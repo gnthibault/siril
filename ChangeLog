@@ -1,0 +1,122 @@
+siril 0.9.5
+--/--/16 - beta test yet
+
+* Implement a graph interface to display quality registration information
+* No X and Y binning value could lead to errors with fwhm
+* Take reference image as normalisation reference
+* Retrieve Bayer pattern from RAW file
+* Export sequence to MP4
+* Statistics should not take into account black point
+* Add ComboBox for registration interpolation
+* Fixed interpolation in global star registration that gave blurred results
+* Fixed FreeBSD intltool compilation fails
+* Fixed erroneous created sequence in registration with unselected images
+* Fixed compilation that failed on KFreeBSD
+
+siril 0.9.4
+08/17/16
+
+ * Fixed issues with SER in generic processing function
+ * Fixed inability to open FITS when filename had parenthesis
+ * Fixed selecting new images did not update the number of selected images
+ * Fixed histogram sliders lag on OS-X
+ * Fixed message "Error in highest quality accepted for sequence processing....." during stack of %, even if quality data are computed
+ * Fixed sequence export to SER with unselected images
+ * Fixed global star alignment with angle close to 180deg
+ * Fixed undo cosmetic correction
+ * Fixed crash in peaker function
+ * Fixed aborting global star registration summary
+ * Fixed sequence list which was unreadable with dark GTK theme
+ * Fixed the update of the list of images
+ * Added support of internationalization: French, Dutch, Chinese, Italian, Arabic
+ * Option for logarithm scale in histogram transformation
+ * Add siril.desktop in archlinux
+ * Added support for exporting sequence in avi format
+ * Option to make a selection for global star registration in a smaller region
+ * Read commands from a file
+ * Option to follow star in registration
+ * Added support for resizing exported sequence
+ * Added support for reading and writing SER timestamps
+ * Added support for RGB alignment
+ * Added functionality to fix broken (0 framecount) SER files.
+
+siril 0.9.3
+04/16/16
+
+ * Fixed bug in preprocessing
+ * Fixed compilation error in come conditions 
+ * Fixed uninitialized values
+ * Fixed typos
+
+siril 0.9.2
+04/04/16
+
+* Added support for dark optimization
+* Added hot pixel removal feature
+* Added Animated GIF output and registered sequence export
+* Added autostretch viewer mode
+* Allowing a reference magnitude to be set to get absolute magnitude instead of relative
+* New commands: sequence selection range and stackall
+* Added vertical banding noise removal tool
+* Providing a better planetary registration algorithm
+* Parallelized registration
+* Refactored conversion to include AVI to SER
+* Configurable "Are you sure" dialogues
+* ls command gives results in an ordered way
+* Updated to FFMS2 latest version
+* Clarified the use of demoisaicing
+* Improved star detection
+* Improved RGB compositing tool
+* Allowing manual selection of background samples
+* Fixed force recomputing statistics for stacking
+* Fixed noise estimation
+* Fixed entropy computation
+
+
+siril 0.9.1
+12/01/15
+
+* added support for GSL 2
+* fixed crash on startup without existing config file
+
+
+siril 0.9.0
+10/16/15
+
+* new global star registration, taking into account field rotation
+* new quality evaluation method for planetary images, used to sort the best
+* images selected for stacking
+* new parallelized stacking algorithm for all sequences, including all SER formats, allowing maximum used memory to be set
+* threading of the most time consuming processings, to keep the GUI reactive, as well as many other speed improvements
+* tested and improved on FreeBSD and MacOS X systems, and ARM architectures
+* undo/redo on processing operations
+* sequence cropping tool
+
+
+siril 0.9.0rc1
+12/29/14
+
+* many fixes including background extraction, compositing alignment, rejection algorithm, wavelets
+* threading of the heavy computations, to avoid graphical user interface freezing and provide a nice way of seeing what is happening in the console window
+* image rotation with any angle (not in registration yet)
+* new Canon banding removing tool
+* GTK+ version is now 3.6 or above
+
+
+siril 0.9.0b1
+11/11/14
+
+* new image formats supported for import and export (BMP, TIFF, JPEG, PNG, NetPBM, PIC (IRIS) RAW DSLR images)
+* better image sequence handling with non-contiguous sequences, but still requiring file names to be postfixed by integers
+* new graphical user interface based on GTK+ version 3.4 and above
+* new display modes added to the standard linear scaling with lo/hi bounds
+* manual translation as new registration method with two preview renderings of the current image with reference frame in transparency
+* automatic translation as new registration method for deep-sky images, based on the PSF analysis of one star
+* new commands available for the command line
+* a star finding algorithm with PSF information
+* new background extraction tool
+* new processing functions
+* new image compositing tool
+* new stacking methods with rejection algorithms
+* numerous bugs fixed and internal code refactoring
+

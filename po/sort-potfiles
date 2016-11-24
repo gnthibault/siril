@@ -1,0 +1,5 @@
+#!/bin/sh
+
+head -n 4 < POTFILES.in > POTFILES.in.tmp 
+grep -v "^[\\[#]" < POTFILES.in | sort >> POTFILES.in.tmp
+mv POTFILES.in.tmp POTFILES.in
