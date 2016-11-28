@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-11-20 20:35+0100\n"
-"PO-Revision-Date: 2016-11-04 11:25+0100\n"
+"PO-Revision-Date: 2016-11-28 16:13+0000\n"
 "Last-Translator: Joaquín. M. Llano Montero\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -23,9 +23,8 @@ msgid "PSF"
 msgstr "PSF"
 
 #: ../src/gui/siril3.glade.h:2
-#, fuzzy
 msgid "PSF for the sequence"
-msgstr "Exportar secuencia"
+msgstr "PSD de la secuencia"
 
 #: ../src/gui/siril3.glade.h:3
 msgid "Pick a Star"
@@ -1457,13 +1456,15 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:325
 msgid "Ensure KSTARS/EKOS compatibility"
-msgstr ""
+msgstr "Asegurar compatibilidad con KSTARS/EKOS"
 
 #: ../src/gui/siril3.glade.h:326
 msgid ""
 "If this box is checked, Siril will try to ensure KSTARS (and PixInsight) "
 "compatibility by reading FITS image in top-bottom order."
 msgstr ""
+"Si se marca esta casilla, SIril intentará asegurar la compatibilidad con "
+"KSTARS (y PixInsight) leyendo la imagen FITS de arriba a abajo."
 
 #: ../src/gui/siril3.glade.h:327
 msgid "Debayer"
@@ -2501,21 +2502,23 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:554
 msgid "Estimate"
-msgstr ""
+msgstr "Estimar"
 
 #: ../src/gui/siril3.glade.h:555
 msgid ""
 "Click on this button to evaluate the number of deviant pixels. If values are "
 "higher than 10000 pixels you will be encouraged to change sigma values."
 msgstr ""
+"Clic en este botón para evaluar el número de píxeles desviados. Si los "
+"valores son mayores de 10000 píxeles se le pedirá cambiar los valores sigma."
 
 #: ../src/gui/siril3.glade.h:556
 msgid "Cold: 0 px"
-msgstr ""
+msgstr "Fríos: 0 px"
 
 #: ../src/gui/siril3.glade.h:557
 msgid "Hot: 0 px"
-msgstr ""
+msgstr "Calientes: 0 px"
 
 #: ../src/gui/siril3.glade.h:558
 msgid "Output sequence"
@@ -2601,16 +2604,15 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:575
 msgid "Prefix:"
-msgstr ""
+msgstr "Prefijo:"
 
 #: ../src/gui/siril3.glade.h:576
 msgid "Prefix of the image names resulting from the registration."
 msgstr "Prefijo de los nombres de imagen resultantes del registro"
 
 #: ../src/gui/siril3.glade.h:577
-#, fuzzy
 msgid "Algorithm: "
-msgstr "Logaritmo"
+msgstr "Algoritmo:"
 
 #: ../src/gui/siril3.glade.h:578
 msgid "Match stars in selection"
@@ -2628,9 +2630,8 @@ msgstr ""
 "selección se ignora esta opción."
 
 #: ../src/gui/siril3.glade.h:581
-#, fuzzy
 msgid "Translation only"
-msgstr "Traslación X:"
+msgstr "Sólo traslación"
 
 #: ../src/gui/siril3.glade.h:582
 msgid ""
@@ -2643,6 +2644,15 @@ msgid ""
 "WARNING: no new sequence is built, registration data is stored in the "
 "original sequence."
 msgstr ""
+"Este es el único registro que puede detectar y aplicar rotaciones en la "
+"imágenes. Sin embargo, rotar las imágenes puede degradarlas en cierta "
+"medida. Activándolo se usará el mismo algoritmo de alineamiento de imágenes "
+"pero sólo se aplicarán traslaciones \"con un píxel de exactitud\" (se "
+"calcula la rotación pero no se aplica).\n"
+"Es útil para secuencias de imágenes con poco ángulo de rotación.\n"
+"\n"
+"AVISO: no se construye una nueva secuencia, los datos de registro se guardan "
+"en la secuencia original."
 
 #: ../src/gui/siril3.glade.h:586
 msgid "Go register"
@@ -2754,50 +2764,44 @@ msgid "Registration"
 msgstr "Registro"
 
 #: ../src/gui/siril3.glade.h:606
-#, fuzzy
 msgid "Filename:"
-msgstr "Nombre del archivo"
+msgstr "Nombre del archivo:"
 
 #: ../src/gui/siril3.glade.h:607
-#, fuzzy
 msgid "Enter the filename of the exported CSV file."
-msgstr "Introduzca el nombre del fichero PNG exporotado"
+msgstr "Introduzca el nombre del fichero CSV exporotado"
 
 #: ../src/gui/siril3.glade.h:608
-#, fuzzy
 msgid "Export to CSV"
-msgstr "Exportar a PNG"
+msgstr "Exportar a CSV"
 
 #: ../src/gui/siril3.glade.h:609
-#, fuzzy
 msgid "Export displayed plot to a CSV file."
-msgstr "Exportar el trazado actual a un fichero PNG."
+msgstr "Exportar el trazado actual a un fichero CSV."
 
 #: ../src/gui/siril3.glade.h:610
-#, fuzzy
 msgid "Clear all"
-msgstr "excluir todas"
+msgstr "Borrar todo"
 
 #: ../src/gui/siril3.glade.h:611
 msgid "Clear all curves displayed in photometry."
-msgstr ""
+msgstr "Borrar todas las curvas mostradas en la fotometría."
 
 #: ../src/gui/siril3.glade.h:612
 msgid "Clear latest"
-msgstr ""
+msgstr "Borrar las últimas"
 
 #: ../src/gui/siril3.glade.h:613
 msgid "Clear the last curve added in photometry."
-msgstr ""
+msgstr "Borrar la última curva añadida a la fotometría."
 
 #: ../src/gui/siril3.glade.h:614
 msgid "Select which information to display from photometry data."
-msgstr ""
+msgstr "Seleccione qué información mostrar de los datos de fotometría."
 
 #: ../src/gui/siril3.glade.h:615
-#, fuzzy
 msgid "Roundness"
-msgstr "Umbral de redondez:"
+msgstr "Redondez"
 
 #: ../src/gui/siril3.glade.h:616 ../src/gui/plot.c:279 ../src/gui/plot.c:429
 msgid "FWHM"
@@ -2805,36 +2809,31 @@ msgstr "FWHM"
 
 #: ../src/gui/siril3.glade.h:617 ../src/gui/plot.c:432
 msgid "Amplitude"
-msgstr ""
+msgstr "Amplitud"
 
 #: ../src/gui/siril3.glade.h:618
-#, fuzzy
 msgid "Magnitude"
-msgstr "Seleccione magnitud"
+msgstr "Magnitud"
 
 #: ../src/gui/siril3.glade.h:619
-#, fuzzy
 msgid "Background"
-msgstr "Mostrar el fondo"
+msgstr "Fondo"
 
 #: ../src/gui/siril3.glade.h:620
-#, fuzzy
 msgid "X position"
-msgstr "Composición HSL"
+msgstr "Posición X"
 
 #: ../src/gui/siril3.glade.h:621
-#, fuzzy
 msgid "Y position"
-msgstr "Composición HSL"
+msgstr "Posición Y"
 
 #: ../src/gui/siril3.glade.h:622
 msgid "Select the source of graph information."
-msgstr ""
+msgstr "Selecciones la fuente de información gráfica."
 
 #: ../src/gui/siril3.glade.h:623
-#, fuzzy
 msgid "Photometry"
-msgstr "Geometría"
+msgstr "Fotometría"
 
 #: ../src/gui/siril3.glade.h:624
 msgid "Plot"
@@ -3740,9 +3739,8 @@ msgid "This command can be used only when a sequence is loaded\n"
 msgstr "Sólo se puede usar este comando cuando se ha cargado una secuencia\n"
 
 #: ../src/core/command.c:716
-#, fuzzy
 msgid "Run a PSF for the sequence first (see seqpsf)\n"
-msgstr "Exportar secuencia"
+msgstr "Ejecutar un PSF para la secuencia primero (ver seqpsf)\n"
 
 #: ../src/core/command.c:720
 #, c-format
@@ -3750,11 +3748,12 @@ msgid ""
 "Reference magnitude has been set for star %d to %f and will be computed for "
 "each image\n"
 msgstr ""
+"La magnitud de referencia se ha establecido para la estrella %d a %f y se "
+"calculará para cada imagen\n"
 
 #: ../src/core/command.c:732
-#, fuzzy
 msgid "Reference magnitude unset for sequence\n"
-msgstr "Seleccionadas todas la imágenes de la secuencia\n"
+msgstr "Magnitud de referencia no establecida para la secuencia\n"
 
 #: ../src/core/command.c:790
 #, c-format
@@ -4435,28 +4434,30 @@ msgstr "Esta unión todavía no se maneja\n"
 #: ../src/gui/callbacks.c:3124
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
-msgstr ""
+msgstr "<span foreground=\"red\">Fríos: %ld px</span>"
 
 #: ../src/gui/callbacks.c:3125 ../src/gui/callbacks.c:3135
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
 msgstr ""
+"Este valor puede ser alto. Por favor considere cambiar el valor sigma o "
+"desmarcar la casilla."
 
 #: ../src/gui/callbacks.c:3128
 #, c-format
 msgid "Cold: %ld px"
-msgstr ""
+msgstr "Fríos: %ld px"
 
 #: ../src/gui/callbacks.c:3134
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
-msgstr ""
+msgstr "<span foreground=\"red\">Calientes: %ld px</span>"
 
 #: ../src/gui/callbacks.c:3138
 #, c-format
 msgid "Hot: %ld px"
-msgstr ""
+msgstr "Calientes: %ld px"
 
 #: ../src/gui/callbacks.c:3316
 msgid "Are you sure you want to quit ?"
@@ -4472,25 +4473,22 @@ msgstr ""
 
 #. translator names
 #: ../src/gui/callbacks.c:3808
-#, fuzzy
 msgid ""
 "Cyril Richard <cyril@free-astro.org>\n"
 "Vincent Hourdin <vh@free-astro.vinvin.tf>"
 msgstr "Joaquín. M. Llano Montero"
 
 #: ../src/gui/callbacks.c:3819
-#, fuzzy
 msgid "About siril"
 msgstr "Acerca de Siril"
 
 #: ../src/gui/callbacks.c:3826
 msgid "Astronomical image (pre-)processing program"
-msgstr ""
+msgstr "Programa de (pre-)proceso de imágenes astronómicas"
 
 #: ../src/gui/callbacks.c:3829
-#, fuzzy
 msgid "Visit the Siril website"
-msgstr "<a href=\"%s\">Visitar el sitio web de Siril</a>"
+msgstr "Visitar el sitio web de Siril"
 
 #: ../src/gui/callbacks.c:3864
 #, c-format
@@ -4726,9 +4724,9 @@ msgid "Star %d of %d"
 msgstr "Estrella %d de %d"
 
 #: ../src/gui/plot.c:181
-#, fuzzy, c-format
+#, c-format
 msgid "%s.csv has been saved.\n"
-msgstr "Se ha creado el archivo stars.lst.\n"
+msgstr "Se ha guardado el fichero %s.csv.\n"
 
 #: ../src/gui/plot.c:182
 msgid "Information"
@@ -4736,7 +4734,7 @@ msgstr "Información"
 
 #: ../src/gui/plot.c:185
 msgid "Something went wrong while saving plot"
-msgstr ""
+msgstr "Algo fue mal al guardar el gráfico"
 
 #: ../src/gui/plot.c:282
 msgid "Quality"
@@ -4748,29 +4746,27 @@ msgstr "Frames:"
 
 #: ../src/gui/plot.c:426
 msgid "Star roundness (1 is round)"
-msgstr ""
+msgstr "Redondez de la estrella (1 es redondo)"
 
 #: ../src/gui/plot.c:436
-#, fuzzy
 msgid "Star magnitude (absolute)"
-msgstr "Polar (Magnitud + Fase)"
+msgstr "Magnitud de la estrella (absoluta)"
 
 #: ../src/gui/plot.c:437
 msgid "Star magnitude (relative, use setmag)"
-msgstr ""
+msgstr "Magnitud de la estrella (relativa, use setmag)"
 
 #: ../src/gui/plot.c:440
-#, fuzzy
 msgid "Background value"
-msgstr "Valor de fondo: %d\n"
+msgstr "Valor de fondo"
 
 #: ../src/gui/plot.c:443
 msgid "Star position on X axis"
-msgstr ""
+msgstr "Posición de la estrella en el eje X"
 
 #: ../src/gui/plot.c:446
 msgid "Star position on Y axis"
-msgstr ""
+msgstr "Posición de la estrella en el eje Y"
 
 #: ../src/gui/registration_preview.c:65
 #, c-format
@@ -5354,6 +5350,9 @@ msgid ""
 "Parameters for mp4 file creation were incorrect. Image dimension has to be a "
 "multiple of 2, fps and file name non nul, quality between 1 and 5."
 msgstr ""
+"Los parámetros para crear el fichero mp4 fueron incorrectos. La dimensión "
+"tiene que ser múltiplo de 2, el fps y nombre de archivo no pueden estar "
+"vacíos, calidad entre 1 y 5."
 
 #: ../src/io/seqfile.c:248
 msgid "The file seems to be corrupted\n"
@@ -5629,9 +5628,9 @@ msgstr ""
 
 #. Get CPU number and set the number of threads
 #: ../src/main.c:376
-#, fuzzy, c-format
+#, c-format
 msgid "Parallel processing %s: Using %d logical processor(s).\n"
-msgstr "Proceso paralelo %s: Usando %d procesadores lógicos %s"
+msgstr "Proceso paralelo %s: Usando %d procesador(es) lógico(s).\n"
 
 #: ../src/main.c:378
 msgid "enabled"
