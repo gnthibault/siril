@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2016 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2017 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -3794,7 +3794,7 @@ gboolean on_main_window_key_press_event(GtkWidget *widget, GdkEventKey *event,
 }
 
 static const gchar* copyright = N_("Copyright © 2004-2011 François Meyer\n"
-		"Copyright © 2012-2016 team free-astro");
+		"Copyright © 2012-2017 team free-astro");
 
 static gchar **authors = (gchar *[] ) { "Vincent Hourdin <vh@free-astro.vinvin.tf>",
 				"Cyril Richard <cyril@free-astro.org>", "François Meyer", NULL };
