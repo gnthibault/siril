@@ -219,7 +219,7 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 			tmp_plot = tmp_plot->next;
 			++k;
 		}
-		variable[j] = variable[j] - mean;
+		variable[j] = variable[j] / mean;
 		tmp_plot = plot;
 		j++;
 	}
