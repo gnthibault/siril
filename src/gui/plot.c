@@ -42,6 +42,8 @@ static gboolean is_fwhm = FALSE, use_photometry = FALSE, requires_color_update =
 static char *ylabel = NULL;
 static char *xlabel = NULL;
 static enum photmetry_source selected_source = ROUNDNESS;
+static double julian0 = 0.0;
+static gnuplot_ctrl *gplot = NULL;
 
 static void update_ylabel();
 static void set_colors(struct kplotcfg *cfg);
@@ -115,7 +117,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 		if (!seq->imgparam[i].incl) continue;
 		if (psfs[i]) {
 			if (seq->type == SEQ_SER && seq->ser_file->ts) {
-				double julian0 = serTimestamp_toJulian(seq->ser_file->ts[0]);
+				julian0 = serTimestamp_toJulian(seq->ser_file->ts[0]);
 				double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
 				plot->data[j].x = julian - (int) julian0;
 				xlabel = calloc(10, sizeof(char));
@@ -165,7 +167,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 
 		/* we'll just take the reference image point from the last data set rendered */
 		if (i == ref_image) {
-			ref.x = plot->data[i].x;//(double) ref_image;
+			ref.x = plot->data[i].x;
 			ref.y = plot->data[j].y;
 		}
 
@@ -185,8 +187,7 @@ static gboolean gnuplot_is_available() {
 static int plotVarCurve(pldata *plot, sequence *seq) {
 	int i, j, nb = 0;
 	pldata *tmp_plot = plot;
-	double *variable, *x;
-	gnuplot_ctrl * gplot;
+	double *variable, *x, *real_x;
 
 	if (!gnuplot_is_available()) {
 		siril_log_message(_("Gnuplot is unavailable. Please consider to install it before trying to plot a graph of a variable star.\n"));
@@ -201,6 +202,7 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 	}
 	variable = calloc(nb, sizeof(double));
 	x = calloc(nb, sizeof(double));
+	real_x = calloc(nb, sizeof(double));
 	for (i = 0, j = 0; i < plot->nb; i++) {
 		if (!seq->imgparam[i].incl)
 			continue;
@@ -209,6 +211,7 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 		/* variable data */
 		variable[j] = tmp_plot->data[j].y;
 		x[j] = tmp_plot->data[j].x;
+		real_x[j] = x[j] + julian0;
 		tmp_plot = tmp_plot->next;
 		int k = 1;	// first data plotted are variable data
 		while (k < MAX_SEQPSF && seq->photometry[k]) {
@@ -222,10 +225,14 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 	}
 
 	/*  data are computed, we now plot the graph */
+	if (gplot != NULL) {
+		gnuplot_close(gplot);
+	}
 
 	if ((gplot = gnuplot_init()) == NULL) {
 		free(variable);
 		free(x);
+		free(real_x);
 		return -1;
 	}
 
@@ -233,10 +240,18 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 	gnuplot_set_xlabel(gplot, xlabel);
 	gnuplot_plot_xy(gplot, x, variable, nb, "");
 
-	//gnuplot_close(gplot);	// if closed, graph is not displayed
+	GtkEntry *EntryCSV = GTK_ENTRY(lookup_widget("GtkEntryCSV"));
+	const gchar *file = gtk_entry_get_text(EntryCSV);
+	if (file && file[0] != '\0') {
+		gchar *filename = g_strndup(file, strlen(file) + 5);
+		g_strlcat(filename, ".csv", strlen(file) + 5);
+		gnuplot_write_xy_csv(filename, real_x, variable, nb, "JD_UTC, mag");
+		g_free(filename);
+	}
 
 	free(variable);
 	free(x);
+	free(real_x);
 	return 0;
 }
 
