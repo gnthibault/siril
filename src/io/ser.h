@@ -84,6 +84,7 @@ struct ser_struct {
 #endif
 };
 
+void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp);
 void ser_init_struct(struct ser_struct *ser_file);
 void ser_display_info(struct ser_struct *ser_file);
 int ser_open_file(char *filename, struct ser_struct *ser_file);

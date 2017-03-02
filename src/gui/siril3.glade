@@ -12409,6 +12409,7 @@ To be enabled, the reference image must have been explicitly set and already dis
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="tooltip_text" translatable="yes">Enter the filename of the exported CSV file.</property>
+                        <property name="width_chars">10</property>
                         <property name="text">Plot</property>
                         <signal name="changed" handler="on_GtkEntryCSV_changed" swapped="no"/>
                       </object>
@@ -12431,7 +12432,7 @@ To be enabled, the reference image must have been explicitly set and already dis
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
+                        <property name="fill">False</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
@@ -12470,6 +12471,42 @@ To be enabled, the reference image must have been explicitly set and already dis
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkButton" id="varCurvePhotometry">
+                        <property name="label" translatable="yes" comments="This is the button for plotting variable star graph">Plot Var.</property>
+                        <property name="sensitive">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Plot a graph of the variable star. The variable star must be analysed in first, then other PSF are applied to references. A maximum of 6 references is allowed. To enable this function, choose 'Magnitude' in the type of displayed graph.
+WARNING: gnuplot must be installed.</property>
+                        <property name="halign">center</property>
+                        <signal name="clicked" handler="on_varCurvePhotometry_clicked" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="plotSourceCombo">
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Select the source of graph information.</property>
+                        <property name="active">0</property>
+                        <items>
+                          <item translatable="yes">Registration</item>
+                          <item translatable="yes">Photometry</item>
+                        </items>
+                        <signal name="changed" handler="on_plotSourceCombo_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="padding">6</property>
+                        <property name="pack_type">end</property>
+                        <property name="position">5</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkComboBoxText" id="plotCombo">
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Select which information to display from photometry data.</property>
@@ -12490,25 +12527,6 @@ To be enabled, the reference image must have been explicitly set and already dis
                         <property name="fill">True</property>
                         <property name="pack_type">end</property>
                         <property name="position">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkComboBoxText" id="plotSourceCombo">
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Select the source of graph information.</property>
-                        <property name="active">0</property>
-                        <items>
-                          <item translatable="yes">Registration</item>
-                          <item translatable="yes">Photometry</item>
-                        </items>
-                        <signal name="changed" handler="on_plotSourceCombo_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="padding">6</property>
-                        <property name="pack_type">end</property>
-                        <property name="position">5</property>
                       </packing>
                     </child>
                   </object>

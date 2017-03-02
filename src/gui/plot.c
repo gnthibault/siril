@@ -31,13 +31,16 @@
 #include "gui/callbacks.h"
 #include "kplot.h"
 #include "algos/PSF.h"
+#include "io/ser.h"
+#include "gui/gnuplot_i/gnuplot_i.h"
 
-static GtkWidget *drawingPlot = NULL, *sourceCombo = NULL, *combo = NULL,
+static GtkWidget *drawingPlot = NULL, *sourceCombo = NULL, *combo = NULL, *varCurve = NULL,
 		 *buttonExport = NULL, *buttonClearAll = NULL, *buttonClearLatest = NULL;
 static pldata *plot_data;
 static struct kpair ref;
 static gboolean is_fwhm = FALSE, use_photometry = FALSE, requires_color_update = FALSE;
 static char *ylabel = NULL;
+static char *xlabel = NULL;
 static enum photmetry_source selected_source = ROUNDNESS;
 
 static void update_ylabel();
@@ -74,6 +77,33 @@ static void build_registration_dataset(sequence *seq, int layer, int ref_image, 
 
 }
 
+static const uint64_t epochTicks = 621355968000000000UL;
+
+static double serTimestamp_toJulian(uint64_t timestamp) {
+	double julian, tmp;
+	uint64_t t1970_ms = (timestamp - epochTicks) / 10000;
+	time_t secs = t1970_ms / 1000;
+	int ms = t1970_ms % 1000;
+	struct tm *t;
+
+	t = gmtime(&secs);
+
+	int year = t->tm_year + 1900;
+	int mon = t->tm_mon + 1;
+
+	tmp = 100 * year + mon - 190002.5;
+	julian = 367.0 * year;
+	julian -= (int) (7.0 * (year + (int) ((mon + 9.0) / 12.0)) / 4.0);
+	julian += (int) (275.0 * mon / 9.0);
+	julian += t->tm_mday;
+	julian += (t->tm_hour + (t->tm_min + t->tm_sec / 60.0) / 60.0) / 24.0;
+	julian += 1721013.5;
+	julian -= 0.5 * tmp / fabs(tmp);
+	julian += 0.5;
+
+	return julian;
+}
+
 static void build_photometry_dataset(sequence *seq, int dataset, int size, int ref_image, pldata *plot) {
 	int i, j;
 	double offset = -1001.0;
@@ -84,7 +114,17 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 	for (i = 0, j = 0; i < size; i++) {
 		if (!seq->imgparam[i].incl) continue;
 		if (psfs[i]) {
-			plot->data[j].x = (double)i;
+			if (seq->type == SEQ_SER && seq->ser_file->ts) {
+				double julian0 = serTimestamp_toJulian(seq->ser_file->ts[0]);
+				double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
+				plot->data[j].x = julian - (int) julian0;
+				xlabel = calloc(10, sizeof(char));
+				g_snprintf(xlabel, 10, "%d +", (int) julian0);
+			}
+			else {
+				plot->data[j].x = (double)i;
+				xlabel = _("Frames");
+			}
 			switch (selected_source) {
 				case ROUNDNESS:
 					plot->data[j].y = psfs[i]->fwhmy / psfs[i]->fwhmx;
@@ -125,13 +165,79 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 
 		/* we'll just take the reference image point from the last data set rendered */
 		if (i == ref_image) {
-			ref.x = (double) ref_image;
+			ref.x = plot->data[i].x;//(double) ref_image;
 			ref.y = plot->data[j].y;
 		}
 
 		j++;
 	}
 	plot->nb = j;
+}
+
+/* returns true if the command gnuplot is available */
+static gboolean gnuplot_is_available() {
+	int retval = system("gnuplot -e > /dev/null 2>&1");
+	if (WIFEXITED(retval))
+		return 0 == WEXITSTATUS(retval);
+	return FALSE;
+}
+
+static int plotVarCurve(pldata *plot, sequence *seq) {
+	int i, j, nb = 0;
+	pldata *tmp_plot = plot;
+	double *variable, *x;
+	gnuplot_ctrl * gplot;
+
+	if (!gnuplot_is_available()) {
+		siril_log_message(_("Gnuplot is unavailable. Please consider to install it before trying to plot a graph of a variable star.\n"));
+		return -1;
+	}
+
+	/* get number of data */
+	for (i = 0, j = 0; i < plot->nb; i++) {
+		if (!seq->imgparam[i].incl)
+			continue;
+		++nb;
+	}
+	variable = calloc(nb, sizeof(double));
+	x = calloc(nb, sizeof(double));
+	for (i = 0, j = 0; i < plot->nb; i++) {
+		if (!seq->imgparam[i].incl)
+			continue;
+		double mean = 0.0;
+
+		/* variable data */
+		variable[j] = tmp_plot->data[j].y;
+		x[j] = tmp_plot->data[j].x;
+		tmp_plot = tmp_plot->next;
+		int k = 1;	// first data plotted are variable data
+		while (k < MAX_SEQPSF && seq->photometry[k]) {
+			mean += (tmp_plot->data[j].y - mean) / (k);
+			tmp_plot = tmp_plot->next;
+			++k;
+		}
+		variable[j] = variable[j] - mean;
+		tmp_plot = plot;
+		j++;
+	}
+
+	/*  data are computed, we now plot the graph */
+
+	if ((gplot = gnuplot_init()) == NULL) {
+		free(variable);
+		free(x);
+		return -1;
+	}
+
+	gnuplot_set_title(gplot, _("Plot of variable star"));
+	gnuplot_set_xlabel(gplot, xlabel);
+	gnuplot_plot_xy(gplot, x, variable, nb, "");
+
+	//gnuplot_close(gplot);	// if closed, graph is not displayed
+
+	free(variable);
+	free(x);
+	return 0;
 }
 
 static int exportCSV(pldata *plot, sequence *seq) {
@@ -197,11 +303,16 @@ static void free_plot_data() {
 		plot = next;
 	}
 	plot_data = NULL;
+	if (xlabel) {
+		free(xlabel);
+		xlabel = NULL;
+	}
 }
 
 void on_plotSourceCombo_changed(GtkComboBox *box, gpointer user_data) {
 	use_photometry = gtk_combo_box_get_active(GTK_COMBO_BOX(box));
 	gtk_widget_set_visible(combo, use_photometry);
+	gtk_widget_set_visible(varCurve, use_photometry);
 	drawPlot();
 }
 
@@ -218,6 +329,7 @@ void reset_plot() {
 		gtk_combo_box_set_active(GTK_COMBO_BOX(sourceCombo), 0);
 		gtk_widget_set_visible(sourceCombo, FALSE);
 		gtk_widget_set_visible(combo, FALSE);
+		gtk_widget_set_visible(varCurve, FALSE);
 		gtk_widget_set_sensitive(buttonExport, FALSE);
 		gtk_widget_set_sensitive(buttonClearLatest, FALSE);
 		gtk_widget_set_sensitive(buttonClearAll, FALSE);
@@ -231,6 +343,7 @@ void drawPlot() {
 	if (drawingPlot == NULL) {
 		drawingPlot = lookup_widget("DrawingPlot");
 		combo = lookup_widget("plotCombo");
+		varCurve = lookup_widget("varCurvePhotometry");
 		sourceCombo = lookup_widget("plotSourceCombo");
 		buttonExport = lookup_widget("ButtonSaveCSV");
 		buttonClearAll  = lookup_widget("clearAllPhotometry");
@@ -297,6 +410,12 @@ void on_ButtonSaveCSV_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(FALSE);
 }
 
+void on_varCurvePhotometry_clicked(GtkButton *button, gpointer user_data) {
+	set_cursor_waiting(TRUE);
+	plotVarCurve(plot_data, &com.seq);
+	set_cursor_waiting(FALSE);
+}
+
 void free_photometry_set(sequence *seq, int set) {
 	int j;
 	for (j = 0; j < seq->number; j++) {
@@ -345,7 +464,7 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		kplotcfg_defaults(&cfgplot);
 		kdatacfg_defaults(&cfgdata);
 		set_colors(&cfgplot);
-		cfgplot.xaxislabel = _("Frames");
+		cfgplot.xaxislabel = (xlabel == NULL) ? _("Frames") : xlabel;
 		cfgplot.yaxislabel = ylabel;
 		cfgplot.yaxislabelrot = M_PI_2 * 3.0;
 		//cfgplot.y2axislabel = _("Sigma");
@@ -373,7 +492,7 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			avg = calloc(max - min, sizeof(struct kpair));
 			j = min;
 			for (i = 0; i < max - min; i++) {
-				avg[i].x = (double) j;
+				avg[i].x = plot_data->data[j].x;//(double) j;
 				avg[i].y = mean;
 				++j;
 			}
@@ -421,6 +540,7 @@ void on_plotCombo_changed(GtkComboBox *box, gpointer user_data) {
 
 static void update_ylabel() {
 	selected_source = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
+	gtk_widget_set_sensitive(varCurve, selected_source == MAGNITUDE);
 	switch (selected_source) {
 		case ROUNDNESS:
 			ylabel = _("Star roundness (1 is round)");

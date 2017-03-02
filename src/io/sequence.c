@@ -1316,6 +1316,8 @@ gpointer export_sequence(gpointer ptr) {
 	fits fit, destfit;
 	char filename[256], dest[256];
 	struct ser_struct *ser_file = NULL;
+	GSList *timestamp = NULL;
+	gchar *strTime;
 #ifdef HAVE_FFMPEG
 	struct mp4_struct *mp4_file = NULL;
 #endif
@@ -1560,6 +1562,8 @@ gpointer export_sequence(gpointer ptr) {
 				}
 				break;
 			case TYPESER:
+				strTime = strdup(destfit.date_obs);
+				timestamp = g_slist_append (timestamp, strTime);
 				if (ser_write_frame_from_fit(ser_file, &destfit, i - skipped))
 					siril_log_message(
 							_("Error while converting to SER (no space left?)\n"));
@@ -1605,8 +1609,10 @@ free_and_reset_progress_bar:
 		free(coeff.scale);
 	}
 	if (args->convflags == TYPESER) {
+		ser_convertTimeStamp(ser_file, timestamp);
 		ser_write_and_close(ser_file);
 		free(ser_file);
+		g_slist_free_full(timestamp, g_free);
 	}
 	else if (args->convflags == TYPEAVI) {
 		avi_file_close(0);
