@@ -240,6 +240,8 @@ void gnuplot_setstyle(gnuplot_ctrl * h, char * plot_style)
 /*-------------------------------------------------------------------------*/
 /**
   @brief    Sets the title of a gnuplot session.
+  @author Cyril Richard (03/03/2017)
+
   @param    h Gnuplot session control handle.
   @param    title Character string to use for title.
   @return   void
@@ -612,6 +614,45 @@ int gnuplot_write_xy_csv(
     for (i=0 ; i<n; i++)
     {
         fprintf(fileHandle, "%.18e, %.18e\n", x[i], y[i]) ;
+    }
+
+    fclose(fileHandle) ;
+
+    return 0;
+}
+
+int gnuplot_write_xy_dat(
+    char const *        fileName,
+    double const    *   x,
+    double const    *   y,
+    int                 n,
+    char const      *   title)
+{
+    int     i ;
+    FILE*   fileHandle;
+
+    if (fileName==NULL || x==NULL || y==NULL || (n<1))
+    {
+        return -1;
+    }
+
+    fileHandle = fopen(fileName, "w");
+
+    if (fileHandle == NULL)
+    {
+        return -1;
+    }
+
+    // Write Comment.
+    if (title != NULL)
+    {
+        fprintf(fileHandle, "# %s\n", title) ;
+    }
+
+    /* Write data to this file  */
+    for (i=0 ; i<n; i++)
+    {
+        fprintf(fileHandle, "%.18e %.18e\n", x[i], y[i]) ;
     }
 
     fclose(fileHandle) ;

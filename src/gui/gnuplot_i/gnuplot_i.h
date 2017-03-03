@@ -402,6 +402,29 @@ int gnuplot_write_xy_csv(
     char const      *   title);
 
 /**
+ * Writes a dat file (blanck space is separator) for use with gnuplot commands later.
+ * Allows files to also be saved for post analysis with excel for example.
+ * Arguments are similar to gnuplot_plot_xy()
+ *
+ * Uses title as gnuplot "comment" on the first line.
+ *
+ * @author Cyril Richard 03/03/2017
+ *
+ * @param fileName file name to write to.  This should be the same name used in the gnuplot command
+ * @param x
+ * @param y
+ * @param n
+ * @param title
+ * @return int <0 if file wasn't written.
+ */
+int gnuplot_write_xy_dat(
+    char const *        fileName,
+    double const    *   x,
+    double const    *   y,
+    int                 n,
+    char const      *   title);
+
+/**
  * Writes a multi column CSV file for use with gnuplot commands later.  Allows files to also be
  * saved for post analysis with excel for example. Note that when used with gnuplot, since there
  * may be more than one column the whole "1:3" or whatever should be used.

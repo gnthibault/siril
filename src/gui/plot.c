@@ -116,7 +116,8 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 	for (i = 0, j = 0; i < size; i++) {
 		if (!seq->imgparam[i].incl) continue;
 		if (psfs[i]) {
-			if (seq->type == SEQ_SER && seq->ser_file->ts) {
+			if (seq->type == SEQ_SER && seq->ser_file->ts
+					&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
 				julian0 = serTimestamp_toJulian(seq->ser_file->ts[0]);
 				double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
 				plot->data[j].x = julian - (int) julian0;
@@ -125,7 +126,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 			}
 			else {
 				plot->data[j].x = (double)i;
-				xlabel = _("Frames");
+				xlabel = strdup(_("Frames"));
 			}
 			switch (selected_source) {
 				case ROUNDNESS:
@@ -185,7 +186,7 @@ static gboolean gnuplot_is_available() {
 }
 
 static int plotVarCurve(pldata *plot, sequence *seq) {
-	int i, j, nb = 0;
+	int i, j, nb = 0, ret = 0;
 	pldata *tmp_plot = plot;
 	double *variable, *x, *real_x;
 
@@ -244,8 +245,16 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 	const gchar *file = gtk_entry_get_text(EntryCSV);
 	if (file && file[0] != '\0') {
 		gchar *filename = g_strndup(file, strlen(file) + 5);
-		g_strlcat(filename, ".csv", strlen(file) + 5);
-		gnuplot_write_xy_csv(filename, real_x, variable, nb, "JD_UTC, mag");
+		g_strlcat(filename, ".dat", strlen(file) + 5);
+		ret = gnuplot_write_xy_dat(filename, real_x, variable, nb,
+				"JD_UTC, Flux(Var)/Flux(Ref)");
+		if (!ret) {
+			char *msg = siril_log_message(_("%s has been saved.\n"), filename);
+			show_dialog(msg, _("Information"), "gtk-dialog-info");
+		} else {
+			show_dialog(_("Something went wrong while saving plot"), _("Error"),
+					"gtk-dialog-error");
+		}
 		g_free(filename);
 	}
 
