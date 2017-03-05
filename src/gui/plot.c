@@ -90,15 +90,43 @@ static double serTimestamp_toJulian(uint64_t timestamp) {
 
 	t = gmtime(&secs);
 
+	/* Get real year and month */
 	int year = t->tm_year + 1900;
 	int mon = t->tm_mon + 1;
 
+	/* Converting to Julian date */
 	tmp = 100 * year + mon - 190002.5;
 	julian = 367.0 * year;
 	julian -= (int) (7.0 * (year + (int) ((mon + 9.0) / 12.0)) / 4.0);
 	julian += (int) (275.0 * mon / 9.0);
 	julian += t->tm_mday;
 	julian += (t->tm_hour + (t->tm_min + t->tm_sec / 60.0) / 60.0) / 24.0;
+	julian += 1721013.5;
+	julian -= 0.5 * tmp / fabs(tmp);
+	julian += 0.5;
+
+	return julian;
+}
+
+static double dateTimestamp_toJulian(char *timestamp, double exp) {
+	double julian, tmp;
+	int year = 0, mon = 0, day = 0, hour = 0, min = 0, sec = 0, ms = 0;
+
+	if (timestamp[0] == '\0')
+		return -1;
+
+	sscanf(timestamp, "%04d-%02d-%02dT%02d:%02d:%02d.%02d", &year, &mon, &day,
+			&hour, &min, &sec, &ms);
+	/* we add exposure / 2 to the timestamp */
+	sec += exp / 2.0;
+
+	/* Converting to Julian date */
+	tmp = 100 * year + mon - 190002.5;
+	julian = 367.0 * year;
+	julian -= (int) (7.0 * (year + (int) ((mon + 9.0) / 12.0)) / 4.0);
+	julian += (int) (275.0 * mon / 9.0);
+	julian += day;
+	julian += (hour + (min + sec / 60.0) / 60.0) / 24.0;
 	julian += 1721013.5;
 	julian -= 0.5 * tmp / fabs(tmp);
 	julian += 0.5;
@@ -118,13 +146,23 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 		if (psfs[i]) {
 			if (seq->type == SEQ_SER && seq->ser_file->ts
 					&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
+				/* Get start date */
 				julian0 = serTimestamp_toJulian(seq->ser_file->ts[0]);
 				double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
+
 				plot->data[j].x = julian - (int) julian0;
 				xlabel = calloc(10, sizeof(char));
 				g_snprintf(xlabel, 10, "%d +", (int) julian0);
-			}
-			else {
+			} else if (seq->type == SEQ_REGULAR && seq->ts) {
+				/* Get start date */
+				julian0 = dateTimestamp_toJulian(g_slist_nth_data(seq->ts, 0), seq->exposure);
+				double julian = dateTimestamp_toJulian(
+						g_slist_nth_data(seq->ts, i), seq->exposure);
+
+				plot->data[j].x = julian - (int) julian0;
+				xlabel = calloc(10, sizeof(char));
+				g_snprintf(xlabel, 10, "%d +", (int) julian0);
+			} else {
 				plot->data[j].x = (double)i;
 				xlabel = strdup(_("Frames"));
 			}
@@ -207,20 +245,30 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 	for (i = 0, j = 0; i < plot->nb; i++) {
 		if (!seq->imgparam[i].incl)
 			continue;
-		double mean = 0.0;
+		double reference = 0.0;
 
-		/* variable data */
 		variable[j] = tmp_plot->data[j].y;
 		x[j] = tmp_plot->data[j].x;
 		real_x[j] = x[j] + julian0;
 		tmp_plot = tmp_plot->next;
 		int k = 1;	// first data plotted are variable data
 		while (k < MAX_SEQPSF && seq->photometry[k]) {
-			mean += (tmp_plot->data[j].y - mean) / (k);
+			/* variable data, inversion of Pogson's law
+			 * Flux = 10^(mag/-2.5)
+			 */
+			double flux_j = pow(10, tmp_plot->data[j].y / -2.5);
+			/* Compute the arithmetic mean of a dataset using the recurrence relation
+			 mean_(n) = mean(n - 1) + (data[n] - mean(n - 1)) / (n + 1)
+			 but here, n starts at 1 */
+			reference = reference + (flux_j - reference) / (k);
 			tmp_plot = tmp_plot->next;
 			++k;
 		}
-		variable[j] = variable[j] / mean;
+		/** TODO: compute standard deviation of each references
+		 */
+		/* Converting back to magnitude */
+		reference = -2.5 * log10(reference);
+		variable[j] = variable[j] / reference;
 		tmp_plot = plot;
 		j++;
 	}
@@ -247,7 +295,7 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 		gchar *filename = g_strndup(file, strlen(file) + 5);
 		g_strlcat(filename, ".dat", strlen(file) + 5);
 		ret = gnuplot_write_xy_dat(filename, real_x, variable, nb,
-				"JD_UTC, Flux(Var)/Flux(Ref)");
+				"JD_UTC, Mag(Var)-Mag(Ref)");
 		if (!ret) {
 			char *msg = siril_log_message(_("%s has been saved.\n"), filename);
 			show_dialog(msg, _("Information"), "gtk-dialog-info");

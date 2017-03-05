@@ -448,7 +448,7 @@ void report_fits_error(int status) {
 /* Read a rectangular section of a FITS image in Siril's format, pointed by its
  * exact filename. Only layer layer is read. */
 int readfits_partial(const char *filename, int layer, fits *fit,
-		const rectangle *area) {
+		const rectangle *area, gboolean do_photometry) {
 	int status;
 	unsigned int nbdata;
 	long fpixel[3], lpixel[3], inc[3] = { 1L, 1L, 1L };
@@ -468,6 +468,24 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		status = 0;
 		fits_close_file(fit->fptr, &status);
 		return status;
+	}
+	if (do_photometry) {
+		status = 0;
+		fits_read_key(fit->fptr, TSTRING, "DATE-OBS", &(fit->date_obs), NULL,
+				&status);
+		status = 0;
+		char ut_start[FLEN_VALUE];
+		/** Case seen in some FITS files. Needed for photo **/
+		fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL, &status);
+		if (ut_start[0] != '\0' && fit->date_obs[2] == '/') {
+			int year, month, day;
+			sscanf(fit->date_obs, "%02d/%02d/%04d", &day, &month, &year);
+			g_snprintf(fit->date_obs, sizeof(fit->date_obs),
+					"%04d-%02d-%02dT%s", year, month, day, ut_start);
+		}
+		status = 0;
+		__tryToFindKeywords(fit->fptr, TDOUBLE, Exposure, &fit->exposure);
+
 	}
 	fit->rx = fit->naxes[0];	// size of the real image
 	fit->ry = fit->naxes[1];

@@ -559,14 +559,14 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
  * rectangle only. layer is set to the layer number in the read partial frame.
  * The partial image result is only one-channel deep, so it cannot be used to
  * have a partial RGB image. */
-int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const rectangle *area) {
+int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const rectangle *area, gboolean do_photometry) {
 	char filename[256];
 	fits tmp_fit;
 	memset(&tmp_fit, 0, sizeof(fits));
 	switch (seq->type) {
 		case SEQ_REGULAR:
 			fit_sequence_get_image_filename(seq, index, filename, TRUE);
-			if (readfits_partial(filename, layer, dest, area)) {
+			if (readfits_partial(filename, layer, dest, area, do_photometry)) {
 				siril_log_message(_("Could not load partial image %d from sequence %s\n"),
 						index, seq->seqname); 
 				return 1;
@@ -815,6 +815,7 @@ void initialize_sequence(sequence *seq, gboolean is_zeroed) {
 	seq->reference_image = -1;	// uninit value
 	seq->reference_star = -1;	// uninit value
 	seq->type = SEQ_REGULAR;
+	seq->ts = NULL;
 	for (i=0; i<PREVIEW_NB; i++) {
 		seq->previewX[i] = -1;
 		seq->previewY[i] = -1;
@@ -858,6 +859,7 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 			free(seq->imgparam[i].stats);
 		}
 	}
+	if (seq->ts) g_slist_free_full(seq->ts, g_free);
 	if (seq->seqname)	free(seq->seqname);
 	if (seq->layers)	free(seq->layers);
 	if (seq->imgparam)	free(seq->imgparam);
@@ -939,7 +941,9 @@ gboolean sequence_is_loaded() {
  * core/processing.c, called generic_sequence.
  * The see coment in siril.h for help on process format.
  */
-int sequence_processing(sequence *seq, sequence_proc process, int layer, gboolean run_in_thread, gboolean run_in_parallel, void *arg) {
+int sequence_processing(sequence *seq, sequence_proc process, int layer,
+		gboolean run_in_thread, gboolean run_in_parallel,
+		gboolean do_photometry, void *arg) {
 	int i, abort = 0;
 	float cur_nb = 0.f, nb_frames;
 	rectangle area;
@@ -968,9 +972,16 @@ int sequence_processing(sequence *seq, sequence_proc process, int layer, gboolea
 			enforce_area_in_image(&area, seq);
 
 			/* opening the image */
-			if (seq_read_frame_part(seq, layer, i, &fit, &area)) {
+			if (seq_read_frame_part(seq, layer, i, &fit, &area, do_photometry)) {
 				abort = 1;
 				continue;
+			}
+
+			if (do_photometry && seq->type == SEQ_REGULAR) {
+				gchar *strTime = strdup(fit.date_obs);
+				seq->ts = g_slist_append (seq->ts, strTime);
+				/* ugly */
+				seq->exposure = fit.exposure;
 			}
 
 			/* processing the image
@@ -1035,7 +1046,7 @@ int do_fwhm_sequence_processing(sequence *seq, int layer, gboolean print_psf, gb
 
 	args.follow_star = follow_star;
 	args.psf = malloc(seq->number * sizeof(fitted_PSF *));
-	retval = sequence_processing(seq, &seqprocess_fwhm, layer, run_in_thread, !follow_star, &args);
+	retval = sequence_processing(seq, &seqprocess_fwhm, layer, run_in_thread, !follow_star, !for_registration, &args);
 
 	if (retval) {
 		set_progress_bar_data(_("Failed to compute PSF for the sequence. Ready."), PROGRESS_NONE);

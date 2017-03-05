@@ -234,7 +234,7 @@ int register_shift_dft(struct registration_args *args) {
 			PROGRESS_NONE);
 	memset(&fit_ref, 0, sizeof(fits));
 	ret = seq_read_frame_part(args->seq, args->layer, ref_image, &fit_ref,
-			&args->selection);
+			&args->selection, FALSE);
 
 	if (ret) {
 		siril_log_message(
@@ -296,7 +296,7 @@ int register_shift_dft(struct registration_args *args) {
 					tmpfilename);
 			set_progress_bar_data(tmpmsg, PROGRESS_NONE);
 			if (!(seq_read_frame_part(args->seq, args->layer, frame, &fit,
-					&args->selection))) {
+					&args->selection, FALSE))) {
 
 				int x;
 				fftw_complex *img = fftw_malloc(sizeof(fftw_complex) * sqsize);

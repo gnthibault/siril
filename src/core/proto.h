@@ -21,7 +21,7 @@ int	readfits(const char *filename, fits *fit, char *realname);
 char*	list_header(fits *fit);
 void	clearfits(fits *);
 void	report_fits_error(int status);
-int	readfits_partial(const char *filename, int layer, fits *fit, const rectangle *area);
+int	readfits_partial(const char *filename, int layer, fits *fit, const rectangle *area, gboolean read_date);
 int	read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area);
 int 	savefits(const char *, fits *);
 void 	save_fits_header(fits *);
@@ -213,7 +213,7 @@ int	check_only_one_film_seq(char* name);
 int	set_seq(const char *);
 char *	seq_get_image_filename(sequence *seq, int index, char *name_buf);
 int	seq_read_frame(sequence *seq, int index, fits *dest);
-int	seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const rectangle *area);
+int	seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const rectangle *area, gboolean do_photometry);
 int	seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it);
 int	seq_open_image(sequence *seq, int index);
 void	seq_close_image(sequence *seq, int index);
@@ -227,7 +227,9 @@ void	initialize_sequence(sequence *seq, gboolean is_zeroed);
 void	free_sequence(sequence *seq, gboolean free_seq_too);
 void	sequence_free_preprocessing_data(sequence *seq);
 gboolean sequence_is_loaded();
-int	sequence_processing(sequence *seq, sequence_proc process, int layer, gboolean run_in_thread, gboolean run_in_parallel, void *arg);
+int sequence_processing(sequence *seq, sequence_proc process, int layer,
+		gboolean run_in_thread, gboolean run_in_parallel,
+		gboolean do_photometry, void *arg);
 int	seqprocess_fwhm(sequence *seq, int seq_layer, int frame_no, fits *fit, rectangle *source_area, void *arg);
 int	do_fwhm_sequence_processing(sequence *seq, int layer, gboolean print_psf, gboolean follow_star, gboolean run_in_thread, gboolean for_registration);
 void	check_or_allocate_regparam(sequence *seq, int layer);
