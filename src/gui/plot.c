@@ -268,7 +268,7 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 		 */
 		/* Converting back to magnitude */
 		reference = -2.5 * log10(reference);
-		variable[j] = variable[j] / reference;
+		variable[j] = variable[j] - reference;
 		tmp_plot = plot;
 		j++;
 	}
@@ -287,6 +287,7 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 
 	gnuplot_set_title(gplot, _("Plot of variable star"));
 	gnuplot_set_xlabel(gplot, xlabel);
+	gnuplot_reverse_yaxis(gplot);
 	gnuplot_plot_xy(gplot, x, variable, nb, "");
 
 	GtkEntry *EntryCSV = GTK_ENTRY(lookup_widget("GtkEntryCSV"));

@@ -342,7 +342,7 @@ struct sequ {
 	int beg;		// imgparam[0]->filenum
 	int end;		// imgparam[number-1]->filenum
 	GSList *ts;		// list of timestamps
-	double exposure;	// exposure of frames (we assume there are all identical)
+	double exposure;	// exposure of frames (we assume they are all identical)
 
 	/* registration previsualisation and manual alignment data */
 	int previewX[PREVIEW_NB], previewY[PREVIEW_NB];	// center, -1 is uninitialized value

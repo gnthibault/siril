@@ -271,6 +271,20 @@ void gnuplot_set_xlabel(gnuplot_ctrl * h, char * label)
     gnuplot_cmd(h, "set xlabel \"%s\"", label) ;
 }
 
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Reverse x axis of a gnuplot session.
+  @param    h Gnuplot session control handle.
+  @return   void
+
+  Reverse x axis of a gnuplot session.
+ */
+/*--------------------------------------------------------------------------*/
+
+void gnuplot_reverse_xaxis(gnuplot_ctrl * h)
+{
+    gnuplot_cmd(h, "set xrange [] reverse") ;
+}
 
 /*-------------------------------------------------------------------------*/
 /**
@@ -288,6 +302,20 @@ void gnuplot_set_ylabel(gnuplot_ctrl * h, char * label)
     gnuplot_cmd(h, "set ylabel \"%s\"", label) ;
 }
 
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Reverse y axis of a gnuplot session.
+  @param    h Gnuplot session control handle.
+  @return   void
+
+  Reverse y axis of a gnuplot session.
+ */
+/*--------------------------------------------------------------------------*/
+
+void gnuplot_reverse_yaxis(gnuplot_ctrl * h)
+{
+    gnuplot_cmd(h, "set yrange [] reverse") ;
+}
 
 /*-------------------------------------------------------------------------*/
 /**

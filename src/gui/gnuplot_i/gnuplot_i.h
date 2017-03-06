@@ -151,18 +151,6 @@ void gnuplot_setstyle(gnuplot_ctrl * h, char * plot_style);
 
 /*-------------------------------------------------------------------------*/
 /**
-  @brief    Sets the x label of a gnuplot session.
-  @param    h Gnuplot session control handle.
-  @param    label Character string to use for X label.
-  @return   void
-
-  Sets the x label for a gnuplot session.
- */
-/*--------------------------------------------------------------------------*/
-void gnuplot_set_xlabel(gnuplot_ctrl * h, char * label);
-
-/*-------------------------------------------------------------------------*/
-/**
   @brief    Sets the title of a gnuplot session.
   @param    h Gnuplot session control handle.
   @param    title Character string to use for title.
@@ -176,6 +164,30 @@ void gnuplot_set_title(gnuplot_ctrl * h, char * title);
 
 /*-------------------------------------------------------------------------*/
 /**
+  @brief    Sets the x label of a gnuplot session.
+  @param    h Gnuplot session control handle.
+  @param    label Character string to use for X label.
+  @return   void
+
+  Sets the x label for a gnuplot session.
+ */
+/*--------------------------------------------------------------------------*/
+void gnuplot_set_xlabel(gnuplot_ctrl * h, char * label);
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Reverse x axis of a gnuplot session.
+  @param    h Gnuplot session control handle.
+  @return   void
+
+  Reverse x axis of a gnuplot session.
+ */
+/*--------------------------------------------------------------------------*/
+
+void gnuplot_reverse_xaxis(gnuplot_ctrl * h);
+
+/*-------------------------------------------------------------------------*/
+/**
   @brief    Sets the y label of a gnuplot session.
   @param    h Gnuplot session control handle.
   @param    label Character string to use for Y label.
@@ -185,6 +197,18 @@ void gnuplot_set_title(gnuplot_ctrl * h, char * title);
  */
 /*--------------------------------------------------------------------------*/
 void gnuplot_set_ylabel(gnuplot_ctrl * h, char * label);
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Reverse y axis of a gnuplot session.
+  @param    h Gnuplot session control handle.
+  @return   void
+
+  Reverse y axis of a gnuplot session.
+ */
+/*--------------------------------------------------------------------------*/
+
+void gnuplot_reverse_yaxis(gnuplot_ctrl * h);
 
 /*-------------------------------------------------------------------------*/
 /**
