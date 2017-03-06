@@ -23,6 +23,13 @@
     $Revision: 2.10 $
  */
 
+/*
+    $New version modified for Siril $
+    $Author: Cyril Richard $
+    $Date: 2017
+    $Revision: 2.12 $
+ */
+
 /*---------------------------------------------------------------------------
                                 Includes
  ---------------------------------------------------------------------------*/
@@ -35,6 +42,7 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <unistd.h>
+#include <glib.h> // g_get_tmp_dir
 
 #ifdef WIN32
 #include <io.h>
@@ -743,9 +751,10 @@ int gnuplot_write_multi_csv(
 
 char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
 {
-    static char const * tmp_filename_template = "gnuplot_tmpdatafile_XXXXXX";
+    static char const * tmp_filename_template = "/gnuplot_tmpdatafile_XXXXXX";
+    char const        * tmp_dir = g_get_tmp_dir();
     char *              tmp_filename = NULL;
-    int                 tmp_filelen = strlen(tmp_filename_template);
+    int                 tmp_filelen = strlen(tmp_filename_template) + strlen(tmp_dir);
 
 #ifndef WIN32
     int                 unx_fd;
@@ -761,12 +770,13 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
         return NULL;
     }
 
-    tmp_filename = (char*) malloc(tmp_filelen+1);
+	tmp_filename = (char*) malloc(tmp_filelen + 1);
     if (tmp_filename == NULL)
     {
         return NULL;
     }
-    strcpy(tmp_filename, tmp_filename_template);
+    strcpy(tmp_filename, tmp_dir);
+    strcat(tmp_filename, tmp_filename_template);
 
 #ifdef WIN32
     if (_mktemp(tmp_filename) == NULL)
