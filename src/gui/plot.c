@@ -254,9 +254,9 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 		int k = 1;	// first data plotted are variable data
 		while (k < MAX_SEQPSF && seq->photometry[k]) {
 			/* variable data, inversion of Pogson's law
-			 * Flux = 10^(mag/-2.5)
+			 * Flux = 10^(-0.4 * mag)
 			 */
-			double flux_j = pow(10, tmp_plot->data[j].y / -2.5);
+			double flux_j = pow(10, -0.4 * tmp_plot->data[j].y);
 			/* Compute the arithmetic mean of a dataset using the recurrence relation
 			 mean_(n) = mean(n - 1) + (data[n] - mean(n - 1)) / (n + 1)
 			 but here, n starts at 1 */
@@ -264,8 +264,6 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 			tmp_plot = tmp_plot->next;
 			++k;
 		}
-		/** TODO: compute standard deviation of each references
-		 */
 		/* Converting back to magnitude */
 		reference = -2.5 * log10(reference);
 		variable[j] = variable[j] - reference;
@@ -285,7 +283,7 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 		return -1;
 	}
 
-	gnuplot_set_title(gplot, _("Plot of variable star"));
+	gnuplot_set_title(gplot, _("Light Curve"));
 	gnuplot_set_xlabel(gplot, xlabel);
 	gnuplot_reverse_yaxis(gplot);
 	gnuplot_plot_xy(gplot, x, variable, nb, "");
