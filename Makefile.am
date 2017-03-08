@@ -24,3 +24,4 @@ install-data-local:
 
 ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = config.rpath
+AUTOMAKE_OPTIONS = foreign
