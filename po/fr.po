@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-02 10:43+0100\n"
-"PO-Revision-Date: 2017-03-02 10:46+0100\n"
+"POT-Creation-Date: 2017-03-08 13:46+0100\n"
+"PO-Revision-Date: 2017-03-07 16:39+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -2344,7 +2344,7 @@ msgstr ""
 "important et un débit moindre. Le résultat est un fichier de taille plus "
 "petite."
 
-#: ../src/gui/siril3.glade.h:519 ../src/io/sequence.c:1733
+#: ../src/gui/siril3.glade.h:519 ../src/io/sequence.c:1746
 msgid "Select area to crop"
 msgstr "Sélectionner zone à recadrer"
 
@@ -2841,11 +2841,11 @@ msgstr "Sélectionner l'information des données photométriques à afficher."
 msgid "Roundness"
 msgstr "Rondeur"
 
-#: ../src/gui/siril3.glade.h:622 ../src/gui/plot.c:392 ../src/gui/plot.c:549
+#: ../src/gui/siril3.glade.h:622 ../src/gui/plot.c:463 ../src/gui/plot.c:620
 msgid "FWHM"
 msgstr "FWHM"
 
-#: ../src/gui/siril3.glade.h:623 ../src/gui/plot.c:552
+#: ../src/gui/siril3.glade.h:623 ../src/gui/plot.c:623
 msgid "Amplitude"
 msgstr "Amplitude"
 
@@ -3450,7 +3450,7 @@ msgstr "Rehaussement de la saturation : en cours...\n"
 #: ../src/core/command.c:1397 ../src/core/siril.c:620 ../src/core/siril.c:904
 #: ../src/core/siril.c:1038 ../src/core/siril.c:1181 ../src/core/siril.c:1556
 #: ../src/core/siril.c:1648 ../src/core/siril.c:1757 ../src/gui/histogram.c:695
-#: ../src/gui/statistics_list.c:306 ../src/io/sequence.c:1253
+#: ../src/gui/statistics_list.c:306 ../src/io/sequence.c:1266
 msgid "Error: no data computed.\n"
 msgstr "Erreur, aucune donnée calculée.\n"
 
@@ -4048,12 +4048,12 @@ msgstr "Les images n'ont pas la même taille (l = %d|%d, h = %d|%d)\n"
 #: ../src/core/siril.c:201 ../src/core/utils.c:435 ../src/gui/callbacks.c:2419
 #: ../src/gui/callbacks.c:4964 ../src/gui/callbacks.c:4985
 #: ../src/gui/callbacks.c:5405 ../src/gui/callbacks.c:5411
-#: ../src/gui/callbacks.c:5436 ../src/gui/PSF_list.c:150 ../src/gui/plot.c:291
-#: ../src/io/conversion.c:491 ../src/io/conversion.c:559
-#: ../src/io/image_format_fits.c:176 ../src/io/image_format_fits.c:183
-#: ../src/io/image_format_fits.c:202 ../src/io/image_format_fits.c:216
-#: ../src/io/image_format_fits.c:231 ../src/io/image_format_fits.c:333
-#: ../src/io/image_format_fits.c:342 ../src/io/image_format_fits.c:663
+#: ../src/gui/callbacks.c:5436 ../src/gui/PSF_list.c:150 ../src/gui/plot.c:302
+#: ../src/gui/plot.c:362 ../src/io/conversion.c:491 ../src/io/conversion.c:559
+#: ../src/io/image_format_fits.c:188 ../src/io/image_format_fits.c:195
+#: ../src/io/image_format_fits.c:214 ../src/io/image_format_fits.c:228
+#: ../src/io/image_format_fits.c:243 ../src/io/image_format_fits.c:345
+#: ../src/io/image_format_fits.c:354 ../src/io/image_format_fits.c:693
 #: ../src/io/image_formats_internal.c:47 ../src/io/image_formats_internal.c:102
 #: ../src/io/image_formats_internal.c:167
 #: ../src/io/image_formats_internal.c:335
@@ -4758,11 +4758,11 @@ msgstr ""
 msgid "Star %d of %d"
 msgstr "Étoile %d sur %d"
 
-#: ../src/gui/plot.c:126 ../src/gui/plot.c:467
+#: ../src/gui/plot.c:167 ../src/gui/plot.c:538
 msgid "Frames"
 msgstr "Images"
 
-#: ../src/gui/plot.c:192
+#: ../src/gui/plot.c:232
 msgid ""
 "Gnuplot is unavailable. Please consider to install it before trying to plot "
 "a graph of a variable star.\n"
@@ -4770,48 +4770,53 @@ msgstr ""
 "Gnuplot n'est pas disponible. Veuillez l'installer avant d'essayer de tracer "
 "la courbe d'une étoile variable.\n"
 
-#: ../src/gui/plot.c:232
-msgid "Plot of variable star"
-msgstr "Graphique de l'étoile variable"
+#: ../src/gui/plot.c:286
+msgid "Light Curve"
+msgstr "Courbe de luminosité"
 
-#: ../src/gui/plot.c:287
+#: ../src/gui/plot.c:299
+#, c-format
+msgid "%s has been saved.\n"
+msgstr "%s a été sauvegardé.\n"
+
+#: ../src/gui/plot.c:300 ../src/gui/plot.c:359
+msgid "Information"
+msgstr "Information"
+
+#: ../src/gui/plot.c:302 ../src/gui/plot.c:362
+msgid "Something went wrong while saving plot"
+msgstr "Une erreur s'est produite pendant la sauvegarde du graphique"
+
+#: ../src/gui/plot.c:358
 #, c-format
 msgid "%s.csv has been saved.\n"
 msgstr "%s.csv a été sauvegardé.\n"
 
-#: ../src/gui/plot.c:288
-msgid "Information"
-msgstr "Information"
-
-#: ../src/gui/plot.c:291
-msgid "Something went wrong while saving plot"
-msgstr "Une erreur s'est produite pendant la sauvegarde du graphique"
-
-#: ../src/gui/plot.c:395
+#: ../src/gui/plot.c:466
 msgid "Quality"
 msgstr "Qualité"
 
-#: ../src/gui/plot.c:546
+#: ../src/gui/plot.c:617
 msgid "Star roundness (1 is round)"
 msgstr "Rondeur de l'étoile (1 = rond parfait)"
 
-#: ../src/gui/plot.c:556
+#: ../src/gui/plot.c:627
 msgid "Star magnitude (absolute)"
 msgstr "Magnitude de l'étoile (absolue)"
 
-#: ../src/gui/plot.c:557
+#: ../src/gui/plot.c:628
 msgid "Star magnitude (relative, use setmag)"
 msgstr "Magnitude de l'étoile (relative, utilisez \"setmag\")"
 
-#: ../src/gui/plot.c:560
+#: ../src/gui/plot.c:631
 msgid "Background value"
 msgstr "Valeur de fond du ciel"
 
-#: ../src/gui/plot.c:563
+#: ../src/gui/plot.c:634
 msgid "Star position on X axis"
 msgstr "Position de l'étoile sur l'axe X"
 
-#: ../src/gui/plot.c:566
+#: ../src/gui/plot.c:637
 msgid "Star position on Y axis"
 msgstr "Position de l'étoile sur l'axe Y"
 
@@ -4968,7 +4973,7 @@ msgstr ""
 "La sortie du format SER aura priorité sur l'option 1 canal par image.\n"
 
 #: ../src/io/conversion.c:528 ../src/io/conversion.c:577
-#: ../src/io/sequence.c:1182 ../src/io/sequence.c:1355
+#: ../src/io/sequence.c:1195 ../src/io/sequence.c:1368
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "La création du fichier SER a échoué, abandon.\n"
 
@@ -5013,7 +5018,7 @@ msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Erreur pendant la lecture de l'image %d de %s, abandon.\n"
 
 #: ../src/io/conversion.c:594 ../src/io/conversion.c:622
-#: ../src/io/sequence.c:1209 ../src/io/sequence.c:1569
+#: ../src/io/sequence.c:1222 ../src/io/sequence.c:1582
 msgid "Error while converting to SER (no space left?)\n"
 msgstr ""
 "Erreur pendant la conversion en fichier SER (plus d'espace disponible ?)\n"
@@ -5086,28 +5091,28 @@ msgstr "FILM ERREUR : format incompatible\n"
 msgid "Loaded FITS file has a BSCALE different than 1 (%d)\n"
 msgstr "Le fichier FITS chargé a un BSCALE différent de 1 (%d)\n"
 
-#: ../src/io/image_format_fits.c:174
+#: ../src/io/image_format_fits.c:186
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr "%s.[extension] non trouvé.\n"
 
-#: ../src/io/image_format_fits.c:181
+#: ../src/io/image_format_fits.c:193
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr "Le fichier %s n'est pas un fichier FITS valide.\n"
 
-#: ../src/io/image_format_fits.c:201
+#: ../src/io/image_format_fits.c:213
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "FITSIO erreur lors de la récupération des paramètres, fichier %s.\n"
 
-#: ../src/io/image_format_fits.c:214 ../src/io/image_format_fits.c:485
+#: ../src/io/image_format_fits.c:226 ../src/io/image_format_fits.c:515
 #, c-format
 msgid "Unknown FITS image format (%ld axes).\n"
 msgstr "Format FITS inconnu (%ld axes).\n"
 
-#: ../src/io/image_format_fits.c:230
+#: ../src/io/image_format_fits.c:242
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -5115,49 +5120,49 @@ msgstr ""
 "Les images FITS avec 64 bits entier signé par pixel.canal ne sont pas "
 "supportées.\n"
 
-#: ../src/io/image_format_fits.c:330
+#: ../src/io/image_format_fits.c:342
 msgid "Unknown FITS image format.\n"
 msgstr "Image FITS de format inconnu.\n"
 
-#: ../src/io/image_format_fits.c:340
+#: ../src/io/image_format_fits.c:352
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Erreur fitsio lors de la lecture des données, fichier : %s.\n"
 
-#: ../src/io/image_format_fits.c:356
+#: ../src/io/image_format_fits.c:368
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lecture du fichier FITS : %s, %ld canal(aux), %ux%u pixels\n"
 
-#: ../src/io/image_format_fits.c:431
+#: ../src/io/image_format_fits.c:443
 #, c-format
 msgid "FITS error: %s\n"
 msgstr "Erreur dans le fichier FITS : %s\n"
 
-#: ../src/io/image_format_fits.c:466
+#: ../src/io/image_format_fits.c:496
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "Lecture partielle du FITS : il n'y pas de canal %d dans l'image %s\n"
 
-#: ../src/io/image_format_fits.c:494
+#: ../src/io/image_format_fits.c:524
 msgid "Only Siril FITS images can be used with partial image reading.\n"
 msgstr ""
 "Seul les images FITS de Siril peuvent être utilisées pour la lecture "
 "partielle.\n"
 
-#: ../src/io/image_format_fits.c:525
+#: ../src/io/image_format_fits.c:555
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Chargement partiel du fichier FITS %s\n"
 
-#: ../src/io/image_format_fits.c:661
+#: ../src/io/image_format_fits.c:691
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 "ERREUR : Impossible d'enregistrer l'image FITS avec un format non supporté "
 "(%d).\n"
 
-#: ../src/io/image_format_fits.c:672
+#: ../src/io/image_format_fits.c:702
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Fichier FITS enregistré : fichier %s, %ld canal(aux), %ux%u pixels\n"
@@ -5493,50 +5498,50 @@ msgid ""
 "This operation is not supported on internal sequences (seq_open_image)\n"
 msgstr "Cette opération n'est pas supportée pour les séquences internes\n"
 
-#: ../src/io/sequence.c:949
+#: ../src/io/sequence.c:955
 msgid "No selection was made for a selection-based sequence processing\n"
 msgstr ""
 "Aucune sélection n'a été définie pour un traitement de la séquence basée "
 "dessus\n"
 
-#: ../src/io/sequence.c:1033
+#: ../src/io/sequence.c:1046
 msgid "Starting sequence processing of PSF\n"
 msgstr "Démarrer le traitement de la PSF sur la séquence\n"
 
-#: ../src/io/sequence.c:1034
+#: ../src/io/sequence.c:1047
 msgid "Computing PSF on selected star"
 msgstr "Calcul de la PSF sur l'étoile sélectionnée"
 
-#: ../src/io/sequence.c:1041
+#: ../src/io/sequence.c:1054
 msgid "Failed to compute PSF for the sequence. Ready."
 msgstr "Échec du calcul de la PSF pour la séquence. Prêt."
 
-#: ../src/io/sequence.c:1045
+#: ../src/io/sequence.c:1058
 msgid "Finished sequence processing of PSF\n"
 msgstr "Traitement de la PSF sur la séquence, terminé\n"
 
-#: ../src/io/sequence.c:1076
+#: ../src/io/sequence.c:1089
 msgid "See the console for a dump of star data over the sequence (stdout)\n"
 msgstr ""
 "Voir la console pour un récapitulatif du résultat de la PSF sur la séquence "
 "(stdout)\n"
 
-#: ../src/io/sequence.c:1077
+#: ../src/io/sequence.c:1090
 #, c-format
 msgid "# image_no amplitude magnitude fwhm x y\n"
 msgstr "# no_image amplitude magnitude fwhm x y\n"
 
-#: ../src/io/sequence.c:1089
+#: ../src/io/sequence.c:1102
 msgid "Finished computing PSF for the sequence. Ready."
 msgstr "Calcul de la PSF de la séquence terminé. Prêt."
 
-#: ../src/io/sequence.c:1330
+#: ../src/io/sequence.c:1343
 #, c-format
 msgid "Using registration information from layer %d to export sequence\n"
 msgstr ""
 "Utilise les informations d'alignement du canal %d pour exporter la séquence\n"
 
-#: ../src/io/sequence.c:1375
+#: ../src/io/sequence.c:1388
 msgid ""
 "MP4 output is not supported because siril was not compiled with ffmpeg "
 "support.\n"
@@ -5544,7 +5549,7 @@ msgstr ""
 "L'exportation mp4 n'est pas supportée car siril n'a pas été compilé avec le "
 "support ffmpeg.\n"
 
-#: ../src/io/sequence.c:1386
+#: ../src/io/sequence.c:1399
 msgid ""
 "Film output needs to have a width that is a multiple of 32 and an even "
 "height, resizing selection.\n"
@@ -5552,41 +5557,41 @@ msgstr ""
 "Le film doit avoir une largeur multiple de 32 et une hauteur paire, "
 "sélection redimensionnée.\n"
 
-#: ../src/io/sequence.c:1467 ../src/stacking/stacking.c:236
+#: ../src/io/sequence.c:1480 ../src/stacking/stacking.c:236
 #: ../src/stacking/stacking.c:860 ../src/stacking/stacking.c:1017
 msgid "Processing image "
 msgstr "Traitement de l'image "
 
-#: ../src/io/sequence.c:1474
+#: ../src/io/sequence.c:1487
 msgid "Export: could not read frame, aborting\n"
 msgstr "Exportation : impossible de lire les images, abandon\n"
 
-#: ../src/io/sequence.c:1582
+#: ../src/io/sequence.c:1595
 msgid "Siril needs opencv to resize images\n"
 msgstr "OpenCV est nécessaire pour redimensionner les images\n"
 
-#: ../src/io/sequence.c:1628
+#: ../src/io/sequence.c:1641
 msgid "Sequence export failed. Check the log."
 msgstr "L'exportation de la séquence a échoué. Vérifier les log."
 
-#: ../src/io/sequence.c:1629
+#: ../src/io/sequence.c:1642
 msgid "Sequence export failed\n"
 msgstr "Échec de l'exportation de la séquence\n"
 
-#: ../src/io/sequence.c:1632
+#: ../src/io/sequence.c:1645
 msgid "Sequence export succeeded."
 msgstr "Séquence exportée avec succès."
 
-#: ../src/io/sequence.c:1633
+#: ../src/io/sequence.c:1646
 msgid "Sequence export succeeded.\n"
 msgstr "Séquence exportée avec succès.\n"
 
-#: ../src/io/sequence.c:1684
+#: ../src/io/sequence.c:1697
 msgid "Width or height cannot be null. Not resizing.\n"
 msgstr ""
 "La largeur ou la hauteur ne peuvent être nulle. Aucun redimensionnement.\n"
 
-#: ../src/io/sequence.c:1732
+#: ../src/io/sequence.c:1745
 msgid "Cropping to selection"
 msgstr "Recadrer selon la sélection"
 
@@ -6282,6 +6287,9 @@ msgstr "Basé sur la qualité  > %.2f (%d images)"
 #, c-format
 msgid "Based on quality"
 msgstr "Basé sur la qualité"
+
+#~ msgid "Plot of variable star"
+#~ msgstr "Graphique de l'étoile variable"
 
 #~ msgid "Credits"
 #~ msgstr "Crédits"
