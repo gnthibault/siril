@@ -44,10 +44,28 @@ All these libraries are available in most Linux distributions and free systems,
 maybe with the exception of ffms2 that is not as popular as others and may need
 to be compiled on some systems.
 
-Since version 0.9.6 a new optional dependency is required to plot photometry data.
+Since version [0.9.6](http://free-astro.org/index.php?title=Siril:0.9.6) a new optional dependency is required to plot photometry data.
 The following package is not needed at compilation time:
 
  * gnuplot
+ 
+Source download
+---------------
+
+You need to use the following commands to clone SIRIL.
+
+Branch 0.9:
+
+    svn co https://free-astro.org/svn/siril/branches/0.9 Siril-0.9
+    
+or you can use the mirror on github:
+
+    git clone https://github.com/lock042/Siril-0.9.git 
+
+Development version (highly unstable):
+
+    svn co https://free-astro.org/svn/siril/trunk/ Siril-master
+ 
 
 Building SIRIL for GNU/Linux and OS X
 -------------------------------------
