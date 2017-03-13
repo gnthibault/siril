@@ -248,7 +248,6 @@ photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 	int n = 0, N = 0, inner = 0;
 	int x, y, x1, y1, x2, y2;
 	double r1, r2, r, rmin_sq, appRadius;
-	double
 	double xc, yc;
 	double mean = 0.0, stdev = 0.0, area = 0.0;
 	double *data;
