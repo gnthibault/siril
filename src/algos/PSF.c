@@ -470,10 +470,15 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf) {
 	//Units
 	psf_angle->units = "px";
 	// Photometry
-	psf->phot = getPhotometricData(z, psf);
-	//Magnitude
-	psf_angle->mag = psf->phot->mag;
-	psf_angle->s_mag = psf->phot->s_mag;
+	psf_angle->phot = getPhotometricData(z, psf_angle);
+	// Magnitude
+	if (psf_angle->phot) {
+		psf_angle->mag = psf_angle->phot->mag;
+		psf_angle->s_mag = psf_angle->phot->s_mag;
+	} else {
+		psf_angle->mag = psf_get_mag(z, psf_angle->B);
+		psf_angle->s_mag = 9.999;
+	}
 	//Layer: not fitted
 	psf_angle->layer = psf->layer;
 	//RMSE
@@ -493,7 +498,7 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf) {
 	gsl_multifit_fdfsolver_free(s);
 	gsl_matrix_free(covar);
 	gsl_rng_free(r);
-	free(psf->phot);
+	free(psf_angle->phot);
 	return psf_angle;
 }
 

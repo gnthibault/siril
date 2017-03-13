@@ -247,9 +247,10 @@ photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 	int height = z->size1;
 	int n = 0, N = 0, inner = 0;
 	int x, y, x1, y1, x2, y2;
-	double r1, r2, r, appRadius;
+	double r1, r2, r, rmin_sq, appRadius;
+	double
 	double xc, yc;
-	double mean = 0.0, stdev = 0.0;
+	double mean = 0.0, stdev = 0.0, area = 0.0;
 	double *data;
 	photometry *phot = phot_alloc(1);
 
@@ -276,10 +277,7 @@ photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 	r1 *= r1;
 	r2 *= r2;
 
-	double area = 0.0;
-	double rmin_sq = (appRadius - 0.5) * (appRadius - 0.5);
-	double rmax_sq = (appRadius + 0.5) * (appRadius + 0.5);
-
+	rmin_sq = (appRadius - 0.5) * (appRadius - 0.5);
 
 	data = calloc((y2 - y1) * (x2 - x1), sizeof(double));
 
@@ -308,6 +306,9 @@ photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 	if (n < min_sky) {
 		siril_log_message(_("Warning: There aren't enough pixels"
 				" in the sky annulus. You need to make a larger selection."));
+		free(data);
+		free(phot);
+		return NULL;
 	}
 
 	robustmean(n, data, &mean, &stdev);
