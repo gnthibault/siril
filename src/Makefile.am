@@ -40,7 +40,5 @@ siril_SOURCES += io/avi_pipp/pipp_avi_write.cpp io/avi_pipp/pipp_avi_write.h io/
 if HAVE_OPENCV
 siril_SOURCES += opencv/opencv.cpp opencv/opencv.h opencv/ecc/ecc.cpp opencv/ecc/ecc.h
 siril_LDADD += $(OPENCV_LIBS)
-siril_LINK = $(CXXLINK)
-else
-siril_LINK = $(LINK)
 endif
+siril_LINK = $(CXXLINK)
