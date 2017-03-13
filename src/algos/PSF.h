@@ -2,6 +2,7 @@
 #define PSF_H_
 
 #include <gsl/gsl_matrix.h>
+#include <algos/photometry.h>
 
 struct fwhm_struct {
 	double B; /* average sky background value */
@@ -11,6 +12,8 @@ struct fwhm_struct {
 	double fwhmx, fwhmy; /* FWHM in x and y axis */
 	double angle; /* angle of the axis x,y with respect to the image's */
 	double mag; /* magnitude of the star : this parameter is not fitted but calculated with the vector G and the parameter B */
+	double s_mag; /* error on the magnitude */
+	photometry *phot; /* photometry data */
 	double xpos, ypos; /* position of the star in the image, not set by Minimization */
 	double rmse; /* RMSE of the minimization */
 

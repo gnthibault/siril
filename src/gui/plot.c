@@ -54,6 +54,8 @@ static pldata *alloc_plot_data(int size) {
 	if (!plot) return NULL;
 	plot->data = malloc(size * sizeof(struct kpair));
 	if (!plot->data) { free(plot); return NULL; }
+	plot->err = malloc(size * sizeof(struct kpair));
+	if (!plot->err) { free(plot->data); free(plot) ; return NULL; }
 	plot->nb = size;
 	plot->next = NULL;
 	return plot;
@@ -151,6 +153,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 				double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
 
 				plot->data[j].x = julian - (int) julian0;
+				plot->err[j].x = julian - (int) julian0;
 				xlabel = calloc(10, sizeof(char));
 				g_snprintf(xlabel, 10, "%d +", (int) julian0);
 			} else if (seq->type == SEQ_REGULAR && seq->ts) {
@@ -160,10 +163,12 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 						g_slist_nth_data(seq->ts, i), seq->exposure);
 
 				plot->data[j].x = julian - (int) julian0;
+				plot->err[j].x = julian - (int) julian0;
 				xlabel = calloc(10, sizeof(char));
 				g_snprintf(xlabel, 10, "%d +", (int) julian0);
 			} else {
 				plot->data[j].x = (double)i;
+				plot->err [j].x = (double)i;
 				xlabel = strdup(_("Frames"));
 			}
 			switch (selected_source) {
@@ -178,6 +183,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 					break;
 				case MAGNITUDE:
 					plot->data[j].y = psfs[i]->mag;
+					plot->err[j].y = psfs[i]->s_mag;
 					if (seq->reference_star >= 0) {
 						/* we have a reference star for the sequence,
 						 * with photometry data */
@@ -226,7 +232,7 @@ static gboolean gnuplot_is_available() {
 static int plotVarCurve(pldata *plot, sequence *seq) {
 	int i, j, nb = 0, ret = 0;
 	pldata *tmp_plot = plot;
-	double *variable, *x, *real_x;
+	double *variable, *err, *x, *real_x;
 
 	if (!gnuplot_is_available()) {
 		siril_log_message(_("Gnuplot is unavailable. Please consider to install it before trying to plot a graph of a variable star.\n"));
@@ -240,14 +246,16 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 		++nb;
 	}
 	variable = calloc(nb, sizeof(double));
+	err = calloc(nb, sizeof(double));
 	x = calloc(nb, sizeof(double));
 	real_x = calloc(nb, sizeof(double));
 	for (i = 0, j = 0; i < plot->nb; i++) {
 		if (!seq->imgparam[i].incl)
 			continue;
-		double reference = 0.0;
+		double ref_int = 0.0, ref_err = 0.0;
 
 		variable[j] = tmp_plot->data[j].y;
+		err[j] = tmp_plot->err[j].y;
 		x[j] = tmp_plot->data[j].x;
 		real_x[j] = x[j] + julian0;
 		tmp_plot = tmp_plot->next;
@@ -257,16 +265,19 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 			 * Flux = 10^(-0.4 * mag)
 			 */
 			double flux_j = pow(10, -0.4 * tmp_plot->data[j].y);
+			double s_mag = tmp_plot->err[j].y;
 			/* Compute the arithmetic mean of a dataset using the recurrence relation
 			 mean_(n) = mean(n - 1) + (data[n] - mean(n - 1)) / (n + 1)
 			 but here, n starts at 1 */
-			reference = reference + (flux_j - reference) / (k);
+			ref_int = ref_int + (flux_j - ref_int) / (k);
+			ref_err = ref_err + (((flux_j * s_mag) / 1.08574) - ref_err) / (k);
 			tmp_plot = tmp_plot->next;
 			++k;
 		}
 		/* Converting back to magnitude */
-		reference = -2.5 * log10(reference);
-		variable[j] = variable[j] - reference;
+		double ref_mag = -2.5 * log10(ref_int);
+		variable[j] = variable[j] - ref_mag;
+		err[j] = err[j] + (ref_err * 1.08574 / ref_int);
 		tmp_plot = plot;
 		j++;
 	}
@@ -278,6 +289,7 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 
 	if ((gplot = gnuplot_init()) == NULL) {
 		free(variable);
+		free(err);
 		free(x);
 		free(real_x);
 		return -1;
@@ -286,14 +298,15 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 	gnuplot_set_title(gplot, _("Light Curve"));
 	gnuplot_set_xlabel(gplot, xlabel);
 	gnuplot_reverse_yaxis(gplot);
-	gnuplot_plot_xy(gplot, x, variable, nb, "");
+	gnuplot_setstyle(gplot, "errorbars");
+	gnuplot_plot_xyyerr(gplot, x, variable, err, nb, "");
 
 	GtkEntry *EntryCSV = GTK_ENTRY(lookup_widget("GtkEntryCSV"));
 	const gchar *file = gtk_entry_get_text(EntryCSV);
 	if (file && file[0] != '\0') {
 		gchar *filename = g_strndup(file, strlen(file) + 5);
 		g_strlcat(filename, ".dat", strlen(file) + 5);
-		ret = gnuplot_write_xy_dat(filename, real_x, variable, nb,
+		ret = gnuplot_write_xyyerr_dat(filename, real_x, variable, err, nb,
 				"JD_UTC, Mag(Var)-Mag(Ref)");
 		if (!ret) {
 			char *msg = siril_log_message(_("%s has been saved.\n"), filename);
@@ -370,6 +383,8 @@ static void free_plot_data() {
 		pldata *next = plot->next;
 		if (plot->data)
 			free(plot->data);
+		if (plot->err)
+			free(plot->err);
 		free(plot);
 		plot = next;
 	}

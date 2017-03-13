@@ -29,7 +29,7 @@ void notify_new_photometry();
 void free_photometry_set(sequence *seq, int set);
 
 typedef struct plot_data_struct {
-	struct kpair *data;
+	struct kpair *data, *err;
 	int nb;
 	struct plot_data_struct *next;
 } pldata;

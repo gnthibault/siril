@@ -28,7 +28,8 @@ enum token_index {
 	PRE = 3,	/* Preprocessing settings */
 	REG = 4,	/* Registration settings */
 	STK = 5,	/* Stacking settings */
-	MISC = 6,	/* Miscellaneous settings */
+	PTM = 6,	/* Photometry settings */
+	MISC = 7,	/* Miscellaneous settings */
 	NOTOK
 };
 

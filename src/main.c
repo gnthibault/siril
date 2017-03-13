@@ -371,6 +371,7 @@ int main(int argc, char *argv[]) {
 #ifdef HAVE_LIBRAW
 	set_GUI_LIBRAW();
 #endif
+	set_GUI_photometry();
 	
 	/* Get CPU number and set the number of threads */
 	siril_log_message(_("Parallel processing %s: Using %d logical processor(s).\n"),

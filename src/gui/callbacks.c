@@ -2104,6 +2104,16 @@ void update_libraw_interface() {
 	writeinitfile();
 }
 
+void update_photometry_interface() {
+	com.phot_set.gain = gtk_spin_button_get_value(
+			GTK_SPIN_BUTTON(lookup_widget("spinGain")));
+	com.phot_set.inner = gtk_spin_button_get_value(
+			GTK_SPIN_BUTTON(lookup_widget("spinInner")));
+	com.phot_set.outer = gtk_spin_button_get_value(
+			GTK_SPIN_BUTTON(lookup_widget("spinOuter")));
+	writeinitfile();
+}
+
 char *vport_number_to_name(int vport) {
 	switch (vport) {
 	case RED_VPORT:
@@ -2790,6 +2800,21 @@ void set_GUI_LIBRAW() {
 	gtk_toggle_button_set_active(demosaicingButton,	com.debayer.open_debayer);
 }
 
+void set_GUI_photometry() {
+	if (com.phot_set.gain > 0.0) {
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinGain")),
+				com.phot_set.gain);
+	}
+	if (com.phot_set.inner > 0.0) {
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinInner")),
+				com.phot_set.inner);
+	}
+	if (com.phot_set.outer > 0.0) {
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinOuter")),
+				com.phot_set.outer);
+	}
+}
+
 /*****************************************************************************
  *      P U B L I C      C A L L B A C K      F U N C T I O N S              *
  ****************************************************************************/
@@ -2865,7 +2890,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 		while (com.stars[i]) {
 			// by design Sx>Sy, we redefine FWHM to be sure to have the value in px
-			double size = sqrt(com.stars[i]->fwhmx / 2.) * 2 * sqrt(log(2.) * 3);
+			double size = sqrt(com.stars[i]->sx / 2.) * 2 * sqrt(log(2.) * 3);
 
 			if (i == com.selected_star) {
 				cairo_set_line_width(cr, 2);
@@ -3153,6 +3178,8 @@ void on_menu_FITS_header_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_close_settings_button_clicked(GtkButton *button, gpointer user_data) {
+	update_libraw_interface();
+	update_photometry_interface();
 	gtk_widget_hide(lookup_widget("settings_window"));
 }
 
@@ -3223,10 +3250,6 @@ void on_checkbutton_auto_evaluate_toggled(GtkToggleButton *button,
 	GtkWidget *entry = lookup_widget("entry_flat_norm");
 
 	gtk_widget_set_sensitive(entry, !gtk_toggle_button_get_active(button));
-}
-
-void on_settings_window_hide(GtkWidget *widget, gpointer user_data) {
-	update_libraw_interface();
 }
 
 void on_combobinning_changed(GtkComboBox *box, gpointer user_data) {

@@ -34,6 +34,7 @@
 #include "core/proto.h"
 #include "gui/callbacks.h"
 #include "algos/PSF.h"
+#include "algos/photometry.h"
 
 #define MAX_ITER_NO_ANGLE  10		//Number of iteration in the minimization with no angle
 #define MAX_ITER_ANGLE     10		//Number of iteration in the minimization with angle
@@ -335,7 +336,7 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background,
 #define FIT(i) gsl_vector_get(s->x, i)
 #define ERR(i) sqrt(gsl_matrix_get(covar,i,i))	//for now, errors are not displayed
 
-	/*Output structure with parameters fitted */
+	/* Output structure with parameters fitted */
 	psf->B = FIT(0);
 	psf->A = FIT(1);
 	psf->x0 = FIT(2);
@@ -345,13 +346,13 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background,
 	psf->fwhmx = sqrt(FIT(4) / 2.) * 2 * sqrt(log(2.) * 2);	//Set the real FWHMx with regards to the Sx parameter
 	psf->fwhmy = sqrt(FIT(5) / 2.) * 2 * sqrt(log(2.) * 2);	//Set the real FWHMy with regards to the Sy parameter
 	psf->angle = 0;	//The angle is not fitted here
-	//Units
+	// Units
 	psf->units = "px";
-	//Magnitude
-	psf->mag = psf_get_mag(z, FIT(0));
-	//Layer: not fitted
+	// Magnitude
+	psf->mag = psf_get_mag(z, psf->B);
+	// Layer: not fitted
 	psf->layer = layer;
-	//RMSE
+	// RMSE
 	psf->rmse = d.rmse;
 	// absolute uncertainties
 	psf->B_err = ERR(0) / FIT(0);
@@ -363,7 +364,7 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background,
 	psf->ang_err = 0;
 	psf->xpos = 0;		// will be set by the peaker
 	psf->ypos = 0;
-	//we free the memory
+	// we free the memory
 	free(sigma);
 	free(y);
 	gsl_vector_free(MaxV);
@@ -468,8 +469,11 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf) {
 	}
 	//Units
 	psf_angle->units = "px";
+	// Photometry
+	psf->phot = getPhotometricData(z, psf);
 	//Magnitude
-	psf_angle->mag = psf_get_mag(z, FIT(0));//we take the un-normalized value of B
+	psf_angle->mag = psf->phot->mag;
+	psf_angle->s_mag = psf->phot->s_mag;
 	//Layer: not fitted
 	psf_angle->layer = psf->layer;
 	//RMSE
@@ -489,6 +493,7 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf) {
 	gsl_multifit_fdfsolver_free(s);
 	gsl_matrix_free(covar);
 	gsl_rng_free(r);
+	free(psf->phot);
 	return psf_angle;
 }
 

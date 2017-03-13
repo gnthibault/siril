@@ -415,8 +415,6 @@ void gnuplot_plot_x(
     return ;
 }
 
-
-
 /*-------------------------------------------------------------------------*/
 /**
   @brief    Plot a 2d graph from a list of points.
@@ -475,6 +473,58 @@ void gnuplot_plot_xy(
     /* Write data to this file  */
     for (i=0 ; i<n; i++) {
         fprintf(tmpfd, "%.18e %.18e\n", x[i], y[i]) ;
+    }
+    fclose(tmpfd) ;
+
+    gnuplot_plot_atmpfile(handle,tmpfname,title);
+    return ;
+}
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Plot a 2d graph from a list of points with errors.
+  @param    handle      Gnuplot session control handle.
+  @param    x           Pointer to a list of x coordinates.
+  @param    y           Pointer to a list of y coordinates.
+  @param    yerr        Pointer to a list of y coordinate errors.
+  @param    n           Number of doubles in x (assumed the same as in y).
+  @param    title       Title of the plot.
+  @return   void
+
+  Plots out a 2d graph from a list of points. Provide points through a list
+  of x and a list of y coordinates. Both provided arrays are assumed to
+  contain the same number of values.
+
+ */
+/*--------------------------------------------------------------------------*/
+
+void gnuplot_plot_xyyerr(
+    gnuplot_ctrl    *   handle,
+    double          *   x,
+    double          *   y,
+    double          *   yerr,
+    int                 n,
+    char            *   title
+)
+{
+    int     i ;
+    FILE*   tmpfd ;
+    char const * tmpfname;
+
+    if (handle==NULL || x==NULL || y==NULL || yerr==NULL || (n<1)) return ;
+
+    /* Open temporary file for output   */
+    tmpfname = gnuplot_tmpfile(handle);
+    tmpfd = fopen(tmpfname, "w");
+
+    if (tmpfd == NULL) {
+        fprintf(stderr,"cannot create temporary file: exiting plot") ;
+        return ;
+    }
+
+    /* Write data to this file  */
+    for (i=0 ; i<n; i++) {
+        fprintf(tmpfd, "%.18e %.18e %.18e\n", x[i], y[i], yerr[i]) ;
     }
     fclose(tmpfd) ;
 
@@ -689,6 +739,46 @@ int gnuplot_write_xy_dat(
     for (i=0 ; i<n; i++)
     {
         fprintf(fileHandle, "%.18e %.18e\n", x[i], y[i]) ;
+    }
+
+    fclose(fileHandle) ;
+
+    return 0;
+}
+
+int gnuplot_write_xyyerr_dat(
+    char const *        fileName,
+    double const    *   x,
+    double const    *   y,
+    double const    *   yerr,
+    int                 n,
+    char const      *   title)
+{
+    int     i ;
+    FILE*   fileHandle;
+
+    if (fileName==NULL || x==NULL || y==NULL || yerr==NULL || (n<1))
+    {
+        return -1;
+    }
+
+    fileHandle = fopen(fileName, "w");
+
+    if (fileHandle == NULL)
+    {
+        return -1;
+    }
+
+    // Write Comment.
+    if (title != NULL)
+    {
+        fprintf(fileHandle, "# %s\n", title) ;
+    }
+
+    /* Write data to this file  */
+    for (i=0 ; i<n; i++)
+    {
+        fprintf(fileHandle, "%.18e %.18e %.18e\n", x[i], y[i], yerr[i]) ;
     }
 
     fclose(fileHandle) ;

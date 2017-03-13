@@ -293,6 +293,15 @@ void gnuplot_plot_xy(
     char            *   title
 ) ;
 
+void gnuplot_plot_xyyerr(
+	    gnuplot_ctrl    *   handle,
+	    double          *   x,
+	    double          *   y,
+	    double          *   yerr,
+	    int                 n,
+	    char            *   title
+	) ;
+
 
 /*-------------------------------------------------------------------------*/
 /**
@@ -447,6 +456,14 @@ int gnuplot_write_xy_dat(
     double const    *   y,
     int                 n,
     char const      *   title);
+
+int gnuplot_write_xyyerr_dat(
+	    char const *        fileName,
+	    double const    *   x,
+	    double const    *   y,
+	    double const    *   yerr,
+	    int                 n,
+	    char const      *   title);
 
 /**
  * Writes a multi column CSV file for use with gnuplot commands later.  Allows files to also be

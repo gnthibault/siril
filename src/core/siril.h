@@ -191,6 +191,7 @@ typedef struct sequ sequence;
 typedef struct single_image single;
 typedef struct ffit fits;
 typedef struct libraw_config libraw;
+typedef struct phot_config phot;
 typedef struct stack_config stackconf;
 typedef struct cominf cominfo;
 typedef struct image_stats imstats;
@@ -453,6 +454,13 @@ struct libraw_config {
 	double gamm[2];						// Gamma correction
 };
 
+/* This structure is used for storing all parameters used in photometry module */
+struct phot_config {
+	double gain;	// A/D converter gain in electrons per ADU
+	double inner;	// Inner radius of the annulus used to measure local background.
+	double outer;	// Outer radius of the annulus used to measure local background.
+};
+
 struct debayer_config {
 	gboolean open_debayer;			// debayer images being opened
 	gboolean use_bayer_header;		// use the pattern given in the file header
@@ -559,6 +567,7 @@ struct cominf {
 
 	libraw raw_set;			// the libraw settings
 	struct debayer_config debayer;	// debayer settings
+	phot phot_set;          // photometry settings
 
 	sequence seq;			// currently loaded sequence	TODO: *seq
 	single *uniq;			// currently loaded image, if outside sequence
