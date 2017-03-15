@@ -424,6 +424,7 @@ struct ffit {
 	char bayer_pattern[FLEN_VALUE];	// BAYERPAT key Bayer Pattern if available
 	/* data obtained from FITS or RAW files */
 	double focal_length, iso_speed, exposure, aperture, ccd_temp;
+	double cvf; // Conversion factor (e-/adu)
 
 	/* data used in the Fourier space */
 	double dft_norm[3];			// Normalization value

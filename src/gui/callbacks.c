@@ -2801,6 +2801,8 @@ void set_GUI_LIBRAW() {
 }
 
 void set_GUI_photometry() {
+	if (gfit.cvf > 0.0)
+		com.phot_set.gain = gfit.cvf;
 	if (com.phot_set.gain > 0.0) {
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinGain")),
 				com.phot_set.gain);

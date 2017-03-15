@@ -125,9 +125,11 @@ int read_single_image(const char* filename, fits *dest, char **realname_out) {
 		siril_log_message(_("Opening %s failed.\n"), realname);
 	if (realname_out)
 		*realname_out = realname;
-	else free(realname);
+	else
+		free(realname);
 	set_GUI_CAMERA();
-	com.filter = (int)imagetype;
+	set_GUI_photometry();
+	com.filter = (int) imagetype;
 	return retval;
 }
 

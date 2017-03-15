@@ -35,6 +35,8 @@
 #define epsilon(x) 0.00000001
 #define maxit      50
 #define min_sky    5
+#define lo_data    0.0
+#define hi_data    USHRT_MAX_DOUBLE
 
 static double hampel(double x) {
 	if (x >= 0) {
@@ -196,62 +198,43 @@ static double getMagnitude(double intensity) {
 }
 
 static double getCameraGain() {
-	static GtkSpinButton *spinGain = NULL;
+	return com.phot_set.gain;
+}
 
-	if (spinGain == NULL)
-		spinGain = GTK_SPIN_BUTTON(lookup_widget("spinGain"));
+static double getInnerRadius() {
+	return com.phot_set.inner;
+}
 
-	return gtk_spin_button_get_value(spinGain);
+static double getOuterRadius() {
+	return com.phot_set.outer;
 }
 
 static double getMagErr(double area, int nsky, double intensity, double skysig) {
-	double err = 0.0;
 	double skyvar, sigsq;
 	double err1, err2, err3;
-	double aperture = 5.0;
 	double phpadu;
 
 	skyvar = skysig * skysig; /* variance of the sky brightness */
 	sigsq = skyvar / nsky; /* square of the standard error of the mean sky brightness */
 	phpadu = getCameraGain();
-
 	err1 = area * skyvar;
 	err2 = intensity / phpadu;
 	err3 = sigsq * area * area;
 
-//	printf("err: %lf et %lf et %lf\n", err1, err2, err3);
-
 	return fmin(9.999, 1.0857 * sqrt(err1 + err2 + err3) / intensity);
 }
 
-static double getInnerRadius() {
-	static GtkSpinButton *spinInner = NULL;
-
-	if (spinInner == NULL)
-		spinInner = GTK_SPIN_BUTTON(lookup_widget("spinInner"));
-
-	return gtk_spin_button_get_value(spinInner);
-}
-
-static double getOuterRadius() {
-	static GtkSpinButton *spinOuter = NULL;
-
-	if (spinOuter == NULL)
-		spinOuter = GTK_SPIN_BUTTON(lookup_widget("spinOuter"));
-
-	return gtk_spin_button_get_value(spinOuter);
-}
-
+/* Function that compute all photometric data. The result must be freed */
 photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 	int width = z->size2;
 	int height = z->size1;
-	int n = 0, N = 0, inner = 0;
+	int n_sky = 0, ret;
 	int x, y, x1, y1, x2, y2;
 	double r1, r2, r, rmin_sq, appRadius;
 	double xc, yc;
-	double mean = 0.0, stdev = 0.0, area = 0.0;
+	double apmag = 0.0, mean = 0.0, stdev = 0.0, area = 0.0;
 	double *data;
-	photometry *phot = phot_alloc(1);
+	photometry *phot;
 
 	xc = psf->x0 - 1;
 	yc = psf->y0 - 1;
@@ -259,6 +242,11 @@ photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 	r1 = getInnerRadius();
 	r2 = getOuterRadius();
 	appRadius = sqrt(psf->sx / 2.0) * 2 * sqrt(log(2.0) * 2) + 0.5;
+	if (appRadius >= r1) {
+		/* Translator note: radii is plural for radius */
+		siril_log_message(_("Inner and outer radii are too small. Please update values in setting box.\n"));
+		return NULL;
+	}
 
 	x1 = xc - r2;
 	if (x1 < 1)
@@ -275,7 +263,6 @@ photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 
 	r1 *= r1;
 	r2 *= r2;
-
 	rmin_sq = (appRadius - 0.5) * (appRadius - 0.5);
 
 	data = calloc((y2 - y1) * (x2 - x1), sizeof(double));
@@ -285,40 +272,46 @@ photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 		for (x = x1; x <= x2; ++x) {
 			r = yp + (x - xc) * (x - xc);
 			double pixel = gsl_matrix_get(z, y, x);
-			double f = (r < rmin_sq ? 1 : appRadius - sqrt(r) + 0.5);
-			if (f >= 0)
-				area += f;
-			/* annulus */
-			if (r < r2 && r > r1) {
-				data[n] = pixel;
-				n++;
-			}
-			/* inner radius */
-			if (r <= r1) {
-				phot->Int += pixel;
-				inner++;
+			if (pixel > lo_data && pixel < hi_data) {
+				double f = (r < rmin_sq ? 1 : appRadius - sqrt(r) + 0.5);
+				if (f >= 0) {
+					area += f;
+					apmag += pixel * f;
+				}
+				/* annulus */
+				if (r < r2 && r > r1) {
+					data[n_sky] = pixel;
+					n_sky++;
+				}
 			}
 		}
 	}
-//	printf("area = %lf\n", area);
-
-	if (n < min_sky) {
-		siril_log_message(_("Warning: There aren't enough pixels"
-				" in the sky annulus. You need to make a larger selection."));
+	if (area < 1) {
 		free(data);
-		free(phot);
 		return NULL;
 	}
 
-	robustmean(n, data, &mean, &stdev);
+	if (n_sky < min_sky) {
+		siril_log_message(_("Warning: There aren't enough pixels"
+				" in the sky annulus. You need to make a larger selection.\n"));
+		free(data);
+		return NULL;
+	}
 
-	phot->Int -= (inner * mean);
+	ret = robustmean(n_sky, data, &mean, &stdev);
+	if (ret > 0) {
+		free(data);
+		return NULL;
+	}
+
+	phot = phot_alloc(1);
+	phot->Int = apmag - (area * mean);
 	phot->B_mean = mean;
 	phot->mag = getMagnitude(phot->Int);
-	phot->n_sky = n;
-	phot->N = area;
+	phot->n_sky = n_sky;
+	phot->area = area;
 	phot->s_pxl = stdev;
-	phot->s_mag = getMagErr(phot->N, phot->n_sky, phot->Int, phot->s_pxl);
+	phot->s_mag = getMagErr(phot->area, phot->n_sky, phot->Int, phot->s_pxl);
 
 	free(data);
 	return phot;

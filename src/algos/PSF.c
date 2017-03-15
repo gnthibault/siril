@@ -42,6 +42,44 @@
 
 const double radian_conversion = ((3600.0 * 180.0) / M_PI) / 1.0E3;
 
+static double getAverage3x3(gsl_matrix *in, const int xx, const int yy, const int w, const int h) {
+	int step, radius, x, y;
+	double value = 0;
+
+	step = radius = 1;
+
+	int n = 0;
+	for (y = yy - radius; y <= yy + radius; y += step) {
+		for (x = xx - radius; x <= xx + radius; x += step) {
+			if (y >= 0 && y < h) {
+				if (x >= 0 && x < w) {
+					if ((x != xx) || (y != yy)) {
+						value += gsl_matrix_get(in, y, x);
+						n++;
+					}
+				}
+			}
+		}
+	}
+	return value / n;
+}
+
+static gsl_matrix *removeHotPixels(gsl_matrix *in) {
+	int width = in->size2;
+	int height = in->size1;
+	int x, y;
+	gsl_matrix *out = gsl_matrix_alloc (in->size1, in->size2);
+
+	gsl_matrix_memcpy (out, in);
+	for (y = 0; y < height; y++) {
+		for (x = 0; x < width; x++) {
+			double a = getAverage3x3(in, x, y, width, height);
+			gsl_matrix_set(out, y, x, a);
+		}
+	}
+	return out;
+}
+
 /* Compute initial values for the algorithm from data in the pixel value matrix */
 static gsl_vector* psf_init_data(gsl_matrix* z, double bg) {
 	gsl_vector * MaxV = gsl_vector_alloc(5);
@@ -51,8 +89,11 @@ static gsl_vector* psf_init_data(gsl_matrix* z, double bg) {
 	size_t i, j;
 
 	/* find maximum */
-	max = gsl_matrix_max(z);
-	gsl_matrix_max_index(z, &i, &j);
+	/* first we remove hot pixels in the matrix */
+	gsl_matrix *m_tmp = removeHotPixels(z);
+	max = gsl_matrix_max(m_tmp);
+	gsl_matrix_max_index(m_tmp, &i, &j);
+	gsl_matrix_free(m_tmp);
 	gsl_vector_set(MaxV, 0, j);
 	gsl_vector_set(MaxV, 1, i);
 	gsl_vector_set(MaxV, 2, max);
@@ -89,6 +130,10 @@ static gsl_vector* psf_init_data(gsl_matrix* z, double bg) {
 	return MaxV;
 }
 
+/* Basic magnitude computation. This is not really accurate, all pixels are
+ * taken into account. But this fast function is used if the other one
+ * failed and for star detection when magnitude is not needed.
+ */
 static double psf_get_mag(gsl_matrix* z, double B) {
 	double intensity = 0.0, magnitude;
 	size_t NbRows = z->size1;
@@ -472,7 +517,7 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf) {
 	// Photometry
 	psf_angle->phot = getPhotometricData(z, psf_angle);
 	// Magnitude
-	if (psf_angle->phot) {
+	if (psf_angle->phot != NULL) {
 		psf_angle->mag = psf_angle->phot->mag;
 		psf_angle->s_mag = psf_angle->phot->s_mag;
 	} else {

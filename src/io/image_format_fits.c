@@ -138,6 +138,9 @@ static void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TDOUBLE, "ISOSPEED", &(fit->iso_speed), NULL,
 			&status);	// Non-standard keywords used in MaxIm DL
 
+	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "CVF", &(fit->cvf), NULL, &status);
+
 	/*******************************************************************
 	 * ************************* DFT KEYWORDS **************************
 	 * ****************************************************************/
@@ -819,6 +822,11 @@ void save_fits_header(fits *fit) {
 		fits_update_key(fit->fptr, TUINT, "YBAYROFF", &(offset),
 				"Y offset of Bayer array", &status);
 	}
+
+	status = 0;
+	if (fit->cvf > 0.)
+		fits_update_key(fit->fptr, TDOUBLE, "CVF", &(fit->cvf),
+				"Conversion factor (e-/adu)", &status);
 
 	/*******************************************************************
 	 * ******************** PROGRAMM KEYWORDS **************************

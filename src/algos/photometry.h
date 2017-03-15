@@ -17,7 +17,7 @@ struct photometry_struct {
 	double Int; // Intensity
 	double B_mean; // background value
 	size_t n_sky; // number of pixels in sky
-	size_t N; // number of pixels in aperture
+	size_t area; // number of pixels in aperture
 };
 typedef struct photometry_struct photometry;
 

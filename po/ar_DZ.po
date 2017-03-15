@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-13 21:52+0100\n"
+"POT-Creation-Date: 2017-03-15 17:19+0100\n"
 "PO-Revision-Date: 2016-11-20 10:20+0100\n"
 "Last-Translator: زنادي أمين <amine-zennadi@hotmail.com>\n"
 "Language-Team: \n"
@@ -2325,7 +2325,7 @@ msgstr ""
 "الفيلم جودة: سيتم استخدام قيمة أقل ضغط أكثر وأيضا مما أقل معدل البت، وحجم "
 "ملف أصغر."
 
-#: ../src/gui/siril3.glade.h:529 ../src/io/sequence.c:1746
+#: ../src/gui/siril3.glade.h:529 ../src/io/sequence.c:1749
 msgid "Select area to crop"
 msgstr "تحديد المنطقة"
 
@@ -2780,12 +2780,12 @@ msgstr "تحديد المعلومات التي يتم عرضها من بيانا
 msgid "Roundness"
 msgstr "عتبة استدارة:"
 
-#: ../src/gui/siril3.glade.h:631 ../src/gui/plot.c:478 ../src/gui/plot.c:635
+#: ../src/gui/siril3.glade.h:631 ../src/gui/plot.c:479 ../src/gui/plot.c:636
 #, fuzzy
 msgid "FWHM"
 msgstr "FWHMx"
 
-#: ../src/gui/siril3.glade.h:632 ../src/gui/plot.c:638
+#: ../src/gui/siril3.glade.h:632 ../src/gui/plot.c:639
 msgid "Amplitude"
 msgstr "إتساع"
 
@@ -3362,7 +3362,7 @@ msgstr "تعزيز التشبع: تجهيز  ...\n"
 #: ../src/core/command.c:1397 ../src/core/siril.c:620 ../src/core/siril.c:904
 #: ../src/core/siril.c:1038 ../src/core/siril.c:1181 ../src/core/siril.c:1556
 #: ../src/core/siril.c:1648 ../src/core/siril.c:1757 ../src/gui/histogram.c:695
-#: ../src/gui/statistics_list.c:306 ../src/io/sequence.c:1266
+#: ../src/gui/statistics_list.c:306 ../src/io/sequence.c:1269
 msgid "Error: no data computed.\n"
 msgstr "خطأ: لا توجد بيانات \n"
 
@@ -3429,13 +3429,19 @@ msgstr "استخراج الخلفية: تجهيز ...\n"
 msgid "Insufficient background samples.\n"
 msgstr "عينات خلفية غير كافية.\n"
 
-#: ../src/algos/photometry.c:306
+#. Translator note: radii is plural for radius
+#: ../src/algos/photometry.c:247
 msgid ""
-"Warning: There aren't enough pixels in the sky annulus. You need to make a "
-"larger selection."
+"Inner and outer radii are too small. Please update values in setting box.\n"
 msgstr ""
 
-#: ../src/algos/PSF.c:616
+#: ../src/algos/photometry.c:295
+msgid ""
+"Warning: There aren't enough pixels in the sky annulus. You need to make a "
+"larger selection.\n"
+msgstr ""
+
+#: ../src/algos/PSF.c:661
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -3523,9 +3529,9 @@ msgstr "نتيجة التركيب غير المحفوظة"
 msgid "You must at least load two layers before!\n"
 msgstr "يجب عليك على الأقل حمولة طبقتين من قبل!\n"
 
-#: ../src/compositing/compositing.c:553 ../src/gui/callbacks.c:5322
-#: ../src/gui/callbacks.c:5366 ../src/gui/callbacks.c:5607
-#: ../src/gui/callbacks.c:5616 ../src/gui/callbacks.c:5674
+#: ../src/compositing/compositing.c:553 ../src/gui/callbacks.c:5324
+#: ../src/gui/callbacks.c:5368 ../src/gui/callbacks.c:5609
+#: ../src/gui/callbacks.c:5618 ../src/gui/callbacks.c:5676
 #: ../src/io/conversion.c:485 ../src/io/image_formats_libraries.c:97
 #: ../src/io/image_formats_libraries.c:154
 #: ../src/registration/registration.c:1112
@@ -3562,10 +3568,10 @@ msgstr "إعادة تعديل طبقة %d في الأوقات%g مشرق\n"
 #: ../src/core/command.c:804 ../src/core/command.c:831
 #: ../src/core/command.c:1142 ../src/core/command.c:1244
 #: ../src/core/command.c:1265 ../src/core/command.c:1284
-#: ../src/gui/callbacks.c:4013 ../src/gui/callbacks.c:4735
-#: ../src/gui/callbacks.c:4935 ../src/gui/callbacks.c:5272
-#: ../src/gui/callbacks.c:5412 ../src/gui/callbacks.c:5717
-#: ../src/gui/callbacks.c:5866 ../src/io/conversion.c:454
+#: ../src/gui/callbacks.c:4015 ../src/gui/callbacks.c:4737
+#: ../src/gui/callbacks.c:4937 ../src/gui/callbacks.c:5274
+#: ../src/gui/callbacks.c:5414 ../src/gui/callbacks.c:5719
+#: ../src/gui/callbacks.c:5868 ../src/io/conversion.c:454
 #: ../src/registration/registration.c:1101 ../src/stacking/stacking.c:1885
 #: ../src/stacking/stacking.c:2012
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -3598,14 +3604,14 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "المحصول: اختيار المنطقة أو تقديم خ، ذ، العرض، الارتفاع\n"
 
 #: ../src/core/command.c:488 ../src/core/command.c:1517
-#: ../src/gui/callbacks.c:5605 ../src/gui/callbacks.c:5672
+#: ../src/gui/callbacks.c:5607 ../src/gui/callbacks.c:5674
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
 "المويجات: الحد الأقصى لعدد خطط لهذا الحجم الصورة %d\n"
 "\n"
 
-#: ../src/core/command.c:494 ../src/gui/callbacks.c:5614
+#: ../src/core/command.c:494 ../src/gui/callbacks.c:5616
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "يجب أن يكون نوع  %d أو %d : المويجات\n"
@@ -3938,15 +3944,15 @@ msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr "الصور ليست لديهم نفس الحجم (w = %d|%d, h = %d|%d)\n"
 
 #: ../src/core/siril.c:201 ../src/core/utils.c:435 ../src/gui/callbacks.c:2429
-#: ../src/gui/callbacks.c:4987 ../src/gui/callbacks.c:5008
-#: ../src/gui/callbacks.c:5428 ../src/gui/callbacks.c:5434
-#: ../src/gui/callbacks.c:5459 ../src/gui/plot.c:315 ../src/gui/plot.c:375
+#: ../src/gui/callbacks.c:4989 ../src/gui/callbacks.c:5010
+#: ../src/gui/callbacks.c:5430 ../src/gui/callbacks.c:5436
+#: ../src/gui/callbacks.c:5461 ../src/gui/plot.c:316 ../src/gui/plot.c:376
 #: ../src/gui/PSF_list.c:150 ../src/io/conversion.c:491
-#: ../src/io/conversion.c:559 ../src/io/image_format_fits.c:188
-#: ../src/io/image_format_fits.c:195 ../src/io/image_format_fits.c:214
-#: ../src/io/image_format_fits.c:228 ../src/io/image_format_fits.c:243
-#: ../src/io/image_format_fits.c:345 ../src/io/image_format_fits.c:354
-#: ../src/io/image_format_fits.c:693 ../src/io/image_formats_internal.c:47
+#: ../src/io/conversion.c:559 ../src/io/image_format_fits.c:191
+#: ../src/io/image_format_fits.c:198 ../src/io/image_format_fits.c:217
+#: ../src/io/image_format_fits.c:231 ../src/io/image_format_fits.c:246
+#: ../src/io/image_format_fits.c:348 ../src/io/image_format_fits.c:357
+#: ../src/io/image_format_fits.c:696 ../src/io/image_formats_internal.c:47
 #: ../src/io/image_formats_internal.c:102
 #: ../src/io/image_formats_internal.c:167
 #: ../src/io/image_formats_internal.c:335
@@ -3967,7 +3973,7 @@ msgstr "الصور ليست لديهم نفس الحجم (w = %d|%d, h = %d|%d)\
 #: ../src/io/image_formats_libraries.c:378
 #: ../src/io/image_formats_libraries.c:446
 #: ../src/io/image_formats_libraries.c:532 ../src/io/single_image.c:111
-#: ../src/io/single_image.c:152 ../src/io/single_image.c:156
+#: ../src/io/single_image.c:154 ../src/io/single_image.c:158
 #: ../src/stacking/stacking.c:382 ../src/stacking/stacking.c:1211
 msgid "Error"
 msgstr "خطأ"
@@ -4348,12 +4354,12 @@ msgstr "Mem: N/A"
 msgid "This binning is not handled yet\n"
 msgstr "لا يتم التعامل مع هذه binning \n"
 
-#: ../src/gui/callbacks.c:3149
+#: ../src/gui/callbacks.c:3151
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">الباردة: % ld px</span>"
 
-#: ../src/gui/callbacks.c:3150 ../src/gui/callbacks.c:3160
+#: ../src/gui/callbacks.c:3152 ../src/gui/callbacks.c:3162
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -4361,26 +4367,26 @@ msgstr ""
 "قد تكون هذه القيمة إلى مرتفع. من فضلك، تنظر إلى تغيير قيمة سيغما أو قم "
 "بإلغاء تحديد المربع."
 
-#: ../src/gui/callbacks.c:3153
+#: ../src/gui/callbacks.c:3155
 #, c-format
 msgid "Cold: %ld px"
 msgstr "الباردة: 0 بكسل"
 
-#: ../src/gui/callbacks.c:3159
+#: ../src/gui/callbacks.c:3161
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">الساخنة: % ld px</span>"
 
-#: ../src/gui/callbacks.c:3163
+#: ../src/gui/callbacks.c:3165
 #, c-format
 msgid "Hot: %ld px"
 msgstr "الساخنة: 0 بكسل"
 
-#: ../src/gui/callbacks.c:3339
+#: ../src/gui/callbacks.c:3341
 msgid "Are you sure you want to quit ?"
 msgstr "هل تريد فعلا إغلاق البرنامج ؟"
 
-#: ../src/gui/callbacks.c:3819
+#: ../src/gui/callbacks.c:3821
 msgid ""
 "Copyright © 2004-2011 François Meyer\n"
 "Copyright © 2012-2017 team free-astro"
@@ -4389,152 +4395,152 @@ msgstr ""
 "حقوق التأليف والنشر © 2012-2017 فريق الفلكية مجاناً"
 
 #. translator names
-#: ../src/gui/callbacks.c:3831
+#: ../src/gui/callbacks.c:3833
 msgid ""
 "Cyril Richard <cyril@free-astro.org>\n"
 "Vincent Hourdin <vh@free-astro.vinvin.tf>"
 msgstr "زنادي أمين <amine-zennadi@hotmail.com>"
 
-#: ../src/gui/callbacks.c:3842
+#: ../src/gui/callbacks.c:3844
 msgid "About siril"
 msgstr "حول Siril"
 
-#: ../src/gui/callbacks.c:3849
+#: ../src/gui/callbacks.c:3851
 msgid "Astronomical image (pre-)processing program"
 msgstr "معالجة ما قبل صورة"
 
-#: ../src/gui/callbacks.c:3852
+#: ../src/gui/callbacks.c:3854
 msgid "Visit the Siril website"
 msgstr "زبارة الموقع"
 
-#: ../src/gui/callbacks.c:3887
+#: ../src/gui/callbacks.c:3889
 #, c-format
 msgid "%g nm"
 msgstr "%g نانومتر"
 
-#: ../src/gui/callbacks.c:3889
+#: ../src/gui/callbacks.c:3891
 #, c-format
 msgid "undefined"
 msgstr "غير محدد"
 
-#: ../src/gui/callbacks.c:3988
+#: ../src/gui/callbacks.c:3990
 msgid ""
 "Exclude all images ?\n"
 " (this erases previous image selection\n"
 " ... and there's no undo)"
 msgstr "استبعاد كل الصور؟ (هذا يمحو اختيار الصورة السابقة ... وليس هناك تراجع)"
 
-#: ../src/gui/callbacks.c:3998
+#: ../src/gui/callbacks.c:4000
 msgid ""
 "Include all images ?\n"
 " (this erases previous image selection\n"
 " ... and there's no undo)"
 msgstr "يشمل جميع الصور؟ (هذا يمحو اختيار الصورة السابقة ... وليس هناك تراجع)"
 
-#: ../src/gui/callbacks.c:4028
+#: ../src/gui/callbacks.c:4030
 msgid "Opening dark image..."
 msgstr "فتح الصورة القاتمة ..."
 
-#: ../src/gui/callbacks.c:4031
+#: ../src/gui/callbacks.c:4033
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "لم يستخدم الضلام: لا يمكن فتح الملف\n"
 
-#: ../src/gui/callbacks.c:4036
+#: ../src/gui/callbacks.c:4038
 msgid "NOT USING DARK: number of channels is different"
 msgstr "لم يستخدم الضلام: عدد قنوات مختلفة"
 
-#: ../src/gui/callbacks.c:4077
+#: ../src/gui/callbacks.c:4079
 msgid "Opening flat image..."
 msgstr "فتح صورة مسطحة ..."
 
-#: ../src/gui/callbacks.c:4080
+#: ../src/gui/callbacks.c:4082
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "لم يستخدم التسطيح: لا يمكن فتح الملف\n"
 
-#: ../src/gui/callbacks.c:4085
+#: ../src/gui/callbacks.c:4087
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "لم يستخدم التسطيح: عدد قنوات مختلفة"
 
-#: ../src/gui/callbacks.c:4113
+#: ../src/gui/callbacks.c:4115
 msgid "Opening offset image..."
 msgstr "فتح صورة تعويض ..."
 
-#: ../src/gui/callbacks.c:4116
+#: ../src/gui/callbacks.c:4118
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "لما تستخدم الأوفست: لا يمكن فتح الملف\n"
 
-#: ../src/gui/callbacks.c:4121
+#: ../src/gui/callbacks.c:4123
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "لما تستخدم الأوفست: عدد قنوات مختلفة"
 
-#: ../src/gui/callbacks.c:4144
+#: ../src/gui/callbacks.c:4146
 msgid "Preprocessing...\n"
 msgstr "تجهيز ...\n"
 
-#: ../src/gui/callbacks.c:4258
+#: ../src/gui/callbacks.c:4260
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "اختيار %s تسلسل %s ..."
 
-#: ../src/gui/callbacks.c:4289
+#: ../src/gui/callbacks.c:4291
 msgid "Searching for sequences in the current working directory..."
 msgstr "البحث عن متواليات في دليل العمل الحالي ..."
 
-#: ../src/gui/callbacks.c:4377
+#: ../src/gui/callbacks.c:4379
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "قيمة التكبير جديدة: %f\n"
 
 #. Write "Siril Version X.Y in Copyright_Txt
-#: ../src/gui/callbacks.c:4545
+#: ../src/gui/callbacks.c:4547
 msgid "Saving TIFF"
 msgstr "حفظTIFF"
 
-#: ../src/gui/callbacks.c:4563
+#: ../src/gui/callbacks.c:4565
 msgid "Saving Netpbm"
 msgstr "حفظ Netpbm "
 
-#: ../src/gui/callbacks.c:4581
+#: ../src/gui/callbacks.c:4583
 msgid "Saving BMP"
 msgstr "حفظ BMP"
 
-#: ../src/gui/callbacks.c:4599
+#: ../src/gui/callbacks.c:4601
 msgid "Saving JPG"
 msgstr "حفظ JPG"
 
-#: ../src/gui/callbacks.c:4985
+#: ../src/gui/callbacks.c:4987
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr "الخلفية لا يمكن استخراجه من نفسها. من فضلك، انقر على مشاهدة صورة\n"
 
-#: ../src/gui/callbacks.c:5007
+#: ../src/gui/callbacks.c:5009
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr "من فضلك، تطبيق التصحيح على الصورة عن طريق النقر على مشاهدة صورة\n"
 
-#: ../src/gui/callbacks.c:5029
+#: ../src/gui/callbacks.c:5031
 msgid "Subtraction done ...\n"
 msgstr "الطرح القيام به ...\n"
 
-#: ../src/gui/callbacks.c:5036
+#: ../src/gui/callbacks.c:5038
 msgid "Division done ...\n"
 msgstr "تقسيم القيام به ...\n"
 
-#: ../src/gui/callbacks.c:5221
+#: ../src/gui/callbacks.c:5223
 msgid "Load an image first, aborted.\n"
 msgstr "تحميل صورة لأول مرة، أجهضت.\n"
 
-#: ../src/gui/callbacks.c:5250
+#: ../src/gui/callbacks.c:5252
 msgid "The file stars.lst has been created.\n"
 msgstr "تم إنشاء الملف stars.lst .\n"
 
-#: ../src/gui/callbacks.c:5320 ../src/gui/callbacks.c:5365
+#: ../src/gui/callbacks.c:5322 ../src/gui/callbacks.c:5367
 msgid ""
 "Current selection is too large.\n"
 "To determine the PSF, please make a selection around a star.\n"
 msgstr ""
 "التحديد الحالي كبيرة جدا. لتحديد PSF، يرجى التأكد التحديد حول نجم واحد.\n"
 
-#: ../src/gui/callbacks.c:5334
+#: ../src/gui/callbacks.c:5336
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -4565,75 +4571,75 @@ msgstr ""
 "الخلفية: B =% 6F الكثافة القصوى: A = % .6f حجم (% ق): م =% 2F RMSE:. RMSE =% "
 "3E"
 
-#: ../src/gui/callbacks.c:5427
+#: ../src/gui/callbacks.c:5429
 msgid "FFT does not work with sequences !\n"
 msgstr "FFT لا يعمل مع متواليات\n"
 
-#: ../src/gui/callbacks.c:5433
+#: ../src/gui/callbacks.c:5435
 msgid "Open an image first !\n"
 msgstr "فتح صورة لأول مرة!\n"
 
-#: ../src/gui/callbacks.c:5458
+#: ../src/gui/callbacks.c:5460
 msgid "Select magnitude and phase before !\n"
 msgstr "حدد حجم ومرحلة قبل!\n"
 
-#: ../src/gui/plot.c:172 ../src/gui/plot.c:553
+#: ../src/gui/plot.c:171 ../src/gui/plot.c:554
 msgid "Frames"
 msgstr "إطارات"
 
-#: ../src/gui/plot.c:238
+#: ../src/gui/plot.c:237
 msgid ""
 "Gnuplot is unavailable. Please consider to install it before trying to plot "
 "a graph of a variable star.\n"
 msgstr ""
 
-#: ../src/gui/plot.c:298
+#: ../src/gui/plot.c:299
 msgid "Light Curve"
 msgstr ""
 
-#: ../src/gui/plot.c:312
+#: ../src/gui/plot.c:313
 #, fuzzy, c-format
 msgid "%s has been saved.\n"
 msgstr " حفظ %s.csv.\n"
 
-#: ../src/gui/plot.c:313 ../src/gui/plot.c:372
+#: ../src/gui/plot.c:314 ../src/gui/plot.c:373
 msgid "Information"
 msgstr "معلومات"
 
-#: ../src/gui/plot.c:315 ../src/gui/plot.c:375
+#: ../src/gui/plot.c:316 ../src/gui/plot.c:376
 msgid "Something went wrong while saving plot"
 msgstr "حدث خطأ أثناء الحفظ "
 
-#: ../src/gui/plot.c:371
+#: ../src/gui/plot.c:372
 #, c-format
 msgid "%s.csv has been saved.\n"
 msgstr " حفظ %s.csv.\n"
 
-#: ../src/gui/plot.c:481
+#: ../src/gui/plot.c:482
 msgid "Quality"
 msgstr "النوعية"
 
-#: ../src/gui/plot.c:632
+#: ../src/gui/plot.c:633
 msgid "Star roundness (1 is round)"
 msgstr "نجوم الدائرية (1 جولة)"
 
-#: ../src/gui/plot.c:642
+#: ../src/gui/plot.c:643
 msgid "Star magnitude (absolute)"
 msgstr "حجم النجوم (المطلق)"
 
-#: ../src/gui/plot.c:643
+#: ../src/gui/plot.c:644
 msgid "Star magnitude (relative, use setmag)"
 msgstr "حجم النجوم (النسبية، واستخدام سيتماج)"
 
-#: ../src/gui/plot.c:646
+#: ../src/gui/plot.c:647
 msgid "Background value"
 msgstr "قيمة الخلفية"
 
-#: ../src/gui/plot.c:649
+#: ../src/gui/plot.c:650
 msgid "Star position on X axis"
 msgstr ""
 
-#: ../src/gui/plot.c:652
+#: ../src/gui/plot.c:653
 msgid "Star position on Y axis"
 msgstr ""
 
@@ -4814,7 +4820,7 @@ msgid ""
 msgstr "سيتم إخراج SER الأسبقية على قناة خيار واحد خلق صورة لكل.\n"
 
 #: ../src/io/conversion.c:528 ../src/io/conversion.c:577
-#: ../src/io/sequence.c:1195 ../src/io/sequence.c:1368
+#: ../src/io/sequence.c:1198 ../src/io/sequence.c:1371
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "إنشاء ملف SER فشلت، إجهاض.\n"
 
@@ -4855,7 +4861,7 @@ msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "خطأ أثناء قراءة إطار%d من%s إجهاض.\n"
 
 #: ../src/io/conversion.c:594 ../src/io/conversion.c:622
-#: ../src/io/sequence.c:1222 ../src/io/sequence.c:1582
+#: ../src/io/sequence.c:1225 ../src/io/sequence.c:1585
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "خطأ أثناء تحويل إلى SER (أي مساحة يقم؟)\n"
 
@@ -4921,72 +4927,72 @@ msgstr "FILM خطأ: شكل يتعارض\n"
 msgid "Loaded FITS file has a BSCALE different than 1 (%d)\n"
 msgstr "تحميل ملف FITS لديه BSCALE مختلفة من 1 (%d)\n"
 
-#: ../src/io/image_format_fits.c:186
+#: ../src/io/image_format_fits.c:189
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr "%s لايوجد شيء\n"
 
-#: ../src/io/image_format_fits.c:193
+#: ../src/io/image_format_fits.c:196
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr "الملف% الصورة ليست FITS  أو لا موجود مع ملحقات تناسبها.\n"
 
-#: ../src/io/image_format_fits.c:213
+#: ../src/io/image_format_fits.c:216
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "خطأ FITSIO الحصول على المعلمات صورة، الملف%s.\n"
 
-#: ../src/io/image_format_fits.c:226 ../src/io/image_format_fits.c:515
+#: ../src/io/image_format_fits.c:229 ../src/io/image_format_fits.c:518
 #, c-format
 msgid "Unknown FITS image format (%ld axes).\n"
 msgstr "FITS غير معروفة على شكل صورة (محاور %ld).\n"
 
-#: ../src/io/image_format_fits.c:242
+#: ../src/io/image_format_fits.c:245
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
 msgstr " الصور FITS غير معتمدة مع 64 بت وقعت صحيح في pixel.channel.\n"
 
-#: ../src/io/image_format_fits.c:342
+#: ../src/io/image_format_fits.c:345
 msgid "Unknown FITS image format.\n"
 msgstr "FITS غير معروف يناسب شكل صورة.\n"
 
-#: ../src/io/image_format_fits.c:352
+#: ../src/io/image_format_fits.c:355
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "البيانات خطأ القراءة Fitsio، ملف: %s.\n"
 
-#: ../src/io/image_format_fits.c:368
+#: ../src/io/image_format_fits.c:371
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "FITS القراءة: الملف%s، طبقة %ld، و%ux%u بكسل\n"
 
-#: ../src/io/image_format_fits.c:443
+#: ../src/io/image_format_fits.c:446
 #, c-format
 msgid "FITS error: %s\n"
 msgstr "خطأ %s : FITS \n"
 
-#: ../src/io/image_format_fits.c:496
+#: ../src/io/image_format_fits.c:499
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "FITS قراءة جزئية: ليس هناك طبقة واحدة  %dفي هذا %s الصورة\n"
 
-#: ../src/io/image_format_fits.c:524
+#: ../src/io/image_format_fits.c:527
 msgid "Only Siril FITS images can be used with partial image reading.\n"
 msgstr "فقط الصور FITS ل  Siril يمكن استخدامها مع القراءة صورة جزئية.\n"
 
-#: ../src/io/image_format_fits.c:555
+#: ../src/io/image_format_fits.c:558
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "ملف FITS جزئية تحميل%s\n"
 
-#: ../src/io/image_format_fits.c:691
+#: ../src/io/image_format_fits.c:694
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr "خطأ: محاولة لانقاذ يناسب صورة مع شكل غير معتمد (%d).\n"
 
-#: ../src/io/image_format_fits.c:702
+#: ../src/io/image_format_fits.c:705
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "توفير يناسب: الملف%s، طبقة %ld، و %ux%u بكسل\n"
@@ -5277,126 +5283,126 @@ msgstr "تسلسل%d، وجد:%d ل%d"
 msgid "Sequence loaded: %s (%d->%d)\n"
 msgstr "تسلسل تحميل:%s (%d ->%d)\n"
 
-#: ../src/io/sequence.c:491
+#: ../src/io/sequence.c:494
 #, c-format
 msgid "%d from %s.ser"
 msgstr "% د من% s.ser"
 
-#: ../src/io/sequence.c:521
+#: ../src/io/sequence.c:524
 #, c-format
 msgid "Could not load image %d from sequence %s\n"
 msgstr "لا يمكن تحميل صورة %d  من تسلسل%s\n"
 
-#: ../src/io/sequence.c:529 ../src/io/sequence.c:579
+#: ../src/io/sequence.c:532 ../src/io/sequence.c:582
 #, c-format
 msgid "Could not load frame %d from SER sequence %s\n"
 msgstr "لا يمكن تحميل إطار%d من SER تسلسل%s\n"
 
-#: ../src/io/sequence.c:538 ../src/io/sequence.c:590
+#: ../src/io/sequence.c:541 ../src/io/sequence.c:593
 #, c-format
 msgid "Could not load frame %d from AVI sequence %s\n"
 msgstr "لا يمكن تحميل إطار%d من AVI تسلسل%s\n"
 
-#: ../src/io/sequence.c:570
+#: ../src/io/sequence.c:573
 #, c-format
 msgid "Could not load partial image %d from sequence %s\n"
 msgstr "لا يمكن تحميل صورة %d  من تسلسل%s\n"
 
-#: ../src/io/sequence.c:658
+#: ../src/io/sequence.c:661
 msgid "This operation is not supported on AVI sequences (seq_open_image)\n"
 msgstr "لا يتم اعتماد هذه العملية على تسلسل افي (seq_open_image)\n"
 
-#: ../src/io/sequence.c:662
+#: ../src/io/sequence.c:665
 msgid ""
 "This operation is not supported on internal sequences (seq_open_image)\n"
 msgstr "لا يتم اعتماد هذه العملية على تسلسل الداخلية (seq_open_image)\n"
 
-#: ../src/io/sequence.c:955
+#: ../src/io/sequence.c:958
 msgid "No selection was made for a selection-based sequence processing\n"
 msgstr "لم يبذل أي اختيار القائم على اختيار معالجة تسلسل\n"
 
-#: ../src/io/sequence.c:1046
+#: ../src/io/sequence.c:1049
 msgid "Starting sequence processing of PSF\n"
 msgstr "بدء معالجة سلسلة من PSF\n"
 
-#: ../src/io/sequence.c:1047
+#: ../src/io/sequence.c:1050
 msgid "Computing PSF on selected star"
 msgstr "الحوسبة PSF على نجمة المختارة"
 
-#: ../src/io/sequence.c:1054
+#: ../src/io/sequence.c:1057
 msgid "Failed to compute PSF for the sequence. Ready."
 msgstr "فشل لPSF  لتسلسل. جاهز."
 
-#: ../src/io/sequence.c:1058
+#: ../src/io/sequence.c:1061
 msgid "Finished sequence processing of PSF\n"
 msgstr "الانتهاء من معالجة سلسلة من PSF\n"
 
-#: ../src/io/sequence.c:1089
+#: ../src/io/sequence.c:1092
 msgid "See the console for a dump of star data over the sequence (stdout)\n"
 msgstr "ترى وحدة لتفريغ البيانات نجوم على التسلسل (المعياري)\n"
 
-#: ../src/io/sequence.c:1090
+#: ../src/io/sequence.c:1093
 #, c-format
 msgid "# image_no amplitude magnitude fwhm x y\n"
 msgstr "# image_no اتساع حجم FWHM س ص\n"
 
-#: ../src/io/sequence.c:1102
+#: ../src/io/sequence.c:1105
 msgid "Finished computing PSF for the sequence. Ready."
 msgstr "الانتهاء من PSF لتسلسل الحوسبة. جاهز."
 
-#: ../src/io/sequence.c:1343
+#: ../src/io/sequence.c:1346
 #, c-format
 msgid "Using registration information from layer %d to export sequence\n"
 msgstr "باستخدام معلومات التسجيل من طبقة %d لتصدير تسلسل\n"
 
-#: ../src/io/sequence.c:1388
+#: ../src/io/sequence.c:1391
 msgid ""
 "MP4 output is not supported because siril was not compiled with ffmpeg "
 "support.\n"
 msgstr ""
 "الإخراج MP4 غير معتمد لأنه لا يتم تحويلها برمجياً سيريل مع دعم ffmpeg.\n"
 
-#: ../src/io/sequence.c:1399
+#: ../src/io/sequence.c:1402
 msgid ""
 "Film output needs to have a width that is a multiple of 32 and an even "
 "height, resizing selection.\n"
 msgstr ""
 "الإنتاج السينمائي يحتاج إلى عرض مضاعفات 32 وارتفاع حتى، تغيير حجم التحديد.\n"
 
-#: ../src/io/sequence.c:1480 ../src/stacking/stacking.c:236
+#: ../src/io/sequence.c:1483 ../src/stacking/stacking.c:236
 #: ../src/stacking/stacking.c:860 ../src/stacking/stacking.c:1017
 msgid "Processing image "
 msgstr "معالجة الصورة "
 
-#: ../src/io/sequence.c:1487
+#: ../src/io/sequence.c:1490
 msgid "Export: could not read frame, aborting\n"
 msgstr "التصدير: لا يمكن قراءة الإطار، إجهاض\n"
 
-#: ../src/io/sequence.c:1595
+#: ../src/io/sequence.c:1598
 msgid "Siril needs opencv to resize images\n"
 msgstr "Siril يحتاج مكتبة برمجية مفتوحة للرؤية الحاسوبية لتغيير حجم الصور\n"
 
-#: ../src/io/sequence.c:1641
+#: ../src/io/sequence.c:1644
 msgid "Sequence export failed. Check the log."
 msgstr "فشل تصدير تسلسل. تحقق من سجل."
 
-#: ../src/io/sequence.c:1642
+#: ../src/io/sequence.c:1645
 msgid "Sequence export failed\n"
 msgstr "فشل تصدير تسلسل\n"
 
-#: ../src/io/sequence.c:1645
+#: ../src/io/sequence.c:1648
 msgid "Sequence export succeeded."
 msgstr "نجح تصدير تسلسل."
 
-#: ../src/io/sequence.c:1646
+#: ../src/io/sequence.c:1649
 msgid "Sequence export succeeded.\n"
 msgstr "نجح تصدير تسلسل.\n"
 
-#: ../src/io/sequence.c:1697
+#: ../src/io/sequence.c:1700
 msgid "Width or height cannot be null. Not resizing.\n"
 msgstr "عرض أو ارتفاع لا يمكن أن تكون فارغة. لا تغيير الحجم.\n"
 
-#: ../src/io/sequence.c:1745
+#: ../src/io/sequence.c:1748
 msgid "Cropping to selection"
 msgstr "القص"
 
@@ -5446,16 +5452,16 @@ msgstr "خطأ في فتح %s الصورة: ملف لم يتم العثور أو
 msgid "Opening %s failed.\n"
 msgstr "فتح %s الفاشلة.\n"
 
-#: ../src/io/single_image.c:152
+#: ../src/io/single_image.c:154
 msgid "This file could not be opened because its extension is not supported.\n"
 msgstr "تعذر فتح هذا الملف لأنه بملحق غير معتمد.\n"
 
-#: ../src/io/single_image.c:156
+#: ../src/io/single_image.c:158
 msgid ""
 "There was an error when opening this image. See the log for more information."
 msgstr "كان هناك خطأ عند فتح هذه الصورة. راجع سجل لمزيد من المعلومات."
 
-#: ../src/io/single_image.c:162
+#: ../src/io/single_image.c:164
 #, c-format
 msgid "Closing sequence %s\n"
 msgstr "إغلاق تسلسل %s\n"

@@ -87,7 +87,6 @@ static double serTimestamp_toJulian(uint64_t timestamp) {
 	double julian, tmp;
 	uint64_t t1970_ms = (timestamp - epochTicks) / 10000;
 	time_t secs = t1970_ms / 1000;
-	int ms = t1970_ms % 1000;
 	struct tm *t;
 
 	t = gmtime(&secs);
@@ -276,8 +275,10 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 		}
 		/* Converting back to magnitude */
 		double ref_mag = -2.5 * log10(ref_int);
-		variable[j] = variable[j] - ref_mag;
-		err[j] = err[j] + (ref_err * 1.08574 / ref_int);
+		if (k > 1) {
+			variable[j] = variable[j] - ref_mag;
+			err[j] = err[j] + (ref_err * 1.08574 / ref_int);
+		}
 		tmp_plot = plot;
 		j++;
 	}

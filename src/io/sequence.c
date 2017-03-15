@@ -410,6 +410,9 @@ int set_seq(const char *name){
 
 	/* update menus */
 	update_MenuItem();
+	/* update parameters */
+	set_GUI_CAMERA();
+	set_GUI_photometry();
 
 	/* redraw and display image */
 	show_main_gray_window();
