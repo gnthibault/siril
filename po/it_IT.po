@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-16 12:41+0100\n"
-"PO-Revision-Date: 2017-01-05 18:02+0100\n"
+"POT-Creation-Date: 2017-03-16 14:12+0100\n"
+"PO-Revision-Date: 2017-03-16 19:04+0100\n"
 "Last-Translator: Sonia Zorba <sonia@zonia3000.net>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
 "Language: it_IT\n"
@@ -40,7 +40,7 @@ msgstr "Crop"
 
 #: ../src/gui/siril3.glade.h:6
 msgid "Crop Sequence..."
-msgstr "Sequenza di crop..."
+msgstr "Ritaglia la sequenza..."
 
 #: ../src/gui/siril3.glade.h:7
 msgid "RGB image"
@@ -280,9 +280,9 @@ msgid ""
 "Instead of keeping pixels with values above the \"hi\" value white, put them "
 "in black to see in which part of the image the threshold is exceeded."
 msgstr ""
-"Invece di tenere in bianco i pixel con valori di livello superiore ad \"alto"
-"\", mettili in nero per vedere in quale parte dell'immagine la soglia è "
-"superata."
+"Invece di visualizzare in bianco i pixel il cui valore supera quello che è "
+"stato impostato nel campo \"Alto\", visualizzali in nero per vedere in quali "
+"parti dell'immagine la soglia è superata."
 
 #: ../src/gui/siril3.glade.h:59
 msgid "Click on this button to chain the layers all together"
@@ -573,11 +573,11 @@ msgstr "Neutra massima"
 
 #: ../src/gui/siril3.glade.h:124
 msgid "Maximum Mask"
-msgstr "Maschera del Massimo"
+msgstr "Maschera Massima"
 
 #: ../src/gui/siril3.glade.h:125
 msgid "Additive Mask"
-msgstr "Maschera addittiva"
+msgstr "Maschera Addittiva"
 
 #: ../src/gui/siril3.glade.h:126
 msgid "Amount:"
@@ -1279,7 +1279,7 @@ msgid ""
 "to the Green."
 msgstr ""
 "Specifica il tuo bilanciamento del bianco grezzo. Il valore per la scala nel "
-"rosso è relativa al verde."
+"rosso è relativo al verde."
 
 #: ../src/gui/siril3.glade.h:288
 msgid ""
@@ -1287,7 +1287,7 @@ msgid ""
 "to the Green."
 msgstr ""
 "Specifica il tuo bilanciamento del bianco grezzo. Il valore per la scala nel "
-"blu è relativa al verde."
+"blu è relativo al verde."
 
 #: ../src/gui/siril3.glade.h:289
 msgid "Brightness"
@@ -1506,8 +1506,8 @@ msgid ""
 "If the Pixel Y size is not automatically loaded, using file's header, you "
 "can update the field by yourself."
 msgstr ""
-"Se la dimensione del Pixel Y non viene automaticamente caricata utilizzando "
-"l'header del file, puoi aggiornare tu il campo."
+"Se la dimensione dei pixel in Y non viene automaticamente caricata "
+"utilizzando l'header del file, puoi aggiornare tu il campo."
 
 #: ../src/gui/siril3.glade.h:333
 msgid "Pixel Y dim. (micron): "
@@ -1542,8 +1542,8 @@ msgid ""
 "If the Pixel X size is not automatically loaded, using file's header, you "
 "can update the field by yourself."
 msgstr ""
-"Se la dimensione del Pixel X non viene automaticamente caricata utilizzando "
-"l'header del file, puoi aggiornare tu il campo."
+"Se la dimensione dei pixel in X non viene automaticamente caricata "
+"utilizzando l'header del file, puoi aggiornare tu il campo."
 
 #: ../src/gui/siril3.glade.h:339
 msgid "<b>Camera and Optics</b>"
@@ -1564,40 +1564,46 @@ msgstr "Camera e ottiche"
 #: ../src/gui/siril3.glade.h:342
 msgid "A/D converter gain in electrons per ADU. Default value is 2.300."
 msgstr ""
+"Guadagno del convertitore A/D in elettroni per ADU. Il valore predefinito è "
+"2.300."
 
 #: ../src/gui/siril3.glade.h:343
 msgid "ADC gain:"
-msgstr ""
+msgstr "Guadagno dell'ADC:"
 
 #: ../src/gui/siril3.glade.h:344
 msgid "Camera"
-msgstr ""
+msgstr "Fotocamera"
 
 #: ../src/gui/siril3.glade.h:345
-#, fuzzy
 msgid "Inner radius: "
-msgstr "Raggio del riquadro:"
+msgstr "Raggio interno:"
 
 #: ../src/gui/siril3.glade.h:346
-#, fuzzy
 msgid "Outer radius:"
-msgstr "Raggio del riquadro:"
+msgstr "Raggio esterno:"
 
 #: ../src/gui/siril3.glade.h:347
 msgid ""
 "Inner radius of the annulus used to measure local background. Default value "
 "is 20.00."
 msgstr ""
+"Il raggio interno dell'anello utilizzato per misurare lo sfondo locale. Il "
+"valore predefinito è 20.00."
 
 #: ../src/gui/siril3.glade.h:348
 msgid ""
 "Outer radius of the annulus used to measure local background. Default value "
 "is 30.00."
 msgstr ""
+"Il raggio esterno dell'anello utilizzato per misurare lo sfondo locale. Il "
+"valore predefinito è 30.00."
 
 #: ../src/gui/siril3.glade.h:349
 msgid "Size of the annulus for background level measurement (pixels):"
 msgstr ""
+"Dimensione dell'anello per la misurazione del livello dello sfondo (in "
+"pixel):"
 
 #: ../src/gui/siril3.glade.h:350
 msgid "Background"
@@ -2157,8 +2163,8 @@ msgid ""
 "Colour image target also applies to the debayer result for conversion."
 msgstr ""
 "Applica debayer a immagini a canale singolo (formato CFA) usando il layout a "
-"matrice di Bayer specificato nelle impostazioni. Applica anche all'apertura "
-"dell'immagine e non solo durante la conversione.\n"
+"matrice di Bayer specificato nelle impostazioni. Si applica anche "
+"all'apertura dell'immagine e non solo durante la conversione.\n"
 "Solo per immagini in input RAW e FITS e per video SER.\n"
 "Anche l'immagine target a colori applica il risultato del debayer per la "
 "conversione."
@@ -2205,8 +2211,8 @@ msgstr ""
 "Le immagini RAW sono le immagini grezze delle fotocamere digitali, come i "
 "file CR2 per le Canon e i NEF per le Nikon.\n"
 "I video di qualsiasi tipo possono essere convertiti come FITS o SER.\n"
-"I file SER sono gestiti direttamente come una sequenza e non sono ancora "
-"disponibili per la conversione."
+"I file SER sono gestiti direttamente come una sequenza e quindi non sono "
+"convertibili."
 
 #: ../src/gui/siril3.glade.h:489
 msgid "File conversion"
@@ -2341,7 +2347,7 @@ msgid ""
 "Export sequence format. MP4 and WEBM replaces GIF for modern Web "
 "publication, AVI is not compressed."
 msgstr ""
-"Esporta il formato della sequenza. MP4 e WEBM rimpiazzano GIF per la "
+"Formato della sequenza esportata. MP4 e WEBM rimpiazzano GIF per la "
 "pubblicazione Web moderna, l'AVI non è compresso."
 
 #: ../src/gui/siril3.glade.h:517
@@ -2616,13 +2622,13 @@ msgid ""
 "The next action for DSLR images would be to debayer the preprocessed images, "
 "go to the Conversion tab."
 msgstr ""
-"Sequenza di pre-elaborazione con i master file soprastanti, la sequenza "
+"La sequenza viene pre-elaborata con i file master soprastanti, la sequenza "
 "risultante sarà in pp_<seq.name> o in un altro prefisso specificato qui a "
 "lato.\n"
-"Una volta completata, la sequenza di pre-elaborazione delle immagini viene "
-"automaticamente caricata come sequenza attuale.\n"
+"Una volta completata, la sequenza di immagini pre-elaborate viene "
+"automaticamente caricata come sequenza corrente.\n"
 "La successiva azione per le immagini DSLR dovrebbe essere l'applicazione del "
-"debayer alle immagini pre-elaborate, vai al tab Conversione."
+"debayer alle immagini pre-elaborate. Questo è fatto nel tab di conversione."
 
 #: ../src/gui/siril3.glade.h:576
 msgid "Pre-processing"
@@ -2868,9 +2874,8 @@ msgstr "Pulisci l'ultima curva aggiunta nella fotometria."
 
 #. This is the button for plotting variable star graph
 #: ../src/gui/siril3.glade.h:626
-#, fuzzy
 msgid "Plot Var."
-msgstr "Grafico"
+msgstr "Disegna var."
 
 #: ../src/gui/siril3.glade.h:627
 msgid ""
@@ -2880,6 +2885,11 @@ msgid ""
 "displayed graph.\n"
 "WARNING: gnuplot must be installed."
 msgstr ""
+"Disegna un grafico della stella variabile. La stella variabile deve essere "
+"dapprima analizzata e in seguito altre PSF sono applicate ai riferimenti. "
+"Sono consentiti al massimo 6 riferimenti. Per abilitare questa funzione "
+"seleziona 'Magnitudine' nella tipologia di grafico visualizzato.\n"
+"ATTENZIONE: gnuplot deve essere installato."
 
 #: ../src/gui/siril3.glade.h:629
 msgid "Select the source of graph information."
@@ -2975,7 +2985,8 @@ msgstr ""
 "\n"
 "Media con rejection: questo metodo è usato per scartare iterativamente i "
 "pixel deviati.\n"
-"Cinque metodi sono stati implementati:- Percentile Clipping\n"
+"Cinque metodi sono stati implementati:\n"
+"- Percentile Clipping\n"
 "- Sigma Clipping\n"
 "- Median Sigma Clipping\n"
 "- Winsorized Sigma Clipping\n"
@@ -3308,8 +3319,8 @@ msgid ""
 "changed with the button Change dir on the right, or with the cd command."
 msgstr ""
 "La cartella che verrà usata per leggere e scrivere i file. Può essere "
-"modificata con il pulsante 'Modifica cartella' sulla destra, o con il "
-"comando cd."
+"modificata con il pulsante 'Cambia cartella' sulla destra, o con il comando "
+"cd."
 
 #: ../src/gui/siril3.glade.h:739
 msgid "Change dir..."
@@ -3586,14 +3597,18 @@ msgstr "Insufficienti campioni dello sfondo.\n"
 msgid ""
 "Inner and outer radii are too small. Please update values in setting box.\n"
 msgstr ""
+"I raggi interno ed esterno sono troppo piccoli. Si prega di aggiornare i "
+"valori nel riquadro delle impostazioni.\n"
 
 #: ../src/algos/photometry.c:301
 msgid ""
 "Warning: There aren't enough pixels in the sky annulus. You need to make a "
 "larger selection.\n"
 msgstr ""
+"Attenzione: non ci sono abbastanza pixel nell'anello di cielo. È necessario "
+"specificare una selezione più ampia.\n"
 
-#: ../src/algos/PSF.c:662
+#: ../src/algos/PSF.c:661
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -4743,7 +4758,7 @@ msgstr ""
 "Per favore crea una selezione attorno ad una stella per determinare la PSF.\n"
 
 #: ../src/gui/callbacks.c:5355
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Centroid Coordinates:\n"
 "\t\tx0=%.2fpx\n"
@@ -4763,7 +4778,7 @@ msgid ""
 "\t\tA=%.6f\n"
 "\n"
 "Magnitude (%s):\n"
-"\t\tm=%.2f\n"
+"\t\tm=%.4f±%.4f\n"
 "\n"
 "RMSE:\n"
 "\t\tRMSE=%.3e"
@@ -4812,15 +4827,17 @@ msgid ""
 "Gnuplot is unavailable. Please consider to install it before trying to plot "
 "a graph of a variable star.\n"
 msgstr ""
+"Gnuplot non è disponibile. Si consideri di installarlo prima di tentare di "
+"disegnare un grafico di una stella variabile.\n"
 
 #: ../src/gui/plot.c:299
 msgid "Light Curve"
-msgstr ""
+msgstr "Curva di luce"
 
 #: ../src/gui/plot.c:313
-#, fuzzy, c-format
+#, c-format
 msgid "%s has been saved.\n"
-msgstr "%s.csv è stato salvato.\n"
+msgstr "%s è stato salvato.\n"
 
 #: ../src/gui/plot.c:314 ../src/gui/plot.c:373
 msgid "Information"
@@ -6368,6 +6385,13 @@ msgstr "Basato sulla qualità > %.2f (%d immagini)"
 #, c-format
 msgid "Based on quality"
 msgstr "Basato sulla qualità"
+
+#~ msgid ""
+#~ "Copyright © 2004-2011 François Meyer\n"
+#~ "Copyright © 2012-2016 team free-astro"
+#~ msgstr ""
+#~ "Copyright © 2004-2011 François Meyer\n"
+#~ "Copyright © 2012-2016 team free-astro"
 
 #~ msgid "Credits"
 #~ msgstr "Crediti"

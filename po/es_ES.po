@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-16 12:41+0100\n"
-"PO-Revision-Date: 2016-11-28 16:13+0000\n"
+"POT-Creation-Date: 2017-03-16 14:12+0100\n"
+"PO-Revision-Date: 2017-03-16 14:03+0000\n"
 "Last-Translator: Joaquín. M. Llano Montero\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -1555,40 +1555,44 @@ msgstr "Cámara y óptica"
 #: ../src/gui/siril3.glade.h:342
 msgid "A/D converter gain in electrons per ADU. Default value is 2.300."
 msgstr ""
+"Ganancia del conversor A/D en electrones por ADU. El valor por defecto es "
+"2.300."
 
 #: ../src/gui/siril3.glade.h:343
 msgid "ADC gain:"
-msgstr ""
+msgstr "Ganancia ADC:"
 
 #: ../src/gui/siril3.glade.h:344
 msgid "Camera"
-msgstr ""
+msgstr "Cámara"
 
 #: ../src/gui/siril3.glade.h:345
-#, fuzzy
 msgid "Inner radius: "
-msgstr "Radio de la caja:"
+msgstr "Radio interior:"
 
 #: ../src/gui/siril3.glade.h:346
-#, fuzzy
 msgid "Outer radius:"
-msgstr "Radio de la caja:"
+msgstr "Radio exterior:"
 
 #: ../src/gui/siril3.glade.h:347
 msgid ""
 "Inner radius of the annulus used to measure local background. Default value "
 "is 20.00."
 msgstr ""
+"Radio interior del anillo usado para medir el fondo local. El valor por "
+"defecto es 20.00."
 
 #: ../src/gui/siril3.glade.h:348
 msgid ""
 "Outer radius of the annulus used to measure local background. Default value "
 "is 30.00."
 msgstr ""
+"Radio exterior del anillo usado para medir el fondo local. El valor por "
+"defecto es 30.00."
 
 #: ../src/gui/siril3.glade.h:349
 msgid "Size of the annulus for background level measurement (pixels):"
-msgstr ""
+msgstr "Tamaño del anillo para la medida del nivel de fondo (píxeles):"
 
 #: ../src/gui/siril3.glade.h:350
 msgid "Background"
@@ -1599,9 +1603,8 @@ msgid "Restore to Default"
 msgstr "Restaurar por defecto"
 
 #: ../src/gui/siril3.glade.h:352
-#, fuzzy
 msgid "Restore the defaut parameters"
-msgstr "Restaurar el directorio de intercambio por defecto"
+msgstr "Restaurar los parámetros por defecto"
 
 #: ../src/gui/siril3.glade.h:353
 msgid "Photometry"
@@ -2849,9 +2852,8 @@ msgstr "Borrar la última curva añadida a la fotometría."
 
 #. This is the button for plotting variable star graph
 #: ../src/gui/siril3.glade.h:626
-#, fuzzy
 msgid "Plot Var."
-msgstr "Trazar"
+msgstr "Dibujar Var."
 
 #: ../src/gui/siril3.glade.h:627
 msgid ""
@@ -2861,6 +2863,11 @@ msgid ""
 "displayed graph.\n"
 "WARNING: gnuplot must be installed."
 msgstr ""
+"Dibujar una gráfica de una estrella variable. La estrella variable ha de ser "
+"analizada primero, así se aplica otra PSF a las referencias. Se permiten un "
+"máximo de 6 referencias. Para habilitar esta función, seleccione 'Magnitud' "
+"en el tipo de gráfica a mostrar.\n"
+"AVISO: debe estar instalado gnuplot."
 
 #: ../src/gui/siril3.glade.h:629
 msgid "Select the source of graph information."
@@ -3560,14 +3567,18 @@ msgstr "Muestras de fondo insuficientes.\n"
 msgid ""
 "Inner and outer radii are too small. Please update values in setting box.\n"
 msgstr ""
+"El radio interior y exterior son demasiado pequeños. Por favor actualice los "
+"valores en la caja de ajustes.\n"
 
 #: ../src/algos/photometry.c:301
 msgid ""
 "Warning: There aren't enough pixels in the sky annulus. You need to make a "
 "larger selection.\n"
 msgstr ""
+"Precaución: no hay suficientes píxeles en el anillo del cielo. Necesita "
+"realizar una selección mayor.\n"
 
-#: ../src/algos/PSF.c:662
+#: ../src/algos/PSF.c:661
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -4721,7 +4732,7 @@ msgid ""
 "\t\tA=%.6f\n"
 "\n"
 "Magnitude (%s):\n"
-"\t\tm=%.2f\n"
+"\t\tm=%.4f±%.4f\n"
 "\n"
 "RMSE:\n"
 "\t\tRMSE=%.3e"
@@ -4744,7 +4755,7 @@ msgstr ""
 "\t\tA=%.6f\n"
 "\n"
 "Magnitud (%s):\n"
-"\t\tm=%.2f\n"
+"\t\tm=%.4f±%.4f\n"
 "\n"
 "RMSE:\n"
 "\t\tRMSE=%.3e"
@@ -4770,15 +4781,17 @@ msgid ""
 "Gnuplot is unavailable. Please consider to install it before trying to plot "
 "a graph of a variable star.\n"
 msgstr ""
+"Gnuplot no está disponible. Considere instalarlo antes de intentar dibujar "
+"una gráfica de una estrella variable.\n"
 
 #: ../src/gui/plot.c:299
 msgid "Light Curve"
-msgstr ""
+msgstr "Curva de luz"
 
 #: ../src/gui/plot.c:313
-#, fuzzy, c-format
+#, c-format
 msgid "%s has been saved.\n"
-msgstr "Se ha guardado el fichero %s.csv.\n"
+msgstr "Se ha guardado %s.\n"
 
 #: ../src/gui/plot.c:314 ../src/gui/plot.c:373
 msgid "Information"
@@ -6311,6 +6324,60 @@ msgstr "Basado en calidad > %.2f (%d imágenes)"
 #, c-format
 msgid "Based on quality"
 msgstr "Basado en calidad"
+
+#~ msgid ""
+#~ "Centroid Coordinates:\n"
+#~ "\t\tx0=%.2fpx\n"
+#~ "\t\ty0=%.2fpx\n"
+#~ "\n"
+#~ "Full Width Half Maximum:\n"
+#~ "\t\tFWHMx=%.2f%s\n"
+#~ "\t\tFWHMy=%.2f%s\n"
+#~ "\n"
+#~ "Angle:\n"
+#~ "\t\t%0.2fdeg\n"
+#~ "\n"
+#~ "Background Value:\n"
+#~ "\t\tB=%.6f\n"
+#~ "\n"
+#~ "Maximal Intensity:\n"
+#~ "\t\tA=%.6f\n"
+#~ "\n"
+#~ "Magnitude (%s):\n"
+#~ "\t\tm=%.2f\n"
+#~ "\n"
+#~ "RMSE:\n"
+#~ "\t\tRMSE=%.3e"
+#~ msgstr ""
+#~ "Coordenadas del Centroide:\n"
+#~ "t\tx0=%.2fpx\n"
+#~ "\t\ty0=%.2fpx\n"
+#~ "\n"
+#~ "Ancho total Mitad del máximo:\n"
+#~ "\t\tATMMx=%.2f%s\n"
+#~ "\t\tATMMy=%.2f%s\n"
+#~ "\n"
+#~ "Ángulo:\n"
+#~ "\t\t%0.2fdeg\n"
+#~ "\n"
+#~ "Valor de Fondo:\n"
+#~ "\t\tB=%.6f\n"
+#~ "\n"
+#~ "Intensidad Máxima:\n"
+#~ "\t\tA=%.6f\n"
+#~ "\n"
+#~ "Magnitud (%s):\n"
+#~ "\t\tm=%.2f\n"
+#~ "\n"
+#~ "RMSE:\n"
+#~ "\t\tRMSE=%.3e"
+
+#~ msgid ""
+#~ "Copyright © 2004-2011 François Meyer\n"
+#~ "Copyright © 2012-2016 team free-astro"
+#~ msgstr ""
+#~ "Copyright © 2004-2011 François Meyer\n"
+#~ "Copyright © 2012-2016 team free-astro"
 
 #~ msgid "Credits"
 #~ msgstr "Créditos"

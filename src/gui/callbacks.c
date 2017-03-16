@@ -5357,11 +5357,11 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 					"Angle:\n\t\t%0.2fdeg\n\n"
 					"Background Value:\n\t\tB=%.6f\n\n"
 					"Maximal Intensity:\n\t\tA=%.6f\n\n"
-					"Magnitude (%s):\n\t\tm=%.2f\n\n"
+					"Magnitude (%s):\n\t\tm=%.4f\u00B1%.4f\n\n"
 					"RMSE:\n\t\tRMSE=%.3e"), result->x0 + com.selection.x,
 			com.selection.y + com.selection.h - result->y0, result->fwhmx,
 			result->units, result->fwhmy, result->units, result->angle, result->B,
-			result->A, str, result->mag + com.magOffset, result->rmse);
+			result->A, str, result->mag + com.magOffset, result->s_mag, result->rmse);
 	show_data_dialog(msg, "PSF Results");
 	free(result);
 }
