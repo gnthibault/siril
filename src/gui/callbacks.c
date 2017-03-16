@@ -2934,7 +2934,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 				cairo_set_font_size(cr, 40);
 				cairo_move_to(cr, the_psf->xpos + com.phot_set.outer + 5, the_psf->ypos);
 				if (i == 0) {
-					cairo_show_text(cr, "v");
+					cairo_show_text(cr, "V");
 				}
 				else {
 					char tmp[2];

@@ -656,6 +656,7 @@ static void update_ylabel() {
 }
 
 void notify_new_photometry() {
+	control_window_switch_to_tab(PLOT);
 	requires_color_update = TRUE;
 	gtk_widget_set_visible(sourceCombo, TRUE);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(sourceCombo), 1);
