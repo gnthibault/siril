@@ -555,7 +555,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	}
 	status = 0;
 	fits_close_file(fit->fptr, &status);
-	siril_log_message(_("Loaded partial FITS file %s\n"), filename);
+	printf(_("Loaded partial FITS file %s\n"), filename);
 	return 0;
 }
 

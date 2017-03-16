@@ -153,8 +153,8 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 
 				plot->data[j].x = julian - (int) julian0;
 				plot->err[j].x = julian - (int) julian0;
-				xlabel = calloc(10, sizeof(char));
-				g_snprintf(xlabel, 10, "%d +", (int) julian0);
+				xlabel = calloc(15, sizeof(char));
+				g_snprintf(xlabel, 15, "(JD) %d +", (int) julian0);
 			} else if (seq->type == SEQ_REGULAR && seq->ts) {
 				/* Get start date */
 				julian0 = dateTimestamp_toJulian(g_slist_nth_data(seq->ts, 0), seq->exposure);
@@ -163,8 +163,8 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 
 				plot->data[j].x = julian - (int) julian0;
 				plot->err[j].x = julian - (int) julian0;
-				xlabel = calloc(10, sizeof(char));
-				g_snprintf(xlabel, 10, "%d +", (int) julian0);
+				xlabel = calloc(15, sizeof(char));
+				g_snprintf(xlabel, 15, "(JD) %d +", (int) julian0);
 			} else {
 				plot->data[j].x = (double)i;
 				plot->err [j].x = (double)i;

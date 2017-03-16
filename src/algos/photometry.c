@@ -38,6 +38,12 @@
 #define lo_data    0.0
 #define hi_data    USHRT_MAX_DOUBLE
 
+static void initializeParam() {
+	com.phot_set.inner = 20;
+	com.phot_set.outer = 30;
+	com.phot_set.gain = 2.3;
+}
+
 static double hampel(double x) {
 	if (x >= 0) {
 		if (x < hampel_a)
@@ -315,5 +321,15 @@ photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 
 	free(data);
 	return phot;
+}
+
+void on_button_reset_photometry_clicked(GtkButton *button, gpointer user_data) {
+	double tmp;
+
+	initializeParam();
+	tmp = gfit.cvf;
+	gfit.cvf = 0.0;
+	set_GUI_photometry();
+	gfit.cvf = tmp;
 }
 
