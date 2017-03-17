@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-16 12:41+0100\n"
-"PO-Revision-Date: 2017-03-14 08:55+0100\n"
-"Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
+"POT-Creation-Date: 2017-03-16 14:12+0100\n"
+"PO-Revision-Date: 2017-03-17 21:11+0100\n"
+"Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language: nl_BE\n"
 "MIME-Version: 1.0\n"
@@ -1538,41 +1538,43 @@ msgstr "Camera & Optiek"
 
 #: ../src/gui/siril3.glade.h:342
 msgid "A/D converter gain in electrons per ADU. Default value is 2.300."
-msgstr ""
+msgstr "A/D convertro gain in electron per ADU. Standaardwaarde is 2.300."
 
 #: ../src/gui/siril3.glade.h:343
 msgid "ADC gain:"
-msgstr ""
+msgstr "ADG gain:"
 
 #: ../src/gui/siril3.glade.h:344
 msgid "Camera"
-msgstr ""
+msgstr "Camera"
 
 #: ../src/gui/siril3.glade.h:345
-#, fuzzy
 msgid "Inner radius: "
-msgstr "Sample radius"
+msgstr "Binnenradius:"
 
 #: ../src/gui/siril3.glade.h:346
-#, fuzzy
 msgid "Outer radius:"
-msgstr "Sample radius"
+msgstr "Buitenradius:"
 
 #: ../src/gui/siril3.glade.h:347
 msgid ""
 "Inner radius of the annulus used to measure local background. Default value "
 "is 20.00."
 msgstr ""
+"Binnenradius is de cirkel gebruikt om de locale achtergrond te meten. "
+"Standaardwaarde is 20.00."
 
 #: ../src/gui/siril3.glade.h:348
 msgid ""
 "Outer radius of the annulus used to measure local background. Default value "
 "is 30.00."
 msgstr ""
+"Buitenradius is de cirkel gebruikt om de locale achtergrond te meten. "
+"Standaardwaarde is 30.00."
 
 #: ../src/gui/siril3.glade.h:349
 msgid "Size of the annulus for background level measurement (pixels):"
-msgstr ""
+msgstr "Grootte van de cirkel om de achtergrondwaarde te meten (pixels):"
 
 #: ../src/gui/siril3.glade.h:350
 msgid "Background"
@@ -1583,9 +1585,8 @@ msgid "Restore to Default"
 msgstr "Herstel de Standaardwaarden"
 
 #: ../src/gui/siril3.glade.h:352
-#, fuzzy
 msgid "Restore the defaut parameters"
-msgstr "Herstel de staardaard swap folder"
+msgstr "Herstel de staardaard parameters"
 
 #: ../src/gui/siril3.glade.h:353
 msgid "Photometry"
@@ -2826,7 +2827,6 @@ msgid "Plot Var."
 msgstr "Plot Var."
 
 #: ../src/gui/siril3.glade.h:627
-#, fuzzy
 msgid ""
 "Plot a graph of the variable star. The variable star must be analysed in "
 "first, then other PSF are applied to references. A maximum of 6 references "
@@ -2834,9 +2834,10 @@ msgid ""
 "displayed graph.\n"
 "WARNING: gnuplot must be installed."
 msgstr ""
-"Plot de grafiek van de variabele ster. De ster moet eerst worden "
-"geanalyseerd vooraleer andere PSF ... Maximaal 6 referenties zijn "
-"toegestaan. Om dit te doen, kies \"Magnitude\" in grafiektypes.\n"
+"Plot de grafiek van de variabele ster. De variabele ster moet eerst worden "
+"geanalyseerd, dan worden andere PSF op referenties toegepast. Maximaal 6 "
+"referenties zijn toegestaan. Om dit te doen, kies \"Magnitude\" in "
+"grafiektypes.\n"
 "OPGELET: gnuplot moet geïnstalleerd zijn."
 
 #: ../src/gui/siril3.glade.h:629
@@ -3526,14 +3527,17 @@ msgstr "Te weinig achtergrondsamples.\n"
 msgid ""
 "Inner and outer radii are too small. Please update values in setting box.\n"
 msgstr ""
+"Binnen- en buitenstraal zijn te klein. Gelieve deze waarden toe te passen.\n"
 
 #: ../src/algos/photometry.c:301
 msgid ""
 "Warning: There aren't enough pixels in the sky annulus. You need to make a "
 "larger selection.\n"
 msgstr ""
+"Opgelet: Er zijn te weinig pixels in cirkel. Gelieve een bredere selectie te "
+"maken.\n"
 
-#: ../src/algos/PSF.c:662
+#: ../src/algos/PSF.c:661
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -4687,7 +4691,7 @@ msgid ""
 "\t\tA=%.6f\n"
 "\n"
 "Magnitude (%s):\n"
-"\t\tm=%.2f\n"
+"\t\tm=%.4f±%.4f\n"
 "\n"
 "RMSE:\n"
 "\t\tRMSE=%.3e"
@@ -4710,7 +4714,7 @@ msgstr ""
 "\t\tA=%.6f\n"
 "\n"
 "Magnitude (%s):\n"
-"\t\tm=%.2f\n"
+"\t\tm=%.4f±%.4f\n"
 "\n"
 "RMSE:\n"
 "\t\tRMSE=%.3e"
