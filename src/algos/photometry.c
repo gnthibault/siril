@@ -231,7 +231,7 @@ static double getMagErr(double area, int nsky, double intensity, double skysig) 
 }
 
 /* Function that compute all photometric data. The result must be freed */
-photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
+photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf) {
 	int width = z->size2;
 	int height = z->size1;
 	int n_sky = 0, ret;
@@ -239,6 +239,7 @@ photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 	double r1, r2, r, rmin_sq, appRadius;
 	double xc, yc;
 	double apmag = 0.0, mean = 0.0, stdev = 0.0, area = 0.0;
+	double signalIntensity;
 	double *data;
 	photometry *phot;
 
@@ -311,13 +312,11 @@ photometry *getPhotometricData(gsl_matrix* z, fitted_PSF *psf) {
 	}
 
 	phot = phot_alloc(1);
-	phot->Int = apmag - (area * mean);
-	phot->B_mean = mean;
-	phot->mag = getMagnitude(phot->Int);
-	phot->n_sky = n_sky;
-	phot->area = area;
-	phot->s_pxl = stdev;
-	phot->s_mag = getMagErr(phot->area, phot->n_sky, phot->Int, phot->s_pxl);
+	if (phot) {
+		signalIntensity = apmag - (area * mean);
+		phot->mag = getMagnitude(signalIntensity);
+		phot->s_mag = getMagErr(area, n_sky, signalIntensity, stdev);
+	}
 
 	free(data);
 	return phot;

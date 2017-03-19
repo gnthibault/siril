@@ -515,7 +515,7 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf) {
 	//Units
 	psf_angle->units = "px";
 	// Photometry
-	psf_angle->phot = getPhotometricData(z, psf_angle);
+	psf_angle->phot = getPhotometryData(z, psf_angle);
 	// Magnitude
 	if (psf_angle->phot != NULL) {
 		psf_angle->mag = psf_angle->phot->mag;
