@@ -215,7 +215,7 @@ static double getOuterRadius() {
 	return com.phot_set.outer;
 }
 
-static double getMagErr(double area, int nsky, double intensity, double skysig) {
+static double getMagErr(double intensity, double area, int nsky, double skysig) {
 	double skyvar, sigsq;
 	double err1, err2, err3;
 	double phpadu;
@@ -315,7 +315,7 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf) {
 	if (phot) {
 		signalIntensity = apmag - (area * mean);
 		phot->mag = getMagnitude(signalIntensity);
-		phot->s_mag = getMagErr(area, n_sky, signalIntensity, stdev);
+		phot->s_mag = getMagErr(signalIntensity, area, n_sky, stdev);
 	}
 
 	free(data);
