@@ -524,7 +524,7 @@ void gnuplot_plot_xyyerr(
 
     /* Write data to this file  */
     for (i=0 ; i<n; i++) {
-        fprintf(tmpfd, "%.18e %.18e %.18e\n", x[i], y[i], yerr[i]) ;
+        fprintf(tmpfd, "%14.6f %8.6f %8.6f\n", x[i], y[i], yerr[i]) ;
     }
     fclose(tmpfd) ;
 
@@ -778,7 +778,7 @@ int gnuplot_write_xyyerr_dat(
     /* Write data to this file  */
     for (i=0 ; i<n; i++)
     {
-        fprintf(fileHandle, "%.18e %.18e %.18e\n", x[i], y[i], yerr[i]) ;
+        fprintf(fileHandle, "%14.6f\t%8.6f\t%8.6f\n", x[i], y[i], yerr[i]) ;
     }
 
     fclose(fileHandle) ;

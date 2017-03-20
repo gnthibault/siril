@@ -87,6 +87,7 @@ static double serTimestamp_toJulian(uint64_t timestamp) {
 	double julian, tmp;
 	uint64_t t1970_ms = (timestamp - epochTicks) / 10000;
 	time_t secs = t1970_ms / 1000;
+	int ms = t1970_ms % 1000;
 	struct tm *t;
 
 	t = gmtime(&secs);
@@ -101,7 +102,7 @@ static double serTimestamp_toJulian(uint64_t timestamp) {
 	julian -= (int) (7.0 * (year + (int) ((mon + 9.0) / 12.0)) / 4.0);
 	julian += (int) (275.0 * mon / 9.0);
 	julian += t->tm_mday;
-	julian += (t->tm_hour + (t->tm_min + t->tm_sec / 60.0) / 60.0) / 24.0;
+	julian += (t->tm_hour + (t->tm_min + (t->tm_sec + ms / 1000.0) / 60.0) / 60.0) / 24.0;
 	julian += 1721013.5;
 	julian -= 0.5 * tmp / fabs(tmp);
 	julian += 0.5;
@@ -251,39 +252,41 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 	for (i = 0, j = 0; i < plot->nb; i++) {
 		if (!seq->imgparam[i].incl)
 			continue;
-		double ref_int = 0.0, ref_err = 0.0;
+		double cmag = 0.0, cerr = 0.0;
 
 		variable[j] = tmp_plot->data[j].y;
 		err[j] = tmp_plot->err[j].y;
 		x[j] = tmp_plot->data[j].x;
-		real_x[j] = x[j] + julian0;
+		real_x[j] = x[j] + (int) julian0;
 		tmp_plot = tmp_plot->next;
-		int k = 1;	// first data plotted are variable data
-		while (k < MAX_SEQPSF && seq->photometry[k]) {
+		int n = 0;
+		/* Warning: first data plotted are variable data, others are references
+		 * Variable is done above, now we compute references */
+		while ((n + 1) < MAX_SEQPSF && seq->photometry[n + 1]) {
 			/* variable data, inversion of Pogson's law
 			 * Flux = 10^(-0.4 * mag)
 			 */
 			double flux_j = pow(10, -0.4 * tmp_plot->data[j].y);
 			double s_mag = tmp_plot->err[j].y;
-			/* Compute the arithmetic mean of a dataset using the recurrence relation
-			 mean_(n) = mean(n - 1) + (data[n] - mean(n - 1)) / (n + 1)
-			 but here, n starts at 1 */
-			ref_int = ref_int + (flux_j - ref_int) / (k);
-			ref_err = ref_err + (((flux_j * s_mag) / 1.08574) - ref_err) / (k);
+
+			cmag += flux_j;
+			cerr += s_mag;
 			tmp_plot = tmp_plot->next;
-			++k;
+			++n;
 		}
 		/* Converting back to magnitude */
-		double ref_mag = -2.5 * log10(ref_int);
-		if (k > 1) {
-			variable[j] = variable[j] - ref_mag;
-			err[j] = err[j] + (ref_err * 1.08574 / ref_int);
+		if (n > 0) {
+			cmag = -2.5 * log10(cmag / n);
+			cerr = (cerr / n) / sqrt((double) n);
+			variable[j] = variable[j] - cmag;
+			err[j] = fmin(9.999, sqrt(err[j] * err[j] + cerr * cerr));
 		}
 		tmp_plot = plot;
 		j++;
 	}
 
 	/*  data are computed, we now plot the graph */
+	/* first, close the graph if already exists */
 	if (gplot != NULL) {
 		gnuplot_close(gplot);
 	}
@@ -308,7 +311,7 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 		gchar *filename = g_strndup(file, strlen(file) + 5);
 		g_strlcat(filename, ".dat", strlen(file) + 5);
 		ret = gnuplot_write_xyyerr_dat(filename, real_x, variable, err, nb,
-				"JD_UTC, Mag(Var)-Mag(Ref)");
+				"JD_UT CV-C err");
 		if (!ret) {
 			char *msg = siril_log_message(_("%s has been saved.\n"), filename);
 			show_dialog(msg, _("Information"), "gtk-dialog-info");
