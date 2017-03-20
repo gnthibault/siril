@@ -229,7 +229,7 @@ static gboolean gnuplot_is_available() {
 	return FALSE;
 }
 
-static int plotVarCurve(pldata *plot, sequence *seq) {
+static int lightCurve(pldata *plot, sequence *seq) {
 	int i, j, nb = 0, ret = 0;
 	pldata *tmp_plot = plot;
 	double *variable, *err, *x, *real_x;
@@ -285,8 +285,9 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 		j++;
 	}
 
-	/*  data are computed, we now plot the graph */
-	/* first, close the graph if already exists */
+	/*  data are computed, now plot the graph. */
+
+	/* First, close the graph if already exists */
 	if (gplot != NULL) {
 		gnuplot_close(gplot);
 	}
@@ -299,19 +300,21 @@ static int plotVarCurve(pldata *plot, sequence *seq) {
 		return -1;
 	}
 
+	/* Plotting light curve */
 	gnuplot_set_title(gplot, _("Light Curve"));
 	gnuplot_set_xlabel(gplot, xlabel);
 	gnuplot_reverse_yaxis(gplot);
 	gnuplot_setstyle(gplot, "errorbars");
 	gnuplot_plot_xyyerr(gplot, x, variable, err, nb, "");
 
+	/* Exporting data in a dat file */
 	GtkEntry *EntryCSV = GTK_ENTRY(lookup_widget("GtkEntryCSV"));
 	const gchar *file = gtk_entry_get_text(EntryCSV);
 	if (file && file[0] != '\0') {
 		gchar *filename = g_strndup(file, strlen(file) + 5);
 		g_strlcat(filename, ".dat", strlen(file) + 5);
 		ret = gnuplot_write_xyyerr_dat(filename, real_x, variable, err, nb,
-				"JD_UT CV-C err");
+				"JD_UT V-C err");
 		if (!ret) {
 			char *msg = siril_log_message(_("%s has been saved.\n"), filename);
 			show_dialog(msg, _("Information"), "gtk-dialog-info");
@@ -502,7 +505,7 @@ void on_ButtonSaveCSV_clicked(GtkButton *button, gpointer user_data) {
 
 void on_varCurvePhotometry_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
-	plotVarCurve(plot_data, &com.seq);
+	lightCurve(plot_data, &com.seq);
 	set_cursor_waiting(FALSE);
 }
 

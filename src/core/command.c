@@ -788,7 +788,6 @@ int process_seq_psf(int nb) {
 	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
 	if (sequence_is_loaded() && layer != -1) {
 		siril_log_message(_("Running the PSF on the loaded sequence, layer %d\n"), layer);
-		siril_log_message(_("Results will be displayed at the end of the processing, on the console output, in the following form:\n"));
 		start_in_new_thread(_psf_thread, (void *)(intptr_t)layer);
 		return 0;
 	}

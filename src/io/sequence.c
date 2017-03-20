@@ -1043,7 +1043,7 @@ int seqprocess_fwhm(sequence *seq, int seq_layer, int frame_no, fits *fit, recta
 /* Computes PSF for all images in a sequence.
  * Prints PSF data if print_psf is true, only position if false. */
 int do_fwhm_sequence_processing(sequence *seq, int layer, gboolean print_psf, gboolean follow_star, gboolean run_in_thread, gboolean for_registration) {
-	int i, retval;
+	int i, j, retval;
 	struct fwhm_seq_proc_struct args;
 
 	siril_log_message(_("Starting sequence processing of PSF\n"));
@@ -1093,11 +1093,26 @@ int do_fwhm_sequence_processing(sequence *seq, int layer, gboolean print_psf, gb
 		fprintf(stdout, _("# image_no amplitude magnitude fwhm x y\n"));
 		for (i = 0; i < seq->number; i++) {
 			fitted_PSF *star = seq->regparam[layer][i].fwhm_data;
+			fitted_PSF *phot0 = seq->photometry[0][0];
+
+			/* registration case */
 			if (star) {
 				// see algos/PSF.h for more fields to print
 				fprintf(stdout, "%d\t%f\t%f\t%f\t%f\t%f\n", i, star->A,
 						star->mag + com.magOffset, star->fwhmx, star->xpos,
 						star->ypos);
+			}
+			/* photometry case */
+			else if (phot0) {
+				j = 0;
+				while (j < MAX_SEQPSF && seq->photometry[j]) {
+					j++;
+				}
+				fitted_PSF *phot = seq->photometry[j - 1][i];
+
+				fprintf(stdout, "%d\t%f\t%f\t%f\t%f\t%f\n", i, phot->A,
+						phot->mag + com.magOffset, phot->fwhmx, phot->xpos,
+						phot->ypos);
 			}
 		}
 	}
