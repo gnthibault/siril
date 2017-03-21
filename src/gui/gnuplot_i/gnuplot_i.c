@@ -778,7 +778,7 @@ int gnuplot_write_xyyerr_dat(
     /* Write data to this file  */
     for (i=0 ; i<n; i++)
     {
-        fprintf(fileHandle, "%14.6f\t%8.6f\t%8.6f\n", x[i], y[i], yerr[i]) ;
+        fprintf(fileHandle, "%14.6f %8.6f %8.6f\n", x[i], y[i], yerr[i]) ;
     }
 
     fclose(fileHandle) ;

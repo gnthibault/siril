@@ -34,15 +34,19 @@
 #include "io/ser.h"
 #include "gui/gnuplot_i/gnuplot_i.h"
 
-static GtkWidget *drawingPlot = NULL, *sourceCombo = NULL, *combo = NULL, *varCurve = NULL,
-		 *buttonExport = NULL, *buttonClearAll = NULL, *buttonClearLatest = NULL;
+#define XLABELSIZE 15
+
+static GtkWidget *drawingPlot = NULL, *sourceCombo = NULL, *combo = NULL,
+		*varCurve = NULL, *buttonExport = NULL, *buttonClearAll = NULL,
+		*buttonClearLatest = NULL;
 static pldata *plot_data;
 static struct kpair ref;
-static gboolean is_fwhm = FALSE, use_photometry = FALSE, requires_color_update = FALSE;
+static gboolean is_fwhm = FALSE, use_photometry = FALSE, requires_color_update =
+		FALSE;
 static char *ylabel = NULL;
 static char *xlabel = NULL;
 static enum photmetry_source selected_source = ROUNDNESS;
-static double julian0 = 0.0;
+static int julian0 = 0;
 static gnuplot_ctrl *gplot = NULL;
 
 static void update_ylabel();
@@ -51,23 +55,34 @@ void on_GtkEntryCSV_changed(GtkEditable *editable, gpointer user_data);
 
 static pldata *alloc_plot_data(int size) {
 	pldata *plot = malloc(sizeof(pldata));
-	if (!plot) return NULL;
+	if (!plot)
+		return NULL;
 	plot->data = malloc(size * sizeof(struct kpair));
-	if (!plot->data) { free(plot); return NULL; }
+	if (!plot->data) {
+		free(plot);
+		return NULL;
+	}
 	plot->err = malloc(size * sizeof(struct kpair));
-	if (!plot->err) { free(plot->data); free(plot) ; return NULL; }
+	if (!plot->err) {
+		free(plot->data);
+		free(plot);
+		return NULL;
+	}
 	plot->nb = size;
 	plot->next = NULL;
 	return plot;
 }
 
-static void build_registration_dataset(sequence *seq, int layer, int ref_image, pldata *plot) {
+static void build_registration_dataset(sequence *seq, int layer, int ref_image,
+		pldata *plot) {
 	int i, j;
 
 	for (i = 0, j = 0; i < plot->nb; i++) {
-		if (!seq->imgparam[i].incl) continue;
+		if (!seq->imgparam[i].incl)
+			continue;
 		plot->data[j].x = (double) i;
-		plot->data[j].y = is_fwhm ?
+		plot->data[j].y =
+				is_fwhm ?
 						seq->regparam[layer][i].fwhm :
 						seq->regparam[layer][i].quality;
 		j++;
@@ -102,7 +117,8 @@ static double serTimestamp_toJulian(uint64_t timestamp) {
 	julian -= (int) (7.0 * (year + (int) ((mon + 9.0) / 12.0)) / 4.0);
 	julian += (int) (275.0 * mon / 9.0);
 	julian += t->tm_mday;
-	julian += (t->tm_hour + (t->tm_min + (t->tm_sec + ms / 1000.0) / 60.0) / 60.0) / 24.0;
+	julian += (t->tm_hour
+			+ (t->tm_min + (t->tm_sec + ms / 1000.0) / 60.0) / 60.0) / 24.0;
 	julian += 1721013.5;
 	julian -= 0.5 * tmp / fabs(tmp);
 	julian += 0.5;
@@ -136,7 +152,8 @@ static double dateTimestamp_toJulian(char *timestamp, double exp) {
 	return julian;
 }
 
-static void build_photometry_dataset(sequence *seq, int dataset, int size, int ref_image, pldata *plot) {
+static void build_photometry_dataset(sequence *seq, int dataset, int size,
+		int ref_image, pldata *plot) {
 	int i, j;
 	double offset = -1001.0;
 	fitted_PSF **psfs = seq->photometry[dataset], *ref_psf;
@@ -144,69 +161,71 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size, int r
 		seq->reference_star = -1;
 
 	for (i = 0, j = 0; i < size; i++) {
-		if (!seq->imgparam[i].incl) continue;
+		if (!seq->imgparam[i].incl)
+			continue;
 		if (psfs[i]) {
 			if (seq->type == SEQ_SER && seq->ser_file->ts
 					&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
 				/* Get start date */
-				julian0 = serTimestamp_toJulian(seq->ser_file->ts[0]);
+				julian0 = (int) serTimestamp_toJulian(seq->ser_file->ts[0]);
 				double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
 
-				plot->data[j].x = julian - (int) julian0;
-				plot->err[j].x = julian - (int) julian0;
-				xlabel = calloc(15, sizeof(char));
-				g_snprintf(xlabel, 15, "(JD) %d +", (int) julian0);
+				plot->data[j].x = julian - (double) julian0;
+				plot->err[j].x = julian - (double) julian0;
+				xlabel = calloc(XLABELSIZE, sizeof(char));
+				g_snprintf(xlabel, XLABELSIZE, "(JD) %d +", julian0);
 			} else if (seq->type == SEQ_REGULAR && seq->ts) {
 				/* Get start date */
-				julian0 = dateTimestamp_toJulian(g_slist_nth_data(seq->ts, 0), seq->exposure);
-				double julian = dateTimestamp_toJulian(
-						g_slist_nth_data(seq->ts, i), seq->exposure);
+				char *ts0 = g_slist_nth_data(seq->ts, 0);
+				char *tsi = g_slist_nth_data(seq->ts, i);
 
-				plot->data[j].x = julian - (int) julian0;
-				plot->err[j].x = julian - (int) julian0;
-				xlabel = calloc(15, sizeof(char));
-				g_snprintf(xlabel, 15, "(JD) %d +", (int) julian0);
+				julian0 = (int) dateTimestamp_toJulian(ts0, seq->exposure);
+				double julian = dateTimestamp_toJulian(tsi, seq->exposure);
+
+				plot->data[j].x = julian - (double) julian0;
+				plot->err[j].x = julian - (double) julian0;
+				xlabel = calloc(XLABELSIZE, sizeof(char));
+				g_snprintf(xlabel, XLABELSIZE, "(JD) %d +", julian0);
 			} else {
-				plot->data[j].x = (double)i;
-				plot->err [j].x = (double)i;
+				plot->data[j].x = (double) i;
+				plot->err[j].x = (double) i;
 				xlabel = strdup(_("Frames"));
 			}
 			switch (selected_source) {
-				case ROUNDNESS:
-					plot->data[j].y = psfs[i]->fwhmy / psfs[i]->fwhmx;
-					break;
-				case FWHM:
-					plot->data[j].y = psfs[i]->fwhmx;
-					break;
-				case AMPLITUDE:
-					plot->data[j].y = psfs[i]->A;
-					break;
-				case MAGNITUDE:
-					plot->data[j].y = psfs[i]->mag;
-					plot->err[j].y = psfs[i]->s_mag;
-					if (seq->reference_star >= 0) {
-						/* we have a reference star for the sequence,
-						 * with photometry data */
-						ref_psf = seq->photometry[seq->reference_star][i];
-						if (ref_psf)
-							offset = seq->reference_mag - ref_psf->mag;
-					}
-					else if (com.magOffset > 0.0)
-						offset = com.magOffset;
+			case ROUNDNESS:
+				plot->data[j].y = psfs[i]->fwhmy / psfs[i]->fwhmx;
+				break;
+			case FWHM:
+				plot->data[j].y = psfs[i]->fwhmx;
+				break;
+			case AMPLITUDE:
+				plot->data[j].y = psfs[i]->A;
+				break;
+			case MAGNITUDE:
+				plot->data[j].y = psfs[i]->mag;
+				plot->err[j].y = psfs[i]->s_mag;
+				if (seq->reference_star >= 0) {
+					/* we have a reference star for the sequence,
+					 * with photometry data */
+					ref_psf = seq->photometry[seq->reference_star][i];
+					if (ref_psf)
+						offset = seq->reference_mag - ref_psf->mag;
+				} else if (com.magOffset > 0.0)
+					offset = com.magOffset;
 
-					/* apply the absolute apparent magnitude offset */
-					if (offset > -1000.0)
-						plot->data[j].y += offset;
-					break;
-				case BACKGROUND:
-					plot->data[j].y = psfs[i]->B;
-					break;
-				case X_POSITION:
-					plot->data[j].y = psfs[i]->xpos;
-					break;
-				case Y_POSITION:
-					plot->data[j].y = psfs[i]->ypos;
-					break;
+				/* apply the absolute apparent magnitude offset */
+				if (offset > -1000.0)
+					plot->data[j].y += offset;
+				break;
+			case BACKGROUND:
+				plot->data[j].y = psfs[i]->B;
+				break;
+			case X_POSITION:
+				plot->data[j].y = psfs[i]->xpos;
+				break;
+			case Y_POSITION:
+				plot->data[j].y = psfs[i]->ypos;
+				break;
 			}
 		}
 
@@ -230,12 +249,13 @@ static gboolean gnuplot_is_available() {
 }
 
 static int lightCurve(pldata *plot, sequence *seq) {
-	int i, j, nb = 0, ret = 0;
+	int i, j, nbImages = 0, ret = 0;
 	pldata *tmp_plot = plot;
-	double *variable, *err, *x, *real_x;
+	double *vmag, *err, *x, *real_x;
 
 	if (!gnuplot_is_available()) {
-		siril_log_message(_("Gnuplot is unavailable. Please consider to install it before trying to plot a graph of a variable star.\n"));
+		siril_log_message(_("Gnuplot is unavailable. "
+				"Please consider to install it before trying to plot a graph of a variable star.\n"));
 		return -1;
 	}
 
@@ -243,21 +263,21 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	for (i = 0, j = 0; i < plot->nb; i++) {
 		if (!seq->imgparam[i].incl)
 			continue;
-		++nb;
+		++nbImages;
 	}
-	variable = calloc(nb, sizeof(double));
-	err = calloc(nb, sizeof(double));
-	x = calloc(nb, sizeof(double));
-	real_x = calloc(nb, sizeof(double));
+	vmag = calloc(nbImages, sizeof(double));
+	err = calloc(nbImages, sizeof(double));
+	x = calloc(nbImages, sizeof(double));
+	real_x = calloc(nbImages, sizeof(double));
 	for (i = 0, j = 0; i < plot->nb; i++) {
 		if (!seq->imgparam[i].incl)
 			continue;
 		double cmag = 0.0, cerr = 0.0;
 
-		variable[j] = tmp_plot->data[j].y;
+		vmag[j] = tmp_plot->data[j].y;
 		err[j] = tmp_plot->err[j].y;
 		x[j] = tmp_plot->data[j].x;
-		real_x[j] = x[j] + (int) julian0;
+		real_x[j] = x[j] + (double) julian0;
 		tmp_plot = tmp_plot->next;
 		int n = 0;
 		/* Warning: first data plotted are variable data, others are references
@@ -266,11 +286,9 @@ static int lightCurve(pldata *plot, sequence *seq) {
 			/* variable data, inversion of Pogson's law
 			 * Flux = 10^(-0.4 * mag)
 			 */
-			double flux_j = pow(10, -0.4 * tmp_plot->data[j].y);
-			double s_mag = tmp_plot->err[j].y;
+			cmag += pow(10, -0.4 * tmp_plot->data[j].y);
+			cerr += tmp_plot->err[j].y;
 
-			cmag += flux_j;
-			cerr += s_mag;
 			tmp_plot = tmp_plot->next;
 			++n;
 		}
@@ -278,7 +296,8 @@ static int lightCurve(pldata *plot, sequence *seq) {
 		if (n > 0) {
 			cmag = -2.5 * log10(cmag / n);
 			cerr = (cerr / n) / sqrt((double) n);
-			variable[j] = variable[j] - cmag;
+
+			vmag[j] = vmag[j] - cmag;
 			err[j] = fmin(9.999, sqrt(err[j] * err[j] + cerr * cerr));
 		}
 		tmp_plot = plot;
@@ -293,7 +312,7 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	}
 
 	if ((gplot = gnuplot_init()) == NULL) {
-		free(variable);
+		free(vmag);
 		free(err);
 		free(x);
 		free(real_x);
@@ -305,7 +324,7 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	gnuplot_set_xlabel(gplot, xlabel);
 	gnuplot_reverse_yaxis(gplot);
 	gnuplot_setstyle(gplot, "errorbars");
-	gnuplot_plot_xyyerr(gplot, x, variable, err, nb, "");
+	gnuplot_plot_xyyerr(gplot, x, vmag, err, nbImages, "");
 
 	/* Exporting data in a dat file */
 	GtkEntry *EntryCSV = GTK_ENTRY(lookup_widget("GtkEntryCSV"));
@@ -313,7 +332,7 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	if (file && file[0] != '\0') {
 		gchar *filename = g_strndup(file, strlen(file) + 5);
 		g_strlcat(filename, ".dat", strlen(file) + 5);
-		ret = gnuplot_write_xyyerr_dat(filename, real_x, variable, err, nb,
+		ret = gnuplot_write_xyyerr_dat(filename, real_x, vmag, err, nbImages,
 				"JD_UT V-C err");
 		if (!ret) {
 			char *msg = siril_log_message(_("%s has been saved.\n"), filename);
@@ -325,7 +344,7 @@ static int lightCurve(pldata *plot, sequence *seq) {
 		g_free(filename);
 	}
 
-	free(variable);
+	free(vmag);
 	free(x);
 	free(real_x);
 	return 0;
@@ -348,20 +367,20 @@ static int exportCSV(pldata *plot, sequence *seq) {
 		} else {
 			if (use_photometry) {
 				pldata *tmp_plot = plot;
-					for (i = 0, j = 0; i < plot->nb; i++) {
-						if (!seq->imgparam[i].incl)
-							continue;
-						int x = 0;
-						fprintf(csv, "%g", tmp_plot->data[j].x);
-						while (x < MAX_SEQPSF && seq->photometry[x]){
-							fprintf(csv, ", %g", tmp_plot->data[j].y);
-							tmp_plot = tmp_plot->next;
-							++x;
-						}
-						fprintf(csv, "\n");
-						tmp_plot = plot;
-						j++;
+				for (i = 0, j = 0; i < plot->nb; i++) {
+					if (!seq->imgparam[i].incl)
+						continue;
+					int x = 0;
+					fprintf(csv, "%g", tmp_plot->data[j].x);
+					while (x < MAX_SEQPSF && seq->photometry[x]) {
+						fprintf(csv, ", %g", tmp_plot->data[j].y);
+						tmp_plot = tmp_plot->next;
+						++x;
 					}
+					fprintf(csv, "\n");
+					tmp_plot = plot;
+					j++;
+				}
 			} else {
 				for (i = 0, j = 0; i < plot->nb; i++) {
 					if (!seq->imgparam[i].incl)
@@ -377,9 +396,9 @@ static int exportCSV(pldata *plot, sequence *seq) {
 	if (!ret) {
 		msg = siril_log_message(_("%s.csv has been saved.\n"), file);
 		show_dialog(msg, _("Information"), "gtk-dialog-info");
-	}
-	else {
-		show_dialog(_("Something went wrong while saving plot"), _("Error"), "gtk-dialog-error");
+	} else {
+		show_dialog(_("Something went wrong while saving plot"), _("Error"),
+				"gtk-dialog-error");
 	}
 	return 0;
 }
@@ -411,7 +430,8 @@ void on_plotSourceCombo_changed(GtkComboBox *box, gpointer user_data) {
 
 void on_GtkEntryCSV_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar *txt;
-	if (!buttonExport) return;
+	if (!buttonExport)
+		return;
 	txt = gtk_entry_get_text(GTK_ENTRY(editable));
 	gtk_widget_set_sensitive(buttonExport, txt[0] != '\0' && plot_data);
 }
@@ -439,7 +459,7 @@ void drawPlot() {
 		varCurve = lookup_widget("varCurvePhotometry");
 		sourceCombo = lookup_widget("plotSourceCombo");
 		buttonExport = lookup_widget("ButtonSaveCSV");
-		buttonClearAll  = lookup_widget("clearAllPhotometry");
+		buttonClearAll = lookup_widget("clearAllPhotometry");
 		buttonClearLatest = lookup_widget("clearLastPhotometry");
 	}
 
@@ -449,7 +469,8 @@ void drawPlot() {
 
 	if (seq->reference_image == -1)
 		ref_image = 0;
-	else ref_image = seq->reference_image;
+	else
+		ref_image = seq->reference_image;
 
 	if (use_photometry) {
 		// photometry data display
@@ -463,7 +484,7 @@ void drawPlot() {
 				plot->next = alloc_plot_data(seq->number);
 				plot = plot->next;
 			}
-			
+
 			build_photometry_dataset(seq, i, seq->number, ref_image, plot);
 		}
 	} else {
@@ -486,7 +507,8 @@ void drawPlot() {
 		} else if (seq->regparam[layer][ref_image].quality >= 0.0) {
 			is_fwhm = FALSE;
 			ylabel = _("Quality");
-		} else return;
+		} else
+			return;
 
 		/* building data array */
 		plot_data = alloc_plot_data(seq->number);
@@ -521,7 +543,8 @@ void free_photometry_set(sequence *seq, int set) {
 
 void on_clearLatestPhotometry_clicked(GtkButton *button, gpointer user_data) {
 	int i;
-	for (i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++);
+	for (i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++)
+		;
 	if (i != 0) {
 		i--;
 		free_photometry_set(&com.seq, i);
@@ -542,11 +565,11 @@ void on_clearAllPhotometry_clicked(GtkButton *button, gpointer user_data) {
 
 gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	guint width, height, i, j;
-	double mean/*, sigma*/;
+	double mean;
 	int min, max, nb_graphs = 0;
 	struct kpair *avg;
-	struct kplotcfg	 cfgplot;
-	struct kdatacfg	 cfgdata;
+	struct kplotcfg cfgplot;
+	struct kdatacfg cfgdata;
 	struct kdata *d1, *ref_d, *mean_d;
 	struct kplot *p;
 
@@ -560,7 +583,6 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		cfgplot.xaxislabel = (xlabel == NULL) ? _("Frames") : xlabel;
 		cfgplot.yaxislabel = ylabel;
 		cfgplot.yaxislabelrot = M_PI_2 * 3.0;
-		//cfgplot.y2axislabel = _("Sigma");
 		cfgplot.xticlabelpad = cfgplot.yticlabelpad = 10.0;
 		cfgdata.point.radius = 10;
 
@@ -569,23 +591,26 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		// data plots
 		while (plot) {
 			d1 = kdata_array_alloc(plot->data, plot->nb);
-			kplot_attach_data(p, d1, ((plot_data->nb <= 100) ? KPLOT_LINESPOINTS : KPLOT_LINES), NULL);
+			kplot_attach_data(p, d1,
+					((plot_data->nb <= 100) ? KPLOT_LINESPOINTS : KPLOT_LINES),
+					NULL);
 			plot = plot->next;
 			nb_graphs++;
 		}
 
-		/* mean and sigma */
+		/* mean and min/max */
 		mean = kdata_ymean(d1);
 		//sigma = kdata_ystddev(d1);
 		min = plot_data->data[0].x;
 		/* if reference is ploted, we take it as maximum if it is */
-		max = (plot_data->data[plot_data->nb-1].x > ref.x) ? plot_data->data[plot_data->nb-1].x + 1: ref.x + 1;
+		max = (plot_data->data[plot_data->nb - 1].x > ref.x) ?
+				plot_data->data[plot_data->nb - 1].x + 1 : ref.x + 1;
 
 		if (nb_graphs == 1) {
 			avg = calloc(max - min, sizeof(struct kpair));
 			j = min;
 			for (i = 0; i < max - min; i++) {
-				avg[i].x = plot_data->data[j].x;//(double) j;
+				avg[i].x = plot_data->data[j].x;
 				avg[i].y = mean;
 				++j;
 			}
@@ -635,29 +660,30 @@ static void update_ylabel() {
 	selected_source = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
 	gtk_widget_set_sensitive(varCurve, selected_source == MAGNITUDE);
 	switch (selected_source) {
-		case ROUNDNESS:
-			ylabel = _("Star roundness (1 is round)");
-			break;
-		case FWHM:
-			ylabel = _("FWHM");
-			break;
-		case AMPLITUDE:
-			ylabel = _("Amplitude");
-			break;
-		case MAGNITUDE:
-			if (com.magOffset > 0.0 || com.seq.reference_star >= 0)
-				ylabel = _("Star magnitude (absolute)");
-			else ylabel = _("Star magnitude (relative, use setmag)");
-			break;
-		case BACKGROUND:
-			ylabel = _("Background value");
-			break;
-		case X_POSITION:
-			ylabel = _("Star position on X axis");
-			break;
-		case Y_POSITION:
-			ylabel = _("Star position on Y axis");
-			break;
+	case ROUNDNESS:
+		ylabel = _("Star roundness (1 is round)");
+		break;
+	case FWHM:
+		ylabel = _("FWHM");
+		break;
+	case AMPLITUDE:
+		ylabel = _("Amplitude");
+		break;
+	case MAGNITUDE:
+		if (com.magOffset > 0.0 || com.seq.reference_star >= 0)
+			ylabel = _("Star magnitude (absolute)");
+		else
+			ylabel = _("Star magnitude (relative, use setmag)");
+		break;
+	case BACKGROUND:
+		ylabel = _("Background value");
+		break;
+	case X_POSITION:
+		ylabel = _("Star position on X axis");
+		break;
+	case Y_POSITION:
+		ylabel = _("Star position on Y axis");
+		break;
 	}
 }
 
