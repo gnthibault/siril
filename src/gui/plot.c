@@ -81,9 +81,7 @@ static void build_registration_dataset(sequence *seq, int layer, int ref_image,
 		if (!seq->imgparam[i].incl)
 			continue;
 		plot->data[j].x = (double) i;
-		plot->data[j].y =
-				is_fwhm ?
-						seq->regparam[layer][i].fwhm :
+		plot->data[j].y = is_fwhm ?	seq->regparam[layer][i].fwhm :
 						seq->regparam[layer][i].quality;
 		j++;
 	}
@@ -144,7 +142,7 @@ static double dateTimestamp_toJulian(char *timestamp, double exp) {
 	julian -= (int) (7.0 * (year + (int) ((mon + 9.0) / 12.0)) / 4.0);
 	julian += (int) (275.0 * mon / 9.0);
 	julian += day;
-	julian += (hour + (min + sec / 60.0) / 60.0) / 24.0;
+	julian += (hour + (min + (sec + ms / 1000.0) / 60.0) / 60.0) / 24.0;
 	julian += 1721013.5;
 	julian -= 0.5 * tmp / fabs(tmp);
 	julian += 0.5;
