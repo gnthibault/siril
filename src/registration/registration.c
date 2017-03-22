@@ -528,6 +528,7 @@ int register_star_alignment(struct registration_args *args) {
 
 	memset(&fit, 0, sizeof(fits));
 	memset(&sf, 0, sizeof(starFinder));
+	memset(&trans, 0, sizeof(TRANS));
 
 	if (!args->seq->regparam) {
 		fprintf(stderr, "regparam should have been created before\n");

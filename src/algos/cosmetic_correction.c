@@ -355,7 +355,7 @@ gboolean end_autoDetect(gpointer p) {
 gpointer autoDetectThreaded(gpointer p) {
 	struct cosmetic_data *args = (struct cosmetic_data *) p;
 	struct timeval t_start, t_end;
-	int retval, chan;
+	int retval = 0, chan;
 	long icold, ihot;
 
 	siril_log_color_message(_("Cosmetic Correction: processing...\n"), "red");

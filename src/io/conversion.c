@@ -569,12 +569,16 @@ static gpointer convert_thread_worker(gpointer p) {
 			struct film_struct film_file;
 			if (film_open_file(src_filename, &film_file) != FILM_SUCCESS) {
 				siril_log_message(_("Error while opening film %s, aborting.\n"), src_filename);
+				clearfits(fit);
+				free(fit);
 				break;
 			}
 			if (convflags & CONVMULTIPLE) {
 				if (ser_create_file(create_sequence_filename(indice++, dest_filename, 128),
 							ser_file, TRUE, NULL)) {
 					siril_log_message(_("Creating the SER file failed, aborting.\n"));
+					clearfits(fit);
+					free(fit);
 					goto clean_exit;
 				}
 			}
@@ -583,6 +587,8 @@ static gpointer convert_thread_worker(gpointer p) {
 				if (film_read_frame(&film_file, frame, fit) != FILM_SUCCESS) {
 					siril_log_message(_("Error while reading frame %d from %s, aborting.\n"),
 							frame, src_filename);
+					clearfits(fit);
+					free(fit);
 					goto clean_exit;
 				}
 
@@ -592,12 +598,16 @@ static gpointer convert_thread_worker(gpointer p) {
 						keep_first_channel_from_fits(fit);
 					if (ser_write_frame_from_fit(ser_file, fit, frame)) {
 						siril_log_message(_("Error while converting to SER (no space left?)\n"));
+						clearfits(fit);
+						free(fit);
 						goto clean_exit;
 					}
 				} else {
 					g_snprintf(dest_filename, 128, "%s%05d", destroot, indice++);
 					if (save_to_target_fits(fit, dest_filename)) {
 						siril_log_message(_("Error while converting to FITS (no space left?)\n"));
+						clearfits(fit);
+						free(fit);
 						goto clean_exit;
 					}
 				}

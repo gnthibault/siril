@@ -347,7 +347,8 @@ int compare_stars(const void* star1, const void* star2) {
 }
 
 void sort_stars(fitted_PSF **stars, int total) {
-	qsort(*(&stars), total, sizeof(fitted_PSF*), compare_stars);
+	if (*(&stars))
+		qsort(*(&stars), total, sizeof(fitted_PSF*), compare_stars);
 }
 
 void FWHM_average(fitted_PSF **stars, float *FWHMx, float *FWHMy, int max) {

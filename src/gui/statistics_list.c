@@ -83,7 +83,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 		sprintf(format, "%%.1lf");
 
 	sprintf(rvalue, "%.4lf", ((double) stat[RLAYER]->ngoodpix / (double) stat[RLAYER]->total) * 100.0);
-	if (nblayer > 1) {
+	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, "%.4lf", ((double) stat[GLAYER]->ngoodpix / (double) stat[GLAYER]->total) * 100.0);
 		sprintf(bvalue, "%.4lf", ((double) stat[BLAYER]->ngoodpix / (double) stat[BLAYER]->total) * 100.0);
 	} else {
@@ -100,7 +100,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			-1);
 
 	sprintf(rvalue, "%lu", stat[RLAYER]->total);
-	if (nblayer > 1) {
+	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, "%lu", stat[GLAYER]->total);
 		sprintf(bvalue, "%lu", stat[BLAYER]->total);
 	} else {
@@ -118,7 +118,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 
 	/** Mean */
 	sprintf(rvalue, format, stat[RLAYER]->mean / normValue[RLAYER]);
-	if (nblayer > 1) {
+	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, format, stat[GLAYER]->mean / normValue[GLAYER]);
 		sprintf(bvalue, format, stat[BLAYER]->mean / normValue[BLAYER]);
 	} else {
@@ -136,7 +136,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 
 	/* median */
 	sprintf(rvalue, format, stat[RLAYER]->median / normValue[RLAYER]);
-	if (nblayer > 1) {
+	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, format, stat[GLAYER]->median / normValue[GLAYER]);
 		sprintf(bvalue, format, stat[BLAYER]->median / normValue[BLAYER]);
 	} else {
@@ -154,7 +154,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 
 	/* sigma */
 	sprintf(rvalue, format, stat[RLAYER]->sigma / normValue[RLAYER]);
-	if (nblayer > 1) {
+	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, format, stat[GLAYER]->sigma / normValue[GLAYER]);
 		sprintf(bvalue, format, stat[BLAYER]->sigma / normValue[BLAYER]);
 	} else {
@@ -172,7 +172,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 
 	/* avgDev */
 	sprintf(rvalue, format, stat[RLAYER]->avgDev / normValue[RLAYER]);
-	if (nblayer > 1) {
+	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, format, stat[GLAYER]->avgDev / normValue[GLAYER]);
 		sprintf(bvalue, format, stat[BLAYER]->avgDev / normValue[BLAYER]);
 	} else {
@@ -190,7 +190,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 
 	/* MAD */
 	sprintf(rvalue, format, stat[RLAYER]->mad / normValue[RLAYER]);
-	if (nblayer > 1) {
+	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, format, stat[GLAYER]->mad / normValue[GLAYER]);
 		sprintf(bvalue, format, stat[BLAYER]->mad / normValue[BLAYER]);
 	} else {
@@ -208,7 +208,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 
 	/* sqrt(BWMV) */
 	sprintf(rvalue, format, stat[RLAYER]->sqrtbwmv / normValue[RLAYER]);
-	if (nblayer > 1) {
+	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, format, stat[GLAYER]->sqrtbwmv / normValue[GLAYER]);
 		sprintf(bvalue, format, stat[BLAYER]->sqrtbwmv / normValue[BLAYER]);
 	} else {
@@ -226,7 +226,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 
 	/* min */
 	sprintf(rvalue, format, stat[RLAYER]->min / normValue[RLAYER]);
-	if (nblayer > 1) {
+	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, format, stat[GLAYER]->min / normValue[GLAYER]);
 		sprintf(bvalue, format, stat[BLAYER]->min / normValue[BLAYER]);
 	} else {
@@ -244,7 +244,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 
 	/* max */
 	sprintf(rvalue, format, stat[RLAYER]->max / normValue[RLAYER]);
-	if (nblayer > 1) {
+	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, format, stat[GLAYER]->max / normValue[GLAYER]);
 		sprintf(bvalue, format, stat[BLAYER]->max / normValue[BLAYER]);
 	} else {
@@ -272,7 +272,7 @@ void computeStat() {
 	gboolean normalized;
 	int channel;
 	char name[256], selection[256];
-	imstats *stat[3];
+	imstats *stat[3] = { NULL, NULL, NULL };
 
 	checkButton = GTK_TOGGLE_BUTTON(lookup_widget("statCheckButton"));
 	statNameLabel = GTK_LABEL(lookup_widget("statNameLabel"));

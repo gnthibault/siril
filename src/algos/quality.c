@@ -315,6 +315,7 @@ static double Gradient(WORD *buf, int width, int height, int qtype) {
 	}
 
 	end:
+	free(map);
 
 	return val;
 }

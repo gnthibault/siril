@@ -633,6 +633,7 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 				STATS_ZERO_NULLCHECK);
 		if (!stats[chan]) {
 			siril_log_message(_("Error: no data computed.\n"));
+			free(stats);
 			return;
 		}
 		ref += stats[chan]->median;
@@ -720,16 +721,15 @@ void on_button_white_selection_clicked(GtkButton *button, gpointer user_data) {
 }
 
 static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
-		double kw[], double bg[], double *norm, double low, double high) {
+		double kw[], double bg[], double norm, double low, double high) {
 	int chan, i, j, n;
 	double tmp[3] = { 0.0, 0.0, 0.0 };
 	WORD lo, hi;
 
 	assert(fit->naxes[2] == 3);
 
-	*norm = (double) get_normalized_value(fit);
-	lo = round_to_WORD(low * (*norm));
-	hi = round_to_WORD(high * (*norm));
+	lo = round_to_WORD(low * (norm));
+	hi = round_to_WORD(high * (norm));
 
 	for (chan = 0; chan < 3; chan++) {
 		n = 0;
@@ -740,7 +740,7 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 		for (i = 0; i < white.h; i++) {
 			for (j = 0; j < white.w; j++) {
 				if (*from > lo && *from < hi ) {
-					kw[chan] += (double) *from / *norm;
+					kw[chan] += (double) *from / norm;
 					n++;
 				}
 				from++;
@@ -819,6 +819,7 @@ static void white_balance(fits *fit, gboolean is_manual, rectangle white_selecti
 	}
 
 	assert(fit->naxes[2] == 3);
+	norm = (double) get_normalized_value(fit);
 
 	if (is_manual) {
 		kw[RLAYER] = gtk_range_get_value(scale_white_balance[RLAYER]);
@@ -827,7 +828,7 @@ static void white_balance(fits *fit, gboolean is_manual, rectangle white_selecti
 	} else {
 		low = gtk_range_get_value(scaleLimit[0]);
 		high = gtk_range_get_value(scaleLimit[1]);
-		get_coeff_for_wb(fit, white_selection, black_selection, kw, bg, &norm, low, high);
+		get_coeff_for_wb(fit, white_selection, black_selection, kw, bg, norm, low, high);
 	}
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(chan) schedule(static)

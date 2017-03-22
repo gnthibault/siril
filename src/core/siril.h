@@ -199,6 +199,7 @@ typedef struct rectangle_struct rectangle;
 typedef struct point_struct point;
 typedef struct gradient_struct gradient;
 typedef struct historic_struct historic;
+typedef struct dateTime_struct dateTime;
 typedef struct fwhm_struct fitted_PSF;
 
 /* global structures */
@@ -494,6 +495,16 @@ struct historic_struct {
 	char *filename;
 	char history[FLEN_VALUE];
 	int rx, ry;
+};
+
+struct dateTime_struct {
+	int year;
+	int month;
+	int day;
+	int hour;
+	int min;
+	int sec;
+	int ms;
 };
 
 struct cominf {

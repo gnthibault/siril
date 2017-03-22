@@ -437,6 +437,9 @@ int crop(fits *fit, rectangle *bounds) {
 	int newnbdata;
 	struct timeval t_start, t_end;
 
+	memset(&t_start, 0, sizeof(struct timeval));
+	memset(&t_end, 0, sizeof(struct timeval));
+
 	if (fit == &gfit) {
 		siril_log_color_message(_("Crop: processing...\n"), "red");
 		gettimeofday(&t_start, NULL);
@@ -1085,7 +1088,7 @@ gpointer seqpreprocess(gpointer p) {
 		struct ser_struct *new_ser_file = NULL;
 		char source_filename[256];
 		int i;
-		long icold, ihot;
+		long icold = 0L, ihot = 0L;
 		deviant_pixel *dev = NULL;
 
 		// creating a SER file if the input data is SER
@@ -1127,7 +1130,6 @@ gpointer seqpreprocess(gpointer p) {
 					ser_close_file(new_ser_file);
 					free(new_ser_file);
 				}
-				if (p) free(p);
 				gdk_threads_add_idle(end_sequence_prepro, args);
 				return GINT_TO_POINTER(1);
 			}
@@ -1153,9 +1155,10 @@ gpointer seqpreprocess(gpointer p) {
 		}
 		free(fit);
 		// closing SER file if it applies
-		if (com.seq.type == SEQ_SER) {
+		if (com.seq.type == SEQ_SER && (new_ser_file != NULL)) {
 			close(new_ser_file->fd);
 			free(new_ser_file);
+			new_ser_file = NULL;
 		}
 		set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 		if (dev) free(dev);

@@ -246,6 +246,8 @@ static int lightCurve(pldata *plot, sequence *seq) {
 			continue;
 		++nbImages;
 	}
+	if (nbImages < 1)
+		return -1;
 	vmag = calloc(nbImages, sizeof(double));
 	err = calloc(nbImages, sizeof(double));
 	x = calloc(nbImages, sizeof(double));
@@ -599,11 +601,10 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			mean_d = kdata_array_alloc(avg, max - min);
 			kplot_attach_data(p, mean_d, KPLOT_LINES, NULL);	// mean plot
 			free(avg);
+
+			ref_d = kdata_array_alloc(&ref, 1);
+			kplot_attach_data(p, ref_d, KPLOT_POINTS, &cfgdata);	// ref image dot
 		}
-
-		ref_d = kdata_array_alloc(&ref, 1);
-
-		kplot_attach_data(p, ref_d, KPLOT_POINTS, &cfgdata);	// ref image dot
 
 		width = gtk_widget_get_allocated_width(widget);
 		height = gtk_widget_get_allocated_height(widget);
@@ -707,4 +708,3 @@ static void set_colors(struct kplotcfg *cfg) {
 	cfg->clrs[6].rgba[1] = 0x1e / 255.0;
 	cfg->clrs[6].rgba[2] = 0x10 / 255.0;
 }
-

@@ -429,6 +429,7 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf) {
 	size_t NbCols = z->size2;
 	const size_t p = 7;			// Number of parameters fitted
 	const size_t n = NbRows * NbCols;
+	g_assert (n > 0);
 	fitted_PSF *psf_angle = malloc(sizeof(fitted_PSF));
 	int status;
 	unsigned int iter = 0;

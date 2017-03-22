@@ -71,21 +71,19 @@ static void align_and_compose() {
 	int x, y, i = 0;	// i is browsing the 1D buffer, i = y * rx + x
 	for (y = 0; y < gfit.ry; ++y) {
 		for (x = 0; x < gfit.rx; ++x) {
-			int layer;
-			for (layer = 0; layer < 3; layer++) {
-				int realX = x;
-				int realY = y;
+			int channel;
+			for (channel = 0; channel < 3; channel++) {
 				if (seq && seq->regparam) {
 					WORD pixel;
-					realX = x - seq->regparam[REGLAYER][layer].shiftx;
-					realY = y - seq->regparam[REGLAYER][layer].shifty;
+					int realX = x - seq->regparam[REGLAYER][channel].shiftx;
+					int realY = y - seq->regparam[REGLAYER][channel].shifty;
 					if (realX < 0 || realX >= gfit.rx)
 						pixel = 0;
 					else if (realY < 0 || realY >= gfit.ry)
 						pixel = 0;
 					else
-						pixel = wfit[layer].pdata[0][realX + gfit.rx * realY];
-					gfit.pdata[layer][i] = pixel;
+						pixel = wfit[channel].pdata[0][realX + gfit.rx * realY];
+					gfit.pdata[channel][i] = pixel;
 				}
 			}
 			i++;

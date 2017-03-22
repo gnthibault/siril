@@ -164,6 +164,10 @@ int stat_file(const char *filename, image_type *type, char *realname) {
 	}
 
 	test_name = malloc(strlen(filename) + 10);
+	if (test_name == NULL) {
+		printf("alloc error: stat_file\n");
+		return 1;
+	}
 	/* else, we can test various file extensions */
 	/* first we test lowercase, then uppercase */
 	for (k = 0; k < 2; k++) {
@@ -172,19 +176,23 @@ int stat_file(const char *filename, image_type *type, char *realname) {
 			gchar *str;
 			if (k == 0)
 				str = strdup(supported_extensions[i]);
-			else str = g_ascii_strup(supported_extensions[i], strlen(supported_extensions[i]));
+			else
+				str = g_ascii_strup(supported_extensions[i],
+						strlen(supported_extensions[i]));
 			snprintf(test_name, 255, "%s%s", filename, str);
 			g_free(str);
 			if (is_readable_file(test_name)) {
-				*type = get_type_for_extension(supported_extensions[i]+1);
+				*type = get_type_for_extension(supported_extensions[i] + 1);
 				assert(*type != TYPEUNDEF);
 				if (realname)
 					strcpy(realname, test_name);
+				free(test_name);
 				return 0;
 			}
 			i++;
 		}
 	}
+	free(test_name);
 	return 1;
 }
 

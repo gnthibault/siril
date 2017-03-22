@@ -73,13 +73,14 @@ static void fillSeqAviExport() {
 	if (com.seq.type == SEQ_SER) {
 		GtkEntry *entryAviFps = GTK_ENTRY(lookup_widget("entryAviFps"));
 
-		if (com.seq.ser_file && com.seq.ser_file->fps <= 0.0) {
-			g_snprintf(fps, sizeof(fps), "25.000");
-		} else {
-			g_snprintf(fps, sizeof(fps), "%2.3lf", com.seq.ser_file->fps);
+		if (com.seq.ser_file != NULL) {
+			if (com.seq.ser_file->fps <= 0.0) {
+				g_snprintf(fps, sizeof(fps), "25.000");
+			} else {
+				g_snprintf(fps, sizeof(fps), "%2.3lf", com.seq.ser_file->fps);
+			}
+			gtk_entry_set_text(entryAviFps, fps);
 		}
-		gtk_entry_set_text(entryAviFps, fps);
-
 	}
 }
 
@@ -1208,10 +1209,16 @@ gpointer crop_sequence(gpointer p) {
 		char dest[256];
 
 		ser_file = malloc(sizeof(struct ser_struct));
+		if (ser_file == NULL) {
+			printf("memory error: crop_sequence\n");
+			args->retvalue = 1;
+			gdk_threads_add_idle(end_crop_sequence, args);
+		}
 		sprintf(dest, "%s%s.ser", args->prefix, args->seq->seqname);
 		if (ser_create_file(dest, ser_file, TRUE, com.seq.ser_file)) {
 			siril_log_message(_("Creating the SER file failed, aborting.\n"));
 			free(ser_file);
+			ser_file = NULL;
 			args->retvalue = 1;
 			gdk_threads_add_idle(end_crop_sequence, args);
 		}
@@ -1233,11 +1240,12 @@ gpointer crop_sequence(gpointer p) {
 				savefits(dest, &wfit[0]);
 				break;
 			case SEQ_SER:
-				ser_file->image_width = wfit[0].rx;
-				ser_file->image_height = wfit[0].ry;
-				if (ser_write_frame_from_fit(ser_file, &wfit[0], frame)) {
-					siril_log_message(
-							_("Error while converting to SER (no space left?)\n"));
+				if (ser_file) {
+					ser_file->image_width = wfit[0].rx;
+					ser_file->image_height = wfit[0].ry;
+					if (ser_write_frame_from_fit(ser_file, &wfit[0], frame)) {
+						siril_log_message(_("Error while converting to SER (no space left?)\n"));
+					}
 				}
 				break;
 			default:
@@ -1666,6 +1674,7 @@ free_and_reset_progress_bar:
 
 	free(args->basename);
 	free(args);
+	args = NULL;
 	gdk_threads_add_idle(end_generic, args);
 	return NULL;
 }
