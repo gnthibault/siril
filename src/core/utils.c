@@ -609,3 +609,51 @@ void load_css_style_sheet (char *path) {
 	}
 	g_free(CSSFile);
 }
+
+/* code borrowed from muniwin
+ * From a datetime it computes the Julian date needed in photometry */
+double encodeJD(dateTime dt) {
+	double jd1;
+	int before, d1, d2;
+
+	/* Check date and time */
+	if (dt.day <= 0 || dt.year <= 0 || dt.month <= 0)
+		return 0;
+
+	/* Compute Julian date from input citizen year, month and day. */
+	/* Tested for YEAR>0 except 1582-10-07/15 */
+	if (dt.year > 1582) {
+		before = 0;
+	} else if (dt.year < 1582) {
+		before = 1;
+	} else if (dt.month > 10) {
+		before = 0;
+	} else if (dt.month < 10) {
+		before = 1;
+	} else if (dt.day >= 15) {
+		before = 0;
+	} else {
+		before = 1;
+	}
+	if (dt.month <= 2) {
+		d1 = (int) (365.25 * (dt.year - 1));
+		d2 = (int) (30.6001 * (dt.month + 13));
+	} else {
+		d1 = (int) (365.25 * (dt.year));
+		d2 = (int) (30.6001 * (dt.month + 1));
+	}
+	jd1 = 1720994.5 + d1 + d2 + dt.day;
+	jd1 += 1.0 * dt.hour / 24;
+	jd1 += 1.0 * dt.min / 1440.0;
+	jd1 += 1.0 * dt.sec / 86400.0;
+	jd1 += 1.0 * dt.ms / 86400000.0;
+
+	if (before) {
+		if (dt.year < 0)
+			return jd1 - 1;
+		else
+			return jd1;
+	} else {
+		return jd1 + 2 - (dt.year / 100) + (dt.year / 400);
+	}
+}

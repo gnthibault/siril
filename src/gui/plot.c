@@ -97,57 +97,40 @@ static void build_registration_dataset(sequence *seq, int layer, int ref_image,
 static const uint64_t epochTicks = 621355968000000000UL;
 
 static double serTimestamp_toJulian(uint64_t timestamp) {
-	double julian, tmp;
+	struct tm *t;
+	dateTime dt;
 	uint64_t t1970_ms = (timestamp - epochTicks) / 10000;
 	time_t secs = t1970_ms / 1000;
 	int ms = t1970_ms % 1000;
-	struct tm *t;
 
 	t = gmtime(&secs);
 
 	/* Get real year and month */
-	int year = t->tm_year + 1900;
-	int mon = t->tm_mon + 1;
+	memset(&dt, 0, sizeof(dateTime));
+	dt.year = t->tm_year + 1900;
+	dt.month = t->tm_mon + 1;
+	dt.day = t->tm_mday;
+	dt.hour = t->tm_hour;
+	dt.min = t->tm_min;
+	dt.sec = t->tm_sec;
+	dt.ms = ms;
 
-	/* Converting to Julian date */
-	tmp = 100 * year + mon - 190002.5;
-	julian = 367.0 * year;
-	julian -= (int) (7.0 * (year + (int) ((mon + 9.0) / 12.0)) / 4.0);
-	julian += (int) (275.0 * mon / 9.0);
-	julian += t->tm_mday;
-	julian += (t->tm_hour
-			+ (t->tm_min + (t->tm_sec + ms / 1000.0) / 60.0) / 60.0) / 24.0;
-	julian += 1721013.5;
-	julian -= 0.5 * tmp / fabs(tmp);
-	julian += 0.5;
-
-	return julian;
+	return encodeJD(dt);
 }
 
 static double dateTimestamp_toJulian(char *timestamp, double exp) {
-	double julian, tmp;
-	int year = 0, mon = 0, day = 0, hour = 0, min = 0, sec = 0, ms = 0;
+	dateTime dt;
 
 	if (timestamp[0] == '\0')
 		return -1;
 
-	sscanf(timestamp, "%04d-%02d-%02dT%02d:%02d:%02d.%02d", &year, &mon, &day,
-			&hour, &min, &sec, &ms);
+	memset(&dt, 0, sizeof(dateTime));
+	sscanf(timestamp, "%04d-%02d-%02dT%02d:%02d:%02d.%02d", &dt.year, &dt.month, &dt.day,
+			&dt.hour, &dt.min, &dt.sec, &dt.ms);
 	/* we add exposure / 2 to the timestamp */
-	sec += exp / 2.0;
+	dt.sec += exp / 2.0;
 
-	/* Converting to Julian date */
-	tmp = 100 * year + mon - 190002.5;
-	julian = 367.0 * year;
-	julian -= (int) (7.0 * (year + (int) ((mon + 9.0) / 12.0)) / 4.0);
-	julian += (int) (275.0 * mon / 9.0);
-	julian += day;
-	julian += (hour + (min + (sec + ms / 1000.0) / 60.0) / 60.0) / 24.0;
-	julian += 1721013.5;
-	julian -= 0.5 * tmp / fabs(tmp);
-	julian += 0.5;
-
-	return julian;
+	return encodeJD(dt);
 }
 
 static void build_photometry_dataset(sequence *seq, int dataset, int size,

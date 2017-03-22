@@ -120,6 +120,17 @@ char*	str_append(char** data, const char* newdata);
 char*	format_basename(char *root);
 float	computePente(WORD *lo, WORD *hi);
 void load_css_style_sheet (char *path);
+struct dateTime_struct {
+	int year;
+	int month;
+	int day;
+	int hour;
+	int min;
+	int sec;
+	int ms;
+};
+typedef struct dateTime_struct dateTime;
+double encodeJD(dateTime dt);
 
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,
