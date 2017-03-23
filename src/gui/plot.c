@@ -54,15 +54,15 @@ static void set_colors(struct kplotcfg *cfg);
 void on_GtkEntryCSV_changed(GtkEditable *editable, gpointer user_data);
 
 static pldata *alloc_plot_data(int size) {
-	pldata *plot = malloc(sizeof(pldata));
+	pldata *plot = calloc(1, sizeof(pldata));
 	if (!plot)
 		return NULL;
-	plot->data = malloc(size * sizeof(struct kpair));
+	plot->data = calloc(size, sizeof(struct kpair));
 	if (!plot->data) {
 		free(plot);
 		return NULL;
 	}
-	plot->err = malloc(size * sizeof(struct kpair));
+	plot->err = calloc(size, sizeof(struct kpair));
 	if (!plot->err) {
 		free(plot->data);
 		free(plot);

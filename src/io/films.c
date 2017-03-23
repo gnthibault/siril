@@ -217,10 +217,16 @@ static int randPixel(int nb_pixels) {
 
 static int *randomIndex(int n) {
 	srand(time(NULL));
-	int *index = malloc(n * sizeof (int));
+	int *index;
 	int i = 0;
 	int x = 0;
 	int tmp = 0;
+
+	index = calloc(n, sizeof (int));
+	if (index == NULL) {
+		printf("alloc error: randomIndex\n");
+		return NULL;
+	}
 
 	/* make index */
 	for (i = 0; i < n; i++) {
@@ -262,6 +268,9 @@ int film_read_frame(struct film_struct *film, int frame_no, fits *fit) {
 		if (frame_no == 0) {
 			int pixel_tested = 0, n = 0;
 			int *randIndex = randomIndex(nb_pixels * 3);
+			if (randIndex == NULL) {
+				return FILM_ERROR;
+			}
 			do {
 				int px = randIndex[n];
 				px = px - (px % 3);

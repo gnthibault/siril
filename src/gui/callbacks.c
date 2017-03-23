@@ -5296,6 +5296,10 @@ void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data)
 
 	struct extract_channels_data *args = malloc(
 			sizeof(struct extract_channels_data));
+	if (args == NULL) {
+		printf("allocation error: extract_channel\n");
+		return;
+	}
 
 	if (combo_extract_channel == NULL) {
 		combo_extract_channel = GTK_COMBO_BOX(
@@ -5321,6 +5325,9 @@ void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data)
 		set_cursor_waiting(TRUE);
 		copyfits(&gfit, args->fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 		start_in_new_thread(extract_channels, args);
+	}
+	else {
+		free(args);
 	}
 }
 
@@ -5423,7 +5430,7 @@ void on_menu_gray_stat_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
 	const char *mag, *phase;
-	char *type, page;
+	char *type = NULL, page;
 	int type_order = -1;
 	static GtkToggleButton *order = NULL;
 	static GtkNotebook* notebookFFT = NULL;
@@ -5496,6 +5503,10 @@ void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
 		args->type_order = type_order;
 		set_cursor_waiting(TRUE);
 		start_in_new_thread(fourier_transform, args);
+	}
+	else {
+		if (type)
+			free(type);
 	}
 }
 
