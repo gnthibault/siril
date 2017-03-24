@@ -102,7 +102,7 @@ gboolean isrgb(fits *fit);
 gboolean ends_with(const char *str, const char *ending);
 int	get_extension_index(const char *filename);
 int	is_readable_file(const char *filename);
-int	stat_file(const char *filename2, image_type *type, char *realname);
+int	stat_file(const char *filename2, image_type *type, char **realname);
 const char *get_filename_ext(const char *filename);
 
 int	changedir(const char *dir);

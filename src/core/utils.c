@@ -139,60 +139,59 @@ int is_readable_file(const char *filename) {
 
 /* Tests if filename is the canonical name of a known file type
  * `type' is set according to the result of the test,
- * `realname' (optionnal) is set according to the found file name.
+ * `realname' (optionnal) is set according to the found file name:: it
+ * must be freed with when no longer needed.
  * If filename contains an extension, only this file name is tested, else all
- * extensions are tested for the file name until one is found. */
-int stat_file(const char *filename, image_type *type, char *realname) {
-	// FIXME: realname should be a char ** to be allocated in the function
-	char *test_name;
+ * extensions are tested for the file name until one is found.  */
+int stat_file(const char *filename, image_type *type, char **realname) {
 	int k;
-	const char *ext = get_filename_ext(filename);
+	const char *ext;
 	*type = TYPEUNDEF;	// default value
 
 	/* check for an extension in filename and isolate it, including the . */
-	if (!filename || filename[0] == '\0')
+	if (filename[0] == '\0')
 		return 1;
+
+	ext = get_filename_ext(filename);
 	/* if filename has an extension, we only test for it */
 	if (ext) {
 		if (is_readable_file(filename)) {
 			if (realname)
-				strcpy(realname, filename);
+				*realname = strdup(filename);
 			*type = get_type_for_extension(ext);
 			return 0;
 		}
 		return 1;
 	}
 
-	test_name = malloc(strlen(filename) + 10);
-	if (test_name == NULL) {
-		printf("alloc error: stat_file\n");
-		return 1;
-	}
 	/* else, we can test various file extensions */
 	/* first we test lowercase, then uppercase */
 	for (k = 0; k < 2; k++) {
 		int i = 0;
 		while (supported_extensions[i]) {
-			gchar *str;
-			if (k == 0)
-				str = strdup(supported_extensions[i]);
-			else
-				str = g_ascii_strup(supported_extensions[i],
+			GString *testName = g_string_new(filename);
+			if (k == 0) {
+				testName = g_string_append(testName, supported_extensions[i]);
+			} else {
+				gchar *tmp = g_ascii_strup(supported_extensions[i],
 						strlen(supported_extensions[i]));
-			snprintf(test_name, 255, "%s%s", filename, str);
-			g_free(str);
-			if (is_readable_file(test_name)) {
+				testName = g_string_append(testName, tmp);
+				g_free(tmp);
+			}
+			gchar *name = g_string_free(testName, FALSE);
+
+			if (is_readable_file(name)) {
 				*type = get_type_for_extension(supported_extensions[i] + 1);
 				assert(*type != TYPEUNDEF);
 				if (realname)
-					strcpy(realname, test_name);
-				free(test_name);
+					*realname = strdup(name);
+				g_free(name);
 				return 0;
 			}
 			i++;
+			g_free(name);
 		}
 	}
-	free(test_name);
 	return 1;
 }
 

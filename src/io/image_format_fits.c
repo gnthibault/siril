@@ -174,7 +174,8 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	long orig[3] = { 1L, 1L, 1L };
 	// orig ^ gives the coordinate in each dimension of the first pixel to be read
 	int zero = 0;
-	char name[256], *msg = NULL, *basename;
+	char *name = NULL, *msg = NULL;
+	gchar *basename;
 	image_type imagetype;
 	int i;
 	unsigned int nbdata;
@@ -183,12 +184,13 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	unsigned long offset;
 	BYTE *data8;
 
-	fit->naxes[2] = 1; //initialization of the axis numer before opening : NEED TO BE OPTIMIZED
+	fit->naxes[2] = 1; //initialization of the axis number before opening : NEED TO BE OPTIMIZED
 
-	if (stat_file(filename, &imagetype, name)) {
+	if (stat_file(filename, &imagetype, &name)) {
 		msg = siril_log_message(_("%s.[any_allowed_extension] not found.\n"),
 				filename);
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		free(name);
 		return 1;
 	}
 	if (imagetype != TYPEFITS) {
@@ -196,6 +198,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 				_("The file %s is not a FITS file or doesn't exists with FITS extensions.\n"),
 						filename);
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		free(name);
 		return 1;
 	}
 
@@ -205,8 +208,10 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	fits_open_diskfile(&(fit->fptr), name, READONLY, &status);
 	if (status) {
 		report_fits_error(status);
+		free(name);
 		return status;
 	}
+	free(name);
 
 	status = 0;
 	fits_get_img_param(fit->fptr, 3, &(fit->bitpix), &(fit->naxis), fit->naxes,

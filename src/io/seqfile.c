@@ -382,10 +382,15 @@ int buildseqfile(sequence *seq, int force_recompute) {
 		return 0;
 	}
 
-	filename = malloc(strlen(seq->seqname)+20);
+	filename = malloc(strlen(seq->seqname) + 20);
+	if (filename == NULL) {
+		printf("alloc error: buildseqfile\n");
+		return 1;
+	}
 	if (seq->type == SEQ_REGULAR) {
 		get_possible_image_filename(seq, seq->beg, filename);
 		// check if the sequence begins at first_index
+
 		if (stat_file(filename, &imagetype, NULL) || imagetype != TYPEFITS) {
 			siril_log_message(_("The sequence %s doesn't start at the frame number %d"
 					" with the specified fixed size index (%d). Cannot load.\n"),

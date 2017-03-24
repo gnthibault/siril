@@ -825,13 +825,13 @@ int32_t c_pipp_avi_write::debug_headers() {
 
     printf("avih_chunk_header.size: 0x%x\n\n", m_avih_chunk_header.size);
 
-    printf("main_avih_header.micro_sec_per_frame: %d\n", m_main_avih_header.micro_sec_per_frame);
-    printf("main_avih_header.max_bytes_per_sec: %d\n", m_main_avih_header.max_bytes_per_sec);
-    printf("main_avih_header.padding_granularity: %d\n", m_main_avih_header.padding_granularity);
+    printf("main_avih_header.micro_sec_per_frame: %ud\n", m_main_avih_header.micro_sec_per_frame);
+    printf("main_avih_header.max_bytes_per_sec: %ud\n", m_main_avih_header.max_bytes_per_sec);
+    printf("main_avih_header.padding_granularity: %ud\n", m_main_avih_header.padding_granularity);
     printf("main_avih_header.flags: 0x%x\n", m_main_avih_header.flags);
-    printf("main_avih_header.total_frames: %d\n", m_main_avih_header.total_frames);
-    printf("main_avih_header.initial_frames: %d\n", m_main_avih_header.initial_frames);
-    printf("main_avih_header.streams: %d\n", m_main_avih_header.streams);
+    printf("main_avih_header.total_frames: %ud\n", m_main_avih_header.total_frames);
+    printf("main_avih_header.initial_frames: %ud\n", m_main_avih_header.initial_frames);
+    printf("main_avih_header.streams: %ud\n", m_main_avih_header.streams);
     printf("main_avih_header.suggested_buffer_size: 0x%x\n", m_main_avih_header.suggested_buffer_size);
     printf("main_avih_header.width: %d\n", m_main_avih_header.width);
     printf("main_avih_header.height: %d\n\n", m_main_avih_header.height);
@@ -869,7 +869,7 @@ int32_t c_pipp_avi_write::debug_headers() {
     printf("vids_stream_header.language: 0x%x\n", m_vids_stream_header.language);
     printf("vids_stream_header.initial_frames: 0x%x\n", m_vids_stream_header.initial_frames);
     printf("vids_stream_header.scale: 0x%x\n", m_vids_stream_header.scale);
-    printf("vids_stream_header.rate: %d\n", m_vids_stream_header.rate);
+    printf("vids_stream_header.rate: %ud\n", m_vids_stream_header.rate);
     printf("vids_stream_header.start: 0x%x\n", m_vids_stream_header.start);
     printf("vids_stream_header.length: 0x%x\n", m_vids_stream_header.length);
     printf("vids_stream_header.suggested_buffer_size: 0x%x\n", m_vids_stream_header.suggested_buffer_size);
@@ -887,17 +887,17 @@ int32_t c_pipp_avi_write::debug_headers() {
            m_strf_chunk_header.four_cc.chr[3]);
     printf("strf_chunk_header.size: 0x%x\n\n", m_strf_chunk_header.size);
 
-    printf("bitmap_info_header.size: %d\n", m_bitmap_info_header.size);
+    printf("bitmap_info_header.size: %ud\n", m_bitmap_info_header.size);
     printf("bitmap_info_header.width: %d\n", m_bitmap_info_header.width);
     printf("bitmap_info_header.height: %d\n", m_bitmap_info_header.height);
     printf("bitmap_info_header.planes: %d\n", m_bitmap_info_header.planes);
     printf("bitmap_info_header.bit_count: %d\n", m_bitmap_info_header.bit_count);
     printf("bitmap_info_header.compression.u32: 0x%x\n", m_bitmap_info_header.compression.u32);
-    printf("bitmap_info_header.size_image: %d\n", m_bitmap_info_header.size_image);
-    printf("bitmap_info_header.x_pels_per_meter: %d\n", m_bitmap_info_header.x_pels_per_meter);
-    printf("bitmap_info_header.y_pels_per_meter: %d\n", m_bitmap_info_header.y_pels_per_meter);
-    printf("bitmap_info_header.clr_used: %d\n", m_bitmap_info_header.clr_used);
-    printf("bitmap_info_header.clr_important: %d\n\n", m_bitmap_info_header.clr_important);
+    printf("bitmap_info_header.size_image: %ud\n", m_bitmap_info_header.size_image);
+    printf("bitmap_info_header.x_pels_per_meter: %ud\n", m_bitmap_info_header.x_pels_per_meter);
+    printf("bitmap_info_header.y_pels_per_meter: %ud\n", m_bitmap_info_header.y_pels_per_meter);
+    printf("bitmap_info_header.clr_used: %ud\n", m_bitmap_info_header.clr_used);
+    printf("bitmap_info_header.clr_important: %ud\n\n", m_bitmap_info_header.clr_important);
 
     printf("movi_list_header.list: %c%c%c%c\n",
            m_movi_list_header.list.chr[0],
@@ -934,7 +934,7 @@ int32_t c_pipp_avi_write::debug_headers() {
            m_avi_index_entry.chunk_id.chr[3]);
     printf("avi_index_entry.flags: 0x%x\n", m_avi_index_entry.flags);
     printf("avi_index_entry.offset: 0x%x\n", m_avi_index_entry.offset);
-    printf("avi_index_entry.size: %d\n\n", m_avi_index_entry.size);
+    printf("avi_index_entry.size: %ud\n\n", m_avi_index_entry.size);
 
     return 0;
 }
