@@ -374,6 +374,10 @@ int stack_median(struct stacking_args *args) {
 	int pool_size = 1;
 	fits *fit = &wfit[0];
 	norm_coeff coeff;
+	struct image_block {
+		unsigned long channel, start_row, end_row, height;
+	};
+	struct image_block *blocks = NULL;
 
 	nb_frames = args->nb_images_to_stack;
 
@@ -598,11 +602,8 @@ int stack_median(struct stacking_args *args) {
 	}
 	siril_log_message(_("We have %d parallel blocks of size %d (+%d) for stacking.\n"),
 			nb_parallel_stacks, size_of_stacks, remainder);
-	struct image_block {
-		unsigned long channel, start_row, end_row, height;
-	};
 	long largest_block_height = 0;
-	struct image_block *blocks = malloc(nb_parallel_stacks * sizeof(struct image_block));
+	blocks = malloc(nb_parallel_stacks * sizeof(struct image_block));
 	{
 		long channel = 0, row = 0, end, j = 0;
 		do {
@@ -796,6 +797,7 @@ free_and_close:
 		}
 		free(data_pool);
 	}
+	if (blocks) free(blocks);
 	free(coeff.offset);
 	free(coeff.mul);
 	free(coeff.scale);
@@ -1202,6 +1204,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	int pool_size = 1;
 	fits *fit = &wfit[0];
 	norm_coeff coeff;
+	struct image_block *blocks = NULL;
 
 	nb_frames = args->nb_images_to_stack;
 	reglayer = get_registration_layer();
@@ -1431,7 +1434,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 		unsigned long channel, start_row, end_row, height;
 	};
 	long largest_block_height = 0;
-	struct image_block *blocks = malloc(nb_parallel_stacks * sizeof(struct image_block));
+	blocks = malloc(nb_parallel_stacks * sizeof(struct image_block));
 	{
 		long channel = 0, row = 0, end, j = 0;
 		do {
@@ -1837,6 +1840,7 @@ free_and_close:
 		}
 		free(data_pool);
 	}
+	if (blocks) free(blocks);
 	free(coeff.offset);
 	free(coeff.mul);
 	free(coeff.scale);
