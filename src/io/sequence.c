@@ -1094,7 +1094,9 @@ int do_fwhm_sequence_processing(sequence *seq, int layer, gboolean print_psf, gb
 		fprintf(stdout, _("# image_no amplitude magnitude fwhm x y\n"));
 		for (i = 0; i < seq->number; i++) {
 			fitted_PSF *star = seq->regparam[layer][i].fwhm_data;
-			fitted_PSF *phot0 = seq->photometry[0][0];
+			fitted_PSF *phot0 = NULL;
+			if (seq->photometry[0])
+				phot0 = seq->photometry[0][0];
 
 			/* registration case */
 			if (star) {
