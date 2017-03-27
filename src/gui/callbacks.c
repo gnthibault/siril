@@ -3559,7 +3559,26 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 			}
 			is_shift_on = FALSE;
 		} else if (event->button == 2) {
-			com.leveldrag = FALSE;
+			double dX, dY, w, h;
+
+			dX = 1.5 * com.phot_set.outer;
+			dY = dX;
+			w = 3 * com.phot_set.outer;
+			h = w;
+
+			if ((dX <= zoomedX) && (dY <= zoomedY)
+					&& (zoomedX - dX + w < gfit.rx)
+					&& (zoomedY - dY + h < gfit.ry)) {
+
+				com.selection.x = zoomedX - dX;
+				com.selection.y = zoomedY - dY;
+				com.selection.w = w;
+				com.selection.h = h;
+
+				new_selection_zone();
+				calculate_fwhm(widget);
+			}
+
 		} else if (event->button == 3) {
 			do_popup_graymenu(widget, NULL);
 		}
@@ -3574,71 +3593,61 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	fits *fit = &(gfit);
 
 	if (inimage((GdkEvent *) event)) {
-		if (com.leveldrag) {	// with button 2 down
-			/* FIXME: CODE DISABLED
-			 fit->lo = (event->y * (double)fit->max[com.cvport] / 2 / (double)fit->ry);
-			 fit->hi = (event->x * (double)fit->max[com.cvport] * 2 / (double)fit->rx);
-			 --delay;
-			 if(delay<=0) {
-			 level_adjust(fit, FALSE);
-			 delay = 5;
-			 }*/
-		} else {
-			char buffer[45];
-			char format[25], *format_base = "x: %%.%dd y: %%.%dd = %%.%dd";
-			int coords_width = 3, val_width = 3;
-			double zoom = get_zoom_val();
-			gint zoomedX, zoomedY;
-			zoomedX = (gint) (event->x / zoom);
-			zoomedY = (gint) (event->y / zoom);
-			if (fit->rx >= 1000 || fit->ry >= 1000)
-				coords_width = 4;
-			if (fit->hi >= 1000)
-				val_width = 4;
-			if (fit->hi >= 10000)
-				val_width = 5;
-			g_snprintf(format, sizeof(format), format_base, coords_width,
-					coords_width, val_width);
-			g_snprintf(buffer, sizeof(buffer), format, zoomedX, zoomedY,
-					fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
-							+ zoomedX]);
-			/* TODO: fix to use the new function vport_number_to_name() */
-			if (widget == com.vport[RED_VPORT])
-				strcat(label, "r");
-			else if (widget == com.vport[GREEN_VPORT])
-				strcat(label, "g");
-			else if (widget == com.vport[BLUE_VPORT])
-				strcat(label, "b");
-			else
-				return FALSE;
-			gtk_label_set_text(
-					GTK_LABEL(gtk_builder_get_object(builder, label)), buffer);
+		char buffer[45];
+		char format[25], *format_base = "x: %%.%dd y: %%.%dd = %%.%dd";
+		int coords_width = 3, val_width = 3;
+		double zoom = get_zoom_val();
+		gint zoomedX, zoomedY;
+		zoomedX = (gint) (event->x / zoom);
+		zoomedY = (gint) (event->y / zoom);
+		if (fit->rx >= 1000 || fit->ry >= 1000)
+			coords_width = 4;
+		if (fit->hi >= 1000)
+			val_width = 4;
+		if (fit->hi >= 10000)
+			val_width = 5;
+		g_snprintf(format, sizeof(format), format_base, coords_width,
+				coords_width, val_width);
+		g_snprintf(buffer, sizeof(buffer), format, zoomedX, zoomedY,
+				fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
+						+ zoomedX]);
+		/* TODO: fix to use the new function vport_number_to_name() */
+		if (widget == com.vport[RED_VPORT])
+			strcat(label, "r");
+		else if (widget == com.vport[GREEN_VPORT])
+			strcat(label, "g");
+		else if (widget == com.vport[BLUE_VPORT])
+			strcat(label, "b");
+		else
+			return FALSE;
+		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder, label)),
+				buffer);
 
-			if (com.drawing) {	// with button 1 down
-				if (zoomedX > com.startX) {
-					com.selection.x = com.startX;
-					com.selection.w = zoomedX - com.selection.x;
-				} else {
-					com.selection.x = zoomedX;
-					com.selection.w = com.startX - zoomedX;
-				}
-
-				if (zoomedY > com.startY) {
-					com.selection.y = com.startY;
-					if (is_shift_on)
-						com.selection.h = com.selection.w;
-					else
-						com.selection.h = zoomedY - com.selection.y;
-				} else {
-					com.selection.y = zoomedY;
-					if (is_shift_on)
-						com.selection.h = com.selection.w;
-					else
-						com.selection.h = com.startY - zoomedY;
-				}
-				gtk_widget_queue_draw(widget);
+		if (com.drawing) {	// with button 1 down
+			if (zoomedX > com.startX) {
+				com.selection.x = com.startX;
+				com.selection.w = zoomedX - com.selection.x;
+			} else {
+				com.selection.x = zoomedX;
+				com.selection.w = com.startX - zoomedX;
 			}
+
+			if (zoomedY > com.startY) {
+				com.selection.y = com.startY;
+				if (is_shift_on)
+					com.selection.h = com.selection.w;
+				else
+					com.selection.h = zoomedY - com.selection.y;
+			} else {
+				com.selection.y = zoomedY;
+				if (is_shift_on)
+					com.selection.h = com.selection.w;
+				else
+					com.selection.h = com.startY - zoomedY;
+			}
+			gtk_widget_queue_draw(widget);
 		}
+
 	}
 	return FALSE;
 }
