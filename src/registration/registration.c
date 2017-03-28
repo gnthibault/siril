@@ -516,7 +516,7 @@ static void _print_result(TRANS *trans, float FWHMx, float FWHMy) {
 int register_star_alignment(struct registration_args *args) {
 	int frame, ref_image, ret, i;
 	int abort = 0;
-	int fitted_stars, failed = 0, skipped;
+	int fitted_stars, failed, skipped;
 	float nb_frames, cur_nb;
 	float FWHMx, FWHMy;
 	fitted_PSF **stars;
@@ -629,6 +629,7 @@ int register_star_alignment(struct registration_args *args) {
 	}
 
 	skipped = 0;
+	failed = 0;
 	for (frame = 0, cur_nb = 0.f; frame < args->seq->number; frame++) {
 		if (!abort) {
 			if (args->run_in_thread && !get_thread_run()) {
@@ -644,6 +645,13 @@ int register_star_alignment(struct registration_args *args) {
 			if (!ret) {
 				char dest[256], filename[256];
 				int nbpoints;
+
+				if (args->translation_only) {
+					/* if "translation only", we choose to initialize all frames
+					 * to exclude status. If registration is ok, the status is
+					 * set to include */
+					args->seq->imgparam[frame].incl = !SEQUENCE_DEFAULT_INCLUDE;
+				}
 
 				if (frame != ref_image) {
 					if (args->seq->type == SEQ_SER) {
@@ -730,6 +738,7 @@ int register_star_alignment(struct registration_args *args) {
 				} else {
 					current_regdata[frame].shiftx = trans.a;
 					current_regdata[frame].shifty = -trans.d;
+					args->seq->imgparam[frame].incl = SEQUENCE_DEFAULT_INCLUDE;
 				}
 
 				cur_nb += 1.f;
