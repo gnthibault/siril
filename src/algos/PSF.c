@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <gsl/gsl_statistics_double.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_linalg.h>
@@ -42,26 +43,33 @@
 
 const double radian_conversion = ((3600.0 * 180.0) / M_PI) / 1.0E3;
 
-static double getAverage3x3(gsl_matrix *in, const int xx, const int yy, const int w, const int h) {
+static WORD getMedian3x3(gsl_matrix *in, const int xx, const int yy,
+		const int w, const int h) {
 	int step, radius, x, y;
-	double value = 0;
+	double *value, median;
 
-	step = radius = 1;
+	step = 1;
+	radius = 1;
 
 	int n = 0;
+	int start;
+	value = calloc(8, sizeof(double));
 	for (y = yy - radius; y <= yy + radius; y += step) {
 		for (x = xx - radius; x <= xx + radius; x += step) {
 			if (y >= 0 && y < h) {
 				if (x >= 0 && x < w) {
 					if ((x != xx) || (y != yy)) {
-						value += gsl_matrix_get(in, y, x);
-						n++;
+						value[n++] = gsl_matrix_get(in, y, x);
 					}
 				}
 			}
 		}
 	}
-	return value / n;
+	start = 8 - n - 1;
+	quicksort_d(value, 8);
+	median = gsl_stats_median_from_sorted_data(value + start, 1, n);
+	free(value);
+	return median;
 }
 
 static gsl_matrix *removeHotPixels(gsl_matrix *in) {
@@ -73,7 +81,7 @@ static gsl_matrix *removeHotPixels(gsl_matrix *in) {
 	gsl_matrix_memcpy (out, in);
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			double a = getAverage3x3(in, x, y, width, height);
+			double a = getMedian3x3(in, x, y, width, height);
 			gsl_matrix_set(out, y, x, a);
 		}
 	}
@@ -389,6 +397,7 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background,
 	psf->sx = FIT(4);
 	psf->sy = FIT(5);
 	psf->fwhmx = sqrt(FIT(4) / 2.) * 2 * sqrt(log(2.) * 2);	//Set the real FWHMx with regards to the Sx parameter
+
 	psf->fwhmy = sqrt(FIT(5) / 2.) * 2 * sqrt(log(2.) * 2);	//Set the real FWHMy with regards to the Sy parameter
 	psf->angle = 0;	//The angle is not fitted here
 	// Units
@@ -446,6 +455,7 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf) {
 	gsl_multifit_fdfsolver *s;
 
 	gsl_rng_env_setup();
+
 
 	type = gsl_rng_default;
 	r = gsl_rng_alloc(type);

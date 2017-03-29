@@ -461,6 +461,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	unsigned int nbdata;
 	long fpixel[3], lpixel[3], inc[3] = { 1L, 1L, 1L };
 	int zero = 0;
+	int dataType = TUSHORT;
 
 	status = 0;
 	if (fits_open_diskfile(&(fit->fptr), filename, READONLY, &status))
@@ -526,14 +527,24 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		fits_close_file(fit->fptr, &status);
 		return -1;
 	}
-	if (fit->bitpix != SHORT_IMG && fit->bitpix != USHORT_IMG
-			&& fit->bitpix != BYTE_IMG) {
-		siril_log_message(
-				_("Only Siril FITS images can be used with partial image reading.\n"));
+
+	switch (fit->bitpix) {
+	case SHORT_IMG:
+		dataType = TSHORT;
+		break;
+	case BYTE_IMG:
+		dataType = TBYTE;
+		break;
+	case USHORT_IMG:
+		dataType = TUSHORT;
+		break;
+	default:
+		siril_log_message(_("Only Siril FITS images "
+				"can be used with partial image reading.\n"));
 		return -1;
 	}
 	fit->naxes[2] = 1;	// force to 1 layer
-	fit->bitpix = USHORT_IMG;
+	fit->bitpix = USHORT_IMG;	// force to be USHORT
 
 	/* realloc fit->data to the image size */
 	WORD *olddata = fit->data;
@@ -550,7 +561,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	fit->pdata[BLAYER] = fit->data;
 
 	status = 0;
-	fits_read_subset(fit->fptr, TUSHORT, fpixel, lpixel, inc, &zero, fit->data,
+	fits_read_subset(fit->fptr, dataType, fpixel, lpixel, inc, &zero, fit->data,
 			&zero, &status);
 	if (status) {
 		report_fits_error(status);

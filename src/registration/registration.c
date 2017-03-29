@@ -575,6 +575,19 @@ int register_star_alignment(struct registration_args *args) {
 	else {
 		com.stars = peaker(&fit, args->layer, &sf, NULL);
 	}
+	/* we copy com.stars to refstars in case user take a look to another image of the sequence
+	 * that would destroy com.stars
+	 */
+	i = 0;
+	fitted_PSF **refstars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
+	while (i < MAX_STARS && com.stars[i]) {
+		fitted_PSF *tmp = malloc(sizeof(fitted_PSF));
+		memcpy(tmp, com.stars[i], sizeof(fitted_PSF));
+		refstars[i] = tmp;
+		refstars[i+1] = NULL;
+		i++;
+    }
+
 	if (sf.nb_stars < AT_MATCH_MINPAIRS) {
 		siril_log_message(
 				_("There are not enough stars in reference image to perform alignment\n"));
@@ -591,12 +604,12 @@ int register_star_alignment(struct registration_args *args) {
 		fprintf(pfile, "REFERENCE IMAGE\n");
 		for (i = 0; i < MAX_STARS_FITTED; i++) {
 			fprintf(pfile, "%.3lf\t%.3lf\t%.3lf\n",
-					com.stars[i]->xpos, com.stars[i]->ypos, com.stars[i]->mag);
+					refstars[i]->xpos, refstars[i]->ypos, refstars[i]->mag);
 		}
 		fclose(pfile);
 #endif
 	fitted_stars = (sf.nb_stars > MAX_STARS_FITTED) ? MAX_STARS_FITTED : sf.nb_stars;
-	FWHM_average(com.stars, &FWHMx, &FWHMy, fitted_stars);
+	FWHM_average(refstars, &FWHMx, &FWHMy, fitted_stars);
 	siril_log_message(_("FWHMx:%*.2f px\n"), 12, FWHMx);
 	siril_log_message(_("FWHMy:%*.2f px\n"), 12, FWHMy);
 	current_regdata[ref_image].fwhm = FWHMx;
@@ -638,6 +651,7 @@ int register_star_alignment(struct registration_args *args) {
 			}
 			if (!args->process_all_frames && !args->seq->imgparam[frame].incl) {
 				skipped++;
+				cur_nb += 1.f;
 				continue;
 			}
 
@@ -663,6 +677,7 @@ int register_star_alignment(struct registration_args *args) {
 								_("Not enough stars. Image %d skipped\n"), frame);
 						args->new_total--;
 						failed++;
+						cur_nb += 1.f;
 						continue;
 					}
 
@@ -683,7 +698,7 @@ int register_star_alignment(struct registration_args *args) {
 					nbpoints = (sf.nb_stars < fitted_stars) ?
 									sf.nb_stars : fitted_stars;
 
-					if (star_match(stars, com.stars, nbpoints, &trans)) {
+					if (star_match(stars, refstars, nbpoints, &trans)) {
 						siril_log_color_message(_("Cannot perform star matching. Image %d skipped\n"),
 								"red", frame);
 						args->new_total--;
@@ -692,6 +707,7 @@ int register_star_alignment(struct registration_args *args) {
 						while (i < MAX_STARS && stars[i])
 							free(stars[i++]);
 						free(stars);
+						cur_nb += 1.f;
 						continue;
 					}
 
@@ -746,6 +762,12 @@ int register_star_alignment(struct registration_args *args) {
 			}
 		}
 	}
+
+	i = 0;
+	while (i < MAX_STARS && refstars[i])
+		free(refstars[i++]);
+	free(refstars);
+
 	if (args->seq->type == SEQ_SER) {
 		ser_write_and_close(new_ser);
 		free(new_ser);
