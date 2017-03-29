@@ -1200,7 +1200,6 @@ static gboolean end_register_idle(gpointer p) {
 				sprintf(rseqname, "%s%s.seq", args->prefix, seqname);
 				g_free(seqname);
 				unlink(rseqname);	// remove previous to overwrite
-				//check_seq(0);		// search for the new sequence
 				char *newname = remove_ext_from_filename(rseqname);
 				seq->seqname = newname;
 				seq->number = args->new_total;
@@ -1216,7 +1215,6 @@ static gboolean end_register_idle(gpointer p) {
 				seq->beg = seq->imgparam[0].filenum;
 				seq->end = seq->imgparam[seq->number-1].filenum;
 				seq->type = args->seq->type;
-				seq->ser_file = args->seq->ser_file;
 				seq->current = -1;
 				seq->needs_saving = TRUE;
 				writeseqfile(seq);

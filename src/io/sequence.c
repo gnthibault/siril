@@ -880,19 +880,17 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 	}
 #endif
 
-// FIXME: fix crash after SER global registration. Not sure about this fix.
-	if (free_seq_too) {
 		if (seq->ser_file) {
-			ser_close_file(seq->ser_file);	// frees the data too
-			free(seq->ser_file);
-		}
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
-		if (seq->film_file) {
-			film_close_file(seq->film_file);	// frees the data too
-			free(seq->film_file);
-		}
-#endif
+		ser_close_file(seq->ser_file);	// frees the data too
+		free(seq->ser_file);
 	}
+#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+	if (seq->film_file) {
+		film_close_file(seq->film_file);	// frees the data too
+		free(seq->film_file);
+	}
+#endif
+
 	if (seq->internal_fits) {
 		/* the fits in internal_fits should still be referenced somewhere */
 		free(seq->internal_fits);
@@ -1116,9 +1114,11 @@ int do_fwhm_sequence_processing(sequence *seq, int layer, gboolean print_psf, gb
 				}
 				fitted_PSF *phot = seq->photometry[j - 1][i];
 
-				fprintf(stdout, "%d\t%f\t%f\t%f\t%f\t%f\n", i, phot->A,
-						phot->mag + com.magOffset, phot->fwhmx, phot->xpos,
-						phot->ypos);
+				if (phot) {
+					fprintf(stdout, "%d\t%f\t%f\t%f\t%f\t%f\n", i, phot->A,
+							phot->mag + com.magOffset, phot->fwhmx, phot->xpos,
+							phot->ypos);
+				}
 			}
 		}
 	}
