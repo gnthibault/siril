@@ -481,7 +481,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 
 	status = 0;
 	fits_read_key(fit->fptr, TINT, "BZERO", &zero, NULL, &status);
-	if (status || (fit->bitpix == SHORT_IMG && zero == 32768))
+	if (fit->bitpix == SHORT_IMG && zero == 32768)
 		fit->bitpix = USHORT_IMG;
 
 	if (do_photometry) {
