@@ -397,7 +397,6 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background,
 	psf->sx = FIT(4);
 	psf->sy = FIT(5);
 	psf->fwhmx = sqrt(FIT(4) / 2.) * 2 * sqrt(log(2.) * 2);	//Set the real FWHMx with regards to the Sx parameter
-
 	psf->fwhmy = sqrt(FIT(5) / 2.) * 2 * sqrt(log(2.) * 2);	//Set the real FWHMy with regards to the Sy parameter
 	psf->angle = 0;	//The angle is not fitted here
 	// Units
@@ -455,7 +454,6 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf) {
 	gsl_multifit_fdfsolver *s;
 
 	gsl_rng_env_setup();
-
 
 	type = gsl_rng_default;
 	r = gsl_rng_alloc(type);

@@ -478,6 +478,12 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		fits_close_file(fit->fptr, &status);
 		return status;
 	}
+
+	status = 0;
+	fits_read_key(fit->fptr, TINT, "BZERO", &zero, NULL, &status);
+	if (status || (fit->bitpix == SHORT_IMG && zero == 32768))
+		fit->bitpix = USHORT_IMG;
+
 	if (do_photometry) {
 		status = 0;
 		fits_read_key(fit->fptr, TSTRING, "DATE-OBS", &(fit->date_obs), NULL,

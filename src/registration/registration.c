@@ -519,7 +519,7 @@ int register_star_alignment(struct registration_args *args) {
 	int fitted_stars, failed, skipped;
 	float nb_frames, cur_nb;
 	float FWHMx, FWHMy;
-	fitted_PSF **stars;
+	fitted_PSF **stars, **refstars;
 	TRANS trans;
 	regdata *current_regdata;
 	starFinder sf;
@@ -575,18 +575,6 @@ int register_star_alignment(struct registration_args *args) {
 	else {
 		com.stars = peaker(&fit, args->layer, &sf, NULL);
 	}
-	/* we copy com.stars to refstars in case user take a look to another image of the sequence
-	 * that would destroy com.stars
-	 */
-	i = 0;
-	fitted_PSF **refstars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
-	while (i < MAX_STARS && com.stars[i]) {
-		fitted_PSF *tmp = malloc(sizeof(fitted_PSF));
-		memcpy(tmp, com.stars[i], sizeof(fitted_PSF));
-		refstars[i] = tmp;
-		refstars[i+1] = NULL;
-		i++;
-    }
 
 	if (sf.nb_stars < AT_MATCH_MINPAIRS) {
 		siril_log_message(
@@ -597,6 +585,20 @@ int register_star_alignment(struct registration_args *args) {
 		return 1;
 	}
 	redraw(com.cvport, REMAP_NONE); // draw stars
+
+	/* we copy com.stars to refstars in case user take a look to another image of the sequence
+	 * that would destroy com.stars
+	 */
+	i = 0;
+	refstars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
+	while (i < MAX_STARS && com.stars[i]) {
+		fitted_PSF *tmp = malloc(sizeof(fitted_PSF));
+		memcpy(tmp, com.stars[i], sizeof(fitted_PSF));
+		refstars[i] = tmp;
+		refstars[i+1] = NULL;
+		i++;
+    }
+
 #ifdef DEBUG
 		FILE *pfile;
 
