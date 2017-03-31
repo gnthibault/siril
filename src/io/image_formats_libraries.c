@@ -655,6 +655,13 @@ int readpng(const char *name, fits* fit) {
 /********************* RAW IMPORT *********************/
 #ifdef HAVE_LIBRAW
 
+static void get_FITS_date(time_t date, char *date_obs) {
+	struct tm *t = gmtime(&date);
+	g_snprintf(date_obs, FLEN_VALUE, "%04d-%02d-%02dT%02d:%02d:%02d",
+			t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min,
+			t->tm_sec);
+}
+
 int readraw(const char *name, fits *fit) {
 	ushort width, height;
 	int npixels, i;
@@ -808,6 +815,7 @@ int readraw(const char *name, fits *fit) {
 		if (raw->other.shutter > 0.) fit->exposure = raw->other.shutter;
 		if (raw->other.aperture > 0.) fit->aperture = raw->other.aperture;
 		g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make, raw->idata.model);
+		get_FITS_date(raw->other.timestamp, fit->date_obs);
 	}
 
 	libraw_dcraw_clear_mem(image);
@@ -947,6 +955,7 @@ int readraw_in_cfa(const char *name, fits *fit) {
 			fit->aperture = raw->other.aperture;
 		g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make,
 				raw->idata.model);
+		get_FITS_date(raw->other.timestamp, fit->date_obs);
 		if (filters)
 			g_snprintf(fit->bayer_pattern, FLEN_VALUE, "%s", pattern);
 	}
