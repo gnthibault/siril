@@ -204,7 +204,6 @@ int main(int argc, char *argv[]) {
 			exit(EXIT_SUCCESS);
 			break;
 		case 'd':
-			printf("test: %s\n\n\n", optarg);
 			cwd_forced = optarg;
 			forcecwd = TRUE;
 			break;
