@@ -472,7 +472,7 @@ struct debayer_config {
 };
 
 struct stack_config {
-	int method;				// 0=sum, 1=median, 2=average, 3=pixel max - Use to save preferences in the init file
+	int method;				// 0=sum, 1=median, 2=average, 3=pixel max, 4=pixel min - Use to save preferences in the init file
 	int normalisation_method;
 	int rej_method;
 	double memory_percent;			// percent of available memory to use for stacking

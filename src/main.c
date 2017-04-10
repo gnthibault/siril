@@ -125,6 +125,7 @@ char *siril_sources[] = {
 
 void usage(const char *command) {
     printf("\nUsage:  %s [OPTIONS] [IMAGE_FILE_TO_OPEN]\n\n", command);
+    puts("-d                      Setting argument in cwd.");
     puts("-i                      With init file name in argument. Start Siril.");
     puts("-f (or --format)        Print all supported image file formats (depending on the libraries you've installed)");
     puts("-v (or --version)       Print program name and version and exit");
@@ -143,6 +144,8 @@ int main(int argc, char *argv[]) {
 	extern int opterr;
 	gchar *siril_path;
 	char *cwd_orig = NULL;
+	gboolean forcecwd = FALSE;
+	char *cwd_forced = NULL;
 	struct sigaction sigIntHandler;
 #if (defined(__APPLE__) && defined(__MACH__))
 	int ret;
@@ -166,7 +169,7 @@ int main(int argc, char *argv[]) {
 	sigaction(SIGINT, &sigIntHandler, NULL);
 
 	while (1) {
-		signed char c = getopt(argc, argv, "i:hfv");
+		signed char c = getopt(argc, argv, "i:hfvd:");
 		if (c == '?') {
 			for (i = 1; i < argc; i++) {
 				if (argv[i][1] == '-') {
@@ -176,6 +179,8 @@ int main(int argc, char *argv[]) {
 						c = 'h';
 					else if (!strcmp(argv[i], "--format"))
 						c = 'f';
+					else if (!strcmp(argv[i], "--directory"))
+						c = 'd';
 					else {
 						usage(argv[0]);
 						exit(EXIT_FAILURE);
@@ -197,6 +202,11 @@ int main(int argc, char *argv[]) {
 		case 'f':
 			list_format_available();
 			exit(EXIT_SUCCESS);
+			break;
+		case 'd':
+			printf("test: %s\n\n\n", optarg);
+			cwd_forced = optarg;
+			forcecwd = TRUE;
 			break;
 		default:
 			fprintf(stderr, _("unknown command line parameter '%c'\n"), argv[argc - 1][1]);
@@ -407,12 +417,20 @@ int main(int argc, char *argv[]) {
 		if (cwd_orig)
 			changedir(cwd_orig);
 		open_single_image(argv[optind]);
-		gchar *newpath = g_path_get_dirname(argv[optind]);
-		changedir(newpath);
-		g_free(newpath);
+		if (!forcecwd) {
+			gchar *newpath = g_path_get_dirname(argv[optind]);
+			changedir(newpath);
+			g_free(newpath);
+		}
 	}
+
+	if (forcecwd && cwd_forced) {
+		changedir(cwd_forced);
+	}
+
 	if (cwd_orig)
 		free(cwd_orig);
+
 	gtk_main();
 
 	/* quit Siril */
