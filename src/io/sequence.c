@@ -987,7 +987,10 @@ int sequence_processing(sequence *seq, sequence_proc process, int layer,
 			if (do_photometry && seq->type == SEQ_REGULAR) {
 				gchar *strTime = strdup(fit.date_obs);
 				seq->ts = g_slist_append (seq->ts, strTime);
-				/* ugly */
+				/* ugly. Indeed it's not the correct place for that */
+#ifdef _OPENMP
+#pragma omp atomic
+#endif
 				seq->exposure = fit.exposure;
 			}
 

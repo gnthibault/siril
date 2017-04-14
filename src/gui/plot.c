@@ -142,37 +142,45 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 		seq->reference_star = -1;
 
 	for (i = 0, j = 0; i < size; i++) {
-		if (!seq->imgparam[i].incl)
+		if (!seq->imgparam[i].incl || !psfs[i])
 			continue;
-		if (psfs[i]) {
+		if (!julian0) {
+			/* X axis init */
 			if (seq->type == SEQ_SER && seq->ser_file->ts
 					&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
-				/* Get start date */
+				/* Get SER start date */
 				julian0 = (int) serTimestamp_toJulian(seq->ser_file->ts[0]);
-				double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
-
-				plot->data[j].x = julian - (double) julian0;
-				plot->err[j].x = julian - (double) julian0;
 				xlabel = calloc(XLABELSIZE, sizeof(char));
 				g_snprintf(xlabel, XLABELSIZE, "(JD) %d +", julian0);
 			} else if (seq->type == SEQ_REGULAR && seq->ts) {
-				/* Get start date */
+				/* Get FITS start date */
 				char *ts0 = g_slist_nth_data(seq->ts, 0);
-				char *tsi = g_slist_nth_data(seq->ts, i);
-
 				julian0 = (int) dateTimestamp_toJulian(ts0, seq->exposure);
-				double julian = dateTimestamp_toJulian(tsi, seq->exposure);
-
-				plot->data[j].x = julian - (double) julian0;
-				plot->err[j].x = julian - (double) julian0;
 				xlabel = calloc(XLABELSIZE, sizeof(char));
 				g_snprintf(xlabel, XLABELSIZE, "(JD) %d +", julian0);
 			} else {
-				plot->data[j].x = (double) i;
-				plot->err[j].x = (double) i;
 				xlabel = strdup(_("Frames"));
 			}
-			switch (selected_source) {
+		}
+
+		if (seq->type == SEQ_SER && seq->ser_file->ts
+				&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
+			/* Get start date */
+			double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
+			plot->data[j].x = julian - (double)julian0;
+			plot->err[j].x = julian - (double)julian0;
+		} else if (seq->type == SEQ_REGULAR && seq->ts) {
+			/* Get start date */
+			char *tsi = g_slist_nth_data(seq->ts, i);
+			double julian = dateTimestamp_toJulian(tsi, seq->exposure);
+			plot->data[j].x = julian - (double)julian0;
+			plot->err[j].x = julian - (double)julian0;
+		} else {
+			plot->data[j].x = (double) i;
+			plot->err[j].x = (double) i;
+		}
+
+		switch (selected_source) {
 			case ROUNDNESS:
 				plot->data[j].y = psfs[i]->fwhmy / psfs[i]->fwhmx;
 				break;
@@ -207,15 +215,13 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 			case Y_POSITION:
 				plot->data[j].y = psfs[i]->ypos;
 				break;
-			}
 		}
 
 		/* we'll just take the reference image point from the last data set rendered */
 		if (i == ref_image) {
-			ref.x = plot->data[i].x;
+			ref.x = plot->data[j].x;
 			ref.y = plot->data[j].y;
 		}
-
 		j++;
 	}
 	plot->nb = j;
@@ -452,13 +458,14 @@ void drawPlot() {
 
 	if (seq->reference_image == -1)
 		ref_image = 0;
-	else
-		ref_image = seq->reference_image;
+	else ref_image = seq->reference_image;
 
 	if (use_photometry) {
 		// photometry data display
 		pldata *plot;
 		update_ylabel();
+		ref.x = -1.0;
+		ref.y = -1.0;
 
 		plot = alloc_plot_data(seq->number);
 		plot_data = plot;
@@ -602,8 +609,10 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			kplot_attach_data(p, mean_d, KPLOT_LINES, NULL);	// mean plot
 			free(avg);
 
-			ref_d = kdata_array_alloc(&ref, 1);
-			kplot_attach_data(p, ref_d, KPLOT_POINTS, &cfgdata);	// ref image dot
+			if (ref.x >= 0.0 && ref.y >= 0.0) {
+				ref_d = kdata_array_alloc(&ref, 1);
+				kplot_attach_data(p, ref_d, KPLOT_POINTS, &cfgdata);	// ref image dot
+			}
 		}
 
 		width = gtk_widget_get_allocated_width(widget);
