@@ -989,7 +989,7 @@ int sequence_processing(sequence *seq, sequence_proc process, int layer,
 				seq->ts = g_slist_append (seq->ts, strTime);
 				/* ugly. Indeed it's not the correct place for that */
 #ifdef _OPENMP
-#pragma omp atomic
+#pragma omp critical
 #endif
 				seq->exposure = fit.exposure;
 			}
