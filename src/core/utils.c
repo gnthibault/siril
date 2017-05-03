@@ -25,7 +25,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <dirent.h>
+#ifndef WIN32
 #include <sys/resource.h>
+#endif
 #include <sys/stat.h>
 #include <fcntl.h>
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
@@ -39,7 +42,6 @@
 #include <sys/sysctl.h>
 #include <mach/vm_statistics.h>
 #endif
-#include <dirent.h>
 #include <ctype.h>
 #include <string.h>
 #include <assert.h>

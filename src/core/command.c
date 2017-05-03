@@ -576,14 +576,20 @@ int process_ls(int nb){
 		else {
 			sprintf(file_path, "%s", list[i]->d_name);
 		}
+#ifdef WIN32
+		if (stat(file_path, &entrystat)) {
+#else
 		if (lstat(file_path, &entrystat)) {
+#endif
 			perror("stat");
 			break;
 		}
+#ifndef WIN32
 		if (S_ISLNK(entrystat.st_mode)) {
 			siril_log_color_message(_("Link: %s\n"), "bold", list[i]->d_name);
 			continue;
 		}
+#endif
 		if (S_ISDIR(entrystat.st_mode)) {
 			siril_log_color_message(_("Directory: %s\n"), "green",
 					list[i]->d_name);
@@ -1592,15 +1598,17 @@ int processcommand(const char *line) {
 		return 0;
 	if (line[0] == '@') { // case of files
 		FILE * fp;
-		char * linef = NULL;
-		size_t lenf = 0;
-		ssize_t read;
+
 
 		fp = fopen(line + 1, "r");
 		if (fp == NULL) {
 			siril_log_message(_("File [%s] does not exist\n"), line + 1);
 			return 1;
 		}
+#if (_POSIX_C_SOURCE >= 200809L)
+		char * linef = NULL;
+		size_t lenf = 0;
+		ssize_t read;
 		while ((read = getline(&linef, &lenf, fp)) != -1) {
 			++i;
 			if (linef[0] == '#') continue;	// comments
@@ -1615,9 +1623,26 @@ int processcommand(const char *line) {
 			}
 			free(myline);
 		}
+		free(linef);
+#else
+		char linef[256];
+		while (fgets(linef, 256, fp)) {
+			++i;
+			if (linef[0] == '#') continue;	// comments
+			if (linef[0] == '\0' || linef[0] == '\n')
+				continue;
+			myline = strdup(linef);
+			parseLine(myline, sizeof(linef), &wordnb);
+			if (executeCommand(wordnb)) {
+				siril_log_message(_("Error in line: %d. Exiting batch processing\n"), i);
+				free(myline);
+				return 1;
+			}
+			free(myline);
+		}
+#endif
 
 		fclose(fp);
-		free(linef);
 	} else {
 		myline = strdup(line);
 		len = strlen(line);

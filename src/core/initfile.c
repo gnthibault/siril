@@ -23,6 +23,9 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#ifdef WIN32
+#include <direct.h>
+#endif
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -349,7 +352,11 @@ int checkinitfile() {
 		snprintf(filename, 255, "%s/.siril", home);
 		if (stat(filename, &sts) != 0) {
 			if (errno == ENOENT) {
+#ifdef WIN32
+				if (_mkdir(filename)) {
+#else
 				if (mkdir(filename, 0755)) {
+#endif
 					fprintf(stderr, "Could not create dir %s, please check\n",
 							filename);
 					return 1;
