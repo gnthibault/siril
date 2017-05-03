@@ -10,7 +10,7 @@ siril_SOURCES = \
 	core/initfile.c core/initfile.h \
 	io/conversion.c io/conversion.h io/ser.c io/ser.h io/films.c io/films.h \
 	io/image_formats_libraries.c io/image_formats_internal.c io/image_format_fits.c \
-	io/sequence.c io/seqfile.c io/single_image.c io/single_image.h \
+	io/sequence.c io/sequence.h io/seqfile.c io/single_image.c io/single_image.h \
 	io/mp4_output.h io/mp4_output.c \
 	gui/callbacks.c gui/callbacks.h gui/histogram.c gui/histogram.h \
 	gui/PSF_list.h gui/PSF_list.c gui/sequence_list.c gui/registration_preview.c \

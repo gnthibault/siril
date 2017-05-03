@@ -49,6 +49,7 @@
 #include "algos/gradient.h"
 #include "io/conversion.h"
 #include "io/films.h"
+#include "io/sequence.h"
 #include "io/ser.h"
 #include "io/single_image.h"
 #include "core/command.h"	// for processcommand()

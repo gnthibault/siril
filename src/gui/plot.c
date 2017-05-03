@@ -144,18 +144,18 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 	for (i = 0, j = 0; i < size; i++) {
 		if (!seq->imgparam[i].incl || !psfs[i])
 			continue;
-		if (!julian0) {
+		if (!julian0 && !xlabel) {
 			/* X axis init */
 			if (seq->type == SEQ_SER && seq->ser_file->ts
 					&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
 				/* Get SER start date */
-				julian0 = (int) serTimestamp_toJulian(seq->ser_file->ts[0]);
-				xlabel = calloc(XLABELSIZE, sizeof(char));
-				g_snprintf(xlabel, XLABELSIZE, "(JD) %d +", julian0);
-			} else if (seq->type == SEQ_REGULAR && seq->ts) {
+				julian0 = (int) serTimestamp_toJulian(seq->ser_file->ts[i]);
+			} else if (seq->type == SEQ_REGULAR && seq->imgparam[i].date_obs) {
 				/* Get FITS start date */
-				char *ts0 = g_slist_nth_data(seq->ts, 0);
+				char *ts0 = seq->imgparam[i].date_obs;
 				julian0 = (int) dateTimestamp_toJulian(ts0, seq->exposure);
+			}
+			if (julian0) {
 				xlabel = calloc(XLABELSIZE, sizeof(char));
 				g_snprintf(xlabel, XLABELSIZE, "(JD) %d +", julian0);
 			} else {
@@ -163,15 +163,13 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 			}
 		}
 
-		if (seq->type == SEQ_SER && seq->ser_file->ts
+		if (julian0 && seq->type == SEQ_SER && seq->ser_file->ts
 				&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
-			/* Get start date */
 			double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
 			plot->data[j].x = julian - (double)julian0;
 			plot->err[j].x = julian - (double)julian0;
-		} else if (seq->type == SEQ_REGULAR && seq->ts) {
-			/* Get start date */
-			char *tsi = g_slist_nth_data(seq->ts, i);
+		} else if (julian0 && seq->type == SEQ_REGULAR && seq->imgparam[i].date_obs) {
+			char *tsi = seq->imgparam[i].date_obs;
 			double julian = dateTimestamp_toJulian(tsi, seq->exposure);
 			plot->data[j].x = julian - (double)julian0;
 			plot->err[j].x = julian - (double)julian0;
@@ -404,6 +402,7 @@ static void free_plot_data() {
 		plot = next;
 	}
 	plot_data = NULL;
+	julian0 = 0;
 	if (xlabel) {
 		free(xlabel);
 		xlabel = NULL;
@@ -570,7 +569,7 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		kplotcfg_defaults(&cfgplot);
 		kdatacfg_defaults(&cfgdata);
 		set_colors(&cfgplot);
-		cfgplot.xaxislabel = (xlabel == NULL) ? _("Frames") : xlabel;
+		cfgplot.xaxislabel = xlabel == NULL ? _("Frames") : xlabel;
 		cfgplot.yaxislabel = ylabel;
 		cfgplot.yaxislabelrot = M_PI_2 * 3.0;
 		cfgplot.xticlabelpad = cfgplot.yticlabelpad = 10.0;

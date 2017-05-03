@@ -4,6 +4,8 @@
 #include <gsl/gsl_matrix.h>
 #include <algos/photometry.h>
 
+//in siril.h: typedef struct fwhm_struct fitted_PSF;
+
 struct fwhm_struct {
 	double B; /* average sky background value */
 	double A; /* amplitude */

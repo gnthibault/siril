@@ -37,6 +37,7 @@
 #include <libgen.h>
 
 #include "core/siril.h"
+#include "io/sequence.h"
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "core/undo.h"
@@ -342,7 +343,7 @@ int check_only_one_film_seq(char* name) {
 	return retval;
 }
 
-/* load a sequence and initialized everything that relates */
+/* load a sequence and initializes everything that relates */
 int set_seq(const char *name){
 	sequence *seq;
 	int image_to_load;
@@ -819,7 +820,6 @@ void initialize_sequence(sequence *seq, gboolean is_zeroed) {
 	seq->reference_image = -1;	// uninit value
 	seq->reference_star = -1;	// uninit value
 	seq->type = SEQ_REGULAR;
-	seq->ts = NULL;
 	for (i=0; i<PREVIEW_NB; i++) {
 		seq->previewX[i] = -1;
 		seq->previewY[i] = -1;
@@ -861,11 +861,13 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 			int status = 0;
 			fits_close_file(seq->fptr[i], &status);
 		}
-		if (seq->imgparam && seq->imgparam[i].stats) {
-			free(seq->imgparam[i].stats);
+		if (seq->imgparam) {
+			if (seq->imgparam[i].stats)
+				free(seq->imgparam[i].stats);
+			if (seq->imgparam[i].date_obs)
+				free(seq->imgparam[i].date_obs);
 		}
 	}
-	if (seq->ts) g_slist_free_full(seq->ts, g_free);
 	if (seq->seqname)	free(seq->seqname);
 	if (seq->layers)	free(seq->layers);
 	if (seq->imgparam)	free(seq->imgparam);
@@ -939,197 +941,6 @@ gboolean sequence_is_loaded() {
 	return (com.seq.seqname != NULL && com.seq.imgparam != NULL);
 }
 
-/*****************************************************************************
- *                             SEQUENCE PROCESSING                           *
- * **************************************************************************/
-
-/* Start a processing on an area of all images of the sequence seq, on layer
- * layer if it applies. Another generic processing method is available in
- * core/processing.c, called generic_sequence.
- * The see coment in siril.h for help on process format.
- */
-int sequence_processing(sequence *seq, sequence_proc process, int layer,
-		gboolean run_in_thread, gboolean run_in_parallel,
-		gboolean do_photometry, void *arg) {
-	int i, abort = 0;
-	float cur_nb = 0.f, nb_frames;
-	rectangle area;
-	fits fit;
-
-	if (!com.selection.w || !com.selection.h) {
-		siril_log_message(_("No selection was made for a selection-based sequence processing\n"));
-		return 1;
-	}
-	memcpy(&area, &com.selection, sizeof(rectangle));
-	memset(&fit, 0, sizeof(fits));
-
-	nb_frames = (float)seq->number;
-
-	/* this loops could be run in parallel, but now the area depends on the previous star
-	 * detection, which makes it a bit hard to keep track of the star movement... */
-#ifdef _OPENMP
-#pragma omp parallel for firstprivate(fit) schedule(static) if(run_in_parallel && ((seq->type == SEQ_REGULAR && fits_is_reentrant()) || seq->type == SEQ_SER))
-#endif
-	for (i=0; i<seq->number; ++i) {
-		if (!abort) {
-			if (run_in_thread && !get_thread_run()) {
-				abort = 1;
-				continue;
-			}
-			enforce_area_in_image(&area, seq);
-
-			/* opening the image */
-			if (seq_read_frame_part(seq, layer, i, &fit, &area, do_photometry)) {
-				abort = 1;
-				continue;
-			}
-
-			if (do_photometry && seq->type == SEQ_REGULAR) {
-				gchar *strTime = strdup(fit.date_obs);
-				seq->ts = g_slist_append (seq->ts, strTime);
-				/* ugly. Indeed it's not the correct place for that */
-#ifdef _OPENMP
-#pragma omp critical
-#endif
-				seq->exposure = fit.exposure;
-			}
-
-			/* processing the image
-			 * warning: area may be modified, only if !run_in_parallel */
-			if (process(seq, layer, i, &fit, &area, arg) < 0) {
-				abort = 1;
-				continue;
-			}
-#ifdef _OPENMP
-#pragma omp atomic
-#endif
-			cur_nb += 1.f;
-			set_progress_bar_data(NULL, cur_nb/nb_frames);
-		}
-	}
-	return abort;
-}
-
-struct fwhm_seq_proc_struct {
-	gboolean follow_star;		// input
-	fitted_PSF **psf;		// input allocated, output result
-};
-
-
-/* Computes FWHM for a sequence image and store data in the sequence regdata.
- * seq_layer is the corresponding layer in the raw image from the sequence.
- * source_area is the area from which fit was extracted from the full frame.
- * when arg->follow_star is true, source_area is centered on the found star.
- */
-int seqprocess_fwhm(sequence *seq, int seq_layer, int frame_no, fits *fit, rectangle *source_area, void *arg) {
-	struct fwhm_seq_proc_struct *args = (struct fwhm_seq_proc_struct *)arg;
-	rectangle area;
-	area.x = area.y = 0;
-	area.w = fit->rx; area.h = fit->ry;
-	assert(seq_layer < seq->nb_layers);
-	fitted_PSF *result = psf_get_minimisation(fit, 0, &area);
-	if (result) {
-		result->xpos = result->x0 + source_area->x;
-		result->ypos = source_area->y + source_area->h - result->y0;
-		args->psf[frame_no] = result;
-
-		/* let's move source_area to center it on the star */
-		if (args->follow_star) {
-			source_area->x = round_to_int(result->xpos) - source_area->w/2;
-			source_area->y = round_to_int(result->ypos) - source_area->h/2;
-		}
-		return 0;
-	} else {
-		args->psf[frame_no] = NULL;
-		return 1;
-	}
-}
-
-/* Computes PSF for all images in a sequence.
- * Prints PSF data if print_psf is true, only position if false. */
-int do_fwhm_sequence_processing(sequence *seq, int layer, gboolean print_psf, gboolean follow_star, gboolean run_in_thread, gboolean for_registration) {
-	int i, j, retval;
-	struct fwhm_seq_proc_struct args;
-
-	siril_log_message(_("Starting sequence processing of PSF\n"));
-	set_progress_bar_data(_("Computing PSF on selected star"), PROGRESS_NONE);
-
-	args.follow_star = follow_star;
-	args.psf = malloc(seq->number * sizeof(fitted_PSF *));
-	retval = sequence_processing(seq, &seqprocess_fwhm, layer, run_in_thread, !follow_star, !for_registration, &args);
-
-	if (retval) {
-		set_progress_bar_data(_("Failed to compute PSF for the sequence. Ready."), PROGRESS_NONE);
-		set_cursor_waiting(FALSE);
-		return 1;
-	}
-	siril_log_message(_("Finished sequence processing of PSF\n"));
-
-	// for registration use: store data in seq->regparam
-	if (for_registration || !seq->regparam[layer]) {
-		check_or_allocate_regparam(seq, layer);
-		for (i = 0; i < seq->number; i++) {
-			seq->regparam[layer][i].fwhm_data = args.psf[i];
-			if (args.psf[i])
-				seq->regparam[layer][i].fwhm = args.psf[i]->fwhmx;
-		}
-		// the data put in regparam if !for_registration will not be saved
-		// should we writeseqfile(seq); ?
-
-		if (for_registration)
-			free(args.psf);
-		seq->needs_saving = TRUE;
-	}
-
-	// for photometry use: store data in seq->photometry
-	if (!for_registration) {
-		for (i = 0; i < MAX_SEQPSF && seq->photometry[i]; i++);
-		if (i == MAX_SEQPSF) i = 0;
-		seq->photometry[i] = args.psf;
-	}
-
-	// update the list in the GUI
-	if (seq->type != SEQ_INTERNAL)
-		fill_sequence_list(seq, layer);
-
-	// deprecated soon
-	if (print_psf) {
-		siril_log_message(_("See the console for a dump of star data over the sequence (stdout)\n"));
-		fprintf(stdout, _("# image_no amplitude magnitude fwhm x y\n"));
-		for (i = 0; i < seq->number; i++) {
-			fitted_PSF *star = seq->regparam[layer][i].fwhm_data;
-			fitted_PSF *phot0 = NULL;
-			if (seq->photometry[0])
-				phot0 = seq->photometry[0][0];
-
-			/* registration case */
-			if (star) {
-				// see algos/PSF.h for more fields to print
-				fprintf(stdout, "%d\t%f\t%f\t%f\t%f\t%f\n", i, star->A,
-						star->mag + com.magOffset, star->fwhmx, star->xpos,
-						star->ypos);
-			}
-			/* photometry case */
-			else if (phot0) {
-				j = 0;
-				while (j < MAX_SEQPSF && seq->photometry[j]) {
-					j++;
-				}
-				fitted_PSF *phot = seq->photometry[j - 1][i];
-
-				if (phot) {
-					fprintf(stdout, "%d\t%f\t%f\t%f\t%f\t%f\n", i, phot->A,
-							phot->mag + com.magOffset, phot->fwhmx, phot->xpos,
-							phot->ypos);
-				}
-			}
-		}
-	}
-	set_fwhm_star_as_star_list_with_layer(seq, layer);
-	set_progress_bar_data(_("Finished computing PSF for the sequence. Ready."), PROGRESS_NONE);
-	return 0;
-}
-
 /* requires seq->nb_layers and seq->number to be already set */
 void check_or_allocate_regparam(sequence *seq, int layer) {
 	assert(layer < seq->nb_layers);
@@ -1162,6 +973,7 @@ sequence *create_internal_sequence(int size) {
 		seq->imgparam[i].filenum = i;
 		seq->imgparam[i].incl = 1;
 		seq->imgparam[i].stats = NULL;
+		seq->imgparam[i].date_obs = NULL;
 }
 check_or_allocate_regparam(seq, 0);
 	return seq;
@@ -1779,5 +1591,210 @@ void update_export_crop_label() {
 	if (com.selection.w && com.selection.h)
 		gtk_label_set_text(label, _("Cropping to selection"));
 	else gtk_label_set_text(label, _("Select area to crop"));
+}
+
+/********************************************************************
+ *                                             __                   *
+ *                   ___  ___  __ _ _ __  ___ / _|                  *
+ *                  / __|/ _ \/ _` | '_ \/ __| |_                   *
+ *                  \__ \  __/ (_| | |_) \__ \  _|                  *
+ *                  |___/\___|\__, | .__/|___/_|                    *
+ *                               |_|_|                              *
+ ********************************************************************/
+
+struct seqpsf_args {
+	gboolean for_registration;
+	framing_mode framing;
+
+	/* The seqpsf result for each image */
+	GSList *list;
+};
+
+struct seqpsf_data {
+	int image_index;
+	fitted_PSF *psf;
+	double exposure;
+};
+
+/* Computes FWHM for a sequence image.
+ * area is the area from which fit was extracted from the full frame.
+ * when the framing is set to follow star, args->area is centered on the found star
+ */
+int seqpsf_image_hook(struct generic_seq_args *args, int index, fits *fit, rectangle *area) {
+	struct seqpsf_args *spsfargs = (struct seqpsf_args *)args->user;
+	struct seqpsf_data *data = malloc(sizeof(struct seqpsf_data));
+	data->image_index = index;
+
+	rectangle psfarea = { .x = 0, .y = 0, .w = fit->rx, .h = fit->ry };
+	data->psf = psf_get_minimisation(fit, 0, &psfarea);
+	if (data->psf) {
+		data->psf->xpos = data->psf->x0 + area->x;
+		data->psf->ypos = area->y + area->h - data->psf->y0;
+
+		/* let's move args->area to center it on the star */
+		if (spsfargs->framing == FOLLOW_STAR_FRAME) {
+			args->area.x = round_to_int(data->psf->xpos) - args->area.w/2;
+			args->area.y = round_to_int(data->psf->ypos) - args->area.h/2;
+		}
+
+		if (!args->seq->imgparam[index].date_obs && fit->date_obs[0] != '\0')
+			args->seq->imgparam[index].date_obs = strdup(fit->date_obs);
+		data->exposure = fit->exposure;
+	}
+	else {
+		siril_log_color_message("No star found in the area image %d around %d,%d\n",
+				"red", index, area->x, area->y);
+	}
+
+#ifdef _OPENMP
+	omp_set_lock(&args->lock);
+#endif
+	spsfargs->list = g_slist_prepend(spsfargs->list, data);
+#ifdef _OPENMP
+	omp_unset_lock(&args->lock);
+#endif
+	return !data->psf;
+}
+
+gboolean end_seqpsf(gpointer p) {
+	struct generic_seq_args *args = (struct generic_seq_args *)p;
+	struct seqpsf_args *spsfargs = (struct seqpsf_args *)args->user;
+	sequence *seq = args->seq;
+	int layer = args->layer_for_partial;
+	int photometry_index;
+	gboolean displayed_warning = FALSE, write_to_regdata = FALSE;
+	gboolean dont_stop_thread;
+
+	if (args->retval)
+		goto proper_ending;
+
+	spsfargs->list = g_slist_reverse(spsfargs->list);
+
+	if (spsfargs->for_registration || !seq->regparam[layer]) {
+		check_or_allocate_regparam(seq, layer);
+		write_to_regdata = TRUE;
+	}
+	if (!spsfargs->for_registration) {
+		int i;
+		for (i = 0; i < MAX_SEQPSF && seq->photometry[i]; i++);
+		if (i == MAX_SEQPSF) {
+			free_photometry_set(seq, 0);
+		       	i = 0;
+		}
+		seq->photometry[i] = calloc(seq->number, sizeof(photometry *));
+		photometry_index = i;
+	}
+
+	GSList *iterator = spsfargs->list;
+	while (iterator) {
+		struct seqpsf_data *data = iterator->data;
+		/* check exposure consistency (only obtained when !for_registration) */
+		if (!spsfargs->for_registration && seq->exposure > 0.0 &&
+				seq->exposure != data->exposure && !displayed_warning) {
+			siril_log_color_message("Star analysis does not give consistent results when exposure changes across the sequence\n", "red");
+			displayed_warning = TRUE;
+		}
+		seq->exposure = data->exposure;
+
+		if (write_to_regdata) {
+			seq->regparam[layer][data->image_index].fwhm_data = data->psf;
+			if (data->psf)
+				seq->regparam[layer][data->image_index].fwhm = data->psf->fwhmx;
+		}
+
+		// for photometry use: store data in seq->photometry
+		if (!spsfargs->for_registration) {
+			seq->photometry[photometry_index][data->image_index] = data->psf;
+		}
+
+		iterator = g_slist_next(iterator);
+	}
+
+	// for registration use: store data in seq->regparam
+	if (spsfargs->for_registration || !seq->regparam[layer]) {
+		// the data put in regparam if !for_registration is not yet saved
+		seq->needs_saving = TRUE;
+	}
+
+	if (com.seq.needs_saving)
+		writeseqfile(&com.seq);
+
+	set_fwhm_star_as_star_list_with_layer(seq, layer);
+
+	if (!args->already_in_a_thread) {
+		/* do here all GUI-related items, because it runs in the main thread.
+		 * Most of these things are already done in end_register_idle
+		 * in case seqpsf is called for registration. */
+		// update the list in the GUI
+		if (seq->type != SEQ_INTERNAL)
+			fill_sequence_list(seq, layer);
+
+		set_layers_for_registration();	// update display of available reg data
+		drawPlot();
+		notify_new_photometry();	// switch to and update plot tab
+	}
+
+proper_ending:
+	dont_stop_thread = args->already_in_a_thread;
+	if (spsfargs->list)
+		g_slist_free(spsfargs->list);
+	free(spsfargs);
+
+	if (dont_stop_thread) {
+		// we must not call stop_processing_thread() here
+		return FALSE;
+	} else {
+		free(args);
+		return end_generic(NULL);
+	}
+}
+
+/* process PSF for the given sequence, on the given layer, the area of the
+ * image selection (com.selection), as a threaded operation or not.
+ */
+int seqpsf(sequence *seq, int layer, gboolean for_registration,
+		framing_mode framing, gboolean run_in_thread) {
+	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	struct seqpsf_args *spsfargs = malloc(sizeof(struct seqpsf_args));
+
+	if (framing == REGISTERED_FRAME && !seq->regparam[layer])
+		framing = ORIGINAL_FRAME;
+
+	if (com.selection.w <= 0 || com.selection.h <= 0){
+		siril_log_message(_("Select an area first\n"));
+		return 1;
+	}
+
+	spsfargs->for_registration = for_registration;
+	spsfargs->framing = framing;
+	spsfargs->list = NULL;	// GSList init is NULL
+
+	args->seq = seq;
+	args->partial_image = TRUE;
+	memcpy(&args->area, &com.selection, sizeof(rectangle));
+	args->layer_for_partial = layer;
+	args->regdata_for_partial = framing == REGISTERED_FRAME;
+	args->get_photometry_data_for_partial = !for_registration;
+	args->filtering_criterion = seq_filter_included;
+	args->nb_filtered_images = seq->selnum;
+	args->prepare_hook = NULL;
+	args->finalize_hook = NULL;
+	args->image_hook = seqpsf_image_hook;
+	args->idle_function = end_seqpsf;
+	args->description = "PSF on area";
+	args->has_output = FALSE;
+	args->user = spsfargs;
+	args->already_in_a_thread = !run_in_thread;
+	args->parallel = framing != FOLLOW_STAR_FRAME;
+
+	if (run_in_thread) {
+		start_in_new_thread(generic_sequence_worker, args);
+		return 0;
+	} else {
+		generic_sequence_worker(args);
+		int retval = args->retval;
+		free(args);
+		return retval;
+	}
 }
 

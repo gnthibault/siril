@@ -299,13 +299,8 @@ struct imdata {
 	imstats *stats;		/* statistics of the image, used as a cache for full image first
 				   channel statistics, particularly used in stacking normalization.
 				   NULL if not available, this is stored in seqfile if non NULL */
+	char *date_obs;		/* date of the observation, processed and copied from the header */
 };
-
-/* Procedure signature for sequence processing.
- * Returns < 0 for an error that should stop the processing on the sequence.
- * Other return values are not used.
- * Processed data should be written in the sequence data directly. */
-typedef int (*sequence_proc)(sequence *seq, int seq_layer, int frame_no, fits *fit, rectangle *source_area, void *arg);
 
 /* preprocessing data from GUI */
 struct preprocessing_data {
@@ -345,7 +340,6 @@ struct sequ {
 	/* beg and end are used prior to imgparam allocation, hence their usefulness */
 	int beg;		// imgparam[0]->filenum
 	int end;		// imgparam[number-1]->filenum
-	GSList *ts;		// list of timestamps
 	double exposure;	// exposure of frames (we assume they are all identical)
 
 	/* registration previsualisation and manual alignment data */

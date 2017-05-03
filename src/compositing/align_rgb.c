@@ -27,6 +27,7 @@
 #include "gui/callbacks.h"
 #include "core/proto.h"
 #include "registration/registration.h"
+#include "io/sequence.h"
 #include "io/single_image.h"
 
 #define REGLAYER 0

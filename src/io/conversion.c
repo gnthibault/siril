@@ -34,6 +34,7 @@
 #include "core/processing.h"
 #include "io/conversion.h"
 #include "io/films.h"
+#include "io/sequence.h"
 #include "io/ser.h"
 #include "gui/callbacks.h"
 #include "algos/demosaicing.h"

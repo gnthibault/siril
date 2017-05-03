@@ -45,6 +45,7 @@
 #include "algos/PSF.h"
 #include "gui/PSF_list.h"
 #include "algos/quality.h"
+#include "io/sequence.h"
 #include "io/ser.h"
 #ifdef HAVE_OPENCV
 #include "opencv/opencv.h"
@@ -113,8 +114,6 @@ void initialize_registration_methods() {
 	reg_methods[i++] = new_reg_method(_("Enhanced Correlation Coefficient (planetary - surfaces)"),
 			&register_ecc, REQUIRES_NO_SELECTION, REGTYPE_PLANETARY);
 #endif
-	//if (theli_is_available())
-	//	reg_methods[i++] = new_reg_method("theli", register_theli, REQUIRES_NO_SELECTION);
 	reg_methods[i] = NULL;
 
 	tip = g_string_new ("");
@@ -415,8 +414,11 @@ int register_shift_fwhm(struct registration_args *args) {
 	 * images to register, which provides FWHM but also star coordinates */
 	// TODO: detect that it was already computed, and don't do it again
 	// -> should be done at a higher level and passed in the args
-	if (do_fwhm_sequence_processing(args->seq, args->layer, TRUE, args->follow_star,
-			args->run_in_thread, TRUE))	// stores in regparam
+	framing_mode framing = ORIGINAL_FRAME;
+	if (args->follow_star)
+		framing = FOLLOW_STAR_FRAME;
+
+	if (seqpsf(args->seq, args->layer, TRUE, framing, FALSE))
 		return 1;
 
 	current_regdata = args->seq->regparam[args->layer];
@@ -1263,6 +1265,7 @@ static gboolean end_register_idle(gpointer p) {
 failed_end:
 #endif
 	update_stack_interface();
+	update_used_memory();
 	set_cursor_waiting(FALSE);
 #ifdef MAC_INTEGRATION
 	GtkosxApplication *osx_app = gtkosx_application_get();

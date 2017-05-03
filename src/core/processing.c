@@ -6,13 +6,14 @@
 #include "processing.h"
 #include "proto.h"
 #include "gui/callbacks.h"
+#include "io/sequence.h"
 #include "io/ser.h"
 
 // called in start_in_new_thread only
 // works in parallel if the arg->parallel is TRUE for FITS or SER sequences
 gpointer generic_sequence_worker(gpointer p) {
 	struct generic_seq_args *args = (struct generic_seq_args *) p;
-	struct timeval t_end;
+	struct timeval t_start, t_end;
 	int frame;	// output frame index
 	int input_idx;	// index of the frame being processed in the sequence
 	int *index_mapping = NULL;
@@ -27,6 +28,8 @@ gpointer generic_sequence_worker(gpointer p) {
 	assert(args->seq);
 	assert(args->image_hook);
 	set_progress_bar_data(NULL, PROGRESS_RESET);
+	gettimeofday(&t_start, NULL);
+
 	if (args->nb_filtered_images > 0)	// XXX can it be zero?
 		nb_frames = args->nb_filtered_images;
 	else 	nb_frames = args->seq->number;
@@ -70,6 +73,9 @@ gpointer generic_sequence_worker(gpointer p) {
 		g_free(msg);
 	}
 
+#ifdef _OPENMP
+	omp_init_lock(&args->lock);
+#endif
 	memset(&fit, 0, sizeof(fits));
 
 #ifdef _OPENMP
@@ -79,6 +85,8 @@ gpointer generic_sequence_worker(gpointer p) {
 	for (frame = 0; frame < nb_frames; frame++) {
 		if (!abort) {
 			char filename[256], msg[256];
+			rectangle area = { .x = args->area.x, .y = args->area.y,
+				.w = args->area.w, .h = args->area.h };
 
 			if (!get_thread_run()) {
 				abort = 1;
@@ -93,26 +101,51 @@ gpointer generic_sequence_worker(gpointer p) {
 				continue;
 			}
 
-			if (seq_read_frame(args->seq, input_idx, &fit)) {
+			if (args->partial_image) {
+				// if we run in parallel, it will not be the same for all
+				// and we don't want to overwrite the original anyway
+				if (args->regdata_for_partial) {
+					int shiftx = args->seq->regparam[args->layer_for_partial][input_idx].shiftx;
+					int shifty = args->seq->regparam[args->layer_for_partial][input_idx].shifty;
+					area.x -= shiftx;
+					area.y += shifty;
+				}
+
+				// args->area may be modified in hooks
+				enforce_area_in_image(&area, args->seq);
+				if (seq_read_frame_part(args->seq,
+							args->layer_for_partial,
+							input_idx, &fit, &area,
+							args->get_photometry_data_for_partial))
+				{
+					abort = 1;
+					clearfits(&fit);
+					continue;
+				}
+			} else {
+				if (seq_read_frame(args->seq, input_idx, &fit)) {
+					abort = 1;
+					clearfits(&fit);
+					continue;
+				}
+			}
+
+			if (args->image_hook(args, input_idx, &fit, &area)) {
 				abort = 1;
 				clearfits(&fit);
 				continue;
 			}
 
-			if (args->image_hook(args, input_idx, &fit)) {
-				abort = 1;
-				clearfits(&fit);
-				continue;
-			}
-
-			int retval;
-			if (args->save_hook)
-				retval = args->save_hook(args, frame, input_idx, &fit);
-			else retval = generic_save(args, frame, input_idx, &fit);
-			if (retval) {
-				abort = 1;
-				clearfits(&fit);
-				continue;
+			if (args->has_output) {
+				int retval;
+				if (args->save_hook)
+					retval = args->save_hook(args, frame, input_idx, &fit);
+				else retval = generic_save(args, frame, input_idx, &fit);
+				if (retval) {
+					abort = 1;
+					clearfits(&fit);
+					continue;
+				}
 			}
 
 			clearfits(&fit);
@@ -135,19 +168,27 @@ gpointer generic_sequence_worker(gpointer p) {
 		set_progress_bar_data(_("Sequence processing succeeded."), PROGRESS_RESET);
 		siril_log_message(_("Sequence processing succeeded.\n"));
 		gettimeofday(&t_end, NULL);
-		show_time(args->t_start, t_end);
+		show_time(t_start, t_end);
 	}
 
 the_end:
+#ifdef _OPENMP
+	omp_destroy_lock(&args->lock);
+#endif
 	if (index_mapping) free(index_mapping);
 	if (args->finalize_hook && args->finalize_hook(args)) {
 		siril_log_message(_("Finalizing sequence processing failed.\n"));
 		args->retval = 1;
 	}
 
-	if (args->idle_function)
-		gdk_threads_add_idle(args->idle_function, args);
-	else gdk_threads_add_idle(end_generic_sequence, args);
+	if (args->already_in_a_thread) {
+		if (args->idle_function)
+			args->idle_function(args);
+	} else {
+		if (args->idle_function)
+			gdk_threads_add_idle(args->idle_function, args);
+		else gdk_threads_add_idle(end_generic_sequence, args);
+	}
 	return NULL;
 }
 
@@ -155,7 +196,8 @@ the_end:
 gboolean end_generic_sequence(gpointer p) {
 	struct generic_seq_args *args = (struct generic_seq_args *) p;
 
-	if (args->load_new_sequence && args->new_seq_prefix && !args->retval) {
+	if (args->has_output && args->load_new_sequence &&
+			args->new_seq_prefix && !args->retval) {
 		char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(args->seq->seqname) + 5);
 		gchar *basename = g_path_get_basename(args->seq->seqname);
 		sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);

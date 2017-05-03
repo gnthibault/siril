@@ -32,6 +32,7 @@
 
 #include "core/siril.h"
 #include "io/ser.h"
+#include "io/sequence.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
@@ -431,12 +432,14 @@ int buildseqfile(sequence *seq, int force_recompute) {
 				seq->imgparam[seq->number].filenum = i;
 				seq->imgparam[seq->number].incl = SEQUENCE_DEFAULT_INCLUDE;
 				seq->imgparam[seq->number].stats = NULL;
+				seq->imgparam[seq->number].date_obs = NULL;
 				seq->number++;
 			}
 		} else {
 			seq->imgparam[i].filenum = i;
 			seq->imgparam[i].incl = SEQUENCE_DEFAULT_INCLUDE;
 			seq->imgparam[i].stats = NULL;
+			seq->imgparam[i].date_obs = NULL;
 		}
 	}
 #if SEQUENCE_DEFAULT_INCLUDE == TRUE

@@ -47,6 +47,7 @@
 #include "gui/callbacks.h"
 #include "algos/colors.h"
 #include "gui/histogram.h"
+#include "io/sequence.h"
 #include "io/single_image.h"
 #include "algos/gradient.h"
 #include "gui/PSF_list.h"
@@ -1466,7 +1467,7 @@ static int fmul_layer(fits *a, int layer, float coeff) {
  *      B A N D I N G      R E D U C T I O N      M A N A G E M E N T        *
  ****************************************************************************/
 
-int banding_image_hook(struct generic_seq_args *args, int i, fits *fit) {
+int banding_image_hook(struct generic_seq_args *args, int i, fits *fit, rectangle *_) {
 	struct banding_data *banding_args = (struct banding_data *)args->user;
 	return BandingEngine(fit, banding_args->sigma, banding_args->amount,
 			banding_args->protect_highlights, banding_args->applyRotation);
@@ -1475,23 +1476,25 @@ int banding_image_hook(struct generic_seq_args *args, int i, fits *fit) {
 void apply_banding_to_sequence(struct banding_data *banding_args) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = &com.seq;
+	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = com.seq.selnum;
-	args->force_ser_output = FALSE;
 	args->prepare_hook = ser_prepare_hook;
 	args->finalize_hook = ser_finalize_hook;
 	args->save_hook = NULL;
-	args->parallel = TRUE;
 	args->image_hook = banding_image_hook;
 	args->idle_function = NULL;
-	args->user = banding_args;
 	args->description = "Banding Reduction";
+	args->has_output = TRUE;
 	args->new_seq_prefix = banding_args->seqEntry;
 	args->load_new_sequence = TRUE;
+	args->force_ser_output = FALSE;
+	args->user = banding_args;
+	args->already_in_a_thread = FALSE;
+	args->parallel = TRUE;
 
 	banding_args->fit = NULL;	// not used here
 
-	gettimeofday(&args->t_start, NULL);
 	start_in_new_thread(generic_sequence_worker, args);
 }
 

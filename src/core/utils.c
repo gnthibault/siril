@@ -50,6 +50,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "io/conversion.h"
+#include "io/sequence.h"
 #include "gui/callbacks.h"
 #include "io/single_image.h"
 
@@ -232,7 +233,7 @@ int changedir(const char *dir) {
 				str);
 		return 0;
 	}
-	siril_log_message(_("Could not change directory.\n"));
+	siril_log_message(_("Could not change directory to '%s'.\n"), dir);
 	return 1;
 }
 

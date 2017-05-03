@@ -22,6 +22,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "io/sequence.h"
 #include "io/single_image.h"
 
 static GtkListStore *list_store = NULL;

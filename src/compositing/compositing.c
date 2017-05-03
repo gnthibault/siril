@@ -29,6 +29,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "algos/colors.h"
+#include "io/sequence.h"
 #include "io/single_image.h"
 #include "gui/PSF_list.h"
 #include "gui/callbacks.h"

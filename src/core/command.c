@@ -39,6 +39,7 @@
 #include "core/initfile.h"
 #include "core/processing.h"
 #include "io/conversion.h"
+#include "io/sequence.h"
 #include "io/single_image.h"
 #include "gui/callbacks.h"
 #include "gui/PSF_list.h"
@@ -761,22 +762,6 @@ int process_psf(int nb){
 	return 0;
 }
 
-gboolean end_seqpsf(gpointer arg) {
-	set_layers_for_registration();	// update display of available reg data
-	if (com.seq.needs_saving)
-		writeseqfile(&com.seq);
-	drawPlot();
-	notify_new_photometry();
-	return end_generic(arg);
-}
-
-void *_psf_thread(void *arg) {
-	int layer = (intptr_t) arg;
-	do_fwhm_sequence_processing(&com.seq, layer, TRUE, TRUE, TRUE, FALSE);
-	gdk_threads_add_idle(end_seqpsf, NULL);
-	return NULL;
-}
-
 int process_seq_psf(int nb) {
 	if (get_thread_run()) {
 		siril_log_message(_("Another task is already in progress, ignoring new request.\n"));
@@ -793,8 +778,16 @@ int process_seq_psf(int nb) {
 
 	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
 	if (sequence_is_loaded() && layer != -1) {
+		framing_mode framing = REGISTERED_FRAME;
+		if (framing == REGISTERED_FRAME && !com.seq.regparam[layer])
+			framing = ORIGINAL_FRAME;
+		if (framing == ORIGINAL_FRAME) {
+			GtkToggleButton *follow = GTK_TOGGLE_BUTTON(lookup_widget("followStarCheckButton"));
+			if (gtk_toggle_button_get_active(follow))
+				framing = FOLLOW_STAR_FRAME;
+		}
 		siril_log_message(_("Running the PSF on the loaded sequence, layer %d\n"), layer);
-		start_in_new_thread(_psf_thread, (void *)(intptr_t)layer);
+		seqpsf(&com.seq, layer, FALSE, REGISTERED_FRAME, TRUE);
 		return 0;
 	}
 	else {

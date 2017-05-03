@@ -27,6 +27,7 @@
 #include "core/proto.h"
 #include "gui/callbacks.h"
 #include "io/conversion.h"
+#include "io/sequence.h"
 #include "io/single_image.h"
 #include "gui/PSF_list.h"
 #include "gui/histogram.h"

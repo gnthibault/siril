@@ -28,6 +28,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "io/sequence.h"
 #include "gui/callbacks.h"
 
 static char *MIPSHI[] = {"MIPS-HI", "CWHITE", NULL };
@@ -48,6 +49,23 @@ static char *Exposure[] = { "EXPTIME", "EXPOSURE", NULL };
 		fits_read_key(fptr, type, keyword[__iter__], value, NULL, &__status__); \
 		__iter__++; \
 	} while ((keyword[__iter__]) && (__status__ > 0)); \
+}
+
+static void read_fits_date_obs_header(fits *fit) {
+	int status = 0;
+	fits_read_key(fit->fptr, TSTRING, "DATE-OBS", &(fit->date_obs), NULL, &status);
+
+	status = 0;
+	char ut_start[FLEN_VALUE];
+	/** Case seen in some FITS files. Needed to get date back in SER conversion **/
+	fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL,
+				&status);
+	if (ut_start[0] != '\0' && fit->date_obs[2] == '/') {
+		int year, month, day;
+		sscanf(fit->date_obs, "%02d/%02d/%04d", &day, &month, &year);
+		g_snprintf(fit->date_obs, sizeof(fit->date_obs), "%04d-%02d-%02dT%s",
+				year, month, day, ut_start);
+	}
 }
 
 /* reading the FITS header to get useful information */
@@ -97,21 +115,7 @@ static void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TSTRING, "BAYERPAT", &(fit->bayer_pattern), NULL,
 			&status);
 
-	status = 0;
-	fits_read_key(fit->fptr, TSTRING, "DATE-OBS", &(fit->date_obs), NULL,
-			&status);
-
-	status = 0;
-	char ut_start[FLEN_VALUE];
-	/** Case seen in some FITS files. Needed to get date back in SER conversion **/
-	fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL,
-				&status);
-	if (ut_start[0] != '\0' && fit->date_obs[2] == '/') {
-		int year, month, day;
-		sscanf(fit->date_obs, "%02d/%02d/%04d", &day, &month, &year);
-		g_snprintf(fit->date_obs, sizeof(fit->date_obs), "%04d-%02d-%02dT%s",
-				year, month, day, ut_start);
-	}
+	read_fits_date_obs_header(fit);
 
 	status = 0;
 	fits_read_key(fit->fptr, TSTRING, "DATE", &(fit->date), NULL,
@@ -485,19 +489,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		fit->bitpix = USHORT_IMG;
 
 	if (do_photometry) {
-		status = 0;
-		fits_read_key(fit->fptr, TSTRING, "DATE-OBS", &(fit->date_obs), NULL,
-				&status);
-		status = 0;
-		char ut_start[FLEN_VALUE];
-		/** Case seen in some FITS files. Needed for photo **/
-		fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL, &status);
-		if (ut_start[0] != '\0' && fit->date_obs[2] == '/') {
-			int year, month, day;
-			sscanf(fit->date_obs, "%02d/%02d/%04d", &day, &month, &year);
-			g_snprintf(fit->date_obs, sizeof(fit->date_obs),
-					"%04d-%02d-%02dT%s", year, month, day, ut_start);
-		}
+		read_fits_date_obs_header(fit);
 		status = 0;
 		__tryToFindKeywords(fit->fptr, TDOUBLE, Exposure, &fit->exposure);
 
@@ -545,8 +537,8 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		dataType = TUSHORT;
 		break;
 	default:
-		siril_log_message(_("Only Siril FITS images "
-				"can be used with partial image reading.\n"));
+		siril_log_color_message(_("Only Siril FITS images "), "red",
+				"can be used with partial image reading.\n");
 		return -1;
 	}
 	fit->naxes[2] = 1;	// force to 1 layer
@@ -642,6 +634,20 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer,
 	return 0;
 }
 
+int fits_get_date_obs(const char *name, fits *f) {
+	int status = 0;
+	if (fits_open_diskfile(&(f->fptr), name, READONLY, &status))
+		report_fits_error(status);
+	if (status)
+		return status;
+
+	read_fits_date_obs_header(f);
+
+	status = 0;
+	fits_close_file(f->fptr, &status);
+	return status;
+}
+
 /* creates, saves and closes the file associated to f, overwriting previous  */
 int savefits(const char *name, fits *f) {
 	int status, i;
@@ -670,6 +676,7 @@ int savefits(const char *name, fits *f) {
 		report_fits_error(status);
 		return 1;
 	}
+	status = 0;
 	if (fits_create_img(f->fptr, f->bitpix, f->naxis, f->naxes, &status)) {
 		report_fits_error(status);
 		return 1;
@@ -677,6 +684,7 @@ int savefits(const char *name, fits *f) {
 
 	pixel_count = f->naxes[0] * f->naxes[1] * f->naxes[2];
 
+	status = 0;
 	switch (f->bitpix) {
 	case BYTE_IMG:
 		data8 = calloc(pixel_count, sizeof(BYTE));
@@ -722,6 +730,7 @@ int savefits(const char *name, fits *f) {
 
 	if (!status)
 		save_fits_header(f);
+	status = 0;
 	fits_close_file(f->fptr, &status);
 	if (!status)
 		siril_log_message(_("Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"),
