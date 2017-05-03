@@ -140,7 +140,7 @@ int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD *
 	WORD *buf;
 	uint32 rowsperstrip;
 	uint16 config;
-	u_long nrow, row;
+	unsigned long nrow, row;
 	char *msg;
 
 	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);

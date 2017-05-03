@@ -674,8 +674,8 @@ static int _pic_read_header(struct pic_struct *pic_file) {
 	assert(pic_file->nbplane != 0);
 	memcpy(&pic_file->hi, header + 118, 2);
 	memcpy(&pic_file->lo, header + 120, 2);
-	pic_file->date = strndup(header + 94, 10);
-	pic_file->time = strndup(header + 104, 12);
+	pic_file->date = g_strndup(header + 94, 10);
+	pic_file->time = g_strndup(header + 104, 12);
 	return 0;
 }
 

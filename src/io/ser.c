@@ -297,7 +297,7 @@ static int ser_read_header(struct ser_struct *ser_file) {
 	memcpy(&ser_file->date_utc, header + 170, 8);
 
 	// strings
-	ser_file->file_id = strndup(header, 14);
+	ser_file->file_id = g_strndup(header, 14);
 
 	memcpy(ser_file->observer, header + 42, 40);
 	memcpy(ser_file->instrument, header + 82, 40);
