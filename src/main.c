@@ -27,6 +27,9 @@
 #ifdef MAC_INTEGRATION
 #include "gtkmacintegration/gtkosxapplication.h"
 #endif
+#ifdef WIN32
+#include <windows.h>
+#endif
 #include <unistd.h>
 #include <signal.h>
 #include <stdio.h>
@@ -133,7 +136,7 @@ void usage(const char *command) {
 }
 
 void signal_handled(int s) {
-	//printf("Caught signal %d\n", s);
+	// printf("Caught signal %d\n", s);
 	undo_flush();
 	exit(EXIT_FAILURE);
 }
@@ -146,14 +149,17 @@ int main(int argc, char *argv[]) {
 	char *cwd_orig = NULL;
 	gboolean forcecwd = FALSE;
 	char *cwd_forced = NULL;
-	struct sigaction sigIntHandler;
 #if (defined(__APPLE__) && defined(__MACH__))
 	int ret;
 	pid_t pid;
 	char path[PROC_PIDPATHINFO_MAXSIZE];
 #endif
 	
+#ifdef WIN32
+	_putenv_s("LC_NUMERIC", "C");
+#else
 	setenv("LC_NUMERIC", "C", 1);		// avoid possible bugs using french separator ","
+#endif
 	opterr = 0;
 	memset(&com, 0, sizeof(struct cominf));	// needed?
 	com.initfile = NULL;
@@ -163,10 +169,7 @@ int main(int argc, char *argv[]) {
 	textdomain(PACKAGE);
 
 	/* Caught signals */
-	sigIntHandler.sa_handler = signal_handled;
-	sigemptyset(&sigIntHandler.sa_mask);
-	sigIntHandler.sa_flags = 0;
-	sigaction(SIGINT, &sigIntHandler, NULL);
+	signal(SIGINT, signal_handled);
 
 	while (1) {
 		signed char c = getopt(argc, argv, "i:hfvd:");

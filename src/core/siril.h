@@ -21,10 +21,12 @@
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
 
+#undef max
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
        __typeof__ (b) _b = (b); \
      _a > _b ? _a : _b; })
+#undef min
  #define min(a,b) \
    ({ __typeof__ (a) _a = (a); \
        __typeof__ (b) _b = (b); \
