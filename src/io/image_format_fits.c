@@ -537,8 +537,8 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		dataType = TUSHORT;
 		break;
 	default:
-		siril_log_color_message(_("Only Siril FITS images "), "red",
-				"can be used with partial image reading.\n");
+		siril_log_color_message(_("Only Siril FITS images "
+				"can be used with partial image reading.\n"), "red");
 		return -1;
 	}
 	fit->naxes[2] = 1;	// force to 1 layer
