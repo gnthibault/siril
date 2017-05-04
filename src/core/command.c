@@ -787,7 +787,7 @@ int process_seq_psf(int nb) {
 				framing = FOLLOW_STAR_FRAME;
 		}
 		siril_log_message(_("Running the PSF on the loaded sequence, layer %d\n"), layer);
-		seqpsf(&com.seq, layer, FALSE, REGISTERED_FRAME, TRUE);
+		seqpsf(&com.seq, layer, FALSE, framing, TRUE);
 		return 0;
 	}
 	else {

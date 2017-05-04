@@ -1782,7 +1782,7 @@ int seqpsf(sequence *seq, int layer, gboolean for_registration,
 	args->finalize_hook = NULL;
 	args->image_hook = seqpsf_image_hook;
 	args->idle_function = end_seqpsf;
-	args->description = "PSF on area";
+	args->description = _("PSF on area");
 	args->has_output = FALSE;
 	args->user = spsfargs;
 	args->already_in_a_thread = !run_in_thread;
