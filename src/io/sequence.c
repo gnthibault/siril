@@ -1754,8 +1754,6 @@ proper_ending:
  */
 int seqpsf(sequence *seq, int layer, gboolean for_registration,
 		framing_mode framing, gboolean run_in_thread) {
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
-	struct seqpsf_args *spsfargs = malloc(sizeof(struct seqpsf_args));
 
 	if (framing == REGISTERED_FRAME && !seq->regparam[layer])
 		framing = ORIGINAL_FRAME;
@@ -1764,6 +1762,9 @@ int seqpsf(sequence *seq, int layer, gboolean for_registration,
 		siril_log_message(_("Select an area first\n"));
 		return 1;
 	}
+
+	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	struct seqpsf_args *spsfargs = malloc(sizeof(struct seqpsf_args));
 
 	spsfargs->for_registration = for_registration;
 	spsfargs->framing = framing;

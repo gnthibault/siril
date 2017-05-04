@@ -1629,6 +1629,7 @@ int processcommand(const char *line) {
 			if (executeCommand(wordnb)) {
 				siril_log_message(_("Error in line: %d. Exiting batch processing\n"), i);
 				free(myline);
+				fclose(fp);
 				return 1;
 			}
 			free(myline);
