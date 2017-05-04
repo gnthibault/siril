@@ -37,6 +37,8 @@
 #include "algos/demosaicing.h"
 #include "io/ser.h"
 
+static gboolean warning = FALSE;
+
 /* 62135596800 sec from year 0001 to 01 janv. 1970 00:00:00 GMT */
 static const uint64_t epochTicks = 621355968000000000UL;
 static const uint64_t ticksPerSecond = 10000000;
@@ -701,15 +703,18 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 			sensor_pattern bayer;
 			bayer = retrieveSERBayerPattern(type_ser);
 			if (bayer != com.debayer.bayer_pattern) {
-				if (bayer == BAYER_FILTER_NONE) {
+				if (bayer == BAYER_FILTER_NONE  && warning == FALSE) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 				}
 				else {
-					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
-							" from Bayer pattern in settings (%s). Overriding settings.\n"),
-							"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
+					if (warning == FALSE) {
+						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+								"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
+					}
 					com.debayer.bayer_pattern = bayer;
 				}
+				warning = TRUE;
 			}
 		}
 		debayer(fit, com.debayer.bayer_inter);
@@ -811,15 +816,18 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 			sensor_pattern bayer;
 			bayer = retrieveSERBayerPattern(type_ser);
 			if (bayer != com.debayer.bayer_pattern) {
-				if (bayer == BAYER_FILTER_NONE) {
+				if (bayer == BAYER_FILTER_NONE && warning == FALSE) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 				}
 				else {
-					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
-							" from Bayer pattern in settings (%s). Overriding settings.\n"),
-							"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
+					if (warning == FALSE) {
+						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+								"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
+					}
 					com.debayer.bayer_pattern = bayer;
 				}
+				warning = TRUE;
 			}
 		}
 		if (layer < 0 || layer >= 3) {

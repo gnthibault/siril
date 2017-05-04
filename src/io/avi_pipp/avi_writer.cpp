@@ -24,7 +24,8 @@
 #include "avi_writer.h"
 #include <cstdlib>
 #include <new>
-#include <mutex>
+//#include <mutex>
+#include <glib.h>
 
 using namespace std;
 
@@ -35,7 +36,8 @@ using namespace std;
 c_pipp_video_write *avi_output_files[MAX_CONCURRENT_AVI_FILES] = {0};
 
 // Mutex to protect the above table
-std::mutex lut_mutex;
+//std::mutex lut_mutex;
+GMutex lut_mutex;
 
 // ------------------------------------------
 // Create a new AVI file
@@ -76,7 +78,8 @@ int32_t avi_file_create(
     // Allocate a file ID from the table - start
 	int count;
 	// Lock mutex to protect table
-    lut_mutex.lock();
+    //lut_mutex.lock();
+	g_mutex_lock(&lut_mutex);
     for (count = 0; count < MAX_CONCURRENT_AVI_FILES; count++) {
         if (avi_output_files[count] == NULL) {
             // This ID slot is free
@@ -89,7 +92,9 @@ int32_t avi_file_create(
     }
 
 	// Unlock the mutex so that other threads can access the table
-	lut_mutex.unlock();
+//	lut_mutex.unlock();
+	g_mutex_unlock(&lut_mutex);
+
 	// Allocate a file ID from the table - done
 
 	if (count == MAX_CONCURRENT_AVI_FILES) {
