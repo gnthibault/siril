@@ -176,7 +176,7 @@ int check_seq(int force) {
 				continue;
 			new_seq = calloc(1, sizeof(sequence));
 			initialize_sequence(new_seq, TRUE);
-			new_seq->seqname = strndup(file->d_name, fnlen-4);
+			new_seq->seqname = g_strndup(file->d_name, fnlen-4);
 			new_seq->beg = 0;
 			new_seq->end = ser_file->frame_count-1;
 			new_seq->number = ser_file->frame_count;
@@ -197,7 +197,7 @@ int check_seq(int force) {
 			new_seq = calloc(1, sizeof(sequence));
 			initialize_sequence(new_seq, TRUE);
 			int len = strlen(ext);
-			new_seq->seqname = strndup(file->d_name, fnlen-(len+1));
+			new_seq->seqname = g_strndup(file->d_name, fnlen-(len+1));
 			new_seq->beg = 0;
 			new_seq->end = film_file->frame_count-1;
 			new_seq->number = film_file->frame_count;
@@ -306,7 +306,7 @@ int check_only_one_film_seq(char* name) {
 
 		new_seq = calloc(1, sizeof(sequence));
 		initialize_sequence(new_seq, TRUE);
-		new_seq->seqname = strndup(name, fnlen-4);
+		new_seq->seqname = g_strndup(name, fnlen-4);
 		new_seq->beg = 0;
 		new_seq->end = ser_file->frame_count-1;
 		new_seq->number = ser_file->frame_count;
@@ -324,7 +324,7 @@ int check_only_one_film_seq(char* name) {
 		new_seq = calloc(1, sizeof(sequence));
 		initialize_sequence(new_seq, TRUE);
 		int len = strlen(ext);
-		new_seq->seqname = strndup(name, fnlen-len-1);
+		new_seq->seqname = g_strndup(name, fnlen-len-1);
 		new_seq->beg = 0;
 		new_seq->end = film_file->frame_count-1;
 		new_seq->number = film_file->frame_count;

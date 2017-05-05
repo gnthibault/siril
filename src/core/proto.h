@@ -122,6 +122,10 @@ char*	format_basename(char *root);
 float	computePente(WORD *lo, WORD *hi);
 void	load_css_style_sheet (char *path);
 double	encodeJD(dateTime dt);
+#ifdef WIN32
+int ListDirectoryContents(const char *sDir);
+int ListSequences(const char *sDir, const char *sequence_name_to_select, GtkComboBoxText *seqcombo, int *index_of_seq_to_load);
+#endif
 
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,

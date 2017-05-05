@@ -144,6 +144,7 @@
 	z.im = x.re * y.im + x.im * y.re ; \
    } 
 
+#undef CF_DIF
 #define CF_DIF(x,y,z) \
    { \
 	z.re = x.re - y.re; \

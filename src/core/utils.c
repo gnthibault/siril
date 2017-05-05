@@ -28,6 +28,8 @@
 #include <dirent.h>
 #ifndef WIN32
 #include <sys/resource.h>
+#else
+#include <windows.h>
 #endif
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -244,8 +246,6 @@ int changedir(const char *dir) {
 int update_sequences_list(const char *sequence_name_to_select) {
 	GtkComboBoxText *seqcombo;
 	struct dirent **list;
-	int i, n;
-	char filename[256];
 	int number_of_loaded_sequences = 0;
 	int index_of_seq_to_load = -1;
 
@@ -253,6 +253,12 @@ int update_sequences_list(const char *sequence_name_to_select) {
 	seqcombo = GTK_COMBO_BOX_TEXT(
 			gtk_builder_get_object(builder, "sequence_list_combobox"));
 	gtk_combo_box_text_remove_all(seqcombo);
+
+#ifdef WIN32
+	number_of_loaded_sequences = ListSequences(com.wd, sequence_name_to_select, seqcombo, &index_of_seq_to_load);
+#else
+	int i, n;
+	char filename[256];
 
 	n = scandir(com.wd, &list, 0, alphasort);
 	if (n < 0)
@@ -279,6 +285,7 @@ int update_sequences_list(const char *sequence_name_to_select) {
 	for (i = 0; i < n; i++)
 		free(list[i]);
 	free(list);
+#endif
 
 	if (!number_of_loaded_sequences) {
 		fprintf(stderr, "No valid sequence found in CWD.\n");
@@ -667,3 +674,108 @@ double encodeJD(dateTime dt) {
 		return jd1 + 2 - (dt.year / 100) + (dt.year / 400);
 	}
 }
+
+#ifdef WIN32
+int ListDirectoryContents(const char *sDir) {
+	WIN32_FIND_DATA fdFile;
+	HANDLE hFind = NULL;
+	const char *ext;
+	char sPath[2048];
+
+	//Specify a file mask. *.* = We want everything!
+	sprintf(sPath, "%s\\*.*", sDir);
+
+	if ((hFind = FindFirstFile(sPath, &fdFile)) == INVALID_HANDLE_VALUE) {
+		printf("Path not found: [%s]\n", sDir);
+		return 1;
+	}
+
+	do {
+		//Find first file will always return "."
+		//    and ".." as the first two directories.
+		if (strcmp(fdFile.cFileName, ".") != 0
+				&& strcmp(fdFile.cFileName, "..") != 0) {
+			//Build up our file path using the passed in
+			//  [sDir] and the file/foldername we just found:
+			sprintf(sPath, "%s\\%s", sDir, fdFile.cFileName);
+
+			//Is the entity a File or Folder?
+			if (fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+				siril_log_color_message(_("Directory: %s\n"), "green",	fdFile.cFileName);
+			} else {
+				//printf("File: %s\n", sPath);
+				ext = get_filename_ext(fdFile.cFileName);
+				if (!ext)
+					continue;
+				image_type type = get_type_for_extension(ext);
+				if (type != TYPEUNDEF) {
+					if (type == TYPEAVI || type == TYPESER)
+						siril_log_color_message(_("Sequence: %s\n"), "salmon",
+								fdFile.cFileName);
+					else if (type == TYPEFITS)
+						siril_log_color_message(_("Image: %s\n"), "plum", fdFile.cFileName);
+					else
+						siril_log_color_message(_("Image: %s\n"), "red", fdFile.cFileName);
+				} else if (!strncmp(ext, "seq", 4))
+					siril_log_color_message(_("Sequence: %s\n"), "blue", fdFile.cFileName);
+			}
+		}
+	} while (FindNextFile(hFind, &fdFile)); //Find the next file.
+
+	FindClose(hFind);
+
+	return 0;
+}
+
+int ListSequences(const char *sDir, const char *sequence_name_to_select, GtkComboBoxText *seqcombo,
+		int *index_of_seq_to_load) {
+	WIN32_FIND_DATA fdFile;
+	HANDLE hFind = NULL;
+	char sPath[2048];
+	char filename[256];
+	int number_of_loaded_sequences = 0;
+
+	//Specify a file mask. *.* = We want everything!
+	sprintf(sPath, "%s\\*.*", sDir);
+
+	if ((hFind = FindFirstFile(sPath, &fdFile)) == INVALID_HANDLE_VALUE) {
+		printf("Path not found: [%s]\n", sDir);
+		return 1;
+	}
+
+	do {
+		//Find first file will always return "."
+		//    and ".." as the first two directories.
+		if (strcmp(fdFile.cFileName, ".") != 0
+				&& strcmp(fdFile.cFileName, "..") != 0) {
+			//Build up our file path using the passed in
+			//  [sDir] and the file/foldername we just found:
+			sprintf(sPath, "%s\\%s", sDir, fdFile.cFileName);
+
+			//Is the entity a File or Folder?
+			if (!(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+				char *suf;
+
+				if ((suf = strstr(fdFile.cFileName, ".seq")) && strlen(suf) == 4) {
+					sequence *seq = readseqfile(fdFile.cFileName);
+					if (seq != NULL) {
+						strncpy(filename, fdFile.cFileName, 255);
+						free_sequence(seq, TRUE);
+						gtk_combo_box_text_append_text(seqcombo, filename);
+						if (sequence_name_to_select
+								&& !strncmp(filename, sequence_name_to_select,
+										strlen(filename))) {
+							*index_of_seq_to_load = number_of_loaded_sequences;
+						}
+						++number_of_loaded_sequences;
+					}
+				}
+			}
+		}
+	} while (FindNextFile(hFind, &fdFile)); //Find the next file.
+
+	FindClose(hFind);
+
+	return number_of_loaded_sequences;
+}
+#endif

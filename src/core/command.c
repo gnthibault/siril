@@ -522,7 +522,6 @@ int process_log(int nb){
 int process_ls(int nb){
 	struct dirent **list;
 	char filename[256], *path;
-	int i, n;
 	
 	filename[0]='\0';
 	/* If a path is given in argument */
@@ -561,6 +560,11 @@ int process_ls(int nb){
 		return 1;
 	}
 
+#ifdef WIN32
+	ListDirectoryContents(path);
+#else
+	int i, n;
+
 	n = scandir(path, &list, 0, alphasort);
 	if (n < 0)
 		perror("scandir");
@@ -577,20 +581,15 @@ int process_ls(int nb){
 		else {
 			sprintf(file_path, "%s", list[i]->d_name);
 		}
-#ifdef WIN32
-		if (stat(file_path, &entrystat)) {
-#else
+
 		if (lstat(file_path, &entrystat)) {
-#endif
 			perror("stat");
 			break;
 		}
-#ifndef WIN32
 		if (S_ISLNK(entrystat.st_mode)) {
 			siril_log_color_message(_("Link: %s\n"), "bold", list[i]->d_name);
 			continue;
 		}
-#endif
 		if (S_ISDIR(entrystat.st_mode)) {
 			siril_log_color_message(_("Directory: %s\n"), "green",
 					list[i]->d_name);
@@ -611,10 +610,11 @@ int process_ls(int nb){
 		} else if (!strncmp(ext, "seq", 4))
 			siril_log_color_message(_("Sequence: %s\n"), "blue", list[i]->d_name);
 	}
-	siril_log_message(_("********* END OF THE LIST *********\n"));
 	for (i = 0; i < n; i++)
 		free(list[i]);
 	free(list);
+#endif
+	siril_log_message(_("********* END OF THE LIST *********\n"));
 	free(path);
 
 	return 0;
