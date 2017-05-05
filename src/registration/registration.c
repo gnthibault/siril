@@ -599,18 +599,18 @@ int register_star_alignment(struct registration_args *args) {
 		refstars[i] = tmp;
 		refstars[i+1] = NULL;
 		i++;
-    }
+	}
 
 #ifdef DEBUG
-		FILE *pfile;
+	FILE *pfile;
 
-		pfile = fopen("ref.txt", "w+");
-		fprintf(pfile, "REFERENCE IMAGE\n");
-		for (i = 0; i < MAX_STARS_FITTED; i++) {
-			fprintf(pfile, "%.3lf\t%.3lf\t%.3lf\n",
-					refstars[i]->xpos, refstars[i]->ypos, refstars[i]->mag);
-		}
-		fclose(pfile);
+	pfile = fopen("ref.txt", "w+");
+	fprintf(pfile, "REFERENCE IMAGE\n");
+	for (i = 0; i < MAX_STARS_FITTED; i++) {
+		fprintf(pfile, "%.3lf\t%.3lf\t%.3lf\n",
+				refstars[i]->xpos, refstars[i]->ypos, refstars[i]->mag);
+	}
+	fclose(pfile);
 #endif
 	fitted_stars = (sf.nb_stars > MAX_STARS_FITTED) ? MAX_STARS_FITTED : sf.nb_stars;
 	FWHM_average(refstars, &FWHMx, &FWHMy, fitted_stars);
@@ -655,7 +655,6 @@ int register_star_alignment(struct registration_args *args) {
 			}
 			if (!args->process_all_frames && !args->seq->imgparam[frame].incl) {
 				skipped++;
-				cur_nb += 1.f;
 				continue;
 			}
 
@@ -700,7 +699,7 @@ int register_star_alignment(struct registration_args *args) {
 #endif
 
 					nbpoints = (sf.nb_stars < fitted_stars) ?
-									sf.nb_stars : fitted_stars;
+						sf.nb_stars : fitted_stars;
 
 					if (star_match(stars, refstars, nbpoints, &trans)) {
 						siril_log_color_message(_("Cannot perform star matching. Image %d skipped\n"),
