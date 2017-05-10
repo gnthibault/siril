@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-04 10:16+0200\n"
+"POT-Creation-Date: 2017-05-10 13:08+0200\n"
 "PO-Revision-Date: 2017-03-23 17:19+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -2576,7 +2576,7 @@ msgstr ""
 "开启对齐处理。将使用所选定的方法和参考通道来对齐队列中的图像（在“图像队列”标"
 "签页中载入，当前队列名称也会在窗口底部显示）。"
 
-#: ../src/gui/siril3.glade.h:600 ../src/registration/registration.c:1024
+#: ../src/gui/siril3.glade.h:600 ../src/registration/registration.c:1023
 msgid "Load a sequence first."
 msgstr "请先载入队列！"
 
@@ -3408,7 +3408,7 @@ msgid "Error in layers alignment."
 msgstr "通道对齐错误。"
 
 #: ../src/compositing/align_rgb.c:117 ../src/compositing/compositing.c:608
-#: ../src/registration/registration.c:1262
+#: ../src/registration/registration.c:1261
 msgid "Registration complete."
 msgstr "对齐完成。"
 
@@ -3457,7 +3457,7 @@ msgstr "必须先期载入至少两个通道！\n"
 #: ../src/gui/callbacks.c:5658 ../src/gui/callbacks.c:5716
 #: ../src/io/conversion.c:485 ../src/io/image_formats_libraries.c:97
 #: ../src/io/image_formats_libraries.c:154
-#: ../src/registration/registration.c:1148
+#: ../src/registration/registration.c:1147
 msgid "Warning"
 msgstr "警告"
 
@@ -3495,7 +3495,7 @@ msgstr "Readjusting layer %d to %g times bright\n"
 #: ../src/gui/callbacks.c:4966 ../src/gui/callbacks.c:5303
 #: ../src/gui/callbacks.c:5450 ../src/gui/callbacks.c:5759
 #: ../src/gui/callbacks.c:5908 ../src/io/conversion.c:454
-#: ../src/registration/registration.c:1137 ../src/stacking/stacking.c:1890
+#: ../src/registration/registration.c:1136 ../src/stacking/stacking.c:1890
 #: ../src/stacking/stacking.c:2017
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Another task is already in progress, ignoring new request.\n"
@@ -3537,11 +3537,11 @@ msgstr "Wavelet: maximum number of plans for this image size is %d\n"
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: type must be %d or %d\n"
 
-#: ../src/core/command.c:554
+#: ../src/core/command.c:553
 msgid "Cannot list files, set working directory first.\n"
 msgstr "无法获得文件列表，请先设置工作目录！\n"
 
-#: ../src/core/command.c:560
+#: ../src/core/command.c:559
 msgid "Siril cannot open the directory.\n"
 msgstr "Siril无法打开目录。\n"
 
@@ -3550,22 +3550,24 @@ msgstr "Siril无法打开目录。\n"
 msgid "Link: %s\n"
 msgstr "链接：%s\n"
 
-#: ../src/core/command.c:595
+#: ../src/core/command.c:594 ../src/core/utils.c:704
 #, c-format
 msgid "Directory: %s\n"
 msgstr "目录：%s\n"
 
-#: ../src/core/command.c:605 ../src/core/command.c:612
+#: ../src/core/command.c:604 ../src/core/command.c:611 ../src/core/utils.c:713
+#: ../src/core/utils.c:720
 #, c-format
 msgid "Sequence: %s\n"
 msgstr "队列：%s\n"
 
-#: ../src/core/command.c:608 ../src/core/command.c:610
+#: ../src/core/command.c:607 ../src/core/command.c:609 ../src/core/utils.c:716
+#: ../src/core/utils.c:718
 #, c-format
 msgid "Image: %s\n"
 msgstr "图像：%s\n"
 
-#: ../src/core/command.c:614 ../src/core/command.c:1498
+#: ../src/core/command.c:617 ../src/core/command.c:1498
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* 列表完 *********\n"
 
@@ -3859,7 +3861,7 @@ msgstr "imoper: images don't have the same size (w = %u|%u, h = %u|%u)\n"
 msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr "图像不具有统一大小 (w = %d|%d, h = %d|%d)\n"
 
-#: ../src/core/siril.c:202 ../src/core/utils.c:445 ../src/gui/callbacks.c:2430
+#: ../src/core/siril.c:202 ../src/core/utils.c:452 ../src/gui/callbacks.c:2430
 #: ../src/gui/callbacks.c:5018 ../src/gui/callbacks.c:5039
 #: ../src/gui/callbacks.c:5466 ../src/gui/callbacks.c:5472
 #: ../src/gui/callbacks.c:5497 ../src/gui/plot.c:328 ../src/gui/plot.c:387
@@ -3868,7 +3870,7 @@ msgstr "图像不具有统一大小 (w = %d|%d, h = %d|%d)\n"
 #: ../src/io/image_format_fits.c:204 ../src/io/image_format_fits.c:226
 #: ../src/io/image_format_fits.c:240 ../src/io/image_format_fits.c:255
 #: ../src/io/image_format_fits.c:357 ../src/io/image_format_fits.c:366
-#: ../src/io/image_format_fits.c:725 ../src/io/image_formats_internal.c:47
+#: ../src/io/image_format_fits.c:726 ../src/io/image_formats_internal.c:47
 #: ../src/io/image_formats_internal.c:102
 #: ../src/io/image_formats_internal.c:167
 #: ../src/io/image_formats_internal.c:335
@@ -4016,40 +4018,40 @@ msgstr "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
 msgid "Noise standard deviation: calculating...\n"
 msgstr "噪声标准背离：计算中...\n"
 
-#: ../src/core/utils.c:226
+#: ../src/core/utils.c:228
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "设置当前工作目录（CWD）为 '%s'\n"
 
-#: ../src/core/utils.c:236
+#: ../src/core/utils.c:238
 #, fuzzy, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr "无法更改目录。\n"
 
-#: ../src/core/utils.c:419
+#: ../src/core/utils.c:426
 msgid "Filename is too long, not expanding it\n"
 msgstr "文件名太长了\n"
 
-#: ../src/core/utils.c:445
+#: ../src/core/utils.c:452
 msgid "File not found"
 msgstr "文件未找到"
 
-#: ../src/core/utils.c:582
+#: ../src/core/utils.c:589
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Checking GTK version ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:601
+#: ../src/core/utils.c:608
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:607
+#: ../src/core/utils.c:614
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 msgstr "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 
-#: ../src/core/utils.c:617
+#: ../src/core/utils.c:624
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "成功载入'%s'\n"
@@ -4831,11 +4833,11 @@ msgstr "保存为3个FITS文件无法执行，因为源图像没有包含三个�
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "在超过一个通道的图像上无法执行debayer\n"
 
-#: ../src/io/conversion.c:757 ../src/io/ser.c:705 ../src/io/ser.c:815
+#: ../src/io/conversion.c:757 ../src/io/ser.c:711 ../src/io/ser.c:824
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
-#: ../src/io/conversion.c:760 ../src/io/ser.c:708 ../src/io/ser.c:818
+#: ../src/io/conversion.c:760 ../src/io/ser.c:715 ../src/io/ser.c:828
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -4932,17 +4934,17 @@ msgstr "FITS read partial: there is no layer %d in the image %s\n"
 msgid "Only Siril FITS images can be used with partial image reading.\n"
 msgstr "Only Siril FITS images can be used with partial image reading.\n"
 
-#: ../src/io/image_format_fits.c:571
+#: ../src/io/image_format_fits.c:572
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Loaded partial FITS file %s\n"
 
-#: ../src/io/image_format_fits.c:723
+#: ../src/io/image_format_fits.c:724
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr "错误：企图以不支持的格式(%d)来保存一个FITS文件。\n"
 
-#: ../src/io/image_format_fits.c:735
+#: ../src/io/image_format_fits.c:736
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
@@ -5330,38 +5332,38 @@ msgstr "裁减到所选区域"
 msgid "PSF on area"
 msgstr ""
 
-#: ../src/io/ser.c:254
+#: ../src/io/ser.c:260
 msgid "Trying to fix broken SER file...\n"
 msgstr "尝试修复损坏的SER文件...\n"
 
-#: ../src/io/ser.c:325
+#: ../src/io/ser.c:331
 msgid "SER file has been fixed...\n"
 msgstr "SER文件已被修复…\n"
 
-#: ../src/io/ser.c:416
+#: ../src/io/ser.c:422
 msgid ""
 "Writing to SER files from larger than 16-bit FITS images is not yet "
 "implemented\n"
 msgstr "以超过16位的FITS图像为源生成SER文件的功能尚未实现\n"
 
-#: ../src/io/ser.c:577
+#: ../src/io/ser.c:583
 #, c-format
 msgid "Created SER file %s\n"
 msgstr "Created SER file %s\n"
 
-#: ../src/io/ser.c:743 ../src/io/ser.c:942
+#: ../src/io/ser.c:752 ../src/io/ser.c:954
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "这个类型的拜耳滤镜排列模式尚未被支持。\n"
 
-#: ../src/io/ser.c:826
+#: ../src/io/ser.c:838
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 
-#: ../src/io/ser.c:853 ../src/io/ser.c:914
+#: ../src/io/ser.c:865 ../src/io/ser.c:926
 msgid "Out of memory - aborting\n"
 msgstr "内存不足，异常中止\n"
 
-#: ../src/io/ser.c:963
+#: ../src/io/ser.c:975
 msgid "Trying to add an image of different size in a SER\n"
 msgstr "试图在SER文件中加入不是一致尺寸的图像\n"
 
@@ -5400,9 +5402,9 @@ msgid "Successfully loaded '%s%s'\n"
 msgstr "Successfully loaded '%s%s'\n"
 
 #: ../src/main.c:256
-#, c-format
-msgid "Unable to read file: %s\n"
-msgstr "无法读取文件：%s\n"
+#, fuzzy, c-format
+msgid "%s. Looking into another directory...\n"
+msgstr "Siril无法打开目录。\n"
 
 #: ../src/main.c:262
 #, c-format
@@ -5513,20 +5515,20 @@ msgid "Register: could not load first image to register, aborting.\n"
 msgstr "Register: could not load first image to register, aborting.\n"
 
 #: ../src/registration/registration.c:294
-#: ../src/registration/registration.c:880
+#: ../src/registration/registration.c:879
 #, c-format
 msgid "Register: processing image %s\n"
 msgstr "对齐：处理图像 %s\n"
 
 #: ../src/registration/registration.c:396
 #: ../src/registration/registration.c:486
-#: ../src/registration/registration.c:782
-#: ../src/registration/registration.c:937
+#: ../src/registration/registration.c:781
+#: ../src/registration/registration.c:936
 msgid "Registration finished.\n"
 msgstr "对齐结束。\n"
 
 #: ../src/registration/registration.c:397
-#: ../src/registration/registration.c:940
+#: ../src/registration/registration.c:939
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "最佳帧： #%d.\n"
@@ -5586,7 +5588,7 @@ msgid "Not handled yet\n"
 msgstr "Not handled yet\n"
 
 #: ../src/registration/registration.c:566
-#: ../src/registration/registration.c:840
+#: ../src/registration/registration.c:839
 msgid "Could not load reference image\n"
 msgstr "无法载入参考帧\n"
 
@@ -5598,64 +5600,64 @@ msgstr "参考帧:\n"
 msgid "There are not enough stars in reference image to perform alignment\n"
 msgstr "参考帧中没有足够数量的星点用于执行对齐\n"
 
-#: ../src/registration/registration.c:676
+#: ../src/registration/registration.c:675
 #, c-format
 msgid "Frame %d:\n"
 msgstr "第%d帧：\n"
 
-#: ../src/registration/registration.c:681
+#: ../src/registration/registration.c:680
 #, c-format
 msgid "Not enough stars. Image %d skipped\n"
 msgstr "Not enough stars. Image %d skipped\n"
 
-#: ../src/registration/registration.c:706
+#: ../src/registration/registration.c:705
 #, c-format
 msgid "Cannot perform star matching. Image %d skipped\n"
 msgstr "Cannot perform star matching. Image %d skipped\n"
 
-#: ../src/registration/registration.c:783
+#: ../src/registration/registration.c:782
 #, c-format
 msgid "%d images processed.\n"
 msgstr "%d images processed.\n"
 
-#: ../src/registration/registration.c:785
+#: ../src/registration/registration.c:784
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr "Total: %d failed, %d registered.\n"
 
-#: ../src/registration/registration.c:792
+#: ../src/registration/registration.c:791
 msgid "Registration aborted.\n"
 msgstr "对齐操作异常中止。\n"
 
-#: ../src/registration/registration.c:893
+#: ../src/registration/registration.c:892
 #, c-format
 msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "无法在帧%d中执行ECC对齐\n"
 
-#: ../src/registration/registration.c:939
+#: ../src/registration/registration.c:938
 #, c-format
 msgid "%d frames were excluded.\n"
 msgstr "%d 号帧被排除。\n"
 
-#: ../src/registration/registration.c:1027
+#: ../src/registration/registration.c:1026
 msgid "Select an area in image first, and select images in the sequence."
 msgstr "先在图像中选定一个区域，再于队列中选定一幅图像。"
 
-#: ../src/registration/registration.c:1029
+#: ../src/registration/registration.c:1028
 msgid "Select images in the sequence."
 msgstr "在队列里选定一幅图像。"
 
-#: ../src/registration/registration.c:1031
+#: ../src/registration/registration.c:1030
 msgid "Select an area in image first."
 msgstr "请先在图像上选择一个区域！"
 
-#: ../src/registration/registration.c:1147
+#: ../src/registration/registration.c:1146
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
 msgstr "所有的先决条件不适合对齐，请先选择一个矩形。\n"
 
-#: ../src/registration/registration.c:1182
+#: ../src/registration/registration.c:1181
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "对齐：处理中，使用方法：%s\n"
@@ -5976,6 +5978,9 @@ msgstr "基于品质 > %.2f (%d 图像)"
 #, c-format
 msgid "Based on quality"
 msgstr "基于品质"
+
+#~ msgid "Unable to read file: %s\n"
+#~ msgstr "无法读取文件：%s\n"
 
 #~ msgid "No selection was made for a selection-based sequence processing\n"
 #~ msgstr "No selection was made for a selection-based sequence processing\n"

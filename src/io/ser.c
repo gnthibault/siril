@@ -78,6 +78,9 @@ static int display_date(uint64_t timestamp, char *txt) {
  * This is not thread-safe
  */
 static time_t __timegm(struct tm *tm) {
+#ifdef WIN32
+	return _mkgmtime(tm);
+#else
 	time_t ret;
 	char *tz;
 
@@ -91,6 +94,7 @@ static time_t __timegm(struct tm *tm) {
 		unsetenv("TZ");
 	tzset();
 	return ret;
+#endif
 }
 
 /* Convert FITS keyword DATE in a UNIX time format

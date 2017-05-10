@@ -253,7 +253,7 @@ int main(int argc, char *argv[]) {
 			g_free(path);
 			break;
 		}
-		fprintf (stderr, _("Unable to read file: %s\n"), err->message);
+		fprintf (stderr, _("%s. Looking into another directory...\n"), err->message);
 		g_free(path);
 		g_error_free(err);
 		i++;

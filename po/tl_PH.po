@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-04 10:16+0200\n"
+"POT-Creation-Date: 2017-05-10 13:08+0200\n"
 "PO-Revision-Date: 2016-07-08 16:10+0800\n"
 "Last-Translator: Bamm Gabriana <bamm@distroastro.org>\n"
 "Language-Team: \n"
@@ -2491,7 +2491,7 @@ msgid ""
 "sequences' tab, current sequence name is at the bottom of the window too)."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:600 ../src/registration/registration.c:1024
+#: ../src/gui/siril3.glade.h:600 ../src/registration/registration.c:1023
 msgid "Load a sequence first."
 msgstr ""
 
@@ -3238,7 +3238,7 @@ msgid "Error in layers alignment."
 msgstr ""
 
 #: ../src/compositing/align_rgb.c:117 ../src/compositing/compositing.c:608
-#: ../src/registration/registration.c:1262
+#: ../src/registration/registration.c:1261
 msgid "Registration complete."
 msgstr ""
 
@@ -3287,7 +3287,7 @@ msgstr ""
 #: ../src/gui/callbacks.c:5658 ../src/gui/callbacks.c:5716
 #: ../src/io/conversion.c:485 ../src/io/image_formats_libraries.c:97
 #: ../src/io/image_formats_libraries.c:154
-#: ../src/registration/registration.c:1148
+#: ../src/registration/registration.c:1147
 msgid "Warning"
 msgstr ""
 
@@ -3325,7 +3325,7 @@ msgstr ""
 #: ../src/gui/callbacks.c:4966 ../src/gui/callbacks.c:5303
 #: ../src/gui/callbacks.c:5450 ../src/gui/callbacks.c:5759
 #: ../src/gui/callbacks.c:5908 ../src/io/conversion.c:454
-#: ../src/registration/registration.c:1137 ../src/stacking/stacking.c:1890
+#: ../src/registration/registration.c:1136 ../src/stacking/stacking.c:1890
 #: ../src/stacking/stacking.c:2017
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr ""
@@ -3367,11 +3367,11 @@ msgstr ""
 msgid "Wavelet: type must be %d or %d\n"
 msgstr ""
 
-#: ../src/core/command.c:554
+#: ../src/core/command.c:553
 msgid "Cannot list files, set working directory first.\n"
 msgstr ""
 
-#: ../src/core/command.c:560
+#: ../src/core/command.c:559
 msgid "Siril cannot open the directory.\n"
 msgstr ""
 
@@ -3380,22 +3380,24 @@ msgstr ""
 msgid "Link: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:595
+#: ../src/core/command.c:594 ../src/core/utils.c:704
 #, c-format
 msgid "Directory: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:605 ../src/core/command.c:612
+#: ../src/core/command.c:604 ../src/core/command.c:611 ../src/core/utils.c:713
+#: ../src/core/utils.c:720
 #, c-format
 msgid "Sequence: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:608 ../src/core/command.c:610
+#: ../src/core/command.c:607 ../src/core/command.c:609 ../src/core/utils.c:716
+#: ../src/core/utils.c:718
 #, c-format
 msgid "Image: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:614 ../src/core/command.c:1498
+#: ../src/core/command.c:617 ../src/core/command.c:1498
 msgid "********* END OF THE LIST *********\n"
 msgstr ""
 
@@ -3678,7 +3680,7 @@ msgstr ""
 msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr ""
 
-#: ../src/core/siril.c:202 ../src/core/utils.c:445 ../src/gui/callbacks.c:2430
+#: ../src/core/siril.c:202 ../src/core/utils.c:452 ../src/gui/callbacks.c:2430
 #: ../src/gui/callbacks.c:5018 ../src/gui/callbacks.c:5039
 #: ../src/gui/callbacks.c:5466 ../src/gui/callbacks.c:5472
 #: ../src/gui/callbacks.c:5497 ../src/gui/plot.c:328 ../src/gui/plot.c:387
@@ -3687,7 +3689,7 @@ msgstr ""
 #: ../src/io/image_format_fits.c:204 ../src/io/image_format_fits.c:226
 #: ../src/io/image_format_fits.c:240 ../src/io/image_format_fits.c:255
 #: ../src/io/image_format_fits.c:357 ../src/io/image_format_fits.c:366
-#: ../src/io/image_format_fits.c:725 ../src/io/image_formats_internal.c:47
+#: ../src/io/image_format_fits.c:726 ../src/io/image_formats_internal.c:47
 #: ../src/io/image_formats_internal.c:102
 #: ../src/io/image_formats_internal.c:167
 #: ../src/io/image_formats_internal.c:335
@@ -3832,40 +3834,40 @@ msgstr ""
 msgid "Noise standard deviation: calculating...\n"
 msgstr ""
 
-#: ../src/core/utils.c:226
+#: ../src/core/utils.c:228
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr ""
 
-#: ../src/core/utils.c:236
+#: ../src/core/utils.c:238
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr ""
 
-#: ../src/core/utils.c:419
+#: ../src/core/utils.c:426
 msgid "Filename is too long, not expanding it\n"
 msgstr ""
 
-#: ../src/core/utils.c:445
+#: ../src/core/utils.c:452
 msgid "File not found"
 msgstr ""
 
-#: ../src/core/utils.c:582
+#: ../src/core/utils.c:589
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr ""
 
-#: ../src/core/utils.c:601
+#: ../src/core/utils.c:608
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr ""
 
-#: ../src/core/utils.c:607
+#: ../src/core/utils.c:614
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 msgstr ""
 
-#: ../src/core/utils.c:617
+#: ../src/core/utils.c:624
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr ""
@@ -4606,11 +4608,11 @@ msgstr ""
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr ""
 
-#: ../src/io/conversion.c:757 ../src/io/ser.c:705 ../src/io/ser.c:815
+#: ../src/io/conversion.c:757 ../src/io/ser.c:711 ../src/io/ser.c:824
 msgid "No Bayer pattern found in the header file.\n"
 msgstr ""
 
-#: ../src/io/conversion.c:760 ../src/io/ser.c:708 ../src/io/ser.c:818
+#: ../src/io/conversion.c:760 ../src/io/ser.c:715 ../src/io/ser.c:828
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -4702,17 +4704,17 @@ msgstr ""
 msgid "Only Siril FITS images can be used with partial image reading.\n"
 msgstr ""
 
-#: ../src/io/image_format_fits.c:571
+#: ../src/io/image_format_fits.c:572
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr ""
 
-#: ../src/io/image_format_fits.c:723
+#: ../src/io/image_format_fits.c:724
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 
-#: ../src/io/image_format_fits.c:735
+#: ../src/io/image_format_fits.c:736
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
@@ -5085,38 +5087,38 @@ msgstr "fwhm: walang seleksyon"
 msgid "PSF on area"
 msgstr ""
 
-#: ../src/io/ser.c:254
+#: ../src/io/ser.c:260
 msgid "Trying to fix broken SER file...\n"
 msgstr ""
 
-#: ../src/io/ser.c:325
+#: ../src/io/ser.c:331
 msgid "SER file has been fixed...\n"
 msgstr ""
 
-#: ../src/io/ser.c:416
+#: ../src/io/ser.c:422
 msgid ""
 "Writing to SER files from larger than 16-bit FITS images is not yet "
 "implemented\n"
 msgstr ""
 
-#: ../src/io/ser.c:577
+#: ../src/io/ser.c:583
 #, c-format
 msgid "Created SER file %s\n"
 msgstr ""
 
-#: ../src/io/ser.c:743 ../src/io/ser.c:942
+#: ../src/io/ser.c:752 ../src/io/ser.c:954
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr ""
 
-#: ../src/io/ser.c:826
+#: ../src/io/ser.c:838
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr ""
 
-#: ../src/io/ser.c:853 ../src/io/ser.c:914
+#: ../src/io/ser.c:865 ../src/io/ser.c:926
 msgid "Out of memory - aborting\n"
 msgstr ""
 
-#: ../src/io/ser.c:963
+#: ../src/io/ser.c:975
 msgid "Trying to add an image of different size in a SER\n"
 msgstr ""
 
@@ -5156,7 +5158,7 @@ msgstr ""
 
 #: ../src/main.c:256
 #, c-format
-msgid "Unable to read file: %s\n"
+msgid "%s. Looking into another directory...\n"
 msgstr ""
 
 #: ../src/main.c:262
@@ -5256,20 +5258,20 @@ msgid "Register: could not load first image to register, aborting.\n"
 msgstr ""
 
 #: ../src/registration/registration.c:294
-#: ../src/registration/registration.c:880
+#: ../src/registration/registration.c:879
 #, c-format
 msgid "Register: processing image %s\n"
 msgstr ""
 
 #: ../src/registration/registration.c:396
 #: ../src/registration/registration.c:486
-#: ../src/registration/registration.c:782
-#: ../src/registration/registration.c:937
+#: ../src/registration/registration.c:781
+#: ../src/registration/registration.c:936
 msgid "Registration finished.\n"
 msgstr ""
 
 #: ../src/registration/registration.c:397
-#: ../src/registration/registration.c:940
+#: ../src/registration/registration.c:939
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr ""
@@ -5329,7 +5331,7 @@ msgid "Not handled yet\n"
 msgstr ""
 
 #: ../src/registration/registration.c:566
-#: ../src/registration/registration.c:840
+#: ../src/registration/registration.c:839
 msgid "Could not load reference image\n"
 msgstr ""
 
@@ -5341,64 +5343,64 @@ msgstr ""
 msgid "There are not enough stars in reference image to perform alignment\n"
 msgstr ""
 
-#: ../src/registration/registration.c:676
+#: ../src/registration/registration.c:675
 #, c-format
 msgid "Frame %d:\n"
 msgstr ""
 
-#: ../src/registration/registration.c:681
+#: ../src/registration/registration.c:680
 #, c-format
 msgid "Not enough stars. Image %d skipped\n"
 msgstr ""
 
-#: ../src/registration/registration.c:706
+#: ../src/registration/registration.c:705
 #, c-format
 msgid "Cannot perform star matching. Image %d skipped\n"
 msgstr ""
 
-#: ../src/registration/registration.c:783
+#: ../src/registration/registration.c:782
 #, c-format
 msgid "%d images processed.\n"
 msgstr ""
 
-#: ../src/registration/registration.c:785
+#: ../src/registration/registration.c:784
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr ""
 
-#: ../src/registration/registration.c:792
+#: ../src/registration/registration.c:791
 msgid "Registration aborted.\n"
 msgstr ""
 
-#: ../src/registration/registration.c:893
+#: ../src/registration/registration.c:892
 #, c-format
 msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr ""
 
-#: ../src/registration/registration.c:939
+#: ../src/registration/registration.c:938
 #, c-format
 msgid "%d frames were excluded.\n"
 msgstr ""
 
-#: ../src/registration/registration.c:1027
+#: ../src/registration/registration.c:1026
 msgid "Select an area in image first, and select images in the sequence."
 msgstr ""
 
-#: ../src/registration/registration.c:1029
+#: ../src/registration/registration.c:1028
 msgid "Select images in the sequence."
 msgstr ""
 
-#: ../src/registration/registration.c:1031
+#: ../src/registration/registration.c:1030
 msgid "Select an area in image first."
 msgstr ""
 
-#: ../src/registration/registration.c:1147
+#: ../src/registration/registration.c:1146
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
 msgstr ""
 
-#: ../src/registration/registration.c:1182
+#: ../src/registration/registration.c:1181
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr ""
