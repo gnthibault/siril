@@ -213,15 +213,19 @@ void sequence_list_change_selection_index(int index) {
 void sequence_list_change_current() {
 	GtkTreeIter iter;
 	gboolean valid;
-	gint row_count = 0;
 
 	get_list_store();
 	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store), &iter);
 	while (valid) {
+		gint index = 0;
+		GValue value = G_VALUE_INIT;
+
+		gtk_tree_model_get_value (GTK_TREE_MODEL(list_store), &iter, COLUMN_INDEX, &value);
+		index = g_value_get_int(&value);
+		g_value_unset(&value);
 		gtk_list_store_set(list_store, &iter,
-				COLUMN_CURRENT, (row_count == com.seq.current) ? 800 : 400,
+				COLUMN_CURRENT, (index == com.seq.current) ? 800 : 400,
 				-1);
-		row_count++;
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store), &iter);
 	}
 }
