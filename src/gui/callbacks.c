@@ -3838,7 +3838,6 @@ gboolean on_max_entry_focus_out_event(GtkWidget *widget, gpointer user_data) {
 			isalnum = FALSE;
 			break;
 	}
-
 	if (isalnum == FALSE || len == 0)
 		gtk_entry_set_text(GTK_ENTRY(widget), "65535");
 	return FALSE;
