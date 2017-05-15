@@ -1668,8 +1668,6 @@ gboolean end_seqpsf(gpointer p) {
 	if (args->retval)
 		goto proper_ending;
 
-	spsfargs->list = g_slist_reverse(spsfargs->list);
-
 	if (spsfargs->for_registration || !seq->regparam[layer]) {
 		check_or_allocate_regparam(seq, layer);
 		write_to_regdata = TRUE;

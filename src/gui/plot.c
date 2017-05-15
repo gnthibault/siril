@@ -44,7 +44,7 @@ static struct kpair ref;
 static gboolean is_fwhm = FALSE, use_photometry = FALSE, requires_color_update =
 		FALSE;
 static char *ylabel = NULL;
-static char *xlabel = NULL;
+static gchar *xlabel = NULL;
 static enum photmetry_source selected_source = ROUNDNESS;
 static int julian0 = 0;
 static gnuplot_ctrl *gplot = NULL;
@@ -159,7 +159,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 				xlabel = calloc(XLABELSIZE, sizeof(char));
 				g_snprintf(xlabel, XLABELSIZE, "(JD) %d +", julian0);
 			} else {
-				xlabel = strdup(_("Frames"));
+				xlabel = g_strdup(_("Frames"));
 			}
 		}
 
@@ -167,16 +167,14 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 				&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
 			double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
 			plot->data[j].x = julian - (double)julian0;
-			plot->err[j].x = julian - (double)julian0;
 		} else if (julian0 && seq->type == SEQ_REGULAR && seq->imgparam[i].date_obs) {
 			char *tsi = seq->imgparam[i].date_obs;
 			double julian = dateTimestamp_toJulian(tsi, seq->exposure);
 			plot->data[j].x = julian - (double)julian0;
-			plot->err[j].x = julian - (double)julian0;
 		} else {
 			plot->data[j].x = (double) i;
-			plot->err[j].x = (double) i;
 		}
+		plot->err[j].x = plot->data[j].x;
 
 		switch (selected_source) {
 			case ROUNDNESS:
@@ -225,6 +223,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 	plot->nb = j;
 }
 
+#ifndef WIN32
 /* returns true if the command gnuplot is available */
 static gboolean gnuplot_is_available() {
 	int retval = system("gnuplot -e > /dev/null 2>&1");
@@ -336,6 +335,7 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	free(real_x);
 	return 0;
 }
+#endif
 
 static int exportCSV(pldata *plot, sequence *seq) {
 	int i, j, ret = 0;
@@ -404,7 +404,7 @@ static void free_plot_data() {
 	plot_data = NULL;
 	julian0 = 0;
 	if (xlabel) {
-		free(xlabel);
+		g_free(xlabel);
 		xlabel = NULL;
 	}
 }
@@ -515,9 +515,13 @@ void on_ButtonSaveCSV_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_varCurvePhotometry_clicked(GtkButton *button, gpointer user_data) {
+#ifdef WIN32
+
+#else
 	set_cursor_waiting(TRUE);
 	lightCurve(plot_data, &com.seq);
 	set_cursor_waiting(FALSE);
+#endif
 }
 
 void free_photometry_set(sequence *seq, int set) {
