@@ -233,7 +233,7 @@ static gboolean gnuplot_is_available() {
 }
 
 static int lightCurve(pldata *plot, sequence *seq) {
-	int i, j, nbImages = 0, ret = 0;
+	int i, j, k, nbImages = 0, ret = 0;
 	pldata *tmp_plot = plot;
 	double *vmag, *err, *x, *real_x;
 
@@ -261,7 +261,14 @@ static int lightCurve(pldata *plot, sequence *seq) {
 		double cmag = 0.0, cerr = 0.0;
 
 		vmag[j] = tmp_plot->data[j].y;
-		err[j] = tmp_plot->err[j].y;
+		/* when data are sorted we need to check order
+		 * by matching timestamps in order
+		 * to sort uncertainties as well
+		 */
+		for (k = 0; k < plot->nb; k++) {
+			if (tmp_plot->err[k].x == tmp_plot->data[j].x)
+				err[j] = tmp_plot->err[k].y;
+		}
 		x[j] = tmp_plot->data[j].x;
 		real_x[j] = x[j] + (double) julian0;
 		tmp_plot = tmp_plot->next;
@@ -273,8 +280,14 @@ static int lightCurve(pldata *plot, sequence *seq) {
 			 * Flux = 10^(-0.4 * mag)
 			 */
 			cmag += pow(10, -0.4 * tmp_plot->data[j].y);
-			cerr += tmp_plot->err[j].y;
-
+			/* when data are sorted we need to check order
+			 * by matching timestamps in order
+			 * to sort uncertainties as well
+			 */
+			for (k = 0; k < plot->nb; k++) {
+				if (tmp_plot->err[k].x == tmp_plot->data[j].x)
+					cerr += tmp_plot->err[k].y;
+			}
 			tmp_plot = tmp_plot->next;
 			++n;
 		}
@@ -437,6 +450,18 @@ void reset_plot() {
 	}
 }
 
+static int compare(const void *a, const void *b) {
+    struct kpair datax_a = * ((struct kpair *) a);
+    struct kpair datax_b = * ((struct kpair *) b);
+
+    if (datax_a.x > datax_b.x) {
+        return 1;
+    } else if (datax_a.x < datax_b.x) {
+        return -1;
+    } else
+        return 0;
+}
+
 void drawPlot() {
 	int i, ref_image, layer = 0;
 	sequence *seq;
@@ -475,6 +500,7 @@ void drawPlot() {
 			}
 
 			build_photometry_dataset(seq, i, seq->number, ref_image, plot);
+			qsort(plot->data, seq->number, sizeof(struct kpair), compare);
 		}
 	} else {
 		// registration data display
