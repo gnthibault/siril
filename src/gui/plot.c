@@ -542,7 +542,7 @@ void on_ButtonSaveCSV_clicked(GtkButton *button, gpointer user_data) {
 
 void on_varCurvePhotometry_clicked(GtkButton *button, gpointer user_data) {
 #ifdef WIN32
-
+	show_dialog(_("Using gnuplot is only available on UNIX system.\n"), _("Error"), "gtk-dialog-error");
 #else
 	set_cursor_waiting(TRUE);
 	lightCurve(plot_data, &com.seq);
