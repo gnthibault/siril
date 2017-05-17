@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 13:08+0200\n"
+"POT-Creation-Date: 2017-05-16 15:54+0200\n"
 "PO-Revision-Date: 2016-07-08 16:10+0800\n"
 "Last-Translator: Bamm Gabriana <bamm@distroastro.org>\n"
 "Language-Team: \n"
@@ -23,14 +23,14 @@ msgid "PSF"
 msgstr "PSF"
 
 #: ../src/gui/siril3.glade.h:2
-msgid "PSF for the sequence"
-msgstr ""
-
-#: ../src/gui/siril3.glade.h:3
 msgid ""
 "Will use registration data if any are available on the registration layer, "
 "otherwise if the checkbox 'follow star movement' is checked in the "
 "registration tab, it will run with this option."
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:3
+msgid "PSF for the sequence"
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:4
@@ -2626,11 +2626,11 @@ msgstr ""
 msgid "Roundness"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:633 ../src/gui/plot.c:495 ../src/gui/plot.c:657
+#: ../src/gui/siril3.glade.h:633 ../src/gui/plot.c:521 ../src/gui/plot.c:687
 msgid "FWHM"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:634 ../src/gui/plot.c:660
+#: ../src/gui/siril3.glade.h:634 ../src/gui/plot.c:690
 msgid "Amplitude"
 msgstr ""
 
@@ -3282,9 +3282,9 @@ msgstr ""
 msgid "You must at least load two layers before!\n"
 msgstr ""
 
-#: ../src/compositing/compositing.c:554 ../src/gui/callbacks.c:5360
-#: ../src/gui/callbacks.c:5404 ../src/gui/callbacks.c:5649
-#: ../src/gui/callbacks.c:5658 ../src/gui/callbacks.c:5716
+#: ../src/compositing/compositing.c:554 ../src/gui/callbacks.c:5408
+#: ../src/gui/callbacks.c:5452 ../src/gui/callbacks.c:5697
+#: ../src/gui/callbacks.c:5706 ../src/gui/callbacks.c:5764
 #: ../src/io/conversion.c:485 ../src/io/image_formats_libraries.c:97
 #: ../src/io/image_formats_libraries.c:154
 #: ../src/registration/registration.c:1147
@@ -3321,10 +3321,10 @@ msgstr ""
 #: ../src/core/command.c:802 ../src/core/command.c:829
 #: ../src/core/command.c:1140 ../src/core/command.c:1242
 #: ../src/core/command.c:1263 ../src/core/command.c:1282
-#: ../src/gui/callbacks.c:4044 ../src/gui/callbacks.c:4766
-#: ../src/gui/callbacks.c:4966 ../src/gui/callbacks.c:5303
-#: ../src/gui/callbacks.c:5450 ../src/gui/callbacks.c:5759
-#: ../src/gui/callbacks.c:5908 ../src/io/conversion.c:454
+#: ../src/gui/callbacks.c:4141 ../src/gui/callbacks.c:4814
+#: ../src/gui/callbacks.c:5014 ../src/gui/callbacks.c:5351
+#: ../src/gui/callbacks.c:5498 ../src/gui/callbacks.c:5807
+#: ../src/gui/callbacks.c:5956 ../src/io/conversion.c:454
 #: ../src/registration/registration.c:1136 ../src/stacking/stacking.c:1890
 #: ../src/stacking/stacking.c:2017
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -3357,12 +3357,12 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr ""
 
 #: ../src/core/command.c:489 ../src/core/command.c:1515
-#: ../src/gui/callbacks.c:5647 ../src/gui/callbacks.c:5714
+#: ../src/gui/callbacks.c:5695 ../src/gui/callbacks.c:5762
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
 
-#: ../src/core/command.c:495 ../src/gui/callbacks.c:5656
+#: ../src/core/command.c:495 ../src/gui/callbacks.c:5704
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr ""
@@ -3380,19 +3380,19 @@ msgstr ""
 msgid "Link: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:594 ../src/core/utils.c:704
+#: ../src/core/command.c:594 ../src/core/utils.c:708
 #, c-format
 msgid "Directory: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:604 ../src/core/command.c:611 ../src/core/utils.c:713
-#: ../src/core/utils.c:720
+#: ../src/core/command.c:604 ../src/core/command.c:611 ../src/core/utils.c:717
+#: ../src/core/utils.c:724
 #, c-format
 msgid "Sequence: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:607 ../src/core/command.c:609 ../src/core/utils.c:716
-#: ../src/core/utils.c:718
+#: ../src/core/command.c:607 ../src/core/command.c:609 ../src/core/utils.c:720
+#: ../src/core/utils.c:722
 #, c-format
 msgid "Image: %s\n"
 msgstr ""
@@ -3413,7 +3413,7 @@ msgid ""
 msgstr ""
 
 #: ../src/core/command.c:693 ../src/core/command.c:753
-#: ../src/core/command.c:775 ../src/io/sequence.c:1762
+#: ../src/core/command.c:775 ../src/io/sequence.c:1760
 msgid "Select an area first\n"
 msgstr ""
 
@@ -3680,11 +3680,11 @@ msgstr ""
 msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr ""
 
-#: ../src/core/siril.c:202 ../src/core/utils.c:452 ../src/gui/callbacks.c:2430
-#: ../src/gui/callbacks.c:5018 ../src/gui/callbacks.c:5039
-#: ../src/gui/callbacks.c:5466 ../src/gui/callbacks.c:5472
-#: ../src/gui/callbacks.c:5497 ../src/gui/plot.c:328 ../src/gui/plot.c:387
-#: ../src/gui/PSF_list.c:150 ../src/io/conversion.c:491
+#: ../src/core/siril.c:202 ../src/core/utils.c:456 ../src/gui/callbacks.c:2430
+#: ../src/gui/callbacks.c:5066 ../src/gui/callbacks.c:5087
+#: ../src/gui/callbacks.c:5514 ../src/gui/callbacks.c:5520
+#: ../src/gui/callbacks.c:5545 ../src/gui/plot.c:340 ../src/gui/plot.c:400
+#: ../src/gui/plot.c:545 ../src/gui/PSF_list.c:150 ../src/io/conversion.c:491
 #: ../src/io/conversion.c:559 ../src/io/image_format_fits.c:196
 #: ../src/io/image_format_fits.c:204 ../src/io/image_format_fits.c:226
 #: ../src/io/image_format_fits.c:240 ../src/io/image_format_fits.c:255
@@ -3834,40 +3834,40 @@ msgstr ""
 msgid "Noise standard deviation: calculating...\n"
 msgstr ""
 
-#: ../src/core/utils.c:228
+#: ../src/core/utils.c:232
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr ""
 
-#: ../src/core/utils.c:238
+#: ../src/core/utils.c:242
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr ""
 
-#: ../src/core/utils.c:426
+#: ../src/core/utils.c:430
 msgid "Filename is too long, not expanding it\n"
 msgstr ""
 
-#: ../src/core/utils.c:452
+#: ../src/core/utils.c:456
 msgid "File not found"
 msgstr ""
 
-#: ../src/core/utils.c:589
+#: ../src/core/utils.c:593
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr ""
 
-#: ../src/core/utils.c:608
+#: ../src/core/utils.c:612
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr ""
 
-#: ../src/core/utils.c:614
+#: ../src/core/utils.c:618
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 msgstr ""
 
-#: ../src/core/utils.c:624
+#: ../src/core/utils.c:628
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr ""
@@ -4119,158 +4119,158 @@ msgstr ""
 msgid "Are you sure you want to quit ?"
 msgstr ""
 
-#: ../src/gui/callbacks.c:3850
+#: ../src/gui/callbacks.c:3938
+#, c-format
+msgid "new zoom value: %f\n"
+msgstr ""
+
+#: ../src/gui/callbacks.c:3947
 msgid ""
 "Copyright © 2004-2011 François Meyer\n"
 "Copyright © 2012-2017 team free-astro"
 msgstr ""
 
 #. translator names
-#: ../src/gui/callbacks.c:3862
+#: ../src/gui/callbacks.c:3959
 msgid ""
 "Cyril Richard <cyril@free-astro.org>\n"
 "Vincent Hourdin <vh@free-astro.vinvin.tf>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:3873
+#: ../src/gui/callbacks.c:3970
 msgid "About siril"
 msgstr ""
 
-#: ../src/gui/callbacks.c:3880
+#: ../src/gui/callbacks.c:3977
 msgid "Astronomical image (pre-)processing program"
 msgstr ""
 
-#: ../src/gui/callbacks.c:3883
+#: ../src/gui/callbacks.c:3980
 msgid "Visit the Siril website"
 msgstr ""
 
-#: ../src/gui/callbacks.c:3918
+#: ../src/gui/callbacks.c:4015
 #, c-format
 msgid "%g nm"
 msgstr ""
 
-#: ../src/gui/callbacks.c:3920
+#: ../src/gui/callbacks.c:4017
 #, c-format
 msgid "undefined"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4019
+#: ../src/gui/callbacks.c:4116
 msgid ""
 "Exclude all images ?\n"
 " (this erases previous image selection\n"
 " ... and there's no undo)"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4029
+#: ../src/gui/callbacks.c:4126
 msgid ""
 "Include all images ?\n"
 " (this erases previous image selection\n"
 " ... and there's no undo)"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4059
+#: ../src/gui/callbacks.c:4156
 msgid "Opening dark image..."
 msgstr ""
 
-#: ../src/gui/callbacks.c:4062
+#: ../src/gui/callbacks.c:4159
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4067
+#: ../src/gui/callbacks.c:4164
 msgid "NOT USING DARK: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4108
+#: ../src/gui/callbacks.c:4205
 msgid "Opening flat image..."
 msgstr ""
 
-#: ../src/gui/callbacks.c:4111
+#: ../src/gui/callbacks.c:4208
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4116
+#: ../src/gui/callbacks.c:4213
 msgid "NOT USING FLAT: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4144
+#: ../src/gui/callbacks.c:4241
 msgid "Opening offset image..."
 msgstr ""
 
-#: ../src/gui/callbacks.c:4147
+#: ../src/gui/callbacks.c:4244
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4152
+#: ../src/gui/callbacks.c:4249
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4175
+#: ../src/gui/callbacks.c:4272
 msgid "Preprocessing...\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4289
+#: ../src/gui/callbacks.c:4386
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr ""
 
-#: ../src/gui/callbacks.c:4320
+#: ../src/gui/callbacks.c:4417
 msgid "Searching for sequences in the current working directory..."
 msgstr ""
 
-#: ../src/gui/callbacks.c:4408
-#, c-format
-msgid "new zoom value: %f\n"
-msgstr ""
-
 #. Write "Siril Version X.Y in Copyright_Txt
-#: ../src/gui/callbacks.c:4576
+#: ../src/gui/callbacks.c:4624
 msgid "Saving TIFF"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4594
+#: ../src/gui/callbacks.c:4642
 msgid "Saving Netpbm"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4612
+#: ../src/gui/callbacks.c:4660
 msgid "Saving BMP"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4630
+#: ../src/gui/callbacks.c:4678
 msgid "Saving JPG"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5016
+#: ../src/gui/callbacks.c:5064
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5038
+#: ../src/gui/callbacks.c:5086
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5060
+#: ../src/gui/callbacks.c:5108
 msgid "Subtraction done ...\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5067
+#: ../src/gui/callbacks.c:5115
 msgid "Division done ...\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5252
+#: ../src/gui/callbacks.c:5300
 msgid "Load an image first, aborted.\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5281
+#: ../src/gui/callbacks.c:5329
 msgid "The file stars.lst has been created.\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5358 ../src/gui/callbacks.c:5403
+#: ../src/gui/callbacks.c:5406 ../src/gui/callbacks.c:5451
 msgid ""
 "Current selection is too large.\n"
 "To determine the PSF, please make a selection around a star.\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5372
+#: ../src/gui/callbacks.c:5420
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -4297,79 +4297,83 @@ msgid ""
 "\t\tRMSE=%.3e"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5465
+#: ../src/gui/callbacks.c:5513
 msgid "FFT does not work with sequences !\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5471
+#: ../src/gui/callbacks.c:5519
 msgid "Open an image first !\n"
 msgstr ""
 
-#: ../src/gui/callbacks.c:5496
+#: ../src/gui/callbacks.c:5544
 msgid "Select magnitude and phase before !\n"
 msgstr ""
 
-#: ../src/gui/plot.c:162 ../src/gui/plot.c:572
+#: ../src/gui/plot.c:162 ../src/gui/plot.c:602
 msgid "Frames"
 msgstr ""
 
-#: ../src/gui/plot.c:242
+#: ../src/gui/plot.c:241
 msgid ""
 "Gnuplot is unavailable. Please consider to install it before trying to plot "
 "a graph of a variable star.\n"
 msgstr ""
 
 #. Plotting light curve
-#: ../src/gui/plot.c:310
+#: ../src/gui/plot.c:322
 msgid "Light Curve"
 msgstr ""
 
-#: ../src/gui/plot.c:325
+#: ../src/gui/plot.c:337
 #, c-format
 msgid "%s has been saved.\n"
 msgstr ""
 
-#: ../src/gui/plot.c:326 ../src/gui/plot.c:385
+#: ../src/gui/plot.c:338 ../src/gui/plot.c:398
 #, fuzzy
 msgid "Information"
 msgstr "Interpolasyon"
 
-#: ../src/gui/plot.c:328 ../src/gui/plot.c:387
+#: ../src/gui/plot.c:340 ../src/gui/plot.c:400
 msgid "Something went wrong while saving plot"
 msgstr ""
 
-#: ../src/gui/plot.c:384
+#: ../src/gui/plot.c:397
 #, c-format
 msgid "%s.csv has been saved.\n"
 msgstr ""
 
-#: ../src/gui/plot.c:498
+#: ../src/gui/plot.c:524
 #, fuzzy
 msgid "Quality"
 msgstr "kalidad"
 
-#: ../src/gui/plot.c:654
+#: ../src/gui/plot.c:545
+msgid "Using gnuplot is only available on UNIX system.\n"
+msgstr ""
+
+#: ../src/gui/plot.c:684
 msgid "Star roundness (1 is round)"
 msgstr ""
 
-#: ../src/gui/plot.c:664
+#: ../src/gui/plot.c:694
 msgid "Star magnitude (absolute)"
 msgstr ""
 
-#: ../src/gui/plot.c:666
+#: ../src/gui/plot.c:696
 msgid "Star magnitude (relative, use setmag)"
 msgstr ""
 
-#: ../src/gui/plot.c:669
+#: ../src/gui/plot.c:699
 #, fuzzy
 msgid "Background value"
 msgstr "Background Extraction"
 
-#: ../src/gui/plot.c:672
+#: ../src/gui/plot.c:702
 msgid "Star position on X axis"
 msgstr ""
 
-#: ../src/gui/plot.c:675
+#: ../src/gui/plot.c:705
 msgid "Star position on Y axis"
 msgstr ""
 
@@ -5083,7 +5087,7 @@ msgstr ""
 msgid "Cropping to selection"
 msgstr "fwhm: walang seleksyon"
 
-#: ../src/io/sequence.c:1785
+#: ../src/io/sequence.c:1783
 msgid "PSF on area"
 msgstr ""
 
