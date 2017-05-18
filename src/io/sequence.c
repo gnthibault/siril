@@ -1626,7 +1626,7 @@ int seqpsf_image_hook(struct generic_seq_args *args, int index, fits *fit, recta
 	data->image_index = index;
 
 	rectangle psfarea = { .x = 0, .y = 0, .w = fit->rx, .h = fit->ry };
-	data->psf = psf_get_minimisation(fit, 0, &psfarea);
+	data->psf = psf_get_minimisation(fit, 0, &psfarea, !spsfargs->for_registration);
 	if (data->psf) {
 		data->psf->xpos = data->psf->x0 + area->x;
 		data->psf->ypos = area->y + area->h - data->psf->y0;

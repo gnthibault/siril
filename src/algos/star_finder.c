@@ -214,7 +214,7 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 					 *  slows down the algorithm too much 
 					 * To fit the angle, set the 3rd parameter to TRUE */
 					fitted_PSF *cur_star = psf_global_minimisation(z, bg, layer,
-							FALSE);
+							FALSE, FALSE);
 					if (cur_star) {
 						psf_update_units(fit, &cur_star);
 						if (is_star(cur_star, sf)) {
@@ -269,7 +269,7 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 	gboolean already_found = FALSE;
 
 	*index = -1;
-	result = psf_get_minimisation(&gfit, layer, &com.selection);
+	result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE);
 	if (!result)
 		return NULL;
 	/* We do not check if it's matching with the "is_star()" criteria.

@@ -5408,7 +5408,7 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 						_("Warning"), "gtk-dialog-warning");
 		return;
 	}
-	result = psf_get_minimisation(&gfit, layer, &com.selection);
+	result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE);
 	if (!result)
 		return;
 
