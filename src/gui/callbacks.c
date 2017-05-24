@@ -6167,3 +6167,7 @@ void on_rgb_align_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	undo_save_state("Processing: RGB alignment (PSF)");
 	rgb_align(0);
 }
+
+void on_gotoStacking_button_clicked(GtkButton *button, gpointer user_data) {
+	control_window_switch_to_tab(STACKING);
+}

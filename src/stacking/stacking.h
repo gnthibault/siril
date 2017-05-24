@@ -58,6 +58,8 @@ struct stacking_args {
 void initialize_stacking_methods();
 
 void fill_list_of_unfiltered_images(struct stacking_args *args);
+double compute_highest_accepted_fwhm(double percent);
+double compute_highest_accepted_quality(double percent);
 
 int stack_summing(struct stacking_args *args);
 int stack_median(struct stacking_args *args);
@@ -70,6 +72,8 @@ void update_stack_interface();
 
 int stack_filter_all(sequence *seq, int nb_img, double any);
 int stack_filter_included(sequence *seq, int nb_img, double any);
+int stack_filter_fwhm(sequence *seq, int nb_img, double max_fwhm);
+int stack_filter_quality(sequence *seq, int nb_img, double max_quality);
 
 int compute_normalization(struct stacking_args *args, norm_coeff *coeff, normalization mode);
 

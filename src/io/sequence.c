@@ -1141,6 +1141,8 @@ struct exportseq_args {
 	int32_t dest_width, dest_height;
 	gboolean crop;
 	rectangle crop_area;
+	seq_image_filter filtering_criterion;
+	double filtering_parameter;
 };
 
 /* Used for avi exporter */
@@ -1290,11 +1292,8 @@ gpointer export_sequence(gpointer ptr) {
 
 		stackargs.force_norm = FALSE;
 		stackargs.seq = args->seq;
-		stackargs.nb_images_to_stack = args->seq->selnum;
-		stackargs.filtering_criterion = stack_filter_included;
-		// alternative arguments for no filter (see other XXX):
-		//stackargs.nb_images_to_stack = args->seq->number;
-		//stackargs.filtering_criterion = stack_filter_all;
+		stackargs.nb_images_to_stack = args->seq->number;
+		stackargs.filtering_criterion = stack_filter_all;
 
 		stackargs.image_indices = malloc(stackargs.nb_images_to_stack * sizeof(int));
 		fill_list_of_unfiltered_images(&stackargs);
@@ -1313,8 +1312,8 @@ gpointer export_sequence(gpointer ptr) {
 			retval = -1;
 			goto free_and_reset_progress_bar;
 		}
-		// XXX to remove for all images
-		if (!args->seq->imgparam[i].incl) {
+		if (!args->filtering_criterion(args->seq, i, args->filtering_parameter)) {
+			siril_log_message("image %d is excluded from export\n", i);
 			skipped++;
 			continue;
 		}
@@ -1502,10 +1501,13 @@ free_and_reset_progress_bar:
 void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	int selected = gtk_combo_box_get_active(GTK_COMBO_BOX(lookup_widget("comboExport")));
 	const char *bname = gtk_entry_get_text(GTK_ENTRY(lookup_widget("entryExportSeq")));
+	GtkAdjustment *stackadj = GTK_ADJUSTMENT(gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(lookup_widget("stackspin"))));
+	GtkComboBox *stack_type = GTK_COMBO_BOX(lookup_widget("comboboxstacksel"));
 	struct exportseq_args *args;
 	GtkToggleButton *exportNormalize, *checkResize;
 	GtkEntry *fpsEntry, *widthEntry, *heightEntry;
 	GtkAdjustment *adjQual;
+	double percent;
 
 	if (bname[0] == '\0') return;
 	if (selected == -1) return;
@@ -1519,6 +1521,26 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	if (args->crop)
 		memcpy(&args->crop_area, &com.selection, sizeof(rectangle));
 
+	// filtering
+	switch (gtk_combo_box_get_active(stack_type)) {
+		case 0:
+			args->filtering_criterion = stack_filter_all;
+			break;
+		case 1:
+			args->filtering_criterion = stack_filter_included;
+			break;
+		case 2:
+			percent = gtk_adjustment_get_value(stackadj);
+			args->filtering_criterion = stack_filter_fwhm;
+			args->filtering_parameter = compute_highest_accepted_fwhm(percent);
+			break;
+		case 3:
+			percent = gtk_adjustment_get_value(stackadj);
+			args->filtering_criterion = stack_filter_quality;
+			args->filtering_parameter = compute_highest_accepted_quality(percent);
+	}
+
+	// format
 	switch (selected) {
 	case 0:
 		args->convflags = TYPEFITS;
