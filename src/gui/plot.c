@@ -500,7 +500,7 @@ void drawPlot() {
 			}
 
 			build_photometry_dataset(seq, i, seq->number, ref_image, plot);
-			qsort(plot->data, seq->number, sizeof(struct kpair), compare);
+			qsort(plot->data, plot->nb, sizeof(struct kpair), compare);
 		}
 	} else {
 		// registration data display
