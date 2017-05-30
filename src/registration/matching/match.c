@@ -335,7 +335,7 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 	 exit(1);
 	 }*/
 	if (get_stars(s1, n, &numA, &star_list_A)) {
-		siril_log_message("can't read data\n");
+		printf("can't read data\n");
 		return (SH_GENERIC_ERROR);
 	}
 
@@ -354,7 +354,7 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 	 shFatal("can't read data from file %s", fileA);
 	 }*/
 	if (get_stars(s1, n, &numA_copy, &star_list_A_copy)) {
-		siril_log_message("can't read data\n");
+		printf("can't read data\n");
 		return (SH_GENERIC_ERROR);
 	}
 	/* sanity check */
@@ -373,7 +373,7 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 	 exit(1);
 	 }*/
 	if (get_stars(s2, n, &numB, &star_list_B)) {
-		siril_log_message("can't read data\n");
+		printf("can't read data\n");
 		return (SH_GENERIC_ERROR);
 	}
 

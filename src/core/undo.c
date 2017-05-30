@@ -46,7 +46,7 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 	snprintf(nameBuff, len, "%s%s", tmpdir, name);
 	fd = mkstemp(nameBuff);
 	if (fd < 1) {
-		siril_log_message("File I/O Error: Unable to create swap file in %s: [%s]\n",
+		siril_log_message(_("File I/O Error: Unable to create swap file in %s: [%s]\n"),
 				tmpdir, strerror(errno));
 		free(nameBuff);
 		return 1;
@@ -57,7 +57,7 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 	errno = 0;
 	// Write some data to the temporary file
 	if (-1 == write(fd, fit->data, size * sizeof(WORD))) {
-		siril_log_message("File I/O Error: Unable to write swap file in %s: [%s]\n",
+		siril_log_message(_("File I/O Error: Unable to write swap file in %s: [%s]\n"),
 				tmpdir, strerror(errno));
 		free(nameBuff);
 		close(fd);

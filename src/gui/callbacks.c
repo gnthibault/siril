@@ -6051,12 +6051,12 @@ void on_crop_Apply_clicked (GtkButton *button, gpointer user_data) {
 
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 	if (com.seq.type == SEQ_AVI) {
-		siril_log_message("Crop does not work with avi film. Please, convert your file to SER first.\n");
+		siril_log_message(_("Crop does not work with avi film. Please, convert your file to SER first.\n"));
 		return;
 	}
 #endif
 	if (com.seq.type == SEQ_INTERNAL) {
-		siril_log_message("Not a valid sequence for cropping.\n");
+		siril_log_message(_("Not a valid sequence for cropping.\n"));
 	}
 
 	struct crop_sequence_data *args = malloc(sizeof(struct crop_sequence_data));

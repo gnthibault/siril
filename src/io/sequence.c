@@ -1313,7 +1313,7 @@ gpointer export_sequence(gpointer ptr) {
 			goto free_and_reset_progress_bar;
 		}
 		if (!args->filtering_criterion(args->seq, i, args->filtering_parameter)) {
-			siril_log_message("image %d is excluded from export\n", i);
+			siril_log_message(_("image %d is excluded from export\n"), i);
 			skipped++;
 			continue;
 		}
@@ -1664,7 +1664,7 @@ int seqpsf_image_hook(struct generic_seq_args *args, int index, fits *fit, recta
 		data->exposure = fit->exposure;
 	}
 	else {
-		siril_log_color_message("No star found in the area image %d around %d,%d\n",
+		siril_log_color_message(_("No star found in the area image %d around %d,%d\n"),
 				"red", index, area->x, area->y);
 	}
 
@@ -1711,7 +1711,7 @@ gboolean end_seqpsf(gpointer p) {
 		/* check exposure consistency (only obtained when !for_registration) */
 		if (!spsfargs->for_registration && seq->exposure > 0.0 &&
 				seq->exposure != data->exposure && !displayed_warning) {
-			siril_log_color_message("Star analysis does not give consistent results when exposure changes across the sequence\n", "red");
+			siril_log_color_message(_("Star analysis does not give consistent results when exposure changes across the sequence.\n"), "red");
 			displayed_warning = TRUE;
 		}
 		seq->exposure = data->exposure;

@@ -889,8 +889,6 @@ int stack_addmax(struct stacking_args *args) {
 				final_pixel[1] = final_pixel[0] + nbdata;	// index of green layer in final_pixel[0]
 				final_pixel[2] = final_pixel[0] + nbdata*2;	// index of blue layer in final_pixel[0]
 			}
-			//~ siril_log_message("Stacking: successfully allocated memory for "
-					//~ "stacking operation\n");
 		} else if (fit->ry * fit->rx != nbdata) {
 			siril_log_message(_("Stacking: image in sequence doesn't has the same dimensions\n"));
 			retval = -3;

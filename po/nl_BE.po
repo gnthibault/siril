@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-24 13:55+0200\n"
+"POT-Creation-Date: 2017-05-30 15:08+0200\n"
 "PO-Revision-Date: 2017-03-17 21:11+0100\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
@@ -3023,7 +3023,7 @@ msgid ""
 msgstr ""
 "beste beelden, automatisch uit de registratiegegevens (planetair) gekozen"
 
-#: ../src/gui/siril3.glade.h:678 ../src/stacking/stacking.c:2379
+#: ../src/gui/siril3.glade.h:678 ../src/stacking/stacking.c:2377
 #, c-format
 msgid "Based on FWHM"
 msgstr "Gebaseerd op de FWHM"
@@ -3698,8 +3698,8 @@ msgstr "Pas laag %d tot %g maal helderder\n"
 #: ../src/gui/callbacks.c:5014 ../src/gui/callbacks.c:5351
 #: ../src/gui/callbacks.c:5498 ../src/gui/callbacks.c:5807
 #: ../src/gui/callbacks.c:5956 ../src/io/conversion.c:454
-#: ../src/registration/registration.c:1136 ../src/stacking/stacking.c:1890
-#: ../src/stacking/stacking.c:2017
+#: ../src/registration/registration.c:1136 ../src/stacking/stacking.c:1888
+#: ../src/stacking/stacking.c:2015
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Andere taak al bezig, huidige wordt genegeerd.\n"
 
@@ -4109,7 +4109,7 @@ msgstr "Afbeeldingen hebben niet dezelfde afmetingen (w = %d|%d, h = %d|%d)\n"
 #: ../src/io/image_formats_libraries.c:446
 #: ../src/io/image_formats_libraries.c:532 ../src/io/single_image.c:111
 #: ../src/io/single_image.c:154 ../src/io/single_image.c:158
-#: ../src/stacking/stacking.c:387 ../src/stacking/stacking.c:1215
+#: ../src/stacking/stacking.c:387 ../src/stacking/stacking.c:1213
 msgid "Error"
 msgstr "Fout"
 
@@ -4239,6 +4239,16 @@ msgstr "Background noise waarde (kanaal: #%d): %0.3lf (%.3e)\n"
 #: ../src/core/siril.c:1750
 msgid "Noise standard deviation: calculating...\n"
 msgstr "Ruis starndaarddeviatie: berekening...\n"
+
+#: ../src/core/undo.c:49
+#, c-format
+msgid "File I/O Error: Unable to create swap file in %s: [%s]\n"
+msgstr ""
+
+#: ../src/core/undo.c:60
+#, c-format
+msgid "File I/O Error: Unable to write swap file in %s: [%s]\n"
+msgstr ""
 
 #: ../src/core/utils.c:232
 #, c-format
@@ -4751,6 +4761,15 @@ msgstr "Open eerst een afbeelding !\n"
 #: ../src/gui/callbacks.c:5544
 msgid "Select magnitude and phase before !\n"
 msgstr "Kies eest een amplitude en fase !\n"
+
+#: ../src/gui/callbacks.c:6054
+msgid ""
+"Crop does not work with avi film. Please, convert your file to SER first.\n"
+msgstr ""
+
+#: ../src/gui/callbacks.c:6059
+msgid "Not a valid sequence for cropping.\n"
+msgstr ""
 
 #: ../src/gui/plot.c:162 ../src/gui/plot.c:602
 msgid "Frames"
@@ -5546,8 +5565,13 @@ msgstr ""
 "De breedte van de outputfilm moet een veelvoud van 32 zijn en een even "
 "hoogte. Selectie herschaald.\n"
 
+#: ../src/io/sequence.c:1316
+#, c-format
+msgid "image %d is excluded from export\n"
+msgstr ""
+
 #: ../src/io/sequence.c:1325 ../src/stacking/stacking.c:237
-#: ../src/stacking/stacking.c:863 ../src/stacking/stacking.c:1020
+#: ../src/stacking/stacking.c:863 ../src/stacking/stacking.c:1018
 msgid "Processing image "
 msgstr "Processing beeld"
 
@@ -5582,6 +5606,17 @@ msgstr "Breedte of hoogte mag niet nul zijn. Geen herschaling.\n"
 #: ../src/io/sequence.c:1614
 msgid "Cropping to selection"
 msgstr "Selectie croppen"
+
+#: ../src/io/sequence.c:1667
+#, c-format
+msgid "No star found in the area image %d around %d,%d\n"
+msgstr ""
+
+#: ../src/io/sequence.c:1714
+msgid ""
+"Star analysis does not give consistent results when exposure changes across "
+"the sequence.\n"
+msgstr ""
 
 #: ../src/io/sequence.c:1805
 msgid "PSF on area"
@@ -5950,40 +5985,40 @@ msgid "Normalization failed."
 msgstr "Normalisatie gefaald."
 
 #: ../src/stacking/stacking.c:216 ../src/stacking/stacking.c:842
-#: ../src/stacking/stacking.c:999
+#: ../src/stacking/stacking.c:997
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"
 msgstr ""
 "Geen beelden geselecteerd voor stacking (kies minstens 2). Stopgezet.\n"
 
 #: ../src/stacking/stacking.c:245 ../src/stacking/stacking.c:871
-#: ../src/stacking/stacking.c:1028
+#: ../src/stacking/stacking.c:1026
 msgid "Stacking: could not read frame, aborting\n"
 msgstr "Stacking: kon beeld niet lezen, stopgezet\n"
 
-#: ../src/stacking/stacking.c:276 ../src/stacking/stacking.c:895
-#: ../src/stacking/stacking.c:1051
+#: ../src/stacking/stacking.c:276 ../src/stacking/stacking.c:893
+#: ../src/stacking/stacking.c:1049
 msgid "Stacking: image in sequence doesn't has the same dimensions\n"
 msgstr "Staking: beeld(en) in de sequenties hebben niet dezelfde afmetingen\n"
 
 #: ../src/stacking/stacking.c:322 ../src/stacking/stacking.c:776
-#: ../src/stacking/stacking.c:946 ../src/stacking/stacking.c:1102
-#: ../src/stacking/stacking.c:1810
+#: ../src/stacking/stacking.c:944 ../src/stacking/stacking.c:1100
+#: ../src/stacking/stacking.c:1808
 msgid "Finalizing stacking..."
 msgstr "Stacking finalisatie..."
 
-#: ../src/stacking/stacking.c:349 ../src/stacking/stacking.c:967
-#: ../src/stacking/stacking.c:1123
+#: ../src/stacking/stacking.c:349 ../src/stacking/stacking.c:965
+#: ../src/stacking/stacking.c:1121
 msgid "Stacking failed. Check the log."
 msgstr "Stacking gefaald. Lees de log."
 
 #: ../src/stacking/stacking.c:350 ../src/stacking/stacking.c:809
-#: ../src/stacking/stacking.c:968 ../src/stacking/stacking.c:1124
-#: ../src/stacking/stacking.c:1852
+#: ../src/stacking/stacking.c:966 ../src/stacking/stacking.c:1122
+#: ../src/stacking/stacking.c:1850
 msgid "Stacking failed.\n"
 msgstr "Stacking gefaald.\n"
 
-#: ../src/stacking/stacking.c:352 ../src/stacking/stacking.c:970
-#: ../src/stacking/stacking.c:1126
+#: ../src/stacking/stacking.c:352 ../src/stacking/stacking.c:968
+#: ../src/stacking/stacking.c:1124
 msgid "Stacking complete."
 msgstr "Stacking klaar."
 
@@ -5992,7 +6027,7 @@ msgid "Median stacking is only supported for FITS images and SER sequences.\n"
 msgstr ""
 "Median stacking is enkel ondersteund voor FITS bestanden en SER sequenties.\n"
 
-#: ../src/stacking/stacking.c:391 ../src/stacking/stacking.c:1219
+#: ../src/stacking/stacking.c:391 ../src/stacking/stacking.c:1217
 msgid "Select at least two frames for stacking. Aborting.\n"
 msgstr "Kies minstens twee beelden voor staking. Stopgezet.\n"
 
@@ -6011,7 +6046,7 @@ msgstr ""
 msgid "Median stack error: input images have different sizes\n"
 msgstr "Median stack foudmelding: beelden hebben verschillende afmetingen\n"
 
-#: ../src/stacking/stacking.c:495 ../src/stacking/stacking.c:1323
+#: ../src/stacking/stacking.c:495 ../src/stacking/stacking.c:1321
 msgid "Super-pixel is not handled yet for on the fly SER stacking\n"
 msgstr "Super-pixel nog niet ondersteund voor \"on the fly\" SER stachking\n"
 
@@ -6020,20 +6055,20 @@ msgstr "Super-pixel nog niet ondersteund voor \"on the fly\" SER stachking\n"
 msgid "Median stack error: uninitialized sequence\n"
 msgstr "Median stack foutmelding: sequentie niet geïnitialiseerd.\n"
 
-#: ../src/stacking/stacking.c:559 ../src/stacking/stacking.c:1387
+#: ../src/stacking/stacking.c:559 ../src/stacking/stacking.c:1385
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Multithreading niet ondersteund door uw versie van cfitsio\n"
 
-#: ../src/stacking/stacking.c:567 ../src/stacking/stacking.c:1395
+#: ../src/stacking/stacking.c:567 ../src/stacking/stacking.c:1393
 msgid "Processing the sequence as RGB\n"
 msgstr "Sequentie als RGB behandelt\n"
 
-#: ../src/stacking/stacking.c:604 ../src/stacking/stacking.c:1432
+#: ../src/stacking/stacking.c:604 ../src/stacking/stacking.c:1430
 #, c-format
 msgid "We have %d parallel blocks of size %d (+%d) for stacking.\n"
 msgstr "We hebben %d parelelle blokken van grootte %d (+%d) voor stacking.\n"
 
-#: ../src/stacking/stacking.c:612 ../src/stacking/stacking.c:1443
+#: ../src/stacking/stacking.c:612 ../src/stacking/stacking.c:1441
 msgid ""
 "A bug has been found. Unable to split the image area into the correct "
 "processing blocks.\n"
@@ -6041,7 +6076,7 @@ msgstr ""
 "Een bug werd gevonden. Onmogelijk om het beeld op te splitsen in de correcte "
 "precessing blocks.\n"
 
-#: ../src/stacking/stacking.c:678 ../src/stacking/stacking.c:1510
+#: ../src/stacking/stacking.c:678 ../src/stacking/stacking.c:1508
 msgid "Starting stacking...\n"
 msgstr "Stacking begonnen...\n"
 
@@ -6049,7 +6084,7 @@ msgstr "Stacking begonnen...\n"
 msgid "Median stacking in progress..."
 msgstr "Mediaan stacking bezig..."
 
-#: ../src/stacking/stacking.c:719 ../src/stacking/stacking.c:1587
+#: ../src/stacking/stacking.c:719 ../src/stacking/stacking.c:1585
 msgid "Error reading one of the image areas\n"
 msgstr "Fout bij het lezen van een van de regio's\n"
 
@@ -6066,7 +6101,7 @@ msgstr "Median stacking klaar."
 msgid "Median stacking complete. %d have been stacked.\n"
 msgstr "Median stacking klaar. %d beelden werden bewerkt.\n"
 
-#: ../src/stacking/stacking.c:1214
+#: ../src/stacking/stacking.c:1212
 msgid ""
 "Rejection stacking is only supported for FITS images and SER sequences.\n"
 "Use \"Sum Stacking\" instead.\n"
@@ -6075,150 +6110,150 @@ msgstr ""
 "sequenties.\n"
 "Gebruik \"Som Stacking\" in de plaats.\n"
 
-#: ../src/stacking/stacking.c:1241
+#: ../src/stacking/stacking.c:1239
 #, c-format
 msgid "Rejection stack: opening image %s"
 msgstr "Verwerping stack: open beeld %s"
 
-#: ../src/stacking/stacking.c:1262
+#: ../src/stacking/stacking.c:1260
 msgid "Rejection stack error: images with > 3 dimensions are not supported\n"
 msgstr ""
 "Verwerping stack foutmelding: beelden met meer dan 3 dimenseis worden niet "
 "ondersteund\n"
 
-#: ../src/stacking/stacking.c:1273
+#: ../src/stacking/stacking.c:1271
 msgid "Rejection stack error: input images have different sizes\n"
 msgstr ""
 "Verwerping stack foutmelding: beelden hebben verschillende afmetingen\n"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:1330
+#: ../src/stacking/stacking.c:1328
 msgid "Rejection stack error: uninitialized sequence\n"
 msgstr "Verwerping stack foutmelding: sequentie niet geïnitialiseerd\n"
 
-#: ../src/stacking/stacking.c:1511
+#: ../src/stacking/stacking.c:1509
 msgid "Rejection stacking in progress..."
 msgstr "Verwerping stacking bezig..."
 
-#: ../src/stacking/stacking.c:1814
+#: ../src/stacking/stacking.c:1812
 #, c-format
 msgid "Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"
 msgstr "Pixel verwerping in kanaal #%d: %.3lf%% - %.3lf%%\n"
 
-#: ../src/stacking/stacking.c:1851
+#: ../src/stacking/stacking.c:1849
 msgid "Rejection stacking failed. Check the log."
 msgstr "Verwerping staking gefaald. Lees de log."
 
-#: ../src/stacking/stacking.c:1854
+#: ../src/stacking/stacking.c:1852
 msgid "Rejection stacking complete."
 msgstr "Verwerping stacking klaar."
 
-#: ../src/stacking/stacking.c:1905
+#: ../src/stacking/stacking.c:1903
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "Gebruikt maximaal %d MB geheugen voor de stacking\n"
 
-#: ../src/stacking/stacking.c:1917
+#: ../src/stacking/stacking.c:1915
 msgid "Stacking: processing...\n"
 msgstr "Stacking: bezig...\n"
 
-#: ../src/stacking/stacking.c:1932
+#: ../src/stacking/stacking.c:1930
 #, c-format
 msgid "Integration of %d images:\n"
 msgstr "Integratie van %d beelden:\n"
 
-#: ../src/stacking/stacking.c:1936
+#: ../src/stacking/stacking.c:1934
 msgid "Pixel combination ......... average\n"
 msgstr "Pixel combinatie ......... gemiddelde\n"
 
-#: ../src/stacking/stacking.c:1939
+#: ../src/stacking/stacking.c:1937
 msgid "Pixel combination ......... normalized sum\n"
 msgstr "Pixel combinatie ......... genormaliseerde som\n"
 
-#: ../src/stacking/stacking.c:1942
+#: ../src/stacking/stacking.c:1940
 msgid "Pixel combination ......... median\n"
 msgstr "Pixel combinatie ......... mediaan\n"
 
-#: ../src/stacking/stacking.c:1945
+#: ../src/stacking/stacking.c:1943
 msgid "Pixel combination ......... minimum\n"
 msgstr "Pixel combinatie ......... minimum\n"
 
-#: ../src/stacking/stacking.c:1948
+#: ../src/stacking/stacking.c:1946
 msgid "Pixel combination ......... maximum\n"
 msgstr "Pixel combinatie ......... maximum\n"
 
-#: ../src/stacking/stacking.c:1951
+#: ../src/stacking/stacking.c:1949
 msgid "Pixel combination ......... none\n"
 msgstr "Pixel combinatie ......... geen\n"
 
-#: ../src/stacking/stacking.c:1961 ../src/stacking/stacking.c:1990
+#: ../src/stacking/stacking.c:1959 ../src/stacking/stacking.c:1988
 msgid "none"
 msgstr "geen"
 
-#: ../src/stacking/stacking.c:1964
+#: ../src/stacking/stacking.c:1962
 msgid "additive"
 msgstr "additief"
 
-#: ../src/stacking/stacking.c:1967
+#: ../src/stacking/stacking.c:1965
 msgid "multiplicative"
 msgstr "multiplicatief"
 
-#: ../src/stacking/stacking.c:1970
+#: ../src/stacking/stacking.c:1968
 msgid "additive + scaling"
 msgstr "additief + schaling"
 
-#: ../src/stacking/stacking.c:1973
+#: ../src/stacking/stacking.c:1971
 msgid "multiplicative + scaling"
 msgstr "multiplicatief + schaling"
 
-#: ../src/stacking/stacking.c:1978
+#: ../src/stacking/stacking.c:1976
 #, c-format
 msgid "Normalization ............. %s\n"
 msgstr "Normalisatie ............. %s\n"
 
-#: ../src/stacking/stacking.c:1982
+#: ../src/stacking/stacking.c:1980
 msgid "Pixel rejection ........... none\n"
 msgstr "Pixel verwerping ........... geen\n"
 
-#: ../src/stacking/stacking.c:1983
+#: ../src/stacking/stacking.c:1981
 msgid "Rejection parameters ...... none\n"
 msgstr "Verwerpingsparameters ........... geen\n"
 
-#: ../src/stacking/stacking.c:1993
+#: ../src/stacking/stacking.c:1991
 msgid "percentile clipping"
 msgstr "percentile clipping"
 
-#: ../src/stacking/stacking.c:1996
+#: ../src/stacking/stacking.c:1994
 msgid "sigma clipping"
 msgstr "sigma clipping"
 
-#: ../src/stacking/stacking.c:1999
+#: ../src/stacking/stacking.c:1997
 msgid "median sigma clipping"
 msgstr "median sigma clipping"
 
-#: ../src/stacking/stacking.c:2002
+#: ../src/stacking/stacking.c:2000
 msgid "Winsorized sigma clipping"
 msgstr "Winsorized sigma clipping"
 
-#: ../src/stacking/stacking.c:2005
+#: ../src/stacking/stacking.c:2003
 msgid "linear fit clipping"
 msgstr "linear fit clipping"
 
-#: ../src/stacking/stacking.c:2008
+#: ../src/stacking/stacking.c:2006
 #, c-format
 msgid "Pixel rejection ........... %s\n"
 msgstr "Pixel verwerping ........... %s\n"
 
-#: ../src/stacking/stacking.c:2009
+#: ../src/stacking/stacking.c:2007
 #, c-format
 msgid "Rejection parameters ...... low=%.3f high=%.3f\n"
 msgstr "Verwerpingsparameter ...... laag=%.3f hoog=%.3f\n"
 
-#: ../src/stacking/stacking.c:2068 ../src/stacking/stacking.c:2073
+#: ../src/stacking/stacking.c:2066 ../src/stacking/stacking.c:2071
 msgid "Unsaved stacking result"
 msgstr "Onopgeslagen stacking resultaat"
 
-#: ../src/stacking/stacking.c:2260
+#: ../src/stacking/stacking.c:2258
 msgid ""
 "Error in highest FWHM accepted for sequence processing: some images don't "
 "have this kind of information available\n"
@@ -6226,7 +6261,7 @@ msgstr ""
 "Fout in de hoogste FWHM aanvaard voor het bewerken van de sequentie: voor "
 "enkele beelden is dit type informatie niet beschikbaar\n"
 
-#: ../src/stacking/stacking.c:2295
+#: ../src/stacking/stacking.c:2293
 #, c-format
 msgid ""
 "Error in highest quality accepted for sequence processing: some images don't "
@@ -6236,17 +6271,17 @@ msgstr ""
 "voor enkele beelden is dit type informatie niet beschikbaar voor kanaal #"
 "%d.\n"
 
-#: ../src/stacking/stacking.c:2353
+#: ../src/stacking/stacking.c:2351
 #, c-format
 msgid "Stacking all images in the sequence (%d)\n"
 msgstr "Alle beelden van de sequentie (%d) stacken\n"
 
-#: ../src/stacking/stacking.c:2360
+#: ../src/stacking/stacking.c:2358
 #, c-format
 msgid "Stacking only selected images in the sequence (%d)\n"
 msgstr "enkel de geselecteerde beelden van de sequentie (%d) stacken\n"
 
-#: ../src/stacking/stacking.c:2371
+#: ../src/stacking/stacking.c:2369
 #, c-format
 msgid ""
 "Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"
@@ -6254,12 +6289,12 @@ msgstr ""
 "De beelden van de sequentie met een FWHM lager of gelijk aan %g stacken "
 "(%d)\n"
 
-#: ../src/stacking/stacking.c:2377
+#: ../src/stacking/stacking.c:2375
 #, c-format
 msgid "Based on FWHM < %.2f (%d images)"
 msgstr "Gebaseerd op FWHM < %.2f (%d beelden)"
 
-#: ../src/stacking/stacking.c:2388
+#: ../src/stacking/stacking.c:2386
 #, c-format
 msgid ""
 "Stacking images of the sequence with a quality higher or equal than %g (%d)\n"
@@ -6268,12 +6303,12 @@ msgstr ""
 "(%d)\n"
 "\n"
 
-#: ../src/stacking/stacking.c:2394
+#: ../src/stacking/stacking.c:2392
 #, c-format
 msgid "Based on quality > %.2f (%d images)"
 msgstr "Gebaseerd op kwaiteit > %.2f (%d beelden)"
 
-#: ../src/stacking/stacking.c:2396
+#: ../src/stacking/stacking.c:2394
 #, c-format
 msgid "Based on quality"
 msgstr "Gebaseerd op kwaliteit"
