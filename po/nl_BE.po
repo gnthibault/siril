@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-30 15:08+0200\n"
-"PO-Revision-Date: 2017-03-17 21:11+0100\n"
+"POT-Creation-Date: 2017-06-13 13:37+0200\n"
+"PO-Revision-Date: 2017-06-13 12:35+0100\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language: nl_BE\n"
@@ -28,6 +28,9 @@ msgid ""
 "otherwise if the checkbox 'follow star movement' is checked in the "
 "registration tab, it will run with this option."
 msgstr ""
+"Zal registratiegegevens gebruiken indien ze beschikbaar zijn op deze "
+"registratielaag. Anders, als het vakje \"Volg de positive van de ster\" "
+"gekozen werd in de registratietab, zal deze optie worden toegapast."
 
 #: ../src/gui/siril3.glade.h:3
 msgid "PSF for the sequence"
@@ -2326,6 +2329,11 @@ msgid ""
 "of a sequence with less images. Images of the exported selection can be "
 "cropped and selected with the same criteria as the stacking image selection."
 msgstr ""
+"Exporteer de geladen sequentie in het geselecteerde formaat. Kan gebruikt "
+"worden om de sequentie in een ander formaat op te slaan, om filmpjes te "
+"maken of om een lichtere versie op te slaan met minder beelden. Beelden "
+"kunnen gecropped worden an geselecteerd worden met dezelfde criteria als de "
+"stacking selectie."
 
 #: ../src/gui/siril3.glade.h:520
 msgid "Normalize images"
@@ -2393,12 +2401,11 @@ msgstr "Gekozen selectie uit te snijden"
 
 #: ../src/gui/siril3.glade.h:533
 msgid "Image selection uses the same controls as for stacking"
-msgstr ""
+msgstr "Beeld selectie gebruikt dezelfde controles als voor de stacking"
 
 #: ../src/gui/siril3.glade.h:534
-#, fuzzy
 msgid "Go to the stacking tab"
-msgstr "Start stacking"
+msgstr "Ga naar de stackiong tab"
 
 #: ../src/gui/siril3.glade.h:535
 msgid "Sequence"
@@ -2847,7 +2854,7 @@ msgstr "Wis laatste kromme in fotometrie."
 
 #. This is the button for plotting variable star graph
 #. Plotting light curve
-#: ../src/gui/siril3.glade.h:630 ../src/gui/plot.c:322
+#: ../src/gui/siril3.glade.h:630 ../src/gui/plot.c:325
 msgid "Light Curve"
 msgstr "Lichtkromme"
 
@@ -2877,11 +2884,11 @@ msgstr "Kies de weergave van de fotometrie gegevens."
 msgid "Roundness"
 msgstr "Rendheid"
 
-#: ../src/gui/siril3.glade.h:636 ../src/gui/plot.c:521 ../src/gui/plot.c:687
+#: ../src/gui/siril3.glade.h:636 ../src/gui/plot.c:524 ../src/gui/plot.c:690
 msgid "FWHM"
 msgstr "FWHM"
 
-#: ../src/gui/siril3.glade.h:637 ../src/gui/plot.c:690
+#: ../src/gui/siril3.glade.h:637 ../src/gui/plot.c:693
 msgid "Amplitude"
 msgstr "Amplitude"
 
@@ -4081,8 +4088,8 @@ msgstr "Afbeeldingen hebben niet dezelfde afmetingen (w = %d|%d, h = %d|%d)\n"
 #: ../src/core/siril.c:202 ../src/core/utils.c:456 ../src/gui/callbacks.c:2430
 #: ../src/gui/callbacks.c:5066 ../src/gui/callbacks.c:5087
 #: ../src/gui/callbacks.c:5514 ../src/gui/callbacks.c:5520
-#: ../src/gui/callbacks.c:5545 ../src/gui/plot.c:340 ../src/gui/plot.c:400
-#: ../src/gui/plot.c:545 ../src/gui/PSF_list.c:150 ../src/io/conversion.c:491
+#: ../src/gui/callbacks.c:5545 ../src/gui/plot.c:343 ../src/gui/plot.c:403
+#: ../src/gui/plot.c:548 ../src/gui/PSF_list.c:150 ../src/io/conversion.c:491
 #: ../src/io/conversion.c:559 ../src/io/image_format_fits.c:196
 #: ../src/io/image_format_fits.c:204 ../src/io/image_format_fits.c:226
 #: ../src/io/image_format_fits.c:240 ../src/io/image_format_fits.c:255
@@ -4243,12 +4250,12 @@ msgstr "Ruis starndaarddeviatie: berekening...\n"
 #: ../src/core/undo.c:49
 #, c-format
 msgid "File I/O Error: Unable to create swap file in %s: [%s]\n"
-msgstr ""
+msgstr "Bestand I/O Fout: Kon swap bestand in %s: [%s] niet aanmaken\n"
 
 #: ../src/core/undo.c:60
 #, c-format
 msgid "File I/O Error: Unable to write swap file in %s: [%s]\n"
-msgstr ""
+msgstr "Bestand I/O Fout: Kon in het swap bestand in %s: [%s] niet schrijven\n"
 
 #: ../src/core/utils.c:232
 #, c-format
@@ -4256,9 +4263,9 @@ msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "Stel huidige werkfolder als '%s'\n"
 
 #: ../src/core/utils.c:242
-#, fuzzy, c-format
+#, c-format
 msgid "Could not change directory to '%s'.\n"
-msgstr "Kon folder niet wijzigen.\n"
+msgstr "Kon folder niet wijzigen in '%s'.\n"
 
 #: ../src/core/utils.c:430
 msgid "Filename is too long, not expanding it\n"
@@ -4766,16 +4773,18 @@ msgstr "Kies eest een amplitude en fase !\n"
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr ""
+"Croppen werkt niet met avi fils. Gelieve het bestand eerst in SER om te "
+"vormen.\n"
 
 #: ../src/gui/callbacks.c:6059
 msgid "Not a valid sequence for cropping.\n"
-msgstr ""
+msgstr "Sequentie niet geldig voor cropping\n"
 
-#: ../src/gui/plot.c:162 ../src/gui/plot.c:602
+#: ../src/gui/plot.c:165 ../src/gui/plot.c:605
 msgid "Frames"
 msgstr "Frames"
 
-#: ../src/gui/plot.c:241
+#: ../src/gui/plot.c:244
 msgid ""
 "Gnuplot is unavailable. Please consider to install it before trying to plot "
 "a graph of a variable star.\n"
@@ -4783,53 +4792,53 @@ msgstr ""
 "Gnuplot is niet aanwezig. Installeer deze eerst voraleer een grafiek van de "
 "variabele ster te willen weergeven.\n"
 
-#: ../src/gui/plot.c:337
+#: ../src/gui/plot.c:340
 #, c-format
 msgid "%s has been saved.\n"
 msgstr "%s werd opgeslaan.\n"
 
-#: ../src/gui/plot.c:338 ../src/gui/plot.c:398
+#: ../src/gui/plot.c:341 ../src/gui/plot.c:401
 msgid "Information"
 msgstr "Informatie"
 
-#: ../src/gui/plot.c:340 ../src/gui/plot.c:400
+#: ../src/gui/plot.c:343 ../src/gui/plot.c:403
 msgid "Something went wrong while saving plot"
 msgstr "Er is iets misgegaan bij het opslaan van de plot"
 
-#: ../src/gui/plot.c:397
+#: ../src/gui/plot.c:400
 #, c-format
 msgid "%s.csv has been saved.\n"
 msgstr "%s.csv werd opgeslaan.\n"
 
-#: ../src/gui/plot.c:524
+#: ../src/gui/plot.c:527
 msgid "Quality"
 msgstr "Qwaliteit"
 
-#: ../src/gui/plot.c:545
+#: ../src/gui/plot.c:548
 msgid "Using gnuplot is only available on UNIX system.\n"
-msgstr ""
+msgstr "Gnuplot is enkel beschikbaar op UNIX systemen\n"
 
-#: ../src/gui/plot.c:684
+#: ../src/gui/plot.c:687
 msgid "Star roundness (1 is round)"
 msgstr "Ster rondheid (1 is rond)"
 
-#: ../src/gui/plot.c:694
+#: ../src/gui/plot.c:697
 msgid "Star magnitude (absolute)"
 msgstr "Ster magnitude (absoluut)"
 
-#: ../src/gui/plot.c:696
+#: ../src/gui/plot.c:699
 msgid "Star magnitude (relative, use setmag)"
 msgstr "Ster magnitude (relatief, gebruikt setmag)"
 
-#: ../src/gui/plot.c:699
+#: ../src/gui/plot.c:702
 msgid "Background value"
 msgstr "Achtergrondwaarde"
 
-#: ../src/gui/plot.c:702
+#: ../src/gui/plot.c:705
 msgid "Star position on X axis"
 msgstr "Ster positie op X-as"
 
-#: ../src/gui/plot.c:705
+#: ../src/gui/plot.c:708
 msgid "Star position on Y axis"
 msgstr "Ster positie op Y-as"
 
@@ -5568,7 +5577,7 @@ msgstr ""
 #: ../src/io/sequence.c:1316
 #, c-format
 msgid "image %d is excluded from export\n"
-msgstr ""
+msgstr "beeld %d is uitgesloten van de export\n"
 
 #: ../src/io/sequence.c:1325 ../src/stacking/stacking.c:237
 #: ../src/stacking/stacking.c:863 ../src/stacking/stacking.c:1018
@@ -5610,17 +5619,19 @@ msgstr "Selectie croppen"
 #: ../src/io/sequence.c:1667
 #, c-format
 msgid "No star found in the area image %d around %d,%d\n"
-msgstr ""
+msgstr "Geen ster gevonden in de zone %d rond %d,%d\n"
 
 #: ../src/io/sequence.c:1714
 msgid ""
 "Star analysis does not give consistent results when exposure changes across "
 "the sequence.\n"
 msgstr ""
+"Ster analyse geeft geed consistente resultaten als de belichting in de "
+"sequentie varieert.\n"
 
 #: ../src/io/sequence.c:1805
 msgid "PSF on area"
-msgstr ""
+msgstr "PSF op zone"
 
 #: ../src/io/ser.c:260
 msgid "Trying to fix broken SER file...\n"
@@ -5700,9 +5711,9 @@ msgid "Successfully loaded '%s%s'\n"
 msgstr " '%s%s' sucessvol geladen\n"
 
 #: ../src/main.c:256
-#, fuzzy, c-format
+#, c-format
 msgid "%s. Looking into another directory...\n"
-msgstr "Siril kan deze map niet openen.\n"
+msgstr "%s. Kijkt in een andere folder...\n"
 
 #: ../src/main.c:262
 #, c-format
