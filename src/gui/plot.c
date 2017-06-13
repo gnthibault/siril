@@ -25,6 +25,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef WIN32
+#include <sys/wait.h>
+#endif
 
 #include "core/siril.h"
 #include "core/proto.h"
