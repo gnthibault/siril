@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-30 15:08+0200\n"
-"PO-Revision-Date: 2017-03-16 22:06+0100\n"
+"POT-Creation-Date: 2017-06-12 13:27+0200\n"
+"PO-Revision-Date: 2017-06-16 15:41+0200\n"
 "Last-Translator: Sonia Zorba <sonia@zonia3000.net>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
 "Language: it_IT\n"
@@ -28,6 +28,10 @@ msgid ""
 "otherwise if the checkbox 'follow star movement' is checked in the "
 "registration tab, it will run with this option."
 msgstr ""
+"Verranno utilizzati i dati della registrazione, se questi sono disponibili "
+"sull'omonimo livello, altrimenti verrà utilizzata l'opzione 'insegui il "
+"movimento delle stelle', se tale checkbox è stata selezionata nel tab della "
+"registrazione."
 
 #: ../src/gui/siril3.glade.h:3
 msgid "PSF for the sequence"
@@ -2367,6 +2371,12 @@ msgid ""
 "of a sequence with less images. Images of the exported selection can be "
 "cropped and selected with the same criteria as the stacking image selection."
 msgstr ""
+"Esporta la sequenza caricata nel formato selezionato. Può essere utilizzato "
+"per memorizzare una sequenza in un altro formato, creare filmati o "
+"memorizzare una versione più snella della sequenza contenente meno immagini. "
+"Le immagini della selezione esportata possono essere ritagliate e "
+"selezionate con lo stesso criterio usato per la selezione delle immagini "
+"dello stacking."
 
 #: ../src/gui/siril3.glade.h:520
 msgid "Normalize images"
@@ -2406,7 +2416,7 @@ msgid ""
 "Check this box if you want to resize exported sequence. Note that this will "
 "degrade image quality."
 msgstr ""
-"Controlla questo riquadro se vuoi ridimensionare la sequenza esportata. Nota "
+"Seleziona questa checkbox se vuoi ridimensionare la sequenza esportata. Nota "
 "che questo degraderà la qualità dell'immagine"
 
 #: ../src/gui/siril3.glade.h:528
@@ -2436,11 +2446,12 @@ msgstr "Seleziona area da ritagliare"
 #: ../src/gui/siril3.glade.h:533
 msgid "Image selection uses the same controls as for stacking"
 msgstr ""
+"La selezione delle immagini usa gli stessi controlli che valgono per lo "
+"stacking"
 
 #: ../src/gui/siril3.glade.h:534
-#, fuzzy
 msgid "Go to the stacking tab"
-msgstr "Inizia stacking"
+msgstr "Vai al tab dello stacking"
 
 #: ../src/gui/siril3.glade.h:535
 msgid "Sequence"
@@ -4319,12 +4330,12 @@ msgstr "Deviazione standard del rumore: sto calcolando...\n"
 #: ../src/core/undo.c:49
 #, c-format
 msgid "File I/O Error: Unable to create swap file in %s: [%s]\n"
-msgstr ""
+msgstr "Errore I/O del file: non posso creare il file di swap in %s: [%s]\n"
 
 #: ../src/core/undo.c:60
 #, c-format
 msgid "File I/O Error: Unable to write swap file in %s: [%s]\n"
-msgstr ""
+msgstr "Errore I/O del file: non posso scrivere il file di swap in %s: [%s]\n"
 
 #: ../src/core/utils.c:232
 #, c-format
@@ -4332,9 +4343,9 @@ msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "Impostazione CLC (Cartella di Lavoro Corrente) a '%s'\n"
 
 #: ../src/core/utils.c:242
-#, fuzzy, c-format
+#, c-format
 msgid "Could not change directory to '%s'.\n"
-msgstr "Non posso cambiare cartella.\n"
+msgstr "Non posso cambiare la cartella in '%s'.\n"
 
 #: ../src/core/utils.c:430
 msgid "Filename is too long, not expanding it\n"
@@ -4492,8 +4503,8 @@ msgstr ""
 #, c-format
 msgid "<%s.seq>: %d images selected out of %d, no reference image set"
 msgstr ""
-"<%s.seq>: %d immagini selezionate fuori da %d, nessuna immagine di "
-"riferimento impostata"
+"<%s.seq>: %d immagini selezionate su %d, nessuna immagine di riferimento "
+"impostata"
 
 #: ../src/gui/callbacks.c:1805
 #, c-format
@@ -4851,10 +4862,12 @@ msgstr "Seleziona prima magnitudine e fase!\n"
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr ""
+"Il ritaglio non funziona con i filmati avi. Per favore, converti prima il "
+"tuo file nel formato SER.\n"
 
 #: ../src/gui/callbacks.c:6059
 msgid "Not a valid sequence for cropping.\n"
-msgstr ""
+msgstr "Sequenza non valida per il ritaglio.\n"
 
 #: ../src/gui/plot.c:162 ../src/gui/plot.c:602
 msgid "Frames"
@@ -4892,7 +4905,7 @@ msgstr "Qualità"
 
 #: ../src/gui/plot.c:545
 msgid "Using gnuplot is only available on UNIX system.\n"
-msgstr ""
+msgstr "L'utilizzo di gnuplot è disponibile solamente sui sistemi UNIX.\n"
 
 #: ../src/gui/plot.c:684
 msgid "Star roundness (1 is round)"
@@ -5648,7 +5661,7 @@ msgstr ""
 #: ../src/io/sequence.c:1316
 #, c-format
 msgid "image %d is excluded from export\n"
-msgstr ""
+msgstr "L'immagine %d è stata esclusa dall'esportazione\n"
 
 #: ../src/io/sequence.c:1325 ../src/stacking/stacking.c:237
 #: ../src/stacking/stacking.c:863 ../src/stacking/stacking.c:1018
@@ -5691,16 +5704,19 @@ msgstr "Ritaglio alla selezione"
 #, c-format
 msgid "No star found in the area image %d around %d,%d\n"
 msgstr ""
+"Nessuna stella è stata trovata nell'area dell'immagine %d intorno a %d,%d\n"
 
 #: ../src/io/sequence.c:1714
 msgid ""
 "Star analysis does not give consistent results when exposure changes across "
 "the sequence.\n"
 msgstr ""
+"L'analisi delle stelle non dà risultati consistenti quando l'esposizione "
+"cambia lungo la sequenza.\n"
 
 #: ../src/io/sequence.c:1805
 msgid "PSF on area"
-msgstr ""
+msgstr "PSF sull'area"
 
 #: ../src/io/ser.c:260
 msgid "Trying to fix broken SER file...\n"
@@ -5782,9 +5798,9 @@ msgid "Successfully loaded '%s%s'\n"
 msgstr "Caricato correttamente '%s%s'\n"
 
 #: ../src/main.c:256
-#, fuzzy, c-format
+#, c-format
 msgid "%s. Looking into another directory...\n"
-msgstr "Siril non può aprire la cartella.\n"
+msgstr "%s. Cercando in un'altra cartella...\n"
 
 #: ../src/main.c:262
 #, c-format
