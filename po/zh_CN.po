@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-30 15:08+0200\n"
-"PO-Revision-Date: 2017-03-23 17:19+0800\n"
+"POT-Creation-Date: 2017-06-12 13:27+0200\n"
+"PO-Revision-Date: 2017-06-18 23:33+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
 "Language: zh_CN\n"
@@ -28,6 +28,7 @@ msgid ""
 "otherwise if the checkbox 'follow star movement' is checked in the "
 "registration tab, it will run with this option."
 msgstr ""
+"当对其帧上有可用数据时，改数据会被使用，除非“跟随星点移动”选择框被选择。"
 
 #: ../src/gui/siril3.glade.h:3
 msgid "PSF for the sequence"
@@ -2232,6 +2233,8 @@ msgid ""
 "of a sequence with less images. Images of the exported selection can be "
 "cropped and selected with the same criteria as the stacking image selection."
 msgstr ""
+"按照所选定的格式导出当前队列。可用于将队列保存为另外的格式，制作动画，或者重"
+"新筛选队列内容。所导出的图像帧可以按照与图像叠加相同的条件来进行过滤和筛选。"
 
 #: ../src/gui/siril3.glade.h:520
 msgid "Normalize images"
@@ -2294,12 +2297,11 @@ msgstr "选择裁减区域"
 
 #: ../src/gui/siril3.glade.h:533
 msgid "Image selection uses the same controls as for stacking"
-msgstr ""
+msgstr "使用图像叠加相同的条件来选择每一帧"
 
 #: ../src/gui/siril3.glade.h:534
-#, fuzzy
 msgid "Go to the stacking tab"
-msgstr "开始叠加"
+msgstr "进入叠加标签页"
 
 #: ../src/gui/siril3.glade.h:535
 msgid "Sequence"
@@ -3446,7 +3448,7 @@ msgstr "NOT OK %ux%u"
 #: ../src/compositing/compositing.c:470
 #, c-format
 msgid "Resizing the loaded image from %dx%d to %dx%d\n"
-msgstr "Resizing the loaded image from %dx%d to %dx%d\n"
+msgstr "将当前载入图像尺寸从 %dx%d 改变为 %dx%d\n"
 
 #: ../src/compositing/compositing.c:473
 #, c-format
@@ -3829,7 +3831,7 @@ msgstr ""
 
 #: ../src/core/processing.c:40
 msgid "Preparing sequence processing failed.\n"
-msgstr "Preparing sequence processing failed.\n"
+msgstr "准备待处理队列失败。\n"
 
 #: ../src/core/processing.c:61
 #, c-format
@@ -4021,16 +4023,16 @@ msgstr "Siril无法估算图像的噪声\n"
 
 #: ../src/core/siril.c:1702
 msgid "backgroundnoise: Error, no data computed\n"
-msgstr "backgroundnoise: Error, no data computed\n"
+msgstr "背景噪声：错误，无可用数据\n"
 
 #: ../src/core/siril.c:1712
 msgid "backgroundnoise: does not converge\n"
-msgstr "backgroundnoise: does not converge\n"
+msgstr "背景噪声：无法汇聚\n"
 
 #: ../src/core/siril.c:1733
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
-msgstr "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
+msgstr "背景噪声值（通道：#%d）: %0.3lf (%.3e)\n"
 
 #: ../src/core/siril.c:1750
 msgid "Noise standard deviation: calculating...\n"
@@ -4039,12 +4041,12 @@ msgstr "噪声标准背离：计算中...\n"
 #: ../src/core/undo.c:49
 #, c-format
 msgid "File I/O Error: Unable to create swap file in %s: [%s]\n"
-msgstr ""
+msgstr "文件I/O错误：无法创建交换文件于 %s: [%s]\n"
 
 #: ../src/core/undo.c:60
 #, c-format
 msgid "File I/O Error: Unable to write swap file in %s: [%s]\n"
-msgstr ""
+msgstr "文件I/O错误：无法写入交换文件于 %s: [%s]\n"
 
 #: ../src/core/utils.c:232
 #, c-format
@@ -4052,9 +4054,9 @@ msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "设置当前工作目录（CWD）为 '%s'\n"
 
 #: ../src/core/utils.c:242
-#, fuzzy, c-format
+#, c-format
 msgid "Could not change directory to '%s'.\n"
-msgstr "无法更改目录。\n"
+msgstr "无法更改目录为 '%s'\n"
 
 #: ../src/core/utils.c:430
 msgid "Filename is too long, not expanding it\n"
@@ -4554,11 +4556,11 @@ msgstr "请先选择好幅值和相位！\n"
 #: ../src/gui/callbacks.c:6054
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
-msgstr ""
+msgstr "AVI文件不支持裁剪。请先将文件转化为SER格式。\n"
 
 #: ../src/gui/callbacks.c:6059
 msgid "Not a valid sequence for cropping.\n"
-msgstr ""
+msgstr "企图裁剪非有效队列。\n"
 
 #: ../src/gui/plot.c:162 ../src/gui/plot.c:602
 msgid "Frames"
@@ -4596,7 +4598,7 @@ msgstr "品质"
 
 #: ../src/gui/plot.c:545
 msgid "Using gnuplot is only available on UNIX system.\n"
-msgstr ""
+msgstr "只有UNIX系统可以使用gnuplot。\n"
 
 #: ../src/gui/plot.c:684
 msgid "Star roundness (1 is round)"
@@ -5279,7 +5281,7 @@ msgstr "%d from %s.ser"
 #: ../src/io/sequence.c:526
 #, c-format
 msgid "Could not load image %d from sequence %s\n"
-msgstr "Could not load image %d from sequence %s\n"
+msgstr "无法载入图像%d位于队列%s\n"
 
 #: ../src/io/sequence.c:534 ../src/io/sequence.c:584
 #, c-format
@@ -5330,7 +5332,7 @@ msgstr ""
 #: ../src/io/sequence.c:1316
 #, c-format
 msgid "image %d is excluded from export\n"
-msgstr ""
+msgstr "图像%d被排除于导出列表\n"
 
 #: ../src/io/sequence.c:1325 ../src/stacking/stacking.c:237
 #: ../src/stacking/stacking.c:863 ../src/stacking/stacking.c:1018
@@ -5372,17 +5374,17 @@ msgstr "裁减到所选区域"
 #: ../src/io/sequence.c:1667
 #, c-format
 msgid "No star found in the area image %d around %d,%d\n"
-msgstr ""
+msgstr "No star found in the area image %d around %d,%d\n"
 
 #: ../src/io/sequence.c:1714
 msgid ""
 "Star analysis does not give consistent results when exposure changes across "
 "the sequence.\n"
-msgstr ""
+msgstr "当队列中的曝光时间不一致时，星点分析无法得到一致的结果。\n"
 
 #: ../src/io/sequence.c:1805
 msgid "PSF on area"
-msgstr ""
+msgstr "区域中的PSF"
 
 #: ../src/io/ser.c:260
 msgid "Trying to fix broken SER file...\n"
@@ -5441,7 +5443,7 @@ msgstr "打开图像发生错误。请查询日志以获取更多信息。"
 #: ../src/io/single_image.c:164
 #, c-format
 msgid "Closing sequence %s\n"
-msgstr "Closing sequence %s\n"
+msgstr "关闭队列%s\n"
 
 #: ../src/main.c:215
 #, c-format
@@ -5454,9 +5456,9 @@ msgid "Successfully loaded '%s%s'\n"
 msgstr "Successfully loaded '%s%s'\n"
 
 #: ../src/main.c:256
-#, fuzzy, c-format
+#, c-format
 msgid "%s. Looking into another directory...\n"
-msgstr "Siril无法打开目录。\n"
+msgstr "%s. 搜索其他目录...\n"
 
 #: ../src/main.c:262
 #, c-format
