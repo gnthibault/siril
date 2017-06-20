@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-30 15:08+0200\n"
-"PO-Revision-Date: 2017-04-18 07:28+0100\n"
+"POT-Creation-Date: 2017-06-20 10:54+0100\n"
+"PO-Revision-Date: 2017-06-20 11:04+0100\n"
 "Last-Translator: Joaquín. M. Llano Montero\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -28,6 +28,9 @@ msgid ""
 "otherwise if the checkbox 'follow star movement' is checked in the "
 "registration tab, it will run with this option."
 msgstr ""
+"Usará los datos de registro si hay alguno disponible en la capa de registro, "
+"de lo contrario, si casilla 'seguir el movimiento de las estrellas' en la "
+"pestaña registro está marcada, se ejecutará con esta opción."
 
 #: ../src/gui/siril3.glade.h:3
 msgid "PSF for the sequence"
@@ -2347,6 +2350,11 @@ msgid ""
 "of a sequence with less images. Images of the exported selection can be "
 "cropped and selected with the same criteria as the stacking image selection."
 msgstr ""
+"Exportar la secuencia cargada en el formato seleccionado. Puede usarse para "
+"guardar una secuencia en otro formato, hacer animaciones o guardar una "
+"versión más luminosa de una secuencia con menos imágenes. Las imágenes de la "
+"selección exportada pueden cortarse y seleccionarse con el mismo criterio "
+"que la selección de imágenes apiladas."
 
 #: ../src/gui/siril3.glade.h:520
 msgid "Normalize images"
@@ -2415,12 +2423,11 @@ msgstr "Seleccione un área para recortar"
 
 #: ../src/gui/siril3.glade.h:533
 msgid "Image selection uses the same controls as for stacking"
-msgstr ""
+msgstr "La selección de imágenes usa los mismos controles que el apilado"
 
 #: ../src/gui/siril3.glade.h:534
-#, fuzzy
 msgid "Go to the stacking tab"
-msgstr "Comenzar apilado"
+msgstr "Ir a la pestaña de apilado"
 
 #: ../src/gui/siril3.glade.h:535
 msgid "Sequence"
@@ -2876,7 +2883,7 @@ msgstr "Borrar la última curva añadida a la fotometría."
 
 #. This is the button for plotting variable star graph
 #. Plotting light curve
-#: ../src/gui/siril3.glade.h:630 ../src/gui/plot.c:322
+#: ../src/gui/siril3.glade.h:630 ../src/gui/plot.c:325
 msgid "Light Curve"
 msgstr "Curva de luz"
 
@@ -2906,11 +2913,11 @@ msgstr "Seleccione qué información mostrar de los datos de fotometría."
 msgid "Roundness"
 msgstr "Redondez"
 
-#: ../src/gui/siril3.glade.h:636 ../src/gui/plot.c:521 ../src/gui/plot.c:687
+#: ../src/gui/siril3.glade.h:636 ../src/gui/plot.c:524 ../src/gui/plot.c:690
 msgid "FWHM"
 msgstr "FWHM"
 
-#: ../src/gui/siril3.glade.h:637 ../src/gui/plot.c:690
+#: ../src/gui/siril3.glade.h:637 ../src/gui/plot.c:693
 msgid "Amplitude"
 msgstr "Amplitud"
 
@@ -4118,8 +4125,8 @@ msgstr "Las imágenes no tienen el mismo tamaño (an =%d|%d, al =%d|%d)\n"
 #: ../src/core/siril.c:202 ../src/core/utils.c:456 ../src/gui/callbacks.c:2430
 #: ../src/gui/callbacks.c:5066 ../src/gui/callbacks.c:5087
 #: ../src/gui/callbacks.c:5514 ../src/gui/callbacks.c:5520
-#: ../src/gui/callbacks.c:5545 ../src/gui/plot.c:340 ../src/gui/plot.c:400
-#: ../src/gui/plot.c:545 ../src/gui/PSF_list.c:150 ../src/io/conversion.c:491
+#: ../src/gui/callbacks.c:5545 ../src/gui/plot.c:343 ../src/gui/plot.c:403
+#: ../src/gui/plot.c:548 ../src/gui/PSF_list.c:150 ../src/io/conversion.c:491
 #: ../src/io/conversion.c:559 ../src/io/image_format_fits.c:196
 #: ../src/io/image_format_fits.c:204 ../src/io/image_format_fits.c:226
 #: ../src/io/image_format_fits.c:240 ../src/io/image_format_fits.c:255
@@ -4278,11 +4285,15 @@ msgstr "Desviación estándar de ruido: calculando...\n"
 #, c-format
 msgid "File I/O Error: Unable to create swap file in %s: [%s]\n"
 msgstr ""
+"Error de E/S: imposible crear fichero de intercambio en %s: [%s]\n"
+"\n"
 
 #: ../src/core/undo.c:60
 #, c-format
 msgid "File I/O Error: Unable to write swap file in %s: [%s]\n"
 msgstr ""
+"Error de E/S: imposible escribir fichero de intercambio en %s: [%s]\n"
+"\n"
 
 #: ../src/core/utils.c:232
 #, c-format
@@ -4290,9 +4301,9 @@ msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "Estableciendo CWD (Directorio Actual de Trabajo) a '%s'\n"
 
 #: ../src/core/utils.c:242
-#, fuzzy, c-format
+#, c-format
 msgid "Could not change directory to '%s'.\n"
-msgstr "No se puede cambiar el directorio.\n"
+msgstr "No se puede cambiar el directorio a '%s'.\n"
 
 #: ../src/core/utils.c:430
 msgid "Filename is too long, not expanding it\n"
@@ -4806,16 +4817,19 @@ msgstr "¡Seleccione magnitud y fase primero!\n"
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr ""
+"El recorte no funciona con películas avi. Por favor convierta el fichero a "
+"SER.\n"
+"\n"
 
 #: ../src/gui/callbacks.c:6059
 msgid "Not a valid sequence for cropping.\n"
-msgstr ""
+msgstr "No es una secuencia válida para recortar.\n"
 
-#: ../src/gui/plot.c:162 ../src/gui/plot.c:602
+#: ../src/gui/plot.c:165 ../src/gui/plot.c:605
 msgid "Frames"
 msgstr "Frames:"
 
-#: ../src/gui/plot.c:241
+#: ../src/gui/plot.c:244
 msgid ""
 "Gnuplot is unavailable. Please consider to install it before trying to plot "
 "a graph of a variable star.\n"
@@ -4823,53 +4837,53 @@ msgstr ""
 "Gnuplot no está disponible. Considere instalarlo antes de intentar dibujar "
 "una gráfica de una estrella variable.\n"
 
-#: ../src/gui/plot.c:337
+#: ../src/gui/plot.c:340
 #, c-format
 msgid "%s has been saved.\n"
 msgstr "Se ha guardado %s.\n"
 
-#: ../src/gui/plot.c:338 ../src/gui/plot.c:398
+#: ../src/gui/plot.c:341 ../src/gui/plot.c:401
 msgid "Information"
 msgstr "Información"
 
-#: ../src/gui/plot.c:340 ../src/gui/plot.c:400
+#: ../src/gui/plot.c:343 ../src/gui/plot.c:403
 msgid "Something went wrong while saving plot"
 msgstr "Algo fue mal al guardar el gráfico"
 
-#: ../src/gui/plot.c:397
+#: ../src/gui/plot.c:400
 #, c-format
 msgid "%s.csv has been saved.\n"
 msgstr "Se ha guardado el fichero %s.csv.\n"
 
-#: ../src/gui/plot.c:524
+#: ../src/gui/plot.c:527
 msgid "Quality"
 msgstr "Calidad"
 
-#: ../src/gui/plot.c:545
+#: ../src/gui/plot.c:548
 msgid "Using gnuplot is only available on UNIX system.\n"
-msgstr ""
+msgstr "El uso de gnuplot sólo está disponible en sistemas UNIX.\n"
 
-#: ../src/gui/plot.c:684
+#: ../src/gui/plot.c:687
 msgid "Star roundness (1 is round)"
 msgstr "Redondez de la estrella (1 es redondo)"
 
-#: ../src/gui/plot.c:694
+#: ../src/gui/plot.c:697
 msgid "Star magnitude (absolute)"
 msgstr "Magnitud de la estrella (absoluta)"
 
-#: ../src/gui/plot.c:696
+#: ../src/gui/plot.c:699
 msgid "Star magnitude (relative, use setmag)"
 msgstr "Magnitud de la estrella (relativa, use setmag)"
 
-#: ../src/gui/plot.c:699
+#: ../src/gui/plot.c:702
 msgid "Background value"
 msgstr "Valor de fondo"
 
-#: ../src/gui/plot.c:702
+#: ../src/gui/plot.c:705
 msgid "Star position on X axis"
 msgstr "Posición de la estrella en el eje X"
 
-#: ../src/gui/plot.c:705
+#: ../src/gui/plot.c:708
 msgid "Star position on Y axis"
 msgstr "Posición de la estrella en el eje Y"
 
@@ -5600,7 +5614,7 @@ msgstr ""
 #: ../src/io/sequence.c:1316
 #, c-format
 msgid "image %d is excluded from export\n"
-msgstr ""
+msgstr "La imagen %d se ha excluido de la exportación\n"
 
 #: ../src/io/sequence.c:1325 ../src/stacking/stacking.c:237
 #: ../src/stacking/stacking.c:863 ../src/stacking/stacking.c:1018
@@ -5643,16 +5657,19 @@ msgstr "Recortando a la selección"
 #, c-format
 msgid "No star found in the area image %d around %d,%d\n"
 msgstr ""
+"No se han encontrado estrellas en la zona de imagen %d en torno a %d,%d\n"
 
 #: ../src/io/sequence.c:1714
 msgid ""
 "Star analysis does not give consistent results when exposure changes across "
 "the sequence.\n"
 msgstr ""
+"El análisis de estrellas no proporciona resultados consistentes cuando la "
+"exposición cambia a lo largo de la secuencia.\n"
 
 #: ../src/io/sequence.c:1805
 msgid "PSF on area"
-msgstr ""
+msgstr "PSF en el área"
 
 #: ../src/io/ser.c:260
 msgid "Trying to fix broken SER file...\n"
@@ -5728,9 +5745,11 @@ msgid "Successfully loaded '%s%s'\n"
 msgstr "Cargado con éxito '%s%s'\n"
 
 #: ../src/main.c:256
-#, fuzzy, c-format
+#, c-format
 msgid "%s. Looking into another directory...\n"
-msgstr "Siril no puede abrir el directorio.\n"
+msgstr ""
+"%s. Buscando en otro directorio...\n"
+"\n"
 
 #: ../src/main.c:262
 #, c-format
