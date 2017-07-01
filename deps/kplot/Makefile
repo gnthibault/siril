@@ -302,7 +302,7 @@ kplot.tgz:
 	(cd .dist && tar zcf ../$@ kplot-$(VERSION))
 	rm -rf .dist
 
-clean:
+clean distclean:
 	rm -f libkplot.a compat.h test-reallocarray 
 	rm -f $(EXAMPLES)
 	rm -rf *.dSYM
