@@ -26,6 +26,10 @@
 #ifdef WIN32
 #include <direct.h>
 #endif
+#if (defined(__APPLE__) && defined(__MACH__))
+#include <gio/gio.h>
+#include <glib/gstdio.h>
+#endif
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -342,8 +346,22 @@ int checkinitfile() {
 				"Could not get the environment variable $HOME, no config file.\n");
 		return 1;
 	}
+
+#if (defined(__APPLE__) && defined(__MACH__))
+	fprintf(stderr, "Creating initfile in Application Support.\n");
+	const gchar *homefolder;
+	homefolder = g_build_filename(getenv("HOME"),
+			"Library/Application Support/siril", NULL);
+	if (g_mkdir_with_parents(homefolder, 0755) == 0) {
+		com.initfile = g_build_filename(homefolder, CFG_FILE, NULL);
+		fprintf(stderr, "The initfile name is %s.\n", com.initfile);
+	} else
+		fprintf(stderr, "Failed to create homefolder %s.\n", homefolder);
+
+#else
 	com.initfile = malloc(strlen(home) + 20);
 	sprintf(com.initfile, "%s/.siril/%s", home, CFG_FILE);
+#endif /* _APPLE__ */
 	if (readinitfile()) {	// couldn't read it
 		char filename[255];
 

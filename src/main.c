@@ -120,7 +120,7 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 char *siril_sources[] = {
 	"",
 #if (defined(__APPLE__) && defined(__MACH__))
-	"",
+	"/tmp/siril/Contents/Resources/share/siril/",
 #endif
 	PACKAGE_DATA_DIR"/",
 	"/usr/share/siril/",
@@ -221,23 +221,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	gtk_init (&argc, &argv);
-
-#if (defined(__APPLE__) && defined(__MACH__))
-	pid = getpid();
-	ret = proc_pidpath ( pid, path, sizeof(path));
-	if ( ret ) {
-		int l;
-		char* sp;
-		sp = strrchr ( path, '/' );
-		sp -= 5;
-		*sp = 0;
-		l = strlen ( path );
-		if (( l + 10 ) < PROC_PIDPATHINFO_MAXSIZE ) {
-			( void ) strcat ( path, "Resources/" );
-			siril_sources[1] = path;
-		}
-	}
-#endif
 
 	/* try to load the glade file, from the sources defined above */
 	builder = gtk_builder_new();
