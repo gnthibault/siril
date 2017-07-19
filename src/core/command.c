@@ -456,7 +456,7 @@ int process_wrecons(int nb){
 	for (i=0; i < nb_chan; i++) {
 		dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
 		strcpy(dir[i], tmpdir);
-		strcat(dir[i], "/");
+		strcat(dir[i], G_DIR_SEPARATOR_S);
 		strcat(dir[i], File_Name_Transform[i]);
 		wavelet_reconstruct_file (dir[i], coef, gfit.pdata[i]);
 		free(dir[i]);
@@ -501,7 +501,7 @@ int process_wavelet(int nb){
 	for (chan = 0; chan < nb_chan; chan++) {
 		dir[chan] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[chan]) + 2);
 		strcpy(dir[chan], tmpdir);
-		strcat(dir[chan], "/");
+		strcat(dir[chan], G_DIR_SEPARATOR_S);
 		strcat(dir[chan], File_Name_Transform[chan]);
 		wavelet_transform_file (Imag, gfit.ry, gfit.rx, dir[chan], Type_Transform, Nbr_Plan, gfit.pdata[chan]);
 		free(dir[chan]);
@@ -528,7 +528,7 @@ int process_ls(int nb){
 	if (nb>1){
 		if (word[1][0]!='\0'){	
 			/* Absolute path */
-			if(word[1][0]=='/' || word[1][0]=='~'){
+			if(word[1][0]==G_DIR_SEPARATOR || word[1][0]=='~'){
 				strncpy(filename, word[1], 250);
 				filename[250] = '\0';
 				expand_home_in_filename(filename, 256);
@@ -536,7 +536,7 @@ int process_ls(int nb){
 			/* Relative path */
 			else {
 				strcpy(filename, com.wd);
-				strcat(filename, "/");
+				strcat(filename, G_DIR_SEPARATOR_S);
 				strcat(filename, word[1]);
 			}	
 			path = strdup(filename);

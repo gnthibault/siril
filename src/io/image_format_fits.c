@@ -60,7 +60,7 @@ static void read_fits_date_obs_header(fits *fit) {
 	/** Case seen in some FITS files. Needed to get date back in SER conversion **/
 	fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL,
 				&status);
-	if (ut_start[0] != '\0' && fit->date_obs[2] == '/') {
+	if (ut_start[0] != '\0' && fit->date_obs[2] == G_DIR_SEPARATOR) {
 		int year, month, day;
 		sscanf(fit->date_obs, "%02d/%02d/%04d", &day, &month, &year);
 		g_snprintf(fit->date_obs, sizeof(fit->date_obs), "%04d-%02d-%02dT%s",

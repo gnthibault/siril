@@ -216,7 +216,7 @@ int changedir(const char *dir) {
 		 * press the check seq button to display the list, and this is also done there. */
 		/* check_seq();
 		 update_sequence_list();*/
-		if (dir[0] == '/') {
+		if (dir[0] == G_DIR_SEPARATOR) {
 			if (com.wd)
 				free(com.wd);
 			com.wd = strdup(dir);
@@ -419,11 +419,11 @@ gboolean theli_is_available() {
 /* expands the ~ in filenames */
 void expand_home_in_filename(char *filename, int size) {
 	if (filename[0] == '~' && filename[1] == '\0')
-		strcat(filename, "/");
+		strcat(filename, G_DIR_SEPARATOR_S);
 	int len = strlen(filename);
 	if (len < 2)
 		return;		// not very necessary now with the first line
-	if (filename[0] == '~' && filename[1] == '/') {
+	if (filename[0] == '~' && filename[1] == G_DIR_SEPARATOR) {
 		char *homepath = getenv("HOME");
 		int j, homelen = strlen(homepath);
 		if (len + homelen > size - 1) {

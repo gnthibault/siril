@@ -540,7 +540,7 @@ static gpointer convert_thread_worker(gpointer p) {
 		if (!get_thread_run()) {
 			break;
 		}
-		gchar *name = g_utf8_strrchr(src_filename, strlen(src_filename), '/');
+		gchar *name = g_utf8_strrchr(src_filename, strlen(src_filename), G_DIR_SEPARATOR);
 		if (name)
 			g_snprintf(msg_bar, 256, _("Converting %s..."), name + 1);
 		else g_snprintf(msg_bar, 256, _("Converting %s..."), src_filename);

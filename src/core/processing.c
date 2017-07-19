@@ -215,7 +215,7 @@ int ser_prepare_hook(struct generic_seq_args *args) {
 	const char *ptr;
 
 	if (args->force_ser_output || args->seq->type == SEQ_SER) {
-		ptr = strrchr(args->seq->seqname, '/');
+		ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
 		if (ptr)
 			snprintf(dest, 255, "%s%s.ser", args->new_seq_prefix, ptr + 1);
 		else snprintf(dest, 255, "%s%s.ser", args->new_seq_prefix, args->seq->seqname);

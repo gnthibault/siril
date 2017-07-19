@@ -630,7 +630,7 @@ int register_star_alignment(struct registration_args *args) {
 
 		new_ser = malloc(sizeof(struct ser_struct));
 
-		const char *ptr = strrchr(args->seq->seqname, '/');
+		const char *ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
 		if (ptr)
 			snprintf(dest, 255, "%s%s.ser", args->prefix, ptr + 1);
 		else

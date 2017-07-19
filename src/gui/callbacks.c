@@ -377,7 +377,7 @@ static void update_wavelets() {
 	for (i = 0; i < gfit.naxes[2]; i++) {
 		dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
 		strcpy(dir[i], tmpdir);
-		strcat(dir[i], "/");
+		strcat(dir[i], G_DIR_SEPARATOR_S);
 		strcat(dir[i], File_Name_Transform[i]);
 		wavelet_reconstruct_file(dir[i], scale, gfit.pdata[i]);
 		free(dir[i]);
@@ -5713,7 +5713,7 @@ void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 	for (i = 0; i < nb_chan; i++) {
 		dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
 		strcpy(dir[i], tmpdir);
-		strcat(dir[i], "/");
+		strcat(dir[i], G_DIR_SEPARATOR_S);
 		strcat(dir[i], File_Name_Transform[i]);
 		wavelet_transform_file(Imag, gfit.ry, gfit.rx, dir[i], Type_Transform, Nbr_Plan,
 				gfit.pdata[i]);

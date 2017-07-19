@@ -1311,7 +1311,7 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 		dir[chan] = malloc(
 				strlen(tmpdir) + strlen(File_Name_Transform[chan]) + 2);
 		strcpy(dir[chan], tmpdir);
-		strcat(dir[chan], "/");
+		strcat(dir[chan], G_DIR_SEPARATOR_S);
 		strcat(dir[chan], File_Name_Transform[chan]);
 		if (wavelet_transform_file(Imag, fit->ry, fit->rx, dir[chan], Type, Nbr_Plan,
 				fit->pdata[chan])) {
