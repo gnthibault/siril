@@ -34,16 +34,16 @@
 /* *filename must be freed */
 static int undo_build_swapfile(fits *fit, char **filename) {
 	char *nameBuff;
-	char name[] = "/siril_swp-XXXXXX";
+	char name[] = "siril_swp-XXXXXX";
 	char *tmpdir;
 	int len, fd, size;
 
 	tmpdir = com.swap_dir;
-	len = strlen(tmpdir) + strlen(name) + 1;
+	len = strlen(tmpdir) + strlen (G_DIR_SEPARATOR_S) + strlen(name) + 1;
 
 	nameBuff = calloc(1, len * sizeof(char));
 
-	snprintf(nameBuff, len, "%s%s", tmpdir, name);
+	snprintf(nameBuff, len, "%s%s%s", tmpdir, G_DIR_SEPARATOR_S, name);
 	fd = mkstemp(nameBuff);
 	if (fd < 1) {
 		siril_log_message(_("File I/O Error: Unable to create swap file in %s: [%s]\n"),
