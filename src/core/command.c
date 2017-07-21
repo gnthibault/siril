@@ -115,7 +115,9 @@ command commande[] = {
 	// extension to a higher priority in case two files with same basename
 	// exist (stat_file() manages that priority order for now).
 	{"log", 0, "log ", process_log}, /* logarifies current image */
+#ifndef WIN32
 	{"ls", 0, "ls ", process_ls},
+#endif
 	
 	{"mirrorx", 0, "mirrorx", process_mirrorx},
 	{"mirrory", 0, "mirrory", process_mirrory},
@@ -519,6 +521,7 @@ int process_log(int nb){
 	return 0;
 }
 
+#ifndef WIN32
 int process_ls(int nb){
 	struct dirent **list;
 	char filename[256], *path;
@@ -560,9 +563,6 @@ int process_ls(int nb){
 		return 1;
 	}
 
-#ifdef WIN32
-	ListDirectoryContents(path);
-#else
 	int i, n;
 
 	n = scandir(path, &list, 0, alphasort);
@@ -613,12 +613,12 @@ int process_ls(int nb){
 	for (i = 0; i < n; i++)
 		free(list[i]);
 	free(list);
-#endif
 	siril_log_message(_("********* END OF THE LIST *********\n"));
 	free(path);
 
 	return 0;
 }
+#endif
 
 int	process_mirrorx(int nb){
 	mirrorx(&gfit, TRUE);
