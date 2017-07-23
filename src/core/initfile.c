@@ -23,12 +23,16 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#ifdef WIN32
-#include <direct.h>
-#endif
-#if (defined(__APPLE__) && defined(__MACH__))
 #include <gio/gio.h>
 #include <glib/gstdio.h>
+#ifdef WIN32
+#include <direct.h>
+#include <shlobj.h>
+#define DATADIR datadir
+/* Constant available since Shell32.dll 4.72 */
+#ifndef CSIDL_APPDATA
+#define CSIDL_APPDATA 0x001a
+#endif
 #endif
 
 #include "core/siril.h"
@@ -331,6 +335,27 @@ int writeinitfile() {
 	return 0;
 }
 
+#ifdef WIN32
+/* stolen from gimp which in turn stole from glib 2.35 */
+static gchar * get_special_folder(int csidl) {
+	wchar_t path[MAX_PATH + 1];
+	HRESULT hr;
+	LPITEMIDLIST pidl = NULL;
+	BOOL b;
+	gchar *retval = NULL;
+
+	hr = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
+	if (hr == S_OK) {
+		b = SHGetPathFromIDListW(pidl, path);
+		if (b)
+			retval = g_utf16_to_utf8(path, -1, NULL, NULL, NULL);
+		CoTaskMemFree(pidl);
+	}
+
+	return retval;
+}
+#endif
+
 int checkinitfile() {
 	char *home;
 	struct stat sts;
@@ -341,23 +366,36 @@ int checkinitfile() {
 	}
 
 	// no file given on command line, set initfile to default location
+#ifdef WIN32
+	home = g_build_filename (get_special_folder (CSIDL_APPDATA),
+			"siril", NULL);
+	if( g_mkdir_with_parents( home, 1 ) == 0 ) {
+		fprintf( stderr, "Created homefolder %s!\n", home );
+	} else {
+		fprintf( stderr, "Failed to create homefolder %s!\n", com.initfile );
+	}
+#else
 	if ((home = getenv("HOME")) == NULL) {
 		fprintf(stderr,
 				"Could not get the environment variable $HOME, no config file.\n");
 		return 1;
 	}
+#endif
 
 #if (defined(__APPLE__) && defined(__MACH__))
 	fprintf(stderr, "Creating initfile in Application Support.\n");
-	const gchar *homefolder;
+	gchar *homefolder;
 	homefolder = g_build_filename(getenv("HOME"),
 			"Library/Application Support/siril", NULL);
 	if (g_mkdir_with_parents(homefolder, 0755) == 0) {
 		com.initfile = g_build_filename(homefolder, CFG_FILE, NULL);
 		fprintf(stderr, "The initfile name is %s.\n", com.initfile);
-	} else
+	} else {
 		fprintf(stderr, "Failed to create homefolder %s.\n", homefolder);
-
+	}
+	g_free(homefolder);
+#elif WIN32
+	com.initfile = g_build_filename(home, CFG_FILE, NULL);
 #else
 	com.initfile = malloc(strlen(home) + 20);
 	sprintf(com.initfile, "%s/.siril/%s", home, CFG_FILE);

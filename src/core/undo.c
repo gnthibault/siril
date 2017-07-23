@@ -31,24 +31,24 @@
 #include "gui/histogram.h"
 #include "core/proto.h"
 
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
 /* *filename must be freed */
 static int undo_build_swapfile(fits *fit, char **filename) {
-	char *nameBuff;
+	gchar *nameBuff;
 	char name[] = "siril_swp-XXXXXX";
 	char *tmpdir;
-	int len, fd, size;
+	int fd, size;
 
 	tmpdir = com.swap_dir;
-	len = strlen(tmpdir) + strlen (G_DIR_SEPARATOR_S) + strlen(name) + 1;
-
-	nameBuff = calloc(1, len * sizeof(char));
-
-	snprintf(nameBuff, len, "%s%s%s", tmpdir, G_DIR_SEPARATOR_S, name);
+	nameBuff = g_build_filename(tmpdir, name, NULL);
 	fd = mkstemp(nameBuff);
 	if (fd < 1) {
 		siril_log_message(_("File I/O Error: Unable to create swap file in %s: [%s]\n"),
 				tmpdir, strerror(errno));
-		free(nameBuff);
+		g_free(nameBuff);
 		return 1;
 	}
 
@@ -59,7 +59,7 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 	if (-1 == write(fd, fit->data, size * sizeof(WORD))) {
 		siril_log_message(_("File I/O Error: Unable to write swap file in %s: [%s]\n"),
 				tmpdir, strerror(errno));
-		free(nameBuff);
+		g_free(nameBuff);
 		close(fd);
 		return 1;
 	}
@@ -72,7 +72,7 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 static int undo_remove_item(historic *histo, int index) {
 	if (histo[index].filename) {
 		unlink(histo[index].filename);
-		free(histo[index].filename);
+		g_free(histo[index].filename);
 		histo[index].filename = NULL;
 	}
 	memset(histo[index].history, 0, FLEN_VALUE);
@@ -117,7 +117,7 @@ static int undo_get_data(fits *fit, historic hist) {
 	unsigned int size;
 	WORD *buf;
 
-	if ((fd = open(hist.filename, O_RDONLY)) == -1) {
+	if ((fd = open(hist.filename, O_RDONLY | O_BINARY)) == -1) {
 		printf("Error opening swap file : %s\n", hist.filename);
 		return 1;
 	}
@@ -129,7 +129,7 @@ static int undo_get_data(fits *fit, historic hist) {
 	buf = calloc(1, size * sizeof(WORD));
 	// read the data from temporary file
 	if ((read(fd, buf, size * sizeof(WORD)) < size * sizeof(WORD))) {
-		printf("Read failed with error [%s]\n", strerror(errno));
+		printf("Read of [%s], failed with error [%s]\n", hist.filename, strerror(errno));
 		free(buf);
 		close(fd);
 		return 1;
@@ -162,7 +162,7 @@ gboolean is_redo_available() {
 }
 
 int undo_save_state(char *message, ...) {
-	char *filename;
+	gchar *filename;
 	char histo[FLEN_VALUE];
 	va_list args;
 	va_start(args, message);

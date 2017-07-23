@@ -375,12 +375,9 @@ static void update_wavelets() {
 	set_cursor_waiting(TRUE);
 
 	for (i = 0; i < gfit.naxes[2]; i++) {
-		dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
-		strcpy(dir[i], tmpdir);
-		strcat(dir[i], G_DIR_SEPARATOR_S);
-		strcat(dir[i], File_Name_Transform[i]);
+		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
 		wavelet_reconstruct_file(dir[i], scale, gfit.pdata[i]);
-		free(dir[i]);
+		g_free(dir[i]);
 	}
 
 	adjust_cutoff_from_updated_gfit();
@@ -704,7 +701,7 @@ static void remap(int vport) {
 		double nb_pixels;
 		size_t hist_nb_bins;
 		size_t i;
-		gsl_histogram *histo = NULL;
+		gsl_histogram *histo;
 
 		compute_histo_for_gfit(1);
 		histo = com.layers_hist[vport];

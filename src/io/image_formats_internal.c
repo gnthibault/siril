@@ -32,6 +32,10 @@
 #include "core/proto.h"
 #include "gui/callbacks.h"
 
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
 /* reads a BMP image at filename `name', and stores it into the fit argument */
 int readbmp(const char *name, fits *fit) {
 	BYTE header[256];
@@ -42,7 +46,7 @@ int readbmp(const char *name, fits *fit) {
 	gboolean inverted = FALSE;
 	char *msg;
 
-	if ((fd = open(name, O_RDONLY)) == -1) {
+	if ((fd = open(name, O_RDONLY | O_BINARY)) == -1) {
 		msg = siril_log_message(_("Error opening BMP.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
 		return -1;
@@ -475,7 +479,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 
 		} else {
 			/* RGB 16-bit image */
-			WORD *tmpbuf = NULL, *olddata = fit->data;
+			WORD *tmpbuf, *olddata = fit->data;
 			stride = fit->rx * 3 * sizeof(WORD);
 			tmpbuf = malloc(stride * fit->ry);
 			fit->data = realloc(fit->data, stride * fit->ry * sizeof(WORD));
@@ -707,7 +711,7 @@ int readpic(const char *name, fits *fit) {
 	memset(&header, 0, sizeof(header));
 	pic_file = calloc(1, sizeof(struct pic_struct));
 
-	if ((pic_file->fd = open(name, O_RDONLY)) == -1) {
+	if ((pic_file->fd = open(name, O_RDONLY | O_BINARY)) == -1) {
 		msg = siril_log_message(
 				_("Sorry but Siril cannot open the PIC file: %s.\n"), name);
 		show_dialog(msg, _("Error"), "gtk-dialog-error");

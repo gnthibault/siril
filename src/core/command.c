@@ -456,12 +456,9 @@ int process_wrecons(int nb){
 	}
 
 	for (i=0; i < nb_chan; i++) {
-		dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
-		strcpy(dir[i], tmpdir);
-		strcat(dir[i], G_DIR_SEPARATOR_S);
-		strcat(dir[i], File_Name_Transform[i]);
+		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
 		wavelet_reconstruct_file (dir[i], coef, gfit.pdata[i]);
-		free(dir[i]);
+		g_free(dir[i]);
 	}
 
 	adjust_cutoff_from_updated_gfit();
@@ -501,12 +498,9 @@ int process_wavelet(int nb){
 	Imag = f_vector_alloc (gfit.rx * gfit.ry);
 	
 	for (chan = 0; chan < nb_chan; chan++) {
-		dir[chan] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[chan]) + 2);
-		strcpy(dir[chan], tmpdir);
-		strcat(dir[chan], G_DIR_SEPARATOR_S);
-		strcat(dir[chan], File_Name_Transform[chan]);
+		dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan], NULL);
 		wavelet_transform_file (Imag, gfit.ry, gfit.rx, dir[chan], Type_Transform, Nbr_Plan, gfit.pdata[chan]);
-		free(dir[chan]);
+		g_free(dir[chan]);
 	}
 	
 	free (Imag);
@@ -1018,9 +1012,8 @@ int process_findhot(int nb){
 	deviant_pixel *dev = find_deviant_pixels(&gfit, sig, &icold, &ihot);
 	siril_log_message(_("%ld cold and %ld hot pixels\n"), icold, ihot);
 
-	FILE* cosme_file = NULL;
 	sprintf(filename, "%s.lst", word[1]);
-	cosme_file = fopen(filename, "w");
+	FILE *cosme_file = fopen(filename, "w");
 	if (cosme_file == NULL) {
 		siril_log_message(_("Cannot open file: %s\n"), filename);
 		free(dev);

@@ -902,8 +902,7 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	imoper(fit_tmp, dark_tmp, OPER_SUB);
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = NULL;
-		stat = statistics(fit_tmp, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(fit_tmp, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 0.0;
@@ -1308,27 +1307,23 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 	for (chan = start; chan < end; chan++) {
 		int Nl, Nc;
 
-		dir[chan] = malloc(
-				strlen(tmpdir) + strlen(File_Name_Transform[chan]) + 2);
-		strcpy(dir[chan], tmpdir);
-		strcat(dir[chan], G_DIR_SEPARATOR_S);
-		strcat(dir[chan], File_Name_Transform[chan]);
+		dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan], NULL);
 		if (wavelet_transform_file(Imag, fit->ry, fit->rx, dir[chan], Type, Nbr_Plan,
 				fit->pdata[chan])) {
 			free((char *) Imag);
-			free(dir[chan]);
+			g_free(dir[chan]);
 			return 1;
 		}
 		if (wave_io_read(dir[chan], &Wavelet[chan])) {
 			free((char *) Imag);
-			free(dir[chan]);
+			g_free(dir[chan]);
 			return 1;
 		}
 		Nl = Wavelet[chan].Nbr_Ligne;
 		Nc = Wavelet[chan].Nbr_Col;
 		pave_2d_extract_plan(Wavelet[chan].Pave.Data, Imag, Nl, Nc, Plan);
 		reget_rawdata(Imag, Nl, Nc, fit->pdata[chan]);
-		free(dir[chan]);
+		g_free(dir[chan]);
 	}
 
 	/* Free */

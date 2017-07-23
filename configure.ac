@@ -47,11 +47,6 @@ fi
 CFLAGS="$CFLAGS $OPENMP_CFLAGS"
 CXXFLAGS="$CFLAGS"
 
-if test `uname` != "Darwin"; then
-	LDFLAGS="$LDFLAGS -rdynamic"
-fi
-
-
 dnl Set PACKAGE_SOURCE_DIR in config.h.
 packagesrcdir=`cd $srcdir && pwd`
 AC_DEFINE_UNQUOTED(PACKAGE_SOURCE_DIR, "${packagesrcdir}", [Package source dir])
@@ -142,6 +137,44 @@ fi
 
 AM_CONDITIONAL(HAVE_OPENCV, [test "x$OPENCV_LIBS" != "x"])
 
+dnl check for win32 platform
+AC_MSG_CHECKING([for Win32 platform])
+case "$host" in
+  *-*-mingw*|*-*-cygwin*)
+        archive_cmds='$CC -shared $libobjs $deplibs $compiler_flags -o $output_objdir/$soname ${wl}--enable-auto-image-base -Xlinker --output-def -Xlinker $lib.def && $DLLTOOL --dllname $soname --def $lib.def --output-delaylib $lib'
+	# If the export-symbols file already is a .def file (1st line
+	# is EXPORTS), use it as is; otherwise, prepend...
+	archive_expsym_cmds='if test "x`$SED 1q $export_symbols`" = xEXPORTS; then
+	  cp $export_symbols $output_objdir/$soname.def;
+	else
+	  echo EXPORTS > $output_objdir/$soname.def;
+	  cat $export_symbols >> $output_objdir/$soname.def;
+	fi~
+	$CC -shared $output_objdir/$soname.def $libobjs $deplibs $compiler_flags -o $output_objdir/$soname ${wl}--enable-auto-image-base;
+	$DLLTOOL --dllname $soname --def $output_objdir/$soname.def --output-delaylib $lib'
+    platform_win32=yes
+    ;;
+  *)
+    platform_win32=no
+    ;;
+esac
+AC_MSG_RESULT([$platform_win32])
+AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
+
+AC_MSG_CHECKING([for native Win32])
+case "$host" in
+  *-*-mingw*)
+    os_win32=yes
+    AC_CHECK_TOOL(WINDRES, windres, [:])
+    ACTIVE_PLUGINS="${ACTIVE_PLUGINS}, 'checkupdate'"
+    ;;
+  *)
+    os_win32=no
+    ;;
+esac
+AC_MSG_RESULT([$os_win32])
+AM_CONDITIONAL(OS_WIN32, test "$os_win32" = "yes")
+
 dnl check for osx platform
 AC_MSG_CHECKING([for Mac OS X platform])
 case "$host" in
@@ -191,6 +224,14 @@ if test "$os_osx" = "yes"; then
 
 	AC_SUBST(GTK_MAC_CFLAGS)
 	AC_SUBST(GTK_MAC_LIBS)
+fi
+
+if test `uname` != "Darwin"; then
+  if (test "$platform_win32" = "yes" || test "os_win32" = "yes" ) ; then
+    LDFLAGS="$LDFLAGS -Wl,--export-all-symbols -mwindows"
+  else
+	LDFLAGS="$LDFLAGS -rdynamic"
+  fi
 fi
 
 AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in])

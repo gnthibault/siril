@@ -264,12 +264,11 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
  * value is NULL and index is set to -1.
  */
 fitted_PSF *add_star(fits *fit, int layer, int *index) {
-	fitted_PSF *result = NULL;
 	int i = 0;
 	gboolean already_found = FALSE;
 
 	*index = -1;
-	result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE);
+	fitted_PSF * result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE);
 	if (!result)
 		return NULL;
 	/* We do not check if it's matching with the "is_star()" criteria.

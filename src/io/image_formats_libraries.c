@@ -462,8 +462,7 @@ int savejpg(char *name, fits *fit, int quality){
 	jpeg_set_quality(&cinfo, quality, TRUE);
 
 	//## CREATE IMAGE BUFFER TO WRITE FROM AND MODIFY THE IMAGE TO LOOK LIKE CHECKERBOARD:
-	unsigned char *image_buffer = NULL;
-	image_buffer = (unsigned char*)malloc(cinfo.image_width*cinfo.image_height*cinfo.num_components);
+	unsigned char *image_buffer = (unsigned char*)malloc(cinfo.image_width*cinfo.image_height*cinfo.num_components);
 	for (i=(cinfo.image_height-1);i>=0;i--){
 		for (j=0;j<cinfo.image_width;j++){
 			int pixelIdx = ((i*cinfo.image_width)+j) * cinfo.input_components;

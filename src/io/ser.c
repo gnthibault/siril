@@ -37,6 +37,10 @@
 #include "algos/demosaicing.h"
 #include "io/ser.h"
 
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
 static gboolean warning = FALSE;
 
 /* 62135596800 sec from year 0001 to 01 janv. 1970 00:00:00 GMT */
@@ -527,7 +531,7 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 	if (overwrite)
 		unlink(filename);
 	if ((ser_file->fd = open(filename, O_CREAT | O_RDWR,
-			S_IWRITE | S_IREAD)) == -1) {
+			S_IWRITE | S_IREAD | O_BINARY)) == -1) {
 		perror("open SER file for creation");
 		return 1;
 	}
@@ -589,7 +593,7 @@ int ser_open_file(char *filename, struct ser_struct *ser_file) {
 		fprintf(stderr, "SER: file already opened, or badly closed\n");
 		return -1;
 	}
-	ser_file->fd = open(filename, O_RDWR); // now we can fix broken file, so not O_RDONLY anymore
+	ser_file->fd = open(filename, O_RDWR | O_BINARY); // now we can fix broken file, so not O_RDONLY anymore
 	if (ser_file->fd == -1) {
 		perror("SER file open");
 		return -1;

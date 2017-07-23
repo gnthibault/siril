@@ -384,7 +384,7 @@ static int _FindCentre_Barycentre(fits *fit, int x1, int y1, int x2, int y2,
 		RealThreshHold = THRESHOLD * 256;
 
 	for (y = y1; y <= y2; ++y) {
-		int rowcount = 0;
+//		int rowcount = 0;
 
 		unsigned short *iptr = fit->data + y * img_width + x1;
 		for (x = x1; x <= x2; ++x, ++iptr) {
@@ -395,7 +395,7 @@ static int _FindCentre_Barycentre(fits *fit, int x1, int y1, int x2, int y2,
 				x_total += x;
 				y_total += y;
 				count++;
-				rowcount++;
+//				rowcount++;
 			}
 		}
 	}
