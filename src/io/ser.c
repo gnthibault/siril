@@ -530,8 +530,8 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 		gboolean overwrite, struct ser_struct *copy_from) {
 	if (overwrite)
 		unlink(filename);
-	if ((ser_file->fd = open(filename, O_CREAT | O_RDWR,
-			S_IWRITE | S_IREAD | O_BINARY)) == -1) {
+	if ((ser_file->fd = open(filename, O_CREAT | O_RDWR | O_BINARY,
+			S_IWRITE | S_IREAD)) == -1) {
 		perror("open SER file for creation");
 		return 1;
 	}
