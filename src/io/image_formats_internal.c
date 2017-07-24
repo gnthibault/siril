@@ -333,7 +333,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 	int i, j, max_val;
 	size_t stride;
 
-	if ((fd = fopen(filename, "r")) == NULL) {
+	if ((fd = fopen(filename, "rb")) == NULL) {
 		perror("fopen pnm");
 		msg = siril_log_message(_("Sorry but Siril cannot open this file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
