@@ -25,14 +25,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <dirent.h>
-#ifndef WIN32
-#include <sys/resource.h>
-#else
-#include <windows.h>
-#endif
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <dirent.h>
+#ifdef WIN32
+#include <windows.h>
+#include <psapi.h>
+#else
+#include <sys/resource.h>
+#endif
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <sys/param.h>		// define or not BSD macro
 #endif
@@ -340,6 +341,11 @@ void update_used_memory() {
 
 	getrusage(RUSAGE_SELF, &usage);
 	set_GUI_MEM((unsigned long) usage.ru_maxrss);
+#elif defined(WIN32) /* Windows */
+    PROCESS_MEMORY_COUNTERS memCounter;
+    
+	if (GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter)))
+        set_GUI_MEM(memCounter.WorkingSetSize / 1024);
 #else
 	set_GUI_MEM((unsigned long) 0);
 #endif
@@ -400,8 +406,15 @@ int get_available_memory_in_MB() {
 		if (value != -1L)
 			mem = (int) (value / 1024L);
 	}
+#elif defined(WIN32) /* Windows */
+	MEMORYSTATUSEX memStatusEx = {0};
+	memStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
+	const DWORD dwMBFactor = 1024 * 1024;
+	DWORDLONG dwTotalPhys = memStatusEx.ullTotalPhys / dwMBFactor;
+	fprintf(stdout, "Total physical memory: %u KB\n", dwTotalPhys );
+	mem = (int) dwTotalPhys;
 #else
-
+	printf("Siril faild to get available free RAM memory\n");
 #endif
 	return mem;
 }

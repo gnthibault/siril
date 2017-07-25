@@ -166,7 +166,6 @@ case "$host" in
   *-*-mingw*)
     os_win32=yes
     AC_CHECK_TOOL(WINDRES, windres, [:])
-    ACTIVE_PLUGINS="${ACTIVE_PLUGINS}, 'checkupdate'"
     ;;
   *)
     os_win32=no
@@ -208,7 +207,6 @@ done
 AC_MSG_CHECKING([for native Mac OS X])
 if test "$gdk_windowing" = "quartz"; then
 	os_osx=yes
-	ACTIVE_PLUGINS="${ACTIVE_PLUGINS}, 'checkupdate'"
 else
 	os_osx=no
 fi
