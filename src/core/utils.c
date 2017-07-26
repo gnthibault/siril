@@ -411,10 +411,10 @@ int get_available_memory_in_MB() {
 	memStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
 	const DWORD dwMBFactor = 1024 * 1024;
 	DWORDLONG dwTotalPhys = memStatusEx.ullTotalPhys / dwMBFactor;
-	fprintf(stdout, "Total physical memory: %u KB\n", dwTotalPhys );
-	mem = (int) dwTotalPhys;
+	if (dwTotalPhys > 0)
+		mem = (int) dwTotalPhys;
 #else
-	printf("Siril faild to get available free RAM memory\n");
+	printf("Siril failed to get available free RAM memory\n");
 #endif
 	return mem;
 }

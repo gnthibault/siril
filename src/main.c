@@ -29,6 +29,7 @@
 #endif
 #ifdef WIN32
 #include <windows.h>
+#include <tchar.h>
 #endif
 #include <unistd.h>
 #include <signal.h>
@@ -118,13 +119,15 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 #endif
 
 char *siril_sources[] = {
-	"",
-#if (defined(__APPLE__) && defined(__MACH__))
+#ifdef WIN32
+    "../share/siril",
+#elif (defined(__APPLE__) && defined(__MACH__))
 	"/tmp/siril/Contents/Resources/share/siril/",
 #endif
 	PACKAGE_DATA_DIR"/",
 	"/usr/share/siril/",
-	"/usr/local/share/siril/"
+	"/usr/local/share/siril/",
+	""
 };
 
 void usage(const char *command) {
@@ -158,16 +161,23 @@ int main(int argc, char *argv[]) {
 	
 #ifdef WIN32
 	_putenv_s("LC_NUMERIC", "C");
+    setlocale( LC_ALL, "" );
+
+	/* for translation */
+    gchar *localedir = g_build_filename( _getcwd( 0, 0 ), "\\..\\share\\locale", NULL);
+	bindtextdomain(PACKAGE, g_win32_locale_filename_from_utf8 ( localedir ) );
+    bind_textdomain_codeset(PACKAGE, "UTF-8");
+	textdomain(PACKAGE);
 #else
 	setenv("LC_NUMERIC", "C", 1);		// avoid possible bugs using french separator ","
+	/* for translation */
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	textdomain(PACKAGE);
 #endif
 	opterr = 0;
 	memset(&com, 0, sizeof(struct cominf));	// needed?
 	com.initfile = NULL;
 	
-	/* for translation */
-	bindtextdomain(PACKAGE, LOCALEDIR);
-	textdomain(PACKAGE);
 
 	/* Caught signals */
 	signal(SIGINT, signal_handled);
@@ -227,18 +237,17 @@ int main(int argc, char *argv[]) {
 	i = 0;
 	do {
 		GError *err = NULL;
-		GString *pathStr = g_string_new (siril_sources[i]);
-		g_string_append(pathStr, GLADE_FILE);
-		gchar *path = g_string_free (pathStr, FALSE);
+        gchar *gladefile;
 
-		if (gtk_builder_add_from_file (builder, path, &err)) {
-			fprintf(stdout, _("Successfully loaded '%s%s'\n"), siril_sources[i], GLADE_FILE);
-			g_free(path);
+        gladefile = g_build_filename (siril_sources[i], GLADE_FILE, NULL);
+		if (gtk_builder_add_from_file (builder, gladefile, &err)) {
+			fprintf(stdout, _("Successfully loaded '%s'\n"), gladefile);
+			g_free(gladefile);
 			break;
 		}
 		fprintf (stderr, _("%s. Looking into another directory...\n"), err->message);
-		g_free(path);
 		g_error_free(err);
+		g_free(gladefile);
 		i++;
 	} while (i < sizeof(siril_sources)/sizeof(char *));
 	if (i == sizeof(siril_sources) / sizeof(char *)) {
