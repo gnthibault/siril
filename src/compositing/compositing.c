@@ -598,6 +598,7 @@ void on_button_align_clicked(GtkButton *button, gpointer user_data) {
 	get_the_registration_area(&regargs, method);
 	regargs.layer = 0;	// TODO: fix with dynamic layers list
 	regargs.run_in_thread = FALSE;
+	com.run_thread = TRUE;	// fix for the cancelling check in processing
 
 	msg = siril_log_message(_("Starting registration using method: %s\n"), method->name);
 	msg[strlen(msg)-1] = '\0';

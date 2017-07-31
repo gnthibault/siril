@@ -323,4 +323,3 @@ int seq_filter_included(sequence *seq, int nb_img, double any) {
 	return (seq->imgparam[nb_img].incl);
 }
 
-
