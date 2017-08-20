@@ -206,11 +206,11 @@ int stack_summing(struct stacking_args *args) {
 	int nb_frames, cur_nb = 0;
 	fits *fit = &wfit[0];
 	char *tmpmsg;
-	memset(fit, 0, sizeof(fits));
 
 	/* should be pre-computed to display it in the stacking tab */
 	nb_frames = args->nb_images_to_stack;
 	reglayer = get_registration_layer();
+	memset(fit, 0, sizeof(fits));
 
 	if (nb_frames <= 1) {
 		siril_log_message(_("No frame selected for stacking (select at least 2). Aborting.\n"));
@@ -374,13 +374,14 @@ int stack_median(struct stacking_args *args) {
 	struct _data_block *data_pool = NULL;
 	int pool_size = 1;
 	fits *fit = &wfit[0];
-	norm_coeff coeff;
+	norm_coeff coeff = { .offset = NULL, .mul = NULL, .scale = NULL };
 	struct image_block {
 		unsigned long channel, start_row, end_row, height;
 	};
 	struct image_block *blocks = NULL;
 
 	nb_frames = args->nb_images_to_stack;
+	memset(fit, 0, sizeof(fits));
 
 	if (args->seq->type != SEQ_REGULAR && args->seq->type != SEQ_SER) {
 		char *msg = siril_log_message(_("Median stacking is only supported for FITS images and SER sequences.\n"));
@@ -516,7 +517,6 @@ int stack_median(struct stacking_args *args) {
 
 	/* initialize result image */
 	nbdata = naxes[0] * naxes[1];
-	memset(fit, 0, sizeof(fits));
 	fit->data = malloc(nbdata * naxes[2] * sizeof(WORD));
 	if (!fit->data) {
 		fprintf(stderr, "Memory allocation error for result\n");
@@ -1202,11 +1202,12 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	struct _data_block *data_pool = NULL;
 	int pool_size = 1;
 	fits *fit = &wfit[0];
-	norm_coeff coeff;
+	norm_coeff coeff = { .offset = NULL, .mul = NULL, .scale = NULL };
 	struct image_block *blocks = NULL;
 
 	nb_frames = args->nb_images_to_stack;
 	reglayer = get_registration_layer();
+	memset(fit, 0, sizeof(fits));
 
 	if (args->seq->type != SEQ_REGULAR && args->seq->type != SEQ_SER) {
 		char *msg = siril_log_message(_("Rejection stacking is only supported for FITS images and SER sequences.\nUse \"Sum Stacking\" instead.\n"));
@@ -1342,7 +1343,6 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 
 	/* initialize result image */
 	nbdata = naxes[0] * naxes[1];
-	memset(fit, 0, sizeof(fits));
 	fit->data = malloc(nbdata * naxes[2] * sizeof(WORD));
 	if (!fit->data) {
 		fprintf(stderr, "Memory allocation error for result\n");
