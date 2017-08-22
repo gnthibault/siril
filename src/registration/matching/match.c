@@ -241,25 +241,25 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 	}
 
 	/* Can only specify one of 'identity' and 'intrans' */
-	if ((intrans != 0) && (identity != 0)) {
+/*	if ((intrans != 0) && (identity != 0)) {
 		shFatal("Cannot specify both 'identity' and an input TRANS file");
 		return (SH_GENERIC_ERROR);
-	}
+	}*/
 
 	/* Makes no sense to specify 'identity' and 'quadratic' or 'cubic' */
-	if ((identity != 0) && (trans_order != AT_TRANS_LINEAR)) {
+/*	if ((identity != 0) && (trans_order != AT_TRANS_LINEAR)) {
 		shFatal("Cannot specify both 'identity' and any order beyond linear");
 		return (SH_GENERIC_ERROR);
-	}
+	}*/
 	/*
 	 * Likewise, makes no sense to specify 'intrans=' and
 	 * 'quadratic' or 'cubic' (or 'linear', actually, but we have
 	 * no easy way to check for that mistake :-(
 	 */
-	if ((intrans != 0) && (trans_order != AT_TRANS_LINEAR)) {
+/*	if ((intrans != 0) && (trans_order != AT_TRANS_LINEAR)) {
 		shFatal("Cannot specify both 'intrans' and any order ");
 		return (SH_GENERIC_ERROR);
-	}
+	}*/
 
 	/*
 	 * The minimum number of pairs required for a successful match

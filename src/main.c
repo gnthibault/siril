@@ -86,7 +86,6 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 	GtkWidget *help_menu = lookup_widget("help1");
 	GtkWidget *sep;
 	GdkPixbuf *icon;
-	GString *icon_str;
 	gchar *icon_path;
 	
 	g_signal_connect(osx_app, "NSApplicationOpenFile", G_CALLBACK(osx_open_file), NULL);
@@ -104,11 +103,8 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 
 	gtk_widget_hide(file_quit_menu_item);
 	gtk_widget_hide(help_menu);
-
-	icon_str = g_string_new(siril_path);
-	g_string_append(icon_str, "pixmaps/siril_1.svg");
 	
-	icon_path = g_string_free(icon_str, FALSE);
+	icon_path = g_build_filename(siril_path, "pixmaps/siril_1.svg", NULL);
 	icon = gdk_pixbuf_new_from_file(icon_path, NULL);
 	gtkosx_application_set_dock_icon_pixbuf(osx_app, icon);
 		
@@ -153,11 +149,6 @@ int main(int argc, char *argv[]) {
 	char *cwd_orig = NULL;
 	gboolean forcecwd = FALSE;
 	char *cwd_forced = NULL;
-#if (defined(__APPLE__) && defined(__MACH__))
-	int ret;
-	pid_t pid;
-	char path[PROC_PIDPATHINFO_MAXSIZE];
-#endif
 	
 #ifdef WIN32
 	_putenv_s("LC_NUMERIC", "C");

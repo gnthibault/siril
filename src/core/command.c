@@ -490,7 +490,7 @@ int process_wavelet(int nb){
 		return 1;
 	}
 
-	if(Type_Transform != TO_PAVE_LINEAR && Type_Transform !=TO_PAVE_BSPLINE){
+	if(Type_Transform != TO_PAVE_LINEAR && Type_Transform != TO_PAVE_BSPLINE){
 		siril_log_message(_("Wavelet: type must be %d or %d\n"), TO_PAVE_LINEAR, TO_PAVE_BSPLINE);
 		return 1;
 	}
@@ -518,29 +518,28 @@ int process_log(int nb){
 #ifndef WIN32
 int process_ls(int nb){
 	struct dirent **list;
-	char filename[256], *path;
+	gchar *path = NULL;
 	
-	filename[0]='\0';
 	/* If a path is given in argument */
-	if (nb>1){
-		if (word[1][0]!='\0'){	
+	if (nb > 1) {
+		if (word[1][0] != '\0') {
 			/* Absolute path */
-			if(word[1][0]==G_DIR_SEPARATOR || word[1][0]=='~'){
+			if (word[1][0] == G_DIR_SEPARATOR || word[1][0] == '~') {
+				char filename[256];
+				
 				strncpy(filename, word[1], 250);
 				filename[250] = '\0';
 				expand_home_in_filename(filename, 256);
+				path = g_build_filename(filename, NULL);
 			}
 			/* Relative path */
 			else {
-				strcpy(filename, com.wd);
-				strcat(filename, G_DIR_SEPARATOR_S);
-				strcat(filename, word[1]);
-			}	
-			path = strdup(filename);
+				path = g_build_filename(com.wd, word[1], NULL);
+			}
 		}
 		/* Should not happen */
 		else {
-			printf("Cannot list files in %s\n", filename);
+			printf("Cannot list files in %s\n", word[1]);
 			return 1;
 		}
 	}
@@ -552,7 +551,7 @@ int process_ls(int nb){
 		}
 		path = strdup(com.wd);
 	}
-	if (!path) {
+	if (path == NULL) {
 		siril_log_message(_("Siril cannot open the directory.\n"));
 		return 1;
 	}
@@ -560,26 +559,29 @@ int process_ls(int nb){
 	int i, n;
 
 	n = scandir(path, &list, 0, alphasort);
-	if (n < 0)
+	if (n < 0) {
 		perror("scandir");
+		siril_log_message(_("Siril cannot open the directory.\n"));
+		g_free(path);
+		return 1;
+	}
 
 	/* List the entries */
 	for (i = 0; i < n; ++i) {
 		struct stat entrystat;
-		char file_path[256];
+		gchar *filename;
 		const char *ext;
 		if (list[i]->d_name[0] == '.')
 			continue; /* no hidden files */
-		if (filename[0] != '\0')
-			sprintf(file_path, "%s/%s", filename, list[i]->d_name);
-		else {
-			sprintf(file_path, "%s", list[i]->d_name);
-		}
 
-		if (lstat(file_path, &entrystat)) {
+		filename = g_build_filename(path, list[i]->d_name, NULL);
+
+		if (lstat(filename, &entrystat)) {
 			perror("stat");
+			g_free(filename);
 			break;
 		}
+		g_free(filename);
 		if (S_ISLNK(entrystat.st_mode)) {
 			siril_log_color_message(_("Link: %s\n"), "bold", list[i]->d_name);
 			continue;
@@ -608,7 +610,7 @@ int process_ls(int nb){
 		free(list[i]);
 	free(list);
 	siril_log_message(_("********* END OF THE LIST *********\n"));
-	free(path);
+	g_free(path);
 
 	return 0;
 }
