@@ -137,21 +137,13 @@ fi
 
 AM_CONDITIONAL(HAVE_OPENCV, [test "x$OPENCV_LIBS" != "x"])
 
-dnl check for win32 platform
-AC_MSG_CHECKING([for Win32 platform])
-case "$host" in
-  *-*-mingw*|*-*-cygwin*)
-        archive_cmds='$CC -shared $libobjs $deplibs $compiler_flags -o $output_objdir/$soname ${wl}--enable-auto-image-base -Xlinker --output-def -Xlinker $lib.def && $DLLTOOL --dllname $soname --def $lib.def --output-delaylib $lib'
-	# If the export-symbols file already is a .def file (1st line
-	# is EXPORTS), use it as is; otherwise, prepend...
-	archive_expsym_cmds='if test "x`$SED 1q $export_symbols`" = xEXPORTS; then
-	  cp $export_symbols $output_objdir/$soname.def;
-	else
-	  echo EXPORTS > $output_objdir/$soname.def;
-	  cat $export_symbols >> $output_objdir/$soname.def;
-	fi~
-	$CC -shared $output_objdir/$soname.def $libobjs $deplibs $compiler_flags -o $output_objdir/$soname ${wl}--enable-auto-image-base;
-	$DLLTOOL --dllname $soname --def $output_objdir/$soname.def --output-delaylib $lib'
+#################
+# Check for Win32
+#################
+
+AC_MSG_CHECKING([if compiling for Win32])
+case "$host_os" in
+  mingw* | cygwin*)
     platform_win32=yes
     ;;
   *)
@@ -161,18 +153,43 @@ esac
 AC_MSG_RESULT([$platform_win32])
 AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
 
-AC_MSG_CHECKING([for native Win32])
-case "$host" in
-  *-*-mingw*)
-    os_win32=yes
-    AC_CHECK_TOOL(WINDRES, windres, [:])
-    ;;
-  *)
-    os_win32=no
-    ;;
-esac
-AC_MSG_RESULT([$os_win32])
+PATHSEP=':'
+os_win32=no
+if test "x$platform_win32" != xno; then
+  AC_MSG_CHECKING([if this is native Win32])
+  case "$host_os" in
+    mingw*)
+      os_win32=yes
+      case "$host_cpu" in
+        x86_64)
+        ;;
+        *)
+        WIN32_LARGE_ADDRESS_AWARE='-Wl,--large-address-aware'
+        ;;
+      esac
+      PATHSEP=';'
+      ;;
+    *)
+      ;;
+  esac
+  AC_MSG_RESULT([$os_win32])
+fi
+AC_SUBST(WIN32_LARGE_ADDRESS_AWARE)
+AC_SUBST(PATHSEP)
 AM_CONDITIONAL(OS_WIN32, test "$os_win32" = "yes")
+AM_CONDITIONAL(OS_UNIX, test "$os_win32" != "yes")
+
+if test "$os_win32" = "yes"; then
+  AC_CHECK_PROG(ms_librarian, lib.exe, yes, no)
+  AC_CHECK_TOOL(WINDRES, windres, :)
+else
+  WINDRES=":"
+fi
+
+AM_CONDITIONAL(MS_LIB_AVAILABLE, test "x$ms_librarian" = xyes)
+AM_CONDITIONAL(HAVE_WINDRES, test "x$WINDRES" != "x:")
+
+AC_SUBST(WINDRES)
 
 dnl check for osx platform
 AC_MSG_CHECKING([for Mac OS X platform])
