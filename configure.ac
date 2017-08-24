@@ -137,6 +137,9 @@ fi
 
 AM_CONDITIONAL(HAVE_OPENCV, [test "x$OPENCV_LIBS" != "x"])
 
+dnl Compute the canonical host-system type variable (need config.guess and config.sub)
+AC_CANONICAL_HOST
+
 #################
 # Check for Win32
 #################
