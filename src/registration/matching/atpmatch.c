@@ -189,6 +189,7 @@ typedef int (*PFI)();
 static int set_star(s_star *star, double x, double y, double mag);
 static void copy_star(s_star *from_ptr, s_star *to_ptr);
 static void copy_star_array(s_star *from_array, s_star *to_array, int num);
+static void free_star_array(s_star *array);
 #ifdef DEBUG
 static void print_star_array(s_star *array, int num);
 #endif
@@ -1496,6 +1497,7 @@ int num_stars /* I: each aray must have this many elements */
  * </AUTO>
  */
 
+static
 void free_star_array(s_star *first /* first star in the array to be deleted */
 ) {
 	shFree(first);

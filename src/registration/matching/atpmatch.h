@@ -216,8 +216,6 @@ typedef struct s_triangle {
    /*
     * these functions are PUBLIC, and may be called by users
     */
-void free_star_array(s_star *array);
-   
 
 int atFindTrans(int numA, s_star *listA, int numB, s_star *listB,
                 double radius, int nbright, double min_scale, double max_scale,

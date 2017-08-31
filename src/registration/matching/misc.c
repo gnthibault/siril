@@ -100,6 +100,7 @@ void shFree(void *vptr /* I: free this chunk of memory */
 	free(vptr);
 }
 
+
 /*********************************************************************
  * ROUTINE: shError
  *
@@ -292,6 +293,11 @@ void atTransDel(TRANS *trans /* I: structure to delete */
 	shFree(trans);
 }
 
+void atHDel(Homography *H /* I: structure to delete */
+) {
+	shFree(H);
+}
+
 /************************************************************************
  *
  *
@@ -400,6 +406,16 @@ int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list) {
 	*list = head;
 
 	return (SH_SUCCESS);
+}
+
+void free_stars(struct s_star *head) {
+	struct s_star* tmp;
+
+	while (head != NULL) {
+		tmp = head;
+		head = head->next;
+		free(tmp);
+	}
 }
 
 /*********************************************************************
@@ -521,9 +537,9 @@ double *val /* O: place value here */
 
 void print_H(Homography *H) {
 	printf("Transformation Matrix:\n");
-	printf("%*.5f %*.5f %*.5f\n", 11, H->h00, 11, H->h01, 11, H->h02);
-	printf("%*.5f %*.5f %*.5f\n", 11, H->h10, 11, H->h11, 11, H->h12);
-	printf("%*.5f %*.5f %*.5f\n", 11, H->h20, 11, H->h21, 11, H->h22);
+	printf("%+*.5f %+*.5f %+*.5f\n", 11, H->h00, 11, H->h01, 11, H->h02);
+	printf("%+*.5f %+*.5f %+*.5f\n", 11, H->h10, 11, H->h11, 11, H->h12);
+	printf("%+*.5f %+*.5f %+*.5f\n", 11, H->h20, 11, H->h21, 11, H->h22);
 }
 
 /************************************************************************

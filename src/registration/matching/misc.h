@@ -152,6 +152,7 @@ Homography *atHNew(void);
 TRANS *getGuessTrans(char *intransfile);
 TRANS *getIdentityTrans(void);
 void atTransDel(TRANS *trans);
+void atHDel(Homography *H);
 void print_H(Homography *H);
 void print_trans(TRANS *trans);
 
@@ -201,6 +202,9 @@ read_star_file(char *filename, int xcolumn, int ycolumn, int magcolumn,
 
 int
 get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list);
+
+void
+free_stars(struct s_star *head);
 
 
 int

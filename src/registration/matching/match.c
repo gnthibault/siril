@@ -213,15 +213,14 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	trans = atTransNew();
 	trans->order = trans_order;
 
-	Hom = atHNew();
-
 #ifdef DEBUG
 	printf("using trans_order %d\n", trans_order);
 #endif
 
 	/* read information from the first list */
 	if (get_stars(s1, n, &numA, &star_list_A)) {
-		printf("can't read data\n");
+		shFatal("can't read data\n");
+		atTransDel(trans);
 		return (SH_GENERIC_ERROR);
 	}
 
@@ -236,7 +235,9 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	 *   (which have been converted to those in set B) with the original coords.
 	 */
 	if (get_stars(s1, n, &numA_copy, &star_list_A_copy)) {
-		printf("can't read data\n");
+		atTransDel(trans);
+		free_stars(star_list_A);
+		shFatal("can't read data\n");
 		return (SH_GENERIC_ERROR);
 	}
 
@@ -249,7 +250,11 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	 */
 	reset_copy_ids(numA, star_list_A, star_list_A_copy);
 
+	/* read information from the second list */
 	if (get_stars(s2, n, &numB, &star_list_B)) {
+		atTransDel(trans);
+		free_stars(star_list_A);
+		free_stars(star_list_A_copy);
 		printf("can't read data\n");
 		return (SH_GENERIC_ERROR);
 	}
@@ -265,9 +270,9 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 		shFatal("initial call to atFindTrans fails");
 		/** */
 		atTransDel(trans);
-		free_star_array(star_list_A);
-		free_star_array(star_list_A_copy);
-		free_star_array(star_list_B);
+		free_stars(star_list_A);
+		free_stars(star_list_A_copy);
+		free_stars(star_list_B);
 		/** */
 		return (SH_GENERIC_ERROR);
 	}
@@ -300,7 +305,6 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	atMatchLists(numA, star_list_A, numB, star_list_B, match_radius, outfile,
 			&num_matches);
 	trans->nm = num_matches;
-	Hom->pair_matched = num_matches;
 
 	/*
 	 * The user didn't give us any information about an initial
@@ -322,9 +326,9 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 		shFatal("prepare_to_recalc fails");
 		/** */
 		atTransDel(trans);
-		free_star_array(matched_list_A);
-		free_star_array(matched_list_B);
-		free_star_array(star_list_A_copy);
+		free_stars(matched_list_A);
+		free_stars(matched_list_B);
+		free_stars(star_list_A_copy);
 		/** */
 		return (SH_GENERIC_ERROR);
 	}
@@ -334,9 +338,9 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 		shFatal("atRecalcTrans fails on matched pairs only");
 		/** */
 		atTransDel(trans);
-		free_star_array(matched_list_A);
-		free_star_array(matched_list_B);
-		free_star_array(star_list_A_copy);
+		free_stars(matched_list_A);
+		free_stars(matched_list_B);
+		free_stars(star_list_A_copy);
 		/** */
 		return (SH_GENERIC_ERROR);
 	}
@@ -345,14 +349,31 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	print_trans(trans);
 #endif
 
+	Hom = atHNew();
+	Hom->pair_matched = num_matches;
+
 	if (atPrepareHomography(num_matched_A, matched_list_A, num_matched_B,
 			matched_list_B, Hom)) {
 		shFatal("atPrepareHomography fails on computing H");
+		/** */
+		atTransDel(trans);
+		atHDel(Hom);
+		free_stars(matched_list_A);
+		free_stars(matched_list_B);
+		free_stars(star_list_A_copy);
+		/** */
 		return (SH_GENERIC_ERROR);
 	}
 
 	print_H(Hom);
 	*H = *Hom;
+
+	/* clean up memory */
+	atTransDel(trans);
+	atHDel(Hom);
+	free_stars(matched_list_A);
+	free_stars(matched_list_B);
+	free_stars(star_list_A_copy);
 
 	return (0);
 }

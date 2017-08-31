@@ -760,7 +760,7 @@ int register_star_alignment(struct registration_args *args) {
 					args->imgparam[frame - failed - skipped].incl = SEQUENCE_DEFAULT_INCLUDE;
 					args->regparam[frame - failed - skipped].fwhm = current_regdata[frame].fwhm;	// not FWHMx because of the ref frame
 				} else {
-					current_regdata[frame].shiftx = -H.h02;
+					current_regdata[frame].shiftx = +H.h02;
 					current_regdata[frame].shifty = -H.h12;
 					args->seq->imgparam[frame].incl = SEQUENCE_DEFAULT_INCLUDE;
 				}
