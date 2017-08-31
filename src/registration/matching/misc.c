@@ -44,7 +44,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include <math.h>
 #include "core/siril.h"
 #include "gui/callbacks.h"
 #include "algos/PSF.h"
@@ -265,6 +264,15 @@ atTransNew() {
 	return (new);
 }
 
+Homography *
+atHNew() {
+	Homography *new;
+	new = shMalloc(sizeof(Homography));
+	new->pair_matched = 0;
+	new->Inliers = 0;
+	return (new);
+}
+
 /************************************************************************
  *
  *
@@ -367,176 +375,6 @@ double mag /* I: mag value for new star */
 	return (new);
 }
 
-/*********************************************************************
- * ROUTINE: read_star_file
- *
- * Given the name of a file, and three integers which specify the
- * columns in which the "x", "y", and "mag" data appear, go through
- * the file, creating an "s_star" structure for each line.
- * Place all the stars in a linked list, and return a pointer
- * to the head of the list, and the number of stars in the list.
- *
- * Ignore any line which starts with a COMMENT_CHAR, and any
- * completely empty line (one with whitespace only).
- *
- * If the "idcolumn" is not -1, then read ID numbers for stars from
- * that column, and use those ID values instead of generating them
- * internally.
- *
- * Note that columns are numbered starting at 0.  Thus,
- * given a file with format like this:
- *
- *    #    x       y      mag
- *       234.43  54.33   12.23
- *
- * we have xcolumn = 0, ycolumn = 1, magcolumn = 2.
- *
- * If the argument 'ra_hours_col' is >= 0, then it indicates that
- * the given colunm has Right Ascension values which are in hours
- * (rather than degrees).  In that case, we multiply the column
- * value by 15.0 to convert from hours -> degrees.
- *
- * RETURNS:
- *      SH_SUCCESS         if all goes well
- *      SH_GENERIC_ERROR   if not
- */
-
-#if 0
-int read_star_file(char *filename, /* I: name of file */
-int xcolumn, /* I: column in which 'x' data is found */
-int ycolumn, /* I: column in which 'y' data is found */
-int magcolumn, /* I: column in which 'mag' data is found */
-int idcolumn, /* I: column in which 'id' data is found */
-int ra_hours_col, /* I: index of column with RA data in hours */
-/*       if -1, no col has RA in hours */
-int *num_stars, /* O: number of stars in new list goes here */
-struct s_star **list /* O: new star list will be placed here */
-) {
-	FILE *fp;
-	char line[LINELEN];
-	char col[MAX_DATA_COL + 1][MAX_COL_LENGTH + 1];
-	int nline, num, ncol;
-	int last_column = -1;
-	int idval;
-	struct s_star *head, *last, *new;
-	double xval, yval, magval, double_idval;
-
-	/* sanity checks */
-	shAssert(xcolumn >= 0);
-	shAssert((ycolumn >= 0) && (ycolumn != xcolumn));
-	shAssert(
-			(magcolumn >= 0) && (magcolumn != xcolumn)
-					&& (magcolumn != ycolumn));
-
-	if ((fp = fopen(filename, "r")) == NULL) {
-		shError("read_star_file: can't open file %s\n", filename);
-		return (SH_GENERIC_ERROR);
-	}
-
-	/* find the highest-numbered column we need to read */
-	last_column = xcolumn;
-	if (ycolumn > last_column) {
-		last_column = ycolumn;
-	}
-	if (magcolumn > last_column) {
-		last_column = magcolumn;
-	}
-	if (idcolumn > last_column) {
-		last_column = idcolumn;
-	}
-	shAssert(last_column >= 2);
-	if (last_column > MAX_DATA_COL) {
-		shError("read_star_file: only %d columns allowed", MAX_DATA_COL);
-		return (SH_GENERIC_ERROR);
-	}
-
-	nline = 0;
-	head = (struct s_star *) NULL;
-	last = head;
-	num = 0;
-	while (fgets(line, LINELEN, fp) != NULL) {
-		if (line[0] == COMMENT_CHAR) {
-			nline++;
-			continue;
-		}
-		if (is_blank(line)) {
-			nline++;
-			continue;
-		}
-		ncol = sscanf(line,
-				"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s",
-				&(col[0][0]), &(col[1][0]), &(col[2][0]), &(col[3][0]),
-				&(col[4][0]), &(col[5][0]), &(col[6][0]), &(col[7][0]),
-				&(col[8][0]), &(col[9][0]), &(col[10][0]), &(col[11][0]),
-				&(col[12][0]), &(col[13][0]), &(col[14][0]), &(col[15][0]),
-				&(col[16][0]), &(col[17][0]), &(col[18][0]), &(col[19][0]));
-		if (last_column > ncol) {
-			shError(
-					"read_data_file: not enough entries in following line; skipping");
-			shError("  %s", line);
-			nline++;
-			continue;
-		}
-
-		/* now read values from each column */
-		if (get_value(col[xcolumn], &xval) != SH_SUCCESS) {
-			shError("read_data_file: can't read X value from %s; skipping",
-					col[xcolumn]);
-			nline++;
-			continue;
-		}
-		if (ra_hours_col == xcolumn) {
-			xval *= 15.0;
-		}
-		if (get_value(col[ycolumn], &yval) != SH_SUCCESS) {
-			shError("read_data_file: can't read Y value from %s; skipping",
-					col[ycolumn]);
-			nline++;
-			continue;
-		}
-		if (ra_hours_col == ycolumn) {
-			yval *= 15.0;
-		}
-		if (get_value(col[magcolumn], &magval) != SH_SUCCESS) {
-			shError("read_data_file: can't read mag value from %s; skipping",
-					col[magcolumn]);
-			nline++;
-			continue;
-		}
-		if (idcolumn != -1) {
-			if (get_value(col[idcolumn], &double_idval) != SH_SUCCESS) {
-				shError("read_data_file: can't read id value from %s; skipping",
-						col[idcolumn]);
-				nline++;
-				continue;
-			} else {
-				idval = (int) double_idval;
-			}
-		}
-
-		/* okay, it's safe to create a new s_star for this line */
-		nline++;
-		num++;
-		new = atStarNew(xval, yval, magval);
-		if (idcolumn != -1) {
-			new->id = idval;
-		}
-		if (head == NULL) {
-			head = new;
-			last = new;
-		} else {
-			last->next = new;
-			last = new;
-		}
-	}
-
-	*num_stars = num;
-	*list = head;
-
-	return (SH_SUCCESS);
-}
-#endif
-
 int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list) {
 	int i = 0;
 	struct s_star *head, *last, *new;
@@ -593,7 +431,7 @@ struct s_star **list /* O: new star list will be placed here */
 ) {
 	FILE *fp;
 	char line[LINELEN];
-	int nline, num, ncol;
+	int num, ncol;
 	int idval;
 	struct s_star *head, *last, *new;
 	double xval, yval, magval;
@@ -603,29 +441,24 @@ struct s_star **list /* O: new star list will be placed here */
 		return (SH_GENERIC_ERROR);
 	}
 
-	nline = 0;
 	head = (struct s_star *) NULL;
 	last = head;
 	num = 0;
 	while (fgets(line, LINELEN, fp) != NULL) {
 		if (line[0] == COMMENT_CHAR) {
-			nline++;
 			continue;
 		}
 		if (is_blank(line)) {
-			nline++;
 			continue;
 		}
 		ncol = sscanf(line, "%d %lf %lf %lf", &idval, &xval, &yval, &magval);
 		if (ncol != 4) {
 			shError("read_matched_file: bad line; skipping");
 			shError("  %s", line);
-			nline++;
 			continue;
 		}
 
 		/* okay, it's safe to create a new s_star for this line */
-		nline++;
 		num++;
 		new = atStarNew(xval, yval, magval);
 		new->id = idval;
@@ -686,6 +519,13 @@ double *val /* O: place value here */
 	}
 }
 
+void print_H(Homography *H) {
+	printf("Transformation Matrix:\n");
+	printf("%*.5f %*.5f %*.5f\n", 11, H->h00, 11, H->h01, 11, H->h02);
+	printf("%*.5f %*.5f %*.5f\n", 11, H->h10, 11, H->h11, 11, H->h12);
+	printf("%*.5f %*.5f %*.5f\n", 11, H->h20, 11, H->h21, 11, H->h22);
+}
+
 /************************************************************************
  *
  *
@@ -739,7 +579,7 @@ void print_trans(TRANS *trans /* I: TRANS to print out */
 	 * we always print this information about the match at the end
 	 * of the line ]
 	 */
-	printf("sig=%-.4e Nr=%d Nm=%d sx=%-.4e sy=%-.4e", trans->sig, trans->nr,
+	printf(" sig=%-.4e Nr=%d Nm=%d sx=%-.4e sy=%-.4e", trans->sig, trans->nr,
 			trans->nm, trans->sx, trans->sy);
 	printf(" \n");
 
@@ -1066,48 +906,5 @@ getIdentityTrans(void) {
 	trans->f = 1.0;
 
 	return (trans);
-}
-
-/************************************************************************
- * ROUTINE: copyTrans
- *
- * DESCRIPTION:
- * Copy all fields (except the "id" field)
- * from the "from" TRANS argument to the "to" argument
- *
- * Returns:
- *   nothing
- */
-void copyTrans(TRANS *from, /* I: copy fields from this TRANS ... */
-TRANS *to /* O: ... to this TRANS */
-) {
-
-	shAssert(from != NULL);
-	shAssert(to != NULL);
-
-	to->order = from->order;
-	to->a = from->a;
-	to->b = from->b;
-	to->c = from->c;
-	to->d = from->d;
-	to->e = from->e;
-	to->f = from->f;
-	to->g = from->g;
-	to->h = from->h;
-	to->i = from->i;
-	to->j = from->j;
-	to->k = from->k;
-	to->l = from->l;
-	to->m = from->m;
-	to->n = from->n;
-	to->o = from->o;
-	to->p = from->p;
-
-	to->nr = from->nr;
-	to->nm = from->nm;
-	to->sig = from->sig;
-	to->sx = from->sx;
-	to->sy = from->sy;
-
 }
 

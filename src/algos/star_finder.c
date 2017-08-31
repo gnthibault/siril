@@ -212,7 +212,7 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 					/* ****** */
 					/* In this case the angle is not fitted because it
 					 *  slows down the algorithm too much 
-					 * To fit the angle, set the 3rd parameter to TRUE */
+					 * To fit the angle, set the 4th parameter to TRUE */
 					fitted_PSF *cur_star = psf_global_minimisation(z, bg, layer,
 							FALSE, FALSE);
 					if (cur_star) {

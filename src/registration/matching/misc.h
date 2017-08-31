@@ -148,11 +148,12 @@ typedef struct Trans {
 void atTransOrderSet(int order);
 int atTransOrderGet(void);
 TRANS *atTransNew(void);
+Homography *atHNew(void);
 TRANS *getGuessTrans(char *intransfile);
 TRANS *getIdentityTrans(void);
 void atTransDel(TRANS *trans);
+void print_H(Homography *H);
 void print_trans(TRANS *trans);
-void copyTrans(TRANS *from, TRANS *to);
 
 	/*
 	 * The MEDTF structure holds statistics on the difference between

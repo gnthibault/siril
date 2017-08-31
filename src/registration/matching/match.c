@@ -104,6 +104,7 @@
 #include "core/siril.h"
 #include "gui/callbacks.h"
 #include "algos/PSF.h"
+#include "opencv/opencv.h"
 #include "registration/matching/misc.h"
 #include "registration/matching/match.h"
 #include "registration/matching/atpmatch.h"
@@ -122,13 +123,12 @@ static int prepare_to_recalc(char *outfile, int *num_matched_A,
 
 char progname[CMDBUFLEN + 1];
 
-int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
+int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	int ret;
 	int numA, numB;
 	int num_matched_A, num_matched_B;
 	int numA_copy;
 	int max_iter = AT_MATCH_MAXITER;
-	int min_req_pairs = AT_MATCH_MINPAIRS;
 	int trans_order = AT_TRANS_LINEAR;
 	double triangle_radius = AT_TRIANGLE_RADIUS; /* in triangle-space coords */
 	double match_radius = AT_MATCH_RADIUS; /* in units of list B */
@@ -138,53 +138,21 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 	double rot_angle = AT_MATCH_NOANGLE; /* by default, any angle is okay */
 	double rot_tol = AT_MATCH_NOANGLE;
 	double halt_sigma = AT_MATCH_HALTSIGMA;
-	double medsigclip = 0.0; /* used in MEDTF calcs */
-	double xshift = 0.0; /* guessed shift in X dir */
-	double yshift = 0.0; /* guessed shift in y dir */
 	int nobj = AT_MATCH_NBRIGHT;
-	int transonly = 0; /* if 1, only find TRANS */
-	int recalc = 1; /* if 1, calc TRANS again */
 	int num_matches = 0; /* number of matching pairs */
-	int medtf_flag = 0; /* calculate MEDTF stats? */
-	int intrans = 0; /* use given input TRANS? */
-	int identity = 0; /* use identity as TRANS? */
 	char outfile[CMDBUFLEN + 1];
-	char intransfile[CMDBUFLEN + 1];
 	const char *tmpdir = g_get_tmp_dir();
 	struct s_star *star_list_A, *star_list_B;
 	struct s_star *star_list_A_copy;
 	struct s_star *matched_list_A, *matched_list_B;
-	MEDTF *medtf;
 	TRANS *trans;
+	Homography *Hom;
 
 	/* buffer overflow paranoia */
 	outfile[CMDBUFLEN] = '\0';
-	progname[CMDBUFLEN] = '\0';
-	intransfile[CMDBUFLEN] = '\0';
 
 	strncpy(outfile, tmpdir, CMDBUFLEN);
 	strcat(outfile, "/matched");
-
-	/*
-	 * We can only calculate _clipped_ MEDTF statistics if we calculate
-	 *   the regular ones.  So it makes no sense to specify 'medsigclip',
-	 *   but not 'medtf'.
-	 */
-	if ((medtf_flag == 0) && (medsigclip != 0.0)) {
-		shError("WARNING: medsigclip requires the 'medtf' option");
-		shError("WARNING: Setting medtf ");
-		medtf_flag = 1;
-	}
-	/*
-	 * Impossible to calculation the MEDTF statistics unless we match
-	 *   up stars after finding the TRANS.  So, if the user does want
-	 *   the MEDTF stats, we force the necessary step.
-	 */
-	if ((medtf_flag == 1) && (recalc == 0)) {
-		shError("WARNING: 'medtf' requires the 'recalc' option");
-		shError("WARNING: Setting recalc ");
-		recalc = 1;
-	}
 
 	/*
 	 * Check to make sure that the user did exactly one of the following:
@@ -240,100 +208,18 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 		return (SH_GENERIC_ERROR);
 	}
 
-	/* Can only specify one of 'identity' and 'intrans' */
-/*	if ((intrans != 0) && (identity != 0)) {
-		shFatal("Cannot specify both 'identity' and an input TRANS file");
-		return (SH_GENERIC_ERROR);
-	}*/
+	/* we start with an "empty" TRANS; atFindTrans will try to fill it */
+	atTransOrderSet(trans_order);
+	trans = atTransNew();
+	trans->order = trans_order;
 
-	/* Makes no sense to specify 'identity' and 'quadratic' or 'cubic' */
-/*	if ((identity != 0) && (trans_order != AT_TRANS_LINEAR)) {
-		shFatal("Cannot specify both 'identity' and any order beyond linear");
-		return (SH_GENERIC_ERROR);
-	}*/
-	/*
-	 * Likewise, makes no sense to specify 'intrans=' and
-	 * 'quadratic' or 'cubic' (or 'linear', actually, but we have
-	 * no easy way to check for that mistake :-(
-	 */
-/*	if ((intrans != 0) && (trans_order != AT_TRANS_LINEAR)) {
-		shFatal("Cannot specify both 'intrans' and any order ");
-		return (SH_GENERIC_ERROR);
-	}*/
+	Hom = atHNew();
 
-	/*
-	 * The minimum number of pairs required for a successful match
-	 * must be at least large enough to define the given transformation.
-	 * If the user has specified a value for 'min_req_pairs'
-	 * which is LESS than this minimum value for the desired TRANS,
-	 * print an error and terminate.
-	 */
-	if ((trans_order == AT_TRANS_LINEAR) && (min_req_pairs < 3)) {
-		shFatal("linear trans requires at least 3 matched pairs ");
-		return (SH_GENERIC_ERROR);
-	}
-	if ((trans_order == AT_TRANS_QUADRATIC) && (min_req_pairs < 6)) {
-		shFatal("quadratic trans requires at least 6 matched pairs ");
-		return (SH_GENERIC_ERROR);
-	}
-	if ((trans_order == AT_TRANS_CUBIC) && (min_req_pairs < 10)) {
-		shFatal("cubic trans requires at least 10 matched pairs ");
-		return (SH_GENERIC_ERROR);
-	}
-
-	/*
-	 * There are three possibilities for the initial TRANS values:
-	 *
-	 *   1. The user specified "identity", so we start with a linear TRANS
-	 *      which has no scale change or rotation; it has no translation,
-	 *      unless the user gave 'xsh' and 'ysh'.
-	 *
-	 *   2. The user specified "intrans=file", in which case we read
-	 *      the initial TRANS values from the given file.
-	 *
-	 *   3. The user didn't give us either, so we start with an empty
-	 *      TRANS and will have to find one ourselves via atFindTrans().
-	 *
-	 * In either case 1 or 2, we will end up with a non-zero initial
-	 * TRANS structure -- which means that we want to use IT to find
-	 * matches, instead of atFindTrans().  We'll therefore set the 'intrans'
-	 * flag to 1, to indicate "don't try to find a TRANS, just use
-	 * the one the user provided".
-	 */
-	if (identity == 1) {
-		trans = getIdentityTrans();
-		trans_order = trans->order;
-		if (xshift != 0.0) {
-			trans->a = xshift;
-		}
-		if (yshift != 0.0) {
-			trans->d = yshift;
-		}
-
-		intrans = 1;
-
-	} else if (intrans == 1) {
-		if ((trans = getGuessTrans(intransfile)) == NULL) {
-			shFatal("GetGuessTrans fails -- must give up");
-			return (SH_GENERIC_ERROR);
-		}
-		trans_order = trans->order;
-	} else {
-		/* this will be an "empty" TRANS; atFindTrans will try to fill it */
-		atTransOrderSet(trans_order);
-		trans = atTransNew();
-		trans->order = trans_order;
-	}
 #ifdef DEBUG
 	printf("using trans_order %d\n", trans_order);
 #endif
 
-	/* read information from the first file */
-	/*	if (read_star_file(fileA, x1col, y1col, mag1col, id1col, -1, &numA,
-	 &star_list_A) != SH_SUCCESS) {
-	 shError("can't read data from file %s", fileA);
-	 exit(1);
-	 }*/
+	/* read information from the first list */
 	if (get_stars(s1, n, &numA, &star_list_A)) {
 		printf("can't read data\n");
 		return (SH_GENERIC_ERROR);
@@ -349,14 +235,11 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 	 *   so that we can restore the output matched coords
 	 *   (which have been converted to those in set B) with the original coords.
 	 */
-	/*	if (read_star_file(fileA, x1col, y1col, mag1col, id1col, -1, &numA_copy,
-	 &star_list_A_copy) != SH_SUCCESS) {
-	 shFatal("can't read data from file %s", fileA);
-	 }*/
 	if (get_stars(s1, n, &numA_copy, &star_list_A_copy)) {
 		printf("can't read data\n");
 		return (SH_GENERIC_ERROR);
 	}
+
 	/* sanity check */
 	shAssert(numA_copy == numA);
 
@@ -366,35 +249,27 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 	 */
 	reset_copy_ids(numA, star_list_A, star_list_A_copy);
 
-	/* read information from the second file */
-	/*	if (read_star_file(fileB, x2col, y2col, mag2col, id2col, -1, &numB,
-	 &star_list_B) != SH_SUCCESS) {
-	 shError("can't read data from file %s", fileB);
-	 exit(1);
-	 }*/
 	if (get_stars(s2, n, &numB, &star_list_B)) {
 		printf("can't read data\n");
 		return (SH_GENERIC_ERROR);
 	}
 
 	/*
-	 * Now, if the has has not given us an initial TRANS structure, we need
+	 * Now, as the has not given us an initial TRANS structure, we need
 	 * to find one ourselves.
 	 */
-	if (intrans == 0) {
-		ret = atFindTrans(numA, star_list_A, numB, star_list_B, match_radius,
-				triangle_radius, nobj, min_scale, max_scale, rot_angle, rot_tol,
-				max_iter, halt_sigma, min_req_pairs, trans);
-		if (ret != SH_SUCCESS) {
-			shFatal("initial call to atFindTrans fails");
-			/** */
-			atTransDel(trans);
-			free_star_array(star_list_A);
-			free_star_array(star_list_A_copy);
-			free_star_array(star_list_B);
-			/** */
-			return (SH_GENERIC_ERROR);
-		}
+	ret = atFindTrans(numA, star_list_A, numB, star_list_B, triangle_radius,
+			nobj, min_scale, max_scale, rot_angle, rot_tol, max_iter,
+			halt_sigma, trans);
+	if (ret != SH_SUCCESS) {
+		shFatal("initial call to atFindTrans fails");
+		/** */
+		atTransDel(trans);
+		free_star_array(star_list_A);
+		free_star_array(star_list_A_copy);
+		free_star_array(star_list_B);
+		/** */
+		return (SH_GENERIC_ERROR);
 	}
 
 #ifdef DEBUG
@@ -402,14 +277,6 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 	printf("Initial trans structure:\n");
 	print_trans(trans);
 #endif
-
-	/*
-	 * if the "transonly" flag is set, stop at this point
-	 */
-	if (transonly == 1) {
-		print_trans(trans);
-		return (0);
-	}
 
 	/*
 	 * having found (or been given) the TRANS that takes A -> B, let us apply
@@ -433,19 +300,13 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 	atMatchLists(numA, star_list_A, numB, star_list_B, match_radius, outfile,
 			&num_matches);
 	trans->nm = num_matches;
+	Hom->pair_matched = num_matches;
 
 	/*
-	 * Okay, there are two possibilities at this point:
-	 *
-	 *    1. The user gave us information about the initial TRANS,
-	 *       either via 'intrans=' or 'identity'.  We have applied
-	 *       his initial TRANS to the input list A, and looked for
-	 *       matched pairs.
-	 *
-	 *    2. The user didn't give us any information about an initial
-	 *       TRANS, so we called 'atFindTrans()' to find one.
-	 *       We have applied this TRANS to input list A, and
-	 *       looked for matched pairs.
+	 * The user didn't give us any information about an initial
+	 * TRANS, so we called 'atFindTrans()' to find one.
+	 *  We have applied this TRANS to input list A, and
+	 *  looked for matched pairs.
 	 *
 	 * Now, we want to improve the initial TRANS, whether it was supplied
 	 * by user or determined by 'atFindTrans()'.  We do so by applying
@@ -484,115 +345,14 @@ int star_match(fitted_PSF **s1, fitted_PSF **s2, int n, TRANS *t) {
 	print_trans(trans);
 #endif
 
-	/*
-	 * At this point, we have a TRANS which is based solely on those items
-	 * which matched.  If the user wishes, we can improve the TRANS
-	 * even more by applying the current transformation to ALL items
-	 * in list A, making a second round of matching pairs, and then
-	 * using these pairs to calculate a new and better TRANS.
-	 *
-	 * The point is that we'll probably end up with more matched pairs
-	 * if we start with the current TRANS, instead of the initial TRANS.
-	 */
-	if (recalc == 1) {
-
-		/* re-set coords of all items in star A */
-		if (reset_A_coords(numA, star_list_A, star_list_A_copy) != 0) {
-			shFatal("reset_A_coords returns with error before recalc");
-			/** */
-			atTransDel(trans);
-			free_star_array(matched_list_A);
-			free_star_array(matched_list_B);
-			free_star_array(star_list_A_copy);
-			/** */
-			return (SH_GENERIC_ERROR);
-		}
-
-		/*
-		 * apply the current TRANS (which is probably much better than
-		 * the initial TRANS) to all items in list A
-		 */
-		atApplyTrans(numA, star_list_A, trans);
-
-		/*
-		 * Match items in list A to those in list B
-		 */
-		atMatchLists(numA, star_list_A, numB, star_list_B, match_radius,
-				outfile, &num_matches);
-		trans->nm = num_matches;
-#ifdef DEBUG
-		printf("After tuning with recalc, num matches is %d\n", num_matches);
-		print_trans(trans);
-#endif
-
-		/* prepare to call atRecalcTrans one last time */
-		/* need to send trans to prepare_to_recalc because it adds sdx,sdy */
-		if (prepare_to_recalc(outfile, &num_matched_A, &matched_list_A,
-				&num_matched_B, &matched_list_B, star_list_A_copy, trans)
-				!= 0) {
-			shFatal("prepare_to_recalc fails");
-			/** */
-			atTransDel(trans);
-			free_star_array(matched_list_A);
-			free_star_array(matched_list_B);
-			free_star_array(star_list_A_copy);
-			/** */
-			return (SH_GENERIC_ERROR);
-		}
-
-		/* final call atRecalcTrans, on matched items only */
-		if (atRecalcTrans(num_matched_A, matched_list_A, num_matched_B,
-				matched_list_B, max_iter, halt_sigma, trans) != SH_SUCCESS) {
-			shFatal("atRecalcTrans fails on matched pairs only");
-			/** */
-			atTransDel(trans);
-			free_star_array(matched_list_A);
-			free_star_array(matched_list_B);
-			free_star_array(star_list_A_copy);
-			/** */
-			return (SH_GENERIC_ERROR);
-		}
-
-#ifdef DEBUG
-		printf("TRANS based on recalculated matches is \n");
-		print_trans(trans);
-#endif
+	if (atPrepareHomography(num_matched_A, matched_list_A, num_matched_B,
+			matched_list_B, Hom)) {
+		shFatal("atPrepareHomography fails on computing H");
+		return (SH_GENERIC_ERROR);
 	}
 
-	/*
-	 * If the user wants summary statistics on the straight translation
-	 * differences between the lists (without any scale or rotation),
-	 * we calculate them now.  We take all the pairs of stars which
-	 * match -- based on their TRANSFORMED coordinates -- and go back
-	 * to look at the differences between their ORIGINAL coordinates.
-	 *
-	 * This only makes sense if a pure translation connects the lists.
-	 */
-	if (medtf_flag) {
-		if (reset_A_coords(num_matched_A, matched_list_A, star_list_A_copy)
-				!= 0) {
-			shFatal("second call to reset_A_coords returns with error");
-			/** */
-			atTransDel(trans);
-			free_star_array(matched_list_A);
-			free_star_array(matched_list_B);
-			free_star_array(star_list_A_copy);
-			/** */
-			return (SH_GENERIC_ERROR);
-		}
-
-		medtf = atMedtfNew();
-		if (atFindMedtf(num_matched_A, matched_list_A, num_matched_B,
-				matched_list_B, medsigclip, medtf) != SH_SUCCESS) {
-			shError("atFindMedtf fails");
-		} else {
-			print_medtf(medtf);
-		}
-		atMedtfDel(medtf);
-	}
-
-	print_trans(trans);
-	*t = *trans;
+	print_H(Hom);
+	*H = *Hom;
 
 	return (0);
 }

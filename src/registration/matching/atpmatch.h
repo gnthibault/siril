@@ -2,7 +2,6 @@
 #define ATPMATCH_H
 
 #include "core/siril.h"
-
 /*
  *
  * FILE: atPMatch.h
@@ -72,7 +71,7 @@
     * trying to match up sets of triangles.  If AT_MATCH_RATIO
     * is set to 1.0, then all triangles will be used.
     */
-#define AT_MATCH_RATIO    0.9
+#define AT_MATCH_RATIO    0.8
 
    /*
     * We require AT LEAST this many matched pairs of stars to
@@ -101,8 +100,8 @@
     * Values of 0.60-0.70 work well for AT_MATCH_PERCENTILE
     * Values of 2-3                     AT_MATCH_NSIGMA
     */
-#define AT_MATCH_PERCENTILE   0.35
-#define AT_MATCH_NSIGMA       10.0
+#define AT_MATCH_PERCENTILE   0.70
+#define AT_MATCH_NSIGMA       3.0
 
    /*
     * We go through a loop of
@@ -120,22 +119,17 @@
 
    /*
     * When we are evaluating the current TRANS, we calculate the
-    * residuals for matching pairs of stars.  If the variance
-	 * in the offset between matched stars (in other words,
-    * the square of the typical residual) is smaller than this value,
+    * residuals for matching pairs of stars.  If the "sigma"
+    * (effective median residual) is smaller than this value,
     * we stop iterating and declare success.
     *
-    * This value is (typically) in pixels-squared.  So a default
-    * value of one pixel-squared is a reasonable default.
-    *
-    * If one has a coordinate system in units of radians,
-	 * then a standard deviation of one arcsecond
-    * corresponds to variance = 2.35E-11 radians.
+    * This value is (typically) in radians-squared.  So a residual
+    * of one arcsecond corresponds to sigma = 2.35E-11.
     *
     * The user can modify this value via the "halt_sigma"
     * command-line argument.
     */
-#define AT_MATCH_HALTSIGMA    1.0
+#define AT_MATCH_HALTSIGMA    1.0e-12
 
 
    /*
@@ -163,22 +157,6 @@
     */
 #define AT_MATCH_NOANGLE      -999.0
 
-
-   /*
-    * When using the "quick" algorithm to compare triangles
-    *    in two lists, we compare the "yt" members of the
-    *    triangles.  How close (in percentage terms) do
-    *    the two "yt" values have to be to count as a match?
-    */
-#define AT_QUICK_YT_PERCENT    2.0
-
-   /*
-    * When using the "quick" algorithm to compare triangles
-    *    in two lists, the ratios of all 3 side lengths in the
-    *    two triangles must differ by less than this amount
-    *    for the two triangles to be considered a match
-    */
-#define AT_QUICK_RATIO_DIFF    0.02
 
 	/*
 	 * Require at least this many matched pairs of stars
@@ -221,21 +199,17 @@ struct s_star *next;    /* we use linked lists internally */
     *                                    the longest side, relative to x-axis
     */
 typedef struct s_triangle {
-	int id;                  /* used for internal debugging purposes only */
-	int index;               /* position of this triangle in its linked list */
-	double a_length;         /* length of side a (not normalized) */
-	double ba;               /* ratio of lengths b/a   ... must be 0.0-1.0 */
-	double ca;               /* ratio of lengths c/a   ... must be 0.0-1.0 */
-	double cb;               /* ratio of lengths c/b   ... must be 0.0-1.0 */
-	int a_index;             /* index of the star opposite side a */
-	int b_index;             /* index of the star opposite side b */
-	int c_index;             /* index of the star opposite side c */
-	int match_id;            /* ID of triangle in other list which matches */
-	double side_a_angle;     /* angle from one star to other in longest side */
-	double xt;               /* dot product of two longest sides */
-	double yt;               /* ratio of longest to shortest side = 1 / ca */
-	double D;                /* product of xt and yt */
-	struct s_triangle *next; /* we use linked lists internally */
+   int id;                  /* used for internal debugging purposes only */
+   int index;               /* position of this triangle in its linked list */
+   double a_length;         /* length of side a (not normalized) */
+   double ba;               /* ratio of lengths b/a   ... must be 0.0-1.0 */
+   double ca;               /* ratio of lengths c/a   ... must be 0.0-1.0 */
+   int a_index;             /* index of the star opposite side a */
+   int b_index;             /* index of the star opposite side b */
+   int c_index;             /* index of the star opposite side c */
+   int match_id;            /* ID of triangle in other list which matches */
+   double side_a_angle;     /* angle from one star to other in longest side */
+   struct s_triangle *next; /* we use linked lists internally */
 } s_triangle;
 
 
@@ -243,13 +217,12 @@ typedef struct s_triangle {
     * these functions are PUBLIC, and may be called by users
     */
 void free_star_array(s_star *array);
+   
 
 int atFindTrans(int numA, s_star *listA, int numB, s_star *listB,
-                double star_match_radius,
                 double radius, int nbright, double min_scale, double max_scale,
                 double rotation_deg, double tolerance_deg,
-                int max_iter, double max_sigma, int min_req_pairs,
-                TRANS *trans);
+                int max_iter, double halt_sigma, TRANS *trans);
 
 int atApplyTrans(int num, s_star *list, TRANS *trans);
 
@@ -273,6 +246,9 @@ int
 atRecalcTrans(int numA, struct s_star *listA,
               int numB, struct s_star *listB,
               int max_iter, double halt_sigma, TRANS *trans);
+
+int atPrepareHomography(int numA, struct s_star *listA, int numB,
+		struct s_star *listB, Homography *H);
 
 int atFindMedtf(int num_matched_A, s_star *listA,
                 int num_matched_B, s_star *listB,

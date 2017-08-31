@@ -491,28 +491,35 @@ int register_shift_fwhm(struct registration_args *args) {
 
 #ifdef HAVE_OPENCV
 
-static void _print_result(TRANS *trans, float FWHMx, float FWHMy) {
-	double rotation, scale;
+static void _print_result(Homography *H, float FWHMx, float FWHMy) {
+	double rotation, scale, scaleX, scaleY;
 	point shift;
+	double inliers;
 
-	switch (trans->order) {
-	case AT_TRANS_LINEAR:
-		rotation = -atan2(trans->c, trans->b);
-		shift.x = trans->a;
-		shift.y = -trans->d;
-		scale = sqrt(trans->b * trans->b + trans->c * trans->c);
-		siril_log_color_message(_("Matching stars: done\n"), "green");
-		siril_log_message(_("%d pair matches.\n"), trans->nr);
-		siril_log_message(_("scale:%*.3f\n"), 13, scale);
-		siril_log_message(_("rotation:%+*.2f deg\n"), 9, rotation * 180 / M_PI);
-		siril_log_message(_("dx:%+*.2f px\n"), 15, shift.x);
-		siril_log_message(_("dy:%+*.2f px\n"), 15, shift.y);
-		siril_log_message(_("FWHMx:%*.2f px\n"), 12, FWHMx);
-		siril_log_message(_("FWHMy:%*.2f px\n"), 12, FWHMy);
-		break;
-	default:
-		siril_log_color_message(_("Not handled yet\n"), "red");
-	}
+	siril_log_color_message(_("Matching stars: done\n"), "green");
+	siril_log_message(_("%d pair matches.\n"), H->pair_matched);
+	inliers = 1.0 - ((((double) H->pair_matched - (double) H->Inliers)) / (double) H->pair_matched);
+	siril_log_message(_("Inliers:%*.3f\n"), 11, inliers);
+
+	// scale
+	scaleX = sqrt(H->h00 * H->h00 + H->h01 * H->h01);
+	scaleY = sqrt(H->h10 * H->h10 + H->h11 * H->h11);
+	scale = (scaleX + scaleY) * 0.5;
+	siril_log_message(_("scaleX:%*.3f\n"), 12, scaleX);
+	siril_log_message(_("scaleY:%*.3f\n"), 12, scaleY);
+	siril_log_message(_("scale:%*.3f\n"), 13, scale);
+
+	// rotation
+	rotation = -atan2(H->h01, H->h00);
+	siril_log_message(_("rotation:%+*.2f deg\n"), 9, rotation * 180 / M_PI);
+
+	// translation
+	shift.x = -H->h02;
+	shift.y = -H->h12;
+	siril_log_message(_("dx:%+*.2f px\n"), 15, shift.x);
+	siril_log_message(_("dy:%+*.2f px\n"), 15, shift.y);
+	siril_log_message(_("FWHMx:%*.2f px\n"), 12, FWHMx);
+	siril_log_message(_("FWHMy:%*.2f px\n"), 12, FWHMy);
 }
 
 int register_star_alignment(struct registration_args *args) {
@@ -522,7 +529,7 @@ int register_star_alignment(struct registration_args *args) {
 	float nb_frames, cur_nb;
 	float FWHMx, FWHMy;
 	fitted_PSF **stars, **refstars;
-	TRANS trans;
+	Homography H;
 	regdata *current_regdata;
 	starFinder sf;
 	fits fit;
@@ -530,7 +537,7 @@ int register_star_alignment(struct registration_args *args) {
 
 	memset(&fit, 0, sizeof(fits));
 	memset(&sf, 0, sizeof(starFinder));
-	memset(&trans, 0, sizeof(TRANS));
+	memset(&H, 0, sizeof(Homography));
 
 	if (!args->seq->regparam) {
 		fprintf(stderr, "regparam should have been created before\n");
@@ -701,7 +708,7 @@ int register_star_alignment(struct registration_args *args) {
 					nbpoints = (sf.nb_stars < fitted_stars) ?
 						sf.nb_stars : fitted_stars;
 
-					if (star_match(stars, refstars, nbpoints, &trans)) {
+					if (new_star_match(stars, refstars, nbpoints, &H)) {
 						siril_log_color_message(_("Cannot perform star matching. Image %d skipped\n"),
 								"red", frame);
 						args->new_total--;
@@ -715,7 +722,7 @@ int register_star_alignment(struct registration_args *args) {
 					}
 
 					FWHM_average(stars, &FWHMx, &FWHMy, nbpoints);
-					_print_result(&trans, FWHMx, FWHMy);
+					_print_result(&H, FWHMx, FWHMy);
 					current_regdata[frame].fwhm = FWHMx;
 
 					if (!args->translation_only) {
@@ -726,9 +733,7 @@ int register_star_alignment(struct registration_args *args) {
 						 * the image is resized down to its final size so as to produce a very sharp lines,
 						 * edges, and much cleaner looking fonts. */
 						cvResizeGaussian(&fit, fit.rx * SUPER_SAMPLING, fit.ry * SUPER_SAMPLING, OPENCV_CUBIC);
-						trans.a *= SUPER_SAMPLING;
-						trans.d *= SUPER_SAMPLING;
-						cvTransformImage(&fit, trans, args->interpolation);
+						cvTransformImage(&fit, H, args->interpolation);
 						cvResizeGaussian(&fit, fit.rx / SUPER_SAMPLING, fit.ry / SUPER_SAMPLING, OPENCV_CUBIC);
 
 						fits_flip_top_to_bottom(&fit);
@@ -755,8 +760,8 @@ int register_star_alignment(struct registration_args *args) {
 					args->imgparam[frame - failed - skipped].incl = SEQUENCE_DEFAULT_INCLUDE;
 					args->regparam[frame - failed - skipped].fwhm = current_regdata[frame].fwhm;	// not FWHMx because of the ref frame
 				} else {
-					current_regdata[frame].shiftx = trans.a;
-					current_regdata[frame].shifty = -trans.d;
+					current_regdata[frame].shiftx = -H.h02;
+					current_regdata[frame].shifty = -H.h12;
 					args->seq->imgparam[frame].incl = SEQUENCE_DEFAULT_INCLUDE;
 				}
 

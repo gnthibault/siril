@@ -4,7 +4,6 @@
 #include "core/siril.h"
 
 #define NUMBER_OF_METHOD 5
-#define SUPER_SAMPLING 2
 
 struct registration_args;
 typedef int (*registration_function)(struct registration_args *);

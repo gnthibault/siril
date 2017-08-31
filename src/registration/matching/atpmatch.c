@@ -133,15 +133,6 @@
  *             statement in make_vote_matrix.
  *             June 26, 2010
  *           Michael Richmond
- *
- *           Fixed bug in find_quick_match() which caused premature
- *             termination if one particular match failed.
- *             Use new routine "check_trans_properties()" to see
- *             if the current match is good enough for user's
- *             needs.  This duplicates some code, but simplifies
- *             things from an overall view.
- *             Aug 7, 2012.
- *           Michael Richmond
  */
 
 #include <stdio.h>
@@ -152,6 +143,9 @@
 #include "core/siril.h"
 #include "registration/matching/misc.h"
 #include "registration/matching/atpmatch.h"
+#ifdef HAVE_OPENCV
+#include "opencv/opencv.h"
+#endif
 
 #undef DEBUG           /* get some of diagnostic output */
 #undef DEBUG2          /* get LOTS more diagnostic output */
@@ -192,18 +186,6 @@
 /* this typedef is used several sorting routines */
 typedef int (*PFI)();
 
-/*
- * use this structure to create an auxiliary array of stars
- *    sorted by one of its coordinates, so that we can quickly
- *    locate a star in one of the main arrays when we are
- *    looking for a match
- */
-typedef struct s_star_coord {
-	int index; /* index of star in main star array */
-	double x; /* "X" value of star */
-	double y; /* "Y" value of star */
-} s_star_coord;
-
 static int set_star(s_star *star, double x, double y, double mag);
 static void copy_star(s_star *from_ptr, s_star *to_ptr);
 static void copy_star_array(s_star *from_array, s_star *to_array, int num);
@@ -218,7 +200,6 @@ static void print_dist_matrix(double **matrix, int num);
 static void set_triangle(s_triangle *triangle, s_star *star_array, int i, int j,
 		int k, double **dist_matrix);
 #ifdef DEBUG2
-static void print_one_triangle(s_triangle *triangle, s_star *star_array);
 static void print_triangle_array(s_triangle *t_array, int numtriangles,
 		s_star *star_array, int numstars);
 #endif
@@ -230,32 +211,17 @@ static void sort_star_by_x(s_star *array, int num);
 static int compare_star_by_x(s_star *star1, s_star *star2);
 static void sort_star_by_match_id(s_star *array, int num);
 static int compare_star_by_match_id(s_star *star1, s_star *star2);
-static void sort_star_coord_by_x(s_star_coord *array, int num);
-static int compare_star_coord_by_x(s_star_coord *sc1, s_star_coord *sc2);
 static int fill_triangle_array(s_star *star_array, int numstars,
 		double **dist_matrix, int numtriangles, s_triangle *t_array);
 static void sort_triangle_array(s_triangle *array, int num);
-static void sort_triangle_by_yt(s_triangle *array, int num);
-static void sort_triangle_by_D(s_triangle *array, int num);
 static int compare_triangle(s_triangle *triangle1, s_triangle *triangle2);
-static int compare_triangle_by_yt(s_triangle *triangle1, s_triangle *triangle2);
-static int compare_triangle_by_D(s_triangle *triangle1, s_triangle *triangle2);
 static int find_ba_triangle(s_triangle *array, int num, double ba0);
-static int find_yt_triangle(s_triangle *array, int num, double yt0);
-static int find_star_coord_by_x(s_star_coord *array, int num, double x0);
 static void prune_triangle_array(s_triangle *t_array, int *numtriangles);
 static int **make_vote_matrix(s_star *star_array_A, int num_stars_A,
 		s_star *star_array_B, int num_stars_B, s_triangle *t_array_A,
 		int num_triangles_A, s_triangle *t_array_B, int num_triangles_B,
 		int nbright, double radius, double min_scale, double max_scale,
 		double rotation_deg, double tolerance_deg);
-static int find_quick_match(s_star *star_array_A, int num_stars_A,
-		s_star *star_array_B, int num_stars_B, s_triangle *t_array_A,
-		int num_triangles_A, s_triangle *t_array_B, int num_triangles_B,
-		int nbright, double star_match_radius, double radius, int max_iter,
-		double max_sigma, double min_scale, double max_scale,
-		double rotation_deg, double tolerance_deg, int min_req_pairs,
-		TRANS *trans);
 #ifdef DEBUG
 static void print_vote_matrix(int **vote_matrix, int numcells);
 #endif
@@ -283,7 +249,7 @@ static void print_matrix(double **matrix, int n);
 #endif
 
 #ifdef DEBUG3
-static void test_routine(void);
+static void test_routine (void);
 #endif
 
 static int iter_trans(int nbright, s_star *star_array_A, int num_stars_A,
@@ -311,29 +277,12 @@ static void remove_same_elements(s_star *star_array_1, int num_stars_1,
 		s_star *star_array_2, int *num_stars_2);
 static void write_array(int num_stars, struct s_star *star_array,
 		char *filename);
+static int write_small_arrays(double ra, double dec, int num_stars,
+		struct s_star *star_array, int nbright, int num_triangles,
+		struct s_triangle *t_array, char *outfile);
 static int is_desired_rotation(struct s_triangle *tri_1,
 		struct s_triangle *tri_2, double want_angle_deg, double tolerance_deg,
 		double *actual_angle_deg);
-static int apply_trans_and_find_matches(s_star *star_array_A, int num_stars_A,
-		s_star *star_array_B, int num_stars_B, s_star_coord *sorted_array_B,
-		double star_match_radius, TRANS *trans, int *num_winners,
-		int *winner_index_A, int *winner_index_B);
-static int compute_match_distance_stats(s_star *star_array_A, int num_stars_A,
-		s_star *star_array_B, int num_stars_B, int num_matches,
-		int *match_index_A, int *match_index_B, double *mean, double *stdev);
-static int prune_matched_pairs(s_star *star_array_A, int num_stars_A,
-		s_star *star_array_B, int num_stars_B, int num_matches,
-		int *match_index_A, int *match_index_B, double critical_distance,
-		int *remaining_pairs);
-
-static int eval_trans_quality(s_star *star_array_A, int num_stars_A,
-		s_star *star_array_B, int num_stars_B, double critical_distance,
-		TRANS *trans);
-static int calc_trans_sig(int num_matches, s_star *star_array_A,
-		int num_stars_A, s_star *star_array_B, int num_stars_B,
-		int *winner_votes, int *winner_index_A, int *winner_index_B,
-		TRANS *trans);
-static int is_trans_good_enough(int min_matches, double max_stdev, TRANS *trans);
 
 /*
  * we have three different versions of a routine to do the
@@ -355,9 +304,6 @@ static int calc_trans_quadratic(int nbright, s_star *star_array_A,
 static int calc_trans_cubic(int nbright, s_star *star_array_A, int num_stars_A,
 		s_star *star_array_B, int num_stars_B, int *winner_votes,
 		int *winner_index_A, int *winner_index_B, TRANS *trans);
-static int
-check_trans_properties(TRANS *trans, double min_scale, double max_scale,
-		double rotation_deg, double tolerance_deg);
 
 /************************************************************************
  * <AUTO EXTRACT>
@@ -387,8 +333,6 @@ int atFindTrans(int numA, /* I: number of stars in list A */
 struct s_star *listA, /* I: match this set of objects with list B */
 int numB, /* I: number of stars in list B */
 struct s_star *listB, /* I: match this set of objects with list A */
-double star_match_radius, /* I: max radius in star-space allowed for */
-/*       a pair of stars to match */
 double radius, /* I: max radius in triangle-space allowed for */
 /*       a pair of triangles to match */
 int nobj, /* I: max number of bright stars to use in creating */
@@ -403,28 +347,27 @@ double tolerance_deg, /* I: allowed range of orientation angles (deg) */
 /*       if AT_MATCH_NOANGLE, any orientation is allowed */
 int max_iter, /* I: go through at most this many iterations */
 /*       in the iter_trans() loop. */
-double max_sigma, /* I: if the mean residual becomes this small */
-/*       then the match was a success */
-int min_req_pairs, /* I: must have at least this many matched pairs */
-/*       of stars be count as successful match */
+double halt_sigma, /* I: halt the fitting procedure if the mean */
+/*       residual becomes this small */
 TRANS *trans /* O: place into this TRANS structure's fields */
 /*       the coeffs which convert coords of chainA */
 /*       into coords of chainB system. */
 ) {
-	int nbright, min;
+	int i, nbright, min;
 	int num_stars_A; /* number of stars in chain A */
 	int num_stars_B; /* number of stars in chain B */
 	int num_triangles_A; /* number of triangles formed from chain A */
 	int num_triangles_B; /* number of triangles formed from chain B */
-	int start_pairs = 0;
-	s_star *star_array_A = NULL;
-	s_star *star_array_B = NULL;
+	int **vote_matrix;
+	int *winner_votes; /* # votes gotten by top pairs of matched stars */
+	int *winner_index_A; /* elem i in this array is index in star array A */
+	/*    which matches ... */
+	int *winner_index_B; /* elem i in this array, index in star array B */
+	int start_pairs;
+	s_star *star_array_A;
+	s_star *star_array_B;
 	s_triangle *triangle_array_A = NULL;
 	s_triangle *triangle_array_B = NULL;
-
-#ifdef DEBUG
-	printf(" entering atFindTrans \n");
-#endif
 
 	num_stars_A = numA;
 	num_stars_B = numB;
@@ -512,50 +455,152 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 	shAssert(triangle_array_B != NULL);
 
 	/*
-	 * sort all triangles in list A by their D value
+	 * Now we prune the triangle arrays to eliminate those with
+	 * ratios (b/a) > AT_MATCH_RATIO,
+	 * since Valdes et al. say that this speeds things up and eliminates
+	 * lots of closely-packed triangles.
 	 */
-	sort_triangle_by_D(triangle_array_A, num_triangles_A);
+	prune_triangle_array(triangle_array_A, &num_triangles_A);
+	prune_triangle_array(triangle_array_B, &num_triangles_B);
 #ifdef DEBUG2
-	printf("after sorting by D, here comes triangle array A\n");
-	print_triangle_array(triangle_array_A, num_triangles_A, star_array_A,
-			num_stars_A);
+	printf("after pruning, here comes triangle array A\n");
+	print_triangle_array(triangle_array_A, num_triangles_A,
+			star_array_A, num_stars_A);
+	printf("after pruning, here comes triangle array B\n");
+	print_triangle_array(triangle_array_B, num_triangles_B,
+			star_array_B, num_stars_B);
 #endif
 
 	/*
-	 * sort all triangles in list B by their yt values
+	 * Next, we want to try to match triangles in the two arrays.
+	 * What we do is to create a "vote matrix", which is a 2-D array
+	 * with "nbright"-by-"nbright" cells.  The cell with
+	 * coords [i][j] holds the number of matched triangles in which
+	 *
+	 *        item [i] in star_array_A matches item [j] in star_array_B
+	 *
+	 * We'll use this "vote_matrix" to figure out a first guess
+	 * at the transformation between coord systems.
+	 *
+	 * Note that if there are fewer than "nbright" stars
+	 * in either list, we'll still make the vote_matrix
+	 * contain "nbright"-by-"nbright" cells ...
+	 * there will just be a lot of cells filled with zero.
 	 */
-	sort_triangle_by_yt(triangle_array_B, num_triangles_B);
-#ifdef DEBUG2
-	printf("after sorting by yt, here comes triangle array B\n");
-	print_triangle_array(triangle_array_B, num_triangles_B, star_array_B,
-			num_stars_B);
-#endif
+	vote_matrix = make_vote_matrix(star_array_A, num_stars_A, star_array_B,
+			num_stars_B, triangle_array_A, num_triangles_A, triangle_array_B,
+			num_triangles_B, nbright, radius, min_scale, max_scale,
+			rotation_deg, tolerance_deg);
 
 	/*
-	 * The important step: walk through list A, checking
-	 * as we go for matches in list B.  If we find a
-	 * possible match, evaluate it using a large number
-	 * of objects; if it's a good match, terminate the
-	 * search.
+	 * having made the vote_matrix, we next need to pick the
+	 * top 'nbright' vote-getters.  We call 'top_vote_getters'
+	 * and are given, in its output arguments, pointers to three
+	 * arrays, each of which has 'nbright' elements pertaining
+	 * to a matched pair of STARS:
+	 *
+	 *       winner_votes[]    number of votes of winners, in descending order
+	 *       winner_index_A[]  index of star in star_array_A
+	 *       winner_index_B[]  index of star in star_array_B
+	 *
+	 * Thus, the pair of stars which matched in the largest number
+	 * of triangles will be
+	 *
+	 *       star_array_A[winner_index_A[0]]    from array A
+	 *       star_array_B[winner_index_A[0]]    from array B
+	 *
+	 * and the pair of stars which matched in the second-largest number
+	 * of triangles will be
+	 *
+	 *       star_array_A[winner_index_A[1]]    from array A
+	 *       star_array_B[winner_index_A[1]]    from array B
+	 *
+	 * and so on.
 	 */
-	if (find_quick_match(star_array_A, num_stars_A, star_array_B, num_stars_B,
-			triangle_array_A, num_triangles_A, triangle_array_B,
-			num_triangles_B, nbright, star_match_radius, radius, max_iter,
-			max_sigma, min_scale, max_scale, rotation_deg, tolerance_deg,
-			min_req_pairs, trans) == SH_SUCCESS) {
-		/* we found a match */
+	top_vote_getters(vote_matrix, nbright, &winner_votes, &winner_index_A,
+			&winner_index_B);
+
+/*	for (i = 0; i < nbright; i++) {
+		printf("%.3lf|%.3lf / %.3lf|%.3lf\n", star_array_A[winner_index_A[i]].x, star_array_B[winner_index_B[i]].x,
+				star_array_A[winner_index_A[i]].y, star_array_B[winner_index_B[i]].y);
+	}
+	exit(1);*/
+
+	/*
+	 * here, we disqualify any of the top vote-getters which have
+	 * fewer than AT_MATCH_MINVOTES votes.  This may decrease the
+	 * number of valid matched pairs below 'nbright', so we
+	 * re-set nbright if necessary.
+	 */
+	for (i = 0; i < nbright; i++) {
+		if (winner_votes[i] < AT_MATCH_MINVOTES) {
 #ifdef DEBUG
-		printf("find_quick_match returns with success! \n");
+			printf("disqualifying all winners after number %d, nbright now %d\n",
+					i, i);
 #endif
-	} else {
-#ifdef DEBUG
-		printf("find_quick_match returns with failure \n");
-#endif
-		shError("atFindTrans: find_quick_match unable to create a valid TRANS");
+			nbright = i;
+			break;
+		}
+	}
+
+	/*
+	 * next, we take the "top" matched pairs of coodinates, and
+	 * figure out a transformation of the form
+	 *
+	 *       x' = A + Bx + Cx
+	 *       y' = D + Ex + Fy
+	 *
+	 * (i.e. a TRANS structure) which converts the coordinates
+	 * of objects in chainA to those in chainB.
+	 */
+	if (iter_trans(nbright, star_array_A, num_stars_A, star_array_B,
+			num_stars_B, winner_votes, winner_index_A, winner_index_B,
+			RECALC_NO, max_iter, halt_sigma, trans) != SH_SUCCESS) {
+
+		shError("atFindTrans: iter_trans unable to create a valid TRANS");
 		free_star_array(star_array_A);
 		free_star_array(star_array_B);
+		shFree(triangle_array_A);
+		shFree(triangle_array_B);
 		return (SH_GENERIC_ERROR);
 	}
+
+#ifdef DEBUG
+	printf("  after calculating new TRANS structure, here it is\n");
+	print_trans(trans);
+#endif
+
+	/*
+	 * clean up memory we allocated during the matching process
+	 */
+	free_star_array(star_array_A);
+	free_star_array(star_array_B);
+	shFree(triangle_array_A);
+	shFree(triangle_array_B);
+
+	return (SH_SUCCESS);
+}
+
+int atPrepareHomography(int numA, /* I: number of stars in list A */
+		struct s_star *listA, /* I: match this set of objects with list B */
+		int numB, /* I: number of stars in list B */
+		struct s_star *listB, /* I: match this set of objects with list A */
+		Homography *H
+) {
+	int ret = 0;
+	int num_stars_B; /* number of stars in chain B */
+
+	s_star *star_array_A;
+	s_star *star_array_B;
+
+	num_stars_B = numB;
+	star_array_A = list_to_array(numA, listA);
+	star_array_B = list_to_array(numB, listB);
+
+	shAssert(star_array_A != NULL);
+	shAssert(star_array_B != NULL);
+
+	ret = cvCalculH(star_array_A, star_array_B, num_stars_B, H);
 
 	/*
 	 * clean up memory we allocated during the matching process
@@ -563,9 +608,8 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 	free_star_array(star_array_A);
 	free_star_array(star_array_B);
 
-	return (SH_SUCCESS);
+	return ret;
 }
-
 /************************************************************************
  * <AUTO EXTRACT>
  *
@@ -605,9 +649,9 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 	int *winner_index_A; /* elem i in this array is index in star array A */
 	/*    which matches ... */
 	int *winner_index_B; /* elem i in this array, index in star array B */
-	int start_pairs = 0;
-	s_star *star_array_A = NULL;
-	s_star *star_array_B = NULL;
+	int start_pairs;
+	s_star *star_array_A;
+	s_star *star_array_B;
 
 	num_stars_A = numA;
 	num_stars_B = numB;
@@ -870,8 +914,8 @@ int *num_matches /* O: number of matching pairs we find */
 	/* do the matching process */
 	if (match_arrays_slow(star_array_A, num_stars_A, star_array_B, num_stars_B,
 			radius, &star_array_J, &num_stars_J, &star_array_K, &num_stars_K,
-			&star_array_L, &num_stars_L, &star_array_M, &num_stars_M)
-			!= SH_SUCCESS) {
+			&star_array_L, &num_stars_L, &star_array_M,
+			&num_stars_M) != SH_SUCCESS) {
 		shError("atMatchLists: match_arrays_slow fails");
 		return (SH_GENERIC_ERROR);
 	}
@@ -932,7 +976,6 @@ int *num_matches /* O: number of matching pairs we find */
  * </AUTO>
  */
 
-#if 0
 int atBuildSmallFile(double ra, /* I: Right Ascension of field center, in degrees */
 double dec, /* I: Declination of field center, in degrees */
 int numA, /* I: number of stars in list A */
@@ -946,7 +989,7 @@ char *outfile /* I: create a file with this name, and place lists */
 	int num_stars_A; /* number of stars in chain A */
 	int num_triangles_A; /* number of triangles formed from chain A */
 	int start_pairs;
-	s_star *star_array_A = NULL;
+	s_star *star_array_A;
 	s_triangle *triangle_array_A = NULL;
 
 	num_stars_A = numA;
@@ -1017,8 +1060,8 @@ char *outfile /* I: create a file with this name, and place lists */
 	prune_triangle_array(triangle_array_A, &num_triangles_A);
 #ifdef DEBUG2
 	printf("after pruning, here comes triangle array A\n");
-	print_triangle_array(triangle_array_A, num_triangles_A, star_array_A,
-			num_stars_A);
+	print_triangle_array(triangle_array_A, num_triangles_A,
+			star_array_A, num_stars_A);
 #endif
 
 	if (write_small_arrays(ra, dec, num_stars_A, star_array_A, nbright,
@@ -1035,7 +1078,6 @@ char *outfile /* I: create a file with this name, and place lists */
 
 	return (SH_SUCCESS);
 }
-#endif
 
 /************************************************************************
  * <AUTO EXTRACT>
@@ -1100,7 +1142,7 @@ int **top_votes /* O: array of votes gotten by the ntop stars */
 	int *winner_index_A; /* elem i in this array is index in star array A */
 	/*    which matches ... */
 	int *winner_index_B; /* elem i in this array, index in star array B */
-	int start_pairs = 0;
+	int start_pairs;
 	static s_star *star_array_A = NULL;
 	static s_triangle *triangle_array_A = NULL;
 	static int first = 1;
@@ -1210,11 +1252,11 @@ int **top_votes /* O: array of votes gotten by the ntop stars */
 	}
 #ifdef DEBUG2
 	printf("after pruning, here comes triangle array A\n");
-	print_triangle_array(triangle_array_A, num_triangles_A, star_array_A,
-			num_stars_A);
+	print_triangle_array(triangle_array_A, num_triangles_A,
+			star_array_A, num_stars_A);
 	printf("after pruning, here comes triangle array B\n");
-	print_triangle_array(triangle_array_B, num_triangles_B, star_array_B,
-			num_stars_B);
+	print_triangle_array(triangle_array_B, num_triangles_B,
+			star_array_B, num_stars_B);
 	fflush(stdout);
 #endif
 
@@ -1276,8 +1318,7 @@ int **top_votes /* O: array of votes gotten by the ntop stars */
 	for (i = 0; i < nbright; i++) {
 		if (winner_votes[i] < AT_MATCH_MINVOTES) {
 #ifdef DEBUG
-			printf(
-					"disqualifying all winners after number %d, nbright now %d\n",
+			printf("disqualifying all winners after number %d, nbright now %d\n",
 					i, i);
 #endif
 			nbright = i;
@@ -1479,17 +1520,21 @@ void free_star_array(s_star *first /* first star in the array to be deleted */
 
 #ifdef DEBUG
 
-static void print_star_array(s_star *array, /* I: first star in array */
-int num /* I: number of stars in the array to print */
-) {
+static void
+print_star_array
+(
+		s_star *array, /* I: first star in array */
+		int num /* I: number of stars in the array to print */
+)
+{
 	int i;
 	s_star *star;
 
 	for (i = 0; i < num; i++) {
 		star = &(array[i]);
 		shAssert(star != NULL);
-		printf(" %4d %4d %11.4e %11.4e %6.2f\n", i, star->id, star->x, star->y,
-				star->mag);
+		printf(" %4d %4d %11.4e %11.4e %6.2f\n", i, star->id, star->x,
+				star->y, star->mag);
 	}
 }
 
@@ -1599,9 +1644,13 @@ int num /* I: number of elems in each row */
 
 #ifdef DEBUG
 
-static void print_dist_matrix(double **matrix, /* I: pointer to start of 2-D square array */
-int num /* I: number of rows and columns in the array */
-) {
+static void
+print_dist_matrix
+(
+		double **matrix, /* I: pointer to start of 2-D square array */
+		int num /* I: number of rows and columns in the array */
+)
+{
 	int i, j;
 
 	for (i = 0; i < num; i++) {
@@ -1630,12 +1679,6 @@ int num /* I: number of rows and columns in the array */
  * The triangle's "a_index" is set to the position of the star opposite
  * its side "a" in its star array, and similarly for "b_index" and "c_index".
  *
- * Also set the Tabur-style fields
- *     xt  =  dot product of two long sides
- *     yt  =  ratio of longest to shortest side  ( = 1 / tri->ca)
- *     D   =  product of xt and yt
- *
- *
  * RETURN:
  *    nothing
  *
@@ -1651,7 +1694,7 @@ double **darray /* array of distances between stars */
 ) {
 	static int id_number = 0;
 	double d12, d23, d13;
-	double a = 0.0, b = 0.0, c = 0.0;
+	double a, b, c;
 	s_star *star1, *star2, *star3;
 
 	shAssert(tri != NULL);
@@ -1744,54 +1787,21 @@ double **darray /* array of distances between stars */
 	 * We need to make a special check, in case a == 0.  In that
 	 * case, we'll just set the ratios ba and ca = 1.0, and hope
 	 * that these triangles are ignored.
-	 *
-	 * Likewise, if the length of b == 0, then we can't compute
-	 * the ratio of side c to side b; in that case, set cb
-	 * to 1.0 also.
 	 */
 	tri->a_length = a;
 	if (a > 0.0) {
 		tri->ba = b / a;
 		tri->ca = c / a;
-		if (b > 0.0) {
-			tri->cb = c / b;
-		} else {
-			tri->cb = 1.0;
-		}
 	} else {
 		tri->ba = 1.0;
 		tri->ca = 1.0;
-		tri->cb = 1.0;
 	}
 	tri->side_a_angle = atan2(
 			star_array[tri->a_index].y - star_array[tri->b_index].y,
 			star_array[tri->a_index].x - star_array[tri->b_index].x);
 #ifdef DEBUG2
-	printf(" triangle %5d  has side_a_angle %lf = %lf deg \n", tri->id,
-			tri->side_a_angle, tri->side_a_angle * (180 / 3.14159));
-#endif
-
-	/*
-	 * Now set the parameters used by Tabur algorithms.
-	 *    xt   is   dot product of two longest sides
-	 *    yt   is   ratio of longest to shortest side
-	 *                  (easy: just the reciprocal of tri->ca)
-	 *    D    is   product of xt and yt
-	 */
-	{
-		double xdot, ydot;
-
-		xdot = ((star_array[tri->a_index].x - star_array[tri->c_index].x)
-				* (star_array[tri->b_index].x - star_array[tri->c_index].x));
-		ydot = ((star_array[tri->a_index].y - star_array[tri->c_index].y)
-				* (star_array[tri->b_index].y - star_array[tri->c_index].y));
-		tri->xt = xdot + ydot;
-		tri->yt = 1.0 / (tri->ca);
-		tri->D = tri->xt * tri->yt;
-	}
-#ifdef DEBUG2
-	printf(" triangle %5d  has xt %lf   yt %lf   D %lf  \n", tri->id, tri->xt,
-			tri->yt, tri->D);
+	printf(" triangle %5d  has side_a_angle %lf = %lf deg \n",
+			tri->id, tri->side_a_angle, tri->side_a_angle*(180/3.14159));
 #endif
 
 	tri->match_id = -1;
@@ -1819,30 +1829,15 @@ double **darray /* array of distances between stars */
 
 #ifdef DEBUG2
 
-static void print_one_triangle(s_triangle *triangle, /* I: print this triangle */
-s_star *star_array /* I: array of stars for this triangle */
-) {
-	s_star *sa, *sb, *sc;
-
-	shAssert(triangle != NULL);
-
-	sa = &(star_array[triangle->a_index]);
-	sb = &(star_array[triangle->b_index]);
-	sc = &(star_array[triangle->c_index]);
-
-	printf(
-			"%4d %3d (%5.1f,%5.1f) %3d (%5.1f,%5.1f) %3d (%5.1f, %5.1f)  %5.3f %5.3f %5.3f  %8.1f  %6.1f  %7.1e \n",
-			triangle->id, triangle->a_index, sa->x, sa->y, triangle->b_index,
-			sb->x, sb->y, triangle->c_index, sc->x, sc->y, triangle->ba,
-			triangle->ca, triangle->cb, triangle->xt, triangle->yt,
-			triangle->D);
-}
-
-static void print_triangle_array(s_triangle *t_array, /* I: first triangle in array */
-int numtriangles, /* I: number of triangles in the array to print */
-s_star *star_array, /* I: array of stars which appear in triangles */
-int numstars /* I: number of stars in star_array */
-) {
+static void
+print_triangle_array
+(
+		s_triangle *t_array, /* I: first triangle in array */
+		int numtriangles, /* I: number of triangles in the array to print */
+		s_star *star_array, /* I: array of stars which appear in triangles */
+		int numstars /* I: number of stars in star_array */
+)
+{
 	int i;
 	s_triangle *triangle;
 	s_star *sa, *sb, *sc;
@@ -1851,8 +1846,16 @@ int numstars /* I: number of stars in star_array */
 		triangle = &(t_array[i]);
 		shAssert(triangle != NULL);
 
-		printf("%4d ", i);
-		print_one_triangle(triangle, star_array);
+		sa = &(star_array[triangle->a_index]);
+		sb = &(star_array[triangle->b_index]);
+		sc = &(star_array[triangle->c_index]);
+
+		printf("%4d %4d %3d (%5.1f,%5.1f) %3d (%5.1f,%5.1f) %3d (%5.1f, %5.1f)  %5.3f %5.3f\n",
+				i, triangle->id,
+				triangle->a_index, sa->x, sa->y,
+				triangle->b_index, sb->x, sb->y,
+				triangle->c_index, sc->x, sc->y,
+				triangle->ba, triangle->ca);
 	}
 }
 
@@ -2173,8 +2176,7 @@ s_triangle *t_array /* O: we'll fill properties of triangles in  */
 	int i, j, k, n;
 	s_triangle *triangle;
 
-	shAssert(
-			(star_array != NULL) && (dist_matrix != NULL) && (t_array != NULL));
+	shAssert((star_array != NULL) && (dist_matrix != NULL) && (t_array != NULL));
 
 	n = 0;
 	for (i = 0; i < numstars - 2; i++) {
@@ -2292,8 +2294,8 @@ double ba0 /* I: value of "ba" we seek */
 		mid = (top + bottom) / 2;
 #ifdef DEBUG2
 		printf(" array[%4d] ba=%.2f   array[%4d] ba=%.2f  array[%4d] ba=%.2f\n",
-				top, array[top].ba, mid, array[mid].ba, bottom,
-				array[bottom].ba);
+				top, array[top].ba, mid, array[mid].ba,
+				bottom, array[bottom].ba);
 #endif
 		if (array[mid].ba < ba0) {
 			top = mid;
@@ -2576,9 +2578,8 @@ double tolerance_deg /* I: allowed range of orientation angles (deg) */
 
 				/* we have a (possible) match! */
 #ifdef DEBUG2
-				ratio = t_array_A[i].a_length / t_array_B[j].a_length;
-				printf(
-						"   match!  A: (%6.3f, %6.3f)   B: (%6.3f, %6.3f)  ratio %9.4e  angle %9.4e\n",
+				ratio = t_array_A[i].a_length/t_array_B[j].a_length;
+				printf("   match!  A: (%6.3f, %6.3f)   B: (%6.3f, %6.3f)  ratio %9.4e  angle %9.4e\n",
 						ba_A, ca_A, ba_B, ca_B, ratio, actual_angle_deg);
 #endif
 				/*
@@ -2618,9 +2619,13 @@ double tolerance_deg /* I: allowed range of orientation angles (deg) */
 
 #ifdef DEBUG
 
-static void print_vote_matrix(int **vote_matrix, /* I: the 2-D array we'll print out */
-int numcells /* I: number of cells in each row and col of matrix */
-) {
+static void
+print_vote_matrix
+(
+		int **vote_matrix, /* I: the 2-D array we'll print out */
+		int numcells /* I: number of cells in each row and col of matrix */
+)
+{
 	int i, j;
 
 	printf("here comes vote matrix\n");
@@ -2742,8 +2747,8 @@ int **winner_index_B /* O: create this array of index into star array B */
 #ifdef DEBUG
 	printf("  in top_vote_getters, we have top %d \n", num);
 	for (i = 0; i < num; i++) {
-		printf("   index_A %4d    index_B %4d    votes %4d\n", w_index_A[i],
-				w_index_B[i], w_votes[i]);
+		printf("   index_A %4d    index_B %4d    votes %4d\n",
+				w_index_A[i], w_index_B[i], w_votes[i]);
 	}
 #endif
 
@@ -2806,9 +2811,8 @@ int *winner_index_A, /* I: index into "star_array_A" of top */
 /*      vote-getters */
 int *winner_index_B, /* I: index into "star_array_B" of top */
 /*      vote-getters */
-TRANS *trans /* I/O: place solved coefficients into this */
+TRANS *trans /* O: place solved coefficients into this */
 /*      existing structure's fields */
-/*      "order" field must be set before calling */
 ) {
 
 	/*
@@ -2846,20 +2850,6 @@ TRANS *trans /* I/O: place solved coefficients into this */
 		shFatal("calc_trans: called with invalid trans->order %d \n",
 				trans->order);
 		break;
-	}
-
-	/*
-	 * we can set the 'nr' field to the number of matched pairs used
-	 * to define the TRANS structure
-	 */
-	trans->nr = nbright;
-
-	/* we can now compute the value of the TRANS "sig" field */
-	if (calc_trans_sig(nbright, star_array_A, num_stars_A, star_array_B,
-			num_stars_B, winner_votes, winner_index_A, winner_index_B, trans)
-			!= SH_SUCCESS) {
-		shError("calc_trans: calc_trans_sig returns with error");
-		return (SH_GENERIC_ERROR);
 	}
 
 	return (SH_SUCCESS);
@@ -2938,9 +2928,13 @@ int n /* I: number of elements in each row and col */
 
 #ifdef DEBUG
 
-static void print_matrix(double **matrix, /* I: pointer to 2-D array to be printed */
-int n /* I: number of elements in each row and col */
-) {
+static void
+print_matrix
+(
+		double **matrix, /* I: pointer to 2-D array to be printed */
+		int n /* I: number of elements in each row and col */
+)
+{
 	int i, j;
 
 	for (i = 0; i < n; i++) {
@@ -2962,7 +2956,9 @@ int n /* I: number of elements in each row and col */
 
 #ifdef DEBUG3
 
-static void test_routine(void) {
+static void
+test_routine (void)
+{
 	int i, j, k, n;
 	int *permutations;
 	double **matrix1, **matrix2, **inverse;
@@ -2973,17 +2969,17 @@ static void test_routine(void) {
 	fflush(stdout);
 	fflush(stderr);
 	n = 2;
-	matrix1 = (double **) shMalloc(n * sizeof(double *));
-	matrix2 = (double **) shMalloc(n * sizeof(double *));
-	inverse = (double **) shMalloc(n * sizeof(double *));
-	vector = (double *) shMalloc(n * sizeof(double));
+	matrix1 = (double **) shMalloc(n*sizeof(double *));
+	matrix2 = (double **) shMalloc(n*sizeof(double *));
+	inverse = (double **) shMalloc(n*sizeof(double *));
+	vector = (double *) shMalloc(n*sizeof(double));
 	for (i = 0; i < n; i++) {
-		matrix1[i] = (double *) shMalloc(n * sizeof(double));
-		matrix2[i] = (double *) shMalloc(n * sizeof(double));
-		inverse[i] = (double *) shMalloc(n * sizeof(double));
+		matrix1[i] = (double *) shMalloc(n*sizeof(double));
+		matrix2[i] = (double *) shMalloc(n*sizeof(double));
+		inverse[i] = (double *) shMalloc(n*sizeof(double));
 	}
-	permutations = (int *) shMalloc(n * sizeof(int));
-	col = (double *) shMalloc(n * sizeof(double));
+	permutations = (int *) shMalloc(n*sizeof(int));
+	col = (double *) shMalloc(n*sizeof(double));
 
 	/* fill the matrix */
 	matrix1[0][0] = 1.0;
@@ -3024,7 +3020,7 @@ static void test_routine(void) {
 	for (i = 0; i < n; i++) {
 		for (j = 0; j < n; j++) {
 			for (k = 0; k < n; k++) {
-				sum += inverse[i][k] * matrix2[k][j];
+				sum += inverse[i][k]*matrix2[k][j];
 			}
 			matrix1[i][j] = sum;
 			sum = 0.0;
@@ -3119,8 +3115,8 @@ int *winner_index_B, /* I: index into "star_array_B" of top */
 /*      We may modify this array */
 int recalc_flag, /* I: should we use only a few best pairs for */
 /*      the first iteration, or all? */
-int max_iterations, /* I: iterate at most this many times.  If we */
-/*      reach this limit, stop iterating */
+int max_iterations, /* I: iterate at most this many times.  If we
+ /*      reach this limit, stop iterating */
 /*      and declare success */
 double halt_sigma, /* I: if the residuals from solution drop to */
 /*      this level, stop iterating and */
@@ -3133,13 +3129,13 @@ TRANS *trans /* O: place solved coefficients into this */
 	int nb; /* number of bad pairs in any iteration */
 	int initial_pairs;
 	int is_ok;
-	int required_pairs = 0, start_pairs = 0;
+	int required_pairs, start_pairs;
 	int iters_so_far;
 	double *dist2, *dist2_sorted;
 	double xdiff, ydiff;
 	double sigma;
 	double max_dist2;
-	double newx = 0.0, newy = 0.0;
+	double newx, newy;
 	s_star *sa, *sb;
 	s_star *a_prime; /* will hold transformed version of stars in set A */
 
@@ -3167,8 +3163,8 @@ TRANS *trans /* O: place solved coefficients into this */
 
 	if (nbright < required_pairs) {
 #ifdef DEBUG
-		printf("iter_trans: only %d items supplied, need %d\n", nbright,
-				required_pairs);
+		printf("iter_trans: only %d items supplied, need %d\n",
+				nbright, required_pairs);
 #endif
 		return (SH_GENERIC_ERROR);
 	}
@@ -3198,8 +3194,8 @@ TRANS *trans /* O: place solved coefficients into this */
 	printf("   on initial calc, use %d pairs\n", initial_pairs);
 #endif
 	if (calc_trans(initial_pairs, star_array_A, num_stars_A, star_array_B,
-			num_stars_B, winner_votes, winner_index_A, winner_index_B, trans)
-			!= SH_SUCCESS) {
+			num_stars_B, winner_votes, winner_index_A, winner_index_B,
+			trans) != SH_SUCCESS) {
 		shError("iter_trans: calc_trans returns with error");
 		return (SH_GENERIC_ERROR);
 	}
@@ -3259,8 +3255,8 @@ TRANS *trans /* O: place solved coefficients into this */
 	while (iters_so_far < max_iterations) {
 
 #ifdef DEBUG
-		printf("iter_trans: at top of loop, nr=%4d iters_so_far=%4d\n", nr,
-				iters_so_far);
+		printf("iter_trans: at top of loop, nr=%4d iters_so_far=%4d\n",
+				nr, iters_so_far);
 #endif
 
 		nb = 0;
@@ -3292,8 +3288,7 @@ TRANS *trans /* O: place solved coefficients into this */
 			dist2[i] = (xdiff * xdiff + ydiff * ydiff);
 			dist2_sorted[i] = dist2[i];
 #ifdef DEBUG
-			printf(
-					"   match %3d  (%12.5e,%12.5e) vs. (%12.5e,%12.5e)  d2=%12.6e\n",
+			printf("   match %3d  (%12.5e,%12.5e) vs. (%12.5e,%12.5e)  d2=%12.6e\n",
 					i, a_prime[i].x, a_prime[i].y, sb->x, sb->y, dist2[i]);
 #endif
 		}
@@ -3377,8 +3372,8 @@ TRANS *trans /* O: place solved coefficients into this */
 		 */
 		if (sigma <= halt_sigma) {
 #ifdef DEBUG
-			printf("   SUCCESS  sigma = %10.5e  <  halt_sigma %10.5e \n", sigma,
-					halt_sigma);
+			printf("   SUCCESS  sigma = %10.5e  <  halt_sigma %10.5e \n",
+					sigma, halt_sigma);
 #endif
 			is_ok = 1;
 			break;
@@ -3460,8 +3455,8 @@ TRANS *trans /* O: place solved coefficients into this */
 		printf("   on this iter,    use %d pairs\n", nr);
 #endif
 		if (calc_trans(nr, star_array_A, num_stars_A, star_array_B, num_stars_B,
-				winner_votes, winner_index_A, winner_index_B, trans)
-				!= SH_SUCCESS) {
+				winner_votes, winner_index_A, winner_index_B,
+				trans) != SH_SUCCESS) {
 			shError("iter_trans: calc_trans returns with error");
 			return (SH_GENERIC_ERROR);
 		}
@@ -3664,7 +3659,7 @@ int num_stars, /* I: number of stars in the array */
 TRANS *trans /* I: contains coefficients of transformation */
 ) {
 	int i;
-	double newx = 0.0, newy = 0.0;
+	double newx, newy;
 	s_star *sp;
 
 	if (num_stars == 0) {
@@ -3974,8 +3969,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_J; posA++) {
 		sa = &((*star_array_J)[posA]);
 		sb = &((*star_array_K)[posA]);
-		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 
@@ -4003,8 +3998,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_J; posA++) {
 		sa = &((*star_array_J)[posA]);
 		sb = &((*star_array_K)[posA]);
-		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 
@@ -4025,8 +4020,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_J; posA++) {
 		sa = &((*star_array_J)[posA]);
 		sb = &((*star_array_K)[posA]);
-		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 	shAssert(*num_stars_J == *num_stars_K);
@@ -4049,8 +4044,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_J; posA++) {
 		sa = &((*star_array_J)[posA]);
 		sb = &((*star_array_K)[posA]);
-		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 
@@ -4059,8 +4054,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_J; posA++) {
 		sa = &((*star_array_J)[posA]);
 		sb = &((*star_array_K)[posA]);
-		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 	if (remove_repeated_elements(*star_array_K, num_stars_K, *star_array_J,
@@ -4074,8 +4069,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_J; posA++) {
 		sa = &((*star_array_J)[posA]);
 		sb = &((*star_array_K)[posA]);
-		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 	shAssert(*num_stars_J == *num_stars_K);
@@ -4116,8 +4111,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_J; posA++) {
 		sa = &((*star_array_J)[posA]);
 		sb = &((*star_array_K)[posA]);
-		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 	/*
@@ -4128,8 +4123,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_L; posA++) {
 		sa = &((*star_array_L)[posA]);
 		sb = &((*star_array_M)[posA]);
-		printf(" %4d  L: %4d (%8.2f, %8.2f)  M: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  L: %4d (%8.2f, %8.2f)  M: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 	remove_same_elements(*star_array_J, *num_stars_J, *star_array_L,
@@ -4139,8 +4134,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_L; posA++) {
 		sa = &((*star_array_L)[posA]);
 		sb = &((*star_array_M)[posA]);
-		printf(" %4d  L: %4d (%8.2f, %8.2f)  M: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  L: %4d (%8.2f, %8.2f)  M: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 
@@ -4163,8 +4158,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_J; posA++) {
 		sa = &((*star_array_J)[posA]);
 		sb = &((*star_array_K)[posA]);
-		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  J: %4d (%8.2f, %8.2f)  K: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 	/*
@@ -4175,8 +4170,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_L; posA++) {
 		sa = &((*star_array_L)[posA]);
 		sb = &((*star_array_M)[posA]);
-		printf(" %4d  L: %4d (%8.2f, %8.2f)  M: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  L: %4d (%8.2f, %8.2f)  M: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 	remove_same_elements(*star_array_K, *num_stars_K, *star_array_M,
@@ -4186,8 +4181,8 @@ int *num_stars_M /* O: number of stars in output array M */
 	for (posA = 0; posA < *num_stars_L; posA++) {
 		sa = &((*star_array_L)[posA]);
 		sb = &((*star_array_M)[posA]);
-		printf(" %4d  L: %4d (%8.2f, %8.2f)  M: %4d (%8.2f, %8.2f) \n", posA,
-				sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
+		printf(" %4d  L: %4d (%8.2f, %8.2f)  M: %4d (%8.2f, %8.2f) \n",
+				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
 
@@ -4485,12 +4480,12 @@ int *num_stars_2 /* I/O: number of elems in array 2 */
  *
  */
 
-static s_star *
+s_star *
 list_to_array(int num_stars, /* I: number of stars in the list */
 struct s_star *list /* I: the linked list */
 ) {
 	int i;
-	struct s_star *array = NULL;
+	struct s_star *array;
 	struct s_star *ptr;
 	struct s_star *star;
 
@@ -4539,11 +4534,107 @@ char *filename /* I: write into this file */
 	}
 
 	for (i = 0; i < num_stars; i++) {
-		fprintf(fp, "%6d %13.7f %13.7f %6.2f\n", star_array[i].id,
+		fprintf(fp, "%6d %13.7f %13.7f %6.2f\n", star_array[i].match_id,
 				star_array[i].x, star_array[i].y, star_array[i].mag);
 	}
 
 	fclose(fp);
+}
+
+/****************************************************************************
+ * ROUTINE: write_small_arrays
+ *
+ * Given an array of 'nstar' stars, and an array of s_triangle structures,
+ * write them into a file which is a mixture of ASCII and binary data.
+ * We use a format which is ASCII at first, but turns to binary at the end:
+ *
+ * ASCII section:
+ *   line 1         nstar
+ *   line 2         info on star 1
+ *   line 3         info on star 2
+ *                      ...
+ *   line nstar+1   info on star nstar
+ *   line nstar+2   ntriangle
+ *
+ * BINARY section:
+ *                  binary dump of triangle 1
+ *                  binary dump of triangle 2
+ *                      ...
+ *                  binary dump of triangle ntriangle
+ *
+ *
+ * RETURN:
+ *   SH_SUCCESS         if all goes well
+ *   SH_GENERIC_ERORR   if not
+ */
+
+static int write_small_arrays(double ra, /* I: Right Ascension of field, degrees */
+double dec, /* I: Declination of field, degrees */
+int num_stars, /* I: number of stars in linked list */
+struct s_star *star_array, /* I: array of s_star structures */
+int nbright, /* I: write only this many stars, at most */
+int num_triangles, /* I: number of triangles in array */
+struct s_triangle *t_array, /* I: array of triangle structures */
+char *outfile /* I: name of output file */
+) {
+	int i, num;
+	struct s_star *star;
+	struct s_triangle *tri;
+	FILE *fp;
+
+	if (num_stars > 0) {
+		shAssert(star_array != NULL);
+	}
+	if (num_triangles > 0) {
+		shAssert(t_array != NULL);
+	}
+
+	num = (num_stars < nbright ? num_stars : nbright);
+
+	if ((fp = fopen(outfile, "w")) == NULL) {
+		shError("write_small_arrays: can't open file %s for writing", outfile);
+		return (SH_GENERIC_ERROR);
+	}
+
+	/* write out the RA and Dec of field center, in decimal degrees */
+	fprintf(fp, "%f %f\n", ra, dec);
+
+	/* write out the stars */
+	fprintf(fp, "%d\n", num);
+	for (i = 0; i < num; i++) {
+		star = &(star_array[i]);
+		shAssert(star != NULL);
+
+		fprintf(fp, "%6d %6d %12.5f %12.5f %12.5f\n", i, star->id, star->x,
+				star->y, star->mag);
+	}
+
+	/* write out the triangles */
+	fprintf(fp, "%d\n", num_triangles);
+	for (i = 0; i < num_triangles; i++) {
+		tri = &(t_array[i]);
+		shAssert(tri != NULL);
+
+#ifdef MATCH_ASCII
+		/* this old version creates an ASCII file, which takes forever to read */
+		fprintf(fp, "%6d %6d %13.5f %6.4f %6.4f %4d %4d %4d\n",
+				i, tri->id, tri->a_length,
+				tri->ba, tri->ca,
+				tri->a_index,
+				tri->b_index,
+				tri->c_index);
+#else
+		/* but this binary version can be read in a flash */
+		tri->index = i;
+		tri->match_id = -1;
+		tri->next = NULL;
+		fwrite((void *) tri, sizeof(struct s_triangle), 1, fp);
+#endif
+
+	}
+	fclose(fp);
+
+	return (SH_SUCCESS);
 }
 
 /***********************************************************************
@@ -4713,15 +4804,6 @@ TRANS *trans /* O: place solved coefficients into this */
 	sumy1x2 = 0.0;
 	sumy1y2 = 0.0;
 
-#ifdef DEBUG2
-	printf(" in calc_trans_linear, num_A %5d num_B %5d here are %5d winners \n",
-			num_stars_A, num_stars_B, nbright);
-	for (i = 0; i < nbright; i++) {
-		printf("   i %5d  winner_index_A %5d  winner_index_B %5d \n", i,
-				winner_index_A[i], winner_index_B[i]);
-	}
-#endif
-
 	for (i = 0; i < nbright; i++) {
 
 		/* sanity checks */
@@ -4775,7 +4857,6 @@ TRANS *trans /* O: place solved coefficients into this */
 	 */
 	if (gauss_matrix(matrix, 3, vector) != SH_SUCCESS) {
 		shError("calc_trans_linear: can't solve for coeffs A,B,C ");
-		free_matrix(matrix, 3);
 		return (SH_GENERIC_ERROR);
 	}
 
@@ -4823,7 +4904,6 @@ TRANS *trans /* O: place solved coefficients into this */
 	 */
 	if (gauss_matrix(matrix, 3, vector) != SH_SUCCESS) {
 		shError("calc_trans_linear: can't solve for coeffs D,E,F ");
-		free_matrix(matrix, 3);
 		return (SH_GENERIC_ERROR);
 	}
 
@@ -4856,12 +4936,6 @@ TRANS *trans /* O: place solved coefficients into this */
 	trans->d = solved_f;
 	trans->e = solved_d;
 	trans->f = solved_e;
-
-	/*
-	 * and set the 'nr' field of the TRANS to the number of
-	 * matching objects
-	 */
-	trans->nr = nbright;
 
 	/*
 	 * free up memory we allocated for this function
@@ -5902,8 +5976,7 @@ double *vector /* I/O: vector which holds "b" values in input */
 	for (i = 0; i < num - 1; i++) {
 
 		/* pivot this row (if necessary) */
-		if (gauss_pivot(matrix, num, vector, biggest_val, i)
-				== SH_GENERIC_ERROR) {
+		if (gauss_pivot(matrix, num, vector, biggest_val, i) == SH_GENERIC_ERROR) {
 			shError("gauss_matrix: singular matrix");
 			shFree(biggest_val);
 			shFree(solution_vector);
@@ -6018,8 +6091,8 @@ int row /* I: want to pivot around this row */
 		printf("%9.4e ", biggest_val[i]);
 	}
 	printf("\n");
-	printf("  gauss_pivot: row %3d  %9.4e %9.4e %12.5e ", row, matrix[row][row],
-			biggest_val[row], big);
+	printf("  gauss_pivot: row %3d  %9.4e %9.4e %12.5e ",
+			row, matrix[row][row], biggest_val[row], big);
 #endif
 
 	for (i = row + 1; i < num; i++) {
@@ -6030,8 +6103,9 @@ int row /* I: want to pivot around this row */
 		}
 	}
 #ifdef DEBUG
-	printf("  pivot_row %3d  %9.4e %9.4e %12.5e ", pivot_row,
-			matrix[pivot_row][pivot_row], biggest_val[pivot_row], big);
+	printf("  pivot_row %3d  %9.4e %9.4e %12.5e ",
+			pivot_row, matrix[pivot_row][pivot_row],
+			biggest_val[pivot_row], big);
 #endif
 
 	/*
@@ -6131,10 +6205,11 @@ MEDTF *medtf /* O: we place results into this structure */
 		dx[i] = xdist;
 		dy[i] = ydist;
 #ifdef DEBUG
-		printf("  medtf:  %4d %4d  xa %7.4f  xb %7.4f   ya %7.4f  yb %7.4f\n",
-				A_star->id, B_star->id, (double) A_star->x, (double) B_star->x,
+		printf ("  medtf:  %4d %4d  xa %7.4f  xb %7.4f   ya %7.4f  yb %7.4f\n",
+				A_star->id, B_star->id,
+				(double) A_star->x, (double) B_star->x,
 				(double) A_star->y, (double) B_star->y);
-		printf("  medtf:  %4d   dx %7.4f  dy %7.4f \n", i, xdist, ydist);
+		printf ("  medtf:  %4d   dx %7.4f  dy %7.4f \n", i, xdist, ydist);
 #endif
 		Dx_sum += xdist;
 		Dy_sum += ydist;
@@ -6422,1831 +6497,5 @@ double *actual_angle_deg /* O: the measured rotation angle between */
 		return (1);
 	} else {
 		return (0);
-	}
-}
-
-/************************************************************************
- *
- *
- * ROUTINE: sort_triangle_by_yt
- *
- * DESCRIPTION:
- * Given an array of "num" s_triangle structures, sort it in order
- * of decreasing "yt" value (where "yt" is the ratio of lengths
- * of longest to shortest side)
- *
- * Calls the "compare_triangle_by_yt" function, below.
- *
- * RETURN:
- *    nothing
- *
- * </AUTO>
- */
-
-static void sort_triangle_by_yt(s_triangle *array, /* I: array of structures to be sorted */
-int num /* I: number of triangles in the array */
-) {
-	qsort((char *) array, num, sizeof(s_triangle),
-			(PFI) compare_triangle_by_yt);
-}
-
-/************************************************************************
- *
- *
- * ROUTINE: compare_triangle_by_yt
- *
- * DESCRIPTION:
- * Given two s_triangle structures, compare their "yt" values.
- * Used by "sort_triangle_by_yt".
- *
- * RETURN:
- *    1                  if first star has smaller "yt"
- *    0                  if the two have equal "yt"
- *   -1                  if the first has larger "yt"
- *
- * </AUTO>
- */
-
-static int compare_triangle_by_yt(s_triangle *triangle1, /* I: compare "yt" field of THIS triangle ... */
-s_triangle *triangle2 /* I:  ... with THIS triangle  */
-) {
-	shAssert((triangle1 != NULL) && (triangle2 != NULL));
-
-	if (triangle1->yt < triangle2->yt) {
-		return (1);
-	}
-	if (triangle1->yt > triangle2->yt) {
-		return (-1);
-	}
-	return (0);
-}
-
-/************************************************************************
- *
- *
- * ROUTINE: sort_triangle_by_D
- *
- * DESCRIPTION:
- * Given an array of "num" s_triangle structures, sort it in order
- * of decreasing "D" value (where "D" is the product of the
- * xt and yt fields)
- *
- * Calls the "compare_triangle_by_D" function, below.
- *
- * RETURN:
- *    nothing
- *
- * </AUTO>
- */
-
-static void sort_triangle_by_D(s_triangle *array, /* I: array of structures to be sorted */
-int num /* I: number of triangles in the array */
-) {
-	qsort((char *) array, num, sizeof(s_triangle), (PFI) compare_triangle_by_D);
-}
-
-/************************************************************************
- *
- *
- * ROUTINE: compare_triangle_by_D
- *
- * DESCRIPTION:
- * Given two s_triangle structures, compare their "D" values.
- * Used by "sort_triangle_by_D".
- *
- * RETURN:
- *    1                  if first star has smaller "D"
- *    0                  if the two have equal "D"
- *   -1                  if the first has larger "D"
- *
- * </AUTO>
- */
-
-static int compare_triangle_by_D(s_triangle *triangle1, /* I: compare "D" field of THIS triangle ... */
-s_triangle *triangle2 /* I:  ... with THIS triangle  */
-) {
-	shAssert((triangle1 != NULL) && (triangle2 != NULL));
-
-	if (triangle1->D < triangle2->D) {
-		return (1);
-	}
-	if (triangle1->D > triangle2->D) {
-		return (-1);
-	}
-	return (0);
-}
-
-/************************************************************************
- *
- *
- * ROUTINE: find_quick_match
- *
- * DESCRIPTION:
- * Given two arrays of triangles, and the arrays of stars that make
- * up each set of triangles, try to match up triangles in the two
- * arrays.  Triangles can be considered to match only when the
- * Euclidean distance in "triangle space", created from the two
- * coordinates "ba" and "ca", is within "max_radius".  That is,
- * for two triangles to match, we must satisfy
- *
- *     sqrt[ (t1.ba - t2.ba)^2 + (t1.ca - t2.ca)^2 ] <= max_radius
- *
- * Note that there may be more than one triangle from array A which
- * matches a particular triangle from array B!  That's okay --
- * we treat any 2 which satisfy the above equation as "matched".
- * We rely upon the "vote_array" to weed out false matches.
- *
- * If "min_scale" and "max_scale" are not both -1, then disallow
- * any match for which the
- * ratio of triangles (indicated by "a_length" members)
- * is outside the given values.
- *
- * If "rotation_deg" and "tolerance_deg" are not both AT_MATCH_NOANGLE,
- * then disallow any match for which the two triangles
- * are not oriented at an angle of "rotation_deg" degrees
- * relative to each other (with a tolerance of "tolerance_deg" degrees).
- *
- * For each pair of triangles that matches, increment
- * the "vote" in each "vote cell" for each pair of matching
- * vertices.
- *
- * RETURN:
- *           SH_SUCCESS            if a good match is found
- *           SH_GENERIC_FAILURE    if a good match is NOT found
- *
- * </AUTO>
- */
-
-static int find_quick_match(s_star *star_array_A, /* I: first array of stars */
-int num_stars_A, /* I: number of stars in star_array_A  */
-s_star *star_array_B, /* I: second array of stars */
-int num_stars_B, /* I: number of stars in star_array_B  */
-s_triangle *t_array_A, /* I: array of triangles from star_array_A */
-int num_triangles_A, /* I: number of triangles in t_array_A */
-s_triangle *t_array_B, /* I: array of triangles from star_array_B */
-int num_triangles_B, /* I: number of triangles in t_array_B */
-int nbright, /* I: consider at most this many stars */
-/*       from each array; also the size */
-/*       of the output "vote_matrix". */
-double star_match_radius, /* I: max radius in star-space allowed */
-/*       for 2 stars to be considered */
-/*       a matching pair. */
-double max_radius, /* I: max radius in triangle-space allowed */
-/*       for 2 triangles to be considered */
-/*       a matching pair. */
-int max_iterations, /* I: iterate at most this many times */
-/*       while refining the TRANS */
-double max_sigma, /* I: the stdev of matched pairs must be */
-/*       this small for successful match */
-double min_scale, /* I: minimum permitted relative scale factor */
-/*       if -1, any scale factor is allowed */
-double max_scale, /* I: maximum permitted relative scale factor */
-/*       if -1, any scale factor is allowed */
-double rotation_deg, /* I: desired relative angle of coord systems (deg) */
-/*       if AT_MATCH_NOANGLE, any orientation is allowed */
-double tolerance_deg, /* I: allowed range of orientation angles (deg) */
-/*       if AT_MATCH_NOANGLE, any orientation is allowed */
-int min_req_pairs, /* I: must have this many matched pairs */
-/*       of stars to count as successful match */
-TRANS *output_trans /* I/O: "order" field must be set on input */
-/*       other fields filled if success for output */
-) {
-	int i_triA;
-	int failure_flag;
-	struct s_triangle *triA, *triB;
-	struct s_star_coord *star_coord_array_B;
-
-#ifdef DEBUG
-	printf(" entering find_quick_match \n");
-#endif
-
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
-	shAssert(t_array_A != NULL);
-	shAssert(t_array_B != NULL);
-	shAssert(nbright > 0);
-	if (min_scale != -1) {
-		shAssert((max_scale != -1) && (min_scale <= max_scale));
-	}
-	if (max_scale != -1) {
-		shAssert((min_scale != -1) && (min_scale <= max_scale));
-	}
-
-	/*
-	 * It will increase efficiency later on
-	 *    (in apply_trans_and_find_matches) to have a
-	 *    way to access the elements of star_array_B
-	 *    in order of their "X" coordinates.
-	 */
-	{
-		int i;
-
-		star_coord_array_B = shMalloc(
-				sizeof(struct s_star_coord) * num_stars_B);
-		for (i = 0; i < num_stars_B; i++) {
-			star_coord_array_B[i].index = i;
-			star_coord_array_B[i].x = star_array_B[i].x;
-			star_coord_array_B[i].y = star_array_B[i].y;
-		}
-		sort_star_coord_by_x(star_coord_array_B, num_stars_B);
-#ifdef DEBUG2
-		printf("  here comes star_coord_array_B sorted by x \n");
-		for (i = 0; i < num_stars_B; i++) {
-			printf("   i %5d  index %5d  x %9.4e  y %9.4e \n", i,
-					star_coord_array_B[i].index, star_coord_array_B[i].x,
-					star_coord_array_B[i].y);
-		}
-#endif
-	}
-
-	/*
-	 * We walk through triangles in list A, which have been sorted by
-	 *    the values of D = dot product xt*yt.  In other words,
-	 *    we start checking the (rare) large triangles, since they
-	 *    are more likely to yield a match quickly.
-	 */
-#ifdef DEBUG2
-	printf("  find_quick_match: about to walk through A  %6d\n",
-			num_triangles_A);
-#endif
-	for (i_triA = 0; i_triA < num_triangles_A; i_triA++) {
-
-		int start_index, end_index, b_index;
-		double yt_eps;
-
-#ifdef DEBUG2
-		printf(" top of find_quick_match, i_triA = %6d \n", i_triA);
-#endif
-
-		triA = &(t_array_A[i_triA]);
-#ifdef DEBUG2
-		print_one_triangle(triA, star_array_A);
-#endif
-
-		/*
-		 * We want to search for a triangle in list B which
-		 *    matches triA.  We make a binary search
-		 *    inside the t_array_B using the "yt" values
-		 *    to choose the first and last triangle in
-		 *    t_array_B which could possibly be a
-		 *    match to triA.
-		 *
-		 * Note that we slide the index one element
-		 *    toward the extremes to make our
-		 *    starting and ending places definitely
-		 *    contain the region of interest.
-		 */
-		yt_eps = triA->yt * (AT_QUICK_YT_PERCENT * 0.01);
-		start_index = find_yt_triangle(t_array_B, num_triangles_B,
-				triA->yt + yt_eps);
-		if (start_index > 0) {
-			start_index--;
-		}
-		end_index = find_yt_triangle(t_array_B, num_triangles_B,
-				triA->yt - yt_eps);
-		if (end_index < (num_triangles_B - 1)) {
-			end_index++;
-		}
-#ifdef DEBUG2
-		printf("  find_quick_match: start_index %5d end_index %5d \n",
-				start_index, end_index);
-#endif
-
-		/*
-		 * Okay, we have a range of triangles in list B
-		 *    we can try to match to the current triA from
-		 *    list A.
-		 *
-		 */
-		for (b_index = start_index; b_index <= end_index; b_index++) {
-			double ba_diff, ca_diff, cb_diff;
-			double actual_angle_deg, ratio;
-
-			triB = &(t_array_B[b_index]);
-#ifdef DEBUG2
-			printf("      i_triA is %6d, looking at triangle B %5d \n", i_triA,
-					triB->id);
-#endif
-
-			ba_diff = triA->ba - triB->ba;
-			if (fabs(ba_diff) > AT_QUICK_RATIO_DIFF) {
-#ifdef DEBUG2
-				printf(
-						"  find_quick_match: ba values %9.4e %9.4e diff %6.3f > %6.3f \n",
-						triA->ba, triB->ba, ba_diff, AT_QUICK_RATIO_DIFF);
-#endif
-				continue;
-			}
-			ca_diff = triA->ca - triB->ca;
-			if (fabs(ca_diff) > AT_QUICK_RATIO_DIFF) {
-#ifdef DEBUG2
-				printf(
-						"  find_quick_match: ca values %9.4e %9.4e diff %6.3f > %6.3f \n",
-						triA->ca, triB->ca, ca_diff, AT_QUICK_RATIO_DIFF);
-#endif
-				continue;
-			}
-			cb_diff = triA->cb - triB->cb;
-			if (fabs(cb_diff) > AT_QUICK_RATIO_DIFF) {
-#ifdef DEBUG2
-				printf(
-						"  find_quick_match: cb values %9.4e %9.4e diff %6.3f > %6.3f \n",
-						triA->cb, triB->cb, cb_diff, AT_QUICK_RATIO_DIFF);
-#endif
-				continue;
-			}
-#ifdef DEBUG2
-			printf("  find_quick_match: good match for A %5d B %5d \n",
-					triA->id, triB->id);
-#endif
-
-			/*
-			 * check the relative orientations of the triangles.
-			 * If they don't match the desired rotation angle,
-			 * discard this match.
-			 */
-			if (rotation_deg != AT_MATCH_NOANGLE) {
-				if (is_desired_rotation(triA, triB, rotation_deg, tolerance_deg,
-						&actual_angle_deg) == 0) {
-#ifdef DEBUG2
-					printf(
-							"  find_quick_match: bad angle %lf is not desired %lf \n",
-							actual_angle_deg, rotation_deg);
-#endif
-					continue;
-				}
-			}
-
-			/*
-			 * check the ratio of lengths of side "a", and discard this
-			 * candidate if it is outside the allowed range
-			 */
-			if (min_scale != -1) {
-				ratio = triA->a_length / triB->a_length;
-				if (ratio < min_scale || ratio > max_scale) {
-#ifdef DEBUG2
-					printf(
-							"  find_quick_match: bad scale %lf is outside %lf  %lf \n",
-							ratio, min_scale, max_scale);
-#endif
-					continue;
-				}
-			}
-
-#ifdef DEBUG2
-			printf("  find_quick_match: match found for A %5d = B %5d \n",
-					triA->id, triB->id);
-#endif
-
-			/*
-			 * now we are going to put these two triangles to
-			 *    more stringent tests
-			 *        triA   =   pointer to triangle in list A
-			 *        triB   =   pointer to MATCHING triangle in list B
-			 */
-
-			/*
-			 * okay, we have a pair of triangles which match.
-			 * This might be a "true" match, which reveals the actual
-			 * transformation between the two coordinate systems;
-			 * or it might be an unlucky false match.
-			 *
-			 * To determine if this is a "true" match, we will
-			 *
-			 *    a) use the 3 stars in each triangle to compute
-			 *         a linear TRANS between the two coord systems
-			 *
-			 *    b) apply the TRANS to all stars in the two lists
-			 *
-			 *    c) count the number of stars which end up matching
-			 *         in the transformed lists as a result.
-			 */
-
-			failure_flag = 0;
-
-			/*
-			 * the "winner_index" arrays give the ID numbers of
-			 *   corresponding stars from each list.
-			 */
-			{
-				int *winner_index_A, *winner_index_B;
-				int nbright;
-				int *winner_votes, num_winners = 0;
-				TRANS *test_trans;
-
-				/*
-				 * right now, we'll only need 3 elements for these
-				 *   arrays, but later on in this routine, we'll
-				 *   need enough space for every star in each list.
-				 */
-				winner_index_A = shMalloc(num_stars_A * sizeof(int));
-				winner_index_B = shMalloc(num_stars_B * sizeof(int));
-				if (num_stars_A > num_stars_B) {
-					winner_votes = shMalloc(num_stars_A * sizeof(int));
-				} else {
-					winner_votes = shMalloc(num_stars_B * sizeof(int));
-				}
-
-				winner_index_A[0] = triA->a_index;
-				winner_index_A[1] = triA->b_index;
-				winner_index_A[2] = triA->c_index;
-				winner_index_B[0] = triB->a_index;
-				winner_index_B[1] = triB->b_index;
-				winner_index_B[2] = triB->c_index;
-				nbright = 3;
-#ifdef DEBUG2
-				printf("  list A stars %5d=%-5d %5d=%-5d %5d=%-5d \n",
-						winner_index_A[0], star_array_A[winner_index_A[0]].id,
-						winner_index_A[1], star_array_A[winner_index_A[1]].id,
-						winner_index_A[2], star_array_A[winner_index_A[2]].id);
-				printf("  list B stars %5d=%-5d %5d=%-5d %5d=%-5d \n",
-						winner_index_B[0], star_array_B[winner_index_B[0]].id,
-						winner_index_B[1], star_array_B[winner_index_B[1]].id,
-						winner_index_B[2], star_array_B[winner_index_B[2]].id);
-#endif
-
-				/* we create a linear TRANS just for this test */
-				test_trans = atTransNew();
-				test_trans->order = AT_TRANS_LINEAR;
-
-				/*
-				 * we iterate the following process:
-				 *
-				 *    1. find a TRANS
-				 *    2. apply TRANS to all stars, and look for matches
-				 *          (and then prune poor matches)
-				 *    3. compute statistics of the matched pairs
-				 *    4. decide whether to quit or continue
-				 *       4a.   quit, or
-				 *       4b.   go to step 1
-				 */
-				{
-					int iter, num_iter;
-
-					num_iter = max_iterations;
-
-					for (iter = 0; iter < num_iter; iter++) {
-
-						if (calc_trans(nbright, star_array_A, num_stars_A,
-								star_array_B, num_stars_B, winner_votes,
-								&(winner_index_A[0]), &(winner_index_B[0]),
-								test_trans) != SH_SUCCESS) {
-#ifdef DEBUG
-							printf(
-									"find_quick_match: iter %3d, calc_trans fails",
-									iter);
-#endif
-							failure_flag = 1;
-							break;
-						}
-#ifdef DEBUG2
-						printf("  find_quick_match: calc_trans succeeds \n");
-						print_trans(test_trans);
-#endif
-
-						/*
-						 * Does this TRANS satisfy the constraints on scale
-						 * and rotation angle which the user specified?
-						 * If no, we discard this TRANS and start all over.
-						 */
-						if (check_trans_properties(test_trans, min_scale,
-								max_scale, rotation_deg, tolerance_deg)
-								!= SH_SUCCESS) {
-#ifdef DEBUG2
-							printf(
-									"check_trans_properties fails, so give up on this TRANS \n");
-#endif
-							failure_flag = 1;
-							break;
-						}
-
-						/*
-						 * Is this really a good TRANS?  To find out, we apply
-						 * it to all the stars in list A, then check to see how
-						 * many match with stars in list B.
-						 *
-						 * After running "apply_trans_and_find_matches()",
-						 *    a) the number of matching pairs will be set
-						 *          in the "num_winners" variable
-						 *    b) the indices of matching pairs
-						 *          from each list will be set in
-						 *          the "winner_index_A[]" and
-						 *          "winner_index_B[[]" arrays
-						 */
-
-#ifdef DEBUG2
-						printf(
-								"  before apply_trans_and_find_matches, num_stars_B %5d \n",
-								num_stars_B);
-#endif
-						if (apply_trans_and_find_matches(star_array_A,
-								num_stars_A, star_array_B, num_stars_B,
-								star_coord_array_B, star_match_radius,
-								test_trans, &num_winners, &(winner_index_A[0]),
-								&(winner_index_B[0])) != SH_SUCCESS) {
-#ifdef DEBUG2
-							printf("apply_trans_and_find_matches fails \n");
-#endif
-						} else {
-#ifdef DEBUG2
-							printf("apply_trans_and_find_matches succeeds \n");
-							printf("   num_winners = %5d \n", num_winners);
-#endif
-
-						}
-#ifdef DEBUG2
-						printf(
-								"  after  apply_trans_and_find_matches, num_stars_B %5d \n",
-								num_stars_B);
-#endif
-
-						nbright = num_winners;
-
-						/* evaluate the quality of the matches given by this TRANS */
-						if (eval_trans_quality(star_array_A, num_stars_A,
-								star_array_B, num_stars_B, star_match_radius,
-								test_trans) != SH_SUCCESS) {
-							printf("eval_trans_quality fails ?!\n");
-							return (SH_GENERIC_ERROR);
-						}
-#ifdef DEBUG
-						printf(" after iter %2d, here comes TRANS \n", iter);
-						print_trans(test_trans);
-#endif
-
-						/*
-						 * at this point, we could could eliminate
-						 * some of the matching pairs
-						 */
-
-						/*
-						 * we used a linear TRANS for the initial comparison of stars,
-						 * but if the user requested a higher-order TRANS, we now
-						 * switch to using that higher-order for all subsequent
-						 * iterations.
-						 */
-						if (output_trans->order != AT_TRANS_LINEAR) {
-#ifdef DEBUG2
-							printf(
-									"   iter %d: switching from order 1 to order %d  \n",
-									iter, output_trans->order);
-#endif
-							test_trans->order = output_trans->order;
-						}
-
-					} /* end of loop over iterations of calc_trans/apply_trans */
-
-				}
-
-				if (failure_flag == 1) {
-					continue;
-				}
-
-				/* we should check here to see if "num_winners" is high enough ... */
-
-				// nbright = num_winners;
-
-				/*
-				 * At this point, we have created the best TRANS we can, starting
-				 * with the current pair of triangles.  The question is "is the
-				 * TRANS good enough for us to declare success and return?"
-				 *
-				 *    If the answer is yes, we break out of loop, return
-				 *    If no, we keep walking through the list of triangles,
-				 *           looking for another pair of matching triangles
-				 *           to serve as a starting point.
-				 */
-				if (is_trans_good_enough(min_req_pairs, max_sigma, test_trans)
-						== SH_SUCCESS) {
-#ifdef DEBUG2
-					printf(" is_trans_good_enough returns yes \n");
-#endif
-
-					/* make sure the TRANS has proper scale and rotation */
-					if (check_trans_properties(test_trans, min_scale, max_scale,
-							rotation_deg, tolerance_deg) == SH_SUCCESS) {
-
-						/* yes!  It's good enough! */
-
-						/* assign the properties of the test_trans to output_trans */
-						copyTrans(test_trans, output_trans);
-
-						/* and return immediately -- no need to look for better matches */
-						return (SH_SUCCESS);
-
-					} else {
-#ifdef DEBUG2
-						printf(
-								" but check_trans_properties fails, so give up on this TRANS \n");
-#endif
-					}
-				} else {
-#ifdef DEBUG2
-					printf(" is_trans_good_enough returns no \n");
-#endif
-				}
-
-			}
-
-		} /* end of loop over all triangles in B list */
-
-	} /* end of loop over all triangles in A list */
-
-	/* if we reach this point, we did NOT find a good match */
-	return (SH_GENERIC_ERROR);
-}
-
-/************************************************************************
- *
- *
- * ROUTINE: find_yt_triangle
- *
- * DESCRIPTION:
- * Given an array of "num" s_triangle structures, which have already
- * been sorted in order of DEcreasing "yt" value, and given one
- * particular "yt" value yt0, return the index of the first triangle
- * in the array which has "yt" <= yt0.
- *
- * We use a binary search, on the "yt" element of each structure.
- *
- * If there is no such triangle, just return the index of the last
- * triangle in the list.
- *
- * RETURN:
- *    index of closest triangle in array         if all goes well
- *    index of last triangle in array            if nothing close
- *
- * </AUTO>
- */
-
-static int find_yt_triangle(s_triangle *array, /* I: array of structures which been sorted */
-int num, /* I: number of triangles in the array */
-double yt0 /* I: value of "yt" we seek */
-) {
-	int top, bottom, mid;
-
-#ifdef DEBUG2
-	printf("find_yt_triangle: looking for yt = %10.2f\n", yt0);
-#endif
-
-	top = 0;
-	if ((bottom = num - 1) < 0) {
-		bottom = 0;
-	}
-
-	while (bottom - top > 1) {
-		mid = (top + bottom) / 2;
-#ifdef DEBUG2
-		printf(
-				" array[%4d] yt=%10.2f   array[%4d] yt=%10.2f  array[%4d] yt=%10.2f\n",
-				top, array[top].yt, mid, array[mid].yt, bottom,
-				array[bottom].yt);
-#endif
-		if (array[mid].yt > yt0) {
-			top = mid;
-		} else {
-			bottom = mid;
-		}
-	}
-#ifdef DEBUG2
-	printf(
-			" array[%4d] yt=%10.2f                              array[%4d] yt=%10.2f\n",
-			top, array[top].yt, bottom, array[bottom].yt);
-#endif
-
-	/*
-	 * if we get here, then the item we seek is either "top" or "bottom"
-	 * (which may point to the same item in the array).
-	 */
-	if (array[top].yt > yt0) {
-#ifdef DEBUG2
-		printf(" returning array[%4d] yt=%10.2f \n", bottom, array[bottom].yt);
-#endif
-		return (bottom);
-	} else {
-#ifdef DEBUG2
-		printf(" returning array[%4d] yt=%10.2f \n", top, array[top].yt);
-#endif
-		return (top);
-	}
-}
-
-/************************************************************************
- *
- *
- * ROUTINE: apply_trans_and_find_matches
- *
- * DESCRIPTION:
- * We already have a candidate TRANS structures that takes coords of
- * objects in set A and transforms to coords of objects in set B.
- * We want to find out if this TRANS is really a good one.
- * The basic idea is: apply the TRANS to all objects in list A,
- * check to see how many match an object in list B.
- *
- * In order to speed up the checks for matches, we create
- * a copy of the stars in list B and sort the copy by
- * the "x" coordinate.  As we walk through the list of
- * transformed stars from list A, we can use a binary
- * search by their "x" coordinate to pick out the small
- * subset of stars in list B which might be matches.
- *
- * When we do find a matching pair of stars, we
- *
- *   a) increment "num_winners"
- *
- *   b) set elements of the "winner_index_A[]"
- *         and "winner_index_B[]" arrays to contain
- *         the indices of the two stars.  The index
- *         for list B refers to the original list B,
- *         not the one we've sorted by "x" coord.
- *
- *
- * RETURNS:
- *   SH_SUCCESS          if no errors occur
- *   SH_GENERIC_ERROR    if something goes wrong
- *
- * </AUTO>
- */
-
-static int apply_trans_and_find_matches(s_star *star_array_A, /* I: first array of s_star structure we match */
-/*      the TRANS takes their coords */
-/*      into those of array B */
-int num_stars_A, /* I: total number of stars in star_array_A */
-s_star *star_array_B, /* I: second array of s_star structure we match */
-int num_stars_B, /* I: total number of stars in star_array_B */
-s_star_coord *sorted_B, /* I: elements of star_array_B which have been */
-/*      sorted by the "x" coordinate value */
-double star_match_radius, /* I: max distance in star-space for two */
-/*      stars to be considered a match */
-TRANS *trans, /* I: use this TRANS to transform coords of */
-/*      stars in list A to system of B */
-int *num_winners, /* O: number of matching pairs we find */
-int *winner_index_A, /* O: index into "star_array_A" of stars */
-/*      which are part of a matched pair */
-int *winner_index_B /* O: index into "star_array_B" of stars */
-/*      which are part of a matched pair */
-) {
-	int i, j;
-	int num_matched;
-	int closest_B_index;
-	double star_match_radius_sq, closest_dist_sq;
-	double mean, stdev;
-	s_star *star_A, *star_B;
-	s_star *transformed_star_array_A;
-
-#ifdef DEBUG2
-	int start_index, end_index;
-	printf("entering apply_trans_and_find_matches \n");
-#endif
-
-	num_matched = 0;
-	star_match_radius_sq = star_match_radius * star_match_radius;
-
-	/*
-	 * create a copy of stars in list A
-	 *    and apply the TRANS to them
-	 */
-	transformed_star_array_A = shMalloc(sizeof(s_star) * num_stars_A);
-	copy_star_array(star_array_A, transformed_star_array_A, num_stars_A);
-	if (apply_trans(transformed_star_array_A, num_stars_A, trans)
-			!= SH_SUCCESS) {
-		shError("apply_trans_and_find_matches: apply_trans fails on list A");
-		return (SH_GENERIC_ERROR);
-	}
-
-	/* walk through the list of all stars in transformed list */
-	for (i = 0; i < num_stars_A; i++) {
-
-		int start_sc_index, end_sc_index;
-		double x;
-
-		star_A = &(transformed_star_array_A[i]);
-#ifdef DEBUG2
-		printf("  star A has x %9.4e \n", star_A->x);
-#endif
-
-		/*
-		 * use binary search to locate starting and ending
-		 *     elements we need to check for matches in list B
-		 */
-		x = star_A->x - star_match_radius;
-		start_sc_index = find_star_coord_by_x(sorted_B, num_stars_B, x);
-		if (start_sc_index > 0) {
-			start_sc_index--;
-		}
-#ifdef DEBUG2
-		start_index = sorted_B[start_sc_index].index;
-#endif
-
-		x = star_A->x + star_match_radius;
-		end_sc_index = find_star_coord_by_x(sorted_B, num_stars_B, x);
-		if (end_sc_index < num_stars_B - 1) {
-			end_sc_index++;
-		}
-
-#ifdef DEBUG2
-		end_index = sorted_B[end_sc_index].index;
-		printf(
-				"    start_index %5d %5d  x %9.4e   end_index %5d %5d x %9.4e \n",
-				start_sc_index, start_index, star_array_B[start_index].x,
-				end_sc_index, end_index, star_array_B[end_index].x);
-#endif
-
-		/*
-		 * now go through all the stars in sorted list B which lie in the range
-		 *   of possible matches to star A.  Find the star in sorted list B
-		 *   which is closest to star A, and set the "closest_B_index"
-		 *   value to its index in star_array_B[].
-		 */
-		closest_B_index = -1;
-		closest_dist_sq = star_match_radius_sq * 2;
-		for (j = start_sc_index; j <= end_sc_index; j++) {
-
-			double dx, dy, distsq;
-
-			star_B = &(star_array_B[sorted_B[j].index]);
-#ifdef DEBUG
-			printf("     star_B is index %5d \n", j);
-#endif
-
-			dx = fabs(star_A->x - star_B->x);
-			if (dx > star_match_radius) {
-#ifdef DEBUG
-				printf("      dx %11.4f > %11.4f so go to next B \n", dx,
-						star_match_radius);
-#endif
-				continue;
-			}
-
-			dy = star_A->y - star_B->y;
-			distsq = dx * dx + dy * dy;
-			if (distsq < closest_dist_sq) {
-#ifdef DEBUG2
-				printf("      new closest distsq %11.4e \n", distsq);
-#endif
-				closest_dist_sq = distsq;
-				closest_B_index = sorted_B[j].index;
-			}
-		}
-
-		/*
-		 * now, check to see if the closest star was within the
-		 *    star_match_radius.  If yes, we have a match;
-		 *    If not, we have no match.
-		 */
-		if (closest_dist_sq < star_match_radius_sq) {
-#ifdef DEBUG2
-			printf("       good match: star A %5d B %5d  dist %11.4e \n", i, j,
-					sqrt(closest_dist_sq));
-#endif
-			winner_index_A[num_matched] = i;
-			winner_index_B[num_matched] = closest_B_index;
-			num_matched++;
-		} else {
-#ifdef DEBUG2
-			printf("       no   match: star A %5d  min dist %11.4e \n", i,
-					sqrt(closest_dist_sq));
-#endif
-		}
-
-	}
-
-#ifdef DEBUG2
-	printf("  apply_trans_and_find_matches: %5d matches  ", num_matched);
-#endif
-
-	*num_winners = num_matched;
-
-	{
-
-		/*
-		 * compute the mean and stdev of distance between stars
-		 * in the matched pairs
-		 */
-		if (compute_match_distance_stats(transformed_star_array_A, num_stars_A,
-				star_array_B, num_stars_B, num_matched, winner_index_A,
-				winner_index_B, &mean, &stdev) != 0) {
-			printf(
-					"apply_trans_and_find_matches: compute_match_distance_stats fails \n");
-			return (SH_GENERIC_ERROR);
-		}
-
-		/*
-		 * discard pairs which have separations more than
-		 * 3 sigma from the mean separation
-		 */
-		double critical_distance = mean + 3 * stdev;
-		int remaining_pairs;
-
-		if (prune_matched_pairs(transformed_star_array_A, num_stars_A,
-				star_array_B, num_stars_B, num_matched, winner_index_A,
-				winner_index_B, critical_distance, &remaining_pairs) != 0) {
-#ifdef DEBUG
-			printf(
-					"apply_trans_and_find_matches: prune_matched_pairs fails \n");
-#endif
-			return (SH_GENERIC_ERROR);
-		} else {
-#ifdef DEBUG
-			printf("  after pruning, %d pairs remain \n", remaining_pairs);
-#endif
-		}
-
-		*num_winners = remaining_pairs;
-
-	}
-
-	return (SH_SUCCESS);
-}
-
-/************************************************************************
- *
- *
- * ROUTINE: sort_star_coord_by_x
- *
- * DESCRIPTION:
- * Given an array of "num" s_star_coord structures, sort it in order
- * of increasing "x" values.
- *
- * Calls the "compare_star_coord_by_x" function, below.
- *
- * RETURN:
- *    nothing
- *
- * </AUTO>
- */
-
-static void sort_star_coord_by_x(s_star_coord *array, /* I: array of structures to be sorted */
-int num /* I: number of stars in the array */
-) {
-	qsort((char *) array, num, sizeof(s_star_coord),
-			(PFI) compare_star_coord_by_x);
-}
-
-/************************************************************************
- *
- *
- * ROUTINE: compare_star_coord_by_x
- *
- * DESCRIPTION:
- * Given two s_star_coord structures, compare their "x" values.
- * Used by "sort_star_coord_by_x".
- *
- * RETURN:
- *    1                  if first star has larger "x"
- *    0                  if the two have equal "x"
- *   -1                  if the first has smaller "x"
- *
- * </AUTO>
- */
-
-static int compare_star_coord_by_x(s_star_coord *star1, /* I: compare "x" field of THIS star ... */
-s_star_coord *star2 /* I:  ... with THIS star  */
-) {
-	shAssert((star1 != NULL) && (star2 != NULL));
-
-	if (star1->x > star2->x) {
-		return (1);
-	}
-	if (star1->x < star2->x) {
-		return (-1);
-	}
-	return (0);
-}
-
-/************************************************************************
- *
- *
- * ROUTINE: find_star_coord_by_x
- *
- * DESCRIPTION:
- * Given an array of "num" s_star_coord structures, which have already
- * been sorted in order of increasing "x" value, and given one
- * particular "x" value x0, return the "index" value of the first star
- * in the array which has "x" >= x0.
- *
- * We use a binary search, on the "x" element of each structure.
- *
- * If there is no such star, just return the index of the last
- * star in the list.
- *
- * RETURN:
- *    index of closest star_coord in array         if all goes well
- *    index of last star_coord in array            if nothing close
- *
- * </AUTO>
- */
-
-static int find_star_coord_by_x(s_star_coord *array, /* I: array of structures which been sorted */
-int num, /* I: number of elements in the array */
-double x0 /* I: value of "x" we seek */
-) {
-	int top, bottom, mid;
-
-#ifdef DEBUG3
-	printf("find_star_coord_by_x: looking for x = %11.4e\n", x0);
-#endif
-
-	top = 0;
-	if ((bottom = num - 1) < 0) {
-		bottom = 0;
-	}
-
-	while (bottom - top > 1) {
-		mid = (top + bottom) / 2;
-#ifdef DEBUG3
-		printf(
-				" array[%4d] x=%11.4e   array[%4d] x=%11.4e  array[%4d] x=%11.4e\n",
-				top, array[top].x, mid, array[mid].x, bottom, array[bottom].x);
-#endif
-		if (array[mid].x < x0) {
-			top = mid;
-		} else {
-			bottom = mid;
-		}
-	}
-#ifdef DEBUG3
-	printf(" array[%4d] x=%11.4e                       array[%4d] x=%11.4e\n",
-			top, array[top].x, bottom, array[bottom].x);
-#endif
-
-	/*
-	 * if we get here, then the item we seek is either "top" or "bottom"
-	 * (which may point to the same item in the array).
-	 */
-	if (array[top].x < x0) {
-#ifdef DEBUG3
-		printf(" returning array[%4d] x=%11.4e \n", bottom, array[bottom].x);
-#endif
-		return (bottom);
-	} else {
-#ifdef DEBUG3
-		printf(" returning array[%4d] x=%11.4e \n", top, array[top].x);
-#endif
-		return (top);
-	}
-}
-
-/************************************************************************
- * ROUTINE: compute_match_distance_stats
- *
- * DESCRIPTION:
- * Given two arrays of "num_matches" elements, which are the indices
- * of corresponding stars in lists A and B, go through the list and
- * for each pair
- *
- *    a) compute the distance between the stars
- *    b) add to running sums of distance and distance-squared
- *
- * so that we can can in the end compute the mean and standard
- * deviation of the distances between stars.
- *
- * Note that the stars in list A must have been TRANSformed
- * into the coordinate system of list B _before_ they are passed
- * to this routine.
- *
- * Place the mean and stdev values into the output arguments.
- *
- * RETURN:
- *    SH_SUCCESS                 if all goes well
- *    SH_GENERIC_ERROR           if an error occurs
- *
- * </AUTO>
- */
-
-static int compute_match_distance_stats(s_star *star_array_A, /* I: first array of stars */
-int num_stars_A, /* I: number of stars in star_array_A  */
-s_star *star_array_B, /* I: second array of stars */
-int num_stars_B, /* I: number of stars in star_array_B  */
-int num_matches, /* I: number of matched pairs of stars */
-int *match_index_A, /* I: array with indices of stars in list A */
-int *match_index_B, /* I: array with indices of stars in list B */
-double *mean, /* O: mean distance between matched stars */
-double *stdev /* O: stdev of distance between matched stars */
-) {
-	int i;
-	double sum, sumsq;
-
-#ifdef DEBUG2
-	printf("entering compute_match_distance_stats \n");
-#endif
-
-	/* sanity checks */
-	if (num_matches < 1) {
-		shError(
-				"compute_match_distance_stats: given invalid num_matches = %d \n",
-				num_matches);
-		return (SH_GENERIC_ERROR);
-	}
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
-	shAssert(match_index_A != NULL);
-	shAssert(match_index_B != NULL);
-
-	sum = 0;
-	sumsq = 0;
-
-	for (i = 0; i < num_matches; i++) {
-		double dx, dy, dist, distsq;
-		s_star *star_A, *star_B;
-
-		star_A = &(star_array_A[match_index_A[i]]);
-		shAssert(star_A != NULL);
-		star_B = &(star_array_B[match_index_B[i]]);
-		shAssert(star_B != NULL);
-
-		dx = star_A->x - star_B->x;
-		dy = star_A->y - star_B->y;
-		distsq = (dx * dx + dy * dy);
-		dist = sqrt(distsq);
-
-		sum += dist;
-		sumsq += distsq;
-#ifdef DEBUG2
-		printf("    i %5d  dx %9.4e dy %9.4e  dist %9.4e  sum %9.4e \n", i, dx,
-				dy, dist, sum);
-#endif
-	}
-
-	*mean = sum / num_matches;
-	if (num_matches > 1) {
-		*stdev = sqrt(
-				(sumsq - num_matches * (*mean) * (*mean)) / (num_matches - 1));
-	} else {
-		*stdev = 0.0;
-	}
-#ifdef DEBUG
-	printf("compute_match_distance_stats: num %5d mean %9.4e stdev %9.4e \n",
-			num_matches, *mean, *stdev);
-#endif
-
-	return (SH_SUCCESS);
-}
-
-/************************************************************************
- * ROUTINE: prune_matched_pairs
- *
- * DESCRIPTION:
- * Given two arrays of "num_matches" elements, which are the indices
- * of corresponding stars in lists A and B, and given some critical
- * matching distance, go through the list of matches and
- * for each pair
- *
- *    a) compute the distance between the stars
- *    b) if the distance is larger than the critical distance,
- *           discard the pair from the list
- *
- * We will modify the elements of the "match_index_A" and "match_index_B"
- * arrays.
- *
- * Place the number of remaining matched pairs into the
- * "remaining_pairs" output argument.
- *
- * RETURN:
- *    SH_SUCCESS                 if all goes well
- *    SH_GENERIC_ERROR           if an error occurs
- *
- * </AUTO>
- */
-
-static int prune_matched_pairs(s_star *star_array_A, /* I: first array of stars */
-int num_stars_A, /* I: number of stars in star_array_A  */
-s_star *star_array_B, /* I: second array of stars */
-int num_stars_B, /* I: number of stars in star_array_B  */
-int num_matches, /* I: number of matched pairs of stars */
-int *match_index_A, /* I/O: array with indices of stars in list A */
-int *match_index_B, /* I/O: array with indices of stars in list B */
-double critical_distance, /* I: discard pairs which differ by more */
-/*       than this distance */
-int *remaining_pairs /* O: number of remaining matched pairs */
-) {
-	int i, current_num_matches;
-
-#ifdef DEBUG2
-	printf("entering prune_matched_pairs \n");
-#endif
-
-	/* sanity checks */
-	if (num_matches < 1) {
-		shError("prune_matched_pairs: given invalid num_matches = %d \n",
-				num_matches);
-		return (SH_GENERIC_ERROR);
-	}
-	current_num_matches = num_matches;
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
-	shAssert(match_index_A != NULL);
-	shAssert(match_index_B != NULL);
-
-	for (i = 0; i < current_num_matches; i++) {
-		double dx, dy, dist, distsq;
-		s_star *star_A, *star_B;
-
-		star_A = &(star_array_A[match_index_A[i]]);
-		shAssert(star_A != NULL);
-		star_B = &(star_array_B[match_index_B[i]]);
-		shAssert(star_B != NULL);
-
-		dx = star_A->x - star_B->x;
-		dy = star_A->y - star_B->y;
-		distsq = (dx * dx + dy * dy);
-		dist = sqrt(distsq);
-
-		if (dist > critical_distance) {
-			int j;
-
-#ifdef DEBUG2
-			printf("  going to remove pair i=%5d  with dist %9.4e > %9.4e \n",
-					i, dist, critical_distance);
-#endif
-
-			for (j = i; j < current_num_matches - 1; j++) {
-#ifdef DEBUG2
-				printf("   shift match_index_A[%3d] from %5d to %5d \n", j,
-						match_index_A[j], match_index_A[j + 1]);
-				printf("   shift match_index_B[%3d] from %5d to %5d \n", j,
-						match_index_B[j], match_index_B[j + 1]);
-#endif
-				match_index_A[j] = match_index_A[j + 1];
-				match_index_B[j] = match_index_B[j + 1];
-			}
-			current_num_matches--;
-			i--;
-		}
-	}
-
-#ifdef DEBUG
-	printf("compute_match_distance_stats: %5d pairs remain from %5d \n",
-			current_num_matches, num_matches);
-	for (i = 0; i < current_num_matches; i++) {
-		double dx, dy, dist, distsq;
-		s_star *star_A, *star_B;
-
-		star_A = &(star_array_A[match_index_A[i]]);
-		shAssert(star_A != NULL);
-		star_B = &(star_array_B[match_index_B[i]]);
-		shAssert(star_B != NULL);
-
-		dx = star_A->x - star_B->x;
-		dy = star_A->y - star_B->y;
-		distsq = (dx * dx + dy * dy);
-		dist = sqrt(distsq);
-
-		if (dist > critical_distance) {
-			shFatal(
-					"prune_matched_pairs: pruned pair %5d has dist %9.4e > %9.4d ?! \n",
-					i, dist, critical_distance);
-		}
-
-		printf("  pair %5d has dist %9.4e  < %9.4e \n", i, dist,
-				critical_distance);
-	}
-
-#endif
-
-	*remaining_pairs = current_num_matches;
-
-	return (SH_SUCCESS);
-}
-
-/************************************************************************
- * ROUTINE: eval_trans_quality
- *
- * DESCRIPTION:
- * Given two lists of stars, A and B, each in its own coordinate system,
- * a matching radius, and a TRANS, we
- *
- *       1) apply the TRANS to all objects in list A, creating
- *              a temporary copy of the list with new coords in system B
- *
- *       2) create an auxiliary array of objects in list B,
- *              sorted by X coord (to speed up matching)
- *
- *       3) walk through list A, searching for matches in list B;
- *              if find several, keep only the closest one
- *
- *       4) compute statistics from the matching pairs
- *
- *       5) set fields in the TRANS to hold these statistics
- *              Nm = number of items within matching radius
- *              sig = stdev of total differences in position of matched pairs
- *              sx = stdev of differences in x position of matched pairs
- *              sy = stdev of differences in y position of matched pairs
- *
- * RETURN:
- *    SH_SUCCESS                 if all goes well
- *    SH_GENERIC_ERROR           if an error occurs
- *
- * </AUTO>
- */
-
-static int eval_trans_quality(s_star *star_array_A, /* I: first array of stars */
-int num_stars_A, /* I: number of stars in star_array_A  */
-s_star *star_array_B, /* I: second array of stars */
-int num_stars_B, /* I: number of stars in star_array_B  */
-double star_match_radius, /* I: count as "matches" stars within this */
-/*       distance, in units of list B */
-TRANS *trans /* I/O: apply this trans to object in a list A */
-/*       and set its fields with statistics */
-/*       of the matched pairs on output */
-) {
-	int i, num_matched, num_possible_matches;
-	int *matched_index_A, *matched_index_B;
-	struct s_star *transformed_star_array_A;
-	struct s_star_coord *star_coord_array_B;
-
-#ifdef DEBUG2
-	printf("entering eval_trans_quality \n");
-	printf("    star_match_radius is %9.4e \n", star_match_radius);
-#endif
-
-	/* sanity checks */
-	if (num_stars_A < 1) {
-		shError("eval_trans_quality: given invalid num_stars_A = %d \n",
-				num_stars_A);
-		return (SH_GENERIC_ERROR);
-	}
-	if (num_stars_B < 1) {
-		shError("eval_trans_quality: given invalid num_stars_B = %d \n",
-				num_stars_B);
-		return (SH_GENERIC_ERROR);
-	}
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
-	shAssert(trans != NULL);
-
-	/*
-	 * step 0: allocate space for arrays which will hold indices
-	 *         of the elements of each match we find
-	 */
-	num_possible_matches = (
-			num_stars_A > num_stars_B ? num_stars_A : num_stars_B);
-	matched_index_A = shMalloc(num_possible_matches * sizeof(int));
-	matched_index_B = shMalloc(num_possible_matches * sizeof(int));
-
-	/*
-	 * step 1: create a copy of star list A, which we then transform
-	 *         into the coords of list B using the given TRANS
-	 */
-#if 0
-	printf(" A: trans order is %d \n", trans->order);
-#endif
-	transformed_star_array_A = shMalloc(sizeof(struct s_star) * num_stars_A);
-#if 0
-	printf(" B: trans order is %d \n", trans->order);
-#endif
-	copy_star_array(star_array_A, transformed_star_array_A, num_stars_A);
-#if 0
-	printf(" C: trans order is %d \n", trans->order);
-#endif
-	if (apply_trans(transformed_star_array_A, num_stars_A, trans)
-			!= SH_SUCCESS) {
-		shError("eval_trans_quality: apply_trans fails \n");
-		return (SH_GENERIC_ERROR);
-	}
-
-	/*
-	 * step 2: create an auxiliary array of star_coord structures for
-	 *         the objects in list B, and then sort that array by
-	 *         'x' coordinate.  This will speed up matching in next step.
-	 */
-	star_coord_array_B = shMalloc(sizeof(struct s_star_coord) * num_stars_B);
-	for (i = 0; i < num_stars_B; i++) {
-		star_coord_array_B[i].index = i;
-		star_coord_array_B[i].x = star_array_B[i].x;
-		star_coord_array_B[i].y = star_array_B[i].y;
-	}
-	sort_star_coord_by_x(star_coord_array_B, num_stars_B);
-
-	/*
-	 * step 3: walk through the transformed stars in list A,
-	 *         searching for matching stars in list B.  If we find more
-	 *         than one match, keep the closest match.
-	 */
-	num_matched = 0;
-	for (i = 0; i < num_stars_A; i++) {
-
-		int j;
-		int closest_B_index;
-		//int start_index, end_index;
-		int start_sc_index, end_sc_index;
-		double x;
-		double closest_dist_sq, star_match_radius_sq;
-		struct s_star *star_A, *star_B;
-
-		star_A = &(transformed_star_array_A[i]);
-		star_match_radius_sq = star_match_radius * star_match_radius;
-
-		/*
-		 * use binary search to locate starting and ending
-		 *     elements we need to check for matches in list B
-		 */
-#ifdef DEBUG2
-		printf("   looking for match to trans A %5d  x %9.2f y %9.2f \n", i,
-				star_A->x, star_A->y);
-#endif
-		x = star_A->x - star_match_radius;
-		start_sc_index = find_star_coord_by_x(star_coord_array_B, num_stars_B,
-				x);
-		if (start_sc_index > 0) {
-			start_sc_index--;
-		}
-		//start_index = star_coord_array_B[start_sc_index].index;
-
-		x = star_A->x + star_match_radius;
-		end_sc_index = find_star_coord_by_x(star_coord_array_B, num_stars_B, x);
-		if (end_sc_index < num_stars_B - 1) {
-			end_sc_index++;
-		}
-		//end_index = star_coord_array_B[end_sc_index].index;
-
-#ifdef DEBUG3
-		printf(
-				"    start_index %5d %5d  x %9.4e   end_index %5d %5d x %9.4e \n",
-				start_sc_index, start_index, star_array_B[start_index].x,
-				end_sc_index, end_index, star_array_B[end_index].x);
-#endif
-
-		/*
-		 * now go through all the stars in sorted list B which lie in the range
-		 *   of possible matches to star A.  Find the star in sorted list B
-		 *   which is closest to star A, and set the "closest_B_index"
-		 *   value to its index in star_array_B[].
-		 */
-		closest_B_index = -1;
-		closest_dist_sq = star_match_radius_sq * 2;
-		for (j = start_sc_index; j <= end_sc_index; j++) {
-
-			double dx, dy, distsq;
-
-			star_B = &(star_array_B[star_coord_array_B[j].index]);
-#ifdef DEBUG3
-			printf("     star_B is index %5d \n", j);
-#endif
-
-			dx = fabs(star_A->x - star_B->x);
-			if (dx > star_match_radius) {
-#ifdef DEBUG3
-				printf("      dx %11.4f > %11.4f so go to next B \n", dx,
-						star_match_radius);
-#endif
-				continue;
-			}
-
-			dy = star_A->y - star_B->y;
-			distsq = dx * dx + dy * dy;
-			if (distsq < closest_dist_sq) {
-#ifdef DEBUG3
-				printf("      new closest distsq %11.4e \n", distsq);
-#endif
-				closest_dist_sq = distsq;
-				closest_B_index = star_coord_array_B[j].index;
-			}
-		}
-
-		/*
-		 * now, check to see if the closest star was within the
-		 *    star_match_radius.  If yes, we have a match;
-		 *    If not, we have no match.
-		 */
-		if (closest_dist_sq < star_match_radius_sq) {
-#ifdef DEBUG2
-			printf(
-					"       good match: star A %5d %9.2f %9.2f  B %5d %9.2f %9.2f  dist %11.4e \n",
-					i, star_A->x, star_A->y, closest_B_index,
-					star_array_B[closest_B_index].x,
-					star_array_B[closest_B_index].y, sqrt(closest_dist_sq));
-#endif
-			matched_index_A[num_matched] = i;
-			matched_index_B[num_matched] = closest_B_index;
-			num_matched++;
-		} else {
-#ifdef DEBUG2
-			printf("       no   match: star A %5d  min dist %11.4e \n", i,
-					sqrt(closest_dist_sq));
-#endif
-		}
-
-#ifdef DEBUG2
-		printf(" at bottom of loop in eval_trans_quality, i = %5d \n", i);
-		printf(" num_stars_B is %d  num_matched is %d \n", num_stars_B,
-				num_matched);
-		fflush(NULL);
-#endif
-
-	}
-
-	/*
-	 * now we compute the statistical properties of the matches
-	 */
-	{
-		double sumx, sumy, sumx_sq, sumy_sq, sumtot, sumtot_sq;
-		double mean_x, mean_y, stdev_x, stdev_y, mean_tot, stdev_tot;
-
-		trans->nm = num_matched;
-		sumx = 0;
-		sumx_sq = 0;
-		sumy = 0;
-		sumy_sq = 0;
-		sumtot = 0;
-		sumtot_sq = 0;
-		for (i = 0; i < num_matched; i++) {
-
-			struct s_star *star_A, *star_B;
-			double dx, dy, tot_sq;
-
-			star_A = &(transformed_star_array_A[matched_index_A[i]]);
-			star_B = &(star_array_B[matched_index_B[i]]);
-			dx = star_A->x - star_B->x;
-			dy = star_A->y - star_B->y;
-#ifdef DEBUG2
-			printf(
-					"  item %4d  A %9.2f %9.2f  B %9.2f %9.2f  dx %9.2f dy %9.2f \n",
-					i, star_A->x, star_A->y, star_B->x, star_B->y, dx, dy);
-#endif
-			sumx += dx;
-			sumy += dy;
-			sumx_sq += dx * dx;
-			sumy_sq += dy * dy;
-			tot_sq = (dx * dx + dy * dy);
-			sumtot_sq += tot_sq;
-			sumtot += sqrt(tot_sq);
-
-		}
-		if (num_matched == 1) {
-			stdev_x = 0;
-			stdev_y = 0;
-			stdev_tot = 0;
-		} else {
-			mean_x = sumx / (double) num_matched;
-			mean_y = sumy / (double) num_matched;
-			mean_tot = sumtot / (double) num_matched;
-			stdev_x = sqrt(
-					(sumx_sq - num_matched * mean_x * mean_x)
-							/ (num_matched - 1.0));
-			stdev_y = sqrt(
-					(sumy_sq - num_matched * mean_y * mean_y)
-							/ (num_matched - 1.0));
-			stdev_tot = sqrt(
-					(sumtot_sq - num_matched * mean_tot * mean_tot)
-							/ (num_matched - 1.0));
-		}
-		trans->sx = stdev_x;
-		trans->sy = stdev_y;
-		trans->sig = stdev_tot;
-#ifdef DEBUG2
-		printf("   num_matched %4d  sx %9.4e sy = %9.4e sig = %9.4e \n",
-				num_matched, trans->sx, trans->sy, trans->sig);
-#endif
-
-	}
-
-	/* de-allocate the arrays we've created */
-	shFree(star_coord_array_B);
-	shFree(transformed_star_array_A);
-	shFree(matched_index_A);
-	shFree(matched_index_B);
-
-	return (SH_SUCCESS);
-}
-
-/************************************************************************
- * ROUTINE: calc_trans_sig
- *
- * DESCRIPTION:
- * Given two lists of stars, A and B, each in its own coordinate system,
- * the number of matching pairs to use, and a set of arrays which
- * define the matching members of each list, we determine the standard
- * deviation of the offsets between matching stars.  Specifically,
- *
- *     for each matching pair
- *
- *        1. transform the coords of star A into coord system of star B
- *        2. compute difference in position between the two stars
- *        3. add difference to running sums
- *
- *     and, at end of loop, compute the stdev of the differences.
- *
- * We can then set the 'sig' field of the given TRANS to this value.
- *
- * RETURN:
- *    SH_SUCCESS                 if all goes well
- *    SH_GENERIC_ERROR           if an error occurs
- *
- * </AUTO>
- */
-
-static int calc_trans_sig(int num_matches, /* I: number of matched pairs of stars */
-s_star *star_array_A, /* I: first array of stars */
-int num_stars_A, /* I: number of stars in star_array_A  */
-s_star *star_array_B, /* I: second array of stars */
-int num_stars_B, /* I: number of stars in star_array_B  */
-int *winner_votes, /* I: number of votes gotten by the top 'nbright' */
-/*      matched pairs of stars */
-int *winner_index_A, /* I: index into "star_array_A" of top */
-/*      vote-getters */
-int *winner_index_B, /* I: index into "star_array_B" of top */
-/*      vote-getters */
-TRANS *trans /* I/O: apply this trans to object in a list A */
-/*       and set its 'sig' field when done */
-) {
-	int i;
-	double dx, dy, dist, dist_sq;
-	double new_A_x = 0.0, new_A_y = 0.0;
-	double sum = 0.0, sum_sq = 0.0, mean = 0.0, stdev = 0.0;
-	struct s_star *star_A, *star_B;
-
-#ifdef DEBUG2
-	printf("entering calc_trans_sig \n");
-#endif
-
-	shAssert(num_matches > 0);
-
-	for (i = 0; i < num_matches; i++) {
-
-		star_A = &(star_array_A[winner_index_A[i]]);
-		star_B = &(star_array_B[winner_index_A[i]]);
-
-		/* transform star A into coord system of star B */
-		if (calc_trans_coords(star_A, trans, &new_A_x, &new_A_y)
-				!= SH_SUCCESS) {
-			shError("calc_trans_sig: calc_trans_coords fails");
-			return (SH_GENERIC_ERROR);
-		}
-
-		dx = new_A_x - star_B->x;
-		dy = new_A_y - star_B->y;
-		dist_sq = (dx * dx + dy * dy);
-		dist = sqrt(dist_sq);
-
-		sum += dist;
-		sum_sq += dist_sq;
-	}
-
-	if (num_matches == 1) {
-		stdev = 0;
-	} else {
-		mean = sum / (double) num_matches;
-		stdev = sqrt(
-				(sum_sq - num_matches * mean * mean) / (num_matches - 1.0));
-	}
-#ifdef DEBUG
-	printf("  calc_trans_sig:  num %4d  mean %9.4e stdev %9.4e \n", num_matches,
-			mean, stdev);
-#endif
-
-	trans->sig = stdev;
-
-	return (SH_SUCCESS);
-
-}
-
-/************************************************************************
- * ROUTINE: is_trans_good_enough
- *
- * DESCRIPTION:
- * Given a TRANS, and some parameters, determine if the TRANS
- * is good enough to meet the conditions for success.
- *
- * The current conditions are:
- *
- *    1. is the number of matching stars GREATER THAN or equal to
- *                  a given value N?
- *
- *    2. is the variance of offset(*) between stars in matching pairs
- *                  LESS than a given value S?  Note that this is
- *                  the variance = square of stdev, not the stdev itself.
- *
- *           (*) as measured in units of the list B
- *
- * If both conditions are true, we declare success; otherwise,
- * we declare failure.
- *
- * RETURN:
- *    SH_SUCCESS                 if conditions are met
- *    SH_GENERIC_ERROR           if conditions are not met
- *
- * </AUTO>
- */
-
-static int is_trans_good_enough(int min_matches, /* I: there must be this many matched stars */
-double max_stdev, /* I: stdev of offset must be less than this */
-TRANS *trans /* I: check properties of this TRANS */
-) {
-	double variance;
-
-#ifdef DEBUG2
-	printf("entering is_trans_good_enough \n");
-#endif
-
-	shAssert(trans != NULL);
-	shAssert(min_matches > 0);
-	shAssert(max_stdev > 0.0);
-
-	/*
-	 * Note that (for historical reasons) we look at the variance
-	 * in the offset between matched pairs of stars, not the stdev.
-	 */
-	variance = trans->sig * trans->sig;
-
-	if (trans->nm >= min_matches) {
-		if (variance <= max_stdev) {
-			return (SH_SUCCESS);
-		}
-	}
-
-	return (SH_GENERIC_ERROR);
-}
-
-/************************************************************************
- * ROUTINE: check_trans_properties
- *
- * DESCRIPTION:
- * Given a TRANS, and some parameters provided by the user,
- * verify that that the scale factor (=magnification)
- * and rotation of the TRANS match the user's desired values.
- *
- * RETURN:
- *    SH_SUCCESS                 if values match user's
- *    SH_GENERIC_ERROR           otherwise
- *
- * </AUTO>
- */
-
-static int check_trans_properties(TRANS *trans, /* I: check properties of this TRANS */
-double min_scale, /* I: scale must be at least this big ... */
-double max_scale, /* I: ... and less than this value */
-double rotation_deg, /* I: rotation angle must be close to this .. */
-double tolerance_deg /* I: ... within this many degrees */
-) {
-	int scale_ok = -1;
-	int rot_ok = -1;
-	double scale;
-
-#ifdef DEBUG2
-	printf("entering check_trans_properties \n");
-#endif
-
-	shAssert(trans != NULL);
-
-	/*
-	 * Figure out the scale factor (=magnification) of the TRANS
-	 */
-	scale = sqrt(trans->b * trans->b + trans->c * trans->c);
-
-	/*
-	 * If the "min_scale" and "max_scale" values are both -1,
-	 * then the user did not specify any constraints.
-	 */
-	if ((min_scale == -1) && (max_scale == -1)) {
-		/* any value is okay */
-		scale_ok = 1;
-	} else {
-		if ((scale < min_scale) || (scale > max_scale)) {
-#ifdef DEBUG2
-			printf(
-					" check_trans_properties: scale %.2f not within %.2f - %.2f \n",
-					scale, min_scale, max_scale);
-#endif
-		} else {
-			scale_ok = 1;
-		}
-	}
-
-	/*
-	 * figure out the rotation angle, in degrees.  Force it into
-	 * the range -180 to +180.
-	 */
-	if ((rotation_deg == AT_MATCH_NOANGLE)
-			&& (tolerance_deg == AT_MATCH_NOANGLE)) {
-		rot_ok = 1;
-	} else {
-		double min_angle_deg, max_angle_deg;
-		double trans_angle_rad, trans_angle_deg;
-
-		min_angle_deg = rotation_deg - tolerance_deg;
-		max_angle_deg = rotation_deg + tolerance_deg;
-
-		trans_angle_rad = atan2(trans->c, trans->b);
-		trans_angle_deg = trans_angle_rad * (180.0 / 3.14159);
-
-		if ((trans_angle_deg >= min_angle_deg)
-				&& (trans_angle_deg <= max_angle_deg)) {
-			/* okay */
-			rot_ok = 1;
-		} else {
-#ifdef DEBUG2
-			printf(
-					" check_trans_properties: TRANS %.1lf deg not in range %.1f - %.1f \n",
-					trans_angle_deg, min_angle_deg, max_angle_deg);
-#endif
-			rot_ok = -1;
-		}
-	}
-
-	if ((scale_ok == 1) && (rot_ok == 1)) {
-		return (SH_SUCCESS);
-	} else {
-		return (SH_GENERIC_ERROR);
 	}
 }

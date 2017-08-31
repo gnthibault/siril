@@ -186,6 +186,8 @@ typedef enum {
 #define PROGRESS_DONE 1.0		// fill the progress bar
 #define PROGRESS_TEXT_RESET ""		// reset the progress bar's text
 
+#define SUPER_SAMPLING 1
+
 typedef struct imdata imgdata;
 typedef struct registration_data regdata;
 typedef struct layer_info_struct layer_info;
@@ -603,6 +605,14 @@ struct image_stats {
 			location, scale;
 	char layername[6];
 };
+
+typedef struct Homo {
+	double h00, h01, h02;
+	double h10, h11, h12;
+	double h20, h21, h22;
+	int pair_matched;
+	int Inliers;
+} Homography;
 
 #if 0
 /* TODO: this structure aims to allow the composition of several 1-channel images and make

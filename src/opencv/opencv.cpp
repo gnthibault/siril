@@ -32,8 +32,10 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "registration/matching/misc.h"
+#include "registration/matching/atpmatch.h"
 #include "opencv.h"
 #include "opencv/ecc/ecc.h"
+#include "opencv/findHomography/calib3d.hpp"
 
 using namespace cv;
 
@@ -187,7 +189,40 @@ int cvRotateImage(fits *image, double angle, int interpolation, int cropped) {
 	return 0;
 }
 
-int cvTransformImage(fits *image, TRANS trans, int interpolation) {
+int cvCalculH(s_star *star_array_img,
+		struct s_star *star_array_ref, int n, Homography *Hom) {
+
+	std::vector<Point2f> ref;
+	std::vector<Point2f> img;
+	Mat mask;
+
+	int i;
+
+	for (i = 0; i < n; i++) {
+		ref.push_back(Point2f(star_array_ref[i].x, star_array_ref[i].y));
+		img.push_back(Point2f(star_array_img[i].x, star_array_img[i].y));
+	}
+
+	Mat H = findHomography(img, ref, CV_RANSAC, 3, mask);
+	if (countNonZero(H) < 1) {
+		return 1;
+	}
+	Hom->Inliers = countNonZero(mask);
+
+	Hom->h00 = H.at<double>(0, 0);
+	Hom->h01 = H.at<double>(0, 1);
+	Hom->h02 = H.at<double>(0, 2);
+	Hom->h10 = H.at<double>(1, 0);
+	Hom->h11 = H.at<double>(1, 1);
+	Hom->h12 = H.at<double>(1, 2);
+	Hom->h20 = H.at<double>(2, 0);
+	Hom->h21 = H.at<double>(2, 1);
+    Hom->h22 = H.at<double>(2, 2);
+
+	return 0;
+}
+
+int cvTransformImage(fits *image, Homography Hom, int interpolation) {
 	assert(image->data);
 	assert(image->rx);
 	assert(image->ry);
@@ -198,20 +233,19 @@ int cvTransformImage(fits *image, TRANS trans, int interpolation) {
 
 	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
 	Mat out(image->ry, image->rx, CV_16UC3);
+	Mat H = Mat::eye(3, 3, CV_64FC1);
 
-	double angle = -atan2(trans.c, trans.b);
-	double s = sqrt(trans.b * trans.b + trans.c * trans.c);
+	H.at<double>(0, 0) = Hom.h00;
+	H.at<double>(0, 1) = Hom.h01;
+	H.at<double>(0, 2) = Hom.h02 * SUPER_SAMPLING;
+	H.at<double>(1, 0) = Hom.h10;
+	H.at<double>(1, 1) = Hom.h11;
+	H.at<double>(1, 2) = Hom.h12 * SUPER_SAMPLING;
+	H.at<double>(2, 0) = Hom.h20;
+	H.at<double>(2, 1) = Hom.h21;
+	H.at<double>(2, 2) = Hom.h22;
 
-    // http://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations
-	Mat transform = Mat::eye(2, 3, CV_64FC1);
-	transform.at<double>(0, 0) = s * cos(angle);
-	transform.at<double>(0, 1) = -s * sin(angle);
-	transform.at<double>(1, 0) = s * sin(angle);
-	transform.at<double>(1, 1) = s * cos(angle);
-	transform.at<double>(0, 2) = trans.a;	// shift dx
-	transform.at<double>(1, 2) = trans.d;	// shift dy
-
-	warpAffine(in, out, transform, in.size(), interpolation);
+	warpPerspective(in, out, H, in.size(), interpolation);
 
 	Mat channel[3];
 	split(out, channel);
@@ -240,7 +274,7 @@ int cvTransformImage(fits *image, TRANS trans, int interpolation) {
 	delete[] bgrbgr;
 	in = Mat();
 	out = Mat();
-	transform = Mat();
+	H = Mat();
 	return 0;
 }
 

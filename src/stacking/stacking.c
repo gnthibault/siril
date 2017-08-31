@@ -1951,7 +1951,7 @@ static void _show_summary(struct stacking_args *args) {
 
 	/* Normalisation */
 	if (args->method != &stack_mean_with_rejection) {
-		norm_str = "none";
+		norm_str = _("none");;
 	} else {
 		switch (args->normalize) {
 		default:
