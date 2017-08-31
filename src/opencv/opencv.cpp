@@ -37,6 +37,8 @@
 #include "opencv/ecc/ecc.h"
 #include "opencv/findHomography/calib3d.hpp"
 
+#define defaultRANSACReprojThreshold 3
+
 using namespace cv;
 
 static WORD *fits_to_bgrbgr(fits *image) {
@@ -198,12 +200,13 @@ int cvCalculH(s_star *star_array_img,
 
 	int i;
 
+	/* build vectors with lists of stars. */
 	for (i = 0; i < n; i++) {
 		ref.push_back(Point2f(star_array_ref[i].x, star_array_ref[i].y));
 		img.push_back(Point2f(star_array_img[i].x, star_array_img[i].y));
 	}
 
-	Mat H = findHomography(img, ref, CV_RANSAC, 3, mask);
+	Mat H = findHomography(img, ref, CV_RANSAC, defaultRANSACReprojThreshold, mask);
 	if (countNonZero(H) < 1) {
 		return 1;
 	}
@@ -218,6 +221,9 @@ int cvCalculH(s_star *star_array_img,
 	Hom->h20 = H.at<double>(2, 0);
 	Hom->h21 = H.at<double>(2, 1);
     Hom->h22 = H.at<double>(2, 2);
+
+	mask = Mat();
+	H = Mat();
 
 	return 0;
 }

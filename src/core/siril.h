@@ -186,7 +186,7 @@ typedef enum {
 #define PROGRESS_DONE 1.0		// fill the progress bar
 #define PROGRESS_TEXT_RESET ""		// reset the progress bar's text
 
-#define SUPER_SAMPLING 1
+#define SUPER_SAMPLING 2
 
 typedef struct imdata imgdata;
 typedef struct registration_data regdata;
