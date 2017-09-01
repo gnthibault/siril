@@ -229,10 +229,10 @@ cvFindHomography( const CvMat* objectPoints, const CvMat* imagePoints,
     CvMat matH = cvMat( 3, 3, CV_64FC1, H );
     int count;
 
-    CV_Assert( CV_IS_MAT(imagePoints) && CV_IS_MAT(objectPoints) );
+    assert( CV_IS_MAT(imagePoints) && CV_IS_MAT(objectPoints) );
 
     count = MAX(imagePoints->cols, imagePoints->rows);
-    CV_Assert( count >= 4 );
+    assert( count >= 4 );
     if( ransacReprojThreshold <= 0 )
         ransacReprojThreshold = defaultRANSACReprojThreshold;
 
@@ -244,7 +244,7 @@ cvFindHomography( const CvMat* objectPoints, const CvMat* imagePoints,
 
     if( mask )
     {
-        CV_Assert( CV_IS_MASK_ARR(mask) && CV_IS_MAT_CONT(mask->type) &&
+        assert( CV_IS_MASK_ARR(mask) && CV_IS_MAT_CONT(mask->type) &&
             (mask->rows == 1 || mask->cols == 1) &&
             mask->rows*mask->cols == count );
     }
@@ -444,7 +444,7 @@ int CvFMEstimator::run8Point( const CvMat* _m1, const CvMat* _m2, CvMat* _fmatri
     const CvPoint2D64f* m1 = (const CvPoint2D64f*)_m1->data.ptr;
     const CvPoint2D64f* m2 = (const CvPoint2D64f*)_m2->data.ptr;
     double* fmatrix = _fmatrix->data.db;
-    CV_Assert( (_m1->cols == 1 || _m1->rows == 1) && CV_ARE_SIZES_EQ(_m1, _m2));
+    assert( (_m1->cols == 1 || _m1->rows == 1) && CV_ARE_SIZES_EQ(_m1, _m2));
     int i, j, k, count = _m1->cols*_m1->rows;
 
     // compute centers and average distances for each of the two point sets
@@ -596,8 +596,8 @@ CV_IMPL int cvFindFundamentalMat( const CvMat* points1, const CvMat* points2,
     CvMat _F3x3 = cvMat( 3, 3, CV_64FC1, F ), _F9x3 = cvMat( 9, 3, CV_64FC1, F );
     int count;
 
-    CV_Assert( CV_IS_MAT(points1) && CV_IS_MAT(points2) && CV_ARE_SIZES_EQ(points1, points2) );
-    CV_Assert( CV_IS_MAT(fmatrix) && fmatrix->cols == 3 &&
+    assert( CV_IS_MAT(points1) && CV_IS_MAT(points2) && CV_ARE_SIZES_EQ(points1, points2) );
+    assert( CV_IS_MAT(fmatrix) && fmatrix->cols == 3 &&
         (fmatrix->rows == 3 || (fmatrix->rows == 9 && method == CV_FM_7POINT)) );
 
     count = MAX(points1->cols, points1->rows);
@@ -612,7 +612,7 @@ CV_IMPL int cvFindFundamentalMat( const CvMat* points1, const CvMat* points2,
 
     if( mask )
     {
-        CV_Assert( CV_IS_MASK_ARR(mask) && CV_IS_MAT_CONT(mask->type) &&
+        assert( CV_IS_MASK_ARR(mask) && CV_IS_MAT_CONT(mask->type) &&
             (mask->rows == 1 || mask->cols == 1) &&
             mask->rows*mask->cols == count );
     }
@@ -673,17 +673,17 @@ CV_IMPL void cvComputeCorrespondEpilines( const CvMat* points, int pointImageID,
     CvMat F = cvMat( 3, 3, CV_64F, f );
 
     if( !CV_IS_MAT(points) )
-        CV_Error( !points ? CV_StsNullPtr : CV_StsBadArg, "points parameter is not a valid matrix" );
+        siril_CV_Error( !points ? CV_StsNullPtr : CV_StsBadArg, "points parameter is not a valid matrix" );
 
     depth = CV_MAT_DEPTH(points->type);
     cn = CV_MAT_CN(points->type);
     if( (depth != CV_32F && depth != CV_64F) || (cn != 1 && cn != 2 && cn != 3) )
-        CV_Error( CV_StsUnsupportedFormat, "The format of point matrix is unsupported" );
+        siril_CV_Error( CV_StsUnsupportedFormat, "The format of point matrix is unsupported" );
 
     if( cn > 1 )
     {
         dims = cn;
-        CV_Assert( points->rows == 1 || points->cols == 1 );
+        assert( points->rows == 1 || points->cols == 1 );
         count = points->rows * points->cols;
     }
     else if( points->rows > points->cols )
@@ -694,35 +694,35 @@ CV_IMPL void cvComputeCorrespondEpilines( const CvMat* points, int pointImageID,
     else
     {
         if( (points->rows > 1 && cn > 1) || (points->rows == 1 && cn == 1) )
-            CV_Error( CV_StsBadSize, "The point matrix does not have a proper layout (2xn, 3xn, nx2 or nx3)" );
+            siril_CV_Error( CV_StsBadSize, "The point matrix does not have a proper layout (2xn, 3xn, nx2 or nx3)" );
         dims = points->rows;
         count = points->cols;
     }
 
     if( dims != 2 && dims != 3 )
-        CV_Error( CV_StsOutOfRange, "The dimensionality of points must be 2 or 3" );
+        siril_CV_Error( CV_StsOutOfRange, "The dimensionality of points must be 2 or 3" );
 
     if( !CV_IS_MAT(fmatrix) )
-        CV_Error( !fmatrix ? CV_StsNullPtr : CV_StsBadArg, "fmatrix is not a valid matrix" );
+        siril_CV_Error( !fmatrix ? CV_StsNullPtr : CV_StsBadArg, "fmatrix is not a valid matrix" );
 
     if( CV_MAT_TYPE(fmatrix->type) != CV_32FC1 && CV_MAT_TYPE(fmatrix->type) != CV_64FC1 )
-        CV_Error( CV_StsUnsupportedFormat, "fundamental matrix must have 32fC1 or 64fC1 type" );
+        siril_CV_Error( CV_StsUnsupportedFormat, "fundamental matrix must have 32fC1 or 64fC1 type" );
 
     if( fmatrix->cols != 3 || fmatrix->rows != 3 )
-        CV_Error( CV_StsBadSize, "fundamental matrix must be 3x3" );
+        siril_CV_Error( CV_StsBadSize, "fundamental matrix must be 3x3" );
 
     if( !CV_IS_MAT(lines) )
-        CV_Error( !lines ? CV_StsNullPtr : CV_StsBadArg, "lines parameter is not a valid matrix" );
+        siril_CV_Error( !lines ? CV_StsNullPtr : CV_StsBadArg, "lines parameter is not a valid matrix" );
 
     abc_depth = CV_MAT_DEPTH(lines->type);
     abc_cn = CV_MAT_CN(lines->type);
     if( (abc_depth != CV_32F && abc_depth != CV_64F) || (abc_cn != 1 && abc_cn != 3) )
-        CV_Error( CV_StsUnsupportedFormat, "The format of the matrix of lines is unsupported" );
+        siril_CV_Error( CV_StsUnsupportedFormat, "The format of the matrix of lines is unsupported" );
 
     if( abc_cn > 1 )
     {
         abc_dims = abc_cn;
-        CV_Assert( lines->rows == 1 || lines->cols == 1 );
+        assert( lines->rows == 1 || lines->cols == 1 );
         abc_count = lines->rows * lines->cols;
     }
     else if( lines->rows > lines->cols )
@@ -733,16 +733,16 @@ CV_IMPL void cvComputeCorrespondEpilines( const CvMat* points, int pointImageID,
     else
     {
         if( (lines->rows > 1 && abc_cn > 1) || (lines->rows == 1 && abc_cn == 1) )
-            CV_Error( CV_StsBadSize, "The lines matrix does not have a proper layout (3xn or nx3)" );
+            siril_CV_Error( CV_StsBadSize, "The lines matrix does not have a proper layout (3xn or nx3)" );
         abc_dims = lines->rows;
         abc_count = lines->cols;
     }
 
     if( abc_dims != 3 )
-        CV_Error( CV_StsOutOfRange, "The lines matrix does not have a proper layout (3xn or nx3)" );
+        siril_CV_Error( CV_StsOutOfRange, "The lines matrix does not have a proper layout (3xn or nx3)" );
 
     if( abc_count != count )
-        CV_Error( CV_StsUnmatchedSizes, "The numbers of points and lines are different" );
+        siril_CV_Error( CV_StsUnmatchedSizes, "The numbers of points and lines are different" );
 
     elem_size = CV_ELEM_SIZE(depth);
     abc_elem_size = CV_ELEM_SIZE(abc_depth);
@@ -837,24 +837,24 @@ CV_IMPL void cvConvertPointsHomogeneous( const CvMat* src, CvMat* dst )
     CvMat* ones = 0;
 
     if( !CV_IS_MAT(src) )
-        CV_Error( !src ? CV_StsNullPtr : CV_StsBadArg,
+        siril_CV_Error( !src ? CV_StsNullPtr : CV_StsBadArg,
         "The input parameter is not a valid matrix" );
 
     if( !CV_IS_MAT(dst) )
-        CV_Error( !dst ? CV_StsNullPtr : CV_StsBadArg,
+        siril_CV_Error( !dst ? CV_StsNullPtr : CV_StsBadArg,
         "The output parameter is not a valid matrix" );
 
     if( src == dst || src->data.ptr == dst->data.ptr )
     {
         if( src != dst && (!CV_ARE_TYPES_EQ(src, dst) || !CV_ARE_SIZES_EQ(src,dst)) )
-            CV_Error( CV_StsBadArg, "Invalid inplace operation" );
+            siril_CV_Error( CV_StsBadArg, "Invalid inplace operation" );
         return;
     }
 
     if( src->rows > src->cols )
     {
         if( !((src->cols > 1) ^ (CV_MAT_CN(src->type) > 1)) )
-            CV_Error( CV_StsBadSize, "Either the number of channels or columns or rows must be =1" );
+            siril_CV_Error( CV_StsBadSize, "Either the number of channels or columns or rows must be =1" );
 
         s_dims = CV_MAT_CN(src->type)*src->cols;
         s_count = src->rows;
@@ -862,7 +862,7 @@ CV_IMPL void cvConvertPointsHomogeneous( const CvMat* src, CvMat* dst )
     else
     {
         if( !((src->rows > 1) ^ (CV_MAT_CN(src->type) > 1)) )
-            CV_Error( CV_StsBadSize, "Either the number of channels or columns or rows must be =1" );
+            siril_CV_Error( CV_StsBadSize, "Either the number of channels or columns or rows must be =1" );
 
         s_dims = CV_MAT_CN(src->type)*src->rows;
         s_count = src->cols;
@@ -874,7 +874,7 @@ CV_IMPL void cvConvertPointsHomogeneous( const CvMat* src, CvMat* dst )
     if( dst->rows > dst->cols )
     {
         if( !((dst->cols > 1) ^ (CV_MAT_CN(dst->type) > 1)) )
-            CV_Error( CV_StsBadSize,
+            siril_CV_Error( CV_StsBadSize,
             "Either the number of channels or columns or rows in the input matrix must be =1" );
 
         d_dims = CV_MAT_CN(dst->type)*dst->cols;
@@ -883,7 +883,7 @@ CV_IMPL void cvConvertPointsHomogeneous( const CvMat* src, CvMat* dst )
     else
     {
         if( !((dst->rows > 1) ^ (CV_MAT_CN(dst->type) > 1)) )
-            CV_Error( CV_StsBadSize,
+            siril_CV_Error( CV_StsBadSize,
             "Either the number of channels or columns or rows in the output matrix must be =1" );
 
         d_dims = CV_MAT_CN(dst->type)*dst->rows;
@@ -894,18 +894,18 @@ CV_IMPL void cvConvertPointsHomogeneous( const CvMat* src, CvMat* dst )
         dst = cvReshape( dst, &_dst, 1, d_count );
 
     if( s_count != d_count )
-        CV_Error( CV_StsUnmatchedSizes, "Both matrices must have the same number of points" );
+        siril_CV_Error( CV_StsUnmatchedSizes, "Both matrices must have the same number of points" );
 
     if( CV_MAT_DEPTH(src->type) < CV_32F || CV_MAT_DEPTH(dst->type) < CV_32F )
-        CV_Error( CV_StsUnsupportedFormat,
+        siril_CV_Error( CV_StsUnsupportedFormat,
         "Both matrices must be floating-point (single or double precision)" );
 
     if( s_dims < 2 || s_dims > 4 || d_dims < 2 || d_dims > 4 )
-        CV_Error( CV_StsOutOfRange,
+        siril_CV_Error( CV_StsOutOfRange,
         "Both input and output point dimensionality must be 2, 3 or 4" );
 
     if( s_dims < d_dims - 1 || s_dims > d_dims + 1 )
-        CV_Error( CV_StsUnmatchedSizes,
+        siril_CV_Error( CV_StsUnmatchedSizes,
         "The dimensionalities of input and output point sets differ too much" );
 
     if( s_dims == d_dims - 1 )
@@ -1070,7 +1070,7 @@ cv::Mat cv::findHomography( InputArray _points1, InputArray _points2,
 {
     Mat points1 = _points1.getMat(), points2 = _points2.getMat();
     int npoints = points1.checkVector(2);
-    CV_Assert( npoints >= 0 && points2.checkVector(2) == npoints &&
+    assert( npoints >= 0 && points2.checkVector(2) == npoints &&
                points1.type() == points2.type());
 
     Mat H(3, 3, CV_64F);
@@ -1099,7 +1099,7 @@ cv::Mat cv::findFundamentalMat( InputArray _points1, InputArray _points2,
 {
     Mat points1 = _points1.getMat(), points2 = _points2.getMat();
     int npoints = points1.checkVector(2);
-    CV_Assert( npoints >= 0 && points2.checkVector(2) == npoints &&
+    assert( npoints >= 0 && points2.checkVector(2) == npoints &&
               points1.type() == points2.type());
 
     Mat F(method == CV_FM_7POINT ? 9 : 3, 3, CV_64F);
@@ -1132,7 +1132,7 @@ void cv::computeCorrespondEpilines( InputArray _points, int whichImage,
     int npoints = points.checkVector(2);
     if( npoints < 0 )
         npoints = points.checkVector(3);
-    CV_Assert( npoints >= 0 && (points.depth() == CV_32F || points.depth() == CV_32S));
+    assert( npoints >= 0 && (points.depth() == CV_32F || points.depth() == CV_32S));
 
     _lines.create(npoints, 1, CV_32FC3, -1, true);
     CvMat c_points = points, c_lines = _lines.getMat(), c_F = F;
@@ -1149,7 +1149,7 @@ void cv::convertPointsFromHomogeneous( InputArray _src, OutputArray _dst )
         if( npoints >= 0 )
             cn = 4;
     }
-    CV_Assert( npoints >= 0 && (src.depth() == CV_32F || src.depth() == CV_32S));
+    assert( npoints >= 0 && (src.depth() == CV_32F || src.depth() == CV_32S));
 
     _dst.create(npoints, 1, CV_MAKETYPE(CV_32F, cn-1));
     CvMat c_src = src, c_dst = _dst.getMat();
@@ -1166,7 +1166,7 @@ void cv::convertPointsToHomogeneous( InputArray _src, OutputArray _dst )
         if( npoints >= 0 )
             cn = 3;
     }
-    CV_Assert( npoints >= 0 && (src.depth() == CV_32F || src.depth() == CV_32S));
+    assert( npoints >= 0 && (src.depth() == CV_32F || src.depth() == CV_32S));
 
     _dst.create(npoints, 1, CV_MAKETYPE(CV_32F, cn+1));
     CvMat c_src = src, c_dst = _dst.getMat();
@@ -1176,7 +1176,7 @@ void cv::convertPointsToHomogeneous( InputArray _src, OutputArray _dst )
 void cv::convertPointsHomogeneous( InputArray _src, OutputArray _dst )
 {
     int stype = _src.type(), dtype = _dst.type();
-    CV_Assert( _dst.fixedType() );
+    assert( _dst.fixedType() );
 
     if( CV_MAT_CN(stype) > CV_MAT_CN(dtype) )
         convertPointsFromHomogeneous(_src, _dst);

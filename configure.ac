@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 m4_define([siril_major_version], [0])
 m4_define([siril_minor_version], [9])
 m4_define([siril_micro_version], [7])
-m4_define([siril_prerelease_version], [beta])
+m4_define([siril_prerelease_version], [beta2])
 m4_define([siril_version],
           [siril_major_version.siril_minor_version.siril_micro_version])
 m4_define([siril_version_full],
@@ -35,7 +35,7 @@ AC_OPENMP
 AC_LANG([C])
 AC_LANG([C++])
 
-dnl remove -g flag from default CFLAGS
+# remove -g flag from default CFLAGS
 if test "x$remember_set_CFLAGS" = "x"; then
 	if test "$CFLAGS" = "-g -O2"; then
 		CFLAGS="-O2"

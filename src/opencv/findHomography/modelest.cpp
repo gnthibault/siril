@@ -88,7 +88,7 @@ cvRANSACUpdateNumIters( double p, double ep,
                         int model_points, int max_iters )
 {
     if( model_points <= 0 )
-        CV_Error( CV_StsOutOfRange, "the number of model points should be positive" );
+        siril_CV_Error( CV_StsOutOfRange, "the number of model points should be positive" );
 
     p = MAX(p, 0.);
     p = MIN(p, 1.);
@@ -119,7 +119,7 @@ bool CvModelEstimator2::runRANSAC( const CvMat* m1, const CvMat* m2, CvMat* mode
 
     int iter, niters = maxIters;
     int count = m1->rows*m1->cols, maxGoodCount = 0;
-    CV_Assert( CV_ARE_SIZES_EQ(m1, m2) && CV_ARE_SIZES_EQ(m1, mask) );
+    assert( CV_ARE_SIZES_EQ(m1, m2) && CV_ARE_SIZES_EQ(m1, mask) );
 
     if( count < modelPoints )
         return false;
@@ -200,7 +200,7 @@ bool CvModelEstimator2::runLMeDS( const CvMat* m1, const CvMat* m2, CvMat* model
     int count = m1->rows*m1->cols;
     double minMedian = DBL_MAX, sigma;
 
-    CV_Assert( CV_ARE_SIZES_EQ(m1, m2) && CV_ARE_SIZES_EQ(m1, mask) );
+    assert( CV_ARE_SIZES_EQ(m1, m2) && CV_ARE_SIZES_EQ(m1, mask) );
 
     if( count < modelPoints )
         return false;
@@ -427,7 +427,7 @@ void cv::Affine3DEstimator::computeReprojError( const CvMat* m1, const CvMat* m2
 
 bool cv::Affine3DEstimator::checkSubset( const CvMat* ms1, int count )
 {
-    CV_Assert( CV_MAT_TYPE(ms1->type) == CV_64FC3 );
+    assert( CV_MAT_TYPE(ms1->type) == CV_64FC3 );
 
     int j, k, i = count - 1;
     const Point3d* ptr = reinterpret_cast<const Point3d*>(ms1->data.ptr);
@@ -462,7 +462,7 @@ int cv::estimateAffine3D(InputArray _from, InputArray _to,
     Mat from = _from.getMat(), to = _to.getMat();
     int count = from.checkVector(3);
 
-    CV_Assert( count >= 0 && to.checkVector(3) == count );
+    assert( count >= 0 && to.checkVector(3) == count );
 
     _out.create(3, 4, CV_64F);
     Mat out = _out.getMat();

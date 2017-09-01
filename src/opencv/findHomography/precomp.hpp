@@ -42,7 +42,7 @@
 #ifndef __OPENCV_PRECOMP_H__
 #define __OPENCV_PRECOMP_H__
 
-//#include "cvconfig.h"
+#define siril_CV_Error( __code__, __msg__ ) printf("CV_Error%s: %s\n", __msg__, __code__)
 
 #include "calib3d.hpp"
 #include <opencv2/imgproc/imgproc.hpp>
