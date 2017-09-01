@@ -3,6 +3,8 @@
 
 #include "core/siril.h"
 
+#ifdef HAVE_OPENCV
+
 /*
  *
  * FILE: misc.h
@@ -220,3 +222,4 @@ int
 get_value(char *str, double *val);
 
 #endif    /* MISC_H */
+#endif

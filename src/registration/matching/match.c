@@ -96,12 +96,13 @@
  *
  */
 
+#include "core/siril.h"
+
+#ifdef HAVE_OPENCV
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
-#include "core/siril.h"
 #include "gui/callbacks.h"
 #include "algos/PSF.h"
 #include "opencv/opencv.h"
@@ -576,3 +577,4 @@ TRANS *trans /* O: we calc herein the sx, sy fields  */
 
 	return (0);
 }
+#endif

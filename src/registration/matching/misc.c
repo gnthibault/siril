@@ -39,12 +39,15 @@
  *
  */
 
+#include "core/siril.h"
+
+#ifdef HAVE_OPENCV
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include "core/siril.h"
 #include "gui/callbacks.h"
 #include "algos/PSF.h"
 #include "registration/matching/misc.h"
@@ -923,4 +926,4 @@ getIdentityTrans(void) {
 
 	return (trans);
 }
-
+#endif
