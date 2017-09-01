@@ -197,7 +197,7 @@ cv::Affine3<T>::Affine3(const Vec3& _rvec, const Vec3& t)
 template<typename T> inline
 cv::Affine3<T>::Affine3(const cv::Mat& data, const Vec3& t)
 {
-    CV_Assert(data.type() == cv::DataType<T>::type);
+    assert(data.type() == cv::DataType<T>::type);
 
     if (data.cols == 4 && data.rows == 4)
     {
@@ -271,7 +271,7 @@ void cv::Affine3<T>::rotation(const Vec3& _rvec)
 template<typename T> inline
 void cv::Affine3<T>::rotation(const cv::Mat& data)
 {
-    CV_Assert(data.type() == cv::DataType<T>::type);
+    assert(data.type() == cv::DataType<T>::type);
 
     if (data.cols == 3 && data.rows == 3)
     {
@@ -286,7 +286,7 @@ void cv::Affine3<T>::rotation(const cv::Mat& data)
         rotation(_rvec);
     }
     else
-        CV_Assert(!"Input marix can be 3x3, 1x3 or 3x1");
+        assert(!"Input marix can be 3x3, 1x3 or 3x1");
 }
 
 template<typename T> inline
