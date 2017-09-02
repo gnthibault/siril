@@ -525,11 +525,9 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 	top_vote_getters(vote_matrix, nbright, &winner_votes, &winner_index_A,
 			&winner_index_B);
 
-/*	for (i = 0; i < nbright; i++) {
-		printf("%.3lf|%.3lf / %.3lf|%.3lf\n", star_array_A[winner_index_A[i]].x, star_array_B[winner_index_B[i]].x,
-				star_array_A[winner_index_A[i]].y, star_array_B[winner_index_B[i]].y);
-	}
-	exit(1);*/
+	for (i = 0; i < nbright; i++)
+		shFree(vote_matrix[i]);
+	shFree(vote_matrix);
 
 	/*
 	 * here, we disqualify any of the top vote-getters which have
@@ -563,6 +561,9 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 			RECALC_NO, max_iter, halt_sigma, trans) != SH_SUCCESS) {
 
 		shError("atFindTrans: iter_trans unable to create a valid TRANS");
+		shFree(winner_votes);
+		shFree(winner_index_A);
+		shFree(winner_index_B);
 		free_star_array(star_array_A);
 		free_star_array(star_array_B);
 		shFree(triangle_array_A);
@@ -578,6 +579,9 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 	/*
 	 * clean up memory we allocated during the matching process
 	 */
+	shFree(winner_votes);
+	shFree(winner_index_A);
+	shFree(winner_index_B);
 	free_star_array(star_array_A);
 	free_star_array(star_array_B);
 	shFree(triangle_array_A);
@@ -954,6 +958,8 @@ struct s_star **matched_list_B
 	/*
 	 * all done!
 	 */
+	free_star_array(star_array_A);
+	free_star_array(star_array_B);
 	free_star_array(star_array_J);
 	free_star_array(star_array_K);
 	free_star_array(star_array_L);

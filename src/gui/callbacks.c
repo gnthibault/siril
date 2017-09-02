@@ -2385,7 +2385,7 @@ void set_cursor_waiting(gboolean waiting) {
 		gdk_flush();
 		list = g_list_next(list);
 	}
-	g_free(list);
+	g_list_free(list);
 }
 
 // Thread-safe progress bar update.
