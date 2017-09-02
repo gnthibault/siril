@@ -276,8 +276,12 @@ static int remove_repeated_elements(s_star *star_array_1, int *num_stars_1,
 		s_star *star_array_2, int *num_stars_2);
 static void remove_same_elements(s_star *star_array_1, int num_stars_1,
 		s_star *star_array_2, int *num_stars_2);
+#ifdef DEBUG
 static void write_array(int num_stars, struct s_star *star_array,
 		char *filename);
+#endif
+static void array_to_list(int num_stars, struct s_star *star_array,
+		s_star **list);
 static int write_small_arrays(double ra, double dec, int num_stars,
 		struct s_star *star_array, int nbright, int num_triangles,
 		struct s_triangle *t_array, char *outfile);
@@ -881,13 +885,9 @@ s_star *listA, /* I: first input list of items to be matched */
 int numB, /* I: number of stars in list B */
 s_star *listB, /* I: second list of items to be matched */
 double radius, /* I: maximum radius for items to be a match */
-char *basename, /* I: base of filenames used to store the */
-/*      output; extension indicates which */
-/*      .mtA    items from A that matched */
-/*      .mtB    items from B that matched */
-/*      .unA    items from A that didn't match */
-/*      .unB    items from A that didn't match */
-int *num_matches /* O: number of matching pairs we find */
+int *num_matches, /* O: number of matching pairs we find */
+struct s_star **matched_list_A,
+struct s_star **matched_list_B
 ) {
 	s_star *star_array_A;
 	int num_stars_A;
@@ -895,7 +895,6 @@ int *num_matches /* O: number of matching pairs we find */
 	int num_stars_B;
 	s_star *star_array_J, *star_array_K, *star_array_L, *star_array_M;
 	int num_stars_J, num_stars_K, num_stars_L, num_stars_M;
-	char filename[100];
 
 	shAssert(listA != NULL);
 	shAssert(listB != NULL);
@@ -927,6 +926,8 @@ int *num_matches /* O: number of matching pairs we find */
 	 */
 	*num_matches = num_stars_J;
 
+#ifdef DEBUG
+	char filename[100];
 	/*
 	 * now write the output into ASCII text files, each of which starts
 	 * with 'basename', but has a different extension.
@@ -936,14 +937,19 @@ int *num_matches /* O: number of matching pairs we find */
 	 *    basename.unA    stars from list A that did NOT match     array L
 	 *    basename.unB    stars from list A that did NOT match     array M
 	 */
-	sprintf(filename, "%s.mtA", basename);
+	sprintf(filename, "match.mtA");
 	write_array(num_stars_J, star_array_J, filename);
-	sprintf(filename, "%s.mtB", basename);
+	sprintf(filename, "match.mtB");
 	write_array(num_stars_K, star_array_K, filename);
-	sprintf(filename, "%s.unA", basename);
+	sprintf(filename, "match.unA");
 	write_array(num_stars_L, star_array_L, filename);
-	sprintf(filename, "%s.unB", basename);
+	sprintf(filename, "match.unB");
 	write_array(num_stars_M, star_array_M, filename);
+
+#endif
+
+	array_to_list(num_stars_J, star_array_J, matched_list_A);
+	array_to_list(num_stars_K, star_array_K, matched_list_B);
 
 	/*
 	 * all done!
@@ -4508,6 +4514,7 @@ struct s_star *list /* I: the linked list */
 	return (array);
 }
 
+#ifdef DEBUG
 /***********************************************************************
  * ROUTINE: write_array
  *
@@ -4541,6 +4548,34 @@ char *filename /* I: write into this file */
 	}
 
 	fclose(fp);
+}
+#endif
+
+static void array_to_list(int num_stars, /* I: number of stars in the array */
+		struct s_star *star_array, /* I: the array of stars */
+		s_star **list
+) {
+	struct s_star *head, *last, *new;
+	int num;
+
+	head = (struct s_star *) NULL;
+	last = head;
+	num = 0;
+	while (num < num_stars) {
+		new = atStarNew(star_array[num].x, star_array[num].y, star_array[num].mag);
+		new->id = star_array[num].id;
+		if (head == NULL) {
+			head = new;
+			last = new;
+		} else {
+			last->next = new;
+			last = new;
+		}
+		num++;
+	}
+
+	*list = head;
+
 }
 
 /****************************************************************************

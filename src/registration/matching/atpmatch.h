@@ -228,7 +228,8 @@ int atFindTrans(int numA, s_star *listA, int numB, s_star *listB,
 int atApplyTrans(int num, s_star *list, TRANS *trans);
 
 int atMatchLists(int numA, s_star *listA, int numB, s_star *listB,
-                 double radius, char *basename, int *num_matches);
+		double radius, int *num_matches, struct s_star **matched_list_A,
+		struct s_star **matched_list_B);
 
 int
 atBuildSmallFile(double ra, double dec,

@@ -117,12 +117,10 @@ static void reset_copy_ids(int numA, struct s_star *star_list_A,
 
 static int reset_A_coords(int numA, struct s_star *post_list_A,
 		struct s_star *pre_list_A);
-static int prepare_to_recalc(char *outfile, int *num_matched_A,
-		struct s_star **matched_list_A, int *num_matched_B,
-		struct s_star **matched_list_B, struct s_star *star_list_A_copy,
+static int prepare_to_recalc(int num_matched_A,
+		struct s_star *matched_list_A, int num_matched_B,
+		struct s_star *matched_list_B, struct s_star *star_list_A_copy,
 		TRANS *trans);
-
-char progname[CMDBUFLEN + 1];
 
 int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	int ret;
@@ -141,19 +139,11 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	double halt_sigma = AT_MATCH_HALTSIGMA;
 	int nobj = AT_MATCH_NBRIGHT;
 	int num_matches = 0; /* number of matching pairs */
-	char outfile[CMDBUFLEN + 1];
-	const char *tmpdir = g_get_tmp_dir();
 	struct s_star *star_list_A, *star_list_B;
 	struct s_star *star_list_A_copy;
 	struct s_star *matched_list_A, *matched_list_B;
 	TRANS *trans;
 	Homography *Hom;
-
-	/* buffer overflow paranoia */
-	outfile[CMDBUFLEN] = '\0';
-
-	strncpy(outfile, tmpdir, CMDBUFLEN);
-	strcat(outfile, "/matched");
 
 	/*
 	 * Check to make sure that the user did exactly one of the following:
@@ -303,9 +293,10 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	 * so we put the names of the files containing those matched objects
 	 * into 'matched_file_A' and 'matched_file_B' for easy reference.
 	 */
-	atMatchLists(numA, star_list_A, numB, star_list_B, match_radius, outfile,
-			&num_matches);
+	atMatchLists(numA, star_list_A, numB, star_list_B, match_radius,
+			&num_matches, &matched_list_A, &matched_list_B);
 	trans->nm = num_matches;
+	num_matched_B = num_matched_A = num_matches;
 
 	/*
 	 * The user didn't give us any information about an initial
@@ -322,13 +313,15 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	 */
 
 	/* need to send trans to prepare_to_recalc because it adds sdx,sdy to it */
-	if (prepare_to_recalc(outfile, &num_matched_A, &matched_list_A,
-			&num_matched_B, &matched_list_B, star_list_A_copy, trans) != 0) {
+	if (prepare_to_recalc(num_matched_A, matched_list_A,
+			num_matched_B, matched_list_B, star_list_A_copy, trans) != 0) {
 		shFatal("prepare_to_recalc fails");
 		/** */
 		atTransDel(trans);
 		free_stars(matched_list_A);
 		free_stars(matched_list_B);
+		free_stars(star_list_A);
+		free_stars(star_list_B);
 		free_stars(star_list_A_copy);
 		/** */
 		return (SH_GENERIC_ERROR);
@@ -341,6 +334,8 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 		atTransDel(trans);
 		free_stars(matched_list_A);
 		free_stars(matched_list_B);
+		free_stars(star_list_A);
+		free_stars(star_list_B);
 		free_stars(star_list_A_copy);
 		/** */
 		return (SH_GENERIC_ERROR);
@@ -361,6 +356,8 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 		atHDel(Hom);
 		free_stars(matched_list_A);
 		free_stars(matched_list_B);
+		free_stars(star_list_A);
+		free_stars(star_list_B);
 		free_stars(star_list_A_copy);
 		/** */
 		return (SH_GENERIC_ERROR);
@@ -374,6 +371,8 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	atHDel(Hom);
 	free_stars(matched_list_A);
 	free_stars(matched_list_B);
+	free_stars(star_list_A);
+	free_stars(star_list_B);
 	free_stars(star_list_A_copy);
 
 	return (0);
@@ -525,51 +524,30 @@ struct s_star *pre_list_A /* I: stars in A, with original coords */
  *    1             if there's an error
  */
 
-static int prepare_to_recalc(char *outfile, /* I: stem of files with matched items */
-int *num_matched_A, /* O: number of stars in matched set */
+static int prepare_to_recalc(int num_matched_A, /* O: number of stars in matched set */
 /*      from list A */
-struct s_star **matched_list_A, /* O: fill this with matched items from */
+struct s_star *matched_list_A, /* O: fill this with matched items from */
 /*      list A, in coord system B */
-int *num_matched_B, /* O: number of stars in matched set */
+int num_matched_B, /* O: number of stars in matched set */
 /*      from list B */
-struct s_star **matched_list_B, /* O: fill this with matched items from */
+struct s_star *matched_list_B, /* O: fill this with matched items from */
 /*      list B, in coord system B */
 struct s_star *star_list_A_copy, /* O: fill this with matched items from */
 /*      list A, with their orig coords  */
 TRANS *trans /* O: we calc herein the sx, sy fields  */
 /*      so put them into this TRANS */
 ) {
-	char matched_file_A[CMDBUFLEN + 4];
-	char matched_file_B[CMDBUFLEN + 4];
 	double Xrms, Yrms;
 
-	shAssert(outfile != NULL);
-
-	sprintf(matched_file_A, "%s.mtA", outfile);
-	if (read_matched_file(matched_file_A, num_matched_A,
-			matched_list_A) != SH_SUCCESS) {
-		shError("read_matched_file can't read data from file %s",
-				matched_file_A);
-		return (1);
-	}
-	sprintf(matched_file_B, "%s.mtB", outfile);
-	if (read_matched_file(matched_file_B, num_matched_B,
-			matched_list_B) != SH_SUCCESS) {
-		shError("read_matched_file can't read data from file %s",
-				matched_file_B);
-		return (1);
-	}
-
 	/* here we find the rms of those stars we read in -- JPB 17/Jan/02 */
-	if (atCalcRMS(*num_matched_A, *matched_list_A, *num_matched_B,
-			*matched_list_B, &Xrms, &Yrms) != SH_SUCCESS) {
+	if (atCalcRMS(num_matched_A, matched_list_A, num_matched_B,
+			matched_list_B, &Xrms, &Yrms) != SH_SUCCESS) {
 		shFatal("atCalcRMS fails on matched pairs");
 	}
 	trans->sx = Xrms;
 	trans->sy = Yrms;
 	/************************************************/
-
-	if (reset_A_coords(*num_matched_A, *matched_list_A, star_list_A_copy)
+	if (reset_A_coords(num_matched_A, matched_list_A, star_list_A_copy)
 			!= 0) {
 		shError("prepare_to_recalc: reset_A_coords returns with error");
 		return (1);

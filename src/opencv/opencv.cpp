@@ -64,8 +64,8 @@ int cvResizeGaussian_data8(uint8_t *dataIn, int rx, int ry, uint8_t *dataOut,
 	for (int i = 0; i < toX * toY * chan; i++)
 		dataOut[i] = (uint8_t) out.data[i];
 
-	in = Mat();
-	out = Mat();
+	in.release();
+	out.release();
 	return 0;
 }
 
@@ -113,8 +113,11 @@ int cvResizeGaussian(fits *image, int toX, int toY, int interpolation) {
 		image->pdata[2] = image->data + (toX * toY) * 2;
 	}
 	delete[] bgrbgr;
-	in = Mat();
-	out = Mat();
+	in.release();
+	out.release();
+	channel[0].release();
+	channel[1].release();
+	channel[2].release();
 	return 0;
 }
 
@@ -186,8 +189,11 @@ int cvRotateImage(fits *image, double angle, int interpolation, int cropped) {
 
 	/* free data */
 	delete[] bgrbgr;
-	in = Mat();
-	out = Mat();
+	in.release();
+	out.release();
+	channel[0].release();
+	channel[1].release();
+	channel[2].release();
 	return 0;
 }
 
@@ -222,9 +228,8 @@ int cvCalculH(s_star *star_array_img,
 	Hom->h21 = H.at<double>(2, 1);
     Hom->h22 = H.at<double>(2, 2);
 
-	mask = Mat();
-	H = Mat();
-
+	mask.release();
+	H.release();
 	return 0;
 }
 
@@ -278,9 +283,12 @@ int cvTransformImage(fits *image, Homography Hom, int interpolation) {
 
 	/* free data */
 	delete[] bgrbgr;
-	in = Mat();
-	out = Mat();
-	H = Mat();
+	in.release();
+	out.release();
+	channel[0].release();
+	channel[1].release();
+	channel[2].release();
+	H.release();
 	return 0;
 }
 
@@ -354,8 +362,11 @@ int cvComputeFinestScale(fits *image) {
 
 	/* free data */
 	delete[] bgrbgr;
-	in = Mat();
-	out = Mat();
+	channel[0].release();
+	channel[1].release();
+	channel[2].release();
+	in.release();
+	out.release();
 
 	return 0;
 }
