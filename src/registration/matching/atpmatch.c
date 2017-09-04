@@ -941,14 +941,10 @@ struct s_star **matched_list_B
 	 *    basename.unA    stars from list A that did NOT match     array L
 	 *    basename.unB    stars from list A that did NOT match     array M
 	 */
-	sprintf(filename, "match.mtA");
-	write_array(num_stars_J, star_array_J, filename);
-	sprintf(filename, "match.mtB");
-	write_array(num_stars_K, star_array_K, filename);
-	sprintf(filename, "match.unA");
-	write_array(num_stars_L, star_array_L, filename);
-	sprintf(filename, "match.unB");
-	write_array(num_stars_M, star_array_M, filename);
+	write_array(num_stars_J, star_array_J, "match.mtA");
+	write_array(num_stars_K, star_array_K, "match.mtB");
+	write_array(num_stars_L, star_array_L, "match.unA");
+	write_array(num_stars_M, star_array_M, "match.unB");
 
 #endif
 
