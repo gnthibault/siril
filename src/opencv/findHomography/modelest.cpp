@@ -39,6 +39,9 @@
 //
 //M*/
 
+#include "opencv2/core/version.hpp"
+#if CV_MAJOR_VERSION == 2
+
 #include "precomp.hpp"
 #include "_modelest.h"
 #include <algorithm>
@@ -455,39 +458,4 @@ bool cv::Affine3DEstimator::checkSubset( const CvMat* ms1, int count )
     return j == i;
 }
 
-int cv::estimateAffine3D(InputArray _from, InputArray _to,
-                         OutputArray _out, OutputArray _inliers,
-                         double param1, double param2)
-{
-    Mat from = _from.getMat(), to = _to.getMat();
-    int count = from.checkVector(3);
-
-    assert( count >= 0 && to.checkVector(3) == count );
-
-    _out.create(3, 4, CV_64F);
-    Mat out = _out.getMat();
-
-    Mat inliers(1, count, CV_8U);
-    inliers = Scalar::all(1);
-
-    Mat dFrom, dTo;
-    from.convertTo(dFrom, CV_64F);
-    to.convertTo(dTo, CV_64F);
-    dFrom = dFrom.reshape(3, 1);
-    dTo = dTo.reshape(3, 1);
-
-    CvMat F3x4 = out;
-    CvMat mask = inliers;
-    CvMat m1 = dFrom;
-    CvMat m2 = dTo;
-
-    const double epsilon = numeric_limits<double>::epsilon();
-    param1 = param1 <= 0 ? 3 : param1;
-    param2 = (param2 < epsilon) ? 0.99 : (param2 > 1 - epsilon) ? 0.99 : param2;
-
-    int ok = Affine3DEstimator().runRANSAC(&m1, &m2, &F3x4, &mask, param1, param2 );
-    if( _inliers.needed() )
-        transpose(inliers, _inliers);
-
-    return ok;
-}
+#endif

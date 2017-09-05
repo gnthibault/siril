@@ -126,10 +126,14 @@ if test -n "$CXX" && ( test "X$CXX" != "Xno" &&
 	
 	dnl AC_MSG_WARN(CXX is "$CXX")
 	dnl http://nerdland.net/2009/07/detecting-c-libraries-with-autotools/ solution 2
-	PKG_CHECK_MODULES([OPENCV], [opencv >= 2.0],
+	PKG_CHECK_MODULES([OPENCV], [opencv >= 3.0],
+			  [AC_DEFINE([HAVE_OPENCV], [1], [Using OpenCV])]
+			  [OPENCV_LIBS="-lopencv_core -lopencv_imgproc -lopencv_calib3d"],
+			  [PKG_CHECK_MODULES([OPENCV], [opencv >= 2.0],
 			  [AC_DEFINE([HAVE_OPENCV], [1], [Using OpenCV])]
 			  [OPENCV_LIBS="-lopencv_core -lopencv_imgproc"],
-			  AC_MSG_WARN([opencv not found. Not using some image processing.]))
+			  AC_MSG_WARN([opencv not found. Not using some image processing.]))]
+			  )
 
 else
 	AC_MSG_ERROR([no C++ compiler found])

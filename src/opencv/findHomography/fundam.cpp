@@ -39,6 +39,9 @@
 //
 //M*/
 
+#include "opencv2/core/version.hpp"
+#if CV_MAJOR_VERSION == 2
+
 #include "precomp.hpp"
 #include "_modelest.h"
 
@@ -1124,64 +1127,6 @@ cv::Mat cv::findFundamentalMat( InputArray _points1, InputArray _points2,
     return cv::findFundamentalMat(_points1, _points2, method, param1, param2, _mask);
 }
 
-
-void cv::computeCorrespondEpilines( InputArray _points, int whichImage,
-                                    InputArray _Fmat, OutputArray _lines )
-{
-    Mat points = _points.getMat(), F = _Fmat.getMat();
-    int npoints = points.checkVector(2);
-    if( npoints < 0 )
-        npoints = points.checkVector(3);
-    assert( npoints >= 0 && (points.depth() == CV_32F || points.depth() == CV_32S));
-
-    _lines.create(npoints, 1, CV_32FC3, -1, true);
-    CvMat c_points = points, c_lines = _lines.getMat(), c_F = F;
-    cvComputeCorrespondEpilines(&c_points, whichImage, &c_F, &c_lines);
-}
-
-void cv::convertPointsFromHomogeneous( InputArray _src, OutputArray _dst )
-{
-    Mat src = _src.getMat();
-    int npoints = src.checkVector(3), cn = 3;
-    if( npoints < 0 )
-    {
-        npoints = src.checkVector(4);
-        if( npoints >= 0 )
-            cn = 4;
-    }
-    assert( npoints >= 0 && (src.depth() == CV_32F || src.depth() == CV_32S));
-
-    _dst.create(npoints, 1, CV_MAKETYPE(CV_32F, cn-1));
-    CvMat c_src = src, c_dst = _dst.getMat();
-    cvConvertPointsHomogeneous(&c_src, &c_dst);
-}
-
-void cv::convertPointsToHomogeneous( InputArray _src, OutputArray _dst )
-{
-    Mat src = _src.getMat();
-    int npoints = src.checkVector(2), cn = 2;
-    if( npoints < 0 )
-    {
-        npoints = src.checkVector(3);
-        if( npoints >= 0 )
-            cn = 3;
-    }
-    assert( npoints >= 0 && (src.depth() == CV_32F || src.depth() == CV_32S));
-
-    _dst.create(npoints, 1, CV_MAKETYPE(CV_32F, cn+1));
-    CvMat c_src = src, c_dst = _dst.getMat();
-    cvConvertPointsHomogeneous(&c_src, &c_dst);
-}
-
-void cv::convertPointsHomogeneous( InputArray _src, OutputArray _dst )
-{
-    int stype = _src.type(), dtype = _dst.type();
-    assert( _dst.fixedType() );
-
-    if( CV_MAT_CN(stype) > CV_MAT_CN(dtype) )
-        convertPointsFromHomogeneous(_src, _dst);
-    else
-        convertPointsToHomogeneous(_src, _dst);
-}
+#endif
 
 /* End of file. */

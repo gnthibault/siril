@@ -40,6 +40,9 @@
 //
 //M*/
 
+#include "opencv2/core/version.hpp"
+#if CV_MAJOR_VERSION == 2
+
 #include "precomp.hpp"
 #include <stdio.h>
 #include <iterator>
@@ -3252,17 +3255,6 @@ void cv::Rodrigues(InputArray _src, OutputArray _dst, OutputArray _jacobian)
         dst = Scalar(0);
 }
 
-void cv::matMulDeriv( InputArray _Amat, InputArray _Bmat,
-                      OutputArray _dABdA, OutputArray _dABdB )
-{
-    Mat A = _Amat.getMat(), B = _Bmat.getMat();
-    _dABdA.create(A.rows*B.cols, A.rows*A.cols, A.type());
-    _dABdB.create(A.rows*B.cols, B.rows*B.cols, A.type());
-    CvMat matA = A, matB = B, c_dABdA = _dABdA.getMat(), c_dABdB = _dABdB.getMat();
-    cvCalcMatMulDeriv(&matA, &matB, &c_dABdA, &c_dABdB);
-}
-
-
 void cv::composeRT( InputArray _rvec1, InputArray _tvec1,
                     InputArray _rvec2, InputArray _tvec2,
                     OutputArray _rvec3, OutputArray _tvec3,
@@ -3384,20 +3376,6 @@ void cv::projectPoints( InputArray _opoints,
     cvProjectPoints2( &c_objectPoints, &c_rvec, &c_tvec, &c_cameraMatrix, &c_distCoeffs,
                       &c_imagePoints, pdpdrot, pdpdt, pdpdf, pdpdc, pdpddist, aspectRatio );
 }
-
-cv::Mat cv::initCameraMatrix2D( InputArrayOfArrays objectPoints,
-                                InputArrayOfArrays imagePoints,
-                                Size imageSize, double aspectRatio )
-{
-    Mat objPt, imgPt, npoints, cameraMatrix(3, 3, CV_64F);
-    collectCalibrationData( objectPoints, imagePoints, noArray(),
-                            objPt, imgPt, 0, npoints );
-    CvMat _objPt = objPt, _imgPt = imgPt, _npoints = npoints, _cameraMatrix = cameraMatrix;
-    cvInitIntrinsicParams2D( &_objPt, &_imgPt, &_npoints,
-                             imageSize, &_cameraMatrix, aspectRatio );
-    return cameraMatrix;
-}
-
 
 double cv::calibrateCamera( InputArrayOfArrays _objectPoints,
                             InputArrayOfArrays _imagePoints,
@@ -3562,22 +3540,6 @@ void cv::stereoRectify( InputArray _cameraMatrix1, InputArray _distCoeffs1,
     cvStereoRectify( &c_cameraMatrix1, &c_cameraMatrix2, &c_distCoeffs1, &c_distCoeffs2,
         imageSize, &c_R, &c_T, &c_R1, &c_R2, &c_P1, &c_P2, p_Q, flags, alpha,
         newImageSize, (CvRect*)validPixROI1, (CvRect*)validPixROI2);
-}
-
-bool cv::stereoRectifyUncalibrated( InputArray _points1, InputArray _points2,
-                                    InputArray _Fmat, Size imgSize,
-                                    OutputArray _Hmat1, OutputArray _Hmat2, double threshold )
-{
-    int rtype = CV_64F;
-    _Hmat1.create(3, 3, rtype);
-    _Hmat2.create(3, 3, rtype);
-    Mat F = _Fmat.getMat();
-    Mat points1 = _points1.getMat(), points2 = _points2.getMat();
-    CvMat c_pt1 = points1, c_pt2 = points2;
-    CvMat c_F, *p_F=0, c_H1 = _Hmat1.getMat(), c_H2 = _Hmat2.getMat();
-    if( F.size() == Size(3, 3) )
-        p_F = &(c_F = F);
-    return cvStereoRectifyUncalibrated(&c_pt1, &c_pt2, p_F, imgSize, &c_H1, &c_H2, threshold) > 0;
 }
 
 cv::Mat cv::getOptimalNewCameraMatrix( InputArray _cameraMatrix,
@@ -3801,6 +3763,8 @@ float cv::rectify3Collinear( InputArray _cameraMatrix1, InputArray _distCoeffs1,
     return (float)((P3.at<double>(idx,3)/P3.at<double>(idx,idx))/
                    (P2.at<double>(idx,3)/P2.at<double>(idx,idx)));
 }
+
+#endif
 
 
 /* End of file. */

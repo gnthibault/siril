@@ -29,13 +29,20 @@
 #include <iomanip>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include "opencv2/core/version.hpp"
+#if CV_MAJOR_VERSION == 2
+#include "opencv/findHomography/calib3d.hpp"
+#else
+#include <opencv2/calib3d.hpp>
+#endif
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "registration/matching/misc.h"
 #include "registration/matching/atpmatch.h"
 #include "opencv.h"
 #include "opencv/ecc/ecc.h"
-#include "opencv/findHomography/calib3d.hpp"
+
 
 #define defaultRANSACReprojThreshold 3
 

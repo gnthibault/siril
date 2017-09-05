@@ -43,9 +43,11 @@
 #ifndef __OPENCV_CALIB3D_HPP__
 #define __OPENCV_CALIB3D_HPP__
 
+#include "opencv2/core/version.hpp"
+#if CV_MAJOR_VERSION == 2
+
 #include <opencv2/core/core.hpp>
-#include <opencv2/features2d/features2d.hpp>
-#include "affine.hpp"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -442,11 +444,6 @@ CV_EXPORTS_W void decomposeProjectionMatrix( InputArray projMatrix, OutputArray 
                                              OutputArray rotMatrixZ=noArray(),
                                              OutputArray eulerAngles=noArray() );
 
-//! computes derivatives of the matrix product w.r.t each of the multiplied matrix coefficients
-CV_EXPORTS_W void matMulDeriv( InputArray A, InputArray B,
-                               OutputArray dABdA,
-                               OutputArray dABdB );
-
 //! composes 2 [R|t] transformations together. Also computes the derivatives of the result w.r.t the arguments
 CV_EXPORTS_W void composeRT( InputArray rvec1, InputArray tvec1,
                              InputArray rvec2, InputArray tvec2,
@@ -490,10 +487,6 @@ CV_EXPORTS_W void solvePnPRansac( InputArray objectPoints,
                                   OutputArray inliers = noArray(),
                                   int flags = ITERATIVE);
 
-//! initializes camera matrix from a few 3D points and the corresponding projections.
-CV_EXPORTS_W Mat initCameraMatrix2D( InputArrayOfArrays objectPoints,
-                                     InputArrayOfArrays imagePoints,
-                                     Size imageSize, double aspectRatio=1. );
 
 enum { CALIB_CB_ADAPTIVE_THRESH = 1, CALIB_CB_NORMALIZE_IMAGE = 2,
        CALIB_CB_FILTER_QUADS = 4, CALIB_CB_FAST_CHECK = 8 };
@@ -512,11 +505,6 @@ CV_EXPORTS_W void drawChessboardCorners( InputOutputArray image, Size patternSiz
 
 enum { CALIB_CB_SYMMETRIC_GRID = 1, CALIB_CB_ASYMMETRIC_GRID = 2,
        CALIB_CB_CLUSTERING = 4 };
-
-//! finds circles' grid pattern of the specified size in the image
-CV_EXPORTS_W bool findCirclesGrid( InputArray image, Size patternSize,
-                                 OutputArray centers, int flags=CALIB_CB_SYMMETRIC_GRID,
-                                 const Ptr<FeatureDetector> &blobDetector = new SimpleBlobDetector());
 
 //! the deprecated function. Use findCirclesGrid() instead of it.
 CV_EXPORTS_W bool findCirclesGridDefault( InputArray image, Size patternSize,
@@ -587,12 +575,6 @@ CV_EXPORTS_W void stereoRectify( InputArray cameraMatrix1, InputArray distCoeffs
                                double alpha=-1, Size newImageSize=Size(),
                                CV_OUT Rect* validPixROI1=0, CV_OUT Rect* validPixROI2=0 );
 
-//! computes the rectification transformation for an uncalibrated stereo camera (zero distortion is assumed)
-CV_EXPORTS_W bool stereoRectifyUncalibrated( InputArray points1, InputArray points2,
-                                             InputArray F, Size imgSize,
-                                             OutputArray H1, OutputArray H2,
-                                             double threshold=5 );
-
 //! computes the rectification transformations for 3-head camera, where all the heads are on the same line.
 CV_EXPORTS_W float rectify3Collinear( InputArray cameraMatrix1, InputArray distCoeffs1,
                                       InputArray cameraMatrix2, InputArray distCoeffs2,
@@ -610,14 +592,6 @@ CV_EXPORTS_W Mat getOptimalNewCameraMatrix( InputArray cameraMatrix, InputArray 
                                             Size imageSize, double alpha, Size newImgSize=Size(),
                                             CV_OUT Rect* validPixROI=0, bool centerPrincipalPoint=false);
 
-//! converts point coordinates from normal pixel coordinates to homogeneous coordinates ((x,y)->(x,y,1))
-CV_EXPORTS_W void convertPointsToHomogeneous( InputArray src, OutputArray dst );
-
-//! converts point coordinates from homogeneous to normal pixel coordinates ((x,y,z)->(x/z, y/z))
-CV_EXPORTS_W void convertPointsFromHomogeneous( InputArray src, OutputArray dst );
-
-//! for backward compatibility
-CV_EXPORTS void convertPointsHomogeneous( InputArray src, OutputArray dst );
 
 //! the algorithm for finding fundamental matrix
 enum
@@ -638,11 +612,6 @@ CV_EXPORTS_W Mat findFundamentalMat( InputArray points1, InputArray points2,
 CV_EXPORTS Mat findFundamentalMat( InputArray points1, InputArray points2,
                                    OutputArray mask, int method=FM_RANSAC,
                                    double param1=3., double param2=0.99);
-
-//! finds coordinates of epipolar lines corresponding the specified points
-CV_EXPORTS_W void computeCorrespondEpilines( InputArray points,
-                                             int whichImage, InputArray F,
-                                             OutputArray lines );
 
 CV_EXPORTS_W void triangulatePoints( InputArray projMatr1, InputArray projMatr2,
                                      InputArray projPoints1, InputArray projPoints2,
@@ -741,10 +710,6 @@ CV_EXPORTS_W void reprojectImageTo3D( InputArray disparity,
                                       bool handleMissingValues=false,
                                       int ddepth=-1 );
 
-CV_EXPORTS_W  int estimateAffine3D(InputArray src, InputArray dst,
-                                   OutputArray out, OutputArray inliers,
-                                   double ransacThreshold=3, double confidence=0.99);
-
 namespace fisheye
 {
     enum{
@@ -758,10 +723,6 @@ namespace fisheye
         CALIB_FIX_K4                = 128,
         CALIB_FIX_INTRINSIC         = 256
     };
-
-    //! projects 3D points using fisheye model
-    CV_EXPORTS void projectPoints(InputArray objectPoints, OutputArray imagePoints, const Affine3d& affine,
-        InputArray K, InputArray D, double alpha = 0, OutputArray jacobian = noArray());
 
     //! projects points using fisheye model
     CV_EXPORTS void projectPoints(InputArray objectPoints, OutputArray imagePoints, InputArray rvec, InputArray tvec,
@@ -806,6 +767,8 @@ namespace fisheye
 }
 
 }
+
+#endif
 
 #endif
 #endif

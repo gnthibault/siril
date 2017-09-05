@@ -43,6 +43,9 @@
 #ifndef _CV_MODEL_EST_H_
 #define _CV_MODEL_EST_H_
 
+#include "opencv2/core/version.hpp"
+#if CV_MAJOR_VERSION == 2
+
 #include "calib3d.hpp"
 
 class CV_EXPORTS CvModelEstimator2
@@ -76,5 +79,7 @@ protected:
     int maxBasicSolutions;
     bool checkPartialSubsets;
 };
+
+#endif
 
 #endif // _CV_MODEL_EST_H_
