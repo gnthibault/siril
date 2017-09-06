@@ -232,29 +232,12 @@ int atMatchLists(int numA, s_star *listA, int numB, s_star *listB,
 		struct s_star **matched_list_B);
 
 int
-atBuildSmallFile(double ra, double dec,
-                 int numA, struct s_star *listA, int nobj, char *outfile);
-
-int
-atSmallTrans(int numA, struct s_star *listA,
-             int numB, struct s_star *star_array_B,
-             int num_triangles_B, struct s_triangle *triangle_array_B,
-             double radius, int nobj, double min_scale, double max_scale,
-             double rotation_deg, double tolerance_deg,
-             int max_iter, double halt_sigma,
-             TRANS *trans, int *ntop, int **top_votes);
-
-int
 atRecalcTrans(int numA, struct s_star *listA,
               int numB, struct s_star *listB,
               int max_iter, double halt_sigma, TRANS *trans);
 
 int atPrepareHomography(int numA, struct s_star *listA, int numB,
 		struct s_star *listB, Homography *H);
-
-int atFindMedtf(int num_matched_A, s_star *listA,
-                int num_matched_B, s_star *listB,
-                double medsigclip, MEDTF *medtf);
 
 int
 atCalcRMS(int num_A, struct s_star *mlistA,

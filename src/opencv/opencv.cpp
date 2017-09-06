@@ -240,17 +240,17 @@ int cvCalculH(s_star *star_array_img,
 	return 0;
 }
 
-int cvTransformImage(fits *image, Homography Hom, int interpolation) {
+int cvTransformImage(fits *image, point ref, Homography Hom, int interpolation) {
 	assert(image->data);
 	assert(image->rx);
 	assert(image->ry);
 
-	int ndata = image->rx * image->ry;
-
+	int ndata = ref.x * ref.y;
+	WORD *newdata;
 	WORD *bgrbgr = fits_to_bgrbgr(image);
 
 	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
-	Mat out(image->ry, image->rx, CV_16UC3);
+	Mat out(ref.y, ref.x, CV_16UC3);
 	Mat H = Mat::eye(3, 3, CV_64FC1);
 
 	H.at<double>(0, 0) = Hom.h00;
@@ -263,10 +263,20 @@ int cvTransformImage(fits *image, Homography Hom, int interpolation) {
 	H.at<double>(2, 1) = Hom.h21;
 	H.at<double>(2, 2) = Hom.h22;
 
-	warpPerspective(in, out, H, in.size(), interpolation);
+	warpPerspective(in, out, H, Size(ref.x, ref.y), interpolation);
 
 	Mat channel[3];
 	split(out, channel);
+
+	if (image->ry != ref.y || image->rx != ref.x) {
+		newdata = (WORD*) realloc(image->data,
+				ref.x * ref.y * sizeof(WORD) * image->naxes[2]);
+			if (!newdata) {
+				free(newdata);
+				return 1;
+			}
+			image->data = newdata;
+	}
 
 	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 	if (image->naxes[2] == 3) {

@@ -63,9 +63,6 @@ void
 shFatal(char *format, ...);
 
 void
-shDebugSet(int level);
-
-void
 shDebug(int level, char *format, ...);
 
    /*
@@ -151,35 +148,9 @@ void atTransOrderSet(int order);
 int atTransOrderGet(void);
 TRANS *atTransNew(void);
 Homography *atHNew(void);
-TRANS *getGuessTrans(char *intransfile);
-TRANS *getIdentityTrans(void);
 void atTransDel(TRANS *trans);
 void atHDel(Homography *H);
 void print_H(Homography *H);
-void print_trans(TRANS *trans);
-
-	/*
-	 * The MEDTF structure holds statistics on the difference between
-	 * matched pairs of stars, assuming that they can be matched
-	 * by a simple translation -- without change in scale or rotation.
-	 * Its elements are set by the atFindMedtf function, which is
-	 * called only if the user specifies a command-line argument.
-	 */
-
-typedef struct Medtf {
-	double mdx;          /* median offset in x-coord between lists */
-	double mdy;          /* median offset in y-coord between lists */
-	double adx;          /* average offset in x-coord between lists */
-	double ady;          /* average offset in y-coord between lists */
-	double sdx;          /* clipped stdev of differences in x-coord */
-	double sdy;          /* clipped stdev of differences in y-coord */
-	int nm;              /* number of matched pairs used in calculations */
-} MEDTF;
-
-MEDTF *atMedtfNew(void);
-void atMedtfDel(MEDTF *medtf);
-void print_medtf(MEDTF *medtf);
-
 
    /*
     * create a new s_star structure
@@ -208,18 +179,6 @@ get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list);
 void
 free_stars(struct s_star *head);
 
-
-int
-read_matched_file(char *filename, int *num_stars, struct s_star **list);
-
-   /*
-    * little routines to support read_star_file
-    */
-int
-is_blank(char *line);
-
-int
-get_value(char *str, double *val);
 
 #endif    /* MISC_H */
 #endif

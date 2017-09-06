@@ -533,6 +533,7 @@ int register_star_alignment(struct registration_args *args) {
 	regdata *current_regdata;
 	starFinder sf;
 	fits fit;
+	point ref;
 	struct ser_struct *new_ser = NULL;
 
 	memset(&fit, 0, sizeof(fits));
@@ -594,6 +595,9 @@ int register_star_alignment(struct registration_args *args) {
 		return 1;
 	}
 	redraw(com.cvport, REMAP_NONE); // draw stars
+
+	ref.x = fit.rx * SUPER_SAMPLING;
+	ref.y = fit.ry * SUPER_SAMPLING;
 
 	/* we copy com.stars to refstars in case user take a look to another image of the sequence
 	 * that would destroy com.stars
@@ -733,7 +737,7 @@ int register_star_alignment(struct registration_args *args) {
 						 * the image is resized down to its final size so as to produce a very sharp lines,
 						 * edges, and much cleaner looking fonts. */
 						cvResizeGaussian(&fit, fit.rx * SUPER_SAMPLING, fit.ry * SUPER_SAMPLING, OPENCV_CUBIC);
-						cvTransformImage(&fit, H, args->interpolation);
+						cvTransformImage(&fit, ref, H, args->interpolation);
 						cvResizeGaussian(&fit, fit.rx / SUPER_SAMPLING, fit.ry / SUPER_SAMPLING, OPENCV_CUBIC);
 
 						fits_flip_top_to_bottom(&fit);
