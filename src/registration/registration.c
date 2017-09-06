@@ -596,8 +596,8 @@ int register_star_alignment(struct registration_args *args) {
 	}
 	redraw(com.cvport, REMAP_NONE); // draw stars
 
-	ref.x = fit.rx * SUPER_SAMPLING;
-	ref.y = fit.ry * SUPER_SAMPLING;
+	ref.x = fit.rx;
+	ref.y = fit.ry;
 
 	/* we copy com.stars to refstars in case user take a look to another image of the sequence
 	 * that would destroy com.stars
@@ -624,6 +624,7 @@ int register_star_alignment(struct registration_args *args) {
 	fclose(pfile);
 #endif
 	fitted_stars = (sf.nb_stars > MAX_STARS_FITTED) ? MAX_STARS_FITTED : sf.nb_stars;
+	siril_log_color_message(_("Reference Image: Limiting to %d brightest stars\n"), "green", MAX_STARS_FITTED);
 	FWHM_average(refstars, &FWHMx, &FWHMy, fitted_stars);
 	siril_log_message(_("FWHMx:%*.2f px\n"), 12, FWHMx);
 	siril_log_message(_("FWHMy:%*.2f px\n"), 12, FWHMy);
@@ -731,15 +732,7 @@ int register_star_alignment(struct registration_args *args) {
 
 					if (!args->translation_only) {
 						fits_flip_top_to_bottom(&fit);	// this is because in cvTransformImage, rotation center point is at (0, 0)
-
-						/* An alternative method for generating an improved rotation: Basically we apply the operation to an image
-						 * that is at least twice (or more) the size of the final image size wanted. After rotating the image,
-						 * the image is resized down to its final size so as to produce a very sharp lines,
-						 * edges, and much cleaner looking fonts. */
-						cvResizeGaussian(&fit, fit.rx * SUPER_SAMPLING, fit.ry * SUPER_SAMPLING, OPENCV_CUBIC);
 						cvTransformImage(&fit, ref, H, args->interpolation);
-						cvResizeGaussian(&fit, fit.rx / SUPER_SAMPLING, fit.ry / SUPER_SAMPLING, OPENCV_CUBIC);
-
 						fits_flip_top_to_bottom(&fit);
 					}
 

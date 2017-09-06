@@ -255,10 +255,10 @@ int cvTransformImage(fits *image, point ref, Homography Hom, int interpolation) 
 
 	H.at<double>(0, 0) = Hom.h00;
 	H.at<double>(0, 1) = Hom.h01;
-	H.at<double>(0, 2) = Hom.h02 * SUPER_SAMPLING;
+	H.at<double>(0, 2) = Hom.h02;
 	H.at<double>(1, 0) = Hom.h10;
 	H.at<double>(1, 1) = Hom.h11;
-	H.at<double>(1, 2) = Hom.h12 * SUPER_SAMPLING;
+	H.at<double>(1, 2) = Hom.h12;
 	H.at<double>(2, 0) = Hom.h20;
 	H.at<double>(2, 1) = Hom.h21;
 	H.at<double>(2, 2) = Hom.h22;
@@ -271,11 +271,11 @@ int cvTransformImage(fits *image, point ref, Homography Hom, int interpolation) 
 	if (image->ry != ref.y || image->rx != ref.x) {
 		newdata = (WORD*) realloc(image->data,
 				ref.x * ref.y * sizeof(WORD) * image->naxes[2]);
-			if (!newdata) {
-				free(newdata);
-				return 1;
-			}
-			image->data = newdata;
+		if (!newdata) {
+			free(newdata);
+			return 1;
+		}
+		image->data = newdata;
 	}
 
 	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));

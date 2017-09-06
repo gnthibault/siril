@@ -132,8 +132,8 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	double triangle_radius = AT_TRIANGLE_RADIUS; /* in triangle-space coords */
 	double match_radius = AT_MATCH_RADIUS; /* in units of list B */
 	double scale = -1.0;
-	double min_scale = 0.99;
-	double max_scale = 1.01;
+	double min_scale = -1.0;
+	double max_scale = -1.0;
 	double rot_angle = AT_MATCH_NOANGLE; /* by default, any angle is okay */
 	double rot_tol = AT_MATCH_NOANGLE;
 	double halt_sigma = AT_MATCH_HALTSIGMA;
