@@ -128,7 +128,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	int num_matched_A, num_matched_B;
 	int numA_copy;
 	int max_iter = AT_MATCH_MAXITER;
-	int trans_order = AT_TRANS_LINEAR;
+	int trans_order = AT_TRANS_LINEAR; /* Good enough to start */
 	double triangle_radius = AT_TRIANGLE_RADIUS; /* in triangle-space coords */
 	double match_radius = AT_MATCH_RADIUS; /* in units of list B */
 	double scale = -1.0;

@@ -210,7 +210,6 @@ int cvCalculH(s_star *star_array_img,
 	std::vector<Point2f> ref;
 	std::vector<Point2f> img;
 	Mat mask;
-
 	int i;
 
 	/* build vectors with lists of stars. */

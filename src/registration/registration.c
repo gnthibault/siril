@@ -612,19 +612,12 @@ int register_star_alignment(struct registration_args *args) {
 		i++;
 	}
 
-#ifdef DEBUG
-	FILE *pfile;
-
-	pfile = fopen("ref.txt", "w+");
-	fprintf(pfile, "REFERENCE IMAGE\n");
-	for (i = 0; i < MAX_STARS_FITTED; i++) {
-		fprintf(pfile, "%.3lf\t%.3lf\t%.3lf\n",
-				refstars[i]->xpos, refstars[i]->ypos, refstars[i]->mag);
+	if (sf.nb_stars > MAX_STARS_FITTED) {
+		fitted_stars = sf.nb_stars;
+		siril_log_color_message(_("Reference Image: Limiting to %d brightest stars\n"), "green", MAX_STARS_FITTED);
+	} else {
+		fitted_stars = sf.nb_stars;
 	}
-	fclose(pfile);
-#endif
-	fitted_stars = (sf.nb_stars > MAX_STARS_FITTED) ? MAX_STARS_FITTED : sf.nb_stars;
-	siril_log_color_message(_("Reference Image: Limiting to %d brightest stars\n"), "green", MAX_STARS_FITTED);
 	FWHM_average(refstars, &FWHMx, &FWHMy, fitted_stars);
 	siril_log_message(_("FWHMx:%*.2f px\n"), 12, FWHMx);
 	siril_log_message(_("FWHMy:%*.2f px\n"), 12, FWHMy);
@@ -696,22 +689,15 @@ int register_star_alignment(struct registration_args *args) {
 						continue;
 					}
 
-#ifdef DEBUG
-					FILE *pfile2;
-
-					pfile2 = fopen("im.txt", "w+");
-					fprintf(pfile2, "IMAGE %d\n", frame);
-					for (i = 0; i < MAX_STARS_FITTED; i++) {
-						fprintf(pfile2, "%.3lf\t%.3lf\t%.3lf\n", stars[i]->xpos,
-								stars[i]->ypos, stars[i]->mag);
+					if (sf.nb_stars > fitted_stars) {
+						if (sf.nb_stars > MAX_STARS_FITTED) {
+							siril_log_color_message(_("Target Image: Limiting to %d brightest stars\n"), "green", MAX_STARS_FITTED);
+						}
+						nbpoints = fitted_stars;
 					}
-					fprintf(pfile2, "\n\n", frame);
-					fclose(pfile2);
-
-#endif
-
-					nbpoints = (sf.nb_stars < fitted_stars) ?
-						sf.nb_stars : fitted_stars;
+					else {
+						nbpoints = sf.nb_stars;
+					}
 
 					if (new_star_match(stars, refstars, nbpoints, &H)) {
 						siril_log_color_message(_("Cannot perform star matching. Image %d skipped\n"),

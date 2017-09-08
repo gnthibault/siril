@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 11:59+0200\n"
+"POT-Creation-Date: 2017-09-06 22:40+0200\n"
 "PO-Revision-Date: 2017-06-13 12:35+0100\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
@@ -2728,7 +2728,7 @@ msgstr ""
 "de gekozen methode en laag registreren (geladen in de \"Beeld sequentie\" "
 "tab, huidige sequentie is ook onderaan dit venster)."
 
-#: ../src/gui/siril3.glade.h:603 ../src/registration/registration.c:1028
+#: ../src/gui/siril3.glade.h:603 ../src/registration/registration.c:1030
 msgid "Load a sequence first."
 msgstr "Laad eerst een sequentie."
 
@@ -3616,7 +3616,7 @@ msgid "Error in layers alignment."
 msgstr "Fout in het uitlijnen van de lagen."
 
 #: ../src/compositing/align_rgb.c:117 ../src/compositing/compositing.c:609
-#: ../src/registration/registration.c:1266
+#: ../src/registration/registration.c:1268
 msgid "Registration complete."
 msgstr "Registratie klaar."
 
@@ -3667,7 +3667,7 @@ msgstr "Minimaal twee lagen moeten eerst geladen worden!\n"
 #: ../src/gui/callbacks.c:5703 ../src/gui/callbacks.c:5761
 #: ../src/io/conversion.c:485 ../src/io/image_formats_libraries.c:97
 #: ../src/io/image_formats_libraries.c:154
-#: ../src/registration/registration.c:1152
+#: ../src/registration/registration.c:1154
 msgid "Warning"
 msgstr "Opgelet"
 
@@ -3706,7 +3706,7 @@ msgstr "Pas laag %d tot %g maal helderder\n"
 #: ../src/gui/callbacks.c:5011 ../src/gui/callbacks.c:5348
 #: ../src/gui/callbacks.c:5495 ../src/gui/callbacks.c:5804
 #: ../src/gui/callbacks.c:5953 ../src/io/conversion.c:454
-#: ../src/registration/registration.c:1141 ../src/stacking/stacking.c:1888
+#: ../src/registration/registration.c:1143 ../src/stacking/stacking.c:1888
 #: ../src/stacking/stacking.c:2015
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Andere taak al bezig, huidige wordt genegeerd.\n"
@@ -5816,7 +5816,7 @@ msgid "Added a registration method: %s\n"
 msgstr "Nieuwe registratiemethode: %s\n"
 
 #: ../src/registration/registration.c:215
-#: ../src/registration/registration.c:548
+#: ../src/registration/registration.c:549
 msgid "Recomputing already existing registration for this layer\n"
 msgstr "Herberekenen van de al bestaande registraties voor deze laag\n"
 
@@ -5830,20 +5830,20 @@ msgstr ""
 "Registratie: kon eerste beeld voor registratie niet laden, stopgezet.\n"
 
 #: ../src/registration/registration.c:294
-#: ../src/registration/registration.c:884
+#: ../src/registration/registration.c:886
 #, c-format
 msgid "Register: processing image %s\n"
 msgstr "Registratie: beweking van beeld %s\n"
 
 #: ../src/registration/registration.c:396
 #: ../src/registration/registration.c:486
-#: ../src/registration/registration.c:786
-#: ../src/registration/registration.c:941
+#: ../src/registration/registration.c:788
+#: ../src/registration/registration.c:943
 msgid "Registration finished.\n"
 msgstr "Registratie klaar.\n"
 
 #: ../src/registration/registration.c:397
-#: ../src/registration/registration.c:944
+#: ../src/registration/registration.c:946
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "Beste beeld: #%d.\n"
@@ -5903,93 +5903,103 @@ msgid "dy:%+*.2f px\n"
 msgstr "dy:%+*.2f px\n"
 
 #: ../src/registration/registration.c:521
-#: ../src/registration/registration.c:624
+#: ../src/registration/registration.c:629
 #, c-format
 msgid "FWHMx:%*.2f px\n"
 msgstr "FWHMx:%*.2f px\n"
 
 #: ../src/registration/registration.c:522
-#: ../src/registration/registration.c:625
+#: ../src/registration/registration.c:630
 #, c-format
 msgid "FWHMy:%*.2f px\n"
 msgstr "FWHMy:%*.2f px\n"
 
-#: ../src/registration/registration.c:573
-#: ../src/registration/registration.c:844
+#: ../src/registration/registration.c:574
+#: ../src/registration/registration.c:846
 msgid "Could not load reference image\n"
 msgstr "Referentiebeeld kon niet worden geladen\n"
 
-#: ../src/registration/registration.c:579
+#: ../src/registration/registration.c:580
 msgid "Reference Image:\n"
 msgstr "Referentiebeeld:\n"
 
-#: ../src/registration/registration.c:590
+#: ../src/registration/registration.c:591
 msgid "There are not enough stars in reference image to perform alignment\n"
 msgstr ""
 "Er zijn niet genoeg sterren in het referentiebeeld om de uitlijning uit te "
 "voeren\n"
 
-#: ../src/registration/registration.c:682
+#: ../src/registration/registration.c:627
+#, c-format
+msgid "Reference Image: Limiting to %d brightest stars\n"
+msgstr ""
+
+#: ../src/registration/registration.c:687
 #, c-format
 msgid "Frame %d:\n"
 msgstr "Frame %d:\n"
 
-#: ../src/registration/registration.c:687
+#: ../src/registration/registration.c:692
 #, c-format
 msgid "Not enough stars. Image %d skipped\n"
 msgstr "Niet genoeg sterren. Beeld %d overgeslagen\n"
 
-#: ../src/registration/registration.c:712
+#: ../src/registration/registration.c:717
+#, c-format
+msgid "Target Image: Limiting to %d brightest stars\n"
+msgstr ""
+
+#: ../src/registration/registration.c:722
 #, c-format
 msgid "Cannot perform star matching. Image %d skipped\n"
 msgstr ""
 "Kon ster uitlijnning niet uitvoeren. Beeld %d overgeslagen\n"
 "\n"
 
-#: ../src/registration/registration.c:787
+#: ../src/registration/registration.c:789
 #, c-format
 msgid "%d images processed.\n"
 msgstr "%d beelden bewerkt.\n"
 
-#: ../src/registration/registration.c:789
+#: ../src/registration/registration.c:791
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr "Totaal: %d gefaald, %d geregistreerd.\n"
 
-#: ../src/registration/registration.c:796
+#: ../src/registration/registration.c:798
 msgid "Registration aborted.\n"
 msgstr "Registratie stopgezet.\n"
 
-#: ../src/registration/registration.c:897
+#: ../src/registration/registration.c:899
 #, c-format
 msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "ECC uitlijnong kan niet worden uitgevoerd voor beeld %d\n"
 
-#: ../src/registration/registration.c:943
+#: ../src/registration/registration.c:945
 #, c-format
 msgid "%d frames were excluded.\n"
 msgstr "%d beelden uitgesloten.\n"
 
-#: ../src/registration/registration.c:1031
+#: ../src/registration/registration.c:1033
 msgid "Select an area in image first, and select images in the sequence."
 msgstr "Kies eerst een regio in het beeld en beelden uit de sequentie."
 
-#: ../src/registration/registration.c:1033
+#: ../src/registration/registration.c:1035
 msgid "Select images in the sequence."
 msgstr "Kies beelden uit de sequentie."
 
-#: ../src/registration/registration.c:1035
+#: ../src/registration/registration.c:1037
 msgid "Select an area in image first."
 msgstr "Kies eerst een regio in het beeld."
 
-#: ../src/registration/registration.c:1151
+#: ../src/registration/registration.c:1153
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
 msgstr ""
 "Alle voorwaarden zijn niet vervuld voor registratie. Kies eerst een regio.\n"
 
-#: ../src/registration/registration.c:1186
+#: ../src/registration/registration.c:1188
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "Registratie: processing met methode: %s\n"

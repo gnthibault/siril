@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 11:59+0200\n"
+"POT-Creation-Date: 2017-09-06 22:40+0200\n"
 "PO-Revision-Date: 2017-06-18 23:33+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -2595,7 +2595,7 @@ msgstr ""
 "开启对齐处理。将使用所选定的方法和参考通道来对齐队列中的图像（在“图像队列”标"
 "签页中载入，当前队列名称也会在窗口底部显示）。"
 
-#: ../src/gui/siril3.glade.h:603 ../src/registration/registration.c:1028
+#: ../src/gui/siril3.glade.h:603 ../src/registration/registration.c:1030
 msgid "Load a sequence first."
 msgstr "请先载入队列！"
 
@@ -3428,7 +3428,7 @@ msgid "Error in layers alignment."
 msgstr "通道对齐错误。"
 
 #: ../src/compositing/align_rgb.c:117 ../src/compositing/compositing.c:609
-#: ../src/registration/registration.c:1266
+#: ../src/registration/registration.c:1268
 msgid "Registration complete."
 msgstr "对齐完成。"
 
@@ -3477,7 +3477,7 @@ msgstr "必须先期载入至少两个通道！\n"
 #: ../src/gui/callbacks.c:5703 ../src/gui/callbacks.c:5761
 #: ../src/io/conversion.c:485 ../src/io/image_formats_libraries.c:97
 #: ../src/io/image_formats_libraries.c:154
-#: ../src/registration/registration.c:1152
+#: ../src/registration/registration.c:1154
 msgid "Warning"
 msgstr "警告"
 
@@ -3516,7 +3516,7 @@ msgstr "Readjusting layer %d to %g times bright\n"
 #: ../src/gui/callbacks.c:5011 ../src/gui/callbacks.c:5348
 #: ../src/gui/callbacks.c:5495 ../src/gui/callbacks.c:5804
 #: ../src/gui/callbacks.c:5953 ../src/io/conversion.c:454
-#: ../src/registration/registration.c:1141 ../src/stacking/stacking.c:1888
+#: ../src/registration/registration.c:1143 ../src/stacking/stacking.c:1888
 #: ../src/stacking/stacking.c:2015
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Another task is already in progress, ignoring new request.\n"
@@ -5552,7 +5552,7 @@ msgid "Added a registration method: %s\n"
 msgstr "启用一种对齐方法: %s\n"
 
 #: ../src/registration/registration.c:215
-#: ../src/registration/registration.c:548
+#: ../src/registration/registration.c:549
 msgid "Recomputing already existing registration for this layer\n"
 msgstr "对该通道重新计算已经存在的对齐数据\n"
 
@@ -5565,20 +5565,20 @@ msgid "Register: could not load first image to register, aborting.\n"
 msgstr "Register: could not load first image to register, aborting.\n"
 
 #: ../src/registration/registration.c:294
-#: ../src/registration/registration.c:884
+#: ../src/registration/registration.c:886
 #, c-format
 msgid "Register: processing image %s\n"
 msgstr "对齐：处理图像 %s\n"
 
 #: ../src/registration/registration.c:396
 #: ../src/registration/registration.c:486
-#: ../src/registration/registration.c:786
-#: ../src/registration/registration.c:941
+#: ../src/registration/registration.c:788
+#: ../src/registration/registration.c:943
 msgid "Registration finished.\n"
 msgstr "对齐结束。\n"
 
 #: ../src/registration/registration.c:397
-#: ../src/registration/registration.c:944
+#: ../src/registration/registration.c:946
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "最佳帧： #%d.\n"
@@ -5637,88 +5637,98 @@ msgid "dy:%+*.2f px\n"
 msgstr "dy:%+*.2f px\n"
 
 #: ../src/registration/registration.c:521
-#: ../src/registration/registration.c:624
+#: ../src/registration/registration.c:629
 #, c-format
 msgid "FWHMx:%*.2f px\n"
 msgstr "FWHMx:%*.2f px\n"
 
 #: ../src/registration/registration.c:522
-#: ../src/registration/registration.c:625
+#: ../src/registration/registration.c:630
 #, c-format
 msgid "FWHMy:%*.2f px\n"
 msgstr "FWHMy:%*.2f px\n"
 
-#: ../src/registration/registration.c:573
-#: ../src/registration/registration.c:844
+#: ../src/registration/registration.c:574
+#: ../src/registration/registration.c:846
 msgid "Could not load reference image\n"
 msgstr "无法载入参考帧\n"
 
-#: ../src/registration/registration.c:579
+#: ../src/registration/registration.c:580
 msgid "Reference Image:\n"
 msgstr "参考帧:\n"
 
-#: ../src/registration/registration.c:590
+#: ../src/registration/registration.c:591
 msgid "There are not enough stars in reference image to perform alignment\n"
 msgstr "参考帧中没有足够数量的星点用于执行对齐\n"
 
-#: ../src/registration/registration.c:682
+#: ../src/registration/registration.c:627
+#, c-format
+msgid "Reference Image: Limiting to %d brightest stars\n"
+msgstr ""
+
+#: ../src/registration/registration.c:687
 #, c-format
 msgid "Frame %d:\n"
 msgstr "第%d帧：\n"
 
-#: ../src/registration/registration.c:687
+#: ../src/registration/registration.c:692
 #, c-format
 msgid "Not enough stars. Image %d skipped\n"
 msgstr "Not enough stars. Image %d skipped\n"
 
-#: ../src/registration/registration.c:712
+#: ../src/registration/registration.c:717
+#, c-format
+msgid "Target Image: Limiting to %d brightest stars\n"
+msgstr ""
+
+#: ../src/registration/registration.c:722
 #, c-format
 msgid "Cannot perform star matching. Image %d skipped\n"
 msgstr "Cannot perform star matching. Image %d skipped\n"
 
-#: ../src/registration/registration.c:787
+#: ../src/registration/registration.c:789
 #, c-format
 msgid "%d images processed.\n"
 msgstr "%d images processed.\n"
 
-#: ../src/registration/registration.c:789
+#: ../src/registration/registration.c:791
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr "Total: %d failed, %d registered.\n"
 
-#: ../src/registration/registration.c:796
+#: ../src/registration/registration.c:798
 msgid "Registration aborted.\n"
 msgstr "对齐操作异常中止。\n"
 
-#: ../src/registration/registration.c:897
+#: ../src/registration/registration.c:899
 #, c-format
 msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "无法在帧%d中执行ECC对齐\n"
 
-#: ../src/registration/registration.c:943
+#: ../src/registration/registration.c:945
 #, c-format
 msgid "%d frames were excluded.\n"
 msgstr "%d 号帧被排除。\n"
 
-#: ../src/registration/registration.c:1031
+#: ../src/registration/registration.c:1033
 msgid "Select an area in image first, and select images in the sequence."
 msgstr "先在图像中选定一个区域，再于队列中选定一幅图像。"
 
-#: ../src/registration/registration.c:1033
+#: ../src/registration/registration.c:1035
 msgid "Select images in the sequence."
 msgstr "在队列里选定一幅图像。"
 
-#: ../src/registration/registration.c:1035
+#: ../src/registration/registration.c:1037
 msgid "Select an area in image first."
 msgstr "请先在图像上选择一个区域！"
 
-#: ../src/registration/registration.c:1151
+#: ../src/registration/registration.c:1153
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
 msgstr "所有的先决条件不适合对齐，请先选择一个矩形。\n"
 
-#: ../src/registration/registration.c:1186
+#: ../src/registration/registration.c:1188
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "对齐：处理中，使用方法：%s\n"

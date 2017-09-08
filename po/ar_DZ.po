@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 11:59+0200\n"
+"POT-Creation-Date: 2017-09-06 22:40+0200\n"
 "PO-Revision-Date: 2016-11-20 10:20+0100\n"
 "Last-Translator: زنادي أمين <amine-zennadi@hotmail.com>\n"
 "Language-Team: \n"
@@ -2658,7 +2658,7 @@ msgstr ""
 "والمرجعية الطبقة المحددة (التي تم تحميلها في علامة التبويب \"تسلسل صورة\" "
 "الحالي اسم تسلسل في الجزء السفلي من النافذة جدا)."
 
-#: ../src/gui/siril3.glade.h:603 ../src/registration/registration.c:1028
+#: ../src/gui/siril3.glade.h:603 ../src/registration/registration.c:1030
 msgid "Load a sequence first."
 msgstr "تحميل السلسلة لأول مرة."
 
@@ -3512,7 +3512,7 @@ msgid "Error in layers alignment."
 msgstr "خطأ في محاذاة الطبقات."
 
 #: ../src/compositing/align_rgb.c:117 ../src/compositing/compositing.c:609
-#: ../src/registration/registration.c:1266
+#: ../src/registration/registration.c:1268
 msgid "Registration complete."
 msgstr "تم التسجيل بنجاح"
 
@@ -3563,7 +3563,7 @@ msgstr "يجب عليك على الأقل حمولة طبقتين من قبل!\n
 #: ../src/gui/callbacks.c:5703 ../src/gui/callbacks.c:5761
 #: ../src/io/conversion.c:485 ../src/io/image_formats_libraries.c:97
 #: ../src/io/image_formats_libraries.c:154
-#: ../src/registration/registration.c:1152
+#: ../src/registration/registration.c:1154
 msgid "Warning"
 msgstr "إنذار"
 
@@ -3602,7 +3602,7 @@ msgstr "إعادة تعديل طبقة %d في الأوقات%g مشرق\n"
 #: ../src/gui/callbacks.c:5011 ../src/gui/callbacks.c:5348
 #: ../src/gui/callbacks.c:5495 ../src/gui/callbacks.c:5804
 #: ../src/gui/callbacks.c:5953 ../src/io/conversion.c:454
-#: ../src/registration/registration.c:1141 ../src/stacking/stacking.c:1888
+#: ../src/registration/registration.c:1143 ../src/stacking/stacking.c:1888
 #: ../src/stacking/stacking.c:2015
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "مهمة أخرى هي بالفعل في التقدم، وتجاهل طلب جديد. .\n"
@@ -5609,7 +5609,7 @@ msgid "Added a registration method: %s\n"
 msgstr "وأضاف طريقة التسجيل: %s\n"
 
 #: ../src/registration/registration.c:215
-#: ../src/registration/registration.c:548
+#: ../src/registration/registration.c:549
 msgid "Recomputing already existing registration for this layer\n"
 msgstr "إعادة حساب تسجيل القائمة بالفعل لهذه الطبقة\n"
 
@@ -5622,20 +5622,20 @@ msgid "Register: could not load first image to register, aborting.\n"
 msgstr "تسجيل: تعذر تحميل الصورة الأولى للتسجيل، إجهاض.\n"
 
 #: ../src/registration/registration.c:294
-#: ../src/registration/registration.c:884
+#: ../src/registration/registration.c:886
 #, c-format
 msgid "Register: processing image %s\n"
 msgstr "تسجيل: معالجة الصورة %s\n"
 
 #: ../src/registration/registration.c:396
 #: ../src/registration/registration.c:486
-#: ../src/registration/registration.c:786
-#: ../src/registration/registration.c:941
+#: ../src/registration/registration.c:788
+#: ../src/registration/registration.c:943
 msgid "Registration finished.\n"
 msgstr "انتهى التسجيل.\n"
 
 #: ../src/registration/registration.c:397
-#: ../src/registration/registration.c:944
+#: ../src/registration/registration.c:946
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "أفضل الإطار:  #%d.\n"
@@ -5694,88 +5694,98 @@ msgid "dy:%+*.2f px\n"
 msgstr "وبناء على FWHM <% .2f (% د صور)\n"
 
 #: ../src/registration/registration.c:521
-#: ../src/registration/registration.c:624
+#: ../src/registration/registration.c:629
 #, c-format
 msgid "FWHMx:%*.2f px\n"
 msgstr "FWHMx:% * بكسل 2F\n"
 
 #: ../src/registration/registration.c:522
-#: ../src/registration/registration.c:625
+#: ../src/registration/registration.c:630
 #, c-format
 msgid "FWHMy:%*.2f px\n"
 msgstr "FWHMy:% * بكسل 2F\n"
 
-#: ../src/registration/registration.c:573
-#: ../src/registration/registration.c:844
+#: ../src/registration/registration.c:574
+#: ../src/registration/registration.c:846
 msgid "Could not load reference image\n"
 msgstr "لا يمكن تحميل صورة المرجعية\n"
 
-#: ../src/registration/registration.c:579
+#: ../src/registration/registration.c:580
 msgid "Reference Image:\n"
 msgstr "صورة مرجعية\n"
 
-#: ../src/registration/registration.c:590
+#: ../src/registration/registration.c:591
 msgid "There are not enough stars in reference image to perform alignment\n"
 msgstr "ليس هناك ما يكفي من النجوم في صورة إشارة لأداء المحاذاة\n"
 
-#: ../src/registration/registration.c:682
+#: ../src/registration/registration.c:627
+#, c-format
+msgid "Reference Image: Limiting to %d brightest stars\n"
+msgstr ""
+
+#: ../src/registration/registration.c:687
 #, c-format
 msgid "Frame %d:\n"
 msgstr "إطارات %d:\n"
 
-#: ../src/registration/registration.c:687
+#: ../src/registration/registration.c:692
 #, c-format
 msgid "Not enough stars. Image %d skipped\n"
 msgstr "النجوم لا يكفي. صورة %d تخطي\n"
 
-#: ../src/registration/registration.c:712
+#: ../src/registration/registration.c:717
+#, c-format
+msgid "Target Image: Limiting to %d brightest stars\n"
+msgstr ""
+
+#: ../src/registration/registration.c:722
 #, c-format
 msgid "Cannot perform star matching. Image %d skipped\n"
 msgstr "لا يمكن إجراء مطابقة نجم. صورة %d تخطي\n"
 
-#: ../src/registration/registration.c:787
+#: ../src/registration/registration.c:789
 #, c-format
 msgid "%d images processed.\n"
 msgstr "%d صور معالجتها.\n"
 
-#: ../src/registration/registration.c:789
+#: ../src/registration/registration.c:791
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr "فشل%d، %d تسجيل: مجموع.\n"
 
-#: ../src/registration/registration.c:796
+#: ../src/registration/registration.c:798
 msgid "Registration aborted.\n"
 msgstr "تسجيل إحباط.\n"
 
-#: ../src/registration/registration.c:897
+#: ../src/registration/registration.c:899
 #, c-format
 msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "لا يمكن إجراء محاذاة ECC لإطار%d\n"
 
-#: ../src/registration/registration.c:943
+#: ../src/registration/registration.c:945
 #, c-format
 msgid "%d frames were excluded.\n"
 msgstr "تم استبعاد إطارات %d\n"
 
-#: ../src/registration/registration.c:1031
+#: ../src/registration/registration.c:1033
 msgid "Select an area in image first, and select images in the sequence."
 msgstr "تحديد منطقة في الصورة الأولى، واختيار الصور في تسلسل."
 
-#: ../src/registration/registration.c:1033
+#: ../src/registration/registration.c:1035
 msgid "Select images in the sequence."
 msgstr "حدد الصور في تسلسل."
 
-#: ../src/registration/registration.c:1035
+#: ../src/registration/registration.c:1037
 msgid "Select an area in image first."
 msgstr "تحديد منطقة في الصورة الأولى."
 
-#: ../src/registration/registration.c:1151
+#: ../src/registration/registration.c:1153
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
 msgstr "لا يتم شغل كل الشروط المسبقة للتسجيل. حدد المستطيل أولا.\n"
 
-#: ../src/registration/registration.c:1186
+#: ../src/registration/registration.c:1188
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "تسجيل: تجهيز باستخدام طريقة: %s\n"
