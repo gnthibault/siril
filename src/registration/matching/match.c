@@ -132,8 +132,8 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	double triangle_radius = AT_TRIANGLE_RADIUS; /* in triangle-space coords */
 	double match_radius = AT_MATCH_RADIUS; /* in units of list B */
 	double scale = -1.0;
-	double min_scale = -1.0;
-	double max_scale = -1.0;
+	double min_scale = 0.9;
+	double max_scale = 1.1;
 	double rot_angle = AT_MATCH_NOANGLE; /* by default, any angle is okay */
 	double rot_tol = AT_MATCH_NOANGLE;
 	double halt_sigma = AT_MATCH_HALTSIGMA;
@@ -253,10 +253,20 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	/*
 	 * Now, as the has not given us an initial TRANS structure, we need
 	 * to find one ourselves.
+	 * First we try with no scale. If it fails we add scale changes.
 	 */
+	int iter = 0;
+	do {
 	ret = atFindTrans(numA, star_list_A, numB, star_list_B, triangle_radius,
 			nobj, min_scale, max_scale, rot_angle, rot_tol, max_iter,
 			halt_sigma, trans);
+		if (ret != SH_SUCCESS) {
+			min_scale = -1.0;
+			max_scale = -1.0;
+			printf("Give another try with scale changes\n");
+		}
+		iter++;
+	} while (iter < 2 && ret != SH_SUCCESS);
 	if (ret != SH_SUCCESS) {
 		shFatal("initial call to atFindTrans fails");
 		/** */
