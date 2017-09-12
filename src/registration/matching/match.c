@@ -233,7 +233,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	}
 
 	/* sanity check */
-	shAssert(numA_copy == numA);
+	g_assert(numA_copy == numA);
 
 	/*
 	 * reset the 'id' field values in the star_list_A_copy so that they
@@ -260,7 +260,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H) {
 	ret = atFindTrans(numA, star_list_A, numB, star_list_B, triangle_radius,
 			nobj, min_scale, max_scale, rot_angle, rot_tol, max_iter,
 			halt_sigma, trans);
-		if (ret != SH_SUCCESS) {
+		if (ret != SH_SUCCESS && iter == 0) {
 			min_scale = -1.0;
 			max_scale = -1.0;
 			printf("Give another try with scale changes\n");
@@ -413,8 +413,8 @@ struct s_star *star_list_A_copy /* I/O: copy of star A list */
 	star = star_list_A;
 	star_copy = star_list_A_copy;
 	for (i = 0; i < numA; i++) {
-		shAssert(star != NULL);
-		shAssert(star_copy != NULL);
+		g_assert(star != NULL);
+		g_assert(star_copy != NULL);
 		star_copy->id = star->id;
 
 		star = star->next;
@@ -455,13 +455,13 @@ struct s_star *pre_list_A /* I: stars in A, with original coords */
 	}
 
 	/* sanity checks */
-	shAssert(post_list_A != NULL);
-	shAssert(pre_list_A != NULL);
+	g_assert(post_list_A != NULL);
+	g_assert(pre_list_A != NULL);
 
 	for (post_index = 0, post_star = post_list_A; post_index < numA;
 			post_index++, post_star = post_star->next) {
 
-		shAssert(post_star != NULL);
+		g_assert(post_star != NULL);
 
 		found_it = 0;
 		pre_star = pre_list_A;
@@ -477,11 +477,11 @@ struct s_star *pre_list_A /* I: stars in A, with original coords */
 		}
 		if (found_it == 0) {
 			printf("reset_A_coords: no match for post_star %d?\n", post_index);
-			shAssert(0);
+			return 1;
 		}
 	}
 
-	return (0);
+	return 0;
 }
 
 /**********************************************************************

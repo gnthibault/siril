@@ -1701,7 +1701,7 @@ gboolean end_seqpsf(gpointer p) {
 			free_photometry_set(seq, 0);
 		       	i = 0;
 		}
-		seq->photometry[i] = calloc(seq->number, sizeof(photometry *));
+		seq->photometry[i] = calloc(seq->number, sizeof(fitted_PSF *));
 		photometry_index = i;
 	}
 

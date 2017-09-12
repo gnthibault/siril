@@ -1637,6 +1637,7 @@ int processcommand(const char *line) {
 		len = strlen(line);
 		parseLine(myline, len, &wordnb);
 		if (executeCommand(wordnb)) {
+			free(myline);
 			return 1;
 		}
 		free(myline);

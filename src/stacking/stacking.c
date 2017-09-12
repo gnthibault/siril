@@ -22,7 +22,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <assert.h>
 #include <math.h>
 #include <gsl/gsl_fit.h>
 #include <gsl/gsl_statistics_ushort.h>
@@ -218,7 +217,7 @@ int stack_summing(struct stacking_args *args) {
 	}
 
 	somme[0] = NULL;
-	assert(nb_frames <= args->seq->number);
+	g_assert(nb_frames <= args->seq->number);
 	set_progress_bar_data(NULL, PROGRESS_RESET);
 
 	for (j=0; j<args->seq->number; ++j){
@@ -255,8 +254,8 @@ int stack_summing(struct stacking_args *args) {
 			args->seq->rx = fit->rx; args->seq->ry = fit->ry;
 			args->seq->nb_layers = fit->naxes[2];
 		}
-		assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-		assert(fit->naxes[2] == args->seq->nb_layers);
+		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
+		g_assert(fit->naxes[2] == args->seq->nb_layers);
 
 		/* first loaded image: init data structures for stacking */
 		if (!nbdata) {
@@ -331,7 +330,7 @@ int stack_summing(struct stacking_args *args) {
 	else	ratio = 1.0;
 
 	if (somme[0]) {
-		assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
+		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
 		for(layer=0; layer<args->seq->nb_layers; ++layer){
 			from = somme[layer];
 			to = gfit.pdata[layer];
@@ -393,7 +392,7 @@ int stack_median(struct stacking_args *args) {
 		return -1;
 	}
 
-	assert(nb_frames <= args->seq->number);
+	g_assert(nb_frames <= args->seq->number);
 	set_progress_bar_data(NULL, PROGRESS_RESET);
 
 	/* allocate data structures */
@@ -481,9 +480,9 @@ int stack_median(struct stacking_args *args) {
 
 	if (naxes[2] == 0)
 		naxes[2] = 1;
-	assert(naxes[2] <= 3);
+	g_assert(naxes[2] <= 3);
 	if (args->seq->type == SEQ_SER) {
-		assert(args->seq->ser_file);
+		g_assert(args->seq->ser_file);
 		naxes[0] = args->seq->ser_file->image_width;
 		naxes[1] = args->seq->ser_file->image_height;
 		ser_color type_ser = args->seq->ser_file->color_id;
@@ -652,9 +651,10 @@ int stack_median(struct stacking_args *args) {
 	 */
 #ifdef _OPENMP
 	pool_size = nb_threads;
-	assert(pool_size > 0);
+	g_assert(pool_size > 0);
 #endif
 	npixels_in_block = largest_block_height * naxes[0];
+	g_assert(npixels_in_block > 0);
 	fprintf(stdout, "allocating data for %d threads (each %'lu MB)\n", pool_size,
 			(unsigned long) (nb_frames * npixels_in_block * sizeof(WORD)) / 1048576UL);
 	data_pool = malloc(pool_size * sizeof(struct _data_block));
@@ -694,7 +694,7 @@ int stack_median(struct stacking_args *args) {
 #ifdef _OPENMP
 		data_idx = omp_get_thread_num();
 #endif
-		assert(data_idx < pool_size);
+		g_assert(data_idx < pool_size);
 		//fprintf(stdout, "thread %d working on block %d gets data\n", data_idx, i);
 		data = &data_pool[data_idx];
 
@@ -844,8 +844,8 @@ int stack_addmax(struct stacking_args *args) {
 	}
 
 	final_pixel[0] = NULL;
-	assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-	assert(nb_frames <= args->seq->number);
+	g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
+	g_assert(nb_frames <= args->seq->number);
 
 	for (j=0; j<args->seq->number; ++j){
 		if (!get_thread_run()) {
@@ -873,8 +873,8 @@ int stack_addmax(struct stacking_args *args) {
 			goto free_and_reset_progress_bar;
 		}
 
-		assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-		assert(fit->naxes[2] == args->seq->nb_layers);
+		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
+		g_assert(fit->naxes[2] == args->seq->nb_layers);
 
 		/* first loaded image: init data structures for stacking */
 		if (!nbdata) {
@@ -949,7 +949,7 @@ int stack_addmax(struct stacking_args *args) {
 	gfit.exposure = exposure;						// TODO : think if exposure has a sense here
 
 	if (final_pixel[0]) {
-		assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
+		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
 		for (layer=0; layer<args->seq->nb_layers; ++layer){
 			from = final_pixel[layer];
 			to = gfit.pdata[layer];
@@ -999,8 +999,8 @@ int stack_addmin(struct stacking_args *args) {
 	}
 
 	final_pixel[0] = NULL;
-	assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-	assert(nb_frames <= args->seq->number);
+	g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
+	g_assert(nb_frames <= args->seq->number);
 
 	for (j=0; j<args->seq->number; ++j){
 		if (!get_thread_run()) {
@@ -1028,8 +1028,8 @@ int stack_addmin(struct stacking_args *args) {
 			goto free_and_reset_progress_bar;
 		}
 
-		assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-		assert(fit->naxes[2] == args->seq->nb_layers);
+		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
+		g_assert(fit->naxes[2] == args->seq->nb_layers);
 
 		/* first loaded image: init data structures for stacking */
 		if (!nbdata) {
@@ -1105,7 +1105,7 @@ int stack_addmin(struct stacking_args *args) {
 	gfit.exposure = exposure;						// TODO : think if exposure has a sense here
 
 	if (final_pixel[0]) {
-		assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
+		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
 		for (layer=0; layer<args->seq->nb_layers; ++layer){
 			from = final_pixel[layer];
 			to = gfit.pdata[layer];
@@ -1219,7 +1219,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 		return -1;
 	}
 
-	assert(nb_frames <= args->seq->number);
+	g_assert(nb_frames <= args->seq->number);
 	set_progress_bar_data(NULL, PROGRESS_RESET);
 
 	/* allocate data structures */
@@ -1307,9 +1307,9 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 
 	if (naxes[2] == 0)
 		naxes[2] = 1;
-	assert(naxes[2] <= 3);
+	g_assert(naxes[2] <= 3);
 	if (args->seq->type == SEQ_SER) {
-		assert(args->seq->ser_file);
+		g_assert(args->seq->ser_file);
 		naxes[0] = args->seq->ser_file->image_width;
 		naxes[1] = args->seq->ser_file->image_height;
 		ser_color type_ser = args->seq->ser_file->color_id;
@@ -1481,9 +1481,11 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	 */
 #ifdef _OPENMP
 	pool_size = nb_threads;
-	assert(pool_size > 0);
+	g_assert(pool_size > 0);
 #endif
 	npixels_in_block = largest_block_height * naxes[0];
+	g_assert(npixels_in_block > 0);
+
 	fprintf(stdout, "allocating data for %d threads (each %'lu MB)\n", pool_size,
 			(unsigned long) (nb_frames * npixels_in_block * sizeof(WORD)) / 1048576UL);
 	data_pool = malloc(pool_size * sizeof(struct _data_block));
@@ -1524,7 +1526,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 #ifdef _OPENMP
 		data_idx = omp_get_thread_num();
 #endif
-		assert(data_idx < pool_size);
+		g_assert(data_idx < pool_size);
 		//fprintf(stdout, "thread %d working on block %d gets data\n", data_idx, i);
 		data = &data_pool[data_idx];
 
@@ -2235,7 +2237,7 @@ void fill_list_of_unfiltered_images(struct stacking_args *args) {
 			j++;
 		}
 	}
-	assert(j <= args->nb_images_to_stack);
+	g_assert(j <= args->nb_images_to_stack);
 }
 
 /****************************************************************/

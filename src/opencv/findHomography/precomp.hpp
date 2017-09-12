@@ -46,13 +46,13 @@
 #ifndef __OPENCV_PRECOMP_H__
 #define __OPENCV_PRECOMP_H__
 
-#define siril_CV_Error( __code__, __msg__ ) printf("CV_Error%s: %s\n", __msg__, __code__)
-
 #include "calib3d.hpp"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
 #include <opencv2/core/internal.hpp>
 #include <vector>
+#include <cstdio>
+#define siril_CV_Error( __code__, __msg__ ) printf("CV_Error%s: %s\n", __msg__, __code__)
 
 #ifdef HAVE_TEGRA_OPTIMIZATION
 #include <opencv2/calib3d/calib3d_tegra.hpp>

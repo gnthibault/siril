@@ -613,7 +613,7 @@ int register_star_alignment(struct registration_args *args) {
 	}
 
 	if (sf.nb_stars > MAX_STARS_FITTED) {
-		fitted_stars = sf.nb_stars;
+		fitted_stars = MAX_STARS_FITTED;
 		siril_log_color_message(_("Reference Image: Limiting to %d brightest stars\n"), "green", MAX_STARS_FITTED);
 	} else {
 		fitted_stars = sf.nb_stars;

@@ -380,8 +380,8 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 	test_routine();
 #endif
 
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
+	g_assert(star_array_A != NULL);
+	g_assert(star_array_B != NULL);
 
 	switch (trans->order) {
 	case AT_TRANS_LINEAR:
@@ -395,7 +395,7 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 		break;
 	default:
 		shError("atFindTrans: invalid trans->order %d ", trans->order);
-		break;
+		return (SH_GENERIC_ERROR);
 	}
 
 	/*
@@ -436,7 +436,7 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 	}
 
 	/* this is a sanity check on the above checks */
-	shAssert((nbright >= start_pairs) && (nbright <= min));
+	g_assert((nbright >= start_pairs) && (nbright <= min));
 
 #ifdef DEBUG
 	printf("here comes star array A\n");
@@ -451,10 +451,10 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 	 */
 	triangle_array_A = stars_to_triangles(star_array_A, num_stars_A, nbright,
 			&num_triangles_A);
-	shAssert(triangle_array_A != NULL);
+	g_assert(triangle_array_A != NULL);
 	triangle_array_B = stars_to_triangles(star_array_B, num_stars_B, nbright,
 			&num_triangles_B);
-	shAssert(triangle_array_B != NULL);
+	g_assert(triangle_array_B != NULL);
 
 	/*
 	 * Now we prune the triangle arrays to eliminate those with
@@ -603,8 +603,8 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 	star_array_A = list_to_array(numA, listA);
 	star_array_B = list_to_array(numB, listB);
 
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
+	g_assert(star_array_A != NULL);
+	g_assert(star_array_B != NULL);
 
 	ret = cvCalculH(star_array_A, star_array_B, num_stars_B, H);
 
@@ -664,8 +664,8 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 	star_array_A = list_to_array(numA, listA);
 	star_array_B = list_to_array(numB, listB);
 
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
+	g_assert(star_array_A != NULL);
+	g_assert(star_array_B != NULL);
 
 	switch (trans->order) {
 	case AT_TRANS_LINEAR:
@@ -679,7 +679,7 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 		break;
 	default:
 		shError("atRecalcTrans: invalid trans->order %d ", trans->order);
-		break;
+		return (SH_GENERIC_ERROR);
 	}
 
 	/*
@@ -700,7 +700,7 @@ TRANS *trans /* O: place into this TRANS structure's fields */
 	nbright = min;
 
 	/* this is a sanity check on the above checks */
-	shAssert((nbright >= start_pairs) && (nbright <= min));
+	g_assert((nbright >= start_pairs) && (nbright <= min));
 
 #ifdef DEBUG
 	printf("here comes star array A\n");
@@ -796,7 +796,7 @@ TRANS *trans /* I: use this TRANS to transform the coords of */
 	int i;
 	struct s_star *ptr, *star_array;
 
-	shAssert(star_list != NULL);
+	g_assert(star_list != NULL);
 
 	/*
 	 * convert the linked list to an array
@@ -822,7 +822,7 @@ TRANS *trans /* I: use this TRANS to transform the coords of */
 	 * transfer the coord values from the array back into the list
 	 */
 	for (ptr = star_list, i = 0; i < num; i++, ptr = ptr->next) {
-		shAssert(ptr != NULL);
+		g_assert(ptr != NULL);
 		ptr->x = star_array[i].x;
 		ptr->y = star_array[i].y;
 	}
@@ -897,16 +897,16 @@ struct s_star **matched_list_B
 	s_star *star_array_J, *star_array_K, *star_array_L, *star_array_M;
 	int num_stars_J, num_stars_K, num_stars_L, num_stars_M;
 
-	shAssert(listA != NULL);
-	shAssert(listB != NULL);
+	g_assert(listA != NULL);
+	g_assert(listB != NULL);
 
 	/* convert from linked lists to arrays */
 	num_stars_A = numA;
 	num_stars_B = numB;
 	star_array_A = list_to_array(numA, listA);
 	star_array_B = list_to_array(numB, listB);
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
+	g_assert(star_array_A != NULL);
+	g_assert(star_array_B != NULL);
 
 	/* reset the 'id' fields in the arrays to match those in the lists */
 	reset_array_ids(listA, numA, star_array_A);
@@ -1027,8 +1027,8 @@ double mag /* I: star's "mag" coordinate */
 static void copy_star(s_star *from_ptr, /* I: copy contents of _this_ star ... */
 s_star *to_ptr /* O: into _this_ star */
 ) {
-	shAssert(from_ptr != NULL);
-	shAssert(to_ptr != NULL);
+	g_assert(from_ptr != NULL);
+	g_assert(to_ptr != NULL);
 
 	to_ptr->id = from_ptr->id;
 	to_ptr->index = from_ptr->index;
@@ -1064,14 +1064,14 @@ int num_stars /* I: each aray must have this many elements */
 	int i;
 	s_star *from_ptr, *to_ptr;
 
-	shAssert(from_array != NULL);
-	shAssert(to_array != NULL);
+	g_assert(from_array != NULL);
+	g_assert(to_array != NULL);
 
 	for (i = 0; i < num_stars; i++) {
 		from_ptr = &(from_array[i]);
 		to_ptr = &(to_array[i]);
-		shAssert(from_ptr != NULL);
-		shAssert(to_ptr != NULL);
+		g_assert(from_ptr != NULL);
+		g_assert(to_ptr != NULL);
 
 		to_ptr->id = from_ptr->id;
 		to_ptr->index = from_ptr->index;
@@ -1135,7 +1135,7 @@ print_star_array
 
 	for (i = 0; i < num; i++) {
 		star = &(array[i]);
-		shAssert(star != NULL);
+		g_assert(star != NULL);
 		printf(" %4d %4d %11.4e %11.4e %6.2f\n", i, star->id, star->x,
 				star->y, star->mag);
 	}
@@ -1257,7 +1257,7 @@ print_dist_matrix
 	int i, j;
 
 	for (i = 0; i < num; i++) {
-		shAssert(matrix[i] != NULL);
+		g_assert(matrix[i] != NULL);
 		for (j = 0; j < num; j++) {
 			printf("%11.4e ", matrix[i][j]);
 		}
@@ -1300,12 +1300,12 @@ double **darray /* array of distances between stars */
 	double a, b, c;
 	s_star *star1, *star2, *star3;
 
-	shAssert(tri != NULL);
-	shAssert((s1 != s2) && (s1 != s3) && (s2 != s3));
+	g_assert(tri != NULL);
+	g_assert((s1 != s2) && (s1 != s3) && (s2 != s3));
 	star1 = &star_array[s1];
 	star2 = &star_array[s2];
 	star3 = &star_array[s3];
-	shAssert((star1 != NULL) && (star2 != NULL) && (star3 != NULL));
+	g_assert((star1 != NULL) && (star2 != NULL) && (star3 != NULL));
 
 	tri->id = id_number++;
 	tri->index = -1;
@@ -1328,9 +1328,9 @@ double **darray /* array of distances between stars */
 	d13 = darray[s1][s3];
 
 	/* sanity check */
-	shAssert(d12 >= 0.0);
-	shAssert(d23 >= 0.0);
-	shAssert(d13 >= 0.0);
+	g_assert(d12 >= 0.0);
+	g_assert(d23 >= 0.0);
+	g_assert(d13 >= 0.0);
 
 	if ((d12 >= d23) && (d12 >= d13)) {
 		/* this applies if the longest side connects stars 1 and 2 */
@@ -1380,7 +1380,7 @@ double **darray /* array of distances between stars */
 	} else {
 		/* we should never get here! */
 		shError("set_triangle: impossible situation?!");
-		shAssert(0);
+		g_assert(0);
 	}
 
 	/*
@@ -1447,7 +1447,7 @@ print_triangle_array
 
 	for (i = 0; i < numtriangles; i++) {
 		triangle = &(t_array[i]);
-		shAssert(triangle != NULL);
+		g_assert(triangle != NULL);
 
 		sa = &(star_array[triangle->a_index]);
 		sb = &(star_array[triangle->b_index]);
@@ -1533,7 +1533,7 @@ int *numtriangles /* O: number of triangles we create */
 	 * distance calculations.
 	 */
 	dist_matrix = calc_distances(star_array, nbright);
-	shAssert(dist_matrix != NULL);
+	g_assert(dist_matrix != NULL);
 
 #ifdef DEBUG
 	printf("stars_to_triangles: here comes distance matrix\n");
@@ -1625,7 +1625,7 @@ int num /* I: number of stars in the array */
 static int compare_star_by_mag(s_star *star1, /* I: compare "mag" field of THIS star ... */
 s_star *star2 /* I:  ... with THIS star  */
 ) {
-	shAssert((star1 != NULL) && (star2 != NULL));
+	g_assert((star1 != NULL) && (star2 != NULL));
 
 	if (star1->mag > star2->mag) {
 		return (1);
@@ -1682,7 +1682,7 @@ int num /* I: number of stars in the array */
 static int compare_star_by_x(s_star *star1, /* I: compare "x" field of THIS star ... */
 s_star *star2 /* I:  ... with THIS star  */
 ) {
-	shAssert((star1 != NULL) && (star2 != NULL));
+	g_assert((star1 != NULL) && (star2 != NULL));
 
 	if (star1->x > star2->x) {
 		return (1);
@@ -1739,7 +1739,7 @@ int num /* I: number of stars in the array */
 static int compare_star_by_match_id(s_star *star1, /* I: compare "match_id" field of THIS star ... */
 s_star *star2 /* I:  ... with THIS star  */
 ) {
-	shAssert((star1 != NULL) && (star2 != NULL));
+	g_assert((star1 != NULL) && (star2 != NULL));
 
 	if (star1->match_id > star2->match_id) {
 		return (1);
@@ -1779,7 +1779,7 @@ s_triangle *t_array /* O: we'll fill properties of triangles in  */
 	int i, j, k, n;
 	s_triangle *triangle;
 
-	shAssert((star_array != NULL) && (dist_matrix != NULL) && (t_array != NULL));
+	g_assert((star_array != NULL) && (dist_matrix != NULL) && (t_array != NULL));
 
 	n = 0;
 	for (i = 0; i < numstars - 2; i++) {
@@ -1793,7 +1793,7 @@ s_triangle *t_array /* O: we'll fill properties of triangles in  */
 			}
 		}
 	}
-	shAssert(n == numtriangles);
+	g_assert(n == numtriangles);
 
 	return (SH_SUCCESS);
 }
@@ -1842,7 +1842,7 @@ int num /* I: number of triangles in the array */
 static int compare_triangle(s_triangle *triangle1, /* I: compare "ba" field of THIS triangle ... */
 s_triangle *triangle2 /* I:  ... with THIS triangle  */
 ) {
-	shAssert((triangle1 != NULL) && (triangle2 != NULL));
+	g_assert((triangle1 != NULL) && (triangle2 != NULL));
 
 	if (triangle1->ba > triangle2->ba) {
 		return (1);
@@ -1953,8 +1953,8 @@ int *numtriangles /* I/O: number of triangles in the t_array */
 ) {
 	int i;
 
-	shAssert(t_array != NULL);
-	shAssert(numtriangles != NULL);
+	g_assert(t_array != NULL);
+	g_assert(numtriangles != NULL);
 
 	/* first, sort the array */
 	sort_triangle_array(t_array, *numtriangles);
@@ -1971,7 +1971,7 @@ int *numtriangles /* I/O: number of triangles in the t_array */
 		}
 	}
 	*numtriangles = i;
-	shAssert(*numtriangles >= 0);
+	g_assert(*numtriangles >= 0);
 }
 
 /************************************************************************
@@ -2054,16 +2054,16 @@ double tolerance_deg /* I: allowed range of orientation angles (deg) */
 	double actual_angle_deg;
 	struct s_triangle *tri;
 
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
-	shAssert(t_array_A != NULL);
-	shAssert(t_array_B != NULL);
-	shAssert(nbright > 0);
+	g_assert(star_array_A != NULL);
+	g_assert(star_array_B != NULL);
+	g_assert(t_array_A != NULL);
+	g_assert(t_array_B != NULL);
+	g_assert(nbright > 0);
 	if (min_scale != -1) {
-		shAssert((max_scale != -1) && (min_scale <= max_scale));
+		g_assert((max_scale != -1) && (min_scale <= max_scale));
 	}
 	if (max_scale != -1) {
-		shAssert((min_scale != -1) && (min_scale <= max_scale));
+		g_assert((min_scale != -1) && (min_scale <= max_scale));
 	}
 
 	/* allocate and initialize the "vote_matrix" */
@@ -2738,7 +2738,7 @@ TRANS *trans /* O: place solved coefficients into this */
 	double xdiff, ydiff;
 	double sigma;
 	double max_dist2;
-	double newx, newy;
+	double newx = 0.0, newy = 0.0;
 	s_star *sa, *sb;
 	s_star *a_prime; /* will hold transformed version of stars in set A */
 
@@ -2761,7 +2761,7 @@ TRANS *trans /* O: place solved coefficients into this */
 		break;
 	default:
 		shFatal("iter_trans: invalid trans->order %d \n", trans->order);
-		break;
+		return (SH_GENERIC_ERROR);
 	}
 
 	if (nbright < required_pairs) {
@@ -2772,16 +2772,16 @@ TRANS *trans /* O: place solved coefficients into this */
 		return (SH_GENERIC_ERROR);
 	}
 
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
-	shAssert(winner_votes != NULL);
-	shAssert(winner_index_A != NULL);
-	shAssert(winner_index_B != NULL);
-	shAssert(trans != NULL);
+	g_assert(star_array_A != NULL);
+	g_assert(star_array_B != NULL);
+	g_assert(winner_votes != NULL);
+	g_assert(winner_index_A != NULL);
+	g_assert(winner_index_B != NULL);
+	g_assert(trans != NULL);
 
 	/* these should already have been checked, but it doesn't hurt */
-	shAssert(num_stars_A >= nbright);
-	shAssert(num_stars_A >= nbright);
+	g_assert(num_stars_A >= nbright);
+	g_assert(num_stars_A >= nbright);
 
 	/*
 	 * make a first guess at TRANS;
@@ -2957,6 +2957,8 @@ TRANS *trans /* O: place solved coefficients into this */
 		 * failure....
 		 */
 		if (nr < 2) {
+			if (nr == 0)
+				return (SH_GENERIC_ERROR);
 			sigma = 0.0;
 #ifdef DEBUG
 			printf("   sigma = %10.5e  (only %d matches) \n", sigma, nr);
@@ -3127,7 +3129,7 @@ TRANS *trans /* O: place solved coefficients into this */
 static int compare_double(double *f1, /* I: compare size of FIRST double value */
 double *f2 /* I:  ... with SECOND double value  */
 ) {
-	shAssert((f1 != NULL) && (f2 != NULL));
+	g_assert((f1 != NULL) && (f2 != NULL));
 
 	if (*f1 > *f2) {
 		return (1);
@@ -3160,9 +3162,9 @@ double perc /* I: for entry at this percentile */
 ) {
 	int index;
 
-	shAssert(array != NULL);
-	shAssert(num > 0);
-	shAssert((perc > 0.0) && (perc <= 1.0));
+	g_assert(array != NULL);
+	g_assert(num > 0);
+	g_assert((perc > 0.0) && (perc <= 1.0));
 
 	index = (int) floor(num * perc + 0.5);
 	if (index >= num) {
@@ -3200,8 +3202,8 @@ double *newy /* O: contains output y coord */
 ) {
 	double rsquared;
 
-	shAssert(star != NULL);
-	shAssert(trans != NULL);
+	g_assert(star != NULL);
+	g_assert(trans != NULL);
 
 	switch (trans->order) {
 	case AT_TRANS_LINEAR:
@@ -3262,14 +3264,14 @@ int num_stars, /* I: number of stars in the array */
 TRANS *trans /* I: contains coefficients of transformation */
 ) {
 	int i;
-	double newx, newy;
+	double newx = 0.0, newy = 0.0;
 	s_star *sp;
 
 	if (num_stars == 0) {
 		return (SH_SUCCESS);
 	}
-	shAssert(star_array != NULL);
-	shAssert(trans != NULL);
+	g_assert(star_array != NULL);
+	g_assert(trans != NULL);
 
 	for (i = 0; i < num_stars; i++) {
 		sp = &(star_array[i]);
@@ -3312,12 +3314,12 @@ int num_stars_B /* I: number of stars in array B */
 	struct s_star *temp_array;
 	struct s_star *sb, *stemp;
 
-	shAssert(num_stars_A == num_stars_B);
+	g_assert(num_stars_A == num_stars_B);
 	if (num_stars_A == 0) {
 		return (SH_SUCCESS);
 	}
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
+	g_assert(star_array_A != NULL);
+	g_assert(star_array_B != NULL);
 
 	/*
 	 * first, let's set the "index" field of each element of each
@@ -3355,9 +3357,9 @@ int num_stars_B /* I: number of stars in array B */
 	sort_star_by_match_id(star_array_A, num_stars_A);
 	for (i = 0; i < num_stars_A; i++) {
 		sb = &(star_array_B[star_array_A[i].index]);
-		shAssert(sb != NULL);
+		g_assert(sb != NULL);
 		stemp = &(temp_array[i]);
-		shAssert(stemp != NULL);
+		g_assert(stemp != NULL);
 		copy_star(sb, stemp);
 	}
 
@@ -3366,9 +3368,9 @@ int num_stars_B /* I: number of stars in array B */
 	 */
 	for (i = 0; i < num_stars_A; i++) {
 		sb = &(star_array_B[i]);
-		shAssert(sb != NULL);
+		g_assert(sb != NULL);
 		stemp = &(temp_array[i]);
-		shAssert(stemp != NULL);
+		g_assert(stemp != NULL);
 		copy_star(stemp, sb);
 	}
 
@@ -3457,13 +3459,13 @@ int *num_stars_M /* O: number of stars in output array M */
 	/*
 	 * make some sanity checks
 	 */
-	shAssert(num_stars_A >= 0);
-	shAssert(num_stars_B >= 0);
+	g_assert(num_stars_A >= 0);
+	g_assert(num_stars_B >= 0);
 	if ((num_stars_A == 0) || (num_stars_B == 0)) {
 		return (SH_SUCCESS);
 	}
-	shAssert(star_array_A != NULL);
-	shAssert(star_array_B != NULL);
+	g_assert(star_array_A != NULL);
+	g_assert(star_array_B != NULL);
 
 	/*
 	 * First, we sort arrays A and B by their "x" coordinates,
@@ -3508,7 +3510,7 @@ int *num_stars_M /* O: number of stars in output array M */
 
 	for (posA = 0; posA < num_stars_A; posA++) {
 
-		shAssert((sa = &(star_array_A[posA])) != NULL);
+		g_assert((sa = &(star_array_A[posA])) != NULL);
 		Ax = sa->x;
 		Ay = sa->y;
 
@@ -3519,7 +3521,7 @@ int *num_stars_M /* O: number of stars in output array M */
 
 		for (posB = 0; posB < num_stars_B; posB++) {
 
-			shAssert((sb = &(star_array_B[posB])) != NULL);
+			g_assert((sb = &(star_array_B[posB])) != NULL);
 			Bx = sb->x;
 			By = sb->y;
 
@@ -3627,7 +3629,7 @@ int *num_stars_M /* O: number of stars in output array M */
 				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
-	shAssert(*num_stars_J == *num_stars_K);
+	g_assert(*num_stars_J == *num_stars_K);
 
 	/*
 	 * next, do the same for array K: sort it by "match_id"
@@ -3676,7 +3678,7 @@ int *num_stars_M /* O: number of stars in output array M */
 				posA, sa->match_id, sa->x, sa->y, sb->match_id, sb->x, sb->y);
 	}
 #endif
-	shAssert(*num_stars_J == *num_stars_K);
+	g_assert(*num_stars_J == *num_stars_K);
 
 	/*
 	 * finally, we have unique set of closest-pair matching elements
@@ -3840,10 +3842,10 @@ int *current_num /* I/O: current number of stars in star_array */
 	int num;
 	s_star *new_array;
 
-	shAssert(new_star != NULL);
-	shAssert((star_array != NULL) && (*star_array != NULL));
-	shAssert((total_num != NULL) && (*total_num >= 0));
-	shAssert((current_num != NULL) && (*current_num >= 0));
+	g_assert(new_star != NULL);
+	g_assert((star_array != NULL) && (*star_array != NULL));
+	g_assert((total_num != NULL) && (*total_num >= 0));
+	g_assert((current_num != NULL) && (*current_num >= 0));
 
 	/*
 	 * check for the easy case: if current_num < total_num, we can
@@ -3872,7 +3874,7 @@ int *current_num /* I/O: current number of stars in star_array */
 		/*
 		 * this should never occur!
 		 */
-		shAssert(0);
+		g_assert(0);
 	}
 
 	return (SH_SUCCESS);
@@ -3909,9 +3911,9 @@ int *num_stars_2 /* I/O: number of stars in array 2 */
 	s_star *s1, *s2;
 	s_star *last1, *last2;
 
-	shAssert(star_array_1 != NULL);
-	shAssert(star_array_2 != NULL);
-	shAssert(*num_stars_1 == *num_stars_2);
+	g_assert(star_array_1 != NULL);
+	g_assert(star_array_2 != NULL);
+	g_assert(*num_stars_1 == *num_stars_2);
 
 	pos1 = 0;
 	pos2 = 0;
@@ -4002,10 +4004,10 @@ int *num_stars /* I/O: on input: number of stars in array */
 	int i;
 	s_star *s1, *s2;
 
-	shAssert(star_array != NULL);
-	shAssert(num < *num_stars);
-	shAssert(num >= 0);
-	shAssert(*num_stars > 0);
+	g_assert(star_array != NULL);
+	g_assert(num < *num_stars);
+	g_assert(num >= 0);
+	g_assert(*num_stars > 0);
 
 	s1 = &(star_array[num]);
 	s2 = &(star_array[num + 1]);
@@ -4039,9 +4041,9 @@ int *num_stars_2 /* I/O: number of elems in array 2 */
 	int pos1, pos2, pos2_top;
 	s_star *s1, *s2;
 
-	shAssert(star_array_1 != NULL);
-	shAssert(star_array_2 != NULL);
-	shAssert(num_stars_2 != NULL);
+	g_assert(star_array_1 != NULL);
+	g_assert(star_array_2 != NULL);
+	g_assert(num_stars_2 != NULL);
 
 	pos1 = 0;
 	pos2_top = 0;
@@ -4049,11 +4051,11 @@ int *num_stars_2 /* I/O: number of elems in array 2 */
 	while (pos1 < num_stars_1) {
 
 		s1 = &(star_array_1[pos1]);
-		shAssert(s1 != NULL);
+		g_assert(s1 != NULL);
 
 		for (pos2 = pos2_top; pos2 < *num_stars_2; pos2++) {
 			s2 = &(star_array_2[pos2]);
-			shAssert(s2 != NULL);
+			g_assert(s2 != NULL);
 
 			if (s1->match_id == s2->match_id) {
 				remove_elem(star_array_2, pos2, num_stars_2);
@@ -4097,11 +4099,11 @@ struct s_star *list /* I: the linked list */
 	 * for each item on the CHAIN.
 	 */
 	array = (s_star *) shMalloc(num_stars * sizeof(s_star));
-	shAssert(array != NULL);
+	g_assert(array != NULL);
 	for (i = 0, ptr = list; i < num_stars; i++, ptr = ptr->next) {
-		shAssert(ptr != NULL);
+		g_assert(ptr != NULL);
 		star = &(array[i]);
-		shAssert(star != NULL);
+		g_assert(star != NULL);
 		set_star(star, ptr->x, ptr->y, ptr->mag);
 		star->match_id = i;
 	}
@@ -4195,8 +4197,8 @@ struct s_star *star_array /* I/O: reset 'id' fields in this array */
 	for (i = 0; i < num_stars; i++) {
 
 		star_in_array = &(star_array[i]);
-		shAssert(star_in_list != NULL);
-		shAssert(star_in_array != NULL);
+		g_assert(star_in_list != NULL);
+		g_assert(star_in_array != NULL);
 
 		star_in_array->id = star_in_list->id;
 
@@ -4315,8 +4317,8 @@ TRANS *trans /* O: place solved coefficients into this */
 	double sumx1y1, sumx1x2, sumx1y2;
 	double sumy1x2, sumy1y2;
 
-	shAssert(nbright >= AT_MATCH_REQUIRE_LINEAR);
-	shAssert(trans->order == AT_TRANS_LINEAR);
+	g_assert(nbright >= AT_MATCH_REQUIRE_LINEAR);
+	g_assert(trans->order == AT_TRANS_LINEAR);
 
 	/*
 	 * allocate a matrix we'll need for this function
@@ -4343,9 +4345,9 @@ TRANS *trans /* O: place solved coefficients into this */
 	for (i = 0; i < nbright; i++) {
 
 		/* sanity checks */
-		shAssert(winner_index_A[i] < num_stars_A);
+		g_assert(winner_index_A[i] < num_stars_A);
 		s1 = &(star_array_A[winner_index_A[i]]);
-		shAssert(winner_index_B[i] < num_stars_B);
+		g_assert(winner_index_B[i] < num_stars_B);
 		s2 = &(star_array_B[winner_index_B[i]]);
 
 		/* elements of the matrix */
@@ -4607,8 +4609,8 @@ TRANS *trans /* O: place solved coefficients into this */
 	double sumx1y1cu;
 	double sumy1qu;
 
-	shAssert(nbright >= AT_MATCH_REQUIRE_QUADRATIC);
-	shAssert(trans->order == AT_TRANS_QUADRATIC);
+	g_assert(nbright >= AT_MATCH_REQUIRE_QUADRATIC);
+	g_assert(trans->order == AT_TRANS_QUADRATIC);
 
 	/*
 	 * allocate a matrix we'll need for this function
@@ -4652,9 +4654,9 @@ TRANS *trans /* O: place solved coefficients into this */
 	for (i = 0; i < nbright; i++) {
 
 		/* sanity checks */
-		shAssert(winner_index_A[i] < num_stars_A);
+		g_assert(winner_index_A[i] < num_stars_A);
 		s1 = &(star_array_A[winner_index_A[i]]);
-		shAssert(winner_index_B[i] < num_stars_B);
+		g_assert(winner_index_B[i] < num_stars_B);
 		s2 = &(star_array_B[winner_index_B[i]]);
 
 		/* elements of the vectors */
@@ -5041,8 +5043,8 @@ TRANS *trans /* O: place solved coefficients into this */
 	double sumy1qu;
 	double sumx1sqRsq, sumx1y1Rsq, sumy1sqRsq;
 
-	shAssert(nbright >= AT_MATCH_REQUIRE_CUBIC);
-	shAssert(trans->order == AT_TRANS_CUBIC);
+	g_assert(nbright >= AT_MATCH_REQUIRE_CUBIC);
+	g_assert(trans->order == AT_TRANS_CUBIC);
 
 	/*
 	 * allocate a matrix we'll need for this function
@@ -5102,9 +5104,9 @@ TRANS *trans /* O: place solved coefficients into this */
 	for (i = 0; i < nbright; i++) {
 
 		/* sanity checks */
-		shAssert(winner_index_A[i] < num_stars_A);
+		g_assert(winner_index_A[i] < num_stars_A);
 		s1 = &(star_array_A[winner_index_A[i]]);
-		shAssert(winner_index_B[i] < num_stars_B);
+		g_assert(winner_index_B[i] < num_stars_B);
 		s2 = &(star_array_B[winner_index_B[i]]);
 
 		/* elements of the vectors */
@@ -5614,9 +5616,9 @@ int row /* I: want to pivot around this row */
 	double big, other_big;
 
 	/* sanity checks */
-	shAssert(matrix != NULL);
-	shAssert(vector != NULL);
-	shAssert(row < num);
+	g_assert(matrix != NULL);
+	g_assert(vector != NULL);
+	g_assert(row < num);
 
 	pivot_row = row;
 	big = fabs(matrix[row][row] / biggest_val[row]);
@@ -5692,22 +5694,22 @@ double *Dx_rms, double *Dy_rms) {
 	int ii, Nstar, Ntoss;
 	struct s_star *A_star, *B_star;
 
-	shAssert(num_A == num_B);
+	g_assert(num_A == num_B);
 	if (num_A == 0) {
 		*Dx_rms = 0.0;
 		*Dy_rms = 0.0;
 		return (SH_SUCCESS);
 	}
 
-	shAssert(mlistA != NULL);
-	shAssert(mlistB != NULL);
+	g_assert(mlistA != NULL);
+	g_assert(mlistB != NULL);
 	Nstar = num_A;
 	Dx_sum2 = Dy_sum2 = 0.0;
 
 	for (ii = 0, A_star = mlistA, B_star = mlistB; ii < Nstar; ii++, A_star =
 			A_star->next, B_star = B_star->next) {
-		shAssert(A_star != NULL);
-		shAssert(B_star != NULL);
+		g_assert(A_star != NULL);
+		g_assert(B_star != NULL);
 		Dxterm = (double) (B_star->x - A_star->x);
 		Dyterm = (double) (B_star->y - A_star->y);
 		Dx_sum2 += Dxterm * Dxterm;
