@@ -2718,7 +2718,7 @@ int *winner_index_B, /* I: index into "star_array_B" of top */
 /*      We may modify this array */
 int recalc_flag, /* I: should we use only a few best pairs for */
 /*      the first iteration, or all? */
-int max_iterations, /* I: iterate at most this many times.  If we
+int max_iterations, /* I: iterate at most this many times.  If we */
  /*      reach this limit, stop iterating */
 /*      and declare success */
 double halt_sigma, /* I: if the residuals from solution drop to */

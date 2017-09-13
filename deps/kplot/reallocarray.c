@@ -18,6 +18,7 @@
 
 #include <sys/types.h>
 
+#include <assert.h>
 #include <errno.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -33,7 +34,8 @@
 void *
 reallocarray(void *optr, size_t nmemb, size_t size)
 {
-
+	assert(size > 0);
+	assert(nmemb > 0);
 	if ((nmemb >= MUL_NO_OVERFLOW || size >= MUL_NO_OVERFLOW) &&
 			nmemb > 0 && SIZE_MAX / nmemb < size) {
 		errno = ENOMEM;
