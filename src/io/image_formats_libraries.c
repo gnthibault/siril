@@ -109,8 +109,8 @@ int readtif(const char *name, fits *fit) {
 		fit->naxes[1] = height;
 		fit->data = data;
 		fit->binning_x=fit->binning_y=1;
-		if (nsamples == 1) {
-			fit->naxes[2] = nsamples;
+		if (nsamples == 1 || nsamples == 2) {
+			fit->naxes[2] = 1;
 			fit->naxis = 2;
 			fit->pdata[RLAYER]=fit->data;
 			fit->pdata[GLAYER]=fit->data;
