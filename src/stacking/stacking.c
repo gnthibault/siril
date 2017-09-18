@@ -709,7 +709,6 @@ int stack_median(struct stacking_args *args) {
 			}
 
 			// reading pixels from current frame
-			g_assert(my_block->channel);	// to shut down clang analyzer
 			int success = seq_opened_read_region(args->seq, my_block->channel,
 					args->image_indices[frame], data->pix[frame], &area);
 
