@@ -30,6 +30,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#ifdef WIN32
+#include <io.h>
+#endif
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -40,6 +43,11 @@
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
+#ifdef WIN32
+#define lseek64 _lseeki64
+#else
+#define lseek64 lseek
+#endif
 
 static gboolean warning = FALSE;
 
@@ -49,7 +57,7 @@ static const uint64_t ticksPerSecond = 10000000;
 
 static int ser_write_header(struct ser_struct *ser_file);
 
-/* Given an SER timestamp, return a char string representation
+/* Given a SER timestamp, return a char string representation
  * MUST be freed
  */
 static char *ser_timestamp(uint64_t timestamp) {
@@ -178,12 +186,12 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 	int frame_size, i;
 	gboolean timestamps_in_order = TRUE;
 	uint64_t previous_ts = 0L;
-	off_t filesize;
+	int64_t filesize;
 
 	filesize = ser_file->filesize;
 	frame_size = ser_file->image_width * ser_file->image_height * ser_file->number_of_planes;
-	off_t offset = SER_HEADER_LEN + (off_t) frame_size * (off_t) ser_file->byte_pixel_depth
-		* (off_t) ser_file->frame_count;
+	int64_t offset = SER_HEADER_LEN + (int64_t) frame_size * (int64_t) ser_file->byte_pixel_depth
+		* (int64_t) ser_file->frame_count;
 
 	/* Check if file is large enough to have timestamps */
 	if (filesize >= offset + (8 * ser_file->frame_count)) {
@@ -191,7 +199,7 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 
 		// Seek to start of timestamps
 		for (i = 0; i < ser_file->frame_count; i++) {
-			if ((off_t) -1 == lseek(ser_file->fd, offset + (i * 8), SEEK_SET)) {
+			if ((int64_t) -1 == lseek64(ser_file->fd, offset + (i * 8), SEEK_SET)) {
 				return -1;
 			}
 			char timestamp[8];
@@ -259,7 +267,7 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 
 static int ser_fix_broken_file(struct ser_struct *ser_file) {
 	int frame_count_calculated;
-	off_t filesize = ser_file->filesize;
+	int64_t filesize = ser_file->filesize;
 
 	siril_log_message(_("Trying to fix broken SER file...\n"));
 	int frame_size = ser_file->image_width * ser_file->image_height;
@@ -287,12 +295,12 @@ static int ser_read_header(struct ser_struct *ser_file) {
 		return -1;
 
 	/* Get file size */
-	ser_file->filesize = lseek(ser_file->fd, 0, SEEK_END);
+	ser_file->filesize = lseek64(ser_file->fd, 0, SEEK_END);
 	if (ser_file->filesize == -1) {
 		perror("seek");
 		return -1;
 	}
-	lseek(ser_file->fd, 0, SEEK_SET);
+	lseek64(ser_file->fd, 0, SEEK_SET);
 
 	/* Read header (size of 178) */
 	if (SER_HEADER_LEN != read(ser_file->fd, header, sizeof(header))) {
@@ -349,12 +357,12 @@ static int ser_write_timestamp(struct ser_struct *ser_file) {
 			// Seek to start of timestamps
 			frame_size = ser_file->image_width * ser_file->image_height
 					* ser_file->number_of_planes;
-			off_t offset = SER_HEADER_LEN
-					+ (off_t) frame_size * (off_t) ser_file->byte_pixel_depth
-							* (off_t) ser_file->frame_count;
+			int64_t offset = SER_HEADER_LEN
+					+ (int64_t) frame_size * (int64_t) ser_file->byte_pixel_depth
+							* (int64_t) ser_file->frame_count;
 			for (i = 0; i < ser_file->frame_count; i++) {
-				if ((off_t) -1
-						== lseek(ser_file->fd, offset + (i * 8), SEEK_SET)) {
+				if ((int64_t) -1
+						== lseek64(ser_file->fd, offset + (i * 8), SEEK_SET)) {
 					return -1;
 				}
 				char timestamp[8];
@@ -376,7 +384,7 @@ static int ser_write_header(struct ser_struct *ser_file) {
 
 	if (!ser_file || ser_file->fd <= 0)
 		return -1;
-	if ((off_t) -1 == lseek(ser_file->fd, 0, SEEK_SET)) {
+	if ((int64_t) -1 == lseek64(ser_file->fd, 0, SEEK_SET)) {
 		perror("seek");
 		return -1;
 	}
@@ -574,7 +582,7 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 
 		/* next operation should be ser_write_frame_from_fit, which writes with no
 		 * seek and expects to be after the header */
-		if ((off_t) -1 == lseek(ser_file->fd, SER_HEADER_LEN, SEEK_SET)) {
+		if ((int64_t) -1 == lseek64(ser_file->fd, SER_HEADER_LEN, SEEK_SET)) {
 			perror("seek");
 			return -1;
 		}
@@ -640,7 +648,7 @@ void ser_init_struct(struct ser_struct *ser_file) {
 /* frame number starts at 0 */
 int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	int retval, frame_size, i, j, swap = 0;
-	off_t offset;
+	int64_t offset;
 	WORD *olddata, *tmp;
 	if (!ser_file || ser_file->fd <= 0 || !ser_file->number_of_planes ||
 			!fit || frame_no < 0 || frame_no >= ser_file->frame_count)
@@ -656,14 +664,14 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 		return -1;
 	}
 
-	offset = SER_HEADER_LEN + (off_t)frame_size *
-		(off_t)ser_file->byte_pixel_depth * (off_t)frame_no;
+	offset = SER_HEADER_LEN + (int64_t)frame_size *
+		(int64_t)ser_file->byte_pixel_depth * (int64_t)frame_no;
 	/*fprintf(stdout, "offset is %lu (frame %d, %d pixels, %d-byte)\n", offset,
 	 frame_no, frame_size, ser_file->pixel_bytedepth);*/
 #ifdef _OPENMP
 	omp_set_lock(&ser_file->fd_lock);
 #endif
-	if ((off_t) -1 == lseek(ser_file->fd, offset, SEEK_SET)) {
+	if ((int64_t) -1 == lseek64(ser_file->fd, offset, SEEK_SET)) {
 #ifdef _OPENMP
 		omp_unset_lock(&ser_file->fd_lock);
 #endif
@@ -763,7 +771,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 /* read an area of an image in an opened SER sequence */
 int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		int frame_no, WORD *buffer, const rectangle *area) {
-	off_t offset;
+	int64_t offset;
 	int frame_size, read_size, retval, xoffset, yoffset, x, y, color_offset;
 	ser_color type_ser;
 	WORD *rawbuf, *demosaiced_buf, *rgb_buf;
@@ -786,13 +794,13 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 
 	switch (type_ser) {
 	case SER_MONO:
-		offset = SER_HEADER_LEN + (off_t)frame_size * (off_t)frame_no +	// requested frame
-			(off_t)(area->y * ser_file->image_width + area->x)
+		offset = SER_HEADER_LEN + (int64_t)frame_size * (int64_t)frame_no +	// requested frame
+			(int64_t)(area->y * ser_file->image_width + area->x)
 						* ser_file->byte_pixel_depth;	// requested area
 #ifdef _OPENMP
 		omp_set_lock(&ser_file->fd_lock);
 #endif
-		if ((off_t) -1 == lseek(ser_file->fd, offset, SEEK_SET)) {
+		if ((int64_t) -1 == lseek64(ser_file->fd, offset, SEEK_SET)) {
 #ifdef _OPENMP
 			omp_unset_lock(&ser_file->fd_lock);
 #endif
@@ -853,7 +861,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 #ifdef _OPENMP
 		omp_set_lock(&ser_file->fd_lock);
 #endif
-		if ((off_t) -1 == lseek(ser_file->fd, offset, SEEK_SET)) {
+		if ((int64_t) -1 == lseek64(ser_file->fd, offset, SEEK_SET)) {
 #ifdef _OPENMP
 			omp_unset_lock(&ser_file->fd_lock);
 #endif
@@ -913,7 +921,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 #ifdef _OPENMP
 		omp_set_lock(&ser_file->fd_lock);
 #endif
-		if ((off_t) -1 == lseek(ser_file->fd, offset, SEEK_SET)) {
+		if ((int64_t) -1 == lseek64(ser_file->fd, offset, SEEK_SET)) {
 #ifdef _OPENMP
 			omp_unset_lock(&ser_file->fd_lock);
 #endif
@@ -965,7 +973,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_no) {
 	int frame_size, pixel, plane, dest;
 	int ret, retval = 0;
-	off_t offset;
+	int64_t offset;
 	BYTE *data8 = NULL;			// for 8-bit files
 	WORD *data16 = NULL;		// for 16-bit files
 
@@ -984,8 +992,8 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 	frame_size = ser_file->image_width * ser_file->image_height *
 		ser_file->number_of_planes;
 
-	offset = SER_HEADER_LEN	+ (off_t) frame_size *
-			(off_t) ser_file->byte_pixel_depth * (off_t) frame_no;
+	offset = SER_HEADER_LEN	+ (int64_t) frame_size *
+			(int64_t) ser_file->byte_pixel_depth * (int64_t) frame_no;
 
 	if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8)
 		data8 = malloc(frame_size * ser_file->byte_pixel_depth);
@@ -1011,7 +1019,7 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 #ifdef _OPENMP
 	omp_set_lock(&ser_file->fd_lock);
 #endif
-	if ((off_t)-1 == lseek(ser_file->fd, offset, SEEK_SET)) {
+	if ((int64_t)-1 == lseek64(ser_file->fd, offset, SEEK_SET)) {
 #ifdef _OPENMP
 		omp_unset_lock(&ser_file->fd_lock);
 #endif
