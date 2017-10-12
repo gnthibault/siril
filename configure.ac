@@ -1,16 +1,16 @@
 dnl Process this file with autoconf to produce a configure script.
 m4_define([siril_major_version], [0])
 m4_define([siril_minor_version], [9])
-m4_define([siril_micro_version], [7])
-m4_define([siril_prerelease_version], [RC1])
+m4_define([siril_micro_version], [8])
+m4_define([siril_prerelease_version], [alpha])
 m4_define([siril_version],
           [siril_major_version.siril_minor_version.siril_micro_version])
 m4_define([siril_version_full],
           [siril_major_version().siril_minor_version().siril_micro_version()m4_bpatsubst(siril_prerelease_version(), [^], [-])])
 
 dnl change siril_version_full by siril_version for stable release
-dnl AC_INIT([siril], [siril_version_full],
-AC_INIT([siril], [siril_version],
+AC_INIT([siril], [siril_version_full],
+dnl AC_INIT([siril], [siril_version],
         [https://free-astro.org/bugs/view_all_bug_page.php],
         [siril],
         [https://free-astro.org/index.php/Siril/fr]) 

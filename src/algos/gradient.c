@@ -259,10 +259,15 @@ static gsl_matrix *computeBackground(newBackground *bkg) {
 		gsl_vector_set(w, inc, 1.0);
 	}
 
-	gsl_multifit_linear_workspace *work;
+    // Must turn off error handler or it aborts on error
+    gsl_set_error_handler_off();
 
-	work = gsl_multifit_linear_alloc(n,	nbParam);
-	gsl_multifit_wlinear(J, w, y, c, cov, &chisq, work);
+	gsl_multifit_linear_workspace *work = gsl_multifit_linear_alloc(n,	nbParam);
+	int status = gsl_multifit_wlinear(J, w, y, c, cov, &chisq, work);
+	if (status != GSL_SUCCESS) {
+		printf("GSL multifit error: %s\n", gsl_strerror(status));
+		return NULL;
+	}
 	gsl_multifit_linear_free(work);
 	gsl_matrix_free(J);
 	gsl_vector_free(y);
@@ -315,6 +320,9 @@ static int extractBackgroundAuto(fits *imgfit, fits *bkgfit, newBackground *bkg)
 	gsl_vector_free(MatR);
 
 	gsl_matrix *bkgMatrix = computeBackground(bkg);
+	if (bkgMatrix == NULL) {
+		return 1;
+	}
 
 	if (imgfit->naxes[2] > 1)
 		copyfits(imgfit, bkgfit, CP_ALLOC | CP_FORMAT | CP_EXPAND, bkg->layer);
@@ -358,6 +366,9 @@ static int extractBackgroundManual(fits *imgfit, fits *bkgfit, newBackground *bk
 	}
 
 	bkgMatrix = computeBackground(bkg);
+	if (bkgMatrix == NULL) {
+		return 1;
+	}
 
 	if (imgfit->naxes[2] > 1)
 		copyfits(imgfit, bkgfit, CP_ALLOC | CP_FORMAT | CP_EXPAND, bkg->layer);

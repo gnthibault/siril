@@ -44,7 +44,7 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 
 	tmpdir = com.swap_dir;
 	nameBuff = g_build_filename(tmpdir, name, NULL);
-	fd = mkstemp(nameBuff);
+	fd = g_mkstemp(nameBuff);
 	if (fd < 1) {
 		siril_log_message(_("File I/O Error: Unable to create swap file in %s: [%s]\n"),
 				tmpdir, strerror(errno));

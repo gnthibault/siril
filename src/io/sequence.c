@@ -967,7 +967,7 @@ sequence *create_internal_sequence(int size) {
 	seq->selnum = size;
 	seq->nb_layers = 1;	
 	seq->internal_fits = calloc(size, sizeof(fits *));
-	seq->seqname = strdup("internal sequence");
+	seq->seqname = strdup(_("internal sequence"));
 	seq->imgparam = calloc(size, sizeof(imgdata));
 	for (i = 0; i < size; i++) {
 		seq->imgparam[i].filenum = i;

@@ -69,10 +69,10 @@ static gboolean is_shift_on = FALSE;
 
 layer_info predefined_layers_colors[] = {
 		/* name, lambda, lo, hi, c/over, c/under, mode */
-		{ "Luminance", 0.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY }, // no color, undefined value is <0
-		{ "Red", 650.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY }, // approx. of the middle of the color
-		{ "Green", 530.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY },	// approx. of the middle of the color
-		{ "Blue", 450.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY }// approx. of the middle of the color
+		{ N_("Luminance"), 0.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY }, // no color, undefined value is <0
+		{ N_("Red"), 650.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY }, // approx. of the middle of the color
+		{ N_("Green"), 530.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY },	// approx. of the middle of the color
+		{ N_("Blue"), 450.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY }// approx. of the middle of the color
 };
 
 /* remap index data, an index for each layer */
@@ -2208,16 +2208,16 @@ void set_layers_for_assign() {
 		if (!com.seq.layers[i].name) {
 			if (com.seq.nb_layers == 1) {
 				com.seq.layers[i].name = strdup(
-						predefined_layers_colors[i].name);
+						_(predefined_layers_colors[i].name));
 				com.seq.layers[i].wavelength =
 						predefined_layers_colors[i].wavelength;
 			} else if (com.seq.nb_layers == 3) {
 				com.seq.layers[i].name = strdup(
-						predefined_layers_colors[i + 1].name);
+						_(predefined_layers_colors[i + 1].name));
 				com.seq.layers[i].wavelength =
 						predefined_layers_colors[i + 1].wavelength;
 			} else {
-				com.seq.layers[i].name = strdup("Unassigned");
+				com.seq.layers[i].name = strdup(_("Unassigned"));
 				com.seq.layers[i].wavelength = -1.0;
 			}
 		}

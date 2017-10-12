@@ -131,7 +131,9 @@ gpointer generic_sequence_worker(gpointer p) {
 			}
 
 			if (args->image_hook(args, input_idx, &fit, &area)) {
-				abort = 1;
+				/* if function can't be applied the frame is excluded
+				 * but the routine must go on */
+				args->seq->imgparam[frame].incl = FALSE;
 				clearfits(&fit);
 				continue;
 			}

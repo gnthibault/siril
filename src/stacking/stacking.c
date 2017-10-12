@@ -2040,7 +2040,7 @@ static gboolean end_stacking(gpointer p) {
 		 * close_single_image() will close everything before reopening it,
 		 * which is quite slow */
 		com.uniq = calloc(1, sizeof(single));
-		com.uniq->comment = strdup("Stacking result image");
+		com.uniq->comment = strdup(_("Stacking result image"));
 		com.uniq->nb_layers = gfit.naxes[2];
 		com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
 		com.uniq->fit = &gfit;
@@ -2257,11 +2257,11 @@ double compute_highest_accepted_fwhm(double percent) {
 	// copy values
 	for (i=0; i<com.seq.number; i++) {
 		if (com.seq.regparam[layer][i].fwhm <= 0.0f) {
-			siril_log_message(_("Error in highest FWHM accepted for sequence processing: some images don't have this kind of information available\n"));
-			free(val);
-			return 0.0;
+			//siril_log_message(_("Error in highest FWHM accepted for sequence processing: some images don't have this kind of information available\n"));
+			val[i] = DBL_MAX;
+		} else {
+			val[i] = com.seq.regparam[layer][i].fwhm;
 		}
-		val[i] = com.seq.regparam[layer][i].fwhm;
 	}
 
 	//sort values

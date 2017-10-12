@@ -376,9 +376,7 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background,
 #if HAVE_GSL_1
 	gsl_multifit_covar(s->J, 0.0, covar);
 #elif HAVE_GSL_2
-	gsl_matrix * J;
-
-	J = gsl_matrix_alloc(n, p);
+	gsl_matrix * J = gsl_matrix_alloc(n, p);
 
 	gsl_multifit_fdfsolver_jac(s, J);
 	gsl_multifit_covar(J, 0.0, covar);
