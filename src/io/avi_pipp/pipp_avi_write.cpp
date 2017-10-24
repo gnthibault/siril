@@ -5,32 +5,11 @@
 #include <fstream>
 #include <cstring>
 #include "pipp_avi_write.h"
+#include "pipp_utf8.h"
 
 #include <cwchar>
 #include <memory>
 #include <sstream>
-
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-#include <sys/param.h>		// define or not BSD macro
-#endif
-
-// 64-bit fseek for various platforms
-#ifdef __linux__
-#define fseek64 fseeko64  // Linux
-#define ftell64 ftello64  // Linux
-#elif defined (__APPLE__) && defined (__MACH__)
-#define fseek64 fseeko  // OS X
-#define ftell64 ftello  // OS X
-#elif defined(BSD)
-#define fseek64 fseeko  // DragonFly BSD, FreeBSD, OpenBSD, NetBSD
-#define ftell64 ftello  // DragonFly BSD, FreeBSD, OpenBSD, NetBSD
-#elif defined (__FreeBSD_kernel__) && defined (__GLIBC__)
-#define fseek64 fseeko  // KFreeBSD
-#define ftell64 ftello  // KFreeBSD
-#else
-#define fseek64 _fseeki64  // Windows
-#define ftell64 _ftelli64  // Windows
-#endif
 
 using namespace std;
 
