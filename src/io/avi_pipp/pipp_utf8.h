@@ -37,8 +37,8 @@
 #define fseek64 fseeko  // DragonFly BSD, FreeBSD, OpenBSD, NetBSD
 #define ftell64 ftello  // DragonFly BSD, FreeBSD, OpenBSD, NetBSD
 #elif defined (__FreeBSD_kernel__) && defined (__GLIBC__)
-#define fseek64 fseeko  // KFreeBSD
-#define ftell64 ftello  // KFreeBSD
+#define fseek64 fseeko64  // KFreeBSD
+#define ftell64 ftello64  // KFreeBSD
 #else
 #define fseek64 _fseeki64  // Windows
 #define ftell64 _ftelli64  // Windows
