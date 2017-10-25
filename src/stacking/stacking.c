@@ -123,7 +123,7 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 }
 
 int compute_normalization(struct stacking_args *args, norm_coeff *coeff, normalization mode) {
-	int i, ref_image, retval = 0, cur_nb = 1;
+	int i, ref_image, ref_image_filtred_idx = -1, retval = 0, cur_nb = 1;
 	double scale0, mul0, offset0;	// for reference frame
 	char *tmpmsg;
 
@@ -140,7 +140,14 @@ int compute_normalization(struct stacking_args *args, norm_coeff *coeff, normali
 	tmpmsg[strlen(tmpmsg) - 1] = '\0';
 	set_progress_bar_data(tmpmsg, PROGRESS_RESET);
 
+	// first, find the index of the ref image in the filtered image list
 	ref_image = sequence_find_refimage(args->seq);
+	for (int i = 0; i < args->nb_images_to_stack; i++)
+		if (args->image_indices[i] == ref_image) {
+			ref_image_filtred_idx = i;
+			break;
+		}
+	g_assert(ref_image_filtred_idx != -1);
 
 	/* We empty the cache if needed (force to recompute) */
 	if (args->force_norm) {
@@ -153,8 +160,10 @@ int compute_normalization(struct stacking_args *args, norm_coeff *coeff, normali
 	}
 
 	// compute for the first image to have scale0 mul0 and offset0
-	if (_compute_normalization_for_image(args, ref_image, ref_image, coeff->offset, coeff->mul, coeff->scale, mode,
-			&scale0, &mul0, &offset0)) {
+	if (_compute_normalization_for_image(args,
+				ref_image_filtred_idx, ref_image_filtred_idx,
+				coeff->offset, coeff->mul, coeff->scale, mode,
+				&scale0, &mul0, &offset0)) {
 		set_progress_bar_data(_("Normalization failed."), PROGRESS_NONE);
 		return 1;
 	}
@@ -165,13 +174,14 @@ int compute_normalization(struct stacking_args *args, norm_coeff *coeff, normali
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) if (args->seq->type == SEQ_SER || fits_is_reentrant())
 #endif
 	for (i = 0; i < args->nb_images_to_stack; ++i) {
-		if (!retval && i != ref_image) {
+		if (!retval && i != ref_image_filtred_idx) {
 			if (!get_thread_run()) {
 				retval = 1;
 				continue;
 			}
-			if (_compute_normalization_for_image(args, i, ref_image, coeff->offset, coeff->mul, coeff->scale,
-					mode, &scale0, &mul0, &offset0)) {
+			if (_compute_normalization_for_image(args, i, ref_image_filtred_idx,
+						coeff->offset, coeff->mul, coeff->scale,
+						mode, &scale0, &mul0, &offset0)) {
 				retval = 1;
 				continue;
 			}
