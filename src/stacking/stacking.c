@@ -2227,12 +2227,16 @@ int compute_nb_filtered_images() {
  * to be already allocated to the correct size at least */
 void fill_list_of_unfiltered_images(struct stacking_args *args) {
 	int i, j;
+	int ref_image = args->seq->reference_image;
 	for (i=0, j=0; i<args->seq->number; i++) {
 		if (args->filtering_criterion(
-					&com.seq, i,
+					args->seq, i,
 					args->filtering_parameter)) {
 			args->image_indices[j] = i;
 			j++;
+		}
+		else if (i == ref_image) {
+			siril_log_color_message(_("The reference image is not in the selected set of images. To avoid issues, please change it or change the filtering parameters."), "red");
 		}
 	}
 	g_assert(j <= args->nb_images_to_stack);
