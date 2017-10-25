@@ -39,6 +39,9 @@
 #elif defined (__FreeBSD_kernel__) && defined (__GLIBC__)
 #define fseek64 fseeko64  // KFreeBSD
 #define ftell64 ftello64  // KFreeBSD
+#elif defined (__gnu_hurd__)
+#define fseek64 fseeko64  // GNU/Hurd
+#define ftell64 ftello64  // GNU/Hurd
 #else
 #define fseek64 _fseeki64  // Windows
 #define ftell64 _ftelli64  // Windows
