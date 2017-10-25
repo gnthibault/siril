@@ -44,6 +44,7 @@ int sequence_processing(sequence *seq, sequence_proc process, int layer,
 int	seqprocess_fwhm(sequence *seq, int seq_layer, int frame_no, fits *fit, rectangle *source_area, void *arg);
 int	do_fwhm_sequence_processing(sequence *seq, int layer, gboolean print_psf, gboolean follow_star, gboolean run_in_thread, gboolean for_registration);
 #endif
+int	sequence_find_refimage(sequence *seq);
 void	check_or_allocate_regparam(sequence *seq, int layer);
 sequence *create_internal_sequence(int size);
 void	internal_sequence_set(sequence *seq, int index, fits *fit);

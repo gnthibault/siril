@@ -354,10 +354,8 @@ int set_seq(const char *name){
 		return 1;
 	}
 	free_image_data();
-	if (seq->reference_image != -1)
-		image_to_load = seq->reference_image;
-	else image_to_load = 0;
 
+	image_to_load = sequence_find_refimage(seq);
 	if (seq_read_frame(seq, image_to_load, &gfit)) {
 		fprintf(stderr, "could not load first image from sequence\n");
 		free(seq);
@@ -939,6 +937,60 @@ void sequence_free_preprocessing_data(sequence *seq) {
 
 gboolean sequence_is_loaded() {
 	return (com.seq.seqname != NULL && com.seq.imgparam != NULL);
+}
+
+/* if no reference image has been set, return the index of an image that is
+ * selected in the sequence, the best of the first registration data found if
+ * any, the first otherwise */
+int sequence_find_refimage(sequence *seq) {
+	if (seq->reference_image != -1)
+		return seq->reference_image;
+	int layer, image, best = -1;
+	for (layer = 0; layer < seq->nb_layers; layer++) {
+		if (seq->regparam[layer]) {
+			gboolean use_fwhm;
+			double best_val;
+			if (seq->regparam[layer][0].fwhm > 0.0) {
+				use_fwhm = TRUE;
+				best_val = 1000000.0;
+			} else if (seq->regparam[layer][0].quality <= 0.0) {
+				use_fwhm = FALSE;
+				best_val = 0.0;
+			}
+			else continue;
+
+			for (image = 0; image < seq->number; image++) {
+				if (!seq->imgparam[image].incl)
+					continue;
+				if (use_fwhm) {
+					if (seq->regparam[layer][image].fwhm > 0 &&
+						       	seq->regparam[layer][image].fwhm < best_val) {
+						best_val = seq->regparam[layer][image].fwhm;
+						best = image;
+					}
+				} else {
+					if (seq->regparam[layer][image].quality > 0 &&
+						       	seq->regparam[layer][image].quality > best_val) {
+						best_val = seq->regparam[layer][image].quality;
+						best = image;
+					}
+				}
+			}
+		}
+	}
+
+	if (best == -1 && seq->selnum > 0) {
+		for (image = 0; image < seq->number; image++) {
+			if (seq->imgparam[image].incl) {
+				best = image;
+				break;
+			}
+		}
+	}
+	
+	if (best == -1) best = 0;	// the first anyway if no regdata and no selected
+
+	return best;
 }
 
 /* requires seq->nb_layers and seq->number to be already set */

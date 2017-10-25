@@ -140,9 +140,7 @@ int compute_normalization(struct stacking_args *args, norm_coeff *coeff, normali
 	tmpmsg[strlen(tmpmsg) - 1] = '\0';
 	set_progress_bar_data(tmpmsg, PROGRESS_RESET);
 
-	if (args->seq->reference_image == -1)
-		ref_image = 0;
-	else ref_image = args->seq->reference_image;
+	ref_image = sequence_find_refimage(args->seq);
 
 	/* We empty the cache if needed (force to recompute) */
 	if (args->force_norm) {
