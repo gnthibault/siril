@@ -223,11 +223,8 @@ int register_shift_dft(struct registration_args *args) {
 	}
 
 	/* loading reference frame */
-	if (args->seq->reference_image == -1)
-		ref_image = 0;
-	else
-		ref_image = args->seq->reference_image;
-
+	ref_image = sequence_find_refimage(args->seq);
+	
 	set_progress_bar_data(
 			_("Register DFT: loading and processing reference frame"),
 			PROGRESS_NONE);
@@ -429,10 +426,7 @@ int register_shift_fwhm(struct registration_args *args) {
 		nb_frames = (float) args->seq->selnum;
 
 	/* loading reference frame */
-	if (args->seq->reference_image == -1)
-		ref_image = 0;
-	else
-		ref_image = args->seq->reference_image;
+	ref_image = sequence_find_refimage(args->seq);
 	if (!current_regdata[ref_image].fwhm_data) {
 		siril_log_message(
 				_("Registration PSF: failed to compute PSF for reference frame at least\n"));
@@ -564,9 +558,7 @@ int register_star_alignment(struct registration_args *args) {
 		nb_frames = (float) args->seq->selnum;
 
 	/* loading reference frame */
-	if (args->seq->reference_image == -1)
-		ref_image = 0;
-	else ref_image = args->seq->reference_image;
+	ref_image = sequence_find_refimage(args->seq);
 
 	/* first we're looking for stars in reference image */
 	ret = seq_read_frame(args->seq, ref_image, &fit);
@@ -814,10 +806,7 @@ int register_ecc(struct registration_args *args) {
 		nb_frames = (float) args->seq->selnum;
 
 	/* loading reference frame */
-	if (args->seq->reference_image == -1)
-		ref_image = 0;
-	else
-		ref_image = args->seq->reference_image;
+	ref_image = sequence_find_refimage(args->seq);
 
 	memset(&ref, 0, sizeof(fits));
 
