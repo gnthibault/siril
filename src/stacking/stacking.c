@@ -2124,7 +2124,7 @@ void on_comboboxstack_methods_changed (GtkComboBox *box, gpointer user_data) {
 	com.stack.method = gtk_combo_box_get_active(box);
 
 	gtk_notebook_set_current_page(notebook, com.stack.method);
-	update_stack_interface();
+	update_stack_interface(TRUE);
 	writeinitfile();
 }
 
@@ -2326,7 +2326,7 @@ double compute_highest_accepted_quality(double percent) {
  * all data related to stacking is set in stackparam, except the method itself,
  * determined at stacking start.
  */
-void update_stack_interface() {	// was adjuststackspin
+void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststackspin
 	static GtkAdjustment *stackadj = NULL;
 	static GtkWidget *go_stack = NULL, *stack[] = {NULL, NULL}, *widgetnormalize=NULL;
 	static GtkComboBox *stack_type = NULL, *method_combo = NULL;
@@ -2345,6 +2345,11 @@ void update_stack_interface() {	// was adjuststackspin
 	}
 	if (!sequence_is_loaded()) return;
 	stackparam.seq = &com.seq;
+
+	if (!dont_change_stack_type) {
+		if (stackparam.seq->selnum < stackparam.seq->number)
+			gtk_combo_box_set_active(stack_type, SELECTED_IMAGES);
+	}
 
 	switch (gtk_combo_box_get_active(method_combo)) {
 		default:
@@ -2425,9 +2430,9 @@ void update_stack_interface() {	// was adjuststackspin
 }
 
 void on_stacksel_changed(GtkComboBox *widget, gpointer user_data) {
-	update_stack_interface();
+	update_stack_interface(TRUE);
 }
 
 void on_spinbut_percent_change(GtkSpinButton *spinbutton, gpointer user_data) {
-	update_stack_interface();
+	update_stack_interface(TRUE);
 }

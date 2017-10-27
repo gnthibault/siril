@@ -1240,7 +1240,7 @@ static gboolean end_register_idle(gpointer p) {
 #ifdef HAVE_OPENCV
 failed_end:
 #endif
-	update_stack_interface();
+	update_stack_interface(TRUE);
 	update_used_memory();
 	set_cursor_waiting(FALSE);
 #ifdef MAC_INTEGRATION

@@ -401,8 +401,8 @@ int set_seq(const char *name){
 	adjust_exclude(image_to_load, FALSE);	// check or uncheck excluded checkbox
 	adjust_refimage(image_to_load);	// check or uncheck reference image checkbox
 	set_prepro_button_sensitiveness(); // enable or not the preprobutton
-	update_reg_interface(TRUE);	// change the registration prereq message
-	update_stack_interface();	// get stacking info and enable the Go button
+	update_reg_interface(FALSE);	// change the registration prereq message
+	update_stack_interface(FALSE);	// get stacking info and enable the Go button
 	adjust_reginfo();		// change registration displayed/editable values
 	update_gfit_histogram_if_needed();
 	adjust_sellabel();

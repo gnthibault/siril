@@ -29,6 +29,14 @@ typedef enum {
 	MULTIPLICATIVE_SCALING,
 } normalization;
 
+/* TYPE OF STACK */
+typedef enum {
+	ALL_IMAGES,
+	SELECTED_IMAGES,
+	BEST_PSF_IMAGES,
+	BEST_QUALITY_IMAGES,
+} stackType;
+
 struct normalization_coeff {
 	double *offset;
 	double *mul;
@@ -68,7 +76,7 @@ int stack_addmax(struct stacking_args *args);
 int stack_addmin(struct stacking_args *args);
 
 void start_stacking();
-void update_stack_interface();
+void update_stack_interface(gboolean dont_change_stack_type);
 
 int stack_filter_all(sequence *seq, int nb_img, double any);
 int stack_filter_included(sequence *seq, int nb_img, double any);

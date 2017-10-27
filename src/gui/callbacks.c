@@ -4549,7 +4549,7 @@ void on_combozoom_changed(GtkComboBox *widget, gpointer user_data) {
 
 void on_comboboxreglayer_changed(GtkComboBox *widget, gpointer user_data) {
 	free_reference_image();
-	update_stack_interface();
+	update_stack_interface(TRUE);
 }
 
 void scrollbars_hadjustment_changed_handler(GtkAdjustment *adjustment,
@@ -4724,7 +4724,7 @@ void on_satu_Apply_clicked(GtkButton *button, gpointer user_data) {
 
 	if (get_thread_run()) {
 		siril_log_message(
-				"Another task is already in progress, ignoring new request.\n");
+				_("Another task is already in progress, ignoring new request.\n"));
 		return;
 	}
 
