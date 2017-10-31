@@ -37,6 +37,7 @@
 #include "io/sequence.h"
 #include "io/ser.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "algos/demosaicing.h"
 
 #define MAX_OF_EXTENSIONS 50	// actual size of supported_extensions

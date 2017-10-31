@@ -31,6 +31,7 @@
 #include "io/single_image.h"
 #include "gui/PSF_list.h"
 #include "gui/histogram.h"
+#include "gui/progress_and_log.h"
 #include "core/undo.h"
 
 /* Closes and frees resources attached to the single image opened in gfit.

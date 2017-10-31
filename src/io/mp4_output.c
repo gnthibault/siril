@@ -39,7 +39,7 @@
 
 #include "io/mp4_output.h"
 #include "core/proto.h"	// computePente
-#include "gui/callbacks.h"	// siril_log_message
+#include "gui/progress_and_log.h"
 
 //#define STREAM_DURATION   10.0
 #define STREAM_PIX_FMT    AV_PIX_FMT_YUV420P /* default output pix_fmt */

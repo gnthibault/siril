@@ -28,6 +28,7 @@
 #include "io/single_image.h"
 #include "gui/histogram.h"
 #include "gui/callbacks.h"	// for lookup_widget()
+#include "gui/progress_and_log.h"
 #include "core/undo.h"
 
 #define shadowsClipping -2.80 /* Shadows clipping point measured in sigma units from the main histogram peak. */

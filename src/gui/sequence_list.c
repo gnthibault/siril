@@ -21,6 +21,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "io/sequence.h"
 #include "algos/PSF.h"
 #include "registration/registration.h"	// for update_reg_interface

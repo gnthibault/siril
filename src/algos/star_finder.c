@@ -30,6 +30,7 @@
 #include "core/proto.h"
 #include "algos/Def_Wavelet.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "algos/PSF.h"
 #include "gui/PSF_list.h"
 #include "algos/star_finder.h"

@@ -6,6 +6,7 @@
 #include "processing.h"
 #include "proto.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "io/sequence.h"
 #include "io/ser.h"
 

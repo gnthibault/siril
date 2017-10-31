@@ -26,6 +26,7 @@
 #include "core/proto.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "io/single_image.h"
 #include "io/ser.h"
 #include "algos/cosmetic_correction.h"

@@ -17,6 +17,7 @@ siril_SOURCES = \
 	gui/statistics_list.c \
 	gui/plot.c gui/plot.h \
 	gui/gnuplot_i/gnuplot_i.c gui/gnuplot_i/gnuplot_i.h \
+	gui/progress_and_log.c gui/progress_and_log.h \
 	registration/registration.c registration/registration.h \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
 	stacking/stacking.c stacking/stacking.h \

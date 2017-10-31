@@ -48,6 +48,7 @@
 #include "io/sequence.h"
 #include "io/conversion.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "registration/registration.h"
 #include "stacking/stacking.h"
 #include "core/undo.h"

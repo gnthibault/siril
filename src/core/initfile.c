@@ -39,6 +39,7 @@
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 
 #define CFG_FILE "siril.cfg"
 

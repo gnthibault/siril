@@ -26,6 +26,7 @@
 #include <fftw3.h>
 
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"

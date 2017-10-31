@@ -34,6 +34,7 @@
 #include "core/siril.h"
 #include "gui/callbacks.h"
 #include "gui/plot.h"
+#include "gui/progress_and_log.h"
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "registration/registration.h"

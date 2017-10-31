@@ -25,6 +25,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "algos/PSF.h"
 #include "algos/photometry.h"
 

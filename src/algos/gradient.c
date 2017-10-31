@@ -28,6 +28,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "algos/gradient.h"
 #include "registration/registration.h"	// for mouse_status
 

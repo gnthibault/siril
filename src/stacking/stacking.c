@@ -36,6 +36,7 @@
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
 #include "registration/registration.h"
@@ -2346,10 +2347,8 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 	if (!sequence_is_loaded()) return;
 	stackparam.seq = &com.seq;
 
-	if (!dont_change_stack_type) {
-		if (stackparam.seq->selnum < stackparam.seq->number)
-			gtk_combo_box_set_active(stack_type, SELECTED_IMAGES);
-	}
+	if (!dont_change_stack_type && stackparam.seq->selnum < stackparam.seq->number)
+		gtk_combo_box_set_active(stack_type, SELECTED_IMAGES);
 
 	switch (gtk_combo_box_get_active(method_combo)) {
 		default:

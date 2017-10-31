@@ -30,6 +30,7 @@
 #include "core/proto.h"
 #include "io/sequence.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 
 static char *MIPSHI[] = {"MIPS-HI", "CWHITE", NULL };
 static char *MIPSLO[] = {"MIPS-LO", "CBLACK", NULL };

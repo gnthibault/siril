@@ -10,9 +10,6 @@ GtkWidget* lookup_widget (const gchar *widget_name);
 void initialize_shortcuts();
 void fill_about_dialog();
 void initialize_remap();
-char* siril_log_message(const char* format, ...);
-char* siril_log_color_message(const char* format, const char* color, ...);
-void show_time(struct timeval, struct timeval);
 void set_cutoff_sliders_max_values();		// was set_upper_minmax
 void set_cutoff_sliders_values();		// was set_ranges
 void set_sliders_value_to_gfit();
@@ -57,7 +54,6 @@ void show_rgb_window();
 void hide_rgb_window();
 void set_cursor_waiting(gboolean waiting);
 
-void set_progress_bar_data(const char *text, double percent);
 void zoomcombo_update_display_for_zoom();
 void initialize_FITS_name_entries();
 void adjust_vport_size_to_image();

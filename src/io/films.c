@@ -29,6 +29,7 @@
 #include <string.h>
 
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "io/films.h"
 #include "core/proto.h"		// for fits_flip_top_to_bottom()
 

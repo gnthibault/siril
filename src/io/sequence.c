@@ -56,8 +56,9 @@
 #include "io/avi_pipp/avi_writer.h"
 #include "io/single_image.h"
 #include "gui/histogram.h"
-#include "algos/PSF.h"
+#include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"	// clear_stars_list
+#include "algos/PSF.h"
 #include "algos/quality.h"
 #include "registration/registration.h"	// for update_reg_interface
 #include "stacking/stacking.h"	// for update_stack_interface

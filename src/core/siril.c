@@ -45,17 +45,18 @@
 #include "core/proto.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
-#include "algos/colors.h"
 #include "gui/histogram.h"
+#include "gui/progress_and_log.h"
+#include "gui/PSF_list.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
+#include "io/ser.h"
 #include "algos/gradient.h"
-#include "gui/PSF_list.h"
-#include "opencv/opencv.h"
+#include "algos/colors.h"
 #include "algos/Def_Math.h"
 #include "algos/Def_Wavelet.h"
 #include "algos/cosmetic_correction.h"
-#include "io/ser.h"
+#include "opencv/opencv.h"
 
 #define MAX_ITER 15
 #define EPSILON 1E-4

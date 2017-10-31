@@ -26,6 +26,7 @@
 
 #include "core/siril.h"
 #include "core/processing.h"
+#include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
 #include "io/single_image.h"
 #include "gui/histogram.h"

@@ -55,6 +55,7 @@
 #include "io/conversion.h"
 #include "io/sequence.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "io/single_image.h"
 
 int round_to_int(double x) {

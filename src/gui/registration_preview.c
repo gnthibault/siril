@@ -21,6 +21,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "registration/registration.h"
 
 mouse_status_enum mouse_status;

@@ -33,6 +33,7 @@
 #include "io/single_image.h"
 #include "gui/PSF_list.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "registration/registration.h"
 #include "compositing/filters.h"
 #include "stacking/stacking.h"
@@ -579,7 +580,7 @@ void create_the_internal_sequence() {
 	seq->ry = gfit.ry;
 }
 
-/* start alignming the layers: create an 'internal' sequence and run the selected method on it */
+/* start aligning the layers: create an 'internal' sequence and run the selected method on it */
 void on_button_align_clicked(GtkButton *button, gpointer user_data) {
 	int i, j;
 	struct registration_args regargs;
