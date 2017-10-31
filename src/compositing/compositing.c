@@ -609,6 +609,7 @@ void on_button_align_clicked(GtkButton *button, gpointer user_data) {
 		set_progress_bar_data(_("Error in layers alignment."), PROGRESS_DONE);
 	else set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
 	set_cursor_waiting(FALSE);
+	com.run_thread = FALSE;	// fix for the cancelling check in processing
 
 	/* display the values */
 	if (luminance_mode) {
