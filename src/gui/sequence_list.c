@@ -47,18 +47,39 @@ enum {
 	N_COLUMNS
 };
 
+void fwhm_quality_cell_data_function (GtkTreeViewColumn *col,
+		GtkCellRenderer   *renderer,
+		GtkTreeModel      *model,
+		GtkTreeIter       *iter,
+		gpointer           user_data)
+{
+	gdouble quality;
+	gchar buf[20];
+	gtk_tree_model_get(model, iter, COLUMN_FWHM, &quality, -1);
+	if (quality >= 0.0)
+		g_snprintf(buf, sizeof(buf), "%.3f", quality);
+	else g_strlcpy(buf, "N/A", sizeof(buf));
+	g_object_set(renderer, "text", buf, NULL);
+}
+
 void get_list_store() {
-	if (list_store == NULL)
+	if (list_store == NULL) {
 		list_store = GTK_LIST_STORE(gtk_builder_get_object(builder, "liststore1"));
+
+		GtkTreeViewColumn *col = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, "treeviewcolumn5"));
+		GtkCellRenderer *cell = GTK_CELL_RENDERER(gtk_builder_get_object(builder, "cellrenderertext5"));
+		gtk_tree_view_column_set_cell_data_func(col, cell, fwhm_quality_cell_data_function, NULL, NULL);
+	}
 }
 
 /* Add an image to the list. If seq is NULL, the list is cleared. */
 void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 	static GtkTreeSelection *selection = NULL;
 	GtkTreeIter iter;
-	char imname[256], fwhm_str[20];
+	char imname[256];
 	char *basename;
 	int shiftx = -1, shifty = -1;
+	double fwhm = -1.0;
 
 	get_list_store();
 	if (!selection)
@@ -71,13 +92,11 @@ void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 		shiftx = seq->regparam[layer][index].shiftx;
 		shifty = seq->regparam[layer][index].shifty;
 
-		if (seq->regparam[layer][index].fwhm > 0.0f) {
-			// Is it certain that FWHMX is > than FWHMY? The minimization seems to imply this.
-			sprintf(fwhm_str, "%.3f", seq->regparam[layer][index].fwhm);
-		} else if (seq->regparam[layer][index].quality >= 0.0) {
-			sprintf(fwhm_str, "%.3f", seq->regparam[layer][index].quality);
-		} else sprintf(fwhm_str, "N/A");
-	} else sprintf(fwhm_str, "N/A");
+		if (seq->regparam[layer][index].fwhm > 0.0f)
+			fwhm = seq->regparam[layer][index].fwhm;
+		else if (seq->regparam[layer][index].quality >= 0.0)
+			fwhm = seq->regparam[layer][index].quality;
+	}
 
 	basename = g_path_get_basename(seq_get_image_filename(seq, index, imname));
 	gtk_list_store_append (list_store, &iter);
@@ -86,7 +105,7 @@ void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 			COLUMN_SHIFTX, shiftx,
 			COLUMN_SHIFTY, shifty,
 			COLUMN_SELECTED, seq->imgparam[index].incl,
-			COLUMN_FWHM, fwhm_str,
+			COLUMN_FWHM, fwhm,
 			COLUMN_CURRENT, index == seq->current ? 800 : 400,
 			// weight value is 400 by default "normal":
 			// http://developer.gnome.org/gtk3/stable/GtkCellRendererText.html#GtkCellRendererText--weight
