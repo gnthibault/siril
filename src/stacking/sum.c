@@ -29,7 +29,7 @@ struct sum_stacking_data {
 	int reglayer;		// layer used for registration data
 };
 
-int sum_stacking_prepare_hook(struct generic_seq_args *args) {
+static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 	struct sum_stacking_data *ssdata = args->user;
 	unsigned int nbdata = args->seq->ry * args->seq->rx;
 	ssdata->sum[0] = calloc(nbdata, sizeof(unsigned long)*args->seq->nb_layers);
@@ -49,7 +49,7 @@ int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 	return 0;
 }
 
-int sum_stacking_image_hook(struct generic_seq_args *args, int i, fits *fit, rectangle *_) {
+static int sum_stacking_image_hook(struct generic_seq_args *args, int i, fits *fit, rectangle *_) {
 	struct sum_stacking_data *ssdata = args->user;
 	int shiftx, shifty, nx, ny, x, y, ii, layer;
 	int pixel = 0;	// index in sum[0]
@@ -90,7 +90,7 @@ int sum_stacking_image_hook(struct generic_seq_args *args, int i, fits *fit, rec
 }
 
 // convert the result and store it into gfit
-int sum_stacking_finalize_hook(struct generic_seq_args *args) {
+static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	struct sum_stacking_data *ssdata = args->user;
 	unsigned long max = 0L;	// max value of the image's channels
 	unsigned int i, nbdata;
