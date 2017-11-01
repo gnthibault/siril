@@ -25,7 +25,6 @@
 
 struct sum_stacking_data {
 	unsigned long *sum[3];	// the new image's channels
-	unsigned long maxim;	// max value of the image's channels
 	double exposure;	// sum of the exposures
 	int reglayer;		// layer used for registration data
 };
@@ -46,17 +45,20 @@ int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 		ssdata->sum[2] = NULL;
 	}
 
-	ssdata->maxim = 0L;
 	ssdata->exposure = 0.0;
 	return 0;
 }
 
 int sum_stacking_image_hook(struct generic_seq_args *args, int i, fits *fit, rectangle *_) {
 	struct sum_stacking_data *ssdata = args->user;
-
-	ssdata->exposure += fit->exposure;
 	int shiftx, shifty, nx, ny, x, y, ii, layer;
-	int pixel=0;	// index in sum[0]
+	int pixel = 0;	// index in sum[0]
+
+#ifdef _OPENMP
+#pragma omp atomic
+#endif
+	ssdata->exposure += fit->exposure;
+	
 	if (ssdata->reglayer != -1 && args->seq->regparam[ssdata->reglayer]) {
 		shiftx = args->seq->regparam[ssdata->reglayer][i].shiftx;
 		shifty = args->seq->regparam[ssdata->reglayer][i].shifty;
@@ -73,11 +75,11 @@ int sum_stacking_image_hook(struct generic_seq_args *args, int i, fits *fit, rec
 				// we have data for this pixel
 				ii = ny * fit->rx + nx;		// index in source image
 				if (ii > 0 && ii < fit->rx * fit->ry){
-					for(layer=0; layer<args->seq->nb_layers; ++layer){
+					for(layer=0; layer<args->seq->nb_layers; ++layer) {
+#ifdef _OPENMP
+#pragma omp atomic
+#endif
 						ssdata->sum[layer][pixel] += fit->pdata[layer][ii];
-						if (ssdata->sum[layer][pixel] > ssdata->maxim){
-							ssdata->maxim = ssdata->sum[layer][pixel];
-						}
 					}
 				}
 			}
@@ -90,19 +92,28 @@ int sum_stacking_image_hook(struct generic_seq_args *args, int i, fits *fit, rec
 // convert the result and store it into gfit
 int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	struct sum_stacking_data *ssdata = args->user;
+	unsigned long max = 0L;	// max value of the image's channels
+	unsigned int i, nbdata;
+	int layer;
+
+	nbdata = args->seq->ry * args->seq->rx * args->seq->nb_layers;
+	// find the max first
+	#pragma omp parallel for reduction(max:max)
+	for (i=0; i < nbdata; ++i)
+		if (ssdata->sum[0][i] > max)
+			max = ssdata->sum[0][i];
 
 	clearfits(&gfit);
 	new_fit_image(&gfit, args->seq->rx, args->seq->ry, args->seq->nb_layers);
-	gfit.hi = round_to_WORD(ssdata->maxim);
+	gfit.hi = round_to_WORD(max);
 	gfit.bitpix = USHORT_IMG;
 	gfit.exposure = ssdata->exposure;
 
 	double ratio = 1.0;
-	if (ssdata->maxim > USHRT_MAX)
-		ratio = USHRT_MAX_DOUBLE / (double)ssdata->maxim;
+	if (max > USHRT_MAX)
+		ratio = USHRT_MAX_DOUBLE / (double)max;
 
-	unsigned int i, nbdata = args->seq->ry * args->seq->rx;
-	int layer;
+	nbdata = args->seq->ry * args->seq->rx;
 	for (layer=0; layer<args->seq->nb_layers; ++layer){
 		unsigned long* from = ssdata->sum[layer];
 		WORD *to = gfit.pdata[layer];
