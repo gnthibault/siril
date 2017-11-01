@@ -56,6 +56,7 @@
 #include "algos/quality.h"
 #include "algos/cosmetic_correction.h"
 #include "stacking/stacking.h"
+#include "stacking/sum.h"
 #include "registration/registration.h"
 
 #ifdef HAVE_OPENCV
@@ -1433,7 +1434,7 @@ gpointer stackall_worker(gpointer args) {
 						com.ext);
 				gettimeofday(&args.t_start, NULL);
 
-				retval = stack_summing(&args);
+				retval = stack_summing_generic(&args);
 				if (savefits(filename, &gfit))
 					siril_log_message(_("Could not save the stacking result %s\n"),
 							filename);

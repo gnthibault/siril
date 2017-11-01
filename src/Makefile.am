@@ -20,7 +20,7 @@ siril_SOURCES = \
 	gui/progress_and_log.c gui/progress_and_log.h \
 	registration/registration.c registration/registration.h \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
-	stacking/stacking.c stacking/stacking.h \
+	stacking/stacking.c stacking/stacking.h stacking/sum.c stacking/sum.h \
 	algos/gradient.c algos/gradient.h algos/quality.c algos/quality.h \
 	algos/statistics.c \
 	algos/fft.c algos/fft.h \

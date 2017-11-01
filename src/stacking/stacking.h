@@ -61,6 +61,7 @@ struct stacking_args {
 	rejection type_of_rejection;		/* Type of rejection */
 	normalization normalize;		/* Normalization */
 	gboolean force_norm;		/* TRUE = force normalization */
+	int reglayer;		// layer used for registration data
 };
 
 void initialize_stacking_methods();

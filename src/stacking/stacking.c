@@ -45,6 +45,7 @@
 #include "gui/PSF_list.h"
 #include "gui/histogram.h"	// update_gfit_histogram_if_needed();
 #include "io/ser.h"
+#include "sum.h"
 
 #undef STACK_DEBUG
 
@@ -53,7 +54,7 @@ static struct stacking_args stackparam = {	// parameters passed to stacking
 };
 
 static stack_method stacking_methods[] = {
-	stack_summing, stack_mean_with_rejection, stack_median, stack_addmax, stack_addmin
+	stack_summing_generic, stack_mean_with_rejection, stack_median, stack_addmax, stack_addmin
 };
 
 static gboolean end_stacking(gpointer p);
@@ -195,171 +196,6 @@ int compute_normalization(struct stacking_args *args, norm_coeff *coeff, normali
 		}
 	}
 	set_progress_bar_data(NULL, PROGRESS_DONE);
-	return retval;
-}
-
-/** STACK method **
- * This method takes several images and create a new being the sum of all
- * others (normalized to the maximum value of unsigned SHORT).
- */
-int stack_summing(struct stacking_args *args) {
-	int x, y, nx, ny, i, ii, j, shiftx, shifty, layer, reglayer;
-	unsigned long *somme[3], *from, maxim = 0;
-	WORD *to;
-	double ratio;
-	double exposure=0.0;
-	unsigned int nbdata = 0;
-	char filename[256];
-	int retval = 0;
-	int nb_frames, cur_nb = 0;
-	fits *fit = &wfit[0];
-	char *tmpmsg;
-
-	/* should be pre-computed to display it in the stacking tab */
-	nb_frames = args->nb_images_to_stack;
-	reglayer = get_registration_layer();
-	memset(fit, 0, sizeof(fits));
-
-	if (nb_frames <= 1) {
-		siril_log_message(_("No frame selected for stacking (select at least 2). Aborting.\n"));
-		return -1;
-	}
-
-	somme[0] = NULL;
-	g_assert(nb_frames <= args->seq->number);
-	set_progress_bar_data(NULL, PROGRESS_RESET);
-
-	for (j=0; j<args->seq->number; ++j){
-		if (!get_thread_run()) {
-			retval = -1;
-			goto free_and_reset_progress_bar;
-		}
-		if (!args->filtering_criterion(args->seq, j, args->filtering_parameter)) {
-			fprintf(stdout, "image %d is excluded from stacking\n", j);
-			continue;
-		}
-		if (!seq_get_image_filename(args->seq, j, filename)) {
-			retval = -1;
-			goto free_and_reset_progress_bar;
-		}
-		tmpmsg = strdup(_("Processing image "));
-		tmpmsg = str_append(&tmpmsg, filename);
-		set_progress_bar_data(tmpmsg, (double)cur_nb/((double)nb_frames+1.));
-		free(tmpmsg);
-
-		cur_nb++;	// only used for progress bar
-
-		if (seq_read_frame(args->seq, j, fit)) {
-			siril_log_message(_("Stacking: could not read frame, aborting\n"));
-			retval = -3;
-			goto free_and_reset_progress_bar;
-		}
-
-		if (args->seq->nb_layers == -1) {
-			/* sequence has not been opened before, this is set in set_seq.
-			 * It happens with the stackall command that stacks a
-			 * sequence right after readseqfile.
-			 */
-			args->seq->rx = fit->rx; args->seq->ry = fit->ry;
-			args->seq->nb_layers = fit->naxes[2];
-		}
-		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-		g_assert(fit->naxes[2] == args->seq->nb_layers);
-
-		/* first loaded image: init data structures for stacking */
-		if (!nbdata) {
-			nbdata = fit->ry * fit->rx;
-			somme[0] = calloc(nbdata, sizeof(unsigned long)*fit->naxes[2]);
-			if (somme[0] == NULL){
-				printf("Stacking: memory allocation failure\n");
-				retval = -2;
-				goto free_and_reset_progress_bar;
-			}
-			if(args->seq->nb_layers == 3){
-				somme[1] = somme[0] + nbdata;	// index of green layer in somme[0]
-				somme[2] = somme[0] + nbdata*2;	// index of blue layer in somme[0]
-			}
-			//~ "stacking operation\n");
-		} else if (fit->ry * fit->rx != nbdata) {
-			siril_log_message(_("Stacking: image in sequence doesn't has the same dimensions\n"));
-			retval = -3;
-			goto free_and_reset_progress_bar;
-		}
-
-		update_used_memory();
-
-		/* load registration data for current image */
-		if(reglayer != -1 && args->seq->regparam[reglayer]) {
-			shiftx = args->seq->regparam[reglayer][j].shiftx;
-			shifty = args->seq->regparam[reglayer][j].shifty;
-		} else {
-			shiftx = 0;
-			shifty = 0;
-		}
-#ifdef STACK_DEBUG
-		printf("Stack image %d with shift x=%d y=%d\n", j, shiftx, shifty);
-#endif
-
-		/* Summing the exposure */
-		exposure += fit->exposure;
-
-		/* stack current image */
-		i=0;	// index in somme[0]
-		for (y=0; y < fit->ry; ++y){
-			for (x=0; x < fit->rx; ++x){
-				nx = x - shiftx;
-				ny = y - shifty;
-				//printf("x=%d y=%d sx=%d sy=%d i=%d ii=%d\n",x,y,shiftx,shifty,i,ii);
-				if (nx >= 0 && nx < fit->rx && ny >= 0 && ny < fit->ry) {
-					ii = ny * fit->rx + nx;		// index in somme[0] too
-					//printf("shiftx=%d shifty=%d i=%d ii=%d\n",shiftx,shifty,i,ii);
-					if (ii > 0 && ii < fit->rx * fit->ry){
-						for(layer=0; layer<args->seq->nb_layers; ++layer){
-							WORD current_pixel = fit->pdata[layer][ii];
-							somme[layer][i] += current_pixel;
-							if (somme[layer][i] > maxim){
-								maxim = somme[layer][i];
-							}
-						}
-					}
-				}
-				++i;
-			}
-		}
-	}
-	set_progress_bar_data(_("Finalizing stacking..."), (double)nb_frames/((double)nb_frames + 1.));
-
-	copyfits(fit, &gfit, CP_ALLOC|CP_FORMAT, 0);
-	gfit.hi = round_to_WORD(maxim);
-	gfit.bitpix = USHORT_IMG;
-	gfit.exposure = exposure;
-
-	if (maxim > USHRT_MAX)
-		ratio = USHRT_MAX_DOUBLE / (double)maxim;
-	else	ratio = 1.0;
-
-	if (somme[0]) {
-		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-		for(layer=0; layer<args->seq->nb_layers; ++layer){
-			from = somme[layer];
-			to = gfit.pdata[layer];
-			for (y=0; y < fit->ry * fit->rx; ++y) {
-				if (ratio == 1.0)
-					*to++ = round_to_WORD(*from++);
-				else	*to++ = round_to_WORD((double)(*from++) * ratio);
-			}
-		}
-	}
-
-free_and_reset_progress_bar:
-	if (somme[0]) free(somme[0]);
-	if (retval) {
-		set_progress_bar_data(_("Stacking failed. Check the log."), PROGRESS_RESET);
-		siril_log_message(_("Stacking failed.\n"));
-	} else {
-		set_progress_bar_data(_("Stacking complete."), PROGRESS_DONE);
-	}
-	update_used_memory();
 	return retval;
 }
 
@@ -1909,6 +1745,8 @@ void start_stacking() {
 	stackparam.method =
 			stacking_methods[gtk_combo_box_get_active(method_combo)];
 	stackparam.seq = &com.seq;
+	stackparam.reglayer = get_registration_layer();
+	siril_log_color_message(_("sum stacking will use registration data of layer %d if some exist.\n"), "salmon", stackparam.reglayer);
 	max_memory = (int) (com.stack.memory_percent
 			* (double) get_available_memory_in_MB());
 	siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);
@@ -1944,7 +1782,7 @@ static void _show_summary(struct stacking_args *args) {
 	if (args->method == &stack_mean_with_rejection) {
 		siril_log_message(_("Pixel combination ......... average\n"));
 	}
-	else if (args->method == &stack_summing) {
+	else if (args->method == &stack_summing_generic) {
 		siril_log_message(_("Pixel combination ......... normalized sum\n"));
 	}
 	else if (args->method == &stack_median) {
