@@ -70,7 +70,6 @@ void fill_list_of_unfiltered_images(struct stacking_args *args);
 double compute_highest_accepted_fwhm(double percent);
 double compute_highest_accepted_quality(double percent);
 
-int stack_summing(struct stacking_args *args);
 int stack_median(struct stacking_args *args);
 int stack_mean_with_rejection(struct stacking_args *args);
 int stack_addmax(struct stacking_args *args);
