@@ -1746,7 +1746,7 @@ void start_stacking() {
 			stacking_methods[gtk_combo_box_get_active(method_combo)];
 	stackparam.seq = &com.seq;
 	stackparam.reglayer = get_registration_layer();
-	siril_log_color_message(_("sum stacking will use registration data of layer %d if some exist.\n"), "salmon", stackparam.reglayer);
+	siril_log_color_message(_("Sum stacking will use registration data of layer %d if some exist.\n"), "salmon", stackparam.reglayer);
 	max_memory = (int) (com.stack.memory_percent
 			* (double) get_available_memory_in_MB());
 	siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);
@@ -2160,7 +2160,6 @@ double compute_highest_accepted_quality(double percent) {
 	return highest_accepted;
 }
 
-
 /* Activates or not the stack button if there are 2 or more selected images,
  * all data related to stacking is set in stackparam, except the method itself,
  * determined at stacking start.
@@ -2216,22 +2215,27 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 			gtk_widget_set_sensitive(stack[1], FALSE);
 			break;
 		case 2:
-			/* we should check if the sequence has this kind of data
+			/* First we must check if the sequence has this kind of data
 			 * available before allowing the option to be selected. */
-			percent = gtk_adjustment_get_value(stackadj);
-			stackparam.filtering_criterion = stack_filter_fwhm;
-			stackparam.filtering_parameter = compute_highest_accepted_fwhm(percent);
-			stackparam.nb_images_to_stack = compute_nb_filtered_images();
-			sprintf(stackparam.description, _("Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"),
-					stackparam.filtering_parameter,
-					stackparam.nb_images_to_stack);
-			gtk_widget_set_sensitive(stack[0], TRUE);
-			gtk_widget_set_sensitive(stack[1], TRUE);
-			if (stackparam.filtering_parameter > 0.0)
-				sprintf(labelbuffer, _("Based on FWHM < %.2f (%d images)"), stackparam.filtering_parameter, stackparam.nb_images_to_stack);
-			else
-				sprintf(labelbuffer, _("Based on FWHM"));
-			gtk_label_set_text(GTK_LABEL(stack[1]), labelbuffer);
+			if (!stackparam.seq->regparam[0][0].fwhm_data) {
+				stackparam.nb_images_to_stack = 0;
+			}
+			else {
+				percent = gtk_adjustment_get_value(stackadj);
+				stackparam.filtering_criterion = stack_filter_fwhm;
+				stackparam.filtering_parameter = compute_highest_accepted_fwhm(percent);
+				stackparam.nb_images_to_stack = compute_nb_filtered_images();
+				sprintf(stackparam.description, _("Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"),
+						stackparam.filtering_parameter,
+						stackparam.nb_images_to_stack);
+				gtk_widget_set_sensitive(stack[0], TRUE);
+				gtk_widget_set_sensitive(stack[1], TRUE);
+				if (stackparam.filtering_parameter > 0.0)
+					sprintf(labelbuffer, _("Based on FWHM < %.2f (%d images)"), stackparam.filtering_parameter, stackparam.nb_images_to_stack);
+				else
+					sprintf(labelbuffer, _("Based on FWHM"));
+				gtk_label_set_text(GTK_LABEL(stack[1]), labelbuffer);
+			}
 			break;
 
 		case 3:
