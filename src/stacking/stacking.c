@@ -2269,6 +2269,8 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		gtk_widget_set_sensitive(go_stack, TRUE);
 	} else {
 		gtk_widget_set_sensitive(go_stack, FALSE);
+		gtk_widget_set_sensitive(stack[0], FALSE);
+		gtk_widget_set_sensitive(stack[1], FALSE);
 	}
 }
 
