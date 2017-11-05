@@ -2169,7 +2169,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 	static GtkWidget *go_stack = NULL, *stack[] = {NULL, NULL}, *widgetnormalize=NULL;
 	static GtkComboBox *stack_type = NULL, *method_combo = NULL;
 	double percent;
-	int channel;
+	int channel, ref_image;
 	char labelbuffer[256];
 
 	if(!stackadj) {
@@ -2219,7 +2219,14 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 			/* First we must check if the sequence has this kind of data
 			 * available before allowing the option to be selected. */
 			channel = get_registration_layer();
-			if ((!stackparam.seq->regparam[channel]) || (!stackparam.seq->regparam[channel][0].fwhm_data)) {
+			ref_image = sequence_find_refimage(&com.seq);
+			if (channel < 0) {
+				stackparam.nb_images_to_stack = 0;
+			}
+			else if (stackparam.seq->regparam[channel] == NULL) {
+				stackparam.nb_images_to_stack = 0;
+			}
+			else if (stackparam.seq->regparam[channel][ref_image].fwhm_data == NULL && stackparam.seq->regparam[channel][ref_image].fwhm == 0.0) {
 				stackparam.nb_images_to_stack = 0;
 			}
 			else {
