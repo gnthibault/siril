@@ -144,7 +144,7 @@ int compute_normalization(struct stacking_args *args, norm_coeff *coeff, normali
 
 	// first, find the index of the ref image in the filtered image list
 	ref_image = sequence_find_refimage(args->seq);
-	for (int i = 0; i < args->nb_images_to_stack; i++)
+	for (i = 0; i < args->nb_images_to_stack; i++)
 		if (args->image_indices[i] == ref_image) {
 			ref_image_filtred_idx = i;
 			break;
@@ -2189,84 +2189,91 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		gtk_combo_box_set_active(stack_type, SELECTED_IMAGES);
 
 	switch (gtk_combo_box_get_active(method_combo)) {
-		default:
-		case 0:
-		case 3:
-		case 4:
-			gtk_widget_set_sensitive(widgetnormalize, FALSE);
-			break;
-		case 1:
-		case 2:
-			gtk_widget_set_sensitive(widgetnormalize, TRUE);
+	default:
+	case 0:
+	case 3:
+	case 4:
+		gtk_widget_set_sensitive(widgetnormalize, FALSE);
+		break;
+	case 1:
+	case 2:
+		gtk_widget_set_sensitive(widgetnormalize, TRUE);
 	}
 
 	switch (gtk_combo_box_get_active(stack_type)) {
-		case 0:
-			stackparam.filtering_criterion = stack_filter_all;
-			stackparam.nb_images_to_stack = com.seq.number;
-			sprintf(stackparam.description, _("Stacking all images in the sequence (%d)\n"), com.seq.number);
-			gtk_widget_set_sensitive(stack[0], FALSE);
-			gtk_widget_set_sensitive(stack[1], FALSE);
-			break;
-		case 1:
-			stackparam.filtering_criterion = stack_filter_included;
-			stackparam.nb_images_to_stack = com.seq.selnum;
-			sprintf(stackparam.description, _("Stacking only selected images in the sequence (%d)\n"), com.seq.selnum);
-			gtk_widget_set_sensitive(stack[0], FALSE);
-			gtk_widget_set_sensitive(stack[1], FALSE);
-			break;
-		case 2:
-			/* First we must check if the sequence has this kind of data
-			 * available before allowing the option to be selected. */
-			channel = get_registration_layer();
-			ref_image = sequence_find_refimage(&com.seq);
-			if (channel < 0) {
-				stackparam.nb_images_to_stack = 0;
-			}
-			else if (stackparam.seq->regparam[channel] == NULL) {
-				stackparam.nb_images_to_stack = 0;
-			}
-			else if (stackparam.seq->regparam[channel][ref_image].fwhm_data == NULL && stackparam.seq->regparam[channel][ref_image].fwhm == 0.0) {
-				stackparam.nb_images_to_stack = 0;
-			}
-			else {
-				percent = gtk_adjustment_get_value(stackadj);
-				stackparam.filtering_criterion = stack_filter_fwhm;
-				stackparam.filtering_parameter = compute_highest_accepted_fwhm(percent);
-				stackparam.nb_images_to_stack = compute_nb_filtered_images();
-				sprintf(stackparam.description, _("Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"),
-						stackparam.filtering_parameter,
-						stackparam.nb_images_to_stack);
-				gtk_widget_set_sensitive(stack[0], TRUE);
-				gtk_widget_set_sensitive(stack[1], TRUE);
-				if (stackparam.filtering_parameter > 0.0)
-					sprintf(labelbuffer, _("Based on FWHM < %.2f (%d images)"), stackparam.filtering_parameter, stackparam.nb_images_to_stack);
-				else
-					sprintf(labelbuffer, _("Based on FWHM"));
-				gtk_label_set_text(GTK_LABEL(stack[1]), labelbuffer);
-			}
-			break;
-
-		case 3:
+	case 0:
+		stackparam.filtering_criterion = stack_filter_all;
+		stackparam.nb_images_to_stack = com.seq.number;
+		sprintf(stackparam.description,
+				_("Stacking all images in the sequence (%d)\n"),
+				com.seq.number);
+		gtk_widget_set_sensitive(stack[0], FALSE);
+		gtk_widget_set_sensitive(stack[1], FALSE);
+		break;
+	case 1:
+		stackparam.filtering_criterion = stack_filter_included;
+		stackparam.nb_images_to_stack = com.seq.selnum;
+		sprintf(stackparam.description,
+				_("Stacking only selected images in the sequence (%d)\n"),
+				com.seq.selnum);
+		gtk_widget_set_sensitive(stack[0], FALSE);
+		gtk_widget_set_sensitive(stack[1], FALSE);
+		break;
+	case 2:
+		/* First we must check if the sequence has this kind of data
+		 * available before allowing the option to be selected. */
+		channel = get_registration_layer();
+		ref_image = sequence_find_refimage(&com.seq);
+		if (channel < 0) {
+			stackparam.nb_images_to_stack = 0;
+		} else if (stackparam.seq->regparam[channel] == NULL) {
+			stackparam.nb_images_to_stack = 0;
+		} else if (stackparam.seq->regparam[channel][ref_image].fwhm_data == NULL
+				&& stackparam.seq->regparam[channel][ref_image].fwhm == 0.0) {
+			stackparam.nb_images_to_stack = 0;
+		} else {
 			percent = gtk_adjustment_get_value(stackadj);
-			stackparam.filtering_criterion = stack_filter_quality;
-			stackparam.filtering_parameter = compute_highest_accepted_quality(percent);
+			stackparam.filtering_criterion = stack_filter_fwhm;
+			stackparam.filtering_parameter = compute_highest_accepted_fwhm(
+					percent);
 			stackparam.nb_images_to_stack = compute_nb_filtered_images();
-			sprintf(stackparam.description, _("Stacking images of the sequence with a quality higher or equal than %g (%d)\n"),
-					stackparam.filtering_parameter,
-					stackparam.nb_images_to_stack);
+			sprintf(stackparam.description, _("Stacking images of the sequence "
+					"with a FWHM lower or equal than %g (%d)\n"),
+					stackparam.filtering_parameter,	stackparam.nb_images_to_stack);
 			gtk_widget_set_sensitive(stack[0], TRUE);
 			gtk_widget_set_sensitive(stack[1], TRUE);
 			if (stackparam.filtering_parameter > 0.0)
-				sprintf(labelbuffer, _("Based on quality > %.2f (%d images)"), stackparam.filtering_parameter, stackparam.nb_images_to_stack);
+				sprintf(labelbuffer, _("Based on FWHM < %.2f (%d images)"),
+						stackparam.filtering_parameter,
+						stackparam.nb_images_to_stack);
 			else
-				sprintf(labelbuffer, _("Based on quality"));
+				sprintf(labelbuffer, _("Based on FWHM"));
 			gtk_label_set_text(GTK_LABEL(stack[1]), labelbuffer);
-			break;
+		}
+		break;
 
-		default:	// could it be -1?
-			fprintf(stderr, "unexpected value from the stack type combo box\n");
-			stackparam.nb_images_to_stack = 0;
+	case 3:
+		percent = gtk_adjustment_get_value(stackadj);
+		stackparam.filtering_criterion = stack_filter_quality;
+		stackparam.filtering_parameter = compute_highest_accepted_quality(
+				percent);
+		stackparam.nb_images_to_stack = compute_nb_filtered_images();
+		sprintf(stackparam.description, _("Stacking images of the sequence "
+				"with a quality higher or equal than %g (%d)\n"),
+				stackparam.filtering_parameter, stackparam.nb_images_to_stack);
+		gtk_widget_set_sensitive(stack[0], TRUE);
+		gtk_widget_set_sensitive(stack[1], TRUE);
+		if (stackparam.filtering_parameter > 0.0)
+			sprintf(labelbuffer, _("Based on quality > %.2f (%d images)"),
+					stackparam.filtering_parameter,	stackparam.nb_images_to_stack);
+		else
+			sprintf(labelbuffer, _("Based on quality"));
+		gtk_label_set_text(GTK_LABEL(stack[1]), labelbuffer);
+		break;
+
+	default:	// could it be -1?
+		fprintf(stderr, "unexpected value from the stack type combo box\n");
+		stackparam.nb_images_to_stack = 0;
 	}
 
 	if (stackparam.nb_images_to_stack >= 2) {
@@ -2275,9 +2282,11 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		fill_list_of_unfiltered_images(&stackparam);
 		gtk_widget_set_sensitive(go_stack, TRUE);
 	} else {
+		if (stackparam.nb_images_to_stack == 0) {
+			gtk_widget_set_sensitive(stack[0], FALSE);
+			gtk_widget_set_sensitive(stack[1], FALSE);
+		}
 		gtk_widget_set_sensitive(go_stack, FALSE);
-		gtk_widget_set_sensitive(stack[0], FALSE);
-		gtk_widget_set_sensitive(stack[1], FALSE);
 	}
 }
 
