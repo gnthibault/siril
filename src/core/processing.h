@@ -39,10 +39,14 @@ struct generic_seq_args {
 	// retval, useful for the idle_function, set by the worker
 	int retval;
 
+	// if false, ignore image_hook errors, unselect failing image from the
+	// sequence and continue processing other images
+	gboolean stop_on_error;
+
 	// string description for progress and logs
 	const char *description;
 
-	// some processings may create new images
+	// some processings may create a new image sequence
 	gboolean has_output;
 	// output files: prefix for the new sequence and automatic loading
 	const char *new_seq_prefix;
