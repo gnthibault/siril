@@ -1481,7 +1481,7 @@ void apply_banding_to_sequence(struct banding_data *banding_args) {
 	args->image_hook = banding_image_hook;
 	args->idle_function = NULL;
 	args->stop_on_error = FALSE;
-	args->description = "Banding Reduction";
+	args->description = _("Banding Reduction");
 	args->has_output = TRUE;
 	args->new_seq_prefix = banding_args->seqEntry;
 	args->load_new_sequence = TRUE;

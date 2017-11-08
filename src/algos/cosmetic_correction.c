@@ -325,7 +325,7 @@ void apply_cosmetic_to_sequence(struct cosmetic_data *cosme_args) {
 	args->image_hook = cosmetic_image_hook;
 	args->idle_function = NULL;
 	args->stop_on_error = FALSE;
-	args->description = "Cosmetic Correction";
+	args->description = _("Cosmetic Correction");
 	args->has_output = TRUE;
 	args->new_seq_prefix = cosme_args->seqEntry;
 	args->load_new_sequence = TRUE;

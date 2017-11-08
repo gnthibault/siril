@@ -142,7 +142,7 @@ int stack_summing_generic(struct stacking_args *stackargs) {
 	args->finalize_hook = sum_stacking_finalize_hook;
 	args->idle_function = NULL;
 	args->stop_on_error = TRUE;
-	args->description = "sum stacking";
+	args->description = _("Sum stacking");
 	args->has_output = FALSE;
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
