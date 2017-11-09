@@ -12,13 +12,7 @@
 char* siril_log_message(const char* format, ...);
 char* siril_log_color_message(const char* format, const char* color, ...);
 
-
 void set_progress_bar_data(const char *text, double percent);
-// deprecated progress bar functions below
-void progress_bar_set_text(const char *text);
-void progress_bar_reset_ready();
-void progress_bar_set_percent(double percent);
-
 
 void show_time(struct timeval, struct timeval);
 

@@ -3941,17 +3941,19 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 			gtk_toggle_button_set_active(tbutton, FALSE);
 		} else {
 			fits *dark_fit;
-			progress_bar_set_text(_("Opening dark image..."));
+			set_progress_bar_data(_("Opening dark image..."), PROGRESS_NONE);
 			dark_fit = calloc(1, sizeof(fits));
 			if (readfits(filename, dark_fit, NULL)) {
-				siril_log_message(_("NOT USING DARK: cannot open the file\n"));
+				const char *msg = _("NOT USING DARK: cannot open the file\n");
+				siril_log_message("%s\n", msg);
+				set_progress_bar_data(msg, PROGRESS_DONE);
 				free(dark_fit);
 				gtk_entry_set_text(entry, "");
 			} else {
 				if (dark_fit->naxes[2] != gfit.naxes[2]) {
 					const char *msg = _("NOT USING DARK: number of channels is different");
 					siril_log_message("%s\n", msg);
-					progress_bar_set_text(msg);
+					set_progress_bar_data(msg, PROGRESS_DONE);
 					free(dark_fit);
 					gtk_entry_set_text(entry, "");
 				}
@@ -3990,17 +3992,19 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 			gtk_toggle_button_set_active(tbutton, FALSE);
 		} else {
 			fits *flat_fit;
-			progress_bar_set_text(_("Opening flat image..."));
+			set_progress_bar_data(_("Opening flat image..."), PROGRESS_NONE);
 			flat_fit = calloc(1, sizeof(fits));
 			if (readfits(filename, flat_fit, NULL)) {
-				siril_log_message(_("NOT USING FLAT: cannot open the file\n"));
+				const char *msg =_("NOT USING FLAT: cannot open the file\n");
+				siril_log_message("%s\n", msg);
+				set_progress_bar_data(msg, PROGRESS_DONE);
 				free(flat_fit);
 				gtk_entry_set_text(entry, "");
 			} else {
 				if (flat_fit->naxes[2] != gfit.naxes[2]) {
 					const char *msg = _("NOT USING FLAT: number of channels is different");
 					siril_log_message("%s\n", msg);
-					progress_bar_set_text(msg);
+					set_progress_bar_data(msg, PROGRESS_DONE);
 					free(flat_fit);
 					gtk_entry_set_text(entry, "");
 				}
@@ -4026,17 +4030,19 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 			gtk_toggle_button_set_active(tbutton, FALSE);
 		} else {
 			fits *bias_fit;
-			progress_bar_set_text(_("Opening offset image..."));
+			set_progress_bar_data(_("Opening offset image..."), PROGRESS_NONE);
 			bias_fit = calloc(1, sizeof(fits));
 			if (readfits(filename, bias_fit, NULL)) {
-				siril_log_message(_("NOT USING OFFSET: cannot open the file\n"));
+				const char *msg =_("NOT USING OFFSET: cannot open the file\n");
+				siril_log_message("%s\n", msg);
+				set_progress_bar_data(msg, PROGRESS_DONE);
 				free(bias_fit);
 				gtk_entry_set_text(entry, "");
 			} else {
 				if (bias_fit->naxes[2] != gfit.naxes[2]) {
 					const char *msg = _("NOT USING OFFSET: number of channels is different");
 					siril_log_message("%s\n", msg);
-					progress_bar_set_text(msg);
+					set_progress_bar_data(msg, PROGRESS_DONE);
 					free(bias_fit);
 					gtk_entry_set_text(entry, "");
 				}
@@ -4101,9 +4107,9 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 		control_window_switch_to_tab(OUTPUT_LOGS);
 		success = seqpreprocess(args) == GPOINTER_TO_INT(0);
 		if (success)
-			progress_bar_reset_ready();
+			set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 		else
-			progress_bar_set_percent(0.0);
+			set_progress_bar_data(_("Error in preprocessing."), PROGRESS_NONE);
 		// end_sequence_prepro is also executed there by seqpreprocess
 
 		free(com.uniq->ppprefix);
@@ -4172,10 +4178,10 @@ void on_seqproc_entry_changed(GtkComboBox *widget, gpointer user_data) {
 		} else
 			type = "";
 		g_snprintf(msg, sizeof(msg), _("Selected %s sequence %s..."), type, name);
-		progress_bar_set_text(msg);
+		set_progress_bar_data(msg, PROGRESS_DONE);
 		set_seq(name);
 		set_cursor_waiting(FALSE);
-		progress_bar_reset_ready();
+		set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 	}
 	g_free(name);
 }
@@ -4191,6 +4197,38 @@ void on_notebook1_switch_page(GtkNotebook *notebook, GtkWidget *page,
 	fill_sequence_list(&com.seq, com.cvport);
 }
 
+struct checkSeq_filter_data {
+	int force;
+	int retvalue;
+	GtkToggleButton *forceButton;
+};
+
+static gboolean end_checkSeq(gpointer p) {
+	struct checkSeq_filter_data *args = (struct checkSeq_filter_data *) p;
+	stop_processing_thread();
+
+	/* it's better to uncheck the force button each time it is used */
+	if (args->force)
+		gtk_toggle_button_set_active(args->forceButton, FALSE);
+	if (args->retvalue)
+		update_sequences_list(NULL);
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
+	set_cursor_waiting(FALSE);
+	free(args);
+	update_used_memory();
+
+	return FALSE;
+}
+
+static gpointer checkSeq(gpointer p) {
+	struct checkSeq_filter_data *args = (struct checkSeq_filter_data *) p;
+
+	if (!check_seq(args->force))
+		args->retvalue = 1;
+	gdk_threads_add_idle(end_checkSeq, args);
+	return GINT_TO_POINTER(0);
+}
+
 void on_checkseqbutton_clicked(GtkButton *button, gpointer user_data) {
 	static GtkToggleButton *forceButton = NULL;
 	int force;
@@ -4200,17 +4238,23 @@ void on_checkseqbutton_clicked(GtkButton *button, gpointer user_data) {
 	}
 	force = gtk_toggle_button_get_active(forceButton);
 
-	set_cursor_waiting(TRUE);
-	progress_bar_set_text(
-			_("Searching for sequences in the current working directory..."));
-	if (!check_seq(force))
-		update_sequences_list(NULL);
+	if (get_thread_run()) {
+		siril_log_message(_("Another task is already "
+				"in progress, ignoring new request.\n"));
+		return;
+	}
 
-	/* it's better to uncheck the force button each time it is used */
-	if (force)
-		gtk_toggle_button_set_active(forceButton, FALSE);
-	progress_bar_reset_ready();
-	set_cursor_waiting(FALSE);
+	set_cursor_waiting(TRUE);
+	set_progress_bar_data(_("Searching for sequences in "
+			"the current working directory..."), PROGRESS_PULSATE);
+
+	struct checkSeq_filter_data *args = malloc(sizeof(struct checkSeq_filter_data));
+
+	args->force = force;
+	args->forceButton = forceButton;
+	args->retvalue = 0;
+	set_cursor_waiting(TRUE);
+	start_in_new_thread(checkSeq, args);
 }
 
 void on_confirmok_clicked(GtkButton *button, gpointer user_data) {
@@ -5584,11 +5628,7 @@ void on_Median_Apply_clicked(GtkButton *button, gpointer user_data) {
 					gtk_builder_get_object(builder, "combo_ksize_median")));
 	double amount = gtk_range_get_value(
 			GTK_RANGE(gtk_builder_get_object(builder, "scale_median")));
-	int iterations = round_to_int(
-			gtk_spin_button_get_value(
-					GTK_SPIN_BUTTON(
-							gtk_builder_get_object(builder,
-									"median_button_iterations"))));
+	int iterations = round_to_int(gtk_spin_button_get_value(GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "median_button_iterations"))));
 
 	if (get_thread_run()) {
 		siril_log_message(

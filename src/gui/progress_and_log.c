@@ -29,8 +29,7 @@
  * Progress bar static functions
  */
 
-// should be static but is still used in preprocessing
-void progress_bar_set_text(const char *text) {
+static void progress_bar_set_text(const char *text) {
 	static GtkProgressBar *pbar = NULL;
 	if (pbar == NULL)
 		pbar = GTK_PROGRESS_BAR(
@@ -42,19 +41,8 @@ void progress_bar_set_text(const char *text) {
 	gtk_progress_bar_set_text(pbar, text);
 }
 
-// should be static but is still used in preprocessing
-void progress_bar_reset_ready() {
-	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
-}
-
-struct progress_bar_idle_data {
-	char *progress_bar_text;
-	double progress_bar_percent;
-};
-
-// should be static but is still used in preprocessing
 /* http://developer.gnome.org/gtk3/3.4/GtkProgressBar.html */
-void progress_bar_set_percent(double percent) {
+static void progress_bar_set_percent(double percent) {
 	static GtkProgressBar *pbar = NULL;
 	if (pbar == NULL)
 		pbar = GTK_PROGRESS_BAR(
@@ -70,6 +58,11 @@ void progress_bar_set_percent(double percent) {
 		gtk_progress_bar_set_fraction(pbar, percent);
 	}
 }
+
+struct progress_bar_idle_data {
+	char *progress_bar_text;
+	double progress_bar_percent;
+};
 
 static gboolean progress_bar_idle_callback(gpointer p) {
 	struct progress_bar_idle_data *data = (struct progress_bar_idle_data *) p;
