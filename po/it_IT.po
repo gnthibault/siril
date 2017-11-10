@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-07 13:50+0100\n"
+"POT-Creation-Date: 2017-11-10 14:39+0100\n"
 "PO-Revision-Date: 2017-06-16 15:41+0200\n"
 "Last-Translator: Sonia Zorba <sonia@zonia3000.net>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
@@ -2253,7 +2253,8 @@ msgid "Search current directory for sequences of FITS images."
 msgstr "Cerca sequenze di immagini FITS nella cartella corrente"
 
 #: ../src/gui/siril3.glade.h:495
-msgid "force .seq recomputation"
+#, fuzzy
+msgid "Force .seq recomputation"
 msgstr "Forza rigenerazione .seq"
 
 #: ../src/gui/siril3.glade.h:496
@@ -2290,7 +2291,8 @@ msgstr ""
 "l'esclusione dell'immagine attuale."
 
 #: ../src/gui/siril3.glade.h:503
-msgid "excluded"
+#, fuzzy
+msgid "Excluded"
 msgstr "escludi"
 
 #: ../src/gui/siril3.glade.h:504
@@ -2302,7 +2304,8 @@ msgstr ""
 "viene eliminato)"
 
 #: ../src/gui/siril3.glade.h:505
-msgid "reference image"
+#, fuzzy
+msgid "Reference image"
 msgstr "immagine di riferimento"
 
 #: ../src/gui/siril3.glade.h:506
@@ -2439,7 +2442,7 @@ msgstr ""
 "Qualità del sensore: un valore più basso userà una compressione maggiore e "
 "un bitrate inferiore, producendo inoltre file di dimensione minore."
 
-#: ../src/gui/siril3.glade.h:531 ../src/io/sequence.c:1668
+#: ../src/gui/siril3.glade.h:531 ../src/io/sequence.c:1663
 msgid "Select area to crop"
 msgstr "Seleziona area da ritagliare"
 
@@ -2808,7 +2811,8 @@ msgid "Manual registration"
 msgstr "Registrazione manuale"
 
 #: ../src/gui/siril3.glade.h:607
-msgid "display reference image"
+#, fuzzy
+msgid "Display reference image"
 msgstr "mostra immagine di riferimento"
 
 #: ../src/gui/siril3.glade.h:609
@@ -3563,7 +3567,7 @@ msgstr "Miglioramento della saturazione: elaborazione...\n"
 #: ../src/core/command.c:1392 ../src/core/siril.c:625 ../src/core/siril.c:908
 #: ../src/core/siril.c:1042 ../src/core/siril.c:1185 ../src/core/siril.c:1559
 #: ../src/core/siril.c:1651 ../src/core/siril.c:1760 ../src/gui/histogram.c:696
-#: ../src/gui/statistics_list.c:308 ../src/io/sequence.c:1165
+#: ../src/gui/statistics_list.c:308 ../src/io/sequence.c:1160
 msgid "Error: no data computed.\n"
 msgstr "Errore, nessun dato calcolato.\n"
 
@@ -3745,9 +3749,9 @@ msgstr "Risultato della composizione non salvato"
 msgid "You must at least load two layers before!\n"
 msgstr "Prima devi caricare almeno due livelli!\n"
 
-#: ../src/compositing/compositing.c:555 ../src/gui/callbacks.c:5196
-#: ../src/gui/callbacks.c:5240 ../src/gui/callbacks.c:5485
-#: ../src/gui/callbacks.c:5494 ../src/gui/callbacks.c:5552
+#: ../src/compositing/compositing.c:555 ../src/gui/callbacks.c:5240
+#: ../src/gui/callbacks.c:5284 ../src/gui/callbacks.c:5529
+#: ../src/gui/callbacks.c:5538 ../src/gui/callbacks.c:5596
 #: ../src/io/conversion.c:486 ../src/io/image_formats_libraries.c:98
 #: ../src/io/image_formats_libraries.c:155
 #: ../src/registration/registration.c:1125
@@ -3785,12 +3789,13 @@ msgstr "Regolamento livello da %d a %g fattori di luminosità\n"
 #: ../src/core/command.c:800 ../src/core/command.c:827
 #: ../src/core/command.c:1137 ../src/core/command.c:1239
 #: ../src/core/command.c:1260 ../src/core/command.c:1279
-#: ../src/gui/callbacks.c:3929 ../src/gui/callbacks.c:4518
-#: ../src/gui/callbacks.c:4602 ../src/gui/callbacks.c:4802
-#: ../src/gui/callbacks.c:5139 ../src/gui/callbacks.c:5286
-#: ../src/gui/callbacks.c:5595 ../src/gui/callbacks.c:5744
-#: ../src/io/conversion.c:455 ../src/registration/registration.c:1114
-#: ../src/stacking/stacking.c:1735 ../src/stacking/stacking.c:1864
+#: ../src/gui/callbacks.c:3929 ../src/gui/callbacks.c:4242
+#: ../src/gui/callbacks.c:4562 ../src/gui/callbacks.c:4646
+#: ../src/gui/callbacks.c:4846 ../src/gui/callbacks.c:5183
+#: ../src/gui/callbacks.c:5330 ../src/gui/callbacks.c:5635
+#: ../src/gui/callbacks.c:5784 ../src/io/conversion.c:455
+#: ../src/registration/registration.c:1114 ../src/stacking/stacking.c:1735
+#: ../src/stacking/stacking.c:1864
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Un altro compito è già in corso, la nuova richiesta viene ignorata.\n"
 
@@ -3824,14 +3829,14 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Ritaglio: seleziona una regione o fornisci x, y, larghezza e altezza\n"
 
 #: ../src/core/command.c:490 ../src/core/command.c:1512
-#: ../src/gui/callbacks.c:5483 ../src/gui/callbacks.c:5550
+#: ../src/gui/callbacks.c:5527 ../src/gui/callbacks.c:5594
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
 "Wavelet: il numero massimo di piani per un'immagine di questa dimensione è "
 "%d\n"
 
-#: ../src/core/command.c:496 ../src/gui/callbacks.c:5492
+#: ../src/core/command.c:496 ../src/gui/callbacks.c:5536
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: il tipo deve essere %d o %d\n"
@@ -3884,7 +3889,7 @@ msgstr ""
 "ad una stella singola per determinare la PSF.\n"
 
 #: ../src/core/command.c:691 ../src/core/command.c:751
-#: ../src/core/command.c:773 ../src/io/sequence.c:1835
+#: ../src/core/command.c:773 ../src/io/sequence.c:1830
 msgid "Select an area first\n"
 msgstr "Seleziona prima un'area\n"
 
@@ -4177,9 +4182,9 @@ msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr "Le immagini non hanno la stessa dimensione (w = %d|%d, h = %d|%d)\n"
 
 #: ../src/core/siril.c:203 ../src/core/utils.c:470 ../src/gui/callbacks.c:2218
-#: ../src/gui/callbacks.c:4854 ../src/gui/callbacks.c:4875
-#: ../src/gui/callbacks.c:5302 ../src/gui/callbacks.c:5308
-#: ../src/gui/callbacks.c:5333 ../src/gui/plot.c:344 ../src/gui/plot.c:404
+#: ../src/gui/callbacks.c:4898 ../src/gui/callbacks.c:4919
+#: ../src/gui/callbacks.c:5346 ../src/gui/callbacks.c:5352
+#: ../src/gui/callbacks.c:5377 ../src/gui/plot.c:344 ../src/gui/plot.c:404
 #: ../src/gui/plot.c:549 ../src/gui/PSF_list.c:150 ../src/io/conversion.c:492
 #: ../src/io/conversion.c:560 ../src/io/image_format_fits.c:197
 #: ../src/io/image_format_fits.c:205 ../src/io/image_format_fits.c:227
@@ -4701,93 +4706,98 @@ msgstr "Apertura immagine dark..."
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "NON STO USANDO IL DARK: non posso aprire il file\n"
 
-#: ../src/gui/callbacks.c:3952
+#: ../src/gui/callbacks.c:3954
 msgid "NOT USING DARK: number of channels is different"
 msgstr "NON STO USANDO IL DARK: il numero di canali non coincide"
 
-#: ../src/gui/callbacks.c:3993
+#: ../src/gui/callbacks.c:3995
 msgid "Opening flat image..."
 msgstr "Apertura immagine flat..."
 
-#: ../src/gui/callbacks.c:3996
+#: ../src/gui/callbacks.c:3998
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "NON STO USANDO IL FLAT: non posso aprire il file\n"
 
-#: ../src/gui/callbacks.c:4001
+#: ../src/gui/callbacks.c:4005
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "NON STO USANDO IL FLAT: il numero di canali non coincide"
 
-#: ../src/gui/callbacks.c:4029
+#: ../src/gui/callbacks.c:4033
 msgid "Opening offset image..."
 msgstr "Apertura immagine offset..."
 
-#: ../src/gui/callbacks.c:4032
+#: ../src/gui/callbacks.c:4036
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "NON STO USANDO L'OFFSET: non posso aprire il file\n"
 
-#: ../src/gui/callbacks.c:4037
+#: ../src/gui/callbacks.c:4043
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "NON STO USANDO L'OFFSET: il numero di canali non coincide"
 
-#: ../src/gui/callbacks.c:4060
+#: ../src/gui/callbacks.c:4066
 msgid "Preprocessing...\n"
 msgstr "Pre-elaborazione...\n"
 
-#: ../src/gui/callbacks.c:4174
+#: ../src/gui/callbacks.c:4112
+#, fuzzy
+msgid "Error in preprocessing."
+msgstr "Inizia pre-elaborazione"
+
+#: ../src/gui/callbacks.c:4180
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Selezionati %s sequenza %s..."
 
-#: ../src/gui/callbacks.c:4205
+#: ../src/gui/callbacks.c:4248
 msgid "Searching for sequences in the current working directory..."
 msgstr "Ricerca di sequenze nella cartella di lavoro corrente..."
 
 #. Write "Siril Version X.Y in Copyright_Txt
-#: ../src/gui/callbacks.c:4412
+#: ../src/gui/callbacks.c:4456
 msgid "Saving TIFF"
 msgstr "Salvataggio TIFF"
 
-#: ../src/gui/callbacks.c:4430
+#: ../src/gui/callbacks.c:4474
 msgid "Saving Netpbm"
 msgstr "Salvataggio Netpbm"
 
-#: ../src/gui/callbacks.c:4448
+#: ../src/gui/callbacks.c:4492
 msgid "Saving BMP"
 msgstr "Salvataggio BMP"
 
-#: ../src/gui/callbacks.c:4466
+#: ../src/gui/callbacks.c:4510
 msgid "Saving JPG"
 msgstr "Salvataggio JPG"
 
-#: ../src/gui/callbacks.c:4852
+#: ../src/gui/callbacks.c:4896
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr ""
 "Lo sfondo non può essere estratto da se stesso. Per favore, clicca su Mostra "
 "Immagine\n"
 
-#: ../src/gui/callbacks.c:4874
+#: ../src/gui/callbacks.c:4918
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr ""
 "Per favore, applica la correzione all'immagine cliccando su Mostra Immagine\n"
 
-#: ../src/gui/callbacks.c:4896
+#: ../src/gui/callbacks.c:4940
 msgid "Subtraction done ...\n"
 msgstr "Sottrazione completata ...\n"
 
-#: ../src/gui/callbacks.c:4903
+#: ../src/gui/callbacks.c:4947
 msgid "Division done ...\n"
 msgstr "Divisione completata ...\n"
 
-#: ../src/gui/callbacks.c:5088
+#: ../src/gui/callbacks.c:5132
 msgid "Load an image first, aborted.\n"
 msgstr "Carica prima un'immagine, abortito.\n"
 
-#: ../src/gui/callbacks.c:5117
+#: ../src/gui/callbacks.c:5161
 msgid "The file stars.lst has been created.\n"
 msgstr "Il file stars.lst è stato creato.\n"
 
-#: ../src/gui/callbacks.c:5194 ../src/gui/callbacks.c:5239
+#: ../src/gui/callbacks.c:5238 ../src/gui/callbacks.c:5283
 msgid ""
 "Current selection is too large.\n"
 "To determine the PSF, please make a selection around a star.\n"
@@ -4795,7 +4805,7 @@ msgstr ""
 "La selezione corrente è troppo larga.\n"
 "Per favore crea una selezione attorno ad una stella per determinare la PSF.\n"
 
-#: ../src/gui/callbacks.c:5208
+#: ../src/gui/callbacks.c:5252
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -4844,26 +4854,26 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:5301
+#: ../src/gui/callbacks.c:5345
 msgid "FFT does not work with sequences !\n"
 msgstr "FFT non funziona con le sequenze!\n"
 
-#: ../src/gui/callbacks.c:5307
+#: ../src/gui/callbacks.c:5351
 msgid "Open an image first !\n"
 msgstr "Apri prima un'immagine !\n"
 
-#: ../src/gui/callbacks.c:5332
+#: ../src/gui/callbacks.c:5376
 msgid "Select magnitude and phase before !\n"
 msgstr "Seleziona prima magnitudine e fase!\n"
 
-#: ../src/gui/callbacks.c:5842
+#: ../src/gui/callbacks.c:5882
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr ""
 "Il ritaglio non funziona con i filmati avi. Per favore, converti prima il "
 "tuo file nel formato SER.\n"
 
-#: ../src/gui/callbacks.c:5847
+#: ../src/gui/callbacks.c:5887
 msgid "Not a valid sequence for cropping.\n"
 msgstr "Sequenza non valida per il ritaglio.\n"
 
@@ -4929,17 +4939,17 @@ msgstr "Posizione della stella sull'asse X"
 msgid "Star position on Y axis"
 msgstr "Posizione della stella sull'asse Y"
 
-#: ../src/gui/progress_and_log.c:230
+#: ../src/gui/progress_and_log.c:223
 #, c-format
 msgid "Execution time: %d min %.2d s.\n"
 msgstr "Tempo d'esecuzione: %d min %.2d s.\n"
 
-#: ../src/gui/progress_and_log.c:234
+#: ../src/gui/progress_and_log.c:227
 #, c-format
 msgid "Execution time: %.2f ms.\n"
 msgstr "Tempo d'esecuzione: %.2f ms.\n"
 
-#: ../src/gui/progress_and_log.c:236
+#: ../src/gui/progress_and_log.c:229
 #, c-format
 msgid "Execution time: %.2f s.\n"
 msgstr "Tempo d'esecuzione: %.2f s.\n"
@@ -5131,7 +5141,7 @@ msgstr ""
 "immagine.\n"
 
 #: ../src/io/conversion.c:529 ../src/io/conversion.c:580
-#: ../src/io/sequence.c:1092 ../src/io/sequence.c:1269
+#: ../src/io/sequence.c:1087 ../src/io/sequence.c:1264
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "Creazione del file SER fallita, aborto.\n"
 
@@ -5175,7 +5185,7 @@ msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Errore leggendo il frame %d da %s, interruzione.\n"
 
 #: ../src/io/conversion.c:601 ../src/io/conversion.c:633
-#: ../src/io/sequence.c:1120 ../src/io/sequence.c:1480
+#: ../src/io/sequence.c:1115 ../src/io/sequence.c:1475
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Errore durante la conversione in SER (spazio esaurito?)\n"
 
@@ -5612,55 +5622,55 @@ msgstr "sequenza %d, trovati: da %d a %d"
 msgid "Sequence loaded: %s (%d->%d)\n"
 msgstr "Sequenza caricata: %s (%d->%d)\n"
 
-#: ../src/io/sequence.c:495
+#: ../src/io/sequence.c:496
 #, c-format
 msgid "%d from %s.ser"
 msgstr "%d da %s.ser"
 
-#: ../src/io/sequence.c:525
+#: ../src/io/sequence.c:526
 #, c-format
 msgid "Could not load image %d from sequence %s\n"
 msgstr "Non posso caricare l'immagine %d dalla sequenza %s\n"
 
-#: ../src/io/sequence.c:533 ../src/io/sequence.c:583
+#: ../src/io/sequence.c:534 ../src/io/sequence.c:584
 #, c-format
 msgid "Could not load frame %d from SER sequence %s\n"
 msgstr "Non posso caricare il frame %d dalla sequenza SER %s\n"
 
-#: ../src/io/sequence.c:542 ../src/io/sequence.c:594
+#: ../src/io/sequence.c:543 ../src/io/sequence.c:595
 #, c-format
 msgid "Could not load frame %d from AVI sequence %s\n"
 msgstr "Non posso caricare il frame %d dalla sequenza AVI %s\n"
 
-#: ../src/io/sequence.c:574
+#: ../src/io/sequence.c:575
 #, c-format
 msgid "Could not load partial image %d from sequence %s\n"
 msgstr "Non posso caricare l'immagine parziale %d dalla sequenza %s\n"
 
-#: ../src/io/sequence.c:662
+#: ../src/io/sequence.c:663
 msgid "This operation is not supported on AVI sequences (seq_open_image)\n"
 msgstr ""
 "Questa operazione non è supportata sulle sequenze AVI (seq_open_image)\n"
 
-#: ../src/io/sequence.c:666
+#: ../src/io/sequence.c:667
 msgid ""
 "This operation is not supported on internal sequences (seq_open_image)\n"
 msgstr ""
 "Questa operazione non è supportata sulle sequenze interne (seq_open_image)\n"
 
-#: ../src/io/sequence.c:1023
+#: ../src/io/sequence.c:1018
 #, fuzzy
 msgid "internal sequence"
 msgstr "Sequenza di ritaglio"
 
-#: ../src/io/sequence.c:1244
+#: ../src/io/sequence.c:1239
 #, c-format
 msgid "Using registration information from layer %d to export sequence\n"
 msgstr ""
 "Usando le informazioni di registrazione del livello %d per esportare la "
 "sequenza\n"
 
-#: ../src/io/sequence.c:1289
+#: ../src/io/sequence.c:1284
 msgid ""
 "MP4 output is not supported because siril was not compiled with ffmpeg "
 "support.\n"
@@ -5668,7 +5678,7 @@ msgstr ""
 "L'output MP4 non è supportato perché siril è stato compilato senza il "
 "supporto ffmpeg.\n"
 
-#: ../src/io/sequence.c:1300
+#: ../src/io/sequence.c:1295
 msgid ""
 "Film output needs to have a width that is a multiple of 32 and an even "
 "height, resizing selection.\n"
@@ -5676,55 +5686,55 @@ msgstr ""
 "L'output del sensore deve avere una larghezza che è un multiplo di 32 e "
 "un'altezza pari, ridimensionando la selezione.\n"
 
-#: ../src/io/sequence.c:1369
+#: ../src/io/sequence.c:1364
 #, c-format
 msgid "image %d is excluded from export\n"
 msgstr "L'immagine %d è stata esclusa dall'esportazione\n"
 
-#: ../src/io/sequence.c:1378 ../src/stacking/stacking.c:708
+#: ../src/io/sequence.c:1373 ../src/stacking/stacking.c:708
 #: ../src/stacking/stacking.c:863
 msgid "Processing image "
 msgstr "Elaborazione dell'immagine "
 
-#: ../src/io/sequence.c:1385
+#: ../src/io/sequence.c:1380
 msgid "Export: could not read frame, aborting\n"
 msgstr "Esportazione: non posso leggere il frame, interruzione\n"
 
-#: ../src/io/sequence.c:1493
+#: ../src/io/sequence.c:1488
 msgid "Siril needs opencv to resize images\n"
 msgstr "Siril ha bisogno di opencv per ridimensionare le immagini\n"
 
-#: ../src/io/sequence.c:1539
+#: ../src/io/sequence.c:1534
 msgid "Sequence export failed. Check the log."
 msgstr "Esportazione della sequenza fallita. Controlla i log."
 
-#: ../src/io/sequence.c:1540
+#: ../src/io/sequence.c:1535
 msgid "Sequence export failed\n"
 msgstr "Esportazione della sequenza fallita\n"
 
-#: ../src/io/sequence.c:1543
+#: ../src/io/sequence.c:1538
 msgid "Sequence export succeeded."
 msgstr "Esportazione della sequenza completata con successo."
 
-#: ../src/io/sequence.c:1544
+#: ../src/io/sequence.c:1539
 msgid "Sequence export succeeded.\n"
 msgstr "Esportazione della sequenza completata con successo.\n"
 
-#: ../src/io/sequence.c:1619
+#: ../src/io/sequence.c:1614
 msgid "Width or height cannot be null. Not resizing.\n"
 msgstr "La larghezza o l'altezza non possono essere nulle. Non ridimensiono.\n"
 
-#: ../src/io/sequence.c:1667
+#: ../src/io/sequence.c:1662
 msgid "Cropping to selection"
 msgstr "Ritaglio alla selezione"
 
-#: ../src/io/sequence.c:1720
+#: ../src/io/sequence.c:1715
 #, c-format
 msgid "No star found in the area image %d around %d,%d\n"
 msgstr ""
 "Nessuna stella è stata trovata nell'area dell'immagine %d intorno a %d,%d\n"
 
-#: ../src/io/sequence.c:1767
+#: ../src/io/sequence.c:1762
 msgid ""
 "Star analysis does not give consistent results when exposure changes across "
 "the sequence.\n"
@@ -5732,7 +5742,7 @@ msgstr ""
 "L'analisi delle stelle non dà risultati consistenti quando l'esposizione "
 "cambia lungo la sequenza.\n"
 
-#: ../src/io/sequence.c:1859
+#: ../src/io/sequence.c:1854
 msgid "PSF on area"
 msgstr "PSF sull'area"
 
