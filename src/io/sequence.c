@@ -395,6 +395,7 @@ int set_seq(const char *name){
 	set_output_filename_to_sequence_name();
 	sliders_mode_set_state(com.sliders);
 	initialize_display_mode();
+	reset_plot(); // reset all plots
 
 	/* initialize image-related runtime data */
 	set_display_mode();		// display the display mode in the combo box
@@ -832,11 +833,6 @@ void initialize_sequence(sequence *seq, gboolean is_zeroed) {
 void free_sequence(sequence *seq, gboolean free_seq_too) {
 	static GtkComboBoxText *cbbt_layers = NULL;
 	int i, j;
-		
-	if (cbbt_layers == NULL)
-		cbbt_layers = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(
-					builder, "comboboxreglayer"));
-	gtk_combo_box_text_remove_all(cbbt_layers);
 	
 	if (seq == NULL) return;
 	if (seq->nb_layers > 0 && seq->regparam) {
@@ -904,7 +900,6 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 	 */
 	if (seq->type != SEQ_INTERNAL)
 		undo_flush();
-	reset_plot();
 
 	for (i = 0; i < MAX_SEQPSF && seq->photometry[i]; i++) {
 		free_photometry_set(seq, i);

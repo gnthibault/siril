@@ -4246,7 +4246,7 @@ void on_checkseqbutton_clicked(GtkButton *button, gpointer user_data) {
 
 	set_cursor_waiting(TRUE);
 	set_progress_bar_data(_("Searching for sequences in "
-			"the current working directory..."), PROGRESS_PULSATE);
+			"the current working directory..."), PROGRESS_NONE);
 
 	struct checkSeq_filter_data *args = malloc(sizeof(struct checkSeq_filter_data));
 
