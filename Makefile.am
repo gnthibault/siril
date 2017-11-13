@@ -18,7 +18,7 @@ install-data-local:
 	$(INSTALL_DATA) src/gui/gtk_old.css $(DESTDIR)$(pkgdatadir)
 	$(INSTALL_DATA) src/gui/gtk.css $(DESTDIR)$(pkgdatadir)
 	$(mkinstalldirs) $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) AUTHORS LICENSE $(DESTDIR)$(docdir)
+	$(INSTALL_DATA) AUTHORS LICENSE.md $(DESTDIR)$(docdir)
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
 	$(INSTALL_DATA) siril.1.gz $(DESTDIR)$(mandir)/man1
 

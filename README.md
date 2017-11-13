@@ -1,5 +1,8 @@
-# SIRIL
-=================
+SIRIL
+-------
+
+> Copyright &copy; 2012-2017, Team free-astro
+> <<https://free-astro.org/index.php/Siril>>
 
 Summary
 -------
@@ -8,7 +11,7 @@ SIRIL is an astronomical image processing tool.
 SIRIL is an image processing tool specially tailored for noise reduction and improving the
 signal/noise ratio of an image from multiple captures, as required in astronomy.
 SIRIL can align automatically or manually, stack and enhance pictures from various file formats,
-even images sequences (movies and SER files).
+even image sequences (movies and SER files).
 
 Contributors are welcome. Programming language is C.
 Main development is done with most recent versions of libraries.
@@ -44,8 +47,9 @@ All these libraries are available in most Linux distributions and free systems,
 maybe with the exception of ffms2 that is not as popular as others and may need
 to be compiled on some systems.
 
-Since version [0.9.6](http://free-astro.org/index.php?title=Siril:0.9.6) a new optional dependency is required to plot photometry data.
-The following package is not needed at compilation time:
+Since version [0.9.6](http://free-astro.org/index.php?title=Siril:0.9.6) a new optional 
+dependency is required to plot photometry data. The following package is not needed 
+at compilation time:
 
  * gnuplot
  
@@ -79,13 +83,25 @@ following command:
 
 Note that a binary package for stable version of SIRIL is maintained for Debian. 
 PPA repositories for Ubuntu and Linux Mint and maintained by SIRIL's authors are
-now available in ppa:lock042/siril.
-See the download page for other packages that could be available.
+now available in **ppa:lock042/siril**.
+See the [download](https://free-astro.org/index.php?title=Siril:releases) page 
+of the current version for other packages that could be available.
+
+SIRIL on Windows
+----------------
+The 0.9.7 version was released with a binary **.exe* file running on Windows 64bits. 
+This application was produced with the great help of [Partha Bagchi](https://www.partha.com/)
+who spent time in building it. However, users shall keep in mind that none of the
+developpers run on Windows and in consequence, some specific bugs could occur.
+For these reasons, the Windows version is tagged as a beta version and will **always**
+be in beta mode.
+Also, there is no certainty for building all future versions for Windows.
 
 Notes on SIRIL FITS image format
 --------------------------------
-Flexible Image Transport System (FITS) is an open standard defining a digital 
-file format useful for storage, transmission and processing of scientific and other images.
+[Flexible Image Transport System (FITS)](https://en.wikipedia.org/wiki/FITS) is an open
+standard defining a digital file format useful for storage, transmission and processing
+of scientific and other images.
 FITS is the most commonly used digital file format in astronomy.
 
 Since FITS doesn't specify the order and size of data, it's useful to fix it at
@@ -104,7 +120,7 @@ containers that are not well suited for astronomy data and that may not be read
 the same way by different players. SIRIL can convert any film format supported
 by FFMS2 (probably all ffmpeg formats, which is a lot) to SER, and even any
 image sequence to SER.
-SIRIL supports SER v3. See https://free-astro.org/index.php/SER for more details.
+SIRIL supports SER v3. See [this page](https://free-astro.org/index.php/SER) for more details.
 
 Useful links
 ------------
