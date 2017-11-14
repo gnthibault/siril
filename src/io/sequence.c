@@ -163,6 +163,7 @@ int check_seq(int force) {
 	}
 
 	sequences = malloc(sizeof(sequence *) * max_seq);
+	set_progress_bar_data(NULL, PROGRESS_PULSATE);
 
 	while ((file = readdir(dir)) != NULL) {
 		sequence *new_seq;
@@ -186,7 +187,6 @@ int check_seq(int force) {
 			sequences[nb_seq] = new_seq;
 			nb_seq++;
 			fprintf(stdout, "Found a SER sequence (number %d)\n", nb_seq);
-			set_progress_bar_data(NULL, PROGRESS_PULSATE);
 		}
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 		else if (!check_for_film_extensions(ext)) {
@@ -207,7 +207,6 @@ int check_seq(int force) {
 			sequences[nb_seq] = new_seq;
 			nb_seq++;
 			fprintf(stdout, "Found a AVI sequence (number %d)\n", nb_seq);
-			set_progress_bar_data(NULL, PROGRESS_PULSATE);
 		}
 #endif
 
@@ -234,7 +233,6 @@ int check_seq(int force) {
 					fprintf(stdout, "Found a sequence (number %d) with base name"
 							" \"%s\", looking for first and last indexes.\n",
 							nb_seq, basename);
-					set_progress_bar_data(NULL, PROGRESS_PULSATE);
 				}
 				if (curidx < sequences[current_seq]->beg)
 					sequences[current_seq]->beg = curidx;
@@ -255,6 +253,7 @@ int check_seq(int force) {
 			}
 		}
 	}
+	set_progress_bar_data(NULL, PROGRESS_DONE);
 	closedir(dir);
 	if (nb_seq > 0) {
 		int retval = 1;
@@ -263,7 +262,6 @@ int check_seq(int force) {
 				char msg[200];
 				sprintf(msg, _("sequence %d, found: %d to %d"),
 						i+1, sequences[i]->beg, sequences[i]->end);
-				set_progress_bar_data(msg, PROGRESS_NONE);
 				if (!buildseqfile(sequences[i], force) && retval)
 					retval = 0;	// at least one succeeded to be created
 			}
