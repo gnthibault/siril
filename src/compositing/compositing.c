@@ -709,7 +709,7 @@ void update_compositing_interface() {
 		gtk_label_set_text(label, "");
 		gtk_widget_set_sensitive(lookup_widget("button_align"), TRUE);
 	}
-
+	update_MenuItem();
 }
 
 /* callback for changes of the selected reference layer */
