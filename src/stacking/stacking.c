@@ -1746,7 +1746,7 @@ void start_stacking() {
 			stacking_methods[gtk_combo_box_get_active(method_combo)];
 	stackparam.seq = &com.seq;
 	stackparam.reglayer = get_registration_layer();
-	siril_log_color_message(_("Sum stacking will use registration data of layer %d if some exist.\n"), "salmon", stackparam.reglayer);
+	siril_log_color_message(_("Stacking will use registration data of layer %d if some exist.\n"), "salmon", stackparam.reglayer);
 	max_memory = (int) (com.stack.memory_percent
 			* (double) get_available_memory_in_MB());
 	siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);

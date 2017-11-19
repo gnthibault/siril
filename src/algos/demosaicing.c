@@ -785,8 +785,8 @@ int debayer(fits* fit, interpolation_method interpolation) {
  *	data to find the original area (between 0 and 3).
  */
 void get_debayer_area(const rectangle *area, rectangle *debayer_area,
-		const rectangle *image_area, int *debayer_offset_x,
-		int *debayer_offset_y) {
+		const rectangle *image_area, int64_t *debayer_offset_x,
+		int64_t *debayer_offset_y) {
 	int right, bottom;	// temp debayer negative offsets
 
 	/* left side */

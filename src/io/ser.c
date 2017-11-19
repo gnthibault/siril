@@ -773,7 +773,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		int frame_no, WORD *buffer, const rectangle *area) {
 	int64_t offset;
-	int frame_size, read_size, retval, xoffset, yoffset, x, y, color_offset;
+	int64_t frame_size, read_size, retval, xoffset, yoffset, x, y, color_offset;
 	ser_color type_ser;
 	WORD *rawbuf, *demosaiced_buf, *rgb_buf;
 	rectangle debayer_area, image_area;
@@ -795,7 +795,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 
 	switch (type_ser) {
 	case SER_MONO:
-		offset = SER_HEADER_LEN + (int64_t)frame_size * (int64_t)frame_no +	// requested frame
+		offset = SER_HEADER_LEN + frame_size * (int64_t)frame_no +	// requested frame
 			(int64_t)(area->y * ser_file->image_width + area->x)
 						* ser_file->byte_pixel_depth;	// requested area
 #ifdef _OPENMP
