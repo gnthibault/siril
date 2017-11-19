@@ -40,7 +40,12 @@
 #include "io/films.h"
 #endif
 
-/* name is sequence filename, with or without .seq extension */
+/* name is sequence filename, with or without .seq extension
+ * It should always be used with seq_check_basic_data() because on first loading
+ * of a .seq that was created from scan of the filesystem, number of layers and
+ * image size are unknown and some properties of the sequence are null or unset.
+ * Returns NULL if the sequence could not be loaded.
+ */
 sequence * readseqfile(const char *name){
 	char line[512], *scanformat;
 	char filename[512], *seqfilename;
@@ -106,8 +111,12 @@ sequence * readseqfile(const char *name){
 						fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
 						goto error;
 					}
-					seq->regparam = calloc(seq->nb_layers, sizeof(regdata*));
-					seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
+					/* seq->nb_layers can be -1 when the sequence has not
+					 * been opened for the first time */
+					if (seq->nb_layers >= 1) {
+						seq->regparam = calloc(seq->nb_layers, sizeof(regdata*));
+						seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
+					}
 				} else if (line[1] >= '0' && line[1] <= '9') {
 					/* in the future, wavelength and name of each layer will be added here */
 				}
@@ -115,8 +124,8 @@ sequence * readseqfile(const char *name){
 			case 'I':
 				seq->imgparam[i].stats = malloc(sizeof(imstats));
 				/* new format: with stats, if already computed, else it's old format */
-			int nb_tokens = sscanf(line + 2,
-					"%d %d %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg",
+				int nb_tokens = sscanf(line + 2,
+						"%d %d %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg",
 						&(seq->imgparam[i].filenum),
 						&(seq->imgparam[i].incl),
 						&(seq->imgparam[i].stats->mean),
@@ -221,7 +230,7 @@ sequence * readseqfile(const char *name){
 							/* test for extension in uppercase */
 							gchar *upcase = g_ascii_strup(supported_film[i].extension, len_ext);
 							strncpy(seqfilename + strlen(seqfilename) - 3, upcase,
-								len_ext);
+									len_ext);
 							if (access(seqfilename, F_OK) != -1) break;
 							/* reinitialize seqfilename if no match: need to do it because of extensions with length of 4 */
 							strcpy(seqfilename, backup_name);
@@ -268,7 +277,7 @@ error:
 	if (seq->seqname)
 		free(seq->seqname);
 	free(seq);
-	siril_log_message(_("Could not load sequence\n"));
+	siril_log_message(_("Could not load sequence %s\n"), name);
 	update_used_memory();
 	free(seqfilename);
 	return NULL;

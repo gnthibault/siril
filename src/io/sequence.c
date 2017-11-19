@@ -342,10 +342,47 @@ int check_only_one_film_seq(char* name) {
 	return retval;
 }
 
+// get the number of layers and image size for a new sequence
+// if load_ref_into_gfit is true, the image is kept into gfit if data loading was
+// required, and 1 is returned when it required loading
+int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
+	if (seq->nb_layers == -1 || seq->rx == 0) {	// not init yet, first loading of the sequence
+		int image_to_load = sequence_find_refimage(seq);
+		fits tmpfit, *fit;
+
+		if (load_ref_into_gfit) {
+			fit = &gfit;
+		} else {
+			fit = &tmpfit;
+			memset(fit, 0, sizeof(fits));
+		}
+
+		if (seq_read_frame(seq, image_to_load, fit)) {
+			fprintf(stderr, "could not load first image from sequence\n");
+			free(seq);
+			return -1;
+		}
+
+		/* initialize sequence-related runtime data */
+		seq->rx = fit->rx; seq->ry = fit->ry;
+		seq->nb_layers = fit->naxes[2];
+		seq->regparam = calloc(seq->nb_layers, sizeof(regdata *));
+		seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
+		writeseqfile(seq);
+
+		if (load_ref_into_gfit) {
+			seq->current = image_to_load;
+		} else {
+			clearfits(fit);
+		}
+		return 1;
+	}
+	return 0;
+}
+
 /* load a sequence and initializes everything that relates */
 int set_seq(const char *name){
 	sequence *seq;
-	int image_to_load;
 	char *basename;
 	
 	if ((seq = readseqfile(name)) == NULL) {
@@ -354,22 +391,20 @@ int set_seq(const char *name){
 	}
 	free_image_data();
 
-	image_to_load = sequence_find_refimage(seq);
-	if (seq_read_frame(seq, image_to_load, &gfit)) {
-		fprintf(stderr, "could not load first image from sequence\n");
+	int retval = seq_check_basic_data(seq, TRUE);
+	if (retval == -1) {
 		free(seq);
 		return 1;
 	}
+	if (retval == 0) {
+		int image_to_load = sequence_find_refimage(seq);
+		if (seq_read_frame(seq, image_to_load, &gfit)) {
+			fprintf(stderr, "could not load first image from sequence\n");
+			free(seq);
+			return 1;
+		}
 
-	/* initialize sequence-related runtime data */
-	seq->rx = gfit.rx; seq->ry = gfit.ry;
-	seq->current = image_to_load;
-
-	if (seq->nb_layers == -1 || seq->nb_layers != gfit.naxes[2]) {	// not init yet, first loading of the sequence
-		seq->nb_layers = gfit.naxes[2];
-		seq->regparam = calloc(seq->nb_layers, sizeof(regdata *));
-		seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
-		writeseqfile(seq);
+		seq->current = image_to_load;
 	}
 
 	basename = g_path_get_basename(seq->seqname);
@@ -386,7 +421,7 @@ int set_seq(const char *name){
 	init_layers_hi_and_lo_values(MIPSLOHI); // set some hi and lo values in seq->layers,
 	set_cutoff_sliders_max_values();// update min and max values for contrast sliders
 	set_cutoff_sliders_values();	// update values for contrast sliders for this image
-	seqsetnum(image_to_load);	// set limits for spin button and display loaded filenum
+	seqsetnum(seq->current);	// set limits for spin button and display loaded filenum
 	set_layers_for_assign();	// set default layers assign and populate combo box
 	set_layers_for_registration();	// set layers in the combo box for registration
 	fill_sequence_list(seq, 0);	// display list of files in the sequence
@@ -398,8 +433,8 @@ int set_seq(const char *name){
 	/* initialize image-related runtime data */
 	set_display_mode();		// display the display mode in the combo box
 	display_filename();		// display filename in gray window
-	adjust_exclude(image_to_load, FALSE);	// check or uncheck excluded checkbox
-	adjust_refimage(image_to_load);	// check or uncheck reference image checkbox
+	adjust_exclude(seq->current, FALSE);	// check or uncheck excluded checkbox
+	adjust_refimage(seq->current);	// check or uncheck reference image checkbox
 	set_prepro_button_sensitiveness(); // enable or not the preprobutton
 	update_reg_interface(FALSE);	// change the registration prereq message
 	update_stack_interface(FALSE);	// get stacking info and enable the Go button
@@ -829,7 +864,6 @@ void initialize_sequence(sequence *seq, gboolean is_zeroed) {
  * initialize_sequence() must be called on it right after free_sequence()
  * (= do it for com.seq) */
 void free_sequence(sequence *seq, gboolean free_seq_too) {
-	static GtkComboBoxText *cbbt_layers = NULL;
 	int i, j;
 	
 	if (seq == NULL) return;

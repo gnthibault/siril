@@ -324,13 +324,13 @@ struct sequ {
 	int number;		// number of images in the sequence
 	int selnum;		// number of selected images in the sequence
 	int fixed;		// fixed length of image index in filename (like %3d)
-	int nb_layers;		// number of layers embedded in each image file
+	int nb_layers;		// number of layers embedded in each image file, -1 if unknown
 	unsigned int rx;	// first image width
 	unsigned int ry;	// first image height
-	layer_info *layers;	// info about layers
+	layer_info *layers;	// info about layers, may be null if nb_layers is unknown
 	int reference_image;	// reference image for registration
 	imgdata *imgparam;	// a structure for each image of the sequence
-	regdata **regparam;	// *regparam[nb_layers]
+	regdata **regparam;	// *regparam[nb_layers], may be null if nb_layers is unknown
 	/* beg and end are used prior to imgparam allocation, hence their usefulness */
 	int beg;		// imgparam[0]->filenum
 	int end;		// imgparam[number-1]->filenum

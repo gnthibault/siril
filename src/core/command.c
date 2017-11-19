@@ -1408,6 +1408,7 @@ gpointer stackall_worker(gpointer args) {
 	struct dirent *file;
 	int number_of_loaded_sequences = 0, retval = 0;
 
+	control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
 	if (check_seq(0) || (dir = opendir(com.wd)) == NULL) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
@@ -1424,30 +1425,32 @@ gpointer stackall_worker(gpointer args) {
 			if (seq != NULL) {
 				char filename[256];
 				struct stacking_args args;
-				//args.method = stack_summing;
+				if (seq_check_basic_data(seq, FALSE) == -1)
+					continue;
 				args.seq = seq;
 				args.filtering_criterion = stack_filter_all;
 				args.nb_images_to_stack = seq->number;
-				snprintf(filename, 256, "%s%sstacked%s", seq->seqname,
-						ends_with(seq->seqname, "_") ?
-								"" : (ends_with(com.seq.seqname, "-") ? "" : "_"),
-						com.ext);
+				args.reglayer = get_registration_layer();
 				gettimeofday(&args.t_start, NULL);
+				char *suffix = ends_with(seq->seqname, "_") ? "" :
+				       	(ends_with(com.seq.seqname, "-") ? "" : "_");
+				snprintf(filename, 256, "%s%sstacked%s",
+						seq->seqname, suffix, com.ext);
 
 				retval = stack_summing_generic(&args);
-				if (savefits(filename, &gfit))
-					siril_log_message(_("Could not save the stacking result %s\n"),
-							filename);
+				if (!retval) {
+					if (savefits(filename, &gfit))
+						siril_log_message(_("Could not save the stacking result %s\n"),
+								filename);
+					++number_of_loaded_sequences;
+				}
 
 				free_sequence(seq, TRUE);
-				++number_of_loaded_sequences;
-				if (retval) break;
 			}
 		}
 	}
 	closedir(dir);
-	siril_log_message(_("Stacked %d sequences %s.\n"), number_of_loaded_sequences,
-			retval ? _("with errors") : _("successfully"));
+	siril_log_message(_("Stacked %d sequences sucessfully.\n"), number_of_loaded_sequences);
 	gdk_threads_add_idle(end_generic, NULL);
 	return NULL;
 }

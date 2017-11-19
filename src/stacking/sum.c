@@ -128,7 +128,6 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	return 0;
 }
 
-
 int stack_summing_generic(struct stacking_args *stackargs) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = stackargs->seq;
