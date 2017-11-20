@@ -639,9 +639,16 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 	int i;
 	BYTE *index;
 	double m = 0.0;
-	double pxl, shadows = 0.0, highlights = 0.0;
-	if (mode == STF_DISPLAY)
-		m = findMidtonesBalance(&gfit, &shadows, &highlights);
+	double pxl;
+	if (mode == STF_DISPLAY) {
+		if (!com.stfComputed) {
+			double shadows = 0.0, highlights = 0.0;
+			m = findMidtonesBalance(&gfit, &shadows, &highlights);
+			com.stfShadows = shadows;
+			com.stfHighlights = highlights;
+			com.stfComputed = TRUE;
+		}
+	}
 
 	/* initialization of data required to build the remap_index */
 	switch (mode) {
@@ -712,8 +719,8 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 			pxl = (gfit.bitpix == BYTE_IMG ?
 					(double) i / UCHAR_MAX_DOUBLE :
 					(double) i / USHRT_MAX_DOUBLE);
-			pxl = (pxl - shadows < 0.0) ? 0.0 : pxl - shadows;
-			pxl /= (highlights - shadows);
+			pxl = (pxl - com.stfShadows < 0.0) ? 0.0 : pxl - com.stfShadows;
+			pxl /= (com.stfHighlights - com.stfShadows);
 			index[i] = round_to_BYTE((float) (MTF(pxl, m)) * pente);
 			break;
 		default:
@@ -1721,6 +1728,8 @@ void update_MenuItem() {
 
 gboolean redraw(int vport, int doremap) {
 	GtkWidget *widget;
+
+	com.stfComputed = FALSE;
 
 	if (vport >= MAXVPORT) {
 		fprintf(stderr, _("redraw: maximum number of layers supported is %d"

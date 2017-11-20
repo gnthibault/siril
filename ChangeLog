@@ -1,13 +1,17 @@
 siril 0.9.8
 --/--/17
 
+* Reduce display time of autostretch
 * Parallelize sum stacking
 * Use thread-safe progress bar update instead of deprecated one. Run 'Check sequences' in a background task
 * Add an option to set the generic image_hook behaviour when function fails
 * Switch on "Images previously manually selected from the sequence" if user check and uncheck frames
+* Fixed menu update after RGB composition
+* Fixed bug in "Average" and "Median" stack for huge SER file
+* Fixed bug in stackall command
 * Fixed when it was impossible to use multithread functions after star alignment in compositing tool
 * Fixed crash when selecting "Best images .. (PSF)" if the loaded sequence has no PSF data
-* Fixed sorting images by FWHM can give some wrong result
+* Fixed sorted images by FWHM
 * Fixed crash on stacking when no reference image is selected and first image of the sequence is excluded
 
 siril 0.9.7
@@ -15,8 +19,8 @@ siril 0.9.7
 
 * Fixed French translation
 * Fixed bug in registration from compositing for layers alignment
-* Fixes crash when stacking failed
-* Fixes limit of 4Go SER file for non POSIX Standard
+* Fixed crash when stacking failed
+* Fixed limit of 4Go SER file for non POSIX Standard
 * Improved global registration. New algorithm with homography
 
 siril 0.9.6
