@@ -394,19 +394,26 @@ int checkinitfile() {
 	} else {
 		fprintf(stderr, "Failed to create homefolder %s.\n", homefolder);
 	}
-	g_free(homefolder);
-#elif WIN32
+
+#elif defined (WIN32)
 	com.initfile = g_build_filename(home, CFG_FILE, NULL);
 #else
 	com.initfile = malloc(strlen(home) + 20);
 	sprintf(com.initfile, "%s/.siril/%s", home, CFG_FILE);
-#endif /* _APPLE__ */
+#endif
 	if (readinitfile()) {	// couldn't read it
 		char filename[255];
 
 		set_GUI_CWD();
 		// if that fails, check and create the default ini file
+#if (defined(__APPLE__) && defined(__MACH__))
+		snprintf(filename, 255, "%s", homefolder);
+		g_free(homefolder);
+#elif defined (WIN32)
+		snprintf(filename, 255, "%s", home);
+#else
 		snprintf(filename, 255, "%s/.siril", home);
+#endif
 		if (stat(filename, &sts) != 0) {
 			if (errno == ENOENT) {
 #ifdef WIN32

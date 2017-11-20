@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
 	extern char *optarg;
 	extern int opterr;
 	gchar *siril_path;
-	char *cwd_orig = NULL;
+	gchar *current_cwd = NULL;
 	gboolean forcecwd = FALSE;
 	char *cwd_forced = NULL;
 	
@@ -319,15 +319,11 @@ int main(int argc, char *argv[]) {
 	load_css_style_sheet (siril_path);
 
 	/* set default CWD and load init file */
-	com.wd = malloc(PATH_MAX + 1);// PATH_MAX may not be available on all systems
-	if (!getcwd(com.wd, PATH_MAX)) {
-		free(com.wd);
-		com.wd = NULL;
-	} else
-		cwd_orig = strdup(com.wd);
+	com.wd = g_strdup(g_get_user_special_dir(G_USER_DIRECTORY_PICTURES));
+	current_cwd = g_get_current_dir();
 
 	if (checkinitfile()) {
-		siril_log_message(_("Could not load or create settings file in ~/.siril, exiting.\n"));
+		siril_log_message(_("Could not load or create settings file, exiting.\n"));
 		exit(1);
 	}
 
@@ -401,8 +397,10 @@ int main(int argc, char *argv[]) {
 	update_used_memory();
 
 	if (argv[optind] != NULL) {
-		if (cwd_orig)
-			changedir(cwd_orig);
+		if (current_cwd) {
+			changedir(current_cwd);
+			g_free(current_cwd);
+		}
 		open_single_image(argv[optind]);
 		if (!forcecwd) {
 			gchar *newpath = g_path_get_dirname(argv[optind]);
@@ -414,9 +412,6 @@ int main(int argc, char *argv[]) {
 	if (forcecwd && cwd_forced) {
 		changedir(cwd_forced);
 	}
-
-	if (cwd_orig)
-		free(cwd_orig);
 
 	gtk_main();
 
