@@ -320,6 +320,10 @@ int main(int argc, char *argv[]) {
 
 	/* set default CWD and load init file */
 	com.wd = g_strdup(g_get_user_special_dir(G_USER_DIRECTORY_PICTURES));
+	/* Not every platform has a directory for this logical id */
+	if (com.wd == NULL) {
+		com.wd = g_get_current_dir();
+	}
 	current_cwd = g_get_current_dir();
 
 	if (checkinitfile()) {
