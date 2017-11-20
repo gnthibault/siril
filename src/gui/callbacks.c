@@ -2458,8 +2458,13 @@ void initialize_display_mode() {
 void set_GUI_CWD() {
 	if (!com.wd)
 		return;
+	gchar str[256];
 	GtkLabel *label = GTK_LABEL(lookup_widget("labelcwd"));
+
 	gtk_label_set_text(label, com.wd);
+
+	g_snprintf(str, 255, "%s v%s - %s", PACKAGE, VERSION, com.wd);
+	gtk_window_set_title(GTK_WINDOW(lookup_widget("main_window")), str);
 }
 
 void set_GUI_misc() {

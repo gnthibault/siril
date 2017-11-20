@@ -212,33 +212,20 @@ int changedir(const char *dir) {
 	if (dir == NULL || dir[0] == '\0')
 		return 1;
 	if (!chdir(dir)) {
-		char str[256];
 
 		/* do we need to search for sequences in the directory now? We still need to
 		 * press the check seq button to display the list, and this is also done there. */
 		/* check_seq();
 		 update_sequence_list();*/
-		if (dir[0] == G_DIR_SEPARATOR) {
-			if (com.wd)
-				free(com.wd);
-			com.wd = strdup(dir);
-			if (!com.wd)
-				return 1;
-		} else {
-			// dir can be a relative path
-			com.wd = realloc(com.wd, PATH_MAX);
-			if (!com.wd)
-				return 1;
-			com.wd = getcwd(com.wd, PATH_MAX);
-		}
+		if (com.wd)
+			g_free(com.wd);
+
+		com.wd = g_get_current_dir();
+
 		siril_log_message(_("Setting CWD (Current Working Directory) to '%s'\n"),
 				com.wd);
 		set_GUI_CWD();
 
-		snprintf(str, 255, "%s v%s - %s", PACKAGE, VERSION, dir);
-		gtk_window_set_title(
-				GTK_WINDOW(gtk_builder_get_object(builder, "main_window")),
-				str);
 		return 0;
 	}
 	siril_log_message(_("Could not change directory to '%s'.\n"), dir);

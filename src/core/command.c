@@ -1450,7 +1450,7 @@ gpointer stackall_worker(gpointer args) {
 		}
 	}
 	closedir(dir);
-	siril_log_message(_("Stacked %d sequences sucessfully.\n"), number_of_loaded_sequences);
+	siril_log_message(_("Stacked %d sequences successfully.\n"), number_of_loaded_sequences);
 	gdk_threads_add_idle(end_generic, NULL);
 	return NULL;
 }
