@@ -184,14 +184,14 @@ static char *convert_color_id_to_char(ser_color color_id) {
 }
 
 static int ser_read_timestamp(struct ser_struct *ser_file) {
-	int frame_size, i;
+	int i;
 	gboolean timestamps_in_order = TRUE;
 	uint64_t previous_ts = 0L;
-	int64_t filesize;
+	int64_t filesize, frame_size;
 
 	filesize = ser_file->filesize;
 	frame_size = ser_file->image_width * ser_file->image_height * ser_file->number_of_planes;
-	int64_t offset = SER_HEADER_LEN + (int64_t) frame_size * (int64_t) ser_file->byte_pixel_depth
+	int64_t offset = SER_HEADER_LEN + frame_size * (int64_t) ser_file->byte_pixel_depth
 		* (int64_t) ser_file->frame_count;
 
 	/* Check if file is large enough to have timestamps */
@@ -271,7 +271,7 @@ static int ser_fix_broken_file(struct ser_struct *ser_file) {
 	int64_t filesize = ser_file->filesize;
 
 	siril_log_message(_("Trying to fix broken SER file...\n"));
-	int frame_size = ser_file->image_width * ser_file->image_height;
+	int64_t frame_size = ser_file->image_width * ser_file->image_height;
 	if (frame_size == 0)
 		return 0;
 
@@ -351,7 +351,8 @@ static int ser_read_header(struct ser_struct *ser_file) {
 }
 
 static int ser_write_timestamp(struct ser_struct *ser_file) {
-	int frame_size, i;
+	int i;
+	int64_t frame_size;
 
 	if (ser_file->frame_count > 0) {
 		if (ser_file->ts) {
@@ -359,7 +360,7 @@ static int ser_write_timestamp(struct ser_struct *ser_file) {
 			frame_size = ser_file->image_width * ser_file->image_height
 					* ser_file->number_of_planes;
 			int64_t offset = SER_HEADER_LEN
-					+ (int64_t) frame_size * (int64_t) ser_file->byte_pixel_depth
+					+ frame_size * (int64_t) ser_file->byte_pixel_depth
 							* (int64_t) ser_file->frame_count;
 			for (i = 0; i < ser_file->frame_count; i++) {
 				if ((int64_t) -1
@@ -451,7 +452,7 @@ static void ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 		FITS_date_key_to_Unix_time(fit->date, &ser_file->date_utc, &ser_file->date);
 }
 
-static int retrieveSERBayerPattern(ser_color pattern) {
+static int get_SER_Bayer_Pattern(ser_color pattern) {
 
 	switch (pattern) {
 	case SER_BAYER_RGGB:
@@ -474,7 +475,8 @@ static int retrieveSERBayerPattern(ser_color pattern) {
 /* once a buffer (data) has been acquired from the file, with frame_size pixels
  * read in it, depending on ser_file's endianess and pixel depth, data is
  * reorganized to match Siril's data format . */
-void ser_manage_endianess_and_depth(struct ser_struct *ser_file, WORD *data, int frame_size) {
+static void ser_manage_endianess_and_depth(struct ser_struct *ser_file,
+		WORD *data, int64_t frame_size) {
 	WORD pixel;
 	int i;
 	if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) {
@@ -648,8 +650,8 @@ void ser_init_struct(struct ser_struct *ser_file) {
 
 /* frame number starts at 0 */
 int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
-	int retval, frame_size, i, j, swap = 0;
-	int64_t offset;
+	int retval, i, j, swap = 0;
+	int64_t offset, frame_size;
 	WORD *olddata, *tmp;
 	if (!ser_file || ser_file->fd <= 0 || !ser_file->number_of_planes ||
 			!fit || frame_no < 0 || frame_no >= ser_file->frame_count)
@@ -665,8 +667,8 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 		return -1;
 	}
 
-	offset = SER_HEADER_LEN + (int64_t)frame_size *
-		(int64_t)ser_file->byte_pixel_depth * (int64_t)frame_no;
+	offset = SER_HEADER_LEN	+ frame_size * (int64_t) ser_file->byte_pixel_depth
+					* (int64_t) frame_no;
 	/*fprintf(stdout, "offset is %lu (frame %d, %d pixels, %d-byte)\n", offset,
 	 frame_no, frame_size, ser_file->pixel_bytedepth);*/
 #ifdef _OPENMP
@@ -718,7 +720,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 		sensortmp = com.debayer.bayer_pattern;
 		if (com.debayer.use_bayer_header) {
 			sensor_pattern bayer;
-			bayer = retrieveSERBayerPattern(type_ser);
+			bayer = get_SER_Bayer_Pattern(type_ser);
 			if (bayer != com.debayer.bayer_pattern) {
 				if (bayer == BAYER_FILTER_NONE  && warning == FALSE) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
@@ -832,7 +834,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		sensortmp = com.debayer.bayer_pattern;
 		if (com.debayer.use_bayer_header) {
 			sensor_pattern bayer;
-			bayer = retrieveSERBayerPattern(type_ser);
+			bayer = get_SER_Bayer_Pattern(type_ser);
 			if (bayer != com.debayer.bayer_pattern) {
 				if (bayer == BAYER_FILTER_NONE && warning == FALSE) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
@@ -858,7 +860,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		get_debayer_area(area, &debayer_area, &image_area, &xoffset, &yoffset);
 
 		offset = SER_HEADER_LEN + frame_size * frame_no +	// requested frame
-				(int64_t) (debayer_area.y * ser_file->image_width + debayer_area.x)
+				(debayer_area.y * ser_file->image_width + debayer_area.x)
 						* ser_file->byte_pixel_depth;	// requested area
 #ifdef _OPENMP
 		omp_set_lock(&ser_file->fd_lock);
@@ -973,9 +975,9 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 }
 
 int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_no) {
-	int frame_size, pixel, plane, dest;
+	int pixel, plane, dest;
 	int ret, retval = 0;
-	int64_t offset;
+	int64_t offset, frame_size;
 	BYTE *data8 = NULL;			// for 8-bit files
 	WORD *data16 = NULL;		// for 16-bit files
 
@@ -994,7 +996,7 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 	frame_size = ser_file->image_width * ser_file->image_height *
 		ser_file->number_of_planes;
 
-	offset = SER_HEADER_LEN	+ (int64_t) frame_size *
+	offset = SER_HEADER_LEN	+ frame_size *
 			(int64_t) ser_file->byte_pixel_depth * (int64_t) frame_no;
 
 	if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8)
