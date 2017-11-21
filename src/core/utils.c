@@ -31,7 +31,7 @@
 #ifdef WIN32
 #include <windows.h>
 #include <psapi.h>
-#include <wchar.h>
+#include <direct.h>
 #define __changeDir__ _chdir
 #else
 #include <sys/resource.h>
