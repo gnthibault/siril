@@ -32,7 +32,7 @@
 #include <windows.h>
 #include <psapi.h>
 #include <wchar.h>
-#define __changeDir__ _wchdir
+#define __changeDir__ _chdir
 #else
 #include <sys/resource.h>
 #define __changeDir__ chdir
