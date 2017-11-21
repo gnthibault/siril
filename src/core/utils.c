@@ -31,8 +31,11 @@
 #ifdef WIN32
 #include <windows.h>
 #include <psapi.h>
+#include <wchar.h>
+#define __changeDir__ _wchdir
 #else
 #include <sys/resource.h>
+#define __changeDir__ chdir
 #endif
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <sys/param.h>		// define or not BSD macro
@@ -211,7 +214,7 @@ int stat_file(const char *filename, image_type *type, char **realname) {
 int changedir(const char *dir) {
 	if (dir == NULL || dir[0] == '\0')
 		return 1;
-	if (!chdir(dir)) {
+	if (!__changeDir__(dir)) {
 
 		/* do we need to search for sequences in the directory now? We still need to
 		 * press the check seq button to display the list, and this is also done there. */
