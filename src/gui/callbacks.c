@@ -646,6 +646,7 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 			m = findMidtonesBalance(&gfit, &shadows, &highlights);
 			com.stfShadows = shadows;
 			com.stfHighlights = highlights;
+			com.stfM = m;
 			com.stfComputed = TRUE;
 		}
 	}
@@ -721,7 +722,7 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 					(double) i / USHRT_MAX_DOUBLE);
 			pxl = (pxl - com.stfShadows < 0.0) ? 0.0 : pxl - com.stfShadows;
 			pxl /= (com.stfHighlights - com.stfShadows);
-			index[i] = round_to_BYTE((float) (MTF(pxl, m)) * pente);
+			index[i] = round_to_BYTE((float) (MTF(pxl, com.stfM)) * pente);
 			break;
 		default:
 			return 1;
