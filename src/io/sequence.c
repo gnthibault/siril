@@ -1376,7 +1376,7 @@ gpointer export_sequence(gpointer ptr) {
 		stackargs.filtering_criterion = stack_filter_all;
 
 		stackargs.image_indices = malloc(stackargs.nb_images_to_stack * sizeof(int));
-		fill_list_of_unfiltered_images(&stackargs);
+		stack_fill_list_of_unfiltered_images(&stackargs);
 		compute_normalization(&stackargs, &coeff, ADDITIVE_SCALING);
 		// the image_indices are not used in the rest of this function for now
 		free(stackargs.image_indices);

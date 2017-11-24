@@ -63,7 +63,7 @@
 #include "opencv/opencv.h"
 #endif
 
-static char *word[MAX_COMMAND_WORDS];
+static char *word[MAX_COMMAND_WORDS];	// NULL terminated
 
 command commande[] = {
 	/* name,	nbarg,	usage,			function pointer */
@@ -1403,10 +1403,16 @@ int process_stat(int nb){
 	return 0;
 }
 
-gpointer stackall_worker(gpointer args) {
+struct _stackall_data {
+	stack_method method;
+	double sig[2];
+};
+
+gpointer stackall_worker(gpointer garg) {
 	DIR *dir;
 	struct dirent *file;
 	int number_of_loaded_sequences = 0, retval = 0;
+	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
 	control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
@@ -1427,36 +1433,82 @@ gpointer stackall_worker(gpointer args) {
 				struct stacking_args args;
 				if (seq_check_basic_data(seq, FALSE) == -1)
 					continue;
+				siril_log_message(_("Stacking sequence %s\n"), seq->seqname);
 				args.seq = seq;
 				args.filtering_criterion = stack_filter_all;
+				args.filtering_parameter = 0.0;
 				args.nb_images_to_stack = seq->number;
-				args.reglayer = get_registration_layer();
+				args.image_indices = malloc(seq->number * sizeof(int));
 				gettimeofday(&args.t_start, NULL);
+				args.max_number_of_rows = stack_get_max_number_of_rows(seq, seq->number);
+				// the three below: used only if method is average w/ rejection
+				args.sig[0] = arg->sig[0];
+				args.sig[1] = arg->sig[1];
+				args.type_of_rejection = WINSORIZED;
+				args.normalize = NO_NORM;	// for all methods
+				args.force_norm = FALSE;
+				args.reglayer = get_registration_layer();
+				stack_fill_list_of_unfiltered_images(&args);
+
 				char *suffix = ends_with(seq->seqname, "_") ? "" :
 				       	(ends_with(com.seq.seqname, "-") ? "" : "_");
 				snprintf(filename, 256, "%s%sstacked%s",
 						seq->seqname, suffix, com.ext);
 
-				retval = stack_summing_generic(&args);
-				if (!retval) {
-					if (savefits(filename, &gfit))
-						siril_log_message(_("Could not save the stacking result %s\n"),
-								filename);
-					++number_of_loaded_sequences;
-				}
+				retval = arg->method(&args);
 
 				free_sequence(seq, TRUE);
+				free(args.image_indices);
+				if (!retval) {
+					if (savefits(filename, &gfit))
+						siril_log_color_message(_("Could not save the stacking result %s\n"),
+								"red", filename);
+					++number_of_loaded_sequences;
+				}
+				else if (!get_thread_run()) break;
+
 			}
 		}
 	}
 	closedir(dir);
+	free(arg);
 	siril_log_message(_("Stacked %d sequences successfully.\n"), number_of_loaded_sequences);
 	gdk_threads_add_idle(end_generic, NULL);
 	return NULL;
 }
 
 int process_stackall(int nb) {
-	start_in_new_thread(stackall_worker, NULL);
+	stack_method method;
+	double sig[2];
+	struct _stackall_data *arg;
+
+	if (!word[1] || !strcmp(word[1], "sum"))
+		method = stack_summing_generic;
+	else if (!strcmp(word[1], "max"))
+		method = stack_addmax;
+	else if (!strcmp(word[1], "min"))
+		method = stack_addmin;
+	else if (!strcmp(word[1], "med") || !strcmp(word[1], "median"))
+		method = stack_median;
+	else if (!strcmp(word[1], "rej") || !strcmp(word[1], "mean")) {
+		if (!word[2] || !word[3] ||
+				(sig[0] = atof(word[2])) < 0.001 ||
+				(sig[1] = atof(word[3])) < 0.001) {
+			siril_log_message(_("The average stacking with rejection uses the windsorized rejection here and requires two extra arguments: sigma low and high.\n"));
+			return 1;
+		}
+		method = stack_mean_with_rejection;
+	}
+	else {
+		siril_log_message(_("The provided type of stacking is unknown (%s).\n"), word[1]);
+		return 1;
+	}
+
+	arg = malloc(sizeof (struct _stackall_data));
+	arg->method = method;
+	arg->sig[0] = sig[0];
+	arg->sig[1] = sig[1];
+	start_in_new_thread(stackall_worker, arg);
 	return 0;
 }
 

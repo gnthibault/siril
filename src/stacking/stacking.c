@@ -1718,7 +1718,6 @@ void start_stacking() {
 	static GtkEntry *output_file = NULL;
 	static GtkToggleButton *overwrite = NULL, *force_norm = NULL;
 	static GtkSpinButton *sigSpin[2] = {NULL, NULL};
-	int max_memory;		// maximum memory to use in MB
 
 	if (method_combo == NULL) {
 		method_combo = GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods"));
@@ -1747,19 +1746,7 @@ void start_stacking() {
 	stackparam.seq = &com.seq;
 	stackparam.reglayer = get_registration_layer();
 	siril_log_color_message(_("Stacking will use registration data of layer %d if some exist.\n"), "salmon", stackparam.reglayer);
-	max_memory = (int) (com.stack.memory_percent
-			* (double) get_available_memory_in_MB());
-	siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);
-	uint64_t number_of_rows = (uint64_t)max_memory * 1048576L /
-		((uint64_t)com.seq.rx * stackparam.nb_images_to_stack * sizeof(WORD) * com.max_thread);
-	// this is how many rows we can load in parallel from all images of the
-	// sequence and be under the limit defined in config in megabytes.
-	// We want to avoid having blocks larger than the half or they will decrease parallelism
-	if (number_of_rows > com.seq.ry)
-		stackparam.max_number_of_rows = com.seq.ry;
-	else if (number_of_rows * 2 > com.seq.ry)
-		stackparam.max_number_of_rows = com.seq.ry / 2;
-	else stackparam.max_number_of_rows = number_of_rows;
+	stackparam.max_number_of_rows = stack_get_max_number_of_rows(&com.seq, stackparam.nb_images_to_stack);
 
 	siril_log_color_message(_("Stacking: processing...\n"), "red");
 	gettimeofday(&stackparam.t_start, NULL);
@@ -2072,9 +2059,26 @@ int compute_nb_filtered_images() {
 	return count;
 }
 
+int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack) {
+	int max_memory;		// maximum memory to use in MB
+	max_memory = (int) (com.stack.memory_percent
+			* (double) get_available_memory_in_MB());
+	siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);
+	uint64_t number_of_rows = (uint64_t)max_memory * 1048576L /
+		((uint64_t)seq->rx * nb_images_to_stack * sizeof(WORD) * com.max_thread);
+	// this is how many rows we can load in parallel from all images of the
+	// sequence and be under the limit defined in config in megabytes.
+	// We want to avoid having blocks larger than the half or they will decrease parallelism
+	if (number_of_rows > seq->ry)
+		return seq->ry;
+	if (number_of_rows * 2 > seq->ry)
+		return seq->ry / 2;
+	return number_of_rows;
+}
+
 /* fill the image_indices mapping for the args->image_indices array, which has
  * to be already allocated to the correct size at least */
-void fill_list_of_unfiltered_images(struct stacking_args *args) {
+void stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
 	int i, j;
 	int ref_image = args->seq->reference_image;
 	for (i=0, j=0; i<args->seq->number; i++) {
@@ -2279,7 +2283,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 	if (stackparam.nb_images_to_stack >= 2) {
 		if (stackparam.image_indices) free(stackparam.image_indices);
 		stackparam.image_indices = malloc(stackparam.nb_images_to_stack * sizeof(int));
-		fill_list_of_unfiltered_images(&stackparam);
+		stack_fill_list_of_unfiltered_images(&stackparam);
 		gtk_widget_set_sensitive(go_stack, TRUE);
 	} else {
 		if (stackparam.nb_images_to_stack == 0) {

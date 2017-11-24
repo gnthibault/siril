@@ -50,9 +50,9 @@ struct stacking_args {
 	double filtering_parameter;
 	int nb_images_to_stack; // calculated from the above, for display purposes
 	int *image_indices;	// conversion between selected image indices and sequence image indices
-	char description[100];
-	const char *output_filename;
-	gboolean output_overwrite;
+	char description[100];	// description of the filtering
+	const char *output_filename;	// used in the idle function only
+	gboolean output_overwrite;	// used in the idle function only
 	struct timeval t_start;
 	int retval;
 	int max_number_of_rows;	/* number of rows that can be processed simultaneously,
@@ -66,7 +66,8 @@ struct stacking_args {
 
 void initialize_stacking_methods();
 
-void fill_list_of_unfiltered_images(struct stacking_args *args);
+int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack);
+void stack_fill_list_of_unfiltered_images(struct stacking_args *args);
 double compute_highest_accepted_fwhm(double percent);
 double compute_highest_accepted_quality(double percent);
 
