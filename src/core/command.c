@@ -1494,7 +1494,7 @@ int process_stackall(int nb) {
 		if (!word[2] || !word[3] ||
 				(sig[0] = atof(word[2])) < 0.001 ||
 				(sig[1] = atof(word[3])) < 0.001) {
-			siril_log_message(_("The average stacking with rejection uses the Windsorized rejection here and requires two extra arguments: sigma low and high.\n"));
+			siril_log_message(_("The average stacking with rejection uses the Winsorized rejection here and requires two extra arguments: sigma low and high.\n"));
 			return 1;
 		}
 		method = stack_mean_with_rejection;
