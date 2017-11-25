@@ -1406,6 +1406,7 @@ int process_stat(int nb){
 struct _stackall_data {
 	stack_method method;
 	double sig[2];
+	gboolean force_no_norm;
 };
 
 gpointer stackall_worker(gpointer garg) {
@@ -1445,7 +1446,10 @@ gpointer stackall_worker(gpointer garg) {
 				args.sig[0] = arg->sig[0];
 				args.sig[1] = arg->sig[1];
 				args.type_of_rejection = WINSORIZED;
-				args.normalize = NO_NORM;	// for all methods
+				if (!arg->force_no_norm &&
+						(arg->method == stack_median || arg->method == stack_mean_with_rejection))
+					args.normalize = ADDITIVE_SCALING;
+				else args.normalize = NO_NORM;
 				args.force_norm = FALSE;
 				args.reglayer = get_registration_layer();
 				stack_fill_list_of_unfiltered_images(&args);
@@ -1478,36 +1482,37 @@ gpointer stackall_worker(gpointer garg) {
 }
 
 int process_stackall(int nb) {
-	stack_method method;
-	double sig[2];
-	struct _stackall_data *arg;
+	struct _stackall_data *arg = malloc(sizeof (struct _stackall_data));
+	arg->force_no_norm = FALSE;
 
 	if (!word[1] || !strcmp(word[1], "sum"))
-		method = stack_summing_generic;
+		arg->method = stack_summing_generic;
 	else if (!strcmp(word[1], "max"))
-		method = stack_addmax;
+		arg->method = stack_addmax;
 	else if (!strcmp(word[1], "min"))
-		method = stack_addmin;
-	else if (!strcmp(word[1], "med") || !strcmp(word[1], "median"))
-		method = stack_median;
-	else if (!strcmp(word[1], "rej") || !strcmp(word[1], "mean")) {
+		arg->method = stack_addmin;
+	else if (!strcmp(word[1], "med") || !strcmp(word[1], "median")) {
+		arg->method = stack_median;
+		if (word[2] && (!strcmp(word[2], "-nonorm") || !strcmp(word[2], "-no_norm")))
+			arg->force_no_norm = TRUE;
+	} else if (!strcmp(word[1], "rej") || !strcmp(word[1], "mean")) {
 		if (!word[2] || !word[3] ||
-				(sig[0] = atof(word[2])) < 0.001 ||
-				(sig[1] = atof(word[3])) < 0.001) {
+				(arg->sig[0] = atof(word[2])) < 0.001 ||
+				(arg->sig[1] = atof(word[3])) < 0.001) {
 			siril_log_message(_("The average stacking with rejection uses the Winsorized rejection here and requires two extra arguments: sigma low and high.\n"));
+			free(arg);
 			return 1;
 		}
-		method = stack_mean_with_rejection;
+		arg->method = stack_mean_with_rejection;
+		if (word[4] && (!strcmp(word[4], "-nonorm") || !strcmp(word[4], "-no_norm")))
+			arg->force_no_norm = TRUE;
 	}
 	else {
 		siril_log_message(_("The provided type of stacking is unknown (%s).\n"), word[1]);
+		free(arg);
 		return 1;
 	}
 
-	arg = malloc(sizeof (struct _stackall_data));
-	arg->method = method;
-	arg->sig[0] = sig[0];
-	arg->sig[1] = sig[1];
 	start_in_new_thread(stackall_worker, arg);
 	return 0;
 }
