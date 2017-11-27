@@ -933,6 +933,20 @@ static void set_filters_dialog(GtkFileChooser *chooser) {
 	}
 }
 
+static gint strcompare(const char *s1, const char *s2) {
+	gchar *collate_key1, *collate_key2;
+	gint result;
+
+	collate_key1  = g_utf8_collate_key_for_filename(s1, strlen(s1));
+	collate_key2  = g_utf8_collate_key_for_filename(s2, strlen(s2));
+
+	result = strcmp(collate_key1, collate_key2);
+	g_free(collate_key1);
+	g_free(collate_key2);
+
+	return result;
+}
+
 static void opendial(void) {
 	GtkWidget *widgetdialog = NULL;
 	GtkFileChooser *dialog = NULL;
@@ -1055,8 +1069,10 @@ static void opendial(void) {
 			open_single_image(filename);
 			set_cursor_waiting(FALSE);
 			break;
+
 		case OD_CONVERT:
 			list = gtk_file_chooser_get_filenames(chooser);
+			list = g_slist_sort(list, (GCompareFunc) strcompare);
 			fill_convert_list(list);
 			g_slist_free(list);
 			break;
