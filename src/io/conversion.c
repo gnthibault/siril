@@ -81,6 +81,12 @@ char *filter_pattern[] = {
 	"GRBG"
 };
 
+enum {
+	COLUMN_CONV_FILENAME,		// gchar[]
+	COLUMN_CONV_DATE,			// gchar[]
+	N_COLUMNS
+};
+
 static gpointer convert_thread_worker(gpointer p);
 static gboolean end_convert_idle(gpointer p);
 
@@ -121,6 +127,28 @@ void list_format_available() {
 #endif
 }
 
+static gint sort_conv_tree(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
+		gpointer user_data) {
+	gchar *name_a, *name_b;
+	gchar *collate_key1, *collate_key2;
+	gint ret;
+
+	gtk_tree_model_get(model, a, 0,	&name_a, -1);
+	gtk_tree_model_get(model, b, 0,	&name_b, -1);
+
+	collate_key1  = g_utf8_collate_key_for_filename(name_a, strlen(name_a));
+	collate_key2  = g_utf8_collate_key_for_filename(name_b, strlen(name_b));
+
+	ret = g_strcmp0(collate_key1, collate_key2);
+
+	g_free(collate_key1);
+	g_free(collate_key2);
+	g_free(name_a);
+	g_free(name_b);
+
+	return ret;
+}
+
 void check_for_conversion_form_completeness() {
 	static GtkTreeView *tree_convert = NULL;
 	GtkTreeIter iter;
@@ -134,6 +162,12 @@ void check_for_conversion_form_completeness() {
 	model = gtk_tree_view_get_model(tree_convert);
 	valid = gtk_tree_model_get_iter_first(model, &iter);
 	gtk_widget_set_sensitive (go_button, destroot && destroot[0] != '\0' && valid);
+
+	/* we override the sort function in order to provide natural sort order */
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(model),
+			COLUMN_CONV_FILENAME, (GtkTreeIterCompareFunc) sort_conv_tree, NULL,
+			NULL);
+
 	update_statusbar_convert();
 }
 

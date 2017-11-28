@@ -933,14 +933,17 @@ static void set_filters_dialog(GtkFileChooser *chooser) {
 	}
 }
 
-static gint strcompare(const char *s1, const char *s2) {
+static gint strcompare(gconstpointer *a, gconstpointer *b) {
 	gchar *collate_key1, *collate_key2;
 	gint result;
+
+	const gchar *s1 = (const gchar *)a;
+	const gchar *s2 = (const gchar *)b;
 
 	collate_key1  = g_utf8_collate_key_for_filename(s1, strlen(s1));
 	collate_key2  = g_utf8_collate_key_for_filename(s2, strlen(s2));
 
-	result = strcmp(collate_key1, collate_key2);
+	result = g_strcmp0(collate_key1, collate_key2);
 	g_free(collate_key1);
 	g_free(collate_key2);
 
