@@ -581,6 +581,7 @@ static gpointer convert_thread_worker(gpointer p) {
 		else g_snprintf(msg_bar, 256, _("Converting %s..."), src_filename);
 
 		imagetype = get_type_for_extension(src_ext);
+		com.filter = (int) imagetype;
 		if (imagetype == TYPEUNDEF) {
 			char msg[512];
 			siril_log_message(_("FILETYPE IS NOT SUPPORTED, CANNOT CONVERT: %s\n"), src_ext);

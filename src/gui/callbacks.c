@@ -872,7 +872,7 @@ static void set_filters_dialog(GtkFileChooser *chooser) {
 				com.filter == TYPERAW);
 		free(raw);
 #endif
-		/*GRAPHICS FILES*/
+		/* GRAPHICS FILES */
 		char graphics_supported[256], pattern[256];
 		g_snprintf(graphics_supported, sizeof(graphics_supported),
 				_("Graphics Files (*.bmp"));
@@ -896,10 +896,10 @@ static void set_filters_dialog(GtkFileChooser *chooser) {
 				com.filter == TYPEBMP || com.filter == TYPEJPG
 						|| com.filter == TYPEPNG || com.filter == TYPETIFF);
 
-		/*NETPBM FILES*/
+		/* NETPBM FILES */
 		gtk_filter_add(chooser, _("Netpbm Files (*.ppm, *.pnm, *.pgm)"),
 				"*.ppm;*.PPM;*.pnm:*.PNM;*.pgm;*.PGM", com.filter == TYPEPNM);
-		/*IRIS FILES*/
+		/* IRIS FILES */
 		gtk_filter_add(chooser, _("IRIS PIC Files (*.pic)"), "*.pic;*.PIC",
 				com.filter == TYPEPIC);
 		/* SER FILES */
@@ -1002,6 +1002,7 @@ static void opendial(void) {
 				GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL,
 				_("_Open"), GTK_RESPONSE_ACCEPT,
 				NULL);
+
 		dialog = GTK_FILE_CHOOSER(widgetdialog);
 		gtk_file_chooser_set_current_folder(dialog, com.wd);
 		gtk_file_chooser_set_select_multiple(dialog, TRUE);
