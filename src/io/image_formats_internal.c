@@ -598,6 +598,8 @@ int pictofit(WORD *buf, fits *fit) {
 		return -1;
 	}
 	data = fit->pdata[BW_LAYER] = fit->data;
+	fit->pdata[GLAYER] = fit->data;
+	fit->pdata[BLAYER] = fit->data;
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
