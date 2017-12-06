@@ -331,10 +331,6 @@ struct sequ {
 	int end;		// imgparam[number-1]->filenum
 	double exposure;	// exposure of frames (we assume they are all identical)
 
-	/* registration previsualisation and manual alignment data */
-	int previewX[PREVIEW_NB], previewY[PREVIEW_NB];	// center, -1 is uninitialized value
-	int previewW[PREVIEW_NB], previewH[PREVIEW_NB];	// 0 is uninitialized value
-
 	sequence_type type;
 	struct ser_struct *ser_file;
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
@@ -351,8 +347,13 @@ struct sequ {
 	fits *dark;		// the image containing dark data
 	fits *flat;		// the image containing flat data
 	char *ppprefix;		// prefix for filename output of preprocessing
-	int current;		// file number currently loaded in wfit (or displayed)
-	//struct registration_method reg_method;	// is it the right place for that?
+	int current;		// file number currently loaded in gfit (or displayed)
+
+	/* registration previsualisation and manual alignment data */
+	int previewX[PREVIEW_NB], previewY[PREVIEW_NB];	// center, -1 is uninitialized value
+	int previewW[PREVIEW_NB], previewH[PREVIEW_NB];	// 0 is uninitialized value
+
+	double upscale_at_stacking;// up-scale factor during stacking (see #215)
 	
 	gboolean needs_saving;	// a dirty flag for the sequence, avoid saving it too often
 

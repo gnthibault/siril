@@ -857,6 +857,7 @@ void initialize_sequence(sequence *seq, gboolean is_zeroed) {
 		seq->previewX[i] = -1;
 		seq->previewY[i] = -1;
 	}
+	seq->upscale_at_stacking = 1.0;
 }
 
 /* call this to close a sequence. Second arg must be FALSE for com.seq
