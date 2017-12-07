@@ -12463,6 +12463,22 @@ WARNING: no new sequence is built, registration data is stored in the original s
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkCheckButton" id="upscaleCheckButton">
+                        <property name="label" translatable="yes">Simplified Drizzle</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="tooltip_text" translatable="yes">Activate the simplified drizzle algorithm for the processing of this sequence. An up-scale (x2) will be applied to the registered frame or during stacking depending on which registration is chosen, that will result in higher resolution images. 
+This option is adapted for under-sampled images, i.e, when the telescope focal length is too short for the pixel size. One may consider that the system is under-sampled when FWHM is smaller than 2 pixels.</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkLabel" id="labelregisterinfo">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -12475,7 +12491,7 @@ WARNING: no new sequence is built, registration data is stored in the original s
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
@@ -12494,7 +12510,7 @@ WARNING: enabling this option requires the registration to not be parallelized, 
                         <property name="fill">True</property>
                         <property name="padding">16</property>
                         <property name="pack_type">end</property>
-                        <property name="position">2</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                   </object>

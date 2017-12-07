@@ -24,6 +24,7 @@ struct registration_args {
 	gboolean matchSelection;	// Match stars found in the seleciton of reference image
 	opencv_interpolation interpolation; // type of rotation interpolation
 	gboolean translation_only;	// don't rotate images
+	gboolean x2upscale; // apply an x2 upscale for pseudo drizzle
 
 	/* data for generated sequence, for star alignment registration */
 	int new_total;

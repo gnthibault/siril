@@ -591,6 +591,10 @@ int register_star_alignment(struct registration_args *args) {
 
 	ref.x = fit.rx;
 	ref.y = fit.ry;
+	if (args->x2upscale) {
+		ref.x *= 2.0;
+		ref.y *= 2.0;
+	}
 
 	/* we copy com.stars to refstars in case user take a look to another image of the sequence
 	 * that would destroy com.stars
@@ -711,6 +715,11 @@ int register_star_alignment(struct registration_args *args) {
 
 					if (!args->translation_only) {
 						fits_flip_top_to_bottom(&fit);	// this is because in cvTransformImage, rotation center point is at (0, 0)
+						if (args->x2upscale) {
+							cvResizeGaussian(&fit, fit.rx * 2, fit.ry * 2, OPENCV_NEAREST);
+							H.h02 *= 2.0;
+							H.h12 *= 2.0;
+						}
 						cvTransformImage(&fit, ref, H, args->interpolation);
 						fits_flip_top_to_bottom(&fit);
 					}
@@ -719,6 +728,11 @@ int register_star_alignment(struct registration_args *args) {
 					while (i < MAX_STARS && stars[i])
 						free(stars[i++]);
 					free(stars);
+				}
+				else {
+					if (args->x2upscale) {
+						cvResizeGaussian(&fit, fit.rx * 2, fit.ry * 2, OPENCV_NEAREST);
+					}
 				}
 
 				if (!args->translation_only) {
@@ -1105,7 +1119,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	struct registration_args *reg_args;
 	struct registration_method *method;
 	char *msg;
-	GtkToggleButton *regall, *follow, *matchSel, *no_translate;
+	GtkToggleButton *regall, *follow, *matchSel, *no_translate, *x2upscale;
 	GtkComboBox *cbbt_layers;
 	GtkComboBoxText *ComboBoxRegInter;
 
@@ -1137,10 +1151,12 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	follow = GTK_TOGGLE_BUTTON(lookup_widget("followStarCheckButton"));
 	matchSel = GTK_TOGGLE_BUTTON(lookup_widget("checkStarSelect"));
 	no_translate = GTK_TOGGLE_BUTTON(lookup_widget("regTranslationOnly"));
+	x2upscale = GTK_TOGGLE_BUTTON(lookup_widget("upscaleCheckButton"));
 	reg_args->process_all_frames = gtk_toggle_button_get_active(regall);
 	reg_args->follow_star = gtk_toggle_button_get_active(follow);
 	reg_args->matchSelection = gtk_toggle_button_get_active(matchSel);
 	reg_args->translation_only = gtk_toggle_button_get_active(no_translate);
+	reg_args->x2upscale = gtk_toggle_button_get_active(x2upscale);
 	/* getting the selected registration layer from the combo box. The value is the index
 	 * of the selected line, and they are in the same order than layers so there should be
 	 * an exact matching between the two */
