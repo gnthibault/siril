@@ -592,8 +592,12 @@ int register_star_alignment(struct registration_args *args) {
 	ref.x = fit.rx;
 	ref.y = fit.ry;
 	if (args->x2upscale) {
-		ref.x *= 2.0;
-		ref.y *= 2.0;
+		if (args->translation_only) {
+			args->seq->upscale_at_stacking = 2.0;
+		} else {
+			ref.x *= 2.0;
+			ref.y *= 2.0;
+		}
 	}
 
 	/* we copy com.stars to refstars in case user take a look to another image of the sequence
@@ -734,7 +738,7 @@ int register_star_alignment(struct registration_args *args) {
 					free(stars);
 				}
 				else {
-					if (args->x2upscale) {
+					if (args->x2upscale && !args->translation_only) {
 						cvResizeGaussian(&fit, fit.rx * 2, fit.ry * 2, OPENCV_NEAREST);
 					}
 				}
