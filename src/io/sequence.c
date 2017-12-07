@@ -365,10 +365,12 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 
 		/* initialize sequence-related runtime data */
 		seq->rx = fit->rx; seq->ry = fit->ry;
-		seq->nb_layers = fit->naxes[2];
-		seq->regparam = calloc(seq->nb_layers, sizeof(regdata *));
-		seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
-		writeseqfile(seq);
+		if (seq->nb_layers == -1) {
+			seq->nb_layers = fit->naxes[2];
+			seq->regparam = calloc(seq->nb_layers, sizeof(regdata *));
+			seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
+			writeseqfile(seq);
+		}
 
 		if (load_ref_into_gfit) {
 			seq->current = image_to_load;

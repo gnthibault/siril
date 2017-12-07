@@ -572,8 +572,8 @@ int register_star_alignment(struct registration_args *args) {
 	}
 	siril_log_color_message(_("Reference Image:\n"), "green");
 
-	if ((com.selection.w != 0) && (com.selection.h != 0) && args->matchSelection) {
-		com.stars = peaker(&fit, args->layer, &sf, &com.selection);
+	if ((args->selection.w != 0) && (args->selection.h != 0) && args->matchSelection) {
+		com.stars = peaker(&fit, args->layer, &sf, &args->selection);
 	}
 	else {
 		com.stars = peaker(&fit, args->layer, &sf, NULL);
@@ -624,8 +624,12 @@ int register_star_alignment(struct registration_args *args) {
 	if (args->process_all_frames)
 		args->new_total = args->seq->number;
 	else args->new_total = args->seq->selnum;
-	args->imgparam = calloc(args->new_total, sizeof(imgdata));
-	args->regparam = calloc(args->new_total, sizeof(regdata));
+
+	if (!args->translation_only) {
+		// allocate destination sequence data
+		args->imgparam = calloc(args->new_total, sizeof(imgdata));
+		args->regparam = calloc(args->new_total, sizeof(regdata));
+	}
 
 	if (args->seq->type == SEQ_SER) {
 		char dest[256];
@@ -1141,17 +1145,23 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	}
 	// TODO: check for reentrance
 
-	reg_args = malloc(sizeof(struct registration_args));
+	reg_args = calloc(1, sizeof(struct registration_args));
 
 	control_window_switch_to_tab(OUTPUT_LOGS);
 
 	/* filling the arguments for registration */
-	reg_args->seq = &com.seq;
 	regall = GTK_TOGGLE_BUTTON(lookup_widget("regallbutton"));
 	follow = GTK_TOGGLE_BUTTON(lookup_widget("followStarCheckButton"));
 	matchSel = GTK_TOGGLE_BUTTON(lookup_widget("checkStarSelect"));
 	no_translate = GTK_TOGGLE_BUTTON(lookup_widget("regTranslationOnly"));
 	x2upscale = GTK_TOGGLE_BUTTON(lookup_widget("upscaleCheckButton"));
+	cbbt_layers = GTK_COMBO_BOX(
+			gtk_builder_get_object(builder, "comboboxreglayer"));
+	ComboBoxRegInter = GTK_COMBO_BOX_TEXT(
+			gtk_builder_get_object(builder, "ComboBoxRegInter"));
+
+	reg_args->func = method->method_ptr;
+	reg_args->seq = &com.seq;
 	reg_args->process_all_frames = gtk_toggle_button_get_active(regall);
 	reg_args->follow_star = gtk_toggle_button_get_active(follow);
 	reg_args->matchSelection = gtk_toggle_button_get_active(matchSel);
@@ -1160,14 +1170,9 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	/* getting the selected registration layer from the combo box. The value is the index
 	 * of the selected line, and they are in the same order than layers so there should be
 	 * an exact matching between the two */
-	cbbt_layers = GTK_COMBO_BOX(
-			gtk_builder_get_object(builder, "comboboxreglayer"));
 	reg_args->layer = gtk_combo_box_get_active(cbbt_layers);
-	ComboBoxRegInter = GTK_COMBO_BOX_TEXT(
-			gtk_builder_get_object(builder, "ComboBoxRegInter"));
 	reg_args->interpolation = gtk_combo_box_get_active(GTK_COMBO_BOX(ComboBoxRegInter));
-	get_the_registration_area(reg_args, method);
-	reg_args->func = method->method_ptr;
+	get_the_registration_area(reg_args, method);	// sets selection
 	reg_args->run_in_thread = TRUE;
 	reg_args->prefix = gtk_entry_get_text(
 			GTK_ENTRY(gtk_builder_get_object(builder, "regseqname_entry")));
