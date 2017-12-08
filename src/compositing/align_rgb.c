@@ -109,6 +109,7 @@ int rgb_align(int m) {
 	get_the_registration_area(&regargs, method);
 	regargs.layer = REGLAYER;
 	regargs.run_in_thread = FALSE;
+	com.run_thread = TRUE;	// fix for the canceling check in processing
 
 	set_cursor_waiting(TRUE);
 	set_progress_bar_data(NULL, PROGRESS_RESET);
@@ -117,6 +118,7 @@ int rgb_align(int m) {
 	else
 		set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
 	set_cursor_waiting(FALSE);
+	com.run_thread = FALSE;	// fix for the canceling check in processing
 
 	align_and_compose();
 
