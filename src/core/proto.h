@@ -168,6 +168,14 @@ struct noise_data {
 	struct timeval t_start;
 };
 
+/* Lucy-Richardson data from GUI */
+struct RL_data {
+	fits *fit;
+	double sigma;
+	int iter;
+};
+
+
 int 	threshlo(fits *fit, int level);
 int 	threshhi(fits *fit, int level);
 int 	nozero(fits *fit, int level);

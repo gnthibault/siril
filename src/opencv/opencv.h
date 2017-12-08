@@ -23,6 +23,7 @@ int cvCalculH(s_star *star_array_img,
 int cvTransformImage(fits *, point, Homography, int);
 int cvUnsharpFilter(fits*, double, double);
 int cvComputeFinestScale(fits *image);
+int cvLucyRichardson(fits *image, double sigma, int iterations);
 #ifdef __cplusplus
 }
 #endif

@@ -76,6 +76,7 @@ int	process_mirrorx(int nb);
 int	process_mirrory(int nb);
 #ifdef HAVE_OPENCV
 int	process_resample(int nb);
+int	process_rl(int nb);
 int	process_rotate(int nb);
 #endif
 int	process_rotatepi(int nb);

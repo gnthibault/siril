@@ -387,4 +387,100 @@ int cvComputeFinestScale(fits *image) {
 	return 0;
 }
 
+static Mat RLTikh_deconvolution(Mat observed, Mat psf, double mu, int iterations) {
+
+	Mat deconv = observed.clone();
+
+	// Iterate
+	for (int i = 0; i < iterations; i++) {
+
+		// Temporary matrix
+		Mat ratio;
+		sepFilter2D(deconv, ratio, deconv.depth(), psf, psf, Point(-1, -1), 0,
+				BORDER_REFLECT);
+
+		divide(observed, ratio, ratio);
+
+		sepFilter2D(ratio, ratio, ratio.depth(), psf, psf, Point(-1, -1), 0,
+				BORDER_REFLECT);
+
+		// TV Regularization
+		Mat denom;
+		Laplacian(deconv, denom, deconv.depth(), 1, 1, 0, BORDER_REFLECT);
+		denom = 1.0 - 2.0 * mu * denom;
+		divide(ratio, denom, ratio);
+
+		// Apply iteration on the estimate
+		multiply(deconv, ratio, deconv);
+	}
+
+	return deconv;
+}
+
+#define KERNEL_SIZE_FACTOR 6
+
+int cvLucyRichardson(fits *image, double sigma, int iterations) {
+	assert(image->data);
+	assert(image->rx);
+	assert(image->ry);
+
+	int ndata = image->rx * image->ry;
+	int ksize = (int)((KERNEL_SIZE_FACTOR * sigma) + 0.5);
+	ksize = ksize % 2 != 0 ? ksize : ksize + 1;
+
+	WORD *bgrbgr = fits_to_bgrbgr(image);
+
+	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
+	Mat out(image->ry, image->rx, CV_16UC3);
+
+	// From here on, use 64-bit floats
+	// Convert original_image to float
+	Mat float_image;
+	in.convertTo(float_image, CV_64FC3);
+	float_image *= 1.0 / 65535.0;
+
+	Mat psf = getGaussianKernel(ksize, sigma);
+
+	double mu = 0.01;
+
+	Mat estimation = RLTikh_deconvolution(float_image, psf, mu, iterations);
+	estimation *= 65535.0;
+
+	estimation.convertTo(out, CV_16UC3);
+
+	Mat channel[3];
+	split(out, channel);
+
+	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
+	if (image->naxes[2] == 3) {
+		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
+		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
+	}
+
+	if (image->naxes[2] == 1) {
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data;
+		image->pdata[BLAYER] = image->data;
+	} else {
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data + ndata;
+		image->pdata[BLAYER] = image->data + ndata * 2;
+	}
+	image->rx = out.cols;
+	image->ry = out.rows;
+	image->naxes[0] = image->rx;
+	image->naxes[1] = image->ry;
+
+	/* free data */
+	delete[] bgrbgr;
+	in.release();
+	out.release();
+	channel[0].release();
+	channel[1].release();
+	channel[2].release();
+
+	return 0;
+
+}
+
 #endif

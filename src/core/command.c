@@ -134,6 +134,7 @@ command commande[] = {
 #ifdef HAVE_OPENCV
 	{"resample", 1, "resample factor", process_resample},
 #endif	
+	{"rl", 1, "rl iterations", process_rl},
 	{"rmgreen", 1, "rmgreen type", process_scnr},
 #ifdef HAVE_OPENCV
 	{"rotate", 1, "rotate angle", process_rotate},
@@ -375,6 +376,62 @@ int process_gauss(int nb){
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	return 0;
+}
+
+static gpointer LRdeconv(gpointer p) {
+	struct RL_data *args = (struct RL_data *) p;
+	struct timeval t_start, t_end;
+
+	siril_log_color_message(_("Lucy-Richardson deconvolution: processing...\n"), "red");
+	gettimeofday(&t_start, NULL);
+
+	cvLucyRichardson(args->fit, args->sigma, args->iter);
+
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
+
+	gdk_threads_add_idle(end_generic, args);
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	return 0;
+}
+
+int process_rl(int nb) {
+	control_window_switch_to_tab(OUTPUT_LOGS);
+
+	if ((!com.selection.h) || (!com.selection.w)) {
+		siril_log_message(_("Select a star first\n"));
+		return 1;
+	}
+
+	double roundness;
+	double fwhm_val;
+	double iter, mu;
+
+	iter = atoi(word[1]);
+	if (iter <= 0) {
+		return 1;
+	}
+
+	if (get_thread_run()) {
+		siril_log_message(
+				_("Another task is already in progress, ignoring new request.\n"));
+		return 1;
+	}
+
+	struct RL_data *args = malloc(sizeof(struct RL_data));
+
+	set_cursor_waiting(TRUE);
+
+	fwhm_val = psf_get_fwhm(&gfit, 0, &roundness);
+	args->fit = &gfit;
+	args->sigma = fwhm_val / 2.354820045;
+	args->iter = iter;
+
+	start_in_new_thread(LRdeconv, args);
+
 	return 0;
 }
 
