@@ -1770,4 +1770,21 @@ gpointer noise(gpointer p) {
 	return GINT_TO_POINTER(0);
 }
 
+gpointer LRdeconv(gpointer p) {
+	struct RL_data *args = (struct RL_data *) p;
+	struct timeval t_start, t_end;
 
+	siril_log_color_message(_("Lucy-Richardson deconvolution: processing...\n"), "red");
+	gettimeofday(&t_start, NULL);
+
+	cvLucyRichardson(args->fit, args->sigma, args->iter);
+
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
+
+	gdk_threads_add_idle(end_generic, args);
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	return 0;
+}

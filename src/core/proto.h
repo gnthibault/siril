@@ -218,6 +218,7 @@ void apply_banding_to_sequence(struct banding_data *banding_args);
 gpointer BandingEngineThreaded(gpointer p);
 int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highlights, gboolean applyRotation);
 gpointer noise(gpointer p);
+gpointer LRdeconv(gpointer p);
 
 /****************** seqfile.h ******************/
 sequence * readseqfile(const char *name);

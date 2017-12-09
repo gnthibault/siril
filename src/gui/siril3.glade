@@ -255,6 +255,13 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">0.01</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adj_iter_deconvolution">
+    <property name="lower">1</property>
+    <property name="upper">1000</property>
+    <property name="value">10</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="adj_median_amount">
     <property name="upper">1</property>
     <property name="value">1</property>
@@ -290,6 +297,13 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   <object class="GtkAdjustment" id="adj_shadows">
     <property name="upper">1</property>
     <property name="step_increment">0.01</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_sigma_deconvolution">
+    <property name="lower">1</property>
+    <property name="upper">10</property>
+    <property name="value">2</property>
+    <property name="step_increment">0.5</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_w0">
@@ -4824,6 +4838,174 @@ Uncheck if images come from a monochrome sensor.</property>
     </child>
     <action-widgets>
       <action-widget response="0">button_data_ok</action-widget>
+    </action-widgets>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
+  <object class="GtkDialog" id="deconvolution_dialog">
+    <property name="width_request">300</property>
+    <property name="can_focus">False</property>
+    <property name="border_width">5</property>
+    <property name="title" translatable="yes">Deconvolution</property>
+    <property name="resizable">False</property>
+    <property name="window_position">center</property>
+    <property name="type_hint">normal</property>
+    <property name="transient_for">main_window</property>
+    <accel-groups>
+      <group name="accelgroup1"/>
+    </accel-groups>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="deconvolution_cancel">
+                <property name="label">gtk-close</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_deconvolution_cancel_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="deconvolution_Apply">
+                <property name="label">gtk-apply</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_deconvolution_Apply_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkGrid" id="grid45">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="row_spacing">10</property>
+            <property name="column_spacing">5</property>
+            <property name="row_homogeneous">True</property>
+            <child>
+              <object class="GtkLabel" id="label171">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Sigma:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="scale_deconvolution">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">This represents the size of the gaussian kernel which is applied. The higher the value is, the stronger the effect is.</property>
+                <property name="hexpand">True</property>
+                <property name="adjustment">adj_sigma_deconvolution</property>
+                <property name="round_digits">2</property>
+                <property name="digits">2</property>
+                <property name="value_pos">right</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="combo_deconvolution">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="active">0</property>
+                <items>
+                  <item>Lucy-Richardson</item>
+                </items>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label174">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Algorithm:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label175">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Iterations:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="spin_iterations">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">Number of iterations.</property>
+                <property name="halign">end</property>
+                <property name="width_chars">6</property>
+                <property name="text">0</property>
+                <property name="input_purpose">number</property>
+                <property name="adjustment">adj_iter_deconvolution</property>
+                <property name="numeric">True</property>
+                <property name="value">10</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="0">deconvolution_Apply</action-widget>
     </action-widgets>
     <child>
       <placeholder/>
@@ -10194,6 +10376,15 @@ WARNING: ensure you have a good reason to change this value because it may degra
                         <property name="label" translatable="yes">Cosmetic Correction...</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menuitem_cosmetic_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menuitem_deconvolution">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Deconvolution...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_menuitem_deconvolution_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>

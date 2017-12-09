@@ -1721,11 +1721,13 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menuitem_fixbanding"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_cosmetic"), any_image_is_loaded);
 #ifdef HAVE_OPENCV
+	gtk_widget_set_sensitive(lookup_widget("menuitem_deconvolution"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_resample"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation90"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation270"), is_a_single_image_loaded);
 #else
+	gtk_widget_set_sensitive(lookup_widget("menuitem_deconvolution"), FALSE);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_resample"), FALSE);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation"), FALSE);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation90"), FALSE);
@@ -5784,6 +5786,35 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 		undo_save_state("Processing: Cosmetic Correction");
 		start_in_new_thread(autoDetectThreaded, args);
 	}
+}
+
+/************************ GUI for deconvolution ***********************/
+void on_menuitem_deconvolution_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	gtk_widget_show(lookup_widget("deconvolution_dialog"));
+}
+
+void on_deconvolution_cancel_clicked(GtkButton *button, gpointer user_data) {
+	gtk_widget_hide(lookup_widget("deconvolution_dialog"));
+}
+
+void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
+	GtkSpinButton *iter;
+	GtkRange *sigma;
+
+	iter = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spin_iterations"));
+	sigma = GTK_RANGE(gtk_builder_get_object(builder, "scale_deconvolution"));
+
+	struct RL_data *args = malloc(sizeof(struct RL_data));
+
+	set_cursor_waiting(TRUE);
+
+	args->fit = &gfit;
+	args->sigma = gtk_range_get_value(sigma);
+	args->iter = gtk_spin_button_get_value(iter);
+
+	undo_save_state("Processing: Deconvolution (iter=%d, sig=%.3f)", args->iter,
+			args->sigma);
+	start_in_new_thread(LRdeconv, args);
 }
 
 /***************** GUI for Canon Banding Reduction ********************/
