@@ -54,8 +54,11 @@ gpointer crop_sequence(gpointer p);
 gboolean sequence_is_rgb(sequence *seq);
 imstats* seq_get_imstats(sequence *seq, int index, fits *the_image, int option);
 void	enforce_area_in_image(rectangle *area, sequence *seq);
-void	update_export_crop_label();
 
 int seqpsf(sequence *seq, int layer, gboolean for_registration,
 		framing_mode framing, gboolean run_in_thread);
+
+/* in export.c now */
+void	update_export_crop_label();
+
 #endif

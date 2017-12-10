@@ -11,7 +11,7 @@ siril_SOURCES = \
 	io/conversion.c io/conversion.h io/ser.c io/ser.h io/films.c io/films.h \
 	io/image_formats_libraries.c io/image_formats_internal.c io/image_format_fits.c \
 	io/sequence.c io/sequence.h io/seqfile.c io/single_image.c io/single_image.h \
-	io/mp4_output.h io/mp4_output.c \
+	io/mp4_output.h io/mp4_output.c io/sequence_export.c \
 	gui/callbacks.c gui/callbacks.h gui/histogram.c gui/histogram.h \
 	gui/PSF_list.h gui/PSF_list.c gui/sequence_list.c gui/registration_preview.c \
 	gui/statistics_list.c \
@@ -20,7 +20,7 @@ siril_SOURCES = \
 	gui/progress_and_log.c gui/progress_and_log.h \
 	registration/registration.c registration/registration.h \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
-	stacking/stacking.c stacking/stacking.h stacking/sum.c stacking/sum.h \
+	stacking/stacking.c stacking/stacking.h stacking/sum.c stacking/sum.h stacking/normalization.c \
 	algos/gradient.c algos/gradient.h algos/quality.c algos/quality.h \
 	algos/statistics.c \
 	algos/fft.c algos/fft.h \

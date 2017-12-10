@@ -50,7 +50,7 @@
 #undef STACK_DEBUG
 
 static struct stacking_args stackparam = {	// parameters passed to stacking
-		NULL, NULL, NULL, -1.0, 0, NULL, { '\0' }, NULL, FALSE, { 0, 0 }, -1, 0, { 0, 0 }, NO_REJEC, NO_NORM, FALSE
+		NULL, NULL, NULL, -1.0, 0, NULL, { '\0' }, NULL, FALSE, { 0, 0 }, -1, 0, { 0, 0 }, NO_REJEC, NO_NORM, { NULL, NULL, NULL}, FALSE, -1
 };
 
 static stack_method stacking_methods[] = {
@@ -58,6 +58,10 @@ static stack_method stacking_methods[] = {
 };
 
 static gboolean end_stacking(gpointer p);
+
+struct image_block {
+	unsigned long channel, start_row, end_row, height;
+};
 
 
 /* pool of memory blocks for parallel processing */
@@ -75,128 +79,6 @@ void initialize_stacking_methods() {
 	rejectioncombo = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "comborejection"));
 	gtk_combo_box_set_active(GTK_COMBO_BOX(stackcombo), com.stack.method);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(rejectioncombo), com.stack.rej_method);
-}
-
-/* scale0, mul0 and offset0 are output arguments when i = ref_image, input arguments otherwise */
-static int _compute_normalization_for_image(struct stacking_args *args, int i, int ref_image,
-		double *offset, double *mul, double *scale, normalization mode, double *scale0,
-		double *mul0, double *offset0) {
-	imstats *stat = NULL;
-
-	if (!(stat = seq_get_imstats(args->seq, args->image_indices[i], NULL, STATS_EXTRA))) {
-		fits fit;
-		memset(&fit, 0, sizeof(fits));
-		if (seq_read_frame(args->seq, args->image_indices[i], &fit)) {
-			return 1;
-		}
-		stat = seq_get_imstats(args->seq, args->image_indices[i], &fit, STATS_EXTRA);
-		if (args->seq->type != SEQ_INTERNAL)
-			clearfits(&fit);
-	}
-
-	switch (mode) {
-	default:
-	case ADDITIVE_SCALING:
-		scale[i] = stat->scale;
-		if (i == ref_image)
-			*scale0 = scale[ref_image];
-		scale[i] = *scale0 / scale[i];
-		/* no break */
-	case ADDITIVE:
-		offset[i] = stat->location;
-		if (i == ref_image)
-			*offset0 = offset[ref_image];
-		offset[i] = scale[i] * offset[i] - *offset0;
-		break;
-	case MULTIPLICATIVE_SCALING:
-		scale[i] = stat->scale;
-		if (i == ref_image)
-			*scale0 = scale[ref_image];
-		scale[i] = *scale0 / scale[i];
-		/* no break */
-	case MULTIPLICATIVE:
-		mul[i] = stat->location;
-		if (i == ref_image)
-			*mul0 = mul[ref_image];
-		mul[i] = *mul0 / mul[i];
-		break;
-	}
-	return 0;
-}
-
-int compute_normalization(struct stacking_args *args, norm_coeff *coeff, normalization mode) {
-	int i, ref_image, ref_image_filtred_idx = -1, retval = 0, cur_nb = 1;
-	double scale0, mul0, offset0;	// for reference frame
-	char *tmpmsg;
-
-	for (i = 0; i < args->nb_images_to_stack; i++) {
-		coeff->offset[i] = 0.0;
-		coeff->mul[i] = 1.0;
-		coeff->scale[i] = 1.0;
-	}
-	scale0 = mul0 = offset0 = 0.0;
-	if (mode == 0)
-		return 0;
-
-	tmpmsg = siril_log_message(_("Computing normalization...\n"));
-	tmpmsg[strlen(tmpmsg) - 1] = '\0';
-	set_progress_bar_data(tmpmsg, PROGRESS_RESET);
-
-	// first, find the index of the ref image in the filtered image list
-	ref_image = sequence_find_refimage(args->seq);
-	for (i = 0; i < args->nb_images_to_stack; i++)
-		if (args->image_indices[i] == ref_image) {
-			ref_image_filtred_idx = i;
-			break;
-		}
-	g_assert(ref_image_filtred_idx != -1);
-
-	/* We empty the cache if needed (force to recompute) */
-	if (args->force_norm) {
-		for (i = 0; i < args->seq->number; i++) {
-			if (args->seq->imgparam && args->seq->imgparam[i].stats) {
-				free(args->seq->imgparam[i].stats);
-				args->seq->imgparam[i].stats = NULL;
-			}
-		}
-	}
-
-	// compute for the first image to have scale0 mul0 and offset0
-	if (_compute_normalization_for_image(args,
-				ref_image_filtred_idx, ref_image_filtred_idx,
-				coeff->offset, coeff->mul, coeff->scale, mode,
-				&scale0, &mul0, &offset0)) {
-		set_progress_bar_data(_("Normalization failed."), PROGRESS_NONE);
-		return 1;
-	}
-
-	set_progress_bar_data(NULL, 1.0 / (double)args->nb_images_to_stack);
-
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) if (args->seq->type == SEQ_SER || fits_is_reentrant())
-#endif
-	for (i = 0; i < args->nb_images_to_stack; ++i) {
-		if (!retval && i != ref_image_filtred_idx) {
-			if (!get_thread_run()) {
-				retval = 1;
-				continue;
-			}
-			if (_compute_normalization_for_image(args, i, ref_image_filtred_idx,
-						coeff->offset, coeff->mul, coeff->scale,
-						mode, &scale0, &mul0, &offset0)) {
-				retval = 1;
-				continue;
-			}
-#ifdef _OPENMP
-#pragma omp atomic
-#endif
-			cur_nb++;	// only used for progress bar
-			set_progress_bar_data(NULL,
-					(double)cur_nb / ((double)args->nb_images_to_stack));
-		}
-	}
-	set_progress_bar_data(NULL, PROGRESS_DONE);
-	return retval;
 }
 
 /******************************* MEDIAN STACKING ******************************
@@ -218,10 +100,6 @@ int stack_median(struct stacking_args *args) {
 	struct _data_block *data_pool = NULL;
 	int pool_size = 1;
 	fits *fit = &wfit[0];
-	norm_coeff coeff = { .offset = NULL, .mul = NULL, .scale = NULL };
-	struct image_block {
-		unsigned long channel, start_row, end_row, height;
-	};
 	struct image_block *blocks = NULL;
 
 	nb_frames = args->nb_images_to_stack;
@@ -314,15 +192,6 @@ int stack_median(struct stacking_args *args) {
 		update_used_memory();
 	}
 
-	coeff.offset = malloc(nb_frames * sizeof(double));
-	coeff.mul = malloc(nb_frames * sizeof(double));
-	coeff.scale = malloc(nb_frames * sizeof(double));
-	if (!coeff.offset || !coeff.mul || !coeff.scale) {
-		printf("allocation issue in stacking normalization\n");
-		retval = -1;
-		goto free_and_close;
-	}
-
 	if (naxes[2] == 0)
 		naxes[2] = 1;
 	g_assert(naxes[2] <= 3);
@@ -349,15 +218,6 @@ int stack_median(struct stacking_args *args) {
 		goto free_and_close;
 	}
 	fprintf(stdout, "image size: %ldx%ld, %ld layers\n", naxes[0], naxes[1], naxes[2]);
-
-	/* normalization: reading all images and making stats on their background level.
-	 * That's very long if not cached. */
-	if (compute_normalization(args, &coeff, args->normalize)) {
-		retval = -1;
-		goto free_and_close;
-	}
-	if (args->seq->needs_saving)	// if we had to compute new stats
-		writeseqfile(args->seq);
 
 	/* initialize result image */
 	nbdata = naxes[0] * naxes[1];
@@ -593,17 +453,23 @@ int stack_median(struct stacking_args *args) {
 				/* copy all images pixel values in the same row array `stack'
 				 * to optimize caching and improve readability */
 				for (ii=0; ii<nb_frames; ++ii) {
-					double tmp = (double)data->pix[ii][y*naxes[0]+x] * coeff.scale[ii];
+					double tmp;
 					switch (args->normalize) {
 						default:
 						case NO_NORM:		// no normalization (scale[ii] = 1, offset[ii] = 0, mul[ii] = 1)
+							data->stack[ii] = data->pix[ii][y*naxes[0]+x];
+							/* it's faster if we don't convert it to double
+							 * to make identity operations */
+							break;
 						case ADDITIVE:		// additive (scale[ii] = 1, mul[ii] = 1)
 						case ADDITIVE_SCALING:		// additive + scale (mul[ii] = 1)
-							data->stack[ii] = round_to_WORD(tmp - coeff.offset[ii]);
+							tmp = (double)data->pix[ii][y*naxes[0]+x] * args->coeff.scale[ii];
+							data->stack[ii] = round_to_WORD(tmp - args->coeff.offset[ii]);
 							break;
 						case MULTIPLICATIVE:		// multiplicative  (scale[ii] = 1, offset[ii] = 0)
 						case MULTIPLICATIVE_SCALING:		// multiplicative + scale (offset[ii] = 0)
-							data->stack[ii] = round_to_WORD(tmp * coeff.mul[ii]);
+							tmp = (double)data->pix[ii][y*naxes[0]+x] * args->coeff.scale[ii];
+							data->stack[ii] = round_to_WORD(tmp * args->coeff.mul[ii]);
 							break;
 					}
 				}
@@ -644,9 +510,9 @@ free_and_close:
 		free(data_pool);
 	}
 	if (blocks) free(blocks);
-	free(coeff.offset);
-	free(coeff.mul);
-	free(coeff.scale);
+	if (args->coeff.offset) free(args->coeff.offset);
+	if (args->coeff.mul) free(args->coeff.mul);
+	if (args->coeff.scale) free(args->coeff.scale);
 	if (retval) {
 		/* if retval is set, gfit has not been modified */
 		if (fit->data) free(fit->data);
@@ -1031,6 +897,7 @@ static void remove_pixel(WORD *arr, int i, int N) {
 	memmove(&arr[i], &arr[i + 1], (N - i - 1) * sizeof(*arr));
 }
 
+
 int stack_mean_with_rejection(struct stacking_args *args) {
 	int nb_frames;		/* number of frames actually used */
 	int status;		/* CFITSIO status value MUST be initialized to zero for EACH call */
@@ -1047,7 +914,6 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	struct _data_block *data_pool = NULL;
 	int pool_size = 1;
 	fits *fit = &wfit[0];
-	norm_coeff coeff = { .offset = NULL, .mul = NULL, .scale = NULL };
 	struct image_block *blocks = NULL;
 
 	nb_frames = args->nb_images_to_stack;
@@ -1141,15 +1007,6 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 		update_used_memory();
 	}
 
-	coeff.offset = malloc(nb_frames * sizeof(double));
-	coeff.mul = malloc(nb_frames * sizeof(double));
-	coeff.scale = malloc(nb_frames * sizeof(double));
-	if (!coeff.offset || !coeff.mul || !coeff.scale) {
-		printf("allocation issue in stacking normalization\n");
-		retval = -1;
-		goto free_and_close;
-	}
-
 	if (naxes[2] == 0)
 		naxes[2] = 1;
 	g_assert(naxes[2] <= 3);
@@ -1176,15 +1033,6 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 		goto free_and_close;
 	}
 	fprintf(stdout, "image size: %ldx%ld, %ld layers\n", naxes[0], naxes[1], naxes[2]);
-
-	/* normalization: reading all images and making stats on their background level.
-	 * That's very long if not cached. */
-	if (compute_normalization(args, &coeff, args->normalize)) {
-		retval = -1;
-		goto free_and_close;
-	}
-	if (args->seq->needs_saving)	// if we had to compute new stats
-		writeseqfile(args->seq);
 
 	/* initialize result image */
 	nbdata = naxes[0] * naxes[1];
@@ -1274,9 +1122,6 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	}
 	siril_log_message(_("We have %d parallel blocks of size %d (+%d) for stacking.\n"),
 			nb_parallel_stacks, size_of_stacks, remainder);
-	struct image_block {
-		unsigned long channel, start_row, end_row, height;
-	};
 	long largest_block_height = 0;
 	blocks = malloc(nb_parallel_stacks * sizeof(struct image_block));
 	{
@@ -1486,13 +1331,13 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 							break;
 						case ADDITIVE:		// additive (scale[frame] = 1, mul[frame] = 1)
 						case ADDITIVE_SCALING:		// additive + scale (mul[frame] = 1)
-							tmp = (double)data->pix[frame][pix_idx+x-shiftx] * coeff.scale[frame];
-							data->stack[frame] = round_to_WORD(tmp - coeff.offset[frame]);
+							tmp = (double)data->pix[frame][pix_idx+x-shiftx] * args->coeff.scale[frame];
+							data->stack[frame] = round_to_WORD(tmp - args->coeff.offset[frame]);
 							break;
 						case MULTIPLICATIVE:		// multiplicative  (scale[frame] = 1, offset[frame] = 0)
 						case MULTIPLICATIVE_SCALING:		// multiplicative + scale (offset[frame] = 0)
-							tmp = (double)data->pix[frame][pix_idx+x-shiftx] * coeff.scale[frame];
-							data->stack[frame] = round_to_WORD(tmp * coeff.mul[frame]);
+							tmp = (double)data->pix[frame][pix_idx+x-shiftx] * args->coeff.scale[frame];
+							data->stack[frame] = round_to_WORD(tmp * args->coeff.mul[frame]);
 							break;
 						}
 					}
@@ -1687,9 +1532,9 @@ free_and_close:
 		free(data_pool);
 	}
 	if (blocks) free(blocks);
-	free(coeff.offset);
-	free(coeff.mul);
-	free(coeff.scale);
+	if (args->coeff.offset) free(args->coeff.offset);
+	if (args->coeff.mul) free(args->coeff.mul);
+	if (args->coeff.scale) free(args->coeff.scale);
 	if (retval) {
 		/* if retval is set, gfit has not been modified */
 		if (fit->data) free(fit->data);
@@ -1706,7 +1551,13 @@ free_and_close:
  * changing all return values and adding the idle everywhere. */
 gpointer stack_function_handler(gpointer p) {
 	struct stacking_args *args = (struct stacking_args *)p;
+	// 1. normalization
+	do_normalization(args);	// does nothing it NO_NORM
+	// 2. up-scale
+	// coming soon
+	// 3. stack
 	args->retval = args->method(p);
+	// 4. save result and clean-up
 	gdk_threads_add_idle(end_stacking, args);
 	return GINT_TO_POINTER(args->retval);	// not used anyway
 }
@@ -1740,9 +1591,14 @@ void start_stacking() {
 	stackparam.type_of_rejection = gtk_combo_box_get_active(rejec_combo);
 	stackparam.normalize = gtk_combo_box_get_active(norm_combo);
 	stackparam.force_norm = gtk_toggle_button_get_active(force_norm);
-
+	stackparam.coeff.offset = NULL;
+	stackparam.coeff.mul = NULL;
+	stackparam.coeff.scale = NULL;
 	stackparam.method =
 			stacking_methods[gtk_combo_box_get_active(method_combo)];
+	// ensure we have no normalization if not supported by the stacking method
+	if (stackparam.method != stack_median && stackparam.method != stack_mean_with_rejection)
+		stackparam.normalize = NO_NORM;
 	stackparam.seq = &com.seq;
 	stackparam.reglayer = get_registration_layer();
 	siril_log_color_message(_("Stacking will use registration data of layer %d if some exist.\n"), "salmon", stackparam.reglayer);
@@ -1953,6 +1809,14 @@ void on_comboboxstack_methods_changed (GtkComboBox *box, gpointer user_data) {
 	update_stack_interface(TRUE);
 	writeinitfile();
 }
+
+void on_combonormalize_changed (GtkComboBox *box, gpointer user_data) {
+	GtkWidget *widgetnormalize = lookup_widget("combonormalize");
+	GtkWidget *force_norm = lookup_widget("checkforcenorm");
+	gtk_widget_set_sensitive(force_norm,
+			gtk_combo_box_get_active(GTK_COMBO_BOX(widgetnormalize)) != 0);
+}
+
 
 void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 	rejection type_of_rejection = gtk_combo_box_get_active(box);
@@ -2170,7 +2034,8 @@ double compute_highest_accepted_quality(double percent) {
  */
 void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststackspin
 	static GtkAdjustment *stackadj = NULL;
-	static GtkWidget *go_stack = NULL, *stack[] = {NULL, NULL}, *widgetnormalize=NULL;
+	static GtkWidget *go_stack = NULL, *stack[] = {NULL, NULL},
+			 *widgetnormalize = NULL, *force_norm = NULL;
 	static GtkComboBox *stack_type = NULL, *method_combo = NULL;
 	double percent;
 	int channel, ref_image;
@@ -2184,7 +2049,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		stack_type = GTK_COMBO_BOX(lookup_widget("comboboxstacksel"));
 		method_combo = GTK_COMBO_BOX(lookup_widget("comboboxstack_methods"));
 		widgetnormalize = lookup_widget("combonormalize");
-
+		force_norm = lookup_widget("checkforcenorm");
 	}
 	if (!sequence_is_loaded()) return;
 	stackparam.seq = &com.seq;
@@ -2198,10 +2063,13 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 	case 3:
 	case 4:
 		gtk_widget_set_sensitive(widgetnormalize, FALSE);
+		gtk_widget_set_sensitive(force_norm, FALSE);
 		break;
 	case 1:
 	case 2:
 		gtk_widget_set_sensitive(widgetnormalize, TRUE);
+		gtk_widget_set_sensitive(force_norm,
+				gtk_combo_box_get_active(GTK_COMBO_BOX(widgetnormalize)) != 0);
 	}
 
 	switch (gtk_combo_box_get_active(stack_type)) {

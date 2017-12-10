@@ -58,10 +58,11 @@ struct stacking_args {
 	int max_number_of_rows;	/* number of rows that can be processed simultaneously,
 				   function of max memory, image size and nb_images_to_stack */
 	double sig[2];		/* low and high sigma rejection */
-	rejection type_of_rejection;		/* Type of rejection */
-	normalization normalize;		/* Normalization */
+	rejection type_of_rejection;	/* type of rejection */
+	normalization normalize;	/* type of normalization */
+	norm_coeff coeff;		/* normalization data */
 	gboolean force_norm;		/* TRUE = force normalization */
-	int reglayer;		// layer used for registration data
+	int reglayer;		/* layer used for registration data */
 };
 
 void initialize_stacking_methods();
@@ -84,6 +85,7 @@ int stack_filter_included(sequence *seq, int nb_img, double any);
 int stack_filter_fwhm(sequence *seq, int nb_img, double max_fwhm);
 int stack_filter_quality(sequence *seq, int nb_img, double max_quality);
 
-int compute_normalization(struct stacking_args *args, norm_coeff *coeff, normalization mode);
+/* normalization functions, normalize.c */
+int do_normalization(struct stacking_args *args);
 
 #endif

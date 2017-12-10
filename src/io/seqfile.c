@@ -258,7 +258,7 @@ sequence * readseqfile(const char *name){
 				 * shift-only registrated sequences, up-scale will be done at
 				 * stack-time. */
 				if (line[1] == ' ' &&
-						sscanf(line+2, "%g", &seq->upscale_at_stacking) != 1) {
+						sscanf(line+2, "%lg", &seq->upscale_at_stacking) != 1) {
 					fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
 					goto error;
 				}
