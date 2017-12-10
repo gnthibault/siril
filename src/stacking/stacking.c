@@ -58,6 +58,7 @@ static stack_method stacking_methods[] = {
 };
 
 static gboolean end_stacking(gpointer p);
+static int stack_addminmax(struct stacking_args *args, gboolean ismax);
 
 struct image_block {
 	unsigned long channel, start_row, end_row, height;
@@ -527,170 +528,22 @@ free_and_close:
 }
 
 
-/** Addmax STACK method **
- * This method is very close to the summing one instead that the result
- * takes only the pixel if it is brighter than the previous one at the
- * same coordinates.
+/******************************* ADDMIN AND ADDMAX STACKING ******************************
+ * These methods are very close to summing stacking instead that the result
+ * takes only the pixel if it is brighter (max) or dimmer (min) than the
+ * previous one at the same coordinates.
  */
 int stack_addmax(struct stacking_args *args) {
-	int x, y, nx, ny, i, ii, j, shiftx, shifty, layer, reglayer;
-	WORD *final_pixel[3], *from, maxim = 0;
-	WORD *to;
-	double exposure=0.0;
-	unsigned int nbdata = 0;
-	char filename[256];
-	int retval = 0;
-	int nb_frames, cur_nb = 0;
-	fits *fit = &wfit[0];
-	char *tmpmsg;
-	memset(fit, 0, sizeof(fits));
-
-	/* should be pre-computed to display it in the stacking tab */
-	nb_frames = args->nb_images_to_stack;
-	reglayer = get_registration_layer();
-
-	if (nb_frames <= 1) {
-		siril_log_message(_("No frame selected for stacking (select at least 2). Aborting.\n"));
-		return -1;
-	}
-
-	final_pixel[0] = NULL;
-	g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-	g_assert(nb_frames <= args->seq->number);
-
-	for (j=0; j<args->seq->number; ++j){
-		if (!get_thread_run()) {
-			retval = -1;
-			goto free_and_reset_progress_bar;
-		}
-		if (!args->filtering_criterion(args->seq, j, args->filtering_parameter)) {
-			fprintf(stdout, "image %d is excluded from stacking\n", j);
-			continue;
-		}
-		if (!seq_get_image_filename(args->seq, j, filename)) {
-			retval = -1;
-			goto free_and_reset_progress_bar;
-		}
-		tmpmsg = strdup(_("Processing image "));
-		tmpmsg = str_append(&tmpmsg, filename);
-		set_progress_bar_data(tmpmsg, (double)cur_nb/((double)nb_frames+1.));
-		free(tmpmsg);
-
-		cur_nb++;	// only used for progress bar
-
-		if (seq_read_frame(args->seq, j, fit)) {
-			siril_log_message(_("Stacking: could not read frame, aborting\n"));
-			retval = -3;
-			goto free_and_reset_progress_bar;
-		}
-
-		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-		g_assert(fit->naxes[2] == args->seq->nb_layers);
-
-		/* first loaded image: init data structures for stacking */
-		if (!nbdata) {
-			nbdata = fit->ry * fit->rx;
-			final_pixel[0] = calloc(nbdata, sizeof(WORD)*fit->naxes[2]);
-			if (final_pixel[0] == NULL){
-				printf("Stacking: memory allocation failure\n");
-				retval = -2;
-				goto free_and_reset_progress_bar;
-			}
-			if(args->seq->nb_layers == 3){
-				final_pixel[1] = final_pixel[0] + nbdata;	// index of green layer in final_pixel[0]
-				final_pixel[2] = final_pixel[0] + nbdata*2;	// index of blue layer in final_pixel[0]
-			}
-		} else if (fit->ry * fit->rx != nbdata) {
-			siril_log_message(_("Stacking: image in sequence doesn't has the same dimensions\n"));
-			retval = -3;
-			goto free_and_reset_progress_bar;
-		}
-
-		update_used_memory();
-
-		/* load registration data for current image */
-		if(reglayer != -1 && args->seq->regparam[reglayer]) {
-			shiftx = args->seq->regparam[reglayer][j].shiftx;
-			shifty = args->seq->regparam[reglayer][j].shifty;
-		} else {
-			shiftx = 0;
-			shifty = 0;
-		}
-#ifdef STACK_DEBUG
-		printf("stack image %d with shift x=%d y=%d\n", j, shiftx, shifty);
-#endif
-
-		/* Summing the exposure */
-		exposure += fit->exposure;
-
-		/* stack current image */
-		i=0;	// index in final_pixel[0]
-		for (y=0; y < fit->ry; ++y){
-			for (x=0; x < fit->rx; ++x){
-				nx = x - shiftx;
-				ny = y - shifty;
-				//printf("x=%d y=%d sx=%d sy=%d i=%d ii=%d\n",x,y,shiftx,shifty,i,ii);
-				if (nx >= 0 && nx < fit->rx && ny >= 0 && ny < fit->ry) {
-					ii = ny * fit->rx + nx;		// index in final_pixel[0] too
-					//printf("shiftx=%d shifty=%d i=%d ii=%d\n",shiftx,shifty,i,ii);
-					if (ii > 0 && ii < fit->rx * fit->ry){
-						for(layer=0; layer<args->seq->nb_layers; ++layer){
-							WORD current_pixel = fit->pdata[layer][ii];
-							if (current_pixel > final_pixel[layer][i])	// we take the brighter pixel
-								final_pixel[layer][i] = current_pixel;
-							if (final_pixel[layer][i] > maxim){
-								maxim = final_pixel[layer][i];
-							}
-						}
-					}
-				}
-				++i;
-			}
-		}
-	}
-	if (!get_thread_run()) {
-		retval = -1;
-		goto free_and_reset_progress_bar;
-	}
-	set_progress_bar_data(_("Finalizing stacking..."), (double)nb_frames/((double)nb_frames+1.));
-
-	copyfits(fit, &gfit, CP_ALLOC|CP_FORMAT, 0);
-	gfit.hi = round_to_WORD(maxim);
-	gfit.bitpix = USHORT_IMG;
-	gfit.exposure = exposure;						// TODO : think if exposure has a sense here
-
-	if (final_pixel[0]) {
-		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-		for (layer=0; layer<args->seq->nb_layers; ++layer){
-			from = final_pixel[layer];
-			to = gfit.pdata[layer];
-			for (y=0; y < fit->ry * fit->rx; ++y) {
-				*to++ = *from++;
-			}
-		}
-	}
-
-free_and_reset_progress_bar:
-	if (final_pixel[0]) free(final_pixel[0]);
-	if (retval) {
-		set_progress_bar_data(_("Stacking failed. Check the log."), PROGRESS_RESET);
-		siril_log_message(_("Stacking failed.\n"));
-	} else {
-		set_progress_bar_data(_("Stacking complete."), PROGRESS_DONE);
-	}
-	update_used_memory();
-	return retval;
+	return stack_addminmax(args, TRUE);
 }
 
-/** Addmax STACK method **
- * This method is very close to the summing one instead that the result
- * takes only the pixel if it is brighter than the previous one at the
- * same coordinates.
- */
 int stack_addmin(struct stacking_args *args) {
+	return stack_addminmax(args, FALSE);
+}
+
+static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 	int x, y, nx, ny, i, ii, j, shiftx, shifty, layer, reglayer;
-	WORD *final_pixel[3], *from;
-	WORD *to, minim = USHRT_MAX;
+	WORD *final_pixel[3], *from, *to, minmaxim = ismax ? 0 : USHRT_MAX;;
 	double exposure=0.0;
 	unsigned int nbdata = 0;
 	char filename[256];
@@ -746,7 +599,7 @@ int stack_addmin(struct stacking_args *args) {
 		if (!nbdata) {
 			nbdata = fit->ry * fit->rx;
 			final_pixel[0] = malloc(nbdata * fit->naxes[2] * sizeof(WORD));
-			memset(final_pixel[0], USHRT_MAX, nbdata * fit->naxes[2] * sizeof(WORD));
+			memset(final_pixel[0], ismax ? 0 : USHRT_MAX, nbdata * fit->naxes[2] * sizeof(WORD));
 			if (final_pixel[0] == NULL){
 				printf("Stacking: memory allocation failure\n");
 				retval = -2;
@@ -792,10 +645,12 @@ int stack_addmin(struct stacking_args *args) {
 					if (ii > 0 && ii < fit->rx * fit->ry){
 						for(layer=0; layer<args->seq->nb_layers; ++layer){
 							WORD current_pixel = fit->pdata[layer][ii];
-							if (current_pixel < final_pixel[layer][i])	// we take the darker pixel
+							if ((ismax && current_pixel > final_pixel[layer][i]) ||	// we take the brighter pixel
+									(!ismax && current_pixel < final_pixel[layer][i]))	// we take the darker pixel
 								final_pixel[layer][i] = current_pixel;
-							if (final_pixel[layer][i] < minim){
-								minim = final_pixel[layer][i];
+							if ((ismax && final_pixel[layer][i] > minmaxim) ||
+									(!ismax && final_pixel[layer][i] < minmaxim)){
+								minmaxim = final_pixel[layer][i];
 							}
 						}
 					}
@@ -811,7 +666,7 @@ int stack_addmin(struct stacking_args *args) {
 	set_progress_bar_data(_("Finalizing stacking..."), (double)nb_frames/((double)nb_frames+1.));
 
 	copyfits(fit, &gfit, CP_ALLOC|CP_FORMAT, 0);
-	gfit.hi = round_to_WORD(minim);
+	gfit.hi = round_to_WORD(minmaxim);
 	gfit.bitpix = USHORT_IMG;
 	gfit.exposure = exposure;						// TODO : think if exposure has a sense here
 
@@ -838,6 +693,12 @@ free_and_reset_progress_bar:
 	return retval;
 }
 
+
+/******************************* REJECTION STACKING ******************************
+ * The functions below are those managing the rejection, the stacking code is
+ * after and similar to median but takes into account the registration data and
+ * does a different operation to keep the final pixel values.
+ *********************************************************************************/
 static int percentile_clipping(WORD pixel, double sig[], double median, uint64_t rej[]) {
 	double plow = sig[0];
 	double phigh = sig[1];
@@ -896,7 +757,6 @@ static int line_clipping(WORD pixel, double sig[], double sigma, int i, double a
 static void remove_pixel(WORD *arr, int i, int N) {
 	memmove(&arr[i], &arr[i + 1], (N - i - 1) * sizeof(*arr));
 }
-
 
 int stack_mean_with_rejection(struct stacking_args *args) {
 	int nb_frames;		/* number of frames actually used */
