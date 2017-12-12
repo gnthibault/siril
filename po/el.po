@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-08 22:35+0100\n"
+"POT-Creation-Date: 2017-12-10 13:25+0100\n"
 "PO-Revision-Date: 2017-11-22 00:22+0200\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -169,7 +169,7 @@ msgid "current red file"
 msgstr "τρέχων κόκκινο αρχείο"
 
 #: ../src/gui/siril3.glade.h:32 ../src/compositing/compositing.c:454
-#: ../src/gui/callbacks.c:2337
+#: ../src/gui/callbacks.c:2338
 msgid "Red channel"
 msgstr "Κόκκινο κανάλι"
 
@@ -2474,7 +2474,7 @@ msgstr ""
 "Ποιότητα ταινίας: μια χαμηλή τιμή θα χρησιμοποιήσει περισσότερη συμπίεση και "
 "λιγότερο bitrate, επίσης θα προκύψει σε μικρότερο μέγεθος αρχείου."
 
-#: ../src/gui/siril3.glade.h:537 ../src/io/sequence.c:1698
+#: ../src/gui/siril3.glade.h:537 ../src/io/sequence_export.c:501
 msgid "Select area to crop"
 msgstr "Επιλέξτε περιοχή για περικοπή"
 
@@ -2822,7 +2822,7 @@ msgstr ""
 "αλληλουχίας είναι επίσης στο κάτω μέρος του παραθύρου)."
 
 #: ../src/gui/siril3.glade.h:608
-msgid "Simplified Drizzle"
+msgid "Simplified Drizzle x2"
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:609
@@ -3160,7 +3160,7 @@ msgid ""
 msgstr ""
 "καλύτερες εικόνες, επιλέχθηκαν αυτόματα από τα δεδομένα εγγραφής (Πλανητική)"
 
-#: ../src/gui/siril3.glade.h:689 ../src/stacking/stacking.c:2254
+#: ../src/gui/siril3.glade.h:689 ../src/stacking/stacking.c:1982
 #, c-format
 msgid "Based on FWHM"
 msgstr "Βασισμένο στο FWHM"
@@ -3630,7 +3630,7 @@ msgstr "Ενίσχυση κορεσμού: γίνεται επεξεργασία
 #: ../src/core/command.c:1433 ../src/core/siril.c:625 ../src/core/siril.c:908
 #: ../src/core/siril.c:1042 ../src/core/siril.c:1185 ../src/core/siril.c:1559
 #: ../src/core/siril.c:1651 ../src/core/siril.c:1760 ../src/gui/histogram.c:696
-#: ../src/gui/statistics_list.c:308 ../src/io/sequence.c:1195
+#: ../src/gui/statistics_list.c:308 ../src/io/sequence.c:1189
 msgid "Error: no data computed.\n"
 msgstr "Σφάλμα: δεν υπολογίστηκαν δεδομένα\n"
 
@@ -3813,9 +3813,9 @@ msgstr "Αποτέλεσμα σύνθεσης το οποίο δεν αποθη�
 msgid "You must at least load two layers before!\n"
 msgstr "Πρέπει να φορτώσετε τουλάχιστον δυο επίπεδα!\n"
 
-#: ../src/compositing/compositing.c:555 ../src/gui/callbacks.c:5276
-#: ../src/gui/callbacks.c:5320 ../src/gui/callbacks.c:5565
-#: ../src/gui/callbacks.c:5574 ../src/gui/callbacks.c:5632
+#: ../src/compositing/compositing.c:555 ../src/gui/callbacks.c:5277
+#: ../src/gui/callbacks.c:5321 ../src/gui/callbacks.c:5566
+#: ../src/gui/callbacks.c:5575 ../src/gui/callbacks.c:5633
 #: ../src/io/conversion.c:520 ../src/io/image_formats_libraries.c:98
 #: ../src/io/image_formats_libraries.c:155
 #: ../src/registration/registration.c:1147
@@ -3854,13 +3854,13 @@ msgstr "Γίνεται αναπροσαρμογή του επιπέδου %d μ�
 #: ../src/core/command.c:806 ../src/core/command.c:841
 #: ../src/core/command.c:868 ../src/core/command.c:1178
 #: ../src/core/command.c:1280 ../src/core/command.c:1301
-#: ../src/core/command.c:1320 ../src/gui/callbacks.c:3965
-#: ../src/gui/callbacks.c:4278 ../src/gui/callbacks.c:4598
-#: ../src/gui/callbacks.c:4682 ../src/gui/callbacks.c:4882
-#: ../src/gui/callbacks.c:5219 ../src/gui/callbacks.c:5366
-#: ../src/gui/callbacks.c:5671 ../src/gui/callbacks.c:5848
+#: ../src/core/command.c:1320 ../src/gui/callbacks.c:3966
+#: ../src/gui/callbacks.c:4279 ../src/gui/callbacks.c:4599
+#: ../src/gui/callbacks.c:4683 ../src/gui/callbacks.c:4883
+#: ../src/gui/callbacks.c:5220 ../src/gui/callbacks.c:5367
+#: ../src/gui/callbacks.c:5672 ../src/gui/callbacks.c:5850
 #: ../src/io/conversion.c:489 ../src/registration/registration.c:1136
-#: ../src/stacking/stacking.c:1734 ../src/stacking/stacking.c:1851
+#: ../src/stacking/stacking.c:1445 ../src/stacking/stacking.c:1567
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Μια άλλη λειτουργία είναι σε εξέλιξη, το νέο αίτημα αγνοείται.\n"
 
@@ -3904,13 +3904,13 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Περικοπή: επιλέξτε μια περιοχή ή δώστε τα x,y, πλάτος, ύψος\n"
 
 #: ../src/core/command.c:531 ../src/core/command.c:1613
-#: ../src/gui/callbacks.c:5563 ../src/gui/callbacks.c:5630
+#: ../src/gui/callbacks.c:5564 ../src/gui/callbacks.c:5631
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
 "Κυματίδιο: ο μέγιστος αριθμός σχεδίων για αυτό το μέγεθος εικόνας είναι %d\n"
 
-#: ../src/core/command.c:537 ../src/gui/callbacks.c:5572
+#: ../src/core/command.c:537 ../src/gui/callbacks.c:5573
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Κυματίδιο: ο τύπος πρέπει να είναι %d ή %d\n"
@@ -3965,7 +3965,7 @@ msgstr ""
 "επιλογή γύρω από ένα αστέρι.\n"
 
 #: ../src/core/command.c:732 ../src/core/command.c:792
-#: ../src/core/command.c:814 ../src/io/sequence.c:1865
+#: ../src/core/command.c:814 ../src/io/sequence.c:1373
 msgid "Select an area first\n"
 msgstr "Επιλέξτε πρώτα μια περιοχή\n"
 
@@ -4261,10 +4261,10 @@ msgstr "imoper: οι εικόνες δεν έχουν το ίδιο μέγεθο
 msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr "Οι εικόνες δεν έχουν το ίδιο μέγεθος (π = %d|%d, υ = %d|%d)\n"
 
-#: ../src/core/siril.c:203 ../src/core/utils.c:460 ../src/gui/callbacks.c:2249
-#: ../src/gui/callbacks.c:4934 ../src/gui/callbacks.c:4955
-#: ../src/gui/callbacks.c:5382 ../src/gui/callbacks.c:5388
-#: ../src/gui/callbacks.c:5413 ../src/gui/plot.c:344 ../src/gui/plot.c:404
+#: ../src/core/siril.c:203 ../src/core/utils.c:460 ../src/gui/callbacks.c:2250
+#: ../src/gui/callbacks.c:4935 ../src/gui/callbacks.c:4956
+#: ../src/gui/callbacks.c:5383 ../src/gui/callbacks.c:5389
+#: ../src/gui/callbacks.c:5414 ../src/gui/plot.c:344 ../src/gui/plot.c:404
 #: ../src/gui/plot.c:549 ../src/gui/PSF_list.c:150 ../src/io/conversion.c:526
 #: ../src/io/conversion.c:595 ../src/io/image_format_fits.c:197
 #: ../src/io/image_format_fits.c:205 ../src/io/image_format_fits.c:227
@@ -4292,7 +4292,7 @@ msgstr "Οι εικόνες δεν έχουν το ίδιο μέγεθος (π =
 #: ../src/io/image_formats_libraries.c:447
 #: ../src/io/image_formats_libraries.c:532 ../src/io/single_image.c:112
 #: ../src/io/single_image.c:155 ../src/io/single_image.c:159
-#: ../src/stacking/stacking.c:232 ../src/stacking/stacking.c:1059
+#: ../src/stacking/stacking.c:111 ../src/stacking/stacking.c:785
 msgid "Error"
 msgstr "Σφάλμα"
 
@@ -4624,7 +4624,7 @@ msgstr "Δεν υπάρχει αλληλουχία"
 msgid "- none -"
 msgstr "- κανένα -"
 
-#: ../src/gui/callbacks.c:1757
+#: ../src/gui/callbacks.c:1758
 #, c-format
 msgid ""
 "redraw: maximum number of layers supported is %d (current image has %d).\n"
@@ -4632,74 +4632,74 @@ msgstr ""
 "redraw: ο μέγιστος αριθμός των επιπέδων που υποστηρίζονται είναι %d (η "
 "τρέχουσα εικόνα έχει %d).\n"
 
-#: ../src/gui/callbacks.c:2032
+#: ../src/gui/callbacks.c:2033
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "fwhm: η επιλογή είναι πολύ μεγάλη"
 
-#: ../src/gui/callbacks.c:2034
+#: ../src/gui/callbacks.c:2035
 #, c-format
 msgid "fwhm: no selection"
 msgstr "fwhm: δεν υπάρχει επιλογή"
 
-#: ../src/gui/callbacks.c:2060
+#: ../src/gui/callbacks.c:2061
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (κανάλι 0)"
 
-#: ../src/gui/callbacks.c:2065
+#: ../src/gui/callbacks.c:2066
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (κανάλι 1)"
 
-#: ../src/gui/callbacks.c:2069
+#: ../src/gui/callbacks.c:2070
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (κανάλι 2)"
 
 # whre does this string appear?
-#: ../src/gui/callbacks.c:2094
+#: ../src/gui/callbacks.c:2095
 msgid "Unassigned"
 msgstr "Δεν έχει προσδιοριστεί"
 
-#: ../src/gui/callbacks.c:2118
+#: ../src/gui/callbacks.c:2119
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: δεν έχει επηρεαστεί ακόμα"
 
-#: ../src/gui/callbacks.c:2248
+#: ../src/gui/callbacks.c:2249
 msgid "Unknown zoom_value value, what is the current zoom?\n"
 msgstr "Άγνωστ τιμή zoom_value, ποια είναι η τρέχουσα μεγέθυνση;\n"
 
-#: ../src/gui/callbacks.c:2334
+#: ../src/gui/callbacks.c:2335
 msgid "B&W channel"
 msgstr "Ασπρόμαυρο κανάλι"
 
-#: ../src/gui/callbacks.c:2367
+#: ../src/gui/callbacks.c:2368
 #, c-format
 msgid "%d files loaded"
 msgstr "%d αρχεία φορτώθηκαν"
 
-#: ../src/gui/callbacks.c:2505
+#: ../src/gui/callbacks.c:2506
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Μνήμη: %ldMB"
 
-#: ../src/gui/callbacks.c:2507
+#: ../src/gui/callbacks.c:2508
 #, c-format
 msgid "Mem: N/A"
 msgstr "Μνήμη: N/A"
 
-#: ../src/gui/callbacks.c:2564
+#: ../src/gui/callbacks.c:2565
 msgid "This binning is not handled yet\n"
 msgstr "Αυτή η ομαδοποίηση δεν υποστηρίζεται ακόμα\n"
 
-#: ../src/gui/callbacks.c:2995
+#: ../src/gui/callbacks.c:2996
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">Ψυχρά: %ld εικονοστοιχεία</span>"
 
-#: ../src/gui/callbacks.c:2996 ../src/gui/callbacks.c:3006
+#: ../src/gui/callbacks.c:2997 ../src/gui/callbacks.c:3007
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -4707,31 +4707,31 @@ msgstr ""
 "Αυτή η τιμή μπορεί να είναι πολύ υψηλή. Παρακαλώ, λάβετε υπόψη να αλλάξετε "
 "την τιμή σίγμα ή να αποεπιλέξετε του κουτί."
 
-#: ../src/gui/callbacks.c:2999
+#: ../src/gui/callbacks.c:3000
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Ψυχρά: %ld εικονοστοιχεία"
 
-#: ../src/gui/callbacks.c:3005
+#: ../src/gui/callbacks.c:3006
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">Θερμά: %ld εικονοστοιχεία</span>"
 
-#: ../src/gui/callbacks.c:3009
+#: ../src/gui/callbacks.c:3010
 #, c-format
 msgid "Hot: %ld px"
 msgstr "Θερμά: %ld εικονοστοιχεία"
 
-#: ../src/gui/callbacks.c:3185
+#: ../src/gui/callbacks.c:3186
 msgid "Are you sure you want to quit ?"
 msgstr "Είστε σίγουροι ότι θέλετε να κλείσετε το πρόγραμμα;"
 
-#: ../src/gui/callbacks.c:3762
+#: ../src/gui/callbacks.c:3763
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "νέα τιμή μεγέθυνσης: %f\n"
 
-#: ../src/gui/callbacks.c:3771
+#: ../src/gui/callbacks.c:3772
 msgid ""
 "Copyright © 2004-2011 François Meyer\n"
 "Copyright © 2012-2017 team free-astro"
@@ -4740,35 +4740,35 @@ msgstr ""
 "Πνευματικά Δικαιώματα© 2012-2017 ομάδα free-astro"
 
 #. translator names
-#: ../src/gui/callbacks.c:3783
+#: ../src/gui/callbacks.c:3784
 msgid ""
 "Cyril Richard <cyril@free-astro.org>\n"
 "Vincent Hourdin <vh@free-astro.vinvin.tf>"
 msgstr "Konstantinos Stavropoulos <kookoo_gr@yahoo.com>"
 
-#: ../src/gui/callbacks.c:3794
+#: ../src/gui/callbacks.c:3795
 msgid "About siril"
 msgstr "Σχετικά με το Siril"
 
-#: ../src/gui/callbacks.c:3801
+#: ../src/gui/callbacks.c:3802
 msgid "Astronomical image (pre-)processing program"
 msgstr "Πρόγραμμα (προ-)επεξεργασίας αστρονομικών εικόνων"
 
-#: ../src/gui/callbacks.c:3804
+#: ../src/gui/callbacks.c:3805
 msgid "Visit the Siril website"
 msgstr "Επισκεφτείτε την ιστοσελίδα του Siril"
 
-#: ../src/gui/callbacks.c:3839
+#: ../src/gui/callbacks.c:3840
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3841
+#: ../src/gui/callbacks.c:3842
 #, c-format
 msgid "undefined"
 msgstr "δεν έχει ορισθεί"
 
-#: ../src/gui/callbacks.c:3940
+#: ../src/gui/callbacks.c:3941
 msgid ""
 "Exclude all images ?\n"
 " (this erases previous image selection\n"
@@ -4778,7 +4778,7 @@ msgstr ""
 "(αυτό διαγράφει την προηγούμενη επιλογή εικόνας\n"
 "...και δεν υπάρχει αναίρεση)"
 
-#: ../src/gui/callbacks.c:3950
+#: ../src/gui/callbacks.c:3951
 msgid ""
 "Include all images ?\n"
 " (this erases previous image selection\n"
@@ -4788,107 +4788,107 @@ msgstr ""
 "(αυτό διαγράφει την προηγούμενη επιλογή εικόνας\n"
 "...και δεν υπάρχει αναίρεση)"
 
-#: ../src/gui/callbacks.c:3980
+#: ../src/gui/callbacks.c:3981
 msgid "Opening dark image..."
 msgstr "Γίνεται άνοιγμα της εικόνας dark..."
 
-#: ../src/gui/callbacks.c:3983
+#: ../src/gui/callbacks.c:3984
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:3990
+#: ../src/gui/callbacks.c:3991
 msgid "NOT USING DARK: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:4031
+#: ../src/gui/callbacks.c:4032
 msgid "Opening flat image..."
 msgstr "Γίνεται άνοιγμα της εικόνας flat..."
 
-#: ../src/gui/callbacks.c:4034
+#: ../src/gui/callbacks.c:4035
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:4041
+#: ../src/gui/callbacks.c:4042
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:4069
+#: ../src/gui/callbacks.c:4070
 msgid "Opening offset image..."
 msgstr "Γίνεται άνοιγμα της εικόνας offset..."
 
-#: ../src/gui/callbacks.c:4072
+#: ../src/gui/callbacks.c:4073
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:4079
+#: ../src/gui/callbacks.c:4080
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr ""
 "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:4102
+#: ../src/gui/callbacks.c:4103
 msgid "Preprocessing...\n"
 msgstr "Γίνεται προ-επεξεργασία...\n"
 
-#: ../src/gui/callbacks.c:4148
+#: ../src/gui/callbacks.c:4149
 msgid "Error in preprocessing."
 msgstr "Σφάλμα στην προ-επεξεργασία."
 
-#: ../src/gui/callbacks.c:4216
+#: ../src/gui/callbacks.c:4217
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Έγινε επιλογή %s αλληλουχίας %s..."
 
-#: ../src/gui/callbacks.c:4284
+#: ../src/gui/callbacks.c:4285
 msgid "Searching for sequences in the current working directory..."
 msgstr "Γίνεται αναζήτηση για αλληλουχίες στον τρέχων κατάλογο εργασίας..."
 
 #. Write "Siril Version X.Y in Copyright_Txt
-#: ../src/gui/callbacks.c:4492
+#: ../src/gui/callbacks.c:4493
 msgid "Saving TIFF"
 msgstr "Γίνεται αποθήκευση του TIFF"
 
-#: ../src/gui/callbacks.c:4510
+#: ../src/gui/callbacks.c:4511
 msgid "Saving Netpbm"
 msgstr "Γίνεται αποθήκευση του Netpbm"
 
-#: ../src/gui/callbacks.c:4528
+#: ../src/gui/callbacks.c:4529
 msgid "Saving BMP"
 msgstr "Γίνεται αποθήκευση του ΒΜΡ"
 
-#: ../src/gui/callbacks.c:4546
+#: ../src/gui/callbacks.c:4547
 msgid "Saving JPG"
 msgstr "Γίνεται αποθήκευση του JPG"
 
-#: ../src/gui/callbacks.c:4932
+#: ../src/gui/callbacks.c:4933
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr ""
 "Το υπόβαθρο δεν μπορεί να εξαχθεί από τον εαυτό του. Παρακαλώ, κάντε κλικ "
 "στην Εμφάνιση Εικόνας\n"
 
-#: ../src/gui/callbacks.c:4954
+#: ../src/gui/callbacks.c:4955
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr ""
 "Παρακαλώ, εφαρμόστε την διόρθωση στην εικόνα κάνοντας κλικ στην Εμφάνιση "
 "Εικονας\n"
 
-#: ../src/gui/callbacks.c:4976
+#: ../src/gui/callbacks.c:4977
 msgid "Subtraction done ...\n"
 msgstr "Η αφαίρεση ολοκληρώθηκε...\n"
 
-#: ../src/gui/callbacks.c:4983
+#: ../src/gui/callbacks.c:4984
 msgid "Division done ...\n"
 msgstr "Η διαίρεση ολοκληρώθηκε...\n"
 
-#: ../src/gui/callbacks.c:5168
+#: ../src/gui/callbacks.c:5169
 msgid "Load an image first, aborted.\n"
 msgstr "Έγινε ακύρωση, φορτώστε πρώτα μια εικόνα.\n"
 
-#: ../src/gui/callbacks.c:5197
+#: ../src/gui/callbacks.c:5198
 msgid "The file stars.lst has been created.\n"
 msgstr "Το αρχείο stars.lst δημιουργήθηκε.\n"
 
-#: ../src/gui/callbacks.c:5274 ../src/gui/callbacks.c:5319
+#: ../src/gui/callbacks.c:5275 ../src/gui/callbacks.c:5320
 msgid ""
 "Current selection is too large.\n"
 "To determine the PSF, please make a selection around a star.\n"
@@ -4896,7 +4896,7 @@ msgstr ""
 "Η τρέχουσα επιλογή είναι πολύ μεγάλη.\n"
 "Για τον καθορισμό του PSF, παρακαλώ κάντε μια επιλογή γύρω από ένα αστέρι.\n"
 
-#: ../src/gui/callbacks.c:5288
+#: ../src/gui/callbacks.c:5289
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -4945,26 +4945,26 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:5381
+#: ../src/gui/callbacks.c:5382
 msgid "FFT does not work with sequences !\n"
 msgstr "Το FFT δεν λειτουργεί με αλληλουχίες!/n\n"
 
-#: ../src/gui/callbacks.c:5387
+#: ../src/gui/callbacks.c:5388
 msgid "Open an image first !\n"
 msgstr "Ανοίξτε πρώτα μια εικόνα!\n"
 
-#: ../src/gui/callbacks.c:5412
+#: ../src/gui/callbacks.c:5413
 msgid "Select magnitude and phase before !\n"
 msgstr "Επιλέξτε πρώτα το μέγεθος και την φάση!\n"
 
-#: ../src/gui/callbacks.c:5946
+#: ../src/gui/callbacks.c:5948
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr ""
 "Η περικοπή δεν λειτουργεί με ταινίες avi. Παρακαλώ, μετατρέψτε πρώτα το "
 "αρχείο σας σε SER.\n"
 
-#: ../src/gui/callbacks.c:5951
+#: ../src/gui/callbacks.c:5953
 msgid "Not a valid sequence for cropping.\n"
 msgstr "Μη έγκυρη αλληλουχία για περικοπή.\n"
 
@@ -5232,7 +5232,7 @@ msgstr ""
 "ανά εικόνα.\n"
 
 #: ../src/io/conversion.c:563 ../src/io/conversion.c:615
-#: ../src/io/sequence.c:1122 ../src/io/sequence.c:1299
+#: ../src/io/sequence.c:1116 ../src/io/sequence_export.c:104
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "Η δημιουργία του αρχείου SER απέτυχε, γίνεται ακύρωση.\n"
 
@@ -5279,7 +5279,7 @@ msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Σφάλμα κατά την ανάγνωση του καρέ %d από %s, γίνεται ακύρωση.\n"
 
 #: ../src/io/conversion.c:636 ../src/io/conversion.c:668
-#: ../src/io/sequence.c:1150 ../src/io/sequence.c:1510
+#: ../src/io/sequence.c:1144 ../src/io/sequence_export.c:314
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Σφάλμα κατά την μετατροπή σε SER (δεν υπάρχει χώρος;)\n"
 
@@ -5729,141 +5729,74 @@ msgstr ""
 "Η αλληλουχία %s δεν μπορεί να ξεκινήσει από τον αριθμό καρέ %d με τον "
 "καθορισμένο δείκτη σταθερού μεγέθους (%d). Δεν είναι δυνατή η φόρτωση.\n"
 
-#: ../src/io/sequence.c:155 ../src/io/sequence.c:285
+#: ../src/io/sequence.c:149 ../src/io/sequence.c:279
 msgid "Current working directory is not set, aborting.\n"
 msgstr "Ο τρέχων κατάλογος εργασίας δεν έχει οριστεί, γίνεται ακύρωση.\n"
 
-#: ../src/io/sequence.c:251
+#: ../src/io/sequence.c:245
 msgid ""
 "Could not allocate more space for the large number of sequences found.\n"
 msgstr ""
 "Δεν ήταν δυνατό να οριστεί περισσότερος χώρος για τον μεγάλο αριθμό των "
 "αλληλουχιών που βρέθηκαν.\n"
 
-#: ../src/io/sequence.c:263
+#: ../src/io/sequence.c:257
 #, c-format
 msgid "sequence %d, found: %d to %d"
 msgstr "αλληλουχία %d, βρέθηκαν: %d έως %d"
 
-#: ../src/io/sequence.c:413
+#: ../src/io/sequence.c:407
 #, c-format
 msgid "Sequence loaded: %s (%d->%d)\n"
 msgstr "Η αλληλουχία φορτώθηκε: %s (%d->%d)\n"
 
-#: ../src/io/sequence.c:531
+#: ../src/io/sequence.c:525
 #, c-format
 msgid "%d from %s.ser"
 msgstr "%d από %s.ser"
 
-#: ../src/io/sequence.c:561
+#: ../src/io/sequence.c:555
 #, c-format
 msgid "Could not load image %d from sequence %s\n"
 msgstr "Δεν ήταν δυνατό να φορτωθεί η εικόνα %d από την αλληλουχία %s\n"
 
-#: ../src/io/sequence.c:569 ../src/io/sequence.c:619
+#: ../src/io/sequence.c:563 ../src/io/sequence.c:613
 #, c-format
 msgid "Could not load frame %d from SER sequence %s\n"
 msgstr "Δεν ήταν δυνατό να φορτωθεί το καρέ %d από την αλληλουχία SER %s\n"
 
-#: ../src/io/sequence.c:578 ../src/io/sequence.c:630
+#: ../src/io/sequence.c:572 ../src/io/sequence.c:624
 #, c-format
 msgid "Could not load frame %d from AVI sequence %s\n"
 msgstr "Δεν ήταν δυνατό να φορτωθεί το καρέ %d από την αλληλουχία AVI %s\n"
 
-#: ../src/io/sequence.c:610
+#: ../src/io/sequence.c:604
 #, c-format
 msgid "Could not load partial image %d from sequence %s\n"
 msgstr "Δεν ήταν δυνατό να φορτωθεί η μερική εικόνα %d από την αλληλουχία %s\n"
 
-#: ../src/io/sequence.c:698
+#: ../src/io/sequence.c:692
 msgid "This operation is not supported on AVI sequences (seq_open_image)\n"
 msgstr ""
 "Αυτή η λειτουργία δεν υποστηρίζεται σε αλληλουχίες AVI (seq_open_image)\n"
 
-#: ../src/io/sequence.c:702
+#: ../src/io/sequence.c:696
 msgid ""
 "This operation is not supported on internal sequences (seq_open_image)\n"
 msgstr ""
 "Αυτή η λειτουργία δεν υποστηρίζεται σε εσωτερικές αλληλουχίες "
 "(seq_open_image)\n"
 
-#: ../src/io/sequence.c:1053
+#: ../src/io/sequence.c:1047
 msgid "internal sequence"
 msgstr "εσωτερική αλληλουχία"
 
-#: ../src/io/sequence.c:1274
-#, c-format
-msgid "Using registration information from layer %d to export sequence\n"
-msgstr ""
-"Γίνεται χρήση των πληροφοριών εγγραφή ς από το επίπεδο %d για την εξαγωγή "
-"αλληλουχίας\n"
-
-#: ../src/io/sequence.c:1319
-msgid ""
-"MP4 output is not supported because siril was not compiled with ffmpeg "
-"support.\n"
-msgstr ""
-"Η εξαγωγή MP4 δεν υποστηρίζεται επειδή το siril δεν μεταγλωττίστηκε με "
-"υποστήριξη ffmpeg.\n"
-
-#: ../src/io/sequence.c:1330
-msgid ""
-"Film output needs to have a width that is a multiple of 32 and an even "
-"height, resizing selection.\n"
-msgstr ""
-"Η εξαγωγή της ταινίας πρέπει να έχει πλάτος το οποίο να είναι πολλαπλάσιο "
-"του 32 και ζυγό ύψους, γίνεται αλλαγή μεγέθους της επιλογής.\n"
-
-#: ../src/io/sequence.c:1399
-#, c-format
-msgid "image %d is excluded from export\n"
-msgstr "η εικόνα %d εξαιρείται από την εξαγωγή\n"
-
-#: ../src/io/sequence.c:1408 ../src/stacking/stacking.c:708
-#: ../src/stacking/stacking.c:863
-msgid "Processing image "
-msgstr "Γίνεται επεξεργασία της εικόνας "
-
-#: ../src/io/sequence.c:1415
-msgid "Export: could not read frame, aborting\n"
-msgstr "Εξαγωγή: δεν μπορούσε να γίνει ανάγνωση του καρέ, γίνεται ακύρωση\n"
-
-#: ../src/io/sequence.c:1523
-msgid "Siril needs opencv to resize images\n"
-msgstr "Το Siril χρειάζεται το opencv για την αλλαγή μεγέθους των εικόνων\n"
-
-#: ../src/io/sequence.c:1569
-msgid "Sequence export failed. Check the log."
-msgstr "Η εξαγωγή της αλληλουχίας απέτυχε. Δείτε το αρχείο καταγραφής."
-
-#: ../src/io/sequence.c:1570
-msgid "Sequence export failed\n"
-msgstr "Η εξαγωγή αλληλουχίας απέτυχε\n"
-
-#: ../src/io/sequence.c:1573
-msgid "Sequence export succeeded."
-msgstr "Η εξαγωγή της αλληλουχίας έγινε με επιτυχία."
-
-#: ../src/io/sequence.c:1574
-msgid "Sequence export succeeded.\n"
-msgstr "Η εξαγωγή της αλληλουχίας έγινε με επιτυχία.\n"
-
-#: ../src/io/sequence.c:1649
-msgid "Width or height cannot be null. Not resizing.\n"
-msgstr ""
-"Το πλάτος ή το ύψος δεν μπορεί να είναι κενό. Δεν γίνεται η αλλαγή του "
-"μεγέθους.\n"
-
-#: ../src/io/sequence.c:1697
-msgid "Cropping to selection"
-msgstr "Γίνεται περικοπή με βάση την επιλογή"
-
-#: ../src/io/sequence.c:1750
+#: ../src/io/sequence.c:1258
 #, c-format
 msgid "No star found in the area image %d around %d,%d\n"
 msgstr "Δεν βρέθηκε αστέρι στην περιοχή της εικόνας %d γύρω από το %d,%d\n"
 
-#: ../src/io/sequence.c:1797
+#: ../src/io/sequence.c:1305
 msgid ""
 "Star analysis does not give consistent results when exposure changes across "
 "the sequence.\n"
@@ -5871,9 +5804,75 @@ msgstr ""
 "Η ανάλυση του άστρου δεν δίνει σταθερά αποτελέσματα όταν η έκθεση αλλάζει "
 "στην αλληλουχία.\n"
 
-#: ../src/io/sequence.c:1889
+#: ../src/io/sequence.c:1397
 msgid "PSF on area"
 msgstr "PSF περιοχής"
+
+#: ../src/io/sequence_export.c:79
+#, c-format
+msgid "Using registration information from layer %d to export sequence\n"
+msgstr ""
+"Γίνεται χρήση των πληροφοριών εγγραφή ς από το επίπεδο %d για την εξαγωγή "
+"αλληλουχίας\n"
+
+#: ../src/io/sequence_export.c:124
+msgid ""
+"MP4 output is not supported because siril was not compiled with ffmpeg "
+"support.\n"
+msgstr ""
+"Η εξαγωγή MP4 δεν υποστηρίζεται επειδή το siril δεν μεταγλωττίστηκε με "
+"υποστήριξη ffmpeg.\n"
+
+#: ../src/io/sequence_export.c:135
+msgid ""
+"Film output needs to have a width that is a multiple of 32 and an even "
+"height, resizing selection.\n"
+msgstr ""
+"Η εξαγωγή της ταινίας πρέπει να έχει πλάτος το οποίο να είναι πολλαπλάσιο "
+"του 32 και ζυγό ύψους, γίνεται αλλαγή μεγέθους της επιλογής.\n"
+
+#: ../src/io/sequence_export.c:203
+#, c-format
+msgid "image %d is excluded from export\n"
+msgstr "η εικόνα %d εξαιρείται από την εξαγωγή\n"
+
+#: ../src/io/sequence_export.c:212 ../src/stacking/stacking.c:582
+msgid "Processing image "
+msgstr "Γίνεται επεξεργασία της εικόνας "
+
+#: ../src/io/sequence_export.c:219
+msgid "Export: could not read frame, aborting\n"
+msgstr "Εξαγωγή: δεν μπορούσε να γίνει ανάγνωση του καρέ, γίνεται ακύρωση\n"
+
+#: ../src/io/sequence_export.c:327
+msgid "Siril needs opencv to resize images\n"
+msgstr "Το Siril χρειάζεται το opencv για την αλλαγή μεγέθους των εικόνων\n"
+
+#: ../src/io/sequence_export.c:372
+msgid "Sequence export failed. Check the log."
+msgstr "Η εξαγωγή της αλληλουχίας απέτυχε. Δείτε το αρχείο καταγραφής."
+
+#: ../src/io/sequence_export.c:373
+msgid "Sequence export failed\n"
+msgstr "Η εξαγωγή αλληλουχίας απέτυχε\n"
+
+#: ../src/io/sequence_export.c:376
+msgid "Sequence export succeeded."
+msgstr "Η εξαγωγή της αλληλουχίας έγινε με επιτυχία."
+
+#: ../src/io/sequence_export.c:377
+msgid "Sequence export succeeded.\n"
+msgstr "Η εξαγωγή της αλληλουχίας έγινε με επιτυχία.\n"
+
+#: ../src/io/sequence_export.c:452
+msgid "Width or height cannot be null. Not resizing.\n"
+msgstr ""
+"Το πλάτος ή το ύψος δεν μπορεί να είναι κενό. Δεν γίνεται η αλλαγή του "
+"μεγέθους.\n"
+
+#: ../src/io/sequence_export.c:500
+msgid "Cropping to selection"
+msgstr "Γίνεται περικοπή με βάση την επιλογή"
 
 #: ../src/io/ser.c:273
 msgid "Trying to fix broken SER file...\n"
@@ -6257,62 +6256,62 @@ msgstr ""
 msgid "Registration: processing using method: %s\n"
 msgstr "Εγγραφή: γίνεται επεξεργασία με την μέθοδο: %s\n"
 
-#: ../src/stacking/stacking.c:141
+#: ../src/stacking/normalization.c:96
 msgid "Computing normalization...\n"
 msgstr "Γίνεται υπολογισμός ομαλοποίησης...\n"
 
-#: ../src/stacking/stacking.c:169
+#: ../src/stacking/normalization.c:124
 msgid "Normalization failed."
 msgstr "Η ομαλοποίηση απέτυχε."
 
-#: ../src/stacking/stacking.c:231
+#: ../src/stacking/stacking.c:110
 msgid "Median stacking is only supported for FITS images and SER sequences.\n"
 msgstr ""
 "Η σώρευση διαμέσου υποστηρίζεται μόνο για εικόνες FITS και αλληλουχίες SER.\n"
 
-#: ../src/stacking/stacking.c:236 ../src/stacking/stacking.c:1063
+#: ../src/stacking/stacking.c:115 ../src/stacking/stacking.c:789
 msgid "Select at least two frames for stacking. Aborting.\n"
 msgstr "Επιλέξτε τουλάχιστον δύο καρέ για σώρευση. Γίνεται ακύρωση.\n"
 
-#: ../src/stacking/stacking.c:258
+#: ../src/stacking/stacking.c:137
 #, c-format
 msgid "Median stack: opening image %s"
 msgstr "Σώρευση Διαμέσου: άνοιγμα εικόνας %s"
 
-#: ../src/stacking/stacking.c:279
+#: ../src/stacking/stacking.c:158
 msgid "Median stack error: images with > 3 dimensions are not supported\n"
 msgstr ""
 "Σφάλμα σώρευσης Διαμέσου: εικόνες με > 3 διαστάσεις δεν υποστηρίζονται\n"
 
-#: ../src/stacking/stacking.c:290
+#: ../src/stacking/stacking.c:169
 msgid "Median stack error: input images have different sizes\n"
 msgstr ""
 "Σφάλμα σώρευσης Διαμέσου: οι εισαγόμενες εικόνες έχουν διαφορετικά μεγέθη\n"
 
-#: ../src/stacking/stacking.c:340 ../src/stacking/stacking.c:1167
+#: ../src/stacking/stacking.c:210 ../src/stacking/stacking.c:884
 msgid "Super-pixel is not handled yet for on the fly SER stacking\n"
 msgstr ""
 "Το υπερ-εικονοστοιχείο δεν μπορεί να χειριστεί άμεσα από την σώρευση SER\n"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:347
+#: ../src/stacking/stacking.c:217
 msgid "Median stack error: uninitialized sequence\n"
 msgstr "Σφάλμα σώρευσης Διαμέσου: ανενεργή αλληλουχία\n"
 
-#: ../src/stacking/stacking.c:403 ../src/stacking/stacking.c:1230
+#: ../src/stacking/stacking.c:264 ../src/stacking/stacking.c:938
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Η έκδοση σας του cfitsio δεν υποστηρίζει multi-threading\n"
 
-#: ../src/stacking/stacking.c:411 ../src/stacking/stacking.c:1238
+#: ../src/stacking/stacking.c:272 ../src/stacking/stacking.c:946
 msgid "Processing the sequence as RGB\n"
 msgstr "Γίνεται επεξεργασία της αλληλουχίας σαν RGB\n"
 
-#: ../src/stacking/stacking.c:448 ../src/stacking/stacking.c:1275
+#: ../src/stacking/stacking.c:309 ../src/stacking/stacking.c:983
 #, c-format
 msgid "We have %d parallel blocks of size %d (+%d) for stacking.\n"
 msgstr "Έχουμε %d παράλληλες περιοχές μεγέθους %d (+%d) για σώρευση.\n"
 
-#: ../src/stacking/stacking.c:456 ../src/stacking/stacking.c:1286
+#: ../src/stacking/stacking.c:317 ../src/stacking/stacking.c:991
 msgid ""
 "A bug has been found. Unable to split the image area into the correct "
 "processing blocks.\n"
@@ -6320,64 +6319,64 @@ msgstr ""
 "Βρέθηκε ένα σφάλμα. Είναι αδύνατο να χωριστεί η εικόνα στις σωστές περιοχές "
 "επεξεργασίας.\n"
 
-#: ../src/stacking/stacking.c:523 ../src/stacking/stacking.c:1355
+#: ../src/stacking/stacking.c:384 ../src/stacking/stacking.c:1060
 msgid "Starting stacking...\n"
 msgstr "Γίνεται εκκίνηση της σώρευσης...\n"
 
-#: ../src/stacking/stacking.c:524
+#: ../src/stacking/stacking.c:385
 msgid "Median stacking in progress..."
 msgstr "Σώρευση διαμέσου σε εξέλιξη..."
 
-#: ../src/stacking/stacking.c:564 ../src/stacking/stacking.c:1432
+#: ../src/stacking/stacking.c:425 ../src/stacking/stacking.c:1137
 msgid "Error reading one of the image areas\n"
 msgstr "Σφάλμα στην ανάγνωση σε μια από τις περιοχές της εικόνας\n"
 
-#: ../src/stacking/stacking.c:621 ../src/stacking/stacking.c:789
-#: ../src/stacking/stacking.c:945 ../src/stacking/stacking.c:1655
+#: ../src/stacking/stacking.c:488 ../src/stacking/stacking.c:666
+#: ../src/stacking/stacking.c:1360
 msgid "Finalizing stacking..."
 msgstr "Οριστικοποίηση σώρευσης..."
 
-#: ../src/stacking/stacking.c:653
+#: ../src/stacking/stacking.c:520
 msgid "Median stacking failed. Check the log."
 msgstr "Αποτυχία σώρευσης Διαμέσου: Δείτε το αρχείο καταγραφής."
 
-#: ../src/stacking/stacking.c:654 ../src/stacking/stacking.c:811
-#: ../src/stacking/stacking.c:967 ../src/stacking/stacking.c:1697
+#: ../src/stacking/stacking.c:521 ../src/stacking/stacking.c:688
+#: ../src/stacking/stacking.c:1402
 msgid "Stacking failed.\n"
 msgstr "Η σώρευση απέτυχε.\n"
 
-#: ../src/stacking/stacking.c:656
+#: ../src/stacking/stacking.c:523
 msgid "Median stacking complete."
 msgstr "H σώρευση Διαμέσου ολοκληρώθηκε."
 
-#: ../src/stacking/stacking.c:657
+#: ../src/stacking/stacking.c:524
 #, c-format
 msgid "Median stacking complete. %d have been stacked.\n"
 msgstr "H σώρευση Διαμέσου ολοκληρώθηκε. %d έχουν σωρευτεί.\n"
 
-#: ../src/stacking/stacking.c:687 ../src/stacking/stacking.c:842
+#: ../src/stacking/stacking.c:561
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"
 msgstr ""
 "Δεν έχει γίνει επιλογή καρέ για σώρευση (επιλέξτε τουλάχιστον 2). Γίνεται "
 "ακύρωση.\n"
 
-#: ../src/stacking/stacking.c:716 ../src/stacking/stacking.c:871
+#: ../src/stacking/stacking.c:590
 msgid "Stacking: could not read frame, aborting\n"
 msgstr "Σώρευση: δεν ήταν δυνατή η ανάγνωση του καρέ, γίνεται ακύρωση\n"
 
-#: ../src/stacking/stacking.c:738 ../src/stacking/stacking.c:894
+#: ../src/stacking/stacking.c:613
 msgid "Stacking: image in sequence doesn't has the same dimensions\n"
 msgstr "Σώρευση: η εικόνα στην αλληλουχία δεν έχει τις ίδιες διαστάσεις\n"
 
-#: ../src/stacking/stacking.c:810 ../src/stacking/stacking.c:966
+#: ../src/stacking/stacking.c:687
 msgid "Stacking failed. Check the log."
 msgstr "Η σώρευση απέτυχε. Δείτε το αρχείο καταγραφής."
 
-#: ../src/stacking/stacking.c:813 ../src/stacking/stacking.c:969
+#: ../src/stacking/stacking.c:690
 msgid "Stacking complete."
 msgstr "Η σώρευση ολοκληρώθηκε."
 
-#: ../src/stacking/stacking.c:1058
+#: ../src/stacking/stacking.c:784
 msgid ""
 "Rejection stacking is only supported for FITS images and SER sequences.\n"
 "Use \"Sum Stacking\" instead.\n"
@@ -6386,163 +6385,163 @@ msgstr ""
 "SER.\n"
 "Χρησιμοποιήστε αντίθετα την \"Αθροιστική Σώρευση\".\n"
 
-#: ../src/stacking/stacking.c:1085
+#: ../src/stacking/stacking.c:811
 #, c-format
 msgid "Rejection stack: opening image %s"
 msgstr "Σώρευση Απόρριψης: άνοιγμα εικόνας %s"
 
-#: ../src/stacking/stacking.c:1106
+#: ../src/stacking/stacking.c:832
 msgid "Rejection stack error: images with > 3 dimensions are not supported\n"
 msgstr ""
 "Σφάλμα σώρευσης Απόρριψης: εικόνες με > 3 διαστάσεις δεν υποστηρίζονται\n"
 "\n"
 
-#: ../src/stacking/stacking.c:1117
+#: ../src/stacking/stacking.c:843
 msgid "Rejection stack error: input images have different sizes\n"
 msgstr ""
 "Σφάλμα σώρευσης Απόρριψης: οι εισαγόμενες εικόνες έχουν διαφορετικά μεγέθη\n"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:1174
+#: ../src/stacking/stacking.c:891
 msgid "Rejection stack error: uninitialized sequence\n"
 msgstr "Σφάλμα σώρευσης Απόρριψης: ανενεργή αλληλουχία\n"
 
-#: ../src/stacking/stacking.c:1356
+#: ../src/stacking/stacking.c:1061
 msgid "Rejection stacking in progress..."
 msgstr "Σώρευση απόρριψης σε εξέλιξη..."
 
-#: ../src/stacking/stacking.c:1659
+#: ../src/stacking/stacking.c:1364
 #, c-format
 msgid "Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"
 msgstr "Απόρριψη εικονοστοιχείων στο κανάλι #%d: %.3lf%% - %.3lf%%\n"
 
-#: ../src/stacking/stacking.c:1696
+#: ../src/stacking/stacking.c:1401
 msgid "Rejection stacking failed. Check the log."
 msgstr "Η σώρευση απόρριψης απέτυχε. Δείτε το αρχείο καταγραφής."
 
-#: ../src/stacking/stacking.c:1699
+#: ../src/stacking/stacking.c:1404
 msgid "Rejection stacking complete."
 msgstr "Η σώρευση απόρριψης ολοκληρώθηκε."
 
-#: ../src/stacking/stacking.c:1748
+#: ../src/stacking/stacking.c:1464
 #, c-format
 msgid "Stacking will use registration data of layer %d if some exist.\n"
 msgstr ""
 "Η σώρευση θα χρησιμοποιήσει τα δεδομένα καταγραφής του επιπέδου %d εφόσον "
 "υπάρχουν.\n"
 
-#: ../src/stacking/stacking.c:1751
+#: ../src/stacking/stacking.c:1467
 msgid "Stacking: processing...\n"
 msgstr "Σώρευση: γίνεται επεξεργασία...\n"
 
-#: ../src/stacking/stacking.c:1766
+#: ../src/stacking/stacking.c:1482
 #, c-format
 msgid "Integration of %d images:\n"
 msgstr "Ολοκλήρωση %d εικόνων:\n"
 
-#: ../src/stacking/stacking.c:1770
+#: ../src/stacking/stacking.c:1486
 msgid "Pixel combination ......... average\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... μέσος όρος\n"
 
-#: ../src/stacking/stacking.c:1773
+#: ../src/stacking/stacking.c:1489
 msgid "Pixel combination ......... normalized sum\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... ομαλοποιημένος αθροιστικός\n"
 
-#: ../src/stacking/stacking.c:1776
+#: ../src/stacking/stacking.c:1492
 msgid "Pixel combination ......... median\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... διάμεσος\n"
 
-#: ../src/stacking/stacking.c:1779
+#: ../src/stacking/stacking.c:1495
 msgid "Pixel combination ......... minimum\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... μέγιστο\n"
 
-#: ../src/stacking/stacking.c:1782
+#: ../src/stacking/stacking.c:1498
 msgid "Pixel combination ......... maximum\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... ελάχιστο\n"
 
-#: ../src/stacking/stacking.c:1785
+#: ../src/stacking/stacking.c:1501
 msgid "Pixel combination ......... none\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... κανένα\n"
 
-#: ../src/stacking/stacking.c:1790 ../src/stacking/stacking.c:1795
-#: ../src/stacking/stacking.c:1824
+#: ../src/stacking/stacking.c:1506 ../src/stacking/stacking.c:1511
+#: ../src/stacking/stacking.c:1540
 msgid "none"
 msgstr "κανένα"
 
-#: ../src/stacking/stacking.c:1798
+#: ../src/stacking/stacking.c:1514
 msgid "additive"
 msgstr "προσθετική"
 
-#: ../src/stacking/stacking.c:1801
+#: ../src/stacking/stacking.c:1517
 msgid "multiplicative"
 msgstr "πολλαπλασιαστική"
 
-#: ../src/stacking/stacking.c:1804
+#: ../src/stacking/stacking.c:1520
 msgid "additive + scaling"
 msgstr "προσθετική + κλιμάκωση"
 
-#: ../src/stacking/stacking.c:1807
+#: ../src/stacking/stacking.c:1523
 msgid "multiplicative + scaling"
 msgstr "πολλαπλασιαστική + κλιμάκωση"
 
-#: ../src/stacking/stacking.c:1812
+#: ../src/stacking/stacking.c:1528
 #, c-format
 msgid "Normalization ............. %s\n"
 msgstr "Ομαλοποίηση ............. %s\n"
 
-#: ../src/stacking/stacking.c:1816
+#: ../src/stacking/stacking.c:1532
 msgid "Pixel rejection ........... none\n"
 msgstr "Απόρριψη εικονοστοιχείων ........... κανένα\n"
 
-#: ../src/stacking/stacking.c:1817
+#: ../src/stacking/stacking.c:1533
 msgid "Rejection parameters ...... none\n"
 msgstr "Παράμετροι απόρριψης ...... κανένα\n"
 
-#: ../src/stacking/stacking.c:1827
+#: ../src/stacking/stacking.c:1543
 msgid "percentile clipping"
 msgstr "εκατοστιαία αποκοπή"
 
-#: ../src/stacking/stacking.c:1830
+#: ../src/stacking/stacking.c:1546
 msgid "sigma clipping"
 msgstr "αποκοπή σίγμα"
 
-#: ../src/stacking/stacking.c:1833
+#: ../src/stacking/stacking.c:1549
 msgid "median sigma clipping"
 msgstr "αποκοπή διαμέσου σίγμα"
 
-#: ../src/stacking/stacking.c:1836
+#: ../src/stacking/stacking.c:1552
 msgid "Winsorized sigma clipping"
 msgstr "Αποκοπή σίγμα Winsor"
 
-#: ../src/stacking/stacking.c:1839
+#: ../src/stacking/stacking.c:1555
 msgid "linear fit clipping"
 msgstr "αποκοπή γραμμικού fit"
 
-#: ../src/stacking/stacking.c:1842
+#: ../src/stacking/stacking.c:1558
 #, c-format
 msgid "Pixel rejection ........... %s\n"
 msgstr "Απόρριψη εικονοστοιχείων ........... %s\n"
 
 # check again
-#: ../src/stacking/stacking.c:1843
+#: ../src/stacking/stacking.c:1559
 #, c-format
 msgid "Rejection parameters ...... low=%.3f high=%.3f\n"
 msgstr "Παράμετροι απόρριψης ...... low=%.3f high=%.3f\n"
 
-#: ../src/stacking/stacking.c:1877
+#: ../src/stacking/stacking.c:1593
 msgid "Stacking result image"
 msgstr "Σώρευση εικόνας"
 
-#: ../src/stacking/stacking.c:1902 ../src/stacking/stacking.c:1907
+#: ../src/stacking/stacking.c:1618 ../src/stacking/stacking.c:1623
 msgid "Unsaved stacking result"
 msgstr "Αποτέλεσμα σώρευσης χωρίς να έχει αποθηκευτεί"
 
-#: ../src/stacking/stacking.c:2066
+#: ../src/stacking/stacking.c:1790
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "Χρησιμοποιούνται %d MB μέγιστης μνήμης για σώρευση\n"
 
-#: ../src/stacking/stacking.c:2092
+#: ../src/stacking/stacking.c:1816
 msgid ""
 "The reference image is not in the selected set of images. To avoid issues, "
 "please change it or change the filtering parameters."
@@ -6551,7 +6550,7 @@ msgstr ""
 "προβλήματα, παρακαλώ αλλάξτε το ή αλλάξτε τις παραμέτρους φιλτραρίσματος."
 
 # ξανα
-#: ../src/stacking/stacking.c:2150
+#: ../src/stacking/stacking.c:1874
 #, c-format
 msgid ""
 "Error in highest quality accepted for sequence processing: some images don't "
@@ -6561,17 +6560,17 @@ msgstr ""
 "εικόνες δεν έχουν διαθέσιμη αυτού του είδους την πληροφορία για το κανάλι #"
 "%d.\n"
 
-#: ../src/stacking/stacking.c:2212
+#: ../src/stacking/stacking.c:1940
 #, c-format
 msgid "Stacking all images in the sequence (%d)\n"
 msgstr "Γίνεται σώρευση όλων των εικόνων της αλληλουχίας (%d)\n"
 
-#: ../src/stacking/stacking.c:2221
+#: ../src/stacking/stacking.c:1949
 #, c-format
 msgid "Stacking only selected images in the sequence (%d)\n"
 msgstr "Γίνεται σώρευση μόνο των επιλεγμένων εικόνων της αλληλουχίας (%d)\n"
 
-#: ../src/stacking/stacking.c:2244
+#: ../src/stacking/stacking.c:1972
 #, c-format
 msgid ""
 "Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"
@@ -6579,12 +6578,12 @@ msgstr ""
 "Γίνεται σώρευση των εικόνων της αλληλουχίας με FWHM μικρότερο ή ίσο του %g "
 "(%d)\n"
 
-#: ../src/stacking/stacking.c:2250
+#: ../src/stacking/stacking.c:1978
 #, c-format
 msgid "Based on FWHM < %.2f (%d images)"
 msgstr "Βασισμένο σε FWHM < %.2f (%d εικόνες)"
 
-#: ../src/stacking/stacking.c:2265
+#: ../src/stacking/stacking.c:1993
 #, c-format
 msgid ""
 "Stacking images of the sequence with a quality higher or equal than %g (%d)\n"
@@ -6592,12 +6591,12 @@ msgstr ""
 "Γίνεται σώρευση των εικόνων της αλληλουχίας με ποιότητα μεγαλύτερη ή ίση του "
 "%g (%d)\n"
 
-#: ../src/stacking/stacking.c:2271
+#: ../src/stacking/stacking.c:1999
 #, c-format
 msgid "Based on quality > %.2f (%d images)"
 msgstr "Βασισμένο σε ποιότητα > %.2f (%d εικόνες)"
 
-#: ../src/stacking/stacking.c:2274
+#: ../src/stacking/stacking.c:2002
 #, c-format
 msgid "Based on quality"
 msgstr "Βασισμένο σε ποιότητα"

@@ -1412,7 +1412,7 @@ free_and_close:
 gpointer stack_function_handler(gpointer p) {
 	struct stacking_args *args = (struct stacking_args *)p;
 	// 1. normalization
-	do_normalization(args);	// does nothing it NO_NORM
+	do_normalization(args);	// does nothing if NO_NORM
 	// 2. up-scale
 	// coming soon
 	// 3. stack
