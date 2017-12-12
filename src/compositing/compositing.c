@@ -37,9 +37,7 @@
 #include "registration/registration.h"
 #include "compositing/filters.h"
 #include "stacking/stacking.h"
-#ifdef HAVE_OPENCV
 #include "opencv/opencv.h"
-#endif
 
 #undef DEBUG
 
@@ -460,7 +458,6 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 			 * in, or even taken from fit->binning_x and binning_y */
 			//if (layers[layer]->the_fit.binning_x > 1 ||
 			//layers[layer]->the_fit.binning_y > 1)
-#ifdef HAVE_OPENCV
 			if (gfit.rx < layers[layer]->the_fit.rx ||
 					gfit.ry < layers[layer]->the_fit.ry) {
 				siril_log_message(_("The first loaded image should have the greatest sizes for now\n"));
@@ -477,12 +474,6 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 				image_find_minmax(&layers[layer]->the_fit, 0);
 				gtk_label_set_text(layers[layer]->label, buf);
 			}
-#else
-			siril_log_message(_("You need to install opencv to compose images with different sizes\n"));
-			sprintf(buf, _("NOT OK %ux%u"), layers[layer]->the_fit.rx, layers[layer]->the_fit.ry);
-			gtk_label_set_text(layers[layer]->label, buf);
-			retval = 1;
-#endif
 		}
 		else if (!retval) {
 			image_find_minmax(&layers[layer]->the_fit, 0);

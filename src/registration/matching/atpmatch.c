@@ -137,7 +137,6 @@
 
 #include "core/siril.h"
 
-#ifdef HAVE_OPENCV
 #include <stdio.h>
 #include <math.h>           /* need this for 'sqrt' in calc_distances */
 #include <stdlib.h>
@@ -5844,4 +5843,3 @@ double *actual_angle_deg /* O: the measured rotation angle between */
 		return (0);
 	}
 }
-#endif

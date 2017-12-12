@@ -78,6 +78,30 @@ PKG_CHECK_MODULES(CFITSIO, [cfitsio])
 dnl check libconfig
 PKG_CHECK_MODULES([LIBCONFIGXX], [libconfig++ >= 1.4],,
 	AC_MSG_ERROR([libconfig++ 1.4 or newer not found.]))
+	
+dnl check opencv
+AC_PROG_CXX
+if test -n "$CXX" && ( test "X$CXX" != "Xno" &&
+		      ( (test "X$CXX" = "Xg++" && `g++ -v >/dev/null 2>&1` ) ||
+		      (test "X$CXX" != "Xg++"))) ; then
+	AC_PROG_CXXCPP
+	
+	dnl check for C++11 support
+	m4_include([m4/ax_cxx_compile_stdcxx.m4])
+	AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
+	
+	dnl AC_MSG_WARN(CXX is "$CXX")
+	dnl http://nerdland.net/2009/07/detecting-c-libraries-with-autotools/ solution 2
+	dnl we handle 2 opencv versions because of a debian bug with opencv2 and GTK3
+	PKG_CHECK_MODULES([OPENCV], [opencv >= 3.0],
+			  [OPENCV_LIBS="-lopencv_core -lopencv_imgproc -lopencv_calib3d"],
+			  [PKG_CHECK_MODULES([OPENCV], [opencv >= 2.0],
+			  [OPENCV_LIBS="-lopencv_core -lopencv_imgproc"],
+			  AC_MSG_ERROR([opencv not found. Not using some image processing.]))]
+			  )
+else
+	AC_MSG_ERROR([no C++ compiler found])
+fi	
 
 dnl ================ OPTIONAL DEPENDECIES ================ 
 dnl check raw lib
@@ -113,33 +137,6 @@ PKG_CHECK_MODULES(FFMPEG, [libavformat libavutil >= 55.20 libavcodec libswscale 
 		  [AC_DEFINE([HAVE_FFMPEG], [1], [film export supported])],
 		  AC_MSG_WARN([ffmpeg libav libraries not found or too old. Not using film export formats.]))
 
-dnl check opencv
-AC_PROG_CXX
-if test -n "$CXX" && ( test "X$CXX" != "Xno" &&
-		      ( (test "X$CXX" = "Xg++" && `g++ -v >/dev/null 2>&1` ) ||
-		      (test "X$CXX" != "Xg++"))) ; then
-	AC_PROG_CXXCPP
-	
-	dnl check for C++11 support
-	m4_include([m4/ax_cxx_compile_stdcxx.m4])
-	AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
-	
-	dnl AC_MSG_WARN(CXX is "$CXX")
-	dnl http://nerdland.net/2009/07/detecting-c-libraries-with-autotools/ solution 2
-	PKG_CHECK_MODULES([OPENCV], [opencv >= 3.0],
-			  [AC_DEFINE([HAVE_OPENCV], [1], [Using OpenCV])]
-			  [OPENCV_LIBS="-lopencv_core -lopencv_imgproc -lopencv_calib3d"],
-			  [PKG_CHECK_MODULES([OPENCV], [opencv >= 2.0],
-			  [AC_DEFINE([HAVE_OPENCV], [1], [Using OpenCV])]
-			  [OPENCV_LIBS="-lopencv_core -lopencv_imgproc"],
-			  AC_MSG_WARN([opencv not found. Not using some image processing.]))]
-			  )
-
-else
-	AC_MSG_ERROR([no C++ compiler found])
-fi
-
-AM_CONDITIONAL(HAVE_OPENCV, [test "x$OPENCV_LIBS" != "x"])
 
 dnl Compute the canonical host-system type variable (need config.guess and config.sub)
 AC_CANONICAL_HOST

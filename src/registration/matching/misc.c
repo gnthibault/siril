@@ -41,8 +41,6 @@
 
 #include "core/siril.h"
 
-#ifdef HAVE_OPENCV
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -373,5 +371,3 @@ void print_H(Homography *H) {
 	printf("%+*.5f %+*.5f %+*.5f\n", 11, H->h10, 11, H->h11, 11, H->h12);
 	printf("%+*.5f %+*.5f %+*.5f\n", 11, H->h20, 11, H->h21, 11, H->h22);
 }
-
-#endif

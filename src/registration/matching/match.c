@@ -98,7 +98,6 @@
 
 #include "core/siril.h"
 
-#ifdef HAVE_OPENCV
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -565,4 +564,3 @@ TRANS *trans /* O: we calc herein the sx, sy fields  */
 
 	return (0);
 }
-#endif

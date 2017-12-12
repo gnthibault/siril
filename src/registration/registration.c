@@ -48,10 +48,8 @@
 #include "algos/quality.h"
 #include "io/sequence.h"
 #include "io/ser.h"
-#ifdef HAVE_OPENCV
 #include "opencv/opencv.h"
 #include "opencv/ecc/ecc.h"
-#endif
 
 #define MAX_STARS_FITTED 2000
 #undef DEBUG
@@ -60,23 +58,18 @@ static char *tooltip_text[] = { N_("One Star Registration: This is the simplest 
 		"Because only one star is concerned for register, images are aligned using shifting "
 		"(at a fraction of pixel). No rotation or scaling are performed. "
 		"Shifts at pixel precision are saved in seq file."),
-#ifdef HAVE_OPENCV
 		N_("Global Star Alignment: This is a more powerful and accurate algorithm (but also slower) "
 		"to perform deep-sky images. The global matching is based on triangle similarity method for automatically "
 		"identify common stars in each image. "
 		"A new sequence is created with the prefix of your choice (r_ by default)."),
-#endif
 		N_("Image Pattern Alignment: This is a simple registration by translation method "
 		"using cross correlation in the spatial domain. This method is fast and is used to register "
 		"planetary movies. It can also be used for some deep-sky images registration. "
-		"Shifts at pixel precision are saved in seq file.")
-#ifdef HAVE_OPENCV
-,
+		"Shifts at pixel precision are saved in seq file."),
 		N_("Enhanced Correlation Coefficient Maximization: It is based on the enhanced correlation "
 		"coefficient maximization algorithm. This method is more complex and slower than Image Pattern Alignment "
 		"but no selection is required. It is good for moon surface images registration. Only translation is taken "
 		"into account yet.")
-#endif
 };
 /* callback for the selected area event */
 void _reg_selected_area_callback() {
@@ -105,16 +98,12 @@ void initialize_registration_methods() {
 
 	reg_methods[i++] = new_reg_method(_("One Star Registration (deep-sky)"),
 			&register_shift_fwhm, REQUIRES_ANY_SELECTION, REGTYPE_DEEPSKY);
-#ifdef HAVE_OPENCV
 	reg_methods[i++] = new_reg_method(_("Global Star Alignment (deep-sky)"),
 			&register_star_alignment, REQUIRES_NO_SELECTION, REGTYPE_DEEPSKY);
-#endif
 	reg_methods[i++] = new_reg_method(_("Image Pattern Alignment (planetary - full disk)"),
 			&register_shift_dft, REQUIRES_SQUARED_SELECTION, REGTYPE_PLANETARY);
-#ifdef HAVE_OPENCV
 	reg_methods[i++] = new_reg_method(_("Enhanced Correlation Coefficient (planetary - surfaces)"),
 			&register_ecc, REQUIRES_NO_SELECTION, REGTYPE_PLANETARY);
-#endif
 	reg_methods[i] = NULL;
 
 	tip = g_string_new ("");
@@ -483,8 +472,6 @@ int register_shift_fwhm(struct registration_args *args) {
 			fwhm_index, fwhm_min);
 	return 0;
 }
-
-#ifdef HAVE_OPENCV
 
 static void _print_result(Homography *H, float FWHMx, float FWHMy) {
 	double rotation, scale, scaleX, scaleY;
@@ -941,8 +928,6 @@ int register_ecc(struct registration_args *args) {
 	return 0;
 }
 
-#endif
-
 void on_comboboxregmethod_changed(GtkComboBox *box, gpointer user_data) {
 	int index = 0;
 	gchar *text = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(box));
@@ -1011,9 +996,7 @@ void update_reg_interface(gboolean dont_change_reg_radio) {
 			|| (nb_images_reg > 1 && method->sel == REQUIRES_NO_SELECTION))) {
 		gtk_widget_set_sensitive(go_register, TRUE);
 		gtk_label_set_text(labelreginfo, "");
-#ifdef HAVE_OPENCV
 		gtk_widget_set_visible(newSequence, method->method_ptr == &register_star_alignment);
-#endif
 		gtk_widget_set_visible(follow, method->method_ptr == &register_shift_fwhm);
 	} else {
 		gtk_widget_set_sensitive(go_register, FALSE);
@@ -1210,7 +1193,6 @@ static gboolean end_register_idle(gpointer p) {
 		set_layers_for_registration();	// update display of available reg data
 
 		/* Load new sequence. Only star alignment method uses new sequence. */
-#ifdef HAVE_OPENCV
 		if (args->func == &register_star_alignment) {
 			if (args->load_new_sequence) {
 				sequence *seq;
@@ -1259,13 +1241,10 @@ static gboolean end_register_idle(gpointer p) {
 			}
 			clear_stars_list();
 		}
-#endif
 	}
 	set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
 	drawPlot();
-#ifdef HAVE_OPENCV
 failed_end:
-#endif
 	update_stack_interface(TRUE);
 	update_used_memory();
 	set_cursor_waiting(FALSE);

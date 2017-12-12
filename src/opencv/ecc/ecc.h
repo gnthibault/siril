@@ -4,7 +4,6 @@
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
-#ifdef HAVE_OPENCV
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,8 +45,5 @@ int findTransform(fits *reference, fits *image, int layer, reg_ecc *reg_param);
 #ifdef __cplusplus
 }
 #endif
-
-#endif	/* HAVE_OPENCV */
-
 
 #endif //_ECC_H_

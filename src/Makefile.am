@@ -39,9 +39,8 @@ siril_LDADD = $(FFMPEG_LIBS) $(GTK_LIBS) ${GTK_MAC_LIBS} $(LIBRAW_LIBS) $(LIBTIF
 siril_SOURCES += io/avi_pipp/pipp_avi_write.cpp io/avi_pipp/pipp_avi_write.h io/avi_pipp/pipp_avi_write_dib.cpp io/avi_pipp/pipp_avi_write_dib.h io/avi_pipp/pipp_utf8.h \
 	io/avi_pipp/pipp_buffer.cpp io/avi_pipp/pipp_buffer.h io/avi_pipp/pipp_video_write.h io/avi_pipp/avi_writer.cpp io/avi_pipp/avi_writer.h
 
-if HAVE_OPENCV
 siril_SOURCES += opencv/opencv.cpp opencv/opencv.h opencv/ecc/ecc.cpp opencv/ecc/ecc.h
 siril_SOURCES += opencv/findHomography/fundam.cpp opencv/findHomography/calibration.cpp opencv/findHomography/modelest.cpp opencv/findHomography/_modelest.h opencv/findHomography/calib3d.hpp opencv/findHomography/precomp.hpp
 siril_LDADD += $(OPENCV_LIBS)
-endif
+
 siril_LINK = $(CXXLINK)

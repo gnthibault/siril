@@ -59,9 +59,7 @@
 #include "compositing/compositing.h"
 #include "compositing/align_rgb.h"
 #include "plot.h"
-#ifdef HAVE_OPENCV
 #include "opencv/opencv.h"
-#endif
 
 static enum {
 	CD_NULL, CD_INCALL, CD_EXCALL, CD_QUIT
@@ -1720,19 +1718,11 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menuitem_histo"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_fixbanding"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_cosmetic"), any_image_is_loaded);
-#ifdef HAVE_OPENCV
 	gtk_widget_set_sensitive(lookup_widget("menuitem_deconvolution"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_resample"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation90"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation270"), is_a_single_image_loaded);
-#else
-	gtk_widget_set_sensitive(lookup_widget("menuitem_deconvolution"), FALSE);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_resample"), FALSE);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation"), FALSE);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation90"), FALSE);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation270"), FALSE);
-#endif
 	gtk_widget_set_sensitive(lookup_widget("menuitem_mirrorx"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_mirrory"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_bkg_extraction"), is_a_single_image_loaded);
@@ -4710,7 +4700,6 @@ void on_combo_scnr_changed(GtkComboBoxText *box, gpointer user_data) {
 	gtk_widget_set_sensitive(GTK_WIDGET(label), type > 1);
 }
 
-#ifdef HAVE_OPENCV
 /* Resample */
 void on_menuitem_resample_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded())
@@ -4851,8 +4840,6 @@ void on_button_rotation_ok_clicked(GtkButton *button, gpointer user_data) {
 	redraw_previews();
 	set_cursor_waiting(FALSE);
 }
-
-#endif
 
 void on_menuitem_mirrorx_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded()) {

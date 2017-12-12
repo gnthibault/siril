@@ -58,10 +58,7 @@
 #include "stacking/stacking.h"
 #include "stacking/sum.h"
 #include "registration/registration.h"
-
-#ifdef HAVE_OPENCV
 #include "opencv/opencv.h"
-#endif
 
 static char *word[MAX_COMMAND_WORDS];	// NULL terminated
 
@@ -131,14 +128,10 @@ command commande[] = {
 	
 	{"psf", 0, "psf", process_psf},
 	
-#ifdef HAVE_OPENCV
 	{"resample", 1, "resample factor", process_resample},
 	{"rl", 2, "rl iterations sigma", process_rl},
-#endif	
 	{"rmgreen", 1, "rmgreen type", process_scnr},
-#ifdef HAVE_OPENCV
 	{"rotate", 1, "rotate angle", process_rotate},
-#endif
 	{"rotatePi", 0, "rotatePi", process_rotatepi},
 	
 	{"satu", 1, "satu coeff ", process_satu}, 
@@ -379,8 +372,6 @@ int process_gauss(int nb){
 	return 0;
 }
 
-#ifdef HAVE_OPENCV
-
 int process_rl(int nb) {
 
 	double sigma;
@@ -417,7 +408,6 @@ int process_rl(int nb) {
 
 	return 0;
 }
-#endif
 
 int process_unsharp(int nb){
 	unsharp(&(gfit), atof(word[1]), atof(word[2]), TRUE);
@@ -673,7 +663,6 @@ int	process_mirrory(int nb){
 	return 0;
 }
 
-#ifdef HAVE_OPENCV
 int process_resample(int nb) {
 	double factor = atof(word[1]);
 	if (factor > 5.0) {
@@ -705,14 +694,10 @@ int process_rotate(int nb) {
 	set_cursor_waiting(FALSE);
 	return 0;
 }
-#endif
 
 int process_rotatepi(int nb){
-#ifdef HAVE_OPENCV
 	verbose_rotate_image(&gfit, 180.0, OPENCV_LINEAR, 1);
-#else
-	fits_rotate_pi(&gfit);
-#endif
+
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	return 0;	
@@ -1138,7 +1123,6 @@ int process_cosme(int nb) {
 			cosmeticCorrOneLine(&gfit, dev, is_cfa);
 			break;
 		case 'C':
-#ifdef HAVE_OPENCV
 			nb_tokens = sscanf(line + 2, "%lf %lf %c", &dev.p.y, &dirty, &type);
 			if (nb_tokens != 2 && nb_tokens != 3) {
 				fprintf(stderr, "cosmetic correction: "
@@ -1151,10 +1135,7 @@ int process_cosme(int nb) {
 			cvRotateImage(&gfit, 90.0, -1, OPENCV_LINEAR);
 			cosmeticCorrOneLine(&gfit, dev, is_cfa);
 			cvRotateImage(&gfit, -90.0, -1, OPENCV_LINEAR);
-#else
-			siril_log_message(_("Opencv need to be compiled to remove bad column.\n"));
-			retval = 1;
-#endif
+
 			break;
 		default:
 			fprintf(stderr, _("cosmetic correction: "

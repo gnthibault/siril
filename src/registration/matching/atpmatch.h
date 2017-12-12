@@ -3,8 +3,6 @@
 
 #include "core/siril.h"
 
-#ifdef HAVE_OPENCV
-
 /*
  *
  * FILE: atPMatch.h
@@ -245,4 +243,3 @@ atCalcRMS(int num_A, struct s_star *mlistA,
           double *Dx_rms, double *Dy_rms);
 
 #endif  /* ATPMATCH_H */
-#endif

@@ -3,7 +3,6 @@
 
 #include "core/siril.h"
 
-#ifdef HAVE_OPENCV
 
    /*
     * this is default value for the base of the output file names.
@@ -18,5 +17,4 @@
 
 int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H);
 
-#endif
 #endif   /* MATCH_H */

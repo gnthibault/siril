@@ -3,8 +3,6 @@
 
 #include "core/siril.h"
 
-#ifdef HAVE_OPENCV
-
 /*
  *
  * FILE: misc.h
@@ -181,4 +179,3 @@ free_stars(struct s_star *head);
 
 
 #endif    /* MISC_H */
-#endif

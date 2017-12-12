@@ -313,7 +313,6 @@ int ndiv(fits *a, fits *b) {
  *
  */
 
-#ifdef HAVE_OPENCV
 int unsharp(fits *fit, double sigma, double amount, gboolean verbose) {
 	struct timeval t_start, t_end;
 
@@ -331,103 +330,6 @@ int unsharp(fits *fit, double sigma, double amount, gboolean verbose) {
 	}
 	return 0;
 }
-
-#else
-double gaussienne(double sigma, int size, double *gauss) {
-	double s2, s;
-	int i,j,n;
-
-	n=size/2;
-	s2=sigma*sigma;
-	s=(double)0;
-	for (i=0;i<size;++i) {
-		for (j=0;j<size;++j) {
-			s+=gauss[i*size+j]=exp(-((double)(i-n)*(i-n) + (double)(j-n)*(j-n))/2/s2);
-			//~ fprintf(stderr,"%d:%d %f %f \n", i, j, s, gauss[i*size+j]);
-		}
-	}
-	return s;
-}
-
-int unsharp(fits *fit, double sigma, double mult, gboolean verbose) {
-	// if fabs(mult) > 0.01, unsharp computes the unsharp mask
-	// else unsharp computes a gaussian filter
-
-	double normalize,g, *gauss/*, *gaussbuf*/;
-	WORD *buf, *gbuf;
-	int size, ss2, stride, i, j, k, l, layer;
-	struct timeval t_start, t_end;
-
-	if (verbose) {
-		siril_log_color_message("Unsharp: processing...\n", "red");
-		gettimeofday (&t_start, NULL);
-	}
-
-	//	fprintf(stderr,"gfitrx: %d mult :%f\n", gfit.rx, mult);
-	//~ size=(int)(4*sigma);
-	size = (int)(2*(((sigma - 0.8) / 0.3) + 1));// heuristic. Just to be homogeneous with opencv
-	if (!(size%2))
-	++size;
-
-	ss2=size/2;
-	gauss=malloc(size*size*sizeof(double));
-	if (!gauss) {
-		perror("unsharp.c: Alloc error for gauss");
-		return -1;
-	}
-	//	fprintf(stderr,"size: %d sigma:%f\n", size, sigma);
-
-	normalize=gaussienne(sigma, size, gauss);
-	//	fprintf(stderr,"gfitrx: %d ss2:%d\n", gfit.rx, ss2);
-	wfit[4].data=(WORD *)calloc(1, fit->rx*fit->ry*sizeof(WORD));
-
-	wfit[4].rx=fit->rx;
-	wfit[4].ry=fit->ry;
-	wfit[4].lo=fit->lo;
-	wfit[4].hi=fit->hi;
-	stride=wfit[4].rx-size;
-	for (layer=0; layer<fit->naxes[2]; ++layer) {
-		memcpy(wfit[4].data, fit->pdata[layer], fit->rx*fit->ry*sizeof(WORD));
-
-		buf=fit->pdata[layer]+ss2+ss2*fit->rx;
-		//	fprintf(stderr,"gfitrx: %d ss2:%d\n", gfit.rx, ss2);
-		for (i=ss2;i<fit->ry-ss2;++i) {
-			for (j=ss2;j<fit->rx-ss2;++j) {
-				g=(double)0;
-				gbuf=wfit[4].data+(i-ss2)*fit->rx+j-ss2;
-				//~ gaussbuf=gauss;
-				for (k=0;k<size;++k) {
-					for(l=0;l<size;++l) {
-						g+=(*gbuf++)*(gauss[k*size+l]);
-					}
-					gbuf+=stride;
-				}
-				*(buf++)=g/normalize;
-			}
-			buf+=ss2+ss2;
-		}
-
-		buf=fit->pdata[layer];
-		gbuf=wfit[4].data;
-		if (fabs(mult)>0.0) {
-			for (i=0; i<fit->rx * fit->ry; i++) {
-				//~ double tmp = gbuf[i] + mult * (gbuf[i] - buf[i]);
-				double tmp = gbuf[i] * (1.0 + mult) + buf[i] * (- mult);
-				if (tmp < 0.0) buf[i] = 0;
-				else if (tmp > USHRT_MAX_DOUBLE) buf[i] = USHRT_MAX;
-				else buf[i] = (WORD) tmp;
-			}
-		}
-	}
-	free(gauss);
-	clearfits(&wfit[4]);
-	if (verbose) {
-		gettimeofday (&t_end, NULL);
-		show_time(t_start, t_end);
-	}
-	return 0;
-}
-#endif
 
 /* inplace cropping of the image in fit
  * fit->data is not realloc, only fit->pdata points to a different area and
@@ -1197,7 +1099,6 @@ void show_FITS_header(fits *fit) {
 		show_data_dialog(fit->header, "FITS Header");
 }
 
-#ifdef HAVE_OPENCV
 /* These functions do not more than resize_gaussian and rotate_image
  * except for console outputs. 
  * Indeed, siril_log_message seems not working in a cpp file */
@@ -1277,8 +1178,6 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
 
 	return 0;
 }
-
-#endif
 
 /* This function computes wavelets with the number of Nbr_Plan and
  * extracts plan "Plan" in fit parameters */
@@ -1542,13 +1441,7 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 	}
 
 	if (applyRotation) {
-#ifdef HAVE_OPENCV
 		cvRotateImage(fit, 90.0, -1, OPENCV_LINEAR);
-#else
-		siril_log_message(_("Rotation is only possible when Siril has been compiled with OpenCV support.\n"));
-		free(fiximage);
-		return 1;
-#endif
 	}
 
 	new_fit_image(fiximage, fit->rx, fit->ry, fit->naxes[2]);
@@ -1609,10 +1502,8 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 	imoper(fit, fiximage, OPER_ADD);
 
 	clearfits(fiximage);
-#ifdef HAVE_OPENCV
 	if (applyRotation)
 		cvRotateImage(fit, -90.0, -1, OPENCV_LINEAR);
-#endif
 	return 0;
 }
 
@@ -1635,15 +1526,7 @@ int backgroundnoise(fits* fit, double sigma[]) {
 	}
 
 	copyfits(fit, waveimage, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
-#ifdef HAVE_OPENCV	// a bit faster
 	cvComputeFinestScale(waveimage);
-#else
-	if (get_wavelet_layers(waveimage, 4, 0, TO_PAVE_BSPLINE, -1)) {
-		siril_log_message(_("Siril cannot evaluate the noise in the image\n"));
-		clearfits(waveimage);
-		return 1;
-	}
-#endif
 
 	for (layer = 0; layer < fit->naxes[2]; layer++) {
 		imstats *stat = statistics(waveimage, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);

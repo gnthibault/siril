@@ -10,9 +10,7 @@
 #include "io/films.h"
 #endif
 #include "avi_pipp/avi_writer.h"
-#ifdef HAVE_OPENCV
 #include "opencv/opencv.h"
-#endif
 #ifdef HAVE_FFMPEG
 #include "io/mp4_output.h"
 #endif
@@ -317,16 +315,11 @@ static gpointer export_sequence(gpointer ptr) {
 				data = fits_to_uint8(&destfit);
 
 				if (args->resize) {
-#ifdef HAVE_OPENCV
 					uint8_t *newdata = malloc(out_width * out_height * destfit.naxes[2]);
 					cvResizeGaussian_data8(data, destfit.rx, destfit.ry, newdata,
 							out_width, out_height, destfit.naxes[2], OPENCV_CUBIC);
 					avi_file_write_frame(0, newdata);
 					free(newdata);
-#else
-					siril_log_message(_("Siril needs opencv to resize images\n"));
-					avi_file_write_frame(0, data);
-#endif
 				}
 				else
 					avi_file_write_frame(0, data);
@@ -478,11 +471,8 @@ void on_comboExport_changed(GtkComboBox *box, gpointer user_data) {
 	GtkWidget *quality = lookup_widget("exportQualScale");
 	gtk_widget_set_visible(avi_options, gtk_combo_box_get_active(box) >= 2);
 	gtk_widget_set_visible(quality, gtk_combo_box_get_active(box) >= 3);
-#ifdef HAVE_OPENCV
 	gtk_widget_set_sensitive(checkAviResize, TRUE);
-#else
-	gtk_widget_set_sensitive(checkAviResize, FALSE);
-#endif
+
 }
 
 void on_checkAviResize_toggled(GtkToggleButton *togglebutton, gpointer user_data) {

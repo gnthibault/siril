@@ -23,7 +23,6 @@
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
-#ifdef HAVE_OPENCV
 #include <assert.h>
 #include <iostream>
 #include <iomanip>
@@ -482,5 +481,3 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 	return 0;
 
 }
-
-#endif

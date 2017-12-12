@@ -4,7 +4,6 @@
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
-#ifdef HAVE_OPENCV
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,7 +26,5 @@ int cvLucyRichardson(fits *image, double sigma, int iterations);
 #ifdef __cplusplus
 }
 #endif
-
-#endif	/* HAVE_OPENCV */
 
 #endif

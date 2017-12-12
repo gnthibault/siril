@@ -207,10 +207,8 @@ double	background(fits* fit, int reqlayer, rectangle *selection);
 int backgroundnoise(fits* fit, double sigma[]);
 imstats* statistics(fits *, int, rectangle *, int, int);
 void	show_FITS_header(fits *);
-#ifdef HAVE_OPENCV
 int	verbose_resize_gaussian(fits *, int, int, int);
 int	verbose_rotate_image(fits *, double, int, int);
-#endif
 double gauss_cvf(double p);
 int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer);
 gpointer median_filter(gpointer p);
