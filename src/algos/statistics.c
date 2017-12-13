@@ -26,7 +26,6 @@
 #include <gsl/gsl_statistics.h>
 #include "core/siril.h"
 #include "core/proto.h"
-#include "gui/histogram.h"
 
 static void select_area(fits *fit, WORD *data, int layer, rectangle *bounds) {
 	int i, j, k = 0;
@@ -44,38 +43,159 @@ static void select_area(fits *fit, WORD *data, int layer, rectangle *bounds) {
 	}
 }
 
-static double siril_stats_ushort_median(gsl_histogram *histo, const size_t n, int nullcheck) {
-	size_t i;
-	size_t hist_size = gsl_histogram_bins(histo);
-	double sum = 0.0;
-	double median = 0.0;
-	int zero = (nullcheck == 0) ? zero = 0 : 1;
+/*
+ *  This Quickselect routine is based on the algorithm described in
+ *  "Numerical recipes in C", Second Edition,
+ *  Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
+ *  This code by Nicolas Devillard - 1998. Public domain.
+ */
 
-	/* Get the median value without 0 value*/
-	for (i = zero; i < hist_size; i++) {
-		sum += gsl_histogram_get(histo, i);
-		if (sum > ((double) n * 0.5)) {
-			median = (double) i;
-			break;	//we get out of the loop
+#define ELEM_SWAP_WORD(a,b) { register WORD t=(a);(a)=(b);(b)=t; }
+
+static double siril_stats_ushort_median(WORD *arr, int n) {
+	int low, high;
+	int median;
+	int middle, ll, hh;
+
+	low = 0;
+	high = n - 1;
+	median = (low + high) / 2;
+	for (;;) {
+		if (high <= low) /* One element only */
+			return (double) arr[median];
+
+		if (high == low + 1) { /* Two elements only */
+			if (arr[low] > arr[high])
+				ELEM_SWAP_WORD(arr[low], arr[high]);
+			return (double) arr[median];
 		}
+
+		/* Find median of low, middle and high items; swap into position low */
+		middle = (low + high) / 2;
+		if (arr[middle] > arr[high])
+			ELEM_SWAP_WORD(arr[middle], arr[high]);
+		if (arr[low] > arr[high])
+			ELEM_SWAP_WORD(arr[low], arr[high]);
+		if (arr[middle] > arr[low])
+			ELEM_SWAP_WORD(arr[middle], arr[low]);
+
+		/* Swap low item (now in position middle) into position (low+1) */
+		ELEM_SWAP_WORD(arr[middle], arr[low + 1]);
+
+		/* Nibble from each end towards middle, swapping items when stuck */
+		ll = low + 1;
+		hh = high;
+		for (;;) {
+			do
+				ll++;
+			while (arr[low] > arr[ll]);
+			do
+				hh--;
+			while (arr[hh] > arr[low]);
+
+			if (hh < ll)
+				break;
+
+			ELEM_SWAP_WORD(arr[ll], arr[hh]);
+		}
+
+		/* Swap middle item (in position low) back into correct position */
+		ELEM_SWAP_WORD(arr[low], arr[hh]);
+
+		/* Re-set active partition */
+		if (hh <= median)
+			low = ll;
+		if (hh >= median)
+			high = hh - 1;
 	}
-	return median;
+	return -1;
 }
 
-static double siril_stats_ushort_mad(const WORD* data, const size_t stride,
-		const size_t n, const double m, int nullcheck) {
+#undef ELEM_SWAP_WORD
+
+#define ELEM_SWAP_DOUBLE(a,b) { register double t=(a);(a)=(b);(b)=t; }
+
+static double siril_stats_double_median(double *arr, int n) {
+	int low, high;
+	int median;
+	int middle, ll, hh;
+
+	low = 0;
+	high = n - 1;
+	median = (low + high) / 2;
+	for (;;) {
+		if (high <= low) /* One element only */
+			return (double) arr[median];
+
+		if (high == low + 1) { /* Two elements only */
+			if (arr[low] > arr[high])
+				ELEM_SWAP_DOUBLE(arr[low], arr[high]);
+			return (double) arr[median];
+		}
+
+		/* Find median of low, middle and high items; swap into position low */
+		middle = (low + high) / 2;
+		if (arr[middle] > arr[high])
+			ELEM_SWAP_DOUBLE(arr[middle], arr[high]);
+		if (arr[low] > arr[high])
+			ELEM_SWAP_DOUBLE(arr[low], arr[high]);
+		if (arr[middle] > arr[low])
+			ELEM_SWAP_DOUBLE(arr[middle], arr[low]);
+
+		/* Swap low item (now in position middle) into position (low+1) */
+		ELEM_SWAP_DOUBLE(arr[middle], arr[low + 1]);
+
+		/* Nibble from each end towards middle, swapping items when stuck */
+		ll = low + 1;
+		hh = high;
+		for (;;) {
+			do
+				ll++;
+			while (arr[low] > arr[ll]);
+			do
+				hh--;
+			while (arr[hh] > arr[low]);
+
+			if (hh < ll)
+				break;
+
+			ELEM_SWAP_DOUBLE(arr[ll], arr[hh]);
+		}
+
+		/* Swap middle item (in position low) back into correct position */
+		ELEM_SWAP_DOUBLE(arr[low], arr[hh]);
+
+		/* Re-set active partition */
+		if (hh <= median)
+			low = ll;
+		if (hh >= median)
+			high = hh - 1;
+	}
+	return -1;
+}
+
+#undef ELEM_SWAP_DOUBLE
+
+/* For a univariate data set X1, X2, ..., Xn, the MAD is defined as the median
+ * of the absolute deviations from the data's median:
+ *  MAD = median (| Xi − median(X) |)
+ */
+
+static double siril_stats_ushort_mad(WORD* data, const size_t stride,
+		const size_t n, const double m) {
 	size_t i;
 	double median;
-	gsl_histogram *histo;
+	WORD *tmp;
 
-	histo = gsl_histogram_alloc(USHRT_MAX + 1);
-	gsl_histogram_set_ranges_uniform(histo, 0, USHRT_MAX);
+	tmp = calloc(n, sizeof(WORD));
+
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 	for (i = 0; i < n; i++) {
-		const double delta = fabs(data[i * stride] - m);
-		gsl_histogram_increment(histo, delta);
+		const WORD delta = fabs(data[i * stride] - m);
+		tmp[i] = delta;
 	}
-	median = siril_stats_ushort_median(histo, n, nullcheck);
-	gsl_histogram_free(histo);
+	median = siril_stats_ushort_median(tmp, n);
+	free(tmp);
 
 	return median;
 }
@@ -88,12 +208,12 @@ static double siril_stats_double_mad(const double* data, const size_t stride,
 
 	tmp = calloc(n, sizeof(double));
 
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 	for (i = 0; i < n; i++) {
 		const double delta = fabs(data[i * stride] - m);
 		tmp[i] = delta;
 	}
-	quicksort_d(tmp, n);
-	median = gsl_stats_median_from_sorted_data(tmp, 1, n);
+	median = siril_stats_double_median(tmp, n);
 	free(tmp);
 
 	return median;
@@ -190,17 +310,17 @@ static WORD* reassign_data(WORD *data, int nb, long ngoodpix) {
 	int i, j = 0;
 	WORD *ndata = calloc(ngoodpix, sizeof(WORD));
 
-	for (i = 0; i < nb; i++)
+	for (i = 0; i < nb; i++) {
 		if (data[i] > 0) {
 			ndata[j] = data[i];
 			j++;
 		}
+	}
 	free(data);
 	return ndata;
 }
 
-/* computes statistics on the given layer of the given image. It creates the
- * histogram to easily extract the median. mean, sigma and noise
+/* computes statistics on the given layer of the given image. Mean, sigma and noise
  * are computed with a cfitsio function rewritten here.
  * min and max value, average deviation, MAD, Bidweight Midvariance and IKSS are computed with gsl stats.
  */
@@ -217,8 +337,7 @@ imstats* statistics(fits *fit, int layer, rectangle *selection, int option, int 
 	int status = 0;
 	int nx, ny;
 	WORD min = 0, max = 0, *data;
-	gsl_histogram* histo;
-	size_t i, hist_size;
+	size_t i, norm = USHRT_MAX;
 	imstats* stat = NULL;
 
 	if (selection && selection->h > 0 && selection->w > 0) {
@@ -226,15 +345,12 @@ imstats* statistics(fits *fit, int layer, rectangle *selection, int option, int 
 		ny = selection->h;
 		data = calloc(nx * ny, sizeof(WORD));
 		select_area(fit, data, layer, selection);
-		histo = computeHisto_Selection(fit, layer, selection);
 	} else {
 		nx = fit->rx;
 		ny = fit->ry;
 		data = calloc(nx * ny, sizeof(WORD));
-		histo = computeHisto(fit, layer);
 		memcpy(data, fit->pdata[layer], nx * ny * sizeof(WORD));
 	}
-	hist_size = gsl_histogram_bins(histo);
 
 	/* Calculation of mean, sigma and noise */
 	if (option & STATS_BASIC)
@@ -249,18 +365,23 @@ imstats* statistics(fits *fit, int layer, rectangle *selection, int option, int 
 		return NULL;
 	}
 
-	/* Calculation of median with histogram */
-	if ((option & STATS_BASIC) || (option & STATS_AVGDEV)
-			|| (option & STATS_MAD) || (option & STATS_BWMV))
-		median = siril_stats_ushort_median(histo, ngoodpix, nullcheck);
-	gsl_histogram_free(histo);
-
+	/* we exclude 0 if nullcheck */
 	if (nullcheck) {
 		data = reassign_data(data, nx * ny, ngoodpix);
 	}
 
-	if (option & STATS_BASIC)
+	/* Calculation of median */
+	if ((option & STATS_BASIC) || (option & STATS_AVGDEV)
+			|| (option & STATS_MAD) || (option & STATS_BWMV))
+		median = siril_stats_ushort_median(data, ngoodpix);
+
+	if (option & STATS_BASIC) {
 		gsl_stats_ushort_minmax(&min, &max, data, 1, ngoodpix);
+		if (max <= UCHAR_MAX)
+			norm = UCHAR_MAX;
+		else
+			norm = USHRT_MAX;
+	}
 
 	/* Calculation of average absolute deviation from the median */
 	if (option & STATS_AVGDEV)
@@ -268,7 +389,7 @@ imstats* statistics(fits *fit, int layer, rectangle *selection, int option, int 
 
 	/* Calculation of median absolute deviation */
 	if ((option & STATS_MAD) || (option & STATS_BWMV))
-		mad = siril_stats_ushort_mad(data, 1, ngoodpix, median, nullcheck);
+		mad = siril_stats_ushort_mad(data, 1, ngoodpix, median);
 
 	/* Calculation of Bidweight Midvariance */
 	if (option & STATS_BWMV)
@@ -280,12 +401,12 @@ imstats* statistics(fits *fit, int layer, rectangle *selection, int option, int 
 
 		/* we convert in the [0, 1] range */
 		for (i = 0; i < ngoodpix; i++) {
-			newdata[i] = (double) data[i] / ((double) hist_size - 1);
+			newdata[i] = (double) data[i] / ((double) norm);
 		}
 		IKSS(newdata, ngoodpix, &location, &scale);
 		/* go back to the original range */
-		location *= ((double) hist_size - 1);
-		scale *= ((double) hist_size - 1);
+		location *= ((double) norm);
+		scale *= ((double) norm);
 		free(newdata);
 	}
 
@@ -319,7 +440,7 @@ imstats* statistics(fits *fit, int layer, rectangle *selection, int option, int 
 	stat->sqrtbwmv = sqrt(bwmv);
 	stat->location = location;
 	stat->scale = scale;
-	stat->normValue = (double) hist_size - 1;
+	stat->normValue = (double) norm;
 
 	free(data);
 	return stat;
