@@ -113,69 +113,6 @@ static double siril_stats_ushort_median(WORD *arr, int n) {
 
 #undef ELEM_SWAP_WORD
 
-#define ELEM_SWAP_DOUBLE(a,b) { register double t=(a);(a)=(b);(b)=t; }
-
-static double siril_stats_double_median(double *arr, int n) {
-	int low, high;
-	int median;
-	int middle, ll, hh;
-
-	low = 0;
-	high = n - 1;
-	median = (low + high) / 2;
-	for (;;) {
-		if (high <= low) /* One element only */
-			return (double) arr[median];
-
-		if (high == low + 1) { /* Two elements only */
-			if (arr[low] > arr[high])
-				ELEM_SWAP_DOUBLE(arr[low], arr[high]);
-			return (double) arr[median];
-		}
-
-		/* Find median of low, middle and high items; swap into position low */
-		middle = (low + high) / 2;
-		if (arr[middle] > arr[high])
-			ELEM_SWAP_DOUBLE(arr[middle], arr[high]);
-		if (arr[low] > arr[high])
-			ELEM_SWAP_DOUBLE(arr[low], arr[high]);
-		if (arr[middle] > arr[low])
-			ELEM_SWAP_DOUBLE(arr[middle], arr[low]);
-
-		/* Swap low item (now in position middle) into position (low+1) */
-		ELEM_SWAP_DOUBLE(arr[middle], arr[low + 1]);
-
-		/* Nibble from each end towards middle, swapping items when stuck */
-		ll = low + 1;
-		hh = high;
-		for (;;) {
-			do
-				ll++;
-			while (arr[low] > arr[ll]);
-			do
-				hh--;
-			while (arr[hh] > arr[low]);
-
-			if (hh < ll)
-				break;
-
-			ELEM_SWAP_DOUBLE(arr[ll], arr[hh]);
-		}
-
-		/* Swap middle item (in position low) back into correct position */
-		ELEM_SWAP_DOUBLE(arr[low], arr[hh]);
-
-		/* Re-set active partition */
-		if (hh <= median)
-			low = ll;
-		if (hh >= median)
-			high = hh - 1;
-	}
-	return -1;
-}
-
-#undef ELEM_SWAP_DOUBLE
-
 /* For a univariate data set X1, X2, ..., Xn, the MAD is defined as the median
  * of the absolute deviations from the data's median:
  *  MAD = median (| Xi − median(X) |)
@@ -200,6 +137,11 @@ static double siril_stats_ushort_mad(WORD* data, const size_t stride,
 	return median;
 }
 
+/* Here this is a bit tricky. This function computes the median from sorted data
+ * because this function is called in IKSS where a quick select algorithm for
+ * finding median is very inefficient.
+ * However, this function is used in a function where sorting is mandatory.
+ */
 static double siril_stats_double_mad(const double* data, const size_t stride,
 		const size_t n, const double m) {
 	size_t i;
@@ -213,7 +155,8 @@ static double siril_stats_double_mad(const double* data, const size_t stride,
 		const double delta = fabs(data[i * stride] - m);
 		tmp[i] = delta;
 	}
-	median = siril_stats_double_median(tmp, n);
+	quicksort_d(tmp, n);
+	median = gsl_stats_median_from_sorted_data(tmp, stride, n);
 	free(tmp);
 
 	return median;
@@ -273,7 +216,7 @@ static int IKSS(double *data, int n, double *location, double *scale) {
 	size_t i, j;
 	double mad, s, s0, m, xlow, xhigh;
 
-	quicksort_d(data, n);
+	quicksort_d(data, n);	// this sort is mandatory
 	i = 0;
 	j = n;
 	s0 = 1;
@@ -370,11 +313,7 @@ imstats* statistics(fits *fit, int layer, rectangle *selection, int option, int 
 		data = reassign_data(data, nx * ny, ngoodpix);
 	}
 
-	/* Calculation of median */
-	if ((option & STATS_BASIC) || (option & STATS_AVGDEV)
-			|| (option & STATS_MAD) || (option & STATS_BWMV))
-		median = siril_stats_ushort_median(data, ngoodpix);
-
+	/* Calculation of min, max and ngoodpix */
 	if (option & STATS_BASIC) {
 		gsl_stats_ushort_minmax(&min, &max, data, 1, ngoodpix);
 		if (max <= UCHAR_MAX)
@@ -382,6 +321,11 @@ imstats* statistics(fits *fit, int layer, rectangle *selection, int option, int 
 		else
 			norm = USHRT_MAX;
 	}
+
+	/* Calculation of median */
+	if ((option & STATS_BASIC) || (option & STATS_AVGDEV)
+			|| (option & STATS_MAD) || (option & STATS_BWMV))
+		median = siril_stats_ushort_median(data, ngoodpix);
 
 	/* Calculation of average absolute deviation from the median */
 	if (option & STATS_AVGDEV)
@@ -395,11 +339,12 @@ imstats* statistics(fits *fit, int layer, rectangle *selection, int option, int 
 	if (option & STATS_BWMV)
 		bwmv = siril_stats_ushort_bwmv(data, ngoodpix, mad, median);
 
-	/* Calculation of IKSS. Used for stacking */
-	if (option & STATS_IKSS) {
+	/* Calculation of IKSS. Only used for stacking */
+	if (option & STATS_BASIC) {
 		double *newdata = calloc(ngoodpix, sizeof(double));
 
 		/* we convert in the [0, 1] range */
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 		for (i = 0; i < ngoodpix; i++) {
 			newdata[i] = (double) data[i] / ((double) norm);
 		}
