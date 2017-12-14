@@ -340,7 +340,7 @@ imstats* statistics(fits *fit, int layer, rectangle *selection, int option, int 
 		bwmv = siril_stats_ushort_bwmv(data, ngoodpix, mad, median);
 
 	/* Calculation of IKSS. Only used for stacking */
-	if (option & STATS_BASIC) {
+	if (option & STATS_IKSS) {
 		double *newdata = calloc(ngoodpix, sizeof(double));
 
 		/* we convert in the [0, 1] range */
