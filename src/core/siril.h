@@ -62,18 +62,6 @@ typedef unsigned short WORD;		// default type for internal image data
 #define SN_NORM 1.1926
 #define QN_NORM 2.2191
 
-#define STATS_BASIC		(1 << 1)	// median, mean, sigma, noise
-#define STATS_AVGDEV	(1 << 2)	// average absolute deviation
-#define STATS_MAD		(1 << 3)	// median absolute deviation
-#define STATS_BWMV		(1 << 5)	// bidweight midvariance
-#define STATS_MAIN		STATS_BASIC | STATS_AVGDEV | STATS_MAD | STATS_BWMV
-#define STATS_IKSS		(1 << 6)	// Iterative K-sigma Estimator of Location and Scale. Take time, needed only for stacking
-#define STATS_EXTRA		STATS_MAIN | STATS_IKSS
-
-#define	STATS_ZERO_NONE 0
-#define	STATS_ZERO_NULLCHECK (!STATS_ZERO_NONE)
-
-
 /* when requesting an image redraw, it can be asked to remap its data before redrawing it.
  * REMAP_NONE	doesn't remaps the data,
  * REMAP_ONLY	remaps only the current viewport (color channel) and the mixed (RGB) image
@@ -282,12 +270,6 @@ typedef enum { SEQ_REGULAR, SEQ_SER,
 struct imdata {
 	int filenum;		/* real file index in the sequence, i.e. for mars9.fit = 9 */
 	gboolean incl;		/* selected in the sequence, included for future processings? */
-	//double eval;		/* an evaluation of the quality of the image, not yet used */
-	/* for deep-sky images, the quality is the FWHM of a star or an average of FWHM of stars,
-	 * for planetary and deep-sky images, it's computed from entropy, contrast or other eval functions. */
-	imstats *stats;		/* statistics of the image, used as a cache for full image first
-				   channel statistics, particularly used in stacking normalization.
-				   NULL if not available, this is stored in seqfile if non NULL */
 	char *date_obs;		/* date of the observation, processed and copied from the header */
 };
 
@@ -308,9 +290,6 @@ struct registration_data {
 	float angle;		// angle for the rotation, saved
 	fitted_PSF *fwhm_data;	// used in PSF/FWHM registration, not saved
 	float fwhm;		// copy of fwhm->fwhmx, used as quality indicator, saved data
-	//double entropy;		// used in DFT registration, saved data
-	// entropy could be replaced by a more general quality indicator at
-	// some point. It's the only double value stored in the .seq files, others are single.
 	double quality;
 };
 
@@ -326,6 +305,7 @@ struct sequ {
 	int reference_image;	// reference image for registration
 	imgdata *imgparam;	// a structure for each image of the sequence
 	regdata **regparam;	// *regparam[nb_layers], may be null if nb_layers is unknown
+	imstats ***stats;	// statistics of the images for each layer, may be null too
 	/* beg and end are used prior to imgparam allocation, hence their usefulness */
 	int beg;		// imgparam[0]->filenum
 	int end;		// imgparam[number-1]->filenum
@@ -370,6 +350,7 @@ struct single_image {
 	int nb_layers;		// number of layers embedded in each image file
 	layer_info *layers;	// info about layers
 	fits *fit;		// the fits is still gfit, but a reference doesn't hurt
+	imstats **stats;	// stats of fit for each layer, null if nb_layers unknown
 
 	/* enabling pre-processing on a single image */
 	fits *offset;		// the image containing offset data
@@ -593,10 +574,10 @@ struct cominf {
 
 /* this structure is used to characterize the statistics of the image */
 struct image_stats {
-	long total, ngoodpix;
-	double mean, avgDev, median, sigma, bgnoise, min, max, normValue, mad, sqrtbwmv,
-			location, scale;
-	char layername[6];
+	long total,	// number of pixels
+	     ngoodpix;	// number of non-zero pixels
+	double mean, median, sigma, avgDev, mad, sqrtbwmv,
+	       location, scale, min, max, normValue, bgnoise;
 };
 
 typedef struct Homo {

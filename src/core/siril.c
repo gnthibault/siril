@@ -56,6 +56,7 @@
 #include "algos/Def_Math.h"
 #include "algos/Def_Wavelet.h"
 #include "algos/cosmetic_correction.h"
+#include "algos/statistics.h"
 #include "opencv/opencv.h"
 
 #define MAX_ITER 15
@@ -522,7 +523,7 @@ double contrast(fits* fit, int layer) {
 	int i;
 	WORD *buf = fit->pdata[layer];
 	double contrast = 0.0;
-	imstats *stat = statistics(fit, layer, &com.selection, STATS_BASIC, STATS_ZERO_NULLCHECK);
+	imstats *stat = statistics(NULL, -1, fit, layer, &com.selection, STATS_BASIC, STATS_ZERO_NULLCHECK);
 	if (!stat) {
 		siril_log_message(_("Error: no data computed.\n"));
 		return -1.0;
@@ -805,7 +806,8 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	imoper(fit_tmp, dark_tmp, OPER_SUB);
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(fit_tmp, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		// TODO: not saving stats in cache for now
+		imstats *stat = statistics(NULL, -1, fit_tmp, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 0.0;
@@ -939,7 +941,7 @@ gpointer seqpreprocess(gpointer p) {
 		if (args->autolevel) {
 			/* TODO: evaluate the layer to apply but generally RLAYER is a good choice.
 			 * Indeed, if it is image from APN, CFA picture are in black & white */
-			imstats *stat = statistics(flat, RLAYER, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+			imstats *stat = statistics(NULL, -1, flat, RLAYER, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
 			if (!stat) {
 				siril_log_message(_("Error: no data computed.\n"));
 				return GINT_TO_POINTER(1);
@@ -963,18 +965,18 @@ gpointer seqpreprocess(gpointer p) {
 
 		if ((com.preprostatus & USE_COSME) && (com.preprostatus & USE_DARK)) {
 			if (dark->naxes[2] == 1) {
-			/* Cosmetic correction */
-			long icold, ihot;
-			deviant_pixel *dev = find_deviant_pixels(dark, args->sigma, &icold, &ihot);
-			siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
-					icold + ihot, icold, ihot);
-			cosmeticCorrection(com.uniq->fit, dev, icold + ihot, args->is_cfa);
-			if (dev)
-				free(dev);
+				/* Cosmetic correction */
+				long icold, ihot;
+				deviant_pixel *dev = find_deviant_pixels(dark, args->sigma, &icold, &ihot);
+				siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
+						icold + ihot, icold, ihot);
+				cosmeticCorrection(com.uniq->fit, dev, icold + ihot, args->is_cfa);
+				if (dev)
+					free(dev);
 			}
 			else
 				siril_log_message(_("Darkmap cosmetic correction "
-						"is only supported with single channel images\n"));
+							"is only supported with single channel images\n"));
 		}
 
 		gchar *filename = g_path_get_basename(com.uniq->filename);
@@ -1082,7 +1084,8 @@ double background(fits* fit, int reqlayer, rectangle *selection) {
 	else if (isrgb(&gfit))
 		layer = GLAYER;		//GLAYER is better to evaluate background
 
-	imstats* stat = statistics(fit, layer, selection, STATS_BASIC, STATS_ZERO_NULLCHECK);
+	// TODO: not saving stats in cache for now
+	imstats* stat = statistics(NULL, -1, fit, layer, selection, STATS_BASIC, STATS_ZERO_NULLCHECK);
 	if (!stat) {
 		siril_log_message(_("Error: no data computed.\n"));
 		return 0.0;
@@ -1447,7 +1450,7 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 	new_fit_image(fiximage, fit->rx, fit->ry, fit->naxes[2]);
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(fit, chan, NULL, STATS_BASIC | STATS_MAD, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, fit, chan, NULL, STATS_BASIC | STATS_MAD, STATS_ZERO_NULLCHECK);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 1;
@@ -1529,7 +1532,7 @@ int backgroundnoise(fits* fit, double sigma[]) {
 	cvComputeFinestScale(waveimage);
 
 	for (layer = 0; layer < fit->naxes[2]; layer++) {
-		imstats *stat = statistics(waveimage, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, waveimage, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 1;
@@ -1638,7 +1641,7 @@ gpointer noise(gpointer p) {
 	}
 	*/
 	for (chan = 0; chan < args->fit->naxes[2]; chan++) {
-		imstats *stat = statistics(args->fit, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			gdk_threads_add_idle(end_noise, args);

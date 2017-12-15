@@ -864,20 +864,27 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 	int i, j;
 	
 	if (seq == NULL) return;
-	if (seq->nb_layers > 0 && seq->regparam) {
+	if (seq->nb_layers > 0 && (seq->regparam || seq->stats)) {
 		for (i=0; i<seq->nb_layers; i++) {
-			if (seq->regparam[i]) {
+			if (seq->regparam && seq->regparam[i] || seq->stats && seq->stats[i]) {
 				for (j = 0; j < seq->number; j++) {
-					if (seq->regparam[i][j].fwhm_data
-							&& ((seq->photometry[0] != NULL)
-									&& seq->regparam[i][j].fwhm_data
-											!= seq->photometry[0][j])) // avoid double free
+					if (seq->regparam && seq->regparam[i] &&
+							seq->regparam[i][j].fwhm_data &&
+							(seq->photometry[0] != NULL &&
+							 seq->regparam[i][j].fwhm_data != seq->photometry[0][j])) // avoid double free
 						free(seq->regparam[i][j].fwhm_data);
+					if (seq->stats && seq->stats[i] &&
+							seq->stats[i][j])
+						free(seq->stats[i][j]);
 				}
-				free(seq->regparam[i]);
+				if (seq->regparam && seq->regparam[i])
+					free(seq->regparam[i]);
+				if (seq->stats && seq->stats[i])
+					free(seq->stats[i]);
 			}
 		}
-		free(seq->regparam);
+		if (seq->regparam) free(seq->regparam);
+		if (seq->stats) free(seq->stats);
 	}
 
 	for (i=0; i<seq->number; i++) {
@@ -886,8 +893,6 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 			fits_close_file(seq->fptr[i], &status);
 		}
 		if (seq->imgparam) {
-			if (seq->imgparam[i].stats)
-				free(seq->imgparam[i].stats);
 			if (seq->imgparam[i].date_obs)
 				free(seq->imgparam[i].date_obs);
 		}
@@ -1049,7 +1054,6 @@ sequence *create_internal_sequence(int size) {
 	for (i = 0; i < size; i++) {
 		seq->imgparam[i].filenum = i;
 		seq->imgparam[i].incl = 1;
-		seq->imgparam[i].stats = NULL;
 		seq->imgparam[i].date_obs = NULL;
 }
 check_or_allocate_regparam(seq, 0);
@@ -1174,24 +1178,6 @@ gboolean sequence_is_rgb(sequence *seq) {
 		default:
 			return TRUE;
 	}
-}
-
-/* Get statistics for an image in a sequence.
- * If it's not in the cache, it will be computed from the_image. If the_image is NULL,
- * it returns NULL in that case.
- * Do not free result.
- */
-imstats* seq_get_imstats(sequence *seq, int index, fits *the_image, int option) {
-	assert(seq->imgparam);
-	if (!seq->imgparam[index].stats && the_image) {
-		seq->imgparam[index].stats = statistics(the_image, 0, NULL, option, STATS_ZERO_NULLCHECK);
-		if (!seq->imgparam[index].stats) {
-			siril_log_message(_("Error: no data computed.\n"));
-			return NULL;
-		}
-		seq->needs_saving = TRUE;
-	}
-	return seq->imgparam[index].stats;
 }
 
 /* Ensures that an area does not derive off-image.

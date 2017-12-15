@@ -25,6 +25,7 @@
 #include <math.h>
 #include "core/siril.h"
 #include "core/proto.h"
+#include "algos/statistics.h"
 #include "io/single_image.h"
 #include "gui/histogram.h"
 #include "gui/callbacks.h"	// for lookup_widget()
@@ -691,7 +692,7 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 	n = fit->naxes[2];
 
 	for (i = 0; i < n; ++i) {
-		stat[i] = statistics(fit, i, NULL, STATS_BASIC | STATS_MAD, STATS_ZERO_NULLCHECK);
+		stat[i] = statistics(NULL, -1, fit, i, NULL, STATS_BASIC | STATS_MAD, STATS_ZERO_NULLCHECK);
 		if (!stat[i]) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 0.0;

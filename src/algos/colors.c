@@ -26,13 +26,14 @@
 
 #include "core/siril.h"
 #include "core/processing.h"
+#include "core/proto.h"
+#include "core/undo.h"
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
-#include "io/single_image.h"
 #include "gui/histogram.h"
-#include "core/proto.h"
+#include "io/single_image.h"
 #include "algos/colors.h"
-#include "core/undo.h"
+#include "algos/statistics.h"
 
 /*
  * A Fast HSL-to-RGB Transform
@@ -421,7 +422,7 @@ gpointer enhance_saturation(gpointer p) {
 	args->h_min /= 360.0;
 	args->h_max /= 360.0;
 	if (args->preserve) {
-		imstats *stat = statistics(args->fit, GLAYER, NULL, STATS_BASIC,
+		imstats *stat = statistics(NULL, -1, args->fit, GLAYER, NULL, STATS_BASIC,
 				STATS_ZERO_NULLCHECK);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
@@ -630,7 +631,7 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 
 	stats = malloc(3 * sizeof(imstats *));
 	for (chan = 0; chan < 3; chan++) {
-		stats[chan] = statistics(fit, chan, &black_selection, STATS_BASIC,
+		stats[chan] = statistics(NULL, -1, fit, chan, &black_selection, STATS_BASIC,
 				STATS_ZERO_NULLCHECK);
 		if (!stats[chan]) {
 			siril_log_message(_("Error: no data computed.\n"));
@@ -754,7 +755,7 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 
 	siril_log_message(_("Background reference:\n"));
 	for (chan = 0; chan < 3; chan++) {
-		imstats *stat = statistics(fit, chan, &black, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, fit, chan, &black, STATS_BASIC, STATS_ZERO_NULLCHECK);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return;

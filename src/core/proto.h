@@ -205,7 +205,6 @@ gpointer seqpreprocess(gpointer empty);
 void	initialize_preprocessing();
 double	background(fits* fit, int reqlayer, rectangle *selection);
 int backgroundnoise(fits* fit, double sigma[]);
-imstats* statistics(fits *, int, rectangle *, int, int);
 void	show_FITS_header(fits *);
 int	verbose_resize_gaussian(fits *, int, int, int);
 int	verbose_rotate_image(fits *, double, int, int);

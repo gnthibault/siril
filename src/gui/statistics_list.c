@@ -21,6 +21,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "algos/statistics.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "io/sequence.h"
@@ -302,7 +303,7 @@ void computeStat() {
 	gtk_label_set_text(statSelecLabel, selection);
 
 	for (channel = 0; channel < gfit.naxes[2]; channel++) {
-		stat[channel] = statistics(&gfit, channel, &com.selection, STATS_MAIN,
+		stat[channel] = statistics(NULL, -1, &gfit, channel, &com.selection, STATS_MAIN,
 				STATS_ZERO_NULLCHECK);
 		if (!stat[channel]) {
 			siril_log_message(_("Error: no data computed.\n"));

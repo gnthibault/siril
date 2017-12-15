@@ -52,7 +52,6 @@ void	internal_sequence_set(sequence *seq, int index, fits *fit);
 int	internal_sequence_find_index(sequence *seq, fits *fit);
 gpointer crop_sequence(gpointer p);
 gboolean sequence_is_rgb(sequence *seq);
-imstats* seq_get_imstats(sequence *seq, int index, fits *the_image, int option);
 void	enforce_area_in_image(rectangle *area, sequence *seq);
 
 int seqpsf(sequence *seq, int layer, gboolean for_registration,

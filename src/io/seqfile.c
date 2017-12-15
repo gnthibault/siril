@@ -31,6 +31,7 @@
 #include <assert.h>
 
 #include "core/siril.h"
+#include "algos/statistics.h"
 #include "io/ser.h"
 #include "io/sequence.h"
 #include "core/proto.h"
@@ -39,6 +40,18 @@
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 #include "io/films.h"
 #endif
+
+/* File format (lines starting with # are comments, lines that are (for all
+ * something) need to be in all in sequence of this only type of line):
+ *
+ * S sequence_name beg number selnum fixed reference_image
+ * L nb_layers
+ * (for all images) I filenum incl [stats+] <- stats added at some point, removed in 0.9.9
+ * (for all layers (x)) Rx regparam+
+ * TS | TA (type for ser or film)
+ * U up-scale_ratio
+ * (for all images (y) and layers (x)) Mx-y stats+
+ */
 
 /* name is sequence filename, with or without .seq extension
  * It should always be used with seq_check_basic_data() because on first loading
@@ -49,11 +62,10 @@
 sequence * readseqfile(const char *name){
 	char line[512], *scanformat;
 	char filename[512], *seqfilename;
-	int i, nbsel;
+	int i, nbsel, nb_tokens, allocated = 0, current_layer = -1, image;
 	FILE *seqfile;
-	int allocated=0;
-	int current_layer = -1;
-	sequence *seq;
+       	sequence *seq;
+	imstats *stats;
 
 	if (!name) return NULL;
 	fprintf(stdout, "Reading sequence file `%s'.\n", name);
@@ -122,34 +134,32 @@ sequence * readseqfile(const char *name){
 				}
 				break;
 			case 'I':
-				seq->imgparam[i].stats = malloc(sizeof(imstats));
-				/* new format: with stats, if already computed, else it's old format */
-				int nb_tokens = sscanf(line + 2,
+				/* First sequence file format was I filenum and incl.
+				 * A later sequence file format added the stats to this.
+				 * The current file format comes back to the first,
+				 * moving stats to the M-line. */
+				stats = NULL;
+				allocate_stats(&stats);
+				nb_tokens = sscanf(line + 2,
 						"%d %d %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg",
 						&(seq->imgparam[i].filenum),
 						&(seq->imgparam[i].incl),
-						&(seq->imgparam[i].stats->mean),
-						&(seq->imgparam[i].stats->median),
-						&(seq->imgparam[i].stats->sigma),
-						&(seq->imgparam[i].stats->avgDev),
-						&(seq->imgparam[i].stats->mad),
-						&(seq->imgparam[i].stats->sqrtbwmv),
-						&(seq->imgparam[i].stats->location),
-						&(seq->imgparam[i].stats->scale),
-						&(seq->imgparam[i].stats->min),
-						&(seq->imgparam[i].stats->max));
+						&(stats->mean),
+						&(stats->median),
+						&(stats->sigma),
+						&(stats->avgDev),
+						&(stats->mad),
+						&(stats->sqrtbwmv),
+						&(stats->location),
+						&(stats->scale),
+						&(stats->min),
+						&(stats->max));
 				if (nb_tokens == 12) {
-					if (seq->nb_layers == 1)
-						strcpy(seq->imgparam[i].stats->layername, "B&W");
-					else	strcpy(seq->imgparam[i].stats->layername, "Red");
+					add_stats_to_seq(seq, i, 0, stats);
 				} else {
-					if (nb_tokens == 2) {
-						/* previously was the simple image description with no line key */
-						free(seq->imgparam[i].stats);
-						seq->imgparam[i].stats = NULL;
-					}
-					else {
-						fprintf(stderr,"readseqfile: sequence file format error: %s\n", line);
+					free(stats);
+					if (nb_tokens != 2) {
+						fprintf(stderr, "readseqfile: sequence file format error: %s\n", line);
 						goto error;
 					}
 				}
@@ -173,7 +183,7 @@ sequence * readseqfile(const char *name){
 				if (i >= seq->number) {
 					fprintf(stderr, "\nreadseqfile ERROR: out of array bounds in reg info!\n\n");
 				} else {
-					int nb_tokens = sscanf(line+3, "%d %d %g %g %g %g %lg",
+					nb_tokens = sscanf(line+3, "%d %d %g %g %g %g %lg",
 							&(seq->regparam[current_layer][i].shiftx),
 							&(seq->regparam[current_layer][i].shifty),
 							&(seq->regparam[current_layer][i].rot_centre_x),
@@ -263,6 +273,42 @@ sequence * readseqfile(const char *name){
 					goto error;
 				}
 				break;
+			case 'M':
+				/* stats may not exist for all images and layers so we use
+				 * indices for them, the line is Mx-y with x the layer
+				 * number and y the image index */
+				current_layer = line[1] - '0';
+				if (current_layer < 0 || current_layer > 9 || line[2] != '-') {
+					fprintf(stderr, "readseqfile: sequence file format error: %s\n",line);
+					goto error;
+				}
+				stats = NULL;
+				allocate_stats(&stats);
+				nb_tokens = sscanf(line + 3,
+						"%d %ld %ld %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg",
+						&image,
+						&(stats->total),
+						&(stats->ngoodpix),
+						&(stats->mean),
+						&(stats->median),
+						&(stats->sigma),
+						&(stats->avgDev),
+						&(stats->mad),
+						&(stats->sqrtbwmv),
+						&(stats->location),
+						&(stats->scale),
+						&(stats->min),
+						&(stats->max),
+						&(stats->normValue),
+						&(stats->bgnoise));
+				if (nb_tokens == 15) {
+					add_stats_to_seq(seq, image, current_layer, stats);
+				} else {
+					free(stats);
+					fprintf(stderr, "readseqfile: sequence file format error: %s\n",line);
+					goto error;
+				}
+				break;
 		}
 	}
 	if (!allocated) {
@@ -333,24 +379,9 @@ int writeseqfile(sequence *seq){
 	fprintf(seqfile, "L %d\n", seq->nb_layers);
 
 	for(i=0; i < seq->number; ++i){
-		if (seq->imgparam[i].stats) {
-			fprintf(seqfile,"I %d %d %g %g %g %g %g %g %g %g %g %g\n",
-					seq->imgparam[i].filenum, 
-					seq->imgparam[i].incl,
-					seq->imgparam[i].stats->mean,
-					seq->imgparam[i].stats->median,
-					seq->imgparam[i].stats->sigma,
-					seq->imgparam[i].stats->avgDev,
-					seq->imgparam[i].stats->mad,
-					seq->imgparam[i].stats->sqrtbwmv,
-					seq->imgparam[i].stats->location,
-					seq->imgparam[i].stats->scale,
-					seq->imgparam[i].stats->min,
-					seq->imgparam[i].stats->max);
-		} else {
-			fprintf(seqfile,"I %d %d\n", seq->imgparam[i].filenum, 
-					seq->imgparam[i].incl);
-		}
+		fprintf(seqfile,"I %d %d\n",
+				seq->imgparam[i].filenum, 
+				seq->imgparam[i].incl);
 	}
 
 	for(j=0; j < seq->nb_layers; j++) {
@@ -374,6 +405,29 @@ int writeseqfile(sequence *seq){
 						seq->regparam[j][i].fwhm,
 						seq->regparam[j][i].quality
 				       );
+			}
+		}
+		if (seq->stats && seq->stats[j]) {
+			for (i=0; i < seq->number; ++i) {
+				if (!seq->stats[j][i]) continue;
+
+				fprintf(seqfile, "M%d-%d %ld %ld %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg\n",
+						j, i,
+						seq->stats[j][i]->total,
+						seq->stats[j][i]->ngoodpix,
+						seq->stats[j][i]->mean,
+						seq->stats[j][i]->median,
+						seq->stats[j][i]->sigma,
+						seq->stats[j][i]->avgDev,
+						seq->stats[j][i]->mad,
+						seq->stats[j][i]->sqrtbwmv,
+						seq->stats[j][i]->location,
+						seq->stats[j][i]->scale,
+						seq->stats[j][i]->min,
+						seq->stats[j][i]->max,
+						seq->stats[j][i]->normValue,
+						seq->stats[j][i]->bgnoise);
+
 			}
 		}
 	}
@@ -457,14 +511,12 @@ int buildseqfile(sequence *seq, int force_recompute) {
 				}
 				seq->imgparam[seq->number].filenum = i;
 				seq->imgparam[seq->number].incl = SEQUENCE_DEFAULT_INCLUDE;
-				seq->imgparam[seq->number].stats = NULL;
 				seq->imgparam[seq->number].date_obs = NULL;
 				seq->number++;
 			}
 		} else {
 			seq->imgparam[i].filenum = i;
 			seq->imgparam[i].incl = SEQUENCE_DEFAULT_INCLUDE;
-			seq->imgparam[i].stats = NULL;
 			seq->imgparam[i].date_obs = NULL;
 		}
 	}
