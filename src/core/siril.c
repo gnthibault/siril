@@ -195,6 +195,7 @@ int sub_background(fits* image, fits* background, int layer) {
 	WORD *image_buf = image->pdata[layer];
 	WORD *bkg_buf = background->pdata[layer];
 	size_t i, ndata;
+	double median;
 
 	if ((image->rx) != (background->rx) || ((image->ry) != (background->ry))) {
 		char *msg = siril_log_message(
@@ -205,23 +206,25 @@ int sub_background(fits* image, fits* background, int layer) {
 	}
 	ndata = image->rx * image->ry;
 
-	// First step we convert data, apply the subtraction and search for minimum
+	/* First step we convert data, apply the subtraction, normalize with median,
+	 * and re-convert data to USHORT
+	 */
+	imstats *stat = statistics(image, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+	median = (double) stat->median / USHRT_MAX_DOUBLE;
 	pxl_image = malloc(sizeof(double) * ndata);
 	pxl_bkg = malloc(sizeof(double) * ndata);
+	image_buf = image->pdata[layer];
+
 	for (i = 0; i < ndata; i++) {
 		pxl_image[i] = (double) image_buf[i] / USHRT_MAX_DOUBLE;
 		pxl_bkg[i] = (double) bkg_buf[i] / USHRT_MAX_DOUBLE;
 		pxl_image[i] -= pxl_bkg[i];
-		min = min(pxl_image[i], min);
-	}
-	image_buf = image->pdata[layer];
-	// Second we apply an offset to the result and re-convert the data
-	for (i = 0; i < ndata; i++) {
-		pxl_image[i] += fabs(min);
+		pxl_image[i] += median;
 		image_buf[i] = round_to_WORD(pxl_image[i] * USHRT_MAX_DOUBLE);
 	}
 
 	// We free memory
+	free(stat);
 	free(pxl_image);
 	free(pxl_bkg);
 	return 0;
