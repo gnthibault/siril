@@ -466,6 +466,8 @@ int register_shift_fwhm(struct registration_args *args) {
 	}
 
 	args->seq->regparam[args->layer] = current_regdata;
+	if (args->x2upscale)
+		args->seq->upscale_at_stacking = 2.0;
 	update_used_memory();
 	siril_log_message(_("Registration finished.\n"));
 	siril_log_color_message(_("Best frame: #%d with fwhm=%.3g.\n"), "bold",

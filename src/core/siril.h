@@ -21,11 +21,13 @@
    ({ __typeof__ (a) _a = (a); \
        __typeof__ (b) _b = (b); \
      _a > _b ? _a : _b; })
+
 #undef min
  #define min(a,b) \
    ({ __typeof__ (a) _a = (a); \
        __typeof__ (b) _b = (b); \
      _a < _b ? _a : _b; })
+
 #define SQR(x) ((x)*(x))
 
 #define USHRT_MAX_DOUBLE ((double)USHRT_MAX)
@@ -89,7 +91,6 @@ enum {
 	N_COLUMNS_CONVERT
 };
 
-
 typedef enum {
 	TYPEUNDEF=(1 << 1),
 	TYPEFITS= (1 << 2),
@@ -109,8 +110,8 @@ typedef enum {
 #define USE_DARK	0x01
 #define USE_FLAT	0x02
 #define USE_OFFSET	0x04
-#define USE_COSME   0x08	/* cosmetic correction */
-#define USE_OPTD    0x10	/* dark optimization */
+#define USE_COSME	0x08	/* cosmetic correction */
+#define USE_OPTD	0x10	/* dark optimization */
 
 /* cookies for the file chooser */
 #define OD_NULL 	0
@@ -134,8 +135,8 @@ typedef enum {
 #define GREEN_VPORT 	1
 #define BLUE_VPORT 	2
 #define RGB_VPORT 	3
-#define MAXGRAYVPORT 	3			// 3 gray vports supported only (R, G, B)
-#define MAXCOLORVPORT	1			// 1 color vport supported only (RGB)
+#define MAXGRAYVPORT 	3	// 3 gray vports supported only (R, G, B)
+#define MAXCOLORVPORT	1	// 1 color vport supported only (RGB)
 #define MAXVPORT 	MAXGRAYVPORT + MAXCOLORVPORT
 
 /* defines for copyfits actions */
@@ -165,11 +166,16 @@ typedef enum {
 
 #define PREVIEW_NB 2
 
+/* special values for com.seq.current, the currently loaded image of the
+ * sequence. Negative values can be used to indicate that a specific image is
+ * loaded while there is a sequence or not in com.seq */
 #define RESULT_IMAGE -1		// used as current image index in a sequence
 				// when the result of a processing is displayed
 #define UNRELATED_IMAGE -2	// image loaded while a sequence was loaded too
+#define SCALED_IMAGE -3		// the single image has a different size than
+				// the loaded sequence
 
-#define MAX_STARS 50000
+#define MAX_STARS 50000		// maximum length of com.stars
 
 /* constants for loglut function */
 #define LOG 1
@@ -313,6 +319,8 @@ struct registration_data {
 	// some point. It's the only double value stored in the .seq files, others are single.
 	double quality;
 };
+
+/* see explanation about sequence and single image management in io/sequence.c */
 
 struct sequ {
 	char *seqname;		// name of the sequence, as in name.seq
