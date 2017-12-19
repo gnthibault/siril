@@ -89,8 +89,8 @@ void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 		return;		// just clear the list
 	}
 	if (seq->regparam && seq->regparam[layer]) {
-		shiftx = seq->regparam[layer][index].shiftx;
-		shifty = seq->regparam[layer][index].shifty;
+		shiftx = roundf_to_int(seq->regparam[layer][index].shiftx);
+		shifty = roundf_to_int(seq->regparam[layer][index].shifty);
 
 		if (seq->regparam[layer][index].fwhm > 0.0f)
 			fwhm = seq->regparam[layer][index].fwhm;

@@ -191,7 +191,7 @@ int imoper(fits *a, fits *b, char oper) {
  * it will use double type format.
  */
 int sub_background(fits* image, fits* background, int layer) {
-	double *pxl_image, *pxl_bkg, min = DBL_MAX;
+	double *pxl_image, *pxl_bkg;
 	WORD *image_buf = image->pdata[layer];
 	WORD *bkg_buf = background->pdata[layer];
 	size_t i, ndata;
@@ -414,58 +414,6 @@ int shift(int sx, int sy) {
 
 	return 0;
 }
-
-#if 0
-int rshift2(char *genname, char *outname, int number, char *shiftfile) {
-	int j,shiftx,shifty,count,n;
-	char line[256];
-	FILE *sf=NULL;
-
-	if (shiftfile!=NULL) {
-		sf=fopen(shiftfile,"r");
-		if (sf==NULL) {
-			siril_log_message("rshift2: could not open shift file %s\n", shiftfile);
-			return 0;
-		}
-		fgets(line,255,sf);
-		while(line[0]=='#') {
-			fgets(line,255,sf);
-		}
-	}
-	shiftx=shifty=0;
-
-	for (j=1;j<=number;++j) {
-		if(sf!=NULL) {
-			count=sscanf(line,"%d %d %d",&n,&shiftx,&shifty);
-			if(count!=3) {
-				siril_log_message("rshift2: format error in shift file %s\n", shiftfile);
-				return 0;
-			}
-			fgets(line,255,sf);
-		}
-		else {
-			shiftx=0;
-			shifty=0;
-			n=j;
-		}
-		fprintf(stderr,"rshift2 %d %d %d\n", n, shiftx,shifty);
-		siril_log_message("Processing image %s%d%s", genname, n, com.ext);
-
-		buildfilename(genname,n);
-		if(readfits(com.formname, &(gfit), com.formname)) {
-			fprintf(stderr,"missed %s com.formanme",com.formname);
-			return 1;
-		}
-		shift(shiftx, shifty);
-		buildfilename(outname,n);
-		savefits(com.formname,&gfit);
-	}
-	if(sf!=NULL) {
-		fclose(sf);
-	}
-	return 0;
-}
-#endif
 
 /* This entropy function computes the entropy for the image in gfit for its
  * layer 'layer', in the area designated by area which can be NULL.

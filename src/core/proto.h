@@ -96,6 +96,7 @@ int open_raw_files(const char *, fits *, int);
 
 /****************** utils.h ******************/
 int	round_to_int(double x);
+int	roundf_to_int(float x);
 WORD	round_to_WORD(double x);
 BYTE	round_to_BYTE(double x);
 BYTE	conv_to_BYTE(double x);

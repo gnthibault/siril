@@ -126,8 +126,8 @@ gpointer generic_sequence_worker(gpointer p) {
 				// if we run in parallel, it will not be the same for all
 				// and we don't want to overwrite the original anyway
 				if (args->regdata_for_partial) {
-					int shiftx = args->seq->regparam[args->layer_for_partial][input_idx].shiftx;
-					int shifty = args->seq->regparam[args->layer_for_partial][input_idx].shifty;
+					int shiftx = roundf_to_int(args->seq->regparam[args->layer_for_partial][input_idx].shiftx);
+					int shifty = roundf_to_int(args->seq->regparam[args->layer_for_partial][input_idx].shifty);
 					area.x -= shiftx;
 					area.y += shifty;
 				}

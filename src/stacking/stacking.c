@@ -621,8 +621,8 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 		/* load registration data for current image */
 		if(reglayer != -1 && args->seq->regparam[reglayer]) {
-			shiftx = args->seq->regparam[reglayer][j].shiftx;
-			shifty = args->seq->regparam[reglayer][j].shifty;
+			shiftx = roundf_to_int(args->seq->regparam[reglayer][j].shiftx);
+			shifty = roundf_to_int(args->seq->regparam[reglayer][j].shifty);
 		} else {
 			shiftx = 0;
 			shifty = 0;
@@ -2073,7 +2073,9 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		return 0;
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	struct upscale_args *upargs = malloc(sizeof(struct upscale_args));
-	upargs->factor = stackargs->seq->upscale_at_stacking;
+	double factor = stackargs->seq->upscale_at_stacking;
+
+	upargs->factor = factor;
 
 	args->seq = stackargs->seq;
 	args->partial_image = FALSE;
@@ -2086,14 +2088,14 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	args->save_hook = NULL;
 	args->idle_function = end_upscale;
 	args->stop_on_error = TRUE;
-	args->description = _("up-scaling sequence for stacking");
+	args->description = _("Up-scaling sequence for stacking");
 	args->has_output = TRUE;
 	args->new_seq_prefix = "tmp_upscaled_";
 	args->load_new_sequence = FALSE;
 	args->force_ser_output = FALSE;
 	args->user = upargs;
 	args->already_in_a_thread = TRUE;
-	args->parallel = FALSE;	// for debug only
+	args->parallel = TRUE;
 
 	/* TODO: we should remove files from a previously up-scaled sequence, in case
 	 * the filtering has changed, because the sequence used for stacking is built
@@ -2109,6 +2111,7 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	free(upargs);
 
 	if (!retval) {
+		int i;
 		// replace active sequence by upscaled
 		if (check_seq(0)) {	// builds the new .seq
 			free(seqname);
@@ -2121,7 +2124,7 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 			free(args);
 			return 1;
 		}
-		/* there are two differences between old and new sequence:
+		/* there are three differences between old and new sequence:
 		 * the size of images and possibly the number of images if the
 		 * stacking is done on a filtered set.
 		 * - about the size, it is updated in the idle function of the
@@ -2129,11 +2132,18 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		 * - the number of images is managed below, to avoid up-scaling
 		 *   unnecessary images, only the selected are and the sequence
 		 *   passed to stacking is treated in its entirety.
+		 * - the shifts between images that must be multiplied by factor
 		 */
 		seq_check_basic_data(newseq, FALSE);
 		stackargs->seq = newseq;
 		stackargs->filtering_criterion = seq_filter_all;
 		stackargs->nb_images_to_stack = newseq->number;
+		/* we multiply regparam by the upscale factor value */
+		stackargs->seq->regparam[stackargs->reglayer] = args->seq->regparam[stackargs->reglayer];
+		for (i = 0; i < stackargs->seq->number; i++) {
+			stackargs->seq->regparam[stackargs->reglayer][i].shiftx *= factor;
+			stackargs->seq->regparam[stackargs->reglayer][i].shifty *= factor;
+		}
 	}
 	free(seqname);
 	free(args);

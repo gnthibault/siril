@@ -265,8 +265,8 @@ static gpointer export_sequence(gpointer ptr) {
 
 		/* load registration data for current image */
 		if (reglayer != -1 && args->seq->regparam[reglayer]) {
-			shiftx = args->seq->regparam[reglayer][i].shiftx;
-			shifty = args->seq->regparam[reglayer][i].shifty;
+			shiftx = roundf_to_int(args->seq->regparam[reglayer][i].shiftx);
+			shifty = roundf_to_int(args->seq->regparam[reglayer][i].shifty);
 		} else {
 			shiftx = 0;
 			shifty = 0;

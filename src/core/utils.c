@@ -69,6 +69,14 @@ int round_to_int(double x) {
 	return (int) (x - 0.5);
 }
 
+int roundf_to_int(float x) {
+	assert(x >= INT_MIN-0.5);
+	assert(x <= INT_MAX+0.5);
+	if (x >= 0.0)
+		return (int) (x + 0.5);
+	return (int) (x - 0.5);
+}
+
 WORD round_to_WORD(double x) {
 	if (x <= 0.0)
 		return (WORD) 0;

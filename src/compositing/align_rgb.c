@@ -77,8 +77,8 @@ static void align_and_compose() {
 			for (channel = 0; channel < 3; channel++) {
 				if (seq && seq->regparam) {
 					WORD pixel;
-					int realX = x - seq->regparam[REGLAYER][channel].shiftx;
-					int realY = y - seq->regparam[REGLAYER][channel].shifty;
+					int realX = x - roundf_to_int(seq->regparam[REGLAYER][channel].shiftx);
+					int realY = y - roundf_to_int(seq->regparam[REGLAYER][channel].shifty);
 					if (realX < 0 || realX >= gfit.rx)
 						pixel = 0;
 					else if (realY < 0 || realY >= gfit.ry)
