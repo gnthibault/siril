@@ -70,7 +70,7 @@ static char *ser_timestamp(uint64_t timestamp) {
 
 	t = gmtime(&secs);
 
-	sprintf(str, "%04d-%02d-%02d %02d:%02d:%02d.%03d", t->tm_year + 1900,
+	sprintf(str, "%04d-%02d-%02dT%02d:%02d:%02d.%03d", t->tm_year + 1900,
 			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, ms);
 
 	return str;
@@ -122,7 +122,7 @@ static int FITS_date_key_to_Unix_time(char *date, uint64_t *utc,
 	if (date[0] == '\0')
 		return -1;
 
-	sscanf(date, "%04d-%02d-%02dT%02d:%02d:%02d.%02d", &year, &month, &day, &hour,
+	sscanf(date, "%04d-%02d-%02dT%02d:%02d:%02d.%d", &year, &month, &day, &hour,
 			&min, &sec, &ms);
 
 	timeinfo.tm_year = year - 1900;
@@ -563,8 +563,6 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 		int i;
 		if (copy_from->ts) {
 			ser_file->ts = calloc(8, copy_from->frame_count);
-			for (i = 0; i < copy_from->frame_count; i++)
-				ser_file->ts[i] = copy_from->ts[i];
 		} else {
 			ser_file->ts = NULL;
 			ser_file->fps = -1.0;
@@ -769,6 +767,10 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 		siril_log_message(_("This type of Bayer pattern is not handled yet.\n"));
 		return -1;
 	}
+	char *timestamp = ser_timestamp(ser_file->ts[frame_no]);
+	g_snprintf(fit->date_obs, FLEN_VALUE, "%s", timestamp);
+	free(timestamp);
+
 	fits_flip_top_to_bottom(fit);
 	return 0;
 }
@@ -1060,6 +1062,13 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 #pragma omp atomic
 #endif
 	ser_file->frame_count++;
+	if (ser_file->ts) {
+		uint64_t utc, local;
+		FITS_date_key_to_Unix_time(fit->date_obs, &utc, &local);
+		ser_file->ts[frame_no] = utc;
+	}
+
+
 	retval = 0;
 
 free_and_quit:
