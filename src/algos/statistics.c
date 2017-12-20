@@ -465,6 +465,7 @@ void copy_seq_stats_to_fit(sequence *seq, int index, fits *fit) {
 /* if image data has changed, use this to force recomputation of the stats */
 void invalidate_stats_from_fit(fits *fit) {
 	if (fit->stats) {
+		int layer;
 		for (layer = 0; layer < fit->naxes[2]; layer++)
 			fit->stats[layer] = NULL;
 	}

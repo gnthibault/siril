@@ -29,7 +29,7 @@ typedef enum {
 	MULTIPLICATIVE_SCALING,
 } normalization;
 
-/* TYPE OF STACK */
+/* identical to the combo box items */
 typedef enum {
 	ALL_IMAGES,
 	SELECTED_IMAGES,

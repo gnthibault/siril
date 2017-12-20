@@ -12,6 +12,8 @@ extern "C" {
 #include <stdint.h>
 #include "registration/matching/misc.h"
 #include "registration/matching/atpmatch.h"
+#include "gui/progress_and_log.h"
+
 
 int cvResizeGaussian(fits *, int, int, int);
 int cvResizeGaussian_data8(uint8_t *dataIn, int rx, int ry, uint8_t *dataOut,

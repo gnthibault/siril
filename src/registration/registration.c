@@ -251,8 +251,8 @@ int register_shift_dft(struct registration_args *args) {
 	current_regdata[ref_image].quality = QualityEstimate(&fit_ref, args->layer, QUALTYPE_NORMAL);
 	clearfits(&fit_ref);
 	fftw_execute_dft(p, ref, in); /* repeat as needed */
-	current_regdata[ref_image].shiftx = 0;
-	current_regdata[ref_image].shifty = 0;
+	current_regdata[ref_image].shiftx = 0.0;
+	current_regdata[ref_image].shifty = 0.0;
 
 	q_min = q_max = current_regdata[ref_image].quality;
 	q_index = ref_image;
@@ -337,8 +337,8 @@ int register_shift_dft(struct registration_args *args) {
 					shiftx -= size;
 				}
 
-				current_regdata[frame].shiftx = shiftx;
-				current_regdata[frame].shifty = shifty;
+				current_regdata[frame].shiftx = (float) shiftx;
+				current_regdata[frame].shifty = (float) shifty;
 
 				/* shiftx and shifty are the x and y values for translation that
 				 * would make this image aligned with the reference image.
@@ -347,7 +347,7 @@ int register_shift_dft(struct registration_args *args) {
 				 */
 #ifdef DEBUG
 				fprintf(stderr,
-						"reg: frame %d, shiftx=%d shifty=%d quality=%g\n",
+						"reg: frame %d, shiftx=%f shifty=%f quality=%g\n",
 						args->seq->imgparam[frame].filenum,
 						current_regdata[frame].shiftx, current_regdata[frame].shifty,
 						current_regdata[frame].quality);
@@ -378,6 +378,8 @@ int register_shift_dft(struct registration_args *args) {
 	fftw_free(convol);
 	if (!ret) {
 		args->seq->regparam[args->layer] = current_regdata;
+		if (args->x2upscale)
+			args->seq->upscale_at_stacking = 2.0;
 		normalizeQualityData(args, q_min, q_max);
 		update_used_memory();
 		siril_log_message(_("Registration finished.\n"));
@@ -439,8 +441,8 @@ int register_shift_fwhm(struct registration_args *args) {
 		if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
 			continue;
 		if (frame == ref_image || !current_regdata[frame].fwhm_data) {
-			current_regdata[frame].shiftx = 0;
-			current_regdata[frame].shifty = 0;
+			current_regdata[frame].shiftx = 0.0;
+			current_regdata[frame].shifty = 0.0;
 			continue;
 		}
 		if (current_regdata[frame].fwhm < fwhm_min
@@ -449,16 +451,16 @@ int register_shift_fwhm(struct registration_args *args) {
 			fwhm_index = frame;
 		}
 		tmp = reference_xpos - current_regdata[frame].fwhm_data->xpos;
-		current_regdata[frame].shiftx = round_to_int(tmp);
+		current_regdata[frame].shiftx = tmp;
 		tmp = current_regdata[frame].fwhm_data->ypos - reference_ypos;
-		current_regdata[frame].shifty = round_to_int(tmp);
+		current_regdata[frame].shifty = tmp;
 
 		/* shiftx and shifty are the x and y values for translation that
 		 * would make this image aligned with the reference image.
 		 * WARNING: the y value is counted backwards, since the FITS is
 		 * stored down from up.
 		 */
-		fprintf(stderr, "reg: file %d, shiftx=%d shifty=%d\n",
+		fprintf(stderr, "reg: file %d, shiftx=%f shifty=%f\n",
 				args->seq->imgparam[frame].filenum,
 				current_regdata[frame].shiftx, current_regdata[frame].shifty);
 		cur_nb += 1.f;
@@ -466,6 +468,8 @@ int register_shift_fwhm(struct registration_args *args) {
 	}
 
 	args->seq->regparam[args->layer] = current_regdata;
+	if (args->x2upscale)
+		args->seq->upscale_at_stacking = 2.0;
 	update_used_memory();
 	siril_log_message(_("Registration finished.\n"));
 	siril_log_color_message(_("Best frame: #%d with fwhm=%.3g.\n"), "bold",
@@ -857,8 +861,8 @@ int register_ecc(struct registration_args *args) {
 			}
 			if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
 				continue;
-			current_regdata[frame].shiftx = 0;
-			current_regdata[frame].shifty = 0;
+			current_regdata[frame].shiftx = 0.0;
+			current_regdata[frame].shifty = 0.0;
 
 			char tmpmsg[1024], tmpfilename[256];
 
@@ -903,8 +907,8 @@ int register_ecc(struct registration_args *args) {
 						q_min = min(q_min, qual);
 					}
 
-					current_regdata[frame].shiftx = -round_to_int(reg_param.dx);
-					current_regdata[frame].shifty = -round_to_int(reg_param.dy);
+					current_regdata[frame].shiftx = -reg_param.dx;
+					current_regdata[frame].shifty = -reg_param.dy;
 
 #ifdef _OPENMP
 #pragma omp atomic
@@ -917,6 +921,8 @@ int register_ecc(struct registration_args *args) {
 		}
 	}
 	args->seq->regparam[args->layer] = current_regdata;
+	if (args->x2upscale)
+		args->seq->upscale_at_stacking = 2.0;
 	normalizeQualityData(args, q_min, q_max);
 	clearfits(&ref);
 	update_used_memory();

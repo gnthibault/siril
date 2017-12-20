@@ -536,7 +536,8 @@ int ser_write_and_close(struct ser_struct *ser_file) {
 	return ser_close_file(ser_file);// closes, frees and zeroes
 }
 
-/* ser_file must be allocated */
+/* ser_file must be allocated
+ * the file is created with no image size, the first image added will set it. */
 int ser_create_file(const char *filename, struct ser_struct *ser_file,
 		gboolean overwrite, struct ser_struct *copy_from) {
 	if (overwrite)
@@ -548,7 +549,8 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 	}
 
 	if (copy_from) {
-		memcpy(&ser_file->lu_id, &copy_from->lu_id, 28);
+		memcpy(&ser_file->lu_id, &copy_from->lu_id, 12);
+		memset(&ser_file->image_width, 0, 16);
 		memcpy(&ser_file->date, &copy_from->date, 8);
 		memcpy(&ser_file->date_utc, &copy_from->date_utc, 8);
 		ser_file->file_id = strdup(copy_from->file_id);
@@ -556,7 +558,7 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 		memcpy(ser_file->instrument, copy_from->instrument, 40);
 		memcpy(ser_file->telescope, copy_from->telescope, 40);
 		ser_file->byte_pixel_depth = copy_from->byte_pixel_depth;
-		ser_file->number_of_planes = copy_from->number_of_planes;
+		ser_file->number_of_planes = 0;
 
 		int i;
 		if (copy_from->ts) {

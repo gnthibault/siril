@@ -58,6 +58,22 @@
 #include "registration/registration.h"
 #include "stacking/stacking.h"	// for update_stack_interface
 
+/* com.seq is a static struct containing the sequence currently selected by the
+ * user from the interface. It may change to be a pointer to any sequence
+ * someday, until then, the seqname is NULL when no sequence is loaded and the
+ * number of images in the sequence is also negative.
+ * com.uniq represents information about an image opened and displayed outside
+ * a sequence, for example from the load command, the open menu, or the result
+ * of a stacking operation.
+ * com.seq.number is used to provide a relationship between a possibly loaded
+ * sequence and the single image. A single image can be loaded without
+ * unloading the sequence. This information could as well be moved to
+ * com.status if com.seq becomes a pointer. Three constants have been declared
+ * in siril.h to explicit this relationship: RESULT_IMAGE, UNRELATED_IMAGE and
+ * SCALED_IMAGE. They are mostly used to understand what to do to display
+ * single images when a sequence is loaded or not.
+ */
+
 static void fillSeqAviExport() {
 	char width[6], height[6], fps[7];
 	GtkEntry *heightEntry = GTK_ENTRY(lookup_widget("entryAviHeight"));
@@ -469,7 +485,13 @@ int seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it) {
 	clear_stars_list();
 	clear_histograms();
 	gfit.maxi = 0;
-	// what else needs to be cleaned?
+	undo_flush();
+	if (seq->current == SCALED_IMAGE) {
+		gfit.rx = seq->rx;
+		gfit.ry = seq->ry;
+		adjust_vport_size_to_image();
+	}
+
 	if (load_it) {
 		set_cursor_waiting(TRUE);
 		if (seq_read_frame(seq, index, dest)) {
@@ -495,14 +517,9 @@ int seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it) {
 		update_gfit_histogram_if_needed();
 		set_cursor_waiting(FALSE);
 	}
-	/* change the displayed value in the spin button to have the real file number
-	 * instead of the index of the adjustment */
 
-	undo_flush();
-	/* initialize menu gui */
-	update_MenuItem();
-
-	display_image_number(index);
+	update_MenuItem();		// initialize menu gui
+	display_image_number(index);	// in the gray window
 	sequence_list_change_current();
 	adjust_exclude(index, FALSE);	// check or uncheck excluded checkbox
 	adjust_refimage(index);	// check or uncheck reference image checkbox

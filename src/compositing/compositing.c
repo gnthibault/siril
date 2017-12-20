@@ -606,16 +606,16 @@ void on_button_align_clicked(GtkButton *button, gpointer user_data) {
 	if (luminance_mode) {
 		for (j=0, i=0; i<layers_count; i++) {
 			if (has_fit(i)) {
-				gtk_spin_button_set_value(layers[i]->spinbutton_x, seq->regparam[0][j].shiftx);
-				gtk_spin_button_set_value(layers[i]->spinbutton_y, seq->regparam[0][j].shifty);
+				gtk_spin_button_set_value(layers[i]->spinbutton_x, roundf_to_int(seq->regparam[0][j].shiftx));
+				gtk_spin_button_set_value(layers[i]->spinbutton_y, roundf_to_int(seq->regparam[0][j].shifty));
 				j++;
 			}
 		}
 	} else {
 		for (j=0, i=1; i<layers_count; i++) {
 			if (has_fit(i)) {
-				gtk_spin_button_set_value(layers[i]->spinbutton_x, seq->regparam[0][j].shiftx);
-				gtk_spin_button_set_value(layers[i]->spinbutton_y, seq->regparam[0][j].shifty);
+				gtk_spin_button_set_value(layers[i]->spinbutton_x, roundf_to_int(seq->regparam[0][j].shiftx));
+				gtk_spin_button_set_value(layers[i]->spinbutton_y, roundf_to_int(seq->regparam[0][j].shifty));
 				j++;
 			}
 		}
@@ -642,9 +642,9 @@ WORD get_composition_pixel_value(int fits_index, int reg_layer, int x, int y) {
 	int realX = x, realY = y;
 	if (seq && seq->regparam && reg_layer < seq->number && reg_layer >= 0) {
 		// all images have one layer, hence the 0 below
-		realX = x - seq->regparam[0][reg_layer].shiftx;
+		realX = x - roundf_to_int(seq->regparam[0][reg_layer].shiftx);
 		if (realX < 0 || realX >= gfit.rx) return (WORD)0;
-		realY = y - seq->regparam[0][reg_layer].shifty;
+		realY = y - roundf_to_int(seq->regparam[0][reg_layer].shifty);
 		if (realY < 0 || realY >= gfit.ry) return (WORD)0;
 	}
 	WORD pixel_value = layers[fits_index]->the_fit.pdata[0][realX + realY * gfit.rx];

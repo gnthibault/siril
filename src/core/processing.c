@@ -126,8 +126,8 @@ gpointer generic_sequence_worker(gpointer p) {
 				// if we run in parallel, it will not be the same for all
 				// and we don't want to overwrite the original anyway
 				if (args->regdata_for_partial) {
-					int shiftx = args->seq->regparam[args->layer_for_partial][input_idx].shiftx;
-					int shifty = args->seq->regparam[args->layer_for_partial][input_idx].shifty;
+					int shiftx = roundf_to_int(args->seq->regparam[args->layer_for_partial][input_idx].shiftx);
+					int shifty = roundf_to_int(args->seq->regparam[args->layer_for_partial][input_idx].shifty);
 					area.x -= shiftx;
 					area.y += shifty;
 				}
@@ -221,8 +221,8 @@ gboolean end_generic_sequence(gpointer p) {
 
 	if (args->has_output && args->load_new_sequence &&
 			args->new_seq_prefix && !args->retval) {
-		char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(args->seq->seqname) + 5);
 		gchar *basename = g_path_get_basename(args->seq->seqname);
+		char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
 		sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
 		check_seq(0);
 		update_sequences_list(seqname);

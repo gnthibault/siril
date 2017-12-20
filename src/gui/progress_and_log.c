@@ -37,7 +37,7 @@ static void progress_bar_set_text(const char *text) {
 	/* It will not happen that text is NULL here, because it's
 	 * catched by set_progress_bar_data() */
 	if (!text || text[0] == '\0')
-		text = "Ready.";
+		text = _("Ready.");
 	gtk_progress_bar_set_text(pbar, text);
 }
 

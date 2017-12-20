@@ -70,8 +70,8 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	cairo_translate(cr, area_width / 2.0 - com.seq.previewX[current_preview],
 			area_height/2.0-com.seq.previewY[current_preview]);
 	if (com.seq.regparam && com.seq.regparam[com.cvport]) {
-		shiftx = com.seq.regparam[com.cvport][com.seq.current].shiftx;
-		shifty = com.seq.regparam[com.cvport][com.seq.current].shifty;
+		shiftx = roundf_to_int(com.seq.regparam[com.cvport][com.seq.current].shiftx);
+		shifty = roundf_to_int(com.seq.regparam[com.cvport][com.seq.current].shifty);
 	}
 	if (shiftx || shifty)
 		cairo_translate(cr, shiftx, -shifty);
@@ -187,9 +187,9 @@ void adjust_reginfo() {
 		gtk_spin_button_set_value(spin_shifty, 0.);
 	} else {
 		gtk_spin_button_set_value(spin_shiftx,
-				com.seq.regparam[com.cvport][com.seq.current].shiftx);
+				roundf_to_int(com.seq.regparam[com.cvport][com.seq.current].shiftx));
 		gtk_spin_button_set_value(spin_shifty,
-				com.seq.regparam[com.cvport][com.seq.current].shifty);
+				roundf_to_int(com.seq.regparam[com.cvport][com.seq.current].shifty));
 	}
 	g_signal_handlers_unblock_by_func(spin_shiftx, on_spinbut_shift_value_change, NULL);
 	g_signal_handlers_unblock_by_func(spin_shifty, on_spinbut_shift_value_change, NULL);
@@ -230,8 +230,8 @@ void on_spinbut_shift_value_change(GtkSpinButton *spinbutton, gpointer user_data
 
 	new_value = gtk_spin_button_get_value_as_int(spinbutton);
 	if (spinbutton == spin_shiftx)
-		com.seq.regparam[current_layer][com.seq.current].shiftx = new_value;
-	else com.seq.regparam[current_layer][com.seq.current].shifty = new_value;
+		com.seq.regparam[current_layer][com.seq.current].shiftx = (float) new_value;
+	else com.seq.regparam[current_layer][com.seq.current].shifty = (float) new_value;
 	writeseqfile(&com.seq);
 	fill_sequence_list(&com.seq, current_layer);	// update list with new regparam
 	redraw_previews();

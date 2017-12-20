@@ -46,6 +46,7 @@
 #include "gui/histogram.h"	// update_gfit_histogram_if_needed();
 #include "io/ser.h"
 #include "sum.h"
+#include "opencv/opencv.h"
 
 #undef STACK_DEBUG
 
@@ -59,6 +60,7 @@ static stack_method stacking_methods[] = {
 
 static gboolean end_stacking(gpointer p);
 static int stack_addminmax(struct stacking_args *args, gboolean ismax);
+static int upscale_sequence(struct stacking_args *stackargs);
 
 struct image_block {
 	unsigned long channel, start_row, end_row, height;
@@ -619,8 +621,8 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 		/* load registration data for current image */
 		if(reglayer != -1 && args->seq->regparam[reglayer]) {
-			shiftx = args->seq->regparam[reglayer][j].shiftx;
-			shifty = args->seq->regparam[reglayer][j].shifty;
+			shiftx = roundf_to_int(args->seq->regparam[reglayer][j].shiftx);
+			shifty = roundf_to_int(args->seq->regparam[reglayer][j].shifty);
 		} else {
 			shiftx = 0;
 			shifty = 0;
@@ -1414,7 +1416,7 @@ gpointer stack_function_handler(gpointer p) {
 	// 1. normalization
 	do_normalization(args);	// does nothing if NO_NORM
 	// 2. up-scale
-	// coming soon
+	upscale_sequence(args); // does nothing if args->seq->upscale_at_stacking != 1
 	// 3. stack
 	args->retval = args->method(p);
 	// 4. save result and clean-up
@@ -1583,9 +1585,13 @@ static gboolean end_stacking(gpointer p) {
 	struct stacking_args *args = (struct stacking_args *)p;
 	fprintf(stdout, "Ending stacking idle function, retval=%d\n", args->retval);
 	stop_processing_thread();	// can it be done here in case there is no thread?
+
 	if (!args->retval) {
 		clear_stars_list();
-		com.seq.current = RESULT_IMAGE;
+		/* check in com.seq, because args->seq may have been replaced */
+		if (com.seq.upscale_at_stacking > 1.05)
+			com.seq.current = SCALED_IMAGE;
+		else com.seq.current = RESULT_IMAGE;
 		/* Warning: the previous com.uniq is not freed, but calling
 		 * close_single_image() will close everything before reopening it,
 		 * which is quite slow */
@@ -1597,11 +1603,11 @@ static gboolean end_stacking(gpointer p) {
 		com.uniq->fit->maxi = 0;	// force to recompute min/max
 		/* Giving summary if average rejection stacking */
 		_show_summary(args);
-		/* Giving noise estimation */
+		/* Giving noise estimation (new thread) */
 		_show_bgnoise(com.uniq->fit);
-		stop_processing_thread();
+		stop_processing_thread();	// wait for it?
 
-		/* save result */
+		/* save stacking result */
 		if (args->output_filename != NULL && args->output_filename[0] != '\0') {
 			struct stat st;
 			if (!stat(args->output_filename, &st)) {
@@ -1638,9 +1644,12 @@ static gboolean end_stacking(gpointer p) {
 		/* update menus */
 		update_MenuItem();
 
+		if (com.seq.current == SCALED_IMAGE)
+			adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		sequence_list_change_current();
+		update_stack_interface(TRUE);
 	}
 
 	set_cursor_waiting(FALSE);
@@ -1933,7 +1942,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 	}
 
 	switch (gtk_combo_box_get_active(stack_type)) {
-	case 0:
+	case ALL_IMAGES:
 		stackparam.filtering_criterion = stack_filter_all;
 		stackparam.nb_images_to_stack = com.seq.number;
 		sprintf(stackparam.description,
@@ -1942,7 +1951,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		gtk_widget_set_sensitive(stack[0], FALSE);
 		gtk_widget_set_sensitive(stack[1], FALSE);
 		break;
-	case 1:
+	case SELECTED_IMAGES:
 		stackparam.filtering_criterion = stack_filter_included;
 		stackparam.nb_images_to_stack = com.seq.selnum;
 		sprintf(stackparam.description,
@@ -1951,7 +1960,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		gtk_widget_set_sensitive(stack[0], FALSE);
 		gtk_widget_set_sensitive(stack[1], FALSE);
 		break;
-	case 2:
+	case BEST_PSF_IMAGES:
 		/* First we must check if the sequence has this kind of data
 		 * available before allowing the option to be selected. */
 		channel = get_registration_layer();
@@ -1984,7 +1993,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		}
 		break;
 
-	case 3:
+	case BEST_QUALITY_IMAGES:
 		percent = gtk_adjustment_get_value(stackadj);
 		stackparam.filtering_criterion = stack_filter_quality;
 		stackparam.filtering_parameter = compute_highest_accepted_quality(
@@ -2028,4 +2037,115 @@ void on_stacksel_changed(GtkComboBox *widget, gpointer user_data) {
 
 void on_spinbut_percent_change(GtkSpinButton *spinbutton, gpointer user_data) {
 	update_stack_interface(TRUE);
+}
+
+/*****************************************************************
+ *      UP-SCALING A SEQUENCE: GENERIC FUNCTION IMPLEMENTATION   *
+ *****************************************************************/
+
+/* stacking an up-scaled sequence is a bit of a trick;
+ * stacking a sequence is normally 3 steps (see stack_function_handler):
+ * computing the normalization parameters, stacking the sequence, saving and
+ * displaying the result. With the up-scale temporarily added in the middle, to
+ * provide a cheap version of the drizzle algorithm, we have to create an
+ * up-scaled sequence and pass it to the stacking operation seamlessly. The
+ * problem with this is that at the end of the stacking, we have to close the
+ * up-scaled sequence, maintain the original sequence as loaded, and display an
+ * image, the result, that has a different size than the sequence's.
+ */
+
+struct upscale_args {
+	double factor;
+};
+
+static int upscale_image_hook(struct generic_seq_args *args, int i, fits *fit, rectangle *_) {
+	struct upscale_args *upargs = args->user;
+	return cvResizeGaussian(fit, fit->rx * upargs->factor, fit->ry * upargs->factor, OPENCV_NEAREST);
+}
+
+static gboolean end_upscale(gpointer p) {
+	// do nothing, the default behaviour of the generic processing ends the thread
+	return FALSE;
+}
+
+static int upscale_sequence(struct stacking_args *stackargs) {
+	if (stackargs->seq->upscale_at_stacking <= 1.05)
+		return 0;
+	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	struct upscale_args *upargs = malloc(sizeof(struct upscale_args));
+	double factor = stackargs->seq->upscale_at_stacking;
+
+	upargs->factor = factor;
+
+	args->seq = stackargs->seq;
+	args->partial_image = FALSE;
+	args->filtering_criterion = stackargs->filtering_criterion;
+	args->filtering_parameter = stackargs->filtering_parameter;
+	args->nb_filtered_images = stackargs->nb_images_to_stack;
+	args->prepare_hook = ser_prepare_hook;
+	args->finalize_hook = ser_finalize_hook;
+	args->image_hook = upscale_image_hook;
+	args->save_hook = NULL;
+	args->idle_function = end_upscale;
+	args->stop_on_error = TRUE;
+	args->description = _("Up-scaling sequence for stacking");
+	args->has_output = TRUE;
+	args->new_seq_prefix = "tmp_upscaled_";
+	args->load_new_sequence = FALSE;
+	args->force_ser_output = FALSE;
+	args->user = upargs;
+	args->already_in_a_thread = TRUE;
+	args->parallel = TRUE;
+
+	/* TODO: we should remove files from a previously up-scaled sequence, in case
+	 * the filtering has changed, because the sequence used for stacking is built
+	 * from the automatic way that will take all images in the directory */
+	gchar *basename = g_path_get_basename(args->seq->seqname);
+	char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
+	sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
+	unlink(seqname);
+	// TODO: for i to seq->number, unlink(imagename)
+
+	generic_sequence_worker(args);
+	int retval = args->retval;
+	free(upargs);
+
+	if (!retval) {
+		int i;
+		// replace active sequence by upscaled
+		if (check_seq(0)) {	// builds the new .seq
+			free(seqname);
+			free(args);
+			return 1;
+		}
+		sequence *newseq = readseqfile(seqname);
+		if (!newseq) {
+			free(seqname);
+			free(args);
+			return 1;
+		}
+		/* there are three differences between old and new sequence:
+		 * the size of images and possibly the number of images if the
+		 * stacking is done on a filtered set.
+		 * - about the size, it is updated in the idle function of the
+		 *   stacking if there was an up-scaling factor
+		 * - the number of images is managed below, to avoid up-scaling
+		 *   unnecessary images, only the selected are and the sequence
+		 *   passed to stacking is treated in its entirety.
+		 * - the shifts between images that must be multiplied by factor
+		 */
+		seq_check_basic_data(newseq, FALSE);
+		stackargs->seq = newseq;
+		stackargs->filtering_criterion = seq_filter_all;
+		stackargs->nb_images_to_stack = newseq->number;
+		/* we multiply regparam by the upscale factor value */
+		stackargs->seq->regparam[stackargs->reglayer] = args->seq->regparam[stackargs->reglayer];
+		for (i = 0; i < stackargs->seq->number; i++) {
+			stackargs->seq->regparam[stackargs->reglayer][i].shiftx *= factor;
+			stackargs->seq->regparam[stackargs->reglayer][i].shifty *= factor;
+		}
+	}
+	free(seqname);
+	free(args);
+	return retval;
 }

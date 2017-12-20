@@ -392,6 +392,7 @@ static Mat RLTikh_deconvolution(Mat observed, Mat psf, double mu, int iterations
 
 	// Iterate
 	for (int i = 0; i < iterations; i++) {
+		set_progress_bar_data(NULL, (double) i / iterations);
 
 		// Temporary matrix
 		Mat ratio;
@@ -431,6 +432,7 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 
 	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
 	Mat out(image->ry, image->rx, CV_16UC3);
+	set_progress_bar_data(_("Deconvolution..."), PROGRESS_NONE);
 
 	// From here on, use 64-bit floats
 	// Convert original_image to float
@@ -470,6 +472,7 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 	image->naxes[0] = image->rx;
 	image->naxes[1] = image->ry;
 
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 	/* free data */
 	delete[] bgrbgr;
 	in.release();

@@ -183,7 +183,7 @@ sequence * readseqfile(const char *name){
 				if (i >= seq->number) {
 					fprintf(stderr, "\nreadseqfile ERROR: out of array bounds in reg info!\n\n");
 				} else {
-					nb_tokens = sscanf(line+3, "%d %d %g %g %g %g %lg",
+					nb_tokens = sscanf(line+3, "%f %f %g %g %g %g %lg",
 							&(seq->regparam[current_layer][i].shiftx),
 							&(seq->regparam[current_layer][i].shifty),
 							&(seq->regparam[current_layer][i].rot_centre_x),
@@ -387,7 +387,7 @@ int writeseqfile(sequence *seq){
 	for(j=0; j < seq->nb_layers; j++) {
 		if (seq->regparam[j]) {
 			for (i=0; i < seq->number; ++i) {
-				fprintf(stderr, "R%d %d %d %g %g %g %g %g\n", j,
+				fprintf(stderr, "R%d %f %f %g %g %g %g %g\n", j,
 						seq->regparam[j][i].shiftx,
 						seq->regparam[j][i].shifty,
 						seq->regparam[j][i].rot_centre_x,
@@ -396,7 +396,7 @@ int writeseqfile(sequence *seq){
 						seq->regparam[j][i].fwhm,
 						seq->regparam[j][i].quality
 						);
-				fprintf(seqfile, "R%d %d %d %g %g %g %g %g\n", j,
+				fprintf(seqfile, "R%d %f %f %g %g %g %g %g\n", j,
 						seq->regparam[j][i].shiftx,
 						seq->regparam[j][i].shifty,
 						seq->regparam[j][i].rot_centre_x,

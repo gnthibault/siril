@@ -62,11 +62,19 @@
 #include "io/single_image.h"
 
 int round_to_int(double x) {
-	assert(x >= INT_MIN-0.5);
-	assert(x <= INT_MAX+0.5);
+	if (x <= INT_MIN + 0.5) return INT_MIN;
+	if (x >= INT_MAX - 0.5) return INT_MAX;
 	if (x >= 0.0)
 		return (int) (x + 0.5);
 	return (int) (x - 0.5);
+}
+
+int roundf_to_int(float x) {
+	if (x <= INT_MIN + 0.5f) return INT_MIN;
+	if (x >= INT_MAX - 0.5f) return INT_MAX;
+	if (x >= 0.0f)
+		return (int) (x + 0.5f);
+	return (int) (x - 0.5f);
 }
 
 WORD round_to_WORD(double x) {

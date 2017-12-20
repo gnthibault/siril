@@ -28,13 +28,14 @@ struct generic_seq_args {
 	// function called for each image with image index in sequence, number
 	// of image currently processed and the image, area if partial
 	int (*image_hook)(struct generic_seq_args *, int, fits *, rectangle *);
-	// saving the processed image, if has_output, can be NULL to get default behaviour
+	// saving the processed image, the one passed to the image_hook, so
+	// in-place editing. If has_output, can be NULL to get default behaviour
 	int (*save_hook)(struct generic_seq_args *, int, int, fits *);
 	// function called after iterating through the sequence
 	int (*finalize_hook)(struct generic_seq_args *);
 
 	// idle function to register at the end. If NULL, the default ending
-	// that stops the thread is queued
+	// that stops the thread is queued. Return false for single execution.
 	GSourceFunc idle_function;
 	// retval, useful for the idle_function, set by the worker
 	int retval;
