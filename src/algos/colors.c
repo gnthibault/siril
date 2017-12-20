@@ -431,7 +431,8 @@ gpointer enhance_saturation(gpointer p) {
 		}
 		bg = stat->median + stat->sigma;
 		bg /= stat->normValue;
-		free(stat);
+		if (!stat->has_internal_ref)
+			free(stat);
 
 	}
 
@@ -624,18 +625,16 @@ void initialize_calibration_interface() {
 /* This function equalize the background by giving equal value for all layers */
 static void background_neutralize(fits* fit, rectangle black_selection) {
 	int chan, i;
-	imstats** stats;
+	imstats* stats[3];
 	int ref = 0;
 
 	assert(fit->naxes[2] == 3);
 
-	stats = malloc(3 * sizeof(imstats *));
 	for (chan = 0; chan < 3; chan++) {
 		stats[chan] = statistics(NULL, -1, fit, chan, &black_selection, STATS_BASIC,
 				STATS_ZERO_NULLCHECK);
 		if (!stats[chan]) {
 			siril_log_message(_("Error: no data computed.\n"));
-			free(stats);
 			return;
 		}
 		ref += stats[chan]->median;
@@ -652,9 +651,9 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 				buf[i] = (buf[i] - offset >= USHRT_MAX ? USHRT_MAX : buf[i] - offset);
 
 		}
-		free(stats[chan]);
+		if (!stats[chan]->has_internal_ref)
+			free(stats[chan]);
 	}
-	free(stats);
 }
 
 void on_button_bkg_neutralization_clicked(GtkButton *button, gpointer user_data) {
@@ -762,7 +761,8 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 		}
 		bg[chan] = stat->median / stat->normValue;
 		siril_log_message("B%d : %.5e\n", chan, bg[chan]);
-		free(stat);
+		if (!stat->has_internal_ref)
+			free(stat);
 
 	}
 

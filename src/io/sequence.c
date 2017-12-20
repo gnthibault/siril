@@ -54,6 +54,7 @@
 #include "gui/PSF_list.h"	// clear_stars_list
 #include "algos/PSF.h"
 #include "algos/quality.h"
+#include "algos/statistics.h"
 #include "registration/registration.h"
 #include "stacking/stacking.h"	// for update_stack_interface
 
@@ -399,15 +400,16 @@ int set_seq(const char *name){
 			free(seq);
 			return 1;
 		}
-
 		seq->current = image_to_load;
 	}
 
 	basename = g_path_get_basename(seq->seqname);
-	siril_log_message(_("Sequence loaded: %s (%d->%d)\n"), basename, seq->beg,
-			seq->end);
+	siril_log_message(_("Sequence loaded: %s (%d->%d)\n"),
+			basename, seq->beg, seq->end);
 	g_free(basename);
 	/* Sequence is stored in com.seq for now */
+	if (sequence_is_loaded() && com.seq.needs_saving)
+			writeseqfile(&com.seq);
 	free_sequence(&com.seq, FALSE);
 	memcpy(&com.seq, seq, sizeof(sequence));
 
@@ -461,6 +463,8 @@ int set_seq(const char *name){
  * TODO: cut that method in two, with an internal func taking a filename and a fits
  */
 int seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it) {
+	if (!single_image_is_loaded())
+		save_stats_from_fit(&gfit, seq, seq->current);
 	seq->current = index;
 	clear_stars_list();
 	clear_histograms();
@@ -585,7 +589,8 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
 			dest->pdata[2] = seq->internal_fits[index]->pdata[2];
 			break;
 	}
-	image_find_minmax(dest, 0);
+	copy_seq_stats_to_fit(seq, index, dest);
+	image_find_minmax(dest, 0);	// to be removed in 1.0
 	return 0;
 }
 
@@ -866,7 +871,7 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 	if (seq == NULL) return;
 	if (seq->nb_layers > 0 && (seq->regparam || seq->stats)) {
 		for (i=0; i<seq->nb_layers; i++) {
-			if (seq->regparam && seq->regparam[i] || seq->stats && seq->stats[i]) {
+			if ((seq->regparam && seq->regparam[i]) || (seq->stats && seq->stats[i])) {
 				for (j = 0; j < seq->number; j++) {
 					if (seq->regparam && seq->regparam[i] &&
 							seq->regparam[i][j].fwhm_data &&

@@ -25,6 +25,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "algos/statistics.h"
 #include "gui/callbacks.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
@@ -51,6 +52,8 @@ void free_image_data() {
 	fprintf(stdout, "free_image_data() called, clearing loaded image\n");
 	/* WARNING: single_image.fit references the actual fits image,
 	 * shouldn't it be used here instead of gfit? */
+	if (!single_image_is_loaded() && sequence_is_loaded())
+		save_stats_from_fit(&gfit, &com.seq, com.seq.current);
 	clearfits(&gfit);
 	clear_stars_list();
 	clear_histograms();

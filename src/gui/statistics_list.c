@@ -310,8 +310,10 @@ void computeStat() {
 		}
 	}
 	add_stats_to_list(stat, gfit.naxes[2], normalized);
+
 	for (channel = 0; channel < gfit.naxes[2]; channel++)
-		free(stat[channel]);
+		if (!stat[channel]->has_internal_ref)
+			free(stat[channel]);
 }
 
 void on_statCheckButton_toggled(GtkToggleButton *togglebutton, gpointer user_data) {

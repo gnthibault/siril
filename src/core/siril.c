@@ -529,7 +529,8 @@ double contrast(fits* fit, int layer) {
 		return -1.0;
 	}
 	double mean = stat->mean;
-	free(stat);
+	if (!stat->has_internal_ref)
+		free(stat);
 
 	for (i = 0; i < fit->rx * fit->ry; i++)
 		contrast += SQR((double )buf[i] - mean);
@@ -806,7 +807,6 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	imoper(fit_tmp, dark_tmp, OPER_SUB);
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		// TODO: not saving stats in cache for now
 		imstats *stat = statistics(NULL, -1, fit_tmp, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
@@ -814,7 +814,8 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 		}
 		noise += stat->bgnoise;
 		//printf("noise=%lf, k=%lf\n", noise, k);
-		free(stat);
+		if (!stat->has_internal_ref)
+			free(stat);
 	}
 	clearfits(dark_tmp);
 	clearfits(fit_tmp);
@@ -949,7 +950,8 @@ gpointer seqpreprocess(gpointer p) {
 			args->normalisation = stat->mean;
 			siril_log_message(_("Normalisation value auto evaluated: %.2lf\n"),
 					args->normalisation);
-			free(stat);
+			if (!stat->has_internal_ref)
+				free(stat);
 		}
 	}
 
@@ -1084,7 +1086,6 @@ double background(fits* fit, int reqlayer, rectangle *selection) {
 	else if (isrgb(&gfit))
 		layer = GLAYER;		//GLAYER is better to evaluate background
 
-	// TODO: not saving stats in cache for now
 	imstats* stat = statistics(NULL, -1, fit, layer, selection, STATS_BASIC, STATS_ZERO_NULLCHECK);
 	if (!stat) {
 		siril_log_message(_("Error: no data computed.\n"));
@@ -1092,8 +1093,8 @@ double background(fits* fit, int reqlayer, rectangle *selection) {
 	}
 	bg = stat->median;
 
-	free(stat);
-	stat = NULL;
+	if (!stat->has_internal_ref)
+		free(stat);
 	return bg;
 }
 
@@ -1459,7 +1460,8 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 		double *rowvalue = calloc(fit->ry, sizeof(double));
 		if (rowvalue == NULL) {
 			fprintf(stderr, "BandingEngine: error allocating data\n");
-			free(stat);
+			if (!stat->has_internal_ref)
+				free(stat);
 			return 1;
 		}
 		if (protect_highlights) {
@@ -1470,7 +1472,8 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 			WORD *cpyline = calloc(fit->rx, sizeof(WORD));
 			if (cpyline == NULL) {
 				fprintf(stderr, "BandingEngine: error allocating data\n");
-				free(stat);
+				if (!stat->has_internal_ref)
+					free(stat);
 				free(rowvalue);
 				return 1;
 			}
@@ -1498,12 +1501,14 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 				fixline[i] = round_to_WORD(rowvalue[row] - minimum);
 		}
 		free(rowvalue);
-		free(stat);
+		if (!stat->has_internal_ref)
+			free(stat);
 	}
 	for (chan = 0; chan < fit->naxes[2]; chan++)
 		fmul_layer(fiximage, chan, amount);
 	imoper(fit, fiximage, OPER_ADD);
 
+	invalidate_stats_from_fit(fit);
 	clearfits(fiximage);
 	if (applyRotation)
 		cvRotateImage(fit, -90.0, -1, OPENCV_LINEAR);
@@ -1553,7 +1558,8 @@ int backgroundnoise(fits* fit, double sigma[]) {
 				free(array1);
 			if (array2)
 				free(array2);
-			free(stat);
+			if (!stat->has_internal_ref)
+				free(stat);
 			return 1;
 		}
 		WORD *set = array1, *subset = array2;
@@ -1581,7 +1587,8 @@ int backgroundnoise(fits* fit, double sigma[]) {
 			if (ndata == 0) {
 				free(array1);
 				free(array2);
-				free(stat);
+				if (!stat->has_internal_ref)
+					free(stat);
 				siril_log_message(_("backgroundnoise: Error, no data computed\n"));
 				sigma[layer] = 0.0;
 				return 1;
@@ -1595,9 +1602,11 @@ int backgroundnoise(fits* fit, double sigma[]) {
 			siril_log_message(_("backgroundnoise: does not converge\n"));
 		free(array1);
 		free(array2);
-		free(stat);
+		if (!stat->has_internal_ref)
+			free(stat);
 	}
 	clearfits(waveimage);
+	invalidate_stats_from_fit(fit);
 
 	return 0;
 }
@@ -1648,7 +1657,8 @@ gpointer noise(gpointer p) {
 			return GINT_TO_POINTER(1);
 		}
 		args->bgnoise[chan] = stat->bgnoise;
-		free(stat);
+		if (!stat->has_internal_ref)
+			free(stat);
 	}
 
 	gdk_threads_add_idle(end_noise, args);

@@ -350,7 +350,6 @@ struct single_image {
 	int nb_layers;		// number of layers embedded in each image file
 	layer_info *layers;	// info about layers
 	fits *fit;		// the fits is still gfit, but a reference doesn't hurt
-	imstats **stats;	// stats of fit for each layer, null if nb_layers unknown
 
 	/* enabling pre-processing on a single image */
 	fits *offset;		// the image containing offset data
@@ -405,6 +404,8 @@ struct ffit {
 	unsigned short max[3];	// max for all layers
 	unsigned short maxi;	// max of the max[3]
 	unsigned short mini;	// min of the min[3]
+	// TODO 1.0: move min and max to stats - stats max is not max, stats ignore the 0!
+	imstats **stats;	// stats of fit for each layer, null if naxes[2] is unknown
 
 	fitsfile *fptr;		// file descriptor. Only used for file read and write.
 	WORD *data;		// 16-bit image data (depending on image type)
@@ -578,6 +579,7 @@ struct image_stats {
 	     ngoodpix;	// number of non-zero pixels
 	double mean, median, sigma, avgDev, mad, sqrtbwmv,
 	       location, scale, min, max, normValue, bgnoise;
+	gboolean has_internal_ref;	// indicate if it can be freed
 };
 
 typedef struct Homo {

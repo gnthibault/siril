@@ -587,6 +587,7 @@ void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
 		gsl_histogram_memcpy(histCpy[i], com.layers_hist[i]);
 	reset_curors_and_values();
 
+	invalidate_stats_from_fit(&gfit);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -737,7 +738,8 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 
 	}
 	for (i = 0; i < n; ++i)
-		free(stat[i]);
+		if (!stat[i]->has_internal_ref)
+			free(stat[i]);
 	return m;
 }
 

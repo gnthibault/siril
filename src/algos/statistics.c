@@ -287,7 +287,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		} else {
 			nx = fit->rx;
 			ny = fit->ry;
-			data = calloc(nx * ny, sizeof(WORD));
+			//data = calloc(nx * ny, sizeof(WORD));
 			//memcpy(data, fit->pdata[layer], nx * ny * sizeof(WORD));
 			data = fit->pdata[layer];
 		}
@@ -317,8 +317,10 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	/* we exclude 0 if nullcheck */
 	if (nullcheck && fit) {
 		if (!data) return NULL;
-		data = reassign_to_non_null_data(data, stat->total, stat->ngoodpix, free_data);
-		free_data = 1;
+		if (stat->total != stat->ngoodpix) {
+			data = reassign_to_non_null_data(data, stat->total, stat->ngoodpix, free_data);
+			free_data = 1;
+		}
 	}
 
 	/* Calculation of min, max and ngoodpix */
@@ -384,33 +386,10 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	return stat;
 }
 
-/* Computes statistics on the given layer of the given opened image. Mean,
- * sigma and noise are computed with a cfitsio function rewritten here. Min and
- * max value, average deviation, MAD, Bidweight Midvariance and IKSS are
- * computed with gsl stats.
- * If the selection is not null or empty, computed data is not stored and seq is not used.
- * If seq is null (single image processing), no caching is done, image_index is ignored.
- */
-imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectangle *selection, int option, int nullcheck) {
-	if (selection && selection->h > 0 && selection->w > 0) {
-		// we have a selection
-		return statistics_internal(fit, layer, selection, option, nullcheck, NULL);
-	} else if (!seq || image_index < 0) {
-		// we have a single image
-		return statistics_internal(fit, layer, NULL, option, nullcheck, NULL);
-	} else {
-		imstats *oldstat = NULL, *stat;
-		if (seq->stats && seq->stats[layer])
-			oldstat = seq->stats[layer][image_index];
-		stat = statistics_internal(fit, layer, NULL, option, nullcheck, oldstat);
-		if (!stat)
-			return NULL;
-		if (!oldstat) {
-			add_stats_to_seq(seq, image_index, layer, stat);
-			return stat;	// must not be freed
-		}
-		return stat;	// must not be freed
-	}
+static void add_stats_to_fit(fits *fit, int layer, imstats *stat) {
+	if (!fit->stats)
+		fit->stats = calloc(fit->naxes[2], sizeof(imstats *));
+	fit->stats[layer] = stat;
 }
 
 void add_stats_to_seq(sequence *seq, int image_index, int layer, imstats *stat) {
@@ -423,6 +402,74 @@ void add_stats_to_seq(sequence *seq, int image_index, int layer, imstats *stat) 
 	seq->needs_saving = TRUE;
 }
 
+/* Computes statistics on the given layer of the given opened image. Mean,
+ * sigma and noise are computed with a cfitsio function rewritten here. Min and
+ * max value, average deviation, MAD, Bidweight Midvariance and IKSS are
+ * computed with gsl stats.
+ * If the selection is not null or empty, computed data is not stored and seq is not used.
+ * If seq is null (single image processing), no caching is done, image_index is ignored.
+ * The return value, if non-null may be freed only if its .has_internal_ref is set to false.
+ */
+imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectangle *selection, int option, int nullcheck) {
+	imstats *oldstat = NULL, *stat;
+	if (selection && selection->h > 0 && selection->w > 0) {
+		// we have a selection, don't store anything
+		return statistics_internal(fit, layer, selection, option, nullcheck, NULL);
+		// ^ may be freed
+	} else if (!seq || image_index < 0) {
+		// we have a single image, store in the fits
+		if (fit->stats && fit->stats[layer])
+			oldstat = fit->stats[layer];
+		stat = statistics_internal(fit, layer, NULL, option, nullcheck, oldstat);
+		if (!stat)
+		       	return NULL;
+		if (!oldstat)
+			add_stats_to_fit(fit, layer, stat);
+		stat->has_internal_ref = TRUE;
+		return stat;	// must not be freed
+	} else {
+		// we have sequence data, store in the sequence
+		if (seq->stats && seq->stats[layer])
+			oldstat = seq->stats[layer][image_index];
+		stat = statistics_internal(fit, layer, NULL, option, nullcheck, oldstat);
+		if (!stat)
+			return NULL;
+		if (!oldstat)
+			add_stats_to_seq(seq, image_index, layer, stat);
+		stat->has_internal_ref = TRUE;
+		return stat;	// must not be freed
+	}
+}
+
+/* saves cached stats from the fits to its sequence, and clears the cache of the fits */
+void save_stats_from_fit(fits *fit, sequence *seq, int index) {
+	int layer;
+	if (!fit || !fit->stats || !seq || index < 0) return;
+	for (layer = 0; layer < fit->naxes[2]; layer++) {
+		if (fit->stats[layer])
+			add_stats_to_seq(seq, index, layer, fit->stats[layer]);
+		fit->stats[layer] = NULL;
+	}
+}
+
+/* fit must be already read from disk or have naxes set at least */
+void copy_seq_stats_to_fit(sequence *seq, int index, fits *fit) {
+	if (seq->stats) {
+		int layer;
+		fit->stats = calloc(fit->naxes[2], sizeof(imstats *));
+		for (layer = 0; layer < fit->naxes[2]; layer++)
+			fit->stats[layer] = seq->stats[layer][index];
+	}
+}
+
+/* if image data has changed, use this to force recomputation of the stats */
+void invalidate_stats_from_fit(fits *fit) {
+	if (fit->stats) {
+		for (layer = 0; layer < fit->naxes[2]; layer++)
+			fit->stats[layer] = NULL;
+	}
+}
+
 void allocate_stats(imstats **stat) {
 	if (stat) {
 		if (!*stat)
@@ -431,6 +478,7 @@ void allocate_stats(imstats **stat) {
 		(*stat)->total = -1L;
 		(*stat)->ngoodpix = -1L;
 		(*stat)->mean = (*stat)->avgDev = (*stat)->median = (*stat)->sigma = (*stat)->bgnoise = (*stat)->min = (*stat)->max = (*stat)->normValue = (*stat)->mad = (*stat)->sqrtbwmv = (*stat)->location = (*stat)->scale = -1.0;
+		(*stat)->has_internal_ref = FALSE;
 	}
 }
 

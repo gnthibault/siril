@@ -446,6 +446,8 @@ void clearfits(fits *fit) {
 		free(fit->data);
 	if (fit->header)
 		free(fit->header);
+	if (fit->stats)
+		free(fit->stats);	// don't free stats[i], they are ref in seq
 	memset(fit, 0, sizeof(fits));
 }
 
