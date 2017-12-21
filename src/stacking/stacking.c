@@ -1604,7 +1604,7 @@ static void remove_tmp_drizzle_files(struct stacking_args *args) {
 	int i;
 	gchar *seqname = malloc(strlen(basename) + 5);
 	g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
-	unlink(seqname);
+	g_unlink(seqname);
 	g_free(seqname);
 
 	/*
@@ -1619,12 +1619,12 @@ static void remove_tmp_drizzle_files(struct stacking_args *args) {
 		for (i = 0; i < args->seq->number; i++) {
 			g_snprintf(filename, strlen(basename) + 5 + strlen(com.ext) + 1,
 					"%s%05d%s", basename, args->image_indices[i], com.ext);
-			unlink(filename);
+			g_unlink(filename);
 		}
 		break;
 	case SEQ_SER:
 		g_snprintf(filename, strlen(basename) + 5, "%s.ser", basename);
-		unlink(filename);
+		g_unlink(filename);
 		break;
 	}
 	g_free(filename);
@@ -1664,7 +1664,7 @@ static gboolean end_stacking(gpointer p) {
 			if (!stat(args->output_filename, &st)) {
 				int failed = !args->output_overwrite;
 				if (!failed) {
-					if (unlink(args->output_filename) == -1)
+					if (g_unlink(args->output_filename) == -1)
 						failed = 1;
 					if (!failed && savefits(args->output_filename, &gfit))
 						failed = 1;
@@ -2154,7 +2154,7 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	gchar *basename = g_path_get_basename(args->seq->seqname);
 	char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
 	sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
-	unlink(seqname);
+	g_unlink(seqname);
 	g_free(basename);
 
 	generic_sequence_worker(args);

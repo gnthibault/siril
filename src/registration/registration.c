@@ -1226,7 +1226,7 @@ static gboolean end_register_idle(gpointer p) {
 
 				sprintf(rseqname, "%s%s.seq", args->prefix, seqname);
 				g_free(seqname);
-				unlink(rseqname);	// remove previous to overwrite
+				g_unlink(rseqname);	// remove previous to overwrite
 				char *newname = remove_ext_from_filename(rseqname);
 				seq->seqname = newname;
 				seq->number = args->new_total;

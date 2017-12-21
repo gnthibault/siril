@@ -543,7 +543,7 @@ int ser_write_and_close(struct ser_struct *ser_file) {
 		char *filename = ser_file->filename;
 		ser_file->filename = NULL;
 		ser_close_file(ser_file);// closes, frees and zeroes
-		unlink(filename);
+		g_unlink(filename);
 		return -1;
 	}
 	ser_write_header(ser_file);	// writes the header
@@ -556,7 +556,7 @@ int ser_write_and_close(struct ser_struct *ser_file) {
 int ser_create_file(const char *filename, struct ser_struct *ser_file,
 		gboolean overwrite, struct ser_struct *copy_from) {
 	if (overwrite)
-		unlink(filename);
+		g_unlink(filename);
 	if ((ser_file->fd = open(filename, O_CREAT | O_RDWR | O_BINARY,
 			S_IWRITE | S_IREAD)) == -1) {
 		perror("open SER file for creation");

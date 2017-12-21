@@ -72,7 +72,7 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 
 static int undo_remove_item(historic *histo, int index) {
 	if (histo[index].filename) {
-		unlink(histo[index].filename);
+		g_unlink(histo[index].filename);
 		g_free(histo[index].filename);
 		histo[index].filename = NULL;
 	}

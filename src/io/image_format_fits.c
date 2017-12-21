@@ -670,7 +670,7 @@ int savefits(const char *name, fits *f) {
 		snprintf(filename, 255, "%s", name);
 	}
 
-	unlink(filename); /* Delete old file if it already exists */
+	g_unlink(filename); /* Delete old file if it already exists */
 
 	status = 0;
 	if (fits_create_diskfile(&(f->fptr), filename, &status)) { /* create new FITS file */
