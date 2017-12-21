@@ -486,13 +486,22 @@ static void ser_manage_endianess_and_depth(struct ser_struct *ser_file,
 }
 
 static int ser_alloc_ts(struct ser_struct *ser_file, int frame_no) {
-	if (ser_file->ts_alloc > frame_no)
-		return 0;
-	uint64_t *new = realloc(ser_file->ts, frame_no * 2);
-	if (!new)
-		return 1;
-	ser_file->ts = new;
-	ser_file->ts_alloc = frame_no * 2;
+	int retval = 0;
+#ifdef _OPENMP
+	omp_set_lock(&ser_file->ts_lock);
+#endif
+	if (ser_file->ts_alloc <= frame_no) {
+		uint64_t *new = realloc(ser_file->ts, frame_no * 2 * sizeof(uint64_t));
+		if (!new) {
+			retval = 1;
+		} else {
+			ser_file->ts = new;
+			ser_file->ts_alloc = frame_no * 2;
+		}
+	}
+#ifdef _OPENMP
+	omp_unset_lock(&ser_file->ts_lock);
+#endif
 	return 0;
 }
 
@@ -602,6 +611,7 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 	}
 #ifdef _OPENMP
 	omp_init_lock(&ser_file->fd_lock);
+	omp_init_lock(&ser_file->ts_lock);
 #endif
 	siril_log_message(_("Created SER file %s\n"), filename);
 	return 0;
@@ -627,6 +637,7 @@ int ser_open_file(char *filename, struct ser_struct *ser_file) {
 
 #ifdef _OPENMP
 	omp_init_lock(&ser_file->fd_lock);
+	omp_init_lock(&ser_file->ts_lock);
 #endif
 	return 0;
 }
@@ -647,6 +658,7 @@ int ser_close_file(struct ser_struct *ser_file) {
 		free(ser_file->filename);
 #ifdef _OPENMP
 	omp_destroy_lock(&ser_file->fd_lock);
+	omp_destroy_lock(&ser_file->ts_lock);
 #endif
 	ser_init_struct(ser_file);
 	return retval;
@@ -1080,8 +1092,6 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 		FITS_date_key_to_Unix_time(fit->date_obs, &utc, &local);
 		ser_file->ts[frame_no] = utc;
 	}
-
-	retval = 0;
 
 free_and_quit:
 	if (data8) free(data8);

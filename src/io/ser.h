@@ -81,7 +81,7 @@ struct ser_struct {
 	int fd;
 	char *filename;
 #ifdef _OPENMP
-	omp_lock_t fd_lock;
+	omp_lock_t fd_lock, ts_lock;
 #endif
 };
 
