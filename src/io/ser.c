@@ -1075,7 +1075,7 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 #endif
 	ser_file->frame_count++;
 
-	if (ser_alloc_ts(ser_file, frame_no)) {
+	if (!ser_alloc_ts(ser_file, frame_no)) {
 		uint64_t utc, local;
 		FITS_date_key_to_Unix_time(fit->date_obs, &utc, &local);
 		ser_file->ts[frame_no] = utc;
