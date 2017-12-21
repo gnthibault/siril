@@ -397,6 +397,7 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	exportNormalize = GTK_TOGGLE_BUTTON(lookup_widget("exportNormalize"));
 	args->normalize = gtk_toggle_button_get_active(exportNormalize);
 	args->crop = com.selection.w && com.selection.h;
+	args->resize = FALSE;
 	if (args->crop)
 		memcpy(&args->crop_area, &com.selection, sizeof(rectangle));
 

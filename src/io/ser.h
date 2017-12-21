@@ -61,14 +61,15 @@ struct ser_struct {
 	int image_height;		// 4	(30)
 	int bit_pixel_depth;		// 4	(34)
 	unsigned int frame_count;	// 4	(38)
-	char observer[40];			// 40	(42)
+	char observer[40];		// 40	(42)
 	char instrument[40];		// 40	(82)
 	char telescope[40];		// 40	(122)
-	uint64_t date;	// 8	(162)
+	uint64_t date;		// 8	(162)
 	uint64_t date_utc;	// 8 (170)
 
 	/* timestamps (not in the header, timestamps are in trailer) */
 	uint64_t *ts;			// total timestamps
+	int ts_alloc;			// allocated number of elements in ts
 	uint64_t ts_min, ts_max;// min and max timestamp
 	double fps;				// frame rate
 
