@@ -204,6 +204,7 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 	/* Check if file is large enough to have timestamps */
 	if (ser_file->filesize >= offset + (8 * ser_file->frame_count)) {
 		ser_file->ts = calloc(8, ser_file->frame_count);
+		ser_file->ts_alloc = ser_file->frame_count;
 
 		// Seek to start of timestamps
 		for (i = 0; i < ser_file->frame_count; i++) {
@@ -360,7 +361,7 @@ static int ser_write_timestamps(struct ser_struct *ser_file) {
 			(int64_t)ser_file->byte_pixel_depth * (int64_t)ser_file->frame_count;
 
 		for (i = 0; i < ser_file->frame_count; i++) {
-			if (i > ser_file->ts_alloc)
+			if (i >= ser_file->ts_alloc)
 				break;
 			if ((int64_t)-1 == lseek64(ser_file->fd, offset+(i*8), SEEK_SET)) {
 				return -1;
