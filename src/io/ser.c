@@ -557,7 +557,7 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 		gboolean overwrite, struct ser_struct *copy_from) {
 	if (overwrite)
 		g_unlink(filename);
-	if ((ser_file->fd = open(filename, O_CREAT | O_RDWR | O_BINARY,
+	if ((ser_file->fd = g_open(filename, O_CREAT | O_RDWR | O_BINARY,
 			S_IWRITE | S_IREAD)) == -1) {
 		perror("open SER file for creation");
 		return 1;
@@ -612,7 +612,7 @@ int ser_open_file(char *filename, struct ser_struct *ser_file) {
 		fprintf(stderr, "SER: file already opened, or badly closed\n");
 		return -1;
 	}
-	ser_file->fd = open(filename, O_RDWR | O_BINARY); // now we can fix broken file, so not O_RDONLY anymore
+	ser_file->fd = g_open(filename, O_RDWR | O_BINARY); // now we can fix broken file, so not O_RDONLY anymore
 	if (ser_file->fd == -1) {
 		perror("SER file open");
 		return -1;
