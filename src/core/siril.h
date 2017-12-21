@@ -4,6 +4,8 @@
 #  include <config.h>
 #endif
 
+#include <glib.h>
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <fitsio.h>	// fitsfile
 #include <gsl/gsl_histogram.h>
