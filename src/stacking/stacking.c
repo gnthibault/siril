@@ -48,6 +48,8 @@
 #include "sum.h"
 #include "opencv/opencv.h"
 
+#define TMP_UPSCALED_PREFIX "tmp_upscaled_"
+
 #undef STACK_DEBUG
 
 static struct stacking_args stackparam = {	// parameters passed to stacking
@@ -1588,6 +1590,47 @@ static void _show_bgnoise(gpointer p) {
 	start_in_new_thread(noise, args);
 }
 
+static void remove_tmp_drizzle_files(struct stacking_args *args) {
+	if (args->seq->upscale_at_stacking < 1.05)
+		return;
+
+	gchar *basename = g_path_get_basename(args->seq->seqname);
+	/* we ensure we will remove the right tmp files,
+	 * that should be ok but double check doesn't hurt */
+	if (!g_str_has_prefix(basename, TMP_UPSCALED_PREFIX)) {
+		return;
+	}
+
+	int i;
+	gchar *seqname = malloc(strlen(basename) + 5);
+	g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
+	unlink(seqname);
+	g_free(seqname);
+
+	/*
+	 * 5: stands for index xxxxx
+	 * 6: stands for extension: .fit or .fts or .fits or .ser + \0
+	 */
+	gchar *filename = malloc(strlen(basename) + 5 + 6);
+
+	switch (args->seq->type) {
+	default:
+	case SEQ_REGULAR:
+		for (i = 0; i < args->seq->number; i++) {
+			g_snprintf(filename, strlen(basename) + 5 + strlen(com.ext) + 1,
+					"%s%05d%s", basename, args->image_indices[i], com.ext);
+			unlink(filename);
+		}
+		break;
+	case SEQ_SER:
+		g_snprintf(filename, strlen(basename) + 5, "%s.ser", basename);
+		unlink(filename);
+		break;
+	}
+	g_free(filename);
+	g_free(basename);
+}
+
 static gboolean end_stacking(gpointer p) {
 	struct timeval t_end;
 	struct stacking_args *args = (struct stacking_args *)p;
@@ -1638,6 +1681,9 @@ static gboolean end_stacking(gpointer p) {
 			}
 			display_filename();
 		}
+		/* remove tmp files if exist (Drizzle) */
+		remove_tmp_drizzle_files(args);
+
 		initialize_display_mode();
 
 		adjust_cutoff_from_updated_gfit();
@@ -2098,21 +2144,18 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	args->stop_on_error = TRUE;
 	args->description = _("Up-scaling sequence for stacking");
 	args->has_output = TRUE;
-	args->new_seq_prefix = "tmp_upscaled_";
+	args->new_seq_prefix = TMP_UPSCALED_PREFIX;
 	args->load_new_sequence = FALSE;
 	args->force_ser_output = FALSE;
 	args->user = upargs;
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
 
-	/* TODO: we should remove files from a previously up-scaled sequence, in case
-	 * the filtering has changed, because the sequence used for stacking is built
-	 * from the automatic way that will take all images in the directory */
 	gchar *basename = g_path_get_basename(args->seq->seqname);
 	char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
 	sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
 	unlink(seqname);
-	// TODO: for i to seq->number, unlink(imagename)
+	g_free(basename);
 
 	generic_sequence_worker(args);
 	int retval = args->retval;
