@@ -47,7 +47,7 @@ int readbmp(const char *name, fits *fit) {
 	gboolean inverted = FALSE;
 	char *msg;
 
-	if ((fd = open(name, O_RDONLY | O_BINARY)) == -1) {
+	if ((fd = g_open(name, O_RDONLY | O_BINARY)) == -1) {
 		msg = siril_log_message(_("Error opening BMP.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
 		return -1;
@@ -714,7 +714,7 @@ int readpic(const char *name, fits *fit) {
 	memset(&header, 0, sizeof(header));
 	pic_file = calloc(1, sizeof(struct pic_struct));
 
-	if ((pic_file->fd = open(name, O_RDONLY | O_BINARY)) == -1) {
+	if ((pic_file->fd = g_open(name, O_RDONLY | O_BINARY)) == -1) {
 		msg = siril_log_message(
 				_("Sorry but Siril cannot open the PIC file: %s.\n"), name);
 		show_dialog(msg, _("Error"), "gtk-dialog-error");

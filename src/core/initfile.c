@@ -416,11 +416,7 @@ int checkinitfile() {
 #endif
 		if (stat(filename, &sts) != 0) {
 			if (errno == ENOENT) {
-#ifdef WIN32
-				if (_mkdir(filename)) {
-#else
-				if (mkdir(filename, 0755)) {
-#endif
+				if (g_mkdir(filename, 0755)) {
 					fprintf(stderr, "Could not create dir %s, please check\n",
 							filename);
 					return 1;
