@@ -424,7 +424,11 @@ int stack_median(struct stacking_args *args) {
 				retval = -1;
 
 			if (retval) {
-				siril_log_message(_("Error reading one of the image areas\n"));
+#ifdef _OPENMP
+				int tid = omp_get_thread_num();
+				if (tid == 0)
+#endif
+					siril_log_message(_("Error reading one of the image areas\n"));
 				break;
 			}
 		}
@@ -1136,7 +1140,11 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 					retval = -1;
 
 				if (retval) {
-					siril_log_message(_("Error reading one of the image areas\n"));
+#ifdef _OPENMP
+					int tid = omp_get_thread_num();
+					if (tid == 0)
+#endif
+						siril_log_message(_("Error reading one of the image areas\n"));
 					break;
 				}
 			}
@@ -2111,7 +2119,6 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	free(upargs);
 
 	if (!retval) {
-		int i;
 		// replace active sequence by upscaled
 		if (check_seq(0)) {	// builds the new .seq
 			free(seqname);

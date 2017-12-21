@@ -380,6 +380,8 @@ int register_shift_dft(struct registration_args *args) {
 		args->seq->regparam[args->layer] = current_regdata;
 		if (args->x2upscale)
 			args->seq->upscale_at_stacking = 2.0;
+		else
+			args->seq->upscale_at_stacking = 1.0;
 		normalizeQualityData(args, q_min, q_max);
 		update_used_memory();
 		siril_log_message(_("Registration finished.\n"));
@@ -470,6 +472,8 @@ int register_shift_fwhm(struct registration_args *args) {
 	args->seq->regparam[args->layer] = current_regdata;
 	if (args->x2upscale)
 		args->seq->upscale_at_stacking = 2.0;
+	else
+		args->seq->upscale_at_stacking = 1.0;
 	update_used_memory();
 	siril_log_message(_("Registration finished.\n"));
 	siril_log_color_message(_("Best frame: #%d with fwhm=%.3g.\n"), "bold",
@@ -588,6 +592,11 @@ int register_star_alignment(struct registration_args *args) {
 		} else {
 			ref.x *= 2.0;
 			ref.y *= 2.0;
+		}
+	}
+	else {
+		if (args->translation_only) {
+			args->seq->upscale_at_stacking = 1.0;
 		}
 	}
 
@@ -923,6 +932,8 @@ int register_ecc(struct registration_args *args) {
 	args->seq->regparam[args->layer] = current_regdata;
 	if (args->x2upscale)
 		args->seq->upscale_at_stacking = 2.0;
+	else
+		args->seq->upscale_at_stacking = 1.0;
 	normalizeQualityData(args, q_min, q_max);
 	clearfits(&ref);
 	update_used_memory();

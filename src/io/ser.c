@@ -239,10 +239,10 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 
 		if (timestamps_in_order) {
 			if (min_ts == max_ts)
-				fprintf(stdout, _("Warning: timestamps in the SER sequence are all identical\n"));
-			else fprintf(stdout, "Timestamps in the SER sequence are correctly ordered\n");
+				fprintf(stdout, _("Warning: timestamps in the SER sequence are all identical.\n"));
+			else fprintf(stdout, _("Timestamps in the SER sequence are correctly ordered.\n"));
 		} else {
-			fprintf(stdout, _("Warning: timestamps in the SER sequence are not in the correct order\n"));
+			fprintf(stdout, _("Warning: timestamps in the SER sequence are not in the correct order.\n"));
 		}
 
 		ser_file->ts_min = min_ts;
