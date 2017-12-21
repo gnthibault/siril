@@ -621,8 +621,8 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 		/* load registration data for current image */
 		if(reglayer != -1 && args->seq->regparam[reglayer]) {
-			shiftx = roundf_to_int(args->seq->regparam[reglayer][j].shiftx);
-			shifty = roundf_to_int(args->seq->regparam[reglayer][j].shifty);
+			shiftx = roundf_to_int(args->seq->regparam[reglayer][j].shiftx * args->seq->upscale_at_stacking);
+			shifty = roundf_to_int(args->seq->regparam[reglayer][j].shifty * args->seq->upscale_at_stacking);
 		} else {
 			shiftx = 0;
 			shifty = 0;
@@ -1100,7 +1100,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 			 * of the original area is read, the rest is filled with zeros. The x
 			 * shift is managed in the main loop after the read. */
 			if (reglayer != -1 && args->seq->regparam[reglayer]) {
-				shifty = args->seq->regparam[reglayer][args->image_indices[frame]].shifty;
+				shifty = args->seq->regparam[reglayer][args->image_indices[frame]].shifty * args->seq->upscale_at_stacking;
 				if (area.y + area.h - 1 + shifty < 0 || area.y + shifty >= naxes[1]) {
 					// entirely outside image below or above: all black pixels
 					clear = TRUE; readdata = FALSE;
@@ -1175,7 +1175,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				for (frame = 0; frame < nb_frames; ++frame) {
 					int shiftx = 0;
 					if (reglayer != -1 && args->seq->regparam[reglayer]) {
-						shiftx = args->seq->regparam[reglayer][args->image_indices[frame]].shiftx;
+						shiftx = args->seq->regparam[reglayer][args->image_indices[frame]].shiftx * args->seq->upscale_at_stacking;
 					}
 					if (shiftx && (x - shiftx >= naxes[0] || x - shiftx < 0)) {
 						/* outside bounds, images are black. We could
@@ -1822,7 +1822,8 @@ void stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
 			j++;
 		}
 		else if (i == ref_image) {
-			siril_log_color_message(_("The reference image is not in the selected set of images. To avoid issues, please change it or change the filtering parameters."), "red");
+			siril_log_color_message(_("The reference image is not in the selected set of images. "
+					"To avoid issues, please change it or change the filtering parameters.\n"), "red");
 		}
 	}
 	g_assert(j <= args->nb_images_to_stack);
@@ -2073,9 +2074,8 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		return 0;
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	struct upscale_args *upargs = malloc(sizeof(struct upscale_args));
-	double factor = stackargs->seq->upscale_at_stacking;
 
-	upargs->factor = factor;
+	upargs->factor = stackargs->seq->upscale_at_stacking;
 
 	args->seq = stackargs->seq;
 	args->partial_image = FALSE;
@@ -2132,18 +2132,15 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		 * - the number of images is managed below, to avoid up-scaling
 		 *   unnecessary images, only the selected are and the sequence
 		 *   passed to stacking is treated in its entirety.
-		 * - the shifts between images that must be multiplied by factor
+		 * - the shifts between images that must be multiplied by upscale_at_stacking
 		 */
 		seq_check_basic_data(newseq, FALSE);
 		stackargs->seq = newseq;
 		stackargs->filtering_criterion = seq_filter_all;
 		stackargs->nb_images_to_stack = newseq->number;
-		/* we multiply regparam by the upscale factor value */
+
 		stackargs->seq->regparam[stackargs->reglayer] = args->seq->regparam[stackargs->reglayer];
-		for (i = 0; i < stackargs->seq->number; i++) {
-			stackargs->seq->regparam[stackargs->reglayer][i].shiftx *= factor;
-			stackargs->seq->regparam[stackargs->reglayer][i].shifty *= factor;
-		}
+		stackargs->seq->upscale_at_stacking = args->seq->upscale_at_stacking;
 	}
 	free(seqname);
 	free(args);
