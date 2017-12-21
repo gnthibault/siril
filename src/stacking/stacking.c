@@ -1602,33 +1602,27 @@ static void remove_tmp_drizzle_files(struct stacking_args *args) {
 	}
 
 	int i;
+	char filename[256];
 	gchar *seqname = malloc(strlen(basename) + 5);
 	g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
+	/* remove seq file */
 	g_unlink(seqname);
-	g_free(seqname);
 
-	/*
-	 * 5: stands for index xxxxx
-	 * 6: stands for extension: .fit or .fts or .fits or .ser + \0
-	 */
-	gchar *filename = malloc(strlen(basename) + 5 + 6);
+	g_free(seqname);
+	g_free(basename);
 
 	switch (args->seq->type) {
 	default:
 	case SEQ_REGULAR:
 		for (i = 0; i < args->seq->number; i++) {
-			g_snprintf(filename, strlen(basename) + 5 + strlen(com.ext) + 1,
-					"%s%05d%s", basename, args->image_indices[i], com.ext);
+			fit_sequence_get_image_filename(args->seq, args->image_indices[i], filename, TRUE);
 			g_unlink(filename);
 		}
 		break;
 	case SEQ_SER:
-		g_snprintf(filename, strlen(basename) + 5, "%s.ser", basename);
-		g_unlink(filename);
+		g_unlink(args->seq->ser_file->filename);
 		break;
 	}
-	g_free(filename);
-	g_free(basename);
 }
 
 static gboolean end_stacking(gpointer p) {
