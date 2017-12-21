@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-20 10:24+0100\n"
+"POT-Creation-Date: 2017-12-21 13:52+0100\n"
 "PO-Revision-Date: 2017-09-14 22:04+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -2323,7 +2323,7 @@ msgid ""
 "resulting is smaller file size."
 msgstr "视频品质：低数值将导致更高压缩率和更低比特率，同时获得更小的文件尺寸。"
 
-#: ../src/gui/siril3.glade.h:537 ../src/io/sequence_export.c:491
+#: ../src/gui/siril3.glade.h:537 ../src/io/sequence_export.c:492
 msgid "Select area to crop"
 msgstr "选择裁减区域"
 
@@ -2648,7 +2648,7 @@ msgid ""
 "square of the Drizzle factor."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:614 ../src/registration/registration.c:1012
+#: ../src/gui/siril3.glade.h:614 ../src/registration/registration.c:1023
 msgid "Load a sequence first."
 msgstr "请先载入队列。"
 
@@ -2942,7 +2942,7 @@ msgid ""
 "best images, automatically selected from the registration data (Planetary)"
 msgstr "最好的图像，自动从对齐统计数据中选择(行星)"
 
-#: ../src/gui/siril3.glade.h:690 ../src/stacking/stacking.c:1991
+#: ../src/gui/siril3.glade.h:690 ../src/stacking/stacking.c:2000
 #, c-format
 msgid "Based on FWHM"
 msgstr "基于FWHM"
@@ -3492,7 +3492,7 @@ msgid "Error in layers alignment."
 msgstr "通道对齐错误。"
 
 #: ../src/compositing/align_rgb.c:119 ../src/compositing/compositing.c:601
-#: ../src/registration/registration.c:1251
+#: ../src/registration/registration.c:1262
 msgid "Registration complete."
 msgstr "对齐完成。"
 
@@ -3542,7 +3542,7 @@ msgstr "必须先期载入至少两个通道！\n"
 #: ../src/gui/callbacks.c:5562 ../src/gui/callbacks.c:5620
 #: ../src/io/conversion.c:520 ../src/io/image_formats_libraries.c:98
 #: ../src/io/image_formats_libraries.c:155
-#: ../src/registration/registration.c:1136
+#: ../src/registration/registration.c:1147
 msgid "Warning"
 msgstr "警告"
 
@@ -3582,8 +3582,8 @@ msgstr "Readjusting layer %d to %g times bright\n"
 #: ../src/gui/callbacks.c:4673 ../src/gui/callbacks.c:4870
 #: ../src/gui/callbacks.c:5207 ../src/gui/callbacks.c:5354
 #: ../src/gui/callbacks.c:5659 ../src/gui/callbacks.c:5837
-#: ../src/io/conversion.c:489 ../src/registration/registration.c:1125
-#: ../src/stacking/stacking.c:1447 ../src/stacking/stacking.c:1569
+#: ../src/io/conversion.c:489 ../src/registration/registration.c:1136
+#: ../src/stacking/stacking.c:1455 ../src/stacking/stacking.c:1577
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Another task is already in progress, ignoring new request.\n"
 
@@ -3993,7 +3993,8 @@ msgstr "图像不具有统一大小 (w = %d|%d, h = %d|%d)\n"
 #: ../src/io/image_formats_libraries.c:447
 #: ../src/io/image_formats_libraries.c:532 ../src/io/single_image.c:112
 #: ../src/io/single_image.c:155 ../src/io/single_image.c:159
-#: ../src/stacking/stacking.c:113 ../src/stacking/stacking.c:787
+#: ../src/stacking/normalization.c:112 ../src/stacking/stacking.c:113
+#: ../src/stacking/stacking.c:791
 msgid "Error"
 msgstr "错误"
 
@@ -4956,11 +4957,11 @@ msgstr "保存为3个FITS文件无法执行，因为源图像没有包含三个�
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "在超过一个通道的图像上无法执行debayer\n"
 
-#: ../src/io/conversion.c:793 ../src/io/ser.c:728 ../src/io/ser.c:842
+#: ../src/io/conversion.c:793 ../src/io/ser.c:734 ../src/io/ser.c:856
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
-#: ../src/io/conversion.c:796 ../src/io/ser.c:732 ../src/io/ser.c:846
+#: ../src/io/conversion.c:796 ../src/io/ser.c:738 ../src/io/ser.c:860
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -5440,7 +5441,7 @@ msgstr ""
 msgid "image %d is excluded from export\n"
 msgstr "图像%d被排除于导出列表\n"
 
-#: ../src/io/sequence_export.c:210 ../src/stacking/stacking.c:584
+#: ../src/io/sequence_export.c:210 ../src/stacking/stacking.c:588
 msgid "Processing image "
 msgstr "处理图像 "
 
@@ -5464,46 +5465,70 @@ msgstr "队列导出成功。"
 msgid "Sequence export succeeded.\n"
 msgstr "队列导出成功。\n"
 
-#: ../src/io/sequence_export.c:445
+#: ../src/io/sequence_export.c:446
 msgid "Width or height cannot be null. Not resizing.\n"
 msgstr "宽度和高度不能为空。缩放不成功。\n"
 
-#: ../src/io/sequence_export.c:490
+#: ../src/io/sequence_export.c:491
 msgid "Cropping to selection"
 msgstr "裁减到所选区域"
 
-#: ../src/io/ser.c:273
+#: ../src/io/ser.c:242
+#, c-format
+msgid "Warning: timestamps in the SER sequence are all identical.\n"
+msgstr ""
+
+#: ../src/io/ser.c:243
+#, c-format
+msgid "Timestamps in the SER sequence are correctly ordered.\n"
+msgstr ""
+
+#: ../src/io/ser.c:245
+#, c-format
+msgid "Warning: timestamps in the SER sequence are not in the correct order.\n"
+msgstr ""
+
+#: ../src/io/ser.c:258
+#, c-format
+msgid "Warning: no timestamps stored in the SER sequence.\n"
+msgstr ""
+
+#: ../src/io/ser.c:267
 msgid "Trying to fix broken SER file...\n"
 msgstr "尝试修复损坏的SER文件...\n"
 
-#: ../src/io/ser.c:344
+#: ../src/io/ser.c:338
 msgid "SER file has been fixed...\n"
 msgstr "SER文件已被修复…\n"
 
-#: ../src/io/ser.c:436
+#: ../src/io/ser.c:428
 msgid ""
 "Writing to SER files from larger than 16-bit FITS images is not yet "
 "implemented\n"
 msgstr "以超过16位的FITS图像为源生成SER文件的功能尚未实现\n"
 
-#: ../src/io/ser.c:600
+#: ../src/io/ser.c:542
+msgid "The SER sequence is being created with no image in it.\n"
+msgstr ""
+
+#: ../src/io/ser.c:606
 #, c-format
 msgid "Created SER file %s\n"
 msgstr "Created SER file %s\n"
 
-#: ../src/io/ser.c:769 ../src/io/ser.c:972
+#: ../src/io/ser.c:775 ../src/io/ser.c:986
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "这个类型的拜耳滤镜排列模式尚未被支持。\n"
 
-#: ../src/io/ser.c:856
+#: ../src/io/ser.c:870
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 
-#: ../src/io/ser.c:883 ../src/io/ser.c:944
+#: ../src/io/ser.c:897 ../src/io/ser.c:958
 msgid "Out of memory - aborting\n"
 msgstr "内存不足，异常中止\n"
 
-#: ../src/io/ser.c:993
+#: ../src/io/ser.c:1007
 msgid "Trying to add an image of different size in a SER\n"
 msgstr "试图在SER文件中加入不是一致尺寸的图像\n"
 
@@ -5638,7 +5663,7 @@ msgid "Added a registration method: %s\n"
 msgstr "启用一种对齐方法: %s\n"
 
 #: ../src/registration/registration.c:205
-#: ../src/registration/registration.c:535
+#: ../src/registration/registration.c:539
 msgid "Recomputing already existing registration for this layer\n"
 msgstr "对该通道重新计算已经存在的对齐数据\n"
 
@@ -5651,179 +5676,190 @@ msgid "Register: could not load first image to register, aborting.\n"
 msgstr "Register: could not load first image to register, aborting.\n"
 
 #: ../src/registration/registration.c:281
-#: ../src/registration/registration.c:870
+#: ../src/registration/registration.c:879
 #, c-format
 msgid "Register: processing image %s\n"
 msgstr "对齐：处理图像 %s\n"
 
-#: ../src/registration/registration.c:385
-#: ../src/registration/registration.c:474
-#: ../src/registration/registration.c:775
-#: ../src/registration/registration.c:929
+#: ../src/registration/registration.c:387
+#: ../src/registration/registration.c:478
+#: ../src/registration/registration.c:784
+#: ../src/registration/registration.c:940
 msgid "Registration finished.\n"
 msgstr "对齐结束。\n"
 
-#: ../src/registration/registration.c:386
-#: ../src/registration/registration.c:932
+#: ../src/registration/registration.c:388
+#: ../src/registration/registration.c:943
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "最佳帧： #%d.\n"
 
-#: ../src/registration/registration.c:424
+#: ../src/registration/registration.c:426
 msgid "Registration PSF: failed to compute PSF for reference frame at least\n"
 msgstr "Registration PSF: failed to compute PSF for reference frame at least\n"
 
-#: ../src/registration/registration.c:475
+#: ../src/registration/registration.c:479
 #, c-format
 msgid "Best frame: #%d with fwhm=%.3g.\n"
 msgstr "Best frame: #%d with fwhm=%.3g.\n"
 
-#: ../src/registration/registration.c:485
+#: ../src/registration/registration.c:489
 msgid "Matching stars: done\n"
 msgstr "匹配星点：完成\n"
 
-#: ../src/registration/registration.c:486
+#: ../src/registration/registration.c:490
 #, c-format
 msgid "%d pair matches.\n"
 msgstr "%d pair matches.\n"
 
-#: ../src/registration/registration.c:488
+#: ../src/registration/registration.c:492
 #, c-format
 msgid "Inliers:%*.3f\n"
 msgstr "内层：%*.3f\n"
 
-#: ../src/registration/registration.c:494
+#: ../src/registration/registration.c:498
 #, c-format
 msgid "scaleX:%*.3f\n"
 msgstr "缩放X轴：%*.3f\n"
 
-#: ../src/registration/registration.c:495
+#: ../src/registration/registration.c:499
 #, c-format
 msgid "scaleY:%*.3f\n"
 msgstr "缩放Y轴：%*.3f\n"
 
-#: ../src/registration/registration.c:496
+#: ../src/registration/registration.c:500
 #, c-format
 msgid "scale:%*.3f\n"
 msgstr "缩放：%*.3f\n"
 
-#: ../src/registration/registration.c:500
+#: ../src/registration/registration.c:504
 #, c-format
 msgid "rotation:%+*.2f deg\n"
 msgstr "rotation:%+*.2f deg\n"
 
-#: ../src/registration/registration.c:505
+#: ../src/registration/registration.c:509
 #, c-format
 msgid "dx:%+*.2f px\n"
 msgstr "dx:%+*.2f px\n"
 
-#: ../src/registration/registration.c:506
+#: ../src/registration/registration.c:510
 #, c-format
 msgid "dy:%+*.2f px\n"
 msgstr "dy:%+*.2f px\n"
 
-#: ../src/registration/registration.c:507
-#: ../src/registration/registration.c:614
+#: ../src/registration/registration.c:511
+#: ../src/registration/registration.c:623
 #, c-format
 msgid "FWHMx:%*.2f px\n"
 msgstr "FWHMx:%*.2f px\n"
 
-#: ../src/registration/registration.c:508
-#: ../src/registration/registration.c:615
+#: ../src/registration/registration.c:512
+#: ../src/registration/registration.c:624
 #, c-format
 msgid "FWHMy:%*.2f px\n"
 msgstr "FWHMy:%*.2f px\n"
 
-#: ../src/registration/registration.c:558
-#: ../src/registration/registration.c:830
+#: ../src/registration/registration.c:562
+#: ../src/registration/registration.c:839
 msgid "Could not load reference image\n"
 msgstr "无法载入参考帧\n"
 
-#: ../src/registration/registration.c:564
+#: ../src/registration/registration.c:568
 msgid "Reference Image:\n"
 msgstr "参考帧:\n"
 
-#: ../src/registration/registration.c:575
+#: ../src/registration/registration.c:579
 msgid "There are not enough stars in reference image to perform alignment\n"
 msgstr "参考帧中没有足够数量的星点用于执行对齐\n"
 
-#: ../src/registration/registration.c:609
+#: ../src/registration/registration.c:618
 #, c-format
 msgid "Reference Image: Limiting to %d brightest stars\n"
 msgstr "参考帧：最亮恒星极限为%d\n"
 
-#: ../src/registration/registration.c:676
+#: ../src/registration/registration.c:685
 #, c-format
 msgid "Frame %d:\n"
 msgstr "第%d帧：\n"
 
-#: ../src/registration/registration.c:681
+#: ../src/registration/registration.c:690
 #, c-format
 msgid "Not enough stars. Image %d skipped\n"
 msgstr "Not enough stars. Image %d skipped\n"
 
-#: ../src/registration/registration.c:690
+#: ../src/registration/registration.c:699
 #, c-format
 msgid "Target Image: Limiting to %d brightest stars\n"
 msgstr "目标图像：最亮恒星极限为%d\n"
 
-#: ../src/registration/registration.c:699
+#: ../src/registration/registration.c:708
 #, c-format
 msgid "Cannot perform star matching. Image %d skipped\n"
 msgstr "Cannot perform star matching. Image %d skipped\n"
 
-#: ../src/registration/registration.c:776
+#: ../src/registration/registration.c:785
 #, c-format
 msgid "%d images processed.\n"
 msgstr "%d images processed.\n"
 
-#: ../src/registration/registration.c:778
+#: ../src/registration/registration.c:787
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr "Total: %d failed, %d registered.\n"
 
-#: ../src/registration/registration.c:785
+#: ../src/registration/registration.c:794
 msgid "Registration aborted.\n"
 msgstr "对齐操作异常中止。\n"
 
-#: ../src/registration/registration.c:883
+#: ../src/registration/registration.c:892
 #, c-format
 msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "无法在帧%d中执行ECC对齐\n"
 
-#: ../src/registration/registration.c:931
+#: ../src/registration/registration.c:942
 #, c-format
 msgid "%d frames were excluded.\n"
 msgstr "%d 号帧被排除。\n"
 
-#: ../src/registration/registration.c:1015
+#: ../src/registration/registration.c:1026
 msgid "Select an area in image first, and select images in the sequence."
 msgstr "先在图像中选定一个区域，再于队列中选定一幅图像。"
 
-#: ../src/registration/registration.c:1017
+#: ../src/registration/registration.c:1028
 msgid "Select images in the sequence."
 msgstr "在队列里选定一幅图像。"
 
-#: ../src/registration/registration.c:1019
+#: ../src/registration/registration.c:1030
 msgid "Select an area in image first."
 msgstr "请先在图像上选择一个区域。"
 
-#: ../src/registration/registration.c:1135
+#: ../src/registration/registration.c:1146
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
 msgstr "所有的先决条件不适合对齐，请先选择一个矩形。\n"
 
-#: ../src/registration/registration.c:1173
+#: ../src/registration/registration.c:1184
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "对齐：处理中，使用方法：%s\n"
 
-#: ../src/stacking/normalization.c:96
+#: ../src/stacking/normalization.c:98
 msgid "Computing normalization...\n"
 msgstr "计算归一化...\n"
 
-#: ../src/stacking/normalization.c:124
+#: ../src/stacking/normalization.c:110
+msgid ""
+"The reference image is not in the selected set of images. Please choose "
+"another reference image.\n"
+msgstr ""
+
+#: ../src/stacking/normalization.c:113
+#, fuzzy
+msgid "Normalisation skipped.\n"
+msgstr "归一化失败。"
+
+#: ../src/stacking/normalization.c:132
 msgid "Normalization failed."
 msgstr "归一化失败。"
 
@@ -5831,7 +5867,7 @@ msgstr "归一化失败。"
 msgid "Median stacking is only supported for FITS images and SER sequences.\n"
 msgstr "Median stacking is only supported for FITS images and SER sequences.\n"
 
-#: ../src/stacking/stacking.c:117 ../src/stacking/stacking.c:791
+#: ../src/stacking/stacking.c:117 ../src/stacking/stacking.c:795
 msgid "Select at least two frames for stacking. Aborting.\n"
 msgstr "至少选择两幅图像用于叠加，异常中止。\n"
 
@@ -5848,7 +5884,7 @@ msgstr "Median stack error: images with > 3 dimensions are not supported\n"
 msgid "Median stack error: input images have different sizes\n"
 msgstr "Median stack error: input images have different sizes\n"
 
-#: ../src/stacking/stacking.c:212 ../src/stacking/stacking.c:886
+#: ../src/stacking/stacking.c:212 ../src/stacking/stacking.c:890
 msgid "Super-pixel is not handled yet for on the fly SER stacking\n"
 msgstr "Super-pixel is not handled yet for on the fly SER stacking\n"
 
@@ -5857,26 +5893,26 @@ msgstr "Super-pixel is not handled yet for on the fly SER stacking\n"
 msgid "Median stack error: uninitialized sequence\n"
 msgstr "Median stack error: uninitialized sequence\n"
 
-#: ../src/stacking/stacking.c:266 ../src/stacking/stacking.c:940
+#: ../src/stacking/stacking.c:266 ../src/stacking/stacking.c:944
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Your version of cfitsio does not support multi-threading\n"
 
-#: ../src/stacking/stacking.c:274 ../src/stacking/stacking.c:948
+#: ../src/stacking/stacking.c:274 ../src/stacking/stacking.c:952
 msgid "Processing the sequence as RGB\n"
 msgstr "以RGB模式处理当前队列\n"
 
-#: ../src/stacking/stacking.c:311 ../src/stacking/stacking.c:985
+#: ../src/stacking/stacking.c:311 ../src/stacking/stacking.c:989
 #, c-format
 msgid "We have %d parallel blocks of size %d (+%d) for stacking.\n"
 msgstr "We have %d parallel blocks of size %d (+%d) for stacking.\n"
 
-#: ../src/stacking/stacking.c:319 ../src/stacking/stacking.c:993
+#: ../src/stacking/stacking.c:319 ../src/stacking/stacking.c:997
 msgid ""
 "A bug has been found. Unable to split the image area into the correct "
 "processing blocks.\n"
 msgstr "发现一个Bug，无法将图像区域拆分成正确的待处理块。\n"
 
-#: ../src/stacking/stacking.c:386 ../src/stacking/stacking.c:1062
+#: ../src/stacking/stacking.c:386 ../src/stacking/stacking.c:1066
 msgid "Starting stacking...\n"
 msgstr "开始叠加...\n"
 
@@ -5884,54 +5920,54 @@ msgstr "开始叠加...\n"
 msgid "Median stacking in progress..."
 msgstr "中位数叠加处理中..."
 
-#: ../src/stacking/stacking.c:427 ../src/stacking/stacking.c:1139
+#: ../src/stacking/stacking.c:431 ../src/stacking/stacking.c:1147
 msgid "Error reading one of the image areas\n"
 msgstr "图像区域读取错误\n"
 
-#: ../src/stacking/stacking.c:490 ../src/stacking/stacking.c:668
-#: ../src/stacking/stacking.c:1362
+#: ../src/stacking/stacking.c:494 ../src/stacking/stacking.c:672
+#: ../src/stacking/stacking.c:1370
 msgid "Finalizing stacking..."
 msgstr "叠加最终定稿..."
 
-#: ../src/stacking/stacking.c:522
+#: ../src/stacking/stacking.c:526
 msgid "Median stacking failed. Check the log."
 msgstr "中位数叠加错误。 请查询日志。"
 
-#: ../src/stacking/stacking.c:523 ../src/stacking/stacking.c:690
-#: ../src/stacking/stacking.c:1404
+#: ../src/stacking/stacking.c:527 ../src/stacking/stacking.c:694
+#: ../src/stacking/stacking.c:1412
 msgid "Stacking failed.\n"
 msgstr "叠加失败。\n"
 
-#: ../src/stacking/stacking.c:525
+#: ../src/stacking/stacking.c:529
 msgid "Median stacking complete."
 msgstr "中位数叠加完成。"
 
-#: ../src/stacking/stacking.c:526
+#: ../src/stacking/stacking.c:530
 #, c-format
 msgid "Median stacking complete. %d have been stacked.\n"
 msgstr "中位数叠加完成。共%d帧图像被叠加。\n"
 
-#: ../src/stacking/stacking.c:563
+#: ../src/stacking/stacking.c:567
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"
 msgstr "没有图像被选中用于叠加（至少2），异常中止。\n"
 
-#: ../src/stacking/stacking.c:592
+#: ../src/stacking/stacking.c:596
 msgid "Stacking: could not read frame, aborting\n"
 msgstr "叠加：无法读取帧，异常中止\n"
 
-#: ../src/stacking/stacking.c:615
+#: ../src/stacking/stacking.c:619
 msgid "Stacking: image in sequence doesn't has the same dimensions\n"
 msgstr "Stacking: image in sequence doesn't has the same dimensions\n"
 
-#: ../src/stacking/stacking.c:689
+#: ../src/stacking/stacking.c:693
 msgid "Stacking failed. Check the log."
 msgstr "叠加失败，请检查日志。"
 
-#: ../src/stacking/stacking.c:692
+#: ../src/stacking/stacking.c:696
 msgid "Stacking complete."
 msgstr "叠加完成。"
 
-#: ../src/stacking/stacking.c:786
+#: ../src/stacking/stacking.c:790
 msgid ""
 "Rejection stacking is only supported for FITS images and SER sequences.\n"
 "Use \"Sum Stacking\" instead.\n"
@@ -5939,208 +5975,208 @@ msgstr ""
 "像素剔除算法只适用于FITS文件和SER序列。\n"
 "请另行尝试“加法叠加”。\n"
 
-#: ../src/stacking/stacking.c:813
+#: ../src/stacking/stacking.c:817
 #, c-format
 msgid "Rejection stack: opening image %s"
 msgstr "叠加（像素剔除）：打开图像%s"
 
-#: ../src/stacking/stacking.c:834
+#: ../src/stacking/stacking.c:838
 msgid "Rejection stack error: images with > 3 dimensions are not supported\n"
 msgstr "叠加（像素剔除）错误：超出三通道的图像无法被支持\n"
 
-#: ../src/stacking/stacking.c:845
+#: ../src/stacking/stacking.c:849
 msgid "Rejection stack error: input images have different sizes\n"
 msgstr "叠加（像素剔除）：输入图像尺寸不统一\n"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:893
+#: ../src/stacking/stacking.c:897
 msgid "Rejection stack error: uninitialized sequence\n"
 msgstr "叠加（像素剔除）：队列未初始化\n"
 
-#: ../src/stacking/stacking.c:1063
+#: ../src/stacking/stacking.c:1067
 msgid "Rejection stacking in progress..."
 msgstr "叠加（像素剔除）执行中..."
 
-#: ../src/stacking/stacking.c:1366
+#: ../src/stacking/stacking.c:1374
 #, c-format
 msgid "Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"
 msgstr "像素剔除于通道 #%d: %.3lf%% - %.3lf%%\n"
 
-#: ../src/stacking/stacking.c:1403
+#: ../src/stacking/stacking.c:1411
 msgid "Rejection stacking failed. Check the log."
 msgstr "叠加（像素剔除）失败，请检查日志。"
 
-#: ../src/stacking/stacking.c:1406
+#: ../src/stacking/stacking.c:1414
 msgid "Rejection stacking complete."
 msgstr "叠加（像素剔除）完成。"
 
-#: ../src/stacking/stacking.c:1466
+#: ../src/stacking/stacking.c:1474
 #, c-format
 msgid "Stacking will use registration data of layer %d if some exist.\n"
 msgstr ""
 
-#: ../src/stacking/stacking.c:1469
+#: ../src/stacking/stacking.c:1477
 msgid "Stacking: processing...\n"
 msgstr "叠加：处理中...\n"
 
-#: ../src/stacking/stacking.c:1484
+#: ../src/stacking/stacking.c:1492
 #, c-format
 msgid "Integration of %d images:\n"
 msgstr "共叠加%d帧图像：\n"
 
-#: ../src/stacking/stacking.c:1488
+#: ../src/stacking/stacking.c:1496
 msgid "Pixel combination ......... average\n"
 msgstr "Pixel combination ......... average\n"
 
-#: ../src/stacking/stacking.c:1491
+#: ../src/stacking/stacking.c:1499
 msgid "Pixel combination ......... normalized sum\n"
 msgstr "Pixel combination ......... normalized sum\n"
 
-#: ../src/stacking/stacking.c:1494
+#: ../src/stacking/stacking.c:1502
 msgid "Pixel combination ......... median\n"
 msgstr "Pixel combination ......... median\n"
 
-#: ../src/stacking/stacking.c:1497
+#: ../src/stacking/stacking.c:1505
 msgid "Pixel combination ......... minimum\n"
 msgstr "Pixel combination ......... minimum\n"
 
-#: ../src/stacking/stacking.c:1500
+#: ../src/stacking/stacking.c:1508
 msgid "Pixel combination ......... maximum\n"
 msgstr "Pixel combination ......... maximum\n"
 
-#: ../src/stacking/stacking.c:1503
+#: ../src/stacking/stacking.c:1511
 msgid "Pixel combination ......... none\n"
 msgstr "Pixel combination ......... none\n"
 
-#: ../src/stacking/stacking.c:1508 ../src/stacking/stacking.c:1513
-#: ../src/stacking/stacking.c:1542
+#: ../src/stacking/stacking.c:1516 ../src/stacking/stacking.c:1521
+#: ../src/stacking/stacking.c:1550
 msgid "none"
 msgstr "无"
 
-#: ../src/stacking/stacking.c:1516
+#: ../src/stacking/stacking.c:1524
 msgid "additive"
 msgstr "累加"
 
-#: ../src/stacking/stacking.c:1519
+#: ../src/stacking/stacking.c:1527
 msgid "multiplicative"
 msgstr "累乘"
 
-#: ../src/stacking/stacking.c:1522
+#: ../src/stacking/stacking.c:1530
 msgid "additive + scaling"
 msgstr "累加带拉伸"
 
-#: ../src/stacking/stacking.c:1525
+#: ../src/stacking/stacking.c:1533
 msgid "multiplicative + scaling"
 msgstr "累乘带拉伸"
 
-#: ../src/stacking/stacking.c:1530
+#: ../src/stacking/stacking.c:1538
 #, c-format
 msgid "Normalization ............. %s\n"
 msgstr "Normalization ............. %s\n"
 
-#: ../src/stacking/stacking.c:1534
+#: ../src/stacking/stacking.c:1542
 msgid "Pixel rejection ........... none\n"
 msgstr "Pixel rejection ........... none\n"
 
-#: ../src/stacking/stacking.c:1535
+#: ../src/stacking/stacking.c:1543
 msgid "Rejection parameters ...... none\n"
 msgstr "Rejection parameters ...... none\n"
 
-#: ../src/stacking/stacking.c:1545
+#: ../src/stacking/stacking.c:1553
 msgid "percentile clipping"
 msgstr "percentile clipping"
 
-#: ../src/stacking/stacking.c:1548
+#: ../src/stacking/stacking.c:1556
 msgid "sigma clipping"
 msgstr "sigma clipping"
 
-#: ../src/stacking/stacking.c:1551
+#: ../src/stacking/stacking.c:1559
 msgid "median sigma clipping"
 msgstr "median sigma clipping"
 
-#: ../src/stacking/stacking.c:1554
+#: ../src/stacking/stacking.c:1562
 msgid "Winsorized sigma clipping"
 msgstr "Winsorized sigma clipping"
 
-#: ../src/stacking/stacking.c:1557
+#: ../src/stacking/stacking.c:1565
 msgid "linear fit clipping"
 msgstr "linear fit clipping"
 
-#: ../src/stacking/stacking.c:1560
+#: ../src/stacking/stacking.c:1568
 #, c-format
 msgid "Pixel rejection ........... %s\n"
 msgstr "像素剔除 ........... %s\n"
 
-#: ../src/stacking/stacking.c:1561
+#: ../src/stacking/stacking.c:1569
 #, c-format
 msgid "Rejection parameters ...... low=%.3f high=%.3f\n"
 msgstr "Rejection parameters ...... low=%.3f high=%.3f\n"
 
-#: ../src/stacking/stacking.c:1599
+#: ../src/stacking/stacking.c:1607
 #, fuzzy
 msgid "Stacking result image"
 msgstr "要叠加的图像集合: "
 
-#: ../src/stacking/stacking.c:1624 ../src/stacking/stacking.c:1629
+#: ../src/stacking/stacking.c:1632 ../src/stacking/stacking.c:1637
 msgid "Unsaved stacking result"
 msgstr "未保存的叠加结果"
 
-#: ../src/stacking/stacking.c:1799
+#: ../src/stacking/stacking.c:1807
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "叠加操作共使用内存%d MB\n"
 
-#: ../src/stacking/stacking.c:1825
+#: ../src/stacking/stacking.c:1833
 msgid ""
 "The reference image is not in the selected set of images. To avoid issues, "
-"please change it or change the filtering parameters."
+"please change it or change the filtering parameters.\n"
 msgstr ""
 
-#: ../src/stacking/stacking.c:1883
+#: ../src/stacking/stacking.c:1892
 #, c-format
 msgid ""
 "Error in highest quality accepted for sequence processing: some images don't "
 "have this kind of information available for channel #%d.\n"
 msgstr "基于高图像质量的队列处理错误：某些图像的通道#%d中不含有这类信息。\n"
 
-#: ../src/stacking/stacking.c:1949
+#: ../src/stacking/stacking.c:1958
 #, c-format
 msgid "Stacking all images in the sequence (%d)\n"
 msgstr "叠加队列(%d)中的所有图像\n"
 
-#: ../src/stacking/stacking.c:1958
+#: ../src/stacking/stacking.c:1967
 #, c-format
 msgid "Stacking only selected images in the sequence (%d)\n"
 msgstr "只叠加队列(%d)中所选择的图像\n"
 
-#: ../src/stacking/stacking.c:1981
+#: ../src/stacking/stacking.c:1990
 #, c-format
 msgid ""
 "Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"
 msgstr "叠加队列中FWHM小于等于 %g (%d) 的图像\n"
 
-#: ../src/stacking/stacking.c:1987
+#: ../src/stacking/stacking.c:1996
 #, c-format
 msgid "Based on FWHM < %.2f (%d images)"
 msgstr "基于FWHM < %.2f (%d 图像)"
 
-#: ../src/stacking/stacking.c:2002
+#: ../src/stacking/stacking.c:2011
 #, c-format
 msgid ""
 "Stacking images of the sequence with a quality higher or equal than %g (%d)\n"
 msgstr "叠加队列中品质大于等于 %g (%d) 的图像\n"
 
-#: ../src/stacking/stacking.c:2008
+#: ../src/stacking/stacking.c:2017
 #, c-format
 msgid "Based on quality > %.2f (%d images)"
 msgstr "基于品质 > %.2f (%d 图像)"
 
-#: ../src/stacking/stacking.c:2011
+#: ../src/stacking/stacking.c:2020
 #, c-format
 msgid "Based on quality"
 msgstr "基于品质"
 
-#: ../src/stacking/stacking.c:2091
+#: ../src/stacking/stacking.c:2099
 #, fuzzy
 msgid "Up-scaling sequence for stacking"
 msgstr "队列叠加"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-20 10:24+0100\n"
+"POT-Creation-Date: 2017-12-21 13:52+0100\n"
 "PO-Revision-Date: 2016-11-20 10:20+0100\n"
 "Last-Translator: زنادي أمين <amine-zennadi@hotmail.com>\n"
 "Language-Team: \n"
@@ -2377,7 +2377,7 @@ msgstr ""
 "الفيلم جودة: سيتم استخدام قيمة أقل ضغط أكثر وأيضا مما أقل معدل البت، وحجم "
 "ملف أصغر."
 
-#: ../src/gui/siril3.glade.h:537 ../src/io/sequence_export.c:491
+#: ../src/gui/siril3.glade.h:537 ../src/io/sequence_export.c:492
 msgid "Select area to crop"
 msgstr "تحديد المنطقة"
 
@@ -2711,7 +2711,7 @@ msgid ""
 "square of the Drizzle factor."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:614 ../src/registration/registration.c:1012
+#: ../src/gui/siril3.glade.h:614 ../src/registration/registration.c:1023
 msgid "Load a sequence first."
 msgstr "تحميل السلسلة لأول مرة."
 
@@ -3015,7 +3015,7 @@ msgid ""
 "best images, automatically selected from the registration data (Planetary)"
 msgstr "أفضل الصور المختارة تلقائيا من بيانات التسجيل (الكواكب)"
 
-#: ../src/gui/siril3.glade.h:690 ../src/stacking/stacking.c:1991
+#: ../src/gui/siril3.glade.h:690 ../src/stacking/stacking.c:2000
 #, c-format
 msgid "Based on FWHM"
 msgstr "بناء على FWHM"
@@ -3576,7 +3576,7 @@ msgid "Error in layers alignment."
 msgstr "خطأ في محاذاة الطبقات."
 
 #: ../src/compositing/align_rgb.c:119 ../src/compositing/compositing.c:601
-#: ../src/registration/registration.c:1251
+#: ../src/registration/registration.c:1262
 msgid "Registration complete."
 msgstr "تم التسجيل بنجاح"
 
@@ -3626,7 +3626,7 @@ msgstr "يجب عليك على الأقل حمولة طبقتين من قبل!\n
 #: ../src/gui/callbacks.c:5562 ../src/gui/callbacks.c:5620
 #: ../src/io/conversion.c:520 ../src/io/image_formats_libraries.c:98
 #: ../src/io/image_formats_libraries.c:155
-#: ../src/registration/registration.c:1136
+#: ../src/registration/registration.c:1147
 msgid "Warning"
 msgstr "إنذار"
 
@@ -3666,8 +3666,8 @@ msgstr "إعادة تعديل طبقة %d في الأوقات%g مشرق\n"
 #: ../src/gui/callbacks.c:4673 ../src/gui/callbacks.c:4870
 #: ../src/gui/callbacks.c:5207 ../src/gui/callbacks.c:5354
 #: ../src/gui/callbacks.c:5659 ../src/gui/callbacks.c:5837
-#: ../src/io/conversion.c:489 ../src/registration/registration.c:1125
-#: ../src/stacking/stacking.c:1447 ../src/stacking/stacking.c:1569
+#: ../src/io/conversion.c:489 ../src/registration/registration.c:1136
+#: ../src/stacking/stacking.c:1455 ../src/stacking/stacking.c:1577
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "مهمة أخرى هي بالفعل في التقدم، وتجاهل طلب جديد. .\n"
 
@@ -4075,7 +4075,8 @@ msgstr "الصور ليست لديهم نفس الحجم (w = %d|%d, h = %d|%d)\
 #: ../src/io/image_formats_libraries.c:447
 #: ../src/io/image_formats_libraries.c:532 ../src/io/single_image.c:112
 #: ../src/io/single_image.c:155 ../src/io/single_image.c:159
-#: ../src/stacking/stacking.c:113 ../src/stacking/stacking.c:787
+#: ../src/stacking/normalization.c:112 ../src/stacking/stacking.c:113
+#: ../src/stacking/stacking.c:791
 msgid "Error"
 msgstr "خطأ"
 
@@ -5008,11 +5009,11 @@ msgstr ""
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "لا يمكن أن تؤدي على الصورة مع أكثر من قناة واحدة\n"
 
-#: ../src/io/conversion.c:793 ../src/io/ser.c:728 ../src/io/ser.c:842
+#: ../src/io/conversion.c:793 ../src/io/ser.c:734 ../src/io/ser.c:856
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "النمط باير لنمط من رأس الملف\n"
 
-#: ../src/io/conversion.c:796 ../src/io/ser.c:732 ../src/io/ser.c:846
+#: ../src/io/conversion.c:796 ../src/io/ser.c:738 ../src/io/ser.c:860
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -5486,7 +5487,7 @@ msgstr ""
 msgid "image %d is excluded from export\n"
 msgstr ""
 
-#: ../src/io/sequence_export.c:210 ../src/stacking/stacking.c:584
+#: ../src/io/sequence_export.c:210 ../src/stacking/stacking.c:588
 msgid "Processing image "
 msgstr "معالجة الصورة "
 
@@ -5510,47 +5511,71 @@ msgstr "نجح تصدير تسلسل."
 msgid "Sequence export succeeded.\n"
 msgstr "نجح تصدير تسلسل.\n"
 
-#: ../src/io/sequence_export.c:445
+#: ../src/io/sequence_export.c:446
 msgid "Width or height cannot be null. Not resizing.\n"
 msgstr "عرض أو ارتفاع لا يمكن أن تكون فارغة. لا تغيير الحجم.\n"
 
-#: ../src/io/sequence_export.c:490
+#: ../src/io/sequence_export.c:491
 msgid "Cropping to selection"
 msgstr "القص"
 
-#: ../src/io/ser.c:273
+#: ../src/io/ser.c:242
+#, c-format
+msgid "Warning: timestamps in the SER sequence are all identical.\n"
+msgstr ""
+
+#: ../src/io/ser.c:243
+#, c-format
+msgid "Timestamps in the SER sequence are correctly ordered.\n"
+msgstr ""
+
+#: ../src/io/ser.c:245
+#, c-format
+msgid "Warning: timestamps in the SER sequence are not in the correct order.\n"
+msgstr ""
+
+#: ../src/io/ser.c:258
+#, c-format
+msgid "Warning: no timestamps stored in the SER sequence.\n"
+msgstr ""
+
+#: ../src/io/ser.c:267
 msgid "Trying to fix broken SER file...\n"
 msgstr "في محاولة لاصلاح ملف SER كسر ...\n"
 
-#: ../src/io/ser.c:344
+#: ../src/io/ser.c:338
 msgid "SER file has been fixed...\n"
 msgstr "تم إصلاح ملف SER ...\n"
 
-#: ../src/io/ser.c:436
+#: ../src/io/ser.c:428
 msgid ""
 "Writing to SER files from larger than 16-bit FITS images is not yet "
 "implemented\n"
 msgstr ""
 "الكتابة إلى الملفات SER من أكبر من 16 بت يناسب لم يتم تنفيذها بعد الصور\n"
 
-#: ../src/io/ser.c:600
+#: ../src/io/ser.c:542
+msgid "The SER sequence is being created with no image in it.\n"
+msgstr ""
+
+#: ../src/io/ser.c:606
 #, c-format
 msgid "Created SER file %s\n"
 msgstr "إنشاء ملف SER %s\n"
 
-#: ../src/io/ser.c:769 ../src/io/ser.c:972
+#: ../src/io/ser.c:775 ../src/io/ser.c:986
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "لا يتم التعامل مع هذا النوع من نمط باير حتى الان.\n"
 
-#: ../src/io/ser.c:856
+#: ../src/io/ser.c:870
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr "للحصول على صورة demosaiced، طبقة يجب أن تكون R، G أو B (0-2).\n"
 
-#: ../src/io/ser.c:883 ../src/io/ser.c:944
+#: ../src/io/ser.c:897 ../src/io/ser.c:958
 msgid "Out of memory - aborting\n"
 msgstr "ذاكرة غير كافية - إجهاض\n"
 
-#: ../src/io/ser.c:993
+#: ../src/io/ser.c:1007
 msgid "Trying to add an image of different size in a SER\n"
 msgstr "في محاولة لإضافة صورة من أحجام مختلفة في SER\n"
 
@@ -5690,7 +5715,7 @@ msgid "Added a registration method: %s\n"
 msgstr "وأضاف طريقة التسجيل: %s\n"
 
 #: ../src/registration/registration.c:205
-#: ../src/registration/registration.c:535
+#: ../src/registration/registration.c:539
 msgid "Recomputing already existing registration for this layer\n"
 msgstr "إعادة حساب تسجيل القائمة بالفعل لهذه الطبقة\n"
 
@@ -5703,179 +5728,190 @@ msgid "Register: could not load first image to register, aborting.\n"
 msgstr "تسجيل: تعذر تحميل الصورة الأولى للتسجيل، إجهاض.\n"
 
 #: ../src/registration/registration.c:281
-#: ../src/registration/registration.c:870
+#: ../src/registration/registration.c:879
 #, c-format
 msgid "Register: processing image %s\n"
 msgstr "تسجيل: معالجة الصورة %s\n"
 
-#: ../src/registration/registration.c:385
-#: ../src/registration/registration.c:474
-#: ../src/registration/registration.c:775
-#: ../src/registration/registration.c:929
+#: ../src/registration/registration.c:387
+#: ../src/registration/registration.c:478
+#: ../src/registration/registration.c:784
+#: ../src/registration/registration.c:940
 msgid "Registration finished.\n"
 msgstr "انتهى التسجيل.\n"
 
-#: ../src/registration/registration.c:386
-#: ../src/registration/registration.c:932
+#: ../src/registration/registration.c:388
+#: ../src/registration/registration.c:943
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "أفضل الإطار:  #%d.\n"
 
-#: ../src/registration/registration.c:424
+#: ../src/registration/registration.c:426
 msgid "Registration PSF: failed to compute PSF for reference frame at least\n"
 msgstr "قوات PSF: فشل لحساب قوات الأمن الفلسطينية لالإطار المرجعي على الأقل\n"
 
-#: ../src/registration/registration.c:475
+#: ../src/registration/registration.c:479
 #, c-format
 msgid "Best frame: #%d with fwhm=%.3g.\n"
 msgstr "أفضل الإطار: #% د مع FWHM =% الجيل الثالث 3G.\n"
 
-#: ../src/registration/registration.c:485
+#: ../src/registration/registration.c:489
 msgid "Matching stars: done\n"
 msgstr "مطابقة النجوم: فعلت\n"
 
-#: ../src/registration/registration.c:486
+#: ../src/registration/registration.c:490
 #, c-format
 msgid "%d pair matches.\n"
 msgstr "مباريات %d  الزوج.\n"
 
-#: ../src/registration/registration.c:488
+#: ../src/registration/registration.c:492
 #, fuzzy, c-format
 msgid "Inliers:%*.3f\n"
 msgstr "على نطاق و: %*.3f\n"
 
-#: ../src/registration/registration.c:494
+#: ../src/registration/registration.c:498
 #, fuzzy, c-format
 msgid "scaleX:%*.3f\n"
 msgstr "على نطاق و: %*.3f\n"
 
-#: ../src/registration/registration.c:495
+#: ../src/registration/registration.c:499
 #, fuzzy, c-format
 msgid "scaleY:%*.3f\n"
 msgstr "على نطاق و: %*.3f\n"
 
-#: ../src/registration/registration.c:496
+#: ../src/registration/registration.c:500
 #, c-format
 msgid "scale:%*.3f\n"
 msgstr "على نطاق و: %*.3f\n"
 
-#: ../src/registration/registration.c:500
+#: ../src/registration/registration.c:504
 #, c-format
 msgid "rotation:%+*.2f deg\n"
 msgstr "دوران: %+*.2f  درجة\n"
 
-#: ../src/registration/registration.c:505
+#: ../src/registration/registration.c:509
 #, c-format
 msgid "dx:%+*.2f px\n"
 msgstr "DX:%   * 2F بكسل\n"
 
-#: ../src/registration/registration.c:506
+#: ../src/registration/registration.c:510
 #, c-format
 msgid "dy:%+*.2f px\n"
 msgstr "وبناء على FWHM <% .2f (% د صور)\n"
 
-#: ../src/registration/registration.c:507
-#: ../src/registration/registration.c:614
+#: ../src/registration/registration.c:511
+#: ../src/registration/registration.c:623
 #, c-format
 msgid "FWHMx:%*.2f px\n"
 msgstr "FWHMx:% * بكسل 2F\n"
 
-#: ../src/registration/registration.c:508
-#: ../src/registration/registration.c:615
+#: ../src/registration/registration.c:512
+#: ../src/registration/registration.c:624
 #, c-format
 msgid "FWHMy:%*.2f px\n"
 msgstr "FWHMy:% * بكسل 2F\n"
 
-#: ../src/registration/registration.c:558
-#: ../src/registration/registration.c:830
+#: ../src/registration/registration.c:562
+#: ../src/registration/registration.c:839
 msgid "Could not load reference image\n"
 msgstr "لا يمكن تحميل صورة المرجعية\n"
 
-#: ../src/registration/registration.c:564
+#: ../src/registration/registration.c:568
 msgid "Reference Image:\n"
 msgstr "صورة مرجعية\n"
 
-#: ../src/registration/registration.c:575
+#: ../src/registration/registration.c:579
 msgid "There are not enough stars in reference image to perform alignment\n"
 msgstr "ليس هناك ما يكفي من النجوم في صورة إشارة لأداء المحاذاة\n"
 
-#: ../src/registration/registration.c:609
+#: ../src/registration/registration.c:618
 #, c-format
 msgid "Reference Image: Limiting to %d brightest stars\n"
 msgstr ""
 
-#: ../src/registration/registration.c:676
+#: ../src/registration/registration.c:685
 #, c-format
 msgid "Frame %d:\n"
 msgstr "إطارات %d:\n"
 
-#: ../src/registration/registration.c:681
+#: ../src/registration/registration.c:690
 #, c-format
 msgid "Not enough stars. Image %d skipped\n"
 msgstr "النجوم لا يكفي. صورة %d تخطي\n"
 
-#: ../src/registration/registration.c:690
+#: ../src/registration/registration.c:699
 #, c-format
 msgid "Target Image: Limiting to %d brightest stars\n"
 msgstr ""
 
-#: ../src/registration/registration.c:699
+#: ../src/registration/registration.c:708
 #, c-format
 msgid "Cannot perform star matching. Image %d skipped\n"
 msgstr "لا يمكن إجراء مطابقة نجم. صورة %d تخطي\n"
 
-#: ../src/registration/registration.c:776
+#: ../src/registration/registration.c:785
 #, c-format
 msgid "%d images processed.\n"
 msgstr "%d صور معالجتها.\n"
 
-#: ../src/registration/registration.c:778
+#: ../src/registration/registration.c:787
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr "فشل%d، %d تسجيل: مجموع.\n"
 
-#: ../src/registration/registration.c:785
+#: ../src/registration/registration.c:794
 msgid "Registration aborted.\n"
 msgstr "تسجيل إحباط.\n"
 
-#: ../src/registration/registration.c:883
+#: ../src/registration/registration.c:892
 #, c-format
 msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "لا يمكن إجراء محاذاة ECC لإطار%d\n"
 
-#: ../src/registration/registration.c:931
+#: ../src/registration/registration.c:942
 #, c-format
 msgid "%d frames were excluded.\n"
 msgstr "تم استبعاد إطارات %d\n"
 
-#: ../src/registration/registration.c:1015
+#: ../src/registration/registration.c:1026
 msgid "Select an area in image first, and select images in the sequence."
 msgstr "تحديد منطقة في الصورة الأولى، واختيار الصور في تسلسل."
 
-#: ../src/registration/registration.c:1017
+#: ../src/registration/registration.c:1028
 msgid "Select images in the sequence."
 msgstr "حدد الصور في تسلسل."
 
-#: ../src/registration/registration.c:1019
+#: ../src/registration/registration.c:1030
 msgid "Select an area in image first."
 msgstr "تحديد منطقة في الصورة الأولى."
 
-#: ../src/registration/registration.c:1135
+#: ../src/registration/registration.c:1146
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
 msgstr "لا يتم شغل كل الشروط المسبقة للتسجيل. حدد المستطيل أولا.\n"
 
-#: ../src/registration/registration.c:1173
+#: ../src/registration/registration.c:1184
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "تسجيل: تجهيز باستخدام طريقة: %s\n"
 
-#: ../src/stacking/normalization.c:96
+#: ../src/stacking/normalization.c:98
 msgid "Computing normalization...\n"
 msgstr "الحوسبة التطبيع ...\n"
 
-#: ../src/stacking/normalization.c:124
+#: ../src/stacking/normalization.c:110
+msgid ""
+"The reference image is not in the selected set of images. Please choose "
+"another reference image.\n"
+msgstr ""
+
+#: ../src/stacking/normalization.c:113
+#, fuzzy
+msgid "Normalisation skipped.\n"
+msgstr "فشل التطبيع."
+
+#: ../src/stacking/normalization.c:132
 msgid "Normalization failed."
 msgstr "فشل التطبيع."
 
@@ -5883,7 +5919,7 @@ msgstr "فشل التطبيع."
 msgid "Median stacking is only supported for FITS images and SER sequences.\n"
 msgstr "تم دعم تجميع وسيطة فقط للصور متقطعة وتسلسل SER.\n"
 
-#: ../src/stacking/stacking.c:117 ../src/stacking/stacking.c:791
+#: ../src/stacking/stacking.c:117 ../src/stacking/stacking.c:795
 msgid "Select at least two frames for stacking. Aborting.\n"
 msgstr "اختيار اثنين على الأقل إطارات لالتراص. إجهاض.\n"
 
@@ -5900,7 +5936,7 @@ msgstr "غير معتمدة الصور مع> 3 أبعاد: متوسط ​​خط
 msgid "Median stack error: input images have different sizes\n"
 msgstr "متوسط ​​خطأ مكدس: صور المدخلات وأحجام مختلفة\n"
 
-#: ../src/stacking/stacking.c:212 ../src/stacking/stacking.c:886
+#: ../src/stacking/stacking.c:212 ../src/stacking/stacking.c:890
 msgid "Super-pixel is not handled yet for on the fly SER stacking\n"
 msgstr "لا تتم معالجة فائقة بكسل حتى الآن طريقة لعلى التراص SER الطيران\n"
 
@@ -5909,20 +5945,20 @@ msgstr "لا تتم معالجة فائقة بكسل حتى الآن طريقة 
 msgid "Median stack error: uninitialized sequence\n"
 msgstr "خطأ مكدس متوسط: تسلسل غير مهيأة\n"
 
-#: ../src/stacking/stacking.c:266 ../src/stacking/stacking.c:940
+#: ../src/stacking/stacking.c:266 ../src/stacking/stacking.c:944
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "لا يدعم إصدار cfitsio متعدد خيوط\n"
 
-#: ../src/stacking/stacking.c:274 ../src/stacking/stacking.c:948
+#: ../src/stacking/stacking.c:274 ../src/stacking/stacking.c:952
 msgid "Processing the sequence as RGB\n"
 msgstr "معالجة تسلسل كما RGB\n"
 
-#: ../src/stacking/stacking.c:311 ../src/stacking/stacking.c:985
+#: ../src/stacking/stacking.c:311 ../src/stacking/stacking.c:989
 #, c-format
 msgid "We have %d parallel blocks of size %d (+%d) for stacking.\n"
 msgstr "لدينا كتل موازية %d من حجم %d ( %d) لالتراص.\n"
 
-#: ../src/stacking/stacking.c:319 ../src/stacking/stacking.c:993
+#: ../src/stacking/stacking.c:319 ../src/stacking/stacking.c:997
 msgid ""
 "A bug has been found. Unable to split the image area into the correct "
 "processing blocks.\n"
@@ -5930,7 +5966,7 @@ msgstr ""
 "تم العثور على الأخطاء. غير قادر على تقسيم منطقة الصورة إلى كتل المعالجة "
 "الصحيحة.\n"
 
-#: ../src/stacking/stacking.c:386 ../src/stacking/stacking.c:1062
+#: ../src/stacking/stacking.c:386 ../src/stacking/stacking.c:1066
 msgid "Starting stacking...\n"
 msgstr "بدءا التراص ...\n"
 
@@ -5938,54 +5974,54 @@ msgstr "بدءا التراص ...\n"
 msgid "Median stacking in progress..."
 msgstr "التراص متوسط ​​في التقدم ..."
 
-#: ../src/stacking/stacking.c:427 ../src/stacking/stacking.c:1139
+#: ../src/stacking/stacking.c:431 ../src/stacking/stacking.c:1147
 msgid "Error reading one of the image areas\n"
 msgstr "خطأ في قراءة واحدة من المناطق صورة\n"
 
-#: ../src/stacking/stacking.c:490 ../src/stacking/stacking.c:668
-#: ../src/stacking/stacking.c:1362
+#: ../src/stacking/stacking.c:494 ../src/stacking/stacking.c:672
+#: ../src/stacking/stacking.c:1370
 msgid "Finalizing stacking..."
 msgstr "الانتهاء من التراص ..."
 
-#: ../src/stacking/stacking.c:522
+#: ../src/stacking/stacking.c:526
 msgid "Median stacking failed. Check the log."
 msgstr "فشل التراص المتوسط. تحقق من سجل."
 
-#: ../src/stacking/stacking.c:523 ../src/stacking/stacking.c:690
-#: ../src/stacking/stacking.c:1404
+#: ../src/stacking/stacking.c:527 ../src/stacking/stacking.c:694
+#: ../src/stacking/stacking.c:1412
 msgid "Stacking failed.\n"
 msgstr "فشل التراص.\n"
 
-#: ../src/stacking/stacking.c:525
+#: ../src/stacking/stacking.c:529
 msgid "Median stacking complete."
 msgstr "متوسط ​​التراص كاملة."
 
-#: ../src/stacking/stacking.c:526
+#: ../src/stacking/stacking.c:530
 #, c-format
 msgid "Median stacking complete. %d have been stacked.\n"
 msgstr "متوسط ​​التراص كاملة. تم مكدسة %d\n"
 
-#: ../src/stacking/stacking.c:563
+#: ../src/stacking/stacking.c:567
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"
 msgstr "لم يتم تحديد لالتراص (حدد على الأقل 2) الإطار. إجهاض.\n"
 
-#: ../src/stacking/stacking.c:592
+#: ../src/stacking/stacking.c:596
 msgid "Stacking: could not read frame, aborting\n"
 msgstr "التراص: لا يمكن قراءة الإطار، إجهاض\n"
 
-#: ../src/stacking/stacking.c:615
+#: ../src/stacking/stacking.c:619
 msgid "Stacking: image in sequence doesn't has the same dimensions\n"
 msgstr "التراص: صورة في تسلسل لا يملك نفس الأبعاد\n"
 
-#: ../src/stacking/stacking.c:689
+#: ../src/stacking/stacking.c:693
 msgid "Stacking failed. Check the log."
 msgstr "فشل التراص. تحقق من سجل."
 
-#: ../src/stacking/stacking.c:692
+#: ../src/stacking/stacking.c:696
 msgid "Stacking complete."
 msgstr "التراص كاملة."
 
-#: ../src/stacking/stacking.c:786
+#: ../src/stacking/stacking.c:790
 msgid ""
 "Rejection stacking is only supported for FITS images and SER sequences.\n"
 "Use \"Sum Stacking\" instead.\n"
@@ -5993,164 +6029,164 @@ msgstr ""
 "ويدعم رفض التراص فقط للصور متقطعة وتسلسل SER. استخدام \"مجموع التراص\" بدلا "
 "من ذلك.\n"
 
-#: ../src/stacking/stacking.c:813
+#: ../src/stacking/stacking.c:817
 #, c-format
 msgid "Rejection stack: opening image %s"
 msgstr "رفض كومة: صورة فتح %s"
 
-#: ../src/stacking/stacking.c:834
+#: ../src/stacking/stacking.c:838
 msgid "Rejection stack error: images with > 3 dimensions are not supported\n"
 msgstr "غير معتمدة الصور مع> 3 أبعاد: متوسط ​​خطأ مكدس\n"
 
-#: ../src/stacking/stacking.c:845
+#: ../src/stacking/stacking.c:849
 msgid "Rejection stack error: input images have different sizes\n"
 msgstr "متوسط ​​خطأ مكدس: صور المدخلات وأحجام مختلفة\n"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:893
+#: ../src/stacking/stacking.c:897
 msgid "Rejection stack error: uninitialized sequence\n"
 msgstr "رفض خطأ مكدس: تسلسل غير مهيأة\n"
 
-#: ../src/stacking/stacking.c:1063
+#: ../src/stacking/stacking.c:1067
 msgid "Rejection stacking in progress..."
 msgstr "رفض التراص في التقدم ..."
 
-#: ../src/stacking/stacking.c:1366
+#: ../src/stacking/stacking.c:1374
 #, c-format
 msgid "Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"
 msgstr "رفض بكسل في قناة #%d: %.3lf%% - %.3lf%%\n"
 
-#: ../src/stacking/stacking.c:1403
+#: ../src/stacking/stacking.c:1411
 msgid "Rejection stacking failed. Check the log."
 msgstr "رفض التراص فشل. تحقق من سجل."
 
-#: ../src/stacking/stacking.c:1406
+#: ../src/stacking/stacking.c:1414
 msgid "Rejection stacking complete."
 msgstr "رفض التراص كاملة."
 
-#: ../src/stacking/stacking.c:1466
+#: ../src/stacking/stacking.c:1474
 #, c-format
 msgid "Stacking will use registration data of layer %d if some exist.\n"
 msgstr ""
 
-#: ../src/stacking/stacking.c:1469
+#: ../src/stacking/stacking.c:1477
 msgid "Stacking: processing...\n"
 msgstr "التراص: تجهيز ...\n"
 
-#: ../src/stacking/stacking.c:1484
+#: ../src/stacking/stacking.c:1492
 #, c-format
 msgid "Integration of %d images:\n"
 msgstr "تكامل%d الصور:\n"
 
-#: ../src/stacking/stacking.c:1488
+#: ../src/stacking/stacking.c:1496
 msgid "Pixel combination ......... average\n"
 msgstr "مزيج بكسل ......... المتوسط\n"
 
-#: ../src/stacking/stacking.c:1491
+#: ../src/stacking/stacking.c:1499
 msgid "Pixel combination ......... normalized sum\n"
 msgstr "مزيج بكسل ......... مبلغ تطبيع\n"
 
-#: ../src/stacking/stacking.c:1494
+#: ../src/stacking/stacking.c:1502
 msgid "Pixel combination ......... median\n"
 msgstr "مزيج بكسل ......... المتوسط\n"
 
-#: ../src/stacking/stacking.c:1497
+#: ../src/stacking/stacking.c:1505
 msgid "Pixel combination ......... minimum\n"
 msgstr "مزيج بكسل ......... الحد الأدنى\n"
 
-#: ../src/stacking/stacking.c:1500
+#: ../src/stacking/stacking.c:1508
 msgid "Pixel combination ......... maximum\n"
 msgstr "مزيج بكسل ......... أقصى\n"
 
-#: ../src/stacking/stacking.c:1503
+#: ../src/stacking/stacking.c:1511
 msgid "Pixel combination ......... none\n"
 msgstr "مزيج بكسل ......... لا شيء\n"
 
-#: ../src/stacking/stacking.c:1508 ../src/stacking/stacking.c:1513
-#: ../src/stacking/stacking.c:1542
+#: ../src/stacking/stacking.c:1516 ../src/stacking/stacking.c:1521
+#: ../src/stacking/stacking.c:1550
 msgid "none"
 msgstr "لا شيء"
 
-#: ../src/stacking/stacking.c:1516
+#: ../src/stacking/stacking.c:1524
 msgid "additive"
 msgstr "مُضَافٌ"
 
-#: ../src/stacking/stacking.c:1519
+#: ../src/stacking/stacking.c:1527
 msgid "multiplicative"
 msgstr "مكثر"
 
-#: ../src/stacking/stacking.c:1522
+#: ../src/stacking/stacking.c:1530
 msgid "additive + scaling"
 msgstr "المضافات +  التحجيم"
 
-#: ../src/stacking/stacking.c:1525
+#: ../src/stacking/stacking.c:1533
 msgid "multiplicative + scaling"
 msgstr "المضاعف +  التحجيم"
 
-#: ../src/stacking/stacking.c:1530
+#: ../src/stacking/stacking.c:1538
 #, c-format
 msgid "Normalization ............. %s\n"
 msgstr "تطبيع .............%s\n"
 
-#: ../src/stacking/stacking.c:1534
+#: ../src/stacking/stacking.c:1542
 msgid "Pixel rejection ........... none\n"
 msgstr "بكسل رفض ........... لا شيء\n"
 
-#: ../src/stacking/stacking.c:1535
+#: ../src/stacking/stacking.c:1543
 msgid "Rejection parameters ...... none\n"
 msgstr "المعلمات الرفض ...... لا شيء\n"
 
-#: ../src/stacking/stacking.c:1545
+#: ../src/stacking/stacking.c:1553
 msgid "percentile clipping"
 msgstr "اللقطة المئوية"
 
-#: ../src/stacking/stacking.c:1548
+#: ../src/stacking/stacking.c:1556
 msgid "sigma clipping"
 msgstr "لقطة سيغما"
 
-#: ../src/stacking/stacking.c:1551
+#: ../src/stacking/stacking.c:1559
 msgid "median sigma clipping"
 msgstr "متوسط ​​سيجما لقطة"
 
-#: ../src/stacking/stacking.c:1554
+#: ../src/stacking/stacking.c:1562
 msgid "Winsorized sigma clipping"
 msgstr "لقطة سيغما"
 
-#: ../src/stacking/stacking.c:1557
+#: ../src/stacking/stacking.c:1565
 msgid "linear fit clipping"
 msgstr "صالح لقطة خطي"
 
-#: ../src/stacking/stacking.c:1560
+#: ../src/stacking/stacking.c:1568
 #, c-format
 msgid "Pixel rejection ........... %s\n"
 msgstr "بكسل رفض ........... %s\n"
 
-#: ../src/stacking/stacking.c:1561
+#: ../src/stacking/stacking.c:1569
 #, c-format
 msgid "Rejection parameters ...... low=%.3f high=%.3f\n"
 msgstr "المعلمات الرفض ......  low=%.3f high=%.3f\n"
 
-#: ../src/stacking/stacking.c:1599
+#: ../src/stacking/stacking.c:1607
 #, fuzzy
 msgid "Stacking result image"
 msgstr "كومة هذه المجموعة من الصور:"
 
-#: ../src/stacking/stacking.c:1624 ../src/stacking/stacking.c:1629
+#: ../src/stacking/stacking.c:1632 ../src/stacking/stacking.c:1637
 msgid "Unsaved stacking result"
 msgstr "نتيجة التراص غير المحفوظة"
 
-#: ../src/stacking/stacking.c:1799
+#: ../src/stacking/stacking.c:1807
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "استخدام %d ميغابايت من الذاكرة كحد أقصى لالتراص\n"
 
-#: ../src/stacking/stacking.c:1825
+#: ../src/stacking/stacking.c:1833
 msgid ""
 "The reference image is not in the selected set of images. To avoid issues, "
-"please change it or change the filtering parameters."
+"please change it or change the filtering parameters.\n"
 msgstr ""
 
-#: ../src/stacking/stacking.c:1883
+#: ../src/stacking/stacking.c:1892
 #, c-format
 msgid ""
 "Error in highest quality accepted for sequence processing: some images don't "
@@ -6159,44 +6195,44 @@ msgstr ""
 "خطأ في أعلى مستوى من الجودة المقبولة لمعالجة تسلسل: بعض الصور لم يكن لديك "
 "هذا النوع من المعلومات المتاحة لقناة #% د.\n"
 
-#: ../src/stacking/stacking.c:1949
+#: ../src/stacking/stacking.c:1958
 #, c-format
 msgid "Stacking all images in the sequence (%d)\n"
 msgstr "التراص جميع الصور في تسلسل (%d)\n"
 
-#: ../src/stacking/stacking.c:1958
+#: ../src/stacking/stacking.c:1967
 #, c-format
 msgid "Stacking only selected images in the sequence (%d)\n"
 msgstr "التراص الصور المحددة فقط في التسلسل (%d)\n"
 
-#: ../src/stacking/stacking.c:1981
+#: ../src/stacking/stacking.c:1990
 #, c-format
 msgid ""
 "Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"
 msgstr "التراص صور التسلسل مع FWHM أقل من أو يساوي %g (%d)\n"
 
-#: ../src/stacking/stacking.c:1987
+#: ../src/stacking/stacking.c:1996
 #, c-format
 msgid "Based on FWHM < %.2f (%d images)"
 msgstr "وبناء على FWHM <% .2f (% د صور)"
 
-#: ../src/stacking/stacking.c:2002
+#: ../src/stacking/stacking.c:2011
 #, c-format
 msgid ""
 "Stacking images of the sequence with a quality higher or equal than %g (%d)\n"
 msgstr "التراص صور التسلسل مع جودة أعلى من أو يساوي %g (%d)\n"
 
-#: ../src/stacking/stacking.c:2008
+#: ../src/stacking/stacking.c:2017
 #, c-format
 msgid "Based on quality > %.2f (%d images)"
 msgstr "على أساس الجودة>% .2f (% د صور)"
 
-#: ../src/stacking/stacking.c:2011
+#: ../src/stacking/stacking.c:2020
 #, c-format
 msgid "Based on quality"
 msgstr "على أساس الجودة"
 
-#: ../src/stacking/stacking.c:2091
+#: ../src/stacking/stacking.c:2099
 #, fuzzy
 msgid "Up-scaling sequence for stacking"
 msgstr "تسلسل التراص"
