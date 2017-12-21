@@ -375,7 +375,12 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 
 		/* initialize sequence-related runtime data */
 		seq->rx = fit->rx; seq->ry = fit->ry;
-		if (seq->nb_layers == -1) {
+
+		/* FIXME: when we load a demosaiced SER video after the seqfile was
+		 * created with seq->nb_layers = 1 (raw mode), seq->nb_layer is overwritten
+		 * and all regdata as well. Should we set another flag ?
+		 */
+		if (seq->nb_layers == -1 || seq->nb_layers != fit->naxes[2]) {
 			seq->nb_layers = fit->naxes[2];
 			seq->regparam = calloc(seq->nb_layers, sizeof(regdata *));
 			seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
