@@ -2187,7 +2187,9 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		seq_check_basic_data(newseq, FALSE);
 		stackargs->seq = newseq;
 		stackargs->filtering_criterion = seq_filter_all;
+		stackargs->filtering_parameter = 0.0;
 		stackargs->nb_images_to_stack = newseq->number;
+		stack_fill_list_of_unfiltered_images(stackargs);
 
 		stackargs->seq->regparam[stackargs->reglayer] = args->seq->regparam[stackargs->reglayer];
 		stackargs->seq->upscale_at_stacking = args->seq->upscale_at_stacking;
