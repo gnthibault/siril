@@ -647,7 +647,7 @@ int ser_close_file(struct ser_struct *ser_file) {
 	if (!ser_file)
 		return -1;
 	if (ser_file->fd > 0) {
-		retval = g_close(ser_file->fd);
+		retval = close(ser_file->fd);
 		ser_file->fd = -1;
 	}
 	if (ser_file->file_id)

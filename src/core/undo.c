@@ -61,11 +61,11 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 		siril_log_message(_("File I/O Error: Unable to write swap file in %s: [%s]\n"),
 				tmpdir, strerror(errno));
 		g_free(nameBuff);
-		g_close(fd);
+		close(fd);
 		return 1;
 	}
 	*filename = nameBuff;
-	g_close(fd);
+	close(fd);
 
 	return 0;
 }
@@ -132,14 +132,14 @@ static int undo_get_data(fits *fit, historic hist) {
 	if ((read(fd, buf, size * sizeof(WORD)) < size * sizeof(WORD))) {
 		printf("Read of [%s], failed with error [%s]\n", hist.filename, strerror(errno));
 		free(buf);
-		g_close(fd);
+		close(fd);
 		return 1;
 	}
 	WORD *newdata = (WORD*) realloc(fit->data, size * sizeof(WORD));
 	if (!newdata) {
 		free(newdata);
 		free(buf);
-		g_close(fd);
+		close(fd);
 		return 1;
 	}
 	fit->data = newdata;
@@ -150,7 +150,7 @@ static int undo_get_data(fits *fit, historic hist) {
 		fit->pdata[BLAYER] = fit->data + fit->rx * fit->ry * 2;
 	}
 	free(buf);
-	g_close(fd);
+	close(fd);
 	return 0;
 }
 

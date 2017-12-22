@@ -1605,7 +1605,6 @@ static void remove_tmp_drizzle_files(struct stacking_args *args) {
 	char filename[256];
 	gchar *seqname = malloc(strlen(basename) + 5);
 	g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
-	printf("test : %s\n", args->seq->seqname);
 	/* remove seq file */
 	g_unlink(seqname);
 

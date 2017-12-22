@@ -56,7 +56,7 @@ int readbmp(const char *name, fits *fit) {
 	if ((count = read(fd, header, 54)) != 54) {
 		fprintf(stderr, "readbmp: %d header bytes read instead of 54\n", count);
 		perror("readbmp");
-		g_close(fd);
+		close(fd);
 		return -1;
 	}
 	lx = 256 * header[19] + header[18];
@@ -72,7 +72,7 @@ int readbmp(const char *name, fits *fit) {
 			fprintf(stderr, "readbmp: %d byte read instead of 1024\n", count);
 			perror("readbmp: failed to read the lut");
 			free(buf);
-			g_close(fd);
+			close(fd);
 			return -1;
 		}
 	} else {
@@ -83,10 +83,10 @@ int readbmp(const char *name, fits *fit) {
 		fprintf(stderr, "readbmp: %d read, %u expected\n", count, nbdata);
 		perror("readbmp");
 		free(buf);
-		g_close(fd);
+		close(fd);
 		return -1;
 	}
-	g_close(fd);
+	close(fd);
 
 	switch (nbplane) {
 	case 1:
@@ -691,7 +691,7 @@ static int _pic_close_file(struct pic_struct *pic_file) {
 	if (!pic_file)
 		return retval;
 	if (pic_file->fd > 0) {
-		retval = g_close(pic_file->fd);
+		retval = close(pic_file->fd);
 		pic_file->fd = -1;
 	}
 	if (pic_file->date)
@@ -743,7 +743,7 @@ int readpic(const char *name, fits *fit) {
 		_pic_close_file(pic_file);
 		return -1;
 	}
-	g_close(pic_file->fd);
+	close(pic_file->fd);
 
 	switch (pic_file->nbplane) {
 	case 1:
