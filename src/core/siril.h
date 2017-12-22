@@ -570,7 +570,7 @@ struct cominf {
 	int hist_size;			// allocated size
 	int hist_current;		// current index
 	int hist_display;		// displayed index
-	char *swap_dir;
+	gchar *swap_dir;
 
 	libraw raw_set;			// the libraw settings
 	struct debayer_config debayer;	// debayer settings

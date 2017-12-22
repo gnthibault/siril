@@ -152,11 +152,11 @@ static int readinitfile() {
 	}
 	if (swap_dir && swap_dir[0] != '\0') {
 		if (com.swap_dir)
-			free(com.swap_dir);
-		com.swap_dir = strdup(swap_dir);
+			g_free(com.swap_dir);
+		com.swap_dir = g_strdup(swap_dir);
 	} else {
 		const char* sw_dir = g_get_tmp_dir();
-		com.swap_dir = strdup(sw_dir);
+		com.swap_dir = g_strdup(sw_dir);
 	}
 	if (extension && extension[0] != '\0') {
 		if (com.ext)
@@ -421,7 +421,7 @@ int checkinitfile() {
 							filename);
 					return 1;
 				}
-				com.swap_dir = strdup(g_get_tmp_dir());
+				com.swap_dir = g_strdup(g_get_tmp_dir());
 				com.ext = strdup(".fit");
 				return (writeinitfile());
 			}
@@ -434,7 +434,7 @@ int checkinitfile() {
 			return 1;
 		}
 
-		com.swap_dir = strdup(g_get_tmp_dir());
+		com.swap_dir = g_strdup(g_get_tmp_dir());
 		com.ext = strdup(".fit");
 		return (writeinitfile());
 	}
