@@ -609,7 +609,7 @@ int process_ls(int nb){
 
 		filename = g_build_filename(path, list[i]->d_name, NULL);
 
-		if (lstat(filename, &entrystat)) {
+		if (g_lstat(filename, &entrystat)) {
 			perror("stat");
 			g_free(filename);
 			break;

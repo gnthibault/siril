@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-21 13:52+0100\n"
+"POT-Creation-Date: 2017-12-21 15:54+0100\n"
 "PO-Revision-Date: 2017-11-22 00:22+0200\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -2358,7 +2358,8 @@ msgstr ""
 "εικόνα αναφοράς."
 
 #: ../src/gui/siril3.glade.h:515
-msgid "exclude all"
+#, fuzzy
+msgid "Exclude All"
 msgstr "εξαίρεση όλων"
 
 #: ../src/gui/siril3.glade.h:516
@@ -2367,7 +2368,8 @@ msgstr ""
 "Να εξαιρεθούν όλες οι εικόνες της αλληλουχίας από το πρόγραμμα επεξεργασίας"
 
 #: ../src/gui/siril3.glade.h:517
-msgid "include all"
+#, fuzzy
+msgid "Include All"
 msgstr "να συμπερηληφθούν όλα"
 
 #: ../src/gui/siril3.glade.h:518
@@ -3162,7 +3164,7 @@ msgid ""
 msgstr ""
 "καλύτερες εικόνες, επιλέχθηκαν αυτόματα από τα δεδομένα εγγραφής (Πλανητική)"
 
-#: ../src/gui/siril3.glade.h:690 ../src/stacking/stacking.c:2000
+#: ../src/gui/siril3.glade.h:690 ../src/stacking/stacking.c:2046
 #, c-format
 msgid "Based on FWHM"
 msgstr "Βασισμένο στο FWHM"
@@ -3856,7 +3858,7 @@ msgstr "Γίνεται αναπροσαρμογή του επιπέδου %d μ�
 #: ../src/gui/callbacks.c:5207 ../src/gui/callbacks.c:5354
 #: ../src/gui/callbacks.c:5659 ../src/gui/callbacks.c:5837
 #: ../src/io/conversion.c:489 ../src/registration/registration.c:1136
-#: ../src/stacking/stacking.c:1455 ../src/stacking/stacking.c:1577
+#: ../src/stacking/stacking.c:1457 ../src/stacking/stacking.c:1579
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Μια άλλη λειτουργία είναι σε εξέλιξη, το νέο αίτημα αγνοείται.\n"
 
@@ -4284,8 +4286,8 @@ msgstr "Οι εικόνες δεν έχουν το ίδιο μέγεθος (π =
 #: ../src/io/image_formats_libraries.c:447
 #: ../src/io/image_formats_libraries.c:532 ../src/io/single_image.c:112
 #: ../src/io/single_image.c:155 ../src/io/single_image.c:159
-#: ../src/stacking/normalization.c:112 ../src/stacking/stacking.c:113
-#: ../src/stacking/stacking.c:791
+#: ../src/stacking/normalization.c:112 ../src/stacking/stacking.c:115
+#: ../src/stacking/stacking.c:793
 msgid "Error"
 msgstr "Σφάλμα"
 
@@ -5818,7 +5820,7 @@ msgstr ""
 msgid "image %d is excluded from export\n"
 msgstr "η εικόνα %d εξαιρείται από την εξαγωγή\n"
 
-#: ../src/io/sequence_export.c:210 ../src/stacking/stacking.c:588
+#: ../src/io/sequence_export.c:210 ../src/stacking/stacking.c:590
 msgid "Processing image "
 msgstr "Γίνεται επεξεργασία της εικόνας "
 
@@ -6280,54 +6282,54 @@ msgstr "Η ομαλοποίηση απέτυχε."
 msgid "Normalization failed."
 msgstr "Η ομαλοποίηση απέτυχε."
 
-#: ../src/stacking/stacking.c:112
+#: ../src/stacking/stacking.c:114
 msgid "Median stacking is only supported for FITS images and SER sequences.\n"
 msgstr ""
 "Η σώρευση διαμέσου υποστηρίζεται μόνο για εικόνες FITS και αλληλουχίες SER.\n"
 
-#: ../src/stacking/stacking.c:117 ../src/stacking/stacking.c:795
+#: ../src/stacking/stacking.c:119 ../src/stacking/stacking.c:797
 msgid "Select at least two frames for stacking. Aborting.\n"
 msgstr "Επιλέξτε τουλάχιστον δύο καρέ για σώρευση. Γίνεται ακύρωση.\n"
 
-#: ../src/stacking/stacking.c:139
+#: ../src/stacking/stacking.c:141
 #, c-format
 msgid "Median stack: opening image %s"
 msgstr "Σώρευση Διαμέσου: άνοιγμα εικόνας %s"
 
-#: ../src/stacking/stacking.c:160
+#: ../src/stacking/stacking.c:162
 msgid "Median stack error: images with > 3 dimensions are not supported\n"
 msgstr ""
 "Σφάλμα σώρευσης Διαμέσου: εικόνες με > 3 διαστάσεις δεν υποστηρίζονται\n"
 
-#: ../src/stacking/stacking.c:171
+#: ../src/stacking/stacking.c:173
 msgid "Median stack error: input images have different sizes\n"
 msgstr ""
 "Σφάλμα σώρευσης Διαμέσου: οι εισαγόμενες εικόνες έχουν διαφορετικά μεγέθη\n"
 
-#: ../src/stacking/stacking.c:212 ../src/stacking/stacking.c:890
+#: ../src/stacking/stacking.c:214 ../src/stacking/stacking.c:892
 msgid "Super-pixel is not handled yet for on the fly SER stacking\n"
 msgstr ""
 "Το υπερ-εικονοστοιχείο δεν μπορεί να χειριστεί άμεσα από την σώρευση SER\n"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:219
+#: ../src/stacking/stacking.c:221
 msgid "Median stack error: uninitialized sequence\n"
 msgstr "Σφάλμα σώρευσης Διαμέσου: ανενεργή αλληλουχία\n"
 
-#: ../src/stacking/stacking.c:266 ../src/stacking/stacking.c:944
+#: ../src/stacking/stacking.c:268 ../src/stacking/stacking.c:946
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Η έκδοση σας του cfitsio δεν υποστηρίζει multi-threading\n"
 
-#: ../src/stacking/stacking.c:274 ../src/stacking/stacking.c:952
+#: ../src/stacking/stacking.c:276 ../src/stacking/stacking.c:954
 msgid "Processing the sequence as RGB\n"
 msgstr "Γίνεται επεξεργασία της αλληλουχίας σαν RGB\n"
 
-#: ../src/stacking/stacking.c:311 ../src/stacking/stacking.c:989
+#: ../src/stacking/stacking.c:313 ../src/stacking/stacking.c:991
 #, c-format
 msgid "We have %d parallel blocks of size %d (+%d) for stacking.\n"
 msgstr "Έχουμε %d παράλληλες περιοχές μεγέθους %d (+%d) για σώρευση.\n"
 
-#: ../src/stacking/stacking.c:319 ../src/stacking/stacking.c:997
+#: ../src/stacking/stacking.c:321 ../src/stacking/stacking.c:999
 msgid ""
 "A bug has been found. Unable to split the image area into the correct "
 "processing blocks.\n"
@@ -6335,64 +6337,64 @@ msgstr ""
 "Βρέθηκε ένα σφάλμα. Είναι αδύνατο να χωριστεί η εικόνα στις σωστές περιοχές "
 "επεξεργασίας.\n"
 
-#: ../src/stacking/stacking.c:386 ../src/stacking/stacking.c:1066
+#: ../src/stacking/stacking.c:388 ../src/stacking/stacking.c:1068
 msgid "Starting stacking...\n"
 msgstr "Γίνεται εκκίνηση της σώρευσης...\n"
 
-#: ../src/stacking/stacking.c:387
+#: ../src/stacking/stacking.c:389
 msgid "Median stacking in progress..."
 msgstr "Σώρευση διαμέσου σε εξέλιξη..."
 
-#: ../src/stacking/stacking.c:431 ../src/stacking/stacking.c:1147
+#: ../src/stacking/stacking.c:433 ../src/stacking/stacking.c:1149
 msgid "Error reading one of the image areas\n"
 msgstr "Σφάλμα στην ανάγνωση σε μια από τις περιοχές της εικόνας\n"
 
-#: ../src/stacking/stacking.c:494 ../src/stacking/stacking.c:672
-#: ../src/stacking/stacking.c:1370
+#: ../src/stacking/stacking.c:496 ../src/stacking/stacking.c:674
+#: ../src/stacking/stacking.c:1372
 msgid "Finalizing stacking..."
 msgstr "Οριστικοποίηση σώρευσης..."
 
-#: ../src/stacking/stacking.c:526
+#: ../src/stacking/stacking.c:528
 msgid "Median stacking failed. Check the log."
 msgstr "Αποτυχία σώρευσης Διαμέσου: Δείτε το αρχείο καταγραφής."
 
-#: ../src/stacking/stacking.c:527 ../src/stacking/stacking.c:694
-#: ../src/stacking/stacking.c:1412
+#: ../src/stacking/stacking.c:529 ../src/stacking/stacking.c:696
+#: ../src/stacking/stacking.c:1414
 msgid "Stacking failed.\n"
 msgstr "Η σώρευση απέτυχε.\n"
 
-#: ../src/stacking/stacking.c:529
+#: ../src/stacking/stacking.c:531
 msgid "Median stacking complete."
 msgstr "H σώρευση Διαμέσου ολοκληρώθηκε."
 
-#: ../src/stacking/stacking.c:530
+#: ../src/stacking/stacking.c:532
 #, c-format
 msgid "Median stacking complete. %d have been stacked.\n"
 msgstr "H σώρευση Διαμέσου ολοκληρώθηκε. %d έχουν σωρευτεί.\n"
 
-#: ../src/stacking/stacking.c:567
+#: ../src/stacking/stacking.c:569
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"
 msgstr ""
 "Δεν έχει γίνει επιλογή καρέ για σώρευση (επιλέξτε τουλάχιστον 2). Γίνεται "
 "ακύρωση.\n"
 
-#: ../src/stacking/stacking.c:596
+#: ../src/stacking/stacking.c:598
 msgid "Stacking: could not read frame, aborting\n"
 msgstr "Σώρευση: δεν ήταν δυνατή η ανάγνωση του καρέ, γίνεται ακύρωση\n"
 
-#: ../src/stacking/stacking.c:619
+#: ../src/stacking/stacking.c:621
 msgid "Stacking: image in sequence doesn't has the same dimensions\n"
 msgstr "Σώρευση: η εικόνα στην αλληλουχία δεν έχει τις ίδιες διαστάσεις\n"
 
-#: ../src/stacking/stacking.c:693
+#: ../src/stacking/stacking.c:695
 msgid "Stacking failed. Check the log."
 msgstr "Η σώρευση απέτυχε. Δείτε το αρχείο καταγραφής."
 
-#: ../src/stacking/stacking.c:696
+#: ../src/stacking/stacking.c:698
 msgid "Stacking complete."
 msgstr "Η σώρευση ολοκληρώθηκε."
 
-#: ../src/stacking/stacking.c:790
+#: ../src/stacking/stacking.c:792
 msgid ""
 "Rejection stacking is only supported for FITS images and SER sequences.\n"
 "Use \"Sum Stacking\" instead.\n"
@@ -6401,163 +6403,163 @@ msgstr ""
 "SER.\n"
 "Χρησιμοποιήστε αντίθετα την \"Αθροιστική Σώρευση\".\n"
 
-#: ../src/stacking/stacking.c:817
+#: ../src/stacking/stacking.c:819
 #, c-format
 msgid "Rejection stack: opening image %s"
 msgstr "Σώρευση Απόρριψης: άνοιγμα εικόνας %s"
 
-#: ../src/stacking/stacking.c:838
+#: ../src/stacking/stacking.c:840
 msgid "Rejection stack error: images with > 3 dimensions are not supported\n"
 msgstr ""
 "Σφάλμα σώρευσης Απόρριψης: εικόνες με > 3 διαστάσεις δεν υποστηρίζονται\n"
 "\n"
 
-#: ../src/stacking/stacking.c:849
+#: ../src/stacking/stacking.c:851
 msgid "Rejection stack error: input images have different sizes\n"
 msgstr ""
 "Σφάλμα σώρευσης Απόρριψης: οι εισαγόμενες εικόνες έχουν διαφορετικά μεγέθη\n"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:897
+#: ../src/stacking/stacking.c:899
 msgid "Rejection stack error: uninitialized sequence\n"
 msgstr "Σφάλμα σώρευσης Απόρριψης: ανενεργή αλληλουχία\n"
 
-#: ../src/stacking/stacking.c:1067
+#: ../src/stacking/stacking.c:1069
 msgid "Rejection stacking in progress..."
 msgstr "Σώρευση απόρριψης σε εξέλιξη..."
 
-#: ../src/stacking/stacking.c:1374
+#: ../src/stacking/stacking.c:1376
 #, c-format
 msgid "Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"
 msgstr "Απόρριψη εικονοστοιχείων στο κανάλι #%d: %.3lf%% - %.3lf%%\n"
 
-#: ../src/stacking/stacking.c:1411
+#: ../src/stacking/stacking.c:1413
 msgid "Rejection stacking failed. Check the log."
 msgstr "Η σώρευση απόρριψης απέτυχε. Δείτε το αρχείο καταγραφής."
 
-#: ../src/stacking/stacking.c:1414
+#: ../src/stacking/stacking.c:1416
 msgid "Rejection stacking complete."
 msgstr "Η σώρευση απόρριψης ολοκληρώθηκε."
 
-#: ../src/stacking/stacking.c:1474
+#: ../src/stacking/stacking.c:1476
 #, c-format
 msgid "Stacking will use registration data of layer %d if some exist.\n"
 msgstr ""
 "Η σώρευση θα χρησιμοποιήσει τα δεδομένα καταγραφής του επιπέδου %d εφόσον "
 "υπάρχουν.\n"
 
-#: ../src/stacking/stacking.c:1477
+#: ../src/stacking/stacking.c:1479
 msgid "Stacking: processing...\n"
 msgstr "Σώρευση: γίνεται επεξεργασία...\n"
 
-#: ../src/stacking/stacking.c:1492
+#: ../src/stacking/stacking.c:1494
 #, c-format
 msgid "Integration of %d images:\n"
 msgstr "Ολοκλήρωση %d εικόνων:\n"
 
-#: ../src/stacking/stacking.c:1496
+#: ../src/stacking/stacking.c:1498
 msgid "Pixel combination ......... average\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... μέσος όρος\n"
 
-#: ../src/stacking/stacking.c:1499
+#: ../src/stacking/stacking.c:1501
 msgid "Pixel combination ......... normalized sum\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... ομαλοποιημένος αθροιστικός\n"
 
-#: ../src/stacking/stacking.c:1502
+#: ../src/stacking/stacking.c:1504
 msgid "Pixel combination ......... median\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... διάμεσος\n"
 
-#: ../src/stacking/stacking.c:1505
+#: ../src/stacking/stacking.c:1507
 msgid "Pixel combination ......... minimum\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... μέγιστο\n"
 
-#: ../src/stacking/stacking.c:1508
+#: ../src/stacking/stacking.c:1510
 msgid "Pixel combination ......... maximum\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... ελάχιστο\n"
 
-#: ../src/stacking/stacking.c:1511
+#: ../src/stacking/stacking.c:1513
 msgid "Pixel combination ......... none\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... κανένα\n"
 
-#: ../src/stacking/stacking.c:1516 ../src/stacking/stacking.c:1521
-#: ../src/stacking/stacking.c:1550
+#: ../src/stacking/stacking.c:1518 ../src/stacking/stacking.c:1523
+#: ../src/stacking/stacking.c:1552
 msgid "none"
 msgstr "κανένα"
 
-#: ../src/stacking/stacking.c:1524
+#: ../src/stacking/stacking.c:1526
 msgid "additive"
 msgstr "προσθετική"
 
-#: ../src/stacking/stacking.c:1527
+#: ../src/stacking/stacking.c:1529
 msgid "multiplicative"
 msgstr "πολλαπλασιαστική"
 
-#: ../src/stacking/stacking.c:1530
+#: ../src/stacking/stacking.c:1532
 msgid "additive + scaling"
 msgstr "προσθετική + κλιμάκωση"
 
-#: ../src/stacking/stacking.c:1533
+#: ../src/stacking/stacking.c:1535
 msgid "multiplicative + scaling"
 msgstr "πολλαπλασιαστική + κλιμάκωση"
 
-#: ../src/stacking/stacking.c:1538
+#: ../src/stacking/stacking.c:1540
 #, c-format
 msgid "Normalization ............. %s\n"
 msgstr "Ομαλοποίηση ............. %s\n"
 
-#: ../src/stacking/stacking.c:1542
+#: ../src/stacking/stacking.c:1544
 msgid "Pixel rejection ........... none\n"
 msgstr "Απόρριψη εικονοστοιχείων ........... κανένα\n"
 
-#: ../src/stacking/stacking.c:1543
+#: ../src/stacking/stacking.c:1545
 msgid "Rejection parameters ...... none\n"
 msgstr "Παράμετροι απόρριψης ...... κανένα\n"
 
-#: ../src/stacking/stacking.c:1553
+#: ../src/stacking/stacking.c:1555
 msgid "percentile clipping"
 msgstr "εκατοστιαία αποκοπή"
 
-#: ../src/stacking/stacking.c:1556
+#: ../src/stacking/stacking.c:1558
 msgid "sigma clipping"
 msgstr "αποκοπή σίγμα"
 
-#: ../src/stacking/stacking.c:1559
+#: ../src/stacking/stacking.c:1561
 msgid "median sigma clipping"
 msgstr "αποκοπή διαμέσου σίγμα"
 
-#: ../src/stacking/stacking.c:1562
+#: ../src/stacking/stacking.c:1564
 msgid "Winsorized sigma clipping"
 msgstr "Αποκοπή σίγμα Winsor"
 
-#: ../src/stacking/stacking.c:1565
+#: ../src/stacking/stacking.c:1567
 msgid "linear fit clipping"
 msgstr "αποκοπή γραμμικού fit"
 
-#: ../src/stacking/stacking.c:1568
+#: ../src/stacking/stacking.c:1570
 #, c-format
 msgid "Pixel rejection ........... %s\n"
 msgstr "Απόρριψη εικονοστοιχείων ........... %s\n"
 
 # check again
-#: ../src/stacking/stacking.c:1569
+#: ../src/stacking/stacking.c:1571
 #, c-format
 msgid "Rejection parameters ...... low=%.3f high=%.3f\n"
 msgstr "Παράμετροι απόρριψης ...... low=%.3f high=%.3f\n"
 
-#: ../src/stacking/stacking.c:1607
+#: ../src/stacking/stacking.c:1650
 msgid "Stacking result image"
 msgstr "Σώρευση εικόνας"
 
-#: ../src/stacking/stacking.c:1632 ../src/stacking/stacking.c:1637
+#: ../src/stacking/stacking.c:1675 ../src/stacking/stacking.c:1680
 msgid "Unsaved stacking result"
 msgstr "Αποτέλεσμα σώρευσης χωρίς να έχει αποθηκευτεί"
 
-#: ../src/stacking/stacking.c:1807
+#: ../src/stacking/stacking.c:1853
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "Χρησιμοποιούνται %d MB μέγιστης μνήμης για σώρευση\n"
 
-#: ../src/stacking/stacking.c:1833
+#: ../src/stacking/stacking.c:1879
 #, fuzzy
 msgid ""
 "The reference image is not in the selected set of images. To avoid issues, "
@@ -6567,7 +6569,7 @@ msgstr ""
 "προβλήματα, παρακαλώ αλλάξτε το ή αλλάξτε τις παραμέτρους φιλτραρίσματος."
 
 # ξανα
-#: ../src/stacking/stacking.c:1892
+#: ../src/stacking/stacking.c:1938
 #, c-format
 msgid ""
 "Error in highest quality accepted for sequence processing: some images don't "
@@ -6577,17 +6579,17 @@ msgstr ""
 "εικόνες δεν έχουν διαθέσιμη αυτού του είδους την πληροφορία για το κανάλι #"
 "%d.\n"
 
-#: ../src/stacking/stacking.c:1958
+#: ../src/stacking/stacking.c:2004
 #, c-format
 msgid "Stacking all images in the sequence (%d)\n"
 msgstr "Γίνεται σώρευση όλων των εικόνων της αλληλουχίας (%d)\n"
 
-#: ../src/stacking/stacking.c:1967
+#: ../src/stacking/stacking.c:2013
 #, c-format
 msgid "Stacking only selected images in the sequence (%d)\n"
 msgstr "Γίνεται σώρευση μόνο των επιλεγμένων εικόνων της αλληλουχίας (%d)\n"
 
-#: ../src/stacking/stacking.c:1990
+#: ../src/stacking/stacking.c:2036
 #, c-format
 msgid ""
 "Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"
@@ -6595,12 +6597,12 @@ msgstr ""
 "Γίνεται σώρευση των εικόνων της αλληλουχίας με FWHM μικρότερο ή ίσο του %g "
 "(%d)\n"
 
-#: ../src/stacking/stacking.c:1996
+#: ../src/stacking/stacking.c:2042
 #, c-format
 msgid "Based on FWHM < %.2f (%d images)"
 msgstr "Βασισμένο σε FWHM < %.2f (%d εικόνες)"
 
-#: ../src/stacking/stacking.c:2011
+#: ../src/stacking/stacking.c:2057
 #, c-format
 msgid ""
 "Stacking images of the sequence with a quality higher or equal than %g (%d)\n"
@@ -6608,17 +6610,17 @@ msgstr ""
 "Γίνεται σώρευση των εικόνων της αλληλουχίας με ποιότητα μεγαλύτερη ή ίση του "
 "%g (%d)\n"
 
-#: ../src/stacking/stacking.c:2017
+#: ../src/stacking/stacking.c:2063
 #, c-format
 msgid "Based on quality > %.2f (%d images)"
 msgstr "Βασισμένο σε ποιότητα > %.2f (%d εικόνες)"
 
-#: ../src/stacking/stacking.c:2020
+#: ../src/stacking/stacking.c:2066
 #, c-format
 msgid "Based on quality"
 msgstr "Βασισμένο σε ποιότητα"
 
-#: ../src/stacking/stacking.c:2099
+#: ../src/stacking/stacking.c:2145
 #, fuzzy
 msgid "Up-scaling sequence for stacking"
 msgstr "Αλληλουχία σώρευσης"

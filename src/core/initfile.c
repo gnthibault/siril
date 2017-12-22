@@ -414,7 +414,7 @@ int checkinitfile() {
 #else
 		snprintf(filename, 255, "%s/.siril", home);
 #endif
-		if (stat(filename, &sts) != 0) {
+		if (g_stat(filename, &sts) != 0) {
 			if (errno == ENOENT) {
 				if (g_mkdir(filename, 0755)) {
 					fprintf(stderr, "Could not create dir %s, please check\n",

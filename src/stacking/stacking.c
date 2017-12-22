@@ -1605,6 +1605,7 @@ static void remove_tmp_drizzle_files(struct stacking_args *args) {
 	char filename[256];
 	gchar *seqname = malloc(strlen(basename) + 5);
 	g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
+	printf("test : %s\n", args->seq->seqname);
 	/* remove seq file */
 	g_unlink(seqname);
 
@@ -1655,7 +1656,7 @@ static gboolean end_stacking(gpointer p) {
 		/* save stacking result */
 		if (args->output_filename != NULL && args->output_filename[0] != '\0') {
 			struct stat st;
-			if (!stat(args->output_filename, &st)) {
+			if (!g_stat(args->output_filename, &st)) {
 				int failed = !args->output_overwrite;
 				if (!failed) {
 					if (g_unlink(args->output_filename) == -1)

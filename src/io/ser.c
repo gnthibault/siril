@@ -502,7 +502,7 @@ static int ser_alloc_ts(struct ser_struct *ser_file, int frame_no) {
 #ifdef _OPENMP
 	omp_unset_lock(&ser_file->ts_lock);
 #endif
-	return 0;
+	return retval;
 }
 
 /*
@@ -647,7 +647,7 @@ int ser_close_file(struct ser_struct *ser_file) {
 	if (!ser_file)
 		return -1;
 	if (ser_file->fd > 0) {
-		retval = close(ser_file->fd);
+		retval = g_close(ser_file->fd);
 		ser_file->fd = -1;
 	}
 	if (ser_file->file_id)

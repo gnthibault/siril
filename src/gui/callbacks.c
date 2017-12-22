@@ -808,7 +808,7 @@ static void fill_convert_list(GSList *list) {
 		char *filename;
 
 		filename = (char *) list->data;
-		if (stat(filename, &st) == 0) {
+		if (g_stat(filename, &st) == 0) {
 			add_convert_to_list(filename, st);
 			list = list->next;
 		} else

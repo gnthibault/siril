@@ -1010,7 +1010,7 @@ gpointer seqpreprocess(gpointer p) {
 		free(fit);
 		// closing SER file if it applies
 		if (com.seq.type == SEQ_SER && (new_ser_file != NULL)) {
-			close(new_ser_file->fd);
+			g_close(new_ser_file->fd);
 			free(new_ser_file);
 			new_ser_file = NULL;
 		}

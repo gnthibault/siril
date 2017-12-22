@@ -388,7 +388,7 @@ gboolean existseq(const char *name){
 	if (!name || name[0] == '\0') return FALSE;
 	filename = malloc(strlen(name)+5);
 	sprintf(filename, "%s.seq", name);
-	if(stat(filename, &sts)==0){
+	if(g_stat(filename, &sts)==0){
 		free(filename);
 		return TRUE;
 	}
