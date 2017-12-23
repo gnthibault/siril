@@ -76,8 +76,8 @@ dnl check cfitsio
 PKG_CHECK_MODULES(CFITSIO, [cfitsio])
 
 dnl check libconfig
-PKG_CHECK_MODULES([LIBCONFIGXX], [libconfig++ >= 1.4],,
-	AC_MSG_ERROR([libconfig++ 1.4 or newer not found.]))
+PKG_CHECK_MODULES([LIBCONFIG], [libconfig >= 1.4],,
+	AC_MSG_ERROR([libconfig 1.4 or newer not found.]))
 	
 dnl check opencv
 AC_PROG_CXX
@@ -246,11 +246,12 @@ if test "$os_osx" = "yes"; then
 fi
 
 if test `uname` != "Darwin"; then
-  if (test "$platform_win32" = "yes" || test "os_win32" = "yes" ) ; then
-    LDFLAGS="$LDFLAGS -Wl,--export-all-symbols -mwindows"
-  else
-	LDFLAGS="$LDFLAGS -rdynamic"
-  fi
+	if (test "$platform_win32" = "yes" || test "os_win32" = "yes" ) ; then
+		LDFLAGS="$LDFLAGS -Wl,--export-all-symbols -mwindows"
+		AC_SUBST(EXTRA_LIBS,'-lpsapi')
+	else
+		LDFLAGS="$LDFLAGS -rdynamic"
+	fi
 fi
 
 AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in])
