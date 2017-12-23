@@ -622,7 +622,7 @@ int ser_open_file(char *filename, struct ser_struct *ser_file) {
 		fprintf(stderr, "SER: file already opened, or badly closed\n");
 		return -1;
 	}
-	ser_file->fd = g_open(filename, O_RDWR | O_BINARY); // now we can fix broken file, so not O_RDONLY anymore
+	ser_file->fd = g_open(filename, O_RDWR | O_BINARY, 0); // now we can fix broken file, so not O_RDONLY anymore
 	if (ser_file->fd == -1) {
 		perror("SER file open");
 		return -1;

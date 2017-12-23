@@ -118,7 +118,7 @@ static int undo_get_data(fits *fit, historic hist) {
 	unsigned int size;
 	WORD *buf;
 
-	if ((fd = g_open(hist.filename, O_RDONLY | O_BINARY)) == -1) {
+	if ((fd = g_open(hist.filename, O_RDONLY | O_BINARY, 0)) == -1) {
 		printf("Error opening swap file : %s\n", hist.filename);
 		return 1;
 	}
