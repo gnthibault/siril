@@ -457,7 +457,7 @@ int process_crop(int nb){
 
 int process_cd(int nb) {
 	char filename[256];
-	int retval, i;
+	int retval;
 
 	g_strlcpy(filename, word[1], 250);
 

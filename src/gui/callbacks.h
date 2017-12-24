@@ -1,7 +1,6 @@
 #ifndef CALLBACKS_H
 #define CALLBACKS_H
 
-#include <gtk/gtk.h>
 #include <sys/time.h>
 #include "core/siril.h"	// for sliders_mode
 
@@ -20,6 +19,7 @@ void adjust_refimage(int n);
 int adjust_sellabel();
 void set_GUI_CWD();
 void set_GUI_MEM(unsigned long size);
+void set_GUI_DiskSpace(double mem);
 void set_GUI_misc();
 void initialize_preprocessing();
 void update_MenuItem();

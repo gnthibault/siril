@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.1 
+<!-- Generated with glade 3.20.2 
 
 Copyright (C) The free-astro development team, 2016
 
@@ -6245,7 +6245,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="max_width_chars">9</property>
                 <property name="text">0.5000000</property>
                 <property name="overwrite_mode">True</property>
-                <property name="input_purpose">digits</property>
+                <property name="input_purpose">number</property>
                 <signal name="changed" handler="on_histoMidEntry_changed" swapped="no"/>
               </object>
               <packing>
@@ -6264,7 +6264,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="max_width_chars">9</property>
                 <property name="text">0.0000000</property>
                 <property name="overwrite_mode">True</property>
-                <property name="input_purpose">digits</property>
+                <property name="input_purpose">number</property>
                 <signal name="changed" handler="on_histoShadEntry_changed" swapped="no"/>
               </object>
               <packing>
@@ -6283,7 +6283,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="max_width_chars">9</property>
                 <property name="text">1.0000000</property>
                 <property name="overwrite_mode">True</property>
-                <property name="input_purpose">digits</property>
+                <property name="input_purpose">number</property>
                 <signal name="changed" handler="on_histoHighEntry_changed" swapped="no"/>
               </object>
               <packing>
@@ -14020,11 +14020,11 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                 <property name="tooltip_text" translatable="yes">Set number of threads manually.
 WARNING: Reducing the number of allowed processors too much will degrade performances.</property>
                 <property name="margin_bottom">1</property>
-                <property name="max_length">2</property>
-                <property name="width_chars">2</property>
+                <property name="max_length">3</property>
+                <property name="width_chars">3</property>
                 <property name="max_width_chars">2</property>
                 <property name="progress_pulse_step">1</property>
-                <property name="input_purpose">number</property>
+                <property name="input_purpose">digits</property>
                 <property name="adjustment">adjCPU</property>
                 <property name="numeric">True</property>
                 <property name="update_policy">if-valid</property>
@@ -14040,21 +14040,46 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="labelmem">
+              <object class="GtkBox" id="GtkBoxMem">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Memory used by Siril</property>
-                <property name="valign">center</property>
-                <property name="hexpand">False</property>
-                <property name="label">Mem: 200MB</property>
-                <property name="justify">right</property>
-                <property name="width_chars">15</property>
-                <property name="max_width_chars">15</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="labelmem">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Memory used by Siril</property>
+                    <property name="halign">end</property>
+                    <property name="label">Mem: 200MB</property>
+                    <property name="justify">right</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">5</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="labelFreeSpace">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Displays the amount of disk space available on the file system containing the working directory.</property>
+                    <property name="halign">end</property>
+                    <property name="label" translatable="yes" context="GUI" comments="Must be short !!">Disk Space: N/A</property>
+                    <property name="justify">right</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="pack_type">end</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="padding">5</property>
+                <property name="fill">True</property>
                 <property name="pack_type">end</property>
                 <property name="position">3</property>
               </packing>

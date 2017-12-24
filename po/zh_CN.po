@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-21 15:54+0100\n"
+"POT-Creation-Date: 2017-12-24 13:18+0100\n"
 "PO-Revision-Date: 2017-09-14 22:04+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -2944,7 +2944,7 @@ msgid ""
 "best images, automatically selected from the registration data (Planetary)"
 msgstr "最好的图像，自动从对齐统计数据中选择(行星)"
 
-#: ../src/gui/siril3.glade.h:690 ../src/stacking/stacking.c:2046
+#: ../src/gui/siril3.glade.h:690 ../src/stacking/stacking.c:2040
 #, c-format
 msgid "Based on FWHM"
 msgstr "基于FWHM"
@@ -3212,14 +3212,25 @@ msgid "Memory used by Siril"
 msgstr "Siril所用内存"
 
 #: ../src/gui/siril3.glade.h:762
+msgid ""
+"Displays the amount of disk space available on the file system containing "
+"the working directory."
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:763 ../src/gui/callbacks.c:2536
+#, c-format
+msgid "Disk Space: N/A"
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:764
 msgid "Don't ask me again"
 msgstr "不再询问"
 
-#: ../src/gui/siril3.glade.h:763
+#: ../src/gui/siril3.glade.h:765
 msgid "Color Calibration"
 msgstr "色彩校准"
 
-#: ../src/gui/siril3.glade.h:764
+#: ../src/gui/siril3.glade.h:766
 msgid ""
 "A set of three color calibration factors will be computed and multiplied "
 "with every color channel.\n"
@@ -3228,41 +3239,41 @@ msgstr ""
 "一组三色校准因子将会被计算并乘到每个色彩通道。\n"
 "背景平衡操作必须先期完成。"
 
-#: ../src/gui/siril3.glade.h:766
+#: ../src/gui/siril3.glade.h:768
 msgid "x coordinate of the start of the background selection"
 msgstr "x轴坐标用于开始背景选择区"
 
-#: ../src/gui/siril3.glade.h:767
+#: ../src/gui/siril3.glade.h:769
 msgid "y coordinate of the start of the background selection"
 msgstr "y轴坐标用于开始背景选择区"
 
-#: ../src/gui/siril3.glade.h:768
+#: ../src/gui/siril3.glade.h:770
 msgid "Width of the background selection"
 msgstr "背景选择区的宽度"
 
-#: ../src/gui/siril3.glade.h:769
+#: ../src/gui/siril3.glade.h:771
 msgid "Height of the background selection"
 msgstr "背景选择区的高度"
 
-#: ../src/gui/siril3.glade.h:770
+#: ../src/gui/siril3.glade.h:772
 msgid "Selected area"
 msgstr "选择一个区域"
 
-#: ../src/gui/siril3.glade.h:771
+#: ../src/gui/siril3.glade.h:773
 msgid "Use current selection"
 msgstr "使用当前所选"
 
-#: ../src/gui/siril3.glade.h:772
+#: ../src/gui/siril3.glade.h:774
 msgid ""
 "You must specify a selection that represents the true background of the "
 "image, trying to exclude all stars or other stellar objects."
 msgstr "必须选定一个表现了真实背景的区域，尽量避开星点和其他天体。"
 
-#: ../src/gui/siril3.glade.h:773
+#: ../src/gui/siril3.glade.h:775
 msgid "Background Neutralization"
 msgstr "背景平衡"
 
-#: ../src/gui/siril3.glade.h:774
+#: ../src/gui/siril3.glade.h:776
 msgid ""
 "Background Neutralization will compute the mean of each color channel and "
 "will equalize the sky background in a neutral grey.\n"
@@ -3271,49 +3282,49 @@ msgstr ""
 "背景平衡会计算每个色彩通道的平均值，并将背景等价为中性灰。\n"
 "本操作应当在色彩校准之前执行。"
 
-#: ../src/gui/siril3.glade.h:776
+#: ../src/gui/siril3.glade.h:778
 msgid "Background reference"
 msgstr "背景参考"
 
-#: ../src/gui/siril3.glade.h:777
+#: ../src/gui/siril3.glade.h:779
 msgid "Manual White Balance"
 msgstr "手动白平衡"
 
-#: ../src/gui/siril3.glade.h:778
+#: ../src/gui/siril3.glade.h:780
 msgid ""
 "By clicking on this option, you will use your own color calibration factors. "
 "This option is disabled by default."
 msgstr "点击此选项，用户将使用自定义的色彩校准因子。缺省为关闭。"
 
-#: ../src/gui/siril3.glade.h:779
+#: ../src/gui/siril3.glade.h:781
 msgid "Red:"
 msgstr "红色:"
 
-#: ../src/gui/siril3.glade.h:780
+#: ../src/gui/siril3.glade.h:782
 msgid "Green:"
 msgstr "绿色:"
 
-#: ../src/gui/siril3.glade.h:781
+#: ../src/gui/siril3.glade.h:783
 msgid "Blue:"
 msgstr "蓝色:"
 
-#: ../src/gui/siril3.glade.h:782
+#: ../src/gui/siril3.glade.h:784
 msgid "x coordinate of the start of the white reference selection"
 msgstr "x轴坐标用于开始白点选择区"
 
-#: ../src/gui/siril3.glade.h:783
+#: ../src/gui/siril3.glade.h:785
 msgid "y coordinate of the start of the white reference selection"
 msgstr "y轴坐标用于开始白点选择区"
 
-#: ../src/gui/siril3.glade.h:784
+#: ../src/gui/siril3.glade.h:786
 msgid "Width of the white reference selection"
 msgstr "白点选择区的高度"
 
-#: ../src/gui/siril3.glade.h:785
+#: ../src/gui/siril3.glade.h:787
 msgid "Height of the white reference selection"
 msgstr "白点选择区的宽度"
 
-#: ../src/gui/siril3.glade.h:786
+#: ../src/gui/siril3.glade.h:788
 msgid ""
 "You should specify a selection that represents an average of suitable white "
 "reference.\n"
@@ -3322,29 +3333,29 @@ msgstr ""
 "请选定一个表现了均匀的舒适的白色参考的区域。如果不选择，整幅图像将被作为参"
 "考。"
 
-#: ../src/gui/siril3.glade.h:788
+#: ../src/gui/siril3.glade.h:790
 msgid ""
 "Lower rejection bound for white selection. Pixels below this value are not "
 "taken into account. Black pixels are always excluded from computation."
 msgstr ""
 "白点选择的剔除下限。像素值低于下限的不会被计算。黑色像素点总是会被排除计算。"
 
-#: ../src/gui/siril3.glade.h:789
+#: ../src/gui/siril3.glade.h:791
 msgid ""
 "Upper rejection bound for white selection. Pixels above this value are not "
 "taken into account. Saturated pixels are always excluded from computation."
 msgstr ""
 "白点选择的剔除上线。像素值超过上限的不会被计算。饱和像素点总是会被排除计算。"
 
-#: ../src/gui/siril3.glade.h:790
+#: ../src/gui/siril3.glade.h:792
 msgid "Lower limit: "
 msgstr "下限: "
 
-#: ../src/gui/siril3.glade.h:791
+#: ../src/gui/siril3.glade.h:793
 msgid "Upper limit: "
 msgstr "上限: "
 
-#: ../src/gui/siril3.glade.h:792
+#: ../src/gui/siril3.glade.h:794
 msgid "White reference"
 msgstr "白点参考"
 
@@ -3365,10 +3376,10 @@ msgstr "饱和度增强：执行中...\n"
 #: ../src/algos/colors.c:759 ../src/algos/cosmetic_correction.c:138
 #: ../src/algos/cosmetic_correction.c:187
 #: ../src/algos/cosmetic_correction.c:400 ../src/algos/star_finder.c:48
-#: ../src/core/command.c:1414 ../src/core/siril.c:478 ../src/core/siril.c:761
+#: ../src/core/command.c:1411 ../src/core/siril.c:478 ../src/core/siril.c:761
 #: ../src/core/siril.c:895 ../src/core/siril.c:1038 ../src/core/siril.c:1403
 #: ../src/core/siril.c:1485 ../src/core/siril.c:1594 ../src/gui/histogram.c:696
-#: ../src/gui/statistics_list.c:308 ../src/io/sequence.c:1206
+#: ../src/gui/statistics_list.c:308 ../src/io/sequence.c:1222
 msgid "Error: no data computed.\n"
 msgstr "Error: no data computed.\n"
 
@@ -3539,9 +3550,9 @@ msgstr "未保存的合成结果"
 msgid "You must at least load two layers before!\n"
 msgstr "必须先期载入至少两个通道！\n"
 
-#: ../src/compositing/compositing.c:546 ../src/gui/callbacks.c:5264
-#: ../src/gui/callbacks.c:5308 ../src/gui/callbacks.c:5553
-#: ../src/gui/callbacks.c:5562 ../src/gui/callbacks.c:5620
+#: ../src/compositing/compositing.c:546 ../src/gui/callbacks.c:5309
+#: ../src/gui/callbacks.c:5353 ../src/gui/callbacks.c:5598
+#: ../src/gui/callbacks.c:5607 ../src/gui/callbacks.c:5665
 #: ../src/io/conversion.c:520 ../src/io/image_formats_libraries.c:98
 #: ../src/io/image_formats_libraries.c:155
 #: ../src/registration/registration.c:1147
@@ -3576,14 +3587,14 @@ msgid "Readjusting layer %d to %g times bright\n"
 msgstr "Readjusting layer %d to %g times bright\n"
 
 #: ../src/core/command.c:201 ../src/core/command.c:395
-#: ../src/core/command.c:791 ../src/core/command.c:826
-#: ../src/core/command.c:853 ../src/core/command.c:1159
-#: ../src/core/command.c:1261 ../src/core/command.c:1282
-#: ../src/core/command.c:1301 ../src/gui/callbacks.c:3956
-#: ../src/gui/callbacks.c:4269 ../src/gui/callbacks.c:4589
-#: ../src/gui/callbacks.c:4673 ../src/gui/callbacks.c:4870
-#: ../src/gui/callbacks.c:5207 ../src/gui/callbacks.c:5354
-#: ../src/gui/callbacks.c:5659 ../src/gui/callbacks.c:5837
+#: ../src/core/command.c:788 ../src/core/command.c:823
+#: ../src/core/command.c:850 ../src/core/command.c:1156
+#: ../src/core/command.c:1258 ../src/core/command.c:1279
+#: ../src/core/command.c:1298 ../src/gui/callbacks.c:4001
+#: ../src/gui/callbacks.c:4314 ../src/gui/callbacks.c:4634
+#: ../src/gui/callbacks.c:4718 ../src/gui/callbacks.c:4915
+#: ../src/gui/callbacks.c:5252 ../src/gui/callbacks.c:5399
+#: ../src/gui/callbacks.c:5704 ../src/gui/callbacks.c:5882
 #: ../src/io/conversion.c:489 ../src/registration/registration.c:1136
 #: ../src/stacking/stacking.c:1457 ../src/stacking/stacking.c:1579
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -3625,84 +3636,84 @@ msgstr "Crop: width and height, respectively, must be less than %d and %d.\n"
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Crop: select a region or provide x, y, width, height\n"
 
-#: ../src/core/command.c:521 ../src/core/command.c:1594
-#: ../src/gui/callbacks.c:5551 ../src/gui/callbacks.c:5618
+#: ../src/core/command.c:518 ../src/core/command.c:1591
+#: ../src/gui/callbacks.c:5596 ../src/gui/callbacks.c:5663
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr "Wavelet: maximum number of plans for this image size is %d\n"
 
-#: ../src/core/command.c:527 ../src/gui/callbacks.c:5560
+#: ../src/core/command.c:524 ../src/gui/callbacks.c:5605
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: type must be %d or %d\n"
 
-#: ../src/core/command.c:582
+#: ../src/core/command.c:579
 msgid "Cannot list files, set working directory first.\n"
 msgstr "无法获得文件列表，请先设置工作目录！\n"
 
-#: ../src/core/command.c:588 ../src/core/command.c:597
+#: ../src/core/command.c:585 ../src/core/command.c:594
 msgid "Siril cannot open the directory.\n"
 msgstr "Siril无法打开目录。\n"
 
-#: ../src/core/command.c:619
+#: ../src/core/command.c:616
 #, c-format
 msgid "Link: %s\n"
 msgstr "链接：%s\n"
 
-#: ../src/core/command.c:623 ../src/core/utils.c:720
+#: ../src/core/command.c:620 ../src/core/utils.c:777
 #, c-format
 msgid "Directory: %s\n"
 msgstr "目录：%s\n"
 
-#: ../src/core/command.c:633 ../src/core/command.c:640 ../src/core/utils.c:729
-#: ../src/core/utils.c:736
+#: ../src/core/command.c:630 ../src/core/command.c:637 ../src/core/utils.c:786
+#: ../src/core/utils.c:793
 #, c-format
 msgid "Sequence: %s\n"
 msgstr "队列：%s\n"
 
-#: ../src/core/command.c:636 ../src/core/command.c:638 ../src/core/utils.c:732
-#: ../src/core/utils.c:734
+#: ../src/core/command.c:633 ../src/core/command.c:635 ../src/core/utils.c:789
+#: ../src/core/utils.c:791
 #, c-format
 msgid "Image: %s\n"
 msgstr "图像：%s\n"
 
-#: ../src/core/command.c:645 ../src/core/command.c:1577
+#: ../src/core/command.c:642 ../src/core/command.c:1574
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* 列表完 *********\n"
 
-#: ../src/core/command.c:669
+#: ../src/core/command.c:666
 msgid "The scaling factor must be less than 5.0\n"
 msgstr "拉伸系数必须小于5.0\n"
 
-#: ../src/core/command.c:713 ../src/core/command.c:773
-#: ../src/core/command.c:795
+#: ../src/core/command.c:710 ../src/core/command.c:770
+#: ../src/core/command.c:792
 msgid ""
 "Current selection is too large. To determine the PSF, please make a "
 "selection around a single star.\n"
 msgstr "当前选择区域太大。若要计算PSF，请选择一个星点周围的区域。\n"
 
-#: ../src/core/command.c:717 ../src/core/command.c:777
-#: ../src/core/command.c:799 ../src/io/sequence.c:1390
+#: ../src/core/command.c:714 ../src/core/command.c:774
+#: ../src/core/command.c:796 ../src/io/sequence.c:1406
 msgid "Select an area first\n"
 msgstr "请先选择一个区域\n"
 
-#: ../src/core/command.c:723
+#: ../src/core/command.c:720
 #, c-format
 msgid ""
 "Relative magnitude: %.3lf, True reduced magnitude: %.3lf, Offset: %.3lf\n"
 msgstr ""
 "Relative magnitude: %.3lf, True reduced magnitude: %.3lf, Offset: %.3lf\n"
 
-#: ../src/core/command.c:739 ../src/core/command.c:758
-#: ../src/core/command.c:818
+#: ../src/core/command.c:736 ../src/core/command.c:755
+#: ../src/core/command.c:815
 msgid "This command can be used only when a sequence is loaded\n"
 msgstr "This command can be used only when a sequence is loaded\n"
 
-#: ../src/core/command.c:747
+#: ../src/core/command.c:744
 msgid "Run a PSF for the sequence first (see seqpsf)\n"
 msgstr "导出队列\n"
 
-#: ../src/core/command.c:751
+#: ../src/core/command.c:748
 #, c-format
 msgid ""
 "Reference magnitude has been set for star %d to %f and will be computed for "
@@ -3711,110 +3722,110 @@ msgstr ""
 "Reference magnitude has been set for star %d to %f and will be computed for "
 "each image\n"
 
-#: ../src/core/command.c:763
+#: ../src/core/command.c:760
 msgid "Reference magnitude unset for sequence\n"
 msgstr "Reference magnitude unset for sequence\n"
 
-#: ../src/core/command.c:813
+#: ../src/core/command.c:810
 #, c-format
 msgid "Running the PSF on the loaded sequence, layer %d\n"
 msgstr "Running the PSF on the loaded sequence, layer %d\n"
 
-#: ../src/core/command.c:846
+#: ../src/core/command.c:843
 #, c-format
 msgid "Background value: %d\n"
 msgstr "背景值: %d\n"
 
-#: ../src/core/command.c:892
+#: ../src/core/command.c:889
 #, c-format
 msgid "The file %s has been created for the %s layer.\n"
 msgstr "The file %s has been created for the %s layer.\n"
 
-#: ../src/core/command.c:964
+#: ../src/core/command.c:961
 msgid "Number of layers MUST be 1 or 3\n"
 msgstr "通道数必须为1或3\n"
 
-#: ../src/core/command.c:973
+#: ../src/core/command.c:970
 msgid "new empty image"
 msgstr "新空白图像"
 
-#: ../src/core/command.c:983
+#: ../src/core/command.c:980
 #, c-format
 msgid "Values must be positive and less than %d.\n"
 msgstr "数值必须为正并且小于 %d.\n"
 
-#: ../src/core/command.c:1001
+#: ../src/core/command.c:998
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: select a region or provide x, y, width, height\n"
 
-#: ../src/core/command.c:1035
+#: ../src/core/command.c:1032
 msgid "find_hot must be applied on an one-channel master-dark frame"
 msgstr "find_hot must be applied on an one-channel master-dark frame"
 
-#: ../src/core/command.c:1043
+#: ../src/core/command.c:1040
 #, c-format
 msgid "%ld cold and %ld hot pixels\n"
 msgstr "%ld 冷像素 %ld 热像素\n"
 
-#: ../src/core/command.c:1048 ../src/core/command.c:1081
+#: ../src/core/command.c:1045 ../src/core/command.c:1078
 #, c-format
 msgid "Cannot open file: %s\n"
 msgstr "无法打开文件: %s\n"
 
-#: ../src/core/command.c:1141
+#: ../src/core/command.c:1138
 #, c-format
 msgid "cosmetic correction: cosme file format error at line %d: %s\n"
 msgstr "cosmetic correction: cosme file format error at line %d: %s\n"
 
-#: ../src/core/command.c:1149
+#: ../src/core/command.c:1146
 msgid "There were some errors, please check your input file.\n"
 msgstr "错误产生，请检查您的输入文件。\n"
 
-#: ../src/core/command.c:1169
+#: ../src/core/command.c:1166
 msgid "The size of the kernel MUST be odd and greater than 1.\n"
 msgstr "The size of the kernel MUST be odd and greater than 1.\n"
 
-#: ../src/core/command.c:1174
+#: ../src/core/command.c:1171
 msgid "Modulation value MUST be between 0 and 1\n"
 msgstr "Modulation value MUST be between 0 and 1\n"
 
 #. FITS are stored bottom to top
-#: ../src/core/command.c:1194
+#: ../src/core/command.c:1191
 #, c-format
 msgid "Center of gravity coordinates are (%.3lf, %.3lf)\n"
 msgstr "Center of gravity coordinates are (%.3lf, %.3lf)\n"
 
-#: ../src/core/command.c:1217
+#: ../src/core/command.c:1214
 #, c-format
 msgid "Contrast: %lf\n"
 msgstr "Contrast: %lf\n"
 
-#: ../src/core/command.c:1278
+#: ../src/core/command.c:1275
 msgid "FFT does not work with sequences\n"
 msgstr "傅立叶变换不可用于队列\n"
 
-#: ../src/core/command.c:1346
+#: ../src/core/command.c:1343
 msgid ""
 "Use this command to select images in a sequence, load a sequence first.\n"
 msgstr ""
 "Use this command to select images in a sequence, load a sequence first.\n"
 
-#: ../src/core/command.c:1352
+#: ../src/core/command.c:1349
 msgid ""
 "The first argument must be between 0 and the number of images minus one.\n"
 msgstr ""
 "The first argument must be between 0 and the number of images minus one.\n"
 
-#: ../src/core/command.c:1377
+#: ../src/core/command.c:1374
 #, c-format
 msgid "Selection update finished, %d images are selected in the sequence\n"
 msgstr "Selection update finished, %d images are selected in the sequence\n"
 
-#: ../src/core/command.c:1394
+#: ../src/core/command.c:1391
 msgid "Siril cannot split layers. Make sure your image is in RGB mode.\n"
 msgstr "Siril无法提取通道，请确保你的图像为RGB模式。\n"
 
-#: ../src/core/command.c:1418
+#: ../src/core/command.c:1415
 #, c-format
 msgid ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
@@ -3823,45 +3834,45 @@ msgstr ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
 "%0.1lf, Max: %0.1lf\n"
 
-#: ../src/core/command.c:1441
+#: ../src/core/command.c:1438
 msgid "Looking for sequences in current working directory...\n"
 msgstr "在当前工作目录中搜索队列...\n"
 
-#: ../src/core/command.c:1443
+#: ../src/core/command.c:1440
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr "搜索或打开目录出错。\n"
 
-#: ../src/core/command.c:1448
+#: ../src/core/command.c:1445
 msgid "Starting stacking of found sequences...\n"
 msgstr "开始对已找到的队列进行叠加...\n"
 
-#: ../src/core/command.c:1459
+#: ../src/core/command.c:1456
 #, fuzzy, c-format
 msgid "Stacking sequence %s\n"
 msgstr "关闭队列%s\n"
 
-#: ../src/core/command.c:1490
+#: ../src/core/command.c:1487
 #, c-format
 msgid "Could not save the stacking result %s\n"
 msgstr "无法保存叠加结果 %s\n"
 
-#: ../src/core/command.c:1501
+#: ../src/core/command.c:1498
 #, fuzzy, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr "Stacked %d sequences %s.\n"
 
-#: ../src/core/command.c:1524
+#: ../src/core/command.c:1521
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
 msgstr ""
 
-#: ../src/core/command.c:1533
+#: ../src/core/command.c:1530
 #, c-format
 msgid "The provided type of stacking is unknown (%s).\n"
 msgstr ""
 
-#: ../src/core/command.c:1550
+#: ../src/core/command.c:1547
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -3870,31 +3881,31 @@ msgstr ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
 "%d.\n"
 
-#: ../src/core/command.c:1562
+#: ../src/core/command.c:1559
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "当前使用 %d 逻辑处理器\n"
 
-#: ../src/core/command.c:1572
+#: ../src/core/command.c:1569
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* 可用指令列表 *********\n"
 
-#: ../src/core/command.c:1649
+#: ../src/core/command.c:1646
 #, c-format
 msgid "Unknown command: '%s' or not implemented yet\n"
 msgstr "Unknown command: '%s' or not implemented yet\n"
 
-#: ../src/core/command.c:1656
+#: ../src/core/command.c:1653
 #, c-format
 msgid "Usage: %s\n"
 msgstr "Usage: %s\n"
 
-#: ../src/core/command.c:1677
+#: ../src/core/command.c:1674
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "文件 [%s] 不存在\n"
 
-#: ../src/core/command.c:1692 ../src/core/command.c:1709
+#: ../src/core/command.c:1689 ../src/core/command.c:1706
 #, c-format
 msgid "Error in line: %d. Exiting batch processing\n"
 msgstr "Error in line: %d. Exiting batch processing\n"
@@ -3964,11 +3975,12 @@ msgstr "imoper: images don't have the same size (w = %u|%u, h = %u|%u)\n"
 msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr "图像不具有统一大小 (w = %d|%d, h = %d|%d)\n"
 
-#: ../src/core/siril.c:204 ../src/core/utils.c:468 ../src/gui/callbacks.c:2240
-#: ../src/gui/callbacks.c:4922 ../src/gui/callbacks.c:4943
-#: ../src/gui/callbacks.c:5370 ../src/gui/callbacks.c:5376
-#: ../src/gui/callbacks.c:5401 ../src/gui/plot.c:344 ../src/gui/plot.c:404
-#: ../src/gui/plot.c:549 ../src/gui/PSF_list.c:150 ../src/io/conversion.c:526
+#: ../src/core/siril.c:204 ../src/core/utils.c:525 ../src/gui/callbacks.c:2240
+#: ../src/gui/callbacks.c:3178 ../src/gui/callbacks.c:4967
+#: ../src/gui/callbacks.c:4988 ../src/gui/callbacks.c:5415
+#: ../src/gui/callbacks.c:5421 ../src/gui/callbacks.c:5446
+#: ../src/gui/plot.c:344 ../src/gui/plot.c:404 ../src/gui/plot.c:549
+#: ../src/gui/PSF_list.c:150 ../src/io/conversion.c:526
 #: ../src/io/conversion.c:595 ../src/io/image_format_fits.c:197
 #: ../src/io/image_format_fits.c:205 ../src/io/image_format_fits.c:227
 #: ../src/io/image_format_fits.c:241 ../src/io/image_format_fits.c:256
@@ -4127,40 +4139,40 @@ msgstr "文件I/O错误：无法创建交换文件于 %s: [%s]\n"
 msgid "File I/O Error: Unable to write swap file in %s: [%s]\n"
 msgstr "文件I/O错误：无法写入交换文件于 %s: [%s]\n"
 
-#: ../src/core/utils.c:236
+#: ../src/core/utils.c:234
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "设置当前工作目录（CWD）为 '%s'\n"
 
-#: ../src/core/utils.c:242
+#: ../src/core/utils.c:240
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr "无法更改目录为 '%s'\n"
 
-#: ../src/core/utils.c:442
+#: ../src/core/utils.c:499
 msgid "Filename is too long, not expanding it\n"
 msgstr "文件名太长了\n"
 
-#: ../src/core/utils.c:468
+#: ../src/core/utils.c:525
 msgid "File not found"
 msgstr "文件未找到"
 
-#: ../src/core/utils.c:605
+#: ../src/core/utils.c:662
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Checking GTK version ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:624
+#: ../src/core/utils.c:681
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:630
+#: ../src/core/utils.c:687
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 msgstr "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 
-#: ../src/core/utils.c:640 ../src/main.c:236
+#: ../src/core/utils.c:697 ../src/main.c:236
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "成功载入'%s'\n"
@@ -4367,46 +4379,56 @@ msgstr "Mem: %ldMB"
 msgid "Mem: N/A"
 msgstr "Mem: N/A"
 
-#: ../src/gui/callbacks.c:2555
+#: ../src/gui/callbacks.c:2533
+#, c-format
+msgid "Disk Space: %.0lf%s"
+msgstr ""
+
+#: ../src/gui/callbacks.c:2593
 msgid "This binning is not handled yet\n"
 msgstr "该合并模式不被支持\n"
 
-#: ../src/gui/callbacks.c:2986
+#: ../src/gui/callbacks.c:3024
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">冷：%ld px</span>"
 
-#: ../src/gui/callbacks.c:2987 ../src/gui/callbacks.c:2997
+#: ../src/gui/callbacks.c:3025 ../src/gui/callbacks.c:3035
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
 msgstr "参数过大。请酌情改变sigma值或者取消本选项之选择。"
 
-#: ../src/gui/callbacks.c:2990
+#: ../src/gui/callbacks.c:3028
 #, c-format
 msgid "Cold: %ld px"
 msgstr "冷：%ld px"
 
-#: ../src/gui/callbacks.c:2996
+#: ../src/gui/callbacks.c:3034
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">热：%ld px</span>"
 
-#: ../src/gui/callbacks.c:3000
+#: ../src/gui/callbacks.c:3038
 #, c-format
 msgid "Hot: %ld px"
 msgstr "热：%ld px"
 
-#: ../src/gui/callbacks.c:3176
+#: ../src/gui/callbacks.c:3177
+#, fuzzy
+msgid "You don't have permission to write in this directory.\n"
+msgstr "转化：工作目录未设置。\n"
+
+#: ../src/gui/callbacks.c:3221
 msgid "Are you sure you want to quit ?"
 msgstr "真的要退出？"
 
-#: ../src/gui/callbacks.c:3753
+#: ../src/gui/callbacks.c:3798
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "new zoom value: %f\n"
 
-#: ../src/gui/callbacks.c:3762
+#: ../src/gui/callbacks.c:3807
 msgid ""
 "Copyright © 2004-2011 François Meyer\n"
 "Copyright © 2012-2017 team free-astro"
@@ -4415,7 +4437,7 @@ msgstr ""
 "Copyright © 2012-2017 team free-astro"
 
 #. translator names
-#: ../src/gui/callbacks.c:3774
+#: ../src/gui/callbacks.c:3819
 msgid ""
 "Cyril Richard <cyril@free-astro.org>\n"
 "Vincent Hourdin <vh@free-astro.vinvin.tf>"
@@ -4423,29 +4445,29 @@ msgstr ""
 "叶云 <yecloud@me.com>\n"
 "Mr.Coffee"
 
-#: ../src/gui/callbacks.c:3785
+#: ../src/gui/callbacks.c:3830
 msgid "About siril"
 msgstr "关于Siril"
 
-#: ../src/gui/callbacks.c:3792
+#: ../src/gui/callbacks.c:3837
 msgid "Astronomical image (pre-)processing program"
 msgstr "天文图像（预）处理程序"
 
-#: ../src/gui/callbacks.c:3795
+#: ../src/gui/callbacks.c:3840
 msgid "Visit the Siril website"
 msgstr "访问Siril网站"
 
-#: ../src/gui/callbacks.c:3830
+#: ../src/gui/callbacks.c:3875
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3832
+#: ../src/gui/callbacks.c:3877
 #, c-format
 msgid "undefined"
 msgstr "未定义的"
 
-#: ../src/gui/callbacks.c:3931
+#: ../src/gui/callbacks.c:3976
 msgid ""
 "Exclude all images ?\n"
 " (this erases previous image selection\n"
@@ -4454,7 +4476,7 @@ msgstr ""
 "排除所有图像？\n"
 "（这将抹去之前的图像选择，并且无法撤销）"
 
-#: ../src/gui/callbacks.c:3941
+#: ../src/gui/callbacks.c:3986
 msgid ""
 "Include all images ?\n"
 " (this erases previous image selection\n"
@@ -4463,109 +4485,109 @@ msgstr ""
 "包含所有图像？\n"
 "（这将抹去之前的图像选择，并且无法撤销）"
 
-#: ../src/gui/callbacks.c:3971
+#: ../src/gui/callbacks.c:4016
 msgid "Opening dark image..."
 msgstr "打开暗场帧…"
 
-#: ../src/gui/callbacks.c:3974
+#: ../src/gui/callbacks.c:4019
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "未使用暗场：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:3981
+#: ../src/gui/callbacks.c:4026
 msgid "NOT USING DARK: number of channels is different"
 msgstr "未使用暗场：通道数目不一致"
 
-#: ../src/gui/callbacks.c:4022
+#: ../src/gui/callbacks.c:4067
 msgid "Opening flat image..."
 msgstr "打开平场帧..."
 
-#: ../src/gui/callbacks.c:4025
+#: ../src/gui/callbacks.c:4070
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "未使用平场：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:4032
+#: ../src/gui/callbacks.c:4077
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "未使用平场：通道数目不一致"
 
-#: ../src/gui/callbacks.c:4060
+#: ../src/gui/callbacks.c:4105
 msgid "Opening offset image..."
 msgstr "打开偏置帧..."
 
-#: ../src/gui/callbacks.c:4063
+#: ../src/gui/callbacks.c:4108
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "未使用偏置：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:4070
+#: ../src/gui/callbacks.c:4115
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "未使用偏置：通道数目不一致"
 
-#: ../src/gui/callbacks.c:4093
+#: ../src/gui/callbacks.c:4138
 msgid "Preprocessing...\n"
 msgstr "预处理...\n"
 
-#: ../src/gui/callbacks.c:4139
+#: ../src/gui/callbacks.c:4184
 #, fuzzy
 msgid "Error in preprocessing."
 msgstr "开始预处理"
 
-#: ../src/gui/callbacks.c:4207
+#: ../src/gui/callbacks.c:4252
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "已选择 %s 队列 %s..."
 
-#: ../src/gui/callbacks.c:4275
+#: ../src/gui/callbacks.c:4320
 msgid "Searching for sequences in the current working directory..."
 msgstr "在当前工作目录中搜索队列..."
 
 #. Write "Siril Version X.Y in Copyright_Txt
-#: ../src/gui/callbacks.c:4483
+#: ../src/gui/callbacks.c:4528
 msgid "Saving TIFF"
 msgstr "保存TIFF"
 
-#: ../src/gui/callbacks.c:4501
+#: ../src/gui/callbacks.c:4546
 msgid "Saving Netpbm"
 msgstr "保存Netpbm"
 
-#: ../src/gui/callbacks.c:4519
+#: ../src/gui/callbacks.c:4564
 msgid "Saving BMP"
 msgstr "保存BMP"
 
-#: ../src/gui/callbacks.c:4537
+#: ../src/gui/callbacks.c:4582
 msgid "Saving JPG"
 msgstr "保存JPG"
 
-#: ../src/gui/callbacks.c:4920
+#: ../src/gui/callbacks.c:4965
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr "背景无法自己提取自己，请点击显示图像\n"
 
-#: ../src/gui/callbacks.c:4942
+#: ../src/gui/callbacks.c:4987
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr "请点击显示图像按钮以应用修正\n"
 
-#: ../src/gui/callbacks.c:4964
+#: ../src/gui/callbacks.c:5009
 msgid "Subtraction done ...\n"
 msgstr "减法完成...\n"
 
-#: ../src/gui/callbacks.c:4971
+#: ../src/gui/callbacks.c:5016
 msgid "Division done ...\n"
 msgstr "除法完成...\n"
 
-#: ../src/gui/callbacks.c:5156
+#: ../src/gui/callbacks.c:5201
 msgid "Load an image first, aborted.\n"
 msgstr "请先载入图像，异常中止。\n"
 
-#: ../src/gui/callbacks.c:5185
+#: ../src/gui/callbacks.c:5230
 msgid "The file stars.lst has been created.\n"
 msgstr "文件stars.lst已被创建。\n"
 
-#: ../src/gui/callbacks.c:5262 ../src/gui/callbacks.c:5307
+#: ../src/gui/callbacks.c:5307 ../src/gui/callbacks.c:5352
 msgid ""
 "Current selection is too large.\n"
 "To determine the PSF, please make a selection around a star.\n"
 msgstr "当前选择区域太大。若要计算PSF，请选择一个星点周围的区域。\n"
 
-#: ../src/gui/callbacks.c:5276
+#: ../src/gui/callbacks.c:5321
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -4614,24 +4636,24 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:5369
+#: ../src/gui/callbacks.c:5414
 msgid "FFT does not work with sequences !\n"
 msgstr "傅立叶变换不可用于队列！\n"
 
-#: ../src/gui/callbacks.c:5375
+#: ../src/gui/callbacks.c:5420
 msgid "Open an image first !\n"
 msgstr "先要打开一幅图像！\n"
 
-#: ../src/gui/callbacks.c:5400
+#: ../src/gui/callbacks.c:5445
 msgid "Select magnitude and phase before !\n"
 msgstr "请先选择好幅值和相位！\n"
 
-#: ../src/gui/callbacks.c:5935
+#: ../src/gui/callbacks.c:5980
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr "AVI文件不支持裁剪。请先将文件转化为SER格式。\n"
 
-#: ../src/gui/callbacks.c:5940
+#: ../src/gui/callbacks.c:5985
 msgid "Not a valid sequence for cropping.\n"
 msgstr "企图裁剪非有效队列。\n"
 
@@ -4897,7 +4919,7 @@ msgid ""
 msgstr "SER输出将获得超过新建单通道图像的优先权。\n"
 
 #: ../src/io/conversion.c:563 ../src/io/conversion.c:615
-#: ../src/io/sequence.c:1133 ../src/io/sequence_export.c:102
+#: ../src/io/sequence.c:1149 ../src/io/sequence_export.c:102
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "创建SER文件失败，异常终止。\n"
 
@@ -4937,7 +4959,7 @@ msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Error while reading frame %d from %s, aborting.\n"
 
 #: ../src/io/conversion.c:636 ../src/io/conversion.c:668
-#: ../src/io/sequence.c:1161 ../src/io/sequence_export.c:312
+#: ../src/io/sequence.c:1177 ../src/io/sequence_export.c:312
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Error while converting to SER (no space left?)\n"
 
@@ -4959,11 +4981,11 @@ msgstr "保存为3个FITS文件无法执行，因为源图像没有包含三个�
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "在超过一个通道的图像上无法执行debayer\n"
 
-#: ../src/io/conversion.c:793 ../src/io/ser.c:734 ../src/io/ser.c:856
+#: ../src/io/conversion.c:793 ../src/io/ser.c:746 ../src/io/ser.c:868
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
-#: ../src/io/conversion.c:796 ../src/io/ser.c:738 ../src/io/ser.c:860
+#: ../src/io/conversion.c:796 ../src/io/ser.c:750 ../src/io/ser.c:872
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -5357,63 +5379,63 @@ msgstr ""
 msgid "sequence %d, found: %d to %d"
 msgstr "sequence %d, found: %d to %d"
 
-#: ../src/io/sequence.c:423
+#: ../src/io/sequence.c:437
 #, c-format
 msgid "Sequence loaded: %s (%d->%d)\n"
 msgstr "Sequence loaded: %s (%d->%d)\n"
 
-#: ../src/io/sequence.c:542
+#: ../src/io/sequence.c:558
 #, c-format
 msgid "%d from %s.ser"
 msgstr "%d from %s.ser"
 
-#: ../src/io/sequence.c:572
+#: ../src/io/sequence.c:588
 #, c-format
 msgid "Could not load image %d from sequence %s\n"
 msgstr "无法载入图像%d位于队列%s\n"
 
-#: ../src/io/sequence.c:580 ../src/io/sequence.c:630
+#: ../src/io/sequence.c:596 ../src/io/sequence.c:646
 #, c-format
 msgid "Could not load frame %d from SER sequence %s\n"
 msgstr "Could not load frame %d from SER sequence %s\n"
 
-#: ../src/io/sequence.c:589 ../src/io/sequence.c:641
+#: ../src/io/sequence.c:605 ../src/io/sequence.c:657
 #, c-format
 msgid "Could not load frame %d from AVI sequence %s\n"
 msgstr "Could not load frame %d from AVI sequence %s\n"
 
-#: ../src/io/sequence.c:621
+#: ../src/io/sequence.c:637
 #, c-format
 msgid "Could not load partial image %d from sequence %s\n"
 msgstr "Could not load partial image %d from sequence %s\n"
 
-#: ../src/io/sequence.c:709
+#: ../src/io/sequence.c:725
 msgid "This operation is not supported on AVI sequences (seq_open_image)\n"
 msgstr "This operation is not supported on AVI sequences (seq_open_image)\n"
 
-#: ../src/io/sequence.c:713
+#: ../src/io/sequence.c:729
 msgid ""
 "This operation is not supported on internal sequences (seq_open_image)\n"
 msgstr ""
 "This operation is not supported on internal sequences (seq_open_image)\n"
 
-#: ../src/io/sequence.c:1064
+#: ../src/io/sequence.c:1080
 #, fuzzy
 msgid "internal sequence"
 msgstr "裁剪队列"
 
-#: ../src/io/sequence.c:1275
+#: ../src/io/sequence.c:1291
 #, c-format
 msgid "No star found in the area image %d around %d,%d\n"
 msgstr "No star found in the area image %d around %d,%d\n"
 
-#: ../src/io/sequence.c:1322
+#: ../src/io/sequence.c:1338
 msgid ""
 "Star analysis does not give consistent results when exposure changes across "
 "the sequence.\n"
 msgstr "当队列中的曝光时间不一致时，星点分析无法得到一致的结果。\n"
 
-#: ../src/io/sequence.c:1414
+#: ../src/io/sequence.c:1430
 msgid "PSF on area"
 msgstr "区域中的PSF"
 
@@ -5509,28 +5531,28 @@ msgid ""
 "implemented\n"
 msgstr "以超过16位的FITS图像为源生成SER文件的功能尚未实现\n"
 
-#: ../src/io/ser.c:542
+#: ../src/io/ser.c:551
 msgid "The SER sequence is being created with no image in it.\n"
 msgstr ""
 
-#: ../src/io/ser.c:606
+#: ../src/io/ser.c:616
 #, c-format
 msgid "Created SER file %s\n"
 msgstr "Created SER file %s\n"
 
-#: ../src/io/ser.c:775 ../src/io/ser.c:986
+#: ../src/io/ser.c:787 ../src/io/ser.c:998
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "这个类型的拜耳滤镜排列模式尚未被支持。\n"
 
-#: ../src/io/ser.c:870
+#: ../src/io/ser.c:882
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 
-#: ../src/io/ser.c:897 ../src/io/ser.c:958
+#: ../src/io/ser.c:909 ../src/io/ser.c:970
 msgid "Out of memory - aborting\n"
 msgstr "内存不足，异常中止\n"
 
-#: ../src/io/ser.c:1007
+#: ../src/io/ser.c:1019
 msgid "Trying to add an image of different size in a SER\n"
 msgstr "试图在SER文件中加入不是一致尺寸的图像\n"
 
@@ -6114,71 +6136,71 @@ msgstr "像素剔除 ........... %s\n"
 msgid "Rejection parameters ...... low=%.3f high=%.3f\n"
 msgstr "Rejection parameters ...... low=%.3f high=%.3f\n"
 
-#: ../src/stacking/stacking.c:1650
+#: ../src/stacking/stacking.c:1644
 #, fuzzy
 msgid "Stacking result image"
 msgstr "要叠加的图像集合: "
 
-#: ../src/stacking/stacking.c:1675 ../src/stacking/stacking.c:1680
+#: ../src/stacking/stacking.c:1669 ../src/stacking/stacking.c:1674
 msgid "Unsaved stacking result"
 msgstr "未保存的叠加结果"
 
-#: ../src/stacking/stacking.c:1853
+#: ../src/stacking/stacking.c:1847
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "叠加操作共使用内存%d MB\n"
 
-#: ../src/stacking/stacking.c:1879
+#: ../src/stacking/stacking.c:1873
 msgid ""
 "The reference image is not in the selected set of images. To avoid issues, "
 "please change it or change the filtering parameters.\n"
 msgstr ""
 
-#: ../src/stacking/stacking.c:1938
+#: ../src/stacking/stacking.c:1932
 #, c-format
 msgid ""
 "Error in highest quality accepted for sequence processing: some images don't "
 "have this kind of information available for channel #%d.\n"
 msgstr "基于高图像质量的队列处理错误：某些图像的通道#%d中不含有这类信息。\n"
 
-#: ../src/stacking/stacking.c:2004
+#: ../src/stacking/stacking.c:1998
 #, c-format
 msgid "Stacking all images in the sequence (%d)\n"
 msgstr "叠加队列(%d)中的所有图像\n"
 
-#: ../src/stacking/stacking.c:2013
+#: ../src/stacking/stacking.c:2007
 #, c-format
 msgid "Stacking only selected images in the sequence (%d)\n"
 msgstr "只叠加队列(%d)中所选择的图像\n"
 
-#: ../src/stacking/stacking.c:2036
+#: ../src/stacking/stacking.c:2030
 #, c-format
 msgid ""
 "Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"
 msgstr "叠加队列中FWHM小于等于 %g (%d) 的图像\n"
 
-#: ../src/stacking/stacking.c:2042
+#: ../src/stacking/stacking.c:2036
 #, c-format
 msgid "Based on FWHM < %.2f (%d images)"
 msgstr "基于FWHM < %.2f (%d 图像)"
 
-#: ../src/stacking/stacking.c:2057
+#: ../src/stacking/stacking.c:2051
 #, c-format
 msgid ""
 "Stacking images of the sequence with a quality higher or equal than %g (%d)\n"
 msgstr "叠加队列中品质大于等于 %g (%d) 的图像\n"
 
-#: ../src/stacking/stacking.c:2063
+#: ../src/stacking/stacking.c:2057
 #, c-format
 msgid "Based on quality > %.2f (%d images)"
 msgstr "基于品质 > %.2f (%d 图像)"
 
-#: ../src/stacking/stacking.c:2066
+#: ../src/stacking/stacking.c:2060
 #, c-format
 msgid "Based on quality"
 msgstr "基于品质"
 
-#: ../src/stacking/stacking.c:2145
+#: ../src/stacking/stacking.c:2139
 #, fuzzy
 msgid "Up-scaling sequence for stacking"
 msgstr "队列叠加"

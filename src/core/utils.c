@@ -58,6 +58,18 @@
 #include "gui/progress_and_log.h"
 #include "io/single_image.h"
 
+#ifdef HAVE_SYS_STATVFS_H
+#include <sys/statvfs.h>
+#endif
+#if HAVE_SYS_VFS_H
+#include <sys/vfs.h>
+#elif HAVE_SYS_MOUNT_H
+#if HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+#include <sys/mount.h>
+#endif
+
 int round_to_int(double x) {
 	if (x <= INT_MIN + 0.5) return INT_MIN;
 	if (x >= INT_MAX - 0.5) return INT_MAX;
@@ -233,7 +245,7 @@ int changedir(const char *dir) {
 		siril_log_message(_("Setting CWD (Current Working Directory) to '%s'\n"),
 				com.wd);
 		set_GUI_CWD();
-
+		update_used_memory();
 		return 0;
 	}
 	siril_log_message(_("Could not change directory to '%s'.\n"), dir);
@@ -304,8 +316,59 @@ int update_sequences_list(const char *sequence_name_to_select) {
 	return 0;
 }
 
-void update_used_memory() {
+/* Find the space remaining in a directory, in bytes. A double for >32bit
+ * problem avoidance. <0 for error.
+ */
+#ifdef HAVE_SYS_STATVFS_H
+static double find_space(const char *name) {
+	struct statvfs st;
+	double sz;
+
+	if (statvfs (name, &st))
+		/* Set to error value.
+		 */
+		sz = -1;
+	else
+		sz = (double) st.f_frsize * st.f_bavail;
+
+	return (sz);
+}
+#elif (HAVE_SYS_VFS_H || HAVE_SYS_MOUNT_H)
+static double find_space(const char *name) {
+	struct statfs st;
+	double sz;
+
+	if (statfs (name, &st))
+		sz = -1;
+	else
+		sz = (double) st.f_bsize * st.f_bavail;
+
+	return (sz);
+}
+#elif defined WIN32
+static double find_space(const char *name) {
+	ULARGE_INTEGER avail;
+	double sz;
+
+	gchar *localdir = g_path_get_dirname(name);
+	wchar_t *wdirname = g_utf8_to_utf16(localdir, -1, NULL, NULL, NULL);
+	g_free(localdir);
+
+	if (!GetDiskFreeSpaceExW(wdirname, &avail, NULL, NULL))
+		sz = -1;
+	else
+		sz = (double) avail.QuadPart;
+
+	return (sz);
+}
+#else
+static double find_space(const char *name) {
+	return (-1);
+}
+#endif /*HAVE_SYS_STATVFS_H*/
+
 #if defined(__linux__)
+static unsigned long update_used_RAM_memory() {
 	unsigned long size, resident, share, text, lib, data, dt;
 	static int page_size_in_k = 0;
 	const char* statm_path = "/proc/self/statm";
@@ -316,41 +379,60 @@ void update_used_memory() {
 	}
 	if (!f) {
 		perror(statm_path);
-		return;
+		return 0UL;
 	}
 	if (7 != fscanf(f, "%lu %lu %lu %lu %lu %lu %lu",
 			&size, &resident, &share, &text, &lib, &data, &dt)) {
 		perror(statm_path);
 		fclose(f);
-		return;
+		return 0UL;
 	}
 	fclose(f);
-	set_GUI_MEM(resident * page_size_in_k);
+	return (resident * page_size_in_k);
+}
 #elif (defined(__APPLE__) && defined(__MACH__))
+static unsigned long update_used_RAM_memory() {
 	struct task_basic_info t_info;
 
 	mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 	task_info(current_task(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count);
-	set_GUI_MEM((unsigned long) t_info.resident_size / 1024UL);
+	return ((unsigned long) t_info.resident_size / 1024UL);
+}
 #elif defined(BSD) /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD). In fact, it could work with linux */
+static unsigned long update_used_RAM_memory() {
 	struct rusage usage;
 
 	getrusage(RUSAGE_SELF, &usage);
-	set_GUI_MEM((unsigned long) usage.ru_maxrss);
+	return ((unsigned long) usage.ru_maxrss);
+}
 #elif defined(WIN32) /* Windows */
+static unsigned long update_used_RAM_memory() {
     PROCESS_MEMORY_COUNTERS memCounter;
     
 	if (GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter)))
-        set_GUI_MEM(memCounter.WorkingSetSize / 1024);
+        return (memCounter.WorkingSetSize / 1024UL);
+	return 0UL;
+}
 #else
-	set_GUI_MEM((unsigned long) 0);
+static unsigned long update_used_RAM_memory() {
+	return 0UL;
+}
 #endif
+
+void update_used_memory() {
+	unsigned long ram;
+	double freeDisk;
+
+	ram = update_used_RAM_memory();
+	freeDisk = find_space(com.wd);
+	/* update GUI */
+	set_GUI_MEM(ram);
+	set_GUI_DiskSpace(freeDisk);
 }
 
+#if defined(__linux__)
 int get_available_memory_in_MB() {
 	int mem = 2048; /* this is the default value if we can't retrieve any values */
-
-#if defined(__linux__)
 	FILE* fp = fopen("/proc/meminfo", "r");
 	if (fp != NULL) {
 		size_t bufsize = 1024 * sizeof(char);
@@ -367,7 +449,11 @@ int get_available_memory_in_MB() {
 		if (value != -1L)
 			mem = (int) (value / 1024L);
 	}
+	return mem;
+}
 #elif (defined(__APPLE__) && defined(__MACH__))
+int get_available_memory_in_MB() {
+	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	vm_size_t page_size;
 	mach_port_t mach_port;
 	mach_msg_type_number_t count;
@@ -385,7 +471,11 @@ int get_available_memory_in_MB() {
 
 		mem = (int) ((unused_memory) / (1024 * 1024));
 	}
+	return mem;
+}
 #elif defined(BSD) /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD). ----------- */
+int get_available_memory_in_MB() {
+	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	FILE* fp = fopen("/var/run/dmesg.boot", "r");
 	if (fp != NULL) {
 		size_t bufsize = 1024 * sizeof(char);
@@ -402,26 +492,23 @@ int get_available_memory_in_MB() {
 		if (value != -1L)
 			mem = (int) (value / 1024L);
 	}
+	return mem;
+}
 #elif defined(WIN32) /* Windows */
+int get_available_memory_in_MB() {
+	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	MEMORYSTATUSEX memStatusEx = {0};
 	memStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
 	const DWORD dwMBFactor = 1024 * 1024;
 	DWORDLONG dwTotalPhys = memStatusEx.ullTotalPhys / dwMBFactor;
 	if (dwTotalPhys > 0)
 		mem = (int) dwTotalPhys;
-#else
-	printf("Siril failed to get available free RAM memory\n");
-#endif
 	return mem;
 }
-
-#if 0
-/* returns true if the command theli is available */
-gboolean theli_is_available() {
-	int retval = system("theli > /dev/null");
-	if (WIFEXITED(retval))
-	return 0 == WEXITSTATUS(retval); // 0 if it's available, 127 if not
-	return FALSE;
+#else
+int get_available_memory_in_MB() {
+	printf("Siril failed to get available free RAM memory\n");
+	return 2048;
 }
 #endif
 
