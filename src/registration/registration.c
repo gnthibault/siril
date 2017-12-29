@@ -1093,8 +1093,8 @@ void get_the_registration_area(struct registration_args *reg_args,
 		struct registration_method *method) {
 	int max;
 	switch (method->sel) {
+	/* even in the case of REQUIRES_NO_SELECTION selection is needed for MatchSelection of starAlignment */
 	case REQUIRES_NO_SELECTION:
-		break;
 	case REQUIRES_ANY_SELECTION:
 		memcpy(&reg_args->selection, &com.selection, sizeof(rectangle));
 		break;
