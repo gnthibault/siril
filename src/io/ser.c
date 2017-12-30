@@ -491,12 +491,12 @@ static int ser_alloc_ts(struct ser_struct *ser_file, int frame_no) {
 	omp_set_lock(&ser_file->ts_lock);
 #endif
 	if (ser_file->ts_alloc <= frame_no) {
-		uint64_t *new = realloc(ser_file->ts, frame_no * 2 * sizeof(uint64_t));
+		uint64_t *new = realloc(ser_file->ts, (frame_no + 1) * 2 * sizeof(uint64_t));
 		if (!new) {
 			retval = 1;
 		} else {
 			ser_file->ts = new;
-			ser_file->ts_alloc = frame_no * 2;
+			ser_file->ts_alloc = (frame_no + 1) * 2;
 		}
 	}
 #ifdef _OPENMP
