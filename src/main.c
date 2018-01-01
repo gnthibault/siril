@@ -318,11 +318,11 @@ int main(int argc, char *argv[]) {
 	/* load the css sheet for general style */
 	load_css_style_sheet (siril_path);
 
-	/* set default CWD and load init file */
+	/* set default CWD */
 	com.wd = siril_get_startup_dir();
-
 	current_cwd = g_get_current_dir();
 
+	/* load init file */
 	if (checkinitfile()) {
 		siril_log_message(_("Could not load or create settings file, exiting.\n"));
 		exit(1);
@@ -380,12 +380,12 @@ int main(int argc, char *argv[]) {
 	if (com.have_dark_theme) {
 		/* Put dark icons */
 		printf("Loading dark theme...\n");
-		gtk_tool_button_set_label_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_anticlock_button")), lookup_widget("rotate90-acw_dark"));
-		gtk_tool_button_set_label_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_clock_button")), lookup_widget("rotate90-cw_dark"));
-		gtk_tool_button_set_label_widget(GTK_TOOL_BUTTON(lookup_widget("mirrorx_button")), lookup_widget("image_mirrorx_dark"));
-		gtk_tool_button_set_label_widget(GTK_TOOL_BUTTON(lookup_widget("mirrory_button")), lookup_widget("image_mirrory_dark"));
-		gtk_tool_button_set_label_widget(GTK_TOOL_BUTTON(lookup_widget("histogram_button")), lookup_widget("image_histogram_dark"));
-		gtk_tool_button_set_label_widget(GTK_TOOL_BUTTON(lookup_widget("seqlist_button")), lookup_widget("image_seqlist_dark"));
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_anticlock_button")), lookup_widget("rotate90-acw_dark"));
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_clock_button")), lookup_widget("rotate90-cw_dark"));
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("mirrorx_button")), lookup_widget("image_mirrorx_dark"));
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("mirrory_button")), lookup_widget("image_mirrory_dark"));
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("histogram_button")), lookup_widget("image_histogram_dark"));
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("seqlist_button")), lookup_widget("image_seqlist_dark"));
 	}
 	
 	/* handling OS-X integration */
