@@ -226,30 +226,87 @@ int stat_file(const char *filename, image_type *type, char **realname) {
 	return 1;
 }
 
-/* Try to change the CWD to the argument, absolute or relative.
- * If success, the new CWD is written to com.wd */
-int changedir(const char *dir) {
-	if (dir == NULL || dir[0] == '\0')
-		return 1;
-	if (!g_chdir(dir)) {
+/** This function tries to set a startup file. It first looks at the "Pictures" directory,
+ *  then if it does not exist, the "Document" one, Finally, if it fails on some UNIX systems
+ *  the dir is set to the home directory.
+ *  @return startup_dir if success, NULL if error
+ */
 
-		/* do we need to search for sequences in the directory now? We still need to
-		 * press the check seq button to display the list, and this is also done there. */
-		/* check_seq();
-		 update_sequence_list();*/
-		if (com.wd)
-			g_free(com.wd);
+static GUserDirectory sdir[] = { G_USER_DIRECTORY_PICTURES,
+		G_USER_DIRECTORY_DOCUMENTS };
+gchar *siril_get_startup_dir() {
+	const gchar *dir = NULL;
+	gchar *startup_dir = NULL;
+	gint i = 0;
+	size_t size;
 
-		com.wd = g_get_current_dir();
+	size = sizeof(sdir) / sizeof(GUserDirectory);
 
-		siril_log_message(_("Setting CWD (Current Working Directory) to '%s'\n"),
-				com.wd);
-		set_GUI_CWD();
-		update_used_memory();
-		return 0;
+	while (dir == NULL && i < size) {
+		dir = g_get_user_special_dir(sdir[i]);
+		i++;
 	}
-	siril_log_message(_("Could not change directory to '%s'.\n"), dir);
-	return 1;
+#ifndef WIN32
+	/* Not every platform has a directory for these logical id */
+	if (dir == NULL) {
+		dir = g_getenv("HOME");
+	}
+#endif
+	if (dir)
+		startup_dir = g_strdup(dir);
+	return startup_dir;
+}
+
+/** Try to change the CWD to the argument, absolute or relative.
+ *  If success, the new CWD is written to com.wd
+ *  @param[in] dir absolute or relative path we want to set as cwd
+ *  @param[out] err error message when return value is different of 1. Can be NULL if message is not needed.
+ *  @return 0 if success, any other values for error
+ *
+ *  */
+int changedir(const char *dir, gchar **err) {
+	gchar *error;
+	int retval = 0;
+
+	if (dir == NULL || dir[0] == '\0') {
+		error = siril_log_message(_("Unknown error\n"));
+		retval = -1;
+	} else if (!g_file_test(dir, G_FILE_TEST_EXISTS)) {
+		error = siril_log_message(_("No such file or directory\n"));
+		retval = 2;
+	} else if (!g_file_test(dir, G_FILE_TEST_IS_DIR)) {
+		error = siril_log_message(_("\"%s\" is not a directory\n"), dir);
+		retval = 3;
+	} else if (g_access(dir, W_OK)) {
+		error = siril_log_color_message(_("You don't have permission "
+				"to write in this directory: %s\n"), "red", dir);
+		retval = 4;
+	} else {
+		if (!g_chdir(dir)) {
+
+			/* do we need to search for sequences in the directory now? We still need to
+			 * press the check seq button to display the list, and this is also done there. */
+			/* check_seq();
+			 update_sequence_list();*/
+			if (com.wd)
+				g_free(com.wd);
+			com.wd = g_get_current_dir();
+			siril_log_message(_("Setting CWD (Current "
+					"Working Directory) to '%s'\n"), com.wd);
+			error = NULL;
+			set_GUI_CWD();
+			update_used_memory();
+			retval = 0;
+		} else {
+			error = siril_log_message(_("Could not change "
+					"directory to '%s'.\n"), dir);
+			retval = 1;
+		}
+	}
+	if (err) {
+		*err = error;
+	}
+	return retval;
 }
 
 /* This method populates the sequence combo box with the sequences found in the CWD.
@@ -877,5 +934,24 @@ int ListSequences(const char *sDir, const char *sequence_name_to_select, GtkComb
 	FindClose(hFind);
 
 	return number_of_loaded_sequences;
+}
+
+/* stolen from gimp which in turn stole from glib 2.35 */
+gchar * get_special_folder(int csidl) {
+	wchar_t path[MAX_PATH + 1];
+	HRESULT hr;
+	LPITEMIDLIST pidl = NULL;
+	BOOL b;
+	gchar *retval = NULL;
+
+	hr = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
+	if (hr == S_OK) {
+		b = SHGetPathFromIDListW(pidl, path);
+		if (b)
+			retval = g_utf16_to_utf8(path, -1, NULL, NULL, NULL);
+		CoTaskMemFree(pidl);
+	}
+
+	return retval;
 }
 #endif

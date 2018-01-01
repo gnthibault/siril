@@ -462,7 +462,7 @@ int process_cd(int nb) {
 	g_strlcpy(filename, word[1], 250);
 
 	expand_home_in_filename(filename, 256);
-	retval = changedir(filename);
+	retval = changedir(filename, NULL);
 	if (!retval) {
 		writeinitfile();
 	}

@@ -1014,6 +1014,7 @@ static void opendial(void) {
 	if (res == GTK_RESPONSE_ACCEPT) {
 		GSList *list = NULL;
 		char *filename;
+		gchar *err;
 		GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
 		filename = gtk_file_chooser_get_filename(chooser);
 
@@ -1062,8 +1063,11 @@ static void opendial(void) {
 			break;
 
 		case OD_CWD:
-			if (!changedir(filename))
+			if (!changedir(filename, &err)) {
 				writeinitfile();
+			} else {
+				show_dialog(err, _("Error"), "gtk-dialog-error");
+			}
 			break;
 
 		case OD_OPEN:
@@ -3151,7 +3155,7 @@ void on_filechooser_swap_file_set(GtkFileChooserButton *fileChooser, gpointer us
 	dir = gtk_file_chooser_get_filename (swap_dir);
 
 	if (g_access (dir, W_OK)) {
-		gchar *msg = siril_log_message(_("You don't have permission to write in this directory.\n"));
+		gchar *msg = siril_log_color_message(_("You don't have permission to write in this directory: %s\n"), "red", dir);
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
 		gtk_file_chooser_set_filename(swap_dir, com.swap_dir);
 		return;

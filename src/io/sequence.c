@@ -102,7 +102,7 @@ int read_single_sequence(char *realname, int imagetype) {
 	int retval=3;		// needs to return 3 if ok !!!
 	char *name = strdup(realname);
 	gchar *dirname = g_path_get_dirname(realname);
-	if (!changedir(dirname))
+	if (!changedir(dirname, NULL))
 		writeinitfile();
 	g_free(dirname);
 

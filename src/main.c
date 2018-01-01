@@ -319,11 +319,8 @@ int main(int argc, char *argv[]) {
 	load_css_style_sheet (siril_path);
 
 	/* set default CWD and load init file */
-	com.wd = g_strdup(g_get_user_special_dir(G_USER_DIRECTORY_PICTURES));
-	/* Not every platform has a directory for this logical id */
-	if (com.wd == NULL) {
-		com.wd = g_get_current_dir();
-	}
+	com.wd = siril_get_startup_dir();
+
 	current_cwd = g_get_current_dir();
 
 	if (checkinitfile()) {
@@ -402,19 +399,19 @@ int main(int argc, char *argv[]) {
 
 	if (argv[optind] != NULL) {
 		if (current_cwd) {
-			changedir(current_cwd);
+			changedir(current_cwd, NULL);
 			g_free(current_cwd);
 		}
 		open_single_image(argv[optind]);
 		if (!forcecwd) {
 			gchar *newpath = g_path_get_dirname(argv[optind]);
-			changedir(newpath);
+			changedir(newpath, NULL);
 			g_free(newpath);
 		}
 	}
 
 	if (forcecwd && cwd_forced) {
-		changedir(cwd_forced);
+		changedir(cwd_forced, NULL);
 	}
 
 	gtk_main();
