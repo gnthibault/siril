@@ -336,6 +336,27 @@ int writeinitfile() {
 	return 0;
 }
 
+#ifdef WIN32
+/* stolen from gimp which in turn stole from glib 2.35 */
+static gchar *get_special_folder(int csidl) {
+	wchar_t path[MAX_PATH + 1];
+	HRESULT hr;
+	LPITEMIDLIST pidl = NULL;
+	BOOL b;
+	gchar *retval = NULL;
+
+	hr = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
+	if (hr == S_OK) {
+		b = SHGetPathFromIDListW(pidl, path);
+		if (b)
+			retval = g_utf16_to_utf8(path, -1, NULL, NULL, NULL);
+		CoTaskMemFree(pidl);
+	}
+
+	return retval;
+}
+#endif
+
 int checkinitfile() {
 	char *home;
 	struct stat sts;

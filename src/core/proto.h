@@ -127,7 +127,6 @@ double	encodeJD(dateTime dt);
 #ifdef WIN32
 int ListDirectoryContents(const char *sDir);
 int ListSequences(const char *sDir, const char *sequence_name_to_select, GtkComboBoxText *seqcombo, int *index_of_seq_to_load);
-gchar * get_special_folder(int csidl);
 #endif
 
 /****************** quantize.h ***************/

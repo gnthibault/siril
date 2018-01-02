@@ -18,6 +18,13 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ *
+ * \file utils.c
+ * \brief Misc. function utilities.
+ *
+ */
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -70,6 +77,11 @@
 #include <sys/mount.h>
 #endif
 
+/**
+ * Round double value to an integer
+ * @param x value to round
+ * @return an integer
+ */
 int round_to_int(double x) {
 	if (x <= INT_MIN + 0.5) return INT_MIN;
 	if (x >= INT_MAX - 0.5) return INT_MAX;
@@ -78,6 +90,11 @@ int round_to_int(double x) {
 	return (int) (x - 0.5);
 }
 
+/**
+ * Round float value to an integer
+ * @param x value to round
+ * @return an integer
+ */
 int roundf_to_int(float x) {
 	if (x <= INT_MIN + 0.5f) return INT_MIN;
 	if (x >= INT_MAX - 0.5f) return INT_MAX;
@@ -86,6 +103,11 @@ int roundf_to_int(float x) {
 	return (int) (x - 0.5f);
 }
 
+/**
+ * Round double value to a WORD
+ * @param x value to round
+ * @return a WORD
+ */
 WORD round_to_WORD(double x) {
 	if (x <= 0.0)
 		return (WORD) 0;
@@ -94,6 +116,11 @@ WORD round_to_WORD(double x) {
 	return (WORD) (x + 0.5);
 }
 
+/**
+ * Round double value to a BYTE
+ * @param x value to round
+ * @return a BYTE
+ */
 BYTE round_to_BYTE(double x) {
 	if (x <= 0.0)
 		return (BYTE) 0;
@@ -102,6 +129,11 @@ BYTE round_to_BYTE(double x) {
 	return (BYTE) (x + 0.5);
 }
 
+/**
+ * convert double value to a BYTE
+ * @param x value to convert
+ * @return a BYTE
+ */
 BYTE conv_to_BYTE(double x) {
 	if (x == 0.0)
 		return (BYTE) 0;
@@ -111,12 +143,21 @@ BYTE conv_to_BYTE(double x) {
 	return((BYTE) (x));
 }
 
-/* returns TRUE if fit has 3 layers */
+/**
+ * Test if fit has 3 channels
+ * @param fit image
+ * @return TRUE if fit image has 3 channels
+ */
 gboolean isrgb(fits *fit) {
 	return (fit->naxis == 3);
 }
 
-/* returns TRUE if str ends with ending, case insensitive */
+/**
+ *  Looks whether the string str ends with ending. This is case insensitive
+ *  @param str the string to check
+ *  @param ending the suffix to look for
+ *  @return TRUE if str ends with ending
+ */
 gboolean ends_with(const char *str, const char *ending) {
 	if (!str || str[0] == '\0')
 		return FALSE;
@@ -129,8 +170,11 @@ gboolean ends_with(const char *str, const char *ending) {
 	return !strncasecmp(str + str_len - ending_len, ending, ending_len);
 }
 
-/* searches for an extension '.something' in filename from the end, and returns
- * the index of the first '.' found */
+/**
+ *  Searches for an extension '.something' in filename from the end
+ *  @param filename input filename
+ *  @return the index of the first '.' found
+ */
 int get_extension_index(const char *filename) {
 	int i;
 	if (filename == NULL || filename[0] == '\0')
@@ -144,8 +188,11 @@ int get_extension_index(const char *filename) {
 	return -1;
 }
 
-/* Get the extension of a file, without the dot.
- * The returned pointed is from the filename itself or NULL. */
+/**
+ * Get the extension of a file, without the dot.
+ * @param filename
+ * @return extension pointed from the filename itself or NULL
+ */
 const char *get_filename_ext(const char *filename) {
 	const char *dot = strrchr(filename, '.');
 	if (!dot || dot == filename)
@@ -153,8 +200,11 @@ const char *get_filename_ext(const char *filename) {
 	return dot + 1;
 }
 
-// tests whether the given file is either regular or a symlink
-// Return value is 1 if file is readable (not actually opened to verify)
+/**
+ * Tests whether the given file is either regular or a symlink
+ * @param filename input
+ * @return 1 if file is readable (not actually opened to verify)
+ */
 int is_readable_file(const char *filename) {
 	struct stat sts;
 	if (g_stat(filename, &sts))
@@ -168,12 +218,15 @@ int is_readable_file(const char *filename) {
 	return 0;
 }
 
-/* Tests if filename is the canonical name of a known file type
- * `type' is set according to the result of the test,
- * `realname' (optionnal) is set according to the found file name:: it
- * must be freed with when no longer needed.
- * If filename contains an extension, only this file name is tested, else all
- * extensions are tested for the file name until one is found.  */
+/** Tests if filename is the canonical name of a known file type
+ *  If filename contains an extension, only this file name is tested, else all
+ *  extensions are tested for the file name until one is found.
+ * @param[in] filename the filename to test for.
+ * @param[in] type is set according to the result of the test.
+ * @param[out] realname (optionnal) is set according to the found file name: it
+ *  must be freed with when no longer needed.
+ * @return 0 if sucess, 1 if error
+ */
 int stat_file(const char *filename, image_type *type, char **realname) {
 	int k;
 	const char *ext;
@@ -226,14 +279,13 @@ int stat_file(const char *filename, image_type *type, char **realname) {
 	return 1;
 }
 
+static GUserDirectory sdir[] = { G_USER_DIRECTORY_PICTURES,
+		G_USER_DIRECTORY_DOCUMENTS };
 /** This function tries to set a startup file. It first looks at the "Pictures" directory,
  *  then if it does not exist, the "Document" one, Finally, if it fails on some UNIX systems
  *  the dir is set to the home directory.
- *  @return startup_dir if success, NULL if error
+ *  @return a working directory path if success, NULL if error
  */
-
-static GUserDirectory sdir[] = { G_USER_DIRECTORY_PICTURES,
-		G_USER_DIRECTORY_DOCUMENTS };
 gchar *siril_get_startup_dir() {
 	const gchar *dir = NULL;
 	gchar *startup_dir = NULL;
@@ -262,8 +314,7 @@ gchar *siril_get_startup_dir() {
  *  @param[in] dir absolute or relative path we want to set as cwd
  *  @param[out] err error message when return value is different of 1. Can be NULL if message is not needed.
  *  @return 0 if success, any other values for error
- *
- *  */
+ */
 int changedir(const char *dir, gchar **err) {
 	gchar *error;
 	int retval = 0;
@@ -283,7 +334,6 @@ int changedir(const char *dir, gchar **err) {
 		retval = 4;
 	} else {
 		if (!g_chdir(dir)) {
-
 			/* do we need to search for sequences in the directory now? We still need to
 			 * press the check seq button to display the list, and this is also done there. */
 			/* check_seq();
@@ -309,10 +359,13 @@ int changedir(const char *dir, gchar **err) {
 	return retval;
 }
 
-/* This method populates the sequence combo box with the sequences found in the CWD.
- * If only one sequence is found, or if a sequence whose name matches the
- * possibly NULL argument is found, it is automatically selected, which triggers
- * its loading */
+/** This method populates the sequence combo box with the sequences found in the CWD.
+ *  If only one sequence is found, or if a sequence whose name matches the
+ *  possibly NULL argument is found, it is automatically selected, which triggers
+ *  its loading
+ *  @param sequence_name_to_select the name of the input sequence
+ *  @return 0 if success
+ */
 int update_sequences_list(const char *sequence_name_to_select) {
 	GtkComboBoxText *seqcombo;
 	struct dirent **list;
@@ -373,8 +426,11 @@ int update_sequences_list(const char *sequence_name_to_select) {
 	return 0;
 }
 
-/* Find the space remaining in a directory, in bytes. A double for >32bit
+/**
+ * Find the space remaining in a directory, in bytes. A double for >32bit
  * problem avoidance. <0 for error.
+ * @param name the path of the dorectory to be tested
+ * @return the disk space remaining in bytes, or a value less than 0 if error
  */
 #ifdef HAVE_SYS_STATVFS_H
 static double find_space(const char *name) {
@@ -936,22 +992,4 @@ int ListSequences(const char *sDir, const char *sequence_name_to_select, GtkComb
 	return number_of_loaded_sequences;
 }
 
-/* stolen from gimp which in turn stole from glib 2.35 */
-gchar * get_special_folder(int csidl) {
-	wchar_t path[MAX_PATH + 1];
-	HRESULT hr;
-	LPITEMIDLIST pidl = NULL;
-	BOOL b;
-	gchar *retval = NULL;
-
-	hr = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
-	if (hr == S_OK) {
-		b = SHGetPathFromIDListW(pidl, path);
-		if (b)
-			retval = g_utf16_to_utf8(path, -1, NULL, NULL, NULL);
-		CoTaskMemFree(pidl);
-	}
-
-	return retval;
-}
 #endif
