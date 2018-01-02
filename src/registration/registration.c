@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2017 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2018 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -380,6 +380,8 @@ int register_shift_dft(struct registration_args *args) {
 		args->seq->regparam[args->layer] = current_regdata;
 		if (args->x2upscale)
 			args->seq->upscale_at_stacking = 2.0;
+		else
+			args->seq->upscale_at_stacking = 1.0;
 		normalizeQualityData(args, q_min, q_max);
 		update_used_memory();
 		siril_log_message(_("Registration finished.\n"));
@@ -470,6 +472,8 @@ int register_shift_fwhm(struct registration_args *args) {
 	args->seq->regparam[args->layer] = current_regdata;
 	if (args->x2upscale)
 		args->seq->upscale_at_stacking = 2.0;
+	else
+		args->seq->upscale_at_stacking = 1.0;
 	update_used_memory();
 	siril_log_message(_("Registration finished.\n"));
 	siril_log_color_message(_("Best frame: #%d with fwhm=%.3g.\n"), "bold",
@@ -588,6 +592,11 @@ int register_star_alignment(struct registration_args *args) {
 		} else {
 			ref.x *= 2.0;
 			ref.y *= 2.0;
+		}
+	}
+	else {
+		if (args->translation_only) {
+			args->seq->upscale_at_stacking = 1.0;
 		}
 	}
 
@@ -923,6 +932,8 @@ int register_ecc(struct registration_args *args) {
 	args->seq->regparam[args->layer] = current_regdata;
 	if (args->x2upscale)
 		args->seq->upscale_at_stacking = 2.0;
+	else
+		args->seq->upscale_at_stacking = 1.0;
 	normalizeQualityData(args, q_min, q_max);
 	clearfits(&ref);
 	update_used_memory();
@@ -1082,8 +1093,8 @@ void get_the_registration_area(struct registration_args *reg_args,
 		struct registration_method *method) {
 	int max;
 	switch (method->sel) {
+	/* even in the case of REQUIRES_NO_SELECTION selection is needed for MatchSelection of starAlignment */
 	case REQUIRES_NO_SELECTION:
-		break;
 	case REQUIRES_ANY_SELECTION:
 		memcpy(&reg_args->selection, &com.selection, sizeof(rectangle));
 		break;
@@ -1215,7 +1226,7 @@ static gboolean end_register_idle(gpointer p) {
 
 				sprintf(rseqname, "%s%s.seq", args->prefix, seqname);
 				g_free(seqname);
-				unlink(rseqname);	// remove previous to overwrite
+				g_unlink(rseqname);	// remove previous to overwrite
 				char *newname = remove_ext_from_filename(rseqname);
 				seq->seqname = newname;
 				seq->number = args->new_total;

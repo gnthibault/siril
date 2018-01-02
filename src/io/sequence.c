@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2017 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2018 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -103,7 +103,7 @@ int read_single_sequence(char *realname, int imagetype) {
 	int retval=3;		// needs to return 3 if ok !!!
 	char *name = strdup(realname);
 	gchar *dirname = g_path_get_dirname(realname);
-	if (!changedir(dirname))
+	if (!changedir(dirname, NULL))
 		writeinitfile();
 	g_free(dirname);
 
@@ -376,7 +376,12 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 
 		/* initialize sequence-related runtime data */
 		seq->rx = fit->rx; seq->ry = fit->ry;
-		if (seq->nb_layers == -1) {
+
+		/* FIXME: when we load a demosaiced SER video after the seqfile was
+		 * created with seq->nb_layers = 1 (raw mode), seq->nb_layer is overwritten
+		 * and all regdata as well. Should we set another flag ?
+		 */
+		if (seq->nb_layers == -1 || seq->nb_layers != fit->naxes[2]) {
 			seq->nb_layers = fit->naxes[2];
 			seq->regparam = calloc(seq->nb_layers, sizeof(regdata *));
 			seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
@@ -391,6 +396,15 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 		return 1;
 	}
 	return 0;
+}
+
+static void free_cbbt_layers() {
+	static GtkComboBoxText *cbbt_layers = NULL;
+
+	if (cbbt_layers == NULL) {
+		cbbt_layers = GTK_COMBO_BOX_TEXT(lookup_widget("comboboxreglayer"));
+	}
+	gtk_combo_box_text_remove_all(cbbt_layers);
 }
 
 /* load a sequence and initializes everything that relates */
@@ -423,6 +437,8 @@ int set_seq(const char *name){
 	siril_log_message(_("Sequence loaded: %s (%d->%d)\n"),
 			basename, seq->beg, seq->end);
 	g_free(basename);
+
+	free_cbbt_layers();
 	/* Sequence is stored in com.seq for now */
 	if (sequence_is_loaded() && com.seq.needs_saving)
 			writeseqfile(&com.seq);

@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2017 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2018 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -60,8 +60,8 @@ static int sum_stacking_image_hook(struct generic_seq_args *args, int i, fits *f
 	ssdata->exposure += fit->exposure;
 	
 	if (ssdata->reglayer != -1 && args->seq->regparam[ssdata->reglayer]) {
-		shiftx = roundf_to_int(args->seq->regparam[ssdata->reglayer][i].shiftx);
-		shifty = roundf_to_int(args->seq->regparam[ssdata->reglayer][i].shifty);
+		shiftx = roundf_to_int(args->seq->regparam[ssdata->reglayer][i].shiftx * args->seq->upscale_at_stacking);
+		shifty = roundf_to_int(args->seq->regparam[ssdata->reglayer][i].shifty * args->seq->upscale_at_stacking);
 	} else {
 		shiftx = 0;
 		shifty = 0;

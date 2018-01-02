@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2017 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2018 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -456,42 +456,39 @@ int process_crop(int nb){
 	return 0;
 }
 
-int process_cd(int nb){
+int process_cd(int nb) {
 	char filename[256];
-	int retval, i;
-	
-	strncpy(filename, word[1], 250);
-	filename[250] = '\0';
-	
-	for (i=1; i<nb-1; ++i){
-		strcat(filename, " ");
-		strcat(filename, word[i+1]);
-	}
-	
+	int retval;
+
+	g_strlcpy(filename, word[1], 250);
+
 	expand_home_in_filename(filename, 256);
-	if (!(retval=changedir(filename)))
+	retval = changedir(filename, NULL);
+	if (!retval) {
 		writeinitfile();
+	}
 	return retval;
 }
 
-int process_wrecons(int nb){
+int process_wrecons(int nb) {
 	int i;
 	float coef[7];
-	char *File_Name_Transform[3] = {"r_rawdata.wave", "g_rawdata.wave", "b_rawdata.wave"}, *dir[3];
+	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
+			"b_rawdata.wave" }, *dir[3];
 	const char *tmpdir;
 	int nb_chan = gfit.naxes[2];
-	
+
 	assert(nb_chan == 1 || nb_chan == 3);
-		
- 	tmpdir = g_get_tmp_dir();
- 	
-	for (i=0;i<nb-1;++i){
-		coef[i] = atof(word[i+1]);
+
+	tmpdir = g_get_tmp_dir();
+
+	for (i = 0; i < nb - 1; ++i) {
+		coef[i] = atof(word[i + 1]);
 	}
 
-	for (i=0; i < nb_chan; i++) {
+	for (i = 0; i < nb_chan; i++) {
 		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
-		wavelet_reconstruct_file (dir[i], coef, gfit.pdata[i]);
+		wavelet_reconstruct_file(dir[i], coef, gfit.pdata[i]);
 		g_free(dir[i]);
 	}
 
@@ -561,7 +558,7 @@ int process_ls(int nb){
 			if (word[1][0] == G_DIR_SEPARATOR || word[1][0] == '~') {
 				char filename[256];
 				
-				strncpy(filename, word[1], 250);
+				g_strlcpy(filename, word[1], 250);
 				filename[250] = '\0';
 				expand_home_in_filename(filename, 256);
 				path = g_build_filename(filename, NULL);
@@ -583,7 +580,7 @@ int process_ls(int nb){
 			siril_log_message(_("Cannot list files, set working directory first.\n"));
 			return 1;
 		}
-		path = strdup(com.wd);
+		path = g_strdup(com.wd);
 	}
 	if (path == NULL) {
 		siril_log_message(_("Siril cannot open the directory.\n"));
@@ -610,7 +607,7 @@ int process_ls(int nb){
 
 		filename = g_build_filename(path, list[i]->d_name, NULL);
 
-		if (lstat(filename, &entrystat)) {
+		if (g_lstat(filename, &entrystat)) {
 			perror("stat");
 			g_free(filename);
 			break;

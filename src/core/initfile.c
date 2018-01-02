@@ -62,9 +62,9 @@ static int readinitfile() {
 
 	/* Working directory */
 	if (config_lookup_string(&config, keywords[WD], &dir)) {
-		if (changedir(dir)) {
-			siril_log_message(
-					_("Reverting current working directory to startup directory, the saved directory is not available anymore\n"));
+		if (changedir(dir, NULL)) {
+			siril_log_message(_("Reverting current working directory to startup directory, "
+					"the saved directory is not available anymore\n"));
 			set_GUI_CWD();
 			writeinitfile();
 		}
@@ -152,11 +152,11 @@ static int readinitfile() {
 	}
 	if (swap_dir && swap_dir[0] != '\0') {
 		if (com.swap_dir)
-			free(com.swap_dir);
-		com.swap_dir = strdup(swap_dir);
+			g_free(com.swap_dir);
+		com.swap_dir = g_strdup(swap_dir);
 	} else {
 		const char* sw_dir = g_get_tmp_dir();
-		com.swap_dir = strdup(sw_dir);
+		com.swap_dir = g_strdup(sw_dir);
 	}
 	if (extension && extension[0] != '\0') {
 		if (com.ext)
@@ -336,27 +336,6 @@ int writeinitfile() {
 	return 0;
 }
 
-#ifdef WIN32
-/* stolen from gimp which in turn stole from glib 2.35 */
-static gchar * get_special_folder(int csidl) {
-	wchar_t path[MAX_PATH + 1];
-	HRESULT hr;
-	LPITEMIDLIST pidl = NULL;
-	BOOL b;
-	gchar *retval = NULL;
-
-	hr = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
-	if (hr == S_OK) {
-		b = SHGetPathFromIDListW(pidl, path);
-		if (b)
-			retval = g_utf16_to_utf8(path, -1, NULL, NULL, NULL);
-		CoTaskMemFree(pidl);
-	}
-
-	return retval;
-}
-#endif
-
 int checkinitfile() {
 	char *home;
 	struct stat sts;
@@ -414,18 +393,14 @@ int checkinitfile() {
 #else
 		snprintf(filename, 255, "%s/.siril", home);
 #endif
-		if (stat(filename, &sts) != 0) {
+		if (g_stat(filename, &sts) != 0) {
 			if (errno == ENOENT) {
-#ifdef WIN32
-				if (_mkdir(filename)) {
-#else
-				if (mkdir(filename, 0755)) {
-#endif
+				if (g_mkdir(filename, 0755)) {
 					fprintf(stderr, "Could not create dir %s, please check\n",
 							filename);
 					return 1;
 				}
-				com.swap_dir = strdup(g_get_tmp_dir());
+				com.swap_dir = g_strdup(g_get_tmp_dir());
 				com.ext = strdup(".fit");
 				return (writeinitfile());
 			}
@@ -438,7 +413,7 @@ int checkinitfile() {
 			return 1;
 		}
 
-		com.swap_dir = strdup(g_get_tmp_dir());
+		com.swap_dir = g_strdup(g_get_tmp_dir());
 		com.ext = strdup(".fit");
 		return (writeinitfile());
 	}

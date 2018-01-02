@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2017 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2018 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -47,6 +47,8 @@
 #include "io/ser.h"
 #include "sum.h"
 #include "opencv/opencv.h"
+
+#define TMP_UPSCALED_PREFIX "tmp_upscaled_"
 
 #undef STACK_DEBUG
 
@@ -424,7 +426,11 @@ int stack_median(struct stacking_args *args) {
 				retval = -1;
 
 			if (retval) {
-				siril_log_message(_("Error reading one of the image areas\n"));
+#ifdef _OPENMP
+				int tid = omp_get_thread_num();
+				if (tid == 0)
+#endif
+					siril_log_message(_("Error reading one of the image areas\n"));
 				break;
 			}
 		}
@@ -621,8 +627,8 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 		/* load registration data for current image */
 		if(reglayer != -1 && args->seq->regparam[reglayer]) {
-			shiftx = roundf_to_int(args->seq->regparam[reglayer][j].shiftx);
-			shifty = roundf_to_int(args->seq->regparam[reglayer][j].shifty);
+			shiftx = roundf_to_int(args->seq->regparam[reglayer][j].shiftx * args->seq->upscale_at_stacking);
+			shifty = roundf_to_int(args->seq->regparam[reglayer][j].shifty * args->seq->upscale_at_stacking);
 		} else {
 			shiftx = 0;
 			shifty = 0;
@@ -1100,7 +1106,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 			 * of the original area is read, the rest is filled with zeros. The x
 			 * shift is managed in the main loop after the read. */
 			if (reglayer != -1 && args->seq->regparam[reglayer]) {
-				shifty = args->seq->regparam[reglayer][args->image_indices[frame]].shifty;
+				shifty = args->seq->regparam[reglayer][args->image_indices[frame]].shifty * args->seq->upscale_at_stacking;
 				if (area.y + area.h - 1 + shifty < 0 || area.y + shifty >= naxes[1]) {
 					// entirely outside image below or above: all black pixels
 					clear = TRUE; readdata = FALSE;
@@ -1136,7 +1142,11 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 					retval = -1;
 
 				if (retval) {
-					siril_log_message(_("Error reading one of the image areas\n"));
+#ifdef _OPENMP
+					int tid = omp_get_thread_num();
+					if (tid == 0)
+#endif
+						siril_log_message(_("Error reading one of the image areas\n"));
 					break;
 				}
 			}
@@ -1175,7 +1185,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				for (frame = 0; frame < nb_frames; ++frame) {
 					int shiftx = 0;
 					if (reglayer != -1 && args->seq->regparam[reglayer]) {
-						shiftx = args->seq->regparam[reglayer][args->image_indices[frame]].shiftx;
+						shiftx = args->seq->regparam[reglayer][args->image_indices[frame]].shiftx * args->seq->upscale_at_stacking;
 					}
 					if (shiftx && (x - shiftx >= naxes[0] || x - shiftx < 0)) {
 						/* outside bounds, images are black. We could
@@ -1580,6 +1590,41 @@ static void _show_bgnoise(gpointer p) {
 	start_in_new_thread(noise, args);
 }
 
+static void remove_tmp_drizzle_files(struct stacking_args *args) {
+	if (args->seq->upscale_at_stacking < 1.05)
+		return;
+
+	gchar *basename = g_path_get_basename(args->seq->seqname);
+	/* we ensure we will remove the right tmp files,
+	 * that should be ok but double check doesn't hurt */
+	if (!g_str_has_prefix(basename, TMP_UPSCALED_PREFIX)) {
+		return;
+	}
+
+	int i;
+	char filename[256];
+	gchar *seqname = malloc(strlen(basename) + 5);
+	g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
+	/* remove seq file */
+	g_unlink(seqname);
+
+	g_free(seqname);
+	g_free(basename);
+
+	switch (args->seq->type) {
+	default:
+	case SEQ_REGULAR:
+		for (i = 0; i < args->seq->number; i++) {
+			fit_sequence_get_image_filename(args->seq, args->image_indices[i], filename, TRUE);
+			g_unlink(filename);
+		}
+		break;
+	case SEQ_SER:
+		g_unlink(args->seq->ser_file->filename);
+		break;
+	}
+}
+
 static gboolean end_stacking(gpointer p) {
 	struct timeval t_end;
 	struct stacking_args *args = (struct stacking_args *)p;
@@ -1610,10 +1655,10 @@ static gboolean end_stacking(gpointer p) {
 		/* save stacking result */
 		if (args->output_filename != NULL && args->output_filename[0] != '\0') {
 			struct stat st;
-			if (!stat(args->output_filename, &st)) {
+			if (!g_stat(args->output_filename, &st)) {
 				int failed = !args->output_overwrite;
 				if (!failed) {
-					if (unlink(args->output_filename) == -1)
+					if (g_unlink(args->output_filename) == -1)
 						failed = 1;
 					if (!failed && savefits(args->output_filename, &gfit))
 						failed = 1;
@@ -1630,6 +1675,9 @@ static gboolean end_stacking(gpointer p) {
 			}
 			display_filename();
 		}
+		/* remove tmp files if exist (Drizzle) */
+		remove_tmp_drizzle_files(args);
+
 		initialize_display_mode();
 
 		adjust_cutoff_from_updated_gfit();
@@ -1822,7 +1870,8 @@ void stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
 			j++;
 		}
 		else if (i == ref_image) {
-			siril_log_color_message(_("The reference image is not in the selected set of images. To avoid issues, please change it or change the filtering parameters."), "red");
+			siril_log_color_message(_("The reference image is not in the selected set of images. "
+					"To avoid issues, please change it or change the filtering parameters.\n"), "red");
 		}
 	}
 	g_assert(j <= args->nb_images_to_stack);
@@ -2073,9 +2122,8 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		return 0;
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	struct upscale_args *upargs = malloc(sizeof(struct upscale_args));
-	double factor = stackargs->seq->upscale_at_stacking;
 
-	upargs->factor = factor;
+	upargs->factor = stackargs->seq->upscale_at_stacking;
 
 	args->seq = stackargs->seq;
 	args->partial_image = FALSE;
@@ -2090,28 +2138,24 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	args->stop_on_error = TRUE;
 	args->description = _("Up-scaling sequence for stacking");
 	args->has_output = TRUE;
-	args->new_seq_prefix = "tmp_upscaled_";
+	args->new_seq_prefix = TMP_UPSCALED_PREFIX;
 	args->load_new_sequence = FALSE;
 	args->force_ser_output = FALSE;
 	args->user = upargs;
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
 
-	/* TODO: we should remove files from a previously up-scaled sequence, in case
-	 * the filtering has changed, because the sequence used for stacking is built
-	 * from the automatic way that will take all images in the directory */
 	gchar *basename = g_path_get_basename(args->seq->seqname);
 	char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
 	sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
-	unlink(seqname);
-	// TODO: for i to seq->number, unlink(imagename)
+	g_unlink(seqname);
+	g_free(basename);
 
 	generic_sequence_worker(args);
 	int retval = args->retval;
 	free(upargs);
 
 	if (!retval) {
-		int i;
 		// replace active sequence by upscaled
 		if (check_seq(0)) {	// builds the new .seq
 			free(seqname);
@@ -2132,18 +2176,17 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		 * - the number of images is managed below, to avoid up-scaling
 		 *   unnecessary images, only the selected are and the sequence
 		 *   passed to stacking is treated in its entirety.
-		 * - the shifts between images that must be multiplied by factor
+		 * - the shifts between images that must be multiplied by upscale_at_stacking
 		 */
 		seq_check_basic_data(newseq, FALSE);
 		stackargs->seq = newseq;
 		stackargs->filtering_criterion = seq_filter_all;
+		stackargs->filtering_parameter = 0.0;
 		stackargs->nb_images_to_stack = newseq->number;
-		/* we multiply regparam by the upscale factor value */
+		stack_fill_list_of_unfiltered_images(stackargs);
+
 		stackargs->seq->regparam[stackargs->reglayer] = args->seq->regparam[stackargs->reglayer];
-		for (i = 0; i < stackargs->seq->number; i++) {
-			stackargs->seq->regparam[stackargs->reglayer][i].shiftx *= factor;
-			stackargs->seq->regparam[stackargs->reglayer][i].shifty *= factor;
-		}
+		stackargs->seq->upscale_at_stacking = args->seq->upscale_at_stacking;
 	}
 	free(seqname);
 	free(args);

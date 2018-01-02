@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 m4_define([siril_major_version], [0])
 m4_define([siril_minor_version], [9])
 m4_define([siril_micro_version], [8])
-m4_define([siril_prerelease_version], [beta4])
+m4_define([siril_prerelease_version], [rc1])
 m4_define([siril_version],
           [siril_major_version.siril_minor_version.siril_micro_version])
 m4_define([siril_version_full],
@@ -51,6 +51,10 @@ dnl Set PACKAGE_SOURCE_DIR in config.h.
 packagesrcdir=`cd $srcdir && pwd`
 AC_DEFINE_UNQUOTED(PACKAGE_SOURCE_DIR, "${packagesrcdir}", [Package source dir])
 
+# Checks for header files.
+AC_CHECK_HEADERS([sys/vfs.h sys/vmount.h sys/statfs.h sys/statvfs.h sys/filio.h])
+
+
 dnl Set PACKAGE_DOC_DIR in config.h.
 dnl AC_DEFINE_UNQUOTED(PACKAGE_DOC_DIR, "${ac_default_prefix}/share/doc/${PACKAGE}", "package doc dir")
 
@@ -76,8 +80,8 @@ dnl check cfitsio
 PKG_CHECK_MODULES(CFITSIO, [cfitsio])
 
 dnl check libconfig
-PKG_CHECK_MODULES([LIBCONFIGXX], [libconfig++ >= 1.4],,
-	AC_MSG_ERROR([libconfig++ 1.4 or newer not found.]))
+PKG_CHECK_MODULES([LIBCONFIG], [libconfig >= 1.4],,
+	AC_MSG_ERROR([libconfig 1.4 or newer not found.]))
 	
 dnl check opencv
 AC_PROG_CXX
@@ -246,11 +250,12 @@ if test "$os_osx" = "yes"; then
 fi
 
 if test `uname` != "Darwin"; then
-  if (test "$platform_win32" = "yes" || test "os_win32" = "yes" ) ; then
-    LDFLAGS="$LDFLAGS -Wl,--export-all-symbols -mwindows"
-  else
-	LDFLAGS="$LDFLAGS -rdynamic"
-  fi
+	if (test "$platform_win32" = "yes" || test "os_win32" = "yes" ) ; then
+		LDFLAGS="$LDFLAGS -Wl,--export-all-symbols -mwindows"
+		AC_SUBST(EXTRA_LIBS,'-lpsapi')
+	else
+		LDFLAGS="$LDFLAGS -rdynamic"
+	fi
 fi
 
 AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in])

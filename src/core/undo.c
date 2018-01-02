@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2017 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2018 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -72,7 +72,7 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 
 static int undo_remove_item(historic *histo, int index) {
 	if (histo[index].filename) {
-		unlink(histo[index].filename);
+		g_unlink(histo[index].filename);
 		g_free(histo[index].filename);
 		histo[index].filename = NULL;
 	}
@@ -118,7 +118,7 @@ static int undo_get_data(fits *fit, historic hist) {
 	unsigned int size;
 	WORD *buf;
 
-	if ((fd = open(hist.filename, O_RDONLY | O_BINARY)) == -1) {
+	if ((fd = g_open(hist.filename, O_RDONLY | O_BINARY, 0)) == -1) {
 		printf("Error opening swap file : %s\n", hist.filename);
 		return 1;
 	}

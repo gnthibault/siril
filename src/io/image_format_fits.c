@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2017 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2018 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -672,7 +672,7 @@ int savefits(const char *name, fits *f) {
 		snprintf(filename, 255, "%s", name);
 	}
 
-	unlink(filename); /* Delete old file if it already exists */
+	g_unlink(filename); /* Delete old file if it already exists */
 
 	status = 0;
 	if (fits_create_diskfile(&(f->fptr), filename, &status)) { /* create new FITS file */

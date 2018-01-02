@@ -107,7 +107,8 @@ int	is_readable_file(const char *filename);
 int	stat_file(const char *filename2, image_type *type, char **realname);
 const char *get_filename_ext(const char *filename);
 
-int	changedir(const char *dir);
+gchar *siril_get_startup_dir();
+int	changedir(const char *dir, gchar **err);
 int	update_sequences_list(const char *sequence_name_to_select);
 void	update_used_memory();
 int	get_available_memory_in_MB();
@@ -126,6 +127,7 @@ double	encodeJD(dateTime dt);
 #ifdef WIN32
 int ListDirectoryContents(const char *sDir);
 int ListSequences(const char *sDir, const char *sequence_name_to_select, GtkComboBoxText *seqcombo, int *index_of_seq_to_load);
+gchar * get_special_folder(int csidl);
 #endif
 
 /****************** quantize.h ***************/

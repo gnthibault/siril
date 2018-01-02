@@ -5,6 +5,7 @@
 #include "io/sequence.h"
 #include "core/proto.h"
 #include "gui/progress_and_log.h"
+#include "gui/callbacks.h"
 
 static int compute_normalization(struct stacking_args *args);
 
@@ -83,7 +84,8 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 }
 
 static int compute_normalization(struct stacking_args *args) {
-	int i, ref_image, ref_image_filtred_idx = -1, retval = 0, cur_nb = 1;
+	int i, ref_image, ref_image_filtred_idx = -1, retval = 0,
+			cur_nb = 1;
 	double scale0, mul0, offset0;	// for reference frame
 	char *tmpmsg;
 	norm_coeff *coeff = &args->coeff;
@@ -108,7 +110,13 @@ static int compute_normalization(struct stacking_args *args) {
 			ref_image_filtred_idx = i;
 			break;
 		}
-	g_assert(ref_image_filtred_idx != -1);
+	if (ref_image_filtred_idx == -1) {
+		char *msg = siril_log_color_message(_("The reference image is not in the selected set of images. "
+				"Please choose another reference image.\n"), "red");
+		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		siril_log_color_message(_("Normalisation skipped.\n"), "red");
+		return 1;
+	}
 
 	/* We empty the cache if needed (force to recompute) */
 	if (args->force_norm)

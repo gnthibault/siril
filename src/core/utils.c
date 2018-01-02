@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2017 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2018 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -31,11 +31,8 @@
 #ifdef WIN32
 #include <windows.h>
 #include <psapi.h>
-#include <direct.h>
-#define __changeDir__ _chdir
 #else
 #include <sys/resource.h>
-#define __changeDir__ chdir
 #endif
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <sys/param.h>		// define or not BSD macro
@@ -60,6 +57,18 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "io/single_image.h"
+
+#ifdef HAVE_SYS_STATVFS_H
+#include <sys/statvfs.h>
+#endif
+#if HAVE_SYS_VFS_H
+#include <sys/vfs.h>
+#elif HAVE_SYS_MOUNT_H
+#if HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+#include <sys/mount.h>
+#endif
 
 int round_to_int(double x) {
 	if (x <= INT_MIN + 0.5) return INT_MIN;
@@ -148,7 +157,7 @@ const char *get_filename_ext(const char *filename) {
 // Return value is 1 if file is readable (not actually opened to verify)
 int is_readable_file(const char *filename) {
 	struct stat sts;
-	if (stat(filename, &sts))
+	if (g_stat(filename, &sts))
 		return 0;
 	if (S_ISREG (sts.st_mode)
 #ifndef WIN32
@@ -217,30 +226,87 @@ int stat_file(const char *filename, image_type *type, char **realname) {
 	return 1;
 }
 
-/* Try to change the CWD to the argument, absolute or relative.
- * If success, the new CWD is written to com.wd */
-int changedir(const char *dir) {
-	if (dir == NULL || dir[0] == '\0')
-		return 1;
-	if (!__changeDir__(dir)) {
+/** This function tries to set a startup file. It first looks at the "Pictures" directory,
+ *  then if it does not exist, the "Document" one, Finally, if it fails on some UNIX systems
+ *  the dir is set to the home directory.
+ *  @return startup_dir if success, NULL if error
+ */
 
-		/* do we need to search for sequences in the directory now? We still need to
-		 * press the check seq button to display the list, and this is also done there. */
-		/* check_seq();
-		 update_sequence_list();*/
-		if (com.wd)
-			g_free(com.wd);
+static GUserDirectory sdir[] = { G_USER_DIRECTORY_PICTURES,
+		G_USER_DIRECTORY_DOCUMENTS };
+gchar *siril_get_startup_dir() {
+	const gchar *dir = NULL;
+	gchar *startup_dir = NULL;
+	gint i = 0;
+	size_t size;
 
-		com.wd = g_get_current_dir();
+	size = sizeof(sdir) / sizeof(GUserDirectory);
 
-		siril_log_message(_("Setting CWD (Current Working Directory) to '%s'\n"),
-				com.wd);
-		set_GUI_CWD();
-
-		return 0;
+	while (dir == NULL && i < size) {
+		dir = g_get_user_special_dir(sdir[i]);
+		i++;
 	}
-	siril_log_message(_("Could not change directory to '%s'.\n"), dir);
-	return 1;
+#ifndef WIN32
+	/* Not every platform has a directory for these logical id */
+	if (dir == NULL) {
+		dir = g_getenv("HOME");
+	}
+#endif
+	if (dir)
+		startup_dir = g_strdup(dir);
+	return startup_dir;
+}
+
+/** Try to change the CWD to the argument, absolute or relative.
+ *  If success, the new CWD is written to com.wd
+ *  @param[in] dir absolute or relative path we want to set as cwd
+ *  @param[out] err error message when return value is different of 1. Can be NULL if message is not needed.
+ *  @return 0 if success, any other values for error
+ *
+ *  */
+int changedir(const char *dir, gchar **err) {
+	gchar *error;
+	int retval = 0;
+
+	if (dir == NULL || dir[0] == '\0') {
+		error = siril_log_message(_("Unknown error\n"));
+		retval = -1;
+	} else if (!g_file_test(dir, G_FILE_TEST_EXISTS)) {
+		error = siril_log_message(_("No such file or directory\n"));
+		retval = 2;
+	} else if (!g_file_test(dir, G_FILE_TEST_IS_DIR)) {
+		error = siril_log_message(_("\"%s\" is not a directory\n"), dir);
+		retval = 3;
+	} else if (g_access(dir, W_OK)) {
+		error = siril_log_color_message(_("You don't have permission "
+				"to write in this directory: %s\n"), "red", dir);
+		retval = 4;
+	} else {
+		if (!g_chdir(dir)) {
+
+			/* do we need to search for sequences in the directory now? We still need to
+			 * press the check seq button to display the list, and this is also done there. */
+			/* check_seq();
+			 update_sequence_list();*/
+			if (com.wd)
+				g_free(com.wd);
+			com.wd = g_get_current_dir();
+			siril_log_message(_("Setting CWD (Current "
+					"Working Directory) to '%s'\n"), com.wd);
+			error = NULL;
+			set_GUI_CWD();
+			update_used_memory();
+			retval = 0;
+		} else {
+			error = siril_log_message(_("Could not change "
+					"directory to '%s'.\n"), dir);
+			retval = 1;
+		}
+	}
+	if (err) {
+		*err = error;
+	}
+	return retval;
 }
 
 /* This method populates the sequence combo box with the sequences found in the CWD.
@@ -307,8 +373,59 @@ int update_sequences_list(const char *sequence_name_to_select) {
 	return 0;
 }
 
-void update_used_memory() {
+/* Find the space remaining in a directory, in bytes. A double for >32bit
+ * problem avoidance. <0 for error.
+ */
+#ifdef HAVE_SYS_STATVFS_H
+static double find_space(const char *name) {
+	struct statvfs st;
+	double sz;
+
+	if (statvfs (name, &st))
+		/* Set to error value.
+		 */
+		sz = -1;
+	else
+		sz = (double) st.f_frsize * st.f_bavail;
+
+	return (sz);
+}
+#elif (HAVE_SYS_VFS_H || HAVE_SYS_MOUNT_H)
+static double find_space(const char *name) {
+	struct statfs st;
+	double sz;
+
+	if (statfs (name, &st))
+		sz = -1;
+	else
+		sz = (double) st.f_bsize * st.f_bavail;
+
+	return (sz);
+}
+#elif defined WIN32
+static double find_space(const char *name) {
+	ULARGE_INTEGER avail;
+	double sz;
+
+	gchar *localdir = g_path_get_dirname(name);
+	wchar_t *wdirname = g_utf8_to_utf16(localdir, -1, NULL, NULL, NULL);
+	g_free(localdir);
+
+	if (!GetDiskFreeSpaceExW(wdirname, &avail, NULL, NULL))
+		sz = -1;
+	else
+		sz = (double) avail.QuadPart;
+
+	return (sz);
+}
+#else
+static double find_space(const char *name) {
+	return (-1);
+}
+#endif /*HAVE_SYS_STATVFS_H*/
+
 #if defined(__linux__)
+static unsigned long update_used_RAM_memory() {
 	unsigned long size, resident, share, text, lib, data, dt;
 	static int page_size_in_k = 0;
 	const char* statm_path = "/proc/self/statm";
@@ -319,41 +436,60 @@ void update_used_memory() {
 	}
 	if (!f) {
 		perror(statm_path);
-		return;
+		return 0UL;
 	}
 	if (7 != fscanf(f, "%lu %lu %lu %lu %lu %lu %lu",
 			&size, &resident, &share, &text, &lib, &data, &dt)) {
 		perror(statm_path);
 		fclose(f);
-		return;
+		return 0UL;
 	}
 	fclose(f);
-	set_GUI_MEM(resident * page_size_in_k);
+	return (resident * page_size_in_k);
+}
 #elif (defined(__APPLE__) && defined(__MACH__))
+static unsigned long update_used_RAM_memory() {
 	struct task_basic_info t_info;
 
 	mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 	task_info(current_task(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count);
-	set_GUI_MEM((unsigned long) t_info.resident_size / 1024UL);
+	return ((unsigned long) t_info.resident_size / 1024UL);
+}
 #elif defined(BSD) /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD). In fact, it could work with linux */
+static unsigned long update_used_RAM_memory() {
 	struct rusage usage;
 
 	getrusage(RUSAGE_SELF, &usage);
-	set_GUI_MEM((unsigned long) usage.ru_maxrss);
+	return ((unsigned long) usage.ru_maxrss);
+}
 #elif defined(WIN32) /* Windows */
+static unsigned long update_used_RAM_memory() {
     PROCESS_MEMORY_COUNTERS memCounter;
     
 	if (GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter)))
-        set_GUI_MEM(memCounter.WorkingSetSize / 1024);
+        return (memCounter.WorkingSetSize / 1024UL);
+	return 0UL;
+}
 #else
-	set_GUI_MEM((unsigned long) 0);
+static unsigned long update_used_RAM_memory() {
+	return 0UL;
+}
 #endif
+
+void update_used_memory() {
+	unsigned long ram;
+	double freeDisk;
+
+	ram = update_used_RAM_memory();
+	freeDisk = find_space(com.wd);
+	/* update GUI */
+	set_GUI_MEM(ram);
+	set_GUI_DiskSpace(freeDisk);
 }
 
+#if defined(__linux__)
 int get_available_memory_in_MB() {
 	int mem = 2048; /* this is the default value if we can't retrieve any values */
-
-#if defined(__linux__)
 	FILE* fp = fopen("/proc/meminfo", "r");
 	if (fp != NULL) {
 		size_t bufsize = 1024 * sizeof(char);
@@ -370,7 +506,11 @@ int get_available_memory_in_MB() {
 		if (value != -1L)
 			mem = (int) (value / 1024L);
 	}
+	return mem;
+}
 #elif (defined(__APPLE__) && defined(__MACH__))
+int get_available_memory_in_MB() {
+	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	vm_size_t page_size;
 	mach_port_t mach_port;
 	mach_msg_type_number_t count;
@@ -388,7 +528,11 @@ int get_available_memory_in_MB() {
 
 		mem = (int) ((unused_memory) / (1024 * 1024));
 	}
+	return mem;
+}
 #elif defined(BSD) /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD). ----------- */
+int get_available_memory_in_MB() {
+	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	FILE* fp = fopen("/var/run/dmesg.boot", "r");
 	if (fp != NULL) {
 		size_t bufsize = 1024 * sizeof(char);
@@ -405,26 +549,23 @@ int get_available_memory_in_MB() {
 		if (value != -1L)
 			mem = (int) (value / 1024L);
 	}
+	return mem;
+}
 #elif defined(WIN32) /* Windows */
+int get_available_memory_in_MB() {
+	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	MEMORYSTATUSEX memStatusEx = {0};
 	memStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
 	const DWORD dwMBFactor = 1024 * 1024;
 	DWORDLONG dwTotalPhys = memStatusEx.ullTotalPhys / dwMBFactor;
 	if (dwTotalPhys > 0)
 		mem = (int) dwTotalPhys;
-#else
-	printf("Siril failed to get available free RAM memory\n");
-#endif
 	return mem;
 }
-
-#if 0
-/* returns true if the command theli is available */
-gboolean theli_is_available() {
-	int retval = system("theli > /dev/null");
-	if (WIFEXITED(retval))
-	return 0 == WEXITSTATUS(retval); // 0 if it's available, 127 if not
-	return FALSE;
+#else
+int get_available_memory_in_MB() {
+	printf("Siril failed to get available free RAM memory\n");
+	return 2048;
 }
 #endif
 
@@ -793,5 +934,24 @@ int ListSequences(const char *sDir, const char *sequence_name_to_select, GtkComb
 	FindClose(hFind);
 
 	return number_of_loaded_sequences;
+}
+
+/* stolen from gimp which in turn stole from glib 2.35 */
+gchar * get_special_folder(int csidl) {
+	wchar_t path[MAX_PATH + 1];
+	HRESULT hr;
+	LPITEMIDLIST pidl = NULL;
+	BOOL b;
+	gchar *retval = NULL;
+
+	hr = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
+	if (hr == S_OK) {
+		b = SHGetPathFromIDListW(pidl, path);
+		if (b)
+			retval = g_utf16_to_utf8(path, -1, NULL, NULL, NULL);
+		CoTaskMemFree(pidl);
+	}
+
+	return retval;
 }
 #endif

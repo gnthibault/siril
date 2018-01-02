@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2017 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2018 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -808,7 +808,7 @@ static void fill_convert_list(GSList *list) {
 		char *filename;
 
 		filename = (char *) list->data;
-		if (stat(filename, &st) == 0) {
+		if (g_stat(filename, &st) == 0) {
 			add_convert_to_list(filename, st);
 			list = list->next;
 		} else
@@ -1014,6 +1014,7 @@ static void opendial(void) {
 	if (res == GTK_RESPONSE_ACCEPT) {
 		GSList *list = NULL;
 		char *filename;
+		gchar *err;
 		GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
 		filename = gtk_file_chooser_get_filename(chooser);
 
@@ -1062,8 +1063,11 @@ static void opendial(void) {
 			break;
 
 		case OD_CWD:
-			if (!changedir(filename))
+			if (!changedir(filename, &err)) {
 				writeinitfile();
+			} else {
+				show_dialog(err, _("Error"), "gtk-dialog-error");
+			}
 			break;
 
 		case OD_OPEN:
@@ -1264,14 +1268,14 @@ static void update_fwhm_units_ok() {
 static void reset_swapdir() {
 	GtkFileChooser *swap_dir = GTK_FILE_CHOOSER(lookup_widget("filechooser_swap"));
 	GtkLabel *label = GTK_LABEL(lookup_widget("label_swap_dir"));
-	const char *dir;
+	const gchar *dir;
 
 	dir = g_get_tmp_dir();
 
-	if (strcmp(dir, com.swap_dir)) {
+	if (g_strcmp0(dir, com.swap_dir)) {
 		if (com.swap_dir)
-			free(com.swap_dir);
-		com.swap_dir = strdup(dir);
+			g_free(com.swap_dir);
+		com.swap_dir = g_strdup(dir);
 		gtk_file_chooser_set_filename(swap_dir, dir);
 		gtk_label_set_text(label, dir);
 		writeinitfile();
@@ -2499,6 +2503,21 @@ void set_GUI_MEM(unsigned long size) {
 	set_label_text_from_main_thread("labelmem", str);
 }
 
+void set_GUI_DiskSpace(double mem) {
+	gchar str[20];
+	const char *units[] = { "B", "k", "M", "G", "T", "P", "E", "Z", "Y" };
+	size_t i = 0;
+	if (mem != 0.0 && i < 9) {
+		while (mem >= 1000.0) {
+			mem = mem / 1024.0;
+			i++;
+		}
+		g_snprintf(str, sizeof(str), _("Disk Space: %.0lf%s"), mem, units[i]);
+	} else
+		g_snprintf(str, sizeof(str), _("Disk Space: N/A"));
+	set_label_text_from_main_thread("labelFreeSpace", str);
+}
+
 void initialize_preprocessing() {
 	GtkToggleButton *ToggleButton;
 
@@ -3131,13 +3150,20 @@ void on_checkbutton_multipliers_toggled(GtkToggleButton *button,
 void on_filechooser_swap_file_set(GtkFileChooserButton *fileChooser, gpointer user_data) {
 	GtkFileChooser *swap_dir = GTK_FILE_CHOOSER(fileChooser);
 	GtkLabel *label = GTK_LABEL(lookup_widget("label_swap_dir"));
-	char *dir;
+	gchar *dir;
 
 	dir = gtk_file_chooser_get_filename (swap_dir);
 
+	if (g_access (dir, W_OK)) {
+		gchar *msg = siril_log_color_message(_("You don't have permission to write in this directory: %s\n"), "red", dir);
+		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		gtk_file_chooser_set_filename(swap_dir, com.swap_dir);
+		return;
+	}
+
 	if (com.swap_dir)
-		free(com.swap_dir);
-	com.swap_dir = (char*) dir;
+		g_free(com.swap_dir);
+	com.swap_dir = dir;
 	gtk_label_set_text (label, com.swap_dir);
 	writeinitfile();
 }
@@ -3760,7 +3786,7 @@ gboolean on_main_window_key_press_event(GtkWidget *widget, GdkEventKey *event,
 }
 
 static const gchar* copyright = N_("Copyright © 2004-2011 François Meyer\n"
-		"Copyright © 2012-2017 team free-astro");
+		"Copyright © 2012-2018 team free-astro");
 
 static gchar **authors = (gchar *[] ) { "Vincent Hourdin <vh@free-astro.vinvin.tf>",
 				"Cyril Richard <cyril@free-astro.org>", "François Meyer", NULL };
