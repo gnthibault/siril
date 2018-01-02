@@ -145,7 +145,7 @@ BYTE conv_to_BYTE(double x) {
 
 /**
  * Test if fit has 3 channels
- * @param fit image
+ * @param fit input FITS image
  * @return TRUE if fit image has 3 channels
  */
 gboolean isrgb(fits *fit) {
@@ -190,7 +190,7 @@ int get_extension_index(const char *filename) {
 
 /**
  * Get the extension of a file, without the dot.
- * @param filename
+ * @param filename input filename
  * @return extension pointed from the filename itself or NULL
  */
 const char *get_filename_ext(const char *filename) {
@@ -532,6 +532,10 @@ static unsigned long update_used_RAM_memory() {
 }
 #endif
 
+/**
+ * Updates RAM memory used by siril, available free disk space
+ * and displays information on the control window.
+ */
 void update_used_memory() {
 	unsigned long ram;
 	double freeDisk;
@@ -543,6 +547,10 @@ void update_used_memory() {
 	set_GUI_DiskSpace(freeDisk);
 }
 
+/**
+ * Gets available memory for stacking process
+ * @return available memory in MB, 2048 if it fails.
+ */
 #if defined(__linux__)
 int get_available_memory_in_MB() {
 	int mem = 2048; /* this is the default value if we can't retrieve any values */
@@ -625,7 +633,11 @@ int get_available_memory_in_MB() {
 }
 #endif
 
-/* expands the ~ in filenames */
+/**
+ * Expands the ~ in filenames
+ * @param[in] filename input filename
+ * @param[in] size maximum size of the filename
+ */
 void expand_home_in_filename(char *filename, int size) {
 	if (filename[0] == '~' && filename[1] == '\0')
 		strcat(filename, G_DIR_SEPARATOR_S);
@@ -647,6 +659,12 @@ void expand_home_in_filename(char *filename, int size) {
 	}
 }
 
+/**
+ * Tries to get normalized value of a fit image. Make assumption that
+ * an image with no values greater than 2^8 comes from 8-bit images
+ * @param fit input FITS image
+ * @return 255 or 65535 if 8- or 16-bit image
+ */
 WORD get_normalized_value(fits *fit) {
 	image_find_minmax(fit, 0);
 	if (fit->maxi <= UCHAR_MAX)
@@ -654,8 +672,12 @@ WORD get_normalized_value(fits *fit) {
 	return USHRT_MAX;
 }
 
-/* This function reads a text file and displays it in the
- * show_data_dialog */
+/**
+ * This function reads a text file and displays it in the
+ * show_data_dialog
+ * @param path filename to display
+ * @param title text shown as dialog title
+ */
 void read_and_show_textfile(char *path, char *title) {
 	char line[64] = "";
 	char txt[1024] = "";
@@ -671,8 +693,12 @@ void read_and_show_textfile(char *path, char *title) {
 	fclose(f);
 }
 
-/* Exchange the two parameters of the function 
- * Usefull in Dynamic PSF (PSF.c) */
+/**
+ * Switch the two parameters of the function:
+ * Useful in Dynamic PSF (PSF.c)
+ * @param a first parameter to switch
+ * @param b second parameter to switch
+ */
 void swap_param(double *a, double *b) {
 	double tmp;
 	tmp = *a;
@@ -680,7 +706,11 @@ void swap_param(double *a, double *b) {
 	*b = tmp;
 }
 
-// in-place quick sort, of array a of size n
+/**
+ * In-place quick sort of array of double a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
 void quicksort_d(double *a, int n) {
 	if (n < 2)
 		return;
@@ -704,7 +734,11 @@ void quicksort_d(double *a, int n) {
 	quicksort_d(l, a + n - l);
 }
 
-// in-place quick sort, of array a of size n
+/**
+ * In-place quick sort of array of WORD a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
 void quicksort_s(WORD *a, int n) {
 	if (n < 2)
 		return;
@@ -728,6 +762,11 @@ void quicksort_s(WORD *a, int n) {
 	quicksort_s(l, a + n - l);
 }
 
+/**
+ * Removes extension of the filename
+ * @param filename file path with extension
+ * @return filename without extension
+ */
 char *remove_ext_from_filename(const char *filename) {
 	size_t filelen;
 	const char *p;
@@ -749,7 +788,12 @@ char *remove_ext_from_filename(const char *filename) {
 	return file;
 }
 
-// append a string to the end of an existing string
+/**
+ * append a string to the end of an existing string
+ * @param data original string
+ * @param newdata suffix to add
+ * @return a new string that should be freed when no longer needed
+ */
 char* str_append(char** data, const char* newdata) {
 	char* p;
 	int len = (*data ? strlen(*data) : 0);
@@ -763,8 +807,12 @@ char* str_append(char** data, const char* newdata) {
 	return *data;
 }
 
-/* cut a base name to 120 characters and add a trailing underscore if needed.
- * WARNING: may return a newly allocated string and free the argument */
+/**
+ * Cut a base name to 120 characters and add a trailing underscore if needed.
+ * WARNING: may return a newly allocated string and free the argument
+ * @param root the original base name
+ * @return a string ending with trailing underscore
+ */
 char *format_basename(char *root) {
 	int len = strlen(root);
 	if (len > 120) {
@@ -781,6 +829,12 @@ char *format_basename(char *root) {
 	return appended;
 }
 
+/**
+ * Computes slop using low and high values
+ * @param lo low value
+ * @param hi high value
+ * @return the computed slope
+ */
 float computePente(WORD *lo, WORD *hi) {
 	float pente;
 
@@ -809,6 +863,10 @@ static const gchar *checking_css_filename() {
 	}
 }
 
+/**
+ * Loads the css sheet
+ * @param path path of the file being loaded
+ */
 void load_css_style_sheet (char *path) {
 	GtkCssProvider *css_provider;
 	GdkDisplay *display;
@@ -840,8 +898,12 @@ void load_css_style_sheet (char *path) {
 	g_free(CSSFile);
 }
 
-/* code borrowed from muniwin
- * From a datetime it computes the Julian date needed in photometry */
+/**
+ * From a datetime it computes the Julian date needed in photometry
+ * (code borrowed from muniwin)
+ * @param dt timestamp in datetime format
+ * @return the Julian date
+ */
 double encodeJD(dateTime dt) {
 	double jd1;
 	int before, d1, d2;
