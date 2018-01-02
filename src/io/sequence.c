@@ -898,7 +898,7 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 	
 	if (seq == NULL) return;
 	if (seq->nb_layers > 0 && seq->regparam) {
-		for (i=0; i<seq->nb_layers; i++) {
+		for (i = 0; i < seq->nb_layers; i++) {
 			if (seq->regparam[i]) {
 				for (j = 0; j < seq->number; j++) {
 					if (seq->regparam[i][j].fwhm_data
@@ -1003,6 +1003,8 @@ gboolean sequence_is_loaded() {
 int sequence_find_refimage(sequence *seq) {
 	if (seq->reference_image != -1)
 		return seq->reference_image;
+	if (seq->type == SEQ_INTERNAL)
+		return 1; // green channel
 	int layer, image, best = -1;
 	for (layer = 0; layer < seq->nb_layers; layer++) {
 		if (seq->regparam[layer]) {
@@ -1075,7 +1077,7 @@ sequence *create_internal_sequence(int size) {
 	seq->type = SEQ_INTERNAL;
 	seq->number = size;
 	seq->selnum = size;
-	seq->nb_layers = 1;	
+	seq->nb_layers = 1;
 	seq->internal_fits = calloc(size, sizeof(fits *));
 	seq->seqname = strdup(_("internal sequence"));
 	seq->imgparam = calloc(size, sizeof(imgdata));
@@ -1084,8 +1086,8 @@ sequence *create_internal_sequence(int size) {
 		seq->imgparam[i].incl = 1;
 		seq->imgparam[i].stats = NULL;
 		seq->imgparam[i].date_obs = NULL;
-}
-check_or_allocate_regparam(seq, 0);
+	}
+	check_or_allocate_regparam(seq, 0);
 	return seq;
 }
 
