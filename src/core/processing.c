@@ -154,7 +154,12 @@ gpointer generic_sequence_worker(gpointer p) {
 			if (args->image_hook(args, input_idx, &fit, &area)) {
 				if (args->stop_on_error)
 					abort = 1;
-				else args->seq->imgparam[frame].incl = FALSE;
+				else {
+					args->seq->imgparam[frame].incl = FALSE;
+					if (args->nb_filtered_images > 0)
+						args->nb_filtered_images--;
+					args->seq->selnum--;
+				}
 				clearfits(&fit);
 				continue;
 			}
