@@ -539,6 +539,43 @@ int seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it) {
 	return 0;
 }
 
+/**
+ * Computes size of the sequence in B. If sequence is a SER or film file
+ * it returns the size of the file. If it is regular sequence, then
+ * the total of selected images times the size of the reference
+ * is returned
+ * @param seq input sequence
+ * @return the size of the sequence in B
+ */
+double seq_compute_size(sequence *seq) {
+	double size = -1.0;
+	char filename[256];
+	struct stat sts;
+	int ref;
+
+	switch(seq->type) {
+	case SEQ_SER:
+		size = (double) seq->ser_file->filesize;
+		break;
+	case SEQ_REGULAR:
+		ref = sequence_find_refimage(seq);
+		fit_sequence_get_image_filename(seq, ref, filename, TRUE);
+		if (g_stat(filename, &sts) == 0) {
+			size = (double) sts.st_size;
+			size *= (double) seq->selnum;
+		}
+		break;
+#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+	case SEQ_AVI:
+		if (g_stat(seq->film_file->filename, &sts) == 0) {
+			size = (double) sts.st_size;
+		}
+		break;
+#endif
+	}
+	return size;
+}
+
 /*****************************************************************************
  *              SEQUENCE FUNCTIONS FOR NON-OPENED SEQUENCES                  *
  * **************************************************************************/

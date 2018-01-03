@@ -548,6 +548,23 @@ void update_used_memory() {
 }
 
 /**
+ * Test if there is enough free disk space by returning the difference
+ * between available free disk space and the size given in parameters
+ * @param seq_size size to be tested
+ * @return a value greater than 0 if there is enough disk space, a value
+ * less than 0 otherwise. The function returns -1 if an error occurs.
+ */
+double test_available_space(double seq_size) {
+	double freeDisk;
+
+	freeDisk = find_space(com.wd);
+	if ((freeDisk < 0) || (seq_size < 0)) {
+		return -1;
+	}
+	return (freeDisk - seq_size);
+}
+
+/**
  * Gets available memory for stacking process
  * @return available memory in MB, 2048 if it fails.
  */

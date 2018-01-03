@@ -111,6 +111,7 @@ gchar *siril_get_startup_dir();
 int	changedir(const char *dir, gchar **err);
 int	update_sequences_list(const char *sequence_name_to_select);
 void	update_used_memory();
+double test_available_space(double seq_size);
 int	get_available_memory_in_MB();
 void	expand_home_in_filename(char *filename, int size);
 WORD	get_normalized_value(fits*);

@@ -1171,6 +1171,17 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->matchSelection = gtk_toggle_button_get_active(matchSel);
 	reg_args->translation_only = gtk_toggle_button_get_active(no_translate);
 	reg_args->x2upscale = gtk_toggle_button_get_active(x2upscale);
+	/* Here we should test available free disk space for Drizzle operation */
+	if (reg_args->x2upscale) {
+		double size = seq_compute_size(reg_args->seq);
+		double diff = test_available_space(size * 4.0); //FIXME: 4 is only ok for x2 Drizzle
+		if (diff < 0.0) {
+			msg = siril_log_message(_("Not enough disk space for Drizzle operation !!\n"));
+			show_dialog(msg, _("Error"), "gtk-dialog-error");
+			free(reg_args);
+			return;
+		}
+	}
 	/* getting the selected registration layer from the combo box. The value is the index
 	 * of the selected line, and they are in the same order than layers so there should be
 	 * an exact matching between the two */
