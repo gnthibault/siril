@@ -1231,10 +1231,12 @@ static gboolean end_register_idle(gpointer p) {
 				initialize_sequence(seq, FALSE);
 
 				/* we are not interested in the whole path */
+				gchar *seqname = g_path_get_basename (com.seq.seqname);
 				char *rseqname = malloc(
-						strlen(args->prefix) + strlen(seq->seqname) + 5);
+						strlen(args->prefix) + strlen(seqname) + 5);
 
-				sprintf(rseqname, "%s%s.seq", args->prefix, seq->seqname);
+				sprintf(rseqname, "%s%s.seq", args->prefix, seqname);
+				g_free(seqname);
 				g_unlink(rseqname);	// remove previous to overwrite
 				char *newname = remove_ext_from_filename(rseqname);
 				seq->seqname = newname;

@@ -1594,20 +1594,22 @@ static void remove_tmp_drizzle_files(struct stacking_args *args) {
 	if (args->seq->upscale_at_stacking < 1.05)
 		return;
 
+	gchar *basename = g_path_get_basename(args->seq->seqname);
 	/* we ensure we will remove the right tmp files,
 	 * that should be ok but double check doesn't hurt */
-	if (!g_str_has_prefix(args->seq->seqname, TMP_UPSCALED_PREFIX)) {
+	if (!g_str_has_prefix(basename, TMP_UPSCALED_PREFIX)) {
 		return;
 	}
 
 	int i;
 	char filename[256];
-	gchar *seqname = malloc(strlen(args->seq->seqname) + 5);
-	g_snprintf(seqname, strlen(args->seq->seqname) + 5, "%s.seq", args->seq->seqname);
+	gchar *seqname = malloc(strlen(basename) + 5);
+	g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
 	/* remove seq file */
 	g_unlink(seqname);
 
 	g_free(seqname);
+	g_free(basename);
 
 	switch (args->seq->type) {
 	default:
@@ -2143,9 +2145,11 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
 
-	char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(args->seq->seqname) + 5);
-	sprintf(seqname, "%s%s.seq", args->new_seq_prefix, args->seq->seqname);
+	gchar *basename = g_path_get_basename(args->seq->seqname);
+	char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
+	sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
 	g_unlink(seqname);
+	g_free(basename);
 
 	generic_sequence_worker(args);
 	int retval = args->retval;

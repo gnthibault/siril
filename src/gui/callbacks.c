@@ -2051,18 +2051,20 @@ void display_filename() {
 		nb_layers = com.seq.nb_layers;
 	}
 	fn_label = GTK_LABEL(gtk_builder_get_object(builder, "labelfilename_red"));
-	g_snprintf(str, sizeof(str), _("%s (channel 0)"), filename);
+	gchar *name = g_path_get_basename(filename);
+	g_snprintf(str, sizeof(str), _("%s (channel 0)"), name);
 	gtk_label_set_text(fn_label, str);
 	if (nb_layers == 3) {	//take in charge both sequence and single image
 		fn_label = GTK_LABEL(
 				gtk_builder_get_object(builder, "labelfilename_green"));
-		g_snprintf(str, sizeof(str), _("%s (channel 1)"), filename);
+		g_snprintf(str, sizeof(str), _("%s (channel 1)"), name);
 		gtk_label_set_text(fn_label, str);
 		fn_label = GTK_LABEL(
 				gtk_builder_get_object(builder, "labelfilename_blue"));
-		g_snprintf(str, sizeof(str), _("%s (channel 2)"), filename);
+		g_snprintf(str, sizeof(str), _("%s (channel 2)"), name);
 		gtk_label_set_text(fn_label, str);
 	}
+	g_free(name);
 }
 
 /* set available layers in the layer list of registration */
