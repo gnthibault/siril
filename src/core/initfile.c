@@ -358,7 +358,7 @@ static gchar *get_special_folder(int csidl) {
 #endif
 
 int checkinitfile() {
-	char *home;
+	gchar *home = NULL;
 	struct stat sts;
 
 	// try to read the file given on command line
@@ -376,18 +376,20 @@ int checkinitfile() {
 		fprintf( stderr, "Failed to create homefolder %s!\n", com.initfile );
 	}
 #else
-	if ((home = getenv("HOME")) == NULL) {
+	const gchar *tmp = g_get_home_dir();
+	if (tmp == NULL) {
 		fprintf(stderr,
 				"Could not get the environment variable $HOME, no config file.\n");
 		return 1;
 	}
+	home = g_strdup(tmp);
 #endif
 
 #if (defined(__APPLE__) && defined(__MACH__))
 	fprintf(stderr, "Creating initfile in Application Support.\n");
 	gchar *homefolder;
-	homefolder = g_build_filename(getenv("HOME"),
-			"Library/Application Support/siril", NULL);
+	homefolder = g_build_filename(g_get_home_dir(),
+			"Library", "Application Support", "siril", NULL);
 	if (g_mkdir_with_parents(homefolder, 0755) == 0) {
 		com.initfile = g_build_filename(homefolder, CFG_FILE, NULL);
 		fprintf(stderr, "The initfile name is %s.\n", com.initfile);
@@ -414,6 +416,7 @@ int checkinitfile() {
 #else
 		snprintf(filename, 255, "%s/.siril", home);
 #endif
+		g_free(home);
 		if (g_stat(filename, &sts) != 0) {
 			if (errno == ENOENT) {
 				if (g_mkdir(filename, 0755)) {

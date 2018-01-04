@@ -660,7 +660,7 @@ void expand_home_in_filename(char *filename, int size) {
 	if (len < 2)
 		return;		// not very necessary now with the first line
 	if (filename[0] == '~' && filename[1] == G_DIR_SEPARATOR) {
-		char *homepath = getenv("HOME");
+		const gchar *homepath = g_get_home_dir();
 		int j, homelen = strlen(homepath);
 		if (len + homelen > size - 1) {
 			siril_log_message(_("Filename is too long, not expanding it\n"));
