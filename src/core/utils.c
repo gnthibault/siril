@@ -298,12 +298,10 @@ gchar *siril_get_startup_dir() {
 		dir = g_get_user_special_dir(sdir[i]);
 		i++;
 	}
-#ifndef WIN32
 	/* Not every platform has a directory for these logical id */
 	if (dir == NULL) {
-		dir = g_getenv("HOME");
+		dir = g_get_home_dir();
 	}
-#endif
 	if (dir)
 		startup_dir = g_strdup(dir);
 	return startup_dir;
