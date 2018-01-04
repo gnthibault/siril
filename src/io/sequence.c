@@ -208,7 +208,7 @@ int check_seq(int force) {
 			new_seq = calloc(1, sizeof(sequence));
 			initialize_sequence(new_seq, TRUE);
 			int len = strlen(ext);
-			new_seq->seqname = g_strndup(file->d_name, fnlen-(len+1));
+			new_seq->seqname = g_strndup(file->d_name, fnlen - (len + 1));
 			new_seq->beg = 0;
 			new_seq->end = film_file->frame_count-1;
 			new_seq->number = film_file->frame_count;
@@ -556,6 +556,18 @@ double seq_compute_size(sequence *seq) {
 	switch(seq->type) {
 	case SEQ_SER:
 		size = (double) seq->ser_file->filesize;
+		/* don't forget we can demosaiced on the fly in
+		 * the case of a new ser is created. We should test
+		 * how many channels are displayed on screen if
+		 * there is a Bayer pattern */
+		switch (seq->ser_file->color_id) {
+		case SER_BAYER_BGGR:
+		case SER_BAYER_GBRG:
+		case SER_BAYER_GRBG:
+		case SER_BAYER_RGGB:
+			size *= seq->nb_layers;
+			break;
+		}
 		break;
 	case SEQ_REGULAR:
 		ref = sequence_find_refimage(seq);

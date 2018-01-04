@@ -1176,7 +1176,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 		double size = seq_compute_size(reg_args->seq);
 		double diff = test_available_space(size * 4.0); //FIXME: 4 is only ok for x2 Drizzle
 		if (diff < 0.0) {
-			msg = siril_log_message(_("Not enough disk space for Drizzle operation !!\n"));
+			msg = siril_log_message(_("Not enough disk space to perform Drizzle operation !!\n"));
 			show_dialog(msg, _("Error"), "gtk-dialog-error");
 			free(reg_args);
 			return;
