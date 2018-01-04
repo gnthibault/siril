@@ -188,7 +188,7 @@ int check_seq(int force) {
 				continue;
 			new_seq = calloc(1, sizeof(sequence));
 			initialize_sequence(new_seq, TRUE);
-			new_seq->seqname = g_strndup(file->d_name, fnlen-4);
+			new_seq->seqname = g_path_get_basename(file->d_name);
 			new_seq->beg = 0;
 			new_seq->end = ser_file->frame_count-1;
 			new_seq->number = ser_file->frame_count;
@@ -208,7 +208,7 @@ int check_seq(int force) {
 			new_seq = calloc(1, sizeof(sequence));
 			initialize_sequence(new_seq, TRUE);
 			int len = strlen(ext);
-			new_seq->seqname = g_strndup(file->d_name, fnlen - (len + 1));
+			new_seq->seqname = g_path_get_basename(file->d_name);
 			new_seq->beg = 0;
 			new_seq->end = film_file->frame_count-1;
 			new_seq->number = film_file->frame_count;
@@ -302,7 +302,6 @@ int check_only_one_film_seq(char* name) {
 		return 1;
 	}
 
-	int fnlen = strlen(name);
 	const char *ext = get_filename_ext(name);
 
 	if (!strcasecmp(ext, "ser")) {
@@ -315,7 +314,7 @@ int check_only_one_film_seq(char* name) {
 
 		new_seq = calloc(1, sizeof(sequence));
 		initialize_sequence(new_seq, TRUE);
-		new_seq->seqname = g_strndup(name, fnlen-4);
+		new_seq->seqname = g_path_get_basename(name);
 		new_seq->beg = 0;
 		new_seq->end = ser_file->frame_count-1;
 		new_seq->number = ser_file->frame_count;
@@ -332,8 +331,7 @@ int check_only_one_film_seq(char* name) {
 		}
 		new_seq = calloc(1, sizeof(sequence));
 		initialize_sequence(new_seq, TRUE);
-		int len = strlen(ext);
-		new_seq->seqname = g_strndup(name, fnlen-len-1);
+		new_seq->seqname = g_path_get_basename(name);
 		new_seq->beg = 0;
 		new_seq->end = film_file->frame_count-1;
 		new_seq->number = film_file->frame_count;
@@ -409,7 +407,6 @@ static void free_cbbt_layers() {
 /* load a sequence and initializes everything that relates */
 int set_seq(const char *name){
 	sequence *seq;
-	char *basename;
 	
 	if ((seq = readseqfile(name)) == NULL) {
 		fprintf(stderr, "could not load sequence %s\n", name);
@@ -433,10 +430,8 @@ int set_seq(const char *name){
 		seq->current = image_to_load;
 	}
 
-	basename = g_path_get_basename(seq->seqname);
-	siril_log_message(_("Sequence loaded: %s (%d->%d)\n"), basename, seq->beg,
+	siril_log_message(_("Sequence loaded: %s (%d->%d)\n"), seq->seqname, seq->beg,
 			seq->end);
-	g_free(basename);
 
 	free_cbbt_layers();
 	/* Sequence is stored in com.seq for now */

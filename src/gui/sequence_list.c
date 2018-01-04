@@ -77,7 +77,6 @@ void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 	static GtkTreeSelection *selection = NULL;
 	GtkTreeIter iter;
 	char imname[256];
-	char *basename;
 	int shiftx = -1, shifty = -1;
 	double fwhm = -1.0;
 
@@ -98,10 +97,10 @@ void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 			fwhm = seq->regparam[layer][index].quality;
 	}
 
-	basename = g_path_get_basename(seq_get_image_filename(seq, index, imname));
+	seq_get_image_filename(seq, index, imname);
 	gtk_list_store_append (list_store, &iter);
 	gtk_list_store_set (list_store, &iter,
-			COLUMN_IMNAME, basename,
+			COLUMN_IMNAME, imname,
 			COLUMN_SHIFTX, shiftx,
 			COLUMN_SHIFTY, shifty,
 			COLUMN_SELECTED, seq->imgparam[index].incl,
@@ -117,7 +116,6 @@ void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 	if (index == seq->current) {
 		gtk_tree_selection_select_iter(selection, &iter);
 	}
-	g_free(basename);
 }
 
 struct _seq_list {

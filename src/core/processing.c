@@ -226,13 +226,11 @@ gboolean end_generic_sequence(gpointer p) {
 
 	if (args->has_output && args->load_new_sequence &&
 			args->new_seq_prefix && !args->retval) {
-		gchar *basename = g_path_get_basename(args->seq->seqname);
-		char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
-		sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
+		char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(args->seq->seqname) + 5);
+		sprintf(seqname, "%s%s.seq", args->new_seq_prefix, args->seq->seqname);
 		check_seq(0);
 		update_sequences_list(seqname);
 		free(seqname);
-		g_free(basename);
 	}
 	
 	return end_generic(p);
