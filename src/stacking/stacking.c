@@ -2156,6 +2156,8 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	free(upargs);
 
 	if (!retval) {
+		int i;
+
 		// replace active sequence by upscaled
 		if (check_seq(0)) {	// builds the new .seq
 			free(seqname);
@@ -2183,9 +2185,14 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		stackargs->filtering_criterion = seq_filter_all;
 		stackargs->filtering_parameter = 0.0;
 		stackargs->nb_images_to_stack = newseq->number;
+
+		stackargs->seq->regparam[stackargs->reglayer] = malloc(stackargs->nb_images_to_stack * sizeof(regdata));
+		for (i = 0; i < stackargs->nb_images_to_stack; i++) {
+			regdata *data = &args->seq->regparam[stackargs->reglayer][stackargs->image_indices[i]];
+			memcpy(&stackargs->seq->regparam[stackargs->reglayer][i], data, sizeof(regdata));
+		}
 		stack_fill_list_of_unfiltered_images(stackargs);
 
-		stackargs->seq->regparam[stackargs->reglayer] = args->seq->regparam[stackargs->reglayer];
 		stackargs->seq->upscale_at_stacking = args->seq->upscale_at_stacking;
 	}
 	free(seqname);
