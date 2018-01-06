@@ -1693,10 +1693,12 @@ void update_MenuItem() {
 	gboolean any_RGB_image_is_loaded;		/* Some RGB data are loaded. Single image or Sequence */
 
 	is_a_singleRGB_image_loaded = isrgb(&gfit) && (!sequence_is_loaded()
-			|| (sequence_is_loaded() && com.seq.current == RESULT_IMAGE));
+			|| (sequence_is_loaded() && (com.seq.current == RESULT_IMAGE
+					|| com.seq.current == SCALED_IMAGE)));
 
 	is_a_single_image_loaded = single_image_is_loaded()	&& (!sequence_is_loaded()
-			|| (sequence_is_loaded() && com.seq.current == RESULT_IMAGE));
+			|| (sequence_is_loaded() && (com.seq.current == RESULT_IMAGE
+					|| com.seq.current == SCALED_IMAGE)));
 
 	any_image_is_loaded = single_image_is_loaded() || sequence_is_loaded();
 
