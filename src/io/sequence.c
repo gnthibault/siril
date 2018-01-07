@@ -156,8 +156,9 @@ int read_single_sequence(char *realname, int imagetype) {
 int check_seq(int force) {
 	char *basename;
 	int curidx, fixed;
-	DIR *dir;
-	struct dirent *file;
+	GDir *dir;
+	GError *error = NULL;
+	const gchar *file;
 	sequence **sequences;
 	int i, nb_seq = 0, max_seq = 10;
 
@@ -165,8 +166,8 @@ int check_seq(int force) {
 		siril_log_message(_("Current working directory is not set, aborting.\n"));
 		return 1;
 	}
-	if ((dir = opendir(com.wd)) == NULL) {
-		fprintf(stderr, "working directory cannot be opened.\n");
+	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL) {
+		fprintf (stderr, "check_seq: %s\n", error->message);
 		free(com.wd);
 		com.wd = NULL;
 		return 1;
@@ -175,20 +176,20 @@ int check_seq(int force) {
 	sequences = malloc(sizeof(sequence *) * max_seq);
 	set_progress_bar_data(NULL, PROGRESS_PULSATE);
 
-	while ((file = readdir(dir)) != NULL) {
+	while ((file = g_dir_read_name(dir)) != NULL) {
 		sequence *new_seq;
-		int fnlen = strlen(file->d_name);
+		int fnlen = strlen(file);
 		if (fnlen < 4) continue;
-		const char *ext = get_filename_ext(file->d_name);
+		const char *ext = get_filename_ext(file);
 		if (!ext) continue;
 		if (!strcasecmp(ext, "ser")) {
 			struct ser_struct *ser_file = malloc(sizeof(struct ser_struct));
 			ser_init_struct(ser_file);
-			if (ser_open_file(file->d_name, ser_file))
+			if (ser_open_file((char *)file, ser_file))
 				continue;
 			new_seq = calloc(1, sizeof(sequence));
 			initialize_sequence(new_seq, TRUE);
-			new_seq->seqname = g_strndup(file->d_name, fnlen-4);
+			new_seq->seqname = g_strndup(file, fnlen-4);
 			new_seq->beg = 0;
 			new_seq->end = ser_file->frame_count-1;
 			new_seq->number = ser_file->frame_count;
@@ -201,14 +202,14 @@ int check_seq(int force) {
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 		else if (!check_for_film_extensions(ext)) {
 			struct film_struct *film_file = malloc(sizeof(struct film_struct));
-			if (film_open_file(file->d_name, film_file)) {
+			if (film_open_file(file, film_file)) {
 				free(film_file);
 				continue;
 			}
 			new_seq = calloc(1, sizeof(sequence));
 			initialize_sequence(new_seq, TRUE);
 			int len = strlen(ext);
-			new_seq->seqname = g_strndup(file->d_name, fnlen - (len + 1));
+			new_seq->seqname = g_strndup(file, fnlen - (len + 1));
 			new_seq->beg = 0;
 			new_seq->end = film_file->frame_count-1;
 			new_seq->number = film_file->frame_count;
@@ -221,7 +222,7 @@ int check_seq(int force) {
 #endif
 
 		else if (!strcasecmp(ext, com.ext+1)) {
-			if (!get_index_and_basename(file->d_name, &basename, &curidx, &fixed)) {
+			if (!get_index_and_basename(file, &basename, &curidx, &fixed)) {
 				int current_seq = -1;
 				/* search in known sequences if we already have it */
 				for (i=0; i<nb_seq; i++) {
@@ -264,7 +265,7 @@ int check_seq(int force) {
 		}
 	}
 	set_progress_bar_data(NULL, PROGRESS_DONE);
-	closedir(dir);
+	g_dir_close(dir);
 	if (nb_seq > 0) {
 		int retval = 1;
 		for (i=0; i<nb_seq; i++) {
@@ -288,15 +289,16 @@ int check_seq(int force) {
  * Returns 0 if OK */
 int check_only_one_film_seq(char* name) {
 	int retval = 1;
-	DIR *dir;
+	GDir *dir;
+	GError *error = NULL;
 	sequence *new_seq = NULL;
 
 	if (!com.wd) {
 		siril_log_message(_("Current working directory is not set, aborting.\n"));
 		return 1;
 	}
-	if ((dir = opendir(com.wd)) == NULL) {
-		fprintf(stderr, "working directory cannot be opened.\n");
+	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL) {
+		fprintf (stderr, "check_only_one_film_seq: %s\n", error->message);
 		free(com.wd);
 		com.wd = NULL;
 		return 1;
@@ -309,7 +311,7 @@ int check_only_one_film_seq(char* name) {
 		struct ser_struct *ser_file = malloc(sizeof(struct ser_struct));
 		ser_init_struct(ser_file);
 		if (ser_open_file(name, ser_file)) {
-			closedir(dir);
+			g_dir_close(dir);
 			return 1;
 		}
 
@@ -327,7 +329,7 @@ int check_only_one_film_seq(char* name) {
 		struct film_struct *film_file = malloc(sizeof(struct film_struct));
 		if (film_open_file(name, film_file)) {
 			free(film_file);
-			closedir(dir);
+			g_dir_close(dir);
 			return 1;
 		}
 		new_seq = calloc(1, sizeof(sequence));
@@ -342,7 +344,7 @@ int check_only_one_film_seq(char* name) {
 		fprintf(stdout, "Found a AVI sequence\n");
 	}
 #endif
-	closedir(dir);
+	g_dir_close(dir);
 	if (!new_seq) return 0;
 	if (new_seq->beg != new_seq->end) {
 		if (!buildseqfile(new_seq, 0) && retval)

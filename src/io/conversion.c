@@ -458,7 +458,7 @@ int count_selected_files() {
 
 struct _convert_data {
 	struct timeval t_start;
-	DIR *dir;
+	GDir *dir;
 	GList *list;
 	int start;
 	int total;
@@ -467,7 +467,8 @@ struct _convert_data {
 };
 
 void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
-	DIR *dir;
+	GDir *dir;
+	GError *error = NULL;
 	gchar *file_data, *file_date;
 	const gchar *indice;
 	static GtkTreeView *tree_convert = NULL;
@@ -521,9 +522,10 @@ void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 		set_cursor_waiting(FALSE);
 		return;
 	}
-	if((dir = opendir(com.wd)) == NULL){
+	if((dir = g_dir_open(com.wd, 0, &error)) == NULL){
 		tmpmsg = siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
 		show_dialog(tmpmsg, _("Error"), "gtk-dialog-error");
+		fprintf (stderr, "Conversion: %s\n", error->message);
 		set_cursor_waiting(FALSE);
 		return ;
 	}
@@ -716,6 +718,7 @@ static gboolean end_convert_idle(gpointer p) {
 	show_time(args->t_start, t_end);
 	stop_processing_thread();
 	g_list_free_full(args->list, g_free);
+	g_dir_close(args->dir);
 	free(args);
 	return FALSE;
 }

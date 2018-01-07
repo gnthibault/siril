@@ -1432,25 +1432,27 @@ struct _stackall_data {
 };
 
 gpointer stackall_worker(gpointer garg) {
-	DIR *dir;
-	struct dirent *file;
+	GDir *dir;
+	GError *error = NULL;
+	const gchar *file;
 	int number_of_loaded_sequences = 0, retval = 0;
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
 	control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
-	if (check_seq(0) || (dir = opendir(com.wd)) == NULL) {
+	if (check_seq(0) || (dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
+		fprintf (stderr, "stackall: %s\n", error->message);
 		com.wd[0] = '\0';
 		gdk_threads_add_idle(end_generic, NULL);
 		return NULL;
 	}
 	siril_log_message(_("Starting stacking of found sequences...\n"));
-	while ((file = readdir(dir)) != NULL) {
+	while ((file = g_dir_read_name(dir)) != NULL) {
 		char *suf;
 
-		if ((suf = strstr(file->d_name, ".seq")) && strlen(suf) == 4) {
-			sequence *seq = readseqfile(file->d_name);
+		if ((suf = strstr(file, ".seq")) && strlen(suf) == 4) {
+			sequence *seq = readseqfile(file);
 			if (seq != NULL) {
 				char filename[256];
 				struct stacking_args args;
@@ -1496,7 +1498,7 @@ gpointer stackall_worker(gpointer garg) {
 			}
 		}
 	}
-	closedir(dir);
+	g_dir_close(dir);
 	free(arg);
 	siril_log_message(_("Stacked %d sequences successfully.\n"), number_of_loaded_sequences);
 	gdk_threads_add_idle(end_generic, NULL);
