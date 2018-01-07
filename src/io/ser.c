@@ -668,16 +668,21 @@ void ser_init_struct(struct ser_struct *ser_file) {
 	memset(ser_file, 0, sizeof(struct ser_struct));
 }
 
-/* frame number starts at 0 */
+/* reads a frame on an already opened SER sequence.
+ * frame number starts at 0 */
 int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
-	int retval, i, j, swap = 0;
+	int retval = 0, i, j, swap = 0;
 	int64_t offset, frame_size;
+	size_t read_size;
 	WORD *olddata, *tmp;
 	if (!ser_file || ser_file->fd <= 0 || !ser_file->number_of_planes ||
 			!fit || frame_no < 0 || frame_no >= ser_file->frame_count)
 		return -1;
-	frame_size = ser_file->image_width * ser_file->image_height
-			* ser_file->number_of_planes;
+
+	frame_size = ser_file->image_width * ser_file->image_height *
+			ser_file->number_of_planes;
+	read_size = frame_size * ser_file->byte_pixel_depth;
+
 	olddata = fit->data;
 	if ((fit->data = realloc(fit->data, frame_size * sizeof(WORD))) == NULL) {
 		fprintf(stderr, "ser_read: error realloc %s %ld\n", ser_file->filename,
@@ -695,16 +700,16 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	omp_set_lock(&ser_file->fd_lock);
 #endif
 	if ((int64_t)-1 == lseek64(ser_file->fd, offset, SEEK_SET)) {
-#ifdef _OPENMP
-		omp_unset_lock(&ser_file->fd_lock);
-#endif
-		return -1;
+		perror("lseek in SER");
+		retval = -1;
+	} else {
+		if (read(ser_file->fd, fit->data, read_size) != read_size)
+			retval = -1;
 	}
-	retval = read(ser_file->fd, fit->data, frame_size * ser_file->byte_pixel_depth);
 #ifdef _OPENMP
 	omp_unset_lock(&ser_file->fd_lock);
 #endif
-	if (retval != frame_size * ser_file->byte_pixel_depth)
+	if (retval)
 		return -1;
 
 	ser_manage_endianess_and_depth(ser_file, fit->data, frame_size);
@@ -799,53 +804,135 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	return 0;
 }
 
+/* multi-type cropping, works in constant space if needed */
+#define crop_area_from_lines(BUFFER_TYPE) { \
+	int x, y, src, dst = 0; \
+	BUFFER_TYPE *inbuf = (BUFFER_TYPE *)read_buffer; \
+	BUFFER_TYPE *out = (BUFFER_TYPE *)outbuf; \
+	for (y = 0; y < area->h; y++) { \
+		src = y * ser_file->image_width + area->x; \
+		for (x = 0; x < area->w; x++) \
+			out[dst++] = inbuf[src++]; \
+	} \
+}
+
+/* multi-type RGB reordering, works in constant space if needed */
+#define crop_area_from_color_lines(BUFFER_TYPE) { \
+	int x, y, src, dst = 0; \
+	BUFFER_TYPE *inbuf = (BUFFER_TYPE *)read_buffer; \
+	BUFFER_TYPE *out = (BUFFER_TYPE *)outbuf; \
+	int color_offset; \
+	if (ser_file->color_id == SER_BGR) { \
+		color_offset = 2 - layer; \
+	} else { \
+		color_offset = layer; \
+	} \
+	for (y = 0; y < area->h; y++) { \
+		src = (y * ser_file->image_width + area->x) * 3 + color_offset; \
+		for (x = 0; x < area->w; x++) { \
+			out[dst++] = inbuf[src]; \
+			src += 3; \
+		} \
+	} \
+}
+
+/* reading an area from a SER frame, for one layer only, either layer == -1 for
+ * monochrome and debayer, or 0-2 for color.
+ * the area is read in one read(2) call to limit the number of syscalls, for a
+ * full-width area of same height as requested, then cropped horizontally to
+ * get the requested area.
+ * This function is the first one of siril to handle two different data types
+ * (BYTE and WORD) for the same algorithm! This uses VIPS-style macros.
+ * */
+static int read_area_from_image(struct ser_struct *ser_file, const int frame_no,
+		WORD *outbuf, const rectangle *area, const int layer) {
+	int64_t offset, frame_size;
+	int retval = 0;
+	WORD *read_buffer;
+	size_t read_size = ser_file->image_width * area->h * ser_file->byte_pixel_depth;
+	if (layer != -1) read_size *= 3;
+	if (layer != -1 || area->w != ser_file->image_width) {
+		// allocated space is probably not enough to
+		// store whole lines or RGB data
+		read_buffer = malloc(read_size);
+	}
+	else read_buffer = outbuf;
+
+	frame_size = ser_file->image_width * ser_file->image_height *
+		ser_file->number_of_planes * ser_file->byte_pixel_depth;
+
+#ifdef _OPENMP
+	omp_set_lock(&ser_file->fd_lock);
+#endif
+	// we read the full-stride rectangle that contains the requested area
+	offset = SER_HEADER_LEN + frame_size * frame_no +	// requested frame
+		area->y * ser_file->image_width *
+		ser_file->byte_pixel_depth * (layer != -1 ? 3 : 1);	// requested area
+
+	if ((int64_t)-1 == lseek64(ser_file->fd, offset, SEEK_SET)) {
+		perror("lseek in SER");
+		retval = -1;
+	} else {
+		if (read(ser_file->fd, read_buffer, read_size) != read_size)
+			retval = -1;
+	}
+#ifdef _OPENMP
+	omp_unset_lock(&ser_file->fd_lock);
+#endif
+	if (!retval) {
+		if (area->w != ser_file->image_width) {
+			// here we crop x-wise our area
+			if (layer != -1) {
+				/* reorder the RGBRGB to RRGGBB and crop */
+				if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) {
+					crop_area_from_color_lines(BYTE);
+				} else if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_16) {
+					crop_area_from_color_lines(WORD);
+				}
+			} else {
+				/* just crop */
+				if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) {
+					crop_area_from_lines(BYTE);
+				} else if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_16) {
+					crop_area_from_lines(WORD);
+				}
+			}
+		} else if (layer != -1) {
+			/* just reorder RGB data, the crop function works too */
+			if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) {
+				crop_area_from_color_lines(BYTE);
+			} else if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_16) {
+				crop_area_from_color_lines(WORD);
+			}
+		}
+	}
+	if (layer != -1 || area->w != ser_file->image_width)
+		free(read_buffer);
+	return retval;
+}
+
 /* read an area of an image in an opened SER sequence */
 int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		int frame_no, WORD *buffer, const rectangle *area) {
-	int64_t offset, frame_size;
-	int read_size, retval, xoffset, yoffset, x, y;
-	int color_offset;
+	int xoffset, yoffset, x, y;
 	ser_color type_ser;
-	WORD *rawbuf, *demosaiced_buf, *rgb_buf;
+	WORD *rawbuf, *demosaiced_buf;
 	rectangle debayer_area, image_area;
 	sensor_pattern sensortmp;
 
 	if (!ser_file || ser_file->fd <= 0 || frame_no < 0
 			|| frame_no >= ser_file->frame_count)
 		return -1;
-	frame_size = ser_file->image_width * ser_file->image_height *
-		ser_file->number_of_planes * ser_file->byte_pixel_depth;
 
-	/* If the user checks the SER CFA box, the video is opened in B&W
-	 * RGB and BGR are not coming from raw data. In consequence CFA does
-	 * not exist for these kind of cam */
 	type_ser = ser_file->color_id;
-	if (!com.debayer.open_debayer && type_ser != SER_RGB && type_ser !=
-			SER_BGR)
+	if (!com.debayer.open_debayer &&
+			type_ser != SER_RGB && type_ser != SER_BGR)
 		type_ser = SER_MONO;
 
 	switch (type_ser) {
 	case SER_MONO:
-		offset = SER_HEADER_LEN + frame_size * frame_no +	// requested frame
-			(int64_t)(area->y * ser_file->image_width + area->x)
-						* ser_file->byte_pixel_depth;	// requested area
-#ifdef _OPENMP
-		omp_set_lock(&ser_file->fd_lock);
-#endif
-		if ((int64_t)-1 == lseek64(ser_file->fd, offset, SEEK_SET)) {
-#ifdef _OPENMP
-			omp_unset_lock(&ser_file->fd_lock);
-#endif
+		if (read_area_from_image(ser_file, frame_no, buffer, area, -1))
 			return -1;
-		}
-		read_size = area->w * area->h * ser_file->byte_pixel_depth;
-		retval = read(ser_file->fd, buffer, read_size);
-#ifdef _OPENMP
-		omp_unset_lock(&ser_file->fd_lock);
-#endif
-		if (retval != read_size)
-			return -1;
-
 		ser_manage_endianess_and_depth(ser_file, buffer, area->w * area->h);
 		break;
 
@@ -887,39 +974,14 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 			.w = ser_file->image_width, .h = ser_file->image_height };
 		get_debayer_area(area, &debayer_area, &image_area, &xoffset, &yoffset);
 
-		offset = SER_HEADER_LEN + frame_size * frame_no +	// requested frame
-				(debayer_area.y * ser_file->image_width + debayer_area.x)
-						* ser_file->byte_pixel_depth;	// requested area
-#ifdef _OPENMP
-		omp_set_lock(&ser_file->fd_lock);
-#endif
-		if ((int64_t) -1 == lseek64(ser_file->fd, offset, SEEK_SET)) {
-#ifdef _OPENMP
-			omp_unset_lock(&ser_file->fd_lock);
-#endif
-			return -1;
-		}
-
 		// allocating a buffer for WORD because it's going to be converted in-place
 		rawbuf = malloc(debayer_area.w * debayer_area.h * sizeof(WORD));
 		if (!rawbuf) {
-#ifdef _OPENMP
-			omp_unset_lock(&ser_file->fd_lock);
-#endif
 			siril_log_message(_("Out of memory - aborting\n"));
 			return -1;
 		}
-		read_size = debayer_area.w * debayer_area.h * ser_file->byte_pixel_depth;
-		retval = read(ser_file->fd, rawbuf, read_size);
-#ifdef _OPENMP
-		omp_unset_lock(&ser_file->fd_lock);
-#endif
-		if (retval != read_size) {
-			free(rawbuf);
-			perror("read");
+		if (read_area_from_image(ser_file, frame_no, rawbuf, &debayer_area, -1))
 			return -1;
-		}
-
 		ser_manage_endianess_and_depth(ser_file, rawbuf, debayer_area.w * debayer_area.h);
 
 		demosaiced_buf = debayer_buffer(rawbuf, &debayer_area.w,
@@ -943,56 +1005,13 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		free(demosaiced_buf);
 		com.debayer.bayer_pattern = sensortmp;
 		break;
+
 	case SER_BGR:
 	case SER_RGB:
 		assert(ser_file->number_of_planes == 3);
-
-		offset = SER_HEADER_LEN + frame_size * frame_no +	// requested frame
-			(area->y * ser_file->image_width + area->x) *
-			ser_file->byte_pixel_depth * 3;	// requested area
-#ifdef _OPENMP
-		omp_set_lock(&ser_file->fd_lock);
-#endif
-		if ((int64_t) -1 == lseek64(ser_file->fd, offset, SEEK_SET)) {
-#ifdef _OPENMP
-			omp_unset_lock(&ser_file->fd_lock);
-#endif
+		if (read_area_from_image(ser_file, frame_no, buffer, area, layer))
 			return -1;
-		}
-
-		read_size = area->w * area->h * ser_file->byte_pixel_depth * 3;
-		// allocating a buffer for WORD because it's going to be converted in-place
-		rgb_buf = malloc(area->w * area->h * 3 * sizeof(WORD));
-		if (!rgb_buf) {
-#ifdef _OPENMP
-			omp_unset_lock(&ser_file->fd_lock);
-#endif
-			siril_log_message(_("Out of memory - aborting\n"));
-			return -1;
-		}
-		retval = read(ser_file->fd, rgb_buf, read_size);
-#ifdef _OPENMP
-		omp_unset_lock(&ser_file->fd_lock);
-#endif
-		if (retval != read_size) {
-			free(rgb_buf);
-			perror("read");
-			return -1;
-		}
-
-		ser_manage_endianess_and_depth(ser_file, rgb_buf, area->w * area->h * 3);
-
-		color_offset = layer;
-		if (type_ser == SER_BGR) {
-			color_offset = 2 - layer;
-		}
-
-		for (y = 0; y < area->h; y++) {
-			for (x = 0; x < area->w; x++) {
-				buffer[y*area->w + x] = rgb_buf[y*area->w*3 + x*3 + color_offset]; 
-			}
-		}
-		free(rgb_buf);
+		ser_manage_endianess_and_depth(ser_file, buffer, area->w * area->h);
 		break;
 	default:
 		siril_log_message(_("This type of Bayer pattern is not handled yet.\n"));
@@ -1000,6 +1019,13 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 	}
 
 	return 0;
+}
+
+int ser_read_opened_partial_fits(struct ser_struct *ser_file, int layer,
+		int frame_no, fits *fit, const rectangle *area) {
+	if (new_fit_image(&fit, area->w, area->h, 1))
+		return -1;
+	return ser_read_opened_partial(ser_file, layer, frame_no, fit->pdata[0], area);
 }
 
 int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_no) {

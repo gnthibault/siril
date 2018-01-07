@@ -36,7 +36,7 @@ void	rgb48bit_to_fits48bit(WORD *rgbbuf, fits *fit, gboolean inverted, gboolean 
 
 void	fits_flip_top_to_bottom(fits *fit);
 void	extract_region_from_fits(fits *from, int layer, fits *to, const rectangle *area);
-int 	new_fit_image(fits *fit, int width, int height, int nblayer);
+int 	new_fit_image(fits **fit, int width, int height, int nblayer);
 void	keep_first_channel_from_fits(fits *fit);
 
 /****************** image_formats_internal.h ******************/

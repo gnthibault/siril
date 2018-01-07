@@ -1192,47 +1192,59 @@ void extract_region_from_fits(fits *from, int layer, fits *to,
 	to->bitpix = (from->bitpix ? from->bitpix : USHRT_MAX);
 }
 
-int new_fit_image(fits *fit, int width, int height, int nblayer) {
+/* creates a new fit image from scratch (NULL fit) or into a fits * previously
+ * allocated, with non-cleared (random) data. */
+int new_fit_image(fits **fit, int width, int height, int nblayer) {
 	gint npixels;
 	WORD *data;
 	assert(width > 0);
 	assert(height > 0);
-	assert(nblayer <= 3);
+	assert(nblayer == 1 || nblayer == 3);
 
 	npixels = width * height;
-	data = calloc(npixels, sizeof(WORD) * nblayer);
+	data = malloc(npixels * nblayer * sizeof(WORD));
 
-	if (data != NULL) {
-		clearfits(fit);
-		fit->bitpix = USHORT_IMG;
-		if (nblayer > 1)
-			fit->naxis = nblayer;
-		else
-			fit->naxis = 2;
-		fit->rx = width;
-		fit->ry = height;
-		fit->naxes[0] = width;
-		fit->naxes[1] = height;
-		fit->naxes[2] = nblayer;
-		fit->data = data;
-		fit->pdata[RLAYER] = fit->data;
-		if (nblayer > 1) {
-			fit->pdata[GLAYER] = fit->data + npixels;
-			fit->pdata[BLAYER] = fit->data + npixels * 2;
+	if (data == NULL) {
+		fprintf(stderr, "Could not allocate memory\n");
+		return -1;
+	}
+
+	if (*fit)
+		clearfits(*fit);
+	else {
+		*fit = calloc(1, sizeof(fits));
+		if (!*fit) {
+			free(data);
+			return -1;
 		}
-		else {
-			fit->pdata[GLAYER] = fit->data;
-			fit->pdata[BLAYER] = fit->data;
-		}
-		return 0;
-	} else
-		return 1;
+	}
+
+	(*fit)->bitpix = USHORT_IMG;
+	if (nblayer > 1)
+		(*fit)->naxis = 3;
+	else (*fit)->naxis = 2;
+	(*fit)->rx = width;
+	(*fit)->ry = height;
+	(*fit)->naxes[0] = width;
+	(*fit)->naxes[1] = height;
+	(*fit)->naxes[2] = nblayer;
+	(*fit)->data = data;
+	(*fit)->pdata[RLAYER] = (*fit)->data;
+	if (nblayer > 1) {
+		(*fit)->pdata[GLAYER] = (*fit)->data + npixels;
+		(*fit)->pdata[BLAYER] = (*fit)->data + npixels * 2;
+	}
+	else {
+		(*fit)->pdata[GLAYER] = (*fit)->data;
+		(*fit)->pdata[BLAYER] = (*fit)->data;
+	}
+	return 0;
 }
 
 void keep_first_channel_from_fits(fits *fit) {
 	if (fit->naxis == 1)
 		return;
-	fit->naxis = 1;
+	fit->naxis = 2;
 	fit->naxes[2] = 1;
 	fit->data = realloc(fit->data, fit->rx * fit->ry * sizeof(WORD));
 	fit->pdata[RLAYER] = fit->data;

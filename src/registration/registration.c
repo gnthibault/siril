@@ -180,15 +180,12 @@ int register_shift_dft(struct registration_args *args) {
 	float nb_frames, cur_nb;
 	int ref_image;
 	regdata *current_regdata;
-	rectangle full_area;	// the area to use after getting image_part
 	double q_max = 0, q_min = DBL_MAX;
 	int q_index = -1;
 
 	/* the selection needs to be squared for the DFT */
 	assert(args->selection.w == args->selection.h);
 	size = args->selection.w;
-	full_area.x = full_area.y = 0;
-	full_area.h = full_area.w = size;
 	sqsize = size * size;
 
 	if (args->process_all_frames)

@@ -213,7 +213,6 @@ int sub_background(fits* image, fits* background, int layer) {
 	median = (double) stat->median / USHRT_MAX_DOUBLE;
 	pxl_image = malloc(sizeof(double) * ndata);
 	pxl_bkg = malloc(sizeof(double) * ndata);
-	image_buf = image->pdata[layer];
 
 	for (i = 0; i < ndata; i++) {
 		pxl_image[i] = (double) image_buf[i] / USHRT_MAX_DOUBLE;
@@ -739,15 +738,16 @@ int lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb) {
 
 static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	double noise = 0;
-	fits *dark_tmp;
-	fits *fit_tmp;
+	fits *dark_tmp = NULL, *fit_tmp = NULL;
 	int chan;
 
-	dark_tmp = calloc(1, sizeof(fits));
-	fit_tmp = calloc(1, sizeof(fits));
-
-	new_fit_image(dark_tmp, dark->rx, dark->ry, 1);
-	new_fit_image(fit_tmp, fit->rx, fit->ry, 1);
+	if (new_fit_image(&dark_tmp, dark->rx, dark->ry, 1)) {
+		return -1.0;
+	}
+	if (new_fit_image(&fit_tmp, fit->rx, fit->ry, 1)) {
+		clearfits(dark_tmp);
+		return -1.0;
+	}
 
 	copyfits(dark, dark_tmp, CP_ALLOC | CP_EXTRACT, 0);
 	copyfits(fit, fit_tmp, CP_ALLOC | CP_EXTRACT, 0);
@@ -783,6 +783,8 @@ static double goldenSectionSearch(fits *brut, fits *dark, double a, double b,
 	do {
 		fc = evaluateNoiseOfCalibratedImage(brut, dark, c);
 		fd = evaluateNoiseOfCalibratedImage(brut, dark, d);
+		if (fc < 0.0 || fd < 0.0)
+			return -1.0;
 		if (fc < fd) {
 			b = d;
 			d = c;
@@ -818,13 +820,16 @@ static int darkOptimization(fits *brut, fits *dark, fits *offset) {
 	double k;
 	double lo = 0.0;
 	double up = 2.0;
+	fits *dark_tmp = NULL;
 
-	fits *dark_tmp = calloc(1, sizeof(fits));
-	new_fit_image(dark_tmp, dark->rx, dark->ry, 1);
+	if (new_fit_image(&dark_tmp, dark->rx, dark->ry, 1))
+		return -1;
 	copyfits(dark, dark_tmp, CP_ALLOC | CP_EXTRACT, 0);
 
 	/* Minimization of background noise to find better k */
 	k = goldenSectionSearch(brut, dark_tmp, lo, up, 1E-3);
+	if (k < 0.0)
+		return -1;
 
 	siril_log_message(_("Dark optimization: %.3lf\n"), k);
 	/* Multiply coefficient to master-dark */
@@ -1382,20 +1387,15 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 	int chan, row, i;
 	WORD *line, *fixline;
 	double minimum = DBL_MAX, globalsigma = 0.0;
-	fits *fiximage;
+	fits *fiximage = NULL;
 	double invsigma = 1.0 / sigma;
-
-	fiximage = calloc(1, sizeof(fits));
-	if (fiximage == NULL) {
-		fprintf(stderr, "BandingEngine: error allocating data\n");
-		return 1;
-	}
 
 	if (applyRotation) {
 		cvRotateImage(fit, 90.0, -1, OPENCV_LINEAR);
 	}
 
-	new_fit_image(fiximage, fit->rx, fit->ry, fit->naxes[2]);
+	if (new_fit_image(&fiximage, fit->rx, fit->ry, fit->naxes[2]))
+		return 1;
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
 		imstats *stat = statistics(fit, chan, NULL, STATS_BASIC | STATS_MAD, STATS_ZERO_NULLCHECK);

@@ -2745,7 +2745,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		}
 	}
 
-	if (sequence_is_loaded()) {
+	if (sequence_is_loaded() && com.seq.current >= 0) {
 		/* draw seqpsf stars */
 		for (i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++) {
 			cairo_set_dash(cr, NULL, 0, 0);

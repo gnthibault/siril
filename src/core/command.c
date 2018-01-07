@@ -965,7 +965,10 @@ int process_new(int nb){
 
 	close_single_image();
 
-	new_fit_image(&gfit, width, height, layers);
+	fits *fit = &gfit;
+	if (new_fit_image(&fit, width, height, layers))
+		return 1;
+	memset(gfit.data, 0, width*height*layers*sizeof(WORD));
 
 	open_single_image_from_gfit(strdup(_("new empty image")));
 	return 0;

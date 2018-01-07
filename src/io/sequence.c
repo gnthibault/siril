@@ -678,7 +678,6 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
 int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const rectangle *area, gboolean do_photometry) {
 	char filename[256];
 	fits tmp_fit;
-	memset(&tmp_fit, 0, sizeof(fits));
 	switch (seq->type) {
 		case SEQ_REGULAR:
 			fit_sequence_get_image_filename(seq, index, filename, TRUE);
@@ -690,18 +689,16 @@ int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const r
 			break;
 		case SEQ_SER:
 			assert(seq->ser_file);
-			/* TODO: build a FITS from ser_read_opened_partial() */
-			if (ser_read_frame(seq->ser_file, index, &tmp_fit)) {
+			if (ser_read_opened_partial_fits(seq->ser_file, layer, index, dest, area)) {
 				siril_log_message(_("Could not load frame %d from SER sequence %s\n"),
 						index, seq->seqname); 
 				return 1;
 			}
-			extract_region_from_fits(&tmp_fit, layer, dest, area);
-			clearfits(&tmp_fit);
 			break;
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 		case SEQ_AVI:
 			assert(seq->film_file);
+			memset(&tmp_fit, 0, sizeof(fits));
 			if (film_read_frame(seq->film_file, index, &tmp_fit)) {
 				siril_log_message(_("Could not load frame %d from AVI sequence %s\n"),
 						index, seq->seqname); 
@@ -1326,12 +1323,16 @@ int seqpsf_image_hook(struct generic_seq_args *args, int index, fits *fit, recta
 	data->psf = psf_get_minimisation(fit, 0, &psfarea, !spsfargs->for_registration);
 	if (data->psf) {
 		data->psf->xpos = data->psf->x0 + area->x;
-		data->psf->ypos = area->y + area->h - data->psf->y0;
+		// for Y, it's a bit special because FITS are upside-down
+		if (args->seq->type == SEQ_REGULAR)
+			data->psf->ypos = area->y + area->h - data->psf->y0;
+		else data->psf->ypos = data->psf->y0 + area->y;
 
 		/* let's move args->area to center it on the star */
 		if (spsfargs->framing == FOLLOW_STAR_FRAME) {
-			args->area.x = round_to_int(data->psf->xpos) - args->area.w/2;
-			args->area.y = round_to_int(data->psf->ypos) - args->area.h/2;
+			args->area.x = round_to_int(data->psf->xpos - args->area.w/2.0);
+			args->area.y = round_to_int(data->psf->ypos - args->area.h/2.0);
+			//fprintf(stdout, "moving area to %d, %d\n", args->area.x, args->area.y);
 		}
 
 		if (!args->seq->imgparam[index].date_obs && fit->date_obs[0] != '\0')
@@ -1339,8 +1340,15 @@ int seqpsf_image_hook(struct generic_seq_args *args, int index, fits *fit, recta
 		data->exposure = fit->exposure;
 	}
 	else {
-		siril_log_color_message(_("No star found in the area image %d around %d,%d\n"),
+		if (spsfargs->framing == FOLLOW_STAR_FRAME) {
+			siril_log_color_message(_("No star found in the area image %d around %d,%d"
+						" (use a larger area?)\n"),
+					"red", index, area->x, area->y);
+		} else {
+			siril_log_color_message(_("No star found in the area image %d around %d,%d"
+					" (use 'follow star' option?)\n"),
 				"red", index, area->x, area->y);
+		}
 	}
 
 #ifdef _OPENMP
@@ -1457,6 +1465,8 @@ int seqpsf(sequence *seq, int layer, gboolean for_registration,
 		siril_log_message(_("Select an area first\n"));
 		return 1;
 	}
+	if (framing == FOLLOW_STAR_FRAME)
+		siril_log_color_message(_("The sequence analysis of the PSF will use a sliding selection area centred on the previous found star; this disables parallel processing.\n"), "salmon");
 
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	struct seqpsf_args *spsfargs = malloc(sizeof(struct seqpsf_args));

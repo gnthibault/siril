@@ -72,7 +72,7 @@ gpointer generic_sequence_worker(gpointer p) {
 	 * done in parallel.
 	 * This is mandatory for SER contiguous output. */
 	if (args->filtering_criterion) {
-		index_mapping = malloc(args->nb_filtered_images * sizeof(int));
+		index_mapping = malloc(nb_frames * sizeof(int));
 		for (input_idx = 0, frame = 0; input_idx < args->seq->number; input_idx++) {
 			if (!args->filtering_criterion(args->seq, input_idx, args->filtering_parameter))
 				continue;
@@ -143,6 +143,9 @@ gpointer generic_sequence_worker(gpointer p) {
 					clearfits(&fit);
 					continue;
 				}
+				/*char tmpfn[100];	// this is for debug purposes
+				sprintf(tmpfn, "/tmp/partial_%d.fit", input_idx);
+				savefits(tmpfn, &fit);*/
 			} else {
 				if (seq_read_frame(args->seq, input_idx, &fit)) {
 					abort = 1;
