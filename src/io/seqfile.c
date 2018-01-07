@@ -223,7 +223,7 @@ sequence * readseqfile(const char *name){
 						int len_ext = strlen(supported_film[i].extension);
 						/* test for extension in lowercase */
 						strncpy(seqfilename + strlen(seqfilename)-3, supported_film[i].extension, len_ext);
-						if (access(seqfilename, F_OK) != -1) break;
+						if (g_access(seqfilename, F_OK) != -1) break;
 						else {
 							/* reinitialize seqfilename if no match: need to do it because of extensions with length of 4 */
 							strcpy(seqfilename, backup_name);
@@ -231,7 +231,7 @@ sequence * readseqfile(const char *name){
 							gchar *upcase = g_ascii_strup(supported_film[i].extension, len_ext);
 							strncpy(seqfilename + strlen(seqfilename) - 3, upcase,
 									len_ext);
-							if (access(seqfilename, F_OK) != -1) break;
+							if (g_access(seqfilename, F_OK) != -1) break;
 							/* reinitialize seqfilename if no match: need to do it because of extensions with length of 4 */
 							strcpy(seqfilename, backup_name);
 

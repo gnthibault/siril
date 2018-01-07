@@ -427,7 +427,7 @@ int update_sequences_list(const char *sequence_name_to_select) {
 /**
  * Find the space remaining in a directory, in bytes. A double for >32bit
  * problem avoidance. <0 for error.
- * @param name the path of the dorectory to be tested
+ * @param name the path of the directory to be tested
  * @return the disk space remaining in bytes, or a value less than 0 if error
  */
 #ifdef HAVE_SYS_STATVFS_H

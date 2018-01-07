@@ -1688,7 +1688,7 @@ int adjust_sellabel() {
 
 void update_MenuItem() {
 	gboolean is_a_single_image_loaded;		/* An image is loaded. Not a sequence or only the result of stacking process */
-	gboolean is_a_singleRGB_image_loaded;	/* A RGB image is laoded. Not a sequence or only the result of stacking process */
+	gboolean is_a_singleRGB_image_loaded;	/* A RGB image is loaded. Not a sequence or only the result of stacking process */
 	gboolean any_image_is_loaded;			/* Something is loaded. Single image or Sequence */
 	gboolean any_RGB_image_is_loaded;		/* Some RGB data are loaded. Single image or Sequence */
 

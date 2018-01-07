@@ -549,6 +549,8 @@ int seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it) {
  */
 double seq_compute_size(sequence *seq) {
 	double size = -1.0;
+	double frame_size = 0;
+	int nb_of_frame = 0;
 	char filename[256];
 	struct stat sts;
 	int ref;
@@ -556,6 +558,10 @@ double seq_compute_size(sequence *seq) {
 	switch(seq->type) {
 	case SEQ_SER:
 		size = (double) seq->ser_file->filesize;
+		/* We remove size of un-selected frames */
+		frame_size = (size - SER_HEADER_LEN) / seq->ser_file->frame_count; /* frame_size also contain trailer associated */
+		nb_of_frame = seq->ser_file->frame_count - seq->selnum;
+		size -= (nb_of_frame * frame_size);
 		/* don't forget we can demosaiced on the fly in
 		 * the case of a new ser is created. We should test
 		 * how many channels are displayed on screen if
@@ -581,6 +587,9 @@ double seq_compute_size(sequence *seq) {
 	case SEQ_AVI:
 		if (g_stat(seq->film_file->filename, &sts) == 0) {
 			size = (double) sts.st_size;
+			frame_size = size / seq->film_file->frame_count;
+			nb_of_frame = seq->ser_file->frame_count - seq->selnum;
+			size -= (nb_of_frame * frame_size);
 		}
 		break;
 #endif
