@@ -392,7 +392,7 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	if (selected == -1) return;
 
 	args = malloc(sizeof(struct exportseq_args));
-	args->basename = strdup(bname);
+	args->basename = g_str_to_ascii(bname, NULL);
 	args->seq = &com.seq;
 	exportNormalize = GTK_TOGGLE_BUTTON(lookup_widget("exportNormalize"));
 	args->normalize = gtk_toggle_button_get_active(exportNormalize);
