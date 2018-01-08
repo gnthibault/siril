@@ -53,6 +53,118 @@
 
 #ifdef HAVE_LIBTIFF
 
+static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
+	unsigned int npixels;
+	int  i, j, scanline, retval=nsamples;
+	WORD *buf;
+	uint32 rowsperstrip;
+	uint16 config;
+	unsigned long nrow, row;
+	char *msg;
+
+	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
+	TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
+
+	npixels = width * height;
+	*data = malloc(npixels * sizeof(WORD) * nsamples);
+	WORD *gbuf[3] = {*data, *data, *data};
+	if (nsamples == 4) {
+		msg = siril_log_message(_("Alpha channel is ignored.\n"));
+		show_dialog(msg, _("Warning"), "gtk-dialog-warning");
+	}
+	if ((nsamples == 3) || (nsamples == 4)) {
+		gbuf[1] = *data + npixels;
+		gbuf[2] = *data + npixels * 2;
+	}
+
+	scanline = TIFFScanlineSize(tif);
+	buf = _TIFFmalloc(TIFFStripSize(tif));
+	if (!buf) return -1;
+	for (row = 0; row < height; row += rowsperstrip){
+		nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
+		switch(config){
+			case PLANARCONFIG_CONTIG:
+				if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow*scanline) < 0){
+					msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
+					show_dialog(msg, _("Error"), "gtk-dialog-error");
+					retval = -1;
+					break;
+				}
+				for (i = 0; i < width*nrow; i++) {
+					*gbuf[RLAYER]++ = buf[i*nsamples+0];
+					if ((nsamples == 3) || (nsamples == 4)) {
+						*gbuf[GLAYER]++ = buf[i*nsamples+1];
+						*gbuf[BLAYER]++ = buf[i*nsamples+2];
+					}
+				}
+				break;
+			case PLANARCONFIG_SEPARATE:
+				if (nsamples >= 3)		//don't need to read the alpha
+					nsamples = 3;
+				for (j=0; j<nsamples; j++){	//loop on the layer
+					if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, j), buf, nrow*scanline) < 0){
+						msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
+						show_dialog(msg, _("Error"), "gtk-dialog-error");
+						retval = -1;
+						break;
+					}
+					for (i = 0; i < width*nrow; i++)
+						*gbuf[j]++ = buf[i];
+				}
+				break;
+			default:
+				msg = siril_log_message(_("Unknown TIFF file.\n"));
+				show_dialog(msg, _("Error"), "gtk-dialog-error");
+				retval = -1;
+		}
+	}
+	_TIFFfree(buf);
+	return retval;
+}
+
+static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
+	uint32 npixels;
+	int retval = nsamples;
+	char *msg;
+
+	npixels = width * height;
+	*data = malloc(npixels * sizeof(WORD) * nsamples);
+	WORD *gbuf[3] = {*data, *data, *data};
+	if (nsamples == 4) {
+		siril_log_message(_("Alpha channel is ignored.\n"));
+	}
+	if ((nsamples == 3) || (nsamples == 4)) {
+		gbuf[1] = *data + npixels;
+		gbuf[2] = *data + npixels * 2;
+	}
+
+	/* get the data */
+	uint32* raster = (uint32*)_TIFFmalloc(npixels*sizeof(uint32));
+	if (raster != NULL) {
+		if (TIFFReadRGBAImage(tif, width, height, raster, 0)) {
+			int i, j;
+			for (j = 0; j < height; j++) {
+				int istart = j * width;
+				for (i = 0; i < width; i++) {
+					*gbuf[RLAYER]++ = (WORD)TIFFGetR(raster[istart + i]);
+					if ((nsamples == 3) || (nsamples == 4)) {
+						*gbuf[GLAYER]++ = (WORD)TIFFGetG(raster[istart + i]);
+						*gbuf[BLAYER]++ = (WORD)TIFFGetB(raster[istart + i]);
+					}
+				}
+			}
+		}
+		else {
+			msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
+			show_dialog(msg, _("Error"), "gtk-dialog-error");
+			retval = -1;
+		}
+		_TIFFfree(raster);
+	}
+	else retval = -1;
+	return retval;
+}
+
 /* reads a TIFF file and stores it in the fits argument.
  * If file loading fails, the argument is untouched.
  */
@@ -68,6 +180,7 @@ int readtif(const char *name, fits *fit) {
 		siril_log_message(_("Could not open the TIFF file %s\n"), name);
 		return -1;
 	}
+
 	data = NULL;
 	
 	TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
@@ -132,117 +245,6 @@ int readtif(const char *name, fits *fit) {
 						nbits, basename, fit->naxes[2], fit->rx, fit->ry);
 	g_free(basename);
 
-	return retval;
-}
-
-int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
-	unsigned int npixels;
-	int  i, j, scanline, retval=nsamples;
-	WORD *buf;
-	uint32 rowsperstrip;
-	uint16 config;
-	unsigned long nrow, row;
-	char *msg;
-
-	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
-	TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
-	   
-	npixels = width * height;
-	*data = malloc(npixels * sizeof(WORD) * nsamples);
-	WORD *gbuf[3] = {*data, *data, *data};	
-	if (nsamples == 4) {
-		msg = siril_log_message(_("Alpha channel is ignored.\n"));
-		show_dialog(msg, _("Warning"), "gtk-dialog-warning");
-	}
-	if ((nsamples == 3) || (nsamples == 4)) {
-		gbuf[1] = *data + npixels;
-		gbuf[2] = *data + npixels * 2;
-	}
-
-	scanline = TIFFScanlineSize(tif);
-	buf = _TIFFmalloc(TIFFStripSize(tif));
-	if (!buf) return -1;
-	for (row = 0; row < height; row += rowsperstrip){
-		nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
-		switch(config){
-			case PLANARCONFIG_CONTIG:
-				if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow*scanline) < 0){
-					msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-					show_dialog(msg, _("Error"), "gtk-dialog-error");
-					retval = -1;
-					break;
-				}
-				for (i = 0; i < width*nrow; i++) {
-					*gbuf[RLAYER]++ = buf[i*nsamples+0];
-					if ((nsamples == 3) || (nsamples == 4)) {
-						*gbuf[GLAYER]++ = buf[i*nsamples+1];
-						*gbuf[BLAYER]++ = buf[i*nsamples+2];
-					}
-				}
-				break;
-			case PLANARCONFIG_SEPARATE:	
-				if (nsamples >= 3)		//don't need to read the alpha
-					nsamples = 3;
-				for (j=0; j<nsamples; j++){	//loop on the layer
-					if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, j), buf, nrow*scanline) < 0){
-						msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-						show_dialog(msg, _("Error"), "gtk-dialog-error");
-						retval = -1;
-						break;
-					}
-					for (i = 0; i < width*nrow; i++)
-						*gbuf[j]++ = buf[i];
-				}
-				break;
-			default:
-				msg = siril_log_message(_("Unknown TIFF file.\n"));
-				show_dialog(msg, _("Error"), "gtk-dialog-error");
-				retval = -1;
-		}
-	}
-	_TIFFfree(buf);
-	return retval;
-}
-int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
-	uint32 npixels;
-	int retval = nsamples;
-	char *msg;
-    
-	npixels = width * height;
-	*data = malloc(npixels * sizeof(WORD) * nsamples);
-	WORD *gbuf[3] = {*data, *data, *data};
-	if (nsamples == 4) {
-		siril_log_message(_("Alpha channel is ignored.\n"));
-	}
-	if ((nsamples == 3) || (nsamples == 4)) {
-		gbuf[1] = *data + npixels;
-		gbuf[2] = *data + npixels * 2;
-	}
-
-	/* get the data */
-	uint32* raster = (uint32*)_TIFFmalloc(npixels*sizeof(uint32));
-	if (raster != NULL) {
-		if (TIFFReadRGBAImage(tif, width, height, raster, 0)) {
-			int i, j;
-			for (j = 0; j < height; j++) {
-				int istart = j * width;
-				for (i = 0; i < width; i++) {
-					*gbuf[RLAYER]++ = (WORD)TIFFGetR(raster[istart + i]);
-					if ((nsamples == 3) || (nsamples == 4)) {
-						*gbuf[GLAYER]++ = (WORD)TIFFGetG(raster[istart + i]);
-						*gbuf[BLAYER]++ = (WORD)TIFFGetB(raster[istart + i]);
-					}
-				}
-			}
-		}
-		else {
-			msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-			show_dialog(msg, _("Error"), "gtk-dialog-error");
-			retval = -1;
-		}
-		_TIFFfree(raster);
-	}
-	else retval = -1;
 	return retval;
 }
 
@@ -374,6 +376,8 @@ int readjpg(const char* name, fits *fit){
 	FILE *f;
 	JSAMPARRAY pJpegBuffer;
 	int row_stride;
+
+
 	if ((f = fopen(name, "rb")) == NULL){
 		char *msg = siril_log_message(_("Sorry but Siril cannot open the file: %s.\n"), name);
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
@@ -662,7 +666,7 @@ static void get_FITS_date(time_t date, char *date_obs) {
 			t->tm_sec);
 }
 
-int readraw(const char *name, fits *fit) {
+static int readraw(const char *name, fits *fit) {
 	ushort width, height;
 	int npixels, i;
 	WORD *data=NULL;
@@ -828,7 +832,7 @@ int readraw(const char *name, fits *fit) {
 #define FC(filters, row,col) \
 	(filters >> ((((row) << 1 & 14) + ((col) & 1)) << 1) & 3)
 
-int readraw_in_cfa(const char *name, fits *fit) {
+static int readraw_in_cfa(const char *name, fits *fit) {
 	libraw_data_t *raw = libraw_init(0);
 	unsigned int i, j, c, col, row;
 	char pattern[FLEN_VALUE];
@@ -967,6 +971,7 @@ int readraw_in_cfa(const char *name, fits *fit) {
 
 int open_raw_files(const char *name, fits *fit, int type) {
 	int retvalue = 1;
+
 	
 	switch(type){
 		default:
@@ -985,7 +990,6 @@ int open_raw_files(const char *name, fits *fit, int type) {
 				basename, fit->naxes[2], fit->rx, fit->ry);
 		g_free(basename);
 	}
-
 	return retvalue;
 }
 #endif

@@ -153,6 +153,21 @@ gboolean isrgb(fits *fit) {
 }
 
 /**
+ * Convert a filename to utf8 ... g_free the result.
+ * @param filename
+ * @return
+ */
+char *f2utf8(const char *filename) {
+	char *utf8;
+
+	if (!(utf8 = g_filename_to_utf8(filename, -1, NULL, NULL, NULL)))
+		utf8 = g_strdup(_("<charset conversion error>"));
+
+	return (utf8);
+}
+
+
+/**
  *  Looks whether the string str ends with ending. This is case insensitive
  *  @param str the string to check
  *  @param ending the suffix to look for
@@ -314,7 +329,7 @@ gchar *siril_get_startup_dir() {
  *  @return 0 if success, any other values for error
  */
 int changedir(const char *dir, gchar **err) {
-	gchar *error;
+	gchar *error = NULL;
 	int retval = 0;
 
 	if (dir == NULL || dir[0] == '\0') {
@@ -336,12 +351,10 @@ int changedir(const char *dir, gchar **err) {
 			 * press the check seq button to display the list, and this is also done there. */
 			/* check_seq();
 			 update_sequence_list();*/
-			if (com.wd)
-				g_free(com.wd);
+			g_free(com.wd);
 			com.wd = g_get_current_dir();
 			siril_log_message(_("Setting CWD (Current "
 					"Working Directory) to '%s'\n"), com.wd);
-			error = NULL;
 			set_GUI_CWD();
 			update_used_memory();
 			retval = 0;
@@ -431,7 +444,7 @@ int update_sequences_list(const char *sequence_name_to_select) {
  * @return the disk space remaining in bytes, or a value less than 0 if error
  */
 #ifdef HAVE_SYS_STATVFS_H
-static double find_space(const char *name) {
+static double find_space(const gchar *name) {
 	struct statvfs st;
 	double sz;
 
@@ -445,7 +458,7 @@ static double find_space(const char *name) {
 	return (sz);
 }
 #elif (HAVE_SYS_VFS_H || HAVE_SYS_MOUNT_H)
-static double find_space(const char *name) {
+static double find_space(const gchar *name) {
 	struct statfs st;
 	double sz;
 
@@ -457,7 +470,7 @@ static double find_space(const char *name) {
 	return (sz);
 }
 #elif defined WIN32
-static double find_space(const char *name) {
+static double find_space(const gchar *name) {
 	ULARGE_INTEGER avail;
 	double sz;
 
@@ -473,7 +486,7 @@ static double find_space(const char *name) {
 	return (sz);
 }
 #else
-static double find_space(const char *name) {
+static double find_space(const gchar *name) {
 	return (-1);
 }
 #endif /*HAVE_SYS_STATVFS_H*/
@@ -1017,7 +1030,7 @@ int ListDirectoryContents(const char *sDir) {
 	return 0;
 }
 
-int ListSequences(const char *sDir, const char *sequence_name_to_select, GtkComboBoxText *seqcombo,
+int ListSequences(const gchar *sDir, const char *sequence_name_to_select, GtkComboBoxText *seqcombo,
 		int *index_of_seq_to_load) {
 	WIN32_FIND_DATA fdFile;
 	HANDLE hFind = NULL;

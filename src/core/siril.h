@@ -540,7 +540,7 @@ struct cominf {
 	guchar *refimage_regbuffer;	// the graybuf[registration_layer] of the reference image
 	cairo_surface_t *refimage_surface;
 
-	char *wd;			// working directory, where images and sequences are
+	gchar *wd;			// working directory, where images and sequences are
 	char *initfile;			// the path of the init file
 	
 	char *ext;		// FITS extension used in SIRIL

@@ -27,7 +27,7 @@ int	fits_get_date_obs(const char *name, fits *f);
 int 	savefits(const char *, fits *);
 void 	save_fits_header(fits *);
 int	copyfits(fits *from, fits *to, unsigned char oper, int layer);
-int copy_header(fits *from, fits *to);
+int	copy_header(fits *from, fits *to);
 int	save1fits16(const char *filename, fits *fit, int layer);
 
 void	rgb24bit_to_fits48bit(unsigned char *rgbbuf, fits *fit, gboolean inverted);
@@ -73,24 +73,20 @@ int	readpic(const char *name, fits *fit);
 
 /****************** image_formats_libraries.h ******************/
 #ifdef HAVE_LIBTIFF
-int	readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data);
-int	readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data);
-int 	readtif(const char *name, fits *fit);
-int	savetif(const char *name, fits *fit, uint16 bitspersample);
+int readtif(const char *name, fits *fit);
+int savetif(const char *name, fits *fit, uint16 bitspersample);
 #endif
 
 #ifdef HAVE_LIBJPEG
-int	readjpg(const char* , fits *);
-int	savejpg(char *, fits *, int);
+int readjpg(const char*, fits *);
+int savejpg(char *, fits *, int);
 #endif
 
 #ifdef HAVE_LIBPNG
-int	readpng(const char* , fits *);
+int readpng(const char*, fits *);
 #endif
 
 #ifdef HAVE_LIBRAW
-int readraw(const char *, fits *);
-int readraw_in_cfa(const char *, fits *);
 int open_raw_files(const char *, fits *, int);
 #endif
 
@@ -101,6 +97,7 @@ WORD	round_to_WORD(double x);
 BYTE	round_to_BYTE(double x);
 BYTE	conv_to_BYTE(double x);
 gboolean isrgb(fits *fit);
+char *f2utf8(const char *filename);
 gboolean ends_with(const char *str, const char *ending);
 int	get_extension_index(const char *filename);
 int	is_readable_file(const char *filename);

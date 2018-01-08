@@ -1012,7 +1012,7 @@ static void opendial(void) {
 
 	if (res == GTK_RESPONSE_ACCEPT) {
 		GSList *list = NULL;
-		char *filename;
+		gchar *filename;
 		gchar *err;
 		GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
 		filename = gtk_file_chooser_get_filename(chooser);

@@ -167,7 +167,7 @@ int check_seq(int force) {
 	}
 	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		fprintf (stderr, "check_seq: %s\n", error->message);
-		free(com.wd);
+		g_free(com.wd);
 		com.wd = NULL;
 		return 1;
 	}
@@ -298,7 +298,7 @@ int check_only_one_film_seq(char* name) {
 	}
 	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		fprintf (stderr, "check_only_one_film_seq: %s\n", error->message);
-		free(com.wd);
+		g_free(com.wd);
 		com.wd = NULL;
 		return 1;
 	}
