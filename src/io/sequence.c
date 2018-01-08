@@ -30,7 +30,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/time.h>
-#include <dirent.h>
 #include <ctype.h>
 #include <assert.h>
 #include <math.h>
@@ -185,7 +184,7 @@ int check_seq(int force) {
 		if (!strcasecmp(ext, "ser")) {
 			struct ser_struct *ser_file = malloc(sizeof(struct ser_struct));
 			ser_init_struct(ser_file);
-			if (ser_open_file((char *)file, ser_file))
+			if (ser_open_file(file, ser_file))
 				continue;
 			new_seq = calloc(1, sizeof(sequence));
 			initialize_sequence(new_seq, TRUE);

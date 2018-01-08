@@ -28,7 +28,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/time.h>
-#include <dirent.h>
 #include <stdarg.h>
 #include <math.h>	// for M_PI
 #include <libgen.h>

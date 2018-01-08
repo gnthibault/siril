@@ -617,7 +617,7 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 	return 0;
 }
 
-int ser_open_file(char *filename, struct ser_struct *ser_file) {
+int ser_open_file(const char *filename, struct ser_struct *ser_file) {
 	if (ser_file->fd > 0) {
 		fprintf(stderr, "SER: file already opened, or badly closed\n");
 		return -1;

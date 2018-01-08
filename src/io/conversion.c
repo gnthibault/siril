@@ -28,7 +28,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <dirent.h>
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
