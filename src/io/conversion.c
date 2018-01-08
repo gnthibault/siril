@@ -205,7 +205,8 @@ void on_convtoroot_changed (GtkEditable *editable, gpointer user_data){
 	if (!multiple_ser)
 		multiple_ser = lookup_widget("multipleSER");
 	if (destroot) g_free(destroot);
-	destroot = g_strdup(name);
+
+	destroot = g_str_to_ascii(name, NULL); // we want to avoid special char
 
 	const char *ext = get_filename_ext(destroot);
 	if (ext && !g_ascii_strcasecmp(ext, "ser")) {
