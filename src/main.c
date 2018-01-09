@@ -143,7 +143,7 @@ void signal_handled(int s) {
 }
 
 static void initialize_path_directory() {
-	GtkFileChooser *swap_dir, *gnuplot_dir;
+	GtkFileChooser *swap_dir;
 
 	swap_dir = GTK_FILE_CHOOSER(lookup_widget("filechooser_swap"));
 	if (com.swap_dir && com.swap_dir[0] != '\0')
