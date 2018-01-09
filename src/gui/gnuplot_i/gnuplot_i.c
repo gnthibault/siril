@@ -49,9 +49,6 @@
 #endif // #ifdef WIN32
 
 #ifdef WIN32
-#ifndef popen
-#define popen(b,m) _popen(b,m)
-#endif /*popen*/
 #ifndef pclose
 #define pclose(f) _pclose(f)
 #endif /*pclose*/
@@ -91,6 +88,32 @@ void gnuplot_plot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char
                             Function codes
  ---------------------------------------------------------------------------*/
 
+FILE *siril_popen(const gchar *command, const gchar *type) {
+#ifdef WIN32
+	wchar_t *wcommand, *wtype;
+	FILE *f;
+
+	wcommand = g_utf8_to_utf16(command, -1, NULL, NULL, NULL);
+	if (wcommand == NULL) {
+		return NULL;
+	}
+
+	wtype = g_utf8_to_utf16(type, -1, NULL, NULL, NULL);
+	if (wtype == NULL) {
+		g_free(wcommand);
+		return NULL;
+	}
+	f = _wpopen(wcommand, wtype);
+
+	g_free(wcommand);
+	g_free(wtype);
+
+	return f;
+#else
+	return popen(command, type);
+#endif
+}
+
 /*-------------------------------------------------------------------------*/
 /**
   @brief    Opens up a gnuplot session, ready to receive commands.
@@ -124,7 +147,7 @@ gnuplot_ctrl * gnuplot_init(void)
     gnuplot_setstyle(handle, "points") ;
     handle->ntmp = 0 ;
 
-    handle->gnucmd = popen(GNUPLOT_NAME, "w") ;
+    handle->gnucmd = siril_popen(GNUPLOT_NAME, "w") ;
     if (handle->gnucmd == NULL) {
         fprintf(stderr, "error starting gnuplot, is gnuplot or gnuplot.exe in your path?\n") ;
         free(handle) ;
