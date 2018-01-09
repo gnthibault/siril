@@ -2981,6 +2981,7 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	char *str[2];
 	double sig[2];
 	long icold = 0L, ihot = 0L;
+	double rate, total;
 
 	set_cursor_waiting(TRUE);
 	sig[0] = gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeColdBox")));
@@ -2997,7 +2998,10 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 			count_deviant_pixels(&(wfit[4]), sig, &icold, &ihot);
 		}
 	}
-	if (icold > 10000) {
+	total = wfit[4].rx * wfit[4].ry;
+	rate = (double)icold / total;
+	/* 1% of cold pixels seems to be a reasonable limit */
+	if (rate > 0.01) {
 		str[0] = g_markup_printf_escaped(_("<span foreground=\"red\">Cold: %ld px</span>"), icold);
 		gtk_widget_set_tooltip_text(widget[0], _("This value may be to high. Please, consider to change sigma value or uncheck the box."));
 	}
@@ -3007,7 +3011,9 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	}
 	gtk_label_set_markup(label[0], str[0]);
 
-	if (ihot > 10000) {
+	rate = (double)ihot / total;
+	/* 1% of hot pixels seems to be a reasonable limit */
+	if (rate > 0.01) {
 		str[1] = g_markup_printf_escaped(_("<span foreground=\"red\">Hot: %ld px</span>"), ihot);
 		gtk_widget_set_tooltip_text(widget[1], _("This value may be to high. Please, consider to change sigma value or uncheck the box."));
 	}
