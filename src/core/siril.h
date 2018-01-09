@@ -77,13 +77,6 @@ typedef unsigned short WORD;		// default type for internal image data
 #define	STATS_ZERO_NONE 0
 #define	STATS_ZERO_NULLCHECK (!STATS_ZERO_NONE)
 
-#ifdef WIN32
-#define GNUPLOT_NAME "C:\\Program Files\\gnuplot\\bin\\wgnuplot.exe"
-#else
-#define GNUPLOT_NAME "gnuplot"
-#endif
-
-
 /* when requesting an image redraw, it can be asked to remap its data before redrawing it.
  * REMAP_NONE	doesn't remaps the data,
  * REMAP_ONLY	remaps only the current viewport (color channel) and the mixed (RGB) image
