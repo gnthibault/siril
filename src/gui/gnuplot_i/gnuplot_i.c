@@ -48,6 +48,15 @@
 #include <io.h>
 #endif // #ifdef WIN32
 
+#ifdef WIN32
+#ifndef popen
+#define popen(b,m) _popen(b,m)
+#endif /*popen*/
+#ifndef pclose
+#define pclose(f) _pclose(f)
+#endif /*pclose*/
+#endif /*WIN32*/
+
 /*---------------------------------------------------------------------------
                                 Defines
  ---------------------------------------------------------------------------*/
@@ -115,7 +124,7 @@ gnuplot_ctrl * gnuplot_init(void)
     gnuplot_setstyle(handle, "points") ;
     handle->ntmp = 0 ;
 
-    handle->gnucmd = popen("gnuplot", "w") ;
+    handle->gnucmd = popen(GNUPLOT_NAME, "w") ;
     if (handle->gnucmd == NULL) {
         fprintf(stderr, "error starting gnuplot, is gnuplot or gnuplot.exe in your path?\n") ;
         free(handle) ;

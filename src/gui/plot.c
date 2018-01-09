@@ -227,14 +227,20 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 	plot->nb = j;
 }
 
-#ifndef WIN32
+#ifdef WIN32
+/* returns true if the wgnuplot.exe exists */
+static gboolean gnuplot_is_available() {
+	return g_file_test(GNUPLOT_NAME, G_FILE_TEST_EXISTS);
+}
+#else
 /* returns true if the command gnuplot is available */
 static gboolean gnuplot_is_available() {
-	int retval = system("gnuplot -e > /dev/null 2>&1");
+	int retval = system(GNUPLOT_NAME" -e > /dev/null 2>&1");
 	if (WIFEXITED(retval))
 		return 0 == WEXITSTATUS(retval);
 	return FALSE;
 }
+#endif
 
 static int lightCurve(pldata *plot, sequence *seq) {
 	int i, j, k, nbImages = 0, ret = 0;
@@ -352,7 +358,6 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	free(real_x);
 	return 0;
 }
-#endif
 
 static int exportCSV(pldata *plot, sequence *seq) {
 	int i, j, ret = 0;
@@ -545,13 +550,9 @@ void on_ButtonSaveCSV_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_varCurvePhotometry_clicked(GtkButton *button, gpointer user_data) {
-#ifdef WIN32
-	show_dialog(_("Using gnuplot is only available on UNIX system.\n"), _("Error"), "gtk-dialog-error");
-#else
 	set_cursor_waiting(TRUE);
 	lightCurve(plot_data, &com.seq);
 	set_cursor_waiting(FALSE);
-#endif
 }
 
 void free_photometry_set(sequence *seq, int set) {

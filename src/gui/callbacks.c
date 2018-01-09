@@ -1266,17 +1266,14 @@ static void update_fwhm_units_ok() {
 
 static void reset_swapdir() {
 	GtkFileChooser *swap_dir = GTK_FILE_CHOOSER(lookup_widget("filechooser_swap"));
-	GtkLabel *label = GTK_LABEL(lookup_widget("label_swap_dir"));
 	const gchar *dir;
 
 	dir = g_get_tmp_dir();
 
 	if (g_strcmp0(dir, com.swap_dir)) {
-		if (com.swap_dir)
-			g_free(com.swap_dir);
+		g_free(com.swap_dir);
 		com.swap_dir = g_strdup(dir);
 		gtk_file_chooser_set_filename(swap_dir, dir);
-		gtk_label_set_text(label, dir);
 		writeinitfile();
 	}
 }
@@ -3148,7 +3145,6 @@ void on_checkbutton_multipliers_toggled(GtkToggleButton *button,
 
 void on_filechooser_swap_file_set(GtkFileChooserButton *fileChooser, gpointer user_data) {
 	GtkFileChooser *swap_dir = GTK_FILE_CHOOSER(fileChooser);
-	GtkLabel *label = GTK_LABEL(lookup_widget("label_swap_dir"));
 	gchar *dir;
 
 	dir = gtk_file_chooser_get_filename (swap_dir);
@@ -3160,10 +3156,8 @@ void on_filechooser_swap_file_set(GtkFileChooserButton *fileChooser, gpointer us
 		return;
 	}
 
-	if (com.swap_dir)
-		g_free(com.swap_dir);
+	g_free(com.swap_dir);
 	com.swap_dir = dir;
-	gtk_label_set_text (label, com.swap_dir);
 	writeinitfile();
 }
 

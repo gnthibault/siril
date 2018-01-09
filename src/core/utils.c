@@ -153,9 +153,12 @@ gboolean isrgb(fits *fit) {
 }
 
 /**
- * Convert a filename to utf8 ... g_free the result.
- * @param filename
- * @return
+ * Converts a string which is in the encoding used by GLib for filenames into a UTF-8 string.
+ * Note that on Windows GLib uses UTF-8 for filenames; on other platforms,
+ * this function indirectly depends on the current locale.
+ * g_free the result when not needed anymore.
+ * @param input filename
+ * @return The converted string, or "<charset conversion error>" on an error.
  */
 char *f2utf8(const char *filename) {
 	char *utf8;
@@ -165,7 +168,6 @@ char *f2utf8(const char *filename) {
 
 	return (utf8);
 }
-
 
 /**
  *  Looks whether the string str ends with ending. This is case insensitive

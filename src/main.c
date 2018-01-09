@@ -142,6 +142,16 @@ void signal_handled(int s) {
 	exit(EXIT_FAILURE);
 }
 
+static void initialize_path_directory() {
+	GtkFileChooser *swap_dir, *gnuplot_dir;
+
+	swap_dir = GTK_FILE_CHOOSER(lookup_widget("filechooser_swap"));
+	if (com.swap_dir && com.swap_dir[0] != '\0')
+		gtk_file_chooser_set_filename (swap_dir, com.swap_dir);
+	else
+		gtk_file_chooser_set_filename (swap_dir, g_get_tmp_dir());
+}
+
 int main(int argc, char *argv[]) {
 	int i;
 	extern char *optarg;
@@ -347,15 +357,8 @@ int main(int argc, char *argv[]) {
 	GtkComboBox *binning = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combobinning"));
 	gtk_combo_box_set_active(binning, 0);
 
-	/* initialization of swap dir chooser */
-	GtkFileChooser *swap_dir = GTK_FILE_CHOOSER(lookup_widget("filechooser_swap"));
-	GtkLabel *label = GTK_LABEL(lookup_widget("label_swap_dir"));
-
-	if (com.swap_dir && com.swap_dir[0] != '\0')
-		gtk_file_chooser_set_filename (swap_dir, com.swap_dir);
-	else
-		gtk_file_chooser_set_filename (swap_dir, g_get_tmp_dir());
-	gtk_label_set_text (label, com.swap_dir);
+	/* initialization of some paths */
+	initialize_path_directory();
 
 	/* initialization of default FITS extension */
 	GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
