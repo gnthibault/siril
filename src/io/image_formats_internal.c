@@ -166,7 +166,7 @@ int savebmp(const char *name, fits *fit) {
 	bmpinfoheader[26] = (unsigned char) (datasize >> 16);
 	bmpinfoheader[27] = (unsigned char) (datasize >> 24);
 
-	f = fopen(name, "wb");
+	f = g_fopen(name, "wb");
 	if (f == NULL) {
 		char *msg = siril_log_message(_("Can't create BMP file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
@@ -334,8 +334,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 	int i, j, max_val;
 	size_t stride;
 
-	if ((fd = fopen(filename, "rb")) == NULL) {
-		perror("fopen pnm");
+	if ((fd = g_fopen(filename, "rb")) == NULL) {
 		msg = siril_log_message(_("Sorry but Siril cannot open this file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
 		return -1;
@@ -526,7 +525,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 }
 
 int saveppm(const char *name, fits *fit) {
-	FILE *fp = fopen(name, "wb");
+	FILE *fp = g_fopen(name, "wb");
 	int i;
 	int ndata = fit->rx * fit->ry;
 	const char *comment = "# CREATOR : SIRIL";
@@ -574,7 +573,7 @@ int savepgm(const char *name, fits *fit) {
 			data[j][i] = (data[j][i] >> 8) | (data[j][i] << 8);
 		}
 	}
-	fp = fopen(name, "wb");
+	fp = g_fopen(name, "wb");
 	if (!fp)
 		return -1;
 	fprintf(fp, "P5\n%s\n%u %u\n%u\n", comment, fit->rx, fit->ry, USHRT_MAX);

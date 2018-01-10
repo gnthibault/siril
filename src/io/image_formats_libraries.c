@@ -165,6 +165,23 @@ static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	return retval;
 }
 
+static TIFF* Siril_TIFFOpen(const char *name, const char *mode) {
+#ifdef WIN32
+	wchar_t *wname;
+
+	wname = g_utf8_to_utf16(name, -1, NULL, NULL, NULL);
+	if (wname == NULL) {
+		return NULL;
+	}
+
+	TIFF* tif = TIFFOpenW(wname, mode);
+	g_free(wname);
+	return tif;
+#else
+	return(TIFFOpen(name, mode));
+#endif
+}
+
 /* reads a TIFF file and stores it in the fits argument.
  * If file loading fails, the argument is untouched.
  */
@@ -175,7 +192,8 @@ int readtif(const char *name, fits *fit) {
 	uint16 nbits, nsamples, color;
 	WORD *data;
 	
-	TIFF* tif = TIFFOpen(name, "r");
+	TIFF* tif = Siril_TIFFOpen(name, "r");
+
 	if (!tif) {
 		siril_log_message(_("Could not open the TIFF file %s\n"), name);
 		return -1;
@@ -240,7 +258,7 @@ int readtif(const char *name, fits *fit) {
 		retval = nsamples;
 	}
 	if (nbits==16) mirrorx(fit, FALSE);
-	char *basename = g_path_get_basename(name);
+	gchar *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
 						nbits, basename, fit->naxes[2], fit->rx, fit->ry);
 	g_free(basename);
@@ -260,7 +278,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 	mirrorx(fit, FALSE);
 
-	TIFF* tif = TIFFOpen(name, "w");
+	TIFF* tif = Siril_TIFFOpen(name, "w");
 
 	if (tif == NULL) {
 		msg = siril_log_message(_("Siril cannot create TIFF file.\n"));
@@ -378,7 +396,7 @@ int readjpg(const char* name, fits *fit){
 	int row_stride;
 
 
-	if ((f = fopen(name, "rb")) == NULL){
+	if ((f = g_fopen(name, "rb")) == NULL){
 		char *msg = siril_log_message(_("Sorry but Siril cannot open the file: %s.\n"), name);
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
 		return -1;
@@ -424,7 +442,7 @@ int readjpg(const char* name, fits *fit){
 		fit->binning_x=fit->binning_y=1;
 	}
 	mirrorx(fit, FALSE);
-	char *basename = g_path_get_basename(name);
+	gchar *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading JPG: file %s, %ld layer(s), %ux%u pixels\n"),
 						basename, fit->naxes[2], fit->rx, fit->ry);
 	g_free(basename);
@@ -446,7 +464,7 @@ int savejpg(char *name, fits *fit, int quality){
 	jpeg_create_compress(&cinfo);
 
 	//## OPEN FILE FOR DATA DESTINATION:
-	if ((f = fopen(name, "wb")) == NULL) {
+	if ((f = g_fopen(name, "wb")) == NULL) {
 		char *msg = siril_log_message(_("Siril cannot create JPG file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
 		return 1;
@@ -542,7 +560,7 @@ int readpng(const char *name, fits* fit) {
 
 	if(setjmp(png_jmpbuf(png))) return -1;
 
-	f = fopen(name, "rb");
+	f = g_fopen(name, "rb");
 	png_init_io(png, f);
 
 	png_read_info(png, info);
@@ -647,7 +665,7 @@ int readpng(const char *name, fits* fit) {
 
 	}
 	mirrorx(fit, FALSE);
-	char *basename = g_path_get_basename(name);
+	gchar *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
 						bit_depth, basename, fit->naxes[2], fit->rx, fit->ry);
 	g_free(basename);
@@ -984,7 +1002,7 @@ int open_raw_files(const char *name, fits *fit, int type) {
 	}
 	if (retvalue >= 0) {
 		mirrorx(fit, FALSE);
-		char *basename = g_path_get_basename(name);
+		gchar *basename = g_path_get_basename(name);
 		siril_log_message(
 				_("Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"),
 				basename, fit->naxes[2], fit->rx, fit->ry);

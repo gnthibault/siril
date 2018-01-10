@@ -596,6 +596,8 @@ double seq_compute_size(sequence *seq) {
 		}
 		break;
 #endif
+	default:
+		fprintf(stderr, "seq_compute_size: Should not happen\n");
 	}
 	return size;
 }
