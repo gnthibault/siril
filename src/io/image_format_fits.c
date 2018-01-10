@@ -25,6 +25,9 @@
 #include <ctype.h>
 #include <string.h>
 #include <gsl/gsl_statistics.h>
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -173,6 +176,44 @@ static void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TUSHORT, "DFT_RY", &(fit->dft_ry), NULL, &status);
 }
 
+static char *fits_fname(const gchar *path) {
+	gchar *str;
+#ifdef WIN32
+	wchar_t *wpath;
+
+	wpath = g_utf8_to_utf16(path, -1, NULL, NULL, NULL);
+	if (wpath == NULL)
+		return NULL;
+
+	// use the short DOS 8.3 path name to avoid problems converting UTF-16 filenames to the ANSI filenames expected by CFITTSIO
+	DWORD shortlen = GetShortPathNameW(wpath, 0, 0);
+
+	if (shortlen) {
+		LPWSTR shortpath = g_new(WCHAR, shortlen);
+		GetShortPathNameW(wpath, shortpath, shortlen);
+		int slen = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS,
+				shortpath, shortlen, 0, 0, 0, 0);
+		str = g_new(gchar, slen + 1);
+		WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath, shortlen,
+				str, slen, 0, 0);
+		g_free(shortpath);
+	} else {
+		str = NULL;
+	}
+	g_free(wpath);
+#else // WIN32
+	str = g_strdup(path);
+#endif // WIN32
+	return str;
+}
+
+static int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode, int *status) {
+	gchar *fname = fits_fname(filename);
+	int ret = fits_open_diskfile(fptr, fname, iomode, status);
+	g_free(fname);
+	return ret;
+}
+
 // return 0 on success, fills realname if not NULL with the opened file's name
 int readfits(const char *filename, fits *fit, char *realname) {
 	int status;
@@ -210,7 +251,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	if (realname)
 		strcpy(realname, name);
 	status = 0;
-	fits_open_diskfile(&(fit->fptr), name, READONLY, &status);
+	siril_fits_open_diskfile(&(fit->fptr), name, READONLY, &status);
 	if (status) {
 		report_fits_error(status);
 		free(name);
@@ -469,7 +510,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	int dataType = TUSHORT;
 
 	status = 0;
-	if (fits_open_diskfile(&(fit->fptr), filename, READONLY, &status))
+	if (siril_fits_open_diskfile(&(fit->fptr), filename, READONLY, &status))
 		report_fits_error(status);
 	if (status)
 		return status;
@@ -637,7 +678,7 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer,
 
 int fits_get_date_obs(const char *name, fits *f) {
 	int status = 0;
-	if (fits_open_diskfile(&(f->fptr), name, READONLY, &status))
+	if (siril_fits_open_diskfile(&(f->fptr), name, READONLY, &status))
 		report_fits_error(status);
 	if (status)
 		return status;
