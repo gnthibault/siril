@@ -5194,7 +5194,7 @@ void on_export_button_clicked(GtkButton *button, gpointer user_data) {
 	int i = 0;
 	if (!com.stars)
 		return;
-	FILE *f = fopen("stars.lst", "w");
+	FILE *f = g_fopen("stars.lst", "w");
 
 	if (f == NULL)
 		return;

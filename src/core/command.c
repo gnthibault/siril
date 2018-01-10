@@ -876,7 +876,7 @@ int process_histo(int nb){
 	else clayer = vport_number_to_name(nlayer);
 	snprintf(name, 20, "histo_%s.dat",clayer);
 
-	FILE *f = fopen(name, "w");
+	FILE *f = g_fopen(name, "w");
 
 	if (f == NULL) {
 		free(clayer);
@@ -1043,7 +1043,7 @@ int process_findhot(int nb){
 	siril_log_message(_("%ld cold and %ld hot pixels\n"), icold, ihot);
 
 	sprintf(filename, "%s.lst", word[1]);
-	FILE *cosme_file = fopen(filename, "w");
+	FILE *cosme_file = g_fopen(filename, "w");
 	if (cosme_file == NULL) {
 		siril_log_message(_("Cannot open file: %s\n"), filename);
 		free(dev);
@@ -1076,7 +1076,7 @@ int process_cosme(int nb) {
 
 	if (!ends_with(word[1], ".lst"))
 		strcat(word[1], ".lst");
-	cosme_file = fopen(word[1], "r");
+	cosme_file = g_fopen(word[1], "r");
 	if (cosme_file == NULL) {
 		siril_log_message(_("Cannot open file: %s\n"), word[1]);
 		return 1;
@@ -1674,7 +1674,7 @@ int processcommand(const char *line) {
 		FILE * fp;
 
 
-		fp = fopen(line + 1, "r");
+		fp = g_fopen(line + 1, "r");
 		if (fp == NULL) {
 			siril_log_message(_("File [%s] does not exist\n"), line + 1);
 			return 1;

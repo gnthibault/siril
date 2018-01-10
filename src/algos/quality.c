@@ -173,7 +173,7 @@ double QualityEstimate(fits *fit, int layer, int qtype) {
 		FILE *out;
 
 		sprintf(filename, "sample_%d.ppm", subsample);
-		out = fopen(filename, "wb");
+		out = g_fopen(filename, "wb");
 		if (out == NULL)
 		printf("Cannot write subsampled image %d\n", subsample);
 		else {

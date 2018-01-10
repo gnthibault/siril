@@ -65,8 +65,7 @@ sequence * readseqfile(const char *name){
 		seqfilename = strdup(name);
 	}
 
-	if ((seqfile = fopen(seqfilename, "r")) == NULL) {
-		perror("fopen sequence file");
+	if ((seqfile = g_fopen(seqfilename, "r")) == NULL) {
 		fprintf(stderr, "Reading sequence failed, file cannot be opened: %s.\n", seqfilename);
 		free(seqfilename);
 		return NULL;
@@ -302,7 +301,7 @@ int writeseqfile(sequence *seq){
 	if (!seq->seqname || seq->seqname[0] == '\0') return 1;
 	filename = malloc(strlen(seq->seqname)+5);
 	sprintf(filename, "%s.seq", seq->seqname);
-	seqfile = fopen(filename, "w+");
+	seqfile = g_fopen(filename, "w+");
 	if (seqfile == NULL) {
 		fprintf(stderr, "Writing sequence file: cannot open %s for writing\n", filename);
 		free(filename);

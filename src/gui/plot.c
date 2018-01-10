@@ -381,7 +381,7 @@ static int exportCSV(pldata *plot, sequence *seq) {
 	if (file && file[0] != '\0') {
 		filename = g_strndup(file, strlen(file) + 5);
 		g_strlcat(filename, ".csv", strlen(file) + 5);
-		FILE *csv = fopen(filename, "w");
+		FILE *csv = g_fopen(filename, "w");
 		if (csv == NULL) {
 			ret = 1;
 		} else {
