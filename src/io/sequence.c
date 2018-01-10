@@ -574,6 +574,8 @@ double seq_compute_size(sequence *seq) {
 		case SER_BAYER_RGGB:
 			size *= seq->nb_layers;
 			break;
+		default:
+			break;
 		}
 		break;
 	case SEQ_REGULAR:

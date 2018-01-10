@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "sequence.h"
