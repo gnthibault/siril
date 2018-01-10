@@ -157,7 +157,7 @@ gboolean isrgb(fits *fit) {
  * Note that on Windows GLib uses UTF-8 for filenames; on other platforms,
  * this function indirectly depends on the current locale.
  * g_free the result when not needed anymore.
- * @param input filename
+ * @param filename input filename
  * @return The converted string, or "<charset conversion error>" on an error.
  */
 char *f2utf8(const char *filename) {
@@ -298,7 +298,7 @@ int stat_file(const char *filename, image_type *type, char **realname) {
 
 static GUserDirectory sdir[] = { G_USER_DIRECTORY_PICTURES,
 		G_USER_DIRECTORY_DOCUMENTS };
-/** This function tries to set a startup file. It first looks at the "Pictures" directory,
+/** This function tries to set a startup directory. It first looks at the "Pictures" directory,
  *  then if it does not exist, the "Document" one, Finally, if it fails on some UNIX systems
  *  the dir is set to the home directory.
  *  @return a working directory path if success, NULL if error
@@ -371,6 +371,83 @@ int changedir(const char *dir, gchar **err) {
 	}
 	return retval;
 }
+
+#ifdef WIN32
+static int ListSequences(const gchar *sDir, const char *sequence_name_to_select,
+		GtkComboBoxText *seqcombo, int *index_of_seq_to_load) {
+	WIN32_FIND_DATAW fdFile;
+	HANDLE hFind = NULL;
+	char sPath[2048];
+	char filename[256];
+	int number_of_loaded_sequences = 0;
+	wchar_t *wpath;
+
+	//Specify a file mask. *.* = We want everything!
+	sprintf(sPath, "%s\\*.*", sDir);
+
+	wpath = g_utf8_to_utf16(sPath, -1, NULL, NULL, NULL);
+	if (wpath == NULL)
+		return 1;
+
+	if ((hFind = FindFirstFileW(wpath, &fdFile)) == INVALID_HANDLE_VALUE) {
+		fprintf(stderr, "Path not found: [%s]\n", sDir);
+		g_free(wpath);
+		return 1;
+	}
+	g_free(wpath);
+
+	do {
+		//Find first file will always return "."
+		//    and ".." as the first two directories.
+
+		// use the short DOS 8.3 path name to avoid problems converting UTF-16 filenames to the ANSI filenames expected by CFITTSIO
+		DWORD shortlen = GetShortPathNameW(fdFile.cFileName, 0, 0);
+
+		if (!shortlen) {
+			return 1;
+		}
+		LPWSTR shortpath = g_new(WCHAR, shortlen);
+		GetShortPathNameW(fdFile.cFileName, shortpath, shortlen);
+		int slen = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS,
+				shortpath, shortlen, 0, 0, 0, 0);
+		gchar *cFileName = g_new(gchar, slen + 1);
+		WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath, shortlen,
+				cFileName, slen, 0, 0);
+		g_free(shortpath);
+
+		if (strcmp(cFileName, ".") != 0 && strcmp(cFileName, "..") != 0) {
+			//Build up our file path using the passed in
+			//  [sDir] and the file/foldername we just found:
+			//sprintf(sPath, "%s\\%s", sDir, cFileName);
+
+			//Is the entity a File or Folder?
+			if (!(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+				char *suf;
+
+				if ((suf = strstr(cFileName, ".seq")) && strlen(suf) == 4) {
+					sequence *seq = readseqfile(cFileName);
+					if (seq != NULL) {
+						strncpy(filename, cFileName, 255);
+						free_sequence(seq, TRUE);
+						gtk_combo_box_text_append_text(seqcombo, filename);
+						if (sequence_name_to_select
+								&& !strncmp(filename, sequence_name_to_select,
+										strlen(filename))) {
+							*index_of_seq_to_load = number_of_loaded_sequences;
+						}
+						++number_of_loaded_sequences;
+					}
+				}
+			}
+		}
+		g_free(cFileName);
+	} while (FindNextFileW(hFind, &fdFile)); //Find the next file.
+
+	FindClose(hFind);
+
+	return number_of_loaded_sequences;
+}
+#endif
 
 /** This method populates the sequence combo box with the sequences found in the CWD.
  *  If only one sequence is found, or if a sequence whose name matches the
@@ -478,13 +555,14 @@ static double find_space(const gchar *name) {
 
 	gchar *localdir = g_path_get_dirname(name);
 	wchar_t *wdirname = g_utf8_to_utf16(localdir, -1, NULL, NULL, NULL);
-	g_free(localdir);
 
 	if (!GetDiskFreeSpaceExW(wdirname, &avail, NULL, NULL))
 		sz = -1;
 	else
 		sz = (double) avail.QuadPart;
 
+	g_free(localdir);
+	g_free(wdirname);
 	return (sz);
 }
 #else
@@ -712,7 +790,7 @@ void read_and_show_textfile(char *path, char *title) {
 	char line[64] = "";
 	char txt[1024] = "";
 
-	FILE *f = fopen(path, "r");
+	FILE *f = g_fopen(path, "r");
 	if (!f) {
 		show_dialog(_("File not found"), _("Error"), "gtk-dialog-error");
 		return;
@@ -979,109 +1057,3 @@ double encodeJD(dateTime dt) {
 		return jd1 + 2 - (dt.year / 100) + (dt.year / 400);
 	}
 }
-
-#ifdef WIN32
-int ListDirectoryContents(const char *sDir) {
-	WIN32_FIND_DATA fdFile;
-	HANDLE hFind = NULL;
-	const char *ext;
-	char sPath[2048];
-
-	//Specify a file mask. *.* = We want everything!
-	sprintf(sPath, "%s\\*.*", sDir);
-
-	if ((hFind = FindFirstFile(sPath, &fdFile)) == INVALID_HANDLE_VALUE) {
-		printf("Path not found: [%s]\n", sDir);
-		return 1;
-	}
-
-	do {
-		//Find first file will always return "."
-		//    and ".." as the first two directories.
-		if (strcmp(fdFile.cFileName, ".") != 0
-				&& strcmp(fdFile.cFileName, "..") != 0) {
-			//Build up our file path using the passed in
-			//  [sDir] and the file/foldername we just found:
-			sprintf(sPath, "%s\\%s", sDir, fdFile.cFileName);
-
-			//Is the entity a File or Folder?
-			if (fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				siril_log_color_message(_("Directory: %s\n"), "green",	fdFile.cFileName);
-			} else {
-				//printf("File: %s\n", sPath);
-				ext = get_filename_ext(fdFile.cFileName);
-				if (!ext)
-					continue;
-				image_type type = get_type_for_extension(ext);
-				if (type != TYPEUNDEF) {
-					if (type == TYPEAVI || type == TYPESER)
-						siril_log_color_message(_("Sequence: %s\n"), "salmon",
-								fdFile.cFileName);
-					else if (type == TYPEFITS)
-						siril_log_color_message(_("Image: %s\n"), "plum", fdFile.cFileName);
-					else
-						siril_log_color_message(_("Image: %s\n"), "red", fdFile.cFileName);
-				} else if (!strncmp(ext, "seq", 4))
-					siril_log_color_message(_("Sequence: %s\n"), "blue", fdFile.cFileName);
-			}
-		}
-	} while (FindNextFile(hFind, &fdFile)); //Find the next file.
-
-	FindClose(hFind);
-
-	return 0;
-}
-
-int ListSequences(const gchar *sDir, const char *sequence_name_to_select, GtkComboBoxText *seqcombo,
-		int *index_of_seq_to_load) {
-	WIN32_FIND_DATA fdFile;
-	HANDLE hFind = NULL;
-	char sPath[2048];
-	char filename[256];
-	int number_of_loaded_sequences = 0;
-
-	//Specify a file mask. *.* = We want everything!
-	sprintf(sPath, "%s\\*.*", sDir);
-
-	if ((hFind = FindFirstFile(sPath, &fdFile)) == INVALID_HANDLE_VALUE) {
-		printf("Path not found: [%s]\n", sDir);
-		return 1;
-	}
-
-	do {
-		//Find first file will always return "."
-		//    and ".." as the first two directories.
-		if (strcmp(fdFile.cFileName, ".") != 0
-				&& strcmp(fdFile.cFileName, "..") != 0) {
-			//Build up our file path using the passed in
-			//  [sDir] and the file/foldername we just found:
-			sprintf(sPath, "%s\\%s", sDir, fdFile.cFileName);
-
-			//Is the entity a File or Folder?
-			if (!(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-				char *suf;
-
-				if ((suf = strstr(fdFile.cFileName, ".seq")) && strlen(suf) == 4) {
-					sequence *seq = readseqfile(fdFile.cFileName);
-					if (seq != NULL) {
-						strncpy(filename, fdFile.cFileName, 255);
-						free_sequence(seq, TRUE);
-						gtk_combo_box_text_append_text(seqcombo, filename);
-						if (sequence_name_to_select
-								&& !strncmp(filename, sequence_name_to_select,
-										strlen(filename))) {
-							*index_of_seq_to_load = number_of_loaded_sequences;
-						}
-						++number_of_loaded_sequences;
-					}
-				}
-			}
-		}
-	} while (FindNextFile(hFind, &fdFile)); //Find the next file.
-
-	FindClose(hFind);
-
-	return number_of_loaded_sequences;
-}
-
-#endif
