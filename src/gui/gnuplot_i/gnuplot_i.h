@@ -34,7 +34,7 @@
 #define GP_MAX_TMP_FILES    64
 
 #ifdef WIN32
-#define GNUPLOT_NAME "C:\\Program Files\\gnuplot\\bin\\wgnuplot.exe -persist" // FIXME
+#define GNUPLOT_NAME "\"C:\\Program Files\\gnuplot\\bin\\gnuplot.exe\" -persist" // FIXME
 #else
 #define GNUPLOT_NAME "gnuplot"
 #endif

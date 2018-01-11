@@ -42,11 +42,13 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <unistd.h>
-#include <glib.h> // g_get_tmp_dir
 
 #ifdef WIN32
 #include <io.h>
 #endif // #ifdef WIN32
+
+#include <glib.h> // g_get_tmp_dir
+#include <glib/gstdio.h>
 
 #ifdef WIN32
 #ifndef pclose
@@ -430,7 +432,7 @@ void gnuplot_plot_x(
 
     /* Open temporary file for output   */
     tmpfname = gnuplot_tmpfile(handle);
-    tmpfd = fopen(tmpfname, "w");
+    tmpfd = g_fopen(tmpfname, "w");
 
     if (tmpfd == NULL) {
         fprintf(stderr,"cannot create temporary file: exiting plot") ;
@@ -495,7 +497,7 @@ void gnuplot_plot_xy(
 
     /* Open temporary file for output   */
     tmpfname = gnuplot_tmpfile(handle);
-    tmpfd = fopen(tmpfname, "w");
+    tmpfd = g_fopen(tmpfname, "w");
 
     if (tmpfd == NULL) {
         fprintf(stderr,"cannot create temporary file: exiting plot") ;
@@ -547,7 +549,7 @@ void gnuplot_plot_xyyerr(
 
     /* Open temporary file for output   */
     tmpfname = gnuplot_tmpfile(handle);
-    tmpfd = fopen(tmpfname, "w");
+    tmpfd = g_fopen(tmpfname, "w");
 
     if (tmpfd == NULL) {
         fprintf(stderr,"cannot create temporary file: exiting plot") ;
@@ -676,7 +678,7 @@ int gnuplot_write_x_csv(
         return -1;
     }
 
-    fileHandle = fopen(fileName, "w");
+    fileHandle = g_fopen(fileName, "w");
 
     if (fileHandle == NULL)
     {
@@ -715,7 +717,7 @@ int gnuplot_write_xy_csv(
         return -1;
     }
 
-    fileHandle = fopen(fileName, "w");
+    fileHandle = g_fopen(fileName, "w");
 
     if (fileHandle == NULL)
     {
@@ -754,7 +756,7 @@ int gnuplot_write_xy_dat(
         return -1;
     }
 
-    fileHandle = fopen(fileName, "w");
+    fileHandle = g_fopen(fileName, "w");
 
     if (fileHandle == NULL)
     {
@@ -794,7 +796,7 @@ int gnuplot_write_xyyerr_dat(
         return -1;
     }
 
-    fileHandle = fopen(fileName, "w");
+    fileHandle = g_fopen(fileName, "w");
 
     if (fileHandle == NULL)
     {
@@ -842,7 +844,7 @@ int gnuplot_write_multi_csv(
         }
     }
 
-    fileHandle = fopen(fileName, "w");
+    fileHandle = g_fopen(fileName, "w");
 
     if (fileHandle == NULL)
     {
@@ -873,12 +875,10 @@ int gnuplot_write_multi_csv(
 
 char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
 {
-    static char const * tmp_filename_template = "/gnuplot_tmpdatafile_XXXXXX";
-    char const        * tmp_dir = g_get_tmp_dir();
+    static char const * tmp_filename_template = "gnuplot_tmpdatafile_XXXXXX";
     char *              tmp_filename = NULL;
-    int                 tmp_filelen = strlen(tmp_filename_template) + strlen(tmp_dir);
-
 #ifndef WIN32
+    char const        * tmp_dir = g_get_tmp_dir();
     int                 unx_fd;
 #endif // #ifndef WIN32
 
@@ -892,13 +892,14 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
         return NULL;
     }
 
-    tmp_filename = (char*) malloc(tmp_filelen + 1);
-    if (tmp_filename == NULL)
-    {
-        return NULL;
-    }
-    strcpy(tmp_filename, tmp_dir);
-    strcat(tmp_filename, tmp_filename_template);
+/* FIXME: Due to a bug with some \tmp files we create temporary files in
+the root dorectory of images for windows. Indeed, here \tmp is read as
+tab character + mp in gnuplot command line */
+#ifdef WIN32
+    tmp_filename = g_build_filename(tmp_filename_template, NULL);
+#else
+    tmp_filename = g_build_filename(tmp_dir, tmp_filename_template, NULL);
+#endif
 
 #ifdef WIN32
     if (_mktemp(tmp_filename) == NULL)
