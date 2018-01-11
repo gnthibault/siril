@@ -382,8 +382,8 @@ static int ListSequences(const gchar *sDir, const char *sequence_name_to_select,
 	int number_of_loaded_sequences = 0;
 	wchar_t *wpath;
 
-	//Specify a file mask. *.* = We want everything!
-	sprintf(sPath, "%s\\*.*", sDir);
+	//Specify a file mask. *.seq = We want only seq file!
+	sprintf(sPath, "%s\\*.seq", sDir);
 
 	wpath = g_utf8_to_utf16(sPath, -1, NULL, NULL, NULL);
 	if (wpath == NULL)
@@ -397,50 +397,26 @@ static int ListSequences(const gchar *sDir, const char *sequence_name_to_select,
 	g_free(wpath);
 
 	do {
-		//Find first file will always return "."
-		//    and ".." as the first two directories.
-
-		// use the short DOS 8.3 path name to avoid problems converting UTF-16 filenames to the ANSI filenames expected by CFITTSIO
-		DWORD shortlen = GetShortPathNameW(fdFile.cFileName, 0, 0);
-
-		if (!shortlen) {
-			return 1;
-		}
-		LPWSTR shortpath = g_new(WCHAR, shortlen);
-		GetShortPathNameW(fdFile.cFileName, shortpath, shortlen);
-		int slen = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS,
-				shortpath, shortlen, 0, 0, 0, 0);
-		gchar *cFileName = g_new(gchar, slen + 1);
-		WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath, shortlen,
-				cFileName, slen, 0, 0);
-		g_free(shortpath);
-
-		if (strcmp(cFileName, ".") != 0 && strcmp(cFileName, "..") != 0) {
-			//Build up our file path using the passed in
-			//  [sDir] and the file/foldername we just found:
-			//sprintf(sPath, "%s\\%s", sDir, cFileName);
-
-			//Is the entity a File or Folder?
-			if (!(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-				char *suf;
-
-				if ((suf = strstr(cFileName, ".seq")) && strlen(suf) == 4) {
-					sequence *seq = readseqfile(cFileName);
-					if (seq != NULL) {
-						strncpy(filename, cFileName, 255);
-						free_sequence(seq, TRUE);
-						gtk_combo_box_text_append_text(seqcombo, filename);
-						if (sequence_name_to_select
-								&& !strncmp(filename, sequence_name_to_select,
-										strlen(filename))) {
-							*index_of_seq_to_load = number_of_loaded_sequences;
-						}
-						++number_of_loaded_sequences;
-					}
-				}
+		//Is the entity a File or Folder?
+		if (!(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+			gchar *cFileName = g_utf16_to_utf8(fdFile.cFileName, -1, NULL, NULL, NULL);
+			if (cFileName == NULL) {
+				return 1;
 			}
+			sequence *seq = readseqfile(cFileName);
+			if (seq != NULL) {
+				strncpy(filename, cFileName, 255);
+				free_sequence(seq, TRUE);
+				gtk_combo_box_text_append_text(seqcombo, filename);
+				if (sequence_name_to_select
+						&& !strncmp(filename, sequence_name_to_select,
+								strlen(filename))) {
+					*index_of_seq_to_load = number_of_loaded_sequences;
+				}
+				++number_of_loaded_sequences;
+			}
+			g_free(cFileName);
 		}
-		g_free(cFileName);
 	} while (FindNextFileW(hFind, &fdFile)); //Find the next file.
 
 	FindClose(hFind);
