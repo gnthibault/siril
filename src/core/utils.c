@@ -164,7 +164,7 @@ char *f2utf8(const char *filename) {
 	char *utf8;
 
 	if (!(utf8 = g_filename_to_utf8(filename, -1, NULL, NULL, NULL)))
-		utf8 = g_strdup(_("<charset conversion error>"));
+		utf8 = g_strdup("<charset conversion error>");
 
 	return (utf8);
 }

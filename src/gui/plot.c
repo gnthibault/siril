@@ -258,8 +258,11 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	double *vmag, *err, *x, *real_x;
 
 	if (!gnuplot_is_available()) {
-		siril_log_message(_("Gnuplot is unavailable. "
-				"Please consider to install it before trying to plot a graph of a variable star.\n"));
+		char *msg = siril_log_message(_("Gnuplot is unavailable. "
+				"Please consider to install it before "
+				"trying to plot a graph of a variable star.\n"));
+
+		show_dialog(msg, _("Warning"), "gtk-dialog-warning");
 		return -1;
 	}
 
