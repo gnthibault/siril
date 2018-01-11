@@ -42,5 +42,7 @@ siril_SOURCES += io/avi_pipp/pipp_avi_write.cpp io/avi_pipp/pipp_avi_write.h io/
 siril_SOURCES += opencv/opencv.cpp opencv/opencv.h opencv/ecc/ecc.cpp opencv/ecc/ecc.h
 siril_SOURCES += opencv/findHomography/fundam.cpp opencv/findHomography/calibration.cpp opencv/findHomography/modelest.cpp opencv/findHomography/_modelest.h opencv/findHomography/calib3d.hpp opencv/findHomography/precomp.hpp
 siril_LDADD += $(OPENCV_LIBS)
-
+if OS_WIN32
+siril_LDADD += ../platform-specific/windows/siril.res
+endif
 siril_LINK = $(CXXLINK)
