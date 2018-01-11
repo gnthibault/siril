@@ -303,7 +303,7 @@ int writeseqfile(sequence *seq){
 	sprintf(filename, "%s.seq", seq->seqname);
 	seqfile = fopen(filename, "w+");	// g_fopen won't work (on WINDOWS).
 	if (seqfile == NULL) {
-		perror("writeseqfile, g_fopen");
+		perror("writeseqfile, fopen");
 		fprintf(stderr, "Writing sequence file: cannot open %s for writing\n", filename);
 		free(filename);
 		return 1;

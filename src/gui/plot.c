@@ -228,9 +228,8 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 }
 
 #ifdef WIN32
-/* returns true if the wgnuplot.exe exists */
-static gchar *possible_path[] = { "wgnuplot.exe",
-		"C:\\Program Files\\gnuplot\\bin\\wgnuplot.exe" };
+/* returns true if the gnuplot.exe exists in the wanted folder */
+static gchar *possible_path[] = { "C:\\Program Files\\gnuplot\\bin\\gnuplot.exe" };
 static gboolean gnuplot_is_available() {
 	size_t size, i = 0;
 	gboolean found = FALSE;
