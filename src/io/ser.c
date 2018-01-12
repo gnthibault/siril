@@ -410,13 +410,11 @@ static void ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 	ser_file->image_width = fit->rx;
 	ser_file->image_height = fit->ry;
 	fprintf(stdout, "setting SER image size as %dx%d\n", fit->rx, fit->ry);
-	if (fit->naxes[2] == 1) {
-		// maybe it's read as CFA...
-		ser_file->color_id = SER_MONO;
-	} else if (fit->naxes[2] == 3) {
+	// already managed during creation for monochrome formats
+	if (fit->naxes[2] == 3) {
 		ser_file->color_id = SER_RGB;
 	}
-	if (ser_file->color_id == SER_RGB || ser_file->color_id == SER_BGR)
+	if (ser_file->color_id == SER_RGB)
 		ser_file->number_of_planes = 3;
 	else ser_file->number_of_planes = 1;
 
@@ -447,20 +445,15 @@ static void ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 }
 
 static int get_SER_Bayer_Pattern(ser_color pattern) {
-
 	switch (pattern) {
 	case SER_BAYER_RGGB:
 		return BAYER_FILTER_RGGB;
-		break;
 	case SER_BAYER_BGGR:
 		return BAYER_FILTER_BGGR;
-		break;
 	case SER_BAYER_GBRG:
 		return BAYER_FILTER_GBRG;
-		break;
 	case SER_BAYER_GRBG:
 		return BAYER_FILTER_GRBG;
-		break;
 	default:
 		return BAYER_FILTER_NONE;
 	}
@@ -590,7 +583,7 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 		memcpy(ser_file->instrument, copy_from->instrument, 40);
 		memcpy(ser_file->telescope, copy_from->telescope, 40);
 		ser_file->byte_pixel_depth = copy_from->byte_pixel_depth;
-		ser_file->number_of_planes = 0;
+		ser_file->number_of_planes = 0;	// used as an indicator of new SER
 
 		if (copy_from->ts && copy_from->frame_count > 0) {
 			ser_file->ts = calloc(8, copy_from->frame_count);
@@ -603,6 +596,7 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 	} else {	// new SER
 		ser_file->file_id = strdup("Made by Siril");
 		ser_file->lu_id = 0;
+		ser_file->color_id = SER_MONO;	// this is 0
 		ser_file->little_endian = SER_LITTLE_ENDIAN; // what will it do on big endian machine?
 		memset(ser_file->observer, 0, 40);
 		memset(ser_file->instrument, 0, 40);
@@ -1055,10 +1049,13 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 	offset = SER_HEADER_LEN	+ frame_size *
 			(int64_t)ser_file->byte_pixel_depth * (int64_t)frame_no;
 
-	if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8)
+	if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) {
 		data8 = malloc(frame_size * ser_file->byte_pixel_depth);
-	else
+		if (!data8) return -1;
+	} else {
 		data16 = malloc(frame_size * ser_file->byte_pixel_depth);
+		if (!data16) return -1;
+	}
 
 	for (plane = 0; plane < ser_file->number_of_planes; plane++) {
 		dest = plane;
