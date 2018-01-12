@@ -141,14 +141,14 @@ static int FITS_date_key_to_Unix_time(char *date, uint64_t *utc,
 	ut = __timegm(&timeinfo);
 	ut *= ticksPerSecond;
 	ut += epochTicks;
-	ut += ms * 100000;
+	ut += ms * 10000;
 	*utc = (uint64_t) ut;
 
 	/* get local time from timeinfo* */
 	t = mktime(&timeinfo);
 	t *= ticksPerSecond;
 	t += epochTicks;
-	t += ms * 100000;
+	t += ms * 10000;
 	*local = (uint64_t) t;
 
 	return 0;
