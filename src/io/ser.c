@@ -117,20 +117,22 @@ static int FITS_date_key_to_Unix_time(char *date, uint64_t *utc,
 		uint64_t *local) {
 	struct tm timeinfo = { };
 	time_t ut, t;
-	int year = 0, month = 0, day = 0, hour = 0, min = 0, sec = 0, ms = 0;
+	int year = 0, month = 0, day = 0, hour = 0, min = 0, ms = 0;
+	float sec = 0.0;
 
 	if (date[0] == '\0')
 		return -1;
 
-	sscanf(date, "%04d-%02d-%02dT%02d:%02d:%02d.%d", &year, &month, &day, &hour,
-			&min, &sec, &ms);
+	sscanf(date, "%04d-%02d-%02dT%02d:%02d:%f", &year, &month, &day, &hour,
+			&min, &sec);
 
 	timeinfo.tm_year = year - 1900;
 	timeinfo.tm_mon = month - 1;
 	timeinfo.tm_mday = day;
 	timeinfo.tm_hour = hour;
 	timeinfo.tm_min = min;
-	timeinfo.tm_sec = sec;
+	timeinfo.tm_sec = (int) sec;
+	ms = ((int) (sec * 1000) % 1000);
 
 	// Hopefully these are not needed
 	timeinfo.tm_wday = 0;
