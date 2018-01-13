@@ -1590,7 +1590,7 @@ static void _show_bgnoise(gpointer p) {
 	start_in_new_thread(noise, args);
 }
 
-static void remove_tmp_drizzle_files(struct stacking_args *args) {
+static void remove_tmp_drizzle_files(struct stacking_args *args, gboolean remove_seqfile) {
 	if (args->seq->upscale_at_stacking < 1.05)
 		return;
 
@@ -1603,13 +1603,16 @@ static void remove_tmp_drizzle_files(struct stacking_args *args) {
 
 	int i;
 	char filename[256];
-	gchar *seqname = malloc(strlen(basename) + 5);
-	g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
-	/* remove seq file */
-	g_unlink(seqname);
 
-	g_free(seqname);
-	g_free(basename);
+	if (remove_seqfile) {
+		gchar *seqname = malloc(strlen(basename) + 5);
+		g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
+		/* remove seq file */
+		g_unlink(seqname);
+
+		g_free(seqname);
+		g_free(basename);
+	}
 
 	switch (args->seq->type) {
 	default:
@@ -1676,7 +1679,7 @@ static gboolean end_stacking(gpointer p) {
 			display_filename();
 		}
 		/* remove tmp files if exist (Drizzle) */
-		remove_tmp_drizzle_files(args);
+		remove_tmp_drizzle_files(args, TRUE);
 
 		initialize_display_mode();
 
@@ -2168,7 +2171,7 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 
 		/* remove tmp files if exist (Drizzle)
 		 * seq file has already be removed */
-		remove_tmp_drizzle_files(stackargs);
+		remove_tmp_drizzle_files(stackargs, FALSE);
 
 		sequence *newseq = readseqfile(seqname);
 		if (!newseq) {
