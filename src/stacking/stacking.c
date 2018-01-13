@@ -2145,11 +2145,6 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
 
-	gchar *basename = g_path_get_basename(args->seq->seqname);
-	char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
-	sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
-	g_unlink(seqname);
-	g_free(basename);
 
 	generic_sequence_worker(args);
 	int retval = args->retval;
@@ -2158,12 +2153,23 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	if (!retval) {
 		int i;
 
+		gchar *basename = g_path_get_basename(args->seq->seqname);
+		char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
+		sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
+		g_unlink(seqname);
+		g_free(basename);
+
 		// replace active sequence by upscaled
 		if (check_seq(0)) {	// builds the new .seq
 			free(seqname);
 			free(args);
 			return 1;
 		}
+
+		/* remove tmp files if exist (Drizzle)
+		 * seq file has already be removed */
+		remove_tmp_drizzle_files(stackargs);
+
 		sequence *newseq = readseqfile(seqname);
 		if (!newseq) {
 			free(seqname);
@@ -2194,8 +2200,8 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		stack_fill_list_of_unfiltered_images(stackargs);
 
 		stackargs->seq->upscale_at_stacking = args->seq->upscale_at_stacking;
+		free(seqname);
 	}
-	free(seqname);
 	free(args);
 	return retval;
 }
