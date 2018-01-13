@@ -1860,7 +1860,7 @@ int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack) {
 /* fill the image_indices mapping for the args->image_indices array, which has
  * to be already allocated to the correct size at least */
 void stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
-	int i, j, message_shown = 0;
+	int i, j;
 	int ref_image = args->seq->reference_image;
 	for (i=0, j=0; i<args->seq->number; i++) {
 		if (args->filtering_criterion(
@@ -1869,10 +1869,9 @@ void stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
 			args->image_indices[j] = i;
 			j++;
 		}
-		else if (i == ref_image && !message_shown) {
+		else if (i == ref_image) {
 			siril_log_color_message(_("The reference image is not in the selected set of images. "
 					"To avoid issues, please change it or change the filtering parameters.\n"), "red");
-			message_shown = 1;
 		}
 	}
 	g_assert(j <= args->nb_images_to_stack);
