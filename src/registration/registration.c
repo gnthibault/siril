@@ -335,7 +335,7 @@ int register_shift_dft(struct registration_args *args) {
 				}
 
 				current_regdata[frame].shiftx = (float) shiftx;
-				current_regdata[frame].shifty = (float) shifty;
+				current_regdata[frame].shifty = (float) (-shifty);
 
 				/* shiftx and shifty are the x and y values for translation that
 				 * would make this image aligned with the reference image.

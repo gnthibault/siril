@@ -805,7 +805,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	int x, y, src, dst = 0; \
 	BUFFER_TYPE *inbuf = (BUFFER_TYPE *)read_buffer; \
 	BUFFER_TYPE *out = (BUFFER_TYPE *)outbuf; \
-	for (y = area->h - 1; y >= 0; y--) { \
+	for (y = 0; y < area->h; y++) { \
 		src = y * ser_file->image_width + area->x; \
 		for (x = 0; x < area->w; x++) \
 			out[dst++] = inbuf[src++]; \
@@ -823,7 +823,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	} else { \
 		color_offset = layer; \
 	} \
-	for (y = area->h - 1; y >= 0; y--) { \
+	for (y = 0; y < area->h; y++) { \
 		src = (y * ser_file->image_width + area->x) * 3 + color_offset; \
 		for (x = 0; x < area->w; x++) { \
 			out[dst++] = inbuf[src]; \
