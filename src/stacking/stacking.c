@@ -2179,6 +2179,8 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 			free(args);
 			return 1;
 		}
+		free(seqname);
+
 		/* there are three differences between old and new sequence:
 		 * the size of images and possibly the number of images if the
 		 * stacking is done on a filtered set.
@@ -2189,7 +2191,11 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		 *   passed to stacking is treated in its entirety.
 		 * - the shifts between images that must be multiplied by upscale_at_stacking
 		 */
-		seq_check_basic_data(newseq, FALSE);
+		retval = seq_check_basic_data(newseq, FALSE);
+		if ( retval == -1) {
+			free(newseq);
+			return retval;
+		}
 		stackargs->seq = newseq;
 		stackargs->filtering_criterion = seq_filter_all;
 		stackargs->filtering_parameter = 0.0;
@@ -2203,7 +2209,7 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		stack_fill_list_of_unfiltered_images(stackargs);
 
 		stackargs->seq->upscale_at_stacking = args->seq->upscale_at_stacking;
-		free(seqname);
+
 	}
 	free(args);
 	return retval;

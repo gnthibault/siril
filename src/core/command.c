@@ -1456,8 +1456,10 @@ gpointer stackall_worker(gpointer garg) {
 			if (seq != NULL) {
 				char filename[256];
 				struct stacking_args args;
-				if (seq_check_basic_data(seq, FALSE) == -1)
+				if (seq_check_basic_data(seq, FALSE) == -1) {
+					free(seq);
 					continue;
+				}
 				siril_log_message(_("Stacking sequence %s\n"), seq->seqname);
 				args.seq = seq;
 				args.filtering_criterion = stack_filter_all;

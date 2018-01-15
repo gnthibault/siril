@@ -370,7 +370,6 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 
 		if (seq_read_frame(seq, image_to_load, fit)) {
 			fprintf(stderr, "could not load first image from sequence\n");
-			free(seq);
 			return -1;
 		}
 
@@ -409,7 +408,7 @@ static void free_cbbt_layers() {
 
 /* load a sequence and initializes everything that relates */
 int set_seq(const char *name){
-	sequence *seq;
+	sequence *seq = NULL;
 	char *basename;
 	
 	if ((seq = readseqfile(name)) == NULL) {
