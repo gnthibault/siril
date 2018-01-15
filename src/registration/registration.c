@@ -152,6 +152,13 @@ struct registration_method *get_selected_registration_method() {
 
 static void normalizeQualityData(struct registration_args *args, double q_min, double q_max) {
 	int frame;
+	double diff = q_max - q_min;
+
+	/* this case occurs when all images but one are excluded */
+	if (diff == 0) {
+		q_min = 0;
+		diff = q_max;
+	}
 
 	for (frame = 0; frame < args->seq->number; ++frame) {
 		if (args->run_in_thread && !get_thread_run()) {
@@ -161,7 +168,7 @@ static void normalizeQualityData(struct registration_args *args, double q_min, d
 			continue;
 
 		args->seq->regparam[args->layer][frame].quality -= q_min;
-		args->seq->regparam[args->layer][frame].quality /= (q_max - q_min);
+		args->seq->regparam[args->layer][frame].quality /= diff;
 	}
 }
 
@@ -892,7 +899,8 @@ int register_ecc(struct registration_args *args) {
 								_("Cannot perform ECC alignment for frame %d\n"),
 								frame);
 						/* We exclude this frame */
-						com.seq.imgparam[frame].incl = FALSE;
+						args->seq->imgparam[frame].incl = FALSE;
+						current_regdata[frame].quality = 0.0;
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
