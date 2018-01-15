@@ -207,6 +207,15 @@ static char *fits_fname(const gchar *path) {
 	return str;
 }
 
+static void report_fits_error(int status) {
+	if (status) {
+		char errmsg[FLEN_ERRMSG];
+		while (fits_read_errmsg(errmsg)) {
+			siril_log_message(_("FITS error: %s\n"), errmsg);
+		}
+	}
+}
+
 static int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode, int *status) {
 	gchar *fname = fits_fname(filename);
 	int ret = fits_open_diskfile(fptr, fname, iomode, status);
@@ -251,6 +260,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	if (realname)
 		strcpy(realname, name);
 	status = 0;
+
 	siril_fits_open_diskfile(&(fit->fptr), name, READONLY, &status);
 	if (status) {
 		report_fits_error(status);
@@ -488,15 +498,6 @@ void clearfits(fits *fit) {
 	if (fit->header)
 		free(fit->header);
 	memset(fit, 0, sizeof(fits));
-}
-
-void report_fits_error(int status) {
-	if (status) {
-		char errmsg[FLEN_ERRMSG];
-		while (fits_read_errmsg(errmsg)) {
-			siril_log_message(_("FITS error: %s\n"), errmsg);
-		}
-	}
 }
 
 /* Read a rectangular section of a FITS image in Siril's format, pointed by its

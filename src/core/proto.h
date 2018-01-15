@@ -20,7 +20,6 @@
 int	readfits(const char *filename, fits *fit, char *realname);
 char*	list_header(fits *fit);
 void	clearfits(fits *);
-void	report_fits_error(int status);
 int	readfits_partial(const char *filename, int layer, fits *fit, const rectangle *area, gboolean read_date);
 int	read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area);
 int	fits_get_date_obs(const char *name, fits *f);
