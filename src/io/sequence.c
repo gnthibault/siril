@@ -1338,9 +1338,9 @@ int seqpsf_image_hook(struct generic_seq_args *args, int index, fits *fit, recta
 	if (data->psf) {
 		data->psf->xpos = data->psf->x0 + area->x;
 		// for Y, it's a bit special because FITS are upside-down
-		if (args->seq->type == SEQ_REGULAR)
-			data->psf->ypos = area->y + area->h - data->psf->y0;
-		else data->psf->ypos = data->psf->y0 + area->y;
+		if (args->seq->type == SEQ_SER)
+			data->psf->ypos = data->psf->y0 + area->y;
+		else data->psf->ypos = area->y + area->h - data->psf->y0;
 
 		/* let's move args->area to center it on the star */
 		if (spsfargs->framing == FOLLOW_STAR_FRAME) {

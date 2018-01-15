@@ -334,8 +334,11 @@ int register_shift_dft(struct registration_args *args) {
 					shiftx -= size;
 				}
 
+				/* for Y, it's a bit special because FITS are upside-down */
+				float sign = args->seq->type == SEQ_SER ? -1 : 1;
+
 				current_regdata[frame].shiftx = (float) shiftx;
-				current_regdata[frame].shifty = (float) (-shifty);
+				current_regdata[frame].shifty = (float) shifty * sign;
 
 				/* shiftx and shifty are the x and y values for translation that
 				 * would make this image aligned with the reference image.
