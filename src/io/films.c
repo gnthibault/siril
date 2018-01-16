@@ -123,8 +123,8 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 	filename = strdup(sourcefile);
 #endif
 	char *idxfilename;
-	idxfilename = malloc(strlen(filename) + 5);
-	sprintf(idxfilename, "%s.idx", filename);
+	idxfilename = malloc(strlen(sourcefile) + 5);
+	sprintf(idxfilename, "%s.idx", sourcefile);
 	index = FFMS_ReadIndex(idxfilename, &film->errinfo);
 	if (index == NULL) {
 #ifdef HAVE_FFMS2_2
@@ -251,7 +251,8 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 		return FILM_ERROR;
 	}
 
-	film->filename = filename;
+	film->filename = strdup(sourcefile);
+	free(filename);
 	fprintf(stdout, "FILM: successfully opened the video file %s, %d frames\n",
 			film->filename, film->frame_count);
 	return FILM_SUCCESS;
