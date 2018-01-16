@@ -133,7 +133,7 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 		if (indexer == NULL) {
 #else
 		/* we need to create the index */
-		index = FFMS_MakeIndex(sourcefile, 0, 0, NULL, NULL,
+		index = FFMS_MakeIndex(filename, 0, 0, NULL, NULL,
 				FFMS_IEH_ABORT, NULL, NULL, &film->errinfo);
 		if (index == NULL) {
 #endif
