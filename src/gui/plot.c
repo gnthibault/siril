@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/wait.h>
 #endif
 
@@ -227,7 +227,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 	plot->nb = j;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 /* returns true if the gnuplot.exe exists in the wanted folder */
 static gchar *possible_path[] = { "C:\\Program Files\\gnuplot\\bin\\gnuplot.exe" };
 static gboolean gnuplot_is_available() {

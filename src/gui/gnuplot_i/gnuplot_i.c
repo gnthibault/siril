@@ -43,18 +43,18 @@
 #include <assert.h>
 #include <unistd.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <io.h>
-#endif // #ifdef WIN32
+#endif // #ifdef _WIN32
 
 #include <glib.h> // g_get_tmp_dir
 #include <glib/gstdio.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #ifndef pclose
 #define pclose(f) _pclose(f)
 #endif /*pclose*/
-#endif /*WIN32*/
+#endif /*_WIN32*/
 
 /*---------------------------------------------------------------------------
                                 Defines
@@ -91,7 +91,7 @@ void gnuplot_plot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char
  ---------------------------------------------------------------------------*/
 
 FILE *siril_popen(const gchar *command, const gchar *type) {
-#ifdef WIN32
+#ifdef _WIN32
 	wchar_t *wcommand, *wtype;
 	FILE *f;
 
@@ -134,11 +134,11 @@ gnuplot_ctrl * gnuplot_init(void)
     gnuplot_ctrl *  handle ;
     int i;
 
-#ifndef WIN32
+#ifndef _WIN32
     if (getenv("DISPLAY") == NULL) {
         fprintf(stderr, "cannot find DISPLAY variable: is it set?\n") ;
     }
-#endif // #ifndef WIN32
+#endif // #ifndef _WIN32
 
 
     /*
@@ -877,10 +877,10 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
 {
     static char const * tmp_filename_template = "gnuplot_tmpdatafile_XXXXXX";
     char *              tmp_filename = NULL;
-#ifndef WIN32
+#ifndef _WIN32
     char const        * tmp_dir = g_get_tmp_dir();
     int                 unx_fd;
-#endif // #ifndef WIN32
+#endif // #ifndef _WIN32
 
     assert(handle->tmp_filename_tbl[handle->ntmp] == NULL);
 
@@ -895,18 +895,18 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
 /* FIXME: Due to a bug with some \tmp files we create temporary files in
 the root dorectory of images for windows. Indeed, here \tmp is read as
 tab character + mp in gnuplot command line */
-#ifdef WIN32
+#ifdef _WIN32
     tmp_filename = g_build_filename(tmp_filename_template, NULL);
 #else
     tmp_filename = g_build_filename(tmp_dir, tmp_filename_template, NULL);
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
     if (_mktemp(tmp_filename) == NULL)
     {
         return NULL;
     }
-#else // #ifdef WIN32
+#else // #ifdef _WIN32
     unx_fd = mkstemp(tmp_filename);
     if (unx_fd == -1)
     {
@@ -915,7 +915,7 @@ tab character + mp in gnuplot command line */
     }
     close(unx_fd);
 
-#endif // #ifdef WIN32
+#endif // #ifdef _WIN32
 
     handle->tmp_filename_tbl[handle->ntmp] = tmp_filename;
     handle->ntmp ++;

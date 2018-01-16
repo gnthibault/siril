@@ -114,7 +114,7 @@ command commande[] = {
 	// extension to a higher priority in case two files with same basename
 	// exist (stat_file() manages that priority order for now).
 	{"log", 0, "log ", process_log}, /* logarifies current image */
-#ifndef WIN32
+#ifndef _WIN32
 	{"ls", 0, "ls ", process_ls},
 #endif
 	
@@ -545,7 +545,7 @@ int process_log(int nb){
 	return 0;
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 int process_ls(int nb){
 	struct dirent **list;
 	gchar *path = NULL;

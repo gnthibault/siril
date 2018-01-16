@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <io.h>
 #endif
 
@@ -44,7 +44,7 @@
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 #define lseek64 _lseeki64
 #else
 #define lseek64 lseek
@@ -91,7 +91,7 @@ static int display_date(uint64_t timestamp, char *txt) {
  * This is not thread-safe
  */
 static time_t __timegm(struct tm *tm) {
-#ifdef WIN32
+#ifdef _WIN32
 	return _mkgmtime(tm);
 #else
 	time_t ret;

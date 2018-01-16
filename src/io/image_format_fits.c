@@ -25,7 +25,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <gsl/gsl_statistics.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -178,7 +178,7 @@ static void read_fits_header(fits *fit) {
 
 static char *fits_fname(const gchar *path) {
 	gchar *str;
-#ifdef WIN32
+#ifdef _WIN32
 	wchar_t *wpath;
 
 	wpath = g_utf8_to_utf16(path, -1, NULL, NULL, NULL);
@@ -201,9 +201,9 @@ static char *fits_fname(const gchar *path) {
 		str = NULL;
 	}
 	g_free(wpath);
-#else // WIN32
+#else // _WIN32
 	str = g_strdup(path);
-#endif // WIN32
+#endif // _WIN32
 	return str;
 }
 

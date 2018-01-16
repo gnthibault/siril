@@ -35,7 +35,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dirent.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <psapi.h>
 #else
@@ -227,7 +227,7 @@ int is_readable_file(const char *filename) {
 	if (g_stat(filename, &sts))
 		return 0;
 	if (S_ISREG (sts.st_mode)
-#ifndef WIN32
+#ifndef _WIN32
 			|| S_ISLNK(sts.st_mode)
 #endif
 	)
@@ -372,7 +372,7 @@ int changedir(const char *dir, gchar **err) {
 	return retval;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 static int ListSequences(const gchar *sDir, const char *sequence_name_to_select,
 		GtkComboBoxText *seqcombo, int *index_of_seq_to_load) {
 	WIN32_FIND_DATAW fdFile;
@@ -443,7 +443,7 @@ int update_sequences_list(const char *sequence_name_to_select) {
 			gtk_builder_get_object(builder, "sequence_list_combobox"));
 	gtk_combo_box_text_remove_all(seqcombo);
 
-#ifdef WIN32
+#ifdef _WIN32
 	number_of_loaded_sequences = ListSequences(com.wd, sequence_name_to_select, seqcombo, &index_of_seq_to_load);
 #else
 	int i, n;
@@ -524,7 +524,7 @@ static double find_space(const gchar *name) {
 
 	return (sz);
 }
-#elif defined WIN32
+#elif defined _WIN32
 static double find_space(const gchar *name) {
 	ULARGE_INTEGER avail;
 	double sz;
@@ -585,7 +585,7 @@ static unsigned long update_used_RAM_memory() {
 	getrusage(RUSAGE_SELF, &usage);
 	return ((unsigned long) usage.ru_maxrss);
 }
-#elif defined(WIN32) /* Windows */
+#elif defined(_WIN32) /* Windows */
 static unsigned long update_used_RAM_memory() {
     PROCESS_MEMORY_COUNTERS memCounter;
     
@@ -699,7 +699,7 @@ int get_available_memory_in_MB() {
 	}
 	return mem;
 }
-#elif defined(WIN32) /* Windows */
+#elif defined(_WIN32) /* Windows */
 int get_available_memory_in_MB() {
 	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	MEMORYSTATUSEX memStatusEx = {0};

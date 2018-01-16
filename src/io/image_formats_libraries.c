@@ -166,7 +166,7 @@ static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 }
 
 static TIFF* Siril_TIFFOpen(const char *name, const char *mode) {
-#ifdef WIN32
+#ifdef _WIN32
 	wchar_t *wname;
 
 	wname = g_utf8_to_utf16(name, -1, NULL, NULL, NULL);
@@ -685,7 +685,7 @@ static void get_FITS_date(time_t date, char *date_obs) {
 }
 
 static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
-#if defined(WIN32) && !defined(__MINGW32__) && defined(_MSC_VER) && (_MSC_VER > 1310)
+#if defined(_WIN32) && !defined(__MINGW32__) && defined(_MSC_VER) && (_MSC_VER > 1310)
 	wchar_t *wname;
 
 	wname = g_utf8_to_utf16(name, -1, NULL, NULL, NULL);

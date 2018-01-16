@@ -27,7 +27,7 @@
 #ifdef MAC_INTEGRATION
 #include "gtkmacintegration/gtkosxapplication.h"
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <tchar.h>
 #endif
@@ -116,7 +116,7 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 #endif
 
 char *siril_sources[] = {
-#ifdef WIN32
+#ifdef _WIN32
     "../share/siril",
 #elif (defined(__APPLE__) && defined(__MACH__))
 	"/tmp/siril/Contents/Resources/share/siril/",
@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
 	gboolean forcecwd = FALSE;
 	char *cwd_forced = NULL;
 	
-#ifdef WIN32
+#ifdef _WIN32
 	_putenv_s("LC_NUMERIC", "C");
     setlocale( LC_ALL, "" );
 
