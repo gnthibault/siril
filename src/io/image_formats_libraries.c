@@ -684,7 +684,37 @@ static void get_FITS_date(time_t date, char *date_obs) {
 			t->tm_sec);
 }
 
+#ifdef _WIN32
+static char *raw_fname(const gchar *path) {
+	gchar *str;
+	wchar_t *wpath;
+
+	wpath = g_utf8_to_utf16(path, -1, NULL, NULL, NULL);
+	if (wpath == NULL)
+		return NULL;
+
+	// use the short DOS 8.3 path name to avoid problems converting UTF-16 filenames to the ANSI filenames expected by standard libraw_open_file
+	DWORD shortlen = GetShortPathNameW(wpath, 0, 0);
+
+	if (shortlen) {
+		LPWSTR shortpath = g_new(WCHAR, shortlen);
+		GetShortPathNameW(wpath, shortpath, shortlen);
+		int slen = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS,
+				shortpath, shortlen, 0, 0, 0, 0);
+		str = g_new(gchar, slen + 1);
+		WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath, shortlen,
+				str, slen, 0, 0);
+		g_free(shortpath);
+	} else {
+		str = NULL;
+	}
+	g_free(wpath);
+	return str;
+}
+#endif // _WIN32
+
 static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
+/* libraw_open_wfile is not defined on all windows compilers */
 #if defined(_WIN32) && !defined(__MINGW32__) && defined(_MSC_VER) && (_MSC_VER > 1310)
 	wchar_t *wname;
 
@@ -695,6 +725,11 @@ static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
 
 	int ret = libraw_open_wfile(rawdata, wname);
 	g_free(wname);
+	return ret;
+#elif defined(_WIN32)
+	gchar *fname = raw_fname(name);
+	int ret = libraw_open_file(rawdata, fname);
+	g_free(fname);
 	return ret;
 #else
 	return(libraw_open_file(rawdata, name));
