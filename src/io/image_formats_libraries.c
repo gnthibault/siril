@@ -684,13 +684,32 @@ static void get_FITS_date(time_t date, char *date_obs) {
 			t->tm_sec);
 }
 
+static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
+#ifdef WIN32
+	wchar_t *wname;
+
+	wname = g_utf8_to_utf16(name, -1, NULL, NULL, NULL);
+	if (wname == NULL) {
+		return NULL;
+	}
+
+	int ret = libraw_open_wfile(rawdata, wname);
+	g_free(wname);
+	return ret;
+#else
+	return(libraw_open_file(rawdata, name));
+#endif
+}
+
 static int readraw(const char *name, fits *fit) {
 	ushort width, height;
 	int npixels, i;
 	WORD *data=NULL;
 	libraw_data_t *raw = libraw_init(0);
 	libraw_processed_image_t *image = NULL;
-	int ret = libraw_open_file(raw, name);
+	int ret;
+
+	ret = siril_libraw_open_file(raw, name);
 	if (ret) {
 		siril_log_message(_("Error in libraw %s\n"), libraw_strerror(ret));
 		libraw_recycle(raw);
@@ -858,7 +877,9 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 	ushort width, height;
 	int npixels;
 	WORD *data = NULL;
-	int ret = libraw_open_file(raw, name);
+	int ret;
+
+	ret = siril_libraw_open_file(raw, name);
 	
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
