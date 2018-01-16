@@ -27,6 +27,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
@@ -51,6 +54,35 @@ int get_nb_film_ext_supported() {
 static void film_init_struct(struct film_struct *film) {
 	memset(film, 0, sizeof(struct film_struct));
 }
+
+#ifdef _WIN32
+static char *film_fname(const gchar *path) {
+	gchar *str;
+	wchar_t *wpath;
+
+	wpath = g_utf8_to_utf16(path, -1, NULL, NULL, NULL);
+	if (wpath == NULL)
+		return NULL;
+
+	// use the short DOS 8.3 path name to avoid problems converting UTF-16 filenames to the ANSI filenames expected
+	DWORD shortlen = GetShortPathNameW(wpath, 0, 0);
+
+	if (shortlen) {
+		LPWSTR shortpath = g_new(WCHAR, shortlen);
+		GetShortPathNameW(wpath, shortpath, shortlen);
+		int slen = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS,
+				shortpath, shortlen, 0, 0, 0, 0);
+		str = g_new(gchar, slen + 1);
+		WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath, shortlen,
+				str, slen, 0, 0);
+		g_free(shortpath);
+	} else {
+		str = NULL;
+	}
+	g_free(wpath);
+	return str;
+}
+#endif // _WIN32
 
 /* Check different film extensions supported in supported_film[].
  * The function return 0 if an extension is found, 1 else */
@@ -83,14 +115,21 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 #ifdef HAVE_FFMS2_2
 	FFMS_Indexer *indexer;
 #endif
+
+	char *filename;
+#ifdef _WIN32
+	filename = film_fname(sourcefile);
+#else
+	filename = strdup(sourcefile);
+#endif
 	char *idxfilename;
-	idxfilename = malloc(strlen(sourcefile) + 5);
-	sprintf(idxfilename, "%s.idx", sourcefile);
+	idxfilename = malloc(strlen(filename) + 5);
+	sprintf(idxfilename, "%s.idx", filename);
 	index = FFMS_ReadIndex(idxfilename, &film->errinfo);
 	if (index == NULL) {
 #ifdef HAVE_FFMS2_2
 		/* we need to create the indexer */
-		indexer = FFMS_CreateIndexer(sourcefile, &film->errinfo);
+		indexer = FFMS_CreateIndexer(filename, &film->errinfo);
 		if (indexer == NULL) {
 #else
 		/* we need to create the index */
@@ -101,6 +140,7 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 			/* handle error (print errinfo.Buffer somewhere) */
 			fprintf(stderr, "FILM error: %s\n", film->errmsg);
 			free(idxfilename);
+			free(filename);
 			return FILM_ERROR;
 		}
 #ifdef HAVE_FFMS2_2
@@ -110,6 +150,7 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 			/* handle error (print errinfo.Buffer somewhere) */
 			fprintf(stderr, "FILM error: %s\n", film->errmsg);
 			free(idxfilename);
+			free(filename);
 			return FILM_ERROR;
 		}
 #endif
@@ -128,14 +169,16 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 		/* no video tracks found in the file, this is bad and you should handle it */
 		/* (print the errmsg somewhere) */
 		fprintf(stderr, "FILM error: %s\n", film->errmsg);
+		free(filename);
 		return FILM_ERROR;
 	}
 
 	/* We now have enough information to create the video source object */
-	film->videosource = FFMS_CreateVideoSource(sourcefile, trackno, index, 1, FFMS_SEEK_NORMAL, &film->errinfo);
+	film->videosource = FFMS_CreateVideoSource(filename, trackno, index, 1, FFMS_SEEK_NORMAL, &film->errinfo);
 	if (film->videosource == NULL) {
 		/* handle error (you should know what to do by now) */
 		fprintf(stderr, "FILM error: %s\n", film->errmsg);
+		free(filename);
 		return FILM_ERROR;
 	}
 
@@ -175,6 +218,7 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 		film->nb_layers = 0;
 		film->pixfmt = 0;
 		fprintf(stderr, "FILM: 16-bit pixel depth films are not supported yet.\n");
+		free(filename);
 		return FILM_ERROR;
 	}
 	else if (propframe->EncodedPixelFormat == pixfmt_gray) {
@@ -203,10 +247,11 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 			FFMS_RESIZER_BICUBIC, &film->errinfo)) {
 		/* handle error */
 		fprintf(stderr, "FILM error: %s\n", film->errmsg);
+		free(filename);
 		return FILM_ERROR;
 	}
 
-	film->filename = strdup(sourcefile);
+	film->filename = filename;
 	fprintf(stdout, "FILM: successfully opened the video file %s, %d frames\n",
 			film->filename, film->frame_count);
 	return FILM_SUCCESS;

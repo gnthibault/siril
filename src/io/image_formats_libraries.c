@@ -714,7 +714,7 @@ static char *raw_fname(const gchar *path) {
 #endif // _WIN32
 
 static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
-/* libraw_open_wfile is not defined on all windows compilers */
+/* libraw_open_wfile is not defined for all windows compilers */
 #if defined(_WIN32) && !defined(__MINGW32__) && defined(_MSC_VER) && (_MSC_VER > 1310)
 	wchar_t *wname;
 
