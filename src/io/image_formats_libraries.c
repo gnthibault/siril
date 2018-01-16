@@ -690,7 +690,7 @@ static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
 
 	wname = g_utf8_to_utf16(name, -1, NULL, NULL, NULL);
 	if (wname == NULL) {
-		return NULL;
+		return 1;
 	}
 
 	int ret = libraw_open_wfile(rawdata, wname);
