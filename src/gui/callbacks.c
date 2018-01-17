@@ -1712,6 +1712,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menu_save_tiff"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_save_bmp"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_save_jpg"), any_image_is_loaded);
+	gtk_widget_set_sensitive(lookup_widget("menu_save_png"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_save_pbm"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_FITS_header"), any_image_is_loaded && gfit.header != NULL);
 
