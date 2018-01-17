@@ -74,7 +74,7 @@ command commande[] = {
 	{"clearstar", 0, "clearstar", process_clearstar},
 	{"contrast", 0, "contrast", process_contrast},
 	{"cosme", 1, "cosme [filename].lst", process_cosme},
-	{"cosme_cfa", 1, "cosme [filename].lst", process_cosme},
+	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme},
 	{"crop", 0, "crop [x y width height]", process_crop}, 
 
 	{"ddp", 3, "ddp level coef sigma", process_ddp}, 
