@@ -1189,6 +1189,13 @@ static void minisavedial(void) {
 				savetif(filename, &gfit, bitspersamples);
 			break;
 #endif
+#ifdef HAVE_LIBPNG
+		case TYPEPNG:
+			strcat(filename, ".png");
+			if (savedial(filename, _("PNG Files"), "*.png;*.PNG"))
+				savepng(filename, &gfit, 2, gfit.naxes[2] == 3);
+			break;
+#endif
 		case TYPEFITS:
 			if (gtk_toggle_button_get_active(fits_8))
 				gfit.bitpix = BYTE_IMG;
@@ -2417,8 +2424,12 @@ void initialize_shortcuts() {
 	gtk_widget_add_accelerator(lookup_widget("menu_rgb_savejpg"), "activate", accel,
 	GDK_KEY_j, get_default_modifier(), GTK_ACCEL_VISIBLE);
 	gtk_widget_add_accelerator(lookup_widget("menu_save_pbm"), "activate", accel,
-	GDK_KEY_p, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	GDK_KEY_n, get_default_modifier(), GTK_ACCEL_VISIBLE);
 	gtk_widget_add_accelerator(lookup_widget("menu_rgb_save8ppm"), "activate", accel,
+	GDK_KEY_n, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator(lookup_widget("menu_save_png"), "activate", accel,
+	GDK_KEY_p, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator(lookup_widget("menu_rgb_savepng"), "activate", accel,
 	GDK_KEY_p, get_default_modifier(), GTK_ACCEL_VISIBLE);
 }
 
@@ -4475,7 +4486,7 @@ void on_menu_rgb_savefits_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		savepopup = lookup_widget("savepopup");
 	}
 	if (single_image_is_loaded() || sequence_is_loaded()) {
-		gtk_window_set_title(GTK_WINDOW(savepopup), "Saving FITS");
+		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving FITS"));
 		gtk_widget_show_all(savepopup);
 		gtk_notebook_set_current_page(notebookFormat, 2);
 		whichminisave = TYPEFITS;
@@ -4509,6 +4520,25 @@ void on_menu_rgb_savetiff_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		gtk_widget_show_all(savepopup);
 		gtk_notebook_set_current_page(notebookFormat, 0);
 		whichminisave = TYPETIFF;
+	}
+}
+
+void on_menu_rgb_savepng_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	static GtkNotebook* notebookFormat = NULL;
+	static GtkWidget *savepopup = NULL;
+
+
+	if (notebookFormat == NULL) {
+		notebookFormat = GTK_NOTEBOOK(
+				gtk_builder_get_object(builder, "notebookFormat"));
+		savepopup = lookup_widget("savepopup");
+	}
+
+	if (single_image_is_loaded() || sequence_is_loaded()) {
+		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving PNG"));
+		gtk_widget_show_all(savepopup);
+		gtk_notebook_set_current_page(notebookFormat, 3);
+		whichminisave = TYPEPNG;
 	}
 }
 
@@ -4573,12 +4603,33 @@ void on_menu_rgb_savejpg_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	}
 }
 
+gboolean on_savetxt_key_press_event(GtkWidget *widget, GdkEventKey *event,
+		gpointer user_data) {
+	GtkEntry *entry = GTK_ENTRY(widget);
+	GtkWidget *button = lookup_widget("button_savepopup");
+	gboolean handled = FALSE;
+	const gchar *name;
+
+	switch (event->keyval) {
+		case GDK_KEY_Return:
+		case GDK_KEY_KP_Enter:
+			handled = TRUE;
+			gtk_widget_set_can_default(button, TRUE);
+			gtk_widget_grab_focus(widget);
+			set_cursor_waiting(TRUE);
+			minisavedial();
+			set_cursor_waiting(FALSE);
+			break;
+	}
+	return handled;
+}
+
 void on_savetxt_changed(GtkEditable *editable, gpointer user_data) {
 	GtkEntry *entry = GTK_ENTRY(editable);
 	GtkWidget *button = lookup_widget("button_savepopup");
 
 	const gchar *name = gtk_entry_get_text(entry);
-	gtk_widget_set_sensitive(button, (name[0] != '\0'));
+	gtk_widget_set_sensitive(button, (*name != '\0'));
 }
 
 void on_button_savepopup_clicked(GtkButton *button, gpointer user_data) {

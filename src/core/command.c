@@ -140,6 +140,9 @@ command commande[] = {
 #ifdef HAVE_LIBJPEG
 	{"savejpg", 1, "savejpg filename [quality] (save current display in jpg)", process_savejpg},
 #endif
+#ifdef HAVE_LIBPNG
+	{"savepng", 1, "savepng filename (save current display in png)", process_savepng},
+#endif
 	{"savepnm", 1, "savepnm filename (save current image in Netpbm)", process_savepnm},
 #ifdef HAVE_LIBTIFF
 	{"savetif", 1, "savetif filename (save current image in tif 16bits)", process_savetif},
@@ -257,6 +260,19 @@ int process_savejpg(int nb){
 	strcat(filename, ".jpg");
 	set_cursor_waiting(TRUE);
 	savejpg(filename, &gfit, quality);
+	set_cursor_waiting(FALSE);
+	return 0;
+}
+#endif
+
+#ifdef HAVE_LIBPNG
+int process_savepng(int nb){
+	char filename[256];
+
+	strcpy(filename, word[1]);
+	strcat(filename, ".png");
+	set_cursor_waiting(TRUE);
+	savepng(filename, &gfit, 2, gfit.naxes[2] == 3);
 	set_cursor_waiting(FALSE);
 	return 0;
 }

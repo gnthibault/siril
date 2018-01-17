@@ -927,6 +927,15 @@ enter a visible wavelength in nm</property>
       </object>
     </child>
     <child>
+      <object class="GtkMenuItem" id="menu_rgb_savepng">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Save RGB image to 48-bit PNG</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_menu_rgb_savepng_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="menu_rgb_save8ppm">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -6715,7 +6724,8 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
-                <property name="has_focus">True</property>
+                <property name="is_focus">True</property>
+                <property name="can_default">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_button_savepopup_clicked" swapped="no"/>
@@ -6750,6 +6760,8 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="has_focus">True</property>
+                    <property name="can_default">True</property>
+                    <property name="has_default">True</property>
                     <property name="has_tooltip">True</property>
                     <property name="tooltip_markup" translatable="yes">root name of the converted images (the &amp;apos;dest&amp;apos; in dest1.fit)</property>
                     <property name="tooltip_text" translatable="yes">root name of the converted images (the 'dest' in dest1.fit)</property>
@@ -6757,6 +6769,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="invisible_char">•</property>
                     <property name="width_chars">26</property>
                     <signal name="changed" handler="on_savetxt_changed" swapped="no"/>
+                    <signal name="key-press-event" handler="on_savetxt_key_press_event" swapped="no"/>
                   </object>
                 </child>
               </object>
@@ -10168,6 +10181,15 @@ WARNING: ensure you have a good reason to change this value because it may degra
                               </object>
                             </child>
                             <child>
+                              <object class="GtkMenuItem" id="menu_save_png">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">PNG...</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="on_menu_rgb_savepng_activate" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkMenuItem" id="menu_save_pbm">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
@@ -12160,7 +12182,7 @@ Hot pixels are located on the master-dark.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="tooltip_text" translatable="yes">Click on this button to evaluate the number of deviant pixels. If values are higher than 0.1% of the total of pixels, you will be encouraged to change sigma values.</property>
+                        <property name="tooltip_text" translatable="yes">Click on this button to evaluate the number of deviant pixels. If values are higher than 0.01% of the total of pixels, you will be encouraged to change sigma values.</property>
                         <property name="halign">center</property>
                         <signal name="clicked" handler="on_GtkButtonEvaluateCC_clicked" swapped="no"/>
                       </object>

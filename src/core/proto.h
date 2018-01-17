@@ -83,6 +83,8 @@ int savejpg(char *, fits *, int);
 
 #ifdef HAVE_LIBPNG
 int readpng(const char*, fits *);
+int savepng(const char *filename, fits *fit, uint32_t bytes_per_sample,
+		gboolean is_colour);
 #endif
 
 #ifdef HAVE_LIBRAW
