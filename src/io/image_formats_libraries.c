@@ -790,8 +790,10 @@ static int32_t save_mono_file(
 
 static WORD *fits_to_bgrbgr(fits *image) {
 	int ndata = image->rx * image->ry;
+	int i, j;
+
 	WORD *bgrbgr = malloc(ndata * 3 * sizeof(WORD));
-	for (int i = 0, j = 0; i < ndata * 3; i += 3, j++) {
+	for (i = 0, j = 0; i < ndata * 3; i += 3, j++) {
 		bgrbgr[i + 0] = image->pdata[BLAYER][j];
 		bgrbgr[i + 1] = image->pdata[GLAYER][j];
 		bgrbgr[i + 2] = image->pdata[RLAYER][j];
