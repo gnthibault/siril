@@ -1345,6 +1345,7 @@ static void new_selection_zone() {
 	for (i = 0; i < _nb_registered_callbacks; ++i) {
 		_registered_callbacks[i]();
 	}
+	redraw(com.cvport, REMAP_NONE);
 }
 
 void delete_selected_area() {
@@ -4606,10 +4607,8 @@ void on_menu_rgb_savejpg_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 gboolean on_savetxt_key_press_event(GtkWidget *widget, GdkEventKey *event,
 		gpointer user_data) {
-	GtkEntry *entry = GTK_ENTRY(widget);
 	GtkWidget *button = lookup_widget("button_savepopup");
 	gboolean handled = FALSE;
-	const gchar *name;
 
 	switch (event->keyval) {
 		case GDK_KEY_Return:
