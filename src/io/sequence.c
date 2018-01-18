@@ -590,7 +590,7 @@ double seq_compute_size(sequence *seq) {
 		if (g_stat(seq->film_file->filename, &sts) == 0) {
 			size = (double) sts.st_size;
 			frame_size = size / seq->film_file->frame_count;
-			nb_of_frame = seq->ser_file->frame_count - seq->selnum;
+			nb_of_frame = seq->film_file->frame_count - seq->selnum;
 			size -= (nb_of_frame * frame_size);
 		}
 		break;
