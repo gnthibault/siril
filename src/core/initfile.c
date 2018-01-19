@@ -65,6 +65,10 @@ static int readinitfile() {
 		if (changedir(dir, NULL)) {
 			siril_log_message(_("Reverting current working directory to startup directory, "
 					"the saved directory is not available anymore\n"));
+			if (changedir(com.wd, NULL)) {
+				fprintf(stderr, "Could not change to start-up directory, aborting\n");
+				return 1;
+			}
 			set_GUI_CWD();
 			writeinitfile();
 		}
