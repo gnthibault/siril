@@ -397,15 +397,6 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 	return 0;
 }
 
-static void free_cbbt_layers() {
-	static GtkComboBoxText *cbbt_layers = NULL;
-
-	if (cbbt_layers == NULL) {
-		cbbt_layers = GTK_COMBO_BOX_TEXT(lookup_widget("comboboxreglayer"));
-	}
-	gtk_combo_box_text_remove_all(cbbt_layers);
-}
-
 /* load a sequence and initializes everything that relates */
 int set_seq(const char *name){
 	sequence *seq = NULL;
@@ -438,7 +429,6 @@ int set_seq(const char *name){
 			seq->end);
 	g_free(basename);
 
-	free_cbbt_layers();
 	/* Sequence is stored in com.seq for now */
 	free_sequence(&com.seq, FALSE);
 	memcpy(&com.seq, seq, sizeof(sequence));

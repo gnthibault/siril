@@ -1886,7 +1886,7 @@ void stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
  * images to include in a processing, computes the highest FWHM value accepted.
  */
 double compute_highest_accepted_fwhm(double percent) {
-	int i, layer;
+	int i, layer, number_images_with_fwhm_data;
 	double *val = malloc(com.seq.number * sizeof(double));
 	double highest_accepted;
 	layer = get_registration_layer();
@@ -1897,7 +1897,6 @@ double compute_highest_accepted_fwhm(double percent) {
 	// copy values
 	for (i=0; i<com.seq.number; i++) {
 		if (com.seq.regparam[layer][i].fwhm <= 0.0f) {
-			//siril_log_message(_("Error in highest FWHM accepted for sequence processing: some images don't have this kind of information available\n"));
 			val[i] = DBL_MAX;
 		} else {
 			val[i] = com.seq.regparam[layer][i].fwhm;
@@ -1906,13 +1905,22 @@ double compute_highest_accepted_fwhm(double percent) {
 
 	//sort values
 	quicksort_d(val, com.seq.number);
-	/*fprintf(stdout, "sorted values:\n");
-	  for (i=0; i<com.seq.number; i++)
-	  fprintf(stdout, "%g ", val[i]);
-	  fputc('\n', stdout);*/
+
+	if (val[com.seq.number-1] != DBL_MAX) {
+		number_images_with_fwhm_data = com.seq.number;
+	} else {
+		for (i=0; i<com.seq.number; i++)
+			if (val[i] == DBL_MAX)
+				break;
+		number_images_with_fwhm_data = i;
+		siril_log_message(_("Warning: some images don't have FWHM information available for best images selection, using only available data (%d images on %d).\n"),
+				number_images_with_fwhm_data, com.seq.number);
+	}
 
 	// get highest accepted
-	highest_accepted = val[(int) (percent * (double) com.seq.number / 100.0)];
+	highest_accepted = val[(int) (percent * (double) number_images_with_fwhm_data / 100.0)];
+	if (highest_accepted == DBL_MAX)
+		highest_accepted = 0.0;
 	free(val);
 	return highest_accepted;
 }
@@ -2027,20 +2035,21 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		} else {
 			percent = gtk_adjustment_get_value(stackadj);
 			stackparam.filtering_criterion = stack_filter_fwhm;
-			stackparam.filtering_parameter = compute_highest_accepted_fwhm(
-					percent);
-			stackparam.nb_images_to_stack = compute_nb_filtered_images();
-			sprintf(stackparam.description, _("Stacking images of the sequence "
-					"with a FWHM lower or equal than %g (%d)\n"),
-					stackparam.filtering_parameter,	stackparam.nb_images_to_stack);
-			gtk_widget_set_sensitive(stack[0], TRUE);
-			gtk_widget_set_sensitive(stack[1], TRUE);
-			if (stackparam.filtering_parameter > 0.0)
+			stackparam.filtering_parameter = compute_highest_accepted_fwhm(percent);
+			// sometimes this fails and returns 0.0 ^
+			if (stackparam.filtering_parameter > 0.0) {
+				stackparam.nb_images_to_stack = compute_nb_filtered_images();
+				sprintf(stackparam.description, _("Stacking images of the sequence "
+							"with a FWHM lower or equal than %g (%d)\n"),
+						stackparam.filtering_parameter,	stackparam.nb_images_to_stack);
+				gtk_widget_set_sensitive(stack[0], TRUE);
+				gtk_widget_set_sensitive(stack[1], TRUE);
 				sprintf(labelbuffer, _("Based on FWHM < %.2f (%d images)"),
 						stackparam.filtering_parameter,
 						stackparam.nb_images_to_stack);
-			else
+			} else {
 				sprintf(labelbuffer, _("Based on FWHM"));
+			}
 			gtk_label_set_text(GTK_LABEL(stack[1]), labelbuffer);
 		}
 		break;
