@@ -397,6 +397,17 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 	return 0;
 }
 
+static void free_cbbt_layers() {
+	static GtkComboBoxText *cbbt_layers = NULL;
+
+	if (cbbt_layers == NULL) {
+		cbbt_layers = GTK_COMBO_BOX_TEXT(lookup_widget("comboboxreglayer"));
+	}
+	g_signal_handlers_block_by_func(GTK_COMBO_BOX(cbbt_layers), on_comboboxreglayer_changed, NULL);
+	gtk_combo_box_text_remove_all(cbbt_layers);
+	g_signal_handlers_block_by_func(GTK_COMBO_BOX(cbbt_layers), on_comboboxreglayer_changed, NULL);
+}
+
 /* load a sequence and initializes everything that relates */
 int set_seq(const char *name){
 	sequence *seq = NULL;
@@ -428,6 +439,8 @@ int set_seq(const char *name){
 	siril_log_message(_("Sequence loaded: %s (%d->%d)\n"), basename, seq->beg,
 			seq->end);
 	g_free(basename);
+
+	free_cbbt_layers();
 
 	/* Sequence is stored in com.seq for now */
 	free_sequence(&com.seq, FALSE);
