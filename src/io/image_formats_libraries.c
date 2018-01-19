@@ -833,7 +833,7 @@ static void get_FITS_date(time_t date, char *date_obs) {
 			t->tm_sec);
 }
 
-#ifdef _WIN32
+#if defined(_WIN32) && (defined(__MINGW32__) || !defined(_MSC_VER) || (_MSC_VER <= 1310))
 static char *raw_fname(const gchar *path) {
 	gchar *str;
 	wchar_t *wpath;
@@ -888,7 +888,7 @@ static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
 static int readraw(const char *name, fits *fit) {
 	ushort width, height;
 	int npixels, i;
-	WORD *data=NULL;
+	WORD *data = NULL;
 	libraw_data_t *raw = libraw_init(0);
 	libraw_processed_image_t *image = NULL;
 	int ret;
@@ -897,7 +897,7 @@ static int readraw(const char *name, fits *fit) {
 	if (ret) {
 		siril_log_message(_("Error in libraw %s\n"), libraw_strerror(ret));
 		libraw_recycle(raw);
-		libraw_close(raw);	
+		libraw_close(raw);
 		return -1;
 	}
 	
@@ -921,40 +921,41 @@ static int readraw(const char *name, fits *fit) {
 		raw->params.user_black = 0;						/* user black level equivalent to dcraw -k 0 */
 	raw->params.output_color = 0;						/* output colorspace, 0=raw, 1=sRGB, 2=Adobe, 3=Wide, 4=ProPhoto, 5=XYZ*/
 		
-	if (!(com.raw_set.auto_mul)) {		/* 4 multipliers (r,g,b,g) of the user's white balance.    */
-		raw->params.user_mul[0] = (float)com.raw_set.mul[0];
+	if (!(com.raw_set.auto_mul)) { /* 4 multipliers (r,g,b,g) of the user's white balance.    */
+		raw->params.user_mul[0] = (float) com.raw_set.mul[0];
 		raw->params.user_mul[1] = raw->params.user_mul[3] = 1.0f;
-		raw->params.user_mul[2] = (float)com.raw_set.mul[2];
+		raw->params.user_mul[2] = (float) com.raw_set.mul[2];
 		siril_log_message(_("Daylight multipliers: %f, %f, %f\n"),
-				raw->params.user_mul[0], raw->params.user_mul[1], raw->params.user_mul[2]);
-	}
-	else {
-		float mul[4];					/* 3 multipliers (r,g,b) from the camera white balance.  */
-		mul[0] = raw->color.pre_mul[0]/raw->color.pre_mul[1];
+				raw->params.user_mul[0], raw->params.user_mul[1],
+				raw->params.user_mul[2]);
+	} else {
+		float mul[4]; /* 3 multipliers (r,g,b) from the camera white balance.  */
+		mul[0] = raw->color.pre_mul[0] / raw->color.pre_mul[1];
 		mul[1] = 1.0; /* raw->color.pre_mul[1]/raw->color.pre_mul[1]; */
-		mul[2] = raw->color.pre_mul[2]/raw->color.pre_mul[1];
-		mul[3] = raw->color.pre_mul[3]/raw->color.pre_mul[1];
-		siril_log_message(_("Daylight multipliers: %f, %f, %f\n"), mul[0], mul[1], mul[2]);
+		mul[2] = raw->color.pre_mul[2] / raw->color.pre_mul[1];
+		mul[3] = raw->color.pre_mul[3] / raw->color.pre_mul[1];
+		siril_log_message(_("Daylight multipliers: %f, %f, %f\n"), mul[0],
+				mul[1], mul[2]);
 	}
 
-	switch(com.raw_set.user_qual) {		/* Set interpolation                                        */
-		case 0:		/* bilinear interpolaton */
-			raw->params.user_qual = 0;
-			siril_log_message(_("Bilinear interpolation...\n"));
-			break;
-		case 2:		/* VNG interpolaton */
-			raw->params.user_qual = 1;
-			siril_log_message(_("VNG interpolation...\n"));
-			break;
-		case 3:		/* PPG interpolaton */
-			raw->params.user_qual = 2;
-			siril_log_message(_("PPG interpolation...\n"));
-			break;
-		default:
-		case 1:		/* AHD interpolaton */
-			raw->params.user_qual = 3;
-			siril_log_message(_("AHD interpolation...\n"));
-			break;
+	switch (com.raw_set.user_qual) { /* Set interpolation                                        */
+	case 0: /* bilinear interpolaton */
+		raw->params.user_qual = 0;
+		siril_log_message(_("Bilinear interpolation...\n"));
+		break;
+	case 2: /* VNG interpolaton */
+		raw->params.user_qual = 1;
+		siril_log_message(_("VNG interpolation...\n"));
+		break;
+	case 3: /* PPG interpolaton */
+		raw->params.user_qual = 2;
+		siril_log_message(_("PPG interpolation...\n"));
+		break;
+	default:
+	case 1: /* AHD interpolaton */
+		raw->params.user_qual = 3;
+		siril_log_message(_("AHD interpolation...\n"));
+		break;
 	}
 
 	
@@ -962,10 +963,11 @@ static int readraw(const char *name, fits *fit) {
 	height = raw->sizes.iheight;
 
 	npixels = width * height;
-	
+
 	data = malloc(npixels * sizeof(WORD) * 3);
-	if (!data) return -1;
-	WORD *buf[3] = {data, data + npixels, data + npixels * 2};
+	if (!data)
+		return -1;
+	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 	ret = libraw_unpack(raw);
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
@@ -974,7 +976,7 @@ static int readraw(const char *name, fits *fit) {
 		libraw_close(raw);
 		return -1;
 	}
-	
+
 	ret = libraw_dcraw_process(raw);
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
@@ -989,24 +991,24 @@ static int readraw(const char *name, fits *fit) {
 		free(data);
 		libraw_dcraw_clear_mem(image);
 		libraw_recycle(raw);
-		libraw_close(raw);	
+		libraw_close(raw);
 		return -1;
 	}
 
 	int nbplanes = image->colors;
-	if (nbplanes!=3) {
+	if (nbplanes != 3) {
 		free(data);
 		libraw_dcraw_clear_mem(image);
 		libraw_recycle(raw);
-		libraw_close(raw);	
+		libraw_close(raw);
 		return -1;
 	}
 	// only for 16-bits because of endianness. Are there 8-bits RAW ???
 
-	for (i=0; i<image->data_size; i+=6) {
-		*buf[RLAYER]++ = (image->data[i+0]) + (image->data[i+1] << 8);
-		*buf[GLAYER]++ = (image->data[i+2]) + (image->data[i+3] << 8);
-		*buf[BLAYER]++ = (image->data[i+4]) + (image->data[i+5] << 8);
+	for (i = 0; i < image->data_size; i += 6) {
+		*buf[RLAYER]++ = (image->data[i + 0]) + (image->data[i + 1] << 8);
+		*buf[GLAYER]++ = (image->data[i + 2]) + (image->data[i + 3] << 8);
+		*buf[BLAYER]++ = (image->data[i + 4]) + (image->data[i + 5] << 8);
 	}
 
 	/*  Here we compute the correct size of the output image (imgdata.sizes.iwidth and imgdata.sizes.iheight) for the following cases:
@@ -1029,17 +1031,22 @@ static int readraw(const char *name, fits *fit) {
 		if (nbplanes == 1)
 			fit->naxis = 2;
 		else
-			fit->naxis = 3;	
+			fit->naxis = 3;
 		fit->data = data;
 		fit->pdata[RLAYER] = fit->data;
 		fit->pdata[GLAYER] = fit->data + npixels;
 		fit->pdata[BLAYER] = fit->data + npixels * 2;
 		fit->binning_x = fit->binning_y = 1;
-		if (raw->other.focal_len > 0.) fit->focal_length = raw->other.focal_len;
-		if (raw->other.iso_speed > 0.) fit->iso_speed = raw->other.iso_speed;
-		if (raw->other.shutter > 0.) fit->exposure = raw->other.shutter;
-		if (raw->other.aperture > 0.) fit->aperture = raw->other.aperture;
-		g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make, raw->idata.model);
+		if (raw->other.focal_len > 0.)
+			fit->focal_length = raw->other.focal_len;
+		if (raw->other.iso_speed > 0.)
+			fit->iso_speed = raw->other.iso_speed;
+		if (raw->other.shutter > 0.)
+			fit->exposure = raw->other.shutter;
+		if (raw->other.aperture > 0.)
+			fit->aperture = raw->other.aperture;
+		g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make,
+				raw->idata.model);
 		get_FITS_date(raw->other.timestamp, fit->date_obs);
 	}
 
@@ -1064,12 +1071,12 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 	int ret;
 
 	ret = siril_libraw_open_file(raw, name);
-	
+
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
 		return -1;
 	}
-	
+
 	ret = libraw_unpack(raw);
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
@@ -1099,8 +1106,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 				- left_margin;
 		width = raw_width - right_margin;
 		height = raw_height;
-	}
-	else {
+	} else {
 		width = raw->sizes.iwidth;
 		height = raw->sizes.iheight;
 	}
@@ -1188,28 +1194,26 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 	}
 
 	libraw_recycle(raw);
-	libraw_close(raw);		
+	libraw_close(raw);
 	return 1;
 }
 
 int open_raw_files(const char *name, fits *fit, int type) {
 	int retvalue = 1;
 
-	
-	switch(type){
-		default:
-		case 0:
-			retvalue = readraw(name, fit);
-			break;
-		case 1:
-			retvalue = readraw_in_cfa(name, fit);
-			break;
+	switch (type) {
+	default:
+	case 0:
+		retvalue = readraw(name, fit);
+		break;
+	case 1:
+		retvalue = readraw_in_cfa(name, fit);
+		break;
 	}
 	if (retvalue >= 0) {
 		mirrorx(fit, FALSE);
 		gchar *basename = g_path_get_basename(name);
-		siril_log_message(
-				_("Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"),
+		siril_log_message(_("Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"),
 				basename, fit->naxes[2], fit->rx, fit->ry);
 		g_free(basename);
 	}
