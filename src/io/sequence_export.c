@@ -100,7 +100,7 @@ static gpointer export_sequence(gpointer ptr) {
 			/* image size is not known here, no problem for crop or resize */
 			ser_file = malloc(sizeof(struct ser_struct));
 			snprintf(dest, 256, "%s.ser", args->basename);
-			if (ser_create_file(dest, ser_file, TRUE, NULL))
+			if (ser_create_file(dest, ser_file, TRUE, args->seq->ser_file))
 				siril_log_message(_("Creating the SER file failed, aborting.\n"));
 			break;
 
