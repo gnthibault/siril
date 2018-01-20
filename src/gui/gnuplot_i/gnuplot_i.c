@@ -877,8 +877,8 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
 {
     static char const * tmp_filename_template = "gnuplot_tmpdatafile_XXXXXX";
     char *              tmp_filename = NULL;
-#ifndef _WIN32
     char const        * tmp_dir = g_get_tmp_dir();
+#ifndef _WIN32
     int                 unx_fd;
 #endif // #ifndef _WIN32
 
@@ -892,11 +892,12 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
         return NULL;
     }
 
-/* FIXME: Due to a bug with some \tmp files we create temporary files in
-the root dorectory of images for windows. Indeed, here \tmp is read as
-tab character + mp in gnuplot command line */
+/* Due to a Windows behavior and Mingw temp file name,
+ * we escapes the special characters by inserting a '\' before them */
 #ifdef _WIN32
-    tmp_filename = g_build_filename(tmp_filename_template, NULL);
+    gchar *tmp = g_build_filename(tmp_dir, tmp_filename_template, NULL);
+    tmp_filename = g_strescape(tmp, NULL);
+    g_free(tmp);
 #else
     tmp_filename = g_build_filename(tmp_dir, tmp_filename_template, NULL);
 #endif
