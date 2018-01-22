@@ -1458,6 +1458,7 @@ proper_ending:
 	if (spsfargs->list)
 		g_slist_free(spsfargs->list);
 	free(spsfargs);
+	adjust_sellabel();
 
 	if (dont_stop_thread) {
 		// we must not call stop_processing_thread() here

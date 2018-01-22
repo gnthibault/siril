@@ -161,14 +161,11 @@ static void normalizeQualityData(struct registration_args *args, double q_min, d
 	}
 
 	for (frame = 0; frame < args->seq->number; ++frame) {
-		if (args->run_in_thread && !get_thread_run()) {
-			break;
-		}
-		if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
-			continue;
-
 		args->seq->regparam[args->layer][frame].quality -= q_min;
 		args->seq->regparam[args->layer][frame].quality /= diff;
+		/* if thread has been manually stopped, some values will be < 0 */
+		if (args->seq->regparam[args->layer][frame].quality < 0)
+			args->seq->regparam[args->layer][frame].quality = -1.0;
 	}
 }
 
@@ -901,6 +898,7 @@ int register_ecc(struct registration_args *args) {
 						/* We exclude this frame */
 						args->seq->imgparam[frame].incl = FALSE;
 						current_regdata[frame].quality = 0.0;
+						args->seq->selnum--;
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
@@ -942,6 +940,7 @@ int register_ecc(struct registration_args *args) {
 		args->seq->upscale_at_stacking = 2.0;
 	else
 		args->seq->upscale_at_stacking = 1.0;
+	printf("q_min=%lf et q_max=%lf\n", q_min, q_max);
 	normalizeQualityData(args, q_min, q_max);
 	clearfits(&ref);
 	update_used_memory();
@@ -1282,6 +1281,7 @@ static gboolean end_register_idle(gpointer p) {
 	drawPlot();
 failed_end:
 	update_stack_interface(TRUE);
+	adjust_sellabel();
 	update_used_memory();
 	set_cursor_waiting(FALSE);
 #ifdef MAC_INTEGRATION
