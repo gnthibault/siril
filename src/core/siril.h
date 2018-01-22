@@ -540,7 +540,7 @@ struct cominf {
 	cairo_surface_t *refimage_surface;
 
 	gchar *wd;			// working directory, where images and sequences are
-	char *initfile;			// the path of the init file
+	gchar *initfile;			// the path of the init file
 	
 	char *ext;		// FITS extension used in SIRIL
 	int len_ext;

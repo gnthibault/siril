@@ -209,7 +209,7 @@ int main(int argc, char *argv[]) {
 			break;
 		switch (c) {
 		case 'i':
-			com.initfile = strdup(optarg);
+			com.initfile = g_strdup(optarg);
 			break;
 		case 'v':
 			fprintf(stdout, "%s %s\n", PACKAGE, VERSION);

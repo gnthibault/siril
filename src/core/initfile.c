@@ -404,7 +404,7 @@ int checkinitfile() {
 #elif defined (_WIN32)
 	com.initfile = g_build_filename(home, CFG_FILE, NULL);
 #else
-	com.initfile = malloc(strlen(home) + 20);
+	com.initfile = g_new(gchar, strlen(home) + 20);
 	sprintf(com.initfile, "%s/.siril/%s", home, CFG_FILE);
 #endif
 	if (readinitfile()) {	// couldn't read it

@@ -641,7 +641,7 @@ int get_available_memory_in_MB() {
 	FILE* fp = fopen("/proc/meminfo", "r");
 	if (fp != NULL) {
 		size_t bufsize = 1024 * sizeof(char);
-		char* buf = (char*) malloc(bufsize);
+		gchar *buf = g_new(gchar, bufsize);
 		long value = -1L;
 		while (getline(&buf, &bufsize, fp) >= 0) {
 			if (strncmp(buf, "MemAvailable", 12) != 0)
@@ -650,7 +650,7 @@ int get_available_memory_in_MB() {
 			break;
 		}
 		fclose(fp);
-		free((void*) buf);
+		g_free(buf);
 		if (value != -1L)
 			mem = (int) (value / 1024L);
 	}
@@ -684,7 +684,7 @@ int get_available_memory_in_MB() {
 	FILE* fp = fopen("/var/run/dmesg.boot", "r");
 	if (fp != NULL) {
 		size_t bufsize = 1024 * sizeof(char);
-		char* buf = (char*) malloc(bufsize);
+		gchar *buf = g_new(gchar, bufsize);
 		long value = -1L;
 		while (getline(&buf, &bufsize, fp) >= 0) {
 			if (strncmp(buf, "avail memory", 12) != 0)
@@ -693,7 +693,7 @@ int get_available_memory_in_MB() {
 			break;
 		}
 		fclose(fp);
-		free((void*) buf);
+		g_free(buf)
 		if (value != -1L)
 			mem = (int) (value / 1024L);
 	}

@@ -940,7 +940,7 @@ int register_ecc(struct registration_args *args) {
 		args->seq->upscale_at_stacking = 2.0;
 	else
 		args->seq->upscale_at_stacking = 1.0;
-	printf("q_min=%lf et q_max=%lf\n", q_min, q_max);
+
 	normalizeQualityData(args, q_min, q_max);
 	clearfits(&ref);
 	update_used_memory();
