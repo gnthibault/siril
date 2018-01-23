@@ -176,7 +176,7 @@ static void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TUSHORT, "DFT_RY", &(fit->dft_ry), NULL, &status);
 }
 
-static char *fits_fname(const gchar *path) {
+static gchar *fits_fname(const gchar *path) {
 	gchar *str;
 #ifdef _WIN32
 	wchar_t *wpath;
