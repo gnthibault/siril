@@ -390,6 +390,7 @@ gboolean end_enhance_saturation(gpointer p) {
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	update_gfit_histogram_if_needed();
 	free(args);
 	set_cursor_waiting(FALSE);
 	update_used_memory();
@@ -477,6 +478,7 @@ gboolean end_scnr(gpointer p) {
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	update_gfit_histogram_if_needed();
 	free(args);
 	set_cursor_waiting(FALSE);
 	update_used_memory();
@@ -692,6 +694,7 @@ void on_button_bkg_neutralization_clicked(GtkButton *button, gpointer user_data)
 
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	update_gfit_histogram_if_needed();
 	set_cursor_waiting(FALSE);
 }
 
@@ -909,6 +912,7 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	update_gfit_histogram_if_needed();
 	set_cursor_waiting(FALSE);
 }
 

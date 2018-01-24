@@ -693,7 +693,7 @@ int get_available_memory_in_MB() {
 			break;
 		}
 		fclose(fp);
-		g_free(buf)
+		g_free(buf);
 		if (value != -1L)
 			mem = (int) (value / 1024L);
 	}
