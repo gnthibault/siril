@@ -369,7 +369,7 @@ static int ser_write_timestamps(struct ser_struct *ser_file) {
 				return -1;
 			}
 			if (8 != write(ser_file->fd, &ser_file->ts[i], 8)) {
-				perror("write timetamps:");
+				perror("write timestamps:");
 				return -1;
 			}
 		}

@@ -712,7 +712,7 @@ int get_available_memory_in_MB() {
 }
 #else
 int get_available_memory_in_MB() {
-	printf("Siril failed to get available free RAM memory\n");
+	fprintf(stderr, "Siril failed to get available free RAM memory\n");
 	return 2048;
 }
 #endif
