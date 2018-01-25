@@ -1220,7 +1220,6 @@ static gchar *save_dialog() {
 	GtkWindow *parent_window = GTK_WINDOW(lookup_widget("control_window"));
 	GtkEntry *savetext = GTK_ENTRY(lookup_widget("savetxt"));
 	gint res;
-	gchar *filename;
 
 	dialog = gtk_file_chooser_dialog_new(_("Save File"), parent_window, action,
 			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT,
@@ -4679,33 +4678,6 @@ void on_menu_rgb_savejpg_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		gtk_notebook_set_current_page(notebookFormat, 1);
 		whichminisave = TYPEJPG;
 	}
-}
-
-gboolean on_savetxt_key_press_event(GtkWidget *widget, GdkEventKey *event,
-		gpointer user_data) {
-	GtkWidget *button = lookup_widget("button_savepopup");
-	gboolean handled = FALSE;
-
-	switch (event->keyval) {
-		case GDK_KEY_Return:
-		case GDK_KEY_KP_Enter:
-			handled = TRUE;
-			gtk_widget_set_can_default(button, TRUE);
-			gtk_widget_grab_focus(widget);
-			set_cursor_waiting(TRUE);
-			minisavedial();
-			set_cursor_waiting(FALSE);
-			break;
-	}
-	return handled;
-}
-
-void on_savetxt_changed(GtkEditable *editable, gpointer user_data) {
-	GtkEntry *entry = GTK_ENTRY(editable);
-	GtkWidget *button = lookup_widget("button_savepopup");
-
-	const gchar *name = gtk_entry_get_text(entry);
-	gtk_widget_set_sensitive(button, (*name != '\0'));
 }
 
 void on_button_savepopup_clicked(GtkButton *button, gpointer user_data) {
