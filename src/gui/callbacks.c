@@ -1212,7 +1212,7 @@ static void prepare_savepopup(int type) {
 	gtk_notebook_set_current_page(notebookFormat, tab);
 }
 
-static gchar *save_dialog() {
+static int save_dialog() {
 	GtkWidget *dialog;
 	GtkFileChooser *chooser;
 	GtkFileFilter *filter;
@@ -1248,7 +1248,7 @@ static gchar *save_dialog() {
 	}
 
 	gtk_widget_destroy(dialog);
-	return 0;
+	return res;
 }
 
 static void minisavedial(void) {
@@ -1347,13 +1347,15 @@ void on_save1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		savepopup = lookup_widget("savepopup");
 	}
 
-	save_dialog();
-	/* now it is not needed for some formats */
-	if (whichminisave != TYPEBMP && whichminisave != TYPEPNG
-			&& whichminisave != TYPEPNM)
-		gtk_widget_show_all(savepopup);
-	else {
-		minisavedial();
+	int res = save_dialog();
+	if (res == GTK_RESPONSE_ACCEPT) {
+		/* now it is not needed for some formats */
+		if (whichminisave != TYPEBMP && whichminisave != TYPEPNG
+				&& whichminisave != TYPEPNM)
+			gtk_widget_show_all(savepopup);
+		else {
+			minisavedial();
+		}
 	}
 }
 
