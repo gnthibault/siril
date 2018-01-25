@@ -567,25 +567,26 @@ static int saveppm(const char *name, fits *fit) {
 
 static int savepgm(const char *name, fits *fit) {
 	FILE *fp;
-	int i, j;
-	WORD data[fit->ry][fit->rx];
+	int i;
+	int ndata = fit->rx * fit->ry;
 	WORD *gbuf = fit->pdata[RLAYER];
 	const char *comment = "# CREATOR : SIRIL";
 
-	/* fill the data array */
-	for (j = fit->ry - 1; j >= 0; j--) {
-		for (i = 0; i < fit->rx; i++) {
-			data[j][i] = *gbuf++;
-			/* change endianness in place */
-			data[j][i] = (data[j][i] >> 8) | (data[j][i] << 8);
-		}
-	}
 	fp = g_fopen(name, "wb");
 	if (!fp)
 		return -1;
 	fprintf(fp, "P5\n%s\n%u %u\n%u\n", comment, fit->rx, fit->ry, USHRT_MAX);
-	fwrite(data, sizeof(data), 1, fp);
+
+	fits_flip_top_to_bottom(fit);
+	for (i = 0; i < ndata; i++) {
+		WORD tmp = *gbuf++;
+		/* change endianness in place */
+		WORD data[1];
+		data[0] = (tmp >> 8) | (tmp << 8);
+		fwrite(data, sizeof(data), 1, fp);
+	}
 	fclose(fp);
+	fits_flip_top_to_bottom(fit);
 	siril_log_message(_("Saving NetPBM: file %s, %ld layer(s), %ux%u pixels\n"),
 			name, fit->naxes[2], fit->rx, fit->ry);
 	return 0;
