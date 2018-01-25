@@ -271,6 +271,7 @@ int readtif(const char *name, fits *fit) {
 int savetif(const char *name, fits *fit, uint16 bitspersample){
 	int retval = 0;
 	char *msg;
+	char *filename;
 	unsigned char *buf8;
 	WORD *buf16;
 	uint32 width, height, row, col, n;
@@ -278,22 +279,29 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 	mirrorx(fit, FALSE);
 
-	TIFF* tif = Siril_TIFFOpen(name, "w");
+	filename = strdup(name);
+	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
+		filename = str_append(&filename, ".tif");
+	}
+
+	TIFF* tif = Siril_TIFFOpen(filename, "w");
 
 	if (tif == NULL) {
 		msg = siril_log_message(_("Siril cannot create TIFF file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		free(filename);
 		return 1;
 	}
-	nsamples	=(uint16)fit->naxes[2];
-	width		=(uint32)fit->rx;
-	height		=(uint32)fit->ry;	
+	free(filename);
+	nsamples = (uint16) fit->naxes[2];
+	width = (uint32) fit->rx;
+	height = (uint32) fit->ry;
 	
 	/*******************************************************************
 	 * If the user saves a tif from the graphical menu, he can set
 	 * the Description and the Copyright of the Image 
 	 ******************************************************************/
-	gchar *img_desc=NULL, *img_copy=NULL;
+	gchar *img_desc = NULL, *img_copy = NULL;
 	GtkTextView *description = GTK_TEXT_VIEW(lookup_widget("Description_txt"));
 	GtkTextView *copyright = GTK_TEXT_VIEW(lookup_widget("Copyright_txt"));
 	GtkTextBuffer *desbuf = gtk_text_view_get_buffer(description);
@@ -304,16 +312,16 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	gtk_text_buffer_get_start_iter(desbuf, &itDebut);
 	gtk_text_buffer_get_end_iter(desbuf, &itFin);
 	if (desbuf)
-		img_desc=gtk_text_buffer_get_text(desbuf, &itDebut, &itFin, TRUE);
-	gtk_text_buffer_get_bounds (desbuf, &itDebut, &itFin);
-	gtk_text_buffer_delete (desbuf, &itDebut, &itFin);
+		img_desc = gtk_text_buffer_get_text(desbuf, &itDebut, &itFin, TRUE);
+	gtk_text_buffer_get_bounds(desbuf, &itDebut, &itFin);
+	gtk_text_buffer_delete(desbuf, &itDebut, &itFin);
 	gtk_text_buffer_get_start_iter(copybuf, &itDebut);
 	gtk_text_buffer_get_end_iter(copybuf, &itFin);
 	if (copybuf)
-		img_copy=gtk_text_buffer_get_text(copybuf, &itDebut, &itFin, TRUE);
-	gtk_text_buffer_get_bounds (copybuf, &itDebut, &itFin);
-	gtk_text_buffer_delete (copybuf, &itDebut, &itFin);
-		
+		img_copy = gtk_text_buffer_get_text(copybuf, &itDebut, &itFin, TRUE);
+	gtk_text_buffer_get_bounds(copybuf, &itDebut, &itFin);
+	gtk_text_buffer_delete(copybuf, &itDebut, &itFin);
+
 	/*******************************************************************/
 
 	/* TIFF TAG FIELD */
@@ -330,7 +338,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	TIFFSetField(tif, TIFFTAG_MINSAMPLEVALUE, fit->mini);
 	TIFFSetField(tif, TIFFTAG_MAXSAMPLEVALUE, fit->maxi);
 	TIFFSetField(tif, TIFFTAG_SOFTWARE, PACKAGE " v" VERSION);
-	
+
 	if (nsamples == 1)
 		TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
 	else if (nsamples == 3)
@@ -342,42 +350,44 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		return 1;
 	}
 
-	WORD *gbuf[3]={fit->pdata[RLAYER],fit->pdata[GLAYER],fit->pdata[BLAYER]};  
-	
-	switch (bitspersample){
-		case 8:
-			buf8 = _TIFFmalloc(width * sizeof(unsigned char) * nsamples);
-			for (row = 0; row < height; row++){
-				for (col = 0; col < width; col++){
-					for (n=0; n < nsamples; n++) {
-						/* UCHAR_MAX / USHRT_MAX is constant, it's 1/255
-						 * This operation should be speed-up by doing a shift */
-						buf8[col*nsamples+n]= (*gbuf[n]++) * UCHAR_MAX_DOUBLE/USHRT_MAX_DOUBLE;
-						//~ buf8[col*nsamples+n] = *gbuf[n]++ >> 8; // bad shift
-					}
+	WORD *gbuf[3] =
+			{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+
+	switch (bitspersample) {
+	case 8:
+		buf8 = _TIFFmalloc(width * sizeof(unsigned char) * nsamples);
+		for (row = 0; row < height; row++) {
+			for (col = 0; col < width; col++) {
+				for (n = 0; n < nsamples; n++) {
+					/* UCHAR_MAX / USHRT_MAX is constant, it's 1/255
+					 * This operation should be speed-up by doing a shift */
+					buf8[col * nsamples + n] = (*gbuf[n]++) * UCHAR_MAX_DOUBLE
+							/ USHRT_MAX_DOUBLE;
 				}
-				TIFFWriteScanline(tif, buf8, row, 0);
 			}
+			TIFFWriteScanline(tif, buf8, row, 0);
+		}
 		_TIFFfree(buf8);
-			break;
-		case 16: 
-			buf16 = _TIFFmalloc(width * sizeof(WORD) * nsamples);
-			for (row = 0; row < height; row++){
-				for (col = 0; col < width; col++){
-					for (n=0; n < nsamples; n++)
-						buf16[col*nsamples+n]=(*gbuf[n]++);
-				}
-				TIFFWriteScanline(tif, buf16, row, 0);
+		break;
+	case 16:
+		buf16 = _TIFFmalloc(width * sizeof(WORD) * nsamples);
+		for (row = 0; row < height; row++) {
+			for (col = 0; col < width; col++) {
+				for (n = 0; n < nsamples; n++)
+					buf16[col * nsamples + n] = (*gbuf[n]++);
 			}
+			TIFFWriteScanline(tif, buf16, row, 0);
+		}
 		_TIFFfree(buf16);
 		break;
-		default:		// Should not happen
-			retval = 1;
+	default:		// Should not happen
+		retval = 1;
 	}
 	TIFFClose(tif);
 	mirrorx(fit, FALSE);
-	siril_log_message(_("Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
-						bitspersample, name, fit->naxes[2], fit->rx, fit->ry);
+	siril_log_message(
+			_("Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
+			bitspersample, name, fit->naxes[2], fit->rx, fit->ry);
 	return retval;
 }
 #endif	// HAVE_LIBTIFF
@@ -463,12 +473,19 @@ int savejpg(char *name, fits *fit, int quality){
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_compress(&cinfo);
 
+	char *filename = strdup(name);
+	if (!ends_with(filename, ".jpg") && (!ends_with(filename, ".jpeg"))) {
+		filename = str_append(&filename, ".jpg");
+	}
+
 	//## OPEN FILE FOR DATA DESTINATION:
-	if ((f = g_fopen(name, "wb")) == NULL) {
+	if ((f = g_fopen(filename, "wb")) == NULL) {
 		char *msg = siril_log_message(_("Siril cannot create JPG file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		free(filename);
 		return 1;
 	}
+	free(filename);
 	jpeg_stdio_dest(&cinfo, f);
 
 	//## SET PARAMETERS FOR COMPRESSION:
@@ -801,11 +818,17 @@ static WORD *fits_to_bgrbgr(fits *image) {
 	return bgrbgr;
 }
 
-int savepng(const char *filename, fits *fit, uint32_t bytes_per_sample,
+int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 		gboolean is_colour) {
 	int ret = -1;
 	uint32_t width = fit->rx;
 	uint32_t height = fit->ry;
+
+	char *filename = strdup(name);
+	if (!ends_with(filename, ".png")) {
+		filename = str_append(&filename, ".png");
+	}
+
 	if (is_colour) {
 		// Create colour PNG file
 		WORD *data = fits_to_bgrbgr(fit);
@@ -817,7 +840,7 @@ int savepng(const char *filename, fits *fit, uint32_t bytes_per_sample,
 		ret = save_mono_file(filename, fit->data, width, height,
 				bytes_per_sample);
 	}
-
+	free(filename);
 	return ret;
 }
 

@@ -663,22 +663,24 @@ static gpointer convert_thread_worker(gpointer p) {
 		}
 		else {	// single image
 			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility);
-			if (convflags & CONVDSTSER) {
-				if (convflags & CONV1X1)
-					keep_first_channel_from_fits(fit);
-				if (ser_write_frame_from_fit(ser_file, fit, args->nb_converted)) {
-					siril_log_message(_("Error while converting to SER (no space left?)\n"));
-					break;
+			if (fit) {
+				if (convflags & CONVDSTSER) {
+					if (convflags & CONV1X1)
+						keep_first_channel_from_fits(fit);
+					if (ser_write_frame_from_fit(ser_file, fit, args->nb_converted)) {
+						siril_log_message(_("Error while converting to SER (no space left?)\n"));
+						break;
+					}
+				} else {
+					g_snprintf(dest_filename, 128, "%s%05d", destroot, indice++);
+					if (save_to_target_fits(fit, dest_filename)) {
+						siril_log_message(_("Error while converting to FITS (no space left?)\n"));
+						break;
+					}
 				}
-			} else {
-				g_snprintf(dest_filename, 128, "%s%05d", destroot, indice++);
-				if (save_to_target_fits(fit, dest_filename)) {
-					siril_log_message(_("Error while converting to FITS (no space left?)\n"));
-					break;
-				}
+				clearfits(fit);
+				free(fit);
 			}
-			clearfits(fit);
-			free(fit);
 		}
 
 		set_progress_bar_data(msg_bar, progress/((double)args->total));

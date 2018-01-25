@@ -166,12 +166,19 @@ int savebmp(const char *name, fits *fit) {
 	bmpinfoheader[26] = (unsigned char) (datasize >> 16);
 	bmpinfoheader[27] = (unsigned char) (datasize >> 24);
 
-	f = g_fopen(name, "wb");
+	char *filename = strdup(name);
+	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
+		filename = str_append(&filename, ".tif");
+	}
+
+	f = g_fopen(filename, "wb");
 	if (f == NULL) {
 		char *msg = siril_log_message(_("Can't create BMP file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		free(filename);
 		return 1;
 	}
+	free(filename);
 
 	fwrite(bmpfileheader, sizeof(bmpfileheader), 1, f);
 	fwrite(bmpinfoheader, sizeof(bmpinfoheader), 1, f);
@@ -524,7 +531,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 	return fit->naxes[2];
 }
 
-int saveppm(const char *name, fits *fit) {
+static int saveppm(const char *name, fits *fit) {
 	FILE *fp = g_fopen(name, "wb");
 	int i;
 	int ndata = fit->rx * fit->ry;
@@ -558,7 +565,7 @@ int saveppm(const char *name, fits *fit) {
 	return 0;
 }
 
-int savepgm(const char *name, fits *fit) {
+static int savepgm(const char *name, fits *fit) {
 	FILE *fp;
 	int i, j;
 	WORD data[fit->ry][fit->rx];
@@ -584,7 +591,27 @@ int savepgm(const char *name, fits *fit) {
 	return 0;
 }
 
-int pictofit(WORD *buf, fits *fit) {
+int saveNetPBM(const char *name, fits *fit) {
+	int retval;
+	char *filename = strdup(name);
+
+	if (fit->naxes[2] == 1) {
+		if (!ends_with(filename, ".pgm")) {
+			filename = str_append(&filename, ".pgm");
+		}
+		retval = savepgm(filename, fit);
+	} else {
+		if (!ends_with(filename, ".ppm") && !ends_with(filename, ".pnm")) {
+			filename = str_append(&filename, ".ppm");
+		}
+		retval = saveppm(filename, fit);
+	}
+	free(filename);
+	return retval;
+}
+
+
+static int pictofit(WORD *buf, fits *fit) {
 	int nbdata;
 	int i;
 	WORD *data, *olddata = fit->data;
@@ -612,7 +639,7 @@ int pictofit(WORD *buf, fits *fit) {
 	return 1;
 }
 
-int pictofitrgb(WORD *buf, fits *fit) {
+static int pictofitrgb(WORD *buf, fits *fit) {
 	int i, nbdata;
 	WORD *data[3], *olddata = fit->data;
 

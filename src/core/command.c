@@ -293,25 +293,7 @@ int process_savetif(int nb){
 #endif
 
 int process_savepnm(int nb){
-	char filename[256];
-	
-	switch(gfit.naxes[2]){
-		case 1:
-			sprintf(filename,"%s", strcat(word[1],".pgm"));
-				set_cursor_waiting(TRUE);
-				savepgm(filename, &(gfit));
-				set_cursor_waiting(FALSE);
-		break;
-		case 3:
-			sprintf(filename,"%s", strcat(word[1],".ppm"));
-			set_cursor_waiting(TRUE);
-			saveppm(filename, &(gfit));
-			set_cursor_waiting(FALSE);
-		break;
-		
-		default:	/*Should not happen */
-			return 1;
-		}
+	saveNetPBM(word[1], &gfit);
 	return 0;	
 }
 

@@ -48,8 +48,7 @@ int	bmp8tofits(unsigned char *rvb, int rx, int ry, fits *fitr);
 
 /* PNM */
 int 	import_pnm_to_fits(const char *filename, fits *fit);
-int	saveppm(const char *name, fits *fit);
-int	savepgm(const char *name, fits *fit);
+int	saveNetPBM(const char *name, fits *fit);
 
 /* PIC */
 struct pic_struct {
@@ -66,8 +65,6 @@ struct pic_struct {
 	// internal stuff
 	int fd;
 };
-int	pictofit(WORD *buf, fits *fit);
-int	pictofitrgb(WORD *buf, fits *fit);
 int	readpic(const char *name, fits *fit);
 
 /****************** image_formats_libraries.h ******************/

@@ -10135,71 +10135,12 @@ WARNING: ensure you have a good reason to change this value because it may degra
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="save1">
-                        <property name="label" translatable="yes">Save as</property>
+                        <property name="label" translatable="yes">Save as...</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="image">image3</property>
                         <property name="use_stock">False</property>
-                        <child type="submenu">
-                          <object class="GtkMenu" id="menu5">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_fits">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">FITS...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_savefits_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_tiff">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">TIFF...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_savetiff_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_bmp">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">BMP...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_savebmp_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_jpg">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">JPG...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_savejpg_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_png">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">PNG...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_savepng_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_pbm">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">NetPBM...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_save8ppm_activate" swapped="no"/>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
+                        <signal name="activate" handler="on_save1_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
