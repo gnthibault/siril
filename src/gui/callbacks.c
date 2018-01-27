@@ -1271,8 +1271,6 @@ static void minisavedial(void) {
 
 	name = gtk_entry_get_text(entry);
 	if (name[0] != '\0') {
-		int nplanes;
-
 		strcpy(filename, name);
 		switch (whichminisave) {
 		case TYPEBMP:

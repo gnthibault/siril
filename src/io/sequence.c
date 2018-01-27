@@ -405,7 +405,7 @@ static void free_cbbt_layers() {
 	}
 	g_signal_handlers_block_by_func(GTK_COMBO_BOX(cbbt_layers), on_comboboxreglayer_changed, NULL);
 	gtk_combo_box_text_remove_all(cbbt_layers);
-	g_signal_handlers_block_by_func(GTK_COMBO_BOX(cbbt_layers), on_comboboxreglayer_changed, NULL);
+	g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(cbbt_layers), on_comboboxreglayer_changed, NULL);
 }
 
 /* load a sequence and initializes everything that relates */
