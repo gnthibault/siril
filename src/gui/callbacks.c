@@ -1174,12 +1174,14 @@ static image_type whichminisave;
 static void prepare_savepopup(int type) {
 	static GtkNotebook* notebookFormat = NULL;
 	static GtkWidget *savepopup = NULL;
+	static GtkWidget *savetxt = NULL;
 	int tab;
 
 	if (notebookFormat == NULL) {
 		notebookFormat = GTK_NOTEBOOK(
 				gtk_builder_get_object(builder, "notebookFormat"));
 		savepopup = lookup_widget("savepopup");
+		savetxt = lookup_widget("filenameframe");
 	}
 
 	switch (type) {
@@ -1209,6 +1211,7 @@ static void prepare_savepopup(int type) {
 	}
 
 	whichminisave = type;
+	gtk_widget_set_visible(savetxt, FALSE);
 	gtk_notebook_set_current_page(notebookFormat, tab);
 }
 
@@ -1350,7 +1353,7 @@ void on_save1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		/* now it is not needed for some formats */
 		if (whichminisave != TYPEBMP && whichminisave != TYPEPNG
 				&& whichminisave != TYPEPNM)
-			gtk_widget_show_all(savepopup);
+			gtk_widget_show(savepopup);
 		else {
 			minisavedial();
 		}
@@ -4553,6 +4556,7 @@ void scrollbars_vadjustment_changed_handler(GtkAdjustment *adjustment,
 void on_menu_rgb_savefits_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	static GtkNotebook* notebookFormat = NULL;
 	static GtkWidget *savepopup = NULL;
+	GtkWidget *savetxt = lookup_widget("filenameframe");
 	GtkToggleButton *b8bit = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit8"));
 	GtkToggleButton *b16bitu = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16"));
 	GtkToggleButton *b16bits = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16s"));
@@ -4566,6 +4570,7 @@ void on_menu_rgb_savefits_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving FITS"));
 		gtk_widget_show_all(savepopup);
 		gtk_notebook_set_current_page(notebookFormat, 2);
+		gtk_widget_set_visible(savetxt, TRUE);
 		whichminisave = TYPEFITS;
 	}
 	switch(gfit.bitpix) {
@@ -4583,6 +4588,7 @@ void on_menu_rgb_savefits_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_menu_rgb_savetiff_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	static GtkNotebook* notebookFormat = NULL;
 	static GtkWidget *savepopup = NULL;
+	GtkWidget *savetxt = lookup_widget("filenameframe");
 
 
 	if (notebookFormat == NULL) {
@@ -4596,6 +4602,7 @@ void on_menu_rgb_savetiff_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving TIFF"));
 		gtk_widget_show_all(savepopup);
 		gtk_notebook_set_current_page(notebookFormat, 0);
+		gtk_widget_set_visible(savetxt, TRUE);
 		whichminisave = TYPETIFF;
 	}
 }
@@ -4603,6 +4610,7 @@ void on_menu_rgb_savetiff_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_menu_rgb_savepng_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	static GtkNotebook* notebookFormat = NULL;
 	static GtkWidget *savepopup = NULL;
+	GtkWidget *savetxt = lookup_widget("filenameframe");
 
 
 	if (notebookFormat == NULL) {
@@ -4615,6 +4623,7 @@ void on_menu_rgb_savepng_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving PNG"));
 		gtk_widget_show_all(savepopup);
 		gtk_notebook_set_current_page(notebookFormat, 3);
+		gtk_widget_set_visible(savetxt, TRUE);
 		whichminisave = TYPEPNG;
 	}
 }
@@ -4622,6 +4631,7 @@ void on_menu_rgb_savepng_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_menu_rgb_save8ppm_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	static GtkNotebook* notebookFormat = NULL;
 	static GtkWidget *savepopup = NULL;
+	GtkWidget *savetxt = lookup_widget("filenameframe");
 
 	if (notebookFormat == NULL) {
 		notebookFormat = GTK_NOTEBOOK(
@@ -4633,6 +4643,7 @@ void on_menu_rgb_save8ppm_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving Netpbm"));
 		gtk_widget_show_all(savepopup);
 		gtk_notebook_set_current_page(notebookFormat, 3);
+		gtk_widget_set_visible(savetxt, TRUE);
 		whichminisave = TYPEPNM;
 	}
 }
@@ -4640,6 +4651,7 @@ void on_menu_rgb_save8ppm_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_menu_rgb_savebmp_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	static GtkNotebook* notebookFormat = NULL;
 	static GtkWidget *savepopup = NULL;
+	GtkWidget *savetxt = lookup_widget("filenameframe");
 
 	if (notebookFormat == NULL) {
 		notebookFormat = GTK_NOTEBOOK(
@@ -4651,6 +4663,7 @@ void on_menu_rgb_savebmp_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving BMP"));
 		gtk_widget_show_all(savepopup);
 		gtk_notebook_set_current_page(notebookFormat, 3);
+		gtk_widget_set_visible(savetxt, TRUE);
 		whichminisave = TYPEBMP;
 	}
 }
@@ -4658,6 +4671,7 @@ void on_menu_rgb_savebmp_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_menu_rgb_savejpg_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	static GtkNotebook* notebookFormat = NULL;
 	static GtkWidget *savepopup = NULL;
+	GtkWidget *savetxt = lookup_widget("filenameframe");
 
 	if (notebookFormat == NULL) {
 		notebookFormat = GTK_NOTEBOOK(
@@ -4676,8 +4690,36 @@ void on_menu_rgb_savejpg_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		}
 		gtk_widget_show_all(savepopup);
 		gtk_notebook_set_current_page(notebookFormat, 1);
+		gtk_widget_set_visible(savetxt, TRUE);
 		whichminisave = TYPEJPG;
 	}
+}
+
+gboolean on_savetxt_key_press_event(GtkWidget *widget, GdkEventKey *event,
+		gpointer user_data) {
+	GtkWidget *button = lookup_widget("button_savepopup");
+	gboolean handled = FALSE;
+
+	switch (event->keyval) {
+	case GDK_KEY_Return:
+	case GDK_KEY_KP_Enter:
+		handled = TRUE;
+		gtk_widget_set_can_default(button, TRUE);
+		gtk_widget_grab_focus(widget);
+		set_cursor_waiting(TRUE);
+		minisavedial();
+		set_cursor_waiting(FALSE);
+		break;
+	}
+	return handled;
+}
+
+void on_savetxt_changed(GtkEditable *editable, gpointer user_data) {
+	GtkEntry *entry = GTK_ENTRY(editable);
+	GtkWidget *button = lookup_widget("button_savepopup");
+
+	const gchar *name = gtk_entry_get_text(entry);
+	gtk_widget_set_sensitive(button, (*name != '\0'));
 }
 
 void on_button_savepopup_clicked(GtkButton *button, gpointer user_data) {
