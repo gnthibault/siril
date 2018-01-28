@@ -1681,9 +1681,7 @@ static gboolean end_stacking(gpointer p) {
 		/* remove tmp files if exist (Drizzle) */
 		remove_tmp_drizzle_files(args, TRUE);
 
-		initialize_display_mode();
-
-		adjust_cutoff_from_updated_gfit();
+		adjust_cutoff_from_updated_gfit();	// computes min and max
 		set_sliders_value_to_gfit();
 		initialize_display_mode();
 
