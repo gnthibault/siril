@@ -18,7 +18,6 @@ int	seq_open_image(sequence *seq, int index);
 void	seq_close_image(sequence *seq, int index);
 int	seq_opened_read_region(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area);
 void	set_fwhm_star_as_star_list(sequence *seq);
-void	set_fwhm_star_as_star_list_with_layer(sequence *seq, int layer);
 char *	fit_sequence_get_image_filename(sequence *seq, int index, char *name_buffer, gboolean add_fits_ext);
 char *	get_possible_image_filename(sequence *seq, int image_number, char *name_buffer);
 int	get_index_and_basename(const char *filename, char **basename, int *index, int *fixed);

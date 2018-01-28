@@ -1016,7 +1016,13 @@ void update_reg_interface(gboolean dont_change_reg_radio) {
 		nb_images_reg = com.seq.number;
 	else
 		nb_images_reg = com.seq.selnum;
-	if (method && ((nb_images_reg > 1 && com.selection.w > 0 && com.selection.h > 0)
+
+	if (method && method->sel != REQUIRES_NO_SELECTION && com.seq.current == SCALED_IMAGE) {
+		gtk_widget_set_sensitive(go_register, FALSE);
+		gtk_widget_set_visible(newSequence, FALSE);
+		gtk_label_set_text(labelreginfo, _("Load a sequence first."));
+	}
+	else if (method && ((nb_images_reg > 1 && com.selection.w > 0 && com.selection.h > 0)
 			|| (nb_images_reg > 1 && method->sel == REQUIRES_NO_SELECTION))) {
 		gtk_widget_set_sensitive(go_register, TRUE);
 		gtk_label_set_text(labelreginfo, "");

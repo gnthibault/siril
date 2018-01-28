@@ -505,6 +505,7 @@ int seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it) {
 		gfit.ry = seq->ry;
 		adjust_vport_size_to_image();
 	}
+	close_single_image();
 	seq->current = index;
 
 	if (load_it) {
@@ -832,7 +833,7 @@ int seq_opened_read_region(sequence *seq, int layer, int index, WORD *buffer, co
  * images, and when switching to a new image, it should be set as the only item
  * in the star list, in order to be displayed.
  * A special care is required in PSF_list.c:clear_stars_list(), to not free this data. */
-void set_fwhm_star_as_star_list_with_layer(sequence *seq, int layer) {
+static void set_fwhm_star_as_star_list_with_layer(sequence *seq, int layer) {
 	assert(seq->regparam);
 	/* we chose here the first layer that has been allocated, which doesn't
 	 * mean it contains data for all images. Handle with care. */
@@ -841,6 +842,7 @@ void set_fwhm_star_as_star_list_with_layer(sequence *seq, int layer) {
 		com.stars = malloc(2 * sizeof(fitted_PSF *));
 		com.stars[0] = seq->regparam[layer][seq->current].fwhm_data;
 		com.stars[1] = NULL;
+		// this is freed in PSF_list.c:clear_stars_list()
 		com.star_is_seqdata = TRUE;
 	}
 }

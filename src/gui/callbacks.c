@@ -772,7 +772,8 @@ static void free_reference_image() {
 		cairo_surface_destroy(com.refimage_surface);
 		com.refimage_surface = NULL;
 	}
-	enable_view_reference_checkbox(FALSE);
+	if (com.seq.reference_image == -1)
+		enable_view_reference_checkbox(FALSE);
 }
 
 /*

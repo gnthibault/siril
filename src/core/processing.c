@@ -305,8 +305,7 @@ void start_in_new_thread(gpointer (*f)(gpointer p), gpointer p) {
 
 void stop_processing_thread() {
 	if (com.thread == NULL) {
-		fprintf(stderr,
-				"The processing thread is not running, cannot stop it.\n");
+		fprintf(stderr, "The processing thread is not running.\n");
 		return;
 	}
 

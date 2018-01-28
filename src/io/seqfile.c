@@ -367,7 +367,7 @@ int writeseqfile(sequence *seq){
 	for(j=0; j < seq->nb_layers; j++) {
 		if (seq->regparam[j]) {
 			for (i=0; i < seq->number; ++i) {
-				fprintf(stderr, "R%d %f %f %g %g %g %g %g\n", j,
+				/*fprintf(stderr, "R%d %f %f %g %g %g %g %g\n", j,
 						seq->regparam[j][i].shiftx,
 						seq->regparam[j][i].shifty,
 						seq->regparam[j][i].rot_centre_x,
@@ -375,7 +375,7 @@ int writeseqfile(sequence *seq){
 						seq->regparam[j][i].angle,
 						seq->regparam[j][i].fwhm,
 						seq->regparam[j][i].quality
-						);
+						);*/
 				fprintf(seqfile, "R%d %f %f %g %g %g %g %g\n", j,
 						seq->regparam[j][i].shiftx,
 						seq->regparam[j][i].shifty,

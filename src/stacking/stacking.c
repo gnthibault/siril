@@ -2190,6 +2190,8 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		}
 		free(seqname);
 
+		memset(&com.selection, 0, sizeof(rectangle));
+
 		/* there are three differences between old and new sequence:
 		 * the size of images and possibly the number of images if the
 		 * stacking is done on a filtered set.
@@ -2201,7 +2203,7 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		 * - the shifts between images that must be multiplied by upscale_at_stacking
 		 */
 		retval = seq_check_basic_data(newseq, FALSE);
-		if ( retval == -1) {
+		if (retval == -1) {
 			free(newseq);
 			return retval;
 		}
