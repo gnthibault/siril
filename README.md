@@ -1,7 +1,7 @@
 SIRIL
 -------
 
-> Copyright &copy; 2012-2017, Team free-astro
+> Copyright &copy; 2012-2018, Team free-astro
 > <<https://free-astro.org/index.php/Siril>>
 
 Summary
@@ -24,6 +24,7 @@ Requirements
  * The GNU Scientific Library (gsl) for FWHM implementation, histograms and background extraction
  * libconfig++ (>= 1.4) for structured configuration file management
  * g++ for opencv code and avi exporter
+ * libopencv for some image processing
 
 SIRIL works internally with FITS files, but other file formats can be used as
 input and converted using the conversion tab of the control window. Some file
@@ -36,7 +37,6 @@ compilation time, or their support won't be compiled.
  * libtiff (>= 4)
  * libjpeg or compatible libraries like libjpeg-turbo
  * libpng
- * libopencv
  * libavformat
  * libavutil >= 55.20
  * libavcodec
@@ -89,12 +89,10 @@ of the current version for other packages that could be available.
 
 SIRIL on Windows
 ----------------
-The 0.9.7 version was released with a binary **.exe* file running on Windows 64bits. 
+From the 0.9.7 version, Siril is released with a binary **.exe* file running on Windows 64bits. 
 This application was produced with the great help of [Partha Bagchi](https://www.partha.com/)
 who spent time in building it. However, users shall keep in mind that none of the
-developpers run on Windows and in consequence, some specific bugs could occur.
-For these reasons, the Windows version is tagged as a beta version and will **always**
-be in beta mode.
+developers run on Windows and in consequence, some specific bugs could occur.
 Also, there is no certainty for building all future versions for Windows.
 
 Notes on SIRIL FITS image format
