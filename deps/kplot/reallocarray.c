@@ -15,6 +15,9 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 #include "compat.h"
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
 
 #include <sys/types.h>
 

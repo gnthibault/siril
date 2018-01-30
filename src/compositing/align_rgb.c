@@ -104,10 +104,12 @@ int rgb_align(int m) {
 	method = reg_methods[m];
 
 	regargs.seq = seq;
-	regargs.seq->nb_layers = 3;
+	regargs.seq->nb_layers = 1;
 	regargs.process_all_frames = TRUE;
 	get_the_registration_area(&regargs, method);
 	regargs.layer = REGLAYER;
+	regargs.follow_star = FALSE;
+	regargs.x2upscale = FALSE;
 	regargs.run_in_thread = FALSE;
 	com.run_thread = TRUE;	// fix for the canceling check in processing
 

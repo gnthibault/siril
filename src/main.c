@@ -27,7 +27,7 @@
 #ifdef MAC_INTEGRATION
 #include "gtkmacintegration/gtkosxapplication.h"
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <tchar.h>
 #endif
@@ -116,7 +116,7 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 #endif
 
 char *siril_sources[] = {
-#ifdef WIN32
+#ifdef _WIN32
     "../share/siril",
 #elif (defined(__APPLE__) && defined(__MACH__))
 	"/tmp/siril/Contents/Resources/share/siril/",
@@ -142,6 +142,16 @@ void signal_handled(int s) {
 	exit(EXIT_FAILURE);
 }
 
+static void initialize_path_directory() {
+	GtkFileChooser *swap_dir;
+
+	swap_dir = GTK_FILE_CHOOSER(lookup_widget("filechooser_swap"));
+	if (com.swap_dir && com.swap_dir[0] != '\0')
+		gtk_file_chooser_set_filename (swap_dir, com.swap_dir);
+	else
+		gtk_file_chooser_set_filename (swap_dir, g_get_tmp_dir());
+}
+
 int main(int argc, char *argv[]) {
 	int i;
 	extern char *optarg;
@@ -151,7 +161,7 @@ int main(int argc, char *argv[]) {
 	gboolean forcecwd = FALSE;
 	char *cwd_forced = NULL;
 	
-#ifdef WIN32
+#ifdef _WIN32
 	_putenv_s("LC_NUMERIC", "C");
     setlocale( LC_ALL, "" );
 
@@ -199,7 +209,7 @@ int main(int argc, char *argv[]) {
 			break;
 		switch (c) {
 		case 'i':
-			com.initfile = strdup(optarg);
+			com.initfile = g_strdup(optarg);
 			break;
 		case 'v':
 			fprintf(stdout, "%s %s\n", PACKAGE, VERSION);
@@ -229,9 +239,9 @@ int main(int argc, char *argv[]) {
 	i = 0;
 	do {
 		GError *err = NULL;
-        gchar *gladefile;
+		gchar *gladefile;
 
-        gladefile = g_build_filename (siril_sources[i], GLADE_FILE, NULL);
+		gladefile = g_build_filename (siril_sources[i], GLADE_FILE, NULL);
 		if (gtk_builder_add_from_file (builder, gladefile, &err)) {
 			fprintf(stdout, _("Successfully loaded '%s'\n"), gladefile);
 			g_free(gladefile);
@@ -262,7 +272,7 @@ int main(int argc, char *argv[]) {
 	gtk_text_buffer_create_tag (tbuf, "green", "foreground", "#01b301", NULL);
 	gtk_text_buffer_create_tag (tbuf, "blue", "foreground", "#7a7af8", NULL);
 	gtk_text_buffer_create_tag (tbuf, "plum", "foreground", "#8e4585", NULL);
-	
+
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
 
 	/* initialize converters (utilities used for different image types importing) */
@@ -304,7 +314,7 @@ int main(int argc, char *argv[]) {
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
 	zoomcombo_update_display_for_zoom();
-	
+
 	/* initialize comboboxs of extraction background */
 	GtkComboBox *order = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combo_polyorder"));
 	gtk_combo_box_set_active(order, POLY_4);
@@ -314,7 +324,7 @@ int main(int argc, char *argv[]) {
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
 	adjust_sellabel();
-	
+
 	/* load the css sheet for general style */
 	load_css_style_sheet (siril_path);
 
@@ -347,15 +357,8 @@ int main(int argc, char *argv[]) {
 	GtkComboBox *binning = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combobinning"));
 	gtk_combo_box_set_active(binning, 0);
 
-	/* initialization of swap dir chooser */
-	GtkFileChooser *swap_dir = GTK_FILE_CHOOSER(lookup_widget("filechooser_swap"));
-	GtkLabel *label = GTK_LABEL(lookup_widget("label_swap_dir"));
-
-	if (com.swap_dir && com.swap_dir[0] != '\0')
-		gtk_file_chooser_set_filename (swap_dir, com.swap_dir);
-	else
-		gtk_file_chooser_set_filename (swap_dir, g_get_tmp_dir());
-	gtk_label_set_text (label, com.swap_dir);
+	/* initialization of some paths */
+	initialize_path_directory();
 
 	/* initialization of default FITS extension */
 	GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
@@ -366,7 +369,7 @@ int main(int argc, char *argv[]) {
 	set_GUI_LIBRAW();
 #endif
 	set_GUI_photometry();
-	
+
 	/* Get CPU number and set the number of threads */
 	siril_log_message(_("Parallel processing %s: Using %d logical processor(s).\n"),
 #ifdef _OPENMP
@@ -387,7 +390,7 @@ int main(int argc, char *argv[]) {
 		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("histogram_button")), lookup_widget("image_histogram_dark"));
 		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("seqlist_button")), lookup_widget("image_seqlist_dark"));
 	}
-	
+
 	/* handling OS-X integration */
 #ifdef MAC_INTEGRATION
 	GtkosxApplication *osx_app = gtkosx_application_get();

@@ -20,14 +20,13 @@
 int	readfits(const char *filename, fits *fit, char *realname);
 char*	list_header(fits *fit);
 void	clearfits(fits *);
-void	report_fits_error(int status);
 int	readfits_partial(const char *filename, int layer, fits *fit, const rectangle *area, gboolean read_date);
 int	read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area);
 int	fits_get_date_obs(const char *name, fits *f);
 int 	savefits(const char *, fits *);
 void 	save_fits_header(fits *);
 int	copyfits(fits *from, fits *to, unsigned char oper, int layer);
-int copy_header(fits *from, fits *to);
+int	copy_header(fits *from, fits *to);
 int	save1fits16(const char *filename, fits *fit, int layer);
 
 void	rgb24bit_to_fits48bit(unsigned char *rgbbuf, fits *fit, gboolean inverted);
@@ -36,7 +35,7 @@ void	rgb48bit_to_fits48bit(WORD *rgbbuf, fits *fit, gboolean inverted, gboolean 
 
 void	fits_flip_top_to_bottom(fits *fit);
 void	extract_region_from_fits(fits *from, int layer, fits *to, const rectangle *area);
-int 	new_fit_image(fits *fit, int width, int height, int nblayer);
+int 	new_fit_image(fits **fit, int width, int height, int nblayer);
 void	keep_first_channel_from_fits(fits *fit);
 
 /****************** image_formats_internal.h ******************/
@@ -49,8 +48,7 @@ int	bmp8tofits(unsigned char *rvb, int rx, int ry, fits *fitr);
 
 /* PNM */
 int 	import_pnm_to_fits(const char *filename, fits *fit);
-int	saveppm(const char *name, fits *fit);
-int	savepgm(const char *name, fits *fit);
+int	saveNetPBM(const char *name, fits *fit);
 
 /* PIC */
 struct pic_struct {
@@ -67,30 +65,26 @@ struct pic_struct {
 	// internal stuff
 	int fd;
 };
-int	pictofit(WORD *buf, fits *fit);
-int	pictofitrgb(WORD *buf, fits *fit);
 int	readpic(const char *name, fits *fit);
 
 /****************** image_formats_libraries.h ******************/
 #ifdef HAVE_LIBTIFF
-int	readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data);
-int	readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data);
-int 	readtif(const char *name, fits *fit);
-int	savetif(const char *name, fits *fit, uint16 bitspersample);
+int readtif(const char *name, fits *fit);
+int savetif(const char *name, fits *fit, uint16 bitspersample);
 #endif
 
 #ifdef HAVE_LIBJPEG
-int	readjpg(const char* , fits *);
-int	savejpg(char *, fits *, int);
+int readjpg(const char*, fits *);
+int savejpg(char *, fits *, int);
 #endif
 
 #ifdef HAVE_LIBPNG
-int	readpng(const char* , fits *);
+int readpng(const char*, fits *);
+int savepng(const char *filename, fits *fit, uint32_t bytes_per_sample,
+		gboolean is_colour);
 #endif
 
 #ifdef HAVE_LIBRAW
-int readraw(const char *, fits *);
-int readraw_in_cfa(const char *, fits *);
 int open_raw_files(const char *, fits *, int);
 #endif
 
@@ -101,6 +95,7 @@ WORD	round_to_WORD(double x);
 BYTE	round_to_BYTE(double x);
 BYTE	conv_to_BYTE(double x);
 gboolean isrgb(fits *fit);
+char *f2utf8(const char *filename);
 gboolean ends_with(const char *str, const char *ending);
 int	get_extension_index(const char *filename);
 int	is_readable_file(const char *filename);
@@ -111,6 +106,7 @@ gchar *siril_get_startup_dir();
 int	changedir(const char *dir, gchar **err);
 int	update_sequences_list(const char *sequence_name_to_select);
 void	update_used_memory();
+double test_available_space(double seq_size);
 int	get_available_memory_in_MB();
 void	expand_home_in_filename(char *filename, int size);
 WORD	get_normalized_value(fits*);
@@ -124,11 +120,6 @@ char*	format_basename(char *root);
 float	computePente(WORD *lo, WORD *hi);
 void	load_css_style_sheet (char *path);
 double	encodeJD(dateTime dt);
-#ifdef WIN32
-int ListDirectoryContents(const char *sDir);
-int ListSequences(const char *sDir, const char *sequence_name_to_select, GtkComboBoxText *seqcombo, int *index_of_seq_to_load);
-gchar * get_special_folder(int csidl);
-#endif
 
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,

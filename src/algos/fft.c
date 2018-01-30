@@ -237,6 +237,7 @@ gpointer fourier_transform(gpointer p) {
 	int ndata = width * height, chan;
 	struct timeval t_start, t_end;
 	WORD *from[3], *to[3];
+	fits *tmp = NULL, *tmp1 = NULL, *tmp2 = NULL;
 
 	siril_log_color_message(_("Fourier Transform: processing...\n"), "red");
 	gettimeofday(&t_start, NULL);
@@ -249,69 +250,77 @@ gpointer fourier_transform(gpointer p) {
 		/* We transform the image in a squared picture */
 		if (args->fit->rx != args->fit->ry) {
 			int size = max(width, height);
-			new_fit_image(&wfit[0], size, size, args->fit->naxes[2]);
+			if (new_fit_image(&tmp, size, size, args->fit->naxes[2]))
+				return GINT_TO_POINTER(1);
 			for (chan = 0; chan < args->fit->naxes[2]; chan++) {
 				from[chan] = args->fit->pdata[chan];
-				to[chan] = wfit[0].pdata[chan];
+				to[chan] = tmp->pdata[chan];
 				memcpy(to[chan], from[chan], ndata * sizeof(WORD));
 			}
-			copyfits(&wfit[0], args->fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
+			copyfits(tmp, args->fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
 		}
 		/* ******************************************* */
-		new_fit_image(&wfit[1], args->fit->rx, args->fit->ry,
+		new_fit_image(&tmp1, args->fit->rx, args->fit->ry,
 				args->fit->naxes[2]);
-		new_fit_image(&wfit[2], args->fit->rx, args->fit->ry,
+		new_fit_image(&tmp2, args->fit->rx, args->fit->ry,
 				args->fit->naxes[2]);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
-			FFTD(args->fit, &wfit[1], &wfit[2], args->type_order, chan);
+			FFTD(args->fit, tmp1, tmp2, args->type_order, chan);
 		/* we save the original size in the FITS HEADER */
-		wfit[1].dft_rx = wfit[2].dft_rx = width;
-		wfit[1].dft_ry = wfit[2].dft_ry = height;
-		strcpy(wfit[1].dft_type, "SPECTRUM");
-		savefits(args->modulus, &wfit[1]);
-		strcpy(wfit[2].dft_type, "PHASE");
-		savefits(args->phase, &wfit[2]);
+		tmp1->dft_rx = tmp2->dft_rx = width;
+		tmp1->dft_ry = tmp2->dft_ry = height;
+		strcpy(tmp1->dft_type, "SPECTRUM");
+		savefits(args->modulus, tmp1);
+		strcpy(tmp2->dft_type, "PHASE");
+		savefits(args->phase, tmp2);
 
 		/* We display the modulus on screen */
-		copyfits(&wfit[1], &gfit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
+		copyfits(tmp1, &gfit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
 
 		/* we copy the header informations */
-		save_dft_information_in_gfit(&wfit[1]);
+		save_dft_information_in_gfit(tmp1);
 		break;
 	case 'i':
 	case 'I':
-		if (readfits(args->modulus, &wfit[0], NULL)) {
+		tmp = calloc(1, sizeof(fits));
+		if (readfits(args->modulus, tmp, NULL)) {
+			free(tmp);
 			gdk_threads_add_idle(end_fourier_transform, args);
 			return GINT_TO_POINTER(1);
 		}
-		if (readfits(args->phase, &wfit[1], NULL)) {
+		tmp1 = calloc(1, sizeof(fits));
+		if (readfits(args->phase, tmp1, NULL)) {
+			free(tmp);
+			free(tmp1);
 			gdk_threads_add_idle(end_fourier_transform, args);
 			return GINT_TO_POINTER(1);
 		}
-		if (wfit[0].dft_ord[0] == 'C')		// CENTERED
+		if (tmp->dft_ord[0] == 'C')		// CENTERED
 			args->type_order = 0;
-		else if (wfit[0].dft_ord[0] == 'R')	// REGULAR
+		else if (tmp->dft_ord[0] == 'R')	// REGULAR
 			args->type_order = 1;
 		else {
+			free(tmp);
+			free(tmp1);
 			siril_log_message(_("There is something wrong in your files\n"));
 			gdk_threads_add_idle(end_fourier_transform, args);
 			return GINT_TO_POINTER(1);
 		}
-		new_fit_image(&wfit[2], wfit[0].rx, wfit[0].ry, wfit[0].naxes[2]);
+		new_fit_image(&tmp2, tmp->rx, tmp->ry, tmp->naxes[2]);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
-			FFTI(&wfit[2], &wfit[0], &wfit[1], args->type_order, chan);
-		new_fit_image(args->fit, wfit[0].dft_rx, wfit[0].dft_ry,
-				wfit[0].naxes[2]);
+			FFTI(tmp2, tmp, tmp1, args->type_order, chan);
+		new_fit_image(&args->fit, tmp->dft_rx, tmp->dft_ry,
+				tmp->naxes[2]);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++) {
-			from[chan] = wfit[2].pdata[chan];
+			from[chan] = tmp2->pdata[chan];
 			to[chan] = args->fit->pdata[chan];
 			memcpy(to[chan], from[chan],
-					wfit[0].dft_rx * wfit[0].dft_ry * sizeof(WORD));
+					tmp->dft_rx * tmp->dft_ry * sizeof(WORD));
 		}
 	}
-	clearfits(&wfit[0]);
-	clearfits(&wfit[1]);
-	clearfits(&wfit[2]);
+	clearfits(tmp);
+	clearfits(tmp1);
+	clearfits(tmp2);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);

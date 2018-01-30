@@ -168,7 +168,7 @@ int wave_io_read (File_Name_In, Wave_Trans)
 	wave_io_name (File_Name_In, File_Name);
 
 	/* open the file */
-	File_Des = fopen (File_Name, "rb");
+	File_Des = g_fopen (File_Name, "rb");
 	if (File_Des == NULL){
 		printf("wave_io_read: error opening file: %s\n", File_Name_In);
 		return 1;
@@ -228,7 +228,7 @@ int wave_io_write (File_Name_In, Wave_Trans)
 	wave_io_name (File_Name_In, File_Name);
 
 	/* open the file */
-	File_Des = fopen (File_Name, "wb");
+	File_Des = g_fopen (File_Name, "wb");
 	if (File_Des == NULL) {
 		printf("wave_io_write: error opening file\n");
 		return 1;

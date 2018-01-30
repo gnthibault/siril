@@ -152,16 +152,20 @@ struct registration_method *get_selected_registration_method() {
 
 static void normalizeQualityData(struct registration_args *args, double q_min, double q_max) {
 	int frame;
+	double diff = q_max - q_min;
+
+	/* this case occurs when all images but one are excluded */
+	if (diff == 0) {
+		q_min = 0;
+		diff = q_max;
+	}
 
 	for (frame = 0; frame < args->seq->number; ++frame) {
-		if (args->run_in_thread && !get_thread_run()) {
-			break;
-		}
-		if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
-			continue;
-
 		args->seq->regparam[args->layer][frame].quality -= q_min;
-		args->seq->regparam[args->layer][frame].quality /= (q_max - q_min);
+		args->seq->regparam[args->layer][frame].quality /= diff;
+		/* if thread has been manually stopped, some values will be < 0 */
+		if (args->seq->regparam[args->layer][frame].quality < 0)
+			args->seq->regparam[args->layer][frame].quality = -1.0;
 	}
 }
 
@@ -180,15 +184,12 @@ int register_shift_dft(struct registration_args *args) {
 	float nb_frames, cur_nb;
 	int ref_image;
 	regdata *current_regdata;
-	rectangle full_area;	// the area to use after getting image_part
 	double q_max = 0, q_min = DBL_MAX;
 	int q_index = -1;
 
 	/* the selection needs to be squared for the DFT */
 	assert(args->selection.w == args->selection.h);
 	size = args->selection.w;
-	full_area.x = full_area.y = 0;
-	full_area.h = full_area.w = size;
 	sqsize = size * size;
 
 	if (args->process_all_frames)
@@ -337,8 +338,11 @@ int register_shift_dft(struct registration_args *args) {
 					shiftx -= size;
 				}
 
+				/* for Y, it's a bit special because FITS are upside-down */
+				float sign = args->seq->type == SEQ_SER ? -1 : 1;
+
 				current_regdata[frame].shiftx = (float) shiftx;
-				current_regdata[frame].shifty = (float) shifty;
+				current_regdata[frame].shifty = (float) shifty * sign;
 
 				/* shiftx and shifty are the x and y values for translation that
 				 * would make this image aligned with the reference image.
@@ -892,7 +896,9 @@ int register_ecc(struct registration_args *args) {
 								_("Cannot perform ECC alignment for frame %d\n"),
 								frame);
 						/* We exclude this frame */
-						com.seq.imgparam[frame].incl = FALSE;
+						args->seq->imgparam[frame].incl = FALSE;
+						current_regdata[frame].quality = 0.0;
+						args->seq->selnum--;
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
@@ -934,6 +940,7 @@ int register_ecc(struct registration_args *args) {
 		args->seq->upscale_at_stacking = 2.0;
 	else
 		args->seq->upscale_at_stacking = 1.0;
+
 	normalizeQualityData(args, q_min, q_max);
 	clearfits(&ref);
 	update_used_memory();
@@ -1009,7 +1016,13 @@ void update_reg_interface(gboolean dont_change_reg_radio) {
 		nb_images_reg = com.seq.number;
 	else
 		nb_images_reg = com.seq.selnum;
-	if (method && ((nb_images_reg > 1 && com.selection.w > 0 && com.selection.h > 0)
+
+	if (method && method->sel != REQUIRES_NO_SELECTION && com.seq.current == SCALED_IMAGE) {
+		gtk_widget_set_sensitive(go_register, FALSE);
+		gtk_widget_set_visible(newSequence, FALSE);
+		gtk_label_set_text(labelreginfo, _("Load a sequence first."));
+	}
+	else if (method && ((nb_images_reg > 1 && com.selection.w > 0 && com.selection.h > 0)
 			|| (nb_images_reg > 1 && method->sel == REQUIRES_NO_SELECTION))) {
 		gtk_widget_set_sensitive(go_register, TRUE);
 		gtk_label_set_text(labelreginfo, "");
@@ -1171,6 +1184,17 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->matchSelection = gtk_toggle_button_get_active(matchSel);
 	reg_args->translation_only = gtk_toggle_button_get_active(no_translate);
 	reg_args->x2upscale = gtk_toggle_button_get_active(x2upscale);
+	/* Here we should test available free disk space for Drizzle operation */
+	if (reg_args->x2upscale) {
+		double size = seq_compute_size(reg_args->seq);
+		double diff = test_available_space(size * 4.0); //FIXME: 4 is only ok for x2 Drizzle
+		if (diff < 0.0) {
+			msg = siril_log_message(_("Not enough disk space to perform Drizzle operation !!\n"));
+			show_dialog(msg, _("Error"), "gtk-dialog-error");
+			free(reg_args);
+			return;
+		}
+	}
 	/* getting the selected registration layer from the combo box. The value is the index
 	 * of the selected line, and they are in the same order than layers so there should be
 	 * an exact matching between the two */
@@ -1263,6 +1287,7 @@ static gboolean end_register_idle(gpointer p) {
 	drawPlot();
 failed_end:
 	update_stack_interface(TRUE);
+	adjust_sellabel();
 	update_used_memory();
 	set_cursor_waiting(FALSE);
 #ifdef MAC_INTEGRATION

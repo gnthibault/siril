@@ -40,7 +40,7 @@
 static int undo_build_swapfile(fits *fit, char **filename) {
 	gchar *nameBuff;
 	char name[] = "siril_swp-XXXXXX";
-	char *tmpdir;
+	gchar *tmpdir;
 	int fd, size;
 
 	tmpdir = com.swap_dir;

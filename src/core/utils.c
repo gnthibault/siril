@@ -18,6 +18,13 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ *
+ * \file utils.c
+ * \brief Misc. function utilities.
+ *
+ */
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -28,7 +35,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <dirent.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <psapi.h>
 #else
@@ -70,6 +77,11 @@
 #include <sys/mount.h>
 #endif
 
+/**
+ * Round double value to an integer
+ * @param x value to round
+ * @return an integer
+ */
 int round_to_int(double x) {
 	if (x <= INT_MIN + 0.5) return INT_MIN;
 	if (x >= INT_MAX - 0.5) return INT_MAX;
@@ -78,6 +90,11 @@ int round_to_int(double x) {
 	return (int) (x - 0.5);
 }
 
+/**
+ * Round float value to an integer
+ * @param x value to round
+ * @return an integer
+ */
 int roundf_to_int(float x) {
 	if (x <= INT_MIN + 0.5f) return INT_MIN;
 	if (x >= INT_MAX - 0.5f) return INT_MAX;
@@ -86,6 +103,11 @@ int roundf_to_int(float x) {
 	return (int) (x - 0.5f);
 }
 
+/**
+ * Round double value to a WORD
+ * @param x value to round
+ * @return a WORD
+ */
 WORD round_to_WORD(double x) {
 	if (x <= 0.0)
 		return (WORD) 0;
@@ -94,6 +116,11 @@ WORD round_to_WORD(double x) {
 	return (WORD) (x + 0.5);
 }
 
+/**
+ * Round double value to a BYTE
+ * @param x value to round
+ * @return a BYTE
+ */
 BYTE round_to_BYTE(double x) {
 	if (x <= 0.0)
 		return (BYTE) 0;
@@ -102,6 +129,11 @@ BYTE round_to_BYTE(double x) {
 	return (BYTE) (x + 0.5);
 }
 
+/**
+ * convert double value to a BYTE
+ * @param x value to convert
+ * @return a BYTE
+ */
 BYTE conv_to_BYTE(double x) {
 	if (x == 0.0)
 		return (BYTE) 0;
@@ -111,12 +143,38 @@ BYTE conv_to_BYTE(double x) {
 	return((BYTE) (x));
 }
 
-/* returns TRUE if fit has 3 layers */
+/**
+ * Test if fit has 3 channels
+ * @param fit input FITS image
+ * @return TRUE if fit image has 3 channels
+ */
 gboolean isrgb(fits *fit) {
 	return (fit->naxis == 3);
 }
 
-/* returns TRUE if str ends with ending, case insensitive */
+/**
+ * Converts a string which is in the encoding used by GLib for filenames into a UTF-8 string.
+ * Note that on Windows GLib uses UTF-8 for filenames; on other platforms,
+ * this function indirectly depends on the current locale.
+ * g_free the result when not needed anymore.
+ * @param filename input filename
+ * @return The converted string, or "<charset conversion error>" on an error.
+ */
+char *f2utf8(const char *filename) {
+	char *utf8;
+
+	if (!(utf8 = g_filename_to_utf8(filename, -1, NULL, NULL, NULL)))
+		utf8 = g_strdup("<charset conversion error>");
+
+	return (utf8);
+}
+
+/**
+ *  Looks whether the string str ends with ending. This is case insensitive
+ *  @param str the string to check
+ *  @param ending the suffix to look for
+ *  @return TRUE if str ends with ending
+ */
 gboolean ends_with(const char *str, const char *ending) {
 	if (!str || str[0] == '\0')
 		return FALSE;
@@ -129,8 +187,11 @@ gboolean ends_with(const char *str, const char *ending) {
 	return !strncasecmp(str + str_len - ending_len, ending, ending_len);
 }
 
-/* searches for an extension '.something' in filename from the end, and returns
- * the index of the first '.' found */
+/**
+ *  Searches for an extension '.something' in filename from the end
+ *  @param filename input filename
+ *  @return the index of the first '.' found
+ */
 int get_extension_index(const char *filename) {
 	int i;
 	if (filename == NULL || filename[0] == '\0')
@@ -144,8 +205,11 @@ int get_extension_index(const char *filename) {
 	return -1;
 }
 
-/* Get the extension of a file, without the dot.
- * The returned pointed is from the filename itself or NULL. */
+/**
+ * Get the extension of a file, without the dot.
+ * @param filename input filename
+ * @return extension pointed from the filename itself or NULL
+ */
 const char *get_filename_ext(const char *filename) {
 	const char *dot = strrchr(filename, '.');
 	if (!dot || dot == filename)
@@ -153,14 +217,17 @@ const char *get_filename_ext(const char *filename) {
 	return dot + 1;
 }
 
-// tests whether the given file is either regular or a symlink
-// Return value is 1 if file is readable (not actually opened to verify)
+/**
+ * Tests whether the given file is either regular or a symlink
+ * @param filename input
+ * @return 1 if file is readable (not actually opened to verify)
+ */
 int is_readable_file(const char *filename) {
 	struct stat sts;
 	if (g_stat(filename, &sts))
 		return 0;
 	if (S_ISREG (sts.st_mode)
-#ifndef WIN32
+#ifndef _WIN32
 			|| S_ISLNK(sts.st_mode)
 #endif
 	)
@@ -168,12 +235,15 @@ int is_readable_file(const char *filename) {
 	return 0;
 }
 
-/* Tests if filename is the canonical name of a known file type
- * `type' is set according to the result of the test,
- * `realname' (optionnal) is set according to the found file name:: it
- * must be freed with when no longer needed.
- * If filename contains an extension, only this file name is tested, else all
- * extensions are tested for the file name until one is found.  */
+/** Tests if filename is the canonical name of a known file type
+ *  If filename contains an extension, only this file name is tested, else all
+ *  extensions are tested for the file name until one is found.
+ * @param[in] filename the filename to test for.
+ * @param[in] type is set according to the result of the test.
+ * @param[out] realname (optionnal) is set according to the found file name: it
+ *  must be freed with when no longer needed.
+ * @return 0 if sucess, 1 if error
+ */
 int stat_file(const char *filename, image_type *type, char **realname) {
 	int k;
 	const char *ext;
@@ -226,14 +296,13 @@ int stat_file(const char *filename, image_type *type, char **realname) {
 	return 1;
 }
 
-/** This function tries to set a startup file. It first looks at the "Pictures" directory,
- *  then if it does not exist, the "Document" one, Finally, if it fails on some UNIX systems
- *  the dir is set to the home directory.
- *  @return startup_dir if success, NULL if error
- */
-
 static GUserDirectory sdir[] = { G_USER_DIRECTORY_PICTURES,
 		G_USER_DIRECTORY_DOCUMENTS };
+/** This function tries to set a startup directory. It first looks at the "Pictures" directory,
+ *  then if it does not exist, the "Document" one, Finally, if it fails on some UNIX systems
+ *  the dir is set to the home directory.
+ *  @return a working directory path if success, NULL if error
+ */
 gchar *siril_get_startup_dir() {
 	const gchar *dir = NULL;
 	gchar *startup_dir = NULL;
@@ -246,12 +315,10 @@ gchar *siril_get_startup_dir() {
 		dir = g_get_user_special_dir(sdir[i]);
 		i++;
 	}
-#ifndef WIN32
 	/* Not every platform has a directory for these logical id */
 	if (dir == NULL) {
-		dir = g_getenv("HOME");
+		dir = g_get_home_dir();
 	}
-#endif
 	if (dir)
 		startup_dir = g_strdup(dir);
 	return startup_dir;
@@ -262,10 +329,9 @@ gchar *siril_get_startup_dir() {
  *  @param[in] dir absolute or relative path we want to set as cwd
  *  @param[out] err error message when return value is different of 1. Can be NULL if message is not needed.
  *  @return 0 if success, any other values for error
- *
- *  */
+ */
 int changedir(const char *dir, gchar **err) {
-	gchar *error;
+	gchar *error = NULL;
 	int retval = 0;
 
 	if (dir == NULL || dir[0] == '\0') {
@@ -283,17 +349,14 @@ int changedir(const char *dir, gchar **err) {
 		retval = 4;
 	} else {
 		if (!g_chdir(dir)) {
-
 			/* do we need to search for sequences in the directory now? We still need to
 			 * press the check seq button to display the list, and this is also done there. */
 			/* check_seq();
 			 update_sequence_list();*/
-			if (com.wd)
-				g_free(com.wd);
+			g_free(com.wd);
 			com.wd = g_get_current_dir();
 			siril_log_message(_("Setting CWD (Current "
 					"Working Directory) to '%s'\n"), com.wd);
-			error = NULL;
 			set_GUI_CWD();
 			update_used_memory();
 			retval = 0;
@@ -309,10 +372,66 @@ int changedir(const char *dir, gchar **err) {
 	return retval;
 }
 
-/* This method populates the sequence combo box with the sequences found in the CWD.
- * If only one sequence is found, or if a sequence whose name matches the
- * possibly NULL argument is found, it is automatically selected, which triggers
- * its loading */
+#ifdef _WIN32
+static int ListSequences(const gchar *sDir, const char *sequence_name_to_select,
+		GtkComboBoxText *seqcombo, int *index_of_seq_to_load) {
+	WIN32_FIND_DATAW fdFile;
+	HANDLE hFind = NULL;
+	char sPath[2048];
+	char filename[256];
+	int number_of_loaded_sequences = 0;
+	wchar_t *wpath;
+
+	//Specify a file mask. *.seq = We want only seq file!
+	sprintf(sPath, "%s\\*.seq", sDir);
+
+	wpath = g_utf8_to_utf16(sPath, -1, NULL, NULL, NULL);
+	if (wpath == NULL)
+		return 1;
+
+	if ((hFind = FindFirstFileW(wpath, &fdFile)) == INVALID_HANDLE_VALUE) {
+		fprintf(stderr, "Path not found: [%s]\n", sDir);
+		g_free(wpath);
+		return 1;
+	}
+	g_free(wpath);
+
+	do {
+		//Is the entity a File or Folder?
+		if (!(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+			gchar *cFileName = g_utf16_to_utf8(fdFile.cFileName, -1, NULL, NULL, NULL);
+			if (cFileName == NULL) {
+				return 1;
+			}
+			sequence *seq = readseqfile(cFileName);
+			if (seq != NULL) {
+				strncpy(filename, cFileName, 255);
+				free_sequence(seq, TRUE);
+				gtk_combo_box_text_append_text(seqcombo, filename);
+				if (sequence_name_to_select
+						&& !strncmp(filename, sequence_name_to_select,
+								strlen(filename))) {
+					*index_of_seq_to_load = number_of_loaded_sequences;
+				}
+				++number_of_loaded_sequences;
+			}
+			g_free(cFileName);
+		}
+	} while (FindNextFileW(hFind, &fdFile)); //Find the next file.
+
+	FindClose(hFind);
+
+	return number_of_loaded_sequences;
+}
+#endif
+
+/** This method populates the sequence combo box with the sequences found in the CWD.
+ *  If only one sequence is found, or if a sequence whose name matches the
+ *  possibly NULL argument is found, it is automatically selected, which triggers
+ *  its loading
+ *  @param sequence_name_to_select the name of the input sequence
+ *  @return 0 if success
+ */
 int update_sequences_list(const char *sequence_name_to_select) {
 	GtkComboBoxText *seqcombo;
 	struct dirent **list;
@@ -324,7 +443,7 @@ int update_sequences_list(const char *sequence_name_to_select) {
 			gtk_builder_get_object(builder, "sequence_list_combobox"));
 	gtk_combo_box_text_remove_all(seqcombo);
 
-#ifdef WIN32
+#ifdef _WIN32
 	number_of_loaded_sequences = ListSequences(com.wd, sequence_name_to_select, seqcombo, &index_of_seq_to_load);
 #else
 	int i, n;
@@ -373,11 +492,14 @@ int update_sequences_list(const char *sequence_name_to_select) {
 	return 0;
 }
 
-/* Find the space remaining in a directory, in bytes. A double for >32bit
+/**
+ * Find the space remaining in a directory, in bytes. A double for >32bit
  * problem avoidance. <0 for error.
+ * @param name the path of the directory to be tested
+ * @return the disk space remaining in bytes, or a value less than 0 if error
  */
 #ifdef HAVE_SYS_STATVFS_H
-static double find_space(const char *name) {
+static double find_space(const gchar *name) {
 	struct statvfs st;
 	double sz;
 
@@ -391,7 +513,7 @@ static double find_space(const char *name) {
 	return (sz);
 }
 #elif (HAVE_SYS_VFS_H || HAVE_SYS_MOUNT_H)
-static double find_space(const char *name) {
+static double find_space(const gchar *name) {
 	struct statfs st;
 	double sz;
 
@@ -402,24 +524,25 @@ static double find_space(const char *name) {
 
 	return (sz);
 }
-#elif defined WIN32
-static double find_space(const char *name) {
+#elif defined _WIN32
+static double find_space(const gchar *name) {
 	ULARGE_INTEGER avail;
 	double sz;
 
 	gchar *localdir = g_path_get_dirname(name);
 	wchar_t *wdirname = g_utf8_to_utf16(localdir, -1, NULL, NULL, NULL);
-	g_free(localdir);
 
 	if (!GetDiskFreeSpaceExW(wdirname, &avail, NULL, NULL))
 		sz = -1;
 	else
 		sz = (double) avail.QuadPart;
 
+	g_free(localdir);
+	g_free(wdirname);
 	return (sz);
 }
 #else
-static double find_space(const char *name) {
+static double find_space(const gchar *name) {
 	return (-1);
 }
 #endif /*HAVE_SYS_STATVFS_H*/
@@ -462,7 +585,7 @@ static unsigned long update_used_RAM_memory() {
 	getrusage(RUSAGE_SELF, &usage);
 	return ((unsigned long) usage.ru_maxrss);
 }
-#elif defined(WIN32) /* Windows */
+#elif defined(_WIN32) /* Windows */
 static unsigned long update_used_RAM_memory() {
     PROCESS_MEMORY_COUNTERS memCounter;
     
@@ -476,6 +599,10 @@ static unsigned long update_used_RAM_memory() {
 }
 #endif
 
+/**
+ * Updates RAM memory used by siril, available free disk space
+ * and displays information on the control window.
+ */
 void update_used_memory() {
 	unsigned long ram;
 	double freeDisk;
@@ -487,13 +614,34 @@ void update_used_memory() {
 	set_GUI_DiskSpace(freeDisk);
 }
 
+/**
+ * Test if there is enough free disk space by returning the difference
+ * between available free disk space and the size given in parameters
+ * @param seq_size size to be tested
+ * @return a value greater than 0 if there is enough disk space, a value
+ * less than 0 otherwise. The function returns -1 if an error occurs.
+ */
+double test_available_space(double seq_size) {
+	double freeDisk;
+
+	freeDisk = find_space(com.wd);
+	if ((freeDisk < 0) || (seq_size < 0)) {
+		return -1;
+	}
+	return (freeDisk - seq_size);
+}
+
+/**
+ * Gets available memory for stacking process
+ * @return available memory in MB, 2048 if it fails.
+ */
 #if defined(__linux__)
 int get_available_memory_in_MB() {
 	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	FILE* fp = fopen("/proc/meminfo", "r");
 	if (fp != NULL) {
 		size_t bufsize = 1024 * sizeof(char);
-		char* buf = (char*) malloc(bufsize);
+		gchar *buf = g_new(gchar, bufsize);
 		long value = -1L;
 		while (getline(&buf, &bufsize, fp) >= 0) {
 			if (strncmp(buf, "MemAvailable", 12) != 0)
@@ -502,7 +650,7 @@ int get_available_memory_in_MB() {
 			break;
 		}
 		fclose(fp);
-		free((void*) buf);
+		g_free(buf);
 		if (value != -1L)
 			mem = (int) (value / 1024L);
 	}
@@ -536,7 +684,7 @@ int get_available_memory_in_MB() {
 	FILE* fp = fopen("/var/run/dmesg.boot", "r");
 	if (fp != NULL) {
 		size_t bufsize = 1024 * sizeof(char);
-		char* buf = (char*) malloc(bufsize);
+		gchar *buf = g_new(gchar, bufsize);
 		long value = -1L;
 		while (getline(&buf, &bufsize, fp) >= 0) {
 			if (strncmp(buf, "avail memory", 12) != 0)
@@ -545,13 +693,13 @@ int get_available_memory_in_MB() {
 			break;
 		}
 		fclose(fp);
-		free((void*) buf);
+		g_free(buf);
 		if (value != -1L)
 			mem = (int) (value / 1024L);
 	}
 	return mem;
 }
-#elif defined(WIN32) /* Windows */
+#elif defined(_WIN32) /* Windows */
 int get_available_memory_in_MB() {
 	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	MEMORYSTATUSEX memStatusEx = {0};
@@ -564,12 +712,16 @@ int get_available_memory_in_MB() {
 }
 #else
 int get_available_memory_in_MB() {
-	printf("Siril failed to get available free RAM memory\n");
+	fprintf(stderr, "Siril failed to get available free RAM memory\n");
 	return 2048;
 }
 #endif
 
-/* expands the ~ in filenames */
+/**
+ * Expands the ~ in filenames
+ * @param[in] filename input filename
+ * @param[in] size maximum size of the filename
+ */
 void expand_home_in_filename(char *filename, int size) {
 	if (filename[0] == '~' && filename[1] == '\0')
 		strcat(filename, G_DIR_SEPARATOR_S);
@@ -577,7 +729,7 @@ void expand_home_in_filename(char *filename, int size) {
 	if (len < 2)
 		return;		// not very necessary now with the first line
 	if (filename[0] == '~' && filename[1] == G_DIR_SEPARATOR) {
-		char *homepath = getenv("HOME");
+		const gchar *homepath = g_get_home_dir();
 		int j, homelen = strlen(homepath);
 		if (len + homelen > size - 1) {
 			siril_log_message(_("Filename is too long, not expanding it\n"));
@@ -591,6 +743,12 @@ void expand_home_in_filename(char *filename, int size) {
 	}
 }
 
+/**
+ * Tries to get normalized value of a fit image. Make assumption that
+ * an image with no values greater than 2^8 comes from 8-bit images
+ * @param fit input FITS image
+ * @return 255 or 65535 if 8- or 16-bit image
+ */
 WORD get_normalized_value(fits *fit) {
 	image_find_minmax(fit, 0);
 	if (fit->maxi <= UCHAR_MAX)
@@ -598,13 +756,17 @@ WORD get_normalized_value(fits *fit) {
 	return USHRT_MAX;
 }
 
-/* This function reads a text file and displays it in the
- * show_data_dialog */
+/**
+ * This function reads a text file and displays it in the
+ * show_data_dialog
+ * @param path filename to display
+ * @param title text shown as dialog title
+ */
 void read_and_show_textfile(char *path, char *title) {
 	char line[64] = "";
 	char txt[1024] = "";
 
-	FILE *f = fopen(path, "r");
+	FILE *f = g_fopen(path, "r");
 	if (!f) {
 		show_dialog(_("File not found"), _("Error"), "gtk-dialog-error");
 		return;
@@ -615,8 +777,12 @@ void read_and_show_textfile(char *path, char *title) {
 	fclose(f);
 }
 
-/* Exchange the two parameters of the function 
- * Usefull in Dynamic PSF (PSF.c) */
+/**
+ * Switch the two parameters of the function:
+ * Useful in Dynamic PSF (PSF.c)
+ * @param a first parameter to switch
+ * @param b second parameter to switch
+ */
 void swap_param(double *a, double *b) {
 	double tmp;
 	tmp = *a;
@@ -624,7 +790,11 @@ void swap_param(double *a, double *b) {
 	*b = tmp;
 }
 
-// in-place quick sort, of array a of size n
+/**
+ * In-place quick sort of array of double a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
 void quicksort_d(double *a, int n) {
 	if (n < 2)
 		return;
@@ -648,7 +818,11 @@ void quicksort_d(double *a, int n) {
 	quicksort_d(l, a + n - l);
 }
 
-// in-place quick sort, of array a of size n
+/**
+ * In-place quick sort of array of WORD a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
 void quicksort_s(WORD *a, int n) {
 	if (n < 2)
 		return;
@@ -672,6 +846,11 @@ void quicksort_s(WORD *a, int n) {
 	quicksort_s(l, a + n - l);
 }
 
+/**
+ * Removes extension of the filename
+ * @param filename file path with extension
+ * @return filename without extension
+ */
 char *remove_ext_from_filename(const char *filename) {
 	size_t filelen;
 	const char *p;
@@ -693,7 +872,12 @@ char *remove_ext_from_filename(const char *filename) {
 	return file;
 }
 
-// append a string to the end of an existing string
+/**
+ * append a string to the end of an existing string
+ * @param data original string
+ * @param newdata suffix to add
+ * @return a new string that should be freed when no longer needed
+ */
 char* str_append(char** data, const char* newdata) {
 	char* p;
 	int len = (*data ? strlen(*data) : 0);
@@ -707,8 +891,12 @@ char* str_append(char** data, const char* newdata) {
 	return *data;
 }
 
-/* cut a base name to 120 characters and add a trailing underscore if needed.
- * WARNING: may return a newly allocated string and free the argument */
+/**
+ * Cut a base name to 120 characters and add a trailing underscore if needed.
+ * WARNING: may return a newly allocated string and free the argument
+ * @param root the original base name
+ * @return a string ending with trailing underscore
+ */
 char *format_basename(char *root) {
 	int len = strlen(root);
 	if (len > 120) {
@@ -725,6 +913,12 @@ char *format_basename(char *root) {
 	return appended;
 }
 
+/**
+ * Computes slop using low and high values
+ * @param lo low value
+ * @param hi high value
+ * @return the computed slope
+ */
 float computePente(WORD *lo, WORD *hi) {
 	float pente;
 
@@ -753,6 +947,10 @@ static const gchar *checking_css_filename() {
 	}
 }
 
+/**
+ * Loads the css sheet
+ * @param path path of the file being loaded
+ */
 void load_css_style_sheet (char *path) {
 	GtkCssProvider *css_provider;
 	GdkDisplay *display;
@@ -784,8 +982,12 @@ void load_css_style_sheet (char *path) {
 	g_free(CSSFile);
 }
 
-/* code borrowed from muniwin
- * From a datetime it computes the Julian date needed in photometry */
+/**
+ * From a datetime it computes the Julian date needed in photometry
+ * (code borrowed from muniwin)
+ * @param dt timestamp in datetime format
+ * @return the Julian date
+ */
 double encodeJD(dateTime dt) {
 	double jd1;
 	int before, d1, d2;
@@ -831,127 +1033,3 @@ double encodeJD(dateTime dt) {
 		return jd1 + 2 - (dt.year / 100) + (dt.year / 400);
 	}
 }
-
-#ifdef WIN32
-int ListDirectoryContents(const char *sDir) {
-	WIN32_FIND_DATA fdFile;
-	HANDLE hFind = NULL;
-	const char *ext;
-	char sPath[2048];
-
-	//Specify a file mask. *.* = We want everything!
-	sprintf(sPath, "%s\\*.*", sDir);
-
-	if ((hFind = FindFirstFile(sPath, &fdFile)) == INVALID_HANDLE_VALUE) {
-		printf("Path not found: [%s]\n", sDir);
-		return 1;
-	}
-
-	do {
-		//Find first file will always return "."
-		//    and ".." as the first two directories.
-		if (strcmp(fdFile.cFileName, ".") != 0
-				&& strcmp(fdFile.cFileName, "..") != 0) {
-			//Build up our file path using the passed in
-			//  [sDir] and the file/foldername we just found:
-			sprintf(sPath, "%s\\%s", sDir, fdFile.cFileName);
-
-			//Is the entity a File or Folder?
-			if (fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				siril_log_color_message(_("Directory: %s\n"), "green",	fdFile.cFileName);
-			} else {
-				//printf("File: %s\n", sPath);
-				ext = get_filename_ext(fdFile.cFileName);
-				if (!ext)
-					continue;
-				image_type type = get_type_for_extension(ext);
-				if (type != TYPEUNDEF) {
-					if (type == TYPEAVI || type == TYPESER)
-						siril_log_color_message(_("Sequence: %s\n"), "salmon",
-								fdFile.cFileName);
-					else if (type == TYPEFITS)
-						siril_log_color_message(_("Image: %s\n"), "plum", fdFile.cFileName);
-					else
-						siril_log_color_message(_("Image: %s\n"), "red", fdFile.cFileName);
-				} else if (!strncmp(ext, "seq", 4))
-					siril_log_color_message(_("Sequence: %s\n"), "blue", fdFile.cFileName);
-			}
-		}
-	} while (FindNextFile(hFind, &fdFile)); //Find the next file.
-
-	FindClose(hFind);
-
-	return 0;
-}
-
-int ListSequences(const char *sDir, const char *sequence_name_to_select, GtkComboBoxText *seqcombo,
-		int *index_of_seq_to_load) {
-	WIN32_FIND_DATA fdFile;
-	HANDLE hFind = NULL;
-	char sPath[2048];
-	char filename[256];
-	int number_of_loaded_sequences = 0;
-
-	//Specify a file mask. *.* = We want everything!
-	sprintf(sPath, "%s\\*.*", sDir);
-
-	if ((hFind = FindFirstFile(sPath, &fdFile)) == INVALID_HANDLE_VALUE) {
-		printf("Path not found: [%s]\n", sDir);
-		return 1;
-	}
-
-	do {
-		//Find first file will always return "."
-		//    and ".." as the first two directories.
-		if (strcmp(fdFile.cFileName, ".") != 0
-				&& strcmp(fdFile.cFileName, "..") != 0) {
-			//Build up our file path using the passed in
-			//  [sDir] and the file/foldername we just found:
-			sprintf(sPath, "%s\\%s", sDir, fdFile.cFileName);
-
-			//Is the entity a File or Folder?
-			if (!(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-				char *suf;
-
-				if ((suf = strstr(fdFile.cFileName, ".seq")) && strlen(suf) == 4) {
-					sequence *seq = readseqfile(fdFile.cFileName);
-					if (seq != NULL) {
-						strncpy(filename, fdFile.cFileName, 255);
-						free_sequence(seq, TRUE);
-						gtk_combo_box_text_append_text(seqcombo, filename);
-						if (sequence_name_to_select
-								&& !strncmp(filename, sequence_name_to_select,
-										strlen(filename))) {
-							*index_of_seq_to_load = number_of_loaded_sequences;
-						}
-						++number_of_loaded_sequences;
-					}
-				}
-			}
-		}
-	} while (FindNextFile(hFind, &fdFile)); //Find the next file.
-
-	FindClose(hFind);
-
-	return number_of_loaded_sequences;
-}
-
-/* stolen from gimp which in turn stole from glib 2.35 */
-gchar * get_special_folder(int csidl) {
-	wchar_t path[MAX_PATH + 1];
-	HRESULT hr;
-	LPITEMIDLIST pidl = NULL;
-	BOOL b;
-	gchar *retval = NULL;
-
-	hr = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
-	if (hr == S_OK) {
-		b = SHGetPathFromIDListW(pidl, path);
-		if (b)
-			retval = g_utf16_to_utf8(path, -1, NULL, NULL, NULL);
-		CoTaskMemFree(pidl);
-	}
-
-	return retval;
-}
-#endif

@@ -88,11 +88,13 @@ struct ser_struct {
 void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp);
 void ser_init_struct(struct ser_struct *ser_file);
 void ser_display_info(struct ser_struct *ser_file);
-int ser_open_file(char *filename, struct ser_struct *ser_file);
+int ser_open_file(const char *filename, struct ser_struct *ser_file);
 int ser_write_and_close(struct ser_struct *ser_file);
 int ser_create_file(const char *filename, struct ser_struct *ser_file, gboolean overwrite, struct ser_struct *copy_from);
 int ser_close_file(struct ser_struct *ser_file);
 int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit);
+int ser_read_opened_partial_fits(struct ser_struct *ser_file, int layer,
+		int frame_no, fits *fit, const rectangle *area);
 int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		int frame_no, WORD *buffer, const rectangle *area);
 int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame);

@@ -1590,7 +1590,7 @@ static void _show_bgnoise(gpointer p) {
 	start_in_new_thread(noise, args);
 }
 
-static void remove_tmp_drizzle_files(struct stacking_args *args) {
+static void remove_tmp_drizzle_files(struct stacking_args *args, gboolean remove_seqfile) {
 	if (args->seq->upscale_at_stacking < 1.05)
 		return;
 
@@ -1603,13 +1603,16 @@ static void remove_tmp_drizzle_files(struct stacking_args *args) {
 
 	int i;
 	char filename[256];
-	gchar *seqname = malloc(strlen(basename) + 5);
-	g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
-	/* remove seq file */
-	g_unlink(seqname);
 
-	g_free(seqname);
-	g_free(basename);
+	if (remove_seqfile) {
+		gchar *seqname = malloc(strlen(basename) + 5);
+		g_snprintf(seqname, strlen(basename) + 5, "%s.seq", basename);
+		/* remove seq file */
+		g_unlink(seqname);
+
+		g_free(seqname);
+		g_free(basename);
+	}
 
 	switch (args->seq->type) {
 	default:
@@ -1676,11 +1679,9 @@ static gboolean end_stacking(gpointer p) {
 			display_filename();
 		}
 		/* remove tmp files if exist (Drizzle) */
-		remove_tmp_drizzle_files(args);
+		remove_tmp_drizzle_files(args, TRUE);
 
-		initialize_display_mode();
-
-		adjust_cutoff_from_updated_gfit();
+		adjust_cutoff_from_updated_gfit();	// computes min and max
 		set_sliders_value_to_gfit();
 		initialize_display_mode();
 
@@ -1883,7 +1884,7 @@ void stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
  * images to include in a processing, computes the highest FWHM value accepted.
  */
 double compute_highest_accepted_fwhm(double percent) {
-	int i, layer;
+	int i, layer, number_images_with_fwhm_data;
 	double *val = malloc(com.seq.number * sizeof(double));
 	double highest_accepted;
 	layer = get_registration_layer();
@@ -1894,7 +1895,6 @@ double compute_highest_accepted_fwhm(double percent) {
 	// copy values
 	for (i=0; i<com.seq.number; i++) {
 		if (com.seq.regparam[layer][i].fwhm <= 0.0f) {
-			//siril_log_message(_("Error in highest FWHM accepted for sequence processing: some images don't have this kind of information available\n"));
 			val[i] = DBL_MAX;
 		} else {
 			val[i] = com.seq.regparam[layer][i].fwhm;
@@ -1903,13 +1903,22 @@ double compute_highest_accepted_fwhm(double percent) {
 
 	//sort values
 	quicksort_d(val, com.seq.number);
-	/*fprintf(stdout, "sorted values:\n");
-	  for (i=0; i<com.seq.number; i++)
-	  fprintf(stdout, "%g ", val[i]);
-	  fputc('\n', stdout);*/
+
+	if (val[com.seq.number-1] != DBL_MAX) {
+		number_images_with_fwhm_data = com.seq.number;
+	} else {
+		for (i=0; i<com.seq.number; i++)
+			if (val[i] == DBL_MAX)
+				break;
+		number_images_with_fwhm_data = i;
+		siril_log_message(_("Warning: some images don't have FWHM information available for best images selection, using only available data (%d images on %d).\n"),
+				number_images_with_fwhm_data, com.seq.number);
+	}
 
 	// get highest accepted
-	highest_accepted = val[(int) (percent * (double) com.seq.number / 100.0)];
+	highest_accepted = val[(int) (percent * (double) number_images_with_fwhm_data / 100.0)];
+	if (highest_accepted == DBL_MAX)
+		highest_accepted = 0.0;
 	free(val);
 	return highest_accepted;
 }
@@ -2024,20 +2033,21 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		} else {
 			percent = gtk_adjustment_get_value(stackadj);
 			stackparam.filtering_criterion = stack_filter_fwhm;
-			stackparam.filtering_parameter = compute_highest_accepted_fwhm(
-					percent);
-			stackparam.nb_images_to_stack = compute_nb_filtered_images();
-			sprintf(stackparam.description, _("Stacking images of the sequence "
-					"with a FWHM lower or equal than %g (%d)\n"),
-					stackparam.filtering_parameter,	stackparam.nb_images_to_stack);
-			gtk_widget_set_sensitive(stack[0], TRUE);
-			gtk_widget_set_sensitive(stack[1], TRUE);
-			if (stackparam.filtering_parameter > 0.0)
+			stackparam.filtering_parameter = compute_highest_accepted_fwhm(percent);
+			// sometimes this fails and returns 0.0 ^
+			if (stackparam.filtering_parameter > 0.0) {
+				stackparam.nb_images_to_stack = compute_nb_filtered_images();
+				sprintf(stackparam.description, _("Stacking images of the sequence "
+							"with a FWHM lower or equal than %g (%d)\n"),
+						stackparam.filtering_parameter,	stackparam.nb_images_to_stack);
+				gtk_widget_set_sensitive(stack[0], TRUE);
+				gtk_widget_set_sensitive(stack[1], TRUE);
 				sprintf(labelbuffer, _("Based on FWHM < %.2f (%d images)"),
 						stackparam.filtering_parameter,
 						stackparam.nb_images_to_stack);
-			else
+			} else {
 				sprintf(labelbuffer, _("Based on FWHM"));
+			}
 			gtk_label_set_text(GTK_LABEL(stack[1]), labelbuffer);
 		}
 		break;
@@ -2145,29 +2155,41 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
 
-	gchar *basename = g_path_get_basename(args->seq->seqname);
-	char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
-	sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
-	g_unlink(seqname);
-	g_free(basename);
 
 	generic_sequence_worker(args);
 	int retval = args->retval;
 	free(upargs);
 
 	if (!retval) {
+		int i;
+
+		gchar *basename = g_path_get_basename(args->seq->seqname);
+		char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
+		sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
+		g_unlink(seqname);
+		g_free(basename);
+
 		// replace active sequence by upscaled
 		if (check_seq(0)) {	// builds the new .seq
 			free(seqname);
 			free(args);
 			return 1;
 		}
+
+		/* remove tmp files if exist (Drizzle)
+		 * seq file has already be removed */
+		remove_tmp_drizzle_files(stackargs, FALSE);
+
 		sequence *newseq = readseqfile(seqname);
 		if (!newseq) {
 			free(seqname);
 			free(args);
 			return 1;
 		}
+		free(seqname);
+
+		memset(&com.selection, 0, sizeof(rectangle));
+
 		/* there are three differences between old and new sequence:
 		 * the size of images and possibly the number of images if the
 		 * stacking is done on a filtered set.
@@ -2178,17 +2200,26 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 		 *   passed to stacking is treated in its entirety.
 		 * - the shifts between images that must be multiplied by upscale_at_stacking
 		 */
-		seq_check_basic_data(newseq, FALSE);
+		retval = seq_check_basic_data(newseq, FALSE);
+		if (retval == -1) {
+			free(newseq);
+			return retval;
+		}
 		stackargs->seq = newseq;
 		stackargs->filtering_criterion = seq_filter_all;
 		stackargs->filtering_parameter = 0.0;
 		stackargs->nb_images_to_stack = newseq->number;
+
+		stackargs->seq->regparam[stackargs->reglayer] = malloc(stackargs->nb_images_to_stack * sizeof(regdata));
+		for (i = 0; i < stackargs->nb_images_to_stack; i++) {
+			regdata *data = &args->seq->regparam[stackargs->reglayer][stackargs->image_indices[i]];
+			memcpy(&stackargs->seq->regparam[stackargs->reglayer][i], data, sizeof(regdata));
+		}
 		stack_fill_list_of_unfiltered_images(stackargs);
 
-		stackargs->seq->regparam[stackargs->reglayer] = args->seq->regparam[stackargs->reglayer];
 		stackargs->seq->upscale_at_stacking = args->seq->upscale_at_stacking;
+
 	}
-	free(seqname);
 	free(args);
 	return retval;
 }

@@ -39,8 +39,9 @@
  * If a sequence is loaded and one of its images is displayed, nothing is done.
  */
 void close_single_image() {
-	if (sequence_is_loaded() && com.seq.current != RESULT_IMAGE)
+	if (sequence_is_loaded() && com.seq.current >= 0)
 		return;
+	memset(&com.selection, 0, sizeof(rectangle));
 	free_image_data();
 	undo_flush();
 }
@@ -163,12 +164,15 @@ int open_single_image(const char* filename) {
 		return 1;
 	}
 
+	// Closing a sequence
 	if (sequence_is_loaded()) {
 		char *basename = g_path_get_basename(com.seq.seqname);
+		// TODO: is basename useful here?
 		siril_log_message(_("Closing sequence %s\n"), basename);
 		g_free(basename);
 		clear_sequence_list();
 		free_sequence(&(com.seq), FALSE);
+		clear_stars_list();
 		initialize_sequence(&com.seq, FALSE);
 	}
 	fprintf(stdout, "Loading image OK, now displaying\n");

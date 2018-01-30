@@ -166,12 +166,19 @@ int savebmp(const char *name, fits *fit) {
 	bmpinfoheader[26] = (unsigned char) (datasize >> 16);
 	bmpinfoheader[27] = (unsigned char) (datasize >> 24);
 
-	f = fopen(name, "wb");
+	char *filename = strdup(name);
+	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
+		filename = str_append(&filename, ".tif");
+	}
+
+	f = g_fopen(filename, "wb");
 	if (f == NULL) {
 		char *msg = siril_log_message(_("Can't create BMP file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		free(filename);
 		return 1;
 	}
+	free(filename);
 
 	fwrite(bmpfileheader, sizeof(bmpfileheader), 1, f);
 	fwrite(bmpinfoheader, sizeof(bmpinfoheader), 1, f);
@@ -334,8 +341,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 	int i, j, max_val;
 	size_t stride;
 
-	if ((fd = fopen(filename, "rb")) == NULL) {
-		perror("fopen pnm");
+	if ((fd = g_fopen(filename, "rb")) == NULL) {
 		msg = siril_log_message(_("Sorry but Siril cannot open this file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
 		return -1;
@@ -525,8 +531,8 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 	return fit->naxes[2];
 }
 
-int saveppm(const char *name, fits *fit) {
-	FILE *fp = fopen(name, "wb");
+static int saveppm(const char *name, fits *fit) {
+	FILE *fp = g_fopen(name, "wb");
 	int i;
 	int ndata = fit->rx * fit->ry;
 	const char *comment = "# CREATOR : SIRIL";
@@ -559,33 +565,54 @@ int saveppm(const char *name, fits *fit) {
 	return 0;
 }
 
-int savepgm(const char *name, fits *fit) {
+static int savepgm(const char *name, fits *fit) {
 	FILE *fp;
-	int i, j;
-	WORD data[fit->ry][fit->rx];
+	int i;
+	int ndata = fit->rx * fit->ry;
 	WORD *gbuf = fit->pdata[RLAYER];
 	const char *comment = "# CREATOR : SIRIL";
 
-	/* fill the data array */
-	for (j = fit->ry - 1; j >= 0; j--) {
-		for (i = 0; i < fit->rx; i++) {
-			data[j][i] = *gbuf++;
-			/* change endianness in place */
-			data[j][i] = (data[j][i] >> 8) | (data[j][i] << 8);
-		}
-	}
-	fp = fopen(name, "wb");
+	fp = g_fopen(name, "wb");
 	if (!fp)
 		return -1;
 	fprintf(fp, "P5\n%s\n%u %u\n%u\n", comment, fit->rx, fit->ry, USHRT_MAX);
-	fwrite(data, sizeof(data), 1, fp);
+
+	fits_flip_top_to_bottom(fit);
+	for (i = 0; i < ndata; i++) {
+		WORD tmp = *gbuf++;
+		/* change endianness in place */
+		WORD data[1];
+		data[0] = (tmp >> 8) | (tmp << 8);
+		fwrite(data, sizeof(data), 1, fp);
+	}
 	fclose(fp);
+	fits_flip_top_to_bottom(fit);
 	siril_log_message(_("Saving NetPBM: file %s, %ld layer(s), %ux%u pixels\n"),
 			name, fit->naxes[2], fit->rx, fit->ry);
 	return 0;
 }
 
-int pictofit(WORD *buf, fits *fit) {
+int saveNetPBM(const char *name, fits *fit) {
+	int retval;
+	char *filename = strdup(name);
+
+	if (fit->naxes[2] == 1) {
+		if (!ends_with(filename, ".pgm")) {
+			filename = str_append(&filename, ".pgm");
+		}
+		retval = savepgm(filename, fit);
+	} else {
+		if (!ends_with(filename, ".ppm") && !ends_with(filename, ".pnm")) {
+			filename = str_append(&filename, ".ppm");
+		}
+		retval = saveppm(filename, fit);
+	}
+	free(filename);
+	return retval;
+}
+
+
+static int pictofit(WORD *buf, fits *fit) {
 	int nbdata;
 	int i;
 	WORD *data, *olddata = fit->data;
@@ -613,7 +640,7 @@ int pictofit(WORD *buf, fits *fit) {
 	return 1;
 }
 
-int pictofitrgb(WORD *buf, fits *fit) {
+static int pictofitrgb(WORD *buf, fits *fit) {
 	int i, nbdata;
 	WORD *data[3], *olddata = fit->data;
 

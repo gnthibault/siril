@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/wait.h>
 #endif
 
@@ -227,14 +227,30 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 	plot->nb = j;
 }
 
-#ifndef WIN32
+#ifdef _WIN32
+/* returns true if the gnuplot.exe exists in the wanted folder */
+static gchar *possible_path[] = { "C:\\Program Files\\gnuplot\\bin\\gnuplot.exe" };
+static gboolean gnuplot_is_available() {
+	size_t size, i = 0;
+	gboolean found = FALSE;
+
+	size = sizeof(possible_path) / sizeof(gchar*);
+	do {
+		found = g_file_test(possible_path[i], G_FILE_TEST_EXISTS);
+		i++;
+	} while (i < size && !found);
+
+	return found;
+}
+#else
 /* returns true if the command gnuplot is available */
 static gboolean gnuplot_is_available() {
-	int retval = system("gnuplot -e > /dev/null 2>&1");
+	int retval = system(GNUPLOT_NAME" -e > /dev/null 2>&1");
 	if (WIFEXITED(retval))
 		return 0 == WEXITSTATUS(retval);
 	return FALSE;
 }
+#endif
 
 static int lightCurve(pldata *plot, sequence *seq) {
 	int i, j, k, nbImages = 0, ret = 0;
@@ -242,8 +258,11 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	double *vmag, *err, *x, *real_x;
 
 	if (!gnuplot_is_available()) {
-		siril_log_message(_("Gnuplot is unavailable. "
-				"Please consider to install it before trying to plot a graph of a variable star.\n"));
+		char *msg = siril_log_message(_("Gnuplot is unavailable. "
+				"Please consider to install it before "
+				"trying to plot a graph of a variable star.\n"));
+
+		show_dialog(msg, _("Warning"), "gtk-dialog-warning");
 		return -1;
 	}
 
@@ -352,7 +371,6 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	free(real_x);
 	return 0;
 }
-#endif
 
 static int exportCSV(pldata *plot, sequence *seq) {
 	int i, j, ret = 0;
@@ -365,7 +383,7 @@ static int exportCSV(pldata *plot, sequence *seq) {
 	if (file && file[0] != '\0') {
 		filename = g_strndup(file, strlen(file) + 5);
 		g_strlcat(filename, ".csv", strlen(file) + 5);
-		FILE *csv = fopen(filename, "w");
+		FILE *csv = g_fopen(filename, "w");
 		if (csv == NULL) {
 			ret = 1;
 		} else {
@@ -545,13 +563,9 @@ void on_ButtonSaveCSV_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_varCurvePhotometry_clicked(GtkButton *button, gpointer user_data) {
-#ifdef WIN32
-	show_dialog(_("Using gnuplot is only available on UNIX system.\n"), _("Error"), "gtk-dialog-error");
-#else
 	set_cursor_waiting(TRUE);
 	lightCurve(plot_data, &com.seq);
 	set_cursor_waiting(FALSE);
-#endif
 }
 
 void free_photometry_set(sequence *seq, int set) {

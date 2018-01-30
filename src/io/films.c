@@ -28,10 +28,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "gui/callbacks.h"
+#include "core/siril.h"
+#include "core/proto.h"
 #include "gui/progress_and_log.h"
 #include "io/films.h"
-#include "core/proto.h"		// for fits_flip_top_to_bottom()
 
 static int pixfmt_gray, pixfmt_rgb, pixfmt_gray16, pixfmt_rgb48;
 

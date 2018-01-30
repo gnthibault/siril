@@ -300,7 +300,7 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_sigma_deconvolution">
-    <property name="lower">1</property>
+    <property name="lower">0.01</property>
     <property name="upper">10</property>
     <property name="value">2</property>
     <property name="step_increment">0.5</property>
@@ -927,6 +927,15 @@ enter a visible wavelength in nm</property>
       </object>
     </child>
     <child>
+      <object class="GtkMenuItem" id="menu_rgb_savepng">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Save RGB image to 48-bit PNG</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_menu_rgb_savepng_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="menu_rgb_save8ppm">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -1284,6 +1293,7 @@ enter a visible wavelength in nm</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="tooltip_text" translatable="yes">current red file</property>
+                            <property name="ellipsize">start</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -6715,6 +6725,9 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="has_focus">True</property>
+                <property name="is_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="has_default">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_button_savepopup_clicked" swapped="no"/>
@@ -6748,7 +6761,7 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkEntry" id="savetxt">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="has_focus">True</property>
+                    <property name="can_default">True</property>
                     <property name="has_tooltip">True</property>
                     <property name="tooltip_markup" translatable="yes">root name of the converted images (the &amp;apos;dest&amp;apos; in dest1.fit)</property>
                     <property name="tooltip_text" translatable="yes">root name of the converted images (the 'dest' in dest1.fit)</property>
@@ -6756,6 +6769,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="invisible_char">•</property>
                     <property name="width_chars">26</property>
                     <signal name="changed" handler="on_savetxt_changed" swapped="no"/>
+                    <signal name="key-press-event" handler="on_savetxt_key_press_event" swapped="no"/>
                   </object>
                 </child>
               </object>
@@ -8528,36 +8542,8 @@ by averaging the entire image</property>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
-                                <property name="top_attach">2</property>
+                                <property name="top_attach">1</property>
                                 <property name="width">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="label_swap_dir">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="halign">start</property>
-                                <property name="label" translatable="yes">/tmp</property>
-                                <property name="ellipsize">middle</property>
-                                <property name="single_line_mode">True</property>
-                                <property name="max_width_chars">50</property>
-                                <property name="track_visited_links">False</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="label85">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="halign">start</property>
-                                <property name="label" translatable="yes">Directory: </property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">1</property>
                               </packing>
                             </child>
                             <child>
@@ -10149,62 +10135,12 @@ WARNING: ensure you have a good reason to change this value because it may degra
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="save1">
-                        <property name="label" translatable="yes">Save as</property>
+                        <property name="label" translatable="yes">Save as...</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="image">image3</property>
                         <property name="use_stock">False</property>
-                        <child type="submenu">
-                          <object class="GtkMenu" id="menu5">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_fits">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">FITS...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_savefits_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_tiff">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">TIFF...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_savetiff_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_bmp">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">BMP...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_savebmp_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_jpg">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">JPG...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_savejpg_activate" swapped="no"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="menu_save_pbm">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">NetPBM...</property>
-                                <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_menu_rgb_save8ppm_activate" swapped="no"/>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
+                        <signal name="activate" handler="on_save1_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -11236,7 +11172,7 @@ SER files are directly handled as a sequence, and are not yet available for conv
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">Search current directory for sequences of FITS images.</property>
+                        <property name="tooltip_text" translatable="yes">Search current directory for sequences of FITS images, SER or film videos.</property>
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_checkseqbutton_clicked" swapped="no"/>
                       </object>
@@ -12187,7 +12123,7 @@ Hot pixels are located on the master-dark.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="tooltip_text" translatable="yes">Click on this button to evaluate the number of deviant pixels. If values are higher than 10000 pixels you will be encouraged to change sigma values.</property>
+                        <property name="tooltip_text" translatable="yes">Click on this button to evaluate the number of deviant pixels. If values are higher than 0.01% of the total of pixels, you will be encouraged to change sigma values.</property>
                         <property name="halign">center</property>
                         <signal name="clicked" handler="on_GtkButtonEvaluateCC_clicked" swapped="no"/>
                       </object>

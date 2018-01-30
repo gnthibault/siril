@@ -28,7 +28,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <dirent.h>
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
@@ -206,7 +205,8 @@ void on_convtoroot_changed (GtkEditable *editable, gpointer user_data){
 	if (!multiple_ser)
 		multiple_ser = lookup_widget("multipleSER");
 	if (destroot) g_free(destroot);
-	destroot = g_strdup(name);
+
+	destroot = g_str_to_ascii(name, NULL); // we want to avoid special char
 
 	const char *ext = get_filename_ext(destroot);
 	if (ext && !g_ascii_strcasecmp(ext, "ser")) {
@@ -458,7 +458,7 @@ int count_selected_files() {
 
 struct _convert_data {
 	struct timeval t_start;
-	DIR *dir;
+	GDir *dir;
 	GList *list;
 	int start;
 	int total;
@@ -467,7 +467,8 @@ struct _convert_data {
 };
 
 void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
-	DIR *dir;
+	GDir *dir;
+	GError *error = NULL;
 	gchar *file_data, *file_date;
 	const gchar *indice;
 	static GtkTreeView *tree_convert = NULL;
@@ -521,9 +522,10 @@ void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 		set_cursor_waiting(FALSE);
 		return;
 	}
-	if((dir = opendir(com.wd)) == NULL){
+	if((dir = g_dir_open(com.wd, 0, &error)) == NULL){
 		tmpmsg = siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
 		show_dialog(tmpmsg, _("Error"), "gtk-dialog-error");
+		fprintf (stderr, "Conversion: %s\n", error->message);
 		set_cursor_waiting(FALSE);
 		return ;
 	}
@@ -661,22 +663,24 @@ static gpointer convert_thread_worker(gpointer p) {
 		}
 		else {	// single image
 			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility);
-			if (convflags & CONVDSTSER) {
-				if (convflags & CONV1X1)
-					keep_first_channel_from_fits(fit);
-				if (ser_write_frame_from_fit(ser_file, fit, args->nb_converted)) {
-					siril_log_message(_("Error while converting to SER (no space left?)\n"));
-					break;
+			if (fit) {
+				if (convflags & CONVDSTSER) {
+					if (convflags & CONV1X1)
+						keep_first_channel_from_fits(fit);
+					if (ser_write_frame_from_fit(ser_file, fit, args->nb_converted)) {
+						siril_log_message(_("Error while converting to SER (no space left?)\n"));
+						break;
+					}
+				} else {
+					g_snprintf(dest_filename, 128, "%s%05d", destroot, indice++);
+					if (save_to_target_fits(fit, dest_filename)) {
+						siril_log_message(_("Error while converting to FITS (no space left?)\n"));
+						break;
+					}
 				}
-			} else {
-				g_snprintf(dest_filename, 128, "%s%05d", destroot, indice++);
-				if (save_to_target_fits(fit, dest_filename)) {
-					siril_log_message(_("Error while converting to FITS (no space left?)\n"));
-					break;
-				}
+				clearfits(fit);
+				free(fit);
 			}
-			clearfits(fit);
-			free(fit);
 		}
 
 		set_progress_bar_data(msg_bar, progress/((double)args->total));
@@ -716,6 +720,7 @@ static gboolean end_convert_idle(gpointer p) {
 	show_time(args->t_start, t_end);
 	stop_processing_thread();
 	g_list_free_full(args->list, g_free);
+	g_dir_close(args->dir);
 	free(args);
 	return FALSE;
 }

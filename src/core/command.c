@@ -75,7 +75,7 @@ command commande[] = {
 	{"clearstar", 0, "clearstar", process_clearstar},
 	{"contrast", 0, "contrast", process_contrast},
 	{"cosme", 1, "cosme [filename].lst", process_cosme},
-	{"cosme_cfa", 1, "cosme [filename].lst", process_cosme},
+	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme},
 	{"crop", 0, "crop [x y width height]", process_crop}, 
 
 	{"ddp", 3, "ddp level coef sigma", process_ddp}, 
@@ -115,7 +115,7 @@ command commande[] = {
 	// extension to a higher priority in case two files with same basename
 	// exist (stat_file() manages that priority order for now).
 	{"log", 0, "log ", process_log}, /* logarifies current image */
-#ifndef WIN32
+#ifndef _WIN32
 	{"ls", 0, "ls ", process_ls},
 #endif
 	
@@ -140,6 +140,9 @@ command commande[] = {
 	{"savebmp", 1, "savebmp filename (save display image in bmp)", process_savebmp}, 
 #ifdef HAVE_LIBJPEG
 	{"savejpg", 1, "savejpg filename [quality] (save current display in jpg)", process_savejpg},
+#endif
+#ifdef HAVE_LIBPNG
+	{"savepng", 1, "savepng filename (save current display in png)", process_savepng},
 #endif
 	{"savepnm", 1, "savepnm filename (save current image in Netpbm)", process_savepnm},
 #ifdef HAVE_LIBTIFF
@@ -263,6 +266,19 @@ int process_savejpg(int nb){
 }
 #endif
 
+#ifdef HAVE_LIBPNG
+int process_savepng(int nb){
+	char filename[256];
+
+	strcpy(filename, word[1]);
+	strcat(filename, ".png");
+	set_cursor_waiting(TRUE);
+	savepng(filename, &gfit, 2, gfit.naxes[2] == 3);
+	set_cursor_waiting(FALSE);
+	return 0;
+}
+#endif
+
 #ifdef HAVE_LIBTIFF
 int process_savetif(int nb){
 	char filename[256];
@@ -278,25 +294,7 @@ int process_savetif(int nb){
 #endif
 
 int process_savepnm(int nb){
-	char filename[256];
-	
-	switch(gfit.naxes[2]){
-		case 1:
-			sprintf(filename,"%s", strcat(word[1],".pgm"));
-				set_cursor_waiting(TRUE);
-				savepgm(filename, &(gfit));
-				set_cursor_waiting(FALSE);
-		break;
-		case 3:
-			sprintf(filename,"%s", strcat(word[1],".ppm"));
-			set_cursor_waiting(TRUE);
-			saveppm(filename, &(gfit));
-			set_cursor_waiting(FALSE);
-		break;
-		
-		default:	/*Should not happen */
-			return 1;
-		}
+	saveNetPBM(word[1], &gfit);
 	return 0;	
 }
 
@@ -546,7 +544,7 @@ int process_log(int nb){
 	return 0;
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 int process_ls(int nb){
 	struct dirent **list;
 	gchar *path = NULL;
@@ -877,7 +875,7 @@ int process_histo(int nb){
 	else clayer = vport_number_to_name(nlayer);
 	snprintf(name, 20, "histo_%s.dat",clayer);
 
-	FILE *f = fopen(name, "w");
+	FILE *f = g_fopen(name, "w");
 
 	if (f == NULL) {
 		free(clayer);
@@ -966,7 +964,10 @@ int process_new(int nb){
 
 	close_single_image();
 
-	new_fit_image(&gfit, width, height, layers);
+	fits *fit = &gfit;
+	if (new_fit_image(&fit, width, height, layers))
+		return 1;
+	memset(gfit.data, 0, width*height*layers*sizeof(WORD));
 
 	open_single_image_from_gfit(strdup(_("new empty image")));
 	return 0;
@@ -1041,7 +1042,7 @@ int process_findhot(int nb){
 	siril_log_message(_("%ld cold and %ld hot pixels\n"), icold, ihot);
 
 	sprintf(filename, "%s.lst", word[1]);
-	FILE *cosme_file = fopen(filename, "w");
+	FILE *cosme_file = g_fopen(filename, "w");
 	if (cosme_file == NULL) {
 		siril_log_message(_("Cannot open file: %s\n"), filename);
 		free(dev);
@@ -1074,7 +1075,7 @@ int process_cosme(int nb) {
 
 	if (!ends_with(word[1], ".lst"))
 		strcat(word[1], ".lst");
-	cosme_file = fopen(word[1], "r");
+	cosme_file = g_fopen(word[1], "r");
 	if (cosme_file == NULL) {
 		siril_log_message(_("Cannot open file: %s\n"), word[1]);
 		return 1;
@@ -1447,30 +1448,34 @@ struct _stackall_data {
 };
 
 gpointer stackall_worker(gpointer garg) {
-	DIR *dir;
-	struct dirent *file;
+	GDir *dir;
+	GError *error = NULL;
+	const gchar *file;
 	int number_of_loaded_sequences = 0, retval = 0;
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
 	control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
-	if (check_seq(0) || (dir = opendir(com.wd)) == NULL) {
+	if (check_seq(0) || (dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
+		fprintf (stderr, "stackall: %s\n", error->message);
 		com.wd[0] = '\0';
 		gdk_threads_add_idle(end_generic, NULL);
 		return NULL;
 	}
 	siril_log_message(_("Starting stacking of found sequences...\n"));
-	while ((file = readdir(dir)) != NULL) {
+	while ((file = g_dir_read_name(dir)) != NULL) {
 		char *suf;
 
-		if ((suf = strstr(file->d_name, ".seq")) && strlen(suf) == 4) {
-			sequence *seq = readseqfile(file->d_name);
+		if ((suf = strstr(file, ".seq")) && strlen(suf) == 4) {
+			sequence *seq = readseqfile(file);
 			if (seq != NULL) {
 				char filename[256];
 				struct stacking_args args;
-				if (seq_check_basic_data(seq, FALSE) == -1)
+				if (seq_check_basic_data(seq, FALSE) == -1) {
+					free(seq);
 					continue;
+				}
 				siril_log_message(_("Stacking sequence %s\n"), seq->seqname);
 				args.seq = seq;
 				args.filtering_criterion = stack_filter_all;
@@ -1511,7 +1516,7 @@ gpointer stackall_worker(gpointer garg) {
 			}
 		}
 	}
-	closedir(dir);
+	g_dir_close(dir);
 	free(arg);
 	siril_log_message(_("Stacked %d sequences successfully.\n"), number_of_loaded_sequences);
 	gdk_threads_add_idle(end_generic, NULL);
@@ -1687,7 +1692,7 @@ int processcommand(const char *line) {
 		FILE * fp;
 
 
-		fp = fopen(line + 1, "r");
+		fp = g_fopen(line + 1, "r");
 		if (fp == NULL) {
 			siril_log_message(_("File [%s] does not exist\n"), line + 1);
 			return 1;

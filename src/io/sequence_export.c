@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "sequence.h"
@@ -98,7 +100,7 @@ static gpointer export_sequence(gpointer ptr) {
 			/* image size is not known here, no problem for crop or resize */
 			ser_file = malloc(sizeof(struct ser_struct));
 			snprintf(dest, 256, "%s.ser", args->basename);
-			if (ser_create_file(dest, ser_file, TRUE, NULL))
+			if (ser_create_file(dest, ser_file, TRUE, args->seq->ser_file))
 				siril_log_message(_("Creating the SER file failed, aborting.\n"));
 			break;
 
@@ -392,7 +394,7 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	if (selected == -1) return;
 
 	args = malloc(sizeof(struct exportseq_args));
-	args->basename = strdup(bname);
+	args->basename = g_str_to_ascii(bname, NULL);
 	args->seq = &com.seq;
 	exportNormalize = GTK_TOGGLE_BUTTON(lookup_widget("exportNormalize"));
 	args->normalize = gtk_toggle_button_get_active(exportNormalize);

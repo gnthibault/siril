@@ -4134,7 +4134,7 @@ char *filename /* I: write into this file */
 	int i;
 	FILE *fp;
 
-	if ((fp = fopen(filename, "w")) == NULL) {
+	if ((fp = g_fopen(filename, "w")) == NULL) {
 		shFatal("write_array: can't open file %s", filename);
 	}
 

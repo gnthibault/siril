@@ -53,6 +53,135 @@
 
 #ifdef HAVE_LIBTIFF
 
+static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
+	unsigned int npixels;
+	int  i, j, scanline, retval=nsamples;
+	WORD *buf;
+	uint32 rowsperstrip;
+	uint16 config;
+	unsigned long nrow, row;
+	char *msg;
+
+	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
+	TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
+
+	npixels = width * height;
+	*data = malloc(npixels * sizeof(WORD) * nsamples);
+	WORD *gbuf[3] = {*data, *data, *data};
+	if (nsamples == 4) {
+		msg = siril_log_message(_("Alpha channel is ignored.\n"));
+		show_dialog(msg, _("Warning"), "gtk-dialog-warning");
+	}
+	if ((nsamples == 3) || (nsamples == 4)) {
+		gbuf[1] = *data + npixels;
+		gbuf[2] = *data + npixels * 2;
+	}
+
+	scanline = TIFFScanlineSize(tif);
+	buf = _TIFFmalloc(TIFFStripSize(tif));
+	if (!buf) return -1;
+	for (row = 0; row < height; row += rowsperstrip){
+		nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
+		switch(config){
+			case PLANARCONFIG_CONTIG:
+				if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow*scanline) < 0){
+					msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
+					show_dialog(msg, _("Error"), "gtk-dialog-error");
+					retval = -1;
+					break;
+				}
+				for (i = 0; i < width*nrow; i++) {
+					*gbuf[RLAYER]++ = buf[i*nsamples+0];
+					if ((nsamples == 3) || (nsamples == 4)) {
+						*gbuf[GLAYER]++ = buf[i*nsamples+1];
+						*gbuf[BLAYER]++ = buf[i*nsamples+2];
+					}
+				}
+				break;
+			case PLANARCONFIG_SEPARATE:
+				if (nsamples >= 3)		//don't need to read the alpha
+					nsamples = 3;
+				for (j=0; j<nsamples; j++){	//loop on the layer
+					if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, j), buf, nrow*scanline) < 0){
+						msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
+						show_dialog(msg, _("Error"), "gtk-dialog-error");
+						retval = -1;
+						break;
+					}
+					for (i = 0; i < width*nrow; i++)
+						*gbuf[j]++ = buf[i];
+				}
+				break;
+			default:
+				msg = siril_log_message(_("Unknown TIFF file.\n"));
+				show_dialog(msg, _("Error"), "gtk-dialog-error");
+				retval = -1;
+		}
+	}
+	_TIFFfree(buf);
+	return retval;
+}
+
+static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
+	uint32 npixels;
+	int retval = nsamples;
+	char *msg;
+
+	npixels = width * height;
+	*data = malloc(npixels * sizeof(WORD) * nsamples);
+	WORD *gbuf[3] = {*data, *data, *data};
+	if (nsamples == 4) {
+		siril_log_message(_("Alpha channel is ignored.\n"));
+	}
+	if ((nsamples == 3) || (nsamples == 4)) {
+		gbuf[1] = *data + npixels;
+		gbuf[2] = *data + npixels * 2;
+	}
+
+	/* get the data */
+	uint32* raster = (uint32*)_TIFFmalloc(npixels*sizeof(uint32));
+	if (raster != NULL) {
+		if (TIFFReadRGBAImage(tif, width, height, raster, 0)) {
+			int i, j;
+			for (j = 0; j < height; j++) {
+				int istart = j * width;
+				for (i = 0; i < width; i++) {
+					*gbuf[RLAYER]++ = (WORD)TIFFGetR(raster[istart + i]);
+					if ((nsamples == 3) || (nsamples == 4)) {
+						*gbuf[GLAYER]++ = (WORD)TIFFGetG(raster[istart + i]);
+						*gbuf[BLAYER]++ = (WORD)TIFFGetB(raster[istart + i]);
+					}
+				}
+			}
+		}
+		else {
+			msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
+			show_dialog(msg, _("Error"), "gtk-dialog-error");
+			retval = -1;
+		}
+		_TIFFfree(raster);
+	}
+	else retval = -1;
+	return retval;
+}
+
+static TIFF* Siril_TIFFOpen(const char *name, const char *mode) {
+#ifdef _WIN32
+	wchar_t *wname;
+
+	wname = g_utf8_to_utf16(name, -1, NULL, NULL, NULL);
+	if (wname == NULL) {
+		return NULL;
+	}
+
+	TIFF* tif = TIFFOpenW(wname, mode);
+	g_free(wname);
+	return tif;
+#else
+	return(TIFFOpen(name, mode));
+#endif
+}
+
 /* reads a TIFF file and stores it in the fits argument.
  * If file loading fails, the argument is untouched.
  */
@@ -63,11 +192,13 @@ int readtif(const char *name, fits *fit) {
 	uint16 nbits, nsamples, color;
 	WORD *data;
 	
-	TIFF* tif = TIFFOpen(name, "r");
+	TIFF* tif = Siril_TIFFOpen(name, "r");
+
 	if (!tif) {
 		siril_log_message(_("Could not open the TIFF file %s\n"), name);
 		return -1;
 	}
+
 	data = NULL;
 	
 	TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
@@ -127,122 +258,11 @@ int readtif(const char *name, fits *fit) {
 		retval = nsamples;
 	}
 	if (nbits==16) mirrorx(fit, FALSE);
-	char *basename = g_path_get_basename(name);
+	gchar *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
 						nbits, basename, fit->naxes[2], fit->rx, fit->ry);
 	g_free(basename);
 
-	return retval;
-}
-
-int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
-	unsigned int npixels;
-	int  i, j, scanline, retval=nsamples;
-	WORD *buf;
-	uint32 rowsperstrip;
-	uint16 config;
-	unsigned long nrow, row;
-	char *msg;
-
-	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
-	TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
-	   
-	npixels = width * height;
-	*data = malloc(npixels * sizeof(WORD) * nsamples);
-	WORD *gbuf[3] = {*data, *data, *data};	
-	if (nsamples == 4) {
-		msg = siril_log_message(_("Alpha channel is ignored.\n"));
-		show_dialog(msg, _("Warning"), "gtk-dialog-warning");
-	}
-	if ((nsamples == 3) || (nsamples == 4)) {
-		gbuf[1] = *data + npixels;
-		gbuf[2] = *data + npixels * 2;
-	}
-
-	scanline = TIFFScanlineSize(tif);
-	buf = _TIFFmalloc(TIFFStripSize(tif));
-	if (!buf) return -1;
-	for (row = 0; row < height; row += rowsperstrip){
-		nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
-		switch(config){
-			case PLANARCONFIG_CONTIG:
-				if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow*scanline) < 0){
-					msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-					show_dialog(msg, _("Error"), "gtk-dialog-error");
-					retval = -1;
-					break;
-				}
-				for (i = 0; i < width*nrow; i++) {
-					*gbuf[RLAYER]++ = buf[i*nsamples+0];
-					if ((nsamples == 3) || (nsamples == 4)) {
-						*gbuf[GLAYER]++ = buf[i*nsamples+1];
-						*gbuf[BLAYER]++ = buf[i*nsamples+2];
-					}
-				}
-				break;
-			case PLANARCONFIG_SEPARATE:	
-				if (nsamples >= 3)		//don't need to read the alpha
-					nsamples = 3;
-				for (j=0; j<nsamples; j++){	//loop on the layer
-					if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, j), buf, nrow*scanline) < 0){
-						msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-						show_dialog(msg, _("Error"), "gtk-dialog-error");
-						retval = -1;
-						break;
-					}
-					for (i = 0; i < width*nrow; i++)
-						*gbuf[j]++ = buf[i];
-				}
-				break;
-			default:
-				msg = siril_log_message(_("Unknown TIFF file.\n"));
-				show_dialog(msg, _("Error"), "gtk-dialog-error");
-				retval = -1;
-		}
-	}
-	_TIFFfree(buf);
-	return retval;
-}
-int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
-	uint32 npixels;
-	int retval = nsamples;
-	char *msg;
-    
-	npixels = width * height;
-	*data = malloc(npixels * sizeof(WORD) * nsamples);
-	WORD *gbuf[3] = {*data, *data, *data};
-	if (nsamples == 4) {
-		siril_log_message(_("Alpha channel is ignored.\n"));
-	}
-	if ((nsamples == 3) || (nsamples == 4)) {
-		gbuf[1] = *data + npixels;
-		gbuf[2] = *data + npixels * 2;
-	}
-
-	/* get the data */
-	uint32* raster = (uint32*)_TIFFmalloc(npixels*sizeof(uint32));
-	if (raster != NULL) {
-		if (TIFFReadRGBAImage(tif, width, height, raster, 0)) {
-			int i, j;
-			for (j = 0; j < height; j++) {
-				int istart = j * width;
-				for (i = 0; i < width; i++) {
-					*gbuf[RLAYER]++ = (WORD)TIFFGetR(raster[istart + i]);
-					if ((nsamples == 3) || (nsamples == 4)) {
-						*gbuf[GLAYER]++ = (WORD)TIFFGetG(raster[istart + i]);
-						*gbuf[BLAYER]++ = (WORD)TIFFGetB(raster[istart + i]);
-					}
-				}
-			}
-		}
-		else {
-			msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-			show_dialog(msg, _("Error"), "gtk-dialog-error");
-			retval = -1;
-		}
-		_TIFFfree(raster);
-	}
-	else retval = -1;
 	return retval;
 }
 
@@ -251,6 +271,7 @@ int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD *
 int savetif(const char *name, fits *fit, uint16 bitspersample){
 	int retval = 0;
 	char *msg;
+	char *filename;
 	unsigned char *buf8;
 	WORD *buf16;
 	uint32 width, height, row, col, n;
@@ -258,22 +279,29 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 	mirrorx(fit, FALSE);
 
-	TIFF* tif = TIFFOpen(name, "w");
+	filename = strdup(name);
+	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
+		filename = str_append(&filename, ".tif");
+	}
+
+	TIFF* tif = Siril_TIFFOpen(filename, "w");
 
 	if (tif == NULL) {
 		msg = siril_log_message(_("Siril cannot create TIFF file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		free(filename);
 		return 1;
 	}
-	nsamples	=(uint16)fit->naxes[2];
-	width		=(uint32)fit->rx;
-	height		=(uint32)fit->ry;	
+	free(filename);
+	nsamples = (uint16) fit->naxes[2];
+	width = (uint32) fit->rx;
+	height = (uint32) fit->ry;
 	
 	/*******************************************************************
 	 * If the user saves a tif from the graphical menu, he can set
 	 * the Description and the Copyright of the Image 
 	 ******************************************************************/
-	gchar *img_desc=NULL, *img_copy=NULL;
+	gchar *img_desc = NULL, *img_copy = NULL;
 	GtkTextView *description = GTK_TEXT_VIEW(lookup_widget("Description_txt"));
 	GtkTextView *copyright = GTK_TEXT_VIEW(lookup_widget("Copyright_txt"));
 	GtkTextBuffer *desbuf = gtk_text_view_get_buffer(description);
@@ -284,16 +312,16 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	gtk_text_buffer_get_start_iter(desbuf, &itDebut);
 	gtk_text_buffer_get_end_iter(desbuf, &itFin);
 	if (desbuf)
-		img_desc=gtk_text_buffer_get_text(desbuf, &itDebut, &itFin, TRUE);
-	gtk_text_buffer_get_bounds (desbuf, &itDebut, &itFin);
-	gtk_text_buffer_delete (desbuf, &itDebut, &itFin);
+		img_desc = gtk_text_buffer_get_text(desbuf, &itDebut, &itFin, TRUE);
+	gtk_text_buffer_get_bounds(desbuf, &itDebut, &itFin);
+	gtk_text_buffer_delete(desbuf, &itDebut, &itFin);
 	gtk_text_buffer_get_start_iter(copybuf, &itDebut);
 	gtk_text_buffer_get_end_iter(copybuf, &itFin);
 	if (copybuf)
-		img_copy=gtk_text_buffer_get_text(copybuf, &itDebut, &itFin, TRUE);
-	gtk_text_buffer_get_bounds (copybuf, &itDebut, &itFin);
-	gtk_text_buffer_delete (copybuf, &itDebut, &itFin);
-		
+		img_copy = gtk_text_buffer_get_text(copybuf, &itDebut, &itFin, TRUE);
+	gtk_text_buffer_get_bounds(copybuf, &itDebut, &itFin);
+	gtk_text_buffer_delete(copybuf, &itDebut, &itFin);
+
 	/*******************************************************************/
 
 	/* TIFF TAG FIELD */
@@ -310,7 +338,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	TIFFSetField(tif, TIFFTAG_MINSAMPLEVALUE, fit->mini);
 	TIFFSetField(tif, TIFFTAG_MAXSAMPLEVALUE, fit->maxi);
 	TIFFSetField(tif, TIFFTAG_SOFTWARE, PACKAGE " v" VERSION);
-	
+
 	if (nsamples == 1)
 		TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
 	else if (nsamples == 3)
@@ -322,42 +350,44 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		return 1;
 	}
 
-	WORD *gbuf[3]={fit->pdata[RLAYER],fit->pdata[GLAYER],fit->pdata[BLAYER]};  
-	
-	switch (bitspersample){
-		case 8:
-			buf8 = _TIFFmalloc(width * sizeof(unsigned char) * nsamples);
-			for (row = 0; row < height; row++){
-				for (col = 0; col < width; col++){
-					for (n=0; n < nsamples; n++) {
-						/* UCHAR_MAX / USHRT_MAX is constant, it's 1/255
-						 * This operation should be speed-up by doing a shift */
-						buf8[col*nsamples+n]= (*gbuf[n]++) * UCHAR_MAX_DOUBLE/USHRT_MAX_DOUBLE;
-						//~ buf8[col*nsamples+n] = *gbuf[n]++ >> 8; // bad shift
-					}
+	WORD *gbuf[3] =
+			{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+
+	switch (bitspersample) {
+	case 8:
+		buf8 = _TIFFmalloc(width * sizeof(unsigned char) * nsamples);
+		for (row = 0; row < height; row++) {
+			for (col = 0; col < width; col++) {
+				for (n = 0; n < nsamples; n++) {
+					/* UCHAR_MAX / USHRT_MAX is constant, it's 1/255
+					 * This operation should be speed-up by doing a shift */
+					buf8[col * nsamples + n] = (*gbuf[n]++) * UCHAR_MAX_DOUBLE
+							/ USHRT_MAX_DOUBLE;
 				}
-				TIFFWriteScanline(tif, buf8, row, 0);
 			}
+			TIFFWriteScanline(tif, buf8, row, 0);
+		}
 		_TIFFfree(buf8);
-			break;
-		case 16: 
-			buf16 = _TIFFmalloc(width * sizeof(WORD) * nsamples);
-			for (row = 0; row < height; row++){
-				for (col = 0; col < width; col++){
-					for (n=0; n < nsamples; n++)
-						buf16[col*nsamples+n]=(*gbuf[n]++);
-				}
-				TIFFWriteScanline(tif, buf16, row, 0);
+		break;
+	case 16:
+		buf16 = _TIFFmalloc(width * sizeof(WORD) * nsamples);
+		for (row = 0; row < height; row++) {
+			for (col = 0; col < width; col++) {
+				for (n = 0; n < nsamples; n++)
+					buf16[col * nsamples + n] = (*gbuf[n]++);
 			}
+			TIFFWriteScanline(tif, buf16, row, 0);
+		}
 		_TIFFfree(buf16);
 		break;
-		default:		// Should not happen
-			retval = 1;
+	default:		// Should not happen
+		retval = 1;
 	}
 	TIFFClose(tif);
 	mirrorx(fit, FALSE);
-	siril_log_message(_("Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
-						bitspersample, name, fit->naxes[2], fit->rx, fit->ry);
+	siril_log_message(
+			_("Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
+			bitspersample, name, fit->naxes[2], fit->rx, fit->ry);
 	return retval;
 }
 #endif	// HAVE_LIBTIFF
@@ -374,7 +404,9 @@ int readjpg(const char* name, fits *fit){
 	FILE *f;
 	JSAMPARRAY pJpegBuffer;
 	int row_stride;
-	if ((f = fopen(name, "rb")) == NULL){
+
+
+	if ((f = g_fopen(name, "rb")) == NULL){
 		char *msg = siril_log_message(_("Sorry but Siril cannot open the file: %s.\n"), name);
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
 		return -1;
@@ -420,7 +452,7 @@ int readjpg(const char* name, fits *fit){
 		fit->binning_x=fit->binning_y=1;
 	}
 	mirrorx(fit, FALSE);
-	char *basename = g_path_get_basename(name);
+	gchar *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading JPG: file %s, %ld layer(s), %ux%u pixels\n"),
 						basename, fit->naxes[2], fit->rx, fit->ry);
 	g_free(basename);
@@ -441,12 +473,19 @@ int savejpg(char *name, fits *fit, int quality){
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_compress(&cinfo);
 
+	char *filename = strdup(name);
+	if (!ends_with(filename, ".jpg") && (!ends_with(filename, ".jpeg"))) {
+		filename = str_append(&filename, ".jpg");
+	}
+
 	//## OPEN FILE FOR DATA DESTINATION:
-	if ((f = fopen(name, "wb")) == NULL) {
+	if ((f = g_fopen(filename, "wb")) == NULL) {
 		char *msg = siril_log_message(_("Siril cannot create JPG file.\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		free(filename);
 		return 1;
 	}
+	free(filename);
 	jpeg_stdio_dest(&cinfo, f);
 
 	//## SET PARAMETERS FOR COMPRESSION:
@@ -538,7 +577,7 @@ int readpng(const char *name, fits* fit) {
 
 	if(setjmp(png_jmpbuf(png))) return -1;
 
-	f = fopen(name, "rb");
+	f = g_fopen(name, "rb");
 	png_init_io(png, f);
 
 	png_read_info(png, info);
@@ -643,13 +682,168 @@ int readpng(const char *name, fits* fit) {
 
 	}
 	mirrorx(fit, FALSE);
-	char *basename = g_path_get_basename(name);
+	gchar *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
 						bit_depth, basename, fit->naxes[2], fit->rx, fit->ry);
 	g_free(basename);
 
 	return nbplanes;
 }
+
+/* Code borrowed from SER Player */
+// Support as many libpng versions as required
+#if PNG_LIBPNG_VER_MAJOR==2
+#error "libpng 2.x.x is not supported"
+#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==7
+#error "libpng 1.7.x is not supported"
+#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==6
+
+// ------------------------------------------
+// Save PNG image (colour)
+// ------------------------------------------
+static int32_t save_colour_file(const char *filename,
+		const WORD *p_image_data, uint32_t width, uint32_t height,
+		uint32_t bytes_per_sample) {
+	int32_t ret = -1;
+	png_image image; // The control structure used by libpng
+
+	// Initialize the 'png_image' structure.
+	memset(&image, 0, (sizeof image));
+	image.version = PNG_IMAGE_VERSION;
+	image.width = width;
+	image.height = height;
+	image.format = PNG_FORMAT_BGR;
+	if (bytes_per_sample == 2) {
+		image.format |= PNG_FORMAT_FLAG_LINEAR;
+	}
+
+	FILE *p_png_file = g_fopen(filename, "wb");
+
+	if (p_png_file != NULL) {
+		png_image_write_to_stdio(&image, p_png_file, 0,  // convert_to_8bit
+				(png_bytep) (p_image_data), image.width * -3,  // row_stride
+				NULL);  // colormap
+		ret = 0;
+		fclose(p_png_file);
+	}
+
+	return ret;
+}
+
+// ------------------------------------------
+// Save PNG image (mono B, G or R)
+// ------------------------------------------
+static int32_t save_mono_file(const char *filename, const WORD *p_image_data,
+		uint32_t width, uint32_t height, uint32_t bytes_per_sample) {
+	int32_t ret = -1;
+	png_image image; // The control structure used by libpng
+
+	// Initialize the 'png_image' structure.
+	memset(&image, 0, (sizeof image));
+	image.version = PNG_IMAGE_VERSION;
+	image.width = width;
+	image.height = height;
+
+	if (bytes_per_sample == 1) {
+		image.format = PNG_FORMAT_GRAY;  // 8-bit data
+	} else {
+		image.format = PNG_FORMAT_LINEAR_Y;  // 16-bit data
+	}
+
+	FILE *p_png_file = g_fopen(filename, "wb");
+
+	if (p_png_file != NULL) {
+		png_image_write_to_stdio(&image, p_png_file, 0,  // convert_to_8bit
+				(png_bytep) p_image_data, image.width * -1,  // row_stride
+				NULL);  // colormap
+		ret = 0;
+		fclose(p_png_file);
+	}
+
+	return ret;
+}
+
+#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==5
+#error "libpng 1.5.x is not supported"
+#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==4
+#error "libpng 1.4.x is not supported"
+#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==3
+#error "libpng 1.3.x is not supported"
+#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==2
+
+// ------------------------------------------
+// Save PNG image (colour)
+// ------------------------------------------
+static int32_t save_colour_file(
+		const char *filename,
+		const WORD *p_image_data,
+		uint32_t width,
+		uint32_t height,
+		uint32_t bytes_per_sample)
+{
+	int32_t ret = -1;
+
+	return ret;
+}
+
+// ------------------------------------------
+// Save PNG image (mono B, G or R)
+// ------------------------------------------
+static int32_t save_mono_file(
+		const char *filename,
+		const WORD *p_image_data,
+		uint32_t width,
+		uint32_t height,
+		uint32_t bytes_per_sample)
+{
+	int32_t ret = -1;
+
+	return ret;
+}
+
+#else
+#error "Unsuported libpng version"
+#endif
+
+static WORD *fits_to_bgrbgr(fits *image) {
+	int ndata = image->rx * image->ry;
+	int i, j;
+
+	WORD *bgrbgr = malloc(ndata * 3 * sizeof(WORD));
+	for (i = 0, j = 0; i < ndata * 3; i += 3, j++) {
+		bgrbgr[i + 0] = image->pdata[BLAYER][j];
+		bgrbgr[i + 1] = image->pdata[GLAYER][j];
+		bgrbgr[i + 2] = image->pdata[RLAYER][j];
+	}
+	return bgrbgr;
+}
+
+int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
+		gboolean is_colour) {
+	int ret = -1;
+	uint32_t width = fit->rx;
+	uint32_t height = fit->ry;
+
+	char *filename = strdup(name);
+	if (!ends_with(filename, ".png")) {
+		filename = str_append(&filename, ".png");
+	}
+
+	if (is_colour) {
+		// Create colour PNG file
+		WORD *data = fits_to_bgrbgr(fit);
+		ret = save_colour_file(filename, data, width, height,
+				bytes_per_sample);
+		free(data);
+	} else {
+		// Create monochrome PNG file
+		ret = save_mono_file(filename, fit->data, width, height,
+				bytes_per_sample);
+	}
+	free(filename);
+	return ret;
+}
+
 #endif	// HAVE_LIBPNG
 
 /********************* RAW IMPORT *********************/
@@ -662,17 +856,71 @@ static void get_FITS_date(time_t date, char *date_obs) {
 			t->tm_sec);
 }
 
-int readraw(const char *name, fits *fit) {
+#if defined(_WIN32) && (defined(__MINGW32__) || !defined(_MSC_VER) || (_MSC_VER <= 1310))
+static char *raw_fname(const gchar *path) {
+	gchar *str;
+	wchar_t *wpath;
+
+	wpath = g_utf8_to_utf16(path, -1, NULL, NULL, NULL);
+	if (wpath == NULL)
+		return NULL;
+
+	// use the short DOS 8.3 path name to avoid problems converting UTF-16 filenames to the ANSI filenames expected by standard libraw_open_file
+	DWORD shortlen = GetShortPathNameW(wpath, 0, 0);
+
+	if (shortlen) {
+		LPWSTR shortpath = g_new(WCHAR, shortlen);
+		GetShortPathNameW(wpath, shortpath, shortlen);
+		int slen = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS,
+				shortpath, shortlen, 0, 0, 0, 0);
+		str = g_new(gchar, slen + 1);
+		WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath, shortlen,
+				str, slen, 0, 0);
+		g_free(shortpath);
+	} else {
+		str = NULL;
+	}
+	g_free(wpath);
+	return str;
+}
+#endif // _WIN32
+
+static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
+/* libraw_open_wfile is not defined for all windows compilers */
+#if defined(_WIN32) && !defined(__MINGW32__) && defined(_MSC_VER) && (_MSC_VER > 1310)
+	wchar_t *wname;
+
+	wname = g_utf8_to_utf16(name, -1, NULL, NULL, NULL);
+	if (wname == NULL) {
+		return 1;
+	}
+
+	int ret = libraw_open_wfile(rawdata, wname);
+	g_free(wname);
+	return ret;
+#elif defined(_WIN32)
+	gchar *fname = raw_fname(name);
+	int ret = libraw_open_file(rawdata, fname);
+	g_free(fname);
+	return ret;
+#else
+	return(libraw_open_file(rawdata, name));
+#endif
+}
+
+static int readraw(const char *name, fits *fit) {
 	ushort width, height;
 	int npixels, i;
-	WORD *data=NULL;
+	WORD *data = NULL;
 	libraw_data_t *raw = libraw_init(0);
 	libraw_processed_image_t *image = NULL;
-	int ret = libraw_open_file(raw, name);
+	int ret;
+
+	ret = siril_libraw_open_file(raw, name);
 	if (ret) {
 		siril_log_message(_("Error in libraw %s\n"), libraw_strerror(ret));
 		libraw_recycle(raw);
-		libraw_close(raw);	
+		libraw_close(raw);
 		return -1;
 	}
 	
@@ -696,40 +944,41 @@ int readraw(const char *name, fits *fit) {
 		raw->params.user_black = 0;						/* user black level equivalent to dcraw -k 0 */
 	raw->params.output_color = 0;						/* output colorspace, 0=raw, 1=sRGB, 2=Adobe, 3=Wide, 4=ProPhoto, 5=XYZ*/
 		
-	if (!(com.raw_set.auto_mul)) {		/* 4 multipliers (r,g,b,g) of the user's white balance.    */
-		raw->params.user_mul[0] = (float)com.raw_set.mul[0];
+	if (!(com.raw_set.auto_mul)) { /* 4 multipliers (r,g,b,g) of the user's white balance.    */
+		raw->params.user_mul[0] = (float) com.raw_set.mul[0];
 		raw->params.user_mul[1] = raw->params.user_mul[3] = 1.0f;
-		raw->params.user_mul[2] = (float)com.raw_set.mul[2];
+		raw->params.user_mul[2] = (float) com.raw_set.mul[2];
 		siril_log_message(_("Daylight multipliers: %f, %f, %f\n"),
-				raw->params.user_mul[0], raw->params.user_mul[1], raw->params.user_mul[2]);
-	}
-	else {
-		float mul[4];					/* 3 multipliers (r,g,b) from the camera white balance.  */
-		mul[0] = raw->color.pre_mul[0]/raw->color.pre_mul[1];
+				raw->params.user_mul[0], raw->params.user_mul[1],
+				raw->params.user_mul[2]);
+	} else {
+		float mul[4]; /* 3 multipliers (r,g,b) from the camera white balance.  */
+		mul[0] = raw->color.pre_mul[0] / raw->color.pre_mul[1];
 		mul[1] = 1.0; /* raw->color.pre_mul[1]/raw->color.pre_mul[1]; */
-		mul[2] = raw->color.pre_mul[2]/raw->color.pre_mul[1];
-		mul[3] = raw->color.pre_mul[3]/raw->color.pre_mul[1];
-		siril_log_message(_("Daylight multipliers: %f, %f, %f\n"), mul[0], mul[1], mul[2]);
+		mul[2] = raw->color.pre_mul[2] / raw->color.pre_mul[1];
+		mul[3] = raw->color.pre_mul[3] / raw->color.pre_mul[1];
+		siril_log_message(_("Daylight multipliers: %f, %f, %f\n"), mul[0],
+				mul[1], mul[2]);
 	}
 
-	switch(com.raw_set.user_qual) {		/* Set interpolation                                        */
-		case 0:		/* bilinear interpolaton */
-			raw->params.user_qual = 0;
-			siril_log_message(_("Bilinear interpolation...\n"));
-			break;
-		case 2:		/* VNG interpolaton */
-			raw->params.user_qual = 1;
-			siril_log_message(_("VNG interpolation...\n"));
-			break;
-		case 3:		/* PPG interpolaton */
-			raw->params.user_qual = 2;
-			siril_log_message(_("PPG interpolation...\n"));
-			break;
-		default:
-		case 1:		/* AHD interpolaton */
-			raw->params.user_qual = 3;
-			siril_log_message(_("AHD interpolation...\n"));
-			break;
+	switch (com.raw_set.user_qual) { /* Set interpolation                                        */
+	case 0: /* bilinear interpolaton */
+		raw->params.user_qual = 0;
+		siril_log_message(_("Bilinear interpolation...\n"));
+		break;
+	case 2: /* VNG interpolaton */
+		raw->params.user_qual = 1;
+		siril_log_message(_("VNG interpolation...\n"));
+		break;
+	case 3: /* PPG interpolaton */
+		raw->params.user_qual = 2;
+		siril_log_message(_("PPG interpolation...\n"));
+		break;
+	default:
+	case 1: /* AHD interpolaton */
+		raw->params.user_qual = 3;
+		siril_log_message(_("AHD interpolation...\n"));
+		break;
 	}
 
 	
@@ -737,10 +986,11 @@ int readraw(const char *name, fits *fit) {
 	height = raw->sizes.iheight;
 
 	npixels = width * height;
-	
+
 	data = malloc(npixels * sizeof(WORD) * 3);
-	if (!data) return -1;
-	WORD *buf[3] = {data, data + npixels, data + npixels * 2};
+	if (!data)
+		return -1;
+	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 	ret = libraw_unpack(raw);
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
@@ -749,7 +999,7 @@ int readraw(const char *name, fits *fit) {
 		libraw_close(raw);
 		return -1;
 	}
-	
+
 	ret = libraw_dcraw_process(raw);
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
@@ -764,24 +1014,24 @@ int readraw(const char *name, fits *fit) {
 		free(data);
 		libraw_dcraw_clear_mem(image);
 		libraw_recycle(raw);
-		libraw_close(raw);	
+		libraw_close(raw);
 		return -1;
 	}
 
 	int nbplanes = image->colors;
-	if (nbplanes!=3) {
+	if (nbplanes != 3) {
 		free(data);
 		libraw_dcraw_clear_mem(image);
 		libraw_recycle(raw);
-		libraw_close(raw);	
+		libraw_close(raw);
 		return -1;
 	}
 	// only for 16-bits because of endianness. Are there 8-bits RAW ???
 
-	for (i=0; i<image->data_size; i+=6) {
-		*buf[RLAYER]++ = (image->data[i+0]) + (image->data[i+1] << 8);
-		*buf[GLAYER]++ = (image->data[i+2]) + (image->data[i+3] << 8);
-		*buf[BLAYER]++ = (image->data[i+4]) + (image->data[i+5] << 8);
+	for (i = 0; i < image->data_size; i += 6) {
+		*buf[RLAYER]++ = (image->data[i + 0]) + (image->data[i + 1] << 8);
+		*buf[GLAYER]++ = (image->data[i + 2]) + (image->data[i + 3] << 8);
+		*buf[BLAYER]++ = (image->data[i + 4]) + (image->data[i + 5] << 8);
 	}
 
 	/*  Here we compute the correct size of the output image (imgdata.sizes.iwidth and imgdata.sizes.iheight) for the following cases:
@@ -804,17 +1054,22 @@ int readraw(const char *name, fits *fit) {
 		if (nbplanes == 1)
 			fit->naxis = 2;
 		else
-			fit->naxis = 3;	
+			fit->naxis = 3;
 		fit->data = data;
 		fit->pdata[RLAYER] = fit->data;
 		fit->pdata[GLAYER] = fit->data + npixels;
 		fit->pdata[BLAYER] = fit->data + npixels * 2;
 		fit->binning_x = fit->binning_y = 1;
-		if (raw->other.focal_len > 0.) fit->focal_length = raw->other.focal_len;
-		if (raw->other.iso_speed > 0.) fit->iso_speed = raw->other.iso_speed;
-		if (raw->other.shutter > 0.) fit->exposure = raw->other.shutter;
-		if (raw->other.aperture > 0.) fit->aperture = raw->other.aperture;
-		g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make, raw->idata.model);
+		if (raw->other.focal_len > 0.)
+			fit->focal_length = raw->other.focal_len;
+		if (raw->other.iso_speed > 0.)
+			fit->iso_speed = raw->other.iso_speed;
+		if (raw->other.shutter > 0.)
+			fit->exposure = raw->other.shutter;
+		if (raw->other.aperture > 0.)
+			fit->aperture = raw->other.aperture;
+		g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make,
+				raw->idata.model);
 		get_FITS_date(raw->other.timestamp, fit->date_obs);
 	}
 
@@ -828,7 +1083,7 @@ int readraw(const char *name, fits *fit) {
 #define FC(filters, row,col) \
 	(filters >> ((((row) << 1 & 14) + ((col) & 1)) << 1) & 3)
 
-int readraw_in_cfa(const char *name, fits *fit) {
+static int readraw_in_cfa(const char *name, fits *fit) {
 	libraw_data_t *raw = libraw_init(0);
 	unsigned int i, j, c, col, row;
 	char pattern[FLEN_VALUE];
@@ -836,13 +1091,15 @@ int readraw_in_cfa(const char *name, fits *fit) {
 	ushort width, height;
 	int npixels;
 	WORD *data = NULL;
-	int ret = libraw_open_file(raw, name);
-	
+	int ret;
+
+	ret = siril_libraw_open_file(raw, name);
+
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
 		return -1;
 	}
-	
+
 	ret = libraw_unpack(raw);
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
@@ -872,8 +1129,7 @@ int readraw_in_cfa(const char *name, fits *fit) {
 				- left_margin;
 		width = raw_width - right_margin;
 		height = raw_height;
-	}
-	else {
+	} else {
 		width = raw->sizes.iwidth;
 		height = raw->sizes.iheight;
 	}
@@ -961,31 +1217,29 @@ int readraw_in_cfa(const char *name, fits *fit) {
 	}
 
 	libraw_recycle(raw);
-	libraw_close(raw);		
+	libraw_close(raw);
 	return 1;
 }
 
 int open_raw_files(const char *name, fits *fit, int type) {
 	int retvalue = 1;
-	
-	switch(type){
-		default:
-		case 0:
-			retvalue = readraw(name, fit);
-			break;
-		case 1:
-			retvalue = readraw_in_cfa(name, fit);
-			break;
+
+	switch (type) {
+	default:
+	case 0:
+		retvalue = readraw(name, fit);
+		break;
+	case 1:
+		retvalue = readraw_in_cfa(name, fit);
+		break;
 	}
 	if (retvalue >= 0) {
 		mirrorx(fit, FALSE);
-		char *basename = g_path_get_basename(name);
-		siril_log_message(
-				_("Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"),
+		gchar *basename = g_path_get_basename(name);
+		siril_log_message(_("Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"),
 				basename, fit->naxes[2], fit->rx, fit->ry);
 		g_free(basename);
 	}
-
 	return retvalue;
 }
 #endif

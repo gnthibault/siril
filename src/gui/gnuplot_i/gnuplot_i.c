@@ -42,11 +42,19 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <unistd.h>
-#include <glib.h> // g_get_tmp_dir
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <io.h>
-#endif // #ifdef WIN32
+#endif // #ifdef _WIN32
+
+#include <glib.h> // g_get_tmp_dir
+#include <glib/gstdio.h>
+
+#ifdef _WIN32
+#ifndef pclose
+#define pclose(f) _pclose(f)
+#endif /*pclose*/
+#endif /*_WIN32*/
 
 /*---------------------------------------------------------------------------
                                 Defines
@@ -82,6 +90,32 @@ void gnuplot_plot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char
                             Function codes
  ---------------------------------------------------------------------------*/
 
+FILE *siril_popen(const gchar *command, const gchar *type) {
+#ifdef _WIN32
+	wchar_t *wcommand, *wtype;
+	FILE *f;
+
+	wcommand = g_utf8_to_utf16(command, -1, NULL, NULL, NULL);
+	if (wcommand == NULL) {
+		return NULL;
+	}
+
+	wtype = g_utf8_to_utf16(type, -1, NULL, NULL, NULL);
+	if (wtype == NULL) {
+		g_free(wcommand);
+		return NULL;
+	}
+	f = _wpopen(wcommand, wtype);
+
+	g_free(wcommand);
+	g_free(wtype);
+
+	return f;
+#else
+	return popen(command, type);
+#endif
+}
+
 /*-------------------------------------------------------------------------*/
 /**
   @brief    Opens up a gnuplot session, ready to receive commands.
@@ -100,11 +134,11 @@ gnuplot_ctrl * gnuplot_init(void)
     gnuplot_ctrl *  handle ;
     int i;
 
-#ifndef WIN32
+#ifndef _WIN32
     if (getenv("DISPLAY") == NULL) {
         fprintf(stderr, "cannot find DISPLAY variable: is it set?\n") ;
     }
-#endif // #ifndef WIN32
+#endif // #ifndef _WIN32
 
 
     /*
@@ -115,7 +149,7 @@ gnuplot_ctrl * gnuplot_init(void)
     gnuplot_setstyle(handle, "points") ;
     handle->ntmp = 0 ;
 
-    handle->gnucmd = popen("gnuplot", "w") ;
+    handle->gnucmd = siril_popen(GNUPLOT_NAME, "w") ;
     if (handle->gnucmd == NULL) {
         fprintf(stderr, "error starting gnuplot, is gnuplot or gnuplot.exe in your path?\n") ;
         free(handle) ;
@@ -398,7 +432,7 @@ void gnuplot_plot_x(
 
     /* Open temporary file for output   */
     tmpfname = gnuplot_tmpfile(handle);
-    tmpfd = fopen(tmpfname, "w");
+    tmpfd = g_fopen(tmpfname, "w");
 
     if (tmpfd == NULL) {
         fprintf(stderr,"cannot create temporary file: exiting plot") ;
@@ -463,7 +497,7 @@ void gnuplot_plot_xy(
 
     /* Open temporary file for output   */
     tmpfname = gnuplot_tmpfile(handle);
-    tmpfd = fopen(tmpfname, "w");
+    tmpfd = g_fopen(tmpfname, "w");
 
     if (tmpfd == NULL) {
         fprintf(stderr,"cannot create temporary file: exiting plot") ;
@@ -515,7 +549,7 @@ void gnuplot_plot_xyyerr(
 
     /* Open temporary file for output   */
     tmpfname = gnuplot_tmpfile(handle);
-    tmpfd = fopen(tmpfname, "w");
+    tmpfd = g_fopen(tmpfname, "w");
 
     if (tmpfd == NULL) {
         fprintf(stderr,"cannot create temporary file: exiting plot") ;
@@ -644,7 +678,7 @@ int gnuplot_write_x_csv(
         return -1;
     }
 
-    fileHandle = fopen(fileName, "w");
+    fileHandle = g_fopen(fileName, "w");
 
     if (fileHandle == NULL)
     {
@@ -683,7 +717,7 @@ int gnuplot_write_xy_csv(
         return -1;
     }
 
-    fileHandle = fopen(fileName, "w");
+    fileHandle = g_fopen(fileName, "w");
 
     if (fileHandle == NULL)
     {
@@ -722,7 +756,7 @@ int gnuplot_write_xy_dat(
         return -1;
     }
 
-    fileHandle = fopen(fileName, "w");
+    fileHandle = g_fopen(fileName, "w");
 
     if (fileHandle == NULL)
     {
@@ -762,7 +796,7 @@ int gnuplot_write_xyyerr_dat(
         return -1;
     }
 
-    fileHandle = fopen(fileName, "w");
+    fileHandle = g_fopen(fileName, "w");
 
     if (fileHandle == NULL)
     {
@@ -810,7 +844,7 @@ int gnuplot_write_multi_csv(
         }
     }
 
-    fileHandle = fopen(fileName, "w");
+    fileHandle = g_fopen(fileName, "w");
 
     if (fileHandle == NULL)
     {
@@ -841,14 +875,12 @@ int gnuplot_write_multi_csv(
 
 char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
 {
-    static char const * tmp_filename_template = "/gnuplot_tmpdatafile_XXXXXX";
-    char const        * tmp_dir = g_get_tmp_dir();
+    static char const * tmp_filename_template = "gnuplot_tmpdatafile_XXXXXX";
     char *              tmp_filename = NULL;
-    int                 tmp_filelen = strlen(tmp_filename_template) + strlen(tmp_dir);
-
-#ifndef WIN32
+    char const        * tmp_dir = g_get_tmp_dir();
+#ifndef _WIN32
     int                 unx_fd;
-#endif // #ifndef WIN32
+#endif // #ifndef _WIN32
 
     assert(handle->tmp_filename_tbl[handle->ntmp] == NULL);
 
@@ -860,20 +892,22 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
         return NULL;
     }
 
-    tmp_filename = (char*) malloc(tmp_filelen + 1);
-    if (tmp_filename == NULL)
-    {
-        return NULL;
-    }
-    strcpy(tmp_filename, tmp_dir);
-    strcat(tmp_filename, tmp_filename_template);
+/* Due to a Windows behavior and Mingw temp file name,
+ * we escapes the special characters by inserting a '\' before them */
+#ifdef _WIN32
+    gchar *tmp = g_build_filename(tmp_dir, tmp_filename_template, NULL);
+    tmp_filename = g_strescape(tmp, NULL);
+    g_free(tmp);
+#else
+    tmp_filename = g_build_filename(tmp_dir, tmp_filename_template, NULL);
+#endif
 
-#ifdef WIN32
+#ifdef _WIN32
     if (_mktemp(tmp_filename) == NULL)
     {
         return NULL;
     }
-#else // #ifdef WIN32
+#else // #ifdef _WIN32
     unx_fd = mkstemp(tmp_filename);
     if (unx_fd == -1)
     {
@@ -882,7 +916,7 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
     }
     close(unx_fd);
 
-#endif // #ifdef WIN32
+#endif // #ifdef _WIN32
 
     handle->tmp_filename_tbl[handle->ntmp] = tmp_filename;
     handle->ntmp ++;

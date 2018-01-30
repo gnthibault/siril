@@ -77,8 +77,7 @@ sequence * readseqfile(const char *name){
 		seqfilename = strdup(name);
 	}
 
-	if ((seqfile = fopen(seqfilename, "r")) == NULL) {
-		perror("fopen sequence file");
+	if ((seqfile = g_fopen(seqfilename, "r")) == NULL) {
 		fprintf(stderr, "Reading sequence failed, file cannot be opened: %s.\n", seqfilename);
 		free(seqfilename);
 		return NULL;
@@ -228,29 +227,40 @@ sequence * readseqfile(const char *name){
 					if (seq->film_file) break;
 					seq->film_file = malloc(sizeof(struct film_struct));
 					int i = 0, nb_film = get_nb_film_ext_supported();
-					char *backup_name = strdup(seqfilename);
-					while (i < nb_film) {
-						int len_ext = strlen(supported_film[i].extension);
-						/* test for extension in lowercase */
-						strncpy(seqfilename + strlen(seqfilename)-3, supported_film[i].extension, len_ext);
-						if (access(seqfilename, F_OK) != -1) break;
-						else {
-							/* reinitialize seqfilename if no match: need to do it because of extensions with length of 4 */
-							strcpy(seqfilename, backup_name);
-							/* test for extension in uppercase */
-							gchar *upcase = g_ascii_strup(supported_film[i].extension, len_ext);
-							strncpy(seqfilename + strlen(seqfilename) - 3, upcase,
-									len_ext);
-							if (access(seqfilename, F_OK) != -1) break;
-							/* reinitialize seqfilename if no match: need to do it because of extensions with length of 4 */
-							strcpy(seqfilename, backup_name);
 
+					gchar *filmname;
+					while (i < nb_film) {
+						GString *filmString;
+						/* test for extension in lowercase */
+						filmString = g_string_new(seqfilename);
+						g_string_truncate(filmString, strlen(seqfilename) - 3);
+						g_string_append(filmString, supported_film[i].extension);
+						filmname = g_string_free(filmString, FALSE);
+
+						if (g_file_test(filmname, G_FILE_TEST_EXISTS)) {
+							break;
+						} else {
+							int len_ext;
+							gchar *upcase;
+
+							g_free(filmname);
+
+							filmString = g_string_new(seqfilename);
+							g_string_truncate(filmString, strlen(seqfilename) - 3);
+							len_ext = strlen(supported_film[i].extension);
+							upcase = g_ascii_strup(supported_film[i].extension, len_ext);
+							g_string_append(filmString, upcase);
+							filmname = g_string_free(filmString, FALSE);
 							g_free(upcase);
+
+							if (g_file_test(filmname, G_FILE_TEST_EXISTS)) {
+								break;
+							}
 						}
 						i++;
 					}
-					free(backup_name);
-					if (film_open_file(seqfilename, seq->film_file)) {
+
+					if (film_open_file(filmname, seq->film_file)) {
 						free(seq->film_file);
 						seq->film_file = NULL;
 						goto error;
@@ -348,8 +358,9 @@ int writeseqfile(sequence *seq){
 	if (!seq->seqname || seq->seqname[0] == '\0') return 1;
 	filename = malloc(strlen(seq->seqname)+5);
 	sprintf(filename, "%s.seq", seq->seqname);
-	seqfile = fopen(filename, "w+");
+	seqfile = fopen(filename, "w+");	// g_fopen won't work (on WINDOWS).
 	if (seqfile == NULL) {
+		perror("writeseqfile, fopen");
 		fprintf(stderr, "Writing sequence file: cannot open %s for writing\n", filename);
 		free(filename);
 		return 1;
@@ -387,7 +398,7 @@ int writeseqfile(sequence *seq){
 	for(j=0; j < seq->nb_layers; j++) {
 		if (seq->regparam[j]) {
 			for (i=0; i < seq->number; ++i) {
-				fprintf(stderr, "R%d %f %f %g %g %g %g %g\n", j,
+				/*fprintf(stderr, "R%d %f %f %g %g %g %g %g\n", j,
 						seq->regparam[j][i].shiftx,
 						seq->regparam[j][i].shifty,
 						seq->regparam[j][i].rot_centre_x,
@@ -395,7 +406,7 @@ int writeseqfile(sequence *seq){
 						seq->regparam[j][i].angle,
 						seq->regparam[j][i].fwhm,
 						seq->regparam[j][i].quality
-						);
+						);*/
 				fprintf(seqfile, "R%d %f %f %g %g %g %g %g\n", j,
 						seq->regparam[j][i].shiftx,
 						seq->regparam[j][i].shifty,
