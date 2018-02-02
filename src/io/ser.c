@@ -106,27 +106,32 @@ static int display_date(uint64_t timestamp, char *txt) {
 	return 0;
 }
 
-/* Comes from http://linux.die.net/man/3/timegm
- * This is not thread-safe
- */
-static time_t __timegm(struct tm *tm) {
-#ifdef _WIN32
-	return _mkgmtime(tm);
-#else
-	time_t ret;
-	char *tz;
+static time_t mktime_utc(struct tm *tm) {
+	time_t retval;
 
-	tz = getenv("TZ");
-	setenv("TZ", "", 1);
-	tzset();
-	ret = mktime(tm);
-	if (tz)
-		setenv("TZ", tz, 1);
-	else
-		unsetenv("TZ");
-	tzset();
-	return ret;
+#ifndef HAVE_TIMEGM
+	static const gint days_before[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243,
+			273, 304, 334 };
 #endif
+
+#ifndef HAVE_TIMEGM
+	if (tm->tm_mon < 0 || tm->tm_mon > 11)
+		return (time_t) -1;
+
+	retval = (tm->tm_year - 70) * 365;
+	retval += (tm->tm_year - 68) / 4;
+	retval += days_before[tm->tm_mon] + tm->tm_mday - 1;
+
+	if (tm->tm_year % 4 == 0 && tm->tm_mon < 2)
+		retval -= 1;
+
+	retval = ((((retval * 24) + tm->tm_hour) * 60) + tm->tm_min) * 60
+			+ tm->tm_sec;
+#else
+	retval = timegm (tm);
+#endif /* !HAVE_TIMEGM */
+
+	return retval;
 }
 
 /* Convert FITS keyword DATE in a UNIX time format
@@ -159,7 +164,7 @@ static int FITS_date_key_to_Unix_time(char *date, uint64_t *utc,
 	timeinfo.tm_isdst = -1;
 
 	/* get UTC time from timeinfo* */
-	ut = __timegm(&timeinfo);
+	ut = mktime_utc(&timeinfo);
 	ut *= ticksPerSecond;
 	ut += epochTicks;
 	ut += ms * 10000;
