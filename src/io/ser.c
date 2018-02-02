@@ -67,8 +67,25 @@ static char *ser_timestamp(uint64_t timestamp) {
 	time_t secs = t1970_ms / 1000;
 	int ms = t1970_ms % 1000;
 	struct tm *t;
+#ifdef HAVE_GMTIME_R
+	struct tm t_;
+#endif
 
+#ifdef _WIN32
+	t = gmtime (&secs);
+#else
+#ifdef HAVE_GMTIME_R
+	t = gmtime_r (&secs, &t_);
+#else
 	t = gmtime(&secs);
+#endif /* HAVE_GMTIME_R */
+#endif /* _WIN32 */
+
+	/* If the gmtime() call has failed, "secs" is too big. */
+	if (t == NULL) {
+		free(str);
+		return NULL;
+	}
 
 	sprintf(str, "%04d-%02d-%02dT%02d:%02d:%02d.%03d", t->tm_year + 1900,
 			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, ms);
@@ -82,8 +99,10 @@ static int display_date(uint64_t timestamp, char *txt) {
 		return -1;
 
 	char *str = ser_timestamp(timestamp);
-	fprintf(stdout, "%s%s\n", txt, str);
-	free(str);
+	if (str) {
+		fprintf(stdout, "%s%s\n", txt, str);
+		free(str);
+	}
 	return 0;
 }
 
@@ -792,8 +811,10 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	/* copy the SER timestamp to the fits */
 	if (ser_file->ts) {
 		char *timestamp = ser_timestamp(ser_file->ts[frame_no]);
-		g_snprintf(fit->date_obs, FLEN_VALUE, "%s", timestamp);
-		free(timestamp);
+		if (timestamp) {
+			g_snprintf(fit->date_obs, FLEN_VALUE, "%s", timestamp);
+			free(timestamp);
+		}
 	}
 
 	fits_flip_top_to_bottom(fit);

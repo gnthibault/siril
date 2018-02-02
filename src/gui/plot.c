@@ -106,8 +106,24 @@ static double serTimestamp_toJulian(uint64_t timestamp) {
 	uint64_t t1970_ms = (timestamp - epochTicks) / 10000;
 	time_t secs = t1970_ms / 1000;
 	int ms = t1970_ms % 1000;
+#ifdef HAVE_GMTIME_R
+	struct tm t_;
+#endif
 
+#ifdef _WIN32
+	t = gmtime (&secs);
+#else
+#ifdef HAVE_GMTIME_R
+	t = gmtime_r (&secs, &t_);
+#else
 	t = gmtime(&secs);
+#endif /* HAVE_GMTIME_R */
+#endif /* _WIN32 */
+
+	/* If the gmtime() call has failed, "secs" is too big. */
+	if (t == NULL) {
+		return -1.0;
+	}
 
 	/* Get real year and month */
 	memset(&dt, 0, sizeof(dateTime));

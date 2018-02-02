@@ -850,10 +850,27 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 #ifdef HAVE_LIBRAW
 
 static void get_FITS_date(time_t date, char *date_obs) {
-	struct tm *t = gmtime(&date);
-	g_snprintf(date_obs, FLEN_VALUE, "%04d-%02d-%02dT%02d:%02d:%02d",
-			t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min,
-			t->tm_sec);
+	struct tm *t;
+#ifdef HAVE_GMTIME_R
+	struct tm t_;
+#endif
+
+#ifdef _WIN32
+	t = gmtime (&date);
+#else
+#ifdef HAVE_GMTIME_R
+	t = gmtime_r (&date, &t_);
+#else
+	t = gmtime(&date);
+#endif /* HAVE_GMTIME_R */
+#endif /* _WIN32 */
+
+	/* If the gmtime() call has failed, "secs" is too big. */
+	if (t) {
+		g_snprintf(date_obs, FLEN_VALUE, "%04d-%02d-%02dT%02d:%02d:%02d",
+				t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min,
+				t->tm_sec);
+	}
 }
 
 #if defined(_WIN32) && (defined(__MINGW32__) || !defined(_MSC_VER) || (_MSC_VER <= 1310))

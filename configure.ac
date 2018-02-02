@@ -56,6 +56,8 @@ AC_CHECK_HEADERS([sys/vfs.h sys/vmount.h sys/statfs.h sys/statvfs.h sys/filio.h]
 
 # Checks for reallocarray function (used in kplot)
 AC_CHECK_FUNCS(reallocarray, AC_DEFINE([HAVE_REALLOCARRAY], [1], [reallocarray is available]), )
+# Checks for library functions.
+AC_CHECK_FUNCS(gmtime_r)
 
 
 dnl Set PACKAGE_DOC_DIR in config.h.
