@@ -457,8 +457,10 @@ void copy_seq_stats_to_fit(sequence *seq, int index, fits *fit) {
 	if (seq->stats) {
 		int layer;
 		fit->stats = calloc(fit->naxes[2], sizeof(imstats *));
-		for (layer = 0; layer < fit->naxes[2]; layer++)
-			fit->stats[layer] = seq->stats[layer][index];
+		for (layer = 0; layer < fit->naxes[2]; layer++) {
+			if (seq->stats[layer])
+				fit->stats[layer] = seq->stats[layer][index];
+		}
 	}
 }
 
