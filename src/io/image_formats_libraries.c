@@ -292,7 +292,6 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		free(filename);
 		return 1;
 	}
-	free(filename);
 	nsamples = (uint16) fit->naxes[2];
 	width = (uint32) fit->rx;
 	height = (uint32) fit->ry;
@@ -347,6 +346,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		TIFFClose(tif);
 		msg = siril_log_message(_("TIFF file has unexpected number of channels (not 1 or 3).\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		free(filename);
 		return 1;
 	}
 
@@ -387,7 +387,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	mirrorx(fit, FALSE);
 	siril_log_message(
 			_("Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
-			bitspersample, name, fit->naxes[2], fit->rx, fit->ry);
+			bitspersample, filename, fit->naxes[2], fit->rx, fit->ry);
+	free(filename);
 	return retval;
 }
 #endif	// HAVE_LIBTIFF
@@ -460,7 +461,7 @@ int readjpg(const char* name, fits *fit){
 	return cinfo.output_components;
 }
 
-int savejpg(char *name, fits *fit, int quality){
+int savejpg(const char *name, fits *fit, int quality){
 	FILE *f;
 	int i, j;
 	unsigned char red, blue, green;
@@ -485,7 +486,6 @@ int savejpg(char *name, fits *fit, int quality){
 		free(filename);
 		return 1;
 	}
-	free(filename);
 	jpeg_stdio_dest(&cinfo, f);
 
 	//## SET PARAMETERS FOR COMPRESSION:
@@ -546,7 +546,8 @@ int savejpg(char *name, fits *fit, int quality){
 	jpeg_destroy_compress(&cinfo);
 	free(image_buffer);
 	siril_log_message(_("Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"),
-						name, quality, fit->naxes[2], fit->rx, fit->ry);
+						filename, quality, fit->naxes[2], fit->rx, fit->ry);
+	free(filename);
 	return 0;
 }
 #endif	// HAVE_LIBJPEG
@@ -840,6 +841,9 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 		ret = save_mono_file(filename, fit->data, width, height,
 				bytes_per_sample);
 	}
+	siril_log_message(_("Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"),
+			filename, fit->naxes[2], fit->rx, fit->ry);
+
 	free(filename);
 	return ret;
 }

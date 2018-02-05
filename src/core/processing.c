@@ -74,8 +74,9 @@ gpointer generic_sequence_worker(gpointer p) {
 	if (args->filtering_criterion) {
 		index_mapping = malloc(nb_frames * sizeof(int));
 		for (input_idx = 0, frame = 0; input_idx < args->seq->number; input_idx++) {
-			if (!args->filtering_criterion(args->seq, input_idx, args->filtering_parameter))
+			if (!args->filtering_criterion(args->seq, input_idx, args->filtering_parameter)) {
 				continue;
+			}
 			index_mapping[frame++] = input_idx;
 		}
 		if (frame != nb_frames) {

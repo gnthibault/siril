@@ -75,7 +75,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample);
 
 #ifdef HAVE_LIBJPEG
 int readjpg(const char*, fits *);
-int savejpg(char *, fits *, int);
+int savejpg(const char *, fits *, int);
 #endif
 
 #ifdef HAVE_LIBPNG
