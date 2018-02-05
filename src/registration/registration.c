@@ -413,7 +413,7 @@ int register_shift_fwhm(struct registration_args *args) {
 	if (args->follow_star)
 		framing = FOLLOW_STAR_FRAME;
 
-	if (seqpsf(args->seq, args->layer, TRUE, framing, FALSE))
+	if (seqpsf(args->seq, args->layer, TRUE, args->process_all_frames, framing, FALSE))
 		return 1;
 
 	current_regdata = args->seq->regparam[args->layer];
