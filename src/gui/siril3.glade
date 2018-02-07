@@ -5095,6 +5095,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="hexpand">True</property>
                 <property name="label">msg</property>
                 <property name="wrap">True</property>
+                <property name="selectable">True</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -10561,9 +10562,17 @@ WARNING: ensure you have a good reason to change this value because it may degra
                 <property name="label" translatable="yes">_Help</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
-                  <object class="GtkMenu" id="help1_menu">
+                  <object class="GtkMenu">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkMenuItem" id="help_update">
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Check For Updates</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_help_update_activate" swapped="no"/>
+                      </object>
+                    </child>
                     <child>
                       <object class="GtkImageMenuItem" id="help_item1">
                         <property name="label">gtk-about</property>

@@ -1,0 +1,289 @@
+/*
+ * This file is part of Siril, an astronomy image processor.
+ * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
+ * Copyright (C) 2012-2018 team free-astro (see more in AUTHORS file)
+ * Reference site is https://free-astro.org/index.php/Siril
+ *
+ * Siril is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Siril is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Siril. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <string.h>
+#include <curl/curl.h>
+
+#include "core/siril.h"
+#include "core/proto.h"
+#include "core/processing.h"
+#include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
+#include "core/siril_update.h"
+
+#ifdef HAVE_LIBCURL
+#define DOMAIN_NAME "https://free-astro.org"
+
+static const gchar* siril_url = DOMAIN_NAME"/svn/siril/tags/";
+static const gchar* download_url = DOMAIN_NAME"/index.php?title=Siril:";
+static const int DEFAULT_FETCH_RETRIES = 5;
+static CURL *curl;
+
+struct ucontent {
+	gchar *data;
+	size_t len;
+};
+
+static size_t cbk_curl(void *buffer, size_t size, size_t nmemb, void *userp) {
+	size_t realsize = size * nmemb;
+	struct ucontent *mem = (struct ucontent *) userp;
+
+	mem->data = g_try_realloc(mem->data, mem->len + realsize + 1);
+
+	memcpy(&(mem->data[mem->len]), buffer, realsize);
+	mem->len += realsize;
+	mem->data[mem->len] = 0;
+
+	return realsize;
+}
+
+static void init() {
+	if (!curl) {
+		g_fprintf(stdout, "initializing CURL\n");
+		curl_global_init(CURL_GLOBAL_ALL);
+		curl = curl_easy_init();
+	}
+
+	if (!curl)
+		exit(EXIT_FAILURE);
+}
+
+static version_number get_current_version_number() {
+	gchar **fullVersionNumber;
+	version_number version;
+
+	fullVersionNumber = g_strsplit_set(PACKAGE_VERSION, ".-", -1);
+	version.major_version = atoi(fullVersionNumber[0]);
+	version.minor_version = atoi(fullVersionNumber[1]);
+	version.micro_version = atoi(fullVersionNumber[2]);
+	/* we discard string after '-' as we are only looking for stable release */
+	g_strfreev(fullVersionNumber);
+
+	return version;
+}
+
+static version_number get_last_version_number(gchar *buffer) {
+	gchar **token;
+	gchar **fullVersionNumber;
+	char *v;
+	gint i, nargs;
+	version_number version;
+
+	token = g_strsplit(buffer, "\n", -1);
+	nargs = g_strv_length(token);
+
+	i = 0;
+	while (i < nargs) {
+		if (g_str_has_prefix(g_strchug(token[i]), "<li>")) {
+			/* get value between double quote */
+			/* the last version number is the newer */
+			strtok(token[i],"\"");
+			v = strtok(NULL,"\"");
+		}
+		i++;
+	}
+
+	/* on tags webpage, version has the following format: "0.9.8/"
+	 * First we remove the last char '/' */
+	v[strlen(v) - 1] = 0;
+	g_fprintf(stdout, "last version: %s\n", v);
+	fullVersionNumber = g_strsplit_set(v, ".-", -1);
+
+	version.major_version = atoi(fullVersionNumber[0]);
+	version.minor_version = atoi(fullVersionNumber[1]);
+	version.micro_version = atoi(fullVersionNumber[2]);
+
+	g_strfreev(fullVersionNumber);
+	g_strfreev(token);
+
+	return version;
+}
+
+static int compare_version(version_number v1, version_number v2) {
+	if (v1.major_version < v2.major_version)
+		return -1;
+	else if (v1.major_version > v2.major_version)
+		return 1;
+	else {
+		if (v1.minor_version < v2.minor_version)
+			return -1;
+		else if (v1.minor_version > v2.minor_version)
+			return 1;
+		else {
+			if (v1.micro_version < v2.micro_version)
+				return -1;
+			else if (v1.micro_version > v2.micro_version)
+				return 1;
+		}
+	}
+	return 0;
+}
+
+static void http_cleanup() {
+	curl_easy_cleanup(curl);
+	curl_global_cleanup();
+	curl = NULL;
+}
+
+static gboolean end_update_idle(gpointer p) {
+	gint ret;
+	char *msg;
+	version_number current_version, last_version_available;
+	static char *icon[] = { "gtk-dialog-info", "gtk-dialog-error" };
+	struct _update_data *args = (struct _update_data *) p;
+
+	if (args->content == NULL) {
+		switch(args->code) {
+		case 0:
+			msg = siril_log_message(_("Unable to check updates !! "
+					"Please Check your network connection\n"));
+			break;
+		default:
+		msg = siril_log_message(_("Unable to check updates !! Error: %ld\n"),
+				args->code);
+		}
+		ret = 1;
+	} else {
+		last_version_available = get_last_version_number(args->content);
+		current_version = get_current_version_number();
+
+		if (compare_version(current_version, last_version_available) < 0) {
+			msg = siril_log_message(_("New version is available. "
+					"You can download it at %s%d.%d.%d\n"), download_url,
+					last_version_available.major_version,
+					last_version_available.minor_version,
+					last_version_available.micro_version);
+		} else if (compare_version(current_version, last_version_available) > 0) {
+			msg = siril_log_message(_("No update check: this is a development version\n"));
+		} else {
+			msg = siril_log_message(_("Siril is up to date\n"));
+		}
+		ret = 0;
+	}
+	show_dialog(msg, _("Software Update"), icon[ret]);
+
+	/* free data */
+	g_free(args->content);
+	free(args);
+	http_cleanup();
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
+	set_cursor_waiting(FALSE);
+	stop_processing_thread();
+	return FALSE;
+}
+
+static gpointer fetch_url(gpointer p) {
+	struct ucontent *content;
+	gchar *result;
+	long code;
+	int retries;
+	unsigned int s;
+	struct _update_data *args = (struct _update_data *) p;
+
+	content = g_try_malloc(sizeof(struct ucontent));
+	if (content == NULL) {
+		return NULL;
+	}
+
+	g_fprintf(stdout, "fetch_url(): %s\n", args->url);
+
+	init();
+	set_progress_bar_data(NULL, 0.1);
+
+	result = NULL;
+
+	retries = DEFAULT_FETCH_RETRIES;
+
+	retrieve: content->data = g_malloc(1);
+	content->data[0] = '\0';
+	content->len = 0;
+
+	curl_easy_setopt(curl, CURLOPT_URL, args->url);
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cbk_curl);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, content);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "siril/0.0");
+
+	if (curl_easy_perform(curl) == CURLE_OK) {
+		if (retries == DEFAULT_FETCH_RETRIES)
+			set_progress_bar_data(NULL, 0.4);
+		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
+		if (retries == DEFAULT_FETCH_RETRIES)
+			set_progress_bar_data(NULL, 0.6);
+
+		switch (code) {
+		case 200:
+			result = content->data;
+			break;
+		case 500:
+		case 502:
+		case 503:
+		case 504:
+			g_fprintf(stderr, "Fetch failed with code %ld for URL %s\n", code,
+					args->url);
+
+			if (retries && get_thread_run()) {
+				double progress = (DEFAULT_FETCH_RETRIES - retries) / (double) DEFAULT_FETCH_RETRIES;
+				progress *= 0.4;
+				progress += 0.6;
+				s = 2 * (DEFAULT_FETCH_RETRIES - retries) + 2;
+				char *msg = siril_log_message(_("Error: %ld. Wait %us before retry\n"), code, s);
+				msg[strlen(msg) - 1] = 0; /* we remove '\n' at the end */
+				set_progress_bar_data(msg, progress);
+				g_usleep(s * 1E6);
+
+				g_free(content->data);
+				retries--;
+				goto retrieve;
+			}
+
+			break;
+		default:
+			g_fprintf(stderr, "Fetch failed with code %ld for URL %s\n", code,
+					args->url);
+		}
+		args->code = code;
+	}
+	set_progress_bar_data(NULL, PROGRESS_DONE);
+
+	if (!result)
+		g_free(content->data);
+	g_free(content);
+
+	args->content = result;
+
+	gdk_threads_add_idle(end_update_idle, args);
+	return NULL;
+}
+
+void on_help_update_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	struct _update_data *args;
+
+	args = malloc(sizeof(struct _update_data));
+	args->url = (gchar *)siril_url;
+	args->code = 0L;
+	args->content = NULL;
+
+	set_progress_bar_data(_("Looking for updates..."), PROGRESS_NONE);
+	set_cursor_waiting(TRUE);
+	start_in_new_thread(fetch_url, args);
+}
+
+#endif

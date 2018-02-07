@@ -1577,6 +1577,11 @@ void update_MenuItem() {
 	/* Windows Menu */
 	gtk_widget_set_sensitive(lookup_widget("menuitemgray"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitemcolor"), any_RGB_image_is_loaded);
+
+#ifdef HAVE_LIBCURL
+	/* Updates check */
+	gtk_widget_set_visible(lookup_widget("help_update"), TRUE);
+#endif
 }
 
 gboolean redraw(int vport, int doremap) {

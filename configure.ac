@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 m4_define([siril_major_version], [0])
 m4_define([siril_minor_version], [9])
-m4_define([siril_micro_version], [8])
-m4_define([siril_prerelease_version], [002])
+m4_define([siril_micro_version], [9])
+m4_define([siril_prerelease_version], [alpha1])
 m4_define([siril_version],
           [siril_major_version.siril_minor_version.siril_micro_version])
 m4_define([siril_version_full],
@@ -146,6 +146,10 @@ PKG_CHECK_MODULES(FFMPEG, [libavformat libavutil >= 55.20 libavcodec libswscale 
 		  [AC_DEFINE([HAVE_FFMPEG], [1], [film export supported])],
 		  AC_MSG_WARN([ffmpeg libav libraries not found or too old. Not using film export formats.]))
 
+dnl checking libcurl
+PKG_CHECK_MODULES(CURL, [libcurl],
+		  [AC_DEFINE([HAVE_LIBCURL], [1], [Using Libcurl ])],
+		  AC_MSG_WARN([libcurl not found. Not using web interaction.]))
 
 dnl Compute the canonical host-system type variable (need config.guess and config.sub)
 AC_CANONICAL_HOST
