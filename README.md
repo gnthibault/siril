@@ -42,6 +42,7 @@ compilation time, or their support won't be compiled.
  * libavcodec
  * libswscale
  * libswresample
+ * libcurl
 
 All these libraries are available in most Linux distributions and free systems,
 maybe with the exception of ffms2 that is not as popular as others and may need
