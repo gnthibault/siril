@@ -18,6 +18,11 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
+#ifdef HAVE_LIBCURL
 #include <string.h>
 #include <curl/curl.h>
 
@@ -28,7 +33,7 @@
 #include "gui/progress_and_log.h"
 #include "core/siril_update.h"
 
-#ifdef HAVE_LIBCURL
+
 #define DOMAIN_NAME "https://free-astro.org"
 
 static const gchar* siril_url = DOMAIN_NAME"/svn/siril/tags/";
