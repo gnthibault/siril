@@ -8,20 +8,19 @@ siril 0.9.8
 * Implementation of a simplified Drizzle
 * New tool for Lucy-Richardson deconvolution
 * Conversion list tree is now sorted on first load. Sort is natural.
-* Commandline command like stackall is available, with optiional arguments, for all stacking methods
+* Command stackall is available, with optional arguments, for all stacking methods
 * Change default working directory to special directory 'Pictures' if it exists
 * Reduce display time of autostretch
 * Parallelize sum stacking
 * Use thread-safe progress bar update instead of deprecated one. Run 'Check sequences' in a background task
 * Add an option to set the generic image_hook behaviour when function fails
 * Switch on "Images previously manually selected from the sequence" if user checks and unchecks frames
-* Fixed numerous bug on Windows with wide char filename
+* Fixed numerous bug on Windows with wide char filenames
 * Fixed dark theme icons
-* Fixed exposure dates of exported SER sequences that was wrong with filtering
-* Fixed background extraction with the lost of color calibration
+* Fixed exposure dates of exported SER sequences that were wrong with filtering
+* Fixed the loss of color calibration on background extraction
 * Fixed menu update after RGB composition
 * Fixed bug in "Average" and "Median" stack for huge SER file
-* Fixed bug in stackall command
 * Fixed when it was impossible to use multithread functions after star alignment in compositing tool
 * Fixed crash when selecting "Best images .. (PSF)" if the loaded sequence has no PSF data
 * Fixed sorted images by FWHM

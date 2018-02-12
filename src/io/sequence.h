@@ -54,7 +54,7 @@ gpointer crop_sequence(gpointer p);
 gboolean sequence_is_rgb(sequence *seq);
 void	enforce_area_in_image(rectangle *area, sequence *seq);
 
-int seqpsf(sequence *seq, int layer, gboolean for_registration,
+int seqpsf(sequence *seq, int layer, gboolean for_registration, gboolean regall,
 		framing_mode framing, gboolean run_in_thread);
 
 /* in export.c now */

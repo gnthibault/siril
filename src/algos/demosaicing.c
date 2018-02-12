@@ -29,7 +29,7 @@
 #include "algos/demosaicing.h"
 
 /* width and height are sizes of the original image */
-int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
+static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
 		sensor_pattern pattern) {
 	int i, col, row;
 	double tmp;
@@ -86,7 +86,7 @@ int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
  * *************************************************/
 
 /* OpenCV's Bayer decoding */
-int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
+static int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
 		sensor_pattern tile) {
 	const int bayerStep = sx;
 	const int rgbStep = 3 * sx;
@@ -174,7 +174,7 @@ int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
 }
 
 /* insprired by OpenCV's Bayer decoding */
-int bayer_NearestNeighbor(const WORD *bayer, WORD *rgb, int sx, int sy,
+static int bayer_NearestNeighbor(const WORD *bayer, WORD *rgb, int sx, int sy,
 		sensor_pattern tile) {
 	const int bayerStep = sx;
 	const int rgbStep = 3 * sx;
@@ -281,7 +281,7 @@ in = in < 0 ? 0 : in;\
 in = in > ((1<<bits)-1) ? ((1<<bits)-1) : in;\
 out=in;
 
-int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
+static int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
 		sensor_pattern pattern) {
 	const int height = sy, width = sx;
 	const signed char *cp;
@@ -470,7 +470,7 @@ static void cam_to_cielab(uint16_t cam[3], float lab[3]) /* [SA] */
  */
 #define TS 256 /* Tile Size */
 
-int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
+static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 		sensor_pattern pattern) {
 	int i, j, top, left, row, col, tr, tc, fc, c, d, val, hm[2];
 	/* the following has the same type as the image */
@@ -662,10 +662,97 @@ int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 	return 0;
 }
 
-/* debayer a buffer of a given size into a newly allocated and returned buffer,
- * using the given bayer pattern and interpolation */
+#define fcol(row, col) xtrans[(row) % 6][(col) % 6]	/* Not thread safe */
+
+/* Code from RAWTherapee:
+ * It is a simple algorithm. Certainly not the best (probably the worst) but it works yet. */
+static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
+		sensor_pattern pattern, int xtrans[6][6]) {
+	uint32_t filters = 9;
+	const int height = sy, width = sx;
+	int row, col;
+
+	/* start - code from border_interpolate(int border) */
+	{
+		int border = 1;
+		unsigned row, col, y, x, f, c, sum[8];
+
+		for (row = 0; row < (unsigned int) height; row++)
+			for (col = 0; col < (unsigned int) width; col++) {
+				if (col == (unsigned int) border && row >= (unsigned int) border
+						&& row < (unsigned int) height - (unsigned int) border)
+					col = width - border;
+				memset(sum, 0, sizeof sum);
+				for (y = row - 1; y != row + 2; y++)
+					for (x = col - 1; x != col + 2; x++)
+						if (y < (unsigned int) height
+								&& x < (unsigned int) width) {
+							f = FC(y, x);
+							sum[f] += dst[(y * width + x) * 3 + f]; /* [SA] */
+							sum[f + 4]++;
+						}
+				f = FC(row, col);
+				FORC3
+					if (c != f && sum[c + 4]) /* [SA] */
+						dst[(row * width + col) * 3 + c] = sum[c] / sum[c + 4]; /* [SA] */
+			}
+	}
+	/* end - code from border_interpolate(int border) */
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+	for (row = 1; row < (height - 1); row ++) {
+		for (col = 1; col < (width - 1); col ++) {
+			float sum[3] = { 0.f };
+
+			int v, h;
+			for (v = -1; v <= 1; v++) {
+				for (h = -1; h <= 1; h++) {
+					sum[fcol(row + v, col + h)] += bayer[(col + h) + (row + v) * width];
+				}
+			}
+
+			switch (fcol(row, col)) {
+			case 0: /* Red */
+				dst[(row * width + col) * 3 + 0] = bayer[col + row * width];
+				dst[(row * width + col) * 3 + 1] = sum[1] * 0.2f;
+				dst[(row * width + col) * 3 + 2] = sum[2] * 0.33333333f;
+				break;
+
+			case 1: /* Green */
+				dst[(row * width + col) * 3 + 0] = sum[0] * 0.5f;
+				dst[(row * width + col) * 3 + 1] = bayer[col + row * width];
+				dst[(row * width + col) * 3 + 2] = sum[2] * 0.5f;
+				break;
+
+			case 2: /* Blue */
+				dst[(row * width + col) * 3 + 0] = sum[0] * 0.33333333f;
+				dst[(row * width + col) * 3 + 1] = sum[1] * 0.2f;
+				dst[(row * width + col) * 3 + 2] = bayer[col + row * width];
+				break;
+			}
+
+		}
+	}
+	return 0;
+}
+
+#undef fcol
+
+/**
+ * debayer a buffer of a given size into a newly allocated and returned buffer,
+ * using the given bayer pattern and interpolation
+ *
+ * @param buf original RAW data
+ * @param width width of image
+ * @param height height of image
+ * @param interpolation type of interpolation used for demosaicing algorithm
+ * @param pattern type of pattern used for demosaicing algorithm
+ * @param xtrans this array is only used in case of FUJI XTRANS RAWs. Can be NULL.
+ * @return a new buffer of demosaiced data
+ */
 WORD *debayer_buffer(WORD *buf, int *width, int *height,
-		interpolation_method interpolation, sensor_pattern pattern) {
+		interpolation_method interpolation, sensor_pattern pattern, int xtrans[6][6]) {
 	WORD *newbuf;
 	int npixels;
 
@@ -722,8 +809,50 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		super_pixel(buf, newbuf, *width, *height, pattern);
 		*width = *width / 2 + *width % 2;
 		*height = *height / 2 + *height % 2;
+		break;
+	case XTRANS:
+		if (xtrans == NULL)
+			return NULL;
+		npixels = (*width) * (*height);
+		newbuf = calloc(1, 3 * npixels * sizeof(WORD));
+		if (newbuf == NULL) {
+			printf("Not enough memory for debayering\n");
+			return NULL;
+		}
+		fast_xtrans_interpolate(buf, newbuf, *width, *height, pattern, xtrans);
+		break;
 	}
 	return newbuf;
+}
+
+/* This function retrieve the xtrans matrix from the FITS header
+ */
+static int retrieveXTRANSPattern(char *bayer, int xtrans[6][6]) {
+	int x, y, i = 0;
+	int len;
+
+	len = strlen(bayer);
+
+	if (len == 36) {
+		for (x = 0; x < 6; x++) {
+			for (y = 0; y < 6; y++) {
+				switch (bayer[i]) {
+				default:
+				case 'R':
+					xtrans[x][y] = 0;
+					break;
+				case 'G':
+					xtrans[x][y] = 1;
+					break;
+				case 'B':
+					xtrans[x][y] = 2;
+					break;
+				}
+				i++;
+			}
+		}
+	}
+	return 0;
 }
 
 int debayer(fits* fit, interpolation_method interpolation) {
@@ -733,9 +862,12 @@ int debayer(fits* fit, interpolation_method interpolation) {
 	int npixels;
 	WORD *buf = fit->data;
 	WORD *newbuf;
+	int xtrans[6][6] = { 0 };
+
+	retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
 
 	newbuf = debayer_buffer(buf, &width, &height, interpolation,
-			com.debayer.bayer_pattern);
+			com.debayer.bayer_pattern, xtrans);
 	if (newbuf == NULL) {
 		return 1;
 	}

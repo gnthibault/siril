@@ -178,7 +178,6 @@ int savebmp(const char *name, fits *fit) {
 		free(filename);
 		return 1;
 	}
-	free(filename);
 
 	fwrite(bmpfileheader, sizeof(bmpfileheader), 1, f);
 	fwrite(bmpinfoheader, sizeof(bmpinfoheader), 1, f);
@@ -212,8 +211,9 @@ int savebmp(const char *name, fits *fit) {
 		}
 	}
 	fclose(f);
-	siril_log_message(_("Saving BMP: file %s, %ld layer(s), %ux%u pixels\n"), name,
+	siril_log_message(_("Saving BMP: file %s, %ld layer(s), %ux%u pixels\n"), filename,
 			fit->naxes[2], fit->rx, fit->ry);
+	free(filename);
 	return 0;
 }
 

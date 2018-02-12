@@ -292,7 +292,6 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		free(filename);
 		return 1;
 	}
-	free(filename);
 	nsamples = (uint16) fit->naxes[2];
 	width = (uint32) fit->rx;
 	height = (uint32) fit->ry;
@@ -347,6 +346,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		TIFFClose(tif);
 		msg = siril_log_message(_("TIFF file has unexpected number of channels (not 1 or 3).\n"));
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		free(filename);
 		return 1;
 	}
 
@@ -387,7 +387,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	mirrorx(fit, FALSE);
 	siril_log_message(
 			_("Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
-			bitspersample, name, fit->naxes[2], fit->rx, fit->ry);
+			bitspersample, filename, fit->naxes[2], fit->rx, fit->ry);
+	free(filename);
 	return retval;
 }
 #endif	// HAVE_LIBTIFF
@@ -460,7 +461,7 @@ int readjpg(const char* name, fits *fit){
 	return cinfo.output_components;
 }
 
-int savejpg(char *name, fits *fit, int quality){
+int savejpg(const char *name, fits *fit, int quality){
 	FILE *f;
 	int i, j;
 	unsigned char red, blue, green;
@@ -485,7 +486,6 @@ int savejpg(char *name, fits *fit, int quality){
 		free(filename);
 		return 1;
 	}
-	free(filename);
 	jpeg_stdio_dest(&cinfo, f);
 
 	//## SET PARAMETERS FOR COMPRESSION:
@@ -546,7 +546,8 @@ int savejpg(char *name, fits *fit, int quality){
 	jpeg_destroy_compress(&cinfo);
 	free(image_buffer);
 	siril_log_message(_("Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"),
-						name, quality, fit->naxes[2], fit->rx, fit->ry);
+						filename, quality, fit->naxes[2], fit->rx, fit->ry);
+	free(filename);
 	return 0;
 }
 #endif	// HAVE_LIBJPEG
@@ -840,6 +841,9 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 		ret = save_mono_file(filename, fit->data, width, height,
 				bytes_per_sample);
 	}
+	siril_log_message(_("Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"),
+			filename, fit->naxes[2], fit->rx, fit->ry);
+
 	free(filename);
 	return ret;
 }
@@ -850,10 +854,27 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 #ifdef HAVE_LIBRAW
 
 static void get_FITS_date(time_t date, char *date_obs) {
-	struct tm *t = gmtime(&date);
-	g_snprintf(date_obs, FLEN_VALUE, "%04d-%02d-%02dT%02d:%02d:%02d",
-			t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min,
-			t->tm_sec);
+	struct tm *t;
+#ifdef HAVE_GMTIME_R
+	struct tm t_;
+#endif
+
+#ifdef _WIN32
+	t = gmtime (&date);
+#else
+#ifdef HAVE_GMTIME_R
+	t = gmtime_r (&date, &t_);
+#else
+	t = gmtime(&date);
+#endif /* HAVE_GMTIME_R */
+#endif /* _WIN32 */
+
+	/* If the gmtime() call has failed, "secs" is too big. */
+	if (t) {
+		g_snprintf(date_obs, FLEN_VALUE, "%04d-%02d-%02dT%02d:%02d:%02d",
+				t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min,
+				t->tm_sec);
+	}
 }
 
 #if defined(_WIN32) && (defined(__MINGW32__) || !defined(_MSC_VER) || (_MSC_VER <= 1310))
@@ -1080,8 +1101,35 @@ static int readraw(const char *name, fits *fit) {
 	return nbplanes;
 }
 
-#define FC(filters, row,col) \
+#define FC(filters, row, col) \
 	(filters >> ((((row) << 1 & 14) + ((col) & 1)) << 1) & 3)
+
+static const char filter[16][16] =
+{ { 2,1,1,3,2,3,2,0,3,2,3,0,1,2,1,0 },
+  { 0,3,0,2,0,1,3,1,0,1,1,2,0,3,3,2 },
+  { 2,3,3,2,3,1,1,3,3,1,2,1,2,0,0,3 },
+  { 0,1,0,1,0,2,0,2,2,0,3,0,1,3,2,1 },
+  { 3,1,1,2,0,1,0,2,1,3,1,3,0,1,3,0 },
+  { 2,0,0,3,3,2,3,1,2,0,2,0,3,2,2,1 },
+  { 2,3,3,1,2,1,2,1,2,1,1,2,3,0,0,1 },
+  { 1,0,0,2,3,0,0,3,0,3,0,3,2,1,2,3 },
+  { 2,3,3,1,1,2,1,0,3,2,3,0,2,3,1,3 },
+  { 1,0,2,0,3,0,3,2,0,1,1,2,0,1,0,2 },
+  { 0,1,1,3,3,2,2,1,1,3,3,0,2,1,3,2 },
+  { 2,3,2,0,0,1,3,0,2,0,1,2,3,0,1,0 },
+  { 1,3,1,2,3,2,3,2,0,2,0,1,1,0,3,0 },
+  { 0,2,0,3,1,0,0,1,1,3,3,2,3,2,2,1 },
+  { 2,1,3,2,3,1,2,1,0,3,0,2,0,2,0,2 },
+  { 0,3,1,0,0,2,0,3,2,1,3,1,1,3,1,3 } };
+
+static int fcol(libraw_data_t *raw, int row, int col) {
+	if (raw->idata.filters == 1)
+		return filter[(row + raw->rawdata.sizes.top_margin) & 15][(col
+				+ raw->rawdata.sizes.left_margin) & 15];
+	if (raw->idata.filters == 9)
+		return raw->idata.xtrans[(row + 6) % 6][(col + 6) % 6];
+	return FC(raw->idata.filters, row, col);
+}
 
 static int readraw_in_cfa(const char *name, fits *fit) {
 	libraw_data_t *raw = libraw_init(0);
@@ -1151,18 +1199,15 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 			fhigh = 4;
 		if ((filters ^ (filters >> 16)) & 0xffff)
 			fhigh = 8;
-		if ((filters == 1) /* Leaf Catchlight with 16x16 bayer matrix */
-				|| (filters == 9)) /* Fuji X-Trans (6x6 matrix) */ {
-			siril_log_message(_("This kind of RAW pictures is not supported.\n"));
-			libraw_recycle(raw);
-			libraw_close(raw);
-			return -1;
-		}
+		if (filters == 1) /* Leaf Catchlight with 16x16 bayer matrix */
+			fhigh = fwide = 16;
+		if (filters == 9) /* Fuji X-Trans (6x6 matrix) */
+			fhigh = fwide = 6;
 
 		j = 0;
 		for (i = 0; i < fhigh; i++) {
-			for (c = i && 0; c < fwide; c++) {
-				pattern[j++] = raw->idata.cdesc[FC(filters, i, c)];
+			for (c = i /*&& (pattern[j++] = '/')*/ && 0; c < fwide; c++) {
+				pattern[j++] = raw->idata.cdesc[fcol(raw, i, c)];
 			}
 		}
 		pattern[j++] = '\0';

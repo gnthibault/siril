@@ -1,16 +1,16 @@
 dnl Process this file with autoconf to produce a configure script.
 m4_define([siril_major_version], [0])
 m4_define([siril_minor_version], [9])
-m4_define([siril_micro_version], [8])
-m4_define([siril_prerelease_version], [rc3])
+m4_define([siril_micro_version], [9])
+m4_define([siril_prerelease_version], [alpha1])
 m4_define([siril_version],
           [siril_major_version.siril_minor_version.siril_micro_version])
 m4_define([siril_version_full],
           [siril_major_version().siril_minor_version().siril_micro_version()m4_bpatsubst(siril_prerelease_version(), [^], [-])])
 
 dnl change siril_version_full by siril_version for stable release
-dnl AC_INIT([siril], [siril_version_full],
-AC_INIT([siril], [siril_version],
+AC_INIT([siril], [siril_version_full],
+dnl AC_INIT([siril], [siril_version],
         [https://free-astro.org/bugs/view_all_bug_page.php],
         [siril],
         [https://free-astro.org/index.php/Siril/fr]) 
@@ -56,6 +56,8 @@ AC_CHECK_HEADERS([sys/vfs.h sys/vmount.h sys/statfs.h sys/statvfs.h sys/filio.h]
 
 # Checks for reallocarray function (used in kplot)
 AC_CHECK_FUNCS(reallocarray, AC_DEFINE([HAVE_REALLOCARRAY], [1], [reallocarray is available]), )
+# Checks for library functions.
+AC_CHECK_FUNCS(timegm gmtime_r)
 
 
 dnl Set PACKAGE_DOC_DIR in config.h.
@@ -144,6 +146,10 @@ PKG_CHECK_MODULES(FFMPEG, [libavformat libavutil >= 55.20 libavcodec libswscale 
 		  [AC_DEFINE([HAVE_FFMPEG], [1], [film export supported])],
 		  AC_MSG_WARN([ffmpeg libav libraries not found or too old. Not using film export formats.]))
 
+dnl checking libcurl
+PKG_CHECK_MODULES(CURL, [libcurl],
+		  [AC_DEFINE([HAVE_LIBCURL], [1], [Using Libcurl ])],
+		  AC_MSG_WARN([libcurl not found. Not using web interaction.]))
 
 dnl Compute the canonical host-system type variable (need config.guess and config.sub)
 AC_CANONICAL_HOST

@@ -67,8 +67,25 @@ static char *ser_timestamp(uint64_t timestamp) {
 	time_t secs = t1970_ms / 1000;
 	int ms = t1970_ms % 1000;
 	struct tm *t;
+#ifdef HAVE_GMTIME_R
+	struct tm t_;
+#endif
 
+#ifdef _WIN32
+	t = gmtime (&secs);
+#else
+#ifdef HAVE_GMTIME_R
+	t = gmtime_r (&secs, &t_);
+#else
 	t = gmtime(&secs);
+#endif /* HAVE_GMTIME_R */
+#endif /* _WIN32 */
+
+	/* If the gmtime() call has failed, "secs" is too big. */
+	if (t == NULL) {
+		free(str);
+		return NULL;
+	}
 
 	sprintf(str, "%04d-%02d-%02dT%02d:%02d:%02d.%03d", t->tm_year + 1900,
 			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, ms);
@@ -82,32 +99,39 @@ static int display_date(uint64_t timestamp, char *txt) {
 		return -1;
 
 	char *str = ser_timestamp(timestamp);
-	fprintf(stdout, "%s%s\n", txt, str);
-	free(str);
+	if (str) {
+		fprintf(stdout, "%s%s\n", txt, str);
+		free(str);
+	}
 	return 0;
 }
 
-/* Comes from http://linux.die.net/man/3/timegm
- * This is not thread-safe
- */
-static time_t __timegm(struct tm *tm) {
-#ifdef _WIN32
-	return _mkgmtime(tm);
-#else
-	time_t ret;
-	char *tz;
+static time_t mktime_utc(struct tm *tm) {
+	time_t retval;
 
-	tz = getenv("TZ");
-	setenv("TZ", "", 1);
-	tzset();
-	ret = mktime(tm);
-	if (tz)
-		setenv("TZ", tz, 1);
-	else
-		unsetenv("TZ");
-	tzset();
-	return ret;
+#ifndef HAVE_TIMEGM
+	static const gint days_before[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243,
+			273, 304, 334 };
 #endif
+
+#ifndef HAVE_TIMEGM
+	if (tm->tm_mon < 0 || tm->tm_mon > 11)
+		return (time_t) -1;
+
+	retval = (tm->tm_year - 70) * 365;
+	retval += (tm->tm_year - 68) / 4;
+	retval += days_before[tm->tm_mon] + tm->tm_mday - 1;
+
+	if (tm->tm_year % 4 == 0 && tm->tm_mon < 2)
+		retval -= 1;
+
+	retval = ((((retval * 24) + tm->tm_hour) * 60) + tm->tm_min) * 60
+			+ tm->tm_sec;
+#else
+	retval = timegm (tm);
+#endif /* !HAVE_TIMEGM */
+
+	return retval;
 }
 
 /* Convert FITS keyword DATE in a UNIX time format
@@ -140,7 +164,7 @@ static int FITS_date_key_to_Unix_time(char *date, uint64_t *utc,
 	timeinfo.tm_isdst = -1;
 
 	/* get UTC time from timeinfo* */
-	ut = __timegm(&timeinfo);
+	ut = mktime_utc(&timeinfo);
 	ut *= ticksPerSecond;
 	ut += epochTicks;
 	ut += ms * 10000;
@@ -792,8 +816,10 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	/* copy the SER timestamp to the fits */
 	if (ser_file->ts) {
 		char *timestamp = ser_timestamp(ser_file->ts[frame_no]);
-		g_snprintf(fit->date_obs, FLEN_VALUE, "%s", timestamp);
-		free(timestamp);
+		if (timestamp) {
+			g_snprintf(fit->date_obs, FLEN_VALUE, "%s", timestamp);
+			free(timestamp);
+		}
 	}
 
 	fits_flip_top_to_bottom(fit);
@@ -982,7 +1008,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 
 		demosaiced_buf = debayer_buffer(rawbuf, &debayer_area.w,
 				&debayer_area.h, com.debayer.bayer_inter,
-				com.debayer.bayer_pattern);
+				com.debayer.bayer_pattern, NULL);
 		free(rawbuf);
 		if (demosaiced_buf == NULL) {
 			return -1;
