@@ -1008,7 +1008,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 
 		demosaiced_buf = debayer_buffer(rawbuf, &debayer_area.w,
 				&debayer_area.h, com.debayer.bayer_inter,
-				com.debayer.bayer_pattern);
+				com.debayer.bayer_pattern, NULL);
 		free(rawbuf);
 		if (demosaiced_buf == NULL) {
 			return -1;

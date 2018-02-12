@@ -77,7 +77,10 @@ char *filter_pattern[] = {
 	"RGGB",
 	"BGGR",
 	"GBRG",
-	"GRBG"
+	"GRBG",
+	"RBGBRGGGRGGBGGBGGRBRGRBGGGBGGRGGRGGB", /* XTRANS */
+	"GBGGRGRGRBGBGBGGRGGRGGBGBGBRGRGRGGBG",
+	"GGRGGBGGBGGRBRGRBGGGBGGRGGRGGBRBGBRG"
 };
 
 enum {
@@ -766,7 +769,7 @@ int save_to_target_fits(fits *fit, const char *dest_filename) {
 static int retrieveBayerPattern(char *bayer) {
 	int i;
 
-	for (i = BAYER_FILTER_MIN; i < BAYER_FILTER_MAX; i++) {
+	for (i = 0; i < (sizeof(filter_pattern) / sizeof(char *)); i++) {
 		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
 			return i;
 		}
@@ -793,20 +796,29 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility) {
 		if (com.debayer.use_bayer_header) {
 			sensor_pattern bayer;
 			bayer = retrieveBayerPattern(fit->bayer_pattern);
-			if (bayer != com.debayer.bayer_pattern) {
-				if (bayer == BAYER_FILTER_NONE) {
-					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+
+			if (bayer <= BAYER_FILTER_MAX) {
+				if (bayer != com.debayer.bayer_pattern) {
+					if (bayer == BAYER_FILTER_NONE) {
+						siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+					}
+					else {
+						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+								"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
+						com.debayer.bayer_pattern = bayer;
+					}
 				}
-				else {
-					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
-							" from Bayer pattern in settings (%s). Overriding settings.\n"),
-							"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
-					com.debayer.bayer_pattern = bayer;
-				}
+			} else { /* FIXME: XTRANS CASE. TESTED FOR ONE FILE */
+				com.debayer.bayer_pattern = XTRANS_FILTER;
+				com.debayer.bayer_inter = XTRANS;
+				siril_log_color_message(_("XTRANS Sensor detected. Using special algorithm.\n"), "red");
 			}
 		}
-		if (com.debayer.bayer_pattern >= 0)
+		if (com.debayer.bayer_pattern >= BAYER_FILTER_MIN
+				&& com.debayer.bayer_pattern <= BAYER_FILTER_MAX) {
 			siril_log_message(_("Filter Pattern: %s\n"), filter_pattern[com.debayer.bayer_pattern]);
+		}
 
 		if (debayer(fit, com.debayer.bayer_inter)) {
 			siril_log_message(_("Cannot perform debayering\n"));

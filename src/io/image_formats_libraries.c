@@ -1101,8 +1101,35 @@ static int readraw(const char *name, fits *fit) {
 	return nbplanes;
 }
 
-#define FC(filters, row,col) \
+#define FC(filters, row, col) \
 	(filters >> ((((row) << 1 & 14) + ((col) & 1)) << 1) & 3)
+
+static const char filter[16][16] =
+{ { 2,1,1,3,2,3,2,0,3,2,3,0,1,2,1,0 },
+  { 0,3,0,2,0,1,3,1,0,1,1,2,0,3,3,2 },
+  { 2,3,3,2,3,1,1,3,3,1,2,1,2,0,0,3 },
+  { 0,1,0,1,0,2,0,2,2,0,3,0,1,3,2,1 },
+  { 3,1,1,2,0,1,0,2,1,3,1,3,0,1,3,0 },
+  { 2,0,0,3,3,2,3,1,2,0,2,0,3,2,2,1 },
+  { 2,3,3,1,2,1,2,1,2,1,1,2,3,0,0,1 },
+  { 1,0,0,2,3,0,0,3,0,3,0,3,2,1,2,3 },
+  { 2,3,3,1,1,2,1,0,3,2,3,0,2,3,1,3 },
+  { 1,0,2,0,3,0,3,2,0,1,1,2,0,1,0,2 },
+  { 0,1,1,3,3,2,2,1,1,3,3,0,2,1,3,2 },
+  { 2,3,2,0,0,1,3,0,2,0,1,2,3,0,1,0 },
+  { 1,3,1,2,3,2,3,2,0,2,0,1,1,0,3,0 },
+  { 0,2,0,3,1,0,0,1,1,3,3,2,3,2,2,1 },
+  { 2,1,3,2,3,1,2,1,0,3,0,2,0,2,0,2 },
+  { 0,3,1,0,0,2,0,3,2,1,3,1,1,3,1,3 } };
+
+static int fcol(libraw_data_t *raw, int row, int col) {
+	if (raw->idata.filters == 1)
+		return filter[(row + raw->rawdata.sizes.top_margin) & 15][(col
+				+ raw->rawdata.sizes.left_margin) & 15];
+	if (raw->idata.filters == 9)
+		return raw->idata.xtrans[(row + 6) % 6][(col + 6) % 6];
+	return FC(raw->idata.filters, row, col);
+}
 
 static int readraw_in_cfa(const char *name, fits *fit) {
 	libraw_data_t *raw = libraw_init(0);
@@ -1172,18 +1199,15 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 			fhigh = 4;
 		if ((filters ^ (filters >> 16)) & 0xffff)
 			fhigh = 8;
-		if ((filters == 1) /* Leaf Catchlight with 16x16 bayer matrix */
-				|| (filters == 9)) /* Fuji X-Trans (6x6 matrix) */ {
-			siril_log_message(_("This kind of RAW pictures is not supported.\n"));
-			libraw_recycle(raw);
-			libraw_close(raw);
-			return -1;
-		}
+		if (filters == 1) /* Leaf Catchlight with 16x16 bayer matrix */
+			fhigh = fwide = 16;
+		if (filters == 9) /* Fuji X-Trans (6x6 matrix) */
+			fhigh = fwide = 6;
 
 		j = 0;
 		for (i = 0; i < fhigh; i++) {
-			for (c = i && 0; c < fwide; c++) {
-				pattern[j++] = raw->idata.cdesc[FC(filters, i, c)];
+			for (c = i /*&& (pattern[j++] = '/')*/ && 0; c < fwide; c++) {
+				pattern[j++] = raw->idata.cdesc[fcol(raw, i, c)];
 			}
 		}
 		pattern[j++] = '\0';
