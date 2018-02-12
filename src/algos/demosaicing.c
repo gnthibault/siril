@@ -705,8 +705,9 @@ static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
 		for (col = 1; col < (width - 1); col ++) {
 			float sum[3] = { 0.f };
 
-			for (int v = -1; v <= 1; v++) {
-				for (int h = -1; h <= 1; h++) {
+			int v, h;
+			for (v = -1; v <= 1; v++) {
+				for (h = -1; h <= 1; h++) {
 					sum[fcol(row + v, col + h)] += bayer[(col + h) + (row + v) * width];
 				}
 			}
