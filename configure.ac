@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 m4_define([siril_major_version], [0])
 m4_define([siril_minor_version], [9])
-m4_define([siril_micro_version], [9])
-m4_define([siril_prerelease_version], [alpha1])
+m4_define([siril_micro_version], [8])
+m4_define([siril_prerelease_version], [003])
 m4_define([siril_version],
           [siril_major_version.siril_minor_version.siril_micro_version])
 m4_define([siril_version_full],
@@ -129,7 +129,7 @@ AC_CHECK_LIB(jpeg, jpeg_mem_src, [],
 	     AC_MSG_WARN([libjpeg not found. Not using JPEG importer and exporter.]))
 
 dnl check png lib
-PKG_CHECK_MODULES(LIBPNG, [libpng],
+PKG_CHECK_MODULES(LIBPNG, [libpng >= 1.6],
 		  [AC_DEFINE([HAVE_LIBPNG], [1], [Using PNG images])],
 		  AC_MSG_WARN([libpng not found. Not using PNG importer and exporter.]))
 

@@ -662,7 +662,7 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 	return 0;
 }
 
-#define fcol(row, col) xtrans[(row) % 6][(col) % 6]	/* Not thread safe */
+#define fcol(row, col) xtrans[(row) % 6][(col) % 6]
 
 /* Code from RAWTherapee:
  * It is a simple algorithm. Certainly not the best (probably the worst) but it works yet. */

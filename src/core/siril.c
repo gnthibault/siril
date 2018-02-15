@@ -991,8 +991,9 @@ gpointer seqpreprocess(gpointer p) {
 				set_progress_bar_data(msg, PROGRESS_RESET);
 				args->retval = 1;
 				if (com.seq.type == SEQ_SER) {
-					ser_close_file(new_ser_file);
+					ser_write_and_close(new_ser_file);
 					free(new_ser_file);
+					new_ser_file = NULL;
 				}
 				gdk_threads_add_idle(end_sequence_prepro, args);
 				return GINT_TO_POINTER(1);
@@ -1020,7 +1021,7 @@ gpointer seqpreprocess(gpointer p) {
 		free(fit);
 		// closing SER file if it applies
 		if (com.seq.type == SEQ_SER && (new_ser_file != NULL)) {
-			close(new_ser_file->fd);
+			ser_write_and_close(new_ser_file);
 			free(new_ser_file);
 			new_ser_file = NULL;
 		}

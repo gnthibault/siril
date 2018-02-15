@@ -26,6 +26,7 @@ typedef struct {
 	gint major_version;
 	gint minor_version;
 	gint micro_version;
+	gint patched_version;
 } version_number;
 
 struct _update_data {

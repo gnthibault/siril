@@ -167,8 +167,8 @@ int savebmp(const char *name, fits *fit) {
 	bmpinfoheader[27] = (unsigned char) (datasize >> 24);
 
 	char *filename = strdup(name);
-	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
-		filename = str_append(&filename, ".tif");
+	if (!ends_with(filename, ".bmp")) {
+		filename = str_append(&filename, ".bmp");
 	}
 
 	f = g_fopen(filename, "wb");

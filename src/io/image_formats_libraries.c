@@ -566,8 +566,9 @@ int readpng(const char *name, fits* fit) {
 	WORD *data;
 	FILE *f;
 
-	png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if(!png) {
+	png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL,
+			NULL);
+	if (!png) {
 		char *msg = siril_log_message(_("Sorry but Siril cannot open the file: %s.\n"), name);
 		show_dialog(msg, _("Error"), "gtk-dialog-error");
 		return -1;
@@ -590,87 +591,87 @@ int readpng(const char *name, fits* fit) {
 	bit_depth = png_get_bit_depth(png, info);
 
 	data = malloc(npixels * sizeof(WORD) * 3);
-	WORD *buf[3] = {data, data + npixels, data + npixels * 2};
+	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 
-	if(color_type == PNG_COLOR_TYPE_PALETTE)
+	if (color_type == PNG_COLOR_TYPE_PALETTE)
 		png_set_palette_to_rgb(png);
 
 	// PNG_COLOR_TYPE_GRAY_ALPHA is always 8 or 16bit depth.
-	if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
+	if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
 		png_set_expand_gray_1_2_4_to_8(png);
 
-	if(png_get_valid(png, info, PNG_INFO_tRNS))
+	if (png_get_valid(png, info, PNG_INFO_tRNS))
 		png_set_tRNS_to_alpha(png);
 
 	// These color_type don't have an alpha channel then fill it with 0xff.
-	if(color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_GRAY ||
-			color_type == PNG_COLOR_TYPE_PALETTE)
+	if (color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_GRAY
+			|| color_type == PNG_COLOR_TYPE_PALETTE)
 		png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
 
-	if(color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+	if (color_type == PNG_COLOR_TYPE_GRAY
+			|| color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
 		png_set_gray_to_rgb(png);
 
 	png_read_update_info(png, info);
 
-	row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
-	for(y = 0; y < height; y++) {
-		row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png,info));
+	row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
+	for (y = 0; y < height; y++) {
+		row_pointers[y] = (png_byte*) malloc(png_get_rowbytes(png, info));
 	}
 
 	png_read_image(png, row_pointers);
 
 	fclose(f);
-	
-	if (bit_depth == 16){			//in 16-bit: it is stored as RRGGBB
-		for (y=0; y<height; y++) {
+
+	if (bit_depth == 16) {			//in 16-bit: it is stored as RRGGBB
+		for (y = 0; y < height; y++) {
 			png_byte* row = row_pointers[y];
-			for (x=0; x<width; x++) {
-				png_byte* ptr = &(row[x*8]);
-				*buf[RLAYER]++ = ptr[0]*(UCHAR_MAX+1)+ptr[1];
-				*buf[GLAYER]++ = ptr[2]*(UCHAR_MAX+1)+ptr[3];
-				*buf[BLAYER]++ = ptr[4]*(UCHAR_MAX+1)+ptr[5];	
+			for (x = 0; x < width; x++) {
+				png_byte* ptr = &(row[x * 8]);
+				*buf[RLAYER]++ = ptr[0] * (UCHAR_MAX + 1) + ptr[1];
+				*buf[GLAYER]++ = ptr[2] * (UCHAR_MAX + 1) + ptr[3];
+				*buf[BLAYER]++ = ptr[4] * (UCHAR_MAX + 1) + ptr[5];
 			}
 		}
-	}
-	else{
-		for (y=0; y<height; y++) {
+	} else {
+		for (y = 0; y < height; y++) {
 			png_byte* row = row_pointers[y];
-			for (x=0; x<width; x++) {		
-				png_byte* ptr = &(row[x*4]);
+			for (x = 0; x < width; x++) {
+				png_byte* ptr = &(row[x * 4]);
 				*buf[RLAYER]++ = ptr[0];
 				*buf[GLAYER]++ = ptr[1];
 				*buf[BLAYER]++ = ptr[2];
 			}
 		}
 		fit->bitpix = BYTE_IMG;
-	}	
+	}
 	// We define the number of channel we have
-	switch(color_type){
+	switch (color_type) {
 	case PNG_COLOR_TYPE_RGB_ALPHA:
 	case PNG_COLOR_TYPE_RGB:
-		nbplanes=3;
+		nbplanes = 3;
 		break;
 	case PNG_COLOR_TYPE_GRAY_ALPHA:
 	case PNG_COLOR_TYPE_GRAY:
-		nbplanes=1;
+		nbplanes = 1;
 		break;
 	default:
-		nbplanes=0;	
+		nbplanes = 0;
 	}
-	
+
 	// free allocated memory
-	for (y=0; y<height; y++)
+	for (y = 0; y < height; y++)
 		free(row_pointers[y]);
 	free(row_pointers);
-	
-	if (data != NULL){
+
+	if (data != NULL) {
 		clearfits(fit);
 		fit->rx = width;
 		fit->ry = height;
 		fit->naxes[0] = width;
 		fit->naxes[1] = height;
 		fit->naxes[2] = nbplanes;
-		if (nbplanes==1)
+		if (nbplanes == 1)
 			fit->naxis = 2;
 		else
 			fit->naxis = 3;
@@ -685,19 +686,13 @@ int readpng(const char *name, fits* fit) {
 	mirrorx(fit, FALSE);
 	gchar *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
-						bit_depth, basename, fit->naxes[2], fit->rx, fit->ry);
+			bit_depth, basename, fit->naxes[2], fit->rx, fit->ry);
 	g_free(basename);
 
 	return nbplanes;
 }
 
 /* Code borrowed from SER Player */
-// Support as many libpng versions as required
-#if PNG_LIBPNG_VER_MAJOR==2
-#error "libpng 2.x.x is not supported"
-#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==7
-#error "libpng 1.7.x is not supported"
-#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==6
 
 // ------------------------------------------
 // Save PNG image (colour)
@@ -763,48 +758,6 @@ static int32_t save_mono_file(const char *filename, const WORD *p_image_data,
 
 	return ret;
 }
-
-#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==5
-#error "libpng 1.5.x is not supported"
-#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==4
-#error "libpng 1.4.x is not supported"
-#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==3
-#error "libpng 1.3.x is not supported"
-#elif PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==2
-
-// ------------------------------------------
-// Save PNG image (colour)
-// ------------------------------------------
-static int32_t save_colour_file(
-		const char *filename,
-		const WORD *p_image_data,
-		uint32_t width,
-		uint32_t height,
-		uint32_t bytes_per_sample)
-{
-	int32_t ret = -1;
-
-	return ret;
-}
-
-// ------------------------------------------
-// Save PNG image (mono B, G or R)
-// ------------------------------------------
-static int32_t save_mono_file(
-		const char *filename,
-		const WORD *p_image_data,
-		uint32_t width,
-		uint32_t height,
-		uint32_t bytes_per_sample)
-{
-	int32_t ret = -1;
-
-	return ret;
-}
-
-#else
-#error "Unsuported libpng version"
-#endif
 
 static WORD *fits_to_bgrbgr(fits *image) {
 	int ndata = image->rx * image->ry;
