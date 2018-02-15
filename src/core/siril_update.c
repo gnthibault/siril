@@ -70,6 +70,23 @@ static void init() {
 		exit(EXIT_FAILURE);
 }
 
+/**
+ * Check if the version is a patched version.
+ * patched version are named like that x.y.z.patch where patch only contains digits.
+ * if patch contains alpha char it is because that's an alpha or beta version. Not a patched one.
+ * @param version version to be tested
+ * @return 0 if the version is not patched. The version of the patch is returned otherwise.
+ */
+static gint check_for_patch(gchar *version) {
+	gint i = 0;
+
+	while (version[i]) {
+		if (g_ascii_isalpha(version[i])) return 0;
+		i++;
+	}
+	return (atoi(version));
+}
+
 static version_number get_current_version_number() {
 	gchar **fullVersionNumber;
 	version_number version;
@@ -78,7 +95,8 @@ static version_number get_current_version_number() {
 	version.major_version = atoi(fullVersionNumber[0]);
 	version.minor_version = atoi(fullVersionNumber[1]);
 	version.micro_version = atoi(fullVersionNumber[2]);
-	/* we discard string after '-' as we are only looking for stable release */
+	version.patched_version = (fullVersionNumber[3] == NULL) ? 0 : check_for_patch(fullVersionNumber[3]);
+
 	g_strfreev(fullVersionNumber);
 
 	return version;
@@ -108,12 +126,13 @@ static version_number get_last_version_number(gchar *buffer) {
 	/* on tags webpage, version has the following format: "0.9.8/"
 	 * First we remove the last char '/' */
 	v[strlen(v) - 1] = 0;
-	g_fprintf(stdout, "last version: %s\n", v);
+	g_fprintf(stdout, "last tagged version: %s\n", v);
 	fullVersionNumber = g_strsplit_set(v, ".-", -1);
 
 	version.major_version = atoi(fullVersionNumber[0]);
 	version.minor_version = atoi(fullVersionNumber[1]);
 	version.micro_version = atoi(fullVersionNumber[2]);
+	version.patched_version = (fullVersionNumber[3] == NULL) ? 0 : atoi(fullVersionNumber[3]);
 
 	g_strfreev(fullVersionNumber);
 	g_strfreev(token);
@@ -121,6 +140,12 @@ static version_number get_last_version_number(gchar *buffer) {
 	return version;
 }
 
+/**
+ * This function compare x1.y1.z1.patch1 vs x2.y2.z2.patch2
+ * @param v1 First version number to be tested
+ * @param v2 Second version number to be tested
+ * @return -1 if v1 < v2, 1 if v1 > v2 and 0 if v1 is equal to v2
+ */
 static int compare_version(version_number v1, version_number v2) {
 	if (v1.major_version < v2.major_version)
 		return -1;
@@ -136,6 +161,12 @@ static int compare_version(version_number v1, version_number v2) {
 				return -1;
 			else if (v1.micro_version > v2.micro_version)
 				return 1;
+			else {
+				if (v1.patched_version < v2.patched_version)
+					return -1;
+				else if (v1.patched_version > v2.patched_version)
+					return 1;
+			}
 		}
 	}
 	return 0;
