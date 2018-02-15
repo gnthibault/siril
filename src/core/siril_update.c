@@ -202,10 +202,13 @@ static gboolean end_update_idle(gpointer p) {
 
 		if (compare_version(current_version, last_version_available) < 0) {
 			msg = siril_log_message(_("New version is available. "
-					"You can download it at %s%d.%d.%d\n"), download_url,
-					last_version_available.major_version,
-					last_version_available.minor_version,
-					last_version_available.micro_version);
+											"You can download it at <a href=\"%s%d.%d.%d\">%s%d.%d.%d</a>\n"),
+							download_url, last_version_available.major_version,
+							last_version_available.minor_version,
+							last_version_available.micro_version,
+							download_url, last_version_available.major_version,
+							last_version_available.minor_version,
+							last_version_available.micro_version);
 		} else if (compare_version(current_version, last_version_available) > 0) {
 			msg = siril_log_message(_("No update check: this is a development version\n"));
 		} else {
