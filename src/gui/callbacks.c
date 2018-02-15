@@ -158,6 +158,7 @@ static gboolean show_dialog_idle(gpointer p) {
 	gtk_window_set_title(GTK_WINDOW(lookup_widget("dialog1")), args->title);
 	gtk_image_set_from_icon_name(image, args->icon, GTK_ICON_SIZE_DIALOG);
 	gtk_label_set_text(label, args->text);
+	gtk_label_set_use_markup (label, TRUE);
 	gtk_widget_show(lookup_widget("dialog1"));
 	gtk_window_present (GTK_WINDOW(lookup_widget("dialog1")));
 	free(args);
