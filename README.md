@@ -36,7 +36,7 @@ compilation time, or their support won't be compiled.
  * libffms2 for films import
  * libtiff (>= 4)
  * libjpeg or compatible libraries like libjpeg-turbo
- * libpng
+ * libpng (>= 1.6)
  * libavformat
  * libavutil >= 55.20
  * libavcodec
