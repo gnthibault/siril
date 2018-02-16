@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-07 10:14+0100\n"
-"PO-Revision-Date: 2018-01-15 00:00+0800\n"
+"POT-Creation-Date: 2018-02-15 13:07+0100\n"
+"PO-Revision-Date: 2018-02-16 18:46+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.5\n"
+"X-Generator: Poedit 2.0.6\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../src/gui/siril3.glade.h:1
@@ -604,7 +604,7 @@ msgstr "名称"
 msgid "No Selection"
 msgstr "无选择"
 
-#: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1339
+#: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1340
 msgid "Banding Reduction"
 msgstr "除去条纹"
 
@@ -1100,13 +1100,13 @@ msgstr "最近邻居法"
 msgid "Bilinear (default)"
 msgstr "双线性（缺省）"
 
-#: ../src/gui/siril3.glade.h:256 ../src/core/siril.c:1075
-#: ../src/core/siril.c:1115
+#: ../src/gui/siril3.glade.h:256 ../src/core/siril.c:1076
+#: ../src/core/siril.c:1116
 msgid "Pixel Area Relation"
 msgstr "像素区域关联法"
 
-#: ../src/gui/siril3.glade.h:257 ../src/core/siril.c:1078
-#: ../src/core/siril.c:1118
+#: ../src/gui/siril3.glade.h:257 ../src/core/siril.c:1079
+#: ../src/core/siril.c:1119
 msgid "Bicubic"
 msgstr "双三次插值"
 
@@ -1395,8 +1395,8 @@ msgstr "选择一种去马赛克的插值算法。"
 msgid "Debayer interpolation: "
 msgstr "Debayer插值算法: "
 
-#: ../src/gui/siril3.glade.h:325 ../src/core/siril.c:1072
-#: ../src/core/siril.c:1112
+#: ../src/gui/siril3.glade.h:325 ../src/core/siril.c:1073
+#: ../src/core/siril.c:1113
 msgid "Bilinear"
 msgstr "双线性"
 
@@ -1972,7 +1972,7 @@ msgstr "_帮助"
 
 #: ../src/gui/siril3.glade.h:460
 msgid "Check For Updates"
-msgstr ""
+msgstr "检查更新"
 
 #: ../src/gui/siril3.glade.h:461
 msgid ""
@@ -2457,11 +2457,11 @@ msgstr "预估"
 #, no-c-format
 msgid ""
 "Click on this button to evaluate the number of deviant pixels. If values are "
-"higher than 0.01% of the total of pixels, you will be encouraged to change "
+"higher than 1% of the total of pixels, you will be encouraged to change "
 "sigma values."
 msgstr ""
-"点此按钮将预估异常像素点。如果预估值所占总像素比例超过0.01%，建议用户更改"
-"sigma值。"
+"点此按钮将预估异常像素点。如果预估值所占总像素比例超过1%，建议用户更改sigma"
+"值。"
 
 #: ../src/gui/siril3.glade.h:572
 msgid "Cold: 0 px"
@@ -2624,7 +2624,16 @@ msgid ""
 "WARNING: the counterpart of this technic is that the amount of memory and "
 "disk space needed to create and process drizzled images is multiplied by the "
 "square of the Drizzle factor."
-msgstr "对当前队列启用simplified drizzle算法。"
+msgstr ""
+"对当前队列启用simplified drizzle算法。一个“升级”操作(x2)会被应用于对齐帧或是"
+"叠加过程中（取决于对齐算法的选择），这将导致图像的分辨率被放大。\n"
+"本选项适用于欠采样图像，例如望远镜焦距相对于像素大小太小。当FWHM小于2像素时，"
+"该系统可被认为是欠采样。\n"
+"本算法的正式名称为超分辨率叠加，不过有个更加通俗的名字是“Simplified Drizzle "
+"x2”。\n"
+"\n"
+"警告：应用本选项会造成更高分辨率的图像被生成，因此其对计算机内存和磁盘空间有"
+"相当于Drizzle因子的平方倍数量的需求。"
 
 #: ../src/gui/siril3.glade.h:610 ../src/registration/registration.c:1023
 #: ../src/registration/registration.c:1036
@@ -3353,8 +3362,8 @@ msgstr "饱和度增强：执行中...\n"
 #: ../src/algos/cosmetic_correction.c:187
 #: ../src/algos/cosmetic_correction.c:400 ../src/algos/star_finder.c:48
 #: ../src/core/command.c:1412 ../src/core/siril.c:477 ../src/core/siril.c:761
-#: ../src/core/siril.c:900 ../src/core/siril.c:1043 ../src/core/siril.c:1403
-#: ../src/core/siril.c:1485 ../src/core/siril.c:1594 ../src/gui/histogram.c:696
+#: ../src/core/siril.c:900 ../src/core/siril.c:1044 ../src/core/siril.c:1404
+#: ../src/core/siril.c:1486 ../src/core/siril.c:1595 ../src/gui/histogram.c:696
 #: ../src/gui/statistics_list.c:308 ../src/io/sequence.c:1288
 msgid "Error: no data computed.\n"
 msgstr "Error: no data computed.\n"
@@ -3388,14 +3397,14 @@ msgstr "色彩校准：处理中...\n"
 #: ../src/algos/cosmetic_correction.c:311
 #, c-format
 msgid "Image %d: %ld pixels corrected (%ld + %ld)\n"
-msgstr "Image %d: %ld pixels corrected (%ld + %ld)\n"
+msgstr "图像 %d: %ld 像素被修正 (%ld + %ld)\n"
 
 #. can it be done here in case there is no thread?
 #: ../src/algos/cosmetic_correction.c:347 ../src/core/siril.c:925
 #: ../src/core/siril.c:964
 #, c-format
 msgid "%ld pixels corrected (%ld + %ld)\n"
-msgstr "%ld pixels corrected (%ld + %ld)\n"
+msgstr "%ld 像素被修正 (%ld + %ld)\n"
 
 #: ../src/algos/cosmetic_correction.c:365
 msgid "Cosmetic Correction: processing...\n"
@@ -3528,7 +3537,7 @@ msgstr "必须先期载入至少两个通道！\n"
 #: ../src/compositing/compositing.c:546 ../src/gui/callbacks.c:4985
 #: ../src/gui/callbacks.c:5029 ../src/gui/callbacks.c:5274
 #: ../src/gui/callbacks.c:5283 ../src/gui/callbacks.c:5341
-#: ../src/gui/plot.c:281 ../src/io/conversion.c:521
+#: ../src/gui/plot.c:281 ../src/io/conversion.c:524
 #: ../src/io/image_formats_libraries.c:73
 #: ../src/io/image_formats_libraries.c:229
 #: ../src/registration/registration.c:1160
@@ -3571,7 +3580,7 @@ msgstr "Readjusting layer %d to %g times bright\n"
 #: ../src/gui/callbacks.c:4394 ../src/gui/callbacks.c:4591
 #: ../src/gui/callbacks.c:4928 ../src/gui/callbacks.c:5075
 #: ../src/gui/callbacks.c:5380 ../src/gui/callbacks.c:5558
-#: ../src/io/conversion.c:490 ../src/registration/registration.c:1149
+#: ../src/io/conversion.c:493 ../src/registration/registration.c:1149
 #: ../src/stacking/stacking.c:1457 ../src/stacking/stacking.c:1579
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Another task is already in progress, ignoring new request.\n"
@@ -3755,7 +3764,7 @@ msgstr "错误产生，请检查您的输入文件。\n"
 
 #: ../src/core/command.c:1167
 msgid "The size of the kernel MUST be odd and greater than 1.\n"
-msgstr "The size of the kernel MUST be odd and greater than 1.\n"
+msgstr "内核大小必须为大于1的奇数。\n"
 
 #: ../src/core/command.c:1172
 msgid "Modulation value MUST be between 0 and 1\n"
@@ -3954,8 +3963,8 @@ msgstr "图像不具有统一大小 (w = %d|%d, h = %d|%d)\n"
 #: ../src/gui/callbacks.c:4643 ../src/gui/callbacks.c:4664
 #: ../src/gui/callbacks.c:5091 ../src/gui/callbacks.c:5097
 #: ../src/gui/callbacks.c:5122 ../src/gui/plot.c:379 ../src/gui/plot.c:438
-#: ../src/gui/PSF_list.c:150 ../src/io/conversion.c:527
-#: ../src/io/conversion.c:597 ../src/io/image_format_fits.c:247
+#: ../src/gui/PSF_list.c:150 ../src/io/conversion.c:530
+#: ../src/io/conversion.c:600 ../src/io/image_format_fits.c:247
 #: ../src/io/image_format_fits.c:255 ../src/io/image_format_fits.c:278
 #: ../src/io/image_format_fits.c:292 ../src/io/image_format_fits.c:307
 #: ../src/io/image_format_fits.c:409 ../src/io/image_format_fits.c:418
@@ -3979,7 +3988,7 @@ msgstr "图像不具有统一大小 (w = %d|%d, h = %d|%d)\n"
 #: ../src/io/image_formats_libraries.c:348
 #: ../src/io/image_formats_libraries.c:412
 #: ../src/io/image_formats_libraries.c:485
-#: ../src/io/image_formats_libraries.c:572 ../src/io/single_image.c:113
+#: ../src/io/image_formats_libraries.c:573 ../src/io/single_image.c:113
 #: ../src/io/single_image.c:156 ../src/io/single_image.c:160
 #: ../src/registration/registration.c:1193 ../src/stacking/normalization.c:112
 #: ../src/stacking/stacking.c:115 ../src/stacking/stacking.c:793
@@ -4046,96 +4055,96 @@ msgstr "读取并且预处理图像 %d/%d (%s)"
 msgid "Could not read one of the raw files: %s. Aborting preprocessing."
 msgstr "无法读取raw文件：%s 预处理异常终止。"
 
-#: ../src/core/siril.c:1068 ../src/core/siril.c:1108
+#: ../src/core/siril.c:1069 ../src/core/siril.c:1109
 msgid "Nearest-Neighbor"
 msgstr "最近邻居法"
 
-#: ../src/core/siril.c:1081 ../src/core/siril.c:1121
+#: ../src/core/siril.c:1082 ../src/core/siril.c:1122
 msgid "Lanczos4"
 msgstr "Lanczos4"
 
-#: ../src/core/siril.c:1085
+#: ../src/core/siril.c:1086
 #, c-format
 msgid "Resample (%s interpolation): processing...\n"
 msgstr "重采样（%s 插值）：处理中...\n"
 
-#: ../src/core/siril.c:1105
+#: ../src/core/siril.c:1106
 msgid "No"
 msgstr "无"
 
-#: ../src/core/siril.c:1126
+#: ../src/core/siril.c:1127
 #, c-format
 msgid "Rotation (%s interpolation, angle=%g): processing...\n"
 msgstr "Rotation (%s interpolation, angle=%g): processing...\n"
 
-#: ../src/core/siril.c:1226
+#: ../src/core/siril.c:1227
 msgid "Median Filter: processing...\n"
 msgstr "中位数滤镜：处理中...\n"
 
-#: ../src/core/siril.c:1231
+#: ../src/core/siril.c:1232
 #, c-format
 msgid "Iteration #%d...\n"
 msgstr "迭代 #%d...\n"
 
-#: ../src/core/siril.c:1374
+#: ../src/core/siril.c:1375
 msgid "Banding Reducing: processing...\n"
 msgstr "除去条纹：处理中...\n"
 
-#: ../src/core/siril.c:1533
+#: ../src/core/siril.c:1534
 msgid "backgroundnoise: Error, no data computed\n"
 msgstr "背景噪声：错误，无可用数据\n"
 
-#: ../src/core/siril.c:1543
+#: ../src/core/siril.c:1544
 msgid "backgroundnoise: does not converge\n"
 msgstr "背景噪声：无法汇聚\n"
 
-#: ../src/core/siril.c:1564
+#: ../src/core/siril.c:1565
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
 msgstr "背景噪声值（通道：#%d）: %0.3lf (%.3e)\n"
 
-#: ../src/core/siril.c:1581
+#: ../src/core/siril.c:1582
 msgid "Noise standard deviation: calculating...\n"
 msgstr "噪声标准背离：计算中...\n"
 
-#: ../src/core/siril.c:1611
+#: ../src/core/siril.c:1612
 msgid "Lucy-Richardson deconvolution: processing...\n"
 msgstr "Lucy-Richardson反卷积：执行中...\n"
 
-#: ../src/core/siril_update.c:154
+#: ../src/core/siril_update.c:191
 msgid "Unable to check updates !! Please Check your network connection\n"
-msgstr ""
+msgstr "无法检查更新！请检查您的网络连接\n"
 
-#: ../src/core/siril_update.c:158
+#: ../src/core/siril_update.c:195
 #, c-format
 msgid "Unable to check updates !! Error: %ld\n"
-msgstr ""
+msgstr "无法检查更新！错误： %ld\n"
 
-#: ../src/core/siril_update.c:167
+#: ../src/core/siril_update.c:204
 #, c-format
 msgid "New version is available. You can download it at %s%d.%d.%d\n"
-msgstr ""
+msgstr "发现新版本。请到此处下载更新 %s%d.%d.%d\n"
 
-#: ../src/core/siril_update.c:173
+#: ../src/core/siril_update.c:210
 msgid "No update check: this is a development version\n"
-msgstr ""
+msgstr "无法检查更新：这是一个测试版软件\n"
 
-#: ../src/core/siril_update.c:175
+#: ../src/core/siril_update.c:212
 msgid "Siril is up to date\n"
-msgstr ""
+msgstr "Siril已是最新版\n"
 
-#: ../src/core/siril_update.c:179
+#: ../src/core/siril_update.c:216
 msgid "Software Update"
-msgstr ""
-
-#: ../src/core/siril_update.c:246
-#, c-format
-msgid "Error: %ld. Wait %us before retry\n"
-msgstr ""
+msgstr "软件更新"
 
 #: ../src/core/siril_update.c:283
+#, c-format
+msgid "Error: %ld. Wait %us before retry\n"
+msgstr "错误： %ld. 等待 %u秒后再重试\n"
+
+#: ../src/core/siril_update.c:320
 msgid "Looking for updates..."
-msgstr ""
+msgstr "查询更新…"
 
 #: ../src/core/undo.c:50
 #, c-format
@@ -4881,86 +4890,86 @@ msgstr "所选区域尺寸－像素: (%d,%d)"
 msgid "No selection"
 msgstr "无选择"
 
-#: ../src/io/conversion.c:302
+#: ../src/io/conversion.c:305
 msgid "BMP images, "
 msgstr "BMP图像， "
 
-#: ../src/io/conversion.c:304
+#: ../src/io/conversion.c:307
 msgid "PIC images (IRIS), "
 msgstr "PIC图像(IRIS)， "
 
-#: ../src/io/conversion.c:306
+#: ../src/io/conversion.c:309
 msgid "PGM and PPM binary images"
 msgstr "PGM和PPM二进制图像"
 
-#: ../src/io/conversion.c:330
+#: ../src/io/conversion.c:333
 msgid "RAW images"
 msgstr "RAW图像"
 
-#: ../src/io/conversion.c:345
+#: ../src/io/conversion.c:348
 msgid "FITS-CFA images"
 msgstr "FITS-CFA图像"
 
-#: ../src/io/conversion.c:350
+#: ../src/io/conversion.c:353
 msgid "Films"
 msgstr "视频"
 
-#: ../src/io/conversion.c:355
+#: ../src/io/conversion.c:358
 msgid "SER sequences"
 msgstr "SER队列"
 
-#: ../src/io/conversion.c:361
+#: ../src/io/conversion.c:364
 msgid "TIFF images"
 msgstr "TIFF图像"
 
-#: ../src/io/conversion.c:369
+#: ../src/io/conversion.c:372
 msgid "JPG images"
 msgstr "JPG图像"
 
-#: ../src/io/conversion.c:377
+#: ../src/io/conversion.c:380
 msgid "PNG images"
 msgstr "PNG图像"
 
-#: ../src/io/conversion.c:386
+#: ../src/io/conversion.c:389
 #, c-format
 msgid "Supported file types: %s\n"
 msgstr "支持的文件类型: %s\n"
 
-#: ../src/io/conversion.c:509
+#: ../src/io/conversion.c:512
 msgid "Conversion: processing...\n"
 msgstr "转化：处理中...\n"
 
-#: ../src/io/conversion.c:520
+#: ../src/io/conversion.c:523
 msgid "Conversion: no working directory set.\n"
 msgstr "转化：工作目录未设置。\n"
 
-#: ../src/io/conversion.c:526
+#: ../src/io/conversion.c:529
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "转化：无法打开工作目录 %s.\n"
 
-#: ../src/io/conversion.c:559
+#: ../src/io/conversion.c:562
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
 msgstr "SER输出将获得超过新建单通道图像的优先权。\n"
 
-#: ../src/io/conversion.c:565 ../src/io/conversion.c:617
+#: ../src/io/conversion.c:568 ../src/io/conversion.c:620
 #: ../src/io/sequence.c:1215 ../src/io/sequence_export.c:104
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "创建SER文件失败，异常终止。\n"
 
-#: ../src/io/conversion.c:582 ../src/io/conversion.c:583
+#: ../src/io/conversion.c:585 ../src/io/conversion.c:586
 #, c-format
 msgid "Converting %s..."
 msgstr "转化 %s..."
 
-#: ../src/io/conversion.c:589
+#: ../src/io/conversion.c:592
 #, c-format
 msgid "FILETYPE IS NOT SUPPORTED, CANNOT CONVERT: %s\n"
 msgstr "不被支持的文件类型，无法转化：%s\n"
 
-#: ../src/io/conversion.c:590
+#: ../src/io/conversion.c:593
 #, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -4975,69 +4984,72 @@ msgstr ""
 "如果确认无错，那么你需要安装第三方软件来激活这种文件类型，详见README\n"
 "如果你所试图载入的文件类型在支持列表内，那么可以向开发团队提交一个缺陷报告。"
 
-#: ../src/io/conversion.c:609
+#: ../src/io/conversion.c:612
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Error while opening film %s, aborting.\n"
 
-#: ../src/io/conversion.c:626
+#: ../src/io/conversion.c:629
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Error while reading frame %d from %s, aborting.\n"
 
-#: ../src/io/conversion.c:638 ../src/io/conversion.c:671
+#: ../src/io/conversion.c:641 ../src/io/conversion.c:674
 #: ../src/io/sequence.c:1243 ../src/io/sequence_export.c:314
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Error while converting to SER (no space left?)\n"
 
-#: ../src/io/conversion.c:646 ../src/io/conversion.c:677
+#: ../src/io/conversion.c:649 ../src/io/conversion.c:680
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr "Error while converting to FITS (no space left?)\n"
 
-#: ../src/io/conversion.c:661
+#: ../src/io/conversion.c:664
 msgid "Converting from SER is not yet supported\n"
 msgstr "Converting from SER is not yet supported\n"
 
-#: ../src/io/conversion.c:734
+#: ../src/io/conversion.c:737
 msgid ""
 "Saving to 3 FITS files cannot be done because the source image does not have "
 "three channels\n"
 msgstr "保存为3个FITS文件无法执行，因为源图像没有包含三个通道\n"
 
-#: ../src/io/conversion.c:787
+#: ../src/io/conversion.c:790
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "在超过一个通道的图像上无法执行debayer\n"
 
-#: ../src/io/conversion.c:798 ../src/io/ser.c:771 ../src/io/ser.c:977
+#: ../src/io/conversion.c:803 ../src/io/ser.c:771 ../src/io/ser.c:977
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
-#: ../src/io/conversion.c:801 ../src/io/ser.c:775 ../src/io/ser.c:981
+#: ../src/io/conversion.c:806 ../src/io/ser.c:775 ../src/io/ser.c:981
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
 "settings (%s). Overriding settings.\n"
 msgstr ""
-"Bayer pattern found in header (%s) is different from Bayer pattern in "
-"settings (%s). Overriding settings.\n"
+"文件头中含有的拜耳滤镜排列模式 (%s) 不同于设置中的排列 (%s)。 设置被覆盖。\n"
 
-#: ../src/io/conversion.c:809
+#: ../src/io/conversion.c:815
+msgid "XTRANS Sensor detected. Using special algorithm.\n"
+msgstr "发现XTRANS传感器。特殊算法将被采用。\n"
+
+#: ../src/io/conversion.c:820
 #, c-format
 msgid "Filter Pattern: %s\n"
-msgstr "Filter Pattern: %s\n"
+msgstr "拜耳阵列模式： %s\n"
 
-#: ../src/io/conversion.c:812
+#: ../src/io/conversion.c:824
 msgid "Cannot perform debayering\n"
 msgstr "无法执行debayer\n"
 
-#: ../src/io/conversion.c:881
+#: ../src/io/conversion.c:893
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
 msgstr "将一个队列文件转化为单个FITS文件的请求是违法的\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:886
+#: ../src/io/conversion.c:898
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "文件打开错误 %s: 文件类型不支持。\n"
@@ -5263,7 +5275,7 @@ msgid "Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 
 #: ../src/io/image_formats_libraries.c:411
-#: ../src/io/image_formats_libraries.c:571
+#: ../src/io/image_formats_libraries.c:572
 #, c-format
 msgid "Sorry but Siril cannot open the file: %s.\n"
 msgstr "抱歉，Siril无法打开文件：%s\n"
@@ -5282,81 +5294,75 @@ msgstr "Siril无法创建JPG文件。\n"
 msgid "Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"
 msgstr "Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/image_formats_libraries.c:687
+#: ../src/io/image_formats_libraries.c:688
 #, c-format
 msgid "Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/image_formats_libraries.c:844
-#, fuzzy, c-format
+#: ../src/io/image_formats_libraries.c:797
+#, c-format
 msgid "Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"
-msgstr "Saving BMP: file %s, %ld layer(s), %ux%u pixels\n"
+msgstr "Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/image_formats_libraries.c:942
+#: ../src/io/image_formats_libraries.c:895
 #, c-format
 msgid "Error in libraw %s\n"
 msgstr "Error in libraw %s\n"
 
-#: ../src/io/image_formats_libraries.c:949
+#: ../src/io/image_formats_libraries.c:902
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%gs)\n"
 msgstr "Decoding %s %s file (ISO=%g, Exposure=%gs)\n"
 
-#: ../src/io/image_formats_libraries.c:952
+#: ../src/io/image_formats_libraries.c:905
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
 msgstr "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
 
-#: ../src/io/image_formats_libraries.c:972
-#: ../src/io/image_formats_libraries.c:981
+#: ../src/io/image_formats_libraries.c:925
+#: ../src/io/image_formats_libraries.c:934
 #, c-format
 msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Daylight multipliers: %f, %f, %f\n"
 
-#: ../src/io/image_formats_libraries.c:988
+#: ../src/io/image_formats_libraries.c:941
 msgid "Bilinear interpolation...\n"
 msgstr "双线性插值…\n"
 
-#: ../src/io/image_formats_libraries.c:992
+#: ../src/io/image_formats_libraries.c:945
 msgid "VNG interpolation...\n"
 msgstr "VNG插值...\n"
 
-#: ../src/io/image_formats_libraries.c:996
+#: ../src/io/image_formats_libraries.c:949
 msgid "PPG interpolation...\n"
 msgstr "PPG插值...\n"
 
-#: ../src/io/image_formats_libraries.c:1001
+#: ../src/io/image_formats_libraries.c:954
 msgid "AHD interpolation...\n"
 msgstr "AHD插值…\n"
 
-#: ../src/io/image_formats_libraries.c:1134
+#: ../src/io/image_formats_libraries.c:1114
 msgid ""
 "Siril cannot open this file in CFA mode (no data available). Try to switch "
 "into RGB.\n"
 msgstr "Siril无法以CFA模式打开此文件（无可用数据）。请尝试使用RGB。\n"
 
-#: ../src/io/image_formats_libraries.c:1161
+#: ../src/io/image_formats_libraries.c:1141
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 msgstr "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 
-#: ../src/io/image_formats_libraries.c:1164
+#: ../src/io/image_formats_libraries.c:1144
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 msgstr "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 
-#. Leaf Catchlight with 16x16 bayer matrix
-#. Fuji X-Trans (6x6 matrix)
-#: ../src/io/image_formats_libraries.c:1177
-msgid "This kind of RAW pictures is not supported.\n"
-msgstr "该类型RAW文件不被支持。\n"
-
-#: ../src/io/image_formats_libraries.c:1190
+#: ../src/io/image_formats_libraries.c:1167
 #, c-format
 msgid "Bayer pattern: %s\n"
 msgstr "拜耳阵列：%s\n"
 
-#: ../src/io/image_formats_libraries.c:1260
+#: ../src/io/image_formats_libraries.c:1237
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
@@ -5772,7 +5778,7 @@ msgstr "Registration PSF: failed to compute PSF for reference frame at least\n"
 #: ../src/registration/registration.c:483
 #, c-format
 msgid "Best frame: #%d with fwhm=%.3g.\n"
-msgstr "Best frame: #%d with fwhm=%.3g.\n"
+msgstr "最佳图像： #%d with fwhm=%.3g.\n"
 
 #: ../src/registration/registration.c:493
 msgid "Matching stars: done\n"
@@ -5786,7 +5792,7 @@ msgstr "%d pair matches.\n"
 #: ../src/registration/registration.c:496
 #, c-format
 msgid "Inliers:%*.3f\n"
-msgstr "内层：%*.3f\n"
+msgstr "Inliers:%*.3f\n"
 
 #: ../src/registration/registration.c:502
 #, c-format
@@ -5806,17 +5812,17 @@ msgstr "缩放：%*.3f\n"
 #: ../src/registration/registration.c:508
 #, c-format
 msgid "rotation:%+*.2f deg\n"
-msgstr "rotation:%+*.2f deg\n"
+msgstr "旋转：%+*.2f 度\n"
 
 #: ../src/registration/registration.c:513
 #, c-format
 msgid "dx:%+*.2f px\n"
-msgstr "dx:%+*.2f px\n"
+msgstr "x轴平移：%+*.2f px\n"
 
 #: ../src/registration/registration.c:514
 #, c-format
 msgid "dy:%+*.2f px\n"
-msgstr "dy:%+*.2f px\n"
+msgstr "y轴平移：%+*.2f px\n"
 
 #: ../src/registration/registration.c:515
 #: ../src/registration/registration.c:627
@@ -5856,7 +5862,7 @@ msgstr "第%d帧：\n"
 #: ../src/registration/registration.c:694
 #, c-format
 msgid "Not enough stars. Image %d skipped\n"
-msgstr "Not enough stars. Image %d skipped\n"
+msgstr "没有足够的星点。图像 %d 被跳过\n"
 
 #: ../src/registration/registration.c:703
 #, c-format
@@ -5965,7 +5971,7 @@ msgstr "Super-pixel is not handled yet for on the fly SER stacking\n"
 #. no image has been loaded
 #: ../src/stacking/stacking.c:221
 msgid "Median stack error: uninitialized sequence\n"
-msgstr "Median stack error: uninitialized sequence\n"
+msgstr "中位数叠加错误：队列未初始化\n"
 
 #: ../src/stacking/stacking.c:268 ../src/stacking/stacking.c:946
 msgid "Your version of cfitsio does not support multi-threading\n"
@@ -6031,7 +6037,7 @@ msgstr "叠加：无法读取帧，异常中止\n"
 
 #: ../src/stacking/stacking.c:621
 msgid "Stacking: image in sequence doesn't has the same dimensions\n"
-msgstr "Stacking: image in sequence doesn't has the same dimensions\n"
+msgstr "叠加：队列中的图像尺寸不一致\n"
 
 #: ../src/stacking/stacking.c:695
 msgid "Stacking failed. Check the log."
@@ -6213,6 +6219,8 @@ msgid ""
 "Warning: some images don't have FWHM information available for best images "
 "selection, using only available data (%d images on %d).\n"
 msgstr ""
+"警告：一些图像不含有可用于最佳图像选择的有效的FWHM信息 ，仅有效数据被使用 "
+"(%d images on %d).\n"
 
 #: ../src/stacking/stacking.c:1941
 #, c-format
@@ -6260,7 +6268,10 @@ msgstr "基于品质"
 
 #: ../src/stacking/stacking.c:2149
 msgid "Up-scaling sequence for stacking"
-msgstr "超采样叠加"
+msgstr "超分辨率叠加"
+
+#~ msgid "This kind of RAW pictures is not supported.\n"
+#~ msgstr "该类型RAW文件不被支持。\n"
 
 #~ msgid "FITS..."
 #~ msgstr "FITS..."
