@@ -155,6 +155,7 @@ sequence * readseqfile(const char *name){
 						&(stats->max));
 				if (nb_tokens == 12) {
 					add_stats_to_seq(seq, i, 0, stats);
+					free_stats(stats);	// we unreference it here
 				} else {
 					free(stats);
 					if (nb_tokens != 2) {
@@ -313,6 +314,7 @@ sequence * readseqfile(const char *name){
 						&(stats->bgnoise));
 				if (nb_tokens == 15) {
 					add_stats_to_seq(seq, image, current_layer, stats);
+					free_stats(stats);	// we unreference it here
 				} else {
 					free(stats);
 					fprintf(stderr, "readseqfile: sequence file format error: %s\n",line);

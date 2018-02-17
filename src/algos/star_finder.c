@@ -52,9 +52,7 @@ static WORD Compute_threshold(fits *fit, double starfinder, int layer, WORD *nor
 	threshold = (WORD) stat->median + starfinder * (WORD) stat->sigma;
 	*norm = (WORD) stat->normValue;
 	*bg = stat->median;
-//	printf("Threshold = %d\n", threshold);
-	if (!stat->has_internal_ref)
-		free(stat);
+	free_stats(stat);
 
 	return threshold;
 }

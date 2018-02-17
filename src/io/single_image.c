@@ -225,8 +225,8 @@ void open_single_image_from_gfit(char *realname) {
 
 /* searches the image for minimum and maximum pixel value, on each layer
  * the values are stored in fit->min[layer] and fit->max[layer] */
-//TODO: TO REWRITE WITH REDUCE
-int image_find_minmax(fits *fit, int force_minmax){
+//TODO: TO REWRITE WITH REDUCE or replace with fit->stats, which one is the fastest?
+int image_find_minmax(fits *fit, int force_minmax) {
 	int i, layer;
 
 	/* this should only be done once per image */

@@ -1435,8 +1435,7 @@ int process_stat(int nb){
 						"AvgDev: %0.1lf, Min: %0.1lf, Max: %0.1lf\n"),
 				layername, stat->mean, stat->median, stat->sigma,
 				stat->avgDev, stat->min, stat->max);
-		if (!stat->has_internal_ref)
-			free(stat);
+		free_stats(stat);
 	}
 	return 0;
 }

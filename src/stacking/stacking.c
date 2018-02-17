@@ -2155,7 +2155,6 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
 
-
 	generic_sequence_worker(args);
 	int retval = args->retval;
 	free(upargs);

@@ -738,8 +738,7 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 
 	}
 	for (i = 0; i < n; ++i)
-		if (!stat[i]->has_internal_ref)
-			free(stat[i]);
+		free_stats(stat[i]);
 	return m;
 }
 

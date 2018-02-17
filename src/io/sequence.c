@@ -969,16 +969,17 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 	if (seq == NULL) return;
 	if (seq->nb_layers > 0 && (seq->regparam || seq->stats)) {
 		for (i = 0; i < seq->nb_layers; i++) {
-			if ((seq->regparam && seq->regparam[i]) || (seq->stats && seq->stats[i])) {
+			if ((seq->regparam && seq->regparam[i]) ||
+					(seq->stats && seq->stats[i])) {
 				for (j = 0; j < seq->number; j++) {
 					if (seq->regparam && seq->regparam[i] &&
 							seq->regparam[i][j].fwhm_data &&
 							(seq->photometry[0] != NULL &&
 							 seq->regparam[i][j].fwhm_data != seq->photometry[0][j])) // avoid double free
 						free(seq->regparam[i][j].fwhm_data);
-					if (seq->stats && seq->stats[i] &&
-							seq->stats[i][j])
-						free(seq->stats[i][j]);
+
+					if (seq->stats && seq->stats[i] && seq->stats[i][j])
+						free_stats(seq->stats[i][j]);
 				}
 				if (seq->regparam && seq->regparam[i])
 					free(seq->regparam[i]);

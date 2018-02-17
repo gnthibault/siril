@@ -224,8 +224,7 @@ int sub_background(fits* image, fits* background, int layer) {
 	}
 
 	// We free memory
-	if (!stat->has_internal_ref)
-		free(stat);
+	free_stats(stat);
 	free(pxl_image);
 	free(pxl_bkg);
 	return 0;
@@ -480,8 +479,7 @@ double contrast(fits* fit, int layer) {
 		return -1.0;
 	}
 	double mean = stat->mean;
-	if (!stat->has_internal_ref)
-		free(stat);
+	free_stats(stat);
 
 	for (i = 0; i < fit->rx * fit->ry; i++)
 		contrast += SQR((double )buf[i] - mean);
@@ -766,8 +764,7 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 		}
 		noise += stat->bgnoise;
 		//printf("noise=%lf, k=%lf\n", noise, k);
-		if (!stat->has_internal_ref)
-			free(stat);
+		free_stats(stat);
 	}
 	clearfits(dark_tmp);
 	clearfits(fit_tmp);
@@ -907,8 +904,7 @@ gpointer seqpreprocess(gpointer p) {
 			args->normalisation = stat->mean;
 			siril_log_message(_("Normalisation value auto evaluated: %.2lf\n"),
 					args->normalisation);
-			if (!stat->has_internal_ref)
-				free(stat);
+			free_stats(stat);
 		}
 	}
 
@@ -1050,9 +1046,7 @@ double background(fits* fit, int reqlayer, rectangle *selection) {
 		return 0.0;
 	}
 	bg = stat->median;
-
-	if (!stat->has_internal_ref)
-		free(stat);
+	free_stats(stat);
 	return bg;
 }
 
@@ -1413,20 +1407,18 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 		double *rowvalue = calloc(fit->ry, sizeof(double));
 		if (rowvalue == NULL) {
 			fprintf(stderr, "BandingEngine: error allocating data\n");
-			if (!stat->has_internal_ref)
-				free(stat);
+			free_stats(stat);
 			return 1;
 		}
 		if (protect_highlights) {
 			globalsigma = stat->mad * MAD_NORM;
 		}
+		free_stats(stat);
 		for (row = 0; row < fit->ry; row++) {
 			line = fit->pdata[chan] + row * fit->rx;
 			WORD *cpyline = calloc(fit->rx, sizeof(WORD));
 			if (cpyline == NULL) {
 				fprintf(stderr, "BandingEngine: error allocating data\n");
-				if (!stat->has_internal_ref)
-					free(stat);
 				free(rowvalue);
 				return 1;
 			}
@@ -1454,8 +1446,6 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 				fixline[i] = round_to_WORD(rowvalue[row] - minimum);
 		}
 		free(rowvalue);
-		if (!stat->has_internal_ref)
-			free(stat);
 	}
 	for (chan = 0; chan < fit->naxes[2]; chan++)
 		fmul_layer(fiximage, chan, amount);
@@ -1490,19 +1480,24 @@ int backgroundnoise(fits* fit, double sigma[]) {
 	cvComputeFinestScale(waveimage);
 
 	for (layer = 0; layer < fit->naxes[2]; layer++) {
-		imstats *stat = statistics(NULL, -1, waveimage, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
-		if (!stat) {
-			siril_log_message(_("Error: no data computed.\n"));
-			return 1;
-		}
-		double sigma0 = stat->sigma;
-		double mean = stat->mean;
+		double sigma0, mean, norm_val;
 		double epsilon = 0.0;
 		WORD lo, hi;
 		WORD *buf = waveimage->pdata[layer];
 		unsigned int i;
 		unsigned int ndata = fit->rx * fit->ry;
 		assert(ndata > 0);
+
+		imstats *stat = statistics(NULL, -1, waveimage, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		if (!stat) {
+			siril_log_message(_("Error: no data computed.\n"));
+			return 1;
+		}
+		sigma0 = stat->sigma;
+		mean = stat->mean;
+		norm_val = stat->normValue;
+		free_stats(stat);
+
 		WORD *array1 = calloc(ndata, sizeof(WORD));
 		WORD *array2 = calloc(ndata, sizeof(WORD));
 		if (array1 == NULL || array2 == NULL) {
@@ -1511,15 +1506,13 @@ int backgroundnoise(fits* fit, double sigma[]) {
 				free(array1);
 			if (array2)
 				free(array2);
-			if (!stat->has_internal_ref)
-				free(stat);
 			return 1;
 		}
 		WORD *set = array1, *subset = array2;
 		memcpy(set, buf, ndata * sizeof(WORD));
 
-		lo = round_to_WORD(LOW_BOUND * stat->normValue);
-		hi = round_to_WORD(HIGH_BOUND * stat->normValue);
+		lo = round_to_WORD(LOW_BOUND * norm_val);
+		hi = round_to_WORD(HIGH_BOUND * norm_val);
 
 		sigma[layer] = sigma0;
 
@@ -1540,8 +1533,6 @@ int backgroundnoise(fits* fit, double sigma[]) {
 			if (ndata == 0) {
 				free(array1);
 				free(array2);
-				if (!stat->has_internal_ref)
-					free(stat);
 				siril_log_message(_("backgroundnoise: Error, no data computed\n"));
 				sigma[layer] = 0.0;
 				return 1;
@@ -1555,8 +1546,6 @@ int backgroundnoise(fits* fit, double sigma[]) {
 			siril_log_message(_("backgroundnoise: does not converge\n"));
 		free(array1);
 		free(array2);
-		if (!stat->has_internal_ref)
-			free(stat);
 	}
 	clearfits(waveimage);
 	invalidate_stats_from_fit(fit);
@@ -1610,8 +1599,7 @@ gpointer noise(gpointer p) {
 			return GINT_TO_POINTER(1);
 		}
 		args->bgnoise[chan] = stat->bgnoise;
-		if (!stat->has_internal_ref)
-			free(stat);
+		free_stats(stat);
 	}
 
 	gdk_threads_add_idle(end_noise, args);

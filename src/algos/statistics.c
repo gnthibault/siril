@@ -18,6 +18,19 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* HOW STATISTICS WORK
+ * Stats for an image are computed on request and are carried in an imstats
+ * structure. Depending on the current mode, this structure is stored for
+ * caching in the fits->stats or in the sequence->stats.
+ * If it is stored in the fits, when it is disposed, it is copied in the
+ * sequence if it belongs to one.
+ * If it is stored in the sequence, when the sequence is disposed, it is saved
+ * in the seqfile, in `M' fields.
+ * When a sequence is loaded, previously computed stats are recovered that way.
+ * All operations that need to access stats should do it with the statistics()
+ * function at the bottom of this file which provides this abstraction.
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -266,6 +279,8 @@ static WORD* reassign_to_non_null_data(WORD *data, long inputlen, long outputlen
 	return ndata;
 }
 
+/* this function tries to get the requested stats from the passed stats,
+ * computes them and stores them in it if they have not already been */
 static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, int option, int nullcheck, imstats *stats) {
 	int nx, ny;
 	WORD *data = NULL;
@@ -287,8 +302,6 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		} else {
 			nx = fit->rx;
 			ny = fit->ry;
-			//data = calloc(nx * ny, sizeof(WORD));
-			//memcpy(data, fit->pdata[layer], nx * ny * sizeof(WORD));
 			data = fit->pdata[layer];
 		}
 		stat->total = nx * ny;
@@ -299,6 +312,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 			stat->sigma < 0. || stat->bgnoise < 0.)) {
 		int status = 0;
 		if (!data) return NULL;	// not in cache
+		fprintf(stdout, "- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
 		fits_img_stats_ushort(data, nx, ny, nullcheck, 0, &stat->ngoodpix,
 				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
 				NULL, NULL, NULL, &status);
@@ -328,6 +342,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		// we already have this from fit->max and min!
 		WORD min, max, norm;
 		if (!data) return NULL;	// not in cache
+		fprintf(stdout, "- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
 		gsl_stats_ushort_minmax(&min, &max, data, 1, stat->ngoodpix);
 		if (max <= UCHAR_MAX)
 			norm = UCHAR_MAX;
@@ -342,24 +357,28 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 				(option & STATS_MAD) || (option & STATS_BWMV)) &&
 			(stat->min < 0. || stat->max < 0. || stat->median < 0.)) {
 		if (!data) return NULL;	// not in cache
+		fprintf(stdout, "- stats %p fit %p (%d): computing median\n", stat, fit, layer);
 		stat->median = siril_stats_ushort_median(data, stat->ngoodpix);
 	}
 
 	/* Calculation of average absolute deviation from the median */
 	if (option & STATS_AVGDEV && stat->avgDev < 0.) {
 		if (!data) return NULL;	// not in cache
+		fprintf(stdout, "- stats %p fit %p (%d): computing absdev\n", stat, fit, layer);
 		stat->avgDev = gsl_stats_ushort_absdev_m(data, 1, stat->ngoodpix, stat->median);
 	}
 
 	/* Calculation of median absolute deviation */
 	if (((option & STATS_MAD) || (option & STATS_BWMV)) && stat->mad < 0.) {
 		if (!data) return NULL;	// not in cache
+		fprintf(stdout, "- stats %p fit %p (%d): computing mad\n", stat, fit, layer);
 		stat->mad = siril_stats_ushort_mad(data, 1, stat->ngoodpix, stat->median);
 	}
 
 	/* Calculation of Bidweight Midvariance */
 	if ((option & STATS_BWMV) && stat->sqrtbwmv < 0.) {
 		if (!data) return NULL;	// not in cache
+		fprintf(stdout, "- stats %p fit %p (%d): computing bimid\n", stat, fit, layer);
 		double bwmv = siril_stats_ushort_bwmv(data, stat->ngoodpix, stat->mad, stat->median);
 		stat->sqrtbwmv = sqrt(bwmv);
 	}
@@ -367,6 +386,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	/* Calculation of IKSS. Only used for stacking */
 	if ((option & STATS_IKSS) && (stat->location < 0. || stat->scale < 0.)) {
 		if (!data) return NULL;	// not in cache
+		fprintf(stdout, "- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
 		long i;
 		double *newdata = malloc(stat->ngoodpix * sizeof(double));
 
@@ -386,29 +406,18 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	return stat;
 }
 
-static void add_stats_to_fit(fits *fit, int layer, imstats *stat) {
-	if (!fit->stats)
-		fit->stats = calloc(fit->naxes[2], sizeof(imstats *));
-	fit->stats[layer] = stat;
-}
-
-void add_stats_to_seq(sequence *seq, int image_index, int layer, imstats *stat) {
-	if (!seq->stats)
-		seq->stats = calloc(seq->nb_layers, sizeof(imstats **));
-	if (!seq->stats[layer])
-		seq->stats[layer] = calloc(seq->number, sizeof(imstats *));
-	if (!seq->stats[layer][image_index])
-		seq->stats[layer][image_index] = stat;
-	seq->needs_saving = TRUE;
-}
-
-/* Computes statistics on the given layer of the given opened image. Mean,
- * sigma and noise are computed with a cfitsio function rewritten here. Min and
- * max value, average deviation, MAD, Bidweight Midvariance and IKSS are
- * computed with gsl stats.
- * If the selection is not null or empty, computed data is not stored and seq is not used.
- * If seq is null (single image processing), no caching is done, image_index is ignored.
- * The return value, if non-null may be freed only if its .has_internal_ref is set to false.
+/* Computes statistics on the given layer of the given opened image.
+ * Mean, sigma and noise are computed with a cfitsio function rewritten here.
+ * Min and max value, average deviation, MAD, Bidweight Midvariance and IKSS
+ * are computed with gsl stats.
+ *
+ * If the selection is not null or empty, computed data is not stored and seq
+ * is not used.
+ * If seq is null (single image processing), image_index is ignored, data is
+ * stored in the fit, which cannot be NULL.
+ * The return value, if non-null, may be freed only using the free_stats()
+ * function because of the special rule of this object that has a reference
+ * counter because it can be referenced in 3 different places.
  */
 imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectangle *selection, int option, int nullcheck) {
 	imstats *oldstat = NULL, *stat;
@@ -418,27 +427,66 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 		// ^ may be freed
 	} else if (!seq || image_index < 0) {
 		// we have a single image, store in the fits
-		if (fit->stats && fit->stats[layer])
+		if (fit->stats && fit->stats[layer]) {
 			oldstat = fit->stats[layer];
+			oldstat->_nb_refs++;
+		}
 		stat = statistics_internal(fit, layer, NULL, option, nullcheck, oldstat);
 		if (!stat)
 		       	return NULL;
 		if (!oldstat)
 			add_stats_to_fit(fit, layer, stat);
-		stat->has_internal_ref = TRUE;
 		return stat;	// must not be freed
 	} else {
 		// we have sequence data, store in the sequence
-		if (seq->stats && seq->stats[layer])
+		if (seq->stats && seq->stats[layer]) {
 			oldstat = seq->stats[layer][image_index];
+			oldstat->_nb_refs++;
+		}
 		stat = statistics_internal(fit, layer, NULL, option, nullcheck, oldstat);
 		if (!stat)
 			return NULL;
 		if (!oldstat)
 			add_stats_to_seq(seq, image_index, layer, stat);
-		stat->has_internal_ref = TRUE;
+		if (fit)
+			add_stats_to_fit(fit, layer, stat);	// can be useful too
 		return stat;	// must not be freed
 	}
+}
+
+
+/****************** statistics caching and data management *****************/
+
+/* reference an imstats struct to a fits, creates the stats array if needed */
+void add_stats_to_fit(fits *fit, int layer, imstats *stat) {
+	if (!fit->stats)
+		fit->stats = calloc(fit->naxes[2], sizeof(imstats *));
+	if (fit->stats[layer]) {
+		if (fit->stats[layer] != stat) {
+			fprintf(stdout, "- stats %p in fit %p (%d) is being replaced\n", fit->stats[layer], fit, layer);
+			free_stats(fit->stats[layer]);
+		} else return;
+	}
+	fit->stats[layer] = stat;
+	stat->_nb_refs++;
+	fprintf(stdout, "- stats %p saved to fit %p (%d)\n", stat, fit, layer);
+}
+
+void add_stats_to_seq(sequence *seq, int image_index, int layer, imstats *stat) {
+	if (!seq->stats)
+		seq->stats = calloc(seq->nb_layers, sizeof(imstats **));
+	if (!seq->stats[layer])
+		seq->stats[layer] = calloc(seq->number, sizeof(imstats *));
+	if (seq->stats[layer][image_index]) {
+		if (seq->stats[layer][image_index] != stat) {
+			fprintf(stdout, "- stats %p, %d in seq (%d) is being replaced\n", seq->stats[layer][image_index], image_index, layer);
+			free_stats(seq->stats[layer][image_index]);
+		} else return;
+	}
+	fprintf(stdout, "- stats %p, %d in seq (%d): saving data\n", stat, image_index, layer);
+	seq->stats[layer][image_index] = stat;
+	seq->needs_saving = TRUE;
+	stat->_nb_refs++;
 }
 
 /* saves cached stats from the fits to its sequence, and clears the cache of the fits */
@@ -448,6 +496,7 @@ void save_stats_from_fit(fits *fit, sequence *seq, int index) {
 	for (layer = 0; layer < fit->naxes[2]; layer++) {
 		if (fit->stats[layer])
 			add_stats_to_seq(seq, index, layer, fit->stats[layer]);
+		free_stats(fit->stats[layer]);
 		fit->stats[layer] = NULL;
 	}
 }
@@ -456,10 +505,11 @@ void save_stats_from_fit(fits *fit, sequence *seq, int index) {
 void copy_seq_stats_to_fit(sequence *seq, int index, fits *fit) {
 	if (seq->stats) {
 		int layer;
-		fit->stats = calloc(fit->naxes[2], sizeof(imstats *));
 		for (layer = 0; layer < fit->naxes[2]; layer++) {
-			if (seq->stats[layer])
-				fit->stats[layer] = seq->stats[layer][index];
+			if (seq->stats[layer] && seq->stats[layer][index]) {
+				add_stats_to_fit(fit, layer, seq->stats[layer][index]);
+				fprintf(stdout, "- stats %p, copied from seq %d (%d)\n", fit->stats[layer], index, layer);
+			}
 		}
 	}
 }
@@ -468,11 +518,18 @@ void copy_seq_stats_to_fit(sequence *seq, int index, fits *fit) {
 void invalidate_stats_from_fit(fits *fit) {
 	if (fit->stats) {
 		int layer;
-		for (layer = 0; layer < fit->naxes[2]; layer++)
+		for (layer = 0; layer < fit->naxes[2]; layer++) {
+			fprintf(stdout, "- stats %p cleared from fit (%d)\n", fit->stats[layer], layer);
+			free_stats(fit->stats[layer]);
 			fit->stats[layer] = NULL;
+		}
 	}
 }
 
+/* allocates an imstat structure and initializes it with default values that
+ * are used by the statistics() function.
+ * Only use free_stats() to free the return value.
+ * Increment the _nb_refs if a new reference to the struct's address is made. */
 void allocate_stats(imstats **stat) {
 	if (stat) {
 		if (!*stat)
@@ -481,16 +538,31 @@ void allocate_stats(imstats **stat) {
 		(*stat)->total = -1L;
 		(*stat)->ngoodpix = -1L;
 		(*stat)->mean = (*stat)->avgDev = (*stat)->median = (*stat)->sigma = (*stat)->bgnoise = (*stat)->min = (*stat)->max = (*stat)->normValue = (*stat)->mad = (*stat)->sqrtbwmv = (*stat)->location = (*stat)->scale = -1.0;
-		(*stat)->has_internal_ref = FALSE;
+		(*stat)->_nb_refs = 1;
 	}
 }
 
+/* frees an imstats struct if there are no more references to it.
+ * returns NULL if it was freed, the argument otherwise. */
+imstats* free_stats(imstats *stat) {
+	if (stat && stat->_nb_refs-- == 1) {
+		fprintf(stdout, "- stats %p has no more refs, freed\n", stat);
+		free(stat);
+		return NULL;
+	}
+	if (stat)
+		fprintf(stdout, "- stats %p has refs (%d)\n", stat, stat->_nb_refs);
+	return stat;
+}
+
+/* calls free_stats on all stats of a sequence */
 void clear_stats(sequence *seq, int layer) {
-	int i;
 	if (seq->stats && seq->stats[layer]) {
+		int i;
 		for (i = 0; i < seq->number; i++) {
 			if (seq->stats[layer][i]) {
-				free(seq->stats[layer][i]);
+				fprintf(stdout, "- stats %p freed from seq %d (%d)\n", seq->stats[layer][i], i, layer);
+				free_stats(seq->stats[layer][i]);
 				seq->stats[layer][i] = NULL;
 			}
 		}

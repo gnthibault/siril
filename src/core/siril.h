@@ -416,7 +416,7 @@ struct ffit {
 	unsigned short max[3];	// max for all layers
 	unsigned short maxi;	// max of the max[3]
 	unsigned short mini;	// min of the min[3]
-	// TODO 1.0: move min and max to stats - stats max is not max, stats ignore the 0!
+	// TODO 1.0: move min and max to stats - stats min is not min, stats ignore the 0!
 	imstats **stats;	// stats of fit for each layer, null if naxes[2] is unknown
 
 	fitsfile *fptr;		// file descriptor. Only used for file read and write.
@@ -591,7 +591,8 @@ struct image_stats {
 	     ngoodpix;	// number of non-zero pixels
 	double mean, median, sigma, avgDev, mad, sqrtbwmv,
 	       location, scale, min, max, normValue, bgnoise;
-	gboolean has_internal_ref;	// indicate if it can be freed
+
+	int _nb_refs;	// reference counting for data management
 };
 
 typedef struct Homo {

@@ -432,8 +432,7 @@ gpointer enhance_saturation(gpointer p) {
 		}
 		bg = stat->median + stat->sigma;
 		bg /= stat->normValue;
-		if (!stat->has_internal_ref)
-			free(stat);
+		free_stats(stat);
 
 	}
 
@@ -653,8 +652,7 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 				buf[i] = (buf[i] - offset >= USHRT_MAX ? USHRT_MAX : buf[i] - offset);
 
 		}
-		if (!stats[chan]->has_internal_ref)
-			free(stats[chan]);
+		free_stats(stats[chan]);
 	}
 }
 
@@ -764,8 +762,7 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 		}
 		bg[chan] = stat->median / stat->normValue;
 		siril_log_message("B%d : %.5e\n", chan, bg[chan]);
-		if (!stat->has_internal_ref)
-			free(stat);
+		free_stats(stat);
 
 	}
 

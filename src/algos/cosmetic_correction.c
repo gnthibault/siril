@@ -156,8 +156,7 @@ long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 		thresHot = (val > USHRT_MAX_DOUBLE) ? USHRT_MAX_DOUBLE : val;
 	}
 
-	if (!stat->has_internal_ref)
-		free(stat);
+	free_stats(stat);
 
 	/** We count deviant pixels **/
 	*icold = 0;
@@ -206,8 +205,7 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 		thresHot = (val > USHRT_MAX_DOUBLE) ? USHRT_MAX_DOUBLE : val;
 	}
 
-	if (!stat->has_internal_ref)
-		free(stat);
+	free_stats(stat);
 
 	/** First we count deviant pixels **/
 	*icold = 0;
@@ -404,8 +402,7 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 	}
 	bkg = stat->median;
 	avgDev = stat->avgDev;
-	if (!stat->has_internal_ref)
-		free(stat);
+	free_stats(stat);
 
 	WORD *buf = fit->pdata[layer];
 
