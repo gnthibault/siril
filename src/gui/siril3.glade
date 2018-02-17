@@ -5106,7 +5106,29 @@ Uncheck if images come from a monochrome sensor.</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">3</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="dialog_scrollbar">
+            <property name="height_request">200</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="hscrollbar_policy">never</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkTextView" id="dialog_data">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="editable">False</property>
+                <property name="cursor_visible">False</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </object>
@@ -12132,7 +12154,7 @@ Hot pixels are located on the master-dark.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="tooltip_text" translatable="yes">Click on this button to evaluate the number of deviant pixels. If values are higher than 0.01% of the total of pixels, you will be encouraged to change sigma values.</property>
+                        <property name="tooltip_text" translatable="yes">Click on this button to evaluate the number of deviant pixels. If values are higher than 1% of the total of pixels, you will be encouraged to change sigma values.</property>
                         <property name="halign">center</property>
                         <signal name="clicked" handler="on_GtkButtonEvaluateCC_clicked" swapped="no"/>
                       </object>
@@ -14175,6 +14197,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Color Calibration</property>
     <property name="resizable">False</property>
+    <property name="window_position">center</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>

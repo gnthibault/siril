@@ -172,15 +172,81 @@ static int compare_version(version_number v1, version_number v2) {
 	return 0;
 }
 
+static gchar *parse_changelog(gchar *changelog) {
+	gchar **token;
+	GString *strResult;
+	gint nargs, i;
+
+	token = g_strsplit(changelog, "\n", -1);
+	nargs = g_strv_length(token);
+
+	strResult = g_string_new(token[0]);
+	strResult = g_string_append(strResult, "\n\n");
+	/* we start at line 3 */
+	i = 3;
+	while (i < nargs && token[i][0] == '*') {
+		strResult = g_string_append(strResult, token[i]);
+		strResult = g_string_append(strResult, "\n");
+		i++;
+	}
+
+	return g_string_free(strResult, FALSE);
+}
+
 static void http_cleanup() {
 	curl_easy_cleanup(curl);
 	curl_global_cleanup();
 	curl = NULL;
 }
 
+static gchar *get_changelog(gint x, gint y, gint z, gint p) {
+	struct ucontent *changelog;
+	gchar *result = NULL;
+	gchar str[20];
+	gchar *changelog_url;
+	long code;
+	GString *url = g_string_new(siril_url);
+
+	changelog = g_try_malloc(sizeof(struct ucontent));
+	if (changelog == NULL) {
+		return NULL;
+	}
+
+	changelog->data = g_malloc(1);
+	changelog->data[0] = '\0';
+	changelog->len = 0;
+
+	if (p != 0) {
+		g_snprintf(str, sizeof(str), "%d.%d.%d.%d/", x, y, z, p);
+	} else {
+		g_snprintf(str, sizeof(str), "%d.%d.%d/", x, y, z);
+	}
+	url = g_string_append(url, str);
+	url = g_string_append(url, "ChangeLog");
+
+	changelog_url = g_string_free(url, FALSE);
+	curl_easy_setopt(curl, CURLOPT_URL, changelog_url);
+
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, changelog);
+	if (curl_easy_perform(curl) == CURLE_OK) {
+		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
+		if (code == 200) {
+			result = g_strdup(changelog->data);
+		}
+	}
+	if (!result)
+		g_free(changelog->data);
+	g_free(changelog);
+	g_free(changelog_url);
+
+	return result;
+}
+
 static gboolean end_update_idle(gpointer p) {
 	gint ret;
 	char *msg;
+	gchar *changelog = NULL;
+	const char *data = NULL;
 	version_number current_version, last_version_available;
 	static char *icon[] = { "gtk-dialog-info", "gtk-dialog-error" };
 	struct _update_data *args = (struct _update_data *) p;
@@ -199,16 +265,17 @@ static gboolean end_update_idle(gpointer p) {
 	} else {
 		last_version_available = get_last_version_number(args->content);
 		current_version = get_current_version_number();
+		gint x = last_version_available.major_version;
+		gint y = last_version_available.minor_version;
+		gint z = last_version_available.micro_version;
+		gint p = last_version_available.patched_version;
 
 		if (compare_version(current_version, last_version_available) < 0) {
-			msg = siril_log_message(_("New version is available. "
-											"You can download it at <a href=\"%s%d.%d.%d\">%s%d.%d.%d</a>\n"),
-							download_url, last_version_available.major_version,
-							last_version_available.minor_version,
-							last_version_available.micro_version,
-							download_url, last_version_available.major_version,
-							last_version_available.minor_version,
-							last_version_available.micro_version);
+			msg = siril_log_message(_("New version is available. You can download it at "
+							"<a href=\"%s%d.%d.%d\">%s%d.%d.%d</a>\n"),
+					download_url, x, y, z, download_url, x, y, z);
+			changelog = get_changelog(x, y, z, p);
+			data = parse_changelog(changelog);
 		} else if (compare_version(current_version, last_version_available) > 0) {
 			msg = siril_log_message(_("No update check: this is a development version\n"));
 		} else {
@@ -216,10 +283,11 @@ static gboolean end_update_idle(gpointer p) {
 		}
 		ret = 0;
 	}
-	show_dialog(msg, _("Software Update"), icon[ret]);
+	show_txt_and_data_dialog(msg, data, _("Software Update"), icon[ret]);
 
 	/* free data */
 	g_free(args->content);
+	g_free(changelog);
 	free(args);
 	http_cleanup();
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
@@ -261,11 +329,9 @@ static gpointer fetch_url(gpointer p) {
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, "siril/0.0");
 
 	if (curl_easy_perform(curl) == CURLE_OK) {
-		if (retries == DEFAULT_FETCH_RETRIES)
-			set_progress_bar_data(NULL, 0.4);
+		if (retries == DEFAULT_FETCH_RETRIES) set_progress_bar_data(NULL, 0.4);
 		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
-		if (retries == DEFAULT_FETCH_RETRIES)
-			set_progress_bar_data(NULL, 0.6);
+		if (retries == DEFAULT_FETCH_RETRIES) set_progress_bar_data(NULL, 0.6);
 
 		switch (code) {
 		case 200:

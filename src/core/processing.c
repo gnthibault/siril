@@ -203,10 +203,10 @@ gpointer generic_sequence_worker(gpointer p) {
 		show_time(t_start, t_end);
 	}
 
-the_end:
 #ifdef _OPENMP
 	omp_destroy_lock(&args->lock);
 #endif
+the_end:
 	if (index_mapping) free(index_mapping);
 	if (args->finalize_hook && args->finalize_hook(args)) {
 		siril_log_message(_("Finalizing sequence processing failed.\n"));

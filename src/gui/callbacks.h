@@ -48,6 +48,7 @@ void set_layers_for_assign();
 void set_layers_for_registration();
 void display_image_number(int index);
 void show_dialog(const char *text, const char *title, const char *icon);
+void show_txt_and_data_dialog(const char *text, const char *data, const char *title, const char *icon);
 void show_data_dialog(char *text, char *title);
 void show_main_gray_window();
 void show_rgb_window();

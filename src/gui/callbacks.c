@@ -144,23 +144,41 @@ static GdkModifierType get_default_modifier() {
 
 struct _dialog_data {
 	const char *text;
+	const char *data;
 	const char *title;
 	const char *icon;
 };
 
 static gboolean show_dialog_idle(gpointer p) {
 	static GtkLabel *label = NULL;
+	static GtkWidget *txtdata = NULL;
+	static GtkTextView *dataview = NULL;
+	static GtkTextBuffer *databuffer = NULL;
+	GtkTextIter itBeg, itEnd;
+	gboolean has_data = FALSE;
 	struct _dialog_data *args = (struct _dialog_data *) p;
 	GtkImage *image = GTK_IMAGE(lookup_widget("image1"));
+
 	if (label == NULL) {
 		label = GTK_LABEL(gtk_builder_get_object(builder, "labeldialog1"));
+		txtdata = lookup_widget("dialog_scrollbar");
+		dataview = GTK_TEXT_VIEW(lookup_widget("dialog_data"));
+		databuffer = gtk_text_view_get_buffer(dataview);
 	}
+
+	has_data = (args->data == NULL) ? FALSE : TRUE;
+	if (has_data) {
+		gtk_text_buffer_get_bounds(databuffer, &itBeg, &itEnd);
+		gtk_text_buffer_delete(databuffer, &itBeg, &itEnd);
+		gtk_text_buffer_set_text(databuffer, args->data, strlen(args->data));
+	}
+	gtk_widget_set_visible(txtdata, has_data);
 	gtk_window_set_title(GTK_WINDOW(lookup_widget("dialog1")), args->title);
 	gtk_image_set_from_icon_name(image, args->icon, GTK_ICON_SIZE_DIALOG);
 	gtk_label_set_text(label, args->text);
-	gtk_label_set_use_markup (label, TRUE);
+	gtk_label_set_use_markup(label, TRUE);
 	gtk_widget_show(lookup_widget("dialog1"));
-	gtk_window_present (GTK_WINDOW(lookup_widget("dialog1")));
+	gtk_window_present(GTK_WINDOW(lookup_widget("dialog1")));
 	free(args);
 	return FALSE;
 }
@@ -1988,6 +2006,16 @@ void display_image_number(int index) {
 void show_dialog(const char *text, const char *title, const char *icon) {
 	struct _dialog_data *args = malloc(sizeof(struct _dialog_data));
 	args->text = text;
+	args->data = NULL;
+	args->title = title;
+	args->icon = icon;
+	gdk_threads_add_idle(show_dialog_idle, args);
+}
+
+void show_txt_and_data_dialog(const char *text, const char *data, const char *title, const char *icon) {
+	struct _dialog_data *args = malloc(sizeof(struct _dialog_data));
+	args->text = text;
+	args->data = data;
 	args->title = title;
 	args->icon = icon;
 	gdk_threads_add_idle(show_dialog_idle, args);
@@ -3649,7 +3677,7 @@ void on_about_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_excludebutton_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	if (!com.seq.imgparam) {
+	if (!sequence_is_loaded() || com.seq.current < 0) {
 		return;
 	}
 	toggle_image_selection(com.seq.current);
