@@ -3677,7 +3677,7 @@ void on_about_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_excludebutton_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	if (!com.seq.imgparam) {
+	if (!sequence_is_loaded() || com.seq.current < 0) {
 		return;
 	}
 	toggle_image_selection(com.seq.current);
