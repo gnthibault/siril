@@ -543,7 +543,7 @@ void create_the_internal_sequence() {
 	nb_layers = number_of_images_loaded();
 	if (nb_layers == 0 || nb_layers == 1) {
 		char *msg = siril_log_message(_("You must at least load two layers before!\n"));
-		show_dialog(msg, _("Warning"), "gtk-dialog-warning");
+		show_dialog(msg, _("Warning"), "dialog-warning");
 		seq = NULL;
 		return;
 	}

@@ -112,7 +112,7 @@ int stack_median(struct stacking_args *args) {
 
 	if (args->seq->type != SEQ_REGULAR && args->seq->type != SEQ_SER) {
 		char *msg = siril_log_message(_("Median stacking is only supported for FITS images and SER sequences.\n"));
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		return -1;
 	}
 	if (nb_frames < 2) {
@@ -790,7 +790,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 
 	if (args->seq->type != SEQ_REGULAR && args->seq->type != SEQ_SER) {
 		char *msg = siril_log_message(_("Rejection stacking is only supported for FITS images and SER sequences.\nUse \"Sum Stacking\" instead.\n"));
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		return -1;
 	}
 	if (nb_frames < 2) {

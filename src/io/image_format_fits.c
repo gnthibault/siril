@@ -244,7 +244,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	if (stat_file(filename, &imagetype, &name)) {
 		msg = siril_log_message(_("%s.[any_allowed_extension] not found.\n"),
 				filename);
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		free(name);
 		return 1;
 	}
@@ -252,7 +252,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 		msg = siril_log_message(
 				_("The file %s is not a FITS file or doesn't exists with FITS extensions.\n"),
 						filename);
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		free(name);
 		return 1;
 	}
@@ -275,7 +275,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	if (status) {
 		msg = siril_log_message(
 				_("FITSIO error getting image parameters, file %s.\n"), filename);
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		report_fits_error(status);
 		status = 0;
 		fits_close_file(fit->fptr, &status);
@@ -289,7 +289,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	if (fit->naxis == 3 && fit->naxes[2] != 3) {
 		msg = siril_log_message(_("Unknown FITS image format (%ld axes).\n"),
 				fit->naxes[2]);
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		status = 0;
 		fits_close_file(fit->fptr, &status);
 		return -1;
@@ -304,7 +304,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	if (fit->bitpix == LONGLONG_IMG) {
 		msg = siril_log_message(
 				_("FITS images with 64 bits signed integer per pixel.channel are not supported.\n"));
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		status = 0;
 		fits_close_file(fit->fptr, &status);
 		return -1;
@@ -406,7 +406,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 		msg = siril_log_message(_("Unknown FITS image format.\n"));
 	}
 	if (msg) {
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		status = 0;
 		fits_close_file(fit->fptr, &status);
 		update_used_memory();
@@ -415,7 +415,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	if (status) {
 		msg = siril_log_message(_("Fitsio error reading data, file: %s.\n"),
 				filename);
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		report_fits_error(status);
 	}
 
@@ -766,7 +766,7 @@ int savefits(const char *name, fits *f) {
 		msg = siril_log_message(
 				_("ERROR: trying to save a FITS image "
 				"with an unsupported format (%d).\n"), f->bitpix);
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		fits_close_file(f->fptr, &status);
 		return 1;
 	}

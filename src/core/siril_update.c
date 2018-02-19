@@ -248,7 +248,7 @@ static gboolean end_update_idle(gpointer p) {
 	gchar *changelog = NULL;
 	const char *data = NULL;
 	version_number current_version, last_version_available;
-	static char *icon[] = { "gtk-dialog-info", "gtk-dialog-error" };
+	static char *icon[] = { "dialog-information", "dialog-error" };
 	struct _update_data *args = (struct _update_data *) p;
 
 	if (args->content == NULL) {

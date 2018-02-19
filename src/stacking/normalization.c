@@ -109,7 +109,7 @@ static int compute_normalization(struct stacking_args *args) {
 	if (ref_image_filtred_idx == -1) {
 		char *msg = siril_log_color_message(_("The reference image is not in the selected set of images. "
 				"Please choose another reference image.\n"), "red");
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		siril_log_color_message(_("Normalisation skipped.\n"), "red");
 		return 1;
 	}
