@@ -2082,7 +2082,7 @@ void set_cursor_waiting(gboolean waiting) {
 		GdkWindow *window = GDK_WINDOW(list->data);
 		gdk_window_set_cursor(window, cursor);
 		gdk_display_sync(gdk_window_get_display(window));
-		gdk_flush();
+		gdk_display_flush(display);
 		list = g_list_next(list);
 	}
 	g_list_free(list);
