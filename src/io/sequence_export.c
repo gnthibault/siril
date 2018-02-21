@@ -252,7 +252,8 @@ static gpointer export_sequence(gpointer ptr) {
 		}
 		else {
 			/* we want copy the header */
-			copy_header(&fit, &destfit);
+			// TODO: why not use copyfits here?
+			copy_fits_metadata(&fit, &destfit);
 			memset(destfit.data, 0, nbdata * fit.naxes[2] * sizeof(WORD));
 			if (args->crop) {
 				/* reset destfit damaged by the crop function */

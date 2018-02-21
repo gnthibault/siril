@@ -313,6 +313,7 @@ struct sequ {
 	int nb_layers;		// number of layers embedded in each image file, -1 if unknown
 	unsigned int rx;	// first image width
 	unsigned int ry;	// first image height
+	int bitpix;		// image pixel format, from fits
 	layer_info *layers;	// info about layers, may be null if nb_layers is unknown
 	int reference_image;	// reference image for registration
 	imgdata *imgparam;	// a structure for each image of the sequence
@@ -373,7 +374,8 @@ struct single_image {
 struct ffit {
 	unsigned int rx;	// image width	(naxes[0])
 	unsigned int ry;	// image height	(naxes[1])
-	int bitpix;
+	int bitpix;		// current bitpix of loaded data
+	int orig_bitpix;	// original bitpix of the file
 	/* bitpix can take the following values:
 	 * BYTE_IMG	(8-bit byte pixels, 0 - 255)
 	 * SHORT_IMG	(16 bit signed integer pixels)	

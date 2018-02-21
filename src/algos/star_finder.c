@@ -296,7 +296,7 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 		free(result);
 		result = NULL;
 		char *msg = siril_log_message(_("This star has already been picked !\n"));
-		show_dialog(msg, _("Peaker"), "gtk-dialog-info");
+		show_dialog(msg, _("Peaker"), "dialog-information");
 	} else {
 		if (i < MAX_STARS) {
 			result->xpos = result->x0 + com.selection.x;

@@ -790,9 +790,7 @@ int register_star_alignment(struct registration_args *args) {
 				args->new_total + failed);
 		siril_log_color_message(_("Total: %d failed, %d registered.\n"), "green",
 				failed, args->new_total);
-
 		args->load_new_sequence = !args->translation_only;
-
 	}
 	else {
 		siril_log_message(_("Registration aborted.\n"));
@@ -1157,7 +1155,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 			&& method->sel != REQUIRES_NO_SELECTION) {
 		msg = siril_log_message(
 				_("All prerequisites are not filled for registration. Select a rectangle first.\n"));
-		show_dialog(msg, _("Warning"), "gtk-dialog-warning");
+		show_dialog(msg, _("Warning"), "dialog-warning");
 		return;
 	}
 	// TODO: check for reentrance
@@ -1190,7 +1188,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 		double diff = test_available_space(size * 4.0); //FIXME: 4 is only ok for x2 Drizzle
 		if (diff < 0.0) {
 			msg = siril_log_message(_("Not enough disk space to perform Drizzle operation !!\n"));
-			show_dialog(msg, _("Error"), "gtk-dialog-error");
+			show_dialog(msg, _("Error"), "dialog-error");
 			free(reg_args);
 			return;
 		}

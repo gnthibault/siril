@@ -18,7 +18,6 @@
 
 /****************** image_format_fits.h ******************/
 int	readfits(const char *filename, fits *fit, char *realname);
-char*	list_header(fits *fit);
 void	clearfits(fits *);
 int	readfits_partial(const char *filename, int layer, fits *fit, const rectangle *area, gboolean read_date);
 int	read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area);
@@ -26,7 +25,7 @@ int	fits_get_date_obs(const char *name, fits *f);
 int 	savefits(const char *, fits *);
 void 	save_fits_header(fits *);
 int	copyfits(fits *from, fits *to, unsigned char oper, int layer);
-int	copy_header(fits *from, fits *to);
+int	copy_fits_metadata(fits *from, fits *to);
 int	save1fits16(const char *filename, fits *fit, int layer);
 
 void	rgb24bit_to_fits48bit(unsigned char *rgbbuf, fits *fit, gboolean inverted);

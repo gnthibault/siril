@@ -147,7 +147,7 @@ void display_PSF(fitted_PSF **result){
 			rmse+=result[i]->rmse;
 			if (i>1){
 				if (strcmp(result[i]->units,result[i-1]->units)){
-					show_dialog(_("Stars must have the same units."), _("Error"), "gtk-dialog-error");
+					show_dialog(_("Stars must have the same units."), _("Error"), "dialog-error");
 					return;
 				}
 			}

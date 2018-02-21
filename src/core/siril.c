@@ -202,7 +202,7 @@ int sub_background(fits* image, fits* background, int layer) {
 		char *msg = siril_log_message(
 				_("Images don't have the same size (w = %d|%d, h = %d|%d)\n"),
 				image->rx, background->rx, image->ry, background->ry);
-		show_dialog(msg, _("Error"), "gtk-dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error");
 		return 1;
 	}
 	ndata = image->rx * image->ry;

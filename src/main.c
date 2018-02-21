@@ -84,7 +84,7 @@ static void gui_add_osx_to_app_menu(GtkosxApplication *osx_app, const gchar *ite
 static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 	GtkWidget *menubar = lookup_widget("menubar1");
 	GtkWidget *file_quit_menu_item = lookup_widget("exit");
-	GtkWidget *help_menu = lookup_widget("help1");
+	GtkWidget *help_menu = lookup_widget("help_item1");
 	GtkWidget *sep;
 	GdkPixbuf *icon;
 	gchar *icon_path;
