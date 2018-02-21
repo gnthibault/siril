@@ -878,6 +878,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	if (naxes[2] == 0)
 		naxes[2] = 1;
 	g_assert(naxes[2] <= 3);
+
 	if (args->seq->type == SEQ_SER) {
 		g_assert(args->seq->ser_file);
 		naxes[0] = args->seq->ser_file->image_width;

@@ -790,9 +790,7 @@ int register_star_alignment(struct registration_args *args) {
 				args->new_total + failed);
 		siril_log_color_message(_("Total: %d failed, %d registered.\n"), "green",
 				failed, args->new_total);
-
 		args->load_new_sequence = !args->translation_only;
-
 	}
 	else {
 		siril_log_message(_("Registration aborted.\n"));
