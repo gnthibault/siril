@@ -47,7 +47,8 @@ struct generic_seq_args {
 	int (*finalize_hook)(struct generic_seq_args *);
 
 	/** idle function to register at the end. If NULL, the default ending
-	 *  that stops the thread is queued. Return false for single execution. */
+	 *  that stops the thread is queued. Return false for single execution.
+	 *  It should free its argument. */
 	GSourceFunc idle_function;
 	/** retval, useful for the idle_function, set by the worker */
 	int retval;

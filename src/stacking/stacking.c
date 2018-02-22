@@ -2125,6 +2125,7 @@ static int upscale_image_hook(struct generic_seq_args *args, int i, fits *fit, r
 
 static gboolean end_upscale(gpointer p) {
 	// do nothing, the default behaviour of the generic processing ends the thread
+	free(p);
 	return FALSE;
 }
 
@@ -2155,7 +2156,6 @@ static int upscale_sequence(struct stacking_args *stackargs) {
 	args->user = upargs;
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
-
 
 	generic_sequence_worker(args);
 	int retval = args->retval;
