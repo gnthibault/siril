@@ -335,7 +335,7 @@ static void convert_data(int bitpix, const void *from, WORD *to, unsigned int nb
 
 		case LONGLONG_IMG:	// 64-bit integer pixels
 		default:
-			siril_log_message("Unknown FITS data format in internal conversion\n");
+			siril_log_message(_("Unknown FITS data format in internal conversion\n"));
 	}
 }
 

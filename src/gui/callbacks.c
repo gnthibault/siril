@@ -1297,8 +1297,10 @@ static void do_popup_rgbmenu(GtkWidget *my_widget, GdkEventButton *event) {
 static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 	static GtkMenu *menu = NULL;
 	gboolean selected;
-	gboolean is_a_single_image_loaded = single_image_is_loaded() && (!sequence_is_loaded()
-				|| (sequence_is_loaded() && com.seq.current == RESULT_IMAGE));
+
+	gboolean is_a_single_image_loaded = single_image_is_loaded()	&& (!sequence_is_loaded()
+			|| (sequence_is_loaded() && (com.seq.current == RESULT_IMAGE
+					|| com.seq.current == SCALED_IMAGE)));
 
 	if (!menu) {
 		menu = GTK_MENU(gtk_builder_get_object(builder, "menugray"));
