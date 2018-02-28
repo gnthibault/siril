@@ -307,6 +307,11 @@ void start_in_new_thread(gpointer (*f)(gpointer p), gpointer p) {
 	com.thread = g_thread_new("processing", f, p);
 }
 
+void waiting_for_thread() {
+	g_thread_join(com.thread);
+	com.thread = NULL;
+}
+
 void stop_processing_thread() {
 	if (com.thread == NULL) {
 		fprintf(stderr, "The processing thread is not running.\n");
@@ -314,9 +319,7 @@ void stop_processing_thread() {
 	}
 
 	set_thread_run(FALSE);
-
-	g_thread_join(com.thread);
-	com.thread = NULL;
+	waiting_for_thread();
 }
 
 void set_thread_run(gboolean b) {

@@ -95,6 +95,7 @@ int seq_filter_all(sequence *seq, int nb_img, double any);
 int seq_filter_included(sequence *seq, int nb_img, double any);
 
 void start_in_new_thread(gpointer(*f)(gpointer p), gpointer p);
+void waiting_for_thread();
 void stop_processing_thread();
 void set_thread_run(gboolean b);
 gboolean get_thread_run();
