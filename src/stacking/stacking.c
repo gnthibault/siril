@@ -62,7 +62,6 @@ static stack_method stacking_methods[] = {
 
 static gboolean end_stacking(gpointer p);
 static int stack_addminmax(struct stacking_args *args, gboolean ismax);
-static int upscale_sequence(struct stacking_args *stackargs);
 
 struct image_block {
 	unsigned long channel, start_row, end_row, height;
@@ -1427,7 +1426,7 @@ gpointer stack_function_handler(gpointer p) {
 	// 1. normalization
 	do_normalization(args);	// does nothing if NO_NORM
 	// 2. up-scale
-	upscale_sequence(args); // does nothing if args->seq->upscale_at_stacking != 1
+	upscale_sequence(args); // does nothing if args->seq->upscale_at_stacking <= 1.05
 	// 3. stack
 	args->retval = args->method(p);
 	// 4. save result and clean-up
@@ -2129,7 +2128,7 @@ static gboolean end_upscale(gpointer p) {
 	return FALSE;
 }
 
-static int upscale_sequence(struct stacking_args *stackargs) {
+int upscale_sequence(struct stacking_args *stackargs) {
 	if (stackargs->seq->upscale_at_stacking <= 1.05)
 		return 0;
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));

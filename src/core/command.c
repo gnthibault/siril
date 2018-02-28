@@ -1470,6 +1470,9 @@ gpointer stackall_worker(gpointer garg) {
 				args.sig[0] = arg->sig[0];
 				args.sig[1] = arg->sig[1];
 				args.type_of_rejection = WINSORIZED;
+				args.coeff.offset = NULL;
+				args.coeff.mul = NULL;
+				args.coeff.scale = NULL;
 				if (!arg->force_no_norm &&
 						(arg->method == stack_median || arg->method == stack_mean_with_rejection))
 					args.normalize = ADDITIVE_SCALING;
@@ -1483,6 +1486,11 @@ gpointer stackall_worker(gpointer garg) {
 				snprintf(filename, 256, "%s%sstacked%s",
 						seq->seqname, suffix, com.ext);
 
+				// 1. normalization
+				do_normalization(&args);	// does nothing if NO_NORM
+				// 2. up-scale
+				upscale_sequence(&args); // does nothing if args->seq->upscale_at_stacking <= 1.05
+				// 3. stack
 				retval = arg->method(&args);
 
 				free_sequence(seq, TRUE);
