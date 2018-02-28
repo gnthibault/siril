@@ -1773,11 +1773,17 @@ int processcommand(const char *line) {
 			siril_log_message(_("File [%s] does not exist\n"), line + 1);
 			return 1;
 		}
-#if (_POSIX_C_SOURCE >= 200809L)
-		char * linef = NULL;
-		size_t lenf = 0;
 		ssize_t read;
+		char *linef;
+#if (_POSIX_C_SOURCE < 200809L)
+		linef = calloc(256, sizeof(char));
+		while (fgets(linef, 256, fp)) {
+			read = strlen(linef) + 1;
+#else
+		size_t lenf = 0;
+		linef = NULL;
 		while ((read = getline(&linef, &lenf, fp)) != -1) {
+#endif
 			++i;
 			if (linef[0] == '#') continue;	// comments
 			if (linef[0] == '\0' || linef[0] == '\n')
@@ -1787,30 +1793,12 @@ int processcommand(const char *line) {
 			if (executeCommand(wordnb)) {
 				siril_log_message(_("Error in line: %d. Exiting batch processing\n"), i);
 				free(myline);
-				return 1;
-			}
-			free(myline);
-		}
-		free(linef);
-#else
-		char linef[256];
-		while (fgets(linef, 256, fp)) {
-			++i;
-			if (linef[0] == '#') continue;	// comments
-			if (linef[0] == '\0' || linef[0] == '\n')
-				continue;
-			myline = strdup(linef);
-			parseLine(myline, sizeof(linef), &wordnb);
-			if (executeCommand(wordnb)) {
-				siril_log_message(_("Error in line: %d. Exiting batch processing\n"), i);
-				free(myline);
 				fclose(fp);
 				return 1;
 			}
 			free(myline);
 		}
-#endif
-
+		free(linef);
 		fclose(fp);
 	} else {
 		myline = strdup(line);
