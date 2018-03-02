@@ -306,6 +306,8 @@ struct preprocessing_data {
 	gboolean autolevel;
 	double sigma[2];
 	gboolean is_cfa;
+	gboolean debayer;
+	gboolean compatibility;
 	float normalisation;
 	int retval;
 };

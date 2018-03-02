@@ -1181,8 +1181,11 @@ int copy_fits_metadata(fits *from, fits *to) {
 	strncpy(to->date_obs, from->date_obs, FLEN_VALUE);
 	strncpy(to->date, from->date, FLEN_VALUE);
 	strncpy(to->instrume, from->instrume, FLEN_VALUE);
+	strncpy(to->telescop, from->telescop, FLEN_VALUE);
+	strncpy(to->observer, from->observer, FLEN_VALUE);
 	strncpy(to->dft_type, from->dft_type, FLEN_VALUE);
 	strncpy(to->dft_ord, from->dft_ord, FLEN_VALUE);
+	strncpy(to->bayer_pattern, from->bayer_pattern, FLEN_VALUE);
 
 	to->focal_length = from->focal_length;
 	to->iso_speed = from->iso_speed;

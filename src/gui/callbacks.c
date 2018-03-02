@@ -1741,9 +1741,9 @@ int copy_rendering_settings_when_chained(gboolean from_GUI) {
 	return 1;
 }
 
-void set_prepro_button_sensitiveness() {
+void update_prepro_interface(gboolean allow_debayer) {
 	static GtkToggleButton *udark = NULL, *uoffset = NULL, *uflat = NULL,
-			*checkAutoEvaluate = NULL;
+			*checkAutoEvaluate = NULL, *pp_debayer = NULL;
 	if (udark == NULL) {
 		udark = GTK_TOGGLE_BUTTON(
 				gtk_builder_get_object(builder, "usedark_button"));
@@ -1753,6 +1753,8 @@ void set_prepro_button_sensitiveness() {
 				gtk_builder_get_object(builder, "useflat_button"));
 		checkAutoEvaluate = GTK_TOGGLE_BUTTON(
 				gtk_builder_get_object(builder, "checkbutton_auto_evaluate"));
+		pp_debayer = GTK_TOGGLE_BUTTON(
+				gtk_builder_get_object(builder, "checkButton_pp_dem"));
 	}
 
 	gtk_widget_set_sensitive(lookup_widget("prepro_button"),
@@ -1769,6 +1771,11 @@ void set_prepro_button_sensitiveness() {
 	gtk_widget_set_sensitive(lookup_widget("entry_flat_norm"),
 			gtk_toggle_button_get_active(uflat)
 					&& !gtk_toggle_button_get_active(checkAutoEvaluate));
+
+	gtk_widget_set_sensitive(lookup_widget("checkButton_pp_dem"), allow_debayer);
+	if (!allow_debayer) {
+		gtk_toggle_button_set_active(pp_debayer, FALSE);
+	}
 }
 
 void clear_sampling_setting_box() {
@@ -2375,6 +2382,7 @@ void initialize_preprocessing() {
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
 	gtk_toggle_button_set_active(ToggleButton, com.prepro_cfa);
+	update_prepro_interface(FALSE);
 }
 
 void set_libraw_settings_menu_available(gboolean activate) {
@@ -3985,12 +3993,13 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 				gtk_builder_get_object(builder, "entry_flat_norm"));
 		args->normalisation = atof(gtk_entry_get_text(norm_entry));
 	}
-	GtkToggleButton *CFA;
+	GtkToggleButton *CFA, *debayer;
 	GtkSpinButton *sigHot, *sigCold;
 
-	CFA = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"cosmCFACheck"));
-	sigHot = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinSigCosmeHot"));
-	sigCold = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinSigCosmeCold"));
+	CFA = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "cosmCFACheck"));
+	debayer = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "checkButton_pp_dem"));
+	sigHot = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinSigCosmeHot"));
+	sigCold = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinSigCosmeCold"));
 
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkSigCold"))))
 		args->sigma[0] = gtk_spin_button_get_value(sigCold);
@@ -4003,6 +4012,8 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 		args->sigma[1] = -1.0;
 
 	args->is_cfa = gtk_toggle_button_get_active(CFA);
+	args->compatibility = com.debayer.compatibility;
+	args->debayer = gtk_toggle_button_get_active(debayer);
 
 	/****/
 

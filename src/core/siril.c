@@ -48,6 +48,7 @@
 #include "gui/histogram.h"
 #include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"
+#include "io/conversion.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
 #include "io/ser.h"
@@ -877,7 +878,7 @@ static gboolean end_sequence_prepro(gpointer p) {
  * returns 1 on error */
 gpointer seqpreprocess(gpointer p) {
 	char dest_filename[256], msg[256];
-	fits *dark, *offset, *flat;
+	fits *dark, *offset, *flat, *fit = NULL;
 	struct preprocessing_data *args = (struct preprocessing_data *) p;
 
 	if (single_image_is_loaded()) {
@@ -912,10 +913,16 @@ gpointer seqpreprocess(gpointer p) {
 		msg[255] = '\0';
 		set_progress_bar_data(msg, 0.5);
 
-		if ((com.preprostatus & USE_OPTD) && (com.preprostatus & USE_DARK))
-			darkOptimization(com.uniq->fit, dark, offset);
+		if (new_fit_image(&fit, com.uniq->fit->rx, com.uniq->fit->ry,
+				com.uniq->fit->naxes[2]))
+			return GINT_TO_POINTER(1);
+		copyfits(com.uniq->fit, fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
+		copy_fits_metadata(com.uniq->fit, fit);
 
-		preprocess(com.uniq->fit, offset, dark, flat, args->normalisation);
+		if ((com.preprostatus & USE_OPTD) && (com.preprostatus & USE_DARK))
+			darkOptimization(fit, dark, offset);
+
+		preprocess(fit, offset, dark, flat, args->normalisation);
 
 		if ((com.preprostatus & USE_COSME) && (com.preprostatus & USE_DARK)) {
 			if (dark->naxes[2] == 1) {
@@ -924,13 +931,17 @@ gpointer seqpreprocess(gpointer p) {
 			deviant_pixel *dev = find_deviant_pixels(dark, args->sigma, &icold, &ihot);
 			siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
 					icold + ihot, icold, ihot);
-			cosmeticCorrection(com.uniq->fit, dev, icold + ihot, args->is_cfa);
+			cosmeticCorrection(fit, dev, icold + ihot, args->is_cfa);
 			if (dev)
 				free(dev);
 			}
 			else
 				siril_log_message(_("Darkmap cosmetic correction "
 						"is only supported with single channel images\n"));
+		}
+
+		if (args->debayer) {
+			debayer_if_needed(TYPEFITS, fit, args->compatibility, TRUE);
 		}
 
 		gchar *filename = g_path_get_basename(com.uniq->filename);
@@ -940,7 +951,9 @@ gpointer seqpreprocess(gpointer p) {
 		snprintf(msg, 255, _("Saving image %s"), filename_noext);
 		msg[255] = '\0';
 		set_progress_bar_data(msg, PROGRESS_NONE);
-		savefits(dest_filename, com.uniq->fit);
+		savefits(dest_filename, fit);
+		clearfits(fit);
+		free(fit);
 		g_free(filename);
 		free(filename_noext);
 	} else {	// sequence
@@ -968,7 +981,12 @@ gpointer seqpreprocess(gpointer p) {
 						"is only supported with single channel images\n"));
 		}
 
-		fits *fit = calloc(1, sizeof(fits));
+		/* allocating memory to new fits */
+		fit = calloc(1, sizeof(fits));
+		if (fit == NULL) {
+			printf("Error: allocating memory to fit.\n");
+			return GINT_TO_POINTER(1);
+		}
 
 		for (i = 0; i < com.seq.number; i++) {
 			if (!get_thread_run())
@@ -1000,6 +1018,10 @@ gpointer seqpreprocess(gpointer p) {
 
 			if ((com.preprostatus & USE_COSME) && (com.preprostatus & USE_DARK) && (dark->naxes[2] == 1))
 				cosmeticCorrection(fit, dev, icold + ihot, args->is_cfa);
+
+			if (args->debayer && com.seq.type == SEQ_REGULAR) {
+				debayer_if_needed(TYPEFITS, fit, args->compatibility, TRUE);
+			}
 
 			snprintf(dest_filename, 255, "%s%s", com.seq.ppprefix,
 					source_filename);

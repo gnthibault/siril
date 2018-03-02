@@ -777,14 +777,14 @@ static int retrieveBayerPattern(char *bayer) {
 	return BAYER_FILTER_NONE;
 }
 
-int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility) {
+int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer) {
 	int retval = 0;
 	sensor_pattern tmp;
 	/* What the hell?
 	 * Siril's FITS are stored bottom to top, debayering will throw 
 	 * wrong results. So before demosacaing we need to transforme the image
 	 * with fits_flip_top_to_bottom() function */
-	if (imagetype == TYPEFITS && (convflags & CONVDEBAYER)) {
+	if (imagetype == TYPEFITS && (((convflags & CONVDEBAYER) && !force_debayer) || force_debayer)) {
 		tmp = com.debayer.bayer_pattern;
 		if (fit->naxes[2] != 1) {
 			siril_log_message(_("Cannot perform debayering on image with more than one channel\n"));
@@ -840,7 +840,7 @@ fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compati
 	retval = any_to_fits(imagetype, source, tmpfit);
 
 	if (!retval)
-		retval = debayer_if_needed(imagetype, tmpfit, compatibility);
+		retval = debayer_if_needed(imagetype, tmpfit, compatibility, FALSE);
 
 	if (retval) {
 		clearfits(tmpfit);

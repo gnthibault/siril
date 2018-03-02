@@ -504,7 +504,7 @@ int savejpg(const char *name, fits *fit, int quality){
 	//## CREATE IMAGE BUFFER TO WRITE FROM AND MODIFY THE IMAGE TO LOOK LIKE CHECKERBOARD:
 	unsigned char *image_buffer = (unsigned char*) malloc(
 			cinfo.image_width * cinfo.image_height * cinfo.num_components);
-	float pixelTot = cinfo.image_height * cinfo.image_width * cinfo.input_components;
+
 	for (i = (cinfo.image_height - 1); i >= 0; i--) {
 		for (j = 0; j < cinfo.image_width; j++) {
 			int pixelIdx = ((i * cinfo.image_width) + j)
