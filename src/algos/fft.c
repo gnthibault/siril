@@ -321,6 +321,9 @@ gpointer fourier_transform(gpointer p) {
 	clearfits(tmp);
 	clearfits(tmp1);
 	clearfits(tmp2);
+	free(tmp);
+	free(tmp1);
+	free(tmp2);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);

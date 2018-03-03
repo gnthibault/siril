@@ -77,6 +77,9 @@ int stack_mean_with_rejection(struct stacking_args *args);
 int stack_addmax(struct stacking_args *args);
 int stack_addmin(struct stacking_args *args);
 
+int upscale_sequence(struct stacking_args *args);
+
+
 void start_stacking();
 void update_stack_interface(gboolean dont_change_stack_type);
 

@@ -124,7 +124,7 @@ int read_single_image(const char* filename, fits *dest, char **realname_out) {
 	} else {
 		retval = any_to_fits(imagetype, realname, dest);
 		if (!retval)
-			debayer_if_needed(imagetype, dest, com.debayer.compatibility);
+			debayer_if_needed(imagetype, dest, com.debayer.compatibility, FALSE);
 	}
 	if (retval != 0 && retval != 3)
 		siril_log_message(_("Opening %s failed.\n"), realname);
@@ -203,7 +203,7 @@ void open_single_image_from_gfit(char *realname) {
 	set_cutoff_sliders_values();
 
 	set_display_mode();
-	set_prepro_button_sensitiveness(); 			// enable or not the preprobutton
+	update_prepro_interface(TRUE);
 	adjust_sellabel();
 
 	display_filename();	// display filename in gray window

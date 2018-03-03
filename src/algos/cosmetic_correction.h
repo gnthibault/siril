@@ -5,7 +5,7 @@
 
 typedef struct deviant_struct deviant_pixel;
 
-/* Banding data from GUI */
+/* Cosmetic data from GUI */
 struct cosmetic_data {
 	fits *fit;
 	double sigma[2];

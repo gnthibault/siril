@@ -239,7 +239,8 @@ gboolean end_generic_sequence(gpointer p) {
 		g_free(basename);
 	}
 	
-	return end_generic(p);
+	free(p);
+	return end_generic(NULL);
 }
 
 int ser_prepare_hook(struct generic_seq_args *args) {
@@ -290,18 +291,25 @@ int generic_save(struct generic_seq_args *args, int out_index, int in_index, fit
  *      P R O C E S S I N G      T H R E A D      M A N A G E M E N T        *
  ****************************************************************************/
 
-// This function is reentrant
+// This function is reentrant. The pointer will be freed in the idle function,
+// so it must be a proper pointer to an allocated memory chunk.
 void start_in_new_thread(gpointer (*f)(gpointer p), gpointer p) {
 	g_mutex_lock(&com.mutex);
 	if (com.run_thread || com.thread != NULL) {
 		fprintf(stderr, "The processing thread is busy, stop it first.\n");
 		g_mutex_unlock(&com.mutex);
+		free(p);
 		return;
 	}
 
 	com.run_thread = TRUE;
 	g_mutex_unlock(&com.mutex);
 	com.thread = g_thread_new("processing", f, p);
+}
+
+void waiting_for_thread() {
+	g_thread_join(com.thread);
+	com.thread = NULL;
 }
 
 void stop_processing_thread() {
@@ -311,9 +319,7 @@ void stop_processing_thread() {
 	}
 
 	set_thread_run(FALSE);
-
-	g_thread_join(com.thread);
-	com.thread = NULL;
+	waiting_for_thread();
 }
 
 void set_thread_run(gboolean b) {

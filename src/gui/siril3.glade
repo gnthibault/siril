@@ -11817,7 +11817,7 @@ A first computation pass will be done on all images before exporting, it may tak
                         <property name="halign">start</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="set_prepro_button_sensitiveness" swapped="no"/>
+                        <signal name="toggled" handler="update_prepro_interface" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -11865,7 +11865,7 @@ All images in the sequence will be divided by the master flat image (each pixel 
                         <property name="halign">start</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="set_prepro_button_sensitiveness" swapped="no"/>
+                        <signal name="toggled" handler="update_prepro_interface" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -11913,7 +11913,7 @@ The dark master image will be removed from all images in the sequence.</property
                         <property name="halign">start</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="set_prepro_button_sensitiveness" swapped="no"/>
+                        <signal name="toggled" handler="update_prepro_interface" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -12227,32 +12227,61 @@ Hot pixels are located on the master-dark.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="box11">
+                  <object class="GtkBox" id="GtkBoxPreprocessing">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="halign">end</property>
-                    <property name="spacing">5</property>
                     <child>
-                      <object class="GtkLabel" id="preproseqname_label">
+                      <object class="GtkCheckButton" id="checkButton_pp_dem">
+                        <property name="label" translatable="yes">Demosaic FITS images before saving</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="label" translatable="yes">Store resulting sequence with prefix:</property>
-                        <property name="justify">center</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="tooltip_text" translatable="yes">Check this option if you want to apply a demosaicing algorithm to your FITS images right after they were preprocessed. By doing this, you skip one manual step which can take some time.
+
+WARNING: this option is only available for FITS images as SER sequence can be demosaiced on-the-fly.</property>
+                        <property name="halign">start</property>
+                        <property name="draw_indicator">True</property>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="preproseqname_entry">
+                      <object class="GtkBox" id="box11">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip_text" translatable="yes">Prefix of the image names resulting from the pre-processing.</property>
-                        <property name="max_length">4</property>
-                        <property name="text">pp_</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkLabel" id="preproseqname_label">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">end</property>
+                            <property name="label" translatable="yes">Store resulting sequence with prefix:</property>
+                            <property name="justify">center</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="preproseqname_entry">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Prefix of the image names resulting from the pre-processing.</property>
+                            <property name="max_length">4</property>
+                            <property name="text">pp_</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>

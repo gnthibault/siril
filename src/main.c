@@ -84,7 +84,6 @@ static void gui_add_osx_to_app_menu(GtkosxApplication *osx_app, const gchar *ite
 static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 	GtkWidget *menubar = lookup_widget("menubar1");
 	GtkWidget *file_quit_menu_item = lookup_widget("exit");
-	GtkWidget *help_menu = lookup_widget("help_item1");
 	GtkWidget *sep;
 	GdkPixbuf *icon;
 	gchar *icon_path;
@@ -103,7 +102,6 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 	gtkosx_application_insert_app_menu_item(osx_app, sep, 3);
 
 	gtk_widget_hide(file_quit_menu_item);
-	gtk_widget_hide(help_menu);
 	
 	icon_path = g_build_filename(siril_path, "pixmaps/siril_1.svg", NULL);
 	icon = gdk_pixbuf_new_from_file(icon_path, NULL);

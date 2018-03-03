@@ -66,7 +66,7 @@ void activate_tab(int vport);
 void control_window_switch_to_tab(main_tabs tab);
 void on_comboboxreglayer_changed(GtkComboBox *widget, gpointer user_data);
 
-void set_prepro_button_sensitiveness();
+void update_prepro_interface();
 
 void update_statusbar_convert();
 

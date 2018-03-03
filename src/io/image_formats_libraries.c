@@ -502,26 +502,29 @@ int savejpg(const char *name, fits *fit, int quality){
 	jpeg_set_quality(&cinfo, quality, TRUE);
 
 	//## CREATE IMAGE BUFFER TO WRITE FROM AND MODIFY THE IMAGE TO LOOK LIKE CHECKERBOARD:
-	unsigned char *image_buffer = (unsigned char*)malloc(cinfo.image_width*cinfo.image_height*cinfo.num_components);
-	for (i=(cinfo.image_height-1);i>=0;i--){
-		for (j=0;j<cinfo.image_width;j++){
-			int pixelIdx = ((i*cinfo.image_width)+j) * cinfo.input_components;
+	unsigned char *image_buffer = (unsigned char*) malloc(
+			cinfo.image_width * cinfo.image_height * cinfo.num_components);
+
+	for (i = (cinfo.image_height - 1); i >= 0; i--) {
+		for (j = 0; j < cinfo.image_width; j++) {
+			int pixelIdx = ((i * cinfo.image_width) + j)
+					* cinfo.input_components;
 			red = *gbuf[RLAYER];
 			gbuf[RLAYER] += 4;
-			if (fit->naxes[2]==3){
-				green   = *gbuf[GLAYER];
-				blue    = *gbuf[BLAYER];
+			if (fit->naxes[2] == 3) {
+				green = *gbuf[GLAYER];
+				blue = *gbuf[BLAYER];
 				gbuf[GLAYER] += 4;
 				gbuf[BLAYER] += 4;
 			} else {
-				green   = red;
-				blue    = red;
+				green = red;
+				blue = red;
 			}
-			image_buffer[pixelIdx+0] = red;         // r |-- Set r,g,b components to
-			image_buffer[pixelIdx+1] = green;       // g |   make this pixel 
-			image_buffer[pixelIdx+2] = blue;        // b |
+			image_buffer[pixelIdx + 0] = red;   // r |-- Set r,g,b components to
+			image_buffer[pixelIdx + 1] = green;       // g |   make this pixel
+			image_buffer[pixelIdx + 2] = blue;        // b |
 		}
-		if (fit->naxes[2]==3){
+		if (fit->naxes[2] == 3) {
 			gbuf[GLAYER] -= cinfo.image_width * 8;
 			gbuf[BLAYER] -= cinfo.image_width * 8;
 		}

@@ -470,7 +470,7 @@ int set_seq(const char *name){
 	display_filename();		// display filename in gray window
 	adjust_exclude(seq->current, FALSE);	// check or uncheck excluded checkbox
 	adjust_refimage(seq->current);	// check or uncheck reference image checkbox
-	set_prepro_button_sensitiveness(); // enable or not the preprobutton
+	update_prepro_interface(seq->type == SEQ_REGULAR); // enable or not the preprobutton
 	update_reg_interface(FALSE);	// change the registration prereq message
 	update_stack_interface(FALSE);	// get stacking info and enable the Go button
 	adjust_reginfo();		// change registration displayed/editable values
