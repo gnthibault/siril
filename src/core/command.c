@@ -1429,6 +1429,7 @@ struct _stackall_data {
 	stack_method method;
 	double sig[2];
 	gboolean force_no_norm;
+	normalization norm;
 	int number_of_loaded_sequences;
 };
 
@@ -1459,7 +1460,7 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		args.coeff.scale = NULL;
 		if (!arg->force_no_norm &&
 				(arg->method == stack_median || arg->method == stack_mean_with_rejection))
-			args.normalize = ADDITIVE_SCALING;
+			args.normalize = arg->norm;
 		else args.normalize = NO_NORM;
 		args.force_norm = FALSE;
 		args.reglayer = get_registration_layer();
@@ -1528,6 +1529,7 @@ static gpointer stackall_worker(gpointer garg) {
 int process_stackall(int nb) {
 	struct _stackall_data *arg = malloc(sizeof (struct _stackall_data));
 	arg->force_no_norm = FALSE;
+	arg->norm = ADDITIVE_SCALING;
 
 	if (!word[1] || !strcmp(word[1], "sum"))
 		arg->method = stack_summing_generic;
@@ -1539,17 +1541,40 @@ int process_stackall(int nb) {
 		arg->method = stack_median;
 		if (word[2] && (!strcmp(word[2], "-nonorm") || !strcmp(word[2], "-no_norm")))
 			arg->force_no_norm = TRUE;
+		else if (word[2] && g_str_has_prefix(word[2], "-norm=")) {
+			if (!strcmp(word[2], "-norm=add")) {
+				arg->norm = ADDITIVE;
+			} else if (!strcmp(word[2], "-norm=addscale")) {
+				arg->norm = ADDITIVE_SCALING;
+			} else if (!strcmp(word[2], "-norm=mul")) {
+				arg->norm = MULTIPLICATIVE;
+			} else if (!strcmp(word[2], "-norm=mulscale")) {
+				arg->norm = MULTIPLICATIVE_SCALING;
+			}
+		}
 	} else if (!strcmp(word[1], "rej") || !strcmp(word[1], "mean")) {
 		if (!word[2] || !word[3] ||
 				(arg->sig[0] = atof(word[2])) < 0.001 ||
 				(arg->sig[1] = atof(word[3])) < 0.001) {
-			siril_log_message(_("The average stacking with rejection uses the Winsorized rejection here and requires two extra arguments: sigma low and high.\n"));
+			siril_log_message(_("The average stacking with rejection uses the Winsorized "
+					"rejection here and requires two extra arguments: sigma low and high.\n"));
 			free(arg);
 			return 1;
 		}
 		arg->method = stack_mean_with_rejection;
 		if (word[4] && (!strcmp(word[4], "-nonorm") || !strcmp(word[4], "-no_norm")))
 			arg->force_no_norm = TRUE;
+		else if (word[4] && g_str_has_prefix(word[4], "-norm=")) {
+			if (!strcmp(word[4], "-norm=add")) {
+				arg->norm = ADDITIVE;
+			} else if (!strcmp(word[4], "-norm=addscale")) {
+				arg->norm = ADDITIVE_SCALING;
+			} else if (!strcmp(word[4], "-norm=mul")) {
+				arg->norm = MULTIPLICATIVE;
+			} else if (!strcmp(word[4], "-norm=mulscale")) {
+				arg->norm = MULTIPLICATIVE_SCALING;
+			}
+		}
 	}
 	else {
 		siril_log_message(_("The provided type of stacking is unknown (%s).\n"), word[1]);
@@ -1613,17 +1638,40 @@ int process_stackone(int nb) {
 		arg->method = stack_median;
 		if (word[3] && (!strcmp(word[3], "-nonorm") || !strcmp(word[3], "-no_norm")))
 			arg->force_no_norm = TRUE;
+		else if (word[3] && g_str_has_prefix(word[3], "-norm=")) {
+			if (!strcmp(word[3], "-norm=add")) {
+				arg->norm = ADDITIVE;
+			} else if (!strcmp(word[3], "-norm=addscale")) {
+				arg->norm = ADDITIVE_SCALING;
+			} else if (!strcmp(word[3], "-norm=mul")) {
+				arg->norm = MULTIPLICATIVE;
+			} else if (!strcmp(word[3], "-norm=mulscale")) {
+				arg->norm = MULTIPLICATIVE_SCALING;
+			}
+		}
 	} else if (!strcmp(word[2], "rej") || !strcmp(word[2], "mean")) {
 		if (!word[3] || !word[4] ||
 				(arg->sig[0] = atof(word[3])) < 0.001 ||
 				(arg->sig[1] = atof(word[4])) < 0.001) {
-			siril_log_message(_("The average stacking with rejection uses the Winsorized rejection here and requires two extra arguments: sigma low and high.\n"));
+			siril_log_message(_("The average stacking with rejection uses the Winsorized "
+					"rejection here and requires two extra arguments: sigma low and high.\n"));
 			free(arg);
 			return 1;
 		}
 		arg->method = stack_mean_with_rejection;
 		if (word[5] && (!strcmp(word[5], "-nonorm") || !strcmp(word[5], "-no_norm")))
 			arg->force_no_norm = TRUE;
+		else if (word[5] && g_str_has_prefix(word[5], "-norm=")) {
+			if (!strcmp(word[5], "-norm=add")) {
+				arg->norm = ADDITIVE;
+			} else if (!strcmp(word[5], "-norm=addscale")) {
+				arg->norm = ADDITIVE_SCALING;
+			} else if (!strcmp(word[5], "-norm=mul")) {
+				arg->norm = MULTIPLICATIVE;
+			} else if (!strcmp(word[5], "-norm=mulscale")) {
+				arg->norm = MULTIPLICATIVE_SCALING;
+			}
+		}
 	}
 	else {
 		siril_log_message(_("The provided type of stacking is unknown (%s).\n"), word[2]);
@@ -1675,7 +1723,8 @@ int process_help(int nb){
 }
 
 int process_exit(int nb){
-	exit(0);
+	undo_flush();
+	exit(EXIT_SUCCESS);
 }
 
 int process_extract(int nb) {
