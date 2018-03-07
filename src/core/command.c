@@ -36,6 +36,7 @@
 #include "core/siril.h"
 #include "core/command.h"
 #include "core/proto.h"
+#include "core/undo.h"
 #include "core/initfile.h"
 #include "core/processing.h"
 #include "io/conversion.h"
