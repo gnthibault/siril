@@ -295,11 +295,11 @@ static gpointer minisavedial(gpointer p) {
 					gfit.hi = com.uniq->layers[RLAYER].hi;
 					gfit.lo = com.uniq->layers[RLAYER].lo;
 				}
-				if (gfit.bitpix == BYTE_IMG
+				if (gfit.orig_bitpix == BYTE_IMG
 						&& (gfit.hi > UCHAR_MAX || gfit.lo > UCHAR_MAX)) {
 					gfit.hi = UCHAR_MAX;
 					gfit.lo = 0;
-				} else if (gfit.bitpix == SHORT_IMG
+				} else if (gfit.orig_bitpix == SHORT_IMG
 						&& (gfit.hi > SHRT_MAX || gfit.lo > SHRT_MAX)) {
 					gfit.hi = UCHAR_MAX;
 					gfit.lo = 0;
