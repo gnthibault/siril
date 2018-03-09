@@ -363,6 +363,7 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 		fits tmpfit, *fit;
 
 		if (load_ref_into_gfit) {
+			clearfits(&gfit);
 			fit = &gfit;
 		} else {
 			fit = &tmpfit;
@@ -445,9 +446,7 @@ int set_seq(const char *name){
 	free_cbbt_layers();
 
 	/* Sequence is stored in com.seq for now */
-	if (sequence_is_loaded() && com.seq.needs_saving)
-			writeseqfile(&com.seq);
-	free_sequence(&com.seq, FALSE);
+	close_sequence();
 	memcpy(&com.seq, seq, sizeof(sequence));
 
 	if (seq->nb_layers > 1)
@@ -499,7 +498,7 @@ int set_seq(const char *name){
  * if load_it is true, dest is assumed to be gfit
  * TODO: cut that method in two, with an internal func taking a filename and a fits
  */
-int seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it) {
+int seq_load_image(sequence *seq, int index, gboolean load_it) {
 	if (!single_image_is_loaded())
 		save_stats_from_fit(&gfit, seq, seq->current);
 	seq->current = index;
@@ -513,11 +512,12 @@ int seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it) {
 		adjust_vport_size_to_image();
 	}
 	close_single_image();
+	clearfits(&gfit);
 	seq->current = index;
 
 	if (load_it) {
 		set_cursor_waiting(TRUE);
-		if (seq_read_frame(seq, index, dest)) {
+		if (seq_read_frame(seq, index, &gfit)) {
 			set_cursor_waiting(FALSE);
 			return 1;
 		}
@@ -1045,6 +1045,8 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 		free_photometry_set(seq, i);
 	}
 
+	sequence_free_preprocessing_data(seq);
+
 	if (free_seq_too)	free(seq);
 }
 
@@ -1073,6 +1075,23 @@ void sequence_free_preprocessing_data(sequence *seq) {
 
 gboolean sequence_is_loaded() {
 	return (com.seq.seqname != NULL && com.seq.imgparam != NULL);
+}
+
+/* Close the com.seq sequence */
+void close_sequence() {
+	fprintf(stdout, "MODE: closing sequence\n");
+	if (sequence_is_loaded()) {
+		siril_log_message(_("Closing sequence %s\n"), com.seq.seqname);
+		clear_sequence_list();
+		if (com.seq.needs_saving)
+			writeseqfile(&com.seq);
+		free_sequence(&com.seq, FALSE);
+		clear_stars_list();
+		initialize_sequence(&com.seq, FALSE);
+		// unselect the sequence in the sequence list
+		GtkComboBox *seqcombo = GTK_COMBO_BOX(lookup_widget("sequence_list_combobox"));
+		gtk_combo_box_set_active(seqcombo, -1);
+	}
 }
 
 /* if no reference image has been set, return the index of an image that is

@@ -3744,7 +3744,7 @@ gboolean on_imagenumberspin_output(GtkSpinButton *spin, gpointer user_data) {
 	//fprintf(stdout, "SPINCHANGED: index=%d\n", index);
 
 	do_display = (com.seq.imgparam[index].incl || com.show_excluded);
-	return !seq_load_image(&com.seq, index, &gfit, do_display);
+	return !seq_load_image(&com.seq, index, do_display);
 }
 
 /* for the spin button to be able to display number which are not the actual value of
@@ -4102,7 +4102,8 @@ void on_seqproc_entry_changed(GtkComboBox *widget, gpointer user_data) {
 		set_cursor_waiting(FALSE);
 		set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 	}
-	g_free(name);
+	if (name)
+		g_free(name);
 }
 
 /* signal handler for the gray window layer change */

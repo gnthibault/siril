@@ -212,7 +212,7 @@ void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
 	gint index = get_image_index_from_path(path);
 	if (index < 0 || index >= com.seq.number) return;
 	fprintf(stdout, "loading image %d\n", index);
-	seq_load_image(&com.seq, index, &gfit, TRUE);
+	seq_load_image(&com.seq, index, TRUE);
 }
 
 /****************** modification of the list store (tree model) ******************/

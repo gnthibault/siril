@@ -80,6 +80,8 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 		mul[i] = *mul0 / mul[i];
 		break;
 	}
+
+	free_stats(stat);
 	return 0;
 }
 

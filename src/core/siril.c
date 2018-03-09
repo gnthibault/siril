@@ -1583,11 +1583,13 @@ gboolean end_noise(gpointer p) {
 
 	nb_chan = args->fit->naxes[2];
 
-	double norm = (double) get_normalized_value(args->fit);
-	for (chan = 0; chan < nb_chan; chan++)
-		siril_log_message(
-				_("Background noise value (channel: #%d): %0.3lf (%.3e)\n"), chan,
-				args->bgnoise[chan], args->bgnoise[chan] / norm);
+	if (!args->retval) {
+		double norm = (double) get_normalized_value(args->fit);
+		for (chan = 0; chan < nb_chan; chan++)
+			siril_log_message(
+					_("Background noise value (channel: #%d): %0.3lf (%.3e)\n"), chan,
+					args->bgnoise[chan], args->bgnoise[chan] / norm);
+	}
 	set_cursor_waiting(FALSE);
 	update_used_memory();
 	if (args->verbose) {
@@ -1600,7 +1602,8 @@ gboolean end_noise(gpointer p) {
 
 gpointer noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
-	int  chan;
+	int chan;
+	args->retval = 0;
 
 	if (args->verbose) {
 		siril_log_color_message(_("Noise standard deviation: calculating...\n"),
@@ -1608,17 +1611,12 @@ gpointer noise(gpointer p) {
 		gettimeofday(&args->t_start, NULL);
 	}
 
-/*	if (backgroundnoise(args->fit, args->bgnoise)) {
-		gdk_threads_add_idle(end_noise, args);
-		return GINT_TO_POINTER(1);
-	}
-	*/
 	for (chan = 0; chan < args->fit->naxes[2]; chan++) {
 		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
 		if (!stat) {
+			args->retval = 1;
 			siril_log_message(_("Error: no data computed.\n"));
-			gdk_threads_add_idle(end_noise, args);
-			return GINT_TO_POINTER(1);
+			break;
 		}
 		args->bgnoise[chan] = stat->bgnoise;
 		free_stats(stat);
@@ -1626,7 +1624,7 @@ gpointer noise(gpointer p) {
 
 	gdk_threads_add_idle(end_noise, args);
 
-	return GINT_TO_POINTER(0);
+	return GINT_TO_POINTER(args->retval);
 }
 
 gpointer LRdeconv(gpointer p) {

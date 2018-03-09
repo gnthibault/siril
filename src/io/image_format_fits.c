@@ -562,7 +562,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	return retval;
 }
 
-// reset a fit data structure, deallocates everything in it
+// reset a fit data structure, deallocates everything in it and zero the data
 void clearfits(fits *fit) {
 	if (fit == NULL)
 		return;
@@ -1381,7 +1381,6 @@ int new_fit_image(fits **fit, int width, int height, int nblayer) {
 
 	npixels = width * height;
 	data = malloc(npixels * nblayer * sizeof(WORD));
-
 	if (data == NULL) {
 		fprintf(stderr, "Could not allocate memory\n");
 		return -1;

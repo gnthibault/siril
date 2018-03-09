@@ -138,6 +138,10 @@ sequence * readseqfile(const char *name){
 				 * The current file format comes back to the first,
 				 * moving stats to the M-line. */
 				stats = NULL;
+				if (!seq->imgparam) {
+					fprintf(stderr, "readseqfile: sequence file format error, missing S line\n");
+					goto error;
+				}
 				allocate_stats(&stats);
 				nb_tokens = sscanf(line + 2,
 						"%d %d %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg",
@@ -157,7 +161,7 @@ sequence * readseqfile(const char *name){
 					add_stats_to_seq(seq, i, 0, stats);
 					free_stats(stats);	// we unreference it here
 				} else {
-					free(stats);
+					free_stats(stats);
 					if (nb_tokens != 2) {
 						fprintf(stderr, "readseqfile: sequence file format error: %s\n", line);
 						goto error;
@@ -316,7 +320,7 @@ sequence * readseqfile(const char *name){
 					add_stats_to_seq(seq, image, current_layer, stats);
 					free_stats(stats);	// we unreference it here
 				} else {
-					free(stats);
+					free_stats(stats);
 					fprintf(stderr, "readseqfile: sequence file format error: %s\n",line);
 					goto error;
 				}

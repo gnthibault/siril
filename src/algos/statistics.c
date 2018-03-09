@@ -441,7 +441,8 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 		// we have sequence data, store in the sequence
 		if (seq->stats && seq->stats[layer]) {
 			oldstat = seq->stats[layer][image_index];
-			oldstat->_nb_refs++;
+			if (oldstat)	// can be NULL here
+				oldstat->_nb_refs++;
 		}
 		stat = statistics_internal(fit, layer, NULL, option, nullcheck, oldstat);
 		if (!stat)
@@ -539,6 +540,7 @@ void allocate_stats(imstats **stat) {
 		(*stat)->ngoodpix = -1L;
 		(*stat)->mean = (*stat)->avgDev = (*stat)->median = (*stat)->sigma = (*stat)->bgnoise = (*stat)->min = (*stat)->max = (*stat)->normValue = (*stat)->mad = (*stat)->sqrtbwmv = (*stat)->location = (*stat)->scale = -1.0;
 		(*stat)->_nb_refs = 1;
+		fprintf(stdout, "- stats %p allocated\n", *stat);
 	}
 }
 

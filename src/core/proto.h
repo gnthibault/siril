@@ -159,6 +159,7 @@ struct noise_data {
 	fits *fit;
 	double bgnoise[3];
 	struct timeval t_start;
+	int retval;
 };
 
 /* Lucy-Richardson data from GUI */

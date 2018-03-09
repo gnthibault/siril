@@ -103,6 +103,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 		if (ssdata->sum[0][i] > max)
 			max = ssdata->sum[0][i];
 
+	clearfits(&gfit);
 	fits *fit = &gfit;
 	if (new_fit_image(&fit, args->seq->rx, args->seq->ry, args->seq->nb_layers))
 		return -1;

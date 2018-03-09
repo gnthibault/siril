@@ -12,7 +12,7 @@ int	set_seq(const char *);
 char *	seq_get_image_filename(sequence *seq, int index, char *name_buf);
 int	seq_read_frame(sequence *seq, int index, fits *dest);
 int	seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const rectangle *area, gboolean do_photometry);
-int	seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it);
+int	seq_load_image(sequence *seq, int index, gboolean load_it);
 double seq_compute_size(sequence *seq);
 int	seq_open_image(sequence *seq, int index);
 void	seq_close_image(sequence *seq, int index);
@@ -24,6 +24,7 @@ int	get_index_and_basename(const char *filename, char **basename, int *index, in
 void	initialize_sequence(sequence *seq, gboolean is_zeroed);
 void	free_sequence(sequence *seq, gboolean free_seq_too);
 void	sequence_free_preprocessing_data(sequence *seq);
+void	close_sequence();
 gboolean sequence_is_loaded();
 
 typedef enum {
