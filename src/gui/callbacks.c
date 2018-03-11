@@ -78,6 +78,10 @@ static BYTE *remap_index[MAXGRAYVPORT];
 static float last_pente[MAXGRAYVPORT];
 static display_mode last_mode[MAXGRAYVPORT];
 
+/* STF (auto-stretch) data */
+static gboolean stfComputed;	// Flag to know if STF parameters are available
+static double stfShadows, stfHighlights, stfM;
+
 /*****************************************************************************
  *                    S T A T I C      F U N C T I O N S                     *
  ****************************************************************************/
@@ -462,7 +466,7 @@ static void test_and_allocate_reference_image(int vport) {
 static void remap(int vport) {
 	// This function maps fit data with a linear LUT between lo and hi levels
 	// to the buffer to be displayed; display only is modified
-	guint x, y;
+	guint y;
 	BYTE *dst, *index, rainbow_index[UCHAR_MAX + 1][3];
 	WORD *src, hi, lo;
 	display_mode mode;
@@ -605,9 +609,10 @@ static void remap(int vport) {
 	index = remap_index[vport];
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(y,x) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) private(y) schedule(static)
 #endif
 	for (y = 0; y < gfit.ry; y++) {
+		guint x;
 		for (x = 0; x < gfit.rx; x++) {
 			guint src_index = y * gfit.rx + x;
 			BYTE dst_pixel_value;
@@ -654,16 +659,11 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 	float pente;
 	int i;
 	BYTE *index;
-	double m = 0.0;
 	double pxl;
 	if (mode == STF_DISPLAY) {
-		if (!com.stfComputed) {
-			double shadows = 0.0, highlights = 0.0;
-			m = findMidtonesBalance(&gfit, &shadows, &highlights);
-			com.stfShadows = shadows;
-			com.stfHighlights = highlights;
-			com.stfM = m;
-			com.stfComputed = TRUE;
+		if (!stfComputed) {
+			stfM = findMidtonesBalance(&gfit, &stfShadows, &stfHighlights);
+			stfComputed = TRUE;
 		}
 	}
 
@@ -736,9 +736,9 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 			pxl = (gfit.orig_bitpix == BYTE_IMG ?
 					(double) i / UCHAR_MAX_DOUBLE :
 					(double) i / USHRT_MAX_DOUBLE);
-			pxl = (pxl - com.stfShadows < 0.0) ? 0.0 : pxl - com.stfShadows;
-			pxl /= (com.stfHighlights - com.stfShadows);
-			index[i] = round_to_BYTE((float) (MTF(pxl, com.stfM)) * pente);
+			pxl = (pxl - stfShadows < 0.0) ? 0.0 : pxl - stfShadows;
+			pxl /= (stfHighlights - stfShadows);
+			index[i] = round_to_BYTE((float) (MTF(pxl, stfM)) * pente);
 			break;
 		default:
 			return 1;
@@ -1608,8 +1608,6 @@ void update_MenuItem() {
 gboolean redraw(int vport, int doremap) {
 	GtkWidget *widget;
 
-	com.stfComputed = FALSE;
-
 	if (vport >= MAXVPORT) {
 		fprintf(stderr, _("redraw: maximum number of layers supported is %d"
 				" (current image has %d).\n"), MAXVPORT, vport);
@@ -1624,6 +1622,7 @@ gboolean redraw(int vport, int doremap) {
 		if (doremap == REMAP_ONLY) {
 			remap(vport);
 		} else if (doremap == REMAP_ALL) {
+			stfComputed = FALSE;
 			int i;
 //#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)		//probably causes crashes in HESTEQ_MODE
 			for (i = 0; i < gfit.naxes[2]; i++) {

@@ -286,6 +286,8 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	WORD *data = NULL;
 	int stat_is_local = 0, free_data = 0;
 	imstats* stat = stats;
+	int compute_median = (option & STATS_BASIC) || (option & STATS_AVGDEV) ||
+		(option & STATS_MAD) || (option & STATS_BWMV);
 	if (!stat) {
 		allocate_stats(&stat);
 		if (!stat) return NULL;
@@ -329,9 +331,12 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	}
 
 	/* we exclude 0 if nullcheck */
-	if (nullcheck && fit) {
-		if (!data) return NULL;
-		if (stat->total != stat->ngoodpix) {
+	if (fit) {
+		/* normally we should only do it in case of null check and when the total differs,
+		 * but the median algorithm is made in O(1) space so it has to
+		 * be copied in this case, and almost everything uses it...
+		 */
+		if (compute_median || (nullcheck && stat->total != stat->ngoodpix)) {
 			data = reassign_to_non_null_data(data, stat->total, stat->ngoodpix, free_data);
 			free_data = 1;
 		}
@@ -353,9 +358,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	}
 
 	/* Calculation of median */
-	if (((option & STATS_BASIC) || (option & STATS_AVGDEV) ||
-				(option & STATS_MAD) || (option & STATS_BWMV)) &&
-			(stat->min < 0. || stat->max < 0. || stat->median < 0.)) {
+	if (compute_median && (stat->min < 0. || stat->max < 0. || stat->median < 0.)) {
 		if (!data) return NULL;	// not in cache
 		fprintf(stdout, "- stats %p fit %p (%d): computing median\n", stat, fit, layer);
 		stat->median = siril_stats_ushort_median(data, stat->ngoodpix);
@@ -415,6 +418,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
  * is not used.
  * If seq is null (single image processing), image_index is ignored, data is
  * stored in the fit, which cannot be NULL.
+ * If seq is non-null, fit can be null to check for cached data.
  * The return value, if non-null, may be freed only using the free_stats()
  * function because of the special rule of this object that has a reference
  * counter because it can be referenced in 3 different places.

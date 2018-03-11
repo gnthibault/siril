@@ -569,11 +569,6 @@ struct cominf {
 
 	gsl_histogram *layers_hist[MAXVPORT]; // current image's histograms
 
-	gboolean stfComputed;	// Ugly Flag to know if stf parameters are already computed
-	double stfShadows;
-	double stfHighlights;
-	double stfM;
-
 	fitted_PSF **stars;		// list of stars detected in the current image
 	gboolean star_is_seqdata;	// the only star in stars belongs to seq, don't free it
 	int selected_star;		// current selected star in the GtkListStore
