@@ -728,9 +728,19 @@ int register_star_alignment(struct registration_args *args) {
 					if (!args->translation_only) {
 						fits_flip_top_to_bottom(&fit);	// this is because in cvTransformImage, rotation center point is at (0, 0)
 						if (args->x2upscale) {
-							cvResizeGaussian(&fit, fit.rx * 2, fit.ry * 2, OPENCV_NEAREST);
-							H.h02 *= 2.0;
-							H.h12 *= 2.0;
+							double upscale = 2.0;
+							double scaleX, scaleY;
+
+							cvResizeGaussian(&fit, fit.rx * upscale, fit.ry * upscale, OPENCV_NEAREST);
+							scaleX = sqrt(H.h00 * H.h00 + H.h01 * H.h01);
+							scaleY = sqrt(H.h10 * H.h10 + H.h11 * H.h11);
+
+							H.h02 *= upscale;
+							H.h12 *= upscale;
+							H.h00 *= ((1.0 + (scaleX - 1.0) * upscale) / scaleX);
+							H.h01 *= ((1.0 + (scaleX - 1.0) * upscale) / scaleX);
+							H.h10 *= ((1.0 + (scaleY - 1.0) * upscale) / scaleY);
+							H.h11 *= ((1.0 + (scaleY - 1.0) * upscale) / scaleY);
 						}
 						cvTransformImage(&fit, ref, H, args->interpolation);
 						fits_flip_top_to_bottom(&fit);
