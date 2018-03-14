@@ -1192,6 +1192,7 @@ int copy_fits_metadata(fits *from, fits *to) {
 	to->exposure = from->exposure;
 	to->aperture = from->aperture;
 	to->ccd_temp = from->ccd_temp;
+	to->cvf = from->cvf;
 	to->dft_norm[0] = from->dft_norm[0];
 	to->dft_norm[1] = from->dft_norm[1];
 	to->dft_norm[2] = from->dft_norm[2];
