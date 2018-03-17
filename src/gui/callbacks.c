@@ -1217,6 +1217,11 @@ static void toggle_image_selection(int image_num) {
 		--com.seq.selnum;
 		g_snprintf(msg, sizeof(msg),
 				_("Image %d has been unselected from sequence\n"), image_num);
+		if (image_num == com.seq.reference_image) {
+			com.seq.reference_image = -1;
+			sequence_list_change_reference();
+			adjust_refimage(image_num);
+		}
 	} else {
 		com.seq.imgparam[image_num].incl = TRUE;
 		++com.seq.selnum;
@@ -2182,7 +2187,6 @@ void adjust_refimage(int n) {
 	if (ref_butt == NULL)
 		ref_butt = lookup_widget("refframe");
 
-	//fprintf(stdout, "adjust refimage: %d (ref is %d)\n", n, com.seq.reference_image);
 	g_signal_handlers_block_by_func(ref_butt, on_ref_frame_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ref_butt), com.seq.reference_image == n);
 	g_signal_handlers_unblock_by_func(ref_butt, on_ref_frame_toggled, NULL);
@@ -4055,6 +4059,15 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	} else {
 		com.seq.reference_image = com.seq.current;
 		test_and_allocate_reference_image(-1);
+		// a reference image should not be excluded to avoid confusion
+		if (!com.seq.imgparam[com.seq.current].incl) {
+			//com.seq.imgparam[com.seq.current].incl = TRUE;
+			//GtkToggleButton *inclButton = GTK_TOGGLE_BUTTON(lookup_widget("exclude_button"));
+			//gtk_toggle_button_set_active(inclButton, FALSE);
+			//g_signal_handlers_block_by_func(inclButton, on_excludebutton_toggled, NULL);
+			toggle_image_selection(com.seq.current);
+			//g_signal_handlers_unblock_by_func(inclButton, on_excludebutton_toggled, NULL);
+		}
 	}
 	sequence_list_change_reference();
 	adjust_sellabel();	// reference image is named in the label
