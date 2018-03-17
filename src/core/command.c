@@ -129,6 +129,7 @@ command commande[] = {
 	
 	{"psf", 0, "psf", process_psf},
 	
+	{"register", 1, "coregister sequence", process_register},
 	{"resample", 1, "resample factor", process_resample},
 	{"rl", 2, "rl iterations sigma", process_rl},
 	{"rmgreen", 1, "rmgreen type", process_scnr},
@@ -161,7 +162,7 @@ command commande[] = {
 	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq},
 	{"split", 3, "split R G B", process_split},
 	{"stat", 0, "stat", process_stat},
-	{"stack", 0, "stack", process_stackone},
+	{"stack", 1, "stack sequence", process_stackone},
 	{"stackall", 0, "stackall", process_stackall},
 	
 	{"threshlo", 1, "threshlo level", process_threshlo},
@@ -1422,6 +1423,155 @@ int process_stat(int nb){
 		free(stat);
 		stat = NULL;
 	}
+	return 0;
+}
+
+static gboolean end_register_worker(gpointer p) {
+	struct timeval t_end;
+	struct registration_args *args = (struct registration_args *) p;
+	stop_processing_thread();
+	if (!args->retval) {
+		writeseqfile(args->seq);
+		fill_sequence_list(args->seq, com.cvport);
+		set_layers_for_registration();	// update display of available reg data
+
+		sequence *seq;
+
+		if (!(seq = malloc(sizeof(sequence)))) {
+			fprintf(stderr, "could not allocate new sequence\n");
+			goto failed_end;
+		}
+		initialize_sequence(seq, FALSE);
+
+		/* we are not interested in the whole path */
+		gchar *seqname = g_path_get_basename (args->seq->seqname);
+		char *rseqname = malloc(
+				strlen(args->prefix) + strlen(seqname) + 5);
+
+		sprintf(rseqname, "%s%s.seq", args->prefix, seqname);
+		g_free(seqname);
+		g_unlink(rseqname);	// remove previous to overwrite
+		char *newname = remove_ext_from_filename(rseqname);
+		seq->seqname = newname;
+		seq->number = args->new_total;
+		seq->selnum = args->new_total;
+		seq->fixed = args->seq->fixed;
+		seq->nb_layers = args->seq->nb_layers;
+		seq->rx = args->seq->rx;
+		seq->ry = args->seq->ry;
+		seq->imgparam = args->imgparam;
+		seq->regparam = calloc(seq->nb_layers, sizeof(regdata*));
+		seq->regparam[args->layer] = args->regparam;
+		seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
+		seq->beg = seq->imgparam[0].filenum;
+		seq->end = seq->imgparam[seq->number-1].filenum;
+		seq->type = args->seq->type;
+		seq->current = -1;
+		seq->needs_saving = TRUE;
+		writeseqfile(seq);
+
+		free_sequence(seq, TRUE);
+
+		free(rseqname);
+	}
+	set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
+failed_end:
+	update_used_memory();
+	set_cursor_waiting(FALSE);
+#ifdef MAC_INTEGRATION
+	GtkosxApplication *osx_app = gtkosx_application_get();
+	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
+	g_object_unref (osx_app);
+#endif
+	gettimeofday(&t_end, NULL);
+	show_time(args->t_start, t_end);
+	free(args);
+	return FALSE;
+
+}
+
+static gpointer register_worker(gpointer p) {
+	struct registration_args *args = (struct registration_args *) p;
+	args->retval = args->func(args);
+	gdk_threads_add_idle(end_register_worker, args); //FIXME
+	return GINT_TO_POINTER(args->retval);	// not used anyway
+}
+
+int process_register(int nb) {
+	struct registration_args *reg_args;
+	struct registration_method *method;
+	char *msg;
+
+	if (get_thread_run()) {
+		siril_log_message(_("Another task is "
+				"already in progress, ignoring new request.\n"));
+		return 1;
+	}
+
+	gchar *file = g_strdup(word[1]);
+	if (!ends_with(file, ".seq")) {
+		str_append(&file, ".seq");
+	}
+
+	sequence *seq = readseqfile(file);
+	if (seq == NULL) {
+		siril_log_message(_("No sequence %s found.\n"), file);
+		return 1;
+	}
+
+	/* getting the selected registration method */
+	struct registration_method *reg = malloc(sizeof(struct registration_method));
+	reg->name = strdup(_("Global Star Alignment (deep-sky)"));
+	reg->method_ptr = &register_star_alignment;
+	reg->sel = REQUIRES_NO_SELECTION;
+	reg->type = REGTYPE_DEEPSKY;
+
+	method = reg;
+
+	reg_args = calloc(1, sizeof(struct registration_args));
+
+	control_window_switch_to_tab(OUTPUT_LOGS);
+
+	/* filling the arguments for registration */
+	reg_args->func = method->method_ptr;
+	reg_args->seq = seq;
+	reg_args->process_all_frames = TRUE;
+	reg_args->follow_star = FALSE;
+	reg_args->matchSelection = FALSE;
+	reg_args->translation_only = FALSE;
+	if (word[2] && (!strcmp(word[2], "-d")))
+		reg_args->x2upscale = TRUE;
+	else
+		reg_args->x2upscale = FALSE;
+	/* Here we should test available free disk space for Drizzle operation */
+	if (reg_args->x2upscale) {
+		double size = seq_compute_size(reg_args->seq);
+		double diff = test_available_space(size * 4.0); //FIXME: 4 is only ok for x2 Drizzle
+		if (diff < 0.0) {
+			msg = siril_log_message(_("Not enough disk space to "
+					"perform Drizzle operation !!\n"));
+			free(reg_args);
+			return 1;
+		}
+	}
+	/* getting the selected registration layer from the combo box. The value is the index
+	 * of the selected line, and they are in the same order than layers so there should be
+	 * an exact matching between the two */
+	reg_args->layer = (reg_args->seq->nb_layers == 3) ? 1 : 0;
+	reg_args->interpolation = OPENCV_LINEAR;
+	get_the_registration_area(reg_args, method);	// sets selection
+	reg_args->run_in_thread = TRUE;
+	reg_args->prefix = "r_";
+
+	msg = siril_log_color_message(
+			_("Registration: processing using method: %s\n"), "red",
+			method->name);
+	msg[strlen(msg) - 1] = '\0';
+	gettimeofday(&(reg_args->t_start), NULL);
+	set_cursor_waiting(TRUE);
+	set_progress_bar_data(msg, PROGRESS_RESET);
+
+	start_in_new_thread(register_worker, reg_args);
 	return 0;
 }
 

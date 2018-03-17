@@ -111,6 +111,7 @@ int	process_set_mag_seq(int nb);
 int	process_unset_mag(int nb);
 int	process_unset_mag_seq(int nb);
 int	process_unselect(int nb);
+int process_register(int nb);
 int	process_stat(int nb);
 int	process_stackall(int nb);
 int	process_stackone(int nb);
