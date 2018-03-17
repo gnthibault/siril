@@ -471,12 +471,10 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 				sprintf(buf, _("OK upscaled from %ux%u"),
 						layers[layer]->the_fit.rx, layers[layer]->the_fit.ry);
 				cvResizeGaussian(&layers[layer]->the_fit, gfit.rx, gfit.ry, OPENCV_LINEAR); // BILINEAR
-				image_find_minmax(&layers[layer]->the_fit, 0);
 				gtk_label_set_text(layers[layer]->label, buf);
 			}
 		}
 		else if (!retval) {
-			image_find_minmax(&layers[layer]->the_fit, 0);
 			sprintf(buf, _("OK %ux%u"), layers[layer]->the_fit.rx, layers[layer]->the_fit.ry);
 			gtk_label_set_text(layers[layer]->label, buf);
 		}
@@ -518,7 +516,6 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		display_filename();
 		sliders_mode_set_state(com.sliders);
 
-		image_find_minmax(&gfit, 0);
 		init_layers_hi_and_lo_values(MIPSLOHI);
 		set_cutoff_sliders_max_values();
 		set_cutoff_sliders_values();

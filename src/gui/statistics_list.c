@@ -303,8 +303,7 @@ void computeStat() {
 	gtk_label_set_text(statSelecLabel, selection);
 
 	for (channel = 0; channel < gfit.naxes[2]; channel++) {
-		stat[channel] = statistics(NULL, -1, &gfit, channel, &com.selection, STATS_MAIN,
-				STATS_ZERO_NULLCHECK);
+		stat[channel] = statistics(NULL, -1, &gfit, channel, &com.selection, STATS_MAIN);
 		if (!stat[channel]) {
 			siril_log_message(_("Error: no data computed.\n"));
 		}

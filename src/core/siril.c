@@ -211,7 +211,7 @@ int sub_background(fits* image, fits* background, int layer) {
 	/* First step we convert data, apply the subtraction, normalize with median,
 	 * and re-convert data to USHORT
 	 */
-	imstats *stat = statistics(NULL, -1, image, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+	imstats *stat = statistics(NULL, -1, image, layer, NULL, STATS_BASIC);
 	median = stat->median / USHRT_MAX_DOUBLE;
 	pxl_image = malloc(sizeof(double) * ndata);
 	pxl_bkg = malloc(sizeof(double) * ndata);
@@ -303,7 +303,7 @@ int ndiv(fits *a, fits *b) {
 						/ (double) b->pdata[layer][i];
 			max = max(div[i], max);
 		}
-		norm = max / (double) a->max[layer];
+		norm = max / fit_get_max(a, layer);
 		for (i = 0; i < nb_pixels; ++i) {
 			a->pdata[layer][i] = round_to_WORD(div[i] / norm);
 		}
@@ -474,7 +474,7 @@ double contrast(fits* fit, int layer) {
 	int i;
 	WORD *buf = fit->pdata[layer];
 	double contrast = 0.0;
-	imstats *stat = statistics(NULL, -1, fit, layer, &com.selection, STATS_BASIC, STATS_ZERO_NULLCHECK);
+	imstats *stat = statistics(NULL, -1, fit, layer, &com.selection, STATS_BASIC);
 	if (!stat) {
 		siril_log_message(_("Error: no data computed.\n"));
 		return -1.0;
@@ -682,11 +682,12 @@ int lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb) {
 	//
 	// some stats used to normalize
 	//
-	image_find_minmax(r, 0);
-	image_find_minmax(g, 0);
-	image_find_minmax(b, 0);
+	if (image_find_minmax(r) || image_find_minmax(g) ||
+			image_find_minmax(b) || image_find_minmax(l)) {
+		siril_log_color_message("Could not compute normalization values for the images, aborting.\n", "red");
+		return -1;
+	}
 	maxi = max(r->maxi, max(g->maxi, b->maxi));
-	image_find_minmax(l, 0);
 	//
 	// initialize pointers
 	//
@@ -758,7 +759,7 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	imoper(fit_tmp, dark_tmp, OPER_SUB);
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, fit_tmp, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, fit_tmp, chan, NULL, STATS_BASIC);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 0.0;
@@ -897,7 +898,7 @@ gpointer seqpreprocess(gpointer p) {
 		if (args->autolevel) {
 			/* TODO: evaluate the layer to apply but generally RLAYER is a good choice.
 			 * Indeed, if it is image from APN, CFA picture are in black & white */
-			imstats *stat = statistics(NULL, -1, flat, RLAYER, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+			imstats *stat = statistics(NULL, -1, flat, RLAYER, NULL, STATS_BASIC);
 			if (!stat) {
 				siril_log_message(_("Error: no data computed.\n"));
 				return GINT_TO_POINTER(1);
@@ -1062,7 +1063,7 @@ double background(fits* fit, int reqlayer, rectangle *selection) {
 	else if (isrgb(&gfit))
 		layer = GLAYER;		//GLAYER is better to evaluate background
 
-	imstats* stat = statistics(NULL, -1, fit, layer, selection, STATS_BASIC, STATS_ZERO_NULLCHECK);
+	imstats* stat = statistics(NULL, -1, fit, layer, selection, STATS_BASIC);
 	if (!stat) {
 		siril_log_message(_("Error: no data computed.\n"));
 		return 0.0;
@@ -1420,7 +1421,7 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 		return 1;
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, fit, chan, NULL, STATS_BASIC | STATS_MAD, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, fit, chan, NULL, STATS_BASIC | STATS_MAD);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 1;
@@ -1510,7 +1511,7 @@ int backgroundnoise(fits* fit, double sigma[]) {
 		unsigned int ndata = fit->rx * fit->ry;
 		assert(ndata > 0);
 
-		imstats *stat = statistics(NULL, -1, waveimage, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, waveimage, layer, NULL, STATS_BASIC);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 1;
@@ -1612,7 +1613,7 @@ gpointer noise(gpointer p) {
 	}
 
 	for (chan = 0; chan < args->fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_BASIC);
 		if (!stat) {
 			args->retval = 1;
 			siril_log_message(_("Error: no data computed.\n"));

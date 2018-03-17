@@ -1367,16 +1367,13 @@ void set_cutoff_sliders_max_values() {
 	}
 	fprintf(stdout, _("Setting MAX value for cutoff sliders adjustments\n"));
 	/* set max value for range according to number of bits of original image
-	 * We should use gfit.bitpix for this, but it's currently always USHORT_IMG */
+	 * We should use gfit.bitpix for this, but it's currently always USHORT_IMG.
+	 * Since 0.9.8 we have orig_bitpix, but it's not filled for SER and other images.
+	 */
 	/*if (gfit.bitpix == BYTE_IMG)
 	 max_val = UCHAR_MAX_DOUBLE;
 	 else max_val = USHRT_MAX_DOUBLE;*/
-	if (gfit.maxi == 0)
-		image_find_minmax(&gfit, 0);
-	if (gfit.maxi <= UCHAR_MAX)
-		max_val = UCHAR_MAX_DOUBLE;
-	else
-		max_val = USHRT_MAX_DOUBLE;
+	max_val = (double)get_normalized_value(&gfit);
 
 	gtk_adjustment_set_upper(adj1, max_val);
 	gtk_adjustment_set_upper(adj2, max_val);

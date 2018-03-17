@@ -423,8 +423,7 @@ gpointer enhance_saturation(gpointer p) {
 	args->h_min /= 360.0;
 	args->h_max /= 360.0;
 	if (args->preserve) {
-		imstats *stat = statistics(NULL, -1, args->fit, GLAYER, NULL, STATS_BASIC,
-				STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, args->fit, GLAYER, NULL, STATS_BASIC);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			gdk_threads_add_idle(end_enhance_saturation, args);
@@ -632,8 +631,7 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 	assert(fit->naxes[2] == 3);
 
 	for (chan = 0; chan < 3; chan++) {
-		stats[chan] = statistics(NULL, -1, fit, chan, &black_selection, STATS_BASIC,
-				STATS_ZERO_NULLCHECK);
+		stats[chan] = statistics(NULL, -1, fit, chan, &black_selection, STATS_BASIC);
 		if (!stats[chan]) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return;
@@ -755,7 +753,7 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 
 	siril_log_message(_("Background reference:\n"));
 	for (chan = 0; chan < 3; chan++) {
-		imstats *stat = statistics(NULL, -1, fit, chan, &black, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, fit, chan, &black, STATS_BASIC);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return;

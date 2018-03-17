@@ -416,12 +416,8 @@ struct ffit {
 	unsigned int dft_rx, dft_ry;		// padding: original value of picture size
 	
 	/* data computed or set by Siril */
-	unsigned short min[3];	// min for all layers
-	unsigned short max[3];	// max for all layers
-	unsigned short maxi;	// max of the max[3]
-	unsigned short mini;	// min of the min[3]
-	// TODO 1.0: move min and max to stats - stats min is not min, stats ignore the 0!
 	imstats **stats;	// stats of fit for each layer, null if naxes[2] is unknown
+	double mini, maxi;	// max of the stats->max[3]
 
 	fitsfile *fptr;		// file descriptor. Only used for file read and write.
 	WORD *data;		// 16-bit image data (depending on image type)

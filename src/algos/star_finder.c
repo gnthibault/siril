@@ -44,7 +44,7 @@ static WORD Compute_threshold(fits *fit, double starfinder, int layer, WORD *nor
 
 	assert(layer <= 3);
 
-	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC);
 	if (!stat) {
 		siril_log_message(_("Error: no data computed.\n"));
 		return 0;

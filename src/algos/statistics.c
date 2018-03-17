@@ -67,6 +67,7 @@ static void select_area(fits *fit, WORD *data, int layer, rectangle *bounds) {
 
 #define ELEM_SWAP_WORD(a,b) { register WORD t=(a);(a)=(b);(b)=t; }
 
+// warning: data is modified, sorted in-place
 static double siril_stats_ushort_median(WORD *arr, int n) {
 	int low, high;
 	int median;
@@ -281,11 +282,12 @@ static WORD* reassign_to_non_null_data(WORD *data, long inputlen, long outputlen
 
 /* this function tries to get the requested stats from the passed stats,
  * computes them and stores them in it if they have not already been */
-static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, int option, int nullcheck, imstats *stats) {
+static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, int option, imstats *stats) {
 	int nx, ny;
 	WORD *data = NULL;
 	int stat_is_local = 0, free_data = 0;
 	imstats* stat = stats;
+	// median is included in STATS_BASIC but required to compute other data
 	int compute_median = (option & STATS_BASIC) || (option & STATS_AVGDEV) ||
 		(option & STATS_MAD) || (option & STATS_BWMV);
 	if (!stat) {
@@ -309,13 +311,28 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		stat->total = nx * ny;
 	}
 
-	/* Calculation of mean, sigma and noise */
+	/* Calculation of min and max */
+	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min < 0. || stat->max < 0.)) {
+		// TODO 1.0: change to double
+		WORD min, max, norm;
+		if (!data) return NULL;	// not in cache, don't compute
+		fprintf(stdout, "- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
+		gsl_stats_ushort_minmax(&min, &max, data, 1, stat->total);
+		if (max <= UCHAR_MAX)
+			norm = UCHAR_MAX;
+		else norm = USHRT_MAX;
+		stat->min = (double)min;
+		stat->max = (double)max;
+		stat->normValue = (double)norm;
+	}
+
+	/* Calculation of ngoodpix, mean, sigma and background noise */
 	if ((option & STATS_BASIC) && (stat->ngoodpix <= 0L || stat->mean < 0. ||
 			stat->sigma < 0. || stat->bgnoise < 0.)) {
 		int status = 0;
-		if (!data) return NULL;	// not in cache
+		if (!data) return NULL;	// not in cache, don't compute
 		fprintf(stdout, "- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
-		fits_img_stats_ushort(data, nx, ny, nullcheck, 0, &stat->ngoodpix,
+		fits_img_stats_ushort(data, nx, ny, 1, 0, &stat->ngoodpix,
 				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
 				NULL, NULL, NULL, &status);
 		if (status) {
@@ -330,43 +347,23 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		return NULL;
 	}
 
-	/* we exclude 0 if nullcheck */
-	if (fit) {
-		/* normally we should only do it in case of null check and when the total differs,
-		 * but the median algorithm is made in O(1) space so it has to
-		 * be copied in this case, and almost everything uses it...
-		 */
-		if (compute_median || (nullcheck && stat->total != stat->ngoodpix)) {
-			data = reassign_to_non_null_data(data, stat->total, stat->ngoodpix, free_data);
-			free_data = 1;
-		}
-	}
-
-	/* Calculation of min, max and ngoodpix */
-	if ((option & STATS_BASIC) && stat->normValue < 0.) {
-		// we already have this from fit->max and min!
-		WORD min, max, norm;
-		if (!data) return NULL;	// not in cache
-		fprintf(stdout, "- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
-		gsl_stats_ushort_minmax(&min, &max, data, 1, stat->ngoodpix);
-		if (max <= UCHAR_MAX)
-			norm = UCHAR_MAX;
-		else norm = USHRT_MAX;
-		stat->min = (double)min;
-		stat->max = (double)max;
-		stat->normValue = (double)norm;
+	/* we exclude 0 if some computations remain to be done or copy data if
+	 * median has to be computed */
+	if (fit && (compute_median || ((option & STATS_IKSS) && stat->total != stat->ngoodpix))) {
+		data = reassign_to_non_null_data(data, stat->total, stat->ngoodpix, free_data);
+		free_data = 1;
 	}
 
 	/* Calculation of median */
-	if (compute_median && (stat->min < 0. || stat->max < 0. || stat->median < 0.)) {
-		if (!data) return NULL;	// not in cache
+	if (compute_median && stat->median < 0.) {
+		if (!data) return NULL;	// not in cache, don't compute
 		fprintf(stdout, "- stats %p fit %p (%d): computing median\n", stat, fit, layer);
 		stat->median = siril_stats_ushort_median(data, stat->ngoodpix);
 	}
 
 	/* Calculation of average absolute deviation from the median */
 	if (option & STATS_AVGDEV && stat->avgDev < 0.) {
-		if (!data) return NULL;	// not in cache
+		if (!data) return NULL;	// not in cache, don't compute
 		fprintf(stdout, "- stats %p fit %p (%d): computing absdev\n", stat, fit, layer);
 		stat->avgDev = gsl_stats_ushort_absdev_m(data, 1, stat->ngoodpix, stat->median);
 	}
@@ -423,11 +420,11 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
  * function because of the special rule of this object that has a reference
  * counter because it can be referenced in 3 different places.
  */
-imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectangle *selection, int option, int nullcheck) {
+imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectangle *selection, int option) {
 	imstats *oldstat = NULL, *stat;
 	if (selection && selection->h > 0 && selection->w > 0) {
 		// we have a selection, don't store anything
-		return statistics_internal(fit, layer, selection, option, nullcheck, NULL);
+		return statistics_internal(fit, layer, selection, option, NULL);
 		// ^ may be freed
 	} else if (!seq || image_index < 0) {
 		// we have a single image, store in the fits
@@ -435,7 +432,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 			oldstat = fit->stats[layer];
 			oldstat->_nb_refs++;
 		}
-		stat = statistics_internal(fit, layer, NULL, option, nullcheck, oldstat);
+		stat = statistics_internal(fit, layer, NULL, option, oldstat);
 		if (!stat)
 		       	return NULL;
 		if (!oldstat)
@@ -448,7 +445,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 			if (oldstat)	// can be NULL here
 				oldstat->_nb_refs++;
 		}
-		stat = statistics_internal(fit, layer, NULL, option, nullcheck, oldstat);
+		stat = statistics_internal(fit, layer, NULL, option, oldstat);
 		if (!stat)
 			return NULL;
 		if (!oldstat)

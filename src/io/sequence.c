@@ -501,18 +501,16 @@ int set_seq(const char *name){
 int seq_load_image(sequence *seq, int index, gboolean load_it) {
 	if (!single_image_is_loaded())
 		save_stats_from_fit(&gfit, seq, seq->current);
-	seq->current = index;
 	clear_stars_list();
 	clear_histograms();
-	gfit.maxi = 0;
 	undo_flush();
+	close_single_image();
+	clearfits(&gfit);
 	if (seq->current == SCALED_IMAGE) {
 		gfit.rx = seq->rx;
 		gfit.ry = seq->ry;
 		adjust_vport_size_to_image();
 	}
-	close_single_image();
-	clearfits(&gfit);
 	seq->current = index;
 
 	if (load_it) {
@@ -692,7 +690,6 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
 			break;
 	}
 	copy_seq_stats_to_fit(seq, index, dest);
-	image_find_minmax(dest, 0);	// to be removed in 1.0
 	return 0;
 }
 

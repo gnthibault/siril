@@ -1640,7 +1640,6 @@ static gboolean end_stacking(gpointer p) {
 		com.uniq->nb_layers = gfit.naxes[2];
 		com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
 		com.uniq->fit = &gfit;
-		//com.uniq->fit->maxi = 0;	// force to recompute min/max
 		/* Giving summary if average rejection stacking */
 		_show_summary(args);
 		/* Giving noise estimation (new thread) */
@@ -2114,12 +2113,6 @@ static int upscale_image_hook(struct generic_seq_args *args, int i, fits *fit, r
 	return cvResizeGaussian(fit, fit->rx * upargs->factor, fit->ry * upargs->factor, OPENCV_NEAREST);
 }
 
-static gboolean end_upscale(gpointer p) {
-	// do nothing, the default behaviour of the generic processing ends the thread
-	free(p);
-	return FALSE;
-}
-
 int upscale_sequence(struct stacking_args *stackargs) {
 	if (stackargs->seq->upscale_at_stacking <= 1.05)
 		return 0;
@@ -2137,7 +2130,7 @@ int upscale_sequence(struct stacking_args *stackargs) {
 	args->finalize_hook = ser_finalize_hook;
 	args->image_hook = upscale_image_hook;
 	args->save_hook = NULL;
-	args->idle_function = end_upscale;
+	args->idle_function = NULL;
 	args->stop_on_error = TRUE;
 	args->description = _("Up-scaling sequence for stacking");
 	args->has_output = TRUE;

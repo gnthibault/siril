@@ -40,14 +40,14 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 	imstats *stat = NULL;
 
 	// try with no fit passed: fails if data is needed because data is not cached
-	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, 0, NULL, STATS_EXTRA, STATS_ZERO_NULLCHECK))) {
+	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, 0, NULL, STATS_EXTRA))) {
 		fits fit;
 		memset(&fit, 0, sizeof(fits));
 		if (seq_read_frame(args->seq, args->image_indices[i], &fit)) {
 			return 1;
 		}
 		// retry with the fit to compute it
-		if (!(stat = statistics(args->seq, args->image_indices[i], &fit, 0, NULL, STATS_EXTRA, STATS_ZERO_NULLCHECK)))
+		if (!(stat = statistics(args->seq, args->image_indices[i], &fit, 0, NULL, STATS_EXTRA)))
 			return 1;
 		if (args->seq->type != SEQ_INTERNAL)
 			clearfits(&fit);

@@ -1410,8 +1410,7 @@ int process_stat(int nb){
 	char layername[6];
 
 	for (layer = 0; layer < nplane; layer++) {
-		imstats* stat = statistics(NULL, -1, &gfit, layer, &com.selection, STATS_MAIN,
-		STATS_ZERO_NULLCHECK);
+		imstats* stat = statistics(NULL, -1, &gfit, layer, &com.selection, STATS_MAIN);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 1;

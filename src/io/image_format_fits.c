@@ -35,6 +35,7 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "algos/statistics.h"
+#include "io/single_image.h"
 
 static char *MIPSHI[] = {"MIPS-HI", "CWHITE", NULL };
 static char *MIPSLO[] = {"MIPS-LO", "CBLACK", NULL };
@@ -1152,8 +1153,7 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		to->naxis = depth == 3 ? 3 : from->naxis;
 		to->naxes[2] = depth;
 		if (depth != from->naxes[2]) {
-			to->max[0] = 0;	// force recomputation
-			to->maxi = 0;
+			to->maxi = -1.0;
 		}
 		to->stats = NULL;
 		to->fptr = NULL;
@@ -1186,8 +1186,7 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		to->naxes[1] = from->naxes[1];
 		to->naxes[2] = 1;
 		if (depth != from->naxes[2]) {
-			to->max[0] = 0;	// force recomputation
-			to->maxi = 0;
+			to->maxi = -1.0;
 		}
 		memcpy(to->data, from->pdata[layer],
 				nbdata * to->naxes[2] * sizeof(WORD));
@@ -1430,11 +1429,9 @@ void keep_first_channel_from_fits(fits *fit) {
 	fit->pdata[GLAYER] = fit->data;
 	fit->pdata[BLAYER] = fit->data;
 	if (fit->maxi > 0) {
-		fit->min[1] = fit->min[2] = 0;
-		fit->max[1] = fit->max[2] = 0;
-		if (fit->maxi != fit->max[0])
+		if (fit->maxi != fit_get_max(fit, 0))
 			fit->maxi = 0;
-		if (fit->mini != fit->min[0])
+		if (fit->mini != fit_get_min(fit, 0))
 			fit->mini = 0;
 	}
 }
