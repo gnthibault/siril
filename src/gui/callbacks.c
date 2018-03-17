@@ -1246,7 +1246,7 @@ static void sequence_setselect_all(gboolean include_all) {
 
 	if (!com.seq.imgparam)
 		return;
-	for (i = 0; i <= com.seq.number; ++i) {
+	for (i = 0; i < com.seq.number; ++i) {
 		if (com.seq.imgparam[i].incl != include_all) {
 			com.seq.imgparam[i].incl = include_all;
 			sequence_list_change_selection_index(i);
