@@ -85,6 +85,7 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 	GtkWidget *menubar = lookup_widget("menubar1");
 	GtkWidget *file_quit_menu_item = lookup_widget("exit");
 	GtkWidget *help_menu = lookup_widget("help1");
+	GtkWidget *window_menu = lookup_widget("menuitemWindows");
 	GtkWidget *sep;
 	GdkPixbuf *icon;
 	gchar *icon_path;
@@ -94,6 +95,7 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 	gtk_widget_hide(menubar);
 
 	gtkosx_application_set_menu_bar(osx_app, GTK_MENU_SHELL(menubar));
+	gtkosx_application_set_window_menu(osx_app, GTK_MENU_ITEM(window_menu));
 
 	gui_add_osx_to_app_menu(osx_app, "help_item1", 0);
 	gui_add_osx_to_app_menu(osx_app, "help_update", 1);
