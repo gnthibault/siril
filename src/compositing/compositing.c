@@ -443,6 +443,9 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 
 	filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
 	if (!filename) return;
+	if (layers[layer]->the_fit.rx == 0) {	// already loaded image
+		clearfits(&layers[layer]->the_fit);
+	}
 	if ((retval = read_single_image(filename, &layers[layer]->the_fit, NULL))) {
 		gtk_label_set_text(layers[layer]->label, _("ERROR"));
 	} else {
@@ -497,7 +500,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 	/* create the new result image if it's the first opened image */
 	if (number_of_images_loaded() == 1) {
 		close_single_image();
-		copyfits(&layers[layer]->the_fit, &gfit, CP_ALLOC | CP_INIT | CP_FORMAT | CP_EXPAND, -1);
+		copyfits(&layers[layer]->the_fit, &gfit, CP_ALLOC | CP_FORMAT | CP_EXPAND, -1);
 	}
 
 	update_result(0);
@@ -760,6 +763,7 @@ void luminance_and_colors_align_and_compose() {
 	}
 	fprintf(stdout, "luminance-enabled composition\n");
 
+	image_find_minmax(&layers[0]->the_fit);
 	double norm = (double)(layers[0]->the_fit.maxi);
 
 #ifdef _OPENMP
@@ -1098,9 +1102,9 @@ void autoadjust(int force_redraw) {
 	set_cursor_waiting(TRUE);
 	clear_pixel(&max_pixel);
 	/* sum the max per channel */
-	/* should we assume that fits mini and maxi are correct? */
 	for (layer = 1; layers[layer]; layer++) {
 		if (has_fit(layer)) {
+			image_find_minmax(&layers[layer]->the_fit);
 			WORD max_value = layers[layer]->the_fit.maxi;
 			if (coeff)
 				max_value = get_normalized_pixel_value(layer, max_value);

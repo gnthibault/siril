@@ -1123,8 +1123,25 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		depth = 1;
 	else depth = from->naxes[2];
 
+	if ((oper & CP_FORMAT)) {
+		// copying metadata, not data or stats which are kept null
+		memcpy(to, from, sizeof(fits));
+		to->naxis = depth == 3 ? 3 : from->naxis;
+		to->naxes[2] = depth;
+		if (depth != from->naxes[2]) {
+			to->maxi = -1.0;
+		}
+		to->stats = NULL;
+		to->fptr = NULL;
+		to->data = NULL;
+		to->pdata[0] = NULL;
+		to->pdata[1] = NULL;
+		to->pdata[2] = NULL;
+		to->header = NULL;
+	}
+
 	if ((oper & CP_ALLOC)) {
-		// allocating to->data
+		// allocating to->data and assigning to->pdata
 		WORD *olddata = to->data;
 		if (!(to->data = realloc(to->data, nbdata * depth * sizeof(WORD)))) {
 			fprintf(stderr, "copyfits: error reallocating data\n");
@@ -1145,23 +1162,6 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 			// clearing to->data allocated above
 			memset(to->data, 0, nbdata * depth * sizeof(WORD));
 		}
-	}
-
-	if ((oper & CP_FORMAT)) {
-		// copying metadata, not data or stats which are kept null
-		memcpy(to, from, sizeof(fits));
-		to->naxis = depth == 3 ? 3 : from->naxis;
-		to->naxes[2] = depth;
-		if (depth != from->naxes[2]) {
-			to->maxi = -1.0;
-		}
-		to->stats = NULL;
-		to->fptr = NULL;
-		to->data = NULL;
-		to->pdata[0] = NULL;
-		to->pdata[1] = NULL;
-		to->pdata[2] = NULL;
-		to->header = NULL;
 	}
 
 	if ((oper & CP_COPYA)) {

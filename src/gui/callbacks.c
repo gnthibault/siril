@@ -1363,7 +1363,6 @@ void set_sliders_value_to_gfit() {
 /* Sets maximum value for contrast scales. Minimum is always 0.
  * Should be done on first image load of a sequence and when single images are loaded.
  * Max value is taken from gfit.maxi, recomputed if not present.
- *
  */
 void set_cutoff_sliders_max_values() {
 	static GtkAdjustment *adj1 = NULL, *adj2 = NULL;
@@ -1377,11 +1376,7 @@ void set_cutoff_sliders_max_values() {
 	 * We should use gfit.bitpix for this, but it's currently always USHORT_IMG.
 	 * Since 0.9.8 we have orig_bitpix, but it's not filled for SER and other images.
 	 */
-	/*if (gfit.bitpix == BYTE_IMG)
-	 max_val = UCHAR_MAX_DOUBLE;
-	 else max_val = USHRT_MAX_DOUBLE;*/
 	max_val = (double)get_normalized_value(&gfit);
-
 	gtk_adjustment_set_upper(adj1, max_val);
 	gtk_adjustment_set_upper(adj2, max_val);
 }
