@@ -1231,6 +1231,7 @@ static void toggle_image_selection(int image_num) {
 	siril_log_message(msg);
 	sequence_list_change_selection_index(image_num);
 	update_reg_interface(FALSE);
+	update_stack_interface(TRUE);
 	adjust_exclude(image_num, TRUE);
 	writeseqfile(&com.seq);
 }
@@ -1266,6 +1267,7 @@ static void sequence_setselect_all(gboolean include_all) {
 	}
 	adjust_exclude(com.seq.current, TRUE);
 	update_reg_interface(FALSE);
+	update_stack_interface(TRUE);
 	writeseqfile(&com.seq);
 }
 
@@ -4061,12 +4063,7 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 		test_and_allocate_reference_image(-1);
 		// a reference image should not be excluded to avoid confusion
 		if (!com.seq.imgparam[com.seq.current].incl) {
-			//com.seq.imgparam[com.seq.current].incl = TRUE;
-			//GtkToggleButton *inclButton = GTK_TOGGLE_BUTTON(lookup_widget("exclude_button"));
-			//gtk_toggle_button_set_active(inclButton, FALSE);
-			//g_signal_handlers_block_by_func(inclButton, on_excludebutton_toggled, NULL);
 			toggle_image_selection(com.seq.current);
-			//g_signal_handlers_unblock_by_func(inclButton, on_excludebutton_toggled, NULL);
 		}
 	}
 	sequence_list_change_reference();

@@ -684,7 +684,7 @@ int lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb) {
 	//
 	if (image_find_minmax(r) || image_find_minmax(g) ||
 			image_find_minmax(b) || image_find_minmax(l)) {
-		siril_log_color_message("Could not compute normalization values for the images, aborting.\n", "red");
+		siril_log_color_message(_("Could not compute normalization values for the images, aborting.\n"), "red");
 		return -1;
 	}
 	maxi = max(r->maxi, max(g->maxi, b->maxi));
