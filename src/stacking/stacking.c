@@ -1815,7 +1815,7 @@ int stack_filter_roundness(sequence *seq, int nb_img, double min_rnd) {
 	if (!seq->regparam[layer]) return 0;
 	if (seq->imgparam[nb_img].incl && seq->regparam[layer][nb_img].fwhm_data) {
 		fitted_PSF *psf = seq->regparam[layer][nb_img].fwhm_data;
-		return (psf->fwhmy / psf->fwhmx) <= min_rnd;
+		return (psf->fwhmy / psf->fwhmx) >= min_rnd;
 	}
 	else return 0;
 }
