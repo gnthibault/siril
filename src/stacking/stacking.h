@@ -34,7 +34,8 @@ typedef enum {
 	ALL_IMAGES,
 	SELECTED_IMAGES,
 	BEST_PSF_IMAGES,
-	BEST_QUALITY_IMAGES,
+	BEST_ROUND_IMAGES,
+	BEST_QUALITY_IMAGES
 } stackType;
 
 struct normalization_coeff {

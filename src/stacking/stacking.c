@@ -1801,7 +1801,7 @@ int stack_filter_all(sequence *seq, int nb_img, double any) {
 }
 
 int stack_filter_included(sequence *seq, int nb_img, double any) {
-	return (seq->imgparam[nb_img].incl);
+	return seq->imgparam[nb_img].incl;
 }
 
 /* filter for deep-sky */
@@ -1812,7 +1812,20 @@ int stack_filter_fwhm(sequence *seq, int nb_img, double max_fwhm) {
 	if (layer == -1) return 0;
 	if (!seq->regparam[layer]) return 0;
 	if (seq->imgparam[nb_img].incl && seq->regparam[layer][nb_img].fwhm > 0.0f)
-		return (seq->regparam[layer][nb_img].fwhm <= max_fwhm);
+		return seq->regparam[layer][nb_img].fwhm <= max_fwhm;
+	else return 0;
+}
+
+int stack_filter_roundness(sequence *seq, int nb_img, double min_rnd) {
+	int layer;
+	if (!seq->regparam) return 0;
+	layer = get_registration_layer();
+	if (layer == -1) return 0;
+	if (!seq->regparam[layer]) return 0;
+	if (seq->imgparam[nb_img].incl && seq->regparam[layer][nb_img].fwhm_data) {
+		fitted_PSF *psf = seq->regparam[layer][nb_img].fwhm_data;
+		return (psf->fwhmy / psf->fwhmx) <= min_rnd;
+	}
 	else return 0;
 }
 
@@ -1824,7 +1837,7 @@ int stack_filter_quality(sequence *seq, int nb_img, double max_quality) {
 	if (layer == -1) return 0;
 	if (!seq->regparam[layer]) return 0;
 	if (seq->imgparam[nb_img].incl && seq->regparam[layer][nb_img].quality > 0.0)
-		return (seq->regparam[layer][nb_img].quality >= max_quality);
+		return seq->regparam[layer][nb_img].quality >= max_quality;
 	else return 0;
 }
 
@@ -1894,7 +1907,7 @@ double compute_highest_accepted_fwhm(double percent) {
 	}
 	// copy values
 	for (i=0; i<com.seq.number; i++) {
-		if (com.seq.regparam[layer][i].fwhm <= 0.0f) {
+		if (com.seq.imgparam[i].incl && com.seq.regparam[layer][i].fwhm <= 0.0f) {
 			val[i] = DBL_MAX;
 		} else {
 			val[i] = com.seq.regparam[layer][i].fwhm;
@@ -1916,7 +1929,7 @@ double compute_highest_accepted_fwhm(double percent) {
 	}
 
 	// get highest accepted
-	highest_accepted = val[(int) (percent * (double) number_images_with_fwhm_data / 100.0)];
+	highest_accepted = val[(int)(percent * (double)number_images_with_fwhm_data / 100.0)];
 	if (highest_accepted == DBL_MAX)
 		highest_accepted = 0.0;
 	free(val);
@@ -1949,11 +1962,59 @@ double compute_highest_accepted_quality(double percent) {
 	quicksort_d(val, com.seq.number);
 
 	// get highest accepted
-	highest_accepted = val[(int) ((100.0 - percent) * (double) com.seq.number
+	highest_accepted = val[(int)((100.0 - percent) * (double)com.seq.number
 			/ 100.0)];
 	free(val);
 	return highest_accepted;
 }
+
+/* For a sequence of images with quality registration data and a percentage of
+ * images to include in a processing, computes the lowest roundness value accepted.
+ */
+double compute_highest_accepted_roundness(double percent) {
+	int i, layer, number_images_with_fwhm_data;
+	double *val = malloc(com.seq.number * sizeof(double));
+	double lowest_accepted;
+	layer = get_registration_layer();
+	if (layer == -1 || !com.seq.regparam || !com.seq.regparam[layer]) {
+		free(val);
+		return 0.0;
+	}
+	// copy values
+	for (i=0; i<com.seq.number; i++) {
+		if (!com.seq.imgparam[i].incl) continue;
+		if (!com.seq.regparam[layer][i].fwhm_data) {
+			siril_log_message(_("Error in highest quality accepted for sequence processing: some images don't have this kind of information available for channel #%d.\n"), layer);
+			val[i] = DBL_MIN;
+		}
+		else {
+			fitted_PSF *psf = com.seq.regparam[layer][i].fwhm_data;
+			val[i] = psf->fwhmy / psf->fwhmx;
+		}
+	}
+
+	//sort values
+	quicksort_d(val, com.seq.number);
+
+	if (val[com.seq.number-1] != DBL_MIN) {
+		number_images_with_fwhm_data = com.seq.number;
+	} else {
+		for (i=0; i<com.seq.number; i++)
+			if (val[i] == DBL_MIN)
+				break;
+		number_images_with_fwhm_data = i;
+		siril_log_message(_("Warning: some images don't have FWHM information available for best images selection, using only available data (%d images on %d).\n"),
+				number_images_with_fwhm_data, com.seq.number);
+	}
+
+	// get lowest accepted
+	lowest_accepted = val[(int)((100.0-percent) * (double)number_images_with_fwhm_data / 100.0)];
+	if (lowest_accepted == DBL_MIN)
+		lowest_accepted = 0.0;
+	free(val);
+	return lowest_accepted;
+}
+
 
 /* Activates or not the stack button if there are 2 or more selected images,
  * all data related to stacking is set in stackparam, except the method itself,
@@ -2048,6 +2109,37 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 			} else {
 				sprintf(labelbuffer, _("Based on FWHM"));
 			}
+			gtk_label_set_text(GTK_LABEL(stack[1]), labelbuffer);
+		}
+		break;
+
+	case BEST_ROUND_IMAGES:
+		/* First we must check if the sequence has this kind of data
+		 * available before allowing the option to be selected. */
+		channel = get_registration_layer();
+		ref_image = sequence_find_refimage(&com.seq);
+		if (channel < 0) {
+			stackparam.nb_images_to_stack = 0;
+		} else if (stackparam.seq->regparam[channel] == NULL) {
+			stackparam.nb_images_to_stack = 0;
+		} else if (stackparam.seq->regparam[channel][ref_image].fwhm_data == NULL) {
+			stackparam.nb_images_to_stack = 0;
+		} else {
+			percent = gtk_adjustment_get_value(stackadj);
+			stackparam.filtering_criterion = stack_filter_roundness;
+			stackparam.filtering_parameter = compute_highest_accepted_roundness(
+					percent);
+			stackparam.nb_images_to_stack = compute_nb_filtered_images();
+			sprintf(stackparam.description, _("Stacking images of the sequence "
+						"with a roundness higher or equal than %g (%d)\n"),
+					stackparam.filtering_parameter, stackparam.nb_images_to_stack);
+			gtk_widget_set_sensitive(stack[0], TRUE);
+			gtk_widget_set_sensitive(stack[1], TRUE);
+			if (stackparam.filtering_parameter > 0.0)
+				sprintf(labelbuffer, _("Based on roundness > %.2f (%d images)"),
+						stackparam.filtering_parameter,	stackparam.nb_images_to_stack);
+			else
+				sprintf(labelbuffer, _("Based on roundness"));
 			gtk_label_set_text(GTK_LABEL(stack[1]), labelbuffer);
 		}
 		break;
