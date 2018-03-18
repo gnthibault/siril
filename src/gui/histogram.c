@@ -25,6 +25,7 @@
 #include <math.h>
 #include "core/siril.h"
 #include "core/proto.h"
+#include "algos/statistics.h"
 #include "io/single_image.h"
 #include "gui/histogram.h"
 #include "gui/callbacks.h"	// for lookup_widget()
@@ -586,6 +587,7 @@ void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
 		gsl_histogram_memcpy(histCpy[i], com.layers_hist[i]);
 	reset_curors_and_values();
 
+	invalidate_stats_from_fit(&gfit);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -691,7 +693,7 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 	n = fit->naxes[2];
 
 	for (i = 0; i < n; ++i) {
-		stat[i] = statistics(fit, i, NULL, STATS_BASIC | STATS_MAD, STATS_ZERO_NULLCHECK);
+		stat[i] = statistics(NULL, -1, fit, i, NULL, STATS_BASIC | STATS_MAD);
 		if (!stat[i]) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 0.0;
@@ -736,7 +738,7 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 
 	}
 	for (i = 0; i < n; ++i)
-		free(stat[i]);
+		free_stats(stat[i]);
 	return m;
 }
 

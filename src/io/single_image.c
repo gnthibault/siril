@@ -25,6 +25,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "algos/statistics.h"
 #include "gui/callbacks.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
@@ -40,7 +41,7 @@
 void close_single_image() {
 	if (sequence_is_loaded() && com.seq.current >= 0)
 		return;
-	memset(&com.selection, 0, sizeof(rectangle));
+	fprintf(stdout, "MODE: closing single image\n");
 	free_image_data();
 	undo_flush();
 }
@@ -52,6 +53,8 @@ void free_image_data() {
 	fprintf(stdout, "free_image_data() called, clearing loaded image\n");
 	/* WARNING: single_image.fit references the actual fits image,
 	 * shouldn't it be used here instead of gfit? */
+	if (!single_image_is_loaded() && sequence_is_loaded())
+		save_stats_from_fit(&gfit, &com.seq, com.seq.current);
 	clearfits(&gfit);
 	clear_stars_list();
 	clear_histograms();
@@ -145,6 +148,8 @@ int open_single_image(const char* filename) {
 	char *realname;
 
 	close_single_image();	// close the previous image and free resources
+	free_image_data();	// free everything anyway
+	close_sequence();	// closing a sequence if loaded
 
 	retval = read_single_image(filename, &gfit, &realname);
 	
@@ -161,17 +166,6 @@ int open_single_image(const char* filename) {
 		return 1;
 	}
 
-	// Closing a sequence
-	if (sequence_is_loaded()) {
-		char *basename = g_path_get_basename(com.seq.seqname);
-		// TODO: is basename useful here?
-		siril_log_message(_("Closing sequence %s\n"), basename);
-		g_free(basename);
-		clear_sequence_list();
-		free_sequence(&(com.seq), FALSE);
-		clear_stars_list();
-		initialize_sequence(&com.seq, FALSE);
-	}
 	fprintf(stdout, "Loading image OK, now displaying\n");
 	open_single_image_from_gfit(realname);
 	return 0;
@@ -192,7 +186,6 @@ void open_single_image_from_gfit(char *realname) {
 	com.uniq->fit = &gfit;
 	initialize_display_mode();
 
-	image_find_minmax(&gfit, 0);
 	init_layers_hi_and_lo_values(MIPSLOHI);		// If MIPS-LO/HI exist we load these values. If not it is min/max
 
 	sliders_mode_set_state(com.sliders);
@@ -222,38 +215,49 @@ void open_single_image_from_gfit(char *realname) {
 
 /* searches the image for minimum and maximum pixel value, on each layer
  * the values are stored in fit->min[layer] and fit->max[layer] */
-//TODO: TO REWRITE WITH REDUCE
-int image_find_minmax(fits *fit, int force_minmax){
-	int i, layer;
-
-	/* this should only be done once per image */
-	if (fit->maxi != 0 && !force_minmax) return 1;
-
-	/* search for min and max values in all layers */
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(layer, i) schedule(dynamic,1) if(fit->naxes[2] > 1)
-#endif
-	for (layer = 0; layer < fit->naxes[2]; ++layer) {
-		WORD *buf = fit->pdata[layer];
-		fit->max[layer] = 0;
-		fit->min[layer] = USHRT_MAX;
-
-		for (i = 0; i < fit->rx * fit->ry; ++i) {
-			fit->max[layer] = max(fit->max[layer], buf[i]);
-			fit->min[layer] = min(fit->min[layer], buf[i]);
-		}
-		/* fprintf(stdout, "min and max (layer %d): %hu %hu\n",
-				layer, fit->min[layer], fit->max[layer]); */
+int image_find_minmax(fits *fit) {
+	int layer;
+	if (fit->maxi > 0.0)
+		return 0;
+	if (!fit->stats) {
+		fit->stats = calloc(fit->naxes[2], sizeof(imstats *));
+		if (!fit->stats)
+			return -1;
 	}
-
-	/* set the overall min and max values from layer values */
-	fit->maxi = 0;
-	fit->mini = USHRT_MAX;
 	for (layer = 0; layer < fit->naxes[2]; ++layer) {
-		fit->maxi = max(fit->max[layer], fit->maxi);
-		fit->mini = min(fit->min[layer], fit->mini);
+		if (!fit->stats[layer])
+			fit->stats[layer] = statistics(NULL, -1, fit, layer, NULL, STATS_MINMAX);
+		if (!fit->stats[layer])
+			return -1;
+		fit->maxi = max(fit->maxi, fit->stats[layer]->max);
+		fit->mini = min(fit->mini, fit->stats[layer]->min);
 	}
 	return 0;
+}
+
+static int fit_get_minmax(fits *fit, int layer) {
+	if (!fit->stats) {
+		fit->stats = calloc(fit->naxes[2], sizeof(imstats *));
+		if (!fit->stats)
+			return -1;
+	}
+	if (!fit->stats[layer])
+		fit->stats[layer] = statistics(NULL, -1, fit, layer, NULL, STATS_MINMAX);
+	if (!fit->stats[layer])
+		return -1;
+	return 0;
+}
+
+double fit_get_max(fits *fit, int layer) {
+	if (fit_get_minmax(fit, layer))
+		return -1.0;
+	return fit->stats[layer]->max;
+}
+
+double fit_get_min(fits *fit, int layer) {
+	if (fit_get_minmax(fit, layer))
+		return -1.0;
+	return fit->stats[layer]->min;
 }
 
 /* gfit has been loaded, now we copy the hi and lo values into the com.uniq or com.seq layers.
@@ -286,10 +290,11 @@ void init_layers_hi_and_lo_values(sliders_mode force_minmax) {
 		if (gfit.hi == 0 || force_minmax == MINMAX) {
 			com.sliders = MINMAX;
 			if (!is_chained) {
-				layers[i].hi = gfit.max[i];
-				layers[i].lo = gfit.min[i];
+				layers[i].hi = fit_get_max(&gfit, i);
+				layers[i].lo = fit_get_min(&gfit, i);
 			}
 			else {
+				image_find_minmax(&gfit);
 				layers[i].hi = gfit.maxi;
 				layers[i].lo = gfit.mini;
 			}
@@ -303,7 +308,7 @@ void init_layers_hi_and_lo_values(sliders_mode force_minmax) {
 
 /* was level_adjust, to call when gfit changed and need min/max to be recomputed. */
 void adjust_cutoff_from_updated_gfit() {
-	image_find_minmax(&gfit, 1);
+	invalidate_stats_from_fit(&gfit);	// needed?
 	update_gfit_histogram_if_needed();
 	init_layers_hi_and_lo_values(com.sliders);
 	set_cutoff_sliders_values();

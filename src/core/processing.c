@@ -310,6 +310,7 @@ void start_in_new_thread(gpointer (*f)(gpointer p), gpointer p) {
 void waiting_for_thread() {
 	g_thread_join(com.thread);
 	com.thread = NULL;
+	com.run_thread = FALSE;	// do it anyway in case of wait without stop
 }
 
 void stop_processing_thread() {

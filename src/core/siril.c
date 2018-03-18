@@ -57,6 +57,7 @@
 #include "algos/Def_Math.h"
 #include "algos/Def_Wavelet.h"
 #include "algos/cosmetic_correction.h"
+#include "algos/statistics.h"
 #include "opencv/opencv.h"
 
 #define MAX_ITER 15
@@ -210,8 +211,8 @@ int sub_background(fits* image, fits* background, int layer) {
 	/* First step we convert data, apply the subtraction, normalize with median,
 	 * and re-convert data to USHORT
 	 */
-	imstats *stat = statistics(image, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
-	median = (double) stat->median / USHRT_MAX_DOUBLE;
+	imstats *stat = statistics(NULL, -1, image, layer, NULL, STATS_BASIC);
+	median = stat->median / USHRT_MAX_DOUBLE;
 	pxl_image = malloc(sizeof(double) * ndata);
 	pxl_bkg = malloc(sizeof(double) * ndata);
 
@@ -224,7 +225,7 @@ int sub_background(fits* image, fits* background, int layer) {
 	}
 
 	// We free memory
-	free(stat);
+	free_stats(stat);
 	free(pxl_image);
 	free(pxl_bkg);
 	return 0;
@@ -302,7 +303,7 @@ int ndiv(fits *a, fits *b) {
 						/ (double) b->pdata[layer][i];
 			max = max(div[i], max);
 		}
-		norm = max / (double) a->max[layer];
+		norm = max / fit_get_max(a, layer);
 		for (i = 0; i < nb_pixels; ++i) {
 			a->pdata[layer][i] = round_to_WORD(div[i] / norm);
 		}
@@ -473,13 +474,13 @@ double contrast(fits* fit, int layer) {
 	int i;
 	WORD *buf = fit->pdata[layer];
 	double contrast = 0.0;
-	imstats *stat = statistics(fit, layer, &com.selection, STATS_BASIC, STATS_ZERO_NULLCHECK);
+	imstats *stat = statistics(NULL, -1, fit, layer, &com.selection, STATS_BASIC);
 	if (!stat) {
 		siril_log_message(_("Error: no data computed.\n"));
 		return -1.0;
 	}
 	double mean = stat->mean;
-	free(stat);
+	free_stats(stat);
 
 	for (i = 0; i < fit->rx * fit->ry; i++)
 		contrast += SQR((double )buf[i] - mean);
@@ -681,11 +682,12 @@ int lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb) {
 	//
 	// some stats used to normalize
 	//
-	image_find_minmax(r, 0);
-	image_find_minmax(g, 0);
-	image_find_minmax(b, 0);
+	if (image_find_minmax(r) || image_find_minmax(g) ||
+			image_find_minmax(b) || image_find_minmax(l)) {
+		siril_log_color_message(_("Could not compute normalization values for the images, aborting.\n"), "red");
+		return -1;
+	}
 	maxi = max(r->maxi, max(g->maxi, b->maxi));
-	image_find_minmax(l, 0);
 	//
 	// initialize pointers
 	//
@@ -757,14 +759,14 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	imoper(fit_tmp, dark_tmp, OPER_SUB);
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(fit_tmp, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, fit_tmp, chan, NULL, STATS_BASIC);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 0.0;
 		}
 		noise += stat->bgnoise;
 		//printf("noise=%lf, k=%lf\n", noise, k);
-		free(stat);
+		free_stats(stat);
 	}
 	clearfits(dark_tmp);
 	clearfits(fit_tmp);
@@ -896,7 +898,7 @@ gpointer seqpreprocess(gpointer p) {
 		if (args->autolevel) {
 			/* TODO: evaluate the layer to apply but generally RLAYER is a good choice.
 			 * Indeed, if it is image from APN, CFA picture are in black & white */
-			imstats *stat = statistics(flat, RLAYER, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+			imstats *stat = statistics(NULL, -1, flat, RLAYER, NULL, STATS_BASIC);
 			if (!stat) {
 				siril_log_message(_("Error: no data computed.\n"));
 				return GINT_TO_POINTER(1);
@@ -904,7 +906,7 @@ gpointer seqpreprocess(gpointer p) {
 			args->normalisation = stat->mean;
 			siril_log_message(_("Normalisation value auto evaluated: %.2lf\n"),
 					args->normalisation);
-			free(stat);
+			free_stats(stat);
 		}
 	}
 
@@ -926,18 +928,18 @@ gpointer seqpreprocess(gpointer p) {
 
 		if ((com.preprostatus & USE_COSME) && (com.preprostatus & USE_DARK)) {
 			if (dark->naxes[2] == 1) {
-			/* Cosmetic correction */
-			long icold, ihot;
-			deviant_pixel *dev = find_deviant_pixels(dark, args->sigma, &icold, &ihot);
-			siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
-					icold + ihot, icold, ihot);
-			cosmeticCorrection(fit, dev, icold + ihot, args->is_cfa);
-			if (dev)
-				free(dev);
+				/* Cosmetic correction */
+				long icold, ihot;
+				deviant_pixel *dev = find_deviant_pixels(dark, args->sigma, &icold, &ihot);
+				siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
+						icold + ihot, icold, ihot);
+				cosmeticCorrection(fit, dev, icold + ihot, args->is_cfa);
+				if (dev)
+					free(dev);
 			}
 			else
 				siril_log_message(_("Darkmap cosmetic correction "
-						"is only supported with single channel images\n"));
+							"is only supported with single channel images\n"));
 		}
 
 		if (args->debayer) {
@@ -1061,15 +1063,13 @@ double background(fits* fit, int reqlayer, rectangle *selection) {
 	else if (isrgb(&gfit))
 		layer = GLAYER;		//GLAYER is better to evaluate background
 
-	imstats* stat = statistics(fit, layer, selection, STATS_BASIC, STATS_ZERO_NULLCHECK);
+	imstats* stat = statistics(NULL, -1, fit, layer, selection, STATS_BASIC);
 	if (!stat) {
 		siril_log_message(_("Error: no data computed.\n"));
 		return 0.0;
 	}
 	bg = stat->median;
-
-	free(stat);
-	stat = NULL;
+	free_stats(stat);
 	return bg;
 }
 
@@ -1421,7 +1421,7 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 		return 1;
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(fit, chan, NULL, STATS_BASIC | STATS_MAD, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, fit, chan, NULL, STATS_BASIC | STATS_MAD);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 1;
@@ -1430,18 +1430,18 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 		double *rowvalue = calloc(fit->ry, sizeof(double));
 		if (rowvalue == NULL) {
 			fprintf(stderr, "BandingEngine: error allocating data\n");
-			free(stat);
+			free_stats(stat);
 			return 1;
 		}
 		if (protect_highlights) {
 			globalsigma = stat->mad * MAD_NORM;
 		}
+		free_stats(stat);
 		for (row = 0; row < fit->ry; row++) {
 			line = fit->pdata[chan] + row * fit->rx;
 			WORD *cpyline = calloc(fit->rx, sizeof(WORD));
 			if (cpyline == NULL) {
 				fprintf(stderr, "BandingEngine: error allocating data\n");
-				free(stat);
 				free(rowvalue);
 				return 1;
 			}
@@ -1469,12 +1469,12 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 				fixline[i] = round_to_WORD(rowvalue[row] - minimum);
 		}
 		free(rowvalue);
-		free(stat);
 	}
 	for (chan = 0; chan < fit->naxes[2]; chan++)
 		fmul_layer(fiximage, chan, amount);
 	imoper(fit, fiximage, OPER_ADD);
 
+	invalidate_stats_from_fit(fit);
 	clearfits(fiximage);
 	if (applyRotation)
 		cvRotateImage(fit, -90.0, -1, OPENCV_LINEAR);
@@ -1503,19 +1503,24 @@ int backgroundnoise(fits* fit, double sigma[]) {
 	cvComputeFinestScale(waveimage);
 
 	for (layer = 0; layer < fit->naxes[2]; layer++) {
-		imstats *stat = statistics(waveimage, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
-		if (!stat) {
-			siril_log_message(_("Error: no data computed.\n"));
-			return 1;
-		}
-		double sigma0 = stat->sigma;
-		double mean = stat->mean;
+		double sigma0, mean, norm_val;
 		double epsilon = 0.0;
 		WORD lo, hi;
 		WORD *buf = waveimage->pdata[layer];
 		unsigned int i;
 		unsigned int ndata = fit->rx * fit->ry;
 		assert(ndata > 0);
+
+		imstats *stat = statistics(NULL, -1, waveimage, layer, NULL, STATS_BASIC);
+		if (!stat) {
+			siril_log_message(_("Error: no data computed.\n"));
+			return 1;
+		}
+		sigma0 = stat->sigma;
+		mean = stat->mean;
+		norm_val = stat->normValue;
+		free_stats(stat);
+
 		WORD *array1 = calloc(ndata, sizeof(WORD));
 		WORD *array2 = calloc(ndata, sizeof(WORD));
 		if (array1 == NULL || array2 == NULL) {
@@ -1524,14 +1529,13 @@ int backgroundnoise(fits* fit, double sigma[]) {
 				free(array1);
 			if (array2)
 				free(array2);
-			free(stat);
 			return 1;
 		}
 		WORD *set = array1, *subset = array2;
 		memcpy(set, buf, ndata * sizeof(WORD));
 
-		lo = round_to_WORD(LOW_BOUND * stat->normValue);
-		hi = round_to_WORD(HIGH_BOUND * stat->normValue);
+		lo = round_to_WORD(LOW_BOUND * norm_val);
+		hi = round_to_WORD(HIGH_BOUND * norm_val);
 
 		sigma[layer] = sigma0;
 
@@ -1552,7 +1556,6 @@ int backgroundnoise(fits* fit, double sigma[]) {
 			if (ndata == 0) {
 				free(array1);
 				free(array2);
-				free(stat);
 				siril_log_message(_("backgroundnoise: Error, no data computed\n"));
 				sigma[layer] = 0.0;
 				return 1;
@@ -1566,9 +1569,9 @@ int backgroundnoise(fits* fit, double sigma[]) {
 			siril_log_message(_("backgroundnoise: does not converge\n"));
 		free(array1);
 		free(array2);
-		free(stat);
 	}
 	clearfits(waveimage);
+	invalidate_stats_from_fit(fit);
 
 	return 0;
 }
@@ -1581,11 +1584,13 @@ gboolean end_noise(gpointer p) {
 
 	nb_chan = args->fit->naxes[2];
 
-	double norm = (double) get_normalized_value(args->fit);
-	for (chan = 0; chan < nb_chan; chan++)
-		siril_log_message(
-				_("Background noise value (channel: #%d): %0.3lf (%.3e)\n"), chan,
-				args->bgnoise[chan], args->bgnoise[chan] / norm);
+	if (!args->retval) {
+		double norm = (double) get_normalized_value(args->fit);
+		for (chan = 0; chan < nb_chan; chan++)
+			siril_log_message(
+					_("Background noise value (channel: #%d): %0.3lf (%.3e)\n"), chan,
+					args->bgnoise[chan], args->bgnoise[chan] / norm);
+	}
 	set_cursor_waiting(FALSE);
 	update_used_memory();
 	if (args->verbose) {
@@ -1598,7 +1603,8 @@ gboolean end_noise(gpointer p) {
 
 gpointer noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
-	int  chan;
+	int chan;
+	args->retval = 0;
 
 	if (args->verbose) {
 		siril_log_color_message(_("Noise standard deviation: calculating...\n"),
@@ -1606,25 +1612,20 @@ gpointer noise(gpointer p) {
 		gettimeofday(&args->t_start, NULL);
 	}
 
-/*	if (backgroundnoise(args->fit, args->bgnoise)) {
-		gdk_threads_add_idle(end_noise, args);
-		return GINT_TO_POINTER(1);
-	}
-	*/
 	for (chan = 0; chan < args->fit->naxes[2]; chan++) {
-		imstats *stat = statistics(args->fit, chan, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_BASIC);
 		if (!stat) {
+			args->retval = 1;
 			siril_log_message(_("Error: no data computed.\n"));
-			gdk_threads_add_idle(end_noise, args);
-			return GINT_TO_POINTER(1);
+			break;
 		}
 		args->bgnoise[chan] = stat->bgnoise;
-		free(stat);
+		free_stats(stat);
 	}
 
 	gdk_threads_add_idle(end_noise, args);
 
-	return GINT_TO_POINTER(0);
+	return GINT_TO_POINTER(args->retval);
 }
 
 gpointer LRdeconv(gpointer p) {

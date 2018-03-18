@@ -78,6 +78,10 @@ static BYTE *remap_index[MAXGRAYVPORT];
 static float last_pente[MAXGRAYVPORT];
 static display_mode last_mode[MAXGRAYVPORT];
 
+/* STF (auto-stretch) data */
+static gboolean stfComputed;	// Flag to know if STF parameters are available
+static double stfShadows, stfHighlights, stfM;
+
 /*****************************************************************************
  *                    S T A T I C      F U N C T I O N S                     *
  ****************************************************************************/
@@ -462,7 +466,7 @@ static void test_and_allocate_reference_image(int vport) {
 static void remap(int vport) {
 	// This function maps fit data with a linear LUT between lo and hi levels
 	// to the buffer to be displayed; display only is modified
-	guint x, y;
+	guint y;
 	BYTE *dst, *index, rainbow_index[UCHAR_MAX + 1][3];
 	WORD *src, hi, lo;
 	display_mode mode;
@@ -605,9 +609,10 @@ static void remap(int vport) {
 	index = remap_index[vport];
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(y,x) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) private(y) schedule(static)
 #endif
 	for (y = 0; y < gfit.ry; y++) {
+		guint x;
 		for (x = 0; x < gfit.rx; x++) {
 			guint src_index = y * gfit.rx + x;
 			BYTE dst_pixel_value;
@@ -654,16 +659,11 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 	float pente;
 	int i;
 	BYTE *index;
-	double m = 0.0;
 	double pxl;
 	if (mode == STF_DISPLAY) {
-		if (!com.stfComputed) {
-			double shadows = 0.0, highlights = 0.0;
-			m = findMidtonesBalance(&gfit, &shadows, &highlights);
-			com.stfShadows = shadows;
-			com.stfHighlights = highlights;
-			com.stfM = m;
-			com.stfComputed = TRUE;
+		if (!stfComputed) {
+			stfM = findMidtonesBalance(&gfit, &stfShadows, &stfHighlights);
+			stfComputed = TRUE;
 		}
 	}
 
@@ -736,9 +736,9 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 			pxl = (gfit.orig_bitpix == BYTE_IMG ?
 					(double) i / UCHAR_MAX_DOUBLE :
 					(double) i / USHRT_MAX_DOUBLE);
-			pxl = (pxl - com.stfShadows < 0.0) ? 0.0 : pxl - com.stfShadows;
-			pxl /= (com.stfHighlights - com.stfShadows);
-			index[i] = round_to_BYTE((float) (MTF(pxl, com.stfM)) * pente);
+			pxl = (pxl - stfShadows < 0.0) ? 0.0 : pxl - stfShadows;
+			pxl /= (stfHighlights - stfShadows);
+			index[i] = round_to_BYTE((float) (MTF(pxl, stfM)) * pente);
 			break;
 		default:
 			return 1;
@@ -1217,6 +1217,11 @@ static void toggle_image_selection(int image_num) {
 		--com.seq.selnum;
 		g_snprintf(msg, sizeof(msg),
 				_("Image %d has been unselected from sequence\n"), image_num);
+		if (image_num == com.seq.reference_image) {
+			com.seq.reference_image = -1;
+			sequence_list_change_reference();
+			adjust_refimage(image_num);
+		}
 	} else {
 		com.seq.imgparam[image_num].incl = TRUE;
 		++com.seq.selnum;
@@ -1226,6 +1231,7 @@ static void toggle_image_selection(int image_num) {
 	siril_log_message(msg);
 	sequence_list_change_selection_index(image_num);
 	update_reg_interface(FALSE);
+	update_stack_interface(TRUE);
 	adjust_exclude(image_num, TRUE);
 	writeseqfile(&com.seq);
 }
@@ -1246,7 +1252,7 @@ static void sequence_setselect_all(gboolean include_all) {
 
 	if (!com.seq.imgparam)
 		return;
-	for (i = 0; i <= com.seq.number; ++i) {
+	for (i = 0; i < com.seq.number; ++i) {
 		if (com.seq.imgparam[i].incl != include_all) {
 			com.seq.imgparam[i].incl = include_all;
 			sequence_list_change_selection_index(i);
@@ -1261,6 +1267,7 @@ static void sequence_setselect_all(gboolean include_all) {
 	}
 	adjust_exclude(com.seq.current, TRUE);
 	update_reg_interface(FALSE);
+	update_stack_interface(TRUE);
 	writeseqfile(&com.seq);
 }
 
@@ -1356,7 +1363,6 @@ void set_sliders_value_to_gfit() {
 /* Sets maximum value for contrast scales. Minimum is always 0.
  * Should be done on first image load of a sequence and when single images are loaded.
  * Max value is taken from gfit.maxi, recomputed if not present.
- *
  */
 void set_cutoff_sliders_max_values() {
 	static GtkAdjustment *adj1 = NULL, *adj2 = NULL;
@@ -1367,17 +1373,10 @@ void set_cutoff_sliders_max_values() {
 	}
 	fprintf(stdout, _("Setting MAX value for cutoff sliders adjustments\n"));
 	/* set max value for range according to number of bits of original image
-	 * We should use gfit.bitpix for this, but it's currently always USHORT_IMG */
-	/*if (gfit.bitpix == BYTE_IMG)
-	 max_val = UCHAR_MAX_DOUBLE;
-	 else max_val = USHRT_MAX_DOUBLE;*/
-	if (gfit.maxi == 0)
-		image_find_minmax(&gfit, 0);
-	if (gfit.maxi <= UCHAR_MAX)
-		max_val = UCHAR_MAX_DOUBLE;
-	else
-		max_val = USHRT_MAX_DOUBLE;
-
+	 * We should use gfit.bitpix for this, but it's currently always USHORT_IMG.
+	 * Since 0.9.8 we have orig_bitpix, but it's not filled for SER and other images.
+	 */
+	max_val = (double)get_normalized_value(&gfit);
 	gtk_adjustment_set_upper(adj1, max_val);
 	gtk_adjustment_set_upper(adj2, max_val);
 }
@@ -1608,8 +1607,6 @@ void update_MenuItem() {
 gboolean redraw(int vport, int doremap) {
 	GtkWidget *widget;
 
-	com.stfComputed = FALSE;
-
 	if (vport >= MAXVPORT) {
 		fprintf(stderr, _("redraw: maximum number of layers supported is %d"
 				" (current image has %d).\n"), MAXVPORT, vport);
@@ -1624,6 +1621,7 @@ gboolean redraw(int vport, int doremap) {
 		if (doremap == REMAP_ONLY) {
 			remap(vport);
 		} else if (doremap == REMAP_ALL) {
+			stfComputed = FALSE;
 			int i;
 //#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)		//probably causes crashes in HESTEQ_MODE
 			for (i = 0; i < gfit.naxes[2]; i++) {
@@ -2186,7 +2184,6 @@ void adjust_refimage(int n) {
 	if (ref_butt == NULL)
 		ref_butt = lookup_widget("refframe");
 
-	//fprintf(stdout, "adjust refimage: %d (ref is %d)\n", n, com.seq.reference_image);
 	g_signal_handlers_block_by_func(ref_butt, on_ref_frame_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ref_butt), com.seq.reference_image == n);
 	g_signal_handlers_unblock_by_func(ref_butt, on_ref_frame_toggled, NULL);
@@ -3744,7 +3741,7 @@ gboolean on_imagenumberspin_output(GtkSpinButton *spin, gpointer user_data) {
 	//fprintf(stdout, "SPINCHANGED: index=%d\n", index);
 
 	do_display = (com.seq.imgparam[index].incl || com.show_excluded);
-	return !seq_load_image(&com.seq, index, &gfit, do_display);
+	return !seq_load_image(&com.seq, index, do_display);
 }
 
 /* for the spin button to be able to display number which are not the actual value of
@@ -4059,6 +4056,10 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	} else {
 		com.seq.reference_image = com.seq.current;
 		test_and_allocate_reference_image(-1);
+		// a reference image should not be excluded to avoid confusion
+		if (!com.seq.imgparam[com.seq.current].incl) {
+			toggle_image_selection(com.seq.current);
+		}
 	}
 	sequence_list_change_reference();
 	adjust_sellabel();	// reference image is named in the label
@@ -4102,7 +4103,8 @@ void on_seqproc_entry_changed(GtkComboBox *widget, gpointer user_data) {
 		set_cursor_waiting(FALSE);
 		set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 	}
-	g_free(name);
+	if (name)
+		g_free(name);
 }
 
 /* signal handler for the gray window layer change */

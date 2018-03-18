@@ -34,6 +34,7 @@
 #include "algos/PSF.h"
 #include "gui/PSF_list.h"
 #include "algos/star_finder.h"
+#include "algos/statistics.h"
 
 #define WAVELET_SCALE 3
 
@@ -43,7 +44,7 @@ static WORD Compute_threshold(fits *fit, double starfinder, int layer, WORD *nor
 
 	assert(layer <= 3);
 
-	stat = statistics(fit, layer, NULL, STATS_BASIC, STATS_ZERO_NULLCHECK);
+	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC);
 	if (!stat) {
 		siril_log_message(_("Error: no data computed.\n"));
 		return 0;
@@ -51,8 +52,7 @@ static WORD Compute_threshold(fits *fit, double starfinder, int layer, WORD *nor
 	threshold = (WORD) stat->median + starfinder * (WORD) stat->sigma;
 	*norm = (WORD) stat->normValue;
 	*bg = stat->median;
-//	printf("Threshold = %d\n", threshold);
-	free(stat);
+	free_stats(stat);
 
 	return threshold;
 }

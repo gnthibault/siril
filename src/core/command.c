@@ -56,6 +56,7 @@
 #include "algos/fft.h"
 #include "algos/quality.h"
 #include "algos/cosmetic_correction.h"
+#include "algos/statistics.h"
 #include "stacking/stacking.h"
 #include "stacking/sum.h"
 #include "registration/registration.h"
@@ -1407,21 +1408,36 @@ int process_split(int nb){
 int process_stat(int nb){
 	int nplane = gfit.naxes[2];
 	int layer;
+	char layername[6];
 
 	for (layer = 0; layer < nplane; layer++) {
-		imstats* stat = statistics(&gfit, layer, &com.selection, STATS_MAIN,
-		STATS_ZERO_NULLCHECK);
+		imstats* stat = statistics(NULL, -1, &gfit, layer, &com.selection, STATS_MAIN);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 1;
 		}
+
+		switch (layer) {
+			case 0:
+				if (gfit.naxes[2] == 1)
+					strcpy(layername, "B&W");
+				else
+					strcpy(layername, "Red");
+				break;
+			case 1:
+				strcpy(layername, "Green");
+				break;
+			case 2:
+				strcpy(layername, "Blue");
+				break;
+		}
+
 		siril_log_message(
 				_("%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, "
 						"AvgDev: %0.1lf, Min: %0.1lf, Max: %0.1lf\n"),
-				stat->layername, stat->mean, stat->median, stat->sigma,
+				layername, stat->mean, stat->median, stat->sigma,
 				stat->avgDev, stat->min, stat->max);
-		free(stat);
-		stat = NULL;
+		free_stats(stat);
 	}
 	return 0;
 }

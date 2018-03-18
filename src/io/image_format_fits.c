@@ -34,6 +34,8 @@
 #include "io/sequence.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "algos/statistics.h"
+#include "io/single_image.h"
 
 static char *MIPSHI[] = {"MIPS-HI", "CWHITE", NULL };
 static char *MIPSLO[] = {"MIPS-LO", "CBLACK", NULL };
@@ -561,7 +563,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	return retval;
 }
 
-// reset a fit data structure, deallocates everything in it
+// reset a fit data structure, deallocates everything in it and zero the data
 void clearfits(fits *fit) {
 	if (fit == NULL)
 		return;
@@ -569,6 +571,12 @@ void clearfits(fits *fit) {
 		free(fit->data);
 	if (fit->header)
 		free(fit->header);
+	if (fit->stats) {
+		int i;
+		for (i = 0; i < fit->naxes[2]; i++)
+			free_stats(fit->stats[i]);
+		free(fit->stats);
+	}
 	memset(fit, 0, sizeof(fits));
 }
 
@@ -1087,37 +1095,55 @@ void save_fits_header(fits *fit) {
  * - CP_ALLOC: allocates the to->data pointer to the size of from->data and
  *   sets to->pdata; required if data is not already allocated with the
  *   correct size or at all. No data is copied
- * - CP_COPYA: copies the actual data, from->data to to->data on all layers,
- *   but no other information from the source
  * - CP_INIT: initialize to->data with zeros, same size of the image in from,
- *   but no other data is modified
- * - CP_FORMAT: copy all other information than data and pdata
+ *   but no other data is modified. Ignored if not used with CP_ALLOC.
+ * - CP_COPYA: copies the actual data, from->data to to->data on all layers,
+ *   but no other information from the source. Should not be used with CP_INIT
+ * - CP_FORMAT: copy all metadata and leaves data to null
  * - CP_EXTRACT: same as CP_FORMAT | CP_COPYA, but only for layer number passed
  *   as argument and sets layer number information to 1, without allocating
  *   data to one layer only
  * - CP_EXPAND: forces the destination number of layers to be taken as 3, but
  *   the other operations have no modifications, meaning that if the source
  *   image has one layer, the output image will have only one actual layer
- *   filled, and two filled with random data.
+ *   filled, and two filled with random data unless CP_INIT is used to fill it
+ *   with zeros.
  *
  * Example: to duplicate a fits from one to an unknown-allocated other, those
  * flags should be used:	CP_ALLOC | CP_COPYA | CP_FORMAT
  *
  */
 int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
-	int depth;
+	int depth, i;
 	unsigned int nbdata = from->rx * from->ry;
 
-	if ((oper & CP_EXPAND)) {
+	if ((oper & CP_EXPAND))
 		depth = 3;
-	} else {
-		depth = from->naxes[2];
+	else if ((oper & CP_EXTRACT))
+		depth = 1;
+	else depth = from->naxes[2];
+
+	if ((oper & CP_FORMAT)) {
+		// copying metadata, not data or stats which are kept null
+		memcpy(to, from, sizeof(fits));
+		to->naxis = depth == 3 ? 3 : from->naxis;
+		to->naxes[2] = depth;
+		if (depth != from->naxes[2]) {
+			to->maxi = -1.0;
+		}
+		to->stats = NULL;
+		to->fptr = NULL;
+		to->data = NULL;
+		to->pdata[0] = NULL;
+		to->pdata[1] = NULL;
+		to->pdata[2] = NULL;
+		to->header = NULL;
 	}
 
 	if ((oper & CP_ALLOC)) {
+		// allocating to->data and assigning to->pdata
 		WORD *olddata = to->data;
-		if ((to->data = realloc(to->data, nbdata * depth * sizeof(WORD)))
-				== NULL) {
+		if (!(to->data = realloc(to->data, nbdata * depth * sizeof(WORD)))) {
 			fprintf(stderr, "copyfits: error reallocating data\n");
 			if (olddata)
 				free(olddata);
@@ -1131,27 +1157,22 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 			to->pdata[GLAYER] = to->data;
 			to->pdata[BLAYER] = to->data;
 		}
-	}
-	//	memcpy(to->r,from->r,from->rx * from->ry*sizeof(WORD));
 
-	if ((oper & CP_INIT)) {
-		memset(to->data, 0, nbdata * depth * sizeof(WORD));
+		if ((oper & CP_INIT)) {
+			// clearing to->data allocated above
+			memset(to->data, 0, nbdata * depth * sizeof(WORD));
+		}
 	}
 
 	if ((oper & CP_COPYA)) {
+		// copying data and stats
 		memcpy(to->data, from->data, nbdata * depth * sizeof(WORD));
-	}
-
-	if ((oper & CP_FORMAT)) {
-		to->rx = from->rx;
-		to->ry = from->ry;
-		to->lo = from->lo;
-		to->hi = from->hi;
-		to->bitpix = from->bitpix;
-		to->naxis = depth == 3 ? 3 : from->naxis;
-		to->naxes[0] = from->naxes[0];
-		to->naxes[1] = from->naxes[1];
-		to->naxes[2] = depth;
+		if (from->stats) {
+			for (i = 0; i < from->naxes[2]; i++) {
+				if (from->stats[i])
+					add_stats_to_fit(to, i, from->stats[i]);
+			}
+		}
 	}
 
 	if ((oper & CP_EXTRACT)) {
@@ -1164,8 +1185,13 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		to->naxes[0] = from->naxes[0];
 		to->naxes[1] = from->naxes[1];
 		to->naxes[2] = 1;
+		if (depth != from->naxes[2]) {
+			to->maxi = -1.0;
+		}
 		memcpy(to->data, from->pdata[layer],
 				nbdata * to->naxes[2] * sizeof(WORD));
+		if (from->stats && from->stats[layer])
+			add_stats_to_fit(to, 0, from->stats[layer]);
 	}
 	update_used_memory();
 	return 0;
@@ -1355,7 +1381,6 @@ int new_fit_image(fits **fit, int width, int height, int nblayer) {
 
 	npixels = width * height;
 	data = malloc(npixels * nblayer * sizeof(WORD));
-
 	if (data == NULL) {
 		fprintf(stderr, "Could not allocate memory\n");
 		return -1;
@@ -1393,6 +1418,8 @@ int new_fit_image(fits **fit, int width, int height, int nblayer) {
 	return 0;
 }
 
+/* In-place conversion to one channel.
+ * See copyfits with CP_EXTRACT for the same in a new fits */
 void keep_first_channel_from_fits(fits *fit) {
 	if (fit->naxis == 1)
 		return;
@@ -1402,5 +1429,10 @@ void keep_first_channel_from_fits(fits *fit) {
 	fit->pdata[RLAYER] = fit->data;
 	fit->pdata[GLAYER] = fit->data;
 	fit->pdata[BLAYER] = fit->data;
-	// mini and maxi could be wrong now
+	if (fit->maxi > 0) {
+		if (fit->maxi != fit_get_max(fit, 0))
+			fit->maxi = 0;
+		if (fit->mini != fit_get_min(fit, 0))
+			fit->mini = 0;
+	}
 }

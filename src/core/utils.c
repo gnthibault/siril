@@ -750,7 +750,7 @@ void expand_home_in_filename(char *filename, int size) {
  * @return 255 or 65535 if 8- or 16-bit image
  */
 WORD get_normalized_value(fits *fit) {
-	image_find_minmax(fit, 0);
+	image_find_minmax(fit);
 	if (fit->maxi <= UCHAR_MAX)
 		return UCHAR_MAX;
 	return USHRT_MAX;

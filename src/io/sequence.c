@@ -53,6 +53,7 @@
 #include "gui/PSF_list.h"	// clear_stars_list
 #include "algos/PSF.h"
 #include "algos/quality.h"
+#include "algos/statistics.h"
 #include "registration/registration.h"
 #include "stacking/stacking.h"	// for update_stack_interface
 
@@ -362,6 +363,7 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 		fits tmpfit, *fit;
 
 		if (load_ref_into_gfit) {
+			clearfits(&gfit);
 			fit = &gfit;
 		} else {
 			fit = &tmpfit;
@@ -433,19 +435,18 @@ int set_seq(const char *name){
 			free(seq);
 			return 1;
 		}
-
 		seq->current = image_to_load;
 	}
 
 	basename = g_path_get_basename(seq->seqname);
-	siril_log_message(_("Sequence loaded: %s (%d->%d)\n"), basename, seq->beg,
-			seq->end);
+	siril_log_message(_("Sequence loaded: %s (%d->%d)\n"),
+			basename, seq->beg, seq->end);
 	g_free(basename);
 
 	free_cbbt_layers();
 
 	/* Sequence is stored in com.seq for now */
-	free_sequence(&com.seq, FALSE);
+	close_sequence();
 	memcpy(&com.seq, seq, sizeof(sequence));
 
 	if (seq->nb_layers > 1)
@@ -497,22 +498,24 @@ int set_seq(const char *name){
  * if load_it is true, dest is assumed to be gfit
  * TODO: cut that method in two, with an internal func taking a filename and a fits
  */
-int seq_load_image(sequence *seq, int index, fits *dest, gboolean load_it) {
+int seq_load_image(sequence *seq, int index, gboolean load_it) {
+	if (!single_image_is_loaded())
+		save_stats_from_fit(&gfit, seq, seq->current);
 	clear_stars_list();
 	clear_histograms();
-	gfit.maxi = 0;
 	undo_flush();
+	close_single_image();
+	clearfits(&gfit);
 	if (seq->current == SCALED_IMAGE) {
 		gfit.rx = seq->rx;
 		gfit.ry = seq->ry;
 		adjust_vport_size_to_image();
 	}
-	close_single_image();
 	seq->current = index;
 
 	if (load_it) {
 		set_cursor_waiting(TRUE);
-		if (seq_read_frame(seq, index, dest)) {
+		if (seq_read_frame(seq, index, &gfit)) {
 			set_cursor_waiting(FALSE);
 			return 1;
 		}
@@ -686,7 +689,7 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
 			dest->pdata[2] = seq->internal_fits[index]->pdata[2];
 			break;
 	}
-	image_find_minmax(dest, 0);
+	copy_seq_stats_to_fit(seq, index, dest);
 	return 0;
 }
 
@@ -963,20 +966,28 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 	int i, j;
 	
 	if (seq == NULL) return;
-	if (seq->nb_layers > 0 && seq->regparam) {
+	if (seq->nb_layers > 0 && (seq->regparam || seq->stats)) {
 		for (i = 0; i < seq->nb_layers; i++) {
-			if (seq->regparam[i]) {
+			if ((seq->regparam && seq->regparam[i]) ||
+					(seq->stats && seq->stats[i])) {
 				for (j = 0; j < seq->number; j++) {
-					if (seq->regparam[i][j].fwhm_data
-							&& ((seq->photometry[0] != NULL)
-									&& seq->regparam[i][j].fwhm_data
-											!= seq->photometry[0][j])) // avoid double free
+					if (seq->regparam && seq->regparam[i] &&
+							seq->regparam[i][j].fwhm_data &&
+							(seq->photometry[0] != NULL &&
+							 seq->regparam[i][j].fwhm_data != seq->photometry[0][j])) // avoid double free
 						free(seq->regparam[i][j].fwhm_data);
+
+					if (seq->stats && seq->stats[i] && seq->stats[i][j])
+						free_stats(seq->stats[i][j]);
 				}
-				free(seq->regparam[i]);
+				if (seq->regparam && seq->regparam[i])
+					free(seq->regparam[i]);
+				if (seq->stats && seq->stats[i])
+					free(seq->stats[i]);
 			}
 		}
-		free(seq->regparam);
+		if (seq->regparam) free(seq->regparam);
+		if (seq->stats) free(seq->stats);
 	}
 
 	for (i=0; i<seq->number; i++) {
@@ -985,8 +996,6 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 			fits_close_file(seq->fptr[i], &status);
 		}
 		if (seq->imgparam) {
-			if (seq->imgparam[i].stats)
-				free(seq->imgparam[i].stats);
 			if (seq->imgparam[i].date_obs)
 				free(seq->imgparam[i].date_obs);
 		}
@@ -1033,6 +1042,8 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 		free_photometry_set(seq, i);
 	}
 
+	sequence_free_preprocessing_data(seq);
+
 	if (free_seq_too)	free(seq);
 }
 
@@ -1061,6 +1072,23 @@ void sequence_free_preprocessing_data(sequence *seq) {
 
 gboolean sequence_is_loaded() {
 	return (com.seq.seqname != NULL && com.seq.imgparam != NULL);
+}
+
+/* Close the com.seq sequence */
+void close_sequence() {
+	fprintf(stdout, "MODE: closing sequence\n");
+	if (sequence_is_loaded()) {
+		siril_log_message(_("Closing sequence %s\n"), com.seq.seqname);
+		clear_sequence_list();
+		if (com.seq.needs_saving)
+			writeseqfile(&com.seq);
+		free_sequence(&com.seq, FALSE);
+		clear_stars_list();
+		initialize_sequence(&com.seq, FALSE);
+		// unselect the sequence in the sequence list
+		GtkComboBox *seqcombo = GTK_COMBO_BOX(lookup_widget("sequence_list_combobox"));
+		gtk_combo_box_set_active(seqcombo, -1);
+	}
 }
 
 /* if no reference image has been set, return the index of an image that is
@@ -1150,7 +1178,6 @@ sequence *create_internal_sequence(int size) {
 	for (i = 0; i < size; i++) {
 		seq->imgparam[i].filenum = i;
 		seq->imgparam[i].incl = 1;
-		seq->imgparam[i].stats = NULL;
 		seq->imgparam[i].date_obs = NULL;
 	}
 	check_or_allocate_regparam(seq, 0);
@@ -1275,24 +1302,6 @@ gboolean sequence_is_rgb(sequence *seq) {
 		default:
 			return TRUE;
 	}
-}
-
-/* Get statistics for an image in a sequence.
- * If it's not in the cache, it will be computed from the_image. If the_image is NULL,
- * it returns NULL in that case.
- * Do not free result.
- */
-imstats* seq_get_imstats(sequence *seq, int index, fits *the_image, int option) {
-	assert(seq->imgparam);
-	if (!seq->imgparam[index].stats && the_image) {
-		seq->imgparam[index].stats = statistics(the_image, 0, NULL, option, STATS_ZERO_NULLCHECK);
-		if (!seq->imgparam[index].stats) {
-			siril_log_message(_("Error: no data computed.\n"));
-			return NULL;
-		}
-		seq->needs_saving = TRUE;
-	}
-	return seq->imgparam[index].stats;
 }
 
 /* Ensures that an area does not derive off-image.

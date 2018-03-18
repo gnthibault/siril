@@ -1,5 +1,6 @@
 #include <string.h>
 #include "core/siril.h"
+#include "algos/statistics.h"
 #include "stacking.h"
 #include "io/sequence.h"
 #include "core/proto.h"
@@ -38,13 +39,16 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 		double *mul0, double *offset0) {
 	imstats *stat = NULL;
 
-	if (!(stat = seq_get_imstats(args->seq, args->image_indices[i], NULL, STATS_EXTRA))) {
+	// try with no fit passed: fails if data is needed because data is not cached
+	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, 0, NULL, STATS_EXTRA))) {
 		fits fit;
 		memset(&fit, 0, sizeof(fits));
 		if (seq_read_frame(args->seq, args->image_indices[i], &fit)) {
 			return 1;
 		}
-		stat = seq_get_imstats(args->seq, args->image_indices[i], &fit, STATS_EXTRA);
+		// retry with the fit to compute it
+		if (!(stat = statistics(args->seq, args->image_indices[i], &fit, 0, NULL, STATS_EXTRA)))
+			return 1;
 		if (args->seq->type != SEQ_INTERNAL)
 			clearfits(&fit);
 	}
@@ -76,6 +80,8 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 		mul[i] = *mul0 / mul[i];
 		break;
 	}
+
+	free_stats(stat);
 	return 0;
 }
 
@@ -115,14 +121,8 @@ static int compute_normalization(struct stacking_args *args) {
 	}
 
 	/* We empty the cache if needed (force to recompute) */
-	if (args->force_norm) {
-		for (i = 0; i < args->seq->number; i++) {
-			if (args->seq->imgparam && args->seq->imgparam[i].stats) {
-				free(args->seq->imgparam[i].stats);
-				args->seq->imgparam[i].stats = NULL;
-			}
-		}
-	}
+	if (args->force_norm)
+		clear_stats(args->seq, 0);
 
 	// compute for the first image to have scale0 mul0 and offset0
 	if (_compute_normalization_for_image(args,

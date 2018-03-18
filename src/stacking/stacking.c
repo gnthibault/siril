@@ -103,11 +103,11 @@ int stack_median(struct stacking_args *args) {
 	int retval = 0;
 	struct _data_block *data_pool = NULL;
 	int pool_size = 1;
-	fits *fit = &wfit[0];
+	fits fit;
 	struct image_block *blocks = NULL;
 
 	nb_frames = args->nb_images_to_stack;
-	memset(fit, 0, sizeof(fits));
+	memset(&fit, 0, sizeof(fits));
 
 	if (args->seq->type != SEQ_REGULAR && args->seq->type != SEQ_SER) {
 		char *msg = siril_log_message(_("Median stacking is only supported for FITS images and SER sequences.\n"));
@@ -225,28 +225,28 @@ int stack_median(struct stacking_args *args) {
 
 	/* initialize result image */
 	nbdata = naxes[0] * naxes[1];
-	fit->data = malloc(nbdata * naxes[2] * sizeof(WORD));
-	if (!fit->data) {
+	fit.data = malloc(nbdata * naxes[2] * sizeof(WORD));
+	if (!fit.data) {
 		fprintf(stderr, "Memory allocation error for result\n");
 		retval = -1;
 		goto free_and_close;
 	}
-	fit->bitpix = USHORT_IMG;
-	fit->naxes[0] = naxes[0];
-	fit->naxes[1] = naxes[1];
-	fit->naxes[2] = naxes[2];
-	fit->rx = naxes[0];
-	fit->ry = naxes[1];
-	fit->naxis = naxis;
-	fit->maxi = 0;
-	if(fit->naxis == 3) {
-		fit->pdata[RLAYER]=fit->data;
-		fit->pdata[GLAYER]=fit->data + nbdata;
-		fit->pdata[BLAYER]=fit->data + nbdata * 2;
+	fit.bitpix = USHORT_IMG;
+	fit.naxes[0] = naxes[0];
+	fit.naxes[1] = naxes[1];
+	fit.naxes[2] = naxes[2];
+	fit.rx = naxes[0];
+	fit.ry = naxes[1];
+	fit.naxis = naxis;
+	fit.maxi = 0;
+	if(fit.naxis == 3) {
+		fit.pdata[RLAYER] = fit.data;
+		fit.pdata[GLAYER] = fit.data + nbdata;
+		fit.pdata[BLAYER] = fit.data + nbdata * 2;
 	} else {
-		fit->pdata[RLAYER]=fit->data;
-		fit->pdata[GLAYER]=fit->data;
-		fit->pdata[BLAYER]=fit->data;
+		fit.pdata[RLAYER] = fit.data;
+		fit.pdata[GLAYER] = fit.data;
+		fit.pdata[BLAYER] = fit.data;
 	}
 	update_used_memory();
 
@@ -482,7 +482,7 @@ int stack_median(struct stacking_args *args) {
 					}
 				}
 				quicksort_s(data->stack, nb_frames);
-				fit->pdata[my_block->channel][pixel_idx] =
+				fit.pdata[my_block->channel][pixel_idx] =
 						gsl_stats_ushort_median_from_sorted_data(data->stack, 1, nb_frames);
 				pixel_idx++;
 			}
@@ -494,14 +494,11 @@ int stack_median(struct stacking_args *args) {
 
 	set_progress_bar_data(_("Finalizing stacking..."), PROGRESS_NONE);
 	/* copy result to gfit if success */
-	copyfits(fit, &gfit, CP_FORMAT, 0);
-	if (gfit.data) free(gfit.data);
-	gfit.data = fit->data;
-	gfit.exposure = exposure;
-	memcpy(gfit.pdata, fit->pdata, 3*sizeof(WORD *));
-
-	fit->data = NULL;
-	memset(fit->pdata, 0, 3*sizeof(WORD *));
+	clearfits(&gfit);
+	copyfits(&fit, &gfit, CP_FORMAT, 0);
+	gfit.data = fit.data;
+	for (i = 0; i < fit.naxes[2]; i++)
+		gfit.pdata[i] = fit.pdata[i];
 
 free_and_close:
 	fprintf(stdout, "free and close (%d)\n", retval);
@@ -523,7 +520,7 @@ free_and_close:
 	if (args->coeff.scale) free(args->coeff.scale);
 	if (retval) {
 		/* if retval is set, gfit has not been modified */
-		if (fit->data) free(fit->data);
+		if (fit.data) free(fit.data);
 		set_progress_bar_data(_("Median stacking failed. Check the log."), PROGRESS_RESET);
 		siril_log_message(_("Stacking failed.\n"));
 	} else {
@@ -556,9 +553,9 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 	char filename[256];
 	int retval = 0;
 	int nb_frames, cur_nb = 0;
-	fits *fit = &wfit[0];
+	fits fit;
 	char *tmpmsg;
-	memset(fit, 0, sizeof(fits));
+	memset(&fit, 0, sizeof(fits));
 
 	/* should be pre-computed to display it in the stacking tab */
 	nb_frames = args->nb_images_to_stack;
@@ -593,20 +590,20 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 		cur_nb++;	// only used for progress bar
 
-		if (seq_read_frame(args->seq, j, fit)) {
+		if (seq_read_frame(args->seq, j, &fit)) {
 			siril_log_message(_("Stacking: could not read frame, aborting\n"));
 			retval = -3;
 			goto free_and_reset_progress_bar;
 		}
 
 		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-		g_assert(fit->naxes[2] == args->seq->nb_layers);
+		g_assert(fit.naxes[2] == args->seq->nb_layers);
 
 		/* first loaded image: init data structures for stacking */
 		if (!nbdata) {
-			nbdata = fit->ry * fit->rx;
-			final_pixel[0] = malloc(nbdata * fit->naxes[2] * sizeof(WORD));
-			memset(final_pixel[0], ismax ? 0 : USHRT_MAX, nbdata * fit->naxes[2] * sizeof(WORD));
+			nbdata = fit.ry * fit.rx;
+			final_pixel[0] = malloc(nbdata * fit.naxes[2] * sizeof(WORD));
+			memset(final_pixel[0], ismax ? 0 : USHRT_MAX, nbdata * fit.naxes[2] * sizeof(WORD));
 			if (final_pixel[0] == NULL){
 				printf("Stacking: memory allocation failure\n");
 				retval = -2;
@@ -616,7 +613,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 				final_pixel[1] = final_pixel[0] + nbdata;	// index of green layer in final_pixel[0]
 				final_pixel[2] = final_pixel[0] + nbdata*2;	// index of blue layer in final_pixel[0]
 			}
-		} else if (fit->ry * fit->rx != nbdata) {
+		} else if (fit.ry * fit.rx != nbdata) {
 			siril_log_message(_("Stacking: image in sequence doesn't has the same dimensions\n"));
 			retval = -3;
 			goto free_and_reset_progress_bar;
@@ -637,21 +634,21 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 #endif
 
 		/* Summing the exposure */
-		exposure += fit->exposure;
+		exposure += fit.exposure;
 
 		/* stack current image */
 		i=0;	// index in final_pixel[0]
-		for (y=0; y < fit->ry; ++y){
-			for (x=0; x < fit->rx; ++x){
+		for (y=0; y < fit.ry; ++y){
+			for (x=0; x < fit.rx; ++x){
 				nx = x - shiftx;
 				ny = y - shifty;
 				//printf("x=%d y=%d sx=%d sy=%d i=%d ii=%d\n",x,y,shiftx,shifty,i,ii);
-				if (nx >= 0 && nx < fit->rx && ny >= 0 && ny < fit->ry) {
-					ii = ny * fit->rx + nx;		// index in final_pixel[0] too
+				if (nx >= 0 && nx < fit.rx && ny >= 0 && ny < fit.ry) {
+					ii = ny * fit.rx + nx;		// index in final_pixel[0] too
 					//printf("shiftx=%d shifty=%d i=%d ii=%d\n",shiftx,shifty,i,ii);
-					if (ii > 0 && ii < fit->rx * fit->ry){
+					if (ii > 0 && ii < fit.rx * fit.ry){
 						for(layer=0; layer<args->seq->nb_layers; ++layer){
-							WORD current_pixel = fit->pdata[layer][ii];
+							WORD current_pixel = fit.pdata[layer][ii];
 							if ((ismax && current_pixel > final_pixel[layer][i]) ||	// we take the brighter pixel
 									(!ismax && current_pixel < final_pixel[layer][i]))	// we take the darker pixel
 								final_pixel[layer][i] = current_pixel;
@@ -672,17 +669,16 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 	}
 	set_progress_bar_data(_("Finalizing stacking..."), (double)nb_frames/((double)nb_frames+1.));
 
-	copyfits(fit, &gfit, CP_ALLOC|CP_FORMAT, 0);
+	copyfits(&fit, &gfit, CP_ALLOC|CP_FORMAT, 0);
 	gfit.hi = round_to_WORD(minmaxim);
 	gfit.bitpix = USHORT_IMG;
-	gfit.exposure = exposure;						// TODO : think if exposure has a sense here
 
 	if (final_pixel[0]) {
 		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
 		for (layer=0; layer<args->seq->nb_layers; ++layer){
 			from = final_pixel[layer];
 			to = gfit.pdata[layer];
-			for (y=0; y < fit->ry * fit->rx; ++y) {
+			for (y=0; y < fit.ry * fit.rx; ++y) {
 				*to++ = *from++;
 			}
 		}
@@ -780,12 +776,12 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	int retval = 0;
 	struct _data_block *data_pool = NULL;
 	int pool_size = 1;
-	fits *fit = &wfit[0];
+	fits fit;
 	struct image_block *blocks = NULL;
 
 	nb_frames = args->nb_images_to_stack;
 	reglayer = get_registration_layer();
-	memset(fit, 0, sizeof(fits));
+	memset(&fit, 0, sizeof(fits));
 
 	if (args->seq->type != SEQ_REGULAR && args->seq->type != SEQ_SER) {
 		char *msg = siril_log_message(_("Rejection stacking is only supported for FITS images and SER sequences.\nUse \"Sum Stacking\" instead.\n"));
@@ -904,28 +900,28 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 
 	/* initialize result image */
 	nbdata = naxes[0] * naxes[1];
-	fit->data = malloc(nbdata * naxes[2] * sizeof(WORD));
-	if (!fit->data) {
+	fit.data = malloc(nbdata * naxes[2] * sizeof(WORD));
+	if (!fit.data) {
 		fprintf(stderr, "Memory allocation error for result\n");
 		retval = -1;
 		goto free_and_close;
 	}
-	fit->bitpix = USHORT_IMG;
-	fit->naxes[0] = naxes[0];
-	fit->naxes[1] = naxes[1];
-	fit->naxes[2] = naxes[2];
-	fit->rx = naxes[0];
-	fit->ry = naxes[1];
-	fit->naxis = naxis;
-	fit->maxi = 0;
-	if(fit->naxis == 3) {
-		fit->pdata[RLAYER]=fit->data;
-		fit->pdata[GLAYER]=fit->data + nbdata;
-		fit->pdata[BLAYER]=fit->data + nbdata * 2;
+	fit.bitpix = USHORT_IMG;
+	fit.naxes[0] = naxes[0];
+	fit.naxes[1] = naxes[1];
+	fit.naxes[2] = naxes[2];
+	fit.rx = naxes[0];
+	fit.ry = naxes[1];
+	fit.naxis = naxis;
+	fit.maxi = 0;
+	if(fit.naxis == 3) {
+		fit.pdata[RLAYER] = fit.data;
+		fit.pdata[GLAYER] = fit.data + nbdata;
+		fit.pdata[BLAYER] = fit.data + nbdata * 2;
 	} else {
-		fit->pdata[RLAYER]=fit->data;
-		fit->pdata[GLAYER]=fit->data;
-		fit->pdata[BLAYER]=fit->data;
+		fit.pdata[RLAYER] = fit.data;
+		fit.pdata[GLAYER] = fit.data;
+		fit.pdata[BLAYER] = fit.data;
 	}
 	update_used_memory();
 
@@ -1353,7 +1349,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				for (frame = 0; frame < N; ++frame) {
 					sum += data->stack[frame];
 				}
-				fit->pdata[my_block->channel][pdata_idx++] = round_to_WORD(sum/(double)N);
+				fit.pdata[my_block->channel][pdata_idx++] = round_to_WORD(sum/(double)N);
 			} // end of for x
 #ifdef _OPENMP
 #pragma omp critical
@@ -1379,14 +1375,11 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	}
 
 	/* copy result to gfit if success */
-	copyfits(fit, &gfit, CP_FORMAT, 0);
-	if (gfit.data) free(gfit.data);
-	gfit.data = fit->data;
-	gfit.exposure = exposure;
-	memcpy(gfit.pdata, fit->pdata, 3*sizeof(WORD *));
-
-	fit->data = NULL;
-	memset(fit->pdata, 0, 3*sizeof(WORD *));
+	clearfits(&gfit);
+	copyfits(&fit, &gfit, CP_FORMAT, 0);
+	gfit.data = fit.data;
+	for (i = 0; i < fit.naxes[2]; i++)
+		gfit.pdata[i] = fit.pdata[i];
 
 free_and_close:
 	fprintf(stdout, "free and close (%d)\n", retval);
@@ -1409,7 +1402,7 @@ free_and_close:
 	if (args->coeff.scale) free(args->coeff.scale);
 	if (retval) {
 		/* if retval is set, gfit has not been modified */
-		if (fit->data) free(fit->data);
+		if (fit.data) free(fit.data);
 		set_progress_bar_data(_("Rejection stacking failed. Check the log."), PROGRESS_RESET);
 		siril_log_message(_("Stacking failed.\n"));
 	} else {
@@ -1579,14 +1572,13 @@ static void _show_bgnoise(gpointer p) {
 				_("Another task is already in progress, ignoring new request.\n"));
 		return;
 	}
-
-	struct noise_data *args = malloc(sizeof(struct noise_data));
-
 	set_cursor_waiting(TRUE);
 
+	struct noise_data *args = malloc(sizeof(struct noise_data));
 	args->fit = com.uniq->fit;
 	args->verbose = FALSE;
 	memset(args->bgnoise, 0.0, sizeof(double[3]));
+
 	start_in_new_thread(noise, args);
 }
 
@@ -1648,12 +1640,10 @@ static gboolean end_stacking(gpointer p) {
 		com.uniq->nb_layers = gfit.naxes[2];
 		com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
 		com.uniq->fit = &gfit;
-		com.uniq->fit->maxi = 0;	// force to recompute min/max
 		/* Giving summary if average rejection stacking */
 		_show_summary(args);
 		/* Giving noise estimation (new thread) */
 		_show_bgnoise(com.uniq->fit);
-		stop_processing_thread();	// wait for it?
 
 		/* save stacking result */
 		if (args->output_filename != NULL && args->output_filename[0] != '\0') {
@@ -1681,6 +1671,7 @@ static gboolean end_stacking(gpointer p) {
 		/* remove tmp files if exist (Drizzle) */
 		remove_tmp_drizzle_files(args, TRUE);
 
+		waiting_for_thread();		// bgnoise
 		adjust_cutoff_from_updated_gfit();	// computes min and max
 		set_sliders_value_to_gfit();
 		initialize_display_mode();
@@ -2214,12 +2205,6 @@ static int upscale_image_hook(struct generic_seq_args *args, int i, fits *fit, r
 	return cvResizeGaussian(fit, fit->rx * upargs->factor, fit->ry * upargs->factor, OPENCV_NEAREST);
 }
 
-static gboolean end_upscale(gpointer p) {
-	// do nothing, the default behaviour of the generic processing ends the thread
-	free(p);
-	return FALSE;
-}
-
 int upscale_sequence(struct stacking_args *stackargs) {
 	if (stackargs->seq->upscale_at_stacking <= 1.05)
 		return 0;
@@ -2237,7 +2222,7 @@ int upscale_sequence(struct stacking_args *stackargs) {
 	args->finalize_hook = ser_finalize_hook;
 	args->image_hook = upscale_image_hook;
 	args->save_hook = NULL;
-	args->idle_function = end_upscale;
+	args->idle_function = NULL;
 	args->stop_on_error = TRUE;
 	args->description = _("Up-scaling sequence for stacking");
 	args->has_output = TRUE;
@@ -2280,7 +2265,7 @@ int upscale_sequence(struct stacking_args *stackargs) {
 		}
 		free(seqname);
 
-		memset(&com.selection, 0, sizeof(rectangle));
+		delete_selected_area();
 
 		/* there are three differences between old and new sequence:
 		 * the size of images and possibly the number of images if the
