@@ -672,6 +672,7 @@ int register_star_alignment(struct registration_args *args) {
 				continue;
 			}
 
+			clearfits(&fit);
 			ret = seq_read_frame(args->seq, frame, &fit);
 			if (!ret) {
 				char dest[256], filename[256];
