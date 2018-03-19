@@ -280,6 +280,29 @@ static WORD* reassign_to_non_null_data(WORD *data, long inputlen, long outputlen
 	return ndata;
 }
 
+static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
+		const WORD data[], const size_t stride, const size_t n) {
+	/* finds the smallest and largest members of a dataset */
+
+	WORD min = data[0 * stride];
+	WORD max = data[0 * stride];
+	size_t i;
+
+#pragma omp parallel for num_threads(com.max_thread) schedule(static) reduction(max:max) reduction(min:min)
+	for (i = 0; i < n; i++) {
+		WORD xi = data[i * stride];
+
+		if (xi < min)
+			min = xi;
+
+		if (xi > max)
+			max = xi;
+	}
+
+	*min_out = min;
+	*max_out = max;
+}
+
 /* this function tries to get the requested stats from the passed stats,
  * computes them and stores them in it if they have not already been */
 static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, int option, imstats *stats) {
@@ -317,7 +340,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		WORD min, max, norm;
 		if (!data) return NULL;	// not in cache, don't compute
 		fprintf(stdout, "- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
-		gsl_stats_ushort_minmax(&min, &max, data, 1, stat->total);
+		siril_stats_ushort_minmax(&min, &max, data, 1, stat->total);
 		if (max <= UCHAR_MAX)
 			norm = UCHAR_MAX;
 		else norm = USHRT_MAX;
@@ -362,7 +385,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	}
 
 	/* Calculation of average absolute deviation from the median */
-	if (option & STATS_AVGDEV && stat->avgDev < 0.) {
+	if ((option & STATS_AVGDEV) && stat->avgDev < 0.) {
 		if (!data) return NULL;	// not in cache, don't compute
 		fprintf(stdout, "- stats %p fit %p (%d): computing absdev\n", stat, fit, layer);
 		stat->avgDev = gsl_stats_ushort_absdev_m(data, 1, stat->ngoodpix, stat->median);
