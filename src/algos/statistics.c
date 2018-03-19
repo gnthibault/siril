@@ -186,6 +186,7 @@ static double siril_stats_ushort_bwmv(const WORD* data, const size_t n,
 	size_t i;
 
 	if (mad > 0.0) {
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) reduction(+:up,down)
 		for (i = 0; i < n; i++) {
 			double yi, ai, yi2;
 
@@ -195,7 +196,6 @@ static double siril_stats_ushort_bwmv(const WORD* data, const size_t n,
 
 			up += ai * SQR((double ) data[i] - median) * SQR(SQR (1 - yi2));
 			down += (ai * (1 - yi2) * (1 - 5 * yi2));
-
 		}
 
 		bwmv = n * (up / (down * down));
@@ -212,6 +212,7 @@ static double siril_stats_double_bwmv(const double* data, const size_t n,
 	size_t i;
 
 	if (mad > 0.0) {
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) reduction(+:up,down)
 		for (i = 0; i < n; i++) {
 			double yi, ai, yi2;
 
