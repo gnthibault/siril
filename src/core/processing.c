@@ -38,7 +38,7 @@ gpointer generic_sequence_worker(gpointer p) {
 	int frame;	// output frame index
 	int input_idx;	// index of the frame being processed in the sequence
 	int *index_mapping = NULL;
-	int nb_frames, progress = 0;
+	int nb_frames, excluded_frames = 0, progress = 0;
 	float nb_framesf;
 	int abort = 0;	// variable for breaking out of loop
 	GString *desc;	// temporary string description for logs
@@ -163,6 +163,7 @@ gpointer generic_sequence_worker(gpointer p) {
 					if (args->nb_filtered_images > 0)
 						args->nb_filtered_images--;
 					args->seq->selnum--;
+					excluded_frames++;
 				}
 				clearfits(&fit);
 				continue;
@@ -193,12 +194,17 @@ gpointer generic_sequence_worker(gpointer p) {
 
 	if (abort) {
 		set_progress_bar_data(_("Sequence processing failed. Check the log."), PROGRESS_RESET);
-		siril_log_message(_("Sequence processing failed.\n"));
+		siril_log_color_message(_("Sequence processing failed.\n"), "red");
 		args->retval = abort;
 	}
 	else {
-		set_progress_bar_data(_("Sequence processing succeeded."), PROGRESS_RESET);
-		siril_log_message(_("Sequence processing succeeded.\n"));
+		if (excluded_frames) {
+			set_progress_bar_data(_("Sequence processing partially succeeded. Check the log."), PROGRESS_RESET);
+			siril_log_color_message(_("Sequence processing partially succeeded, with %d images that failed and that were temporarily excluded from the sequence.\n"), "salmon", excluded_frames);
+		} else {
+			set_progress_bar_data(_("Sequence processing succeeded."), PROGRESS_RESET);
+			siril_log_color_message(_("Sequence processing succeeded.\n"), "green");
+		}
 		gettimeofday(&t_end, NULL);
 		show_time(t_start, t_end);
 	}

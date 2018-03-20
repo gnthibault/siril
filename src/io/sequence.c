@@ -1329,7 +1329,7 @@ struct seqpsf_args {
 	gboolean for_registration;
 	framing_mode framing;
 
-	/* The seqpsf result for each image */
+	/* The seqpsf result for each image, list of seqpsf_data */
 	GSList *list;
 };
 
@@ -1497,6 +1497,8 @@ int seqpsf(sequence *seq, int layer, gboolean for_registration, gboolean regall,
 	}
 	if (framing == FOLLOW_STAR_FRAME)
 		siril_log_color_message(_("The sequence analysis of the PSF will use a sliding selection area centred on the previous found star; this disables parallel processing.\n"), "salmon");
+	else if (framing == REGISTERED_FRAME)
+		siril_log_color_message(_("The sequence analysis of the PSF will use registration data to move the selection area for each image; this is compatible with parallel processing.\n"), "salmon");
 
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	struct seqpsf_args *spsfargs = malloc(sizeof(struct seqpsf_args));
