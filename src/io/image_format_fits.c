@@ -476,10 +476,17 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	 */
 	status = 0;
 	fits_read_key(fit->fptr, TUINT, "BZERO", &offset, NULL, &status);
-	if (fit->bitpix == SHORT_IMG && offset == 32768)
-		fit->bitpix = USHORT_IMG;
-	else if (fit->bitpix == LONG_IMG && offset == 2147483648)
-		fit->bitpix = ULONG_IMG;
+	if (!status) {
+		if (fit->bitpix == SHORT_IMG && offset == 32768)
+			fit->bitpix = USHORT_IMG;
+		else if (fit->bitpix == LONG_IMG && offset == 2147483648)
+			fit->bitpix = ULONG_IMG;
+	} else {
+		/* but some software just put unsigned 16-bit data in the file
+		 * and don't set the BZERO keyword... */
+		if (fit->bitpix == SHORT_IMG)
+			fit->bitpix = USHORT_IMG;
+	}
 
 	// and we store the original bitpix to reuse it during later partial
 	// reads when we have no access to the header or a fits * struct.
