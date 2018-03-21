@@ -238,6 +238,41 @@ int cvCalculH(s_star *star_array_img,
 	return 0;
 }
 
+int cvTransformH(Homography *H1, double scale) {
+	Mat H = Mat::eye(3, 3, CV_64FC1);
+	Mat S = Mat::eye(3, 3, CV_64FC1);
+
+	H.at<double>(0, 0) = H1->h00;
+	H.at<double>(0, 1) = H1->h01;
+	H.at<double>(0, 2) = H1->h02;
+	H.at<double>(1, 0) = H1->h10;
+	H.at<double>(1, 1) = H1->h11;
+	H.at<double>(1, 2) = H1->h12;
+	H.at<double>(2, 0) = H1->h20;
+	H.at<double>(2, 1) = H1->h21;
+	H.at<double>(2, 2) = H1->h22;
+
+
+	S.at<double>(0,0) = scale;
+	S.at<double>(1,1) = scale;
+
+	Mat result = S * H * S.inv();
+
+	H1->h00 = result.at<double>(0, 0);
+	H1->h01 = result.at<double>(0, 1);
+	H1->h02 = result.at<double>(0, 2);
+	H1->h10 = result.at<double>(1, 0);
+	H1->h11 = result.at<double>(1, 1);
+	H1->h12 = result.at<double>(1, 2);
+	H1->h20 = result.at<double>(2, 0);
+	H1->h21 = result.at<double>(2, 1);
+    H1->h22 = result.at<double>(2, 2);
+
+	H.release();
+	result.release();
+	return 0;
+}
+
 int cvTransformImage(fits *image, point ref, Homography Hom, int interpolation) {
 	assert(image->data);
 	assert(image->rx);

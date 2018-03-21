@@ -485,31 +485,32 @@ int register_shift_fwhm(struct registration_args *args) {
 	return 0;
 }
 
-static void _print_result(Homography *H, float FWHMx, float FWHMy) {
+static void print_alignment_results(Homography H, float FWHMx, float FWHMy) {
 	double rotation, scale, scaleX, scaleY;
 	point shift;
 	double inliers;
 
+	/* Matching information */
 	siril_log_color_message(_("Matching stars: done\n"), "green");
-	siril_log_message(_("%d pair matches.\n"), H->pair_matched);
-	inliers = 1.0 - ((((double) H->pair_matched - (double) H->Inliers)) / (double) H->pair_matched);
+	siril_log_message(_("%d pair matches.\n"), H.pair_matched);
+	inliers = 1.0 - ((((double) H.pair_matched - (double) H.Inliers)) / (double) H.pair_matched);
 	siril_log_message(_("Inliers:%*.3f\n"), 11, inliers);
 
-	// scale
-	scaleX = sqrt(H->h00 * H->h00 + H->h01 * H->h01);
-	scaleY = sqrt(H->h10 * H->h10 + H->h11 * H->h11);
+	/* Scale */
+	scaleX = sqrt(H.h00 * H.h00 + H.h01 * H.h01);
+	scaleY = sqrt(H.h10 * H.h10 + H.h11 * H.h11);
 	scale = (scaleX + scaleY) * 0.5;
 	siril_log_message(_("scaleX:%*.3f\n"), 12, scaleX);
 	siril_log_message(_("scaleY:%*.3f\n"), 12, scaleY);
 	siril_log_message(_("scale:%*.3f\n"), 13, scale);
 
-	// rotation
-	rotation = -atan2(H->h01, H->h00);
+	/* Rotation */
+	rotation = -atan2(H.h01, H.h00);
 	siril_log_message(_("rotation:%+*.2f deg\n"), 9, rotation * 180 / M_PI);
 
-	// translation
-	shift.x = -H->h02;
-	shift.y = -H->h12;
+	/* Translation */
+	shift.x = -H.h02;
+	shift.y = -H.h12;
 	siril_log_message(_("dx:%+*.2f px\n"), 15, shift.x);
 	siril_log_message(_("dy:%+*.2f px\n"), 15, shift.y);
 	siril_log_message(_("FWHMx:%*.2f px\n"), 12, FWHMx);
@@ -723,25 +724,17 @@ int register_star_alignment(struct registration_args *args) {
 					}
 
 					FWHM_average(stars, &FWHMx, &FWHMy, nbpoints);
-					_print_result(&H, FWHMx, FWHMy);
+					print_alignment_results(H, FWHMx, FWHMy);
 					current_regdata[frame].fwhm = FWHMx;
 
 					if (!args->translation_only) {
 						fits_flip_top_to_bottom(&fit);	// this is because in cvTransformImage, rotation center point is at (0, 0)
 						if (args->x2upscale) {
 							double upscale = 2.0;
-							double scaleX, scaleY;
 
 							cvResizeGaussian(&fit, fit.rx * upscale, fit.ry * upscale, OPENCV_NEAREST);
-							scaleX = sqrt(H.h00 * H.h00 + H.h01 * H.h01);
-							scaleY = sqrt(H.h10 * H.h10 + H.h11 * H.h11);
 
-							H.h02 *= upscale;
-							H.h12 *= upscale;
-							H.h00 *= ((1.0 + (scaleX - 1.0) * upscale) / scaleX);
-							H.h01 *= ((1.0 + (scaleX - 1.0) * upscale) / scaleX);
-							H.h10 *= ((1.0 + (scaleY - 1.0) * upscale) / scaleY);
-							H.h11 *= ((1.0 + (scaleY - 1.0) * upscale) / scaleY);
+							cvTransformH(&H, upscale);
 						}
 						cvTransformImage(&fit, ref, H, args->interpolation);
 						fits_flip_top_to_bottom(&fit);

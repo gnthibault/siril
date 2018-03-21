@@ -21,6 +21,7 @@ int cvResizeGaussian_data8(uint8_t *dataIn, int rx, int ry, uint8_t *dataOut,
 int cvRotateImage(fits *, double, int, int);
 int cvCalculH(s_star *star_array_img,
 		struct s_star *star_array_ref, int n, Homography *H);
+int cvTransformH(Homography *H1, double scale);
 int cvTransformImage(fits *, point, Homography, int);
 int cvUnsharpFilter(fits*, double, double);
 int cvComputeFinestScale(fits *image);
