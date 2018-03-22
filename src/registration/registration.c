@@ -734,7 +734,7 @@ int register_star_alignment(struct registration_args *args) {
 
 							cvResizeGaussian(&fit, fit.rx * upscale, fit.ry * upscale, OPENCV_NEAREST);
 
-							cvTransformH(&H, upscale);
+							cvApplyScaleToH(&H, upscale);
 						}
 						cvTransformImage(&fit, ref, H, args->interpolation);
 						fits_flip_top_to_bottom(&fit);

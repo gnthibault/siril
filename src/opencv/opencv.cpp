@@ -203,6 +203,30 @@ int cvRotateImage(fits *image, double angle, int interpolation, int cropped) {
 	return 0;
 }
 
+static void convert_H_to_MatH(Homography *from, Mat &to) {
+	to.at<double>(0, 0) = from->h00;
+	to.at<double>(0, 1) = from->h01;
+	to.at<double>(0, 2) = from->h02;
+	to.at<double>(1, 0) = from->h10;
+	to.at<double>(1, 1) = from->h11;
+	to.at<double>(1, 2) = from->h12;
+	to.at<double>(2, 0) = from->h20;
+	to.at<double>(2, 1) = from->h21;
+	to.at<double>(2, 2) = from->h22;
+}
+
+static void convert_MatH_to_H(Mat from, Homography *to) {
+	to->h00 = from.at<double>(0, 0);
+	to->h01 = from.at<double>(0, 1);
+	to->h02 = from.at<double>(0, 2);
+	to->h10 = from.at<double>(1, 0);
+	to->h11 = from.at<double>(1, 1);
+	to->h12 = from.at<double>(1, 2);
+	to->h20 = from.at<double>(2, 0);
+	to->h21 = from.at<double>(2, 1);
+    to->h22 = from.at<double>(2, 2);
+}
+
 int cvCalculH(s_star *star_array_img,
 		struct s_star *star_array_ref, int n, Homography *Hom) {
 
@@ -223,50 +247,39 @@ int cvCalculH(s_star *star_array_img,
 	}
 	Hom->Inliers = countNonZero(mask);
 
-	Hom->h00 = H.at<double>(0, 0);
-	Hom->h01 = H.at<double>(0, 1);
-	Hom->h02 = H.at<double>(0, 2);
-	Hom->h10 = H.at<double>(1, 0);
-	Hom->h11 = H.at<double>(1, 1);
-	Hom->h12 = H.at<double>(1, 2);
-	Hom->h20 = H.at<double>(2, 0);
-	Hom->h21 = H.at<double>(2, 1);
-    Hom->h22 = H.at<double>(2, 2);
+	convert_MatH_to_H(H, Hom);
 
 	mask.release();
 	H.release();
 	return 0;
 }
 
-int cvTransformH(Homography *H1, double scale) {
+/**
+ * Apply the upscale to H. Same value of x and y.
+ * @param H1
+ * @param scale
+ * @return 0
+ */
+int cvApplyScaleToH(Homography *H1, double s) {
 	Mat H = Mat::eye(3, 3, CV_64FC1);
 	Mat S = Mat::eye(3, 3, CV_64FC1);
 
-	H.at<double>(0, 0) = H1->h00;
-	H.at<double>(0, 1) = H1->h01;
-	H.at<double>(0, 2) = H1->h02;
-	H.at<double>(1, 0) = H1->h10;
-	H.at<double>(1, 1) = H1->h11;
-	H.at<double>(1, 2) = H1->h12;
-	H.at<double>(2, 0) = H1->h20;
-	H.at<double>(2, 1) = H1->h21;
-	H.at<double>(2, 2) = H1->h22;
+	convert_H_to_MatH(H1, H);
 
+	/* we define Scale Matrix S
+	 *
+	 *     s   0   0
+	 * S = 0   s   0
+	 *     0   0   1
+	 *
+	 */
+	S.at<double>(0,0) = s;
+	S.at<double>(1,1) = s;
 
-	S.at<double>(0,0) = scale;
-	S.at<double>(1,1) = scale;
-
+	/* We apply transform */
 	Mat result = S * H * S.inv();
 
-	H1->h00 = result.at<double>(0, 0);
-	H1->h01 = result.at<double>(0, 1);
-	H1->h02 = result.at<double>(0, 2);
-	H1->h10 = result.at<double>(1, 0);
-	H1->h11 = result.at<double>(1, 1);
-	H1->h12 = result.at<double>(1, 2);
-	H1->h20 = result.at<double>(2, 0);
-	H1->h21 = result.at<double>(2, 1);
-    H1->h22 = result.at<double>(2, 2);
+	convert_MatH_to_H(result, H1);
 
 	H.release();
 	result.release();
@@ -286,15 +299,7 @@ int cvTransformImage(fits *image, point ref, Homography Hom, int interpolation) 
 	Mat out(ref.y, ref.x, CV_16UC3);
 	Mat H = Mat::eye(3, 3, CV_64FC1);
 
-	H.at<double>(0, 0) = Hom.h00;
-	H.at<double>(0, 1) = Hom.h01;
-	H.at<double>(0, 2) = Hom.h02;
-	H.at<double>(1, 0) = Hom.h10;
-	H.at<double>(1, 1) = Hom.h11;
-	H.at<double>(1, 2) = Hom.h12;
-	H.at<double>(2, 0) = Hom.h20;
-	H.at<double>(2, 1) = Hom.h21;
-	H.at<double>(2, 2) = Hom.h22;
+	convert_H_to_MatH(&Hom, H);
 
 	warpPerspective(in, out, H, Size(ref.x, ref.y), interpolation);
 
