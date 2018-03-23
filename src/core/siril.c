@@ -830,6 +830,7 @@ static int darkOptimization(fits *brut, fits *dark, fits *offset) {
 	copyfits(dark, dark_tmp, CP_ALLOC | CP_EXTRACT, 0);
 
 	/* Minimization of background noise to find better k */
+	invalidate_stats_from_fit(brut);
 	k = goldenSectionSearch(brut, dark_tmp, lo, up, 1E-3);
 	if (k < 0.0)
 		return -1;

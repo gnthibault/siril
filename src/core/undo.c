@@ -31,6 +31,8 @@
 #include "io/single_image.h"
 #include "core/undo.h"
 #include "core/proto.h"
+#include "algos/statistics.h"
+
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -126,6 +128,7 @@ static int undo_get_data(fits *fit, historic hist) {
 	errno = 0;
 	fit->rx = hist.rx;
 	fit->ry = hist.ry;
+
 	size = fit->rx * fit->ry * fit->naxes[2];
 	buf = calloc(1, size * sizeof(WORD));
 	// read the data from temporary file
@@ -149,6 +152,7 @@ static int undo_get_data(fits *fit, historic hist) {
 		fit->pdata[GLAYER] = fit->data + fit->rx * fit->ry;
 		fit->pdata[BLAYER] = fit->data + fit->rx * fit->ry * 2;
 	}
+	invalidate_stats_from_fit(fit);
 	free(buf);
 	close(fd);
 	return 0;
