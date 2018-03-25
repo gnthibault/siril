@@ -446,7 +446,7 @@ int set_seq(const char *name){
 	free_cbbt_layers();
 
 	/* Sequence is stored in com.seq for now */
-	close_sequence();
+	close_sequence(TRUE);
 	memcpy(&com.seq, seq, sizeof(sequence));
 
 	if (seq->nb_layers > 1)
@@ -1075,7 +1075,7 @@ gboolean sequence_is_loaded() {
 }
 
 /* Close the com.seq sequence */
-void close_sequence() {
+void close_sequence(int loading_another) {
 	fprintf(stdout, "MODE: closing sequence\n");
 	if (sequence_is_loaded()) {
 		siril_log_message(_("Closing sequence %s\n"), com.seq.seqname);
@@ -1085,9 +1085,11 @@ void close_sequence() {
 		free_sequence(&com.seq, FALSE);
 		clear_stars_list();
 		initialize_sequence(&com.seq, FALSE);
-		// unselect the sequence in the sequence list
-		GtkComboBox *seqcombo = GTK_COMBO_BOX(lookup_widget("sequence_list_combobox"));
-		gtk_combo_box_set_active(seqcombo, -1);
+		if (!loading_another) {
+			// unselect the sequence in the sequence list
+			GtkComboBox *seqcombo = GTK_COMBO_BOX(lookup_widget("sequence_list_combobox"));
+			gtk_combo_box_set_active(seqcombo, -1);
+		}
 	}
 }
 

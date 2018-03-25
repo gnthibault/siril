@@ -24,7 +24,7 @@ int	get_index_and_basename(const char *filename, char **basename, int *index, in
 void	initialize_sequence(sequence *seq, gboolean is_zeroed);
 void	free_sequence(sequence *seq, gboolean free_seq_too);
 void	sequence_free_preprocessing_data(sequence *seq);
-void	close_sequence();
+void	close_sequence(int loading_another);
 gboolean sequence_is_loaded();
 
 typedef enum {

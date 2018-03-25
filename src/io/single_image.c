@@ -149,7 +149,7 @@ int open_single_image(const char* filename) {
 
 	close_single_image();	// close the previous image and free resources
 	free_image_data();	// free everything anyway
-	close_sequence();	// closing a sequence if loaded
+	close_sequence(FALSE);	// closing a sequence if loaded
 
 	retval = read_single_image(filename, &gfit, &realname);
 	
