@@ -22,6 +22,9 @@
 #define _GNU_SOURCE
 #endif
 
+#ifdef MAC_INTEGRATION
+#include "gtkmacintegration/gtkosxapplication.h"
+#endif
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
