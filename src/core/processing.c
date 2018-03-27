@@ -160,10 +160,15 @@ gpointer generic_sequence_worker(gpointer p) {
 					abort = 1;
 				else {
 					args->seq->imgparam[frame].incl = FALSE;
-					if (args->nb_filtered_images > 0)
-						args->nb_filtered_images--;
-					args->seq->selnum--;
-					excluded_frames++;
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+					{
+						if (args->nb_filtered_images > 0)
+							args->nb_filtered_images--;
+						args->seq->selnum--;
+						excluded_frames++;
+					}
 				}
 				clearfits(&fit);
 				continue;
