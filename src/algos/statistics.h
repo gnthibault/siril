@@ -10,7 +10,7 @@
 #define STATS_MAIN	STATS_BASIC | STATS_AVGDEV | STATS_MAD | STATS_BWMV
 
 // Iterative K-sigma Estimator of Location and Scale. Takes time, needed only for stacking
-#define STATS_IKSS	(1 << 6)	
+#define STATS_IKSS	(1 << 7)
 #define STATS_EXTRA	STATS_MAIN | STATS_IKSS
 
 #include "core/siril.h"
