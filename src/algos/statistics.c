@@ -351,7 +351,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	}
 
 	/* Calculation of ngoodpix, mean, sigma and background noise */
-	if ((option & STATS_BASIC) && (stat->ngoodpix <= 0L || stat->mean < 0. ||
+	if ((option & (STATS_NOISE | STATS_BASIC)) && (stat->ngoodpix <= 0L || stat->mean < 0. ||
 			stat->sigma < 0. || stat->bgnoise < 0.)) {
 		int status = 0;
 		if (!data) return NULL;	// not in cache, don't compute
