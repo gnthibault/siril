@@ -759,7 +759,7 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	imoper(fit_tmp, dark_tmp, OPER_SUB);
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, fit_tmp, chan, NULL, STATS_BASIC);
+		imstats *stat = statistics(NULL, -1, fit_tmp, chan, NULL, STATS_NOISE);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
 			return 0.0;
@@ -780,10 +780,12 @@ static double goldenSectionSearch(fits *brut, fits *dark, double a, double b,
 		double tol) {
 	double c, d;
 	double fc, fd;
+	int iter = 0;
 
 	c = b - GR * (b - a);
 	d = a + GR * (b - a);
 	do {
+		fprintf(stdout, "Iter: %d\n", ++iter);
 		fc = evaluateNoiseOfCalibratedImage(brut, dark, c);
 		fd = evaluateNoiseOfCalibratedImage(brut, dark, d);
 		if (fc < 0.0 || fd < 0.0)
@@ -1614,7 +1616,7 @@ gpointer noise(gpointer p) {
 	}
 
 	for (chan = 0; chan < args->fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_BASIC);
+		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_NOISE);
 		if (!stat) {
 			args->retval = 1;
 			siril_log_message(_("Error: no data computed.\n"));
