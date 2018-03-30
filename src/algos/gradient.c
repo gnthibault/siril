@@ -325,11 +325,6 @@ static int extractBackgroundAuto(fits *imgfit, fits *bkgfit, newBackground *bkg)
 		return 1;
 	}
 
-	if (imgfit->naxes[2] > 1)
-		copyfits(imgfit, bkgfit, CP_ALLOC | CP_FORMAT | CP_EXPAND, bkg->layer);
-	else
-		copyfits(imgfit, bkgfit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
-
 	WORD *tbuf = bkgfit->pdata[bkg->layer];
 	for (i = 0; i < bkg->row; i++) {
 		for (j = 0; j < bkg->col; j++)
@@ -370,11 +365,6 @@ static int extractBackgroundManual(fits *imgfit, fits *bkgfit, newBackground *bk
 	if (bkgMatrix == NULL) {
 		return 1;
 	}
-
-	if (imgfit->naxes[2] > 1)
-		copyfits(imgfit, bkgfit, CP_ALLOC | CP_FORMAT | CP_EXPAND, bkg->layer);
-	else
-		copyfits(imgfit, bkgfit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
 
 	WORD *tbuf = bkgfit->pdata[bkg->layer];
 	for (i = 0; i < bkg->row; i++) {
@@ -417,6 +407,8 @@ void bkgExtractBackground(fits *fit, gboolean automatic) {
 	bkg.box = (size_t) gtk_spin_button_get_value(spinBkgSizeBox) * 2;
 	bkg.row = (size_t) gfit.ry;
 	bkg.col = (size_t) gfit.rx;
+
+	copyfits(&gfit, fit, CP_ALLOC | CP_FORMAT, -1);
 
 	for (layer = 0; layer < com.uniq->nb_layers; layer++) {
 		bkg.layer = layer;
