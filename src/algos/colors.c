@@ -464,6 +464,7 @@ gpointer enhance_saturation(gpointer p) {
 		buf[GLAYER][i] = round_to_WORD(g * USHRT_MAX_DOUBLE);
 		buf[BLAYER][i] = round_to_WORD(b * USHRT_MAX_DOUBLE);
 	}
+	invalidate_stats_from_fit(args->fit);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 	gdk_threads_add_idle(end_enhance_saturation, args);
@@ -543,8 +544,8 @@ gpointer scnr(gpointer p) {
 		buf[BLAYER][i] = round_to_WORD(blue * (double) norm);
 	}
 
+	invalidate_stats_from_fit(args->fit);
 	gettimeofday(&t_end, NULL);
-
 	show_time(t_start, t_end);
 	gdk_threads_add_idle(end_scnr, args);
 	return GINT_TO_POINTER(0);
@@ -839,6 +840,8 @@ static void white_balance(fits *fit, gboolean is_manual, rectangle white_selecti
 		if (kw[chan] == 1.0) continue;
 		calibrate(fit, chan, kw[chan], bg[chan], norm);
 	}
+
+	invalidate_stats_from_fit(fit);
 }
 
 void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) {
