@@ -652,6 +652,8 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 		}
 		free_stats(stats[chan]);
 	}
+
+	invalidate_stats_from_fit(fit);
 }
 
 void on_button_bkg_neutralization_clicked(GtkButton *button, gpointer user_data) {
