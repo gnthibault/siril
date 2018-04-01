@@ -18,6 +18,8 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* This file is currently not used by compositing, only by the RGB align menu
+ * entry in the RGB image popup. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,14 +39,6 @@ static sequence *seq = NULL;		// the sequence of channels
 static struct registration_method *reg_methods[3];
 
 
-static int extract_fits() {
-	copyfits(&gfit, wfit + 0, CP_ALLOC | CP_EXTRACT, RLAYER); /* r */
-	copyfits(&gfit, wfit + 1, CP_ALLOC | CP_EXTRACT, GLAYER); /* g */
-	copyfits(&gfit, wfit + 2, CP_ALLOC | CP_EXTRACT, BLAYER); /* b */
-
-	return 0;
-}
-
 static void initialize_methods() {
 	reg_methods[0] = new_reg_method(_("One star registration (deep-sky)"),
 			&register_shift_fwhm, REQUIRES_ANY_SELECTION, REGTYPE_DEEPSKY);
@@ -54,14 +48,26 @@ static void initialize_methods() {
 	reg_methods[2] = NULL;
 }
 
+// We cannot currently do this in free_sequence() because compositing still
+// uses the references, so we have to do it here as a special case
+static void free_internal_sequence(sequence *seq) {
+	if (seq) {
+		int i;
+		for (i=0; i<seq->number; i++)
+			clearfits(internal_sequence_get(seq, i));
+		free_sequence(seq, TRUE);
+	}
+}
+
 static int initialize_internal_rgb_sequence() {
 	int i;
-	if (seq) free_sequence(seq, TRUE);
+	if (seq) free_internal_sequence(seq);
 
-	extract_fits();
 	seq = create_internal_sequence(3);
 	for (i = 0; i < 3; i++) {
-		internal_sequence_set(seq, i, &wfit[i]);
+		fits *fit = calloc(1, sizeof(fits));
+		copyfits(&gfit, fit, CP_ALLOC | CP_EXTRACT, i);
+		internal_sequence_set(seq, i, fit);
 	}
 	seq->rx = gfit.rx;
 	seq->ry = gfit.ry;
@@ -75,6 +81,7 @@ static void align_and_compose() {
 		for (x = 0; x < gfit.rx; ++x) {
 			int channel;
 			for (channel = 0; channel < 3; channel++) {
+				fits *fit = internal_sequence_get(seq, channel);
 				if (seq && seq->regparam) {
 					WORD pixel;
 					int realX = x - roundf_to_int(seq->regparam[REGLAYER][channel].shiftx);
@@ -84,7 +91,7 @@ static void align_and_compose() {
 					else if (realY < 0 || realY >= gfit.ry)
 						pixel = 0;
 					else
-						pixel = wfit[channel].pdata[0][realX + gfit.rx * realY];
+						pixel = fit->pdata[0][realX + gfit.rx * realY];
 					gfit.pdata[channel][i] = pixel;
 				}
 			}
@@ -96,9 +103,12 @@ static void align_and_compose() {
 int rgb_align(int m) {
 	struct registration_args regargs;
 	struct registration_method *method;
+	int retval;
 
 	initialize_methods();
 	initialize_internal_rgb_sequence();
+	set_cursor_waiting(TRUE);
+	set_progress_bar_data(NULL, PROGRESS_RESET);
 
 	/* align it */
 	method = reg_methods[m];
@@ -113,18 +123,20 @@ int rgb_align(int m) {
 	regargs.run_in_thread = FALSE;
 	com.run_thread = TRUE;	// fix for the canceling check in processing
 
-	set_cursor_waiting(TRUE);
-	set_progress_bar_data(NULL, PROGRESS_RESET);
-	if (method->method_ptr(&regargs))
-		set_progress_bar_data(_("Error in layers alignment."), PROGRESS_DONE);
-	else
-		set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
-	set_cursor_waiting(FALSE);
+	retval = method->method_ptr(&regargs);
+
 	com.run_thread = FALSE;	// fix for the canceling check in processing
 
-	align_and_compose();
-
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	return 0;
+	if (retval) {
+		set_progress_bar_data(_("Error in layers alignment."), PROGRESS_DONE);
+	} else {
+		set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
+		align_and_compose();
+		adjust_cutoff_from_updated_gfit();
+		redraw(com.cvport, REMAP_ALL);
+	}
+	set_cursor_waiting(FALSE);
+	free_internal_sequence(seq);
+	seq =  NULL;
+	return retval;
 }

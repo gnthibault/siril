@@ -305,9 +305,11 @@ int process_savepnm(int nb){
 }
 
 int process_imoper(int nb){
-	clearfits(&(wfit[4]));
-	readfits(word[1], &(wfit[4]), NULL);
-	imoper(&gfit, &wfit[4], word[0][1]);
+	fits fit;
+	memset(&fit, 0, sizeof(fits));
+	if (readfits(word[1], &fit, NULL))
+		return -1;
+	imoper(&gfit, &fit, word[0][1]);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -315,9 +317,11 @@ int process_imoper(int nb){
 }
 
 int process_addmax(int nb){
-	clearfits(&(wfit[4]));
-	readfits(word[1], &(wfit[4]), NULL);
-	if (addmax(&gfit, &wfit[4])==0) {
+	fits fit;
+	memset(&fit, 0, sizeof(fits));
+	if (readfits(word[1], &fit, NULL))
+		return -1;
+	if (addmax(&gfit, &fit)==0) {
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
@@ -328,11 +332,13 @@ int process_addmax(int nb){
 int process_fdiv(int nb){
 	// combines an image division and a scalar multiplication.
 	float norm;
+	fits fit;
+	memset(&fit, 0, sizeof(fits));
 
 	norm = atof(word[2]);
-	clearfits(&(wfit[4]));
-	readfits(word[1], &(wfit[4]), NULL);
-	fdiv(&gfit,&wfit[4], norm);
+	if (readfits(word[1], &fit, NULL))
+		return -1;
+	fdiv(&gfit, &fit, norm);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();

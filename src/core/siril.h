@@ -622,7 +622,6 @@ struct image_layer_struct {
 extern GtkBuilder *builder;	// get widget references anywhere
 extern cominfo com;		// the main data struct
 extern fits gfit;		// currently loaded image
-extern fits wfit[5];		// used for temp files, can probably be replaced by local variables
 extern char **supported_extensions;
 extern char *filter_pattern[];
 #endif

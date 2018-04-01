@@ -489,13 +489,15 @@ double contrast(fits* fit, int layer) {
 }
 
 int ddp(fits *a, int level, float coeff, float sigma) {
-	copyfits(a, &wfit[0], CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
-	unsharp(&wfit[0], sigma, 0, FALSE);
-	soper(&wfit[0], (double) level, OPER_ADD);
-	nozero(&wfit[0], 1);
-	fdiv(a, &wfit[0], level);
+	fits fit;
+	memset(&fit, 0, sizeof(fits));
+	copyfits(a, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
+	unsharp(&fit, sigma, 0, FALSE);
+	soper(&fit, (double) level, OPER_ADD);
+	nozero(&fit, 1);
+	fdiv(a, &fit, level);
 	soper(a, (double) coeff, OPER_MUL);
-	clearfits(&wfit[0]);
+	clearfits(&fit);
 	return 0;
 }
 

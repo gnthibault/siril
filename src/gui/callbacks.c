@@ -63,6 +63,7 @@
 static enum {
 	CD_NULL, CD_INCALL, CD_EXCALL, CD_QUIT
 } confirm;
+
 static gboolean is_shift_on = FALSE;
 
 layer_info predefined_layers_colors[] = {
@@ -81,6 +82,9 @@ static display_mode last_mode[MAXGRAYVPORT];
 /* STF (auto-stretch) data */
 static gboolean stfComputed;	// Flag to know if STF parameters are available
 static double stfShadows, stfHighlights, stfM;
+
+/* background image */
+static fits background_fit;
 
 /*****************************************************************************
  *                    S T A T I C      F U N C T I O N S                     *
@@ -2843,6 +2847,8 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	double sig[2];
 	long icold = 0L, ihot = 0L;
 	double rate, total;
+	fits fit;
+	memset(&fit, 0, sizeof(fits));
 
 	set_cursor_waiting(TRUE);
 	sig[0] = gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeColdBox")));
@@ -2853,13 +2859,14 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	label[1] = GTK_LABEL(lookup_widget("GtkLabelHotCC"));
 	entry = GTK_ENTRY(lookup_widget("darkname_entry"));
 	filename = gtk_entry_get_text(entry);
-	if (filename) {
-		int ret = readfits(filename, &(wfit[4]), NULL);
-		if (!ret) {
-			count_deviant_pixels(&(wfit[4]), sig, &icold, &ihot);
-		}
+	if (readfits(filename, &fit, NULL)) {
+		str[0] = g_markup_printf_escaped(_("<span foreground=\"red\">ERROR</span>"));
+		str[1] = g_markup_printf_escaped(_("<span foreground=\"red\">ERROR</span>"));
+		return;
 	}
-	total = wfit[4].rx * wfit[4].ry;
+	count_deviant_pixels(&fit, sig, &icold, &ihot);
+	total = fit.rx * fit.ry;
+	clearfits(&fit);
 	rate = (double)icold / total;
 	/* 1% of cold pixels seems to be a reasonable limit */
 	if (rate > 0.01) {
@@ -4689,7 +4696,8 @@ void on_bkgCompute_clicked(GtkButton *button, gpointer user_data) {
 	}
 
 	set_cursor_waiting(TRUE);
-	bkgExtractBackground(&wfit[0], automatic);
+	bkgExtractBackground(&background_fit, automatic);
+	memset(&background_fit, 0, sizeof(fits));
 	redraw(com.cvport, REMAP_NONE);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
@@ -4721,7 +4729,7 @@ void on_button_bkg_correct_clicked(GtkButton *button, gpointer user_data) {
 	default:
 	case 0:
 		for (layer = 0; layer < com.uniq->nb_layers; layer++) {
-			if (sub_background(&gfit, &wfit[0], layer)) {
+			if (sub_background(&gfit, &background_fit, layer)) {
 				set_cursor_waiting(FALSE);
 				return;
 			}
@@ -4729,7 +4737,7 @@ void on_button_bkg_correct_clicked(GtkButton *button, gpointer user_data) {
 		siril_log_message(_("Subtraction done ...\n"));
 		break;
 	case 1:
-		if (ndiv(&gfit, &wfit[0])) {
+		if (ndiv(&gfit, &background_fit)) {
 			set_cursor_waiting(FALSE);
 			return;
 		}
@@ -4752,9 +4760,10 @@ void on_checkbutton_bkg_boxes_toggled(GtkToggleButton *togglebutton,
 
 void on_radiobutton_bkg_toggled(GtkToggleButton *togglebutton,
 		gpointer user_data) {
-	memcpy(&wfit[1], &gfit, sizeof(fits));
-	memcpy(&gfit, &wfit[0], sizeof(fits));
-	memcpy(&wfit[0], &wfit[1], sizeof(fits));
+	fits *tmp;
+	memcpy(&tmp, &gfit, sizeof(fits));
+	memcpy(&gfit, &background_fit, sizeof(fits));
+	memcpy(&background_fit, &tmp, sizeof(fits));
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 }
@@ -4786,7 +4795,7 @@ void on_bkgClearSamples_clicked(GtkButton *button, gpointer user_data) {
 	clearSamples();
 	redraw(com.cvport, remap_option);
 	redraw_previews();
-	clearfits(&wfit[0]);
+	clearfits(&background_fit);
 	set_cursor_waiting(FALSE);
 }
 
@@ -4817,7 +4826,7 @@ void on_Bkg_extract_window_hide(GtkWidget *widget, gpointer user_data) {
 	mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
 	redraw(com.cvport, remap_option);
 	redraw_previews();
-	clearfits(&wfit[0]);
+	clearfits(&background_fit);
 	set_cursor_waiting(FALSE);
 }
 

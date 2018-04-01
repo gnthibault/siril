@@ -59,7 +59,6 @@
 /* the global variables of the whole project */
 cominfo com;	// the main data struct
 fits gfit;	// currently loaded image
-fits wfit[5];	// used for temp files, can probably be replaced by local variables
 GtkBuilder *builder;	// get widget references anywhere
 void initialize_scrollbars();
 
