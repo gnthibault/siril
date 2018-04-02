@@ -461,7 +461,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 		       	return NULL;
 		if (!oldstat)
 			add_stats_to_fit(fit, layer, stat);
-		return stat;	// must not be freed
+		return stat;
 	} else {
 		// we have sequence data, store in the sequence
 		if (seq->stats && seq->stats[layer]) {
@@ -476,7 +476,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 			add_stats_to_seq(seq, image_index, layer, stat);
 		if (fit)
 			add_stats_to_fit(fit, layer, stat);	// can be useful too
-		return stat;	// must not be freed
+		return stat;
 	}
 }
 
