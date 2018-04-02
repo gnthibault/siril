@@ -2330,6 +2330,9 @@ void initialize_display_mode() {
 		g_signal_handlers_unblock_by_func(chainedbutton, on_checkchain_toggled,
 				NULL);
 	}
+
+	/* initialize background gradient data */
+	memset(&background_fit, 0, sizeof(fits));
 }
 
 void set_GUI_CWD() {
@@ -4697,7 +4700,6 @@ void on_bkgCompute_clicked(GtkButton *button, gpointer user_data) {
 
 	set_cursor_waiting(TRUE);
 	bkgExtractBackground(&background_fit, automatic);
-	memset(&background_fit, 0, sizeof(fits));
 	redraw(com.cvport, REMAP_NONE);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
@@ -4760,7 +4762,7 @@ void on_checkbutton_bkg_boxes_toggled(GtkToggleButton *togglebutton,
 
 void on_radiobutton_bkg_toggled(GtkToggleButton *togglebutton,
 		gpointer user_data) {
-	fits *tmp;
+	fits tmp;
 	memcpy(&tmp, &gfit, sizeof(fits));
 	memcpy(&gfit, &background_fit, sizeof(fits));
 	memcpy(&background_fit, &tmp, sizeof(fits));
@@ -5369,7 +5371,7 @@ void on_menu_wavelet_separation_activate(GtkMenuItem *menuitem,
 }
 
 void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
-	fits *fit;
+	fits fit;
 	int Nbr_Plan, Type, maxplan, mins, i;
 	static GtkSpinButton *Spin_Nbr_Plan = NULL;
 	static GtkComboBox *Combo_Wavelets_Type = NULL;
@@ -5395,17 +5397,17 @@ void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
 		set_cursor_waiting(FALSE);
 		return;
 	}
-	fit = calloc(1, sizeof(fits));
-	copyfits(&gfit, fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
+	memset(&fit, 0, sizeof(fits));
+	copyfits(&gfit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 
 	for (i = 0; i < Nbr_Plan; i++) {
 		char filename[256];
 
 		g_snprintf(filename, sizeof(filename), "layer%02d", i);
-		get_wavelet_layers(fit, Nbr_Plan, i, Type, -1);
-		savefits(filename, fit);
+		get_wavelet_layers(&fit, Nbr_Plan, i, Type, -1);
+		savefits(filename, &fit);
 	}
-	clearfits(fit);
+	clearfits(&fit);
 	update_used_memory();
 	set_cursor_waiting(FALSE);
 }
