@@ -18,13 +18,13 @@ Main development is done with most recent versions of libraries.
 
 Requirements
 ------------
- * Gtk 3, (>= 3.6) for the GUI toolkit
- * cfitsio for fits related stuff
- * fftw3 as a FFT library
- * The GNU Scientific Library (gsl) for FWHM implementation, histograms and background extraction
- * libconfig++ (>= 1.4) for structured configuration file management
- * g++ for opencv code and avi exporter
- * libopencv for some image processing
+ * **Gtk 3**, (>= 3.6) for the GUI toolkit
+ * **cfitsio** for fits related stuff
+ * **fftw3** as a FFT library
+ * **GSL** (The GNU Scientific Library) for FWHM implementation, histograms and background extraction
+ * **libconfig++** (>= 1.4) for structured configuration file management
+ * **g++** for opencv code and avi exporter
+ * **libopencv** for most image processing
 
 SIRIL works internally with FITS files, but other file formats can be used as
 input and converted using the conversion tab of the control window. Some file
@@ -32,27 +32,23 @@ formats are handled internally, like BMP, PPM and SER, some required external
 libraries or programs as listed below. Libraries need to be present at
 compilation time, or their support won't be compiled.
 
- * libraw for DSLR RAW files import
- * libffms2 for films import
- * libtiff (>= 4)
- * libjpeg or compatible libraries like libjpeg-turbo
- * libpng (>= 1.6)
- * libavformat
- * libavutil >= 55.20
- * libavcodec
- * libswscale
- * libswresample
- * libcurl
+ * **libraw** for DSLR RAW files import
+ * **libffms2** for films import
+ * **libtiff** (>= 4) for TIFF format support
+ * **libjpeg** or compatible libraries like libjpeg-turbo for JPEG format support
+ * **libpng** (>= 1.6) for PNG format support
+ * **libavformat**, **libavutil** >= 55.20, **libavcodec**, **libswscale** and **libswresample** for avi export
+ * **libcurl**
 
 All these libraries are available in most Linux distributions and free systems,
 maybe with the exception of ffms2 that is not as popular as others and may need
 to be compiled on some systems.
 
-Since version [0.9.6](http://free-astro.org/index.php?title=Siril:0.9.6) a new optional 
+Since version [0.9.6](http://free-astro.org/index.php?title=Siril:0.9.6) an optional 
 dependency is required to plot photometry data. The following package is not needed 
 at compilation time:
 
- * gnuplot
+ * **gnuplot**
  
 Source download
 ---------------
@@ -95,6 +91,15 @@ This application was produced with the great help of [Partha Bagchi](https://www
 who spent time in building it. However, users shall keep in mind that none of the
 developers run on Windows and in consequence, some specific bugs could occur.
 Also, there is no certainty for building all future versions for Windows.
+
+Translation instructions for Siril
+----------------------------------
+The translation system is based on [intltool](https://www.freedesktop.org/wiki/Software/intltool/), common for GTK+ software, with the help of the [poedit](https://poedit.net/) editor.
+Get siril sources. In the po directory, run 
+     
+    make update-po
+Install poedit and open the **siril.pot** file in the po directory to start a new translation.
+Proceed to the translation of the english elements in the list. When you want to stop or when you have finished, send us the .po file that you created and we'll include it in the next version's sources and packages.
 
 Notes on SIRIL FITS image format
 --------------------------------
