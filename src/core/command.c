@@ -1763,7 +1763,6 @@ int process_stackall(int nb) {
 }
 
 static gpointer stackone_worker(gpointer garg) {
-	GError *error = NULL;
 	char *suf;
 	int retval = 0;
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
