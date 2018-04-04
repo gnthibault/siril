@@ -2,7 +2,7 @@
 
 bin_PROGRAMS = siril
 
-AM_CPPFLAGS = -DPACKAGE_DATA_DIR='"$(datadir)/${PACKAGE}"' -DPACKAGE_DOC_DIR='"${datarootdir}/doc/${PACKAGE}"' -DLOCALEDIR='"${localedir}"' $(FFMPEG_CFLAGS) $(GTK_CFLAGS) ${GTK_MAC_CFLAGS} $(LIBTIFF_CFLAGS) $(LIBPNG_CFLAGS) $(FFTW_CFLAGS) $(CFITSIO_CFLAGS) $(GSL_CFLAGS) $(FFMS2_CFLAGS) $(LIBCONFIG_CFLAGS) -I ../deps/kplot
+AM_CPPFLAGS = -DPACKAGE_DATA_DIR='"$(datadir)/${PACKAGE}"' -DPACKAGE_DOC_DIR='"${datarootdir}/doc/${PACKAGE}"' -DLOCALEDIR='"${localedir}"' $(FFMPEG_CFLAGS) $(GTK_CFLAGS) ${GTK_MAC_CFLAGS} $(LIBTIFF_CFLAGS) $(LIBPNG_CFLAGS) $(FFTW_CFLAGS) $(CFITSIO_CFLAGS) $(GSL_CFLAGS) $(FFMS2_CFLAGS) $(LIBCONFIG_CFLAGS) -I $(top_builddir)/deps/kplot
 
 siril_SOURCES = \
 	main.c \
@@ -34,7 +34,7 @@ siril_SOURCES = \
 	algos/photometry.h algos/photometry.c \
 	compositing/compositing.c compositing/compositing.h compositing/filters.c compositing/filters.h compositing/align_rgb.c compositing/align_rgb.h
 
-siril_LDADD =  ../deps/kplot/libkplot.a $(FFMPEG_LIBS) $(GTK_LIBS) ${GTK_MAC_LIBS} $(LIBRAW_LIBS) $(LIBTIFF_LIBS) $(LIBPNG_LIBS) $(FFTW_LIBS) $(CFITSIO_LIBS) $(GSL_LIBS) $(FFMS2_LIBS) $(LIBCONFIG_LIBS) $(CURL_LIBS) $(EXTRA_LIBS)
+siril_LDADD =  $(top_builddir)/deps/kplot/libkplot.a $(FFMPEG_LIBS) $(GTK_LIBS) ${GTK_MAC_LIBS} $(LIBRAW_LIBS) $(LIBTIFF_LIBS) $(LIBPNG_LIBS) $(FFTW_LIBS) $(CFITSIO_LIBS) $(GSL_LIBS) $(FFMS2_LIBS) $(LIBCONFIG_LIBS) $(CURL_LIBS) $(EXTRA_LIBS)
 
 siril_SOURCES += io/avi_pipp/pipp_avi_write.cpp io/avi_pipp/pipp_avi_write.h io/avi_pipp/pipp_avi_write_dib.cpp io/avi_pipp/pipp_avi_write_dib.h io/avi_pipp/pipp_utf8.h \
 	io/avi_pipp/pipp_buffer.cpp io/avi_pipp/pipp_buffer.h io/avi_pipp/pipp_video_write.h io/avi_pipp/avi_writer.cpp io/avi_pipp/avi_writer.h
@@ -43,6 +43,6 @@ siril_SOURCES += opencv/opencv.cpp opencv/opencv.h opencv/ecc/ecc.cpp opencv/ecc
 siril_SOURCES += opencv/findHomography/fundam.cpp opencv/findHomography/calibration.cpp opencv/findHomography/modelest.cpp opencv/findHomography/_modelest.h opencv/findHomography/calib3d.hpp opencv/findHomography/precomp.hpp
 siril_LDADD += $(OPENCV_LIBS)
 if OS_WIN32
-siril_LDADD += ../platform-specific/windows/siril.res
+siril_LDADD += $(top_builddir)/platform-specific/windows/siril.res
 endif
 siril_LINK = $(CXXLINK)

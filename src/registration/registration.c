@@ -1297,8 +1297,14 @@ failed_end:
 	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
 	g_object_unref (osx_app);
 #endif
-	gettimeofday(&t_end, NULL);
-	show_time(args->t_start, t_end);
+	/* Do not display time for register_shift_fwhm
+	 * cause it uses the generic function that already
+	 * displays the time
+	 */
+	if (args->func != &register_shift_fwhm) {
+		gettimeofday(&t_end, NULL);
+		show_time(args->t_start, t_end);
+	}
 	free(args);
 	return FALSE;
 }

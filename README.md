@@ -37,7 +37,7 @@ compilation time, or their support won't be compiled.
  * **libtiff** (>= 4) for TIFF format support
  * **libjpeg** or compatible libraries like libjpeg-turbo for JPEG format support
  * **libpng** (>= 1.6) for PNG format support
- * **libavformat**, **libavutil** >= 55.20, **libavcodec**, **libswscale** and **libswresample** for avi export
+ * **libavformat**, **libavutil** (>= 55.20), **libavcodec**, **libswscale** and **libswresample** for avi export
  * **libcurl**
 
 All these libraries are available in most Linux distributions and free systems,

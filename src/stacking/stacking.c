@@ -1469,7 +1469,11 @@ void start_stacking() {
 	siril_log_color_message(_("Stacking will use registration data of layer %d if some exist.\n"), "salmon", stackparam.reglayer);
 	stackparam.max_number_of_rows = stack_get_max_number_of_rows(&com.seq, stackparam.nb_images_to_stack);
 
-	siril_log_color_message(_("Stacking: processing...\n"), "red");
+	/* Do not display that cause it uses the generic function that already
+	 * displays this text
+	 */
+	if (stackparam.method != &stack_summing_generic)
+		siril_log_color_message(_("Stacking: processing...\n"), "red");
 	gettimeofday(&stackparam.t_start, NULL);
 	set_cursor_waiting(TRUE);
 	siril_log_message(stackparam.description);
@@ -1698,8 +1702,14 @@ static gboolean end_stacking(gpointer p) {
 	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
 	g_object_unref (osx_app);
 #endif
-	gettimeofday (&t_end, NULL);
-	show_time(args->t_start, t_end);
+	/* Do not display time for stack_summing_generic
+	 * cause it uses the generic function that already
+	 * displays the time
+	 */
+	if (args->method != &stack_summing_generic) {
+		gettimeofday(&t_end, NULL);
+		show_time(args->t_start, t_end);
+	}
 	return FALSE;
 }
 
