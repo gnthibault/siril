@@ -1493,20 +1493,15 @@ static void _show_summary(struct stacking_args *args) {
 	/* Type of algorithm */
 	if (args->method == &stack_mean_with_rejection) {
 		siril_log_message(_("Pixel combination ......... average\n"));
-	}
-	else if (args->method == &stack_summing_generic) {
+	} else if (args->method == &stack_summing_generic) {
 		siril_log_message(_("Pixel combination ......... normalized sum\n"));
-	}
-	else if (args->method == &stack_median) {
+	} else if (args->method == &stack_median) {
 		siril_log_message(_("Pixel combination ......... median\n"));
-	}
-	else if (args->method == &stack_addmin) {
+	} else if (args->method == &stack_addmin) {
 		siril_log_message(_("Pixel combination ......... minimum\n"));
-	}
-	else if (args->method == &stack_addmax) {
+	} else if (args->method == &stack_addmax) {
 		siril_log_message(_("Pixel combination ......... maximum\n"));
-	}
-	else {
+	} else {
 		siril_log_message(_("Pixel combination ......... none\n"));
 	}
 

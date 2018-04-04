@@ -2865,6 +2865,9 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	if (readfits(filename, &fit, NULL)) {
 		str[0] = g_markup_printf_escaped(_("<span foreground=\"red\">ERROR</span>"));
 		str[1] = g_markup_printf_escaped(_("<span foreground=\"red\">ERROR</span>"));
+		gtk_label_set_markup(label[0], str[0]);
+		gtk_label_set_markup(label[1], str[1]);
+		set_cursor_waiting(FALSE);
 		return;
 	}
 	count_deviant_pixels(&fit, sig, &icold, &ihot);
