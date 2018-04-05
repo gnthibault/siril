@@ -40,14 +40,14 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 	imstats *stat = NULL;
 
 	// try with no fit passed: fails if data is needed because data is not cached
-	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, 0, NULL, STATS_EXTRA))) {
+	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, args->reglayer, NULL, STATS_EXTRA))) {
 		fits fit;
 		memset(&fit, 0, sizeof(fits));
 		if (seq_read_frame(args->seq, args->image_indices[i], &fit)) {
 			return 1;
 		}
 		// retry with the fit to compute it
-		if (!(stat = statistics(args->seq, args->image_indices[i], &fit, 0, NULL, STATS_EXTRA)))
+		if (!(stat = statistics(args->seq, args->image_indices[i], &fit, args->reglayer, NULL, STATS_EXTRA)))
 			return 1;
 		if (args->seq->type != SEQ_INTERNAL)
 			clearfits(&fit);
@@ -59,7 +59,7 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 		scale[i] = stat->scale;
 		if (i == ref_image)
 			*scale0 = scale[ref_image];
-		scale[i] = *scale0 / scale[i];
+		scale[i] = (scale[i] == 0) ? 1 : *scale0 / scale[i];
 		/* no break */
 	case ADDITIVE:
 		offset[i] = stat->location;
@@ -71,13 +71,13 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 		scale[i] = stat->scale;
 		if (i == ref_image)
 			*scale0 = scale[ref_image];
-		scale[i] = *scale0 / scale[i];
+		scale[i] = (scale[i] == 0) ? 1 : *scale0 / scale[i];
 		/* no break */
 	case MULTIPLICATIVE:
 		mul[i] = stat->location;
 		if (i == ref_image)
 			*mul0 = mul[ref_image];
-		mul[i] = *mul0 / mul[i];
+		mul[i] = (mul[i] == 0) ? 1 : *mul / mul[i];
 		break;
 	}
 
