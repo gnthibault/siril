@@ -761,6 +761,18 @@ static void remove_pixel(WORD *arr, int i, int N) {
 	memmove(&arr[i], &arr[i + 1], (N - i - 1) * sizeof(*arr));
 }
 
+static void normalize_to16bit(int bitpix, double *sum) {
+	switch(bitpix) {
+	case BYTE_IMG:
+		*sum *= (USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE);
+		break;
+	default:
+	case SHORT_IMG:
+	case USHORT_IMG:
+		; // do nothing
+	}
+}
+
 int stack_mean_with_rejection(struct stacking_args *args) {
 	int nb_frames;		/* number of frames actually used */
 	int status;		/* CFITSIO status value MUST be initialized to zero for EACH call */
@@ -879,6 +891,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 		naxes[0] = args->seq->ser_file->image_width;
 		naxes[1] = args->seq->ser_file->image_height;
 		ser_color type_ser = args->seq->ser_file->color_id;
+		bitpix = (args->seq->ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) ? BYTE_IMG : USHORT_IMG;
 		if (!com.debayer.open_debayer && type_ser != SER_RGB && type_ser != SER_BGR)
 			type_ser = SER_MONO;
 		naxes[2] = type_ser == SER_MONO ? 1 : 3;
@@ -1349,7 +1362,11 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				for (frame = 0; frame < N; ++frame) {
 					sum += data->stack[frame];
 				}
-				fit.pdata[my_block->channel][pdata_idx++] = round_to_WORD(sum/(double)N);
+				sum /= (double) N;
+				if (args->norm_to_16) {
+					normalize_to16bit(bitpix, &sum);
+				}
+				fit.pdata[my_block->channel][pdata_idx++] = round_to_WORD(sum);
 			} // end of for x
 #ifdef _OPENMP
 #pragma omp critical
@@ -1434,6 +1451,7 @@ void start_stacking() {
 	static GtkEntry *output_file = NULL;
 	static GtkToggleButton *overwrite = NULL, *force_norm = NULL;
 	static GtkSpinButton *sigSpin[2] = {NULL, NULL};
+	static GtkWidget *norm_to_16 = NULL;
 
 	if (method_combo == NULL) {
 		method_combo = GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods"));
@@ -1444,6 +1462,7 @@ void start_stacking() {
 		rejec_combo = GTK_COMBO_BOX(lookup_widget("comborejection"));
 		norm_combo = GTK_COMBO_BOX(lookup_widget("combonormalize"));
 		force_norm = GTK_TOGGLE_BUTTON(lookup_widget("checkforcenorm"));
+		norm_to_16 = lookup_widget("check_normalise_to_16b");
 	}
 
 	if (get_thread_run()) {
@@ -1456,6 +1475,8 @@ void start_stacking() {
 	stackparam.type_of_rejection = gtk_combo_box_get_active(rejec_combo);
 	stackparam.normalize = gtk_combo_box_get_active(norm_combo);
 	stackparam.force_norm = gtk_toggle_button_get_active(force_norm);
+	stackparam.norm_to_16 = gtk_toggle_button_get_active(
+			GTK_TOGGLE_BUTTON(norm_to_16)) && gtk_widget_is_visible(norm_to_16);
 	stackparam.coeff.offset = NULL;
 	stackparam.coeff.mul = NULL;
 	stackparam.coeff.scale = NULL;
@@ -2019,7 +2040,7 @@ double compute_highest_accepted_roundness(double percent) {
 void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststackspin
 	static GtkAdjustment *stackadj = NULL;
 	static GtkWidget *go_stack = NULL, *stack[] = {NULL, NULL},
-			 *widgetnormalize = NULL, *force_norm = NULL;
+			 *widgetnormalize = NULL, *force_norm = NULL, *norm_to_16 = NULL;
 	static GtkComboBox *stack_type = NULL, *method_combo = NULL;
 	double percent;
 	int channel, ref_image;
@@ -2034,6 +2055,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		method_combo = GTK_COMBO_BOX(lookup_widget("comboboxstack_methods"));
 		widgetnormalize = lookup_widget("combonormalize");
 		force_norm = lookup_widget("checkforcenorm");
+		norm_to_16 = lookup_widget("check_normalise_to_16b");
 	}
 	if (!sequence_is_loaded()) return;
 	stackparam.seq = &com.seq;
@@ -2054,6 +2076,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		gtk_widget_set_sensitive(widgetnormalize, TRUE);
 		gtk_widget_set_sensitive(force_norm,
 				gtk_combo_box_get_active(GTK_COMBO_BOX(widgetnormalize)) != 0);
+		gtk_widget_set_visible(norm_to_16, stackparam.seq->bitpix < SHORT_IMG);
 	}
 
 	switch (gtk_combo_box_get_active(stack_type)) {

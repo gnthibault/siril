@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.2 
+<!-- Generated with glade 3.22.0 
 
 Copyright (C) The free-astro development team, 2018
 
@@ -13475,7 +13475,20 @@ gradients with differing spatial distributions and orientations.
                                       </packing>
                                     </child>
                                     <child>
-                                      <placeholder/>
+                                      <object class="GtkCheckButton" id="check_normalise_to_16b">
+                                        <property name="label" translatable="yes">Normalise to 16-bit</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">If you check this button, the final image will be normalized to 16-bit per channel. This is important when input sequence has a depth of 8-bit per channel.
+However you may want to disable this option when building master frames of 8-bit sequences.</property>
+                                        <property name="active">True</property>
+                                        <property name="draw_indicator">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="left_attach">0</property>
+                                        <property name="top_attach">1</property>
+                                      </packing>
                                     </child>
                                   </object>
                                 </child>
