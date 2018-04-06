@@ -480,6 +480,11 @@ int buildseqfile(sequence *seq, int force_recompute) {
 		return 0;
 	}
 
+	if (force_recompute) {
+		for (i = 0; i < seq->nb_layers; i++)
+			clear_stats(seq, i);
+	}
+
 	filename = malloc(strlen(seq->seqname) + 20);
 	if (filename == NULL) {
 		printf("alloc error: buildseqfile\n");
