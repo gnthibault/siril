@@ -122,7 +122,7 @@ static int compute_normalization(struct stacking_args *args) {
 
 	/* We empty the cache if needed (force to recompute) */
 	if (args->force_norm)
-		clear_stats(args->seq, 0);
+		clear_stats(args->seq, args->reglayer);
 
 	// compute for the first image to have scale0 mul0 and offset0
 	if (_compute_normalization_for_image(args,
