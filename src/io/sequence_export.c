@@ -230,6 +230,7 @@ static gpointer export_sequence(gpointer ptr) {
 			destfit.fptr = NULL;
 			nbdata = fit.rx * fit.ry;
 			destfit.data = calloc(nbdata * fit.naxes[2], sizeof(WORD));
+			destfit.stats = NULL;
 			if (!destfit.data) {
 				fprintf(stderr, "Could not allocate memory for the export, aborting\n");
 				retval = -1;
@@ -343,7 +344,7 @@ static gpointer export_sequence(gpointer ptr) {
 
 free_and_reset_progress_bar:
 	clearfits(&fit);	// in case of goto
-	clearfits(&destfit);
+	free(destfit.data);
 	if (args->normalize) {
 		free(coeff.offset);
 		free(coeff.scale);
