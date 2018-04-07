@@ -85,6 +85,7 @@ struct ser_struct {
 #endif
 };
 
+gboolean ser_is_cfa(struct ser_struct *ser_file);
 void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp);
 void ser_init_struct(struct ser_struct *ser_file);
 void ser_display_info(struct ser_struct *ser_file);

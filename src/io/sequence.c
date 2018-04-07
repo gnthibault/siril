@@ -379,17 +379,12 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 		seq->rx = fit->rx; seq->ry = fit->ry;
 		seq->bitpix = fit->orig_bitpix;	// for partial read
 		fprintf(stdout, "bitpix for the sequence is set as %d\n", seq->bitpix);
-
-		/* FIXME: when we load a demosaiced SER video after the seqfile was
-		 * created with seq->nb_layers = 1 (raw mode), seq->nb_layer is overwritten
-		 * and all regdata as well. Should we set another flag ?
-		 */
-		if (seq->nb_layers == -1 || seq->nb_layers != fit->naxes[2]) {
+		if (seq->nb_layers == -1) {
 			seq->nb_layers = fit->naxes[2];
-			seq->regparam = calloc(seq->nb_layers, sizeof(regdata *));
+			seq->regparam = calloc(seq->nb_layers, sizeof(regdata*));
 			seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
-			writeseqfile(seq);
 		}
+		seq->needs_saving = TRUE;
 
 		if (load_ref_into_gfit) {
 			seq->current = image_to_load;
@@ -416,7 +411,7 @@ static void free_cbbt_layers() {
 int set_seq(const char *name){
 	sequence *seq = NULL;
 	char *basename;
-	
+
 	if ((seq = readseqfile(name)) == NULL) {
 		fprintf(stderr, "could not load sequence %s\n", name);
 		return 1;

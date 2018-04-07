@@ -118,12 +118,23 @@ sequence * readseqfile(const char *name){
 			case 'L':
 				/* for now, the L line stores the number of layers for each image. */
 				if (line[1] == ' ') {
+					int nbl_backup = seq->nb_layers;
 					if (sscanf(line+2, "%d", &seq->nb_layers) != 1) {
 						fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
 						goto error;
 					}
-					/* seq->nb_layers can be -1 when the sequence has not
-					 * been opened for the first time */
+					/* seq->nb_layers can be -1 when the sequence has not been
+					 * opened for the first time, but it may already have been
+					 * set in SER opening below, so we keep the backup in this
+					 * case */
+					if (nbl_backup > 0 && ser_is_cfa(seq->ser_file)) {
+					       if (com.debayer.open_debayer)
+						       seq->nb_layers = nbl_backup;
+					       else seq->nb_layers = 1;
+					}
+					// else if nbl_backup is 3 but opening debayer is not
+					// enabled, we keep 1 in the nb_layers, which will be set in
+					// the seq_check_basic_data() call later
 					if (seq->nb_layers >= 1) {
 						seq->regparam = calloc(seq->nb_layers, sizeof(regdata*));
 						seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
@@ -176,6 +187,10 @@ sequence * readseqfile(const char *name){
 					fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
 					goto error;
 				}
+				if (current_layer > seq->nb_layers) {
+					// it may happen when opening a CFA file in monochrome
+					break;
+				}
 				if (seq->regparam[current_layer] == NULL) {
 					seq->regparam[current_layer] = calloc(seq->number, sizeof(regdata));
 					if (seq->regparam[current_layer] == NULL) {
@@ -224,7 +239,16 @@ sequence * readseqfile(const char *name){
 						seq->ser_file = NULL;
 						goto error;
 					}
-					else ser_display_info(seq->ser_file);
+					ser_display_info(seq->ser_file);
+
+					if (ser_is_cfa(seq->ser_file)) {
+						seq->nb_layers = 3;
+						if (seq->regparam)
+							seq->regparam = realloc(seq->regparam, seq->nb_layers * sizeof(regdata *));
+						if (seq->layers)
+							seq->layers = realloc(seq->regparam, seq->nb_layers * sizeof(layer_info));
+						seq->needs_saving = TRUE;
+					}
 				}
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 				else if (line[1] == 'A') {
@@ -296,6 +320,10 @@ sequence * readseqfile(const char *name){
 				if (current_layer < 0 || current_layer > 9 || line[2] != '-') {
 					fprintf(stderr, "readseqfile: sequence file format error: %s\n",line);
 					goto error;
+				}
+				if (current_layer > seq->nb_layers) {
+					// it may happen when opening a CFA file in monochrome
+					break;
 				}
 				stats = NULL;
 				allocate_stats(&stats);

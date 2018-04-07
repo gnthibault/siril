@@ -528,6 +528,15 @@ static int ser_alloc_ts(struct ser_struct *ser_file, int frame_no) {
  * Public functions
  */
 
+gboolean ser_is_cfa(struct ser_struct *ser_file) {
+	return ser_file && (ser_file->color_id == SER_BAYER_RGGB || 
+			ser_file->color_id == SER_BAYER_GRBG || 
+			ser_file->color_id == SER_BAYER_GBRG || 
+			ser_file->color_id == SER_BAYER_BGGR); 
+	// SER_BAYER_CYYM SER_BAYER_YCMY SER_BAYER_YMCY SER_BAYER_MYYC are not
+	// supported yet so returning false for them here is good
+}
+
 /* set the timestamps of the ser_file using a list of timestamps in string form */
 void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp) {
 	int i = 0;
