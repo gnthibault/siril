@@ -133,7 +133,7 @@ command commande[] = {
 	
 	{"psf", 0, "psf", process_psf},
 	
-	{"register", 1, "coregister sequence", process_register},
+	{"register", 1, "register sequence", process_register},
 	{"resample", 1, "resample factor", process_resample},
 	{"rl", 2, "rl iterations sigma", process_rl},
 	{"rmgreen", 1, "rmgreen type", process_scnr},
