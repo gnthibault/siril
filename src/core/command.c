@@ -67,6 +67,8 @@
 
 static char *word[MAX_COMMAND_WORDS];	// NULL terminated
 
+static GThread *script_thread = NULL;
+
 command commande[] = {
 	/* name,	nbarg,	usage,			function pointer */
 	{"addmax",	1,	"addmax filename",	process_addmax},
@@ -102,10 +104,10 @@ command commande[] = {
 	{"fixbanding", 2, "fixbanding amount sigma", process_fixbanding},
 
 	
-	{"gauss", 1, "gauss sigma ", process_gauss},	
+	{"gauss", 1, "gauss sigma ", process_gauss},
 	//~ {"gauss2", 1, "gauss sigma", process_gauss2},
 
-	{"help", 0, "help", process_help},	
+	{"help", 0, "help", process_help},
 	{"histo", 1, "histo layer (layer=0, 1, 2 with 0: red, 1: green, 2: blue)", process_histo},
 	
 	/* commands oper filename and curent image */
@@ -195,7 +197,7 @@ int process_load(int nb){
 	int retval, i;
 	
 	strncpy(filename, word[1], 250);
-	filename[250] = '\0';	
+	filename[250] = '\0';
 	
 	for (i = 1; i < nb - 1; ++i) {
 		strcat(filename, " ");
@@ -301,7 +303,7 @@ int process_savetif(int nb){
 
 int process_savepnm(int nb){
 	saveNetPBM(word[1], &gfit);
-	return 0;	
+	return 0;
 }
 
 int process_imoper(int nb){
@@ -388,7 +390,7 @@ int process_rl(int nb) {
 	double sigma;
 	int iter;
 
-	control_window_switch_to_tab(OUTPUT_LOGS);
+	//control_window_switch_to_tab(OUTPUT_LOGS);
 	iter = atoi(word[1]);
 	sigma = atof(word[2]);
 	if (iter <= 0) {
@@ -435,7 +437,7 @@ int process_crop(int nb){
 			if (atoi(word[1])<0 || atoi(word[2])<0){
 				siril_log_message(_("Crop: x and y must be positive values.\n"));
 				return 1;
-			}			
+			}
 			if (atoi(word[3])<=0 || atoi(word[4])<=0){
 				siril_log_message(_("Crop: width and height must be greater than 0.\n"));
 				return 1;
@@ -506,7 +508,7 @@ int process_wrecons(int nb) {
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	return 0;
-}	
+}
 
 int process_wavelet(int nb){
 	char *File_Name_Transform[3] = {"r_rawdata.wave", "g_rawdata.wave", "b_rawdata.wave"}, *dir[3];
@@ -685,7 +687,7 @@ int process_resample(int nb) {
 	update_used_memory();
 	adjust_vport_size_to_image();
 	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();	
+	redraw_previews();
 	set_cursor_waiting(FALSE);
 	return 0;
 }
@@ -708,7 +710,7 @@ int process_rotatepi(int nb){
 
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
-	return 0;	
+	return 0;
 }
 
 int process_set_mag(int nb) {
@@ -865,7 +867,7 @@ int process_bgnoise(int nb){
 	struct noise_data *args = malloc(sizeof(struct noise_data));
 
 	set_cursor_waiting(TRUE);
-	control_window_switch_to_tab(OUTPUT_LOGS);
+	//control_window_switch_to_tab(OUTPUT_LOGS);
 
 	args->fit = &gfit;
 	args->verbose = TRUE;
@@ -992,7 +994,7 @@ int process_visu(int nb){
 	high = atoi(word[2]);
 	if ((high>USHRT_MAX) || (low<0)){
 		siril_log_message(_("Values must be positive and less than %d.\n"), USHRT_MAX);
-		return 1;		
+		return 1;
 	}
 	visu(&gfit, low, high);
 	return 0;
@@ -1171,7 +1173,7 @@ int process_fmedian(int nb){
 		return 1;
 	}
 	
-	struct median_filter_data *args = malloc(sizeof(struct median_filter_data));	
+	struct median_filter_data *args = malloc(sizeof(struct median_filter_data));
 	args->ksize = atoi(word[1]);
 	args->amount = atof(word[2]);
 	args->iterations = 1;
@@ -1229,7 +1231,7 @@ int process_contrast(int nb){
 	return 0;
 }
 
-int process_fill(int nb){	
+int process_fill(int nb){
 	int level;
 	rectangle area;
 	
@@ -1555,7 +1557,7 @@ int process_register(int nb) {
 
 	reg_args = calloc(1, sizeof(struct registration_args));
 
-	control_window_switch_to_tab(OUTPUT_LOGS);
+	//control_window_switch_to_tab(OUTPUT_LOGS);
 
 	/* filling the arguments for registration */
 	reg_args->func = method->method_ptr;
@@ -1676,7 +1678,7 @@ static gpointer stackall_worker(gpointer garg) {
 	const gchar *file;
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
-	control_window_switch_to_tab(OUTPUT_LOGS);
+	//control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
 	if (check_seq(0) || (dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
@@ -1767,7 +1769,7 @@ static gpointer stackone_worker(gpointer garg) {
 	int retval = 0;
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
-	control_window_switch_to_tab(OUTPUT_LOGS);
+	//control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
 	if (check_seq(0)) {
 		siril_log_message(_("Error while searching sequences.\n"));
@@ -1978,52 +1980,63 @@ static int executeCommand(int wordnb) {
 	}
 
 	// process the command
+	siril_log_color_message("Running command: %s\n", "salmon", word[0]);
 	commande[i].process(wordnb);
 	return 0;
 }
 
+gpointer execute_script(gpointer p) {
+	FILE *fp = (FILE *)p;
+	ssize_t read;
+	char *linef;
+	int line = 0;
+#if (_POSIX_C_SOURCE < 200809L)
+	linef = calloc(256, sizeof(char));
+	while (fgets(linef, 256, fp)) {
+		read = strlen(linef) + 1;
+#else
+	size_t lenf = 0;
+	linef = NULL;
+	while ((read = getline(&linef, &lenf, fp)) != -1) {
+#endif
+		++line;
+		if (linef[0] == '#') continue;	// comments
+		if (linef[0] == '\0' || linef[0] == '\n')
+			continue;
+		int wordnb;
+		char *myline = strdup(linef);
+		parseLine(myline, read, &wordnb);
+		if (executeCommand(wordnb)) {
+			siril_log_message(_("Error in line: %d. Exiting batch processing\n"), line);
+			free(myline);
+			fclose(fp);
+			return GINT_TO_POINTER(1);
+		}
+		free(myline);
+		if (waiting_for_thread())
+			break;	// abort script on command failure
+	}
+	free(linef);
+	fclose(fp);
+	return NULL;
+}
+
 int processcommand(const char *line) {
-	int wordnb = 0, len, i = 0;
+	int wordnb = 0, len;
 	char *myline;
 
 	if (line[0] == '\0' || line[0] == '\n')
 		return 0;
 	if (line[0] == '@') { // case of files
-		FILE * fp;
-
-
-		fp = g_fopen(line + 1, "r");
+		if (script_thread)
+			g_thread_join(script_thread);
+		FILE* fp = g_fopen(line + 1, "r");
 		if (fp == NULL) {
 			siril_log_message(_("File [%s] does not exist\n"), line + 1);
 			return 1;
 		}
-		ssize_t read;
-		char *linef;
-#if (_POSIX_C_SOURCE < 200809L)
-		linef = calloc(256, sizeof(char));
-		while (fgets(linef, 256, fp)) {
-			read = strlen(linef) + 1;
-#else
-		size_t lenf = 0;
-		linef = NULL;
-		while ((read = getline(&linef, &lenf, fp)) != -1) {
-#endif
-			++i;
-			if (linef[0] == '#') continue;	// comments
-			if (linef[0] == '\0' || linef[0] == '\n')
-				continue;
-			myline = strdup(linef);
-			parseLine(myline, read, &wordnb);
-			if (executeCommand(wordnb)) {
-				siril_log_message(_("Error in line: %d. Exiting batch processing\n"), i);
-				free(myline);
-				fclose(fp);
-				return 1;
-			}
-			free(myline);
-		}
-		free(linef);
-		fclose(fp);
+		control_window_switch_to_tab(OUTPUT_LOGS);
+		script_thread = g_thread_new("script", execute_script, fp);
 	} else {
 		myline = strdup(line);
 		len = strlen(line);

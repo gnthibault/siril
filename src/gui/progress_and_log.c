@@ -230,3 +230,39 @@ void show_time(struct timeval t_start, struct timeval t_end) {
 	}
 }
 
+/* thread-safe cursor change */
+static gboolean idle_set_cursor(gpointer arg) {
+	int waiting = GPOINTER_TO_INT(arg);
+	GdkCursor *cursor;
+	static GdkCursor *clock = NULL;
+	GdkDisplay *display;
+	GdkScreen *screen;
+	GList *list;
+
+	display = gdk_display_get_default ();
+
+	if (clock == NULL)
+		clock = gdk_cursor_new_for_display(display, GDK_WATCH);
+
+	screen = gdk_screen_get_default();
+	list = gdk_screen_get_toplevel_windows(screen);
+
+	if (waiting) {
+		cursor = clock;
+	} else {
+		cursor = NULL;
+	}
+	while (list) {
+		GdkWindow *window = GDK_WINDOW(list->data);
+		gdk_window_set_cursor(window, cursor);
+		gdk_display_sync(gdk_window_get_display(window));
+		gdk_display_flush(display);
+		list = g_list_next(list);
+	}
+	g_list_free(list);
+	return FALSE;
+}
+
+void set_cursor_waiting(gboolean waiting) {
+	gdk_threads_add_idle(idle_set_cursor, GINT_TO_POINTER(waiting));
+}

@@ -53,7 +53,6 @@ void show_data_dialog(char *text, char *title);
 void show_main_gray_window();
 void show_rgb_window();
 void hide_rgb_window();
-void set_cursor_waiting(gboolean waiting);
 
 void zoomcombo_update_display_for_zoom();
 void initialize_FITS_name_entries();

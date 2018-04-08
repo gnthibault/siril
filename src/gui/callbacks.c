@@ -84,7 +84,7 @@ static gboolean stfComputed;	// Flag to know if STF parameters are available
 static double stfShadows, stfHighlights, stfM;
 
 /* background image */
-static fits background_fit;
+static fits background_fit = { 0 };	// Testing init
 
 /*****************************************************************************
  *                    S T A T I C      F U N C T I O N S                     *
@@ -2067,36 +2067,6 @@ void hide_rgb_window() {
 	 GTK_CHECK_MENU_ITEM(gtk_builder_get_object(builder, "menuitemcolor"));
 	 gtk_check_menu_item_set_active(rgbcheck, FALSE);*/
 	gtk_widget_hide(lookup_widget("rgb_window"));
-}
-
-void set_cursor_waiting(gboolean waiting) {
-	GdkCursor *cursor;
-	static GdkCursor *clock = NULL;
-	GdkDisplay *display;
-	GdkScreen *screen;
-	GList *list;
-
-	display = gdk_display_get_default ();
-
-	if (clock == NULL)
-		clock = gdk_cursor_new_for_display(display, GDK_WATCH);
-
-	screen = gdk_screen_get_default();
-	list = gdk_screen_get_toplevel_windows(screen);
-
-	if (waiting) {
-		cursor = clock;
-	} else {
-		cursor = NULL;
-	}
-	while (list) {
-		GdkWindow *window = GDK_WINDOW(list->data);
-		gdk_window_set_cursor(window, cursor);
-		gdk_display_sync(gdk_window_get_display(window));
-		gdk_display_flush(display);
-		list = g_list_next(list);
-	}
-	g_list_free(list);
 }
 
 void zoomcombo_update_display_for_zoom() {

@@ -232,7 +232,7 @@ the_end:
 			gdk_threads_add_idle(args->idle_function, args);
 		else gdk_threads_add_idle(end_generic_sequence, args);
 	}
-	return NULL;
+	return GINT_TO_POINTER(args->retval);
 }
 
 // defaut idle function (in GTK main thread) to run at the end of the generic sequence processing
@@ -318,10 +318,13 @@ void start_in_new_thread(gpointer (*f)(gpointer p), gpointer p) {
 	com.thread = g_thread_new("processing", f, p);
 }
 
-void waiting_for_thread() {
-	g_thread_join(com.thread);
+gpointer waiting_for_thread() {
+	gpointer retval = NULL;
+	if (com.thread != NULL)
+		retval = g_thread_join(com.thread);
 	com.thread = NULL;
-	com.run_thread = FALSE;	// do it anyway in case of wait without stop
+	set_thread_run(FALSE);	// do it anyway in case of wait without stop
+	return retval;
 }
 
 void stop_processing_thread() {

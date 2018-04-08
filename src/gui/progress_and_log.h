@@ -16,4 +16,6 @@ void set_progress_bar_data(const char *text, double percent);
 
 void show_time(struct timeval, struct timeval);
 
+void set_cursor_waiting(int waiting);
+
 #endif
