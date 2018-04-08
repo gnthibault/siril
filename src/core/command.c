@@ -177,9 +177,9 @@ command commande[] = {
 	
 	/* unsharp masking of current image or genname sequence */
 	{"unselect", 2, "unselect from to", process_unselect},
-	{"unsharp", 2, "unsharp sigma multi", process_unsharp},
 	{"unsetmag", 0, "unsetmag", process_unset_mag},
 	{"unsetmagseq", 0, "unsetmagseq", process_unset_mag_seq},
+	{"unsharp", 2, "unsharp sigma multi", process_unsharp},
 //	{"unsharp2", 5, "unsharp2 sigma multi src dest number", process_unsharp2},
 
 	{"visu", 2, "visu low high", process_visu},
@@ -1641,7 +1641,7 @@ static int stack_one_seq(struct _stackall_data *arg) {
 			args.normalize = arg->norm;
 		else args.normalize = NO_NORM;
 		args.force_norm = FALSE;
-		args.reglayer = get_registration_layer();
+		args.reglayer = args.seq->nb_layers == 1 ? 0 : 1;
 		stack_fill_list_of_unfiltered_images(&args);
 
 		char *suffix = ends_with(seq->seqname, "_") ? "" :
