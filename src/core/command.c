@@ -104,7 +104,7 @@ command commande[] = {
 	{"fixbanding", 2, "fixbanding amount sigma", process_fixbanding},
 
 	
-	{"gauss", 1, "gauss sigma ", process_gauss},
+	{"gauss", 1, "gauss sigma", process_gauss},
 	//~ {"gauss2", 1, "gauss sigma", process_gauss2},
 
 	{"help", 0, "help", process_help},
@@ -120,9 +120,9 @@ command commande[] = {
 	// specific loads are not required, but could be used to force the
 	// extension to a higher priority in case two files with same basename
 	// exist (stat_file() manages that priority order for now).
-	{"log", 0, "log ", process_log}, /* logarifies current image */
+	{"log", 0, "log", process_log}, /* logarifies current image */
 #ifndef _WIN32
-	{"ls", 0, "ls ", process_ls},
+	{"ls", 0, "ls", process_ls},
 #endif
 	
 	{"mirrorx", 0, "mirrorx", process_mirrorx},
@@ -142,7 +142,7 @@ command commande[] = {
 	{"rotate", 1, "rotate angle", process_rotate},
 	{"rotatePi", 0, "rotatePi", process_rotatepi},
 	
-	{"satu", 1, "satu coeff ", process_satu}, 
+	{"satu", 1, "satu coeff", process_satu}, 
 	{"save", 1, "save filename (save current image in fit)", process_save}, 
 	{"savebmp", 1, "savebmp filename (save display image in bmp)", process_savebmp}, 
 #ifdef HAVE_LIBJPEG
@@ -168,7 +168,7 @@ command commande[] = {
 	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq},
 	{"split", 3, "split R G B", process_split},
 	{"stat", 0, "stat", process_stat},
-	{"stack", 1, "stack sequence", process_stackone},
+	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackone},
 	{"stackall", 0, "stackall", process_stackall},
 	
 	{"threshlo", 1, "threshlo level", process_threshlo},
@@ -1453,12 +1453,12 @@ int process_stat(int nb){
 	return 0;
 }
 
+// useless function
 static gboolean end_register_worker(gpointer p) {
 	struct timeval t_end;
 	struct registration_args *args = (struct registration_args *) p;
 	stop_processing_thread();
 	if (!args->retval) {
-		writeseqfile(args->seq);
 		fill_sequence_list(args->seq, com.cvport);
 		set_layers_for_registration();	// update display of available reg data
 
@@ -1517,11 +1517,13 @@ failed_end:
 
 }
 
+// this function also exists in registration.c as register_thread_func() but
+// this one does not call the idle_function at the end
 static gpointer register_worker(gpointer p) {
 	struct registration_args *args = (struct registration_args *) p;
 	args->retval = args->func(args);
-	gdk_threads_add_idle(end_register_worker, args); //FIXME
-	return GINT_TO_POINTER(args->retval);	// not used anyway
+	writeseqfile(args->seq);
+	return GINT_TO_POINTER(args->retval);
 }
 
 int process_register(int nb) {
@@ -1656,6 +1658,11 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		// 3. stack
 		retval = arg->method(&args);
 
+		// TODO, from end_stacking:
+		//_show_summary(args);
+		//noise(&gfit);
+		//remove_tmp_drizzle_files(args, TRUE);
+
 		free_sequence(seq, TRUE);
 		free(args.image_indices);
 		if (!retval) {
@@ -1769,13 +1776,12 @@ static gpointer stackone_worker(gpointer garg) {
 	int retval = 0;
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
-	//control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
 	if (check_seq(0)) {
 		siril_log_message(_("Error while searching sequences.\n"));
 		com.wd[0] = '\0';
 		gdk_threads_add_idle(end_generic, NULL);
-		return NULL;
+		return GINT_TO_POINTER(1);
 	}
 
 	if ((suf = strstr(arg->file, ".seq")) && strlen(suf) == 4) {
@@ -1856,6 +1862,7 @@ int process_stackone(int nb) {
 		return 1;
 	}
 
+	//control_window_switch_to_tab(OUTPUT_LOGS);
 	start_in_new_thread(stackone_worker, arg);
 	return 0;
 }

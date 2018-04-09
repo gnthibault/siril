@@ -304,7 +304,7 @@ int generic_save(struct generic_seq_args *args, int out_index, int in_index, fit
 
 // This function is reentrant. The pointer will be freed in the idle function,
 // so it must be a proper pointer to an allocated memory chunk.
-void start_in_new_thread(gpointer (*f)(gpointer p), gpointer p) {
+void start_in_new_thread(gpointer (*f)(gpointer), gpointer p) {
 	g_mutex_lock(&com.mutex);
 	if (com.run_thread || com.thread != NULL) {
 		fprintf(stderr, "The processing thread is busy, stop it first.\n");
