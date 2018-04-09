@@ -1221,8 +1221,9 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 static gpointer register_thread_func(gpointer p) {
 	struct registration_args *args = (struct registration_args *) p;
 	args->retval = args->func(args);
+	writeseqfile(args->seq);
 	gdk_threads_add_idle(end_register_idle, args);
-	return GINT_TO_POINTER(args->retval);	// not used anyway
+	return GINT_TO_POINTER(args->retval);
 }
 
 // end of registration, GTK thread
@@ -1231,7 +1232,6 @@ static gboolean end_register_idle(gpointer p) {
 	struct registration_args *args = (struct registration_args *) p;
 	stop_processing_thread();
 	if (!args->retval) {
-		writeseqfile(args->seq);
 		fill_sequence_list(args->seq, com.cvport);
 		set_layers_for_registration();	// update display of available reg data
 

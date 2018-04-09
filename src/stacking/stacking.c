@@ -1441,7 +1441,7 @@ gpointer stack_function_handler(gpointer p) {
 	args->retval = args->method(p);
 	// 4. save result and clean-up
 	gdk_threads_add_idle(end_stacking, args);
-	return GINT_TO_POINTER(args->retval);	// not used anyway
+	return GINT_TO_POINTER(args->retval);
 }
 
 /* starts a summing operation using data stored in the stackparam structure
