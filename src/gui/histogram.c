@@ -710,6 +710,7 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 			normValue = stat[i]->normValue;
 			median = stat[i]->median / normValue;
 			mad = stat[i]->mad / normValue * MAD_NORM;
+			/* this is a guard to avoid breakdown point */
 			if (mad == 0.0) mad = 0.001;
 
 			c0 += median + shadowsClipping * mad;
@@ -727,6 +728,7 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 			normValue = stat[i]->normValue;
 			median = stat[i]->median / normValue;
 			mad = stat[i]->mad / normValue * MAD_NORM;
+			/* this is a guard to avoid breakdown point */
 			if (mad == 0.0) mad = 0.001;
 
 			m += median;
