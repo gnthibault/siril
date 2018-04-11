@@ -328,6 +328,7 @@ struct sequ {
 
 	sequence_type type;
 	struct ser_struct *ser_file;
+	gboolean cfa_opened_monochrome;	// in case the CFA SER was opened in monochrome mode
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 	struct film_struct *film_file;
 	char *ext;		// extension of video, NULL if not video

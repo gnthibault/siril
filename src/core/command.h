@@ -75,6 +75,7 @@ int	process_ls(int nb);
 int	process_contrast(int nb);
 int	process_cdg(int nb);
 int 	process_clearstar(int nb);
+int	process_close(int nb);
 int	process_mirrorx(int nb);
 int	process_mirrory(int nb);
 int	process_resample(int nb);

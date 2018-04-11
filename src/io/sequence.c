@@ -109,7 +109,7 @@ int read_single_sequence(char *realname, int imagetype) {
 	if (check_only_one_film_seq(realname)) retval = 1;
 	else {
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
-	const char *ext;
+		const char *ext;
 #endif
 		switch (imagetype) {
 			case TYPESER:
@@ -959,41 +959,41 @@ void initialize_sequence(sequence *seq, gboolean is_zeroed) {
  * initialize_sequence() must be called on it right after free_sequence()
  * (= do it for com.seq) */
 void free_sequence(sequence *seq, gboolean free_seq_too) {
-	int i, j;
+	int layer, j;
 	
 	if (seq == NULL) return;
 	if (seq->nb_layers > 0 && (seq->regparam || seq->stats)) {
-		for (i = 0; i < seq->nb_layers; i++) {
-			if ((seq->regparam && seq->regparam[i]) ||
-					(seq->stats && seq->stats[i])) {
+		for (layer = 0; layer < seq->nb_layers; layer++) {
+			if ((seq->regparam && seq->regparam[layer]) ||
+					(seq->stats && seq->stats[layer])) {
 				for (j = 0; j < seq->number; j++) {
-					if (seq->regparam && seq->regparam[i] &&
-							seq->regparam[i][j].fwhm_data &&
-							(seq->photometry[0] != NULL &&
-							 seq->regparam[i][j].fwhm_data != seq->photometry[0][j])) // avoid double free
-						free(seq->regparam[i][j].fwhm_data);
+					if (seq->regparam && seq->regparam[layer] &&
+							seq->regparam[layer][j].fwhm_data &&
+							(!seq->photometry[0] ||
+							 seq->regparam[layer][j].fwhm_data != seq->photometry[0][j])) // avoid double free
+						free(seq->regparam[layer][j].fwhm_data);
 
-					if (seq->stats && seq->stats[i] && seq->stats[i][j])
-						free_stats(seq->stats[i][j]);
+					if (seq->stats && seq->stats[layer] && seq->stats[layer][j])
+						free_stats(seq->stats[layer][j]);
 				}
-				if (seq->regparam && seq->regparam[i])
-					free(seq->regparam[i]);
-				if (seq->stats && seq->stats[i])
-					free(seq->stats[i]);
+				if (seq->regparam && seq->regparam[layer])
+					free(seq->regparam[layer]);
+				if (seq->stats && seq->stats[layer])
+					free(seq->stats[layer]);
 			}
 		}
 		if (seq->regparam) free(seq->regparam);
 		if (seq->stats) free(seq->stats);
 	}
 
-	for (i=0; i<seq->number; i++) {
-		if (seq->fptr && seq->fptr[i]) {
+	for (j=0; j<seq->number; j++) {
+		if (seq->fptr && seq->fptr[j]) {
 			int status = 0;
-			fits_close_file(seq->fptr[i], &status);
+			fits_close_file(seq->fptr[j], &status);
 		}
 		if (seq->imgparam) {
-			if (seq->imgparam[i].date_obs)
-				free(seq->imgparam[i].date_obs);
+			if (seq->imgparam[j].date_obs)
+				free(seq->imgparam[j].date_obs);
 		}
 	}
 	if (seq->seqname)	free(seq->seqname);
@@ -1003,14 +1003,14 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 
 #ifdef _OPENMP
 	if (seq->fd_lock) {
-		for (i=0; i<seq->number; i++) {
-			omp_destroy_lock(&seq->fd_lock[i]);
+		for (j=0; j<seq->number; j++) {
+			omp_destroy_lock(&seq->fd_lock[j]);
 		}
 		free(seq->fd_lock);
 	}
 #endif
 
-		if (seq->ser_file) {
+	if (seq->ser_file) {
 		ser_close_file(seq->ser_file);	// frees the data too
 		free(seq->ser_file);
 	}
@@ -1023,8 +1023,8 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 
 	if (seq->internal_fits) {
 		// Compositing still uses references to the images in the sequence
-		//for (i=0; i<seq->number; i++)
-		//	clearfits(seq->internal_fits[i]);
+		//for (j=0; j<seq->number; j++)
+		//	clearfits(seq->internal_fits[j]);
 		free(seq->internal_fits);
 	}
 	/* Here this is a bit tricky. An internal sequence is a single image. So some
@@ -1036,8 +1036,8 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 	if (seq->type != SEQ_INTERNAL)
 		undo_flush();
 
-	for (i = 0; i < MAX_SEQPSF && seq->photometry[i]; i++) {
-		free_photometry_set(seq, i);
+	for (j = 0; j < MAX_SEQPSF && seq->photometry[j]; j++) {
+		free_photometry_set(seq, j);
 	}
 
 	sequence_free_preprocessing_data(seq);

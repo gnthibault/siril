@@ -79,6 +79,7 @@ command commande[] = {
 	{"cd", 1, "cd directory (define the working directory)", process_cd},
 	{"cdg", 0, "cdg", process_cdg},
 	{"clearstar", 0, "clearstar", process_clearstar},
+	{"close", 0, "close", process_close},
 	{"contrast", 0, "contrast", process_contrast},
 	{"cosme", 1, "cosme [filename].lst", process_cosme},
 	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme},
@@ -1214,6 +1215,18 @@ int process_clearstar(int nb){
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_NONE);
 	redraw_previews();
+	return 0;
+}
+
+int process_close(int nb) {
+	free_image_data();
+	close_sequence(TRUE);
+	undo_flush();
+	hide_rgb_window();
+	hide_gray_window();
+	reset_plot(); // reset all plots
+	close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
+	update_used_memory();
 	return 0;
 }
 

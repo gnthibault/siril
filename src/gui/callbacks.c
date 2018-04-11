@@ -2069,6 +2069,10 @@ void hide_rgb_window() {
 	gtk_widget_hide(lookup_widget("rgb_window"));
 }
 
+void hide_gray_window() {
+	gtk_widget_hide(lookup_widget("main_window"));
+}
+
 void zoomcombo_update_display_for_zoom() {
 	static GtkComboBox *zoomcombo = NULL;
 	static double indexes[] = { 16., 8., 4., 2., 1., .5, .25, .125, /*.0625, */

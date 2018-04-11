@@ -128,9 +128,9 @@ sequence * readseqfile(const char *name){
 					 * set in SER opening below, so we keep the backup in this
 					 * case */
 					if (nbl_backup > 0 && ser_is_cfa(seq->ser_file)) {
-					       if (com.debayer.open_debayer)
-						       seq->nb_layers = nbl_backup;
-					       else seq->nb_layers = 1;
+						if (com.debayer.open_debayer)
+							seq->nb_layers = nbl_backup;
+						else seq->nb_layers = 1;
 					}
 					// else if nbl_backup is 3 but opening debayer is not
 					// enabled, we keep 1 in the nb_layers, which will be set in
@@ -143,6 +143,7 @@ sequence * readseqfile(const char *name){
 					/* in the future, wavelength and name of each layer will be added here */
 				}
 				break;
+
 			case 'I':
 				/* First sequence file format was I filenum and incl.
 				 * A later sequence file format added the stats to this.
@@ -180,6 +181,7 @@ sequence * readseqfile(const char *name){
 				}
 				++i;
 				break;
+
 			case 'R':
 				/* registration info */
 				current_layer = line[1] - '0';
@@ -223,6 +225,7 @@ sequence * readseqfile(const char *name){
 					++i;
 				}
 				break;
+
 			case 'T':
 				/* sequence type (several files or a single file) */
 				if (line[1] == 'S') {
@@ -242,6 +245,12 @@ sequence * readseqfile(const char *name){
 					ser_display_info(seq->ser_file);
 
 					if (ser_is_cfa(seq->ser_file)) {
+						if (!com.debayer.open_debayer) {
+							// we set this flag instead of relying on the
+							// com.debayer.open_debayer flag which varies
+							// as the user changes the GUI
+							seq->cfa_opened_monochrome = TRUE;
+						}
 						seq->nb_layers = 3;
 						if (seq->regparam)
 							seq->regparam = realloc(seq->regparam, seq->nb_layers * sizeof(regdata *));
@@ -302,6 +311,7 @@ sequence * readseqfile(const char *name){
 				else seq->ext = "fit";
 #endif
 				break;
+
 			case 'U':
 				/* up-scale factor for stacking. Used in simplified stacking for
 				 * shift-only registrated sequences, up-scale will be done at
@@ -314,9 +324,27 @@ sequence * readseqfile(const char *name){
 				break;
 			case 'M':
 				/* stats may not exist for all images and layers so we use
-				 * indices for them, the line is Mx-y with x the layer
-				 * number and y the image index */
-				current_layer = line[1] - '0';
+				 * indices for them, the line is Mx-y with x the layer number
+				 * and y the image index */
+
+				if (line[1] == '*') {
+					/* these are stats for the CFA channel, the star is a
+					 * way to differentiate stats belonging to CFA and
+					 * those belonging to the demosaiced red channel, both
+					 * would have layer number 0 otherwise */
+					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
+							!com.debayer.open_debayer) {
+						fprintf(stdout, "- stats: using CFA stats\n");
+						current_layer = 0;
+					} else break;
+				}
+				else if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
+						!com.debayer.open_debayer) {
+					fprintf(stdout, "- stats: not using demosaiced stats\n");
+					break;
+				}
+				else current_layer = line[1] - '0';
+
 				if (current_layer < 0 || current_layer > 9 || line[2] != '-') {
 					fprintf(stderr, "readseqfile: sequence file format error: %s\n",line);
 					goto error;
@@ -387,7 +415,7 @@ error:
 int writeseqfile(sequence *seq){
 	char *filename;
 	FILE *seqfile;
-	int i,j;
+	int i, layer;
 
 	if (!seq->seqname || seq->seqname[0] == '\0') return 1;
 	filename = malloc(strlen(seq->seqname)+5);
@@ -429,49 +457,51 @@ int writeseqfile(sequence *seq){
 				seq->imgparam[i].incl);
 	}
 
-	for(j=0; j < seq->nb_layers; j++) {
-		if (seq->regparam[j]) {
+	for (layer = 0; layer < seq->nb_layers; layer++) {
+		if (seq->regparam[layer]) {
 			for (i=0; i < seq->number; ++i) {
-				/*fprintf(stderr, "R%d %f %f %g %g %g %g %g\n", j,
-						seq->regparam[j][i].shiftx,
-						seq->regparam[j][i].shifty,
-						seq->regparam[j][i].rot_centre_x,
-						seq->regparam[j][i].rot_centre_y,
-						seq->regparam[j][i].angle,
-						seq->regparam[j][i].fwhm,
-						seq->regparam[j][i].quality
+				/*fprintf(stderr, "R%d %f %f %g %g %g %g %g\n", layer,
+						seq->regparam[layer][i].shiftx,
+						seq->regparam[layer][i].shifty,
+						seq->regparam[layer][i].rot_centre_x,
+						seq->regparam[layer][i].rot_centre_y,
+						seq->regparam[layer][i].angle,
+						seq->regparam[layer][i].fwhm,
+						seq->regparam[layer][i].quality
 						);*/
-				fprintf(seqfile, "R%d %f %f %g %g %g %g %g\n", j,
-						seq->regparam[j][i].shiftx,
-						seq->regparam[j][i].shifty,
-						seq->regparam[j][i].rot_centre_x,
-						seq->regparam[j][i].rot_centre_y,
-						seq->regparam[j][i].angle,
-						seq->regparam[j][i].fwhm,
-						seq->regparam[j][i].quality
+				fprintf(seqfile, "R%d %f %f %g %g %g %g %g\n", layer,
+						seq->regparam[layer][i].shiftx,
+						seq->regparam[layer][i].shifty,
+						seq->regparam[layer][i].rot_centre_x,
+						seq->regparam[layer][i].rot_centre_y,
+						seq->regparam[layer][i].angle,
+						seq->regparam[layer][i].fwhm,
+						seq->regparam[layer][i].quality
 				       );
 			}
 		}
-		if (seq->stats && seq->stats[j]) {
+		if (seq->stats && seq->stats[layer]) {
+			if (seq->cfa_opened_monochrome && layer > 0)
+				continue;
 			for (i=0; i < seq->number; ++i) {
-				if (!seq->stats[j][i]) continue;
+				if (!seq->stats[layer][i]) continue;
 
-				fprintf(seqfile, "M%d-%d %ld %ld %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg\n",
-						j, i,
-						seq->stats[j][i]->total,
-						seq->stats[j][i]->ngoodpix,
-						seq->stats[j][i]->mean,
-						seq->stats[j][i]->median,
-						seq->stats[j][i]->sigma,
-						seq->stats[j][i]->avgDev,
-						seq->stats[j][i]->mad,
-						seq->stats[j][i]->sqrtbwmv,
-						seq->stats[j][i]->location,
-						seq->stats[j][i]->scale,
-						seq->stats[j][i]->min,
-						seq->stats[j][i]->max,
-						seq->stats[j][i]->normValue,
-						seq->stats[j][i]->bgnoise);
+				fprintf(seqfile, "M%c-%d %ld %ld %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg\n",
+						seq->cfa_opened_monochrome ? '*' : '0' + layer, i,
+						seq->stats[layer][i]->total,
+						seq->stats[layer][i]->ngoodpix,
+						seq->stats[layer][i]->mean,
+						seq->stats[layer][i]->median,
+						seq->stats[layer][i]->sigma,
+						seq->stats[layer][i]->avgDev,
+						seq->stats[layer][i]->mad,
+						seq->stats[layer][i]->sqrtbwmv,
+						seq->stats[layer][i]->location,
+						seq->stats[layer][i]->scale,
+						seq->stats[layer][i]->min,
+						seq->stats[layer][i]->max,
+						seq->stats[layer][i]->normValue,
+						seq->stats[layer][i]->bgnoise);
 
 			}
 		}
