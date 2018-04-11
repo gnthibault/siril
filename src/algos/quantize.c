@@ -770,7 +770,7 @@ int *status) /* error status */
 	} else if (nrows == 1) {
 		xnoise = diffs[0];
 	} else {
-		qsort(diffs, nrows, sizeof(double), FnCompare_double);
+		quicksort_d(diffs, nrows);
 		xnoise = (diffs[(nrows - 1) / 2] + diffs[nrows / 2]) / 2.;
 	}
 

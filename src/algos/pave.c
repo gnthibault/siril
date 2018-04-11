@@ -85,37 +85,34 @@
 
 /****************************************************************************/
 
-int static test_ind (ind, N)
-int ind, N;
-{
-    int Val;
-    
-/*    if (ind < 0) Val = - ind;*/
-    if (ind < 0) Val = -0;
-    else
-    {
-/*       if (ind >= N) Val = 2 * (N - 1) - ind;*/
-        if (ind >= N) Val = N - 1;
-        else Val = ind;
-    }
-    return (Val);
+int static test_ind(int ind, int N) {
+	int Val;
+
+	if (ind < 0)
+		Val = -0;
+	else {
+		if (ind >= N)
+			Val = N - 1;
+		else
+			Val = ind;
+	}
+	return (Val);
 }
 
 /****************************************************************************/
 
-int pave_2d_linear_smooth (Imag, Smooth, Nl, Nc, Num_Plan)
-float *Imag, *Smooth;
-int Nl, Nc, Num_Plan;
-{
-    int i,j,Step;
-    int indi1,indj1,indi2,indj2;
+int pave_2d_linear_smooth(float *Imag, float *Smooth, int Nl, int Nc,
+		int Num_Plan) {
+	int i, j, Step;
+	int indi1, indj1, indi2, indj2;
 
     Step = pow(2., (float) Num_Plan) + 0.5;
 
-    for (i = 0; i < Nl; i ++)
-    {
-        for (j = 0; j < Nc; j ++)
-        {
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
+#endif
+	for (i = 0; i < Nl; i++) {
+		for (j = 0; j < Nc; j++) {
             indi1 = test_ind (i - Step, Nl);
             indj1 = test_ind (j - Step, Nc);
             indi2 = test_ind (i + Step, Nl);
@@ -137,114 +134,107 @@ int Nl, Nc, Num_Plan;
 
 /***************************************************************************/
 
-int pave_2d_tfo (Pict, Pave, Nl, Nc, Nbr_Plan, Type_To)
-float *Pict, *Pave;
-int Nl, Nc, Nbr_Plan;
-int Type_To;
-{
-	int Num_Plan,i,Pos;
-	float *Plan, *Imag;
-	
-	Imag = f_vector_alloc (Nl*Nc);
-	if (Imag == NULL) return 1;
-	memcpy(Imag, Pict, Nl*Nc*sizeof(float));
-	//for (i = 0; i < Nl*Nc; i++) Imag[i] = Pict[i];
-	
-	for (Num_Plan = 0; Num_Plan < Nbr_Plan - 1; Num_Plan++)	{
-		Pos = Nl * Nc * Num_Plan;
-		Plan = Pave + Pos;
-	
+int pave_2d_tfo(float *Pict, float *Pave, int Nl, int Nc, int Nbr_Plan,
+		int Type_To) {
+	int Num_Plan, i;
+	float *Imag, *Plan;
+
+	Imag = f_vector_alloc(Nl * Nc);
+	if (Imag == NULL)
+		return 1;
+	memcpy(Imag, Pict, Nl * Nc * sizeof(float));
+
+	for (Num_Plan = 0; Num_Plan < Nbr_Plan - 1; Num_Plan++) {
+		Plan = Pave + (Nl * Nc * Num_Plan);
+
 		/* Copy */
-		memcpy(Plan, Imag, Nl*Nc*sizeof(float));
-		//for (i = 0; i < Nl*Nc; i++) Plan [i] = Imag [i];
-	
+		memcpy(Plan, Imag, Nl * Nc * sizeof(float));
+
 		/* we smooth the image */
 		switch (Type_To) {
-			case TO_PAVE_LINEAR:
-				pave_2d_linear_smooth (Plan, Imag, Nl, Nc, Num_Plan);
-				break;
-			case TO_PAVE_BSPLINE:
-				pave_2d_bspline_smooth (Plan, Imag, Nl, Nc, Num_Plan);
-				break;
-			default:
-				fprintf (stderr, "pave_2d.c: unknown transform\n");
-				exit (-1);
-				break;
+		case TO_PAVE_LINEAR:
+			pave_2d_linear_smooth(Plan, Imag, Nl, Nc, Num_Plan);
+			break;
+		case TO_PAVE_BSPLINE:
+			pave_2d_bspline_smooth(Plan, Imag, Nl, Nc, Num_Plan);
+			break;
+		default:
+			fprintf(stderr, "pave_2d.c: unknown transform\n");
+			exit(-1);
+			break;
 		}
-		
+
 		/* computes  the wavelet transform */
-		for (i = 0; i < Nl*Nc; i++) Plan [i] -= Imag [i];
+		for (i = 0; i < Nl * Nc; i++)
+			Plan[i] -= Imag[i];
 	}
-	
+
 	/* copy the low resolution image in the transform */
-	Pos = Nl * Nc * (Nbr_Plan - 1);
-	Plan = Pave + Pos;
-	memcpy(Plan, Imag, Nl*Nc*sizeof(float));
-	//for (i = 0; i < Nl*Nc; i++) Plan [i] = Imag [i];
-	
-	free ((char *) Imag);
+	Plan = Pave + (Nl * Nc * (Nbr_Plan - 1));
+	memcpy(Plan, Imag, Nl * Nc * sizeof(float));
+
+	free((char *) Imag);
+
 	return 0;
 }
 
 /***************************************************************************/
 
-int pave_2d_build (Pave, Imag, Nl, Nc, Nbr_Plan, coef)
-float *Imag, *Pave, *coef;
-int Nl, Nc, Nbr_Plan;
-{
-	int Num_Plan,i,Pos;
-	float *Plan;
-	
-	for (i = 0; i < Nl*Nc; i++) Imag [i] = 0.;
-	
+int pave_2d_build(float *Pave, float *Imag, int Nl, int Nc, int Nbr_Plan,
+		float *coef) {
+	int Num_Plan;
+
+	memset(Imag, 0.0, Nl * Nc * sizeof(float));
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
+#endif
 	for (Num_Plan = Nbr_Plan - 1; Num_Plan >= 0; Num_Plan--) {
-		Pos = Nl * Nc * Num_Plan;
-		Plan = Pave + Pos;
-	
-		for (i = 0; i < Nl*Nc; i++) Imag [i] += coef[Num_Plan]*Plan [i];
+		int Pos = Nl * Nc * Num_Plan;
+		float *Plan = Pave + Pos;
+
+		int i;
+		for (i = 0; i < Nl * Nc; i++)
+			Imag[i] += coef[Num_Plan] * Plan[i];
 	}
 	return 0;
 }
 
 /***************************************************************************/
 
-int pave_2d_extract_plan (Pave, Imag, Nl, Nc, Num_Plan)
-float *Imag, *Pave;
-int Nl, Nc, Num_Plan;
-{
-	int i,Pos;
+int pave_2d_extract_plan(float *Pave, float *Imag, int Nl, int Nc, int Num_Plan) {
+	int Pos;
 	float *Plan;
-	
+
 	Pos = Nl * Nc * Num_Plan;
 	Plan = Pave + Pos;
-	
-	for (i = 0; i < Nl*Nc; i++) Imag [i] = Plan [i];
+
+	memcpy(Imag, Plan, Nl * Nc * sizeof(float));
+
 	return 0;
 }
 
 /***************************************************************************/
 
-int pave_2d_bspline_smooth (Imag, Smooth, Nl, Nc, Num_Plan)
-float *Imag, *Smooth;
-int Nl, Nc, Num_Plan;
-{
-	int i,j,Step;
-	int indi1,indj1,indi2,indj2,indi3,indj3,indi4,indj4;
+int pave_2d_bspline_smooth(float *Imag, float *Smooth, int Nl, int Nc,
+		int Num_Plan) {
+	int i, j, Step;
 	
 	Step = pow(2., (float) Num_Plan) + 0.5;
-	
-	for (i = 0; i < Nl; i ++)
-	{
-		for (j = 0; j < Nc; j ++)
-		{
-			indi1 = test_ind (i - Step, Nl);
-			indj1 = test_ind (j - Step, Nc);
-			indi2 = test_ind (i + Step, Nl);
-			indj2 = test_ind (j + Step,Nc);
-			indi3 = test_ind (i - 2 * Step, Nl);
-			indj3 = test_ind (j - 2 * Step,Nc);
-			indi4 = test_ind (i + 2 * Step, Nl);
-			indj4 = test_ind (j + 2 * Step,Nc);
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
+#endif
+	for (i = 0; i < Nl; i++) {
+		for (j = 0; j < Nc; j++) {
+			int indi1 = test_ind(i - Step, Nl);
+			int indj1 = test_ind (j - Step, Nc);
+			int indi2 = test_ind (i + Step, Nl);
+			int indj2 = test_ind (j + Step,Nc);
+			int indi3 = test_ind (i - 2 * Step, Nl);
+			int indj3 = test_ind (j - 2 * Step,Nc);
+			int indi4 = test_ind (i + 2 * Step, Nl);
+			int indj4 = test_ind (j + 2 * Step,Nc);
 	
 	
 			Smooth [i * Nc + j] = 0.00390625 * ( Imag [indi3 * Nc + indj3]
