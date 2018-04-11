@@ -99,6 +99,8 @@ gpointer waiting_for_thread();
 void stop_processing_thread();
 void set_thread_run(gboolean b);
 gboolean get_thread_run();
+
 gboolean end_generic(gpointer arg);
+guint siril_add_idle(GSourceFunc idle_function, gpointer data);
 
 #endif

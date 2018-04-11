@@ -700,7 +700,7 @@ clean_exit:
 		free(ser_file);
 	}
 
-	gdk_threads_add_idle(end_convert_idle, args);
+	siril_add_idle(end_convert_idle, args);
 	return NULL;
 }
 

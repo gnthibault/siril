@@ -285,14 +285,14 @@ gpointer fourier_transform(gpointer p) {
 		tmp = calloc(1, sizeof(fits));
 		if (readfits(args->modulus, tmp, NULL)) {
 			free(tmp);
-			gdk_threads_add_idle(end_fourier_transform, args);
+			siril_add_idle(end_fourier_transform, args);
 			return GINT_TO_POINTER(1);
 		}
 		tmp1 = calloc(1, sizeof(fits));
 		if (readfits(args->phase, tmp1, NULL)) {
 			free(tmp);
 			free(tmp1);
-			gdk_threads_add_idle(end_fourier_transform, args);
+			siril_add_idle(end_fourier_transform, args);
 			return GINT_TO_POINTER(1);
 		}
 		if (tmp->dft_ord[0] == 'C')		// CENTERED
@@ -303,7 +303,7 @@ gpointer fourier_transform(gpointer p) {
 			free(tmp);
 			free(tmp1);
 			siril_log_message(_("There is something wrong in your files\n"));
-			gdk_threads_add_idle(end_fourier_transform, args);
+			siril_add_idle(end_fourier_transform, args);
 			return GINT_TO_POINTER(1);
 		}
 		new_fit_image(&tmp2, tmp->rx, tmp->ry, tmp->naxes[2]);
@@ -327,7 +327,7 @@ gpointer fourier_transform(gpointer p) {
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
-	gdk_threads_add_idle(end_fourier_transform, args);
+	siril_add_idle(end_fourier_transform, args);
 
 	return GINT_TO_POINTER(0);
 }

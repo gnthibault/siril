@@ -341,17 +341,12 @@ void apply_cosmetic_to_sequence(struct cosmetic_data *cosme_args) {
 
 // idle function executed at the end of the Cosmetic Correction processing
 gboolean end_autoDetect(gpointer p) {
-	struct cosmetic_data *args = (struct cosmetic_data *) p;
-
-	stop_processing_thread();// can it be done here in case there is no thread?
-	siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
-			args->icold + args->ihot, args->icold, args->ihot);
+	stop_processing_thread();
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
 	update_used_memory();
-	free(args);
 	return FALSE;
 }
 
@@ -371,12 +366,13 @@ gpointer autoDetectThreaded(gpointer p) {
 		if (retval)
 			break;
 	}
-	args->icold = icold;
-	args->ihot = ihot;
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
-	gdk_threads_add_idle(end_autoDetect, args);
+	siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
+			icold + ihot, icold, ihot);
 
+	free(args);
+	siril_add_idle(end_autoDetect, NULL);
 	return GINT_TO_POINTER(retval);
 }
 

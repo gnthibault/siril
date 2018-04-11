@@ -1212,7 +1212,7 @@ int internal_sequence_find_index(sequence *seq, fits *fit) {
 gboolean end_crop_sequence(gpointer p) {
 	struct crop_sequence_data *args = (struct crop_sequence_data *) p;
 
-	stop_processing_thread();// can it be done here in case there is no thread?
+	stop_processing_thread();
 	if (!args->retvalue) {
 		char *rseqname = malloc(
 				strlen(args->prefix) + strlen(com.seq.seqname) + 5);
@@ -1243,7 +1243,7 @@ gpointer crop_sequence(gpointer p) {
 		if (ser_file == NULL) {
 			printf("memory error: crop_sequence\n");
 			args->retvalue = 1;
-			gdk_threads_add_idle(end_crop_sequence, args);
+			siril_add_idle(end_crop_sequence, args);
 		}
 		sprintf(dest, "%s%s.ser", args->prefix, args->seq->seqname);
 		if (ser_create_file(dest, ser_file, TRUE, com.seq.ser_file)) {
@@ -1251,7 +1251,7 @@ gpointer crop_sequence(gpointer p) {
 			free(ser_file);
 			ser_file = NULL;
 			args->retvalue = 1;
-			gdk_threads_add_idle(end_crop_sequence, args);
+			siril_add_idle(end_crop_sequence, args);
 		}
 	}
 
@@ -1294,7 +1294,7 @@ gpointer crop_sequence(gpointer p) {
 		ser_write_and_close(ser_file);
 		free(ser_file);
 	}
-	gdk_threads_add_idle(end_crop_sequence, args);
+	siril_add_idle(end_crop_sequence, args);
 	return 0;
 }
 

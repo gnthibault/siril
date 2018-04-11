@@ -1015,7 +1015,7 @@ gpointer seqpreprocess(gpointer p) {
 					free(new_ser_file);
 					new_ser_file = NULL;
 				}
-				gdk_threads_add_idle(end_sequence_prepro, args);
+				siril_add_idle(end_sequence_prepro, args);
 				return GINT_TO_POINTER(1);
 			}
 			if ((com.preprostatus & USE_OPTD) && (com.preprostatus & USE_DARK))
@@ -1053,7 +1053,7 @@ gpointer seqpreprocess(gpointer p) {
 		if (dev) free(dev);
 	}
 	args->retval = 0;
-	gdk_threads_add_idle(end_sequence_prepro, args);
+	siril_add_idle(end_sequence_prepro, args);
 	return GINT_TO_POINTER(0);
 }
 
@@ -1262,7 +1262,7 @@ gpointer median_filter(gpointer p) {
 			WORD **image = malloc(ny * sizeof(WORD *));
 			if (image == NULL) {
 				printf("median filter: error allocating data\n");
-				gdk_threads_add_idle(end_median_filter, args);
+				siril_add_idle(end_median_filter, args);
 				return GINT_TO_POINTER(1);
 			}
 			for (i = 0; i < ny; i++)
@@ -1277,7 +1277,7 @@ gpointer median_filter(gpointer p) {
 					if (data == NULL) {
 						printf("median filter: error allocating data\n");
 						free(image);
-						gdk_threads_add_idle(end_median_filter, args);
+						siril_add_idle(end_median_filter, args);
 						return GINT_TO_POINTER(1);
 					}
 					i = 0;
@@ -1324,7 +1324,7 @@ gpointer median_filter(gpointer p) {
 	} while (iter < args->iterations && get_thread_run());
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
-	gdk_threads_add_idle(end_median_filter, args);
+	siril_add_idle(end_median_filter, args);
 
 	return GINT_TO_POINTER(0);
 }
@@ -1406,7 +1406,7 @@ gpointer BandingEngineThreaded(gpointer p) {
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
-	gdk_threads_add_idle(end_BandingEngine, args);
+	siril_add_idle(end_BandingEngine, args);
 	
 	return GINT_TO_POINTER(retval);
 }
@@ -1583,19 +1583,8 @@ int backgroundnoise(fits* fit, double sigma[]) {
 
 gboolean end_noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
-	stop_processing_thread();// can it be done here in case there is no thread?
-	int chan, nb_chan;
+	stop_processing_thread();
 	struct timeval t_end;
-
-	nb_chan = args->fit->naxes[2];
-
-	if (!args->retval) {
-		double norm = (double) get_normalized_value(args->fit);
-		for (chan = 0; chan < nb_chan; chan++)
-			siril_log_message(
-					_("Background noise value (channel: #%d): %0.3lf (%.3e)\n"), chan,
-					args->bgnoise[chan], args->bgnoise[chan] / norm);
-	}
 	set_cursor_waiting(FALSE);
 	update_used_memory();
 	if (args->verbose) {
@@ -1628,7 +1617,15 @@ gpointer noise(gpointer p) {
 		free_stats(stat);
 	}
 
-	gdk_threads_add_idle(end_noise, args);
+	if (!args->retval) {
+		double norm = (double) get_normalized_value(args->fit);
+		for (chan = 0; chan < args->fit->naxes[2]; chan++)
+			siril_log_message(
+					_("Background noise value (channel: #%d): %0.3lf (%.3e)\n"), chan,
+					args->bgnoise[chan], args->bgnoise[chan] / norm);
+	}
+
+	siril_add_idle(end_noise, args);
 
 	return GINT_TO_POINTER(args->retval);
 }
@@ -1645,7 +1642,7 @@ gpointer LRdeconv(gpointer p) {
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 
-	gdk_threads_add_idle(end_generic, args);
+	siril_add_idle(end_generic, args);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();

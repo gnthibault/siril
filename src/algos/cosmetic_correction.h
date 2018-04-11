@@ -9,8 +9,6 @@ typedef struct deviant_struct deviant_pixel;
 struct cosmetic_data {
 	fits *fit;
 	double sigma[2];
-	long icold;
-	long ihot;
 	double amount;
 	gboolean is_cfa;
 	const gchar *seqEntry;

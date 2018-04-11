@@ -254,12 +254,12 @@ static gboolean end_update_idle(gpointer p) {
 	if (args->content == NULL) {
 		switch(args->code) {
 		case 0:
-			msg = siril_log_message(_("Unable to check updates !! "
+			msg = siril_log_message(_("Unable to check updates! "
 					"Please Check your network connection\n"));
 			break;
 		default:
-		msg = siril_log_message(_("Unable to check updates !! Error: %ld\n"),
-				args->code);
+			msg = siril_log_message(_("Unable to check updates! Error: %ld\n"),
+					args->code);
 		}
 		ret = 1;
 	} else {

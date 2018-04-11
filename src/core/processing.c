@@ -229,8 +229,8 @@ the_end:
 			args->idle_function(args);
 	} else {
 		if (args->idle_function)
-			gdk_threads_add_idle(args->idle_function, args);
-		else gdk_threads_add_idle(end_generic_sequence, args);
+			siril_add_idle(args->idle_function, args);
+		else siril_add_idle(end_generic_sequence, args);
 	}
 	return GINT_TO_POINTER(args->retval);
 }
@@ -352,13 +352,21 @@ gboolean get_thread_run() {
 }
 
 /* should be called in a threaded function if nothing special has to be done at the end.
- * gdk_threads_add_idle(end_generic, NULL);
+ * siril_add_idle(end_generic, NULL);
  */
 gboolean end_generic(gpointer arg) {
 	stop_processing_thread();
 	update_used_memory();
 	set_cursor_waiting(FALSE);
 	return FALSE;
+}
+
+/* wrapper for gdk_threads_add_idle that deactivates idle functions when
+ * running in script/console mode */
+guint siril_add_idle(GSourceFunc idle_function, gpointer data) {
+	if (!com.headless)
+		return gdk_threads_add_idle(idle_function, data);
+	return 0;
 }
 
 void on_processes_button_cancel_clicked(GtkButton *button, gpointer user_data) {

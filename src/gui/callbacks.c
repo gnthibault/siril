@@ -3033,7 +3033,6 @@ void on_combobox_ext_changed(GtkComboBox *box, gpointer user_data) {
 		free(com.ext);
 
 	com.ext = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(box));
-	com.len_ext = strlen(com.ext);
 	writeinitfile();
 	initialize_FITS_name_entries();
 }
@@ -4133,7 +4132,7 @@ static gpointer checkSeq(gpointer p) {
 
 	if (!check_seq(args->force))
 		args->retvalue = 1;
-	gdk_threads_add_idle(end_checkSeq, args);
+	siril_add_idle(end_checkSeq, args);
 	return GINT_TO_POINTER(0);
 }
 

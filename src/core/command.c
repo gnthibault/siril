@@ -117,7 +117,7 @@ command commande[] = {
 	{"imul", 1, "imul filename", process_imoper}, 
 	{"isub", 1, "isub filename", process_imoper},
 	
-	{"load", 1, "load filename.[ext]", process_load}, 
+	{"load", 1, "load filename[.ext]", process_load}, 
 	// specific loads are not required, but could be used to force the
 	// extension to a higher priority in case two files with same basename
 	// exist (stat_file() manages that priority order for now).
@@ -1466,79 +1466,6 @@ int process_stat(int nb){
 	return 0;
 }
 
-// useless function
-static gboolean end_register_worker(gpointer p) {
-	struct timeval t_end;
-	struct registration_args *args = (struct registration_args *) p;
-	stop_processing_thread();
-	if (!args->retval) {
-		fill_sequence_list(args->seq, com.cvport);
-		set_layers_for_registration();	// update display of available reg data
-
-		sequence *seq;
-
-		if (!(seq = malloc(sizeof(sequence)))) {
-			fprintf(stderr, "could not allocate new sequence\n");
-			goto failed_end;
-		}
-		initialize_sequence(seq, FALSE);
-
-		/* we are not interested in the whole path */
-		gchar *seqname = g_path_get_basename (args->seq->seqname);
-		char *rseqname = malloc(
-				strlen(args->prefix) + strlen(seqname) + 5);
-
-		sprintf(rseqname, "%s%s.seq", args->prefix, seqname);
-		g_free(seqname);
-		g_unlink(rseqname);	// remove previous to overwrite
-		char *newname = remove_ext_from_filename(rseqname);
-		seq->seqname = newname;
-		seq->number = args->new_total;
-		seq->selnum = args->new_total;
-		seq->fixed = args->seq->fixed;
-		seq->nb_layers = args->seq->nb_layers;
-		seq->rx = args->seq->rx;
-		seq->ry = args->seq->ry;
-		seq->imgparam = args->imgparam;
-		seq->regparam = calloc(seq->nb_layers, sizeof(regdata*));
-		seq->regparam[args->layer] = args->regparam;
-		seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
-		seq->beg = seq->imgparam[0].filenum;
-		seq->end = seq->imgparam[seq->number-1].filenum;
-		seq->type = args->seq->type;
-		seq->current = -1;
-		seq->needs_saving = TRUE;
-		writeseqfile(seq);
-
-		free_sequence(seq, TRUE);
-
-		free(rseqname);
-	}
-	set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
-failed_end:
-	update_used_memory();
-	set_cursor_waiting(FALSE);
-#ifdef MAC_INTEGRATION
-	GtkosxApplication *osx_app = gtkosx_application_get();
-	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
-	g_object_unref (osx_app);
-#endif
-	gettimeofday(&t_end, NULL);
-	show_time(args->t_start, t_end);
-	free(args);
-	return FALSE;
-
-}
-
-// this function also exists in registration.c as register_thread_func() but
-// this one does not call the idle_function at the end
-static gpointer register_worker(gpointer p) {
-	struct registration_args *args = (struct registration_args *) p;
-	args->retval = args->func(args);
-	writeseqfile(args->seq);
-	return GINT_TO_POINTER(args->retval);
-}
-
 int process_register(int nb) {
 	struct registration_args *reg_args;
 	struct registration_method *method;
@@ -1613,7 +1540,7 @@ int process_register(int nb) {
 	set_cursor_waiting(TRUE);
 	set_progress_bar_data(msg, PROGRESS_RESET);
 
-	start_in_new_thread(register_worker, reg_args);
+	start_in_new_thread(register_thread_func, reg_args);
 	return 0;
 }
 
@@ -1704,7 +1631,7 @@ static gpointer stackall_worker(gpointer garg) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
 		fprintf (stderr, "stackall: %s\n", error->message);
 		com.wd[0] = '\0';
-		gdk_threads_add_idle(end_generic, NULL);
+		siril_add_idle(end_generic, NULL);
 		return NULL;
 	}
 	siril_log_message(_("Starting stacking of found sequences...\n"));
@@ -1720,7 +1647,7 @@ static gpointer stackall_worker(gpointer garg) {
 	g_dir_close(dir);
 	free(arg);
 	siril_log_message(_("Stacked %d sequences successfully.\n"), arg->number_of_loaded_sequences);
-	gdk_threads_add_idle(end_generic, NULL);
+	siril_add_idle(end_generic, NULL);
 	return NULL;
 }
 
@@ -1793,7 +1720,7 @@ static gpointer stackone_worker(gpointer garg) {
 	if (check_seq(0)) {
 		siril_log_message(_("Error while searching sequences.\n"));
 		com.wd[0] = '\0';
-		gdk_threads_add_idle(end_generic, NULL);
+		siril_add_idle(end_generic, NULL);
 		return GINT_TO_POINTER(1);
 	}
 
@@ -1803,7 +1730,7 @@ static gpointer stackone_worker(gpointer garg) {
 	free(arg);
 	if (!retval)
 		siril_log_message(_("Stacked sequence successfully.\n"));
-	gdk_threads_add_idle(end_generic, NULL);
+	siril_add_idle(end_generic, NULL);
 	return NULL;
 }
 
@@ -2010,6 +1937,7 @@ gpointer execute_script(gpointer p) {
 	ssize_t read;
 	char *linef;
 	int line = 0;
+	com.headless = TRUE;
 #if (_POSIX_C_SOURCE < 200809L)
 	linef = calloc(256, sizeof(char));
 	while (fgets(linef, 256, fp)) {
@@ -2038,6 +1966,7 @@ gpointer execute_script(gpointer p) {
 	}
 	free(linef);
 	fclose(fp);
+	com.headless = FALSE;
 	return NULL;
 }
 

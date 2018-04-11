@@ -67,6 +67,7 @@ void compute_fitting_selection(rectangle *area, int hsteps, int vsteps, int pres
 void get_the_registration_area(struct registration_args *reg_args,
 		struct registration_method *method); // for compositing
 void fill_comboboxregmethod();
+gpointer register_thread_func(gpointer p);
 
 /** getter */
 int get_registration_layer();

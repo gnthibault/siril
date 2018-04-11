@@ -77,7 +77,6 @@ void _reg_selected_area_callback() {
 }
 
 static struct registration_method *reg_methods[NUMBER_OF_METHOD];
-static gpointer register_thread_func(gpointer p);
 static gboolean end_register_idle(gpointer p);
 
 struct registration_method *new_reg_method(const char *name, registration_function f,
@@ -1218,11 +1217,11 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 }
 
 // worker thread
-static gpointer register_thread_func(gpointer p) {
+gpointer register_thread_func(gpointer p) {
 	struct registration_args *args = (struct registration_args *) p;
 	args->retval = args->func(args);
 	writeseqfile(args->seq);
-	gdk_threads_add_idle(end_register_idle, args);
+	siril_add_idle(end_register_idle, args);
 	return GINT_TO_POINTER(args->retval);
 }
 

@@ -132,6 +132,7 @@ int read_single_image(const char* filename, fits *dest, char **realname_out) {
 		*realname_out = realname;
 	else
 		free(realname);
+	// TODO: do this in an idle function or move it to open_single_image_from_gfit()?
 	set_GUI_CAMERA();
 	set_GUI_photometry();
 	com.filter = (int) imagetype;
@@ -167,6 +168,7 @@ int open_single_image(const char* filename) {
 	}
 
 	fprintf(stdout, "Loading image OK, now displaying\n");
+	// TODO: do this in an idle function
 	open_single_image_from_gfit(realname);
 	return 0;
 }

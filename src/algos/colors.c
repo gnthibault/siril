@@ -286,18 +286,10 @@ void xyz_to_rgb(double x, double y, double z, double *r, double *g, double *b) {
 // idle function executed at the end of the extract_channels processing
 gboolean end_extract_channels(gpointer p) {
 	struct extract_channels_data *args = (struct extract_channels_data *) p;
-	if (args->process) {
-		int i;
-
-		stop_processing_thread();
-		for (i = 0; i < 3; i++)
-			save1fits16(args->channel[i], args->fit, i);
-	}
-	clearfits(args->fit);
+	stop_processing_thread();
 	free(args);
 	set_cursor_waiting(FALSE);
 	update_used_memory();
-
 	return FALSE;
 }
 
@@ -313,7 +305,8 @@ gpointer extract_channels(gpointer p) {
 		siril_log_message(
 				_("Siril cannot extract layers. Make sure your image is in RGB mode.\n"));
 		args->process = FALSE;
-		gdk_threads_add_idle(end_extract_channels, args);
+		clearfits(args->fit);
+		siril_add_idle(end_extract_channels, args);
 		return GINT_TO_POINTER(1);
 	}
 
@@ -377,9 +370,12 @@ gpointer extract_channels(gpointer p) {
 		}
 
 	}
+	for (i = 0; i < 3; i++)
+		save1fits16(args->channel[i], args->fit, i);
+	clearfits(args->fit);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
-	gdk_threads_add_idle(end_extract_channels, args);
+	siril_add_idle(end_extract_channels, args);
 
 	return GINT_TO_POINTER(0);
 }
@@ -406,11 +402,11 @@ gpointer enhance_saturation(gpointer p) {
 	int i;
 
 	if (!isrgb(args->fit)) {
-		gdk_threads_add_idle(end_enhance_saturation, args);
+		siril_add_idle(end_enhance_saturation, args);
 		return GINT_TO_POINTER(1);
 	}
 	if (args->coeff == 0.0) {
-		gdk_threads_add_idle(end_enhance_saturation, args);
+		siril_add_idle(end_enhance_saturation, args);
 		return GINT_TO_POINTER(1);
 	}
 
@@ -426,13 +422,12 @@ gpointer enhance_saturation(gpointer p) {
 		imstats *stat = statistics(NULL, -1, args->fit, GLAYER, NULL, STATS_BASIC);
 		if (!stat) {
 			siril_log_message(_("Error: no data computed.\n"));
-			gdk_threads_add_idle(end_enhance_saturation, args);
+			siril_add_idle(end_enhance_saturation, args);
 			return GINT_TO_POINTER(1);
 		}
 		bg = stat->median + stat->sigma;
 		bg /= stat->normValue;
 		free_stats(stat);
-
 	}
 
 #ifdef _OPENMP
@@ -467,20 +462,18 @@ gpointer enhance_saturation(gpointer p) {
 	invalidate_stats_from_fit(args->fit);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
-	gdk_threads_add_idle(end_enhance_saturation, args);
+	siril_add_idle(end_enhance_saturation, args);
 
 	return GINT_TO_POINTER(0);
 }
 
 // idle function executed at the end of the scnr processing
 gboolean end_scnr(gpointer p) {
-	struct scnr_data *args = (struct scnr_data *) p;
 	stop_processing_thread();
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	update_gfit_histogram_if_needed();
-	free(args);
 	set_cursor_waiting(FALSE);
 	update_used_memory();
 
@@ -545,9 +538,10 @@ gpointer scnr(gpointer p) {
 	}
 
 	invalidate_stats_from_fit(args->fit);
+	free(args);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
-	gdk_threads_add_idle(end_scnr, args);
+	siril_add_idle(end_scnr, NULL);
 	return GINT_TO_POINTER(0);
 }
 

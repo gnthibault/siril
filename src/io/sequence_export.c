@@ -377,7 +377,7 @@ free_and_reset_progress_bar:
 	free(args->basename);
 	free(args);
 	args = NULL;
-	gdk_threads_add_idle(end_generic, args);
+	siril_add_idle(end_generic, args);
 	return NULL;
 }
 

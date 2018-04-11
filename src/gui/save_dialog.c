@@ -316,7 +316,7 @@ static gpointer minisavedial(gpointer p) {
 			break;
 		}
 	}
-	gdk_threads_add_idle(end_save, args);
+	siril_add_idle(end_save, args);
 
 	return NULL;
 }

@@ -1440,7 +1440,7 @@ gpointer stack_function_handler(gpointer p) {
 	// 3. stack
 	args->retval = args->method(p);
 	// 4. save result and clean-up
-	gdk_threads_add_idle(end_stacking, args);
+	siril_add_idle(end_stacking, args);
 	return GINT_TO_POINTER(args->retval);
 }
 
@@ -1640,6 +1640,9 @@ static void remove_tmp_drizzle_files(struct stacking_args *args, gboolean remove
 	}
 }
 
+/* because this idle function is called after one of many stacking method
+ * functions, it contains all generic wrap-up stuff instead of only graphical
+ * operations. */
 static gboolean end_stacking(gpointer p) {
 	struct timeval t_end;
 	struct stacking_args *args = (struct stacking_args *)p;

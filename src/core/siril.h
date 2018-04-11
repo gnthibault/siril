@@ -488,6 +488,8 @@ struct dateTime_struct {
 	int ms;
 };
 
+/* The global data structure of siril, the only with gfit and the gtk builder,
+ * declared in main.c */
 struct cominf {
 	/* current version of GTK, through GdkPixmap, doesn't handle gray images, so
 	 * graybufs are the same size than the rgbbuf with 3 times the same value */
@@ -529,7 +531,6 @@ struct cominf {
 	gchar *initfile;			// the path of the init file
 	
 	char *ext;		// FITS extension used in SIRIL
-	int len_ext;
 
 	int reg_settings;		// Use to save registration method in the init file
 	
@@ -539,7 +540,7 @@ struct cominf {
 
 	stackconf stack;
 	
-	int filter;
+	int filter;			// file extension filter for open/save dialogs
 
 	/* history of the command line. This is a circular buffer (cmd_history)
 	 * of size cmd_hist_size, position to be written is cmd_hist_current and
@@ -579,6 +580,7 @@ struct cominf {
 	GMutex mutex;			// a mutex we use for this thread
 	gboolean run_thread;		// the main thread loop condition
 	int max_thread;			// maximum of thread used
+	gboolean headless;		// console execution, no GUI (scripts for now)
 };
 
 /* this structure is used to characterize the statistics of the image */
