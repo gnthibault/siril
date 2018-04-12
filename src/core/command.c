@@ -231,11 +231,10 @@ int process_save(int nb){
 		gfit.hi = com.seq.layers[RLAYER].hi;
 		gfit.lo = com.seq.layers[RLAYER].lo;
 	}
-	else {
+	else if (single_image_is_loaded()) {
 		gfit.hi = com.uniq->layers[RLAYER].hi;
 		gfit.lo = com.uniq->layers[RLAYER].lo;
 	}
-
 
 	sprintf(filename, "%s", word[1]);
 	set_cursor_waiting(TRUE);
@@ -1927,12 +1926,15 @@ static int executeCommand(int wordnb) {
 	return 0;
 }
 
-gpointer execute_script(gpointer p) {
+static gpointer execute_script(gpointer p) {
 	FILE *fp = (FILE *)p;
 	ssize_t read;
 	char *linef;
-	int line = 0;
+	int line = 0, retval = 0;
+	struct timeval t_start, t_end;
+
 	com.headless = TRUE;
+	gettimeofday(&t_start, NULL);
 #if (_POSIX_C_SOURCE < 200809L)
 	linef = calloc(256, sizeof(char));
 	while (fgets(linef, 256, fp)) {
@@ -1952,8 +1954,8 @@ gpointer execute_script(gpointer p) {
 		if (executeCommand(wordnb)) {
 			siril_log_message(_("Error in line: %d. Exiting batch processing\n"), line);
 			free(myline);
-			fclose(fp);
-			return GINT_TO_POINTER(1);
+			retval = 1;
+			break;
 		}
 		free(myline);
 		if (waiting_for_thread())
@@ -1962,7 +1964,12 @@ gpointer execute_script(gpointer p) {
 	free(linef);
 	fclose(fp);
 	com.headless = FALSE;
-	return NULL;
+	if (!retval) {
+		siril_log_message(_("Script execution finished successfully.\n"));
+		gettimeofday(&t_end, NULL);
+		show_time_msg(t_start, t_end, _("Total execution time"));
+	}
+	return GINT_TO_POINTER(retval);
 }
 
 int processcommand(const char *line) {
@@ -1980,6 +1987,7 @@ int processcommand(const char *line) {
 			return 1;
 		}
 		control_window_switch_to_tab(OUTPUT_LOGS);
+		siril_log_message(_("Starting script %s\n"), line + 1);
 		script_thread = g_thread_new("script", execute_script, fp);
 	} else {
 		myline = strdup(line);

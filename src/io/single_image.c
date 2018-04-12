@@ -34,6 +34,7 @@
 #include "gui/histogram.h"
 #include "gui/progress_and_log.h"
 #include "core/undo.h"
+#include "core/processing.h"
 
 /* Closes and frees resources attached to the single image opened in gfit.
  * If a sequence is loaded and one of its images is displayed, nothing is done.
@@ -87,7 +88,7 @@ void free_image_data() {
 		com.uniq = NULL;
 	}
 
-	/* TODO: free alignment preview data */
+	/* free alignment preview data */
 	for (i=0; i<PREVIEW_NB; i++) {
 		if (com.preview_surface[i]) {
 			cairo_surface_destroy(com.preview_surface[i]);
@@ -98,6 +99,12 @@ void free_image_data() {
 		cairo_surface_destroy(com.refimage_surface);
 		com.refimage_surface = NULL;
 	}
+}
+
+static gboolean end_read_single_image(gpointer p) {
+	set_GUI_CAMERA();
+	set_GUI_photometry();
+	return FALSE;
 }
 
 /* Reads an image from disk and stores it in the user allocated destination
@@ -132,11 +139,15 @@ int read_single_image(const char* filename, fits *dest, char **realname_out) {
 		*realname_out = realname;
 	else
 		free(realname);
-	// TODO: do this in an idle function or move it to open_single_image_from_gfit()?
-	set_GUI_CAMERA();
-	set_GUI_photometry();
 	com.filter = (int) imagetype;
+	siril_add_idle(end_read_single_image, NULL);
 	return retval;
+}
+
+static gboolean end_open_single_image(gpointer arg) {
+	char *name = (char *)arg;
+	open_single_image_from_gfit(name);
+	return FALSE;
 }
 
 /* This function is used to load a single image, meaning outside a sequence,
@@ -168,8 +179,7 @@ int open_single_image(const char* filename) {
 	}
 
 	fprintf(stdout, "Loading image OK, now displaying\n");
-	// TODO: do this in an idle function
-	open_single_image_from_gfit(realname);
+	siril_add_idle(end_open_single_image, realname);
 	return 0;
 }
 

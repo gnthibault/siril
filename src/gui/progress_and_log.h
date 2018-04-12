@@ -15,6 +15,7 @@ char* siril_log_color_message(const char* format, const char* color, ...);
 void set_progress_bar_data(const char *text, double percent);
 
 void show_time(struct timeval, struct timeval);
+void show_time_msg(struct timeval t_start, struct timeval t_end, const char *msg);
 
 void set_cursor_waiting(int waiting);
 
