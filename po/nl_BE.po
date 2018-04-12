@@ -3,11 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#: ../src/core/command.c:172 ../src/core/command.c:173
+#: ../src/core/command.c:174
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-01 21:15+0100\n"
+"POT-Creation-Date: 2018-04-12 21:07+0200\n"
 "PO-Revision-Date: 2018-02-16 11:17+0100\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
@@ -111,7 +113,7 @@ msgstr "Bewaar RGB afbeelding in 48-bit PPM"
 msgid "RGB Align"
 msgstr "RGB Uitlijning"
 
-#: ../src/gui/siril3.glade.h:22 ../src/compositing/align_rgb.c:51
+#: ../src/gui/siril3.glade.h:22 ../src/compositing/align_rgb.c:45
 #: ../src/compositing/compositing.c:360
 msgid "Image pattern alignment (planetary/deep-sky)"
 msgstr "Patroonherkenning uitlijning (planetair/deep-sky)"
@@ -119,7 +121,7 @@ msgstr "Patroonherkenning uitlijning (planetair/deep-sky)"
 #. the list below depends on the content of the glade file. It
 #. * should be done in the same way as in registration.c, but it
 #. * woud be easier if the two glades are merged.
-#: ../src/gui/siril3.glade.h:23 ../src/compositing/align_rgb.c:49
+#: ../src/gui/siril3.glade.h:23 ../src/compositing/align_rgb.c:43
 #: ../src/compositing/compositing.c:359
 msgid "One star registration (deep-sky)"
 msgstr "Registratie met één ster (deep-sky)"
@@ -161,7 +163,7 @@ msgid "quality"
 msgstr "kwaliteit"
 
 #. no color, undefined value is <0
-#: ../src/gui/siril3.glade.h:31 ../src/gui/callbacks.c:71
+#: ../src/gui/siril3.glade.h:31 ../src/gui/callbacks.c:72
 msgid "Red"
 msgstr "Rood"
 
@@ -169,13 +171,13 @@ msgstr "Rood"
 msgid "current red file"
 msgstr "huidige rood bestand"
 
-#: ../src/gui/siril3.glade.h:33 ../src/compositing/compositing.c:452
-#: ../src/gui/callbacks.c:2209
+#: ../src/gui/siril3.glade.h:33 ../src/compositing/compositing.c:455
+#: ../src/gui/callbacks.c:2206
 msgid "Red channel"
 msgstr "Rood kanaal"
 
 #. approx. of the middle of the color
-#: ../src/gui/siril3.glade.h:34 ../src/gui/callbacks.c:72
+#: ../src/gui/siril3.glade.h:34 ../src/gui/callbacks.c:73
 msgid "Green"
 msgstr "Groen"
 
@@ -188,7 +190,7 @@ msgid "Green channel"
 msgstr "Groen kanaal"
 
 #. approx. of the middle of the color
-#: ../src/gui/siril3.glade.h:37 ../src/gui/callbacks.c:73
+#: ../src/gui/siril3.glade.h:37 ../src/gui/callbacks.c:74
 msgid "Blue"
 msgstr "Blauw"
 
@@ -626,7 +628,7 @@ msgstr "Naam"
 msgid "No Selection"
 msgstr "Geen selectie"
 
-#: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1349
+#: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1367
 msgid "Banding Reduction"
 msgstr "Banding Reductie"
 
@@ -682,7 +684,7 @@ msgstr "Uitlijning lagen"
 
 #. don't destroy it on removal from grid
 #: ../src/gui/siril3.glade.h:149 ../src/compositing/compositing.c:181
-#: ../src/compositing/compositing.c:1075
+#: ../src/compositing/compositing.c:1076
 msgid "not loaded"
 msgstr "niet geladen"
 
@@ -770,7 +772,7 @@ msgid "For LRGB composition, the reference layer should be luminance."
 msgstr "Voor LRGB compositie moet de referentielaag de luminantie zijn."
 
 #. name, lambda, lo, hi, c/over, c/under, mode
-#: ../src/gui/siril3.glade.h:166 ../src/gui/callbacks.c:70
+#: ../src/gui/siril3.glade.h:166 ../src/gui/callbacks.c:71
 msgid "Luminance"
 msgstr "Luminantie"
 
@@ -1137,13 +1139,13 @@ msgstr "Dichtsbijzijnde Buur (Nearest Neighbor)"
 msgid "Bilinear (default)"
 msgstr "Bilineair (standaard)"
 
-#: ../src/gui/siril3.glade.h:256 ../src/core/siril.c:1085
-#: ../src/core/siril.c:1125
+#: ../src/gui/siril3.glade.h:256 ../src/core/siril.c:1103
+#: ../src/core/siril.c:1143
 msgid "Pixel Area Relation"
 msgstr "Pixel Relatie Zone"
 
-#: ../src/gui/siril3.glade.h:257 ../src/core/siril.c:1088
-#: ../src/core/siril.c:1128
+#: ../src/gui/siril3.glade.h:257 ../src/core/siril.c:1106
+#: ../src/core/siril.c:1146
 msgid "Bicubic"
 msgstr "Bikubisch"
 
@@ -1446,8 +1448,8 @@ msgstr "Kies een interpolatiemethode voor de demosaicing."
 msgid "Debayer interpolation: "
 msgstr "Debayer interpolatie: "
 
-#: ../src/gui/siril3.glade.h:325 ../src/core/siril.c:1082
-#: ../src/core/siril.c:1122
+#: ../src/gui/siril3.glade.h:325 ../src/core/siril.c:1100
+#: ../src/core/siril.c:1140
 msgid "Bilinear"
 msgstr "Bilineair"
 
@@ -1961,7 +1963,7 @@ msgstr "Banding Vermindering..."
 msgid "Cosmetic Correction..."
 msgstr "Cosmetische Correcties."
 
-#: ../src/gui/siril3.glade.h:439
+#: ../src/gui/siril3.glade.h:439 ../src/opencv/opencv.cpp:475
 msgid "Deconvolution..."
 msgstr "Deconvolutie..."
 
@@ -2405,7 +2407,7 @@ msgstr ""
 "Film kwaliteit: een lagere waarde betekent meer compressi en lagere bitrate "
 "en dus een kleiner bestandsgrootte."
 
-#: ../src/gui/siril3.glade.h:532 ../src/io/sequence_export.c:495
+#: ../src/gui/siril3.glade.h:532 ../src/io/sequence_export.c:496
 msgid "Select area to crop"
 msgstr "Gekozen selectie uit te snijden"
 
@@ -2789,8 +2791,8 @@ msgstr ""
 "opslagplaats om de beelden aan te maken en te verwerken door het kwadraat "
 "van de Drizzle factor vermenigvuldigd wordt."
 
-#: ../src/gui/siril3.glade.h:614 ../src/registration/registration.c:1021
-#: ../src/registration/registration.c:1034
+#: ../src/gui/siril3.glade.h:614 ../src/registration/registration.c:1024
+#: ../src/registration/registration.c:1037
 msgid "Load a sequence first."
 msgstr "Laad eerst een sequentie."
 
@@ -3054,7 +3056,7 @@ msgstr ""
 "Pixels van het beeld worden vervangen met de pixel op dezelfde plaats met de "
 "minimale waarde."
 
-#: ../src/gui/siril3.glade.h:680 ../src/stacking/sum.c:144
+#: ../src/gui/siril3.glade.h:680 ../src/stacking/sum.c:145
 msgid "Sum stacking"
 msgstr "Som stacking"
 
@@ -3094,33 +3096,42 @@ msgid "images previously manually selected from the sequence"
 msgstr "beelden voormalig handmatig uit de sequentie gekozen"
 
 #: ../src/gui/siril3.glade.h:688
-msgid "best images, automatically selected from the registration data (PSF)"
+#, fuzzy
+msgid ""
+"best images, automatically selected from the registration data (PSF - FWHM)"
 msgstr "beste beelden, automatisch uit de registratiegegevens (PSF) gekozen"
 
 #: ../src/gui/siril3.glade.h:689
+#, fuzzy
+msgid ""
+"best images, automatically selected from the registration data (PSF - "
+"roundness)"
+msgstr "beste beelden, automatisch uit de registratiegegevens (PSF) gekozen"
+
+#: ../src/gui/siril3.glade.h:690
 msgid ""
 "best images, automatically selected from the registration data (Planetary)"
 msgstr ""
 "beste beelden, automatisch uit de registratiegegevens (planetair) gekozen"
 
-#: ../src/gui/siril3.glade.h:690 ../src/stacking/stacking.c:2049
+#: ../src/gui/siril3.glade.h:691 ../src/stacking/stacking.c:2132
 #, c-format
 msgid "Based on FWHM"
 msgstr "Gebaseerd op de FWHM"
 
-#: ../src/gui/siril3.glade.h:691
+#: ../src/gui/siril3.glade.h:692
 msgid "Stack best:"
 msgstr "Stack de beste: "
 
-#: ../src/gui/siril3.glade.h:692
+#: ../src/gui/siril3.glade.h:693
 msgid "Sigma low: "
 msgstr "Sigmaa laag: "
 
-#: ../src/gui/siril3.glade.h:693
+#: ../src/gui/siril3.glade.h:694
 msgid "Sigma high: "
 msgstr "Sigma hoog: "
 
-#: ../src/gui/siril3.glade.h:694
+#: ../src/gui/siril3.glade.h:695
 msgid ""
 "Five rejection algorithms are available.\n"
 "- Percentile Clipping is a one-step rejection algorithm ideal for small sets "
@@ -3171,48 +3182,62 @@ msgstr ""
 "Wiley\n"
 "[2] Juan Conejero, ImageIntegration, Pixinsight Tutorial"
 
-#: ../src/gui/siril3.glade.h:710
+#: ../src/gui/siril3.glade.h:711
 msgid "No rejection"
 msgstr "Geen verwerping"
 
-#: ../src/gui/siril3.glade.h:711
+#: ../src/gui/siril3.glade.h:712
 msgid "Percentile Clipping"
 msgstr "Precentile Clipping"
 
-#: ../src/gui/siril3.glade.h:712
+#: ../src/gui/siril3.glade.h:713
 msgid "Sigma Clipping"
 msgstr "Sigma Clipping"
 
-#: ../src/gui/siril3.glade.h:713
+#: ../src/gui/siril3.glade.h:714
 msgid "Median Sigma Clipping"
 msgstr "Median Sigma Clipping"
 
-#: ../src/gui/siril3.glade.h:714
+#: ../src/gui/siril3.glade.h:715
 msgid "Winsorized Sigma Clipping"
 msgstr "Winsorized Sigma Clipping"
 
-#: ../src/gui/siril3.glade.h:715
+#: ../src/gui/siril3.glade.h:716
 msgid "Linear Fit Clipping"
 msgstr "Linear Fit Clipping"
 
-#: ../src/gui/siril3.glade.h:716
+#: ../src/gui/siril3.glade.h:717
+#, fuzzy
+msgid "Normalise to 16-bit"
+msgstr "Normalisatie"
+
+#: ../src/gui/siril3.glade.h:718
+msgid ""
+"If you check this button, the final image will be normalized to 16-bit per "
+"channel. This is important when input sequence has a depth of 8-bit per "
+"channel.\n"
+"However you may want to disable this option when building master frames of 8-"
+"bit sequences."
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:720
 msgid "Rejection:"
 msgstr "Verwerping:"
 
-#: ../src/gui/siril3.glade.h:718
+#: ../src/gui/siril3.glade.h:722
 #, no-c-format
 msgid "%"
 msgstr "%"
 
-#: ../src/gui/siril3.glade.h:719
+#: ../src/gui/siril3.glade.h:723
 msgid "Normalisation:"
 msgstr "Normalisatie"
 
-#: ../src/gui/siril3.glade.h:720
+#: ../src/gui/siril3.glade.h:724
 msgid "Start stacking"
 msgstr "Start stacking"
 
-#: ../src/gui/siril3.glade.h:721
+#: ../src/gui/siril3.glade.h:725
 msgid ""
 "Start stacking the current sequence of images, using the method and other "
 "information provided above.\n"
@@ -3224,19 +3249,19 @@ msgstr ""
 "Siril gebruikt een 32-bit intern beeld voor de stacking, dewelke dan als een "
 "16-bit afbeelding word opgeslaan met onderstaande naam."
 
-#: ../src/gui/siril3.glade.h:723
+#: ../src/gui/siril3.glade.h:727
 msgid "Store result in file:"
 msgstr "Sla uitkomst in bestand:"
 
-#: ../src/gui/siril3.glade.h:724
+#: ../src/gui/siril3.glade.h:728
 msgid "Overwrite"
 msgstr "Overschrijven"
 
-#: ../src/gui/siril3.glade.h:725
+#: ../src/gui/siril3.glade.h:729
 msgid "Overwrite file without notice if it already exists."
 msgstr "Schrijf het bestand over zonder waarschuwing"
 
-#: ../src/gui/siril3.glade.h:726
+#: ../src/gui/siril3.glade.h:730
 msgid ""
 "If one of these items is selected, a normalisation process will be applied "
 "to all input\n"
@@ -3274,31 +3299,31 @@ msgstr ""
 "De offset en dark moeten niet worden verwerkt met normalisatie.\n"
 "De flat moet worden verwerkt met multiplicatieve normalisatie."
 
-#: ../src/gui/siril3.glade.h:738
+#: ../src/gui/siril3.glade.h:742
 msgid "No normalisation"
 msgstr "Geen normalisatie"
 
-#: ../src/gui/siril3.glade.h:739
+#: ../src/gui/siril3.glade.h:743
 msgid "Additive"
 msgstr "Additieve"
 
-#: ../src/gui/siril3.glade.h:740
+#: ../src/gui/siril3.glade.h:744
 msgid "Multiplicative"
 msgstr "Multiplicatieve"
 
-#: ../src/gui/siril3.glade.h:741
+#: ../src/gui/siril3.glade.h:745
 msgid "Additive with scaling"
 msgstr "Additive met schaling"
 
-#: ../src/gui/siril3.glade.h:742
+#: ../src/gui/siril3.glade.h:746
 msgid "Multiplicative with scaling"
 msgstr "Multiplicatieve met schaling"
 
-#: ../src/gui/siril3.glade.h:743
+#: ../src/gui/siril3.glade.h:747
 msgid "Force recomputing"
 msgstr "Herberekenen"
 
-#: ../src/gui/siril3.glade.h:744
+#: ../src/gui/siril3.glade.h:748
 msgid ""
 "By default, Siril takes the normalisation coefficients from seq file if "
 "already computed. However you can force Siril to recompute it before "
@@ -3307,11 +3332,11 @@ msgstr ""
 "Als standaard gebruikt Siril de coëfficiënten afkomstig van het seq-bestand, "
 "maar het is mogelijk om deze opnieuw te berekenen voor de stacking."
 
-#: ../src/gui/siril3.glade.h:745
+#: ../src/gui/siril3.glade.h:749
 msgid "Stacking"
 msgstr "Stacking"
 
-#: ../src/gui/siril3.glade.h:746
+#: ../src/gui/siril3.glade.h:750
 msgid ""
 "Siril output window, displays messages about what has been done and in "
 "response to command inputs."
@@ -3319,42 +3344,39 @@ msgstr ""
 "Siril outputvenster, verteent berichten over wat werd gedaan en antwoorden "
 "op command inputs."
 
-#: ../src/gui/siril3.glade.h:747
+#: ../src/gui/siril3.glade.h:751
 msgid "Output logs"
 msgstr "Output logs"
 
-#: ../src/gui/siril3.glade.h:748
+#: ../src/gui/siril3.glade.h:752
+#, fuzzy
 msgid ""
-"Input command. Typing `help&apos; here will bring the list of supported "
-"commands."
-msgstr ""
-"Input command. Tijp hier `help&apos op de lijst van ondersteunde commando's "
-"te tonen."
-
-#: ../src/gui/siril3.glade.h:749
-msgid ""
-"Input command. Typing `help' here will bring the list of supported commands."
+"Input command. Typing 'help' here will bring the list of supported commands."
 msgstr ""
 "Inputcommando. Tijp hier 'help' om de lijst van ondersteunde commando's te "
 "tonen."
 
-#: ../src/gui/siril3.glade.h:750
+#: ../src/gui/siril3.glade.h:753
 msgid "Type help for the list of supported commands"
 msgstr "Tijp help vorr de lijst van ondersteunde commando's"
 
-#: ../src/gui/siril3.glade.h:751
+#: ../src/gui/siril3.glade.h:754
+msgid "Displays manual of the command written in the console."
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:755
 msgid "<b>Console</b>"
 msgstr "<b>Console</b>"
 
-#: ../src/gui/siril3.glade.h:752 ../src/gui/progress_and_log.c:40
+#: ../src/gui/siril3.glade.h:756 ../src/gui/progress_and_log.c:40
 msgid "Ready."
 msgstr "Klaar."
 
-#: ../src/gui/siril3.glade.h:753
+#: ../src/gui/siril3.glade.h:757
 msgid "Current working directory:"
 msgstr "Huidige werkmap"
 
-#: ../src/gui/siril3.glade.h:754
+#: ../src/gui/siril3.glade.h:758
 msgid ""
 "The directory in which files will be read from and written to. Can be "
 "changed with the button Change dir on the right, or with the cd command."
@@ -3362,23 +3384,23 @@ msgstr ""
 "De map waar alle bestanden worden opgeslaan en gelezen. Kan gekozen worden "
 "met de knop Verander map of met de commande cd."
 
-#: ../src/gui/siril3.glade.h:755
+#: ../src/gui/siril3.glade.h:759
 msgid "Change dir..."
 msgstr "Verander map"
 
-#: ../src/gui/siril3.glade.h:756
+#: ../src/gui/siril3.glade.h:760
 msgid "Change current working directory"
 msgstr "Verander de huidige werkmap"
 
-#: ../src/gui/siril3.glade.h:757
+#: ../src/gui/siril3.glade.h:761
 msgid "Stop running processes"
 msgstr "Stop lopend process"
 
-#: ../src/gui/siril3.glade.h:758
+#: ../src/gui/siril3.glade.h:762
 msgid "Current working sequence:"
 msgstr "Huidige sequentie:"
 
-#: ../src/gui/siril3.glade.h:759
+#: ../src/gui/siril3.glade.h:763
 msgid ""
 "Set number of threads manually.\n"
 "WARNING: Reducing the number of allowed processors too much will degrade "
@@ -3387,11 +3409,11 @@ msgstr ""
 "Kies het aantal threads manueel.\n"
 "OPGELET: Een te klein aantal processoren zal de performantie verminderen."
 
-#: ../src/gui/siril3.glade.h:761
+#: ../src/gui/siril3.glade.h:765
 msgid "Displays the amount of used RAM memory by Siril."
 msgstr "Toon hoeveel RAM geheugen Siril gebruikt."
 
-#: ../src/gui/siril3.glade.h:762
+#: ../src/gui/siril3.glade.h:766
 msgid ""
 "Displays the amount of disk space available on the file system containing "
 "the working directory."
@@ -3400,20 +3422,20 @@ msgstr ""
 "bestandssysteem warin de map zich bevindt."
 
 #. Must be short !!
-#: ../src/gui/siril3.glade.h:764
+#: ../src/gui/siril3.glade.h:768
 msgctxt "GUI"
 msgid "Disk Space: N/A"
 msgstr "Harde Schijf ter beschikking: N/A"
 
-#: ../src/gui/siril3.glade.h:765
+#: ../src/gui/siril3.glade.h:769
 msgid "Don't ask me again"
 msgstr "Niet opnieuw vragen"
 
-#: ../src/gui/siril3.glade.h:766
+#: ../src/gui/siril3.glade.h:770
 msgid "Color Calibration"
 msgstr "Kleurenkalibratie"
 
-#: ../src/gui/siril3.glade.h:767
+#: ../src/gui/siril3.glade.h:771
 msgid ""
 "A set of three color calibration factors will be computed and multiplied "
 "with every color channel.\n"
@@ -3423,31 +3445,31 @@ msgstr ""
 "kleurenkanaal.\n"
 "De Achtergrond Neutralisatie moet vóór deze stap gebeuren."
 
-#: ../src/gui/siril3.glade.h:769
+#: ../src/gui/siril3.glade.h:773
 msgid "x coordinate of the start of the background selection"
 msgstr "x coordinaat voor het begin van de achtergrondselectie"
 
-#: ../src/gui/siril3.glade.h:770
+#: ../src/gui/siril3.glade.h:774
 msgid "y coordinate of the start of the background selection"
 msgstr "y coordinaat voor het begin van de achtergrondselectie"
 
-#: ../src/gui/siril3.glade.h:771
+#: ../src/gui/siril3.glade.h:775
 msgid "Width of the background selection"
 msgstr "Breedte van de achtergrondselectie"
 
-#: ../src/gui/siril3.glade.h:772
+#: ../src/gui/siril3.glade.h:776
 msgid "Height of the background selection"
 msgstr "Hoogte van de achtergrondselectie"
 
-#: ../src/gui/siril3.glade.h:773
+#: ../src/gui/siril3.glade.h:777
 msgid "Selected area"
 msgstr "Gekozen selectie"
 
-#: ../src/gui/siril3.glade.h:774
+#: ../src/gui/siril3.glade.h:778
 msgid "Use current selection"
 msgstr "Gebruik huidige selectie"
 
-#: ../src/gui/siril3.glade.h:775
+#: ../src/gui/siril3.glade.h:779
 msgid ""
 "You must specify a selection that represents the true background of the "
 "image, trying to exclude all stars or other stellar objects."
@@ -3455,11 +3477,11 @@ msgstr ""
 "Kies een regio dat representatief is voor het achtergrond. Vermeid sterren "
 "en andere objecten."
 
-#: ../src/gui/siril3.glade.h:776
+#: ../src/gui/siril3.glade.h:780
 msgid "Background Neutralization"
 msgstr "Achtergrond neutralisatie"
 
-#: ../src/gui/siril3.glade.h:777
+#: ../src/gui/siril3.glade.h:781
 msgid ""
 "Background Neutralization will compute the mean of each color channel and "
 "will equalize the sky background in a neutral grey.\n"
@@ -3469,15 +3491,15 @@ msgstr ""
 "en het achtergrond neutraal maken.\n"
 "Dit moet worden uitgevoerd voor de kleurenkalibratie."
 
-#: ../src/gui/siril3.glade.h:779
+#: ../src/gui/siril3.glade.h:783
 msgid "Background reference"
 msgstr "Achtergrondreferentie"
 
-#: ../src/gui/siril3.glade.h:780
+#: ../src/gui/siril3.glade.h:784
 msgid "Manual White Balance"
 msgstr "Manuele kleurenbalans"
 
-#: ../src/gui/siril3.glade.h:781
+#: ../src/gui/siril3.glade.h:785
 msgid ""
 "By clicking on this option, you will use your own color calibration factors. "
 "This option is disabled by default."
@@ -3485,35 +3507,35 @@ msgstr ""
 "Door dit aan te vinken gebruikt Siril uw eigen kalibratiefactoren. Dit is "
 "standaard uitgeschakeld."
 
-#: ../src/gui/siril3.glade.h:782
+#: ../src/gui/siril3.glade.h:786
 msgid "Red:"
 msgstr "Rood:"
 
-#: ../src/gui/siril3.glade.h:783
+#: ../src/gui/siril3.glade.h:787
 msgid "Green:"
 msgstr "Groen:"
 
-#: ../src/gui/siril3.glade.h:784
+#: ../src/gui/siril3.glade.h:788
 msgid "Blue:"
 msgstr "Blauw:"
 
-#: ../src/gui/siril3.glade.h:785
+#: ../src/gui/siril3.glade.h:789
 msgid "x coordinate of the start of the white reference selection"
 msgstr "x coordinaat voor het begin van de referentie voor het wit"
 
-#: ../src/gui/siril3.glade.h:786
+#: ../src/gui/siril3.glade.h:790
 msgid "y coordinate of the start of the white reference selection"
 msgstr "y coordinaat voor het begin van de referentie voor het wit"
 
-#: ../src/gui/siril3.glade.h:787
+#: ../src/gui/siril3.glade.h:791
 msgid "Width of the white reference selection"
 msgstr "Breedte voor de selectie van het wit"
 
-#: ../src/gui/siril3.glade.h:788
+#: ../src/gui/siril3.glade.h:792
 msgid "Height of the white reference selection"
 msgstr "Hoogte voor de selectie van het wit"
 
-#: ../src/gui/siril3.glade.h:789
+#: ../src/gui/siril3.glade.h:793
 msgid ""
 "You should specify a selection that represents an average of suitable white "
 "reference.\n"
@@ -3522,7 +3544,7 @@ msgstr ""
 "Kies een regio dat representatief is voor een gemiddelde witte regio.\n"
 "Als de selectie leeg is wordt het gans baald in rekening genomen."
 
-#: ../src/gui/siril3.glade.h:791
+#: ../src/gui/siril3.glade.h:795
 msgid ""
 "Lower rejection bound for white selection. Pixels below this value are not "
 "taken into account. Black pixels are always excluded from computation."
@@ -3531,7 +3553,7 @@ msgstr ""
 "worden niet in rekening genomen. Zwarte pixels worden nooit in rekening "
 "genomen."
 
-#: ../src/gui/siril3.glade.h:792
+#: ../src/gui/siril3.glade.h:796
 msgid ""
 "Upper rejection bound for white selection. Pixels above this value are not "
 "taken into account. Saturated pixels are always excluded from computation."
@@ -3540,67 +3562,67 @@ msgstr ""
 "worden niet in rekening genomen. Gesatureerde pixels worden nooit in "
 "rekening genomen."
 
-#: ../src/gui/siril3.glade.h:793
+#: ../src/gui/siril3.glade.h:797
 msgid "Lower limit: "
 msgstr "Ondergrens: "
 
-#: ../src/gui/siril3.glade.h:794
+#: ../src/gui/siril3.glade.h:798
 msgid "Upper limit: "
 msgstr "Bovengrens: "
 
-#: ../src/gui/siril3.glade.h:795
+#: ../src/gui/siril3.glade.h:799
 msgid "White reference"
 msgstr "Referentie wit"
 
-#: ../src/algos/colors.c:313
+#: ../src/algos/colors.c:306
 msgid "Siril cannot extract layers. Make sure your image is in RGB mode.\n"
 msgstr ""
 "Siril kan de lagen niet berekenen. Wees zeker dat het beeld in RGB-modus "
 "is.\n"
 
-#: ../src/algos/colors.c:319
+#: ../src/algos/colors.c:313
 #, c-format
 msgid "%s channel extraction: processing...\n"
 msgstr "Extractie van kanaal %s ...\n"
 
-#: ../src/algos/colors.c:419
+#: ../src/algos/colors.c:416
 msgid "Saturation enhancement: processing...\n"
 msgstr "Verhoging van de saturatie: bezig...\n"
 
-#: ../src/algos/colors.c:428 ../src/algos/colors.c:638
-#: ../src/algos/colors.c:762 ../src/algos/cosmetic_correction.c:138
+#: ../src/algos/colors.c:424 ../src/algos/colors.c:631
+#: ../src/algos/colors.c:755 ../src/algos/cosmetic_correction.c:138
 #: ../src/algos/cosmetic_correction.c:187
-#: ../src/algos/cosmetic_correction.c:399 ../src/algos/star_finder.c:48
-#: ../src/core/command.c:1413 ../src/core/siril.c:478 ../src/core/siril.c:762
-#: ../src/core/siril.c:901 ../src/core/siril.c:1053 ../src/core/siril.c:1413
-#: ../src/core/siril.c:1495 ../src/core/siril.c:1604 ../src/gui/histogram.c:696
-#: ../src/gui/statistics_list.c:308 ../src/io/sequence.c:1290
+#: ../src/algos/cosmetic_correction.c:395 ../src/algos/star_finder.c:49
+#: ../src/core/command.c:1435 ../src/core/siril.c:479 ../src/core/siril.c:766
+#: ../src/core/siril.c:908 ../src/core/siril.c:1073 ../src/core/siril.c:1431
+#: ../src/core/siril.c:1521 ../src/core/siril.c:1613 ../src/gui/histogram.c:698
+#: ../src/gui/statistics_list.c:308
 msgid "Error: no data computed.\n"
 msgstr "Fout: geen gegevens berekend.\n"
 
-#: ../src/algos/colors.c:500
+#: ../src/algos/colors.c:494
 msgid "SCNR: processing...\n"
 msgstr "SCNR: bezig...\n"
 
-#: ../src/algos/colors.c:558 ../src/algos/colors.c:680
-#: ../src/algos/colors.c:716 ../src/algos/colors.c:887
-#: ../src/algos/colors.c:898
+#: ../src/algos/colors.c:553 ../src/algos/colors.c:673
+#: ../src/algos/colors.c:709 ../src/algos/colors.c:882
+#: ../src/algos/colors.c:893
 msgid "Make a selection of the background area before"
 msgstr "Maak eerst een selectie van de background"
 
-#: ../src/algos/colors.c:758
+#: ../src/algos/colors.c:751
 msgid "Background reference:\n"
 msgstr "Achtergrondreferentie:\n"
 
-#: ../src/algos/colors.c:771
+#: ../src/algos/colors.c:764
 msgid "White reference:\n"
 msgstr "Wit referentie:\n"
 
-#: ../src/algos/colors.c:786
+#: ../src/algos/colors.c:779
 msgid "Color calibration factors:\n"
 msgstr "Kleurenkalibratiefactoren:\n"
 
-#: ../src/algos/colors.c:852
+#: ../src/algos/colors.c:847
 msgid "Color Calibration: processing...\n"
 msgstr "Kleurenkalibratie: bezig...\n"
 
@@ -3609,16 +3631,15 @@ msgstr "Kleurenkalibratie: bezig...\n"
 msgid "Image %d: %ld pixels corrected (%ld + %ld)\n"
 msgstr "Image %d: %ld pixels gewijzigd (%ld + %ld)\n"
 
-#. can it be done here in case there is no thread?
-#: ../src/algos/cosmetic_correction.c:347 ../src/core/siril.c:926
-#: ../src/core/siril.c:969
+#: ../src/algos/cosmetic_correction.c:359
+msgid "Cosmetic Correction: processing...\n"
+msgstr "Cosmetische Correctie: bezig...\n"
+
+#: ../src/algos/cosmetic_correction.c:371 ../src/core/siril.c:939
+#: ../src/core/siril.c:984
 #, c-format
 msgid "%ld pixels corrected (%ld + %ld)\n"
 msgstr "%ld pixels gewijzigd (%ld + %ld)\n"
-
-#: ../src/algos/cosmetic_correction.c:364
-msgid "Cosmetic Correction: processing...\n"
-msgstr "Cosmetische Correctie: bezig...\n"
 
 #: ../src/algos/fft.c:242
 msgid "Fourier Transform: processing...\n"
@@ -3628,16 +3649,16 @@ msgstr "Fouriertransormatie: bezig...\n"
 msgid "There is something wrong in your files\n"
 msgstr "Er is iets mis met het bestand\n"
 
-#: ../src/algos/gradient.c:339 ../src/algos/gradient.c:385
+#: ../src/algos/gradient.c:334 ../src/algos/gradient.c:375
 #, c-format
 msgid "Channel #%d: background extraction done.\n"
 msgstr "Kanaal #%d: achtergrondextractie klaar.\n"
 
-#: ../src/algos/gradient.c:413
+#: ../src/algos/gradient.c:403
 msgid "Background extraction: processing...\n"
 msgstr "Achtergrondextractie: bezig...\n"
 
-#: ../src/algos/gradient.c:434 ../src/algos/gradient.c:440
+#: ../src/algos/gradient.c:426 ../src/algos/gradient.c:432
 msgid "Insufficient background samples.\n"
 msgstr "Te weinig achtergrondsamples.\n"
 
@@ -3656,7 +3677,7 @@ msgstr ""
 "Opgelet: Er zijn te weinig pixels in cirkel. Gelieve een bredere selectie te "
 "maken.\n"
 
-#: ../src/algos/PSF.c:690
+#: ../src/algos/PSF.c:671
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -3694,52 +3715,52 @@ msgstr "Deze ster werd al reeds gekozen !\n"
 msgid "Peaker"
 msgstr "Aanwijzing"
 
-#: ../src/algos/transform.c:200
+#: ../src/algos/transform.c:190
 msgid "wavelet_transform_data: bad plane number\n"
 msgstr "wavelet_transform_date: fout aantal lagen\n"
 
-#: ../src/compositing/align_rgb.c:119 ../src/compositing/compositing.c:600
+#: ../src/compositing/align_rgb.c:131 ../src/compositing/compositing.c:600
 msgid "Error in layers alignment."
 msgstr "Fout in het uitlijnen van de lagen."
 
-#: ../src/compositing/align_rgb.c:121 ../src/compositing/compositing.c:601
-#: ../src/registration/registration.c:1284
+#: ../src/compositing/align_rgb.c:133 ../src/compositing/compositing.c:601
+#: ../src/registration/registration.c:1287
 msgid "Registration complete."
 msgstr "Registratie klaar."
 
-#: ../src/compositing/compositing.c:447
+#: ../src/compositing/compositing.c:450
 msgid "ERROR"
 msgstr "FOUT"
 
-#: ../src/compositing/compositing.c:463
+#: ../src/compositing/compositing.c:466
 msgid "The first loaded image should have the greatest sizes for now\n"
 msgstr "De eerstgeladen afbeelding moet voor het moment de zwaarste zijn.\n"
 
-#: ../src/compositing/compositing.c:464
+#: ../src/compositing/compositing.c:467
 #, c-format
 msgid "NOT OK %ux%u"
 msgstr "NIET OK %ux%u"
 
-#: ../src/compositing/compositing.c:468
+#: ../src/compositing/compositing.c:471
 #, c-format
 msgid "Resizing the loaded image from %dx%d to %dx%d\n"
 msgstr "Herschaal het geladen beeld van %dx%d tot %dx%d\n"
 
-#: ../src/compositing/compositing.c:471
+#: ../src/compositing/compositing.c:474
 #, c-format
 msgid "OK upscaled from %ux%u"
 msgstr "OK upscale van %ux%u"
 
-#: ../src/compositing/compositing.c:480
+#: ../src/compositing/compositing.c:481
 #, c-format
 msgid "OK %ux%u"
 msgstr "OK %ux%u"
 
-#: ../src/compositing/compositing.c:513
+#: ../src/compositing/compositing.c:514
 msgid "Compositing result image"
 msgstr "Compositing resultaat afbeelding"
 
-#: ../src/compositing/compositing.c:514
+#: ../src/compositing/compositing.c:515
 msgid "Unsaved compositing result"
 msgstr "Compositing resultaat niet opgeslaan"
 
@@ -3747,13 +3768,13 @@ msgstr "Compositing resultaat niet opgeslaan"
 msgid "You must at least load two layers before!\n"
 msgstr "Minimaal twee lagen moeten eerst geladen worden!\n"
 
-#: ../src/compositing/compositing.c:546 ../src/gui/callbacks.c:5027
-#: ../src/gui/callbacks.c:5071 ../src/gui/callbacks.c:5316
-#: ../src/gui/callbacks.c:5325 ../src/gui/callbacks.c:5383
+#: ../src/compositing/compositing.c:546 ../src/gui/callbacks.c:5038
+#: ../src/gui/callbacks.c:5082 ../src/gui/callbacks.c:5327
+#: ../src/gui/callbacks.c:5336 ../src/gui/callbacks.c:5394
 #: ../src/gui/plot.c:281 ../src/io/conversion.c:524
 #: ../src/io/image_formats_libraries.c:73
 #: ../src/io/image_formats_libraries.c:229
-#: ../src/registration/registration.c:1158
+#: ../src/registration/registration.c:1161
 msgid "Warning"
 msgstr "Opgelet"
 
@@ -3771,125 +3792,588 @@ msgstr "Een beeld moet worden geselecteerd voor de uitlijning"
 msgid "At least 2 channels must be loaded for align"
 msgstr "Minstens twee kanalen moeten worden geladen voor de uitlijning"
 
-#: ../src/compositing/compositing.c:1121
+#: ../src/compositing/compositing.c:1122
 msgid "No overflow with the current colours, redrawing only\n"
 msgstr "Geen overflow met de huidige kleuren, enkel hertekenen\n"
 
-#: ../src/compositing/compositing.c:1124
+#: ../src/compositing/compositing.c:1125
 msgid "Nothing to adjust, no overflow\n"
 msgstr "Geen aanpassingen, geen overflow\n"
 
-#: ../src/compositing/compositing.c:1157
+#: ../src/compositing/compositing.c:1158
 #, c-format
 msgid "Readjusting layer %d to %g times bright\n"
 msgstr "Pas laag %d tot %g maal helderder\n"
 
-#: ../src/core/command.c:205 ../src/core/command.c:394
-#: ../src/core/command.c:787 ../src/core/command.c:822
-#: ../src/core/command.c:849 ../src/core/command.c:1158
-#: ../src/core/command.c:1260 ../src/core/command.c:1281
-#: ../src/core/command.c:1300 ../src/gui/callbacks.c:3845
-#: ../src/gui/callbacks.c:4161 ../src/gui/callbacks.c:4352
-#: ../src/gui/callbacks.c:4436 ../src/gui/callbacks.c:4633
-#: ../src/gui/callbacks.c:4970 ../src/gui/callbacks.c:5117
-#: ../src/gui/callbacks.c:5422 ../src/gui/callbacks.c:5600
-#: ../src/io/conversion.c:493 ../src/registration/registration.c:1147
-#: ../src/stacking/stacking.c:1457 ../src/stacking/stacking.c:1579
+#. name,	nbarg,	usage,			function pointer
+#: ../src/core/command.c:74
+msgid ""
+"Computes a new image IMG with IMG_1 and IMG_2. The pixel of IMG_1 is "
+"replaced by the pixel at the same coordinates of IMG_2 if the intensity of 2 "
+"is greater than 1"
+msgstr ""
+
+#: ../src/core/command.c:76
+msgid "Returns the background level of the image loaded in memory"
+msgstr ""
+
+#: ../src/core/command.c:77
+#, fuzzy
+msgid "Returns the background noise level"
+msgstr "Hoogte van de achtergrondselectie"
+
+#: ../src/core/command.c:79
+msgid ""
+"Set the new current working directory. The argument \"directory\" can "
+"contain the ~ token, expanded as the home directory, directories with spaces "
+"in the name can be protected using single or double quotes"
+msgstr ""
+
+#: ../src/core/command.c:80
+msgid "Returns the coordinates of the center of gravity of the image"
+msgstr ""
+
+#: ../src/core/command.c:81
+msgid "Clear all the stars saved in memory and displayed on the screen"
+msgstr ""
+
+#: ../src/core/command.c:82
+msgid "Properly closes the opened image and the opened sequence, if any"
+msgstr ""
+
+#: ../src/core/command.c:83
+msgid ""
+"Apply the local mean to a set of pixels on the in-memory image (cosmetic "
+"correction). The coordinate of this pixels are in an ASCII file [.lst file]. "
+"COSME is adapted to correct residual hot and cold pixels after preprocessing"
+msgstr ""
+
+#: ../src/core/command.c:84
+msgid "Same function that COSME but applying to RAW CFA images"
+msgstr ""
+
+#: ../src/core/command.c:85
+msgid "Crops the current image within the rectangle previously selected"
+msgstr ""
+
+#: ../src/core/command.c:87
+msgid ""
+"Performs a DDP (digital development processing) as described first by "
+"Kunihiko Okano. This implementation is the one described in IRIS. It "
+"combines a linear distribution on low levels (below \"level\") and a non-"
+"linear on high levels. It uses a Gaussian filter of sigma \"sigma\" and "
+"multiplies the resulting image by \"coef\". The typical values for \"sigma\" "
+"are included between 0.7 and 2"
+msgstr ""
+
+#: ../src/core/command.c:89
+msgid ""
+"Computes the entropy of the opened image on the displayed layer, only in the "
+"selected area if one has been selected or in the whole image else. The "
+"entropy is one way of measuring the noise or the details in an image"
+msgstr ""
+
+#: ../src/core/command.c:90
+msgid "Quits the application"
+msgstr ""
+
+#: ../src/core/command.c:91
+msgid "Extracts \"NbPlans\" planes of wavelet domain"
+msgstr ""
+
+#: ../src/core/command.c:93
+msgid ""
+"Divides the image in memory by the image given in argument. The resulting "
+"image is multiplied by the value of the \"scalar\" argument. See also IDIV"
+msgstr ""
+
+#: ../src/core/command.c:94
+msgid ""
+"Applies a Fast Fourier Transform to the image loaded in memory. \"Modulus\" "
+"and \"phase\" given in argument are saved in FITS files"
+msgstr ""
+
+#: ../src/core/command.c:95
+msgid ""
+"Retrieves corrected image applying an inverse transformation. The \"modulus"
+"\" and \"phase\" used are the files given in argument"
+msgstr ""
+
+#: ../src/core/command.c:96
+msgid ""
+"Fills the whole current image (or selection) with pixels having the \"value"
+"\" intensity"
+msgstr ""
+
+#: ../src/core/command.c:97
+msgid ""
+"Same command than FILL but this is a symmetric fill of a region defined by "
+"the mouse. Used to process an image in the Fourier (FFT) domain"
+msgstr ""
+
+#: ../src/core/command.c:98
+msgid ""
+"Applies an automatic detection of cold and hot pixels following the "
+"thresholds written in arguments"
+msgstr ""
+
+#: ../src/core/command.c:99
+msgid "Same command than FIND_COSME but for monochromatic CFA images"
+msgstr ""
+
+#: ../src/core/command.c:100
+msgid ""
+"Provides a list file \"filename\" (format text) in the working directory "
+"which contains the coordinates of the pixels which have an intensity "
+"\"hot_sigma\" times higher and \"cold_sigma\" lower than standard deviation. "
+"We generally use this command on a master-dark file"
+msgstr ""
+
+#: ../src/core/command.c:101
+msgid ""
+"Detects stars having a level greater than a threshold computed by Siril. The "
+"algorithm is based on the publication of Mighell, K. J. 1999, in ASP Conf. "
+"Ser., Vol. 172, Astronomical Data Analysis Software and Systems VIII, eds. "
+"D. M. Mehringer, R. L. Plante, & D. A. Roberts (San Francisco: ASP), 317. "
+"After that, a PSF is applied and Siril rejects all detected structures that "
+"don't fulfill a set of prescribed detection criteria. Finaly, a circle is "
+"drawn around detected stars. See also the command CLEARSTAR"
+msgstr ""
+
+#: ../src/core/command.c:102
+msgid ""
+"Performs a median filter of size \"ksize\" x \"ksize\" (\"ksize\" MUST be "
+"odd) to the original image with a modulation parameter \"modulation\". The "
+"output pixel is computed as : out=mod x m + (1 − mod) x in, where m is the "
+"median-filtered pixel value. A modulation's value of 1 will apply no "
+"modulation"
+msgstr ""
+
+#: ../src/core/command.c:103
+msgid "Multiplies the loaded image by the \"scalar\" given in argument"
+msgstr ""
+
+#: ../src/core/command.c:104
+msgid ""
+"Tries to remove the canon banding. Argument \"amount\" define the amount of "
+"correction. \"Sigma\" defines a protection level of the algorithm, higher "
+"sigma gives higher protection"
+msgstr ""
+
+#: ../src/core/command.c:106
+msgid "Performs a Gaussian filter with the given \"sigma\""
+msgstr ""
+
+#: ../src/core/command.c:108
+msgid "Gives the available commands"
+msgstr ""
+
+#: ../src/core/command.c:109
+msgid ""
+"Calculates the histogram of the image channel in memory and produces file "
+"histo_[channel name].dat in the working directory"
+msgstr ""
+
+#. commands oper filename and curent image
+#: ../src/core/command.c:112
+msgid "Adds the image in memory to the image given in argument"
+msgstr ""
+
+#: ../src/core/command.c:113
+msgid ""
+"Divides the image in memory by the image given in argument. See also FDIV"
+msgstr ""
+
+#: ../src/core/command.c:114
+msgid "Multiplies the image in memory by the image given in argument"
+msgstr ""
+
+#: ../src/core/command.c:115
+msgid "Subtracts the image in memory by the image given in argument"
+msgstr ""
+
+#: ../src/core/command.c:117
+msgid ""
+"Loads the image \"filename\"; it first attempts to load \"filename\", then "
+"\"filename\".fit and finally \"filename\".fits and after, all supported "
+"format, aborting if none of these are found. These scheme is applicable to "
+"every Siril command implying reading files. Fits headers MIPS-HI and MIPS-LO "
+"are read and their values given to the current viewing levels. Writing a "
+"known extension at the end of \"filename\" will load the image \"filename\"."
+"ext: this is used when numerous files have the same name but not the same "
+"extension"
+msgstr ""
+
+#. specific loads are not required, but could be used to force the
+#. extension to a higher priority in case two files with same basename
+#. exist (stat_file() manages that priority order for now).
+#: ../src/core/command.c:121
+msgid "Computes and applies a logarithmic scale to the current image"
+msgstr ""
+
+#: ../src/core/command.c:123
+#, fuzzy
+msgid "Lists files and directories in the working directory"
+msgstr "Verander de huidige werkmap"
+
+#: ../src/core/command.c:126
+msgid "Rotates the image around a vertical axis"
+msgstr ""
+
+#: ../src/core/command.c:127
+msgid "Rotates the image around an horizontal axis"
+msgstr ""
+
+#: ../src/core/command.c:129
+msgid ""
+"Creates a new image filled with zeros with a size of \"width\" x \"height\". "
+"The image is in 16-bit format, and it contains \"nb_channel\" channels, "
+"\"nb_channel\" being 1 or 3. It is not saved, but displayed and can be saved "
+"afterwards"
+msgstr ""
+
+#: ../src/core/command.c:130
+msgid ""
+"Replaces null values by \"level\" values. Useful before an idiv or fdiv "
+"operation"
+msgstr ""
+
+#. replaces null values by level
+#: ../src/core/command.c:132
+msgid ""
+"Adds the constant \"value\" to the current image. This constant can take a "
+"negative value. As Siril uses unsigned FITS files, if the intensity of the "
+"pixel become negative its value is replaced by 0 and by 65535 (for a 16-bit "
+"file) if the pixel intensity overflows"
+msgstr ""
+
+#: ../src/core/command.c:134
+msgid "Performs a PSF (Point Spread Function) on the selected star"
+msgstr ""
+
+#: ../src/core/command.c:136
+msgid ""
+"Performs geometric transforms on images of the sequence given in arguement "
+"so that they may be superimposed on the reference image. The output sequence "
+"name starts with the prefix \"r_\". Using stars for registration, this "
+"algorithm only works with deepsky images"
+msgstr ""
+
+#: ../src/core/command.c:137
+msgid "Resamples image with a factor \"factor\""
+msgstr ""
+
+#: ../src/core/command.c:138
+msgid ""
+"Restores an image using the Richardson-Lucy method. \"Iterations\" is the "
+"number of iterations to be performed (typically between 10 and 50). \"Sigma"
+"\" is the size of the kernel to be applied"
+msgstr ""
+
+#: ../src/core/command.c:139
+msgid ""
+"Chromatic noise reduction filter. It removes green noise in the current "
+"image. This filter is based on PixInsight's SCNR Average Neutral algorithm "
+"and it is the same filter used by HLVG plugin in Photoshop. \"Type\"=1 "
+"stands for Average Neutral Protection, while \"type\"=2 stands for Maximum "
+"Neutral Protection"
+msgstr ""
+
+#: ../src/core/command.c:140
+msgid "Rotates the image of an angle of \"degree\" value"
+msgstr ""
+
+#: ../src/core/command.c:141
+msgid ""
+"Rotates the image of an angle of 180° around its center. This is equivalent "
+"to the command \"ROTATE 180\" or \"ROTATE -180\""
+msgstr ""
+
+#: ../src/core/command.c:143
+msgid ""
+"Enhances the global saturation of the image. Try iteratively to obtain best "
+"results"
+msgstr ""
+
+#: ../src/core/command.c:144
+msgid ""
+"Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO "
+"are added with values corresponding to the current viewing levels"
+msgstr ""
+
+#: ../src/core/command.c:145
+msgid ""
+"Saves current image under the form of a bitmap file with 8-bit per channel: "
+"\"filename\".bmp (BMP 24-bit). This function is like a screenshot of what "
+"you see with the levels updated. This is very usefull to share an image in "
+"the bitmap format"
+msgstr ""
+
+#: ../src/core/command.c:147
+msgid ""
+"Saves current image into a JPG file: \"filename\".jpg. You have the "
+"possibility to adjust the quality of the compression. A value 100 for "
+"\"quality\" parameter offers best fidelity while a low value increases the "
+"compression ratio. If no value is specified, it holds a value of 100"
+msgstr ""
+
+#: ../src/core/command.c:150
+msgid "Saves current image into a PNG file: \"filename\".png"
+msgstr ""
+
+#: ../src/core/command.c:152
+msgid ""
+"Saves current image under the form of a Netpbm file format with 16-bit per "
+"channel. The extension of the output will be \"filename\".ppm for RGB image "
+"and \"filename\".pgm for gray-level image"
+msgstr ""
+
+#: ../src/core/command.c:154
+msgid ""
+"Saves current image under the form of a uncompressed TIFF file with 16-bit "
+"per channel: \"filename\".tif"
+msgstr ""
+
+#: ../src/core/command.c:155
+msgid ""
+"Same command than SAVE_TIF but the output file is saved in 8-bit per "
+"channel: \"filename\".tif"
+msgstr ""
+
+#: ../src/core/command.c:157
+msgid ""
+"This command allows easy mass selection of images in the loaded sequence "
+"(\"from\" - \"to\", to included)"
+msgstr ""
+
+#: ../src/core/command.c:158
+#, fuzzy
+msgid "Crops the loaded sequence"
+msgstr "Sequentie %s kon niet worden geladen\n"
+
+#: ../src/core/command.c:159
+msgid "Same command than FIND_COSME but for the loaded sequence"
+msgstr ""
+
+#: ../src/core/command.c:160
+msgid "Same command than FIND_COSME_CFA but for the loaded sequence"
+msgstr ""
+
+#: ../src/core/command.c:161
+msgid ""
+"Same command than PSF but works for sequences. Results are dumped in the "
+"console in a form that can be used to produce brightness variation curves"
+msgstr ""
+
+#: ../src/core/command.c:163
+msgid ""
+"Defines the number of processing threads used for calculation. Can be as "
+"high as the number of virtual threads existing on the system, which is the "
+"number of CPU cores or twice this number if hyperthreading (Intel HT) is "
+"available"
+msgstr ""
+
+#: ../src/core/command.c:165
+msgid ""
+"Calibrates the magnitude by selecting a star and giving the known apparent "
+"magnitude. All PSF computations will return the calibrated apparent "
+"magnitude afterwards, instead of an apparent magnitude relative to ADU "
+"values. To reset the magnitude constant see UNSETMAG"
+msgstr ""
+
+#: ../src/core/command.c:166
+msgid ""
+"This command is only valid after having run SEQPSF or its graphical "
+"counterpart (select the area around a star and launch the PSF analysis for "
+"the sequence, it will appear in the graphs). This command has the same goal "
+"as SETMAG but recomputes the reference magnitude for each image of the "
+"sequence where the reference star has been found. When running the command, "
+"the last star that has been analysed will be considered as the reference "
+"star. Displaying the magnitude plot before typing the command makes it easy "
+"to understand. To reset the reference star and magnitude offset, see "
+"UNSETMAGSEQ"
+msgstr ""
+
+#: ../src/core/command.c:167
+msgid ""
+"Splits the color image into three distincts files (one for each color) and "
+"save them in \"r\" \"g\" and \"b\" file"
+msgstr ""
+
+#: ../src/core/command.c:168
+msgid ""
+"Stacks the \"sequencename\" sequence, using options. The allowed types are: "
+"sum, max, min, med or median, and rej or mean that requires the use of "
+"additional arguments \"sigma low\" and \"high\" used for the Winsorized "
+"sigma clipping rejection algorithm (cannot be changed from here). If no "
+"argument other than the sequence name is provided, sum stacking is assumed"
+msgstr ""
+
+#: ../src/core/command.c:169
+msgid ""
+"Opens all sequences in the CWD and stacks them with the optionally specified "
+"stacking type or with sum stacking. See STACK command for options description"
+msgstr ""
+
+#: ../src/core/command.c:170
+msgid ""
+"Returns global statistics of the current image. If a selection is made, the "
+"command returns statistics within the selection"
+msgstr ""
+
+#. threshes hi and lo
+#. unsharp masking of current image or genname sequence
+#: ../src/core/command.c:177
+msgid ""
+"Allows easy mass unselection of images in the loaded sequence (\"from\" - "
+"\"to\"). See SELECT"
+msgstr ""
+
+#: ../src/core/command.c:178
+msgid "Reset the magnitude calibration to 0. See SETMAG"
+msgstr ""
+
+#: ../src/core/command.c:179
+msgid ""
+"Resets the magnitude calibration and reference star for the sequence. See "
+"SETMAGSEQ"
+msgstr ""
+
+#: ../src/core/command.c:180
+msgid ""
+"Applies to the working image an unsharp mask with sigma \"sigma\" and "
+"coefficient \"multi\""
+msgstr ""
+
+#: ../src/core/command.c:181
+msgid ""
+"Displays an image with \"low\" and \"high\" as the low and high threshold"
+msgstr ""
+
+#. wavelet transform in nbr_plan plans
+#: ../src/core/command.c:184
+msgid ""
+"Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) "
+"or bspline (type=2) version of the 'a trous' algorithm. The result is stored "
+"in a file as a structure containing the planes, ready for weighted "
+"reconstruction with WRECONS"
+msgstr ""
+
+#. reconstruct from wavelet transform and weighs plans with c1, c2, c3...
+#: ../src/core/command.c:186
+msgid ""
+"Reconstructs to current image from the planes previously computed with "
+"wavelets and weighted with coefficients \"c1\", \"c2\", ..., \"cn\" "
+"according to the number of planes used for wavelet transform"
+msgstr ""
+
+#: ../src/core/command.c:209 ../src/core/command.c:404
+#: ../src/core/command.c:797 ../src/core/command.c:832
+#: ../src/core/command.c:859 ../src/core/command.c:1168
+#: ../src/core/command.c:1282 ../src/core/command.c:1303
+#: ../src/core/command.c:1322 ../src/core/command.c:1479
+#: ../src/gui/callbacks.c:3850 ../src/gui/callbacks.c:4171
+#: ../src/gui/callbacks.c:4362 ../src/gui/callbacks.c:4446
+#: ../src/gui/callbacks.c:4643 ../src/gui/callbacks.c:4981
+#: ../src/gui/callbacks.c:5128 ../src/gui/callbacks.c:5433
+#: ../src/gui/callbacks.c:5611 ../src/io/conversion.c:493
+#: ../src/registration/registration.c:1150 ../src/stacking/stacking.c:1469
+#: ../src/stacking/stacking.c:1592
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Andere taak al bezig, huidige wordt genegeerd.\n"
 
-#: ../src/core/command.c:341
+#: ../src/core/command.c:351
 msgid "Multiplying by a coefficient less than or equal to 0 is not possible.\n"
 msgstr ""
 "Vermenigvuldigen met een coëfficient lager of gelijk aan 0 is niet "
 "mogelijk.\n"
 
-#: ../src/core/command.c:362
+#: ../src/core/command.c:372
 #, c-format
 msgid "Entropy: %.3lf\n"
 msgstr "Entropie: %.3lf\n"
 
-#: ../src/core/command.c:383
+#: ../src/core/command.c:393
 msgid "Number of iterations must be > 0.\n"
 msgstr "Aantal iteraties moet > 0 zijn.\n"
 
-#: ../src/core/command.c:388
+#: ../src/core/command.c:398
 msgid "Sigma must be > 0.\n"
 msgstr ""
 "Sigma moet > 0 zijn.\n"
 "\n"
 
-#: ../src/core/command.c:424
+#: ../src/core/command.c:434
 msgid "Crop: x and y must be positive values.\n"
 msgstr "Crop: x en y moeten positieve waarden zijn.\n"
 
-#: ../src/core/command.c:428
+#: ../src/core/command.c:438
 msgid "Crop: width and height must be greater than 0.\n"
 msgstr "Crop: hoogte en breedte moeten groter dan 0 zijn.\n"
 
-#: ../src/core/command.c:432
+#: ../src/core/command.c:442
 #, c-format
 msgid "Crop: width and height, respectively, must be less than %d and %d.\n"
 msgstr ""
 "Crop: breedte en hoogte moeten respectievelijk kleiner zijn dan %d en %d.\n"
 
-#: ../src/core/command.c:441
+#: ../src/core/command.c:451
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Crop: kies een regio of voer x, y, breedte en hoogte in\n"
 
-#: ../src/core/command.c:517 ../src/core/command.c:1690
-#: ../src/gui/callbacks.c:5314 ../src/gui/callbacks.c:5381
+#: ../src/core/command.c:527 ../src/core/command.c:1867
+#: ../src/gui/callbacks.c:5325 ../src/gui/callbacks.c:5392
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
 "Wavelet: het maximaal aantal vlakken voor een beeld met deze afmetingen is "
 "%d\n"
 
-#: ../src/core/command.c:523 ../src/gui/callbacks.c:5323
+#: ../src/core/command.c:533 ../src/gui/callbacks.c:5334
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: type moet %d of %d zijn\n"
 
-#: ../src/core/command.c:578
+#: ../src/core/command.c:588
 msgid "Cannot list files, set working directory first.\n"
 msgstr ""
 "Kan de bestanden niet oplijsten, gelieven een werkfolder eerst te "
 "definiëren.\n"
 
-#: ../src/core/command.c:584 ../src/core/command.c:593
+#: ../src/core/command.c:594 ../src/core/command.c:603
 msgid "Siril cannot open the directory.\n"
 msgstr "Siril kan deze map niet openen.\n"
 
-#: ../src/core/command.c:615
+#: ../src/core/command.c:625
 #, c-format
 msgid "Link: %s\n"
 msgstr "Link: %s\n"
 
-#: ../src/core/command.c:619
+#: ../src/core/command.c:629
 #, c-format
 msgid "Directory: %s\n"
 msgstr "Map: %s\n"
 
-#: ../src/core/command.c:629 ../src/core/command.c:636
+#: ../src/core/command.c:639 ../src/core/command.c:646
 #, c-format
 msgid "Sequence: %s\n"
 msgstr "Sequentie: %s\n"
 
-#: ../src/core/command.c:632 ../src/core/command.c:634
+#: ../src/core/command.c:642 ../src/core/command.c:644
 #, c-format
 msgid "Image: %s\n"
 msgstr "Afbeelding: %s\n"
 
-#: ../src/core/command.c:641 ../src/core/command.c:1673
+#: ../src/core/command.c:651 ../src/core/command.c:1849
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* EINDE VAN DE LIJST *********\n"
 
-#: ../src/core/command.c:665
+#: ../src/core/command.c:675
 msgid "The scaling factor must be less than 5.0\n"
 msgstr "De schaalfactor moet kleiner dan 5.0 zijn\n"
 
-#: ../src/core/command.c:709 ../src/core/command.c:769
-#: ../src/core/command.c:791
+#: ../src/core/command.c:719 ../src/core/command.c:779
+#: ../src/core/command.c:801
 msgid ""
 "Current selection is too large. To determine the PSF, please make a "
 "selection around a single star.\n"
@@ -3897,12 +4381,12 @@ msgstr ""
 "Huidige selectie is te groot. Kies een regui rond een ster om de PSF te "
 "bepalen.\n"
 
-#: ../src/core/command.c:713 ../src/core/command.c:773
-#: ../src/core/command.c:795 ../src/io/sequence.c:1486
+#: ../src/core/command.c:723 ../src/core/command.c:783
+#: ../src/core/command.c:805 ../src/io/sequence.c:1504
 msgid "Select an area first\n"
 msgstr "Kies eerst een redio\n"
 
-#: ../src/core/command.c:719
+#: ../src/core/command.c:729
 #, c-format
 msgid ""
 "Relative magnitude: %.3lf, True reduced magnitude: %.3lf, Offset: %.3lf\n"
@@ -3910,17 +4394,17 @@ msgstr ""
 "Relatieve magnitude: %.3lf, Echte verminderde magnitude: %.3lf, Offset: "
 "%.3lf\n"
 
-#: ../src/core/command.c:735 ../src/core/command.c:754
-#: ../src/core/command.c:814
+#: ../src/core/command.c:745 ../src/core/command.c:764
+#: ../src/core/command.c:824
 msgid "This command can be used only when a sequence is loaded\n"
 msgstr ""
 "Dit commando kan enkel worden gebruikt indien een sequentie geladen is\n"
 
-#: ../src/core/command.c:743
+#: ../src/core/command.c:753
 msgid "Run a PSF for the sequence first (see seqpsf)\n"
 msgstr "Voer eerst een PSF uit voor de sequentie (zie seqpsf)\n"
 
-#: ../src/core/command.c:747
+#: ../src/core/command.c:757
 #, c-format
 msgid ""
 "Reference magnitude has been set for star %d to %f and will be computed for "
@@ -3929,112 +4413,112 @@ msgstr ""
 "Referentiemagnitude werd gekozen voor ster %d tot %f en zal worden berekend "
 "voor elk beeld\n"
 
-#: ../src/core/command.c:759
+#: ../src/core/command.c:769
 msgid "Reference magnitude unset for sequence\n"
 msgstr ""
 "Referentiemagnitude niet gekozen voor de sequentie\n"
 "\n"
 
-#: ../src/core/command.c:809
+#: ../src/core/command.c:819
 #, c-format
 msgid "Running the PSF on the loaded sequence, layer %d\n"
 msgstr "Voer de PSF uit op de geladen sequentie, laag %d\n"
 
-#: ../src/core/command.c:842
+#: ../src/core/command.c:852
 #, c-format
 msgid "Background value: %d\n"
 msgstr "Achtergrondwaarde: %d\n"
 
-#: ../src/core/command.c:888
+#: ../src/core/command.c:898
 #, c-format
 msgid "The file %s has been created for the %s layer.\n"
 msgstr "Het bestand %s werd aangemaakt voor de laag %s.\n"
 
-#: ../src/core/command.c:960
+#: ../src/core/command.c:970
 msgid "Number of layers MUST be 1 or 3\n"
 msgstr "Aantal lagen MOET 1 of 3 zijn\n"
 
-#: ../src/core/command.c:972
+#: ../src/core/command.c:982
 msgid "new empty image"
 msgstr "nieuw lege afbeelding"
 
-#: ../src/core/command.c:982
+#: ../src/core/command.c:992
 #, c-format
 msgid "Values must be positive and less than %d.\n"
 msgstr "Waarden moeten positief en kleiner dan %d zijn.\n"
 
-#: ../src/core/command.c:1000
+#: ../src/core/command.c:1010
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: kies een regio of voer x, y, breedte en hoogte in\n"
 
-#: ../src/core/command.c:1034
+#: ../src/core/command.c:1044
 msgid "find_hot must be applied on an one-channel master-dark frame"
 msgstr "find_hot moet worden toegepast op een één-kalaal master-dark"
 
-#: ../src/core/command.c:1042
+#: ../src/core/command.c:1052
 #, c-format
 msgid "%ld cold and %ld hot pixels\n"
 msgstr "%ld koude en %ld warme pixels\n"
 
-#: ../src/core/command.c:1047 ../src/core/command.c:1080
+#: ../src/core/command.c:1057 ../src/core/command.c:1090
 #, c-format
 msgid "Cannot open file: %s\n"
 msgstr "Kan bestand niet openen: %s\n"
 
-#: ../src/core/command.c:1140
+#: ../src/core/command.c:1150
 #, c-format
 msgid "cosmetic correction: cosme file format error at line %d: %s\n"
 msgstr "cosmetische correcties: cosme file format error op lijn %d: %s\n"
 
-#: ../src/core/command.c:1148
+#: ../src/core/command.c:1158
 msgid "There were some errors, please check your input file.\n"
 msgstr "Er waren fouten, controleer de input file.\n"
 
-#: ../src/core/command.c:1168
+#: ../src/core/command.c:1178
 msgid "The size of the kernel MUST be odd and greater than 1.\n"
 msgstr "De grootte van de kern MOET een oneven getal groter dan 1 zijn.\n"
 
-#: ../src/core/command.c:1173
+#: ../src/core/command.c:1183
 msgid "Modulation value MUST be between 0 and 1\n"
 msgstr "Modulatiewaarde MOET tussen 0 en 1 zijn\n"
 
 #. FITS are stored bottom to top
-#: ../src/core/command.c:1193
+#: ../src/core/command.c:1203
 #, c-format
 msgid "Center of gravity coordinates are (%.3lf, %.3lf)\n"
 msgstr "De coördinaten van het zwaartepunt zijn (%.3lf, %.3lf)\n"
 
-#: ../src/core/command.c:1216
+#: ../src/core/command.c:1238
 #, c-format
 msgid "Contrast: %lf\n"
 msgstr "Contrast: %lf\n"
 
-#: ../src/core/command.c:1277
+#: ../src/core/command.c:1299
 msgid "FFT does not work with sequences\n"
 msgstr "FFT werkt niet met sequenties\n"
 
-#: ../src/core/command.c:1345
+#: ../src/core/command.c:1367
 msgid ""
 "Use this command to select images in a sequence, load a sequence first.\n"
 msgstr ""
 "Gebruik dit commande om afbeeldingen uit een sequentie te selecteren.\n"
 
-#: ../src/core/command.c:1351
+#: ../src/core/command.c:1373
 msgid ""
 "The first argument must be between 0 and the number of images minus one.\n"
 msgstr "Het eerste argument moet tussen 0 en het aantal beelden min één.\n"
 
-#: ../src/core/command.c:1376
+#: ../src/core/command.c:1398
 #, c-format
 msgid "Selection update finished, %d images are selected in the sequence\n"
 msgstr "Selectie update klaar, %d beelden geselecteerd in de sequentie\n"
 
-#: ../src/core/command.c:1393
+#: ../src/core/command.c:1415
 msgid "Siril cannot split layers. Make sure your image is in RGB mode.\n"
 msgstr ""
 "Siril kan de lagen niet splitsen. Wees zeker dat het beeld in RGB-modus is.\n"
 
-#: ../src/core/command.c:1417
+#: ../src/core/command.c:1455
 #, c-format
 msgid ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
@@ -4043,39 +4527,53 @@ msgstr ""
 "%s laag: Gemiddelde: %0.1lf, Mediaan: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, "
 "Min: %0.1lf, Max: %0.1lf\n"
 
-#: ../src/core/command.c:1445
-#, c-format
-msgid "Stacking sequence %s\n"
-msgstr "Stack sequentie %s\n"
-
-#: ../src/core/command.c:1484
-#, c-format
-msgid "Could not save the stacking result %s\n"
-msgstr "Kan de resultaat %s van de staking niet oplsaan\n"
-
-#: ../src/core/command.c:1491
+#: ../src/core/command.c:1491 ../src/core/command.c:1621
 #, fuzzy, c-format
 msgid "No sequence %s found.\n"
 msgstr "Geen sequentie geselecteerd"
 
-#: ../src/core/command.c:1503 ../src/core/command.c:1571
+#: ../src/core/command.c:1497 ../src/registration/registration.c:100
+msgid "Global Star Alignment (deep-sky)"
+msgstr "Globale Ster Uitlijning (deep-sky)"
+
+#: ../src/core/command.c:1524 ../src/registration/registration.c:1193
+msgid "Not enough disk space to perform Drizzle operation !!\n"
+msgstr "Niet genoeg opslagruimte om Drizzle operatie toe te passen!!\n"
+
+#: ../src/core/command.c:1540 ../src/registration/registration.c:1209
+#, c-format
+msgid "Registration: processing using method: %s\n"
+msgstr "Registratie: processing met methode: %s\n"
+
+#: ../src/core/command.c:1570
+#, c-format
+msgid "Stacking sequence %s\n"
+msgstr "Stack sequentie %s\n"
+
+#: ../src/core/command.c:1614
+#, c-format
+msgid "Could not save the stacking result %s\n"
+msgstr "Kan de resultaat %s van de staking niet oplsaan\n"
+
+#. control_window_switch_to_tab(OUTPUT_LOGS);
+#: ../src/core/command.c:1633 ../src/core/command.c:1723
 msgid "Looking for sequences in current working directory...\n"
 msgstr "Zoekt zequenties in huidige werkfolder...\n"
 
-#: ../src/core/command.c:1505
+#: ../src/core/command.c:1635
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr "Fout tijdens het zoeken van sequenties of bij het openen van de map.\n"
 
-#: ../src/core/command.c:1511
+#: ../src/core/command.c:1641
 msgid "Starting stacking of found sequences...\n"
 msgstr "Begin stacking van de gevonden sequenties\n"
 
-#: ../src/core/command.c:1523
+#: ../src/core/command.c:1653
 #, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr "Stackte %d sequenties succesvol.\n"
 
-#: ../src/core/command.c:1546 ../src/core/command.c:1620
+#: ../src/core/command.c:1688 ../src/core/command.c:1783
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
@@ -4083,22 +4581,22 @@ msgstr ""
 "De gemiddelde stackingmethode gebruikt Winsorised afwijzing an heeft twee "
 "extra parameters nodig: sigma laag en hoog.\n"
 
-#: ../src/core/command.c:1555 ../src/core/command.c:1629
+#: ../src/core/command.c:1709 ../src/core/command.c:1804
 #, c-format
 msgid "The provided type of stacking is unknown (%s).\n"
 msgstr "De gegeven stackingmethode is ongekend. (%s).\n"
 
-#: ../src/core/command.c:1573
+#: ../src/core/command.c:1725
 #, fuzzy
 msgid "Error while searching sequences.\n"
 msgstr "Fout tijdens het zoeken van sequenties of bij het openen van de map.\n"
 
-#: ../src/core/command.c:1584
+#: ../src/core/command.c:1736
 #, fuzzy
 msgid "Stacked sequence successfully.\n"
 msgstr "Stackte %d sequenties succesvol.\n"
 
-#: ../src/core/command.c:1646
+#: ../src/core/command.c:1822
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -4107,34 +4605,45 @@ msgstr ""
 "Aantal logische processoren MOET groter dan 0 en kleiner of gelijk aan %d "
 "zijn.\n"
 
-#: ../src/core/command.c:1658
+#: ../src/core/command.c:1834
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "Gebruikt nu %d logische processoren\n"
 
-#: ../src/core/command.c:1668
+#: ../src/core/command.c:1844
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* LIJST VAN BESCHIKBARE COMMANDO'S *********\n"
 
-#: ../src/core/command.c:1745
+#: ../src/core/command.c:1922
 #, c-format
 msgid "Unknown command: '%s' or not implemented yet\n"
 msgstr "Onbekend of nog niet geïmplementeerde commando '%s'\n"
 
-#: ../src/core/command.c:1752
+#: ../src/core/command.c:1929
 #, c-format
 msgid "Usage: %s\n"
 msgstr "Verbruik: %s\n"
 
-#: ../src/core/command.c:1773
+#. process the command
+#: ../src/core/command.c:1934
+#, c-format
+msgid "Running command: %s\n"
+msgstr ""
+
+#: ../src/core/command.c:1961
+#, c-format
+msgid "Error in line: %d. Exiting batch processing\n"
+msgstr "Fout in lijn: %d. Einde van de batch processing\n"
+
+#: ../src/core/command.c:1986
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Bestand [%s] bestaat niet\n"
 
-#: ../src/core/command.c:1794
-#, c-format
-msgid "Error in line: %d. Exiting batch processing\n"
-msgstr "Fout in lijn: %d. Einde van de batch processing\n"
+#: ../src/core/command.c:2119
+#, fuzzy
+msgid "No help for this command"
+msgstr "Tijp help vorr de lijst van ondersteunde commando's"
 
 #: ../src/core/initfile.c:61
 #, c-format
@@ -4162,57 +4671,69 @@ msgstr "Output index mapping failed (%d %d).\n"
 msgid ": processing...\n"
 msgstr ": processing...\n"
 
-#: ../src/core/processing.c:189
+#: ../src/core/processing.c:195
 #, c-format
 msgid "%s. Processing image %d (%s)"
 msgstr "%s. Processing beeld %d (%s)"
 
-#: ../src/core/processing.c:195
+#: ../src/core/processing.c:201
 msgid "Sequence processing failed. Check the log."
 msgstr "Processing sequentie gefaald. Lees de log."
 
-#: ../src/core/processing.c:196
+#: ../src/core/processing.c:202
 msgid "Sequence processing failed.\n"
 msgstr "Processing sequentie gefaald.\n"
 
-#: ../src/core/processing.c:200
+#: ../src/core/processing.c:207
+#, fuzzy
+msgid "Sequence processing partially succeeded. Check the log."
+msgstr "Processing sequentie gefaald. Lees de log."
+
+#: ../src/core/processing.c:208
+#, c-format
+msgid ""
+"Sequence processing partially succeeded, with %d images that failed and that "
+"were temporarily excluded from the sequence.\n"
+msgstr ""
+
+#: ../src/core/processing.c:210
 msgid "Sequence processing succeeded."
 msgstr "Processing sequentie sucessvol."
 
-#: ../src/core/processing.c:201
+#: ../src/core/processing.c:211
 msgid "Sequence processing succeeded.\n"
 msgstr "Sequence processing succeeded.\n"
 
-#: ../src/core/processing.c:212
+#: ../src/core/processing.c:223
 msgid "Finalizing sequence processing failed.\n"
 msgstr "Finalisatie van de sequentie gefaald.\n"
 
-#: ../src/core/processing.c:351
+#: ../src/core/processing.c:374
 msgid "Process aborted by user\n"
 msgstr "Process stopgezet door de gebruiker\n"
 
-#: ../src/core/siril.c:157
+#: ../src/core/siril.c:158
 #, c-format
 msgid "imoper: images don't have the same size (w = %u|%u, h = %u|%u)\n"
 msgstr ""
 "imoper: afbeeldingen hebben niet dezelfde afmetingen (b = %u|%u, h = %u|%u)\n"
 
-#: ../src/core/siril.c:203
+#: ../src/core/siril.c:204
 #, c-format
 msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr "Afbeeldingen hebben niet dezelfde afmetingen (w = %d|%d, h = %d|%d)\n"
 
-#: ../src/core/siril.c:205 ../src/core/utils.c:771 ../src/gui/callbacks.c:1088
-#: ../src/gui/callbacks.c:2121 ../src/gui/callbacks.c:3024
-#: ../src/gui/callbacks.c:4685 ../src/gui/callbacks.c:4706
-#: ../src/gui/callbacks.c:5133 ../src/gui/callbacks.c:5139
-#: ../src/gui/callbacks.c:5164 ../src/gui/plot.c:379 ../src/gui/plot.c:438
+#: ../src/core/siril.c:206 ../src/core/utils.c:771 ../src/gui/callbacks.c:1092
+#: ../src/gui/callbacks.c:2119 ../src/gui/callbacks.c:3030
+#: ../src/gui/callbacks.c:4695 ../src/gui/callbacks.c:4716
+#: ../src/gui/callbacks.c:5144 ../src/gui/callbacks.c:5150
+#: ../src/gui/callbacks.c:5175 ../src/gui/plot.c:379 ../src/gui/plot.c:438
 #: ../src/gui/PSF_list.c:150 ../src/io/conversion.c:530
-#: ../src/io/conversion.c:600 ../src/io/image_format_fits.c:405
-#: ../src/io/image_format_fits.c:411 ../src/io/image_format_fits.c:432
-#: ../src/io/image_format_fits.c:440 ../src/io/image_format_fits.c:462
-#: ../src/io/image_format_fits.c:493 ../src/io/image_format_fits.c:511
-#: ../src/io/image_format_fits.c:640 ../src/io/image_format_fits.c:875
+#: ../src/io/conversion.c:600 ../src/io/image_format_fits.c:407
+#: ../src/io/image_format_fits.c:413 ../src/io/image_format_fits.c:434
+#: ../src/io/image_format_fits.c:442 ../src/io/image_format_fits.c:464
+#: ../src/io/image_format_fits.c:502 ../src/io/image_format_fits.c:520
+#: ../src/io/image_format_fits.c:655 ../src/io/image_format_fits.c:890
 #: ../src/io/image_formats_internal.c:52 ../src/io/image_formats_internal.c:107
 #: ../src/io/image_formats_internal.c:177
 #: ../src/io/image_formats_internal.c:346
@@ -4232,14 +4753,14 @@ msgstr "Afbeeldingen hebben niet dezelfde afmetingen (w = %d|%d, h = %d|%d)\n"
 #: ../src/io/image_formats_libraries.c:348
 #: ../src/io/image_formats_libraries.c:412
 #: ../src/io/image_formats_libraries.c:485
-#: ../src/io/image_formats_libraries.c:576 ../src/io/single_image.c:113
-#: ../src/io/single_image.c:156 ../src/io/single_image.c:160
-#: ../src/registration/registration.c:1191 ../src/stacking/normalization.c:112
-#: ../src/stacking/stacking.c:114 ../src/stacking/stacking.c:792
+#: ../src/io/image_formats_libraries.c:576 ../src/io/single_image.c:116
+#: ../src/io/single_image.c:162 ../src/io/single_image.c:166
+#: ../src/registration/registration.c:1194 ../src/stacking/normalization.c:118
+#: ../src/stacking/stacking.c:114 ../src/stacking/stacking.c:800
 msgid "Error"
 msgstr "Fout"
 
-#: ../src/core/siril.c:240
+#: ../src/core/siril.c:241
 #, c-format
 msgid ""
 "addmax: images don't have the same size (w = %d|%d, h = %d|%d, layers = %d|"
@@ -4248,125 +4769,130 @@ msgstr ""
 "addmax: afbeeldingen hebben niet dezelfde afmetingen (w = %d|%d, h = %d|%d, "
 "layers = %d|%d)\n"
 
-#: ../src/core/siril.c:325
+#: ../src/core/siril.c:326
 msgid "Unsharp: processing...\n"
 msgstr "Unsharp: bezig....\n"
 
-#: ../src/core/siril.c:351
+#: ../src/core/siril.c:352
 msgid "Crop: processing...\n"
 msgstr "Crop: processing...\n"
 
-#: ../src/core/siril.c:581
+#: ../src/core/siril.c:584
 msgid "Horizontal mirror: processing...\n"
 msgstr "Horizontaal spiegelbeeld: bezig...\n"
 
-#: ../src/core/siril.c:609
+#: ../src/core/siril.c:612
 msgid "Vertical mirror: processing...\n"
 msgstr ""
 "Verticaal spiegelbeeld: bezig...\n"
 "\n"
 
-#: ../src/core/siril.c:835
+#: ../src/core/siril.c:689
+msgid "Could not compute normalization values for the images, aborting.\n"
+msgstr ""
+
+#: ../src/core/siril.c:842
 #, c-format
 msgid "Dark optimization: %.3lf\n"
 msgstr "Dark optimisatie: %.3lf\n"
 
-#: ../src/core/siril.c:905
+#: ../src/core/siril.c:912
 #, c-format
 msgid "Normalisation value auto evaluated: %.2lf\n"
 msgstr "Normalisatiewaarde automatisch geschat: %.2lf\n"
 
-#: ../src/core/siril.c:912
+#: ../src/core/siril.c:919
 #, c-format
 msgid "Pre-processing image %s"
 msgstr "Pre-processing van de beelden %s"
 
-#: ../src/core/siril.c:933 ../src/core/siril.c:972
+#: ../src/core/siril.c:946 ../src/core/siril.c:987
 msgid ""
 "Darkmap cosmetic correction is only supported with single channel images\n"
 msgstr ""
 "Darkmap cosmetische correcties enkel ondersteund met éénkanalige "
 "afbeeldingen\n"
 
-#: ../src/core/siril.c:945
+#: ../src/core/siril.c:958
 #, c-format
 msgid "Saving image %s"
 msgstr "Sla afbeelding %s op"
 
-#: ../src/core/siril.c:982
+#: ../src/core/siril.c:1002
 #, c-format
 msgid "Loading and pre-processing image %d/%d (%s)"
 msgstr "Laad en pre-process afbeeldingen%d %d (%s)"
 
-#: ../src/core/siril.c:988
+#: ../src/core/siril.c:1008
 #, c-format
 msgid "Could not read one of the raw files: %s. Aborting preprocessing."
 msgstr "Kon een van de raw bestanden niet lezen: %s. Pre-processing gestopt."
 
-#: ../src/core/siril.c:1078 ../src/core/siril.c:1118
+#: ../src/core/siril.c:1096 ../src/core/siril.c:1136
 msgid "Nearest-Neighbor"
 msgstr "Dichtsbijzijnde Buur (Nearest Neighbor)"
 
-#: ../src/core/siril.c:1091 ../src/core/siril.c:1131
+#: ../src/core/siril.c:1109 ../src/core/siril.c:1149
 msgid "Lanczos4"
 msgstr "Lancoz4"
 
-#: ../src/core/siril.c:1095
+#: ../src/core/siril.c:1113
 #, c-format
 msgid "Resample (%s interpolation): processing...\n"
 msgstr "Resample (%s interpolatie): bezig...\n"
 
-#: ../src/core/siril.c:1115
+#: ../src/core/siril.c:1133
 msgid "No"
 msgstr "Nee"
 
-#: ../src/core/siril.c:1136
+#: ../src/core/siril.c:1154
 #, c-format
 msgid "Rotation (%s interpolation, angle=%g): processing...\n"
 msgstr "Rotatie (%s interpolatie, hoek = %g): bezig...\n"
 
-#: ../src/core/siril.c:1236
+#: ../src/core/siril.c:1254
 msgid "Median Filter: processing...\n"
 msgstr "Mediaan Filter: bezig...\n"
 
-#: ../src/core/siril.c:1241
+#: ../src/core/siril.c:1259
 #, c-format
 msgid "Iteration #%d...\n"
 msgstr "Iteratie #%d...\n"
 
-#: ../src/core/siril.c:1384
+#: ../src/core/siril.c:1402
 msgid "Banding Reducing: processing...\n"
 msgstr "Banding Vermindering: bezig...\n"
 
-#: ../src/core/siril.c:1543
+#: ../src/core/siril.c:1564
 msgid "backgroundnoise: Error, no data computed\n"
 msgstr "backgroundnoise: Foutmelding, geen gegevens berekend\n"
 
-#: ../src/core/siril.c:1553
+#: ../src/core/siril.c:1574
 msgid "backgroundnoise: does not converge\n"
 msgstr "backgroundnoise: geen convergentie\n"
 
-#: ../src/core/siril.c:1574
+#: ../src/core/siril.c:1604
+msgid "Noise standard deviation: calculating...\n"
+msgstr "Ruis starndaarddeviatie: berekening...\n"
+
+#: ../src/core/siril.c:1624
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
 msgstr "Background noise waarde (kanaal: #%d): %0.3lf (%.3e)\n"
 
-#: ../src/core/siril.c:1591
-msgid "Noise standard deviation: calculating...\n"
-msgstr "Ruis starndaarddeviatie: berekening...\n"
-
-#: ../src/core/siril.c:1621
+#: ../src/core/siril.c:1637
 msgid "Lucy-Richardson deconvolution: processing...\n"
 msgstr "Lucy-Richardson deconvolution: bezig...\n"
 
 #: ../src/core/siril_update.c:257
-msgid "Unable to check updates !! Please Check your network connection\n"
+#, fuzzy
+msgid "Unable to check updates! Please Check your network connection\n"
 msgstr ""
 "Updates controleren gefaald !! Gelieve uw netwerkverbinding te controleren\n"
 
 #: ../src/core/siril_update.c:261
-#, c-format
-msgid "Unable to check updates !! Error: %ld\n"
+#, fuzzy, c-format
+msgid "Unable to check updates! Error: %ld\n"
 msgstr "Updates controleren gefaald !! Foutmelding: %ld\n"
 
 #: ../src/core/siril_update.c:274
@@ -4399,12 +4925,12 @@ msgstr "Foutmelding:  %ld. wacht %us voordat u opnieuw probeert\n"
 msgid "Looking for updates..."
 msgstr "Zoek voor updates..."
 
-#: ../src/core/undo.c:50
+#: ../src/core/undo.c:52
 #, c-format
 msgid "File I/O Error: Unable to create swap file in %s: [%s]\n"
 msgstr "Bestand I/O Fout: Kon swap bestand in %s: [%s] niet aanmaken\n"
 
-#: ../src/core/undo.c:61
+#: ../src/core/undo.c:63
 #, c-format
 msgid "File I/O Error: Unable to write swap file in %s: [%s]\n"
 msgstr "Bestand I/O Fout: Kon in het swap bestand in %s: [%s] niet schrijven\n"
@@ -4424,7 +4950,7 @@ msgstr "Onbekend bestand of map\n"
 msgid "\"%s\" is not a directory\n"
 msgstr "\"%s\" is geen map\n"
 
-#: ../src/core/utils.c:347 ../src/gui/callbacks.c:3023
+#: ../src/core/utils.c:347 ../src/gui/callbacks.c:3029
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr ""
@@ -4465,168 +4991,168 @@ msgid "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 msgstr ""
 "Onmogelijk om de CSS style sheet %s te laden. Gelieve %s te herinstalleren\n"
 
-#: ../src/core/utils.c:979 ../src/main.c:246
+#: ../src/core/utils.c:979 ../src/main.c:249
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Succesvol '%s' geladen\n"
 
-#: ../src/gui/callbacks.c:865 ../src/gui/save_dialog.c:59
+#: ../src/gui/callbacks.c:869 ../src/gui/save_dialog.c:59
 msgid "FITS Files (*.fit, *.fits, *.fts)"
 msgstr "FITS Bestanden (*.fit, *.fits, *.fts)"
 
-#: ../src/gui/callbacks.c:888
+#: ../src/gui/callbacks.c:892
 msgid "RAW DSLR Camera Files"
 msgstr "RAW DSLR Camera Bestanden"
 
-#: ../src/gui/callbacks.c:895
+#: ../src/gui/callbacks.c:899
 #, c-format
 msgid "Graphics Files (*.bmp"
 msgstr "Grafische Bestanden (*.bmp"
 
 #. NETPBM FILES
-#: ../src/gui/callbacks.c:917 ../src/gui/save_dialog.c:82
+#: ../src/gui/callbacks.c:921 ../src/gui/save_dialog.c:82
 msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
 msgstr "Netpbm Bestanden (*.ppm, *.pnm, *.pgm)"
 
 #. IRIS FILES
-#: ../src/gui/callbacks.c:920
+#: ../src/gui/callbacks.c:924
 msgid "IRIS PIC Files (*.pic)"
 msgstr "IRIS PIC Bestanden (*.pic)"
 
 #. SER FILES
-#: ../src/gui/callbacks.c:923
+#: ../src/gui/callbacks.c:927
 msgid "SER files (*.ser)"
 msgstr "SER Bestanden (*ser)"
 
-#: ../src/gui/callbacks.c:946
+#: ../src/gui/callbacks.c:950
 msgid "Film Files (*.avi, *.mpg, ...)"
 msgstr "Film Bestanden (*.avi, *.mpg, ...)"
 
-#: ../src/gui/callbacks.c:989 ../src/gui/callbacks.c:999
-#: ../src/gui/callbacks.c:1008 ../src/gui/callbacks.c:1018
+#: ../src/gui/callbacks.c:993 ../src/gui/callbacks.c:1003
+#: ../src/gui/callbacks.c:1012 ../src/gui/callbacks.c:1022
 msgid "Open File"
 msgstr "Open bestand"
 
-#: ../src/gui/callbacks.c:990 ../src/gui/callbacks.c:1000
-#: ../src/gui/callbacks.c:1009 ../src/gui/callbacks.c:1019
+#: ../src/gui/callbacks.c:994 ../src/gui/callbacks.c:1004
+#: ../src/gui/callbacks.c:1013 ../src/gui/callbacks.c:1023
 #: ../src/gui/save_dialog.c:179
 msgid "_Cancel"
 msgstr "_Cancel"
 
-#: ../src/gui/callbacks.c:991 ../src/gui/callbacks.c:1001
-#: ../src/gui/callbacks.c:1010 ../src/gui/callbacks.c:1020
+#: ../src/gui/callbacks.c:995 ../src/gui/callbacks.c:1005
+#: ../src/gui/callbacks.c:1014 ../src/gui/callbacks.c:1024
 msgid "_Open"
 msgstr "_Open"
 
-#: ../src/gui/callbacks.c:1219
+#: ../src/gui/callbacks.c:1223
 #, c-format
 msgid "Image %d has been unselected from sequence\n"
 msgstr "Afbeelding %d is uitgesloten van de sequentie\n"
 
-#: ../src/gui/callbacks.c:1224
+#: ../src/gui/callbacks.c:1233
 #, c-format
 msgid "Image %d has been selected from sequence\n"
 msgstr "Afbeelding %d is geselecteerd uit de sequentie\n"
 
-#: ../src/gui/callbacks.c:1257
+#: ../src/gui/callbacks.c:1267
 msgid "Selected all images from sequence\n"
 msgstr "Selecteer alle beelden van de sequentie\n"
 
-#: ../src/gui/callbacks.c:1260
+#: ../src/gui/callbacks.c:1270
 msgid "Unselected all images from sequence\n"
 msgstr "Deselecteer alle beelden van de sequentie\n"
 
-#: ../src/gui/callbacks.c:1368
+#: ../src/gui/callbacks.c:1400
 #, c-format
 msgid "Setting MAX value for cutoff sliders adjustments\n"
 msgstr "Kies de MAX waarde voor de aanpassing van cutoff sliders\n"
 
 #. there should be no other normal cases
-#: ../src/gui/callbacks.c:1418
+#: ../src/gui/callbacks.c:1443
 #, c-format
 msgid "setting ranges scalemin=%d, scalemax=%d\n"
 msgstr "setting ranges scalemin=%d, scalemax=%d\n"
 
-#: ../src/gui/callbacks.c:1519
+#: ../src/gui/callbacks.c:1544
 #, c-format
 msgid "<%%s.seq>: %%d images selected out of %%d, reference image is %%d"
 msgstr "<%%s.seq>: %%d beelden geselecteerd uit %%d, referentiebeelden %%d"
 
-#: ../src/gui/callbacks.c:1522
+#: ../src/gui/callbacks.c:1547
 #, c-format
 msgid "<%%s.seq>: %%d images selected out of %%d, reference image is %%.%dd"
 msgstr "<%%s.seq>: %%d beelden geselecteerd uit %%d, referentiebeelden %%.%dd"
 
-#: ../src/gui/callbacks.c:1531
+#: ../src/gui/callbacks.c:1556
 #, c-format
 msgid "<%s.seq>: %d images selected out of %d, no reference image set"
 msgstr "<%s.seq>: %d images geselecteerd uit %d, geen referentiebeeld gekozen"
 
-#: ../src/gui/callbacks.c:1534
+#: ../src/gui/callbacks.c:1559
 #, c-format
 msgid "%s, %d images selected"
 msgstr "%s, %d beelden geselecteerd"
 
-#: ../src/gui/callbacks.c:1538
+#: ../src/gui/callbacks.c:1563
 #, c-format
 msgid "No sequence"
 msgstr "Geen sequentie"
 
-#: ../src/gui/callbacks.c:1539
+#: ../src/gui/callbacks.c:1564
 #, c-format
 msgid "- none -"
 msgstr "- geen -"
 
-#: ../src/gui/callbacks.c:1614
+#: ../src/gui/callbacks.c:1637
 #, c-format
 msgid ""
 "redraw: maximum number of layers supported is %d (current image has %d).\n"
 msgstr ""
 "redraw: maximaal aantal lagen ondersteund is %d (huidig beeld heeft er %d).\n"
 
-#: ../src/gui/callbacks.c:1896
+#: ../src/gui/callbacks.c:1920
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "fwhm: selectie is te groot"
 
-#: ../src/gui/callbacks.c:1898
+#: ../src/gui/callbacks.c:1922
 #, c-format
 msgid "fwhm: no selection"
 msgstr "fwhm: geen selectie"
 
-#: ../src/gui/callbacks.c:1923
+#: ../src/gui/callbacks.c:1947
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (kanaal 0)"
 
-#: ../src/gui/callbacks.c:1928
+#: ../src/gui/callbacks.c:1952
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (kanaal 1)"
 
-#: ../src/gui/callbacks.c:1932
+#: ../src/gui/callbacks.c:1956
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (kanaal 2)"
 
-#: ../src/gui/callbacks.c:1956
+#: ../src/gui/callbacks.c:1980
 msgid "Unassigned"
 msgstr "Niet-toegewezen"
 
-#: ../src/gui/callbacks.c:1980
+#: ../src/gui/callbacks.c:2004
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: nog niet beïnvloed"
 
-#: ../src/gui/callbacks.c:2120
+#: ../src/gui/callbacks.c:2118
 msgid "Unknown zoom_value value, what is the current zoom?\n"
 msgstr "Onbekende zoom_value value, was is de huidige zoom?\n"
 
-#: ../src/gui/callbacks.c:2206
+#: ../src/gui/callbacks.c:2203
 msgid "B&W channel"
 msgstr "B&W kanaal"
 
-#: ../src/gui/callbacks.c:2239
+#: ../src/gui/callbacks.c:2236
 #, c-format
 msgid "%d files loaded"
 msgstr "%d bestanden geladen"
@@ -4655,12 +5181,17 @@ msgstr "Schijfruimte: N/A"
 msgid "This binning is not handled yet\n"
 msgstr "Deze binning is nog niet ondersteund\n"
 
-#: ../src/gui/callbacks.c:2869
+#: ../src/gui/callbacks.c:2862 ../src/gui/callbacks.c:2863
+#, fuzzy, c-format
+msgid "<span foreground=\"red\">ERROR</span>"
+msgstr "<span foreground=\"red\">Warm: %ld px</span>"
+
+#: ../src/gui/callbacks.c:2875
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">Koud: %ld px</span>"
 
-#: ../src/gui/callbacks.c:2870 ../src/gui/callbacks.c:2882
+#: ../src/gui/callbacks.c:2876 ../src/gui/callbacks.c:2888
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -4668,31 +5199,31 @@ msgstr ""
 "Deze waarde kan te groot zijn. Overweeg een modificatie van de sigmawaarde "
 "of onvink dit vakje."
 
-#: ../src/gui/callbacks.c:2873
+#: ../src/gui/callbacks.c:2879
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Koud: %ld px"
 
-#: ../src/gui/callbacks.c:2881
+#: ../src/gui/callbacks.c:2887
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">Warm: %ld px</span>"
 
-#: ../src/gui/callbacks.c:2885
+#: ../src/gui/callbacks.c:2891
 #, c-format
 msgid "Hot: %ld px"
 msgstr "Warm: %ld px"
 
-#: ../src/gui/callbacks.c:3065
+#: ../src/gui/callbacks.c:3070
 msgid "Are you sure you want to quit ?"
 msgstr "Bent u zeker dat u wilt sluiten ?"
 
-#: ../src/gui/callbacks.c:3642
+#: ../src/gui/callbacks.c:3647
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "nieuwe zoomwaarde: %f\n"
 
-#: ../src/gui/callbacks.c:3651
+#: ../src/gui/callbacks.c:3656
 msgid ""
 "Copyright © 2004-2011 François Meyer\n"
 "Copyright © 2012-2018 team free-astro"
@@ -4701,35 +5232,35 @@ msgstr ""
 "Copyright © 2012-2018 team free-astro"
 
 #. translator names
-#: ../src/gui/callbacks.c:3663
+#: ../src/gui/callbacks.c:3668
 msgid ""
 "Cyril Richard <cyril@free-astro.org>\n"
 "Vincent Hourdin <vh@free-astro.vinvin.tf>"
 msgstr "Antoine Hoeffelman"
 
-#: ../src/gui/callbacks.c:3674
+#: ../src/gui/callbacks.c:3679
 msgid "About siril"
 msgstr "Over Siril"
 
-#: ../src/gui/callbacks.c:3681
+#: ../src/gui/callbacks.c:3686
 msgid "Astronomical image (pre-)processing program"
 msgstr "Software voor het bewerken van astronomische foto's"
 
-#: ../src/gui/callbacks.c:3684
+#: ../src/gui/callbacks.c:3689
 msgid "Visit the Siril website"
 msgstr "Bezoek de website van Siril"
 
-#: ../src/gui/callbacks.c:3719
+#: ../src/gui/callbacks.c:3724
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3721
+#: ../src/gui/callbacks.c:3726
 #, c-format
 msgid "undefined"
 msgstr "niet gedeviniëerd"
 
-#: ../src/gui/callbacks.c:3820
+#: ../src/gui/callbacks.c:3825
 msgid ""
 "Exclude all images ?\n"
 " (this erases previous image selection\n"
@@ -4739,7 +5270,7 @@ msgstr ""
 "(dit wist alle voorgaande selecties\n"
 "... en er is geen \"undo\")"
 
-#: ../src/gui/callbacks.c:3830
+#: ../src/gui/callbacks.c:3835
 msgid ""
 "Include all images ?\n"
 " (this erases previous image selection\n"
@@ -4749,86 +5280,86 @@ msgstr ""
 "(dit wist alle voorgaande selecties\n"
 "... en er is geen \"undo\")"
 
-#: ../src/gui/callbacks.c:3860
+#: ../src/gui/callbacks.c:3865
 msgid "Opening dark image..."
 msgstr "Dark beeld openen..."
 
-#: ../src/gui/callbacks.c:3863
+#: ../src/gui/callbacks.c:3868
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "GEBRUIKT GEEN DARK: kan het bestand niet openen\n"
 
-#: ../src/gui/callbacks.c:3870
+#: ../src/gui/callbacks.c:3875
 msgid "NOT USING DARK: number of channels is different"
 msgstr "GEBRUIKT GEEN DARK: aantal kanalen is verschillend"
 
-#: ../src/gui/callbacks.c:3911
+#: ../src/gui/callbacks.c:3916
 msgid "Opening flat image..."
 msgstr "Flat beeld openen..."
 
-#: ../src/gui/callbacks.c:3914
+#: ../src/gui/callbacks.c:3919
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "GEBRUIKT GEEN FALT: kan het bestand niet openen\n"
 
-#: ../src/gui/callbacks.c:3921
+#: ../src/gui/callbacks.c:3926
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "GEBRUKT GEEN FLAT: aantal kanale verschillend"
 
-#: ../src/gui/callbacks.c:3949
+#: ../src/gui/callbacks.c:3954
 msgid "Opening offset image..."
 msgstr "Offset beeld openen..."
 
-#: ../src/gui/callbacks.c:3952
+#: ../src/gui/callbacks.c:3957
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "GEBRUIKT GEEN OFFSET: kan bestand niet openen\n"
 
-#: ../src/gui/callbacks.c:3959
+#: ../src/gui/callbacks.c:3964
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "GEBRUIKT GEEN OFFSET: aantal kanale verschillend"
 
-#: ../src/gui/callbacks.c:3982
+#: ../src/gui/callbacks.c:3987
 msgid "Preprocessing...\n"
 msgstr "Preprocessing...\n"
 
-#: ../src/gui/callbacks.c:4031
+#: ../src/gui/callbacks.c:4036
 msgid "Error in preprocessing."
 msgstr "Fout tijndense de voorbewerking."
 
-#: ../src/gui/callbacks.c:4099
+#: ../src/gui/callbacks.c:4108
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Gekozen %s sequentie %s..."
 
-#: ../src/gui/callbacks.c:4167
+#: ../src/gui/callbacks.c:4177
 msgid "Searching for sequences in the current working directory..."
 msgstr "Sequenties aan het zoeken in werkfolder..."
 
-#: ../src/gui/callbacks.c:4683
+#: ../src/gui/callbacks.c:4693
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr ""
 "Background kan niet uit zichzelf worden berekend. Kiez op Toon Afbeelding\n"
 
-#: ../src/gui/callbacks.c:4705
+#: ../src/gui/callbacks.c:4715
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr "Pas de correcties toe door op Toon Afbeelding te drukken\n"
 
-#: ../src/gui/callbacks.c:4727
+#: ../src/gui/callbacks.c:4737
 msgid "Subtraction done ...\n"
 msgstr "Aftrekking klaar ...\n"
 
-#: ../src/gui/callbacks.c:4734
+#: ../src/gui/callbacks.c:4744
 msgid "Division done ...\n"
 msgstr "Deling klaar...\n"
 
-#: ../src/gui/callbacks.c:4919
+#: ../src/gui/callbacks.c:4930
 msgid "Load an image first, aborted.\n"
 msgstr "Laad eerst een beeld, gestopt.\n"
 
-#: ../src/gui/callbacks.c:4948
+#: ../src/gui/callbacks.c:4959
 msgid "The file stars.lst has been created.\n"
 msgstr "Het bestand stars.lst werd aangemaakt.\n"
 
-#: ../src/gui/callbacks.c:5025 ../src/gui/callbacks.c:5070
+#: ../src/gui/callbacks.c:5036 ../src/gui/callbacks.c:5081
 msgid ""
 "Current selection is too large.\n"
 "To determine the PSF, please make a selection around a star.\n"
@@ -4836,7 +5367,7 @@ msgstr ""
 "Huidige selectie is te groot.\n"
 "Kies een regio rond een ster om de PSF te berekenen.\n"
 
-#: ../src/gui/callbacks.c:5039
+#: ../src/gui/callbacks.c:5050
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -4885,26 +5416,26 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:5132
+#: ../src/gui/callbacks.c:5143
 msgid "FFT does not work with sequences !\n"
 msgstr "FFT werkt niet met sequenties !\n"
 
-#: ../src/gui/callbacks.c:5138
+#: ../src/gui/callbacks.c:5149
 msgid "Open an image first !\n"
 msgstr "Open eerst een afbeelding !\n"
 
-#: ../src/gui/callbacks.c:5163
+#: ../src/gui/callbacks.c:5174
 msgid "Select magnitude and phase before !\n"
 msgstr "Kies eest een amplitude en fase !\n"
 
-#: ../src/gui/callbacks.c:5698
+#: ../src/gui/callbacks.c:5709
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr ""
 "Croppen werkt niet met avi fils. Gelieve het bestand eerst in SER om te "
 "vormen.\n"
 
-#: ../src/gui/callbacks.c:5703
+#: ../src/gui/callbacks.c:5714
 msgid "Not a valid sequence for cropping.\n"
 msgstr "Sequentie niet geldig voor cropping\n"
 
@@ -5092,66 +5623,66 @@ msgstr "exclusief"
 msgid "including"
 msgstr "inclusief"
 
-#: ../src/gui/statistics_list.c:44
+#: ../src/gui/statistics_list.c:45
 msgid "count (%)"
 msgstr "aantal (%)"
 
-#: ../src/gui/statistics_list.c:45
+#: ../src/gui/statistics_list.c:46
 msgid "count (px)"
 msgstr "aantal (px)"
 
-#: ../src/gui/statistics_list.c:46
+#: ../src/gui/statistics_list.c:47
 msgid "mean"
 msgstr "gemiddelde"
 
-#: ../src/gui/statistics_list.c:47
+#: ../src/gui/statistics_list.c:48
 msgid "median"
 msgstr "mediaan"
 
-#: ../src/gui/statistics_list.c:48
+#: ../src/gui/statistics_list.c:49
 msgid "sigma"
 msgstr "sigma"
 
-#: ../src/gui/statistics_list.c:49
+#: ../src/gui/statistics_list.c:50
 msgid "avgDev"
 msgstr "avgDev"
 
-#: ../src/gui/statistics_list.c:50
+#: ../src/gui/statistics_list.c:51
 msgid "MAD"
 msgstr "MAD"
 
-#: ../src/gui/statistics_list.c:51
+#: ../src/gui/statistics_list.c:52
 msgid "sqrt(BWMV)"
 msgstr "sqrt(BWMV)"
 
-#: ../src/gui/statistics_list.c:52
+#: ../src/gui/statistics_list.c:53
 msgid "min"
 msgstr "min"
 
-#: ../src/gui/statistics_list.c:53
+#: ../src/gui/statistics_list.c:54
 msgid "max"
 msgstr "max"
 
-#: ../src/gui/statistics_list.c:54
+#: ../src/gui/statistics_list.c:55
 msgid "normalization"
 msgstr "normalisatie"
 
-#: ../src/gui/statistics_list.c:287
+#: ../src/gui/statistics_list.c:288
 #, c-format
 msgid "Image %d/%d from the sequence %s"
 msgstr "Beeld  %d/%d van de sequentie %s"
 
-#: ../src/gui/statistics_list.c:290
+#: ../src/gui/statistics_list.c:291
 #, c-format
 msgid "unknown image"
 msgstr "onbekend beeld"
 
-#: ../src/gui/statistics_list.c:296
+#: ../src/gui/statistics_list.c:297
 #, c-format
 msgid "Size of selection in pixel: (%d,%d)"
 msgstr "Grootte van de selectie in pixels: (%d,%d)"
 
-#: ../src/gui/statistics_list.c:299
+#: ../src/gui/statistics_list.c:300
 #, c-format
 msgid "No selection"
 msgstr "Geen selectie"
@@ -5221,7 +5752,7 @@ msgid ""
 msgstr "SER output krijgt voorrang over de optie \"één kanaal per beeld\"\n"
 
 #: ../src/io/conversion.c:568 ../src/io/conversion.c:620
-#: ../src/io/sequence.c:1217 ../src/io/sequence_export.c:104
+#: ../src/io/sequence.c:1250 ../src/io/sequence_export.c:104
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "Fout bij het aanmaken van SER bestand, stopgezet.\n"
 
@@ -5264,7 +5795,7 @@ msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Fout tijdens het lezen van frame %d tot %s, stopt.\n"
 
 #: ../src/io/conversion.c:641 ../src/io/conversion.c:674
-#: ../src/io/sequence.c:1245 ../src/io/sequence_export.c:315
+#: ../src/io/sequence.c:1280 ../src/io/sequence_export.c:316
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Fout bij de conversie naar SER (geen plaats meer?)\n"
 
@@ -5288,11 +5819,11 @@ msgstr ""
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "Kan debayering niet uitvoeren op een beeld met meer dan één kanaal\n"
 
-#: ../src/io/conversion.c:803 ../src/io/ser.c:771 ../src/io/ser.c:977
+#: ../src/io/conversion.c:803 ../src/io/ser.c:781 ../src/io/ser.c:987
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Bayerpatroon niet gevonden in de header van het bestand.\n"
 
-#: ../src/io/conversion.c:806 ../src/io/ser.c:775 ../src/io/ser.c:981
+#: ../src/io/conversion.c:806 ../src/io/ser.c:785 ../src/io/ser.c:991
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -5332,54 +5863,54 @@ msgstr "Fout bij het openen van %s: type niet ondersteund.\n"
 msgid "FILM ERROR: incompatible format\n"
 msgstr "FILM FOUT: formaat niet compatiebel\n"
 
-#: ../src/io/image_format_fits.c:89
+#: ../src/io/image_format_fits.c:91
 #, c-format
 msgid "Loaded FITS file has a BSCALE different than 1 (%d)\n"
 msgstr "Het geladen FITS bestand heeft een BSCALE verschillend van 1 (%d)\n"
 
-#: ../src/io/image_format_fits.c:267
+#: ../src/io/image_format_fits.c:269
 #, c-format
 msgid "FITS error: %s\n"
 msgstr "FITS fout: %s\n"
 
-#: ../src/io/image_format_fits.c:338
+#: ../src/io/image_format_fits.c:340
 #, fuzzy
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "Onbekend FITS formaat (%ld axes).\n"
 
-#: ../src/io/image_format_fits.c:404 ../src/io/image_format_fits.c:639
+#: ../src/io/image_format_fits.c:406 ../src/io/image_format_fits.c:654
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr ""
 
-#: ../src/io/image_format_fits.c:410
+#: ../src/io/image_format_fits.c:412
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Fitsio fout bij het lezen van de data, bestand: %s.\n"
 
-#: ../src/io/image_format_fits.c:430
+#: ../src/io/image_format_fits.c:432
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr "%s.[extension] niet gevonden.\n"
 
-#: ../src/io/image_format_fits.c:438
+#: ../src/io/image_format_fits.c:440
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr ""
 "Bestand %s is geen FITS bestand of bestaat niet met een FITS extentie.\n"
 
-#: ../src/io/image_format_fits.c:461
+#: ../src/io/image_format_fits.c:463
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "FITSIO fout bij het lezen van de parameters, bestand %s.\n"
 
-#: ../src/io/image_format_fits.c:491
+#: ../src/io/image_format_fits.c:500
 #, fuzzy, c-format
 msgid "Unsupported FITS image with %ld channels.\n"
 msgstr "Onbekend FITS formaat (%ld axes).\n"
 
-#: ../src/io/image_format_fits.c:510
+#: ../src/io/image_format_fits.c:519
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -5387,33 +5918,33 @@ msgstr ""
 "FITS bestanden met 64 getekende integer bits per pixel.kanaal worden niet "
 "ondersteund.\n"
 
-#: ../src/io/image_format_fits.c:554
+#: ../src/io/image_format_fits.c:563
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "FITS bestand lezen: bestand %s, %ld la(a)g(en), %ux%u pixels\n"
 
-#: ../src/io/image_format_fits.c:687
+#: ../src/io/image_format_fits.c:702
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "FITS partiële lezeing: kanaal %d afwezig van beeld %s\n"
 
-#: ../src/io/image_format_fits.c:695
+#: ../src/io/image_format_fits.c:710
 #, fuzzy, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Onbekend FITS formaat (%ld axes).\n"
 
-#: ../src/io/image_format_fits.c:736
+#: ../src/io/image_format_fits.c:751
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Partiëel geladen FITS bestand %s\n"
 
-#: ../src/io/image_format_fits.c:873
+#: ../src/io/image_format_fits.c:888
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 "FOUT: onmogelijk om op te slaan als FITS met niet ondersteund formaat (%d).\n"
 
-#: ../src/io/image_format_fits.c:885
+#: ../src/io/image_format_fits.c:900
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "FITS Opslaan: bestand %s, %ld la(a)gen, %ux%u pixels\n"
@@ -5668,11 +6199,11 @@ msgstr ""
 "Beeldafmetingen moeten een veelvoud van 2 zijn, fps en bestandsnaam "
 "verschillend van nul en kwaliteit tussen 1 en 5."
 
-#: ../src/io/seqfile.c:279
+#: ../src/io/seqfile.c:387
 msgid "The file seems to be corrupted\n"
 msgstr "Het bestand blijkt corrupt te zijn\n"
 
-#: ../src/io/seqfile.c:289
+#: ../src/io/seqfile.c:397
 #, c-format
 msgid ""
 "Fixing the selection number in the .seq file (%d) to the actual value (%d) "
@@ -5681,12 +6212,12 @@ msgstr ""
 "Het aantal selectie (%d) in het .seq bestand aan de actuele waarde (%d) "
 "aanpassen (niet opgeslaan)\n"
 
-#: ../src/io/seqfile.c:300
+#: ../src/io/seqfile.c:408
 #, c-format
 msgid "Could not load sequence %s\n"
 msgstr "Sequentie %s kon niet worden geladen\n"
 
-#: ../src/io/seqfile.c:433
+#: ../src/io/seqfile.c:556
 #, c-format
 msgid ""
 "The sequence %s doesn't start at the frame number %d with the specified "
@@ -5695,82 +6226,87 @@ msgstr ""
 "De sequentie %s begint niet met het frame nummer %d met de grootte van het "
 "gespecifieerde index (%d). Kan niet laden\n"
 
-#: ../src/io/sequence.c:165 ../src/io/sequence.c:296
+#: ../src/io/sequence.c:166 ../src/io/sequence.c:297
 msgid "Current working directory is not set, aborting.\n"
 msgstr "Huidige werkfolder niet gespecifieerd, gestopt.\n"
 
-#: ../src/io/sequence.c:261
+#: ../src/io/sequence.c:262
 msgid ""
 "Could not allocate more space for the large number of sequences found.\n"
 msgstr ""
 "Meer ruimte kan niet worden toegewezen voor het groot aantal gevonden "
 "sequenties.\n"
 
-#: ../src/io/sequence.c:273
+#: ../src/io/sequence.c:274
 #, c-format
 msgid "sequence %d, found: %d to %d"
 msgstr "squentie %d, gevonden %d tot %d"
 
-#: ../src/io/sequence.c:441
+#: ../src/io/sequence.c:437
 #, c-format
 msgid "Sequence loaded: %s (%d->%d)\n"
 msgstr "Sequentie geladen: %s (%d -> %d)\n"
 
-#: ../src/io/sequence.c:626
+#: ../src/io/sequence.c:624
 #, c-format
 msgid "%d from %s.ser"
 msgstr "%d van %s.ser"
 
-#: ../src/io/sequence.c:656
+#: ../src/io/sequence.c:654
 #, c-format
 msgid "Could not load image %d from sequence %s\n"
 msgstr "Kan afbeelding %d niet laden uit de sequentie %s\n"
 
-#: ../src/io/sequence.c:664 ../src/io/sequence.c:712
+#: ../src/io/sequence.c:662 ../src/io/sequence.c:711
 #, c-format
 msgid "Could not load frame %d from SER sequence %s\n"
 msgstr "Kan afbeelding %d niet laden uit de SER sequentie %s\n"
 
-#: ../src/io/sequence.c:673 ../src/io/sequence.c:722
+#: ../src/io/sequence.c:671 ../src/io/sequence.c:721
 #, c-format
 msgid "Could not load frame %d from AVI sequence %s\n"
 msgstr "Kan afbeelding %d niet laden uit de AVI sequentie %s\n"
 
-#: ../src/io/sequence.c:704
+#: ../src/io/sequence.c:703
 #, c-format
 msgid "Could not load partial image %d from sequence %s\n"
 msgstr "Kan deelafbeelding %d niet laden uit de sequentie %s\n"
 
-#: ../src/io/sequence.c:790
+#: ../src/io/sequence.c:789
 msgid "This operation is not supported on AVI sequences (seq_open_image)\n"
 msgstr ""
 "Deze bewerking is niet onderscteund voor AVI sequenties (seq_open_image)\n"
 
-#: ../src/io/sequence.c:794
+#: ../src/io/sequence.c:793
 msgid ""
 "This operation is not supported on internal sequences (seq_open_image)\n"
 msgstr ""
 "Deze bewerking is niet onderscteund voor interne sequenties "
 "(seq_open_image)\n"
 
-#: ../src/io/sequence.c:1148
+#: ../src/io/sequence.c:1079
+#, c-format
+msgid "Closing sequence %s\n"
+msgstr "Sluit sequentie %s\n"
+
+#: ../src/io/sequence.c:1176
 msgid "internal sequence"
 msgstr "interne sequentie"
 
-#: ../src/io/sequence.c:1364
+#: ../src/io/sequence.c:1382
 #, c-format
 msgid "No star found in the area image %d around %d,%d (use a larger area?)\n"
 msgstr ""
 "Geen ster gevonden in de zone %d rond %d,%d (gebruik een grootere zone?)\n"
 
-#: ../src/io/sequence.c:1368
+#: ../src/io/sequence.c:1386
 #, c-format
 msgid ""
 "No star found in the area image %d around %d,%d (use 'follow star' option?)\n"
 msgstr ""
 "Geen ster gevonden in de zone %d rond %d,%d (gebruik 'volg ster' optie?)\n"
 
-#: ../src/io/sequence.c:1417
+#: ../src/io/sequence.c:1435
 msgid ""
 "Star analysis does not give consistent results when exposure changes across "
 "the sequence.\n"
@@ -5778,7 +6314,7 @@ msgstr ""
 "Ster analyse geeft geed consistente resultaten als de belichting in de "
 "sequentie varieert.\n"
 
-#: ../src/io/sequence.c:1490
+#: ../src/io/sequence.c:1508
 msgid ""
 "The sequence analysis of the PSF will use a sliding selection area centred "
 "on the previous found star; this disables parallel processing.\n"
@@ -5787,7 +6323,17 @@ msgstr ""
 "gecentreerd rond de voorgaande gevonden ster; dit maakt niet gebruik van "
 "parallel processing.\n"
 
-#: ../src/io/sequence.c:1512
+#: ../src/io/sequence.c:1510
+#, fuzzy
+msgid ""
+"The sequence analysis of the PSF will use registration data to move the "
+"selection area for each image; this is compatible with parallel processing.\n"
+msgstr ""
+"De analyse van de PSF van de sequentie gebruikt een glijdende selectie, "
+"gecentreerd rond de voorgaande gevonden ster; dit maakt niet gebruik van "
+"parallel processing.\n"
+
+#: ../src/io/sequence.c:1532
 msgid "PSF on area"
 msgstr "PSF op zone"
 
@@ -5819,7 +6365,7 @@ msgstr ""
 msgid "image %d is excluded from export\n"
 msgstr "beeld %d is uitgesloten van de export\n"
 
-#: ../src/io/sequence_export.c:212 ../src/stacking/stacking.c:589
+#: ../src/io/sequence_export.c:212 ../src/stacking/stacking.c:586
 msgid "Processing image "
 msgstr "Processing beeld"
 
@@ -5827,27 +6373,27 @@ msgstr "Processing beeld"
 msgid "Export: could not read frame, aborting\n"
 msgstr "Export: kon het beeld niet lezen, stopgezet\n"
 
-#: ../src/io/sequence_export.c:368
+#: ../src/io/sequence_export.c:369
 msgid "Sequence export failed. Check the log."
 msgstr "Export van de sequentie gefaald. Bekijk de log."
 
-#: ../src/io/sequence_export.c:369
+#: ../src/io/sequence_export.c:370
 msgid "Sequence export failed\n"
 msgstr "Export van de sequentie gefaald\n"
 
-#: ../src/io/sequence_export.c:372
+#: ../src/io/sequence_export.c:373
 msgid "Sequence export succeeded."
 msgstr "Export van de sequentie geslaagd."
 
-#: ../src/io/sequence_export.c:373
+#: ../src/io/sequence_export.c:374
 msgid "Sequence export succeeded.\n"
 msgstr "Export van de sequentie geslaagd.\n"
 
-#: ../src/io/sequence_export.c:449
+#: ../src/io/sequence_export.c:450
 msgid "Width or height cannot be null. Not resizing.\n"
 msgstr "Breedte of hoogte mag niet nul zijn. Geen herschaling.\n"
 
-#: ../src/io/sequence_export.c:494
+#: ../src/io/sequence_export.c:495
 msgid "Cropping to selection"
 msgstr "Selectie croppen"
 
@@ -5888,97 +6434,91 @@ msgstr ""
 "Het schrijven naar SER bestanden vanuit meer dan 16-bit FITS bestanden is "
 "nog niet geïmplementeerd\n"
 
-#: ../src/io/ser.c:570
+#: ../src/io/ser.c:579
 msgid "The SER sequence is being created with no image in it.\n"
 msgstr "De SER sequentie wordt leeg aangemaakt.\n"
 
-#: ../src/io/ser.c:636
+#: ../src/io/ser.c:645
 #, c-format
 msgid "Created SER file %s\n"
 msgstr "SER bestand %s aangemaakt\n"
 
-#: ../src/io/ser.c:812 ../src/io/ser.c:1039
+#: ../src/io/ser.c:822 ../src/io/ser.c:1049
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "Het type Bayer pattern is nog niet ondersteund.\n"
 
-#: ../src/io/ser.c:991
+#: ../src/io/ser.c:1001
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr "Voor een gedebayered beeld moet de laag R, G of B zijn (0 tot 2).\n"
 
-#: ../src/io/ser.c:1002
+#: ../src/io/ser.c:1012
 msgid "Out of memory - aborting\n"
 msgstr "Geen geheugen meer - stopgezet\n"
 
-#: ../src/io/ser.c:1067
+#: ../src/io/ser.c:1077
 msgid "Trying to add an image of different size in a SER\n"
 msgstr ""
 "Probeert een beeld van verschillende grootte in een SER bestand toe te "
 "voegen\n"
 
-#: ../src/io/single_image.c:112
+#: ../src/io/single_image.c:115
 #, c-format
 msgid "Error opening image %s: file not found or not supported.\n"
 msgstr ""
 "Fout bij het openen van bestand %s: bestand niet gevonden of niet "
 "ondersteund.\n"
 
-#: ../src/io/single_image.c:127
+#: ../src/io/single_image.c:130
 #, c-format
 msgid "Opening %s failed.\n"
 msgstr "%s openen gefaald.\n"
 
-#: ../src/io/single_image.c:156
+#: ../src/io/single_image.c:162
 msgid "This file could not be opened because its extension is not supported.\n"
 msgstr ""
 "Het bestand kon niet worden geopend omdat de extensie niet word "
 "ondersteund.\n"
 
-#: ../src/io/single_image.c:160
+#: ../src/io/single_image.c:166
 msgid ""
 "There was an error when opening this image. See the log for more information."
 msgstr "Fout bij het openen van dit beeld. Bekijk de log voor meer informatie."
 
-#. TODO: is basename useful here?
-#: ../src/io/single_image.c:168
-#, c-format
-msgid "Closing sequence %s\n"
-msgstr "Sluit sequentie %s\n"
-
-#: ../src/main.c:227
+#: ../src/main.c:230
 #, c-format
 msgid "unknown command line parameter '%c'\n"
 msgstr "onbekend commando parameter '%c'\n"
 
-#: ../src/main.c:250
+#: ../src/main.c:253
 #, c-format
 msgid "%s. Looking into another directory...\n"
 msgstr "%s. Kijkt in een andere folder...\n"
 
-#: ../src/main.c:256
+#: ../src/main.c:259
 #, c-format
 msgid "%s was not found or contains errors, cannot render GUI. Exiting.\n"
 msgstr "%s niet gevonden of bevat fouten, kan GUI niet opmaken. Sluit.\n"
 
-#: ../src/main.c:276
+#: ../src/main.c:279
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Welcop in %s v%s\n"
 
-#: ../src/main.c:337
+#: ../src/main.c:340
 msgid "Could not load or create settings file, exiting.\n"
 msgstr "Kon paramersbestand niet laden of aanmaken, aan het sluiten.\n"
 
 #. Get CPU number and set the number of threads
-#: ../src/main.c:374
+#: ../src/main.c:380
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor(s).\n"
 msgstr "Parallel processing %s: Gebruikt %d logische processor(en).\n"
 
-#: ../src/main.c:376
+#: ../src/main.c:382
 msgid "enabled"
 msgstr "ingeschakeld"
 
-#: ../src/main.c:378
+#: ../src/main.c:384
 msgid "disabled"
 msgstr "uitgeschakeld"
 
@@ -6036,70 +6576,67 @@ msgstr ""
 "niet vereist. Deze methode is aanbevolen voor planetaire beelden zoals de "
 "maan. Enkel translaties worden toegepast."
 
-#: ../src/registration/registration.c:99
+#: ../src/registration/registration.c:98
 msgid "One Star Registration (deep-sky)"
 msgstr "Eén Ster Registratie (deep-sky)"
 
-#: ../src/registration/registration.c:101
-msgid "Global Star Alignment (deep-sky)"
-msgstr "Globale Ster Uitlijning (deep-sky)"
-
-#: ../src/registration/registration.c:103
+#: ../src/registration/registration.c:102
 msgid "Image Pattern Alignment (planetary - full disk)"
 msgstr "Patroonherkenning Uitlijning (planetair - volle disk)"
 
-#: ../src/registration/registration.c:105
+#: ../src/registration/registration.c:104
 msgid "Enhanced Correlation Coefficient (planetary - surfaces)"
 msgstr "Verbetering van de correllatiecoëfficiënt (planetair - oppervlakken)"
 
-#: ../src/registration/registration.c:126
+#: ../src/registration/registration.c:125
 #, c-format
 msgid "Added a registration method: %s\n"
 msgstr "Nieuwe registratiemethode: %s\n"
 
-#: ../src/registration/registration.c:206
+#: ../src/registration/registration.c:205
 #: ../src/registration/registration.c:543
 msgid "Recomputing already existing registration for this layer\n"
 msgstr "Herberekenen van de al bestaande registraties voor deze laag\n"
 
-#: ../src/registration/registration.c:220
+#: ../src/registration/registration.c:219
 msgid "Register DFT: loading and processing reference frame"
 msgstr "DFT Uitlijning: referentiebeeld laden en bewerken"
 
-#: ../src/registration/registration.c:228
+#: ../src/registration/registration.c:227
 msgid "Register: could not load first image to register, aborting.\n"
 msgstr ""
 "Registratie: kon eerste beeld voor registratie niet laden, stopgezet.\n"
 
-#: ../src/registration/registration.c:282
-#: ../src/registration/registration.c:881
+#: ../src/registration/registration.c:281
+#: ../src/registration/registration.c:884
 #, c-format
 msgid "Register: processing image %s\n"
 msgstr "Registratie: beweking van beeld %s\n"
 
-#: ../src/registration/registration.c:391
-#: ../src/registration/registration.c:482
-#: ../src/registration/registration.c:788
-#: ../src/registration/registration.c:945
+#: ../src/registration/registration.c:390
+#: ../src/registration/registration.c:481
+#: ../src/registration/registration.c:791
+#: ../src/registration/registration.c:948
 msgid "Registration finished.\n"
 msgstr "Registratie klaar.\n"
 
-#: ../src/registration/registration.c:392
-#: ../src/registration/registration.c:948
+#: ../src/registration/registration.c:391
+#: ../src/registration/registration.c:951
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "Beste beeld: #%d.\n"
 
-#: ../src/registration/registration.c:430
+#: ../src/registration/registration.c:429
 msgid "Registration PSF: failed to compute PSF for reference frame at least\n"
 msgstr ""
 "Registratie PSF: PSF berekening gefaald, tenminste voor referentiebeeld\n"
 
-#: ../src/registration/registration.c:483
+#: ../src/registration/registration.c:482
 #, c-format
 msgid "Best frame: #%d with fwhm=%.3g.\n"
 msgstr "Beste beeld: #%d met fwhm=%.3g.\n"
 
+#. Matching information
 #: ../src/registration/registration.c:493
 msgid "Matching stars: done\n"
 msgstr "Uitlijning van de beelden: klaar\n"
@@ -6157,7 +6694,7 @@ msgid "FWHMy:%*.2f px\n"
 msgstr "FWHMy:%*.2f px\n"
 
 #: ../src/registration/registration.c:566
-#: ../src/registration/registration.c:841
+#: ../src/registration/registration.c:844
 msgid "Could not load reference image\n"
 msgstr "Referentiebeeld kon niet worden geladen\n"
 
@@ -6176,85 +6713,76 @@ msgstr ""
 msgid "Reference Image: Limiting to %d brightest stars\n"
 msgstr "Referentie beeld: Beperking tot de %d helderste sterren\n"
 
-#: ../src/registration/registration.c:689
+#: ../src/registration/registration.c:690
 #, c-format
 msgid "Frame %d:\n"
 msgstr "Frame %d:\n"
 
-#: ../src/registration/registration.c:694
+#: ../src/registration/registration.c:695
 #, c-format
 msgid "Not enough stars. Image %d skipped\n"
 msgstr "Niet genoeg sterren. Beeld %d overgeslagen\n"
 
-#: ../src/registration/registration.c:703
+#: ../src/registration/registration.c:704
 #, c-format
 msgid "Target Image: Limiting to %d brightest stars\n"
 msgstr "Doel afbeelding: Bepeken tot de %d helderste sterren\n"
 
-#: ../src/registration/registration.c:712
+#: ../src/registration/registration.c:713
 #, c-format
 msgid "Cannot perform star matching. Image %d skipped\n"
 msgstr ""
 "Kon ster uitlijnning niet uitvoeren. Beeld %d overgeslagen\n"
 "\n"
 
-#: ../src/registration/registration.c:789
+#: ../src/registration/registration.c:792
 #, c-format
 msgid "%d images processed.\n"
 msgstr "%d beelden bewerkt.\n"
 
-#: ../src/registration/registration.c:791
+#: ../src/registration/registration.c:794
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr "Totaal: %d gefaald, %d geregistreerd.\n"
 
-#: ../src/registration/registration.c:796
+#: ../src/registration/registration.c:799
 msgid "Registration aborted.\n"
 msgstr "Registratie stopgezet.\n"
 
-#: ../src/registration/registration.c:894
+#: ../src/registration/registration.c:897
 #, c-format
 msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "ECC uitlijnong kan niet worden uitgevoerd voor beeld %d\n"
 
-#: ../src/registration/registration.c:947
+#: ../src/registration/registration.c:950
 #, c-format
 msgid "%d frames were excluded.\n"
 msgstr "%d beelden uitgesloten.\n"
 
-#: ../src/registration/registration.c:1037
+#: ../src/registration/registration.c:1040
 msgid "Select an area in image first, and select images in the sequence."
 msgstr "Kies eerst een regio in het beeld en beelden uit de sequentie."
 
-#: ../src/registration/registration.c:1039
+#: ../src/registration/registration.c:1042
 msgid "Select images in the sequence."
 msgstr "Kies beelden uit de sequentie."
 
-#: ../src/registration/registration.c:1041
+#: ../src/registration/registration.c:1044
 msgid "Select an area in image first."
 msgstr "Kies eerst een regio in het beeld."
 
-#: ../src/registration/registration.c:1157
+#: ../src/registration/registration.c:1160
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
 msgstr ""
 "Alle voorwaarden zijn niet vervuld voor registratie. Kies eerst een regio.\n"
 
-#: ../src/registration/registration.c:1190
-msgid "Not enough disk space to perform Drizzle operation !!\n"
-msgstr "Niet genoeg opslagruimte om Drizzle operatie toe te passen!!\n"
-
-#: ../src/registration/registration.c:1206
-#, c-format
-msgid "Registration: processing using method: %s\n"
-msgstr "Registratie: processing met methode: %s\n"
-
-#: ../src/stacking/normalization.c:98
+#: ../src/stacking/normalization.c:104
 msgid "Computing normalization...\n"
 msgstr "Berekening van normalisatie...\n"
 
-#: ../src/stacking/normalization.c:110
+#: ../src/stacking/normalization.c:116
 msgid ""
 "The reference image is not in the selected set of images. Please choose "
 "another reference image.\n"
@@ -6262,7 +6790,7 @@ msgstr ""
 "Het referentiebeels is niet in de geselecteerde set van afbeeldingen. Kies "
 "aub een ander referentiebeeld.\n"
 
-#: ../src/stacking/normalization.c:113
+#: ../src/stacking/normalization.c:119
 msgid "Normalisation skipped.\n"
 msgstr "Normalisatie overgeslaan.\n"
 
@@ -6275,7 +6803,7 @@ msgid "Median stacking is only supported for FITS images and SER sequences.\n"
 msgstr ""
 "Median stacking is enkel ondersteund voor FITS bestanden en SER sequenties.\n"
 
-#: ../src/stacking/stacking.c:118 ../src/stacking/stacking.c:796
+#: ../src/stacking/stacking.c:118 ../src/stacking/stacking.c:804
 msgid "Select at least two frames for stacking. Aborting.\n"
 msgstr "Kies minstens twee beelden voor staking. Stopgezet.\n"
 
@@ -6294,7 +6822,7 @@ msgstr ""
 msgid "Median stack error: input images have different sizes\n"
 msgstr "Median stack foudmelding: beelden hebben verschillende afmetingen\n"
 
-#: ../src/stacking/stacking.c:213 ../src/stacking/stacking.c:892
+#: ../src/stacking/stacking.c:213 ../src/stacking/stacking.c:901
 msgid "Super-pixel is not handled yet for on the fly SER stacking\n"
 msgstr "Super-pixel nog niet ondersteund voor \"on the fly\" SER stachking\n"
 
@@ -6303,20 +6831,20 @@ msgstr "Super-pixel nog niet ondersteund voor \"on the fly\" SER stachking\n"
 msgid "Median stack error: uninitialized sequence\n"
 msgstr "Median stack foutmelding: sequentie niet geïnitialiseerd.\n"
 
-#: ../src/stacking/stacking.c:267 ../src/stacking/stacking.c:946
+#: ../src/stacking/stacking.c:267 ../src/stacking/stacking.c:955
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Multithreading niet ondersteund door uw versie van cfitsio\n"
 
-#: ../src/stacking/stacking.c:275 ../src/stacking/stacking.c:954
+#: ../src/stacking/stacking.c:275 ../src/stacking/stacking.c:963
 msgid "Processing the sequence as RGB\n"
 msgstr "Sequentie als RGB behandelt\n"
 
-#: ../src/stacking/stacking.c:312 ../src/stacking/stacking.c:991
+#: ../src/stacking/stacking.c:312 ../src/stacking/stacking.c:1000
 #, c-format
 msgid "We have %d parallel blocks of size %d (+%d) for stacking.\n"
 msgstr "We hebben %d parelelle blokken van grootte %d (+%d) voor stacking.\n"
 
-#: ../src/stacking/stacking.c:320 ../src/stacking/stacking.c:999
+#: ../src/stacking/stacking.c:320 ../src/stacking/stacking.c:1008
 msgid ""
 "A bug has been found. Unable to split the image area into the correct "
 "processing blocks.\n"
@@ -6324,7 +6852,7 @@ msgstr ""
 "Een bug werd gevonden. Onmogelijk om het beeld op te splitsen in de correcte "
 "precessing blocks.\n"
 
-#: ../src/stacking/stacking.c:387 ../src/stacking/stacking.c:1068
+#: ../src/stacking/stacking.c:387 ../src/stacking/stacking.c:1077
 msgid "Starting stacking...\n"
 msgstr "Stacking begonnen...\n"
 
@@ -6332,55 +6860,55 @@ msgstr "Stacking begonnen...\n"
 msgid "Median stacking in progress..."
 msgstr "Mediaan stacking bezig..."
 
-#: ../src/stacking/stacking.c:432 ../src/stacking/stacking.c:1149
+#: ../src/stacking/stacking.c:432 ../src/stacking/stacking.c:1158
 msgid "Error reading one of the image areas\n"
 msgstr "Fout bij het lezen van een van de regio's\n"
 
-#: ../src/stacking/stacking.c:495 ../src/stacking/stacking.c:673
-#: ../src/stacking/stacking.c:1372
+#: ../src/stacking/stacking.c:495 ../src/stacking/stacking.c:670
+#: ../src/stacking/stacking.c:1385
 msgid "Finalizing stacking..."
 msgstr "Stacking finalisatie..."
 
-#: ../src/stacking/stacking.c:527
+#: ../src/stacking/stacking.c:524
 msgid "Median stacking failed. Check the log."
 msgstr "Median stacking gefaald. Lees de log."
 
-#: ../src/stacking/stacking.c:528 ../src/stacking/stacking.c:695
-#: ../src/stacking/stacking.c:1414
+#: ../src/stacking/stacking.c:525 ../src/stacking/stacking.c:691
+#: ../src/stacking/stacking.c:1424
 msgid "Stacking failed.\n"
 msgstr "Stacking gefaald.\n"
 
-#: ../src/stacking/stacking.c:530
+#: ../src/stacking/stacking.c:527
 msgid "Median stacking complete."
 msgstr "Median stacking klaar."
 
-#: ../src/stacking/stacking.c:531
+#: ../src/stacking/stacking.c:528
 #, c-format
 msgid "Median stacking complete. %d have been stacked.\n"
 msgstr "Median stacking klaar. %d beelden werden bewerkt.\n"
 
-#: ../src/stacking/stacking.c:568
+#: ../src/stacking/stacking.c:565
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"
 msgstr ""
 "Geen beelden geselecteerd voor stacking (kies minstens 2). Stopgezet.\n"
 
-#: ../src/stacking/stacking.c:597
+#: ../src/stacking/stacking.c:594
 msgid "Stacking: could not read frame, aborting\n"
 msgstr "Stacking: kon beeld niet lezen, stopgezet\n"
 
-#: ../src/stacking/stacking.c:620
+#: ../src/stacking/stacking.c:617
 msgid "Stacking: image in sequence doesn't has the same dimensions\n"
 msgstr "Staking: beeld(en) in de sequenties hebben niet dezelfde afmetingen\n"
 
-#: ../src/stacking/stacking.c:694
+#: ../src/stacking/stacking.c:690
 msgid "Stacking failed. Check the log."
 msgstr "Stacking gefaald. Lees de log."
 
-#: ../src/stacking/stacking.c:697
+#: ../src/stacking/stacking.c:693
 msgid "Stacking complete."
 msgstr "Stacking klaar."
 
-#: ../src/stacking/stacking.c:791
+#: ../src/stacking/stacking.c:799
 msgid ""
 "Rejection stacking is only supported for FITS images and SER sequences.\n"
 "Use \"Sum Stacking\" instead.\n"
@@ -6389,161 +6917,161 @@ msgstr ""
 "sequenties.\n"
 "Gebruik \"Som Stacking\" in de plaats.\n"
 
-#: ../src/stacking/stacking.c:818
+#: ../src/stacking/stacking.c:826
 #, c-format
 msgid "Rejection stack: opening image %s"
 msgstr "Verwerping stack: open beeld %s"
 
-#: ../src/stacking/stacking.c:839
+#: ../src/stacking/stacking.c:847
 msgid "Rejection stack error: images with > 3 dimensions are not supported\n"
 msgstr ""
 "Verwerping stack foutmelding: beelden met meer dan 3 dimenseis worden niet "
 "ondersteund\n"
 
-#: ../src/stacking/stacking.c:850
+#: ../src/stacking/stacking.c:858
 msgid "Rejection stack error: input images have different sizes\n"
 msgstr ""
 "Verwerping stack foutmelding: beelden hebben verschillende afmetingen\n"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:899
+#: ../src/stacking/stacking.c:908
 msgid "Rejection stack error: uninitialized sequence\n"
 msgstr "Verwerping stack foutmelding: sequentie niet geïnitialiseerd\n"
 
-#: ../src/stacking/stacking.c:1069
+#: ../src/stacking/stacking.c:1078
 msgid "Rejection stacking in progress..."
 msgstr "Verwerping stacking bezig..."
 
-#: ../src/stacking/stacking.c:1376
+#: ../src/stacking/stacking.c:1389
 #, c-format
 msgid "Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"
 msgstr "Pixel verwerping in kanaal #%d: %.3lf%% - %.3lf%%\n"
 
-#: ../src/stacking/stacking.c:1413
+#: ../src/stacking/stacking.c:1423
 msgid "Rejection stacking failed. Check the log."
 msgstr "Verwerping staking gefaald. Lees de log."
 
-#: ../src/stacking/stacking.c:1416
+#: ../src/stacking/stacking.c:1426
 msgid "Rejection stacking complete."
 msgstr "Verwerping stacking klaar."
 
-#: ../src/stacking/stacking.c:1476
+#: ../src/stacking/stacking.c:1490
 #, c-format
 msgid "Stacking will use registration data of layer %d if some exist.\n"
 msgstr ""
 "Stacking zal registratiegegevens van laag %d gebruiken als deze bestaat.\n"
 
-#: ../src/stacking/stacking.c:1479
+#: ../src/stacking/stacking.c:1497
 msgid "Stacking: processing...\n"
 msgstr "Stacking: bezig...\n"
 
-#: ../src/stacking/stacking.c:1494
+#: ../src/stacking/stacking.c:1512
 #, c-format
 msgid "Integration of %d images:\n"
 msgstr "Integratie van %d beelden:\n"
 
-#: ../src/stacking/stacking.c:1498
+#: ../src/stacking/stacking.c:1516
 msgid "Pixel combination ......... average\n"
 msgstr "Pixel combinatie ......... gemiddelde\n"
 
-#: ../src/stacking/stacking.c:1501
+#: ../src/stacking/stacking.c:1518
 msgid "Pixel combination ......... normalized sum\n"
 msgstr "Pixel combinatie ......... genormaliseerde som\n"
 
-#: ../src/stacking/stacking.c:1504
+#: ../src/stacking/stacking.c:1520
 msgid "Pixel combination ......... median\n"
 msgstr "Pixel combinatie ......... mediaan\n"
 
-#: ../src/stacking/stacking.c:1507
+#: ../src/stacking/stacking.c:1522
 msgid "Pixel combination ......... minimum\n"
 msgstr "Pixel combinatie ......... minimum\n"
 
-#: ../src/stacking/stacking.c:1510
+#: ../src/stacking/stacking.c:1524
 msgid "Pixel combination ......... maximum\n"
 msgstr "Pixel combinatie ......... maximum\n"
 
-#: ../src/stacking/stacking.c:1513
+#: ../src/stacking/stacking.c:1526
 msgid "Pixel combination ......... none\n"
 msgstr "Pixel combinatie ......... geen\n"
 
-#: ../src/stacking/stacking.c:1518 ../src/stacking/stacking.c:1523
-#: ../src/stacking/stacking.c:1552
+#: ../src/stacking/stacking.c:1531 ../src/stacking/stacking.c:1536
+#: ../src/stacking/stacking.c:1565
 msgid "none"
 msgstr "geen"
 
-#: ../src/stacking/stacking.c:1526
+#: ../src/stacking/stacking.c:1539
 msgid "additive"
 msgstr "additief"
 
-#: ../src/stacking/stacking.c:1529
+#: ../src/stacking/stacking.c:1542
 msgid "multiplicative"
 msgstr "multiplicatief"
 
-#: ../src/stacking/stacking.c:1532
+#: ../src/stacking/stacking.c:1545
 msgid "additive + scaling"
 msgstr "additief + schaling"
 
-#: ../src/stacking/stacking.c:1535
+#: ../src/stacking/stacking.c:1548
 msgid "multiplicative + scaling"
 msgstr "multiplicatief + schaling"
 
-#: ../src/stacking/stacking.c:1540
+#: ../src/stacking/stacking.c:1553
 #, c-format
 msgid "Normalization ............. %s\n"
 msgstr "Normalisatie ............. %s\n"
 
-#: ../src/stacking/stacking.c:1544
+#: ../src/stacking/stacking.c:1557
 msgid "Pixel rejection ........... none\n"
 msgstr "Pixel verwerping ........... geen\n"
 
-#: ../src/stacking/stacking.c:1545
+#: ../src/stacking/stacking.c:1558
 msgid "Rejection parameters ...... none\n"
 msgstr "Verwerpingsparameters ........... geen\n"
 
-#: ../src/stacking/stacking.c:1555
+#: ../src/stacking/stacking.c:1568
 msgid "percentile clipping"
 msgstr "percentile clipping"
 
-#: ../src/stacking/stacking.c:1558
+#: ../src/stacking/stacking.c:1571
 msgid "sigma clipping"
 msgstr "sigma clipping"
 
-#: ../src/stacking/stacking.c:1561
+#: ../src/stacking/stacking.c:1574
 msgid "median sigma clipping"
 msgstr "median sigma clipping"
 
-#: ../src/stacking/stacking.c:1564
+#: ../src/stacking/stacking.c:1577
 msgid "Winsorized sigma clipping"
 msgstr "Winsorized sigma clipping"
 
-#: ../src/stacking/stacking.c:1567
+#: ../src/stacking/stacking.c:1580
 msgid "linear fit clipping"
 msgstr "linear fit clipping"
 
-#: ../src/stacking/stacking.c:1570
+#: ../src/stacking/stacking.c:1583
 #, c-format
 msgid "Pixel rejection ........... %s\n"
 msgstr "Pixel verwerping ........... %s\n"
 
-#: ../src/stacking/stacking.c:1571
+#: ../src/stacking/stacking.c:1584
 #, c-format
 msgid "Rejection parameters ...... low=%.3f high=%.3f\n"
 msgstr "Verwerpingsparameter ...... laag=%.3f hoog=%.3f\n"
 
-#: ../src/stacking/stacking.c:1647
+#: ../src/stacking/stacking.c:1662
 msgid "Stacking result image"
 msgstr "Stacking resultaat"
 
-#: ../src/stacking/stacking.c:1672 ../src/stacking/stacking.c:1677
+#: ../src/stacking/stacking.c:1685 ../src/stacking/stacking.c:1690
 msgid "Unsaved stacking result"
 msgstr "Onopgeslagen stacking resultaat"
 
-#: ../src/stacking/stacking.c:1848
+#: ../src/stacking/stacking.c:1881
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "Gebruikt maximaal %d MB geheugen voor de stacking\n"
 
-#: ../src/stacking/stacking.c:1874
+#: ../src/stacking/stacking.c:1907
 msgid ""
 "The reference image is not in the selected set of images. To avoid issues, "
 "please change it or change the filtering parameters.\n"
@@ -6552,7 +7080,7 @@ msgstr ""
 "problemen te voorkomen, gelieven van beeld te veranderen of de filter "
 "parameters aan te passen.\n"
 
-#: ../src/stacking/stacking.c:1914
+#: ../src/stacking/stacking.c:1947 ../src/stacking/stacking.c:2026
 #, c-format
 msgid ""
 "Warning: some images don't have FWHM information available for best images "
@@ -6561,7 +7089,7 @@ msgstr ""
 "Opgelet: sommige beelden missen FWHM informatie voor de keuze van de beste "
 "beelden. Gebruikt enkel de beschikbare gegens (%d beelde on %d).\n"
 
-#: ../src/stacking/stacking.c:1941
+#: ../src/stacking/stacking.c:1974 ../src/stacking/stacking.c:2007
 #, c-format
 msgid ""
 "Error in highest quality accepted for sequence processing: some images don't "
@@ -6571,17 +7099,17 @@ msgstr ""
 "voor enkele beelden is dit type informatie niet beschikbaar voor kanaal #"
 "%d.\n"
 
-#: ../src/stacking/stacking.c:2007
+#: ../src/stacking/stacking.c:2090
 #, c-format
 msgid "Stacking all images in the sequence (%d)\n"
 msgstr "Alle beelden van de sequentie (%d) stacken\n"
 
-#: ../src/stacking/stacking.c:2016
+#: ../src/stacking/stacking.c:2099
 #, c-format
 msgid "Stacking only selected images in the sequence (%d)\n"
 msgstr "enkel de geselecteerde beelden van de sequentie (%d) stacken\n"
 
-#: ../src/stacking/stacking.c:2040
+#: ../src/stacking/stacking.c:2123
 #, c-format
 msgid ""
 "Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"
@@ -6589,12 +7117,32 @@ msgstr ""
 "De beelden van de sequentie met een FWHM lager of gelijk aan %g stacken "
 "(%d)\n"
 
-#: ../src/stacking/stacking.c:2045
+#: ../src/stacking/stacking.c:2128
 #, c-format
 msgid "Based on FWHM < %.2f (%d images)"
 msgstr "Gebaseerd op FWHM < %.2f (%d beelden)"
 
-#: ../src/stacking/stacking.c:2061
+#: ../src/stacking/stacking.c:2155
+#, fuzzy, c-format
+msgid ""
+"Stacking images of the sequence with a roundness higher or equal than %g "
+"(%d)\n"
+msgstr ""
+"De beelden van de sequentie met een kwaliteit hoger of gelijk aan %g stacken "
+"(%d)\n"
+"\n"
+
+#: ../src/stacking/stacking.c:2161
+#, fuzzy, c-format
+msgid "Based on roundness > %.2f (%d images)"
+msgstr "Gebaseerd op kwaiteit > %.2f (%d beelden)"
+
+#: ../src/stacking/stacking.c:2164
+#, c-format
+msgid "Based on roundness"
+msgstr ""
+
+#: ../src/stacking/stacking.c:2175
 #, c-format
 msgid ""
 "Stacking images of the sequence with a quality higher or equal than %g (%d)\n"
@@ -6603,19 +7151,26 @@ msgstr ""
 "(%d)\n"
 "\n"
 
-#: ../src/stacking/stacking.c:2067
+#: ../src/stacking/stacking.c:2181
 #, c-format
 msgid "Based on quality > %.2f (%d images)"
 msgstr "Gebaseerd op kwaiteit > %.2f (%d beelden)"
 
-#: ../src/stacking/stacking.c:2070
+#: ../src/stacking/stacking.c:2184
 #, c-format
 msgid "Based on quality"
 msgstr "Gebaseerd op kwaliteit"
 
-#: ../src/stacking/stacking.c:2150
+#: ../src/stacking/stacking.c:2258
 msgid "Up-scaling sequence for stacking"
 msgstr "Sequentie herschaling voor stacking"
+
+#~ msgid ""
+#~ "Input command. Typing `help&apos; here will bring the list of supported "
+#~ "commands."
+#~ msgstr ""
+#~ "Input command. Tijp hier `help&apos op de lijst van ondersteunde "
+#~ "commando's te tonen."
 
 #~ msgid "Unknown FITS image format.\n"
 #~ msgstr "Onbekend FITS formaat.\n"

@@ -71,126 +71,121 @@ static GThread *script_thread = NULL;
 
 command commande[] = {
 	/* name,	nbarg,	usage,			function pointer */
-	{"addmax",	1,	"addmax filename",	process_addmax},
+	{"addmax",	1,	"addmax filename",	process_addmax, N_("Computes a new image IMG with IMG_1 and IMG_2. The pixel of IMG_1 is replaced by the pixel at the same coordinates of IMG_2 if the intensity of 2 is greater than 1")},
 	
-	{"bg", 0, "bg", process_bg},
-	{"bgnoise", 0, "bgnoise", process_bgnoise},
+	{"bg", 0, "bg", process_bg, N_("Returns the background level of the image loaded in memory")},
+	{"bgnoise", 0, "bgnoise", process_bgnoise, N_("Returns the background noise level")},
 	
-	{"cd", 1, "cd directory (define the working directory)", process_cd},
-	{"cdg", 0, "cdg", process_cdg},
-	{"clearstar", 0, "clearstar", process_clearstar},
-	{"close", 0, "close", process_close},
-	{"contrast", 0, "contrast", process_contrast},
-	{"cosme", 1, "cosme [filename].lst", process_cosme},
-	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme},
-	{"crop", 0, "crop [x y width height]", process_crop}, 
+	{"cd", 1, "cd directory", process_cd, N_("Set the new current working directory. The argument \"directory\" can contain the ~ token, expanded as the home directory, directories with spaces in the name can be protected using single or double quotes")},
+	{"cdg", 0, "cdg", process_cdg, N_("Returns the coordinates of the center of gravity of the image")},
+	{"clearstar", 0, "clearstar", process_clearstar, N_("Clear all the stars saved in memory and displayed on the screen")},
+	{"close", 0, "close", process_close, N_("Properly closes the opened image and the opened sequence, if any")},
+	{"cosme", 1, "cosme [filename].lst", process_cosme, N_("Apply the local mean to a set of pixels on the in-memory image (cosmetic correction). The coordinate of this pixels are in an ASCII file [.lst file]. COSME is adapted to correct residual hot and cold pixels after preprocessing")},
+	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme, N_("Same function that COSME but applying to RAW CFA images")},
+	{"crop", 0, "crop [x y width height]", process_crop, N_("Crops the current image within the rectangle previously selected")},
 
-	{"ddp", 3, "ddp level coef sigma", process_ddp}, 
+	{"ddp", 3, "ddp level coef sigma", process_ddp, N_("Performs a DDP (digital development processing) as described first by Kunihiko Okano. This implementation is the one described in IRIS. It combines a linear distribution on low levels (below \"level\") and a non-linear on high levels. It uses a Gaussian filter of sigma \"sigma\" and multiplies the resulting image by \"coef\". The typical values for \"sigma\" are included between 0.7 and 2")},
 	
-	{"entropy", 0, "entropy", process_entropy},
-	{"exit", 0, "exit", process_exit},
-	{"extract", 1, "extract NbPlans", process_extract},
+	{"entropy", 0, "entropy", process_entropy, N_("Computes the entropy of the opened image on the displayed layer, only in the selected area if one has been selected or in the whole image else. The entropy is one way of measuring the noise or the details in an image")},
+	{"exit", 0, "exit", process_exit, N_("Quits the application")},
+	{"extract", 1, "extract NbPlans", process_extract, N_("Extracts \"NbPlans\" planes of wavelet domain")},
 	
-	{"fdiv", 2, "fdiv filename scalar", process_fdiv},
-	{"fftd", 2, "fftd magnitude phase", process_fft},
-	{"ffti", 2, "ffti magnitude phase", process_fft},
-	{"fill", 1, "fill value", process_fill},
-	{"fill2", 1, "fill2 value [x y width height]", process_fill2},
-	{"find_hot", 3, "find_hot filename cold_sigma hot_sigma", process_findhot},
-	{"find_cosme", 2, "find_cosme cold_sigma hot_sigma", process_findcosme},
-	{"find_cosme_cfa", 2, "find_cosme_cfa cold_sigma hot_sigma", process_findcosme},
-	{"findstar", 0, "findstar", process_findstar},
-	{"fmedian", 2, "fmedian ksize modulation", process_fmedian},
-	{"fmul", 1, "fmul scalar", process_fmul},
-	{"fixbanding", 2, "fixbanding amount sigma", process_fixbanding},
+	{"fdiv", 2, "fdiv filename scalar", process_fdiv, N_("Divides the image in memory by the image given in argument. The resulting image is multiplied by the value of the \"scalar\" argument. See also IDIV")},
+	{"fftd", 2, "fftd modulus phase", process_fft, N_("Applies a Fast Fourier Transform to the image loaded in memory. \"Modulus\" and \"phase\" given in argument are saved in FITS files")},
+	{"ffti", 2, "ffti modulus phase", process_fft, N_("Retrieves corrected image applying an inverse transformation. The \"modulus\" and \"phase\" used are the files given in argument")},
+	{"fill", 1, "fill value", process_fill, N_("Fills the whole current image (or selection) with pixels having the \"value\" intensity")},
+	{"fill2", 1, "fill2 value [x y width height]", process_fill2, N_("Same command than FILL but this is a symmetric fill of a region defined by the mouse. Used to process an image in the Fourier (FFT) domain")},
+	{"find_cosme", 2, "find_cosme cold_sigma hot_sigma", process_findcosme, N_("Applies an automatic detection of cold and hot pixels following the thresholds written in arguments")},
+	{"find_cosme_cfa", 2, "find_cosme_cfa cold_sigma hot_sigma", process_findcosme, N_("Same command than FIND_COSME but for monochromatic CFA images")},
+	{"find_hot", 3, "find_hot filename cold_sigma hot_sigma", process_findhot, N_("Provides a list file \"filename\" (format text) in the working directory which contains the coordinates of the pixels which have an intensity \"hot_sigma\" times higher and \"cold_sigma\" lower than standard deviation. We generally use this command on a master-dark file")},
+	{"findstar", 0, "findstar", process_findstar, N_("Detects stars having a level greater than a threshold computed by Siril. The algorithm is based on the publication of Mighell, K. J. 1999, in ASP Conf. Ser., Vol. 172, Astronomical Data Analysis Software and Systems VIII, eds. D. M. Mehringer, R. L. Plante, & D. A. Roberts (San Francisco: ASP), 317. After that, a PSF is applied and Siril rejects all detected structures that don't fulfill a set of prescribed detection criteria. Finaly, a circle is drawn around detected stars. See also the command CLEARSTAR")},
+	{"fmedian", 2, "fmedian ksize modulation", process_fmedian, N_("Performs a median filter of size \"ksize\" x \"ksize\" (\"ksize\" MUST be odd) to the original image with a modulation parameter \"modulation\". The output pixel is computed as : out=mod x m + (1 − mod) x in, where m is the median-filtered pixel value. A modulation's value of 1 will apply no modulation")},
+	{"fmul", 1, "fmul scalar", process_fmul, N_("Multiplies the loaded image by the \"scalar\" given in argument")},
+	{"fixbanding", 2, "fixbanding amount sigma", process_fixbanding, N_("Tries to remove the canon banding. Argument \"amount\" define the amount of correction. \"Sigma\" defines a protection level of the algorithm, higher sigma gives higher protection")},
 
-	
-	{"gauss", 1, "gauss sigma", process_gauss},
-	//~ {"gauss2", 1, "gauss sigma", process_gauss2},
+	{"gauss", 1, "gauss sigma", process_gauss, N_("Performs a Gaussian filter with the given \"sigma\"")},
 
-	{"help", 0, "help", process_help},
-	{"histo", 1, "histo layer (layer=0, 1, 2 with 0: red, 1: green, 2: blue)", process_histo},
+	{"help", 0, "help", process_help, N_("Gives the available commands")},
+	{"histo", 1, "histo channel (channel=0, 1, 2 with 0: red, 1: green, 2: blue)", process_histo, N_("Calculates the histogram of the image channel in memory and produces file histo_[channel name].dat in the working directory")},
 	
 	/* commands oper filename and curent image */
-	{"iadd", 1, "add filename", process_imoper}, 
-	{"idiv", 1, "idiv filename", process_imoper},
-	{"imul", 1, "imul filename", process_imoper}, 
-	{"isub", 1, "isub filename", process_imoper},
+	{"iadd", 1, "iadd filename", process_imoper, N_("Adds the image in memory to the image given in argument")},
+	{"idiv", 1, "idiv filename", process_imoper, N_("Divides the image in memory by the image given in argument. See also FDIV")},
+	{"imul", 1, "imul filename", process_imoper, N_("Multiplies the image in memory by the image given in argument")},
+	{"isub", 1, "isub filename", process_imoper, N_("Subtracts the image in memory by the image given in argument")},
 	
-	{"load", 1, "load filename[.ext]", process_load}, 
+	{"load", 1, "load filename.[ext]", process_load, N_("Loads the image \"filename\"; it first attempts to load \"filename\", then \"filename\".fit and finally \"filename\".fits and after, all supported format, aborting if none of these are found. These scheme is applicable to every Siril command implying reading files. Fits headers MIPS-HI and MIPS-LO are read and their values given to the current viewing levels. Writing a known extension at the end of \"filename\" will load the image \"filename\".ext: this is used when numerous files have the same name but not the same extension")},
 	// specific loads are not required, but could be used to force the
 	// extension to a higher priority in case two files with same basename
 	// exist (stat_file() manages that priority order for now).
-	{"log", 0, "log", process_log}, /* logarifies current image */
+	{"log", 0, "log", process_log, N_("Computes and applies a logarithmic scale to the current image")}, /* logarifies current image */
 #ifndef _WIN32
-	{"ls", 0, "ls", process_ls},
+	{"ls", 0, "ls", process_ls, N_("Lists files and directories in the working directory")},
 #endif
 	
-	{"mirrorx", 0, "mirrorx", process_mirrorx},
-	{"mirrory", 0, "mirrory", process_mirrory},
+	{"mirrorx", 0, "mirrorx", process_mirrorx, N_("Rotates the image around a vertical axis")},
+	{"mirrory", 0, "mirrory", process_mirrory, N_("Rotates the image around an horizontal axis")},
 	
-	{"new", 3, "new width height nb_layers", process_new},
-	{"nozero", 1, "nozero level (replaces null values by level)", process_nozero}, /* replaces null values by level */
+	{"new", 3, "new width height nb_channel", process_new, N_("Creates a new image filled with zeros with a size of \"width\" x \"height\". The image is in 16-bit format, and it contains \"nb_channel\" channels, \"nb_channel\" being 1 or 3. It is not saved, but displayed and can be saved afterwards")},
+	{"nozero", 1, "nozero level (replaces null values by level)", process_nozero, N_("Replaces null values by \"level\" values. Useful before an idiv or fdiv operation")}, /* replaces null values by level */
 	
-	{"offset", 1, "offset value", process_offset},
+	{"offset", 1, "offset value", process_offset, N_("Adds the constant \"value\" to the current image. This constant can take a negative value. As Siril uses unsigned FITS files, if the intensity of the pixel become negative its value is replaced by 0 and by 65535 (for a 16-bit file) if the pixel intensity overflows")},
 	
-	{"psf", 0, "psf", process_psf},
+	{"psf", 0, "psf", process_psf, N_("Performs a PSF (Point Spread Function) on the selected star")},
 	
-	{"register", 1, "register sequence", process_register},
-	{"resample", 1, "resample factor", process_resample},
-	{"rl", 2, "rl iterations sigma", process_rl},
-	{"rmgreen", 1, "rmgreen type", process_scnr},
-	{"rotate", 1, "rotate angle", process_rotate},
-	{"rotatePi", 0, "rotatePi", process_rotatepi},
+	{"register", 1, "register sequence", process_register, N_("Performs geometric transforms on images of the sequence given in arguement so that they may be superimposed on the reference image. The output sequence name starts with the prefix \"r_\". Using stars for registration, this algorithm only works with deepsky images")},
+	{"resample", 1, "resample factor", process_resample, N_("Resamples image with a factor \"factor\"")},
+	{"rl", 2, "rl iterations sigma", process_rl, N_("Restores an image using the Richardson-Lucy method. \"Iterations\" is the number of iterations to be performed (typically between 10 and 50). \"Sigma\" is the size of the kernel to be applied")},
+	{"rmgreen", 1, "rmgreen type", process_scnr, N_("Chromatic noise reduction filter. It removes green noise in the current image. This filter is based on PixInsight's SCNR Average Neutral algorithm and it is the same filter used by HLVG plugin in Photoshop. \"Type\"=1 stands for Average Neutral Protection, while \"type\"=2 stands for Maximum Neutral Protection")},
+	{"rotate", 1, "rotate degree", process_rotate, N_("Rotates the image of an angle of \"degree\" value")},
+	{"rotatePi", 0, "rotatePi", process_rotatepi, N_("Rotates the image of an angle of 180° around its center. This is equivalent to the command \"ROTATE 180\" or \"ROTATE -180\"")},
 	
-	{"satu", 1, "satu coeff", process_satu}, 
-	{"save", 1, "save filename (save current image in fit)", process_save}, 
-	{"savebmp", 1, "savebmp filename (save display image in bmp)", process_savebmp}, 
+	{"satu", 1, "satu coeff", process_satu, N_("Enhances the global saturation of the image. Try iteratively to obtain best results")},
+	{"save", 1, "save filename", process_save, N_("Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO are added with values corresponding to the current viewing levels")},
+	{"savebmp", 1, "savebmp filename", process_savebmp, N_("Saves current image under the form of a bitmap file with 8-bit per channel: \"filename\".bmp (BMP 24-bit). This function is like a screenshot of what you see with the levels updated. This is very usefull to share an image in the bitmap format")},
 #ifdef HAVE_LIBJPEG
-	{"savejpg", 1, "savejpg filename [quality] (save current display in jpg)", process_savejpg},
+	{"savejpg", 1, "savejpg filename [quality]", process_savejpg, N_("Saves current image into a JPG file: \"filename\".jpg. You have the possibility to adjust the quality of the compression. A value 100 for \"quality\" parameter offers best fidelity while a low value increases the compression ratio. If no value is specified, it holds a value of 100")},
 #endif
 #ifdef HAVE_LIBPNG
-	{"savepng", 1, "savepng filename (save current display in png)", process_savepng},
+	{"savepng", 1, "savepng filename", process_savepng, N_("Saves current image into a PNG file: \"filename\".png")},
 #endif
-	{"savepnm", 1, "savepnm filename (save current image in Netpbm)", process_savepnm},
+	{"savepnm", 1, "savepnm filename", process_savepnm, N_("Saves current image under the form of a Netpbm file format with 16-bit per channel. The extension of the output will be \"filename\".ppm for RGB image and \"filename\".pgm for gray-level image")},
 #ifdef HAVE_LIBTIFF
-	{"savetif", 1, "savetif filename (save current image in tif 16bits)", process_savetif},
-	{"savetif8", 1, "savetif8 filename (save current image in tif 8bits)", process_savetif},
+	{"savetif", 1, "savetif filename", process_savetif, N_("Saves current image under the form of a uncompressed TIFF file with 16-bit per channel: \"filename\".tif")},
+	{"savetif8", 1, "savetif8 filename", process_savetif, N_("Same command than SAVE_TIF but the output file is saved in 8-bit per channel: \"filename\".tif")},
 #endif
-	{"select", 2, "select from to", process_select},
-	{"seqcrop", 0, "seqcrop", process_seq_crop},
-	{"seqfind_cosme", 2, "seqfind_cosme cold_sigma hot_sigma", process_findcosme},
-	{"seqfind_cosme_cfa", 2, "seqfind_cosme_cfa cold_sigma hot_sigma", process_findcosme},
-	{"seqpsf", 0, "seqpsf", process_seq_psf},
+	{"select", 2, "select from to", process_select, N_("This command allows easy mass selection of images in the loaded sequence (\"from\" - \"to\", to included)")},
+	{"seqcrop", 0, "seqcrop", process_seq_crop, N_("Crops the loaded sequence")},
+	{"seqfind_cosme", 2, "seqfind_cosme cold_sigma hot_sigma", process_findcosme, N_("Same command than FIND_COSME but for the loaded sequence")},
+	{"seqfind_cosme_cfa", 2, "seqfind_cosme_cfa cold_sigma hot_sigma", process_findcosme, N_("Same command than FIND_COSME_CFA but for the loaded sequence")},
+	{"seqpsf", 0, "seqpsf", process_seq_psf, N_("Same command than PSF but works for sequences. Results are dumped in the console in a form that can be used to produce brightness variation curves")},
 #ifdef _OPENMP
-	{"setcpu", 1, "setcpu number", process_set_cpu},
+	{"setcpu", 1, "setcpu number", process_set_cpu, N_("Defines the number of processing threads used for calculation. Can be as high as the number of virtual threads existing on the system, which is the number of CPU cores or twice this number if hyperthreading (Intel HT) is available")},
 #endif
-	{"setmag", 1, "setmag magnitude", process_set_mag},
-	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq},
-	{"split", 3, "split R G B", process_split},
-	{"stat", 0, "stat", process_stat},
-	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackone},
-	{"stackall", 0, "stackall", process_stackall},
+	{"setmag", 1, "setmag magnitude", process_set_mag, N_("Calibrates the magnitude by selecting a star and giving the known apparent magnitude. All PSF computations will return the calibrated apparent magnitude afterwards, instead of an apparent magnitude relative to ADU values. To reset the magnitude constant see UNSETMAG")},
+	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, N_("This command is only valid after having run SEQPSF or its graphical counterpart (select the area around a star and launch the PSF analysis for the sequence, it will appear in the graphs). This command has the same goal as SETMAG but recomputes the reference magnitude for each image of the sequence where the reference star has been found. When running the command, the last star that has been analysed will be considered as the reference star. Displaying the magnitude plot before typing the command makes it easy to understand. To reset the reference star and magnitude offset, see UNSETMAGSEQ")},
+	{"split", 3, "split R G B", process_split, N_("Splits the color image into three distincts files (one for each color) and save them in \"r\" \"g\" and \"b\" file")},
+	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackone, N_("Stacks the \"sequencename\" sequence, using options. The allowed types are: sum, max, min, med or median, and rej or mean that requires the use of additional arguments \"sigma low\" and \"high\" used for the Winsorized sigma clipping rejection algorithm (cannot be changed from here). If no argument other than the sequence name is provided, sum stacking is assumed")},
+	{"stackall", 0, "stackall", process_stackall, N_("Opens all sequences in the CWD and stacks them with the optionally specified stacking type or with sum stacking. See STACK command for options description")},
+	{"stat", 0, "stat", process_stat, N_("Returns global statistics of the current image. If a selection is made, the command returns statistics within the selection")},
 	
-	{"threshlo", 1, "threshlo level", process_threshlo},
-	{"threshhi", 1, "threshi level", process_threshhi}, 
-	{"thresh", 2, "thresh hi lo (threshes hi and lo)", process_thresh}, /* threshes hi and lo */
+	{"threshlo", 1, "threshlo level", process_threshlo, N_("")},
+	{"threshhi", 1, "threshi level", process_threshhi, N_("")},
+	{"thresh", 2, "thresh hi lo", process_thresh, N_("")}, /* threshes hi and lo */
 	
 	/* unsharp masking of current image or genname sequence */
-	{"unselect", 2, "unselect from to", process_unselect},
-	{"unsetmag", 0, "unsetmag", process_unset_mag},
-	{"unsetmagseq", 0, "unsetmagseq", process_unset_mag_seq},
-	{"unsharp", 2, "unsharp sigma multi", process_unsharp},
-//	{"unsharp2", 5, "unsharp2 sigma multi src dest number", process_unsharp2},
-
-	{"visu", 2, "visu low high", process_visu},
+	{"unselect", 2, "unselect from to", process_unselect, N_("Allows easy mass unselection of images in the loaded sequence (\"from\" - \"to\"). See SELECT")},
+	{"unsetmag", 0, "unsetmag", process_unset_mag, N_("Reset the magnitude calibration to 0. See SETMAG")},
+	{"unsetmagseq", 0, "unsetmagseq", process_unset_mag_seq, N_("Resets the magnitude calibration and reference star for the sequence. See SETMAGSEQ")},
+	{"unsharp", 2, "unsharp sigma multi", process_unsharp, N_("Applies to the working image an unsharp mask with sigma \"sigma\" and coefficient \"multi\"")},
+	{"visu", 2, "visu low high", process_visu, N_("Displays an image with \"low\" and \"high\" as the low and high threshold")},
 	
 	/* wavelet transform in nbr_plan plans */ 
-	{"wavelet", 1, "wavelet nbr_plan type (1=linear 2=spline)", process_wavelet},
+	{"wavelet", 1, "wavelet nbr_plan type", process_wavelet, N_("Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) or bspline (type=2) version of the 'a trous' algorithm. The result is stored in a file as a structure containing the planes, ready for weighted reconstruction with WRECONS")},
 	/* reconstruct from wavelet transform and weighs plans with c1, c2, c3... */ 
-	{"wrecons", 2, "wrecons c1 c2 c3 ...", process_wrecons},
+	{"wrecons", 2, "wrecons c1 c2 c3 ...", process_wrecons, N_("Reconstructs to current image from the planes previously computed with wavelets and weighted with coefficients \"c1\", \"c2\", ..., \"cn\" according to the number of planes used for wavelet transform")},
 	
-	{"",0,"",0}
+	{"",0,"",0, ""}
 };
 
 int process_load(int nb){
@@ -1466,6 +1461,15 @@ int process_stat(int nb){
 	return 0;
 }
 
+// this function also exists in registration.c as register_thread_func() but
+// this one does not call the idle_function at the end
+static gpointer register_worker(gpointer p) {
+	struct registration_args *args = (struct registration_args *) p;
+	args->retval = args->func(args);
+	writeseqfile(args->seq);
+	return GINT_TO_POINTER(args->retval);
+}
+
 int process_register(int nb) {
 	struct registration_args *reg_args;
 	struct registration_method *method;
@@ -1540,7 +1544,7 @@ int process_register(int nb) {
 	set_cursor_waiting(TRUE);
 	set_progress_bar_data(msg, PROGRESS_RESET);
 
-	start_in_new_thread(register_thread_func, reg_args);
+	start_in_new_thread(register_worker, reg_args);
 	return 0;
 }
 
@@ -1631,7 +1635,7 @@ static gpointer stackall_worker(gpointer garg) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
 		fprintf (stderr, "stackall: %s\n", error->message);
 		com.wd[0] = '\0';
-		siril_add_idle(end_generic, NULL);
+		gdk_threads_add_idle(end_generic, NULL);
 		return NULL;
 	}
 	siril_log_message(_("Starting stacking of found sequences...\n"));
@@ -1647,7 +1651,7 @@ static gpointer stackall_worker(gpointer garg) {
 	g_dir_close(dir);
 	free(arg);
 	siril_log_message(_("Stacked %d sequences successfully.\n"), arg->number_of_loaded_sequences);
-	siril_add_idle(end_generic, NULL);
+	gdk_threads_add_idle(end_generic, NULL);
 	return NULL;
 }
 
@@ -1720,7 +1724,7 @@ static gpointer stackone_worker(gpointer garg) {
 	if (check_seq(0)) {
 		siril_log_message(_("Error while searching sequences.\n"));
 		com.wd[0] = '\0';
-		siril_add_idle(end_generic, NULL);
+		gdk_threads_add_idle(end_generic, NULL);
 		return GINT_TO_POINTER(1);
 	}
 
@@ -1730,7 +1734,7 @@ static gpointer stackone_worker(gpointer garg) {
 	free(arg);
 	if (!retval)
 		siril_log_message(_("Stacked sequence successfully.\n"));
-	siril_add_idle(end_generic, NULL);
+	gdk_threads_add_idle(end_generic, NULL);
 	return NULL;
 }
 
@@ -1927,7 +1931,7 @@ static int executeCommand(int wordnb) {
 	}
 
 	// process the command
-	siril_log_color_message("Running command: %s\n", "salmon", word[0]);
+	siril_log_color_message(_("Running command: %s\n"), "salmon", word[0]);
 	commande[i].process(wordnb);
 	return 0;
 }
@@ -1937,7 +1941,6 @@ gpointer execute_script(gpointer p) {
 	ssize_t read;
 	char *linef;
 	int line = 0;
-	com.headless = TRUE;
 #if (_POSIX_C_SOURCE < 200809L)
 	linef = calloc(256, sizeof(char));
 	while (fgets(linef, 256, fp)) {
@@ -1966,7 +1969,6 @@ gpointer execute_script(gpointer p) {
 	}
 	free(linef);
 	fclose(fp);
-	com.headless = FALSE;
 	return NULL;
 }
 
@@ -1997,4 +1999,130 @@ int processcommand(const char *line) {
 		free(myline);
 	}
 	return 0;
+}
+
+/* callback functions */
+
+#define COMPLETION_COLUMN 0
+
+static gboolean on_match_selected(GtkEntryCompletion *widget, GtkTreeModel *model,
+		GtkTreeIter *iter, gpointer user_data) {
+	const gchar *cmd;
+	GtkEditable *e = (GtkEditable *) gtk_entry_completion_get_entry(widget);
+	gchar *s = gtk_editable_get_chars(e, 0, -1);
+	gint cur_pos = gtk_editable_get_position(e);
+	gint p = cur_pos;
+	gchar *end;
+	gint del_end_pos = -1;
+
+	gtk_tree_model_get(model, iter, COMPLETION_COLUMN, &cmd, -1);
+
+	end = s + cur_pos;
+
+	if (end) {
+		del_end_pos = end - s + 1;
+	} else {
+		del_end_pos = cur_pos;
+	}
+
+	gtk_editable_delete_text(e, 0, del_end_pos);
+	gtk_editable_insert_text(e, cmd, -1, &p);
+	gtk_editable_set_position(e, p);
+
+	return TRUE;
+}
+
+static gboolean completion_match_func(GtkEntryCompletion *completion,
+		const gchar *key, GtkTreeIter *iter, gpointer user_data) {
+	gboolean res = FALSE;
+	char *tag = NULL;
+	GtkTreeModel *model = gtk_entry_completion_get_model(completion);
+	int column = gtk_entry_completion_get_text_column(completion);
+
+	if (gtk_tree_model_get_column_type(model, column) != G_TYPE_STRING)
+		return FALSE;
+
+	gtk_tree_model_get(model, iter, column, &tag, -1);
+
+	if (tag) {
+		char *normalized = g_utf8_normalize(tag, -1, G_NORMALIZE_ALL);
+		if (normalized) {
+			char *casefold = g_utf8_casefold(normalized, -1);
+			if (casefold) {
+				res = g_strstr_len(casefold, -1, key) != NULL;
+			}
+			g_free(casefold);
+		}
+		g_free(normalized);
+		g_free(tag);
+	}
+
+	return res;
+}
+
+void init_completion_command() {
+	GtkEntryCompletion *completion = gtk_entry_completion_new();
+	GtkListStore *model = gtk_list_store_new(1, G_TYPE_STRING);
+	GtkTreeIter iter;
+	gint i;
+	GtkEntry *entry = GTK_ENTRY(lookup_widget("command"));
+
+	gtk_entry_completion_set_text_column(completion, COMPLETION_COLUMN);
+	gtk_entry_set_completion(entry, completion);
+	gtk_entry_completion_set_inline_completion(completion, TRUE);
+	gtk_entry_completion_set_popup_single_match(completion, FALSE);
+	gtk_entry_completion_set_minimum_key_length(completion, 2);
+	gtk_entry_completion_set_match_func(completion, completion_match_func, NULL, NULL);
+	g_signal_connect(G_OBJECT(completion), "match-selected", G_CALLBACK(on_match_selected), NULL);
+
+	/* Populate the completion database. */
+	for (i = 0; i < sizeof(commande) / sizeof(command); i++) {
+		gtk_list_store_append(model, &iter);
+		gtk_list_store_set(model, &iter, COMPLETION_COLUMN, commande[i].name, -1);
+	}
+	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(model));
+	g_object_unref(model);
+}
+
+void on_GtkCommandHelper_clicked(GtkButton *button, gpointer user_data) {
+	GtkEntry *entry;
+	GString *str;
+	GtkWidget *popover;
+	gchar **command_line;
+	const gchar *text;
+	gchar *helper = NULL;
+	gint i;
+
+	entry = GTK_ENTRY(lookup_widget("command"));
+	text = gtk_entry_get_text(entry);
+	if (*text != 0) {
+		command_line = g_strsplit_set(text, " ", -1);
+
+		for (i = 0; i < sizeof(commande) / sizeof(command); i++) {
+			if (!g_ascii_strcasecmp(commande[i].name, command_line[0])) {
+				gchar **token;
+
+				token = g_strsplit_set(commande[i].usage, " ", -1);
+				str = g_string_new(token[0]);
+				str = g_string_prepend(str, "<span foreground=\"red\"><b>");
+				str = g_string_append(str, "</b>");
+				if (token[1] != NULL) {
+					str = g_string_append(str, commande[i].usage + strlen(token[0]));
+				}
+				str = g_string_append(str, "</span>\n\n\t");
+				str = g_string_append(str, _(commande[i].definition));
+				helper = g_string_free(str, FALSE);
+				g_strfreev(token);
+			}
+		}
+		if (!helper) {
+			helper = g_strdup(_("No help for this command"));
+		}
+
+		g_strfreev(command_line);
+
+		popover = popover_new(lookup_widget("command"), helper);
+		gtk_popover_popup(GTK_POPOVER(popover));
+		g_free(helper);
+	}
 }

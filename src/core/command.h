@@ -7,10 +7,11 @@
 
 typedef
 struct {
-	char name[32];
+	char *name;
 	int nbarg;
-	char usage[128];
+	char *usage;
 	int (* process)(int);
+	char *definition;
 } command;
 
 int	process_load(int nb);
@@ -72,7 +73,6 @@ int	process_wavelet(int nb);
 //
 int	process_log(int nb);
 int	process_ls(int nb);
-int	process_contrast(int nb);
 int	process_cdg(int nb);
 int 	process_clearstar(int nb);
 int	process_close(int nb);
@@ -131,5 +131,6 @@ int	process_help(int nb);
 int	process_exit(int nb);
 int	process_extract(int nb);
 int	processcommand(const char *line);
+void init_completion_command();
 
 #endif

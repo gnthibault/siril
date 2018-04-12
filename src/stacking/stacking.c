@@ -1320,8 +1320,8 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 					break;
 				case LINEARFIT:
 					do {
-						double *xf = malloc(N * sizeof(double));
-						double *yf = malloc(N * sizeof(double));
+						double *xf = g_malloc(N * sizeof(double));
+						double *yf = g_malloc(N * sizeof(double));
 						double a, b, cov00, cov01, cov11, sumsq;
 						quicksort_s(data->stack, N);
 						for (frame = 0; frame < N; frame++) {
@@ -1330,7 +1330,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 						}
 						gsl_fit_linear(xf, 1, yf, 1, N, &b, &a, &cov00, &cov01, &cov11, &sumsq);
 						sigma = 0.0;
-						for (frame=0; frame < N; frame++)
+						for (frame = 0; frame < N; frame++)
 							sigma += (fabs((double)data->stack[frame] - (a*(double)frame + b)));
 						sigma /= (double)N;
 						n = 0;
@@ -1349,8 +1349,8 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 							}
 						}
 						N = N - n;
-						free(xf);
-						free(yf);
+						g_free(xf);
+						g_free(yf);
 					} while (n > 0 && N > 3);
 					break;
 				default:
@@ -1786,7 +1786,7 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
 			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 5.0);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 2.5);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 5.0);
 			gtk_label_set_text (label_rejection[0], "Linear low: ");
 			gtk_label_set_text (label_rejection[1], "Linear high: ");
 			break;

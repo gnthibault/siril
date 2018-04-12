@@ -45,6 +45,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
+#include "core/command.h"
 #include "io/sequence.h"
 #include "io/conversion.h"
 #include "gui/callbacks.h"
@@ -342,6 +343,9 @@ int main(int argc, char *argv[]) {
 
 	/* initialize menu gui */
 	update_MenuItem();
+
+	/* initialize command completion */
+	init_completion_command();
 
 	/* initialize preprocessing */
 	initialize_preprocessing();
