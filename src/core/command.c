@@ -1461,15 +1461,6 @@ int process_stat(int nb){
 	return 0;
 }
 
-// this function also exists in registration.c as register_thread_func() but
-// this one does not call the idle_function at the end
-static gpointer register_worker(gpointer p) {
-	struct registration_args *args = (struct registration_args *) p;
-	args->retval = args->func(args);
-	writeseqfile(args->seq);
-	return GINT_TO_POINTER(args->retval);
-}
-
 int process_register(int nb) {
 	struct registration_args *reg_args;
 	struct registration_method *method;
@@ -1544,7 +1535,7 @@ int process_register(int nb) {
 	set_cursor_waiting(TRUE);
 	set_progress_bar_data(msg, PROGRESS_RESET);
 
-	start_in_new_thread(register_worker, reg_args);
+	start_in_new_thread(register_thread_func, reg_args);
 	return 0;
 }
 
@@ -1635,7 +1626,7 @@ static gpointer stackall_worker(gpointer garg) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
 		fprintf (stderr, "stackall: %s\n", error->message);
 		com.wd[0] = '\0';
-		gdk_threads_add_idle(end_generic, NULL);
+		siril_add_idle(end_generic, NULL);
 		return NULL;
 	}
 	siril_log_message(_("Starting stacking of found sequences...\n"));
@@ -1651,7 +1642,7 @@ static gpointer stackall_worker(gpointer garg) {
 	g_dir_close(dir);
 	free(arg);
 	siril_log_message(_("Stacked %d sequences successfully.\n"), arg->number_of_loaded_sequences);
-	gdk_threads_add_idle(end_generic, NULL);
+	siril_add_idle(end_generic, NULL);
 	return NULL;
 }
 
@@ -1724,7 +1715,7 @@ static gpointer stackone_worker(gpointer garg) {
 	if (check_seq(0)) {
 		siril_log_message(_("Error while searching sequences.\n"));
 		com.wd[0] = '\0';
-		gdk_threads_add_idle(end_generic, NULL);
+		siril_add_idle(end_generic, NULL);
 		return GINT_TO_POINTER(1);
 	}
 
@@ -1734,7 +1725,7 @@ static gpointer stackone_worker(gpointer garg) {
 	free(arg);
 	if (!retval)
 		siril_log_message(_("Stacked sequence successfully.\n"));
-	gdk_threads_add_idle(end_generic, NULL);
+	siril_add_idle(end_generic, NULL);
 	return NULL;
 }
 
@@ -1941,6 +1932,7 @@ gpointer execute_script(gpointer p) {
 	ssize_t read;
 	char *linef;
 	int line = 0;
+	com.headless = TRUE;
 #if (_POSIX_C_SOURCE < 200809L)
 	linef = calloc(256, sizeof(char));
 	while (fgets(linef, 256, fp)) {
@@ -1969,6 +1961,7 @@ gpointer execute_script(gpointer p) {
 	}
 	free(linef);
 	fclose(fp);
+	com.headless = FALSE;
 	return NULL;
 }
 
