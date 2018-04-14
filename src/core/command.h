@@ -116,6 +116,7 @@ int process_register(int nb);
 int	process_stat(int nb);
 int	process_stackall(int nb);
 int	process_stackone(int nb);
+int process_preprocess(int nb);
 #ifdef _OPENMP
 int process_set_cpu(int nb);
 #endif

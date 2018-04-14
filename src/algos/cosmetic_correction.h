@@ -8,6 +8,7 @@ typedef struct deviant_struct deviant_pixel;
 /* Cosmetic data from GUI */
 struct cosmetic_data {
 	fits *fit;
+	sequence *seq;
 	double sigma[2];
 	double amount;
 	gboolean is_cfa;

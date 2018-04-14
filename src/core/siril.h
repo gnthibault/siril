@@ -293,6 +293,7 @@ struct preprocessing_data {
 	gboolean compatibility;
 	float normalisation;
 	int retval;
+	const gchar *file; // used for script */
 };
 
 /* registration data, exists once for each image and each layer */

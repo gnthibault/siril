@@ -131,6 +131,7 @@ command commande[] = {
 	
 	{"offset", 1, "offset value", process_offset, N_("Adds the constant \"value\" to the current image. This constant can take a negative value. As Siril uses unsigned FITS files, if the intensity of the pixel become negative its value is replaced by 0 and by 65535 (for a 16-bit file) if the pixel intensity overflows")},
 	
+	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa]", process_preprocess, N_("Preprocesses the sequence \"sequencename\" using bias, dark and flat given in argument")},
 	{"psf", 0, "psf", process_psf, N_("Performs a PSF (Point Spread Function) on the selected star")},
 	
 	{"register", 1, "register sequence", process_register, N_("Performs geometric transforms on images of the sequence given in arguement so that they may be superimposed on the reference image. The output sequence name starts with the prefix \"r_\". Using stars for registration, this algorithm only works with deepsky images")},
@@ -156,8 +157,8 @@ command commande[] = {
 #endif
 	{"select", 2, "select from to", process_select, N_("This command allows easy mass selection of images in the loaded sequence (\"from\" - \"to\", to included)")},
 	{"seqcrop", 0, "seqcrop", process_seq_crop, N_("Crops the loaded sequence")},
-	{"seqfind_cosme", 2, "seqfind_cosme cold_sigma hot_sigma", process_findcosme, N_("Same command than FIND_COSME but for the loaded sequence")},
-	{"seqfind_cosme_cfa", 2, "seqfind_cosme_cfa cold_sigma hot_sigma", process_findcosme, N_("Same command than FIND_COSME_CFA but for the loaded sequence")},
+	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma", process_findcosme, N_("Same command than FIND_COSME but for the sequence \"sequencename\"")},
+	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma", process_findcosme, N_("Same command than FIND_COSME_CFA but for the sequence \"sequencename\"")},
 	{"seqpsf", 0, "seqpsf", process_seq_psf, N_("Same command than PSF but works for sequences. Results are dumped in the console in a form that can be used to produce brightness variation curves")},
 #ifdef _OPENMP
 	{"setcpu", 1, "setcpu number", process_set_cpu, N_("Defines the number of processing threads used for calculation. Can be as high as the number of virtual threads existing on the system, which is the number of CPU cores or twice this number if hyperthreading (Intel HT) is available")},
@@ -169,9 +170,9 @@ command commande[] = {
 	{"stackall", 0, "stackall", process_stackall, N_("Opens all sequences in the CWD and stacks them with the optionally specified stacking type or with sum stacking. See STACK command for options description")},
 	{"stat", 0, "stat", process_stat, N_("Returns global statistics of the current image. If a selection is made, the command returns statistics within the selection")},
 	
-	{"threshlo", 1, "threshlo level", process_threshlo, N_("")},
-	{"threshhi", 1, "threshi level", process_threshhi, N_("")},
-	{"thresh", 2, "thresh hi lo", process_thresh, N_("")}, /* threshes hi and lo */
+	{"threshlo", 1, "threshlo level", process_threshlo, N_("Replaces values below \"level\" with \"level\"")},
+	{"threshhi", 1, "threshi level", process_threshhi, N_("Replaces values above \"level\" with \"level\"")},
+	{"thresh", 2, "thresh lo hi", process_thresh, N_("Replaces values below \"lo\" with \"lo\" and values above \"hi\" with \"hi\"")}, /* threshes hi and lo */
 	
 	/* unsharp masking of current image or genname sequence */
 	{"unselect", 2, "unselect from to", process_unselect, N_("Allows easy mass unselection of images in the loaded sequence (\"from\" - \"to\"). See SELECT")},
@@ -1336,22 +1337,46 @@ int process_fixbanding(int nb) {
 }
 
 int process_findcosme(int nb) {
+	gboolean is_sequence;
+	sequence *seq = NULL;
+	int i = 0;
 
-	if (!sequence_is_loaded() && !single_image_is_loaded())
+	if (get_thread_run()) {
+		siril_log_message(_("Another task is "
+				"already in progress, ignoring new request.\n"));
 		return 1;
+	}
+
+	is_sequence = (word[0][0] == 's');
+
+	if (is_sequence) {
+		gchar *file = g_strdup(word[1]);
+		if (!ends_with(file, ".seq")) {
+			str_append(&file, ".seq");
+		}
+
+		seq = readseqfile(file);
+		if (seq == NULL) {
+			siril_log_message(_("No sequence %s found.\n"), file);
+			return 1;
+		}
+		i++;
+	} else {
+		if (!single_image_is_loaded())
+			return 1;
+	}
+
 	struct cosmetic_data *args = malloc(sizeof(struct cosmetic_data));
 
-	args->sigma[0] = atof(word[1]);
-	args->sigma[1] = atof(word[2]);
-	if (word[0][10] == '_' || word[0][13] == '_') {	// find_cosme_cfa or seqfind_cosme_cfa
-		args->is_cfa = TRUE;
-	}
-	else {
-		args->is_cfa = FALSE;
-	}
+	args->seq = seq;
+	args->sigma[0] = atof(word[1 + i]);
+	args->sigma[1] = atof(word[2 + i]);
+	args->is_cfa = (word[0][10] == '_' || word[0][13] == '_');	// find_cosme_cfa or seqfind_cosme_cfa
 	args->fit = &gfit;
+
 	set_cursor_waiting(TRUE);
-	if (word[0][0] == 's' && sequence_is_loaded()) {
+
+	if (is_sequence) {
 		args->seqEntry = "cc_";
 		apply_cosmetic_to_sequence(args);
 	} else {
@@ -1796,8 +1821,92 @@ int process_stackone(int nb) {
 		return 1;
 	}
 
-	//control_window_switch_to_tab(OUTPUT_LOGS);
 	start_in_new_thread(stackone_worker, arg);
+	return 0;
+}
+
+static gpointer preprocess_worker(gpointer garg) {
+	struct preprocessing_data *args = (struct preprocessing_data *) garg;
+
+	siril_log_message("Work in progress ...\n");
+	return NULL;
+}
+
+// preprocess sequencename -bias= -dark= -flat= -cfa
+int process_preprocess(int nb) {
+	com.preprostatus = 0;
+	gboolean is_cfa = FALSE;
+	gchar *file;
+	fits *master_bias = NULL;
+	fits *master_dark = NULL;
+	fits *master_flat = NULL;
+	int i;
+
+	if (word[1][0] == '\0') {
+		return -1;
+	}
+
+	file = g_strdup(word[1]);
+	if (!ends_with(file, ".seq")) {
+		str_append(&file, ".seq");
+	}
+
+	for (i = 2; i < 6; i++) {
+		if (word[i]) {
+			if (g_str_has_prefix(word[i], "-bias=")) {
+				master_bias = calloc(1, sizeof(fits));
+				if (!readfits(word[i] + 6, master_bias, NULL)) {
+					com.preprostatus |= USE_OFFSET;
+					com.seq.offset = master_bias;
+				}
+			} else if (g_str_has_prefix(word[i], "-dark=")) {
+				if (!readfits(word[i] + 6, master_dark, NULL)) {
+					master_dark = calloc(1, sizeof(fits));
+					com.preprostatus |= USE_DARK;
+					com.preprostatus |= USE_COSME;
+					com.seq.dark = master_dark;
+				}
+			} else if (g_str_has_prefix(word[i], "-flat=")) {
+				if (!readfits(word[i] + 6, master_flat, NULL)) {
+					master_flat = calloc(1, sizeof(fits));
+					com.preprostatus |= USE_FLAT;
+					com.seq.flat = master_flat;
+				}
+			} else if (!strcmp(word[i], "-cfa")) {
+				is_cfa = TRUE;
+			}
+		}
+	}
+
+	if (com.preprostatus == 0)
+		return -1;
+
+	struct preprocessing_data *args = malloc(sizeof(struct preprocessing_data));
+
+	siril_log_color_message(_("Preprocessing...\n"), "red");
+	gettimeofday(&args->t_start, NULL);
+
+	/* Get parameters */
+	args->autolevel = TRUE;
+	args->normalisation = 1.0f;	// will be updated anyway
+
+	args->sigma[0] = -1.00; /* cold pixels */
+	args->sigma[1] =  3.00; /* hot poxels */
+
+	args->compatibility = FALSE;
+	args->debayer = TRUE;
+
+	args->file = file;
+
+	/****/
+
+	// sequence, executed in a background thread
+	com.seq.ppprefix = "pp_";
+
+	// start preprocessing
+	set_cursor_waiting(TRUE);
+	start_in_new_thread(preprocess_worker, args);
+
 	return 0;
 }
 
