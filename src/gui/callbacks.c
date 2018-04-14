@@ -2846,8 +2846,7 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	double sig[2];
 	long icold = 0L, ihot = 0L;
 	double rate, total;
-	fits fit;
-	memset(&fit, 0, sizeof(fits));
+	fits fit = { 0 };
 
 	set_cursor_waiting(TRUE);
 	sig[0] = gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeColdBox")));
@@ -3837,26 +3836,16 @@ void on_seqselectall_button_clicked(GtkButton *button, gpointer user_data) {
 	gtk_widget_show(lookup_widget("confirm_dialog"));
 }
 
-void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
+static int test_for_master_files() {
 	GtkToggleButton *tbutton;
 	GtkEntry *entry;
-	com.preprostatus = 0;
-
-	if (!single_image_is_loaded() && !sequence_is_loaded())
-		return;
-
-	if (!single_image_is_loaded() && get_thread_run()) {
-		siril_log_message(
-				_("Another task is already in progress, ignoring new request.\n"));
-		return;
-	}
+	int ret_value = 0;
 
 	// if dark selected
-	tbutton = GTK_TOGGLE_BUTTON(
-			gtk_builder_get_object(builder, "usedark_button"));
+	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("usedark_button"));
 	if (gtk_toggle_button_get_active(tbutton) == TRUE) {
 		const char *filename;
-		entry = GTK_ENTRY(gtk_builder_get_object(builder, "darkname_entry"));
+		entry = GTK_ENTRY(lookup_widget("darkname_entry"));
 		filename = gtk_entry_get_text(entry);
 		if (filename[0] == '\0') {
 			gtk_toggle_button_set_active(tbutton, FALSE);
@@ -3879,7 +3868,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 					gtk_entry_set_text(entry, "");
 				}
 				else {
-					com.preprostatus |= USE_DARK;
+					ret_value |= USE_DARK;
 					if (single_image_is_loaded())
 						com.uniq->dark = dark_fit;
 					else
@@ -3888,26 +3877,23 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 			}
 		}
 		// if dark optimization selected
-		tbutton = GTK_TOGGLE_BUTTON(
-				gtk_builder_get_object(builder, "checkDarkOptimize"));
+		tbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkDarkOptimize"));
 		if (gtk_toggle_button_get_active(tbutton) == TRUE) {
-			com.preprostatus |= USE_OPTD;
+			ret_value |= USE_OPTD;
 		}
 
 		// if cosmetic correction selected
-		tbutton = GTK_TOGGLE_BUTTON(
-				gtk_builder_get_object(builder, "cosmEnabledCheck"));
+		tbutton = GTK_TOGGLE_BUTTON(lookup_widget("cosmEnabledCheck"));
 		if (gtk_toggle_button_get_active(tbutton) == TRUE) {
-			com.preprostatus |= USE_COSME;
+			ret_value |= USE_COSME;
 		}
 	}
 
 	// if flat selected
-	tbutton = GTK_TOGGLE_BUTTON(
-			gtk_builder_get_object(builder, "useflat_button"));
+	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("useflat_button"));
 	if (gtk_toggle_button_get_active(tbutton) == TRUE) {
 		const char *filename;
-		entry = GTK_ENTRY(gtk_builder_get_object(builder, "flatname_entry"));
+		entry = GTK_ENTRY(lookup_widget("flatname_entry"));
 		filename = gtk_entry_get_text(entry);
 		if (filename[0] == '\0') {
 			gtk_toggle_button_set_active(tbutton, FALSE);
@@ -3930,7 +3916,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 					gtk_entry_set_text(entry, "");
 				}
 				else {
-					com.preprostatus |= USE_FLAT;
+					ret_value |= USE_FLAT;
 					if (single_image_is_loaded())
 						com.uniq->flat = flat_fit;
 					else
@@ -3941,11 +3927,10 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	}
 
 	// if offset selected
-	tbutton = GTK_TOGGLE_BUTTON(
-			gtk_builder_get_object(builder, "useoffset_button"));
+	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("useoffset_button"));
 	if (gtk_toggle_button_get_active(tbutton) == TRUE) {
 		const char *filename;
-		entry = GTK_ENTRY(gtk_builder_get_object(builder, "offsetname_entry"));
+		entry = GTK_ENTRY(lookup_widget("offsetname_entry"));
 		filename = gtk_entry_get_text(entry);
 		if (filename[0] == '\0') {
 			gtk_toggle_button_set_active(tbutton, FALSE);
@@ -3968,7 +3953,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 					gtk_entry_set_text(entry, "");
 				}
 				else {
-					com.preprostatus |= USE_OFFSET;
+					ret_value |= USE_OFFSET;
 					if (single_image_is_loaded())
 						com.uniq->offset = bias_fit;
 					else
@@ -3977,34 +3962,50 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 			}
 		}
 	}
+	return ret_value;
+}
+
+void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
+	GtkEntry *entry;
+	GtkWidget *autobutton;
+	GtkToggleButton *CFA, *debayer;
+	GtkSpinButton *sigHot, *sigCold;
+
+	if (!single_image_is_loaded() && !sequence_is_loaded())
+		return;
+
+	if (!single_image_is_loaded() && get_thread_run()) {
+		siril_log_message(_("Another task is already in "
+				"progress, ignoring new request.\n"));
+		return;
+	}
+
+	com.preprostatus = test_for_master_files();
 
 	if (com.preprostatus == 0)
 		return;
 
-	// set output filename (preprocessed file name prefix)
-	entry = GTK_ENTRY(gtk_builder_get_object(builder, "preproseqname_entry"));
 	struct preprocessing_data *args = malloc(sizeof(struct preprocessing_data));
-	siril_log_color_message(_("Preprocessing...\n"), "red");
 	gettimeofday(&args->t_start, NULL);
+	siril_log_color_message(_("Preprocessing...\n"), "red");
+
+	// set output filename (preprocessed file name prefix)
+	entry = GTK_ENTRY(lookup_widget("preproseqname_entry"));
 
 	/* Get parameters */
-	GtkWidget *autobutton = lookup_widget("checkbutton_auto_evaluate");
-	args->autolevel = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(autobutton));
+	autobutton = lookup_widget("checkbutton_auto_evaluate");
+	args->autolevel = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autobutton));
 	if (args->autolevel) {
 		args->normalisation = 1.0f;	// will be updated anyway
 	} else {
-		GtkEntry *norm_entry = GTK_ENTRY(
-				gtk_builder_get_object(builder, "entry_flat_norm"));
+		GtkEntry *norm_entry = GTK_ENTRY(lookup_widget("entry_flat_norm"));
 		args->normalisation = atof(gtk_entry_get_text(norm_entry));
 	}
-	GtkToggleButton *CFA, *debayer;
-	GtkSpinButton *sigHot, *sigCold;
 
-	CFA = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "cosmCFACheck"));
-	debayer = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "checkButton_pp_dem"));
-	sigHot = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinSigCosmeHot"));
-	sigCold = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinSigCosmeCold"));
+	CFA = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
+	debayer = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_pp_dem"));
+	sigHot = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeHot"));
+	sigCold = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeCold"));
 
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkSigCold"))))
 		args->sigma[0] = gtk_spin_button_get_value(sigCold);
@@ -4024,6 +4025,10 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 
 	if (single_image_is_loaded()) {
 		int success = 0;
+		args->offset = com.uniq->offset;
+		args->dark = com.uniq->dark;
+		args->flat = com.uniq->flat;
+		args->is_sequence = FALSE;
 
 		com.uniq->ppprefix = strdup(gtk_entry_get_text(entry));
 		// start preprocessing
@@ -4040,9 +4045,13 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 		com.uniq->ppprefix = NULL;
 		unique_free_preprocessing_data(com.uniq);
 	} else {	// sequence, executed in a background thread
-		if (com.seq.ppprefix)
-			free(com.seq.ppprefix);
-		com.seq.ppprefix = strdup(gtk_entry_get_text(entry));
+		args->seq = &com.seq;
+		args->offset = args->seq->offset;
+		args->dark = args->seq->dark;
+		args->flat = args->seq->flat;
+		args->is_sequence = TRUE;
+
+		args->seq->ppprefix = strdup(gtk_entry_get_text(entry));
 
 		// start preprocessing
 		set_cursor_waiting(TRUE);
@@ -5369,7 +5378,7 @@ void on_menu_wavelet_separation_activate(GtkMenuItem *menuitem,
 }
 
 void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
-	fits fit;
+	fits fit = { 0 };
 	int Nbr_Plan, Type, maxplan, mins, i;
 	static GtkSpinButton *Spin_Nbr_Plan = NULL;
 	static GtkComboBox *Combo_Wavelets_Type = NULL;
@@ -5395,7 +5404,6 @@ void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
 		set_cursor_waiting(FALSE);
 		return;
 	}
-	memset(&fit, 0, sizeof(fits));
 	copyfits(&gfit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 
 	for (i = 0; i < Nbr_Plan; i++) {

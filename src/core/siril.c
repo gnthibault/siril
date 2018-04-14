@@ -862,16 +862,17 @@ static gboolean end_sequence_prepro(gpointer p) {
 	gettimeofday(&t_end, NULL);
 	show_time(args->t_start, t_end);
 	update_used_memory();
-	if (!args->retval && !single_image_is_loaded()) {
+	if (!args->retval && args->is_sequence) {
 		// load the new sequence
 		char *ppseqname = malloc(
-				strlen(com.seq.ppprefix) + strlen(com.seq.seqname) + 5);
-		sprintf(ppseqname, "%s%s.seq", com.seq.ppprefix, com.seq.seqname);
+				strlen(args->seq->ppprefix) + strlen(args->seq->seqname) + 5);
+		sprintf(ppseqname, "%s%s.seq", args->seq->ppprefix, args->seq->seqname);
 		check_seq(0);
 		update_sequences_list(ppseqname);
 		free(ppseqname);
 	}
-	sequence_free_preprocessing_data(&com.seq);
+	sequence_free_preprocessing_data(args->seq);
+	free(args->seq->ppprefix);
 #ifdef MAC_INTEGRATION
 	GtkosxApplication *osx_app = gtkosx_application_get();
 	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
@@ -888,16 +889,9 @@ gpointer seqpreprocess(gpointer p) {
 	fits *dark, *offset, *flat, *fit = NULL;
 	struct preprocessing_data *args = (struct preprocessing_data *) p;
 
-	if (single_image_is_loaded()) {
-		dark = com.uniq->dark;
-		offset = com.uniq->offset;
-		flat = com.uniq->flat;
-	} else if (sequence_is_loaded()) {
-		dark = com.seq.dark;
-		offset = com.seq.offset;
-		flat = com.seq.flat;
-	} else
-		return GINT_TO_POINTER(1);
+	dark = args->dark;
+	offset = args->offset;
+	flat = args->flat;
 
 	if (com.preprostatus & USE_FLAT) {
 		if (args->autolevel) {
@@ -915,7 +909,7 @@ gpointer seqpreprocess(gpointer p) {
 		}
 	}
 
-	if (single_image_is_loaded()) {
+	if (!args->is_sequence) {
 		snprintf(msg, 255, _("Pre-processing image %s"), com.uniq->filename);
 		msg[255] = '\0';
 		set_progress_bar_data(msg, 0.5);
@@ -971,11 +965,11 @@ gpointer seqpreprocess(gpointer p) {
 		deviant_pixel *dev = NULL;
 
 		// creating a SER file if the input data is SER
-		if (com.seq.type == SEQ_SER) {
+		if (args->seq->type == SEQ_SER) {
 			char new_ser_filename[256];
 			new_ser_file = calloc(1, sizeof(struct ser_struct));
-			snprintf(new_ser_filename, 255, "%s%s", com.seq.ppprefix, com.seq.ser_file->filename);
-			ser_create_file(new_ser_filename, new_ser_file, TRUE, com.seq.ser_file);
+			snprintf(new_ser_filename, 255, "%s%s", args->seq->ppprefix, args->seq->ser_file->filename);
+			ser_create_file(new_ser_filename, new_ser_file, TRUE, args->seq->ser_file);
 		}
 
 		if ((com.preprostatus & USE_COSME) && (com.preprostatus & USE_DARK)) {
@@ -995,22 +989,22 @@ gpointer seqpreprocess(gpointer p) {
 			return GINT_TO_POINTER(1);
 		}
 
-		for (i = 0; i < com.seq.number; i++) {
+		for (i = 0; i < args->seq->number; i++) {
 			if (!get_thread_run())
 				break;
-			seq_get_image_filename(&com.seq, i, source_filename);
+			seq_get_image_filename(args->seq, i, source_filename);
 			snprintf(msg, 255, _("Loading and pre-processing image %d/%d (%s)"),
-					i + 1, com.seq.number, source_filename);
+					i + 1, args->seq->number, source_filename);
 			msg[255] = '\0';
 			set_progress_bar_data(msg,
-					(double) (i + 1) / (double) com.seq.number);
-			if (seq_read_frame(&com.seq, i, fit)) {
+					(double) (i + 1) / (double) args->seq->number);
+			if (seq_read_frame(args->seq, i, fit)) {
 				snprintf(msg, 255, _("Could not read one of the raw files: %s."
 						" Aborting preprocessing."), source_filename);
 				msg[255] = '\0';
 				set_progress_bar_data(msg, PROGRESS_RESET);
 				args->retval = 1;
-				if (com.seq.type == SEQ_SER) {
+				if (args->seq->type == SEQ_SER) {
 					ser_write_and_close(new_ser_file);
 					free(new_ser_file);
 					new_ser_file = NULL;
@@ -1026,16 +1020,16 @@ gpointer seqpreprocess(gpointer p) {
 			if ((com.preprostatus & USE_COSME) && (com.preprostatus & USE_DARK) && (dark->naxes[2] == 1))
 				cosmeticCorrection(fit, dev, icold + ihot, args->is_cfa);
 
-			if (args->debayer && com.seq.type == SEQ_REGULAR) {
+			if (args->debayer && args->seq->type == SEQ_REGULAR) {
 				debayer_if_needed(TYPEFITS, fit, args->compatibility, TRUE);
 			}
 
-			snprintf(dest_filename, 255, "%s%s", com.seq.ppprefix,
+			snprintf(dest_filename, 255, "%s%s", args->seq->ppprefix,
 					source_filename);
 			dest_filename[255] = '\0';
-			snprintf(msg, 255, "Saving image %d/%d (%s)", i + 1, com.seq.number,
+			snprintf(msg, 255, "Saving image %d/%d (%s)", i + 1, args->seq->number,
 					dest_filename);
-			if (com.seq.type == SEQ_SER) {
+			if (args->seq->type == SEQ_SER) {
 				ser_write_frame_from_fit(new_ser_file, fit, i);
 			} else {
 				savefits(dest_filename, fit);
@@ -1044,7 +1038,7 @@ gpointer seqpreprocess(gpointer p) {
 		}
 		free(fit);
 		// closing SER file if it applies
-		if (com.seq.type == SEQ_SER && (new_ser_file != NULL)) {
+		if (args->seq->type == SEQ_SER && (new_ser_file != NULL)) {
 			ser_write_and_close(new_ser_file);
 			free(new_ser_file);
 			new_ser_file = NULL;

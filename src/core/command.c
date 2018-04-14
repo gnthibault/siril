@@ -131,7 +131,7 @@ command commande[] = {
 	
 	{"offset", 1, "offset value", process_offset, N_("Adds the constant \"value\" to the current image. This constant can take a negative value. As Siril uses unsigned FITS files, if the intensity of the pixel become negative its value is replaced by 0 and by 65535 (for a 16-bit file) if the pixel intensity overflows")},
 	
-	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa]", process_preprocess, N_("Preprocesses the sequence \"sequencename\" using bias, dark and flat given in argument")},
+	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa] [-debayer]", process_preprocess, N_("Preprocesses the sequence \"sequencename\" using bias, dark and flat given in argument")},
 	{"psf", 0, "psf", process_psf, N_("Performs a PSF (Point Spread Function) on the selected star")},
 	
 	{"register", 1, "register sequence", process_register, N_("Performs geometric transforms on images of the sequence given in arguement so that they may be superimposed on the reference image. The output sequence name starts with the prefix \"r_\". Using stars for registration, this algorithm only works with deepsky images")},
@@ -303,8 +303,8 @@ int process_savepnm(int nb){
 }
 
 int process_imoper(int nb){
-	fits fit;
-	memset(&fit, 0, sizeof(fits));
+	fits fit = { 0 };
+
 	if (readfits(word[1], &fit, NULL))
 		return -1;
 	imoper(&gfit, &fit, word[0][1]);
@@ -315,8 +315,8 @@ int process_imoper(int nb){
 }
 
 int process_addmax(int nb){
-	fits fit;
-	memset(&fit, 0, sizeof(fits));
+	fits fit = { 0 };
+
 	if (readfits(word[1], &fit, NULL))
 		return -1;
 	if (addmax(&gfit, &fit)==0) {
@@ -330,8 +330,7 @@ int process_addmax(int nb){
 int process_fdiv(int nb){
 	// combines an image division and a scalar multiplication.
 	float norm;
-	fits fit;
-	memset(&fit, 0, sizeof(fits));
+	fits fit = { 0 };
 
 	norm = atof(word[2]);
 	if (readfits(word[1], &fit, NULL))
@@ -1556,7 +1555,6 @@ int process_register(int nb) {
 			method->name);
 	msg[strlen(msg) - 1] = '\0';
 	gettimeofday(&(reg_args->t_start), NULL);
-	set_cursor_waiting(TRUE);
 	set_progress_bar_data(msg, PROGRESS_RESET);
 
 	start_in_new_thread(register_thread_func, reg_args);
@@ -1825,15 +1823,10 @@ int process_stackone(int nb) {
 	return 0;
 }
 
-static gpointer preprocess_worker(gpointer garg) {
-	struct preprocessing_data *args = (struct preprocessing_data *) garg;
-
-	siril_log_message("Work in progress ...\n");
-	return NULL;
-}
-
-// preprocess sequencename -bias= -dark= -flat= -cfa
+// preprocess sequencename -bias= -dark= -flat= -cfa -debayer
 int process_preprocess(int nb) {
+	struct preprocessing_data *args = malloc(sizeof(struct preprocessing_data));
+
 	com.preprostatus = 0;
 	gboolean is_cfa = FALSE;
 	gchar *file;
@@ -1843,6 +1836,7 @@ int process_preprocess(int nb) {
 	int i;
 
 	if (word[1][0] == '\0') {
+		free(args);
 		return -1;
 	}
 
@@ -1851,42 +1845,53 @@ int process_preprocess(int nb) {
 		str_append(&file, ".seq");
 	}
 
+	sequence *seq = readseqfile(file);
+	if (seq == NULL) {
+		siril_log_message(_("No sequence %s found.\n"), file);
+		return 1;
+	}
+
+	args->debayer = FALSE;
+
 	for (i = 2; i < 6; i++) {
 		if (word[i]) {
 			if (g_str_has_prefix(word[i], "-bias=")) {
 				master_bias = calloc(1, sizeof(fits));
 				if (!readfits(word[i] + 6, master_bias, NULL)) {
 					com.preprostatus |= USE_OFFSET;
-					com.seq.offset = master_bias;
+					seq->offset = master_bias;
 				}
 			} else if (g_str_has_prefix(word[i], "-dark=")) {
+				master_dark = calloc(1, sizeof(fits));
 				if (!readfits(word[i] + 6, master_dark, NULL)) {
-					master_dark = calloc(1, sizeof(fits));
 					com.preprostatus |= USE_DARK;
 					com.preprostatus |= USE_COSME;
-					com.seq.dark = master_dark;
+					seq->dark = master_dark;
 				}
 			} else if (g_str_has_prefix(word[i], "-flat=")) {
+				master_flat = calloc(1, sizeof(fits));
 				if (!readfits(word[i] + 6, master_flat, NULL)) {
-					master_flat = calloc(1, sizeof(fits));
 					com.preprostatus |= USE_FLAT;
-					com.seq.flat = master_flat;
+					seq->flat = master_flat;
 				}
 			} else if (!strcmp(word[i], "-cfa")) {
 				is_cfa = TRUE;
+			}  else if (!strcmp(word[i], "-debayer")) {
+				args->debayer = TRUE;
 			}
 		}
 	}
 
-	if (com.preprostatus == 0)
+	if (com.preprostatus == 0) {
+		free(args);
 		return -1;
-
-	struct preprocessing_data *args = malloc(sizeof(struct preprocessing_data));
+	}
 
 	siril_log_color_message(_("Preprocessing...\n"), "red");
 	gettimeofday(&args->t_start, NULL);
 
 	/* Get parameters */
+	args->seq = seq;
 	args->autolevel = TRUE;
 	args->normalisation = 1.0f;	// will be updated anyway
 
@@ -1894,18 +1899,19 @@ int process_preprocess(int nb) {
 	args->sigma[1] =  3.00; /* hot poxels */
 
 	args->compatibility = FALSE;
-	args->debayer = TRUE;
 
-	args->file = file;
+	args->offset = args->seq->offset;
+	args->dark = args->seq->dark;
+	args->flat = args->seq->flat;
+	args->is_sequence = TRUE;
 
 	/****/
 
 	// sequence, executed in a background thread
-	com.seq.ppprefix = "pp_";
+	args->seq->ppprefix = strdup("pp_");
 
 	// start preprocessing
-	set_cursor_waiting(TRUE);
-	start_in_new_thread(preprocess_worker, args);
+	start_in_new_thread(seqpreprocess, args);
 
 	return 0;
 }

@@ -286,6 +286,9 @@ struct imdata {
 /* preprocessing data from GUI */
 struct preprocessing_data {
 	struct timeval t_start;
+	fits *dark, *offset, *flat;
+	gboolean is_sequence;
+	sequence *seq;
 	gboolean autolevel;
 	double sigma[2];
 	gboolean is_cfa;
@@ -293,7 +296,6 @@ struct preprocessing_data {
 	gboolean compatibility;
 	float normalisation;
 	int retval;
-	const gchar *file; // used for script */
 };
 
 /* registration data, exists once for each image and each layer */
