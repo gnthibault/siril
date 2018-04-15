@@ -1245,7 +1245,7 @@ static gboolean end_register_idle(gpointer p) {
 				initialize_sequence(seq, FALSE);
 
 				/* we are not interested in the whole path */
-				gchar *seqname = g_path_get_basename (com.seq.seqname);
+				gchar *seqname = g_path_get_basename (args->seq->seqname);
 				char *rseqname = malloc(
 						strlen(args->prefix) + strlen(seqname) + 5);
 
@@ -1271,7 +1271,7 @@ static gboolean end_register_idle(gpointer p) {
 				seq->needs_saving = TRUE;
 				writeseqfile(seq);
 
-				free_sequence(args->seq, FALSE);	// probably com.seq
+				free_sequence(args->seq, &com.seq != args->seq);
 
 				/* copy the new over com.seq to leave it in a usable state,
 				 * even if it will be freed in update_sequences_list to be
