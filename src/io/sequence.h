@@ -5,7 +5,7 @@
 
 int	read_single_sequence(char *realname, int imagetype);
 int	seqsetnum(int image_number);
-int	check_seq(int force);
+int	check_seq(int recompute_stats);
 int	check_only_one_film_seq(char* name);
 int	seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit);
 int	set_seq(const char *);

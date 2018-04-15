@@ -152,8 +152,9 @@ int read_single_sequence(char *realname, int imagetype) {
  * corresponding sequence files.
  * Called when changing wd with name == NULL or when an explicit root name is
  * given in the GUI or when searching for sequences.
+ * force clears the stats in the seqfile.
  */
-int check_seq(int force) {
+int check_seq(int recompute_stats) {
 	char *basename;
 	int curidx, fixed;
 	GDir *dir;
@@ -273,7 +274,7 @@ int check_seq(int force) {
 				char msg[200];
 				sprintf(msg, _("sequence %d, found: %d to %d"),
 						i+1, sequences[i]->beg, sequences[i]->end);
-				if (!buildseqfile(sequences[i], force) && retval)
+				if (!buildseqfile(sequences[i], recompute_stats) && retval)
 					retval = 0;	// at least one succeeded to be created
 			}
 			free_sequence(sequences[i], TRUE);
@@ -453,7 +454,7 @@ int set_seq(const char *name){
 	seqsetnum(seq->current);	// set limits for spin button and display loaded filenum
 	set_layers_for_assign();	// set default layers assign and populate combo box
 	set_layers_for_registration();	// set layers in the combo box for registration
-	fill_sequence_list(seq, 0);	// display list of files in the sequence
+	fill_sequence_list(seq, 0, FALSE);// display list of files in the sequence
 	set_output_filename_to_sequence_name();
 	sliders_mode_set_state(com.sliders);
 	initialize_display_mode();
@@ -1468,7 +1469,7 @@ gboolean end_seqpsf(gpointer p) {
 		 * in case seqpsf is called for registration. */
 		// update the list in the GUI
 		if (seq->type != SEQ_INTERNAL)
-			fill_sequence_list(seq, layer);
+			fill_sequence_list(seq, layer, FALSE);
 
 		set_layers_for_registration();	// update display of available reg data
 		drawPlot();

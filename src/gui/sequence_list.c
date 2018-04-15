@@ -126,23 +126,26 @@ struct _seq_list {
 };
 
 /* called on sequence loading (set_seq), on layer tab change and on registration data update.
- * It is executed safely in the GTK thread. */
-void fill_sequence_list(sequence *seq, int layer) {
+ * It is executed safely in the GTK thread if as_idle is true. */
+void fill_sequence_list(sequence *seq, int layer, gboolean as_idle) {
 	struct _seq_list *args;
 	if (seq == NULL || layer >= seq->nb_layers) return;
 	args = malloc(sizeof(struct _seq_list));
 	args->seq = seq;
 	args->layer = layer;
-	gdk_threads_add_idle(fill_sequence_list_idle, args);
+	if (as_idle)
+		gdk_threads_add_idle(fill_sequence_list_idle, args);
+	else fill_sequence_list_idle(args);
 }
 
 static gboolean fill_sequence_list_idle(gpointer p) {
 	int i;
 	struct _seq_list *args = (struct _seq_list *)p;
 	add_image_to_sequence_list(NULL, 0, 0);	// clear  
-	if (args->seq->number == 0) return FALSE;
-	for (i=0; i<args->seq->number; i++) {
-		add_image_to_sequence_list(args->seq, i, args->layer);
+	if (args->seq->number > 0) {
+		for (i=0; i<args->seq->number; i++) {
+			add_image_to_sequence_list(args->seq, i, args->layer);
+		}
 	}
 	free(args);
 	return FALSE;

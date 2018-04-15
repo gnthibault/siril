@@ -233,7 +233,7 @@ void on_spinbut_shift_value_change(GtkSpinButton *spinbutton, gpointer user_data
 		com.seq.regparam[current_layer][com.seq.current].shiftx = (float) new_value;
 	else com.seq.regparam[current_layer][com.seq.current].shifty = (float) new_value;
 	writeseqfile(&com.seq);
-	fill_sequence_list(&com.seq, current_layer);	// update list with new regparam
+	fill_sequence_list(&com.seq, current_layer, FALSE);	// update list with new regparam
 	redraw_previews();
 }
 

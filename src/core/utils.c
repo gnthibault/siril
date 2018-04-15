@@ -437,17 +437,26 @@ int update_sequences_list(const char *sequence_name_to_select) {
 	struct dirent **list;
 	int number_of_loaded_sequences = 0;
 	int index_of_seq_to_load = -1;
+	char *seqname = NULL;
 
 	// clear the previous list
 	seqcombo = GTK_COMBO_BOX_TEXT(
 			gtk_builder_get_object(builder, "sequence_list_combobox"));
 	gtk_combo_box_text_remove_all(seqcombo);
 
+	if (sequence_name_to_select) {
+	       if (ends_with(sequence_name_to_select, ".seq"))
+		       seqname = strdup(sequence_name_to_select);
+	       else {
+		       seqname = malloc(strlen(sequence_name_to_select) + 5);
+		       sprintf(seqname, "%s.seq", sequence_name_to_select);
+	       }
+	}
+
 #ifdef _WIN32
-	number_of_loaded_sequences = ListSequences(com.wd, sequence_name_to_select, seqcombo, &index_of_seq_to_load);
+	number_of_loaded_sequences = ListSequences(com.wd, seqname, seqcombo, &index_of_seq_to_load);
 #else
 	int i, n;
-	char filename[256];
 
 	n = scandir(com.wd, &list, 0, alphasort);
 	if (n < 0)
@@ -459,14 +468,11 @@ int update_sequences_list(const char *sequence_name_to_select) {
 		if ((suf = strstr(list[i]->d_name, ".seq")) && strlen(suf) == 4) {
 			sequence *seq = readseqfile(list[i]->d_name);
 			if (seq != NULL) {
-				strncpy(filename, list[i]->d_name, 255);
 				free_sequence(seq, TRUE);
+				char *filename = list[i]->d_name;
 				gtk_combo_box_text_append_text(seqcombo, filename);
-				if (sequence_name_to_select
-						&& !strncmp(filename, sequence_name_to_select,
-								strlen(filename))) {
+				if (seqname && !strcmp(filename, seqname))
 					index_of_seq_to_load = number_of_loaded_sequences;
-				}
 				++number_of_loaded_sequences;
 			}
 		}
@@ -475,6 +481,8 @@ int update_sequences_list(const char *sequence_name_to_select) {
 		free(list[i]);
 	free(list);
 #endif
+
+	if (seqname) free(seqname);
 
 	if (!number_of_loaded_sequences) {
 		fprintf(stderr, "No valid sequence found in CWD.\n");
@@ -849,7 +857,7 @@ void quicksort_s(WORD *a, int n) {
 /**
  * Removes extension of the filename
  * @param filename file path with extension
- * @return filename without extension
+ * @return newly allocated filename without extension
  */
 char *remove_ext_from_filename(const char *filename) {
 	size_t filelen;

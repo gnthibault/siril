@@ -13,23 +13,24 @@ struct registration_args {
 	registration_function func;	// the registration function
 	sequence *seq;			// the sequence to register
 	gboolean process_all_frames;	// all frames of the sequence (opposite of selected frames)
-	rectangle selection;		// the selection rectangle
 	int layer;			// layer of images on which the registration is computed
 	struct timeval t_start;		// start time of func
 	int retval;			// retval of func
 	gboolean run_in_thread;		// true if the registration was run in a thread
-	const gchar *prefix;		// prefix of the created sequence if any
 	gboolean follow_star;		// follow star position between frames
-	gboolean load_new_sequence;	// load a new sequence if success
 	gboolean matchSelection;	// Match stars found in the seleciton of reference image
-	opencv_interpolation interpolation; // type of rotation interpolation
-	gboolean translation_only;	// don't rotate images
-	gboolean x2upscale; // apply an x2 upscale for pseudo drizzle
+	rectangle selection;		// the selection rectangle
+	gboolean x2upscale;		// apply an x2 upscale for pseudo drizzle
 
 	/* data for generated sequence, for star alignment registration */
-	int new_total;
-	imgdata *imgparam;
-	regdata *regparam;
+	gboolean translation_only;	// don't rotate images => no new sequence
+	int new_total;			// remaining images after registration
+	imgdata *imgparam;		// imgparam for the new sequence
+	regdata *regparam;		// regparam for the new sequence
+	const gchar *prefix;		// prefix of the created sequence if any
+	gboolean load_new_sequence;	// load the new sequence if success
+	sequence *new_seq;		// the new sequence
+	opencv_interpolation interpolation; // type of rotation interpolation
 };
 
 typedef enum {

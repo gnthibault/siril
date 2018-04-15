@@ -229,7 +229,7 @@ void	sequence_list_change_selection(gchar *path, gboolean new_value);
 void	sequence_list_change_selection_index(int index);
 void	sequence_list_change_current();
 void	sequence_list_change_reference();
-void	fill_sequence_list(sequence *seq, int layer);
+void	fill_sequence_list(sequence *seq, int layer, gboolean as_idle);
 void	clear_sequence_list();
 
 /****************** statistics_list.h ******************/

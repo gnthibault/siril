@@ -385,7 +385,8 @@ int process_rl(int nb) {
 	double sigma;
 	int iter;
 
-	//control_window_switch_to_tab(OUTPUT_LOGS);
+	if (!com.headless)
+		control_window_switch_to_tab(OUTPUT_LOGS);
 	iter = atoi(word[1]);
 	sigma = atof(word[2]);
 	if (iter <= 0) {
@@ -862,7 +863,8 @@ int process_bgnoise(int nb){
 	struct noise_data *args = malloc(sizeof(struct noise_data));
 
 	set_cursor_waiting(TRUE);
-	//control_window_switch_to_tab(OUTPUT_LOGS);
+	if (!com.headless)
+		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	args->fit = &gfit;
 	args->verbose = TRUE;
@@ -1354,11 +1356,14 @@ int process_findcosme(int nb) {
 			str_append(&file, ".seq");
 		}
 
+		if (!existseq(file))
+			check_seq(FALSE);
 		seq = readseqfile(file);
 		if (seq == NULL) {
 			siril_log_message(_("No sequence %s found.\n"), file);
 			return 1;
 		}
+		seq_check_basic_data(seq, FALSE);
 		i++;
 	} else {
 		if (!single_image_is_loaded())
@@ -1500,6 +1505,8 @@ int process_register(int nb) {
 		str_append(&file, ".seq");
 	}
 
+	if (!existseq(file))
+		check_seq(FALSE);
 	sequence *seq = readseqfile(file);
 	if (seq == NULL) {
 		siril_log_message(_("No sequence %s found.\n"), file);
@@ -1518,7 +1525,8 @@ int process_register(int nb) {
 
 	reg_args = calloc(1, sizeof(struct registration_args));
 
-	//control_window_switch_to_tab(OUTPUT_LOGS);
+	if (!com.headless)
+		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	/* filling the arguments for registration */
 	reg_args->func = method->method_ptr;
@@ -1537,7 +1545,7 @@ int process_register(int nb) {
 		double diff = test_available_space(size * 4.0); //FIXME: 4 is only ok for x2 Drizzle
 		if (diff < 0.0) {
 			msg = siril_log_message(_("Not enough disk space to "
-					"perform Drizzle operation !!\n"));
+					"perform Drizzle operation!\n"));
 			free(reg_args);
 			return 1;
 		}
@@ -1550,6 +1558,7 @@ int process_register(int nb) {
 	get_the_registration_area(reg_args, method);	// sets selection
 	reg_args->run_in_thread = TRUE;
 	reg_args->prefix = "r_";
+	reg_args->load_new_sequence = FALSE;	// don't load it for command line execution
 
 	msg = siril_log_color_message(
 			_("Registration: processing using method: %s\n"), "red",
@@ -1643,7 +1652,8 @@ static gpointer stackall_worker(gpointer garg) {
 	const gchar *file;
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
-	//control_window_switch_to_tab(OUTPUT_LOGS);
+	if (!com.headless)
+		control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
 	if (check_seq(0) || (dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
@@ -1846,11 +1856,14 @@ int process_preprocess(int nb) {
 		str_append(&file, ".seq");
 	}
 
+	if (!existseq(file))
+		check_seq(FALSE);
 	sequence *seq = readseqfile(file);
 	if (seq == NULL) {
 		siril_log_message(_("No sequence %s found.\n"), file);
 		return 1;
 	}
+	seq_check_basic_data(seq, FALSE);
 
 	args->debayer = FALSE;
 

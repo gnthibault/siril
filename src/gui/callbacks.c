@@ -4132,7 +4132,7 @@ void on_notebook1_switch_page(GtkNotebook *notebook, GtkWidget *page,
 	set_display_mode();		// change the mode in the combo box if needed
 	redraw(com.cvport, REMAP_ONLY);
 	calculate_fwhm(com.vport[com.cvport]);
-	fill_sequence_list(&com.seq, com.cvport);
+	fill_sequence_list(&com.seq, com.cvport, FALSE);
 }
 
 struct checkSeq_filter_data {
