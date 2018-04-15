@@ -1505,6 +1505,7 @@ int process_register(int nb) {
 		siril_log_message(_("No sequence %s found.\n"), file);
 		return 1;
 	}
+	seq_check_basic_data(seq, FALSE);
 
 	/* getting the selected registration method */
 	struct registration_method *reg = malloc(sizeof(struct registration_method));
