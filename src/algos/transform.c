@@ -171,6 +171,28 @@ int wavelet_transform_file(float *Imag, int Nl, int Nc,
 
 /*****************************************************************************/
 
+// alternative to wavelet_transform_file that does not use a file
+// call wave_io_free() on the returned Wavelet if retval is 0
+int wavelet_transform(float *Imag, int Nl, int Nc,
+		wave_transf_des *Wavelet, int Type_Transform, int Nbr_Plan, WORD *data) {
+
+	memset(Wavelet, 0, sizeof(wave_transf_des));
+
+	/* read the input image */
+	prepare_rawdata(Imag, Nl, Nc, data);
+
+	if (wavelet_transform_data(Imag, Nl, Nc, Wavelet, Type_Transform,
+				Nbr_Plan)) {
+		wave_io_free(Wavelet);
+		return 1;
+	}
+
+	return 0;
+}
+
+/*****************************************************************************/
+
+
 int wavelet_transform_data(float *Imag, int Nl, int Nc,
 		wave_transf_des *Wavelet, int Type_Transform, int Nbr_Plan) {
 	float *Pave;

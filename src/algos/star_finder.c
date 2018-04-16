@@ -112,21 +112,14 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 	double bg;
 	WORD threshold, norm;
 	WORD **wave_image, **real_image;
-	fits *wave_fit;
+	fits wave_fit = { 0 };
 	fitted_PSF **results;
 	struct timeval t_start, t_end;
 
 	assert(nx > 0 && ny > 0);
 
-	wave_fit = calloc(1, sizeof(fits));
-	if (wave_fit == NULL) {
-		printf("Memory allocation failed: peaker\n");
-		return NULL;
-	}
-
 	results = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
 	if (results == NULL) {
-		free(wave_fit);
 		printf("Memory allocation failed: peaker\n");
 		return NULL;
 	}
@@ -138,24 +131,22 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 	get_structure(sf);
 	threshold = Compute_threshold(fit, sf->sigma, layer, &norm, &bg);
 
-	copyfits(fit, wave_fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
-	get_wavelet_layers(wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
+	copyfits(fit, &wave_fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
+	get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
 
 	/* FILL wavelet image upside-down */
 	wave_image = malloc(ny * sizeof(WORD *));
 	if (wave_image == NULL) {
-		free(wave_fit);
 		free(results);
 		printf("Memory allocation failed: peaker\n");
 		return NULL;
 	}
 	for (k = 0; k < ny; k++)
-		wave_image[ny - k - 1] = wave_fit->pdata[layer] + k * nx;
+		wave_image[ny - k - 1] = wave_fit.pdata[layer] + k * nx;
 
 	/* FILL real image upside-down */
 	real_image = malloc(ny * sizeof(WORD *));
 	if (real_image == NULL) {
-		free(wave_fit);
 		free(results);
 		free(wave_image);
 		printf("Memory allocation failed: peaker\n");
@@ -248,7 +239,7 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 	sf->nb_stars = nbstars;
 	free(wave_image);
 	free(real_image);
-	clearfits(wave_fit);
+	clearfits(&wave_fit);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);

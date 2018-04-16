@@ -1161,11 +1161,9 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
  * extracts plan "Plan" in fit parameters */
 
 int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer) {
-	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
-			"b_rawdata.wave" }, *dir[3];
 	const char *tmpdir;
-	int chan, start, end;
-	wave_transf_des Wavelet[3];
+	int chan, start, end, retval = 0;
+	wave_transf_des wavelet[3];
 
 	assert(fit->naxes[2] <= 3);
 	tmpdir = g_get_tmp_dir();
@@ -1182,35 +1180,25 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 		start = reqlayer;
 		end = start + 1;
 	}
+
 	for (chan = start; chan < end; chan++) {
 		int Nl, Nc;
 
-		dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan], NULL);
-		if (wavelet_transform_file(Imag, fit->ry, fit->rx, dir[chan], Type, Nbr_Plan,
-				fit->pdata[chan])) {
-			free((char *) Imag);
-			g_free(dir[chan]);
-			return 1;
+		if (wavelet_transform(Imag, fit->ry, fit->rx, &wavelet[chan],
+					Type, Nbr_Plan, fit->pdata[chan])) {
+			retval = 1;
+			break;
 		}
-		if (wave_io_read(dir[chan], &Wavelet[chan])) {
-			free((char *) Imag);
-			g_free(dir[chan]);
-			return 1;
-		}
-		Nl = Wavelet[chan].Nbr_Ligne;
-		Nc = Wavelet[chan].Nbr_Col;
-		pave_2d_extract_plan(Wavelet[chan].Pave.Data, Imag, Nl, Nc, Plan);
+		Nl = wavelet[chan].Nbr_Ligne;
+		Nc = wavelet[chan].Nbr_Col;
+		pave_2d_extract_plan(wavelet[chan].Pave.Data, Imag, Nl, Nc, Plan);
 		reget_rawdata(Imag, Nl, Nc, fit->pdata[chan]);
-		g_free(dir[chan]);
+		wave_io_free(&wavelet[chan]);
 	}
 
 	/* Free */
-	if (Imag)
-		free((char *) Imag);
-	for (chan = start; chan < end; chan++) {
-		wave_io_free(&Wavelet[chan]);
-	}
-	return 0;
+	free(Imag);
+	return retval;
 }
 
 /*****************************************************************************
