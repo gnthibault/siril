@@ -1862,6 +1862,7 @@ int process_preprocess(int nb) {
 	sequence *seq = readseqfile(file);
 	if (seq == NULL) {
 		siril_log_message(_("No sequence %s found.\n"), file);
+		free(args);
 		return 1;
 	}
 	seq_check_basic_data(seq, FALSE);
@@ -2064,6 +2065,7 @@ static gpointer execute_script(gpointer p) {
 	struct timeval t_start, t_end;
 
 	com.headless = TRUE;
+	com.stop_script = FALSE;
 	gettimeofday(&t_start, NULL);
 #if (_POSIX_C_SOURCE < 200809L)
 	linef = calloc(256, sizeof(char));
@@ -2075,7 +2077,14 @@ static gpointer execute_script(gpointer p) {
 	while ((read = getline(&linef, &lenf, fp)) != -1) {
 #endif
 		++line;
-		if (linef[0] == '#') continue;	// comments
+		if (com.stop_script) {
+			retval = 1;
+			break;
+		}
+		if (linef[0] == '#') {
+			siril_log_color_message(linef, "blue");
+			continue;
+		}
 		if (linef[0] == '\0' || linef[0] == '\n')
 			continue;
 		int wordnb;
@@ -2094,6 +2103,7 @@ static gpointer execute_script(gpointer p) {
 	free(linef);
 	fclose(fp);
 	com.headless = FALSE;
+	com.stop_script = FALSE;
 	if (!retval) {
 		siril_log_message(_("Script execution finished successfully.\n"));
 		gettimeofday(&t_end, NULL);

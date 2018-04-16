@@ -373,6 +373,7 @@ void on_processes_button_cancel_clicked(GtkButton *button, gpointer user_data) {
 	if (com.thread != NULL)
 		siril_log_color_message(_("Process aborted by user\n"), "red");
 	stop_processing_thread();
+	com.stop_script = TRUE;
 }
 
 int seq_filter_all(sequence *seq, int nb_img, double any) {

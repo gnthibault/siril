@@ -584,6 +584,7 @@ struct cominf {
 	gboolean run_thread;		// the main thread loop condition
 	int max_thread;			// maximum of thread used
 	gboolean headless;		// console execution, no GUI (scripts for now)
+	gboolean stop_script;   // global variable to manually stop script execution
 };
 
 /* this structure is used to characterize the statistics of the image */
