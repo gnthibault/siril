@@ -108,9 +108,6 @@ int pave_2d_linear_smooth(float *Imag, float *Smooth, int Nl, int Nc,
 
     Step = pow(2., (float) Num_Plan) + 0.5;
 
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) schedule(static)
-#endif
 	for (i = 0; i < Nl; i++) {
 		for (j = 0; j < Nc; j++) {
             indi1 = test_ind (i - Step, Nl);
@@ -222,9 +219,6 @@ int pave_2d_bspline_smooth(float *Imag, float *Smooth, int Nl, int Nc,
 	
 	Step = pow(2., (float) Num_Plan) + 0.5;
 
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) schedule(static)
-#endif
 	for (i = 0; i < Nl; i++) {
 		for (j = 0; j < Nc; j++) {
 			int indi1 = test_ind(i - Step, Nl);
