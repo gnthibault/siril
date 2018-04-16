@@ -131,10 +131,10 @@ command commande[] = {
 	
 	{"offset", 1, "offset value", process_offset, N_("Adds the constant \"value\" to the current image. This constant can take a negative value. As Siril uses unsigned FITS files, if the intensity of the pixel become negative its value is replaced by 0 and by 65535 (for a 16-bit file) if the pixel intensity overflows")},
 	
-	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa] [-debayer]", process_preprocess, N_("Preprocesses the sequence \"sequencename\" using bias, dark and flat given in argument")},
+	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa] [-debayer]", process_preprocess, N_("Preprocesses the sequence \"sequencename\" using bias, dark and flat given in argument. It is possible to specify if images are CFA for cosmetic correction purposes with the option \"-cfa\" and also to demosaic images at the end of the process with \"-debayer\"")},
 	{"psf", 0, "psf", process_psf, N_("Performs a PSF (Point Spread Function) on the selected star")},
 	
-	{"register", 1, "register sequence", process_register, N_("Performs geometric transforms on images of the sequence given in arguement so that they may be superimposed on the reference image. The output sequence name starts with the prefix \"r_\". Using stars for registration, this algorithm only works with deepsky images")},
+	{"register", 1, "register sequence [-drizzle]", process_register, N_("Performs geometric transforms on images of the sequence given in arguement so that they may be superimposed on the reference image. The output sequence name starts with the prefix \"r_\". Using stars for registration, this algorithm only works with deepsky images. The option \"-drizzle\" performs a x2 drizzle on the images")},
 	{"resample", 1, "resample factor", process_resample, N_("Resamples image with a factor \"factor\"")},
 	{"rl", 2, "rl iterations sigma", process_rl, N_("Restores an image using the Richardson-Lucy method. \"Iterations\" is the number of iterations to be performed (typically between 10 and 50). \"Sigma\" is the size of the kernel to be applied")},
 	{"rmgreen", 1, "rmgreen type", process_scnr, N_("Chromatic noise reduction filter. It removes green noise in the current image. This filter is based on PixInsight's SCNR Average Neutral algorithm and it is the same filter used by HLVG plugin in Photoshop. \"Type\"=1 stands for Average Neutral Protection, while \"type\"=2 stands for Maximum Neutral Protection")},
@@ -1535,7 +1535,7 @@ int process_register(int nb) {
 	reg_args->follow_star = FALSE;
 	reg_args->matchSelection = FALSE;
 	reg_args->translation_only = FALSE;
-	if (word[2] && (!strcmp(word[2], "-d")))
+	if (word[2] && (!strcmp(word[2], "-drizzle")))
 		reg_args->x2upscale = TRUE;
 	else
 		reg_args->x2upscale = FALSE;
@@ -1610,6 +1610,7 @@ static int stack_one_seq(struct _stackall_data *arg) {
 			args.normalize = arg->norm;
 		else args.normalize = NO_NORM;
 		args.force_norm = FALSE;
+		args.norm_to_16 = TRUE;
 		args.reglayer = args.seq->nb_layers == 1 ? 0 : 1;
 		stack_fill_list_of_unfiltered_images(&args);
 
