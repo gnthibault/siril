@@ -1841,6 +1841,7 @@ int process_preprocess(int nb) {
 
 	com.preprostatus = 0;
 	gboolean is_cfa = FALSE;
+	gboolean do_debayer = FALSE;
 	gchar *file;
 	fits *master_bias = NULL;
 	fits *master_dark = NULL;
@@ -1867,8 +1868,6 @@ int process_preprocess(int nb) {
 	}
 	seq_check_basic_data(seq, FALSE);
 
-	args->debayer = FALSE;
-
 	for (i = 2; i < 6; i++) {
 		if (word[i]) {
 			if (g_str_has_prefix(word[i], "-bias=")) {
@@ -1893,7 +1892,7 @@ int process_preprocess(int nb) {
 			} else if (!strcmp(word[i], "-cfa")) {
 				is_cfa = TRUE;
 			}  else if (!strcmp(word[i], "-debayer")) {
-				args->debayer = TRUE;
+				do_debayer = TRUE;
 			}
 		}
 	}
@@ -1915,6 +1914,9 @@ int process_preprocess(int nb) {
 	args->sigma[1] =  3.00; /* hot poxels */
 
 	args->compatibility = FALSE;
+
+	args->debayer = do_debayer;
+	args->is_cfa = is_cfa;
 
 	args->offset = args->seq->offset;
 	args->dark = args->seq->dark;
@@ -2263,7 +2265,11 @@ void on_GtkCommandHelper_clicked(GtkButton *button, gpointer user_data) {
 		g_strfreev(command_line);
 
 		popover = popover_new(lookup_widget("command"), helper);
+#if GTK_MAJOR_VERSION >= 3 && GTK_MINOR_VERSION < 22
+		gtk_widget_show(popover);
+#else
 		gtk_popover_popup(GTK_POPOVER(popover));
+#endif
 		g_free(helper);
 	}
 }
