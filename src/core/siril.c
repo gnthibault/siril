@@ -1161,12 +1161,10 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
  * extracts plan "Plan" in fit parameters */
 
 int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer) {
-	const char *tmpdir;
 	int chan, start, end, retval = 0;
 	wave_transf_des wavelet[3];
 
 	assert(fit->naxes[2] <= 3);
-	tmpdir = g_get_tmp_dir();
 
 	float *Imag = f_vector_alloc(fit->ry * fit->rx);
 	if (Imag == NULL)
