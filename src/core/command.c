@@ -1846,7 +1846,7 @@ int process_preprocess(int nb) {
 	fits *master_bias = NULL;
 	fits *master_dark = NULL;
 	fits *master_flat = NULL;
-	int i;
+	int i, retvalue = 0;
 
 	if (word[1][0] == '\0') {
 		free(args);
@@ -1875,6 +1875,9 @@ int process_preprocess(int nb) {
 				if (!readfits(word[i] + 6, master_bias, NULL)) {
 					com.preprostatus |= USE_OFFSET;
 					seq->offset = master_bias;
+				} else {
+					retvalue = 1;
+					break;
 				}
 			} else if (g_str_has_prefix(word[i], "-dark=")) {
 				master_dark = calloc(1, sizeof(fits));
@@ -1882,12 +1885,18 @@ int process_preprocess(int nb) {
 					com.preprostatus |= USE_DARK;
 					com.preprostatus |= USE_COSME;
 					seq->dark = master_dark;
+				} else {
+					retvalue = 1;
+					break;
 				}
 			} else if (g_str_has_prefix(word[i], "-flat=")) {
 				master_flat = calloc(1, sizeof(fits));
 				if (!readfits(word[i] + 6, master_flat, NULL)) {
 					com.preprostatus |= USE_FLAT;
 					seq->flat = master_flat;
+				} else {
+					retvalue = 1;
+					break;
 				}
 			} else if (!strcmp(word[i], "-cfa")) {
 				is_cfa = TRUE;
@@ -1897,7 +1906,10 @@ int process_preprocess(int nb) {
 		}
 	}
 
-	if (com.preprostatus == 0) {
+	if (retvalue || !com.preprostatus) {
+		if (master_bias) free(master_bias);
+		if (master_dark) free(master_dark);
+		if (master_flat) free(master_flat);
 		free(args);
 		return -1;
 	}
