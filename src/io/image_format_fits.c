@@ -86,9 +86,13 @@ static void read_fits_header(fits *fit) {
 
 	status = 0;
 	fits_read_key(fit->fptr, TINT, "BSCALE", &zero, NULL, &status);
-	if (!status && 1 != zero)
-		siril_log_message(
-				_("Loaded FITS file has a BSCALE different than 1 (%d)\n"), zero);
+	if (!status && 1 != zero) {
+		siril_log_message(_("Loaded FITS file has "
+				"a BSCALE different than 1 (%d)\n"), zero);
+		status = 0;
+		/* We reset the scaling factors as we don't use it */
+		fits_set_bscale(fit->fptr, 1.0, 0.0, &status);
+	}
 	status = 0;
 	fits_read_key(fit->fptr, TINT, "BZERO", &zero, NULL, &status);
 
