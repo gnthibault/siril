@@ -183,9 +183,6 @@ int pave_2d_build(float *Pave, float *Imag, int Nl, int Nc, int Nbr_Plan,
 
 	memset(Imag, 0.0, Nl * Nc * sizeof(float));
 
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) schedule(static)
-#endif
 	for (Num_Plan = Nbr_Plan - 1; Num_Plan >= 0; Num_Plan--) {
 		int Pos = Nl * Nc * Num_Plan;
 		float *Plan = Pave + Pos;
