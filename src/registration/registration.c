@@ -691,7 +691,12 @@ int register_star_alignment(struct registration_args *args) {
 					if (args->seq->type == SEQ_SER) {
 						siril_log_color_message(_("Frame %d:\n"), "bold", frame);
 					}
-					stars = peaker(&fit, args->layer, &sf, NULL);
+					if (args->matchSelection && args->selection.w > 0 && args->selection.h > 0) {
+						stars = peaker(&fit, args->layer, &sf, &args->selection);
+					}
+					else {
+						stars = peaker(&fit, args->layer, &sf, NULL);
+					}
 					if (sf.nb_stars < AT_MATCH_MINPAIRS) {
 						siril_log_message(
 								_("Not enough stars. Image %d skipped\n"), frame);
