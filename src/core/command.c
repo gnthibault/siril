@@ -1779,6 +1779,16 @@ int process_stackone(int nb) {
 		str_append(&file, ".seq");
 	}
 
+	if (!existseq(file))
+		check_seq(FALSE);
+	sequence *seq = readseqfile(file);
+	if (seq == NULL) {
+		siril_log_message(_("No sequence %s found.\n"), file);
+		free(arg);
+		return 1;
+	}
+	seq_check_basic_data(seq, FALSE);
+
 	arg->file = file;
 	if (!word[2] || !strcmp(word[2], "sum"))
 		arg->method = stack_summing_generic;
@@ -2067,11 +2077,10 @@ static int executeCommand(int wordnb) {
 
 	// process the command
 	siril_log_color_message(_("Running command: %s\n"), "salmon", word[0]);
-	commande[i].process(wordnb);
-	return 0;
+	return commande[i].process(wordnb);
 }
 
-static gpointer execute_script(gpointer p) {
+gpointer execute_script(gpointer p) {
 	FILE *fp = (FILE *)p;
 	ssize_t read;
 	char *linef;
@@ -2133,6 +2142,10 @@ int processcommand(const char *line) {
 	if (line[0] == '\0' || line[0] == '\n')
 		return 0;
 	if (line[0] == '@') { // case of files
+		if (get_thread_run()) {
+			siril_log_message(_("Another task is already in progress, ignoring new request.\n"));
+			return 1;
+		}
 		if (script_thread)
 			g_thread_join(script_thread);
 		FILE* fp = g_fopen(line + 1, "r");

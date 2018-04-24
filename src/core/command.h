@@ -131,6 +131,7 @@ int	process_lrgb(int nb);
 int	process_help(int nb);
 int	process_exit(int nb);
 int	process_extract(int nb);
+gpointer execute_script(gpointer p);
 int	processcommand(const char *line);
 void init_completion_command();
 
