@@ -101,9 +101,8 @@ int readbmp(const char *name, fits *fit) {
 		bmp32tofits48(buf, lx, ly, fit, inverted);
 		break;
 	default:
-		msg =
-				siril_log_message(
-						_("Sorry but Siril cannot open this kind of BMP. Try to convert it before.\n"));
+		msg = siril_log_message(_("Sorry but Siril cannot open this kind of BMP. "
+				"Try to convert it before.\n"));
 		show_dialog(msg, _("Error"), "dialog-error");
 	}
 	free(buf);
@@ -246,7 +245,7 @@ int bmp32tofits48(unsigned char *rvb, int rx, int ry, fits *fit,
 				rvb++;
 		}
 	}
-	fit->bitpix = BYTE_IMG;
+	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
 	fit->naxis = 3;
 	fit->rx = rx;
 	fit->ry = ry;
@@ -282,7 +281,7 @@ int bmp24tofits48(unsigned char *rvb, int rx, int ry, fits *fit) {
 		}
 		rvb += padsize;
 	}
-	fit->bitpix = BYTE_IMG;
+	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
 	fit->naxis = 3;
 	fit->rx = rx;
 	fit->ry = ry;
@@ -315,7 +314,7 @@ int bmp8tofits(unsigned char *rgb, int rx, int ry, fits *fit) {
 		}
 		rgb += padsize;
 	}
-	fit->bitpix = BYTE_IMG;
+	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
 	fit->rx = rx;
 	fit->ry = ry;
 	fit->naxes[0] = rx;
@@ -632,7 +631,7 @@ static int pictofit(WORD *buf, fits *fit) {
 #endif
 	for (i = 0; i < nbdata; i++)
 		data[i] = buf[i];
-	fit->bitpix = SHORT_IMG;
+	fit->bitpix = fit->orig_bitpix = SHORT_IMG;
 	fit->naxes[0] = fit->rx;
 	fit->naxes[1] = fit->ry;
 	fit->naxes[2] = 1;
@@ -672,7 +671,7 @@ static int pictofitrgb(WORD *buf, fits *fit) {
 	for (i = 0; i < nbdata; i++)
 		data[BLAYER][i] = buf[i + (nbdata * BLAYER)];
 
-	fit->bitpix = SHORT_IMG;
+	fit->bitpix = fit->orig_bitpix = SHORT_IMG;
 	fit->naxis = 3;
 	fit->naxes[0] = fit->rx;
 	fit->naxes[1] = fit->ry;
