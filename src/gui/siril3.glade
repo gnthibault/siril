@@ -5915,9 +5915,10 @@ Uncheck if images come from a monochrome sensor.</property>
         </child>
         <child>
           <object class="GtkScrolledWindow" id="histoScroll">
-            <property name="height_request">300</property>
+            <property name="height_request">500</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="hscrollbar_policy">always</property>
             <child>
               <object class="GtkViewport" id="viewport1">
                 <property name="visible">True</property>
@@ -5941,17 +5942,66 @@ Uncheck if images come from a monochrome sensor.</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="labelShade">
+                      <object class="GtkScale" id="scale_midtones">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip_text" translatable="yes">Midtones balance</property>
+                        <property name="valign">center</property>
+                        <property name="hexpand">True</property>
+                        <property name="adjustment">adj_midtones</property>
+                        <property name="digits">7</property>
+                        <property name="draw_value">False</property>
+                        <property name="has_origin">False</property>
+                        <signal name="key-release-event" handler="on_scale_key_release_event" swapped="no"/>
+                        <signal name="value-changed" handler="on_scale_midtones_value_changed" swapped="no"/>
                         <style>
-                          <class name="histo-shade"/>
+                          <class name="midtone-scale"/>
                         </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="scale_shadows">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip_text" translatable="yes">Shadows clipping</property>
+                        <property name="valign">center</property>
+                        <property name="hexpand">True</property>
+                        <property name="adjustment">adj_shadows</property>
+                        <property name="digits">5</property>
+                        <property name="draw_value">False</property>
+                        <property name="has_origin">False</property>
+                        <signal name="key-release-event" handler="on_scale_key_release_event" swapped="no"/>
+                        <signal name="value-changed" handler="on_scale_shadows_value_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="scale_highlights">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip_text" translatable="yes">Highlights clipping</property>
+                        <property name="valign">center</property>
+                        <property name="hexpand">True</property>
+                        <property name="adjustment">adj_highlights</property>
+                        <property name="digits">5</property>
+                        <property name="draw_value">False</property>
+                        <property name="has_origin">False</property>
+                        <signal name="key-release-event" handler="on_scale_key_release_event" swapped="no"/>
+                        <signal name="value-changed" handler="on_scale_highlights_value_changed" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                   </object>
@@ -5963,6 +6013,69 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButtonBox" id="dialog-action_area18">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="button_histo_reset">
+                <property name="label">gtk-clear</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Reset</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_button_histo_reset_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_histo_close">
+                <property name="label">gtk-close</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Close</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_button_histo_close_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_histo_apply">
+                <property name="label">gtk-apply</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="has_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Apply histogram transformation</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_button_histo_apply_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="padding">10</property>
+            <property name="pack_type">end</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <child>
@@ -6095,70 +6208,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">3</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButtonBox" id="dialog-action_area18">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <object class="GtkButton" id="button_histo_reset">
-                <property name="label">gtk-clear</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Reset</property>
-                <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_button_histo_reset_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_histo_close">
-                <property name="label">gtk-close</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Close</property>
-                <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_button_histo_close_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_histo_apply">
-                <property name="label">gtk-apply</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="has_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Apply histogram transformation</property>
-                <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_button_histo_apply_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="padding">10</property>
-            <property name="pack_type">end</property>
-            <property name="position">4</property>
+            <property name="position">6</property>
           </packing>
         </child>
         <child>
@@ -6166,60 +6216,6 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="column_spacing">10</property>
-            <child>
-              <object class="GtkScale" id="scale_highlights">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Highlights clipping</property>
-                <property name="hexpand">True</property>
-                <property name="adjustment">adj_highlights</property>
-                <property name="round_digits">9</property>
-                <property name="digits">5</property>
-                <property name="draw_value">False</property>
-                <signal name="key-release-event" handler="on_scale_key_release_event" swapped="no"/>
-                <signal name="value-changed" handler="on_scale_highlights_value_changed" swapped="no"/>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="scale_midtones">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Midtones balance</property>
-                <property name="hexpand">True</property>
-                <property name="adjustment">adj_midtones</property>
-                <property name="round_digits">9</property>
-                <property name="digits">7</property>
-                <property name="draw_value">False</property>
-                <signal name="key-release-event" handler="on_scale_key_release_event" swapped="no"/>
-                <signal name="value-changed" handler="on_scale_midtones_value_changed" swapped="no"/>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="scale_shadows">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Shadows clipping</property>
-                <property name="hexpand">True</property>
-                <property name="adjustment">adj_shadows</property>
-                <property name="round_digits">9</property>
-                <property name="digits">5</property>
-                <property name="draw_value">False</property>
-                <signal name="key-release-event" handler="on_scale_key_release_event" swapped="no"/>
-                <signal name="value-changed" handler="on_scale_shadows_value_changed" swapped="no"/>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
             <child>
               <object class="GtkLabel" id="label134">
                 <property name="visible">True</property>
@@ -6260,11 +6256,11 @@ Uncheck if images come from a monochrome sensor.</property>
               <object class="GtkLabel" id="label137">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="halign">start</property>
+                <property name="halign">center</property>
                 <property name="label" translatable="yes">Clip (%)</property>
               </object>
               <packing>
-                <property name="left_attach">3</property>
+                <property name="left_attach">2</property>
                 <property name="top_attach">0</property>
               </packing>
             </child>
@@ -6281,7 +6277,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="max_width_chars">8</property>
               </object>
               <packing>
-                <property name="left_attach">3</property>
+                <property name="left_attach">2</property>
                 <property name="top_attach">1</property>
               </packing>
             </child>
@@ -6298,7 +6294,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="max_width_chars">8</property>
               </object>
               <packing>
-                <property name="left_attach">3</property>
+                <property name="left_attach">2</property>
                 <property name="top_attach">2</property>
               </packing>
             </child>
@@ -6307,6 +6303,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Midtones balance</property>
+                <property name="hexpand">True</property>
                 <property name="max_length">9</property>
                 <property name="has_frame">False</property>
                 <property name="width_chars">10</property>
@@ -6317,7 +6314,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <signal name="changed" handler="on_histoMidEntry_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">2</property>
+                <property name="left_attach">1</property>
                 <property name="top_attach">0</property>
               </packing>
             </child>
@@ -6326,6 +6323,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Shadows clipping</property>
+                <property name="hexpand">True</property>
                 <property name="max_length">9</property>
                 <property name="has_frame">False</property>
                 <property name="width_chars">10</property>
@@ -6336,7 +6334,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <signal name="changed" handler="on_histoShadEntry_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">2</property>
+                <property name="left_attach">1</property>
                 <property name="top_attach">1</property>
               </packing>
             </child>
@@ -6345,6 +6343,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Highlights clipping</property>
+                <property name="hexpand">True</property>
                 <property name="max_length">9</property>
                 <property name="has_frame">False</property>
                 <property name="width_chars">10</property>
@@ -6355,7 +6354,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <signal name="changed" handler="on_histoHighEntry_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">2</property>
+                <property name="left_attach">1</property>
                 <property name="top_attach">2</property>
               </packing>
             </child>
@@ -6363,7 +6362,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">5</property>
+            <property name="position">7</property>
           </packing>
         </child>
       </object>
@@ -10537,6 +10536,13 @@ WARNING: ensure you have a good reason to change this value because it may degra
                     </child>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuscript">
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Scripts</property>
+                <property name="use_underline">True</property>
               </object>
             </child>
             <child>

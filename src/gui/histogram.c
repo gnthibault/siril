@@ -35,6 +35,7 @@
 
 #define shadowsClipping -2.80 /* Shadows clipping point measured in sigma units from the main histogram peak. */
 #define targetBackground 0.25 /* final "luminance" of the image for autostretch in the [0,1] range */
+#define SLIDERBARS_HIGH 40 * 3
 #undef HISTO_DEBUG
 
 /* The gsl_histogram, documented here:
@@ -199,7 +200,7 @@ static void adjust_histogram_vport_size() {
 	int cur_width = gtk_widget_get_allocated_width(vport);
 	int cur_height = gtk_widget_get_allocated_height(vport);
 	targetW = (int) (((double) cur_width) * zoomH);
-	targetH = (int) (((double) cur_height) * zoomV);
+	targetH = (int) (((double) cur_height) * zoomV) - SLIDERBARS_HIGH;
 	gtk_widget_set_size_request(drawarea, targetW, targetH);
 #ifdef HISTO_DEBUG
 	fprintf(stdout, "Histo vport size (%d, %d)\n", targetW, targetH);
@@ -394,8 +395,6 @@ static void apply_mtf_to_fits(fits *fit, double m, double lo, double hi) {
 	nb_chan = fit->naxes[2];
 	ndata = fit->rx * fit->ry;
 
-	pente = 1.0 / (hi - lo);
-
 	undo_save_state("Processing: Histogram Transformation "
 			"(mid=%.3lf, low=%.3lf, high=%.3lf)", m, lo, hi);
 
@@ -414,7 +413,6 @@ static void apply_mtf_to_histo(gsl_histogram *histo, double norm, double m, doub
 		double hi) {
 	gsl_histogram *mtf_histo;
 	unsigned short i;
-	double pente = 1.0 / (hi - lo);
 
 	mtf_histo = gsl_histogram_alloc((size_t) norm + 1);
 	gsl_histogram_set_ranges_uniform(mtf_histo, 0, norm);
