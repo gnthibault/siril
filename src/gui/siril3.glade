@@ -5846,29 +5846,6 @@ Uncheck if images come from a monochrome sensor.</property>
               </packing>
             </child>
             <child>
-              <object class="GtkToolItem" id="toolbutton2">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkSpinButton" id="histoSpinZoomV">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Vertical Zoom</property>
-                    <property name="text">1</property>
-                    <property name="input_purpose">number</property>
-                    <property name="adjustment">histoAdjZoomV</property>
-                    <property name="numeric">True</property>
-                    <property name="value">1</property>
-                    <signal name="value-changed" handler="on_histoSpinZoom_value_changed" swapped="no"/>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkToolButton" id="histoZoom100">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -6149,7 +6126,7 @@ Uncheck if images come from a monochrome sensor.</property>
               <object class="GtkToggleToolButton" id="histoToolGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Histogram grid</property>
+                <property name="tooltip_text" translatable="yes">Show grids</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
                 <property name="use_underline">True</property>
@@ -6166,7 +6143,7 @@ Uncheck if images come from a monochrome sensor.</property>
               <object class="GtkToggleToolButton" id="histoToolCurve">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Histogram curve</property>
+                <property name="tooltip_text" translatable="yes">Show MTF curve</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
                 <property name="use_underline">True</property>
