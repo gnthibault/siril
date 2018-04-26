@@ -576,26 +576,14 @@ void clear_histograms() {
 }
 
 double MTF(double x, double m, double lo, double hi) {
-	double out;
-	double xp;
-
 	if (x <= lo)
 		return 0.0;
 	if (x >= hi)
 		return 1.0;
 
-	xp = (x - lo) / (hi - lo);
+	double xp = (x - lo) / (hi - lo);
 
-	if (m == 0.0)
-		out = 1.0;
-	else if (m == 0.5)
-		out = xp;
-	else if (m == 1.0)
-		out = 0.0;
-	else {
-		out = ((m - 1.0) * xp) / (((2.0 * m - 1.0) * xp) - m);
-	}
-	return out;
+	return ((m - 1.0) * xp) / (((2.0 * m - 1.0) * xp) - m);
 }
 
 double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {

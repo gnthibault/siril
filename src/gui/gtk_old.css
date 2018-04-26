@@ -2,13 +2,6 @@ GtkTextView {
 	font: monospace;
 }
 
-.histo-shade {
-	background-image: -gtk-gradient (linear,
-								left top, right top,
-								from (black),
-								to (shade (white, 0.95)));
-}
-
 #neg_button, #mirrorx_button, #mirrory_button, #colormap_button, #seqlist_button {
 	-GtkButton-default-border: 0;
 	-GtkButton-default-outside-border: 0;
@@ -24,4 +17,38 @@ GtkTextView {
 
 #histoToolBlue {
 	color: blue;
+}
+
+/*****************
+ * Midtone scale *
+ ****************/
+
+.midtone-scale {
+	background-image: -gtk-gradient(linear, left top, right top, from(black),
+		to(shade(white, 0.95)));
+	padding: 5px;
+}
+
+.midtone-scale trough,
+.midtone-scale highlight,
+.midtone-scale trough:disabled {
+    border-image: none;
+    border-style: none;
+    border-width: 0px;
+    border-radius: 0px;
+    background-color: transparent;
+}
+
+.midtone-scale slider,
+.midtone-scale slider:hover,
+.midtone-scale slider:disabled {
+    border-radius: 0px;
+    border-style: none;
+    background-color: transparent;
+    box-shadow: none;
+    min-width: 21px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: top;
+    background-image: url("pixmaps/scale-slider-horz.png");
 }
