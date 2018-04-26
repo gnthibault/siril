@@ -37,13 +37,121 @@
 #define O_BINARY 0
 #endif
 
+static int bmp32tofits48(unsigned char *rvb, unsigned long rx, unsigned long ry, fits *fit) {
+	unsigned long datasize;
+	int i, j;
+	WORD *rdata, *gdata, *bdata, *olddata;
+
+	datasize = rx * ry;
+
+	olddata = fit->data;
+	if ((fit->data = realloc(fit->data, 3 * datasize * sizeof(WORD))) == NULL) {
+		printf("readbmp: could not alloc fit data\n");
+		if (olddata)
+			free(fit->data);
+		return 1;
+	}
+
+	rdata = fit->pdata[RLAYER] = fit->data;
+	gdata = fit->pdata[GLAYER] = fit->data + datasize;
+	bdata = fit->pdata[BLAYER] = fit->data + 2 * datasize;
+	for (i = 0; i < ry; i++) {
+		for (j = 0; j < rx; j++) {
+			*bdata++ = (WORD) *rvb++;
+			*gdata++ = (WORD) *rvb++;
+			*rdata++ = (WORD) *rvb++;
+			rvb++;
+		}
+	}
+	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
+	fit->naxis = 3;
+	fit->rx = rx;
+	fit->ry = ry;
+	fit->naxes[0] = rx;
+	fit->naxes[1] = ry;
+	fit->naxes[2] = 3;
+	fit->binning_x = fit->binning_y = 1;
+	return 0;
+}
+
+static int bmp24tofits48(unsigned char *rvb, unsigned long rx, unsigned long ry, fits *fit) {
+	int i, j;
+	WORD *rdata, *gdata, *bdata, *olddata;
+
+	int padsize = (4 - (rx * 3) % 4) % 4;
+	int newdatasize = ry * rx;
+
+	olddata = fit->data;
+	if ((fit->data = realloc(fit->data, 3 * newdatasize * sizeof(WORD))) == NULL) {
+		printf("readbmp: could not alloc fit data\n");
+		if (olddata)
+			free(fit->data);
+		return 1;
+	}
+	rdata = fit->pdata[RLAYER] = fit->data;
+	gdata = fit->pdata[GLAYER] = fit->data + newdatasize;
+	bdata = fit->pdata[BLAYER] = fit->data + 2 * newdatasize;
+	for (i = 0; i < ry; i++) {
+		for (j = 0; j < rx; j++) {
+			*bdata++ = *rvb++;
+			*gdata++ = *rvb++;
+			*rdata++ = *rvb++;
+		}
+		rvb += padsize;
+	}
+	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
+	fit->naxis = 3;
+	fit->rx = rx;
+	fit->ry = ry;
+	fit->naxes[0] = rx;
+	fit->naxes[1] = ry;
+	fit->naxes[2] = 3;
+	fit->binning_x = fit->binning_y = 1;
+	return 0;
+}
+
+static int bmp8tofits(unsigned char *rgb, unsigned long rx, unsigned long ry, fits *fit) {
+	unsigned long nbdata, padsize;
+	int i, j;
+	WORD *data, *olddata;
+
+	padsize = (4 - (rx % 4)) % 4;
+	nbdata = rx * ry;
+
+	olddata = fit->data;
+	if ((fit->data = realloc(fit->data, nbdata * sizeof(WORD))) == NULL) {
+		printf("readbmp: could not alloc fit data\n");
+		if (olddata)
+			free(fit->data);
+		return 1;
+	}
+	data = fit->pdata[BW_LAYER] = fit->data;
+	for (i = 0; i < ry; i++) {
+		for (j = 0; j < rx; j++) {
+			*data++ = (WORD) *rgb++;
+		}
+		rgb += padsize;
+	}
+	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
+	fit->rx = rx;
+	fit->ry = ry;
+	fit->naxes[0] = rx;
+	fit->naxes[1] = ry;
+	fit->naxes[2] = 1;
+	fit->naxis = 2;
+	fit->binning_x = fit->binning_y = 1;
+	return 0;
+}
+
 /* reads a BMP image at filename `name', and stores it into the fit argument */
 int readbmp(const char *name, fits *fit) {
 	BYTE header[256];
-	int fd, nbplane, padsize;
-	int count, lx, ly;
+	int fd;
+	long int count;
 	unsigned char *buf;
-	unsigned int nbdata, data_offset;
+	unsigned long data_offset = 0, lx = 0, ly = 0, compression = 0;
+	unsigned long nbdata, padsize;
+	unsigned short nbplane = 0;
 	gboolean inverted = FALSE;
 	char *msg;
 
@@ -54,22 +162,28 @@ int readbmp(const char *name, fits *fit) {
 	}
 
 	if ((count = read(fd, header, 54)) != 54) {
-		fprintf(stderr, "readbmp: %d header bytes read instead of 54\n", count);
+		fprintf(stderr, "readbmp: %ld header bytes read instead of 54\n", count);
 		perror("readbmp");
 		close(fd);
 		return -1;
 	}
-	lx = 256 * header[19] + header[18];
-	ly = 256 * header[23] + header[22];
-	nbplane = header[28] / 8;
+
+/*	memcpy(&compression, header + 30, 4);*/
+
+	memcpy(&lx, header + 18, 4);
+	memcpy(&ly, header + 22, 4);
+	memcpy(&nbplane, header + 28, 2);
+	nbplane = nbplane / 8;
+	memcpy(&data_offset, header + 10, 4);
+
 	padsize = (4 - (lx * nbplane) % 4) % 4;
 	nbdata = lx * ly * nbplane + ly * padsize;
-	data_offset = header[10];		//get the offset value
+
 	lseek(fd, data_offset, SEEK_SET);
 	if (nbplane == 1) {
 		buf = malloc(nbdata + 1024);
 		if ((count = read(fd, buf, 1024)) != 1024) {
-			fprintf(stderr, "readbmp: %d byte read instead of 1024\n", count);
+			fprintf(stderr, "readbmp: %ld byte read instead of 1024\n", count);
 			perror("readbmp: failed to read the lut");
 			free(buf);
 			close(fd);
@@ -80,7 +194,7 @@ int readbmp(const char *name, fits *fit) {
 	}
 
 	if ((count = read(fd, buf, nbdata)) != nbdata) {
-		fprintf(stderr, "readbmp: %d read, %u expected\n", count, nbdata);
+		fprintf(stderr, "readbmp: %ld read, %lu expected\n", count, nbdata);
 		perror("readbmp");
 		free(buf);
 		close(fd);
@@ -96,13 +210,11 @@ int readbmp(const char *name, fits *fit) {
 		bmp24tofits48(buf, lx, ly, fit);
 		break;
 	case 4:
-		if (header[30]) /*For the position of alpha channel*/
-			inverted = TRUE; /* Gimp gives 32bits with header[30]=3, Photoshop is 0 : NEED TO BE OPTIMIZED*/
-		bmp32tofits48(buf, lx, ly, fit, inverted);
+		bmp32tofits48(buf, lx, ly, fit);
 		break;
 	default:
-		msg = siril_log_message(_("Sorry but Siril cannot open this kind of BMP. "
-				"Try to convert it before.\n"));
+		msg = siril_log_message(_("Sorry but Siril cannot "
+				"open this kind of BMP. Try to convert it before.\n"));
 		show_dialog(msg, _("Error"), "dialog-error");
 	}
 	free(buf);
@@ -110,7 +222,7 @@ int readbmp(const char *name, fits *fit) {
 	siril_log_message(_("Reading BMP: file %s, %ld layer(s), %ux%u pixels\n"),
 			basename, fit->naxes[2], fit->rx, fit->ry);
 	g_free(basename);
-	return nbplane;
+	return (int) nbplane;
 }
 
 int savebmp(const char *name, fits *fit) {
@@ -213,115 +325,6 @@ int savebmp(const char *name, fits *fit) {
 	siril_log_message(_("Saving BMP: file %s, %ld layer(s), %ux%u pixels\n"), filename,
 			fit->naxes[2], fit->rx, fit->ry);
 	free(filename);
-	return 0;
-}
-
-int bmp32tofits48(unsigned char *rvb, int rx, int ry, fits *fit,
-		gboolean inverted) {
-	int datasize, i, j;
-	WORD *rdata, *gdata, *bdata, *olddata;
-
-	datasize = rx * ry;
-
-	olddata = fit->data;
-	if ((fit->data = realloc(fit->data, 3 * datasize * sizeof(WORD))) == NULL) {
-		printf("readbmp: could not alloc fit data\n");
-		if (olddata)
-			free(fit->data);
-		return 1;
-	}
-
-	rdata = fit->pdata[RLAYER] = fit->data;
-	gdata = fit->pdata[GLAYER] = fit->data + datasize;
-	bdata = fit->pdata[BLAYER] = fit->data + 2 * datasize;
-	for (i = 0; i < ry; i++) {
-		for (j = 0; j < rx; j++) {
-			if (inverted)
-				rvb++;
-			*bdata++ = (WORD) *rvb++;
-			*gdata++ = (WORD) *rvb++;
-			*rdata++ = (WORD) *rvb++;
-			if (!inverted)
-				rvb++;
-		}
-	}
-	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
-	fit->naxis = 3;
-	fit->rx = rx;
-	fit->ry = ry;
-	fit->naxes[0] = rx;
-	fit->naxes[1] = ry;
-	fit->naxes[2] = 3;
-	fit->binning_x = fit->binning_y = 1;
-	return 0;
-}
-
-int bmp24tofits48(unsigned char *rvb, int rx, int ry, fits *fit) {
-	int i, j;
-	WORD *rdata, *gdata, *bdata, *olddata;
-
-	int padsize = (4 - (rx * 3) % 4) % 4;
-	int newdatasize = ry * rx;
-
-	olddata = fit->data;
-	if ((fit->data = realloc(fit->data, 3 * newdatasize * sizeof(WORD))) == NULL) {
-		printf("readbmp: could not alloc fit data\n");
-		if (olddata)
-			free(fit->data);
-		return 1;
-	}
-	rdata = fit->pdata[RLAYER] = fit->data;
-	gdata = fit->pdata[GLAYER] = fit->data + newdatasize;
-	bdata = fit->pdata[BLAYER] = fit->data + 2 * newdatasize;
-	for (i = 0; i < ry; i++) {
-		for (j = 0; j < rx; j++) {
-			*bdata++ = *rvb++;
-			*gdata++ = *rvb++;
-			*rdata++ = *rvb++;
-		}
-		rvb += padsize;
-	}
-	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
-	fit->naxis = 3;
-	fit->rx = rx;
-	fit->ry = ry;
-	fit->naxes[0] = rx;
-	fit->naxes[1] = ry;
-	fit->naxes[2] = 3;
-	fit->binning_x = fit->binning_y = 1;
-	return 0;
-}
-
-int bmp8tofits(unsigned char *rgb, int rx, int ry, fits *fit) {
-	int nbdata, padsize;
-	int i, j;
-	WORD *data, *olddata;
-
-	padsize = (4 - (rx % 4)) % 4;
-	nbdata = rx * ry;
-
-	olddata = fit->data;
-	if ((fit->data = realloc(fit->data, nbdata * sizeof(WORD))) == NULL) {
-		printf("readbmp: could not alloc fit data\n");
-		if (olddata)
-			free(fit->data);
-		return 1;
-	}
-	data = fit->pdata[BW_LAYER] = fit->data;
-	for (i = 0; i < ry; i++) {
-		for (j = 0; j < rx; j++) {
-			*data++ = (WORD) *rgb++;
-		}
-		rgb += padsize;
-	}
-	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
-	fit->rx = rx;
-	fit->ry = ry;
-	fit->naxes[0] = rx;
-	fit->naxes[1] = ry;
-	fit->naxes[2] = 1;
-	fit->naxis = 2;
-	fit->binning_x = fit->binning_y = 1;
 	return 0;
 }
 

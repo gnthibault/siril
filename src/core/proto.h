@@ -41,9 +41,6 @@ void	keep_first_channel_from_fits(fits *fit);
 /* BMP */
 int 	readbmp(const char *, fits *);
 int 	savebmp(const char *, fits *);
-int	bmp32tofits48(unsigned char *rvb, int rx, int ry, fits *fitr, gboolean inverted);
-int	bmp24tofits48(unsigned char *rvb, int rx, int ry, fits *fitr);
-int	bmp8tofits(unsigned char *rvb, int rx, int ry, fits *fitr);
 
 /* PNM */
 int 	import_pnm_to_fits(const char *filename, fits *fit);
