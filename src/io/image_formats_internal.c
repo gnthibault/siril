@@ -180,13 +180,37 @@ static int bmp8tofits(unsigned char *rgb, unsigned long rx, unsigned long ry, fi
 	return 0;
 }
 
+static int get_image_size(BYTE *header, unsigned long *width, unsigned long *height) {
+	unsigned long bitmapinfoheader = 0;
+	unsigned long lx = 0, ly = 0;
+	unsigned short sx = 0, sy = 0;
+	int ret = 0;
+
+	memcpy(&bitmapinfoheader, header + 14, 4);
+	if (bitmapinfoheader == 40) {
+		memcpy(&lx, header + 18, 4);
+		memcpy(&ly, header + 22, 4);
+		*width = lx;
+		*height = ly;
+	} else if (bitmapinfoheader == 12) {
+		memcpy(&sx, header + 18, 2);
+		memcpy(&sy, header + 20, 2);
+		*width = (unsigned long) sx;
+		*height = (unsigned long) sy;
+	} else {
+		ret = -1;
+	}
+	return ret;
+}
+
 /* reads a BMP image at filename `name', and stores it into the fit argument */
 int readbmp(const char *name, fits *fit) {
 	BYTE header[256];
 	int fd;
 	long int count;
 	unsigned char *buf;
-	unsigned long data_offset = 0, lx = 0, ly = 0, compression = 0;
+	unsigned long data_offset = 0, compression = 0;
+	unsigned long width = 0, height = 0;
 	unsigned long nbdata, padsize;
 	unsigned short nbplane = 0;
 	gboolean inverted = FALSE;
@@ -207,14 +231,17 @@ int readbmp(const char *name, fits *fit) {
 
 /*	memcpy(&compression, header + 30, 4);*/
 
-	memcpy(&lx, header + 18, 4);
-	memcpy(&ly, header + 22, 4);
+	if (get_image_size(header, &width, &height)) {
+		fprintf(stderr, "readbmp: cannot read width and height\n");
+		close(fd);
+		return -1;
+	}
 	memcpy(&nbplane, header + 28, 2);
 	nbplane = nbplane / 8;
 	memcpy(&data_offset, header + 10, 4);
 
-	padsize = (4 - (lx * nbplane) % 4) % 4;
-	nbdata = lx * ly * nbplane + ly * padsize;
+	padsize = (4 - (width * nbplane) % 4) % 4;
+	nbdata = width * height * nbplane + height * padsize;
 
 	lseek(fd, data_offset, SEEK_SET);
 	if (nbplane == 1) {
@@ -241,16 +268,16 @@ int readbmp(const char *name, fits *fit) {
 
 	switch (nbplane) {
 	case 1:
-		bmp8tofits(buf, lx, ly, fit);
+		bmp8tofits(buf, width, height, fit);
 		break;
 	case 2:
-		bmp16tofits48(buf, lx, ly, fit);
+		bmp16tofits48(buf, width, height, fit);
 		break;
 	case 3:
-		bmp24tofits48(buf, lx, ly, fit);
+		bmp24tofits48(buf, width, height, fit);
 		break;
 	case 4:
-		bmp32tofits48(buf, lx, ly, fit);
+		bmp32tofits48(buf, width, height, fit);
 		break;
 	default:
 		msg = siril_log_message(_("Sorry but Siril cannot "
