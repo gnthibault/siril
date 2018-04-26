@@ -110,6 +110,43 @@ static int bmp24tofits48(unsigned char *rvb, unsigned long rx, unsigned long ry,
 	return 0;
 }
 
+static int bmp16tofits48(unsigned char *rvb, unsigned long rx, unsigned long ry, fits *fit) {
+	int i;
+	WORD *rdata, *gdata, *bdata, *olddata;
+
+	int newdatasize = ry * rx;
+
+	olddata = fit->data;
+	if ((fit->data = realloc(fit->data, 3 * newdatasize * sizeof(WORD))) == NULL) {
+		printf("readbmp: could not alloc fit data\n");
+		if (olddata)
+			free(fit->data);
+		return 1;
+	}
+	rdata = fit->pdata[RLAYER] = fit->data;
+	gdata = fit->pdata[GLAYER] = fit->data + newdatasize;
+	bdata = fit->pdata[BLAYER] = fit->data + 2 * newdatasize;
+	for (i = 0; i < ry * rx; i++) {
+		unsigned char buf0 = *rvb++;
+		unsigned char buf1 = *rvb++;
+		unsigned pixel_data = buf0 | buf1 << 8;
+
+        *rdata++ = ((pixel_data & 0x7c00) >> 10) * 255.0 / 31.0 + 0.5;
+        *gdata++ = ((pixel_data & 0x03e0) >> 5) * 255.0 / 31.0 + 0.5;
+        *bdata++ = ((pixel_data & 0x001f) >> 0) * 255.0 / 31.0 + 0.5;
+
+	}
+	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
+	fit->naxis = 3;
+	fit->rx = rx;
+	fit->ry = ry;
+	fit->naxes[0] = rx;
+	fit->naxes[1] = ry;
+	fit->naxes[2] = 3;
+	fit->binning_x = fit->binning_y = 1;
+	return 0;
+}
+
 static int bmp8tofits(unsigned char *rgb, unsigned long rx, unsigned long ry, fits *fit) {
 	unsigned long nbdata, padsize;
 	int i, j;
@@ -205,6 +242,9 @@ int readbmp(const char *name, fits *fit) {
 	switch (nbplane) {
 	case 1:
 		bmp8tofits(buf, lx, ly, fit);
+		break;
+	case 2:
+		bmp16tofits48(buf, lx, ly, fit);
 		break;
 	case 3:
 		bmp24tofits48(buf, lx, ly, fit);
@@ -691,13 +731,11 @@ static int _pic_read_header(struct pic_struct *pic_file) {
 		return -1;
 	}
 
-	memcpy(&pic_file->magic[0], header, 2);
-	memcpy(&pic_file->magic[1], header + 2, 2);
+	memcpy(&pic_file->magic, header, 4);
 
-	if (!((pic_file->magic[0] == 0x31fc) && (pic_file->magic[1] == 0x0122))) {
-		char *msg =
-				siril_log_message(
-						_("Wrong magic cookie in PIC file. This image is not supported.\n"));
+	if (pic_file->magic != 0x12231fc) {
+		char *msg = siril_log_message(_("Wrong magic cookie in PIC file. "
+				"This image is not supported.\n"));
 		show_dialog(msg, _("Error"), "dialog-error");
 		return -1;
 	}
