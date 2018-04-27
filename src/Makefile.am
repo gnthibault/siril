@@ -14,7 +14,7 @@ siril_SOURCES = \
 	io/mp4_output.h io/mp4_output.c io/sequence_export.c \
 	gui/callbacks.c gui/callbacks.h gui/histogram.c gui/histogram.h gui/save_dialog.c gui/save_dialog.h \
 	gui/PSF_list.h gui/PSF_list.c gui/sequence_list.c gui/registration_preview.c \
-	gui/statistics_list.c \
+	gui/statistics_list.c gui/script_menu.c gui/script_menu.h \
 	gui/plot.c gui/plot.h \
 	gui/gnuplot_i/gnuplot_i.c gui/gnuplot_i/gnuplot_i.h \
 	gui/progress_and_log.c gui/progress_and_log.h \

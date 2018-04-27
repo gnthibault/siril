@@ -2114,7 +2114,7 @@ gpointer execute_script(gpointer p) {
 		char *myline = strdup(linef);
 		parseLine(myline, read, &wordnb);
 		if (executeCommand(wordnb)) {
-			siril_log_message(_("Error in line: %d. Exiting batch processing\n"), line);
+			siril_log_message(_("Error in line %d. Exiting batch processing\n"), line);
 			free(myline);
 			retval = 1;
 			break;

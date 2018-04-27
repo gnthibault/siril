@@ -49,6 +49,7 @@
 #include "io/sequence.h"
 #include "io/conversion.h"
 #include "gui/callbacks.h"
+#include "gui/script_menu.h"
 #include "gui/progress_and_log.h"
 #include "registration/registration.h"
 #include "stacking/stacking.h"
@@ -343,6 +344,9 @@ int main(int argc, char *argv[]) {
 
 	/* initialize menu gui */
 	update_MenuItem();
+	gchar *script = g_build_filename(siril_path, "scripts", NULL);
+	initialize_script_menu(script);
+	g_free(script);
 
 	/* initialize command completion */
 	init_completion_command();

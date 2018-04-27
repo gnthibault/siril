@@ -48,7 +48,7 @@ int	saveNetPBM(const char *name, fits *fit);
 
 /* PIC */
 struct pic_struct {
-	unsigned short magic[2];
+	unsigned long magic;
 	unsigned short width;
 	unsigned short height;
 	unsigned short bin[6];
@@ -116,6 +116,7 @@ char*	format_basename(char *root);
 float	computePente(WORD *lo, WORD *hi);
 void	load_css_style_sheet (char *path);
 double	encodeJD(dateTime dt);
+gint strcompare(gconstpointer *a, gconstpointer *b);
 
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,

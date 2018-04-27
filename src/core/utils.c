@@ -1041,3 +1041,26 @@ double encodeJD(dateTime dt) {
 		return jd1 + 2 - (dt.year / 100) + (dt.year / 400);
 	}
 }
+
+/**
+ * Compares a and b like strcmp()
+ * @param a a gconstpointer
+ * @param b a gconstpointer
+ * @return an integer less than, equal to, or greater than zero, if a is than b .
+ */
+gint strcompare(gconstpointer *a, gconstpointer *b) {
+	gchar *collate_key1, *collate_key2;
+	gint result;
+
+	const gchar *s1 = (const gchar *)a;
+	const gchar *s2 = (const gchar *)b;
+
+	collate_key1  = g_utf8_collate_key_for_filename(s1, strlen(s1));
+	collate_key2  = g_utf8_collate_key_for_filename(s2, strlen(s2));
+
+	result = g_strcmp0(collate_key1, collate_key2);
+	g_free(collate_key1);
+	g_free(collate_key2);
+
+	return result;
+}
