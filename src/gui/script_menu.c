@@ -100,9 +100,9 @@ int initialize_script_menu(const char *path) {
 	gint i = 0, nb_item = 0;
 
 #ifdef _WIN32
-	home_script = g_build_filename (get_special_folder (CSIDL_APPDATA),
+	home1_script = g_build_filename (get_special_folder (CSIDL_APPDATA),
 			"siril", "scripts", NULL);
-	home_script2 = NULL;
+	home2_script = NULL;
 #else
 	home1_script = g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL);
 	home2_script = g_build_filename(g_get_home_dir(), "siril", "scripts", NULL);
@@ -136,6 +136,7 @@ int initialize_script_menu(const char *path) {
 				NULL);
 				g_signal_connect(G_OBJECT(menu_item), "activate",
 						G_CALLBACK(on_script_execution), (gchar * ) full_path);
+				siril_log_message(_("Loading script: %s\n"), list->data);
 				gtk_widget_show(menu_item);
 
 				/* go to the next item */
