@@ -375,7 +375,6 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 }
 
 static void apply_mtf_to_fits(fits *fit, double m, double lo, double hi) {
-	double pente;
 	int i, chan, nb_chan, ndata;
 	WORD *buf[3] =
 			{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
