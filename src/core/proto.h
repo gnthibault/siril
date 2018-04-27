@@ -104,6 +104,9 @@ int	update_sequences_list(const char *sequence_name_to_select);
 void	update_used_memory();
 double test_available_space(double seq_size);
 int	get_available_memory_in_MB();
+#ifdef _WIN32
+gchar *get_special_folder(int csidl);
+#endif
 void	expand_home_in_filename(char *filename, int size);
 WORD	get_normalized_value(fits*);
 void	read_and_show_textfile(char*, char*);

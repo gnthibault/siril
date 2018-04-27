@@ -18,6 +18,12 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef _WIN32
+/* Constant available since Shell32.dll 4.72 */
+#ifndef CSIDL_APPDATA
+#define CSIDL_APPDATA 0x001a
+#endif
+#endif
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/command.h"
@@ -88,22 +94,22 @@ void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 int initialize_script_menu(const char *path) {
 	GSList *list;
 	GtkWidget *menuscript;
-	gchar *home_script;
-	gchar *home_script2;
+	gchar *home1_script;
+	gchar *home2_script;
 	gchar *generic_script;
 	gint i = 0, nb_item = 0;
 
 #ifdef _WIN32
 	home_script = g_build_filename (get_special_folder (CSIDL_APPDATA),
 			"siril", "scripts", NULL);
-	home_script2 = NULL
+	home_script2 = NULL;
 #else
-	home_script = g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL);
-	home_script2 = g_build_filename(g_get_home_dir(), "siril", "scripts", NULL);
+	home1_script = g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL);
+	home2_script = g_build_filename(g_get_home_dir(), "siril", "scripts", NULL);
 #endif
 
 	generic_script = g_strdup(path);
-	gchar *directories[] = { generic_script, home_script, home_script2, NULL };
+	gchar *directories[] = { generic_script, home1_script, home2_script, NULL };
 
 	menuscript = lookup_widget("menuscript");
 	GtkWidget *menu = gtk_menu_new();
@@ -139,7 +145,8 @@ int initialize_script_menu(const char *path) {
 		}
 		i++;
 	}
-	g_free(home_script);
+	g_free(home1_script);
+	g_free(home2_script);
 	g_free(generic_script);
 	return 0;
 }
