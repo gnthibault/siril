@@ -112,6 +112,7 @@ int initialize_script_menu() {
 		gchar *fName = g_utf16_to_utf8(wFilename, -1, NULL, NULL, NULL);
 		gchar *path = g_path_get_dirname(fName);
 		path[strlen(path) - 4] = '\0';		/* remove "/bin" */
+		home2_script = g_build_filename(path, "scripts", NULL);
 		g_free(fName);
 		g_free(path);
 	}
