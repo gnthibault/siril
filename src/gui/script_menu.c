@@ -19,6 +19,7 @@
  */
 
 #ifdef _WIN32
+#include <Windows.h>
 /* Constant available since Shell32.dll 4.72 */
 #ifndef CSIDL_APPDATA
 #define CSIDL_APPDATA 0x001a
@@ -91,25 +92,35 @@ void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 	g_free(script_file);
 }
 
-int initialize_script_menu(const char *path) {
+int initialize_script_menu() {
 	GSList *list;
 	GtkWidget *menuscript;
 	gchar *home1_script;
 	gchar *home2_script;
-	gchar *generic_script;
 	gint i = 0, nb_item = 0;
 
 #ifdef _WIN32
+	wchar_t wFilename[MAX_PATH];
+
 	home1_script = g_build_filename (get_special_folder (CSIDL_APPDATA),
 			"siril", "scripts", NULL);
 	home2_script = NULL;
+
+	if (!GetModuleFileNameW(NULL, wFilename, MAX_PATH)) {
+		fprintf(stderr, "initialize_script_menu error: %d\n", GetLastError());
+	} else {
+		gchar *fName = g_utf16_to_utf8(wFilename, -1, NULL, NULL, NULL);
+		gchar *path = g_path_get_dirname(fName);
+		path[strlen(path) - 4] = '\0';		/* remove "/bin" */
+		g_free(fName);
+		g_free(path);
+	}
 #else
 	home1_script = g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL);
 	home2_script = g_build_filename(g_get_home_dir(), "siril", "scripts", NULL);
 #endif
 
-	generic_script = g_strdup(path);
-	gchar *directories[] = { generic_script, home1_script, home2_script, NULL };
+	gchar *directories[] = { home1_script, home2_script, NULL };
 
 	menuscript = lookup_widget("menuscript");
 	GtkWidget *menu = gtk_menu_new();
@@ -148,6 +159,5 @@ int initialize_script_menu(const char *path) {
 	}
 	g_free(home1_script);
 	g_free(home2_script);
-	g_free(generic_script);
 	return 0;
 }

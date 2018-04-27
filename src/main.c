@@ -344,9 +344,7 @@ int main(int argc, char *argv[]) {
 
 	/* initialize menu gui */
 	update_MenuItem();
-	gchar *script = g_build_filename(siril_path, "scripts", NULL);
-	initialize_script_menu(script);
-	g_free(script);
+	initialize_script_menu();
 
 	/* initialize command completion */
 	init_completion_command();
