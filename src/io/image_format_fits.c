@@ -275,13 +275,6 @@ static void report_fits_error(int status) {
 	}
 }
 
-static int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode, int *status) {
-	gchar *fname = fits_fname(filename);
-	fits_open_diskfile(fptr, fname, iomode, status);
-	g_free(fname);
-	return *status;
-}
-
 /* convert FITS data formats to siril native.
  * nbdata is the number of pixels, w * h.
  * from is not freed, to must be allocated and can be the same as from */
@@ -560,9 +553,6 @@ int readfits(const char *filename, fits *fit, char *realname) {
 			free(fit->header);
 		fit->header = copy_header(fit);
 
-		if (gtk_widget_get_visible(lookup_widget("data_dialog")))// update data if already shown
-			show_FITS_header(fit);
-
 		basename = g_path_get_basename(filename);
 		siril_log_message(_("Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"),
 				basename, fit->naxes[2], fit->rx, fit->ry);
@@ -572,6 +562,13 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	status = 0;
 	fits_close_file(fit->fptr, &status);
 	return retval;
+}
+
+int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode, int *status) {
+	gchar *fname = fits_fname(filename);
+	fits_open_diskfile(fptr, fname, iomode, status);
+	g_free(fname);
+	return *status;
 }
 
 // reset a fit data structure, deallocates everything in it and zero the data

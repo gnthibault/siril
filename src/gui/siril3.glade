@@ -7711,6 +7711,7 @@ Uncheck if images come from a monochrome sensor.</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">Select an interpolation method to perform demosaicing before opening image.</property>
+                                <property name="halign">start</property>
                                 <property name="valign">center</property>
                                 <property name="active">1</property>
                                 <items>
@@ -7977,6 +7978,7 @@ by averaging the entire image</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">Select your camera's Bayer pattern.</property>
+                                <property name="halign">start</property>
                                 <property name="active">0</property>
                                 <items>
                                   <item>RGGB</item>
@@ -8009,6 +8011,7 @@ by averaging the entire image</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">Select an interpolation method to perform demosaicing.</property>
+                                <property name="halign">start</property>
                                 <property name="active">0</property>
                                 <items>
                                   <item translatable="yes">Bilinear</item>
@@ -8042,19 +8045,23 @@ by averaging the entire image</property>
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="checkbutton_debayer_compatibility">
-                                <property name="label" translatable="yes">Ensure KSTARS/EKOS compatibility</property>
+                                <property name="label" translatable="yes">Ensure compatibility with images stored
+in up-bottom orientation (KSTARS/EKOS, 
+PixInsight, and probably others ...)</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">If this box is checked, Siril will try to ensure KSTARS (and PixInsight) compatibility by reading FITS image in top-bottom order.</property>
+                                <property name="tooltip_text" translatable="yes">If this box is checked, Siril will try to ensure KSTARS (and PixInsight or others) compatibility by reading FITS image in up-bottom order.</property>
                                 <property name="halign">start</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
                                 <property name="top_attach">3</property>
-                                <property name="width">2</property>
                               </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
                             </child>
                           </object>
                         </child>
@@ -8774,6 +8781,7 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
+                            <property name="halign">start</property>
                             <property name="valign">start</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_confirmDontShowButton_toggled" swapped="no"/>
@@ -8823,6 +8831,7 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="tooltip_text" translatable="yes">Some dialogs of Siril have non-standard bright colours. With a dark theme, where the text is bright too, that's unreadable. Checking here will change these non-standard colours to dark.</property>
+                                <property name="halign">start</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="on_darkThemeCheck_toggled" swapped="no"/>
                               </object>

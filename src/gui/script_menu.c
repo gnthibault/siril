@@ -61,7 +61,7 @@ static GSList *search_script(const char *path) {
 	return list;
 }
 
-void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
+static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 	gchar *script_file;
 	GString *str;
 

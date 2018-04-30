@@ -27,6 +27,7 @@ void 	save_fits_header(fits *);
 int	copyfits(fits *from, fits *to, unsigned char oper, int layer);
 int	copy_fits_metadata(fits *from, fits *to);
 int	save1fits16(const char *filename, fits *fit, int layer);
+int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode, int *status);
 
 void	rgb24bit_to_fits48bit(unsigned char *rgbbuf, fits *fit, gboolean inverted);
 void	rgb8bit_to_fits16bit(unsigned char *graybuf, fits *fit);
