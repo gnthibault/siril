@@ -27,6 +27,7 @@
 #endif
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/initfile.h"
 #include "core/command.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
@@ -36,6 +37,87 @@
 #define EXT ".ssf"
 
 static GThread *script_thread = NULL;
+
+static GSList *initialize_script_paths(){
+	GSList *list = NULL;
+#ifdef _WIN32
+	wchar_t wFilename[MAX_PATH];
+
+	list = g_slist_append(list, g_build_filename (get_special_folder (CSIDL_APPDATA),
+			"siril", "scripts", NULL));
+
+	if (!GetModuleFileNameW(NULL, wFilename, MAX_PATH)) {
+		fprintf(stderr, "initialize_script_menu error: %d\n", GetLastError());
+	} else {
+		gchar *fName = g_utf16_to_utf8(wFilename, -1, NULL, NULL, NULL);
+		gchar *path = g_path_get_dirname(fName);
+		path[strlen(path) - 4] = '\0';		/* remove "/bin" */
+		list = g_slist_append(list, g_build_filename(path, "scripts", NULL));
+		g_free(fName);
+		g_free(path);
+	}
+#else
+	list = g_slist_append(list, g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL));
+	list = g_slist_append(list, g_build_filename(g_get_home_dir(), "siril", "scripts", NULL));
+#endif
+	return list;
+}
+
+static GSList *get_list_from_textview() {
+	GSList *list = NULL;
+	static GtkTextBuffer *tbuf = NULL;
+	static GtkTextView *text = NULL;
+	GtkTextIter start, end;
+	gchar *txt;
+	gint i = 0;
+
+	if (!tbuf) {
+		text = GTK_TEXT_VIEW(lookup_widget("GtkTxtScriptPath"));
+		tbuf = gtk_text_view_get_buffer(text);
+	}
+	gtk_text_buffer_get_bounds(tbuf, &start, &end);
+	txt = gtk_text_buffer_get_text(tbuf, &start, &end, TRUE);
+	if (txt) {
+		gchar **token = g_strsplit(txt, "\n", -1);
+		while (token[i]) {
+			if (*token[i] != '\0')
+				list = g_slist_append(list, g_strdup(token[i]));
+			i++;
+		}
+		g_strfreev(token);
+	}
+
+	return list;
+}
+
+static void add_path_to_gtkText(gchar *path) {
+	static GtkTextBuffer *tbuf = NULL;
+	static GtkTextView *text = NULL;
+	GtkTextIter iter;
+
+	if (!tbuf) {
+		text = GTK_TEXT_VIEW(lookup_widget("GtkTxtScriptPath"));
+		tbuf = gtk_text_view_get_buffer(text);
+	}
+
+	gtk_text_buffer_get_end_iter(tbuf, &iter);
+	gtk_text_buffer_insert(tbuf, &iter, path, strlen(path));
+	gtk_text_buffer_insert(tbuf, &iter, "\n", strlen("\n"));
+
+	/* scroll to end */
+	gtk_text_buffer_get_end_iter(tbuf, &iter);
+	GtkTextMark *insert_mark = gtk_text_buffer_get_insert(tbuf);
+	gtk_text_buffer_place_cursor(tbuf, &iter);
+	gtk_text_view_scroll_to_mark(text, insert_mark, 0.0, TRUE, 0.0, 1.0);
+	gtk_widget_queue_draw(GTK_WIDGET(text));
+}
+
+static void fill_gtkText(GSList *list) {
+	while (list) {
+		add_path_to_gtkText((gchar *) list->data);
+		list = list->next;
+	}
+}
 
 static GSList *search_script(const char *path) {
 	GSList *list = NULL;
@@ -93,41 +175,23 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 int initialize_script_menu() {
-	GSList *list;
+	GSList *list, *script;
 	GtkWidget *menuscript;
-	gchar *home1_script;
-	gchar *home2_script;
-	gint i = 0, nb_item = 0;
+	gint nb_item = 0;
 
-#ifdef _WIN32
-	wchar_t wFilename[MAX_PATH];
-
-	home1_script = g_build_filename (get_special_folder (CSIDL_APPDATA),
-			"siril", "scripts", NULL);
-	home2_script = NULL;
-
-	if (!GetModuleFileNameW(NULL, wFilename, MAX_PATH)) {
-		fprintf(stderr, "initialize_script_menu error: %d\n", GetLastError());
+	if (!com.script_path) {
+		script = initialize_script_paths();
+		com.script_path = script;
 	} else {
-		gchar *fName = g_utf16_to_utf8(wFilename, -1, NULL, NULL, NULL);
-		gchar *path = g_path_get_dirname(fName);
-		path[strlen(path) - 4] = '\0';		/* remove "/bin" */
-		home2_script = g_build_filename(path, "scripts", NULL);
-		g_free(fName);
-		g_free(path);
+		script = com.script_path;
 	}
-#else
-	home1_script = g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL);
-	home2_script = g_build_filename(g_get_home_dir(), "siril", "scripts", NULL);
-#endif
-
-	gchar *directories[] = { home1_script, home2_script, NULL };
+	fill_gtkText(script);
 
 	menuscript = lookup_widget("menuscript");
 	GtkWidget *menu = gtk_menu_new();
 
-	while (directories[i]) {
-		list = search_script(directories[i]);
+	while (script) {
+		list = search_script(script->data);
 		if (list) {
 			gtk_widget_show(menuscript);
 			gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuscript), menu);
@@ -144,7 +208,7 @@ int initialize_script_menu() {
 
 				menu_item = gtk_menu_item_new_with_label(list->data);
 				gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-				gchar *full_path = g_build_filename(directories[i], list->data,
+				gchar *full_path = g_build_filename(script->data, list->data,
 				NULL);
 				g_signal_connect(G_OBJECT(menu_item), "activate",
 						G_CALLBACK(on_script_execution), (gchar * ) full_path);
@@ -156,9 +220,19 @@ int initialize_script_menu() {
 			}
 			g_slist_free_full(list, g_free);
 		}
-		i++;
+		/* go to the next path */
+		script = script->next;
 	}
-	g_free(home1_script);
-	g_free(home2_script);
+	writeinitfile();
+
 	return 0;
+}
+
+void fill_script_paths_list() {
+	GSList *list;
+
+	g_slist_free_full(com.script_path, g_free);
+	list = get_list_from_textview();
+	com.script_path = list;
+	writeinitfile();
 }

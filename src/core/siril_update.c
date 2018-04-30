@@ -189,7 +189,7 @@ static gchar *parse_changelog(gchar *changelog) {
 		strResult = g_string_append(strResult, "\n");
 		i++;
 	}
-
+	g_strfreev(token);
 	return g_string_free(strResult, FALSE);
 }
 

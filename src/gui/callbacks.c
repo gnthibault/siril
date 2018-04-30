@@ -39,6 +39,7 @@
 #include "gui/callbacks.h"
 #include "gui/PSF_list.h"
 #include "gui/histogram.h"
+#include "gui/script_menu.h"
 #include "gui/progress_and_log.h"
 #include "algos/colors.h"
 #include "algos/PSF.h"
@@ -2888,6 +2889,7 @@ void on_menu_FITS_header_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_close_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_libraw_interface();
 	update_photometry_interface();
+	fill_script_paths_list();
 	gtk_widget_hide(lookup_widget("settings_window"));
 }
 
