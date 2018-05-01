@@ -1,0 +1,51 @@
+############################################
+# Script for Siril 0.9.9
+# April 2018
+# (C) Cyril Richard
+########### PREPROCESSING SCRIPT ###########
+# Script for DSLR color camera preprocessing
+# needs 3 sets of images in the working
+# directory, previously converted with
+# SIRIL:
+# - bias_xxx1.fit, bias_xxx2.fit ...
+# - dark_xxx1.fit, dark_xxx2.fit ...
+# - flat_xxx1.fit, flat_xxx2.fit ...
+#
+############################################
+
+#build master-bias
+cd biases
+stack bias_ rej 3 3 -nonorm
+cd ..
+
+cd flats
+#preprocess flats
+preprocess flat_ -bias=../biases/bias_stacked.fit
+
+#build master-flat
+stack pp_flat_ rej 3 3 -norm=mul
+cd ..
+
+#build master-dark
+cd darks
+stack dark_ rej 3 3 -nonorm
+cd ..
+
+#preprocess lights
+cd lights
+preprocess light_ -dark=../darks/dark_stacked.fit -flat=../flats/pp_flat_stacked.fit -cfa -debayer
+
+#align lights
+register pp_light_
+
+#stack calibrated lights
+stack r_pp_light_ rej 3 3 -norm=addscale
+
+#That's a workaround here to save result in another place.
+#These lines are not mandatory
+#load image in memory
+load r_pp_light_stacked.fit
+#and save it at root
+cd  ..
+save result.fit
+close
