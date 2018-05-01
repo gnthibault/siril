@@ -25,6 +25,7 @@
 #define CSIDL_APPDATA 0x001a
 #endif
 #endif
+#include <string.h>
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
