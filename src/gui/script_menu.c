@@ -182,7 +182,7 @@ int initialize_script_menu() {
 	gint nb_item = 0;
 
 	if (!menuscript) {
-		menuscript = menuscript = lookup_widget("menuscript");
+		menuscript = lookup_widget("menuscript");
 	}
 
 	if (!com.script_path) {
