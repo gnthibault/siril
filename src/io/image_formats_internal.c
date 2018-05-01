@@ -209,11 +209,10 @@ int readbmp(const char *name, fits *fit) {
 	int fd;
 	long int count;
 	unsigned char *buf;
-	unsigned long data_offset = 0, compression = 0;
+	unsigned long data_offset = 0;
 	unsigned long width = 0, height = 0;
 	unsigned long nbdata, padsize;
 	unsigned short nbplane = 0;
-	gboolean inverted = FALSE;
 	char *msg;
 
 	if ((fd = g_open(name, O_RDONLY | O_BINARY, 0)) == -1) {

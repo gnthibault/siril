@@ -428,6 +428,7 @@ int main(int argc, char *argv[]) {
 	gtk_main();
 
 	/* quit Siril */
+	close_sequence(FALSE);
 	undo_flush();
 #ifdef MAC_INTEGRATION
 	g_object_unref (osx_app);

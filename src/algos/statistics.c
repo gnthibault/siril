@@ -498,21 +498,29 @@ void add_stats_to_fit(fits *fit, int layer, imstats *stat) {
 	fprintf(stdout, "- stats %p saved to fit %p (%d)\n", stat, fit, layer);
 }
 
-void add_stats_to_seq(sequence *seq, int image_index, int layer, imstats *stat) {
-	if (!seq->stats)
-		seq->stats = calloc(seq->nb_layers, sizeof(imstats **));
-	if (!seq->stats[layer])
-		seq->stats[layer] = calloc(seq->number, sizeof(imstats *));
-	if (seq->stats[layer][image_index]) {
-		if (seq->stats[layer][image_index] != stat) {
-			fprintf(stdout, "- stats %p, %d in seq (%d) is being replaced\n", seq->stats[layer][image_index], image_index, layer);
-			free_stats(seq->stats[layer][image_index]);
+static void add_stats_to_stats(sequence *seq, int nb_layers, imstats ****stats, int image_index, int layer, imstats *stat) {
+	if (!*stats)
+		*stats = calloc(nb_layers, sizeof(imstats **));
+	if (!(*stats)[layer])
+		(*stats)[layer] = calloc(seq->number, sizeof(imstats *));
+	if ((*stats)[layer][image_index]) {
+		if ((*stats)[layer][image_index] != stat) {
+			fprintf(stdout, "- stats %p, %d in seq (%d) is being replaced\n", (*stats)[layer][image_index], image_index, layer);
+			free_stats((*stats)[layer][image_index]);
 		} else return;
 	}
 	fprintf(stdout, "- stats %p, %d in seq (%d): saving data\n", stat, image_index, layer);
-	seq->stats[layer][image_index] = stat;
+	(*stats)[layer][image_index] = stat;
 	seq->needs_saving = TRUE;
 	stat->_nb_refs++;
+}
+
+void add_stats_to_seq(sequence *seq, int image_index, int layer, imstats *stat) {
+	add_stats_to_stats(seq, seq->nb_layers, &seq->stats, image_index, layer, stat);
+}
+
+void add_stats_to_seq_backup(sequence *seq, int image_index, int layer, imstats *stat) {
+	add_stats_to_stats(seq, 3, &seq->stats_bkp, image_index, layer, stat);
 }
 
 /* saves cached stats from the fits to its sequence, and clears the cache of the fits */

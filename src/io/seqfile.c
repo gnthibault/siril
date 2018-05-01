@@ -62,10 +62,11 @@
 sequence * readseqfile(const char *name){
 	char line[512], *scanformat;
 	char filename[512], *seqfilename;
-	int i, nbsel, nb_tokens, allocated = 0, current_layer = -1, image;
+	int i, nbsel, nb_tokens, allocated = 0, current_layer = -1, image, to_backup = 0;
 	FILE *seqfile;
        	sequence *seq;
 	imstats *stats;
+	regdata *regparam;
 
 	if (!name) return NULL;
 	fprintf(stdout, "Reading sequence file `%s'.\n", name);
@@ -138,6 +139,8 @@ sequence * readseqfile(const char *name){
 					if (seq->nb_layers >= 1) {
 						seq->regparam = calloc(seq->nb_layers, sizeof(regdata*));
 						seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
+						if (ser_is_cfa(seq->ser_file))
+							seq->regparam_bkp = calloc(seq->nb_layers, sizeof(regdata*));
 					}
 				} else if (line[1] >= '0' && line[1] <= '9') {
 					/* in the future, wavelength and name of each layer will be added here */
@@ -189,33 +192,42 @@ sequence * readseqfile(const char *name){
 					fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
 					goto error;
 				}
-				if (current_layer > seq->nb_layers) {
-					// it may happen when opening a CFA file in monochrome
-					break;
+				if ((!seq->cfa_opened_monochrome && current_layer >= seq->nb_layers) ||
+						(seq->cfa_opened_monochrome && current_layer >= 3)) {
+					fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
+					goto error;
 				}
-				if (seq->regparam[current_layer] == NULL) {
-					seq->regparam[current_layer] = calloc(seq->number, sizeof(regdata));
-					if (seq->regparam[current_layer] == NULL) {
+				if (seq->cfa_opened_monochrome)
+					regparam = seq->regparam_bkp[current_layer];
+				else regparam = seq->regparam[current_layer];
+
+				if (!regparam) {
+					regparam = calloc(seq->number, sizeof(regdata));
+					if (!regparam) {
 						fprintf(stderr, "readseqfile: could not allocate registration data\n");
 						goto error;
 					}
-					i = 0;
+					i = 0;	// one line per image, starting with 0
+					// reassign, because we didn't use a pointer
+					if (seq->cfa_opened_monochrome)
+						seq->regparam_bkp[current_layer] = regparam;
+					else seq->regparam[current_layer] = regparam;
 				}
 				if (i >= seq->number) {
 					fprintf(stderr, "\nreadseqfile ERROR: out of array bounds in reg info!\n\n");
 				} else {
 					nb_tokens = sscanf(line+3, "%f %f %g %g %g %g %lg",
-							&(seq->regparam[current_layer][i].shiftx),
-							&(seq->regparam[current_layer][i].shifty),
-							&(seq->regparam[current_layer][i].rot_centre_x),
-							&(seq->regparam[current_layer][i].rot_centre_y),
-							&(seq->regparam[current_layer][i].angle),
-							&(seq->regparam[current_layer][i].fwhm),
-							&(seq->regparam[current_layer][i].quality));
+							&(regparam[i].shiftx),
+							&(regparam[i].shifty),
+							&(regparam[i].rot_centre_x),
+							&(regparam[i].rot_centre_y),
+							&(regparam[i].angle),
+							&(regparam[i].fwhm),
+							&(regparam[i].quality));
 					if (nb_tokens != 7) {
 						if (nb_tokens == 3) {
 							// old format, with quality as third token
-							seq->regparam[current_layer][i].rot_centre_x = 0.0f;
+							regparam[i].rot_centre_x = 0.0f;
 							// the rest is already zero due to the calloc
 						} else {
 							fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
@@ -335,24 +347,31 @@ sequence * readseqfile(const char *name){
 					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
 							!com.debayer.open_debayer) {
 						fprintf(stdout, "- stats: using CFA stats\n");
-						current_layer = 0;
-					} else break;
+						to_backup = 0;
+					} else { ;
+						fprintf(stdout, "- stats: backing up CFA stats\n");
+						to_backup = 1;
+					}
+					current_layer = 0;
 				}
-				else if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
-						!com.debayer.open_debayer) {
-					fprintf(stdout, "- stats: not using demosaiced stats\n");
-					break;
+				else {
+					to_backup = 0;
+					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
+							!com.debayer.open_debayer) {
+						to_backup = 1;
+						fprintf(stdout, "- stats: backing up demosaiced stats\n");
+					}
+					current_layer = line[1] - '0';
 				}
-				else current_layer = line[1] - '0';
 
 				if (current_layer < 0 || current_layer > 9 || line[2] != '-') {
 					fprintf(stderr, "readseqfile: sequence file format error: %s\n",line);
 					goto error;
 				}
-				if (current_layer > seq->nb_layers) {
+				/*if (current_layer >= seq->nb_layers) {
 					// it may happen when opening a CFA file in monochrome
 					break;
-				}
+				}*/
 				stats = NULL;
 				allocate_stats(&stats);
 				nb_tokens = sscanf(line + 3,
@@ -373,7 +392,9 @@ sequence * readseqfile(const char *name){
 						&(stats->normValue),
 						&(stats->bgnoise));
 				if (nb_tokens == 15) {
-					add_stats_to_seq(seq, image, current_layer, stats);
+					if (to_backup)
+						add_stats_to_seq_backup(seq, image, current_layer, stats);
+					else add_stats_to_seq(seq, image, current_layer, stats);
 					free_stats(stats);	// we unreference it here
 				} else {
 					free_stats(stats);
@@ -387,6 +408,7 @@ sequence * readseqfile(const char *name){
 		siril_log_message(_("The file seems to be corrupted\n"));
 		goto error;
 	}
+	seq->needs_saving = FALSE;	// loading stats sets it to true
 	fclose(seqfile);
 	seq->end = seq->imgparam[seq->number-1].filenum;
 	seq->current = -1;
@@ -397,6 +419,21 @@ sequence * readseqfile(const char *name){
 		siril_log_message(_("Fixing the selection number in the .seq file (%d) to the actual value (%d) (not saved)\n"), seq->selnum, nbsel);
 		seq->selnum = nbsel;
 	}
+	
+	// copy some regparam_bkp to regparam if it applies
+	if (seq->cfa_opened_monochrome && seq->regparam_bkp && (!seq->regparam || !seq->regparam[0])) {
+		for (i = 0; i < 3; i++) {
+			if (seq->regparam_bkp[i]) {
+				siril_log_message(_("Using registration data from demosaiced layer %d (red is 0, green is 1, blue is 2)\n"), i);
+				seq->regparam[0] = calloc(seq->number, sizeof(regdata));
+				for (image = 0; image < seq->number; image++) {
+					memcpy(&seq->regparam[0][image], &seq->regparam_bkp[i][image], sizeof(regdata));
+				}
+				break;
+			}
+		}
+	}
+
 	update_used_memory();
 	free(seqfilename);
 	return seq;
@@ -458,17 +495,8 @@ int writeseqfile(sequence *seq){
 	}
 
 	for (layer = 0; layer < seq->nb_layers; layer++) {
-		if (seq->regparam[layer]) {
+		if (seq->regparam[layer] && !seq->cfa_opened_monochrome) {
 			for (i=0; i < seq->number; ++i) {
-				/*fprintf(stderr, "R%d %f %f %g %g %g %g %g\n", layer,
-						seq->regparam[layer][i].shiftx,
-						seq->regparam[layer][i].shifty,
-						seq->regparam[layer][i].rot_centre_x,
-						seq->regparam[layer][i].rot_centre_y,
-						seq->regparam[layer][i].angle,
-						seq->regparam[layer][i].fwhm,
-						seq->regparam[layer][i].quality
-						);*/
 				fprintf(seqfile, "R%d %f %f %g %g %g %g %g\n", layer,
 						seq->regparam[layer][i].shiftx,
 						seq->regparam[layer][i].shifty,
@@ -481,8 +509,6 @@ int writeseqfile(sequence *seq){
 			}
 		}
 		if (seq->stats && seq->stats[layer]) {
-			if (seq->cfa_opened_monochrome && layer > 0)
-				continue;
 			for (i=0; i < seq->number; ++i) {
 				if (!seq->stats[layer][i]) continue;
 
@@ -506,6 +532,45 @@ int writeseqfile(sequence *seq){
 			}
 		}
 	}
+	for (layer = 0; layer < 3; layer++) {
+		if (seq->regparam_bkp && seq->regparam_bkp[layer]) {
+			for (i=0; i < seq->number; ++i) {
+				fprintf(seqfile, "R%d %f %f %g %g %g %g %g\n", layer,
+						seq->regparam_bkp[layer][i].shiftx,
+						seq->regparam_bkp[layer][i].shifty,
+						seq->regparam_bkp[layer][i].rot_centre_x,
+						seq->regparam_bkp[layer][i].rot_centre_y,
+						seq->regparam_bkp[layer][i].angle,
+						seq->regparam_bkp[layer][i].fwhm,
+						seq->regparam_bkp[layer][i].quality
+				       );
+			}
+		}
+		if (seq->stats_bkp && seq->stats_bkp[layer]) {
+			for (i=0; i < seq->number; ++i) {
+				if (!seq->stats_bkp[layer][i]) continue;
+
+				fprintf(seqfile, "M%c-%d %ld %ld %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg %lg\n",
+						seq->cfa_opened_monochrome ? '0' + layer : '*', i,
+						seq->stats_bkp[layer][i]->total,
+						seq->stats_bkp[layer][i]->ngoodpix,
+						seq->stats_bkp[layer][i]->mean,
+						seq->stats_bkp[layer][i]->median,
+						seq->stats_bkp[layer][i]->sigma,
+						seq->stats_bkp[layer][i]->avgDev,
+						seq->stats_bkp[layer][i]->mad,
+						seq->stats_bkp[layer][i]->sqrtbwmv,
+						seq->stats_bkp[layer][i]->location,
+						seq->stats_bkp[layer][i]->scale,
+						seq->stats_bkp[layer][i]->min,
+						seq->stats_bkp[layer][i]->max,
+						seq->stats_bkp[layer][i]->normValue,
+						seq->stats_bkp[layer][i]->bgnoise);
+
+			}
+		}
+	}
+
 	fclose(seqfile);
 	seq->needs_saving = FALSE;
 	return 0;

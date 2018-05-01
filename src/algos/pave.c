@@ -161,7 +161,7 @@ int pave_2d_tfo(float *Pict, float *Pave, int Nl, int Nc, int Nbr_Plan,
 			break;
 		}
 
-		/* computes  the wavelet transform */
+		/* computes the wavelet transform */
 		for (i = 0; i < Nl * Nc; i++)
 			Plan[i] -= Imag[i];
 	}

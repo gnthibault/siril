@@ -324,6 +324,11 @@ struct sequ {
 	imgdata *imgparam;	// a structure for each image of the sequence
 	regdata **regparam;	// *regparam[nb_layers], may be null if nb_layers is unknown
 	imstats ***stats;	// statistics of the images for each layer, may be null too
+	/* in the case of a CFA sequence, depending on the opening mode, we cannot store
+	 * and use everything that was in the seqfile, so we back them up here */
+	regdata **regparam_bkp;	// *regparam[3], null if nothing to back up
+	imstats ***stats_bkp;	// statistics of the images for 3 layers, may be null too
+
 	/* beg and end are used prior to imgparam allocation, hence their usefulness */
 	int beg;		// imgparam[0]->filenum
 	int end;		// imgparam[number-1]->filenum

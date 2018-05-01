@@ -1216,7 +1216,7 @@ int process_clearstar(int nb){
 
 int process_close(int nb) {
 	free_image_data();
-	close_sequence(TRUE);
+	close_sequence(FALSE);
 	undo_flush();
 	hide_rgb_window();
 	hide_gray_window();

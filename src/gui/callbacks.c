@@ -3058,6 +3058,8 @@ void gtk_main_quit() {
 }
 
 void on_exit_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	free_image_data();
+	close_sequence(FALSE);	// save unfinished business
 	gtk_main_quit();
 }
 

@@ -163,7 +163,7 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 	}
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(y) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) private(y) schedule(guided)
 #endif
 	for (y = sf->radius + areaY0; y < areaY1 - sf->radius; y++) {
 		int x;

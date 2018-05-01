@@ -963,28 +963,61 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 	int layer, j;
 	
 	if (seq == NULL) return;
-	if (seq->nb_layers > 0 && (seq->regparam || seq->stats)) {
+	// free regparam
+	if (seq->nb_layers > 0 && seq->regparam) {
 		for (layer = 0; layer < seq->nb_layers; layer++) {
-			if ((seq->regparam && seq->regparam[layer]) ||
-					(seq->stats && seq->stats[layer])) {
+			if (seq->regparam[layer]) {
 				for (j = 0; j < seq->number; j++) {
-					if (seq->regparam && seq->regparam[layer] &&
-							seq->regparam[layer][j].fwhm_data &&
+					if (seq->regparam[layer][j].fwhm_data &&
 							(!seq->photometry[0] ||
 							 seq->regparam[layer][j].fwhm_data != seq->photometry[0][j])) // avoid double free
 						free(seq->regparam[layer][j].fwhm_data);
-
-					if (seq->stats && seq->stats[layer] && seq->stats[layer][j])
-						free_stats(seq->stats[layer][j]);
 				}
-				if (seq->regparam && seq->regparam[layer])
-					free(seq->regparam[layer]);
-				if (seq->stats && seq->stats[layer])
-					free(seq->stats[layer]);
+				free(seq->regparam[layer]);
 			}
 		}
-		if (seq->regparam) free(seq->regparam);
-		if (seq->stats) free(seq->stats);
+		free(seq->regparam);
+	}
+	// free stats
+	if (seq->nb_layers > 0 && seq->stats) {
+		for (layer = 0; layer < seq->nb_layers; layer++) {
+			if (seq->stats[layer]) {
+				for (j = 0; j < seq->number; j++) {
+					if (seq->stats[layer][j])
+						free_stats(seq->stats[layer][j]);
+				}
+				free(seq->stats[layer]);
+			}
+		}
+		free(seq->stats);
+	}
+	// free backup regparam
+	if (seq->nb_layers > 0 && seq->regparam_bkp) {
+		for (layer = 0; layer < seq->nb_layers; layer++) {
+			if (seq->regparam_bkp[layer]) {
+				for (j = 0; j < seq->number; j++) {
+					if (seq->regparam_bkp[layer][j].fwhm_data &&
+							(!seq->photometry[0] ||
+							 seq->regparam_bkp[layer][j].fwhm_data != seq->photometry[0][j])) // avoid double free
+						free(seq->regparam_bkp[layer][j].fwhm_data);
+				}
+				free(seq->regparam_bkp[layer]);
+			}
+		}
+		free(seq->regparam_bkp);
+	}
+	// free backup stats
+	if (seq->nb_layers > 0 && seq->stats_bkp) {
+		for (layer = 0; layer < seq->nb_layers; layer++) {
+			if (seq->stats_bkp[layer]) {
+				for (j = 0; j < seq->number; j++) {
+					if (seq->stats_bkp[layer][j])
+						free_stats(seq->stats_bkp[layer][j]);
+				}
+				free(seq->stats_bkp[layer]);
+			}
+		}
+		free(seq->stats_bkp);
 	}
 
 	for (j=0; j<seq->number; j++) {
