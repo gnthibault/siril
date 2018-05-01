@@ -268,5 +268,7 @@ static gboolean idle_set_cursor(gpointer arg) {
 }
 
 void set_cursor_waiting(gboolean waiting) {
-	gdk_threads_add_idle(idle_set_cursor, GINT_TO_POINTER(waiting));
+	if (com.headless)
+		gdk_threads_add_idle(idle_set_cursor, GINT_TO_POINTER(waiting));
+	else idle_set_cursor(GINT_TO_POINTER(waiting));
 }
