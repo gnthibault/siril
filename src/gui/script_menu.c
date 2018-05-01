@@ -175,9 +175,14 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 int initialize_script_menu() {
+	static GtkWidget *menuscript = NULL;
 	GSList *list, *script;
-	GtkWidget *menuscript;
+	GtkWidget *menu;
 	gint nb_item = 0;
+
+	if (!menuscript) {
+		menuscript = menuscript = lookup_widget("menuscript");
+	}
 
 	if (!com.script_path) {
 		script = initialize_script_paths();
@@ -187,8 +192,7 @@ int initialize_script_menu() {
 	}
 	fill_gtkText(script);
 
-	menuscript = lookup_widget("menuscript");
-	GtkWidget *menu = gtk_menu_new();
+	menu = gtk_menu_new();
 
 	while (script) {
 		list = search_script(script->data);
@@ -209,7 +213,7 @@ int initialize_script_menu() {
 				menu_item = gtk_menu_item_new_with_label(list->data);
 				gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
 				gchar *full_path = g_build_filename(script->data, list->data,
-				NULL);
+						NULL);
 				g_signal_connect(G_OBJECT(menu_item), "activate",
 						G_CALLBACK(on_script_execution), (gchar * ) full_path);
 				siril_log_message(_("Loading script: %s\n"), list->data);
