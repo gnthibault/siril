@@ -234,25 +234,27 @@ void show_time_msg(struct timeval t_start, struct timeval t_end, const char *msg
 	}
 }
 
+struct _cursor_data {
+	gboolean change;
+	GdkCursorType cursor_type;
+};
+
 /* thread-safe cursor change */
-static gboolean idle_set_cursor(gpointer arg) {
-	int waiting = GPOINTER_TO_INT(arg);
+static gboolean idle_set_cursor(gpointer garg) {
+	struct _cursor_data *arg = (struct _cursor_data *)garg;
 	GdkCursor *cursor;
-	static GdkCursor *clock = NULL;
+	GdkCursor *new;
 	GdkDisplay *display;
 	GdkScreen *screen;
 	GList *list;
 
 	display = gdk_display_get_default ();
-
-	if (clock == NULL)
-		clock = gdk_cursor_new_for_display(display, GDK_WATCH);
-
+	new = gdk_cursor_new_for_display(display, arg->cursor_type);
 	screen = gdk_screen_get_default();
 	list = gdk_screen_get_toplevel_windows(screen);
 
-	if (waiting) {
-		cursor = clock;
+	if (arg->change) {
+		cursor = new;
 	} else {
 		cursor = NULL;
 	}
@@ -264,11 +266,28 @@ static gboolean idle_set_cursor(gpointer arg) {
 		list = g_list_next(list);
 	}
 	g_list_free(list);
+	free(arg);
 	return FALSE;
 }
 
 void set_cursor_waiting(gboolean waiting) {
+	struct _cursor_data *arg = malloc(sizeof (struct _cursor_data));
+
+	arg->change = waiting;
+	arg->cursor_type = GDK_WATCH;
+
 	if (com.headless)
-		gdk_threads_add_idle(idle_set_cursor, GINT_TO_POINTER(waiting));
-	else idle_set_cursor(GINT_TO_POINTER(waiting));
+		gdk_threads_add_idle(idle_set_cursor, arg);
+	else idle_set_cursor(arg);
+}
+
+void set_cursor(GdkCursorType cursor_type, gboolean change) {
+	struct _cursor_data *arg = malloc(sizeof (struct _cursor_data));
+
+	arg->change = change;
+	arg->cursor_type = cursor_type;
+
+	if (com.headless)
+		gdk_threads_add_idle(idle_set_cursor, arg);
+	else idle_set_cursor(arg);
 }

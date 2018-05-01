@@ -492,37 +492,6 @@ static void set_histogram(gsl_histogram *histo, int layer) {
 	com.layers_hist[layer] = histo;
 }
 
-/* Use same function that set_cursor_waiting */
-static void change_cursor_for_hand(gboolean change) {
-	GdkCursor *cursor;
-	static GdkCursor *hand = NULL;
-	GdkDisplay *display;
-	GdkScreen *screen;
-	GList *list;
-
-	display = gdk_display_get_default();
-
-	if (hand == NULL)
-		hand = gdk_cursor_new_for_display(display, GDK_HAND2);
-
-	screen = gdk_screen_get_default();
-	list = gdk_screen_get_toplevel_windows(screen);
-
-	if (change) {
-		cursor = hand;
-	} else {
-		cursor = NULL;
-	}
-	while (list) {
-		GdkWindow *window = GDK_WINDOW(list->data);
-		gdk_window_set_cursor(window, cursor);
-		gdk_display_sync(gdk_window_get_display(window));
-		gdk_display_flush(display);
-		list = g_list_next(list);
-	}
-	g_list_free(list);
-}
-
 /*
  * Public functions
  */
@@ -967,13 +936,13 @@ void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) 
 gboolean on_scale_midtones_enter_notify_event(GtkWidget *widget,
 		GdkEvent *event, gpointer user_data) {
 
-	change_cursor_for_hand(TRUE);
+	set_cursor(GDK_HAND2, TRUE);
 	return FALSE;
 }
 
 gboolean on_scale_midtones_leave_notify_event(GtkWidget *widget,
 		GdkEvent *event, gpointer user_data) {
 
-	change_cursor_for_hand(FALSE);
+	set_cursor(GDK_HAND2, FALSE);
 	return FALSE;
 }

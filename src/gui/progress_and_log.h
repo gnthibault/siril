@@ -2,6 +2,7 @@
 #define _PROGRESSLOG_H
 
 #include <sys/time.h>
+#include <gtk/gtk.h>
 
 #define PROGRESS_NONE -2.0		// don't update the progress bar value
 #define PROGRESS_PULSATE -1.0		// pulsate the progress bar
@@ -17,6 +18,7 @@ void set_progress_bar_data(const char *text, double percent);
 void show_time(struct timeval, struct timeval);
 void show_time_msg(struct timeval t_start, struct timeval t_end, const char *msg);
 
-void set_cursor_waiting(int waiting);
+void set_cursor_waiting(gboolean waiting);
+void set_cursor(GdkCursorType cursor_type, gboolean change);
 
 #endif
