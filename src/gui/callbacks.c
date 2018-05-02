@@ -1071,7 +1071,7 @@ static void opendial(void) {
 			if (!changedir(filename, &err)) {
 				writeinitfile();
 			} else {
-				show_dialog(err, _("Error"), "dialog-error");
+				show_dialog(err, _("Error"), "dialog-error-symbolic");
 			}
 			break;
 
@@ -2098,7 +2098,7 @@ void zoomcombo_update_display_for_zoom() {
 	}
 	msg = siril_log_message(
 			_("Unknown zoom_value value, what is the current zoom?\n"));
-	show_dialog(msg, _("Error"), "dialog-error");
+	show_dialog(msg, _("Error"), "dialog-error-symbolic");
 }
 
 void initialize_FITS_name_entries() {
@@ -3009,7 +3009,7 @@ void on_filechooser_swap_file_set(GtkFileChooserButton *fileChooser, gpointer us
 
 	if (g_access (dir, W_OK)) {
 		gchar *msg = siril_log_color_message(_("You don't have permission to write in this directory: %s\n"), "red", dir);
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		gtk_file_chooser_set_filename(swap_dir, com.swap_dir);
 		return;
 	}
@@ -4686,7 +4686,7 @@ void on_bkgCompute_clicked(GtkButton *button, gpointer user_data) {
 	if (!gtk_toggle_button_get_active(imgbutton)) {
 		char *msg =	siril_log_message(_("Background cannot be extracted"
 				" from itself. Please, click on Show Image\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return;
 	}
 
@@ -4707,7 +4707,7 @@ void on_button_bkg_correct_clicked(GtkButton *button, gpointer user_data) {
 		char *msg =
 				siril_log_message(
 						_("Please, apply correction on the image by clicking on Show Image\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return;
 	}
 
@@ -5029,7 +5029,7 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		show_dialog(
 				_("Current selection is too large.\n"
 						"To determine the PSF, please make a selection around a star.\n"),
-						_("Warning"), "dialog-warning");
+						_("Warning"), "dialog-warning-symbolic");
 		return;
 	}
 	result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE);
@@ -5073,7 +5073,7 @@ void on_menu_gray_pick_star_activate(GtkMenuItem *menuitem, gpointer user_data) 
 			char *msg =
 					siril_log_message(
 							_("Current selection is too large.\nTo determine the PSF, please make a selection around a star.\n"));
-			show_dialog(msg, _("Warning"), "dialog-warning");
+			show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
 			return;
 		}
 		fitted_PSF *new_star = add_star(&gfit, layer, &new_index);
@@ -5135,13 +5135,13 @@ void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
 	if (page == 0) {
 		if (sequence_is_loaded()) {
 			char *msg = siril_log_message(_("FFT does not work with sequences !\n"));
-			show_dialog(msg, _("Error"), "dialog-error");
+			show_dialog(msg, _("Error"), "dialog-error-symbolic");
 			set_cursor_waiting(FALSE);
 			return;
 		}
 		if (!single_image_is_loaded()) {
 			char *msg = siril_log_message(_("Open an image first !\n"));
-			show_dialog(msg, _("Error"), "dialog-error");
+			show_dialog(msg, _("Error"), "dialog-error-symbolic");
 			set_cursor_waiting(FALSE);
 			return;
 
@@ -5166,7 +5166,7 @@ void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
 
 		if (mag == NULL || phase == NULL) {
 			char *msg = siril_log_message(_("Select magnitude and phase before !\n"));
-			show_dialog(msg, _("Error"), "dialog-error");
+			show_dialog(msg, _("Error"), "dialog-error-symbolic");
 			set_cursor_waiting(FALSE);
 			free(type);
 			return;
@@ -5318,7 +5318,7 @@ void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 		char *msg = siril_log_message(
 				_("Wavelet: maximum number of plans for this image size is %d\n"),
 				maxplan);
-		show_dialog(msg, _("Warning"), "dialog-warning");
+		show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
 		Nbr_Plan = maxplan;
 		gtk_spin_button_set_value(
 				GTK_SPIN_BUTTON(lookup_widget("spinbutton_plans_w")), Nbr_Plan);
@@ -5327,7 +5327,7 @@ void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 	if (Type_Transform != TO_PAVE_LINEAR && Type_Transform != TO_PAVE_BSPLINE) {
 		char *msg = siril_log_message(_("Wavelet: type must be %d or %d\n"),
 		TO_PAVE_LINEAR, TO_PAVE_BSPLINE);
-		show_dialog(msg, _("Warning"), "dialog-warning");
+		show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
 	}
 
 	set_cursor_waiting(TRUE);
@@ -5385,7 +5385,7 @@ void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
 		char *msg = siril_log_message(
 				_("Wavelet: maximum number of plans for this image size is %d\n"),
 				maxplan);
-		show_dialog(msg, _("Warning"), "dialog-warning");
+		show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
 		set_cursor_waiting(FALSE);
 		return;
 	}

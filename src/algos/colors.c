@@ -551,7 +551,7 @@ void on_button_bkg_selection_clicked(GtkButton *button, gpointer user_data) {
 
 	if ((!com.selection.h) || (!com.selection.w)) {
 		show_dialog(_("Make a selection of the background area before"), "Warning",
-				"dialog-warning");
+				"dialog-warning-symbolic");
 		return;
 	}
 
@@ -671,7 +671,7 @@ void on_button_bkg_neutralization_clicked(GtkButton *button, gpointer user_data)
 
 	if ((!width) || (!height)) {
 		show_dialog(_("Make a selection of the background area before"), "Warning",
-				"dialog-warning");
+				"dialog-warning-symbolic");
 		return;
 	}
 	black_selection.x = gtk_spin_button_get_value(selection_black_value[0]);
@@ -707,7 +707,7 @@ void on_button_white_selection_clicked(GtkButton *button, gpointer user_data) {
 
 	if ((!com.selection.h) || (!com.selection.w)) {
 		show_dialog(_("Make a selection of the background area before"), "Warning",
-				"dialog-warning");
+				"dialog-warning-symbolic");
 		return;
 	}
 
@@ -880,7 +880,7 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 
 	if (!black_selection.w || !black_selection.h) {
 		show_dialog(_("Make a selection of the background area before"), "Warning",
-				"dialog-warning");
+				"dialog-warning-symbolic");
 		return;
 	}
 
@@ -891,7 +891,7 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 
 	if ((!white_selection.w || !white_selection.h) && !is_manual) {
 		show_dialog(_("Make a selection of the background area before"), "Warning",
-				"dialog-warning");
+				"dialog-warning-symbolic");
 		return;
 	}
 

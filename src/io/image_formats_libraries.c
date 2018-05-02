@@ -70,7 +70,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	WORD *gbuf[3] = {*data, *data, *data};
 	if (nsamples == 4) {
 		msg = siril_log_message(_("Alpha channel is ignored.\n"));
-		show_dialog(msg, _("Warning"), "dialog-warning");
+		show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
 	}
 	if ((nsamples == 3) || (nsamples == 4)) {
 		gbuf[1] = *data + npixels;
@@ -86,7 +86,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 			case PLANARCONFIG_CONTIG:
 				if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow*scanline) < 0){
 					msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-					show_dialog(msg, _("Error"), "dialog-error");
+					show_dialog(msg, _("Error"), "dialog-error-symbolic");
 					retval = -1;
 					break;
 				}
@@ -104,7 +104,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 				for (j=0; j<nsamples; j++){	//loop on the layer
 					if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, j), buf, nrow*scanline) < 0){
 						msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-						show_dialog(msg, _("Error"), "dialog-error");
+						show_dialog(msg, _("Error"), "dialog-error-symbolic");
 						retval = -1;
 						break;
 					}
@@ -114,7 +114,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 				break;
 			default:
 				msg = siril_log_message(_("Unknown TIFF file.\n"));
-				show_dialog(msg, _("Error"), "dialog-error");
+				show_dialog(msg, _("Error"), "dialog-error-symbolic");
 				retval = -1;
 		}
 	}
@@ -156,7 +156,7 @@ static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 		}
 		else {
 			msg = siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-			show_dialog(msg, _("Error"), "dialog-error");
+			show_dialog(msg, _("Error"), "dialog-error-symbolic");
 			retval = -1;
 		}
 		_TIFFfree(raster);
@@ -226,7 +226,7 @@ int readtif(const char *name, fits *fit) {
 
 		default :
 			msg = siril_log_message(_("Siril only works with 8/16-bit TIFF format.\n"));
-			show_dialog(msg, _("Warning"), "dialog-warning");
+			show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
 			retval = -1;
 	}
 	TIFFClose(tif);
@@ -288,7 +288,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 	if (tif == NULL) {
 		msg = siril_log_message(_("Siril cannot create TIFF file.\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		free(filename);
 		return 1;
 	}
@@ -345,7 +345,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	else {
 		TIFFClose(tif);
 		msg = siril_log_message(_("TIFF file has unexpected number of channels (not 1 or 3).\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		free(filename);
 		return 1;
 	}
@@ -409,7 +409,7 @@ int readjpg(const char* name, fits *fit){
 
 	if ((f = g_fopen(name, "rb")) == NULL){
 		char *msg = siril_log_message(_("Sorry but Siril cannot open the file: %s.\n"), name);
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return -1;
 	}
 	cinfo.err = jpeg_std_error(&jerr);
@@ -482,7 +482,7 @@ int savejpg(const char *name, fits *fit, int quality){
 	//## OPEN FILE FOR DATA DESTINATION:
 	if ((f = g_fopen(filename, "wb")) == NULL) {
 		char *msg = siril_log_message(_("Siril cannot create JPG file.\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		free(filename);
 		return 1;
 	}
@@ -573,7 +573,7 @@ int readpng(const char *name, fits* fit) {
 			NULL);
 	if (!png) {
 		char *msg = siril_log_message(_("Sorry but Siril cannot open the file: %s.\n"), name);
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return -1;
 	}
 

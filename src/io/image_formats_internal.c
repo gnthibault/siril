@@ -217,7 +217,7 @@ int readbmp(const char *name, fits *fit) {
 
 	if ((fd = g_open(name, O_RDONLY | O_BINARY, 0)) == -1) {
 		msg = siril_log_message(_("Error opening BMP.\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return -1;
 	}
 
@@ -281,7 +281,7 @@ int readbmp(const char *name, fits *fit) {
 	default:
 		msg = siril_log_message(_("Sorry but Siril cannot "
 				"open this kind of BMP. Try to convert it before.\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 	}
 	free(buf);
 	char *basename = g_path_get_basename(name);
@@ -351,7 +351,7 @@ int savebmp(const char *name, fits *fit) {
 	f = g_fopen(filename, "wb");
 	if (f == NULL) {
 		char *msg = siril_log_message(_("Can't create BMP file.\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		free(filename);
 		return 1;
 	}
@@ -411,7 +411,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 
 	if ((fd = g_fopen(filename, "rb")) == NULL) {
 		msg = siril_log_message(_("Sorry but Siril cannot open this file.\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return -1;
 	}
 	if (fgets(buf, 256, fd) == NULL) {
@@ -423,7 +423,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		msg = siril_log_message(
 				_("Wrong magic cookie in PNM file, ASCII types and"
 						" b&w bitmaps are not supported.\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		fclose(fd);
 		return -1;
 	}
@@ -506,7 +506,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		}
 		if (fread(tmpbuf, stride, fit->ry, fd) < fit->ry) {
 			msg = siril_log_message(_("Error reading 8-bit PPM image data.\n"));
-			show_dialog(msg, _("Error"), "dialog-error");
+			show_dialog(msg, _("Error"), "dialog-error-symbolic");
 			fclose(fd);
 			free(tmpbuf);
 			free(fit->data);
@@ -538,7 +538,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 			if (fread(fit->data, stride, fit->ry, fd) < fit->ry) {
 				msg = siril_log_message(
 						_("Error reading 16-bit gray PPM image data.\n"));
-				show_dialog(msg, _("Error"), "dialog-error");
+				show_dialog(msg, _("Error"), "dialog-error-symbolic");
 				fclose(fd);
 				free(fit->data);
 				fit->data = NULL;
@@ -571,7 +571,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 			if (fread(tmpbuf, stride, fit->ry, fd) < fit->ry) {
 				msg = siril_log_message(
 						_("Error reading 16-bit color PPM image data.\n"));
-				show_dialog(msg, _("Error"), "dialog-error");
+				show_dialog(msg, _("Error"), "dialog-error-symbolic");
 				fclose(fd);
 				free(tmpbuf);
 				free(fit->data);
@@ -587,7 +587,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 	} else {
 		msg = siril_log_message(_("Not handled max value for PNM: %d.\n"),
 				max_val);
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		fclose(fd);
 		return -1;
 	}
@@ -762,7 +762,7 @@ static int _pic_read_header(struct pic_struct *pic_file) {
 	if (pic_file->magic != 0x12231fc) {
 		char *msg = siril_log_message(_("Wrong magic cookie in PIC file. "
 				"This image is not supported.\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return -1;
 	}
 
@@ -810,7 +810,7 @@ int readpic(const char *name, fits *fit) {
 	if ((pic_file->fd = g_open(name, O_RDONLY | O_BINARY, 0)) == -1) {
 		msg = siril_log_message(
 				_("Sorry but Siril cannot open the PIC file: %s.\n"), name);
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		free(pic_file);
 		return -1;
 	}
@@ -848,7 +848,7 @@ int readpic(const char *name, fits *fit) {
 	default:
 		retval = -1;
 		msg = siril_log_message(_("Sorry but Siril cannot open this file.\n"));
-		show_dialog(msg, _("Error"), "dialog-error");
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 	}
 
 	char *basename = g_path_get_basename(name);

@@ -804,7 +804,7 @@ void read_and_show_textfile(char *path, char *title) {
 
 	FILE *f = g_fopen(path, "r");
 	if (!f) {
-		show_dialog(_("File not found"), _("Error"), "dialog-error");
+		show_dialog(_("File not found"), _("Error"), "dialog-error-symbolic");
 		return;
 	}
 	while (fgets(line, sizeof(line), f) != NULL)

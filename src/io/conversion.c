@@ -521,13 +521,13 @@ void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 	char *tmpmsg;
 	if (!com.wd) {
 		tmpmsg = siril_log_message(_("Conversion: no working directory set.\n"));
-		show_dialog(tmpmsg, _("Warning"), "dialog-warning");
+		show_dialog(tmpmsg, _("Warning"), "dialog-warning-symbolic");
 		set_cursor_waiting(FALSE);
 		return;
 	}
 	if((dir = g_dir_open(com.wd, 0, &error)) == NULL){
 		tmpmsg = siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
-		show_dialog(tmpmsg, _("Error"), "dialog-error");
+		show_dialog(tmpmsg, _("Error"), "dialog-error-symbolic");
 		fprintf (stderr, "Conversion: %s\n", error->message);
 		set_cursor_waiting(FALSE);
 		return ;
@@ -597,7 +597,7 @@ static gpointer convert_thread_worker(gpointer p) {
 				"If the file type you are trying to load is listed in supported "
 				"formats, you may notify the developpers that the extension you are "
 				"trying to use should be recognized for this type."), src_ext);
-			show_dialog(msg, _("Error"), "dialog-error");
+			show_dialog(msg, _("Error"), "dialog-error-symbolic");
 			break;	// avoid 100 error popups
 		}
 

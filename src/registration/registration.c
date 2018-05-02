@@ -1170,7 +1170,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 			&& method->sel != REQUIRES_NO_SELECTION) {
 		msg = siril_log_message(
 				_("All prerequisites are not filled for registration. Select a rectangle first.\n"));
-		show_dialog(msg, _("Warning"), "dialog-warning");
+		show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
 		return;
 	}
 	// TODO: check for reentrance
@@ -1203,7 +1203,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 		double diff = test_available_space(size * 4.0); //FIXME: 4 is only ok for x2 Drizzle
 		if (diff < 0.0) {
 			msg = siril_log_message(_("Not enough disk space to perform Drizzle operation!\n"));
-			show_dialog(msg, _("Error"), "dialog-error");
+			show_dialog(msg, _("Error"), "dialog-error-symbolic");
 			free(reg_args);
 			return;
 		}
