@@ -804,12 +804,12 @@ void on_histoMidEntry_changed(GtkEditable *editable, gpointer user_data) {
 	value = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
 	if (value <= 0.0) {
 		gtk_entry_set_text(GTK_ENTRY(editable), "0.0000001");
-		return;
+		value = 0.0;
 	}
 
 	if (value >= 1.0) {
 		gtk_entry_set_text(GTK_ENTRY(editable), "0.9999999");
-		value = 0;
+		value = 1.0;
 	}
 
 	MidRange = GTK_RANGE(GTK_SCALE(gtk_builder_get_object(builder, "scale_midtones")));
@@ -821,19 +821,27 @@ void on_histoMidEntry_changed(GtkEditable *editable, gpointer user_data) {
 }
 
 void on_histoShadEntry_changed(GtkEditable *editable, gpointer user_data) {
-	double value;
+	double hi, lo;
 	GtkAdjustment *Shadows;
 	GtkRange *ShadRange;
+	GtkEntry *hi_entry;
 
-	value = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
-	if (value < 0.0) {
+	hi_entry = GTK_ENTRY(lookup_widget("histoHighEntry"));
+
+	lo = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
+	hi = atof(gtk_entry_get_text(hi_entry));
+
+	if (lo < 0.0) {
 		gtk_entry_set_text(GTK_ENTRY(editable), "0.0000000");
-		return;
-	}
-
-	if (value > 1.0) {
+		lo = 0.0;
+	} else if (lo > 1.0) {
 		gtk_entry_set_text(GTK_ENTRY(editable), "1.0000000");
-		value = 0;
+		lo = 1.0;
+	} else if (lo > hi) {
+		char str[10];
+		g_snprintf(str, sizeof(str), "%9.8f", hi);
+		gtk_entry_set_text(GTK_ENTRY(editable), str);
+		lo = hi;
 	}
 
 	set_cursor_waiting(TRUE);
@@ -841,26 +849,34 @@ void on_histoShadEntry_changed(GtkEditable *editable, gpointer user_data) {
 	ShadRange = GTK_RANGE(GTK_SCALE(gtk_builder_get_object(builder, "scale_shadows")));
 
 	g_signal_handlers_block_by_func(ShadRange, on_scale_shadows_value_changed, NULL);
-	gtk_adjustment_set_value(Shadows, value);
+	gtk_adjustment_set_value(Shadows, lo);
 	g_signal_handlers_unblock_by_func(ShadRange, on_scale_shadows_value_changed, NULL);
 	update_histo_mtf();
 	set_cursor_waiting(FALSE);
 }
 
 void on_histoHighEntry_changed(GtkEditable *editable, gpointer user_data) {
-	double value;
+	double hi, lo;
 	GtkAdjustment *Highligts;
 	GtkRange *HighRange;
+	GtkEntry *lo_entry;
 
-	value = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
-	if (value < 0.0) {
+	lo_entry = GTK_ENTRY(lookup_widget("histoShadEntry"));
+
+	lo = atof(gtk_entry_get_text(lo_entry));
+	hi = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
+
+	if (hi < 0.0) {
 		gtk_entry_set_text(GTK_ENTRY(editable), "0.0000000");
-		return;
-	}
-
-	if (value > 1.0) {
+		hi = 0.0;
+	} else if (hi > 1.0) {
 		gtk_entry_set_text(GTK_ENTRY(editable), "1.0000000");
-		value = 0;
+		hi = 1.0;
+	} else if (hi < lo) {
+		char str[10];
+		g_snprintf(str, sizeof(str), "%9.8f", lo);
+		gtk_entry_set_text(GTK_ENTRY(editable), str);
+		hi = lo;
 	}
 
 	set_cursor_waiting(TRUE);
@@ -869,7 +885,7 @@ void on_histoHighEntry_changed(GtkEditable *editable, gpointer user_data) {
 	HighRange = GTK_RANGE(GTK_SCALE(gtk_builder_get_object(builder, "scale_highlights")));
 
 	g_signal_handlers_block_by_func(HighRange, on_scale_highlights_value_changed, NULL);
-	gtk_adjustment_set_value(Highligts, value);
+	gtk_adjustment_set_value(Highligts, hi);
 	g_signal_handlers_unblock_by_func(HighRange, on_scale_highlights_value_changed, NULL);
 	update_histo_mtf();
 	set_cursor_waiting(FALSE);
