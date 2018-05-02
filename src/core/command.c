@@ -1628,9 +1628,8 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		retval = arg->method(&args);
 
 		// TODO, from end_stacking:
-		//_show_summary(args);
 		//noise(&gfit);
-		//remove_tmp_drizzle_files(args, TRUE);
+		clean_end_stacking(&args);
 
 		free_sequence(seq, TRUE);
 		free(args.image_indices);

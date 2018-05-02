@@ -1640,6 +1640,11 @@ static void remove_tmp_drizzle_files(struct stacking_args *args, gboolean remove
 	}
 }
 
+void clean_end_stacking(struct stacking_args *args) {
+	_show_summary(args);
+	remove_tmp_drizzle_files(args, TRUE);
+}
+
 /* because this idle function is called after one of many stacking method
  * functions, it contains all generic wrap-up stuff instead of only graphical
  * operations. */
