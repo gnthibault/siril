@@ -72,120 +72,119 @@ static GThread *script_thread = NULL;
 
 command commande[] = {
 	/* name,	nbarg,	usage,			function pointer */
-	{"addmax",	1,	"addmax filename",	process_addmax, STR_ADDMAX},
+	{"addmax",	1,	"addmax filename",	process_addmax, STR_ADDMAX, FALSE},
 	
-	{"bg", 0, "bg", process_bg, STR_BG},
-	{"bgnoise", 0, "bgnoise", process_bgnoise, STR_BGNOISE},
+	{"bg", 0, "bg", process_bg, STR_BG, TRUE},
+	{"bgnoise", 0, "bgnoise", process_bgnoise, STR_BGNOISE, TRUE},
 	
-	{"cd", 1, "cd directory", process_cd, STR_CD},
-	{"cdg", 0, "cdg", process_cdg, STR_CDG},
-	{"clearstar", 0, "clearstar", process_clearstar, STR_CLEARSTAR},
-	{"close", 0, "close", process_close, STR_CLOSE},
-	{"cosme", 1, "cosme [filename].lst", process_cosme, STR_COSME},
-	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme, STR_COSME_CFA},
-	{"crop", 0, "crop [x y width height]", process_crop, STR_CROP},
+	{"cd", 1, "cd directory", process_cd, STR_CD, TRUE},
+	{"cdg", 0, "cdg", process_cdg, STR_CDG, TRUE},
+	{"clearstar", 0, "clearstar", process_clearstar, STR_CLEARSTAR, FALSE},
+	{"close", 0, "close", process_close, STR_CLOSE, TRUE},
+	{"cosme", 1, "cosme [filename].lst", process_cosme, STR_COSME, TRUE},
+	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme, STR_COSME_CFA, TRUE},
+	{"crop", 0, "crop [x y width height]", process_crop, STR_CROP, TRUE},
 
-	{"ddp", 3, "ddp level coef sigma", process_ddp, STR_DDP},
+	{"ddp", 3, "ddp level coef sigma", process_ddp, STR_DDP, FALSE},
 	
-	{"entropy", 0, "entropy", process_entropy, STR_ENTROPY},
-	{"exit", 0, "exit", process_exit, STR_EXIT},
-	{"extract", 1, "extract NbPlans", process_extract, STR_EXTRACT},
+	{"entropy", 0, "entropy", process_entropy, STR_ENTROPY, TRUE},
+	{"exit", 0, "exit", process_exit, STR_EXIT, TRUE},
+	{"extract", 1, "extract NbPlans", process_extract, STR_EXTRACT, TRUE},
 	
-	{"fdiv", 2, "fdiv filename scalar", process_fdiv, STR_FDIV},
-	{"fftd", 2, "fftd modulus phase", process_fft, STR_FFTD},
-	{"ffti", 2, "ffti modulus phase", process_fft, STR_FFTI},
-	{"fill", 1, "fill value", process_fill, STR_FILL},
-	{"fill2", 1, "fill2 value [x y width height]", process_fill2, STR_FILL2},
-	{"find_cosme", 2, "find_cosme cold_sigma hot_sigma", process_findcosme, STR_FIND_COSME},
-	{"find_cosme_cfa", 2, "find_cosme_cfa cold_sigma hot_sigma", process_findcosme, STR_FIND_COSME_CFA},
-	{"find_hot", 3, "find_hot filename cold_sigma hot_sigma", process_findhot, STR_FIND_HOT},
-	{"findstar", 0, "findstar", process_findstar, STR_FINDSTAR},
-	{"fmedian", 2, "fmedian ksize modulation", process_fmedian, STR_FMEDIAN},
-	{"fmul", 1, "fmul scalar", process_fmul, STR_FMUL},
-	{"fixbanding", 2, "fixbanding amount sigma", process_fixbanding, STR_FIXBANDING},
+	{"fdiv", 2, "fdiv filename scalar", process_fdiv, STR_FDIV, TRUE},
+	{"fftd", 2, "fftd modulus phase", process_fft, STR_FFTD, TRUE},
+	{"ffti", 2, "ffti modulus phase", process_fft, STR_FFTI, TRUE},
+	{"fill", 1, "fill value [x y width height]", process_fill, STR_FILL, TRUE},
+	{"fill2", 1, "fill2 value [x y width height]", process_fill2, STR_FILL2, TRUE},
+	{"find_cosme", 2, "find_cosme cold_sigma hot_sigma", process_findcosme, STR_FIND_COSME, TRUE},
+	{"find_cosme_cfa", 2, "find_cosme_cfa cold_sigma hot_sigma", process_findcosme, STR_FIND_COSME_CFA, TRUE},
+	{"find_hot", 3, "find_hot filename cold_sigma hot_sigma", process_findhot, STR_FIND_HOT, TRUE},
+	{"findstar", 0, "findstar", process_findstar, STR_FINDSTAR, FALSE},
+	{"fmedian", 2, "fmedian ksize modulation", process_fmedian, STR_FMEDIAN, TRUE},
+	{"fmul", 1, "fmul scalar", process_fmul, STR_FMUL, TRUE},
+	{"fixbanding", 2, "fixbanding amount sigma", process_fixbanding, STR_FIXBANDING, TRUE},
 
-	{"gauss", 1, "gauss sigma", process_gauss, STR_GAUSS},
+	{"gauss", 1, "gauss sigma", process_gauss, STR_GAUSS, TRUE},
 
-	{"help", 0, "help", process_help, STR_HELP},
-	{"histo", 1, "histo channel (channel=0, 1, 2 with 0: red, 1: green, 2: blue)", process_histo, STR_HISTO},
+	{"help", 0, "help", process_help, STR_HELP, FALSE},
+	{"histo", 1, "histo channel (channel=0, 1, 2 with 0: red, 1: green, 2: blue)", process_histo, STR_HISTO, TRUE},
 	
 	/* commands oper filename and curent image */
-	{"iadd", 1, "iadd filename", process_imoper, STR_IADD},
-	{"idiv", 1, "idiv filename", process_imoper, STR_IDIV},
-	{"imul", 1, "imul filename", process_imoper, STR_IMUL},
-	{"isub", 1, "isub filename", process_imoper, STR_ISUB},
+	{"iadd", 1, "iadd filename", process_imoper, STR_IADD, FALSE},
+	{"idiv", 1, "idiv filename", process_imoper, STR_IDIV, FALSE},
+	{"imul", 1, "imul filename", process_imoper, STR_IMUL, FALSE},
+	{"isub", 1, "isub filename", process_imoper, STR_ISUB, FALSE},
 	
-	{"load", 1, "load filename.[ext]", process_load, STR_LOAD},
+	{"load", 1, "load filename.[ext]", process_load, STR_LOAD, TRUE},
 	// specific loads are not required, but could be used to force the
 	// extension to a higher priority in case two files with same basename
 	// exist (stat_file() manages that priority order for now).
-	{"log", 0, "log", process_log, STR_LOG}, /* logarifies current image */
+	{"log", 0, "log", process_log, STR_LOG, TRUE}, /* logarifies current image */
 #ifndef _WIN32
-	{"ls", 0, "ls", process_ls, STR_LS},
+	{"ls", 0, "ls", process_ls, STR_LS, FALSE},
 #endif
 	
-	{"mirrorx", 0, "mirrorx", process_mirrorx, STR_MIRRORX},
-	{"mirrory", 0, "mirrory", process_mirrory, STR_MIRRORY},
+	{"mirrorx", 0, "mirrorx", process_mirrorx, STR_MIRRORX, TRUE},
+	{"mirrory", 0, "mirrory", process_mirrory, STR_MIRRORY, TRUE},
 	
-	{"new", 3, "new width height nb_channel", process_new, STR_NEW},
-	{"nozero", 1, "nozero level (replaces null values by level)", process_nozero, STR_NOZERO}, /* replaces null values by level */
+	{"new", 3, "new width height nb_channel", process_new, STR_NEW, FALSE},
+	{"nozero", 1, "nozero level (replaces null values by level)", process_nozero, STR_NOZERO, TRUE}, /* replaces null values by level */
 	
-	{"offset", 1, "offset value", process_offset, STR_OFFSET},
+	{"offset", 1, "offset value", process_offset, STR_OFFSET, TRUE},
 	
-	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa] [-debayer]", process_preprocess, STR_PREPROCESS},
-	{"psf", 0, "psf", process_psf, STR_PSF},
+	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa] [-debayer]", process_preprocess, STR_PREPROCESS, TRUE},
+	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 	
-	{"register", 1, "register sequence [-drizzle]", process_register, STR_REGISTER},
-	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE},
-	{"rl", 2, "rl iterations sigma", process_rl, STR_RL},
-	{"rmgreen", 1, "rmgreen type", process_scnr, STR_RMGREEN},
-	{"rotate", 1, "rotate degree", process_rotate, STR_ROTATE},
-	{"rotatePi", 0, "rotatePi", process_rotatepi, STR_ROTATEPI},
+	{"register", 1, "register sequence [-drizzle]", process_register, STR_REGISTER, TRUE},
+	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE, TRUE},
+	{"rl", 2, "rl iterations sigma", process_rl, STR_RL, TRUE},
+	{"rmgreen", 1, "rmgreen type", process_scnr, STR_RMGREEN, TRUE},
+	{"rotate", 1, "rotate degree", process_rotate, STR_ROTATE, TRUE},
+	{"rotatePi", 0, "rotatePi", process_rotatepi, STR_ROTATEPI, TRUE},
 	
-	{"satu", 1, "satu coeff", process_satu, STR_SATU},
-	{"save", 1, "save filename", process_save, STR_SAVE},
-	{"savebmp", 1, "savebmp filename", process_savebmp, STR_SAVEBMP},
+	{"satu", 1, "satu coeff", process_satu, STR_SATU, TRUE},
+	{"save", 1, "save filename", process_save, STR_SAVE, TRUE},
+	{"savebmp", 1, "savebmp filename", process_savebmp, STR_SAVEBMP, FALSE},
 #ifdef HAVE_LIBJPEG
-	{"savejpg", 1, "savejpg filename [quality]", process_savejpg, STR_SAVEJPG},
+	{"savejpg", 1, "savejpg filename [quality]", process_savejpg, STR_SAVEJPG, FALSE},
 #endif
 #ifdef HAVE_LIBPNG
-	{"savepng", 1, "savepng filename", process_savepng, STR_SAVEPNG},
+	{"savepng", 1, "savepng filename", process_savepng, STR_SAVEPNG, TRUE},
 #endif
-	{"savepnm", 1, "savepnm filename", process_savepnm, STR_SAVEPNM},
+	{"savepnm", 1, "savepnm filename", process_savepnm, STR_SAVEPNM, TRUE},
 #ifdef HAVE_LIBTIFF
-	{"savetif", 1, "savetif filename", process_savetif, STR_SAVETIF},
-	{"savetif8", 1, "savetif8 filename", process_savetif, STR_SAVETIF8},
+	{"savetif", 1, "savetif filename", process_savetif, STR_SAVETIF, TRUE},
+	{"savetif8", 1, "savetif8 filename", process_savetif, STR_SAVETIF8, TRUE},
 #endif
-	{"select", 2, "select from to", process_select, STR_SELECT},
-	{"seqcrop", 0, "seqcrop", process_seq_crop, STR_SEQCROP},
-	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME},
-	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME_CFA},
-	{"seqpsf", 0, "seqpsf", process_seq_psf, STR_SEQPSF},
+	{"select", 2, "select from to", process_select, STR_SELECT, FALSE},
+	{"seqcrop", 0, "seqcrop", process_seq_crop, STR_SEQCROP, FALSE}, // TODO: add seqname
+	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME, TRUE},
+	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},
+	{"seqpsf", 0, "seqpsf", process_seq_psf, STR_SEQPSF, FALSE},
 #ifdef _OPENMP
-	{"setcpu", 1, "setcpu number", process_set_cpu, STR_SETCPU},
+	{"setcpu", 1, "setcpu number", process_set_cpu, STR_SETCPU, TRUE},
 #endif
-	{"setmag", 1, "setmag magnitude", process_set_mag, STR_SETMAG},
-	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ},
-	{"split", 3, "split R G B", process_split, STR_SPLIT},
-	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackone, STR_STACK},
-	{"stackall", 0, "stackall", process_stackall, STR_STACKALL},
-	{"stat", 0, "stat", process_stat, STR_STAT},
+	{"setmag", 1, "setmag magnitude", process_set_mag, STR_SETMAG, TRUE},
+	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, TRUE},
+	{"split", 3, "split R G B", process_split, STR_SPLIT, FALSE},
+	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackone, STR_STACK, TRUE},
+	{"stackall", 0, "stackall", process_stackall, STR_STACKALL, TRUE},
+	{"stat", 0, "stat", process_stat, STR_STAT, TRUE},
 	
-	{"threshlo", 1, "threshlo level", process_threshlo, STR_THRESHLO},
-	{"threshhi", 1, "threshi level", process_threshhi, STR_THRESHHI},
-	{"thresh", 2, "thresh lo hi", process_thresh, STR_THRESH}, /* threshes hi and lo */
+	{"threshlo", 1, "threshlo level", process_threshlo, STR_THRESHLO, TRUE},
+	{"threshhi", 1, "threshi level", process_threshhi, STR_THRESHHI, TRUE},
+	{"thresh", 2, "thresh lo hi", process_thresh, STR_THRESH, TRUE}, /* threshes hi and lo */
 	
-	/* unsharp masking of current image or genname sequence */
-	{"unselect", 2, "unselect from to", process_unselect, STR_UNSELECT},
-	{"unsetmag", 0, "unsetmag", process_unset_mag, STR_UNSETMAG},
-	{"unsetmagseq", 0, "unsetmagseq", process_unset_mag_seq, STR_UNSETMAGSEQ},
-	{"unsharp", 2, "unsharp sigma multi", process_unsharp, STR_UNSHARP},
-	{"visu", 2, "visu low high", process_visu, STR_VISU},
+	{"unselect", 2, "unselect from to", process_unselect, STR_UNSELECT, FALSE},
+	{"unsetmag", 0, "unsetmag", process_unset_mag, STR_UNSETMAG, TRUE},
+	{"unsetmagseq", 0, "unsetmagseq", process_unset_mag_seq, STR_UNSETMAGSEQ, FALSE},
+	{"unsharp", 2, "unsharp sigma multi", process_unsharp, STR_UNSHARP, TRUE},
+	{"visu", 2, "visu low high", process_visu, STR_VISU, FALSE},
 	
 	/* wavelet transform in nbr_plan plans */ 
-	{"wavelet", 1, "wavelet nbr_plan type", process_wavelet, STR_WAVELET},
+	{"wavelet", 1, "wavelet nbr_plan type", process_wavelet, STR_WAVELET, TRUE},
 	/* reconstruct from wavelet transform and weighs plans with c1, c2, c3... */ 
-	{"wrecons", 2, "wrecons c1 c2 c3 ...", process_wrecons, STR_WRECONS},
+	{"wrecons", 2, "wrecons c1 c2 c3 ...", process_wrecons, STR_WRECONS, TRUE},
 	
 	{"",0,"",0, STR_NONE}
 };
@@ -220,9 +219,10 @@ int process_satu(int nb){
 	args->h_min = 0.0;
 	args->h_max = 360.0;
 	args->preserve = TRUE;
+
 	set_cursor_waiting(TRUE);
 	start_in_new_thread(enhance_saturation, args);
-	
+
 	return 0;
 }
 
@@ -408,18 +408,18 @@ int process_rl(int nb) {
 
 	struct RL_data *args = malloc(sizeof(struct RL_data));
 
-	set_cursor_waiting(TRUE);
-
 	args->fit = &gfit;
 	args->sigma = sigma;
 	args->iter = iter;
+
+	set_cursor_waiting(TRUE);
 
 	start_in_new_thread(LRdeconv, args);
 
 	return 0;
 }
 
-int process_unsharp(int nb){
+int process_unsharp(int nb) {
 	unsharp(&(gfit), atof(word[1]), atof(word[2]), TRUE);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
@@ -427,19 +427,19 @@ int process_unsharp(int nb){
 	return 0;
 }
 
-int process_crop(int nb){
+int process_crop(int nb) {
 	rectangle area;
 	if ((!com.selection.h) || (!com.selection.w)) {
 		if (nb==5){
-			if (atoi(word[1])<0 || atoi(word[2])<0){
+			if (atoi(word[1]) < 0 || atoi(word[2]) < 0) {
 				siril_log_message(_("Crop: x and y must be positive values.\n"));
 				return 1;
 			}
-			if (atoi(word[3])<=0 || atoi(word[4])<=0){
+			if (atoi(word[3]) <= 0 || atoi(word[4]) <= 0) {
 				siril_log_message(_("Crop: width and height must be greater than 0.\n"));
 				return 1;
 			}
-			if (atoi(word[3])>gfit.rx || atoi(word[4])>gfit.ry){
+			if (atoi(word[3]) > gfit.rx || atoi(word[4]) > gfit.ry) {
 				siril_log_message(_("Crop: width and height, respectively, must be less than %d and %d.\n"), gfit.rx,gfit.ry);
 				return 1;
 			}
@@ -507,14 +507,15 @@ int process_wrecons(int nb) {
 	return 0;
 }
 
-int process_wavelet(int nb){
-	char *File_Name_Transform[3] = {"r_rawdata.wave", "g_rawdata.wave", "b_rawdata.wave"}, *dir[3];
+int process_wavelet(int nb) {
+	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
+			"b_rawdata.wave" }, *dir[3];
 	const char* tmpdir;
 	int Type_Transform, Nbr_Plan, maxplan, mins, chan, nb_chan;
 	float *Imag;
-	
- 	tmpdir = g_get_tmp_dir();
-	
+
+	tmpdir = g_get_tmp_dir();
+
 	Nbr_Plan = atoi(word[1]);
 	Type_Transform = atoi(word[2]);
 	
@@ -844,6 +845,7 @@ int process_seq_crop(int nb) {
 	args->prefix = "cropped_";
 
 	set_cursor_waiting(TRUE);
+
 	start_in_new_thread(crop_sequence, args);
 	return 0;
 }
@@ -863,13 +865,16 @@ int process_bgnoise(int nb){
 
 	struct noise_data *args = malloc(sizeof(struct noise_data));
 
-	set_cursor_waiting(TRUE);
-	if (!com.headless)
+	if (!com.headless) {
 		control_window_switch_to_tab(OUTPUT_LOGS);
+		set_cursor_waiting(TRUE);
+	}
 
 	args->fit = &gfit;
 	args->verbose = TRUE;
 	memset(args->bgnoise, 0.0, sizeof(double[3]));
+	set_cursor_waiting(TRUE);
+
 	start_in_new_thread(noise, args);
 	return 0;
 }
@@ -1189,6 +1194,7 @@ int process_fmedian(int nb){
 	args->fit = &gfit;
 
 	set_cursor_waiting(TRUE);
+
 	start_in_new_thread(median_filter, args);
 	
 	return 0;
@@ -1290,7 +1296,9 @@ int process_scnr(int nb){
 	args->fit = &gfit;
 	args->amount = 0.0;
 	args->preserve = TRUE;
+
 	set_cursor_waiting(TRUE);
+
 	start_in_new_thread(scnr, args);
 
 	return 0;
@@ -1314,6 +1322,7 @@ int process_fft(int nb){
 	args->type_order = 0;
 	
 	set_cursor_waiting(TRUE);
+
 	start_in_new_thread(fourier_transform, args);
 	
 	return 0;
@@ -1333,6 +1342,7 @@ int process_fixbanding(int nb) {
 	args->fit = &gfit;
 
 	set_cursor_waiting(TRUE);
+
 	start_in_new_thread(BandingEngineThreaded, args);
 	
 	return 0;
@@ -1568,6 +1578,8 @@ int process_register(int nb) {
 	gettimeofday(&(reg_args->t_start), NULL);
 	set_progress_bar_data(msg, PROGRESS_RESET);
 
+	set_cursor_waiting(TRUE);
+
 	start_in_new_thread(register_thread_func, reg_args);
 	return 0;
 }
@@ -1736,6 +1748,8 @@ int process_stackall(int nb) {
 		return 1;
 	}
 
+	set_cursor_waiting(TRUE);
+
 	start_in_new_thread(stackall_worker, arg);
 	return 0;
 }
@@ -1840,6 +1854,8 @@ int process_stackone(int nb) {
 		free(arg);
 		return 1;
 	}
+
+	set_cursor_waiting(TRUE);
 
 	start_in_new_thread(stackone_worker, arg);
 	return 0;
@@ -1951,6 +1967,7 @@ int process_preprocess(int nb) {
 	args->seq->ppprefix = strdup("pp_");
 
 	// start preprocessing
+	set_cursor_waiting(TRUE);
 	start_in_new_thread(seqpreprocess, args);
 
 	return 0;
@@ -2001,7 +2018,8 @@ int process_exit(int nb){
 }
 
 int process_extract(int nb) {
-	int Nbr_Plan, maxplan, mins, i;
+	int Nbr_Plan, maxplan, mins;
+	fits fit = { 0 };
 	
 	Nbr_Plan = atoi(word[1]);
 
@@ -2013,17 +2031,11 @@ int process_extract(int nb) {
 				maxplan);
 		return 1;
 	}
-	fits *fit = calloc(1, sizeof(fits));
-	copyfits(&gfit, fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
+	copyfits(&gfit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 	
-	for (i=0; i < Nbr_Plan; i++) {
-		char filename[256];
-		
-		sprintf(filename, "layer%02d", i);
-		get_wavelet_layers(fit, Nbr_Plan, i, TO_PAVE_BSPLINE, -1);
-		savefits(filename, fit);
-	}
-	clearfits(fit);
+	extract_plans(&fit, Nbr_Plan, TO_PAVE_BSPLINE);
+
+	clearfits(&fit);
 	update_used_memory();
 	return 0;
 }
@@ -2075,6 +2087,14 @@ static int executeCommand(int wordnb) {
 		return 1;
 	}
 
+	// verifie if the command is scriptable
+	if (com.headless) {
+		if (!commande[i].scriptable) {
+			siril_log_message(_("This command cannot be used in a script: %s\n"), commande[i].name);
+			return 1;
+		}
+	}
+
 	// process the command
 	siril_log_color_message(_("Running command: %s\n"), "salmon", word[0]);
 	return commande[i].process(wordnb);
@@ -2083,8 +2103,9 @@ static int executeCommand(int wordnb) {
 gpointer execute_script(gpointer p) {
 	FILE *fp = (FILE *)p;
 	ssize_t read;
-	char *linef;
+	char *linef, *myline;
 	int line = 0, retval = 0;
+	int wordnb;
 	struct timeval t_start, t_end;
 
 	com.headless = TRUE;
@@ -2104,14 +2125,14 @@ gpointer execute_script(gpointer p) {
 			retval = 1;
 			break;
 		}
+		/* Displays comments */
 		if (linef[0] == '#') {
 			siril_log_color_message(linef, "blue");
 			continue;
 		}
 		if (linef[0] == '\0' || linef[0] == '\n')
 			continue;
-		int wordnb;
-		char *myline = strdup(linef);
+		myline = strdup(linef);
 		parseLine(myline, read, &wordnb);
 		if (executeCommand(wordnb)) {
 			siril_log_message(_("Error in line %d. Exiting batch processing\n"), line);
@@ -2132,6 +2153,7 @@ gpointer execute_script(gpointer p) {
 		gettimeofday(&t_end, NULL);
 		show_time_msg(t_start, t_end, _("Total execution time"));
 	}
+	set_cursor_waiting(FALSE);
 	return GINT_TO_POINTER(retval);
 }
 
@@ -2279,8 +2301,19 @@ void on_GtkCommandHelper_clicked(GtkButton *button, gpointer user_data) {
 				}
 				str = g_string_append(str, "</span>\n\n\t");
 				str = g_string_append(str, _(commande[i].definition));
+				str = g_string_append(str, "\n\n<b>");
+				str = g_string_append(str, _("Can be used in a script: "));
+				if (commande[i].scriptable) {
+					str = g_string_append(str, _("YES"));
+				} else {
+					str = g_string_append(str, "<span foreground=\"red\">");
+					str = g_string_append(str, _("NO"));
+					str = g_string_append(str, "</span>");
+				}
+				str = g_string_append(str, "</b>");
 				helper = g_string_free(str, FALSE);
 				g_strfreev(token);
+				break;
 			}
 		}
 		if (!helper) {

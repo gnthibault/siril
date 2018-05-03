@@ -1199,6 +1199,24 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 	return retval;
 }
 
+int extract_plans(fits *fit, int Nbr_Plan, int Type) {
+	int i;
+
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
+
+	for (i = 0; i < Nbr_Plan; i++) {
+		char filename[256], msg[256];
+
+		g_snprintf(filename, sizeof(filename), "layer%02d", i);
+		snprintf(msg, 256, _("Extracting %s..."), filename);
+		set_progress_bar_data(msg, (float)i / Nbr_Plan);
+		get_wavelet_layers(fit, Nbr_Plan, i, Type, -1);
+		savefits(filename, fit);
+	}
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_DONE);
+	return 0;
+}
+
 /*****************************************************************************
  *                      M E D I A N     F I L T E R                          *
  ****************************************************************************/

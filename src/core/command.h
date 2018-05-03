@@ -12,6 +12,7 @@ struct {
 	char *usage;
 	int (* process)(int);
 	char *definition;
+	gboolean scriptable;
 } command;
 
 int	process_load(int nb);

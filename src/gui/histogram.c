@@ -519,25 +519,6 @@ gsl_histogram* computeHisto_Selection(fits* fit, int layer,
 	return histo;
 }
 
-//compute histogram for all pixel values below backgroud value
-gsl_histogram* histo_bg(fits* fit, int layer, double bg) {
-	unsigned int i, ndata;
-	WORD *buf;
-	if (layer >= 3)
-		return NULL;
-	size_t size = (size_t) bg;
-	gsl_histogram* histo = gsl_histogram_alloc(size + 1);
-	gsl_histogram_set_ranges_uniform(histo, 0, size);
-
-	buf = fit->pdata[layer];
-	ndata = fit->rx * fit->ry;
-	for (i = 0; i < ndata; i++) {
-		if (buf[i] <= (WORD) bg)
-			gsl_histogram_increment(histo, (double) buf[i]);
-	}
-	return histo;
-}
-
 void compute_histo_for_gfit(int force) {
 	int nb_layers = 3;
 	int i;
@@ -689,13 +670,9 @@ void on_histo_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 }
 
 void on_histogram_window_show(GtkWidget *object, gpointer user_data) {
-//	register_selection_update_callback(_histo_on_selection_changed);
 	_initialize_clip_text();
 }
 
-void on_histogram_window_hide(GtkWidget *object, gpointer user_data) {
-//	unregister_selection_update_callback(_histo_on_selection_changed);
-}
 
 void on_button_histo_close_clicked() {
 	graph_height = 0.;

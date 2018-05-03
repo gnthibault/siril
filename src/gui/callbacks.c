@@ -3643,7 +3643,7 @@ static const gchar* copyright = N_("Copyright © 2004-2011 François Meyer\n"
 static gchar **authors = (gchar *[] ) { "Vincent Hourdin <vh@free-astro.vinvin.tf>",
 				"Cyril Richard <cyril@free-astro.org>", "François Meyer", NULL };
 
-static gchar **documenters = (gchar *[] ) { "Laurent Roge <siril.doc@orange.fr>", NULL };
+static gchar **documenters = (gchar *[] ) { "Laurent Rogé <siril.doc@orange.fr>", NULL };
 
 static gchar **artists = (gchar *[] ) { "Coralie Monnier",
 				"Cyril Richard <cyril@free-astro.org>", NULL };
@@ -5364,7 +5364,7 @@ void on_menu_wavelet_separation_activate(GtkMenuItem *menuitem,
 
 void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
 	fits fit = { 0 };
-	int Nbr_Plan, Type, maxplan, mins, i;
+	int Nbr_Plan, Type, maxplan, mins;
 	static GtkSpinButton *Spin_Nbr_Plan = NULL;
 	static GtkComboBox *Combo_Wavelets_Type = NULL;
 
@@ -5382,22 +5382,17 @@ void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
 	maxplan = log(mins) / log(2) - 2;
 
 	if (Nbr_Plan > maxplan) {
-		char *msg = siril_log_message(
-				_("Wavelet: maximum number of plans for this image size is %d\n"),
-				maxplan);
+		char *msg = siril_log_message(_("Wavelet: maximum number "
+				"of plans for this image size is %d\n"), maxplan);
 		show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
 		set_cursor_waiting(FALSE);
 		return;
 	}
+
 	copyfits(&gfit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 
-	for (i = 0; i < Nbr_Plan; i++) {
-		char filename[256];
+	extract_plans(&fit, Nbr_Plan, Type);
 
-		g_snprintf(filename, sizeof(filename), "layer%02d", i);
-		get_wavelet_layers(&fit, Nbr_Plan, i, Type, -1);
-		savefits(filename, &fit);
-	}
 	clearfits(&fit);
 	update_used_memory();
 	set_cursor_waiting(FALSE);

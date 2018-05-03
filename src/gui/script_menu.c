@@ -202,12 +202,6 @@ int initialize_script_menu() {
 			gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuscript), menu);
 			while (list) {
 				nb_item ++;
-				/* write separator but not for the first one */
-				if (nb_item > 1) {
-					GtkWidget *separator = gtk_separator_menu_item_new();
-					gtk_menu_shell_append(GTK_MENU_SHELL(menu), separator);
-					gtk_widget_show(separator);
-				}
 				/* write an item per script file */
 				GtkWidget *menu_item;
 
@@ -227,6 +221,12 @@ int initialize_script_menu() {
 		}
 		/* go to the next path */
 		script = script->next;
+		/* write separator but not for the first one */
+		if (nb_item > 1) {
+			GtkWidget *separator = gtk_separator_menu_item_new();
+			gtk_menu_shell_append(GTK_MENU_SHELL(menu), separator);
+			gtk_widget_show(separator);
+		}
 	}
 	writeinitfile();
 

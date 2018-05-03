@@ -206,6 +206,7 @@ int	verbose_resize_gaussian(fits *, int, int, int);
 int	verbose_rotate_image(fits *, double, int, int);
 double gauss_cvf(double p);
 int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer);
+int extract_plans(fits *fit, int Nbr_Plan, int Type);
 gpointer median_filter(gpointer p);
 void apply_banding_to_sequence(struct banding_data *banding_args);
 gpointer BandingEngineThreaded(gpointer p);
