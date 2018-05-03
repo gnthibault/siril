@@ -1237,7 +1237,7 @@ gpointer median_filter(gpointer p) {
 	do {
 		if (args->iterations != 1)
 			siril_log_message(_("Iteration #%d...\n"), iter + 1);
-		for (layer = 0; layer < com.uniq->nb_layers; layer++) {
+		for (layer = 0; layer < args->fit->naxes[2]; layer++) {
 			/* FILL image upside-down */
 			WORD **image = malloc(ny * sizeof(WORD *));
 			if (image == NULL) {
