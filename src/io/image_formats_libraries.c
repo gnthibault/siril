@@ -494,10 +494,10 @@ int savejpg(const char *name, fits *fit, int quality){
 	cinfo.input_components = 3;     // Number of color components per pixel.
 	cinfo.in_color_space = JCS_RGB; // Colorspace of input image as RGB.
 
-	unsigned char *gbuf[3]={
-		com.graybuf[RLAYER] + cinfo.image_width * (cinfo.image_height-1) * 4,
-		com.graybuf[GLAYER] + cinfo.image_width * (cinfo.image_height-1) * 4,
-		com.graybuf[BLAYER] + cinfo.image_width * (cinfo.image_height-1) * 4
+	unsigned char *gbuf[3] = {
+		com.graybuf[RLAYER] + cinfo.image_width * (cinfo.image_height - 1) * 4,
+		com.graybuf[GLAYER] + cinfo.image_width * (cinfo.image_height - 1) * 4,
+		com.graybuf[BLAYER] + cinfo.image_width * (cinfo.image_height - 1) * 4
 	};
 	jpeg_set_defaults(&cinfo);
 	jpeg_set_quality(&cinfo, quality, TRUE);

@@ -165,26 +165,24 @@ int main(int argc, char *argv[]) {
 	gboolean forcecwd = FALSE;
 	char *cwd_forced = NULL;
 	
-#ifdef _WIN32
-	_putenv_s("LC_NUMERIC", "C");
-    setlocale( LC_ALL, "" );
+	g_setenv ("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
 	/* for translation */
-    gchar *localedir = g_build_filename( _getcwd( 0, 0 ), "\\..\\share\\locale", NULL);
-	bindtextdomain(PACKAGE, g_win32_locale_filename_from_utf8 ( localedir ) );
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-	textdomain(PACKAGE);
+#ifdef _WIN32
+	setlocale(LC_ALL, "");
+
+	gchar *localedir = g_build_filename(_getcwd(0, 0), "\\..\\share\\locale", NULL);
+	bindtextdomain(PACKAGE, g_win32_locale_filename_from_utf8(localedir));
+	bind_textdomain_codeset(PACKAGE, "UTF-8");
 #else
-	setenv("LC_NUMERIC", "C", 1);		// avoid possible bugs using french separator ","
-	/* for translation */
 	bindtextdomain(PACKAGE, LOCALEDIR);
-	textdomain(PACKAGE);
 #endif
+	textdomain(PACKAGE);
+
 	opterr = 0;
 	memset(&com, 0, sizeof(struct cominf));	// needed?
 	com.initfile = NULL;
 	
-
 	/* Caught signals */
 	signal(SIGINT, signal_handled);
 
