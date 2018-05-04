@@ -493,10 +493,10 @@ int savejpg(const char *name, fits *fit, int quality){
 	//## SET PARAMETERS FOR COMPRESSION:
 	cinfo.image_width  = fit->rx;   // |-- Image width and height in pixels.
 	cinfo.image_height = fit->ry;   // |
-	cinfo.input_components = 3;     // Number of color components per pixel.
-	cinfo.in_color_space = JCS_RGB; // Colorspace of input image as RGB.
+	cinfo.input_components = fit->naxes[2];     // Number of color components per pixel.
+	cinfo.in_color_space = (fit->naxes[2] == 3) ? JCS_RGB : JCS_GRAYSCALE; // Colorspace of input image as RGB.
 
-	WORD *gbuf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	WORD *gbuf[3] =	{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 
 	jpeg_set_defaults(&cinfo);
 	jpeg_set_quality(&cinfo, quality, TRUE);
@@ -510,27 +510,22 @@ int savejpg(const char *name, fits *fit, int quality){
 
 	for (i = (cinfo.image_height - 1); i >= 0; i--) {
 		for (j = 0; j < cinfo.image_width; j++) {
-			int pixelIdx = ((i * cinfo.image_width) + j)
-					* cinfo.input_components;
+			int pixelIdx = ((i * cinfo.image_width) + j) * cinfo.input_components;
 			red = *gbuf[RLAYER]++;
-			if (fit->naxes[2] == 3) {
+			image_buffer[pixelIdx + 0] = round_to_BYTE(red * norm);         // r |-- Set r,g,b components to
+			if (cinfo.input_components == 3) {
 				green = *gbuf[GLAYER]++;
 				blue = *gbuf[BLAYER]++;
-			} else {
-				green = red;
-				blue = red;
+				image_buffer[pixelIdx + 1] = round_to_BYTE(green * norm); // g |   make this pixel
+				image_buffer[pixelIdx + 2] = round_to_BYTE(blue * norm);  // b |
 			}
-			image_buffer[pixelIdx + 0] = round_to_BYTE(red * norm);         // r |-- Set r,g,b components to
-			image_buffer[pixelIdx + 1] = round_to_BYTE(green * norm);       // g |   make this pixel
-			image_buffer[pixelIdx + 2] = round_to_BYTE(blue * norm);        // b |
 		}
 	}
 	//## START COMPRESSION:
 	jpeg_start_compress(&cinfo, TRUE);
-	row_stride = cinfo.image_width * 3;        // JSAMPLEs per row in image_buffer
+	row_stride = cinfo.image_width * cinfo.input_components;        // JSAMPLEs per row in image_buffer
 
-	while (cinfo.next_scanline < cinfo.image_height)
-	{
+	while (cinfo.next_scanline < cinfo.image_height) {
 		row_pointer[0] = &image_buffer[cinfo.next_scanline * row_stride];
 		(void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
 	}
