@@ -174,6 +174,7 @@ int main(int argc, char *argv[]) {
 	gchar *localedir = g_build_filename(_getcwd(0, 0), "\\..\\share\\locale", NULL);
 	bindtextdomain(PACKAGE, g_win32_locale_filename_from_utf8(localedir));
 	bind_textdomain_codeset(PACKAGE, "UTF-8");
+	g_free(localedir);
 #else
 	bindtextdomain(PACKAGE, LOCALEDIR);
 #endif
