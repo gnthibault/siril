@@ -255,6 +255,7 @@ int readtif(const char *name, fits *fit) {
 			fit->pdata[BLAYER]=fit->data + npixels * 2;
 		}
 		fit->bitpix = (nbits == 8) ? BYTE_IMG : USHORT_IMG;
+		fit->orig_bitpix = fit->bitpix;
 		retval = nsamples;
 	}
 	if (nbits==16) mirrorx(fit, FALSE);
@@ -436,7 +437,7 @@ int readjpg(const char* name, fits *fit){
 	jpeg_destroy_decompress(&cinfo);
 	if (data != NULL){
 		clearfits(fit);	
-		fit->bitpix = BYTE_IMG;
+		fit->bitpix = fit->orig_bitpix = BYTE_IMG;
 		if (cinfo.output_components==1)
 			fit->naxis = 2;
 		else
@@ -450,7 +451,7 @@ int readjpg(const char* name, fits *fit){
 		fit->pdata[RLAYER]=fit->data;
 		fit->pdata[GLAYER]=fit->data + npixels;
 		fit->pdata[BLAYER]=fit->data + npixels * 2;
-		fit->binning_x=fit->binning_y=1;
+		fit->binning_x = fit->binning_y = 1;
 	}
 	mirrorx(fit, FALSE);
 	gchar *basename = g_path_get_basename(name);
@@ -464,11 +465,12 @@ int readjpg(const char* name, fits *fit){
 int savejpg(const char *name, fits *fit, int quality){
 	FILE *f;
 	int i, j;
-	unsigned char red, blue, green;
+	WORD red, blue, green;
 	struct jpeg_compress_struct cinfo;    // Basic info for JPEG properties.
 	struct jpeg_error_mgr jerr;           // In case of error.
 	JSAMPROW row_pointer[1];              // Pointer to JSAMPLE row[s].
 	int row_stride;                       // Physical row width in image buffer.
+	double norm;
 
 	//## ALLOCATE AND INITIALIZE JPEG COMPRESSION OBJECT
 	cinfo.err = jpeg_std_error(&jerr);
@@ -494,11 +496,8 @@ int savejpg(const char *name, fits *fit, int quality){
 	cinfo.input_components = 3;     // Number of color components per pixel.
 	cinfo.in_color_space = JCS_RGB; // Colorspace of input image as RGB.
 
-	unsigned char *gbuf[3] = {
-		com.graybuf[RLAYER] + cinfo.image_width * (cinfo.image_height - 1) * 4,
-		com.graybuf[GLAYER] + cinfo.image_width * (cinfo.image_height - 1) * 4,
-		com.graybuf[BLAYER] + cinfo.image_width * (cinfo.image_height - 1) * 4
-	};
+	WORD *gbuf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+
 	jpeg_set_defaults(&cinfo);
 	jpeg_set_quality(&cinfo, quality, TRUE);
 
@@ -506,30 +505,25 @@ int savejpg(const char *name, fits *fit, int quality){
 	unsigned char *image_buffer = (unsigned char*) malloc(
 			cinfo.image_width * cinfo.image_height * cinfo.num_components);
 
+	norm = (fit->orig_bitpix > BYTE_IMG ?
+			UCHAR_MAX_DOUBLE / USHRT_MAX_DOUBLE : 1.0);
+
 	for (i = (cinfo.image_height - 1); i >= 0; i--) {
 		for (j = 0; j < cinfo.image_width; j++) {
 			int pixelIdx = ((i * cinfo.image_width) + j)
 					* cinfo.input_components;
-			red = *gbuf[RLAYER];
-			gbuf[RLAYER] += 4;
+			red = *gbuf[RLAYER]++;
 			if (fit->naxes[2] == 3) {
-				green = *gbuf[GLAYER];
-				blue = *gbuf[BLAYER];
-				gbuf[GLAYER] += 4;
-				gbuf[BLAYER] += 4;
+				green = *gbuf[GLAYER]++;
+				blue = *gbuf[BLAYER]++;
 			} else {
 				green = red;
 				blue = red;
 			}
-			image_buffer[pixelIdx + 0] = red;   // r |-- Set r,g,b components to
-			image_buffer[pixelIdx + 1] = green;       // g |   make this pixel
-			image_buffer[pixelIdx + 2] = blue;        // b |
+			image_buffer[pixelIdx + 0] = round_to_BYTE(red * norm);         // r |-- Set r,g,b components to
+			image_buffer[pixelIdx + 1] = round_to_BYTE(green * norm);       // g |   make this pixel
+			image_buffer[pixelIdx + 2] = round_to_BYTE(blue * norm);        // b |
 		}
-		if (fit->naxes[2] == 3) {
-			gbuf[GLAYER] -= cinfo.image_width * 8;
-			gbuf[BLAYER] -= cinfo.image_width * 8;
-		}
-		gbuf[RLAYER] -= cinfo.image_width * 8;
 	}
 	//## START COMPRESSION:
 	jpeg_start_compress(&cinfo, TRUE);
@@ -647,7 +641,7 @@ int readpng(const char *name, fits* fit) {
 				*buf[BLAYER]++ = ptr[2];
 			}
 		}
-		fit->bitpix = BYTE_IMG;
+		fit->bitpix = fit->orig_bitpix = BYTE_IMG;
 	}
 	// We define the number of channel we have
 	switch (color_type) {
@@ -680,6 +674,7 @@ int readpng(const char *name, fits* fit) {
 		else
 			fit->naxis = 3;
 		fit->bitpix = (bit_depth == 8) ? BYTE_IMG : USHORT_IMG;
+		fit->orig_bitpix = fit->bitpix;
 		fit->data = data;
 		fit->pdata[RLAYER] = fit->data;
 		fit->pdata[GLAYER] = fit->data + npixels;
@@ -1023,7 +1018,7 @@ static int readraw(const char *name, fits *fit) {
 	
 	if (data != NULL) {
 		clearfits(fit);
-		fit->bitpix = USHORT_IMG;
+		fit->bitpix = fit->orig_bitpix = USHORT_IMG;
 		fit->rx = (unsigned int) width;
 		fit->ry = (unsigned int) height;
 		fit->naxes[0] = (long) width;
@@ -1191,7 +1186,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 	
 	if (data != NULL) {
 		clearfits(fit);
-		fit->bitpix = USHORT_IMG;
+		fit->bitpix = fit->orig_bitpix = USHORT_IMG;
 		fit->rx = (unsigned int) (width);
 		fit->ry = (unsigned int) (height);
 		fit->naxes[0] = (long) (width);

@@ -309,18 +309,17 @@ int savebmp(const char *name, fits *fit) {
 			0, 0, 0, 0, 	//important colors
 			};
 	unsigned int width = fit->rx, height = fit->ry;
+	double norm;
 
 	FILE *f;
 
-	unsigned char *gbuf[3] = { com.graybuf[RLAYER] + width * (height - 1) * 4,
-			com.graybuf[GLAYER] + width * (height - 1) * 4, com.graybuf[BLAYER]
-					+ width * (height - 1) * 4 };
+	WORD *gbuf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 
 	int padsize = (4 - (width * 3) % 4) % 4;
 	int datasize = width * height * 3 + padsize * height;
 	int filesize = datasize + sizeof(bmpfileheader) + sizeof(bmpinfoheader);
 	int i, j;
-	unsigned char red, blue, green;
+	WORD red, blue, green;
 	unsigned char pixel[3];
 
 	bmpfileheader[2] = (unsigned char) (filesize);
@@ -356,36 +355,31 @@ int savebmp(const char *name, fits *fit) {
 		return 1;
 	}
 
+	norm = (fit->orig_bitpix > BYTE_IMG ?
+			UCHAR_MAX_DOUBLE / USHRT_MAX_DOUBLE : 1.0);
+
 	fwrite(bmpfileheader, sizeof(bmpfileheader), 1, f);
 	fwrite(bmpinfoheader, sizeof(bmpinfoheader), 1, f);
 
 	for (i = 0; i < height; i++) {
 		for (j = 0; j < width; j++) {
-			red = *gbuf[RLAYER];
-			gbuf[RLAYER] += 4;
+			red = *gbuf[RLAYER]++;
 			if (fit->naxes[2] == 3) {
-				green = *gbuf[GLAYER];
-				blue = *gbuf[BLAYER];
-				gbuf[GLAYER] += 4;
-				gbuf[BLAYER] += 4;
+				green = *gbuf[GLAYER]++;
+				blue = *gbuf[BLAYER]++;
 			} else {
 				green = red;
 				blue = red;
 			}
 
-			pixel[0] = blue; /* swap Blue and Red */
-			pixel[1] = green;
-			pixel[2] = red;
+			pixel[0] = round_to_BYTE(blue * norm); /* swap Blue and Red */
+			pixel[1] = round_to_BYTE(green * norm);
+			pixel[2] = round_to_BYTE(red * norm);
 
 			fwrite(pixel, sizeof(pixel), 1, f);
 		}
 		if (padsize != 0)
 			fwrite("0", 1, padsize, f);		//We fill the end of width with 0
-		gbuf[RLAYER] -= width * 8;
-		if (fit->naxes[2] == 3) {
-			gbuf[GLAYER] -= width * 8;
-			gbuf[BLAYER] -= width * 8;
-		}
 	}
 	fclose(f);
 	siril_log_message(_("Saving BMP: file %s, %ld layer(s), %ux%u pixels\n"), filename,

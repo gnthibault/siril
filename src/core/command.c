@@ -144,9 +144,9 @@ command commande[] = {
 	
 	{"satu", 1, "satu coeff", process_satu, STR_SATU, TRUE},
 	{"save", 1, "save filename", process_save, STR_SAVE, TRUE},
-	{"savebmp", 1, "savebmp filename", process_savebmp, STR_SAVEBMP, FALSE},
+	{"savebmp", 1, "savebmp filename", process_savebmp, STR_SAVEBMP, TRUE},
 #ifdef HAVE_LIBJPEG
-	{"savejpg", 1, "savejpg filename [quality]", process_savejpg, STR_SAVEJPG, FALSE},
+	{"savejpg", 1, "savejpg filename [quality]", process_savejpg, STR_SAVEJPG, TRUE},
 #endif
 #ifdef HAVE_LIBPNG
 	{"savepng", 1, "savepng filename", process_savepng, STR_SAVEPNG, TRUE},
@@ -164,8 +164,8 @@ command commande[] = {
 #ifdef _OPENMP
 	{"setcpu", 1, "setcpu number", process_set_cpu, STR_SETCPU, TRUE},
 #endif
-	{"setmag", 1, "setmag magnitude", process_set_mag, STR_SETMAG, TRUE},
-	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, TRUE},
+	{"setmag", 1, "setmag magnitude", process_set_mag, STR_SETMAG, FALSE},
+	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, FALSE},
 	{"split", 3, "split R G B", process_split, STR_SPLIT, FALSE},
 	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackone, STR_STACK, TRUE},
 	{"stackall", 0, "stackall", process_stackall, STR_STACKALL, TRUE},
@@ -176,7 +176,7 @@ command commande[] = {
 	{"thresh", 2, "thresh lo hi", process_thresh, STR_THRESH, TRUE}, /* threshes hi and lo */
 	
 	{"unselect", 2, "unselect from to", process_unselect, STR_UNSELECT, FALSE},
-	{"unsetmag", 0, "unsetmag", process_unset_mag, STR_UNSETMAG, TRUE},
+	{"unsetmag", 0, "unsetmag", process_unset_mag, STR_UNSETMAG, FALSE},
 	{"unsetmagseq", 0, "unsetmagseq", process_unset_mag_seq, STR_UNSETMAGSEQ, FALSE},
 	{"unsharp", 2, "unsharp sigma multi", process_unsharp, STR_UNSHARP, TRUE},
 	{"visu", 2, "visu low high", process_visu, STR_VISU, FALSE},
@@ -2146,6 +2146,7 @@ gpointer execute_script(gpointer p) {
 	}
 	free(linef);
 	fclose(fp);
+	set_cursor_waiting(FALSE);
 	com.headless = FALSE;
 	com.stop_script = FALSE;
 	if (!retval) {
@@ -2153,7 +2154,6 @@ gpointer execute_script(gpointer p) {
 		gettimeofday(&t_end, NULL);
 		show_time_msg(t_start, t_end, _("Total execution time"));
 	}
-	set_cursor_waiting(FALSE);
 	return GINT_TO_POINTER(retval);
 }
 
@@ -2188,6 +2188,7 @@ int processcommand(const char *line) {
 		}
 		free(myline);
 	}
+	set_cursor_waiting(FALSE);
 	return 0;
 }
 
