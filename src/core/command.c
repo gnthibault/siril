@@ -2082,12 +2082,12 @@ static int executeCommand(int wordnb) {
 	}
 
 	// verify argument count
-	if(wordnb - 1 < commande[i].nbarg) {
+	if (wordnb - 1 < commande[i].nbarg) {
 		siril_log_message(_("Usage: %s\n"), commande[i].usage);
 		return 1;
 	}
 
-	// verifie if the command is scriptable
+	// verify if command is scriptable
 	if (com.headless) {
 		if (!commande[i].scriptable) {
 			siril_log_message(_("This command cannot be used in a script: %s\n"), commande[i].name);
@@ -2303,14 +2303,13 @@ void on_GtkCommandHelper_clicked(GtkButton *button, gpointer user_data) {
 				str = g_string_append(str, _(commande[i].definition));
 				str = g_string_append(str, "\n\n<b>");
 				str = g_string_append(str, _("Can be used in a script: "));
+				str = g_string_append(str, "<span foreground=\"red\">");
 				if (commande[i].scriptable) {
 					str = g_string_append(str, _("YES"));
 				} else {
-					str = g_string_append(str, "<span foreground=\"red\">");
 					str = g_string_append(str, _("NO"));
-					str = g_string_append(str, "</span>");
 				}
-				str = g_string_append(str, "</b>");
+				str = g_string_append(str, "</span></b>");
 				helper = g_string_free(str, FALSE);
 				g_strfreev(token);
 				break;
