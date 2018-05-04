@@ -350,6 +350,8 @@ int changedir(const char *dir, gchar **err) {
 				"to write in this directory: %s\n"), "red", dir);
 		retval = 4;
 	} else {
+		/* sequences are invalidate when cwd is changed */
+		close_sequence(FALSE);
 		if (!g_chdir(dir)) {
 			/* do we need to search for sequences in the directory now? We still need to
 			 * press the check seq button to display the list, and this is also done there. */
