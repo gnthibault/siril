@@ -56,7 +56,7 @@ static struct stacking_args stackparam = {	// parameters passed to stacking
 		NULL, NULL, NULL, -1.0, 0, NULL, { '\0' }, NULL, FALSE, { 0, 0 }, -1, 0, { 0, 0 }, NO_REJEC, NO_NORM, { NULL, NULL, NULL}, FALSE, -1
 };
 
-static stack_method stacking_methods[] = {
+stack_method stacking_methods[] = {
 	stack_summing_generic, stack_mean_with_rejection, stack_median, stack_addmax, stack_addmin
 };
 
@@ -792,7 +792,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	struct image_block *blocks = NULL;
 
 	nb_frames = args->nb_images_to_stack;
-	reglayer = get_registration_layer();
+	reglayer = args->reglayer;
 	memset(&fit, 0, sizeof(fits));
 
 	if (args->seq->type != SEQ_REGULAR && args->seq->type != SEQ_SER) {

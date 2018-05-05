@@ -135,7 +135,7 @@ command commande[] = {
 	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa] [-debayer]", process_preprocess, STR_PREPROCESS, TRUE},
 	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 	
-	{"register", 1, "register sequence [-drizzle]", process_register, STR_REGISTER, TRUE},
+	{"register", 1, "register sequence [-no-rot] [-drizzle]", process_register, STR_REGISTER, TRUE},
 	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE, TRUE},
 	{"rl", 2, "rl iterations sigma", process_rl, STR_RL, TRUE},
 	{"rmgreen", 1, "rmgreen type", process_scnr, STR_RMGREEN, TRUE},
@@ -1504,6 +1504,7 @@ int process_register(int nb) {
 	struct registration_args *reg_args;
 	struct registration_method *method;
 	char *msg;
+	int i;
 
 	if (get_thread_run()) {
 		siril_log_message(_("Another task is "
@@ -1546,10 +1547,18 @@ int process_register(int nb) {
 	reg_args->follow_star = FALSE;
 	reg_args->matchSelection = FALSE;
 	reg_args->translation_only = FALSE;
-	if (word[2] && (!strcmp(word[2], "-drizzle")))
-		reg_args->x2upscale = TRUE;
-	else
-		reg_args->x2upscale = FALSE;
+	reg_args->x2upscale = FALSE;
+
+	/* check for options */
+	for (i = 2; i < 4; i++) {
+		if (word[i]) {
+			if (!strcmp(word[i], "-drizzle")) {
+				reg_args->x2upscale = TRUE;
+			} else if (!strcmp(word[i], "-no-rot")) {
+				reg_args->translation_only = TRUE;
+			}
+		}
+	}
 	/* Here we should test available free disk space for Drizzle operation */
 	if (reg_args->x2upscale) {
 		double size = seq_compute_size(reg_args->seq);
@@ -1622,6 +1631,7 @@ static int stack_one_seq(struct _stackall_data *arg) {
 				(arg->method == stack_median || arg->method == stack_mean_with_rejection))
 			args.normalize = arg->norm;
 		else args.normalize = NO_NORM;
+		args.method = arg->method;
 		args.force_norm = FALSE;
 		args.norm_to_16 = TRUE;
 		args.reglayer = args.seq->nb_layers == 1 ? 0 : 1;
