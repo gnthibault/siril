@@ -135,7 +135,7 @@ command commande[] = {
 	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa] [-debayer]", process_preprocess, STR_PREPROCESS, TRUE},
 	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 	
-	{"register", 1, "register sequence [-no-rot] [-drizzle]", process_register, STR_REGISTER, TRUE},
+	{"register", 1, "register sequence [-norot] [-drizzle]", process_register, STR_REGISTER, TRUE},
 	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE, TRUE},
 	{"rl", 2, "rl iterations sigma", process_rl, STR_RL, TRUE},
 	{"rmgreen", 1, "rmgreen type", process_scnr, STR_RMGREEN, TRUE},
@@ -1554,7 +1554,7 @@ int process_register(int nb) {
 		if (word[i]) {
 			if (!strcmp(word[i], "-drizzle")) {
 				reg_args->x2upscale = TRUE;
-			} else if (!strcmp(word[i], "-no-rot")) {
+			} else if (!strcmp(word[i], "-norot")) {
 				reg_args->translation_only = TRUE;
 			}
 		}
