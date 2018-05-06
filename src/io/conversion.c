@@ -89,7 +89,6 @@ enum {
 	N_COLUMNS
 };
 
-static gpointer convert_thread_worker(gpointer p);
 static gboolean end_convert_idle(gpointer p);
 
 
@@ -459,15 +458,6 @@ int count_selected_files() {
 	return count;
 }
 
-struct _convert_data {
-	struct timeval t_start;
-	GDir *dir;
-	GList *list;
-	int start;
-	int total;
-	int nb_converted;
-	gboolean compatibility;
-};
 
 void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 	GDir *dir;
@@ -542,11 +532,12 @@ void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 	args->t_start.tv_sec = t_start.tv_sec;
 	args->t_start.tv_usec = t_start.tv_usec;
 	args->compatibility = com.debayer.compatibility;
+	args->destroot = g_strdup(destroot);
 	start_in_new_thread(convert_thread_worker, args);
 	return;
 }
 
-static gpointer convert_thread_worker(gpointer p) {
+gpointer convert_thread_worker(gpointer p) {
 	char dest_filename[128], msg_bar[256];
 	int indice;
 	double progress = 0.0;
@@ -564,7 +555,7 @@ static gpointer convert_thread_worker(gpointer p) {
 		} else {
 			ser_file = malloc(sizeof(struct ser_struct));
 			if (!(convflags & CONVMULTIPLE)) {
-				if (ser_create_file(destroot, ser_file, TRUE, NULL)) {
+				if (ser_create_file(args->destroot, ser_file, TRUE, NULL)) {
 					siril_log_message(_("Creating the SER file failed, aborting.\n"));
 					goto clean_exit;
 				}
@@ -644,7 +635,7 @@ static gpointer convert_thread_worker(gpointer p) {
 						goto clean_exit;
 					}
 				} else {
-					g_snprintf(dest_filename, 128, "%s%05d", destroot, indice++);
+					g_snprintf(dest_filename, 128, "%s%05d", args->destroot, indice++);
 					if (save_to_target_fits(fit, dest_filename)) {
 						siril_log_message(_("Error while converting to FITS (no space left?)\n"));
 						clearfits(fit);
@@ -675,7 +666,7 @@ static gpointer convert_thread_worker(gpointer p) {
 						break;
 					}
 				} else {
-					g_snprintf(dest_filename, 128, "%s%05d", destroot, indice++);
+					g_snprintf(dest_filename, 128, "%s%05d", args->destroot, indice++);
 					if (save_to_target_fits(fit, dest_filename)) {
 						siril_log_message(_("Error while converting to FITS (no space left?)\n"));
 						break;
@@ -699,7 +690,9 @@ clean_exit:
 			ser_write_and_close(ser_file);
 		free(ser_file);
 	}
-
+	g_free(args->destroot);
+	g_list_free_full(args->list, g_free);
+	g_dir_close(args->dir);
 	siril_add_idle(end_convert_idle, args);
 	return NULL;
 }
@@ -710,8 +703,8 @@ static gboolean end_convert_idle(gpointer p) {
 	
 	if (get_thread_run() && args->nb_converted > 1) {
 		// load the sequence
-		char *ppseqname = malloc(strlen(destroot) + 5);
-		sprintf(ppseqname, "%s.seq", destroot);
+		char *ppseqname = malloc(strlen(args->destroot) + 5);
+		sprintf(ppseqname, "%s.seq", args->destroot);
 		check_seq(0);
 		update_sequences_list(ppseqname);
 		free(ppseqname);
@@ -722,8 +715,6 @@ static gboolean end_convert_idle(gpointer p) {
 	gettimeofday(&t_end, NULL);
 	show_time(args->t_start, t_end);
 	stop_processing_thread();
-	g_list_free_full(args->list, g_free);
-	g_dir_close(args->dir);
 	free(args);
 	return FALSE;
 }

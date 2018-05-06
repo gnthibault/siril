@@ -81,6 +81,7 @@ command commande[] = {
 	{"cdg", 0, "cdg", process_cdg, STR_CDG, TRUE},
 	{"clearstar", 0, "clearstar", process_clearstar, STR_CLEARSTAR, FALSE},
 	{"close", 0, "close", process_close, STR_CLOSE, TRUE},
+	{"convertraw", 1, "convert basename", process_convertraw, STR_CONVERT, TRUE},
 	{"cosme", 1, "cosme [filename].lst", process_cosme, STR_COSME, TRUE},
 	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme, STR_COSME_CFA, TRUE},
 	{"crop", 0, "crop [x y width height]", process_crop, STR_CROP, TRUE},
@@ -1500,6 +1501,67 @@ int process_stat(int nb){
 	return 0;
 }
 
+int process_convertraw(int nb) {
+	GDir *dir;
+	GError *error = NULL;
+	const gchar *file;
+	char *tmpmsg;
+	GList *list = NULL;
+
+	if (get_thread_run()) {
+		siril_log_message(_("Another task is "
+				"already in progress, ignoring new request.\n"));
+		return 1;
+	}
+
+	if((dir = g_dir_open(com.wd, 0, &error)) == NULL){
+		tmpmsg = siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
+		show_dialog(tmpmsg, _("Error"), "dialog-error-symbolic");
+		fprintf (stderr, "Conversion: %s\n", error->message);
+		set_cursor_waiting(FALSE);
+		return 1;
+	}
+
+	while ((file = g_dir_read_name(dir)) != NULL) {
+		const char *ext = get_filename_ext(file);
+		if (!ext)
+			continue;
+		image_type type = get_type_for_extension(ext);
+		if (type == TYPERAW) {
+			list = g_list_append (list, g_strdup(file));
+		}
+	}
+	/* sort list */
+	list = g_list_sort(list, (GCompareFunc) strcompare);
+
+	siril_log_color_message(_("Conversion: processing...\n"), "red");
+
+	set_cursor_waiting(TRUE);
+	control_window_switch_to_tab(OUTPUT_LOGS);
+
+	/* then, convert files to Siril's FITS format */
+	struct _convert_data *args;
+	set_cursor_waiting(TRUE);
+	if (!com.wd) {
+		tmpmsg = siril_log_message(_("Conversion: no working directory set.\n"));
+		show_dialog(tmpmsg, _("Warning"), "dialog-warning-symbolic");
+		set_cursor_waiting(FALSE);
+		return 1;
+	}
+
+
+	args = malloc(sizeof(struct _convert_data));
+	args->start = 1;
+	args->dir = dir;
+	args->list = list;
+	args->total = g_list_length(list);
+	args->nb_converted = 0;
+	args->compatibility = FALSE;	// not used here
+	args->destroot = g_strdup(word[1]);
+	start_in_new_thread(convert_thread_worker, args);
+	return 0;
+}
+
 int process_register(int nb) {
 	struct registration_args *reg_args;
 	struct registration_method *method;
@@ -2185,7 +2247,11 @@ int processcommand(const char *line) {
 			siril_log_message(_("File [%s] does not exist\n"), line + 1);
 			return 1;
 		}
+		/* Switch to console tab */
 		control_window_switch_to_tab(OUTPUT_LOGS);
+		/* ensure that everything is closed */
+		process_close(0);
+		/* Then, run script */
 		siril_log_message(_("Starting script %s\n"), line + 1);
 		script_thread = g_thread_new("script", execute_script, fp);
 	} else {

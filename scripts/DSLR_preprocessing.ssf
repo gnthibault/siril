@@ -2,25 +2,24 @@
 # Script for Siril 0.9.9
 # April 2018
 # (C) Cyril Richard
-# DSLR_preprocessing v1.0
+# DSLR_preprocessing v1.1
 ########### PREPROCESSING SCRIPT ###########
 # Script for DSLR color camera preprocessing
-# needs 3 sets of images in the working
-# directory, previously converted with
-# SIRIL:
-# - bias_xxx1.fit, bias_xxx2.fit ...
-# - dark_xxx1.fit, dark_xxx2.fit ...
-# - flat_xxx1.fit, flat_xxx2.fit ...
+# needs 4 sets of RAW images in the working
+# directory, within 4 directories:
+# biases, flats, darks and lights 
 #
 ############################################
 
 #build master-bias
 cd biases
+convertraw bias_
 stack bias_ rej 3 3 -nonorm
 cd ..
 
 cd flats
 #preprocess flats
+convertraw flat_
 preprocess flat_ -bias=../biases/bias_stacked.fit
 
 #build master-flat
@@ -29,11 +28,13 @@ cd ..
 
 #build master-dark
 cd darks
+convertraw dark_
 stack dark_ rej 3 3 -nonorm
 cd ..
 
 #preprocess lights
 cd lights
+convertraw light_
 preprocess light_ -dark=../darks/dark_stacked.fit -flat=../flats/pp_flat_stacked.fit -cfa -debayer
 
 #align lights
@@ -46,6 +47,8 @@ stack r_pp_light_ rej 3 3 -norm=addscale
 #These lines are not mandatory
 #load image in memory
 load r_pp_light_stacked.fit
+#Compute noise
+bgnoise
 #and save it at root
 cd  ..
 save result.fit

@@ -168,7 +168,11 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 		g_free(script_file);
 		return;
 	}
+	/* Switch to console tab */
 	control_window_switch_to_tab(OUTPUT_LOGS);
+	/* ensure that everything is closed */
+	process_close(0);
+	/* Then, run script */
 	siril_log_message(_("Starting script %s\n"), script_file);
 	script_thread = g_thread_new("script", execute_script, fp);
 
