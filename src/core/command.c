@@ -187,7 +187,7 @@ command commande[] = {
 	/* reconstruct from wavelet transform and weighs plans with c1, c2, c3... */ 
 	{"wrecons", 2, "wrecons c1 c2 c3 ...", process_wrecons, STR_WRECONS, TRUE},
 	
-	{"",0,"",0, STR_NONE}
+	{"",0,"",0, STR_NONE, FALSE}
 };
 
 int process_load(int nb){
@@ -1751,7 +1751,7 @@ static gpointer stackall_worker(gpointer garg) {
 	if (!com.headless)
 		control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
-	if (check_seq(0) || (dir = g_dir_open(com.wd, 0, &error)) == NULL) {
+	if (check_seq(FALSE) || (dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
 		fprintf (stderr, "stackall: %s\n", error->message);
 		com.wd[0] = '\0';
@@ -1843,7 +1843,7 @@ static gpointer stackone_worker(gpointer garg) {
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
-	if (check_seq(0)) {
+	if (check_seq(FALSE)) {
 		siril_log_message(_("Error while searching sequences.\n"));
 		com.wd[0] = '\0';
 		siril_add_idle(end_generic, NULL);
@@ -2092,7 +2092,7 @@ int process_set_cpu(int nb){
 int process_help(int nb){
 	command *current = commande;
 	siril_log_message(_("********* LIST OF AVAILABLE COMMANDS *********\n"));
-	while(current->process){
+	while (current->process) {
 		siril_log_message("%s\n", current->usage);
 		current++;
 	}
@@ -2347,7 +2347,6 @@ void init_completion_command() {
 	GtkEntryCompletion *completion = gtk_entry_completion_new();
 	GtkListStore *model = gtk_list_store_new(1, G_TYPE_STRING);
 	GtkTreeIter iter;
-	gint i;
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("command"));
 
 	gtk_entry_completion_set_text_column(completion, COMPLETION_COLUMN);
@@ -2359,9 +2358,12 @@ void init_completion_command() {
 	g_signal_connect(G_OBJECT(completion), "match-selected", G_CALLBACK(on_match_selected), NULL);
 
 	/* Populate the completion database. */
-	for (i = 0; i < sizeof(commande) / sizeof(command); i++) {
+	command *current = commande;
+
+	while (current->process){
 		gtk_list_store_append(model, &iter);
-		gtk_list_store_set(model, &iter, COMPLETION_COLUMN, commande[i].name, -1);
+		gtk_list_store_set(model, &iter, COMPLETION_COLUMN, current->name, -1);
+		current++;
 	}
 	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(model));
 	g_object_unref(model);
@@ -2374,30 +2376,30 @@ void on_GtkCommandHelper_clicked(GtkButton *button, gpointer user_data) {
 	gchar **command_line;
 	const gchar *text;
 	gchar *helper = NULL;
-	gint i;
 
 	entry = GTK_ENTRY(lookup_widget("command"));
 	text = gtk_entry_get_text(entry);
 	if (*text != 0) {
-		command_line = g_strsplit_set(text, " ", -1);
+		command *current = commande;
 
-		for (i = 0; i < sizeof(commande) / sizeof(command); i++) {
-			if (!g_ascii_strcasecmp(commande[i].name, command_line[0])) {
+		command_line = g_strsplit_set(text, " ", -1);
+		while (current->process) {
+			if (!g_ascii_strcasecmp(current->name, command_line[0])) {
 				gchar **token;
 
-				token = g_strsplit_set(commande[i].usage, " ", -1);
+				token = g_strsplit_set(current->usage, " ", -1);
 				str = g_string_new(token[0]);
 				str = g_string_prepend(str, "<span foreground=\"red\"><b>");
 				str = g_string_append(str, "</b>");
 				if (token[1] != NULL) {
-					str = g_string_append(str, commande[i].usage + strlen(token[0]));
+					str = g_string_append(str, current->usage + strlen(token[0]));
 				}
 				str = g_string_append(str, "</span>\n\n\t");
-				str = g_string_append(str, _(commande[i].definition));
+				str = g_string_append(str, _(current->definition));
 				str = g_string_append(str, "\n\n<b>");
 				str = g_string_append(str, _("Can be used in a script: "));
 				str = g_string_append(str, "<span foreground=\"red\">");
-				if (commande[i].scriptable) {
+				if (current->scriptable) {
 					str = g_string_append(str, _("YES"));
 				} else {
 					str = g_string_append(str, _("NO"));
@@ -2407,6 +2409,7 @@ void on_GtkCommandHelper_clicked(GtkButton *button, gpointer user_data) {
 				g_strfreev(token);
 				break;
 			}
+			current++;
 		}
 		if (!helper) {
 			helper = g_strdup(_("No help for this command"));
