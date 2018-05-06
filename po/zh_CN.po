@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-06 09:29+0200\n"
+"POT-Creation-Date: 2018-05-06 16:34+0200\n"
 "PO-Revision-Date: 2018-02-16 18:46+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -3591,10 +3591,10 @@ msgstr "未保存的合成结果"
 msgid "You must at least load two layers before!\n"
 msgstr "必须先期载入至少两个通道！\n"
 
-#: ../src/compositing/compositing.c:546 ../src/core/command.c:1547
+#: ../src/compositing/compositing.c:546 ../src/core/command.c:1556
 #: ../src/gui/callbacks.c:5032 ../src/gui/callbacks.c:5076
 #: ../src/gui/callbacks.c:5321 ../src/gui/callbacks.c:5330
-#: ../src/gui/callbacks.c:5387 ../src/gui/plot.c:281 ../src/io/conversion.c:514
+#: ../src/gui/callbacks.c:5387 ../src/gui/plot.c:281 ../src/io/conversion.c:546
 #: ../src/io/image_formats_libraries.c:73
 #: ../src/io/image_formats_libraries.c:229
 #: ../src/registration/registration.c:1173
@@ -3633,13 +3633,13 @@ msgstr "Readjusting layer %d to %g times bright\n"
 #: ../src/core/command.c:863 ../src/core/command.c:1176
 #: ../src/core/command.c:1291 ../src/core/command.c:1314
 #: ../src/core/command.c:1334 ../src/core/command.c:1358
-#: ../src/core/command.c:1512 ../src/core/command.c:1572
-#: ../src/core/command.c:2240 ../src/gui/callbacks.c:3963
+#: ../src/core/command.c:1514 ../src/core/command.c:1583
+#: ../src/core/command.c:2256 ../src/gui/callbacks.c:3963
 #: ../src/gui/callbacks.c:4165 ../src/gui/callbacks.c:4356
 #: ../src/gui/callbacks.c:4440 ../src/gui/callbacks.c:4637
 #: ../src/gui/callbacks.c:4975 ../src/gui/callbacks.c:5122
 #: ../src/gui/callbacks.c:5421 ../src/gui/callbacks.c:5599
-#: ../src/gui/script_menu.c:152 ../src/io/conversion.c:483
+#: ../src/gui/script_menu.c:152 ../src/io/conversion.c:515
 #: ../src/registration/registration.c:1162 ../src/stacking/stacking.c:1469
 #: ../src/stacking/stacking.c:1592
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -3679,7 +3679,7 @@ msgstr "Crop: width and height, respectively, must be less than %d and %d.\n"
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Crop: select a region or provide x, y, width, height\n"
 
-#: ../src/core/command.c:530 ../src/core/command.c:2102
+#: ../src/core/command.c:530 ../src/core/command.c:2118
 #: ../src/gui/callbacks.c:5319 ../src/gui/callbacks.c:5385
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
@@ -3718,7 +3718,7 @@ msgstr "队列：%s\n"
 msgid "Image: %s\n"
 msgstr "图像：%s\n"
 
-#: ../src/core/command.c:654 ../src/core/command.c:2083
+#: ../src/core/command.c:654 ../src/core/command.c:2099
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* 列表完 *********\n"
 
@@ -3845,9 +3845,9 @@ msgstr "Contrast: %lf\n"
 msgid "FFT does not work with sequences\n"
 msgstr "傅立叶变换不可用于队列\n"
 
-#: ../src/core/command.c:1375 ../src/core/command.c:1586
-#: ../src/core/command.c:1729 ../src/core/command.c:1872
-#: ../src/core/command.c:1963
+#: ../src/core/command.c:1375 ../src/core/command.c:1597
+#: ../src/core/command.c:1740 ../src/core/command.c:1883
+#: ../src/core/command.c:1976
 #, fuzzy, c-format
 msgid "No sequence %s found.\n"
 msgstr "当前所选序列号"
@@ -3882,18 +3882,18 @@ msgstr ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
 "%0.1lf, Max: %0.1lf\n"
 
-#: ../src/core/command.c:1518 ../src/io/conversion.c:519
+#: ../src/core/command.c:1526 ../src/io/conversion.c:551
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "转化：无法打开工作目录 %s.\n"
 
-#: ../src/core/command.c:1519 ../src/core/siril.c:206 ../src/core/utils.c:809
+#: ../src/core/command.c:1527 ../src/core/siril.c:206 ../src/core/utils.c:809
 #: ../src/gui/callbacks.c:1074 ../src/gui/callbacks.c:2101
 #: ../src/gui/callbacks.c:3012 ../src/gui/callbacks.c:4689
 #: ../src/gui/callbacks.c:4710 ../src/gui/callbacks.c:5138
 #: ../src/gui/callbacks.c:5144 ../src/gui/callbacks.c:5169
 #: ../src/gui/plot.c:379 ../src/gui/plot.c:438 ../src/gui/PSF_list.c:150
-#: ../src/io/conversion.c:520 ../src/io/conversion.c:591
+#: ../src/io/conversion.c:552 ../src/io/conversion.c:624
 #: ../src/io/image_format_fits.c:404 ../src/io/image_format_fits.c:410
 #: ../src/io/image_format_fits.c:431 ../src/io/image_format_fits.c:439
 #: ../src/io/image_format_fits.c:461 ../src/io/image_format_fits.c:499
@@ -3925,56 +3925,56 @@ msgstr "转化：无法打开工作目录 %s.\n"
 msgid "Error"
 msgstr "错误"
 
-#: ../src/core/command.c:1537 ../src/io/conversion.c:502
+#: ../src/core/command.c:1545 ../src/io/conversion.c:534
 msgid "Conversion: processing...\n"
 msgstr "转化：处理中...\n"
 
-#: ../src/core/command.c:1546 ../src/io/conversion.c:513
+#: ../src/core/command.c:1555 ../src/io/conversion.c:545
 msgid "Conversion: no working directory set.\n"
 msgstr "转化：工作目录未设置。\n"
 
-#: ../src/core/command.c:1593 ../src/registration/registration.c:101
+#: ../src/core/command.c:1604 ../src/registration/registration.c:101
 msgid "Global Star Alignment (deep-sky)"
 msgstr "全局星点对齐（深空）"
 
-#: ../src/core/command.c:1629 ../src/registration/registration.c:1205
+#: ../src/core/command.c:1640 ../src/registration/registration.c:1205
 #, fuzzy
 msgid "Not enough disk space to perform Drizzle operation!\n"
 msgstr "没有足够的磁盘空间来执行Drizzle操作！\n"
 
-#: ../src/core/command.c:1646 ../src/registration/registration.c:1222
+#: ../src/core/command.c:1657 ../src/registration/registration.c:1222
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "对齐：处理中，使用方法：%s\n"
 
-#: ../src/core/command.c:1677
+#: ../src/core/command.c:1688
 #, c-format
 msgid "Stacking sequence %s\n"
 msgstr "叠加队列%s\n"
 
-#: ../src/core/command.c:1722
+#: ../src/core/command.c:1733
 #, c-format
 msgid "Could not save the stacking result %s\n"
 msgstr "无法保存叠加结果 %s\n"
 
-#: ../src/core/command.c:1742 ../src/core/command.c:1834
+#: ../src/core/command.c:1753 ../src/core/command.c:1845
 msgid "Looking for sequences in current working directory...\n"
 msgstr "在当前工作目录中搜索队列...\n"
 
-#: ../src/core/command.c:1744
+#: ../src/core/command.c:1755
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr "搜索或打开目录出错。\n"
 
-#: ../src/core/command.c:1750
+#: ../src/core/command.c:1761
 msgid "Starting stacking of found sequences...\n"
 msgstr "开始对已找到的队列进行叠加...\n"
 
-#: ../src/core/command.c:1762
+#: ../src/core/command.c:1773
 #, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr "%d 队列叠加成功。\n"
 
-#: ../src/core/command.c:1797 ../src/core/command.c:1904
+#: ../src/core/command.c:1808 ../src/core/command.c:1915
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
@@ -3982,26 +3982,26 @@ msgstr ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
 
-#: ../src/core/command.c:1818 ../src/core/command.c:1925
+#: ../src/core/command.c:1829 ../src/core/command.c:1936
 #, c-format
 msgid "The provided type of stacking is unknown (%s).\n"
 msgstr "The provided type of stacking is unknown (%s).\n"
 
-#: ../src/core/command.c:1836
+#: ../src/core/command.c:1847
 #, fuzzy
 msgid "Error while searching sequences.\n"
 msgstr "搜索或打开目录出错。\n"
 
-#: ../src/core/command.c:1847
+#: ../src/core/command.c:1858
 #, fuzzy
 msgid "Stacked sequence successfully.\n"
 msgstr "%d 队列叠加成功。\n"
 
-#: ../src/core/command.c:2015 ../src/gui/callbacks.c:3975
+#: ../src/core/command.c:2031 ../src/gui/callbacks.c:3975
 msgid "Preprocessing...\n"
 msgstr "预处理...\n"
 
-#: ../src/core/command.c:2056
+#: ../src/core/command.c:2072
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -4010,75 +4010,75 @@ msgstr ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
 "%d.\n"
 
-#: ../src/core/command.c:2068
+#: ../src/core/command.c:2084
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "当前使用 %d 逻辑处理器\n"
 
-#: ../src/core/command.c:2078
+#: ../src/core/command.c:2094
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* 可用指令列表 *********\n"
 
-#: ../src/core/command.c:2151
+#: ../src/core/command.c:2167
 #, c-format
 msgid "Unknown command: '%s' or not implemented yet\n"
 msgstr "Unknown command: '%s' or not implemented yet\n"
 
-#: ../src/core/command.c:2158
+#: ../src/core/command.c:2174
 #, c-format
 msgid "Usage: %s\n"
 msgstr "Usage: %s\n"
 
-#: ../src/core/command.c:2165
+#: ../src/core/command.c:2181
 #, fuzzy, c-format
 msgid "This command cannot be used in a script: %s\n"
 msgstr "This command can be used only when a sequence is loaded\n"
 
 #. process the command
-#: ../src/core/command.c:2171
+#: ../src/core/command.c:2187
 #, c-format
 msgid "Running command: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:2210
+#: ../src/core/command.c:2226
 #, fuzzy, c-format
 msgid "Error in line %d. Exiting batch processing\n"
 msgstr "Error in line: %d. Exiting batch processing\n"
 
-#: ../src/core/command.c:2225
+#: ../src/core/command.c:2241
 #, fuzzy
 msgid "Script execution finished successfully.\n"
 msgstr "%d 队列叠加成功。\n"
 
-#: ../src/core/command.c:2227
+#: ../src/core/command.c:2243
 #, fuzzy
 msgid "Total execution time"
 msgstr "局部剔除"
 
-#: ../src/core/command.c:2247 ../src/gui/script_menu.c:167
+#: ../src/core/command.c:2263 ../src/gui/script_menu.c:167
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "文件 [%s] 不存在\n"
 
 #. Then, run script
-#: ../src/core/command.c:2255 ../src/gui/script_menu.c:175
+#: ../src/core/command.c:2271 ../src/gui/script_menu.c:176
 #, fuzzy, c-format
 msgid "Starting script %s\n"
 msgstr "开始叠加...\n"
 
-#: ../src/core/command.c:2382
+#: ../src/core/command.c:2398
 msgid "Can be used in a script: "
 msgstr ""
 
-#: ../src/core/command.c:2385
+#: ../src/core/command.c:2401
 msgid "YES"
 msgstr ""
 
-#: ../src/core/command.c:2387
+#: ../src/core/command.c:2403
 msgid "NO"
 msgstr ""
 
-#: ../src/core/command.c:2396
+#: ../src/core/command.c:2412
 #, fuzzy
 msgid "No help for this command"
 msgstr "输入help以获得命令列表"
@@ -4121,7 +4121,8 @@ msgstr ""
 #: ../src/core/command_def.h:15
 msgid ""
 "Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" "
-"is the basename of the new sequence"
+"is the basename of the new sequence. The option \"-debayer\" applies "
+"demosaicing to images"
 msgstr ""
 
 #: ../src/core/command_def.h:16
@@ -4330,7 +4331,8 @@ msgid ""
 "Preprocesses the sequence \"sequencename\" using bias, dark and flat given "
 "in argument. It is possible to specify if images are CFA for cosmetic "
 "correction purposes with the option \"-cfa\" and also to demosaic images at "
-"the end of the process with \"-debayer\""
+"the end of the process with \"-debayer\". The \"-flip\" option tells to "
+"Siril to read image from up to bottom for demosaicing operation"
 msgstr ""
 
 #: ../src/core/command_def.h:62
@@ -5477,7 +5479,7 @@ msgstr "_保存"
 msgid "This type of file is not handled. Should not happen"
 msgstr "该文件类型无法被识别"
 
-#: ../src/gui/script_menu.c:217
+#: ../src/gui/script_menu.c:218
 #, fuzzy, c-format
 msgid "Loading script: %s\n"
 msgstr "开始叠加...\n"
@@ -5559,73 +5561,79 @@ msgstr "所选区域尺寸－像素: (%d,%d)"
 msgid "No selection"
 msgstr "无选择"
 
-#: ../src/io/conversion.c:304
+#: ../src/io/conversion.c:237
+msgid ""
+"Saving to 3 FITS files cannot be done because the source image does not have "
+"three channels\n"
+msgstr "保存为3个FITS文件无法执行，因为源图像没有包含三个通道\n"
+
+#: ../src/io/conversion.c:336
 msgid "BMP images, "
 msgstr "BMP图像， "
 
-#: ../src/io/conversion.c:306
+#: ../src/io/conversion.c:338
 msgid "PIC images (IRIS), "
 msgstr "PIC图像(IRIS)， "
 
-#: ../src/io/conversion.c:308
+#: ../src/io/conversion.c:340
 msgid "PGM and PPM binary images"
 msgstr "PGM和PPM二进制图像"
 
-#: ../src/io/conversion.c:332
+#: ../src/io/conversion.c:364
 msgid "RAW images"
 msgstr "RAW图像"
 
-#: ../src/io/conversion.c:347
+#: ../src/io/conversion.c:379
 msgid "FITS-CFA images"
 msgstr "FITS-CFA图像"
 
-#: ../src/io/conversion.c:352
+#: ../src/io/conversion.c:384
 msgid "Films"
 msgstr "视频"
 
-#: ../src/io/conversion.c:357
+#: ../src/io/conversion.c:389
 msgid "SER sequences"
 msgstr "SER队列"
 
-#: ../src/io/conversion.c:363
+#: ../src/io/conversion.c:395
 msgid "TIFF images"
 msgstr "TIFF图像"
 
-#: ../src/io/conversion.c:371
+#: ../src/io/conversion.c:403
 msgid "JPG images"
 msgstr "JPG图像"
 
-#: ../src/io/conversion.c:379
+#: ../src/io/conversion.c:411
 msgid "PNG images"
 msgstr "PNG图像"
 
-#: ../src/io/conversion.c:388
+#: ../src/io/conversion.c:420
 #, c-format
 msgid "Supported file types: %s\n"
 msgstr "支持的文件类型: %s\n"
 
-#: ../src/io/conversion.c:553
+#: ../src/io/conversion.c:586
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
 msgstr "SER输出将获得超过新建单通道图像的优先权。\n"
 
-#: ../src/io/conversion.c:559 ../src/io/conversion.c:611
+#: ../src/io/conversion.c:592 ../src/io/conversion.c:644
 #: ../src/io/sequence.c:1284 ../src/io/sequence_export.c:104
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "创建SER文件失败，异常终止。\n"
 
-#: ../src/io/conversion.c:576 ../src/io/conversion.c:577
+#: ../src/io/conversion.c:609 ../src/io/conversion.c:610
 #, c-format
 msgid "Converting %s..."
 msgstr "转化 %s..."
 
-#: ../src/io/conversion.c:583
+#: ../src/io/conversion.c:616
 #, c-format
 msgid "FILETYPE IS NOT SUPPORTED, CANNOT CONVERT: %s\n"
 msgstr "不被支持的文件类型，无法转化：%s\n"
 
-#: ../src/io/conversion.c:584
+#: ../src/io/conversion.c:617
 #, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -5640,44 +5648,38 @@ msgstr ""
 "如果确认无错，那么你需要安装第三方软件来激活这种文件类型，详见README\n"
 "如果你所试图载入的文件类型在支持列表内，那么可以向开发团队提交一个缺陷报告。"
 
-#: ../src/io/conversion.c:603
+#: ../src/io/conversion.c:636
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Error while opening film %s, aborting.\n"
 
-#: ../src/io/conversion.c:620
+#: ../src/io/conversion.c:653
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Error while reading frame %d from %s, aborting.\n"
 
-#: ../src/io/conversion.c:632 ../src/io/conversion.c:665
+#: ../src/io/conversion.c:665 ../src/io/conversion.c:698
 #: ../src/io/sequence.c:1314 ../src/io/sequence_export.c:316
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Error while converting to SER (no space left?)\n"
 
-#: ../src/io/conversion.c:640 ../src/io/conversion.c:671
+#: ../src/io/conversion.c:673 ../src/io/conversion.c:704
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr "Error while converting to FITS (no space left?)\n"
 
-#: ../src/io/conversion.c:655
+#: ../src/io/conversion.c:688
 msgid "Converting from SER is not yet supported\n"
 msgstr "Converting from SER is not yet supported\n"
 
-#: ../src/io/conversion.c:728
-msgid ""
-"Saving to 3 FITS files cannot be done because the source image does not have "
-"three channels\n"
-msgstr "保存为3个FITS文件无法执行，因为源图像没有包含三个通道\n"
-
-#: ../src/io/conversion.c:781
+#: ../src/io/conversion.c:746
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "在超过一个通道的图像上无法执行debayer\n"
 
-#: ../src/io/conversion.c:794 ../src/io/ser.c:781 ../src/io/ser.c:987
+#: ../src/io/conversion.c:759 ../src/io/ser.c:781 ../src/io/ser.c:987
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
-#: ../src/io/conversion.c:797 ../src/io/ser.c:785 ../src/io/ser.c:991
+#: ../src/io/conversion.c:762 ../src/io/ser.c:785 ../src/io/ser.c:991
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -5685,27 +5687,27 @@ msgid ""
 msgstr ""
 "文件头中含有的拜耳滤镜排列模式 (%s) 不同于设置中的排列 (%s)。 设置被覆盖。\n"
 
-#: ../src/io/conversion.c:806
+#: ../src/io/conversion.c:771
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr "发现XTRANS传感器。特殊算法将被采用。\n"
 
-#: ../src/io/conversion.c:811
+#: ../src/io/conversion.c:776
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "拜耳阵列模式： %s\n"
 
-#: ../src/io/conversion.c:815
+#: ../src/io/conversion.c:780
 msgid "Cannot perform debayering\n"
 msgstr "无法执行debayer\n"
 
-#: ../src/io/conversion.c:884
+#: ../src/io/conversion.c:830
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
 msgstr "将一个队列文件转化为单个FITS文件的请求是违法的\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:889
+#: ../src/io/conversion.c:835
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "文件打开错误 %s: 文件类型不支持。\n"

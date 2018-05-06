@@ -81,7 +81,7 @@ command commande[] = {
 	{"cdg", 0, "cdg", process_cdg, STR_CDG, TRUE},
 	{"clearstar", 0, "clearstar", process_clearstar, STR_CLEARSTAR, FALSE},
 	{"close", 0, "close", process_close, STR_CLOSE, TRUE},
-	{"convertraw", 1, "convert basename", process_convertraw, STR_CONVERT, TRUE},
+	{"convertraw", 1, "convert basename [-debayer]", process_convertraw, STR_CONVERT, TRUE},
 	{"cosme", 1, "cosme [filename].lst", process_cosme, STR_COSME, TRUE},
 	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme, STR_COSME_CFA, TRUE},
 	{"crop", 0, "crop [x y width height]", process_crop, STR_CROP, TRUE},
