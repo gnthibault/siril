@@ -150,30 +150,8 @@ static gint sort_conv_tree(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
 	return ret;
 }
 
-void check_for_conversion_form_completeness() {
-	static GtkTreeView *tree_convert = NULL;
-	GtkTreeIter iter;
-	GtkTreeModel *model = NULL;
-	gboolean valid;
-	GtkWidget *go_button = lookup_widget("convert_button");
-	
-	if (tree_convert == NULL)
-		tree_convert = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview_convert"));
-	
-	model = gtk_tree_view_get_model(tree_convert);
-	valid = gtk_tree_model_get_iter_first(model, &iter);
-	gtk_widget_set_sensitive (go_button, destroot && destroot[0] != '\0' && valid);
-
-	/* we override the sort function in order to provide natural sort order */
-	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(model),
-			COLUMN_CONV_FILENAME, (GtkTreeIterCompareFunc) sort_conv_tree, NULL,
-			NULL);
-
-	update_statusbar_convert();
-}
-
 // input is destroot
-char *create_sequence_filename(int counter, char *output, int outsize) {
+static char *create_sequence_filename(int counter, char *output, int outsize) {
 	const char *ext = get_filename_ext(destroot);
 	if (ext) {
 		/* we need to insert a number before the extension */
@@ -199,67 +177,6 @@ char *create_sequence_filename(int counter, char *output, int outsize) {
 	return output;
 }
 
-// truncates destroot if it's more than 120 characters, append a '_' if it
-// doesn't end with one or a '-'. SER extensions are accepted and unmodified.
-void on_convtoroot_changed (GtkEditable *editable, gpointer user_data){
-	static GtkWidget *multiple_ser = NULL;
-	const gchar *name = gtk_entry_get_text(GTK_ENTRY(editable));
-	if (!multiple_ser)
-		multiple_ser = lookup_widget("multipleSER");
-	if (destroot) g_free(destroot);
-
-	destroot = g_str_to_ascii(name, NULL); // we want to avoid special char
-
-	const char *ext = get_filename_ext(destroot);
-	if (ext && !g_ascii_strcasecmp(ext, "ser")) {
-		convflags |= CONVDSTSER;
-		gtk_widget_set_visible(multiple_ser, TRUE);
-		return;
-	}
-	gtk_widget_set_visible(multiple_ser, FALSE);
-
-	destroot = format_basename(destroot);
-
-	check_for_conversion_form_completeness();
-}
-
-void on_demosaicing_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
-	static GtkToggleButton *but = NULL;
-	if (!but) but = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton1"));
-	if (gtk_toggle_button_get_active(togglebutton)) {
-		convflags |= CONVDEBAYER;
-		gtk_toggle_button_set_active(but, TRUE);
-		com.debayer.open_debayer = TRUE;
-	}
-	else {
-		convflags &= ~CONVDEBAYER;	// used for conversion
-		com.debayer.open_debayer = FALSE;	// used for image opening
-	}
-}
-
-void on_multipleSER_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
-	if (gtk_toggle_button_get_active(togglebutton))
-		convflags |= CONVMULTIPLE;
-	else convflags &= ~CONVMULTIPLE;
-}
-
-void on_conv3planefit_toggled (GtkToggleButton *togglebutton, gpointer user_data){
-	convflags |= CONV1X3;
-	convflags &= ~(CONV3X1|CONV1X1);
-}
-
-void on_conv3_1plane_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
-	convflags |= CONV3X1;
-	convflags &= ~(CONV1X1|CONV1X3);
-}
-
-void on_conv1_1plane_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
-	convflags |= CONV1X1;
-	convflags &= ~(CONV3X1|CONV1X3);
-}
-
-/*************************************************************************************/
-
 /* This function sets all default values of libraw settings in the com.raw_set
  * struct, as defined in the glade file.
  * When the ini file is read, the values of com.raw_set are overwritten, but if the
@@ -267,28 +184,143 @@ void on_conv1_1plane_toggled (GtkToggleButton *togglebutton, gpointer user_data)
  * GUI states reset to zero by set_GUI_LIBRAW() because the data in com.raw_set had
  * not been initialized with the default GUI values (= initialized to 0).
  */
-void initialize_libraw_settings() {
+static void initialize_libraw_settings() {
 	com.raw_set.bright = 1.0;		// brightness
 	com.raw_set.mul[0] = 1.0;		// multipliers: red
 	com.raw_set.mul[1] = 1.0;		// multipliers: green, not used because always equal to 1
 	com.raw_set.mul[2] = 1.0;		// multipliers: blue
 	com.raw_set.auto_mul = 1;		// multipliers are Either read from file, or calculated on the basis of file data, or taken from hardcoded constants
 	com.raw_set.user_black = 0;		// black point correction
-	com.raw_set.use_camera_wb = 0;	// if possible, use the white balance from the camera. 
+	com.raw_set.use_camera_wb = 0;	// if possible, use the white balance from the camera.
 	com.raw_set.use_auto_wb = 0;		// use automatic white balance obtained after averaging over the entire image
 	com.raw_set.user_qual = 1;		// type of interpolation. AHD by default
 	com.raw_set.gamm[0] = 1.0;		// gamma curve: linear by default
 	com.raw_set.gamm[1] = 1.0;
 }
 
-void initialize_ser_debayer_settings() {
+static void initialize_ser_debayer_settings() {
 	com.debayer.open_debayer = FALSE;
 	com.debayer.use_bayer_header = TRUE;
 	com.debayer.compatibility = FALSE;
 	com.debayer.bayer_pattern = BAYER_FILTER_RGGB;
 	com.debayer.bayer_inter = BAYER_VNG;
 }
- 
+
+static gboolean end_convert_idle(gpointer p) {
+	struct _convert_data *args = (struct _convert_data *) p;
+	struct timeval t_end;
+
+	if (get_thread_run() && args->nb_converted > 1) {
+		// load the sequence
+		char *ppseqname = malloc(strlen(args->destroot) + 5);
+		sprintf(ppseqname, "%s.seq", args->destroot);
+		check_seq(0);
+		update_sequences_list(ppseqname);
+		free(ppseqname);
+	}
+	update_used_memory();
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_DONE);
+	set_cursor_waiting(FALSE);
+	gettimeofday(&t_end, NULL);
+	show_time(args->t_start, t_end);
+	stop_processing_thread();
+	free(args);
+	return FALSE;
+}
+
+/* from a fits object, save to file or files, based on the channel policy from convflags */
+static int save_to_target_fits(fits *fit, const char *dest_filename) {
+	if (convflags & CONV3X1) {	// an RGB image to 3 fits, one for each channel
+		char filename[130];
+
+		if (fit->naxis != 3) {
+			siril_log_message(_("Saving to 3 FITS files cannot be done because the source image does not have three channels\n"));
+			return 1;
+		}
+		sprintf(filename, "r_%s", dest_filename);
+		if (save1fits16(filename, fit, RLAYER)) {
+			printf("tofits: save1fit8 error, CONV3X1\n");
+			return 1;
+		}
+		sprintf(filename, "g_%s", dest_filename);
+		if (save1fits16(filename, fit, GLAYER)) {
+			printf("tofits: save1fit8 error, CONV3X1\n");
+			return 1;
+		}
+		sprintf(filename, "b_%s", dest_filename);
+		if (save1fits16(filename, fit, BLAYER)) {
+			printf("tofits: save1fit8 error, CONV3X1\n");
+			return 1;
+		}
+	} else if (convflags & CONV1X1) { // a single FITS to convert from an RGB grey image
+		if (save1fits16(dest_filename, fit, RLAYER)) {
+			printf("tofits: save1fit8 error, CONV1X1\n");
+			return 1;
+		}
+	} else {			// normal FITS save, any format
+		if (savefits(dest_filename, fit)) {
+			printf("tofits: savefit error, CONV1X3\n");
+			return 1;
+		}
+	}
+	return 0;
+}
+
+static int retrieveBayerPattern(char *bayer) {
+	int i;
+
+	for (i = 0; i < (sizeof(filter_pattern) / sizeof(char *)); i++) {
+		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
+			return i;
+		}
+	}
+	return BAYER_FILTER_NONE;
+}
+
+/* open the file with path source from any image type and load it into a new FITS object */
+static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility) {
+	int retval = 0;
+	fits *tmpfit = calloc(1, sizeof(fits));
+
+	retval = any_to_fits(imagetype, source, tmpfit);
+
+	if (!retval)
+		retval = debayer_if_needed(imagetype, tmpfit, compatibility, FALSE);
+
+	if (retval) {
+		clearfits(tmpfit);
+		free(tmpfit);
+		return NULL;
+	}
+
+	return tmpfit;
+}
+
+/**************************Public functions***********************************************************/
+
+void check_for_conversion_form_completeness() {
+	static GtkTreeView *tree_convert = NULL;
+	GtkTreeIter iter;
+	GtkTreeModel *model = NULL;
+	gboolean valid;
+	GtkWidget *go_button = lookup_widget("convert_button");
+
+	if (tree_convert == NULL)
+		tree_convert = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview_convert"));
+
+	model = gtk_tree_view_get_model(tree_convert);
+	valid = gtk_tree_model_get_iter_first(model, &iter);
+	gtk_widget_set_sensitive (go_button, destroot && destroot[0] != '\0' && valid);
+
+	/* we override the sort function in order to provide natural sort order */
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(model),
+			COLUMN_CONV_FILENAME, (GtkTreeIterCompareFunc) sort_conv_tree, NULL,
+			NULL);
+
+	update_statusbar_convert();
+}
+
+
 /* initialize converters (utilities used for different image types importing) *
  * updates the label listing the supported input file formats, and modifies the
  * list of file types used in convflags */
@@ -697,77 +729,6 @@ clean_exit:
 	return NULL;
 }
 
-static gboolean end_convert_idle(gpointer p) {
-	struct _convert_data *args = (struct _convert_data *) p;
-	struct timeval t_end;
-	
-	if (get_thread_run() && args->nb_converted > 1) {
-		// load the sequence
-		char *ppseqname = malloc(strlen(args->destroot) + 5);
-		sprintf(ppseqname, "%s.seq", args->destroot);
-		check_seq(0);
-		update_sequences_list(ppseqname);
-		free(ppseqname);
-	}
-	update_used_memory();
-	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_DONE);
-	set_cursor_waiting(FALSE);
-	gettimeofday(&t_end, NULL);
-	show_time(args->t_start, t_end);
-	stop_processing_thread();
-	free(args);
-	return FALSE;
-}
-
-/* from a fits object, save to file or files, based on the channel policy from convflags */
-int save_to_target_fits(fits *fit, const char *dest_filename) {
-	if (convflags & CONV3X1) {	// an RGB image to 3 fits, one for each channel
-		char filename[130];
-
-		if (fit->naxis != 3) {
-			siril_log_message(_("Saving to 3 FITS files cannot be done because the source image does not have three channels\n"));
-			return 1;
-		}
-		sprintf(filename, "r_%s", dest_filename);
-		if (save1fits16(filename, fit, RLAYER)) {
-			printf("tofits: save1fit8 error, CONV3X1\n");
-			return 1;
-		}
-		sprintf(filename, "g_%s", dest_filename);
-		if (save1fits16(filename, fit, GLAYER)) {
-			printf("tofits: save1fit8 error, CONV3X1\n");
-			return 1;
-		}
-		sprintf(filename, "b_%s", dest_filename);
-		if (save1fits16(filename, fit, BLAYER)) {
-			printf("tofits: save1fit8 error, CONV3X1\n");
-			return 1;
-		}
-	} else if (convflags & CONV1X1) { // a single FITS to convert from an RGB grey image
-		if (save1fits16(dest_filename, fit, RLAYER)) {
-			printf("tofits: save1fit8 error, CONV1X1\n");
-			return 1;
-		}
-	} else {			// normal FITS save, any format
-		if (savefits(dest_filename, fit)) {
-			printf("tofits: savefit error, CONV1X3\n");
-			return 1;
-		}
-	}
-	return 0;
-}
-
-static int retrieveBayerPattern(char *bayer) {
-	int i;
-
-	for (i = 0; i < (sizeof(filter_pattern) / sizeof(char *)); i++) {
-		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
-			return i;
-		}
-	}
-	return BAYER_FILTER_NONE;
-}
-
 int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer) {
 	int retval = 0;
 	sensor_pattern tmp;
@@ -823,25 +784,6 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 	return retval;
 }
 
-/* open the file with path source from any image type and load it into a new FITS object */
-fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility) {
-	int retval = 0;
-	fits *tmpfit = calloc(1, sizeof(fits));
-
-	retval = any_to_fits(imagetype, source, tmpfit);
-
-	if (!retval)
-		retval = debayer_if_needed(imagetype, tmpfit, compatibility, FALSE);
-
-	if (retval) {
-		clearfits(tmpfit);
-		free(tmpfit);
-		return NULL;
-	}
-
-	return tmpfit;
-}
-
 /* open the file with path source from any image type and load it into the given FITS object */
 int any_to_fits(image_type imagetype, const char *source, fits *dest) {
 	int retval = 0;
@@ -891,5 +833,66 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest) {
 	}
 
 	return retval;
+}
+
+/******************Callback functions*******************************************************************/
+
+// truncates destroot if it's more than 120 characters, append a '_' if it
+// doesn't end with one or a '-'. SER extensions are accepted and unmodified.
+void on_convtoroot_changed (GtkEditable *editable, gpointer user_data){
+	static GtkWidget *multiple_ser = NULL;
+	const gchar *name = gtk_entry_get_text(GTK_ENTRY(editable));
+	if (!multiple_ser)
+		multiple_ser = lookup_widget("multipleSER");
+	if (destroot) g_free(destroot);
+
+	destroot = g_str_to_ascii(name, NULL); // we want to avoid special char
+
+	const char *ext = get_filename_ext(destroot);
+	if (ext && !g_ascii_strcasecmp(ext, "ser")) {
+		convflags |= CONVDSTSER;
+		gtk_widget_set_visible(multiple_ser, TRUE);
+		return;
+	}
+	gtk_widget_set_visible(multiple_ser, FALSE);
+
+	destroot = format_basename(destroot);
+
+	check_for_conversion_form_completeness();
+}
+
+void on_demosaicing_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
+	static GtkToggleButton *but = NULL;
+	if (!but) but = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton1"));
+	if (gtk_toggle_button_get_active(togglebutton)) {
+		convflags |= CONVDEBAYER;
+		gtk_toggle_button_set_active(but, TRUE);
+		com.debayer.open_debayer = TRUE;
+	}
+	else {
+		convflags &= ~CONVDEBAYER;	// used for conversion
+		com.debayer.open_debayer = FALSE;	// used for image opening
+	}
+}
+
+void on_multipleSER_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
+	if (gtk_toggle_button_get_active(togglebutton))
+		convflags |= CONVMULTIPLE;
+	else convflags &= ~CONVMULTIPLE;
+}
+
+void on_conv3planefit_toggled (GtkToggleButton *togglebutton, gpointer user_data){
+	convflags |= CONV1X3;
+	convflags &= ~(CONV3X1|CONV1X1);
+}
+
+void on_conv3_1plane_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
+	convflags |= CONV3X1;
+	convflags &= ~(CONV1X1|CONV1X3);
+}
+
+void on_conv1_1plane_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
+	convflags |= CONV1X1;
+	convflags &= ~(CONV3X1|CONV1X3);
 }
 
