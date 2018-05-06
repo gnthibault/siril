@@ -118,11 +118,18 @@ static int get_filetype(const gchar *filter) {
 }
 
 static GtkWindow *get_windows_toplevel(GtkWidget *widget) {
-	GtkWidget *toplevel = gtk_widget_get_toplevel(widget);
-	if (GTK_IS_WINDOW(toplevel)) {
-		return GTK_WINDOW(toplevel);
+	GtkWindow *win = NULL;
+
+	GList *list = gtk_window_list_toplevels();
+	while (list) {
+		if (gtk_window_has_toplevel_focus ((GtkWindow *)list->data)) {
+			win = (GtkWindow *)list->data;
+			break;
+		}
+		list = list->next;
 	}
-	return NULL;
+	g_list_free(list);
+	return win;
 }
 
 static void prepare_savepopup(int type) {
