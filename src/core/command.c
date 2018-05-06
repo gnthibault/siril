@@ -133,7 +133,7 @@ command commande[] = {
 	
 	{"offset", 1, "offset value", process_offset, STR_OFFSET, TRUE},
 	
-	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa] [-debayer]", process_preprocess, STR_PREPROCESS, TRUE},
+	{"preprocess", 1, "preprocess sequencename [-bias=, -dark=, -flat=] [-cfa] [-debayer] [-flip]", process_preprocess, STR_PREPROCESS, TRUE},
 	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 	
 	{"register", 1, "register sequence [-norot] [-drizzle]", process_register, STR_REGISTER, TRUE},
@@ -1508,10 +1508,18 @@ int process_convertraw(int nb) {
 	char *tmpmsg;
 	GList *list = NULL;
 
+	struct timeval t_start;
+
 	if (get_thread_run()) {
 		siril_log_message(_("Another task is "
 				"already in progress, ignoring new request.\n"));
 		return 1;
+	}
+
+	if (word[2]) {
+		if (!strcmp(word[2], "-debayer")) {
+			set_debayer_in_convflags();
+		}
 	}
 
 	if((dir = g_dir_open(com.wd, 0, &error)) == NULL){
@@ -1535,6 +1543,7 @@ int process_convertraw(int nb) {
 	list = g_list_sort(list, (GCompareFunc) strcompare);
 
 	siril_log_color_message(_("Conversion: processing...\n"), "red");
+	gettimeofday(&t_start, NULL);
 
 	set_cursor_waiting(TRUE);
 	control_window_switch_to_tab(OUTPUT_LOGS);
@@ -1549,14 +1558,16 @@ int process_convertraw(int nb) {
 		return 1;
 	}
 
-
 	args = malloc(sizeof(struct _convert_data));
 	args->start = 1;
 	args->dir = dir;
 	args->list = list;
 	args->total = g_list_length(list);
 	args->nb_converted = 0;
+	args->t_start.tv_sec = t_start.tv_sec;
+	args->t_start.tv_usec = t_start.tv_usec;
 	args->compatibility = FALSE;	// not used here
+	args->command_line = TRUE;
 	args->destroot = g_strdup(word[1]);
 	start_in_new_thread(convert_thread_worker, args);
 	return 0;
@@ -1936,10 +1947,12 @@ int process_stackone(int nb) {
 // preprocess sequencename -bias= -dark= -flat= -cfa -debayer
 int process_preprocess(int nb) {
 	struct preprocessing_data *args = malloc(sizeof(struct preprocessing_data));
+	int nb_command_max = 7;
 
 	com.preprostatus = 0;
 	gboolean is_cfa = FALSE;
 	gboolean do_debayer = FALSE;
+	gboolean flip = FALSE;
 	gchar *file;
 	fits *master_bias = NULL;
 	fits *master_dark = NULL;
@@ -1966,7 +1979,8 @@ int process_preprocess(int nb) {
 	}
 	seq_check_basic_data(seq, FALSE);
 
-	for (i = 2; i < 6; i++) {
+	/* checking for options */
+	for (i = 2; i < nb_command_max; i++) {
 		if (word[i]) {
 			if (g_str_has_prefix(word[i], "-bias=")) {
 				master_bias = calloc(1, sizeof(fits));
@@ -2000,6 +2014,8 @@ int process_preprocess(int nb) {
 				is_cfa = TRUE;
 			}  else if (!strcmp(word[i], "-debayer")) {
 				do_debayer = TRUE;
+			} else if (!strcmp(word[i], "-flip")) {
+				flip = TRUE;
 			}
 		}
 	}
@@ -2023,7 +2039,7 @@ int process_preprocess(int nb) {
 	args->sigma[0] = -1.00; /* cold pixels */
 	args->sigma[1] =  3.00; /* hot poxels */
 
-	args->compatibility = FALSE;
+	args->compatibility = flip;
 
 	args->debayer = do_debayer;
 	args->is_cfa = is_cfa;

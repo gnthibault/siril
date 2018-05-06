@@ -564,6 +564,7 @@ void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 	args->t_start.tv_sec = t_start.tv_sec;
 	args->t_start.tv_usec = t_start.tv_usec;
 	args->compatibility = com.debayer.compatibility;
+	args->command_line = FALSE;
 	args->destroot = g_strdup(destroot);
 	start_in_new_thread(convert_thread_worker, args);
 	return;
@@ -722,6 +723,9 @@ clean_exit:
 			ser_write_and_close(ser_file);
 		free(ser_file);
 	}
+	if (args->command_line) {
+		unset_debayer_in_convflags();
+	}
 	g_free(args->destroot);
 	g_list_free_full(args->list, g_free);
 	g_dir_close(args->dir);
@@ -835,6 +839,14 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest) {
 	return retval;
 }
 
+void set_debayer_in_convflags() {
+	convflags |= CONVDEBAYER;
+}
+
+void unset_debayer_in_convflags() {
+	convflags &= ~CONVDEBAYER;
+}
+
 /******************Callback functions*******************************************************************/
 
 // truncates destroot if it's more than 120 characters, append a '_' if it
@@ -865,12 +877,12 @@ void on_demosaicing_toggled (GtkToggleButton *togglebutton, gpointer user_data) 
 	static GtkToggleButton *but = NULL;
 	if (!but) but = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton1"));
 	if (gtk_toggle_button_get_active(togglebutton)) {
-		convflags |= CONVDEBAYER;
+		set_debayer_in_convflags();
 		gtk_toggle_button_set_active(but, TRUE);
 		com.debayer.open_debayer = TRUE;
 	}
 	else {
-		convflags &= ~CONVDEBAYER;	// used for conversion
+		unset_debayer_in_convflags();	// used for conversion
 		com.debayer.open_debayer = FALSE;	// used for image opening
 	}
 }
