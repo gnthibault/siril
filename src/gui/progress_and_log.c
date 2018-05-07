@@ -86,6 +86,7 @@ void set_progress_bar_data(const char *text, double percent) {
 			fprintf(stdout, "progress: %s, %4.2lf\n", text, percent);
 		else fprintf(stdout, "\033[A\33[2KT\rprogress: %4.2lf\n", percent);
 		// TODO: I don't know how to do that in other OS than GNU
+		// On OS-X it works. On Windows ... well, I doubt it will used
 	} else {
 		g_mutex_lock(&com.mutex);
 		data = malloc(sizeof(struct progress_bar_idle_data));
