@@ -429,8 +429,8 @@ int main(int argc, char *argv[]) {
 
 	/* handling OS-X integration */
 #ifdef MAC_INTEGRATION
+	GtkosxApplication *osx_app = gtkosx_application_get();
 	if (!com.headless) {
-		GtkosxApplication *osx_app = gtkosx_application_get();
 		set_osx_integration(osx_app, siril_path);
 	}
 #endif //MAC_INTEGRATION
@@ -470,7 +470,7 @@ int main(int argc, char *argv[]) {
 	undo_flush();
 #ifdef MAC_INTEGRATION
 	if (!com.headless) {
-		g_object_unref (osx_app);
+		g_object_unref(osx_app);
 	}
 #endif //MAC_INTEGRATION
 	return 0;
