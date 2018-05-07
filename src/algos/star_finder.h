@@ -1,15 +1,8 @@
 #ifndef FINDER_H_
 #define FINDER_H_
 
-typedef struct starFinder_struct starFinder;
-
-struct starFinder_struct {
-	int radius;
-	double sigma;
-	double roundness;
-	int nb_stars;
-};
-
+void init_peaker_GUI();
+void init_peaker_default();
 fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area);
 fitted_PSF *add_star(fits *fit, int layer, int *index);
 int remove_star(int index);

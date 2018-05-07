@@ -55,6 +55,7 @@
 #include "stacking/stacking.h"
 #include "core/undo.h"
 #include "io/single_image.h"
+#include "algos/star_finder.h"
 
 #define GLADE_FILE "siril3.glade"
 
@@ -133,11 +134,12 @@ char *siril_sources[] = {
 
 void usage(const char *command) {
     printf("\nUsage:  %s [OPTIONS] [IMAGE_FILE_TO_OPEN]\n\n", command);
-    puts("-d                      Setting argument in cwd.");
-    puts("-i                      With init file name in argument. Start Siril.");
-    puts("-f (or --format)        Print all supported image file formats (depending on the libraries you've installed)");
-    puts("-v (or --version)       Print program name and version and exit");
-    puts("-h (or --help)          This text");
+    puts("  -d cwd             Changing the current working directory as the argument");
+    puts("  -s scriptfile      Run the siril commands script in console mode");
+    puts("  -i initfile        Load configration from file name instead of the default configuration file");
+    puts("  -f (or --format)   Print all supported image file formats (depending on installed libraries)");
+    puts("  -v (or --version)  Print program name and version and exit");
+    puts("  -h (or --help)     This text");
 }
 
 void signal_handled(int s) {
@@ -162,9 +164,9 @@ int main(int argc, char *argv[]) {
 	extern int opterr;
 	gchar *siril_path;
 	gchar *current_cwd = NULL;
-	gboolean forcecwd = FALSE;
-	char *cwd_forced = NULL;
-	
+	gboolean forcecwd = FALSE, headless= FALSE;
+	char *cwd_forced = NULL, *start_script = NULL;
+
 	g_setenv ("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
 	/* for translation */
@@ -183,12 +185,12 @@ int main(int argc, char *argv[]) {
 	opterr = 0;
 	memset(&com, 0, sizeof(struct cominf));	// needed?
 	com.initfile = NULL;
-	
+
 	/* Caught signals */
 	signal(SIGINT, signal_handled);
 
 	while (1) {
-		signed char c = getopt(argc, argv, "i:hfvd:");
+		signed char c = getopt(argc, argv, "i:hfvd:s:");
 		if (c == '?') {
 			for (i = 1; i < argc; i++) {
 				if (argv[i][1] == '-') {
@@ -211,70 +213,76 @@ int main(int argc, char *argv[]) {
 		if (c == -1)
 			break;
 		switch (c) {
-		case 'i':
-			com.initfile = g_strdup(optarg);
-			break;
-		case 'v':
-			fprintf(stdout, "%s %s\n", PACKAGE, VERSION);
-			exit(EXIT_SUCCESS);
-			break;
-		case 'f':
-			list_format_available();
-			exit(EXIT_SUCCESS);
-			break;
-		case 'd':
-			cwd_forced = optarg;
-			forcecwd = TRUE;
-			break;
-		default:
-			fprintf(stderr, _("unknown command line parameter '%c'\n"), argv[argc - 1][1]);
-			/* no break */
-		case 'h':
-			usage(argv[0]);
-			exit(EXIT_SUCCESS);
+			case 'i':
+				com.initfile = g_strdup(optarg);
+				break;
+			case 'v':
+				fprintf(stdout, "%s %s\n", PACKAGE, VERSION);
+				exit(EXIT_SUCCESS);
+				break;
+			case 'f':
+				list_format_available();
+				exit(EXIT_SUCCESS);
+				break;
+			case 'd':
+				cwd_forced = optarg;
+				forcecwd = TRUE;
+				break;
+			case 's':
+				start_script = optarg;
+				headless = TRUE;
+				break;
+			default:
+				fprintf(stderr, _("unknown command line parameter '%c'\n"), argv[argc - 1][1]);
+				/* no break */
+			case 'h':
+				usage(argv[0]);
+				exit(EXIT_SUCCESS);
 		}
 	}
 
-	gtk_init (&argc, &argv);
+	//gtk_init (&argc, &argv);
 
-	/* try to load the glade file, from the sources defined above */
-	builder = gtk_builder_new();
-	i = 0;
-	do {
-		GError *err = NULL;
-		gchar *gladefile;
+	if (!headless) {
+		/* try to load the glade file, from the sources defined above */
+		builder = gtk_builder_new();
+		i = 0;
+		do {
+			GError *err = NULL;
+			gchar *gladefile;
 
-		gladefile = g_build_filename (siril_sources[i], GLADE_FILE, NULL);
-		if (gtk_builder_add_from_file (builder, gladefile, &err)) {
-			fprintf(stdout, _("Successfully loaded '%s'\n"), gladefile);
+			gladefile = g_build_filename (siril_sources[i], GLADE_FILE, NULL);
+			if (gtk_builder_add_from_file (builder, gladefile, &err)) {
+				fprintf(stdout, _("Successfully loaded '%s'\n"), gladefile);
+				g_free(gladefile);
+				break;
+			}
+			fprintf (stderr, _("%s. Looking into another directory...\n"), err->message);
+			g_error_free(err);
 			g_free(gladefile);
-			break;
+			i++;
+		} while (i < sizeof(siril_sources)/sizeof(char *));
+		if (i == sizeof(siril_sources) / sizeof(char *)) {
+			fprintf(stderr, _("%s was not found or contains errors, cannot render GUI. Exiting.\n"), GLADE_FILE);
+			exit(EXIT_FAILURE);
 		}
-		fprintf (stderr, _("%s. Looking into another directory...\n"), err->message);
-		g_error_free(err);
-		g_free(gladefile);
-		i++;
-	} while (i < sizeof(siril_sources)/sizeof(char *));
-	if (i == sizeof(siril_sources) / sizeof(char *)) {
-		fprintf(stderr, _("%s was not found or contains errors, cannot render GUI. Exiting.\n"), GLADE_FILE);
-		exit(EXIT_FAILURE);
+		siril_path = siril_sources[i];
+
+		gtk_builder_connect_signals (builder, NULL);
+
+		/* Create tags associated with the buffer for the output text. */
+		GtkTextBuffer *tbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(builder, "output")));
+		/* Tag with weight bold and tag name "bold" . */
+		gtk_text_buffer_create_tag (tbuf, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
+		/* Tag with style normal */
+		gtk_text_buffer_create_tag (tbuf, "normal", "weight", PANGO_WEIGHT_NORMAL, NULL);
+		/* Couleur Tags */
+		gtk_text_buffer_create_tag (tbuf, "red", "foreground", "#e72828", NULL);
+		gtk_text_buffer_create_tag (tbuf, "salmon", "foreground", "#ff9898", NULL);
+		gtk_text_buffer_create_tag (tbuf, "green", "foreground", "#01b301", NULL);
+		gtk_text_buffer_create_tag (tbuf, "blue", "foreground", "#7a7af8", NULL);
+		gtk_text_buffer_create_tag (tbuf, "plum", "foreground", "#8e4585", NULL);
 	}
-	siril_path = siril_sources[i];
-
-	gtk_builder_connect_signals (builder, NULL);
-
-	/* Create tags associated with the buffer for the output text. */
-	GtkTextBuffer *tbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(builder, "output")));
-	/* Tag with weight bold and tag name "bold" . */
-	gtk_text_buffer_create_tag (tbuf, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
-	/* Tag with style normal */
-	gtk_text_buffer_create_tag (tbuf, "normal", "weight", PANGO_WEIGHT_NORMAL, NULL);
-	/* Couleur Tags */
-	gtk_text_buffer_create_tag (tbuf, "red", "foreground", "#e72828", NULL);
-	gtk_text_buffer_create_tag (tbuf, "salmon", "foreground", "#ff9898", NULL);
-	gtk_text_buffer_create_tag (tbuf, "green", "foreground", "#01b301", NULL);
-	gtk_text_buffer_create_tag (tbuf, "blue", "foreground", "#7a7af8", NULL);
-	gtk_text_buffer_create_tag (tbuf, "plum", "foreground", "#8e4585", NULL);
 
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
 
@@ -305,31 +313,37 @@ int main(int argc, char *argv[]) {
 	initialize_scrollbars();
 	init_mouse();
 
-	/* Keybord Shortcuts */
-	initialize_shortcuts();
+	if (!headless) {
+		/* Keybord Shortcuts */
+		initialize_shortcuts();
 
-	/* Select combo boxes that trigger some text display or other things */
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods")), 0);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstacksel")), 0);
+		/* Select combo boxes that trigger some text display or other things */
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods")), 0);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstacksel")), 0);
+	}
 
 	/* initialize the com struct and zoom level */
 	com.drawn = FALSE;
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
-	zoomcombo_update_display_for_zoom();
+	if (!headless) {
+		zoomcombo_update_display_for_zoom();
 
-	/* initialize comboboxs of extraction background */
-	GtkComboBox *order = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combo_polyorder"));
-	gtk_combo_box_set_active(order, POLY_4);
-	GtkComboBox *grad_inter = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combobox_gradient_inter"));
-	gtk_combo_box_set_active(grad_inter, 0);
+		/* initialize comboboxs of extraction background */
+		GtkComboBox *order = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combo_polyorder"));
+		gtk_combo_box_set_active(order, POLY_4);
+		GtkComboBox *grad_inter = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combobox_gradient_inter"));
+		gtk_combo_box_set_active(grad_inter, 0);
+	}
 
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
-	adjust_sellabel();
+	if (!headless) {
+		adjust_sellabel();
 
-	/* load the css sheet for general style */
-	load_css_style_sheet (siril_path);
+		/* load the css sheet for general style */
+		load_css_style_sheet (siril_path);
+	}
 
 	/* set default CWD */
 	com.wd = siril_get_startup_dir();
@@ -341,41 +355,48 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	/* initialize menu gui */
-	update_MenuItem();
-	initialize_script_menu();
+	if (!headless) {
+		/* initialize menu gui */
+		update_MenuItem();
+		initialize_script_menu();
 
-	/* initialize command completion */
-	init_completion_command();
+		/* initialize command completion */
+		init_completion_command();
 
-	/* initialize preprocessing */
-	initialize_preprocessing();
+		/* initialize preprocessing */
+		initialize_preprocessing();
 
-	/* initialize registration methods */
-	initialize_registration_methods();
+		/* initialize registration methods */
+		initialize_registration_methods();
 
-	/* initialize stacking methods */
-	initialize_stacking_methods();
+		/* initialize stacking methods */
+		initialize_stacking_methods();
 
-	/* register some callbacks */
-	register_selection_update_callback(update_export_crop_label);
+		/* register some callbacks */
+		register_selection_update_callback(update_export_crop_label);
 
-	/* initialization of the binning parameters */
-	GtkComboBox *binning = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combobinning"));
-	gtk_combo_box_set_active(binning, 0);
+		/* initialization of the binning parameters */
+		GtkComboBox *binning = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combobinning"));
+		gtk_combo_box_set_active(binning, 0);
 
-	/* initialization of some paths */
-	initialize_path_directory();
+		/* initialization of some paths */
+		initialize_path_directory();
 
-	/* initialization of default FITS extension */
-	GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
-	gtk_combo_box_set_active_id(box, com.ext);
-	initialize_FITS_name_entries();
+		/* initialization of default FITS extension */
+		GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
+		gtk_combo_box_set_active_id(box, com.ext);
+		initialize_FITS_name_entries();
 
 #ifdef HAVE_LIBRAW
-	set_GUI_LIBRAW();
+		set_GUI_LIBRAW();
 #endif
-	set_GUI_photometry();
+		set_GUI_photometry();
+
+		init_peaker_GUI();
+	}
+	else {
+		init_peaker_default();
+	}
 
 	/* Get CPU number and set the number of threads */
 	siril_log_message(_("Parallel processing %s: Using %d logical processor(s).\n"),
@@ -385,17 +406,19 @@ int main(int argc, char *argv[]) {
 			_("disabled"), com.max_thread = 1
 #endif
 			);
-	update_spinCPU(com.max_thread);
+	if (!headless) {
+		update_spinCPU(com.max_thread);
 
-	if (com.have_dark_theme) {
-		/* Put dark icons */
-		printf("Loading dark theme...\n");
-		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_anticlock_button")), lookup_widget("rotate90-acw_dark"));
-		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_clock_button")), lookup_widget("rotate90-cw_dark"));
-		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("mirrorx_button")), lookup_widget("image_mirrorx_dark"));
-		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("mirrory_button")), lookup_widget("image_mirrory_dark"));
-		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("histogram_button")), lookup_widget("image_histogram_dark"));
-		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("seqlist_button")), lookup_widget("image_seqlist_dark"));
+		if (com.have_dark_theme) {
+			/* Put dark icons */
+			printf("Loading dark theme...\n");
+			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_anticlock_button")), lookup_widget("rotate90-acw_dark"));
+			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_clock_button")), lookup_widget("rotate90-cw_dark"));
+			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("mirrorx_button")), lookup_widget("image_mirrorx_dark"));
+			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("mirrory_button")), lookup_widget("image_mirrory_dark"));
+			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("histogram_button")), lookup_widget("image_histogram_dark"));
+			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("seqlist_button")), lookup_widget("image_seqlist_dark"));
+		}
 	}
 
 	/* handling OS-X integration */
@@ -405,7 +428,7 @@ int main(int argc, char *argv[]) {
 #endif //MAC_INTEGRATION
 
 	/* start Siril */
-	update_used_memory();
+	if (!headless) update_used_memory();
 
 	if (argv[optind] != NULL) {
 		if (current_cwd) {
@@ -424,7 +447,15 @@ int main(int argc, char *argv[]) {
 		changedir(cwd_forced, NULL);
 	}
 
-	gtk_main();
+	if (headless) {
+		FILE* fp = g_fopen(start_script, "r");
+		if (fp == NULL) {
+			siril_log_message(_("File [%s] does not exist\n"), start_script);
+			exit(1);
+		}
+		execute_script(fp);
+	}
+	else gtk_main();
 
 	/* quit Siril */
 	close_sequence(FALSE);

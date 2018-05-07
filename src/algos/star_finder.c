@@ -92,6 +92,33 @@ static void get_structure(starFinder *sf) {
 	sf->roundness = gtk_spin_button_get_value(spin_roundness);
 }
 
+void init_peaker_GUI() {
+	/* TODO someday: read values from conf file and set them in the GUI.
+	 * Until then, storing values in com.starfinder_conf instead of getting
+	 * them in the GUI while running the peaker.
+	 * see also init_peaker_default below */
+	get_structure(&com.starfinder_conf);
+}
+
+void init_peaker_default() {
+	/* values taken from siril3.glade */
+	com.starfinder_conf.radius = 7;
+	com.starfinder_conf.sigma = 1.0;
+	com.starfinder_conf.roundness = 0.6;
+}
+
+void on_spin_sf_radius_changed(GtkSpinButton *spinbutton, gpointer user_data) {
+	com.starfinder_conf.radius = (int)gtk_spin_button_get_value(spinbutton);
+}
+
+void on_spin_sf_threshold_changed(GtkSpinButton *spinbutton, gpointer user_data) {
+	com.starfinder_conf.sigma = gtk_spin_button_get_value(spinbutton);
+}
+
+void on_spin_sf_roundness_changed(GtkSpinButton *spinbutton, gpointer user_data) {
+	com.starfinder_conf.roundness = gtk_spin_button_get_value(spinbutton);
+}
+
 /*
  This is an implementation of a simple peak detector algorithm which
  identifies any pixel that is greater than any of its eight neighbors.
@@ -128,7 +155,6 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 	gettimeofday(&t_start, NULL);
 
 	results[0] = NULL;
-	get_structure(sf);
 	threshold = Compute_threshold(fit, sf->sigma, layer, &norm, &bg);
 
 	copyfits(fit, &wave_fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);

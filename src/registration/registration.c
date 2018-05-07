@@ -533,8 +533,8 @@ int register_star_alignment(struct registration_args *args) {
 	struct ser_struct *new_ser = NULL;
 
 	memset(&fit, 0, sizeof(fits));
-	memset(&sf, 0, sizeof(starFinder));
 	memset(&H, 0, sizeof(Homography));
+	memcpy(&sf, &com.starfinder_conf, sizeof(starFinder));
 
 	if (!args->seq->regparam) {
 		fprintf(stderr, "regparam should have been created before\n");
@@ -588,7 +588,8 @@ int register_star_alignment(struct registration_args *args) {
 		free(current_regdata);
 		return 1;
 	}
-	redraw(com.cvport, REMAP_NONE); // draw stars
+	if (!com.headless)
+		redraw(com.cvport, REMAP_NONE); // draw stars
 
 	ref.x = fit.rx;
 	ref.y = fit.ry;

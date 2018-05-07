@@ -81,15 +81,21 @@ static gboolean progress_bar_idle_callback(gpointer p) {
 // text can be NULL, percent can be -1 for pulsating, -2 for nothing, or between 0 and 1 for percent
 void set_progress_bar_data(const char *text, double percent) {
 	struct progress_bar_idle_data *data;
-	g_mutex_lock(&com.mutex);
-	//fprintf(stdout, "progress: %s, %g\n", text ? text : "NULL", percent);
-	data = malloc(sizeof(struct progress_bar_idle_data));
-	data->progress_bar_text = text ? strdup(text) : NULL;
-	data->progress_bar_percent = percent;
-	assert(percent == PROGRESS_PULSATE || percent == PROGRESS_NONE ||
-			(percent >= 0.0 && percent <= 1.0));
-	gdk_threads_add_idle(progress_bar_idle_callback, data);
-	g_mutex_unlock(&com.mutex);
+	if (com.headless) {
+		if (text)
+			fprintf(stdout, "progress: %s, %g\n", text, percent);
+		else fprintf(stdout, "\033[A\33[2KT\rprogress: %g\n", percent);
+		// TODO: I don't know how to do that in other OS than GNU
+	} else {
+		g_mutex_lock(&com.mutex);
+		data = malloc(sizeof(struct progress_bar_idle_data));
+		data->progress_bar_text = text ? strdup(text) : NULL;
+		data->progress_bar_percent = percent;
+		assert(percent == PROGRESS_PULSATE || percent == PROGRESS_NONE ||
+				(percent >= 0.0 && percent <= 1.0));
+		gdk_threads_add_idle(progress_bar_idle_callback, data);
+		g_mutex_unlock(&com.mutex);
+	}
 }
 
 /*
@@ -188,7 +194,8 @@ static char* siril_log_internal(const char* format, const char* color, va_list a
 	new_msg->timestamp = strdup(timestamp);
 	new_msg->message = strdup(msg);
 	new_msg->color = color;
-	gdk_threads_add_idle(idle_messaging, new_msg);
+	if (!com.headless)	// avoid adding things in lost memory
+		gdk_threads_add_idle(idle_messaging, new_msg);
 
 	return msg;
 }

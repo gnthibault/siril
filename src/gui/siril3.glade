@@ -9198,6 +9198,7 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                         <property name="adjustment">adjstarfinder_radius</property>
                         <property name="numeric">True</property>
                         <property name="value">7</property>
+                        <signal name="value-changed" handler="on_spin_sf_radius_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9217,6 +9218,7 @@ The default value for threshold is 1.00.</property>
                         <property name="digits">2</property>
                         <property name="numeric">True</property>
                         <property name="value">1</property>
+                        <signal name="value-changed" handler="on_spin_sf_threshold_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9272,6 +9274,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
                         <property name="digits">1</property>
                         <property name="numeric">True</property>
                         <property name="value">0.59999999999999998</property>
+                        <signal name="value-changed" handler="on_spin_sf_roundness_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
