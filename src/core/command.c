@@ -1546,7 +1546,8 @@ int process_convertraw(int nb) {
 	gettimeofday(&t_start, NULL);
 
 	set_cursor_waiting(TRUE);
-	control_window_switch_to_tab(OUTPUT_LOGS);
+	if (!com.headless)
+		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	/* then, convert files to Siril's FITS format */
 	struct _convert_data *args;
