@@ -335,7 +335,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	/* initialize the com struct and zoom level */
-	com.drawn = FALSE;
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
 	if (!com.headless) {

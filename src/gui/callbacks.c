@@ -1654,7 +1654,6 @@ gboolean redraw(int vport, int doremap) {
 		break;
 	}
 	//fprintf(stdout, "end of redraw\n");
-	com.drawn = FALSE;
 	return FALSE;
 }
 
@@ -3240,7 +3239,6 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 				 * callbacks because it's in the same file and
 				 * requires a special argument */
 				calculate_fwhm(widget);
-				com.drawn = TRUE;
 			} else if (mouse_status == MOUSE_ACTION_SELECT_PREVIEW1) {
 				set_preview_area(0, zoomedX, zoomedY);
 				mouse_status = MOUSE_ACTION_SELECT_REG_AREA;

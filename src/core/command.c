@@ -431,7 +431,7 @@ int process_unsharp(int nb) {
 int process_crop(int nb) {
 	rectangle area;
 	if ((!com.selection.h) || (!com.selection.w)) {
-		if (nb==5){
+		if (nb == 5) {
 			if (atoi(word[1]) < 0 || atoi(word[2]) < 0) {
 				siril_log_message(_("Crop: x and y must be positive values.\n"));
 				return 1;
@@ -1007,8 +1007,8 @@ int process_visu(int nb){
 int process_fill2(int nb){
 	int level=atoi(word[1]);
 	rectangle area;
-	if (!com.drawn || com.drawing){		// TODO: what's that test?
-		if (nb==6){
+	if ((!com.selection.h) || (!com.selection.w)) {
+		if (nb == 6) {
 			area.x = atoi(word[2]);
 			area.y = atoi(word[3]);
 			area.w = atoi(word[4]);
@@ -1252,8 +1252,8 @@ int process_fill(int nb){
 	int level;
 	rectangle area;
 	
-	if (!com.drawn || com.drawing){		// TODO: what's that test?
-		if (nb==6){
+	if ((!com.selection.h) || (!com.selection.w)) {
+		if (nb == 6) {
 			area.x = atoi(word[2]);
 			area.y = atoi(word[3]);
 			area.w = atoi(word[4]);

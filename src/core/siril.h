@@ -530,7 +530,6 @@ struct cominf {
 	double zoom_value;		// 1.0 is normal zoom, use get_zoom_val() to access it
 
 	/* selection rectangle for registration, FWHM, PSF */
-	gboolean drawn;			// true if the selection rectangle has been drawn TO REMOVE!
 	gboolean drawing;		// true if the rectangle is being set (clicked motion)
 	gint startX, startY;		// where the mouse was originally clicked to
 	rectangle selection;		// coordinates of the selection rectangle
