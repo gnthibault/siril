@@ -202,6 +202,8 @@ int main(int argc, char *argv[]) {
 						c = 'f';
 					else if (!strcmp(argv[i], "--directory"))
 						c = 'd';
+					else if (!strcmp(argv[i], "--script"))
+						c = 's';
 					else {
 						usage(argv[0]);
 						exit(EXIT_FAILURE);
@@ -427,8 +429,10 @@ int main(int argc, char *argv[]) {
 
 	/* handling OS-X integration */
 #ifdef MAC_INTEGRATION
-	GtkosxApplication *osx_app = gtkosx_application_get();
-	set_osx_integration(osx_app, siril_path);
+	if (!com.headless) {
+		GtkosxApplication *osx_app = gtkosx_application_get();
+		set_osx_integration(osx_app, siril_path);
+	}
 #endif //MAC_INTEGRATION
 
 	/* start Siril */
@@ -465,7 +469,9 @@ int main(int argc, char *argv[]) {
 	close_sequence(FALSE);
 	undo_flush();
 #ifdef MAC_INTEGRATION
-	g_object_unref (osx_app);
+	if (!com.headless) {
+		g_object_unref (osx_app);
+	}
 #endif //MAC_INTEGRATION
 	return 0;
 }
