@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
 	extern int opterr;
 	gchar *siril_path;
 	gchar *current_cwd = NULL;
-	gboolean forcecwd = FALSE, headless= FALSE;
+	gboolean forcecwd = FALSE;
 	char *cwd_forced = NULL, *start_script = NULL;
 
 	g_setenv ("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
 				break;
 			case 's':
 				start_script = optarg;
-				headless = TRUE;
+				com.headless = TRUE;
 				break;
 			default:
 				fprintf(stderr, _("unknown command line parameter '%c'\n"), argv[argc - 1][1]);
@@ -241,7 +241,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	if (!headless) {
+	if (!com.headless) {
 		gtk_init (&argc, &argv);
 
 		/* try to load the glade file, from the sources defined above */
@@ -290,12 +290,14 @@ int main(int argc, char *argv[]) {
 	initialize_converters();
 
 	/* initializing internal structures with widgets (drawing areas) */
-	com.vport[RED_VPORT] = lookup_widget("drawingarear");
-	com.vport[GREEN_VPORT] = lookup_widget("drawingareag");
-	com.vport[BLUE_VPORT] = lookup_widget("drawingareab");
-	com.vport[RGB_VPORT] = lookup_widget("drawingareargb");
-	com.preview_area[0] = lookup_widget("drawingarea_preview1");
-	com.preview_area[1] = lookup_widget("drawingarea_preview2");
+	if (!com.headless) {
+		com.vport[RED_VPORT] = lookup_widget("drawingarear");
+		com.vport[GREEN_VPORT] = lookup_widget("drawingareag");
+		com.vport[BLUE_VPORT] = lookup_widget("drawingareab");
+		com.vport[RGB_VPORT] = lookup_widget("drawingareargb");
+		com.preview_area[0] = lookup_widget("drawingarea_preview1");
+		com.preview_area[1] = lookup_widget("drawingarea_preview2");
+	}
 	com.cvport = RED_VPORT;
 	com.show_excluded = TRUE;
 	com.selected_star = -1;
@@ -307,13 +309,15 @@ int main(int argc, char *argv[]) {
 	com.color = NORMAL_COLOR;
 	for (i=0; i<MAXVPORT; i++)
 		com.buf_is_dirty[i] = TRUE;
-	initialize_remap();
 	memset(&com.selection, 0, sizeof(rectangle));
 	memset(com.layers_hist, 0, sizeof(com.layers_hist));
-	initialize_scrollbars();
-	init_mouse();
+	if (!com.headless) {
+		initialize_remap();
+		initialize_scrollbars();
+		init_mouse();
+	}
 
-	if (!headless) {
+	if (!com.headless) {
 		/* Keybord Shortcuts */
 		initialize_shortcuts();
 
@@ -326,7 +330,7 @@ int main(int argc, char *argv[]) {
 	com.drawn = FALSE;
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
-	if (!headless) {
+	if (!com.headless) {
 		zoomcombo_update_display_for_zoom();
 
 		/* initialize comboboxs of extraction background */
@@ -338,7 +342,7 @@ int main(int argc, char *argv[]) {
 
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
-	if (!headless) {
+	if (!com.headless) {
 		adjust_sellabel();
 
 		/* load the css sheet for general style */
@@ -355,7 +359,7 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	if (!headless) {
+	if (!com.headless) {
 		/* initialize menu gui */
 		update_MenuItem();
 		initialize_script_menu();
@@ -406,7 +410,7 @@ int main(int argc, char *argv[]) {
 			_("disabled"), com.max_thread = 1
 #endif
 			);
-	if (!headless) {
+	if (!com.headless) {
 		update_spinCPU(com.max_thread);
 
 		if (com.have_dark_theme) {
@@ -428,7 +432,7 @@ int main(int argc, char *argv[]) {
 #endif //MAC_INTEGRATION
 
 	/* start Siril */
-	if (!headless) update_used_memory();
+	if (!com.headless) update_used_memory();
 
 	if (argv[optind] != NULL) {
 		if (current_cwd) {
@@ -447,7 +451,7 @@ int main(int argc, char *argv[]) {
 		changedir(cwd_forced, NULL);
 	}
 
-	if (headless) {
+	if (com.headless) {
 		FILE* fp = g_fopen(start_script, "r");
 		if (fp == NULL) {
 			siril_log_message(_("File [%s] does not exist\n"), start_script);

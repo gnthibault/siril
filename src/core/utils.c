@@ -361,7 +361,8 @@ int changedir(const char *dir, gchar **err) {
 			com.wd = g_get_current_dir();
 			siril_log_message(_("Setting CWD (Current "
 					"Working Directory) to '%s'\n"), com.wd);
-			set_GUI_CWD();
+			if (!com.headless)
+				set_GUI_CWD();
 			update_used_memory();
 			retval = 0;
 		} else {

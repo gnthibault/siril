@@ -162,7 +162,8 @@ static int readinitfile() {
 				list = g_slist_append(list, g_strdup(tmp));
 			}
 
-			set_GUI_misc();
+			if (!com.headless)
+				set_GUI_misc();
 		}
 	}
 	if (swap_dir && swap_dir[0] != '\0') {

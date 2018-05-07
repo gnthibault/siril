@@ -362,7 +362,7 @@ void initialize_converters() {
 	supported_filetypes |= TYPERAW;
 	g_string_append(string, ", ");
 	g_string_append(string, _("RAW images"));
-	set_libraw_settings_menu_available(TRUE);	// enable libraw settings
+	if (!com.headless) set_libraw_settings_menu_available(TRUE);	// enable libraw settings
 	initialize_libraw_settings();	// below in the file
 	
 	nb_raw = get_nb_raw_supported();
@@ -373,7 +373,7 @@ void initialize_converters() {
 	}
 	count_ext += nb_raw;
 #else
-	set_libraw_settings_menu_available(FALSE);	// disable libraw settings
+	if (!com.headless) set_libraw_settings_menu_available(FALSE);	// disable libraw settings
 #endif
 	g_string_append(string, ", ");
 	g_string_append(string, _("FITS-CFA images"));
@@ -414,9 +414,11 @@ void initialize_converters() {
 	supported_extensions[count_ext++] = NULL;		// NULL-terminated array
 
 	g_string_append(string, ".");
-	label_supported = GTK_LABEL(gtk_builder_get_object(builder, "label_supported_types"));
 	text = g_string_free(string, FALSE);
-	gtk_label_set_text(label_supported, text);
+	if (!com.headless) {
+		label_supported = GTK_LABEL(gtk_builder_get_object(builder, "label_supported_types"));
+		gtk_label_set_text(label_supported, text);
+	}
 	siril_log_message(_("Supported file types: %s\n"), text + 1);
 	g_free(text);
 }
