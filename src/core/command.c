@@ -2230,6 +2230,7 @@ gpointer execute_script(gpointer p) {
 			break;
 		}
 		free(myline);
+		memset(word, 0, sizeof(word));
 		if (waiting_for_thread())
 			break;	// abort script on command failure
 	}
