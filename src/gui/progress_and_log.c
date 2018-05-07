@@ -83,8 +83,8 @@ void set_progress_bar_data(const char *text, double percent) {
 	struct progress_bar_idle_data *data;
 	if (com.headless) {
 		if (text)
-			fprintf(stdout, "progress: %s, %g\n", text, percent);
-		else fprintf(stdout, "\033[A\33[2KT\rprogress: %g\n", percent);
+			fprintf(stdout, "progress: %s, %4.2lf\n", text, percent);
+		else fprintf(stdout, "\033[A\33[2KT\rprogress: %4.2lf\n", percent);
 		// TODO: I don't know how to do that in other OS than GNU
 	} else {
 		g_mutex_lock(&com.mutex);

@@ -233,6 +233,11 @@ int main(int argc, char *argv[]) {
 			case 's':
 				start_script = optarg;
 				com.headless = TRUE;
+				/* need to force cwd to the current dir if no option -d */
+				if (!forcecwd) {
+					cwd_forced = g_get_current_dir();
+					forcecwd = TRUE;
+				}
 				break;
 			default:
 				fprintf(stderr, _("unknown command line parameter '%c'\n"), argv[argc - 1][1]);
@@ -469,9 +474,7 @@ int main(int argc, char *argv[]) {
 	close_sequence(FALSE);
 	undo_flush();
 #ifdef MAC_INTEGRATION
-	if (!com.headless) {
 		g_object_unref(osx_app);
-	}
 #endif //MAC_INTEGRATION
 	return 0;
 }
