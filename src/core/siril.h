@@ -302,10 +302,9 @@ struct preprocessing_data {
 /* registration data, exists once for each image and each layer */
 struct registration_data {
 	float shiftx, shifty;	// we could have a subpixel precision, but is it needed? saved
-	float rot_centre_x, rot_centre_y;	// coordinates for the rotation centre, saved
-	float angle;		// angle for the rotation, saved
 	fitted_PSF *fwhm_data;	// used in PSF/FWHM registration, not saved
 	float fwhm;		// copy of fwhm->fwhmx, used as quality indicator, saved data
+	float roundness;	// fwhm->fwhmy / fwhm->fwhmx, [0, 1]
 	double quality;
 };
 

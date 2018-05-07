@@ -41,10 +41,16 @@
 #include "io/films.h"
 #endif
 
+/* seqfile version history *
+ * no version up to 0.9.9
+ * version 1 introduced roundness in regdata, 0.9.9
+ */
+#define CURRENT_SEQFILE_VERSION 1	// to increment on format change
+
 /* File format (lines starting with # are comments, lines that are (for all
  * something) need to be in all in sequence of this only type of line):
  *
- * S sequence_name beg number selnum fixed reference_image
+ * S sequence_name beg number selnum fixed reference_image [version]
  * L nb_layers
  * (for all images) I filenum incl [stats+] <- stats added at some point, removed in 0.9.9
  * (for all layers (x)) Rx regparam+
@@ -62,7 +68,8 @@
 sequence * readseqfile(const char *name){
 	char line[512], *scanformat;
 	char filename[512], *seqfilename;
-	int i, nbsel, nb_tokens, allocated = 0, current_layer = -1, image, to_backup = 0;
+	int i, nbsel, nb_tokens, allocated = 0, current_layer = -1, image;
+	int to_backup = 0, version = -1;
 	FILE *seqfile;
        	sequence *seq;
 	imstats *stats;
@@ -96,13 +103,13 @@ sequence * readseqfile(const char *name){
 				 * Such sequences don't exist anymore. */
 				assert(line[2] != '"');
 				if (line[2] == '\'')	/* new format, quoted string */
-					scanformat = "'%511[^']' %d %d %d %d %d";
-				else scanformat = "%511s %d %d %d %d %d";
+					scanformat = "'%511[^']' %d %d %d %d %d %d";
+				else scanformat = "%511s %d %d %d %d %d %d";
 
 				if(sscanf(line+2, scanformat,
 							filename, &seq->beg, &seq->number,
 							&seq->selnum, &seq->fixed,
-							&seq->reference_image) != 6 ||
+							&seq->reference_image, version) < 6 ||
 						allocated != 0){
 					fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
 					goto error;
@@ -215,19 +222,20 @@ sequence * readseqfile(const char *name){
 				}
 				if (i >= seq->number) {
 					fprintf(stderr, "\nreadseqfile ERROR: out of array bounds in reg info!\n\n");
-				} else {
+					goto error;
+				}
+				if (version < 1) {
+					float rot_centre_x, rot_centre_y, angle;
 					nb_tokens = sscanf(line+3, "%f %f %g %g %g %g %lg",
 							&(regparam[i].shiftx),
 							&(regparam[i].shifty),
-							&(regparam[i].rot_centre_x),
-							&(regparam[i].rot_centre_y),
-							&(regparam[i].angle),
+							&rot_centre_x, &rot_centre_y,
+							&angle,
 							&(regparam[i].fwhm),
 							&(regparam[i].quality));
 					if (nb_tokens != 7) {
 						if (nb_tokens == 3) {
 							// old format, with quality as third token
-							regparam[i].rot_centre_x = 0.0f;
 							// the rest is already zero due to the calloc
 						} else {
 							fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
@@ -235,6 +243,17 @@ sequence * readseqfile(const char *name){
 						}
 					}
 					++i;
+				} else {
+					// new file format with roundness instead of weird things
+					if (sscanf(line+3, "%f %f %g %g %lg",
+								&(regparam[i].shiftx),
+								&(regparam[i].shifty),
+								&(regparam[i].fwhm),
+								&(regparam[i].roundness),
+								&(regparam[i].quality)) != 5) {
+						fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
+						goto error;
+					}
 				}
 				break;
 
@@ -369,8 +388,8 @@ sequence * readseqfile(const char *name){
 					goto error;
 				}
 				/*if (current_layer >= seq->nb_layers) {
-					// it may happen when opening a CFA file in monochrome
-					break;
+				// it may happen when opening a CFA file in monochrome
+				break;
 				}*/
 				stats = NULL;
 				allocate_stats(&stats);
@@ -468,11 +487,11 @@ int writeseqfile(sequence *seq){
 	free(filename);
 
 	fprintf(seqfile,"#Siril sequence file. Contains list of files (images), selection, and registration data\n");
-	fprintf(seqfile,"#S 'sequence_name' start_index nb_images nb_selected fixed_len reference_image\n");
-	fprintf(stderr,"S '%s' %d %d %d %d %d\n", 
-			seq->seqname, seq->beg, seq->number, seq->selnum, seq->fixed, seq->reference_image);
-	fprintf(seqfile,"S '%s' %d %d %d %d %d\n", 
-			seq->seqname, seq->beg, seq->number, seq->selnum, seq->fixed, seq->reference_image);
+	fprintf(seqfile,"#S 'sequence_name' start_index nb_images nb_selected fixed_len reference_image version\n");
+	fprintf(stderr,"S '%s' %d %d %d %d %d %d\n", 
+			seq->seqname, seq->beg, seq->number, seq->selnum, seq->fixed, seq->reference_image, CURRENT_SEQFILE_VERSION);
+	fprintf(seqfile,"S '%s' %d %d %d %d %d %d\n", 
+			seq->seqname, seq->beg, seq->number, seq->selnum, seq->fixed, seq->reference_image, CURRENT_SEQFILE_VERSION);
 	if (seq->type != SEQ_REGULAR) {
 		/* sequence type, not needed for regular, S for ser, A for avi */
 		fprintf(stderr, "T%c\n", seq->type == SEQ_SER ? 'S' : 'A');
@@ -497,13 +516,11 @@ int writeseqfile(sequence *seq){
 	for (layer = 0; layer < seq->nb_layers; layer++) {
 		if (seq->regparam[layer] && !seq->cfa_opened_monochrome) {
 			for (i=0; i < seq->number; ++i) {
-				fprintf(seqfile, "R%d %f %f %g %g %g %g %g\n", layer,
+				fprintf(seqfile, "R%d %f %f %g %g %g\n", layer,
 						seq->regparam[layer][i].shiftx,
 						seq->regparam[layer][i].shifty,
-						seq->regparam[layer][i].rot_centre_x,
-						seq->regparam[layer][i].rot_centre_y,
-						seq->regparam[layer][i].angle,
 						seq->regparam[layer][i].fwhm,
+						seq->regparam[layer][i].roundness,
 						seq->regparam[layer][i].quality
 				       );
 			}
@@ -535,13 +552,11 @@ int writeseqfile(sequence *seq){
 	for (layer = 0; layer < 3; layer++) {
 		if (seq->regparam_bkp && seq->regparam_bkp[layer]) {
 			for (i=0; i < seq->number; ++i) {
-				fprintf(seqfile, "R%d %f %f %g %g %g %g %g\n", layer,
+				fprintf(seqfile, "R%d %f %f %g %g %g\n", layer,
 						seq->regparam_bkp[layer][i].shiftx,
 						seq->regparam_bkp[layer][i].shifty,
-						seq->regparam_bkp[layer][i].rot_centre_x,
-						seq->regparam_bkp[layer][i].rot_centre_y,
-						seq->regparam_bkp[layer][i].angle,
 						seq->regparam_bkp[layer][i].fwhm,
+						seq->regparam_bkp[layer][i].roundness,
 						seq->regparam_bkp[layer][i].quality
 				       );
 			}
