@@ -162,7 +162,7 @@ static int readinitfile() {
 				list = g_slist_append(list, g_strdup(tmp));
 			}
 
-			if (!com.headless)
+			if (!com.script)
 				set_GUI_misc();
 		}
 	}

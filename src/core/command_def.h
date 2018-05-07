@@ -76,7 +76,7 @@
 #define STR_SAVEPNM N_("Saves current image under the form of a Netpbm file format with 16-bit per channel. The extension of the output will be \"filename\".ppm for RGB image and \"filename\".pgm for gray-level image")
 #define STR_SAVETIF N_("Saves current image under the form of a uncompressed TIFF file with 16-bit per channel: \"filename\".tif")
 #define STR_SAVETIF8 N_("Same command than SAVE_TIF but the output file is saved in 8-bit per channel: \"filename\".tif")
-#define STR_SELECT N_("This command allows easy mass selection of images in the loaded sequence (\"from\" - \"to\", to included)")
+#define STR_SELECT N_("This command allows easy mass selection of images in the loaded sequence (from \"from\" to \"to\" included)")
 #define STR_SEQCROP N_("Crops the loaded sequence")
 #define STR_SEQFIND_COSME N_("Same command than FIND_COSME but for the sequence \"sequencename\"")
 #define STR_SEQFIND_COSME_CFA N_("Same command than FIND_COSME_CFA but for the sequence \"sequencename\"")
@@ -93,7 +93,7 @@
 #define STR_THRESHHI N_("Replaces values above \"level\" with \"level\"")
 #define STR_THRESH N_("Replaces values below \"lo\" with \"lo\" and values above \"hi\" with \"hi\"")
 
-#define STR_UNSELECT N_("Allows easy mass unselection of images in the loaded sequence (\"from\" - \"to\"). See SELECT")
+#define STR_UNSELECT N_("Allows easy mass unselection of images in the loaded sequence (from \"from\" to \"to\" included). See SELECT")
 #define STR_UNSETMAG N_("Reset the magnitude calibration to 0. See SETMAG")
 #define STR_UNSETMAGSEQ N_("Resets the magnitude calibration and reference star for the sequence. See SETMAGSEQ")
 #define STR_UNSHARP N_("Applies to the working image an unsharp mask with sigma \"sigma\" and coefficient \"multi\"")

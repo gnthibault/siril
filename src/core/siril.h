@@ -597,7 +597,8 @@ struct cominf {
 	GMutex mutex;			// a mutex we use for this thread
 	gboolean run_thread;		// the main thread loop condition
 	int max_thread;			// maximum of thread used
-	gboolean headless;		// console execution, no GUI (scripts for now)
+	gboolean headless;		// pure console, no GUI
+	gboolean script;		// scripts execution
 	gboolean stop_script;   // global variable to manually stop script execution
 };
 

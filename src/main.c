@@ -232,6 +232,7 @@ int main(int argc, char *argv[]) {
 				break;
 			case 's':
 				start_script = optarg;
+				com.script = TRUE;
 				com.headless = TRUE;
 				/* need to force cwd to the current dir if no option -d */
 				if (!forcecwd) {

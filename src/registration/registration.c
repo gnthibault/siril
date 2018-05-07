@@ -588,7 +588,7 @@ int register_star_alignment(struct registration_args *args) {
 		free(current_regdata);
 		return 1;
 	}
-	if (!com.headless)
+	if (!com.script)
 		redraw(com.cvport, REMAP_NONE); // draw stars
 
 	ref.x = fit.rx;

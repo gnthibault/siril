@@ -362,7 +362,7 @@ void initialize_converters() {
 	supported_filetypes |= TYPERAW;
 	g_string_append(string, ", ");
 	g_string_append(string, _("RAW images"));
-	if (!com.headless) set_libraw_settings_menu_available(TRUE);	// enable libraw settings
+	if (!com.script) set_libraw_settings_menu_available(TRUE);	// enable libraw settings
 	initialize_libraw_settings();	// below in the file
 	
 	nb_raw = get_nb_raw_supported();
@@ -373,7 +373,7 @@ void initialize_converters() {
 	}
 	count_ext += nb_raw;
 #else
-	if (!com.headless) set_libraw_settings_menu_available(FALSE);	// disable libraw settings
+	if (!com.script) set_libraw_settings_menu_available(FALSE);	// disable libraw settings
 #endif
 	g_string_append(string, ", ");
 	g_string_append(string, _("FITS-CFA images"));
@@ -415,7 +415,7 @@ void initialize_converters() {
 
 	g_string_append(string, ".");
 	text = g_string_free(string, FALSE);
-	if (!com.headless) {
+	if (!com.script) {
 		label_supported = GTK_LABEL(gtk_builder_get_object(builder, "label_supported_types"));
 		gtk_label_set_text(label_supported, text);
 	}

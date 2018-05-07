@@ -387,7 +387,7 @@ int process_rl(int nb) {
 	double sigma;
 	int iter;
 
-	if (!com.headless)
+	if (!com.script)
 		control_window_switch_to_tab(OUTPUT_LOGS);
 	iter = atoi(word[1]);
 	sigma = atof(word[2]);
@@ -866,7 +866,7 @@ int process_bgnoise(int nb){
 
 	struct noise_data *args = malloc(sizeof(struct noise_data));
 
-	if (!com.headless) {
+	if (!com.script) {
 		control_window_switch_to_tab(OUTPUT_LOGS);
 		set_cursor_waiting(TRUE);
 	}
@@ -1546,7 +1546,7 @@ int process_convertraw(int nb) {
 	gettimeofday(&t_start, NULL);
 
 	set_cursor_waiting(TRUE);
-	if (!com.headless)
+	if (!com.script)
 		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	/* then, convert files to Siril's FITS format */
@@ -1611,7 +1611,7 @@ int process_register(int nb) {
 
 	reg_args = calloc(1, sizeof(struct registration_args));
 
-	if (!com.headless)
+	if (!com.script)
 		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	/* filling the arguments for registration */
@@ -1749,7 +1749,7 @@ static gpointer stackall_worker(gpointer garg) {
 	const gchar *file;
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
-	if (!com.headless)
+	if (!com.script)
 		control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
 	if (check_seq(FALSE) || (dir = g_dir_open(com.wd, 0, &error)) == NULL) {
@@ -2177,7 +2177,7 @@ static int executeCommand(int wordnb) {
 	}
 
 	// verify if command is scriptable
-	if (com.headless) {
+	if (com.script) {
 		if (!commande[i].scriptable) {
 			siril_log_message(_("This command cannot be used in a script: %s\n"), commande[i].name);
 			return 1;
@@ -2197,7 +2197,7 @@ gpointer execute_script(gpointer p) {
 	int wordnb;
 	struct timeval t_start, t_end;
 
-	com.headless = TRUE;
+	com.script = TRUE;
 	com.stop_script = FALSE;
 	gettimeofday(&t_start, NULL);
 #if (_POSIX_C_SOURCE < 200809L)
@@ -2236,7 +2236,7 @@ gpointer execute_script(gpointer p) {
 	free(linef);
 	fclose(fp);
 	set_cursor_waiting(FALSE);
-	com.headless = FALSE;
+	com.script = FALSE;
 	com.stop_script = FALSE;
 	if (!retval) {
 		siril_log_message(_("Script execution finished successfully.\n"));
