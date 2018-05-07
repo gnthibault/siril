@@ -167,7 +167,7 @@ command commande[] = {
 #endif
 	{"setmag", 1, "setmag magnitude", process_set_mag, STR_SETMAG, FALSE},
 	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, FALSE},
-	{"split", 3, "split R G B", process_split, STR_SPLIT, FALSE},
+	{"split", 3, "split R G B", process_split, STR_SPLIT, TRUE},
 	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackone, STR_STACK, TRUE},
 	{"stackall", 0, "stackall", process_stackall, STR_STACKALL, TRUE},
 	{"stat", 0, "stat", process_stat, STR_STAT, TRUE},
