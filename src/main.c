@@ -241,9 +241,9 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	gtk_init (&argc, &argv);
-
 	if (!headless) {
+		gtk_init (&argc, &argv);
+
 		/* try to load the glade file, from the sources defined above */
 		builder = gtk_builder_new();
 		i = 0;
