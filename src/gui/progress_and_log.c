@@ -80,22 +80,20 @@ static gboolean progress_bar_idle_callback(gpointer p) {
 // Thread-safe progress bar update.
 // text can be NULL, percent can be -1 for pulsating, -2 for nothing, or between 0 and 1 for percent
 void set_progress_bar_data(const char *text, double percent) {
-	struct progress_bar_idle_data *data;
 	if (com.headless) {
 		if (text)
-			fprintf(stdout, "progress: %s, %4.2lf\n", text, percent);
-		else fprintf(stdout, "\033[A\33[2KT\rprogress: %4.2lf\n", percent);
+			fprintf(stdout, "progress: %s, %4.2lf\n", text, percent*100.0);
+		else fprintf(stdout, "\033[A\33[2KT\rprogress: %4.2lf\n", percent*100.0);
 		// TODO: I don't know how to do that in other OS than GNU
-		// On OS-X it works. On Windows ... well, I doubt it will used
+		// On OS-X it works. On Windows ... well, I doubt it will be used
 	} else {
-		g_mutex_lock(&com.mutex);
+		struct progress_bar_idle_data *data;
 		data = malloc(sizeof(struct progress_bar_idle_data));
 		data->progress_bar_text = text ? strdup(text) : NULL;
 		data->progress_bar_percent = percent;
 		assert(percent == PROGRESS_PULSATE || percent == PROGRESS_NONE ||
 				(percent >= 0.0 && percent <= 1.0));
 		gdk_threads_add_idle(progress_bar_idle_callback, data);
-		g_mutex_unlock(&com.mutex);
 	}
 }
 

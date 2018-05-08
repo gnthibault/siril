@@ -302,11 +302,13 @@ int generic_save(struct generic_seq_args *args, int out_index, int in_index, fit
  *      P R O C E S S I N G      T H R E A D      M A N A G E M E N T        *
  ****************************************************************************/
 
+static gboolean thread_being_waited = FALSE;
+
 // This function is reentrant. The pointer will be freed in the idle function,
 // so it must be a proper pointer to an allocated memory chunk.
 void start_in_new_thread(gpointer (*f)(gpointer), gpointer p) {
 	g_mutex_lock(&com.mutex);
-	if (com.run_thread || com.thread != NULL) {
+	if (com.run_thread || com.thread) {
 		fprintf(stderr, "The processing thread is busy, stop it first.\n");
 		g_mutex_unlock(&com.mutex);
 		free(p);
@@ -320,9 +322,12 @@ void start_in_new_thread(gpointer (*f)(gpointer), gpointer p) {
 
 gpointer waiting_for_thread() {
 	gpointer retval = NULL;
-	if (com.thread != NULL)
+	if (com.thread) {
+		thread_being_waited = TRUE;
 		retval = g_thread_join(com.thread);
+	}
 	com.thread = NULL;
+	thread_being_waited = FALSE;
 	set_thread_run(FALSE);	// do it anyway in case of wait without stop
 	return retval;
 }
@@ -334,7 +339,8 @@ void stop_processing_thread() {
 	}
 
 	set_thread_run(FALSE);
-	waiting_for_thread();
+	if (!thread_being_waited)
+		waiting_for_thread();
 }
 
 void set_thread_run(gboolean b) {
@@ -372,8 +378,8 @@ guint siril_add_idle(GSourceFunc idle_function, gpointer data) {
 void on_processes_button_cancel_clicked(GtkButton *button, gpointer user_data) {
 	if (com.thread != NULL)
 		siril_log_color_message(_("Process aborted by user\n"), "red");
-	stop_processing_thread();
 	com.stop_script = TRUE;
+	stop_processing_thread();
 }
 
 int seq_filter_all(sequence *seq, int nb_img, double any) {

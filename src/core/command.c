@@ -2223,27 +2223,28 @@ gpointer execute_script(gpointer p) {
 			continue;
 		myline = strdup(linef);
 		parseLine(myline, read, &wordnb);
-		if (executeCommand(wordnb)) {
+		if ((retval = executeCommand(wordnb))) {
 			siril_log_message(_("Error in line %d. Exiting batch processing\n"), line);
 			free(myline);
-			retval = 1;
 			break;
 		}
-		free(myline);
-		memset(word, 0, sizeof(word));
-		if (waiting_for_thread())
+		if (waiting_for_thread()) {
+			free(myline);
 			break;	// abort script on command failure
+		}
+		memset(word, 0, sizeof word);
+		free(myline);
 	}
 	free(linef);
 	fclose(fp);
 	set_cursor_waiting(FALSE);
 	com.script = FALSE;
-	com.stop_script = FALSE;
 	if (!retval) {
 		siril_log_message(_("Script execution finished successfully.\n"));
 		gettimeofday(&t_end, NULL);
 		show_time_msg(t_start, t_end, _("Total execution time"));
 	}
+	fprintf(stderr, "Script thread exiting\n");
 	return GINT_TO_POINTER(retval);
 }
 
@@ -2260,9 +2261,12 @@ int processcommand(const char *line) {
 		}
 		if (script_thread)
 			g_thread_join(script_thread);
-		FILE* fp = g_fopen(line + 1, "r");
+		char filename[256];
+		g_strlcpy(filename, line + 1, 250);
+		expand_home_in_filename(filename, 256);
+		FILE* fp = g_fopen(filename, "r");
 		if (fp == NULL) {
-			siril_log_message(_("File [%s] does not exist\n"), line + 1);
+			siril_log_message(_("File [%s] does not exist\n"), filename);
 			return 1;
 		}
 		/* Switch to console tab */
@@ -2270,7 +2274,7 @@ int processcommand(const char *line) {
 		/* ensure that everything is closed */
 		process_close(0);
 		/* Then, run script */
-		siril_log_message(_("Starting script %s\n"), line + 1);
+		siril_log_message(_("Starting script %s\n"), filename);
 		script_thread = g_thread_new("script", execute_script, fp);
 	} else {
 		myline = strdup(line);
