@@ -1141,7 +1141,7 @@ int sequence_find_refimage(sequence *seq) {
 			if (seq->regparam[layer][0].fwhm > 0.0) {
 				use_fwhm = TRUE;
 				best_val = 1000000.0;
-			} else if (seq->regparam[layer][0].quality <= 0.0) {
+			} else if (seq->regparam[layer][0].quality > 0.0) {
 				use_fwhm = FALSE;
 				best_val = 0.0;
 			}
@@ -1150,18 +1150,14 @@ int sequence_find_refimage(sequence *seq) {
 			for (image = 0; image < seq->number; image++) {
 				if (!seq->imgparam[image].incl)
 					continue;
-				if (use_fwhm) {
-					if (seq->regparam[layer][image].fwhm > 0 &&
-						       	seq->regparam[layer][image].fwhm < best_val) {
-						best_val = seq->regparam[layer][image].fwhm;
-						best = image;
-					}
-				} else {
-					if (seq->regparam[layer][image].quality > 0 &&
-						       	seq->regparam[layer][image].quality > best_val) {
-						best_val = seq->regparam[layer][image].quality;
-						best = image;
-					}
+				if (use_fwhm && seq->regparam[layer][image].fwhm > 0 &&
+						seq->regparam[layer][image].fwhm < best_val) {
+					best_val = seq->regparam[layer][image].fwhm;
+					best = image;
+				} else if (seq->regparam[layer][image].quality > 0 &&
+						seq->regparam[layer][image].quality > best_val) {
+					best_val = seq->regparam[layer][image].quality;
+					best = image;
 				}
 			}
 		}
@@ -1473,8 +1469,11 @@ gboolean end_seqpsf(gpointer p) {
 
 		if (write_to_regdata) {
 			seq->regparam[layer][data->image_index].fwhm_data = data->psf;
-			if (data->psf)
+			if (data->psf) {
 				seq->regparam[layer][data->image_index].fwhm = data->psf->fwhmx;
+				seq->regparam[layer][data->image_index].roundness =
+					data->psf->fwhmy / data->psf->fwhmx;
+			}
 		}
 
 		// for photometry use: store data in seq->photometry

@@ -1847,10 +1847,8 @@ int stack_filter_roundness(sequence *seq, int nb_img, double min_rnd) {
 	layer = get_registration_layer();
 	if (layer == -1) return 0;
 	if (!seq->regparam[layer]) return 0;
-	if (seq->imgparam[nb_img].incl && seq->regparam[layer][nb_img].fwhm_data) {
-		fitted_PSF *psf = seq->regparam[layer][nb_img].fwhm_data;
-		return (psf->fwhmy / psf->fwhmx) >= min_rnd;
-	}
+	if (seq->imgparam[nb_img].incl && seq->regparam[layer][nb_img].roundness > 0.0f)
+		return seq->regparam[layer][nb_img].roundness >= min_rnd;
 	else return 0;
 }
 
@@ -2007,14 +2005,11 @@ double compute_highest_accepted_roundness(double percent) {
 	}
 	// copy values
 	for (i=0; i<com.seq.number; i++) {
-		if (!com.seq.imgparam[i].incl) continue;
-		if (!com.seq.regparam[layer][i].fwhm_data) {
+		if (com.seq.imgparam[i].incl && com.seq.regparam[layer][i].roundness <= 0.0f) {
 			siril_log_message(_("Error in highest quality accepted for sequence processing: some images don't have this kind of information available for channel #%d.\n"), layer);
 			val[i] = DBL_MIN;
-		}
-		else {
-			fitted_PSF *psf = com.seq.regparam[layer][i].fwhm_data;
-			val[i] = psf->fwhmy / psf->fwhmx;
+		} else {
+			val[i] = com.seq.regparam[layer][i].roundness;
 		}
 	}
 
@@ -2115,8 +2110,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 			stackparam.nb_images_to_stack = 0;
 		} else if (stackparam.seq->regparam[channel] == NULL) {
 			stackparam.nb_images_to_stack = 0;
-		} else if (stackparam.seq->regparam[channel][ref_image].fwhm_data == NULL
-				&& stackparam.seq->regparam[channel][ref_image].fwhm == 0.0) {
+		} else if (stackparam.seq->regparam[channel][ref_image].fwhm == 0.0) {
 			stackparam.nb_images_to_stack = 0;
 		} else {
 			percent = gtk_adjustment_get_value(stackadj);
@@ -2149,7 +2143,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 			stackparam.nb_images_to_stack = 0;
 		} else if (stackparam.seq->regparam[channel] == NULL) {
 			stackparam.nb_images_to_stack = 0;
-		} else if (stackparam.seq->regparam[channel][ref_image].fwhm_data == NULL) {
+		} else if (stackparam.seq->regparam[channel][ref_image].roundness == 0.0) {
 			stackparam.nb_images_to_stack = 0;
 		} else {
 			percent = gtk_adjustment_get_value(stackadj);

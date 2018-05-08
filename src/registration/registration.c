@@ -630,6 +630,7 @@ int register_star_alignment(struct registration_args *args) {
 	siril_log_message(_("FWHMx:%*.2f px\n"), 12, FWHMx);
 	siril_log_message(_("FWHMy:%*.2f px\n"), 12, FWHMy);
 	current_regdata[ref_image].fwhm = FWHMx;
+	current_regdata[ref_image].roundness = FWHMy/FWHMx;
 
 	/* then we compare to other frames */
 	if (args->process_all_frames)

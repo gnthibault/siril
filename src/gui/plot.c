@@ -557,7 +557,7 @@ void drawPlot() {
 		if (seq->regparam[layer][ref_image].fwhm > 0.0f) {
 			is_fwhm = TRUE;
 			ylabel = _("FWHM");
-		} else if (seq->regparam[layer][ref_image].quality >= 0.0) {
+		} else if (seq->regparam[layer][ref_image].quality > 0.0) {
 			is_fwhm = FALSE;
 			ylabel = _("Quality");
 		} else

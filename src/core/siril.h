@@ -304,7 +304,7 @@ struct registration_data {
 	float shiftx, shifty;	// we could have a subpixel precision, but is it needed? saved
 	fitted_PSF *fwhm_data;	// used in PSF/FWHM registration, not saved
 	float fwhm;		// copy of fwhm->fwhmx, used as quality indicator, saved data
-	float roundness;	// fwhm->fwhmy / fwhm->fwhmx, [0, 1]
+	float roundness;	// fwhm->fwhmy / fwhm->fwhmx, 0 when uninit, ]0, 1] when set 
 	double quality;
 };
 

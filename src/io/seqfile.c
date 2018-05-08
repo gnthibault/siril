@@ -236,13 +236,13 @@ sequence * readseqfile(const char *name){
 					if (nb_tokens != 7) {
 						if (nb_tokens == 3) {
 							// old format, with quality as third token
+							regparam[i].quality = rot_centre_x;
 							// the rest is already zero due to the calloc
 						} else {
 							fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
 							goto error;
 						}
 					}
-					++i;
 				} else {
 					// new file format with roundness instead of weird things
 					if (sscanf(line+3, "%f %f %g %g %lg",
@@ -255,6 +255,7 @@ sequence * readseqfile(const char *name){
 						goto error;
 					}
 				}
+				++i;
 				break;
 
 			case 'T':
