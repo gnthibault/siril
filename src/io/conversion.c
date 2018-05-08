@@ -856,23 +856,27 @@ void unset_debayer_in_convflags() {
 void on_convtoroot_changed (GtkEditable *editable, gpointer user_data){
 	static GtkWidget *multiple_ser = NULL;
 	const gchar *name = gtk_entry_get_text(GTK_ENTRY(editable));
-	if (!multiple_ser)
-		multiple_ser = lookup_widget("multipleSER");
-	if (destroot) g_free(destroot);
 
-	destroot = g_str_to_ascii(name, NULL); // we want to avoid special char
+	if (*name != 0) {
+		if (!multiple_ser)
+			multiple_ser = lookup_widget("multipleSER");
+		if (destroot)
+			g_free(destroot);
 
-	const char *ext = get_filename_ext(destroot);
-	if (ext && !g_ascii_strcasecmp(ext, "ser")) {
-		convflags |= CONVDSTSER;
-		gtk_widget_set_visible(multiple_ser, TRUE);
-		return;
+		destroot = g_str_to_ascii(name, NULL); // we want to avoid special char
+
+		const char *ext = get_filename_ext(destroot);
+		if (ext && !g_ascii_strcasecmp(ext, "ser")) {
+			convflags |= CONVDSTSER;
+			gtk_widget_set_visible(multiple_ser, TRUE);
+			return;
+		}
+		gtk_widget_set_visible(multiple_ser, FALSE);
+
+		destroot = format_basename(destroot);
+
+		check_for_conversion_form_completeness();
 	}
-	gtk_widget_set_visible(multiple_ser, FALSE);
-
-	destroot = format_basename(destroot);
-
-	check_for_conversion_form_completeness();
 }
 
 void on_demosaicing_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
