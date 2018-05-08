@@ -81,9 +81,10 @@ static gboolean progress_bar_idle_callback(gpointer p) {
 // text can be NULL, percent can be -1 for pulsating, -2 for nothing, or between 0 and 1 for percent
 void set_progress_bar_data(const char *text, double percent) {
 	if (com.headless) {
+		if (percent < 0.0) percent = 1.0;
 		if (text)
-			fprintf(stdout, "progress: %s, %4.2lf\n", text, percent*100.0);
-		else fprintf(stdout, "\033[A\33[2KT\rprogress: %4.2lf\n", percent*100.0);
+			fprintf(stdout, "progress: %s, %4.2lf%%\n", text, percent*100.0);
+		else fprintf(stdout, "\033[A\33[2KT\rprogress: %4.2lf%%\n", percent*100.0);
 		// TODO: I don't know how to do that in other OS than GNU
 		// On OS-X it works. On Windows ... well, I doubt it will be used
 	} else {
