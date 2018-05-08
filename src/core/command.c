@@ -2243,6 +2243,10 @@ gpointer execute_script(gpointer p) {
 		siril_log_message(_("Script execution finished successfully.\n"));
 		gettimeofday(&t_end, NULL);
 		show_time_msg(t_start, t_end, _("Total execution time"));
+	} else {
+		char *msg = siril_log_message(_("Script execution failed.\n"));
+		msg[strlen(msg)-1] = '\0';
+		set_progress_bar_data(msg, PROGRESS_DONE);
 	}
 	fprintf(stderr, "Script thread exiting\n");
 	return GINT_TO_POINTER(retval);
