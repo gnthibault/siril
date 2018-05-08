@@ -224,6 +224,7 @@ static gboolean end_convert_idle(gpointer p) {
 	gettimeofday(&t_end, NULL);
 	show_time(args->t_start, t_end);
 	stop_processing_thread();
+	g_free(args->destroot);
 	free(args);
 	return FALSE;
 }
@@ -728,7 +729,6 @@ clean_exit:
 	if (args->command_line) {
 		unset_debayer_in_convflags();
 	}
-	g_free(args->destroot);
 	g_list_free_full(args->list, g_free);
 	g_dir_close(args->dir);
 	siril_add_idle(end_convert_idle, args);
