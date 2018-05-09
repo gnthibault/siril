@@ -734,6 +734,7 @@ int register_star_alignment(struct registration_args *args) {
 					FWHM_average(stars, &FWHMx, &FWHMy, nbpoints);
 					print_alignment_results(H, FWHMx, FWHMy);
 					current_regdata[frame].fwhm = FWHMx;
+					current_regdata[frame].roundness = FWHMy/FWHMx;
 
 					if (!args->translation_only) {
 						fits_flip_top_to_bottom(&fit);	// this is because in cvTransformImage, rotation center point is at (0, 0)
