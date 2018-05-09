@@ -1868,10 +1868,9 @@ int stack_filter_quality(sequence *seq, int nb_img, double max_quality) {
 int compute_nb_filtered_images() {
 	int i, count = 0;
 	if (!sequence_is_loaded()) return 0;
-	for (i=0; i<com.seq.number; i++) {
-		if (stackparam.filtering_criterion(
-					&com.seq, i,
-					stackparam.filtering_parameter))
+	for (i = 0; i < com.seq.number; i++) {
+		if (stackparam.filtering_criterion(&com.seq, i,
+				stackparam.filtering_parameter))
 			count++;
 	}
 	return count;
@@ -1972,7 +1971,7 @@ double compute_highest_accepted_quality(double percent) {
 		return 0.0;
 	}
 	// copy values
-	for (i=0; i<com.seq.number; i++) {
+	for (i = 0; i < com.seq.number; i++) {
 		if (com.seq.imgparam[i].incl && com.seq.regparam[layer][i].quality < 0.0) {
 			siril_log_message(_("Error in highest quality accepted for sequence processing: some images don't have this kind of information available for channel #%d.\n"), layer);
 			free(val);
@@ -1994,7 +1993,7 @@ double compute_highest_accepted_quality(double percent) {
 /* For a sequence of images with quality registration data and a percentage of
  * images to include in a processing, computes the lowest roundness value accepted.
  */
-double compute_highest_accepted_roundness(double percent) {
+double compute_lowest_accepted_roundness(double percent) {
 	int i, layer, number_images_with_fwhm_data;
 	double *val = malloc(com.seq.number * sizeof(double));
 	double lowest_accepted;
@@ -2004,7 +2003,7 @@ double compute_highest_accepted_roundness(double percent) {
 		return 0.0;
 	}
 	// copy values
-	for (i=0; i<com.seq.number; i++) {
+	for (i = 0; i < com.seq.number; i++) {
 		if (com.seq.imgparam[i].incl && com.seq.regparam[layer][i].roundness <= 0.0f) {
 			siril_log_message(_("Error in highest quality accepted for sequence processing: some images don't have this kind of information available for channel #%d.\n"), layer);
 			val[i] = DBL_MIN;
@@ -2019,7 +2018,7 @@ double compute_highest_accepted_roundness(double percent) {
 	if (val[com.seq.number-1] != DBL_MIN) {
 		number_images_with_fwhm_data = com.seq.number;
 	} else {
-		for (i=0; i<com.seq.number; i++)
+		for (i = 0; i < com.seq.number; i++)
 			if (val[i] == DBL_MIN)
 				break;
 		number_images_with_fwhm_data = i;
@@ -2028,7 +2027,7 @@ double compute_highest_accepted_roundness(double percent) {
 	}
 
 	// get lowest accepted
-	lowest_accepted = val[(int)((100.0-percent) * (double)number_images_with_fwhm_data / 100.0)];
+	lowest_accepted = val[(int)((100.0 - percent) * (double)number_images_with_fwhm_data / 100.0)];
 	if (lowest_accepted == DBL_MIN)
 		lowest_accepted = 0.0;
 	free(val);
@@ -2148,7 +2147,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		} else {
 			percent = gtk_adjustment_get_value(stackadj);
 			stackparam.filtering_criterion = stack_filter_roundness;
-			stackparam.filtering_parameter = compute_highest_accepted_roundness(
+			stackparam.filtering_parameter = compute_lowest_accepted_roundness(
 					percent);
 			stackparam.nb_images_to_stack = compute_nb_filtered_images();
 			sprintf(stackparam.description, _("Stacking images of the sequence "
