@@ -7,16 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-06 16:52+0200\n"
-"PO-Revision-Date: 2018-02-21 16:19+0000\n"
-"Last-Translator: Joaquín. M. Llano Montero\n"
+"POT-Creation-Date: 2018-04-30 16:19+0200\n"
+"PO-Revision-Date: 2018-05-09 20:50+0200\n"
+"Last-Translator: David Vazquez Garcia <davidvazquezgijon@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.5\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Bookmarks: -1,-1,459,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: ../src/gui/siril3.glade.h:1
 msgid "PSF"
@@ -28,17 +29,17 @@ msgid ""
 "otherwise if the checkbox 'follow star movement' is checked in the "
 "registration tab, it will run with this option."
 msgstr ""
-"Usará los datos de registro si hay alguno disponible en la capa de registro, "
-"de lo contrario, si casilla 'seguir el movimiento de las estrellas' en la "
-"pestaña registro está marcada, se ejecutará con esta opción."
+"Usará los datos de registro si están disponibles en la capa de registro, de "
+"lo contrario, si la casilla 'Seguir el movimiento de las estrellas' en la "
+"pestaña Registro está marcada, se ejecutará con esta opción."
 
 #: ../src/gui/siril3.glade.h:3
 msgid "PSF for the sequence"
-msgstr "PSD de la secuencia"
+msgstr "PSF de la secuencia"
 
 #: ../src/gui/siril3.glade.h:4
 msgid "Pick a Star"
-msgstr "Seleccione una estrella"
+msgstr "Seleccionar una estrella"
 
 #: ../src/gui/siril3.glade.h:5
 msgid "Statistics"
@@ -61,7 +62,7 @@ msgid ""
 "Enter a wavelength value in nanometers here, between 380 and 780, decimals "
 "are accepted."
 msgstr ""
-"Introduce una longitud de onda en nanómetros aquí, entre 380 y 780, pueden "
+"Introducir una longitud de onda en nanómetros aquí, entre 380 y 780; pueden "
 "usarse decimales."
 
 #: ../src/gui/siril3.glade.h:10
@@ -630,7 +631,7 @@ msgstr "Nombre"
 msgid "No Selection"
 msgstr "Sin selección"
 
-#: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1365
+#: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1347
 msgid "Banding Reduction"
 msgstr "Reducir bandas"
 
@@ -2099,7 +2100,7 @@ msgid ""
 "This conversion tab is used to import files and convert them into a format "
 "with which Siril can work: FITS or SER."
 msgstr ""
-"Este diálogo se usa para importar ficheros y convertirlos a un formato con "
+"Esta pestaña se usa para importar ficheros y convertirlos a un formato con "
 "el que Siril pueda trabajar: FITS o SER."
 
 #: ../src/gui/siril3.glade.h:467
@@ -2116,11 +2117,11 @@ msgstr "Añadir archivos a convertir"
 
 #: ../src/gui/siril3.glade.h:470
 msgid "Remove selected files"
-msgstr "Borrar los archivos seleccionados"
+msgstr "Eliminar los archivos seleccionados"
 
 #: ../src/gui/siril3.glade.h:471
 msgid "Remove all files from the list"
-msgstr "Borrar todos los ficheros de la lista"
+msgstr "Eliminar todos los ficheros de la lista"
 
 #: ../src/gui/siril3.glade.h:472
 msgid "Destination"
@@ -2136,9 +2137,9 @@ msgid ""
 "images in the form NGC_6822-L_00001.fit. The name can also end with .ser, "
 "which will enable SER output format for the conversion."
 msgstr ""
-"Introduce el nombre base de la secuencia, por ejemplo NGC_6822-L creará "
-"imágenes como NGC_6822-L_00001.fit. El nombre  puede terminar en .ser, que "
-"habilitará el formato SER en la conversión de salida."
+"Introducir el nombre base de la secuencia, por ejemplo NGC_6822-L. Creará "
+"imágenes como NGC_6822-L_00001.fit. El nombre  puede terminar en .ser, lo "
+"que habilita el formato de salida SER para la conversión."
 
 #: ../src/gui/siril3.glade.h:475
 msgid "Colour image target"
@@ -2171,16 +2172,16 @@ msgstr "Conservar sólo el primer canal"
 #: ../src/gui/siril3.glade.h:481
 msgid "For an RGB image, only keep R. Useful for grey images stored as RGB."
 msgstr ""
-"Para una imagen RGB, sólo conservar R. Útil para imágenes grises guardadas "
-"como RGB."
+"Para una imagen RGB, conservar sólo R. Útil para imágenes en escala de "
+"grises guardadas como RGB."
 
 #: ../src/gui/siril3.glade.h:482
 msgid ""
 "Indicates the start indice of your converted files. This value must be "
 "included in the [1, 65535] range."
 msgstr ""
-"Indica el índice inicial de sus ficheros convertidos. Este valor debe estar "
-"en el rango 1-65535."
+"Define el índice inicial de los ficheros convertidos. Este valor debe estar "
+"en el rango [1, 65535]"
 
 #: ../src/gui/siril3.glade.h:483
 msgid "Demosaicing"
@@ -2193,20 +2194,20 @@ msgid ""
 "Only for RAW and FITS input images and SER films.\n"
 "Colour image target also applies to the debayer result for conversion."
 msgstr ""
-"Quitar el bayer a imágenes de un sólo canal (formato CFA) usando la el "
-"diseño de la matriz Bayer definida en las opciones. También se aplica a la "
+"Quitar la máscara de Bayer a imágenes de un único canal (formato CFA) usando "
+"la máscara de Bayer definida en las preferencias. Se aplica también a la "
 "apertura de imágenes, no sólo a la conversión.\n"
 "Sólo para imágenes de entrada en formato RAW y FITS y películas SER.\n"
-"El color de la imagen de salida también se aplica al resultado de la "
-"conversión eliminando el Bayer."
+"\"Color de la imagen destino\" también se aplica al resultado del "
+"debayerizado en la conversión."
 
 #: ../src/gui/siril3.glade.h:487
 msgid ""
 "Start conversion of all source files into the configured output files, FITS "
 "or SER, with colour processing or not."
 msgstr ""
-"Empezar a convertir todos los ficheros de entrada en los ficheros de salida "
-"configurados, FITS o SER, con procesado de color o no."
+"Iniciar la conversión de todos los archivos de entrada en los ficheros de "
+"salida configurados, FITS o SER, con procesamiento de color o no."
 
 #: ../src/gui/siril3.glade.h:488
 msgid "Create as many SER files as input files"
@@ -2238,11 +2239,11 @@ msgid ""
 msgstr ""
 "Los tipos soportados dependen de las librerías disponibles durante la "
 "compilación. Ver la documentación.\n"
-"Las imágenes RAW son ficheros en crudo de cámaras digitales, como los CR2 en "
+"Las imágenes RAW son ficheros RAW de cámaras digitales, como los CR2 en "
 "Canon o NEF en Nikon.\n"
-"Los vídeos de cualquier tipo pueden convertirse a FITS o SER.\n"
-"Los ficheros SER se tratan directamente como una secuencia,  todavía no "
-"están disponibles para convertir."
+"Los vídeos de cualquier tipo pueden ser convertidos a FITS o SER.\n"
+"Los ficheros SER se tratan directamente como una secuencia, y no es posible "
+"por el momento su conversión."
 
 #: ../src/gui/siril3.glade.h:495
 msgid "File conversion"
@@ -3171,7 +3172,7 @@ msgstr ""
 "las mejores imágenes, seleccionadas automáticamente de los datos de registro "
 "(Planetario)"
 
-#: ../src/gui/siril3.glade.h:696 ../src/stacking/stacking.c:2137
+#: ../src/gui/siril3.glade.h:696 ../src/stacking/stacking.c:2132
 #, c-format
 msgid "Based on FWHM"
 msgstr "Basado en FWHM"
@@ -3410,20 +3411,19 @@ msgid "Output logs"
 msgstr "Logs de salida"
 
 #: ../src/gui/siril3.glade.h:757
-#, fuzzy
 msgid ""
 "Input command. Typing 'help' here will bring the list of supported commands."
 msgstr ""
-"Comando de entrada. Escribiend `help' aquí le mostrará la lista de comandos "
+"Introducir comando. Escribir 'help' aquí muestra la lista de comandos "
 "soportados."
 
 #: ../src/gui/siril3.glade.h:758
 msgid "Type help for the list of supported commands"
-msgstr "Esciba help para conocer la lista de comandos soportados"
+msgstr "Escribir 'help' para obtener la lista de comandos soportados"
 
 #: ../src/gui/siril3.glade.h:759
 msgid "Displays manual of the command written in the console."
-msgstr ""
+msgstr "Muestra el manual para el comando escrito en la consola."
 
 #: ../src/gui/siril3.glade.h:760
 msgid "<b>Console</b>"
@@ -3442,9 +3442,9 @@ msgid ""
 "The directory in which files will be read from and written to. Can be "
 "changed with the button Change dir on the right, or with the cd command."
 msgstr ""
-"El directorio en el cuál se leerán y escribirán los ficheros. Puede "
-"cambiarse pulsando el botón Cambiar directorio en la derecha, o con el "
-"comando cd."
+"El directorio en el cual se leerán y escribirán los ficheros. Puede "
+"cambiarse usando el botón Cambiar directorio de la derecha, o con el comando "
+"cd."
 
 #: ../src/gui/siril3.glade.h:764
 msgid "Change dir..."
@@ -3468,13 +3468,13 @@ msgid ""
 "WARNING: Reducing the number of allowed processors too much will degrade "
 "performances."
 msgstr ""
-"Establecer el número de hilos manualmente.\n"
-"PRECAUCIÓN: reducir el número de procesadores permitidos demasiado puede "
+"Establecer manualmente el número de hilos.\n"
+"PRECAUCIÓN: reducir demasiado el número de procesadores permitidos puede "
 "degradar el rendimiento."
 
 #: ../src/gui/siril3.glade.h:770
 msgid "Displays the amount of used RAM memory by Siril."
-msgstr "Muestra la cantidad de RAM que consume Siril."
+msgstr "Muestra la cantidad de memoria RAM usada por Siril."
 
 #: ../src/gui/siril3.glade.h:771
 msgid ""
@@ -3482,7 +3482,7 @@ msgid ""
 "the working directory."
 msgstr ""
 "Muestra la cantidad de espacio en disco disponible en el sistema de ficheros "
-"que contiene el directorio de trabajo."
+"que contiene al directorio de trabajo."
 
 #. Must be short !!
 #: ../src/gui/siril3.glade.h:773
@@ -3657,9 +3657,9 @@ msgstr "Mejora de la saturación: procesando...\n"
 #: ../src/algos/colors.c:755 ../src/algos/cosmetic_correction.c:138
 #: ../src/algos/cosmetic_correction.c:187
 #: ../src/algos/cosmetic_correction.c:395 ../src/algos/star_finder.c:49
-#: ../src/core/command.c:1475 ../src/core/siril.c:479 ../src/core/siril.c:766
-#: ../src/core/siril.c:902 ../src/core/siril.c:1067 ../src/core/siril.c:1429
-#: ../src/core/siril.c:1519 ../src/core/siril.c:1611 ../src/gui/histogram.c:580
+#: ../src/core/command.c:1463 ../src/core/siril.c:479 ../src/core/siril.c:766
+#: ../src/core/siril.c:902 ../src/core/siril.c:1067 ../src/core/siril.c:1411
+#: ../src/core/siril.c:1501 ../src/core/siril.c:1593 ../src/gui/histogram.c:599
 #: ../src/gui/statistics_list.c:308
 msgid "Error: no data computed.\n"
 msgstr "Error: no hay datos procesados.\n"
@@ -3833,10 +3833,10 @@ msgstr "Resultado de la composición no guardado"
 msgid "You must at least load two layers before!\n"
 msgstr "¡Debería cargar como mínimo dos capas antes!\n"
 
-#: ../src/compositing/compositing.c:546 ../src/core/command.c:1556
-#: ../src/gui/callbacks.c:5032 ../src/gui/callbacks.c:5076
-#: ../src/gui/callbacks.c:5321 ../src/gui/callbacks.c:5330
-#: ../src/gui/callbacks.c:5387 ../src/gui/plot.c:281 ../src/io/conversion.c:546
+#: ../src/compositing/compositing.c:546 ../src/gui/callbacks.c:5030
+#: ../src/gui/callbacks.c:5074 ../src/gui/callbacks.c:5319
+#: ../src/gui/callbacks.c:5328 ../src/gui/callbacks.c:5386
+#: ../src/gui/plot.c:281 ../src/io/conversion.c:524
 #: ../src/io/image_formats_libraries.c:73
 #: ../src/io/image_formats_libraries.c:229
 #: ../src/registration/registration.c:1173
@@ -3870,541 +3870,58 @@ msgstr "Nada que ajustar, no hay desbordamiento\n"
 msgid "Readjusting layer %d to %g times bright\n"
 msgstr "Reajustando capa %d a %g veces más brillante\n"
 
-#: ../src/core/command.c:211 ../src/core/command.c:406
-#: ../src/core/command.c:800 ../src/core/command.c:835
-#: ../src/core/command.c:863 ../src/core/command.c:1176
-#: ../src/core/command.c:1291 ../src/core/command.c:1314
-#: ../src/core/command.c:1334 ../src/core/command.c:1358
-#: ../src/core/command.c:1514 ../src/core/command.c:1583
-#: ../src/core/command.c:2256 ../src/gui/callbacks.c:3963
-#: ../src/gui/callbacks.c:4165 ../src/gui/callbacks.c:4356
-#: ../src/gui/callbacks.c:4440 ../src/gui/callbacks.c:4637
-#: ../src/gui/callbacks.c:4975 ../src/gui/callbacks.c:5122
-#: ../src/gui/callbacks.c:5421 ../src/gui/callbacks.c:5599
-#: ../src/gui/script_menu.c:152 ../src/io/conversion.c:515
-#: ../src/registration/registration.c:1162 ../src/stacking/stacking.c:1469
-#: ../src/stacking/stacking.c:1592
-msgid "Another task is already in progress, ignoring new request.\n"
-msgstr "Otra tarea en progreso, ignorando nuevas peticiones.\n"
-
-#: ../src/core/command.c:352
-msgid "Multiplying by a coefficient less than or equal to 0 is not possible.\n"
-msgstr "Multiplicar por un coeficiente menor o igual a 0 no es posible.\n"
-
-#: ../src/core/command.c:373
-#, c-format
-msgid "Entropy: %.3lf\n"
-msgstr "Entropía: %.3lf\n"
-
-#: ../src/core/command.c:395
-msgid "Number of iterations must be > 0.\n"
-msgstr ""
-"El número de iteraciones ha de ser mayor que 0.\n"
-"\n"
-
-#: ../src/core/command.c:400
-msgid "Sigma must be > 0.\n"
-msgstr ""
-"El valor Sigma debe ser mayor que 0.\n"
-"\n"
-
-#: ../src/core/command.c:436
-msgid "Crop: x and y must be positive values.\n"
-msgstr "Recortar: x e y deben ser valores positivos.\n"
-
-#: ../src/core/command.c:440
-msgid "Crop: width and height must be greater than 0.\n"
-msgstr "Recortar: ancho y alto deben ser mayores que 0.\n"
-
-#: ../src/core/command.c:444
-#, c-format
-msgid "Crop: width and height, respectively, must be less than %d and %d.\n"
-msgstr ""
-"Recortar: ancho y alto deben ser menores que %d y %d respectivamente.\n"
-
-#: ../src/core/command.c:453
-msgid "Crop: select a region or provide x, y, width, height\n"
-msgstr "Recortar: seleccione una región o proporcione x, y, ancho y alto\n"
-
-#: ../src/core/command.c:530 ../src/core/command.c:2118
-#: ../src/gui/callbacks.c:5319 ../src/gui/callbacks.c:5385
-#, c-format
-msgid "Wavelet: maximum number of plans for this image size is %d\n"
-msgstr "Wavelet: el número máximo de planos para este tamaño de imagen es %d\n"
-
-#: ../src/core/command.c:536 ../src/gui/callbacks.c:5328
-#, c-format
-msgid "Wavelet: type must be %d or %d\n"
-msgstr "Wavelet: el tipo debe ser %d o %d\n"
-
-#: ../src/core/command.c:591
-msgid "Cannot list files, set working directory first.\n"
-msgstr ""
-"No se pueden listar ficheros, establezca primero el directorio de trabajo.\n"
-
-#: ../src/core/command.c:597 ../src/core/command.c:606
-msgid "Siril cannot open the directory.\n"
-msgstr "Siril no puede abrir el directorio.\n"
-
-#: ../src/core/command.c:628
-#, c-format
-msgid "Link: %s\n"
-msgstr "Enlace: %s\n"
-
-#: ../src/core/command.c:632
-#, c-format
-msgid "Directory: %s\n"
-msgstr "Directorio: %s\n"
-
-#: ../src/core/command.c:642 ../src/core/command.c:649
-#, c-format
-msgid "Sequence: %s\n"
-msgstr "Secuencia: %s\n"
-
-#: ../src/core/command.c:645 ../src/core/command.c:647
-#, c-format
-msgid "Image: %s\n"
-msgstr "Imagen: %s\n"
-
-#: ../src/core/command.c:654 ../src/core/command.c:2099
-msgid "********* END OF THE LIST *********\n"
-msgstr "********* FIN DE LA LISTA **********\n"
-
-#: ../src/core/command.c:678
-msgid "The scaling factor must be less than 5.0\n"
-msgstr "El factor de escala debe ser menor de 5.0\n"
-
-#: ../src/core/command.c:722 ../src/core/command.c:782
-#: ../src/core/command.c:804
-msgid ""
-"Current selection is too large. To determine the PSF, please make a "
-"selection around a single star.\n"
-msgstr ""
-"La selección actual es demasiado amplia. Para determinar el PSF realice una "
-"selección alrededor de una única estrella.\n"
-
-#: ../src/core/command.c:726 ../src/core/command.c:786
-#: ../src/core/command.c:808 ../src/io/sequence.c:1538
-msgid "Select an area first\n"
-msgstr "Seleccione un área primero\n"
-
-#: ../src/core/command.c:732
-#, c-format
-msgid ""
-"Relative magnitude: %.3lf, True reduced magnitude: %.3lf, Offset: %.3lf\n"
-msgstr ""
-"Magnitud relativa: %.3lf, Magnidud real reducida: %.3lf, Compensación: "
-"%.3lf\n"
-
-#: ../src/core/command.c:748 ../src/core/command.c:767
-#: ../src/core/command.c:827
-msgid "This command can be used only when a sequence is loaded\n"
-msgstr "Sólo se puede usar este comando cuando se ha cargado una secuencia\n"
-
-#: ../src/core/command.c:756
-msgid "Run a PSF for the sequence first (see seqpsf)\n"
-msgstr "Ejecutar un PSF para la secuencia primero (ver seqpsf)\n"
-
-#: ../src/core/command.c:760
-#, c-format
-msgid ""
-"Reference magnitude has been set for star %d to %f and will be computed for "
-"each image\n"
-msgstr ""
-"La magnitud de referencia se ha establecido para la estrella %d a %f y se "
-"calculará para cada imagen\n"
-
-#: ../src/core/command.c:772
-msgid "Reference magnitude unset for sequence\n"
-msgstr "Magnitud de referencia no establecida para la secuencia\n"
-
-#: ../src/core/command.c:822
-#, c-format
-msgid "Running the PSF on the loaded sequence, layer %d\n"
-msgstr "Ejecutando el PSF en la secuencia cargada, capa %d\n"
-
-#: ../src/core/command.c:856
-#, c-format
-msgid "Background value: %d\n"
-msgstr "Valor de fondo: %d\n"
-
-#: ../src/core/command.c:906
-#, c-format
-msgid "The file %s has been created for the %s layer.\n"
-msgstr "Se ha creado el fichero %s para la capa %s.\n"
-
-#: ../src/core/command.c:978
-msgid "Number of layers MUST be 1 or 3\n"
-msgstr "El número de capas debe ser 1 o 3\n"
-
-#: ../src/core/command.c:990
-msgid "new empty image"
-msgstr "nueva imagen vacía"
-
-#: ../src/core/command.c:1000
-#, c-format
-msgid "Values must be positive and less than %d.\n"
-msgstr "Los valores han de ser positivos y menores que %d.\n"
-
-#: ../src/core/command.c:1018
-msgid "Fill2: select a region or provide x, y, width, height\n"
-msgstr "Seleccione una región o proporcione x, y, ancho y alto\n"
-
-#: ../src/core/command.c:1052
-msgid "find_hot must be applied on an one-channel master-dark frame"
-msgstr ""
-"encontrar_calientes debe aplicarse en un dark frame maestro de un único canal"
-
-#: ../src/core/command.c:1060
-#, c-format
-msgid "%ld cold and %ld hot pixels\n"
-msgstr "%ld píxeles friós y %ld píxeles calientes\n"
-
-#: ../src/core/command.c:1065 ../src/core/command.c:1098
-#, c-format
-msgid "Cannot open file: %s\n"
-msgstr "No se puede abrir el fichero: %s\n"
-
-#: ../src/core/command.c:1158
-#, c-format
-msgid "cosmetic correction: cosme file format error at line %d: %s\n"
-msgstr "correción cosmética: error en el fichero cosme en la línea %d: %s\n"
-
-#: ../src/core/command.c:1166
-msgid "There were some errors, please check your input file.\n"
-msgstr "Hubo errores, revise el fichero de entrada.\n"
-
-#: ../src/core/command.c:1186
-msgid "The size of the kernel MUST be odd and greater than 1.\n"
-msgstr "El tamaño del kernel debe ser impar y mayo que 1.\n"
-
-#: ../src/core/command.c:1191
-msgid "Modulation value MUST be between 0 and 1\n"
-msgstr "El valor de modulación debe estar entre 0 y 1\n"
-
-#. FITS are stored bottom to top
-#: ../src/core/command.c:1212
-#, c-format
-msgid "Center of gravity coordinates are (%.3lf, %.3lf)\n"
-msgstr "Las coordenadas del centro de gravedad son (%.3lf,%.3lf)\n"
-
-#: ../src/core/command.c:1247
-#, c-format
-msgid "Contrast: %lf\n"
-msgstr "Contraste: %lf\n"
-
-#: ../src/core/command.c:1310
-msgid "FFT does not work with sequences\n"
-msgstr "La transformada rápida de Fourier no funciona con secuencias\n"
-
-#: ../src/core/command.c:1375 ../src/core/command.c:1597
-#: ../src/core/command.c:1740 ../src/core/command.c:1883
-#: ../src/core/command.c:1976
-#, fuzzy, c-format
-msgid "No sequence %s found.\n"
-msgstr "No hay secuencia seleccionada"
-
-#: ../src/core/command.c:1407
-msgid ""
-"Use this command to select images in a sequence, load a sequence first.\n"
-msgstr ""
-"Use este comando para seleccionar imágenes de una secuencia, cargue primero "
-"la secuencia.\n"
-
-#: ../src/core/command.c:1413
-msgid ""
-"The first argument must be between 0 and the number of images minus one.\n"
-msgstr ""
-"El primer argumento debe estar entre 0 y el número de imágenes menos uno.\n"
-
-#: ../src/core/command.c:1438
-#, c-format
-msgid "Selection update finished, %d images are selected in the sequence\n"
-msgstr ""
-"Actualización de la selección finalizada, %d imágenes seleccionadas en la "
-"secuencia\n"
-
-#: ../src/core/command.c:1455
-msgid "Siril cannot split layers. Make sure your image is in RGB mode.\n"
-msgstr ""
-"Siril no puede dividir capas. Asegúrese que la imagen está en modo RGB.\n"
-
-#: ../src/core/command.c:1495
-#, c-format
-msgid ""
-"%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
-"%0.1lf, Max: %0.1lf\n"
-msgstr ""
-"Capa %s: Media: %0.1lf, Mediana: %0.1lf, Sigma: %0.1lf, AvgDev; %0.1lf, Mín: "
-"%0.1lf, Máx: %0.1lf\n"
-
-#: ../src/core/command.c:1526 ../src/io/conversion.c:551
-#, c-format
-msgid "Conversion: error opening working directory %s.\n"
-msgstr "Conversión: error abriendo directorio de trabajo %s.\n"
-
-#: ../src/core/command.c:1527 ../src/core/siril.c:206 ../src/core/utils.c:809
-#: ../src/gui/callbacks.c:1074 ../src/gui/callbacks.c:2101
-#: ../src/gui/callbacks.c:3012 ../src/gui/callbacks.c:4689
-#: ../src/gui/callbacks.c:4710 ../src/gui/callbacks.c:5138
-#: ../src/gui/callbacks.c:5144 ../src/gui/callbacks.c:5169
-#: ../src/gui/plot.c:379 ../src/gui/plot.c:438 ../src/gui/PSF_list.c:150
-#: ../src/io/conversion.c:552 ../src/io/conversion.c:624
-#: ../src/io/image_format_fits.c:404 ../src/io/image_format_fits.c:410
-#: ../src/io/image_format_fits.c:431 ../src/io/image_format_fits.c:439
-#: ../src/io/image_format_fits.c:461 ../src/io/image_format_fits.c:499
-#: ../src/io/image_format_fits.c:517 ../src/io/image_format_fits.c:656
-#: ../src/io/image_format_fits.c:891 ../src/io/image_formats_internal.c:220
-#: ../src/io/image_formats_internal.c:284
-#: ../src/io/image_formats_internal.c:353
-#: ../src/io/image_formats_internal.c:408
-#: ../src/io/image_formats_internal.c:420
-#: ../src/io/image_formats_internal.c:503
-#: ../src/io/image_formats_internal.c:535
-#: ../src/io/image_formats_internal.c:568
-#: ../src/io/image_formats_internal.c:584
-#: ../src/io/image_formats_internal.c:759
-#: ../src/io/image_formats_internal.c:807
-#: ../src/io/image_formats_internal.c:845
-#: ../src/io/image_formats_libraries.c:89
-#: ../src/io/image_formats_libraries.c:107
-#: ../src/io/image_formats_libraries.c:117
-#: ../src/io/image_formats_libraries.c:159
-#: ../src/io/image_formats_libraries.c:292
-#: ../src/io/image_formats_libraries.c:349
-#: ../src/io/image_formats_libraries.c:413
-#: ../src/io/image_formats_libraries.c:487
-#: ../src/io/image_formats_libraries.c:566 ../src/io/single_image.c:123
-#: ../src/io/single_image.c:173 ../src/io/single_image.c:177
-#: ../src/registration/registration.c:1206 ../src/stacking/normalization.c:121
-#: ../src/stacking/stacking.c:114 ../src/stacking/stacking.c:800
-msgid "Error"
-msgstr "Error"
-
-#: ../src/core/command.c:1545 ../src/io/conversion.c:534
-msgid "Conversion: processing...\n"
-msgstr "Conversión: procesando...\n"
-
-#: ../src/core/command.c:1555 ../src/io/conversion.c:545
-msgid "Conversion: no working directory set.\n"
-msgstr "Conversión: no se ha establecido directorio de trabajo.\n"
-
-#: ../src/core/command.c:1604 ../src/registration/registration.c:101
-msgid "Global Star Alignment (deep-sky)"
-msgstr "Alineación Global de Estrellas (espacio profundo)"
-
-#: ../src/core/command.c:1640 ../src/registration/registration.c:1205
-#, fuzzy
-msgid "Not enough disk space to perform Drizzle operation!\n"
-msgstr "¡¡No hay suficiente espacio en disco para realizar el Drizzle!!\n"
-
-#: ../src/core/command.c:1657 ../src/registration/registration.c:1222
-#, c-format
-msgid "Registration: processing using method: %s\n"
-msgstr "Registro: procesando usando el método: %s\n"
-
-#: ../src/core/command.c:1688
-#, c-format
-msgid "Stacking sequence %s\n"
-msgstr ""
-"Secuencia de apilado %s\n"
-"\n"
-
-#: ../src/core/command.c:1733
-#, c-format
-msgid "Could not save the stacking result %s\n"
-msgstr "No se puede guardar el resultado del apilado %s\n"
-
-#: ../src/core/command.c:1753 ../src/core/command.c:1845
-msgid "Looking for sequences in current working directory...\n"
-msgstr "Buscando secuencias en el directorio actual...\n"
-
-#: ../src/core/command.c:1755
-msgid "Error while searching sequences or opening the directory.\n"
-msgstr "Error buscando secuencias o abriendo el directorio.\n"
-
-#: ../src/core/command.c:1761
-msgid "Starting stacking of found sequences...\n"
-msgstr "Comenzando el apilado de las secuencias encontradas...\n"
-
-#: ../src/core/command.c:1773
-#, c-format
-msgid "Stacked %d sequences successfully.\n"
-msgstr ""
-"Apiladas %d secuencias correctamente.\n"
-"\n"
-
-#: ../src/core/command.c:1808 ../src/core/command.c:1915
-msgid ""
-"The average stacking with rejection uses the Winsorized rejection here and "
-"requires two extra arguments: sigma low and high.\n"
-msgstr ""
-"La media de apilados con rechazo usa el rechazo Winsorized y requiere dos "
-"argumentos adicionales: sigma bajo y sigma alto.\n"
-
-#: ../src/core/command.c:1829 ../src/core/command.c:1936
-#, c-format
-msgid "The provided type of stacking is unknown (%s).\n"
-msgstr "Apilado proporcionado (%s) desconocido.\n"
-
-#: ../src/core/command.c:1847
-#, fuzzy
-msgid "Error while searching sequences.\n"
-msgstr "Error buscando secuencias o abriendo el directorio.\n"
-
-#: ../src/core/command.c:1858
-#, fuzzy
-msgid "Stacked sequence successfully.\n"
-msgstr ""
-"Apiladas %d secuencias correctamente.\n"
-"\n"
-
-#: ../src/core/command.c:2031 ../src/gui/callbacks.c:3975
-msgid "Preprocessing...\n"
-msgstr "Procesando...\n"
-
-#: ../src/core/command.c:2072
-#, c-format
-msgid ""
-"Number of logical processors MUST be greater than 0 and lower or equal to "
-"%d.\n"
-msgstr ""
-"El número de procesadores lógicos debe ser mayor que 0 y menor o igual que "
-"%d.\n"
-
-#: ../src/core/command.c:2084
-#, c-format
-msgid "Using now %d logical processors\n"
-msgstr "Usando %d procesadores lógicos\n"
-
-#: ../src/core/command.c:2094
-msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
-msgstr "******* LISTA DE COMANDOS DISPONIBLES *******\n"
-
-#: ../src/core/command.c:2167
-#, c-format
-msgid "Unknown command: '%s' or not implemented yet\n"
-msgstr "Comando desconocido: '%s' todavía no implementado\n"
-
-#: ../src/core/command.c:2174
-#, c-format
-msgid "Usage: %s\n"
-msgstr "Uso: %s\n"
-
-#: ../src/core/command.c:2181
-#, fuzzy, c-format
-msgid "This command cannot be used in a script: %s\n"
-msgstr "Sólo se puede usar este comando cuando se ha cargado una secuencia\n"
-
-#. process the command
-#: ../src/core/command.c:2187
-#, c-format
-msgid "Running command: %s\n"
-msgstr ""
-
-#: ../src/core/command.c:2226
-#, fuzzy, c-format
-msgid "Error in line %d. Exiting batch processing\n"
-msgstr "Error en la línea: %d. Saliendo del proceso por lotes\n"
-
-#: ../src/core/command.c:2241
-#, fuzzy
-msgid "Script execution finished successfully.\n"
-msgstr ""
-"Apiladas %d secuencias correctamente.\n"
-"\n"
-
-#: ../src/core/command.c:2243
-#, fuzzy
-msgid "Total execution time"
-msgstr "Descarte local"
-
-#: ../src/core/command.c:2263 ../src/gui/script_menu.c:167
-#, c-format
-msgid "File [%s] does not exist\n"
-msgstr "El fichero [%s] no existe\n"
-
-#. Then, run script
-#: ../src/core/command.c:2271 ../src/gui/script_menu.c:176
-#, fuzzy, c-format
-msgid "Starting script %s\n"
-msgstr "Comenzando apilado...\n"
-
-#: ../src/core/command.c:2398
-msgid "Can be used in a script: "
-msgstr ""
-
-#: ../src/core/command.c:2401
-msgid "YES"
-msgstr ""
-
-#: ../src/core/command.c:2403
-msgid "NO"
-msgstr ""
-
-#: ../src/core/command.c:2412
-#, fuzzy
-msgid "No help for this command"
-msgstr "Esciba help para conocer la lista de comandos soportados"
-
-#: ../src/core/command_def.h:6
+#. name,	nbarg,	usage,			function pointer
+#: ../src/core/command.c:74
 msgid ""
 "Computes a new image IMG with IMG_1 and IMG_2. The pixel of IMG_1 is "
 "replaced by the pixel at the same coordinates of IMG_2 if the intensity of 2 "
 "is greater than 1"
 msgstr ""
 
-#: ../src/core/command_def.h:8
+#: ../src/core/command.c:76
 msgid "Returns the background level of the image loaded in memory"
 msgstr ""
 
-#: ../src/core/command_def.h:9
+#: ../src/core/command.c:77
 #, fuzzy
 msgid "Returns the background noise level"
 msgstr "Alto de la selección de fondo"
 
-#: ../src/core/command_def.h:11
+#: ../src/core/command.c:79
 msgid ""
 "Set the new current working directory. The argument \"directory\" can "
 "contain the ~ token, expanded as the home directory, directories with spaces "
 "in the name can be protected using single or double quotes"
 msgstr ""
 
-#: ../src/core/command_def.h:12
+#: ../src/core/command.c:80
 msgid "Returns the coordinates of the center of gravity of the image"
 msgstr ""
 
-#: ../src/core/command_def.h:13
+#: ../src/core/command.c:81
 msgid "Clear all the stars saved in memory and displayed on the screen"
 msgstr ""
 
-#: ../src/core/command_def.h:14
+#: ../src/core/command.c:82
 msgid "Properly closes the opened image and the opened sequence, if any"
 msgstr ""
 
-#: ../src/core/command_def.h:15
-msgid ""
-"Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" "
-"is the basename of the new sequence. The option \"-debayer\" applies "
-"demosaicing to images"
-msgstr ""
-
-#: ../src/core/command_def.h:16
+#: ../src/core/command.c:83
 msgid ""
 "Apply the local mean to a set of pixels on the in-memory image (cosmetic "
 "correction). The coordinate of this pixels are in an ASCII file [.lst file]. "
 "COSME is adapted to correct residual hot and cold pixels after preprocessing"
 msgstr ""
 
-#: ../src/core/command_def.h:17
+#: ../src/core/command.c:84
 msgid "Same function that COSME but applying to RAW CFA images"
 msgstr ""
 
-#: ../src/core/command_def.h:18
+#: ../src/core/command.c:85
 msgid "Crops the current image within the rectangle previously selected"
 msgstr ""
 
-#: ../src/core/command_def.h:20
+#: ../src/core/command.c:87
 msgid ""
 "Performs a DDP (digital development processing) as described first by "
 "Kunihiko Okano. This implementation is the one described in IRIS. It "
@@ -4414,62 +3931,62 @@ msgid ""
 "are included between 0.7 and 2"
 msgstr ""
 
-#: ../src/core/command_def.h:22
+#: ../src/core/command.c:89
 msgid ""
 "Computes the entropy of the opened image on the displayed layer, only in the "
 "selected area if one has been selected or in the whole image else. The "
 "entropy is one way of measuring the noise or the details in an image"
 msgstr ""
 
-#: ../src/core/command_def.h:23
+#: ../src/core/command.c:90
 msgid "Quits the application"
 msgstr ""
 
-#: ../src/core/command_def.h:24
+#: ../src/core/command.c:91
 msgid "Extracts \"NbPlans\" planes of wavelet domain"
 msgstr ""
 
-#: ../src/core/command_def.h:26
+#: ../src/core/command.c:93
 msgid ""
 "Divides the image in memory by the image given in argument. The resulting "
 "image is multiplied by the value of the \"scalar\" argument. See also IDIV"
 msgstr ""
 
-#: ../src/core/command_def.h:27
+#: ../src/core/command.c:94
 msgid ""
 "Applies a Fast Fourier Transform to the image loaded in memory. \"Modulus\" "
 "and \"phase\" given in argument are saved in FITS files"
 msgstr ""
 
-#: ../src/core/command_def.h:28
+#: ../src/core/command.c:95
 msgid ""
 "Retrieves corrected image applying an inverse transformation. The \"modulus"
 "\" and \"phase\" used are the files given in argument"
 msgstr ""
 
-#: ../src/core/command_def.h:29
+#: ../src/core/command.c:96
 msgid ""
 "Fills the whole current image (or selection) with pixels having the \"value"
 "\" intensity"
 msgstr ""
 
-#: ../src/core/command_def.h:30
+#: ../src/core/command.c:97
 msgid ""
 "Same command than FILL but this is a symmetric fill of a region defined by "
 "the mouse. Used to process an image in the Fourier (FFT) domain"
 msgstr ""
 
-#: ../src/core/command_def.h:31
+#: ../src/core/command.c:98
 msgid ""
 "Applies an automatic detection of cold and hot pixels following the "
 "thresholds written in arguments"
 msgstr ""
 
-#: ../src/core/command_def.h:32
+#: ../src/core/command.c:99
 msgid "Same command than FIND_COSME but for monochromatic CFA images"
 msgstr ""
 
-#: ../src/core/command_def.h:33
+#: ../src/core/command.c:100
 msgid ""
 "Provides a list file \"filename\" (format text) in the working directory "
 "which contains the coordinates of the pixels which have an intensity "
@@ -4477,18 +3994,18 @@ msgid ""
 "We generally use this command on a master-dark file"
 msgstr ""
 
-#: ../src/core/command_def.h:34
+#: ../src/core/command.c:101
 msgid ""
 "Detects stars having a level greater than a threshold computed by Siril. The "
 "algorithm is based on the publication of Mighell, K. J. 1999, in ASP Conf. "
 "Ser., Vol. 172, Astronomical Data Analysis Software and Systems VIII, eds. "
-"D. M. Mehringer, R. L. Plante, and D. A. Roberts (San Francisco: ASP), 317. "
+"D. M. Mehringer, R. L. Plante, & D. A. Roberts (San Francisco: ASP), 317. "
 "After that, a PSF is applied and Siril rejects all detected structures that "
 "don't fulfill a set of prescribed detection criteria. Finaly, a circle is "
 "drawn around detected stars. See also the command CLEARSTAR"
 msgstr ""
 
-#: ../src/core/command_def.h:35
+#: ../src/core/command.c:102
 msgid ""
 "Performs a median filter of size \"ksize\" x \"ksize\" (\"ksize\" MUST be "
 "odd) to the original image with a modulation parameter \"modulation\". The "
@@ -4497,49 +4014,50 @@ msgid ""
 "modulation"
 msgstr ""
 
-#: ../src/core/command_def.h:36
+#: ../src/core/command.c:103
 msgid "Multiplies the loaded image by the \"scalar\" given in argument"
 msgstr ""
 
-#: ../src/core/command_def.h:37
+#: ../src/core/command.c:104
 msgid ""
 "Tries to remove the canon banding. Argument \"amount\" define the amount of "
 "correction. \"Sigma\" defines a protection level of the algorithm, higher "
 "sigma gives higher protection"
 msgstr ""
 
-#: ../src/core/command_def.h:39
+#: ../src/core/command.c:106
 msgid "Performs a Gaussian filter with the given \"sigma\""
 msgstr ""
 
-#: ../src/core/command_def.h:41
+#: ../src/core/command.c:108
 msgid "Gives the available commands"
 msgstr ""
 
-#: ../src/core/command_def.h:42
+#: ../src/core/command.c:109
 msgid ""
 "Calculates the histogram of the image channel in memory and produces file "
 "histo_[channel name].dat in the working directory"
 msgstr ""
 
-#: ../src/core/command_def.h:44
+#. commands oper filename and curent image
+#: ../src/core/command.c:112
 msgid "Adds the image in memory to the image given in argument"
 msgstr ""
 
-#: ../src/core/command_def.h:45
+#: ../src/core/command.c:113
 msgid ""
 "Divides the image in memory by the image given in argument. See also FDIV"
 msgstr ""
 
-#: ../src/core/command_def.h:46
+#: ../src/core/command.c:114
 msgid "Multiplies the image in memory by the image given in argument"
 msgstr ""
 
-#: ../src/core/command_def.h:47
+#: ../src/core/command.c:115
 msgid "Subtracts the image in memory by the image given in argument"
 msgstr ""
 
-#: ../src/core/command_def.h:49
+#: ../src/core/command.c:117
 msgid ""
 "Loads the image \"filename\"; it first attempts to load \"filename\", then "
 "\"filename\".fit and finally \"filename\".fits and after, all supported "
@@ -4551,24 +4069,27 @@ msgid ""
 "extension"
 msgstr ""
 
-#: ../src/core/command_def.h:50
+#. specific loads are not required, but could be used to force the
+#. extension to a higher priority in case two files with same basename
+#. exist (stat_file() manages that priority order for now).
+#: ../src/core/command.c:121
 msgid "Computes and applies a logarithmic scale to the current image"
 msgstr ""
 
-#: ../src/core/command_def.h:51
+#: ../src/core/command.c:123
 #, fuzzy
 msgid "Lists files and directories in the working directory"
 msgstr "Cambiar el directorio de trabajo actual"
 
-#: ../src/core/command_def.h:53
+#: ../src/core/command.c:126
 msgid "Rotates the image around a vertical axis"
 msgstr ""
 
-#: ../src/core/command_def.h:54
+#: ../src/core/command.c:127
 msgid "Rotates the image around an horizontal axis"
 msgstr ""
 
-#: ../src/core/command_def.h:56
+#: ../src/core/command.c:129
 msgid ""
 "Creates a new image filled with zeros with a size of \"width\" x \"height\". "
 "The image is in 16-bit format, and it contains \"nb_channel\" channels, "
@@ -4576,13 +4097,14 @@ msgid ""
 "afterwards"
 msgstr ""
 
-#: ../src/core/command_def.h:57
+#: ../src/core/command.c:130
 msgid ""
 "Replaces null values by \"level\" values. Useful before an idiv or fdiv "
 "operation"
 msgstr ""
 
-#: ../src/core/command_def.h:59
+#. replaces null values by level
+#: ../src/core/command.c:132
 msgid ""
 "Adds the constant \"value\" to the current image. This constant can take a "
 "negative value. As Siril uses unsigned FITS files, if the intensity of the "
@@ -4590,41 +4112,39 @@ msgid ""
 "file) if the pixel intensity overflows"
 msgstr ""
 
-#: ../src/core/command_def.h:61
+#: ../src/core/command.c:134
 msgid ""
 "Preprocesses the sequence \"sequencename\" using bias, dark and flat given "
 "in argument. It is possible to specify if images are CFA for cosmetic "
 "correction purposes with the option \"-cfa\" and also to demosaic images at "
-"the end of the process with \"-debayer\". The \"-flip\" option tells to "
-"Siril to read image from up to bottom for demosaicing operation"
+"the end of the process with \"-debayer\""
 msgstr ""
 
-#: ../src/core/command_def.h:62
+#: ../src/core/command.c:135
 msgid "Performs a PSF (Point Spread Function) on the selected star"
 msgstr ""
 
-#: ../src/core/command_def.h:64
+#: ../src/core/command.c:137
 msgid ""
-"Performs geometric transforms on images of the sequence given in argument so "
-"that they may be superimposed on the reference image. The output sequence "
+"Performs geometric transforms on images of the sequence given in arguement "
+"so that they may be superimposed on the reference image. The output sequence "
 "name starts with the prefix \"r_\". Using stars for registration, this "
-"algorithm only works with deepsky images. The option \"-norot\" performs a "
-"translation only with no new sequence built while the option \"-drizzle\" "
-"applies a x2 drizzle on the images"
+"algorithm only works with deepsky images. The option \"-drizzle\" performs a "
+"x2 drizzle on the images"
 msgstr ""
 
-#: ../src/core/command_def.h:65
+#: ../src/core/command.c:138
 msgid "Resamples image with a factor \"factor\""
 msgstr ""
 
-#: ../src/core/command_def.h:66
+#: ../src/core/command.c:139
 msgid ""
 "Restores an image using the Richardson-Lucy method. \"Iterations\" is the "
 "number of iterations to be performed (typically between 10 and 50). \"Sigma"
 "\" is the size of the kernel to be applied"
 msgstr ""
 
-#: ../src/core/command_def.h:67
+#: ../src/core/command.c:140
 msgid ""
 "Chromatic noise reduction filter. It removes green noise in the current "
 "image. This filter is based on PixInsight's SCNR Average Neutral algorithm "
@@ -4633,29 +4153,29 @@ msgid ""
 "Neutral Protection"
 msgstr ""
 
-#: ../src/core/command_def.h:68
+#: ../src/core/command.c:141
 msgid "Rotates the image of an angle of \"degree\" value"
 msgstr ""
 
-#: ../src/core/command_def.h:69
+#: ../src/core/command.c:142
 msgid ""
 "Rotates the image of an angle of 180° around its center. This is equivalent "
 "to the command \"ROTATE 180\" or \"ROTATE -180\""
 msgstr ""
 
-#: ../src/core/command_def.h:71
+#: ../src/core/command.c:144
 msgid ""
 "Enhances the global saturation of the image. Try iteratively to obtain best "
 "results"
 msgstr ""
 
-#: ../src/core/command_def.h:72
+#: ../src/core/command.c:145
 msgid ""
 "Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO "
 "are added with values corresponding to the current viewing levels"
 msgstr ""
 
-#: ../src/core/command_def.h:73
+#: ../src/core/command.c:146
 msgid ""
 "Saves current image under the form of a bitmap file with 8-bit per channel: "
 "\"filename\".bmp (BMP 24-bit). This function is like a screenshot of what "
@@ -4663,7 +4183,7 @@ msgid ""
 "the bitmap format"
 msgstr ""
 
-#: ../src/core/command_def.h:74
+#: ../src/core/command.c:148
 msgid ""
 "Saves current image into a JPG file: \"filename\".jpg. You have the "
 "possibility to adjust the quality of the compression. A value 100 for "
@@ -4671,55 +4191,55 @@ msgid ""
 "compression ratio. If no value is specified, it holds a value of 100"
 msgstr ""
 
-#: ../src/core/command_def.h:75
+#: ../src/core/command.c:151
 msgid "Saves current image into a PNG file: \"filename\".png"
 msgstr ""
 
-#: ../src/core/command_def.h:76
+#: ../src/core/command.c:153
 msgid ""
 "Saves current image under the form of a Netpbm file format with 16-bit per "
 "channel. The extension of the output will be \"filename\".ppm for RGB image "
 "and \"filename\".pgm for gray-level image"
 msgstr ""
 
-#: ../src/core/command_def.h:77
+#: ../src/core/command.c:155
 msgid ""
 "Saves current image under the form of a uncompressed TIFF file with 16-bit "
 "per channel: \"filename\".tif"
 msgstr ""
 
-#: ../src/core/command_def.h:78
+#: ../src/core/command.c:156
 msgid ""
 "Same command than SAVE_TIF but the output file is saved in 8-bit per "
 "channel: \"filename\".tif"
 msgstr ""
 
-#: ../src/core/command_def.h:79
+#: ../src/core/command.c:158
 msgid ""
 "This command allows easy mass selection of images in the loaded sequence "
 "(\"from\" - \"to\", to included)"
 msgstr ""
 
-#: ../src/core/command_def.h:80
+#: ../src/core/command.c:159
 #, fuzzy
 msgid "Crops the loaded sequence"
 msgstr "No se puede cargar la secuencia %s\n"
 
-#: ../src/core/command_def.h:81
+#: ../src/core/command.c:160
 msgid "Same command than FIND_COSME but for the sequence \"sequencename\""
 msgstr ""
 
-#: ../src/core/command_def.h:82
+#: ../src/core/command.c:161
 msgid "Same command than FIND_COSME_CFA but for the sequence \"sequencename\""
 msgstr ""
 
-#: ../src/core/command_def.h:83
+#: ../src/core/command.c:162
 msgid ""
 "Same command than PSF but works for sequences. Results are dumped in the "
 "console in a form that can be used to produce brightness variation curves"
 msgstr ""
 
-#: ../src/core/command_def.h:84
+#: ../src/core/command.c:164
 msgid ""
 "Defines the number of processing threads used for calculation. Can be as "
 "high as the number of virtual threads existing on the system, which is the "
@@ -4727,7 +4247,7 @@ msgid ""
 "available"
 msgstr ""
 
-#: ../src/core/command_def.h:85
+#: ../src/core/command.c:166
 msgid ""
 "Calibrates the magnitude by selecting a star and giving the known apparent "
 "magnitude. All PSF computations will return the calibrated apparent "
@@ -4735,7 +4255,7 @@ msgid ""
 "values. To reset the magnitude constant see UNSETMAG"
 msgstr ""
 
-#: ../src/core/command_def.h:86
+#: ../src/core/command.c:167
 msgid ""
 "This command is only valid after having run SEQPSF or its graphical "
 "counterpart (select the area around a star and launch the PSF analysis for "
@@ -4748,77 +4268,77 @@ msgid ""
 "UNSETMAGSEQ"
 msgstr ""
 
-#: ../src/core/command_def.h:87
+#: ../src/core/command.c:168
 msgid ""
 "Splits the color image into three distincts files (one for each color) and "
 "save them in \"r\" \"g\" and \"b\" file"
 msgstr ""
 
-#: ../src/core/command_def.h:88
+#: ../src/core/command.c:169
 msgid ""
 "Stacks the \"sequencename\" sequence, using options. The allowed types are: "
 "sum, max, min, med or median, and rej or mean that requires the use of "
 "additional arguments \"sigma low\" and \"high\" used for the Winsorized "
-"sigma clipping rejection algorithm (cannot be changed from here). Different "
-"types of normalisation are allowed: \"-norm=add\" for addition, \"-norm=mul"
-"\" for multiplicative. Options \"-norm=addscale\" and \"-norm=mulscale\" "
-"apply same normalisations but with scale operations. If no argument other "
-"than the sequence name is provided, sum stacking is assumed"
+"sigma clipping rejection algorithm (cannot be changed from here). If no "
+"argument other than the sequence name is provided, sum stacking is assumed"
 msgstr ""
 
-#: ../src/core/command_def.h:89
+#: ../src/core/command.c:170
 msgid ""
 "Opens all sequences in the CWD and stacks them with the optionally specified "
 "stacking type or with sum stacking. See STACK command for options description"
 msgstr ""
 
-#: ../src/core/command_def.h:90
+#: ../src/core/command.c:171
 msgid ""
 "Returns global statistics of the current image. If a selection is made, the "
 "command returns statistics within the selection"
 msgstr ""
 
-#: ../src/core/command_def.h:92
+#: ../src/core/command.c:173
 msgid "Replaces values below \"level\" with \"level\""
 msgstr ""
 
-#: ../src/core/command_def.h:93
+#: ../src/core/command.c:174
 msgid "Replaces values above \"level\" with \"level\""
 msgstr ""
 
-#: ../src/core/command_def.h:94
+#: ../src/core/command.c:175
 msgid ""
 "Replaces values below \"lo\" with \"lo\" and values above \"hi\" with \"hi\""
 msgstr ""
 
-#: ../src/core/command_def.h:96
+#. threshes hi and lo
+#. unsharp masking of current image or genname sequence
+#: ../src/core/command.c:178
 msgid ""
 "Allows easy mass unselection of images in the loaded sequence (\"from\" - "
 "\"to\"). See SELECT"
 msgstr ""
 
-#: ../src/core/command_def.h:97
+#: ../src/core/command.c:179
 msgid "Reset the magnitude calibration to 0. See SETMAG"
 msgstr ""
 
-#: ../src/core/command_def.h:98
+#: ../src/core/command.c:180
 msgid ""
 "Resets the magnitude calibration and reference star for the sequence. See "
 "SETMAGSEQ"
 msgstr ""
 
-#: ../src/core/command_def.h:99
+#: ../src/core/command.c:181
 msgid ""
 "Applies to the working image an unsharp mask with sigma \"sigma\" and "
 "coefficient \"multi\""
 msgstr ""
 
-#: ../src/core/command_def.h:101
+#: ../src/core/command.c:182
 msgid ""
 "Displays an image with \"low\" and \"high\" as the low and high threshold"
 msgstr ""
 
-#: ../src/core/command_def.h:103
+#. wavelet transform in nbr_plan plans
+#: ../src/core/command.c:185
 msgid ""
 "Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) "
 "or bspline (type=2) version of the 'a trous' algorithm. The result is stored "
@@ -4826,12 +4346,419 @@ msgid ""
 "reconstruction with WRECONS"
 msgstr ""
 
-#: ../src/core/command_def.h:104
+#. reconstruct from wavelet transform and weighs plans with c1, c2, c3...
+#: ../src/core/command.c:187
 msgid ""
 "Reconstructs to current image from the planes previously computed with "
 "wavelets and weighted with coefficients \"c1\", \"c2\", ..., \"cn\" "
 "according to the number of planes used for wavelet transform"
 msgstr ""
+
+#: ../src/core/command.c:210 ../src/core/command.c:404
+#: ../src/core/command.c:797 ../src/core/command.c:832
+#: ../src/core/command.c:859 ../src/core/command.c:1169
+#: ../src/core/command.c:1283 ../src/core/command.c:1304
+#: ../src/core/command.c:1323 ../src/core/command.c:1346
+#: ../src/core/command.c:1498 ../src/core/command.c:2146
+#: ../src/gui/callbacks.c:3961 ../src/gui/callbacks.c:4163
+#: ../src/gui/callbacks.c:4354 ../src/gui/callbacks.c:4438
+#: ../src/gui/callbacks.c:4635 ../src/gui/callbacks.c:4973
+#: ../src/gui/callbacks.c:5120 ../src/gui/callbacks.c:5424
+#: ../src/gui/callbacks.c:5602 ../src/gui/script_menu.c:151
+#: ../src/io/conversion.c:493 ../src/registration/registration.c:1162
+#: ../src/stacking/stacking.c:1469 ../src/stacking/stacking.c:1592
+msgid "Another task is already in progress, ignoring new request.\n"
+msgstr "Otra tarea en progreso, ignorando nuevas peticiones.\n"
+
+#: ../src/core/command.c:350
+msgid "Multiplying by a coefficient less than or equal to 0 is not possible.\n"
+msgstr "Multiplicar por un coeficiente menor o igual a 0 no es posible.\n"
+
+#: ../src/core/command.c:371
+#, c-format
+msgid "Entropy: %.3lf\n"
+msgstr "Entropía: %.3lf\n"
+
+#: ../src/core/command.c:393
+msgid "Number of iterations must be > 0.\n"
+msgstr ""
+"El número de iteraciones ha de ser mayor que 0.\n"
+"\n"
+
+#: ../src/core/command.c:398
+msgid "Sigma must be > 0.\n"
+msgstr ""
+"El valor Sigma debe ser mayor que 0.\n"
+"\n"
+
+#: ../src/core/command.c:434
+msgid "Crop: x and y must be positive values.\n"
+msgstr "Recortar: x e y deben ser valores positivos.\n"
+
+#: ../src/core/command.c:438
+msgid "Crop: width and height must be greater than 0.\n"
+msgstr "Recortar: ancho y alto deben ser mayores que 0.\n"
+
+#: ../src/core/command.c:442
+#, c-format
+msgid "Crop: width and height, respectively, must be less than %d and %d.\n"
+msgstr ""
+"Recortar: ancho y alto deben ser menores que %d y %d respectivamente.\n"
+
+#: ../src/core/command.c:451
+msgid "Crop: select a region or provide x, y, width, height\n"
+msgstr "Recortar: seleccione una región o proporcione x, y, ancho y alto\n"
+
+#: ../src/core/command.c:527 ../src/core/command.c:2012
+#: ../src/gui/callbacks.c:5317 ../src/gui/callbacks.c:5384
+#, c-format
+msgid "Wavelet: maximum number of plans for this image size is %d\n"
+msgstr "Wavelet: el número máximo de planos para este tamaño de imagen es %d\n"
+
+#: ../src/core/command.c:533 ../src/gui/callbacks.c:5326
+#, c-format
+msgid "Wavelet: type must be %d or %d\n"
+msgstr "Wavelet: el tipo debe ser %d o %d\n"
+
+#: ../src/core/command.c:588
+msgid "Cannot list files, set working directory first.\n"
+msgstr ""
+"No se pueden listar ficheros, establezca primero el directorio de trabajo.\n"
+
+#: ../src/core/command.c:594 ../src/core/command.c:603
+msgid "Siril cannot open the directory.\n"
+msgstr "Siril no puede abrir el directorio.\n"
+
+#: ../src/core/command.c:625
+#, c-format
+msgid "Link: %s\n"
+msgstr "Enlace: %s\n"
+
+#: ../src/core/command.c:629
+#, c-format
+msgid "Directory: %s\n"
+msgstr "Directorio: %s\n"
+
+#: ../src/core/command.c:639 ../src/core/command.c:646
+#, c-format
+msgid "Sequence: %s\n"
+msgstr "Secuencia: %s\n"
+
+#: ../src/core/command.c:642 ../src/core/command.c:644
+#, c-format
+msgid "Image: %s\n"
+msgstr "Imagen: %s\n"
+
+#: ../src/core/command.c:651 ../src/core/command.c:1994
+msgid "********* END OF THE LIST *********\n"
+msgstr "********* FIN DE LA LISTA **********\n"
+
+#: ../src/core/command.c:675
+msgid "The scaling factor must be less than 5.0\n"
+msgstr "El factor de escala debe ser menor de 5.0\n"
+
+#: ../src/core/command.c:719 ../src/core/command.c:779
+#: ../src/core/command.c:801
+msgid ""
+"Current selection is too large. To determine the PSF, please make a "
+"selection around a single star.\n"
+msgstr ""
+"La selección actual es demasiado amplia. Para determinar el PSF realice una "
+"selección alrededor de una única estrella.\n"
+
+#: ../src/core/command.c:723 ../src/core/command.c:783
+#: ../src/core/command.c:805 ../src/io/sequence.c:1505
+msgid "Select an area first\n"
+msgstr "Seleccione un área primero\n"
+
+#: ../src/core/command.c:729
+#, c-format
+msgid ""
+"Relative magnitude: %.3lf, True reduced magnitude: %.3lf, Offset: %.3lf\n"
+msgstr ""
+"Magnitud relativa: %.3lf, Magnidud real reducida: %.3lf, Compensación: "
+"%.3lf\n"
+
+#: ../src/core/command.c:745 ../src/core/command.c:764
+#: ../src/core/command.c:824
+msgid "This command can be used only when a sequence is loaded\n"
+msgstr "Sólo se puede usar este comando cuando se ha cargado una secuencia\n"
+
+#: ../src/core/command.c:753
+msgid "Run a PSF for the sequence first (see seqpsf)\n"
+msgstr "Ejecutar un PSF para la secuencia primero (ver seqpsf)\n"
+
+#: ../src/core/command.c:757
+#, c-format
+msgid ""
+"Reference magnitude has been set for star %d to %f and will be computed for "
+"each image\n"
+msgstr ""
+"La magnitud de referencia se ha establecido para la estrella %d a %f y se "
+"calculará para cada imagen\n"
+
+#: ../src/core/command.c:769
+msgid "Reference magnitude unset for sequence\n"
+msgstr "Magnitud de referencia no establecida para la secuencia\n"
+
+#: ../src/core/command.c:819
+#, c-format
+msgid "Running the PSF on the loaded sequence, layer %d\n"
+msgstr "Ejecutando el PSF en la secuencia cargada, capa %d\n"
+
+#: ../src/core/command.c:852
+#, c-format
+msgid "Background value: %d\n"
+msgstr "Valor de fondo: %d\n"
+
+#: ../src/core/command.c:899
+#, c-format
+msgid "The file %s has been created for the %s layer.\n"
+msgstr "Se ha creado el fichero %s para la capa %s.\n"
+
+#: ../src/core/command.c:971
+msgid "Number of layers MUST be 1 or 3\n"
+msgstr "El número de capas debe ser 1 o 3\n"
+
+#: ../src/core/command.c:983
+msgid "new empty image"
+msgstr "nueva imagen vacía"
+
+#: ../src/core/command.c:993
+#, c-format
+msgid "Values must be positive and less than %d.\n"
+msgstr "Los valores han de ser positivos y menores que %d.\n"
+
+#: ../src/core/command.c:1011
+msgid "Fill2: select a region or provide x, y, width, height\n"
+msgstr "Seleccione una región o proporcione x, y, ancho y alto\n"
+
+#: ../src/core/command.c:1045
+msgid "find_hot must be applied on an one-channel master-dark frame"
+msgstr ""
+"encontrar_calientes debe aplicarse en un dark frame maestro de un único canal"
+
+#: ../src/core/command.c:1053
+#, c-format
+msgid "%ld cold and %ld hot pixels\n"
+msgstr "%ld píxeles friós y %ld píxeles calientes\n"
+
+#: ../src/core/command.c:1058 ../src/core/command.c:1091
+#, c-format
+msgid "Cannot open file: %s\n"
+msgstr "No se puede abrir el fichero: %s\n"
+
+#: ../src/core/command.c:1151
+#, c-format
+msgid "cosmetic correction: cosme file format error at line %d: %s\n"
+msgstr "correción cosmética: error en el fichero cosme en la línea %d: %s\n"
+
+#: ../src/core/command.c:1159
+msgid "There were some errors, please check your input file.\n"
+msgstr "Hubo errores, revise el fichero de entrada.\n"
+
+#: ../src/core/command.c:1179
+msgid "The size of the kernel MUST be odd and greater than 1.\n"
+msgstr "El tamaño del kernel debe ser impar y mayo que 1.\n"
+
+#: ../src/core/command.c:1184
+msgid "Modulation value MUST be between 0 and 1\n"
+msgstr "El valor de modulación debe estar entre 0 y 1\n"
+
+#. FITS are stored bottom to top
+#: ../src/core/command.c:1204
+#, c-format
+msgid "Center of gravity coordinates are (%.3lf, %.3lf)\n"
+msgstr "Las coordenadas del centro de gravedad son (%.3lf,%.3lf)\n"
+
+#: ../src/core/command.c:1239
+#, c-format
+msgid "Contrast: %lf\n"
+msgstr "Contraste: %lf\n"
+
+#: ../src/core/command.c:1300
+msgid "FFT does not work with sequences\n"
+msgstr "La transformada rápida de Fourier no funciona con secuencias\n"
+
+#: ../src/core/command.c:1363 ../src/core/command.c:1512
+#: ../src/core/command.c:1645 ../src/core/command.c:1786
+#: ../src/core/command.c:1875
+#, fuzzy, c-format
+msgid "No sequence %s found.\n"
+msgstr "No hay secuencia seleccionada"
+
+#: ../src/core/command.c:1395
+msgid ""
+"Use this command to select images in a sequence, load a sequence first.\n"
+msgstr ""
+"Use este comando para seleccionar imágenes de una secuencia, cargue primero "
+"la secuencia.\n"
+
+#: ../src/core/command.c:1401
+msgid ""
+"The first argument must be between 0 and the number of images minus one.\n"
+msgstr ""
+"El primer argumento debe estar entre 0 y el número de imágenes menos uno.\n"
+
+#: ../src/core/command.c:1426
+#, c-format
+msgid "Selection update finished, %d images are selected in the sequence\n"
+msgstr ""
+"Actualización de la selección finalizada, %d imágenes seleccionadas en la "
+"secuencia\n"
+
+#: ../src/core/command.c:1443
+msgid "Siril cannot split layers. Make sure your image is in RGB mode.\n"
+msgstr ""
+"Siril no puede dividir capas. Asegúrese que la imagen está en modo RGB.\n"
+
+#: ../src/core/command.c:1483
+#, c-format
+msgid ""
+"%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
+"%0.1lf, Max: %0.1lf\n"
+msgstr ""
+"Capa %s: Media: %0.1lf, Mediana: %0.1lf, Sigma: %0.1lf, AvgDev; %0.1lf, Mín: "
+"%0.1lf, Máx: %0.1lf\n"
+
+#: ../src/core/command.c:1519 ../src/registration/registration.c:101
+msgid "Global Star Alignment (deep-sky)"
+msgstr "Alineación Global de Estrellas (espacio profundo)"
+
+#: ../src/core/command.c:1547 ../src/registration/registration.c:1205
+#, fuzzy
+msgid "Not enough disk space to perform Drizzle operation!\n"
+msgstr "¡¡No hay suficiente espacio en disco para realizar el Drizzle!!\n"
+
+#: ../src/core/command.c:1564 ../src/registration/registration.c:1222
+#, c-format
+msgid "Registration: processing using method: %s\n"
+msgstr "Registro: procesando usando el método: %s\n"
+
+#: ../src/core/command.c:1593
+#, c-format
+msgid "Stacking sequence %s\n"
+msgstr ""
+"Secuencia de apilado %s\n"
+"\n"
+
+#: ../src/core/command.c:1638
+#, c-format
+msgid "Could not save the stacking result %s\n"
+msgstr "No se puede guardar el resultado del apilado %s\n"
+
+#: ../src/core/command.c:1658 ../src/core/command.c:1748
+msgid "Looking for sequences in current working directory...\n"
+msgstr "Buscando secuencias en el directorio actual...\n"
+
+#: ../src/core/command.c:1660
+msgid "Error while searching sequences or opening the directory.\n"
+msgstr "Error buscando secuencias o abriendo el directorio.\n"
+
+#: ../src/core/command.c:1666
+msgid "Starting stacking of found sequences...\n"
+msgstr "Comenzando el apilado de las secuencias encontradas...\n"
+
+#: ../src/core/command.c:1678
+#, c-format
+msgid "Stacked %d sequences successfully.\n"
+msgstr ""
+"Apiladas %d secuencias correctamente.\n"
+"\n"
+
+#: ../src/core/command.c:1713 ../src/core/command.c:1818
+msgid ""
+"The average stacking with rejection uses the Winsorized rejection here and "
+"requires two extra arguments: sigma low and high.\n"
+msgstr ""
+"La media de apilados con rechazo usa el rechazo Winsorized y requiere dos "
+"argumentos adicionales: sigma bajo y sigma alto.\n"
+
+#: ../src/core/command.c:1734 ../src/core/command.c:1839
+#, c-format
+msgid "The provided type of stacking is unknown (%s).\n"
+msgstr "Apilado proporcionado (%s) desconocido.\n"
+
+#: ../src/core/command.c:1750
+#, fuzzy
+msgid "Error while searching sequences.\n"
+msgstr "Error buscando secuencias o abriendo el directorio.\n"
+
+#: ../src/core/command.c:1761
+#, fuzzy
+msgid "Stacked sequence successfully.\n"
+msgstr ""
+"Apiladas %d secuencias correctamente.\n"
+"\n"
+
+#: ../src/core/command.c:1927 ../src/gui/callbacks.c:3973
+msgid "Preprocessing...\n"
+msgstr "Procesando...\n"
+
+#: ../src/core/command.c:1967
+#, c-format
+msgid ""
+"Number of logical processors MUST be greater than 0 and lower or equal to "
+"%d.\n"
+msgstr ""
+"El número de procesadores lógicos debe ser mayor que 0 y menor o igual que "
+"%d.\n"
+
+#: ../src/core/command.c:1979
+#, c-format
+msgid "Using now %d logical processors\n"
+msgstr "Usando %d procesadores lógicos\n"
+
+#: ../src/core/command.c:1989
+msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
+msgstr "******* LISTA DE COMANDOS DISPONIBLES *******\n"
+
+#: ../src/core/command.c:2067
+#, c-format
+msgid "Unknown command: '%s' or not implemented yet\n"
+msgstr "Comando desconocido: '%s' todavía no implementado\n"
+
+#: ../src/core/command.c:2074
+#, c-format
+msgid "Usage: %s\n"
+msgstr "Uso: %s\n"
+
+#. process the command
+#: ../src/core/command.c:2079
+#, c-format
+msgid "Running command: %s\n"
+msgstr ""
+
+#: ../src/core/command.c:2117
+#, fuzzy, c-format
+msgid "Error in line %d. Exiting batch processing\n"
+msgstr "Error en la línea: %d. Saliendo del proceso por lotes\n"
+
+#: ../src/core/command.c:2131
+#, fuzzy
+msgid "Script execution finished successfully.\n"
+msgstr ""
+"Apiladas %d secuencias correctamente.\n"
+"\n"
+
+#: ../src/core/command.c:2133
+#, fuzzy
+msgid "Total execution time"
+msgstr "Descarte local"
+
+#: ../src/core/command.c:2153 ../src/gui/script_menu.c:166
+#, c-format
+msgid "File [%s] does not exist\n"
+msgstr "El fichero [%s] no existe\n"
+
+#: ../src/core/command.c:2157 ../src/gui/script_menu.c:171
+#, fuzzy, c-format
+msgid "Starting script %s\n"
+msgstr "Comenzando apilado...\n"
+
+#: ../src/core/command.c:2287
+msgid "No help for this command"
+msgstr "Escribir help para obtener la lista de comandos soportados"
 
 #: ../src/core/initfile.c:60
 #, c-format
@@ -4910,6 +4837,44 @@ msgstr ""
 #, c-format
 msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr "Las imágenes no tienen el mismo tamaño (an =%d|%d, al =%d|%d)\n"
+
+#: ../src/core/siril.c:206 ../src/core/utils.c:807 ../src/gui/callbacks.c:1074
+#: ../src/gui/callbacks.c:2101 ../src/gui/callbacks.c:3012
+#: ../src/gui/callbacks.c:4687 ../src/gui/callbacks.c:4708
+#: ../src/gui/callbacks.c:5136 ../src/gui/callbacks.c:5142
+#: ../src/gui/callbacks.c:5167 ../src/gui/plot.c:379 ../src/gui/plot.c:438
+#: ../src/gui/PSF_list.c:150 ../src/io/conversion.c:530
+#: ../src/io/conversion.c:600 ../src/io/image_format_fits.c:404
+#: ../src/io/image_format_fits.c:410 ../src/io/image_format_fits.c:431
+#: ../src/io/image_format_fits.c:439 ../src/io/image_format_fits.c:461
+#: ../src/io/image_format_fits.c:499 ../src/io/image_format_fits.c:517
+#: ../src/io/image_format_fits.c:656 ../src/io/image_format_fits.c:891
+#: ../src/io/image_formats_internal.c:221
+#: ../src/io/image_formats_internal.c:285
+#: ../src/io/image_formats_internal.c:355
+#: ../src/io/image_formats_internal.c:415
+#: ../src/io/image_formats_internal.c:427
+#: ../src/io/image_formats_internal.c:510
+#: ../src/io/image_formats_internal.c:542
+#: ../src/io/image_formats_internal.c:575
+#: ../src/io/image_formats_internal.c:591
+#: ../src/io/image_formats_internal.c:766
+#: ../src/io/image_formats_internal.c:814
+#: ../src/io/image_formats_internal.c:852
+#: ../src/io/image_formats_libraries.c:89
+#: ../src/io/image_formats_libraries.c:107
+#: ../src/io/image_formats_libraries.c:117
+#: ../src/io/image_formats_libraries.c:159
+#: ../src/io/image_formats_libraries.c:291
+#: ../src/io/image_formats_libraries.c:348
+#: ../src/io/image_formats_libraries.c:412
+#: ../src/io/image_formats_libraries.c:485
+#: ../src/io/image_formats_libraries.c:576 ../src/io/single_image.c:123
+#: ../src/io/single_image.c:173 ../src/io/single_image.c:177
+#: ../src/registration/registration.c:1206 ../src/stacking/normalization.c:121
+#: ../src/stacking/stacking.c:114 ../src/stacking/stacking.c:800
+msgid "Error"
+msgstr "Error"
 
 #: ../src/core/siril.c:241
 #, c-format
@@ -4999,42 +4964,37 @@ msgstr "No"
 msgid "Rotation (%s interpolation, angle=%g): processing...\n"
 msgstr "Rotación (interpolación %s, ángulo=%g): procesando...\n"
 
-#: ../src/core/siril.c:1211
-#, fuzzy, c-format
-msgid "Extracting %s..."
-msgstr "Extracción"
-
-#: ../src/core/siril.c:1252
+#: ../src/core/siril.c:1234
 msgid "Median Filter: processing...\n"
 msgstr "Filtro de mediana: procesando...\n"
 
-#: ../src/core/siril.c:1257
+#: ../src/core/siril.c:1239
 #, c-format
 msgid "Iteration #%d...\n"
 msgstr "Iteración #%d...\n"
 
-#: ../src/core/siril.c:1400
+#: ../src/core/siril.c:1382
 msgid "Banding Reducing: processing...\n"
 msgstr "Reducción de bandas: procesando...\n"
 
-#: ../src/core/siril.c:1562
+#: ../src/core/siril.c:1544
 msgid "backgroundnoise: Error, no data computed\n"
 msgstr "ruido de fondo: Error, sin datos procesados\n"
 
-#: ../src/core/siril.c:1572
+#: ../src/core/siril.c:1554
 msgid "backgroundnoise: does not converge\n"
 msgstr "ruido de fondo; no converge\n"
 
-#: ../src/core/siril.c:1602
+#: ../src/core/siril.c:1584
 msgid "Noise standard deviation: calculating...\n"
 msgstr "Desviación estándar de ruido: calculando...\n"
 
-#: ../src/core/siril.c:1622
+#: ../src/core/siril.c:1604
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
 msgstr "Valor del ruido de fondo (canal: #%d): %0.3lf (%.3e)\n"
 
-#: ../src/core/siril.c:1635
+#: ../src/core/siril.c:1617
 msgid "Lucy-Richardson deconvolution: processing...\n"
 msgstr "Deconvolución Lucy-Richardson: procesando...\n"
 
@@ -5110,40 +5070,40 @@ msgstr ""
 "No dispone de permisos para escribir en este directorio: %s\n"
 "\n"
 
-#: ../src/core/utils.c:362
+#: ../src/core/utils.c:360
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "Estableciendo CWD (Directorio Actual de Trabajo) a '%s'\n"
 
-#: ../src/core/utils.c:368
+#: ../src/core/utils.c:366
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr "No se puede cambiar el directorio a '%s'.\n"
 
-#: ../src/core/utils.c:773
+#: ../src/core/utils.c:771
 msgid "Filename is too long, not expanding it\n"
 msgstr "Nombre de fichero demasiado largo, no se expande\n"
 
-#: ../src/core/utils.c:809
+#: ../src/core/utils.c:807
 msgid "File not found"
 msgstr "Fichero no encontrado"
 
-#: ../src/core/utils.c:978
+#: ../src/core/utils.c:976
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Verificando la versión de GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:1001
+#: ../src/core/utils.c:999
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "La versión de GTK no cumple con los requisitos: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:1007
+#: ../src/core/utils.c:1005
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 msgstr "Imposible cargar la hoja de estilos CSS: %s. Reinstale %s\n"
 
-#: ../src/core/utils.c:1017 ../src/main.c:249
+#: ../src/core/utils.c:1015 ../src/main.c:250
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "'%s' cargado con éxito\n"
@@ -5374,12 +5334,12 @@ msgstr "Calientes: %ld px"
 msgid "Are you sure you want to quit ?"
 msgstr "¿Está seguro de que quiere salir?"
 
-#: ../src/gui/callbacks.c:3631
+#: ../src/gui/callbacks.c:3629
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "nuevo valor de zoom: %f\n"
 
-#: ../src/gui/callbacks.c:3640
+#: ../src/gui/callbacks.c:3638
 msgid ""
 "Copyright © 2004-2011 François Meyer\n"
 "Copyright © 2012-2018 team free-astro"
@@ -5388,35 +5348,35 @@ msgstr ""
 "Copyright © 2012-2018 team free-astro"
 
 #. translator names
-#: ../src/gui/callbacks.c:3652
+#: ../src/gui/callbacks.c:3650
 msgid ""
 "Cyril Richard <cyril@free-astro.org>\n"
 "Vincent Hourdin <vh@free-astro.vinvin.tf>"
 msgstr "Joaquín. M. Llano Montero"
 
-#: ../src/gui/callbacks.c:3663
+#: ../src/gui/callbacks.c:3661
 msgid "About siril"
 msgstr "Acerca de Siril"
 
-#: ../src/gui/callbacks.c:3670
+#: ../src/gui/callbacks.c:3668
 msgid "Astronomical image (pre-)processing program"
 msgstr "Programa de (pre-)proceso de imágenes astronómicas"
 
-#: ../src/gui/callbacks.c:3673
+#: ../src/gui/callbacks.c:3671
 msgid "Visit the Siril website"
 msgstr "Visitar el sitio web de Siril"
 
-#: ../src/gui/callbacks.c:3708
+#: ../src/gui/callbacks.c:3706
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3710
+#: ../src/gui/callbacks.c:3708
 #, c-format
 msgid "undefined"
 msgstr "sin defeinir"
 
-#: ../src/gui/callbacks.c:3809
+#: ../src/gui/callbacks.c:3807
 msgid ""
 "Exclude all images ?\n"
 " (this erases previous image selection\n"
@@ -5426,7 +5386,7 @@ msgstr ""
 "(esto borrará la anterior selección\n"
 "... y no es posible deshacer)"
 
-#: ../src/gui/callbacks.c:3819
+#: ../src/gui/callbacks.c:3817
 msgid ""
 "Include all images ?\n"
 " (this erases previous image selection\n"
@@ -5436,84 +5396,84 @@ msgstr ""
 "(esto borrará la anterior selección\n"
 "... y no es posible deshacer)"
 
-#: ../src/gui/callbacks.c:3839
+#: ../src/gui/callbacks.c:3837
 msgid "Opening dark image..."
 msgstr "Abriendo imagen negra..."
 
-#: ../src/gui/callbacks.c:3842
+#: ../src/gui/callbacks.c:3840
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "SIN USAR DARK: no se puede abrir el fichero\n"
 
-#: ../src/gui/callbacks.c:3849
+#: ../src/gui/callbacks.c:3847
 msgid "NOT USING DARK: number of channels is different"
 msgstr "SIN USAR DARK: el número de canales es diferente"
 
-#: ../src/gui/callbacks.c:3887
+#: ../src/gui/callbacks.c:3885
 msgid "Opening flat image..."
 msgstr "Abriendo imagen plana..."
 
-#: ../src/gui/callbacks.c:3890
+#: ../src/gui/callbacks.c:3888
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "SIN USAR IMAGEN PLANA: no se puede abrir el fichero\n"
 
-#: ../src/gui/callbacks.c:3897
+#: ../src/gui/callbacks.c:3895
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "SIN USAR IMAGEN PLANA: número de canales incorrecto"
 
-#: ../src/gui/callbacks.c:3924
+#: ../src/gui/callbacks.c:3922
 msgid "Opening offset image..."
 msgstr "Abriendo imagen de compensación..."
 
-#: ../src/gui/callbacks.c:3927
+#: ../src/gui/callbacks.c:3925
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "SIN USAR COMPENSACIÓN: no se puede abrir el fichero\n"
 
-#: ../src/gui/callbacks.c:3934
+#: ../src/gui/callbacks.c:3932
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "SIN USAR COMPENSACIÓN: el número de canales es diferente"
 
-#: ../src/gui/callbacks.c:4026
+#: ../src/gui/callbacks.c:4024
 msgid "Error in preprocessing."
 msgstr "Error en el preprocesado."
 
-#: ../src/gui/callbacks.c:4102
+#: ../src/gui/callbacks.c:4100
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Seleccionada %s secuencia %s..."
 
-#: ../src/gui/callbacks.c:4171
+#: ../src/gui/callbacks.c:4169
 msgid "Searching for sequences in the current working directory..."
 msgstr "Buscando secuencias en el directorio de trabajo actual..."
 
-#: ../src/gui/callbacks.c:4687
+#: ../src/gui/callbacks.c:4685
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr ""
 "No se puede extraer el fondo de sí mismo. Por favor haga clic en Mostrar "
 "Imagen\n"
 
-#: ../src/gui/callbacks.c:4709
+#: ../src/gui/callbacks.c:4707
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr ""
 "Por favor, aplique la corrección en la imagen clicando en Mostrar Imagen\n"
 
-#: ../src/gui/callbacks.c:4731
+#: ../src/gui/callbacks.c:4729
 msgid "Subtraction done ...\n"
 msgstr "Resta realizada ...\n"
 
-#: ../src/gui/callbacks.c:4738
+#: ../src/gui/callbacks.c:4736
 msgid "Division done ...\n"
 msgstr "División realizada ...\n"
 
-#: ../src/gui/callbacks.c:4924
+#: ../src/gui/callbacks.c:4922
 msgid "Load an image first, aborted.\n"
 msgstr "Cargue primero una imagen, abortado.\n"
 
-#: ../src/gui/callbacks.c:4953
+#: ../src/gui/callbacks.c:4951
 msgid "The file stars.lst has been created.\n"
 msgstr "Se ha creado el archivo stars.lst.\n"
 
-#: ../src/gui/callbacks.c:5030 ../src/gui/callbacks.c:5075
+#: ../src/gui/callbacks.c:5028 ../src/gui/callbacks.c:5073
 msgid ""
 "Current selection is too large.\n"
 "To determine the PSF, please make a selection around a star.\n"
@@ -5522,7 +5482,7 @@ msgstr ""
 "Para determinar el PSF, por favor realice una selección alrededor de una "
 "estrella.\n"
 
-#: ../src/gui/callbacks.c:5044
+#: ../src/gui/callbacks.c:5042
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -5571,19 +5531,19 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:5137
+#: ../src/gui/callbacks.c:5135
 msgid "FFT does not work with sequences !\n"
 msgstr "¡La FFT no funciona con secuencias!\n"
 
-#: ../src/gui/callbacks.c:5143
+#: ../src/gui/callbacks.c:5141
 msgid "Open an image first !\n"
 msgstr "¡Abra una imagen primero!\n"
 
-#: ../src/gui/callbacks.c:5168
+#: ../src/gui/callbacks.c:5166
 msgid "Select magnitude and phase before !\n"
 msgstr "¡Seleccione magnitud y fase primero!\n"
 
-#: ../src/gui/callbacks.c:5697
+#: ../src/gui/callbacks.c:5700
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr ""
@@ -5591,7 +5551,7 @@ msgstr ""
 "SER.\n"
 "\n"
 
-#: ../src/gui/callbacks.c:5702
+#: ../src/gui/callbacks.c:5705
 msgid "Not a valid sequence for cropping.\n"
 msgstr "No es una secuencia válida para recortar.\n"
 
@@ -5771,7 +5731,7 @@ msgstr "_Guardar"
 msgid "This type of file is not handled. Should not happen"
 msgstr "Este tipo de archivo no está soportado. No debería ocurrir"
 
-#: ../src/gui/script_menu.c:218
+#: ../src/gui/script_menu.c:215
 #, fuzzy, c-format
 msgid "Loading script: %s\n"
 msgstr "Comenzando apilado...\n"
@@ -5853,82 +5813,87 @@ msgstr "Tamaño de la selección en píxeles: (%d,%d)"
 msgid "No selection"
 msgstr "Sin selección"
 
-#: ../src/io/conversion.c:237
-msgid ""
-"Saving to 3 FITS files cannot be done because the source image does not have "
-"three channels\n"
-msgstr ""
-"No se puede guardar a archivos 3 FITs porque la imagen original no tiene "
-"tres canales\n"
-
-#: ../src/io/conversion.c:336
+#: ../src/io/conversion.c:305
 msgid "BMP images, "
 msgstr "Imágenes BMP, "
 
-#: ../src/io/conversion.c:338
+#: ../src/io/conversion.c:307
 msgid "PIC images (IRIS), "
 msgstr "Imágenes PIC (IRIS), "
 
-#: ../src/io/conversion.c:340
+#: ../src/io/conversion.c:309
 msgid "PGM and PPM binary images"
 msgstr "Imágenes binarias PGM y PPM"
 
-#: ../src/io/conversion.c:364
+#: ../src/io/conversion.c:333
 msgid "RAW images"
 msgstr "Imágenes RAW"
 
-#: ../src/io/conversion.c:379
+#: ../src/io/conversion.c:348
 msgid "FITS-CFA images"
 msgstr "Imágenes FITS-CFA"
 
-#: ../src/io/conversion.c:384
+#: ../src/io/conversion.c:353
 msgid "Films"
 msgstr "Películas"
 
-#: ../src/io/conversion.c:389
+#: ../src/io/conversion.c:358
 msgid "SER sequences"
 msgstr "Secuencias SER"
 
-#: ../src/io/conversion.c:395
+#: ../src/io/conversion.c:364
 msgid "TIFF images"
 msgstr "Imágenes TIFF"
 
-#: ../src/io/conversion.c:403
+#: ../src/io/conversion.c:372
 msgid "JPG images"
 msgstr "Imágenes JPG"
 
-#: ../src/io/conversion.c:411
+#: ../src/io/conversion.c:380
 msgid "PNG images"
 msgstr "Imágenes PNG"
 
-#: ../src/io/conversion.c:420
+#: ../src/io/conversion.c:389
 #, c-format
 msgid "Supported file types: %s\n"
 msgstr "Tipos de archivo soportados: %s\n"
 
-#: ../src/io/conversion.c:586
+#: ../src/io/conversion.c:512
+msgid "Conversion: processing...\n"
+msgstr "Conversión: procesando...\n"
+
+#: ../src/io/conversion.c:523
+msgid "Conversion: no working directory set.\n"
+msgstr "Conversión: no se ha establecido directorio de trabajo.\n"
+
+#: ../src/io/conversion.c:529
+#, c-format
+msgid "Conversion: error opening working directory %s.\n"
+msgstr "Conversión: error abriendo directorio de trabajo %s.\n"
+
+#: ../src/io/conversion.c:562
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
 msgstr ""
 "La salida SER tendrá prioridad sobre la opción crear un canal por imagen.\n"
 
-#: ../src/io/conversion.c:592 ../src/io/conversion.c:644
-#: ../src/io/sequence.c:1284 ../src/io/sequence_export.c:104
+#: ../src/io/conversion.c:568 ../src/io/conversion.c:620
+#: ../src/io/sequence.c:1251 ../src/io/sequence_export.c:104
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "Creación del archivo SER fallida, abortando.\n"
 
-#: ../src/io/conversion.c:609 ../src/io/conversion.c:610
+#: ../src/io/conversion.c:585 ../src/io/conversion.c:586
 #, c-format
 msgid "Converting %s..."
 msgstr "Convirtiendo %s..."
 
-#: ../src/io/conversion.c:616
+#: ../src/io/conversion.c:592
 #, c-format
 msgid "FILETYPE IS NOT SUPPORTED, CANNOT CONVERT: %s\n"
 msgstr "TIPO DE ARCHIVO NO SOPORTADO, NO SE PUEDE CONVERTIR: %s\n"
 
-#: ../src/io/conversion.c:617
+#: ../src/io/conversion.c:593
 #, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -5947,38 +5912,46 @@ msgstr ""
 "soportados, puede notificar a los desarrolladores que la extensión que está "
 "probando deba reconocerse para este tipo de archivos."
 
-#: ../src/io/conversion.c:636
+#: ../src/io/conversion.c:612
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Error abriendo película %s, abortando.\n"
 
-#: ../src/io/conversion.c:653
+#: ../src/io/conversion.c:629
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Error leyendo frame %d de %s, abortando.\n"
 
-#: ../src/io/conversion.c:665 ../src/io/conversion.c:698
-#: ../src/io/sequence.c:1314 ../src/io/sequence_export.c:316
+#: ../src/io/conversion.c:641 ../src/io/conversion.c:674
+#: ../src/io/sequence.c:1281 ../src/io/sequence_export.c:316
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Error convirtiendo a SER (¿sin espacio?)\n"
 
-#: ../src/io/conversion.c:673 ../src/io/conversion.c:704
+#: ../src/io/conversion.c:649 ../src/io/conversion.c:680
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr "Error convirtiendo a FITS (¿sin espacio?)\n"
 
-#: ../src/io/conversion.c:688
+#: ../src/io/conversion.c:664
 msgid "Converting from SER is not yet supported\n"
 msgstr "Todavía no se soporta la conversión de SER\n"
 
-#: ../src/io/conversion.c:746
+#: ../src/io/conversion.c:737
+msgid ""
+"Saving to 3 FITS files cannot be done because the source image does not have "
+"three channels\n"
+msgstr ""
+"No se puede guardar a archivos 3 FITs porque la imagen original no tiene "
+"tres canales\n"
+
+#: ../src/io/conversion.c:790
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "No se puede hacer el debayer en una imagen con más de un canal\n"
 
-#: ../src/io/conversion.c:759 ../src/io/ser.c:781 ../src/io/ser.c:987
+#: ../src/io/conversion.c:803 ../src/io/ser.c:781 ../src/io/ser.c:987
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "No se ha encontrado patrón Bayer en el fichero cabecera.\n"
 
-#: ../src/io/conversion.c:762 ../src/io/ser.c:785 ../src/io/ser.c:991
+#: ../src/io/conversion.c:806 ../src/io/ser.c:785 ../src/io/ser.c:991
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -5987,20 +5960,20 @@ msgstr ""
 "El patrón Bayer encontrado en la cabecera (%s) es diferente del patrón Bayer "
 "en las opciones (%s). Sobrescribiendo configuración.\n"
 
-#: ../src/io/conversion.c:771
+#: ../src/io/conversion.c:815
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr "Detectado sensor XTRANS. Usando algoritmo especial.\n"
 
-#: ../src/io/conversion.c:776
+#: ../src/io/conversion.c:820
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Patrón de archivo: %s\n"
 
-#: ../src/io/conversion.c:780
+#: ../src/io/conversion.c:824
 msgid "Cannot perform debayering\n"
 msgstr "No se puede realizar el debayer\n"
 
-#: ../src/io/conversion.c:830
+#: ../src/io/conversion.c:893
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
@@ -6009,7 +5982,7 @@ msgstr ""
 "ocurrir\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:835
+#: ../src/io/conversion.c:898
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "Error abriendo %s: tipo de archivo no soportado.\n"
@@ -6103,37 +6076,37 @@ msgstr ""
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Guardando archivo FITS: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_internal.c:219
+#: ../src/io/image_formats_internal.c:220
 msgid "Error opening BMP.\n"
 msgstr "Error abriendo BMP.\n"
 
-#: ../src/io/image_formats_internal.c:282
+#: ../src/io/image_formats_internal.c:283
 msgid ""
 "Sorry but Siril cannot open this kind of BMP. Try to convert it before.\n"
 msgstr ""
 "Lo sentimos pero Siril no puede abrir este tipo de BMP. Intente convertirlo "
 "primero.\n"
 
-#: ../src/io/image_formats_internal.c:288
+#: ../src/io/image_formats_internal.c:289
 #, c-format
 msgid "Reading BMP: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Abriendo BMP: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_internal.c:352
+#: ../src/io/image_formats_internal.c:354
 msgid "Can't create BMP file.\n"
 msgstr "No se puede crear el archivo BMP.\n"
 
-#: ../src/io/image_formats_internal.c:385
+#: ../src/io/image_formats_internal.c:392
 #, c-format
 msgid "Saving BMP: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Guardando archivo BMP: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_internal.c:407
-#: ../src/io/image_formats_internal.c:844
+#: ../src/io/image_formats_internal.c:414
+#: ../src/io/image_formats_internal.c:851
 msgid "Sorry but Siril cannot open this file.\n"
 msgstr "Lo sentimos, Siril no puede abrir este tipo de archivos.\n"
 
-#: ../src/io/image_formats_internal.c:418
+#: ../src/io/image_formats_internal.c:425
 msgid ""
 "Wrong magic cookie in PNM file, ASCII types and b&w bitmaps are not "
 "supported.\n"
@@ -6141,60 +6114,60 @@ msgstr ""
 "Cookie mágica incorrecta en archivo PNM, los tipos ASCII y mapas de bits en "
 "byn no están soportados.\n"
 
-#: ../src/io/image_formats_internal.c:502
+#: ../src/io/image_formats_internal.c:509
 msgid "Error reading 8-bit PPM image data.\n"
 msgstr "Error leyendo datos de imagen de 8 bits PPM.\n"
 
-#: ../src/io/image_formats_internal.c:534
+#: ../src/io/image_formats_internal.c:541
 msgid "Error reading 16-bit gray PPM image data.\n"
 msgstr "Error al leer datos imagen PPM de 16 bits gris.\n"
 
-#: ../src/io/image_formats_internal.c:567
+#: ../src/io/image_formats_internal.c:574
 msgid "Error reading 16-bit color PPM image data.\n"
 msgstr "Error leyendo datos de imagen de 16 bits color.\n"
 
-#: ../src/io/image_formats_internal.c:582
+#: ../src/io/image_formats_internal.c:589
 #, c-format
 msgid "Not handled max value for PNM: %d.\n"
 msgstr "No se maneja valor máximo para PNM: %d.\n"
 
-#: ../src/io/image_formats_internal.c:590
+#: ../src/io/image_formats_internal.c:597
 #, c-format
 msgid "Reading NetPBM: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Leyendo NetPBM: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_internal.c:625
-#: ../src/io/image_formats_internal.c:652
+#: ../src/io/image_formats_internal.c:632
+#: ../src/io/image_formats_internal.c:659
 #, c-format
 msgid "Saving NetPBM: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Guardando NetPBM: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_internal.c:757
+#: ../src/io/image_formats_internal.c:764
 msgid "Wrong magic cookie in PIC file. This image is not supported.\n"
 msgstr "Cookie mágica errónea en archivo PIC. Esta imagen no está soportada.\n"
 
-#: ../src/io/image_formats_internal.c:806
+#: ../src/io/image_formats_internal.c:813
 #, c-format
 msgid "Sorry but Siril cannot open the PIC file: %s.\n"
 msgstr "Lo sentimos pero Siril no puede abrir el archivo PIC: %s.\n"
 
-#: ../src/io/image_formats_internal.c:828
+#: ../src/io/image_formats_internal.c:835
 msgid "Cannot Read the data\n"
 msgstr "No se pueden leer los datos\n"
 
-#: ../src/io/image_formats_internal.c:849
+#: ../src/io/image_formats_internal.c:856
 #, c-format
 msgid "Reading PIC: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Leyendo archivo PIC: archivo %s, %ldcapa(s), %ux%u píxeles\n"
 
 #. removing left white spaces if exist
-#: ../src/io/image_formats_internal.c:858
+#: ../src/io/image_formats_internal.c:865
 #, c-format
 msgid "Date (of observation): %s\n"
 msgstr "Fecha (de observación): %s\n"
 
 #. removing left white spaces if exist
-#: ../src/io/image_formats_internal.c:862
+#: ../src/io/image_formats_internal.c:869
 #, c-format
 msgid "Time (of observation): %s\n"
 msgstr "Hora (de observación): %s\n"
@@ -6226,92 +6199,92 @@ msgstr ""
 "Siril sólo trabaja con formatos TIFF de 8/16 bits.\n"
 " \n"
 
-#: ../src/io/image_formats_libraries.c:263
+#: ../src/io/image_formats_libraries.c:262
 #, c-format
 msgid "Reading TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Leyendo TIFF: %d-bit archivo %s, %ldcapa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_libraries.c:291
+#: ../src/io/image_formats_libraries.c:290
 msgid "Siril cannot create TIFF file.\n"
 msgstr "Siril no puede crear el archivo TIFF.\n"
 
-#: ../src/io/image_formats_libraries.c:348
+#: ../src/io/image_formats_libraries.c:347
 msgid "TIFF file has unexpected number of channels (not 1 or 3).\n"
 msgstr "El archivo TIFF tiene un número inesperado de canales (no es 1 o 3).\n"
 
-#: ../src/io/image_formats_libraries.c:390
+#: ../src/io/image_formats_libraries.c:389
 #, c-format
 msgid "Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Guardando TIFF: %d-bit archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_libraries.c:412
-#: ../src/io/image_formats_libraries.c:565
+#: ../src/io/image_formats_libraries.c:411
+#: ../src/io/image_formats_libraries.c:575
 #, c-format
 msgid "Sorry but Siril cannot open the file: %s.\n"
 msgstr "Lo sentimos pero Siril no puede abrir el fichero: %s.\n"
 
-#: ../src/io/image_formats_libraries.c:458
+#: ../src/io/image_formats_libraries.c:457
 #, c-format
 msgid "Reading JPG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Leyendo JPG: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_libraries.c:486
+#: ../src/io/image_formats_libraries.c:484
 msgid "Siril cannot create JPG file.\n"
 msgstr "Siril no puede crear el fichero JPG.\n"
 
-#: ../src/io/image_formats_libraries.c:541
+#: ../src/io/image_formats_libraries.c:551
 #, c-format
 msgid "Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"
 msgstr "Guardando archivo JPG %s, calidad=%d%%, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_libraries.c:682
+#: ../src/io/image_formats_libraries.c:691
 #, c-format
 msgid "Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Leyendo PNG: %d-bit archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_libraries.c:791
+#: ../src/io/image_formats_libraries.c:800
 #, fuzzy, c-format
 msgid "Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Guardando archivo BMP: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/image_formats_libraries.c:889
+#: ../src/io/image_formats_libraries.c:898
 #, c-format
 msgid "Error in libraw %s\n"
 msgstr "Error en libraw %s\n"
 
-#: ../src/io/image_formats_libraries.c:896
+#: ../src/io/image_formats_libraries.c:905
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%gs)\n"
 msgstr "Decodificando %s archivo %s (ISO=%g, Exposición=%gs)\n"
 
-#: ../src/io/image_formats_libraries.c:899
+#: ../src/io/image_formats_libraries.c:908
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
 msgstr "Decodificando %s archivo %s (ISO=%g, Exposición=1%gs)\n"
 
-#: ../src/io/image_formats_libraries.c:919
 #: ../src/io/image_formats_libraries.c:928
+#: ../src/io/image_formats_libraries.c:937
 #, c-format
 msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Multiplicadores de luz día: %f, %f, %f\n"
 
-#: ../src/io/image_formats_libraries.c:935
+#: ../src/io/image_formats_libraries.c:944
 msgid "Bilinear interpolation...\n"
 msgstr "Interpolación bilineal...\n"
 
-#: ../src/io/image_formats_libraries.c:939
+#: ../src/io/image_formats_libraries.c:948
 msgid "VNG interpolation...\n"
 msgstr "Interpolación VNG...\n"
 
-#: ../src/io/image_formats_libraries.c:943
+#: ../src/io/image_formats_libraries.c:952
 msgid "PPG interpolation...\n"
 msgstr "Interpolación PPG...\n"
 
-#: ../src/io/image_formats_libraries.c:948
+#: ../src/io/image_formats_libraries.c:957
 msgid "AHD interpolation...\n"
 msgstr "Interpolación AHD...\n"
 
-#: ../src/io/image_formats_libraries.c:1108
+#: ../src/io/image_formats_libraries.c:1117
 msgid ""
 "Siril cannot open this file in CFA mode (no data available). Try to switch "
 "into RGB.\n"
@@ -6319,22 +6292,22 @@ msgstr ""
 "Siril no puede abrir este archivo en modo CFA (no hay datos disponibles). "
 "Pruebe a cambiar a RGB.\n"
 
-#: ../src/io/image_formats_libraries.c:1135
+#: ../src/io/image_formats_libraries.c:1144
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 msgstr "Decodificando %s archivo %s (ISO=%g, Exposición=1%0.1f s)\n"
 
-#: ../src/io/image_formats_libraries.c:1138
+#: ../src/io/image_formats_libraries.c:1147
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 msgstr "Decodificando %s archivo %s (ISO=%g, Exposición=%0.1f s)\n"
 
-#: ../src/io/image_formats_libraries.c:1161
+#: ../src/io/image_formats_libraries.c:1170
 #, c-format
 msgid "Bayer pattern: %s\n"
 msgstr "Patrón bayer: %s\n"
 
-#: ../src/io/image_formats_libraries.c:1231
+#: ../src/io/image_formats_libraries.c:1240
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Leyendo archivo RAW: archivo %s, %ld capa(s), %ux%u píxeles\n"
@@ -6348,11 +6321,11 @@ msgstr ""
 "tiene que ser múltiplo de 2, el fps y nombre de archivo no pueden estar "
 "vacíos, calidad entre 1 y 5."
 
-#: ../src/io/seqfile.c:408
+#: ../src/io/seqfile.c:387
 msgid "The file seems to be corrupted\n"
 msgstr "El archivo parece estar corrupto\n"
 
-#: ../src/io/seqfile.c:419
+#: ../src/io/seqfile.c:397
 #, c-format
 msgid ""
 "Fixing the selection number in the .seq file (%d) to the actual value (%d) "
@@ -6361,19 +6334,12 @@ msgstr ""
 "Fijando el número de la selección en el archivo .seq (%d) al valor actual "
 "(%d) (no guardado)\n"
 
-#: ../src/io/seqfile.c:427
-#, c-format
-msgid ""
-"Using registration data from demosaiced layer %d (red is 0, green is 1, blue "
-"is 2)\n"
-msgstr ""
-
-#: ../src/io/seqfile.c:445
+#: ../src/io/seqfile.c:408
 #, c-format
 msgid "Could not load sequence %s\n"
 msgstr "No se puede cargar la secuencia %s\n"
 
-#: ../src/io/seqfile.c:621
+#: ../src/io/seqfile.c:556
 #, c-format
 msgid ""
 "The sequence %s doesn't start at the frame number %d with the specified "
@@ -6438,23 +6404,23 @@ msgid ""
 msgstr ""
 "Esta operación no está soportada para secuencias internas (seq_open_image)\n"
 
-#: ../src/io/sequence.c:1113
+#: ../src/io/sequence.c:1080
 #, c-format
 msgid "Closing sequence %s\n"
 msgstr "Cerrando la secuencia %s\n"
 
-#: ../src/io/sequence.c:1210
+#: ../src/io/sequence.c:1177
 msgid "internal sequence"
 msgstr "secuencia interna"
 
-#: ../src/io/sequence.c:1416
+#: ../src/io/sequence.c:1383
 #, c-format
 msgid "No star found in the area image %d around %d,%d (use a larger area?)\n"
 msgstr ""
 "No se han encontrado estrellas en la zona de imagen %d en torno a %d,%d "
 "(¿usar un area mayor?)\n"
 
-#: ../src/io/sequence.c:1420
+#: ../src/io/sequence.c:1387
 #, c-format
 msgid ""
 "No star found in the area image %d around %d,%d (use 'follow star' option?)\n"
@@ -6462,7 +6428,7 @@ msgstr ""
 "No se han encontrado estrellas en la zona de imagen %d en torno a %d,%d "
 "(¿usar la opción 'seguimiento de estrellas'?)\n"
 
-#: ../src/io/sequence.c:1469
+#: ../src/io/sequence.c:1436
 msgid ""
 "Star analysis does not give consistent results when exposure changes across "
 "the sequence.\n"
@@ -6470,7 +6436,7 @@ msgstr ""
 "El análisis de estrellas no proporciona resultados consistentes cuando la "
 "exposición cambia a lo largo de la secuencia.\n"
 
-#: ../src/io/sequence.c:1542
+#: ../src/io/sequence.c:1509
 msgid ""
 "The sequence analysis of the PSF will use a sliding selection area centred "
 "on the previous found star; this disables parallel processing.\n"
@@ -6478,7 +6444,7 @@ msgstr ""
 "La secuencia de análisis de PSF usará un área deslizante centrada en la "
 "estrella encontrada anterior; esto deshabilita el proceso paralelo.\n"
 
-#: ../src/io/sequence.c:1544
+#: ../src/io/sequence.c:1511
 #, fuzzy
 msgid ""
 "The sequence analysis of the PSF will use registration data to move the "
@@ -6487,7 +6453,7 @@ msgstr ""
 "La secuencia de análisis de PSF usará un área deslizante centrada en la "
 "estrella encontrada anterior; esto deshabilita el proceso paralelo.\n"
 
-#: ../src/io/sequence.c:1566
+#: ../src/io/sequence.c:1533
 msgid "PSF on area"
 msgstr "PSF en el área"
 
@@ -6636,44 +6602,44 @@ msgid ""
 msgstr ""
 "Hubo un error al abrir esta imagen. Revise el log para más información."
 
-#: ../src/main.c:230
+#: ../src/main.c:231
 #, c-format
 msgid "unknown command line parameter '%c'\n"
 msgstr "parámetro de línea de comandos desconocido '%c'\n"
 
-#: ../src/main.c:253
+#: ../src/main.c:254
 #, c-format
 msgid "%s. Looking into another directory...\n"
 msgstr ""
 "%s. Buscando en otro directorio...\n"
 "\n"
 
-#: ../src/main.c:259
+#: ../src/main.c:260
 #, c-format
 msgid "%s was not found or contains errors, cannot render GUI. Exiting.\n"
 msgstr ""
 "%s no encontrado o con errores, no se puede renderizar la GUI. Saliendo.\n"
 
-#: ../src/main.c:279
+#: ../src/main.c:280
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Bienvenido a %s v%s\n"
 
-#: ../src/main.c:340
+#: ../src/main.c:341
 msgid "Could not load or create settings file, exiting.\n"
 msgstr "No se puede cargar o crear el archivo de configuración, saliendo.\n"
 
 #. Get CPU number and set the number of threads
-#: ../src/main.c:381
+#: ../src/main.c:382
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor(s).\n"
 msgstr "Proceso paralelo %s: Usando %d procesador(es) lógico(s).\n"
 
-#: ../src/main.c:383
+#: ../src/main.c:384
 msgid "enabled"
 msgstr "habilitado"
 
-#: ../src/main.c:385
+#: ../src/main.c:386
 msgid "disabled"
 msgstr "deshabilitado"
 
@@ -7220,20 +7186,20 @@ msgstr "Decarte de píxeles ........... %s\n"
 msgid "Rejection parameters ...... low=%.3f high=%.3f\n"
 msgstr "Parámetros de descarte ...... bajo=%.3f alto=%.3f\n"
 
-#: ../src/stacking/stacking.c:1667
+#: ../src/stacking/stacking.c:1662
 msgid "Stacking result image"
 msgstr "Imagen resultado del apilado"
 
-#: ../src/stacking/stacking.c:1690 ../src/stacking/stacking.c:1695
+#: ../src/stacking/stacking.c:1685 ../src/stacking/stacking.c:1690
 msgid "Unsaved stacking result"
 msgstr "Resultado de apilado sin guardar"
 
-#: ../src/stacking/stacking.c:1886
+#: ../src/stacking/stacking.c:1881
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "Usando %d MB de memoria máximos para el apilado\n"
 
-#: ../src/stacking/stacking.c:1912
+#: ../src/stacking/stacking.c:1907
 msgid ""
 "The reference image is not in the selected set of images. To avoid issues, "
 "please change it or change the filtering parameters.\n"
@@ -7242,7 +7208,7 @@ msgstr ""
 "problemas, por favor cambie los parámetros de filtrado.\n"
 "\n"
 
-#: ../src/stacking/stacking.c:1952 ../src/stacking/stacking.c:2031
+#: ../src/stacking/stacking.c:1947 ../src/stacking/stacking.c:2026
 #, c-format
 msgid ""
 "Warning: some images don't have FWHM information available for best images "
@@ -7252,7 +7218,7 @@ msgstr ""
 "mejor selección de imágenes, usando sólo los datos disponibles (%d imágenes "
 "de %d).\n"
 
-#: ../src/stacking/stacking.c:1979 ../src/stacking/stacking.c:2012
+#: ../src/stacking/stacking.c:1974 ../src/stacking/stacking.c:2007
 #, c-format
 msgid ""
 "Error in highest quality accepted for sequence processing: some images don't "
@@ -7262,29 +7228,29 @@ msgstr ""
 "algunas imágenes no tienen este tipo de información disponible para el canal "
 "#%d.\n"
 
-#: ../src/stacking/stacking.c:2095
+#: ../src/stacking/stacking.c:2090
 #, c-format
 msgid "Stacking all images in the sequence (%d)\n"
 msgstr "Apilando todas las imágenes de la secuencia (%d)\n"
 
-#: ../src/stacking/stacking.c:2104
+#: ../src/stacking/stacking.c:2099
 #, c-format
 msgid "Stacking only selected images in the sequence (%d)\n"
 msgstr "Apilando sólo las imágenes seleccionadas en la secuencia (%d)\n"
 
-#: ../src/stacking/stacking.c:2128
+#: ../src/stacking/stacking.c:2123
 #, c-format
 msgid ""
 "Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"
 msgstr ""
 "Apilando imágenes de la secuencia con un FWHM menor o igual que %g (%d)\n"
 
-#: ../src/stacking/stacking.c:2133
+#: ../src/stacking/stacking.c:2128
 #, c-format
 msgid "Based on FWHM < %.2f (%d images)"
 msgstr "Basado en FWHM < %.2f (%d imágenes)"
 
-#: ../src/stacking/stacking.c:2160
+#: ../src/stacking/stacking.c:2155
 #, fuzzy, c-format
 msgid ""
 "Stacking images of the sequence with a roundness higher or equal than %g "
@@ -7292,34 +7258,34 @@ msgid ""
 msgstr ""
 "Apilando imágenes de la secuencia con una calidad mayor o igual que %g (%d)\n"
 
-#: ../src/stacking/stacking.c:2166
+#: ../src/stacking/stacking.c:2161
 #, fuzzy, c-format
 msgid "Based on roundness > %.2f (%d images)"
 msgstr "Basado en calidad > %.2f (%d imágenes)"
 
-#: ../src/stacking/stacking.c:2169
+#: ../src/stacking/stacking.c:2164
 #, c-format
 msgid "Based on roundness"
 msgstr ""
 
-#: ../src/stacking/stacking.c:2180
+#: ../src/stacking/stacking.c:2175
 #, c-format
 msgid ""
 "Stacking images of the sequence with a quality higher or equal than %g (%d)\n"
 msgstr ""
 "Apilando imágenes de la secuencia con una calidad mayor o igual que %g (%d)\n"
 
-#: ../src/stacking/stacking.c:2186
+#: ../src/stacking/stacking.c:2181
 #, c-format
 msgid "Based on quality > %.2f (%d images)"
 msgstr "Basado en calidad > %.2f (%d imágenes)"
 
-#: ../src/stacking/stacking.c:2189
+#: ../src/stacking/stacking.c:2184
 #, c-format
 msgid "Based on quality"
 msgstr "Basado en calidad"
 
-#: ../src/stacking/stacking.c:2263
+#: ../src/stacking/stacking.c:2258
 msgid "Up-scaling sequence for stacking"
 msgstr "Secuencia de escalado para el apilado"
 
