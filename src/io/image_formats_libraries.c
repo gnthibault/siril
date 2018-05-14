@@ -694,7 +694,7 @@ int readpng(const char *name, fits* fit) {
 // Save PNG image (colour)
 // ------------------------------------------
 static int32_t save_colour_file(const char *filename,
-		const WORD *p_image_data, uint32_t width, uint32_t height,
+		const void *p_image_data, uint32_t width, uint32_t height,
 		uint32_t bytes_per_sample) {
 	int32_t ret = -1;
 	int row_stride;
@@ -705,7 +705,7 @@ static int32_t save_colour_file(const char *filename,
 	image.version = PNG_IMAGE_VERSION;
 	image.width = width;
 	image.height = height;
-	image.format = PNG_FORMAT_BGR;
+	image.format = PNG_FORMAT_RGB;
 	if (bytes_per_sample == 2) {
 		image.format |= PNG_FORMAT_FLAG_LINEAR;
 	}
@@ -728,7 +728,7 @@ static int32_t save_colour_file(const char *filename,
 // ------------------------------------------
 // Save PNG image (mono B, G or R)
 // ------------------------------------------
-static int32_t save_mono_file(const char *filename, const WORD *p_image_data,
+static int32_t save_mono_file(const char *filename, const void *p_image_data,
 		uint32_t width, uint32_t height, uint32_t bytes_per_sample) {
 	int32_t ret = -1;
 	int row_stride;
@@ -760,17 +760,34 @@ static int32_t save_mono_file(const char *filename, const WORD *p_image_data,
 	return ret;
 }
 
-static WORD *fits_to_bgrbgr(fits *image) {
+static WORD *convert_data(fits *image, int ch) {
 	int ndata = image->rx * image->ry;
 	int i, j;
 
-	WORD *bgrbgr = malloc(ndata * 3 * sizeof(WORD));
-	for (i = 0, j = 0; i < ndata * 3; i += 3, j++) {
-		bgrbgr[i + 0] = image->pdata[BLAYER][j];
-		bgrbgr[i + 1] = image->pdata[GLAYER][j];
-		bgrbgr[i + 2] = image->pdata[RLAYER][j];
+	WORD *buffer = malloc(ndata * ch * sizeof(WORD));
+	for (i = 0, j = 0; i < ndata * ch; i += ch, j++) {
+		buffer[i + 0] = image->pdata[RLAYER][j];
+		if (ch > 1) {
+			buffer[i + 1] = image->pdata[GLAYER][j];
+			buffer[i + 2] = image->pdata[BLAYER][j];
+		}
 	}
-	return bgrbgr;
+	return buffer;
+}
+
+static uint8_t *convert_data8(fits *image, int ch) {
+	int ndata = image->rx * image->ry;
+	int i, j;
+
+	uint8_t *buffer = malloc(ndata * ch * sizeof(WORD));
+	for (i = 0, j = 0; i < ndata * ch; i += ch, j++) {
+		buffer[i + 0] = (uint8_t)image->pdata[RLAYER][j];
+		if (ch > 1) {
+			buffer[i + 1] = (uint8_t) image->pdata[GLAYER][j];
+			buffer[i + 2] = (uint8_t) image->pdata[BLAYER][j];
+		}
+	}
+	return buffer;
 }
 
 int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
@@ -786,14 +803,28 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 
 	if (is_colour) {
 		// Create colour PNG file
-		WORD *data = fits_to_bgrbgr(fit);
-		ret = save_colour_file(filename, data, width, height,
-				bytes_per_sample);
-		free(data);
+		if (bytes_per_sample == 2) {
+			WORD *data = convert_data(fit, 3);
+			ret = save_colour_file(filename, data, width, height,
+					bytes_per_sample);
+			free(data);
+		} else {
+			uint8_t *data = convert_data8(fit, 3);
+			ret = save_colour_file(filename, data, width, height,
+					bytes_per_sample);
+			free(data);
+		}
 	} else {
 		// Create monochrome PNG file
-		ret = save_mono_file(filename, fit->data, width, height,
-				bytes_per_sample);
+		if (bytes_per_sample == 2) {
+			ret = save_mono_file(filename, fit->data, width, height,
+					bytes_per_sample);
+		} else {
+			uint8_t *data = convert_data8(fit, 1);
+			ret = save_mono_file(filename, data, width, height,
+					bytes_per_sample);
+			free(data);
+		}
 	}
 	siril_log_message(_("Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"),
 			filename, fit->naxes[2], fit->rx, fit->ry);

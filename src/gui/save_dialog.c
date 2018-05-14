@@ -284,6 +284,7 @@ static void initialize_data(gpointer p) {
 
 static gpointer minisavedial(gpointer p) {
 	struct savedial_data *args = (struct savedial_data *) p;
+	uint32_t bytes_per_sample;
 
 	if (args->filename[0] != '\0') {
 		switch (whichminisave) {
@@ -302,7 +303,8 @@ static gpointer minisavedial(gpointer p) {
 #endif
 #ifdef HAVE_LIBPNG
 		case TYPEPNG:
-			savepng(args->filename, &gfit, 2, gfit.naxes[2] == 3);
+			bytes_per_sample = gfit.orig_bitpix > BYTE_IMG ? 2 : 1;
+			savepng(args->filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
 			break;
 #endif
 		case TYPEFITS:
