@@ -277,6 +277,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	WORD *buf16;
 	uint32 width, height, row, col, n;
 	uint16 nsamples;
+	double norm;
 
 	mirrorx(fit, FALSE);
 
@@ -357,13 +358,13 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	switch (bitspersample) {
 	case 8:
 		buf8 = _TIFFmalloc(width * sizeof(unsigned char) * nsamples);
+		norm = fit->orig_bitpix > BYTE_IMG ? 1.0 : UCHAR_MAX_DOUBLE / USHRT_MAX_DOUBLE;
 		for (row = 0; row < height; row++) {
 			for (col = 0; col < width; col++) {
 				for (n = 0; n < nsamples; n++) {
 					/* UCHAR_MAX / USHRT_MAX is constant, it's 1/255
 					 * This operation should be speed-up by doing a shift */
-					buf8[col * nsamples + n] = (*gbuf[n]++) * UCHAR_MAX_DOUBLE
-							/ USHRT_MAX_DOUBLE;
+					buf8[col * nsamples + n] = (*gbuf[n]++) * norm;
 				}
 			}
 			TIFFWriteScanline(tif, buf8, row, 0);
@@ -372,10 +373,11 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		break;
 	case 16:
 		buf16 = _TIFFmalloc(width * sizeof(WORD) * nsamples);
+		norm = fit->orig_bitpix > BYTE_IMG ? 1.0 : USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE;
 		for (row = 0; row < height; row++) {
 			for (col = 0; col < width; col++) {
 				for (n = 0; n < nsamples; n++)
-					buf16[col * nsamples + n] = (*gbuf[n]++);
+					buf16[col * nsamples + n] = (*gbuf[n]++) * norm;
 			}
 			TIFFWriteScanline(tif, buf16, row, 0);
 		}
@@ -692,9 +694,10 @@ int readpng(const char *name, fits* fit) {
 // Save PNG image (colour)
 // ------------------------------------------
 static int32_t save_colour_file(const char *filename,
-		const WORD *p_image_data, uint32_t width, uint32_t height,
+		const void *p_image_data, uint32_t width, uint32_t height,
 		uint32_t bytes_per_sample) {
 	int32_t ret = -1;
+	int row_stride;
 	png_image image; // The control structure used by libpng
 
 	// Initialize the 'png_image' structure.
@@ -708,11 +711,13 @@ static int32_t save_colour_file(const char *filename,
 	}
 
 	FILE *p_png_file = g_fopen(filename, "wb");
+	row_stride = image.width * -3;
 
 	if (p_png_file != NULL) {
-		png_image_write_to_stdio(&image, p_png_file, 0,  // convert_to_8bit
-				(png_bytep) (p_image_data), image.width * -3,  // row_stride
+		png_image_write_to_stdio(&image, p_png_file, 0,
+				(png_bytep) (p_image_data), row_stride,  // row_stride
 				NULL);  // colormap
+
 		ret = 0;
 		fclose(p_png_file);
 	}
@@ -723,9 +728,10 @@ static int32_t save_colour_file(const char *filename,
 // ------------------------------------------
 // Save PNG image (mono B, G or R)
 // ------------------------------------------
-static int32_t save_mono_file(const char *filename, const WORD *p_image_data,
+static int32_t save_mono_file(const char *filename, const void *p_image_data,
 		uint32_t width, uint32_t height, uint32_t bytes_per_sample) {
 	int32_t ret = -1;
+	int row_stride;
 	png_image image; // The control structure used by libpng
 
 	// Initialize the 'png_image' structure.
@@ -741,10 +747,11 @@ static int32_t save_mono_file(const char *filename, const WORD *p_image_data,
 	}
 
 	FILE *p_png_file = g_fopen(filename, "wb");
+	row_stride = image.width * -1;
 
 	if (p_png_file != NULL) {
 		png_image_write_to_stdio(&image, p_png_file, 0,  // convert_to_8bit
-				(png_bytep) p_image_data, image.width * -1,  // row_stride
+				(png_bytep) p_image_data, row_stride,  // row_stride
 				NULL);  // colormap
 		ret = 0;
 		fclose(p_png_file);
