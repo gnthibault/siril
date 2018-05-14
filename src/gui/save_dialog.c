@@ -33,7 +33,11 @@
 
 
 static image_type whichminisave = TYPEUNDEF;
+#ifdef _WIN32
+static GtkFileChooserNative *saveDialog = NULL;
+#else
 static GtkWidget *saveDialog = NULL;
+#endif
 static GtkWindow *saveParent = NULL;
 
 
@@ -86,7 +90,7 @@ static void set_filters_save_dialog(GtkFileChooser *chooser) {
 static int get_filetype(const gchar *filter) {
 	gchar **string;
 	int type = TYPEUNDEF;
-	int i=0;
+	int i = 0;
 
 	string = g_strsplit_set(filter, "*(),.", -1);
 
@@ -182,16 +186,24 @@ static void init_dialog(GtkWindow *parent) {
 	if (saveDialog == NULL) {
 		GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
 
+#ifdef _WIN32
+		saveDialog = gtk_file_chooser_native_new("Save File", parent, action,
+				_("_Save"), _("_Cancel"));
+#else
 		saveDialog = gtk_file_chooser_dialog_new(_("Save File"), parent, action,
 				_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"),
-				GTK_RESPONSE_ACCEPT,
-				NULL);
+				GTK_RESPONSE_ACCEPT, NULL);
+#endif				
 	}
 }
 
 static void close_dialog() {
 	if (saveDialog != NULL) {
+#ifdef _WIN32
+		g_object_unref(saveDialog);
+#else
 		gtk_widget_destroy(saveDialog);
+#endif
 		saveDialog = NULL;
 	}
 }
@@ -209,7 +221,11 @@ static int save_dialog(GtkWindow *parent) {
 	gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
 	set_filters_save_dialog(chooser);
 
+#ifdef _WIN32
+	res = gtk_native_dialog_run(GTK_NATIVE_DIALOG(saveDialog));
+#else
 	res = gtk_dialog_run(GTK_DIALOG(saveDialog));
+#endif	
 	if (res == GTK_RESPONSE_ACCEPT) {
 
 		gchar *filename = gtk_file_chooser_get_filename(chooser);

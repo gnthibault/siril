@@ -954,13 +954,16 @@ static void set_filters_dialog(GtkFileChooser *chooser) {
 }
 
 static void opendial(void) {
-	GtkWidget *widgetdialog = NULL;
-	GtkFileChooser *dialog = NULL;
+#ifdef _WIN32
+	GtkFileChooserNative *widgetdialog;
+#else
+	GtkWidget *widgetdialog;
+#endif
+	GtkFileChooser *dialog;
+	GtkFileChooserAction action;
+	GtkWindow *main_window = GTK_WINDOW(lookup_widget("main_window"));
+	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
 	gint res;
-	GtkWindow *main_window = GTK_WINDOW(
-			gtk_builder_get_object(builder, "main_window"));
-	GtkWindow *control_window = GTK_WINDOW(
-			gtk_builder_get_object(builder, "control_window"));
 
 	if (!com.wd)
 		return;
@@ -972,40 +975,59 @@ static void opendial(void) {
 	case OD_FLAT:
 	case OD_DARK:
 	case OD_OFFSET:
-		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"), control_window,
-				GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL,
-				_("_Open"), GTK_RESPONSE_ACCEPT,
-				NULL);
+		action = GTK_FILE_CHOOSER_ACTION_OPEN;
+#ifdef _WIN32
+		widgetdialog = gtk_file_chooser_native_new(_("Open File"), control_window, action,
+				_("_Open"), _("_Cancel"));
+#else
+		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"),
+				control_window, action, _("_Cancel"), GTK_RESPONSE_CANCEL,
+				_("_Open"), GTK_RESPONSE_ACCEPT, NULL);
+#endif
 		dialog = GTK_FILE_CHOOSER(widgetdialog);
 		gtk_file_chooser_set_current_folder(dialog, com.wd);
 		gtk_file_chooser_set_select_multiple(dialog, FALSE);
 		set_filters_dialog(dialog);
 		break;
 	case OD_CWD:
-		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"), control_window,
-				GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, _("_Cancel"),
-				GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT,
-				NULL);
+		action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+#ifdef _WIN32
+		widgetdialog = gtk_file_chooser_native_new(_("Open File"), control_window, action,
+				_("_Open"), _("_Cancel"));
+#else
+		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"), main_window,
+				action, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"),
+				GTK_RESPONSE_ACCEPT, NULL);
+#endif
 		dialog = GTK_FILE_CHOOSER(widgetdialog);
 		gtk_file_chooser_set_current_folder(dialog, com.wd);
 		gtk_file_chooser_set_select_multiple(dialog, FALSE);
 		break;
 	case OD_OPEN:
+		action = GTK_FILE_CHOOSER_ACTION_OPEN;
+#ifdef _WIN32
+		widgetdialog = gtk_file_chooser_native_new(_("Open File"), main_window, action,
+				_("_Open"), _("_Cancel"));
+#else
 		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"), main_window,
 				GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL,
-				_("_Open"), GTK_RESPONSE_ACCEPT,
-				NULL);
+				_("_Open"), GTK_RESPONSE_ACCEPT, NULL);
+#endif
 		dialog = GTK_FILE_CHOOSER(widgetdialog);
 		gtk_file_chooser_set_current_folder(dialog, com.wd);
 		gtk_file_chooser_set_select_multiple(dialog, FALSE);
 		set_filters_dialog(dialog);
 		break;
 	case OD_CONVERT:
-		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"), control_window,
-				GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL,
-				_("_Open"), GTK_RESPONSE_ACCEPT,
-				NULL);
-
+		action = GTK_FILE_CHOOSER_ACTION_OPEN;
+#if _WIN32
+		widgetdialog = gtk_file_chooser_native_new(_("Open File"), control_window, action,
+				_("_Open"), _("_Cancel"));
+#else
+		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"),
+				control_window, GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"),
+				GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT, NULL);
+#endif
 		dialog = GTK_FILE_CHOOSER(widgetdialog);
 		gtk_file_chooser_set_current_folder(dialog, com.wd);
 		gtk_file_chooser_set_select_multiple(dialog, TRUE);
@@ -1014,7 +1036,11 @@ static void opendial(void) {
 
 	if (!dialog)
 		return;
+#if _WIN32
+	res = gtk_native_dialog_run(GTK_NATIVE_DIALOG(widgetdialog));
+#else
 	res = gtk_dialog_run(GTK_DIALOG(dialog));
+#endif
 
 	if (res == GTK_RESPONSE_ACCEPT) {
 		GSList *list = NULL;
@@ -1091,7 +1117,11 @@ static void opendial(void) {
 		whichdial = OD_NULL;
 		g_free(filename);
 	}
+#ifdef _WIN32
+	g_object_unref(widgetdialog);
+#else
 	gtk_widget_destroy(widgetdialog);
+#endif
 }
 
 /*
