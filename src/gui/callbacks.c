@@ -4946,7 +4946,7 @@ void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data)
 	int layer = RLAYER;
 	starFinder sf;
 
-	memset(&sf, 0, sizeof(starFinder));
+	memcpy(&sf, &com.starfinder_conf, sizeof(starFinder));
 
 	if (!single_image_is_loaded() && !sequence_is_loaded()) {
 		siril_log_color_message(_("Load an image first, aborted.\n"), "red");

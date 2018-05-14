@@ -1033,7 +1033,7 @@ int process_findstar(int nb){
 	int layer = RLAYER;
 	starFinder sf;
 
-	memset(&sf, 0, sizeof(starFinder));
+	memcpy(&sf, &com.starfinder_conf, sizeof(starFinder));
 	
 	if (!single_image_is_loaded()) return 0;
 	if (isrgb(&gfit)) layer = GLAYER;
