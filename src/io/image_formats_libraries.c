@@ -694,7 +694,7 @@ int readpng(const char *name, fits* fit) {
 // Save PNG image (colour)
 // ------------------------------------------
 static int32_t save_colour_file(const char *filename,
-		const void *p_image_data, uint32_t width, uint32_t height,
+		const WORD *p_image_data, uint32_t width, uint32_t height,
 		uint32_t bytes_per_sample) {
 	int32_t ret = -1;
 	int row_stride;
@@ -728,7 +728,7 @@ static int32_t save_colour_file(const char *filename,
 // ------------------------------------------
 // Save PNG image (mono B, G or R)
 // ------------------------------------------
-static int32_t save_mono_file(const char *filename, const void *p_image_data,
+static int32_t save_mono_file(const char *filename, const WORD *p_image_data,
 		uint32_t width, uint32_t height, uint32_t bytes_per_sample) {
 	int32_t ret = -1;
 	int row_stride;
