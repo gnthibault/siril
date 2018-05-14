@@ -760,8 +760,9 @@ static int32_t save_mono_file(const char *filename, const void *p_image_data,
 	return ret;
 }
 
-static WORD *convert_data(fits *image, int ch) {
+static WORD *convert_data(fits *image) {
 	int ndata = image->rx * image->ry;
+	int ch = image->naxes[2];
 	int i, j;
 
 	WORD *buffer = malloc(ndata * ch * sizeof(WORD));
@@ -775,8 +776,9 @@ static WORD *convert_data(fits *image, int ch) {
 	return buffer;
 }
 
-static uint8_t *convert_data8(fits *image, int ch) {
+static uint8_t *convert_data8(fits *image) {
 	int ndata = image->rx * image->ry;
+	int ch = image->naxes[2];
 	int i, j;
 
 	uint8_t *buffer = malloc(ndata * ch * sizeof(WORD));
@@ -804,12 +806,12 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 	if (is_colour) {
 		// Create colour PNG file
 		if (bytes_per_sample == 2) {
-			WORD *data = convert_data(fit, 3);
+			WORD *data = convert_data(fit);
 			ret = save_colour_file(filename, data, width, height,
 					bytes_per_sample);
 			free(data);
 		} else {
-			uint8_t *data = convert_data8(fit, 3);
+			uint8_t *data = convert_data8(fit);
 			ret = save_colour_file(filename, data, width, height,
 					bytes_per_sample);
 			free(data);
@@ -820,7 +822,7 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 			ret = save_mono_file(filename, fit->data, width, height,
 					bytes_per_sample);
 		} else {
-			uint8_t *data = convert_data8(fit, 1);
+			uint8_t *data = convert_data8(fit);
 			ret = save_mono_file(filename, data, width, height,
 					bytes_per_sample);
 			free(data);
