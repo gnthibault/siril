@@ -213,9 +213,19 @@ int get_extension_index(const char *filename) {
  * @return extension pointed from the filename itself or NULL
  */
 const char *get_filename_ext(const char *filename) {
-	const char *dot = strrchr(filename, '.');
-	if (!dot || dot == filename)
+	gchar *basename;
+	int len;
+	const char *dot, *p;
+
+	basename = g_path_get_basename(filename);
+	len = strlen(filename) - strlen(basename);
+	g_free(basename);
+
+	p = filename + len;
+	dot = strrchr(p, '.');
+	if (!dot || dot == p) {
 		return NULL;
+	}
 	return dot + 1;
 }
 
@@ -256,6 +266,7 @@ int stat_file(const char *filename, image_type *type, char **realname) {
 		return 1;
 
 	ext = get_filename_ext(filename);
+	printf("ext: %s\n", ext);
 	/* if filename has an extension, we only test for it */
 	if (ext) {
 		if (is_readable_file(filename)) {
