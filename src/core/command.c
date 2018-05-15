@@ -169,7 +169,7 @@ command commande[] = {
 	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, FALSE},
 	{"split", 3, "split R G B", process_split, STR_SPLIT, TRUE},
 	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackone, STR_STACK, TRUE},
-	{"stackall", 0, "stackall", process_stackall, STR_STACKALL, TRUE},
+	{"stackall", 0, "stackall [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackall, STR_STACKALL, TRUE},
 	{"stat", 0, "stat", process_stat, STR_STAT, TRUE},
 	
 	{"threshlo", 1, "threshlo level", process_threshlo, STR_THRESHLO, TRUE},
