@@ -266,7 +266,6 @@ int stat_file(const char *filename, image_type *type, char **realname) {
 		return 1;
 
 	ext = get_filename_ext(filename);
-	printf("ext: %s\n", ext);
 	/* if filename has an extension, we only test for it */
 	if (ext) {
 		if (is_readable_file(filename)) {
