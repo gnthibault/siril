@@ -3,7 +3,7 @@
 
 #include "core/siril.h"
 
-#define NUMBER_OF_METHOD 5
+#define NUMBER_OF_METHODS 5
 
 struct registration_args;
 typedef int (*registration_function)(struct registration_args *);
@@ -12,6 +12,7 @@ typedef int (*registration_function)(struct registration_args *);
 struct registration_args {
 	registration_function func;	// the registration function
 	sequence *seq;			// the sequence to register
+	int reference_image;		// reference image index
 	gboolean process_all_frames;	// all frames of the sequence (opposite of selected frames)
 	int layer;			// layer of images on which the registration is computed
 	struct timeval t_start;		// start time of func
@@ -24,12 +25,12 @@ struct registration_args {
 
 	/* data for generated sequence, for star alignment registration */
 	gboolean translation_only;	// don't rotate images => no new sequence
-	int new_total;			// remaining images after registration
+	int new_total;                  // remaining images after registration
 	imgdata *imgparam;		// imgparam for the new sequence
 	regdata *regparam;		// regparam for the new sequence
 	const gchar *prefix;		// prefix of the created sequence if any
 	gboolean load_new_sequence;	// load the new sequence if success
-	sequence *new_seq;		// the new sequence
+	const gchar *new_seq_name;
 	opencv_interpolation interpolation; // type of rotation interpolation
 };
 

@@ -1031,14 +1031,10 @@ int process_fill2(int nb){
 
 int process_findstar(int nb){
 	int layer = RLAYER;
-	starFinder sf;
-
-	memcpy(&sf, &com.starfinder_conf, sizeof(starFinder));
-	
 	if (!single_image_is_loaded()) return 0;
 	if (isrgb(&gfit)) layer = GLAYER;
 	delete_selected_area();
-	com.stars = peaker(&gfit, layer, &sf, NULL);
+	com.stars = peaker(&gfit, layer, &com.starfinder_conf, NULL, NULL);
 	refresh_stars_list(com.stars);
 	return 0;
 }
@@ -1617,6 +1613,7 @@ int process_register(int nb) {
 	/* filling the arguments for registration */
 	reg_args->func = method->method_ptr;
 	reg_args->seq = seq;
+	reg_args->reference_image = sequence_find_refimage(seq);
 	reg_args->process_all_frames = TRUE;
 	reg_args->follow_star = FALSE;
 	reg_args->matchSelection = FALSE;

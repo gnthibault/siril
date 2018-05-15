@@ -18,7 +18,7 @@ siril_SOURCES = \
 	gui/plot.c gui/plot.h \
 	gui/gnuplot_i/gnuplot_i.c gui/gnuplot_i/gnuplot_i.h \
 	gui/progress_and_log.c gui/progress_and_log.h \
-	registration/registration.c registration/registration.h \
+	registration/registration.c registration/registration.h registration/global.c \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
 	stacking/stacking.c stacking/stacking.h stacking/sum.c stacking/sum.h stacking/normalization.c \
 	algos/gradient.c algos/gradient.h algos/quality.c algos/quality.h \

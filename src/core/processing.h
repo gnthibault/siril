@@ -39,11 +39,13 @@ struct generic_seq_args {
 	int (*prepare_hook)(struct generic_seq_args *);
 	/** function called for each image with image index in sequence, number
 	 *  of image currently processed and the image, area if partial */
-	int (*image_hook)(struct generic_seq_args *, int, fits *, rectangle *);
+	int (*image_hook)(struct generic_seq_args *, int, int, fits *, rectangle *);
 	/** saving the processed image, the one passed to the image_hook, so
-	 *  in-place editing. If has_output, can be NULL to get default behaviour */
+	 * in-place editing, if the image_hook succeeded. Only used if
+	 * has_output, set to NULL to get default behaviour */
 	int (*save_hook)(struct generic_seq_args *, int, int, fits *);
-	/** function called after iterating through the sequence */
+	/** function called after iterating through the sequence, or on
+	 * clean-up, even in case of error */
 	int (*finalize_hook)(struct generic_seq_args *);
 
 	/** idle function to register at the end. If NULL, the default ending
@@ -79,7 +81,7 @@ struct generic_seq_args {
 	/** activate parallel execution */
 	gboolean parallel;
 #ifdef _OPENMP
-	/** for in-hook synchronization (internal) */
+	/** for in-hook synchronization (internal init, public use) */
 	omp_lock_t lock;
 #endif
 };

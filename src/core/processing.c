@@ -29,6 +29,7 @@
 #include "gui/progress_and_log.h"
 #include "io/sequence.h"
 #include "io/ser.h"
+#include "algos/statistics.h"
 
 // called in start_in_new_thread only
 // works in parallel if the arg->parallel is TRUE for FITS or SER sequences
@@ -155,18 +156,18 @@ gpointer generic_sequence_worker(gpointer p) {
 				}
 			}
 
-			if (args->image_hook(args, input_idx, &fit, &area)) {
+			if (args->image_hook(args, frame, input_idx, &fit, &area)) {
 				if (args->stop_on_error)
 					abort = 1;
 				else {
-					args->seq->imgparam[frame].incl = FALSE;
+					//args->seq->imgparam[frame].incl = FALSE;
 #ifdef _OPENMP
 #pragma omp critical
 #endif
 					{
-						if (args->nb_filtered_images > 0)
-							args->nb_filtered_images--;
-						args->seq->selnum--;
+						//if (args->nb_filtered_images > 0)
+						//	args->nb_filtered_images--;
+						//args->seq->selnum--;
 						excluded_frames++;
 					}
 				}
@@ -186,6 +187,8 @@ gpointer generic_sequence_worker(gpointer p) {
 				}
 			}
 
+			// save stats that may have been computed for the first time
+			save_stats_from_fit(&fit, args->seq, input_idx);
 			clearfits(&fit);
 
 #ifdef _OPENMP
@@ -280,11 +283,9 @@ int ser_finalize_hook(struct generic_seq_args *args) {
 	return retval;
 }
 
-/* For a FITS sequence, adding 1 is recommended because for users a sequence
- * should start at 1 instead of 0.
- * With SER, all images must be in a contiguous sequence, so we use the out_index.
- * With FITS sequences, to keep track of image accross processings, we keep the
- * input index all along.
+/* In SER, all images must be in a contiguous sequence, so we use the out_index.
+ * In FITS sequences, to keep track of image accross processings, we keep the
+ * input file number all along (in_index is the index in the sequence, not the name).
  */
 int generic_save(struct generic_seq_args *args, int out_index, int in_index, fits *fit) {
 	char dest[256];
@@ -292,8 +293,12 @@ int generic_save(struct generic_seq_args *args, int out_index, int in_index, fit
 	if (args->force_ser_output || args->seq->type == SEQ_SER) {
 		return ser_write_frame_from_fit(args->new_ser, fit, out_index);
 	} else {
-		snprintf(dest, 256, "%s%s%05d%s", args->new_seq_prefix,
-				args->seq->seqname, in_index, com.ext);
+		char format[16];
+		sprintf(format, "%%s%%s%%0%dd%%s", args->seq->fixed);
+		snprintf(dest, 256, format, args->new_seq_prefix,
+				args->seq->seqname, 
+				args->seq->imgparam[in_index].filenum,
+				/*in_index,*/ com.ext);
 		return savefits(dest, fit);
 	}
 }

@@ -2229,7 +2229,7 @@ struct upscale_args {
 	double factor;
 };
 
-static int upscale_image_hook(struct generic_seq_args *args, int i, fits *fit, rectangle *_) {
+static int upscale_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
 	struct upscale_args *upargs = args->user;
 	return cvResizeGaussian(fit, fit->rx * upargs->factor, fit->ry * upargs->factor, OPENCV_NEAREST);
 }

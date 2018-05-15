@@ -2,6 +2,7 @@
 #define ATPMATCH_H
 
 #include "core/siril.h"
+#include "misc.h"
 
 /*
  *

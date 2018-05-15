@@ -588,6 +588,62 @@ int ser_write_and_close(struct ser_struct *ser_file) {
 	return ser_close_file(ser_file);// closes, frees and zeroes
 }
 
+/* calling ser_write_frame_from_fit() with image indices that do not cover a
+ * contiguous range will pose some problems since there will be holes in images
+ * data and the indices of frames in the file will be incorrect. To solve this
+ * and still allow a parallel processing that can safely fail to be done with
+ * SER output, we compact the frames that have been identified as failed in the
+ * processing. The provided array contains booleans that inform about the
+ * success of the processing and the presence of the frame with a given index
+ * in the file. nb_frames is the size of this array and the last index + 1 of
+ * the frames added to the file.
+ * This function is not thread-safe. */
+int ser_compact_file(struct ser_struct *ser_file, unsigned char *successful_frames, int nb_frames) {
+	int64_t offseti, offsetj, frame_size;
+	int i, j;
+	unsigned char *buffer = NULL;
+	frame_size = ser_file->image_width * ser_file->image_height *
+		ser_file->number_of_planes * ser_file->byte_pixel_depth;
+
+	// frame_count should be fine because it's incremented only when adding
+	// one, but the real number of images for the file size if nb_frames
+	for (i=0, j=0; i<ser_file->frame_count; i++, j++) {
+		while (!successful_frames[j] && j < nb_frames) j++;
+		if (i != j) {
+			// move image j to i
+			if (!buffer) {
+				buffer = malloc(frame_size);
+				if (!buffer) return 1;
+				siril_log_message(_("Compacting SER file after parallel output to it\n"));
+			}
+			offseti = SER_HEADER_LEN + frame_size * (int64_t)i;
+			offsetj = SER_HEADER_LEN + frame_size * (int64_t)j;
+
+			if ((int64_t)-1 == lseek64(ser_file->fd, offsetj, SEEK_SET)) {
+				perror("seek");
+				return 1;
+			}
+			if (read(ser_file->fd, buffer, frame_size) != frame_size) {
+				perror("read");
+				return 1;
+			}
+			if ((int64_t)-1 == lseek64(ser_file->fd, offseti, SEEK_SET)) {
+				perror("seek");
+				return 1;
+			}
+			if (write(ser_file->fd, buffer, frame_size) != frame_size) {
+				perror("write");
+				return 1;
+			}
+
+			ser_file->ts[i] = ser_file->ts[j];
+		}
+	}
+
+	if (buffer) free(buffer);
+	return 0;
+}
+
 /* ser_file must be allocated
  * the file is created with no image size, the first image added will set it. */
 int ser_create_file(const char *filename, struct ser_struct *ser_file,

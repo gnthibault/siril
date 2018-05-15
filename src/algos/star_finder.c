@@ -46,7 +46,7 @@ static WORD Compute_threshold(fits *fit, double starfinder, int layer, WORD *nor
 
 	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC);
 	if (!stat) {
-		siril_log_message(_("Error: no data computed.\n"));
+		siril_log_message(_("Error: statistics computation failed.\n"));
 		return 0;
 	}
 	threshold = (WORD) stat->median + starfinder * (WORD) stat->sigma;
@@ -57,7 +57,7 @@ static WORD Compute_threshold(fits *fit, double starfinder, int layer, WORD *nor
 	return threshold;
 }
 
-static gboolean is_star(fitted_PSF *result, starFinder *sf) {
+static gboolean is_star(fitted_PSF *result, star_finder_params *sf) {
 	if (isnan(result->fwhmx) || isnan(result->fwhmy))
 		return FALSE;
 	if (isnan(result->x0) || isnan(result->y0))
@@ -78,7 +78,7 @@ static gboolean is_star(fitted_PSF *result, starFinder *sf) {
 	return TRUE;
 }
 
-static void get_structure(starFinder *sf) {
+static void get_structure(star_finder_params *sf) {
 	static GtkSpinButton *spin_radius = NULL, *spin_sigma = NULL,
 			*spin_roundness = NULL;
 
@@ -128,7 +128,7 @@ void on_spin_sf_roundness_changed(GtkSpinButton *spinbutton, gpointer user_data)
  */
 
 /* returns a NULL-ended array of FWHM info */
-fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
+fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, rectangle *area) {
 	int nx = fit->rx;
 	int ny = fit->ry;
 	int areaX0 = 0;
@@ -164,7 +164,8 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 	wave_image = malloc(ny * sizeof(WORD *));
 	if (wave_image == NULL) {
 		free(results);
-		printf("Memory allocation failed: peaker\n");
+		clearfits(&wave_fit);
+		fprintf(stderr, "Memory allocation failed: peaker\n");
 		return NULL;
 	}
 	for (k = 0; k < ny; k++)
@@ -175,7 +176,8 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 	if (real_image == NULL) {
 		free(results);
 		free(wave_image);
-		printf("Memory allocation failed: peaker\n");
+		clearfits(&wave_fit);
+		fprintf(stderr, "Memory allocation failed: peaker\n");
 		return NULL;
 	}
 	for (k = 0; k < ny; k++)
@@ -189,7 +191,7 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 	}
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(y) schedule(guided)
+//#pragma omp parallel for num_threads(com.max_thread) private(y) schedule(guided)
 #endif
 	for (y = sf->radius + areaY0; y < areaY1 - sf->radius; y++) {
 		int x;
@@ -262,13 +264,14 @@ fitted_PSF **peaker(fits *fit, int layer, starFinder *sf, rectangle *area) {
 	}
 	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);
 	sort_stars(results, nbstars);
-	sf->nb_stars = nbstars;
 	free(wave_image);
 	free(real_image);
 	clearfits(&wave_fit);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
+	if (nb_stars)
+		*nb_stars = nbstars;
 	return results;
 }
 

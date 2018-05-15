@@ -188,7 +188,7 @@ typedef struct gradient_struct gradient;
 typedef struct historic_struct historic;
 typedef struct dateTime_struct dateTime;
 typedef struct fwhm_struct fitted_PSF;
-typedef struct starFinder_struct starFinder;
+typedef struct star_finder_struct star_finder_params;
 
 /* global structures */
 
@@ -496,11 +496,10 @@ struct dateTime_struct {
 	int ms;
 };
 
-struct starFinder_struct {
+struct star_finder_struct {
 	int radius;
 	double sigma;
 	double roundness;
-	int nb_stars;
 };
 
 /* The global data structure of siril, the only with gfit and the gtk builder,
@@ -582,7 +581,7 @@ struct cominf {
 
 	gsl_histogram *layers_hist[MAXVPORT]; // current image's histograms
 
-	starFinder starfinder_conf;	// star finder settings, from GUI or init file
+	star_finder_params starfinder_conf;	// star finder settings, from GUI or init file
 	fitted_PSF **stars;		// list of stars detected in the current image
 	gboolean star_is_seqdata;	// the only star in stars belongs to seq, don't free it
 	int selected_star;		// current selected star in the GtkListStore

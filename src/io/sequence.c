@@ -1382,7 +1382,7 @@ struct seqpsf_data {
  * area is the area from which fit was extracted from the full frame.
  * when the framing is set to follow star, args->area is centered on the found star
  */
-int seqpsf_image_hook(struct generic_seq_args *args, int index, fits *fit, rectangle *area) {
+int seqpsf_image_hook(struct generic_seq_args *args, int out_index, int index, fits *fit, rectangle *area) {
 	struct seqpsf_args *spsfargs = (struct seqpsf_args *)args->user;
 	struct seqpsf_data *data = malloc(sizeof(struct seqpsf_data));
 	data->image_index = index;

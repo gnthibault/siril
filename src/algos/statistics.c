@@ -36,6 +36,7 @@
 #include <math.h>
 #include <string.h>
 #include <float.h>
+#include <assert.h>
 #include <gsl/gsl_statistics.h>
 #include "core/siril.h"
 #include "core/proto.h"
@@ -269,9 +270,16 @@ static int IKSS(double *data, int n, double *location, double *scale) {
 static WORD* reassign_to_non_null_data(WORD *data, long inputlen, long outputlen, int free_input) {
 	int i, j = 0;
 	WORD *ndata = malloc(outputlen * sizeof(WORD));
+	if (!ndata)
+		return NULL;
 
 	for (i = 0; i < inputlen; i++) {
 		if (data[i] > 0) {
+			if (j >= outputlen) {
+				assert(0);
+				fprintf(stderr, "\n- stats MISMATCH in sizes (in: %ld, out: %ld), THIS IS A BUG: seqfile is wrong *********\n\n", inputlen, outputlen);
+				break;
+			}
 			ndata[j] = data[i];
 			j++;
 		}
@@ -314,6 +322,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	// median is included in STATS_BASIC but required to compute other data
 	int compute_median = (option & STATS_BASIC) || (option & STATS_AVGDEV) ||
 		(option & STATS_MAD) || (option & STATS_BWMV);
+
 	if (!stat) {
 		allocate_stats(&stat);
 		if (!stat) return NULL;
@@ -375,6 +384,10 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	 * median has to be computed */
 	if (fit && (compute_median || ((option & STATS_IKSS) && stat->total != stat->ngoodpix))) {
 		data = reassign_to_non_null_data(data, stat->total, stat->ngoodpix, free_data);
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;
+		}
 		free_data = 1;
 	}
 
@@ -449,7 +462,6 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 	if (selection && selection->h > 0 && selection->w > 0) {
 		// we have a selection, don't store anything
 		return statistics_internal(fit, layer, selection, option, NULL);
-		// ^ may be freed
 	} else if (!seq || image_index < 0) {
 		// we have a single image, store in the fits
 		if (fit->stats && fit->stats[layer]) {
@@ -457,8 +469,12 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 			oldstat->_nb_refs++;
 		}
 		stat = statistics_internal(fit, layer, NULL, option, oldstat);
-		if (!stat)
+		if (!stat) {
+			fprintf(stderr, "- stats failed for fit %p (%d)\n", fit, layer);
+			if (oldstat)
+				allocate_stats(&oldstat);
 		       	return NULL;
+		}
 		if (!oldstat)
 			add_stats_to_fit(fit, layer, stat);
 		return stat;
@@ -470,8 +486,12 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 				oldstat->_nb_refs++;
 		}
 		stat = statistics_internal(fit, layer, NULL, option, oldstat);
-		if (!stat)
+		if (!stat) {
+			fprintf(stderr, "- stats failed for fit %p (%d) with seq\n", fit, layer);
+			if (oldstat)
+				allocate_stats(&oldstat);
 			return NULL;
+		}
 		if (!oldstat)
 			add_stats_to_seq(seq, image_index, layer, stat);
 		if (fit)

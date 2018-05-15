@@ -24,6 +24,7 @@ void set_GUI_DiskSpace(double mem);
 void set_GUI_misc();
 void initialize_preprocessing();
 void update_MenuItem();
+void queue_redraw(int doremap);
 gboolean redraw(int vport, int remap);
 void sliders_mode_set_state(sliders_mode);
 int copy_rendering_settings_when_chained(gboolean from_GUI);

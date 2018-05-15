@@ -91,6 +91,7 @@ void ser_init_struct(struct ser_struct *ser_file);
 void ser_display_info(struct ser_struct *ser_file);
 int ser_open_file(const char *filename, struct ser_struct *ser_file);
 int ser_write_and_close(struct ser_struct *ser_file);
+int ser_compact_file(struct ser_struct *ser_file, unsigned char *successful_frames, int nb_frames);
 int ser_create_file(const char *filename, struct ser_struct *ser_file, gboolean overwrite, struct ser_struct *copy_from);
 int ser_close_file(struct ser_struct *ser_file);
 int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit);

@@ -1687,6 +1687,15 @@ gboolean redraw(int vport, int doremap) {
 	return FALSE;
 }
 
+static gboolean redraw_idle(gpointer p) {
+	redraw(com.cvport, GPOINTER_TO_INT(p)); // draw stars
+	return FALSE;
+}
+
+void queue_redraw(int doremap) {	// request a redraw from another thread
+	siril_add_idle(redraw_idle, GINT_TO_POINTER(doremap));
+}
+
 void sliders_mode_set_state(sliders_mode sliders) {
 	GtkToggleButton *radiobutton;	// Must not be static
 	char *str[] =
@@ -4944,10 +4953,6 @@ void on_remove_all_button_clicked(GtkButton *button, gpointer user_data) {
 
 void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data) {
 	int layer = RLAYER;
-	starFinder sf;
-
-	memcpy(&sf, &com.starfinder_conf, sizeof(starFinder));
-
 	if (!single_image_is_loaded() && !sequence_is_loaded()) {
 		siril_log_color_message(_("Load an image first, aborted.\n"), "red");
 		return;
@@ -4956,7 +4961,7 @@ void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data)
 	if (gfit.naxes[2] == 3)
 		layer = GLAYER;
 	delete_selected_area();
-	com.stars = peaker(&gfit, layer, &sf, NULL);
+	com.stars = peaker(&gfit, layer, &com.starfinder_conf, NULL, NULL);
 	refresh_stars_list(com.stars);
 	set_cursor_waiting(FALSE);
 }

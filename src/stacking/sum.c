@@ -49,7 +49,7 @@ static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 	return 0;
 }
 
-static int sum_stacking_image_hook(struct generic_seq_args *args, int i, fits *fit, rectangle *_) {
+static int sum_stacking_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
 	struct sum_stacking_data *ssdata = args->user;
 	int shiftx, shifty, nx, ny, x, y, ii, layer;
 	int pixel = 0;	// index in sum[0]
