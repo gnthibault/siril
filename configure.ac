@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 m4_define([siril_major_version], [0])
 m4_define([siril_minor_version], [9])
 m4_define([siril_micro_version], [9])
-m4_define([siril_prerelease_version], [beta])
+m4_define([siril_prerelease_version], [beta2])
 m4_define([siril_version],
           [siril_major_version.siril_minor_version.siril_micro_version])
 m4_define([siril_version_full],
