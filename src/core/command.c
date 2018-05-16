@@ -165,6 +165,7 @@ command commande[] = {
 #ifdef _OPENMP
 	{"setcpu", 1, "setcpu number", process_set_cpu, STR_SETCPU, TRUE},
 #endif
+	{"setext", 1, "setext extension", process_set_ext, STR_SETEXT, TRUE},
 	{"setmag", 1, "setmag magnitude", process_set_mag, STR_SETMAG, FALSE},
 	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, FALSE},
 	{"split", 3, "split R G B", process_split, STR_SPLIT, TRUE},
@@ -759,6 +760,27 @@ int process_set_mag_seq(int nb) {
 	com.seq.reference_mag = mag;
 	siril_log_message(_("Reference magnitude has been set for star %d to %f and will be computed for each image\n"), i-1, mag);
 	drawPlot();
+	return 0;
+}
+
+int process_set_ext(int nb) {
+	if (word[1]) {
+		GString *str = NULL;
+
+		if ((g_ascii_strncasecmp(word[1], "fit", 3))
+				&& (g_ascii_strncasecmp(word[1], "fts", 3))
+				&& (g_ascii_strncasecmp(word[1], "fits", 4))) {
+			siril_log_message(_("FITS extension unknown: %s\n"), word[1]);
+		}
+
+		free(com.ext);
+		str = g_string_new(".");
+		str = g_string_append(str, word[1]);
+		str = g_string_ascii_down(str);
+		com.ext = g_string_free(str, FALSE);
+		writeinitfile();
+	}
+
 	return 0;
 }
 

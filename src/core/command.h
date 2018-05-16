@@ -111,6 +111,7 @@ int	process_split(int nb);
 int	process_select(int nb);
 int	process_set_mag(int nb);
 int	process_set_mag_seq(int nb);
+int	process_set_ext(int nb);
 int	process_unset_mag(int nb);
 int	process_unset_mag_seq(int nb);
 int	process_unselect(int nb);
