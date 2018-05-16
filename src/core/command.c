@@ -1030,11 +1030,13 @@ int process_fill2(int nb){
 }
 
 int process_findstar(int nb){
+	int nbstars;
 	int layer = RLAYER;
 	if (!single_image_is_loaded()) return 0;
 	if (isrgb(&gfit)) layer = GLAYER;
 	delete_selected_area();
-	com.stars = peaker(&gfit, layer, &com.starfinder_conf, NULL, NULL);
+	com.stars = peaker(&gfit, layer, &com.starfinder_conf, &nbstars, NULL, TRUE);
+	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);
 	refresh_stars_list(com.stars);
 	return 0;
 }
@@ -1655,7 +1657,6 @@ int process_register(int nb) {
 			_("Registration: processing using method: %s\n"), "red",
 			method->name);
 	msg[strlen(msg) - 1] = '\0';
-	gettimeofday(&(reg_args->t_start), NULL);
 	set_progress_bar_data(msg, PROGRESS_RESET);
 
 	set_cursor_waiting(TRUE);

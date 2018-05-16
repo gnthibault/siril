@@ -886,7 +886,6 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	msg = siril_log_color_message(_("Registration: processing using method: %s\n"),
 			"red", method->name);
 	msg[strlen(msg) - 1] = '\0';
-	gettimeofday(&(reg_args->t_start), NULL);
 	set_cursor_waiting(TRUE);
 	set_progress_bar_data(msg, PROGRESS_RESET);
 
@@ -912,7 +911,6 @@ gpointer register_thread_func(gpointer p) {
 // end of registration, GTK thread. Executed when started from the GUI and in
 // the graphical command line but not from a script (headless mode)
 static gboolean end_register_idle(gpointer p) {
-	struct timeval t_end;
 	struct registration_args *args = (struct registration_args *) p;
 	stop_processing_thread();
 	if (!args->retval) {
@@ -940,13 +938,7 @@ static gboolean end_register_idle(gpointer p) {
 	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
 	g_object_unref (osx_app);
 #endif
-	/* Do not display time for register_shift_fwhm cause it uses the
-	 * generic function that already displays the time
-	 */
-	if (args->func != &register_shift_fwhm) {
-		gettimeofday(&t_end, NULL);
-		show_time(args->t_start, t_end);
-	}
+
 	free(args);
 	return FALSE;
 }

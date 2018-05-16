@@ -607,14 +607,14 @@ int ser_compact_file(struct ser_struct *ser_file, unsigned char *successful_fram
 
 	// frame_count should be fine because it's incremented only when adding
 	// one, but the real number of images for the file size if nb_frames
-	for (i=0, j=0; i<ser_file->frame_count; i++, j++) {
+	for (i = 0, j = 0; i < ser_file->frame_count; i++, j++) {
 		while (!successful_frames[j] && j < nb_frames) j++;
 		if (i != j) {
 			// move image j to i
 			if (!buffer) {
 				buffer = malloc(frame_size);
 				if (!buffer) return 1;
-				siril_log_message(_("Compacting SER file after parallel output to it\n"));
+				siril_log_message(_("Compacting SER file after parallel output to it...\n"));
 			}
 			offseti = SER_HEADER_LEN + frame_size * (int64_t)i;
 			offsetj = SER_HEADER_LEN + frame_size * (int64_t)j;

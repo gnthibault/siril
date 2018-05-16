@@ -20,7 +20,7 @@ cd ..
 cd flats
 #preprocess flats
 convertraw flat_
-preprocess flat_ -bias=../biases/bias_stacked.fit
+preprocess flat_ -bias=../biases/bias_stacked
 
 #build master-flat
 stack pp_flat_ rej 3 3 -norm=mul
@@ -35,7 +35,7 @@ cd ..
 #preprocess lights
 cd lights
 convertraw light_
-preprocess light_ -dark=../darks/dark_stacked.fit -flat=../flats/pp_flat_stacked.fit -cfa -debayer
+preprocess light_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cfa -debayer
 
 #align lights
 register pp_light_
@@ -46,10 +46,10 @@ stack r_pp_light_ rej 3 3 -norm=addscale
 #That's a workaround here to save result in another place.
 #These lines are not mandatory
 #load image in memory
-load r_pp_light_stacked.fit
+load r_pp_light_stacked
 #Compute noise
 bgnoise
 #and save it at root
 cd  ..
-save result.fit
+save result
 close

@@ -46,7 +46,7 @@
  */
 
 static void create_output_sequence_for_global_star(struct registration_args *args);
-static void print_alignment_results(Homography H, float FWHMx, float FWHMy);
+static void print_alignment_results(Homography H, int filenum, float FWHMx, float FWHMy);
 
 struct star_align_data {
 	struct registration_args *regargs;
@@ -88,11 +88,13 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	siril_log_color_message(_("Reference Image:\n"), "green");
 
 	if (regargs->matchSelection && regargs->selection.w > 0 && regargs->selection.h > 0) {
-		com.stars = peaker(&fit, regargs->layer, &com.starfinder_conf, &nb_stars, &regargs->selection);
+		com.stars = peaker(&fit, regargs->layer, &com.starfinder_conf, &nb_stars, &regargs->selection, FALSE);
 	}
 	else {
-		com.stars = peaker(&fit, regargs->layer, &com.starfinder_conf, &nb_stars, NULL);
+		com.stars = peaker(&fit, regargs->layer, &com.starfinder_conf, &nb_stars, NULL, FALSE);
 	}
+	siril_log_message(_("Found %d stars in reference, channel #%d\n"), nb_stars, regargs->layer);
+
 
 	if (nb_stars < AT_MATCH_MINPAIRS) {
 		siril_log_message(
@@ -202,11 +204,13 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 			siril_log_color_message(_("Frame %d:\n"), "bold", filenum);
 		}
 		if (regargs->matchSelection && regargs->selection.w > 0 && regargs->selection.h > 0) {
-			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, &regargs->selection);
+			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, &regargs->selection, FALSE);
 		}
 		else {
-			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, NULL);
+			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, NULL, FALSE);
 		}
+		siril_log_message(_("Found %d stars in image %d, channel #%d\n"), nb_stars, in_index, regargs->layer);
+
 		if (nb_stars < AT_MATCH_MINPAIRS) {
 			siril_log_message(
 					_("Not enough stars. Image %d skipped\n"), filenum);
@@ -234,7 +238,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		}
 
 		FWHM_average(stars, &FWHMx, &FWHMy, nbpoints);
-		print_alignment_results(H, FWHMx, FWHMy);
+		print_alignment_results(H, filenum, FWHMx, FWHMy);
 		sadata->current_regdata[in_index].fwhm = FWHMx;
 		sadata->current_regdata[in_index].roundness = FWHMy/FWHMx;
 
@@ -378,7 +382,10 @@ int register_star_alignment(struct registration_args *regargs) {
 	args->parallel = TRUE;
 
 	struct star_align_data *sadata = calloc(1, sizeof(struct star_align_data));
-	if (!sadata) return -1;
+	if (!sadata) {
+		free(args);
+		return -1;
+	}
 	sadata->regargs = regargs;
 	args->user = sadata;
 
@@ -421,13 +428,13 @@ static void create_output_sequence_for_global_star(struct registration_args *arg
 	free_sequence(&seq, FALSE);
 }
 
-static void print_alignment_results(Homography H, float FWHMx, float FWHMy) {
+static void print_alignment_results(Homography H, int filenum, float FWHMx, float FWHMy) {
 	double rotation, scale, scaleX, scaleY;
 	point shift;
 	double inliers;
 
 	/* Matching information */
-	siril_log_color_message(_("Matching stars: done\n"), "green");
+	siril_log_color_message(_("Matching stars in image %d: done\n"), "green", filenum);
 	siril_log_message(_("%d pair matches.\n"), H.pair_matched);
 	inliers = 1.0 - ((((double) H.pair_matched - (double) H.Inliers)) / (double) H.pair_matched);
 	siril_log_message(_("Inliers:%*.3f\n"), 11, inliers);

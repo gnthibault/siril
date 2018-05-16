@@ -15,7 +15,6 @@ struct registration_args {
 	int reference_image;		// reference image index
 	gboolean process_all_frames;	// all frames of the sequence (opposite of selected frames)
 	int layer;			// layer of images on which the registration is computed
-	struct timeval t_start;		// start time of func
 	int retval;			// retval of func
 	gboolean run_in_thread;		// true if the registration was run in a thread
 	gboolean follow_star;		// follow star position between frames

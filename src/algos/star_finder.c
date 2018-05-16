@@ -128,7 +128,7 @@ void on_spin_sf_roundness_changed(GtkSpinButton *spinbutton, gpointer user_data)
  */
 
 /* returns a NULL-ended array of FWHM info */
-fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, rectangle *area) {
+fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, rectangle *area, gboolean showtime) {
 	int nx = fit->rx;
 	int ny = fit->ry;
 	int areaX0 = 0;
@@ -190,9 +190,6 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		areaY1 = area->h + areaY0;
 	}
 
-#ifdef _OPENMP
-//#pragma omp parallel for num_threads(com.max_thread) private(y) schedule(guided)
-#endif
 	for (y = sf->radius + areaY0; y < areaY1 - sf->radius; y++) {
 		int x;
 		for (x = sf->radius + areaX0; x < areaX1 - sf->radius; x++) {
@@ -240,16 +237,12 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 						if (is_star(cur_star, sf)) {
 							cur_star->xpos = x + cur_star->x0 - sf->radius - 1;
 							cur_star->ypos = y + cur_star->y0 - sf->radius - 1;
-#ifdef _OPENMP
-#pragma omp critical
-#endif
-							{
-								if (nbstars < MAX_STARS) {
-									results[nbstars] = cur_star;
-									results[nbstars + 1] = NULL;
-									nbstars++;
-								}
+							if (nbstars < MAX_STARS) {
+								results[nbstars] = cur_star;
+								results[nbstars + 1] = NULL;
+								nbstars++;
 							}
+
 						}
 					}
 					gsl_matrix_free(z);
@@ -262,14 +255,14 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		free(results);
 		results = NULL;
 	}
-	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);
 	sort_stars(results, nbstars);
 	free(wave_image);
 	free(real_image);
 	clearfits(&wave_fit);
 
 	gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
+	if (showtime)
+		show_time(t_start, t_end);
 	if (nb_stars)
 		*nb_stars = nbstars;
 	return results;
