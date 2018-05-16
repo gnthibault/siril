@@ -421,7 +421,7 @@ gpointer enhance_saturation(gpointer p) {
 	if (args->preserve) {
 		imstats *stat = statistics(NULL, -1, args->fit, GLAYER, NULL, STATS_BASIC);
 		if (!stat) {
-			siril_log_message(_("Error: no data computed.\n"));
+			siril_log_message(_("Error: statistics computation failed.\n"));
 			siril_add_idle(end_enhance_saturation, args);
 			return GINT_TO_POINTER(1);
 		}
@@ -628,7 +628,7 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 	for (chan = 0; chan < 3; chan++) {
 		stats[chan] = statistics(NULL, -1, fit, chan, &black_selection, STATS_BASIC);
 		if (!stats[chan]) {
-			siril_log_message(_("Error: no data computed.\n"));
+			siril_log_message(_("Error: statistics computation failed.\n"));
 			return;
 		}
 		ref += stats[chan]->median;
@@ -752,7 +752,7 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 	for (chan = 0; chan < 3; chan++) {
 		imstats *stat = statistics(NULL, -1, fit, chan, &black, STATS_BASIC);
 		if (!stat) {
-			siril_log_message(_("Error: no data computed.\n"));
+			siril_log_message(_("Error: statistics computation failed.\n"));
 			return;
 		}
 		bg[chan] = stat->median / stat->normValue;

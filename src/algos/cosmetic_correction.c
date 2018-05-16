@@ -135,7 +135,7 @@ long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 	/** statistics **/
 	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC);
 	if (!stat) {
-		siril_log_message(_("Error: no data computed.\n"));
+		siril_log_message(_("Error: statistics computation failed.\n"));
 		return 0L;
 	}
 	sigma = stat->sigma;
@@ -184,7 +184,7 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 	/** statistics **/
 	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC);
 	if (!stat) {
-		siril_log_message(_("Error: no data computed.\n"));
+		siril_log_message(_("Error: statistics computation failed.\n"));
 		return NULL;
 	}
 	sigma = stat->sigma;
@@ -392,7 +392,7 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 	 * into account the Bayer pattern */
 	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC | STATS_AVGDEV);
 	if (!stat) {
-		siril_log_message(_("Error: no data computed.\n"));
+		siril_log_message(_("Error: statistics computation failed.\n"));
 		return 1;
 	}
 	bkg = stat->median;

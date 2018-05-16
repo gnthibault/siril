@@ -476,7 +476,7 @@ double contrast(fits* fit, int layer) {
 	double contrast = 0.0;
 	imstats *stat = statistics(NULL, -1, fit, layer, &com.selection, STATS_BASIC);
 	if (!stat) {
-		siril_log_message(_("Error: no data computed.\n"));
+		siril_log_message(_("Error: statistics computation failed.\n"));
 		return -1.0;
 	}
 	double mean = stat->mean;
@@ -763,7 +763,7 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
 		imstats *stat = statistics(NULL, -1, fit_tmp, chan, NULL, STATS_NOISE);
 		if (!stat) {
-			siril_log_message(_("Error: no data computed.\n"));
+			siril_log_message(_("Error: statistics computation failed.\n"));
 			return 0.0;
 		}
 		noise += stat->bgnoise;
@@ -892,6 +892,14 @@ gpointer seqpreprocess(gpointer p) {
 	dark = args->dark;
 	offset = args->offset;
 	flat = args->flat;
+	args->retval = 0;
+
+	// remove old sequence
+	char *ppseqname = malloc(
+			strlen(args->seq->ppprefix) + strlen(args->seq->seqname) + 5);
+	sprintf(ppseqname, "%s%s.seq", args->seq->ppprefix, args->seq->seqname);
+	unlink(ppseqname);
+	free(ppseqname);
 
 	if (com.preprostatus & USE_FLAT) {
 		if (args->autolevel) {
@@ -899,7 +907,7 @@ gpointer seqpreprocess(gpointer p) {
 			 * Indeed, if it is image from APN, CFA picture are in black & white */
 			imstats *stat = statistics(NULL, -1, flat, RLAYER, NULL, STATS_BASIC);
 			if (!stat) {
-				siril_log_message(_("Error: no data computed.\n"));
+				siril_log_message(_("Error: statistics computation failed.\n"));
 				return GINT_TO_POINTER(1);
 			}
 			args->normalisation = stat->mean;
@@ -984,8 +992,8 @@ gpointer seqpreprocess(gpointer p) {
 
 		/* allocating memory to new fits */
 		fit = calloc(1, sizeof(fits));
-		if (fit == NULL) {
-			printf("Error: allocating memory to fit.\n");
+		if (!fit) {
+			fprintf(stderr, "Error: allocating memory to fit.\n");
 			return GINT_TO_POINTER(1);
 		}
 
@@ -1004,13 +1012,7 @@ gpointer seqpreprocess(gpointer p) {
 				msg[255] = '\0';
 				set_progress_bar_data(msg, PROGRESS_RESET);
 				args->retval = 1;
-				if (args->seq->type == SEQ_SER) {
-					ser_write_and_close(new_ser_file);
-					free(new_ser_file);
-					new_ser_file = NULL;
-				}
-				siril_add_idle(end_sequence_prepro, args);
-				return GINT_TO_POINTER(1);
+				break;
 			}
 			if ((com.preprostatus & USE_OPTD) && (com.preprostatus & USE_DARK))
 				darkOptimization(fit, dark, offset);
@@ -1046,9 +1048,8 @@ gpointer seqpreprocess(gpointer p) {
 		set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 		if (dev) free(dev);
 	}
-	args->retval = 0;
 	siril_add_idle(end_sequence_prepro, args);
-	return GINT_TO_POINTER(0);
+	return GINT_TO_POINTER(args->retval);
 }
 
 /* computes the background value using the histogram and/or median value.
@@ -1064,7 +1065,7 @@ double background(fits* fit, int reqlayer, rectangle *selection) {
 
 	imstats* stat = statistics(NULL, -1, fit, layer, selection, STATS_BASIC);
 	if (!stat) {
-		siril_log_message(_("Error: no data computed.\n"));
+		siril_log_message(_("Error: statistics computation failed.\n"));
 		return 0.0;
 	}
 	bg = stat->median;
@@ -1426,7 +1427,7 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
 		imstats *stat = statistics(NULL, -1, fit, chan, NULL, STATS_BASIC | STATS_MAD);
 		if (!stat) {
-			siril_log_message(_("Error: no data computed.\n"));
+			siril_log_message(_("Error: statistics computation failed.\n"));
 			return 1;
 		}
 		double background = stat->median;
@@ -1516,7 +1517,7 @@ int backgroundnoise(fits* fit, double sigma[]) {
 
 		imstats *stat = statistics(NULL, -1, waveimage, layer, NULL, STATS_BASIC);
 		if (!stat) {
-			siril_log_message(_("Error: no data computed.\n"));
+			siril_log_message(_("Error: statistics computation failed.\n"));
 			return 1;
 		}
 		sigma0 = stat->sigma;
@@ -1608,7 +1609,7 @@ gpointer noise(gpointer p) {
 		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_NOISE);
 		if (!stat) {
 			args->retval = 1;
-			siril_log_message(_("Error: no data computed.\n"));
+			siril_log_message(_("Error: statistics computation failed.\n"));
 			break;
 		}
 		args->bgnoise[chan] = stat->bgnoise;

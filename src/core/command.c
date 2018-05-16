@@ -1492,7 +1492,7 @@ int process_stat(int nb){
 	for (layer = 0; layer < nplane; layer++) {
 		imstats* stat = statistics(NULL, -1, &gfit, layer, &com.selection, STATS_MAIN);
 		if (!stat) {
-			siril_log_message(_("Error: no data computed.\n"));
+			siril_log_message(_("Error: statistics computation failed.\n"));
 			return 1;
 		}
 
@@ -2074,6 +2074,13 @@ int process_preprocess(int nb) {
 
 	// sequence, executed in a background thread
 	args->seq->ppprefix = strdup("pp_");
+
+	// remove old sequence
+	char *ppseqname = malloc(
+			strlen(args->seq->ppprefix) + strlen(args->seq->seqname) + 5);
+	sprintf(ppseqname, "%s%s.seq", args->seq->ppprefix, args->seq->seqname);
+	unlink(ppseqname);
+	free(ppseqname);
 
 	// start preprocessing
 	set_cursor_waiting(TRUE);
