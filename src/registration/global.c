@@ -240,6 +240,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		}
 
 		FWHM_average(stars, &FWHMx, &FWHMy, nbpoints);
+#pragma omp critical
 		print_alignment_results(H, filenum, FWHMx, FWHMy);
 		sadata->current_regdata[in_index].fwhm = FWHMx;
 		sadata->current_regdata[in_index].roundness = FWHMy/FWHMx;
