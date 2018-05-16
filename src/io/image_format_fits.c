@@ -473,6 +473,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	 */
 	status = 0;
 	fits_read_key(fit->fptr, TUINT, "BZERO", &offset, NULL, &status);
+	fprintf(stderr, "ERROR: status=%d, bzero=%u\n", status, offset);
 	if (!status) {
 		if (fit->bitpix == SHORT_IMG && offset == 32768)
 			fit->bitpix = USHORT_IMG;
@@ -481,7 +482,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	} else {
 		/* but some software just put unsigned 16-bit data in the file
 		 * and don't set the BZERO keyword... */
-		if (fit->bitpix == SHORT_IMG)
+		if (status != NUM_OVERFLOW && fit->bitpix == SHORT_IMG)
 			fit->bitpix = USHORT_IMG;
 	}
 

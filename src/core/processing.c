@@ -298,6 +298,7 @@ int generic_save(struct generic_seq_args *args, int out_index, int in_index, fit
 				args->seq->seqname, 
 				args->seq->imgparam[in_index].filenum,
 				/*in_index,*/ com.ext);
+		fit->bitpix = fit->orig_bitpix;
 		return savefits(dest, fit);
 	}
 }

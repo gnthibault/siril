@@ -770,7 +770,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 
 	olddata = fit->data;
 	if ((fit->data = realloc(fit->data, frame_size * sizeof(WORD))) == NULL) {
-		fprintf(stderr, "ser_read: error realloc %s %d\n", ser_file->filename,
+		fprintf(stderr, "ser_read: error realloc %s %ld\n", ser_file->filename,
 				frame_size);
 		if (olddata)
 			free(olddata);
