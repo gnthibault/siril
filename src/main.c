@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
 	int i;
 	extern char *optarg;
 	extern int opterr;
-	gchar *siril_path;
+	gchar *siril_path = NULL;
 	gchar *current_cwd = NULL;
 	gboolean forcecwd = FALSE;
 	char *cwd_forced = NULL, *start_script = NULL;

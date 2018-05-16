@@ -172,6 +172,7 @@ static void prepare_savepopup(int type) {
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving TIFF"));
 		tab = PAGE_TIFF;
 		break;
+	default:
 	case TYPEFITS:
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving FITS"));
 		tab = PAGE_FITS;

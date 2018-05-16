@@ -1434,7 +1434,7 @@ gboolean end_seqpsf(gpointer p) {
 	struct seqpsf_args *spsfargs = (struct seqpsf_args *)args->user;
 	sequence *seq = args->seq;
 	int layer = args->layer_for_partial;
-	int photometry_index;
+	int photometry_index = 0;
 	gboolean displayed_warning = FALSE, write_to_regdata = FALSE;
 	gboolean dont_stop_thread;
 

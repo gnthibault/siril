@@ -44,7 +44,7 @@ gpointer generic_sequence_worker(gpointer p) {
 	int abort = 0;	// variable for breaking out of loop
 	GString *desc;	// temporary string description for logs
 	gchar *msg;	// final string description for logs
-	fits fit;
+	fits fit = { 0 };
 
 	assert(args);
 	assert(args->seq);
@@ -99,7 +99,6 @@ gpointer generic_sequence_worker(gpointer p) {
 #ifdef _OPENMP
 	omp_init_lock(&args->lock);
 #endif
-	memset(&fit, 0, sizeof(fits));
 
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) firstprivate(fit) private(input_idx) schedule(static) \

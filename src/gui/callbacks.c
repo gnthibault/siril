@@ -959,7 +959,7 @@ static void opendial(void) {
 #else
 	GtkWidget *widgetdialog;
 #endif
-	GtkFileChooser *dialog;
+	GtkFileChooser *dialog = NULL;
 	GtkFileChooserAction action;
 	GtkWindow *main_window = GTK_WINDOW(lookup_widget("main_window"));
 	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));

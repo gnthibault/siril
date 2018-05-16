@@ -62,7 +62,8 @@ static gpointer export_sequence(gpointer ptr) {
 	float cur_nb = 0.f, nb_frames;
 	unsigned int out_width, out_height, in_width, in_height, nbdata = 0;
 	uint8_t *data;
-	fits fit, destfit;
+	fits fit = { 0 };
+	fits destfit = { 0 };
 	char filename[256], dest[256];
 	struct ser_struct *ser_file = NULL;
 	GSList *timestamp = NULL;
@@ -71,9 +72,7 @@ static gpointer export_sequence(gpointer ptr) {
 	struct mp4_struct *mp4_file = NULL;
 #endif
 	struct exportseq_args *args = (struct exportseq_args *)ptr;
-	norm_coeff coeff;
-	memset(&fit, 0, sizeof(fits));
-	memset(&destfit, 0, sizeof(fits));
+	norm_coeff coeff = { 0 };
 
 	reglayer = get_registration_layer();
 	siril_log_message(_("Using registration information from layer %d to export sequence\n"), reglayer);

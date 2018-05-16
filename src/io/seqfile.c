@@ -298,7 +298,7 @@ sequence * readseqfile(const char *name){
 					seq->film_file = malloc(sizeof(struct film_struct));
 					int i = 0, nb_film = get_nb_film_ext_supported();
 
-					gchar *filmname;
+					gchar *filmname = NULL;
 					while (i < nb_film) {
 						GString *filmString;
 						/* test for extension in lowercase */
