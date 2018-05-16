@@ -15,6 +15,6 @@
     */
 #define AT_MATCH_OUTFILE   "matched"
 
-int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H);
+int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point image_size);
 
 #endif   /* MATCH_H */

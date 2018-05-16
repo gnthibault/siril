@@ -190,6 +190,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 	float FWHMx, FWHMy;
 	fitted_PSF **stars;
 	Homography H = { 0 };
+	point image_size = { 0 };
 	int filenum = args->seq->imgparam[in_index].filenum;	// for display purposes
 
 	if (regargs->translation_only) {
@@ -226,8 +227,9 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		else {
 			nbpoints = nb_stars;
 		}
-
-		if (new_star_match(stars, sadata->refstars, nbpoints, &H)) {
+		image_size.x = fit->rx;
+		image_size.y = fit->ry;
+		if (new_star_match(stars, sadata->refstars, nbpoints, &H, image_size)) {
 			siril_log_color_message(_("Cannot perform star matching. Image %d skipped\n"),
 					"red", filenum);
 			i = 0;
@@ -243,8 +245,6 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		sadata->current_regdata[in_index].roundness = FWHMy/FWHMx;
 
 		if (!regargs->translation_only) {
-			fits_flip_top_to_bottom(fit);	// this is because in cvTransformImage, rotation center point is at (0, 0)
-			// TODO: can't we multiply H by a translation or something to avoid the double flip?
 			if (regargs->x2upscale) {
 				double upscale = 2.0;
 
@@ -253,7 +253,6 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 				cvApplyScaleToH(&H, upscale);
 			}
 			cvTransformImage(fit, sadata->ref, H, regargs->interpolation);
-			fits_flip_top_to_bottom(fit);
 		}
 
 		i = 0;

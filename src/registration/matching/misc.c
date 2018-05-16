@@ -328,7 +328,7 @@ double mag /* I: mag value for new star */
 	return (new);
 }
 
-int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list) {
+int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list, point image_size) {
 	int i = 0;
 	struct s_star *head, *last, *new;
 
@@ -336,7 +336,7 @@ int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list) {
 	last = head;
 
 	while (i < n) {
-		new = atStarNew(s[i]->xpos, s[i]->ypos, s[i]->mag);
+		new = atStarNew(s[i]->xpos, image_size.y - s[i]->ypos, s[i]->mag);
 		new->id = i;
 
 		if (head == NULL) {
