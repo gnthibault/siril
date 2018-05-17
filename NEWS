@@ -1,25 +1,27 @@
 v0.9.9, xxx xx, xxxx
 Stability update for v0.9.8
 
-* Added script module with documentation on every command
-* Added 'stack sequence' command
-* Added 'register sequence' command
-* Added a filtering method based on roundness
-* Added completion to command entry
-* Added pure console script execution
-* Added native open and save dialog for Windows users
-* Fixed wrong handling of scale variations in Drizzle case
-* Fixed bug in the "About" OS X menu
-* Fixed bug in 8-bit images autostretch display
-* Fixed bug in BMP support
-* Fixed issues in PNG and TIFF 8-bit export
-* Save statistics and autostretch parameters for better performance
-* Improved support of FITS
-* Run all GUI save functions in another thread
-* Workflow improvement by adding demosaic as last part of the preprocessing
-* Allow to normalize stacked images to 16-bit with average rejection algorithms
+* Major update of the command line, with completion and
+documentation in the GUI, enhanced scripting capability by running
+commands from a file and also allowing it to be run with no X11 server
+running with the -s command line option
+* Added commands to stack and register a sequence
+* Image statistics, including auto-stretch parameters and stacking
+normalization, are now cached in the seq file for better performance
+* Global star registration now runs in parallel
+* Workflow improvement by adding demosaicing as last part of the preprocessing
+* Added a filtering method for stacking based on star roundness
+* Added an option to normalize stacked images to 16-bit with average
+rejection algorithm
+* All GUI save functions are now done in another thread
 * Improved histogram transformation GUI
-* Improved speed of global registration with parallelisation
+* Improved support of various FITS pixel formats
+* Added native open and save dialogues for Windows users
+* Fixed wrong handling of scale variations in Drizzle case
+* Fixed 8-bit images auto-stretch display
+* Fixed BMP support
+* Fixed issues in PNG and TIFF 8-bit export
+* Fixed the "About" OS X menu
 
 v0.9.8.3, Feb 19, 2018
 Patch update for v0.9.8
