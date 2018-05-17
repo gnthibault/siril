@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-16 21:23+0200\n"
-"PO-Revision-Date: 2018-05-16 21:24+0200\n"
+"POT-Creation-Date: 2018-05-17 15:04+0200\n"
+"PO-Revision-Date: 2018-05-17 15:05+0200\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -634,7 +634,7 @@ msgstr "Nom"
 msgid "No Selection"
 msgstr "Aucune sélection"
 
-#: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1365
+#: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1366
 msgid "Banding Reduction"
 msgstr "Réduction de la trame"
 
@@ -1148,13 +1148,13 @@ msgstr "Plus Proches Voisins"
 msgid "Bilinear (default)"
 msgstr "Bilinéaire (défaut)"
 
-#: ../src/gui/siril3.glade.h:256 ../src/core/siril.c:1097
-#: ../src/core/siril.c:1137
+#: ../src/gui/siril3.glade.h:256 ../src/core/siril.c:1098
+#: ../src/core/siril.c:1138
 msgid "Pixel Area Relation"
 msgstr "Zone de relation des pixels"
 
-#: ../src/gui/siril3.glade.h:257 ../src/core/siril.c:1100
-#: ../src/core/siril.c:1140
+#: ../src/gui/siril3.glade.h:257 ../src/core/siril.c:1101
+#: ../src/core/siril.c:1141
 msgid "Bicubic"
 msgstr "Bicubique"
 
@@ -1463,8 +1463,8 @@ msgstr "Sélectionner une méthode d'interpolation pour exécuter le dématriça
 msgid "Debayer interpolation: "
 msgstr "Interpolation de dématriçage : "
 
-#: ../src/gui/siril3.glade.h:325 ../src/core/siril.c:1094
-#: ../src/core/siril.c:1134
+#: ../src/gui/siril3.glade.h:325 ../src/core/siril.c:1095
+#: ../src/core/siril.c:1135
 msgid "Bilinear"
 msgstr "Bilinéaire"
 
@@ -3670,13 +3670,13 @@ msgstr "Rehaussement de la saturation : en cours...\n"
 #: ../src/algos/colors.c:424 ../src/algos/colors.c:631
 #: ../src/algos/colors.c:755 ../src/algos/cosmetic_correction.c:138
 #: ../src/algos/cosmetic_correction.c:187
-#: ../src/algos/cosmetic_correction.c:395 ../src/core/command.c:1495
-#: ../src/core/siril.c:479 ../src/core/siril.c:766 ../src/core/siril.c:902
-#: ../src/core/siril.c:1067 ../src/core/siril.c:1429 ../src/core/siril.c:1519
-#: ../src/core/siril.c:1611 ../src/gui/histogram.c:580
+#: ../src/algos/cosmetic_correction.c:395 ../src/algos/star_finder.c:49
+#: ../src/core/command.c:1495 ../src/core/siril.c:479 ../src/core/siril.c:766
+#: ../src/core/siril.c:910 ../src/core/siril.c:1068 ../src/core/siril.c:1430
+#: ../src/core/siril.c:1520 ../src/core/siril.c:1612 ../src/gui/histogram.c:580
 #: ../src/gui/statistics_list.c:308
-msgid "Error: no data computed.\n"
-msgstr "Erreur, aucune donnée calculée.\n"
+msgid "Error: statistics computation failed.\n"
+msgstr "Erreur : échec du calcul des statistiques.\n"
 
 #: ../src/algos/colors.c:494
 msgid "SCNR: processing...\n"
@@ -3713,8 +3713,8 @@ msgstr "Image %d : %ld pixels corrigés (%ld + %ld)\n"
 msgid "Cosmetic Correction: processing...\n"
 msgstr "Correction cosmétique : en cours...\n"
 
-#: ../src/algos/cosmetic_correction.c:371 ../src/core/siril.c:933
-#: ../src/core/siril.c:978
+#: ../src/algos/cosmetic_correction.c:371 ../src/core/siril.c:941
+#: ../src/core/siril.c:986
 #, c-format
 msgid "%ld pixels corrected (%ld + %ld)\n"
 msgstr "%ld pixels corrigés (%ld + %ld)\n"
@@ -3776,10 +3776,6 @@ msgstr ""
 "Inensité Maximale=%0.6f\n"
 "Magnitude (%s)=%0.2f\n"
 "RMSE=%.3e\n"
-
-#: ../src/algos/star_finder.c:49
-msgid "Error: statistics computation failed.\n"
-msgstr "Erreur : échec du calcul des statistiques.\n"
 
 #: ../src/algos/star_finder.c:154
 msgid "Findstar: processing...\n"
@@ -3890,7 +3886,7 @@ msgstr "Réajustement du canal %d (x%g)\n"
 #: ../src/core/command.c:1311 ../src/core/command.c:1334
 #: ../src/core/command.c:1354 ../src/core/command.c:1378
 #: ../src/core/command.c:1534 ../src/core/command.c:1604
-#: ../src/core/command.c:2283 ../src/gui/callbacks.c:4000
+#: ../src/core/command.c:2290 ../src/gui/callbacks.c:4000
 #: ../src/gui/callbacks.c:4202 ../src/gui/callbacks.c:4393
 #: ../src/gui/callbacks.c:4477 ../src/gui/callbacks.c:4674
 #: ../src/gui/callbacks.c:5010 ../src/gui/callbacks.c:5157
@@ -3943,7 +3939,7 @@ msgstr ""
 "Recadrage : sélectionner une zone ou entrer les valeurs de x, y, largeur et "
 "hauteur\n"
 
-#: ../src/core/command.c:531 ../src/core/command.c:2139
+#: ../src/core/command.c:531 ../src/core/command.c:2146
 #: ../src/gui/callbacks.c:5354 ../src/gui/callbacks.c:5420
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
@@ -3983,7 +3979,7 @@ msgstr "Séquence : %s\n"
 msgid "Image: %s\n"
 msgstr "Image : %s\n"
 
-#: ../src/core/command.c:655 ../src/core/command.c:2120
+#: ../src/core/command.c:655 ../src/core/command.c:2127
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* FIN DE LA LISTE***********\n"
 
@@ -4181,10 +4177,10 @@ msgstr "Conversion : erreur lors de l'ouverture du répertoire de travail %s.\n"
 #: ../src/gui/plot.c:379 ../src/gui/plot.c:438 ../src/gui/PSF_list.c:150
 #: ../src/io/conversion.c:555 ../src/io/conversion.c:627
 #: ../src/io/image_format_fits.c:404 ../src/io/image_format_fits.c:410
-#: ../src/io/image_format_fits.c:431 ../src/io/image_format_fits.c:439
-#: ../src/io/image_format_fits.c:461 ../src/io/image_format_fits.c:499
-#: ../src/io/image_format_fits.c:517 ../src/io/image_format_fits.c:656
-#: ../src/io/image_format_fits.c:891 ../src/io/image_formats_internal.c:220
+#: ../src/io/image_format_fits.c:432 ../src/io/image_format_fits.c:440
+#: ../src/io/image_format_fits.c:462 ../src/io/image_format_fits.c:500
+#: ../src/io/image_format_fits.c:518 ../src/io/image_format_fits.c:657
+#: ../src/io/image_format_fits.c:893 ../src/io/image_formats_internal.c:220
 #: ../src/io/image_formats_internal.c:284
 #: ../src/io/image_formats_internal.c:353
 #: ../src/io/image_formats_internal.c:408
@@ -4286,7 +4282,7 @@ msgstr "Séquence empilée avec succès.\n"
 msgid "Preprocessing...\n"
 msgstr "Prétraitement...\n"
 
-#: ../src/core/command.c:2093
+#: ../src/core/command.c:2100
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -4294,77 +4290,77 @@ msgid ""
 msgstr ""
 "Le nombre de processeurs doit être supérieur à 0 et inférieur ou égal à %d.\n"
 
-#: ../src/core/command.c:2105
+#: ../src/core/command.c:2112
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "Utilise maintenant %d processeurs\n"
 
-#: ../src/core/command.c:2115
+#: ../src/core/command.c:2122
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* LISTE DES COMMANDES DISPONIBLES *********\n"
 
-#: ../src/core/command.c:2188
+#: ../src/core/command.c:2195
 #, c-format
 msgid "Unknown command: '%s' or not implemented yet\n"
 msgstr "Commande inconnue : '%s' ou pas encore implémentée\n"
 
-#: ../src/core/command.c:2195
+#: ../src/core/command.c:2202
 #, c-format
 msgid "Usage: %s\n"
 msgstr "Usage : %s\n"
 
-#: ../src/core/command.c:2202
+#: ../src/core/command.c:2209
 #, c-format
 msgid "This command cannot be used in a script: %s\n"
 msgstr "Cette commande ne peut pas être utilisée dans un script : %s\n"
 
 #. process the command
-#: ../src/core/command.c:2208
+#: ../src/core/command.c:2215
 #, c-format
 msgid "Running command: %s\n"
 msgstr "Exécution de la commande : %s\n"
 
-#: ../src/core/command.c:2247
+#: ../src/core/command.c:2254
 #, c-format
 msgid "Error in line %d. Exiting batch processing\n"
 msgstr "Erreur à la ligne %d. Abandon\n"
 
-#: ../src/core/command.c:2263
+#: ../src/core/command.c:2270
 msgid "Script execution finished successfully.\n"
 msgstr "L'exécution du script s'est terminée avec succès.\n"
 
-#: ../src/core/command.c:2265
+#: ../src/core/command.c:2272
 msgid "Total execution time"
 msgstr "Temps d'exécution total"
 
-#: ../src/core/command.c:2267
+#: ../src/core/command.c:2274
 msgid "Script execution failed.\n"
 msgstr "L'exécution du script a échoué.\n"
 
-#: ../src/core/command.c:2293 ../src/gui/script_menu.c:167 ../src/main.c:466
+#: ../src/core/command.c:2300 ../src/gui/script_menu.c:167 ../src/main.c:466
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Le fichier [%s] n'existe pas\n"
 
 #. Then, run script
-#: ../src/core/command.c:2301 ../src/gui/script_menu.c:176
+#: ../src/core/command.c:2308 ../src/gui/script_menu.c:176
 #, c-format
 msgid "Starting script %s\n"
 msgstr "Début du script %s\n"
 
-#: ../src/core/command.c:2430
+#: ../src/core/command.c:2437
 msgid "Can be used in a script: "
 msgstr "Peut être utilisé dans un script : "
 
-#: ../src/core/command.c:2433
+#: ../src/core/command.c:2440
 msgid "YES"
 msgstr "OUI"
 
-#: ../src/core/command.c:2435
+#: ../src/core/command.c:2442
 msgid "NO"
 msgstr "NON"
 
-#: ../src/core/command.c:2445
+#: ../src/core/command.c:2452
 msgid "No help for this command"
 msgstr "Aucune aide pour cette commande"
 
@@ -4886,6 +4882,14 @@ msgstr ""
 
 #: ../src/core/command_def.h:85
 msgid ""
+"Sets the extension used and recognized by sequences. The argument \"extension"
+"\" can be \"fit\", \"fts\" or \"fits\""
+msgstr ""
+"Définit l'extension utilisée et reconnues par les séquences. L'argument "
+"\"extension\" peut être \"fit\", \"fts\" ou \"fits\""
+
+#: ../src/core/command_def.h:86
+msgid ""
 "Calibrates the magnitude by selecting a star and giving the known apparent "
 "magnitude. All PSF computations will return the calibrated apparent "
 "magnitude afterwards, instead of an apparent magnitude relative to ADU "
@@ -4897,7 +4901,7 @@ msgstr ""
 "valeurs ADU. Pour réinitialiser la constante de décalage de la magnitude, "
 "voir UNSETMAG"
 
-#: ../src/core/command_def.h:86
+#: ../src/core/command_def.h:87
 msgid ""
 "This command is only valid after having run SEQPSF or its graphical "
 "counterpart (select the area around a star and launch the PSF analysis for "
@@ -4918,14 +4922,6 @@ msgstr ""
 "comme l'étoile de référence. L'affichage du graphique d'amplitude avant de "
 "taper la commande la rend facile à comprendre. Pour réinitialiser l'étoile "
 "de référence et le décalage de magnitude, voir UNSETMAGSEQ"
-
-#: ../src/core/command_def.h:87
-msgid ""
-"Sets the extension used and recognized by sequences. The argument \"extension"
-"\" can be \"fit\", \"fts\" or \"fits\""
-msgstr ""
-"Définit l'extension utilisée et reconnues par les séquences. L'argument "
-"\"extension\" peut être \"fit\", \"fts\" ou \"fits\""
 
 #: ../src/core/command_def.h:88
 msgid ""
@@ -5158,97 +5154,97 @@ msgstr ""
 msgid "Dark optimization: %.3lf\n"
 msgstr "Optimisation des darks : %.3lf\n"
 
-#: ../src/core/siril.c:906
+#: ../src/core/siril.c:914
 #, c-format
 msgid "Normalisation value auto evaluated: %.2lf\n"
 msgstr "Valeur de normalisation auto-évaluée : %.2lf\n"
 
-#: ../src/core/siril.c:913
+#: ../src/core/siril.c:921
 #, c-format
 msgid "Pre-processing image %s"
 msgstr "Pré-traitement de l'image %s"
 
-#: ../src/core/siril.c:940 ../src/core/siril.c:981
+#: ../src/core/siril.c:948 ../src/core/siril.c:989
 msgid ""
 "Darkmap cosmetic correction is only supported with single channel images\n"
 msgstr ""
 "La correction cosmétique utilisant le master-dark ne supporte que des images "
 "à un canal\n"
 
-#: ../src/core/siril.c:952
+#: ../src/core/siril.c:960
 #, c-format
 msgid "Saving image %s"
 msgstr "Image %s enregistrée"
 
-#: ../src/core/siril.c:996
+#: ../src/core/siril.c:1004
 #, c-format
 msgid "Loading and pre-processing image %d/%d (%s)"
 msgstr "Chargement et pré-traitement de l'image %d/%d (%s)"
 
-#: ../src/core/siril.c:1002
+#: ../src/core/siril.c:1010
 #, c-format
 msgid "Could not read one of the raw files: %s. Aborting preprocessing."
 msgstr ""
 "Impossible de lire un des fichiers raw : %s. Abandon du pré-traitement."
 
-#: ../src/core/siril.c:1090 ../src/core/siril.c:1130
+#: ../src/core/siril.c:1091 ../src/core/siril.c:1131
 msgid "Nearest-Neighbor"
 msgstr "Plus proches voisins"
 
-#: ../src/core/siril.c:1103 ../src/core/siril.c:1143
+#: ../src/core/siril.c:1104 ../src/core/siril.c:1144
 msgid "Lanczos4"
 msgstr "Lanczos4"
 
-#: ../src/core/siril.c:1107
+#: ../src/core/siril.c:1108
 #, c-format
 msgid "Resample (%s interpolation): processing...\n"
 msgstr "Ré-échantillonner (interpolation %s) : en cours...\n"
 
-#: ../src/core/siril.c:1127
+#: ../src/core/siril.c:1128
 msgid "No"
 msgstr "Non"
 
-#: ../src/core/siril.c:1148
+#: ../src/core/siril.c:1149
 #, c-format
 msgid "Rotation (%s interpolation, angle=%g): processing...\n"
 msgstr "Rotation (interpolation %s, angle=%g) : en cours...\n"
 
-#: ../src/core/siril.c:1211
+#: ../src/core/siril.c:1212
 #, c-format
 msgid "Extracting %s..."
 msgstr "Extraire %s..."
 
-#: ../src/core/siril.c:1252
+#: ../src/core/siril.c:1253
 msgid "Median Filter: processing...\n"
 msgstr "Filtre médian : en cours...\n"
 
-#: ../src/core/siril.c:1257
+#: ../src/core/siril.c:1258
 #, c-format
 msgid "Iteration #%d...\n"
 msgstr "Itération #%d...\n"
 
-#: ../src/core/siril.c:1400
+#: ../src/core/siril.c:1401
 msgid "Banding Reducing: processing...\n"
 msgstr "Réduction de la trame : en cours...\n"
 
-#: ../src/core/siril.c:1562
+#: ../src/core/siril.c:1563
 msgid "backgroundnoise: Error, no data computed\n"
 msgstr "backgroundnoise : Erreur, aucune donnée calculée\n"
 
-#: ../src/core/siril.c:1572
+#: ../src/core/siril.c:1573
 msgid "backgroundnoise: does not converge\n"
 msgstr "backgroundnoise : aucune convergence\n"
 
-#: ../src/core/siril.c:1602
+#: ../src/core/siril.c:1603
 msgid "Noise standard deviation: calculating...\n"
 msgstr "Déviation standard du bruit : calcul en cours...\n"
 
-#: ../src/core/siril.c:1622
+#: ../src/core/siril.c:1623
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
 msgstr "Estimation du bruit : (canal : #%d) : %0.3lf (%.3e)\n"
 
-#: ../src/core/siril.c:1635
+#: ../src/core/siril.c:1636
 msgid "Lucy-Richardson deconvolution: processing...\n"
 msgstr "Déconvolution Lucy-Richardson : en cours...\n"
 
@@ -6248,8 +6244,8 @@ msgstr "FILM ERREUR : format incompatible\n"
 
 #: ../src/io/image_format_fits.c:90
 #, c-format
-msgid "Loaded FITS file has a BSCALE different than 1 (%d)\n"
-msgstr "Le fichier FITS chargé a un BSCALE différent de 1 (%d)\n"
+msgid "Loaded FITS file has a BSCALE different than 1 (%lf)\n"
+msgstr "Le fichier FITS chargé a un BSCALE différent de 1 (%lf)\n"
 
 #: ../src/io/image_format_fits.c:273
 #, c-format
@@ -6260,7 +6256,7 @@ msgstr "Erreur dans le fichier FITS : %s\n"
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "Format FITS inconnu dans la conversion interne\n"
 
-#: ../src/io/image_format_fits.c:403 ../src/io/image_format_fits.c:655
+#: ../src/io/image_format_fits.c:403 ../src/io/image_format_fits.c:656
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr "Le format %d de l'image  FITS n'est pas supportée par Siril.\n"
@@ -6270,28 +6266,28 @@ msgstr "Le format %d de l'image  FITS n'est pas supportée par Siril.\n"
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Erreur fitsio lors de la lecture des données, fichier : %s.\n"
 
-#: ../src/io/image_format_fits.c:429
+#: ../src/io/image_format_fits.c:430
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr "%s.[extension] non trouvé.\n"
 
-#: ../src/io/image_format_fits.c:437
+#: ../src/io/image_format_fits.c:438
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr "Le fichier %s n'est pas un fichier FITS valide.\n"
 
-#: ../src/io/image_format_fits.c:460
+#: ../src/io/image_format_fits.c:461
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "FITSIO erreur lors de la récupération des paramètres, fichier %s.\n"
 
-#: ../src/io/image_format_fits.c:497
+#: ../src/io/image_format_fits.c:498
 #, c-format
 msgid "Unsupported FITS image with %ld channels.\n"
 msgstr "Format d'image FITS non supporté avec %ld canaux.\n"
 
-#: ../src/io/image_format_fits.c:516
+#: ../src/io/image_format_fits.c:517
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -6299,34 +6295,34 @@ msgstr ""
 "Les images FITS avec 64 bits entier signé par pixel.canal ne sont pas "
 "supportées.\n"
 
-#: ../src/io/image_format_fits.c:557
+#: ../src/io/image_format_fits.c:558
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lecture du fichier FITS : %s, %ld canal(aux), %ux%u pixels\n"
 
-#: ../src/io/image_format_fits.c:703
+#: ../src/io/image_format_fits.c:705
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "Lecture partielle du FITS : il n'y pas de canal %d dans l'image %s\n"
 
-#: ../src/io/image_format_fits.c:711
+#: ../src/io/image_format_fits.c:713
 #, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Format d'image FITS non supporté (%ld axes).\n"
 
-#: ../src/io/image_format_fits.c:752
+#: ../src/io/image_format_fits.c:754
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Chargement partiel du fichier FITS %s\n"
 
-#: ../src/io/image_format_fits.c:889
+#: ../src/io/image_format_fits.c:891
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 "ERREUR : Impossible d'enregistrer l'image FITS avec un format non supporté "
 "(%d).\n"
 
-#: ../src/io/image_format_fits.c:901
+#: ../src/io/image_format_fits.c:903
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Fichier FITS enregistré : fichier %s, %ld canal(aux), %ux%u pixels\n"
@@ -7570,6 +7566,9 @@ msgstr "Basé sur la qualité"
 #: ../src/stacking/stacking.c:2256
 msgid "Up-scaling sequence for stacking"
 msgstr "Mise à l'échelle de la séquence pour l’empilement"
+
+#~ msgid "Error: no data computed.\n"
+#~ msgstr "Erreur, aucune donnée calculée.\n"
 
 #~ msgid "Ensure KSTARS/EKOS compatibility"
 #~ msgstr "Assurer la compatibilité avec KSTARS/EKOS"
