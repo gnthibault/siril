@@ -472,7 +472,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	 * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
 	 */
 	status = 0;
-	fits_read_key(fit->fptr, TUINT, "BZERO", &offset, NULL, &status);
+	fits_read_key(fit->fptr, TINT, "BZERO", &offset, NULL, &status);
 	if (!status) {
 		if (fit->bitpix == SHORT_IMG && offset == 32768)
 			fit->bitpix = USHORT_IMG;
