@@ -71,7 +71,7 @@ static char *word[MAX_COMMAND_WORDS];	// NULL terminated
 static GThread *script_thread = NULL;
 
 command commande[] = {
-	/* name,	nbarg,	usage,			function pointer */
+	/* name,	nbarg,	usage,		function pointer, definition, scriptable */
 	{"addmax",	1,	"addmax filename",	process_addmax, STR_ADDMAX, FALSE},
 	
 	{"bg", 0, "bg", process_bg, STR_BG, TRUE},
@@ -79,6 +79,7 @@ command commande[] = {
 	
 	{"cd", 1, "cd directory", process_cd, STR_CD, TRUE},
 	{"cdg", 0, "cdg", process_cdg, STR_CDG, TRUE},
+	{"clear", 0, "clear", process_clear, STR_CLEAR, FALSE},
 	{"clearstar", 0, "clearstar", process_clearstar, STR_CLEARSTAR, FALSE},
 	{"close", 0, "close", process_close, STR_CLOSE, TRUE},
 	{"convertraw", 1, "convertraw basename [-debayer]", process_convertraw, STR_CONVERT, TRUE},
@@ -1231,6 +1232,17 @@ int process_cdg(int nb) {
 	y_avg = gfit.ry - y_avg;	// FITS are stored bottom to top
 	siril_log_message(_("Center of gravity coordinates are (%.3lf, %.3lf)\n"), x_avg, y_avg);
 
+	return 0;
+}
+
+int process_clear(int nb) {
+	if (com.script) return 0;
+	GtkTextView *text = GTK_TEXT_VIEW(gtk_builder_get_object(builder, "output"));
+	GtkTextBuffer *tbuf = gtk_text_view_get_buffer(text);
+	GtkTextIter start_iter, end_iter;
+	gtk_text_buffer_get_start_iter(tbuf, &start_iter);
+	gtk_text_buffer_get_end_iter(tbuf, &end_iter);
+	gtk_text_buffer_delete(tbuf, &start_iter, &end_iter);
 	return 0;
 }
 

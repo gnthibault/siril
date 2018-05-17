@@ -10,6 +10,7 @@
 
 #define STR_CD N_("Set the new current working directory. The argument \"directory\" can contain the ~ token, expanded as the home directory, directories with spaces in the name can be protected using single or double quotes")
 #define STR_CDG N_("Returns the coordinates of the center of gravity of the image")
+#define STR_CLEAR N_("Clears the graphical output logs")
 #define STR_CLEARSTAR N_("Clear all the stars saved in memory and displayed on the screen")
 #define STR_CLOSE N_("Properly closes the opened image and the opened sequence, if any")
 #define STR_CONVERT N_("Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" is the basename of the new sequence. The option \"-debayer\" applies demosaicing to images")
