@@ -417,11 +417,11 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 
 // return 0 on success, fills realname if not NULL with the opened file's name
 int readfits(const char *filename, fits *fit, char *realname) {
-	int status, retval;
+	int status, offset, retval;
 	char *name = NULL, *msg = NULL;
 	gchar *basename;
 	image_type imagetype;
-	unsigned int offset, nbdata;
+	unsigned int nbdata;
 
 	fit->naxes[2] = 1; //initialization of the axis number before opening : NEED TO BE OPTIMIZED
 
