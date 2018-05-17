@@ -79,22 +79,22 @@ static void read_fits_date_obs_header(fits *fit) {
 static void read_fits_header(fits *fit) {
 	/* about the status argument: http://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node28.html */
 	int status = 0;
-	int zero;
+	double zero;
 
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSHI, &fit->hi);
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSLO, &fit->lo);
 
 	status = 0;
-	fits_read_key(fit->fptr, TINT, "BSCALE", &zero, NULL, &status);
-	if (!status && 1 != zero) {
+	fits_read_key(fit->fptr, TDOUBLE, "BSCALE", &zero, NULL, &status);
+	if (!status && 1.0 != zero) {
 		siril_log_message(_("Loaded FITS file has "
-				"a BSCALE different than 1 (%d)\n"), zero);
+				"a BSCALE different than 1 (%lf)\n"), zero);
 		status = 0;
 		/* We reset the scaling factors as we don't use it */
 		fits_set_bscale(fit->fptr, 1.0, 0.0, &status);
 	}
 	status = 0;
-	fits_read_key(fit->fptr, TINT, "BZERO", &zero, NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &zero, NULL, &status);
 
 	/*******************************************************************
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
@@ -417,11 +417,12 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 
 // return 0 on success, fills realname if not NULL with the opened file's name
 int readfits(const char *filename, fits *fit, char *realname) {
-	int status, offset, retval;
+	int status, retval;
 	char *name = NULL, *msg = NULL;
 	gchar *basename;
 	image_type imagetype;
 	unsigned int nbdata;
+	double offset;
 
 	fit->naxes[2] = 1; //initialization of the axis number before opening : NEED TO BE OPTIMIZED
 
@@ -472,11 +473,11 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	 * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
 	 */
 	status = 0;
-	fits_read_key(fit->fptr, TINT, "BZERO", &offset, NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &offset, NULL, &status);
 	if (!status) {
-		if (fit->bitpix == SHORT_IMG && offset == 32768)
+		if (fit->bitpix == SHORT_IMG && offset == 32768.0)
 			fit->bitpix = USHORT_IMG;
-		else if (fit->bitpix == LONG_IMG && offset == 2147483648)
+		else if (fit->bitpix == LONG_IMG && offset == 2147483648.0)
 			fit->bitpix = ULONG_IMG;
 	} else {
 		/* but some software just put unsigned 16-bit data in the file
@@ -665,7 +666,8 @@ static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry, int bitpi
 int readfits_partial(const char *filename, int layer, fits *fit,
 		const rectangle *area, gboolean do_photometry) {
 	int status;
-	unsigned int nbdata, offset;
+	unsigned int nbdata;
+	double offset;
 
 	status = 0;
 	if (siril_fits_open_diskfile(&(fit->fptr), filename, READONLY, &status)) {
@@ -683,10 +685,10 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		return status;
 	}
 	status = 0;
-	fits_read_key(fit->fptr, TUINT, "BZERO", &offset, NULL, &status);
-	if (fit->bitpix == SHORT_IMG && offset == 32768)
+	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &offset, NULL, &status);
+	if (fit->bitpix == SHORT_IMG && offset == 32768.0)
 		fit->bitpix = USHORT_IMG;
-	else if (fit->bitpix == LONG_IMG && offset == 2147483648)
+	else if (fit->bitpix == LONG_IMG && offset == 2147483648.0)
 		fit->bitpix = ULONG_IMG;
 	fit->orig_bitpix = fit->bitpix;
 
@@ -905,7 +907,7 @@ int savefits(const char *name, fits *f) {
 
 void save_fits_header(fits *fit) {
 	int i, status = 0;
-	int zero;
+	double zero;
 	unsigned int offset = 0;
 	char comment[FLEN_COMMENT];
 
@@ -919,19 +921,19 @@ void save_fits_header(fits *fit) {
 	switch (fit->bitpix) {
 	case BYTE_IMG:
 	case SHORT_IMG:
-		zero = 0;
+		zero = 0.0;
 		break;
 	default:
 	case USHORT_IMG:
-		zero = 32768;
+		zero = 32768.0;
 		break;
 	}
-	fits_update_key(fit->fptr, TUINT, "BZERO", &zero,
+	fits_update_key(fit->fptr, TDOUBLE, "BZERO", &zero,
 			"offset data range to that of unsigned short", &status);
 
 	status = 0;
-	zero = 1;
-	fits_update_key(fit->fptr, TUINT, "BSCALE", &zero, "default scaling factor",
+	zero = 1.0;
+	fits_update_key(fit->fptr, TDOUBLE, "BSCALE", &zero, "default scaling factor",
 			&status);
 
 	/*******************************************************************
