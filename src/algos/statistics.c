@@ -487,7 +487,9 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 		}
 		stat = statistics_internal(fit, layer, NULL, option, oldstat);
 		if (!stat) {
-			fprintf(stderr, "- stats failed for fit %p (%d) with seq\n", fit, layer);
+			if (fit)
+				fprintf(stderr, "- stats failed for %d in seq (%d)\n",
+						image_index, layer);
 			if (oldstat)
 				allocate_stats(&oldstat);
 			return NULL;
