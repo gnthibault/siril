@@ -43,6 +43,10 @@ siril_SOURCES += opencv/opencv.cpp opencv/opencv.h opencv/ecc/ecc.cpp opencv/ecc
 siril_SOURCES += opencv/findHomography/fundam.cpp opencv/findHomography/calibration.cpp opencv/findHomography/modelest.cpp opencv/findHomography/_modelest.h opencv/findHomography/calib3d.hpp opencv/findHomography/precomp.hpp
 siril_LDADD += $(OPENCV_LIBS)
 if OS_WIN32
-siril_LDADD += $(top_builddir)/platform-specific/windows/siril.res
+if HAVE_WINDRES
+$(top_builddir)/platform-specific/windows/siril.res.o: $(top_builddir)/platform-specific/windows/siril.rc
+	$(WINDRES) $< $@
+siril_LDADD += $(top_builddir)/platform-specific/windows/siril.res.o
+endif
 endif
 siril_LINK = $(CXXLINK)
