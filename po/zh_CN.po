@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-16 21:23+0200\n"
-"PO-Revision-Date: 2018-05-13 23:18+0800\n"
+"POT-Creation-Date: 2018-05-20 15:10+0200\n"
+"PO-Revision-Date: 2018-05-20 00:46+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
 "Language: zh_CN\n"
@@ -604,7 +604,7 @@ msgstr "名称"
 msgid "No Selection"
 msgstr "无选择"
 
-#: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1365
+#: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1366
 msgid "Banding Reduction"
 msgstr "除去条纹"
 
@@ -1100,13 +1100,13 @@ msgstr "最近邻居法"
 msgid "Bilinear (default)"
 msgstr "双线性（缺省）"
 
-#: ../src/gui/siril3.glade.h:256 ../src/core/siril.c:1097
-#: ../src/core/siril.c:1137
+#: ../src/gui/siril3.glade.h:256 ../src/core/siril.c:1098
+#: ../src/core/siril.c:1138
 msgid "Pixel Area Relation"
 msgstr "像素区域关联法"
 
-#: ../src/gui/siril3.glade.h:257 ../src/core/siril.c:1100
-#: ../src/core/siril.c:1140
+#: ../src/gui/siril3.glade.h:257 ../src/core/siril.c:1101
+#: ../src/core/siril.c:1141
 msgid "Bicubic"
 msgstr "双三次插值"
 
@@ -1395,8 +1395,8 @@ msgstr "选择一种去马赛克的插值算法。"
 msgid "Debayer interpolation: "
 msgstr "Debayer插值算法: "
 
-#: ../src/gui/siril3.glade.h:325 ../src/core/siril.c:1094
-#: ../src/core/siril.c:1134
+#: ../src/gui/siril3.glade.h:325 ../src/core/siril.c:1095
+#: ../src/core/siril.c:1135
 msgid "Bilinear"
 msgstr "双线性"
 
@@ -1431,15 +1431,17 @@ msgid ""
 "in up-bottom orientation (KSTARS/EKOS, \n"
 "PixInsight, and probably others ...)"
 msgstr ""
+"确保被保存图像的兼容性\n"
+"以自上而下的方向（KSTARS/EKOS,\n"
+"PixInsight, 和其他……）"
 
 #: ../src/gui/siril3.glade.h:334
-#, fuzzy
 msgid ""
 "If this box is checked, Siril will try to ensure KSTARS (and PixInsight or "
 "others) compatibility by reading FITS image in up-bottom order."
 msgstr ""
-"若本项被选定，Siril会试图通过使用从上倒下的顺序来读取FITS文件，以确保"
-"KSTARS（和PixInsight）的兼容性。"
+"若本项被选定，Siril会试图通过使用自上而下的顺序来读取FITS文件，以确保"
+"KSTARS（和PixInsight或其他）的兼容性。"
 
 #: ../src/gui/siril3.glade.h:335
 msgid "Debayer"
@@ -1659,11 +1661,14 @@ msgid ""
 "want. However you have to keep in mind that more paths are cheked the longer "
 "is the startup."
 msgstr ""
+"The paths written in this text box will be checked in order to load scripts "
+"that have been put inside. Write a path per line with as many lines you "
+"want. However you have to keep in mind that more paths are cheked the longer "
+"is the startup."
 
 #: ../src/gui/siril3.glade.h:382
-#, fuzzy
 msgid "<b>Scripts Storage Directories</b>"
-msgstr "<b>Swap目录</b>"
+msgstr "<b>脚本存放目录</b>"
 
 #: ../src/gui/siril3.glade.h:383
 msgid "Misc."
@@ -3421,12 +3426,13 @@ msgstr "饱和度增强：执行中...\n"
 #: ../src/algos/colors.c:424 ../src/algos/colors.c:631
 #: ../src/algos/colors.c:755 ../src/algos/cosmetic_correction.c:138
 #: ../src/algos/cosmetic_correction.c:187
-#: ../src/algos/cosmetic_correction.c:395 ../src/core/command.c:1495
-#: ../src/core/siril.c:479 ../src/core/siril.c:766 ../src/core/siril.c:902
-#: ../src/core/siril.c:1067 ../src/core/siril.c:1429 ../src/core/siril.c:1519
-#: ../src/core/siril.c:1611 ../src/gui/histogram.c:580
+#: ../src/algos/cosmetic_correction.c:395 ../src/algos/star_finder.c:49
+#: ../src/core/command.c:1507 ../src/core/siril.c:479 ../src/core/siril.c:766
+#: ../src/core/siril.c:910 ../src/core/siril.c:1068 ../src/core/siril.c:1430
+#: ../src/core/siril.c:1520 ../src/core/siril.c:1612 ../src/gui/histogram.c:580
 #: ../src/gui/statistics_list.c:308
-msgid "Error: no data computed.\n"
+#, fuzzy
+msgid "Error: statistics computation failed.\n"
 msgstr "Error: no data computed.\n"
 
 #: ../src/algos/colors.c:494
@@ -3464,8 +3470,8 @@ msgstr "图像 %d: %ld 像素被修正 (%ld + %ld)\n"
 msgid "Cosmetic Correction: processing...\n"
 msgstr "降噪：处理中...\n"
 
-#: ../src/algos/cosmetic_correction.c:371 ../src/core/siril.c:933
-#: ../src/core/siril.c:978
+#: ../src/algos/cosmetic_correction.c:371 ../src/core/siril.c:941
+#: ../src/core/siril.c:986
 #, c-format
 msgid "%ld pixels corrected (%ld + %ld)\n"
 msgstr "%ld 像素被修正 (%ld + %ld)\n"
@@ -3523,11 +3529,6 @@ msgstr ""
 "Maximal intensity=%0.6f\n"
 "Magnitude (%s)=%0.2f\n"
 "RMSE=%.3e\n"
-
-#: ../src/algos/star_finder.c:49
-#, fuzzy
-msgid "Error: statistics computation failed.\n"
-msgstr "Error: no data computed.\n"
 
 #: ../src/algos/star_finder.c:154
 msgid "Findstar: processing...\n"
@@ -3594,7 +3595,7 @@ msgstr "未保存的合成结果"
 msgid "You must at least load two layers before!\n"
 msgstr "必须先期载入至少两个通道！\n"
 
-#: ../src/compositing/compositing.c:546 ../src/core/command.c:1577
+#: ../src/compositing/compositing.c:546 ../src/core/command.c:1589
 #: ../src/gui/callbacks.c:5067 ../src/gui/callbacks.c:5111
 #: ../src/gui/callbacks.c:5356 ../src/gui/callbacks.c:5365
 #: ../src/gui/callbacks.c:5422 ../src/gui/plot.c:281 ../src/io/conversion.c:549
@@ -3631,13 +3632,13 @@ msgstr "Nothing to adjust, no overflow\n"
 msgid "Readjusting layer %d to %g times bright\n"
 msgstr "Readjusting layer %d to %g times bright\n"
 
-#: ../src/core/command.c:212 ../src/core/command.c:407
-#: ../src/core/command.c:822 ../src/core/command.c:857
-#: ../src/core/command.c:885 ../src/core/command.c:1196
-#: ../src/core/command.c:1311 ../src/core/command.c:1334
-#: ../src/core/command.c:1354 ../src/core/command.c:1378
-#: ../src/core/command.c:1534 ../src/core/command.c:1604
-#: ../src/core/command.c:2283 ../src/gui/callbacks.c:4000
+#: ../src/core/command.c:213 ../src/core/command.c:408
+#: ../src/core/command.c:823 ../src/core/command.c:858
+#: ../src/core/command.c:886 ../src/core/command.c:1197
+#: ../src/core/command.c:1323 ../src/core/command.c:1346
+#: ../src/core/command.c:1366 ../src/core/command.c:1390
+#: ../src/core/command.c:1546 ../src/core/command.c:1616
+#: ../src/core/command.c:2302 ../src/gui/callbacks.c:4000
 #: ../src/gui/callbacks.c:4202 ../src/gui/callbacks.c:4393
 #: ../src/gui/callbacks.c:4477 ../src/gui/callbacks.c:4674
 #: ../src/gui/callbacks.c:5010 ../src/gui/callbacks.c:5157
@@ -3648,116 +3649,116 @@ msgstr "Readjusting layer %d to %g times bright\n"
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Another task is already in progress, ignoring new request.\n"
 
-#: ../src/core/command.c:353
+#: ../src/core/command.c:354
 msgid "Multiplying by a coefficient less than or equal to 0 is not possible.\n"
 msgstr "乘法的乘数小于或等于0是不允许的。\n"
 
-#: ../src/core/command.c:374
+#: ../src/core/command.c:375
 #, c-format
 msgid "Entropy: %.3lf\n"
 msgstr "熵：%.3lf\n"
 
-#: ../src/core/command.c:396
+#: ../src/core/command.c:397
 msgid "Number of iterations must be > 0.\n"
 msgstr "迭代次数必须大于0\n"
 
-#: ../src/core/command.c:401
+#: ../src/core/command.c:402
 msgid "Sigma must be > 0.\n"
 msgstr "Sigma必须大于0\n"
 
-#: ../src/core/command.c:437
+#: ../src/core/command.c:438
 msgid "Crop: x and y must be positive values.\n"
 msgstr "Crop: x and y must be positive values.\n"
 
-#: ../src/core/command.c:441
+#: ../src/core/command.c:442
 msgid "Crop: width and height must be greater than 0.\n"
 msgstr "Crop: width and height must be greater than 0.\n"
 
-#: ../src/core/command.c:445
+#: ../src/core/command.c:446
 #, c-format
 msgid "Crop: width and height, respectively, must be less than %d and %d.\n"
 msgstr "Crop: width and height, respectively, must be less than %d and %d.\n"
 
-#: ../src/core/command.c:454
+#: ../src/core/command.c:455
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Crop: select a region or provide x, y, width, height\n"
 
-#: ../src/core/command.c:531 ../src/core/command.c:2139
+#: ../src/core/command.c:532 ../src/core/command.c:2158
 #: ../src/gui/callbacks.c:5354 ../src/gui/callbacks.c:5420
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr "Wavelet: maximum number of plans for this image size is %d\n"
 
-#: ../src/core/command.c:537 ../src/gui/callbacks.c:5363
+#: ../src/core/command.c:538 ../src/gui/callbacks.c:5363
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: type must be %d or %d\n"
 
-#: ../src/core/command.c:592
+#: ../src/core/command.c:593
 msgid "Cannot list files, set working directory first.\n"
 msgstr "无法获得文件列表，请先设置工作目录！\n"
 
-#: ../src/core/command.c:598 ../src/core/command.c:607
+#: ../src/core/command.c:599 ../src/core/command.c:608
 msgid "Siril cannot open the directory.\n"
 msgstr "Siril无法打开目录。\n"
 
-#: ../src/core/command.c:629
+#: ../src/core/command.c:630
 #, c-format
 msgid "Link: %s\n"
 msgstr "链接：%s\n"
 
-#: ../src/core/command.c:633
+#: ../src/core/command.c:634
 #, c-format
 msgid "Directory: %s\n"
 msgstr "目录：%s\n"
 
-#: ../src/core/command.c:643 ../src/core/command.c:650
+#: ../src/core/command.c:644 ../src/core/command.c:651
 #, c-format
 msgid "Sequence: %s\n"
 msgstr "队列：%s\n"
 
-#: ../src/core/command.c:646 ../src/core/command.c:648
+#: ../src/core/command.c:647 ../src/core/command.c:649
 #, c-format
 msgid "Image: %s\n"
 msgstr "图像：%s\n"
 
-#: ../src/core/command.c:655 ../src/core/command.c:2120
+#: ../src/core/command.c:656 ../src/core/command.c:2139
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* 列表完 *********\n"
 
-#: ../src/core/command.c:679
+#: ../src/core/command.c:680
 msgid "The scaling factor must be less than 5.0\n"
 msgstr "拉伸系数必须小于5.0\n"
 
-#: ../src/core/command.c:723 ../src/core/command.c:804
-#: ../src/core/command.c:826
+#: ../src/core/command.c:724 ../src/core/command.c:805
+#: ../src/core/command.c:827
 msgid ""
 "Current selection is too large. To determine the PSF, please make a "
 "selection around a single star.\n"
 msgstr "当前选择区域太大。若要计算PSF，请选择一个星点周围的区域。\n"
 
-#: ../src/core/command.c:727 ../src/core/command.c:808
-#: ../src/core/command.c:830 ../src/io/sequence.c:1537
+#: ../src/core/command.c:728 ../src/core/command.c:809
+#: ../src/core/command.c:831 ../src/io/sequence.c:1537
 msgid "Select an area first\n"
 msgstr "请先选择一个区域\n"
 
-#: ../src/core/command.c:733
+#: ../src/core/command.c:734
 #, c-format
 msgid ""
 "Relative magnitude: %.3lf, True reduced magnitude: %.3lf, Offset: %.3lf\n"
 msgstr ""
 "Relative magnitude: %.3lf, True reduced magnitude: %.3lf, Offset: %.3lf\n"
 
-#: ../src/core/command.c:749 ../src/core/command.c:789
-#: ../src/core/command.c:849
+#: ../src/core/command.c:750 ../src/core/command.c:790
+#: ../src/core/command.c:850
 msgid "This command can be used only when a sequence is loaded\n"
 msgstr "This command can be used only when a sequence is loaded\n"
 
-#: ../src/core/command.c:757
+#: ../src/core/command.c:758
 msgid "Run a PSF for the sequence first (see seqpsf)\n"
 msgstr "导出队列\n"
 
-#: ../src/core/command.c:761
+#: ../src/core/command.c:762
 #, c-format
 msgid ""
 "Reference magnitude has been set for star %d to %f and will be computed for "
@@ -3766,127 +3767,127 @@ msgstr ""
 "Reference magnitude has been set for star %d to %f and will be computed for "
 "each image\n"
 
-#: ../src/core/command.c:773
+#: ../src/core/command.c:774
 #, c-format
 msgid "FITS extension unknown: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:794
+#: ../src/core/command.c:795
 msgid "Reference magnitude unset for sequence\n"
 msgstr "队列中的参考星等未设定\n"
 
-#: ../src/core/command.c:844
+#: ../src/core/command.c:845
 #, c-format
 msgid "Running the PSF on the loaded sequence, layer %d\n"
 msgstr "Running the PSF on the loaded sequence, layer %d\n"
 
-#: ../src/core/command.c:878
+#: ../src/core/command.c:879
 #, c-format
 msgid "Background value: %d\n"
 msgstr "背景值: %d\n"
 
-#: ../src/core/command.c:928
+#: ../src/core/command.c:929
 #, c-format
 msgid "The file %s has been created for the %s layer.\n"
 msgstr "The file %s has been created for the %s layer.\n"
 
-#: ../src/core/command.c:1000
+#: ../src/core/command.c:1001
 msgid "Number of layers MUST be 1 or 3\n"
 msgstr "通道数必须为1或3\n"
 
-#: ../src/core/command.c:1012
+#: ../src/core/command.c:1013
 msgid "new empty image"
 msgstr "新空白图像"
 
-#: ../src/core/command.c:1022
+#: ../src/core/command.c:1023
 #, c-format
 msgid "Values must be positive and less than %d.\n"
 msgstr "数值必须为正并且小于 %d.\n"
 
-#: ../src/core/command.c:1040
+#: ../src/core/command.c:1041
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: select a region or provide x, y, width, height\n"
 
-#: ../src/core/command.c:1061 ../src/gui/callbacks.c:4966
+#: ../src/core/command.c:1062 ../src/gui/callbacks.c:4966
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Found %d stars in image, channel #%d\n"
 
-#: ../src/core/command.c:1072
+#: ../src/core/command.c:1073
 msgid "find_hot must be applied on an one-channel master-dark frame"
 msgstr "find_hot must be applied on an one-channel master-dark frame"
 
-#: ../src/core/command.c:1080
+#: ../src/core/command.c:1081
 #, c-format
 msgid "%ld cold and %ld hot pixels\n"
 msgstr "%ld 冷像素 %ld 热像素\n"
 
-#: ../src/core/command.c:1085 ../src/core/command.c:1118
+#: ../src/core/command.c:1086 ../src/core/command.c:1119
 #, c-format
 msgid "Cannot open file: %s\n"
 msgstr "无法打开文件: %s\n"
 
-#: ../src/core/command.c:1178
+#: ../src/core/command.c:1179
 #, c-format
 msgid "cosmetic correction: cosme file format error at line %d: %s\n"
 msgstr "cosmetic correction: cosme file format error at line %d: %s\n"
 
-#: ../src/core/command.c:1186
+#: ../src/core/command.c:1187
 msgid "There were some errors, please check your input file.\n"
 msgstr "错误产生，请检查您的输入文件。\n"
 
-#: ../src/core/command.c:1206
+#: ../src/core/command.c:1207
 msgid "The size of the kernel MUST be odd and greater than 1.\n"
 msgstr "内核大小必须为大于1的奇数。\n"
 
-#: ../src/core/command.c:1211
+#: ../src/core/command.c:1212
 msgid "Modulation value MUST be between 0 and 1\n"
 msgstr "Modulation value MUST be between 0 and 1\n"
 
 #. FITS are stored bottom to top
-#: ../src/core/command.c:1232
+#: ../src/core/command.c:1233
 #, c-format
 msgid "Center of gravity coordinates are (%.3lf, %.3lf)\n"
 msgstr "Center of gravity coordinates are (%.3lf, %.3lf)\n"
 
-#: ../src/core/command.c:1267
+#: ../src/core/command.c:1279
 #, c-format
 msgid "Contrast: %lf\n"
 msgstr "Contrast: %lf\n"
 
-#: ../src/core/command.c:1330
+#: ../src/core/command.c:1342
 msgid "FFT does not work with sequences\n"
 msgstr "傅立叶变换不可用于队列\n"
 
-#: ../src/core/command.c:1395 ../src/core/command.c:1618
-#: ../src/core/command.c:1761 ../src/core/command.c:1904
-#: ../src/core/command.c:1997
+#: ../src/core/command.c:1407 ../src/core/command.c:1630
+#: ../src/core/command.c:1773 ../src/core/command.c:1916
+#: ../src/core/command.c:2009
 #, c-format
 msgid "No sequence %s found.\n"
 msgstr "无法找到队列%s。\n"
 
-#: ../src/core/command.c:1427
+#: ../src/core/command.c:1439
 msgid ""
 "Use this command to select images in a sequence, load a sequence first.\n"
 msgstr ""
 "Use this command to select images in a sequence, load a sequence first.\n"
 
-#: ../src/core/command.c:1433
+#: ../src/core/command.c:1445
 msgid ""
 "The first argument must be between 0 and the number of images minus one.\n"
 msgstr ""
 "The first argument must be between 0 and the number of images minus one.\n"
 
-#: ../src/core/command.c:1458
+#: ../src/core/command.c:1470
 #, c-format
 msgid "Selection update finished, %d images are selected in the sequence\n"
 msgstr "Selection update finished, %d images are selected in the sequence\n"
 
-#: ../src/core/command.c:1475
+#: ../src/core/command.c:1487
 msgid "Siril cannot split layers. Make sure your image is in RGB mode.\n"
 msgstr "Siril无法提取通道，请确保你的图像为RGB模式。\n"
 
-#: ../src/core/command.c:1515
+#: ../src/core/command.c:1527
 #, c-format
 msgid ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
@@ -3895,12 +3896,12 @@ msgstr ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
 "%0.1lf, Max: %0.1lf\n"
 
-#: ../src/core/command.c:1546 ../src/io/conversion.c:554
+#: ../src/core/command.c:1558 ../src/io/conversion.c:554
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "转化：无法打开工作目录 %s.\n"
 
-#: ../src/core/command.c:1547 ../src/core/siril.c:206 ../src/core/utils.c:820
+#: ../src/core/command.c:1559 ../src/core/siril.c:206 ../src/core/utils.c:820
 #: ../src/gui/callbacks.c:1100 ../src/gui/callbacks.c:2139
 #: ../src/gui/callbacks.c:3050 ../src/gui/callbacks.c:4726
 #: ../src/gui/callbacks.c:4747 ../src/gui/callbacks.c:5173
@@ -3908,10 +3909,10 @@ msgstr "转化：无法打开工作目录 %s.\n"
 #: ../src/gui/plot.c:379 ../src/gui/plot.c:438 ../src/gui/PSF_list.c:150
 #: ../src/io/conversion.c:555 ../src/io/conversion.c:627
 #: ../src/io/image_format_fits.c:404 ../src/io/image_format_fits.c:410
-#: ../src/io/image_format_fits.c:431 ../src/io/image_format_fits.c:439
-#: ../src/io/image_format_fits.c:461 ../src/io/image_format_fits.c:499
-#: ../src/io/image_format_fits.c:517 ../src/io/image_format_fits.c:656
-#: ../src/io/image_format_fits.c:891 ../src/io/image_formats_internal.c:220
+#: ../src/io/image_format_fits.c:432 ../src/io/image_format_fits.c:440
+#: ../src/io/image_format_fits.c:462 ../src/io/image_format_fits.c:500
+#: ../src/io/image_format_fits.c:518 ../src/io/image_format_fits.c:657
+#: ../src/io/image_format_fits.c:893 ../src/io/image_formats_internal.c:220
 #: ../src/io/image_formats_internal.c:284
 #: ../src/io/image_formats_internal.c:353
 #: ../src/io/image_formats_internal.c:408
@@ -3933,60 +3934,60 @@ msgstr "转化：无法打开工作目录 %s.\n"
 #: ../src/io/image_formats_libraries.c:489
 #: ../src/io/image_formats_libraries.c:568 ../src/io/single_image.c:123
 #: ../src/io/single_image.c:172 ../src/io/single_image.c:176
-#: ../src/registration/registration.c:870 ../src/stacking/normalization.c:121
+#: ../src/registration/registration.c:870 ../src/stacking/normalization.c:120
 #: ../src/stacking/stacking.c:114 ../src/stacking/stacking.c:800
 msgid "Error"
 msgstr "错误"
 
-#: ../src/core/command.c:1565 ../src/io/conversion.c:537
+#: ../src/core/command.c:1577 ../src/io/conversion.c:537
 msgid "Conversion: processing...\n"
 msgstr "转化：处理中...\n"
 
-#: ../src/core/command.c:1576 ../src/io/conversion.c:548
+#: ../src/core/command.c:1588 ../src/io/conversion.c:548
 msgid "Conversion: no working directory set.\n"
 msgstr "转化：工作目录未设置。\n"
 
-#: ../src/core/command.c:1625 ../src/registration/registration.c:97
+#: ../src/core/command.c:1637 ../src/registration/registration.c:97
 msgid "Global Star Alignment (deep-sky)"
 msgstr "全局星点对齐（深空）"
 
-#: ../src/core/command.c:1662 ../src/registration/registration.c:869
+#: ../src/core/command.c:1674 ../src/registration/registration.c:869
 msgid "Not enough disk space to perform Drizzle operation!\n"
 msgstr "没有足够的磁盘空间来执行Drizzle操作！\n"
 
-#: ../src/core/command.c:1679 ../src/registration/registration.c:886
+#: ../src/core/command.c:1691 ../src/registration/registration.c:886
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "对齐：处理中，使用方法：%s\n"
 
-#: ../src/core/command.c:1709
+#: ../src/core/command.c:1721
 #, c-format
 msgid "Stacking sequence %s\n"
 msgstr "叠加队列%s\n"
 
-#: ../src/core/command.c:1754
+#: ../src/core/command.c:1766
 #, c-format
 msgid "Could not save the stacking result %s\n"
 msgstr "无法保存叠加结果 %s\n"
 
-#: ../src/core/command.c:1774 ../src/core/command.c:1866
+#: ../src/core/command.c:1786 ../src/core/command.c:1878
 msgid "Looking for sequences in current working directory...\n"
 msgstr "在当前工作目录中搜索队列...\n"
 
-#: ../src/core/command.c:1776
+#: ../src/core/command.c:1788
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr "搜索或打开目录出错。\n"
 
-#: ../src/core/command.c:1782
+#: ../src/core/command.c:1794
 msgid "Starting stacking of found sequences...\n"
 msgstr "开始对已找到的队列进行叠加...\n"
 
-#: ../src/core/command.c:1794
+#: ../src/core/command.c:1806
 #, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr "%d 队列叠加成功。\n"
 
-#: ../src/core/command.c:1829 ../src/core/command.c:1936
+#: ../src/core/command.c:1841 ../src/core/command.c:1948
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
@@ -3994,24 +3995,24 @@ msgstr ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
 
-#: ../src/core/command.c:1850 ../src/core/command.c:1957
+#: ../src/core/command.c:1862 ../src/core/command.c:1969
 #, c-format
 msgid "The provided type of stacking is unknown (%s).\n"
 msgstr "The provided type of stacking is unknown (%s).\n"
 
-#: ../src/core/command.c:1868
+#: ../src/core/command.c:1880
 msgid "Error while searching sequences.\n"
 msgstr "搜索队列出错。\n"
 
-#: ../src/core/command.c:1879
+#: ../src/core/command.c:1891
 msgid "Stacked sequence successfully.\n"
 msgstr "队列叠加成功。\n"
 
-#: ../src/core/command.c:2052 ../src/gui/callbacks.c:4012
+#: ../src/core/command.c:2064 ../src/gui/callbacks.c:4012
 msgid "Preprocessing...\n"
 msgstr "预处理...\n"
 
-#: ../src/core/command.c:2093
+#: ../src/core/command.c:2112
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -4020,78 +4021,77 @@ msgstr ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
 "%d.\n"
 
-#: ../src/core/command.c:2105
+#: ../src/core/command.c:2124
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "当前使用 %d 逻辑处理器\n"
 
-#: ../src/core/command.c:2115
+#: ../src/core/command.c:2134
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* 可用指令列表 *********\n"
 
-#: ../src/core/command.c:2188
+#: ../src/core/command.c:2207
 #, c-format
 msgid "Unknown command: '%s' or not implemented yet\n"
 msgstr "Unknown command: '%s' or not implemented yet\n"
 
-#: ../src/core/command.c:2195
+#: ../src/core/command.c:2214
 #, c-format
 msgid "Usage: %s\n"
 msgstr "Usage: %s\n"
 
-#: ../src/core/command.c:2202
-#, fuzzy, c-format
+#: ../src/core/command.c:2221
+#, c-format
 msgid "This command cannot be used in a script: %s\n"
-msgstr "This command can be used only when a sequence is loaded\n"
+msgstr "This command cannot be used in a script: %s\n"
 
 #. process the command
-#: ../src/core/command.c:2208
+#: ../src/core/command.c:2227
 #, c-format
 msgid "Running command: %s\n"
 msgstr "Running command: %s\n"
 
-#: ../src/core/command.c:2247
+#: ../src/core/command.c:2266
 #, c-format
 msgid "Error in line %d. Exiting batch processing\n"
 msgstr "在%d 行中出现错误。 正在退出批处理\n"
 
-#: ../src/core/command.c:2263
+#: ../src/core/command.c:2282
 msgid "Script execution finished successfully.\n"
 msgstr "脚本执行成功完成。\n"
 
-#: ../src/core/command.c:2265
+#: ../src/core/command.c:2284
 msgid "Total execution time"
 msgstr "总执行时间"
 
-#: ../src/core/command.c:2267
-#, fuzzy
+#: ../src/core/command.c:2286
 msgid "Script execution failed.\n"
-msgstr "脚本执行成功完成。\n"
+msgstr "脚本执行失败。\n"
 
-#: ../src/core/command.c:2293 ../src/gui/script_menu.c:167 ../src/main.c:466
+#: ../src/core/command.c:2312 ../src/gui/script_menu.c:167 ../src/main.c:466
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "文件 [%s] 不存在\n"
 
 #. Then, run script
-#: ../src/core/command.c:2301 ../src/gui/script_menu.c:176
+#: ../src/core/command.c:2320 ../src/gui/script_menu.c:176
 #, c-format
 msgid "Starting script %s\n"
 msgstr "开始运行脚本%s\n"
 
-#: ../src/core/command.c:2430
+#: ../src/core/command.c:2449
 msgid "Can be used in a script: "
-msgstr ""
+msgstr "Can be used in a script: "
 
-#: ../src/core/command.c:2433
+#: ../src/core/command.c:2452
 msgid "YES"
-msgstr ""
+msgstr "YES"
 
-#: ../src/core/command.c:2435
+#: ../src/core/command.c:2454
 msgid "NO"
-msgstr ""
+msgstr "NO"
 
-#: ../src/core/command.c:2445
+#: ../src/core/command.c:2464
 msgid "No help for this command"
 msgstr "No help for this command"
 
@@ -4128,39 +4128,48 @@ msgid "Returns the coordinates of the center of gravity of the image"
 msgstr "Returns the coordinates of the center of gravity of the image"
 
 #: ../src/core/command_def.h:13
+msgid "Clears the graphical output logs"
+msgstr ""
+
+#: ../src/core/command_def.h:14
 msgid "Clear all the stars saved in memory and displayed on the screen"
 msgstr "Clear all the stars saved in memory and displayed on the screen"
 
-#: ../src/core/command_def.h:14
+#: ../src/core/command_def.h:15
 msgid "Properly closes the opened image and the opened sequence, if any"
 msgstr "Properly closes the opened image and the opened sequence, if any"
 
-#: ../src/core/command_def.h:15
+#: ../src/core/command_def.h:16
 msgid ""
 "Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" "
 "is the basename of the new sequence. The option \"-debayer\" applies "
 "demosaicing to images"
 msgstr ""
+"Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" "
+"is the basename of the new sequence. The option \"-debayer\" applies "
+"demosaicing to images"
 
-#: ../src/core/command_def.h:16
+#: ../src/core/command_def.h:17
+#, fuzzy
 msgid ""
 "Apply the local mean to a set of pixels on the in-memory image (cosmetic "
-"correction). The coordinate of this pixels are in an ASCII file [.lst file]. "
-"COSME is adapted to correct residual hot and cold pixels after preprocessing"
+"correction). The coordinates of these pixels are in an ASCII file [.lst "
+"file]. COSME is adapted to correct residual hot and cold pixels after "
+"preprocessing"
 msgstr ""
 "Apply the local mean to a set of pixels on the in-memory image (cosmetic "
 "correction). The coordinate of this pixels are in an ASCII file [.lst file]. "
 "COSME is adapted to correct residual hot and cold pixels after preprocessing"
 
-#: ../src/core/command_def.h:17
+#: ../src/core/command_def.h:18
 msgid "Same function that COSME but applying to RAW CFA images"
 msgstr "Same function that COSME but applying to RAW CFA images"
 
-#: ../src/core/command_def.h:18
+#: ../src/core/command_def.h:19
 msgid "Crops the current image within the rectangle previously selected"
 msgstr "Crops the current image within the rectangle previously selected"
 
-#: ../src/core/command_def.h:20
+#: ../src/core/command_def.h:21
 msgid ""
 "Performs a DDP (digital development processing) as described first by "
 "Kunihiko Okano. This implementation is the one described in IRIS. It "
@@ -4176,7 +4185,7 @@ msgstr ""
 "multiplies the resulting image by \"coef\". The typical values for \"sigma\" "
 "are included between 0.7 and 2"
 
-#: ../src/core/command_def.h:22
+#: ../src/core/command_def.h:23
 #, fuzzy
 msgid ""
 "Computes the entropy of the opened image on the displayed layer, only in the "
@@ -4187,67 +4196,67 @@ msgstr ""
 "selected area if one has been selected or in the whole image else. The "
 "entropy is one way of measuring the noise or the details in an image"
 
-#: ../src/core/command_def.h:23
+#: ../src/core/command_def.h:24
 msgid "Quits the application"
 msgstr "Quits the application"
 
-#: ../src/core/command_def.h:24
+#: ../src/core/command_def.h:25
 msgid "Extracts \"NbPlans\" planes of wavelet domain"
 msgstr "Extracts \"NbPlans\" planes of wavelet domain"
 
-#: ../src/core/command_def.h:26
-msgid ""
-"Divides the image in memory by the image given in argument. The resulting "
-"image is multiplied by the value of the \"scalar\" argument. See also IDIV"
-msgstr ""
-"Divides the image in memory by the image given in argument. The resulting "
-"image is multiplied by the value of the \"scalar\" argument. See also IDIV"
-
 #: ../src/core/command_def.h:27
 msgid ""
-"Applies a Fast Fourier Transform to the image loaded in memory. \"Modulus\" "
-"and \"phase\" given in argument are saved in FITS files"
+"Divides the image in memory by the image given in argument. The resulting "
+"image is multiplied by the value of the \"scalar\" argument. See also IDIV"
 msgstr ""
-"Applies a Fast Fourier Transform to the image loaded in memory. \"Modulus\" "
-"and \"phase\" given in argument are saved in FITS files"
+"Divides the image in memory by the image given in argument. The resulting "
+"image is multiplied by the value of the \"scalar\" argument. See also IDIV"
 
 #: ../src/core/command_def.h:28
 msgid ""
-"Retrieves corrected image applying an inverse transformation. The \"modulus"
-"\" and \"phase\" used are the files given in argument"
+"Applies a Fast Fourier Transform to the image loaded in memory. \"Modulus\" "
+"and \"phase\" given in argument are saved in FITS files"
 msgstr ""
-"Retrieves corrected image applying an inverse transformation. The \"modulus"
-"\" and \"phase\" used are the files given in argument"
+"Applies a Fast Fourier Transform to the image loaded in memory. \"Modulus\" "
+"and \"phase\" given in argument are saved in FITS files"
 
 #: ../src/core/command_def.h:29
 msgid ""
-"Fills the whole current image (or selection) with pixels having the \"value"
-"\" intensity"
+"Retrieves corrected image applying an inverse transformation. The \"modulus"
+"\" and \"phase\" used are the files given in argument"
 msgstr ""
-"Fills the whole current image (or selection) with pixels having the \"value"
-"\" intensity"
+"Retrieves corrected image applying an inverse transformation. The \"modulus"
+"\" and \"phase\" used are the files given in argument"
 
 #: ../src/core/command_def.h:30
 msgid ""
-"Same command than FILL but this is a symmetric fill of a region defined by "
-"the mouse. Used to process an image in the Fourier (FFT) domain"
+"Fills the whole current image (or selection) with pixels having the \"value"
+"\" intensity"
 msgstr ""
-"Same command than FILL but this is a symmetric fill of a region defined by "
-"the mouse. Used to process an image in the Fourier (FFT) domain"
+"Fills the whole current image (or selection) with pixels having the \"value"
+"\" intensity"
 
 #: ../src/core/command_def.h:31
 msgid ""
+"Same command than FILL but this is a symmetric fill of a region defined by "
+"the mouse. Used to process an image in the Fourier (FFT) domain"
+msgstr ""
+"Same command than FILL but this is a symmetric fill of a region defined by "
+"the mouse. Used to process an image in the Fourier (FFT) domain"
+
+#: ../src/core/command_def.h:32
+msgid ""
 "Applies an automatic detection of cold and hot pixels following the "
 "thresholds written in arguments"
 msgstr ""
 "Applies an automatic detection of cold and hot pixels following the "
 "thresholds written in arguments"
 
-#: ../src/core/command_def.h:32
+#: ../src/core/command_def.h:33
 msgid "Same command than FIND_COSME but for monochromatic CFA images"
 msgstr "Same command than FIND_COSME but for monochromatic CFA images"
 
-#: ../src/core/command_def.h:33
+#: ../src/core/command_def.h:34
 msgid ""
 "Provides a list file \"filename\" (format text) in the working directory "
 "which contains the coordinates of the pixels which have an intensity "
@@ -4259,7 +4268,7 @@ msgstr ""
 "\"hot_sigma\" times higher and \"cold_sigma\" lower than standard deviation. "
 "We generally use this command on a master-dark file"
 
-#: ../src/core/command_def.h:34
+#: ../src/core/command_def.h:35
 #, fuzzy
 msgid ""
 "Detects stars having a level greater than a threshold computed by Siril. The "
@@ -4267,18 +4276,18 @@ msgid ""
 "Ser., Vol. 172, Astronomical Data Analysis Software and Systems VIII, eds. "
 "D. M. Mehringer, R. L. Plante, and D. A. Roberts (San Francisco: ASP), 317. "
 "After that, a PSF is applied and Siril rejects all detected structures that "
-"don't fulfill a set of prescribed detection criteria. Finaly, a circle is "
+"don't fulfill a set of prescribed detection criteria. Finally, a circle is "
 "drawn around detected stars. See also the command CLEARSTAR"
 msgstr ""
 "Detects stars having a level greater than a threshold computed by Siril. The "
 "algorithm is based on the publication of Mighell, K. J. 1999, in ASP Conf. "
 "Ser., Vol. 172, Astronomical Data Analysis Software and Systems VIII, eds. "
-"D. M. Mehringer, R. L. Plante, & D. A. Roberts (San Francisco: ASP), 317. "
+"D. M. Mehringer, R. L. Plante, and D. A. Roberts (San Francisco: ASP), 317. "
 "After that, a PSF is applied and Siril rejects all detected structures that "
 "don't fulfill a set of prescribed detection criteria. Finaly, a circle is "
 "drawn around detected stars. See also the command CLEARSTAR"
 
-#: ../src/core/command_def.h:35
+#: ../src/core/command_def.h:36
 msgid ""
 "Performs a median filter of size \"ksize\" x \"ksize\" (\"ksize\" MUST be "
 "odd) to the original image with a modulation parameter \"modulation\". The "
@@ -4292,11 +4301,11 @@ msgstr ""
 "median-filtered pixel value. A modulation's value of 1 will apply no "
 "modulation"
 
-#: ../src/core/command_def.h:36
+#: ../src/core/command_def.h:37
 msgid "Multiplies the loaded image by the \"scalar\" given in argument"
 msgstr "Multiplies the loaded image by the \"scalar\" given in argument"
 
-#: ../src/core/command_def.h:37
+#: ../src/core/command_def.h:38
 msgid ""
 "Tries to remove the canon banding. Argument \"amount\" define the amount of "
 "correction. \"Sigma\" defines a protection level of the algorithm, higher "
@@ -4306,15 +4315,15 @@ msgstr ""
 "correction. \"Sigma\" defines a protection level of the algorithm, higher "
 "sigma gives higher protection"
 
-#: ../src/core/command_def.h:39
+#: ../src/core/command_def.h:40
 msgid "Performs a Gaussian filter with the given \"sigma\""
 msgstr "Performs a Gaussian filter with the given \"sigma\""
 
-#: ../src/core/command_def.h:41
+#: ../src/core/command_def.h:42
 msgid "Gives the available commands"
 msgstr "Gives the available commands"
 
-#: ../src/core/command_def.h:42
+#: ../src/core/command_def.h:43
 msgid ""
 "Calculates the histogram of the image channel in memory and produces file "
 "histo_[channel name].dat in the working directory"
@@ -4322,25 +4331,25 @@ msgstr ""
 "Calculates the histogram of the image channel in memory and produces file "
 "histo_[channel name].dat in the working directory"
 
-#: ../src/core/command_def.h:44
+#: ../src/core/command_def.h:45
 msgid "Adds the image in memory to the image given in argument"
 msgstr "Adds the image in memory to the image given in argument"
 
-#: ../src/core/command_def.h:45
+#: ../src/core/command_def.h:46
 msgid ""
 "Divides the image in memory by the image given in argument. See also FDIV"
 msgstr ""
 "Divides the image in memory by the image given in argument. See also FDIV"
 
-#: ../src/core/command_def.h:46
+#: ../src/core/command_def.h:47
 msgid "Multiplies the image in memory by the image given in argument"
 msgstr "Multiplies the image in memory by the image given in argument"
 
-#: ../src/core/command_def.h:47
+#: ../src/core/command_def.h:48
 msgid "Subtracts the image in memory by the image given in argument"
 msgstr "Subtracts the image in memory by the image given in argument"
 
-#: ../src/core/command_def.h:49
+#: ../src/core/command_def.h:50
 msgid ""
 "Loads the image \"filename\"; it first attempts to load \"filename\", then "
 "\"filename\".fit and finally \"filename\".fits and after, all supported "
@@ -4360,43 +4369,43 @@ msgstr ""
 "ext: this is used when numerous files have the same name but not the same "
 "extension"
 
-#: ../src/core/command_def.h:50
+#: ../src/core/command_def.h:51
 msgid "Computes and applies a logarithmic scale to the current image"
 msgstr "Computes and applies a logarithmic scale to the current image"
 
-#: ../src/core/command_def.h:51
+#: ../src/core/command_def.h:52
 msgid "Lists files and directories in the working directory"
 msgstr "Lists files and directories in the working directory"
 
-#: ../src/core/command_def.h:53
+#: ../src/core/command_def.h:54
 msgid "Rotates the image around a vertical axis"
 msgstr "Rotates the image around a vertical axis"
 
-#: ../src/core/command_def.h:54
+#: ../src/core/command_def.h:55
 msgid "Rotates the image around an horizontal axis"
 msgstr "Rotates the image around an horizontal axis"
 
-#: ../src/core/command_def.h:56
-msgid ""
-"Creates a new image filled with zeros with a size of \"width\" x \"height\". "
-"The image is in 16-bit format, and it contains \"nb_channel\" channels, "
-"\"nb_channel\" being 1 or 3. It is not saved, but displayed and can be saved "
-"afterwards"
-msgstr ""
-"Creates a new image filled with zeros with a size of \"width\" x \"height\". "
-"The image is in 16-bit format, and it contains \"nb_channel\" channels, "
-"\"nb_channel\" being 1 or 3. It is not saved, but displayed and can be saved "
-"afterwards"
-
 #: ../src/core/command_def.h:57
 msgid ""
+"Creates a new image filled with zeros with a size of \"width\" x \"height\". "
+"The image is in 16-bit format, and it contains \"nb_channel\" channels, "
+"\"nb_channel\" being 1 or 3. It is not saved, but displayed and can be saved "
+"afterwards"
+msgstr ""
+"Creates a new image filled with zeros with a size of \"width\" x \"height\". "
+"The image is in 16-bit format, and it contains \"nb_channel\" channels, "
+"\"nb_channel\" being 1 or 3. It is not saved, but displayed and can be saved "
+"afterwards"
+
+#: ../src/core/command_def.h:58
+msgid ""
 "Replaces null values by \"level\" values. Useful before an idiv or fdiv "
 "operation"
 msgstr ""
 "Replaces null values by \"level\" values. Useful before an idiv or fdiv "
 "operation"
 
-#: ../src/core/command_def.h:59
+#: ../src/core/command_def.h:60
 msgid ""
 "Adds the constant \"value\" to the current image. This constant can take a "
 "negative value. As Siril uses unsigned FITS files, if the intensity of the "
@@ -4408,8 +4417,7 @@ msgstr ""
 "pixel become negative its value is replaced by 0 and by 65535 (for a 16-bit "
 "file) if the pixel intensity overflows"
 
-#: ../src/core/command_def.h:61
-#, fuzzy
+#: ../src/core/command_def.h:62
 msgid ""
 "Preprocesses the sequence \"sequencename\" using bias, dark and flat given "
 "in argument. It is possible to specify if images are CFA for cosmetic "
@@ -4420,14 +4428,14 @@ msgstr ""
 "Preprocesses the sequence \"sequencename\" using bias, dark and flat given "
 "in argument. It is possible to specify if images are CFA for cosmetic "
 "correction purposes with the option \"-cfa\" and also to demosaic images at "
-"the end of the process with \"-debayer\""
+"the end of the process with \"-debayer\". The \"-flip\" option tells to "
+"Siril to read image from up to bottom for demosaicing operation"
 
-#: ../src/core/command_def.h:62
+#: ../src/core/command_def.h:63
 msgid "Performs a PSF (Point Spread Function) on the selected star"
 msgstr "Performs a PSF (Point Spread Function) on the selected star"
 
-#: ../src/core/command_def.h:64
-#, fuzzy
+#: ../src/core/command_def.h:65
 msgid ""
 "Performs geometric transforms on images of the sequence given in argument so "
 "that they may be superimposed on the reference image. The output sequence "
@@ -4436,28 +4444,29 @@ msgid ""
 "translation only with no new sequence built while the option \"-drizzle\" "
 "applies a x2 drizzle on the images"
 msgstr ""
-"Performs geometric transforms on images of the sequence given in arguement "
-"so that they may be superimposed on the reference image. The output sequence "
+"Performs geometric transforms on images of the sequence given in argument so "
+"that they may be superimposed on the reference image. The output sequence "
 "name starts with the prefix \"r_\". Using stars for registration, this "
-"algorithm only works with deepsky images. The option \"-drizzle\" performs a "
-"x2 drizzle on the images"
+"algorithm only works with deepsky images. The option \"-norot\" performs a "
+"translation only with no new sequence built while the option \"-drizzle\" "
+"applies a x2 drizzle on the images"
 
-#: ../src/core/command_def.h:65
+#: ../src/core/command_def.h:66
 msgid "Resamples image with a factor \"factor\""
 msgstr "Resamples image with a factor \"factor\""
 
-#: ../src/core/command_def.h:66
-msgid ""
-"Restores an image using the Richardson-Lucy method. \"Iterations\" is the "
-"number of iterations to be performed (typically between 10 and 50). \"Sigma"
-"\" is the size of the kernel to be applied"
-msgstr ""
-"Restores an image using the Richardson-Lucy method. \"Iterations\" is the "
-"number of iterations to be performed (typically between 10 and 50). \"Sigma"
-"\" is the size of the kernel to be applied"
-
 #: ../src/core/command_def.h:67
 msgid ""
+"Restores an image using the Richardson-Lucy method. \"Iterations\" is the "
+"number of iterations to be performed (typically between 10 and 50). \"Sigma"
+"\" is the size of the kernel to be applied"
+msgstr ""
+"Restores an image using the Richardson-Lucy method. \"Iterations\" is the "
+"number of iterations to be performed (typically between 10 and 50). \"Sigma"
+"\" is the size of the kernel to be applied"
+
+#: ../src/core/command_def.h:68
+msgid ""
 "Chromatic noise reduction filter. It removes green noise in the current "
 "image. This filter is based on PixInsight's SCNR Average Neutral algorithm "
 "and it is the same filter used by HLVG plugin in Photoshop. \"Type\"=1 "
@@ -4470,39 +4479,40 @@ msgstr ""
 "stands for Average Neutral Protection, while \"type\"=2 stands for Maximum "
 "Neutral Protection"
 
-#: ../src/core/command_def.h:68
+#: ../src/core/command_def.h:69
 msgid "Rotates the image of an angle of \"degree\" value"
 msgstr "Rotates the image of an angle of \"degree\" value"
 
-#: ../src/core/command_def.h:69
+#: ../src/core/command_def.h:70
 msgid ""
 "Rotates the image of an angle of 180° around its center. This is equivalent "
 "to the command \"ROTATE 180\" or \"ROTATE -180\""
 msgstr ""
 "Rotates the image of an angle of 180° around its center. This is equivalent "
 "to the command \"ROTATE 180\" or \"ROTATE -180\""
-
-#: ../src/core/command_def.h:71
-msgid ""
-"Enhances the global saturation of the image. Try iteratively to obtain best "
-"results"
-msgstr ""
-"Enhances the global saturation of the image. Try iteratively to obtain best "
-"results"
 
 #: ../src/core/command_def.h:72
 msgid ""
-"Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO "
-"are added with values corresponding to the current viewing levels"
+"Enhances the global saturation of the image. Try iteratively to obtain best "
+"results"
 msgstr ""
-"Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO "
-"are added with values corresponding to the current viewing levels"
+"Enhances the global saturation of the image. Try iteratively to obtain best "
+"results"
 
 #: ../src/core/command_def.h:73
 msgid ""
+"Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO "
+"are added with values corresponding to the current viewing levels"
+msgstr ""
+"Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO "
+"are added with values corresponding to the current viewing levels"
+
+#: ../src/core/command_def.h:74
+#, fuzzy
+msgid ""
 "Saves current image under the form of a bitmap file with 8-bit per channel: "
 "\"filename\".bmp (BMP 24-bit). This function is like a screenshot of what "
-"you see with the levels updated. This is very usefull to share an image in "
+"you see with the levels updated. This is very useful to share an image in "
 "the bitmap format"
 msgstr ""
 "Saves current image under the form of a bitmap file with 8-bit per channel: "
@@ -4510,7 +4520,7 @@ msgstr ""
 "you see with the levels updated. This is very usefull to share an image in "
 "the bitmap format"
 
-#: ../src/core/command_def.h:74
+#: ../src/core/command_def.h:75
 msgid ""
 "Saves current image into a JPG file: \"filename\".jpg. You have the "
 "possibility to adjust the quality of the compression. A value 100 for "
@@ -4522,118 +4532,117 @@ msgstr ""
 "\"quality\" parameter offers best fidelity while a low value increases the "
 "compression ratio. If no value is specified, it holds a value of 100"
 
-#: ../src/core/command_def.h:75
+#: ../src/core/command_def.h:76
 msgid "Saves current image into a PNG file: \"filename\".png"
 msgstr "Saves current image into a PNG file: \"filename\".png"
 
-#: ../src/core/command_def.h:76
-msgid ""
-"Saves current image under the form of a Netpbm file format with 16-bit per "
-"channel. The extension of the output will be \"filename\".ppm for RGB image "
-"and \"filename\".pgm for gray-level image"
-msgstr ""
-"Saves current image under the form of a Netpbm file format with 16-bit per "
-"channel. The extension of the output will be \"filename\".ppm for RGB image "
-"and \"filename\".pgm for gray-level image"
-
 #: ../src/core/command_def.h:77
 msgid ""
-"Saves current image under the form of a uncompressed TIFF file with 16-bit "
-"per channel: \"filename\".tif"
+"Saves current image under the form of a Netpbm file format with 16-bit per "
+"channel. The extension of the output will be \"filename\".ppm for RGB image "
+"and \"filename\".pgm for gray-level image"
 msgstr ""
-"Saves current image under the form of a uncompressed TIFF file with 16-bit "
-"per channel: \"filename\".tif"
+"Saves current image under the form of a Netpbm file format with 16-bit per "
+"channel. The extension of the output will be \"filename\".ppm for RGB image "
+"and \"filename\".pgm for gray-level image"
 
 #: ../src/core/command_def.h:78
 msgid ""
+"Saves current image under the form of a uncompressed TIFF file with 16-bit "
+"per channel: \"filename\".tif"
+msgstr ""
+"Saves current image under the form of a uncompressed TIFF file with 16-bit "
+"per channel: \"filename\".tif"
+
+#: ../src/core/command_def.h:79
+msgid ""
 "Same command than SAVE_TIF but the output file is saved in 8-bit per "
 "channel: \"filename\".tif"
 msgstr ""
 "Same command than SAVE_TIF but the output file is saved in 8-bit per "
 "channel: \"filename\".tif"
 
-#: ../src/core/command_def.h:79
-#, fuzzy
+#: ../src/core/command_def.h:80
 msgid ""
 "This command allows easy mass selection of images in the loaded sequence "
 "(from \"from\" to \"to\" included)"
 msgstr ""
 "This command allows easy mass selection of images in the loaded sequence "
-"(\"from\" - \"to\", to included)"
+"(from \"from\" to \"to\" included)"
 
-#: ../src/core/command_def.h:80
+#: ../src/core/command_def.h:81
 msgid "Crops the loaded sequence"
 msgstr "裁剪所载入的队列"
 
-#: ../src/core/command_def.h:81
+#: ../src/core/command_def.h:82
 msgid "Same command than FIND_COSME but for the sequence \"sequencename\""
 msgstr "Same command than FIND_COSME but for the sequence \"sequencename\""
 
-#: ../src/core/command_def.h:82
+#: ../src/core/command_def.h:83
 msgid "Same command than FIND_COSME_CFA but for the sequence \"sequencename\""
 msgstr "Same command than FIND_COSME_CFA but for the sequence \"sequencename\""
 
-#: ../src/core/command_def.h:83
-msgid ""
-"Same command than PSF but works for sequences. Results are dumped in the "
-"console in a form that can be used to produce brightness variation curves"
-msgstr ""
-"Same command than PSF but works for sequences. Results are dumped in the "
-"console in a form that can be used to produce brightness variation curves"
-
 #: ../src/core/command_def.h:84
 msgid ""
-"Defines the number of processing threads used for calculation. Can be as "
-"high as the number of virtual threads existing on the system, which is the "
-"number of CPU cores or twice this number if hyperthreading (Intel HT) is "
-"available"
+"Same command than PSF but works for sequences. Results are dumped in the "
+"console in a form that can be used to produce brightness variation curves"
 msgstr ""
-"Defines the number of processing threads used for calculation. Can be as "
-"high as the number of virtual threads existing on the system, which is the "
-"number of CPU cores or twice this number if hyperthreading (Intel HT) is "
-"available"
+"Same command than PSF but works for sequences. Results are dumped in the "
+"console in a form that can be used to produce brightness variation curves"
 
 #: ../src/core/command_def.h:85
 msgid ""
-"Calibrates the magnitude by selecting a star and giving the known apparent "
-"magnitude. All PSF computations will return the calibrated apparent "
-"magnitude afterwards, instead of an apparent magnitude relative to ADU "
-"values. To reset the magnitude constant see UNSETMAG"
+"Defines the number of processing threads used for calculation. Can be as "
+"high as the number of virtual threads existing on the system, which is the "
+"number of CPU cores or twice this number if hyperthreading (Intel HT) is "
+"available"
 msgstr ""
-"Calibrates the magnitude by selecting a star and giving the known apparent "
-"magnitude. All PSF computations will return the calibrated apparent "
-"magnitude afterwards, instead of an apparent magnitude relative to ADU "
-"values. To reset the magnitude constant see UNSETMAG"
+"Defines the number of processing threads used for calculation. Can be as "
+"high as the number of virtual threads existing on the system, which is the "
+"number of CPU cores or twice this number if hyperthreading (Intel HT) is "
+"available"
 
 #: ../src/core/command_def.h:86
-msgid ""
-"This command is only valid after having run SEQPSF or its graphical "
-"counterpart (select the area around a star and launch the PSF analysis for "
-"the sequence, it will appear in the graphs). This command has the same goal "
-"as SETMAG but recomputes the reference magnitude for each image of the "
-"sequence where the reference star has been found. When running the command, "
-"the last star that has been analysed will be considered as the reference "
-"star. Displaying the magnitude plot before typing the command makes it easy "
-"to understand. To reset the reference star and magnitude offset, see "
-"UNSETMAGSEQ"
-msgstr ""
-"This command is only valid after having run SEQPSF or its graphical "
-"counterpart (select the area around a star and launch the PSF analysis for "
-"the sequence, it will appear in the graphs). This command has the same goal "
-"as SETMAG but recomputes the reference magnitude for each image of the "
-"sequence where the reference star has been found. When running the command, "
-"the last star that has been analysed will be considered as the reference "
-"star. Displaying the magnitude plot before typing the command makes it easy "
-"to understand. To reset the reference star and magnitude offset, see "
-"UNSETMAGSEQ"
-
-#: ../src/core/command_def.h:87
 msgid ""
 "Sets the extension used and recognized by sequences. The argument \"extension"
 "\" can be \"fit\", \"fts\" or \"fits\""
 msgstr ""
 
+#: ../src/core/command_def.h:87
+msgid ""
+"Calibrates the magnitude by selecting a star and giving the known apparent "
+"magnitude. All PSF computations will return the calibrated apparent "
+"magnitude afterwards, instead of an apparent magnitude relative to ADU "
+"values. To reset the magnitude constant see UNSETMAG"
+msgstr ""
+"Calibrates the magnitude by selecting a star and giving the known apparent "
+"magnitude. All PSF computations will return the calibrated apparent "
+"magnitude afterwards, instead of an apparent magnitude relative to ADU "
+"values. To reset the magnitude constant see UNSETMAG"
+
 #: ../src/core/command_def.h:88
+msgid ""
+"This command is only valid after having run SEQPSF or its graphical "
+"counterpart (select the area around a star and launch the PSF analysis for "
+"the sequence, it will appear in the graphs). This command has the same goal "
+"as SETMAG but recomputes the reference magnitude for each image of the "
+"sequence where the reference star has been found. When running the command, "
+"the last star that has been analysed will be considered as the reference "
+"star. Displaying the magnitude plot before typing the command makes it easy "
+"to understand. To reset the reference star and magnitude offset, see "
+"UNSETMAGSEQ"
+msgstr ""
+"This command is only valid after having run SEQPSF or its graphical "
+"counterpart (select the area around a star and launch the PSF analysis for "
+"the sequence, it will appear in the graphs). This command has the same goal "
+"as SETMAG but recomputes the reference magnitude for each image of the "
+"sequence where the reference star has been found. When running the command, "
+"the last star that has been analysed will be considered as the reference "
+"star. Displaying the magnitude plot before typing the command makes it easy "
+"to understand. To reset the reference star and magnitude offset, see "
+"UNSETMAGSEQ"
+
+#: ../src/core/command_def.h:89
 msgid ""
 "Splits the color image into three distincts files (one for each color) and "
 "save them in \"r\" \"g\" and \"b\" file"
@@ -4641,8 +4650,7 @@ msgstr ""
 "Splits the color image into three distincts files (one for each color) and "
 "save them in \"r\" \"g\" and \"b\" file"
 
-#: ../src/core/command_def.h:89
-#, fuzzy
+#: ../src/core/command_def.h:90
 msgid ""
 "Stacks the \"sequencename\" sequence, using options. The allowed types are: "
 "sum, max, min, med or median, and rej or mean that requires the use of "
@@ -4656,87 +4664,89 @@ msgstr ""
 "Stacks the \"sequencename\" sequence, using options. The allowed types are: "
 "sum, max, min, med or median, and rej or mean that requires the use of "
 "additional arguments \"sigma low\" and \"high\" used for the Winsorized "
-"sigma clipping rejection algorithm (cannot be changed from here). If no "
-"argument other than the sequence name is provided, sum stacking is assumed"
-
-#: ../src/core/command_def.h:90
-msgid ""
-"Opens all sequences in the CWD and stacks them with the optionally specified "
-"stacking type or with sum stacking. See STACK command for options description"
-msgstr ""
-"Opens all sequences in the CWD and stacks them with the optionally specified "
-"stacking type or with sum stacking. See STACK command for options description"
+"sigma clipping rejection algorithm (cannot be changed from here). Different "
+"types of normalisation are allowed: \"-norm=add\" for addition, \"-norm=mul"
+"\" for multiplicative. Options \"-norm=addscale\" and \"-norm=mulscale\" "
+"apply same normalisations but with scale operations. If no argument other "
+"than the sequence name is provided, sum stacking is assumed"
 
 #: ../src/core/command_def.h:91
 msgid ""
+"Opens all sequences in the CWD and stacks them with the optionally specified "
+"stacking type or with sum stacking. See STACK command for options description"
+msgstr ""
+"Opens all sequences in the CWD and stacks them with the optionally specified "
+"stacking type or with sum stacking. See STACK command for options description"
+
+#: ../src/core/command_def.h:92
+msgid ""
 "Returns global statistics of the current image. If a selection is made, the "
 "command returns statistics within the selection"
 msgstr ""
 "Returns global statistics of the current image. If a selection is made, the "
 "command returns statistics within the selection"
 
-#: ../src/core/command_def.h:93
+#: ../src/core/command_def.h:94
 msgid "Replaces values below \"level\" with \"level\""
 msgstr "Replaces values below \"level\" with \"level\""
 
-#: ../src/core/command_def.h:94
+#: ../src/core/command_def.h:95
 msgid "Replaces values above \"level\" with \"level\""
 msgstr "Replaces values above \"level\" with \"level\""
 
-#: ../src/core/command_def.h:95
+#: ../src/core/command_def.h:96
 msgid ""
 "Replaces values below \"lo\" with \"lo\" and values above \"hi\" with \"hi\""
 msgstr ""
 "Replaces values below \"lo\" with \"lo\" and values above \"hi\" with \"hi\""
 
-#: ../src/core/command_def.h:97
-#, fuzzy
+#: ../src/core/command_def.h:98
 msgid ""
 "Allows easy mass unselection of images in the loaded sequence (from \"from\" "
 "to \"to\" included). See SELECT"
 msgstr ""
-"Allows easy mass unselection of images in the loaded sequence (\"from\" - "
-"\"to\"). See SELECT"
+"Allows easy mass unselection of images in the loaded sequence (from \"from\" "
+"to \"to\" included). See SELECT"
 
-#: ../src/core/command_def.h:98
+#: ../src/core/command_def.h:99
 msgid "Reset the magnitude calibration to 0. See SETMAG"
 msgstr "Reset the magnitude calibration to 0. See SETMAG"
 
-#: ../src/core/command_def.h:99
-msgid ""
-"Resets the magnitude calibration and reference star for the sequence. See "
-"SETMAGSEQ"
-msgstr ""
-"Resets the magnitude calibration and reference star for the sequence. See "
-"SETMAGSEQ"
-
 #: ../src/core/command_def.h:100
 msgid ""
+"Resets the magnitude calibration and reference star for the sequence. See "
+"SETMAGSEQ"
+msgstr ""
+"Resets the magnitude calibration and reference star for the sequence. See "
+"SETMAGSEQ"
+
+#: ../src/core/command_def.h:101
+msgid ""
 "Applies to the working image an unsharp mask with sigma \"sigma\" and "
 "coefficient \"multi\""
 msgstr ""
 "Applies to the working image an unsharp mask with sigma \"sigma\" and "
 "coefficient \"multi\""
 
-#: ../src/core/command_def.h:102
+#: ../src/core/command_def.h:103
 msgid ""
 "Displays an image with \"low\" and \"high\" as the low and high threshold"
 msgstr ""
 "Displays an image with \"low\" and \"high\" as the low and high threshold"
-
-#: ../src/core/command_def.h:104
-msgid ""
-"Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) "
-"or bspline (type=2) version of the 'a trous' algorithm. The result is stored "
-"in a file as a structure containing the planes, ready for weighted "
-"reconstruction with WRECONS"
-msgstr ""
-"Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) "
-"or bspline (type=2) version of the 'a trous' algorithm. The result is stored "
-"in a file as a structure containing the planes, ready for weighted "
-"reconstruction with WRECONS"
 
 #: ../src/core/command_def.h:105
+msgid ""
+"Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) "
+"or bspline (type=2) version of the 'a trous' algorithm. The result is stored "
+"in a file as a structure containing the planes, ready for weighted "
+"reconstruction with WRECONS"
+msgstr ""
+"Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) "
+"or bspline (type=2) version of the 'a trous' algorithm. The result is stored "
+"in a file as a structure containing the planes, ready for weighted "
+"reconstruction with WRECONS"
+
+#: ../src/core/command_def.h:106
 msgid ""
 "Reconstructs to current image from the planes previously computed with "
 "wavelets and weighted with coefficients \"c1\", \"c2\", ..., \"cn\" "
@@ -4856,94 +4866,94 @@ msgstr "无法计算图像归一化数值，异常终止。\n"
 msgid "Dark optimization: %.3lf\n"
 msgstr "暗场优化： %.3lf\n"
 
-#: ../src/core/siril.c:906
+#: ../src/core/siril.c:914
 #, c-format
 msgid "Normalisation value auto evaluated: %.2lf\n"
 msgstr "自动估算归一化参数：%.2lf\n"
 
-#: ../src/core/siril.c:913
+#: ../src/core/siril.c:921
 #, c-format
 msgid "Pre-processing image %s"
 msgstr "预处理图像 %s"
 
-#: ../src/core/siril.c:940 ../src/core/siril.c:981
+#: ../src/core/siril.c:948 ../src/core/siril.c:989
 msgid ""
 "Darkmap cosmetic correction is only supported with single channel images\n"
 msgstr "暗场降噪只支持单通道图像\n"
 
-#: ../src/core/siril.c:952
+#: ../src/core/siril.c:960
 #, c-format
 msgid "Saving image %s"
 msgstr "保存图像 %s"
 
-#: ../src/core/siril.c:996
+#: ../src/core/siril.c:1004
 #, c-format
 msgid "Loading and pre-processing image %d/%d (%s)"
 msgstr "读取并且预处理图像 %d/%d (%s)"
 
-#: ../src/core/siril.c:1002
+#: ../src/core/siril.c:1010
 #, c-format
 msgid "Could not read one of the raw files: %s. Aborting preprocessing."
 msgstr "无法读取raw文件：%s 预处理异常终止。"
 
-#: ../src/core/siril.c:1090 ../src/core/siril.c:1130
+#: ../src/core/siril.c:1091 ../src/core/siril.c:1131
 msgid "Nearest-Neighbor"
 msgstr "最近邻居法"
 
-#: ../src/core/siril.c:1103 ../src/core/siril.c:1143
+#: ../src/core/siril.c:1104 ../src/core/siril.c:1144
 msgid "Lanczos4"
 msgstr "Lanczos4"
 
-#: ../src/core/siril.c:1107
+#: ../src/core/siril.c:1108
 #, c-format
 msgid "Resample (%s interpolation): processing...\n"
 msgstr "重采样（%s 插值）：处理中...\n"
 
-#: ../src/core/siril.c:1127
+#: ../src/core/siril.c:1128
 msgid "No"
 msgstr "无"
 
-#: ../src/core/siril.c:1148
+#: ../src/core/siril.c:1149
 #, c-format
 msgid "Rotation (%s interpolation, angle=%g): processing...\n"
 msgstr "Rotation (%s interpolation, angle=%g): processing...\n"
 
-#: ../src/core/siril.c:1211
-#, fuzzy, c-format
+#: ../src/core/siril.c:1212
+#, c-format
 msgid "Extracting %s..."
-msgstr "提取"
+msgstr "提取 %s…"
 
-#: ../src/core/siril.c:1252
+#: ../src/core/siril.c:1253
 msgid "Median Filter: processing...\n"
 msgstr "中位数滤镜：处理中...\n"
 
-#: ../src/core/siril.c:1257
+#: ../src/core/siril.c:1258
 #, c-format
 msgid "Iteration #%d...\n"
 msgstr "迭代 #%d...\n"
 
-#: ../src/core/siril.c:1400
+#: ../src/core/siril.c:1401
 msgid "Banding Reducing: processing...\n"
 msgstr "除去条纹：处理中...\n"
 
-#: ../src/core/siril.c:1562
+#: ../src/core/siril.c:1563
 msgid "backgroundnoise: Error, no data computed\n"
 msgstr "背景噪声：错误，无可用数据\n"
 
-#: ../src/core/siril.c:1572
+#: ../src/core/siril.c:1573
 msgid "backgroundnoise: does not converge\n"
 msgstr "背景噪声：无法汇聚\n"
 
-#: ../src/core/siril.c:1602
+#: ../src/core/siril.c:1603
 msgid "Noise standard deviation: calculating...\n"
 msgstr "噪声标准背离：计算中...\n"
 
-#: ../src/core/siril.c:1622
+#: ../src/core/siril.c:1623
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
 msgstr "背景噪声值（通道：#%d）: %0.3lf (%.3e)\n"
 
-#: ../src/core/siril.c:1635
+#: ../src/core/siril.c:1636
 msgid "Lucy-Richardson deconvolution: processing...\n"
 msgstr "Lucy-Richardson反卷积：执行中...\n"
 
@@ -5663,9 +5673,9 @@ msgid "This type of file is not handled. Should not happen"
 msgstr "该文件类型无法被识别"
 
 #: ../src/gui/script_menu.c:218
-#, fuzzy, c-format
+#, c-format
 msgid "Loading script: %s\n"
-msgstr "开始运行脚本%s\n"
+msgstr "载入脚本：%s\n"
 
 #: ../src/gui/sequence_list.c:197
 #, c-format
@@ -5900,8 +5910,8 @@ msgid "FILM ERROR: incompatible format\n"
 msgstr "视频错误：不兼容的格式\n"
 
 #: ../src/io/image_format_fits.c:90
-#, c-format
-msgid "Loaded FITS file has a BSCALE different than 1 (%d)\n"
+#, fuzzy, c-format
+msgid "Loaded FITS file has a BSCALE different than 1 (%lf)\n"
 msgstr "Loaded FITS file has a BSCALE different than 1 (%d)\n"
 
 #: ../src/io/image_format_fits.c:273
@@ -5913,7 +5923,7 @@ msgstr "FITS error: %s\n"
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "内部转化中有不可识别的FITS数据格式\n"
 
-#: ../src/io/image_format_fits.c:403 ../src/io/image_format_fits.c:655
+#: ../src/io/image_format_fits.c:403 ../src/io/image_format_fits.c:656
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr "FITS图像格式%d不被Siril支持。\n"
@@ -5923,29 +5933,29 @@ msgstr "FITS图像格式%d不被Siril支持。\n"
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Fitsio error reading data, file: %s.\n"
 
-#: ../src/io/image_format_fits.c:429
+#: ../src/io/image_format_fits.c:430
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr "%s.[any_allowed_extension] 未找到。\n"
 
-#: ../src/io/image_format_fits.c:437
+#: ../src/io/image_format_fits.c:438
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 
-#: ../src/io/image_format_fits.c:460
+#: ../src/io/image_format_fits.c:461
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "FITSIO error getting image parameters, file %s.\n"
 
-#: ../src/io/image_format_fits.c:497
+#: ../src/io/image_format_fits.c:498
 #, c-format
 msgid "Unsupported FITS image with %ld channels.\n"
 msgstr "Unsupported FITS image with %ld channels.\n"
 
-#: ../src/io/image_format_fits.c:516
+#: ../src/io/image_format_fits.c:517
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -5953,32 +5963,32 @@ msgstr ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
 
-#: ../src/io/image_format_fits.c:557
+#: ../src/io/image_format_fits.c:558
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/image_format_fits.c:703
+#: ../src/io/image_format_fits.c:705
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "FITS read partial: there is no layer %d in the image %s\n"
 
-#: ../src/io/image_format_fits.c:711
+#: ../src/io/image_format_fits.c:713
 #, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Unsupported FITS image format (%ld axes).\n"
 
-#: ../src/io/image_format_fits.c:752
+#: ../src/io/image_format_fits.c:754
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Loaded partial FITS file %s\n"
 
-#: ../src/io/image_format_fits.c:889
+#: ../src/io/image_format_fits.c:891
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr "错误：企图以不支持的格式(%d)来保存一个FITS文件。\n"
 
-#: ../src/io/image_format_fits.c:901
+#: ../src/io/image_format_fits.c:903
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
@@ -6241,6 +6251,8 @@ msgid ""
 "Using registration data from demosaiced layer %d (red is 0, green is 1, blue "
 "is 2)\n"
 msgstr ""
+"Using registration data from demosaiced layer %d (red is 0, green is 1, blue "
+"is 2)\n"
 
 #: ../src/io/seqfile.c:465
 #, c-format
@@ -6483,7 +6495,7 @@ msgstr "试图在SER文件中加入不是一致尺寸的图像\n"
 #: ../src/io/single_image.c:122
 #, c-format
 msgid "Error opening image %s: file not found or not supported.\n"
-msgstr "Error opening image %s: file not found or not supported.\n"
+msgstr "打开图像错误 %s: 文件未找到或无法识别。\n"
 
 #: ../src/io/single_image.c:137
 #, c-format
@@ -6789,27 +6801,27 @@ msgid ""
 "first.\n"
 msgstr "所有的先决条件不适合对齐，请先选择一个矩形。\n"
 
-#: ../src/stacking/normalization.c:107
+#: ../src/stacking/normalization.c:106
 msgid "Computing normalization...\n"
 msgstr "计算归一化...\n"
 
-#: ../src/stacking/normalization.c:119
+#: ../src/stacking/normalization.c:118
 msgid ""
 "The reference image is not in the selected set of images. Please choose "
 "another reference image.\n"
 msgstr "参考帧不在所选定的队列里。请重新选择参考帧。\n"
 
-#: ../src/stacking/normalization.c:122
+#: ../src/stacking/normalization.c:121
 msgid "Normalisation skipped.\n"
 msgstr "归一化终止。\n"
 
-#: ../src/stacking/normalization.c:135
+#: ../src/stacking/normalization.c:134
 msgid "Normalization failed."
 msgstr "归一化失败。"
 
 #: ../src/stacking/stacking.c:113
 msgid "Median stacking is only supported for FITS images and SER sequences.\n"
-msgstr "Median stacking is only supported for FITS images and SER sequences.\n"
+msgstr "中位数叠加只可用于FITS图像和SER队列。\n"
 
 #: ../src/stacking/stacking.c:118 ../src/stacking/stacking.c:804
 msgid "Select at least two frames for stacking. Aborting.\n"

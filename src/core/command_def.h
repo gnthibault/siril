@@ -14,7 +14,7 @@
 #define STR_CLEARSTAR N_("Clear all the stars saved in memory and displayed on the screen")
 #define STR_CLOSE N_("Properly closes the opened image and the opened sequence, if any")
 #define STR_CONVERT N_("Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" is the basename of the new sequence. The option \"-debayer\" applies demosaicing to images")
-#define STR_COSME N_("Apply the local mean to a set of pixels on the in-memory image (cosmetic correction). The coordinate of this pixels are in an ASCII file [.lst file]. COSME is adapted to correct residual hot and cold pixels after preprocessing")
+#define STR_COSME N_("Apply the local mean to a set of pixels on the in-memory image (cosmetic correction). The coordinates of these pixels are in an ASCII file [.lst file]. COSME is adapted to correct residual hot and cold pixels after preprocessing")
 #define STR_COSME_CFA N_("Same function that COSME but applying to RAW CFA images")
 #define STR_CROP N_("Crops the current image within the rectangle previously selected")
 
@@ -32,7 +32,7 @@
 #define STR_FIND_COSME N_("Applies an automatic detection of cold and hot pixels following the thresholds written in arguments")
 #define STR_FIND_COSME_CFA N_("Same command than FIND_COSME but for monochromatic CFA images")
 #define STR_FIND_HOT N_("Provides a list file \"filename\" (format text) in the working directory which contains the coordinates of the pixels which have an intensity \"hot_sigma\" times higher and \"cold_sigma\" lower than standard deviation. We generally use this command on a master-dark file")
-#define STR_FINDSTAR N_("Detects stars having a level greater than a threshold computed by Siril. The algorithm is based on the publication of Mighell, K. J. 1999, in ASP Conf. Ser., Vol. 172, Astronomical Data Analysis Software and Systems VIII, eds. D. M. Mehringer, R. L. Plante, and D. A. Roberts (San Francisco: ASP), 317. After that, a PSF is applied and Siril rejects all detected structures that don't fulfill a set of prescribed detection criteria. Finaly, a circle is drawn around detected stars. See also the command CLEARSTAR")
+#define STR_FINDSTAR N_("Detects stars having a level greater than a threshold computed by Siril. The algorithm is based on the publication of Mighell, K. J. 1999, in ASP Conf. Ser., Vol. 172, Astronomical Data Analysis Software and Systems VIII, eds. D. M. Mehringer, R. L. Plante, and D. A. Roberts (San Francisco: ASP), 317. After that, a PSF is applied and Siril rejects all detected structures that don't fulfill a set of prescribed detection criteria. Finally, a circle is drawn around detected stars. See also the command CLEARSTAR")
 #define STR_FMEDIAN N_("Performs a median filter of size \"ksize\" x \"ksize\" (\"ksize\" MUST be odd) to the original image with a modulation parameter \"modulation\". The output pixel is computed as : out=mod x m + (1 − mod) x in, where m is the median-filtered pixel value. A modulation's value of 1 will apply no modulation")
 #define STR_FMUL N_("Multiplies the loaded image by the \"scalar\" given in argument")
 #define STR_FIXBANDING N_("Tries to remove the canon banding. Argument \"amount\" define the amount of correction. \"Sigma\" defines a protection level of the algorithm, higher sigma gives higher protection")
@@ -71,7 +71,7 @@
 
 #define STR_SATU N_("Enhances the global saturation of the image. Try iteratively to obtain best results")
 #define STR_SAVE N_("Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO are added with values corresponding to the current viewing levels")
-#define STR_SAVEBMP N_("Saves current image under the form of a bitmap file with 8-bit per channel: \"filename\".bmp (BMP 24-bit). This function is like a screenshot of what you see with the levels updated. This is very usefull to share an image in the bitmap format")
+#define STR_SAVEBMP N_("Saves current image under the form of a bitmap file with 8-bit per channel: \"filename\".bmp (BMP 24-bit). This function is like a screenshot of what you see with the levels updated. This is very useful to share an image in the bitmap format")
 #define STR_SAVEJPG N_("Saves current image into a JPG file: \"filename\".jpg. You have the possibility to adjust the quality of the compression. A value 100 for \"quality\" parameter offers best fidelity while a low value increases the compression ratio. If no value is specified, it holds a value of 100")
 #define STR_SAVEPNG N_("Saves current image into a PNG file: \"filename\".png")
 #define STR_SAVEPNM N_("Saves current image under the form of a Netpbm file format with 16-bit per channel. The extension of the output will be \"filename\".ppm for RGB image and \"filename\".pgm for gray-level image")
