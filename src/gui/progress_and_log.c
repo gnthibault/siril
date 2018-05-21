@@ -41,20 +41,16 @@ static void progress_bar_set_text(const char *text) {
 	gtk_progress_bar_set_text(pbar, text);
 }
 
-/* http://developer.gnome.org/gtk3/3.4/GtkProgressBar.html */
+/* http://developer.gnome.org/gtk3/stable/GtkProgressBar.html */
 static void progress_bar_set_percent(double percent) {
 	static GtkProgressBar *pbar = NULL;
 	if (pbar == NULL)
 		pbar = GTK_PROGRESS_BAR(
 				gtk_builder_get_object(builder, "progressbar1"));
 	if (percent == PROGRESS_PULSATE) {
-#ifdef _OPENMP
-#pragma omp critical
-#endif
 		gtk_progress_bar_pulse(pbar);
 	}
 	else {
-		assert(percent >= 0.0 && percent <= 1.0);
 		gtk_progress_bar_set_fraction(pbar, percent);
 	}
 }
@@ -85,7 +81,7 @@ void set_progress_bar_data(const char *text, double percent) {
 		if (text)
 			fprintf(stdout, "progress: %s, %4.2lf%%\n", text, percent*100.0);
 		else fprintf(stdout, "\033[A\33[2KT\rprogress: %4.2lf%%\n", percent*100.0);
-		// TODO: I don't know how to do that in other OS than GNU
+		// Warning: I don't know how to do that in other OS than GNU
 		// On OS-X it works. On Windows ... well, I doubt it will be used
 	} else {
 		struct progress_bar_idle_data *data;

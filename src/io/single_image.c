@@ -57,10 +57,12 @@ void free_image_data() {
 	if (!single_image_is_loaded() && sequence_is_loaded())
 		save_stats_from_fit(&gfit, &com.seq, com.seq.current);
 	clearfits(&gfit);
-	clear_stars_list();
+	if (!com.script) {
+		clear_stars_list();
+		delete_selected_area();
+		clear_sampling_setting_box();	// clear focal and pixel pitch info
+	}
 	clear_histograms();
-	delete_selected_area();
-	clear_sampling_setting_box();	// clear focal and pixel pitch info
 
 	for (vport=0; vport<MAXGRAYVPORT; vport++) {
 		if (com.graybuf[vport]) {
@@ -74,7 +76,8 @@ void free_image_data() {
 		com.surface_stride[vport] = 0;
 		com.surface_height[vport] = 0;
 	}
-	activate_tab(RED_VPORT);
+	if (!com.script)
+		activate_tab(RED_VPORT);
 	if (com.rgbbuf) {
 		free(com.rgbbuf);
 		com.rgbbuf = NULL;
@@ -87,17 +90,19 @@ void free_image_data() {
 		free(com.uniq);
 		com.uniq = NULL;
 	}
-
-	/* free alignment preview data */
-	for (i=0; i<PREVIEW_NB; i++) {
-		if (com.preview_surface[i]) {
-			cairo_surface_destroy(com.preview_surface[i]);
-			com.preview_surface[i] = NULL;
+ 
+	if (!com.script) {
+		/* free alignment preview data */
+		for (i=0; i<PREVIEW_NB; i++) {
+			if (com.preview_surface[i]) {
+				cairo_surface_destroy(com.preview_surface[i]);
+				com.preview_surface[i] = NULL;
+			}
 		}
-	}
-	if (com.refimage_surface) {
-		cairo_surface_destroy(com.refimage_surface);
-		com.refimage_surface = NULL;
+		if (com.refimage_surface) {
+			cairo_surface_destroy(com.refimage_surface);
+			com.refimage_surface = NULL;
+		}
 	}
 }
 

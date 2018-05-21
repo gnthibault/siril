@@ -375,7 +375,7 @@ gboolean end_generic(gpointer arg) {
 /* wrapper for gdk_threads_add_idle that deactivates idle functions when
  * running in script/console mode */
 guint siril_add_idle(GSourceFunc idle_function, gpointer data) {
-	if (!com.script)
+	if (!com.script && !com.headless)
 		return gdk_threads_add_idle(idle_function, data);
 	return 0;
 }

@@ -1400,8 +1400,12 @@ int process_findcosme(int nb) {
 			str_append(&file, ".seq");
 		}
 
-		if (!existseq(file))
-			check_seq(FALSE);
+		if (!existseq(file)) {
+			if (check_seq(FALSE)) {
+				siril_log_message(_("No sequence %s found.\n"), file);
+				return 1;
+			}
+		}
 		seq = readseqfile(file);
 		if (seq == NULL) {
 			siril_log_message(_("No sequence %s found.\n"), file);
@@ -1623,8 +1627,12 @@ int process_register(int nb) {
 		str_append(&file, ".seq");
 	}
 
-	if (!existseq(file))
-		check_seq(FALSE);
+	if (!existseq(file)) {
+		if (check_seq(FALSE)) {
+			siril_log_message(_("No sequence %s found.\n"), file);
+			return 1;
+		}
+	}
 	sequence *seq = readseqfile(file);
 	if (seq == NULL) {
 		siril_log_message(_("No sequence %s found.\n"), file);
@@ -1787,7 +1795,6 @@ static gpointer stackall_worker(gpointer garg) {
 	if (check_seq(FALSE) || (dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
 		fprintf (stderr, "stackall: %s\n", error->message);
-		com.wd[0] = '\0';
 		siril_add_idle(end_generic, NULL);
 		return NULL;
 	}
@@ -1876,12 +1883,6 @@ static gpointer stackone_worker(gpointer garg) {
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
-	if (check_seq(FALSE)) {
-		siril_log_message(_("Error while searching sequences.\n"));
-		com.wd[0] = '\0';
-		siril_add_idle(end_generic, NULL);
-		return GINT_TO_POINTER(1);
-	}
 
 	if ((suf = strstr(arg->file, ".seq")) && strlen(suf) == 4) {
 		retval = stack_one_seq(arg);
@@ -1909,8 +1910,13 @@ int process_stackone(int nb) {
 		str_append(&file, ".seq");
 	}
 
-	if (!existseq(file))
-		check_seq(FALSE);
+	if (!existseq(file)) {
+		if (check_seq(FALSE)) {
+			siril_log_message(_("No sequence %s found.\n"), file);
+			free(arg);
+			return 1;
+		}
+	}
 	sequence *seq = readseqfile(file);
 	if (seq == NULL) {
 		siril_log_message(_("No sequence %s found.\n"), file);
@@ -2002,8 +2008,13 @@ int process_preprocess(int nb) {
 		str_append(&file, ".seq");
 	}
 
-	if (!existseq(file))
-		check_seq(FALSE);
+	if (!existseq(file)) {
+		if (check_seq(FALSE)) {
+			siril_log_message(_("No sequence %s found.\n"), file);
+			free(args);
+			return 1;
+		}
+	}
 	sequence *seq = readseqfile(file);
 	if (seq == NULL) {
 		siril_log_message(_("No sequence %s found.\n"), file);
@@ -2228,6 +2239,13 @@ static int executeCommand(int wordnb) {
 	return commande[i].process(wordnb);
 }
 
+gboolean end_script(gpointer p) {
+	set_GUI_CWD();
+	update_used_memory();
+	set_cursor_waiting(FALSE);
+	return FALSE;
+}
+
 gpointer execute_script(gpointer p) {
 	FILE *fp = (FILE *)p;
 	ssize_t read;
@@ -2276,8 +2294,8 @@ gpointer execute_script(gpointer p) {
 	}
 	free(linef);
 	fclose(fp);
-	set_cursor_waiting(FALSE);
 	com.script = FALSE;
+	siril_add_idle(end_script, NULL);
 	if (!retval) {
 		siril_log_message(_("Script execution finished successfully.\n"));
 		gettimeofday(&t_end, NULL);
