@@ -2302,7 +2302,7 @@ int processcommand(const char *line) {
 			siril_log_message(_("Another task is already in progress, ignoring new request.\n"));
 			return 1;
 		}
-		if (script_thread)
+		if (script_thread)	// TODO: may not be set on cancel
 			g_thread_join(script_thread);
 		char filename[256];
 		g_strlcpy(filename, line + 1, 250);

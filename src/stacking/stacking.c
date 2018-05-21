@@ -62,6 +62,7 @@ stack_method stacking_methods[] = {
 
 static gboolean end_stacking(gpointer p);
 static int stack_addminmax(struct stacking_args *args, gboolean ismax);
+static void start_stacking();
 
 struct image_block {
 	unsigned long channel, start_row, end_row, height;
@@ -559,7 +560,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 	/* should be pre-computed to display it in the stacking tab */
 	nb_frames = args->nb_images_to_stack;
-	reglayer = get_registration_layer();
+	reglayer = get_registration_layer(args->seq);
 
 	if (nb_frames <= 1) {
 		siril_log_message(_("No frame selected for stacking (select at least 2). Aborting.\n"));
@@ -1447,7 +1448,7 @@ gpointer stack_function_handler(gpointer p) {
 
 /* starts a summing operation using data stored in the stackparam structure
  * function is not reentrant but can be called again after it has returned and the thread is running */
-void start_stacking() {
+static void start_stacking() {
 	static GtkComboBox *method_combo = NULL, *rejec_combo = NULL, *norm_combo = NULL;
 	static GtkEntry *output_file = NULL;
 	static GtkToggleButton *overwrite = NULL, *force_norm = NULL;
@@ -1487,7 +1488,7 @@ void start_stacking() {
 	if (stackparam.method != stack_median && stackparam.method != stack_mean_with_rejection)
 		stackparam.normalize = NO_NORM;
 	stackparam.seq = &com.seq;
-	stackparam.reglayer = get_registration_layer();
+	stackparam.reglayer = get_registration_layer(&com.seq);
 	siril_log_color_message(_("Stacking will use registration data of layer %d if some exist.\n"), "salmon", stackparam.reglayer);
 	stackparam.max_number_of_rows = stack_get_max_number_of_rows(&com.seq, stackparam.nb_images_to_stack);
 
@@ -1834,7 +1835,7 @@ int stack_filter_included(sequence *seq, int nb_img, double any) {
 int stack_filter_fwhm(sequence *seq, int nb_img, double max_fwhm) {
 	int layer;
 	if (!seq->regparam) return 0;
-	layer = get_registration_layer();
+	layer = get_registration_layer(seq);
 	if (layer == -1) return 0;
 	if (!seq->regparam[layer]) return 0;
 	if (seq->imgparam[nb_img].incl && seq->regparam[layer][nb_img].fwhm > 0.0f)
@@ -1845,7 +1846,7 @@ int stack_filter_fwhm(sequence *seq, int nb_img, double max_fwhm) {
 int stack_filter_roundness(sequence *seq, int nb_img, double min_rnd) {
 	int layer;
 	if (!seq->regparam) return 0;
-	layer = get_registration_layer();
+	layer = get_registration_layer(seq);
 	if (layer == -1) return 0;
 	if (!seq->regparam[layer]) return 0;
 	if (seq->imgparam[nb_img].incl && seq->regparam[layer][nb_img].roundness > 0.0f)
@@ -1857,7 +1858,7 @@ int stack_filter_roundness(sequence *seq, int nb_img, double min_rnd) {
 int stack_filter_quality(sequence *seq, int nb_img, double max_quality) {
 	int layer;
 	if (!seq->regparam) return 0;
-	layer = get_registration_layer();
+	layer = get_registration_layer(seq);
 	if (layer == -1) return 0;
 	if (!seq->regparam[layer]) return 0;
 	if (seq->imgparam[nb_img].incl && seq->regparam[layer][nb_img].quality > 0.0)
@@ -1923,7 +1924,7 @@ double compute_highest_accepted_fwhm(double percent) {
 	int i, layer, number_images_with_fwhm_data;
 	double *val = malloc(com.seq.number * sizeof(double));
 	double highest_accepted;
-	layer = get_registration_layer();
+	layer = get_registration_layer(&com.seq);
 	if (layer == -1 || !com.seq.regparam || !com.seq.regparam[layer]) {
 		free(val);
 		return 0.0;
@@ -1966,7 +1967,7 @@ double compute_highest_accepted_quality(double percent) {
 	int i, layer;
 	double *val = malloc(com.seq.number * sizeof(double));
 	double highest_accepted;
-	layer = get_registration_layer();
+	layer = get_registration_layer(&com.seq);
 	if (layer == -1 || !com.seq.regparam || !com.seq.regparam[layer]) {
 		free(val);
 		return 0.0;
@@ -1998,7 +1999,7 @@ double compute_lowest_accepted_roundness(double percent) {
 	int i, layer, number_images_with_fwhm_data;
 	double *val = malloc(com.seq.number * sizeof(double));
 	double lowest_accepted;
-	layer = get_registration_layer();
+	layer = get_registration_layer(&com.seq);
 	if (layer == -1 || !com.seq.regparam || !com.seq.regparam[layer]) {
 		free(val);
 		return 0.0;
@@ -2104,7 +2105,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 	case BEST_PSF_IMAGES:
 		/* First we must check if the sequence has this kind of data
 		 * available before allowing the option to be selected. */
-		channel = get_registration_layer();
+		channel = get_registration_layer(&com.seq);
 		ref_image = sequence_find_refimage(&com.seq);
 		if (channel < 0) {
 			stackparam.nb_images_to_stack = 0;
@@ -2137,7 +2138,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 	case BEST_ROUND_IMAGES:
 		/* First we must check if the sequence has this kind of data
 		 * available before allowing the option to be selected. */
-		channel = get_registration_layer();
+		channel = get_registration_layer(&com.seq);
 		ref_image = sequence_find_refimage(&com.seq);
 		if (channel < 0) {
 			stackparam.nb_images_to_stack = 0;

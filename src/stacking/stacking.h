@@ -82,7 +82,6 @@ int stack_addmin(struct stacking_args *args);
 int upscale_sequence(struct stacking_args *args);
 
 
-void start_stacking();
 void clean_end_stacking(struct stacking_args *args);
 void update_stack_interface(gboolean dont_change_stack_type);
 

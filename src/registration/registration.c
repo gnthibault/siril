@@ -637,15 +637,24 @@ void on_comboboxregmethod_changed(GtkComboBox *box, gpointer user_data) {
 	writeinitfile();
 }
 
-int get_registration_layer() {
-	int reglayer;
-	GtkComboBox *registbox = GTK_COMBO_BOX(lookup_widget("comboboxreglayer"));
-
-	if (!sequence_is_loaded())
+/* for now, the sequence argument is used only when executing a script */
+int get_registration_layer(sequence *seq) {
+	if (!com.script) {
+		GtkComboBox *registbox = GTK_COMBO_BOX(lookup_widget("comboboxreglayer"));
+		int reglayer = gtk_combo_box_get_active(registbox);
+		if (!seq || !seq->regparam || seq->nb_layers < 0)
+			return -1;
+		return reglayer;
+	} else {
+		// find first available regdata
+		if (!seq || !seq->regparam || seq->nb_layers < 0)
+			return -1;
+		int i;
+		for (i = 0; i < seq->nb_layers; i++)
+			if (seq->regparam[i])
+				return i;
 		return -1;
-	reglayer = gtk_combo_box_get_active(registbox);
-
-	return reglayer;
+	}
 }
 
 /* Selects the "register all" or "register selected" according to the number of

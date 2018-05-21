@@ -74,7 +74,7 @@ static gpointer export_sequence(gpointer ptr) {
 	struct exportseq_args *args = (struct exportseq_args *)ptr;
 	norm_coeff coeff = { 0 };
 
-	reglayer = get_registration_layer();
+	reglayer = get_registration_layer(args->seq);
 	siril_log_message(_("Using registration information from layer %d to export sequence\n"), reglayer);
 	if (args->crop) {
 		in_width  = args->crop_area.w;

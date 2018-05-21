@@ -71,7 +71,7 @@ void fill_comboboxregmethod();
 gpointer register_thread_func(gpointer p);
 
 /** getter */
-int get_registration_layer();
+int get_registration_layer(sequence *seq);
 
 /* mouse behaviour */
 typedef enum {
