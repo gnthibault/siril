@@ -109,6 +109,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 		return -1;
 	gfit.hi = round_to_WORD(max);
 	gfit.exposure = ssdata->exposure;
+	gfit.bitpix = gfit.orig_bitpix = USHORT_IMG;
 
 	double ratio = 1.0;
 	if (max > USHRT_MAX)

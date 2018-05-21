@@ -919,7 +919,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 		retval = -1;
 		goto free_and_close;
 	}
-	fit.bitpix = USHORT_IMG;
+	fit.bitpix = fit.orig_bitpix = bitpix;
 	fit.naxes[0] = naxes[0];
 	fit.naxes[1] = naxes[1];
 	fit.naxes[2] = naxes[2];
@@ -1365,6 +1365,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				sum /= (double) N;
 				if (args->norm_to_16) {
 					normalize_to16bit(bitpix, &sum);
+					fit.bitpix = fit.orig_bitpix = USHORT_IMG;
 				}
 				fit.pdata[my_block->channel][pdata_idx++] = round_to_WORD(sum);
 			} // end of for x
