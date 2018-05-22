@@ -2059,6 +2059,8 @@ void display_image_number(int index) {
 
 /* sets text in the label and displays the dialog window 1 */
 void show_dialog(const char *text, const char *title, const char *icon) {
+	if (com.headless)
+		return;	// show_dialog usually follows a siril_log_message() call
 	struct _dialog_data *args = malloc(sizeof(struct _dialog_data));
 	args->text = text;
 	args->data = NULL;
