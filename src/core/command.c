@@ -68,8 +68,6 @@
 
 static char *word[MAX_COMMAND_WORDS];	// NULL terminated
 
-static GThread *script_thread = NULL;
-
 command commande[] = {
 	/* name,	nbarg,	usage,		function pointer, definition, scriptable */
 	{"addmax",	1,	"addmax filename",	process_addmax, STR_ADDMAX, FALSE},
@@ -2336,8 +2334,8 @@ int processcommand(const char *line) {
 			siril_log_message(_("Another task is already in progress, ignoring new request.\n"));
 			return 1;
 		}
-		if (script_thread)	// TODO: may not be set on cancel
-			g_thread_join(script_thread);
+		if (com.script_thread)
+			g_thread_join(com.script_thread);
 		char filename[256];
 		g_strlcpy(filename, line + 1, 250);
 		expand_home_in_filename(filename, 256);
@@ -2352,7 +2350,7 @@ int processcommand(const char *line) {
 		process_close(0);
 		/* Then, run script */
 		siril_log_message(_("Starting script %s\n"), filename);
-		script_thread = g_thread_new("script", execute_script, fp);
+		com.script_thread = g_thread_new("script", execute_script, fp);
 	} else {
 		myline = strdup(line);
 		len = strlen(line);

@@ -380,11 +380,18 @@ guint siril_add_idle(GSourceFunc idle_function, gpointer data) {
 	return 0;
 }
 
+void wait_for_script_thread() {
+	if (com.script_thread)
+		g_thread_join(com.script_thread);
+	com.script_thread = NULL;
+}
+
 void on_processes_button_cancel_clicked(GtkButton *button, gpointer user_data) {
 	if (com.thread != NULL)
 		siril_log_color_message(_("Process aborted by user\n"), "red");
 	com.stop_script = TRUE;
 	stop_processing_thread();
+	wait_for_script_thread();
 }
 
 int seq_filter_all(sequence *seq, int nb_img, double any) {

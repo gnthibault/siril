@@ -591,13 +591,16 @@ struct cominf {
 	int grad_nb_boxes, grad_size_boxes;
 	gboolean grad_boxes_drawn;
 
+	int max_thread;			// maximum of thread used for parallel execution
+
 	GThread *thread;		// the thread for processing
 	GMutex mutex;			// a mutex we use for this thread
 	gboolean run_thread;		// the main thread loop condition
-	int max_thread;			// maximum of thread used
+
 	gboolean headless;		// pure console, no GUI
 	gboolean script;		// scripts execution
-	gboolean stop_script;   // global variable to manually stop script execution
+	gboolean stop_script;		// abort script execution
+	GThread *script_thread;		// reads a script and executes its commands
 };
 
 /* this structure is used to characterize the statistics of the image */

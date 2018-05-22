@@ -284,7 +284,7 @@ int check_seq(int recompute_stats) {
 	}
 	free(sequences);
 	//TODO: to be translated
-	fprintf(stderr, "No sequence found, verify working directory or change FITS extension in settings\n");
+	fprintf(stderr, "No sequence found, verify working directory or change FITS extension in settings (current is %s)\n", com.ext);
 	return 1;	// no sequence found
 }
 
