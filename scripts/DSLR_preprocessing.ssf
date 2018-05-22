@@ -2,7 +2,7 @@
 # Script for Siril 0.9.9
 # April 2018
 # (C) Cyril Richard
-# DSLR_preprocessing v1.1
+# DSLR_preprocessing v1.2
 ########### PREPROCESSING SCRIPT ###########
 # Script for DSLR color camera preprocessing
 # needs 4 sets of RAW images in the working
@@ -47,8 +47,6 @@ stack r_pp_light_ rej 3 3 -norm=addscale
 #These lines are not mandatory
 #load image in memory
 load r_pp_light_stacked
-#Compute noise
-bgnoise
 #and save it at root
 cd  ..
 save result
