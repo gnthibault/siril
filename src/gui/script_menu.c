@@ -37,8 +37,6 @@
 
 #define EXT ".ssf"
 
-static GThread *script_thread = NULL;
-
 static GSList *initialize_script_paths(){
 	GSList *list = NULL;
 #ifdef _WIN32
@@ -154,8 +152,8 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 		return;
 	}
 
-	if (script_thread)
-		g_thread_join(script_thread);
+	if (com.script_thread)
+		g_thread_join(com.script_thread);
 
 	/* append script file extension */
 	str = g_string_new((gchar *) user_data);
@@ -174,7 +172,7 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 	process_close(0);
 	/* Then, run script */
 	siril_log_message(_("Starting script %s\n"), script_file);
-	script_thread = g_thread_new("script", execute_script, fp);
+	com.script_thread = g_thread_new("script", execute_script, fp);
 
 	g_free(script_file);
 }
