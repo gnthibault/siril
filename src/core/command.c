@@ -1258,11 +1258,13 @@ int process_close(int nb) {
 	free_image_data();
 	close_sequence(FALSE);
 	undo_flush();
-	hide_rgb_window();
-	hide_gray_window();
-	reset_plot(); // reset all plots
-	close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
-	update_used_memory();
+	if (!com.script) {
+		hide_rgb_window();
+		hide_gray_window();
+		reset_plot(); // reset all plots
+		close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
+		update_used_memory();
+	}
 	return 0;
 }
 
@@ -1411,7 +1413,10 @@ int process_findcosme(int nb) {
 			siril_log_message(_("No sequence %s found.\n"), file);
 			return 1;
 		}
-		seq_check_basic_data(seq, FALSE);
+		if (seq_check_basic_data(seq, FALSE) == -1) {
+			free(seq);
+			return 1;
+		}
 		i++;
 	} else {
 		if (!single_image_is_loaded())
@@ -1638,7 +1643,10 @@ int process_register(int nb) {
 		siril_log_message(_("No sequence %s found.\n"), file);
 		return 1;
 	}
-	seq_check_basic_data(seq, FALSE);
+	if (seq_check_basic_data(seq, FALSE) == -1) {
+		free(seq);
+		return 1;
+	}
 
 	/* getting the selected registration method */
 	struct registration_method *reg = malloc(sizeof(struct registration_method));
@@ -1923,7 +1931,10 @@ int process_stackone(int nb) {
 		free(arg);
 		return 1;
 	}
-	seq_check_basic_data(seq, FALSE);
+	if (seq_check_basic_data(seq, FALSE) == -1) {
+		free(seq);
+		return 1;
+	}
 
 	arg->file = file;
 	if (!word[2] || !strcmp(word[2], "sum"))
@@ -2021,7 +2032,10 @@ int process_preprocess(int nb) {
 		free(args);
 		return 1;
 	}
-	seq_check_basic_data(seq, FALSE);
+	if (seq_check_basic_data(seq, FALSE) == -1) {
+		free(seq);
+		return 1;
+	}
 
 	/* checking for options */
 	for (i = 2; i < nb_command_max; i++) {

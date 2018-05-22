@@ -1113,13 +1113,15 @@ void close_sequence(int loading_another) {
 	fprintf(stdout, "MODE: closing sequence\n");
 	if (sequence_is_loaded()) {
 		siril_log_message(_("Closing sequence %s\n"), com.seq.seqname);
-		clear_sequence_list();
+		if (!com.script)
+			clear_sequence_list();
 		if (com.seq.needs_saving)
 			writeseqfile(&com.seq);
 		free_sequence(&com.seq, FALSE);
-		clear_stars_list();
+		if (!com.script)
+			clear_stars_list();
 		initialize_sequence(&com.seq, FALSE);
-		if (!loading_another) {
+		if (!loading_another && !com.script) {
 			// unselect the sequence in the sequence list
 			GtkComboBox *seqcombo = GTK_COMBO_BOX(lookup_widget("sequence_list_combobox"));
 			gtk_combo_box_set_active(seqcombo, -1);
