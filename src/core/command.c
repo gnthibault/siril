@@ -1933,6 +1933,7 @@ int process_stackone(int nb) {
 	}
 	if (seq_check_basic_data(seq, FALSE) == -1) {
 		free(seq);
+		free(arg);
 		return 1;
 	}
 
@@ -2034,6 +2035,7 @@ int process_preprocess(int nb) {
 	}
 	if (seq_check_basic_data(seq, FALSE) == -1) {
 		free(seq);
+		free(args);
 		return 1;
 	}
 
