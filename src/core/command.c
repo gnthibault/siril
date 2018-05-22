@@ -1769,8 +1769,8 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		// 3. stack
 		retval = arg->method(&args);
 
-		// TODO, from end_stacking:
-		//noise(&gfit);
+		struct noise_data noise_args = { .fit = &gfit, .verbose = TRUE };
+		noise(&noise_args);
 		clean_end_stacking(&args);
 
 		free_sequence(seq, TRUE);
