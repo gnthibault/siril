@@ -18,6 +18,16 @@
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
 
+
+#ifdef SIRIL_OUTPUT_DEBUG
+#define DEBUG_TEST 1
+#else
+#define DEBUG_TEST 0
+#endif
+
+#define siril_debug_print(fmt, ...) \
+            do { if (DEBUG_TEST) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
+
 #undef max
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \

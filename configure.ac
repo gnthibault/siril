@@ -150,6 +150,21 @@ dnl checking libcurl
 PKG_CHECK_MODULES(CURL, [libcurl],
 		  [AC_DEFINE([HAVE_LIBCURL], [1], [Using Libcurl ])],
 		  AC_MSG_WARN([libcurl not found. Not using web interaction.]))
+		  
+dnl ================================================================
+dnl Collect some arguments.
+dnl ================================================================
+AC_ARG_ENABLE(debug,
+              [AC_HELP_STRING([--enable-debug],
+                              [enable debug build [default=no]])],,
+              [enable_debug="no"])
+
+AM_CONDITIONAL([SIRIL_DEBUG],[test "x$enable_debug" = "xyes"])
+
+if test "x$enable_debug" = "xyes"; then
+   AC_DEFINE([SIRIL_OUTPUT_DEBUG], [1], [Using debug output])
+fi
+
 
 dnl Compute the canonical host-system type variable (need config.guess and config.sub)
 AC_CANONICAL_HOST
@@ -260,7 +275,10 @@ fi
 
 if test `uname` != "Darwin"; then
 	if (test "$platform_win32" = "yes" || test "os_win32" = "yes" ) ; then
-		LDFLAGS="$LDFLAGS -Wl,--export-all-symbols -mwindows"
+		LDFLAGS="$LDFLAGS -Wl,--export-all-symbols"
+		if test "x$enable_debug" = "xno"; then
+			LDFLAGS="$LDFLAGS -mwindows"
+		fi
 		AC_SUBST(EXTRA_LIBS,'-lpsapi')
 	else
 		LDFLAGS="$LDFLAGS -rdynamic"

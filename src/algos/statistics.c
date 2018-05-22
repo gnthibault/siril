@@ -349,7 +349,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		// TODO 1.0: change to double
 		WORD min, max, norm;
 		if (!data) return NULL;	// not in cache, don't compute
-		fprintf(stdout, "- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
+		siril_debug_print("- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
 		siril_stats_ushort_minmax(&min, &max, data, 1, stat->total);
 		if (max <= UCHAR_MAX)
 			norm = UCHAR_MAX;
@@ -364,7 +364,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 			stat->sigma < 0. || stat->bgnoise < 0.)) {
 		int status = 0;
 		if (!data) return NULL;	// not in cache, don't compute
-		fprintf(stdout, "- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
+		siril_debug_print("- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
 		fits_img_stats_ushort(data, nx, ny, 1, 0, &stat->ngoodpix,
 				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
 				NULL, NULL, NULL, &status);
@@ -394,28 +394,28 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	/* Calculation of median */
 	if (compute_median && stat->median < 0.) {
 		if (!data) return NULL;	// not in cache, don't compute
-		fprintf(stdout, "- stats %p fit %p (%d): computing median\n", stat, fit, layer);
+		siril_debug_print("- stats %p fit %p (%d): computing median\n", stat, fit, layer);
 		stat->median = siril_stats_ushort_median(data, stat->ngoodpix);
 	}
 
 	/* Calculation of average absolute deviation from the median */
 	if ((option & STATS_AVGDEV) && stat->avgDev < 0.) {
 		if (!data) return NULL;	// not in cache, don't compute
-		fprintf(stdout, "- stats %p fit %p (%d): computing absdev\n", stat, fit, layer);
+		siril_debug_print("- stats %p fit %p (%d): computing absdev\n", stat, fit, layer);
 		stat->avgDev = gsl_stats_ushort_absdev_m(data, 1, stat->ngoodpix, stat->median);
 	}
 
 	/* Calculation of median absolute deviation */
 	if (((option & STATS_MAD) || (option & STATS_BWMV)) && stat->mad < 0.) {
 		if (!data) return NULL;	// not in cache
-		fprintf(stdout, "- stats %p fit %p (%d): computing mad\n", stat, fit, layer);
+		siril_debug_print("- stats %p fit %p (%d): computing mad\n", stat, fit, layer);
 		stat->mad = siril_stats_ushort_mad(data, 1, stat->ngoodpix, stat->median);
 	}
 
 	/* Calculation of Bidweight Midvariance */
 	if ((option & STATS_BWMV) && stat->sqrtbwmv < 0.) {
 		if (!data) return NULL;	// not in cache
-		fprintf(stdout, "- stats %p fit %p (%d): computing bimid\n", stat, fit, layer);
+		siril_debug_print("- stats %p fit %p (%d): computing bimid\n", stat, fit, layer);
 		double bwmv = siril_stats_ushort_bwmv(data, stat->ngoodpix, stat->mad, stat->median);
 		stat->sqrtbwmv = sqrt(bwmv);
 	}
@@ -423,7 +423,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	/* Calculation of IKSS. Only used for stacking */
 	if ((option & STATS_IKSS) && (stat->location < 0. || stat->scale < 0.)) {
 		if (!data) return NULL;	// not in cache
-		fprintf(stdout, "- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
+		siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
 		long i;
 		double *newdata = malloc(stat->ngoodpix * sizeof(double));
 
@@ -511,13 +511,13 @@ void add_stats_to_fit(fits *fit, int layer, imstats *stat) {
 		fit->stats = calloc(fit->naxes[2], sizeof(imstats *));
 	if (fit->stats[layer]) {
 		if (fit->stats[layer] != stat) {
-			fprintf(stdout, "- stats %p in fit %p (%d) is being replaced\n", fit->stats[layer], fit, layer);
+			siril_debug_print("- stats %p in fit %p (%d) is being replaced\n", fit->stats[layer], fit, layer);
 			free_stats(fit->stats[layer]);
 		} else return;
 	}
 	fit->stats[layer] = stat;
 	stat->_nb_refs++;
-	fprintf(stdout, "- stats %p saved to fit %p (%d)\n", stat, fit, layer);
+	siril_debug_print("- stats %p saved to fit %p (%d)\n", stat, fit, layer);
 }
 
 static void add_stats_to_stats(sequence *seq, int nb_layers, imstats ****stats, int image_index, int layer, imstats *stat) {
@@ -527,11 +527,11 @@ static void add_stats_to_stats(sequence *seq, int nb_layers, imstats ****stats, 
 		(*stats)[layer] = calloc(seq->number, sizeof(imstats *));
 	if ((*stats)[layer][image_index]) {
 		if ((*stats)[layer][image_index] != stat) {
-			fprintf(stdout, "- stats %p, %d in seq (%d) is being replaced\n", (*stats)[layer][image_index], image_index, layer);
+			siril_debug_print("- stats %p, %d in seq (%d) is being replaced\n", (*stats)[layer][image_index], image_index, layer);
 			free_stats((*stats)[layer][image_index]);
 		} else return;
 	}
-	fprintf(stdout, "- stats %p, %d in seq (%d): saving data\n", stat, image_index, layer);
+	siril_debug_print("- stats %p, %d in seq (%d): saving data\n", stat, image_index, layer);
 	(*stats)[layer][image_index] = stat;
 	seq->needs_saving = TRUE;
 	stat->_nb_refs++;
@@ -564,7 +564,7 @@ void copy_seq_stats_to_fit(sequence *seq, int index, fits *fit) {
 		for (layer = 0; layer < fit->naxes[2]; layer++) {
 			if (seq->stats[layer] && seq->stats[layer][index]) {
 				add_stats_to_fit(fit, layer, seq->stats[layer][index]);
-				fprintf(stdout, "- stats %p, copied from seq %d (%d)\n", fit->stats[layer], index, layer);
+				siril_debug_print("- stats %p, copied from seq %d (%d)\n", fit->stats[layer], index, layer);
 			}
 		}
 	}
@@ -575,7 +575,7 @@ void invalidate_stats_from_fit(fits *fit) {
 	if (fit->stats) {
 		int layer;
 		for (layer = 0; layer < fit->naxes[2]; layer++) {
-			fprintf(stdout, "- stats %p cleared from fit (%d)\n", fit->stats[layer], layer);
+			siril_debug_print("- stats %p cleared from fit (%d)\n", fit->stats[layer], layer);
 			free_stats(fit->stats[layer]);
 			fit->stats[layer] = NULL;
 		}
@@ -595,7 +595,7 @@ void allocate_stats(imstats **stat) {
 		(*stat)->ngoodpix = -1L;
 		(*stat)->mean = (*stat)->avgDev = (*stat)->median = (*stat)->sigma = (*stat)->bgnoise = (*stat)->min = (*stat)->max = (*stat)->normValue = (*stat)->mad = (*stat)->sqrtbwmv = (*stat)->location = (*stat)->scale = -1.0;
 		(*stat)->_nb_refs = 1;
-		fprintf(stdout, "- stats %p allocated\n", *stat);
+		siril_debug_print("- stats %p allocated\n", *stat);
 	}
 }
 
@@ -603,12 +603,12 @@ void allocate_stats(imstats **stat) {
  * returns NULL if it was freed, the argument otherwise. */
 imstats* free_stats(imstats *stat) {
 	if (stat && stat->_nb_refs-- == 1) {
-		fprintf(stdout, "- stats %p has no more refs, freed\n", stat);
+		siril_debug_print("- stats %p has no more refs, freed\n", stat);
 		free(stat);
 		return NULL;
 	}
 	if (stat)
-		fprintf(stdout, "- stats %p has refs (%d)\n", stat, stat->_nb_refs);
+		siril_debug_print("- stats %p has refs (%d)\n", stat, stat->_nb_refs);
 	return stat;
 }
 
@@ -618,7 +618,7 @@ void clear_stats(sequence *seq, int layer) {
 		int i;
 		for (i = 0; i < seq->number; i++) {
 			if (seq->stats[layer][i]) {
-				fprintf(stdout, "- stats %p freed from seq %d (%d)\n", seq->stats[layer][i], i, layer);
+				siril_debug_print("- stats %p freed from seq %d (%d)\n", seq->stats[layer][i], i, layer);
 				free_stats(seq->stats[layer][i]);
 				seq->stats[layer][i] = NULL;
 			}
