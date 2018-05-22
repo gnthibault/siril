@@ -1245,17 +1245,18 @@ gpointer median_filter(gpointer p) {
 	int ny = args->fit->ry;
 	int radius = (args->ksize - 1) / 2;
 	double norm = (double) get_normalized_value(args->fit);
-
+	double cur, total;
 	assert(nx > 0 && ny > 0);
 
 	struct timeval t_start, t_end;
 
-	siril_log_color_message(_("Median Filter: processing...\n"), "red");
+	char *msg = siril_log_color_message(_("Median Filter: processing...\n"), "red");
+	msg[strlen(msg) - 1] = '\0';
+	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
 
+
 	do {
-		if (args->iterations != 1)
-			siril_log_message(_("Iteration #%d...\n"), iter + 1);
 		for (layer = 0; layer < args->fit->naxes[2]; layer++) {
 			/* FILL image upside-down */
 			WORD **image = malloc(ny * sizeof(WORD *));
@@ -1270,6 +1271,10 @@ gpointer median_filter(gpointer p) {
 			for (y = 0; y < ny; y++) {
 				if (!get_thread_run())
 					break;
+				total = ny * args->iterations;
+				cur = (double) y + (ny * iter);
+				if (y & 4)	// every 16 iterations
+					set_progress_bar_data(NULL, cur / total);
 				for (x = 0; x < nx; x++) {
 					WORD *data = calloc(args->ksize * args->ksize,
 							sizeof(WORD));
@@ -1277,6 +1282,7 @@ gpointer median_filter(gpointer p) {
 						printf("median filter: error allocating data\n");
 						free(image);
 						siril_add_idle(end_median_filter, args);
+						set_progress_bar_data(_("Median filter failed"), PROGRESS_DONE);
 						return GINT_TO_POINTER(1);
 					}
 					i = 0;
@@ -1323,6 +1329,7 @@ gpointer median_filter(gpointer p) {
 	} while (iter < args->iterations && get_thread_run());
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
+	set_progress_bar_data(_("Median filter applied"), PROGRESS_DONE);
 	siril_add_idle(end_median_filter, args);
 
 	return GINT_TO_POINTER(0);
