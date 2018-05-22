@@ -2025,6 +2025,8 @@ void set_layers_for_registration() {
 		if (com.seq.regparam[i]) {
 			// calculate average quality for this layer
 			strcat(layer, " (*)");
+			if (reminder == -1)	// set as default selection
+			       	reminder = i;
 		}
 		gtk_combo_box_text_append_text(cbbt_layers, layer);
 	}
