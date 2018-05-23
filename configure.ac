@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 m4_define([siril_major_version], [0])
 m4_define([siril_minor_version], [9])
 m4_define([siril_micro_version], [9])
-m4_define([siril_prerelease_version], [RC1])
+m4_define([siril_prerelease_version], [RC2])
 m4_define([siril_version],
           [siril_major_version.siril_minor_version.siril_micro_version])
 m4_define([siril_version_full],
@@ -275,16 +275,11 @@ fi
 
 if test `uname` != "Darwin"; then
 	if (test "$platform_win32" = "yes" || test "os_win32" = "yes" ) ; then
-		LDFLAGS="$LDFLAGS -Wl,--export-all-symbols"
-		if test "x$enable_debug" = "xno"; then
-			LDFLAGS="$LDFLAGS -mwindows"
-		fi
-		AC_SUBST(EXTRA_LIBS,'-lpsapi')
-	else
-		LDFLAGS="$LDFLAGS -rdynamic"
+		AC_SUBST(EXTRA_LIBS,'-lpsapi')	
 	fi
 fi
 
+AC_SUBST([AM_LDFLAGS])
+
 AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in])
 AC_OUTPUT
-
