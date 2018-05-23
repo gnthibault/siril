@@ -152,7 +152,7 @@ static int undo_get_data(fits *fit, historic hist) {
 		fit->pdata[GLAYER] = fit->data + fit->rx * fit->ry;
 		fit->pdata[BLAYER] = fit->data + fit->rx * fit->ry * 2;
 	}
-	invalidate_stats_from_fit(fit);
+	full_stats_invalidation_from_fit(fit);
 	free(buf);
 	close(fd);
 	return 0;

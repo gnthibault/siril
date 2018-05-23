@@ -42,6 +42,14 @@
 #include "opencv.h"
 #include "opencv/ecc/ecc.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "algos/statistics.h"
+#ifdef __cplusplus
+}
+#endif
+
 
 #define defaultRANSACReprojThreshold 3
 
@@ -87,16 +95,17 @@ int cvResizeGaussian(fits *image, int toX, int toY, int interpolation) {
 
 	resize(in, out, out.size(), 0, 0, interpolation);
 
-	image->rx = toX;
-	image->naxes[0] = toX;
-	image->ry = toY;
-	image->naxes[1] = toY;
 	WORD *newdata = (WORD*) realloc(image->data,
 			toX * toY * sizeof(WORD) * image->naxes[2]);
 	if (!newdata) {
 		free(newdata);
 		return 1;
 	}
+	image->rx = toX;
+	image->naxes[0] = toX;
+	image->ry = toY;
+	image->naxes[1] = toY;
+
 	image->data = newdata;
 	Mat channel[3];
 	split(out, channel);
@@ -124,6 +133,7 @@ int cvResizeGaussian(fits *image, int toX, int toY, int interpolation) {
 	channel[0].release();
 	channel[1].release();
 	channel[2].release();
+	invalidate_stats_from_fit(image);
 	return 0;
 }
 
@@ -192,6 +202,7 @@ int cvRotateImage(fits *image, double angle, int interpolation, int cropped) {
 	image->ry = out.rows;
 	image->naxes[0] = image->rx;
 	image->naxes[1] = image->ry;
+	invalidate_stats_from_fit(image);
 
 	/* free data */
 	delete[] bgrbgr;
@@ -335,6 +346,7 @@ int cvTransformImage(fits *image, point ref, Homography Hom, int interpolation) 
 	image->ry = out.rows;
 	image->naxes[0] = image->rx;
 	image->naxes[1] = image->ry;
+	invalidate_stats_from_fit(image);
 
 	/* free data */
 	delete[] bgrbgr;
@@ -375,6 +387,7 @@ int cvUnsharpFilter(fits* image, double sigma, double amount) {
 		image->pdata[2] = image->data + (image->rx * image->ry) * 2;
 	}
 	in.release();
+	invalidate_stats_from_fit(image);
 	return 0;
 }
 
@@ -414,6 +427,7 @@ int cvComputeFinestScale(fits *image) {
 	image->ry = out.rows;
 	image->naxes[0] = image->rx;
 	image->naxes[1] = image->ry;
+	invalidate_stats_from_fit(image);
 
 	/* free data */
 	delete[] bgrbgr;
@@ -520,6 +534,7 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 	channel[0].release();
 	channel[1].release();
 	channel[2].release();
+	invalidate_stats_from_fit(image);
 
 	return 0;
 

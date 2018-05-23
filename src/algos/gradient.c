@@ -30,6 +30,7 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "algos/gradient.h"
+#include "algos/statistics.h"
 #include "registration/registration.h"	// for mouse_status
 
 #define NPARAM_POLY4 15		// Number of parameters used with 4rd order
@@ -333,6 +334,7 @@ static int extractBackgroundAuto(fits *imgfit, fits *bkgfit, newBackground *bkg)
 
 	siril_log_message(_("Channel #%d: background extraction done.\n"), bkg->layer);
 	gsl_matrix_free(bkgMatrix);
+	invalidate_stats_from_fit(imgfit);
 	return 0;
 }
 
@@ -374,6 +376,7 @@ static int extractBackgroundManual(fits *imgfit, fits *bkgfit, newBackground *bk
 
 	siril_log_message(_("Channel #%d: background extraction done.\n"), bkg->layer);
 	gsl_matrix_free(bkgMatrix);
+	invalidate_stats_from_fit(imgfit);
 	return 0;
 }
 

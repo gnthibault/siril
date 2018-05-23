@@ -29,6 +29,7 @@ void add_stats_to_seq_backup(sequence *seq, int image_index, int layer, imstats 
 void copy_seq_stats_to_fit(sequence *seq, int index, fits *fit);
 void save_stats_from_fit(fits *fit, sequence *seq, int index);
 void invalidate_stats_from_fit(fits *fit);
+void full_stats_invalidation_from_fit(fits *fit);
 
 #endif
 

@@ -254,6 +254,7 @@ int cosmeticCorrOnePoint(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 		newpixel = getAverage3x3(buf, x, y, width, height, is_cfa);
 
 	buf[x + y * fit->rx] = newpixel;
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -269,7 +270,7 @@ int cosmeticCorrOneLine(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 	memcpy(line, newline, width * sizeof(WORD));
 
 	free(newline);
-
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -291,6 +292,8 @@ int cosmeticCorrection(fits *fit, deviant_pixel *dev, int size, gboolean is_cfa)
 
 		buf[xx + yy * width] = newPixel;
 	}
+
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -428,5 +431,6 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 			}
 		}
 	}
+	invalidate_stats_from_fit(fit);
 	return 0;
 }

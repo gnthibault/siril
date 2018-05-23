@@ -75,6 +75,7 @@ int threshlo(fits *fit, int level) {
 			buf++;
 		}
 	}
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -88,6 +89,7 @@ int threshhi(fits *fit, int level) {
 			buf++;
 		}
 	}
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -102,6 +104,7 @@ int nozero(fits *fit, int level) {
 			buf++;
 		}
 	}
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -144,6 +147,7 @@ int soper(fits *a, double scalar, char oper) {
 			break;
 		}
 	}
+	invalidate_stats_from_fit(a);
 	return 0;
 }
 
@@ -186,6 +190,7 @@ int imoper(fits *a, fits *b, char oper) {
 			break;
 		}
 	}
+	invalidate_stats_from_fit(a);
 	return 0;
 }
 
@@ -224,6 +229,7 @@ int sub_background(fits* image, fits* background, int layer) {
 		image_buf[i] = round_to_WORD(pxl_image[i] * USHRT_MAX_DOUBLE);
 	}
 
+	invalidate_stats_from_fit(image);
 	// We free memory
 	free_stats(stat);
 	free(pxl_image);
@@ -250,6 +256,7 @@ int addmax(fits *a, fits *b) {
 				gbuf[layer][i] = buf[layer][i];
 		}
 	}
+	invalidate_stats_from_fit(a);
 	return 0;
 }
 
@@ -276,6 +283,7 @@ int fdiv(fits *a, fits *b, float coef) {
 			gbuf[i] = round_to_WORD(temp);
 		}
 	}
+	invalidate_stats_from_fit(a);
 	return retvalue;
 }
 
@@ -309,6 +317,7 @@ int ndiv(fits *a, fits *b) {
 		}
 	}
 
+	invalidate_stats_from_fit(a);
 	free(div);
 	return 0;
 }
@@ -376,6 +385,7 @@ int crop(fits *fit, rectangle *bounds) {
 		gettimeofday(&t_end, NULL);
 		show_time(t_start, t_end);
 	}
+	invalidate_stats_from_fit(fit);
 
 	return 0;
 }
@@ -412,6 +422,7 @@ int shift(int sx, int sy) {
 				gfit.rx * gfit.ry * sizeof(WORD));
 	}
 	free(tmpfit.data);
+	invalidate_stats_from_fit(&gfit);
 
 	return 0;
 }
@@ -467,6 +478,7 @@ int loglut(fits *fit, int dir) {
 				buf[layer][i] = exp(temp / normalisation);
 		}
 	}
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -498,6 +510,7 @@ int ddp(fits *a, int level, float coeff, float sigma) {
 	fdiv(a, &fit, level);
 	soper(a, (double) coeff, OPER_MUL);
 	clearfits(&fit);
+	invalidate_stats_from_fit(a);
 	return 0;
 }
 
@@ -547,6 +560,7 @@ int fill(fits *fit, int level, rectangle *arearg) {
 			buf += stridebuf;
 		}
 	}
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -572,6 +586,7 @@ int off(fits *fit, int level) {
 				buf[layer][i] = val + level;
 		}
 	}
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -1260,7 +1275,6 @@ gpointer median_filter(gpointer p) {
 	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
 
-
 	do {
 		for (layer = 0; layer < args->fit->naxes[2]; layer++) {
 			/* FILL image upside-down */
@@ -1332,6 +1346,7 @@ gpointer median_filter(gpointer p) {
 		}
 		iter++;
 	} while (iter < args->iterations && get_thread_run());
+	invalidate_stats_from_fit(args->fit);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 	set_progress_bar_data(_("Median filter applied"), PROGRESS_DONE);
@@ -1350,6 +1365,7 @@ static int fmul_layer(fits *a, int layer, float coeff) {
 	for (i = 0; i < a->rx * a->ry; ++i) {
 		buf[i] = round_to_WORD(buf[i] * coeff);
 	}
+	invalidate_stats_from_fit(a);
 	return 0;
 }
 

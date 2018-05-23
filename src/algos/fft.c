@@ -207,6 +207,7 @@ void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 		gbuf[i] = round_to_WORD(pxl);
 	}
 	delete_selected_area();
+	invalidate_stats_from_fit(fit);
 
 	free(modulus);
 	free(phase);
@@ -318,6 +319,7 @@ gpointer fourier_transform(gpointer p) {
 					tmp->dft_rx * tmp->dft_ry * sizeof(WORD));
 		}
 	}
+	invalidate_stats_from_fit(args->fit);
 	clearfits(tmp);
 	clearfits(tmp1);
 	clearfits(tmp2);

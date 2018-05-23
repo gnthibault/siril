@@ -575,10 +575,19 @@ void invalidate_stats_from_fit(fits *fit) {
 	if (fit->stats) {
 		int layer;
 		for (layer = 0; layer < fit->naxes[2]; layer++) {
-			siril_debug_print("- stats %p cleared from fit (%d)\n", fit->stats[layer], layer);
 			free_stats(fit->stats[layer]);
+			siril_debug_print("- stats %p cleared from fit (%d)\n", fit->stats[layer], layer);
 			fit->stats[layer] = NULL;
 		}
+	}
+}
+
+/* if image data and image structure has changed, invalidate the complete stats data structure */
+void full_stats_invalidation_from_fit(fits *fit) {
+	if (fit->stats) {
+		invalidate_stats_from_fit(fit);
+		free(fit->stats);
+		fit->stats = NULL;
 	}
 }
 
