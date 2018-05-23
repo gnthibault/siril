@@ -84,6 +84,13 @@ static void read_fits_header(fits *fit) {
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSHI, &fit->hi);
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSLO, &fit->lo);
 
+	if (fit->orig_bitpix == SHORT_IMG) {
+		if (fit->lo)
+			fit->lo += 32768;
+		if (fit->hi)
+			fit->hi += 32768;
+	}
+
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "BSCALE", &zero, NULL, &status);
 	if (!status && 1.0 != zero) {
@@ -485,7 +492,6 @@ int readfits(const char *filename, fits *fit, char *realname) {
 		if (status == KEY_NO_EXIST && fit->bitpix == SHORT_IMG)
 			fit->bitpix = USHORT_IMG;
 	}
-
 	// and we store the original bitpix to reuse it during later partial
 	// reads when we have no access to the header or a fits * struct.
 	fit->orig_bitpix = fit->bitpix;
