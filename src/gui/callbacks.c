@@ -1643,6 +1643,7 @@ void update_MenuItem() {
 }
 
 gboolean redraw(int vport, int doremap) {
+	if (com.script) return FALSE;
 	GtkWidget *widget;
 
 	if (vport >= MAXVPORT) {
@@ -2173,6 +2174,7 @@ void initialize_FITS_name_entries() {
 }
 
 void adjust_vport_size_to_image() {
+	if (com.script) return;
 	int vport;
 	// make GtkDrawingArea the same size than the image
 	// http://developer.gnome.org/gtk3/3.4/GtkWidget.html#gtk-widget-set-size-request

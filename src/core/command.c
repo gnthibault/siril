@@ -110,10 +110,10 @@ command commande[] = {
 	{"histo", 1, "histo channel (channel=0, 1, 2 with 0: red, 1: green, 2: blue)", process_histo, STR_HISTO, TRUE},
 	
 	/* commands oper filename and curent image */
-	{"iadd", 1, "iadd filename", process_imoper, STR_IADD, FALSE},
-	{"idiv", 1, "idiv filename", process_imoper, STR_IDIV, FALSE},
-	{"imul", 1, "imul filename", process_imoper, STR_IMUL, FALSE},
-	{"isub", 1, "isub filename", process_imoper, STR_ISUB, FALSE},
+	{"iadd", 1, "iadd filename", process_imoper, STR_IADD, TRUE},
+	{"idiv", 1, "idiv filename", process_imoper, STR_IDIV, TRUE},
+	{"imul", 1, "imul filename", process_imoper, STR_IMUL, TRUE},
+	{"isub", 1, "isub filename", process_imoper, STR_ISUB, TRUE},
 	
 	{"load", 1, "load filename.[ext]", process_load, STR_LOAD, TRUE},
 	// specific loads are not required, but could be used to force the
@@ -690,7 +690,6 @@ int process_resample(int nb) {
 	set_cursor_waiting(FALSE);
 	return 0;
 }
-
 
 int process_rotate(int nb) {
 	double degree;
@@ -1416,9 +1415,6 @@ int process_findcosme(int nb) {
 			return 1;
 		}
 		i++;
-	} else {
-		if (!single_image_is_loaded())
-			return 1;
 	}
 
 	struct cosmetic_data *args = malloc(sizeof(struct cosmetic_data));

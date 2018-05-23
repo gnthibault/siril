@@ -512,7 +512,7 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 	image->naxes[0] = image->rx;
 	image->naxes[1] = image->ry;
 
-	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
+	set_progress_bar_data(_("Deconvoltuion applied"), PROGRESS_DONE);
 	/* free data */
 	delete[] bgrbgr;
 	in.release();

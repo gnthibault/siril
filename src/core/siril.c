@@ -181,7 +181,7 @@ int imoper(fits *a, fits *b, char oper) {
 			break;
 		case OPER_DIV:
 			for (i = 0; i < n; ++i) {
-				gbuf[i] = round_to_WORD(gbuf[i] / buf[i]);
+				gbuf[i] = (buf[i] == 0) ? 0 : round_to_WORD(gbuf[i] / buf[i]);
 			}
 			break;
 		}

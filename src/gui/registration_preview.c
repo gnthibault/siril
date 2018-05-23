@@ -94,7 +94,8 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 void redraw_previews() {
 	int i;
-	for (i=0; i<PREVIEW_NB; i++)
+	if (com.script) return;
+	for (i = 0; i < PREVIEW_NB; i++)
 		gtk_widget_queue_draw(com.preview_area[i]);
 }
 
