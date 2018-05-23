@@ -862,17 +862,20 @@ static gboolean end_sequence_prepro(gpointer p) {
 	gettimeofday(&t_end, NULL);
 	show_time(args->t_start, t_end);
 	update_used_memory();
-	if (!args->retval && args->is_sequence) {
-		// load the new sequence
-		char *ppseqname = malloc(
-				strlen(args->seq->ppprefix) + strlen(args->seq->seqname) + 5);
-		sprintf(ppseqname, "%s%s.seq", args->seq->ppprefix, args->seq->seqname);
-		check_seq(0);
-		update_sequences_list(ppseqname);
-		free(ppseqname);
+	if (args->is_sequence) {
+		if (!args->retval) {
+			// load the new sequence
+			char *ppseqname = malloc(
+					strlen(args->seq->ppprefix) + strlen(args->seq->seqname) + 5);
+			sprintf(ppseqname, "%s%s.seq", args->seq->ppprefix,
+					args->seq->seqname);
+			check_seq(0);
+			update_sequences_list(ppseqname);
+			free(ppseqname);
+		}
+		sequence_free_preprocessing_data(args->seq);
+		free(args->seq->ppprefix);
 	}
-	sequence_free_preprocessing_data(args->seq);
-	free(args->seq->ppprefix);
 #ifdef MAC_INTEGRATION
 	GtkosxApplication *osx_app = gtkosx_application_get();
 	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
@@ -895,11 +898,13 @@ gpointer seqpreprocess(gpointer p) {
 	args->retval = 0;
 
 	// remove old sequence
-	char *ppseqname = malloc(
-			strlen(args->seq->ppprefix) + strlen(args->seq->seqname) + 5);
-	sprintf(ppseqname, "%s%s.seq", args->seq->ppprefix, args->seq->seqname);
-	unlink(ppseqname);
-	free(ppseqname);
+	if (args->is_sequence) {
+		char *ppseqname = malloc(
+				strlen(args->seq->ppprefix) + strlen(args->seq->seqname) + 5);
+		sprintf(ppseqname, "%s%s.seq", args->seq->ppprefix, args->seq->seqname);
+		unlink(ppseqname);
+		free(ppseqname);
+	}
 
 	if (com.preprostatus & USE_FLAT) {
 		if (args->autolevel) {
