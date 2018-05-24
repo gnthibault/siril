@@ -482,24 +482,6 @@ int loglut(fits *fit, int dir) {
 	return 0;
 }
 
-double contrast(fits* fit, int layer) {
-	int i;
-	WORD *buf = fit->pdata[layer];
-	double contrast = 0.0;
-	imstats *stat = statistics(NULL, -1, fit, layer, &com.selection, STATS_BASIC);
-	if (!stat) {
-		siril_log_message(_("Error: statistics computation failed.\n"));
-		return -1.0;
-	}
-	double mean = stat->mean;
-	free_stats(stat);
-
-	for (i = 0; i < fit->rx * fit->ry; i++)
-		contrast += SQR((double )buf[i] - mean);
-	contrast /= (fit->rx * fit->ry);
-	return contrast;
-}
-
 int ddp(fits *a, int level, float coeff, float sigma) {
 	fits fit;
 	memset(&fit, 0, sizeof(fits));
