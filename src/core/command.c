@@ -2171,7 +2171,7 @@ int process_preprocess(int nb) {
 		}
 	}
 
-	if (retvalue || !com.preprostatus) {
+	if (retvalue) {
 		if (master_bias) free(master_bias);
 		if (master_dark) free(master_dark);
 		if (master_flat) free(master_flat);
