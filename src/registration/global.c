@@ -110,6 +110,8 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 
 	sadata->ref.x = fit.rx;
 	sadata->ref.y = fit.ry;
+	clearfits(&fit);
+
 	if (regargs->x2upscale) {
 		if (regargs->translation_only) {
 			args->seq->upscale_at_stacking = 2.0;
@@ -173,11 +175,14 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 		 * (like fps, local and UTC time, ...) have no sense now since some frames
 		 * could be removed from the sequence.
 		 */
-		ser_create_file(dest, args->new_ser, TRUE, NULL);
+		if (ser_create_file(dest, args->new_ser, TRUE, NULL)) {
+			free(args->new_ser);
+			args->new_ser = NULL;
+			return 1;
+		}
 	}
 
 	sadata->success = calloc(args->nb_filtered_images, sizeof(BYTE));
-	clearfits(&fit);
 	return 0;
 }
 

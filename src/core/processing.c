@@ -267,15 +267,18 @@ int ser_prepare_hook(struct generic_seq_args *args) {
 		else snprintf(dest, 255, "%s%s.ser", args->new_seq_prefix, args->seq->seqname);
 
 		args->new_ser = malloc(sizeof(struct ser_struct));
-		return ser_create_file(dest, args->new_ser, TRUE, args->seq->ser_file);
+		if (ser_create_file(dest, args->new_ser, TRUE, args->seq->ser_file)) {
+			free(args->new_ser);
+			args->new_ser = NULL;
+			return 1;
+		}
 	}
-
 	return 0;
 }
 
 int ser_finalize_hook(struct generic_seq_args *args) {
 	int retval = 0;
-	if (args->force_ser_output || args->seq->type == SEQ_SER) {
+	if ((args->force_ser_output || args->seq->type == SEQ_SER) && args->new_ser) {
 		retval = ser_write_and_close(args->new_ser);
 		free(args->new_ser);
 	}
