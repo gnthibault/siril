@@ -979,7 +979,11 @@ gpointer seqpreprocess(gpointer p) {
 			char new_ser_filename[256];
 			new_ser_file = calloc(1, sizeof(struct ser_struct));
 			snprintf(new_ser_filename, 255, "%s%s", args->seq->ppprefix, args->seq->ser_file->filename);
-			ser_create_file(new_ser_filename, new_ser_file, TRUE, args->seq->ser_file);
+			if (ser_create_file(new_ser_filename, new_ser_file, TRUE, args->seq->ser_file)) {
+				free(new_ser_file);
+				new_ser_file = NULL;
+				return GINT_TO_POINTER(1);
+			}
 		}
 
 		if ((com.preprostatus & USE_COSME) && (com.preprostatus & USE_DARK)) {
