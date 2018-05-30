@@ -1634,10 +1634,12 @@ static void remove_tmp_drizzle_files(struct stacking_args *args, gboolean remove
 	case SEQ_REGULAR:
 		for (i = 0; i < args->seq->number; i++) {
 			fit_sequence_get_image_filename(args->seq, args->image_indices[i], filename, TRUE);
+			siril_debug_print("Removing %s\n", filename);
 			g_unlink(filename);
 		}
 		break;
 	case SEQ_SER:
+		siril_debug_print("Removing %s\n", args->seq->ser_file->filename);
 		g_unlink(args->seq->ser_file->filename);
 		break;
 	}
