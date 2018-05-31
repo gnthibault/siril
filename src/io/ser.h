@@ -1,6 +1,7 @@
 #ifndef _SER_H_
 #define _SER_H_
 
+#include <stdio.h>
 #include <stdint.h>
 #ifdef _OPENMP
 #include <omp.h>
@@ -26,11 +27,11 @@
 #define fseek64 fseeko  // DragonFly BSD, FreeBSD, OpenBSD, NetBSD
 #define ftell64 ftello  // DragonFly BSD, FreeBSD, OpenBSD, NetBSD
 #elif defined (__FreeBSD_kernel__) && defined (__GLIBC__)
-#define fseek64 fseeko64  // kFreeBSD
-#define ftell64 ftello64  // kFreeBSD
+#define fseek64 fseeko  // kFreeBSD
+#define ftell64 ftello  // kFreeBSD
 #elif defined (__gnu_hurd__)
-#define fseek64 fseeko64  // GNU/Hurd
-#define ftell64 ftello64  // GNU/Hurd
+#define fseek64 fseeko  // GNU/Hurd
+#define ftell64 ftello  // GNU/Hurd
 #else
 #define fseek64 _fseeki64  // Windows
 #define ftell64 _ftelli64  // Windows
