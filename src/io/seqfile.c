@@ -477,7 +477,7 @@ int writeseqfile(sequence *seq){
 	if (!seq->seqname || seq->seqname[0] == '\0') return 1;
 	filename = malloc(strlen(seq->seqname)+5);
 	sprintf(filename, "%s.seq", seq->seqname);
-	seqfile = fopen(filename, "w+");	// g_fopen won't work (on WINDOWS).
+	seqfile = g_fopen(filename, "w+t");
 	if (seqfile == NULL) {
 		perror("writeseqfile, fopen");
 		fprintf(stderr, "Writing sequence file: cannot open %s for writing\n", filename);
