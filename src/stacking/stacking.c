@@ -1641,6 +1641,7 @@ static void remove_tmp_drizzle_files(struct stacking_args *args, gboolean remove
 	case SEQ_SER:
 		siril_debug_print("Removing %s\n", args->seq->ser_file->filename);
 		g_unlink(args->seq->ser_file->filename);
+		ser_close_file(args->seq->ser_file);
 		break;
 	}
 }

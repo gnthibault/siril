@@ -741,7 +741,7 @@ int lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb) {
 static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	double noise = 0;
 	fits *dark_tmp = NULL, *fit_tmp = NULL;
-	int chan;
+	int chan, ret = 0;
 
 	if (new_fit_image(&dark_tmp, dark->rx, dark->ry, 1)) {
 		return -1.0;
@@ -755,7 +755,12 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	copyfits(fit, fit_tmp, CP_ALLOC | CP_EXTRACT, 0);
 
 	soper(dark_tmp, k, OPER_MUL);
-	imoper(fit_tmp, dark_tmp, OPER_SUB);
+	ret = imoper(fit_tmp, dark_tmp, OPER_SUB);
+	if (ret) {
+		clearfits(dark_tmp);
+		clearfits(fit_tmp);
+		return -1.0;
+	}
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
 		imstats *stat = statistics(NULL, -1, fit_tmp, chan, NULL, STATS_NOISE);
@@ -803,18 +808,25 @@ static double goldenSectionSearch(fits *brut, fits *dark, double a, double b,
 }
 
 static int preprocess(fits *brut, fits *offset, fits *dark, fits *flat, float level) {
+	int ret = 0;
 
 	if (com.preprostatus & USE_OFFSET) {
-		imoper(brut, offset, OPER_SUB);
+		ret = imoper(brut, offset, OPER_SUB);
+		if (ret)
+			return ret;
 	}
 
 	/* if dark optimization, the master-dark has already been subtracted */
 	if ((com.preprostatus & USE_DARK) && !(com.preprostatus & USE_OPTD)) {
-		imoper(brut, dark, OPER_SUB);
+		ret = imoper(brut, dark, OPER_SUB);
+		if (ret)
+			return ret;
 	}
 
 	if (com.preprostatus & USE_FLAT) {
-		fdiv(brut, flat, level);
+		ret = fdiv(brut, flat, level);
+		if (ret)
+			return ret;
 	}
 
 	return 0;
@@ -824,7 +836,13 @@ static int darkOptimization(fits *brut, fits *dark, fits *offset) {
 	double k;
 	double lo = 0.0;
 	double up = 2.0;
+	int ret = 0;
 	fits *dark_tmp = NULL;
+
+	if (brut->rx != dark->rx ||
+			brut->ry != dark->ry) {
+		return -1;
+	}
 
 	if (new_fit_image(&dark_tmp, dark->rx, dark->ry, 1))
 		return -1;
@@ -839,13 +857,17 @@ static int darkOptimization(fits *brut, fits *dark, fits *offset) {
 	siril_log_message(_("Dark optimization: %.3lf\n"), k);
 	/* Multiply coefficient to master-dark */
 	if (com.preprostatus & USE_OFFSET)
-		imoper(dark_tmp, offset, OPER_SUB);
+		ret = imoper(dark_tmp, offset, OPER_SUB);
+		if (ret) {
+			clearfits(dark_tmp);
+			return ret;
+		}
 	soper(dark_tmp, k, OPER_MUL);
-	imoper(brut, dark_tmp, OPER_SUB);
+	ret =  imoper(brut, dark_tmp, OPER_SUB);
 
 	clearfits(dark_tmp);
 
-	return 0;
+	return ret;
 }
 
 // idle function executed at the end of the sequence preprocessing
@@ -887,6 +909,7 @@ static gboolean end_sequence_prepro(gpointer p) {
 gpointer seqpreprocess(gpointer p) {
 	char dest_filename[256], msg[256];
 	fits *dark, *offset, *flat, *fit = NULL;
+	int ret = 0;
 	struct preprocessing_data *args = (struct preprocessing_data *) p;
 
 	dark = args->dark;
@@ -930,10 +953,23 @@ gpointer seqpreprocess(gpointer p) {
 		copyfits(com.uniq->fit, fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
 		copy_fits_metadata(com.uniq->fit, fit);
 
-		if ((com.preprostatus & USE_OPTD) && (com.preprostatus & USE_DARK))
-			darkOptimization(fit, dark, offset);
+		if ((com.preprostatus & USE_OPTD) && (com.preprostatus & USE_DARK)) {
+			ret = darkOptimization(fit, dark, offset);
+			if (ret) {
+				set_progress_bar_data(msg, PROGRESS_NONE);
+				clearfits(fit);
+				free(fit);
+				return(GINT_TO_POINTER(1));
+			}
+		}
 
-		preprocess(fit, offset, dark, flat, args->normalisation);
+		ret = preprocess(fit, offset, dark, flat, args->normalisation);
+		if (ret) {
+			set_progress_bar_data(msg, PROGRESS_NONE);
+			clearfits(fit);
+			free(fit);
+			return(GINT_TO_POINTER(1));
+		}
 
 		if ((com.preprostatus & USE_COSME) && (com.preprostatus & USE_DARK)) {
 			if (dark->naxes[2] == 1) {
@@ -1000,6 +1036,7 @@ gpointer seqpreprocess(gpointer p) {
 		fit = calloc(1, sizeof(fits));
 		if (!fit) {
 			fprintf(stderr, "Error: allocating memory to fit.\n");
+			siril_add_idle(end_sequence_prepro, args);
 			return GINT_TO_POINTER(1);
 		}
 
@@ -1020,10 +1057,25 @@ gpointer seqpreprocess(gpointer p) {
 				args->retval = 1;
 				break;
 			}
-			if ((com.preprostatus & USE_OPTD) && (com.preprostatus & USE_DARK))
-				darkOptimization(fit, dark, offset);
+			if ((com.preprostatus & USE_OPTD) && (com.preprostatus & USE_DARK)) {
+				ret = darkOptimization(fit, dark, offset);
+				if (ret) {
+					set_progress_bar_data(msg, PROGRESS_NONE);
+					clearfits(fit);
+					free(fit);
+					siril_add_idle(end_sequence_prepro, args);
+					return GINT_TO_POINTER(ret);
+				}
+			}
 
-			preprocess(fit, offset, dark, flat, args->normalisation);
+			ret = preprocess(fit, offset, dark, flat, args->normalisation);
+			if (ret) {
+				set_progress_bar_data(msg, PROGRESS_NONE);
+				clearfits(fit);
+				free(fit);
+				siril_add_idle(end_sequence_prepro, args);
+				return GINT_TO_POINTER(ret);
+			}
 
 			if ((com.preprostatus & USE_COSME) && (com.preprostatus & USE_DARK) && (dark->naxes[2] == 1))
 				cosmeticCorrection(fit, dev, icold + ihot, args->is_cfa);
@@ -1425,7 +1477,7 @@ gpointer BandingEngineThreaded(gpointer p) {
 }
 
 int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highlights, gboolean applyRotation) {
-	int chan, row, i;
+	int chan, row, i, ret = 0;
 	WORD *line, *fixline;
 	double minimum = DBL_MAX, globalsigma = 0.0;
 	fits *fiximage = NULL;
@@ -1490,13 +1542,13 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 	}
 	for (chan = 0; chan < fit->naxes[2]; chan++)
 		fmul_layer(fiximage, chan, amount);
-	imoper(fit, fiximage, OPER_ADD);
+	ret = imoper(fit, fiximage, OPER_ADD);
 
 	invalidate_stats_from_fit(fit);
 	clearfits(fiximage);
-	if (applyRotation)
+	if ((!ret) && applyRotation)
 		cvRotateImage(fit, -90.0, -1, OPENCV_LINEAR);
-	return 0;
+	return ret;
 }
 
 /*****************************************************************************

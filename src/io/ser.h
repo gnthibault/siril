@@ -12,6 +12,27 @@
  * on big endian systems.
  */
 
+#ifdef __linux__
+#define fseek64 fseeko  // Linux
+#define ftell64 ftello  // Linux
+#elif defined (__APPLE__) && defined(__MACH__)
+#define fseek64 fseeko  // OS X
+#define ftell64 ftello  // OS X
+#elif defined(BSD)
+#define fseek64 fseeko  // DragonFly BSD, FreeBSD, OpenBSD, NetBSD
+#define ftell64 ftello  // DragonFly BSD, FreeBSD, OpenBSD, NetBSD
+#elif defined (__FreeBSD_kernel__) && defined (__GLIBC__)
+#define fseek64 fseeko64  // kFreeBSD
+#define ftell64 ftello64  // kFreeBSD
+#elif defined (__gnu_hurd__)
+#define fseek64 fseeko64  // GNU/Hurd
+#define ftell64 ftello64  // GNU/Hurd
+#else
+#define fseek64 _fseeki64  // Windows
+#define ftell64 _ftelli64  // Windows
+#endif
+
+
 #define SER_HEADER_LEN 178
 
 typedef enum {
@@ -78,7 +99,7 @@ struct ser_struct {
 	// internal representations of header data
 	ser_pixdepth byte_pixel_depth;	// more useful representation of the bit_pixel_depth
 	unsigned int number_of_planes;	// derived from the color_id
-	int fd;
+	FILE *file;
 	char *filename;
 #ifdef _OPENMP
 	omp_lock_t fd_lock, ts_lock;

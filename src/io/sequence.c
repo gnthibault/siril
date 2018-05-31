@@ -785,7 +785,7 @@ int seq_open_image(sequence *seq, int index) {
 			/* should we check image parameters here? such as bitpix or naxis */
 			break;
 		case SEQ_SER:
-			assert(seq->ser_file->fd > 0);
+			assert(seq->ser_file->file == NULL);
 			break;
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 		case SEQ_AVI:
