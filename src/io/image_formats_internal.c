@@ -180,33 +180,31 @@ static int bmp8tofits(unsigned char *rgb, unsigned long rx, unsigned long ry, fi
 	return 0;
 }
 
-static int get_image_size(BYTE *header, unsigned long *width, unsigned long *height) {
+static void get_image_size(BYTE *header, unsigned long *width,
+		unsigned long *height) {
 	unsigned long bitmapinfoheader = 0;
 	unsigned long lx = 0, ly = 0;
 	unsigned short sx = 0, sy = 0;
-	int ret = 0;
 
 	memcpy(&bitmapinfoheader, header + 14, 4);
-	if (bitmapinfoheader == 40) {
-		memcpy(&lx, header + 18, 4);
-		memcpy(&ly, header + 22, 4);
-		*width = lx;
-		*height = ly;
-	} else if (bitmapinfoheader == 12) {
+	printf("test: %lu\n", bitmapinfoheader);
+	if (bitmapinfoheader == 12) {
 		memcpy(&sx, header + 18, 2);
 		memcpy(&sy, header + 20, 2);
 		*width = (unsigned long) sx;
 		*height = (unsigned long) sy;
 	} else {
-		ret = -1;
+		memcpy(&lx, header + 18, 4);
+		memcpy(&ly, header + 22, 4);
+		*width = lx;
+		*height = ly;
 	}
-	return ret;
 }
 
 /* reads a BMP image at filename `name', and stores it into the fit argument */
 int readbmp(const char *name, fits *fit) {
 	BYTE header[256];
-	int fd;
+	FILE *file;
 	long int count;
 	unsigned char *buf;
 	unsigned long data_offset = 0;
@@ -215,26 +213,22 @@ int readbmp(const char *name, fits *fit) {
 	unsigned short nbplane = 0;
 	char *msg;
 
-	if ((fd = g_open(name, O_RDONLY | O_BINARY, 0)) == -1) {
+	if ((file = g_fopen(name, "rb")) == NULL) {
 		msg = siril_log_message(_("Error opening BMP.\n"));
 		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return -1;
 	}
 
-	if ((count = read(fd, header, 54)) != 54) {
+	if ((count = fread(header, 1, 54, file)) != 54) {
 		fprintf(stderr, "readbmp: %ld header bytes read instead of 54\n", count);
 		perror("readbmp");
-		g_close(fd, NULL);
+		fclose(file);
 		return -1;
 	}
 
 /*	memcpy(&compression, header + 30, 4);*/
 
-	if (get_image_size(header, &width, &height)) {
-		fprintf(stderr, "readbmp: cannot read width and height\n");
-		g_close(fd, NULL);
-		return -1;
-	}
+	get_image_size(header, &width, &height);
 	memcpy(&nbplane, header + 28, 2);
 	nbplane = nbplane / 8;
 	memcpy(&data_offset, header + 10, 4);
@@ -242,28 +236,22 @@ int readbmp(const char *name, fits *fit) {
 	padsize = (4 - (width * nbplane) % 4) % 4;
 	nbdata = width * height * nbplane + height * padsize;
 
-	lseek(fd, data_offset, SEEK_SET);
+	fseek(file, data_offset, SEEK_SET);
 	if (nbplane == 1) {
 		buf = malloc(nbdata + 1024);
-		if ((count = read(fd, buf, 1024)) != 1024) {
+		if ((count = fread(buf, 1, 1024, file)) != 1024) {
 			fprintf(stderr, "readbmp: %ld byte read instead of 1024\n", count);
 			perror("readbmp: failed to read the lut");
 			free(buf);
-			g_close(fd, NULL);
+			fclose(file);
 			return -1;
 		}
 	} else {
 		buf = malloc(nbdata);
 	}
 
-	if ((count = read(fd, buf, nbdata)) != nbdata) {
-		fprintf(stderr, "readbmp: %ld read, %lu expected\n", count, nbdata);
-		perror("readbmp");
-		free(buf);
-		g_close(fd, NULL);
-		return -1;
-	}
-	g_close(fd, NULL);
+	fread(buf, 1, nbdata, file);
+	fclose(file);
 
 	switch (nbplane) {
 	case 1:
@@ -398,19 +386,19 @@ int savebmp(const char *name, fits *fit) {
  */
 /* This method loads a pnm or pgm binary file into the fits image passed as argument. */
 int import_pnm_to_fits(const char *filename, fits *fit) {
-	FILE *fd;
+	FILE *file;
 	char buf[256], *msg;
 	int i, j, max_val;
 	size_t stride;
 
-	if ((fd = g_fopen(filename, "rb")) == NULL) {
+	if ((file = g_fopen(filename, "rb")) == NULL) {
 		msg = siril_log_message(_("Sorry but Siril cannot open this file.\n"));
 		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return -1;
 	}
-	if (fgets(buf, 256, fd) == NULL) {
+	if (fgets(buf, 256, file) == NULL) {
 		perror("reading pnm file");
-		fclose(fd);
+		fclose(file);
 		return -1;
 	}
 	if (buf[0] != 'P' || buf[1] < '5' || buf[1] > '6' || buf[2] != '\n') {
@@ -418,7 +406,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 				_("Wrong magic cookie in PNM file, ASCII types and"
 						" b&w bitmaps are not supported.\n"));
 		show_dialog(msg, _("Error"), "dialog-error-symbolic");
-		fclose(fd);
+		fclose(file);
 		return -1;
 	}
 	if (buf[1] == '6') {
@@ -430,8 +418,8 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 	}
 
 	do {
-		if (fgets(buf, 256, fd) == NULL) {
-			fclose(fd);
+		if (fgets(buf, 256, file) == NULL) {
+			fclose(file);
 			return -1;
 		}
 	} while (buf[0] == '#');
@@ -439,7 +427,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 	while (buf[i] >= '0' && buf[i] <= '9')
 		i++;
 	if (i == 0) {
-		fclose(fd);
+		fclose(file);
 		return -1;
 	}
 	buf[i] = '\0';
@@ -448,19 +436,19 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 	while (buf[j] >= '0' && buf[j] <= '9')
 		j++;
 	if (j == i) {
-		fclose(fd);
+		fclose(file);
 		return -1;
 	}
 	if (buf[j] != '\n') {
-		fclose(fd);
+		fclose(file);
 		return -1;
 	}
 	buf[j] = '\0';
 	fit->ry = atoi(buf + i);
 
 	do {
-		if (fgets(buf, 256, fd) == NULL) {
-			fclose(fd);
+		if (fgets(buf, 256, file) == NULL) {
+			fclose(file);
 			return -1;
 		}
 	} while (buf[0] == '#');
@@ -468,13 +456,13 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 	while (buf[i] >= '0' && buf[i] <= '9')
 		i++;
 	if (buf[i] != '\n') {
-		fclose(fd);
+		fclose(file);
 		return -1;
 	}
 	buf[i] = '\0';
 	max_val = atoi(buf);
 	if (max_val < UCHAR_MAX) {
-		fclose(fd);
+		fclose(file);
 		return -1;
 	}
 	if (max_val == UCHAR_MAX) {
@@ -490,7 +478,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		fit->data = realloc(fit->data, stride * fit->ry * sizeof(WORD));
 		if (fit->data == NULL || tmpbuf == NULL) {
 			fprintf(stderr, "error allocating fits image data\n");
-			fclose(fd);
+			fclose(file);
 			if (olddata && !fit->data)
 				free(olddata);
 			if (tmpbuf)
@@ -498,10 +486,10 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 			fit->data = NULL;
 			return -1;
 		}
-		if (fread(tmpbuf, stride, fit->ry, fd) < fit->ry) {
+		if (fread(tmpbuf, stride, fit->ry, file) < fit->ry) {
 			msg = siril_log_message(_("Error reading 8-bit PPM image data.\n"));
 			show_dialog(msg, _("Error"), "dialog-error-symbolic");
-			fclose(fd);
+			fclose(file);
 			free(tmpbuf);
 			free(fit->data);
 			fit->data = NULL;
@@ -524,16 +512,16 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 			fit->data = realloc(fit->data, stride * fit->ry * sizeof(WORD));
 			if (fit->data == NULL) {
 				fprintf(stderr, "error allocating fits image data\n");
-				fclose(fd);
+				fclose(file);
 				if (olddata)
 					free(olddata);
 				return -1;
 			}
-			if (fread(fit->data, stride, fit->ry, fd) < fit->ry) {
+			if (fread(fit->data, stride, fit->ry, file) < fit->ry) {
 				msg = siril_log_message(
 						_("Error reading 16-bit gray PPM image data.\n"));
 				show_dialog(msg, _("Error"), "dialog-error-symbolic");
-				fclose(fd);
+				fclose(file);
 				free(fit->data);
 				fit->data = NULL;
 				return -1;
@@ -554,7 +542,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 			fit->data = realloc(fit->data, stride * fit->ry * sizeof(WORD));
 			if (fit->data == NULL || tmpbuf == NULL) {
 				fprintf(stderr, "error allocating fits image data\n");
-				fclose(fd);
+				fclose(file);
 				if (olddata && !fit->data)
 					free(olddata);
 				if (tmpbuf)
@@ -562,11 +550,11 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 				fit->data = NULL;
 				return -1;
 			}
-			if (fread(tmpbuf, stride, fit->ry, fd) < fit->ry) {
+			if (fread(tmpbuf, stride, fit->ry, file) < fit->ry) {
 				msg = siril_log_message(
 						_("Error reading 16-bit color PPM image data.\n"));
 				show_dialog(msg, _("Error"), "dialog-error-symbolic");
-				fclose(fd);
+				fclose(file);
 				free(tmpbuf);
 				free(fit->data);
 				fit->data = NULL;
@@ -582,10 +570,10 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		msg = siril_log_message(_("Not handled max value for PNM: %d.\n"),
 				max_val);
 		show_dialog(msg, _("Error"), "dialog-error-symbolic");
-		fclose(fd);
+		fclose(file);
 		return -1;
 	}
-	fclose(fd);
+	fclose(file);
 	char *basename = g_path_get_basename(filename);
 	siril_log_message(_("Reading NetPBM: file %s, %ld layer(s), %ux%u pixels\n"),
 			basename, fit->naxes[2], fit->rx, fit->ry);
