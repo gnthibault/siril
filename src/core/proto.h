@@ -60,7 +60,7 @@ struct pic_struct {
 	char *time;		
 
 	// internal stuff
-	int fd;
+	FILE *file;
 };
 int	readpic(const char *name, fits *fit);
 

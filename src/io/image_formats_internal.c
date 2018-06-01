@@ -736,9 +736,9 @@ static int pictofitrgb(WORD *buf, fits *fit) {
 
 static int _pic_read_header(struct pic_struct *pic_file) {
 	char header[290];
-	if (!pic_file || pic_file->fd <= 0)
+	if (!pic_file || !pic_file->file)
 		return -1;
-	if (sizeof(header) != read(pic_file->fd, header, sizeof(header))) {
+	if (sizeof(header) != fread(header, 1, sizeof(header), pic_file->file)) {
 		perror("read");
 		return -1;
 	}
@@ -769,9 +769,9 @@ static int _pic_close_file(struct pic_struct *pic_file) {
 	int retval = 0;
 	if (!pic_file)
 		return retval;
-	if (pic_file->fd > 0) {
-		retval = g_close(pic_file->fd, NULL);
-		pic_file->fd = -1;
+	if (pic_file->file) {
+		retval = fclose(pic_file->file);
+		pic_file->file = NULL;
 	}
 	if (pic_file->date)
 		free(pic_file->date);
@@ -793,7 +793,7 @@ int readpic(const char *name, fits *fit) {
 	memset(&header, 0, sizeof(header));
 	pic_file = calloc(1, sizeof(struct pic_struct));
 
-	if ((pic_file->fd = g_open(name, O_RDONLY | O_BINARY, 0)) == -1) {
+	if ((pic_file->file = g_fopen(name, "rb")) == NULL) {
 		msg = siril_log_message(
 				_("Sorry but Siril cannot open the PIC file: %s.\n"), name);
 		show_dialog(msg, _("Error"), "dialog-error-symbolic");
@@ -812,17 +812,16 @@ int readpic(const char *name, fits *fit) {
 
 	nbdata = fit->rx * fit->ry;
 	assert(nbdata > 0);
-	lseek(pic_file->fd, sizeof(header), SEEK_SET);
+	fseeko(pic_file->file, sizeof(header), SEEK_SET);
 	buf = malloc(nbdata * pic_file->nbplane * sizeof(WORD));
 
-	if ((read(pic_file->fd, buf, nbdata * pic_file->nbplane * sizeof(WORD)))
+	if ((fread(buf, 1, nbdata * pic_file->nbplane * sizeof(WORD), pic_file->file))
 			!= nbdata * pic_file->nbplane * sizeof(WORD)) {
 		siril_log_message(_("Cannot Read the data\n"));
 		free(buf);
 		_pic_close_file(pic_file);
 		return -1;
 	}
-	g_close(pic_file->fd, NULL);
 
 	switch (pic_file->nbplane) {
 	case 1:
