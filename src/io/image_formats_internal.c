@@ -812,7 +812,7 @@ int readpic(const char *name, fits *fit) {
 
 	nbdata = fit->rx * fit->ry;
 	assert(nbdata > 0);
-	fseeko(pic_file->file, sizeof(header), SEEK_SET);
+	fseek(pic_file->file, sizeof(header), SEEK_SET);
 	buf = malloc(nbdata * pic_file->nbplane * sizeof(WORD));
 
 	if ((fread(buf, 1, nbdata * pic_file->nbplane * sizeof(WORD), pic_file->file))
