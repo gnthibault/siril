@@ -25,6 +25,7 @@
 #include <fftw3.h>
 #include <assert.h>
 #include <float.h>
+#include <math.h>
 #include <gtk/gtk.h>
 #ifdef MAC_INTEGRATION
 #include "gtkmacintegration/gtkosxapplication.h"
@@ -160,7 +161,8 @@ static void normalizeQualityData(struct registration_args *args, double q_min, d
 		args->seq->regparam[args->layer][frame].quality -= q_min;
 		args->seq->regparam[args->layer][frame].quality /= diff;
 		/* if thread has been manually stopped, some values will be < 0 */
-		if (args->seq->regparam[args->layer][frame].quality < 0)
+		if ((args->seq->regparam[args->layer][frame].quality < 0)
+				|| isnan(args->seq->regparam[args->layer][frame].quality))
 			args->seq->regparam[args->layer][frame].quality = -1.0;
 	}
 }
@@ -934,13 +936,13 @@ static gboolean end_register_idle(gpointer p) {
 	}
 	set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
 
-	if (!args->retval || !args->load_new_sequence) {	// already done in set_seq()
+//	if (!args->load_new_sequence) {	// already done in set_seq()
 		drawPlot();
 		update_stack_interface(TRUE);
 		adjust_sellabel();
-		update_used_memory();
-		set_cursor_waiting(FALSE);
-	}
+//	}
+	update_used_memory();
+	set_cursor_waiting(FALSE);
 
 #ifdef MAC_INTEGRATION
 	GtkosxApplication *osx_app = gtkosx_application_get();
