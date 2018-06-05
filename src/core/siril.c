@@ -824,9 +824,7 @@ static int preprocess(fits *brut, fits *offset, fits *dark, fits *flat, float le
 	}
 
 	if (com.preprostatus & USE_FLAT) {
-		ret = fdiv(brut, flat, level);
-		if (ret)
-			return ret;
+		fdiv(brut, flat, level);
 	}
 
 	return 0;
@@ -1069,6 +1067,7 @@ gpointer seqpreprocess(gpointer p) {
 			}
 
 			ret = preprocess(fit, offset, dark, flat, args->normalisation);
+			printf("ret=%d\n", ret);
 			if (ret) {
 				set_progress_bar_data(msg, PROGRESS_NONE);
 				clearfits(fit);

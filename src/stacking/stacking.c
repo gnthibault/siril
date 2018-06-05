@@ -1368,6 +1368,8 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				if (args->norm_to_16) {
 					normalize_to16bit(bitpix, &sum);
 					fit.bitpix = fit.orig_bitpix = USHORT_IMG;
+				} else if (fit.orig_bitpix > BYTE_IMG) {
+					fit.bitpix = fit.orig_bitpix = USHORT_IMG;
 				}
 				fit.pdata[my_block->channel][pdata_idx++] = round_to_WORD(sum);
 			} // end of for x
@@ -1397,13 +1399,14 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	/* copy result to gfit if success */
 	clearfits(&gfit);
 	copyfits(&fit, &gfit, CP_FORMAT, 0);
+	gfit.exposure = exposure;
 	gfit.data = fit.data;
 	for (i = 0; i < fit.naxes[2]; i++)
 		gfit.pdata[i] = fit.pdata[i];
 
 free_and_close:
 	fprintf(stdout, "free and close (%d)\n", retval);
-	for (i=0; i<nb_frames; ++i) {
+	for (i = 0; i < nb_frames; ++i) {
 		seq_close_image(args->seq, args->image_indices[i]);
 	}
 
