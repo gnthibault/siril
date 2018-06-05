@@ -789,12 +789,11 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	int retval = 0;
 	struct _data_block *data_pool = NULL;
 	int pool_size = 1;
-	fits fit;
+	fits fit = {0};
 	struct image_block *blocks = NULL;
 
 	nb_frames = args->nb_images_to_stack;
 	reglayer = args->reglayer;
-	memset(&fit, 0, sizeof(fits));
 
 	if (args->seq->type != SEQ_REGULAR && args->seq->type != SEQ_SER) {
 		char *msg = siril_log_message(_("Rejection stacking is only supported for FITS images and SER sequences.\nUse \"Sum Stacking\" instead.\n"));
@@ -815,7 +814,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 
 	/* first loop: open all fits files and check they are of same size */
 	if (args->seq->type == SEQ_REGULAR) {
-		for (i=0; i<nb_frames; ++i) {
+		for (i = 0; i < nb_frames; ++i) {
 			int image_index = args->image_indices[i];	// image index in sequence
 			if (!get_thread_run()) {
 				retval = -1;
@@ -869,17 +868,14 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 			}
 
 			/* exposure summing */
-			double tmp;
-			status = 0;
-			/* and here we should provide a opened_fits_read_key for example */
-			fits_read_key (args->seq->fptr[image_index], TDOUBLE, "EXPTIME", &tmp, NULL, &status);
-			if (status || tmp <= 0.0) {
-				status = 0;
-				fits_read_key (args->seq->fptr[image_index], TDOUBLE, "EXPOSURE", &tmp, NULL, &status);
-			}
-			if (!status)
-				exposure += tmp;
+			exposure += get_exposure_from_fitsfile(args->seq->fptr[image_index]);
 		}
+		/* We copy metadata from reference to the final fit */
+		int ref = 0;
+		if (args->seq->reference_image > 0)
+			ref = args->seq->reference_image;
+		import_metadata_from_fitsfile(args->seq->fptr[ref], &fit);
+
 		update_used_memory();
 	}
 

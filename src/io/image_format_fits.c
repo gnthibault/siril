@@ -422,6 +422,23 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	return 0;
 }
 
+double get_exposure_from_fitsfile(fitsfile *fptr) {
+	double exp = 0.0;
+
+	__tryToFindKeywords(fptr, TDOUBLE, Exposure, &exp);
+	return exp;
+}
+
+int import_metadata_from_fitsfile(fitsfile *fptr, fits *to) {
+	fits from = { 0 };
+
+	from.fptr = fptr;
+
+	read_fits_header(&from);
+	copy_fits_metadata(&from, to);
+	return 0;
+}
+
 // return 0 on success, fills realname if not NULL with the opened file's name
 int readfits(const char *filename, fits *fit, char *realname) {
 	int status, retval;

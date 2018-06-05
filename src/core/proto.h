@@ -18,6 +18,8 @@
 
 /****************** image_format_fits.h ******************/
 int	readfits(const char *filename, fits *fit, char *realname);
+double get_exposure_from_fitsfile(fitsfile *fptr);
+int import_metadata_from_fitsfile(fitsfile *fptr, fits *to);
 void	clearfits(fits *);
 int	readfits_partial(const char *filename, int layer, fits *fit, const rectangle *area, gboolean read_date);
 int	read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area);

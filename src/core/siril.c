@@ -1067,7 +1067,6 @@ gpointer seqpreprocess(gpointer p) {
 			}
 
 			ret = preprocess(fit, offset, dark, flat, args->normalisation);
-			printf("ret=%d\n", ret);
 			if (ret) {
 				set_progress_bar_data(msg, PROGRESS_NONE);
 				clearfits(fit);
