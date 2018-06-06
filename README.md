@@ -59,9 +59,9 @@ Branch 0.9:
 
     svn co https://free-astro.org/svn/siril/branches/0.9 Siril-0.9
     
-or you can use the mirror on github:
+or you can use the mirror on gitlab:
 
-    git clone https://github.com/lock042/Siril-0.9.git 
+    git clone https://gitlab.com/lock042/Siril-0.9.git 
 
 Development version (highly unstable):
 
