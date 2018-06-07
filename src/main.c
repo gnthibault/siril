@@ -136,7 +136,7 @@ void usage(const char *command) {
     printf("\nUsage:  %s [OPTIONS] [IMAGE_FILE_TO_OPEN]\n\n", command);
     puts("    -d, --directory CWD        changing the current working directory as the argument");
     puts("    -s, --script    SCRIPTFILE run the siril commands script in console mode");
-    puts("    -i                         load configration from file name instead of the default configuration file");
+    puts("    -i                         load configuration from file name instead of the default configuration file");
     puts("    -f, --format               print all supported image file formats (depending on installed libraries)");
     puts("    -v, --version              print program name and version and exit");
     puts("    -h, --help                 show this message");
