@@ -238,7 +238,7 @@ static char *copy_header(fits *fit) {
 	if (!header)
 		return NULL;
 	if (!sequence_is_loaded() || com.seq.current == 0)
-		fprintf(stdout, "%s", header);// don't display for all frames of a sequence
+		siril_debug_print("%s", header);// don't display for all frames of a sequence
 	return header;
 }
 
