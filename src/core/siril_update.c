@@ -184,7 +184,7 @@ static gchar *parse_changelog(gchar *changelog) {
 	strResult = g_string_append(strResult, "\n\n");
 	/* we start at line 3 */
 	i = 3;
-	while (i < nargs && token[i][0] == '*') {
+	while (i < nargs && token[i][0] != '\0') {
 		strResult = g_string_append(strResult, token[i]);
 		strResult = g_string_append(strResult, "\n");
 		i++;
