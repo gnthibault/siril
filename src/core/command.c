@@ -1311,7 +1311,7 @@ int process_fmedian(int nb){
 int process_cdg(int nb) {
 	double x_avg, y_avg;
 
-	if (!single_image_is_loaded()) return 1;
+	if (!single_image_is_loaded() && !sequence_is_loaded()) return 1;
 
 	FindCentre(&gfit, &x_avg, &y_avg);
 	y_avg = gfit.ry - y_avg;	// FITS are stored bottom to top
@@ -2451,6 +2451,7 @@ int processcommand(const char *line) {
 		len = strlen(line);
 		parseLine(myline, len, &wordnb);
 		if (executeCommand(wordnb)) {
+			siril_log_message(_("Command execution failed.\n"));
 			free(myline);
 			return 1;
 		}
