@@ -274,7 +274,7 @@ int register_shift_dft(struct registration_args *args) {
 			char tmpmsg[1024], tmpfilename[256];
 
 			seq_get_image_filename(args->seq, frame, tmpfilename);
-			g_snprintf(tmpmsg, 1024, _("Register: processing image %s\n"),
+			g_snprintf(tmpmsg, 1024, _("Register: processing image %s"),
 					tmpfilename);
 			set_progress_bar_data(tmpmsg, PROGRESS_NONE);
 			if (!(seq_read_frame_part(args->seq, args->layer, frame, &fit,
@@ -551,7 +551,7 @@ int register_ecc(struct registration_args *args) {
 			char tmpmsg[1024], tmpfilename[256];
 
 			seq_get_image_filename(args->seq, frame, tmpfilename);
-			g_snprintf(tmpmsg, 1024, _("Register: processing image %s\n"),
+			g_snprintf(tmpmsg, 1024, _("Register: processing image %s"),
 					tmpfilename);
 			set_progress_bar_data(tmpmsg, PROGRESS_NONE);
 
