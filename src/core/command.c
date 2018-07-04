@@ -358,7 +358,7 @@ int process_fdiv(int nb){
 	norm = atof(word[2]);
 	if (readfits(word[1], &fit, NULL))
 		return -1;
-	fdiv(&gfit, &fit, norm);
+	siril_fdiv(&gfit, &fit, norm);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();

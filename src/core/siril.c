@@ -260,8 +260,8 @@ int addmax(fits *a, fits *b) {
 	return 0;
 }
 
-/* If fdiv is ok, function returns 0. If overflow, fdiv returns 1*/
-int fdiv(fits *a, fits *b, float coef) {
+/* If siril_fdiv is ok, function returns 0. If overflow, siril_fdiv returns 1*/
+int siril_fdiv(fits *a, fits *b, float coef) {
 	int i, layer;
 	int retvalue = 0;
 	double temp;
@@ -289,7 +289,7 @@ int fdiv(fits *a, fits *b, float coef) {
 
 /* normalized division a/b, stored in a, with max value equal to the original
  * max value of a, for each layer. */
-int ndiv(fits *a, fits *b) {
+int siril_ndiv(fits *a, fits *b) {
 	double *div;
 	int layer, i, nb_pixels;
 	if (a->rx != b->rx || a->ry != b->ry || a->naxes[2] != b->naxes[2]) {
@@ -489,7 +489,7 @@ int ddp(fits *a, int level, float coeff, float sigma) {
 	unsharp(&fit, sigma, 0, FALSE);
 	soper(&fit, (double) level, OPER_ADD);
 	nozero(&fit, 1);
-	fdiv(a, &fit, level);
+	siril_fdiv(a, &fit, level);
 	soper(a, (double) coeff, OPER_MUL);
 	clearfits(&fit);
 	invalidate_stats_from_fit(a);
@@ -824,7 +824,7 @@ static int preprocess(fits *brut, fits *offset, fits *dark, fits *flat, float le
 	}
 
 	if (com.preprostatus & USE_FLAT) {
-		fdiv(brut, flat, level);
+		siril_fdiv(brut, flat, level);
 	}
 
 	return 0;

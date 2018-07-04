@@ -4775,7 +4775,7 @@ void on_button_bkg_correct_clicked(GtkButton *button, gpointer user_data) {
 		siril_log_message(_("Subtraction done ...\n"));
 		break;
 	case 1:
-		if (ndiv(&gfit, &background_fit)) {
+		if (siril_ndiv(&gfit, &background_fit)) {
 			set_cursor_waiting(FALSE);
 			return;
 		}
