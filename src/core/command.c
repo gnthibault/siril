@@ -2309,7 +2309,7 @@ static void parseLine(char *myline, int len, int *nb) {
 				break;
 			}
 		} while (i < len && (!isblank(myline[i]) || string_starter != '\0')
-				&& myline[i] != '\n');
+				&& myline[i] != '\r' && myline[i] != '\n');
 		if (myline[i] == '\0')	// the end of the word and line (i == len)
 			break;
 		myline[i++] = '\0';		// the end of the word
