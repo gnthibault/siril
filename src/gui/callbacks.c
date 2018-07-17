@@ -961,7 +961,6 @@ static void opendial(void) {
 #endif
 	GtkFileChooser *dialog = NULL;
 	GtkFileChooserAction action;
-	GtkWindow *main_window = GTK_WINDOW(lookup_widget("main_window"));
 	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
 	gint res;
 
@@ -995,7 +994,7 @@ static void opendial(void) {
 		widgetdialog = gtk_file_chooser_native_new(_("Open File"), control_window, action,
 				_("_Open"), _("_Cancel"));
 #else
-		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"), main_window,
+		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"), control_window,
 				action, _("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"),
 				GTK_RESPONSE_ACCEPT, NULL);
 #endif
@@ -1006,10 +1005,10 @@ static void opendial(void) {
 	case OD_OPEN:
 		action = GTK_FILE_CHOOSER_ACTION_OPEN;
 #ifdef _WIN32
-		widgetdialog = gtk_file_chooser_native_new(_("Open File"), main_window, action,
+		widgetdialog = gtk_file_chooser_native_new(_("Open File"), control_window, action,
 				_("_Open"), _("_Cancel"));
 #else
-		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"), main_window,
+		widgetdialog = gtk_file_chooser_dialog_new(_("Open File"), control_window,
 				GTK_FILE_CHOOSER_ACTION_OPEN, _("_Cancel"), GTK_RESPONSE_CANCEL,
 				_("_Open"), GTK_RESPONSE_ACCEPT, NULL);
 #endif
