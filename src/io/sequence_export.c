@@ -176,6 +176,7 @@ static gpointer export_sequence(gpointer ptr) {
 		stackargs.nb_images_to_stack = args->seq->number;
 		stackargs.filtering_criterion = stack_filter_all;
 		stackargs.normalize = ADDITIVE_SCALING;
+		stackargs.reglayer = reglayer;
 
 		// build image indices used by normalization
 		stackargs.image_indices = malloc(stackargs.nb_images_to_stack * sizeof(int));
