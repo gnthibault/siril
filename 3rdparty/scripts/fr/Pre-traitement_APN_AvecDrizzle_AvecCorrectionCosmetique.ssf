@@ -1,0 +1,62 @@
+############################################
+# Script pour Siril 0.9.9
+# Juin 2018
+# (C) Cyril Richard
+# Adapté, modifié et traduit par Colmic
+# 
+# 
+# Pré-traitement pour APN avec option Drizzle 2x
+# et correction cosmétique automatique
+# 
+# 
+# Ce script a besoin de 4 dossiers pour fonctionner
+# à installer dans votre dossier de travail de Siril :
+# offsets, darks, flats, brutes
+#
+############################################
+
+#Création du master-offset
+cd offsets
+convertraw offset_
+stack offset_ rej 3 3 -nonorm
+cd ..
+
+cd flats
+#Pré-traitement des flats
+convertraw flat_
+preprocess flat_ -offset=../offsets/offset_stacked.fit
+
+#Création du master-flat
+stack pp_flat_ rej 3 3 -norm=mul
+cd ..
+
+#Création du master-dark
+cd darks
+convertraw dark_
+stack dark_ rej 3 3 -nonorm
+cd ..
+
+#pré-traitement des brutes
+cd brutes
+convertraw brute_
+preprocess brute_ -dark=../darks/dark_stacked.fit -flat=../flats/pp_flat_stacked.fit -cfa
+
+#Correction cosmétique automatique
+seqfind_cosme_cfa pp_brute_ 3 3
+
+#debayerisation des brutes
+preprocess cc_pp_brute_ -debayer
+
+#Alignement des brutes avec option Drizzle 2x
+register pp_cc_pp_brute_ -drizzle
+
+#Empilement des brutes calibrées
+stack r_pp_cc_pp_brute_ rej 3 3 -norm=addscale
+
+#Chargement de l'image résultante en mémoire
+load r_pp_cc_pp_brute_stacked.fit
+
+#Sauvegarde de l'image à la racine du dossier de travail
+cd  ..
+save resultat.fit
+close

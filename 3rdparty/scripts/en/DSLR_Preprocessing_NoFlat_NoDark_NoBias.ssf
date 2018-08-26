@@ -1,0 +1,35 @@
+############################################
+# Script pour Siril 0.9.9
+# Juin 2018
+# (C) Cyril Richard
+# Adapté, modifié et traduit par Colmic
+# 
+# 
+# Pré-traitement pour APN
+# Sans Flat ni Dark ni Offset
+#
+# 
+# Ce script a besoin de 1 dossier pour fonctionner
+# à installer dans votre dossier de travail de Siril :
+# brutes
+#
+############################################
+
+#pré-traitement des brutes
+cd brutes
+convertraw brute_
+preprocess brute_ -debayer
+
+#Alignement des brutes
+register pp_brute_
+
+#Empilement des brutes calibrées
+stack r_pp_brute_ rej 3 3 -norm=addscale
+
+#Chargement de l'image résultante en mémoire
+load r_pp_brute_stacked.fit
+
+#Sauvegarde de l'image à la racine du dossier de travail
+cd  ..
+save resultat.fit
+close
