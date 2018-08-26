@@ -414,7 +414,7 @@ struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fp
 	}
 
 	/* Initialize libavcodec, and register all codecs and formats. */
-	av_register_all();
+//	av_register_all();
 	video_st = calloc(1, sizeof(struct mp4_struct));
 
 	/* allocate the output media context */
