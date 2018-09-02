@@ -1435,6 +1435,17 @@ free_and_close:
  * changing all return values and adding the idle everywhere. */
 gpointer stack_function_handler(gpointer p) {
 	struct stacking_args *args = (struct stacking_args *)p;
+	int nb_allowed_files;
+
+	/* first of all we need to check if we can process the files */
+	if (args->seq->type == SEQ_REGULAR) {
+		if (!allow_to_open_files(args->nb_images_to_stack, &nb_allowed_files)) {
+			siril_log_message(_("Your system does not allow to open more than %d file at the same time. "
+					"You may consider to enhance this limit (the method depends of the Operating System) or "
+					"convert your FITS sequence into a SER sequence before stacking.\n"), nb_allowed_files);
+			return GINT_TO_POINTER(-1);
+		}
+	}
 	// 1. normalization
 	do_normalization(args);	// does nothing if NO_NORM
 	// 2. up-scale

@@ -123,6 +123,7 @@ float	computePente(WORD *lo, WORD *hi);
 void	load_css_style_sheet (char *path);
 double	encodeJD(dateTime dt);
 gint strcompare(gconstpointer *a, gconstpointer *b);
+gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file);
 
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,

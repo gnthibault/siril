@@ -58,6 +58,7 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
+#include <fitsio2.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -1104,4 +1105,31 @@ gint strcompare(gconstpointer *a, gconstpointer *b) {
 	g_free(collate_key2);
 
 	return result;
+}
+
+/**
+ * Check how many files a process can have open. That depends of the Operating System and of cfitsio (NMAXFILES)
+ * @param nb_frames number of file processed
+ * @param nb_allowed_file the maximum of file that can be opened
+ * @return TRUE if the system can open all the files, FALSE otherwise
+ */
+gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
+	int dtablesize, maxfile;
+
+#if defined _DEFAULT_SOURCE || defined _BSD_SOURCE || !defined _POSIX_C_SOURCE >= 200112L
+	dtablesize = getdtablesize();
+#else
+#ifdef _WIN32
+	_setmaxstdio(2048);
+	dtablesize = _getmaxstdio();
+#else
+	dtablesize = NMAXFILES; // unknown
+#endif // _WIN32
+#endif
+
+	maxfile = dtablesize > NMAXFILES ? NMAXFILES : dtablesize;
+	siril_debug_print("dtablesize=%d, NMAXFILES=%d\n", dtablesize, NMAXFILES);
+	*nb_allowed_file = maxfile;
+
+	return nb_frames < maxfile;
 }
