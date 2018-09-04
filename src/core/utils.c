@@ -30,6 +30,8 @@
 #endif
 
 #include <stdio.h>
+#include <ctype.h>
+#include <math.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -54,10 +56,8 @@
 #include <sys/sysctl.h>
 #include <mach/vm_statistics.h>
 #endif
-#include <ctype.h>
 #include <string.h>
 #include <assert.h>
-#include <math.h>
 #include <fitsio2.h>
 
 #include "core/siril.h"
