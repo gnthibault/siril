@@ -58,7 +58,7 @@
 #endif
 #include <string.h>
 #include <assert.h>
-#include <fitsio2.h>
+#include <fitsio.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -1114,9 +1114,16 @@ gint strcompare(gconstpointer *a, gconstpointer *b) {
  * @return TRUE if the system can open all the files, FALSE otherwise
  */
 gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
-	int dtablesize, maxfile;
+	int dtablesize, maxfile, NMAXFILES;
+	float version;
 
+	/* get the limit of cfitsio */
+	fits_get_version(&version);
+	NMAXFILES = (version < 3.45) ? 1000 : 10000;
+
+	/* get the OS limit */
 #ifdef _WIN32
+	/* extend the limit to 2048 if possible */
 	_setmaxstdio(2048);
 	dtablesize = _getmaxstdio();
 #else
