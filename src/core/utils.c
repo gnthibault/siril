@@ -1116,16 +1116,12 @@ gint strcompare(gconstpointer *a, gconstpointer *b) {
 gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 	int dtablesize, maxfile;
 
-#if defined _DEFAULT_SOURCE || defined _BSD_SOURCE || !defined _POSIX_C_SOURCE >= 200112L
-	dtablesize = getdtablesize();
-#else
 #ifdef _WIN32
 	_setmaxstdio(2048);
 	dtablesize = _getmaxstdio();
 #else
-	dtablesize = NMAXFILES; // unknown
+	dtablesize = sysconf(_SC_OPEN_MAX);
 #endif // _WIN32
-#endif
 
 	maxfile = dtablesize > NMAXFILES ? NMAXFILES : dtablesize;
 	siril_debug_print("dtablesize=%d, NMAXFILES=%d\n", dtablesize, NMAXFILES);
