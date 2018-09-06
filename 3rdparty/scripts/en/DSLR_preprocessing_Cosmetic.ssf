@@ -37,7 +37,7 @@ cd ..
 #preprocess lights
 cd lights
 convertraw light_
-preprocess light_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cfa
+preprocess light_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cfa -equalize_cfa
 
 #Automatic cosmetic correction
 seqfind_cosme_cfa pp_light_ 3 3

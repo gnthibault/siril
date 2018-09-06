@@ -974,4 +974,3 @@ void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 	assert(debayer_area->h > 2);
 	assert(debayer_area->w > 2);
 }
-

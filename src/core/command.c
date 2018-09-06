@@ -57,6 +57,7 @@
 #include "algos/Def_Math.h"
 #include "algos/Def_Wavelet.h"
 #include "algos/gradient.h"
+#include "algos/demosaicing.h"
 #include "algos/fft.h"
 #include "algos/quality.h"
 #include "algos/cosmetic_correction.h"
@@ -105,6 +106,7 @@ command commande[] = {
 	{"fixbanding", 2, "fixbanding amount sigma", process_fixbanding, STR_FIXBANDING, TRUE},
 
 	{"gauss", 1, "gauss sigma", process_gauss, STR_GAUSS, TRUE},
+	{"grey_flat", 0, "grey_flat", process_grey_flat, STR_GREY_FLAT, TRUE},
 
 	{"help", 0, "help", process_help, STR_HELP, FALSE},
 	{"histo", 1, "histo channel (channel=0, 1, 2 with 0: red, 1: green, 2: blue)", process_histo, STR_HISTO, TRUE},
@@ -132,7 +134,7 @@ command commande[] = {
 	
 	{"offset", 1, "offset value", process_offset, STR_OFFSET, TRUE},
 	
-	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-flip]", process_preprocess, STR_PREPROCESS, TRUE},
+	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-flip] [-equalize_cfa]", process_preprocess, STR_PREPROCESS, TRUE},
 	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 	
 	{"register", 1, "register sequence [-norot] [-drizzle]", process_register, STR_REGISTER, TRUE},
@@ -165,6 +167,7 @@ command commande[] = {
 	{"setcpu", 1, "setcpu number", process_set_cpu, STR_SETCPU, TRUE},
 #endif
 	{"setext", 1, "setext extension", process_set_ext, STR_SETEXT, TRUE},
+	{"setfindstar", 2, "setfindstar sigma roundness", process_set_findstar, STR_SETFINDSTAR, TRUE},
 	{"setmag", 1, "setmag magnitude", process_set_mag, STR_SETMAG, FALSE},
 	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, FALSE},
 	{"split", 3, "split R G B", process_split, STR_SPLIT, TRUE},
@@ -406,6 +409,17 @@ int process_gauss(int nb){
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	return 0;
+}
+
+int process_grey_flat(int nb) {
+	if (!single_image_is_loaded()) return 1;
+
+	compute_grey_flat(&gfit);
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+
 	return 0;
 }
 
@@ -832,6 +846,21 @@ int process_set_ext(int nb) {
 	}
 
 	return 0;
+}
+
+int process_set_findstar(int nb) {
+	double sigma = atof(word[1]);
+	double roundness = atof(word[2]);
+	int retval = 0;
+
+	if (sigma >= 0.05 && roundness >= 0 && roundness <= 0.9) {
+		com.starfinder_conf.sigma = sigma;
+		com.starfinder_conf.roundness = roundness;
+	} else {
+		siril_log_message(_("Wrong parameter values. Sigma must be >= 0.05 and roundness between 0 and 0.9.\n"));
+		retval = 1;
+	}
+	return retval;
 }
 
 int process_unset_mag_seq(int nb) {
@@ -2089,7 +2118,7 @@ int process_stackone(int nb) {
 // preprocess sequencename -bias= -dark= -flat= -cfa -debayer
 int process_preprocess(int nb) {
 	struct preprocessing_data *args = malloc(sizeof(struct preprocessing_data));
-	int nb_command_max = 7;
+	int nb_command_max = 8;
 
 	com.preprostatus = 0;
 	gboolean is_cfa = FALSE;
@@ -2167,6 +2196,8 @@ int process_preprocess(int nb) {
 				do_debayer = TRUE;
 			} else if (!strcmp(word[i], "-flip")) {
 				flip = TRUE;
+			} else if (!strcmp(word[i], "-equalize_cfa")) {
+				compute_grey_flat(seq->flat);
 			}
 		}
 	}

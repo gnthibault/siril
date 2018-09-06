@@ -267,17 +267,6 @@ static int save_to_target_fits(fits *fit, const char *dest_filename) {
 	return 0;
 }
 
-static int retrieveBayerPattern(char *bayer) {
-	int i;
-
-	for (i = 0; i < (sizeof(filter_pattern) / sizeof(char *)); i++) {
-		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
-			return i;
-		}
-	}
-	return BAYER_FILTER_NONE;
-}
-
 /* open the file with path source from any image type and load it into a new FITS object */
 static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility) {
 	int retval = 0;
@@ -298,6 +287,17 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 }
 
 /**************************Public functions***********************************************************/
+
+int retrieveBayerPattern(char *bayer) {
+	int i;
+
+	for (i = 0; i < (sizeof(filter_pattern) / sizeof(char *)); i++) {
+		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
+			return i;
+		}
+	}
+	return BAYER_FILTER_NONE;
+}
 
 void check_for_conversion_form_completeness() {
 	static GtkTreeView *tree_convert = NULL;

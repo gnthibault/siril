@@ -502,6 +502,28 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 	}
 }
 
+int compute_means_from_cfa(fits *fit, double mean[4]) {
+	int row, col, c, ndata;
+	WORD *data;
+
+	mean[0] = mean[1] = mean[2] = mean[3] = 0.0;
+	data = fit->data;
+	ndata = (fit->rx * fit->ry);
+
+	for (row = 0; row < fit->ry - 1; row += 2) {
+		for (col = 0; col < fit->rx - 1; col += 2) {
+			mean[0] += (double) data[col + row * fit->rx];
+			mean[1] += (double) data[1 + col + row * fit->rx];
+			mean[2] += (double) data[col + (1 + row) * fit->rx];
+			mean[3] += (double) data[1 + col + (1 + row) * fit->rx];
+		}
+	}
+
+	for (c = 0; c < 4; c++) {
+		mean[c] /= (ndata * 0.25);
+	}
+	return 0;
+}
 
 /****************** statistics caching and data management *****************/
 

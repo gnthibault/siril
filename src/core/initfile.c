@@ -112,6 +112,7 @@ static int readinitfile() {
 	config_setting_t *prepro_setting = config_lookup(&config, keywords[PRE]);
 	if (prepro_setting) {
 		config_setting_lookup_bool(prepro_setting, "cfa", &com.prepro_cfa);
+		config_setting_lookup_bool(prepro_setting, "equalize_cfa", &com.prepro_equalize_cfa);
 	}
 
 	/* Registration setting */
@@ -259,6 +260,9 @@ static void _save_preprocessing(config_t *config, config_setting_t *root) {
 
 	prepro_setting = config_setting_add(prepro_group, "cfa", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(prepro_setting, com.prepro_cfa);
+
+	prepro_setting = config_setting_add(prepro_group, "equalize_cfa", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(prepro_setting, com.prepro_equalize_cfa);
 }
 
 static void _save_registration(config_t *config, config_setting_t *root) {

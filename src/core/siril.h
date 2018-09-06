@@ -305,6 +305,7 @@ struct preprocessing_data {
 	gboolean is_cfa;
 	gboolean debayer;
 	gboolean compatibility;
+	gboolean equalize_cfa;
 	float normalisation;
 	int retval;
 };
@@ -535,6 +536,7 @@ struct cominf {
 	sliders_mode sliders;		// 0: min/max, 1: MIPS-LO/HI, 2: user
 	int preprostatus;
 	gboolean prepro_cfa;	// Use to save type of sensor for cosmetic correction in preprocessing
+	gboolean prepro_equalize_cfa;  // Use to save if flat will be equalized in preprocessing
 	gboolean show_excluded;		// show excluded images in sequences
 	double zoom_value;		// 1.0 is normal zoom, use get_zoom_val() to access it
 

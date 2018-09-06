@@ -1114,7 +1114,7 @@ gint strcompare(gconstpointer *a, gconstpointer *b) {
  * @return TRUE if the system can open all the files, FALSE otherwise
  */
 gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
-	int dtablesize, maxfile, NMAXFILES;
+	int open_max, maxfile, NMAXFILES;
 	float version;
 
 	/* get the limit of cfitsio */
@@ -1125,13 +1125,14 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 #ifdef _WIN32
 	/* extend the limit to 2048 if possible */
 	_setmaxstdio(2048);
-	dtablesize = _getmaxstdio();
+	open_max = _getmaxstdio();
 #else
-	dtablesize = sysconf(_SC_OPEN_MAX);
+	open_max = sysconf(_SC_OPEN_MAX);
 #endif // _WIN32
 
-	maxfile = dtablesize > NMAXFILES ? NMAXFILES : dtablesize;
-	siril_debug_print("dtablesize=%d, NMAXFILES=%d\n", dtablesize, NMAXFILES);
+	maxfile = open_max > NMAXFILES ? NMAXFILES : open_max;
+	siril_debug_print("dtablesize=%d, NMAXFILES=%d\n", open_max, NMAXFILES);
+
 	*nb_allowed_file = maxfile;
 
 	return nb_frames < maxfile;

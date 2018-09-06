@@ -32,7 +32,7 @@ cd ..
 #pré-traitement des brutes
 cd brutes
 convertraw brute_
-preprocess brute_ -offset=../offsets/offset_stacked.fit -flat=../flats/pp_flat_stacked.fit -debayer
+preprocess brute_ -offset=../offsets/offset_stacked.fit -flat=../flats/pp_flat_stacked.fit -equalize_cfa -debayer
 
 #Alignement des brutes
 register pp_brute_

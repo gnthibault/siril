@@ -23,6 +23,7 @@ extern supported_raw_list supported_raw[];	//supported raw extensions
 int get_nb_raw_supported();
 
 void list_format_available();
+int retrieveBayerPattern(char *bayer);
 void check_for_conversion_form_completeness();
 image_type get_type_for_extension(const char *extension);
 void initialize_converters();

@@ -12042,26 +12042,6 @@ The bias/offset master image will be removed from all images in the sequence.</p
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkCheckButton" id="checkbutton_auto_evaluate">
-                        <property name="label" translatable="yes">Auto evaluate normalisation value</property>
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="tooltip_text" translatable="yes">If this box is checked, Siril will auto-evaluate the normalisation value.
-This value is the mean of the master flat calibrated with the master offset.</property>
-                        <property name="halign">end</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_checkbutton_auto_evaluate_toggled" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">4</property>
-                        <property name="width">2</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkCheckButton" id="checkDarkOptimize">
                         <property name="label" translatable="yes">Dark optimization</property>
                         <property name="visible">True</property>
@@ -12077,6 +12057,55 @@ WARNING: Do not apply dark optimization on master-dark if master-bias has not be
                       <packing>
                         <property name="left_attach">0</property>
                         <property name="top_attach">2</property>
+                        <property name="width">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="GtkBoxFlat">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkCheckButton" id="checkbutton_auto_evaluate">
+                            <property name="label" translatable="yes">Auto evaluate normalisation value</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="tooltip_text" translatable="yes">If this box is checked, Siril will auto-evaluate the normalisation value.
+This value is the mean of the master flat calibrated with the master offset.</property>
+                            <property name="halign">end</property>
+                            <property name="active">True</property>
+                            <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="on_checkbutton_auto_evaluate_toggled" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="pack_type">end</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton" id="checkbutton_equalize_cfa">
+                            <property name="label" translatable="yes">Equalize CFA</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="tooltip_text" translatable="yes">This option equalizes the mean intensity of RGB layers in a CFA flat image.</property>
+                            <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="on_checkbutton_equalize_cfa_toggled" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="pack_type">end</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">4</property>
                         <property name="width">2</property>
                       </packing>
                     </child>

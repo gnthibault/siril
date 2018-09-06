@@ -1810,13 +1810,16 @@ void update_prepro_interface(gboolean allow_debayer) {
 			gtk_toggle_button_get_active(udark));
 	gtk_widget_set_sensitive(lookup_widget("checkDarkOptimize"),
 			gtk_toggle_button_get_active(udark));
-	gtk_widget_set_sensitive(lookup_widget("checkbutton_auto_evaluate"),
+	gtk_widget_set_sensitive(lookup_widget("GtkBoxFlat"),
 			gtk_toggle_button_get_active(uflat));
 	gtk_widget_set_sensitive(lookup_widget("entry_flat_norm"),
 			gtk_toggle_button_get_active(uflat)
 					&& !gtk_toggle_button_get_active(checkAutoEvaluate));
 
-	gtk_widget_set_sensitive(lookup_widget("checkButton_pp_dem"), allow_debayer);
+	gtk_widget_set_sensitive(lookup_widget("checkButton_pp_dem"),
+			allow_debayer && (gtk_toggle_button_get_active(udark)
+							|| gtk_toggle_button_get_active(uoffset)
+							|| gtk_toggle_button_get_active(uflat)));
 	if (!allow_debayer) {
 		gtk_toggle_button_set_active(pp_debayer, FALSE);
 	}
@@ -2403,10 +2406,13 @@ void set_GUI_DiskSpace(double mem) {
 }
 
 void initialize_preprocessing() {
-	GtkToggleButton *ToggleButton;
+	GtkToggleButton *cfaButton, *eqButton;
 
-	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
-	gtk_toggle_button_set_active(ToggleButton, com.prepro_cfa);
+	cfaButton = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
+	gtk_toggle_button_set_active(cfaButton, com.prepro_cfa);
+	eqButton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
+	gtk_toggle_button_set_active(eqButton, com.prepro_equalize_cfa);
+
 	update_prepro_interface(FALSE);
 }
 
@@ -2859,6 +2865,11 @@ void on_cosmEnabledCheck_toggled(GtkToggleButton *button, gpointer user_data) {
 
 void on_cosmCFACheck_toggled(GtkToggleButton *button, gpointer user_data) {
 	com.prepro_cfa = gtk_toggle_button_get_active(button);
+	writeinitfile();
+}
+
+void on_checkbutton_equalize_cfa_toggled(GtkToggleButton *button, gpointer user_data) {
+	com.prepro_equalize_cfa = gtk_toggle_button_get_active(button);
 	writeinitfile();
 }
 
@@ -3995,7 +4006,7 @@ static int test_for_master_files() {
 void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	GtkEntry *entry;
 	GtkWidget *autobutton;
-	GtkToggleButton *CFA, *debayer;
+	GtkToggleButton *CFA, *debayer, *equalize_cfa;
 	GtkSpinButton *sigHot, *sigCold;
 
 	if (!single_image_is_loaded() && !sequence_is_loaded())
@@ -4031,6 +4042,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 
 	CFA = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
 	debayer = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_pp_dem"));
+	equalize_cfa = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
 	sigHot = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeHot"));
 	sigCold = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeCold"));
 
@@ -4047,6 +4059,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	args->is_cfa = gtk_toggle_button_get_active(CFA);
 	args->compatibility = com.debayer.compatibility;
 	args->debayer = gtk_toggle_button_get_active(debayer);
+	args->equalize_cfa = gtk_toggle_button_get_active(equalize_cfa);
 
 	/****/
 
@@ -4995,6 +5008,7 @@ void on_export_button_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_stars_list_window_show(GtkWidget *widget, gpointer user_data) {
+	update_peaker_GUI();
 	fill_stars_list(com.stars);
 }
 

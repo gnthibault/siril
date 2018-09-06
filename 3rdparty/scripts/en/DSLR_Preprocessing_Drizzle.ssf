@@ -38,7 +38,7 @@ cd ..
 #preprocess lights
 cd lights
 convertraw light_
-preprocess light_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cfa -debayer
+preprocess light_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cfa -equalize_cfa -debayer
 
 #align lights
 register pp_light_ -drizzle

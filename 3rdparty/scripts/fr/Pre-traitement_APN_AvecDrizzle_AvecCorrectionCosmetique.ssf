@@ -39,7 +39,7 @@ cd ..
 #pré-traitement des brutes
 cd brutes
 convertraw brute_
-preprocess brute_ -dark=../darks/dark_stacked.fit -flat=../flats/pp_flat_stacked.fit -cfa
+preprocess brute_ -dark=../darks/dark_stacked.fit -flat=../flats/pp_flat_stacked.fit -cfa -equalize_cfa
 
 #Correction cosmétique automatique
 seqfind_cosme_cfa pp_brute_ 3 3

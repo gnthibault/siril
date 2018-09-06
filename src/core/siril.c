@@ -925,6 +925,9 @@ gpointer seqpreprocess(gpointer p) {
 	}
 
 	if (com.preprostatus & USE_FLAT) {
+		if (args->equalize_cfa) {
+			compute_grey_flat(flat);
+		}
 		if (args->autolevel) {
 			/* TODO: evaluate the layer to apply but generally RLAYER is a good choice.
 			 * Indeed, if it is image from APN, CFA picture are in black & white */
@@ -1710,4 +1713,50 @@ gpointer LRdeconv(gpointer p) {
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	return 0;
+}
+
+void compute_grey_flat(fits *fit) {
+	double mean[4];
+	double r_g, b_g;
+	double r, g, b;
+	sensor_pattern pattern;
+
+	pattern = retrieveBayerPattern(fit->bayer_pattern);
+	if (pattern == BAYER_FILTER_NONE) {
+		siril_log_message(_("Siril cannot find any Bayer pattern in the FITS header. Taking pattern as defined in settings.\n"));
+		pattern = com.debayer.bayer_pattern;
+	}
+
+	/* compute means of 4 channels */
+	compute_means_from_cfa(fit, mean);
+
+	/* compute coefficients */
+	switch (pattern) {
+	default:
+	case BAYER_FILTER_RGGB:
+		b = mean[1];
+		g = (mean[0] + mean[3]) * 0.5;
+		r = mean[2];
+		break;
+	case BAYER_FILTER_BGGR:
+		r = mean[1];
+		g = (mean[0] + mean[3]) * 0.5;
+		b = mean[2];
+		break;
+	case BAYER_FILTER_GBRG:
+		r = mean[0];
+		g = (mean[1] + mean[2]) * 0.5;
+		b = mean[3];
+		break;
+	case BAYER_FILTER_GRBG:
+		b = mean[0];
+		g = (mean[1] + mean[2]) * 0.5;
+		r = mean[3];
+		break;
+	}
+	r_g = r / g;
+	b_g = b / g;
+
+	/* apllies coefficients to cfa image */
+	equalize_cfa_fit_with_coeffs(fit, r_g, b_g, pattern);
 }

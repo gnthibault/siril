@@ -214,6 +214,7 @@ gpointer BandingEngineThreaded(gpointer p);
 int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highlights, gboolean applyRotation);
 gpointer noise(gpointer p);
 gpointer LRdeconv(gpointer p);
+void compute_grey_flat(fits *fit);
 
 /****************** seqfile.h ******************/
 sequence * readseqfile(const char *name);

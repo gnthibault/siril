@@ -54,6 +54,7 @@ int	process_rshift2(int nb);
 #endif
 int	process_entropy(int nb);
 int	process_gauss(int nb);
+int process_grey_flat(int nb);
 int	process_unsharp(int nb);
 #if 0
 int	process_unsharp2(int nb);
@@ -113,6 +114,7 @@ int	process_select(int nb);
 int	process_set_mag(int nb);
 int	process_set_mag_seq(int nb);
 int	process_set_ext(int nb);
+int process_set_findstar(int nb);
 int	process_unset_mag(int nb);
 int	process_unset_mag_seq(int nb);
 int	process_unselect(int nb);

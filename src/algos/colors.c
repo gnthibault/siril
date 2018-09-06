@@ -283,6 +283,41 @@ void xyz_to_rgb(double x, double y, double z, double *r, double *g, double *b) {
 	*b = (*b > 0.0031308) ? 1.055 * (pow(*b, (1 / 2.4))) - 0.055 : 12.92 * (*b);
 }
 
+int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2, sensor_pattern pattern) {
+	int row, col;
+	double tmp1, tmp2;
+	WORD *data;
+
+	data = fit->data;
+
+	for (row = 0; row < fit->ry - 1; row += 2) {
+		for (col = 0; col < fit->rx - 1; col += 2) {
+			switch (pattern) {
+			default:
+			case BAYER_FILTER_RGGB:
+			case BAYER_FILTER_BGGR:
+				tmp1 = (double) data[1 + col + row * fit->rx];
+				tmp1 /= coeff2;
+				data[1 + col + row * fit->rx] = round_to_WORD(tmp1);
+				tmp2 = (double) data[col + (1 + row) * fit->rx];
+				tmp2 /= coeff1;
+				data[col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
+				break;
+			case BAYER_FILTER_GBRG:
+			case BAYER_FILTER_GRBG:
+				tmp1 = (double) data[1 + col + row * fit->rx];
+				tmp1 /= coeff2;
+				data[1 + col + row * fit->rx] = tmp1;
+				tmp2 = (double) data[(col + row * fit->rx) + fit->rx];
+				tmp2 /= coeff1;
+				data[(col + row * fit->rx) + fit->rx] = tmp2;
+				break;
+			}
+		}
+	}
+	return 0;
+}
+
 // idle function executed at the end of the extract_channels processing
 gboolean end_extract_channels(gpointer p) {
 	struct extract_channels_data *args = (struct extract_channels_data *) p;

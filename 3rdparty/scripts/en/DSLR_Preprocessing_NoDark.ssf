@@ -32,7 +32,7 @@ cd ..
 #preprocess lights
 cd lights
 convertraw light_
-preprocess light_ -bias=../biases/bias_stacked -flat=../flats/pp_flat_stacked -debayer
+preprocess light_ -bias=../biases/bias_stacked -flat=../flats/pp_flat_stacked -equalize_cfa -debayer
 
 #align lights
 register pp_light_

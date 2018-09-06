@@ -38,6 +38,7 @@
 #define STR_FIXBANDING N_("Tries to remove the canon banding. Argument \"amount\" define the amount of correction. \"Sigma\" defines a protection level of the algorithm, higher sigma gives higher protection")
 
 #define STR_GAUSS N_("Performs a Gaussian filter with the given \"sigma\"")
+#define STR_GREY_FLAT N_("The function equalizes the mean intensity of RGB layers in a CFA images")
 
 #define STR_HELP N_("Gives the available commands")
 #define STR_HISTO N_("Calculates the histogram of the image channel in memory and produces file histo_[channel name].dat in the working directory")
@@ -59,7 +60,7 @@
 
 #define STR_OFFSET N_("Adds the constant \"value\" to the current image. This constant can take a negative value. As Siril uses unsigned FITS files, if the intensity of the pixel become negative its value is replaced by 0 and by 65535 (for a 16-bit file) if the pixel intensity overflows")
 
-#define STR_PREPROCESS N_("Preprocesses the sequence \"sequencename\" using bias, dark and flat given in argument. It is possible to specify if images are CFA for cosmetic correction purposes with the option \"-cfa\" and also to demosaic images at the end of the process with \"-debayer\". The \"-flip\" option tells to Siril to read image from up to bottom for demosaicing operation")
+#define STR_PREPROCESS N_("Preprocesses the sequence \"sequencename\" using bias, dark and flat given in argument. It is possible to specify if images are CFA for cosmetic correction purposes with the option \"-cfa\" and also to demosaic images at the end of the process with \"-debayer\". The \"-flip\" option tells to Siril to read image from up to bottom for demosaicing operation and the \"-equalize_cfa\" option equalizes the mean intensity of RGB layers of the CFA flat master")
 #define STR_PSF N_("Performs a PSF (Point Spread Function) on the selected star")
 
 #define STR_REGISTER N_("Performs geometric transforms on images of the sequence given in argument so that they may be superimposed on the reference image. The output sequence name starts with the prefix \"r_\". Using stars for registration, this algorithm only works with deepsky images. The option \"-norot\" performs a translation only with no new sequence built while the option \"-drizzle\" applies a x2 drizzle on the images")
@@ -84,6 +85,7 @@
 #define STR_SEQPSF N_("Same command than PSF but works for sequences. Results are dumped in the console in a form that can be used to produce brightness variation curves")
 #define STR_SETCPU N_("Defines the number of processing threads used for calculation. Can be as high as the number of virtual threads existing on the system, which is the number of CPU cores or twice this number if hyperthreading (Intel HT) is available")
 #define STR_SETEXT N_("Sets the extension used and recognized by sequences. The argument \"extension\" can be \"fit\", \"fts\" or \"fits\"")
+#define STR_SETFINDSTAR N_("Defines thresholds above the noise and star roundness for stars detection with FINDSTAR and REGISTER commands. \"Sigma\" must be greater or equal to 0.05 and \"roundness\" between 0 and 0.9")
 #define STR_SETMAG N_("Calibrates the magnitude by selecting a star and giving the known apparent magnitude. All PSF computations will return the calibrated apparent magnitude afterwards, instead of an apparent magnitude relative to ADU values. To reset the magnitude constant see UNSETMAG")
 #define STR_SETMAGSEQ N_("This command is only valid after having run SEQPSF or its graphical counterpart (select the area around a star and launch the PSF analysis for the sequence, it will appear in the graphs). This command has the same goal as SETMAG but recomputes the reference magnitude for each image of the sequence where the reference star has been found. When running the command, the last star that has been analysed will be considered as the reference star. Displaying the magnitude plot before typing the command makes it easy to understand. To reset the reference star and magnitude offset, see UNSETMAGSEQ")
 #define STR_SPLIT N_("Splits the color image into three distincts files (one for each color) and save them in \"r\" \"g\" and \"b\" file")

@@ -119,6 +119,20 @@ void on_spin_sf_roundness_changed(GtkSpinButton *spinbutton, gpointer user_data)
 	com.starfinder_conf.roundness = gtk_spin_button_get_value(spinbutton);
 }
 
+void update_peaker_GUI() {
+	static GtkSpinButton *spin_radius = NULL, *spin_sigma = NULL,
+			*spin_roundness = NULL;
+
+	if (spin_radius == NULL) {
+		spin_radius = GTK_SPIN_BUTTON(lookup_widget("spinstarfinder_radius"));
+		spin_sigma = GTK_SPIN_BUTTON(lookup_widget("spinstarfinder_threshold"));
+		spin_roundness = GTK_SPIN_BUTTON(lookup_widget("spinstarfinder_round"));
+	}
+	gtk_spin_button_set_value(spin_radius, (double) com.starfinder_conf.radius);
+	gtk_spin_button_set_value(spin_sigma, com.starfinder_conf.sigma);
+	gtk_spin_button_set_value(spin_roundness, com.starfinder_conf.roundness);
+}
+
 /*
  This is an implementation of a simple peak detector algorithm which
  identifies any pixel that is greater than any of its eight neighbors.
