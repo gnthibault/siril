@@ -296,21 +296,21 @@ int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2, sensor
 			default:
 			case BAYER_FILTER_RGGB:
 			case BAYER_FILTER_BGGR:
-				tmp1 = (double) data[1 + col + row * fit->rx];
-				tmp1 /= coeff2;
+				tmp1 = (double) data[1 + col + row * fit->rx] / coeff2;
 				data[1 + col + row * fit->rx] = round_to_WORD(tmp1);
-				tmp2 = (double) data[col + (1 + row) * fit->rx];
-				tmp2 /= coeff1;
+
+				tmp2 = (double) data[col + (1 + row) * fit->rx] / coeff1;
 				data[col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
+
 				break;
 			case BAYER_FILTER_GBRG:
 			case BAYER_FILTER_GRBG:
-				tmp1 = (double) data[1 + col + row * fit->rx];
-				tmp1 /= coeff2;
-				data[1 + col + row * fit->rx] = tmp1;
-				tmp2 = (double) data[(col + row * fit->rx) + fit->rx];
-				tmp2 /= coeff1;
-				data[(col + row * fit->rx) + fit->rx] = tmp2;
+				tmp1 = (double) data[col + row * fit->rx] / coeff2;
+				data[col + row * fit->rx] = round_to_WORD(tmp1);
+
+				tmp2 = (double) data[(1 + col + row * fit->rx) + fit->rx] / coeff1;
+				data[(1 + col + row * fit->rx) + fit->rx] = round_to_WORD(tmp2);
+
 				break;
 			}
 		}

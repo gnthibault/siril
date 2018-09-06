@@ -44,7 +44,7 @@ static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
 				newbuf[i + 0] = buf[col + row * width];
 				tmp = (double) buf[1 + col + row * width];
 				tmp += (double) buf[col + (1 + row) * width];
-				tmp /= 2.0;
+				tmp *= 0.5;
 				newbuf[i + 1] = round_to_WORD(tmp);
 				newbuf[i + 2] = buf[1 + col + (1 + row) * width];
 				break;
@@ -52,7 +52,7 @@ static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
 				newbuf[i + 2] = buf[col + row * width];
 				tmp = (double) buf[1 + col + row * width];
 				tmp += (double) buf[(col + row * width) + width];
-				tmp /= 2.0;
+				tmp *= 0.5;
 				newbuf[i + 1] = round_to_WORD(tmp);
 				newbuf[i + 0] = buf[(1 + col + row * width) + width];
 				break;
@@ -61,7 +61,7 @@ static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
 				newbuf[i + 0] = buf[(col + row * width) + width];
 				tmp = (double) buf[col + row * width];
 				tmp += (double) buf[(1 + col + row * width) + width];
-				tmp /= 2.0;
+				tmp *= 0.5;
 				newbuf[i + 1] = round_to_WORD(tmp);
 				break;
 			case BAYER_FILTER_GRBG:
@@ -69,7 +69,7 @@ static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
 				newbuf[i + 2] = buf[(col + row * width) + width];
 				tmp = (double) buf[col + row * width];
 				tmp += (double) buf[(1 + col + row * width) + width];
-				tmp /= 2.0;
+				tmp *= 0.5;
 				newbuf[i + 1] = round_to_WORD(tmp);
 				break;
 			}
