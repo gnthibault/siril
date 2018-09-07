@@ -594,7 +594,7 @@ int writeseqfile(sequence *seq){
 
 gboolean existseq(const char *name){
 	char *filename;
-	struct stat sts;
+	GStatBuf sts;
 	if (!name || name[0] == '\0') return FALSE;
 	filename = malloc(strlen(name)+5);
 	sprintf(filename, "%s.seq", name);

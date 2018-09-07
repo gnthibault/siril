@@ -559,7 +559,7 @@ double seq_compute_size(sequence *seq) {
 	double frame_size = 0;
 	int nb_of_frame = 0;
 	char filename[256];
-	struct stat sts;
+	GStatBuf sts;
 	int ref;
 
 	switch(seq->type) {

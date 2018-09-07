@@ -822,7 +822,7 @@ static void get_convert_list_store() {
 }
 
 static void fill_convert_list(GSList *list) {
-	struct stat st;
+	GStatBuf st;
 
 	get_convert_list_store();
 

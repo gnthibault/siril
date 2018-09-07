@@ -236,7 +236,7 @@ const char *get_filename_ext(const char *filename) {
  * @return 1 if file is readable (not actually opened to verify)
  */
 int is_readable_file(const char *filename) {
-	struct stat sts;
+	GStatBuf sts;
 	if (g_stat(filename, &sts))
 		return 0;
 	if (S_ISREG (sts.st_mode)
