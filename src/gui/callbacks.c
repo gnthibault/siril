@@ -804,7 +804,7 @@ static void free_reference_image() {
 
 static GtkListStore *liststore_convert = NULL;
 
-static void add_convert_to_list(char *filename, struct stat st) {
+static void add_convert_to_list(char *filename, GStatBuf st) {
 	GtkTreeIter iter;
 	char *date;
 
