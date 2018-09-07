@@ -286,9 +286,7 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 	return tmpfit;
 }
 
-/**************************Public functions***********************************************************/
-
-int retrieveBayerPattern(char *bayer) {
+static int retrieveBayerPattern(char *bayer) {
 	int i;
 
 	for (i = 0; i < (sizeof(filter_pattern) / sizeof(char *)); i++) {
@@ -298,6 +296,8 @@ int retrieveBayerPattern(char *bayer) {
 	}
 	return BAYER_FILTER_NONE;
 }
+
+/**************************Public functions***********************************************************/
 
 void check_for_conversion_form_completeness() {
 	static GtkTreeView *tree_convert = NULL;

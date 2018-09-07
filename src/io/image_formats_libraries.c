@@ -1199,7 +1199,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 			}
 		}
 		pattern[j++] = '\0';
-		siril_log_message(_("Bayer pattern: %s\n"), pattern);
+		siril_log_message(_("CFA pattern: %s\n"), pattern);
 	}
 
 	data = (WORD*) calloc(1, npixels * sizeof(WORD));

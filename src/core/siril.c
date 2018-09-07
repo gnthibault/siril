@@ -929,8 +929,6 @@ gpointer seqpreprocess(gpointer p) {
 			compute_grey_flat(flat);
 		}
 		if (args->autolevel) {
-			/* TODO: evaluate the layer to apply but generally RLAYER is a good choice.
-			 * Indeed, if it is image from APN, CFA picture are in black & white */
 			imstats *stat = statistics(NULL, -1, flat, RLAYER, NULL, STATS_BASIC);
 			if (!stat) {
 				siril_log_message(_("Error: statistics computation failed.\n"));
@@ -1717,46 +1715,33 @@ gpointer LRdeconv(gpointer p) {
 
 void compute_grey_flat(fits *fit) {
 	double mean[4];
-	double r_g, b_g;
-	double r, g, b;
-	sensor_pattern pattern;
-
-	pattern = retrieveBayerPattern(fit->bayer_pattern);
-	if (pattern == BAYER_FILTER_NONE) {
-		siril_log_message(_("Siril cannot find any Bayer pattern in the FITS header. Taking pattern as defined in settings.\n"));
-		pattern = com.debayer.bayer_pattern;
-	}
+	double diag1, diag2, coeff1, coeff2;
+	int config;
 
 	/* compute means of 4 channels */
 	compute_means_from_cfa(fit, mean);
 
 	/* compute coefficients */
-	switch (pattern) {
-	default:
-	case BAYER_FILTER_RGGB:
-		b = mean[1];
-		g = (mean[0] + mean[3]) * 0.5;
-		r = mean[2];
-		break;
-	case BAYER_FILTER_BGGR:
-		r = mean[1];
-		g = (mean[0] + mean[3]) * 0.5;
-		b = mean[2];
-		break;
-	case BAYER_FILTER_GBRG:
-		r = mean[0];
-		g = (mean[1] + mean[2]) * 0.5;
-		b = mean[3];
-		break;
-	case BAYER_FILTER_GRBG:
-		b = mean[0];
-		g = (mean[1] + mean[2]) * 0.5;
-		r = mean[3];
-		break;
+
+	/* looking for green diagonal */
+	diag1 = mean[0]/mean[3];
+	diag2 = mean[1]/mean[2];
+
+	/* BAYER_FILTER_RGGB
+	 * BAYER_FILTER_BGGR */
+	if (fabs(1 - diag1) < fabs(1 - diag2)) {
+		coeff1 = mean[1] / mean[0];
+		coeff2 = mean[2] / mean[3];
+		config = 0;
+	} /* BAYER_FILTER_GBRG
+	   * BAYER_FILTER_GRBG */
+	else {
+		coeff1 = mean[0] / mean[1];
+		coeff2 = mean[3] / mean[2];
+		config = 1;
 	}
-	r_g = r / g;
-	b_g = b / g;
 
 	/* apllies coefficients to cfa image */
-	equalize_cfa_fit_with_coeffs(fit, r_g, b_g, pattern);
+	equalize_cfa_fit_with_coeffs(fit, coeff1, coeff2, config);
+
 }

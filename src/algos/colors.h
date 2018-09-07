@@ -34,7 +34,7 @@ void xyz_to_LAB(double, double, double, double *, double *, double *);
 void LAB_to_xyz(double, double, double, double *, double *, double *);
 void xyz_to_rgb(double, double, double, double *, double *, double *);
 
-int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2, sensor_pattern pattern);
+int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2, int config);
 
 gpointer extract_channels(gpointer p);
 gpointer enhance_saturation(gpointer p);
