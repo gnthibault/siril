@@ -664,7 +664,7 @@ int process_ls(int nb){
 
 	/* List the entries */
 	for (i = 0; i < n; ++i) {
-		struct stat entrystat;
+		GStatBuf entrystat;
 		gchar *filename;
 		const char *ext;
 		if (list[i]->d_name[0] == '.')

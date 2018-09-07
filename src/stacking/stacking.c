@@ -1696,7 +1696,7 @@ static gboolean end_stacking(gpointer p) {
 
 		/* save stacking result */
 		if (args->output_filename != NULL && args->output_filename[0] != '\0') {
-			struct stat st;
+			GStatBuf st;
 			if (!g_stat(args->output_filename, &st)) {
 				int failed = !args->output_overwrite;
 				if (!failed) {

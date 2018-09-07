@@ -367,7 +367,7 @@ int writeinitfile() {
 
 int checkinitfile() {
 	gchar *home = NULL;
-	struct stat sts;
+	GStatBuf sts;
 
 	// try to read the file given on command line
 	if (com.initfile && !readinitfile()) {
