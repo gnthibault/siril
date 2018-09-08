@@ -1139,6 +1139,10 @@ int process_fill2(int nb){
 			area.y = atoi(word[3]);
 			area.w = atoi(word[4]);
 			area.h = atoi(word[5]);
+			if ((area.w + area.x > gfit.rx) || (area.h + area.y > gfit.ry)) {
+				siril_log_message(_("Wrong parameters.\n"));
+				return 1;
+			}
 		}
 		else {
 			siril_log_message(_("Fill2: select a region or provide x, y, width, height\n"));
@@ -1396,6 +1400,10 @@ int process_fill(int nb){
 			area.y = atoi(word[3]);
 			area.w = atoi(word[4]);
 			area.h = atoi(word[5]);
+			if ((area.w + area.x > gfit.rx) || (area.h + area.y > gfit.ry)) {
+				siril_log_message(_("Wrong parameters.\n"));
+				return 1;
+			}
 		}
 		else {
 			area.w = gfit.rx; area.h = gfit.ry;

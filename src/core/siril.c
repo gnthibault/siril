@@ -1719,13 +1719,13 @@ void compute_grey_flat(fits *fit) {
 	int config;
 
 	/* compute means of 4 channels */
-	compute_means_from_cfa(fit, mean);
+	compute_means_from_flat_cfa(fit, mean);
 
 	/* compute coefficients */
 
 	/* looking for green diagonal */
-	diag1 = mean[0]/mean[3];
-	diag2 = mean[1]/mean[2];
+	diag1 = mean[0] / mean[3];
+	diag2 = mean[1] / mean[2];
 
 	/* BAYER_FILTER_RGGB
 	 * BAYER_FILTER_BGGR */
@@ -1734,7 +1734,7 @@ void compute_grey_flat(fits *fit) {
 		coeff2 = mean[2] / mean[3];
 		config = 0;
 	} /* BAYER_FILTER_GBRG
-	   * BAYER_FILTER_GRBG */
+	 * BAYER_FILTER_GRBG */
 	else {
 		coeff1 = mean[0] / mean[1];
 		coeff2 = mean[3] / mean[2];

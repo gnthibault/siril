@@ -283,7 +283,8 @@ void xyz_to_rgb(double x, double y, double z, double *r, double *g, double *b) {
 	*b = (*b > 0.0031308) ? 1.055 * (pow(*b, (1 / 2.4))) - 0.055 : 12.92 * (*b);
 }
 
-int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2, int config) {
+int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2,
+		int config) {
 	int row, col;
 	double tmp1, tmp2;
 	WORD *data;
