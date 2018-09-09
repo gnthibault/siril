@@ -523,7 +523,8 @@ int compute_means_from_flat_cfa(fits *fit, double mean[4]) {
 	startx = startx % 2 == 0 ? startx : startx + 1;
 	starty = starty % 2 == 0 ? starty : starty + 1;
 
-	siril_debug_print("Computing stat in (%d, %d, %d, %d)\n", startx, starty, width - 1 - startx, height - 1 - starty);
+	siril_debug_print("Computing stat in (%d, %d, %d, %d)\n", startx, starty,
+			width - 1 - startx, height - 1 - starty);
 
 	/* Compute mean of each channel */
 	for (row = starty; row < height - 1 - starty; row += 2) {

@@ -1689,9 +1689,10 @@ gpointer noise(gpointer p) {
 					args->bgnoise[chan], args->bgnoise[chan] / norm);
 	}
 
+	int retval = args->retval;
 	siril_add_idle(end_noise, args);
 
-	return GINT_TO_POINTER(args->retval);
+	return GINT_TO_POINTER(retval);
 }
 
 gpointer LRdeconv(gpointer p) {

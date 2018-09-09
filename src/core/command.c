@@ -1844,6 +1844,7 @@ int process_register(int nb) {
 }
 
 struct _stackall_data {
+	struct timeval t_start;
 	const gchar *file;
 	stack_method method;
 	double sig[2];
@@ -1868,7 +1869,6 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		args.filtering_parameter = 0.0;
 		args.nb_images_to_stack = seq->number;
 		args.image_indices = malloc(seq->number * sizeof(int));
-		gettimeofday(&args.t_start, NULL);
 		args.max_number_of_rows = stack_get_max_number_of_rows(seq, seq->number);
 		// the three below: used only if method is average w/ rejection
 		args.sig[0] = arg->sig[0];
@@ -1899,8 +1899,11 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		// 3. stack
 		retval = arg->method(&args);
 
-		struct noise_data noise_args = { .fit = &gfit, .verbose = TRUE };
-		noise(&noise_args);
+		struct noise_data *noise_args = malloc(sizeof(struct noise_data));
+		noise_args->fit = &gfit;
+		noise_args->verbose = FALSE;
+		noise(noise_args);
+
 		clean_end_stacking(&args);
 
 		free_sequence(seq, TRUE);
@@ -1923,6 +1926,7 @@ static gpointer stackall_worker(gpointer garg) {
 	GDir *dir;
 	GError *error = NULL;
 	const gchar *file;
+	struct timeval t_end;
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
 	if (!com.script)
@@ -1944,9 +1948,12 @@ static gpointer stackall_worker(gpointer garg) {
 			stack_one_seq(arg);
 		}
 	}
+
+	siril_log_message(_("Stacked %d sequences successfully.\n"), arg->number_of_loaded_sequences);
+	gettimeofday(&t_end, NULL);
+	show_time(arg->t_start, t_end);
 	g_dir_close(dir);
 	free(arg);
-	siril_log_message(_("Stacked %d sequences successfully.\n"), arg->number_of_loaded_sequences);
 	siril_add_idle(end_generic, NULL);
 	return NULL;
 }
@@ -2008,6 +2015,7 @@ int process_stackall(int nb) {
 	}
 
 	set_cursor_waiting(TRUE);
+	gettimeofday(&arg->t_start, NULL);
 
 	start_in_new_thread(stackall_worker, arg);
 	return 0;
@@ -2016,6 +2024,8 @@ int process_stackall(int nb) {
 static gpointer stackone_worker(gpointer garg) {
 	char *suf;
 	int retval = 0;
+	struct timeval t_end;
+
 	struct _stackall_data *arg = (struct _stackall_data *)garg;
 
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
@@ -2023,9 +2033,12 @@ static gpointer stackone_worker(gpointer garg) {
 	if ((suf = strstr(arg->file, ".seq")) && strlen(suf) == 4) {
 		retval = stack_one_seq(arg);
 	}
-	free(arg);
 	if (!retval)
 		siril_log_message(_("Stacked sequence successfully.\n"));
+
+	gettimeofday(&t_end, NULL);
+	show_time(arg->t_start, t_end);
+	free(arg);
 	siril_add_idle(end_generic, NULL);
 	return NULL;
 }
@@ -2118,6 +2131,7 @@ int process_stackone(int nb) {
 	}
 
 	set_cursor_waiting(TRUE);
+	gettimeofday(&arg->t_start, NULL);
 
 	start_in_new_thread(stackone_worker, arg);
 	return 0;
