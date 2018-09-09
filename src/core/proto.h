@@ -161,6 +161,7 @@ struct banding_data {
 /* Noise data from GUI */
 struct noise_data {
 	gboolean verbose;
+	gboolean use_idle;
 	fits *fit;
 	double bgnoise[3];
 	struct timeval t_start;

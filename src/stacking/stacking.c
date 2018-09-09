@@ -1615,6 +1615,7 @@ static void _show_bgnoise(gpointer p) {
 	struct noise_data *args = malloc(sizeof(struct noise_data));
 	args->fit = com.uniq->fit;
 	args->verbose = FALSE;
+	args->use_idle = TRUE;
 	memset(args->bgnoise, 0.0, sizeof(double[3]));
 
 	start_in_new_thread(noise, args);

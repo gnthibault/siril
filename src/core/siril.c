@@ -1648,10 +1648,10 @@ int backgroundnoise(fits* fit, double sigma[]) {
 gboolean end_noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
 	stop_processing_thread();
-	struct timeval t_end;
 	set_cursor_waiting(FALSE);
 	update_used_memory();
 	if (args->verbose) {
+		struct timeval t_end;
 		gettimeofday(&t_end, NULL);
 		show_time(args->t_start, t_end);
 	}
@@ -1690,7 +1690,8 @@ gpointer noise(gpointer p) {
 	}
 
 	int retval = args->retval;
-	siril_add_idle(end_noise, args);
+	if (args->use_idle)
+		siril_add_idle(end_noise, args);
 
 	return GINT_TO_POINTER(retval);
 }

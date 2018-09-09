@@ -980,6 +980,7 @@ int process_bgnoise(int nb){
 
 	args->fit = &gfit;
 	args->verbose = TRUE;
+	args->use_idle = TRUE;
 	memset(args->bgnoise, 0.0, sizeof(double[3]));
 	set_cursor_waiting(TRUE);
 
@@ -1899,16 +1900,13 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		// 3. stack
 		retval = arg->method(&args);
 
-		struct noise_data *noise_args = malloc(sizeof(struct noise_data));
-		noise_args->fit = &gfit;
-		noise_args->verbose = FALSE;
-		noise(noise_args);
-
 		clean_end_stacking(&args);
-
 		free_sequence(seq, TRUE);
 		free(args.image_indices);
+
 		if (!retval) {
+			struct noise_data noise_args = { .fit = &gfit, .verbose = FALSE, .use_idle = FALSE };
+			noise(&noise_args);
 			if (savefits(filename, &gfit))
 				siril_log_color_message(_("Could not save the stacking result %s\n"),
 						"red", filename);
