@@ -497,7 +497,6 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	 * in order to read it properly. Same thing for LONG and ULONG.
 	 * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
 	 */
-	status = __SHRT_MAX__;
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &offset, NULL, &status);
 	if (!status) {
