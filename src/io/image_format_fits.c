@@ -375,6 +375,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	case SHORT_IMG:
 		fits_read_pix(fit->fptr, TSHORT, orig, nbdata, &zero,
 				fit->data, &zero, &status);
+		if (status) break;
 		convert_data(fit->bitpix, fit->data, fit->data, nbdata);
 		fit->bitpix = USHORT_IMG;
 		break;
@@ -414,8 +415,8 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 
 	if (status) {
 		msg = siril_log_message(_("Fitsio error reading data, file: %s.\n"), filename);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		report_fits_error(status);
+		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return -1;
 	}
 
@@ -496,12 +497,14 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	 * in order to read it properly. Same thing for LONG and ULONG.
 	 * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
 	 */
+	status = __SHRT_MAX__;
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &offset, NULL, &status);
 	if (!status) {
-		if (fit->bitpix == SHORT_IMG && offset == 32768.0)
+		if (fit->bitpix == SHORT_IMG && offset != 0.0) {
 			fit->bitpix = USHORT_IMG;
-		else if (fit->bitpix == LONG_IMG && offset == 2147483648.0)
+		}
+		else if (fit->bitpix == LONG_IMG && offset != 0.0)
 			fit->bitpix = ULONG_IMG;
 	} else {
 		/* but some software just put unsigned 16-bit data in the file
