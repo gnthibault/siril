@@ -1663,7 +1663,8 @@ static void remove_tmp_drizzle_files(struct stacking_args *args, gboolean remove
 }
 
 void clean_end_stacking(struct stacking_args *args) {
-	_show_summary(args);
+	if (!args->retval)
+		_show_summary(args);
 	remove_tmp_drizzle_files(args, TRUE);
 }
 

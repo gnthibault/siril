@@ -381,6 +381,7 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 		/* initialize sequence-related runtime data */
 		seq->rx = fit->rx; seq->ry = fit->ry;
 		seq->bitpix = fit->orig_bitpix;	// for partial read
+		seq->data_max = fit->data_max; // for partial read
 		fprintf(stdout, "bitpix for the sequence is set as %d\n", seq->bitpix);
 		if (seq->nb_layers == -1) {
 			seq->nb_layers = fit->naxes[2];

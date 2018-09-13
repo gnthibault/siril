@@ -330,6 +330,7 @@ struct sequ {
 	unsigned int rx;	// first image width
 	unsigned int ry;	// first image height
 	int bitpix;		// image pixel format, from fits
+	double data_max; // data_max used for cdata conversion
 	layer_info *layers;	// info about layers, may be null if nb_layers is unknown
 	int reference_image;	// reference image for registration
 	imgdata *imgparam;	// a structure for each image of the sequence
@@ -417,6 +418,7 @@ struct ffit {
 	/* data obtained from the FITS file */
 	WORD lo;	// MIPS-LO key in FITS file, which is "Lower visualization cutoff"
 	WORD hi;	// MIPS-HI key in FITS file, which is "Upper visualization cutoff"
+	double data_max; // used to check if 32b float is between 0 and 1
 	float pixel_size_x, pixel_size_y;	// XPIXSZ and YPIXSZ keys
 	unsigned int binning_x, binning_y;		// XBINNING and YBINNING keys
 	char date_obs[FLEN_VALUE];		// YYYY-MM-DDThh:mm:ss observation start, UT
