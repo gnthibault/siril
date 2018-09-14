@@ -1898,7 +1898,7 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		// 2. up-scale
 		upscale_sequence(&args); // does nothing if args->seq->upscale_at_stacking <= 1.05
 		// 3. stack
-		retval = args->retval = arg->method(&args);
+		retval = args.retval = arg->method(&args);
 
 		clean_end_stacking(&args);
 		free_sequence(seq, TRUE);
