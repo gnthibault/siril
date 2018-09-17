@@ -2144,6 +2144,7 @@ int process_preprocess(int nb) {
 	gboolean is_cfa = FALSE;
 	gboolean do_debayer = FALSE;
 	gboolean flip = FALSE;
+	gboolean equalize_cfa = FALSE;
 	gchar *file;
 	fits *master_bias = NULL;
 	fits *master_dark = NULL;
@@ -2217,7 +2218,7 @@ int process_preprocess(int nb) {
 			} else if (!strcmp(word[i], "-flip")) {
 				flip = TRUE;
 			} else if (!strcmp(word[i], "-equalize_cfa")) {
-				compute_grey_flat(seq->flat);
+				equalize_cfa = TRUE;
 			}
 		}
 	}
@@ -2245,6 +2246,7 @@ int process_preprocess(int nb) {
 
 	args->debayer = do_debayer;
 	args->is_cfa = is_cfa;
+	args->equalize_cfa = equalize_cfa;
 
 	args->offset = args->seq->offset;
 	args->dark = args->seq->dark;
