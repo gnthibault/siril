@@ -1108,31 +1108,59 @@ gint strcompare(gconstpointer *a, gconstpointer *b) {
 }
 
 /**
- * Check how many files a process can have open. That depends of the Operating System and of cfitsio (NMAXFILES)
+ * Check how many files a process can have open and try to extend the limit if possible.
+ * The max files depends of the Operating System and of cfitsio (NMAXFILES)
  * @param nb_frames number of file processed
  * @param nb_allowed_file the maximum of file that can be opened
  * @return TRUE if the system can open all the files, FALSE otherwise
  */
 gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
-	int open_max, maxfile, NMAXFILES;
+	int open_max, maxfile, MAX_NO_FILE_CFITSIO, MAX_NO_FILE;
 	float version;
 
 	/* get the limit of cfitsio */
 	fits_get_version(&version);
-	NMAXFILES = (version < 3.45) ? 1000 : 10000;
+	MAX_NO_FILE_CFITSIO = (version < 3.45) ? 1000 : 10000;
 
-	/* get the OS limit */
+	/* get the OS limit and extend it if possible */
 #ifdef _WIN32
-	/* extend the limit to 2048 if possible */
-	_setmaxstdio(2048);
+	MAX_NO_FILE = MAX_NO_FILE_CFITSIO < 2048 ? MAX_NO_FILE_CFITSIO : 2048;
 	open_max = _getmaxstdio();
+	if (open_max < MAX_NO_FILE) {
+		/* extend the limit to 2048 if possible
+		 * 2048 is the maximum on WINDOWS */
+		_setmaxstdio(MAX_NO_FILE);
+		open_max = _getmaxstdio();
+	}
 #else
-	open_max = sysconf(_SC_OPEN_MAX);
+	MAX_NO_FILE = MAX_NO_FILE_CFITSIO;
+	struct rlimit rlp;
+
+	if (!getrlimit(RLIMIT_NOFILE, &rlp)) {
+		MAX_NO_FILE = rlp.rlim_max;
+		// On some systems rlim_max == -1
+		if (MAX_NO_FILE < 0)
+			MAX_NO_FILE = MAX_NO_FILE_CFITSIO;
+		open_max = rlp.rlim_cur;
+
+		MAX_NO_FILE = (MAX_NO_FILE_CFITSIO < MAX_NO_FILE) ?	MAX_NO_FILE_CFITSIO : MAX_NO_FILE;
+		if (open_max < MAX_NO_FILE) {
+
+			rlp.rlim_cur = MAX_NO_FILE;
+			/* extend the limit to NMAXFILES if possible */
+			int retval = setrlimit(RLIMIT_NOFILE, &rlp);
+			if (!retval) {
+				getrlimit(RLIMIT_NOFILE, &rlp);
+				open_max = rlp.rlim_cur;
+			}
+		}
+	} else {
+		open_max = sysconf(_SC_OPEN_MAX);
+	}
 #endif // _WIN32
 
-	maxfile = open_max > NMAXFILES ? NMAXFILES : open_max;
-	siril_debug_print("dtablesize=%d, NMAXFILES=%d\n", open_max, NMAXFILES);
-
+	maxfile = open_max > MAX_NO_FILE ? MAX_NO_FILE : open_max;
+	siril_debug_print("max of files that will be opened=%d\n", maxfile);
 	*nb_allowed_file = maxfile;
 
 	return nb_frames < maxfile;
