@@ -2239,7 +2239,7 @@ int process_preprocess(int nb) {
 	args->autolevel = TRUE;
 	args->normalisation = 1.0f;	// will be updated anyway
 
-	args->sigma[0] = -1.00; /* cold pixels */
+	args->sigma[0] = -1.00; /* cold pixels: it is better to deactive it */
 	args->sigma[1] =  3.00; /* hot poxels */
 
 	args->compatibility = flip;
