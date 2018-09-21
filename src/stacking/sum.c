@@ -21,6 +21,7 @@
 #include "core/siril.h"
 #include "core/processing.h"
 #include "core/proto.h"		// FITS functions
+#include "io/sequence.h"
 #include "stacking.h"
 
 struct sum_stacking_data {
@@ -107,6 +108,16 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	fits *fit = &gfit;
 	if (new_fit_image(&fit, args->seq->rx, args->seq->ry, args->seq->nb_layers))
 		return -1;
+
+	/* We copy metadata from reference to the final fit */
+	int ref = 0;
+	if (args->seq->reference_image > 0)
+		ref = args->seq->reference_image;
+	if (!seq_open_image(args->seq, ref)) {
+		import_metadata_from_fitsfile(args->seq->fptr[ref], &gfit);
+		seq_close_image(args->seq, ref);
+	}
+
 	gfit.hi = round_to_WORD(max);
 	gfit.exposure = ssdata->exposure;
 	gfit.bitpix = gfit.orig_bitpix = USHORT_IMG;
