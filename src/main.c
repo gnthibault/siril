@@ -471,8 +471,8 @@ int main(int argc, char *argv[]) {
 	else gtk_main();
 
 	/* quit Siril */
-	close_sequence(FALSE);
-	undo_flush();
+	close_sequence(FALSE);	// closing a sequence if loaded
+	close_single_image();	// close the previous image and free resources
 #ifdef MAC_INTEGRATION
 		g_object_unref(osx_app);
 #endif //MAC_INTEGRATION
