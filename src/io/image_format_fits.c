@@ -769,7 +769,6 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	fit->pdata[GLAYER] = fit->data;
 	fit->pdata[BLAYER] = fit->data;
 
-	status = 0;
 	status = internal_read_partial_fits(fit->fptr, fit->naxes[1],
 			fit->bitpix, fit->data, data_max > 1.0, layer, area);
 
