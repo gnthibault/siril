@@ -856,7 +856,7 @@ int fits_get_date_obs(const char *name, fits *f) {
 int savefits(const char *name, fits *f) {
 	int status, i;
 	long orig[3] = { 1L, 1L, 1L }, pixel_count;
-	char filename[256], *msg;
+	char filename[256];
 	BYTE *data8;
 
 	f->naxes[0] = f->rx;
@@ -928,7 +928,7 @@ int savefits(const char *name, fits *f) {
 	case FLOAT_IMG:
 	case DOUBLE_IMG:
 	default:
-		msg = siril_log_message(_("ERROR: trying to save a FITS image "
+		siril_log_message(_("ERROR: trying to save a FITS image "
 				"with an unsupported format (%d).\n"), f->bitpix);
 		fits_close_file(f->fptr, &status);
 		return 1;
