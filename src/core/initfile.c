@@ -72,6 +72,7 @@ static int readinitfile() {
 			writeinitfile();
 		}
 	}
+	else set_GUI_CWD();
 
 	/* Libraw setting */
 	config_setting_t *raw_setting = config_lookup(&config, keywords[RAW]);
