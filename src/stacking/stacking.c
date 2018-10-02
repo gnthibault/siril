@@ -871,10 +871,12 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 			exposure += get_exposure_from_fitsfile(args->seq->fptr[image_index]);
 		}
 		/* We copy metadata from reference to the final fit */
-		int ref = 0;
-		if (args->seq->reference_image > 0)
-			ref = args->seq->reference_image;
-		import_metadata_from_fitsfile(args->seq->fptr[ref], &fit);
+		if (args->seq->type == SEQ_REGULAR) {
+			int ref = 0;
+			if (args->seq->reference_image > 0)
+				ref = args->seq->reference_image;
+			import_metadata_from_fitsfile(args->seq->fptr[ref], &fit);
+		}
 
 		update_used_memory();
 	}
