@@ -121,7 +121,7 @@ static int prepare_to_recalc(int num_matched_A,
 		struct s_star *matched_list_B, struct s_star *star_list_A_copy,
 		TRANS *trans);
 
-int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point image_size) {
+int new_star_match(fitted_PSF **s1, fitted_PSF **s2, Homography *H, point image_size) {
 	int ret;
 	int numA, numB;
 	int num_matched_A, num_matched_B;
@@ -208,7 +208,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 #endif
 
 	/* read information from the first list */
-	if (get_stars(s1, n, &numA, &star_list_A, image_size)) {
+	if (get_stars(s1, &numA, &star_list_A, image_size)) {
 		shFatal("can't read data\n");
 		atTransDel(trans);
 		return (SH_GENERIC_ERROR);
@@ -224,7 +224,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 	 *   so that we can restore the output matched coords
 	 *   (which have been converted to those in set B) with the original coords.
 	 */
-	if (get_stars(s1, n, &numA_copy, &star_list_A_copy, image_size)) {
+	if (get_stars(s1, &numA_copy, &star_list_A_copy, image_size)) {
 		atTransDel(trans);
 		free_stars(star_list_A);
 		shFatal("can't read data\n");
@@ -241,7 +241,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 	reset_copy_ids(numA, star_list_A, star_list_A_copy);
 
 	/* read information from the second list */
-	if (get_stars(s2, n, &numB, &star_list_B, image_size)) {
+	if (get_stars(s2, &numB, &star_list_B, image_size)) {
 		atTransDel(trans);
 		free_stars(star_list_A);
 		free_stars(star_list_A_copy);

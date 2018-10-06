@@ -172,7 +172,7 @@ read_star_file(char *filename, int xcolumn, int ycolumn, int magcolumn,
     */
 
 int
-get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list, point image_size);
+get_stars(fitted_PSF **s, int *num_stars, struct s_star **list, point image_size);
 
 void
 free_stars(struct s_star *head);
