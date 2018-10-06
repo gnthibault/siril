@@ -939,7 +939,7 @@ int process_seq_crop(int nb) {
 		return 1;
 	}
 
-	if (com.selection.w != 0 || com.selection.h != 0)
+	if (com.selection.w <= 0 || com.selection.h <= 0)
 		return 1;
 
 	struct crop_sequence_data *args = malloc(sizeof(struct crop_sequence_data));

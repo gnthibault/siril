@@ -1276,7 +1276,7 @@ gpointer crop_sequence(gpointer p) {
 
 		ser_file = malloc(sizeof(struct ser_struct));
 		if (ser_file == NULL) {
-			printf("memory error: crop_sequence\n");
+			fprintf(stderr, "memory error: crop_sequence\n");
 			args->retvalue = 1;
 			siril_add_idle(end_crop_sequence, args);
 		}

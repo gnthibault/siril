@@ -425,7 +425,7 @@ sequence * readseqfile(const char *name){
 		}
 	}
 	if (!allocated) {
-		siril_log_message(_("The file seems to be corrupted\n"));
+		siril_log_message(_("The sequence file %s seems to be corrupted\n"), seqfilename);
 		goto error;
 	}
 	seq->needs_saving = FALSE;	// loading stats sets it to true
@@ -444,7 +444,7 @@ sequence * readseqfile(const char *name){
 	if (seq->cfa_opened_monochrome && seq->regparam_bkp && (!seq->regparam || !seq->regparam[0])) {
 		for (i = 0; i < 3; i++) {
 			if (seq->regparam_bkp[i]) {
-				siril_log_message(_("Using registration data from demosaiced layer %d (red is 0, green is 1, blue is 2)\n"), i);
+				siril_log_message(_("%s: Using registration data from demosaiced layer %d (red is 0, green is 1, blue is 2)\n"), seqfilename, i);
 				seq->regparam[0] = calloc(seq->number, sizeof(regdata));
 				for (image = 0; image < seq->number; image++) {
 					memcpy(&seq->regparam[0][image], &seq->regparam_bkp[i][image], sizeof(regdata));
