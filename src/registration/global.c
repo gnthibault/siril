@@ -216,7 +216,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		else {
 			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, NULL, FALSE);
 		}
-		siril_log_message(_("Found %d stars in image %d, channel #%d\n"), nb_stars, in_index, regargs->layer);
+		siril_log_message(_("Found %d stars in image %d, channel #%d\n"), nb_stars, filenum, regargs->layer);
 
 		if (nb_stars < AT_MATCH_MINPAIRS) {
 			siril_log_message(
