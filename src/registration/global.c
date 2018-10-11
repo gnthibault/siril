@@ -235,7 +235,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		}
 		image_size.x = fit->rx;
 		image_size.y = fit->ry;
-		if (new_star_match(stars, sadata->refstars, &H, image_size)) {
+		if (new_star_match(stars, sadata->refstars, nbpoints, &H, image_size)) {
 			siril_log_color_message(_("Cannot perform star matching. Image %d skipped\n"),
 					"red", filenum);
 			i = 0;
