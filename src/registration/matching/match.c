@@ -109,7 +109,7 @@
 #include "registration/matching/match.h"
 #include "registration/matching/atpmatch.h"
 
-#undef DEBUG           /* get some of diagnostic output */
+#define DEBUG           /* get some of diagnostic output */
 
 static void reset_copy_ids(int numA, struct s_star *star_list_A,
 		struct s_star *star_list_A_copy);
@@ -121,7 +121,8 @@ static int prepare_to_recalc(int num_matched_A,
 		struct s_star *matched_list_B, struct s_star *star_list_A_copy,
 		TRANS *trans);
 
-int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point image_size) {
+int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override,
+		Homography *H, point image_size) {
 	int ret;
 	int numA, numB;
 	int num_matched_A, num_matched_B;
@@ -164,12 +165,12 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 	} else if ((scale == -1) && (min_scale != -1) && (max_scale != -1)) {
 		/* okay */
 		if (min_scale > max_scale) {
-			shFatal("min_scale must be smaller than max_scale");
+			fprintf(stderr,"min_scale must be smaller than max_scale\n");
 			return (SH_GENERIC_ERROR);
 		}
 	} else {
 		/* not okay */
-		shFatal("invalid combination of 'scale', 'min_scale', 'max_scale'");
+		fprintf(stderr,"invalid combination of 'scale', 'min_scale', 'max_scale'\n");
 		return (SH_GENERIC_ERROR);
 	}
 #ifdef DEBUG
@@ -179,6 +180,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 		printf("using min_scale %f  max_scale %f \n", min_scale, max_scale);
 	}
 #endif
+	if (nobj_override > 0) nobj = nobj_override;
 
 	/*
 	 * Check to make sure that the user specified
@@ -194,7 +196,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 		/* this is okay */
 	} else {
 		/* this is NOT okay */
-		shFatal("Must specify both 'rotangle' and 'rottol', or neither ");
+		fprintf(stderr,"Must specify both 'rotangle' and 'rottol', or neither \n");
 		return (SH_GENERIC_ERROR);
 	}
 
@@ -227,7 +229,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 	if (get_stars(s1, n, &numA_copy, &star_list_A_copy, image_size)) {
 		atTransDel(trans);
 		free_stars(star_list_A);
-		shFatal("can't read data\n");
+		fprintf(stderr,"can't read data\n");
 		return (SH_GENERIC_ERROR);
 	}
 
@@ -262,12 +264,12 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 		if (ret != SH_SUCCESS && iter == 0) {
 			min_scale = -1.0;
 			max_scale = -1.0;
-			printf("Give another try with scale changes\n");
+			fprintf(stdout, "Give another try with scale changes\n");
 		}
 		iter++;
 	} while (iter < 2 && ret != SH_SUCCESS);
 	if (ret != SH_SUCCESS) {
-		shFatal("initial call to atFindTrans fails");
+		fprintf(stderr,"initial call to atFindTrans fails\n");
 		/** */
 		atTransDel(trans);
 		free_stars(star_list_A);
@@ -302,8 +304,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 	 * so we put the names of the files containing those matched objects
 	 * into 'matched_file_A' and 'matched_file_B' for easy reference.
 	 */
-	atMatchLists(numA, star_list_A, numB, star_list_B, match_radius,
-			&num_matches, &matched_list_A, &matched_list_B);
+	atMatchLists(numA, star_list_A, numB, star_list_B, match_radius, &num_matches, &matched_list_A, &matched_list_B);
 	trans->nm = num_matches;
 	num_matched_B = num_matched_A = num_matches;
 
@@ -324,7 +325,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 	/* need to send trans to prepare_to_recalc because it adds sdx,sdy to it */
 	if (prepare_to_recalc(num_matched_A, matched_list_A,
 			num_matched_B, matched_list_B, star_list_A_copy, trans) != 0) {
-		shFatal("prepare_to_recalc fails");
+		fprintf(stderr,"prepare_to_recalc fails\n");
 		/** */
 		atTransDel(trans);
 		free_stars(matched_list_A);
@@ -338,7 +339,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 	/* okay, now we're ready to call atRecalcTrans, on matched items only */
 	if (atRecalcTrans(num_matched_A, matched_list_A, num_matched_B,
 			matched_list_B, max_iter, halt_sigma, trans) != SH_SUCCESS) {
-		shFatal("atRecalcTrans fails on matched pairs only");
+		fprintf(stderr,"atRecalcTrans fails on matched pairs only\n");
 		/** */
 		atTransDel(trans);
 		free_stars(matched_list_A);
@@ -354,12 +355,81 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, Homography *H, point
 	print_trans(trans);
 #endif
 
+	/*
+	 * At this point, we have a TRANS which is based solely on those items
+	 * which matched.  If the user wishes, we can improve the TRANS
+	 * even more by applying the current transformation to ALL items
+	 * in list A, making a second round of matching pairs, and then
+	 * using these pairs to calculate a new and better TRANS.
+	 *
+	 * The point is that we'll probably end up with more matched pairs
+	 * if we start with the current TRANS, instead of the initial TRANS.
+    */
+
+	/* re-set coords of all items in star A */
+	if (reset_A_coords(numA, star_list_A, star_list_A_copy) != 0) {
+		shFatal("reset_A_coords returns with error before recalc");
+	}
+
+	/*
+	 * apply the current TRANS (which is probably much better than
+	 * the initial TRANS) to all items in list A
+	 */
+	atApplyTrans(numA, star_list_A, trans);
+
+	/*
+	 * Match items in list A to those in list B
+	 */
+	atMatchLists(numA, star_list_A, numB, star_list_B, match_radius, &num_matches, &matched_list_A, &matched_list_B);
+	trans->nm = num_matches;
+	num_matched_B = num_matched_A = num_matches;
+#ifdef DEBUG
+	printf("After tuning with recalc, num matches is %d\n", num_matches);
+	print_trans(trans);
+#endif
+
+	/* prepare to call atRecalcTrans one last time */
+	/* need to send trans to prepare_to_recalc because it adds sdx,sdy */
+	if (prepare_to_recalc(num_matched_A, matched_list_A,
+			num_matched_B, matched_list_B, star_list_A_copy, trans) != 0) {
+		fprintf(stderr,"prepare_to_recalc fails\n");
+		/** */
+		atTransDel(trans);
+		free_stars(matched_list_A);
+		free_stars(matched_list_B);
+		free_stars(star_list_A);
+		free_stars(star_list_B);
+		free_stars(star_list_A_copy);
+		/** */
+		return (SH_GENERIC_ERROR);
+	}
+
+	/* final call atRecalcTrans, on matched items only */
+	if (atRecalcTrans(num_matched_A, matched_list_A, num_matched_B,
+			matched_list_B, max_iter, halt_sigma, trans) != SH_SUCCESS) {
+		fprintf(stderr,"atRecalcTrans fails on matched pairs only\n");
+		/** */
+		atTransDel(trans);
+		free_stars(matched_list_A);
+		free_stars(matched_list_B);
+		free_stars(star_list_A);
+		free_stars(star_list_B);
+		free_stars(star_list_A_copy);
+		/** */
+		return (SH_GENERIC_ERROR);
+	}
+
+#ifdef DEBUG
+	printf("TRANS based on recalculated matches is \n");
+	print_trans(trans);
+#endif
+
 	Hom = atHNew();
 	Hom->pair_matched = num_matches;
 
 	if (atPrepareHomography(num_matched_A, matched_list_A, num_matched_B,
 			matched_list_B, Hom)) {
-		shFatal("atPrepareHomography fails on computing H");
+		fprintf(stderr,"atPrepareHomography fails on computing H\n");
 		/** */
 		atTransDel(trans);
 		atHDel(Hom);
@@ -551,7 +621,7 @@ TRANS *trans /* O: we calc herein the sx, sy fields  */
 	/* here we find the rms of those stars we read in -- JPB 17/Jan/02 */
 	if (atCalcRMS(num_matched_A, matched_list_A, num_matched_B,
 			matched_list_B, &Xrms, &Yrms) != SH_SUCCESS) {
-		shFatal("atCalcRMS fails on matched pairs");
+		fprintf(stderr,"atCalcRMS fails on matched pairs\n");
 	}
 	trans->sx = Xrms;
 	trans->sy = Yrms;

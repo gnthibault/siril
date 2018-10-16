@@ -65,6 +65,7 @@
 #include "stacking/stacking.h"
 #include "stacking/sum.h"
 #include "registration/registration.h"
+#include "registration/matching/match.h"
 #include "opencv/opencv.h"
 
 static char *word[MAX_COMMAND_WORDS];	// NULL terminated

@@ -328,6 +328,67 @@ double mag /* I: mag value for new star */
 	return (new);
 }
 
+/**********************************************************************
+ * ROUTINE: is_blank
+ *
+ * If the given string consists only of whitespace, return 1.
+ * Otherwise, return 0.
+ */
+
+int
+is_blank
+   (
+   char *line                /* I: string to be checked */
+   )
+{
+   char *p;
+
+   for (p = line; (*p != '\0') && (isspace(*p)); p++) {
+      ;
+   }
+   /* 17/Dec/01, jpb: fixed a bug that said "if (p=='\0')" */
+   if (*p == '\0') {
+      return(1);
+   }
+   else {
+      return(0);
+   }
+}
+
+
+/**********************************************************************
+ * ROUTINE: get_value
+ *
+ * Given a string containing a numerical value, read the numerical
+ * value and place it into the given double argument.
+ *
+ * Return 0 if all goes well.
+ * Return 1 if there is an error.
+ */
+
+int
+get_value
+   (
+   char *str,                /* I: string to be converted to double */
+   double *val               /* O: place value here */
+   )
+{
+   if (sscanf(str, "%lf", val) != 1) {
+      return(1);
+   }
+   else {
+      return(0);
+   }
+}
+
+/**********************************************************************
+ * ROUTINE: get_stars
+ *
+ *
+ * Return 0 if all goes well.
+ * Return 1 if there is an error.
+ */
+
 int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list, point image_size) {
 	int i = 0;
 	struct s_star *head, *last, *new;
@@ -371,3 +432,65 @@ void print_H(Homography *H) {
 	printf("%+*.5f %+*.5f %+*.5f\n", 11, H->h10, 11, H->h11, 11, H->h12);
 	printf("%+*.5f %+*.5f %+*.5f\n", 11, H->h20, 11, H->h21, 11, H->h22);
 }
+
+/************************************************************************
+ *
+ *
+ * ROUTINE: print_trans
+ *
+ * DESCRIPTION:
+ * Print the elements of a TRANS structure.
+ *
+ * RETURNS:
+ *   nothing
+ *
+ * </AUTO>
+ */
+
+
+void
+print_trans
+   (
+   TRANS *trans       /* I: TRANS to print out */
+   )
+{
+   switch (trans->order) {
+
+   case 1:  /* linear transformation */
+      printf("TRANS: a=%-15.9e b=%-15.9e c=%-15.9e d=%-15.9e e=%-15.9e f=%-15.9e",
+            trans->a, trans->b, trans->c, trans->d, trans->e, trans->f);
+      break;
+
+   case 2:  /* quadratic terms */
+      printf("TRANS: a=%-15.9e b=%-15.9e c=%-15.9e d=%-15.9e e=%-15.9e f=%-15.9e ",
+          trans->a, trans->b, trans->c, trans->d, trans->e, trans->f);
+      printf("       g=%-15.9e h=%-15.9e i=%-15.9e j=%-15.9e k=%-15.9e l=%-15.9e",
+          trans->g, trans->h, trans->i, trans->j, trans->k, trans->l);
+      break;
+
+   case 3:  /* cubic terms */
+      printf("TRANS: a=%-15.9e b=%-15.9e c=%-15.9e d=%-15.9e e=%-15.9e f=%-15.9e g=%-15.9e h=%-15.9e",
+         trans->a, trans->b, trans->c, trans->d, trans->e, trans->f,
+         trans->g, trans->h);
+      printf("       i=%-15.9e j=%-15.9e k=%-15.9e l=%-15.9e m=%-15.9e n=%-15.9e o=%-15.9e p=%-15.9e",
+         trans->i, trans->j, trans->k, trans->l, trans->m, trans->n,
+         trans->o, trans->p);
+      break;
+
+   default:
+      shFatal("print_trans: invalid trans->order %d \n", trans->order);
+      exit(1);
+   }
+
+	/*
+	 * we always print this information about the match at the end
+	 * of the line ]
+	 */
+	printf(" sig=%-.4e Nr=%d Nm=%d sx=%-.4e sy=%-.4e",
+	       trans->sig, trans->nr, trans->nm, trans->sx, trans->sy);
+	printf(" \n");
+
+}
+
+
+/************************************************************************/

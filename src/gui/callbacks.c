@@ -1630,6 +1630,7 @@ void update_MenuItem() {
 	/* Analysis Menu */
 	gtk_widget_set_sensitive(lookup_widget("menuitem_noise"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_stat"), any_image_is_loaded);
+	gtk_widget_set_sensitive(lookup_widget("menuitem_IPS"), any_image_is_loaded);
 
 	/* Windows Menu */
 	gtk_widget_set_sensitive(lookup_widget("menuitemgray"), any_image_is_loaded);

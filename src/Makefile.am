@@ -20,6 +20,7 @@ siril_SOURCES = \
 	gui/progress_and_log.c gui/progress_and_log.h \
 	registration/registration.c registration/registration.h registration/global.c \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
+	registration/matching/project_coords.c registration/matching/project_coords.h registration/matching/degtorad.h registration/matching/apply_match.c \
 	stacking/stacking.c stacking/stacking.h stacking/sum.c stacking/sum.h stacking/normalization.c \
 	algos/gradient.c algos/gradient.h algos/quality.c algos/quality.h \
 	algos/statistics.c \
@@ -32,6 +33,7 @@ siril_SOURCES = \
 	algos/cosmetic_correction.c algos/cosmetic_correction.h \
 	algos/quantize.c \
 	algos/photometry.h algos/photometry.c \
+	algos/plateSolver.c algos/plateSolver.h \
 	compositing/compositing.c compositing/compositing.h compositing/filters.c compositing/filters.h compositing/align_rgb.c compositing/align_rgb.h
 
 siril_LDADD =  $(top_builddir)/deps/kplot/libkplot.a $(FFMPEG_LIBS) $(GTK_LIBS) ${GTK_MAC_LIBS} $(LIBRAW_LIBS) $(LIBTIFF_LIBS) $(LIBPNG_LIBS) $(FFTW_LIBS) $(CFITSIO_LIBS) $(GSL_LIBS) $(FFMS2_LIBS) $(LIBCONFIG_LIBS) $(CURL_LIBS) $(EXTRA_LIBS)

@@ -254,6 +254,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 							if (nbstars < MAX_STARS) {
 								results[nbstars] = cur_star;
 								results[nbstars + 1] = NULL;
+//								printf("%lf\t\t%lf\t\t%lf\n", cur_star->xpos, cur_star->ypos, cur_star->mag);
 								nbstars++;
 							}
 
@@ -376,6 +377,13 @@ int compare_stars(const void* star1, const void* star2) {
 void sort_stars(fitted_PSF **stars, int total) {
 	if (*(&stars))
 		qsort(*(&stars), total, sizeof(fitted_PSF*), compare_stars);
+}
+
+void free_fitted_stars(fitted_PSF **stars) {
+	int i = 0;
+	while (stars && stars[i])
+		free(stars[i++]);
+	free(stars);
 }
 
 void FWHM_average(fitted_PSF **stars, float *FWHMx, float *FWHMy, int max) {

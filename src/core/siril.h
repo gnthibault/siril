@@ -431,6 +431,10 @@ struct ffit {
 	double focal_length, iso_speed, exposure, aperture, ccd_temp;
 	double cvf; // Conversion factor (e-/adu)
 
+	/* Plate Solving data */
+	double crpix1, crpix2;
+	double crval1, crval2;
+
 	/* data used in the Fourier space */
 	double dft_norm[3];			// Normalization value
 	char dft_type[FLEN_VALUE];		// spectrum, phase

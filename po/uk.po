@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: FreeAstro Siril\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-06-09 12:57+0300\n"
-"PO-Revision-Date: 2018-07-16 16:00+0300\n"
+"PO-Revision-Date: 2018-09-12 11:00+0300\n"
 "Last-Translator: Maksym Pyatnytskyy <mpyat2@gmail.com>\n"
 "Language-Team: Maksym Pyatnytskyy, Oleh Malyi. mpyat2@gmail.com\n"
 "Language: uk\n"
@@ -71,10 +71,12 @@ msgstr ""
 msgid ""
 "Detect stars in the current loaded image (not sequence image) and compute PSF"
 msgstr ""
+"Виявити зірки на поточному завантаженому зображенні (не з послідовності) та "
+"розрахувати PSF"
 
 #: ../src/gui/siril3.glade.h:14
 msgid "Average PSF parameters for selected stars"
-msgstr ""
+msgstr "Усереднення параметрів PSF для вибраних зврок"
 
 #: ../src/gui/siril3.glade.h:15
 msgid "Save RGB image to 48-bit FITS"
@@ -107,7 +109,7 @@ msgstr "Вирівнювання RGB"
 #: ../src/gui/siril3.glade.h:22 ../src/compositing/align_rgb.c:45
 #: ../src/compositing/compositing.c:360
 msgid "Image pattern alignment (planetary/deep-sky)"
-msgstr ""
+msgstr "Вирівнювання патернів зображення (планети/далекий космос)"
 
 #. the list below depends on the content of the glade file. It
 #. * should be done in the same way as in registration.c, but it
@@ -227,7 +229,7 @@ msgstr "Режим відображення"
 
 #: ../src/gui/siril3.glade.h:49
 msgid "Linear"
-msgstr "Лінійна"
+msgstr "Лінійний"
 
 #: ../src/gui/siril3.glade.h:50
 msgid "Logarithm"
@@ -318,68 +320,72 @@ msgstr "Поліноміальна інтерполяція"
 
 #: ../src/gui/siril3.glade.h:69
 msgid "Manual"
-msgstr ""
+msgstr "Вручну"
 
 #: ../src/gui/siril3.glade.h:70
 msgid "You must click on the picture to pick your own background samples."
-msgstr ""
+msgstr "Ви маєте клацнути на зображенні для вибору зразків фону."
 
 #: ../src/gui/siril3.glade.h:71
 msgid "Automatic"
-msgstr ""
+msgstr "Автоматично"
 
 #: ../src/gui/siril3.glade.h:72
 msgid "Siril picks background samples automatically."
-msgstr ""
+msgstr "Siril вибере зразки фону автоматично."
 
 #: ../src/gui/siril3.glade.h:73
 msgid "Clear background samples."
-msgstr ""
+msgstr "Очистити вибір зразків фону."
 
 #: ../src/gui/siril3.glade.h:74
 msgid "Draw samples"
-msgstr ""
+msgstr "Намалювати зразки"
 
 #: ../src/gui/siril3.glade.h:75
 msgid "<b>Type of Extraction</b>"
-msgstr ""
+msgstr "<b>Спосіб виділення фону</b>"
 
 #: ../src/gui/siril3.glade.h:76
 msgid "Box radius:"
-msgstr ""
+msgstr "Половинний розмір боксу:"
 
 #: ../src/gui/siril3.glade.h:77
 msgid "Box separation: "
-msgstr ""
+msgstr "Проміжки між боксами: "
 
 #: ../src/gui/siril3.glade.h:78
 msgid ""
 "This is the distance in pixels between two adjacent background sample boxes."
-msgstr ""
+msgstr "Відстань у пікселях між двома суміжними зразками фону."
 
 #: ../src/gui/siril3.glade.h:79
 msgid ""
 "This is the radius in pixels of a background sample box. Multiply by 2 to "
 "have the length of a box."
 msgstr ""
+"Половинний розмір (радіус) зразка фону у пікселях. Подвойте, щоб отримати "
+"повний розмір зразка."
 
 #: ../src/gui/siril3.glade.h:80
 msgid "Sample Generation"
-msgstr ""
+msgstr "Генерація зразків"
 
 #: ../src/gui/siril3.glade.h:81
 msgid "Tolerance: "
-msgstr ""
+msgstr "Допуск: "
 
 #: ../src/gui/siril3.glade.h:82
 msgid ""
 "This parameter indicates the tolerance of local sample rejection, in sigma "
 "units."
 msgstr ""
+"Цей параметр показує \"допуски\" для локального відхидання фону, в одиницях "
+"сігми."
 
 #: ../src/gui/siril3.glade.h:83
 msgid "Local Rejection"
-msgstr ""
+msgstr "Локальне відкидання"
 
 #: ../src/gui/siril3.glade.h:84
 msgid "Deviation: "
@@ -387,39 +393,43 @@ msgstr "Відхиленя: "
 
 #: ../src/gui/siril3.glade.h:85
 msgid "Tolerance of global sample rejection, in sigma units."
-msgstr ""
+msgstr "Допуски глобального відкидання зразків, в одиницях сігми."
 
 #: ../src/gui/siril3.glade.h:86
 msgid "Unbalance:"
-msgstr ""
+msgstr "Дисбаланс:"
 
 #: ../src/gui/siril3.glade.h:87
 msgid ""
 "This is the factor multiplied by the deviation parameter in order to include "
 "more dark pixels in the background evaluation."
 msgstr ""
+"Цей фактор множиться на параметр відхилення, щоб включити більше темних "
+"пікселів в оцінку фону."
 
 #: ../src/gui/siril3.glade.h:88
 msgid "Global Rejection"
-msgstr ""
+msgstr "Глобальне відкидання"
 
 #: ../src/gui/siril3.glade.h:89
 msgid "Samples per row: "
-msgstr ""
+msgstr "Зразків на рядок: "
 
 #: ../src/gui/siril3.glade.h:90
 msgid "This is the number of sample box in a row."
-msgstr ""
+msgstr "Число зразкыв фону у рядку."
 
 #: ../src/gui/siril3.glade.h:91
 msgid ""
 "This is the factor multiplied by the deviation parameter in order to include "
 "more dark pixels in the background evaluation"
 msgstr ""
+"Цей фактор множиться на параметр відхилення, щоб включити більше темних "
+"пікселів в оцінку фону"
 
 #: ../src/gui/siril3.glade.h:92
 msgid "Degree Order: "
-msgstr ""
+msgstr "Порядок поліному: "
 
 #: ../src/gui/siril3.glade.h:93
 msgid ""
@@ -427,26 +437,30 @@ msgid ""
 "By default the value is of 4.\n"
 "The higher the degree order is, the stronger the gradient can be remove."
 msgstr ""
+"Виберіть порядок (ступінь) поліноміальної функції, яка буде "
+"використовуватись для апроксимації.\n"
+"За замовчуванням порядок 4.\n"
+"Чим порядок більший, тим сильніший градієнт може бути видалений."
 
 #: ../src/gui/siril3.glade.h:96
 msgid "Interpolation"
-msgstr ""
+msgstr "Інтерполяція"
 
 #: ../src/gui/siril3.glade.h:97
 msgid "Show Image"
-msgstr ""
+msgstr "Показати зображення"
 
 #: ../src/gui/siril3.glade.h:98
 msgid "Click on this button to show the image."
-msgstr ""
+msgstr "Натисніть цю кнопку, щоб показати зображення."
 
 #: ../src/gui/siril3.glade.h:99
 msgid "Show Background"
-msgstr ""
+msgstr "Показати фон"
 
 #: ../src/gui/siril3.glade.h:100
 msgid "Click on this button to show the background computed."
-msgstr ""
+msgstr "Натисніть цю кнопку, щоб показати розрахований фон."
 
 #: ../src/gui/siril3.glade.h:101
 msgid ""
@@ -457,10 +471,16 @@ msgid ""
 "vignetting or differential atmospheric absorption for example. However, this "
 "kind of operation should be done by master-flat correction."
 msgstr ""
+"Виберіть тип корекції, яку ви бажаєте застосувати:\n"
+"Віднімання: в основному використовується для видалення адитивних ефектів, "
+"таких, як гоадієнт від засвітки (світлового забруднення) або Місяця.\n"
+"Ділення: в основному використовується для корекції мультиплікативних явищ, "
+"наприклад, таких, як віньєтування або диференційне атмосферне поглинання. "
+"Однак, подібні операції слід проводити корегуванням майстер-флетами."
 
 #: ../src/gui/siril3.glade.h:104
 msgid "Subtraction"
-msgstr ""
+msgstr "Віднімання"
 
 #: ../src/gui/siril3.glade.h:105
 msgid "Division"
@@ -468,37 +488,39 @@ msgstr "Ділення"
 
 #: ../src/gui/siril3.glade.h:106
 msgid "<b>Correction</b>"
-msgstr ""
+msgstr "<b>Корекція</b>"
 
 #: ../src/gui/siril3.glade.h:107
 msgid "Compute"
-msgstr ""
+msgstr "Розрахувати"
 
 #: ../src/gui/siril3.glade.h:108
 msgid "This will compute the synthetic background."
-msgstr ""
+msgstr "Розрахунок синтетичного фону."
 
 #: ../src/gui/siril3.glade.h:109
 msgid "Apply"
-msgstr ""
+msgstr "Застосувати"
 
 #: ../src/gui/siril3.glade.h:110
 msgid "This will apply the selected correction."
-msgstr ""
+msgstr "Застосування вибраної корекції."
 
 #: ../src/gui/siril3.glade.h:111
 msgid "Median Filter"
-msgstr ""
+msgstr "Медіанний фільтр"
 
 #: ../src/gui/siril3.glade.h:112
 msgid ""
 "Kernel Size. This is the odd size of the neighborhood considered for each "
 "pixel."
 msgstr ""
+"Розмір ядра. Непарне значення, визначає розмір сусідньої області кожного "
+"пікселя."
 
 #: ../src/gui/siril3.glade.h:113
 msgid "Modulation:"
-msgstr ""
+msgstr "Модуляція:"
 
 #: ../src/gui/siril3.glade.h:114
 msgid ""
@@ -506,14 +528,17 @@ msgid ""
 "When this parameter is equal to 1, no modulation is applied.\n"
 "If the parameters is null, so no filter is apply at all."
 msgstr ""
+"Параметр модуляції задається у діапазоні [0, 1].\n"
+"Якщо цей параметр дорівнює одиниці, модуляція не застосовується.\n"
+"Якщо цей параметр нульовий, фільтр взагалі відсутній."
 
 #: ../src/gui/siril3.glade.h:117
 msgid "Kernel Size: "
-msgstr ""
+msgstr "Розмір ядра: "
 
 #: ../src/gui/siril3.glade.h:118
 msgid "Iterations:"
-msgstr ""
+msgstr "Ітерацій:"
 
 #: ../src/gui/siril3.glade.h:119
 msgid ""
@@ -521,56 +546,62 @@ msgid ""
 "This is useful when modulation parameter is different to 1 helping the whole "
 "process to converge to better result."
 msgstr ""
+"Кількість ітерацій алгоритму.\n"
+"Цей параметр корисний, якщо параметр модуляції відрізняється від одиниці і "
+"дозволяє досягти кращого результату сходимості процесу."
 
 #: ../src/gui/siril3.glade.h:121
 msgid "Use Luminance"
-msgstr ""
+msgstr "Використовувати Яскравість"
 
 #: ../src/gui/siril3.glade.h:122
 msgid "Subtractive Chromatic Green Noise Reduction"
-msgstr ""
+msgstr "Віднімання хроматичного \"зеленого\" шуму"
 
 #: ../src/gui/siril3.glade.h:123
 msgid ""
 "Average Neutral Protection is the default option. This is the recommended "
 "option in most cases."
 msgstr ""
+"Усереднений нейтральний -- режим за замовчуванням. Це рекомендований режим "
+"для більшості випадків."
 
 #: ../src/gui/siril3.glade.h:124
 msgid "Average Neutral"
-msgstr ""
+msgstr "Усереднений нейтральний"
 
 #: ../src/gui/siril3.glade.h:125
 msgid "Maximum Neutral"
-msgstr ""
+msgstr "Максимальний нейтральний"
 
 #: ../src/gui/siril3.glade.h:126
 msgid "Maximum Mask"
-msgstr ""
+msgstr "Максимальний з маскою"
 
 #: ../src/gui/siril3.glade.h:127
 msgid "Additive Mask"
-msgstr ""
+msgstr "Адитивна маска"
 
 #: ../src/gui/siril3.glade.h:128
 msgid "Amount:"
-msgstr ""
+msgstr "Величина: "
 
 #: ../src/gui/siril3.glade.h:129
 msgid "Protection method: "
-msgstr ""
+msgstr "Метод: "
 
 #: ../src/gui/siril3.glade.h:130
 msgid "Preserve lightness"
-msgstr ""
+msgstr "Зберегти світність"
 
 #: ../src/gui/siril3.glade.h:131
 msgid "Preserves the original CIE L* component in the processed image."
 msgstr ""
+"Зберегти початкове значення компоненти CIE L* в обробленому зображенні."
 
 #: ../src/gui/siril3.glade.h:132
 msgid "Run statistic calculation"
-msgstr ""
+msgstr "Запустити розрахунок статистики"
 
 #: ../src/gui/siril3.glade.h:133
 msgid "Close the window"
@@ -590,7 +621,7 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:137 ../src/core/siril.c:1430
 msgid "Banding Reduction"
-msgstr ""
+msgstr "Зменшення смугастості"
 
 #: ../src/gui/siril3.glade.h:138
 msgid "Protect from Highlights"
@@ -598,41 +629,43 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:139
 msgid "Vertical banding"
-msgstr ""
+msgstr "Вертикальна смугастість"
 
 #: ../src/gui/siril3.glade.h:140
 msgid "Check this box if banding is vertical."
-msgstr ""
+msgstr "Встановіть цей прапорець, якщо смугастість вертикальна."
 
 #: ../src/gui/siril3.glade.h:141
 msgid "Apply to sequence"
-msgstr ""
+msgstr "Застосувати до послідовності"
 
 #: ../src/gui/siril3.glade.h:142
 msgid ""
 "If a sequence is loaded and this is activated, perform the processing on all "
 "images of the sequence instead of only the loaded image."
 msgstr ""
+"Якщо послідовність завантажена і ця опція активована, виконати обробку всіх "
+"зображень з послідовності замість одного завантаженого зображення."
 
 #: ../src/gui/siril3.glade.h:143
 msgid "Output prefix:"
-msgstr ""
+msgstr "Префікс результуючих файлів:"
 
 #: ../src/gui/siril3.glade.h:144
 msgid "Prefix of the image names resulting from the unband process."
-msgstr ""
+msgstr "Префікс імен зображень після зменшення смугастості."
 
 #: ../src/gui/siril3.glade.h:145
 msgid "1/Sigma Factor"
-msgstr ""
+msgstr "Фактор 1/Sigma"
 
 #: ../src/gui/siril3.glade.h:146
 msgid "Image compositing"
-msgstr ""
+msgstr "Композиція зображень"
 
 #: ../src/gui/siril3.glade.h:147
 msgid "Multi-layer image composition"
-msgstr ""
+msgstr "Багатошарова композиція зображень"
 
 #: ../src/gui/siril3.glade.h:148
 msgid "Layer alignments"
@@ -642,11 +675,11 @@ msgstr "Вирівнювання шарів"
 #: ../src/gui/siril3.glade.h:149 ../src/compositing/compositing.c:181
 #: ../src/compositing/compositing.c:1076
 msgid "not loaded"
-msgstr ""
+msgstr "не завантажено"
 
 #: ../src/gui/siril3.glade.h:150
 msgid "Adjust layers brightness"
-msgstr ""
+msgstr "Підігнати яскравість зображення"
 
 #: ../src/gui/siril3.glade.h:151
 msgid ""
@@ -654,10 +687,13 @@ msgid ""
 "they don't overflow when compositing (based on max value for each image). "
 "Colour hues are unchanged."
 msgstr ""
+"Автоматично підігнати яскравість кольорів, вибраних для шарів, так, щоб не "
+"було переповнення під час композиції (грунтуючись на максимальному значенні "
+"для кожного зображення). Відтінок кольру не буде змінений."
 
 #: ../src/gui/siril3.glade.h:152
 msgid "Finalize colour balance"
-msgstr ""
+msgstr "Фіналізувати баланс кольорів"
 
 #: ../src/gui/siril3.glade.h:153
 msgid ""
@@ -666,6 +702,10 @@ msgid ""
 "Modifying parameters in this windows afterward will void the colour balance, "
 "and it will have to be remade."
 msgstr ""
+"Відкриває інструмент калібрування RGB для результуючого зображення. Цей "
+"інструмент змінює зображення, щоб вирівняти три канали результата.\n"
+"Наступна зміна параиетрів в цьому вікні порушить баланс кольорів і він має "
+"бути заново відновлений."
 
 #: ../src/gui/siril3.glade.h:155
 msgid ""
@@ -675,21 +715,23 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:156
 msgid "HSL composition"
-msgstr ""
+msgstr "Композиція HSL"
 
 #: ../src/gui/siril3.glade.h:157
 msgid "HSV composition"
-msgstr ""
+msgstr "Композиція HSV"
 
 #: ../src/gui/siril3.glade.h:158
 msgid "CIE L*a*b* composition"
-msgstr ""
+msgstr "Композиція CIE L*a*b*"
 
 #: ../src/gui/siril3.glade.h:159
 msgid ""
 "WARNING: You should not perform a LRGB combination with linear images. "
 "Process images before."
 msgstr ""
+"УВАГА: слід уникати комбінування LRGB лінійних зображень. Зображення мають "
+"бути сперше оброблені."
 
 #: ../src/gui/siril3.glade.h:160
 msgid "Align layers on this reference layer:"
@@ -705,7 +747,7 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:163
 msgid "Crop image to common area after align"
-msgstr ""
+msgstr "Після вирівнювання обрізати області зображень, що не перетинаються"
 
 #: ../src/gui/siril3.glade.h:164
 msgid "and using this alignment method:"
@@ -722,7 +764,7 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:167 ../src/algos/cosmetic_correction.c:331
 msgid "Cosmetic Correction"
-msgstr ""
+msgstr "Косметична корекція"
 
 #: ../src/gui/siril3.glade.h:168
 msgid "Close current window"
@@ -730,7 +772,7 @@ msgstr "Закрити поточне вікно"
 
 #: ../src/gui/siril3.glade.h:169
 msgid "Apply Cosmetic Correction"
-msgstr ""
+msgstr "Застосувати косметичну корекцію"
 
 #: ../src/gui/siril3.glade.h:170
 msgid "CFA"
@@ -747,39 +789,45 @@ msgstr ""
 #: ../src/gui/siril3.glade.h:173
 msgid ""
 "Prefix of the image names resulting from the cosmetic correction process."
-msgstr ""
+msgstr "Префікс імен зображень після косметичної корекції."
 
 #: ../src/gui/siril3.glade.h:174
 msgid "Cold Sigma:"
-msgstr ""
+msgstr "Холодна сігма:"
 
 #: ../src/gui/siril3.glade.h:175
 msgid ""
 "How many times (in averrage deviation units) a pixel value must differ from "
 "the value of surrounding neighbors to be considered as a cold pixel."
 msgstr ""
+"Задає, у скільки разів (у одиницях середнього відхилення) значення пікселя "
+"має відрізнятись від значень оточуючих сусідніх пікселів, щоб піксель "
+"вважався \"холодним\"."
 
 #: ../src/gui/siril3.glade.h:176
 msgid "Hot Sigma:"
-msgstr ""
+msgstr "Гаряча сігма:"
 
 #: ../src/gui/siril3.glade.h:177
 msgid ""
 "How many times (in averrage deviation units) a pixel value must differ from "
 "the value of surrounding neighbors to be considered as a hot pixel."
 msgstr ""
+"Задає, у скільки разів (у одиницях середнього відхилення) значення пікселя "
+"має відрізнятись від значень оточуючих сусідніх пікселів, щоб піксель "
+"вважався \"гарячим\"."
 
 #: ../src/gui/siril3.glade.h:178
 msgid "Auto detection"
-msgstr ""
+msgstr "Автовизначення"
 
 #: ../src/gui/siril3.glade.h:179
 msgid "Crop sequence"
-msgstr ""
+msgstr "Обрізка кадрів з послідовності"
 
 #: ../src/gui/siril3.glade.h:180
 msgid "Prefix of the image names resulting from the cropping process."
-msgstr ""
+msgstr "Префікс імен зображень після обрізки."
 
 #: ../src/gui/siril3.glade.h:181
 msgid "Deconvolution"
@@ -787,21 +835,23 @@ msgstr "Деконволюція"
 
 #: ../src/gui/siril3.glade.h:182
 msgid "Sigma:"
-msgstr ""
+msgstr "Сігма:"
 
 #: ../src/gui/siril3.glade.h:183
 msgid ""
 "This represents the size of the gaussian kernel which is applied. The higher "
 "the value is, the stronger the effect is."
 msgstr ""
+"Задає розмір гаусового ядра, що застосовується для деконволюції. Більше "
+"значення призводить до сильнішого ефекту."
 
 #: ../src/gui/siril3.glade.h:184
 msgid "Algorithm:"
-msgstr ""
+msgstr "Аглоритм:"
 
 #: ../src/gui/siril3.glade.h:185
 msgid "Number of iterations."
-msgstr ""
+msgstr "Кількість ітерацій."
 
 #: ../src/gui/siril3.glade.h:186
 msgid "Siril message"
@@ -809,15 +859,15 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:187
 msgid "Fourier Transform"
-msgstr ""
+msgstr "Фур'є-перетворення"
 
 #: ../src/gui/siril3.glade.h:188
 msgid "Name of the magnitude file: "
-msgstr ""
+msgstr "Ім'я файлу магнітуди: "
 
 #: ../src/gui/siril3.glade.h:189
 msgid "Name of the phase file: "
-msgstr ""
+msgstr "Ім'я файлу фази: "
 
 #: ../src/gui/siril3.glade.h:190
 msgid "Order: "
@@ -837,15 +887,15 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:194
 msgid "Centered"
-msgstr ""
+msgstr "Центроване"
 
 #: ../src/gui/siril3.glade.h:195
 msgid "Normal"
-msgstr ""
+msgstr "Нормальне"
 
 #: ../src/gui/siril3.glade.h:196
 msgid "Polar (Magnitude + Phase)"
-msgstr ""
+msgstr "Полярне (магнітуда + фаза)"
 
 #: ../src/gui/siril3.glade.h:197
 msgid "Direct Transform"
@@ -853,55 +903,57 @@ msgstr "Пряме перетворення"
 
 #: ../src/gui/siril3.glade.h:198
 msgid "Magnitude of the image: "
-msgstr ""
+msgstr "Магнітуда зображення: "
 
 #: ../src/gui/siril3.glade.h:199
 msgid "Phase of the image: "
-msgstr ""
+msgstr "Фаза зображення: "
 
 #: ../src/gui/siril3.glade.h:200
 msgid "Select Magnitude"
-msgstr ""
+msgstr "Виберіть магнітуду"
 
 #: ../src/gui/siril3.glade.h:201
 msgid "Select Phase"
-msgstr ""
+msgstr "Виберіть фазу"
 
 #: ../src/gui/siril3.glade.h:202
 msgid "Inverse Transform"
-msgstr ""
+msgstr "Зворотнє перетворення"
 
 #: ../src/gui/siril3.glade.h:203
 msgid "Channel Extraction"
-msgstr ""
+msgstr "Виділення каналів"
 
 #: ../src/gui/siril3.glade.h:204
 msgid "File name for the first FITS file to save."
-msgstr ""
+msgstr "Ім'я файлу FITS для зберігання першого каналу."
 
 #: ../src/gui/siril3.glade.h:205
 msgid "File name for the second FITS file to save."
-msgstr ""
+msgstr "Ім'я файлу FITS для зберігання другого каналу."
 
 #: ../src/gui/siril3.glade.h:206
 msgid "File name for the third FITS file to save."
-msgstr ""
+msgstr "Ім'я файлу FITS для зберігання третього каналу."
 
 #: ../src/gui/siril3.glade.h:207
 msgid "Channel #1:"
-msgstr ""
+msgstr "Канал #1:"
 
 #: ../src/gui/siril3.glade.h:208
 msgid "Channel #2:"
-msgstr ""
+msgstr "Канал #2:"
 
 #: ../src/gui/siril3.glade.h:209
 msgid "Channel #3:"
-msgstr ""
+msgstr "Канал #2:"
 
 #: ../src/gui/siril3.glade.h:210
 msgid "Select the color space corresponding to the three extracted images"
 msgstr ""
+"Виберіть простір кольорів, який відповідає трьом зображенням, що будуть "
+"виділені"
 
 #: ../src/gui/siril3.glade.h:211
 msgid "RGB"
@@ -921,11 +973,11 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:215
 msgid "Color Space:"
-msgstr ""
+msgstr "Простір кольорів:"
 
 #: ../src/gui/siril3.glade.h:216
 msgid "Wavelets Layers Extraction"
-msgstr ""
+msgstr "Виділення шарів вейвлетів"
 
 #: ../src/gui/siril3.glade.h:217
 msgid "Close"
@@ -933,17 +985,19 @@ msgstr "Закрити"
 
 #: ../src/gui/siril3.glade.h:218
 msgid "Apply wavelet extraction."
-msgstr ""
+msgstr "Застосувати виділення вейвлетів."
 
 #: ../src/gui/siril3.glade.h:219
 msgid ""
 "Number of wavelet layers. You can choose up to 6 layers for wavelets "
 "computing."
 msgstr ""
+"Число шарів вейвлетів. Ви можете вибрати до 6-и шарів для розрахунку "
+"вейвлетів."
 
 #: ../src/gui/siril3.glade.h:220
 msgid "Type of algorithm"
-msgstr ""
+msgstr "Тип алгоритму"
 
 #: ../src/gui/siril3.glade.h:221
 msgid "BSpline"
@@ -951,11 +1005,11 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:222
 msgid "Nb. of Layers: "
-msgstr ""
+msgstr "Число шарів: "
 
 #: ../src/gui/siril3.glade.h:223
 msgid "Interpolation Algorithm:"
-msgstr ""
+msgstr "Алгоритм інтерполяції:"
 
 #: ../src/gui/siril3.glade.h:224
 msgid "Histograms"
@@ -1048,25 +1102,25 @@ msgstr "Частина відсічених пікселів (яскраві д�
 
 #: ../src/gui/siril3.glade.h:247
 msgid "Resample"
-msgstr ""
+msgstr "Масштабувати"
 
 #: ../src/gui/siril3.glade.h:249
 #, no-c-format
 msgid "X scale (%): "
-msgstr ""
+msgstr "Масштаб по X (%): "
 
 #: ../src/gui/siril3.glade.h:251
 #, no-c-format
 msgid "Y scale (%): "
-msgstr ""
+msgstr "Масштаб по Y (%): "
 
 #: ../src/gui/siril3.glade.h:252
 msgid "Preserve Aspect Ratio"
-msgstr ""
+msgstr "Зберегти співвідношення сторін зображення"
 
 #: ../src/gui/siril3.glade.h:253
 msgid "Type of algorithm used for resampling"
-msgstr ""
+msgstr "Тип алгоритму, який використовується для масштабування"
 
 #: ../src/gui/siril3.glade.h:254
 msgid "Nearest Neighbor"
@@ -1074,7 +1128,7 @@ msgstr "Найближчі сусідні пікселі"
 
 #: ../src/gui/siril3.glade.h:255
 msgid "Bilinear (default)"
-msgstr ""
+msgstr "Білінійна (за замовчуванням)"
 
 #: ../src/gui/siril3.glade.h:256 ../src/core/siril.c:1154
 #: ../src/core/siril.c:1194
@@ -1092,49 +1146,51 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:259
 msgid "Color saturation"
-msgstr ""
+msgstr "Насиченість кольору"
 
 #: ../src/gui/siril3.glade.h:260
 msgid ""
 "Value of 0 means no change, negative reduces the color saturation, positive "
 "increases it."
 msgstr ""
+"Якщо величина дорівнює 0, то змін не буде, відмінне значення зменшує "
+"насиченість кольору, додатнє -- підвищує."
 
 #: ../src/gui/siril3.glade.h:261
 msgid "Pink-Red / Red-Orange"
-msgstr ""
+msgstr "Рожево-червоний / Червого-помаранчевий"
 
 #: ../src/gui/siril3.glade.h:262
 msgid "Orange-Brown / Yellow"
-msgstr ""
+msgstr "Помаранчево-коричневий / Жовтий"
 
 #: ../src/gui/siril3.glade.h:263
 msgid "Yellow-Green / Green-Cyan"
-msgstr ""
+msgstr "Жовто-зелений / Зелено-ціановий"
 
 #: ../src/gui/siril3.glade.h:264
 msgid "Cyan"
-msgstr ""
+msgstr "Ціан"
 
 #: ../src/gui/siril3.glade.h:265
 msgid "Cyan-Blue / Blue-Magenta"
-msgstr ""
+msgstr "Ціаново-блакитний / Балкитний-маджента"
 
 #: ../src/gui/siril3.glade.h:266
 msgid "Magenta / Pink"
-msgstr ""
+msgstr "Маджента / Рожевий"
 
 #: ../src/gui/siril3.glade.h:267
 msgid "Global"
-msgstr ""
+msgstr "Глобально"
 
 #: ../src/gui/siril3.glade.h:268
 msgid "Hue:"
-msgstr ""
+msgstr "Відтінок:"
 
 #: ../src/gui/siril3.glade.h:269
 msgid "Preserve background"
-msgstr ""
+msgstr "Зберегти фон"
 
 #: ../src/gui/siril3.glade.h:270
 msgid "root name of the converted images (the &apos;dest&apos; in dest1.fit)"
@@ -1146,19 +1202,19 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:272
 msgid "<b>Filename</b>"
-msgstr ""
+msgstr "<b>Ім'я файлу</b>"
 
 #: ../src/gui/siril3.glade.h:273
 msgid "8-bit unsigned integer"
-msgstr ""
+msgstr "8-бітове ціле без знака"
 
 #: ../src/gui/siril3.glade.h:274
 msgid "16-bit unsigned integer"
-msgstr ""
+msgstr "16-бітове ціле без знака"
 
 #: ../src/gui/siril3.glade.h:275
 msgid "<b>Sample Format</b>"
-msgstr ""
+msgstr "<b>Формат</b>"
 
 #: ../src/gui/siril3.glade.h:276
 msgid "None"
@@ -1198,19 +1254,19 @@ msgstr "JPEG"
 
 #: ../src/gui/siril3.glade.h:285
 msgid "16-bit signed integer"
-msgstr ""
+msgstr "16-бітове ціле зі знаком"
 
 #: ../src/gui/siril3.glade.h:286
 msgid "Sample Format"
-msgstr ""
+msgstr "Формат"
 
 #: ../src/gui/siril3.glade.h:287
 msgid "Save MIPS-HI and MIPS-LO values"
-msgstr ""
+msgstr "Зберегти значення MIPS-HI та MIPS-LO"
 
 #: ../src/gui/siril3.glade.h:288
 msgid "Embedded Data"
-msgstr ""
+msgstr "Вбудовані дані"
 
 #: ../src/gui/siril3.glade.h:289
 msgid "FITS"
@@ -1693,7 +1749,7 @@ msgstr "Різне"
 
 #: ../src/gui/siril3.glade.h:384
 msgid "Dynamic PSF"
-msgstr ""
+msgstr "Динамічна PSF"
 
 #: ../src/gui/siril3.glade.h:385
 msgid "Ch."
@@ -1749,11 +1805,11 @@ msgstr "Радіус: "
 
 #: ../src/gui/siril3.glade.h:399
 msgid "Threshold: "
-msgstr ""
+msgstr "Поріг:"
 
 #: ../src/gui/siril3.glade.h:400
 msgid "Roundness threshold:"
-msgstr ""
+msgstr "Поріг округлості:"
 
 #: ../src/gui/siril3.glade.h:401
 msgid ""
@@ -1763,22 +1819,27 @@ msgid ""
 "WARNING: ensure you have a good reason to change this value because it may "
 "degrade the star detection."
 msgstr ""
+"Порогове значення для круглості зірок. Зменшіть це значення, якщо зірки "
+"мають невеликі треки.\n"
+"\n"
+"УВАГА: упевніться, що ви маєте вагомі причини, щоб змінити це значення, тому "
+"що це може суттєво погіршити виявлення зірок."
 
 #: ../src/gui/siril3.glade.h:404
 msgid "Star Detection"
-msgstr ""
+msgstr "Виявлення зірок"
 
 #: ../src/gui/siril3.glade.h:405
 msgid "Export PSF parameters in a ASCII file"
-msgstr ""
+msgstr "Експортувати параметри PSF у файл ASCII"
 
 #: ../src/gui/siril3.glade.h:406
 msgid "Remove selected star from the list"
-msgstr ""
+msgstr "Видалити вибрані зірки зі списку"
 
 #: ../src/gui/siril3.glade.h:407
 msgid "Remove all stars from the list"
-msgstr ""
+msgstr "Видалити всі зірки зі списку"
 
 #: ../src/gui/siril3.glade.h:408
 msgid "Wavelets control"
@@ -1786,11 +1847,11 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:409
 msgid "Cancel all changes applied"
-msgstr ""
+msgstr "Скасувати всі зміни"
 
 #: ../src/gui/siril3.glade.h:410
 msgid "Select an algorithm type to perform wavelets"
-msgstr ""
+msgstr "Виберіть тип алгоритму вейвлетного перетворення"
 
 #: ../src/gui/siril3.glade.h:411
 msgid "Compute wavelets"
@@ -1802,67 +1863,67 @@ msgstr "Тип:"
 
 #: ../src/gui/siril3.glade.h:413
 msgid "Nb of plans:"
-msgstr ""
+msgstr "Кількість площин:"
 
 #: ../src/gui/siril3.glade.h:414
 msgid "Number of wavelet layers that will be used"
-msgstr ""
+msgstr "Кількість вейвлетних площин, які будуть використані"
 
 #: ../src/gui/siril3.glade.h:415
 msgid "1st Plan:"
-msgstr ""
+msgstr "1-а площина:"
 
 #: ../src/gui/siril3.glade.h:416
 msgid "2nd Plan:"
-msgstr ""
+msgstr "2-а площина:"
 
 #: ../src/gui/siril3.glade.h:417
 msgid "3th Plan:"
-msgstr ""
+msgstr "3-я площина:"
 
 #: ../src/gui/siril3.glade.h:418
 msgid "4th Plan:"
-msgstr ""
+msgstr "4-а площина:"
 
 #: ../src/gui/siril3.glade.h:419
 msgid "5th Plan:"
-msgstr ""
+msgstr "5-а площина:"
 
 #: ../src/gui/siril3.glade.h:420
 msgid "6th Plan:"
-msgstr ""
+msgstr "6-а площина:"
 
 #: ../src/gui/siril3.glade.h:421
 msgid "Reset changes"
-msgstr ""
+msgstr "Скинути зміни"
 
 #: ../src/gui/siril3.glade.h:422
 msgid "Performs transformation"
-msgstr ""
+msgstr "Виконати трансформацію"
 
 #: ../src/gui/siril3.glade.h:423
 msgid "Adjust"
-msgstr ""
+msgstr "Настроїти"
 
 #: ../src/gui/siril3.glade.h:424
 msgid "Rotation"
-msgstr ""
+msgstr "Поворот"
 
 #: ../src/gui/siril3.glade.h:425
 msgid "Angle (°): "
-msgstr ""
+msgstr "Кут (°): "
 
 #: ../src/gui/siril3.glade.h:426
 msgid "Checking this box will crop the output image."
-msgstr ""
+msgstr "Встановлення цього прапорця призведе до обрізки зображення."
 
 #: ../src/gui/siril3.glade.h:427
 msgid "Angle in degrees. Rotation center is the center of the image."
-msgstr ""
+msgstr "Кут в градусах. Центр повороту співпадає з центром зображення."
 
 #: ../src/gui/siril3.glade.h:428
 msgid "Type of algorithm used for rotation"
-msgstr ""
+msgstr "Тип алгоритму, який викристовується для повороту"
 
 #: ../src/gui/siril3.glade.h:429
 msgid "Siril control center"
@@ -2213,7 +2274,7 @@ msgstr "Вибір зображень з послідовності"
 
 #: ../src/gui/siril3.glade.h:507
 msgid "No sequence selected"
-msgstr "Послідовність не обрана"
+msgstr "Послідовність не вибрана"
 
 #: ../src/gui/siril3.glade.h:508
 msgid ""
@@ -2371,7 +2432,7 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:537 ../src/io/sequence_export.c:495
 msgid "Select area to crop"
-msgstr "Оберіть область для обрізки"
+msgstr "Виберіть область для обрізки"
 
 #: ../src/gui/siril3.glade.h:538
 msgid "Image selection uses the same controls as for stacking"
@@ -2471,7 +2532,7 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:560
 msgid "Choose your own normalisation value."
-msgstr "Оберіть своє власне значення нормалізації."
+msgstr "Виберіть своє власне значення нормалізації."
 
 #: ../src/gui/siril3.glade.h:561
 msgid "Normalisation value for flat division"
@@ -2640,11 +2701,11 @@ msgstr "Зареєструвати лише вибрані зображення"
 
 #: ../src/gui/siril3.glade.h:595
 msgid "Choose registration method:"
-msgstr "Оберіть метод реєстрації:"
+msgstr "Виберіть метод реєстрації:"
 
 #: ../src/gui/siril3.glade.h:596
 msgid "Select registration layer:"
-msgstr "Оберіть площину для реєстрації:"
+msgstr "Виберіть  площину для реєстрації:"
 
 #: ../src/gui/siril3.glade.h:597
 msgid ""
@@ -2910,11 +2971,11 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:649
 msgid "Select the source of graph information."
-msgstr "Оберіть джерело інформації для графіку."
+msgstr "Виберіть джерело інформації для графіку."
 
 #: ../src/gui/siril3.glade.h:650
 msgid "Select which information to display from photometry data."
-msgstr "Оберіть, яку інформацію з фотометричних даних показувати."
+msgstr "Виберіть, яку інформацію з фотометричних даних показувати."
 
 #: ../src/gui/siril3.glade.h:651
 msgid "Roundness"
@@ -3054,7 +3115,7 @@ msgid ""
 "selected can be used. But it is possible to only select the percentage of "
 "best images following quality criteria (planetary, roundness or fwhm)."
 msgstr ""
-"Оберіть набір зображень для стекінгу. Можуть бути використані або всі "
+"Виберіть набір зображень для стекінгу. Можуть бути використані або всі "
 "зображення, або частина зображень, обраних вручну. Також можна встановити "
 "відсоток зображень найкращої якості, відібраних за різними критеріями "
 "(такими, що пасують до планетарних зображень, або критеріям круглості зірок "
@@ -3327,6 +3388,8 @@ msgid ""
 "Siril output window, displays messages about what has been done and in "
 "response to command inputs."
 msgstr ""
+"Відно для видачі інформації про те, що зроблено та відгуків на введені "
+"команди."
 
 #: ../src/gui/siril3.glade.h:757
 msgid "Output logs"
@@ -3345,7 +3408,7 @@ msgstr "Надрукуйте 'help', щоб отримати список ком
 
 #: ../src/gui/siril3.glade.h:760
 msgid "Displays manual of the command written in the console."
-msgstr ""
+msgstr "Показує керівництво з використання команди, яка введена з консолі."
 
 #: ../src/gui/siril3.glade.h:761
 msgid "<b>Console</b>"
@@ -3475,7 +3538,7 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:789
 msgid "Background reference"
-msgstr "Баланс кольорів фону"
+msgstr "Опорний зразок фону"
 
 #: ../src/gui/siril3.glade.h:790
 msgid "Manual White Balance"
@@ -3556,7 +3619,7 @@ msgstr "Верхня границя: "
 
 #: ../src/gui/siril3.glade.h:805
 msgid "White reference"
-msgstr "Баланс білого"
+msgstr "Опорний зразок білого"
 
 #: ../src/algos/colors.c:306
 msgid "Siril cannot extract layers. Make sure your image is in RGB mode.\n"
@@ -3752,7 +3815,7 @@ msgstr ""
 
 #: ../src/compositing/compositing.c:691
 msgid "An image area must be selected for align"
-msgstr ""
+msgstr "Для виконання вирівнювання потрібно вибрати область зображення"
 
 #: ../src/compositing/compositing.c:697
 msgid "At least 2 channels must be loaded for align"
@@ -3879,7 +3942,7 @@ msgstr ""
 #: ../src/core/command.c:777 ../src/core/command.c:860
 #: ../src/core/command.c:882 ../src/io/sequence.c:1541
 msgid "Select an area first\n"
-msgstr "Спочатку оберіть область\n"
+msgstr "Спочатку виберіть область\n"
 
 #: ../src/core/command.c:783
 #, c-format
@@ -4070,7 +4133,7 @@ msgstr "Помилка"
 
 #: ../src/core/command.c:1677 ../src/io/conversion.c:537
 msgid "Conversion: processing...\n"
-msgstr ""
+msgstr "Перетворення: обробка...\n"
 
 #: ../src/core/command.c:1688 ../src/io/conversion.c:548
 msgid "Conversion: no working directory set.\n"
@@ -4133,7 +4196,7 @@ msgstr ""
 
 #: ../src/core/command.c:2182 ../src/gui/callbacks.c:4018
 msgid "Preprocessing...\n"
-msgstr ""
+msgstr "Попередня обробка...\n"
 
 #: ../src/core/command.c:2230
 #, c-format
@@ -4183,7 +4246,7 @@ msgstr ""
 
 #: ../src/core/command.c:2411
 msgid "Total execution time"
-msgstr ""
+msgstr "Загальний час виконання"
 
 #: ../src/core/command.c:2413
 msgid "Script execution failed.\n"
@@ -4202,19 +4265,19 @@ msgstr ""
 
 #: ../src/core/command.c:2576
 msgid "Can be used in a script: "
-msgstr ""
+msgstr "Може бути використана в скриптах: "
 
 #: ../src/core/command.c:2579
 msgid "YES"
-msgstr ""
+msgstr "ТАК"
 
 #: ../src/core/command.c:2581
 msgid "NO"
-msgstr ""
+msgstr "НІ"
 
 #: ../src/core/command.c:2591
 msgid "No help for this command"
-msgstr ""
+msgstr "Нема опису цієї команди"
 
 #: ../src/core/command_def.h:6
 msgid ""
@@ -4875,11 +4938,11 @@ msgstr ""
 
 #: ../src/core/siril.c:1309
 msgid "Median Filter: processing...\n"
-msgstr ""
+msgstr "Медіанний фільтр: обробка...\n"
 
 #: ../src/core/siril.c:1340
 msgid "Median filter failed"
-msgstr ""
+msgstr "Медіанний фільтр: невдало"
 
 #: ../src/core/siril.c:1388
 msgid "Median filter applied"
@@ -4899,12 +4962,12 @@ msgstr ""
 
 #: ../src/core/siril.c:1667
 msgid "Noise standard deviation: calculating...\n"
-msgstr ""
+msgstr "Стандартне відхилення шуму: обчислення...\n"
 
 #: ../src/core/siril.c:1687
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
-msgstr ""
+msgstr "Рівень фонового шуму (канал: #%d): %0.3lf (%.3e)\n"
 
 #: ../src/core/siril.c:1700
 msgid "Lucy-Richardson deconvolution: processing...\n"
@@ -5015,7 +5078,7 @@ msgstr ""
 
 #: ../src/gui/callbacks.c:868 ../src/gui/save_dialog.c:63
 msgid "FITS Files (*.fit, *.fits, *.fts)"
-msgstr ""
+msgstr "Файли FITS (*.fit, *.fits, *.fts)"
 
 #: ../src/gui/callbacks.c:891
 msgid "RAW DSLR Camera Files"
@@ -5109,7 +5172,7 @@ msgstr ""
 #: ../src/gui/callbacks.c:1568
 #, c-format
 msgid "<%s.seq>: %d images selected out of %d, no reference image set"
-msgstr ""
+msgstr "<%s.seq>: %d зображень вибрано з %d, опорне зображення не встановлено"
 
 #: ../src/gui/callbacks.c:1571
 #, c-format
@@ -5236,7 +5299,7 @@ msgstr ""
 
 #: ../src/gui/callbacks.c:3096
 msgid "Are you sure you want to quit ?"
-msgstr ""
+msgstr "Ви впевнені, що хочете вийти з програми?"
 
 #: ../src/gui/callbacks.c:3674
 #, c-format
@@ -5478,7 +5541,7 @@ msgstr ""
 
 #: ../src/gui/progress_and_log.c:220
 msgid "Execution time"
-msgstr ""
+msgstr "Час виконання"
 
 #: ../src/gui/progress_and_log.c:230
 #, c-format
@@ -5569,7 +5632,7 @@ msgstr ""
 
 #: ../src/gui/save_dialog.c:177 ../src/gui/save_dialog.c:374
 msgid "Saving FITS"
-msgstr ""
+msgstr "Збереження FITS"
 
 #: ../src/gui/save_dialog.c:192 ../src/gui/save_dialog.c:195
 msgid "_Save"
@@ -5586,7 +5649,7 @@ msgstr ""
 #: ../src/gui/script_menu.c:216
 #, c-format
 msgid "Loading script: %s\n"
-msgstr ""
+msgstr "Завантажуємо скріпт: %s\n"
 
 #: ../src/gui/sequence_list.c:197
 #, c-format
@@ -5778,7 +5841,7 @@ msgstr ""
 
 #: ../src/io/conversion.c:761 ../src/io/ser.c:827 ../src/io/ser.c:1033
 msgid "No Bayer pattern found in the header file.\n"
-msgstr ""
+msgstr "В заголовку файлу не знайдено специфікації баєрівської матриці.\n"
 
 #: ../src/io/conversion.c:764 ../src/io/ser.c:831 ../src/io/ser.c:1037
 #, c-format
@@ -5786,6 +5849,8 @@ msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
 "settings (%s). Overriding settings.\n"
 msgstr ""
+"Специфікація баєрівської матриці з заголовку (%s) відрізняється від вказаної "
+"в налаштуваннях (%s). Перевизначаємо налаштування.\n"
 
 #: ../src/io/conversion.c:773
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
@@ -5870,7 +5935,7 @@ msgstr ""
 #: ../src/io/image_format_fits.c:581
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
-msgstr "Зчитування FITS: файл %s, %ld шар(и), %ux%u пікселів\n"
+msgstr "Зчитування FITS-файлу: %s, %ld шар(и), %ux%u пікселів\n"
 
 #: ../src/io/image_format_fits.c:728
 #, c-format
@@ -5895,7 +5960,7 @@ msgstr ""
 #: ../src/io/image_format_fits.c:926
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
-msgstr ""
+msgstr "Збереження FITS-файлу: %s, %ld шар(и), %ux%u пікселів\n"
 
 #: ../src/io/image_formats_internal.c:217
 msgid "Error opening BMP.\n"
@@ -6069,12 +6134,12 @@ msgstr ""
 #: ../src/io/image_formats_libraries.c:937
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%gs)\n"
-msgstr ""
+msgstr "Декодування файлу %s %s (ISO=%g, Експозиція=%gс)\n"
 
 #: ../src/io/image_formats_libraries.c:940
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
-msgstr ""
+msgstr "Декодування файлу %s %s (ISO=%g, Експозиція=1/%gс)\n"
 
 #: ../src/io/image_formats_libraries.c:960
 #: ../src/io/image_formats_libraries.c:969
@@ -6107,22 +6172,22 @@ msgstr ""
 #: ../src/io/image_formats_libraries.c:1176
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
-msgstr ""
+msgstr "Декодування файлу %s %s (ISO=%g, Експозиція=1/%0.1f сек)\n"
 
 #: ../src/io/image_formats_libraries.c:1179
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
-msgstr ""
+msgstr "Декодування файлу %s %s (ISO=%g, Експозиція=%0.1f сек)\n"
 
 #: ../src/io/image_formats_libraries.c:1202
 #, c-format
 msgid "Bayer pattern: %s\n"
-msgstr ""
+msgstr "Баєрівська матриця: %s\n"
 
 #: ../src/io/image_formats_libraries.c:1272
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
-msgstr ""
+msgstr "Зчитування RAW-файла: %s, %ld шар(и), %ux%u пікселів\n"
 
 #: ../src/io/mp4_output.c:412
 msgid ""
@@ -6216,7 +6281,7 @@ msgstr ""
 #: ../src/io/sequence.c:1115
 #, c-format
 msgid "Closing sequence %s\n"
-msgstr ""
+msgstr "Закриваємо послідовність %s\n"
 
 #: ../src/io/sequence.c:1210
 msgid "internal sequence"
@@ -6358,7 +6423,7 @@ msgstr ""
 
 #: ../src/io/ser.c:868 ../src/io/ser.c:1095
 msgid "This type of Bayer pattern is not handled yet.\n"
-msgstr ""
+msgstr "Цей тип баєрівської матриці поки що не підтримується.\n"
 
 #: ../src/io/ser.c:1047
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
@@ -6679,7 +6744,7 @@ msgstr "%d кадрів виключено.\n"
 #: ../src/registration/registration.c:719
 msgid "Select an area in image first, and select images in the sequence."
 msgstr ""
-"Спочатку оберіть область на зображенні та виберить зображення з "
+"Спочатку виберіть область на зображенні та виберить зображення з "
 "послідовності."
 
 #: ../src/registration/registration.c:721
@@ -6688,7 +6753,7 @@ msgstr ""
 
 #: ../src/registration/registration.c:723
 msgid "Select an area in image first."
-msgstr "Спочатку оберіть область на зображенні."
+msgstr "Спочатку виберіть область на зображенні."
 
 #: ../src/registration/registration.c:846
 msgid ""
@@ -6720,7 +6785,7 @@ msgstr ""
 
 #: ../src/stacking/stacking.c:119 ../src/stacking/stacking.c:804
 msgid "Select at least two frames for stacking. Aborting.\n"
-msgstr "Оберіть щонайменш два кадри для стекінгу. Перервано.\n"
+msgstr "Виберіть щонайменш два кадри для стекінгу. Перервано.\n"
 
 #: ../src/stacking/stacking.c:141
 #, c-format
@@ -6755,7 +6820,7 @@ msgstr ""
 #: ../src/stacking/stacking.c:313 ../src/stacking/stacking.c:997
 #, c-format
 msgid "We have %d parallel blocks of size %d (+%d) for stacking.\n"
-msgstr ""
+msgstr "Маємо %d паралельних блоків розміром %d (+%d) для стекінгу.\n"
 
 #: ../src/stacking/stacking.c:321 ../src/stacking/stacking.c:1005
 msgid ""
@@ -6765,7 +6830,7 @@ msgstr ""
 
 #: ../src/stacking/stacking.c:388 ../src/stacking/stacking.c:1074
 msgid "Starting stacking...\n"
-msgstr ""
+msgstr "Починаємо стекінг...\n"
 
 #: ../src/stacking/stacking.c:389
 msgid "Median stacking in progress..."
@@ -6791,12 +6856,12 @@ msgstr ""
 
 #: ../src/stacking/stacking.c:528
 msgid "Median stacking complete."
-msgstr ""
+msgstr "Медіанний стекінг завершено."
 
 #: ../src/stacking/stacking.c:529
 #, c-format
 msgid "Median stacking complete. %d have been stacked.\n"
-msgstr ""
+msgstr "Медіанний стекінг завершено. Використано %d зображень.\n"
 
 #: ../src/stacking/stacking.c:566
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"
@@ -6863,77 +6928,79 @@ msgstr ""
 #, c-format
 msgid "Stacking will use registration data of layer %d if some exist.\n"
 msgstr ""
+"Стекінг буде використовувати дані реєстрації для шару %d, якщо вони "
+"існують.\n"
 
 #: ../src/stacking/stacking.c:1499
 msgid "Stacking: processing...\n"
-msgstr ""
+msgstr "Стекінг: обробка...\n"
 
 #: ../src/stacking/stacking.c:1514
 #, c-format
 msgid "Integration of %d images:\n"
-msgstr ""
+msgstr "Об'єднуємо %d зображень:\n"
 
 #: ../src/stacking/stacking.c:1518
 msgid "Pixel combination ......... average\n"
-msgstr ""
+msgstr "Пікселі скомбіновано ......... усередненням\n"
 
 #: ../src/stacking/stacking.c:1520
 msgid "Pixel combination ......... normalized sum\n"
-msgstr ""
+msgstr "Пікселі скомбіновано ......... нормалізованою сумою\n"
 
 #: ../src/stacking/stacking.c:1522
 msgid "Pixel combination ......... median\n"
-msgstr ""
+msgstr "Пікселі скомбіновано ......... медіаною\n"
 
 #: ../src/stacking/stacking.c:1524
 msgid "Pixel combination ......... minimum\n"
-msgstr ""
+msgstr "Пікселі скомбіновано ......... мінімумом\n"
 
 #: ../src/stacking/stacking.c:1526
 msgid "Pixel combination ......... maximum\n"
-msgstr ""
+msgstr "Пікселі скомбіновано ......... максимумом\n"
 
 #: ../src/stacking/stacking.c:1528
 msgid "Pixel combination ......... none\n"
-msgstr ""
+msgstr "Пікселі скомбіновано ......... ніяк\n"
 
 #: ../src/stacking/stacking.c:1533 ../src/stacking/stacking.c:1538
 #: ../src/stacking/stacking.c:1567
 msgid "none"
-msgstr ""
+msgstr "немає"
 
 #: ../src/stacking/stacking.c:1541
 msgid "additive"
-msgstr ""
+msgstr "адитивна"
 
 #: ../src/stacking/stacking.c:1544
 msgid "multiplicative"
-msgstr ""
+msgstr "мультиплікативна"
 
 #: ../src/stacking/stacking.c:1547
 msgid "additive + scaling"
-msgstr ""
+msgstr "адитивна + масштабування"
 
 #: ../src/stacking/stacking.c:1550
 msgid "multiplicative + scaling"
-msgstr ""
+msgstr "мультиплікативна + масштабування"
 
 #: ../src/stacking/stacking.c:1555
 #, c-format
 msgid "Normalization ............. %s\n"
-msgstr ""
+msgstr "Нормалізація ................. %s\n"
 
 #: ../src/stacking/stacking.c:1559
 msgid "Pixel rejection ........... none\n"
-msgstr ""
+msgstr "Відкидання пікселів .......... немає\n"
 
 #: ../src/stacking/stacking.c:1560
 msgid "Rejection parameters ...... none\n"
-msgstr ""
+msgstr "Параметри відкидання ......... немає\n"
 
 #: ../src/stacking/stacking.c:1570
 msgid "percentile clipping"
-msgstr ""
+msgstr "персентильний кліпінг"
 
 #: ../src/stacking/stacking.c:1573
 msgid "sigma clipping"
@@ -6972,7 +7039,7 @@ msgstr ""
 #: ../src/stacking/stacking.c:1888
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
-msgstr ""
+msgstr "Максимальний об'єм пам'яті для стекінгу: %d MB\n"
 
 #: ../src/stacking/stacking.c:1914
 msgid ""
@@ -6997,7 +7064,7 @@ msgstr ""
 #: ../src/stacking/stacking.c:2094
 #, c-format
 msgid "Stacking all images in the sequence (%d)\n"
-msgstr ""
+msgstr "Стекінг всіх зображень у послідовності (%d)\n"
 
 #: ../src/stacking/stacking.c:2103
 #, c-format

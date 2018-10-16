@@ -164,6 +164,22 @@ static void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TDOUBLE, "CVF", &(fit->cvf), NULL, &status);
 
 	/*******************************************************************
+	 * ******************* PLATE SOLVING KEYWORDS **********************
+	 * ****************************************************************/
+	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->crpix1), NULL, &status);
+
+	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "CRPIX2", &(fit->crpix2), NULL, &status);
+
+	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->crval1), NULL, &status);
+
+	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->crval2), NULL, &status);
+
+
+	/*******************************************************************
 	 * ************************* DFT KEYWORDS **************************
 	 * ****************************************************************/
 
@@ -1064,6 +1080,26 @@ void save_fits_header(fits *fit) {
 	if (fit->cvf > 0.)
 		fits_update_key(fit->fptr, TDOUBLE, "CVF", &(fit->cvf),
 				"Conversion factor (e-/adu)", &status);
+
+	/*******************************************************************
+	 * ******************* PLATE SOLVING KEYWORDS **********************
+	 * ****************************************************************/
+	status = 0;
+	if (fit->crpix1 > 0.)
+		fits_update_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->crpix1),
+				"Axis1 reference pixel", &status);
+	status = 0;
+	if (fit->crpix2 > 0.)
+		fits_update_key(fit->fptr, TDOUBLE, "CRPIX2", &(fit->crpix2),
+				"Axis2 reference pixel", &status);
+	status = 0;
+	if (fit->crval1 > 0.)
+		fits_update_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->crval1),
+				"Axis1 reference value", &status);
+	status = 0;
+	if (fit->crval2 > 0.)
+		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->crval2),
+				"Axis2 reference value", &status);
 
 	/*******************************************************************
 	 * ******************** PROGRAMM KEYWORDS **************************

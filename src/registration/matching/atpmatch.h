@@ -66,14 +66,14 @@
     * This is the default value.  The user can override it with an optional
     * command-line argument.
     */
-#define AT_MATCH_NBRIGHT   20
+#define AT_MATCH_NBRIGHT   30
 
    /*
     * ignore all triangles which have (b/a) > AT_MATCH_RATIO when
     * trying to match up sets of triangles.  If AT_MATCH_RATIO
     * is set to 1.0, then all triangles will be used.
     */
-#define AT_MATCH_RATIO    0.8
+#define AT_MATCH_RATIO    0.9
 
    /*
     * We require AT LEAST this many matched pairs of stars to
@@ -99,11 +99,9 @@
     * as an effective "sigma".  Throw out any pairs with
     * discrepancy more than AT_MATCH_NSIGMA*"sigma".
     *
-    * Values of 0.60-0.70 work well for AT_MATCH_PERCENTILE
-    * Values of 2-3                     AT_MATCH_NSIGMA
     */
-#define AT_MATCH_PERCENTILE   0.70
-#define AT_MATCH_NSIGMA       3.0
+#define AT_MATCH_PERCENTILE   0.35
+#define AT_MATCH_NSIGMA       10.0
 
    /*
     * We go through a loop of

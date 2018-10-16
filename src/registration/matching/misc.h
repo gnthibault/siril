@@ -29,7 +29,7 @@
 #define COMMENT_CHAR   '#'
 
    /* data files can have this many data columns, at most */
-#define MAX_DATA_COL    20
+#define MAX_DATA_COL    30
 
    /* each column in the data file can have at most this many characters */
 #define MAX_COL_LENGTH 50
@@ -146,6 +146,7 @@ void atTransOrderSet(int order);
 int atTransOrderGet(void);
 TRANS *atTransNew(void);
 Homography *atHNew(void);
+void print_trans(TRANS *trans);
 void atTransDel(TRANS *trans);
 void atHDel(Homography *H);
 void print_H(Homography *H);
@@ -176,6 +177,12 @@ get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list, point ima
 
 void
 free_stars(struct s_star *head);
+
+int
+is_blank(char *line);
+
+int
+get_value(char *str, double *val);
 
 
 #endif    /* MISC_H */
