@@ -69,13 +69,13 @@ static int parse_curl_buffer(char *buffer, struct object *obj) {
 	nargs = g_strv_length(token);
 
 	while (i < nargs) {
-		if (g_str_has_prefix (token[i], "#=N=NED")) {
+		if (g_strrstr (token[i], "NED")) {
 			resolver = RESOLVER_NED;
 		}
-		else if (g_str_has_prefix (token[i], "#=Sc=Simbad")) {
+		else if (g_strrstr (token[i], "Simbad")) {
 			resolver = RESOLVER_SIMBAD;
 		}
-		else if (g_str_has_prefix(token[i], "#=V1=VizieR")) {
+		else if (g_strrstr(token[i], "VizieR")) {
 			resolver = RESOLVER_VISIER;
 		}
 		else if (g_str_has_prefix (token[i], "%J ")) {
@@ -138,7 +138,7 @@ static gchar *get_catalog_url(point center, int mag_limit, double dfov, int type
 	gchar mag[3];
 	gchar fov[10];
 
-	g_snprintf(coordinates, sizeof(coordinates), "%lf%%20%c%lf", center.x, center.y > 0 ? '+' : '-', center.y);
+	g_snprintf(coordinates, sizeof(coordinates), "%lf+%lf", center.x, center.y);
 	g_snprintf(mag, sizeof(mag), "%d", mag_limit);
 	g_snprintf(fov, sizeof(fov), "%d", (int)dfov / 2);
 
@@ -515,7 +515,7 @@ static void print_platesolving_results(Homography H, image_solved image) {
 	/* Matching information */
 	siril_log_message(_("%d pair matches.\n"), H.pair_matched);
 	inliers = 1.0 - ((((double) H.pair_matched - (double) H.Inliers)) / (double) H.pair_matched);
-	siril_log_message(_("Inliers:%*.3f\n"), 11, inliers);
+	siril_log_message(_("Inliers:%*.3f\n"), 14, inliers);
 
 	/* Plate Solving */
 	scaleX = sqrt(H.h00 * H.h00 + H.h01 * H.h01);
@@ -655,7 +655,7 @@ static int match_catalog(gchar *catalogStars) {
 	catalog = g_fopen(catalogStars, "r");
 	if (catalog == NULL) {
 		fprintf(stderr, "match_catalog: error opening file: %s\n", catalogStars);
-		free_fitted_stars(cstars);
+		free(cstars);
 		return 1;
 	}
 
@@ -679,13 +679,42 @@ static int match_catalog(gchar *catalogStars) {
 		update_IPS_GUI();
 	} else {
 		siril_log_color_message(_("Plate Solving failed. The image could not be aligned with the reference star field.\n"), "red");
-		siril_log_color_message(_("This is usually because the initial parameters (pixel size, focal length, initial coordinates) are too far from the real metadata of the image.\n"), "red");
+		siril_log_color_message(_("This is usually because the initial parameters (pixel size, focal length, initial coordinates) "
+				"are too far from the real metadata of the image.\n"), "red");
 	}
 
 	/* free data */
 	if (n_cat > 0) free_fitted_stars(cstars);
 	clear_stars_list();
 	return 0;
+}
+
+static void search_object_in_catalogs(const gchar *object) {
+	GString *url;
+	gchar *gcurl, *result;
+	struct object obj;
+
+	set_cursor_waiting(TRUE);
+	url = g_string_new(CDSSESAME);
+	url = g_string_append(url, "/-oI/A?");
+	url = g_string_append(url, object);
+	gcurl = g_string_free(url, FALSE);
+	result = fetch_url(gcurl);
+	parse_curl_buffer(result, &obj);
+	add_object_to_list();
+	free_Platedobject();
+	set_cursor_waiting(FALSE);
+}
+
+static void start_image_plate_solve() {
+	gchar *catalog;
+
+	set_cursor_waiting(TRUE);
+	catalog = download_catalog();
+	match_catalog(catalog);
+	set_cursor_waiting(FALSE);
+
+	g_free(catalog);
 }
 
 /*****
@@ -724,30 +753,16 @@ void on_GtkButton_IPS_metadata_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_GtkButtonIPS_clicked(GtkButton *button, gpointer user_data) {
-	GString *url;
-	gchar *gcurl, *result;
-	struct object obj;
 	GtkEntry *entry;
 
 	entry = GTK_ENTRY(lookup_widget("GtkSearchIPS"));
-	set_cursor_waiting(TRUE);
-	url = g_string_new(CDSSESAME);
-	url = g_string_append(url, "/-oI/A?");
-	url = g_string_append(url, gtk_entry_get_text(GTK_ENTRY(entry)));
-	gcurl = g_string_free(url, FALSE);
-	result = fetch_url(gcurl);
-	parse_curl_buffer(result, &obj);
-	add_object_to_list();
-	free_Platedobject();
-	set_cursor_waiting(FALSE);
-
+	search_object_in_catalogs(gtk_entry_get_text(GTK_ENTRY(entry)));
 }
 
 void on_buttonIPS_ok_clicked(GtkButton *button, gpointer user_data) {
-	gchar *catalog;
+	start_image_plate_solve();
+}
 
-	set_cursor_waiting(TRUE);
-	catalog = download_catalog();
-	match_catalog(catalog);
-	set_cursor_waiting(FALSE);
+void on_GtkSearchIPS_activate(GtkEntry *entry, gpointer user_data) {
+	search_object_in_catalogs(gtk_entry_get_text(GTK_ENTRY(entry)));
 }
