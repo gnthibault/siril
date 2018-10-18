@@ -38,8 +38,6 @@
 #include "registration/matching/atpmatch.h"
 #include "registration/matching/project_coords.h"
 
-#define BRIGHTEST_STARS 2500
-
 #define RADCONV ((3600.0 * 180.0) / M_PI) / 1.0E3
 
 #undef DEBUG           /* get some of diagnostic output */
@@ -154,8 +152,6 @@ static gchar *get_catalog_url(point center, int mag_limit, double dfov, int type
 		url = g_string_append(url, coordinates);
 		url = g_string_append(url, "&Vmag=<");
 		url = g_string_append(url, mag);
-//		url = g_string_append(url, "&Bmag=<");
-//		url = g_string_append(url, mag);
 		break;
 	default:
 	case APPAS:
@@ -289,7 +285,7 @@ static gchar *download_catalog() {
 	buffer = fetch_url(url);
 
 	filename = g_build_filename(g_get_tmp_dir(), "catalog.dat", NULL);
-	catalog = g_fopen(filename, "w+t");
+	catalog = g_fopen(filename, "r+t");
 	if (catalog == NULL) {
 		fprintf(stderr, "plateSolver: Cannot open catalog\n");
 		g_free(foutput);
@@ -302,6 +298,7 @@ static gchar *download_catalog() {
 	if (fproj == NULL) {
 		fprintf(stderr, "plateSolver: Cannot open fproj\n");
 		g_free(foutput);
+		fclose(catalog);
 		return NULL;
 	}
 
@@ -310,6 +307,7 @@ static gchar *download_catalog() {
 	is_result.px_cat_center = platedObject[index].imageCenter;
 
 	fclose(catalog);
+	fclose(fproj);
 	g_free(filename);
 
 	/* free data */
@@ -542,11 +540,13 @@ static void print_platesolving_results(Homography H, image_solved image) {
 
 static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 	char line[LINELEN];
-	fitted_PSF *psf;
-	double r, x, y, Vmag, Bmag;
+	fitted_PSF *star;
+
 	int i = 0;
 
 	while (fgets(line, LINELEN, catalog) != NULL) {
+		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
+
 		if (line[0] == COMMENT_CHAR) {
 			continue;
 		}
@@ -557,13 +557,13 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 			continue;
 		}
 		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &Bmag);
-		if (n < 5)
-			continue;
-		psf = malloc(sizeof(fitted_PSF));
-		psf->xpos = x;
-		psf->ypos = -y + shift_y;
-		psf->mag = Vmag;
-		cstars[i] = psf;
+
+		star = malloc(sizeof(fitted_PSF));
+		star->xpos = x;
+		star->ypos = -y + shift_y;
+		star->mag = Vmag;
+		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
+		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
 	}
@@ -574,7 +574,7 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 
 static int read_APPAS_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 	char line[LINELEN];
-	fitted_PSF *psf;
+	fitted_PSF *star;
 	double x, y, magA, magB, pmRA, pmDec;
 	int i = 0;
 	int tmp;
@@ -595,11 +595,11 @@ static int read_APPAS_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		int n = sscanf(line, "%d %d %d %lf %lf %lf %lf %lf %lf %d", &tmp, &tmp, &tmp, &x, &y, &pmRA, &pmDec, &magA, &magB, &tmp);
 		if (n < 10)
 			continue;
-		psf = malloc(sizeof(fitted_PSF));
-		psf->xpos = x;
-		psf->ypos = -y + shift_y;
-		psf->mag = magA;
-		cstars[i] = psf;
+		star = malloc(sizeof(fitted_PSF));
+		star->xpos = x;
+		star->ypos = -y + shift_y;
+		star->mag = magA;
+		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
 	}
@@ -638,6 +638,9 @@ static int match_catalog(gchar *catalogStars) {
 	int n_fit, n_cat, n;
 	point image_size = {gfit.rx, gfit.ry};
 	Homography H = { 0 };
+	int ret = 1;
+	int nobj = AT_MATCH_CATALOG_NBRIGHT;
+	int attempt = 1;
 
 	com.stars = peaker(&gfit, 0, &com.starfinder_conf, &n_fit, NULL, TRUE); // TODO: use good layer
 	if (n_fit < AT_MATCH_MINPAIRS) {
@@ -666,7 +669,11 @@ static int match_catalog(gchar *catalogStars) {
 	n = n_fit < n_cat ? n_fit : n_cat;
 	n = n > BRIGHTEST_STARS ? BRIGHTEST_STARS : n;
 
-	int ret = new_star_match(com.stars, cstars, n, AT_MATCH_CATALOG_NBRIGHT, &H, image_size);
+	while (ret && attempt < NB_OF_MATCHING_TRY){
+		ret = new_star_match(com.stars, cstars, n, nobj, &H, image_size);
+		nobj += 50;
+		attempt++;
+	}
 
 	if (!ret) {
 		TRANS trans = H_to_linear_TRANS(H);
@@ -678,7 +685,7 @@ static int match_catalog(gchar *catalogStars) {
 		print_platesolving_results(H, is_result);
 		update_IPS_GUI();
 	} else {
-		siril_log_color_message(_("Plate Solving failed. The image could not be aligned with the reference star field.\n"), "red");
+		siril_log_color_message(_("Plate Solving failed. The image could not be aligned with the reference star  after %d attempts.\n"), "red", attempt);
 		siril_log_color_message(_("This is usually because the initial parameters (pixel size, focal length, initial coordinates) "
 				"are too far from the real metadata of the image.\n"), "red");
 	}
@@ -686,6 +693,7 @@ static int match_catalog(gchar *catalogStars) {
 	/* free data */
 	if (n_cat > 0) free_fitted_stars(cstars);
 	clear_stars_list();
+	fclose(catalog);
 	return 0;
 }
 

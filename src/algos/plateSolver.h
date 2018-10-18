@@ -8,6 +8,8 @@
 #ifndef PI
 #define PI 3.14159265359
 #endif
+
+#define BRIGHTEST_STARS 2500
 #define AT_MATCH_CATALOG_NBRIGHT   60
 
 #define RADtoASEC (3600.0 * 180.0 / M_PI)

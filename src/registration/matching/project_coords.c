@@ -85,9 +85,6 @@ static int
 proc_star_file(char *file, int racol, int deccol, double ra, double dec,
 		FILE *out_fp, int doASEC);
 
-#define USAGE  "usage: project_coords starfile1 racol deccol ra dec [outfile=] [asec]"
-char *progname = "project_coords";
-
 int convert_catalog_coords(char *fileA, point coord, FILE *out) {
 	int doASEC = 1;
 	double ra = coord.x;
@@ -98,8 +95,6 @@ int convert_catalog_coords(char *fileA, point coord, FILE *out) {
 		shError("can't process data from file %s", fileA);
 		exit(1);
 	}
-
-	fclose(out);
 
 	return (0);
 }
@@ -134,7 +129,7 @@ double central_dec, /* I: central Dec of tangent plane (degrees) */
 FILE *out_fp, /* I: place output into this stream */
 int doASEC /* I: if > 0, write offsets in arcsec */
 ) {
-	char line[LINELEN];
+	char line[LINELEN] = { 0 };
 	char col[MAX_DATA_COL + 1][MAX_COL_LENGTH + 1];
 	int i, ncol;
 	int last_column = -1;
@@ -243,25 +238,27 @@ int doASEC /* I: if > 0, write offsets in arcsec */
 		 * different output formats for (xi, eta) if they are expressed
 		 * in radians or arcseconds.  
 		 */
-		line[0] = '\0';
+		char newcol[MAX_COL_LENGTH] = { 0 };
+		memset(line, 0, LINELEN);
 		for (i = 0; i < ncol; i++) {
 			if (i == racol) {
 				if (doASEC > 0) {
 					/* write the offsets in arcsec */
-					sprintf(line, "%s %12.5f", line, xi);
+					g_snprintf(newcol, 12, "%12.5f  ", xi);
 				} else {
-					sprintf(line, "%s %13.6e", line, xi);
+					g_snprintf(newcol, 13, "%13.6e ", xi);
 				}
 			} else if (i == deccol) {
 				if (doASEC > 0) {
 					/* write the offsets in arcsec */
-					sprintf(line, "%s %12.5f", line, eta);
+					g_snprintf(newcol, 12, "%12.5f ", eta);
 				} else {
-					sprintf(line, "%s %13.6e", line, eta);
+					g_snprintf(newcol, 13, "%13.6e ", eta);
 				}
 			} else {
-				sprintf(line, "%s %s", line, col[i]);
+				g_sprintf(newcol, "%s ", col[i]);
 			}
+			g_strlcat(line, newcol, LINELEN);
 		}
 		fprintf(out_fp, "%s\n", line);
 
