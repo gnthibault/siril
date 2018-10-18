@@ -46,7 +46,7 @@ enum {
 	APPAS, NOMAD
 };
 
-static int get_mag_limit();
+static double get_mag_limit(double fov);
 static double get_focal();
 static double get_pixel();
 static double get_resolution(double focal, double pixel);
@@ -130,15 +130,15 @@ static void free_Platedobject() {
 	}
 }
 
-static gchar *get_catalog_url(point center, int mag_limit, double dfov, int type) {
+static gchar *get_catalog_url(point center, double mag_limit, double dfov, int type) {
 	GString *url;
 	gchar coordinates[256];
-	gchar mag[3];
+	gchar mag[6];
 	gchar fov[10];
 
 	g_snprintf(coordinates, sizeof(coordinates), "%lf+%lf", center.x, center.y);
-	g_snprintf(mag, sizeof(mag), "%d", mag_limit);
-	g_snprintf(fov, sizeof(fov), "%d", (int)dfov / 2);
+	g_snprintf(mag, sizeof(mag), "%2.2lf", mag_limit);
+	g_snprintf(fov, sizeof(fov), "%2.1lf", dfov / 2);
 
 	url = g_string_new("http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source=");
 	switch (type) {
@@ -268,7 +268,7 @@ static char *fetch_url(const char *url) {
 
 static gchar *download_catalog() {
 	gchar *url;
-	gchar *buffer;
+	char *buffer = NULL;
 	FILE *catalog = NULL;
 	FILE *fproj = NULL;
 	gchar *filename, *foutput;
@@ -280,44 +280,45 @@ static gchar *download_catalog() {
 	double fov = get_fov(get_resolution(get_focal(), get_pixel()),
 			gfit.ry > gfit.rx ? gfit.ry : gfit.rx);
 
-	url = get_catalog_url(platedObject[index].imageCenter, get_mag_limit(), fov,
+	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
+
+	url = get_catalog_url(platedObject[index].imageCenter, get_mag_limit(fov), fov,
 			NOMAD);
-	buffer = fetch_url(url);
 
 	filename = g_build_filename(g_get_tmp_dir(), "catalog.dat", NULL);
-	catalog = g_fopen(filename, "r+t");
+	catalog = g_fopen(filename, "w+t");
 	if (catalog == NULL) {
 		fprintf(stderr, "plateSolver: Cannot open catalog\n");
 		g_free(foutput);
 		return NULL;
 	}
-	fprintf(catalog, buffer);
+	buffer = fetch_url(url);
+	fprintf(catalog, "%s", buffer);
+	g_free(url);
+	free(buffer);
+	fclose(catalog);
+
+	/* -------------------------------------------------------------------------------- */
+
+	/* --------- Project coords of Vizier catalog and save it into catalog.proj ------- */
 
 	foutput = g_build_filename(g_get_tmp_dir(), "catalog.proj", NULL);
 	fproj = g_fopen(foutput, "w+t");
 	if (fproj == NULL) {
 		fprintf(stderr, "plateSolver: Cannot open fproj\n");
 		g_free(foutput);
-		fclose(catalog);
 		return NULL;
 	}
 
 	convert_catalog_coords(filename, platedObject[index].imageCenter, fproj);
+	fclose(fproj);
+
+	/* -------------------------------------------------------------------------------- */
 
 	is_result.px_cat_center = platedObject[index].imageCenter;
 
-	fclose(catalog);
-	fclose(fproj);
 	g_free(filename);
-
-	/* free data */
-	g_free(url);
 	return foutput;
-}
-
-void http_cleanup() {
-	curl_easy_cleanup(curl);
-	curl_global_cleanup();
 }
 
 /*********
@@ -330,7 +331,6 @@ enum {
 	N_COLUMNS
 };
 
-// RA: 03 47 13.271  Dec: +24 19 17.77
 static void deg_to_HMS(double var, gchar *type, gchar *HMS) {
 	if (!strncasecmp(type, "ra", 2)) {
 		char rs = ' ';
@@ -443,11 +443,22 @@ static double get_fov(double resolution, int image_size) {
 	return (resolution * (double)image_size) / 60.0;
 }
 
+static double get_mag_limit(double fov) {
+	GtkToggleButton *autobutton = GTK_TOGGLE_BUTTON(lookup_widget("GtkCheckButton_Mag_Limit"));
+	if (gtk_toggle_button_get_active(autobutton)) {
+		// Empiric formula for 1000 stars at 20 deg of galactic latitude
+		double autoLimitMagnitudeFactor = 14.5;
+		/* convert fov in degree */
+		fov /= 60.0;
+		double m = autoLimitMagnitudeFactor * pow(fov, -0.179);
+		m = round(100 * min(20, max(7, m))) / 100;
+		return m;
+	} else {
+		GtkSpinButton *magButton = GTK_SPIN_BUTTON(
+				lookup_widget("GtkSpinIPS_Mag_Limit"));
 
-static int get_mag_limit() {
-	GtkSpinButton *magButton = GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Mag_Limit"));
-
-	return gtk_spin_button_get_value_as_int(magButton);
+		return gtk_spin_button_get_value(magButton);
+	}
 }
 
 static void update_pixel_size() {
@@ -640,6 +651,9 @@ static int match_catalog(gchar *catalogStars) {
 	int ret = 1;
 	int nobj = AT_MATCH_CATALOG_NBRIGHT;
 	int attempt = 1;
+	double s;
+
+	s = get_resolution(get_focal(), get_pixel());
 
 	com.stars = peaker(&gfit, 0, &com.starfinder_conf, &n_fit, NULL, TRUE); // TODO: use good layer
 	if (n_fit < AT_MATCH_MINPAIRS) {
@@ -669,7 +683,8 @@ static int match_catalog(gchar *catalogStars) {
 	n = n > BRIGHTEST_STARS ? BRIGHTEST_STARS : n;
 
 	while (ret && attempt < NB_OF_MATCHING_TRY){
-		ret = new_star_match(com.stars, cstars, n, nobj, &H, image_size);
+		ret = new_star_match(com.stars, cstars, n, nobj, s - 0.2, s + 0.2, &H,
+				image_size);
 		nobj += 50;
 		attempt++;
 	}
@@ -772,4 +787,12 @@ void on_buttonIPS_ok_clicked(GtkButton *button, gpointer user_data) {
 
 void on_GtkSearchIPS_activate(GtkEntry *entry, gpointer user_data) {
 	search_object_in_catalogs(gtk_entry_get_text(GTK_ENTRY(entry)));
+}
+
+void on_GtkCheckButton_Mag_Limit_toggled(GtkToggleButton *button,
+		gpointer user_data) {
+	GtkWidget *spinmag;
+
+	spinmag = lookup_widget("GtkSpinIPS_Mag_Limit");
+	gtk_widget_set_sensitive(spinmag, !gtk_toggle_button_get_active(button));
 }

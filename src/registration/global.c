@@ -240,7 +240,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		image_size.y = fit->ry;
 		/* make a loop with different tries in order to align the two sets of data */
 		while (retvalue && attempt < NB_OF_MATCHING_TRY){
-			retvalue = new_star_match(stars, sadata->refstars, nbpoints, nobj, &H, image_size);
+			retvalue = new_star_match(stars, sadata->refstars, nbpoints, nobj, 0.9, 1.1, &H, image_size);
 			nobj += 50;
 			attempt++;
 		}

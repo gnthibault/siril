@@ -102,7 +102,7 @@ void init_peaker_GUI() {
 
 void init_peaker_default() {
 	/* values taken from siril3.glade */
-	com.starfinder_conf.radius = 7;
+	com.starfinder_conf.radius = 10;
 	com.starfinder_conf.sigma = 1.0;
 	com.starfinder_conf.roundness = 0.6;
 }

@@ -129,7 +129,7 @@ double central_dec, /* I: central Dec of tangent plane (degrees) */
 FILE *out_fp, /* I: place output into this stream */
 int doASEC /* I: if > 0, write offsets in arcsec */
 ) {
-	char line[LINELEN] = { 0 };
+	char line[LINELEN];
 	char col[MAX_DATA_COL + 1][MAX_COL_LENGTH + 1];
 	int i, ncol;
 	int last_column = -1;
@@ -238,27 +238,25 @@ int doASEC /* I: if > 0, write offsets in arcsec */
 		 * different output formats for (xi, eta) if they are expressed
 		 * in radians or arcseconds.  
 		 */
-		char newcol[MAX_COL_LENGTH] = { 0 };
-		memset(line, 0, LINELEN);
+		line[0] = '\0';
 		for (i = 0; i < ncol; i++) {
 			if (i == racol) {
 				if (doASEC > 0) {
 					/* write the offsets in arcsec */
-					g_snprintf(newcol, 12, "%12.5f  ", xi);
+					sprintf(line, "%s %12.5f", line, xi);
 				} else {
-					g_snprintf(newcol, 13, "%13.6e ", xi);
+					sprintf(line, "%s %13.6e", line, xi);
 				}
 			} else if (i == deccol) {
 				if (doASEC > 0) {
 					/* write the offsets in arcsec */
-					g_snprintf(newcol, 12, "%12.5f ", eta);
+					sprintf(line, "%s %12.5f", line, eta);
 				} else {
-					g_snprintf(newcol, 13, "%13.6e ", eta);
+					sprintf(line, "%s %13.6e", line, eta);
 				}
 			} else {
-				g_sprintf(newcol, "%s ", col[i]);
+				sprintf(line, "%s %s", line, col[i]);
 			}
-			g_strlcat(line, newcol, LINELEN);
 		}
 		fprintf(out_fp, "%s\n", line);
 

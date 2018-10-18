@@ -392,7 +392,7 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   <object class="GtkAdjustment" id="adjstarfinder_radius">
     <property name="lower">1</property>
     <property name="upper">50</property>
-    <property name="value">7</property>
+    <property name="value">10</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
@@ -3274,7 +3274,6 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
       <group name="accelgroup1"/>
     </accel-groups>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <signal name="show" handler="on_ImagePlateSolver_Dial_show" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -3532,6 +3531,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                             <child>
                               <object class="GtkSpinButton" id="GtkSpinIPS_Mag_Limit">
                                 <property name="visible">True</property>
+                                <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="halign">start</property>
                                 <property name="adjustment">AdjIPS_Mag_Limit</property>
@@ -3642,7 +3642,19 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               </packing>
                             </child>
                             <child>
-                              <placeholder/>
+                              <object class="GtkCheckButton" id="GtkCheckButton_Mag_Limit">
+                                <property name="label" translatable="yes">Auto</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_GtkCheckButton_Mag_Limit_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="top_attach">3</property>
+                              </packing>
                             </child>
                             <child>
                               <placeholder/>
@@ -9742,7 +9754,7 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                         <property name="input_purpose">number</property>
                         <property name="adjustment">adjstarfinder_radius</property>
                         <property name="numeric">True</property>
-                        <property name="value">7</property>
+                        <property name="value">10</property>
                         <signal name="value-changed" handler="on_spin_sf_radius_changed" swapped="no"/>
                       </object>
                       <packing>
