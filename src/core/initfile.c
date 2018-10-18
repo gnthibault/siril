@@ -358,7 +358,7 @@ int writeinitfile() {
 	_save_misc(&config, root);
 
 #ifdef _WIN32
-	com.initfile = g_win32_locale_filename_from_utf8(com.initfile);
+	localefilename = g_win32_locale_filename_from_utf8(com.initfile);
 #else
 	localefilename = g_strdup(com.initfile);
 #endif
