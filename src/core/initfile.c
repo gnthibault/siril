@@ -343,6 +343,7 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 int writeinitfile() {
 	config_t config;
 	config_setting_t *root;
+	gchar *localefilename;
 
 	config_init(&config);
 	root = config_root_setting(&config);
@@ -356,13 +357,19 @@ int writeinitfile() {
 	_save_photometry(&config, root);
 	_save_misc(&config, root);
 
-	if (!config_write_file(&config, com.initfile)) {
+#ifdef _WIN32
+	com.initfile = g_win32_locale_filename_from_utf8(com.initfile);
+#else
+	localefilename = g_strdup(com.initfile);
+#endif
+	if (!config_write_file(&config, localefilename)) {
 		fprintf(stderr, "Error while writing file.\n");
 		config_destroy(&config);
+		g_free(localefilename);
 		return 1;
 	}
 	config_destroy(&config);
-
+	g_free(localefilename);
 	return 0;
 }
 
