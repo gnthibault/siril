@@ -562,7 +562,6 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		star->xpos = x;
 		star->ypos = -y + shift_y;
 		star->mag = Vmag;
-		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
