@@ -61,13 +61,11 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="AdjIPS_RA_h">
-    <property name="lower">1</property>
     <property name="upper">23</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="AdjIPS_RA_m">
-    <property name="lower">1</property>
     <property name="upper">59</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
@@ -3292,6 +3290,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Close the window.</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_buttonIPS_close_clicked" swapped="no"/>
               </object>
@@ -3307,6 +3306,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Start the plate solving algorithm.</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_buttonIPS_ok_clicked" swapped="no"/>
               </object>
@@ -3352,15 +3352,15 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               <object class="GtkSpinButton" id="GtkSpinIPS_RA_h">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Initial equatorial coordinates. Input value must be inside the image.</property>
                                 <property name="halign">start</property>
                                 <property name="max_length">2</property>
                                 <property name="width_chars">2</property>
                                 <property name="max_width_chars">2</property>
                                 <property name="text" translatable="yes">1</property>
-                                <property name="input_purpose">digits</property>
+                                <property name="input_purpose">number</property>
                                 <property name="adjustment">AdjIPS_RA_h</property>
                                 <property name="numeric">True</property>
-                                <property name="value">1</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -3371,15 +3371,15 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               <object class="GtkSpinButton" id="GtkSpinIPS_RA_m">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Initial equatorial coordinates. Input value must be inside the image.</property>
                                 <property name="halign">start</property>
                                 <property name="max_length">2</property>
                                 <property name="width_chars">2</property>
                                 <property name="max_width_chars">2</property>
                                 <property name="text" translatable="yes">1</property>
-                                <property name="input_purpose">digits</property>
+                                <property name="input_purpose">number</property>
                                 <property name="adjustment">AdjIPS_RA_m</property>
                                 <property name="numeric">True</property>
-                                <property name="value">1</property>
                               </object>
                               <packing>
                                 <property name="left_attach">2</property>
@@ -3390,12 +3390,13 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               <object class="GtkSpinButton" id="GtkSpinIPS_Dec_deg">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Initial equatorial coordinates. Input value must be inside the image.</property>
                                 <property name="halign">start</property>
                                 <property name="max_length">2</property>
                                 <property name="width_chars">2</property>
                                 <property name="max_width_chars">2</property>
                                 <property name="text" translatable="yes">0</property>
-                                <property name="input_purpose">digits</property>
+                                <property name="input_purpose">number</property>
                                 <property name="adjustment">AdjIPS_Dec_deg</property>
                                 <property name="numeric">True</property>
                               </object>
@@ -3408,12 +3409,13 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               <object class="GtkSpinButton" id="GtkSpinIPS_Dec_m">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Initial equatorial coordinates. Input value must be inside the image.</property>
                                 <property name="halign">start</property>
                                 <property name="max_length">2</property>
                                 <property name="width_chars">2</property>
                                 <property name="max_width_chars">2</property>
                                 <property name="text" translatable="yes">0</property>
-                                <property name="input_purpose">digits</property>
+                                <property name="input_purpose">number</property>
                                 <property name="adjustment">AdjIPS_Dec_m</property>
                                 <property name="numeric">True</property>
                               </object>
@@ -3426,9 +3428,11 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               <object class="GtkEntry" id="GtkEntryIPS_RA_s">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Initial equatorial coordinates. Input value must be inside the image.</property>
                                 <property name="halign">start</property>
                                 <property name="width_chars">7</property>
                                 <property name="max_width_chars">6</property>
+                                <property name="text">0.000</property>
                                 <property name="input_purpose">number</property>
                               </object>
                               <packing>
@@ -3440,8 +3444,10 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               <object class="GtkEntry" id="GtkEntryIPS_Dec_s">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Initial equatorial coordinates. Input value must be inside the image.</property>
                                 <property name="halign">start</property>
                                 <property name="width_chars">7</property>
+                                <property name="text">0.000</property>
                                 <property name="input_purpose">number</property>
                               </object>
                               <packing>
@@ -3477,6 +3483,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">This button is checked for negative declination (southern hemisphere).</property>
                                 <property name="halign">start</property>
                                 <property name="draw_indicator">True</property>
                               </object>
@@ -3491,6 +3498,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                                 <property name="can_focus">True</property>
                                 <property name="has_focus">True</property>
                                 <property name="is_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Enter the identifier or the name of the object which must be in the image.</property>
                                 <property name="valign">center</property>
                                 <property name="primary_icon_name">edit-find-symbolic</property>
                                 <property name="primary_icon_activatable">False</property>
@@ -3508,6 +3516,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="tooltip_text" translatable="yes">Start searching.</property>
                                 <property name="use_stock">True</property>
                                 <property name="always_show_image">True</property>
                                 <signal name="clicked" handler="on_GtkButtonIPS_clicked" swapped="no"/>
@@ -3533,6 +3542,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                                 <property name="visible">True</property>
                                 <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Maximum star magnitude used in the catalog queries. Wider is the field, lower is the value.</property>
                                 <property name="halign">start</property>
                                 <property name="adjustment">AdjIPS_Mag_Limit</property>
                               </object>
@@ -3545,9 +3555,10 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               <object class="GtkEntry" id="GtkEntry_IPS_focal">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Effective focal length of the optical system in millimeter. Even if the input value has not to be very accurate, try to give a value with an error not exceeding 20%.</property>
                                 <property name="halign">start</property>
                                 <property name="width_chars">10</property>
-                                <property name="text" translatable="yes">1000</property>
+                                <property name="text">1000</property>
                                 <property name="input_purpose">number</property>
                                 <signal name="changed" handler="on_GtkEntry_IPS_changed" swapped="no"/>
                               </object>
@@ -3560,9 +3571,10 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               <object class="GtkEntry" id="GtkEntry_IPS_pixels">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Pixel size in micrometer. The image is assumed to have square pixels.</property>
                                 <property name="halign">start</property>
                                 <property name="width_chars">10</property>
-                                <property name="text" translatable="yes">5.00</property>
+                                <property name="text">5.00</property>
                                 <property name="input_purpose">number</property>
                                 <signal name="changed" handler="on_GtkEntry_IPS_changed" swapped="no"/>
                               </object>
@@ -3612,11 +3624,12 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                                 <property name="visible">True</property>
                                 <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">The resolution of the image that is automatically determined from the focal and pixel size value.</property>
                                 <property name="halign">start</property>
                                 <property name="valign">center</property>
                                 <property name="editable">False</property>
                                 <property name="width_chars">7</property>
-                                <property name="text" translatable="yes">1.031</property>
+                                <property name="text">1.031</property>
                                 <property name="input_purpose">number</property>
                               </object>
                               <packing>
@@ -3631,6 +3644,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="tooltip_text" translatable="yes">Click on this button to get focal and pixel size value from the header of the file if they exist.</property>
                                 <property name="halign">center</property>
                                 <property name="valign">center</property>
                                 <signal name="clicked" handler="on_GtkButton_IPS_metadata_clicked" swapped="no"/>
@@ -3647,6 +3661,8 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">The limit magnitude is automatically determined using the approximation of the Field Of View.</property>
+                                <property name="halign">start</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="on_GtkCheckButton_Mag_Limit_toggled" swapped="no"/>

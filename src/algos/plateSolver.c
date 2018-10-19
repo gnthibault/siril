@@ -711,21 +711,60 @@ static int match_catalog(gchar *catalogStars) {
 	return 0;
 }
 
+static void url_encode(gchar *qry) {
+	int new_string_length = 0;
+	for (gchar *c = qry; *c != '\0'; c++) {
+		if (*c == ' ')
+			new_string_length += 2;
+		new_string_length++;
+	}
+	gchar *qstr = g_malloc((new_string_length + 1) * sizeof qstr[0]);
+	gchar *c1, *c2;
+	for (c1 = qry, c2 = qstr; *c1 != '\0'; c1++) {
+		if (*c1 == ' ') {
+			c2[0] = '%';
+			c2[1] = '2';
+			c2[2] = '0';
+			c2 += 3;
+		} else {
+			*c2 = *c1;
+			c2++;
+		}
+	}
+	*c2 = '\0';
+	g_free(qry);
+	qry = g_strdup(qstr);
+	g_free(qstr);
+}
+
 static void search_object_in_catalogs(const gchar *object) {
 	GString *url;
-	gchar *gcurl, *result;
+	gchar *gcurl, *result, *name;
 	struct object obj;
 
 	set_cursor_waiting(TRUE);
+
+	name = g_strdup(object);
+	/* Removes leading and trailing whitespace */
+	name = g_strstrip(name);
+	/* replace whitespaces by %20 for html purposes */
+	url_encode(name);
+
 	url = g_string_new(CDSSESAME);
 	url = g_string_append(url, "/-oI/A?");
-	url = g_string_append(url, object);
+	url = g_string_append(url, name);
 	gcurl = g_string_free(url, FALSE);
+
 	result = fetch_url(gcurl);
-	parse_curl_buffer(result, &obj);
-	add_object_to_list();
-	free_Platedobject();
+	if (result) {
+		parse_curl_buffer(result, &obj);
+		add_object_to_list();
+		free_Platedobject();
+	}
 	set_cursor_waiting(FALSE);
+	g_free(gcurl);
+	g_free(result);
+	g_free(name);
 }
 
 static void start_image_plate_solve() {
