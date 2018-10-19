@@ -250,7 +250,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 						psf_update_units(fit, &cur_star);
 						if (is_star(cur_star, sf)) {
 							cur_star->xpos = x + cur_star->x0 - sf->radius - 1;
-							cur_star->ypos = y + cur_star->y0 - sf->radius - 1;
+							cur_star->ypos = y + cur_star->y0 - sf->radius;
 							if (nbstars < MAX_STARS) {
 								results[nbstars] = cur_star;
 								results[nbstars + 1] = NULL;
