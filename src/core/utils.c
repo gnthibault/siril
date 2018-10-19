@@ -387,6 +387,20 @@ int changedir(const char *dir, gchar **err) {
 	}
 	return retval;
 }
+/**
+ * If Windows OS, converts a filename from UTF-8 to the system codepage. Do nothing on other system
+ * @param path to convert
+ * @return converted filename
+ */
+gchar *get_locale_filename(const gchar *path) {
+	gchar *str;
+#ifdef _WIN32
+	str = g_win32_locale_filename_from_utf8(path);
+#else // _WIN32
+	str = g_strdup(path);
+#endif // _WIN32
+	return str;
+}
 
 #ifdef _WIN32
 static int ListSequences(const gchar *sDir, const char *sequence_name_to_select,

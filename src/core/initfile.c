@@ -336,6 +336,13 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 	}
 }
 
+static int siril_config_write_file(config_t *config, const char *filename) {
+	gchar *fname = get_locale_filename(filename);
+	int ret = config_write_file(config, fname);
+	g_free(fname);
+	return ret;
+}
+
 /**
  * Public functions
  */
@@ -343,7 +350,6 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 int writeinitfile() {
 	config_t config;
 	config_setting_t *root;
-	gchar *localefilename;
 
 	config_init(&config);
 	root = config_root_setting(&config);
@@ -357,19 +363,12 @@ int writeinitfile() {
 	_save_photometry(&config, root);
 	_save_misc(&config, root);
 
-#ifdef _WIN32
-	localefilename = g_win32_locale_filename_from_utf8(com.initfile);
-#else
-	localefilename = g_strdup(com.initfile);
-#endif
-	if (!config_write_file(&config, localefilename)) {
+	if (!siril_config_write_file(&config, com.initfile)) {
 		fprintf(stderr, "Error while writing file.\n");
 		config_destroy(&config);
-		g_free(localefilename);
 		return 1;
 	}
 	config_destroy(&config);
-	g_free(localefilename);
 	return 0;
 }
 

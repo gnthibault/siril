@@ -103,6 +103,7 @@ const char *get_filename_ext(const char *filename);
 
 gchar *siril_get_startup_dir();
 int	changedir(const char *dir, gchar **err);
+gchar *get_locale_filename(const gchar *path);
 int	update_sequences_list(const char *sequence_name_to_select);
 void	update_used_memory();
 double test_available_space(double seq_size);

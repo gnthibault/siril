@@ -261,36 +261,6 @@ static char *copy_header(fits *fit) {
 	return header;
 }
 
-static gchar *fits_fname(const gchar *path) {
-	gchar *str;
-#ifdef _WIN32
-	wchar_t *wpath;
-
-	wpath = g_utf8_to_utf16(path, -1, NULL, NULL, NULL);
-	if (wpath == NULL)
-		return NULL;
-
-	// use the short DOS 8.3 path name to avoid problems converting UTF-16 filenames to the ANSI filenames expected by CFITTSIO
-	DWORD shortlen = GetShortPathNameW(wpath, 0, 0);
-
-	if (shortlen) {
-		LPWSTR shortpath = g_new(WCHAR, shortlen);
-		GetShortPathNameW(wpath, shortpath, shortlen);
-		int slen = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS,
-				shortpath, shortlen, 0, 0, 0, 0);
-		str = g_new(gchar, slen + 1);
-		WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath, shortlen,
-				str, slen, 0, 0);
-		g_free(shortpath);
-	} else {
-		str = NULL;
-	}
-	g_free(wpath);
-#else // _WIN32
-	str = g_strdup(path);
-#endif // _WIN32
-	return str;
-}
 
 static void report_fits_error(int status) {
 	if (status) {
@@ -614,9 +584,9 @@ int readfits(const char *filename, fits *fit, char *realname) {
 }
 
 int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode, int *status) {
-	gchar *fname = fits_fname(filename);
-	fits_open_diskfile(fptr, fname, iomode, status);
-	g_free(fname);
+	gchar *localefilename = get_locale_filename(filename);
+	fits_open_diskfile(fptr, localefilename, iomode, status);
+	g_free(localefilename);
 	return *status;
 }
 
@@ -868,6 +838,13 @@ int fits_get_date_obs(const char *name, fits *f) {
 	return status;
 }
 
+static int siril_fits_create_diskfile(fitsfile **fptr, const char *filename, int *status) {
+	gchar *localefilename = get_locale_filename(filename);
+	fits_create_diskfile(fptr, localefilename, status);
+	g_free(localefilename);
+	return *status;
+}
+
 /* creates, saves and closes the file associated to f, overwriting previous  */
 int savefits(const char *name, fits *f) {
 	int status, i;
@@ -892,7 +869,7 @@ int savefits(const char *name, fits *f) {
 	g_unlink(filename); /* Delete old file if it already exists */
 
 	status = 0;
-	if (fits_create_diskfile(&(f->fptr), filename, &status)) { /* create new FITS file */
+	if (siril_fits_create_diskfile(&(f->fptr), filename, &status)) { /* create new FITS file */
 		report_fits_error(status);
 		return 1;
 	}
