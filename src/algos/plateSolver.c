@@ -50,8 +50,7 @@ enum {
 static double get_mag_limit(double fov);
 static double get_focal();
 static double get_pixel();
-static double get_binning();
-static double get_resolution(double focal, double pixel, double binning);
+static double get_resolution(double focal, double pixel);
 static double get_fov();
 
 void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
@@ -320,7 +319,7 @@ static gchar *download_catalog() {
 	if (index < 0)
 		return NULL;
 
-	double fov = get_fov(get_resolution(get_focal(), get_pixel(), get_binning()),
+	double fov = get_fov(get_resolution(get_focal(), get_pixel()),
 			gfit.ry > gfit.rx ? gfit.ry : gfit.rx);
 
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
@@ -445,6 +444,12 @@ static void update_coordinates() {
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget("GtkEntryIPS_Dec_s")), Dec_sec);
 }
 
+static gboolean has_any_keywords() {
+	return (gfit.focal_length > 0.0 ||
+			gfit.pixel_size_x > 0.0 ||
+			gfit.pixel_size_y > 0.0);
+}
+
 static double get_focal() {
 	GtkEntry *focal_entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_focal"));
 	const gchar *value = gtk_entry_get_text(focal_entry);
@@ -460,19 +465,13 @@ static double get_pixel() {
 	return atof(value);
 }
 
-static double get_resolution(double focal, double pixel, double binning) {
-	return RADCONV / focal * pixel * binning;
+static double get_resolution(double focal, double pixel) {
+	return RADCONV / focal * pixel;
 }
 
 /* get FOV in arcsec/px */
 static double get_fov(double resolution, int image_size) {
 	return (resolution * (double)image_size) / 60.0;
-}
-
-/* get binning value */
-static double get_binning() {
-	GtkComboBox *combo_box = GTK_COMBO_BOX(lookup_widget("IPS_combobinning"));
-	return (double) gtk_combo_box_get_active(combo_box) + 1.0;
 }
 
 static double get_mag_limit(double fov) {
@@ -519,22 +518,9 @@ static void update_focal() {
 	}
 }
 
-static void update_binning() {
-	GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("IPS_combobinning"));
-	unsigned int x, y;
-
-	x = gfit.binning_x;
-	y = gfit.binning_y;
-	if (x != y || x > 4) {
-		printf("Cannot get bining (%u-%u)\n", x, y);
-	} else {
-		gtk_combo_box_set_active(box, x - 1);
-	}
-}
-
 static void update_resolution_field() {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_resolution"));
-	double res = get_resolution(get_focal(), get_pixel(), get_binning());
+	double res = get_resolution(get_focal(), get_pixel());
 	gchar cres[6];
 
 	g_snprintf(cres, sizeof(cres), "%1.3lf", res);
@@ -547,14 +533,9 @@ void update_IPS_GUI() {
 	  */
 	update_focal();
 	update_pixel_size();
-	update_binning();
 }
 
 void on_GtkEntry_IPS_changed(GtkEditable *editable, gpointer user_data) {
-	update_resolution_field();
-}
-
-void on_IPS_combobinning_changed(GtkComboBox *box, gpointer user_data) {
 	update_resolution_field();
 }
 
@@ -565,8 +546,6 @@ static void update_gfit(image_solved image) {
 	gfit.crpix2 = image.px_center.y;
 	gfit.crval1 = image.ra_center;
 	gfit.crval2 = image.dec_center;
-	gfit.binning_x = image.bin_x;
-	gfit.binning_y = image.bin_y;
 }
 
 static void print_platesolving_results(Homography H, image_solved image) {
@@ -592,7 +571,6 @@ static void print_platesolving_results(Homography H, image_solved image) {
 
 	image.focal = focal;
 	image.pixel_size = pixel;
-	image.bin_x = image.bin_y = get_binning();
 
 	siril_log_message(_("Focal:%*.2f mm\n"), 15, focal);
 	siril_log_message(_("Pixel size:%*.2f µm\n"), 10, pixel);
@@ -708,7 +686,7 @@ static int match_catalog(gchar *catalogStars) {
 	int attempt = 1;
 	double s;
 
-	s = get_resolution(get_focal(), get_pixel(), get_binning());
+	s = get_resolution(get_focal(), get_pixel());
 
 	com.stars = peaker(&gfit, 0, &com.starfinder_conf, &n_fit, NULL, TRUE); // TODO: use good layer
 	if (n_fit < AT_MATCH_MINPAIRS) {
@@ -871,7 +849,11 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 }
 
 void on_GtkButton_IPS_metadata_clicked(GtkButton *button, gpointer user_data) {
-	update_IPS_GUI();
+	if (!has_any_keywords()) {
+		siril_log_message(_("No keywords found in the header.\n"));
+	} else {
+		update_IPS_GUI();
+	}
 }
 
 void on_GtkButtonIPS_clicked(GtkButton *button, gpointer user_data) {

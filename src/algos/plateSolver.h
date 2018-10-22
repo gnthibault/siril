@@ -55,7 +55,6 @@ struct image_solved_struct {
 	point fov;
 	double ra_center, dec_center;
 	double resolution, pixel_size, focal;
-	unsigned int bin_x, bin_y;
 };
 typedef struct image_solved_struct image_solved;
 
