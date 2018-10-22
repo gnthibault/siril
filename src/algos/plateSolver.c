@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <unistd.h>
 #include <curl/curl.h>
 
 #include "core/siril.h"
@@ -49,18 +50,64 @@ enum {
 static double get_mag_limit(double fov);
 static double get_focal();
 static double get_pixel();
-static double get_resolution(double focal, double pixel);
+static double get_binning();
+static double get_resolution(double focal, double pixel, double binning);
 static double get_fov();
+
+void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
+		gpointer user_data);
 
 static struct object platedObject[RESOLVER_NUMBER];
 static GtkListStore *list_IPS = NULL;
 static int selectedItem = -1;
 static image_solved is_result;
 
+static RA convert_ra(double var) {
+	RA ra;
+	ra.hour = (int)(var / 15.0);
+	ra.min = (int)(((var / 15.0) - ra.hour) * 60.0);
+	ra.sec = ((((var / 15.0) - ra.hour) * 60.0) - ra.min) * 60.0;
+	return ra;
+}
+
+static DEC convert_dec(double var) {
+	DEC dec;
+	dec.degree = (int) var;
+	dec.min = fabs((int) ((var - dec.degree) * 60));
+	dec.sec = (fabs((var - dec.degree) * 60) - dec.min) * 60;
+	return dec;
+}
+
+static void deg_to_HMS(double var, gchar *type, gchar *HMS) {
+	if (!strncasecmp(type, "ra", 2)) {
+		char rs = ' ';
+		int raH, raM;
+		double raS;
+
+		if (var < 0) rs = '-';
+		var = fabs(var);
+		raH = (int)(var / 15.0);
+		raM = (int)(((var / 15.0) - raH) * 60.0);
+		raS = ((((var / 15.0) - raH) * 60.0) - raM) * 60.0;
+		g_snprintf(HMS, 256, "%c%02d %02d %.3lf", rs, raH, raM, raS);
+	} else if (!strncasecmp(type, "dec", 2)) {
+		char ds = ' ';
+		int deg, decM;
+		double decS;
+
+		if (var < 0) ds = '-';
+		var = fabs(var);
+		deg = (int) var;
+		decM = fabs((int) ((var - deg) * 60));
+		decS = (fabs((var - deg) * 60) - decM) * 60;
+		g_snprintf(HMS, 256, "%c%02d %02d %.3lf", ds, deg, decM, decS);
+	}
+}
+
 static int parse_curl_buffer(char *buffer, struct object *obj) {
 	char **token, **fields;
 	point center;
-	gchar *object = NULL, *name = NULL;
+	gchar *object = NULL;
 	int nargs, i = 0, resolver = -1;
 
 	token = g_strsplit(buffer, "\n", -1);
@@ -81,36 +128,32 @@ static int parse_curl_buffer(char *buffer, struct object *obj) {
 			sscanf(fields[1], "%lf", &center.x);
 			sscanf(fields[2], "%lf", &center.y);
 			if (resolver != -1) {
-				double hour = center.x * 24.0 / 360.0;
-				platedObject[resolver].RA.hour = (int) hour;
-				double min = (hour - (int) hour) * 60.0;
-				platedObject[resolver].RA.min = (int) min;
-				double sec = (min - (int) min) * 60.0;
-				platedObject[resolver].RA.sec = sec;
+				/* RA coordinates */
+				platedObject[resolver].RA = convert_ra(center.x);
 
-				if (center.y < 0.0)
-					platedObject[resolver].south = TRUE;
-				else
-					platedObject[resolver].south = FALSE;
+				/* Dec coordinates */
+				platedObject[resolver].Dec = convert_dec(center.y);
 
-				double degree = fabs(center.y);
-				platedObject[resolver].Dec.degree = (int) degree;
-				double degmin = ((double) (degree - (int) degree) * 60.0);
-				platedObject[resolver].Dec.min = (int) degmin;
-				double degsec = (degmin - (int) degmin) * 60.0;
-				platedObject[resolver].Dec.sec = degsec;
-
+				/* others */
 				platedObject[resolver].imageCenter = center;
+				platedObject[resolver].south = (center.y < 0.0);
 			}
 			g_strfreev(fields);
 		}
 		else if (g_str_has_prefix (token[i], "%I.0 ")) {
 			if (resolver != -1) {
-				name = g_strstr_len(token[i], strlen(token[i]), "%I.0 ");
+				gchar *name = g_strstr_len(token[i], strlen(token[i]), "%I.0 ");
 				gchar *realname;
-				realname = strdup(name + 5);
+				realname = g_strdup(name + 5);
 				platedObject[resolver].name = realname;
-				name = NULL;
+			}
+		} else if (g_str_has_prefix (token[i], "%I NAME ")) {
+			if (resolver != -1) {
+				gchar *name = g_strstr_len(token[i], strlen(token[i]), "%I NAME ");
+				gchar *realname;
+				realname = g_strdup(name + 5 + 3);
+				g_free(platedObject[resolver].name);
+				platedObject[resolver].name = realname;
 			}
 		}
 		i++;
@@ -277,7 +320,7 @@ static gchar *download_catalog() {
 	if (index < 0)
 		return NULL;
 
-	double fov = get_fov(get_resolution(get_focal(), get_pixel()),
+	double fov = get_fov(get_resolution(get_focal(), get_pixel(), get_binning()),
 			gfit.ry > gfit.rx ? gfit.ry : gfit.rx);
 
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
@@ -331,50 +374,33 @@ enum {
 	N_COLUMNS
 };
 
-static void deg_to_HMS(double var, gchar *type, gchar *HMS) {
-	if (!strncasecmp(type, "ra", 2)) {
-		char rs = ' ';
-		int raH, raM;
-		double raS;
-
-		if (var < 0) rs = '-';
-		var = fabs(var);
-		raH = (int)(var / 15.0);
-		raM = (int)(((var / 15.0) - raH) * 60.0);
-		raS = ((((var / 15.0) - raH) * 60.0) - raM) * 60.0;
-		g_snprintf(HMS, 256, "%c%02d %02d %.3lf", rs, raH, raM, raS);
-	} else if (!strncasecmp(type, "dec", 2)) {
-		char ds = ' ';
-		int deg, decM;
-		double decS;
-
-		if (var < 0) ds = '-';
-		var = fabs(var);
-		deg = (int) var;
-		decM = fabs((int) ((var - deg) * 60));
-		decS = (fabs((var - deg) * 60) - decM) * 60;
-		g_snprintf(HMS, 256, "%c%02d %02d %.3lf", ds, deg, decM, decS);
-	}
-}
-
 static void get_list_IPS() {
 	if (list_IPS == NULL)
 		list_IPS = GTK_LIST_STORE(gtk_builder_get_object(builder, "liststoreIPS"));
 }
 
+static void clear_all_objects() {
+	static GtkTreeSelection *selection;
+
+	gtk_list_store_clear(list_IPS);
+	selectedItem = -1;
+
+	selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder, "GtkTreeSelectionIPS"));
+
+	gtk_tree_selection_unselect_all (selection);
+}
+
 static void add_object_to_list() {
-	static GtkTreeSelection *selection = NULL;
+
 	GtkTreeIter iter;
 
 	get_list_IPS();
-	if (!selection)
-		selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder, "GtkTreeSelectionIPS"));
 
-	gtk_list_store_clear(list_IPS);
+	clear_all_objects();
 
 if (platedObject[RESOLVER_NED].name) {
 		gtk_list_store_append(list_IPS, &iter);
-		gtk_list_store_set(list_IPS, &iter, COLUMN_RESOLVER, "NEV", COLUMN_NAME,
+		gtk_list_store_set(list_IPS, &iter, COLUMN_RESOLVER, "NED", COLUMN_NAME,
 				platedObject[RESOLVER_NED].name, -1);
 	}
 
@@ -434,13 +460,19 @@ static double get_pixel() {
 	return atof(value);
 }
 
-static double get_resolution(double focal, double pixel) {
-	return (RADCONV / focal) * pixel;
+static double get_resolution(double focal, double pixel, double binning) {
+	return RADCONV / focal * pixel * binning;
 }
 
 /* get FOV in arcsec/px */
 static double get_fov(double resolution, int image_size) {
 	return (resolution * (double)image_size) / 60.0;
+}
+
+/* get binning value */
+static double get_binning() {
+	GtkComboBox *combo_box = GTK_COMBO_BOX(lookup_widget("IPS_combobinning"));
+	return (double) gtk_combo_box_get_active(combo_box) + 1.0;
 }
 
 static double get_mag_limit(double fov) {
@@ -487,9 +519,22 @@ static void update_focal() {
 	}
 }
 
+static void update_binning() {
+	GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("IPS_combobinning"));
+	unsigned int x, y;
+
+	x = gfit.binning_x;
+	y = gfit.binning_y;
+	if (x != y || x > 4) {
+		printf("Cannot get bining (%u-%u)\n", x, y);
+	} else {
+		gtk_combo_box_set_active(box, x - 1);
+	}
+}
+
 static void update_resolution_field() {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_resolution"));
-	double res = get_resolution(get_focal(), get_pixel());
+	double res = get_resolution(get_focal(), get_pixel(), get_binning());
 	gchar cres[6];
 
 	g_snprintf(cres, sizeof(cres), "%1.3lf", res);
@@ -497,12 +542,19 @@ static void update_resolution_field() {
 }
 
 void update_IPS_GUI() {
-	update_pixel_size();
+	/* update all fields. Resolution is updated as well
+	 thanks to the Entry and combo changed signal
+	  */
 	update_focal();
-	update_resolution_field();
+	update_pixel_size();
+	update_binning();
 }
 
 void on_GtkEntry_IPS_changed(GtkEditable *editable, gpointer user_data) {
+	update_resolution_field();
+}
+
+void on_IPS_combobinning_changed(GtkComboBox *box, gpointer user_data) {
 	update_resolution_field();
 }
 
@@ -513,6 +565,8 @@ static void update_gfit(image_solved image) {
 	gfit.crpix2 = image.px_center.y;
 	gfit.crval1 = image.ra_center;
 	gfit.crval2 = image.dec_center;
+	gfit.binning_x = image.bin_x;
+	gfit.binning_y = image.bin_y;
 }
 
 static void print_platesolving_results(Homography H, image_solved image) {
@@ -538,6 +592,7 @@ static void print_platesolving_results(Homography H, image_solved image) {
 
 	image.focal = focal;
 	image.pixel_size = pixel;
+	image.bin_x = image.bin_y = get_binning();
 
 	siril_log_message(_("Focal:%*.2f mm\n"), 15, focal);
 	siril_log_message(_("Pixel size:%*.2f µm\n"), 10, pixel);
@@ -573,6 +628,7 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		star->xpos = x;
 		star->ypos = -y + shift_y;
 		star->mag = Vmag;
+		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -653,7 +709,7 @@ static int match_catalog(gchar *catalogStars) {
 	int attempt = 1;
 	double s;
 
-	s = get_resolution(get_focal(), get_pixel());
+	s = get_resolution(get_focal(), get_pixel(), get_binning());
 
 	com.stars = peaker(&gfit, 0, &com.starfinder_conf, &n_fit, NULL, TRUE); // TODO: use good layer
 	if (n_fit < AT_MATCH_MINPAIRS) {
@@ -711,16 +767,16 @@ static int match_catalog(gchar *catalogStars) {
 	return 0;
 }
 
-static void url_encode(gchar *qry) {
+static void url_encode(gchar **qry) {
 	int new_string_length = 0;
-	for (gchar *c = qry; *c != '\0'; c++) {
+	for (gchar *c = *qry; *c != '\0'; c++) {
 		if (*c == ' ')
 			new_string_length += 2;
 		new_string_length++;
 	}
 	gchar *qstr = g_malloc((new_string_length + 1) * sizeof qstr[0]);
 	gchar *c1, *c2;
-	for (c1 = qry, c2 = qstr; *c1 != '\0'; c1++) {
+	for (c1 = *qry, c2 = qstr; *c1 != '\0'; c1++) {
 		if (*c1 == ' ') {
 			c2[0] = '%';
 			c2[1] = '2';
@@ -732,8 +788,8 @@ static void url_encode(gchar *qry) {
 		}
 	}
 	*c2 = '\0';
-	g_free(qry);
-	qry = g_strdup(qstr);
+	g_free(*qry);
+	*qry = g_strdup(qstr);
 	g_free(qstr);
 }
 
@@ -741,6 +797,9 @@ static void search_object_in_catalogs(const gchar *object) {
 	GString *url;
 	gchar *gcurl, *result, *name;
 	struct object obj;
+	GtkTreeView *GtkTreeViewIPS;
+
+	GtkTreeViewIPS = GTK_TREE_VIEW(lookup_widget("GtkTreeViewIPS"));
 
 	set_cursor_waiting(TRUE);
 
@@ -748,7 +807,7 @@ static void search_object_in_catalogs(const gchar *object) {
 	/* Removes leading and trailing whitespace */
 	name = g_strstrip(name);
 	/* replace whitespaces by %20 for html purposes */
-	url_encode(name);
+	url_encode(&name);
 
 	url = g_string_new(CDSSESAME);
 	url = g_string_append(url, "/-oI/A?");
@@ -758,7 +817,9 @@ static void search_object_in_catalogs(const gchar *object) {
 	result = fetch_url(gcurl);
 	if (result) {
 		parse_curl_buffer(result, &obj);
+		g_signal_handlers_block_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
 		add_object_to_list();
+		g_signal_handlers_unblock_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
 		free_Platedobject();
 	}
 	set_cursor_waiting(FALSE);
@@ -797,8 +858,9 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (tree_view);
 	GtkTreeIter iter;
 
-	if (gtk_tree_model_get_iter_first(treeModel, &iter) == FALSE) return;	//The tree is empty
-	if (gtk_tree_selection_get_selected(selection, &treeModel, &iter)){	//get selected item
+	if (gtk_tree_model_get_iter_first(treeModel, &iter) == FALSE)
+		return;	//The tree is empty
+	if (gtk_tree_selection_get_selected(selection, &treeModel, &iter)) { //get selected item
 		GtkTreePath *path = gtk_tree_model_get_path(treeModel, &iter);
 		gint *index = gtk_tree_path_get_indices(path);
 		if (index) {

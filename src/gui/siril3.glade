@@ -3564,7 +3564,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">4</property>
+                                <property name="top_attach">5</property>
                               </packing>
                             </child>
                             <child>
@@ -3580,7 +3580,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">5</property>
+                                <property name="top_attach">6</property>
                               </packing>
                             </child>
                             <child>
@@ -3591,7 +3591,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
-                                <property name="top_attach">4</property>
+                                <property name="top_attach">5</property>
                               </packing>
                             </child>
                             <child>
@@ -3602,7 +3602,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
-                                <property name="top_attach">5</property>
+                                <property name="top_attach">6</property>
                               </packing>
                             </child>
                             <child>
@@ -3615,7 +3615,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               </object>
                               <packing>
                                 <property name="left_attach">2</property>
-                                <property name="top_attach">4</property>
+                                <property name="top_attach">5</property>
                                 <property name="height">2</property>
                               </packing>
                             </child>
@@ -3634,7 +3634,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               </object>
                               <packing>
                                 <property name="left_attach">3</property>
-                                <property name="top_attach">4</property>
+                                <property name="top_attach">5</property>
                                 <property name="height">2</property>
                               </packing>
                             </child>
@@ -3651,7 +3651,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
-                                <property name="top_attach">6</property>
+                                <property name="top_attach">8</property>
                                 <property name="width">4</property>
                               </packing>
                             </child>
@@ -3671,6 +3671,59 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                                 <property name="left_attach">2</property>
                                 <property name="top_attach">3</property>
                               </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_top">10</property>
+                                <property name="margin_bottom">10</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">4</property>
+                                <property name="width">5</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkComboBoxText" id="IPS_combobinning">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">If the binning is not automatically loaded, using file's header, you can update this combo box.</property>
+                                <property name="halign">start</property>
+                                <property name="active">0</property>
+                                <items>
+                                  <item>1x1</item>
+                                  <item>2x2</item>
+                                  <item>3x3</item>
+                                  <item>4x4</item>
+                                </items>
+                                <signal name="changed" handler="on_IPS_combobinning_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">7</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="GtkLabelPixelBinning">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Binning:</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">7</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
                             </child>
                             <child>
                               <placeholder/>
@@ -3720,7 +3773,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                                 <property name="search_column">0</property>
                                 <signal name="cursor-changed" handler="on_GtkTreeViewIPS_cursor_changed" swapped="no"/>
                                 <child internal-child="selection">
-                                  <object class="GtkTreeSelection"/>
+                                  <object class="GtkTreeSelection" id="GtkTreeSelectionIPS"/>
                                 </child>
                                 <child>
                                   <object class="GtkTreeViewColumn" id="GtkTreeViwColumnResolver">

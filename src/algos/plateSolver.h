@@ -15,10 +15,11 @@
 #define RADtoASEC (3600.0 * 180.0 / M_PI)
 
 #define CDSSESAME "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame"
+#define VIZIERSESAME "http://vizier.cfa.harvard.edu/viz-bin/nph-sesame"
 
 enum resolver {
-	RESOLVER_SIMBAD,
 	RESOLVER_NED,
+	RESOLVER_SIMBAD,
 	RESOLVER_VISIER,
 	RESOLVER_NUMBER
 };
@@ -35,14 +36,14 @@ struct Dec_struct {
 	int min;
 	double sec;
 };
-typedef struct Dec_struct Declination;
+typedef struct Dec_struct DEC;
 
 struct object {
 	gchar *name;
 	double radius;
 	int maxRecords;
 	RA RA;
-	Declination Dec;
+	DEC Dec;
 	point imageCenter;
 	gboolean south;
 };
@@ -54,6 +55,7 @@ struct image_solved_struct {
 	point fov;
 	double ra_center, dec_center;
 	double resolution, pixel_size, focal;
+	unsigned int bin_x, bin_y;
 };
 typedef struct image_solved_struct image_solved;
 
