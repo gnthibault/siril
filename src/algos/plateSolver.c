@@ -438,7 +438,7 @@ static void update_coordinates() {
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget("GtkEntryIPS_RA_s")), RA_sec);
 
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_deg")),
-			platedObject[index].Dec.degree);
+			fabs(platedObject[index].Dec.degree));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_m")),
 			platedObject[index].Dec.min);
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget("GtkEntryIPS_Dec_s")), Dec_sec);
