@@ -47,12 +47,6 @@ enum {
 	APPAS, NOMAD
 };
 
-static double get_mag_limit(double fov);
-static double get_focal();
-static double get_pixel();
-static double get_resolution(double focal, double pixel);
-static double get_fov();
-
 void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 		gpointer user_data);
 
@@ -101,6 +95,20 @@ static void deg_to_HMS(double var, gchar *type, gchar *HMS) {
 		decS = (fabs((var - deg) * 60) - decM) * 60;
 		g_snprintf(HMS, 256, "%c%02d %02d %.3lf", ds, deg, decM, decS);
 	}
+}
+
+static void fov_in_DHMS(double var, gchar *fov) {
+	int deg, decM;
+	double decS;
+
+	if (var < 0) {
+		fprintf(stdout, "fov_in_DHMS: negative value, should not happend\n");
+		return;
+	}
+	deg = (int) var;
+	decM = fabs((int) ((var - deg) * 60));
+	decS = (fabs((var - deg) * 60) - decM) * 60;
+	g_snprintf(fov, 256, "%02dd %02d\' %.2lf\"", deg, decM, decS);
 }
 
 static int parse_curl_buffer(char *buffer, struct object *obj) {
@@ -171,6 +179,49 @@ static void free_Platedobject() {
 		}
 	}
 }
+
+static double get_focal() {
+	GtkEntry *focal_entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_focal"));
+	const gchar *value = gtk_entry_get_text(focal_entry);
+
+	return atof(value);
+}
+
+/* get pixel in µm */
+static double get_pixel() {
+	GtkEntry *pixel_entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_pixels"));
+	const gchar *value = gtk_entry_get_text(pixel_entry);
+
+	return atof(value);
+}
+
+static double get_resolution(double focal, double pixel) {
+	return RADCONV / focal * pixel;
+}
+
+/* get FOV in arcmin/px */
+static double get_fov(double resolution, int image_size) {
+	return (resolution * (double)image_size) / 60.0;
+}
+
+static double get_mag_limit(double fov) {
+	GtkToggleButton *autobutton = GTK_TOGGLE_BUTTON(lookup_widget("GtkCheckButton_Mag_Limit"));
+	if (gtk_toggle_button_get_active(autobutton)) {
+		// Empiric formula for 1000 stars at 20 deg of galactic latitude
+		double autoLimitMagnitudeFactor = 14.5;
+		/* convert fov in degree */
+		fov /= 60.0;
+		double m = autoLimitMagnitudeFactor * pow(fov, -0.179);
+		m = round(100 * min(20, max(7, m))) / 100;
+		return m;
+	} else {
+		GtkSpinButton *magButton = GTK_SPIN_BUTTON(
+				lookup_widget("GtkSpinIPS_Mag_Limit"));
+
+		return gtk_spin_button_get_value(magButton);
+	}
+}
+
 
 static gchar *get_catalog_url(point center, double mag_limit, double dfov, int type) {
 	GString *url;
@@ -450,48 +501,6 @@ static gboolean has_any_keywords() {
 			gfit.pixel_size_y > 0.0);
 }
 
-static double get_focal() {
-	GtkEntry *focal_entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_focal"));
-	const gchar *value = gtk_entry_get_text(focal_entry);
-
-	return atof(value);
-}
-
-/* get pixel in µm */
-static double get_pixel() {
-	GtkEntry *pixel_entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_pixels"));
-	const gchar *value = gtk_entry_get_text(pixel_entry);
-
-	return atof(value);
-}
-
-static double get_resolution(double focal, double pixel) {
-	return RADCONV / focal * pixel;
-}
-
-/* get FOV in arcsec/px */
-static double get_fov(double resolution, int image_size) {
-	return (resolution * (double)image_size) / 60.0;
-}
-
-static double get_mag_limit(double fov) {
-	GtkToggleButton *autobutton = GTK_TOGGLE_BUTTON(lookup_widget("GtkCheckButton_Mag_Limit"));
-	if (gtk_toggle_button_get_active(autobutton)) {
-		// Empiric formula for 1000 stars at 20 deg of galactic latitude
-		double autoLimitMagnitudeFactor = 14.5;
-		/* convert fov in degree */
-		fov /= 60.0;
-		double m = autoLimitMagnitudeFactor * pow(fov, -0.179);
-		m = round(100 * min(20, max(7, m))) / 100;
-		return m;
-	} else {
-		GtkSpinButton *magButton = GTK_SPIN_BUTTON(
-				lookup_widget("GtkSpinIPS_Mag_Limit"));
-
-		return gtk_spin_button_get_value(magButton);
-	}
-}
-
 static void update_pixel_size() {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_pixels"));
 	gchar cpixels[24];
@@ -527,16 +536,12 @@ static void update_resolution_field() {
 	gtk_entry_set_text(entry, cres);
 }
 
-void update_IPS_GUI() {
+static void update_IPS_GUI() {
 	/* update all fields. Resolution is updated as well
 	 thanks to the Entry and combo changed signal
 	  */
 	update_focal();
 	update_pixel_size();
-}
-
-void on_GtkEntry_IPS_changed(GtkEditable *editable, gpointer user_data) {
-	update_resolution_field();
 }
 
 static void update_gfit(image_solved image) {
@@ -553,6 +558,8 @@ static void print_platesolving_results(Homography H, image_solved image) {
 	double inliers;
 	char RA[256] = { 0 };
 	char DEC[256] = { 0 };
+	char field_x[256] = { 0 };
+	char field_y[256] = { 0 };
 
 	/* Matching information */
 	siril_log_message(_("%d pair matches.\n"), H.pair_matched);
@@ -571,9 +578,14 @@ static void print_platesolving_results(Homography H, image_solved image) {
 
 	image.focal = focal;
 	image.pixel_size = pixel;
+	image.fov.x = get_fov(resolution, image.px_size.x);
+	image.fov.y = get_fov(resolution, image.px_size.y);
 
 	siril_log_message(_("Focal:%*.2f mm\n"), 15, focal);
 	siril_log_message(_("Pixel size:%*.2f µm\n"), 10, pixel);
+	fov_in_DHMS(image.fov.x / 60.0, field_x);
+	fov_in_DHMS(image.fov.y / 60.0, field_y);
+	siril_log_message(_("Field of view:    %s x %s\n"), field_x, field_y);
 	deg_to_HMS(image.ra_center, "ra", RA);
 	deg_to_HMS(image.dec_center, "dec", DEC);
 	siril_log_message(_("Image center: RA: %s, DEC: %s\n"), RA, DEC);
@@ -660,7 +672,7 @@ static int read_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y, int typ
 	}
 }
 
-TRANS H_to_linear_TRANS(Homography H) {
+static TRANS H_to_linear_TRANS(Homography H) {
 	TRANS trans;
 
 	trans.order = AT_TRANS_LINEAR;
@@ -723,8 +735,12 @@ static int match_catalog(gchar *catalogStars) {
 	}
 
 	if (!ret) {
+		/* we only want to compare with linear function
+		 * Maybe one day we will apply match with homography matrix
+		 */
 		TRANS trans = H_to_linear_TRANS(H);
 
+		is_result.px_size = image_size;
 		is_result.px_center.x = image_size.x / 2.0;
 		is_result.px_center.y = image_size.y / 2.0;
 		apply_match(trans, &is_result);
@@ -816,9 +832,20 @@ static void start_image_plate_solve() {
 	g_free(catalog);
 }
 
+void invalidate_WCS_keywords() {
+	gfit.crpix1 = 0.0;
+	gfit.crpix2 = 0.0;
+	gfit.crval1 = 0.0;
+	gfit.crval2 = 0.0;
+}
+
 /*****
  * CALLBACKS FUNCTIONS
  */
+
+void on_GtkEntry_IPS_changed(GtkEditable *editable, gpointer user_data) {
+	update_resolution_field();
+}
 
 void on_menuitem_IPS_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	gtk_widget_show_all(lookup_widget("ImagePlateSolver_Dial"));
@@ -850,7 +877,8 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 
 void on_GtkButton_IPS_metadata_clicked(GtkButton *button, gpointer user_data) {
 	if (!has_any_keywords()) {
-		siril_log_message(_("No keywords found in the header.\n"));
+		char *msg = siril_log_message(_("No keywords found in the header.\n"));
+		show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
 	} else {
 		update_IPS_GUI();
 	}

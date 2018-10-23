@@ -59,6 +59,6 @@ struct image_solved_struct {
 typedef struct image_solved_struct image_solved;
 
 
-void update_PSI_GUI();
+void invalidate_WCS_keywords();
 
 #endif /* SRC_ALGOS_PLATESOLVER_H_ */
