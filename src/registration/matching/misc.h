@@ -156,7 +156,7 @@ void print_H(Homography *H);
     */
 
 struct s_star *
-atStarNew(double x, double y, double mag);
+atStarNew(double x, double y, double mag, double BV);
 
    /*
     * read an ASCII file with a catalog of stars, and create a list

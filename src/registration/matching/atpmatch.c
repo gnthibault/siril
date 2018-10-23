@@ -185,7 +185,7 @@
 /* this typedef is used several sorting routines */
 typedef int (*PFI)();
 
-static int set_star(s_star *star, double x, double y, double mag);
+static int set_star(s_star *star, double x, double y, double mag, double BV);
 static void copy_star(s_star *from_ptr, s_star *to_ptr);
 static void copy_star_array(s_star *from_array, s_star *to_array, int num);
 static void free_star_array(s_star *array);
@@ -606,6 +606,24 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 	g_assert(star_array_B != NULL);
 
 	ret = cvCalculH(star_array_A, star_array_B, num_stars_B, H);
+//
+//	int i;
+//	s_star *star;
+//
+//	for (i = 0; i < numB; i++) {
+//		star = &(star_array_B[i]);
+//		g_assert(star != NULL);
+//		printf(" %4d %11.4e %11.4e %6.2f\n", i, star->x,
+//				star->y, star->BV);
+//	}
+//
+//	for (i = 0; i < numA; i++) {
+//		star = &(star_array_A[i]);
+//		g_assert(star != NULL);
+//		printf(" %4d %11.4e %11.4e %6.2f\n", i, star->x,
+//				star->y, star->BV);
+//	}
+
 
 	/*
 	 * clean up memory we allocated during the matching process
@@ -615,6 +633,7 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 
 	return ret;
 }
+
 /************************************************************************
  * <AUTO EXTRACT>
  *
@@ -989,7 +1008,8 @@ struct s_star **matched_list_B
 static int set_star(s_star *star, /* I: pointer to existing s_star structure */
 double x, /* I: star's "X" coordinate */
 double y, /* I: star's "Y" coordinate */
-double mag /* I: star's "mag" coordinate */
+double mag, /* I: star's "mag" coordinate */
+double BV /* I: star's "BV" coordinate */
 ) {
 	static int id_number = 0;
 
@@ -1002,6 +1022,7 @@ double mag /* I: star's "mag" coordinate */
 	star->x = x;
 	star->y = y;
 	star->mag = mag;
+	star->BV = BV;
 	star->match_id = -1;
 	star->next = (s_star *) NULL;
 
@@ -1034,6 +1055,7 @@ s_star *to_ptr /* O: into _this_ star */
 	to_ptr->x = from_ptr->x;
 	to_ptr->y = from_ptr->y;
 	to_ptr->mag = from_ptr->mag;
+	to_ptr->BV = from_ptr->BV;
 	to_ptr->match_id = from_ptr->match_id;
 	to_ptr->next = from_ptr->next;
 
@@ -1077,6 +1099,7 @@ int num_stars /* I: each aray must have this many elements */
 		to_ptr->x = from_ptr->x;
 		to_ptr->y = from_ptr->y;
 		to_ptr->mag = from_ptr->mag;
+		to_ptr->BV = from_ptr->BV;
 		to_ptr->match_id = from_ptr->match_id;
 		to_ptr->next = from_ptr->next;
 	}
@@ -4103,7 +4126,7 @@ struct s_star *list /* I: the linked list */
 		g_assert(ptr != NULL);
 		star = &(array[i]);
 		g_assert(star != NULL);
-		set_star(star, ptr->x, ptr->y, ptr->mag);
+		set_star(star, ptr->x, ptr->y, ptr->mag, ptr->BV);
 		star->match_id = i;
 	}
 
@@ -4158,7 +4181,7 @@ static void array_to_list(int num_stars, /* I: number of stars in the array */
 	last = head;
 	num = 0;
 	while (num < num_stars) {
-		new = atStarNew(star_array[num].x, star_array[num].y, star_array[num].mag);
+		new = atStarNew(star_array[num].x, star_array[num].y, star_array[num].mag, star_array[num].BV);
 		new->id = star_array[num].id;
 		if (head == NULL) {
 			head = new;

@@ -33,6 +33,7 @@ void rgb_to_xyz(double, double, double, double *, double *, double *);
 void xyz_to_LAB(double, double, double, double *, double *, double *);
 void LAB_to_xyz(double, double, double, double *, double *, double *);
 void xyz_to_rgb(double, double, double, double *, double *, double *);
+double BV_to_T(double BV);
 
 int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2, int config);
 

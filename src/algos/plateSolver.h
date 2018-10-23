@@ -17,6 +17,15 @@
 #define CDSSESAME "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame"
 #define VIZIERSESAME "http://vizier.cfa.harvard.edu/viz-bin/nph-sesame"
 
+/* median filter data from GUI */
+struct plate_solver_data {
+	gchar *catalogStars;
+	double s; // scale (resolution)
+	fits *fit;
+	int ret; // return value
+	double pixel_size; // pixel size in µm
+};
+
 enum resolver {
 	RESOLVER_NED,
 	RESOLVER_SIMBAD,

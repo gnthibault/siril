@@ -18,6 +18,7 @@ struct fwhm_struct {
 	photometry *phot; /* photometry data */
 	double xpos, ypos; /* position of the star in the image, not set by Minimization */
 	double rmse; /* RMSE of the minimization */
+	double BV; /* only use in BV calibration */
 
 	/* uncertainties */
 	double B_err;

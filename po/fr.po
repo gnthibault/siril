@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-19 13:52+0200\n"
-"PO-Revision-Date: 2018-10-19 14:05+0200\n"
+"POT-Creation-Date: 2018-10-23 15:32+0200\n"
+"PO-Revision-Date: 2018-10-23 15:49+0200\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -3797,6 +3797,27 @@ msgstr "Limite haute : "
 msgid "White reference"
 msgstr "Référence des blancs"
 
+#: ../src/algos/PSF.c:671
+#, c-format
+msgid ""
+"PSF fit Result:\n"
+"x0=%0.2f px, y0=%0.2f px\n"
+"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
+"Angle=%0.2f deg\n"
+"Background value=%0.6f\n"
+"Maximal intensity=%0.6f\n"
+"Magnitude (%s)=%0.2f\n"
+"RMSE=%.3e\n"
+msgstr ""
+"Résultat de l'ajustement PSF :\n"
+"\\x0=%0.2f px, y0=%0.2f px\n"
+"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
+"Angle=%0.2f deg\n"
+"Valeur du FDC=%0.6f\n"
+"Inensité Maximale=%0.6f\n"
+"Magnitude (%s)=%0.2f\n"
+"RMSE=%.3e\n"
+
 #: ../src/algos/colors.c:354
 msgid "Siril cannot extract layers. Make sure your image is in RGB mode.\n"
 msgstr ""
@@ -3901,26 +3922,88 @@ msgstr ""
 "Attention : Il n'y a pas assez de pixels dans l'anneau du ciel. Vous devez "
 "faire une plus grande sélection.\n"
 
-#: ../src/algos/PSF.c:671
+#. Matching information
+#: ../src/algos/plateSolver.c:566 ../src/registration/global.c:443
+#, c-format
+msgid "%d pair matches.\n"
+msgstr "%d paires correspondantes.\n"
+
+#: ../src/algos/plateSolver.c:568 ../src/registration/global.c:445
+#, c-format
+msgid "Inliers:%*.3f\n"
+msgstr "Pts OK :   %*.3f\n"
+
+#. we assume square pixels
+#: ../src/algos/plateSolver.c:574
+#, c-format
+msgid "Resolution:%*.3lf arcsec/px\n"
+msgstr "Résolution :  %*.3lf arcsec/px\n"
+
+#: ../src/algos/plateSolver.c:584
+#, c-format
+msgid "Rotation:%+*.2lf deg %s\n"
+msgstr "Rotation :  %+*.2lf deg %s\n"
+
+#: ../src/algos/plateSolver.c:584
+msgid "(flipped)"
+msgstr "(inversée)"
+
+#: ../src/algos/plateSolver.c:591
+#, c-format
+msgid "Focal:%*.2lf mm\n"
+msgstr "Focale : %*.2lf mm\n"
+
+#: ../src/algos/plateSolver.c:592
+#, c-format
+msgid "Pixel size:%*.2lf µm\n"
+msgstr "Pixel dim. :  %*.2lf µm\n"
+
+#: ../src/algos/plateSolver.c:595
+#, c-format
+msgid "Field of view:    %s x %s\n"
+msgstr "Champ de vision :   %s x %s\n"
+
+#: ../src/algos/plateSolver.c:598
+#, c-format
+msgid "Image center: RA: %s, DEC: %s\n"
+msgstr "Centre de l'image : RA: %s, DEC: %s\n"
+
+#: ../src/algos/plateSolver.c:723
+msgid "Not enough stars.\n"
+msgstr "Pas assez d'étoiles.\n"
+
+#: ../src/algos/plateSolver.c:772
 #, c-format
 msgid ""
-"PSF fit Result:\n"
-"x0=%0.2f px, y0=%0.2f px\n"
-"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
-"Angle=%0.2f deg\n"
-"Background value=%0.6f\n"
-"Maximal intensity=%0.6f\n"
-"Magnitude (%s)=%0.2f\n"
-"RMSE=%.3e\n"
+"Plate Solving failed. The image could not be aligned with the reference "
+"star  after %d attempts.\n"
 msgstr ""
-"Résultat de l'ajustement PSF :\n"
-"\\x0=%0.2f px, y0=%0.2f px\n"
-"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
-"Angle=%0.2f deg\n"
-"Valeur du FDC=%0.6f\n"
-"Inensité Maximale=%0.6f\n"
-"Magnitude (%s)=%0.2f\n"
-"RMSE=%.3e\n"
+"La résolution astrométrique a échoué. L'image n'a pas pu être alignée sur "
+"les étoiles de référence après %d tentatives.\n"
+
+#: ../src/algos/plateSolver.c:773
+msgid ""
+"This is usually because the initial parameters (pixel size, focal length, "
+"initial coordinates) are too far from the real metadata of the image.\n"
+msgstr ""
+"Cela est généralement dû au fait que les paramètres initiaux (taille en "
+"pixels, longueur focale, coordonnées initiales) sont trop éloignés des "
+"métadonnées réelles de l'image.\n"
+
+#: ../src/algos/plateSolver.c:902
+msgid "No keywords found in the header.\n"
+msgstr "Aucun mot clé trouvé dans l'entête du fichier.\n"
+
+#: ../src/algos/plateSolver.c:903 ../src/compositing/compositing.c:546
+#: ../src/core/command.c:1728 ../src/gui/callbacks.c:5092
+#: ../src/gui/callbacks.c:5136 ../src/gui/callbacks.c:5381
+#: ../src/gui/callbacks.c:5390 ../src/gui/callbacks.c:5447
+#: ../src/gui/plot.c:281 ../src/io/conversion.c:549
+#: ../src/io/image_formats_libraries.c:73
+#: ../src/io/image_formats_libraries.c:229
+#: ../src/registration/registration.c:847
+msgid "Warning"
+msgstr "Attention"
 
 #: ../src/algos/star_finder.c:168
 msgid "Findstar: processing...\n"
@@ -3987,16 +4070,6 @@ msgstr "Résultat non enregistré"
 #: ../src/compositing/compositing.c:545
 msgid "You must at least load two layers before!\n"
 msgstr "Vous devez au moins charger 2 canaux\n"
-
-#: ../src/compositing/compositing.c:546 ../src/core/command.c:1728
-#: ../src/gui/callbacks.c:5092 ../src/gui/callbacks.c:5136
-#: ../src/gui/callbacks.c:5381 ../src/gui/callbacks.c:5390
-#: ../src/gui/callbacks.c:5447 ../src/gui/plot.c:281 ../src/io/conversion.c:549
-#: ../src/io/image_formats_libraries.c:73
-#: ../src/io/image_formats_libraries.c:229
-#: ../src/registration/registration.c:847
-msgid "Warning"
-msgstr "Attention"
 
 #. fix for the cancelling check in processing
 #: ../src/compositing/compositing.c:595
@@ -4323,17 +4396,17 @@ msgstr ""
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Conversion : erreur lors de l'ouverture du répertoire de travail %s.\n"
 
-#: ../src/core/command.c:1698 ../src/core/siril.c:211 ../src/core/utils.c:821
-#: ../src/gui/callbacks.c:1099 ../src/gui/callbacks.c:2147
-#: ../src/gui/callbacks.c:3072 ../src/gui/callbacks.c:4750
-#: ../src/gui/callbacks.c:4771 ../src/gui/callbacks.c:5198
-#: ../src/gui/callbacks.c:5204 ../src/gui/callbacks.c:5229
-#: ../src/gui/plot.c:379 ../src/gui/plot.c:438 ../src/gui/PSF_list.c:150
+#: ../src/core/command.c:1698 ../src/core/siril.c:211 ../src/core/utils.c:835
+#: ../src/gui/PSF_list.c:150 ../src/gui/callbacks.c:1099
+#: ../src/gui/callbacks.c:2147 ../src/gui/callbacks.c:3072
+#: ../src/gui/callbacks.c:4750 ../src/gui/callbacks.c:4771
+#: ../src/gui/callbacks.c:5198 ../src/gui/callbacks.c:5204
+#: ../src/gui/callbacks.c:5229 ../src/gui/plot.c:379 ../src/gui/plot.c:438
 #: ../src/io/conversion.c:555 ../src/io/conversion.c:627
-#: ../src/io/image_format_fits.c:414 ../src/io/image_format_fits.c:421
-#: ../src/io/image_format_fits.c:459 ../src/io/image_format_fits.c:467
-#: ../src/io/image_format_fits.c:489 ../src/io/image_format_fits.c:527
-#: ../src/io/image_format_fits.c:545 ../src/io/image_format_fits.c:685
+#: ../src/io/image_format_fits.c:405 ../src/io/image_format_fits.c:412
+#: ../src/io/image_format_fits.c:450 ../src/io/image_format_fits.c:458
+#: ../src/io/image_format_fits.c:480 ../src/io/image_format_fits.c:518
+#: ../src/io/image_format_fits.c:536 ../src/io/image_format_fits.c:676
 #: ../src/io/image_formats_internal.c:218
 #: ../src/io/image_formats_internal.c:272
 #: ../src/io/image_formats_internal.c:341
@@ -5512,35 +5585,69 @@ msgstr "Définir le répertoire de travail à '%s'\n"
 msgid "Could not change directory to '%s'.\n"
 msgstr "Impossible de modifier le répertoire de travail en '%s'.\n"
 
-#: ../src/core/utils.c:785
+#: ../src/core/utils.c:799
 msgid "Filename is too long, not expanding it\n"
 msgstr "Nom de fichier trop long, ne fera rien\n"
 
-#: ../src/core/utils.c:821
+#: ../src/core/utils.c:835
 msgid "File not found"
 msgstr "Fichier non trouvé"
 
-#: ../src/core/utils.c:990
+#: ../src/core/utils.c:1004
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Vérifie la version de GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:1013
+#: ../src/core/utils.c:1027
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "La version de GTK ne correspond pas aux prérequis: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:1019
+#: ../src/core/utils.c:1033
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 msgstr ""
 "Impossible de charger le fichier de la feuille de style CSS : %s. Veuillez "
 "réinstaller %s\n"
 
-#: ../src/core/utils.c:1029 ../src/main.c:266
+#: ../src/core/utils.c:1043 ../src/main.c:266
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Chargé avec succès '%s'\n"
+
+#: ../src/gui/PSF_list.c:150
+msgid "Stars must have the same units."
+msgstr "Les étoiles doivent avoir les mêmes unités."
+
+#: ../src/gui/PSF_list.c:163
+#, c-format
+msgid ""
+"Average Gaussian PSF\n"
+"\n"
+"N:\t%d stars\n"
+"B:\t%.6f\n"
+"A:\t%.6f\n"
+"FWHMx:\t%.2f%s\n"
+"FWHMy:\t%.2f%s\n"
+"r:\t%.3f\n"
+"Angle:\t%.2f deg\n"
+"rmse:\t%.3e\n"
+msgstr ""
+"Moyenne du PSF Gaussien\n"
+"\n"
+"N:\t%d stars\n"
+"B:\t%.6f\n"
+"A:\t%.6f\n"
+"FWHMx:\t%.2f%s\n"
+"FWHMy:\t%.2f%s\n"
+"r:\t%.3f\n"
+"Angle:\t%.2f deg\n"
+"rmse:\t%.3e\n"
+
+#: ../src/gui/PSF_list.c:228
+#, c-format
+msgid "Star %d of %d"
+msgstr "Étoile %d sur %d"
 
 #: ../src/gui/callbacks.c:868 ../src/gui/save_dialog.c:63
 msgid "FITS Files (*.fit, *.fits, *.fts)"
@@ -6071,40 +6178,6 @@ msgstr "%s: %.2f ms.\n"
 msgid "%s: %.2f s.\n"
 msgstr "%s: %.2f s.\n"
 
-#: ../src/gui/PSF_list.c:150
-msgid "Stars must have the same units."
-msgstr "Les étoiles doivent avoir les mêmes unités."
-
-#: ../src/gui/PSF_list.c:163
-#, c-format
-msgid ""
-"Average Gaussian PSF\n"
-"\n"
-"N:\t%d stars\n"
-"B:\t%.6f\n"
-"A:\t%.6f\n"
-"FWHMx:\t%.2f%s\n"
-"FWHMy:\t%.2f%s\n"
-"r:\t%.3f\n"
-"Angle:\t%.2f deg\n"
-"rmse:\t%.3e\n"
-msgstr ""
-"Moyenne du PSF Gaussien\n"
-"\n"
-"N:\t%d stars\n"
-"B:\t%.6f\n"
-"A:\t%.6f\n"
-"FWHMx:\t%.2f%s\n"
-"FWHMy:\t%.2f%s\n"
-"r:\t%.3f\n"
-"Angle:\t%.2f deg\n"
-"rmse:\t%.3e\n"
-
-#: ../src/gui/PSF_list.c:228
-#, c-format
-msgid "Star %d of %d"
-msgstr "Étoile %d sur %d"
-
 #: ../src/gui/registration_preview.c:66
 #, c-format
 msgid "Preview %d"
@@ -6427,47 +6500,47 @@ msgstr "FILM ERREUR : format incompatible\n"
 msgid "Loaded FITS file has a BSCALE different than 1 (%lf)\n"
 msgstr "Le fichier FITS chargé a un BSCALE différent de 1 (%lf)\n"
 
-#: ../src/io/image_format_fits.c:278
+#: ../src/io/image_format_fits.c:269
 #, c-format
 msgid "FITS error: %s\n"
 msgstr "Erreur dans le fichier FITS : %s\n"
 
-#: ../src/io/image_format_fits.c:345
+#: ../src/io/image_format_fits.c:336
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "Format FITS inconnu dans la conversion interne\n"
 
-#: ../src/io/image_format_fits.c:413 ../src/io/image_format_fits.c:684
+#: ../src/io/image_format_fits.c:404 ../src/io/image_format_fits.c:675
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr "Le format %d de l'image  FITS n'est pas supportée par Siril.\n"
 
-#: ../src/io/image_format_fits.c:419
+#: ../src/io/image_format_fits.c:410
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Erreur fitsio lors de la lecture des données, fichier : %s.\n"
 
-#: ../src/io/image_format_fits.c:457
+#: ../src/io/image_format_fits.c:448
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr "%s.[extension] non trouvé.\n"
 
-#: ../src/io/image_format_fits.c:465
+#: ../src/io/image_format_fits.c:456
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr "Le fichier %s n'est pas un fichier FITS valide.\n"
 
-#: ../src/io/image_format_fits.c:488
+#: ../src/io/image_format_fits.c:479
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "FITSIO erreur lors de la récupération des paramètres, fichier %s.\n"
 
-#: ../src/io/image_format_fits.c:525
+#: ../src/io/image_format_fits.c:516
 #, c-format
 msgid "Unsupported FITS image with %ld channels.\n"
 msgstr "Format d'image FITS non supporté avec %ld canaux.\n"
 
-#: ../src/io/image_format_fits.c:544
+#: ../src/io/image_format_fits.c:535
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -6475,34 +6548,34 @@ msgstr ""
 "Les images FITS avec 64 bits entier signé par pixel.canal ne sont pas "
 "supportées.\n"
 
-#: ../src/io/image_format_fits.c:585
+#: ../src/io/image_format_fits.c:576
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lecture du fichier FITS : %s, %ld canal(aux), %ux%u pixels\n"
 
-#: ../src/io/image_format_fits.c:732
+#: ../src/io/image_format_fits.c:723
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "Lecture partielle du FITS : il n'y pas de canal %d dans l'image %s\n"
 
-#: ../src/io/image_format_fits.c:740
+#: ../src/io/image_format_fits.c:731
 #, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Format d'image FITS non supporté (%ld axes).\n"
 
-#: ../src/io/image_format_fits.c:786
+#: ../src/io/image_format_fits.c:777
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Chargement partiel du fichier FITS %s\n"
 
-#: ../src/io/image_format_fits.c:926
+#: ../src/io/image_format_fits.c:924
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 "ERREUR : Impossible d'enregistrer l'image FITS avec un format non supporté "
 "(%d).\n"
 
-#: ../src/io/image_format_fits.c:937
+#: ../src/io/image_format_fits.c:935
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Fichier FITS enregistré : fichier %s, %ld canal(aux), %ux%u pixels\n"
@@ -7188,16 +7261,6 @@ msgstr "Alignement global sur les étoiles"
 #, c-format
 msgid "Matching stars in image %d: done\n"
 msgstr "Correspondance des étoiles dans l'image %d : finie\n"
-
-#: ../src/registration/global.c:443
-#, c-format
-msgid "%d pair matches.\n"
-msgstr "%d paires correspondantes.\n"
-
-#: ../src/registration/global.c:445
-#, c-format
-msgid "Inliers:%*.3f\n"
-msgstr "Pts OK :   %*.3f\n"
 
 #: ../src/registration/global.c:451
 #, c-format

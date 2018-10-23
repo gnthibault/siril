@@ -66,7 +66,7 @@
     * This is the default value.  The user can override it with an optional
     * command-line argument.
     */
-#define AT_MATCH_NBRIGHT   30
+#define AT_MATCH_NBRIGHT   20
 
    /*
     * ignore all triangles which have (b/a) > AT_MATCH_RATIO when
@@ -182,6 +182,7 @@ typedef struct s_star {
 	double x;               /* star's "X" coordinate */
 	double y;               /* star's "Y" coordinate */
 	double mag;             /* some measure of star's brightness */
+	double BV;              /* only used for BV calibration */
 	int match_id;           /* ID of star in other list which matches */
 struct s_star *next;    /* we use linked lists internally */
 } s_star;

@@ -283,6 +283,24 @@ void xyz_to_rgb(double x, double y, double z, double *r, double *g, double *b) {
 	*b = (*b > 0.0031308) ? 1.055 * (pow(*b, (1 / 2.4))) - 0.055 : 12.92 * (*b);
 }
 
+// color index to temperature in kelvin
+double BV_to_T(double BV) {
+	double T;
+
+	// make sure BV is within its bounds [-0.4, 2] otherwise the math doesnt work
+	if (BV < -0.4) {
+		BV = -0.4;
+	} else if (BV > 2) {
+		BV = 2;
+	}
+
+	// http://www.wikiwand.com/en/Color_index
+	T = 4600 * ((1 / ((0.92 * BV) + 1.7)) + (1 / ((0.92 * BV) + 0.62)));
+
+	return T;
+}
+
+
 int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2,
 		int config) {
 	int row, col;

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-19 13:52+0200\n"
+"POT-Creation-Date: 2018-10-23 15:32+0200\n"
 "PO-Revision-Date: 2018-05-15 16:19+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -3830,6 +3830,27 @@ msgstr "Άνω όριο:"
 msgid "White reference"
 msgstr "Αναφορά άσπρου"
 
+#: ../src/algos/PSF.c:671
+#, c-format
+msgid ""
+"PSF fit Result:\n"
+"x0=%0.2f px, y0=%0.2f px\n"
+"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
+"Angle=%0.2f deg\n"
+"Background value=%0.6f\n"
+"Maximal intensity=%0.6f\n"
+"Magnitude (%s)=%0.2f\n"
+"RMSE=%.3e\n"
+msgstr ""
+"Αποτέλεσμα PSF fit:\n"
+"x0=%0.2f εικονοστοιχεία, y0=%0.2f εικονοστοιχεία\n"
+"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
+"Γωνία=%0.2f μοίρες\n"
+"Τιμή υποβάθρου=%0.6f\n"
+"Μέγιστη ένταση=%0.6f\n"
+"Μέγεθος (%s)=%0.2f\n"
+"RMSE=%.3e\n"
+
 #: ../src/algos/colors.c:354
 msgid "Siril cannot extract layers. Make sure your image is in RGB mode.\n"
 msgstr ""
@@ -3935,26 +3956,85 @@ msgstr ""
 "Προειδοποίηση: Δεν υπάρχουν αρκετά εικονοστοιχεία στον δακτύλιο του ουρανού. "
 "Πρέπει να κάνετε μια μεγαλύτερη επιλογή.\n"
 
-#: ../src/algos/PSF.c:671
+#. Matching information
+#: ../src/algos/plateSolver.c:566 ../src/registration/global.c:443
+#, c-format
+msgid "%d pair matches.\n"
+msgstr "%d ζεύγη ταιριάζουν.\n"
+
+#: ../src/algos/plateSolver.c:568 ../src/registration/global.c:445
+#, c-format
+msgid "Inliers:%*.3f\n"
+msgstr "Inliers:%*.3f\n"
+
+#. we assume square pixels
+#: ../src/algos/plateSolver.c:574
+#, fuzzy, c-format
+msgid "Resolution:%*.3lf arcsec/px\n"
+msgstr "Deconvolution"
+
+#: ../src/algos/plateSolver.c:584
+#, fuzzy, c-format
+msgid "Rotation:%+*.2lf deg %s\n"
+msgstr "περιστροφή:%+*.2f μοίρες\n"
+
+#: ../src/algos/plateSolver.c:584
+msgid "(flipped)"
+msgstr ""
+
+#: ../src/algos/plateSolver.c:591
+#, fuzzy, c-format
+msgid "Focal:%*.2lf mm\n"
+msgstr "κλίμακα:%*.3f\n"
+
+#: ../src/algos/plateSolver.c:592
+#, fuzzy, c-format
+msgid "Pixel size:%*.2lf µm\n"
+msgstr "Διάσταση Χ εικονοστοιχείου (μικρά):"
+
+#: ../src/algos/plateSolver.c:595
+#, c-format
+msgid "Field of view:    %s x %s\n"
+msgstr ""
+
+#: ../src/algos/plateSolver.c:598
+#, c-format
+msgid "Image center: RA: %s, DEC: %s\n"
+msgstr ""
+
+#: ../src/algos/plateSolver.c:723
+#, fuzzy
+msgid "Not enough stars.\n"
+msgstr "Δεν υπάρχουν αρκετά αστέρια. Η εικόνα %d παραλείφθηκε\n"
+
+#: ../src/algos/plateSolver.c:772
 #, c-format
 msgid ""
-"PSF fit Result:\n"
-"x0=%0.2f px, y0=%0.2f px\n"
-"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
-"Angle=%0.2f deg\n"
-"Background value=%0.6f\n"
-"Maximal intensity=%0.6f\n"
-"Magnitude (%s)=%0.2f\n"
-"RMSE=%.3e\n"
+"Plate Solving failed. The image could not be aligned with the reference "
+"star  after %d attempts.\n"
 msgstr ""
-"Αποτέλεσμα PSF fit:\n"
-"x0=%0.2f εικονοστοιχεία, y0=%0.2f εικονοστοιχεία\n"
-"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
-"Γωνία=%0.2f μοίρες\n"
-"Τιμή υποβάθρου=%0.6f\n"
-"Μέγιστη ένταση=%0.6f\n"
-"Μέγεθος (%s)=%0.2f\n"
-"RMSE=%.3e\n"
+
+#: ../src/algos/plateSolver.c:773
+msgid ""
+"This is usually because the initial parameters (pixel size, focal length, "
+"initial coordinates) are too far from the real metadata of the image.\n"
+msgstr ""
+
+#: ../src/algos/plateSolver.c:902
+#, fuzzy
+msgid "No keywords found in the header.\n"
+msgstr "Δεν βρέθηκε διάταξη Bayer στην κεφαλίδα του αρχείου.\n"
+
+#: ../src/algos/plateSolver.c:903 ../src/compositing/compositing.c:546
+#: ../src/core/command.c:1728 ../src/gui/callbacks.c:5092
+#: ../src/gui/callbacks.c:5136 ../src/gui/callbacks.c:5381
+#: ../src/gui/callbacks.c:5390 ../src/gui/callbacks.c:5447
+#: ../src/gui/plot.c:281 ../src/io/conversion.c:549
+#: ../src/io/image_formats_libraries.c:73
+#: ../src/io/image_formats_libraries.c:229
+#: ../src/registration/registration.c:847
+msgid "Warning"
+msgstr "Προειδοποίηση"
 
 #: ../src/algos/star_finder.c:168
 msgid "Findstar: processing...\n"
@@ -4023,16 +4103,6 @@ msgstr "Αποτέλεσμα σύνθεσης το οποίο δεν αποθη�
 #: ../src/compositing/compositing.c:545
 msgid "You must at least load two layers before!\n"
 msgstr "Πρέπει να φορτώσετε τουλάχιστον δυο επίπεδα!\n"
-
-#: ../src/compositing/compositing.c:546 ../src/core/command.c:1728
-#: ../src/gui/callbacks.c:5092 ../src/gui/callbacks.c:5136
-#: ../src/gui/callbacks.c:5381 ../src/gui/callbacks.c:5390
-#: ../src/gui/callbacks.c:5447 ../src/gui/plot.c:281 ../src/io/conversion.c:549
-#: ../src/io/image_formats_libraries.c:73
-#: ../src/io/image_formats_libraries.c:229
-#: ../src/registration/registration.c:847
-msgid "Warning"
-msgstr "Προειδοποίηση"
 
 #. fix for the cancelling check in processing
 #: ../src/compositing/compositing.c:595
@@ -4356,17 +4426,17 @@ msgstr ""
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Μετατροπή: σφάλμα ανοίγματος καταλόγου εργασίας %s.\n"
 
-#: ../src/core/command.c:1698 ../src/core/siril.c:211 ../src/core/utils.c:821
-#: ../src/gui/callbacks.c:1099 ../src/gui/callbacks.c:2147
-#: ../src/gui/callbacks.c:3072 ../src/gui/callbacks.c:4750
-#: ../src/gui/callbacks.c:4771 ../src/gui/callbacks.c:5198
-#: ../src/gui/callbacks.c:5204 ../src/gui/callbacks.c:5229
-#: ../src/gui/plot.c:379 ../src/gui/plot.c:438 ../src/gui/PSF_list.c:150
+#: ../src/core/command.c:1698 ../src/core/siril.c:211 ../src/core/utils.c:835
+#: ../src/gui/PSF_list.c:150 ../src/gui/callbacks.c:1099
+#: ../src/gui/callbacks.c:2147 ../src/gui/callbacks.c:3072
+#: ../src/gui/callbacks.c:4750 ../src/gui/callbacks.c:4771
+#: ../src/gui/callbacks.c:5198 ../src/gui/callbacks.c:5204
+#: ../src/gui/callbacks.c:5229 ../src/gui/plot.c:379 ../src/gui/plot.c:438
 #: ../src/io/conversion.c:555 ../src/io/conversion.c:627
-#: ../src/io/image_format_fits.c:414 ../src/io/image_format_fits.c:421
-#: ../src/io/image_format_fits.c:459 ../src/io/image_format_fits.c:467
-#: ../src/io/image_format_fits.c:489 ../src/io/image_format_fits.c:527
-#: ../src/io/image_format_fits.c:545 ../src/io/image_format_fits.c:685
+#: ../src/io/image_format_fits.c:405 ../src/io/image_format_fits.c:412
+#: ../src/io/image_format_fits.c:450 ../src/io/image_format_fits.c:458
+#: ../src/io/image_format_fits.c:480 ../src/io/image_format_fits.c:518
+#: ../src/io/image_format_fits.c:536 ../src/io/image_format_fits.c:676
 #: ../src/io/image_formats_internal.c:218
 #: ../src/io/image_formats_internal.c:272
 #: ../src/io/image_formats_internal.c:341
@@ -5562,34 +5632,68 @@ msgstr "Γίνεται ορισμός του τρέχοντος καταλόγο
 msgid "Could not change directory to '%s'.\n"
 msgstr "Δεν ήταν δυνατή η αλλαγή του καταλόγου στο '%s'.\n"
 
-#: ../src/core/utils.c:785
+#: ../src/core/utils.c:799
 msgid "Filename is too long, not expanding it\n"
 msgstr "Το όνομα του αρχείου είναι πολύ μεγάλο, δεν γίνεται επέκταση του\n"
 
-#: ../src/core/utils.c:821
+#: ../src/core/utils.c:835
 msgid "File not found"
 msgstr "Το αρχείο δεν βρέθηκε"
 
-#: ../src/core/utils.c:990
+#: ../src/core/utils.c:1004
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Γίνεται έλεγχος της έκδοσης GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:1013
+#: ../src/core/utils.c:1027
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "Η έκδοση του GTK δεν ταιριάζει με τις απαιτήσεις: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:1019
+#: ../src/core/utils.c:1033
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 msgstr ""
 "Δεν ήταν δυνατό να φορτωθεί το αρχείο CSS: %s. Παρακαλώ εγκαταστήστε ξανά%s\n"
 
-#: ../src/core/utils.c:1029 ../src/main.c:266
+#: ../src/core/utils.c:1043 ../src/main.c:266
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Το '%s' φορτώθηκε με επιτυχία\n"
+
+#: ../src/gui/PSF_list.c:150
+msgid "Stars must have the same units."
+msgstr "Τα αστέρια πρέπει να έχουν τις ίδιες μονάδες."
+
+#: ../src/gui/PSF_list.c:163
+#, c-format
+msgid ""
+"Average Gaussian PSF\n"
+"\n"
+"N:\t%d stars\n"
+"B:\t%.6f\n"
+"A:\t%.6f\n"
+"FWHMx:\t%.2f%s\n"
+"FWHMy:\t%.2f%s\n"
+"r:\t%.3f\n"
+"Angle:\t%.2f deg\n"
+"rmse:\t%.3e\n"
+msgstr ""
+"Γκαουσιανό PSF μέσου όρου\n"
+"\n"
+"N:\t%d αστέρια\n"
+"B:\t%.6f\n"
+"A:\t%.6f\n"
+"FWHMx:\t%.2f%s\n"
+"FWHMy:\t%.2f%s\n"
+"r:\t%.3f\n"
+"Γωνία:\t%.2f μοίρες\n"
+"rmse:\t%.3e\n"
+
+#: ../src/gui/PSF_list.c:228
+#, c-format
+msgid "Star %d of %d"
+msgstr "Αστέρι %d από %d"
 
 #: ../src/gui/callbacks.c:868 ../src/gui/save_dialog.c:63
 msgid "FITS Files (*.fit, *.fits, *.fts)"
@@ -6124,40 +6228,6 @@ msgstr "%s: %.2f ms.\n"
 msgid "%s: %.2f s.\n"
 msgstr "%s: %.2f s.\n"
 
-#: ../src/gui/PSF_list.c:150
-msgid "Stars must have the same units."
-msgstr "Τα αστέρια πρέπει να έχουν τις ίδιες μονάδες."
-
-#: ../src/gui/PSF_list.c:163
-#, c-format
-msgid ""
-"Average Gaussian PSF\n"
-"\n"
-"N:\t%d stars\n"
-"B:\t%.6f\n"
-"A:\t%.6f\n"
-"FWHMx:\t%.2f%s\n"
-"FWHMy:\t%.2f%s\n"
-"r:\t%.3f\n"
-"Angle:\t%.2f deg\n"
-"rmse:\t%.3e\n"
-msgstr ""
-"Γκαουσιανό PSF μέσου όρου\n"
-"\n"
-"N:\t%d αστέρια\n"
-"B:\t%.6f\n"
-"A:\t%.6f\n"
-"FWHMx:\t%.2f%s\n"
-"FWHMy:\t%.2f%s\n"
-"r:\t%.3f\n"
-"Γωνία:\t%.2f μοίρες\n"
-"rmse:\t%.3e\n"
-
-#: ../src/gui/PSF_list.c:228
-#, c-format
-msgid "Star %d of %d"
-msgstr "Αστέρι %d από %d"
-
 #: ../src/gui/registration_preview.c:66
 #, c-format
 msgid "Preview %d"
@@ -6478,49 +6548,49 @@ msgstr "ΣΦΑΛΜΑ ΤΑΙΝΙΑΣ: ασύμβατος τύπος\n"
 msgid "Loaded FITS file has a BSCALE different than 1 (%lf)\n"
 msgstr "Το αρχείο FITS που φορτώθηκε έχει διαφορετικό BSCALE από 1 (%d)\n"
 
-#: ../src/io/image_format_fits.c:278
+#: ../src/io/image_format_fits.c:269
 #, c-format
 msgid "FITS error: %s\n"
 msgstr "Σφάλμα FITS: %s\n"
 
-#: ../src/io/image_format_fits.c:345
+#: ../src/io/image_format_fits.c:336
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "Άγνωστα δεδομένα FITS κατά την εσωτερική μετατροπή\n"
 
-#: ../src/io/image_format_fits.c:413 ../src/io/image_format_fits.c:684
+#: ../src/io/image_format_fits.c:404 ../src/io/image_format_fits.c:675
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr "Ο τύπος εικόνας FITS %d δεν υποστηρίζεται από το Siril.\n"
 
-#: ../src/io/image_format_fits.c:419
+#: ../src/io/image_format_fits.c:410
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Σφάλμα ανάγνωσης δεδομένω fitsio, αρχείο: %s.\n"
 
-#: ../src/io/image_format_fits.c:457
+#: ../src/io/image_format_fits.c:448
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr ""
 "%s.[any_allowed_extension] δεν βρέθηκε.\n"
 "\n"
 
-#: ../src/io/image_format_fits.c:465
+#: ../src/io/image_format_fits.c:456
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr "Το αρχείο %s δεν είναι αρχείο FITS ή δεν υπάρχει με προεκτάσεις FITS\n"
 
-#: ../src/io/image_format_fits.c:488
+#: ../src/io/image_format_fits.c:479
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "Σφάλμα FITSIO στην λήψη των παραμέτρων εικόνας, αρχείο %s.\n"
 
-#: ../src/io/image_format_fits.c:525
+#: ../src/io/image_format_fits.c:516
 #, c-format
 msgid "Unsupported FITS image with %ld channels.\n"
 msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
 
-#: ../src/io/image_format_fits.c:544
+#: ../src/io/image_format_fits.c:535
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -6528,35 +6598,35 @@ msgstr ""
 "Οι εικόνες FITS με 64 bit ακέραιο με πρόσημο ανά εικονοστοιχεία.κανάλι δεν "
 "υποστηρίζονται.\n"
 
-#: ../src/io/image_format_fits.c:585
+#: ../src/io/image_format_fits.c:576
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται ανάγνωση του FITS: αρχείο %s, %ld επίπεδο(α), %ux%u εικονοστοιχεία\n"
 
-#: ../src/io/image_format_fits.c:732
+#: ../src/io/image_format_fits.c:723
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "Μερική ανάγνωση FITS: δεν υπάρχει επίπεδο %d στην εικόνα %s\n"
 
-#: ../src/io/image_format_fits.c:740
+#: ../src/io/image_format_fits.c:731
 #, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Άγνωστος τύπος εικόνας FITS (%ld άξονες).\n"
 
-#: ../src/io/image_format_fits.c:786
+#: ../src/io/image_format_fits.c:777
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Έγινε μερική φόρτωση του αρχείου FITS %s\n"
 
-#: ../src/io/image_format_fits.c:926
+#: ../src/io/image_format_fits.c:924
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 "ΣΦΑΛΜΑ: γίνεται προσπάθεια αποθήκευσης εικόνας FITS σε μη υποστηριζόμενο "
 "τύπο (%d).\n"
 
-#: ../src/io/image_format_fits.c:937
+#: ../src/io/image_format_fits.c:935
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
@@ -7286,16 +7356,6 @@ msgstr "Χειροκίνητη εγγραφή"
 #, fuzzy, c-format
 msgid "Matching stars in image %d: done\n"
 msgstr "Ταίριασμα αστεριών: έγινε\n"
-
-#: ../src/registration/global.c:443
-#, c-format
-msgid "%d pair matches.\n"
-msgstr "%d ζεύγη ταιριάζουν.\n"
-
-#: ../src/registration/global.c:445
-#, c-format
-msgid "Inliers:%*.3f\n"
-msgstr "Inliers:%*.3f\n"
 
 #: ../src/registration/global.c:451
 #, c-format

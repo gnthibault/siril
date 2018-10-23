@@ -312,7 +312,8 @@ void atHDel(Homography *H /* I: structure to delete */
 struct s_star *
 atStarNew(double x, /* I: x value for new star */
 double y, /* I: y value for new star */
-double mag /* I: mag value for new star */
+double mag, /* I: mag value for new star */
+double BV /* I: BV value for new star */
 ) {
 	struct s_star *new;
 	static int id_number = 0;
@@ -323,6 +324,7 @@ double mag /* I: mag value for new star */
 	new->x = x;
 	new->y = y;
 	new->mag = mag;
+	new->BV = BV;
 	new->match_id = -1;
 	new->next = (struct s_star *) NULL;
 	return (new);
@@ -397,7 +399,7 @@ int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list, point
 	last = head;
 
 	while (i < n) {
-		new = atStarNew(s[i]->xpos, image_size.y - s[i]->ypos, s[i]->mag);
+		new = atStarNew(s[i]->xpos, image_size.y - s[i]->ypos, s[i]->mag, s[i]->BV);
 		new->id = i;
 
 		if (head == NULL) {
