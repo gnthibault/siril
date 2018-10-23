@@ -598,7 +598,6 @@ static void print_platesolving_results(Homography H, image_solved image) {
 	siril_log_message(_("Image center: RA: %s, DEC: %s\n"), RA, DEC);
 
    	update_gfit(image);
-	update_IPS_GUI();
 }
 
 static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
