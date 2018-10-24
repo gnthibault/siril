@@ -432,6 +432,8 @@ struct ffit {
 	double cvf; // Conversion factor (e-/adu)
 
 	/* Plate Solving data */
+	char objctra[FLEN_VALUE];
+	char objctdec[FLEN_VALUE];
 	double crpix1, crpix2;
 	double crval1, crval2;
 

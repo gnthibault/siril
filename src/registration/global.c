@@ -453,8 +453,8 @@ static void print_alignment_results(Homography H, int filenum, float FWHMx, floa
 	siril_log_message(_("scale:%*.3f\n"), 13, scale);
 
 	/* Rotation */
-	rotation = -atan2(H.h01, H.h00);
-	siril_log_message(_("rotation:%+*.2f deg\n"), 9, rotation * 180 / M_PI);
+	rotation = -atan2(H.h01, H.h00) * 180 / M_PI;
+	siril_log_message(_("rotation:%+*.2f deg\n"), 9, rotation);
 
 	/* Translation */
 	shift.x = -H.h02;

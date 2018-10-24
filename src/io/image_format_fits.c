@@ -178,6 +178,12 @@ static void read_fits_header(fits *fit) {
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->crval2), NULL, &status);
 
+	status = 0;
+	fits_read_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->objctra), NULL, &status);
+
+	status = 0;
+	fits_read_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->objctdec), NULL, &status);
+
 
 	/*******************************************************************
 	 * ************************* DFT KEYWORDS **************************
@@ -1077,6 +1083,14 @@ void save_fits_header(fits *fit) {
 	if (fit->crval2 > 0.)
 		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->crval2),
 				"Axis2 reference value", &status);
+	status = 0;
+	if (fit->objctra[0] != '\0')
+		fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->objctra),
+				"Image center R.A. (hms)", &status);
+	status = 0;
+	if (fit->objctdec[0] != '\0')
+		fits_update_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->objctdec),
+				"Image center declination (dms)", &status);
 
 	/*******************************************************************
 	 * ******************** PROGRAMM KEYWORDS **************************

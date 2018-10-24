@@ -104,7 +104,7 @@ void init_peaker_default() {
 	/* values taken from siril3.glade */
 	com.starfinder_conf.radius = 10;
 	com.starfinder_conf.sigma = 1.0;
-	com.starfinder_conf.roundness = 0.6;
+	com.starfinder_conf.roundness = 0.5;
 }
 
 void on_spin_sf_radius_changed(GtkSpinButton *spinbutton, gpointer user_data) {

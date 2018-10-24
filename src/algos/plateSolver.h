@@ -29,7 +29,7 @@ struct plate_solver_data {
 enum resolver {
 	RESOLVER_NED,
 	RESOLVER_SIMBAD,
-	RESOLVER_VISIER,
+	RESOLVER_VIZIER,
 	RESOLVER_NUMBER
 };
 

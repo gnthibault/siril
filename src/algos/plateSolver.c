@@ -109,7 +109,12 @@ static void fov_in_DHMS(double var, gchar *fov) {
 	deg = (int) var;
 	decM = fabs((int) ((var - deg) * 60));
 	decS = (fabs((var - deg) * 60) - decM) * 60;
-	g_snprintf(fov, 256, "%02dd %02d\' %.2lf\"", deg, decM, decS);
+	if (deg > 0)
+		g_snprintf(fov, 256, "%02dd %02d\' %.2lf\"", deg, decM, decS);
+	else if (decM > 0)
+		g_snprintf(fov, 256, "%02d\' %.2lf\"", decM, decS);
+	else if (decS > 0.0)
+		g_snprintf(fov, 256, "%.2lf\"", decS);
 }
 
 static int parse_curl_buffer(char *buffer, struct object *obj) {
@@ -129,7 +134,7 @@ static int parse_curl_buffer(char *buffer, struct object *obj) {
 			resolver = RESOLVER_SIMBAD;
 		}
 		else if (g_strrstr(token[i], "VizieR")) {
-			resolver = RESOLVER_VISIER;
+			resolver = RESOLVER_VIZIER;
 		}
 		else if (g_str_has_prefix (token[i], "%J ")) {
 			fields = g_strsplit(token[i], " ", -1);
@@ -449,7 +454,7 @@ static void add_object_to_list() {
 
 	clear_all_objects();
 
-if (platedObject[RESOLVER_NED].name) {
+	if (platedObject[RESOLVER_NED].name) {
 		gtk_list_store_append(list_IPS, &iter);
 		gtk_list_store_set(list_IPS, &iter, COLUMN_RESOLVER, "NED", COLUMN_NAME,
 				platedObject[RESOLVER_NED].name, -1);
@@ -457,14 +462,14 @@ if (platedObject[RESOLVER_NED].name) {
 
 	if (platedObject[RESOLVER_SIMBAD].name) {
 		gtk_list_store_append(list_IPS, &iter);
-		gtk_list_store_set(list_IPS, &iter, COLUMN_RESOLVER, "SIMBAD",
+		gtk_list_store_set(list_IPS, &iter, COLUMN_RESOLVER, "Simbad",
 				COLUMN_NAME, platedObject[RESOLVER_SIMBAD].name, -1);
 	}
 
-	if (platedObject[RESOLVER_VISIER].name) {
+	if (platedObject[RESOLVER_VIZIER].name) {
 		gtk_list_store_append(list_IPS, &iter);
-		gtk_list_store_set(list_IPS, &iter, COLUMN_RESOLVER, "VISIER",
-				COLUMN_NAME, platedObject[RESOLVER_VISIER].name, -1);
+		gtk_list_store_set(list_IPS, &iter, COLUMN_RESOLVER, "VizieR",
+				COLUMN_NAME, platedObject[RESOLVER_VIZIER].name, -1);
 	}
 }
 
@@ -552,10 +557,12 @@ static void update_gfit(image_solved image) {
 	gfit.crpix2 = image.px_center.y;
 	gfit.crval1 = image.ra_center;
 	gfit.crval2 = image.dec_center;
+	deg_to_HMS(image.ra_center, "ra", gfit.objctra);
+	deg_to_HMS(image.dec_center, "dec", gfit.objctdec);
 }
 
 static void print_platesolving_results(Homography H, image_solved image) {
-	double rotation, det, resolution, scaleX, scaleY, focal;
+	double rotation, det, scaleX, scaleY;
 	double inliers;
 	char RA[256] = { 0 };
 	char DEC[256] = { 0 };
@@ -570,10 +577,14 @@ static void print_platesolving_results(Homography H, image_solved image) {
 	/* Plate Solving */
 	scaleX = sqrt(H.h00 * H.h00 + H.h01 * H.h01);
 	scaleY = sqrt(H.h10 * H.h10 + H.h11 * H.h11);
-	resolution = (scaleX + scaleY) * 0.5; // we assume square pixels
-	siril_log_message(_("Resolution:%*.3lf arcsec/px\n"), 11, resolution);
+	image.resolution = (scaleX + scaleY) * 0.5; // we assume square pixels
+	siril_log_message(_("Resolution:%*.3lf arcsec/px\n"), 11, image.resolution);
+
+	/* rotation */
 	rotation = atan2(H.h00 + H.h01, H.h10 + H.h11) * 180 / M_PI + 135.0;
 	det = (H.h00 * H.h11 - H.h01 * H.h10); // determinant of rotation matrix (ac - bd)
+	/* If the determinant of the top-left 2x2 rotation matrix is > 0
+	 * the transformation is orientation-preserving. */
 	if (det < 0)
 		rotation = -90 - rotation;
 	rotation = - rotation;
@@ -581,14 +592,13 @@ static void print_platesolving_results(Homography H, image_solved image) {
 		rotation += 360;
 	if (rotation > 180)
 		rotation -= 360;
-	siril_log_message(_("Rotation:%+*.2lf deg %s\n"), 12, rotation, det > 0 ? _("(flipped)") : "");
-	focal = RADCONV * image.pixel_size / resolution;
+	siril_log_message(_("Rotation:%+*.2lf deg %s\n"), 12, rotation, det < 0 ? _("(flipped)") : "");
+	image.focal = RADCONV * image.pixel_size / image.resolution;
 
-	image.focal = focal;
-	image.fov.x = get_fov(resolution, image.px_size.x);
-	image.fov.y = get_fov(resolution, image.px_size.y);
+	image.fov.x = get_fov(image.resolution, image.px_size.x);
+	image.fov.y = get_fov(image.resolution, image.px_size.y);
 
-	siril_log_message(_("Focal:%*.2lf mm\n"), 15, focal);
+	siril_log_message(_("Focal:%*.2lf mm\n"), 15, image.focal);
 	siril_log_message(_("Pixel size:%*.2lf µm\n"), 10, image.pixel_size);
 	fov_in_DHMS(image.fov.x / 60.0, field_x);
 	fov_in_DHMS(image.fov.y / 60.0, field_y);
@@ -621,8 +631,8 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &Bmag);
 
 		star = malloc(sizeof(fitted_PSF));
-		star->xpos = -x;
-		star->ypos = y - shift_y;
+		star->xpos = x;
+		star->ypos = y + shift_y; // shift_y is here because in get_stars of misc.c we have "image_size.y - s[i]->ypos"
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
 		cstars[i] = star;
@@ -659,7 +669,7 @@ static int read_APPAS_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 			continue;
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = -y + shift_y;
+		star->ypos = y + shift_y;
 		star->mag = magA;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
@@ -858,6 +868,8 @@ void invalidate_WCS_keywords() {
 	gfit.crpix2 = 0.0;
 	gfit.crval1 = 0.0;
 	gfit.crval2 = 0.0;
+	memset(gfit.objctra, 0, FLEN_VALUE);
+	memset(gfit.objctdec, 0, FLEN_VALUE);
 }
 
 /*****
@@ -882,17 +894,27 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 	GtkTreeModel *treeModel = gtk_tree_view_get_model(tree_view);
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (tree_view);
 	GtkTreeIter iter;
+	GValue value = G_VALUE_INIT;
 
 	if (gtk_tree_model_get_iter_first(treeModel, &iter) == FALSE)
 		return;	//The tree is empty
 	if (gtk_tree_selection_get_selected(selection, &treeModel, &iter)) { //get selected item
-		GtkTreePath *path = gtk_tree_model_get_path(treeModel, &iter);
-		gint *index = gtk_tree_path_get_indices(path);
-		if (index) {
-			selectedItem = index[0];
-			update_coordinates();
+		gtk_tree_model_get_value(treeModel, &iter, COLUMN_RESOLVER, &value);
+		const gchar *res = g_value_get_string(&value);
+		if (!g_strcmp0(res, "NED")) {
+			selectedItem = 0;
+		} else if (!g_strcmp0(res, "Simbad")) {
+			selectedItem = 1;
+		} else if (!g_strcmp0(res, "VizieR")) {
+			selectedItem = 2;
+		} else {
+			selectedItem = -1;
 		}
-		gtk_tree_path_free(path);
+
+		if (selectedItem >= 0)
+			update_coordinates();
+
+		g_value_unset(&value);
 	}
 }
 
