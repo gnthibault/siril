@@ -74,6 +74,66 @@ static void read_fits_date_obs_header(fits *fit) {
 	}
 }
 
+/* TODO: use result for siril stats ? */
+static int fit_stats(fits *fit) {
+	int status = 0;
+	int ii;
+	long totpix, fpixel[2];
+	double *pix, sum = 0.;
+
+	double meanval = 0., minval = 1.E33, maxval = -1.E33;
+
+	fits_get_img_dim(fit->fptr, &(fit->naxis), &status);
+	fits_get_img_size(fit->fptr, 2, fit->naxes, &status);
+
+	if (status || fit->naxis != 2) {
+		printf("Error: NAXIS = %d.  Only 2-D images are supported.\n",
+				fit->naxis);
+		return (1);
+	}
+
+	pix = (double *) malloc(fit->naxes[0] * sizeof(double)); /* memory for 1 row */
+
+	if (pix == NULL) {
+		printf("Memory allocation error\n");
+		return (1);
+	}
+
+	totpix = fit->naxes[0] * fit->naxes[1];
+	fpixel[0] = 1; /* read starting with first pixel in each row */
+
+	/* process image one row at a time; increment row # in each loop */
+	for (fpixel[1] = 1; fpixel[1] <= fit->naxes[1]; fpixel[1]++) {
+		/* give starting pixel coordinate and number of pixels to read */
+		if (fits_read_pix(fit->fptr, TDOUBLE, fpixel, fit->naxes[0], 0, pix, 0,
+				&status))
+			break; /* jump out of loop on error */
+
+		for (ii = 0; ii < fit->naxes[0]; ii++) {
+			sum += pix[ii]; /* accumlate sum */
+			if (pix[ii] < minval)
+				minval = pix[ii]; /* find min and  */
+			if (pix[ii] > maxval)
+				maxval = pix[ii]; /* max values    */
+		}
+	}
+	free(pix);
+
+	if (status) {
+		fits_report_error(stderr, status); /* print any error message */
+	} else {
+		if (totpix > 0)
+			meanval = sum / totpix;
+//		printf("  sum of pixels = %g\n", sum);
+//		printf("  mean value    = %g\n", *meanval);
+//		printf("  minimum value = %g\n", *minval);
+//		printf("  maximum value = %g\n", *maxval);
+		fit->maxi = maxval;
+		fit->mini = minval;
+	}
+	return status;
+}
+
 /* reading the FITS header to get useful information
  * stored in the fit, requires an opened file descriptor */
 static void read_fits_header(fits *fit) {
@@ -105,6 +165,9 @@ static void read_fits_header(fits *fit) {
 
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &(fit->data_max), NULL, &status);
+	if (status == KEY_NO_EXIST) {
+		fit->data_max = fit->maxi;
+	}
 
 	/*******************************************************************
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
@@ -400,7 +463,6 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		fits_read_pix(fit->fptr, TDOUBLE, orig, nbdata, &zero,
 				pixels_double, &zero, &status);
 		if (status) break;
-
 		convert_data(fit->bitpix, pixels_double, fit->data, nbdata, fit->data_max > 1.0);
 		free(pixels_double);
 		fit->bitpix = USHORT_IMG;
@@ -478,6 +540,8 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	}
 	free(name);
 
+	fit_stats(fit);
+
 	status = 0;
 	fits_get_img_param(fit->fptr, 3, &(fit->bitpix), &(fit->naxis), fit->naxes, &status);
 	if (status) {
@@ -507,7 +571,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	} else {
 		/* but some software just put unsigned 16-bit data in the file
 		 * and don't set the BZERO keyword... */
-		if (status == KEY_NO_EXIST && fit->bitpix == SHORT_IMG)
+		if (status == KEY_NO_EXIST && fit->bitpix == SHORT_IMG && fit->mini >= 0)
 			fit->bitpix = USHORT_IMG;
 	}
 	// and we store the original bitpix to reuse it during later partial
@@ -709,12 +773,23 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		fits_close_file(fit->fptr, &status);
 		return status;
 	}
+
+	fit_stats(fit);
+
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &offset, NULL, &status);
-	if (fit->bitpix == SHORT_IMG && offset != 0.0)
-		fit->bitpix = USHORT_IMG;
-	else if (fit->bitpix == LONG_IMG && offset != 0.0)
-		fit->bitpix = ULONG_IMG;
+	if (!status) {
+		if (fit->bitpix == SHORT_IMG && offset != 0.0) {
+			fit->bitpix = USHORT_IMG;
+		}
+		else if (fit->bitpix == LONG_IMG && offset != 0.0)
+			fit->bitpix = ULONG_IMG;
+	} else {
+		/* but some software just put unsigned 16-bit data in the file
+		 * and don't set the BZERO keyword... */
+		if (status == KEY_NO_EXIST && fit->bitpix == SHORT_IMG && fit->mini >= 0)
+			fit->bitpix = USHORT_IMG;
+	}
 	fit->orig_bitpix = fit->bitpix;
 
 	if (do_photometry) {
@@ -744,6 +819,9 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	status = 0;
 	if (fit->bitpix == FLOAT_IMG)
 		fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &data_max, NULL, &status);
+	if (status == KEY_NO_EXIST) {
+		data_max = fit->maxi;
+	}
 
 
 	nbdata = area->w * area->h;
