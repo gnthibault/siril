@@ -6,6 +6,7 @@
 
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <glib/gprintf.h>
 #include <gtk/gtk.h>
 #include <fitsio.h>	// fitsfile
 #include <gsl/gsl_histogram.h>
@@ -26,7 +27,7 @@
 #endif
 
 #define siril_debug_print(fmt, ...) \
-            do { if (DEBUG_TEST) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
+   do { if (DEBUG_TEST) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
 
 #undef max
 #define max(a,b) \
@@ -186,6 +187,8 @@ typedef struct registration_data regdata;
 typedef struct layer_info_struct layer_info;
 typedef struct sequ sequence;
 typedef struct single_image single;
+typedef struct wcs_struct wcs_info;
+typedef struct dft_struct dft_info;
 typedef struct ffit fits;
 typedef struct libraw_config libraw;
 typedef struct phot_config phot;
@@ -394,6 +397,21 @@ struct single_image {
 	char *ppprefix;		// prefix for filename output of preprocessing
 };
 
+struct wcs_struct {
+	unsigned int equinox;
+	double crpix1, crpix2;
+	double crval1, crval2;
+	char objctra[FLEN_VALUE];
+	char objctdec[FLEN_VALUE];
+};
+
+struct dft_struct {
+	double norm[3];			// Normalization value
+	char type[FLEN_VALUE];		// spectrum, phase
+	char ord[FLEN_VALUE];		// regular, centered
+	unsigned int rx, ry;		// padding: original value of picture size
+};
+
 struct ffit {
 	unsigned int rx;	// image width	(naxes[0])
 	unsigned int ry;	// image height	(naxes[1])
@@ -432,20 +450,14 @@ struct ffit {
 	double cvf; // Conversion factor (e-/adu)
 
 	/* Plate Solving data */
-	char objctra[FLEN_VALUE];
-	char objctdec[FLEN_VALUE];
-	double crpix1, crpix2;
-	double crval1, crval2;
+	wcs_info wcs;
 
 	/* data used in the Fourier space */
-	double dft_norm[3];			// Normalization value
-	char dft_type[FLEN_VALUE];		// spectrum, phase
-	char dft_ord[FLEN_VALUE];		// regular, centered
-	unsigned int dft_rx, dft_ry;		// padding: original value of picture size
+	dft_info dft;
 	
 	/* data computed or set by Siril */
 	imstats **stats;	// stats of fit for each layer, null if naxes[2] is unknown
-	double mini, maxi;	// max of the stats->max[3]
+	double mini, maxi;	// min and max of the stats->max[3]
 
 	fitsfile *fptr;		// file descriptor. Only used for file read and write.
 	WORD *data;		// 16-bit image data (depending on image type)

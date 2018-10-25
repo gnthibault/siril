@@ -43,6 +43,7 @@
 #include "gui/progress_and_log.h"
 #include "algos/colors.h"
 #include "algos/PSF.h"
+#include "algos/plateSolver.h"
 #include "algos/star_finder.h"
 #include "algos/fft.h"
 #include "algos/Def_Wavelet.h"
@@ -3532,19 +3533,29 @@ void on_checkchain_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 }
 
 void on_mirrorx_button_clicked(GtkToolButton *button, gpointer user_data) {
-	set_cursor_waiting(TRUE);
-	mirrorx(&gfit, TRUE);
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
+	if (single_image_is_loaded()) {
+		if (confirm_delete_wcs_keywords(&gfit)) {
+			set_cursor_waiting(TRUE);
+			undo_save_state("Processing: Mirror X");
+			mirrorx(&gfit, TRUE);
+			redraw(com.cvport, REMAP_ALL);
+			redraw_previews();
+			set_cursor_waiting(FALSE);
+		}
+	}
 }
 
 void on_mirrory_button_clicked(GtkToolButton *button, gpointer user_data) {
-	set_cursor_waiting(TRUE);
-	mirrory(&gfit, TRUE);
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
+	if (single_image_is_loaded()) {
+		if (confirm_delete_wcs_keywords(&gfit)) {
+			set_cursor_waiting(TRUE);
+			undo_save_state("Processing: Mirror Y");
+			mirrory(&gfit, TRUE);
+			redraw(com.cvport, REMAP_ALL);
+			redraw_previews();
+			set_cursor_waiting(FALSE);
+		}
+	}
 }
 
 void on_max_entry_changed(GtkEditable *editable, gpointer user_data) {
@@ -4253,6 +4264,7 @@ void on_confirmok_clicked(GtkButton *button, gpointer user_data) {
 		sequence_setselect_all(FALSE);
 		break;
 
+	default:
 	case CD_NULL:
 		break;
 
@@ -4536,25 +4548,27 @@ void on_menuitem_resample_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_button_resample_ok_clicked(GtkButton *button, gpointer user_data) {
-	double sample[2];
-	sample[0] = gtk_spin_button_get_value(
-			GTK_SPIN_BUTTON(lookup_widget("spinbutton_resample_X")));
-	sample[1] = gtk_spin_button_get_value(
-			GTK_SPIN_BUTTON(lookup_widget("spinbutton_resample_Y")));
-	int interpolation = gtk_combo_box_get_active(
-			GTK_COMBO_BOX(lookup_widget("combo_interpolation")));
+	if (confirm_delete_wcs_keywords(&gfit)) {
+		double sample[2];
+		sample[0] = gtk_spin_button_get_value(
+				GTK_SPIN_BUTTON(lookup_widget("spinbutton_resample_X")));
+		sample[1] = gtk_spin_button_get_value(
+				GTK_SPIN_BUTTON(lookup_widget("spinbutton_resample_Y")));
+		int interpolation = gtk_combo_box_get_active(
+				GTK_COMBO_BOX(lookup_widget("combo_interpolation")));
 
-	set_cursor_waiting(TRUE);
-	int toX = round_to_int((sample[0] / 100.0) * gfit.rx);
-	int toY = round_to_int((sample[1] / 100.0) * gfit.ry);
-	undo_save_state("Processing: Resample (%g - %g)",
-			sample[0]/100.0, sample[1]/100.0);
-	verbose_resize_gaussian(&gfit, toX, toY, interpolation);
-	update_used_memory();
-	adjust_vport_size_to_image();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
+		set_cursor_waiting(TRUE);
+		int toX = round_to_int((sample[0] / 100.0) * gfit.rx);
+		int toY = round_to_int((sample[1] / 100.0) * gfit.ry);
+		undo_save_state("Processing: Resample (%g - %g)", sample[0] / 100.0,
+				sample[1] / 100.0);
+		verbose_resize_gaussian(&gfit, toX, toY, interpolation);
+		update_used_memory();
+		adjust_vport_size_to_image();
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+		set_cursor_waiting(FALSE);
+	}
 }
 
 void on_button_resample_close_clicked(GtkButton *button, gpointer user_data) {
@@ -4599,41 +4613,45 @@ void on_button_sample_ratio_toggled(GtkToggleButton *button, gpointer user_data)
 
 /* Rotation */
 void on_menuitem_rotation90_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	static GtkToggleButton *crop_rotation = NULL;
-	int cropped;
+	if (confirm_delete_wcs_keywords(&gfit)) {
+		static GtkToggleButton *crop_rotation = NULL;
+		int cropped;
 
-	if (crop_rotation == NULL) {
-		crop_rotation = GTK_TOGGLE_BUTTON(
-				lookup_widget("checkbutton_rotation_crop"));
+		if (crop_rotation == NULL) {
+			crop_rotation = GTK_TOGGLE_BUTTON(
+					lookup_widget("checkbutton_rotation_crop"));
+		}
+		cropped = gtk_toggle_button_get_active(crop_rotation);
+
+		set_cursor_waiting(TRUE);
+		undo_save_state("Processing: Rotation (90.0deg)");
+		verbose_rotate_image(&gfit, 90.0, -1, cropped);	// fast rotation, no interpolation, no crop
+		adjust_vport_size_to_image();
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+		set_cursor_waiting(FALSE);
 	}
-	cropped = gtk_toggle_button_get_active(crop_rotation);
-
-	set_cursor_waiting(TRUE);
-	undo_save_state("Processing: Rotation (90.0deg)");
-	verbose_rotate_image(&gfit, 90.0, -1, cropped);	// fast rotation, no interpolation, no crop
-	adjust_vport_size_to_image();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
 }
 
 void on_menuitem_rotation270_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	static GtkToggleButton *crop_rotation = NULL;
-	int cropped;
+	if (confirm_delete_wcs_keywords(&gfit)) {
+		static GtkToggleButton *crop_rotation = NULL;
+		int cropped;
 
-	if (crop_rotation == NULL) {
-		crop_rotation = GTK_TOGGLE_BUTTON(
-				lookup_widget("checkbutton_rotation_crop"));
+		if (crop_rotation == NULL) {
+			crop_rotation = GTK_TOGGLE_BUTTON(
+					lookup_widget("checkbutton_rotation_crop"));
+		}
+		cropped = gtk_toggle_button_get_active(crop_rotation);
+
+		set_cursor_waiting(TRUE);
+		undo_save_state("Processing: Rotation (-90.0deg)");
+		verbose_rotate_image(&gfit, 270.0, -1, cropped);// fast rotation, no interpolation, no crop
+		adjust_vport_size_to_image();
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+		set_cursor_waiting(FALSE);
 	}
-	cropped = gtk_toggle_button_get_active(crop_rotation);
-
-	set_cursor_waiting(TRUE);
-	undo_save_state("Processing: Rotation (-90.0deg)");
-	verbose_rotate_image(&gfit, 270.0, -1, cropped);// fast rotation, no interpolation, no crop
-	adjust_vport_size_to_image();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
 }
 
 void on_menuitem_rotation_activate(GtkMenuItem *menuitem, gpointer user_data) {
@@ -4646,49 +4664,55 @@ void on_button_rotation_close_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_button_rotation_ok_clicked(GtkButton *button, gpointer user_data) {
-	static GtkToggleButton *crop_rotation = NULL;
-	double angle = gtk_spin_button_get_value(
-			GTK_SPIN_BUTTON(lookup_widget("spinbutton_rotation")));
-	int interpolation = gtk_combo_box_get_active(
-			GTK_COMBO_BOX(lookup_widget("combo_interpolation_rotation")));
-	int cropped;
+	if (confirm_delete_wcs_keywords(&gfit)) {
+		static GtkToggleButton *crop_rotation = NULL;
+		double angle = gtk_spin_button_get_value(
+				GTK_SPIN_BUTTON(lookup_widget("spinbutton_rotation")));
+		int interpolation = gtk_combo_box_get_active(
+				GTK_COMBO_BOX(lookup_widget("combo_interpolation_rotation")));
+		int cropped;
 
-	if (crop_rotation == NULL) {
-		crop_rotation = GTK_TOGGLE_BUTTON(
-				lookup_widget("checkbutton_rotation_crop"));
+		if (crop_rotation == NULL) {
+			crop_rotation = GTK_TOGGLE_BUTTON(
+					lookup_widget("checkbutton_rotation_crop"));
+		}
+		cropped = gtk_toggle_button_get_active(crop_rotation);
+
+		set_cursor_waiting(TRUE);
+		undo_save_state("Processing: Rotation (%.1lfdeg, cropped=%s)", angle,
+				cropped ? "TRUE" : "FALSE");
+		verbose_rotate_image(&gfit, angle, interpolation, cropped);
+		update_used_memory();
+		adjust_vport_size_to_image();
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+		set_cursor_waiting(FALSE);
 	}
-	cropped = gtk_toggle_button_get_active(crop_rotation);
-
-	set_cursor_waiting(TRUE);
-	undo_save_state("Processing: Rotation (%.1lfdeg, cropped=%s)",
-			angle, cropped ? "TRUE" : "FALSE");
-	verbose_rotate_image(&gfit, angle, interpolation, cropped);
-	update_used_memory();
-	adjust_vport_size_to_image();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
 }
 
 void on_menuitem_mirrorx_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded()) {
-		set_cursor_waiting(TRUE);
-		undo_save_state("Processing: Mirror X");
-		mirrorx(&gfit, TRUE);
-		redraw(com.cvport, REMAP_ALL);
-		redraw_previews();
-		set_cursor_waiting(FALSE);
+		if (confirm_delete_wcs_keywords(&gfit)) {
+			set_cursor_waiting(TRUE);
+			undo_save_state("Processing: Mirror X");
+			mirrorx(&gfit, TRUE);
+			redraw(com.cvport, REMAP_ALL);
+			redraw_previews();
+			set_cursor_waiting(FALSE);
+		}
 	}
 }
 
 void on_menuitem_mirrory_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded()) {
-		set_cursor_waiting(TRUE);
-		undo_save_state("Processing: Mirror Y");
-		mirrory(&gfit, TRUE);
-		redraw(com.cvport, REMAP_ALL);
-		redraw_previews();
-		set_cursor_waiting(FALSE);
+		if (confirm_delete_wcs_keywords(&gfit)) {
+			set_cursor_waiting(TRUE);
+			undo_save_state("Processing: Mirror Y");
+			mirrory(&gfit, TRUE);
+			redraw(com.cvport, REMAP_ALL);
+			redraw_previews();
+			set_cursor_waiting(FALSE);
+		}
 	}
 }
 
@@ -5149,14 +5173,18 @@ void on_menu_gray_pick_star_activate(GtkMenuItem *menuitem, gpointer user_data) 
 }
 
 void on_menu_gray_crop_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	undo_save_state("Processing: Crop (x=%d, y=%d, w=%d, h=%d)",
-			com.selection.x, com.selection.y, com.selection.w, com.selection.h);
-	crop(&gfit, &com.selection);
-	delete_selected_area();
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	update_used_memory();
+	// if astrometry exists
+	if (confirm_delete_wcs_keywords(&gfit)) {
+		undo_save_state("Processing: Crop (x=%d, y=%d, w=%d, h=%d)",
+				com.selection.x, com.selection.y, com.selection.w,
+				com.selection.h);
+		crop(&gfit, &com.selection);
+		delete_selected_area();
+		adjust_cutoff_from_updated_gfit();
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+		update_used_memory();
+	}
 }
 
 void on_menu_gray_crop_seq_activate(GtkMenuItem *menuitem, gpointer user_data) {

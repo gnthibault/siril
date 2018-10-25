@@ -58,6 +58,7 @@
 #include "algos/Def_Wavelet.h"
 #include "algos/cosmetic_correction.h"
 #include "algos/statistics.h"
+#include "algos/plateSolver.h"
 #include "opencv/opencv.h"
 
 #define MAX_ITER 15
@@ -386,6 +387,7 @@ int crop(fits *fit, rectangle *bounds) {
 		show_time(t_start, t_end);
 	}
 	invalidate_stats_from_fit(fit);
+	invalidate_WCS_keywords(fit);
 
 	return 0;
 }
@@ -600,28 +602,12 @@ void mirrorx(fits *fit, gboolean verbose) {
 		gettimeofday(&t_end, NULL);
 		show_time(t_start, t_end);
 	}
-}
-
-void mirrory(fits *fit, gboolean verbose) {
-	struct timeval t_start, t_end;
-
-	if (verbose) {
-		siril_log_color_message(_("Vertical mirror: processing...\n"), "red");
-		gettimeofday(&t_start, NULL);
-	}
-
-	fits_flip_top_to_bottom(fit);
-	fits_rotate_pi(fit);
-
-	if (verbose) {
-		gettimeofday(&t_end, NULL);
-		show_time(t_start, t_end);
-	}
+	invalidate_WCS_keywords(fit);
 }
 
 /* this method rotates the image 180 degrees, useful after german mount flip.
  * fit->rx, fit->ry, fit->naxes[2] and fit->pdata[*] are required to be assigned correctly */
-void fits_rotate_pi(fits *fit) {
+static void fits_rotate_pi(fits *fit) {
 	int i, line, axis, line_size;
 	WORD *line1, *line2, *src, *dst, swap;
 
@@ -661,6 +647,24 @@ void fits_rotate_pi(fits *fit) {
 	}
 	free(line1);
 	free(line2);
+}
+
+void mirrory(fits *fit, gboolean verbose) {
+	struct timeval t_start, t_end;
+
+	if (verbose) {
+		siril_log_color_message(_("Vertical mirror: processing...\n"), "red");
+		gettimeofday(&t_start, NULL);
+	}
+
+	fits_flip_top_to_bottom(fit);
+	fits_rotate_pi(fit);
+
+	if (verbose) {
+		gettimeofday(&t_end, NULL);
+		show_time(t_start, t_end);
+	}
+	invalidate_WCS_keywords(fit);
 }
 
 /* This function fills the data in the lrgb image with LRGB information from l, r, g and b
@@ -1168,6 +1172,7 @@ int verbose_resize_gaussian(fits *image, int toX, int toY, int interpolation) {
 	gettimeofday(&t_start, NULL);
 
 	retvalue = cvResizeGaussian(&gfit, toX, toY, interpolation);
+	invalidate_WCS_keywords(&gfit);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
@@ -1211,6 +1216,8 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
+
+	invalidate_WCS_keywords(&gfit);
 
 	return 0;
 }

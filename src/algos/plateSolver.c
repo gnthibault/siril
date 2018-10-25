@@ -246,7 +246,7 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 		url = g_string_append(url, "&-out=%20RAJ2000%20DEJ2000%20Vmag%20Bmag");
 		url = g_string_append(url, "&-c.rm=");
 		url = g_string_append(url, fov);
-		url = g_string_append(url, "&-out.max=5000");
+		url = g_string_append(url, "&-out.max=200000");
 		url = g_string_append(url, "&-c=");
 		url = g_string_append(url, coordinates);
 		url = g_string_append(url, "&Vmag=<");
@@ -256,11 +256,11 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 	case APPAS:
 		url = g_string_append(url, "I/259/tyc2");
 		url = g_string_append(url, "&-c.u=deg&-out=TYC1&-out=TYC2&-out=TYC3&-out=RAmdeg&-out=DEmdeg&-out=pmRA&-out=pmDE&-out=VTmag&-out=BTmag&-out=HIP");
-		url = g_string_append(url, "&-out.max=5000");
+		url = g_string_append(url, "&-out.max=200000");
 		url = g_string_append(url, "&-c=");
 		url = g_string_append(url, coordinates);
-		// TODO: fov ?
-		url = g_string_append(url, "&-c.r=51");
+		url = g_string_append(url, "&-c.rm=");
+		url = g_string_append(url, fov);
 		url = g_string_append(url, "&VTmag=<");
 		url = g_string_append(url, mag);
 		break;
@@ -553,12 +553,13 @@ static void update_IPS_GUI() {
 static void update_gfit(image_solved image) {
 	gfit.focal_length = image.focal;
 	gfit.pixel_size_x = gfit.pixel_size_y = image.pixel_size;
-	gfit.crpix1 = image.px_center.x;
-	gfit.crpix2 = image.px_center.y;
-	gfit.crval1 = image.ra_center;
-	gfit.crval2 = image.dec_center;
-	deg_to_HMS(image.ra_center, "ra", gfit.objctra);
-	deg_to_HMS(image.dec_center, "dec", gfit.objctdec);
+	gfit.wcs.crpix1 = image.px_center.x;
+	gfit.wcs.crpix2 = image.px_center.y;
+	gfit.wcs.crval1 = image.ra_center;
+	gfit.wcs.crval2 = image.dec_center;
+	gfit.wcs.equinox = 2000;
+	deg_to_HMS(image.ra_center, "ra", gfit.wcs.objctra);
+	deg_to_HMS(image.dec_center, "dec", gfit.wcs.objctdec);
 }
 
 static void print_platesolving_results(Homography H, image_solved image) {
@@ -704,6 +705,21 @@ static TRANS H_to_linear_TRANS(Homography H) {
 	return trans;
 }
 
+static gboolean check_affine_TRANS_sanity(TRANS trans) {
+	gboolean ok = FALSE;
+
+	double var1 = fabs(trans.b/trans.f);
+	double var2 = fabs(trans.c/trans.e);
+	siril_debug_print("abs(b/f)=%lf et abs(c/e)=%lf\n", var1, var2);
+
+	if (0.9 < var1 && var1 < 1.1) {
+		if (0.9 < var2 && var2 < 1.1) {
+			ok = TRUE;
+		}
+	}
+	return ok;
+}
+
 static gboolean end_plate_solver(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	stop_processing_thread();
@@ -763,21 +779,27 @@ static gpointer match_catalog(gpointer p) {
 	}
 
 	if (!args->ret) {
+
 		/* we only want to compare with linear function
 		 * Maybe one day we will apply match with homography matrix
 		 */
 		TRANS trans = H_to_linear_TRANS(H);
+		if (check_affine_TRANS_sanity(trans)) {
 
-		is_result.px_size = image_size;
-		is_result.px_center.x = image_size.x / 2.0;
-		is_result.px_center.y = image_size.y / 2.0;
-		is_result.pixel_size = args->pixel_size;
+			is_result.px_size = image_size;
+			is_result.px_center.x = image_size.x / 2.0;
+			is_result.px_center.y = image_size.y / 2.0;
+			is_result.pixel_size = args->pixel_size;
 
-		apply_match(trans, &is_result);
+			apply_match(trans, &is_result);
 
-		print_platesolving_results(H, is_result);
+			print_platesolving_results(H, is_result);
+		} else {
+			args->ret = 1;
+		}
 
-	} else {
+	}
+	if (args->ret) {
 		siril_log_color_message(_("Plate Solving failed. The image could not be aligned with the reference stars after %d attempts.\n"), "red", attempt);
 		siril_log_color_message(_("This is usually because the initial parameters (pixel size, focal length, initial coordinates) "
 				"are too far from the real metadata of the image.\n"), "red");
@@ -863,13 +885,43 @@ static void start_image_plate_solve() {
 	start_in_new_thread(match_catalog, args);
 }
 
-void invalidate_WCS_keywords() {
-	gfit.crpix1 = 0.0;
-	gfit.crpix2 = 0.0;
-	gfit.crval1 = 0.0;
-	gfit.crval2 = 0.0;
-	memset(gfit.objctra, 0, FLEN_VALUE);
-	memset(gfit.objctdec, 0, FLEN_VALUE);
+/******
+ *
+ * Public functions
+ */
+
+gboolean confirm_delete_wcs_keywords(fits *fit) {
+	GtkWindow *parent = GTK_WINDOW(lookup_widget("main_window"));
+	GtkWidget *dialog;
+	gint res;
+	gboolean erase = FALSE;
+
+	if (fit->wcs.equinox > 0) {
+		dialog = gtk_message_dialog_new(parent, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING,
+						GTK_BUTTONS_OK_CANCEL, _("The astrometric solution contained in "
+						"the image will be erased by the geometric transformation and no undo "
+						"will be possible."));
+		res = gtk_dialog_run(GTK_DIALOG(dialog));
+		if (res == GTK_RESPONSE_OK) {
+			erase = TRUE;
+		}
+		gtk_widget_destroy(dialog);
+	} else {
+		erase = TRUE;
+	}
+	return erase;
+}
+
+void invalidate_WCS_keywords(fits *fit) {
+	if (fit->wcs.equinox > 0) {
+		fit->wcs.equinox = 0;
+		fit->wcs.crpix1 = 0.0;
+		fit->wcs.crpix2 = 0.0;
+		fit->wcs.crval1 = 0.0;
+		fit->wcs.crval2 = 0.0;
+		memset(fit->wcs.objctra, 0, FLEN_VALUE);
+		memset(fit->wcs.objctdec, 0, FLEN_VALUE);
+	}
 }
 
 /*****
