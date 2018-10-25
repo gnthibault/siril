@@ -445,6 +445,15 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	case USHORT_IMG:
 		fits_read_pix(fit->fptr, TUSHORT, orig, nbdata, &zero,
 				fit->data, &zero, &status);
+		if (status == NUM_OVERFLOW) {
+			status = 0;
+			fits_read_pix(fit->fptr, TSHORT, orig, nbdata, &zero, fit->data,
+					&zero, &status);
+			if (status)
+				break;
+			convert_data(SHORT_IMG, fit->data, fit->data, nbdata, FALSE);
+			fit->bitpix = USHORT_IMG;
+		}
 		// siril 0.9 native, no conversion required
 		break;
 	case ULONG_IMG:		// 32-bit unsigned integer pixels
