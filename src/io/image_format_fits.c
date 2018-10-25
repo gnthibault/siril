@@ -75,7 +75,7 @@ static void read_fits_date_obs_header(fits *fit) {
 }
 
 /* TODO: use result for siril stats ? */
-static int fit_stats(fits *fit) {
+static int fit_stats(fits *fit, double *mini, double *maxi) {
 	int status = 0;
 	int ii;
 	long totpix, fpixel[2];
@@ -128,8 +128,8 @@ static int fit_stats(fits *fit) {
 //		printf("  mean value    = %g\n", *meanval);
 //		printf("  minimum value = %g\n", *minval);
 //		printf("  maximum value = %g\n", *maxval);
-		fit->maxi = maxval;
-		fit->mini = minval;
+		*maxi = maxval;
+		*mini = minval;
 	}
 	return status;
 }
@@ -139,7 +139,9 @@ static int fit_stats(fits *fit) {
 static void read_fits_header(fits *fit) {
 	/* about the status argument: http://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node28.html */
 	int status = 0;
-	double zero;
+	double zero, mini, maxi;
+
+	fit_stats(fit, &mini, &maxi);
 
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSHI, &fit->hi);
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSLO, &fit->lo);
@@ -166,7 +168,7 @@ static void read_fits_header(fits *fit) {
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &(fit->data_max), NULL, &status);
 	if (status == KEY_NO_EXIST) {
-		fit->data_max = fit->maxi;
+		fit->data_max = maxi;
 	}
 
 	/*******************************************************************
@@ -540,8 +542,6 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	}
 	free(name);
 
-	fit_stats(fit);
-
 	status = 0;
 	fits_get_img_param(fit->fptr, 3, &(fit->bitpix), &(fit->naxis), fit->naxes, &status);
 	if (status) {
@@ -571,7 +571,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	} else {
 		/* but some software just put unsigned 16-bit data in the file
 		 * and don't set the BZERO keyword... */
-		if (status == KEY_NO_EXIST && fit->bitpix == SHORT_IMG && fit->mini >= 0)
+		if (status == KEY_NO_EXIST && fit->bitpix == SHORT_IMG)
 			fit->bitpix = USHORT_IMG;
 	}
 	// and we store the original bitpix to reuse it during later partial
@@ -757,6 +757,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	int status;
 	unsigned int nbdata;
 	double offset, data_max = 0.0;
+	double mini, maxi;
 
 	status = 0;
 	if (siril_fits_open_diskfile(&(fit->fptr), filename, READONLY, &status)) {
@@ -774,7 +775,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		return status;
 	}
 
-	fit_stats(fit);
+	fit_stats(fit, &mini, &maxi);
 
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &offset, NULL, &status);
@@ -787,7 +788,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	} else {
 		/* but some software just put unsigned 16-bit data in the file
 		 * and don't set the BZERO keyword... */
-		if (status == KEY_NO_EXIST && fit->bitpix == SHORT_IMG && fit->mini >= 0)
+		if (status == KEY_NO_EXIST && fit->bitpix == SHORT_IMG)
 			fit->bitpix = USHORT_IMG;
 	}
 	fit->orig_bitpix = fit->bitpix;
@@ -820,7 +821,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	if (fit->bitpix == FLOAT_IMG)
 		fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &data_max, NULL, &status);
 	if (status == KEY_NO_EXIST) {
-		data_max = fit->maxi;
+		data_max = maxi;
 	}
 
 
