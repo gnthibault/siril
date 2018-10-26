@@ -407,18 +407,23 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 
 	// filtering
 	switch (gtk_combo_box_get_active(stack_type)) {
-		case 0:
+		case ALL_IMAGES:
 			args->filtering_criterion = stack_filter_all;
 			break;
-		case 1:
+		case SELECTED_IMAGES:
 			args->filtering_criterion = stack_filter_included;
 			break;
-		case 2:
+		case BEST_PSF_IMAGES:
 			percent = gtk_adjustment_get_value(stackadj);
 			args->filtering_criterion = stack_filter_fwhm;
 			args->filtering_parameter = compute_highest_accepted_fwhm(percent);
 			break;
-		case 3:
+		case BEST_ROUND_IMAGES:
+			percent = gtk_adjustment_get_value(stackadj);
+			args->filtering_criterion = stack_filter_roundness;
+			args->filtering_parameter = compute_lowest_accepted_roundness(percent);
+			break;
+		case BEST_QUALITY_IMAGES:
 			percent = gtk_adjustment_get_value(stackadj);
 			args->filtering_criterion = stack_filter_quality;
 			args->filtering_parameter = compute_highest_accepted_quality(percent);
