@@ -1676,7 +1676,6 @@ int process_convertraw(int nb) {
 	GDir *dir;
 	GError *error = NULL;
 	const gchar *file;
-	char *tmpmsg;
 	GList *list = NULL;
 
 	struct timeval t_start;
@@ -1694,8 +1693,7 @@ int process_convertraw(int nb) {
 	}
 
 	if((dir = g_dir_open(com.wd, 0, &error)) == NULL){
-		tmpmsg = siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
-		show_dialog(tmpmsg, _("Error"), "dialog-error-symbolic");
+		siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
 		fprintf (stderr, "Conversion: %s\n", error->message);
 		set_cursor_waiting(FALSE);
 		return 1;
@@ -1724,8 +1722,7 @@ int process_convertraw(int nb) {
 	struct _convert_data *args;
 	set_cursor_waiting(TRUE);
 	if (!com.wd) {
-		tmpmsg = siril_log_message(_("Conversion: no working directory set.\n"));
-		show_dialog(tmpmsg, _("Warning"), "dialog-warning-symbolic");
+		siril_log_message(_("Conversion: no working directory set.\n"));
 		set_cursor_waiting(FALSE);
 		return 1;
 	}

@@ -45,6 +45,7 @@
 #include "core/proto.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "gui/histogram.h"
 #include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"
@@ -209,7 +210,7 @@ int sub_background(fits* image, fits* background, int layer) {
 		char *msg = siril_log_message(
 				_("Images don't have the same size (w = %d|%d, h = %d|%d)\n"),
 				image->rx, background->rx, image->ry, background->ry);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
+		siril_message_dialog( GTK_MESSAGE_ERROR, _("Error"), msg);
 		return 1;
 	}
 	ndata = image->rx * image->ry;

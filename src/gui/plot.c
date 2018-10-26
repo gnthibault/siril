@@ -32,6 +32,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "kplot.h"
 #include "algos/PSF.h"
@@ -274,11 +275,11 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	double *vmag, *err, *x, *real_x;
 
 	if (!gnuplot_is_available()) {
-		char *msg = siril_log_message(_("Gnuplot is unavailable. "
-				"Please consider to install it before "
+		char *msg = siril_log_message(_("Please consider to install it before "
 				"trying to plot a graph of a variable star.\n"));
 
-		show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
+		siril_message_dialog( GTK_MESSAGE_WARNING, _("Gnuplot is unavailable"), msg);
+
 		return -1;
 	}
 
@@ -374,10 +375,12 @@ static int lightCurve(pldata *plot, sequence *seq) {
 				"JD_UT V-C err");
 		if (!ret) {
 			char *msg = siril_log_message(_("%s has been saved.\n"), filename);
-			show_dialog(msg, _("Information"), "dialog-information-symbolic");
+			siril_message_dialog( GTK_MESSAGE_INFO, _("Information"), msg);
+
 		} else {
-			show_dialog(_("Something went wrong while saving plot"), _("Error"),
-					"dialog-error-symbolic");
+			siril_message_dialog( GTK_MESSAGE_ERROR, _("Error"),
+					_("Something went wrong while saving plot"));
+
 		}
 		g_free(filename);
 	}
@@ -433,10 +436,11 @@ static int exportCSV(pldata *plot, sequence *seq) {
 	}
 	if (!ret) {
 		msg = siril_log_message(_("%s.csv has been saved.\n"), file);
-		show_dialog(msg, _("Information"), "dialog-information-symbolic");
+		siril_message_dialog( GTK_MESSAGE_INFO, _("Information"), msg);
 	} else {
-		show_dialog(_("Something went wrong while saving plot"), _("Error"),
-				"dialog-error-symbolic");
+		siril_message_dialog( GTK_MESSAGE_INFO, _("Error"),
+				_("Something went wrong while saving plot"));
+
 	}
 	return 0;
 }

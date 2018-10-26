@@ -27,6 +27,7 @@
 #include "core/proto.h"
 #include "algos/statistics.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
@@ -125,7 +126,7 @@ int read_single_image(const char* filename, fits *dest, char **realname_out) {
 	retval = stat_file(filename, &imagetype, &realname);
 	if (retval) {
 		char *msg = siril_log_message(_("Error opening image %s: file not found or not supported.\n"), filename);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
+		siril_message_dialog( GTK_MESSAGE_ERROR, _("Error"), msg);
 		set_cursor_waiting(FALSE);
 		free(realname);
 		return 1;
@@ -174,11 +175,15 @@ int open_single_image(const char* filename) {
 		return 0;
 	}
 	if (retval == 2) {
-		show_dialog(_("This file could not be opened because its extension is not supported.\n"), _("Error"), "dialog-error-symbolic");
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error oppening file"),
+				_("This file could not be opened because "
+						"its extension is not supported."));
 		return 1;
 	}
 	if (retval == 1) {
-		show_dialog(_("There was an error when opening this image. See the log for more information."), _("Error"), "dialog-error-symbolic");
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error oppening file"),
+				_("There was an error when opening this image. "
+						"See the log for more information."));
 		return 1;
 	}
 

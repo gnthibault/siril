@@ -30,6 +30,7 @@
 #include "core/proto.h"
 #include "algos/Def_Wavelet.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "algos/PSF.h"
 #include "gui/PSF_list.h"
@@ -324,7 +325,7 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 		free(result);
 		result = NULL;
 		char *msg = siril_log_message(_("This star has already been picked !\n"));
-		show_dialog(msg, _("Peaker"), "dialog-information-symbolic");
+		siril_message_dialog( GTK_MESSAGE_INFO, _("Peaker"), msg);
 	} else {
 		if (i < MAX_STARS) {
 			result->xpos = result->x0 + com.selection.x;

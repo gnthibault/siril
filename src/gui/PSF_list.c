@@ -25,6 +25,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "algos/PSF.h"
 #include "gui/PSF_list.h"
 #include "algos/star_finder.h"
@@ -147,7 +148,7 @@ void display_PSF(fitted_PSF **result){
 			rmse+=result[i]->rmse;
 			if (i>1){
 				if (strcmp(result[i]->units,result[i-1]->units)){
-					show_dialog(_("Stars must have the same units."), _("Error"), "dialog-error-symbolic");
+					siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), _("Stars must have the same units."));
 					return;
 				}
 			}

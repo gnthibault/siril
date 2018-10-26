@@ -33,6 +33,7 @@
 #include "io/single_image.h"
 #include "gui/PSF_list.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "registration/registration.h"
 #include "compositing/filters.h"
@@ -543,7 +544,7 @@ void create_the_internal_sequence() {
 	nb_layers = number_of_images_loaded();
 	if (nb_layers == 0 || nb_layers == 1) {
 		char *msg = siril_log_message(_("You must at least load two layers before!\n"));
-		show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
+		siril_message_dialog( GTK_MESSAGE_WARNING, _("Warning"), msg);
 		seq = NULL;
 		return;
 	}

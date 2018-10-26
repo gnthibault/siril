@@ -821,27 +821,6 @@ WORD get_normalized_value(fits *fit) {
 }
 
 /**
- * This function reads a text file and displays it in the
- * show_data_dialog
- * @param path filename to display
- * @param title text shown as dialog title
- */
-void read_and_show_textfile(char *path, char *title) {
-	char line[64] = "";
-	char txt[1024] = "";
-
-	FILE *f = g_fopen(path, "r");
-	if (!f) {
-		show_dialog(_("File not found"), _("Error"), "dialog-error-symbolic");
-		return;
-	}
-	while (fgets(line, sizeof(line), f) != NULL)
-		strcat(txt, line);
-	show_data_dialog(txt, title);
-	fclose(f);
-}
-
-/**
  * Switch the two parameters of the function:
  * Useful in Dynamic PSF (PSF.c)
  * @param a first parameter to switch
@@ -1180,4 +1159,27 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 	*nb_allowed_file = maxfile;
 
 	return nb_frames < maxfile;
+}
+
+/**
+ *
+ * @return
+ */
+GtkWindow *siril_get_active_window() {
+	GtkWindow *win = NULL;
+	GList *list, *l;
+
+	list = gtk_window_list_toplevels();
+
+	for (l = list; l; l = l->next) {
+		GtkWidget *widget = l->data;
+
+		if (gtk_window_is_active((GtkWindow *) l->data)) {
+			win = (GtkWindow *) l->data;
+			break;
+		}
+	}
+
+	g_list_free(list);
+	return win;
 }

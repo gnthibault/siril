@@ -211,11 +211,9 @@ int readbmp(const char *name, fits *fit) {
 	unsigned long width = 0, height = 0;
 	unsigned long nbdata, padsize;
 	unsigned short nbplane = 0;
-	char *msg;
 
 	if ((file = g_fopen(name, "rb")) == NULL) {
-		msg = siril_log_message(_("Error opening BMP.\n"));
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
+		siril_log_message(_("Error opening BMP.\n"));
 		return -1;
 	}
 
@@ -267,9 +265,8 @@ int readbmp(const char *name, fits *fit) {
 		bmp32tofits48(buf, width, height, fit);
 		break;
 	default:
-		msg = siril_log_message(_("Sorry but Siril cannot "
+		siril_log_message(_("Sorry but Siril cannot "
 				"open this kind of BMP. Try to convert it before.\n"));
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 	}
 	free(buf);
 	char *basename = g_path_get_basename(name);
@@ -337,8 +334,7 @@ int savebmp(const char *name, fits *fit) {
 
 	f = g_fopen(filename, "wb");
 	if (f == NULL) {
-		char *msg = siril_log_message(_("Can't create BMP file.\n"));
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
+		siril_log_message(_("Can't create BMP file.\n"));
 		free(filename);
 		return 1;
 	}
@@ -387,13 +383,12 @@ int savebmp(const char *name, fits *fit) {
 /* This method loads a pnm or pgm binary file into the fits image passed as argument. */
 int import_pnm_to_fits(const char *filename, fits *fit) {
 	FILE *file;
-	char buf[256], *msg;
+	char buf[256];
 	int i, j, max_val;
 	size_t stride;
 
 	if ((file = g_fopen(filename, "rb")) == NULL) {
-		msg = siril_log_message(_("Sorry but Siril cannot open this file.\n"));
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
+		siril_log_message(_("Sorry but Siril cannot open this file.\n"));
 		return -1;
 	}
 	if (fgets(buf, 256, file) == NULL) {
@@ -402,10 +397,9 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		return -1;
 	}
 	if (buf[0] != 'P' || buf[1] < '5' || buf[1] > '6' || buf[2] != '\n') {
-		msg = siril_log_message(
+		siril_log_message(
 				_("Wrong magic cookie in PNM file, ASCII types and"
 						" b&w bitmaps are not supported.\n"));
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		fclose(file);
 		return -1;
 	}
@@ -487,8 +481,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 			return -1;
 		}
 		if (fread(tmpbuf, stride, fit->ry, file) < fit->ry) {
-			msg = siril_log_message(_("Error reading 8-bit PPM image data.\n"));
-			show_dialog(msg, _("Error"), "dialog-error-symbolic");
+			siril_log_message(_("Error reading 8-bit PPM image data.\n"));
 			fclose(file);
 			free(tmpbuf);
 			free(fit->data);
@@ -518,9 +511,8 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 				return -1;
 			}
 			if (fread(fit->data, stride, fit->ry, file) < fit->ry) {
-				msg = siril_log_message(
+				siril_log_message(
 						_("Error reading 16-bit gray PPM image data.\n"));
-				show_dialog(msg, _("Error"), "dialog-error-symbolic");
 				fclose(file);
 				free(fit->data);
 				fit->data = NULL;
@@ -551,9 +543,8 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 				return -1;
 			}
 			if (fread(tmpbuf, stride, fit->ry, file) < fit->ry) {
-				msg = siril_log_message(
+				siril_log_message(
 						_("Error reading 16-bit color PPM image data.\n"));
-				show_dialog(msg, _("Error"), "dialog-error-symbolic");
 				fclose(file);
 				free(tmpbuf);
 				free(fit->data);
@@ -567,9 +558,8 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		fit->binning_x = fit->binning_y = 1;
 		fits_flip_top_to_bottom(fit);
 	} else {
-		msg = siril_log_message(_("Not handled max value for PNM: %d.\n"),
+		siril_log_message(_("Not handled max value for PNM: %d.\n"),
 				max_val);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		fclose(file);
 		return -1;
 	}
@@ -746,9 +736,8 @@ static int _pic_read_header(struct pic_struct *pic_file) {
 	memcpy(&pic_file->magic, header, 4);
 
 	if (pic_file->magic != 0x12231fc) {
-		char *msg = siril_log_message(_("Wrong magic cookie in PIC file. "
+		siril_log_message(_("Wrong magic cookie in PIC file. "
 				"This image is not supported.\n"));
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return -1;
 	}
 
@@ -786,7 +775,6 @@ int readpic(const char *name, fits *fit) {
 	char header[290];
 	struct pic_struct *pic_file;
 	WORD *buf;
-	char *msg;
 	int retval = 0;
 	unsigned int nbdata;
 
@@ -794,9 +782,8 @@ int readpic(const char *name, fits *fit) {
 	pic_file = calloc(1, sizeof(struct pic_struct));
 
 	if ((pic_file->file = g_fopen(name, "rb")) == NULL) {
-		msg = siril_log_message(
+		siril_log_message(
 				_("Sorry but Siril cannot open the PIC file: %s.\n"), name);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		free(pic_file);
 		return -1;
 	}
@@ -832,8 +819,7 @@ int readpic(const char *name, fits *fit) {
 		break;
 	default:
 		retval = -1;
-		msg = siril_log_message(_("Sorry but Siril cannot open this file.\n"));
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
+		siril_log_message(_("Sorry but Siril cannot open this file.\n"));
 	}
 
 	char *basename = g_path_get_basename(name);

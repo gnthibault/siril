@@ -424,7 +424,6 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	long orig[3] = { 1L, 1L, 1L };
 	// orig ^ gives the coordinate in each dimension of the first pixel to be read
 	unsigned int nbdata = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
-	char *msg = NULL;
 
 	switch (fit->bitpix) {
 	case SBYTE_IMG:	// UNTESTED, may not exist while reading data
@@ -488,15 +487,13 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		break;
 	case LONGLONG_IMG:	// 64-bit integer pixels
 	default:
-		msg = siril_log_message(_("FITS image format %d is not supported by Siril.\n"), fit->bitpix);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
+		siril_log_message(_("FITS image format %d is not supported by Siril.\n"), fit->bitpix);
 		return -1;
 	}
 
 	if (status) {
-		msg = siril_log_message(_("Fitsio error reading data, file: %s.\n"), filename);
+		siril_log_message(_("Fitsio error reading data, file: %s.\n"), filename);
 		report_fits_error(status);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		return -1;
 	}
 
@@ -514,7 +511,6 @@ static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
 	long *pixels_long;
 	long fpixel[3], lpixel[3], inc[3] = { 1L, 1L, 1L };
 	int zero = 0, status = 0;
-	char *msg;
 
 	/* fpixel is first pixel, lpixel is last pixel, starts with value 1 */
 	fpixel[0] = area->x + 1;        // in siril, it starts with 0
@@ -568,8 +564,7 @@ static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
 			break;
 		case LONGLONG_IMG:	// 64-bit integer pixels
 		default:
-			msg = siril_log_message(_("FITS image format %d is not supported by Siril.\n"), bitpix);
-			show_dialog(msg, _("Error"), "dialog-error-symbolic");
+			siril_log_message(_("FITS image format %d is not supported by Siril.\n"), bitpix);
 			return -1;
 	}
 	return status;
@@ -830,7 +825,7 @@ int import_metadata_from_fitsfile(fitsfile *fptr, fits *to) {
 // return 0 on success, fills realname if not NULL with the opened file's name
 int readfits(const char *filename, fits *fit, char *realname) {
 	int status, retval;
-	char *name = NULL, *msg = NULL;
+	char *name = NULL;
 	gchar *basename;
 	image_type imagetype;
 	unsigned int nbdata;
@@ -839,17 +834,15 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	fit->naxes[2] = 1; //initialization of the axis number before opening : NEED TO BE OPTIMIZED
 
 	if (stat_file(filename, &imagetype, &name)) {
-		msg = siril_log_message(_("%s.[any_allowed_extension] not found.\n"),
+		siril_log_message(_("%s.[any_allowed_extension] not found.\n"),
 				filename);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		free(name);
 		return 1;
 	}
 	if (imagetype != TYPEFITS) {
-		msg = siril_log_message(
+		siril_log_message(
 				_("The file %s is not a FITS file or doesn't exists with FITS extensions.\n"),
 						filename);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		free(name);
 		return 1;
 	}
@@ -869,9 +862,8 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	status = 0;
 	fits_get_img_param(fit->fptr, 3, &(fit->bitpix), &(fit->naxis), fit->naxes, &status);
 	if (status) {
-		msg = siril_log_message(
+		siril_log_message(
 				_("FITSIO error getting image parameters, file %s.\n"), filename);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		report_fits_error(status);
 		status = 0;
 		fits_close_file(fit->fptr, &status);
@@ -907,9 +899,8 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	nbdata = fit->rx * fit->ry;
 
 	if (fit->naxis == 3 && fit->naxes[2] != 3) {
-		msg = siril_log_message(_("Unsupported FITS image with %ld channels.\n"),
+		siril_log_message(_("Unsupported FITS image with %ld channels.\n"),
 				fit->naxes[2]);
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		status = 0;
 		fits_close_file(fit->fptr, &status);
 		return -1;
@@ -925,9 +916,8 @@ int readfits(const char *filename, fits *fit, char *realname) {
 		 */
 	}
 	if (fit->bitpix == LONGLONG_IMG) {
-		msg = siril_log_message(
+		siril_log_message(
 				_("FITS images with 64 bits signed integer per pixel.channel are not supported.\n"));
-		show_dialog(msg, _("Error"), "dialog-error-symbolic");
 		status = 0;
 		fits_close_file(fit->fptr, &status);
 		return -1;

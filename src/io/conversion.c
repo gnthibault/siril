@@ -36,6 +36,7 @@
 #include "io/sequence.h"
 #include "io/ser.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "algos/demosaicing.h"
 
@@ -546,13 +547,13 @@ void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 	char *tmpmsg;
 	if (!com.wd) {
 		tmpmsg = siril_log_message(_("Conversion: no working directory set.\n"));
-		show_dialog(tmpmsg, _("Warning"), "dialog-warning-symbolic");
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("Warning"), tmpmsg);
 		set_cursor_waiting(FALSE);
 		return;
 	}
 	if((dir = g_dir_open(com.wd, 0, &error)) == NULL){
 		tmpmsg = siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
-		show_dialog(tmpmsg, _("Error"), "dialog-error-symbolic");
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), tmpmsg);
 		fprintf (stderr, "Conversion: %s\n", error->message);
 		set_cursor_waiting(FALSE);
 		return ;
@@ -616,7 +617,7 @@ gpointer convert_thread_worker(gpointer p) {
 		com.filter = (int) imagetype;
 		if (imagetype == TYPEUNDEF) {
 			char msg[512];
-			siril_log_message(_("FILETYPE IS NOT SUPPORTED, CANNOT CONVERT: %s\n"), src_ext);
+			char *title = siril_log_message(_("Filetype is not supported, cannot convert: %s\n"), src_ext);
 			g_snprintf(msg, 512, _("File extension '%s' is not supported.\n"
 				"Verify that you typed the extension correctly.\n"
 				"If so, you may need to install third-party software to enable "
@@ -624,7 +625,7 @@ gpointer convert_thread_worker(gpointer p) {
 				"If the file type you are trying to load is listed in supported "
 				"formats, you may notify the developpers that the extension you are "
 				"trying to use should be recognized for this type."), src_ext);
-			show_dialog(msg, _("Error"), "dialog-error-symbolic");
+			siril_message_dialog(GTK_MESSAGE_ERROR, title, msg);
 			break;	// avoid 100 error popups
 		}
 

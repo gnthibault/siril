@@ -29,6 +29,7 @@
 #include "core/proto.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"
 #include "algos/PSF.h"
@@ -891,23 +892,12 @@ static void start_image_plate_solve() {
  */
 
 gboolean confirm_delete_wcs_keywords(fits *fit) {
-	GtkWindow *parent = GTK_WINDOW(lookup_widget("main_window"));
-	GtkWidget *dialog;
-	gint res;
-	gboolean erase = FALSE;
+	gboolean erase = TRUE;
 
 	if (fit->wcs.equinox > 0) {
-		dialog = gtk_message_dialog_new(parent, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING,
-						GTK_BUTTONS_OK_CANCEL, _("The astrometric solution contained in "
-						"the image will be erased by the geometric transformation and no undo "
-						"will be possible."));
-		res = gtk_dialog_run(GTK_DIALOG(dialog));
-		if (res == GTK_RESPONSE_OK) {
-			erase = TRUE;
-		}
-		gtk_widget_destroy(dialog);
-	} else {
-		erase = TRUE;
+		erase = siril_confirm_dialog(_("Astrometric solution detected"), _("The astrometric solution contained in "
+				"the image will be erased by the geometric transformation and no undo "
+				"will be possible."), FALSE);
 	}
 	return erase;
 }
@@ -972,8 +962,8 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 
 void on_GtkButton_IPS_metadata_clicked(GtkButton *button, gpointer user_data) {
 	if (!has_any_keywords()) {
-		char *msg = siril_log_message(_("No keywords found in the header.\n"));
-		show_dialog(msg, _("Warning"), "dialog-warning-symbolic");
+		char *msg = siril_log_message(_("There is no keywords storred in the FITS header.\n"));
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("No metadata"), msg);
 	} else {
 		update_IPS_GUI();
 	}
