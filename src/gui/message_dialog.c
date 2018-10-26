@@ -91,7 +91,7 @@ gboolean siril_confirm_dialog(gchar *title, gchar *msg, gboolean show_checkbutto
 	strip_last_ret_char(msg);
 
 	dialog = gtk_message_dialog_new(parent, GTK_DIALOG_MODAL,
-			GTK_MESSAGE_WARNING, GTK_BUTTONS_OK_CANCEL, title);
+			GTK_MESSAGE_QUESTION, GTK_BUTTONS_OK_CANCEL, title);
 	gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), msg);
 	if (show_checkbutton) {
 		check = gtk_check_button_new_with_mnemonic(_("_Do not show this dialog again"));

@@ -1162,8 +1162,8 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 }
 
 /**
- *
- * @return
+ * Get the active window on toplevels
+ * @return the GtkWindow activated
  */
 GtkWindow *siril_get_active_window() {
 	GtkWindow *win = NULL;
