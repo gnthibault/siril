@@ -68,7 +68,7 @@ static RA convert_ra(double var) {
 static DEC convert_dec(double var) {
 	DEC dec;
 	dec.degree = (int) var;
-	dec.min = fabs((int) ((var - dec.degree) * 60));
+	dec.min = abs((int) ((var - dec.degree) * 60));
 	dec.sec = (fabs((var - dec.degree) * 60) - dec.min) * 60;
 	return dec;
 }
@@ -93,7 +93,7 @@ static void deg_to_HMS(double var, gchar *type, gchar *HMS) {
 		if (var < 0) ds = '-';
 		var = fabs(var);
 		deg = (int) var;
-		decM = fabs((int) ((var - deg) * 60));
+		decM = abs((int) ((var - deg) * 60));
 		decS = (fabs((var - deg) * 60) - decM) * 60;
 		g_snprintf(HMS, 256, "%c%02d %02d %.3lf", ds, deg, decM, decS);
 	}
@@ -108,7 +108,7 @@ static void fov_in_DHMS(double var, gchar *fov) {
 		return;
 	}
 	deg = (int) var;
-	decM = fabs((int) ((var - deg) * 60));
+	decM = abs((int) ((var - deg) * 60));
 	decS = (fabs((var - deg) * 60) - decM) * 60;
 	if (deg > 0)
 		g_snprintf(fov, 256, "%02dd %02d\' %.2lf\"", deg, decM, decS);
@@ -496,7 +496,7 @@ static void update_coordinates() {
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget("GtkEntryIPS_RA_s")), RA_sec);
 
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_deg")),
-			fabs(platedObject[index].Dec.degree));
+			abs(platedObject[index].Dec.degree));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_m")),
 			platedObject[index].Dec.min);
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget("GtkEntryIPS_Dec_s")), Dec_sec);
