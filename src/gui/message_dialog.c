@@ -80,7 +80,8 @@ gboolean siril_confirm_dialog(gchar *title, gchar *msg, gboolean show_checkbutto
 
 	parent = siril_get_active_window();
 	if (!GTK_IS_WINDOW(parent)) {
-		/* could happend if window has been destroyed after the call */
+		/* could happend if the GtkWindow has been destroyed right after the call
+		 * This is the case for chooser dialog */
 		parent = GTK_WINDOW(lookup_widget("control_window"));
 	}
 
@@ -91,8 +92,8 @@ gboolean siril_confirm_dialog(gchar *title, gchar *msg, gboolean show_checkbutto
 	strip_last_ret_char(msg);
 
 	dialog = gtk_message_dialog_new(parent, GTK_DIALOG_MODAL,
-			GTK_MESSAGE_QUESTION, GTK_BUTTONS_OK_CANCEL, title);
-	gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), msg);
+			GTK_MESSAGE_QUESTION, GTK_BUTTONS_OK_CANCEL, "%s", title);
+	gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), "%s", msg);
 	if (show_checkbutton) {
 		check = gtk_check_button_new_with_mnemonic(_("_Do not show this dialog again"));
 		gtk_box_pack_end(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG (dialog))),
