@@ -30,6 +30,7 @@
 #include "core/proto.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "core/siril_update.h"
 
@@ -246,9 +247,10 @@ static gboolean end_update_idle(gpointer p) {
 	gint ret;
 	char *msg;
 	gchar *changelog = NULL;
-	const char *data = NULL;
+	gchar *data = NULL;
 	version_number current_version, last_version_available;
-	static char *icon[] = { "dialog-information-symbolic", "dialog-error-symbolic" };
+//	static char *icon[] = { "dialog-information-symbolic", "dialog-error-symbolic" };
+	static GtkMessageType type[] = { GTK_MESSAGE_INFO, GTK_MESSAGE_ERROR };
 	struct _update_data *args = (struct _update_data *) p;
 
 	if (args->content == NULL) {
@@ -283,7 +285,7 @@ static gboolean end_update_idle(gpointer p) {
 		}
 		ret = 0;
 	}
-	show_txt_and_data_dialog(msg, data, _("Software Update"), icon[ret]);
+	siril_data_dialog(type[ret], _("Software Update"), msg, data);
 
 	/* free data */
 	g_free(args->content);
