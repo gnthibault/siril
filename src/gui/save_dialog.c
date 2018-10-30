@@ -38,8 +38,6 @@ static GtkFileChooserNative *saveDialog = NULL;
 #else
 static GtkWidget *saveDialog = NULL;
 #endif
-static GtkWindow *saveParent = NULL;
-
 
 static void gtk_filter_add(GtkFileChooser *file_chooser, const gchar *title,
 		const gchar *pattern, gboolean set_default) {
@@ -121,21 +119,6 @@ static int get_filetype(const gchar *filter) {
 	return type;
 }
 
-static GtkWindow *get_windows_toplevel(GtkWidget *widget) {
-	GtkWindow *win = NULL;
-
-	GList *list = gtk_window_list_toplevels();
-	while (list) {
-		if (gtk_window_has_toplevel_focus ((GtkWindow *)list->data)) {
-			win = (GtkWindow *)list->data;
-			break;
-		}
-		list = list->next;
-	}
-	g_list_free(list);
-	return win;
-}
-
 static void prepare_savepopup(int type) {
 	static GtkNotebook* notebookFormat = NULL;
 	static GtkWidget *savepopup = NULL;
@@ -149,7 +132,7 @@ static void prepare_savepopup(int type) {
 		savetxt = lookup_widget("filenameframe");
 	}
 
-	gtk_window_set_transient_for (GTK_WINDOW(savepopup), saveParent);
+	gtk_window_set_transient_for (GTK_WINDOW(savepopup), siril_get_active_window());
 
 	switch (type) {
 	case TYPEBMP:
@@ -183,9 +166,11 @@ static void prepare_savepopup(int type) {
 	gtk_notebook_set_current_page(notebookFormat, tab);
 }
 
-static void init_dialog(GtkWindow *parent) {
+static void init_dialog() {
+	GtkWindow *parent;
 	if (saveDialog == NULL) {
 		GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+		parent = siril_get_active_window();
 
 #ifdef _WIN32
 		saveDialog = gtk_file_chooser_native_new("Save File", parent, action,
@@ -209,13 +194,13 @@ static void close_dialog() {
 	}
 }
 
-static int save_dialog(GtkWindow *parent) {
+static int save_dialog() {
 	GtkFileChooser *chooser;
 	GtkFileFilter *filter;
 	GtkEntry *savetext;
 	gint res;
 
-	init_dialog(parent);
+	init_dialog();
 
 	chooser = GTK_FILE_CHOOSER(saveDialog);
 
@@ -556,20 +541,17 @@ void on_button_cancelpopup_clicked(GtkButton *button, gpointer user_data) {
 
 void on_save1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	static GtkWidget *savepopup = NULL;
-	GtkWidget *w;
 
 	if (savepopup == NULL) {
 		savepopup = lookup_widget("savepopup");
 	}
-	w = GTK_WIDGET(menuitem);
-	saveParent = get_windows_toplevel(w);
 
-	int res = save_dialog(saveParent);
+	int res = save_dialog();
 	if (res == GTK_RESPONSE_ACCEPT) {
 		/* now it is not needed for some formats */
 		if (whichminisave != TYPEBMP && whichminisave != TYPEPNG
 				&& whichminisave != TYPEPNM) {
-				gtk_window_set_transient_for (GTK_WINDOW(savepopup), saveParent);
+				gtk_window_set_transient_for (GTK_WINDOW(savepopup), siril_get_active_window());
 				gtk_widget_show(savepopup);
 				close_dialog();
 		}
