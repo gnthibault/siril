@@ -968,3 +968,29 @@ void on_checkbutton_manual_calibration_toggled(GtkToggleButton *togglebutton,
 	gtk_widget_set_sensitive(manual_components,
 			gtk_toggle_button_get_active(togglebutton));
 }
+
+static int pos_to_neg(fits *fit) {
+	WORD norm;
+	int chan, i;
+	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER],
+			fit->pdata[BLAYER] };
+
+	norm = get_normalized_value(fit);
+	for (chan = 0; chan < fit->naxes[2]; chan ++) {
+		for (i = 0; i < fit->rx * fit->ry; i++) {
+			buf[chan][i] = norm - buf[chan][i];
+		}
+	}
+
+	return 0;
+}
+
+void on_menu_negative_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	set_cursor_waiting(TRUE);
+	undo_save_state("Processing: Negative Transformation");
+	pos_to_neg(&gfit);
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	update_gfit_histogram_if_needed();
+	set_cursor_waiting(FALSE);
+}

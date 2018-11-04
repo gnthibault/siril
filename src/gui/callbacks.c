@@ -1563,6 +1563,7 @@ void update_MenuItem() {
 	/* Image processing Menu */
 	gtk_widget_set_sensitive(lookup_widget("removegreen"), is_a_singleRGB_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_satu"), is_a_singleRGB_image_loaded);
+	gtk_widget_set_sensitive(lookup_widget("menu_negative"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitemcalibration"), is_a_singleRGB_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_channel_separation"), is_a_singleRGB_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_histo"), any_image_is_loaded);
@@ -2241,6 +2242,9 @@ void initialize_shortcuts() {
 	/* SAVE */
 	gtk_widget_add_accelerator(lookup_widget("save1"), "activate", accel,
 	GDK_KEY_s, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	/* NEGATIVE */
+	gtk_widget_add_accelerator(lookup_widget("menu_negative"), "activate", accel,
+	GDK_KEY_i, get_default_modifier(), GTK_ACCEL_VISIBLE);
 }
 
 void initialize_remap() {
