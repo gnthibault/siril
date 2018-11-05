@@ -167,6 +167,21 @@ static int readinitfile() {
 			if (!com.script)
 				set_GUI_misc();
 		}
+		misc_setting = config_lookup(&config, "misc-settings.main_w_pos");
+		if (misc_setting != NULL) {
+			com.main_w_pos.x = config_setting_get_int_elem(misc_setting, 0);
+			com.main_w_pos.y = config_setting_get_int_elem(misc_setting, 1);
+			com.main_w_pos.w = config_setting_get_int_elem(misc_setting, 2);
+			com.main_w_pos.h = config_setting_get_int_elem(misc_setting, 3);
+		}
+		misc_setting = config_lookup(&config, "misc-settings.rgb_w_pos");
+		if (misc_setting != NULL) {
+			com.rgb_w_pos.x = config_setting_get_int_elem(misc_setting, 0);
+			com.rgb_w_pos.y = config_setting_get_int_elem(misc_setting, 1);
+			com.rgb_w_pos.w = config_setting_get_int_elem(misc_setting, 2);
+			com.rgb_w_pos.h = config_setting_get_int_elem(misc_setting, 3);
+		}
+
 	}
 	if (swap_dir && swap_dir[0] != '\0') {
 		if (com.swap_dir)
@@ -334,6 +349,18 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 		config_setting_set_string_elem(misc_setting, -1, (char *)list->data);
 		list = list->next;
 	}
+	misc_setting = config_setting_add(misc_group, "main_w_pos",
+			CONFIG_TYPE_LIST);
+	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.x);
+	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.y);
+	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.w);
+	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.h);
+	misc_setting = config_setting_add(misc_group, "rgb_w_pos",
+			CONFIG_TYPE_LIST);
+	config_setting_set_int_elem(misc_setting, -1, com.rgb_w_pos.x);
+	config_setting_set_int_elem(misc_setting, -1, com.rgb_w_pos.y);
+	config_setting_set_int_elem(misc_setting, -1, com.rgb_w_pos.w);
+	config_setting_set_int_elem(misc_setting, -1, com.rgb_w_pos.h);
 }
 
 static int siril_config_write_file(config_t *config, const char *filename) {

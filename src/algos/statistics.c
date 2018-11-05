@@ -276,7 +276,7 @@ static WORD* reassign_to_non_null_data(WORD *data, long inputlen, long outputlen
 	for (i = 0; i < inputlen; i++) {
 		if (data[i] > 0) {
 			if (j >= outputlen) {
-				assert(0);
+				//assert(0);
 				fprintf(stderr, "\n- stats MISMATCH in sizes (in: %ld, out: %ld), THIS IS A BUG: seqfile is wrong *********\n\n", inputlen, outputlen);
 				break;
 			}

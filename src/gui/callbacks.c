@@ -2032,23 +2032,47 @@ void show_data_dialog(char *text, char *title) {
 void show_main_gray_window() {
 	GtkCheckMenuItem *graycheck = GTK_CHECK_MENU_ITEM(
 			gtk_builder_get_object(builder, "menuitemgray"));
+	GtkWidget *win;
+
+	win = lookup_widget("main_window");
+	int x = com.main_w_pos.x;
+	int y = com.main_w_pos.y;
+	/* not used for now
+	int w = com.main_w_pos.w;
+	int h = com.main_w_pos.h;
+	***/
+
 	gtk_check_menu_item_set_active(graycheck, TRUE);
-	gtk_widget_show_all(lookup_widget("main_window"));
-	gtk_window_present(GTK_WINDOW(lookup_widget("main_window")));
+	gtk_widget_show_all(win);
+	if (x != 0 && y != 0) {
+		gtk_window_move(GTK_WINDOW(win), x, y);
+//		gtk_window_resize(GTK_WINDOW(win), w, h);
+	}
+	gtk_window_present(GTK_WINDOW(win));
 }
 
 void show_rgb_window() {
 	GtkCheckMenuItem *rgbcheck = GTK_CHECK_MENU_ITEM(
 			gtk_builder_get_object(builder, "menuitemcolor"));
+	GtkWidget *win;
+
+	win = lookup_widget("rgb_window");
+	int x = com.rgb_w_pos.x;
+	int y = com.rgb_w_pos.y;
+	/* not used for now
+	int w = com.rgb_w_pos.w;
+	int h = com.rgb_w_pos.h;
+	***/
+
 	gtk_check_menu_item_set_active(rgbcheck, TRUE);
-	gtk_widget_show_all(lookup_widget("rgb_window"));
+	gtk_widget_show_all(win);
+	if (x != 0 && y != 0) {
+		gtk_window_move(GTK_WINDOW(win), x, y);
+//		gtk_window_resize(GTK_WINDOW(win), w, h);
+	}
 }
 
 void hide_rgb_window() {
-	/* unchecking the menu item is done in the window destruction callback */
-	/*GtkCheckMenuItem *rgbcheck =
-	 GTK_CHECK_MENU_ITEM(gtk_builder_get_object(builder, "menuitemcolor"));
-	 gtk_check_menu_item_set_active(rgbcheck, FALSE);*/
 	gtk_widget_hide(lookup_widget("rgb_window"));
 }
 
@@ -3037,7 +3061,28 @@ void on_combobox_ext_changed(GtkComboBox *box, gpointer user_data) {
 	initialize_FITS_name_entries();
 }
 
+static rectangle get_window_position(GtkWidget *window) {
+	gint x, y, w, h;
+	rectangle rec;
+
+	gtk_window_get_position(GTK_WINDOW(window), &x, &y);
+	gtk_window_get_size(GTK_WINDOW(window), &w, &h);
+	rec.x = x;
+	rec.y = y;
+	rec.w = w;
+	rec.h = h;
+	return rec;
+}
+
+static void save_all_windows_position() {
+	com.main_w_pos = get_window_position(lookup_widget("main_window"));
+	com.rgb_w_pos = get_window_position(lookup_widget("rgb_window"));
+
+	writeinitfile();
+}
+
 void gtk_main_quit() {
+	save_all_windows_position();
 	close_sequence(FALSE);	// save unfinished business
 	close_single_image();	// close the previous image and free resources
 	undo_flush();

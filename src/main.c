@@ -144,8 +144,7 @@ void usage(const char *command) {
 
 void signal_handled(int s) {
 	// printf("Caught signal %d\n", s);
-	undo_flush();
-	exit(EXIT_FAILURE);
+	gtk_main_quit();
 }
 
 static void initialize_path_directory() {

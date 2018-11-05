@@ -560,6 +560,10 @@ struct cominf {
 	gboolean show_excluded;		// show excluded images in sequences
 	double zoom_value;		// 1.0 is normal zoom, use get_zoom_val() to access it
 
+	/* positions of all windows */
+	rectangle main_w_pos;
+	rectangle rgb_w_pos;
+
 	/* selection rectangle for registration, FWHM, PSF */
 	gboolean drawing;		// true if the rectangle is being set (clicked motion)
 	gint startX, startY;		// where the mouse was originally clicked to
