@@ -23,6 +23,7 @@ struct plate_solver_data {
 	double s; // scale (resolution)
 	fits *fit;
 	int ret; // return value
+	int attempt; // number of try
 	double pixel_size; // pixel size in µm
 };
 

@@ -474,7 +474,6 @@ static void add_object_to_list() {
 	}
 }
 
-
 static void update_coordinates() {
 	gchar RA_sec[7], Dec_sec[7];
 
@@ -726,8 +725,15 @@ static gboolean end_plate_solver(gpointer p) {
 	stop_processing_thread();
 	clear_stars_list();
 	set_cursor_waiting(FALSE);
-	if (!args->ret)
+
+	if (args->ret) {
+		char *title = siril_log_color_message(_("Plate Solving failed. "
+				"The image could not be aligned with the reference stars after %d attempts.\n"), "red", args->attempt);
+		siril_message_dialog(GTK_MESSAGE_ERROR, title, _("This is usually because the initial parameters (pixel size, focal length, initial coordinates) "
+				"are too far from the real metadata of the image."));
+	} else {
 		update_IPS_GUI();
+	}
 	g_free(args->catalogStars);
 	free(args);
 	update_used_memory();
@@ -778,7 +784,7 @@ static gpointer match_catalog(gpointer p) {
 		nobj += 50;
 		attempt++;
 	}
-
+	args->attempt = attempt;
 	if (!args->ret) {
 
 		/* we only want to compare with linear function
@@ -799,11 +805,6 @@ static gpointer match_catalog(gpointer p) {
 			args->ret = 1;
 		}
 
-	}
-	if (args->ret) {
-		siril_log_color_message(_("Plate Solving failed. The image could not be aligned with the reference stars after %d attempts.\n"), "red", attempt);
-		siril_log_color_message(_("This is usually because the initial parameters (pixel size, focal length, initial coordinates) "
-				"are too far from the real metadata of the image.\n"), "red");
 	}
 	/* free data */
 	if (n_cat > 0) free_fitted_stars(cstars);
@@ -962,7 +963,7 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 
 void on_GtkButton_IPS_metadata_clicked(GtkButton *button, gpointer user_data) {
 	if (!has_any_keywords()) {
-		char *msg = siril_log_message(_("There is no keywords storred in the FITS header.\n"));
+		char *msg = siril_log_message(_("There are no keywords storred in the FITS header.\n"));
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("No metadata"), msg);
 	} else {
 		update_IPS_GUI();
