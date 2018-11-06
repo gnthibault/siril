@@ -733,6 +733,7 @@ static gboolean end_plate_solver(gpointer p) {
 				"are too far from the real metadata of the image."));
 	} else {
 		update_IPS_GUI();
+		control_window_switch_to_tab(OUTPUT_LOGS);
 	}
 	g_free(args->catalogStars);
 	free(args);
@@ -753,12 +754,16 @@ static gpointer match_catalog(gpointer p) {
 	com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, TRUE); // TODO: use good layer
 	if (n_fit < AT_MATCH_MINPAIRS) {
 		siril_log_message(_("Not enough stars.\n"));
+		args->ret = 1;
+		siril_add_idle(end_plate_solver, args);
 		return GINT_TO_POINTER(1);
 	}
 
 	cstars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
 	if (cstars == NULL) {
 		printf("Memory allocation failed: peaker\n");
+		args->ret = 1;
+		siril_add_idle(end_plate_solver, args);
 		return GINT_TO_POINTER(1);
 	}
 
@@ -767,6 +772,8 @@ static gpointer match_catalog(gpointer p) {
 	if (catalog == NULL) {
 		fprintf(stderr, "match_catalog: error opening file: %s\n", args->catalogStars);
 		free(cstars);
+		args->ret = 1;
+		siril_add_idle(end_plate_solver, args);
 		return GINT_TO_POINTER(1);
 	}
 
