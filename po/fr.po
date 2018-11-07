@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-05 22:40+0100\n"
-"PO-Revision-Date: 2018-11-05 22:40+0100\n"
+"POT-Creation-Date: 2018-11-07 21:04+0100\n"
+"PO-Revision-Date: 2018-11-07 21:12+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -3991,15 +3991,15 @@ msgstr ""
 "pixels, longueur focale, coordonnées initiales) sont trop éloignés des "
 "métadonnées réelles de l'image."
 
-#: ../src/algos/plateSolver.c:755
+#: ../src/algos/plateSolver.c:756
 msgid "Not enough stars.\n"
 msgstr "Pas assez d'étoiles.\n"
 
-#: ../src/algos/plateSolver.c:899
+#: ../src/algos/plateSolver.c:906
 msgid "Astrometric solution detected"
 msgstr "Solution astrométrique detectée"
 
-#: ../src/algos/plateSolver.c:899
+#: ../src/algos/plateSolver.c:906
 msgid ""
 "The astrometric solution contained in the image will be erased by the "
 "geometric transformation and no undo will be possible."
@@ -4007,11 +4007,11 @@ msgstr ""
 "La solution astrométrique contenue dans l'image va être effacée par la "
 "transformation géométrique et aucun retour en arrière n'est possible."
 
-#: ../src/algos/plateSolver.c:966
+#: ../src/algos/plateSolver.c:973
 msgid "There are no keywords storred in the FITS header.\n"
 msgstr "Il n'y a aucun mot clé stocké dans l'entête du fichier.\n"
 
-#: ../src/algos/plateSolver.c:967
+#: ../src/algos/plateSolver.c:974
 msgid "No metadata"
 msgstr "Aucune métadonnée"
 
@@ -4083,7 +4083,7 @@ msgstr "Vous devez au moins charger 2 canaux\n"
 
 #: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:5362
 #: ../src/gui/callbacks.c:5371 ../src/gui/callbacks.c:5428
-#: ../src/io/conversion.c:550 ../src/registration/registration.c:848
+#: ../src/io/conversion.c:576 ../src/registration/registration.c:848
 msgid "Warning"
 msgstr "Attention"
 
@@ -4125,7 +4125,7 @@ msgstr "Réajustement du canal %d (x%g)\n"
 #: ../src/gui/callbacks.c:4465 ../src/gui/callbacks.c:4673
 #: ../src/gui/callbacks.c:5010 ../src/gui/callbacks.c:5163
 #: ../src/gui/callbacks.c:5462 ../src/gui/callbacks.c:5640
-#: ../src/gui/script_menu.c:150 ../src/io/conversion.c:519
+#: ../src/gui/script_menu.c:150 ../src/io/conversion.c:518
 #: ../src/registration/registration.c:830 ../src/stacking/stacking.c:1486
 #: ../src/stacking/stacking.c:1610
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4407,16 +4407,16 @@ msgstr ""
 "Canal %s : Moyenne : %0.1lf, Médiane : %0.1lf, Sigma : %0.1lf, AvgDev : "
 "%0.1lf, Min : %0.1lf, Max : %0.1lf\n"
 
-#: ../src/core/command.c:1696 ../src/io/conversion.c:555
+#: ../src/core/command.c:1696 ../src/io/conversion.c:581
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Conversion : erreur lors de l'ouverture du répertoire de travail %s.\n"
 
-#: ../src/core/command.c:1714 ../src/io/conversion.c:538
+#: ../src/core/command.c:1714 ../src/io/conversion.c:564
 msgid "Conversion: processing...\n"
 msgstr "Conversion : en cours...\n"
 
-#: ../src/core/command.c:1725 ../src/io/conversion.c:549
+#: ../src/core/command.c:1725 ../src/io/conversion.c:575
 msgid "Conversion: no working directory set.\n"
 msgstr "Conversion: aucun répertoire de travail défini.\n"
 
@@ -5351,7 +5351,7 @@ msgstr "Les images n'ont pas la même taille (l = %d|%d, h = %d|%d)\n"
 #: ../src/gui/callbacks.c:3032 ../src/gui/callbacks.c:4725
 #: ../src/gui/callbacks.c:4746 ../src/gui/callbacks.c:5179
 #: ../src/gui/callbacks.c:5185 ../src/gui/callbacks.c:5210
-#: ../src/gui/plot.c:381 ../src/gui/plot.c:441 ../src/io/conversion.c:556
+#: ../src/gui/plot.c:381 ../src/gui/plot.c:441 ../src/io/conversion.c:582
 #: ../src/io/single_image.c:129
 msgid "Error"
 msgstr "Erreur"
@@ -6377,29 +6377,58 @@ msgstr "Images PNG"
 msgid "Supported file types: %s\n"
 msgstr "Type de fichiers supportés : %s\n"
 
-#: ../src/io/conversion.c:590
+#: ../src/io/conversion.c:523
+#, c-format
+msgid "A file named %s already exists. Do you want to replace it?\n"
+msgstr "Un fichier nommé %s existe déjà. Voulez-vous le remplacer ?\n"
+
+#: ../src/io/conversion.c:525
+msgid "The file already exists. Replacing it will overwrite its contents."
+msgstr "Le fichier existe déjà. Le remplacer écrasera son contenu."
+
+#: ../src/io/conversion.c:551 ../src/io/conversion.c:556
+msgid "A conflict has been detected."
+msgstr "Un conflit a été détecté."
+
+#: ../src/io/conversion.c:552
+msgid ""
+"The Debayer option is not allowed in SER conversion, please uncheck the "
+"option."
+msgstr ""
+"L'option de dématriçage n'est pas autorisée dans la conversion SER, veuillez "
+"décocher l'option."
+
+#: ../src/io/conversion.c:557
+msgid ""
+"The Multiple SER option is not allowed in SER conversion, please uncheck the "
+"option."
+msgstr ""
+"L'option de conversion en fichier SER multiple n'est pas autorisée dans la "
+"conversion SER, veuillez décocher l'option."
+
+#: ../src/io/conversion.c:627
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
 msgstr ""
 "La sortie du format SER aura priorité sur l'option 1 canal par image.\n"
 
-#: ../src/io/conversion.c:596 ../src/io/conversion.c:648
+#: ../src/io/conversion.c:633 ../src/io/conversion.c:685
 #: ../src/io/sequence.c:1285 ../src/io/sequence_export.c:103
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "La création du fichier SER a échoué, abandon.\n"
 
-#: ../src/io/conversion.c:613 ../src/io/conversion.c:614
+#: ../src/io/conversion.c:650 ../src/io/conversion.c:651
 #, c-format
 msgid "Converting %s..."
 msgstr "Conversion de %s..."
 
-#: ../src/io/conversion.c:620
+#: ../src/io/conversion.c:657
 #, c-format
 msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr "Le type de fichier n'est pas supporté, impossible de convertir : %s\n"
 
-#: ../src/io/conversion.c:621
+#: ../src/io/conversion.c:658
 #, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -6419,42 +6448,58 @@ msgstr ""
 "supportés, vous devriez contacter les développeurs pour leur notifier que "
 "l'extension que vous essayez d'utiliser devrait être reconnue."
 
-#: ../src/io/conversion.c:640
+#: ../src/io/conversion.c:677
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Erreur pendant l'ouverture du film %s, abandon.\n"
 
-#: ../src/io/conversion.c:657
+#: ../src/io/conversion.c:697 ../src/io/conversion.c:763
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Erreur pendant la lecture de l'image %d de %s, abandon.\n"
 
-#: ../src/io/conversion.c:669 ../src/io/conversion.c:702
-#: ../src/io/sequence.c:1315 ../src/io/sequence_export.c:316
+#: ../src/io/conversion.c:709 ../src/io/conversion.c:775
+#: ../src/io/conversion.c:802 ../src/io/sequence.c:1315
+#: ../src/io/sequence_export.c:316
 msgid "Error while converting to SER (no space left?)\n"
 msgstr ""
 "Erreur pendant la conversion en fichier SER (plus d'espace disponible ?)\n"
 
-#: ../src/io/conversion.c:677 ../src/io/conversion.c:708
+#: ../src/io/conversion.c:717 ../src/io/conversion.c:783
+#: ../src/io/conversion.c:808
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr ""
 "Erreur pendant la conversion en fichier FITS (plus d'espace disponible ?)\n"
 
-#: ../src/io/conversion.c:692
-msgid "Converting from SER is not yet supported\n"
-msgstr "La conversion à partir d'un fichier SER n'est pas encore supportée\n"
+#: ../src/io/conversion.c:733
+msgid ""
+"Joining SER files is only possible with a list only containing SER files. "
+"Please, remove non SER files.\n"
+msgstr ""
+"La jonction de fichiers SER n’est possible qu’avec une liste contenant "
+"uniquement des fichiers SER. Veuillez s'il vous plaît, supprimer les "
+"fichiers non SER.\n"
 
-#: ../src/io/conversion.c:749
+#: ../src/io/conversion.c:742
+#, c-format
+msgid "Error while opening ser file %s, aborting.\n"
+msgstr "Erreur pendant l'ouverture du fichier ser %s, abandon.\n"
+
+#: ../src/io/conversion.c:750
+msgid "Input SER files must have the same size to be joined.\n"
+msgstr "Les fichiers SER doivent avoir la même taille pour être joints.\n"
+
+#: ../src/io/conversion.c:849
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr ""
 "Impossible de dématricer une image dont le nombre de canaux est supérieur à "
 "1\n"
 
-#: ../src/io/conversion.c:762 ../src/io/ser.c:827 ../src/io/ser.c:1033
+#: ../src/io/conversion.c:862 ../src/io/ser.c:827 ../src/io/ser.c:1033
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Aucun motif de Bayer trouvé dans l'entête du fichier.\n"
 
-#: ../src/io/conversion.c:765 ../src/io/ser.c:831 ../src/io/ser.c:1037
+#: ../src/io/conversion.c:865 ../src/io/ser.c:831 ../src/io/ser.c:1037
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -6463,20 +6508,20 @@ msgstr ""
 "Le motif de Bayer trouvé dans l'entête (%s) est différent du motif de Bayer "
 "enregistré dans les paramètres (%s). Outrepasser les paramètres.\n"
 
-#: ../src/io/conversion.c:774
+#: ../src/io/conversion.c:874
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr "Capteur XTRANS détecté. Utilisation d'un algorithme spécial.\n"
 
-#: ../src/io/conversion.c:779
+#: ../src/io/conversion.c:879
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Motif du Filtre : %s\n"
 
-#: ../src/io/conversion.c:783
+#: ../src/io/conversion.c:883
 msgid "Cannot perform debayering\n"
 msgstr "Dématriçage impossible\n"
 
-#: ../src/io/conversion.c:833
+#: ../src/io/conversion.c:933
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
@@ -6485,7 +6530,7 @@ msgstr ""
 "devrait pas arriver\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:838
+#: ../src/io/conversion.c:938
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "Erreur à l'ouverture de %s : type de fichier non supporté.\n"
@@ -7834,6 +7879,10 @@ msgstr "Basé sur la qualité"
 #: ../src/stacking/stacking.c:2279
 msgid "Up-scaling sequence for stacking"
 msgstr "Mise à l'échelle de la séquence pour l’empilement"
+
+#~ msgid "Converting from SER is not yet supported\n"
+#~ msgstr ""
+#~ "La conversion à partir d'un fichier SER n'est pas encore supportée\n"
 
 #, fuzzy
 #~ msgid "error"

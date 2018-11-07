@@ -16,6 +16,7 @@ struct _convert_data {
 	int nb_converted;
 	gboolean compatibility;
 	gboolean command_line;
+	gboolean several_type_of_files;
 	gchar *destroot;
 };
 

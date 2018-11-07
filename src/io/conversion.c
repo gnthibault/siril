@@ -485,17 +485,15 @@ int count_selected_files() {
 	
 	while (valid) {
 		gchar *file_name, *file_date;
-		gtk_tree_model_get (model, &iter, COLUMN_FILENAME, &file_name,
-											COLUMN_DATE, &file_date,
-											-1);
+		gtk_tree_model_get(model, &iter, COLUMN_FILENAME, &file_name,
+				COLUMN_DATE, &file_date, -1);
 		valid = gtk_tree_model_iter_next (model, &iter);
 		count ++;
 	}
 	return count;
 }
 
-
-void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
+static void initialize_convert() {
 	GDir *dir;
 	GError *error = NULL;
 	gchar *file_data, *file_date;
@@ -504,7 +502,8 @@ void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 	static GtkEntry *startEntry = NULL;
 	GtkTreeModel *model = NULL;
 	GtkTreeIter iter;
-	gboolean valid;
+	gboolean valid, several_type_of_files = FALSE;
+	image_type imagetype = TYPEUNDEF;
 	GList *list = NULL;
 	int count = 0;
 	
@@ -520,19 +519,46 @@ void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 		return;
 	}
 
+	if (g_file_test(destroot, G_FILE_TEST_EXISTS)) {
+		char *title = siril_log_message(_("A file named %s already exists. "
+				"Do you want to replace it?\n"), destroot);
+		gboolean replace = siril_confirm_dialog(title, _("The file already exists. "
+				"Replacing it will overwrite its contents."), FALSE);
+		if (!replace) return;
+	}
+
 	model = gtk_tree_view_get_model(tree_convert);
 	valid = gtk_tree_model_get_iter_first(model, &iter);
 	if (valid == FALSE) return;	//The tree is empty
 	
 	while (valid) {
-		gtk_tree_model_get (model, &iter, COLUMN_FILENAME, &file_data,
-				COLUMN_DATE, &file_date,
-				-1);
+		gtk_tree_model_get(model, &iter, COLUMN_FILENAME, &file_data,
+				COLUMN_DATE, &file_date, -1);
 		list = g_list_append (list, file_data);
+
+		const char *src_ext = get_filename_ext(file_data);
+		if (count != 0) {
+			if (imagetype != get_type_for_extension(src_ext)) {
+				several_type_of_files = TRUE;
+			}
+		}
+		imagetype = get_type_for_extension(src_ext);
 		valid = gtk_tree_model_iter_next (model, &iter);
 		count ++;
 	}
 	
+	if ((convflags & CONVDEBAYER) && (imagetype = TYPESER) && (several_type_of_files == FALSE)) {
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
+				_("The Debayer option is not allowed in SER conversion, please uncheck the option."));
+		set_cursor_waiting(FALSE);
+		return;
+	} else if ((convflags & CONVMULTIPLE) && (imagetype = TYPESER) && (several_type_of_files == FALSE)) {
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
+				_("The Multiple SER option is not allowed in SER conversion, please uncheck the option."));
+		set_cursor_waiting(FALSE);
+		return;
+	}
+
 	indice = gtk_entry_get_text(startEntry);
 
 	siril_log_color_message(_("Conversion: processing...\n"), "red");
@@ -569,14 +595,25 @@ void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 	args->t_start.tv_usec = t_start.tv_usec;
 	args->compatibility = com.debayer.compatibility;
 	args->command_line = FALSE;
+	args->several_type_of_files = several_type_of_files;
 	args->destroot = g_strdup(destroot);
 	start_in_new_thread(convert_thread_worker, args);
 	return;
 }
 
+void on_entry2_activate(GtkEntry *entry, gpointer user_data) {
+	initialize_convert();
+}
+
+
+void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
+	initialize_convert();
+}
+
 gpointer convert_thread_worker(gpointer p) {
 	char dest_filename[128], msg_bar[256];
 	int indice;
+	int ser_frames = 0;
 	double progress = 0.0;
 	struct ser_struct *ser_file = NULL;
 	struct _convert_data *args = (struct _convert_data *) p;
@@ -652,6 +689,9 @@ gpointer convert_thread_worker(gpointer p) {
 				}
 			}
 			for (frame = 0; frame < film_file.frame_count; frame++) {
+				if (!get_thread_run()) {
+					break;
+				}
 				// read frame from the film
 				if (film_read_frame(&film_file, frame, fit) != FILM_SUCCESS) {
 					siril_log_message(_("Error while reading frame %d from %s, aborting.\n"),
@@ -689,8 +729,68 @@ gpointer convert_thread_worker(gpointer p) {
 #endif
 		}
 		else if (imagetype == TYPESER) {
-			siril_log_message(_("Converting from SER is not yet supported\n"));
-			break;
+			if (args->several_type_of_files) {
+				siril_log_message(_("Joining SER files is only possible with a list "
+						"only containing SER files. Please, remove non SER files.\n"));
+				break;
+			}
+			int frame;
+			fits *fit = calloc(1, sizeof(fits));
+			struct ser_struct tmp_ser;
+			ser_init_struct(&tmp_ser);
+			if (ser_open_file(src_filename, &tmp_ser)) {
+				siril_log_message(_("Error while opening ser file %s, aborting.\n"), src_filename);
+				clearfits(fit);
+				free(fit);
+				break;
+			}
+			if (args->nb_converted > 0 && (convflags & CONVDSTSER)) {
+				if (tmp_ser.image_height != ser_file->image_height
+						|| tmp_ser.image_width != ser_file->image_width) {
+					siril_log_color_message(_("Input SER files must have the same size to be joined.\n"), "red");
+					clearfits(fit);
+					free(fit);
+					break;
+				}
+			}
+			set_progress_bar_data(msg_bar, PROGRESS_PULSATE);
+			for (frame = 0; frame < tmp_ser.frame_count; frame++) {
+				if (!get_thread_run()) {
+					break;
+				}
+				// read frame from the film
+				if (ser_read_frame(&tmp_ser, frame, fit)) {
+					siril_log_message(_("Error while reading frame %d from %s, aborting.\n"),
+							frame, src_filename);
+					clearfits(fit);
+					free(fit);
+					goto clean_exit;
+				}
+
+				// save to the destination file
+				if (convflags & CONVDSTSER) {
+					if (convflags & CONV1X1)
+						keep_first_channel_from_fits(fit);
+					if (ser_write_frame_from_fit(ser_file, fit, frame + ser_frames)) {
+						siril_log_message(_("Error while converting to SER (no space left?)\n"));
+						clearfits(fit);
+						free(fit);
+						goto clean_exit;
+					}
+				} else {
+					g_snprintf(dest_filename, 128, "%s%05d", args->destroot, indice++);
+					if (save_to_target_fits(fit, dest_filename)) {
+						siril_log_message(_("Error while converting to FITS (no space left?)\n"));
+						clearfits(fit);
+						free(fit);
+						goto clean_exit;
+					}
+				}
+				clearfits(fit);
+			}
+			ser_frames += frame;
+			ser_close_file(&tmp_ser);
+			free(fit);
 		}
 		else {	// single image
 			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility);
@@ -870,12 +970,11 @@ void on_convtoroot_changed (GtkEditable *editable, gpointer user_data){
 		if (ext && !g_ascii_strcasecmp(ext, "ser")) {
 			convflags |= CONVDSTSER;
 			gtk_widget_set_visible(multiple_ser, TRUE);
-			return;
+		} else {
+			convflags &= ~CONVDSTSER;
+			gtk_widget_set_visible(multiple_ser, FALSE);
+			destroot = format_basename(destroot);
 		}
-		gtk_widget_set_visible(multiple_ser, FALSE);
-
-		destroot = format_basename(destroot);
-
 		check_for_conversion_form_completeness();
 	}
 }

@@ -11542,6 +11542,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
                         <property name="tooltip_text" translatable="yes">Enter the base name of the sequence, for example NGC_6822-L. It will create images in the form NGC_6822-L_00001.fit. The name can also end with .ser, which will enable SER output format for the conversion.</property>
                         <property name="valign">center</property>
                         <property name="hexpand">True</property>
+                        <signal name="activate" handler="on_entry2_activate" swapped="no"/>
                         <signal name="changed" handler="on_convtoroot_changed" swapped="no"/>
                       </object>
                       <packing>
