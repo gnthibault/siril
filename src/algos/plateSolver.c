@@ -18,6 +18,12 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LIBCURL
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -121,7 +127,6 @@ static void fov_in_DHMS(double var, gchar *fov) {
 static int parse_curl_buffer(char *buffer, struct object *obj) {
 	char **token, **fields;
 	point center;
-	gchar *object = NULL;
 	int nargs, i = 0, resolver = -1;
 
 	token = g_strsplit(buffer, "\n", -1);
@@ -389,7 +394,6 @@ static gchar *download_catalog() {
 	catalog = g_fopen(filename, "w+t");
 	if (catalog == NULL) {
 		fprintf(stderr, "plateSolver: Cannot open catalog\n");
-		g_free(foutput);
 		return NULL;
 	}
 	buffer = fetch_url(url);
@@ -999,3 +1003,5 @@ void on_GtkCheckButton_Mag_Limit_toggled(GtkToggleButton *button,
 	spinmag = lookup_widget("GtkSpinIPS_Mag_Limit");
 	gtk_widget_set_sensitive(spinmag, !gtk_toggle_button_get_active(button));
 }
+
+#endif

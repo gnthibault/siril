@@ -1,6 +1,8 @@
 #ifndef SRC_ALGOS_PLATESOLVER_H_
 #define SRC_ALGOS_PLATESOLVER_H_
 
+#ifdef HAVE_LIBCURL
+
 #include "core/siril.h"
 #include "registration/matching/degtorad.h"
 
@@ -73,3 +75,4 @@ gboolean confirm_delete_wcs_keywords(fits *fit);
 void invalidate_WCS_keywords(fits *fit);
 
 #endif /* SRC_ALGOS_PLATESOLVER_H_ */
+#endif

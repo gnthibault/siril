@@ -1593,6 +1593,7 @@ void update_MenuItem() {
 #ifdef HAVE_LIBCURL
 	/* Updates check */
 	gtk_widget_set_visible(lookup_widget("help_update"), TRUE);
+	gtk_widget_set_visible(lookup_widget("menuitem_IPS"), TRUE);
 #endif
 }
 
