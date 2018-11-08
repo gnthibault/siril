@@ -18,25 +18,22 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#ifdef HAVE_LIBCURL
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
-#include <curl/curl.h>
-
 #include "core/siril.h"
 #include "core/proto.h"
+#include "gui/message_dialog.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
-#include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
+
+#ifdef HAVE_LIBCURL
+
+#include <curl/curl.h>
+
 #include "gui/PSF_list.h"
 #include "algos/PSF.h"
 #include "algos/star_finder.h"
@@ -898,34 +895,6 @@ static void start_image_plate_solve() {
 	start_in_new_thread(match_catalog, args);
 }
 
-/******
- *
- * Public functions
- */
-
-gboolean confirm_delete_wcs_keywords(fits *fit) {
-	gboolean erase = TRUE;
-
-	if (fit->wcs.equinox > 0) {
-		erase = siril_confirm_dialog(_("Astrometric solution detected"), _("The astrometric solution contained in "
-				"the image will be erased by the geometric transformation and no undo "
-				"will be possible."), FALSE);
-	}
-	return erase;
-}
-
-void invalidate_WCS_keywords(fits *fit) {
-	if (fit->wcs.equinox > 0) {
-		fit->wcs.equinox = 0;
-		fit->wcs.crpix1 = 0.0;
-		fit->wcs.crpix2 = 0.0;
-		fit->wcs.crval1 = 0.0;
-		fit->wcs.crval2 = 0.0;
-		memset(fit->wcs.objctra, 0, FLEN_VALUE);
-		memset(fit->wcs.objctdec, 0, FLEN_VALUE);
-	}
-}
-
 /*****
  * CALLBACKS FUNCTIONS
  */
@@ -1003,5 +972,32 @@ void on_GtkCheckButton_Mag_Limit_toggled(GtkToggleButton *button,
 	spinmag = lookup_widget("GtkSpinIPS_Mag_Limit");
 	gtk_widget_set_sensitive(spinmag, !gtk_toggle_button_get_active(button));
 }
-
 #endif
+
+/******
+ *
+ * Public functions
+ */
+
+gboolean confirm_delete_wcs_keywords(fits *fit) {
+	gboolean erase = TRUE;
+
+	if (fit->wcs.equinox > 0) {
+		erase = siril_confirm_dialog(_("Astrometric solution detected"), _("The astrometric solution contained in "
+				"the image will be erased by the geometric transformation and no undo "
+				"will be possible."), FALSE);
+	}
+	return erase;
+}
+
+void invalidate_WCS_keywords(fits *fit) {
+	if (fit->wcs.equinox > 0) {
+		fit->wcs.equinox = 0;
+		fit->wcs.crpix1 = 0.0;
+		fit->wcs.crpix2 = 0.0;
+		fit->wcs.crval1 = 0.0;
+		fit->wcs.crval2 = 0.0;
+		memset(fit->wcs.objctra, 0, FLEN_VALUE);
+		memset(fit->wcs.objctdec, 0, FLEN_VALUE);
+	}
+}

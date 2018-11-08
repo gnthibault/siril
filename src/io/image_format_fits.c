@@ -74,7 +74,7 @@ static void read_fits_date_obs_header(fits *fit) {
 	}
 }
 
-/* TODO: use result for siril stats ? */
+/* This only work on FITS with naxis=2 */
 static int fit_stats(fits *fit, double *mini, double *maxi) {
 	int status = 0;
 	int ii;
@@ -87,7 +87,7 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 	fits_get_img_size(fit->fptr, 2, fit->naxes, &status);
 
 	if (status || fit->naxis != 2) {
-		printf("Error: NAXIS = %d.  Only 2-D images are supported.\n",
+		siril_debug_print("fit_stats: NAXIS = %d. Only 2-D images are supported.\n",
 				fit->naxis);
 		return (1);
 	}
@@ -124,10 +124,10 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 	} else {
 		if (totpix > 0)
 			meanval = sum / totpix;
-//		printf("  sum of pixels = %g\n", sum);
-//		printf("  mean value    = %g\n", *meanval);
-//		printf("  minimum value = %g\n", *minval);
-//		printf("  maximum value = %g\n", *maxval);
+		siril_debug_print("  sum of pixels = %g\n", sum);
+		siril_debug_print("  mean value    = %g\n", meanval);
+		siril_debug_print("  minimum value = %g\n", minval);
+		siril_debug_print("  maximum value = %g\n", maxval);
 		*maxi = maxval;
 		*mini = minval;
 	}

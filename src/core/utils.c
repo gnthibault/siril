@@ -1172,8 +1172,6 @@ GtkWindow *siril_get_active_window() {
 	list = gtk_window_list_toplevels();
 
 	for (l = list; l; l = l->next) {
-		GtkWidget *widget = l->data;
-
 		if (gtk_window_is_active((GtkWindow *) l->data)) {
 			win = (GtkWindow *) l->data;
 			break;
