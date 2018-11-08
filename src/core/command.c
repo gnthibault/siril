@@ -160,7 +160,7 @@ command commande[] = {
 	{"savetif8", 1, "savetif8 filename", process_savetif, STR_SAVETIF8, TRUE},
 #endif
 	{"select", 2, "select from to", process_select, STR_SELECT, FALSE},
-	{"seqcrop", 0, "seqcrop", process_seq_crop, STR_SEQCROP, FALSE}, // TODO: add seqname
+	{"seqcrop", 1, "seqcrop sequencename [x y width height]", process_seq_crop, STR_SEQCROP, TRUE},
 	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME, TRUE},
 	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},
 	{"seqpsf", 0, "seqpsf", process_seq_psf, STR_SEQPSF, FALSE},
@@ -940,13 +940,63 @@ int process_seq_crop(int nb) {
 		return 1;
 	}
 
-	if (com.selection.w <= 0 || com.selection.h <= 0)
+	rectangle area;
+	sequence *seq;
+	gchar *file;
+
+	if ((!com.selection.h) || (!com.selection.w)) {
+		if (nb == 6) {
+			if (atoi(word[2]) < 0 || atoi(word[3]) < 0) {
+				siril_log_message(_("Crop: x and y must be positive values.\n"));
+				return 1;
+			}
+			if (atoi(word[4]) <= 0 || atoi(word[5]) <= 0) {
+				siril_log_message(_("Crop: width and height must be greater than 0.\n"));
+				return 1;
+			}
+			area.x = atoi(word[2]);
+			area.y = atoi(word[3]);
+			area.w = atoi(word[4]);
+			area.h = atoi(word[5]);
+		}
+		else {
+			siril_log_message(_("Crop: select a region or provide x, y, width, height\n"));
+			return 1;
+		}
+	} else {
+		memcpy(&area, &com.selection, sizeof(rectangle));
+	}
+
+	file = g_strdup(word[1]);
+	if (!ends_with(file, ".seq")) {
+		str_append(&file, ".seq");
+	}
+
+	if (!existseq(file)) {
+		if (check_seq(FALSE)) {
+			siril_log_message(_("No sequence %s found.\n"), file);
+			return 1;
+		}
+	}
+	seq = readseqfile(file);
+	if (seq == NULL) {
+		siril_log_message(_("No sequence %s found.\n"), file);
 		return 1;
+	}
+	if (seq_check_basic_data(seq, FALSE) == -1) {
+		free(seq);
+		return 1;
+	}
+	if (atoi(word[4]) > seq->rx || atoi(word[5]) > seq->ry) {
+		siril_log_message(_("Crop: width and height, respectively, must be less than %d and %d.\n"),
+				seq->rx, seq->ry);
+		return 1;
+	}
 
 	struct crop_sequence_data *args = malloc(sizeof(struct crop_sequence_data));
 
-	args->seq = &com.seq;
-	args->area = &com.selection;
+	args->seq = seq;
+	args->area = area;
 	args->prefix = "cropped_";
 
 	set_cursor_waiting(TRUE);

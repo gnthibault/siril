@@ -135,7 +135,7 @@ int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,
 /* crop sequence data from GUI */
 struct crop_sequence_data {
 	sequence *seq;
-	rectangle *area;
+	rectangle area;
 	const char *prefix;
 	int retvalue;
 };

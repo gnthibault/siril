@@ -1593,6 +1593,7 @@ void update_MenuItem() {
 #ifdef HAVE_LIBCURL
 	/* Updates check */
 	gtk_widget_set_visible(lookup_widget("help_update"), TRUE);
+	/* Astrometry tool */
 	gtk_widget_set_visible(lookup_widget("menuitem_IPS"), TRUE);
 #endif
 }
@@ -3076,10 +3077,12 @@ static rectangle get_window_position(GtkWidget *window) {
 }
 
 static void save_all_windows_position() {
-	com.main_w_pos = get_window_position(lookup_widget("main_window"));
-	com.rgb_w_pos = get_window_position(lookup_widget("rgb_window"));
+	if (!com.script) {
+		com.main_w_pos = get_window_position(lookup_widget("main_window"));
+		com.rgb_w_pos = get_window_position(lookup_widget("rgb_window"));
 
-	writeinitfile();
+		writeinitfile();
+	}
 }
 
 void gtk_main_quit() {
@@ -5749,7 +5752,7 @@ void on_crop_Apply_clicked (GtkButton *button, gpointer user_data) {
 	GtkEntry *cropped_entry = GTK_ENTRY(lookup_widget("cropped_entry"));
 
 	args->seq = &com.seq;
-	args->area = &com.selection;
+	args->area = com.selection;
 	args->prefix = gtk_entry_get_text(cropped_entry);
 
 	set_cursor_waiting(TRUE);

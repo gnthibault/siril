@@ -1250,9 +1250,9 @@ gboolean end_crop_sequence(gpointer p) {
 	stop_processing_thread();
 	if (!args->retvalue) {
 		char *rseqname = malloc(
-				strlen(args->prefix) + strlen(com.seq.seqname) + 5);
+				strlen(args->prefix) + strlen(args->seq->seqname) + 5);
 
-		sprintf(rseqname, "%s%s.seq", args->prefix, com.seq.seqname);
+		sprintf(rseqname, "%s%s.seq", args->prefix, args->seq->seqname);
 		check_seq(0);
 		update_sequences_list(rseqname);
 		free(rseqname);
@@ -1289,7 +1289,7 @@ gpointer crop_sequence(gpointer p) {
 			siril_add_idle(end_crop_sequence, args);
 		}
 	}
-
+	set_progress_bar_data(_("Processing..."), PROGRESS_RESET);
 	for (frame = 0, cur_nb = 0.f; frame < args->seq->number; frame++) {
 		if (!get_thread_run())
 			break;
@@ -1299,7 +1299,7 @@ gpointer crop_sequence(gpointer p) {
 		if (!ret) {
 			char dest[256], filename[256];
 
-			crop(&fit, args->area);
+			crop(&fit, &(args->area));
 			switch (args->seq->type) {
 			case SEQ_REGULAR:
 				fit_sequence_get_image_filename(args->seq, frame, filename,
@@ -1329,6 +1329,7 @@ gpointer crop_sequence(gpointer p) {
 		ser_write_and_close(ser_file);
 		free(ser_file);
 	}
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 	siril_add_idle(end_crop_sequence, args);
 	return 0;
 }
