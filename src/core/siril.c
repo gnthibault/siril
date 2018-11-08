@@ -859,17 +859,17 @@ static int darkOptimization(fits *brut, fits *dark, fits *offset) {
 
 	siril_log_message(_("Dark optimization: %.3lf\n"), k);
 	/* Multiply coefficient to master-dark */
-	if (com.preprostatus & USE_OFFSET)
+	if (com.preprostatus & USE_OFFSET) {
 		ret = imoper(dark_tmp, offset, OPER_SUB);
 		if (ret) {
 			clearfits(dark_tmp);
 			return ret;
 		}
+	}
 	soper(dark_tmp, k, OPER_MUL);
-	ret =  imoper(brut, dark_tmp, OPER_SUB);
+	ret = imoper(brut, dark_tmp, OPER_SUB);
 
 	clearfits(dark_tmp);
-
 	return ret;
 }
 
