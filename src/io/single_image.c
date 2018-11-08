@@ -58,7 +58,7 @@ void free_image_data() {
 	if (!single_image_is_loaded() && sequence_is_loaded())
 		save_stats_from_fit(&gfit, &com.seq, com.seq.current);
 	clearfits(&gfit);
-	if (!com.script) {
+	if (!com.headless) {
 		clear_stars_list();
 		delete_selected_area();
 		clear_sampling_setting_box();	// clear focal and pixel pitch info
@@ -77,7 +77,7 @@ void free_image_data() {
 		com.surface_stride[vport] = 0;
 		com.surface_height[vport] = 0;
 	}
-	if (!com.script)
+	if (!com.headless)
 		activate_tab(RED_VPORT);
 	if (com.rgbbuf) {
 		free(com.rgbbuf);
@@ -91,8 +91,8 @@ void free_image_data() {
 		free(com.uniq);
 		com.uniq = NULL;
 	}
- 
-	if (!com.script) {
+
+	if (!com.headless) {
 		/* free alignment preview data */
 		for (i=0; i<PREVIEW_NB; i++) {
 			if (com.preview_surface[i]) {
