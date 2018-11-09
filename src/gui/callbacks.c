@@ -1496,15 +1496,16 @@ void adjust_exclude(int n, gboolean changed) {
 int adjust_sellabel() {
 	static GtkLabel *local_label = NULL, *global_label = NULL;
 	char bufferlocal[256], bufferglobal[256];
-	gchar *seq_basename;
+	gchar *seq_basename = NULL;
 
 	if (local_label == NULL) {
 		local_label = GTK_LABEL(lookup_widget("imagesel_label"));
 		global_label = GTK_LABEL(lookup_widget("labelseq"));
 	}
-	seq_basename = g_path_get_basename(com.seq.seqname);
 
 	if (sequence_is_loaded()) {
+		seq_basename = g_path_get_basename(com.seq.seqname);
+
 		if (com.seq.reference_image != -1) {
 			char format[150];
 			if (com.seq.fixed <= 1) {
