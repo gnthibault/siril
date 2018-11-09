@@ -114,7 +114,7 @@
     * The user can modify this limit via the "max_iter"
     * command-line argument.
     */
-#define AT_MATCH_MAXITER      3
+#define AT_MATCH_MAXITER      5
 
 
    /*

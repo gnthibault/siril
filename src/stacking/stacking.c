@@ -1180,7 +1180,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				retval = -1;
 				break;
 			}
-			if (y & 4)	// every 16 iterations
+			if (y & 15)	// every 16 iterations
 				set_progress_bar_data(NULL, (double)cur_nb/total);
 
 			double sigma = -1.0;

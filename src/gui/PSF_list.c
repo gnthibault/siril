@@ -40,6 +40,7 @@ enum {
 	COLUMN_Y0,			// gchar[]
 	COLUMN_FWHMX,		// gchar[]
 	COLUMN_FWHMY,		// gchar[]
+	COLUMN_MAG,		    // gchar[]
 	COLUMN_ROUNDNESS,	// gchar[]
 	COLUMN_ANGLE,		// gchar[]
 	COLUMN_RMSE,		// gchar[]
@@ -59,7 +60,7 @@ void add_star_to_list(fitted_PSF *star) {
 	static GtkTreeSelection *selection = NULL;
 	GtkTreeIter iter;
 	gchar B[16], A[16], xpos[16], ypos[16], angle[16],
-		fwhmx[16], fwhmy[16], roundness[16], rmse[16];
+		fwhmx[16], fwhmy[16], mag[16], roundness[16], rmse[16];
 
 	get_stars_list_store();
 	if (!selection)
@@ -75,6 +76,7 @@ void add_star_to_list(fitted_PSF *star) {
 	g_snprintf(ypos, sizeof(ypos), "%.2lf", star->ypos);
 	g_snprintf(fwhmx, sizeof(fwhmx), "%.2lf%s", star->fwhmx, star->units);
 	g_snprintf(fwhmy, sizeof(fwhmy), "%.2lf%s", star->fwhmy, star->units);
+	g_snprintf(mag, sizeof(mag), "%.2lf", star->mag);
 	g_snprintf(roundness, sizeof(roundness), "%8.3lf", star->fwhmy/star->fwhmx);		//ALWAYS FWHMX > FWHMY
 	g_snprintf(angle, sizeof(angle), "%.2lf", star->angle);
 	g_snprintf(rmse, sizeof(rmse), "%.3e", star->rmse);
@@ -87,6 +89,7 @@ void add_star_to_list(fitted_PSF *star) {
 			COLUMN_Y0, ypos,
 			COLUMN_FWHMX, fwhmx,
 			COLUMN_FWHMY, fwhmy,
+			COLUMN_MAG, mag,
 			COLUMN_ROUNDNESS, roundness,
 			COLUMN_ANGLE, angle,
 			COLUMN_RMSE, rmse,

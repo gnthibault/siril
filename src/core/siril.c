@@ -1337,7 +1337,7 @@ gpointer median_filter(gpointer p) {
 					break;
 				total = ny * args->iterations;
 				cur = (double) y + (ny * iter);
-				if (y & 4)	// every 16 iterations
+				if (y & 15)	// every 16 iterations
 					set_progress_bar_data(NULL, cur / total);
 				for (x = 0; x < nx; x++) {
 					WORD *data = calloc(args->ksize * args->ksize,

@@ -752,7 +752,7 @@ static gpointer match_catalog(gpointer p) {
 	int nobj = AT_MATCH_CATALOG_NBRIGHT;
 	int attempt = 1;
 
-	com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, TRUE); // TODO: use good layer
+	com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, FALSE); // TODO: use good layer
 	if (n_fit < AT_MATCH_MINPAIRS) {
 		siril_log_message(_("Not enough stars.\n"));
 		args->ret = 1;

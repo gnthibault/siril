@@ -1267,6 +1267,8 @@ enter a visible wavelength in nm</property>
       <column type="gchararray"/>
       <!-- column-name FWHMy -->
       <column type="gchararray"/>
+      <!-- column-name mag -->
+      <column type="gchararray"/>
       <!-- column-name r -->
       <column type="gchararray"/>
       <!-- column-name angle -->
@@ -9709,6 +9711,21 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                   </object>
                 </child>
                 <child>
+                  <object class="GtkTreeViewColumn" id="treeviewcolumn_mag">
+                    <property name="sizing">autosize</property>
+                    <property name="title" translatable="yes">Mag</property>
+                    <property name="alignment">0.5</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="cell_mag">
+                        <property name="alignment">right</property>
+                      </object>
+                      <attributes>
+                        <attribute name="text">7</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn14">
                     <property name="title" translatable="yes">r</property>
                     <property name="expand">True</property>
@@ -9718,7 +9735,7 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                         <property name="alignment">right</property>
                       </object>
                       <attributes>
-                        <attribute name="text">7</attribute>
+                        <attribute name="text">8</attribute>
                       </attributes>
                     </child>
                   </object>
@@ -9733,7 +9750,7 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                         <property name="alignment">right</property>
                       </object>
                       <attributes>
-                        <attribute name="text">8</attribute>
+                        <attribute name="text">9</attribute>
                       </attributes>
                     </child>
                   </object>
@@ -9748,7 +9765,7 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                         <property name="alignment">right</property>
                       </object>
                       <attributes>
-                        <attribute name="text">9</attribute>
+                        <attribute name="text">10</attribute>
                       </attributes>
                     </child>
                   </object>
@@ -11868,6 +11885,7 @@ SER files are directly handled as a sequence, and are not yet available for conv
                     </child>
                     <child>
                       <object class="GtkComboBoxText" id="sequence_list_combobox">
+                        <property name="width_request">500</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <signal name="changed" handler="on_seqproc_entry_changed" swapped="no"/>
@@ -11972,6 +11990,7 @@ WARNING: it will erase all registration and statistics data.</property>
                     <property name="halign">start</property>
                     <property name="label" translatable="yes">No sequence selected</property>
                     <property name="justify">right</property>
+                    <property name="ellipsize">middle</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -14631,6 +14650,7 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
             <property name="pulse_step">0.050000000000000003</property>
             <property name="text" translatable="yes">Ready.</property>
             <property name="show_text">True</property>
+            <property name="ellipsize">middle</property>
           </object>
           <packing>
             <property name="expand">False</property>

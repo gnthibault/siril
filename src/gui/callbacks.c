@@ -1496,10 +1496,14 @@ void adjust_exclude(int n, gboolean changed) {
 int adjust_sellabel() {
 	static GtkLabel *local_label = NULL, *global_label = NULL;
 	char bufferlocal[256], bufferglobal[256];
+	gchar *seq_basename;
+
 	if (local_label == NULL) {
 		local_label = GTK_LABEL(lookup_widget("imagesel_label"));
 		global_label = GTK_LABEL(lookup_widget("labelseq"));
 	}
+	seq_basename = g_path_get_basename(com.seq.seqname);
+
 	if (sequence_is_loaded()) {
 		if (com.seq.reference_image != -1) {
 			char format[150];
@@ -1512,16 +1516,16 @@ int adjust_sellabel() {
 						com.seq.fixed);
 			}
 			g_snprintf(bufferlocal, sizeof(bufferlocal), format,
-					com.seq.seqname, com.seq.selnum, com.seq.number,
+					seq_basename, com.seq.selnum, com.seq.number,
 					com.seq.imgparam[com.seq.reference_image].filenum);
 
 		} else {
 			g_snprintf(bufferlocal, sizeof(bufferlocal),
 					_("<%s.seq>: %d images selected out of %d, no reference image set"),
-					com.seq.seqname, com.seq.selnum, com.seq.number);
+					seq_basename, com.seq.selnum, com.seq.number);
 		}
 		g_snprintf(bufferglobal, sizeof(bufferglobal), _("%s, %d images selected"),
-				com.seq.seqname, com.seq.selnum);
+				seq_basename, com.seq.selnum);
 		//gtk_widget_set_sensitive(lookup_widget("goregister_button"), com.seq.selnum>0?TRUE:FALSE);
 	} else {
 		g_snprintf(bufferlocal, sizeof(bufferlocal), _("No sequence"));
@@ -1531,6 +1535,7 @@ int adjust_sellabel() {
 
 	gtk_label_set_text(local_label, bufferlocal);
 	gtk_label_set_text(global_label, bufferglobal);
+	g_free(seq_basename);
 	return 0;
 }
 
@@ -4981,10 +4986,10 @@ void on_export_button_clicked(GtkButton *button, gpointer user_data) {
 		return;
 	while (com.stars[i]) {
 		fprintf(f,
-				"%d\t%d\t%10.6f %10.6f %10.2f %10.2f %10.2f %10.2f %3.2f %10.3e\n",
+				"%d\t%d\t%10.6f %10.6f %10.2f %10.2f %10.2f %10.2f %3.2f %10.3e %10.2f \n",
 				i + 1, com.stars[i]->layer, com.stars[i]->B, com.stars[i]->A,
 				com.stars[i]->xpos, com.stars[i]->ypos, com.stars[i]->fwhmx,
-				com.stars[i]->fwhmy, com.stars[i]->angle, com.stars[i]->rmse);
+				com.stars[i]->fwhmy, com.stars[i]->angle, com.stars[i]->rmse, com.stars[i]->mag);
 		i++;
 	}
 	fclose(f);
