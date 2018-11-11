@@ -18,11 +18,18 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
+#ifdef HAVE_LIBCURL
+#include <curl/curl.h>
+#endif
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/message_dialog.h"
@@ -31,8 +38,6 @@
 #include "gui/progress_and_log.h"
 
 #ifdef HAVE_LIBCURL
-
-#include <curl/curl.h>
 
 #include "gui/PSF_list.h"
 #include "algos/PSF.h"
