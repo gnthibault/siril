@@ -546,13 +546,13 @@ static void initialize_convert() {
 		valid = gtk_tree_model_iter_next (model, &iter);
 		count ++;
 	}
-	
-	if ((convflags & CONVDEBAYER) && (imagetype = TYPESER) && (several_type_of_files == FALSE)) {
+
+	if ((convflags & CONVDEBAYER) && (imagetype == TYPESER) && (several_type_of_files == FALSE)) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
 				_("The Debayer option is not allowed in SER conversion, please uncheck the option."));
 		set_cursor_waiting(FALSE);
 		return;
-	} else if ((convflags & CONVMULTIPLE) && (imagetype = TYPESER) && (several_type_of_files == FALSE)) {
+	} else if ((convflags & CONVMULTIPLE) && (imagetype == TYPESER) && (several_type_of_files == FALSE)) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
 				_("The Multiple SER option is not allowed in SER conversion, please uncheck the option."));
 		set_cursor_waiting(FALSE);
