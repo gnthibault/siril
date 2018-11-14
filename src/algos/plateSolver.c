@@ -73,12 +73,24 @@ static RA convert_ra(double var) {
 	return ra;
 }
 
+static double ra_to_x(RA ra) {
+	return ra.hour * 15.0 + ra.min * 15.0 / 60.0 + ra.sec * 15.0 / 3600.0;
+}
+
 static DEC convert_dec(double var) {
 	DEC dec;
 	dec.degree = (int) var;
-	dec.min = abs((int) ((var - dec.degree) * 60));
-	dec.sec = (fabs((var - dec.degree) * 60) - dec.min) * 60;
+	dec.min = abs((int) ((var - dec.degree) * 60.0));
+	dec.sec = (fabs((var - dec.degree) * 60.0) - dec.min) * 60.0;
 	return dec;
+}
+
+static double dec_to_y(DEC dec) {
+	if (dec.degree > 0) {
+		return ((dec.sec / 3600.0) + (dec.min / 60.0) + dec.degree);
+	} else {
+		return (-(dec.sec / 3600.0) - (dec.min / 60.0) + dec.degree);
+	}
 }
 
 static void deg_to_HMS(double var, gchar *type, gchar *HMS) {
@@ -236,6 +248,50 @@ static double get_mag_limit(double fov) {
 	}
 }
 
+static point get_center_of_catalog() {
+	GtkSpinButton *GtkSpinIPS_RA_h, *GtkSpinIPS_RA_m;
+	GtkSpinButton *GtkSpinIPS_Dec_deg, *GtkSpinIPS_Dec_m;
+	GtkEntry *GtkEntryIPS_RA_s, *GtkEntryIPS_Dec_s;
+	GtkToggleButton *GtkCheckButtonIPS_S;
+	RA ra;
+	DEC dec;
+	point result;
+
+	/* get RA center */
+	GtkSpinIPS_RA_h = GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_RA_h"));
+	GtkSpinIPS_RA_m = GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_RA_m"));
+	GtkEntryIPS_RA_s = GTK_ENTRY(lookup_widget("GtkEntryIPS_RA_s"));
+
+	ra.hour = gtk_spin_button_get_value_as_int(GtkSpinIPS_RA_h);
+	ra.min = gtk_spin_button_get_value_as_int(GtkSpinIPS_RA_m);
+	ra.sec = atof(gtk_entry_get_text(GtkEntryIPS_RA_s));
+
+	/* get Dec center */
+	GtkSpinIPS_Dec_deg = GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_deg"));
+	GtkSpinIPS_Dec_m = GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_m"));
+	GtkEntryIPS_Dec_s = GTK_ENTRY(lookup_widget("GtkEntryIPS_Dec_s"));
+	GtkCheckButtonIPS_S = GTK_TOGGLE_BUTTON(lookup_widget("GtkCheckButtonIPS_S"));
+
+	dec.degree = gtk_spin_button_get_value_as_int(GtkSpinIPS_Dec_deg);
+	dec.min = gtk_spin_button_get_value_as_int(GtkSpinIPS_Dec_m);
+	dec.sec = atof(gtk_entry_get_text(GtkEntryIPS_Dec_s));
+	if (gtk_toggle_button_get_active(GtkCheckButtonIPS_S)) {
+		dec.degree = -dec.degree;
+	}
+
+	/* convert */
+	result.x = ra_to_x(ra);
+	result.y = dec_to_y(dec);
+
+	return result;
+}
+
+static gboolean is_detection_manual() {
+	GtkToggleButton *button;
+
+	button = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_IPS_manual"));
+	return gtk_toggle_button_get_active(button);
+}
 
 static gchar *get_catalog_url(point center, double mag_limit, double dfov, int type) {
 	GString *url;
@@ -380,6 +436,7 @@ static gchar *download_catalog() {
 	FILE *fproj = NULL;
 	gchar *filename, *foutput;
 	int index = selectedItem;
+	point catalog_center;
 
 	if (index < 0)
 		return NULL;
@@ -387,9 +444,11 @@ static gchar *download_catalog() {
 	double fov = get_fov(get_resolution(get_focal(), get_pixel()),
 			gfit.ry > gfit.rx ? gfit.ry : gfit.rx);
 
+	catalog_center = get_center_of_catalog();
+
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
 
-	url = get_catalog_url(platedObject[index].imageCenter, get_mag_limit(fov), fov,
+	url = get_catalog_url(catalog_center, get_mag_limit(fov), fov,
 			NOMAD);
 
 	filename = g_build_filename(g_get_tmp_dir(), "catalog.dat", NULL);
@@ -559,13 +618,13 @@ static void update_IPS_GUI() {
 static void update_gfit(image_solved image) {
 	gfit.focal_length = image.focal;
 	gfit.pixel_size_x = gfit.pixel_size_y = image.pixel_size;
-	gfit.wcs.crpix1 = image.px_center.x;
-	gfit.wcs.crpix2 = image.px_center.y;
-	gfit.wcs.crval1 = image.ra_center;
-	gfit.wcs.crval2 = image.dec_center;
+	gfit.wcs.crpix1 = image.x;
+	gfit.wcs.crpix2 = image.y;
+	gfit.wcs.crval1 = image.ra;
+	gfit.wcs.crval2 = image.dec;
 	gfit.wcs.equinox = 2000;
-	deg_to_HMS(image.ra_center, "ra", gfit.wcs.objctra);
-	deg_to_HMS(image.dec_center, "dec", gfit.wcs.objctdec);
+	deg_to_HMS(image.ra, "ra", gfit.wcs.objctra);
+	deg_to_HMS(image.dec, "dec", gfit.wcs.objctdec);
 }
 
 static void print_platesolving_results(Homography H, image_solved image) {
@@ -610,8 +669,8 @@ static void print_platesolving_results(Homography H, image_solved image) {
 	fov_in_DHMS(image.fov.x / 60.0, field_x);
 	fov_in_DHMS(image.fov.y / 60.0, field_y);
 	siril_log_message(_("Field of view:    %s x %s\n"), field_x, field_y);
-	deg_to_HMS(image.ra_center, "ra", RA);
-	deg_to_HMS(image.dec_center, "dec", DEC);
+	deg_to_HMS(image.ra, "ra", RA);
+	deg_to_HMS(image.dec, "dec", DEC);
 	siril_log_message(_("Image center: RA: %s, DEC: %s\n"), RA, DEC);
 
    	update_gfit(image);
@@ -671,7 +730,8 @@ static int read_APPAS_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		if (g_str_has_prefix(line, "TYC")) {
 			continue;
 		}
-		int n = sscanf(line, "%d %d %d %lf %lf %lf %lf %lf %lf %d", &tmp, &tmp, &tmp, &x, &y, &pmRA, &pmDec, &magA, &magB, &tmp);
+		int n = sscanf(line, "%d %d %d %lf %lf %lf %lf %lf %lf %d", &tmp, &tmp,
+				&tmp, &x, &y, &pmRA, &pmDec, &magA, &magB, &tmp);
 		if (n < 10)
 			continue;
 		star = malloc(sizeof(fitted_PSF));
@@ -729,19 +789,24 @@ static gboolean check_affine_TRANS_sanity(TRANS trans) {
 static gboolean end_plate_solver(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	stop_processing_thread();
-	clear_stars_list();
+	if (!args->manual)
+		clear_stars_list();
 	set_cursor_waiting(FALSE);
 
 	if (args->ret) {
 		char *title = siril_log_color_message(_("Plate Solving failed. "
-				"The image could not be aligned with the reference stars after %d attempts.\n"), "red", args->attempt);
-		siril_message_dialog(GTK_MESSAGE_ERROR, title, _("This is usually because the initial parameters (pixel size, focal length, initial coordinates) "
-				"are too far from the real metadata of the image."));
+				"The image could not be aligned with the reference stars.\n"), "red");
+		if (!args->message) {
+			args->message = g_strdup(_("This is usually because the initial parameters (pixel size, focal length, initial coordinates) "
+					"are too far from the real metadata of the image."));
+		}
+		siril_message_dialog(GTK_MESSAGE_ERROR, title, args->message);
 	} else {
 		update_IPS_GUI();
 		control_window_switch_to_tab(OUTPUT_LOGS);
 	}
 	g_free(args->catalogStars);
+	g_free(args->message);
 	free(args);
 	update_used_memory();
 	return FALSE;
@@ -751,15 +816,28 @@ static gpointer match_catalog(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	FILE *catalog;
 	fitted_PSF **cstars;
-	int n_fit, n_cat, n;
+	int n_fit, n_cat, n, i = 0;
+	int attempt = 1;
 	point image_size = {args->fit->rx, args->fit->ry};
 	Homography H = { 0 };
 	int nobj = AT_MATCH_CATALOG_NBRIGHT;
-	int attempt = 1;
+	gchar msg[512];
 
-	com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, FALSE); // TODO: use good layer
+	args->message = NULL;
+
+	if (!args->manual) {
+		com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, FALSE); // TODO: use good layer
+	} else {
+		while (com.stars && com.stars[i]) {
+			i++;
+		}
+		n_fit = i;
+	}
 	if (n_fit < AT_MATCH_MINPAIRS) {
-		siril_log_message(_("Not enough stars.\n"));
+		g_snprintf(msg, sizeof(msg), _("There are not enough stars picked in the image. "
+				"At least %d stars are needed."), AT_MATCH_MINPAIRS);
+		args->message = g_strdup(msg);
+		siril_log_message("%s\n", args->message);
 		args->ret = 1;
 		siril_add_idle(end_plate_solver, args);
 		return GINT_TO_POINTER(1);
@@ -792,12 +870,11 @@ static gpointer match_catalog(gpointer p) {
 
 	args->ret = 1;
 	while (args->ret && attempt < NB_OF_MATCHING_TRY){
-		args->ret = new_star_match(com.stars, cstars, n, nobj, args->s - 0.2, args->s + 0.2, &H,
-				image_size);
+		args->ret = new_star_match(com.stars, cstars, n, nobj,
+				args->scale - 0.2, args->scale + 0.2, &H, image_size);
 		nobj += 50;
 		attempt++;
 	}
-	args->attempt = attempt;
 	if (!args->ret) {
 
 		/* we only want to compare with linear function
@@ -807,11 +884,11 @@ static gpointer match_catalog(gpointer p) {
 		if (check_affine_TRANS_sanity(trans)) {
 
 			is_result.px_size = image_size;
-			is_result.px_center.x = image_size.x / 2.0;
-			is_result.px_center.y = image_size.y / 2.0;
+			is_result.x = image_size.x / 2.0;
+			is_result.y = image_size.y / 2.0;
 			is_result.pixel_size = args->pixel_size;
 
-			apply_match(trans, &is_result);
+			apply_match(&is_result, trans);
 
 			print_platesolving_results(H, is_result);
 		} else {
@@ -894,7 +971,8 @@ static void start_image_plate_solve() {
 
 	args->catalogStars = download_catalog();
 	args->pixel_size = get_pixel();
-	args->s = get_resolution(get_focal(), get_pixel());
+	args->scale = get_resolution(get_focal(), get_pixel());
+	args->manual = is_detection_manual();
 	args->fit = &gfit;
 
 	start_in_new_thread(match_catalog, args);

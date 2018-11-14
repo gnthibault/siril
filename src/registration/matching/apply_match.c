@@ -116,7 +116,7 @@
 static int
 proc_star_file(fitted_PSF **s, image_solved *solved, TRANS *trans);
 
-int apply_match(TRANS trans, image_solved *solved) {
+int apply_match(image_solved *solved, TRANS trans) {
 
 	/* now walk through the file and do the dirty work */
 	if (proc_star_file(com.stars, solved, &trans) != SH_SUCCESS) {
@@ -153,7 +153,7 @@ static int proc_star_file(fitted_PSF **s, /* I: name of input data with star lis
 image_solved *solved, TRANS *trans /* I: TRANS taking (x,y) -> (ra, dec) */
 ) {
 	char line[LINELEN];
-	int i = 0;
+//	int i = 0;
 	double xval, yval;
 	double r_ra, r_dec;
 	double z, alpha, delta;
@@ -166,8 +166,8 @@ image_solved *solved, TRANS *trans /* I: TRANS taking (x,y) -> (ra, dec) */
 	r_dec = dec * DEGTORAD;
 
 //	while (s && s[i]) {
-	xval = solved->px_center.x; //s[i]->xpos;
-	yval = solved->px_center.y; //s[i]->ypos;
+	xval = solved->x; //s[i]->xpos;
+	yval = solved->y; //s[i]->ypos;
 	/*
 	 * let's transform from (x,y) to (delta_ra, delta_dec),
 	 * using either a linear, quadratic, or cubic transformation
@@ -249,10 +249,10 @@ image_solved *solved, TRANS *trans /* I: TRANS taking (x,y) -> (ra, dec) */
 #ifdef DEBUG
 	fprintf(stdout, "new RA = %10.5f, new dec = %10.5f\n", alpha, delta);
 #endif
-	solved->ra_center = alpha;
-	solved->dec_center = delta;
+	solved->ra = alpha;
+	solved->dec = delta;
 
-	i++;
+//	i++;
 //	}
 
 	return (SH_SUCCESS);

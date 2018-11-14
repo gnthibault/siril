@@ -583,23 +583,30 @@ static void save_wcs_keywords(fits *fit) {
 	if (fit->wcs.equinox > 0) {
 		fits_update_key(fit->fptr, TUINT, "EQUINOX", &(fit->wcs.equinox),
 						"Equatorial equinox", &status);
+		status=0;
+		fits_update_key(fit->fptr, TSTRING, "CTYPE1", "RA---TA",
+				"the coordinate type for the first axis", &status);
+		status=0;
+		fits_update_key(fit->fptr, TSTRING, "CTYPE2", "DEC--TA",
+				"the coordinate type for the second axis", &status);
+		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->wcs.crpix1),
-				"Axis1 reference pixel", &status);
+				"axis1 reference pixel", &status);
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CRPIX2", &(fit->wcs.crpix2),
-				"Axis2 reference pixel", &status);
+				"axis2 reference pixel", &status);
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcs.crval1),
-				"Axis1 reference value", &status);
+				"axis1 reference value", &status);
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcs.crval2),
-				"Axis2 reference value", &status);
+				"axis2 reference value", &status);
 		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcs.objctra),
-				"Image center R.A. (hms)", &status);
+				"image center R.A. (hms)", &status);
 		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcs.objctdec),
-				"Image center declination (dms)", &status);
+				"image center declination (dms)", &status);
 	}
 }
 

@@ -26,7 +26,7 @@
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 
-static gboolean show_modal_dialog_idle(gpointer p) {
+static gboolean show_modal_dialog(gpointer p) {
 	struct siril_dialog_data *args = (struct siril_dialog_data *) p;
 	GtkTextIter itBeg, itEnd;
 	GtkWidget *dialog;
@@ -73,9 +73,17 @@ static gboolean show_modal_dialog_idle(gpointer p) {
 	return FALSE;
 }
 
-static void strip_last_ret_char(gchar *str) {
-	if (str[strlen(str) - 1] == '\n')
-		str[strlen(str) - 1] = '\0';
+static gchar *strip_last_ret_char(gchar *str) {
+	char *pch;
+	int len;
+
+	pch = strrchr(str, '\0');
+	len = pch - str;
+
+	if (str[len - 1] == '\n') {
+		str[len - 1] = '\0';
+	}
+	return str;
 }
 
 /******* Public functions *****************/
@@ -99,7 +107,7 @@ void siril_message_dialog(GtkMessageType type, char *title, char *text) {
 	args->secondary_text = text;
 	args->data = NULL;
 	args->type = type;
-	gdk_threads_add_idle(show_modal_dialog_idle, args);
+	show_modal_dialog(args);
 }
 
 void siril_data_dialog(GtkMessageType type, char *title, char *text, gchar *data) {
@@ -121,7 +129,7 @@ void siril_data_dialog(GtkMessageType type, char *title, char *text, gchar *data
 	args->secondary_text = text;
 	args->data = data;
 	args->type = type;
-	gdk_threads_add_idle(show_modal_dialog_idle, args);
+	show_modal_dialog(args);
 }
 
 gboolean siril_confirm_dialog(gchar *title, gchar *msg, gboolean show_checkbutton) {

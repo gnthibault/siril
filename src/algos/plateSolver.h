@@ -20,11 +20,12 @@
 /* median filter data from GUI */
 struct plate_solver_data {
 	gchar *catalogStars;
-	double s; // scale (resolution)
+	double scale; // scale (resolution)
 	fits *fit;
+	gchar *message; // error message
 	int ret; // return value
-	int attempt; // number of try
 	double pixel_size; // pixel size in µm
+	gboolean manual; // Manual platesolving
 };
 
 enum resolver {
@@ -60,10 +61,10 @@ struct object {
 
 struct image_solved_struct {
 	point px_size;
-	point px_center;
 	point px_cat_center;
 	point fov;
-	double ra_center, dec_center;
+	double x, y;
+	double ra, dec;
 	double resolution, pixel_size, focal;
 };
 typedef struct image_solved_struct image_solved;

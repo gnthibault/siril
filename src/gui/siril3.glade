@@ -3774,6 +3774,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                                 <property name="tooltip_text" translatable="yes">Initial equatorial coordinates. Input value must be inside the image.</property>
                                 <property name="halign">start</property>
                                 <property name="width_chars">7</property>
+                                <property name="max_width_chars">6</property>
                                 <property name="text">0.0000</property>
                                 <property name="input_purpose">number</property>
                               </object>
@@ -4112,6 +4113,45 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFrame" id="Frame_IPS_star_detection">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">none</property>
+                <child>
+                  <object class="GtkAlignment">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="left_padding">12</property>
+                    <child>
+                      <object class="GtkCheckButton" id="checkButton_IPS_manual">
+                        <property name="label" translatable="yes">Manual detection</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="tooltip_text" translatable="yes">Check this option if you want to pick each stars manually. It could be useful in some case where Siril can't find enough stars. Please, try to choose the brightest stars in the image.</property>
+                        <property name="halign">start</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child type="label">
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Star detection&lt;/b&gt;</property>
+                    <property name="use_markup">True</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
