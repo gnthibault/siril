@@ -833,9 +833,9 @@ static gpointer match_catalog(gpointer p) {
 		}
 		n_fit = i;
 	}
-	if (n_fit < AT_MATCH_MINPAIRS) {
+	if (n_fit < AT_MATCH_STARTN_LINEAR) {
 		g_snprintf(msg, sizeof(msg), _("There are not enough stars picked in the image. "
-				"At least %d stars are needed."), AT_MATCH_MINPAIRS);
+				"At least %d stars are needed."), AT_MATCH_STARTN_LINEAR);
 		args->message = g_strdup(msg);
 		siril_log_message("%s\n", args->message);
 		args->ret = 1;
