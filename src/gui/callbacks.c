@@ -5581,6 +5581,7 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 	if (gtk_toggle_button_get_active(seq) && sequence_is_loaded()) {
 		if (args->seqEntry && args->seqEntry[0] == '\0')
 			args->seqEntry = "cc_";
+		args->seq = &com.seq;
 		apply_cosmetic_to_sequence(args);
 	} else {
 		undo_save_state("Processing: Cosmetic Correction");
