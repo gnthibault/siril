@@ -3698,44 +3698,6 @@ gboolean on_main_window_key_press_event(GtkWidget *widget, GdkEventKey *event,
 	return FALSE;
 }
 
-static const gchar* copyright = N_("Copyright © 2004-2011 François Meyer\n"
-		"Copyright © 2012-2018 team free-astro");
-
-static gchar **authors = (gchar *[] ) { "Vincent Hourdin <vh@free-astro.vinvin.tf>",
-				"Cyril Richard <cyril@free-astro.org>", "François Meyer", NULL };
-
-static gchar **documenters = (gchar *[] ) { "Laurent Rogé <siril.doc@orange.fr>", NULL };
-
-static gchar **artists = (gchar *[] ) { "Coralie Monnier",
-				"Cyril Richard <cyril@free-astro.org>", NULL };
-
-// translator names
-static gchar *translator = N_("Cyril Richard <cyril@free-astro.org>\n"
-		"Vincent Hourdin <vh@free-astro.vinvin.tf>");
-
-void on_about_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	GdkPixbuf *icon;
-	GtkWindow *parent;
-
-	parent = GTK_WINDOW(lookup_widget("control_window"));
-	icon = gtk_image_get_pixbuf(GTK_IMAGE(lookup_widget("pixmap1")));
-	gtk_show_about_dialog(parent,
-			"program-name", PACKAGE,
-			"title", _("About siril"),
-			"logo", icon,
-			"version", VERSION,
-			"copyright", _(copyright),
-			"authors", authors,
-			"documenters", documenters,
-			"artists", artists,
-			"comments", _("Astronomical image (pre-)processing program"),
-			"translator-credits", _(translator),
-			"website", "https://free-astro.org/index.php/Siril",
-			"website-label", _("Visit the Siril website"),
-			"license-type", GTK_LICENSE_GPL_3_0,
-			NULL);
-}
-
 void on_excludebutton_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	if (!sequence_is_loaded() || com.seq.current < 0) {
 		return;

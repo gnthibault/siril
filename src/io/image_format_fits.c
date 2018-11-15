@@ -583,10 +583,10 @@ static void save_wcs_keywords(fits *fit) {
 	if (fit->wcs.equinox > 0) {
 		fits_update_key(fit->fptr, TUINT, "EQUINOX", &(fit->wcs.equinox),
 						"Equatorial equinox", &status);
-		status=0;
+		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "CTYPE1", "RA---TA",
 				"the coordinate type for the first axis", &status);
-		status=0;
+		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "CTYPE2", "DEC--TA",
 				"the coordinate type for the second axis", &status);
 		status = 0;

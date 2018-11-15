@@ -821,7 +821,6 @@ static gpointer match_catalog(gpointer p) {
 	point image_size = {args->fit->rx, args->fit->ry};
 	Homography H = { 0 };
 	int nobj = AT_MATCH_CATALOG_NBRIGHT;
-	gchar msg[512];
 
 	args->message = NULL;
 
@@ -834,9 +833,8 @@ static gpointer match_catalog(gpointer p) {
 		n_fit = i;
 	}
 	if (n_fit < AT_MATCH_STARTN_LINEAR) {
-		g_snprintf(msg, sizeof(msg), _("There are not enough stars picked in the image. "
+		args->message = g_strdup_printf(_("There are not enough stars picked in the image. "
 				"At least %d stars are needed."), AT_MATCH_STARTN_LINEAR);
-		args->message = g_strdup(msg);
 		siril_log_message("%s\n", args->message);
 		args->ret = 1;
 		siril_add_idle(end_plate_solver, args);

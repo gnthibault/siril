@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-14 16:06+0100\n"
-"PO-Revision-Date: 2018-11-14 16:10+0100\n"
+"POT-Creation-Date: 2018-11-15 21:28+0100\n"
+"PO-Revision-Date: 2018-11-15 21:28+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -754,7 +754,7 @@ msgstr "Détection manuelle"
 #: ../src/gui/siril3.glade.h:160
 msgid ""
 "Check this option if you want to pick each stars manually. It could be "
-"useful in some case where Siril can't find enough stars. Please, try to "
+"useful in some cases where Siril can't find enough stars. Please, try to "
 "choose the brightest stars in the image."
 msgstr ""
 "Cocher cette option si vous désirez sélectionner chaque étoile manuellement. "
@@ -4013,7 +4013,7 @@ msgstr ""
 "pixels, longueur focale, coordonnées initiales) sont trop éloignés des "
 "métadonnées réelles de l'image."
 
-#: ../src/algos/plateSolver.c:837
+#: ../src/algos/plateSolver.c:836
 #, c-format
 msgid ""
 "There are not enough stars picked in the image. At least %d stars are needed."
@@ -4021,19 +4021,19 @@ msgstr ""
 "Il n'y a pas assez d'étoiles dans l'image de référence pour procéder à un "
 "alignement. Au moins %d étoiles sont nécessaires."
 
-#: ../src/algos/plateSolver.c:1029
+#: ../src/algos/plateSolver.c:1027
 msgid "There are no keywords storred in the FITS header.\n"
 msgstr "Il n'y a aucun mot clé stocké dans l'entête du fichier.\n"
 
-#: ../src/algos/plateSolver.c:1030
+#: ../src/algos/plateSolver.c:1028
 msgid "No metadata"
 msgstr "Aucune métadonnée"
 
-#: ../src/algos/plateSolver.c:1069
+#: ../src/algos/plateSolver.c:1067
 msgid "Astrometric solution detected"
 msgstr "Solution astrométrique detectée"
 
-#: ../src/algos/plateSolver.c:1069
+#: ../src/algos/plateSolver.c:1067
 msgid ""
 "The astrometric solution contained in the image will be erased by the "
 "geometric transformation and no undo will be possible."
@@ -4107,8 +4107,8 @@ msgstr "Résultat non enregistré"
 msgid "You must at least load two layers before!\n"
 msgstr "Vous devez au moins charger 2 canaux\n"
 
-#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:5372
-#: ../src/gui/callbacks.c:5381 ../src/gui/callbacks.c:5438
+#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:5334
+#: ../src/gui/callbacks.c:5343 ../src/gui/callbacks.c:5400
 #: ../src/io/conversion.c:576 ../src/registration/registration.c:848
 msgid "Warning"
 msgstr "Attention"
@@ -4146,11 +4146,11 @@ msgstr "Réajustement du canal %d (x%g)\n"
 #: ../src/core/command.c:1491 ../src/core/command.c:1513
 #: ../src/core/command.c:1541 ../src/core/command.c:1567
 #: ../src/core/command.c:1734 ../src/core/command.c:1802
-#: ../src/core/command.c:2530 ../src/gui/callbacks.c:4023
-#: ../src/gui/callbacks.c:4228 ../src/gui/callbacks.c:4391
-#: ../src/gui/callbacks.c:4475 ../src/gui/callbacks.c:4683
-#: ../src/gui/callbacks.c:5020 ../src/gui/callbacks.c:5173
-#: ../src/gui/callbacks.c:5472 ../src/gui/callbacks.c:5650
+#: ../src/core/command.c:2530 ../src/gui/callbacks.c:3985
+#: ../src/gui/callbacks.c:4190 ../src/gui/callbacks.c:4353
+#: ../src/gui/callbacks.c:4437 ../src/gui/callbacks.c:4645
+#: ../src/gui/callbacks.c:4982 ../src/gui/callbacks.c:5135
+#: ../src/gui/callbacks.c:5434 ../src/gui/callbacks.c:5613
 #: ../src/gui/script_menu.c:150 ../src/io/conversion.c:518
 #: ../src/registration/registration.c:830 ../src/stacking/stacking.c:1486
 #: ../src/stacking/stacking.c:1610
@@ -4200,12 +4200,12 @@ msgstr ""
 "hauteur\n"
 
 #: ../src/core/command.c:583 ../src/core/command.c:2379
-#: ../src/gui/callbacks.c:5370 ../src/gui/callbacks.c:5436
+#: ../src/gui/callbacks.c:5332 ../src/gui/callbacks.c:5398
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr "Ondelettes : le nombre maximum de plan pour cette image est %d\n"
 
-#: ../src/core/command.c:589 ../src/gui/callbacks.c:5379
+#: ../src/core/command.c:589 ../src/gui/callbacks.c:5341
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Ondelettes : le type doit être %d ou %d\n"
@@ -4350,7 +4350,7 @@ msgstr ""
 "Fill2 : sélectionner une zone ou entrer les valeurs de x, y, largeur et "
 "hauteur\n"
 
-#: ../src/core/command.c:1223 ../src/gui/callbacks.c:4975
+#: ../src/core/command.c:1223 ../src/gui/callbacks.c:4937
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "%d étoiles trouvées dans l'image, canal #%d\n"
@@ -4506,7 +4506,7 @@ msgstr "Le type de séquence proposée est inconnu (%s).\n"
 msgid "Stacked sequence successfully.\n"
 msgstr "Séquence empilée avec succès.\n"
 
-#: ../src/core/command.c:2282 ../src/gui/callbacks.c:4035
+#: ../src/core/command.c:2282 ../src/gui/callbacks.c:3997
 msgid "Preprocessing...\n"
 msgstr "Prétraitement...\n"
 
@@ -5375,9 +5375,9 @@ msgstr "Les images n'ont pas la même taille (l = %d|%d, h = %d|%d)\n"
 
 #: ../src/core/siril.c:213 ../src/gui/PSF_list.c:154
 #: ../src/gui/callbacks.c:1052 ../src/gui/callbacks.c:2112
-#: ../src/gui/callbacks.c:3040 ../src/gui/callbacks.c:4735
-#: ../src/gui/callbacks.c:4756 ../src/gui/callbacks.c:5189
-#: ../src/gui/callbacks.c:5195 ../src/gui/callbacks.c:5220
+#: ../src/gui/callbacks.c:3040 ../src/gui/callbacks.c:4697
+#: ../src/gui/callbacks.c:4718 ../src/gui/callbacks.c:5151
+#: ../src/gui/callbacks.c:5157 ../src/gui/callbacks.c:5182
 #: ../src/gui/plot.c:381 ../src/gui/plot.c:441 ../src/io/conversion.c:582
 #: ../src/io/single_image.c:129
 msgid "Error"
@@ -5901,143 +5901,116 @@ msgstr "Êtes vous sûr de vouloir quitter ?"
 msgid "new zoom value: %f\n"
 msgstr "nouvelle valeur du zoom : %f\n"
 
-#: ../src/gui/callbacks.c:3701
-msgid ""
-"Copyright © 2004-2011 François Meyer\n"
-"Copyright © 2012-2018 team free-astro"
-msgstr ""
-"Copyright © 2004-2011 François Meyer\n"
-"Copyright © 2012-2018 team free-astro"
-
-#. translator names
-#: ../src/gui/callbacks.c:3713
-msgid ""
-"Cyril Richard <cyril@free-astro.org>\n"
-"Vincent Hourdin <vh@free-astro.vinvin.tf>"
-msgstr "Cyril Richard <cyril@free-astro.org>"
-
-#: ../src/gui/callbacks.c:3724
-msgid "About siril"
-msgstr "À propos de siril"
-
 #: ../src/gui/callbacks.c:3731
-msgid "Astronomical image (pre-)processing program"
-msgstr "Programme de (pré-)traitement des images astronomiques"
-
-#: ../src/gui/callbacks.c:3734
-msgid "Visit the Siril website"
-msgstr "Visiter le site de Siril"
-
-#: ../src/gui/callbacks.c:3769
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3771
+#: ../src/gui/callbacks.c:3733
 #, c-format
 msgid "undefined"
 msgstr "non défini"
 
-#: ../src/gui/callbacks.c:3867
+#: ../src/gui/callbacks.c:3829
 msgid "Exclude all images ?"
 msgstr "Exclure toutes les images ?"
 
-#: ../src/gui/callbacks.c:3868 ../src/gui/callbacks.c:3878
+#: ../src/gui/callbacks.c:3830 ../src/gui/callbacks.c:3840
 msgid "This erases previous image selection and there's no possible undo."
 msgstr ""
 "Cela supprime la sélection précédente et il n'y a pas de retour possible."
 
-#: ../src/gui/callbacks.c:3877
+#: ../src/gui/callbacks.c:3839
 msgid "Include all images ?"
 msgstr "Inclure toutes les images ?"
 
-#: ../src/gui/callbacks.c:3899
+#: ../src/gui/callbacks.c:3861
 msgid "Opening dark image..."
 msgstr "Ouverture de l'image dark..."
 
-#: ../src/gui/callbacks.c:3902
+#: ../src/gui/callbacks.c:3864
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "DARK NON UTILISÉ : impossible d'ouvrir le fichier\n"
 
-#: ../src/gui/callbacks.c:3909
+#: ../src/gui/callbacks.c:3871
 msgid "NOT USING DARK: number of channels is different"
 msgstr "DARK NON UTILISÉ : nombre de canal différent"
 
-#: ../src/gui/callbacks.c:3947
+#: ../src/gui/callbacks.c:3909
 msgid "Opening flat image..."
 msgstr "Ouverture de l'image falt..."
 
-#: ../src/gui/callbacks.c:3950
+#: ../src/gui/callbacks.c:3912
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "FLAT NON UTILISÉ : impossible d'ouvrir le fichier\n"
 
-#: ../src/gui/callbacks.c:3957
+#: ../src/gui/callbacks.c:3919
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "FLAT NON UTILISÉ : nombre de canal différent"
 
-#: ../src/gui/callbacks.c:3984
+#: ../src/gui/callbacks.c:3946
 msgid "Opening offset image..."
 msgstr "Ouverture de l'image d'offset..."
 
-#: ../src/gui/callbacks.c:3987
+#: ../src/gui/callbacks.c:3949
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "OFFSET NON UTILISÉ : impossible d'ouvrir le fichier\n"
 
-#: ../src/gui/callbacks.c:3994
+#: ../src/gui/callbacks.c:3956
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "OFFSET NON UTILISÉ : nombre de canal différent"
 
-#: ../src/gui/callbacks.c:4088
+#: ../src/gui/callbacks.c:4050
 msgid "Error in preprocessing."
 msgstr "Erreur dans le pré-traitement."
 
-#: ../src/gui/callbacks.c:4165
+#: ../src/gui/callbacks.c:4127
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Séquence %s sélectionnée %s..."
 
-#: ../src/gui/callbacks.c:4234
+#: ../src/gui/callbacks.c:4196
 msgid "Searching for sequences in the current working directory..."
 msgstr "Cherche des séquences dans le répertoire de travail..."
 
-#: ../src/gui/callbacks.c:4733
+#: ../src/gui/callbacks.c:4695
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr ""
 "Le gradient ne peut pas être extrait de lui même. Veuillez cliquer sur "
 "\"Montrer Image\"\n"
 
-#: ../src/gui/callbacks.c:4755
+#: ../src/gui/callbacks.c:4717
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr ""
 "Appliquer la correction sur l'image en cliquant sur \"Montrer Image\"\n"
 
-#: ../src/gui/callbacks.c:4777
+#: ../src/gui/callbacks.c:4739
 msgid "Subtraction done ...\n"
 msgstr "Soustraction effectuée ...\n"
 
-#: ../src/gui/callbacks.c:4784
+#: ../src/gui/callbacks.c:4746
 msgid "Division done ...\n"
 msgstr "Division effectuée ...\n"
 
-#: ../src/gui/callbacks.c:4967
+#: ../src/gui/callbacks.c:4929
 msgid "Load an image first, aborted.\n"
 msgstr "Veuillez d'abord charger l'image.\n"
 
-#: ../src/gui/callbacks.c:4997
+#: ../src/gui/callbacks.c:4959
 msgid "The file stars.lst has been created.\n"
 msgstr "Le fichier stars.lst a été créé.\n"
 
-#: ../src/gui/callbacks.c:5074 ../src/gui/callbacks.c:5122
+#: ../src/gui/callbacks.c:5036 ../src/gui/callbacks.c:5084
 msgid "Current selection is too large"
 msgstr "La sélection courante est trop grande"
 
-#: ../src/gui/callbacks.c:5075 ../src/gui/callbacks.c:5123
+#: ../src/gui/callbacks.c:5037 ../src/gui/callbacks.c:5085
 msgid "To determine the PSF, please make a selection around a star."
 msgstr ""
 "Afin de déterminer la PSF, veuillez faire une sélection autour d'une étoile."
 
-#: ../src/gui/callbacks.c:5088
+#: ../src/gui/callbacks.c:5050
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -6086,36 +6059,36 @@ msgstr ""
 "RMSE :\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:5104
+#: ../src/gui/callbacks.c:5066
 msgid "PSF for the sequence only applies on sequences"
 msgstr "La PSF de la séquence ne s'applique que sur des séquences"
 
-#: ../src/gui/callbacks.c:5105
+#: ../src/gui/callbacks.c:5067
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr ""
 "Veuillez charger une séquence avant d'essayer d'appliquer une PSF de la "
 "séquence."
 
-#: ../src/gui/callbacks.c:5188
+#: ../src/gui/callbacks.c:5150
 msgid "FFT does not work with sequences !\n"
 msgstr "La FFT ne marche pas avec des séquences !\n"
 
-#: ../src/gui/callbacks.c:5194
+#: ../src/gui/callbacks.c:5156
 msgid "Open an image first !\n"
 msgstr "Veuillez d'abord ouvrir une image !\n"
 
-#: ../src/gui/callbacks.c:5219
+#: ../src/gui/callbacks.c:5181
 msgid "Select magnitude and phase before !\n"
 msgstr "Veuillez d'abord sélectionner des fichiers de module et de phase !\n"
 
-#: ../src/gui/callbacks.c:5748
+#: ../src/gui/callbacks.c:5711
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr ""
 "Le recadrage ne fonctionne pas avec un film de type avi. Veuillez s'il vous "
 "plaît convertir le film en SER.\n"
 
-#: ../src/gui/callbacks.c:5753
+#: ../src/gui/callbacks.c:5716
 msgid "Not a valid sequence for cropping.\n"
 msgstr "N'est pas une séquence valide pour le recadrage.\n"
 
@@ -7910,6 +7883,27 @@ msgstr "Basé sur la qualité"
 #: ../src/stacking/stacking.c:2279
 msgid "Up-scaling sequence for stacking"
 msgstr "Mise à l'échelle de la séquence pour l’empilement"
+
+#~ msgid ""
+#~ "Copyright © 2004-2011 François Meyer\n"
+#~ "Copyright © 2012-2018 team free-astro"
+#~ msgstr ""
+#~ "Copyright © 2004-2011 François Meyer\n"
+#~ "Copyright © 2012-2018 team free-astro"
+
+#~ msgid ""
+#~ "Cyril Richard <cyril@free-astro.org>\n"
+#~ "Vincent Hourdin <vh@free-astro.vinvin.tf>"
+#~ msgstr "Cyril Richard <cyril@free-astro.org>"
+
+#~ msgid "About siril"
+#~ msgstr "À propos de siril"
+
+#~ msgid "Astronomical image (pre-)processing program"
+#~ msgstr "Programme de (pré-)traitement des images astronomiques"
+
+#~ msgid "Visit the Siril website"
+#~ msgstr "Visiter le site de Siril"
 
 #~ msgid "Not enough stars.\n"
 #~ msgstr "Pas assez d'étoiles.\n"

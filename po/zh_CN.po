@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-14 16:06+0100\n"
+"POT-Creation-Date: 2018-11-15 21:28+0100\n"
 "PO-Revision-Date: 2018-05-29 09:04+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -717,7 +717,7 @@ msgstr "手动对齐"
 #: ../src/gui/siril3.glade.h:160
 msgid ""
 "Check this option if you want to pick each stars manually. It could be "
-"useful in some case where Siril can't find enough stars. Please, try to "
+"useful in some cases where Siril can't find enough stars. Please, try to "
 "choose the brightest stars in the image."
 msgstr ""
 
@@ -3753,26 +3753,26 @@ msgid ""
 "initial coordinates) are too far from the real metadata of the image."
 msgstr ""
 
-#: ../src/algos/plateSolver.c:837
+#: ../src/algos/plateSolver.c:836
 #, fuzzy, c-format
 msgid ""
 "There are not enough stars picked in the image. At least %d stars are needed."
 msgstr "参考帧中没有足够数量的星点用于执行对齐\n"
 
-#: ../src/algos/plateSolver.c:1029
+#: ../src/algos/plateSolver.c:1027
 #, fuzzy
 msgid "There are no keywords storred in the FITS header.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
-#: ../src/algos/plateSolver.c:1030
+#: ../src/algos/plateSolver.c:1028
 msgid "No metadata"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1069
+#: ../src/algos/plateSolver.c:1067
 msgid "Astrometric solution detected"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1069
+#: ../src/algos/plateSolver.c:1067
 msgid ""
 "The astrometric solution contained in the image will be erased by the "
 "geometric transformation and no undo will be possible."
@@ -3843,8 +3843,8 @@ msgstr "未保存的合成结果"
 msgid "You must at least load two layers before!\n"
 msgstr "必须先期载入至少两个通道！\n"
 
-#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:5372
-#: ../src/gui/callbacks.c:5381 ../src/gui/callbacks.c:5438
+#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:5334
+#: ../src/gui/callbacks.c:5343 ../src/gui/callbacks.c:5400
 #: ../src/io/conversion.c:576 ../src/registration/registration.c:848
 msgid "Warning"
 msgstr "警告"
@@ -3882,11 +3882,11 @@ msgstr "Readjusting layer %d to %g times bright\n"
 #: ../src/core/command.c:1491 ../src/core/command.c:1513
 #: ../src/core/command.c:1541 ../src/core/command.c:1567
 #: ../src/core/command.c:1734 ../src/core/command.c:1802
-#: ../src/core/command.c:2530 ../src/gui/callbacks.c:4023
-#: ../src/gui/callbacks.c:4228 ../src/gui/callbacks.c:4391
-#: ../src/gui/callbacks.c:4475 ../src/gui/callbacks.c:4683
-#: ../src/gui/callbacks.c:5020 ../src/gui/callbacks.c:5173
-#: ../src/gui/callbacks.c:5472 ../src/gui/callbacks.c:5650
+#: ../src/core/command.c:2530 ../src/gui/callbacks.c:3985
+#: ../src/gui/callbacks.c:4190 ../src/gui/callbacks.c:4353
+#: ../src/gui/callbacks.c:4437 ../src/gui/callbacks.c:4645
+#: ../src/gui/callbacks.c:4982 ../src/gui/callbacks.c:5135
+#: ../src/gui/callbacks.c:5434 ../src/gui/callbacks.c:5613
 #: ../src/gui/script_menu.c:150 ../src/io/conversion.c:518
 #: ../src/registration/registration.c:830 ../src/stacking/stacking.c:1486
 #: ../src/stacking/stacking.c:1610
@@ -3928,12 +3928,12 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Crop: select a region or provide x, y, width, height\n"
 
 #: ../src/core/command.c:583 ../src/core/command.c:2379
-#: ../src/gui/callbacks.c:5370 ../src/gui/callbacks.c:5436
+#: ../src/gui/callbacks.c:5332 ../src/gui/callbacks.c:5398
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr "Wavelet: maximum number of plans for this image size is %d\n"
 
-#: ../src/core/command.c:589 ../src/gui/callbacks.c:5379
+#: ../src/core/command.c:589 ../src/gui/callbacks.c:5341
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: type must be %d or %d\n"
@@ -4072,7 +4072,7 @@ msgstr ""
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: select a region or provide x, y, width, height\n"
 
-#: ../src/core/command.c:1223 ../src/gui/callbacks.c:4975
+#: ../src/core/command.c:1223 ../src/gui/callbacks.c:4937
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Found %d stars in image, channel #%d\n"
@@ -4218,7 +4218,7 @@ msgstr "The provided type of stacking is unknown (%s).\n"
 msgid "Stacked sequence successfully.\n"
 msgstr "队列叠加成功。\n"
 
-#: ../src/core/command.c:2282 ../src/gui/callbacks.c:4035
+#: ../src/core/command.c:2282 ../src/gui/callbacks.c:3997
 msgid "Preprocessing...\n"
 msgstr "预处理...\n"
 
@@ -5061,9 +5061,9 @@ msgstr "图像不具有统一大小 (w = %d|%d, h = %d|%d)\n"
 
 #: ../src/core/siril.c:213 ../src/gui/PSF_list.c:154
 #: ../src/gui/callbacks.c:1052 ../src/gui/callbacks.c:2112
-#: ../src/gui/callbacks.c:3040 ../src/gui/callbacks.c:4735
-#: ../src/gui/callbacks.c:4756 ../src/gui/callbacks.c:5189
-#: ../src/gui/callbacks.c:5195 ../src/gui/callbacks.c:5220
+#: ../src/gui/callbacks.c:3040 ../src/gui/callbacks.c:4697
+#: ../src/gui/callbacks.c:4718 ../src/gui/callbacks.c:5151
+#: ../src/gui/callbacks.c:5157 ../src/gui/callbacks.c:5182
 #: ../src/gui/plot.c:381 ../src/gui/plot.c:441 ../src/io/conversion.c:582
 #: ../src/io/single_image.c:129
 msgid "Error"
@@ -5565,147 +5565,118 @@ msgstr "真的要退出？"
 msgid "new zoom value: %f\n"
 msgstr "new zoom value: %f\n"
 
-#: ../src/gui/callbacks.c:3701
-msgid ""
-"Copyright © 2004-2011 François Meyer\n"
-"Copyright © 2012-2018 team free-astro"
-msgstr ""
-"Copyright © 2004-2011 François Meyer\n"
-"Copyright © 2012-2018 team free-astro"
-
-#. translator names
-#: ../src/gui/callbacks.c:3713
-msgid ""
-"Cyril Richard <cyril@free-astro.org>\n"
-"Vincent Hourdin <vh@free-astro.vinvin.tf>"
-msgstr ""
-"叶云 <yecloud@me.com>\n"
-"Mr.Coffee"
-
-#: ../src/gui/callbacks.c:3724
-msgid "About siril"
-msgstr "关于Siril"
-
 #: ../src/gui/callbacks.c:3731
-msgid "Astronomical image (pre-)processing program"
-msgstr "天文图像（预）处理程序"
-
-#: ../src/gui/callbacks.c:3734
-msgid "Visit the Siril website"
-msgstr "访问Siril网站"
-
-#: ../src/gui/callbacks.c:3769
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3771
+#: ../src/gui/callbacks.c:3733
 #, c-format
 msgid "undefined"
 msgstr "未定义的"
 
-#: ../src/gui/callbacks.c:3867
+#: ../src/gui/callbacks.c:3829
 #, fuzzy
 msgid "Exclude all images ?"
 msgstr "全部排除"
 
-#: ../src/gui/callbacks.c:3868 ../src/gui/callbacks.c:3878
+#: ../src/gui/callbacks.c:3830 ../src/gui/callbacks.c:3840
 #, fuzzy
 msgid "This erases previous image selection and there's no possible undo."
 msgstr ""
 "排除所有图像？\n"
 "（这将抹去之前的图像选择，并且无法撤销）"
 
-#: ../src/gui/callbacks.c:3877
+#: ../src/gui/callbacks.c:3839
 #, fuzzy
 msgid "Include all images ?"
 msgstr "全部包含"
 
-#: ../src/gui/callbacks.c:3899
+#: ../src/gui/callbacks.c:3861
 msgid "Opening dark image..."
 msgstr "打开暗场帧…"
 
-#: ../src/gui/callbacks.c:3902
+#: ../src/gui/callbacks.c:3864
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "未使用暗场：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:3909
+#: ../src/gui/callbacks.c:3871
 msgid "NOT USING DARK: number of channels is different"
 msgstr "未使用暗场：通道数目不一致"
 
-#: ../src/gui/callbacks.c:3947
+#: ../src/gui/callbacks.c:3909
 msgid "Opening flat image..."
 msgstr "打开平场帧..."
 
-#: ../src/gui/callbacks.c:3950
+#: ../src/gui/callbacks.c:3912
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "未使用平场：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:3957
+#: ../src/gui/callbacks.c:3919
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "未使用平场：通道数目不一致"
 
-#: ../src/gui/callbacks.c:3984
+#: ../src/gui/callbacks.c:3946
 msgid "Opening offset image..."
 msgstr "打开偏置帧..."
 
-#: ../src/gui/callbacks.c:3987
+#: ../src/gui/callbacks.c:3949
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "未使用偏置：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:3994
+#: ../src/gui/callbacks.c:3956
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "未使用偏置：通道数目不一致"
 
-#: ../src/gui/callbacks.c:4088
+#: ../src/gui/callbacks.c:4050
 msgid "Error in preprocessing."
 msgstr "Error in preprocessing."
 
-#: ../src/gui/callbacks.c:4165
+#: ../src/gui/callbacks.c:4127
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "已选择 %s 队列 %s..."
 
-#: ../src/gui/callbacks.c:4234
+#: ../src/gui/callbacks.c:4196
 msgid "Searching for sequences in the current working directory..."
 msgstr "在当前工作目录中搜索队列..."
 
-#: ../src/gui/callbacks.c:4733
+#: ../src/gui/callbacks.c:4695
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr "背景无法自己提取自己，请点击显示图像\n"
 
-#: ../src/gui/callbacks.c:4755
+#: ../src/gui/callbacks.c:4717
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr "请点击显示图像按钮以应用修正\n"
 
-#: ../src/gui/callbacks.c:4777
+#: ../src/gui/callbacks.c:4739
 msgid "Subtraction done ...\n"
 msgstr "减法完成...\n"
 
-#: ../src/gui/callbacks.c:4784
+#: ../src/gui/callbacks.c:4746
 msgid "Division done ...\n"
 msgstr "除法完成...\n"
 
-#: ../src/gui/callbacks.c:4967
+#: ../src/gui/callbacks.c:4929
 msgid "Load an image first, aborted.\n"
 msgstr "请先载入图像，异常中止。\n"
 
-#: ../src/gui/callbacks.c:4997
+#: ../src/gui/callbacks.c:4959
 msgid "The file stars.lst has been created.\n"
 msgstr "文件stars.lst已被创建。\n"
 
-#: ../src/gui/callbacks.c:5074 ../src/gui/callbacks.c:5122
+#: ../src/gui/callbacks.c:5036 ../src/gui/callbacks.c:5084
 #, fuzzy
 msgid "Current selection is too large"
 msgstr "fwhm: 选择区域太大"
 
-#: ../src/gui/callbacks.c:5075 ../src/gui/callbacks.c:5123
+#: ../src/gui/callbacks.c:5037 ../src/gui/callbacks.c:5085
 #, fuzzy
 msgid "To determine the PSF, please make a selection around a star."
 msgstr "当前选择区域太大。若要计算PSF，请选择一个星点周围的区域。\n"
 
-#: ../src/gui/callbacks.c:5088
+#: ../src/gui/callbacks.c:5050
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -5754,33 +5725,33 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:5104
+#: ../src/gui/callbacks.c:5066
 #, fuzzy
 msgid "PSF for the sequence only applies on sequences"
 msgstr "导出队列\n"
 
-#: ../src/gui/callbacks.c:5105
+#: ../src/gui/callbacks.c:5067
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr ""
 
-#: ../src/gui/callbacks.c:5188
+#: ../src/gui/callbacks.c:5150
 msgid "FFT does not work with sequences !\n"
 msgstr "傅立叶变换不可用于队列！\n"
 
-#: ../src/gui/callbacks.c:5194
+#: ../src/gui/callbacks.c:5156
 msgid "Open an image first !\n"
 msgstr "先要打开一幅图像！\n"
 
-#: ../src/gui/callbacks.c:5219
+#: ../src/gui/callbacks.c:5181
 msgid "Select magnitude and phase before !\n"
 msgstr "请先选择好幅值和相位！\n"
 
-#: ../src/gui/callbacks.c:5748
+#: ../src/gui/callbacks.c:5711
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr "AVI文件不支持裁剪。请先将文件转化为SER格式。\n"
 
-#: ../src/gui/callbacks.c:5753
+#: ../src/gui/callbacks.c:5716
 msgid "Not a valid sequence for cropping.\n"
 msgstr "企图裁剪非有效队列。\n"
 
@@ -7482,6 +7453,29 @@ msgstr "基于品质"
 #: ../src/stacking/stacking.c:2279
 msgid "Up-scaling sequence for stacking"
 msgstr "超分辨率叠加"
+
+#~ msgid ""
+#~ "Copyright © 2004-2011 François Meyer\n"
+#~ "Copyright © 2012-2018 team free-astro"
+#~ msgstr ""
+#~ "Copyright © 2004-2011 François Meyer\n"
+#~ "Copyright © 2012-2018 team free-astro"
+
+#~ msgid ""
+#~ "Cyril Richard <cyril@free-astro.org>\n"
+#~ "Vincent Hourdin <vh@free-astro.vinvin.tf>"
+#~ msgstr ""
+#~ "叶云 <yecloud@me.com>\n"
+#~ "Mr.Coffee"
+
+#~ msgid "About siril"
+#~ msgstr "关于Siril"
+
+#~ msgid "Astronomical image (pre-)processing program"
+#~ msgstr "天文图像（预）处理程序"
+
+#~ msgid "Visit the Siril website"
+#~ msgstr "访问Siril网站"
 
 #, fuzzy
 #~ msgid "Not enough stars.\n"
