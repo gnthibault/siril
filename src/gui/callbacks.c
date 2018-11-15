@@ -831,14 +831,15 @@ static void set_filters_dialog(GtkFileChooser *chooser) {
 		nb_raw = get_nb_raw_supported();
 		raw = calloc(sizeof(char), nb_raw * 12 + 1);// we assume the extension size of 3 char "*.xxx;*.XXX;" = 12
 		for (i = 0; i < nb_raw; i++) {
-			char ext[20];
+			char *ext;
 			gchar *upcase;
 
 			upcase = g_ascii_strup(supported_raw[i].extension, strlen(supported_raw[i].extension));
-			g_snprintf(ext, sizeof(ext), "*.%s;*.%s;",
-					supported_raw[i].extension, upcase);
+			ext = g_strdup_printf("*.%s;*.%s;", supported_raw[i].extension,
+					upcase);
 			strcat(raw, ext);
 
+			g_free(ext);
 			g_free(upcase);
 		}
 		gtk_filter_add(chooser, _("RAW DSLR Camera Files"), raw,
@@ -846,25 +847,29 @@ static void set_filters_dialog(GtkFileChooser *chooser) {
 		free(raw);
 #endif
 		/* GRAPHICS FILES */
-		char graphics_supported[256], pattern[256];
-		g_snprintf(graphics_supported, sizeof(graphics_supported),
-				_("Graphics Files (*.bmp"));
-		g_snprintf(pattern, sizeof(pattern), "*.bmp;*.BMP;");
+		GString *s_supported_graph, *s_pattern;
+		gchar *graphics_supported, *pattern;
+
+		s_supported_graph = g_string_new(_("Graphics Files (*.bmp"));
+		s_pattern = g_string_new("*.bmp;*.BMP;");
 #ifdef HAVE_LIBJPEG
-		strcat(graphics_supported, ", *.jpg, *.jpeg");
-		strcat(pattern, "*.jpg;*.JPG;*.jpeg;*.JPEG;");
+		s_supported_graph = g_string_append(s_supported_graph, ", *.jpg, *.jpeg");
+		s_pattern = g_string_append(s_pattern, "*.jpg;*.JPG;*.jpeg;*.JPEG;");
 #endif
 
 #ifdef HAVE_LIBPNG
-		strcat(graphics_supported, ", *.png");
-		strcat(pattern, "*.png;*.PNG;");
+		s_supported_graph = g_string_append(s_supported_graph, ", *.png");
+		s_pattern = g_string_append(s_pattern, "*.png;*.PNG;");
 #endif
 
 #ifdef HAVE_LIBTIFF
-		strcat(graphics_supported, ", *.tif, *.tiff");
-		strcat(pattern, "*.tif;*.TIF;*.tiff;*.TIFF");
+		s_supported_graph = g_string_append(s_supported_graph, ", *.tif, *.tiff");
+		s_pattern = g_string_append(s_pattern, "*.tif;*.TIF;*.tiff;*.TIFF");
 #endif
-		strcat(graphics_supported, ")");
+		s_supported_graph = g_string_append(s_supported_graph, ")");
+
+		graphics_supported = g_string_free(s_supported_graph, FALSE);
+		pattern = g_string_free(s_pattern, FALSE);
 		gtk_filter_add(chooser, graphics_supported, pattern,
 				com.filter == TYPEBMP || com.filter == TYPEJPG
 						|| com.filter == TYPEPNG || com.filter == TYPETIFF);
@@ -888,21 +893,24 @@ static void set_filters_dialog(GtkFileChooser *chooser) {
 		nb_film = get_nb_film_ext_supported();
 		film = calloc(sizeof(char), nb_film * 14 + 1);// we assume the extension size of 4 char "*.xxxx;*.XXXX;" = 14
 		for (j = 0; j < nb_film; j++) {
-			char ext[20];
+			char *ext;
 			gchar *upcase;
 
 			upcase = g_ascii_strup(supported_film[j].extension,
 					strlen(supported_film[j].extension));
-			g_snprintf(ext, sizeof(ext), "*.%s;*.%s;",
-					supported_film[j].extension, upcase);
+			ext = g_strdup_printf("*.%s;*.%s;", supported_film[j].extension,
+					upcase);
 			strcat(film, ext);
 
+			g_free(ext);
 			g_free(upcase);
 		}
 		gtk_filter_add(chooser, _("Film Files (*.avi, *.mpg, ...)"), film,
 				com.filter == TYPEAVI);
 		free(film);
 #endif
+		g_free(graphics_supported);
+		g_free(pattern);
 	}
 }
 
@@ -3069,16 +3077,21 @@ void on_combobox_ext_changed(GtkComboBox *box, gpointer user_data) {
 	initialize_FITS_name_entries();
 }
 
-static rectangle get_window_position(GtkWidget *window) {
+static rectangle get_window_position(GtkWidget *widget) {
 	gint x, y, w, h;
-	rectangle rec;
+	rectangle rec = { 0 };
+	GtkWindow *window;
 
-	gtk_window_get_position(GTK_WINDOW(window), &x, &y);
-	gtk_window_get_size(GTK_WINDOW(window), &w, &h);
-	rec.x = x;
-	rec.y = y;
-	rec.w = w;
-	rec.h = h;
+	window = GTK_WINDOW(widget);
+
+	if (GTK_IS_WINDOW(window)) {
+		gtk_window_get_position(window, &x, &y);
+		gtk_window_get_size(window, &w, &h);
+		rec.x = x;
+		rec.y = y;
+		rec.w = w;
+		rec.h = h;
+	}
 	return rec;
 }
 
@@ -5023,7 +5036,7 @@ void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data)
 /******************* POPUP GRAY MENU *******************************/
 
 void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	char msg[512];
+	gchar *msg;
 	fitted_PSF *result = NULL;
 	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
 	char *str;
@@ -5046,8 +5059,7 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		str = "true reduced";
 	else
 		str = "relative";
-	g_snprintf(msg, sizeof(msg),
-			_("Centroid Coordinates:\n\t\tx0=%.2fpx\n\t\ty0=%.2fpx\n\n"
+	msg = g_strdup_printf(_("Centroid Coordinates:\n\t\tx0=%.2fpx\n\t\ty0=%.2fpx\n\n"
 					"Full Width Half Maximum:\n\t\tFWHMx=%.2f%s\n\t\tFWHMy=%.2f%s\n\n"
 					"Angle:\n\t\t%0.2fdeg\n\n"
 					"Background Value:\n\t\tB=%.6f\n\n"
@@ -5058,6 +5070,7 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 			result->units, result->fwhmy, result->units, result->angle, result->B,
 			result->A, str, result->mag + com.magOffset, result->s_mag, result->rmse);
 	show_data_dialog(msg, "PSF Results");
+	g_free(msg);
 	free(result);
 }
 
