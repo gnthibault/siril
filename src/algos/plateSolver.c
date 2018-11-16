@@ -304,9 +304,9 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 	case NOMAD:
 		url = g_string_append(url, "NOMAD&-out.meta=-h-u-D&-out.add=_r&-sort=_r");
 		url = g_string_append(url, "&-out=%20RAJ2000%20DEJ2000%20Vmag%20Bmag");
+		url = g_string_append(url, "&-out.max=200000");
 		url = g_string_append(url, "&-c.rm=");
 		url = g_string_append(url, fov);
-		url = g_string_append(url, "&-out.max=200000");
 		url = g_string_append(url, "&-c=");
 		url = g_string_append(url, coordinates);
 		url = g_string_append(url, "&Vmag=<");
@@ -315,13 +315,35 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 	default:
 	case TYCHO2:
 		url = g_string_append(url, "I/259/tyc2&-out.add=_r&-sort=_r");
-		url = g_string_append(url, "&-c.u=deg&-out=%20RAmdeg%20DEmdeg%20VTmag%20BTmag");
+		url = g_string_append(url, "&-out=%20RAmdeg%20DEmdeg%20VTmag%20BTmag");
 		url = g_string_append(url, "&-out.max=200000");
 		url = g_string_append(url, "&-c=");
 		url = g_string_append(url, coordinates);
 		url = g_string_append(url, "&-c.rm=");
 		url = g_string_append(url, fov);
 		url = g_string_append(url, "&VTmag=<");
+		url = g_string_append(url, mag);
+		break;
+	case GAIA:
+		url = g_string_append(url, "I/345/gaia2&-out.add=_r&-sort=_r");
+		url = g_string_append(url, "&-out=%20RAJ2000%20DEJ2000%20Gmag%20BPmag");
+		url = g_string_append(url, "&-out.max=200000");
+		url = g_string_append(url, "&-c=");
+		url = g_string_append(url, coordinates);
+		url = g_string_append(url, "&-c.rm=");
+		url = g_string_append(url, fov);
+		url = g_string_append(url, "&Gmag=<");
+		url = g_string_append(url, mag);
+		break;
+	case BRIGHT_STARS:
+		url = g_string_append(url, "V/50/catalog&-out.add=_r&-sort=_r");
+		url = g_string_append(url, "&-out.add=_RAJ,_DEJ&-out=Vmag&-out=B-V");
+		url = g_string_append(url, "&-out.max=200000");
+		url = g_string_append(url, "&-c=");
+		url = g_string_append(url, coordinates);
+		url = g_string_append(url, "&-c.rm=");
+		url = g_string_append(url, fov);
+		url = g_string_append(url, "&Vmag=<");
 		url = g_string_append(url, mag);
 		break;
 	}
@@ -332,6 +354,8 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 
 	return g_string_free(url, FALSE);
 }
+
+// http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source=V/50/catalog&-c=56.803081 24.323643&-c.r=1.384364&-c.u=deg&-out.form=|&-out.add=_RAJ,_DEJ&-out=pmRA&-out=pmDE&-out=Name&-out=HR&-out=HD&-out=DM&-out=SAO&-out=Vmag&-out=B-V&-out=U-B&-out=R-I&-out=SpType&Vmag=<13.14
 
 /*****
  * HTTP functions
@@ -512,22 +536,14 @@ static void get_list_IPS() {
 }
 
 static void clear_all_objects() {
-	static GtkTreeSelection *selection;
-
 	gtk_list_store_clear(list_IPS);
 	selectedItem = -1;
-
-	selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder, "GtkTreeSelectionIPS"));
-
-	gtk_tree_selection_unselect_all (selection);
 }
 
 static void add_object_to_list() {
-
 	GtkTreeIter iter;
 
 	get_list_IPS();
-
 	clear_all_objects();
 
 	if (platedObject[RESOLVER_NED].name) {
@@ -549,30 +565,20 @@ static void add_object_to_list() {
 	}
 }
 
-static void update_coordinates() {
+static void update_coordinates(RA ra, DEC Dec, gboolean south) {
 	gchar *RA_sec, *Dec_sec;
 
-	int index = selectedItem;
-	if (index < 0)
-		return;
+	RA_sec = g_strdup_printf("%6.4lf", ra.sec);
+	Dec_sec = g_strdup_printf("%6.4lf", Dec.sec);
 
-	RA_sec = g_strdup_printf("%6.4lf", platedObject[index].RA.sec);
-	Dec_sec = g_strdup_printf("%6.4lf", platedObject[index].Dec.sec);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("GtkCheckButtonIPS_S")), south);
 
-	gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("GtkCheckButtonIPS_S")),
-			platedObject[index].south);
-
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_RA_h")),
-			platedObject[index].RA.hour);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_RA_m")),
-			platedObject[index].RA.min);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_RA_h")), ra.hour);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_RA_m")), ra.min);
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget("GtkEntryIPS_RA_s")), RA_sec);
 
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_deg")),
-			abs(platedObject[index].Dec.degree));
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_m")),
-			platedObject[index].Dec.min);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_deg")), abs(Dec.degree));
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_m")), Dec.min);
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget("GtkEntryIPS_Dec_s")), Dec_sec);
 
 	g_free(RA_sec);
@@ -623,7 +629,7 @@ static void update_resolution_field() {
 	g_free(cres);
 }
 
-static void update_IPS_GUI() {
+static void update_image_parameters_GUI() {
 	/* update all fields. Resolution is updated as well
 	 thanks to the Entry and combo changed signal
 	  */
@@ -722,7 +728,7 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		i++;
 	}
 	sort_stars(cstars, i);
-
+	siril_log_message(_("Catalog NOMAD size: %d objects\n"), i);
 	return i;
 }
 
@@ -733,7 +739,7 @@ static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) 
 	int i = 0;
 
 	while (fgets(line, LINELEN, catalog) != NULL) {
-		double r = 0.0, x = 0.0, y = 0.0, magA = 0.0, magB = 0.0;
+		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
 			continue;
@@ -750,20 +756,105 @@ static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) 
 		if (g_str_has_prefix(line, "arcmin")) {
 			continue;
 		}
-		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &magA, &magB);
+		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &Bmag);
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
 		star->ypos = y + shift_y;
-		star->mag = magA;
+		star->mag = Vmag;
+		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
 
 	}
 	sort_stars(cstars, i);
+	siril_log_message(_("Catalog TYCHO-2 size: %d objects\n"), i);
 	return i;
 }
+
+static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
+	char line[LINELEN] = {0};
+	fitted_PSF *star;
+
+	int i = 0;
+
+	while (fgets(line, LINELEN, catalog) != NULL) {
+		double r = 0.0, x = 0.0, y = 0.0, Gmag = 0.0, BPmag = 0.0;
+
+		if (line[0] == COMMENT_CHAR) {
+			continue;
+		}
+		if (is_blank(line)) {
+			continue;
+		}
+		if (g_str_has_prefix(line, "---")) {
+			continue;
+		}
+		if (g_str_has_prefix(line, "_r")) {
+			continue;
+		}
+		if (g_str_has_prefix(line, "arcmin")) {
+			continue;
+		}
+		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Gmag, &BPmag);
+
+		star = malloc(sizeof(fitted_PSF));
+		star->xpos = x;
+		star->ypos = y + shift_y;
+		star->mag = Gmag;
+		star->BV = -99.9;
+		cstars[i] = star;
+		cstars[i + 1] = NULL;
+		i++;
+
+	}
+	sort_stars(cstars, i);
+	siril_log_message(_("Catalog Gaia DR2 size: %d objects\n"), i);
+	return i;
+}
+
+static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
+	char line[LINELEN] = {0};
+	fitted_PSF *star;
+
+	int i = 0;
+
+	while (fgets(line, LINELEN, catalog) != NULL) {
+		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, BV = 0.0;
+
+		if (line[0] == COMMENT_CHAR) {
+			continue;
+		}
+		if (is_blank(line)) {
+			continue;
+		}
+		if (g_str_has_prefix(line, "---")) {
+			continue;
+		}
+		if (g_str_has_prefix(line, "_r")) {
+			continue;
+		}
+		if (g_str_has_prefix(line, "arcmin")) {
+			continue;
+		}
+		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &BV);
+
+		star = malloc(sizeof(fitted_PSF));
+		star->xpos = x;
+		star->ypos = y + shift_y;
+		star->mag = Vmag;
+		star->BV = BV;
+		cstars[i] = star;
+		cstars[i + 1] = NULL;
+		i++;
+
+	}
+	sort_stars(cstars, i);
+	siril_log_message(_("Catalog Bright stars size: %d objects\n"), i);
+	return i;
+}
+
 
 static int read_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y,
 		int type) {
@@ -773,6 +864,10 @@ static int read_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y,
 		return read_TYCHO2_catalog(catalog, cstars, shift_y);
 	case NOMAD:
 		return read_NOMAD_catalog(catalog, cstars, shift_y);
+	case GAIA:
+		return read_GAIA_catalog(catalog, cstars, shift_y);
+	case BRIGHT_STARS:
+		return read_BRIGHT_STARS_catalog(catalog, cstars, shift_y);
 	}
 }
 
@@ -822,7 +917,14 @@ static gboolean end_plate_solver(gpointer p) {
 		}
 		siril_message_dialog(GTK_MESSAGE_ERROR, title, args->message);
 	} else {
-		update_IPS_GUI();
+		RA ra;
+		DEC Dec;
+
+		update_image_parameters_GUI();
+		ra = convert_ra(is_result.ra);
+		Dec = convert_dec(is_result.dec);
+		update_coordinates(ra, Dec, is_result.dec < 0.0);
+
 		control_window_switch_to_tab(OUTPUT_LOGS);
 	}
 	g_free(args->catalogStars);
@@ -1036,8 +1138,10 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 			selectedItem = -1;
 		}
 
-		if (selectedItem >= 0)
-			update_coordinates();
+		if (selectedItem >= 0) {
+			update_coordinates(platedObject[selectedItem].RA,
+					platedObject[selectedItem].Dec, platedObject[selectedItem].south);
+		}
 
 		g_value_unset(&value);
 	}
@@ -1048,7 +1152,7 @@ void on_GtkButton_IPS_metadata_clicked(GtkButton *button, gpointer user_data) {
 		char *msg = siril_log_message(_("There are no keywords storred in the FITS header.\n"));
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("No metadata"), msg);
 	} else {
-		update_IPS_GUI();
+		update_image_parameters_GUI();
 	}
 }
 

@@ -18,7 +18,7 @@
 #define VIZIERSESAME "http://vizier.cfa.harvard.edu/viz-bin/nph-sesame"
 
 typedef enum {
-	TYCHO2, NOMAD
+	TYCHO2, NOMAD, GAIA, BRIGHT_STARS
 } online_catalog;
 
 enum resolver {
