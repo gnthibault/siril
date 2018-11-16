@@ -53,10 +53,6 @@
 
 #undef DEBUG           /* get some of diagnostic output */
 
-enum {
-	APPAS, NOMAD
-};
-
 void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 		gpointer user_data);
 
@@ -295,13 +291,13 @@ static gboolean is_detection_manual() {
 
 static gchar *get_catalog_url(point center, double mag_limit, double dfov, int type) {
 	GString *url;
-	gchar coordinates[256];
-	gchar mag[6];
-	gchar fov[10];
+	gchar *coordinates;
+	gchar *mag;
+	gchar *fov;
 
-	g_snprintf(coordinates, sizeof(coordinates), "%lf+%lf", center.x, center.y);
-	g_snprintf(mag, sizeof(mag), "%2.2lf", mag_limit);
-	g_snprintf(fov, sizeof(fov), "%2.1lf", dfov / 2);
+	coordinates = g_strdup_printf("%lf+%lf", center.x, center.y);
+	mag = g_strdup_printf("%2.2lf", mag_limit);
+	fov = g_strdup_printf("%2.1lf", dfov / 2);
 
 	url = g_string_new("http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source=");
 	switch (type) {
@@ -317,9 +313,9 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 		url = g_string_append(url, mag);
 		break;
 	default:
-	case APPAS:
-		url = g_string_append(url, "I/259/tyc2");
-		url = g_string_append(url, "&-c.u=deg&-out=TYC1&-out=TYC2&-out=TYC3&-out=RAmdeg&-out=DEmdeg&-out=pmRA&-out=pmDE&-out=VTmag&-out=BTmag&-out=HIP");
+	case TYCHO2:
+		url = g_string_append(url, "I/259/tyc2&-out.add=_r&-sort=_r");
+		url = g_string_append(url, "&-c.u=deg&-out=%20RAmdeg%20DEmdeg%20VTmag%20BTmag");
 		url = g_string_append(url, "&-out.max=200000");
 		url = g_string_append(url, "&-c=");
 		url = g_string_append(url, coordinates);
@@ -329,6 +325,11 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 		url = g_string_append(url, mag);
 		break;
 	}
+
+	g_free(coordinates);
+	g_free(mag);
+	g_free(fov);
+
 	return g_string_free(url, FALSE);
 }
 
@@ -429,7 +430,16 @@ static char *fetch_url(const char *url) {
 	return result;
 }
 
-static gchar *download_catalog() {
+static online_catalog get_online_catalog() {
+	GtkComboBox *box;
+	int ret;
+
+	box = GTK_COMBO_BOX(lookup_widget("ComboBoxIPSCatalog"));
+	ret = gtk_combo_box_get_active(box);
+	return (ret < 0 ? TYCHO2 : ret);
+}
+
+static gchar *download_catalog(online_catalog onlineCatalog) {
 	gchar *url;
 	char *buffer = NULL;
 	FILE *catalog = NULL;
@@ -449,12 +459,12 @@ static gchar *download_catalog() {
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
 
 	url = get_catalog_url(catalog_center, get_mag_limit(fov), fov,
-			NOMAD);
+			onlineCatalog);
 
 	filename = g_build_filename(g_get_tmp_dir(), "catalog.dat", NULL);
 	catalog = g_fopen(filename, "w+t");
 	if (catalog == NULL) {
-		fprintf(stderr, "plateSolver: Cannot open catalog\n");
+		fprintf(stderr, "plateSolver: Cannot open catalogue\n");
 		return NULL;
 	}
 	buffer = fetch_url(url);
@@ -540,14 +550,14 @@ static void add_object_to_list() {
 }
 
 static void update_coordinates() {
-	gchar RA_sec[7], Dec_sec[7];
+	gchar *RA_sec, *Dec_sec;
 
 	int index = selectedItem;
 	if (index < 0)
 		return;
 
-	g_snprintf(RA_sec, sizeof(RA_sec), "%lf", platedObject[index].RA.sec);
-	g_snprintf(Dec_sec, sizeof(Dec_sec), "%lf", platedObject[index].Dec.sec);
+	RA_sec = g_strdup_printf("%6.4lf", platedObject[index].RA.sec);
+	Dec_sec = g_strdup_printf("%6.4lf", platedObject[index].Dec.sec);
 
 	gtk_toggle_button_set_active(
 			GTK_TOGGLE_BUTTON(lookup_widget("GtkCheckButtonIPS_S")),
@@ -564,6 +574,9 @@ static void update_coordinates() {
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_m")),
 			platedObject[index].Dec.min);
 	gtk_entry_set_text(GTK_ENTRY(lookup_widget("GtkEntryIPS_Dec_s")), Dec_sec);
+
+	g_free(RA_sec);
+	g_free(Dec_sec);
 }
 
 static gboolean has_any_keywords() {
@@ -574,37 +587,40 @@ static gboolean has_any_keywords() {
 
 static void update_pixel_size() {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_pixels"));
-	gchar cpixels[24];
+	gchar *cpixels;
 	double pixel;
 
 	pixel = gfit.pixel_size_x > gfit.pixel_size_y ? gfit.pixel_size_x : gfit.pixel_size_y;
 
 	if (pixel > 0.0) {
-		g_snprintf(cpixels, sizeof(cpixels), "%1.2lf", pixel);
+		cpixels = g_strdup_printf("%1.2lf", pixel);
 		gtk_entry_set_text(entry, cpixels);
+		g_free(cpixels);
 	}
 }
 
 static void update_focal() {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_focal"));
-	gchar cfocal[24];
+	gchar *cfocal;
 	double focal;
 
 	focal = gfit.focal_length;
 
 	if (focal > 0.0) {
-		g_snprintf(cfocal, sizeof(cfocal), "%.3lf", focal);
+		cfocal = g_strdup_printf("%.3lf", focal);
 		gtk_entry_set_text(entry, cfocal);
+		g_free(cfocal);
 	}
 }
 
 static void update_resolution_field() {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_resolution"));
 	double res = get_resolution(get_focal(), get_pixel());
-	gchar cres[6];
+	gchar *cres;
 
-	g_snprintf(cres, sizeof(cres), "%1.3lf", res);
+	cres = g_strdup_printf("%1.3lf", res);
 	gtk_entry_set_text(entry, cres);
+	g_free(cres);
 }
 
 static void update_IPS_GUI() {
@@ -710,14 +726,15 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 	return i;
 }
 
-static int read_APPAS_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
-	char line[LINELEN];
+static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
+	char line[LINELEN] = {0};
 	fitted_PSF *star;
-	double x, y, magA, magB, pmRA, pmDec;
+
 	int i = 0;
-	int tmp;
 
 	while (fgets(line, LINELEN, catalog) != NULL) {
+		double r = 0.0, x = 0.0, y = 0.0, magA = 0.0, magB = 0.0;
+
 		if (line[0] == COMMENT_CHAR) {
 			continue;
 		}
@@ -727,13 +744,14 @@ static int read_APPAS_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		if (g_str_has_prefix(line, "---")) {
 			continue;
 		}
-		if (g_str_has_prefix(line, "TYC")) {
+		if (g_str_has_prefix(line, "_r")) {
 			continue;
 		}
-		int n = sscanf(line, "%d %d %d %lf %lf %lf %lf %lf %lf %d", &tmp, &tmp,
-				&tmp, &x, &y, &pmRA, &pmDec, &magA, &magB, &tmp);
-		if (n < 10)
+		if (g_str_has_prefix(line, "arcmin")) {
 			continue;
+		}
+		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &magA, &magB);
+
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
 		star->ypos = y + shift_y;
@@ -741,16 +759,18 @@ static int read_APPAS_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
+
 	}
 	sort_stars(cstars, i);
 	return i;
 }
 
-static int read_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y, int type) {
+static int read_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y,
+		int type) {
 	switch (type) {
 	default:
-	case APPAS:
-		return read_APPAS_catalog(catalog, cstars, shift_y);
+	case TYCHO2:
+		return read_TYCHO2_catalog(catalog, cstars, shift_y);
 	case NOMAD:
 		return read_NOMAD_catalog(catalog, cstars, shift_y);
 	}
@@ -859,7 +879,7 @@ static gpointer match_catalog(gpointer p) {
 		return GINT_TO_POINTER(1);
 	}
 
-	n_cat = read_catalog(catalog, cstars, image_size.y, NOMAD);
+	n_cat = read_catalog(catalog, cstars, image_size.y, args->onlineCatalog);
 
 	/* make sure that arrays are not too small
 	 * make  sure that the max of stars is BRIGHTEST_STARS */
@@ -967,7 +987,8 @@ static void start_image_plate_solve() {
 	struct plate_solver_data *args = malloc(sizeof(struct plate_solver_data));
 	set_cursor_waiting(TRUE);
 
-	args->catalogStars = download_catalog();
+	args->onlineCatalog = get_online_catalog();
+	args->catalogStars = download_catalog(args->onlineCatalog);
 	args->pixel_size = get_pixel();
 	args->scale = get_resolution(get_focal(), get_pixel());
 	args->manual = is_detection_manual();

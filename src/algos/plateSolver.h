@@ -17,8 +17,20 @@
 #define CDSSESAME "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame"
 #define VIZIERSESAME "http://vizier.cfa.harvard.edu/viz-bin/nph-sesame"
 
+typedef enum {
+	TYCHO2, NOMAD
+} online_catalog;
+
+enum resolver {
+	RESOLVER_NED,
+	RESOLVER_SIMBAD,
+	RESOLVER_VIZIER,
+	RESOLVER_NUMBER
+};
+
 /* median filter data from GUI */
 struct plate_solver_data {
+	online_catalog onlineCatalog;
 	gchar *catalogStars;
 	double scale; // scale (resolution)
 	fits *fit;
@@ -26,13 +38,6 @@ struct plate_solver_data {
 	int ret; // return value
 	double pixel_size; // pixel size in µm
 	gboolean manual; // Manual platesolving
-};
-
-enum resolver {
-	RESOLVER_NED,
-	RESOLVER_SIMBAD,
-	RESOLVER_VIZIER,
-	RESOLVER_NUMBER
 };
 
 struct RA_struct {
