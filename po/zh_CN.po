@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-15 21:28+0100\n"
+"POT-Creation-Date: 2018-11-16 23:00+0100\n"
 "PO-Revision-Date: 2018-05-29 09:04+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -253,7 +253,7 @@ msgid "current red file"
 msgstr "当前红色文件"
 
 #: ../src/gui/siril3.glade.h:54 ../src/compositing/compositing.c:456
-#: ../src/gui/callbacks.c:2200
+#: ../src/gui/callbacks.c:2208
 msgid "Red channel"
 msgstr "红色通道"
 
@@ -598,51 +598,37 @@ msgid "Initial equatorial coordinates. Input value must be inside the image."
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:135
-msgid "1"
-msgstr "1"
-
-#: ../src/gui/siril3.glade.h:136
 msgid "0"
 msgstr "0"
 
-#: ../src/gui/siril3.glade.h:137
+#: ../src/gui/siril3.glade.h:136
 msgid "Right Ascension: "
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:138
+#: ../src/gui/siril3.glade.h:137
 #, fuzzy
 msgid "Declination: "
 msgstr "偏差: "
 
-#: ../src/gui/siril3.glade.h:139
+#: ../src/gui/siril3.glade.h:138
 msgid "S"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:140
+#: ../src/gui/siril3.glade.h:139
 msgid "This button is checked for negative declination (southern hemisphere)."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:141
+#: ../src/gui/siril3.glade.h:140
 msgid ""
 "Enter the identifier or the name of the object which must be in the image."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:142
+#: ../src/gui/siril3.glade.h:141
 #, fuzzy
 msgid "Start searching."
 msgstr "开始叠加"
 
 #: ../src/gui/siril3.glade.h:143
-msgid "Catalog Limit Mag:"
-msgstr ""
-
-#: ../src/gui/siril3.glade.h:144
-msgid ""
-"Maximum star magnitude used in the catalog queries. Wider is the field, "
-"lower is the value."
-msgstr ""
-
-#: ../src/gui/siril3.glade.h:146
 #, no-c-format
 msgid ""
 "Effective focal length of the optical system in millimeter. Even if the "
@@ -650,97 +636,133 @@ msgid ""
 "not exceeding 20%."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:147
+#: ../src/gui/siril3.glade.h:144
 msgid "Pixel size in micrometer. The image is assumed to have square pixels."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:148
+#: ../src/gui/siril3.glade.h:145
 #, fuzzy
 msgid "Focal distance (mm):"
 msgstr "焦距(毫米): "
 
-#: ../src/gui/siril3.glade.h:149
+#: ../src/gui/siril3.glade.h:146
 #, fuzzy
 msgid "Pixel size (µm):"
 msgstr "像素宽度X(微米): "
 
-#: ../src/gui/siril3.glade.h:150
+#: ../src/gui/siril3.glade.h:147
 #, fuzzy
 msgid "Resolution: "
 msgstr "反卷积"
 
-#: ../src/gui/siril3.glade.h:151
+#: ../src/gui/siril3.glade.h:148
 msgid ""
 "The resolution of the image that is automatically determined from the focal "
 "and pixel size value."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:152
+#: ../src/gui/siril3.glade.h:149
 msgid "Get Metadata From Image"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:153
+#: ../src/gui/siril3.glade.h:150
 msgid ""
 "Click on this button to get focal and pixel size value from the header of "
 "the file if they exist."
 msgstr ""
 
+#: ../src/gui/siril3.glade.h:151
+msgid "Resolver"
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:152
+msgid "Name"
+msgstr "名称"
+
+#: ../src/gui/siril3.glade.h:153
+#, fuzzy
+msgid "<b>Image Parameters</b>"
+msgstr "<b>图像版权</b>"
+
 #: ../src/gui/siril3.glade.h:154
+msgid "Catalogue Limit Mag: "
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:155
+msgid ""
+"Maximum star magnitude used in the catalog queries. Wider is the field, "
+"lower is the value."
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:156
 #, fuzzy
 msgid "Auto"
 msgstr "自动"
 
-#: ../src/gui/siril3.glade.h:155
+#: ../src/gui/siril3.glade.h:157
 msgid ""
 "The limit magnitude is automatically determined using the approximation of "
 "the Field Of View."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:156
-msgid "Resolver"
+#: ../src/gui/siril3.glade.h:158
+msgid "Online Star Catalogue: "
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:157
-msgid "Name"
-msgstr "名称"
+#: ../src/gui/siril3.glade.h:159
+msgid ""
+"Choose the online catalogue against one want to compare the image.\n"
+"* TYCHO-2 catalogue contains positions, proper motions, and two-color "
+"photometric data for 2,539,913 of the brightest stars in the Milky Way.\n"
+"* NOMAD is a simple merge of data from the Hipparcos, Tycho-2, UCAC-2 and "
+"USNO-B1 catalogues, supplemented by photometric information from the 2MASS "
+"final release point source catalogue.\n"
+"* Gaia Data Release 2 was released on 25 April 2018. The five-parameter "
+"astrometric solution, positions on the sky (α, δ), parallaxes, and proper "
+"motions, are given for more than 1.3 billion sources, with a limiting "
+"magnitude of G = 21.\n"
+"* The Bright Star Catalogue is a star catalogue that lists all stars of "
+"stellar magnitude 6.5 or brighter, which is roughly every star visible to "
+"the naked eye from Earth. The catalog contains 9,110 objects"
+msgstr ""
 
-#: ../src/gui/siril3.glade.h:158
+#: ../src/gui/siril3.glade.h:164
 #, fuzzy
-msgid "<b>Image Parameters</b>"
+msgid "<b>Catalogue Parameters</b>"
 msgstr "<b>图像版权</b>"
 
-#: ../src/gui/siril3.glade.h:159
+#: ../src/gui/siril3.glade.h:165
 #, fuzzy
 msgid "Manual detection"
 msgstr "手动对齐"
 
-#: ../src/gui/siril3.glade.h:160
+#: ../src/gui/siril3.glade.h:166
 msgid ""
 "Check this option if you want to pick each stars manually. It could be "
 "useful in some cases where Siril can't find enough stars. Please, try to "
 "choose the brightest stars in the image."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:161
+#: ../src/gui/siril3.glade.h:167
 #, fuzzy
 msgid "<b>Star detection</b>"
 msgstr "星点侦测"
 
-#: ../src/gui/siril3.glade.h:162
+#: ../src/gui/siril3.glade.h:168
 msgid "Median Filter"
 msgstr "中位数过滤"
 
-#: ../src/gui/siril3.glade.h:163
+#: ../src/gui/siril3.glade.h:169
 msgid ""
 "Kernel Size. This is the odd size of the neighborhood considered for each "
 "pixel."
 msgstr "内核大小。每个像素认定“邻居”的奇数范围值。"
 
-#: ../src/gui/siril3.glade.h:164
+#: ../src/gui/siril3.glade.h:170
 msgid "Modulation:"
 msgstr "调制:"
 
-#: ../src/gui/siril3.glade.h:165
+#: ../src/gui/siril3.glade.h:171
 msgid ""
 "Modulation parameter set in the [0, 1] range.\n"
 "When this parameter is equal to 1, no modulation is applied.\n"
@@ -750,15 +772,15 @@ msgstr ""
 "1为无调制。\n"
 "为空则不会有任何过滤被应用。"
 
-#: ../src/gui/siril3.glade.h:168
+#: ../src/gui/siril3.glade.h:174
 msgid "Kernel Size: "
 msgstr "内核大小: "
 
-#: ../src/gui/siril3.glade.h:169
+#: ../src/gui/siril3.glade.h:175
 msgid "Iterations:"
 msgstr "迭代:"
 
-#: ../src/gui/siril3.glade.h:170
+#: ../src/gui/siril3.glade.h:176
 msgid ""
 "Number of iterations of the algorithm.\n"
 "This is useful when modulation parameter is different to 1 helping the whole "
@@ -767,87 +789,87 @@ msgstr ""
 "算法的迭代数。\n"
 "当调制参数不为1时，使用本参数可以获得更好的结果。"
 
-#: ../src/gui/siril3.glade.h:172
+#: ../src/gui/siril3.glade.h:178
 msgid "Use Luminance"
 msgstr "使用明度通道"
 
-#: ../src/gui/siril3.glade.h:173
+#: ../src/gui/siril3.glade.h:179
 msgid "Run statistic calculation"
 msgstr "计算统计结果"
 
-#: ../src/gui/siril3.glade.h:174
+#: ../src/gui/siril3.glade.h:180
 msgid "Close the window"
 msgstr "关闭窗口"
 
-#: ../src/gui/siril3.glade.h:175
+#: ../src/gui/siril3.glade.h:181
 msgid "Normalized Real [0, 1]"
 msgstr "归一化实数 [0, 1]"
 
-#: ../src/gui/siril3.glade.h:176
+#: ../src/gui/siril3.glade.h:182
 msgid "No Selection"
 msgstr "无选择"
 
-#: ../src/gui/siril3.glade.h:177 ../src/core/siril.c:1439
+#: ../src/gui/siril3.glade.h:183 ../src/core/siril.c:1439
 msgid "Banding Reduction"
 msgstr "除去条纹"
 
-#: ../src/gui/siril3.glade.h:178
+#: ../src/gui/siril3.glade.h:184
 msgid "Protect from Highlights"
 msgstr "免受高光影响"
 
-#: ../src/gui/siril3.glade.h:179
+#: ../src/gui/siril3.glade.h:185
 msgid "Vertical banding"
 msgstr "垂直条纹"
 
-#: ../src/gui/siril3.glade.h:180
+#: ../src/gui/siril3.glade.h:186
 msgid "Check this box if banding is vertical."
 msgstr "选择以针对垂直条纹。"
 
-#: ../src/gui/siril3.glade.h:181
+#: ../src/gui/siril3.glade.h:187
 msgid "Apply to sequence"
 msgstr "应用到队列"
 
-#: ../src/gui/siril3.glade.h:182
+#: ../src/gui/siril3.glade.h:188
 msgid ""
 "If a sequence is loaded and this is activated, perform the processing on all "
 "images of the sequence instead of only the loaded image."
 msgstr "如果有当前活动队列，则将处理过程应用到队列中的所有图像上。"
 
-#: ../src/gui/siril3.glade.h:183
+#: ../src/gui/siril3.glade.h:189
 msgid "Output prefix:"
 msgstr "输出前缀:"
 
-#: ../src/gui/siril3.glade.h:184
+#: ../src/gui/siril3.glade.h:190
 msgid "Prefix of the image names resulting from the unband process."
 msgstr "去条纹处理后输出的文件名前缀。"
 
-#: ../src/gui/siril3.glade.h:185
+#: ../src/gui/siril3.glade.h:191
 msgid "1/Sigma Factor"
 msgstr "1/Sigma因子"
 
-#: ../src/gui/siril3.glade.h:186
+#: ../src/gui/siril3.glade.h:192
 msgid "Image compositing"
 msgstr "图像合成"
 
-#: ../src/gui/siril3.glade.h:187
+#: ../src/gui/siril3.glade.h:193
 msgid "Multi-layer image composition"
 msgstr "多通道图像合成"
 
-#: ../src/gui/siril3.glade.h:188
+#: ../src/gui/siril3.glade.h:194
 msgid "Layer alignments"
 msgstr "通道对齐"
 
 #. don't destroy it on removal from grid
-#: ../src/gui/siril3.glade.h:189 ../src/compositing/compositing.c:182
+#: ../src/gui/siril3.glade.h:195 ../src/compositing/compositing.c:182
 #: ../src/compositing/compositing.c:1077
 msgid "not loaded"
 msgstr "未载入"
 
-#: ../src/gui/siril3.glade.h:190
+#: ../src/gui/siril3.glade.h:196
 msgid "Adjust layers brightness"
 msgstr "调整通道亮度"
 
-#: ../src/gui/siril3.glade.h:191
+#: ../src/gui/siril3.glade.h:197
 msgid ""
 "Automatically adjust the brightness of the colours picked for layers so that "
 "they don't overflow when compositing (based on max value for each image). "
@@ -856,11 +878,11 @@ msgstr ""
 "自动调整各个通道的亮度，使之在合成中不会溢出（基于每幅图像的最大值）。色调不"
 "会改变。"
 
-#: ../src/gui/siril3.glade.h:192
+#: ../src/gui/siril3.glade.h:198
 msgid "Finalize colour balance"
 msgstr "冻结色彩平衡"
 
-#: ../src/gui/siril3.glade.h:193
+#: ../src/gui/siril3.glade.h:199
 msgid ""
 "Open the RGB calibration tool on the resulting image. This will modify the "
 "result in a destructive way to align the three channels of the result.\n"
@@ -870,76 +892,76 @@ msgstr ""
 "针对最终图像开启RGB色彩校准工具。这将改变最终图像的色彩平衡。\n"
 "之后在当前窗口中修改任何参数将使色彩平衡无效，色彩平衡必须重做。"
 
-#: ../src/gui/siril3.glade.h:195
+#: ../src/gui/siril3.glade.h:201
 msgid ""
 "Type of luminance-based colour composition. They represent the way of adding "
 "colour information to luminance data."
 msgstr "明度为基础的彩色合成类型。描述了在明度数据上添加彩色信息的方法。"
 
-#: ../src/gui/siril3.glade.h:196
+#: ../src/gui/siril3.glade.h:202
 msgid "HSL composition"
 msgstr "HSL合成"
 
-#: ../src/gui/siril3.glade.h:197
+#: ../src/gui/siril3.glade.h:203
 msgid "HSV composition"
 msgstr "HSV合成"
 
-#: ../src/gui/siril3.glade.h:198
+#: ../src/gui/siril3.glade.h:204
 msgid "CIE L*a*b* composition"
 msgstr "CIE L*a*b* 合成"
 
-#: ../src/gui/siril3.glade.h:199
+#: ../src/gui/siril3.glade.h:205
 msgid ""
 "WARNING: You should not perform a LRGB combination with linear images. "
 "Process images before."
 msgstr "警告：禁止使用线性图进行LRGB合成。请先完成图像的线性处理。"
 
-#: ../src/gui/siril3.glade.h:200
+#: ../src/gui/siril3.glade.h:206
 msgid "Align layers on this reference layer:"
 msgstr "基于这个参考通道来对齐其他通道:"
 
-#: ../src/gui/siril3.glade.h:201
+#: ../src/gui/siril3.glade.h:207
 msgid "Align"
 msgstr "对齐"
 
-#: ../src/gui/siril3.glade.h:202
+#: ../src/gui/siril3.glade.h:208
 msgid "Automatic alignment using the selected registration method."
 msgstr "使用所选的方法自动对齐。"
 
-#: ../src/gui/siril3.glade.h:203
+#: ../src/gui/siril3.glade.h:209
 msgid "Crop image to common area after align"
 msgstr "对齐后裁剪图像到公共区"
 
-#: ../src/gui/siril3.glade.h:204
+#: ../src/gui/siril3.glade.h:210
 msgid "and using this alignment method:"
 msgstr "使用此对齐方法:"
 
-#: ../src/gui/siril3.glade.h:205
+#: ../src/gui/siril3.glade.h:211
 msgid "For LRGB composition, the reference layer should be luminance."
 msgstr "在执行LRGB合成时，应选择明度通道为参考通道。"
 
 #. name, lambda, lo, hi, c/over, c/under, mode
-#: ../src/gui/siril3.glade.h:206 ../src/gui/callbacks.c:70
+#: ../src/gui/siril3.glade.h:212 ../src/gui/callbacks.c:70
 msgid "Luminance"
 msgstr "明度"
 
-#: ../src/gui/siril3.glade.h:207 ../src/algos/cosmetic_correction.c:331
+#: ../src/gui/siril3.glade.h:213 ../src/algos/cosmetic_correction.c:331
 msgid "Cosmetic Correction"
 msgstr "降噪"
 
-#: ../src/gui/siril3.glade.h:208
+#: ../src/gui/siril3.glade.h:214
 msgid "Close current window"
 msgstr "关闭当前窗口"
 
-#: ../src/gui/siril3.glade.h:209
+#: ../src/gui/siril3.glade.h:215
 msgid "Apply Cosmetic Correction"
 msgstr "应用降噪"
 
-#: ../src/gui/siril3.glade.h:210
+#: ../src/gui/siril3.glade.h:216
 msgid "CFA"
 msgstr "CFA"
 
-#: ../src/gui/siril3.glade.h:211
+#: ../src/gui/siril3.glade.h:217
 msgid ""
 "Check if the target frames are CFA images.\n"
 "Uncheck if images come from a monochrome sensor."
@@ -947,16 +969,16 @@ msgstr ""
 "CFA图像请点选这里。\n"
 "单色传感器的图像不要选上。"
 
-#: ../src/gui/siril3.glade.h:213
+#: ../src/gui/siril3.glade.h:219
 msgid ""
 "Prefix of the image names resulting from the cosmetic correction process."
 msgstr "降噪处理后的文件名前缀。"
 
-#: ../src/gui/siril3.glade.h:214
+#: ../src/gui/siril3.glade.h:220
 msgid "Cold Sigma:"
 msgstr "冷Sigma:"
 
-#: ../src/gui/siril3.glade.h:215
+#: ../src/gui/siril3.glade.h:221
 msgid ""
 "How many times (in averrage deviation units) a pixel value must differ from "
 "the value of surrounding neighbors to be considered as a cold pixel."
@@ -964,11 +986,11 @@ msgstr ""
 "当一个像素被认定为冷像素时，该像素必须相异于周围邻居像素的倍数（平均偏差单"
 "位）。"
 
-#: ../src/gui/siril3.glade.h:216
+#: ../src/gui/siril3.glade.h:222
 msgid "Hot Sigma:"
 msgstr "热Sigma:"
 
-#: ../src/gui/siril3.glade.h:217
+#: ../src/gui/siril3.glade.h:223
 msgid ""
 "How many times (in averrage deviation units) a pixel value must differ from "
 "the value of surrounding neighbors to be considered as a hot pixel."
@@ -976,511 +998,511 @@ msgstr ""
 "当一个像素被认定为热像素时，该像素必须相异于周围邻居像素的倍数（平均偏差单"
 "位）。"
 
-#: ../src/gui/siril3.glade.h:218
+#: ../src/gui/siril3.glade.h:224
 msgid "Auto detection"
 msgstr "自动侦测"
 
-#: ../src/gui/siril3.glade.h:219
+#: ../src/gui/siril3.glade.h:225
 msgid "Crop sequence"
 msgstr "裁剪队列"
 
-#: ../src/gui/siril3.glade.h:220
+#: ../src/gui/siril3.glade.h:226
 msgid "Prefix of the image names resulting from the cropping process."
 msgstr "裁剪处理后的文件名前缀。"
 
-#: ../src/gui/siril3.glade.h:221
+#: ../src/gui/siril3.glade.h:227
 msgid "Deconvolution"
 msgstr "反卷积"
 
-#: ../src/gui/siril3.glade.h:222
+#: ../src/gui/siril3.glade.h:228
 msgid "Sigma:"
 msgstr "Sigma:"
 
-#: ../src/gui/siril3.glade.h:223
+#: ../src/gui/siril3.glade.h:229
 msgid ""
 "This represents the size of the gaussian kernel which is applied. The higher "
 "the value is, the stronger the effect is."
 msgstr "高斯强化的幅度。数值越大，效果越明显。"
 
-#: ../src/gui/siril3.glade.h:224
+#: ../src/gui/siril3.glade.h:230
 msgid "Algorithm:"
 msgstr "算法："
 
-#: ../src/gui/siril3.glade.h:225
+#: ../src/gui/siril3.glade.h:231
 msgid "Number of iterations."
 msgstr "迭代次数。"
 
-#: ../src/gui/siril3.glade.h:226
+#: ../src/gui/siril3.glade.h:232
 msgid "Siril message"
 msgstr "Siril消息"
 
-#: ../src/gui/siril3.glade.h:227
+#: ../src/gui/siril3.glade.h:233
 msgid "Fourier Transform"
 msgstr "傅立叶变换"
 
-#: ../src/gui/siril3.glade.h:228
+#: ../src/gui/siril3.glade.h:234
 msgid "Name of the magnitude file: "
 msgstr "幅值文件名: "
 
-#: ../src/gui/siril3.glade.h:229
+#: ../src/gui/siril3.glade.h:235
 msgid "Name of the phase file: "
 msgstr "相位文件名: "
 
-#: ../src/gui/siril3.glade.h:230
+#: ../src/gui/siril3.glade.h:236
 msgid "Order: "
 msgstr "规则: "
 
-#: ../src/gui/siril3.glade.h:231
+#: ../src/gui/siril3.glade.h:237
 msgid "Type: "
 msgstr "类型: "
 
-#: ../src/gui/siril3.glade.h:232
+#: ../src/gui/siril3.glade.h:238
 msgid "modulus"
 msgstr "modulus"
 
-#: ../src/gui/siril3.glade.h:233
+#: ../src/gui/siril3.glade.h:239
 msgid "phase"
 msgstr "phase"
 
-#: ../src/gui/siril3.glade.h:234
+#: ../src/gui/siril3.glade.h:240
 msgid "Centered"
 msgstr "中心化"
 
-#: ../src/gui/siril3.glade.h:235
+#: ../src/gui/siril3.glade.h:241
 msgid "Normal"
 msgstr "标准"
 
-#: ../src/gui/siril3.glade.h:236
+#: ../src/gui/siril3.glade.h:242
 msgid "Polar (Magnitude + Phase)"
 msgstr "极坐标（幅值＋相位）"
 
-#: ../src/gui/siril3.glade.h:237
+#: ../src/gui/siril3.glade.h:243
 msgid "Direct Transform"
 msgstr "正变换"
 
-#: ../src/gui/siril3.glade.h:238
+#: ../src/gui/siril3.glade.h:244
 msgid "Magnitude of the image: "
 msgstr "幅值文件: "
 
-#: ../src/gui/siril3.glade.h:239
+#: ../src/gui/siril3.glade.h:245
 msgid "Phase of the image: "
 msgstr "相位文件: "
 
-#: ../src/gui/siril3.glade.h:240
+#: ../src/gui/siril3.glade.h:246
 msgid "Select Magnitude"
 msgstr "选择幅值文件"
 
-#: ../src/gui/siril3.glade.h:241
+#: ../src/gui/siril3.glade.h:247
 msgid "Select Phase"
 msgstr "选择相位文件"
 
-#: ../src/gui/siril3.glade.h:242
+#: ../src/gui/siril3.glade.h:248
 msgid "Inverse Transform"
 msgstr "反变换"
 
-#: ../src/gui/siril3.glade.h:243
+#: ../src/gui/siril3.glade.h:249
 msgid "Channel Extraction"
 msgstr "通道提取"
 
-#: ../src/gui/siril3.glade.h:244
+#: ../src/gui/siril3.glade.h:250
 msgid "File name for the first FITS file to save."
 msgstr "第一个要保存的FITS文件名。"
 
-#: ../src/gui/siril3.glade.h:245
+#: ../src/gui/siril3.glade.h:251
 msgid "File name for the second FITS file to save."
 msgstr "第二个要保存的FITS文件名。"
 
-#: ../src/gui/siril3.glade.h:246
+#: ../src/gui/siril3.glade.h:252
 msgid "File name for the third FITS file to save."
 msgstr "第三个要保存的FITS文件名。"
 
-#: ../src/gui/siril3.glade.h:247
+#: ../src/gui/siril3.glade.h:253
 msgid "Channel #1:"
 msgstr "通道#1:"
 
-#: ../src/gui/siril3.glade.h:248
+#: ../src/gui/siril3.glade.h:254
 msgid "Channel #2:"
 msgstr "通道#2:"
 
-#: ../src/gui/siril3.glade.h:249
+#: ../src/gui/siril3.glade.h:255
 msgid "Channel #3:"
 msgstr "通道#3:"
 
-#: ../src/gui/siril3.glade.h:250
+#: ../src/gui/siril3.glade.h:256
 msgid "Select the color space corresponding to the three extracted images"
 msgstr "选择所要提取之对应的色彩空间"
 
-#: ../src/gui/siril3.glade.h:251
+#: ../src/gui/siril3.glade.h:257
 msgid "RGB"
 msgstr "RGB"
 
-#: ../src/gui/siril3.glade.h:252
+#: ../src/gui/siril3.glade.h:258
 msgid "HSL"
 msgstr "HSL"
 
-#: ../src/gui/siril3.glade.h:253
+#: ../src/gui/siril3.glade.h:259
 msgid "HSV"
 msgstr "HSV"
 
-#: ../src/gui/siril3.glade.h:254
+#: ../src/gui/siril3.glade.h:260
 msgid "CIE L*a*b*"
 msgstr "CIE L*a*b*"
 
-#: ../src/gui/siril3.glade.h:255
+#: ../src/gui/siril3.glade.h:261
 msgid "Color Space:"
 msgstr "色彩空间:"
 
-#: ../src/gui/siril3.glade.h:256
+#: ../src/gui/siril3.glade.h:262
 msgid "Wavelets Layers Extraction"
 msgstr "小波图层提取"
 
-#: ../src/gui/siril3.glade.h:257
+#: ../src/gui/siril3.glade.h:263
 msgid "Close"
 msgstr "关闭"
 
-#: ../src/gui/siril3.glade.h:258
+#: ../src/gui/siril3.glade.h:264
 msgid "Apply wavelet extraction."
 msgstr "执行小波提取。"
 
-#: ../src/gui/siril3.glade.h:259
+#: ../src/gui/siril3.glade.h:265
 msgid ""
 "Number of wavelet layers. You can choose up to 6 layers for wavelets "
 "computing."
 msgstr "小波图层数量。可以选择最多6个图层。"
 
-#: ../src/gui/siril3.glade.h:260
+#: ../src/gui/siril3.glade.h:266
 msgid "Type of algorithm"
 msgstr "算法类型"
 
-#: ../src/gui/siril3.glade.h:261
+#: ../src/gui/siril3.glade.h:267
 msgid "BSpline"
 msgstr "B样条函数"
 
-#: ../src/gui/siril3.glade.h:262
+#: ../src/gui/siril3.glade.h:268
 msgid "Nb. of Layers: "
 msgstr "图层数: "
 
-#: ../src/gui/siril3.glade.h:263
+#: ../src/gui/siril3.glade.h:269
 msgid "Interpolation Algorithm:"
 msgstr "插值算法:"
 
-#: ../src/gui/siril3.glade.h:264
+#: ../src/gui/siril3.glade.h:270
 msgid "Histograms"
 msgstr "直方图"
 
-#: ../src/gui/siril3.glade.h:265
+#: ../src/gui/siril3.glade.h:271
 msgid "Horizontal Zoom"
 msgstr "水平比例"
 
-#: ../src/gui/siril3.glade.h:266
+#: ../src/gui/siril3.glade.h:272
 msgid "Reset zooms to 1."
 msgstr "重置缩放比例为1。"
 
-#: ../src/gui/siril3.glade.h:267
+#: ../src/gui/siril3.glade.h:273
 msgid "Logarithmic scale"
 msgstr "对数比例"
 
-#: ../src/gui/siril3.glade.h:268
+#: ../src/gui/siril3.glade.h:274
 msgid "Midtones balance"
 msgstr "中间调平衡"
 
-#: ../src/gui/siril3.glade.h:269
+#: ../src/gui/siril3.glade.h:275
 msgid "Shadows clipping"
 msgstr "阴影裁剪"
 
-#: ../src/gui/siril3.glade.h:270
+#: ../src/gui/siril3.glade.h:276
 msgid "Highlights clipping"
 msgstr "高光裁剪"
 
-#: ../src/gui/siril3.glade.h:271
+#: ../src/gui/siril3.glade.h:277
 msgid "Reset"
 msgstr "重置"
 
-#: ../src/gui/siril3.glade.h:272
+#: ../src/gui/siril3.glade.h:278
 msgid "Apply histogram transformation"
 msgstr "应用直方图变换"
 
-#: ../src/gui/siril3.glade.h:273
+#: ../src/gui/siril3.glade.h:279
 msgid "R"
 msgstr "R"
 
-#: ../src/gui/siril3.glade.h:274
+#: ../src/gui/siril3.glade.h:280
 msgid "G"
 msgstr "G"
 
-#: ../src/gui/siril3.glade.h:275
+#: ../src/gui/siril3.glade.h:281
 msgid "B"
 msgstr "B"
 
-#: ../src/gui/siril3.glade.h:276
+#: ../src/gui/siril3.glade.h:282
 msgid "Show grids"
 msgstr "显示网格"
 
-#: ../src/gui/siril3.glade.h:277
+#: ../src/gui/siril3.glade.h:283
 msgid "Show MTF curve"
 msgstr "显示MTF曲线"
 
-#: ../src/gui/siril3.glade.h:278
+#: ../src/gui/siril3.glade.h:284
 msgid "Apply autostretch algorithm to image"
 msgstr "执行自动拉伸"
 
-#: ../src/gui/siril3.glade.h:279
+#: ../src/gui/siril3.glade.h:285
 msgid "autoStretch"
 msgstr "自动拉伸"
 
-#: ../src/gui/siril3.glade.h:280
+#: ../src/gui/siril3.glade.h:286
 msgid "Highlights: "
 msgstr "高光: "
 
-#: ../src/gui/siril3.glade.h:281
+#: ../src/gui/siril3.glade.h:287
 msgid "Midtones: "
 msgstr "中间调: "
 
-#: ../src/gui/siril3.glade.h:282
+#: ../src/gui/siril3.glade.h:288
 msgid "Shadows: "
 msgstr "阴影: "
 
-#: ../src/gui/siril3.glade.h:284
+#: ../src/gui/siril3.glade.h:290
 #, no-c-format
 msgid "Clip (%)"
 msgstr "裁剪 (%)"
 
-#: ../src/gui/siril3.glade.h:285
+#: ../src/gui/siril3.glade.h:291
 msgid "Clipped pixels count (shadows)"
 msgstr "裁剪像素统计（阴影）"
 
-#: ../src/gui/siril3.glade.h:286
+#: ../src/gui/siril3.glade.h:292
 msgid "Clipped pixels count (highlights)"
 msgstr "裁剪像素统计（高光）"
 
-#: ../src/gui/siril3.glade.h:287
+#: ../src/gui/siril3.glade.h:293
 msgid "Resample"
 msgstr "重采样"
 
-#: ../src/gui/siril3.glade.h:289
+#: ../src/gui/siril3.glade.h:295
 #, no-c-format
 msgid "X scale (%): "
 msgstr "X轴比例 (%): "
 
-#: ../src/gui/siril3.glade.h:291
+#: ../src/gui/siril3.glade.h:297
 #, no-c-format
 msgid "Y scale (%): "
 msgstr "Y轴比例 (%): "
 
-#: ../src/gui/siril3.glade.h:292
+#: ../src/gui/siril3.glade.h:298
 msgid "Preserve Aspect Ratio"
 msgstr "锁定高宽比"
 
-#: ../src/gui/siril3.glade.h:293
+#: ../src/gui/siril3.glade.h:299
 msgid "Type of algorithm used for resampling"
 msgstr "重采样算法"
 
-#: ../src/gui/siril3.glade.h:294
+#: ../src/gui/siril3.glade.h:300
 msgid "Nearest Neighbor"
 msgstr "最近邻居法"
 
-#: ../src/gui/siril3.glade.h:295
+#: ../src/gui/siril3.glade.h:301
 msgid "Bilinear (default)"
 msgstr "双线性（缺省）"
 
-#: ../src/gui/siril3.glade.h:296 ../src/core/siril.c:1160
+#: ../src/gui/siril3.glade.h:302 ../src/core/siril.c:1160
 #: ../src/core/siril.c:1201
 msgid "Pixel Area Relation"
 msgstr "像素区域关联法"
 
-#: ../src/gui/siril3.glade.h:297 ../src/core/siril.c:1163
+#: ../src/gui/siril3.glade.h:303 ../src/core/siril.c:1163
 #: ../src/core/siril.c:1204
 msgid "Bicubic"
 msgstr "双三次插值"
 
-#: ../src/gui/siril3.glade.h:298
+#: ../src/gui/siril3.glade.h:304
 msgid "Lanczos-4"
 msgstr "Lanczos-4"
 
-#: ../src/gui/siril3.glade.h:299
+#: ../src/gui/siril3.glade.h:305
 msgid "root name of the converted images (the &apos;dest&apos; in dest1.fit)"
 msgstr "保存文件的基础名称（例如 dest1.fit 的 &apos;dest&apos;）"
 
-#: ../src/gui/siril3.glade.h:300
+#: ../src/gui/siril3.glade.h:306
 msgid "root name of the converted images (the 'dest' in dest1.fit)"
 msgstr "保存文件的基础名称（例如 dest1.fit 的“dest”）"
 
-#: ../src/gui/siril3.glade.h:301
+#: ../src/gui/siril3.glade.h:307
 msgid "<b>Filename</b>"
 msgstr "<b>文件名</b>"
 
-#: ../src/gui/siril3.glade.h:302
+#: ../src/gui/siril3.glade.h:308
 msgid "8-bit unsigned integer"
 msgstr "8位无符号整数"
 
-#: ../src/gui/siril3.glade.h:303
+#: ../src/gui/siril3.glade.h:309
 msgid "16-bit unsigned integer"
 msgstr "16位无符号整数"
 
-#: ../src/gui/siril3.glade.h:304
+#: ../src/gui/siril3.glade.h:310
 msgid "<b>Sample Format</b>"
 msgstr "<b>采样格式</b>"
 
-#: ../src/gui/siril3.glade.h:305
+#: ../src/gui/siril3.glade.h:311
 msgid "None"
 msgstr "无"
 
-#: ../src/gui/siril3.glade.h:306
+#: ../src/gui/siril3.glade.h:312
 msgid "ZIP"
 msgstr "ZIP"
 
-#: ../src/gui/siril3.glade.h:307
+#: ../src/gui/siril3.glade.h:313
 msgid "Not available"
 msgstr "不可用"
 
-#: ../src/gui/siril3.glade.h:308
+#: ../src/gui/siril3.glade.h:314
 msgid "<b>Compression</b>"
 msgstr "<b>压缩</b>"
 
-#: ../src/gui/siril3.glade.h:309
+#: ../src/gui/siril3.glade.h:315
 msgid "<b>Image Description</b>"
 msgstr "<b>图像描述</b>"
 
-#: ../src/gui/siril3.glade.h:310
+#: ../src/gui/siril3.glade.h:316
 msgid "<b>Image Copyright</b>"
 msgstr "<b>图像版权</b>"
 
-#: ../src/gui/siril3.glade.h:311
+#: ../src/gui/siril3.glade.h:317
 msgid "TIFF"
 msgstr "TIFF"
 
-#: ../src/gui/siril3.glade.h:312
+#: ../src/gui/siril3.glade.h:318
 msgid "Quality: "
 msgstr "品质: "
 
-#: ../src/gui/siril3.glade.h:313
+#: ../src/gui/siril3.glade.h:319
 msgid "JPEG"
 msgstr "JPEG"
 
-#: ../src/gui/siril3.glade.h:314
+#: ../src/gui/siril3.glade.h:320
 msgid "16-bit signed integer"
 msgstr "16位符号整数"
 
-#: ../src/gui/siril3.glade.h:315
+#: ../src/gui/siril3.glade.h:321
 msgid "Sample Format"
 msgstr "采样格式"
 
-#: ../src/gui/siril3.glade.h:316
+#: ../src/gui/siril3.glade.h:322
 msgid "Save MIPS-HI and MIPS-LO values"
 msgstr "保存MIPS-HI和MIPS-LO值"
 
-#: ../src/gui/siril3.glade.h:317
+#: ../src/gui/siril3.glade.h:323
 msgid "Embedded Data"
 msgstr "嵌入数据"
 
-#: ../src/gui/siril3.glade.h:318
+#: ../src/gui/siril3.glade.h:324
 msgid "FITS"
 msgstr "FITS"
 
-#: ../src/gui/siril3.glade.h:319
+#: ../src/gui/siril3.glade.h:325
 msgid "Settings"
 msgstr "设置"
 
-#: ../src/gui/siril3.glade.h:320
+#: ../src/gui/siril3.glade.h:326
 msgid "Use automatic daylight multiplier"
 msgstr "使用自动的昼光因子"
 
-#: ../src/gui/siril3.glade.h:321
+#: ../src/gui/siril3.glade.h:327
 msgid ""
 "When this option is enabled, coefficients for each channel are automatically "
 "computed. You can choose your own multiplier by unchecking this box."
 msgstr "当本选项被选定，每个通道的系数会自动计算。"
 
-#: ../src/gui/siril3.glade.h:322
+#: ../src/gui/siril3.glade.h:328
 msgid ""
 "Specify your own raw white balance. The value for the Red scale is relative "
 "to the Green."
 msgstr "指定raw白平衡，此处的红色比例系数是相对于绿色的。"
 
-#: ../src/gui/siril3.glade.h:323
+#: ../src/gui/siril3.glade.h:329
 msgid ""
 "Specify your own raw white balance. The value for the Blue scale is relative "
 "to the Green."
 msgstr "指定raw白平衡，此处的蓝色比例系数是相对于绿色的。"
 
-#: ../src/gui/siril3.glade.h:324
+#: ../src/gui/siril3.glade.h:330
 msgid "Brightness"
 msgstr "亮度"
 
-#: ../src/gui/siril3.glade.h:325
+#: ../src/gui/siril3.glade.h:331
 msgid "Divide the white level by this number."
 msgstr "白点比例系数。"
 
-#: ../src/gui/siril3.glade.h:326
+#: ../src/gui/siril3.glade.h:332
 msgid "No black point correction"
 msgstr "不进行黑点修正"
 
-#: ../src/gui/siril3.glade.h:327
+#: ../src/gui/siril3.glade.h:333
 msgid ""
 "When this option is enabled, no black point correction is applied to raw "
 "images."
 msgstr "本项选择后，不对raw图像进行黑点修正。"
 
-#: ../src/gui/siril3.glade.h:328
+#: ../src/gui/siril3.glade.h:334
 msgid "<b>Image Color Adjustement</b>"
 msgstr "<b>图像色彩调整</b>"
 
-#: ../src/gui/siril3.glade.h:329
+#: ../src/gui/siril3.glade.h:335
 msgid ""
 "Select an interpolation method to perform demosaicing before opening image."
 msgstr "选择一个针对所打开图像的去马赛克插值算法。"
 
-#: ../src/gui/siril3.glade.h:330
+#: ../src/gui/siril3.glade.h:336
 msgid "High-speed, low-quality bilinear"
 msgstr "高速低品质，双线性插值"
 
-#: ../src/gui/siril3.glade.h:331
+#: ../src/gui/siril3.glade.h:337
 msgid "Adaptive Homogeneity-Directed (AHD)"
 msgstr "自适应均匀导向法（AHD）"
 
-#: ../src/gui/siril3.glade.h:332
+#: ../src/gui/siril3.glade.h:338
 msgid "Variable Number of Gradients (VNG)"
 msgstr "可变参数渐变法（VNG）"
 
-#: ../src/gui/siril3.glade.h:333
+#: ../src/gui/siril3.glade.h:339
 msgid "Patterned Pixel Grouping (PPG)"
 msgstr "像素图样组群法（PPG）"
 
-#: ../src/gui/siril3.glade.h:334
+#: ../src/gui/siril3.glade.h:340
 msgid "Image Matrix Interpolation"
 msgstr "图像矩阵插值"
 
-#: ../src/gui/siril3.glade.h:335
+#: ../src/gui/siril3.glade.h:341
 msgid "No gamma correction is applied to the image."
 msgstr "不对图像进行伽玛校正。"
 
-#: ../src/gui/siril3.glade.h:336
+#: ../src/gui/siril3.glade.h:342
 msgid "BT.709 curve"
 msgstr "BT.709曲线"
 
-#: ../src/gui/siril3.glade.h:337
+#: ../src/gui/siril3.glade.h:343
 msgid "Apply a specific gamma curve to the image."
 msgstr "对图像应用伽玛曲线。"
 
-#: ../src/gui/siril3.glade.h:338
+#: ../src/gui/siril3.glade.h:344
 msgid "sRGB curve"
 msgstr "sRGB曲线"
 
-#: ../src/gui/siril3.glade.h:339
+#: ../src/gui/siril3.glade.h:345
 msgid "Apply a specific gamma curve to the image"
 msgstr "对图像应用伽玛曲线"
 
-#: ../src/gui/siril3.glade.h:340
+#: ../src/gui/siril3.glade.h:346
 msgid "<b>Image Gamma Correction</b>"
 msgstr "<b>图像伽玛校正</b>"
 
-#: ../src/gui/siril3.glade.h:341
+#: ../src/gui/siril3.glade.h:347
 msgid ""
 "Use the white balance \n"
 "specified by the camera"
 msgstr "使用相机的白平衡设置"
 
-#: ../src/gui/siril3.glade.h:343
+#: ../src/gui/siril3.glade.h:349
 msgid ""
 "By default, libraw uses a fixed white balance based on a color chart "
 "illuminated with a standard D65 lamp. If you check this box, libraw will try "
@@ -1489,13 +1511,13 @@ msgstr ""
 "在缺省情况下libraw使用一个基于D65标准色彩图表的固定的白平衡。当本项被选定后，"
 "libraw将使用相机上设定的白平衡。"
 
-#: ../src/gui/siril3.glade.h:344
+#: ../src/gui/siril3.glade.h:350
 msgid ""
 "Calculate the white balance \n"
 "by averaging the entire image"
 msgstr "平均整幅图像来计算白平衡"
 
-#: ../src/gui/siril3.glade.h:346
+#: ../src/gui/siril3.glade.h:352
 msgid ""
 "By default, libraw uses a fixed white balance based on a color chart "
 "illuminated with a standard D65 lamp. If you check this box, libraw will "
@@ -1504,56 +1526,56 @@ msgstr ""
 "在缺省情况下libraw使用一个基于D65标准色彩图表的固定的白平衡。当本项被选定后，"
 "libraw将通过平均整幅图像来自动计算白平衡。"
 
-#: ../src/gui/siril3.glade.h:347
+#: ../src/gui/siril3.glade.h:353
 msgid "Image White Balance"
 msgstr "图像白平衡"
 
-#: ../src/gui/siril3.glade.h:348
+#: ../src/gui/siril3.glade.h:354
 msgid "DSLR RAW file format decoder based on the libraw library."
 msgstr "基于libraw库对于DSLR的RAW文件解码。"
 
-#: ../src/gui/siril3.glade.h:349
+#: ../src/gui/siril3.glade.h:355
 msgid "DSLR RAW debayer"
 msgstr "DSLR RAW debayer"
 
-#: ../src/gui/siril3.glade.h:350
+#: ../src/gui/siril3.glade.h:356
 msgid "Select your camera's Bayer pattern."
 msgstr "选择相机的Bayer滤镜排列模式。"
 
-#: ../src/gui/siril3.glade.h:351
+#: ../src/gui/siril3.glade.h:357
 msgid "Bayer/mosaic pattern: "
 msgstr "Bayer滤镜排列模式: "
 
-#: ../src/gui/siril3.glade.h:352
+#: ../src/gui/siril3.glade.h:358
 msgid "Select an interpolation method to perform demosaicing."
 msgstr "选择一种去马赛克的插值算法。"
 
-#: ../src/gui/siril3.glade.h:353
+#: ../src/gui/siril3.glade.h:359
 msgid "Debayer interpolation: "
 msgstr "Debayer插值算法: "
 
-#: ../src/gui/siril3.glade.h:354 ../src/core/siril.c:1157
+#: ../src/gui/siril3.glade.h:360 ../src/core/siril.c:1157
 #: ../src/core/siril.c:1198
 msgid "Bilinear"
 msgstr "双线性"
 
-#: ../src/gui/siril3.glade.h:355
+#: ../src/gui/siril3.glade.h:361
 msgid "VNG"
 msgstr "VNG"
 
-#: ../src/gui/siril3.glade.h:356
+#: ../src/gui/siril3.glade.h:362
 msgid "AHD"
 msgstr "AHD"
 
-#: ../src/gui/siril3.glade.h:357
+#: ../src/gui/siril3.glade.h:363
 msgid "Super Pixel"
 msgstr "超级像素"
 
-#: ../src/gui/siril3.glade.h:358
+#: ../src/gui/siril3.glade.h:364
 msgid "Bayer pattern from file's header if available"
 msgstr "使用文件头中的Bayer滤镜排列模式"
 
-#: ../src/gui/siril3.glade.h:359
+#: ../src/gui/siril3.glade.h:365
 msgid ""
 "If this box is checked, Siril will automatically apply the Bayer pattern "
 "found in the file's header. If the result looks wrong uncheck this box and "
@@ -1562,7 +1584,7 @@ msgstr ""
 "当本选项被选择，Siril会自动应用文件头中的Bayer滤镜排列模式。如果结果看上去不"
 "妥，关闭本选项，在下面自行手动选择Bayer滤镜的排列模式。"
 
-#: ../src/gui/siril3.glade.h:360
+#: ../src/gui/siril3.glade.h:366
 msgid ""
 "Ensure compatibility with images stored\n"
 "in up-bottom orientation (KSTARS/EKOS, \n"
@@ -1572,7 +1594,7 @@ msgstr ""
 "以自上而下的方向（KSTARS/EKOS,\n"
 "PixInsight, 和其他……）"
 
-#: ../src/gui/siril3.glade.h:363
+#: ../src/gui/siril3.glade.h:369
 msgid ""
 "If this box is checked, Siril will try to ensure KSTARS (and PixInsight or "
 "others) compatibility by reading FITS image in up-bottom order."
@@ -1580,69 +1602,69 @@ msgstr ""
 "若本项被选定，Siril会试图通过使用自上而下的顺序来读取FITS文件，以确保"
 "KSTARS（和PixInsight或其他）的兼容性。"
 
-#: ../src/gui/siril3.glade.h:364
+#: ../src/gui/siril3.glade.h:370
 msgid "Debayer"
 msgstr "Debayer"
 
-#: ../src/gui/siril3.glade.h:365
+#: ../src/gui/siril3.glade.h:371
 msgid "Other debayer"
 msgstr "其它debayer"
 
-#: ../src/gui/siril3.glade.h:366
+#: ../src/gui/siril3.glade.h:372
 msgid "Focal length (mm): "
 msgstr "焦距(毫米): "
 
-#: ../src/gui/siril3.glade.h:367
+#: ../src/gui/siril3.glade.h:373
 msgid "Pixel X dim. (micron): "
 msgstr "像素宽度X(微米): "
 
-#: ../src/gui/siril3.glade.h:368
+#: ../src/gui/siril3.glade.h:374
 msgid ""
 "Clear all the fields. If you save your image after, the header will not "
 "contain any data about the focal or sensor size."
 msgstr "清空所有，之后所保存的文件头不会包含任何焦距和传感器信息。"
 
-#: ../src/gui/siril3.glade.h:369
+#: ../src/gui/siril3.glade.h:375
 msgid ""
 "If the Pixel Y size is not automatically loaded, using file's header, you "
 "can update the field by yourself."
 msgstr "如果像素高度Y无法从文件头中读取，你可以在此手工输入。"
 
-#: ../src/gui/siril3.glade.h:370
+#: ../src/gui/siril3.glade.h:376
 msgid "Pixel Y dim. (micron): "
 msgstr "像素高度Y(微米): "
 
-#: ../src/gui/siril3.glade.h:371
+#: ../src/gui/siril3.glade.h:377
 msgid "Binning: "
 msgstr "像素合并: "
 
-#: ../src/gui/siril3.glade.h:372
+#: ../src/gui/siril3.glade.h:378
 msgid ""
 "If the binning is not automatically loaded, using file's header, you can "
 "update this combo box."
 msgstr "如果像素合并无法从文件头中读取，你可以在此手工输入。"
 
-#: ../src/gui/siril3.glade.h:373
+#: ../src/gui/siril3.glade.h:379
 msgid "FWHM will be updated"
 msgstr "FWHM将会更新"
 
-#: ../src/gui/siril3.glade.h:374
+#: ../src/gui/siril3.glade.h:380
 msgid ""
 "If the focal length is not automatically loaded, using file's header, you "
 "can update the field by yourself."
 msgstr "如果焦距无法从文件头中读取，你可以在此手工输入。"
 
-#: ../src/gui/siril3.glade.h:375
+#: ../src/gui/siril3.glade.h:381
 msgid ""
 "If the Pixel X size is not automatically loaded, using file's header, you "
 "can update the field by yourself."
 msgstr "如果像素宽度X无法从文件头中读取，你可以在此手工输入。"
 
-#: ../src/gui/siril3.glade.h:376
+#: ../src/gui/siril3.glade.h:382
 msgid "<b>Camera and Optics</b>"
 msgstr "<b>相机和光学设备</b>"
 
-#: ../src/gui/siril3.glade.h:377
+#: ../src/gui/siril3.glade.h:383
 msgid ""
 "WARNING: these fields are automatically read from FITS file on opening and "
 "setting them here will only work for the currently loaded file."
@@ -1650,85 +1672,85 @@ msgstr ""
 "警告：上述数据原则上是自动从FITS文件中读取的，此处的改动只会对当前已载入文件"
 "有效。"
 
-#: ../src/gui/siril3.glade.h:378
+#: ../src/gui/siril3.glade.h:384
 msgid "Camera & Optics"
 msgstr "相机和光学设备"
 
-#: ../src/gui/siril3.glade.h:379
+#: ../src/gui/siril3.glade.h:385
 msgid "A/D converter gain in electrons per ADU. Default value is 2.300."
 msgstr "A/D转换的增益，单位为电子/ADU。缺省值为2.300。"
 
-#: ../src/gui/siril3.glade.h:380
+#: ../src/gui/siril3.glade.h:386
 msgid "ADC gain:"
 msgstr "ADC增益："
 
-#: ../src/gui/siril3.glade.h:381
+#: ../src/gui/siril3.glade.h:387
 msgid "Camera"
 msgstr "相机"
 
-#: ../src/gui/siril3.glade.h:382
+#: ../src/gui/siril3.glade.h:388
 msgid "Inner radius: "
 msgstr "内半径: "
 
-#: ../src/gui/siril3.glade.h:383
+#: ../src/gui/siril3.glade.h:389
 msgid "Outer radius:"
 msgstr "外半径："
 
-#: ../src/gui/siril3.glade.h:384
+#: ../src/gui/siril3.glade.h:390
 msgid ""
 "Inner radius of the annulus used to measure local background. Default value "
 "is 20.00."
 msgstr "用于测量局部背景的环形内半径。缺省值为20.00。"
 
-#: ../src/gui/siril3.glade.h:385
+#: ../src/gui/siril3.glade.h:391
 msgid ""
 "Outer radius of the annulus used to measure local background. Default value "
 "is 30.00."
 msgstr "用于测量局部背景的环形外半径。缺省值为30.00。"
 
-#: ../src/gui/siril3.glade.h:386
+#: ../src/gui/siril3.glade.h:392
 msgid "Size of the annulus for background level measurement (pixels):"
 msgstr "用于测量背景等级的环形区域大小（像素）:"
 
-#: ../src/gui/siril3.glade.h:387
+#: ../src/gui/siril3.glade.h:393
 msgid "Background"
 msgstr "背景"
 
-#: ../src/gui/siril3.glade.h:388
+#: ../src/gui/siril3.glade.h:394
 msgid "Restore to Default"
 msgstr "恢复为缺省值"
 
-#: ../src/gui/siril3.glade.h:389
+#: ../src/gui/siril3.glade.h:395
 msgid "Restore the defaut parameters"
 msgstr "恢复缺省参数"
 
-#: ../src/gui/siril3.glade.h:390
+#: ../src/gui/siril3.glade.h:396
 msgid "Photometry"
 msgstr "光度测定"
 
-#: ../src/gui/siril3.glade.h:391
+#: ../src/gui/siril3.glade.h:397
 msgid "Restore the defaut swap storage directory"
 msgstr "恢复为缺省的swap目录"
 
-#: ../src/gui/siril3.glade.h:392
+#: ../src/gui/siril3.glade.h:398
 msgid ""
 "Select an existing directory. Make sure you have write permissions and "
 "enough spaces."
 msgstr "选择一个已有的目录，该目录须要具有写权限和足够的空间。"
 
-#: ../src/gui/siril3.glade.h:393
+#: ../src/gui/siril3.glade.h:399
 msgid "Select Swap Directory"
 msgstr "选择Swap目录"
 
-#: ../src/gui/siril3.glade.h:394
+#: ../src/gui/siril3.glade.h:400
 msgid "<b>Swap Storage Directory</b>"
 msgstr "<b>Swap目录</b>"
 
-#: ../src/gui/siril3.glade.h:395
+#: ../src/gui/siril3.glade.h:401
 msgid "Ratio of Available Memory Used: "
 msgstr "所使用的可用内存的比例: "
 
-#: ../src/gui/siril3.glade.h:396
+#: ../src/gui/siril3.glade.h:402
 msgid ""
 "The memory used corresponds to this value times the total of available "
 "memory.\n"
@@ -1738,39 +1760,39 @@ msgstr ""
 "程序所使用的内存占可用内存的比例。\n"
 "警告：降低这个比例会影响程序的执行效率。"
 
-#: ../src/gui/siril3.glade.h:398
+#: ../src/gui/siril3.glade.h:404
 msgid "<b>Memory Managment</b>"
 msgstr "<b>内存管理</b>"
 
-#: ../src/gui/siril3.glade.h:399
+#: ../src/gui/siril3.glade.h:405
 msgid "Type of extension: "
 msgstr "扩展名类型: "
 
-#: ../src/gui/siril3.glade.h:400
+#: ../src/gui/siril3.glade.h:406
 msgid ".fit"
 msgstr ".fit"
 
-#: ../src/gui/siril3.glade.h:401
+#: ../src/gui/siril3.glade.h:407
 msgid ".fits"
 msgstr ".fits"
 
-#: ../src/gui/siril3.glade.h:402
+#: ../src/gui/siril3.glade.h:408
 msgid ".fts"
 msgstr ".fts"
 
-#: ../src/gui/siril3.glade.h:403
+#: ../src/gui/siril3.glade.h:409
 msgid "<b>FITS Format</b>"
 msgstr "<b>FITS 格式</b>"
 
-#: ../src/gui/siril3.glade.h:404
+#: ../src/gui/siril3.glade.h:410
 msgid "Don't ask before quitting"
 msgstr "退出前不询问"
 
-#: ../src/gui/siril3.glade.h:405
+#: ../src/gui/siril3.glade.h:411
 msgid "<b>Confirmation dialog</b>"
 msgstr "<b>确认对话框</b>"
 
-#: ../src/gui/siril3.glade.h:406
+#: ../src/gui/siril3.glade.h:412
 msgid ""
 "Using dark GTK theme\n"
 "(may require restarting)"
@@ -1778,7 +1800,7 @@ msgstr ""
 "使用drak GTK主题\n"
 "（需要重新启动）"
 
-#: ../src/gui/siril3.glade.h:408
+#: ../src/gui/siril3.glade.h:414
 msgid ""
 "Some dialogs of Siril have non-standard bright colours. With a dark theme, "
 "where the text is bright too, that's unreadable. Checking here will change "
@@ -1787,11 +1809,11 @@ msgstr ""
 "某些Siril对话框具有非标准的亮色。当使用暗色主题时，这些文字仍是亮色，会难以阅"
 "读。点选此处将会改变这些非标准色彩为暗色。"
 
-#: ../src/gui/siril3.glade.h:409
+#: ../src/gui/siril3.glade.h:415
 msgid "<b>Look and feel</b>"
 msgstr "<b>外观</b>"
 
-#: ../src/gui/siril3.glade.h:410
+#: ../src/gui/siril3.glade.h:416
 msgid ""
 "The paths written in this text box will be checked in order to load scripts "
 "that have been put inside. Write a path per line with as many lines you "
@@ -1803,63 +1825,63 @@ msgstr ""
 "want. However you have to keep in mind that more paths are cheked the longer "
 "is the startup."
 
-#: ../src/gui/siril3.glade.h:411
+#: ../src/gui/siril3.glade.h:417
 msgid "<b>Scripts Storage Directories</b>"
 msgstr "<b>脚本存放目录</b>"
 
-#: ../src/gui/siril3.glade.h:412
+#: ../src/gui/siril3.glade.h:418
 msgid "Misc."
 msgstr "杂项."
 
-#: ../src/gui/siril3.glade.h:413
+#: ../src/gui/siril3.glade.h:419
 msgid "Dynamic PSF"
 msgstr "动态PSF"
 
-#: ../src/gui/siril3.glade.h:414
+#: ../src/gui/siril3.glade.h:420
 msgid "Ch."
 msgstr "Ch."
 
-#: ../src/gui/siril3.glade.h:415
+#: ../src/gui/siril3.glade.h:421
 msgid "A"
 msgstr "A"
 
-#: ../src/gui/siril3.glade.h:416
+#: ../src/gui/siril3.glade.h:422
 msgid "x0"
 msgstr "x0"
 
-#: ../src/gui/siril3.glade.h:417
+#: ../src/gui/siril3.glade.h:423
 msgid "y0"
 msgstr "y0"
 
-#: ../src/gui/siril3.glade.h:418
+#: ../src/gui/siril3.glade.h:424
 msgid "FWHMx"
 msgstr "FWHMx"
 
-#: ../src/gui/siril3.glade.h:419
+#: ../src/gui/siril3.glade.h:425
 msgid "FWHMy"
 msgstr "FWHMy"
 
-#: ../src/gui/siril3.glade.h:420
+#: ../src/gui/siril3.glade.h:426
 msgid "Mag"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:421
+#: ../src/gui/siril3.glade.h:427
 msgid "r"
 msgstr "圆度"
 
-#: ../src/gui/siril3.glade.h:422
+#: ../src/gui/siril3.glade.h:428
 msgid "Angle"
 msgstr "偏角"
 
-#: ../src/gui/siril3.glade.h:423
+#: ../src/gui/siril3.glade.h:429
 msgid "RMSE"
 msgstr "RMSE"
 
-#: ../src/gui/siril3.glade.h:424
+#: ../src/gui/siril3.glade.h:430
 msgid "Size in pixels of the search box."
 msgstr "搜索框的像素尺寸。"
 
-#: ../src/gui/siril3.glade.h:425
+#: ../src/gui/siril3.glade.h:431
 msgid ""
 "Threshold value above the noise for stars detection.\n"
 "The median and standard deviation values of the image are determined, then "
@@ -1870,19 +1892,19 @@ msgstr ""
 "图像的中位数和标准背离值将被侦测，阀值则为：中位数＋[阀值]*标准背离值\n"
 "缺省值为1.00。"
 
-#: ../src/gui/siril3.glade.h:428
+#: ../src/gui/siril3.glade.h:434
 msgid "Radius: "
 msgstr "半径: "
 
-#: ../src/gui/siril3.glade.h:429
+#: ../src/gui/siril3.glade.h:435
 msgid "Threshold: "
 msgstr "阀值: "
 
-#: ../src/gui/siril3.glade.h:430
+#: ../src/gui/siril3.glade.h:436
 msgid "Roundness threshold:"
 msgstr "圆度阀值："
 
-#: ../src/gui/siril3.glade.h:431
+#: ../src/gui/siril3.glade.h:437
 msgid ""
 "Threshold value of star roundnesses. Decrease this value if your stars show "
 "small trails.\n"
@@ -1893,295 +1915,295 @@ msgstr ""
 "星点的圆度阀值。如果星点拖线则可以减小此值。\n"
 "警告：此处更改会影响星点侦测，请确定你有足够的理由来修改它。"
 
-#: ../src/gui/siril3.glade.h:434
+#: ../src/gui/siril3.glade.h:440
 msgid "Star Detection"
 msgstr "星点侦测"
 
-#: ../src/gui/siril3.glade.h:435
+#: ../src/gui/siril3.glade.h:441
 msgid "Export PSF parameters in a ASCII file"
 msgstr "导出PSF数据到ASCII文件"
 
-#: ../src/gui/siril3.glade.h:436
+#: ../src/gui/siril3.glade.h:442
 msgid "Remove selected star from the list"
 msgstr "移除所选的星点"
 
-#: ../src/gui/siril3.glade.h:437
+#: ../src/gui/siril3.glade.h:443
 msgid "Remove all stars from the list"
 msgstr "清空整个列表"
 
-#: ../src/gui/siril3.glade.h:438
+#: ../src/gui/siril3.glade.h:444
 msgid "Wavelets control"
 msgstr "小波控制"
 
-#: ../src/gui/siril3.glade.h:439
+#: ../src/gui/siril3.glade.h:445
 msgid "Cancel all changes applied"
 msgstr "取消所有的更改"
 
-#: ../src/gui/siril3.glade.h:440
+#: ../src/gui/siril3.glade.h:446
 msgid "Select an algorithm type to perform wavelets"
 msgstr "选择一个小波算法"
 
-#: ../src/gui/siril3.glade.h:441
+#: ../src/gui/siril3.glade.h:447
 msgid "Compute wavelets"
 msgstr "计算小波"
 
-#: ../src/gui/siril3.glade.h:442
+#: ../src/gui/siril3.glade.h:448
 msgid "Type:"
 msgstr "类型:"
 
-#: ../src/gui/siril3.glade.h:443
+#: ../src/gui/siril3.glade.h:449
 msgid "Nb of plans:"
 msgstr "通道数:"
 
-#: ../src/gui/siril3.glade.h:444
+#: ../src/gui/siril3.glade.h:450
 msgid "Number of wavelet layers that will be used"
 msgstr "小波图层数量"
 
-#: ../src/gui/siril3.glade.h:445
+#: ../src/gui/siril3.glade.h:451
 msgid "1st Plan:"
 msgstr "通道1:"
 
-#: ../src/gui/siril3.glade.h:446
+#: ../src/gui/siril3.glade.h:452
 msgid "2nd Plan:"
 msgstr "通道2:"
 
-#: ../src/gui/siril3.glade.h:447
+#: ../src/gui/siril3.glade.h:453
 msgid "3th Plan:"
 msgstr "通道3:"
 
-#: ../src/gui/siril3.glade.h:448
+#: ../src/gui/siril3.glade.h:454
 msgid "4th Plan:"
 msgstr "通道4:"
 
-#: ../src/gui/siril3.glade.h:449
+#: ../src/gui/siril3.glade.h:455
 msgid "5th Plan:"
 msgstr "通道5:"
 
-#: ../src/gui/siril3.glade.h:450
+#: ../src/gui/siril3.glade.h:456
 msgid "6th Plan:"
 msgstr "通道6:"
 
-#: ../src/gui/siril3.glade.h:451
+#: ../src/gui/siril3.glade.h:457
 msgid "Reset changes"
 msgstr "重置所有通道"
 
-#: ../src/gui/siril3.glade.h:452
+#: ../src/gui/siril3.glade.h:458
 msgid "Performs transformation"
 msgstr "执行变换"
 
-#: ../src/gui/siril3.glade.h:453
+#: ../src/gui/siril3.glade.h:459
 msgid "Adjust"
 msgstr "调整"
 
-#: ../src/gui/siril3.glade.h:454
+#: ../src/gui/siril3.glade.h:460
 msgid "Rotation"
 msgstr "旋转"
 
-#: ../src/gui/siril3.glade.h:455
+#: ../src/gui/siril3.glade.h:461
 msgid "Angle (°): "
 msgstr "角度(°): "
 
-#: ../src/gui/siril3.glade.h:456
+#: ../src/gui/siril3.glade.h:462
 msgid "Checking this box will crop the output image."
 msgstr "点选此处将会裁剪输出的图像。"
 
-#: ../src/gui/siril3.glade.h:457
+#: ../src/gui/siril3.glade.h:463
 msgid "Angle in degrees. Rotation center is the center of the image."
 msgstr "旋转的角度。旋转中心为图像中心。"
 
-#: ../src/gui/siril3.glade.h:458
+#: ../src/gui/siril3.glade.h:464
 msgid "Type of algorithm used for rotation"
 msgstr "旋转所用的算法"
 
-#: ../src/gui/siril3.glade.h:459
+#: ../src/gui/siril3.glade.h:465
 msgid "Siril control center"
 msgstr "Siril控制中心"
 
-#: ../src/gui/siril3.glade.h:460
+#: ../src/gui/siril3.glade.h:466
 msgid "_File"
 msgstr "_文件"
 
-#: ../src/gui/siril3.glade.h:461
+#: ../src/gui/siril3.glade.h:467
 msgid "Save as..."
 msgstr "另存为..."
 
-#: ../src/gui/siril3.glade.h:462
+#: ../src/gui/siril3.glade.h:468
 msgid "FITS Header..."
 msgstr "FITS 文件头..."
 
-#: ../src/gui/siril3.glade.h:463
+#: ../src/gui/siril3.glade.h:469
 msgid "_Edit"
 msgstr "_编辑"
 
-#: ../src/gui/siril3.glade.h:464
+#: ../src/gui/siril3.glade.h:470
 msgid "_Image Processing"
 msgstr "_图像处理"
 
-#: ../src/gui/siril3.glade.h:465
+#: ../src/gui/siril3.glade.h:471
 msgid "Histogram Transformation..."
 msgstr "直方图变换…"
 
-#: ../src/gui/siril3.glade.h:466
+#: ../src/gui/siril3.glade.h:472
 msgid "Color Calibration..."
 msgstr "色彩校准..."
 
-#: ../src/gui/siril3.glade.h:467
+#: ../src/gui/siril3.glade.h:473
 msgid "Remove Green Noise..."
 msgstr "除去绿色噪声…"
 
-#: ../src/gui/siril3.glade.h:468
+#: ../src/gui/siril3.glade.h:474
 #, fuzzy
 msgid "Color Saturation..."
 msgstr "饱和度..."
 
-#: ../src/gui/siril3.glade.h:469
+#: ../src/gui/siril3.glade.h:475
 #, fuzzy
 msgid "Negative Transformation"
 msgstr "直方图变换…"
 
-#: ../src/gui/siril3.glade.h:470
+#: ../src/gui/siril3.glade.h:476
 msgid "À trous Wavelets Transform..."
 msgstr "小波变换（ATWT）…"
 
-#: ../src/gui/siril3.glade.h:471
+#: ../src/gui/siril3.glade.h:477
 msgid "Banding Reduction..."
 msgstr "除去条纹…"
 
-#: ../src/gui/siril3.glade.h:472
+#: ../src/gui/siril3.glade.h:478
 msgid "Cosmetic Correction..."
 msgstr "降噪..."
 
-#: ../src/gui/siril3.glade.h:473 ../src/opencv/opencv.cpp:489
+#: ../src/gui/siril3.glade.h:479 ../src/opencv/opencv.cpp:489
 msgid "Deconvolution..."
 msgstr "反卷积…"
 
-#: ../src/gui/siril3.glade.h:474
+#: ../src/gui/siril3.glade.h:480
 msgid "Fourier Transform..."
 msgstr "傅立叶变换..."
 
-#: ../src/gui/siril3.glade.h:475
+#: ../src/gui/siril3.glade.h:481
 msgid "Median Filter..."
 msgstr "中位数滤镜..."
 
-#: ../src/gui/siril3.glade.h:476
+#: ../src/gui/siril3.glade.h:482
 msgid "Geometry"
 msgstr "几何调整"
 
-#: ../src/gui/siril3.glade.h:477
+#: ../src/gui/siril3.glade.h:483
 msgid "Horizontal Mirror"
 msgstr "水平翻转"
 
-#: ../src/gui/siril3.glade.h:478
+#: ../src/gui/siril3.glade.h:484
 msgid "Vertical Mirror"
 msgstr "垂直翻转"
 
-#: ../src/gui/siril3.glade.h:479
+#: ../src/gui/siril3.glade.h:485
 msgid "Rotation..."
 msgstr "旋转…"
 
-#: ../src/gui/siril3.glade.h:480
+#: ../src/gui/siril3.glade.h:486
 msgid "Resample..."
 msgstr "重采样…"
 
-#: ../src/gui/siril3.glade.h:481
+#: ../src/gui/siril3.glade.h:487
 msgid "Background Extraction..."
 msgstr "背景提取…"
 
-#: ../src/gui/siril3.glade.h:482
+#: ../src/gui/siril3.glade.h:488
 msgid "Extraction"
 msgstr "提取"
 
-#: ../src/gui/siril3.glade.h:483
+#: ../src/gui/siril3.glade.h:489
 msgid "Channels..."
 msgstr "通道…"
 
-#: ../src/gui/siril3.glade.h:484
+#: ../src/gui/siril3.glade.h:490
 msgid "Wavelet Layers..."
 msgstr "小波图层…"
 
-#: ../src/gui/siril3.glade.h:485
+#: ../src/gui/siril3.glade.h:491
 msgid "RGB Compositing..."
 msgstr "RGB合成…"
 
-#: ../src/gui/siril3.glade.h:486
+#: ../src/gui/siril3.glade.h:492
 msgid "_Scripts"
 msgstr "_Scripts"
 
-#: ../src/gui/siril3.glade.h:487
+#: ../src/gui/siril3.glade.h:493
 msgid "_Analysis"
 msgstr "_分析"
 
-#: ../src/gui/siril3.glade.h:488
+#: ../src/gui/siril3.glade.h:494
 msgid "Dynamic PSF..."
 msgstr "动态PSF..."
 
-#: ../src/gui/siril3.glade.h:489
+#: ../src/gui/siril3.glade.h:495
 msgid "Image Plate Solver..."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:490
+#: ../src/gui/siril3.glade.h:496
 msgid "Statistics..."
 msgstr "统计..."
 
-#: ../src/gui/siril3.glade.h:491
+#: ../src/gui/siril3.glade.h:497
 msgid "Noise Estimation"
 msgstr "噪声评估"
 
-#: ../src/gui/siril3.glade.h:492
+#: ../src/gui/siril3.glade.h:498
 msgid "_Windows"
 msgstr "_窗口"
 
-#: ../src/gui/siril3.glade.h:493
+#: ../src/gui/siril3.glade.h:499
 msgid "Gray Channels Images"
 msgstr "灰度通道图像"
 
-#: ../src/gui/siril3.glade.h:494
+#: ../src/gui/siril3.glade.h:500
 msgid "Color Image"
 msgstr "彩色图像"
 
-#: ../src/gui/siril3.glade.h:495
+#: ../src/gui/siril3.glade.h:501
 msgid "_Help"
 msgstr "_帮助"
 
-#: ../src/gui/siril3.glade.h:496
+#: ../src/gui/siril3.glade.h:502
 msgid "Check For Updates"
 msgstr "检查更新"
 
-#: ../src/gui/siril3.glade.h:497
+#: ../src/gui/siril3.glade.h:503
 msgid ""
 "This conversion tab is used to import files and convert them into a format "
 "with which Siril can work: FITS or SER."
 msgstr "转化标签页用于导入文件并且将其转化为Siril可以操作的格式：FITS 或 SER。"
 
-#: ../src/gui/siril3.glade.h:498
+#: ../src/gui/siril3.glade.h:504
 msgid "Source"
 msgstr "源文件"
 
-#: ../src/gui/siril3.glade.h:499
+#: ../src/gui/siril3.glade.h:505
 msgid "Date"
 msgstr "日期"
 
-#: ../src/gui/siril3.glade.h:500
+#: ../src/gui/siril3.glade.h:506
 msgid "Add files to convert"
 msgstr "添加文件用于转化"
 
-#: ../src/gui/siril3.glade.h:501
+#: ../src/gui/siril3.glade.h:507
 msgid "Remove selected files"
 msgstr "移除所选的文件"
 
-#: ../src/gui/siril3.glade.h:502
+#: ../src/gui/siril3.glade.h:508
 msgid "Remove all files from the list"
 msgstr "移除列表里所有的文件"
 
-#: ../src/gui/siril3.glade.h:503
+#: ../src/gui/siril3.glade.h:509
 msgid "Destination"
 msgstr "目标文件"
 
-#: ../src/gui/siril3.glade.h:504
+#: ../src/gui/siril3.glade.h:510
 msgid "Sequence name:"
 msgstr "队列名称:"
 
-#: ../src/gui/siril3.glade.h:505
+#: ../src/gui/siril3.glade.h:511
 msgid ""
 "Enter the base name of the sequence, for example NGC_6822-L. It will create "
 "images in the form NGC_6822-L_00001.fit. The name can also end with .ser, "
@@ -2190,43 +2212,43 @@ msgstr ""
 "键入队列的文件名词根，例如NGC_6822-L，程序会创建文件名从NGC_6822-L_00001.fit"
 "开始。文件名可以加入.ser后缀，这样将会输出为SER格式。"
 
-#: ../src/gui/siril3.glade.h:506
+#: ../src/gui/siril3.glade.h:512
 msgid "Colour image target"
 msgstr "彩色图像目标"
 
-#: ../src/gui/siril3.glade.h:507
+#: ../src/gui/siril3.glade.h:513
 msgid "Keep three channels"
 msgstr "包含三个通道"
 
-#: ../src/gui/siril3.glade.h:508
+#: ../src/gui/siril3.glade.h:514
 msgid ""
 "Keep the destination image with RGB channels, do not change the channels "
 "configuration."
 msgstr "在目标文件中包含RGB通道，不改各个变通道的设置。"
 
-#: ../src/gui/siril3.glade.h:509
+#: ../src/gui/siril3.glade.h:515
 msgid "Create three images"
 msgstr "分拆为三个文件"
 
-#: ../src/gui/siril3.glade.h:510
+#: ../src/gui/siril3.glade.h:516
 msgid "Split an RGB image into three images, R, G and B."
 msgstr "将RGB通道分拆为R,G和B三个单独的文件。"
 
-#: ../src/gui/siril3.glade.h:511
+#: ../src/gui/siril3.glade.h:517
 msgid "Keep only first channel"
 msgstr "只保留第一个通道"
 
-#: ../src/gui/siril3.glade.h:512
+#: ../src/gui/siril3.glade.h:518
 msgid "For an RGB image, only keep R. Useful for grey images stored as RGB."
 msgstr "只保留RGB图像中的R通道。一般用于以RGB模式保存的灰度图像。"
 
-#: ../src/gui/siril3.glade.h:513
+#: ../src/gui/siril3.glade.h:519
 msgid ""
 "Indicates the start indice of your converted files. This value must be "
 "included in the [1, 65535] range."
 msgstr "转化文件的起始点。该值必须在[1, 65535]范围内。"
 
-#: ../src/gui/siril3.glade.h:514
+#: ../src/gui/siril3.glade.h:520
 msgid ""
 "Debayer single-channel images (CFA format) using the Bayer matrix layout "
 "given in the settings. Also applies to image opening, not only conversion.\n"
@@ -2237,18 +2259,18 @@ msgstr ""
 "化，也作用于打开的图像。\n"
 "只针对RAW和FITS图像文件，还有SER视频。"
 
-#: ../src/gui/siril3.glade.h:517
+#: ../src/gui/siril3.glade.h:523
 msgid ""
 "Start conversion of all source files into the configured output files, FITS "
 "or SER, with colour processing or not."
 msgstr ""
 "开始转化所有元文件为所设定的目标文件（彩色化开启或关闭），格式为FITS或者SER。"
 
-#: ../src/gui/siril3.glade.h:518
+#: ../src/gui/siril3.glade.h:524
 msgid "Create as many SER files as input files"
 msgstr "创建跟源文件数目相同的SER文件"
 
-#: ../src/gui/siril3.glade.h:519
+#: ../src/gui/siril3.glade.h:525
 msgid ""
 "Tick this to create several SER files instead of a single SER file for all "
 "input elements. Use this if input elements (films) don't share the same "
@@ -2257,11 +2279,11 @@ msgstr ""
 "点选此处用于创建数个SER文件而非单一的。用于当原始素材（视频）为非相同分辨率大"
 "小，或因某些原因不准备被一起处理。"
 
-#: ../src/gui/siril3.glade.h:520
+#: ../src/gui/siril3.glade.h:526
 msgid "Supported file types:"
 msgstr "支持文件类型:"
 
-#: ../src/gui/siril3.glade.h:521
+#: ../src/gui/siril3.glade.h:527
 msgid ""
 "Supported types depend on compile-time libraries availability. See "
 "documentation.\n"
@@ -2276,11 +2298,11 @@ msgstr ""
 "视频为任何可以被转化为FITS或者SER的格式。\n"
 "SER为可直接操作的队列文件，并且尚不支持转化。"
 
-#: ../src/gui/siril3.glade.h:525
+#: ../src/gui/siril3.glade.h:531
 msgid "File conversion"
 msgstr "文件转化"
 
-#: ../src/gui/siril3.glade.h:526
+#: ../src/gui/siril3.glade.h:532
 msgid ""
 "Images are manipulated in sequences. Siril can find sequences in CWD, and "
 "you can filter images out."
@@ -2288,28 +2310,28 @@ msgstr ""
 "图像以队列的形式被Siril操作，Siril可以发现当前目录中的队列，并且用户可以筛选"
 "其中的图像。"
 
-#: ../src/gui/siril3.glade.h:527
+#: ../src/gui/siril3.glade.h:533
 msgid "Sequence selection"
 msgstr "队列选择"
 
-#: ../src/gui/siril3.glade.h:528
+#: ../src/gui/siril3.glade.h:534
 msgid "Sequence:"
 msgstr "队列:"
 
-#: ../src/gui/siril3.glade.h:529
+#: ../src/gui/siril3.glade.h:535
 msgid "Search sequences"
 msgstr "查找队列"
 
-#: ../src/gui/siril3.glade.h:530
+#: ../src/gui/siril3.glade.h:536
 msgid ""
 "Search current directory for sequences of FITS images, SER or film videos."
 msgstr "在当前目录中搜索以FITS文件组成的队列，SER文件或者视频文件。"
 
-#: ../src/gui/siril3.glade.h:531
+#: ../src/gui/siril3.glade.h:537
 msgid "Force .seq recomputation"
 msgstr "强制.seq文件重新计算"
 
-#: ../src/gui/siril3.glade.h:532
+#: ../src/gui/siril3.glade.h:538
 msgid ""
 "By default, Siril takes the data from seq file if already computed. However "
 "you can force Siril to recompute the file if some changes have not been "
@@ -2323,15 +2345,15 @@ msgstr ""
 "此按钮被使用过以后会自动重置为空。\n"
 "警告：本操作会清空所有对齐和统计信息。"
 
-#: ../src/gui/siril3.glade.h:536
+#: ../src/gui/siril3.glade.h:542
 msgid "Image selection in sequence"
 msgstr "队列中的文件选择"
 
-#: ../src/gui/siril3.glade.h:537
+#: ../src/gui/siril3.glade.h:543
 msgid "No sequence selected"
 msgstr "当前所选序列号"
 
-#: ../src/gui/siril3.glade.h:538
+#: ../src/gui/siril3.glade.h:544
 msgid ""
 "Image index in the sequence. You can also use arrow keys to browse images, "
 "and the SPACE key to toggle exclude for the current image."
@@ -2339,21 +2361,21 @@ msgstr ""
 "队列中的图像序号。用户也可以使用方向键来遍历图像，空格键来切换是否排除当前图"
 "像。"
 
-#: ../src/gui/siril3.glade.h:539
+#: ../src/gui/siril3.glade.h:545
 msgid "Excluded"
 msgstr "已排除"
 
-#: ../src/gui/siril3.glade.h:540
+#: ../src/gui/siril3.glade.h:546
 msgid ""
 "Whether or not the image is excluded from processing (the file itself is not "
 "deleted)"
 msgstr "图像是否被排除在后续处理之外"
 
-#: ../src/gui/siril3.glade.h:541
+#: ../src/gui/siril3.glade.h:547
 msgid "Reference image"
 msgstr "参考帧"
 
-#: ../src/gui/siril3.glade.h:542
+#: ../src/gui/siril3.glade.h:548
 msgid ""
 "If set, the current image will be the reference image for registration.\n"
 "Only one image can be the reference image in a sequence, setting it will "
@@ -2364,45 +2386,45 @@ msgstr ""
 "一个队列中只能有一幅图像作为参考帧，新设置的参考帧会覆盖之前的设置。\n"
 "如果没有被手动指定，则队列里第一幅图像即为参考帧。"
 
-#: ../src/gui/siril3.glade.h:545
+#: ../src/gui/siril3.glade.h:551
 msgid "Exclude All"
 msgstr "全部排除"
 
-#: ../src/gui/siril3.glade.h:546
+#: ../src/gui/siril3.glade.h:552
 msgid "Exclude all images of the sequence from the processing schedule"
 msgstr "队列里所有的图像被排除在后续处理之外"
 
-#: ../src/gui/siril3.glade.h:547
+#: ../src/gui/siril3.glade.h:553
 msgid "Include All"
 msgstr "全部包含"
 
-#: ../src/gui/siril3.glade.h:548
+#: ../src/gui/siril3.glade.h:554
 msgid "includes all images of the sequence in the processing schedule"
 msgstr "队列里所有的图像被包含在后续处理之内"
 
-#: ../src/gui/siril3.glade.h:549
+#: ../src/gui/siril3.glade.h:555
 msgid "Sequence export"
 msgstr "队列导出"
 
-#: ../src/gui/siril3.glade.h:550
+#: ../src/gui/siril3.glade.h:556
 msgid "Base name:"
 msgstr "命名词根:"
 
-#: ../src/gui/siril3.glade.h:551
+#: ../src/gui/siril3.glade.h:557
 msgid "Base name for the exported sequence"
 msgstr "导出队列的文件名词根"
 
-#: ../src/gui/siril3.glade.h:552
+#: ../src/gui/siril3.glade.h:558
 msgid ""
 "Export sequence format. MP4 and WEBM replaces GIF for modern Web "
 "publication, AVI is not compressed."
 msgstr "队列导出的格式。MP4和WEBM是用于代替GIF的先进Web格式，AVI是无压缩的。"
 
-#: ../src/gui/siril3.glade.h:553
+#: ../src/gui/siril3.glade.h:559
 msgid "Export sequence"
 msgstr "导出队列"
 
-#: ../src/gui/siril3.glade.h:554
+#: ../src/gui/siril3.glade.h:560
 msgid ""
 "Export the loaded sequence in the selected format. It can be used to store a "
 "sequence in another format, make animated movies, or store a lighter version "
@@ -2412,11 +2434,11 @@ msgstr ""
 "按照所选定的格式导出当前队列。可用于将队列保存为另外的格式，制作动画，或者重"
 "新筛选队列内容。所导出的图像帧可以按照与图像叠加相同的条件来进行过滤和筛选。"
 
-#: ../src/gui/siril3.glade.h:555
+#: ../src/gui/siril3.glade.h:561
 msgid "Normalize images"
 msgstr "图像归一化"
 
-#: ../src/gui/siril3.glade.h:556
+#: ../src/gui/siril3.glade.h:562
 msgid ""
 "Activate image normalisation for the export. This will make all images the "
 "same brightness and is thus recommended for sequences with inconsistent "
@@ -2431,84 +2453,84 @@ msgstr ""
 "耗一些时间来处理。\n"
 "\t\t\t"
 
-#: ../src/gui/siril3.glade.h:559
+#: ../src/gui/siril3.glade.h:565
 msgid "Fps:"
 msgstr "Fps:"
 
-#: ../src/gui/siril3.glade.h:560
+#: ../src/gui/siril3.glade.h:566
 msgid "Frame rate"
 msgstr "帧率"
 
-#: ../src/gui/siril3.glade.h:561
+#: ../src/gui/siril3.glade.h:567
 msgid "Resize"
 msgstr "缩放"
 
-#: ../src/gui/siril3.glade.h:562
+#: ../src/gui/siril3.glade.h:568
 msgid ""
 "Check this box if you want to resize exported sequence. Note that this will "
 "degrade image quality."
 msgstr "若要改变输出队列的图像大小，点选此处。注意这将影响图像质量。"
 
-#: ../src/gui/siril3.glade.h:563
+#: ../src/gui/siril3.glade.h:569
 msgid "Width of output video"
 msgstr "输出视频的宽度"
 
-#: ../src/gui/siril3.glade.h:564
+#: ../src/gui/siril3.glade.h:570
 msgid "x"
 msgstr "x"
 
-#: ../src/gui/siril3.glade.h:565
+#: ../src/gui/siril3.glade.h:571
 msgid "Height of output video"
 msgstr "输出视频的高度"
 
-#: ../src/gui/siril3.glade.h:566
+#: ../src/gui/siril3.glade.h:572
 msgid ""
 "Film quality: lower value will use more compression and less bitrate, also "
 "resulting is smaller file size."
 msgstr "视频品质：低数值将导致更高压缩率和更低比特率，同时获得更小的文件尺寸。"
 
-#: ../src/gui/siril3.glade.h:567 ../src/io/sequence_export.c:501
+#: ../src/gui/siril3.glade.h:573 ../src/io/sequence_export.c:501
 msgid "Select area to crop"
 msgstr "选择裁减区域"
 
-#: ../src/gui/siril3.glade.h:568
+#: ../src/gui/siril3.glade.h:574
 msgid "Image selection uses the same controls as for stacking"
 msgstr "使用图像叠加相同的条件来选择每一帧"
 
-#: ../src/gui/siril3.glade.h:569
+#: ../src/gui/siril3.glade.h:575
 msgid "Go to the stacking tab"
 msgstr "进入叠加标签页"
 
-#: ../src/gui/siril3.glade.h:570
+#: ../src/gui/siril3.glade.h:576
 msgid "Sequence"
 msgstr "队列"
 
-#: ../src/gui/siril3.glade.h:571
+#: ../src/gui/siril3.glade.h:577
 msgid "Pre-processing is an optional step to apply to a sequence of images."
 msgstr "针对一个图像队列的预处理是一个可选的步骤。"
 
-#: ../src/gui/siril3.glade.h:572
+#: ../src/gui/siril3.glade.h:578
 msgid ""
 "The single file is often called the master file, which is the result of the "
 "processing of several frames, for each type of master image."
 msgstr "这个单一的文件也被称为主文件，是每一种类型的若干帧叠加处理后的结果。"
 
-#: ../src/gui/siril3.glade.h:573
+#: ../src/gui/siril3.glade.h:579
 msgid "Dark, offset (bias) and flat files can only be a single FITS file."
 msgstr "暗场，偏置和平场，只能为单一的FITS文件。"
 
 #. Flat is the kind of the picture used here. In french I
-#: ../src/gui/siril3.glade.h:575
+#: ../src/gui/siril3.glade.h:581
 msgid "Use flat"
 msgstr "使用平场"
 
-#: ../src/gui/siril3.glade.h:576
+#: ../src/gui/siril3.glade.h:582
 msgid ""
 "All images in the sequence will be divided by the master flat image (each "
 "pixel value)."
 msgstr "队列中的所有图像将被主平场帧除（每个像素点）。"
 
-#: ../src/gui/siril3.glade.h:577
+#: ../src/gui/siril3.glade.h:583
 msgid ""
 "Enter the master flat file name here, or use the browse button.\n"
 "All images in the sequence will be divided by the master flat image (each "
@@ -2517,20 +2539,20 @@ msgstr ""
 "键入主平场帧的文件名，或者使用浏览按钮。\n"
 "队列中的所有图像将被主平场帧除（每个像素点）。"
 
-#: ../src/gui/siril3.glade.h:579
+#: ../src/gui/siril3.glade.h:585
 msgid "Browse..."
 msgstr "浏览..."
 
 #. Dark is the kind of the picture used here. In french I
-#: ../src/gui/siril3.glade.h:581
+#: ../src/gui/siril3.glade.h:587
 msgid "Use dark"
 msgstr "使用暗场"
 
-#: ../src/gui/siril3.glade.h:582
+#: ../src/gui/siril3.glade.h:588
 msgid "The dark master image will be removed from all images in the sequence."
 msgstr "主暗场帧将被从队列中所有图像中扣除（减）。"
 
-#: ../src/gui/siril3.glade.h:583
+#: ../src/gui/siril3.glade.h:589
 msgid ""
 "Enter the master dark file name here, or use the browse button.\n"
 "The dark master image will be removed from all images in the sequence."
@@ -2539,16 +2561,16 @@ msgstr ""
 "主暗场帧将被从队列中所有图像中扣除（减）。"
 
 #. Offset is the kind of the picture used here. In french I
-#: ../src/gui/siril3.glade.h:586
+#: ../src/gui/siril3.glade.h:592
 msgid "Use offset"
 msgstr "使用偏置"
 
-#: ../src/gui/siril3.glade.h:587
+#: ../src/gui/siril3.glade.h:593
 msgid ""
 "The bias/offset master image will be removed from all images in the sequence."
 msgstr "主偏置帧将被从队列中所有图像中扣除（减）。"
 
-#: ../src/gui/siril3.glade.h:588
+#: ../src/gui/siril3.glade.h:594
 msgid ""
 "Enter the master bias/offset file name here, or use the browse button.\n"
 "The bias/offset master image will be removed from all images in the sequence."
@@ -2556,19 +2578,19 @@ msgstr ""
 "键入主偏置帧的文件名，或者使用浏览按钮。\n"
 "主偏置帧将被从队列中所有图像中扣除（减）。"
 
-#: ../src/gui/siril3.glade.h:590
+#: ../src/gui/siril3.glade.h:596
 msgid "Choose your own normalisation value."
 msgstr "选择自定义的归一化参数。"
 
-#: ../src/gui/siril3.glade.h:591
+#: ../src/gui/siril3.glade.h:597
 msgid "Normalisation value for flat division"
 msgstr "除平场时所用的归一化参数"
 
-#: ../src/gui/siril3.glade.h:592
+#: ../src/gui/siril3.glade.h:598
 msgid "Dark optimization"
 msgstr "暗场优化"
 
-#: ../src/gui/siril3.glade.h:593
+#: ../src/gui/siril3.glade.h:599
 msgid ""
 "Dark subtraction can be optionally optimized so that the noise of the "
 "resulting picture (light frame minus dark frame) is minimized by applying a "
@@ -2584,11 +2606,11 @@ msgstr ""
 "\n"
 "警告：如若没有先期通过扣主偏置帧来得到主暗场帧，则不要应用暗场优化。"
 
-#: ../src/gui/siril3.glade.h:596
+#: ../src/gui/siril3.glade.h:602
 msgid "Auto evaluate normalisation value"
 msgstr "自动估算归一化参数"
 
-#: ../src/gui/siril3.glade.h:597
+#: ../src/gui/siril3.glade.h:603
 msgid ""
 "If this box is checked, Siril will auto-evaluate the normalisation value.\n"
 "This value is the mean of the master flat calibrated with the master offset."
@@ -2596,30 +2618,30 @@ msgstr ""
 "选定后，Siril会自动估算归一化参数。\n"
 "这个参数是主平场帧被主偏置帧校准后的中间值。"
 
-#: ../src/gui/siril3.glade.h:599
+#: ../src/gui/siril3.glade.h:605
 msgid "Equalize CFA"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:600
+#: ../src/gui/siril3.glade.h:606
 msgid ""
 "This option equalizes the mean intensity of RGB layers in a CFA flat image."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:601
+#: ../src/gui/siril3.glade.h:607
 msgid "Cosmetic correction (using master-dark)"
 msgstr "降噪（使用主暗场）"
 
-#: ../src/gui/siril3.glade.h:602
+#: ../src/gui/siril3.glade.h:608
 msgid ""
 "How many times the standard deviation, the pixel value must differ to be "
 "considered as defective."
 msgstr "像素的数值被认为是“有缺陷的”所需要达到的标准背离次数。"
 
-#: ../src/gui/siril3.glade.h:603
+#: ../src/gui/siril3.glade.h:609
 msgid "Enable Cosmectic Correction"
 msgstr "启用降噪"
 
-#: ../src/gui/siril3.glade.h:604
+#: ../src/gui/siril3.glade.h:610
 msgid ""
 "Check if you want to apply a hot pixel removal.\n"
 "Hot pixels are located on the master-dark."
@@ -2627,11 +2649,11 @@ msgstr ""
 "点选以启用热噪点移除。\n"
 "热噪点由主暗场帧提供。"
 
-#: ../src/gui/siril3.glade.h:606
+#: ../src/gui/siril3.glade.h:612
 msgid "Estimate"
 msgstr "预估"
 
-#: ../src/gui/siril3.glade.h:608
+#: ../src/gui/siril3.glade.h:614
 #, no-c-format
 msgid ""
 "Click on this button to evaluate the number of deviant pixels. If values are "
@@ -2641,24 +2663,24 @@ msgstr ""
 "点此按钮将预估异常像素点。如果预估值所占总像素比例超过1%，建议用户更改sigma"
 "值。"
 
-#: ../src/gui/siril3.glade.h:609
+#: ../src/gui/siril3.glade.h:615
 msgid "Cold: 0 px"
 msgstr "冷：0 px"
 
-#: ../src/gui/siril3.glade.h:610
+#: ../src/gui/siril3.glade.h:616
 msgid "Hot: 0 px"
 msgstr "热：0 px"
 
-#: ../src/gui/siril3.glade.h:611
+#: ../src/gui/siril3.glade.h:617
 msgid "Output sequence"
 msgstr "输出队列"
 
-#: ../src/gui/siril3.glade.h:612
+#: ../src/gui/siril3.glade.h:618
 #, fuzzy
 msgid "Debayer FITS images before saving"
 msgstr "保存前对FITS图像执行去马赛克"
 
-#: ../src/gui/siril3.glade.h:613
+#: ../src/gui/siril3.glade.h:619
 msgid ""
 "Check this option if you want to apply a demosaicing algorithm to your FITS "
 "images right after they were preprocessed. By doing this, you skip one "
@@ -2672,19 +2694,19 @@ msgstr ""
 "\n"
 "警告：此选项仅适用于FITS图像，SER队列可以实时去马赛克。"
 
-#: ../src/gui/siril3.glade.h:616
+#: ../src/gui/siril3.glade.h:622
 msgid "Store resulting sequence with prefix:"
 msgstr "结果所保存为的队列名前缀:"
 
-#: ../src/gui/siril3.glade.h:617
+#: ../src/gui/siril3.glade.h:623
 msgid "Prefix of the image names resulting from the pre-processing."
 msgstr "预处理结果的文件名前缀。"
 
-#: ../src/gui/siril3.glade.h:618
+#: ../src/gui/siril3.glade.h:624
 msgid "Start pre-processing"
 msgstr "开始预处理"
 
-#: ../src/gui/siril3.glade.h:619
+#: ../src/gui/siril3.glade.h:625
 msgid ""
 "Pre-process sequence with the above master files, resulting sequence will be "
 "in pp_<seq.name> or another prefix given aside.\n"
@@ -2698,37 +2720,37 @@ msgstr ""
 "完成后，预处理的结果队列会被自动载入成当前队列。\n"
 "对于DSLR的照片来说，下一个步骤为debayer，请移步转化标签页。"
 
-#: ../src/gui/siril3.glade.h:622
+#: ../src/gui/siril3.glade.h:628
 msgid "Pre-processing"
 msgstr "预处理"
 
-#: ../src/gui/siril3.glade.h:623
+#: ../src/gui/siril3.glade.h:629
 msgid ""
 "Registration is basically aligning the images from a sequence to be able to "
 "process them afterwards."
 msgstr "对齐队列里的图像，使之可用于后续处理。"
 
-#: ../src/gui/siril3.glade.h:624
+#: ../src/gui/siril3.glade.h:630
 msgid "Image registration"
 msgstr "图像对齐"
 
-#: ../src/gui/siril3.glade.h:625
+#: ../src/gui/siril3.glade.h:631
 msgid "Register all images from sequence"
 msgstr "对齐队列中的所有图像"
 
-#: ../src/gui/siril3.glade.h:626
+#: ../src/gui/siril3.glade.h:632
 msgid "Register selected images only"
 msgstr "仅对齐所选中的图像"
 
-#: ../src/gui/siril3.glade.h:627
+#: ../src/gui/siril3.glade.h:633
 msgid "Choose registration method:"
 msgstr "选择对齐方法:"
 
-#: ../src/gui/siril3.glade.h:628
+#: ../src/gui/siril3.glade.h:634
 msgid "Select registration layer:"
 msgstr "选择对齐的通道:"
 
-#: ../src/gui/siril3.glade.h:629
+#: ../src/gui/siril3.glade.h:635
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -2742,23 +2764,23 @@ msgstr ""
 "当图像被处理时，对齐数据是从可用的缺省通道所获取的（对于RBG图像：绿色，然后是"
 "蓝色和红色）。"
 
-#: ../src/gui/siril3.glade.h:632
+#: ../src/gui/siril3.glade.h:638
 msgid "Prefix:"
 msgstr "前缀："
 
-#: ../src/gui/siril3.glade.h:633
+#: ../src/gui/siril3.glade.h:639
 msgid "Prefix of the image names resulting from the registration."
 msgstr "对齐结果的文件名前缀。"
 
-#: ../src/gui/siril3.glade.h:634
+#: ../src/gui/siril3.glade.h:640
 msgid "Algorithm: "
 msgstr "算法： "
 
-#: ../src/gui/siril3.glade.h:635
+#: ../src/gui/siril3.glade.h:641
 msgid "Match stars in selection"
 msgstr "匹配所选范围里的星点"
 
-#: ../src/gui/siril3.glade.h:636
+#: ../src/gui/siril3.glade.h:642
 msgid ""
 "Check this box if you want to perform the Global Star Alignment algorithm "
 "within the selected area in the reference image. If no selection are done, "
@@ -2769,11 +2791,11 @@ msgstr ""
 "选项会被忽略。\n"
 "警告：请确定所画的区域内有足够的星点。"
 
-#: ../src/gui/siril3.glade.h:638
+#: ../src/gui/siril3.glade.h:644
 msgid "Translation only"
 msgstr "只平移"
 
-#: ../src/gui/siril3.glade.h:639
+#: ../src/gui/siril3.glade.h:645
 msgid ""
 "This is the only registration that can detect and apply rotations on images. "
 "However, rotating images will degrade them to a certain extent. Activating "
@@ -2789,11 +2811,11 @@ msgstr ""
 "这对于那些旋转角度很小的图像队列比较适用。\n"
 "警告：不会有新的队列被创建，对齐信息将被保存于原始队列中。"
 
-#: ../src/gui/siril3.glade.h:643
+#: ../src/gui/siril3.glade.h:649
 msgid "Go register"
 msgstr "执行对齐"
 
-#: ../src/gui/siril3.glade.h:644
+#: ../src/gui/siril3.glade.h:650
 msgid ""
 "Start the registration process. It will register images in the loaded "
 "sequence using the selected method and reference layer (loaded in the 'Image "
@@ -2802,11 +2824,11 @@ msgstr ""
 "开启对齐处理。将使用所选定的方法和参考通道来对齐队列中的图像（在“图像队列”标"
 "签页中载入，当前队列名称也会在窗口底部显示）。"
 
-#: ../src/gui/siril3.glade.h:645
+#: ../src/gui/siril3.glade.h:651
 msgid "Simplified Drizzle x2"
 msgstr "Simplified Drizzle x2"
 
-#: ../src/gui/siril3.glade.h:646
+#: ../src/gui/siril3.glade.h:652
 msgid ""
 "Activate the simplified drizzle algorithm for the processing of this "
 "sequence. An up-scale (x2) will be applied to the registered frame or during "
@@ -2832,16 +2854,16 @@ msgstr ""
 "警告：应用本选项会造成更高分辨率的图像被生成，因此其对计算机内存和磁盘空间有"
 "相当于Drizzle因子的平方倍数量的需求。"
 
-#: ../src/gui/siril3.glade.h:651 ../src/registration/registration.c:704
+#: ../src/gui/siril3.glade.h:657 ../src/registration/registration.c:704
 #: ../src/registration/registration.c:717
 msgid "Load a sequence first."
 msgstr "请先载入队列。"
 
-#: ../src/gui/siril3.glade.h:652
+#: ../src/gui/siril3.glade.h:658
 msgid "Follow star movement"
 msgstr "跟随星点移动"
 
-#: ../src/gui/siril3.glade.h:653
+#: ../src/gui/siril3.glade.h:659
 msgid ""
 "Use this option to use the position of the star found in the previous image "
 "as new centre for the current image registration. This allows the selection "
@@ -2854,15 +2876,15 @@ msgstr ""
 "择区域可以更小，对齐更快，并且统计大量的星点。\n"
 "警告：开启本选项会要求对齐操作非并行，因此只能使用一个CPU核心来运行。"
 
-#: ../src/gui/siril3.glade.h:655
+#: ../src/gui/siril3.glade.h:661
 msgid "Manual registration"
 msgstr "手动对齐"
 
-#: ../src/gui/siril3.glade.h:656
+#: ../src/gui/siril3.glade.h:662
 msgid "Display reference image"
 msgstr "显示参考帧"
 
-#: ../src/gui/siril3.glade.h:658
+#: ../src/gui/siril3.glade.h:664
 #, no-c-format
 msgid ""
 "Display the reference image over the current image using a 50% "
@@ -2874,35 +2896,35 @@ msgstr ""
 "若要开启本选项，参考帧必须已经设定好，\n"
 "并且至少已经在所选择的对齐通道上显示过一次。"
 
-#: ../src/gui/siril3.glade.h:660
+#: ../src/gui/siril3.glade.h:666
 msgid ""
 "Change this value, using mouse wheel or up and down arrows, to align the "
 "image with the reference image on the X axis."
 msgstr "改变数值以在X轴上对齐当前帧和参考帧，也可使用鼠标滚轮活着上下方向键。"
 
-#: ../src/gui/siril3.glade.h:661
+#: ../src/gui/siril3.glade.h:667
 msgid "X translation:"
 msgstr "X 平移:"
 
-#: ../src/gui/siril3.glade.h:662
+#: ../src/gui/siril3.glade.h:668
 msgid ""
 "Change this value, using mouse wheel or up and down arrows, to align the "
 "image with the reference image on the Y axis."
 msgstr "改变数值以在Y轴上对齐当前帧和参考帧，也可使用鼠标滚轮活着上下方向键。"
 
-#: ../src/gui/siril3.glade.h:663
+#: ../src/gui/siril3.glade.h:669
 msgid "Y translation:"
 msgstr "Y 平移:"
 
-#: ../src/gui/siril3.glade.h:664
+#: ../src/gui/siril3.glade.h:670
 msgid "Set reference image first."
 msgstr "请先选定参考帧。"
 
-#: ../src/gui/siril3.glade.h:665
+#: ../src/gui/siril3.glade.h:671
 msgid "Set first preview"
 msgstr "设置预览一"
 
-#: ../src/gui/siril3.glade.h:666
+#: ../src/gui/siril3.glade.h:672
 msgid ""
 "Allows a preview area to be displayed just below. After clicking on this "
 "button, click on the image to position the preview area's centre"
@@ -2910,53 +2932,53 @@ msgstr ""
 "在下方区域内显示预览。点击完本按钮后，请点击图像来指定某位置作为预览区域的中"
 "心"
 
-#: ../src/gui/siril3.glade.h:667
+#: ../src/gui/siril3.glade.h:673
 msgid "Set second preview"
 msgstr "设置预览二"
 
-#: ../src/gui/siril3.glade.h:668
+#: ../src/gui/siril3.glade.h:674
 msgid "Registration"
 msgstr "对齐"
 
-#: ../src/gui/siril3.glade.h:669
+#: ../src/gui/siril3.glade.h:675
 msgid "Filename:"
 msgstr "文件名："
 
-#: ../src/gui/siril3.glade.h:670
+#: ../src/gui/siril3.glade.h:676
 msgid "Enter the filename of the exported CSV file."
 msgstr "输入导出的CSV文件名。"
 
-#: ../src/gui/siril3.glade.h:671
+#: ../src/gui/siril3.glade.h:677
 msgid "Export to CSV"
 msgstr "导出为CSV"
 
-#: ../src/gui/siril3.glade.h:672
+#: ../src/gui/siril3.glade.h:678
 msgid "Export displayed plot to a CSV file."
 msgstr "将显示的图表导出为CSV文件。"
 
-#: ../src/gui/siril3.glade.h:673
+#: ../src/gui/siril3.glade.h:679
 msgid "Clear all"
 msgstr "清除"
 
-#: ../src/gui/siril3.glade.h:674
+#: ../src/gui/siril3.glade.h:680
 msgid "Clear all curves displayed in photometry."
 msgstr "清除所有测光曲线。"
 
-#: ../src/gui/siril3.glade.h:675
+#: ../src/gui/siril3.glade.h:681
 msgid "Clear latest"
 msgstr "清除最后项"
 
-#: ../src/gui/siril3.glade.h:676
+#: ../src/gui/siril3.glade.h:682
 msgid "Clear the last curve added in photometry."
 msgstr "清除最后添加的测光曲线。"
 
 #. This is the button for plotting variable star graph
 #. Plotting light curve
-#: ../src/gui/siril3.glade.h:678 ../src/gui/plot.c:362
+#: ../src/gui/siril3.glade.h:684 ../src/gui/plot.c:362
 msgid "Light Curve"
 msgstr "光变曲线"
 
-#: ../src/gui/siril3.glade.h:679
+#: ../src/gui/siril3.glade.h:685
 msgid ""
 "Plot a graph of the variable star. The variable star must be analysed in "
 "first, then other PSF are applied to references. A maximum of 6 references "
@@ -2970,61 +2992,61 @@ msgstr ""
 "displayed graph.\n"
 "WARNING: gnuplot must be installed."
 
-#: ../src/gui/siril3.glade.h:681
+#: ../src/gui/siril3.glade.h:687
 msgid "Select the source of graph information."
 msgstr "选择曲线数据源。"
 
-#: ../src/gui/siril3.glade.h:682
+#: ../src/gui/siril3.glade.h:688
 msgid "Select which information to display from photometry data."
 msgstr "选择将被显示的测光数据。"
 
-#: ../src/gui/siril3.glade.h:683
+#: ../src/gui/siril3.glade.h:689
 msgid "Roundness"
 msgstr "圆度"
 
-#: ../src/gui/siril3.glade.h:684 ../src/gui/plot.c:563 ../src/gui/plot.c:725
+#: ../src/gui/siril3.glade.h:690 ../src/gui/plot.c:563 ../src/gui/plot.c:725
 msgid "FWHM"
 msgstr "FWHM"
 
-#: ../src/gui/siril3.glade.h:685 ../src/gui/plot.c:728
+#: ../src/gui/siril3.glade.h:691 ../src/gui/plot.c:728
 msgid "Amplitude"
 msgstr "振幅"
 
-#: ../src/gui/siril3.glade.h:686
+#: ../src/gui/siril3.glade.h:692
 msgid "Magnitude"
 msgstr "星等"
 
-#: ../src/gui/siril3.glade.h:687
+#: ../src/gui/siril3.glade.h:693
 msgid "X position"
 msgstr "X坐标"
 
-#: ../src/gui/siril3.glade.h:688
+#: ../src/gui/siril3.glade.h:694
 msgid "Y position"
 msgstr "Y坐标"
 
-#: ../src/gui/siril3.glade.h:689
+#: ../src/gui/siril3.glade.h:695
 msgid "Plot"
 msgstr "图表"
 
-#: ../src/gui/siril3.glade.h:690
+#: ../src/gui/siril3.glade.h:696
 msgid ""
 "Stacking of images, either summing, median, mean with rejection or pixel "
 "minimum/maximum."
 msgstr "图像叠加，支持加法，中位数，具有像素剔除或最大/最小值的平均值法。"
 
-#: ../src/gui/siril3.glade.h:691
+#: ../src/gui/siril3.glade.h:697
 msgid "Sequence stacking"
 msgstr "队列叠加"
 
-#: ../src/gui/siril3.glade.h:692
+#: ../src/gui/siril3.glade.h:698
 msgid "Stacking Methods:"
 msgstr "叠加方式:"
 
-#: ../src/gui/siril3.glade.h:693
+#: ../src/gui/siril3.glade.h:699
 msgid "Stack this set of images:"
 msgstr "要叠加的图像集合:"
 
-#: ../src/gui/siril3.glade.h:694
+#: ../src/gui/siril3.glade.h:700
 #, fuzzy
 msgid ""
 "Sum: This is the simplest method.\n"
@@ -3082,27 +3104,27 @@ msgstr ""
 "像素最小化：该方式可用于叠加后选择一个区域进行裁剪。\n"
 "图像中的像素点会被相同坐标中的更暗的点所代替。"
 
-#: ../src/gui/siril3.glade.h:717 ../src/stacking/sum.c:159
+#: ../src/gui/siril3.glade.h:723 ../src/stacking/sum.c:159
 msgid "Sum stacking"
 msgstr "加法叠加"
 
-#: ../src/gui/siril3.glade.h:718
+#: ../src/gui/siril3.glade.h:724
 msgid "Average stacking with rejection"
 msgstr "含有像素剔除的平均数叠加"
 
-#: ../src/gui/siril3.glade.h:719
+#: ../src/gui/siril3.glade.h:725
 msgid "Median stacking"
 msgstr "中位数叠加"
 
-#: ../src/gui/siril3.glade.h:720
+#: ../src/gui/siril3.glade.h:726
 msgid "Pixel maximum stacking"
 msgstr "像素最大化叠加"
 
-#: ../src/gui/siril3.glade.h:721
+#: ../src/gui/siril3.glade.h:727
 msgid "Pixel minimum stacking"
 msgstr "像素最小化叠加"
 
-#: ../src/gui/siril3.glade.h:722
+#: ../src/gui/siril3.glade.h:728
 msgid ""
 "Select the set of images to be stacked. All the images or only the manually "
 "selected can be used. But it is possible to only select the percentage of "
@@ -3112,48 +3134,48 @@ msgstr ""
 "于图像的品质（行星，圆度或者FWHM）来选定一部分“最好的图像”（百分比）用于叠"
 "加。"
 
-#: ../src/gui/siril3.glade.h:723
+#: ../src/gui/siril3.glade.h:729
 msgid "all the images of the sequence"
 msgstr "队列里所有的图像"
 
-#: ../src/gui/siril3.glade.h:724
+#: ../src/gui/siril3.glade.h:730
 msgid "images previously manually selected from the sequence"
 msgstr "队列里之前手动选择则图像"
 
-#: ../src/gui/siril3.glade.h:725
+#: ../src/gui/siril3.glade.h:731
 msgid ""
 "best images, automatically selected from the registration data (PSF - FWHM)"
 msgstr "最佳图像，自动从对齐统计数据（PSF - FWHM）中选择"
 
-#: ../src/gui/siril3.glade.h:726
+#: ../src/gui/siril3.glade.h:732
 msgid ""
 "best images, automatically selected from the registration data (PSF - "
 "roundness)"
 msgstr "最佳图像，自动从对齐统计数据（PSF - 圆度）中选择"
 
-#: ../src/gui/siril3.glade.h:727
+#: ../src/gui/siril3.glade.h:733
 msgid ""
 "best images, automatically selected from the registration data (Planetary)"
 msgstr "最好的图像，自动从对齐统计数据中选择(行星)"
 
-#: ../src/gui/siril3.glade.h:728 ../src/stacking/stacking.c:2153
+#: ../src/gui/siril3.glade.h:734 ../src/stacking/stacking.c:2153
 #, c-format
 msgid "Based on FWHM"
 msgstr "基于FWHM"
 
-#: ../src/gui/siril3.glade.h:729
+#: ../src/gui/siril3.glade.h:735
 msgid "Stack best:"
 msgstr "叠加最好的:"
 
-#: ../src/gui/siril3.glade.h:730
+#: ../src/gui/siril3.glade.h:736
 msgid "Sigma low: "
 msgstr "Sigma低值: "
 
-#: ../src/gui/siril3.glade.h:731
+#: ../src/gui/siril3.glade.h:737
 msgid "Sigma high: "
 msgstr "Sigma高值: "
 
-#: ../src/gui/siril3.glade.h:732
+#: ../src/gui/siril3.glade.h:738
 msgid ""
 "Five rejection algorithms are available.\n"
 "- Percentile Clipping is a one-step rejection algorithm ideal for small sets "
@@ -3199,31 +3221,31 @@ msgstr ""
 "Wiley\n"
 "[2] Juan Conejero, ImageIntegration, Pixinsight Tutorial"
 
-#: ../src/gui/siril3.glade.h:748
+#: ../src/gui/siril3.glade.h:754
 msgid "No rejection"
 msgstr "无像素剔除"
 
-#: ../src/gui/siril3.glade.h:749
+#: ../src/gui/siril3.glade.h:755
 msgid "Percentile Clipping"
 msgstr "Percentile Clipping"
 
-#: ../src/gui/siril3.glade.h:750
+#: ../src/gui/siril3.glade.h:756
 msgid "Sigma Clipping"
 msgstr "Sigma Clipping"
 
-#: ../src/gui/siril3.glade.h:751
+#: ../src/gui/siril3.glade.h:757
 msgid "Median Sigma Clipping"
 msgstr "Median Sigma Clipping"
 
-#: ../src/gui/siril3.glade.h:752
+#: ../src/gui/siril3.glade.h:758
 msgid "Winsorized Sigma Clipping"
 msgstr "Winsorized Sigma Clipping"
 
-#: ../src/gui/siril3.glade.h:753
+#: ../src/gui/siril3.glade.h:759
 msgid "Linear Fit Clipping"
 msgstr "Linear Fit Clipping"
 
-#: ../src/gui/siril3.glade.h:754
+#: ../src/gui/siril3.glade.h:760
 msgid ""
 "Normalise to 16-bit\n"
 "(Don't check for Masters)"
@@ -3231,7 +3253,7 @@ msgstr ""
 "归一化为16位\n"
 "（主校准帧不要选择）"
 
-#: ../src/gui/siril3.glade.h:756
+#: ../src/gui/siril3.glade.h:762
 msgid ""
 "If you check this button, the final image will be normalized to 16-bit per "
 "channel. This is important when input sequence has a depth of 8-bit per "
@@ -3243,24 +3265,24 @@ msgstr ""
 "8位时，这一点很重要。\n"
 "但是，在构建8位的主帧序列时，您可能希望禁用此选项。"
 
-#: ../src/gui/siril3.glade.h:758
+#: ../src/gui/siril3.glade.h:764
 msgid "Rejection:"
 msgstr "像素剔除:"
 
-#: ../src/gui/siril3.glade.h:760
+#: ../src/gui/siril3.glade.h:766
 #, no-c-format
 msgid "%"
 msgstr "%"
 
-#: ../src/gui/siril3.glade.h:761
+#: ../src/gui/siril3.glade.h:767
 msgid "Normalisation:"
 msgstr "归一化:"
 
-#: ../src/gui/siril3.glade.h:762
+#: ../src/gui/siril3.glade.h:768
 msgid "Start stacking"
 msgstr "开始叠加"
 
-#: ../src/gui/siril3.glade.h:763
+#: ../src/gui/siril3.glade.h:769
 msgid ""
 "Start stacking the current sequence of images, using the method and other "
 "information provided above.\n"
@@ -3270,19 +3292,19 @@ msgstr ""
 "开始叠加当前队列中的图像，应用上面所选择的方式和其他信息\n"
 "Siril使用32位整数图像来执行叠加，然后保存为16位整数图像，文件名在下面给出。"
 
-#: ../src/gui/siril3.glade.h:765
+#: ../src/gui/siril3.glade.h:771
 msgid "Store result in file:"
 msgstr "保存结果为文件:"
 
-#: ../src/gui/siril3.glade.h:766
+#: ../src/gui/siril3.glade.h:772
 msgid "Overwrite"
 msgstr "覆盖"
 
-#: ../src/gui/siril3.glade.h:767
+#: ../src/gui/siril3.glade.h:773
 msgid "Overwrite file without notice if it already exists."
 msgstr "无提示覆盖已经存在的文件。"
 
-#: ../src/gui/siril3.glade.h:768
+#: ../src/gui/siril3.glade.h:774
 msgid ""
 "If one of these items is selected, a normalisation process will be applied "
 "to all input\n"
@@ -3313,31 +3335,31 @@ msgstr ""
 "\n"
 "偏置和暗场不应使用归一化处理。但是平场必须应用累乘归一化处理。"
 
-#: ../src/gui/siril3.glade.h:780
+#: ../src/gui/siril3.glade.h:786
 msgid "No normalisation"
 msgstr "无归一化"
 
-#: ../src/gui/siril3.glade.h:781
+#: ../src/gui/siril3.glade.h:787
 msgid "Additive"
 msgstr "累加"
 
-#: ../src/gui/siril3.glade.h:782
+#: ../src/gui/siril3.glade.h:788
 msgid "Multiplicative"
 msgstr "累乘"
 
-#: ../src/gui/siril3.glade.h:783
+#: ../src/gui/siril3.glade.h:789
 msgid "Additive with scaling"
 msgstr "累加带拉伸"
 
-#: ../src/gui/siril3.glade.h:784
+#: ../src/gui/siril3.glade.h:790
 msgid "Multiplicative with scaling"
 msgstr "累乘带拉伸"
 
-#: ../src/gui/siril3.glade.h:785
+#: ../src/gui/siril3.glade.h:791
 msgid "Force recomputing"
 msgstr "强制重新计算"
 
-#: ../src/gui/siril3.glade.h:786
+#: ../src/gui/siril3.glade.h:792
 msgid ""
 "By default, Siril takes the normalisation coefficients from seq file if "
 "already computed. However you can force Siril to recompute it before "
@@ -3346,68 +3368,68 @@ msgstr ""
 "缺省下，Siril会从seq文件中读取已经计算好的归一化系数。不过用户可以强制Siril在"
 "叠加前重新计算。"
 
-#: ../src/gui/siril3.glade.h:787
+#: ../src/gui/siril3.glade.h:793
 msgid "Stacking"
 msgstr "叠加"
 
-#: ../src/gui/siril3.glade.h:788
+#: ../src/gui/siril3.glade.h:794
 msgid ""
 "Siril output window, displays messages about what has been done and in "
 "response to command inputs."
 msgstr "Siril输出窗口，显示各种程序执行过程的信息，并且对输入的命令进行响应。"
 
-#: ../src/gui/siril3.glade.h:789
+#: ../src/gui/siril3.glade.h:795
 msgid "Output logs"
 msgstr "输出记录"
 
-#: ../src/gui/siril3.glade.h:790
+#: ../src/gui/siril3.glade.h:796
 msgid ""
 "Input command. Typing 'help' here will bring the list of supported commands."
 msgstr "输入命令。键入‘help’以得到命令列表。"
 
-#: ../src/gui/siril3.glade.h:791
+#: ../src/gui/siril3.glade.h:797
 msgid "Type help for the list of supported commands"
 msgstr "输入help以获得命令列表"
 
-#: ../src/gui/siril3.glade.h:792
+#: ../src/gui/siril3.glade.h:798
 msgid "Displays manual of the command written in the console."
 msgstr "显示控制台命令的手册。"
 
-#: ../src/gui/siril3.glade.h:793
+#: ../src/gui/siril3.glade.h:799
 msgid "<b>Console</b>"
 msgstr "<b>控制台</b>"
 
-#: ../src/gui/siril3.glade.h:794 ../src/gui/progress_and_log.c:40
+#: ../src/gui/siril3.glade.h:800 ../src/gui/progress_and_log.c:40
 msgid "Ready."
 msgstr "就绪。"
 
-#: ../src/gui/siril3.glade.h:795
+#: ../src/gui/siril3.glade.h:801
 msgid "Current working directory:"
 msgstr "当前工作目录:"
 
-#: ../src/gui/siril3.glade.h:796
+#: ../src/gui/siril3.glade.h:802
 msgid ""
 "The directory in which files will be read from and written to. Can be "
 "changed with the button Change dir on the right, or with the cd command."
 msgstr "文件读写所在的目录。可以使用右边的按钮或者命令来更改。"
 
-#: ../src/gui/siril3.glade.h:797
+#: ../src/gui/siril3.glade.h:803
 msgid "Change dir..."
 msgstr "更改目录..."
 
-#: ../src/gui/siril3.glade.h:798
+#: ../src/gui/siril3.glade.h:804
 msgid "Change current working directory"
 msgstr "更改当前工作目录"
 
-#: ../src/gui/siril3.glade.h:799
+#: ../src/gui/siril3.glade.h:805
 msgid "Stop running processes"
 msgstr "停止正在执行的处理"
 
-#: ../src/gui/siril3.glade.h:800
+#: ../src/gui/siril3.glade.h:806
 msgid "Current working sequence:"
 msgstr "当前工作队列:"
 
-#: ../src/gui/siril3.glade.h:801
+#: ../src/gui/siril3.glade.h:807
 msgid ""
 "Set number of threads manually.\n"
 "WARNING: Reducing the number of allowed processors too much will degrade "
@@ -3416,27 +3438,27 @@ msgstr ""
 "手动设定线程数。\n"
 "警告：降低该数值会影响程序的性能。"
 
-#: ../src/gui/siril3.glade.h:803
+#: ../src/gui/siril3.glade.h:809
 msgid "Displays the amount of used RAM memory by Siril."
 msgstr "显示Siril所占用的内存大小。"
 
-#: ../src/gui/siril3.glade.h:804
+#: ../src/gui/siril3.glade.h:810
 msgid ""
 "Displays the amount of disk space available on the file system containing "
 "the working directory."
 msgstr "显示当前工作目录所在的文件系统的可用磁盘空间。"
 
 #. Must be short !!
-#: ../src/gui/siril3.glade.h:806
+#: ../src/gui/siril3.glade.h:812
 msgctxt "GUI"
 msgid "Disk Space: N/A"
 msgstr "磁盘空间：N/A"
 
-#: ../src/gui/siril3.glade.h:807
+#: ../src/gui/siril3.glade.h:813
 msgid "Color Calibration"
 msgstr "色彩校准"
 
-#: ../src/gui/siril3.glade.h:808
+#: ../src/gui/siril3.glade.h:814
 msgid ""
 "A set of three color calibration factors will be computed and multiplied "
 "with every color channel.\n"
@@ -3445,41 +3467,41 @@ msgstr ""
 "一组三色校准因子将会被计算并乘到每个色彩通道。\n"
 "背景平衡操作必须先期完成。"
 
-#: ../src/gui/siril3.glade.h:810
+#: ../src/gui/siril3.glade.h:816
 msgid "x coordinate of the start of the background selection"
 msgstr "x轴坐标用于开始背景选择区"
 
-#: ../src/gui/siril3.glade.h:811
+#: ../src/gui/siril3.glade.h:817
 msgid "y coordinate of the start of the background selection"
 msgstr "y轴坐标用于开始背景选择区"
 
-#: ../src/gui/siril3.glade.h:812
+#: ../src/gui/siril3.glade.h:818
 msgid "Width of the background selection"
 msgstr "背景选择区的宽度"
 
-#: ../src/gui/siril3.glade.h:813
+#: ../src/gui/siril3.glade.h:819
 msgid "Height of the background selection"
 msgstr "背景选择区的高度"
 
-#: ../src/gui/siril3.glade.h:814
+#: ../src/gui/siril3.glade.h:820
 msgid "Selected area"
 msgstr "选择一个区域"
 
-#: ../src/gui/siril3.glade.h:815
+#: ../src/gui/siril3.glade.h:821
 msgid "Use current selection"
 msgstr "使用当前所选"
 
-#: ../src/gui/siril3.glade.h:816
+#: ../src/gui/siril3.glade.h:822
 msgid ""
 "You must specify a selection that represents the true background of the "
 "image, trying to exclude all stars or other stellar objects."
 msgstr "必须选定一个表现了真实背景的区域，尽量避开星点和其他天体。"
 
-#: ../src/gui/siril3.glade.h:817
+#: ../src/gui/siril3.glade.h:823
 msgid "Background Neutralization"
 msgstr "背景平衡"
 
-#: ../src/gui/siril3.glade.h:818
+#: ../src/gui/siril3.glade.h:824
 msgid ""
 "Background Neutralization will compute the mean of each color channel and "
 "will equalize the sky background in a neutral grey.\n"
@@ -3488,49 +3510,49 @@ msgstr ""
 "背景平衡会计算每个色彩通道的平均值，并将背景等价为中性灰。\n"
 "本操作应当在色彩校准之前执行。"
 
-#: ../src/gui/siril3.glade.h:820
+#: ../src/gui/siril3.glade.h:826
 msgid "Background reference"
 msgstr "背景参考"
 
-#: ../src/gui/siril3.glade.h:821
+#: ../src/gui/siril3.glade.h:827
 msgid "Manual White Balance"
 msgstr "手动白平衡"
 
-#: ../src/gui/siril3.glade.h:822
+#: ../src/gui/siril3.glade.h:828
 msgid ""
 "By clicking on this option, you will use your own color calibration factors. "
 "This option is disabled by default."
 msgstr "点击此选项，用户将使用自定义的色彩校准因子。缺省为关闭。"
 
-#: ../src/gui/siril3.glade.h:823
+#: ../src/gui/siril3.glade.h:829
 msgid "Red:"
 msgstr "红色:"
 
-#: ../src/gui/siril3.glade.h:824
+#: ../src/gui/siril3.glade.h:830
 msgid "Green:"
 msgstr "绿色:"
 
-#: ../src/gui/siril3.glade.h:825
+#: ../src/gui/siril3.glade.h:831
 msgid "Blue:"
 msgstr "蓝色:"
 
-#: ../src/gui/siril3.glade.h:826
+#: ../src/gui/siril3.glade.h:832
 msgid "x coordinate of the start of the white reference selection"
 msgstr "x轴坐标用于开始白点选择区"
 
-#: ../src/gui/siril3.glade.h:827
+#: ../src/gui/siril3.glade.h:833
 msgid "y coordinate of the start of the white reference selection"
 msgstr "y轴坐标用于开始白点选择区"
 
-#: ../src/gui/siril3.glade.h:828
+#: ../src/gui/siril3.glade.h:834
 msgid "Width of the white reference selection"
 msgstr "白点选择区的高度"
 
-#: ../src/gui/siril3.glade.h:829
+#: ../src/gui/siril3.glade.h:835
 msgid "Height of the white reference selection"
 msgstr "白点选择区的宽度"
 
-#: ../src/gui/siril3.glade.h:830
+#: ../src/gui/siril3.glade.h:836
 msgid ""
 "You should specify a selection that represents an average of suitable white "
 "reference.\n"
@@ -3539,29 +3561,29 @@ msgstr ""
 "请选定一个表现了均匀的舒适的白色参考的区域。如果不选择，整幅图像将被作为参"
 "考。"
 
-#: ../src/gui/siril3.glade.h:832
+#: ../src/gui/siril3.glade.h:838
 msgid ""
 "Lower rejection bound for white selection. Pixels below this value are not "
 "taken into account. Black pixels are always excluded from computation."
 msgstr ""
 "白点选择的剔除下限。像素值低于下限的不会被计算。黑色像素点总是会被排除计算。"
 
-#: ../src/gui/siril3.glade.h:833
+#: ../src/gui/siril3.glade.h:839
 msgid ""
 "Upper rejection bound for white selection. Pixels above this value are not "
 "taken into account. Saturated pixels are always excluded from computation."
 msgstr ""
 "白点选择的剔除上线。像素值超过上限的不会被计算。饱和像素点总是会被排除计算。"
 
-#: ../src/gui/siril3.glade.h:834
+#: ../src/gui/siril3.glade.h:840
 msgid "Lower limit: "
 msgstr "下限: "
 
-#: ../src/gui/siril3.glade.h:835
+#: ../src/gui/siril3.glade.h:841
 msgid "Upper limit: "
 msgstr "上限: "
 
-#: ../src/gui/siril3.glade.h:836
+#: ../src/gui/siril3.glade.h:842
 msgid "White reference"
 msgstr "白点参考"
 
@@ -3696,83 +3718,103 @@ msgid ""
 msgstr "警告：环形区域的像素数量不足，请选取更大的区域，\n"
 
 #. Matching information
-#: ../src/algos/plateSolver.c:639 ../src/registration/global.c:443
+#: ../src/algos/plateSolver.c:661 ../src/registration/global.c:443
 #, c-format
 msgid "%d pair matches.\n"
 msgstr "%d pair matches.\n"
 
-#: ../src/algos/plateSolver.c:641 ../src/registration/global.c:445
+#: ../src/algos/plateSolver.c:663 ../src/registration/global.c:445
 #, c-format
 msgid "Inliers:%*.3f\n"
 msgstr "Inliers:%*.3f\n"
 
 #. we assume square pixels
-#: ../src/algos/plateSolver.c:647
+#: ../src/algos/plateSolver.c:669
 #, fuzzy, c-format
 msgid "Resolution:%*.3lf arcsec/px\n"
 msgstr "反卷积"
 
-#: ../src/algos/plateSolver.c:661
+#: ../src/algos/plateSolver.c:683
 #, fuzzy, c-format
 msgid "Rotation:%+*.2lf deg %s\n"
 msgstr "旋转：%+*.2f 度\n"
 
-#: ../src/algos/plateSolver.c:661
+#: ../src/algos/plateSolver.c:683
 msgid "(flipped)"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:667
+#: ../src/algos/plateSolver.c:689
 #, fuzzy, c-format
 msgid "Focal:%*.2lf mm\n"
 msgstr "缩放：%*.3f\n"
 
-#: ../src/algos/plateSolver.c:668
+#: ../src/algos/plateSolver.c:690
 #, fuzzy, c-format
 msgid "Pixel size:%*.2lf µm\n"
 msgstr "像素宽度X(微米): "
 
-#: ../src/algos/plateSolver.c:671
+#: ../src/algos/plateSolver.c:693
 #, c-format
 msgid "Field of view:    %s x %s\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:674
+#: ../src/algos/plateSolver.c:696
 #, c-format
 msgid "Image center: RA: %s, DEC: %s\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:797
+#: ../src/algos/plateSolver.c:731
+#, c-format
+msgid "Catalog NOMAD size: %d objects\n"
+msgstr ""
+
+#: ../src/algos/plateSolver.c:772
+#, c-format
+msgid "Catalog TYCHO-2 size: %d objects\n"
+msgstr ""
+
+#: ../src/algos/plateSolver.c:813
+#, c-format
+msgid "Catalog Gaia DR2 size: %d objects\n"
+msgstr ""
+
+#: ../src/algos/plateSolver.c:854
+#, c-format
+msgid "Catalog Bright stars size: %d objects\n"
+msgstr ""
+
+#: ../src/algos/plateSolver.c:912
 msgid ""
 "Plate Solving failed. The image could not be aligned with the reference "
 "stars.\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:800
+#: ../src/algos/plateSolver.c:915
 msgid ""
 "This is usually because the initial parameters (pixel size, focal length, "
 "initial coordinates) are too far from the real metadata of the image."
 msgstr ""
 
-#: ../src/algos/plateSolver.c:836
+#: ../src/algos/plateSolver.c:958
 #, fuzzy, c-format
 msgid ""
 "There are not enough stars picked in the image. At least %d stars are needed."
 msgstr "参考帧中没有足够数量的星点用于执行对齐\n"
 
-#: ../src/algos/plateSolver.c:1027
+#: ../src/algos/plateSolver.c:1152
 #, fuzzy
 msgid "There are no keywords storred in the FITS header.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
-#: ../src/algos/plateSolver.c:1028
+#: ../src/algos/plateSolver.c:1153
 msgid "No metadata"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1067
+#: ../src/algos/plateSolver.c:1192
 msgid "Astrometric solution detected"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1067
+#: ../src/algos/plateSolver.c:1192
 msgid ""
 "The astrometric solution contained in the image will be erased by the "
 "geometric transformation and no undo will be possible."
@@ -3843,8 +3885,8 @@ msgstr "未保存的合成结果"
 msgid "You must at least load two layers before!\n"
 msgstr "必须先期载入至少两个通道！\n"
 
-#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:5334
-#: ../src/gui/callbacks.c:5343 ../src/gui/callbacks.c:5400
+#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:5347
+#: ../src/gui/callbacks.c:5356 ../src/gui/callbacks.c:5413
 #: ../src/io/conversion.c:576 ../src/registration/registration.c:848
 msgid "Warning"
 msgstr "警告"
@@ -3882,11 +3924,11 @@ msgstr "Readjusting layer %d to %g times bright\n"
 #: ../src/core/command.c:1491 ../src/core/command.c:1513
 #: ../src/core/command.c:1541 ../src/core/command.c:1567
 #: ../src/core/command.c:1734 ../src/core/command.c:1802
-#: ../src/core/command.c:2530 ../src/gui/callbacks.c:3985
-#: ../src/gui/callbacks.c:4190 ../src/gui/callbacks.c:4353
-#: ../src/gui/callbacks.c:4437 ../src/gui/callbacks.c:4645
-#: ../src/gui/callbacks.c:4982 ../src/gui/callbacks.c:5135
-#: ../src/gui/callbacks.c:5434 ../src/gui/callbacks.c:5613
+#: ../src/core/command.c:2530 ../src/gui/callbacks.c:3998
+#: ../src/gui/callbacks.c:4203 ../src/gui/callbacks.c:4366
+#: ../src/gui/callbacks.c:4450 ../src/gui/callbacks.c:4658
+#: ../src/gui/callbacks.c:4995 ../src/gui/callbacks.c:5148
+#: ../src/gui/callbacks.c:5447 ../src/gui/callbacks.c:5626
 #: ../src/gui/script_menu.c:150 ../src/io/conversion.c:518
 #: ../src/registration/registration.c:830 ../src/stacking/stacking.c:1486
 #: ../src/stacking/stacking.c:1610
@@ -3928,12 +3970,12 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Crop: select a region or provide x, y, width, height\n"
 
 #: ../src/core/command.c:583 ../src/core/command.c:2379
-#: ../src/gui/callbacks.c:5332 ../src/gui/callbacks.c:5398
+#: ../src/gui/callbacks.c:5345 ../src/gui/callbacks.c:5411
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr "Wavelet: maximum number of plans for this image size is %d\n"
 
-#: ../src/core/command.c:589 ../src/gui/callbacks.c:5341
+#: ../src/core/command.c:589 ../src/gui/callbacks.c:5354
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: type must be %d or %d\n"
@@ -4072,7 +4114,7 @@ msgstr ""
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: select a region or provide x, y, width, height\n"
 
-#: ../src/core/command.c:1223 ../src/gui/callbacks.c:4937
+#: ../src/core/command.c:1223 ../src/gui/callbacks.c:4950
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Found %d stars in image, channel #%d\n"
@@ -4218,7 +4260,7 @@ msgstr "The provided type of stacking is unknown (%s).\n"
 msgid "Stacked sequence successfully.\n"
 msgstr "队列叠加成功。\n"
 
-#: ../src/core/command.c:2282 ../src/gui/callbacks.c:3997
+#: ../src/core/command.c:2282 ../src/gui/callbacks.c:4010
 msgid "Preprocessing...\n"
 msgstr "预处理...\n"
 
@@ -5060,10 +5102,10 @@ msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr "图像不具有统一大小 (w = %d|%d, h = %d|%d)\n"
 
 #: ../src/core/siril.c:213 ../src/gui/PSF_list.c:154
-#: ../src/gui/callbacks.c:1052 ../src/gui/callbacks.c:2112
-#: ../src/gui/callbacks.c:3040 ../src/gui/callbacks.c:4697
-#: ../src/gui/callbacks.c:4718 ../src/gui/callbacks.c:5151
-#: ../src/gui/callbacks.c:5157 ../src/gui/callbacks.c:5182
+#: ../src/gui/callbacks.c:1060 ../src/gui/callbacks.c:2120
+#: ../src/gui/callbacks.c:3048 ../src/gui/callbacks.c:4710
+#: ../src/gui/callbacks.c:4731 ../src/gui/callbacks.c:5164
+#: ../src/gui/callbacks.c:5170 ../src/gui/callbacks.c:5195
 #: ../src/gui/plot.c:381 ../src/gui/plot.c:441 ../src/io/conversion.c:582
 #: ../src/io/single_image.c:129
 msgid "Error"
@@ -5257,7 +5299,7 @@ msgstr "文件或目录不存在\n"
 msgid "\"%s\" is not a directory\n"
 msgstr "%s不是一个目录\n"
 
-#: ../src/core/utils.c:360 ../src/gui/callbacks.c:3039
+#: ../src/core/utils.c:360 ../src/gui/callbacks.c:3047
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "当前用户对目录%s没有写权限\n"
@@ -5334,349 +5376,348 @@ msgstr "星点 %d 之于 %d"
 msgid "FITS Files (*.fit, *.fits, *.fts)"
 msgstr "FITS文件 (*.fit, *.fits, *.fts)"
 
-#: ../src/gui/callbacks.c:844
+#: ../src/gui/callbacks.c:845
 msgid "RAW DSLR Camera Files"
 msgstr "RAW DSLR相机文件"
 
-#: ../src/gui/callbacks.c:851
-#, c-format
+#: ../src/gui/callbacks.c:853
 msgid "Graphics Files (*.bmp"
 msgstr "图像文件 (*.bmp"
 
 #. NETPBM FILES
-#: ../src/gui/callbacks.c:873 ../src/gui/save_dialog.c:84
+#: ../src/gui/callbacks.c:878 ../src/gui/save_dialog.c:84
 msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
 msgstr "Netpbm文件 (*.ppm, *.pnm, *.pgm)"
 
 #. IRIS FILES
-#: ../src/gui/callbacks.c:876
+#: ../src/gui/callbacks.c:881
 msgid "IRIS PIC Files (*.pic)"
 msgstr "IRIS PIC 文件 (*.pic)"
 
 #. SER FILES
-#: ../src/gui/callbacks.c:879
+#: ../src/gui/callbacks.c:884
 msgid "SER files (*.ser)"
 msgstr "SER文件 (*.ser)"
 
-#: ../src/gui/callbacks.c:902
+#: ../src/gui/callbacks.c:908
 msgid "Film Files (*.avi, *.mpg, ...)"
 msgstr "视频文件 (*.avi, *.mpg, ...)"
 
-#: ../src/gui/callbacks.c:932 ../src/gui/callbacks.c:935
-#: ../src/gui/callbacks.c:947 ../src/gui/callbacks.c:950
-#: ../src/gui/callbacks.c:961 ../src/gui/callbacks.c:964
-#: ../src/gui/callbacks.c:976 ../src/gui/callbacks.c:979
+#: ../src/gui/callbacks.c:940 ../src/gui/callbacks.c:943
+#: ../src/gui/callbacks.c:955 ../src/gui/callbacks.c:958
+#: ../src/gui/callbacks.c:969 ../src/gui/callbacks.c:972
+#: ../src/gui/callbacks.c:984 ../src/gui/callbacks.c:987
 msgid "Open File"
 msgstr "打开文件"
 
-#: ../src/gui/callbacks.c:933 ../src/gui/callbacks.c:937
-#: ../src/gui/callbacks.c:948 ../src/gui/callbacks.c:951
-#: ../src/gui/callbacks.c:962 ../src/gui/callbacks.c:966
-#: ../src/gui/callbacks.c:977 ../src/gui/callbacks.c:981
+#: ../src/gui/callbacks.c:941 ../src/gui/callbacks.c:945
+#: ../src/gui/callbacks.c:956 ../src/gui/callbacks.c:959
+#: ../src/gui/callbacks.c:970 ../src/gui/callbacks.c:974
+#: ../src/gui/callbacks.c:985 ../src/gui/callbacks.c:989
 msgid "_Open"
 msgstr "打开"
 
-#: ../src/gui/callbacks.c:933 ../src/gui/callbacks.c:936
-#: ../src/gui/callbacks.c:948 ../src/gui/callbacks.c:951
-#: ../src/gui/callbacks.c:962 ../src/gui/callbacks.c:965
-#: ../src/gui/callbacks.c:977 ../src/gui/callbacks.c:980
+#: ../src/gui/callbacks.c:941 ../src/gui/callbacks.c:944
+#: ../src/gui/callbacks.c:956 ../src/gui/callbacks.c:959
+#: ../src/gui/callbacks.c:970 ../src/gui/callbacks.c:973
+#: ../src/gui/callbacks.c:985 ../src/gui/callbacks.c:988
 #: ../src/gui/save_dialog.c:177 ../src/gui/save_dialog.c:180
 msgid "_Cancel"
 msgstr "取消"
 
-#: ../src/gui/callbacks.c:1187
+#: ../src/gui/callbacks.c:1195
 #, c-format
 msgid "Image %d has been unselected from sequence\n"
 msgstr "图像 %d 已被除去\n"
 
-#: ../src/gui/callbacks.c:1197
+#: ../src/gui/callbacks.c:1205
 #, c-format
 msgid "Image %d has been selected from sequence\n"
 msgstr "图像 %d 已被选择\n"
 
-#: ../src/gui/callbacks.c:1231
+#: ../src/gui/callbacks.c:1239
 msgid "Selected all images from sequence\n"
 msgstr "已选择队列中所有的图像\n"
 
-#: ../src/gui/callbacks.c:1234
+#: ../src/gui/callbacks.c:1242
 msgid "Unselected all images from sequence\n"
 msgstr "已除去队列中所有的图像\n"
 
-#: ../src/gui/callbacks.c:1364
+#: ../src/gui/callbacks.c:1372
 #, c-format
 msgid "Setting MAX value for cutoff sliders adjustments\n"
 msgstr "Setting MAX value for cutoff sliders adjustments\n"
 
 #. there should be no other normal cases
-#: ../src/gui/callbacks.c:1407
+#: ../src/gui/callbacks.c:1415
 #, c-format
 msgid "setting ranges scalemin=%d, scalemax=%d\n"
 msgstr "setting ranges scalemin=%d, scalemax=%d\n"
 
-#: ../src/gui/callbacks.c:1513
+#: ../src/gui/callbacks.c:1521
 #, c-format
 msgid "<%%s.seq>: %%d images selected out of %%d, reference image is %%d"
 msgstr "<%%s.seq>: %%d 幅图像已被选择，总共图像 %%d，参考帧为 %%d"
 
-#: ../src/gui/callbacks.c:1516
+#: ../src/gui/callbacks.c:1524
 #, c-format
 msgid "<%%s.seq>: %%d images selected out of %%d, reference image is %%.%dd"
 msgstr "<%%s.seq>: %%d 幅图像已被选择，总共图像 %%d，参考帧为 %%.%dd"
 
-#: ../src/gui/callbacks.c:1525
+#: ../src/gui/callbacks.c:1533
 #, c-format
 msgid "<%s.seq>: %d images selected out of %d, no reference image set"
 msgstr "<%s.seq>: %d 幅图像已被选择，总共图像 %d，尚未设置参考帧"
 
-#: ../src/gui/callbacks.c:1528
+#: ../src/gui/callbacks.c:1536
 #, c-format
 msgid "%s, %d images selected"
 msgstr "%s, %d 图像已被选择"
 
-#: ../src/gui/callbacks.c:1532
+#: ../src/gui/callbacks.c:1540
 #, c-format
 msgid "No sequence"
 msgstr "无队列"
 
-#: ../src/gui/callbacks.c:1533
+#: ../src/gui/callbacks.c:1541
 #, c-format
 msgid "- none -"
 msgstr "- 无 -"
 
-#: ../src/gui/callbacks.c:1612
+#: ../src/gui/callbacks.c:1620
 #, c-format
 msgid ""
 "redraw: maximum number of layers supported is %d (current image has %d).\n"
 msgstr "redraw: 最大支持的通道数为 %d （当前文件为 %d）。\n"
 
-#: ../src/gui/callbacks.c:1906
+#: ../src/gui/callbacks.c:1914
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "fwhm: 选择区域太大"
 
-#: ../src/gui/callbacks.c:1908
+#: ../src/gui/callbacks.c:1916
 #, c-format
 msgid "fwhm: no selection"
 msgstr "fwhm: 无选择"
 
-#: ../src/gui/callbacks.c:1933
+#: ../src/gui/callbacks.c:1941
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (通道 0)"
 
-#: ../src/gui/callbacks.c:1938
+#: ../src/gui/callbacks.c:1946
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (通道 1)"
 
-#: ../src/gui/callbacks.c:1942
+#: ../src/gui/callbacks.c:1950
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (通道 2)"
 
-#: ../src/gui/callbacks.c:1966
+#: ../src/gui/callbacks.c:1974
 msgid "Unassigned"
 msgstr "未指定"
 
-#: ../src/gui/callbacks.c:1990
+#: ../src/gui/callbacks.c:1998
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: 未生效"
 
-#: ../src/gui/callbacks.c:2111
+#: ../src/gui/callbacks.c:2119
 msgid "Unknown zoom_value value, what is the current zoom?\n"
 msgstr "Unknown zoom_value value, what is the current zoom?\n"
 
-#: ../src/gui/callbacks.c:2197
+#: ../src/gui/callbacks.c:2205
 msgid "B&W channel"
 msgstr "黑白通道"
 
-#: ../src/gui/callbacks.c:2230
+#: ../src/gui/callbacks.c:2238
 #, c-format
 msgid "%d files loaded"
 msgstr "%d个文件已载入"
 
-#: ../src/gui/callbacks.c:2356
+#: ../src/gui/callbacks.c:2364
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Mem: %ldMB"
 
-#: ../src/gui/callbacks.c:2358
+#: ../src/gui/callbacks.c:2366
 #, c-format
 msgid "Mem: N/A"
 msgstr "Mem: N/A"
 
-#: ../src/gui/callbacks.c:2371
+#: ../src/gui/callbacks.c:2379
 #, c-format
 msgid "Disk Space: %.0lf%s"
 msgstr "磁盘空间：%.0lf%s"
 
-#: ../src/gui/callbacks.c:2373
+#: ../src/gui/callbacks.c:2381
 #, c-format
 msgid "Disk Space: N/A"
 msgstr "磁盘空间：N/A"
 
-#: ../src/gui/callbacks.c:2434
+#: ../src/gui/callbacks.c:2442
 msgid "This binning is not handled yet\n"
 msgstr "该合并模式不被支持\n"
 
-#: ../src/gui/callbacks.c:2871 ../src/gui/callbacks.c:2872
+#: ../src/gui/callbacks.c:2879 ../src/gui/callbacks.c:2880
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr "<span foreground=\"red\">错误</span>"
 
-#: ../src/gui/callbacks.c:2884
+#: ../src/gui/callbacks.c:2892
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">冷：%ld px</span>"
 
-#: ../src/gui/callbacks.c:2885 ../src/gui/callbacks.c:2897
+#: ../src/gui/callbacks.c:2893 ../src/gui/callbacks.c:2905
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
 msgstr "参数过大。请酌情改变sigma值或者取消本选项之选择。"
 
-#: ../src/gui/callbacks.c:2888
+#: ../src/gui/callbacks.c:2896
 #, c-format
 msgid "Cold: %ld px"
 msgstr "冷：%ld px"
 
-#: ../src/gui/callbacks.c:2896
+#: ../src/gui/callbacks.c:2904
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">热：%ld px</span>"
 
-#: ../src/gui/callbacks.c:2900
+#: ../src/gui/callbacks.c:2908
 #, c-format
 msgid "Hot: %ld px"
 msgstr "热：%ld px"
 
-#: ../src/gui/callbacks.c:3106
+#: ../src/gui/callbacks.c:3119
 #, fuzzy
 msgid "Closing application"
 msgstr "色彩校准"
 
-#: ../src/gui/callbacks.c:3106
+#: ../src/gui/callbacks.c:3119
 msgid "Are you sure you want to quit ?"
 msgstr "真的要退出？"
 
-#: ../src/gui/callbacks.c:3692
+#: ../src/gui/callbacks.c:3705
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "new zoom value: %f\n"
 
-#: ../src/gui/callbacks.c:3731
+#: ../src/gui/callbacks.c:3744
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3733
+#: ../src/gui/callbacks.c:3746
 #, c-format
 msgid "undefined"
 msgstr "未定义的"
 
-#: ../src/gui/callbacks.c:3829
+#: ../src/gui/callbacks.c:3842
 #, fuzzy
 msgid "Exclude all images ?"
 msgstr "全部排除"
 
-#: ../src/gui/callbacks.c:3830 ../src/gui/callbacks.c:3840
+#: ../src/gui/callbacks.c:3843 ../src/gui/callbacks.c:3853
 #, fuzzy
 msgid "This erases previous image selection and there's no possible undo."
 msgstr ""
 "排除所有图像？\n"
 "（这将抹去之前的图像选择，并且无法撤销）"
 
-#: ../src/gui/callbacks.c:3839
+#: ../src/gui/callbacks.c:3852
 #, fuzzy
 msgid "Include all images ?"
 msgstr "全部包含"
 
-#: ../src/gui/callbacks.c:3861
+#: ../src/gui/callbacks.c:3874
 msgid "Opening dark image..."
 msgstr "打开暗场帧…"
 
-#: ../src/gui/callbacks.c:3864
+#: ../src/gui/callbacks.c:3877
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "未使用暗场：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:3871
+#: ../src/gui/callbacks.c:3884
 msgid "NOT USING DARK: number of channels is different"
 msgstr "未使用暗场：通道数目不一致"
 
-#: ../src/gui/callbacks.c:3909
+#: ../src/gui/callbacks.c:3922
 msgid "Opening flat image..."
 msgstr "打开平场帧..."
 
-#: ../src/gui/callbacks.c:3912
+#: ../src/gui/callbacks.c:3925
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "未使用平场：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:3919
+#: ../src/gui/callbacks.c:3932
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "未使用平场：通道数目不一致"
 
-#: ../src/gui/callbacks.c:3946
+#: ../src/gui/callbacks.c:3959
 msgid "Opening offset image..."
 msgstr "打开偏置帧..."
 
-#: ../src/gui/callbacks.c:3949
+#: ../src/gui/callbacks.c:3962
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "未使用偏置：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:3956
+#: ../src/gui/callbacks.c:3969
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "未使用偏置：通道数目不一致"
 
-#: ../src/gui/callbacks.c:4050
+#: ../src/gui/callbacks.c:4063
 msgid "Error in preprocessing."
 msgstr "Error in preprocessing."
 
-#: ../src/gui/callbacks.c:4127
+#: ../src/gui/callbacks.c:4140
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "已选择 %s 队列 %s..."
 
-#: ../src/gui/callbacks.c:4196
+#: ../src/gui/callbacks.c:4209
 msgid "Searching for sequences in the current working directory..."
 msgstr "在当前工作目录中搜索队列..."
 
-#: ../src/gui/callbacks.c:4695
+#: ../src/gui/callbacks.c:4708
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr "背景无法自己提取自己，请点击显示图像\n"
 
-#: ../src/gui/callbacks.c:4717
+#: ../src/gui/callbacks.c:4730
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr "请点击显示图像按钮以应用修正\n"
 
-#: ../src/gui/callbacks.c:4739
+#: ../src/gui/callbacks.c:4752
 msgid "Subtraction done ...\n"
 msgstr "减法完成...\n"
 
-#: ../src/gui/callbacks.c:4746
+#: ../src/gui/callbacks.c:4759
 msgid "Division done ...\n"
 msgstr "除法完成...\n"
 
-#: ../src/gui/callbacks.c:4929
+#: ../src/gui/callbacks.c:4942
 msgid "Load an image first, aborted.\n"
 msgstr "请先载入图像，异常中止。\n"
 
-#: ../src/gui/callbacks.c:4959
+#: ../src/gui/callbacks.c:4972
 msgid "The file stars.lst has been created.\n"
 msgstr "文件stars.lst已被创建。\n"
 
-#: ../src/gui/callbacks.c:5036 ../src/gui/callbacks.c:5084
+#: ../src/gui/callbacks.c:5049 ../src/gui/callbacks.c:5097
 #, fuzzy
 msgid "Current selection is too large"
 msgstr "fwhm: 选择区域太大"
 
-#: ../src/gui/callbacks.c:5037 ../src/gui/callbacks.c:5085
+#: ../src/gui/callbacks.c:5050 ../src/gui/callbacks.c:5098
 #, fuzzy
 msgid "To determine the PSF, please make a selection around a star."
 msgstr "当前选择区域太大。若要计算PSF，请选择一个星点周围的区域。\n"
 
-#: ../src/gui/callbacks.c:5050
+#: ../src/gui/callbacks.c:5062
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -5725,33 +5766,33 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:5066
+#: ../src/gui/callbacks.c:5079
 #, fuzzy
 msgid "PSF for the sequence only applies on sequences"
 msgstr "导出队列\n"
 
-#: ../src/gui/callbacks.c:5067
+#: ../src/gui/callbacks.c:5080
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr ""
 
-#: ../src/gui/callbacks.c:5150
+#: ../src/gui/callbacks.c:5163
 msgid "FFT does not work with sequences !\n"
 msgstr "傅立叶变换不可用于队列！\n"
 
-#: ../src/gui/callbacks.c:5156
+#: ../src/gui/callbacks.c:5169
 msgid "Open an image first !\n"
 msgstr "先要打开一幅图像！\n"
 
-#: ../src/gui/callbacks.c:5181
+#: ../src/gui/callbacks.c:5194
 msgid "Select magnitude and phase before !\n"
 msgstr "请先选择好幅值和相位！\n"
 
-#: ../src/gui/callbacks.c:5711
+#: ../src/gui/callbacks.c:5724
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr "AVI文件不支持裁剪。请先将文件转化为SER格式。\n"
 
-#: ../src/gui/callbacks.c:5716
+#: ../src/gui/callbacks.c:5729
 msgid "Not a valid sequence for cropping.\n"
 msgstr "企图裁剪非有效队列。\n"
 
@@ -7454,6 +7495,16 @@ msgstr "基于品质"
 msgid "Up-scaling sequence for stacking"
 msgstr "超分辨率叠加"
 
+#~ msgid "4"
+#~ msgstr "4"
+
+#, fuzzy
+#~ msgid "Bright stars"
+#~ msgstr "亮度"
+
+#~ msgid "1"
+#~ msgstr "1"
+
 #~ msgid ""
 #~ "Copyright © 2004-2011 François Meyer\n"
 #~ "Copyright © 2012-2018 team free-astro"
@@ -7803,9 +7854,6 @@ msgstr "超分辨率叠加"
 
 #~ msgid "3"
 #~ msgstr "3"
-
-#~ msgid "4"
-#~ msgstr "4"
 
 #~ msgid "3x3"
 #~ msgstr "3x3"
