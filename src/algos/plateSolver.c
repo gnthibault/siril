@@ -51,6 +51,12 @@
 
 #define RADCONV ((3600.0 * 180.0) / M_PI) / 1.0E3
 
+enum {
+	COLUMN_RESOLVER,		// string
+	COLUMN_NAME,		// string
+	N_COLUMNS
+};
+
 #undef DEBUG           /* get some of diagnostic output */
 
 void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
@@ -305,16 +311,16 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 		url = g_string_append(url, "NOMAD&-out.meta=-h-u-D&-out.add=_r&-sort=_r");
 		url = g_string_append(url, "&-out=%20RAJ2000%20DEJ2000%20Vmag%20Bmag");
 		url = g_string_append(url, "&-out.max=200000");
-		url = g_string_append(url, "&-c.rm=");
-		url = g_string_append(url, fov);
 		url = g_string_append(url, "&-c=");
 		url = g_string_append(url, coordinates);
+		url = g_string_append(url, "&-c.rm=");
+		url = g_string_append(url, fov);
 		url = g_string_append(url, "&Vmag=<");
 		url = g_string_append(url, mag);
 		break;
 	default:
 	case TYCHO2:
-		url = g_string_append(url, "I/259/tyc2&-out.add=_r&-sort=_r");
+		url = g_string_append(url, "I/259/tyc2&-out.meta=-h-u-D&-out.add=_r&-sort=_r");
 		url = g_string_append(url, "&-out=%20RAmdeg%20DEmdeg%20VTmag%20BTmag");
 		url = g_string_append(url, "&-out.max=200000");
 		url = g_string_append(url, "&-c=");
@@ -325,7 +331,7 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 		url = g_string_append(url, mag);
 		break;
 	case GAIA:
-		url = g_string_append(url, "I/345/gaia2&-out.add=_r&-sort=_r");
+		url = g_string_append(url, "I/345/gaia2&-out.meta=-h-u-D&-out.add=_r&-sort=_r");
 		url = g_string_append(url, "&-out=%20RAJ2000%20DEJ2000%20Gmag%20BPmag");
 		url = g_string_append(url, "&-out.max=200000");
 		url = g_string_append(url, "&-c=");
@@ -335,8 +341,19 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 		url = g_string_append(url, "&Gmag=<");
 		url = g_string_append(url, mag);
 		break;
+	case PPMXL:
+		url = g_string_append(url, "I/317&-out.meta=-h-u-D&-out.add=_r&-sort=_r");
+		url = g_string_append(url, "&-out=%20RAJ2000%20DEJ2000%20Jmag%20Hmag");
+		url = g_string_append(url, "&-out.max=200000");
+		url = g_string_append(url, "&-c=");
+		url = g_string_append(url, coordinates);
+		url = g_string_append(url, "&-c.rm=");
+		url = g_string_append(url, fov);
+		url = g_string_append(url, "&Jmag=<");
+		url = g_string_append(url, mag);
+		break;
 	case BRIGHT_STARS:
-		url = g_string_append(url, "V/50/catalog&-out.add=_r&-sort=_r");
+		url = g_string_append(url, "V/50/catalog&-out.meta=-h-u-D&-out.add=_r&-sort=_r");
 		url = g_string_append(url, "&-out.add=_RAJ,_DEJ&-out=Vmag&-out=B-V");
 		url = g_string_append(url, "&-out.max=200000");
 		url = g_string_append(url, "&-c=");
@@ -523,12 +540,6 @@ static gchar *download_catalog(online_catalog onlineCatalog) {
 /*********
  *
  */
-
-enum {
-	COLUMN_RESOLVER,		// string
-	COLUMN_NAME,		// string
-	N_COLUMNS
-};
 
 static void get_list_IPS() {
 	if (list_IPS == NULL)
@@ -733,7 +744,7 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 }
 
 static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
-	char line[LINELEN] = {0};
+	char line[LINELEN];
 	fitted_PSF *star;
 
 	int i = 0;
@@ -750,12 +761,6 @@ static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) 
 		if (g_str_has_prefix(line, "---")) {
 			continue;
 		}
-		if (g_str_has_prefix(line, "_r")) {
-			continue;
-		}
-		if (g_str_has_prefix(line, "arcmin")) {
-			continue;
-		}
 		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &Bmag);
 
 		star = malloc(sizeof(fitted_PSF));
@@ -766,7 +771,6 @@ static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) 
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
-
 	}
 	sort_stars(cstars, i);
 	siril_log_message(_("Catalog TYCHO-2 size: %d objects\n"), i);
@@ -774,7 +778,7 @@ static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) 
 }
 
 static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
-	char line[LINELEN] = {0};
+	char line[LINELEN];
 	fitted_PSF *star;
 
 	int i = 0;
@@ -791,13 +795,7 @@ static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		if (g_str_has_prefix(line, "---")) {
 			continue;
 		}
-		if (g_str_has_prefix(line, "_r")) {
-			continue;
-		}
-		if (g_str_has_prefix(line, "arcmin")) {
-			continue;
-		}
-		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Gmag, &BPmag);
+		sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Gmag, &BPmag);
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
@@ -807,15 +805,49 @@ static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
-
 	}
 	sort_stars(cstars, i);
 	siril_log_message(_("Catalog Gaia DR2 size: %d objects\n"), i);
 	return i;
 }
 
-static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
-	char line[LINELEN] = {0};
+static int read_PPMXL_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
+	char line[LINELEN];
+	fitted_PSF *star;
+
+	int i = 0;
+
+	while (fgets(line, LINELEN, catalog) != NULL) {
+		double r = 0.0, x = 0.0, y = 0.0, Jmag = 0.0, Hmag = 0.0;
+
+		if (line[0] == COMMENT_CHAR) {
+			continue;
+		}
+		if (is_blank(line)) {
+			continue;
+		}
+		if (g_str_has_prefix(line, "---")) {
+			continue;
+		}
+		sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Jmag, &Hmag);
+
+		star = malloc(sizeof(fitted_PSF));
+		star->xpos = x;
+		star->ypos = y + shift_y;
+		star->mag = Jmag;
+		star->BV = -99;
+		cstars[i] = star;
+		cstars[i + 1] = NULL;
+		i++;
+	}
+	sort_stars(cstars, i);
+	siril_log_message(_("Catalog PPMXL size: %d objects\n"), i);
+	return i;
+}
+
+static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars,
+		int shift_y) {
+	char line[LINELEN];
 	fitted_PSF *star;
 
 	int i = 0;
@@ -832,13 +864,7 @@ static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars, int shi
 		if (g_str_has_prefix(line, "---")) {
 			continue;
 		}
-		if (g_str_has_prefix(line, "_r")) {
-			continue;
-		}
-		if (g_str_has_prefix(line, "arcmin")) {
-			continue;
-		}
-		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &BV);
+		sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &BV);
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
@@ -848,7 +874,6 @@ static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars, int shi
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
-
 	}
 	sort_stars(cstars, i);
 	siril_log_message(_("Catalog Bright stars size: %d objects\n"), i);
@@ -866,6 +891,8 @@ static int read_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y,
 		return read_NOMAD_catalog(catalog, cstars, shift_y);
 	case GAIA:
 		return read_GAIA_catalog(catalog, cstars, shift_y);
+	case PPMXL:
+		return read_PPMXL_catalog(catalog, cstars, shift_y);
 	case BRIGHT_STARS:
 		return read_BRIGHT_STARS_catalog(catalog, cstars, shift_y);
 	}

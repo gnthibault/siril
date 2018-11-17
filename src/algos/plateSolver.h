@@ -18,15 +18,19 @@
 #define VIZIERSESAME "http://vizier.cfa.harvard.edu/viz-bin/nph-sesame"
 
 typedef enum {
-	TYCHO2, NOMAD, GAIA, BRIGHT_STARS
+	TYCHO2,
+	NOMAD,
+	GAIA,
+	PPMXL,
+	BRIGHT_STARS
 } online_catalog;
 
-enum resolver {
+typedef enum {
 	RESOLVER_NED,
 	RESOLVER_SIMBAD,
 	RESOLVER_VIZIER,
 	RESOLVER_NUMBER
-};
+} resolver;
 
 /* median filter data from GUI */
 struct plate_solver_data {
