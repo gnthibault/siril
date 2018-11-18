@@ -46,6 +46,7 @@
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "core/command.h"
+#include "core/pipe.h"
 #include "io/sequence.h"
 #include "io/conversion.h"
 #include "gui/callbacks.h"
@@ -136,7 +137,8 @@ void usage(const char *command) {
     printf("\nUsage:  %s [OPTIONS] [IMAGE_FILE_TO_OPEN]\n\n", command);
     puts("    -d, --directory CWD        changing the current working directory as the argument");
     puts("    -s, --script    SCRIPTFILE run the siril commands script in console mode");
-    puts("    -i                         load configuration from file name instead of the default configuration file");
+    puts("    -i              INITFILE   load configuration from file name instead of the default configuration file");
+    puts("    -p                         run in console mode with command and log stream through named pipes");
     puts("    -f, --format               print all supported image file formats (depending on installed libraries)");
     puts("    -v, --version              print program name and version and exit");
     puts("    -h, --help                 show this message");
@@ -191,7 +193,7 @@ int main(int argc, char *argv[]) {
 	signal(SIGINT, signal_handled);
 
 	while (1) {
-		signed char c = getopt(argc, argv, "i:hfvd:s:");
+		signed char c = getopt(argc, argv, "i:phfvd:s:");
 		if (c == '?') {
 			for (i = 1; i < argc; i++) {
 				if (argv[i][1] == '-') {
@@ -232,7 +234,7 @@ int main(int argc, char *argv[]) {
 				forcecwd = TRUE;
 				break;
 			case 's':
-				start_script = optarg;
+			case 'p':
 				com.script = TRUE;
 				com.headless = TRUE;
 				/* need to force cwd to the current dir if no option -d */
@@ -240,6 +242,8 @@ int main(int argc, char *argv[]) {
 					cwd_forced = g_get_current_dir();
 					forcecwd = TRUE;
 				}
+				if (c == 's')
+					start_script = optarg;
 				break;
 			default:
 				fprintf(stderr, _("unknown command line parameter '%c'\n"), argv[argc - 1][1]);
@@ -418,6 +422,7 @@ int main(int argc, char *argv[]) {
 			_("disabled"), com.max_thread = 1
 #endif
 			);
+
 	if (!com.headless) {
 		update_spinCPU(com.max_thread);
 
@@ -462,20 +467,27 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (com.headless) {
-		FILE* fp = g_fopen(start_script, "r");
-		if (fp == NULL) {
-			siril_log_message(_("File [%s] does not exist\n"), start_script);
-			exit(1);
+		if (start_script) {
+			FILE* fp = g_fopen(start_script, "r");
+			if (fp == NULL) {
+				siril_log_message(_("File [%s] does not exist\n"), start_script);
+				exit(1);
+			}
+			execute_script(fp);
 		}
-		execute_script(fp);
+		else {
+			pipe_start();
+			read_pipe(NULL);
+		}
 	}
 	else gtk_main();
 
 	/* quit Siril */
 	close_sequence(FALSE);	// closing a sequence if loaded
 	close_single_image();	// close the previous image and free resources
+	pipe_stop();		// close the pipes and their threads
 #ifdef MAC_INTEGRATION
-		g_object_unref(osx_app);
+	g_object_unref(osx_app);
 #endif //MAC_INTEGRATION
 	return 0;
 }

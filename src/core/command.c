@@ -70,7 +70,7 @@
 
 static char *word[MAX_COMMAND_WORDS];	// NULL terminated
 
-command commande[] = {
+static command commands[] = {
 	/* name,	nbarg,	usage,		function pointer, definition, scriptable */
 	{"addmax",	1,	"addmax filename",	process_addmax, STR_ADDMAX, FALSE},
 	
@@ -2349,7 +2349,7 @@ int process_set_cpu(int nb){
 #endif
 
 int process_help(int nb){
-	command *current = commande;
+	command *current = commands;
 	siril_log_message(_("********* LIST OF AVAILABLE COMMANDS *********\n"));
 	while (current->process) {
 		siril_log_message("%s\n", current->usage);
@@ -2422,8 +2422,8 @@ static int executeCommand(int wordnb) {
 	int i;
 	// search for the command in the list
 	if (word[0] == NULL) return 1;
-	i = sizeof(commande)/sizeof(command);
-	while (strcasecmp (commande[--i].name, word[0])) {
+	i = sizeof(commands)/sizeof(command);
+	while (strcasecmp (commands[--i].name, word[0])) {
 		if (i == 0) {
 			siril_log_message(_("Unknown command: '%s' or not implemented yet\n"), word[0]);
 			return 1 ;
@@ -2431,22 +2431,22 @@ static int executeCommand(int wordnb) {
 	}
 
 	// verify argument count
-	if (wordnb - 1 < commande[i].nbarg) {
-		siril_log_message(_("Usage: %s\n"), commande[i].usage);
+	if (wordnb - 1 < commands[i].nbarg) {
+		siril_log_message(_("Usage: %s\n"), commands[i].usage);
 		return 1;
 	}
 
 	// verify if command is scriptable
 	if (com.script) {
-		if (!commande[i].scriptable) {
-			siril_log_message(_("This command cannot be used in a script: %s\n"), commande[i].name);
+		if (!commands[i].scriptable) {
+			siril_log_message(_("This command cannot be used in a script: %s\n"), commands[i].name);
 			return 1;
 		}
 	}
 
 	// process the command
 	siril_log_color_message(_("Running command: %s\n"), "salmon", word[0]);
-	return commande[i].process(wordnb);
+	return commands[i].process(wordnb);
 }
 
 gboolean end_script(gpointer p) {
@@ -2636,7 +2636,7 @@ void init_completion_command() {
 	g_signal_connect(G_OBJECT(completion), "match-selected", G_CALLBACK(on_match_selected), NULL);
 
 	/* Populate the completion database. */
-	command *current = commande;
+	command *current = commands;
 
 	while (current->process){
 		gtk_list_store_append(model, &iter);
@@ -2657,50 +2657,51 @@ void on_GtkCommandHelper_clicked(GtkButton *button, gpointer user_data) {
 
 	entry = GTK_ENTRY(lookup_widget("command"));
 	text = gtk_entry_get_text(entry);
-	if (*text != 0) {
-		command *current = commande;
+	if (*text == '\0')
+		return;
 
-		command_line = g_strsplit_set(text, " ", -1);
-		while (current->process) {
-			if (!g_ascii_strcasecmp(current->name, command_line[0])) {
-				gchar **token;
+	command *current = commands;
 
-				token = g_strsplit_set(current->usage, " ", -1);
-				str = g_string_new(token[0]);
-				str = g_string_prepend(str, "<span foreground=\"red\"><b>");
-				str = g_string_append(str, "</b>");
-				if (token[1] != NULL) {
-					str = g_string_append(str, current->usage + strlen(token[0]));
-				}
-				str = g_string_append(str, "</span>\n\n\t");
-				str = g_string_append(str, _(current->definition));
-				str = g_string_append(str, "\n\n<b>");
-				str = g_string_append(str, _("Can be used in a script: "));
-				str = g_string_append(str, "<span foreground=\"red\">");
-				if (current->scriptable) {
-					str = g_string_append(str, _("YES"));
-				} else {
-					str = g_string_append(str, _("NO"));
-				}
-				str = g_string_append(str, "</span></b>");
-				helper = g_string_free(str, FALSE);
-				g_strfreev(token);
-				break;
+	command_line = g_strsplit_set(text, " ", -1);
+	while (current->process) {
+		if (!g_ascii_strcasecmp(current->name, command_line[0])) {
+			gchar **token;
+
+			token = g_strsplit_set(current->usage, " ", -1);
+			str = g_string_new(token[0]);
+			str = g_string_prepend(str, "<span foreground=\"red\"><b>");
+			str = g_string_append(str, "</b>");
+			if (token[1] != NULL) {
+				str = g_string_append(str, current->usage + strlen(token[0]));
 			}
-			current++;
+			str = g_string_append(str, "</span>\n\n\t");
+			str = g_string_append(str, _(current->definition));
+			str = g_string_append(str, "\n\n<b>");
+			str = g_string_append(str, _("Can be used in a script: "));
+			str = g_string_append(str, "<span foreground=\"red\">");
+			if (current->scriptable) {
+				str = g_string_append(str, _("YES"));
+			} else {
+				str = g_string_append(str, _("NO"));
+			}
+			str = g_string_append(str, "</span></b>");
+			helper = g_string_free(str, FALSE);
+			g_strfreev(token);
+			break;
 		}
-		if (!helper) {
-			helper = g_strdup(_("No help for this command"));
-		}
-
-		g_strfreev(command_line);
-
-		popover = popover_new(lookup_widget("command"), helper);
-#if GTK_MAJOR_VERSION >= 3 && GTK_MINOR_VERSION < 22
-		gtk_widget_show(popover);
-#else
-		gtk_popover_popup(GTK_POPOVER(popover));
-#endif
-		g_free(helper);
+		current++;
 	}
+	if (!helper) {
+		helper = g_strdup(_("No help for this command"));
+	}
+
+	g_strfreev(command_line);
+
+	popover = popover_new(lookup_widget("command"), helper);
+#if GTK_MAJOR_VERSION >= 3 && GTK_MINOR_VERSION < 22
+	gtk_widget_show(popover);
+#else
+	gtk_popover_popup(GTK_POPOVER(popover));
+#endif
+	g_free(helper);
 }

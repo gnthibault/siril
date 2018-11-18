@@ -6,7 +6,8 @@ AM_CPPFLAGS = -DPACKAGE_DATA_DIR='"$(datadir)/${PACKAGE}"' -DPACKAGE_DOC_DIR='"$
 
 siril_SOURCES = \
 	main.c \
-	core/siril.c core/siril.h core/command.c core/command.h core/command_def.h core/proto.h core/undo.c core/undo.h core/utils.c core/processing.c \
+	core/siril.c core/siril.h core/command.c core/command.h core/command_def.h core/proto.h \
+	core/undo.c core/undo.h core/utils.c core/processing.c core/pipe.c core/pipe.h \
 	core/initfile.c core/initfile.h core/siril_update.c core/siril_update.h \
 	io/conversion.c io/conversion.h io/ser.c io/ser.h io/films.c io/films.h \
 	io/image_formats_libraries.c io/image_formats_internal.c io/image_format_fits.c \

@@ -89,7 +89,9 @@ static gchar *strip_last_ret_char(gchar *str) {
 /******* Public functions *****************/
 
 void siril_message_dialog(GtkMessageType type, char *title, char *text) {
-	if (com.headless)
+	/* headless has no GUI, so no dialog; script has a GUI but calls it from another thread
+	 * so it's not safe to use dialogs in the calling thread, we just ignore it for now. */
+	if (com.headless || com.script)
 		return;	// show_dialog usually follows a siril_log_message() call
 	struct siril_dialog_data *args = g_try_malloc(sizeof(struct siril_dialog_data));
 
@@ -111,7 +113,7 @@ void siril_message_dialog(GtkMessageType type, char *title, char *text) {
 }
 
 void siril_data_dialog(GtkMessageType type, char *title, char *text, gchar *data) {
-	if (com.headless)
+	if (com.headless || com.script)
 		return;	// show_dialog usually follows a siril_log_message() call
 	struct siril_dialog_data *args = malloc(sizeof(struct siril_dialog_data));
 
