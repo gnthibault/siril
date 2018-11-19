@@ -22,8 +22,8 @@
 
 #define PIPE_NAME_R "siril_command.in"
 #define PIPE_NAME_W "siril_command.out"
-#define PIPE_PATH_R "/tmp/" PIPE_NAME_R
-#define PIPE_PATH_W "/tmp/" PIPE_NAME_W
+#define PIPE_PATH_R "/tmp/" PIPE_NAME_R  // TODO: use g_get_tmp_dir()
+#define PIPE_PATH_W "/tmp/" PIPE_NAME_W  // TODO: use g_get_tmp_dir()
 #define PIPE_MSG_SZ 512
 
 #include <sys/types.h>
@@ -35,6 +35,7 @@
 #include <signal.h>
 #include <sys/select.h>
 
+#include "core/siril.h"
 #include "pipe.h"
 #include "command.h"
 //#include "processing.h"
@@ -80,25 +81,25 @@ int pipe_create() {
 	struct stat st;
 	if (stat(PIPE_PATH_R, &st)) {
 		if (mkfifo(PIPE_PATH_R, 0666)) {
-			siril_log_message("Could not create the named pipe "PIPE_PATH_R"\n");
+			siril_log_message(_("Could not create the named pipe "PIPE_PATH_R"\n"));
 			perror("mkfifo");
 			return -1;
 		}
 	}
 	else if (!S_ISFIFO(st.st_mode)) {
-		siril_log_message("The named pipe file " PIPE_PATH_R " already exists but is not a fifo, cannot create or open\n");
+		siril_log_message(_("The named pipe file " PIPE_PATH_R " already exists but is not a fifo, cannot create or open\n"));
 		return -1;
 	}
 
 	if (stat(PIPE_PATH_W, &st)) {
 		if (mkfifo(PIPE_PATH_W, 0666)) {
-			siril_log_message("Could not create the named pipe "PIPE_PATH_W"\n");
+			siril_log_message(_("Could not create the named pipe "PIPE_PATH_W"\n"));
 			perror("mkfifo");
 			return -1;
 		}
 	}
 	else if (!S_ISFIFO(st.st_mode)) {
-		siril_log_message("The named pipe file " PIPE_PATH_W " already exists but is not a fifo, cannot create or open\n");
+		siril_log_message(_("The named pipe file " PIPE_PATH_W " already exists but is not a fifo, cannot create or open\n"));
 		return -1;
 	}
 #endif
@@ -166,7 +167,7 @@ void *read_pipe_old(void *p) {
 		// open will block until the other end is opened
 		fprintf(stdout, "read pipe waiting to be opened...\n");
 		if ((pipe_fd_r = open(PIPE_PATH_R, O_RDONLY)) == -1) {
-			siril_log_message("Could not open the named pipe\n");
+			siril_log_message(_("Could not open the named pipe\n"));
 			perror("open");
 			break;
 		}
@@ -201,7 +202,7 @@ void *read_pipe(void *p) {
 		// open will block until the other end is opened
 		fprintf(stdout, "read pipe waiting to be opened...\n");
 		if ((pipe_fd_r = open(PIPE_PATH_R, O_RDONLY)) == -1) {
-			siril_log_message("Could not open the named pipe\n");
+			siril_log_message(_("Could not open the named pipe\n"));
 			perror("open");
 			break;
 		}
@@ -282,7 +283,7 @@ static void *write_pipe(void *p) {
 		// open will block until the other end is opened
 		fprintf(stdout, "write pipe waiting to be opened...\n");
 		if ((pipe_fd_w = open(PIPE_PATH_W, O_WRONLY)) == -1) {
-			siril_log_message("Could not open the named pipe\n");
+			siril_log_message(_("Could not open the named pipe\n"));
 			perror("open");
 			break;
 		}

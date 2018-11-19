@@ -35,10 +35,13 @@
 #include "core/siril_update.h"
 
 
-#define DOMAIN_NAME "https://free-astro.org"
+#define DOMAIN_NAME "https://free-astro.org/"
+#define GITLAB_URL "https://gitlab.com/free-astro/siril/"
+#define TITLE_TAG_STRING "<a class=\"item-title"
 
-static const gchar* siril_url = DOMAIN_NAME"/svn/siril/tags/";
-static const gchar* download_url = DOMAIN_NAME"/index.php?title=Siril:";
+static const gchar* gitlab_tags = GITLAB_URL"tags";
+static const gchar* gitlab_raw = GITLAB_URL"raw";
+static const gchar* download_url = DOMAIN_NAME"index.php?title=Siril:";
 static const int DEFAULT_FETCH_RETRIES = 5;
 static CURL *curl;
 
@@ -106,38 +109,36 @@ static version_number get_current_version_number() {
 static version_number get_last_version_number(gchar *buffer) {
 	gchar **token;
 	gchar **fullVersionNumber;
-	char *v;
+	gchar *v = NULL;
 	gint i, nargs;
-	version_number version;
+	version_number version = { 0 };
 
 	token = g_strsplit(buffer, "\n", -1);
 	nargs = g_strv_length(token);
 
 	i = 0;
 	while (i < nargs) {
-		if (g_str_has_prefix(g_strchug(token[i]), "<li>")) {
-			/* get value between double quote */
-			/* the last version number is the newer */
-			strtok(token[i],"\"");
-			v = strtok(NULL,"\"");
+		if (g_str_has_prefix(g_strchug(token[i]), TITLE_TAG_STRING)) {
+			/* get value between > and < */
+			/* the first version number is the newer */
+			strtok(token[i], ">");
+			v = strtok(NULL, "<");
+			break;
 		}
 		i++;
 	}
+	if (v) {
+		g_fprintf(stdout, "last tagged version: %s\n", v);
+		fullVersionNumber = g_strsplit_set(v, ".-", -1);
 
-	/* on tags webpage, version has the following format: "0.9.8/"
-	 * First we remove the last char '/' */
-	v[strlen(v) - 1] = 0;
-	g_fprintf(stdout, "last tagged version: %s\n", v);
-	fullVersionNumber = g_strsplit_set(v, ".-", -1);
+		version.major_version = atoi(fullVersionNumber[0]);
+		version.minor_version = atoi(fullVersionNumber[1]);
+		version.micro_version = atoi(fullVersionNumber[2]);
+		version.patched_version = (fullVersionNumber[3] == NULL) ? 0 : atoi(fullVersionNumber[3]);
 
-	version.major_version = atoi(fullVersionNumber[0]);
-	version.minor_version = atoi(fullVersionNumber[1]);
-	version.micro_version = atoi(fullVersionNumber[2]);
-	version.patched_version = (fullVersionNumber[3] == NULL) ? 0 : atoi(fullVersionNumber[3]);
-
-	g_strfreev(fullVersionNumber);
-	g_strfreev(token);
-
+		g_strfreev(fullVersionNumber);
+		g_strfreev(token);
+	}
 	return version;
 }
 
@@ -206,7 +207,7 @@ static gchar *get_changelog(gint x, gint y, gint z, gint p) {
 	gchar str[20];
 	gchar *changelog_url;
 	long code;
-	GString *url = g_string_new(siril_url);
+	GString *url = g_string_new(gitlab_raw);
 
 	changelog = g_try_malloc(sizeof(struct ucontent));
 	if (changelog == NULL) {
@@ -218,9 +219,9 @@ static gchar *get_changelog(gint x, gint y, gint z, gint p) {
 	changelog->len = 0;
 
 	if (p != 0) {
-		g_snprintf(str, sizeof(str), "%d.%d.%d.%d/", x, y, z, p);
+		g_snprintf(str, sizeof(str), "/%d.%d.%d.%d/", x, y, z, p);
 	} else {
-		g_snprintf(str, sizeof(str), "%d.%d.%d/", x, y, z);
+		g_snprintf(str, sizeof(str), "/%d.%d.%d/", x, y, z);
 	}
 	url = g_string_append(url, str);
 	url = g_string_append(url, "ChangeLog");
@@ -249,7 +250,6 @@ static gboolean end_update_idle(gpointer p) {
 	gchar *changelog = NULL;
 	gchar *data = NULL;
 	version_number current_version, last_version_available;
-//	static char *icon[] = { "dialog-information-symbolic", "dialog-error-symbolic" };
 	static GtkMessageType type[] = { GTK_MESSAGE_INFO, GTK_MESSAGE_ERROR };
 	struct _update_data *args = (struct _update_data *) p;
 
@@ -285,15 +285,16 @@ static gboolean end_update_idle(gpointer p) {
 		}
 		ret = 0;
 	}
+	set_cursor_waiting(FALSE);
 	siril_data_dialog(type[ret], _("Software Update"), msg, data);
 
 	/* free data */
 	g_free(args->content);
+	g_free(data);
 	g_free(changelog);
 	free(args);
 	http_cleanup();
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
-	set_cursor_waiting(FALSE);
 	stop_processing_thread();
 	return FALSE;
 }
@@ -384,7 +385,7 @@ void on_help_update_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	struct _update_data *args;
 
 	args = malloc(sizeof(struct _update_data));
-	args->url = (gchar *)siril_url;
+	args->url = (gchar *)gitlab_tags;
 	args->code = 0L;
 	args->content = NULL;
 
