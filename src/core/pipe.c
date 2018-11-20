@@ -45,8 +45,7 @@
 
 /* TODO:
  * use PIPE_STATUS
- * manage the SIGPIPE that occurs when writing to a closed pipe
- * check the mutexes around the conditional variables
+ * check the mutexes around the conditional variables and fix the deadlock on stop
  * windows version
  */
 
@@ -64,12 +63,9 @@ static GCond write_cond, read_cond;
 static GMutex write_mutex, read_mutex;
 static GList *command_list;
 
+static void sigpipe_handler(int signum) { }	// do nothing
+
 int pipe_create() {
-	// we don't need the SIGPIPE signals, we handle return value of write(2)
-	if (SIG_ERR == signal(SIGPIPE, SIG_IGN)) {
-		perror("signal");
-		return -1;
-	}
 	/* using commands from a thread that is not the GUI thread is only
 	 * supported when this is toggled, otherwise changing the cursor and
 	 * possibly other graphical operations are badly done. */
@@ -77,6 +73,16 @@ int pipe_create() {
 #ifdef _WIN32
 #else
 	if (pipe_fd_r >= 0 || pipe_fd_w > 0) return 0;
+
+	struct sigaction sa;
+	sa.sa_handler = sigpipe_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART; /* Restart functions if
+				     interrupted by handler */
+	if (sigaction(SIGPIPE, &sa, NULL) == -1) {
+		perror("sigaction");
+		return -1;
+	}
 
 	struct stat st;
 	if (stat(PIPE_PATH_R, &st)) {
@@ -260,7 +266,10 @@ void *process_commands(void *p) {
 			fprintf(stdout, "waiting for commands to be read from the pipe\n");
 			g_cond_wait(&read_cond, &read_mutex);
 		}
-		if (!pipe_active) break;
+		if (!pipe_active) {
+			g_mutex_unlock(&read_mutex);
+			break;
+		}
 
 		command = (char*)command_list->data;
 		command_list = g_list_next(command_list);
@@ -300,6 +309,7 @@ static void *write_pipe(void *p) {
 				fprintf(stdout, "closed write pipe\n");
 				close(pipe_fd_w);
 				pipe_fd_w = -1;
+				break;
 			}
 			pipe_buf_o[0] = '\0';
 		} while (1);
@@ -318,7 +328,6 @@ int pipe_start() {
 
 	pipe_active = 1;
 	worker_thread = g_thread_new("worker", process_commands, NULL);
-	//pipe_thread_r = g_thread_new("pipe reader", read_pipe, NULL);
 	pipe_thread_w = g_thread_new("pipe writer", write_pipe, NULL);
 	return 0;
 }
@@ -326,10 +335,15 @@ int pipe_start() {
 void pipe_stop() {
 	fprintf(stdout, "closing pipes\n");
 	pipe_active = 0;
-	close(pipe_fd_r);
-	close(pipe_fd_w);
+	if (pipe_fd_r >= 0)
+		close(pipe_fd_r);
+	if (pipe_fd_w > 0)
+		close(pipe_fd_w);
+	pipe_buf_o[0] = '\1';
 	g_cond_signal(&write_cond);
-	g_thread_join(pipe_thread_w);
-	//g_thread_join(pipe_thread_r);
-	g_thread_join(worker_thread);
+	g_cond_signal(&read_cond);
+	if (pipe_thread_w)
+		g_thread_join(pipe_thread_w);
+	if (worker_thread)
+		g_thread_join(worker_thread);
 }
