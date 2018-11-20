@@ -57,7 +57,7 @@ static int pipe_fd_w = -1;
 #endif
 
 static char pipe_buf_o[PIPE_MSG_SZ];
-static GThread *pipe_thread_r, *pipe_thread_w, *worker_thread;
+static GThread *pipe_thread_w, *worker_thread;
 static int pipe_active;
 static GCond write_cond, read_cond;
 static GMutex write_mutex, read_mutex;
