@@ -624,7 +624,6 @@ int readpng(const char *name, fits* fit) {
 				*buf[BLAYER]++ = ptr[2];
 			}
 		}
-		fit->bitpix = fit->orig_bitpix = BYTE_IMG;
 	}
 	// We define the number of channel we have
 	switch (color_type) {
@@ -656,7 +655,7 @@ int readpng(const char *name, fits* fit) {
 			fit->naxis = 2;
 		else
 			fit->naxis = 3;
-		fit->bitpix = (bit_depth == 8) ? BYTE_IMG : USHORT_IMG;
+		fit->bitpix = (bit_depth == 16) ? USHORT_IMG : BYTE_IMG;
 		fit->orig_bitpix = fit->bitpix;
 		fit->data = data;
 		fit->pdata[RLAYER] = fit->data;

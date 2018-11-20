@@ -289,13 +289,15 @@ int process_savejpg(int nb){
 #ifdef HAVE_LIBPNG
 int process_savepng(int nb){
 	char filename[256];
+	uint32_t bytes_per_sample;;
 
 	if (!single_image_is_loaded()) return 1;
 
 	strcpy(filename, word[1]);
 	strcat(filename, ".png");
 	set_cursor_waiting(TRUE);
-	savepng(filename, &gfit, 2, gfit.naxes[2] == 3);
+	bytes_per_sample = gfit.orig_bitpix > BYTE_IMG ? 2 : 1;
+	savepng(filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
 	set_cursor_waiting(FALSE);
 	return 0;
 }
