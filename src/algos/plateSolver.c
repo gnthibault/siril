@@ -481,7 +481,7 @@ static online_catalog get_online_catalog(double fov, double m) {
 		if (m <= 6.5) {
 			ret = BRIGHT_STARS;
 		} else if (fov > 180.0) {
-			ret = TYCHO2;
+			ret = NOMAD;
 		} else if (fov < 30.0){
 			ret = GAIA;
 		} else {
@@ -491,7 +491,7 @@ static online_catalog get_online_catalog(double fov, double m) {
 	} else {
 		box = GTK_COMBO_BOX(lookup_widget("ComboBoxIPSCatalog"));
 		ret = gtk_combo_box_get_active(box);
-		return (ret < 0 ? PPMXL : ret);
+		return (ret < 0 ? NOMAD : ret);
 	}
 }
 

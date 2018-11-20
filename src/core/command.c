@@ -289,7 +289,7 @@ int process_savejpg(int nb){
 #ifdef HAVE_LIBPNG
 int process_savepng(int nb){
 	char filename[256];
-	uint32_t bytes_per_sample;;
+	uint32_t bytes_per_sample;
 
 	if (!single_image_is_loaded()) return 1;
 
