@@ -33,7 +33,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <signal.h>
+#ifdef _WIN32
+#else
 #include <sys/select.h>
+#endif
 
 #include "core/siril.h"
 #include "pipe.h"
