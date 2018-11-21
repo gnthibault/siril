@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "algos/geometry.h"
 #include "core/siril.h"
 #include "core/proto.h"
 #include "sequence.h"

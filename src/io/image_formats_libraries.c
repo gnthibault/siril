@@ -43,6 +43,7 @@
 #include <libraw/libraw.h>
 #endif
 
+#include "algos/geometry.h"
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"

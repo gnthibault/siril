@@ -62,6 +62,7 @@
 #include "algos/quality.h"
 #include "algos/cosmetic_correction.h"
 #include "algos/statistics.h"
+#include "algos/geometry.h"
 #include "stacking/stacking.h"
 #include "stacking/sum.h"
 #include "registration/registration.h"

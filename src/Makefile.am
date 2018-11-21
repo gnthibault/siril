@@ -28,6 +28,7 @@ siril_SOURCES = \
 	algos/statistics.c \
 	algos/fft.c algos/fft.h \
 	algos/colors.c algos/colors.h \
+	algos/geometry.c algos/geometry.h \
 	algos/demosaicing.c algos/demosaicing.h \
 	algos/pave.c algos/transform.c algos/io_wave.c algos/reconstr.c \
 	algos/Def_Math.h algos/Def_Wavelet.h algos/Def_Mem.h \
