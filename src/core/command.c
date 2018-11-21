@@ -39,7 +39,6 @@
 #include "core/siril.h"
 #include "core/command.h"
 #include "core/command_def.h"
-#include "core/pipe.h"
 #include "core/proto.h"
 #include "core/undo.h"
 #include "core/initfile.h"
@@ -2364,7 +2363,6 @@ int process_help(int nb){
 
 int process_exit(int nb){
 	undo_flush();
-	//pipe_stop();	// not working yet
 	exit(EXIT_SUCCESS);
 }
 

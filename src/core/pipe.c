@@ -24,7 +24,7 @@
 #define PIPE_NAME_W "siril_command.out"
 #define PIPE_PATH_R "/tmp/" PIPE_NAME_R  // TODO: use g_get_tmp_dir()
 #define PIPE_PATH_W "/tmp/" PIPE_NAME_W  // TODO: use g_get_tmp_dir()
-#define PIPE_MSG_SZ 512
+#define PIPE_MSG_SZ 512	// max input command length
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -41,11 +41,10 @@
 //#include "processing.h"
 	void stop_processing_thread();	// avoid including everything
 	gpointer waiting_for_thread();
+	gboolean get_thread_run();
 #include "gui/progress_and_log.h"
 
 /* TODO:
- * use PIPE_STATUS
- * check the mutexes around the conditional variables and fix the deadlock on stop
  * windows version
  */
 
@@ -56,21 +55,19 @@ static int pipe_fd_r = -1;
 static int pipe_fd_w = -1;
 #endif
 
-static char pipe_buf_o[PIPE_MSG_SZ];
 static GThread *pipe_thread_w, *worker_thread;
 static int pipe_active;
 static GCond write_cond, read_cond;
 static GMutex write_mutex, read_mutex;
-static GList *command_list;
+static GList *command_list, *pending_writes;
+// ^ could use GQueue instead since it's used as a queue, avoids the cells memory leak
 
 static void sigpipe_handler(int signum) { }	// do nothing
 
 int pipe_create() {
-	/* using commands from a thread that is not the GUI thread is only
-	 * supported when this is toggled, otherwise changing the cursor and
-	 * possibly other graphical operations are badly done. */
-	//com.script = TRUE;
 #ifdef _WIN32
+	siril_log_message("not yet supported\n");
+	return -1;
 #else
 	if (pipe_fd_r >= 0 || pipe_fd_w > 0) return 0;
 
@@ -114,6 +111,7 @@ int pipe_create() {
 
 static int pipe_write(const char *string) {
 #ifdef _WIN32
+	return -1;
 #else
 	int length, retval;
 	if (pipe_fd_w <= 0)
@@ -125,85 +123,78 @@ static int pipe_write(const char *string) {
 #endif
 }
 
-/* not reentrant, arg needs the newline for logs but not for others */
 int pipe_send_message(pipe_message msgtype, pipe_verb verb, const char *arg) {
+#ifdef _WIN32
+	return -1;
+#else
 	if (pipe_fd_w <= 0) return -1;
+#endif
+	char *msg;
 
-	g_mutex_lock(&write_mutex);
 	switch (msgtype) {
 		case PIPE_LOG:
-			snprintf(pipe_buf_o, PIPE_MSG_SZ, "log: %s", arg);
+			msg = malloc(strlen(arg) + 6);
+			sprintf(msg, "log: %s", arg);
 			break;
 		case PIPE_STATUS:
+			msg = malloc((arg ? strlen(arg) : 0) + 20);
 			switch (verb) {
 				case PIPE_STARTING:
-					snprintf(pipe_buf_o, PIPE_MSG_SZ, "status: starting %s\n", arg);
+					sprintf(msg, "status: starting %s", arg);
 					break;
 				case PIPE_SUCCESS:
-					snprintf(pipe_buf_o, PIPE_MSG_SZ, "status: success %s\n", arg);
+					sprintf(msg, "status: success %s", arg);
 					break;
 				case PIPE_ERROR:
-					snprintf(pipe_buf_o, PIPE_MSG_SZ, "status: error %s\n", arg);
+					sprintf(msg, "status: error %s", arg);
 					break;
 				case PIPE_EXIT:
-					snprintf(pipe_buf_o, PIPE_MSG_SZ, "status: exit\n");
+					sprintf(msg, "status: exit\n");
 					break;
 				case PIPE_NA:
+					free(msg);
 					return -1;
 			}
 			break;
 		case PIPE_PROGRESS:
-			snprintf(pipe_buf_o, PIPE_MSG_SZ, "%s", arg);
+			msg = strdup(arg);
 			break;
-
 	}
+
+	g_mutex_lock(&write_mutex);
+	pending_writes = g_list_append(pending_writes, msg);
 
 	g_cond_signal(&write_cond);
 	g_mutex_unlock(&write_mutex);
-	//return pipe_write(pipe_buf_o);
 	return 0;
 }
 
-#ifdef _WIN32
-#else
-void *read_pipe_old(void *p) {
-	char pipe_buf_i[PIPE_MSG_SZ];
+int enqueue_command(char *command) {
+	if (!strncmp(command, "cancel", 6))
+		return 1;
+	if ((command[0] >= 'a' && command[0] <= 'z') ||
+			(command[0] >= 'A' && command[0] <= '2')) {
+		g_mutex_lock(&read_mutex);
+		command_list = g_list_append(command_list, command);
+		g_cond_signal(&read_cond);
+		g_mutex_unlock(&read_mutex);
+	}
+	return 0;
+}
 
-	do {
-		// open will block until the other end is opened
-		fprintf(stdout, "read pipe waiting to be opened...\n");
-		if ((pipe_fd_r = open(PIPE_PATH_R, O_RDONLY)) == -1) {
-			siril_log_message(_("Could not open the named pipe\n"));
-			perror("open");
-			break;
-		}
-		fprintf(stdout, "opened read pipe\n");
-
-		FILE *fd = fdopen(pipe_fd_r, "r");
-		if (!fd) { // should never happen
-			perror("fdopen");
-			break;
-		}
-
-		/*do {
-			if (!fgets(pipe_buf_i, PIPE_MSG_SZ, fd)) {
-				fprintf(stdout, "closed read pipe\n");
-				fclose(fd);
-				pipe_fd_r = -1;
-				break;
-			}
-
-			processcommand(pipe_buf_i);
-
-		} while (1);*/
-		// even easier and safer:
-		execute_script(fd);
-	} while (pipe_active);
-
-	return GINT_TO_POINTER(pipe_active ? -1 : 0);
+void empty_command_queue() {
+	g_mutex_lock(&read_mutex);
+	while (command_list) {
+		free(command_list->data);
+		command_list = g_list_next(command_list);
+	}
+	g_mutex_unlock(&read_mutex);
 }
 
 void *read_pipe(void *p) {
+#ifdef _WIN32
+	return NULL;
+#else
 	do {
 		// open will block until the other end is opened
 		fprintf(stdout, "read pipe waiting to be opened...\n");
@@ -214,12 +205,8 @@ void *read_pipe(void *p) {
 		}
 		fprintf(stdout, "opened read pipe\n");
 
-		FILE *fd = fdopen(pipe_fd_r, "r");
-		if (!fd) { // should never happen
-			perror("fdopen");
-			break;
-		}
-
+		int bufstart = 0;
+		char buf[PIPE_MSG_SZ];
 		do {
 			int retval;
 			fd_set rfds;
@@ -228,34 +215,64 @@ void *read_pipe(void *p) {
 
 			retval = select(pipe_fd_r+1, &rfds, NULL, NULL, NULL);
 			if (retval == 1) {
-				char *command = malloc(PIPE_MSG_SZ);
-				if (!fgets(command, PIPE_MSG_SZ, fd)) {
+				char *command;
+				int len = read(pipe_fd_r, buf+bufstart, PIPE_MSG_SZ-1-bufstart);
+				if (len == -1 || len == 0)
 					retval = -1;
-				}
-
-				if (retval == 1) {
-					if (!strncmp(command, "cancel", 6))
+				else {
+					int i = 0, nbnl = 0;
+					buf[len] = '\0';
+					while (i < len && buf[i] != '\0') {
+						if (buf[i] == '\n')
+							nbnl++;
+						i++;
+					}
+					if (nbnl == 0) {
+						pipe_send_message(PIPE_STATUS, PIPE_ERROR, _("command too long or malformed\n"));
 						retval = -1;
-					else if (command[0] > 'a' && command[0] < 'z') {
-						g_mutex_lock(&read_mutex);
-						command_list = g_list_append(command_list,
-								command);
-						g_cond_signal(&read_cond);
-						g_mutex_unlock(&read_mutex);
+					}
+
+					if (retval == 1) {
+						/* we have several commands in the buffer, we need to
+						 * cut them, enqueue them and prepare next buffer for
+						 * incomplete commands */
+						char backup_char;
+						for (i = 0; i < len && buf[i] != '\0'; i++) {
+							if (buf[i] == '\n') {
+								backup_char = buf[i + 1];
+								buf[i + 1] = '\0';
+								command = strdup(buf+bufstart);
+								buf[i + 1] = backup_char;
+								bufstart = i + 1;
+
+								if (enqueue_command(command)) {
+									retval = -1;
+									break;
+								}
+							}
+						}
+						if (bufstart == i)
+							bufstart = 0;
+						else memcpy(buf, buf+bufstart, len-bufstart);
 					}
 				}
 			}
 			if (retval <= 0) {
 				fprintf(stdout, "closed read pipe\n");
-				fclose(fd);
+				close(pipe_fd_r);
 				pipe_fd_r = -1;
-				stop_processing_thread();
+				empty_command_queue();
+				if (get_thread_run()) {
+					stop_processing_thread();
+					pipe_send_message(PIPE_STATUS, PIPE_ERROR, _("command interrupted\n"));
+				}
 				break;
 			}
 		} while (1);
 	} while (pipe_active);
 
 	return GINT_TO_POINTER(pipe_active ? -1 : 0);
+#endif
 }
 
 void *process_commands(void *p) {
@@ -275,20 +292,22 @@ void *process_commands(void *p) {
 		command_list = g_list_next(command_list);
 		g_mutex_unlock(&read_mutex);
 
-		processcommand(command);
+		pipe_send_message(PIPE_STATUS, PIPE_STARTING, command);
+		if (processcommand(command))
+			pipe_send_message(PIPE_STATUS, PIPE_ERROR, command);
+		else pipe_send_message(PIPE_STATUS, PIPE_SUCCESS, command);
 
 		free(command);
-		if (waiting_for_thread()) {
-			g_mutex_lock(&read_mutex);
-			command_list = NULL;
-			g_mutex_unlock(&read_mutex);
-		}
+		if (waiting_for_thread())
+			empty_command_queue();
 	}
 	return NULL;
 }
 
 static void *write_pipe(void *p) {
 	do {
+#ifdef _WIN32
+#else
 		// open will block until the other end is opened
 		fprintf(stdout, "write pipe waiting to be opened...\n");
 		if ((pipe_fd_w = open(PIPE_PATH_W, O_WRONLY)) == -1) {
@@ -296,31 +315,46 @@ static void *write_pipe(void *p) {
 			perror("open");
 			break;
 		}
+#endif
 		fprintf(stdout, "opened write pipe\n");
 
 		do {
+			char *msg;
 			// wait for messages to write
 			g_mutex_lock(&write_mutex);
-			while (pipe_buf_o[0] == '\0')
+			while (!pending_writes && pipe_active)
 				g_cond_wait(&write_cond, &write_mutex);
-			g_mutex_unlock(&write_mutex);
-
-			if (pipe_write(pipe_buf_o)) {
-				fprintf(stdout, "closed write pipe\n");
-				close(pipe_fd_w);
-				pipe_fd_w = -1;
+			if (!pipe_active) {
+				g_mutex_unlock(&write_mutex);
 				break;
 			}
-			pipe_buf_o[0] = '\0';
+
+			msg = (char *)pending_writes->data;
+			pending_writes = g_list_next(pending_writes);
+			g_mutex_unlock(&write_mutex);
+
+			if (pipe_write(msg)) {
+				fprintf(stdout, "closed write pipe\n");
+#ifdef _WIN32
+#else
+				close(pipe_fd_w);
+				pipe_fd_w = -1;
+#endif
+				free(msg);
+				break;
+			}
+			free(msg);
 		} while (1);
 	} while (pipe_active);
 	return GINT_TO_POINTER(-1);
 }
 
-#endif
-
 /* not reentrant */
 int pipe_start() {
+#ifdef _WIN32
+	siril_log_message("not yet supported\n");
+	return -1;
+#endif
 	if (pipe_active)
 		return 0;
 	if (pipe_create())
@@ -332,16 +366,24 @@ int pipe_start() {
 	return 0;
 }
 
+/* not working, not used: blocked open calls are not signaled,
+ * and blocked write_cond throws a deadlock error */
 void pipe_stop() {
 	fprintf(stdout, "closing pipes\n");
+	g_mutex_lock(&read_mutex);
+	g_mutex_lock(&write_mutex);
 	pipe_active = 0;
+#ifdef _WIN32
+#else
 	if (pipe_fd_r >= 0)
 		close(pipe_fd_r);
 	if (pipe_fd_w > 0)
 		close(pipe_fd_w);
-	pipe_buf_o[0] = '\1';
+#endif
 	g_cond_signal(&write_cond);
 	g_cond_signal(&read_cond);
+	g_mutex_unlock(&read_mutex);
+	g_mutex_unlock(&write_mutex);
 	if (pipe_thread_w)
 		g_thread_join(pipe_thread_w);
 	if (worker_thread)

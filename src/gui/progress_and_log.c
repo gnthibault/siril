@@ -86,10 +86,8 @@ void set_progress_bar_data(const char *text, double percent) {
 		// On OS-X it works. On Windows ... well, I doubt it will be used
 
 		/* progress update to the named pipe */
-		char buf[300];
-		if (text)
-			snprintf(buf, 300, "progress: %s, %4.2lf%%\n", text, percent*100.0);
-		else snprintf(buf, 300, "progress: %4.2lf%%\n", percent*100.0);
+		char buf[30];
+		snprintf(buf, 30, "progress: %4.2lf%%\n", percent*100.0);
 		pipe_send_message(PIPE_PROGRESS, PIPE_NA, buf);
 	} else {
 		struct progress_bar_idle_data *data;
