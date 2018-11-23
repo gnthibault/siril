@@ -1256,7 +1256,9 @@ static void do_popup_rgbmenu(GtkWidget *my_widget, GdkEventButton *event) {
 		gtk_menu_attach_to_widget(GTK_MENU(menu), my_widget, NULL);
 	}
 
-#if GTK_MAJOR_VERSION >= 3 && GTK_MINOR_VERSION < 22
+#if GTK_CHECK_VERSION(3, 22, 0)
+	gtk_menu_popup_at_pointer(GTK_MENU(menu), NULL);
+#else
 	int button, event_time;
 
 	if (event) {
@@ -1269,8 +1271,6 @@ static void do_popup_rgbmenu(GtkWidget *my_widget, GdkEventButton *event) {
 
 	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, button,
 			event_time);
-#else
-	gtk_menu_popup_at_pointer(GTK_MENU(menu), NULL);
 #endif
 }
 
@@ -1298,7 +1298,9 @@ static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop"), selected && is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop_seq"), selected && sequence_is_loaded());
 
-#if GTK_MAJOR_VERSION >= 3 && GTK_MINOR_VERSION < 22
+#if GTK_CHECK_VERSION(3, 22, 0)
+	gtk_menu_popup_at_pointer(GTK_MENU(menu), NULL);
+#else
 	int button, event_time;
 
 	if (event) {
@@ -1310,8 +1312,6 @@ static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 	}
 
 	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, button, event_time);
-#else
-	gtk_menu_popup_at_pointer(GTK_MENU(menu), NULL);
 #endif
 }
 
