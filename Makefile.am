@@ -4,15 +4,18 @@ export CC CFLAGS CPPFLAGS
 
 SUBDIRS = deps/kplot po src
 
+# set language of the scripts to be installed (en or fr)
+SCRIPT_LANG = en
+
 install-data-local:
 	@$(NORMAL_INSTALL)
 	if test -d $(srcdir)/pixmaps; then \
-	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/pixmaps; \
-	  for pixmap in $(srcdir)/pixmaps/*; do \
-	    if test -f $$pixmap; then \
-	      $(INSTALL_DATA) $$pixmap $(DESTDIR)$(pkgdatadir)/pixmaps; \
-	    fi \
-	  done \
+		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/pixmaps; \
+		for pixmap in $(srcdir)/pixmaps/*; do \
+			if test -f $$pixmap; then \
+				$(INSTALL_DATA) $$pixmap $(DESTDIR)$(pkgdatadir)/pixmaps; \
+			fi \
+		done \
 	fi
 	$(INSTALL_DATA) src/gui/siril3.glade $(DESTDIR)$(pkgdatadir)
 	$(INSTALL_DATA) src/gui/gtk_old.css $(DESTDIR)$(pkgdatadir)
@@ -21,6 +24,13 @@ install-data-local:
 	$(INSTALL_DATA) AUTHORS LICENSE.md $(DESTDIR)$(docdir)
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
 	$(INSTALL_DATA) siril.1.gz $(DESTDIR)$(mandir)/man1
+	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/scripts/
+	for script in $(srcdir)/scripts/*; do \
+		$(INSTALL_DATA) $$script $(DESTDIR)$(pkgdatadir)/scripts; \
+	done
+	for script in $(srcdir)/3rdparty/scripts/$(SCRIPT_LANG)/*; do \
+		$(INSTALL_DATA) $$script $(DESTDIR)$(pkgdatadir)/scripts; \
+	done
 
 ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = config.rpath

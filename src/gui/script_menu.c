@@ -56,6 +56,7 @@ static GSList *initialize_script_paths(){
 		g_free(path);
 	}
 #else
+	list = g_slist_append(list, g_build_filename(PACKAGE_DATA_DIR, "scripts", NULL));	
 	list = g_slist_append(list, g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL));
 	list = g_slist_append(list, g_build_filename(g_get_home_dir(), "siril", "scripts", NULL));
 #endif
