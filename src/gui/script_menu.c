@@ -252,10 +252,10 @@ void fill_script_paths_list() {
 #define GET_SCRIPTS_URL "https://free-astro.org/index.php?title=Siril:scripts"
 
 void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
+#if GTK_CHECK_VERSION(3, 22, 0)
 	GtkWidget *win;
 
 	win = lookup_widget("control_window");
-#if GTK_CHECK_VERSION(3, 22, 0)
 	gtk_show_uri_on_window(GTK_WINDOW(win),	GET_SCRIPTS_URL, gtk_get_current_event_time(), NULL);
 #else
 	gtk_show_uri(gdk_screen_get_default(), url, gtk_get_current_event_time(), NULL);
