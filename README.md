@@ -1,29 +1,30 @@
 SIRIL
--------
+=====
 
 > Copyright &copy; 2012-2018, Team free-astro
 > <<https://free-astro.org/index.php/Siril>>
+> <<https://www.siril.org>>
 
 Summary
 -------
 SIRIL is an astronomical image processing tool.
 
-SIRIL is an image processing tool specially tailored for noise reduction and improving the
-signal/noise ratio of an image from multiple captures, as required in astronomy.
+It is specially tailored for noise reduction and improving the signal/noise
+ratio of an image from multiple captures, as required in astronomy.
 SIRIL can align automatically or manually, stack and enhance pictures from various file formats,
-even image sequences (movies and SER files).
+even image sequence files (films and SER files).
 
 Contributors are welcome. Programming language is C.
 Main development is done with most recent versions of libraries.
 
 Requirements
 ------------
- * **Gtk 3**, (>= 3.6) for the GUI toolkit
+ * **GTK+ 3**, (>= 3.6) for the GUI toolkit
  * **cfitsio** for fits related stuff
  * **fftw3** as a FFT library
  * **GSL** (The GNU Scientific Library) for FWHM implementation, histograms and background extraction
- * **libconfig++** (>= 1.4) for structured configuration file management
- * **g++** for opencv code and avi exporter
+ * **libconfig** (>= 1.4) for structured configuration file management
+ * **A C++ compiler** for opencv code and avi exporter
  * **libopencv** for most image processing
 
 SIRIL works internally with FITS files, but other file formats can be used as
@@ -37,39 +38,51 @@ compilation time, or their support won't be compiled.
  * **libtiff** (>= 4) for TIFF format support
  * **libjpeg** or compatible libraries like libjpeg-turbo for JPEG format support
  * **libpng** (>= 1.6) for PNG format support
- * **libavformat**, **libavutil** (>= 55.20), **libavcodec**, **libswscale** and **libswresample** for avi export
- * **libcurl**
+ * **libavformat**, **libavutil** (>= 55.20), **libavcodec**, **libswscale** and **libswresample** for avi export (usually provided by ffmpeg)
+ * **libcurl** for the Web-based new version check and the astrometry solver
 
 All these libraries are available in most Linux distributions and free systems,
 maybe with the exception of ffms2 that is not as popular as others and may need
 to be compiled on some systems.
 
-Since version [0.9.6](http://free-astro.org/index.php?title=Siril:0.9.6) an optional 
+Since version [0.9.6](https://free-astro.org/index.php?title=Siril:0.9.6) an optional 
 dependency is required to plot photometry data. The following package is not needed 
 at compilation time:
 
  * **gnuplot**
- 
+
+Scripting
+---------
+
+SIRIL accepts commands from the graphical command line, from scripts as a file
+that contains a sequence of commands, or from a named pipe. The list of
+supported commands is documented
+[here](https://free-astro.org/index.php?title=Siril:Commands).
+
+Some general purpose scripts have been made by the developers and some power
+users, and are provided with the source code and some installers. When they are
+in some default directories or in the user-defined directories (in the
+settings), scripts appear in a top-menu of the main window. See [this
+page](https://free-astro.org/index.php?title=Siril:scripts) for more
+information about scripts and a list of available scripts.
+
+The named pipe is only enabled when using SIRIL in a non-graphical way and when
+the `-p` command is passed to the program command line.
+
 Source download
 ---------------
 
-You need to use the following commands to clone SIRIL.
-
-Branch 0.9:
+You can get siril source code from the release archives on their webpage, or the latest version from svn or git. The current development branch is labelled 0.9 on the svn, mirrored on gitlab.com:
 
     svn co https://free-astro.org/svn/siril/branches/0.9 Siril-0.9
     
-or you can use the mirror on gitlab:
+or 
 
     git clone https://gitlab.com/lock042/Siril-0.9.git 
 
-Development version (highly unstable):
 
-    svn co https://free-astro.org/svn/siril/trunk/ Siril-master
- 
-
-Building SIRIL for GNU/Linux and OS X
--------------------------------------
+Building SIRIL for GNU/Linux
+----------------------------
 The install is similar to the usual GNU/Linux package build, except that the
 configure script is not directly shipped and has to be created and run with the
 following command:
@@ -84,21 +97,25 @@ now available in **ppa:lock042/siril**.
 See the [download](https://free-astro.org/index.php?title=Siril:releases) page 
 of the current version for other packages that could be available.
 
+Building SIRIL for macOS
+------------------------
+We provide a dmg installer on the website, but you can also install SIRIL from source using homebrew.
+
+    brew install siril
+
+
 SIRIL on Windows
 ----------------
-From the 0.9.7 version, Siril is released with a binary **.exe* file running on Windows 64bits. 
-This application was produced with the great help of [Partha Bagchi](https://www.partha.com/)
-who spent time in building it. However, users shall keep in mind that none of the
-developers run on Windows and in consequence, some specific bugs could occur.
-Also, there is no certainty for building all future versions for Windows.
+SIRIL is fully supported on windows since version 0.9.8. An installer has been created by a SIRIL user and he maintains it. We only provide an archive containing the binaries as the official Windows release.
 
-Translation instructions for Siril
+Translation instructions for SIRIL
 ----------------------------------
 The translation system is based on [intltool](https://www.freedesktop.org/wiki/Software/intltool/), common for GTK+ software, with the help of the [poedit](https://poedit.net/) editor.
-Get siril sources. In the po directory, run 
+Get SIRIL sources. In the po directory, run 
      
     make update-po
 Install poedit and open the **siril.pot** file in the po directory to start a new translation.
+
 Proceed to the translation of the english elements in the list. When you want to stop or when you have finished, send us the .po file that you created and we'll include it in the next version's sources and packages.
 
 Notes on SIRIL FITS image format
@@ -128,7 +145,8 @@ SIRIL supports SER v3. See [this page](https://free-astro.org/index.php/SER) for
 
 Useful links
 ------------
- * [Project Homepage](http://free-astro.org/index.php/Siril)
- * [Documentation](http://free-astro.org/siril_doc-en/#Reference_documentation_1)
- * [Releases and Downloads](http://free-astro.org/index.php?title=Siril:releases)
+ * [Project Homepage](https://free-astro.org/index.php/Siril)
+ * [Documentation](https://free-astro.org/siril_doc-en/#Reference_documentation_1)
+ * [Releases and Downloads](https://free-astro.org/index.php?title=Siril:releases)
  * [Report a bug](https://free-astro.org/bugs/view_all_bug_page.php)
+ * [Supported commands](https://free-astro.org/index.php?title=Siril:Commands)
