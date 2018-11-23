@@ -32,6 +32,7 @@
 #include "core/command.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "script_menu.h"
 
