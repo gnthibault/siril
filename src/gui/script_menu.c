@@ -244,3 +244,16 @@ void fill_script_paths_list() {
 	com.script_path = list;
 	writeinitfile();
 }
+
+
+/* Get Scripts menu */
+#ifdef HAVE_LIBCURL
+
+#define GET_SCRIPTS_URL "https://free-astro.org/index.php?title=Siril:scripts"
+
+void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	gtk_show_uri_on_window(GTK_WINDOW(lookup_widget("control_window")),
+			GET_SCRIPTS_URL, GDK_CURRENT_TIME, NULL);
+}
+
+#endif
