@@ -101,7 +101,8 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 	gtkosx_application_set_window_menu(osx_app, GTK_MENU_ITEM(window_menu));
 
 	gui_add_osx_to_app_menu(osx_app, "help_item1", 0);
-	gui_add_osx_to_app_menu(osx_app, "help_update", 1);
+	gui_add_osx_to_app_menu(osx_app, "help_get_scripts", 1);
+	gui_add_osx_to_app_menu(osx_app, "help_update", 2);
 	sep = gtk_separator_menu_item_new();
 	gtkosx_application_insert_app_menu_item(osx_app, sep, 2);
 	gui_add_osx_to_app_menu(osx_app, "settings", 3);
