@@ -74,6 +74,7 @@ static char *word[MAX_COMMAND_WORDS];	// NULL terminated
 static command commands[] = {
 	/* name,	nbarg,	usage,		function pointer, definition, scriptable */
 	{"addmax",	1,	"addmax filename",	process_addmax, STR_ADDMAX, FALSE},
+	{"asinh",	1,	"asinh stretch",	process_asinh, STR_ASINH, TRUE},
 	
 	{"bg", 0, "bg", process_bg, STR_BG, TRUE},
 	{"bgnoise", 0, "bgnoise", process_bgnoise, STR_BGNOISE, TRUE},
@@ -608,7 +609,19 @@ int process_wavelet(int nb) {
 int process_log(int nb){
 	if (!single_image_is_loaded()) return 1;
 
-	loglut(&gfit, LOG);
+	loglut(&gfit);
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	return 0;
+}
+
+int process_asinh(int nb) {
+	if (!single_image_is_loaded()) return 1;
+
+	double beta = atof(word[1]);
+
+	asinhlut(&gfit, beta, 0, FALSE);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -1496,6 +1509,7 @@ int process_scnr(int nb){
 	}
 
 	if (!single_image_is_loaded()) return 1;
+	if (gfit.naxes[2] == 1) return 1;
 
 	struct scnr_data *args = malloc(sizeof(struct scnr_data));
 	

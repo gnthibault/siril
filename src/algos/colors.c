@@ -994,3 +994,31 @@ void on_menu_negative_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	update_gfit_histogram_if_needed();
 	set_cursor_waiting(FALSE);
 }
+
+void on_menuitem_asinh_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	gtk_widget_show(lookup_widget("asinh_dialog"));
+}
+
+void on_asinh_cancel_clicked(GtkButton *button, gpointer user_data) {
+	gtk_widget_hide(lookup_widget("asinh_dialog"));
+}
+
+void on_asinh_Apply_clicked(GtkButton *button, gpointer user_data) {
+	GtkRange *stretch, *black_point;
+	GtkToggleButton *checkbutton;
+	double beta, offset;
+
+	checkbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_RGBspace"));
+	stretch = GTK_RANGE(lookup_widget("scale_asinh"));
+	black_point = GTK_RANGE(lookup_widget("black_point_asinh"));
+
+	set_cursor_waiting(TRUE);
+	beta = gtk_range_get_value(stretch);
+	offset = gtk_range_get_value(black_point);
+	undo_save_state("Processing: Arcsinh Transformation: %7.1lf/%lf", beta, offset);
+	asinhlut(&gfit, beta, offset, gtk_toggle_button_get_active(checkbutton));
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	set_cursor_waiting(FALSE);
+}

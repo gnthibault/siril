@@ -4,6 +4,7 @@
 #define STR_NONE ""
 
 #define STR_ADDMAX N_("Computes a new image IMG with IMG_1 and IMG_2. The pixel of IMG_1 is replaced by the pixel at the same coordinates of IMG_2 if the intensity of 2 is greater than 1")
+#define STR_ASINH N_("ASINH command stretches the image for show faint objects, while simultaneously, preserve the structure of bright objects of the field")
 
 #define STR_BG N_("Returns the background level of the image loaded in memory")
 #define STR_BGNOISE N_("Returns the background noise level")

@@ -75,6 +75,7 @@ int	process_wavelet(int nb);
 //int	process_animate(int nb);
 //
 int	process_log(int nb);
+int	process_asinh(int nb);
 int	process_ls(int nb);
 int	process_cdg(int nb);
 int	process_clear(int nb);

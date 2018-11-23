@@ -415,23 +415,57 @@ double entropy(fits *fit, int layer, rectangle *area, imstats *opt_stats) {
 	return e;
 }
 
-int loglut(fits *fit, int dir) {
+int loglut(fits *fit) {
 	// This function maps fit with a log LUT
 	int i, layer;
-	gdouble normalisation, temp;
-	WORD *buf[3] =
-			{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
-	assert(fit->naxes[2] <= 3);
+	WORD *buf[3] = { fit->pdata[RLAYER],
+			fit->pdata[GLAYER], fit->pdata[BLAYER] };
 
-	normalisation = USHRT_MAX_DOUBLE / log(USHRT_MAX_DOUBLE);
+	double norm = USHRT_MAX_DOUBLE / log(USHRT_MAX_DOUBLE);
 
 	for (i = 0; i < fit->ry * fit->rx; i++) {
 		for (layer = 0; layer < fit->naxes[2]; ++layer) {
-			temp = buf[layer][i] + 1;
-			if (dir == LOG)
-				buf[layer][i] = normalisation * log(temp);
+			double px = (double)buf[layer][i];
+			px = (px == 0.0) ? 1.0 : px;
+			buf[layer][i] = round_to_WORD(norm * log(px));
+		}
+	}
+	invalidate_stats_from_fit(fit);
+	return 0;
+}
+
+int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
+	int i, layer;
+	WORD *buf[3] = { fit->pdata[RLAYER],
+			fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	double norm;
+
+	norm = get_normalized_value(fit);
+
+	for (i = 0; i < fit->ry * fit->rx; i++) {
+		double x, k;
+		if (fit->naxes[2] > 1) {
+			double r, g, b;
+
+			r = (double) buf[RLAYER][i] / norm;
+			g = (double) buf[GLAYER][i] / norm;
+			b = (double) buf[BLAYER][i] / norm;
+			/* RGB space */
+			if (RGBspace)
+				x = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 			else
-				buf[layer][i] = exp(temp / normalisation);
+				x = 0.3333 * r + 0.3333 * g + 0.3333 * b;
+		} else {
+			x = buf[RLAYER][i] / norm;
+		}
+
+		k = asinh(beta * x) / (x * asinh(beta));
+
+		for (layer = 0; layer < fit->naxes[2]; ++layer) {
+			double px = (double) buf[layer][i] / norm;
+			px -= offset;
+			px *= k;
+			buf[layer][i] = round_to_WORD(px * norm);
 		}
 	}
 	invalidate_stats_from_fit(fit);
