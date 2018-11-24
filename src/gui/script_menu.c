@@ -26,6 +26,8 @@
 #endif
 #endif
 #include <string.h>
+#include <locale.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
@@ -258,12 +260,33 @@ void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 #if GTK_CHECK_VERSION(3, 22, 0)
 	GtkWidget *win;
+	gboolean is_language_supported = FALSE;
+	const char *locale = setlocale(LC_MESSAGES, NULL);
+	const char *supported_languages[] = { "en", "fr", NULL };
+	gchar *lang;
+	int i = 0;
+
+	if (!locale)
+		lang = g_strdup("");
+	else
+		lang = g_strndup(locale, 2);
+	while (supported_languages[i]) {
+		if (!strncmp(lang, supported_languages[i], 2)) {
+			is_language_supported = TRUE;
+			break;
+		}
+		i++;
+	}
+	/* by default it is in english */
+	if (!is_language_supported)
+		lang = g_strdup("");
+	gchar *url = g_build_path("/", GET_SCRIPTS_URL, lang, NULL);
 
 	win = lookup_widget("control_window");
-	ret = gtk_show_uri_on_window(GTK_WINDOW(win), GET_SCRIPTS_URL,
+	ret = gtk_show_uri_on_window(GTK_WINDOW(win), url,
 			gtk_get_current_event_time(), NULL);
 #else
-	ret = gtk_show_uri(gdk_screen_get_default(), GET_SCRIPTS_URL,
+	ret = gtk_show_uri(gdk_screen_get_default(), url,
 			gtk_get_current_event_time(), NULL);
 #endif
 	if (!ret) {
@@ -271,6 +294,7 @@ void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 				_("Please go to <a href=\""GET_SCRIPTS_URL"\">"GET_SCRIPTS_URL"</a> "
 								"by copying the link."));
 	}
+	g_free(url);
 }
 
 #endif
