@@ -260,25 +260,19 @@ void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 #if GTK_CHECK_VERSION(3, 22, 0)
 	GtkWidget *win;
-	gboolean is_language_supported = FALSE;
 	const char *locale = setlocale(LC_MESSAGES, NULL);
-	const char *supported_languages[] = { "en", "fr", NULL };
+	const char *supported_languages[] = { "fr", NULL }; // en is for NULL: default language
 	gchar *lang = NULL;
 	int i = 0;
 
-	if (locale)
-		lang = g_strndup(locale, 2);
-	while (supported_languages[i]) {
-		if (!strncmp(lang, supported_languages[i], 2)) {
-			is_language_supported = TRUE;
-			break;
+	if (locale) {
+		while (supported_languages[i]) {
+			if (!strncmp(locale, supported_languages[i], 2)) {
+				lang = g_strndup(locale, 2);
+				break;
+			}
+			i++;
 		}
-		i++;
-	}
-	/* by default it is in english */
-	if (!is_language_supported) {
-		g_free(lang);
-		lang = NULL;
 	}
 	gchar *url = g_build_path("/", GET_SCRIPTS_URL, lang, NULL);
 
