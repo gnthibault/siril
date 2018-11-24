@@ -263,12 +263,10 @@ void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	gboolean is_language_supported = FALSE;
 	const char *locale = setlocale(LC_MESSAGES, NULL);
 	const char *supported_languages[] = { "en", "fr", NULL };
-	gchar *lang;
+	gchar *lang = NULL;
 	int i = 0;
 
-	if (!locale)
-		lang = g_strdup("");
-	else
+	if (locale)
 		lang = g_strndup(locale, 2);
 	while (supported_languages[i]) {
 		if (!strncmp(lang, supported_languages[i], 2)) {
@@ -278,8 +276,10 @@ void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		i++;
 	}
 	/* by default it is in english */
-	if (!is_language_supported)
-		lang = g_strdup("");
+	if (!is_language_supported) {
+		g_free(lang);
+		lang = NULL;
+	}
 	gchar *url = g_build_path("/", GET_SCRIPTS_URL, lang, NULL);
 
 	win = lookup_widget("control_window");
@@ -295,6 +295,7 @@ void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 								"by copying the link."));
 	}
 	g_free(url);
+	g_free(lang);
 }
 
 #endif
