@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-23 17:18+0100\n"
+"POT-Creation-Date: 2018-11-25 21:13+0100\n"
 "PO-Revision-Date: 2018-05-30 13:09+0200\n"
 "Last-Translator: Sonia Zorba <sonia@zonia3000.net>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
@@ -265,7 +265,7 @@ msgid "current red file"
 msgstr "file rosso corrente"
 
 #: ../src/gui/siril3.glade.h:54 ../src/compositing/compositing.c:456
-#: ../src/gui/callbacks.c:2210
+#: ../src/gui/callbacks.c:2208
 msgid "Red channel"
 msgstr "Canale rosso"
 
@@ -4119,10 +4119,12 @@ msgstr ""
 msgid ""
 "This is usually because the initial parameters (pixel size, focal length, "
 "initial coordinates) are too far from the real metadata of the image.\n"
-"You could also try to look into another catalogue."
+"You could also try to look into another catalogue.\n"
+"Finally, keep in mind that plate solving algorithm should only be applied on "
+"linear image."
 msgstr ""
 
-#: ../src/algos/plateSolver.c:997
+#: ../src/algos/plateSolver.c:998
 #, fuzzy, c-format
 msgid ""
 "There are not enough stars picked in the image. At least %d stars are needed."
@@ -4130,20 +4132,20 @@ msgstr ""
 "Non ci sono abbastanza stelle nell'immagine di riferimento per eseguire "
 "l'allineamento\n"
 
-#: ../src/algos/plateSolver.c:1199
+#: ../src/algos/plateSolver.c:1200
 #, fuzzy
 msgid "There are no keywords storred in the FITS header.\n"
 msgstr "Nessun pattern Bayer trovato nell'intestazione del file.\n"
 
-#: ../src/algos/plateSolver.c:1200
+#: ../src/algos/plateSolver.c:1201
 msgid "No metadata"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1247
+#: ../src/algos/plateSolver.c:1248
 msgid "Astrometric solution detected"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1247
+#: ../src/algos/plateSolver.c:1248
 msgid ""
 "The astrometric solution contained in the image will be erased by the "
 "geometric transformation and no undo will be possible."
@@ -4215,8 +4217,8 @@ msgstr "Risultato della composizione non salvato"
 msgid "You must at least load two layers before!\n"
 msgstr "Prima devi caricare almeno due livelli!\n"
 
-#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:5129
-#: ../src/gui/callbacks.c:5138 ../src/gui/callbacks.c:5195
+#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:5127
+#: ../src/gui/callbacks.c:5136 ../src/gui/callbacks.c:5193
 #: ../src/io/conversion.c:576 ../src/registration/registration.c:848
 msgid "Warning"
 msgstr "Attenzione"
@@ -4254,12 +4256,12 @@ msgstr "Regolamento livello da %d a %g fattori di luminosità\n"
 #: ../src/core/command.c:1507 ../src/core/command.c:1530
 #: ../src/core/command.c:1558 ../src/core/command.c:1584
 #: ../src/core/command.c:1751 ../src/core/command.c:1819
-#: ../src/core/command.c:2547 ../src/gui/callbacks.c:3974
-#: ../src/gui/callbacks.c:4179 ../src/gui/callbacks.c:4342
-#: ../src/gui/callbacks.c:4426 ../src/gui/callbacks.c:4459
-#: ../src/gui/callbacks.c:4796 ../src/gui/callbacks.c:4930
-#: ../src/gui/callbacks.c:5229 ../src/gui/callbacks.c:5408
-#: ../src/gui/script_menu.c:150 ../src/io/conversion.c:518
+#: ../src/core/command.c:2547 ../src/gui/callbacks.c:3972
+#: ../src/gui/callbacks.c:4177 ../src/gui/callbacks.c:4340
+#: ../src/gui/callbacks.c:4424 ../src/gui/callbacks.c:4457
+#: ../src/gui/callbacks.c:4794 ../src/gui/callbacks.c:4928
+#: ../src/gui/callbacks.c:5227 ../src/gui/callbacks.c:5406
+#: ../src/gui/script_menu.c:154 ../src/io/conversion.c:518
 #: ../src/registration/registration.c:830 ../src/stacking/stacking.c:1486
 #: ../src/stacking/stacking.c:1610
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4303,14 +4305,14 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Ritaglio: seleziona una regione o fornisci x, y, larghezza e altezza\n"
 
 #: ../src/core/command.c:587 ../src/core/command.c:2396
-#: ../src/gui/callbacks.c:5127 ../src/gui/callbacks.c:5193
+#: ../src/gui/callbacks.c:5125 ../src/gui/callbacks.c:5191
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
 "Wavelet: il numero massimo di piani per un'immagine di questa dimensione è "
 "%d\n"
 
-#: ../src/core/command.c:593 ../src/gui/callbacks.c:5136
+#: ../src/core/command.c:593 ../src/gui/callbacks.c:5134
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: il tipo deve essere %d o %d\n"
@@ -4452,7 +4454,7 @@ msgstr ""
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: seleziona una regione o fornisci x, y, larghezza e altezza\n"
 
-#: ../src/core/command.c:1239 ../src/gui/callbacks.c:4751
+#: ../src/core/command.c:1239 ../src/gui/callbacks.c:4749
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Trovate %d stelle nell'immagine, canale #%d\n"
@@ -4611,7 +4613,7 @@ msgstr ""
 "Stacking eseguito con successo sulla sequenza.\n"
 "\n"
 
-#: ../src/core/command.c:2299 ../src/gui/callbacks.c:3986
+#: ../src/core/command.c:2299 ../src/gui/callbacks.c:3984
 msgid "Preprocessing...\n"
 msgstr "Pre-elaborazione...\n"
 
@@ -4675,13 +4677,13 @@ msgstr "Tempo di esecuzione totale"
 msgid "Script execution failed.\n"
 msgstr "Esecuzione dello script non riuscita.\n"
 
-#: ../src/core/command.c:2557 ../src/gui/script_menu.c:165 ../src/main.c:473
+#: ../src/core/command.c:2557 ../src/gui/script_menu.c:169 ../src/main.c:474
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Il file [%s] non esiste\n"
 
 #. Then, run script
-#: ../src/core/command.c:2565 ../src/gui/script_menu.c:174
+#: ../src/core/command.c:2565 ../src/gui/script_menu.c:178
 #, c-format
 msgid "Starting script %s\n"
 msgstr "Avvio dello script %s\n"
@@ -5512,10 +5514,10 @@ msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr "Le immagini non hanno la stessa dimensione (w = %d|%d, h = %d|%d)\n"
 
 #: ../src/core/siril.c:213 ../src/gui/PSF_list.c:154
-#: ../src/gui/callbacks.c:1059 ../src/gui/callbacks.c:2122
-#: ../src/gui/callbacks.c:3050 ../src/gui/callbacks.c:4511
-#: ../src/gui/callbacks.c:4532 ../src/gui/callbacks.c:4946
-#: ../src/gui/callbacks.c:4952 ../src/gui/callbacks.c:4977
+#: ../src/gui/callbacks.c:1059 ../src/gui/callbacks.c:2120
+#: ../src/gui/callbacks.c:3048 ../src/gui/callbacks.c:4509
+#: ../src/gui/callbacks.c:4530 ../src/gui/callbacks.c:4944
+#: ../src/gui/callbacks.c:4950 ../src/gui/callbacks.c:4975
 #: ../src/gui/plot.c:381 ../src/gui/plot.c:441 ../src/io/conversion.c:582
 #: ../src/io/single_image.c:129
 msgid "Error"
@@ -5683,7 +5685,7 @@ msgstr "File o directory inesistente\n"
 msgid "\"%s\" is not a directory\n"
 msgstr "\"%s\" non è una cartella\n"
 
-#: ../src/core/utils.c:360 ../src/gui/callbacks.c:3049
+#: ../src/core/utils.c:360 ../src/gui/callbacks.c:3047
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr ""
@@ -5721,7 +5723,7 @@ msgstr ""
 "Non posso caricare il file del foglio di stile CSS: %s. Per favore "
 "reinstalla %s\n"
 
-#: ../src/core/utils.c:1022 ../src/main.c:269
+#: ../src/core/utils.c:1022 ../src/main.c:270
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Caricato con successo '%s'\n"
@@ -5877,7 +5879,7 @@ msgstr "Nessuna sequenza"
 msgid "- none -"
 msgstr "- nessuna -"
 
-#: ../src/gui/callbacks.c:1622
+#: ../src/gui/callbacks.c:1620
 #, c-format
 msgid ""
 "redraw: maximum number of layers supported is %d (current image has %d).\n"
@@ -5885,88 +5887,88 @@ msgstr ""
 "ridisegno: il numero massimo di livelli supportati è %d (l'immagine attuale "
 "ne ha %d).\n"
 
-#: ../src/gui/callbacks.c:1916
+#: ../src/gui/callbacks.c:1914
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "fwhm: la selezione è troppo larga"
 
-#: ../src/gui/callbacks.c:1918
+#: ../src/gui/callbacks.c:1916
 #, c-format
 msgid "fwhm: no selection"
 msgstr "fwhm: nessuna selezione"
 
-#: ../src/gui/callbacks.c:1943
+#: ../src/gui/callbacks.c:1941
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (canale 0)"
 
-#: ../src/gui/callbacks.c:1948
+#: ../src/gui/callbacks.c:1946
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (canale 1)"
 
-#: ../src/gui/callbacks.c:1952
+#: ../src/gui/callbacks.c:1950
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (canale 2)"
 
-#: ../src/gui/callbacks.c:1976
+#: ../src/gui/callbacks.c:1974
 msgid "Unassigned"
 msgstr "Non assegnato"
 
-#: ../src/gui/callbacks.c:2000
+#: ../src/gui/callbacks.c:1998
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: non ancora influenzato"
 
-#: ../src/gui/callbacks.c:2121
+#: ../src/gui/callbacks.c:2119
 msgid "Unknown zoom_value value, what is the current zoom?\n"
 msgstr "Valore zoom_value sconosciuto, qual è lo zoom corrente?\n"
 
-#: ../src/gui/callbacks.c:2207
+#: ../src/gui/callbacks.c:2205
 msgid "B&W channel"
 msgstr "Canale B/N"
 
-#: ../src/gui/callbacks.c:2240
+#: ../src/gui/callbacks.c:2238
 #, c-format
 msgid "%d files loaded"
 msgstr "%d file caricati"
 
-#: ../src/gui/callbacks.c:2366
+#: ../src/gui/callbacks.c:2364
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Mem: %ldMB"
 
-#: ../src/gui/callbacks.c:2368
+#: ../src/gui/callbacks.c:2366
 #, c-format
 msgid "Mem: N/A"
 msgstr "Mem: ND"
 
-#: ../src/gui/callbacks.c:2381
+#: ../src/gui/callbacks.c:2379
 #, c-format
 msgid "Disk Space: %.0lf%s"
 msgstr "Spazio disco: %.0lf%s"
 
-#: ../src/gui/callbacks.c:2383
+#: ../src/gui/callbacks.c:2381
 #, c-format
 msgid "Disk Space: N/A"
 msgstr "Spazio disco: N/A"
 
-#: ../src/gui/callbacks.c:2444
+#: ../src/gui/callbacks.c:2442
 msgid "This binning is not handled yet\n"
 msgstr "Il binning non è ancora gestito\n"
 
-#: ../src/gui/callbacks.c:2881 ../src/gui/callbacks.c:2882
+#: ../src/gui/callbacks.c:2879 ../src/gui/callbacks.c:2880
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr "<span foreground=\"red\">ERRORE</span>"
 
-#: ../src/gui/callbacks.c:2894
+#: ../src/gui/callbacks.c:2892
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">Freddi: %ld px</span>"
 
-#: ../src/gui/callbacks.c:2895 ../src/gui/callbacks.c:2907
+#: ../src/gui/callbacks.c:2893 ../src/gui/callbacks.c:2905
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -5974,51 +5976,51 @@ msgstr ""
 "Questo valore potrebbe essere troppo alto. Per favore, considera di "
 "modificare il valore sigma oppure deseleziona la checkbox."
 
-#: ../src/gui/callbacks.c:2898
+#: ../src/gui/callbacks.c:2896
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Freddi: %ld px"
 
-#: ../src/gui/callbacks.c:2906
+#: ../src/gui/callbacks.c:2904
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">Caldi: %ld px</span>"
 
-#: ../src/gui/callbacks.c:2910
+#: ../src/gui/callbacks.c:2908
 #, c-format
 msgid "Hot: %ld px"
 msgstr "Caldi: %ld px"
 
-#: ../src/gui/callbacks.c:3121
+#: ../src/gui/callbacks.c:3119
 #, fuzzy
 msgid "Closing application"
 msgstr "Calibrazione del colore"
 
-#: ../src/gui/callbacks.c:3121
+#: ../src/gui/callbacks.c:3119
 msgid "Are you sure you want to quit ?"
 msgstr "Sei sicuro di voler uscire?"
 
-#: ../src/gui/callbacks.c:3681
+#: ../src/gui/callbacks.c:3679
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "nuovo valore di zoom: %f\n"
 
-#: ../src/gui/callbacks.c:3720
+#: ../src/gui/callbacks.c:3718
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3722
+#: ../src/gui/callbacks.c:3720
 #, c-format
 msgid "undefined"
 msgstr "non definito"
 
-#: ../src/gui/callbacks.c:3818
+#: ../src/gui/callbacks.c:3816
 #, fuzzy
 msgid "Exclude all images ?"
 msgstr "Escludi tutte"
 
-#: ../src/gui/callbacks.c:3819 ../src/gui/callbacks.c:3829
+#: ../src/gui/callbacks.c:3817 ../src/gui/callbacks.c:3827
 #, fuzzy
 msgid "This erases previous image selection and there's no possible undo."
 msgstr ""
@@ -6026,101 +6028,101 @@ msgstr ""
 " (questo cancella la precedente selezione dell'immagine\n"
 " ... e non c'è modo di annullare le modifiche)"
 
-#: ../src/gui/callbacks.c:3828
+#: ../src/gui/callbacks.c:3826
 #, fuzzy
 msgid "Include all images ?"
 msgstr "Includi tutte"
 
-#: ../src/gui/callbacks.c:3850
+#: ../src/gui/callbacks.c:3848
 msgid "Opening dark image..."
 msgstr "Apertura immagine dark..."
 
-#: ../src/gui/callbacks.c:3853
+#: ../src/gui/callbacks.c:3851
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "NON STO USANDO IL DARK: non posso aprire il file\n"
 
-#: ../src/gui/callbacks.c:3860
+#: ../src/gui/callbacks.c:3858
 msgid "NOT USING DARK: number of channels is different"
 msgstr "NON STO USANDO IL DARK: il numero di canali non coincide"
 
-#: ../src/gui/callbacks.c:3898
+#: ../src/gui/callbacks.c:3896
 msgid "Opening flat image..."
 msgstr "Apertura immagine flat..."
 
-#: ../src/gui/callbacks.c:3901
+#: ../src/gui/callbacks.c:3899
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "NON STO USANDO IL FLAT: non posso aprire il file\n"
 
-#: ../src/gui/callbacks.c:3908
+#: ../src/gui/callbacks.c:3906
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "NON STO USANDO IL FLAT: il numero di canali non coincide"
 
-#: ../src/gui/callbacks.c:3935
+#: ../src/gui/callbacks.c:3933
 msgid "Opening offset image..."
 msgstr "Apertura immagine offset..."
 
-#: ../src/gui/callbacks.c:3938
+#: ../src/gui/callbacks.c:3936
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "NON STO USANDO L'OFFSET: non posso aprire il file\n"
 
-#: ../src/gui/callbacks.c:3945
+#: ../src/gui/callbacks.c:3943
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "NON STO USANDO L'OFFSET: il numero di canali non coincide"
 
-#: ../src/gui/callbacks.c:4039
+#: ../src/gui/callbacks.c:4037
 msgid "Error in preprocessing."
 msgstr "Errore nella pre-elaborazione."
 
-#: ../src/gui/callbacks.c:4116
+#: ../src/gui/callbacks.c:4114
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Selezionati %s sequenza %s..."
 
-#: ../src/gui/callbacks.c:4185
+#: ../src/gui/callbacks.c:4183
 msgid "Searching for sequences in the current working directory..."
 msgstr "Ricerca di sequenze nella cartella di lavoro corrente..."
 
-#: ../src/gui/callbacks.c:4509
+#: ../src/gui/callbacks.c:4507
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr ""
 "Lo sfondo non può essere estratto da se stesso. Per favore, clicca su Mostra "
 "Immagine\n"
 
-#: ../src/gui/callbacks.c:4531
+#: ../src/gui/callbacks.c:4529
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr ""
 "Per favore, applica la correzione all'immagine cliccando su Mostra Immagine\n"
 
-#: ../src/gui/callbacks.c:4553
+#: ../src/gui/callbacks.c:4551
 msgid "Subtraction done ...\n"
 msgstr "Sottrazione completata ...\n"
 
-#: ../src/gui/callbacks.c:4560
+#: ../src/gui/callbacks.c:4558
 msgid "Division done ...\n"
 msgstr "Divisione completata ...\n"
 
-#: ../src/gui/callbacks.c:4743
+#: ../src/gui/callbacks.c:4741
 msgid "Load an image first, aborted.\n"
 msgstr "Carica prima un'immagine, abortito.\n"
 
-#: ../src/gui/callbacks.c:4773
+#: ../src/gui/callbacks.c:4771
 msgid "The file stars.lst has been created.\n"
 msgstr "Il file stars.lst è stato creato.\n"
 
-#: ../src/gui/callbacks.c:4850 ../src/gui/callbacks.c:4898
+#: ../src/gui/callbacks.c:4848 ../src/gui/callbacks.c:4896
 #, fuzzy
 msgid "Current selection is too large"
 msgstr "fwhm: la selezione è troppo larga"
 
-#: ../src/gui/callbacks.c:4851 ../src/gui/callbacks.c:4899
+#: ../src/gui/callbacks.c:4849 ../src/gui/callbacks.c:4897
 #, fuzzy
 msgid "To determine the PSF, please make a selection around a star."
 msgstr ""
 "La selezione corrente è troppo larga.\n"
 "Per favore crea una selezione attorno ad una stella per determinare la PSF.\n"
 
-#: ../src/gui/callbacks.c:4863
+#: ../src/gui/callbacks.c:4861
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -6169,24 +6171,24 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:4880
+#: ../src/gui/callbacks.c:4878
 #, fuzzy
 msgid "PSF for the sequence only applies on sequences"
 msgstr "Esegui prima una PSF per la sequenza (vedi seqpsf)\n"
 
-#: ../src/gui/callbacks.c:4881
+#: ../src/gui/callbacks.c:4879
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr ""
 
-#: ../src/gui/callbacks.c:4945
+#: ../src/gui/callbacks.c:4943
 msgid "FFT does not work with sequences !\n"
 msgstr "FFT non funziona con le sequenze!\n"
 
-#: ../src/gui/callbacks.c:4951
+#: ../src/gui/callbacks.c:4949
 msgid "Open an image first !\n"
 msgstr "Apri prima un'immagine !\n"
 
-#: ../src/gui/callbacks.c:4976
+#: ../src/gui/callbacks.c:4974
 msgid "Select magnitude and phase before !\n"
 msgstr "Seleziona prima magnitudine e fase!\n"
 
@@ -6341,15 +6343,23 @@ msgstr "Salva File"
 msgid "This type of file is not handled. Should not happen"
 msgstr "Questo tipo di file non è gestito. Non dovrebbe accadere"
 
-#: ../src/gui/script_menu.c:211
+#: ../src/gui/script_menu.c:215
 #, fuzzy, c-format
 msgid "Searching scripts in: %s...\n"
 msgstr "Avvio dello script %s\n"
 
-#: ../src/gui/script_menu.c:223
+#: ../src/gui/script_menu.c:227
 #, c-format
 msgid "Loading script: %s\n"
 msgstr "Avvio dello script: %s\n"
+
+#: ../src/gui/script_menu.c:286
+msgid "Could not show link"
+msgstr ""
+
+#: ../src/gui/script_menu.c:287
+msgid "Please go to <a href=\""
+msgstr ""
 
 #: ../src/gui/sequence_list.c:197
 #, c-format
@@ -7275,43 +7285,43 @@ msgstr ""
 "Si è verificato un errore durante l'apertura di questa immagine. Controlla i "
 "log per maggiori informazioni."
 
-#: ../src/main.c:249
+#: ../src/main.c:250
 #, c-format
 msgid "unknown command line parameter '%c'\n"
 msgstr "Parametro da linea di comando '%c' sconosciuto\n"
 
-#: ../src/main.c:273
+#: ../src/main.c:274
 #, c-format
 msgid "%s. Looking into another directory...\n"
 msgstr "%s. Cercando in un'altra cartella...\n"
 
-#: ../src/main.c:279
+#: ../src/main.c:280
 #, c-format
 msgid "%s was not found or contains errors, cannot render GUI. Exiting.\n"
 msgstr ""
 "%s non è stato trovato o contiene errori, non posso visualizzare la GUI. "
 "Uscita.\n"
 
-#: ../src/main.c:300
+#: ../src/main.c:301
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Benvenuto in %s v%s\n"
 
-#: ../src/main.c:370
+#: ../src/main.c:371
 msgid "Could not load or create settings file, exiting.\n"
 msgstr "Non posso caricare o creare il file delle impostazioni, uscita.\n"
 
 #. Get CPU number and set the number of threads
-#: ../src/main.c:418
+#: ../src/main.c:419
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor(s).\n"
 msgstr "Elaborazione parallela %s: Utilizzando %d processori logici.\n"
 
-#: ../src/main.c:420
+#: ../src/main.c:421
 msgid "enabled"
 msgstr "abilitata"
 
-#: ../src/main.c:422
+#: ../src/main.c:423
 msgid "disabled"
 msgstr "disabilitato"
 

@@ -1015,7 +1015,7 @@ void on_asinh_Apply_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	beta = gtk_range_get_value(stretch);
 	offset = gtk_range_get_value(black_point);
-	undo_save_state("Processing: Arcsinh Transformation: %7.1lf/%lf", beta, offset);
+	undo_save_state("Processing: Asinh Transformation: %7.1lf/%lf", beta, offset);
 	asinhlut(&gfit, beta, offset, gtk_toggle_button_get_active(checkbutton));
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
