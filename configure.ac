@@ -105,8 +105,11 @@ if test -n "$CXX" && ( test "X$CXX" != "Xno" &&
 	PKG_CHECK_MODULES([OPENCV], [opencv >= 3.0],
 			  [OPENCV_LIBS="-lopencv_core -lopencv_imgproc -lopencv_calib3d"],
 			  [PKG_CHECK_MODULES([OPENCV], [opencv >= 2.0],
-			  [OPENCV_LIBS="-lopencv_core -lopencv_imgproc"],
-			  AC_MSG_ERROR([opencv not found. Not using some image processing.]))]
+					     [OPENCV_LIBS="-lopencv_core -lopencv_imgproc"],
+					     [PKG_CHECK_MODULES([OPENCV], [opencv4],
+								[OPENCV_LIBS="-lopencv_core -lopencv_imgproc -lopencv_calib3d"],
+								AC_MSG_ERROR([opencv not found. Not using some image processing.]))]
+					     )]
 			  )
 else
 	AC_MSG_ERROR([no C++ compiler found])

@@ -32,6 +32,9 @@
 #if CV_MAJOR_VERSION == 2
 #include "opencv/findHomography/calib3d.hpp"
 #else
+#if CV_MAJOR_VERSION == 4
+#define CV_RANSAC FM_RANSAC
+#endif
 #include <opencv2/calib3d.hpp>
 #endif
 
