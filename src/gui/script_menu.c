@@ -251,7 +251,6 @@ void fill_script_paths_list() {
 
 
 /* Get Scripts menu */
-#ifdef HAVE_LIBCURL
 
 #define GET_SCRIPTS_URL "https://free-astro.org/index.php?title=Siril:scripts"
 
@@ -261,7 +260,7 @@ void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 #if GTK_CHECK_VERSION(3, 22, 0)
 	GtkWidget *win;
 	const char *locale = setlocale(LC_MESSAGES, NULL);
-	const char *supported_languages[] = { "fr", NULL }; // en is for NULL: default language
+	const char *supported_languages[] = { "fr", NULL }; // en is NULL: default language
 	gchar *lang = NULL;
 	int i = 0;
 
@@ -292,4 +291,3 @@ void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	g_free(lang);
 }
 
-#endif
