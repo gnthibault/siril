@@ -72,14 +72,9 @@ the `-p` command is passed to the program command line.
 Source download
 ---------------
 
-You can get siril source code from the release archives on their webpage, or the latest version from svn or git. The current development branch is labelled 0.9 on the svn, mirrored on gitlab.com:
+You can get SIRIL source code from the release archives on their webpage, or the latest version from git:
 
-    svn co https://free-astro.org/svn/siril/branches/0.9 Siril-0.9
-    
-or 
-
-    git clone https://gitlab.com/lock042/Siril-0.9.git 
-
+    git clone https://gitlab.com/free-astro/siril.git 
 
 Building SIRIL for GNU/Linux
 ----------------------------
@@ -103,7 +98,6 @@ We provide a dmg installer on the website, but you can also install SIRIL from s
 
     brew install siril
 
-
 SIRIL on Windows
 ----------------
 SIRIL is fully supported on windows since version 0.9.8. An installer has been created by a SIRIL user and he maintains it. We only provide an archive containing the binaries as the official Windows release.
@@ -114,9 +108,10 @@ The translation system is based on [intltool](https://www.freedesktop.org/wiki/S
 Get SIRIL sources. In the po directory, run 
      
     make update-po
+    
 Install poedit and open the **siril.pot** file in the po directory to start a new translation.
 
-Proceed to the translation of the english elements in the list. When you want to stop or when you have finished, send us the .po file that you created and we'll include it in the next version's sources and packages.
+Proceed to the translation of the English elements in the list. When you want to stop or when you have finished, send us the .po file that you created and we'll include it in the next version's sources and packages.
 
 Notes on SIRIL FITS image format
 --------------------------------
@@ -145,8 +140,8 @@ SIRIL supports SER v3. See [this page](https://free-astro.org/index.php/SER) for
 
 Useful links
 ------------
- * [Project Homepage](https://free-astro.org/index.php/Siril)
- * [Documentation](https://free-astro.org/siril_doc-en/#Reference_documentation_1)
+ * [Project Homepage](https://www.siril.org)
+ * [Documentation](https://free-astro.org/siril_doc-en)
  * [Releases and Downloads](https://free-astro.org/index.php?title=Siril:releases)
- * [Report a bug](https://free-astro.org/bugs/view_all_bug_page.php)
+ * [Report a bug](https://gitlab.com/free-astro/siril/issues)
  * [Supported commands](https://free-astro.org/index.php?title=Siril:Commands)
