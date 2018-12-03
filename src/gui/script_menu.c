@@ -256,9 +256,6 @@ void fill_script_paths_list() {
 
 void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	gboolean ret;
-
-#if GTK_CHECK_VERSION(3, 22, 0)
-	GtkWidget *win;
 	const char *locale = setlocale(LC_MESSAGES, NULL);
 	const char *supported_languages[] = { "fr", NULL }; // en is NULL: default language
 	gchar *lang = NULL;
@@ -275,7 +272,8 @@ void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	}
 	gchar *url = g_build_path("/", GET_SCRIPTS_URL, lang, NULL);
 
-	win = lookup_widget("control_window");
+#if GTK_CHECK_VERSION(3, 22, 0)
+	GtkWidget* win = lookup_widget("control_window");
 	ret = gtk_show_uri_on_window(GTK_WINDOW(win), url,
 			gtk_get_current_event_time(), NULL);
 #else
