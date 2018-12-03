@@ -2716,9 +2716,9 @@ void on_GtkCommandHelper_clicked(GtkButton *button, gpointer user_data) {
 
 	popover = popover_new(lookup_widget("command"), helper);
 #if GTK_CHECK_VERSION(3, 22, 0)
-	gtk_widget_show(popover);
-#else
 	gtk_popover_popup(GTK_POPOVER(popover));
+#else
+	gtk_widget_show(popover);
 #endif
 	g_free(helper);
 }
