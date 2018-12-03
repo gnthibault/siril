@@ -100,7 +100,7 @@ int pipe_create() {
 
 	hPipe_r = CreateNamedPipe(
 			lpszPipename_r,           // pipe name
-			PIPE_ACCESS_OUTBOUND,     // write access
+			PIPE_ACCESS_INBOUND,      // read access
 			PIPE_TYPE_MESSAGE |       // message type pipe
 			PIPE_READMODE_MESSAGE |   // message-read mode
 			PIPE_WAIT,                // blocking mode
