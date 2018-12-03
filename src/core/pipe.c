@@ -26,6 +26,7 @@
 #define PIPE_PATH_W "/tmp/" PIPE_NAME_W  // TODO: use g_get_tmp_dir()
 #define PIPE_MSG_SZ 512	// max input command length
 
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -34,6 +35,15 @@
 #include <fcntl.h>
 #include <signal.h>
 #ifdef _WIN32
+// doc at: https://docs.microsoft.com/en-us/windows/desktop/ipc/named-pipes
+// samples from: https://docs.microsoft.com/en-us/windows/desktop/ipc/using-pipes
+// With windows, pipes can be bidirectional. To keep common code between windows and the
+//	rest of the world, we still use unidirectional modes for windows named pipes.
+// It's also different in the philosophy of pipe creation, where a pipe is created only
+//	for one client and has to be created again to serve another.
+#include <windows.h>
+#include <conio.h>
+#include <tchar.h>
 #else
 #include <sys/select.h>
 #endif
@@ -47,12 +57,11 @@
 	gboolean get_thread_run();
 #include "gui/progress_and_log.h"
 
-/* TODO:
- * windows version
- */
-
 #ifdef _WIN32
-// https://docs.microsoft.com/en-us/windows/desktop/ipc/named-pipes
+LPTSTR lpszPipename_r = TEXT("\\\\.\\pipe\\" PIPE_NAME_R);
+LPTSTR lpszPipename_w = TEXT("\\\\.\\pipe\\" PIPE_NAME_W);
+HANDLE hPipe_r = INVALID_HANDLE_VALUE;
+HANDLE hPipe_w = INVALID_HANDLE_VALUE;
 #else
 static int pipe_fd_r = -1;
 static int pipe_fd_w = -1;
@@ -69,8 +78,42 @@ static void sigpipe_handler(int signum) { }	// do nothing
 
 int pipe_create() {
 #ifdef _WIN32
-	siril_log_message("not yet supported\n");
-	return -1;
+	if (hPipe_w != INVALID_HANDLE_VALUE || hPipe_r != INVALID_HANDLE_VALUE)
+		return 0;
+
+	hPipe_w = CreateNamedPipe(
+			lpszPipename_w,           // pipe name
+			PIPE_ACCESS_OUTBOUND,     // write access
+			PIPE_TYPE_MESSAGE |       // message type pipe
+			PIPE_READMODE_MESSAGE |   // message-read mode
+			PIPE_WAIT,                // blocking mode
+			PIPE_UNLIMITED_INSTANCES, // max. instances
+			3*PIPE_MSG_SZ,            // output buffer size
+			0,                        // input buffer size
+			0,                        // client time-out
+			NULL);                    // default security attribute
+	if (hPipe_w == INVALID_HANDLE_VALUE)
+	{
+		siril_log_message("Output pipe creation failed with error %d\n", GetLastError());
+		return -1;
+	}
+
+	hPipe_r = CreateNamedPipe(
+			lpszPipename_r,           // pipe name
+			PIPE_ACCESS_OUTBOUND,     // write access
+			PIPE_TYPE_MESSAGE |       // message type pipe
+			PIPE_READMODE_MESSAGE |   // message-read mode
+			PIPE_WAIT,                // blocking mode
+			PIPE_UNLIMITED_INSTANCES, // max. instances
+			3*PIPE_MSG_SZ,            // output buffer size
+			0,                        // input buffer size
+			0,                        // client time-out
+			NULL);                    // default security attribute
+	if (hPipe_r == INVALID_HANDLE_VALUE)
+	{
+		siril_log_message("Input pipe creation failed with error %d\n", GetLastError());
+		return -1;
+	}
 #else
 	if (pipe_fd_r >= 0 || pipe_fd_w > 0) return 0;
 
@@ -114,7 +157,27 @@ int pipe_create() {
 
 static int pipe_write(const char *string) {
 #ifdef _WIN32
-	return -1;
+	int length;
+	DWORD  retval ;
+	if (hPipe_w == INVALID_HANDLE_VALUE)
+		return -1;
+	length = strlen(string);
+	BOOL result = WriteFile(hPipe_w, string, length, &retval, NULL);
+	if(result && retval == length)
+		return 0;
+	int err = GetLastError();
+	if (err == ERROR_BROKEN_PIPE) {
+		fprintf(stderr, "Output stream disconnected.\n");
+		return 1;
+	}
+	else if (err == ERROR_NO_DATA) {
+		fprintf(stderr, "Output stream closed on receiving side.\n");
+		return 1;
+	}
+	else {
+		fprintf(stderr, "Error writing to output stream; error code was 0x%08x.\n", err);
+		return 1;
+	}
 #else
 	int length, retval;
 	if (pipe_fd_w <= 0)
@@ -128,7 +191,7 @@ static int pipe_write(const char *string) {
 
 int pipe_send_message(pipe_message msgtype, pipe_verb verb, const char *arg) {
 #ifdef _WIN32
-	return -1;
+	if (hPipe_w == INVALID_HANDLE_VALUE) return -1;
 #else
 	if (pipe_fd_w <= 0) return -1;
 #endif
@@ -196,7 +259,81 @@ void empty_command_queue() {
 
 void *read_pipe(void *p) {
 #ifdef _WIN32
-	return NULL;
+	do {
+		/* try to open the pipe */
+		// will block until the other end is opened
+		if (!ConnectNamedPipe(hPipe_r, NULL) && GetLastError() != ERROR_PIPE_CONNECTED) {
+			siril_log_message(_("Could not open the named pipe\n"));
+			break;
+		}
+
+		fprintf(stdout, "opened read pipe\n");
+		/* now, try to read from it */
+		int bufstart = 0;
+		DWORD len;
+		char buf[PIPE_MSG_SZ];
+		do
+		{
+			// Read from the pipe.
+			BOOL fSuccess = ReadFile(
+					hPipe_r,         // pipe handle
+					buf+bufstart,    // buffer to receive reply
+					PIPE_MSG_SZ-1-bufstart, // size of buffer
+					&len,            // number of bytes read
+					NULL);           // not overlapped
+
+			if ((fSuccess || GetLastError() == ERROR_MORE_DATA) && len > 0) {
+				int i = 0, nbnl = 0;
+				buf[len] = '\0';
+				while (i < len && buf[i] != '\0') {
+					if (buf[i] == '\n')
+						nbnl++;
+					i++;
+				}
+				if (nbnl == 0) {
+					pipe_send_message(PIPE_STATUS, PIPE_ERROR, _("command too long or malformed\n"));
+					fSuccess = FALSE;
+				}
+
+				if (fSuccess) {
+					/* we have several commands in the buffer, we need to
+					 * cut them, enqueue them and prepare next buffer for
+					 * incomplete commands */
+					char backup_char;
+					char *command = NULL ;
+					for (i = 0; i < len && buf[i] != '\0'; i++) {
+						if (buf[i] == '\n') {
+							backup_char = buf[i + 1];
+							buf[i + 1] = '\0';
+							command = strdup(buf+bufstart);
+							buf[i + 1] = backup_char;
+							bufstart = i + 1;
+
+							if (enqueue_command(command)) {
+								fSuccess = FALSE;
+								break;
+							}
+						}
+					}
+					if (bufstart == i)
+						bufstart = 0;
+					else memcpy(buf, buf+bufstart, len-bufstart);
+				}
+
+			}
+			if (!fSuccess && GetLastError() != ERROR_MORE_DATA) {
+				fprintf(stdout, "closed read pipe\n");
+				CloseHandle(hPipe_r);
+				hPipe_r = INVALID_HANDLE_VALUE;
+				empty_command_queue();
+				if (get_thread_run()) {
+					stop_processing_thread();
+					pipe_send_message(PIPE_STATUS, PIPE_ERROR, _("command interrupted\n"));
+				}
+				break;
+			}
+		} while (1);
+	} while (pipe_active);
 #else
 	do {
 		// open will block until the other end is opened
@@ -273,9 +410,9 @@ void *read_pipe(void *p) {
 			}
 		} while (1);
 	} while (pipe_active);
+#endif
 
 	return GINT_TO_POINTER(pipe_active ? -1 : 0);
-#endif
 }
 
 void *process_commands(void *p) {
@@ -309,10 +446,15 @@ void *process_commands(void *p) {
 
 static void *write_pipe(void *p) {
 	do {
+		fprintf(stdout, "write pipe waiting to be opened...\n");
 #ifdef _WIN32
+		// will block until the other end is opened
+		if (!ConnectNamedPipe(hPipe_w, NULL) && GetLastError() != ERROR_PIPE_CONNECTED) {
+			siril_log_message(_("Could not open the named pipe\n"));
+			break;
+		}
 #else
 		// open will block until the other end is opened
-		fprintf(stdout, "write pipe waiting to be opened...\n");
 		if ((pipe_fd_w = open(PIPE_PATH_W, O_WRONLY)) == -1) {
 			siril_log_message(_("Could not open the named pipe\n"));
 			perror("open");
@@ -337,9 +479,11 @@ static void *write_pipe(void *p) {
 			g_mutex_unlock(&write_mutex);
 
 			if (pipe_write(msg)) {
-				fprintf(stdout, "closed write pipe\n");
 #ifdef _WIN32
+				CloseHandle(hPipe_w);
+				hPipe_w = INVALID_HANDLE_VALUE;
 #else
+				fprintf(stdout, "closed write pipe\n");
 				close(pipe_fd_w);
 				pipe_fd_w = -1;
 #endif
@@ -354,10 +498,6 @@ static void *write_pipe(void *p) {
 
 /* not reentrant */
 int pipe_start() {
-#ifdef _WIN32
-	siril_log_message("not yet supported\n");
-	return -1;
-#endif
 	if (pipe_active)
 		return 0;
 	if (pipe_create())
@@ -377,11 +517,19 @@ void pipe_stop() {
 	g_mutex_lock(&write_mutex);
 	pipe_active = 0;
 #ifdef _WIN32
+	if (hPipe_r != INVALID_HANDLE_VALUE)
+		CloseHandle(hPipe_r);
+	hPipe_r = INVALID_HANDLE_VALUE;
+	if (hPipe_w != INVALID_HANDLE_VALUE)
+		CloseHandle(hPipe_w);
+	hPipe_w = INVALID_HANDLE_VALUE;
 #else
 	if (pipe_fd_r >= 0)
 		close(pipe_fd_r);
+	pipe_fd_r = -1;
 	if (pipe_fd_w > 0)
 		close(pipe_fd_w);
+	pipe_fd_w = -1;
 #endif
 	g_cond_signal(&write_cond);
 	g_cond_signal(&read_cond);
