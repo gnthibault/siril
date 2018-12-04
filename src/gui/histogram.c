@@ -508,6 +508,19 @@ static void reset_curors_and_values() {
 	update_gfit_histogram_if_needed();
 }
 
+static void update_curors_and_values() {
+	static GtkRange *scale_transfert_function[3] = { NULL, NULL, NULL };
+	if (scale_transfert_function[0] == NULL) {
+		scale_transfert_function[0] = GTK_RANGE(lookup_widget("scale_shadows"));
+		scale_transfert_function[1] = GTK_RANGE(lookup_widget("scale_midtones"));
+		scale_transfert_function[2] = GTK_RANGE(lookup_widget("scale_highlights"));
+	}
+
+	gtk_range_set_value(scale_transfert_function[0], _shadows);
+	gtk_range_set_value(scale_transfert_function[1], _midtones);
+	gtk_range_set_value(scale_transfert_function[2], _highlights);
+}
+
 static void queue_window_redraw() {
 	static GtkWidget *drawarea = NULL;
 	if (!drawarea)
@@ -938,6 +951,7 @@ void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) 
 	_highlights = 1.0;
 	update_histo_mtf();
 	histo_recompute();
+	update_curors_and_values();
 	set_cursor_waiting(FALSE);
 }
 
