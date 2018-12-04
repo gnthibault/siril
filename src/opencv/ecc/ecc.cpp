@@ -553,48 +553,36 @@ double findTransform_ECC(InputArray templateImage, InputArray inputImage,
 	return rho;
 }
 
+/* siril code starts here, code above is from opencv */
+
 int findTransform(fits *reference, fits *image, int layer,
 		reg_ecc *reg_param) {
 	Mat ref(reference->ry, reference->rx, CV_16UC1, reference->pdata[layer]);
 	Mat im(image->ry, image->rx, CV_16UC1, image->pdata[layer]);
-	Mat warp_matrix(3, 3, CV_32FC1);
-	WARP_MODE warp_mode = WARP_MODE_TRANSLATION;	// for tests
-	int number_of_iterations = 50;
-	double termination_eps = 0.001;
+	Mat warp_matrix = Mat::eye(2, 3, CV_32F);
+	WARP_MODE warp_mode = WARP_MODE_TRANSLATION;
+	int number_of_iterations = 180;
+	double termination_eps = 0.002;
 	int retvalue = 0;
 
-	setIdentity(warp_matrix);
-	ref.convertTo(ref, CV_8UC1);
-	im.convertTo(im, CV_8UC1);
-
-	if (warp_mode != WARP_MODE_HOMOGRAPHY)
-		warp_matrix.rows = 2;
+	/* this conversion operation of the reference could be avoided since
+	 * it's the same for all tested images */
+	ref.convertTo(ref, CV_32FC1, 1.0/reference->stats[layer]->max);
+	im.convertTo(im, CV_32FC1, 1.0/image->stats[layer]->max);
 
 	// Define termination criteria
 	TermCriteria criteria (TermCriteria::COUNT+TermCriteria::EPS, number_of_iterations, termination_eps);
 
-	double rho = findTransform_ECC(ref, im, warp_matrix, warp_mode, criteria,
-			noArray());
-
-	if (rho > 0) {
-
+	double ecc = findTransform_ECC(ref, im, warp_matrix, warp_mode, criteria, noArray());
 #ifdef ECC_DEBUG
-		std::cout << "rho=" << rho << std::endl;
-		std::cout << "result=" << std::endl << warp_matrix << std::endl;
+	std::cout << "ecc = " << ecc << std::endl;
+	std::cout << "result = " << std::endl << warp_matrix << std::endl;
 #endif
-
-		switch (warp_mode) {
-		case WARP_MODE_TRANSLATION:
-			reg_param->dx = warp_matrix.at<float>(0, 2);
-			reg_param->dy = warp_matrix.at<float>(1, 2);
-			break;
-		default:
-			std::cout << "Not handled yet" << std::endl;
-			retvalue = 1;
-		}
+	if (ecc > 0.8) {
+		reg_param->dx = warp_matrix.at<float>(0, 2);
+		reg_param->dy = warp_matrix.at<float>(1, 2);
 	}
-	else
-		retvalue = rho;
+	else retvalue = 1;
 
 	warp_matrix.release();
 	ref.release();

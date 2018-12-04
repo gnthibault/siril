@@ -48,6 +48,7 @@
 #include "algos/quality.h"
 #include "io/sequence.h"
 #include "io/ser.h"
+#include "io/single_image.h"
 #include "opencv/opencv.h"
 #include "opencv/ecc/ecc.h"
 
@@ -523,6 +524,7 @@ int register_ecc(struct registration_args *args) {
 	clearfits(&ref);
 	/* Ugly code: as QualityEstimate destroys fit we need to reload it */
 	seq_read_frame(args->seq, ref_image, &ref);
+	image_find_minmax(&ref);
 	q_min = q_max = current_regdata[ref_image].quality;
 	q_index = ref_image;
 
@@ -562,6 +564,7 @@ int register_ecc(struct registration_args *args) {
 				if (!ret) {
 					reg_ecc reg_param;
 					memset(&reg_param, 0, sizeof(reg_ecc));
+					image_find_minmax(&im);
 
 					if (findTransform(&ref, &im, args->layer, &reg_param)) {
 						siril_log_message(
