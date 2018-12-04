@@ -450,7 +450,9 @@ gpointer enhance_saturation(gpointer p) {
 	double bg = 0;
 	int i;
 
-	if (!isrgb(args->fit)) {
+	if (!isrgb(args->input) || !isrgb(args->output) ||
+			args->input->naxes[0] != args->output->naxes[0] ||
+			args->input->naxes[1] != args->output->naxes[1]) {
 		siril_add_idle(end_enhance_saturation, args);
 		return GINT_TO_POINTER(1);
 	}
@@ -459,8 +461,10 @@ gpointer enhance_saturation(gpointer p) {
 		return GINT_TO_POINTER(1);
 	}
 
-	WORD *buf[3] = { args->fit->pdata[RLAYER], args->fit->pdata[GLAYER],
-			args->fit->pdata[BLAYER] };
+	WORD *in[3] = { args->input->pdata[RLAYER], args->input->pdata[GLAYER],
+			args->input->pdata[BLAYER] };
+	WORD *out[3] = { args->output->pdata[RLAYER], args->output->pdata[GLAYER],
+			args->output->pdata[BLAYER] };
 
 	siril_log_color_message(_("Saturation enhancement: processing...\n"), "red");
 	gettimeofday(&t_start, NULL);
@@ -468,7 +472,7 @@ gpointer enhance_saturation(gpointer p) {
 	args->h_min /= 360.0;
 	args->h_max /= 360.0;
 	if (args->preserve) {
-		imstats *stat = statistics(NULL, -1, args->fit, GLAYER, NULL, STATS_BASIC);
+		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			siril_add_idle(end_enhance_saturation, args);
@@ -482,11 +486,11 @@ gpointer enhance_saturation(gpointer p) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
-	for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
+	for (i = 0; i < args->input->rx * args->input->ry; i++) {
 		double h, s, l;
-		double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
-		double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
-		double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
+		double r = (double) in[RLAYER][i] / USHRT_MAX_DOUBLE;
+		double g = (double) in[GLAYER][i] / USHRT_MAX_DOUBLE;
+		double b = (double) in[BLAYER][i] / USHRT_MAX_DOUBLE;
 		rgb_to_hsl(r, g, b, &h, &s, &l);
 		if (l > bg) {
 			if (args->h_min > args->h_max) {// Red case. TODO: find a nicer way to do it
@@ -504,11 +508,11 @@ gpointer enhance_saturation(gpointer p) {
 				s = 1.0;
 		}
 		hsl_to_rgb(h, s, l, &r, &g, &b);
-		buf[RLAYER][i] = round_to_WORD(r * USHRT_MAX_DOUBLE);
-		buf[GLAYER][i] = round_to_WORD(g * USHRT_MAX_DOUBLE);
-		buf[BLAYER][i] = round_to_WORD(b * USHRT_MAX_DOUBLE);
+		out[RLAYER][i] = round_to_WORD(r * USHRT_MAX_DOUBLE);
+		out[GLAYER][i] = round_to_WORD(g * USHRT_MAX_DOUBLE);
+		out[BLAYER][i] = round_to_WORD(b * USHRT_MAX_DOUBLE);
 	}
-	invalidate_stats_from_fit(args->fit);
+	invalidate_stats_from_fit(args->output);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 	siril_add_idle(end_enhance_saturation, args);
@@ -727,7 +731,7 @@ void on_button_bkg_neutralization_clicked(GtkButton *button, gpointer user_data)
 	black_selection.w = gtk_spin_button_get_value(selection_black_value[2]);
 	black_selection.h = gtk_spin_button_get_value(selection_black_value[3]);
 
-	undo_save_state("Processing: Background neutralization");
+	undo_save_state(&gfit, "Processing: Background neutralization");
 
 	set_cursor_waiting(TRUE);
 	background_neutralize(&gfit, black_selection);
@@ -943,7 +947,7 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 	}
 
 	set_cursor_waiting(TRUE);
-	undo_save_state("Processing: Color Calibration");
+	undo_save_state(&gfit, "Processing: Color Calibration");
 	white_balance(&gfit, is_manual, white_selection, black_selection);
 
 	gettimeofday(&t_end, NULL);
@@ -987,38 +991,10 @@ static int pos_to_neg(fits *fit) {
 
 void on_menu_negative_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	set_cursor_waiting(TRUE);
-	undo_save_state("Processing: Negative Transformation");
+	undo_save_state(&gfit, "Processing: Negative Transformation");
 	pos_to_neg(&gfit);
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	update_gfit_histogram_if_needed();
-	set_cursor_waiting(FALSE);
-}
-
-void on_menuitem_asinh_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	gtk_widget_show(lookup_widget("asinh_dialog"));
-}
-
-void on_asinh_cancel_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("asinh_dialog"));
-}
-
-void on_asinh_Apply_clicked(GtkButton *button, gpointer user_data) {
-	GtkRange *stretch, *black_point;
-	GtkToggleButton *checkbutton;
-	double beta, offset;
-
-	checkbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_RGBspace"));
-	stretch = GTK_RANGE(lookup_widget("scale_asinh"));
-	black_point = GTK_RANGE(lookup_widget("black_point_asinh"));
-
-	set_cursor_waiting(TRUE);
-	beta = gtk_range_get_value(stretch);
-	offset = gtk_range_get_value(black_point);
-	undo_save_state("Processing: Asinh Transformation: %7.1lf/%lf", beta, offset);
-	asinhlut(&gfit, beta, offset, gtk_toggle_button_get_active(checkbutton));
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
 	set_cursor_waiting(FALSE);
 }

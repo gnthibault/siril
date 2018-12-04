@@ -224,7 +224,8 @@ int process_satu(int nb){
 	args->coeff = atof(word[1]);
 	if (args->coeff == 0.0) args->coeff = 1.0;
 
-	args->fit = &gfit;
+	args->input = &gfit;
+	args->output = &gfit;
 	args->h_min = 0.0;
 	args->h_max = 360.0;
 	args->preserve = TRUE;

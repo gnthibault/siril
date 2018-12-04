@@ -27,7 +27,7 @@
 gboolean is_undo_available();
 gboolean is_redo_available();
 int undo_display_data(int dir);
-int undo_save_state(char *message, ...);
+int undo_save_state(fits *fit, char *message, ...);
 int	undo_flush();
 
 #endif /* UNDO_H_ */

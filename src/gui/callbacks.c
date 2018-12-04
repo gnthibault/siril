@@ -145,68 +145,6 @@ static GdkModifierType get_default_modifier() {
 }
 
 /*
- * Wavelet static functions
- */
-
-static void reset_scale_w() {
-	static GtkSpinButton *spin_w[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
-	int i;
-
-	if (spin_w[0] == NULL) {
-		spin_w[0] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w0"));
-		spin_w[1] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w1"));
-		spin_w[2] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w2"));
-		spin_w[3] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w3"));
-		spin_w[4] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w4"));
-		spin_w[5] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w5"));
-	}
-
-	for (i = 0; i < 6; i++) {
-		g_signal_handlers_block_by_func(spin_w[i], on_spin_w_changed, NULL);
-		gtk_spin_button_set_value(spin_w[i], 1.f);
-		g_signal_handlers_unblock_by_func(spin_w[i], on_spin_w_changed, NULL);
-	}
-
-	gtk_widget_set_sensitive(lookup_widget("button_apply_w"), FALSE);
-}
-
-static void update_wavelets() {
-	float scale[6];
-	static GtkSpinButton *spin_w[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
-	int i;
-	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
-			"b_rawdata.wave" }, *dir[3];
-	const char *tmpdir;
-
-	tmpdir = g_get_tmp_dir();
-
-	if (spin_w[0] == NULL) {
-		spin_w[0] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w0"));
-		spin_w[1] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w1"));
-		spin_w[2] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w2"));
-		spin_w[3] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w3"));
-		spin_w[4] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w4"));
-		spin_w[5] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w5"));
-	}
-
-	for (i = 0; i < 6; i++)
-		scale[i] = (float) gtk_spin_button_get_value(spin_w[i]);
-
-	set_cursor_waiting(TRUE);
-
-	for (i = 0; i < gfit.naxes[2]; i++) {
-		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
-		wavelet_reconstruct_file(dir[i], scale, gfit.pdata[i]);
-		g_free(dir[i]);
-	}
-
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
-}
-
-/*
  * Memory label static functions
  */
 
@@ -523,7 +461,7 @@ static void remap(int vport) {
 		size_t i;
 		gsl_histogram *histo;
 
-		compute_histo_for_gfit(1);
+		compute_histo_for_gfit();
 		histo = com.layers_hist[vport];
 		hist_nb_bins = gsl_histogram_bins(histo);
 		/*if (hist_nb_bins <= USHRT_MAX) {
@@ -4241,17 +4179,6 @@ void on_gray_window_hide(GtkWidget *object, gpointer user_data) {
 	gtk_check_menu_item_set_active(graycheck, FALSE);
 }
 
-void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_data) {
-	GtkWidget *window = lookup_widget("histogram_window");
-	set_cursor_waiting(TRUE);
-	compute_histo_for_gfit(1);// it needs to be forced in the case where operation like background extraction have been done
-	if (gtk_widget_get_visible(window))
-		gtk_widget_hide(window);
-	else
-		gtk_widget_show(window);
-	set_cursor_waiting(FALSE);
-}
-
 void on_combozoom_changed(GtkComboBox *widget, gpointer user_data) {
 	gint active = gtk_combo_box_get_active(widget);
 	switch (active) {
@@ -4322,82 +4249,6 @@ void on_removegreen_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		gtk_widget_show_all(lookup_widget("SCNR_dialog"));
 }
 
-void on_menuitem_satu_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (single_image_is_loaded() && isrgb(&gfit))
-		gtk_widget_show_all(lookup_widget("satu_dialog"));
-}
-
-void on_satu_cancel_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("satu_dialog"));
-}
-
-void on_satu_Apply_clicked(GtkButton *button, gpointer user_data) {
-	static GtkComboBox *combo_satu = NULL;
-	int combo;
-
-	if (get_thread_run()) {
-		siril_log_message(
-				_("Another task is already in progress, ignoring new request.\n"));
-		return;
-	}
-
-	struct enhance_saturation_data *args = malloc(sizeof(struct enhance_saturation_data));
-
-
-	args->coeff = gtk_range_get_value(
-			GTK_RANGE(gtk_builder_get_object(builder, "scale_satu")));
-	gboolean preserve = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg")));
-
-	if (args->coeff == 0.0) {
-		free(args);
-		return;
-	}
-	undo_save_state("Processing: Saturation enhancement (%lf)", args->coeff);
-
-	if (!combo_satu)
-		combo_satu = GTK_COMBO_BOX(lookup_widget("combo_saturation"));
-	combo = gtk_combo_box_get_active(combo_satu);
-
-	set_cursor_waiting(TRUE);
-
-	switch (combo) {
-	case 0:		// Pink-Red to Red-Orange
-		args->h_min = 346.0;
-		args->h_max = 20.0;
-		break;
-	case 1:		// Orange-Brown to Yellow
-		args->h_min = 21.0;
-		args->h_max = 60.0;
-		break;
-	case 2:		// Yellow-Green to Green-Cyan
-		args->h_min = 61.0;
-		args->h_max = 200.0;
-		break;
-	case 3:		// Cyan
-		args->h_min = 170.0;
-		args->h_max = 200.0;
-		break;
-	case 4:		// Cyan-Blue to Blue-Magenta
-		args->h_min = 201.0;
-		args->h_max = 280.0;
-		break;
-	case 5:		// Magenta to Pink
-		args->h_min = 281.0;
-		args->h_max = 345.0;
-		break;
-	default:
-	case 6:		// Global
-		args->h_min = 0.0;
-		args->h_max = 360.0;
-	}
-
-	args->fit = &gfit;
-	args->preserve = preserve;
-	set_cursor_waiting(TRUE);
-	start_in_new_thread(enhance_saturation, args);
-}
-
 void on_SCNR_dialog_show(GtkWidget *widget, gpointer user_data) {
 	GtkComboBox *comboscnr = GTK_COMBO_BOX(
 			gtk_builder_get_object(builder, "combo_scnr"));
@@ -4426,7 +4277,7 @@ void on_SCNR_Apply_clicked(GtkButton *button, gpointer user_data) {
 	}
 
 	struct scnr_data *args = malloc(sizeof(struct scnr_data));
-	undo_save_state("Processing: SCNR (type: %d, amount: %0.2lf, preserve: %s)",
+	undo_save_state(&gfit, "Processing: SCNR (type: %d, amount: %0.2lf, preserve: %s)",
 			type, amount, preserve ? "TRUE" : "FALSE");
 
 	args->fit = &gfit;
@@ -4536,7 +4387,7 @@ void on_button_bkg_correct_clicked(GtkButton *button, gpointer user_data) {
 	int correction = gtk_combo_box_get_active(operation);
 
 	set_cursor_waiting(TRUE);
-	undo_save_state("Processing: Background extraction (Correction: %s)",
+	undo_save_state(&gfit, "Processing: Background extraction (Correction: %s)",
 			correction ? "Division" : "Subtraction");
 
 	switch (correction) {
@@ -4650,16 +4501,6 @@ void on_menu_channel_separation_activate(GtkMenuItem *menuitem,
 		gpointer user_data) {
 	if (single_image_is_loaded() && isrgb(&gfit))
 		gtk_widget_show_all(lookup_widget("extract_channel_dialog"));
-}
-
-void on_menuitem_histo_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	GtkWidget *window = lookup_widget("histogram_window");
-	if (single_image_is_loaded() || sequence_is_loaded()) {
-		set_cursor_waiting(TRUE);
-		compute_histo_for_gfit(1);
-		gtk_widget_show(window);
-		set_cursor_waiting(FALSE);
-	}
 }
 
 void on_menuitemcalibration_activate(GtkMenuItem *menuitem, gpointer user_data) {
@@ -5018,144 +4859,6 @@ void on_menuitem_medianfilter_activate(GtkMenuItem *menuitem,
 		gtk_widget_show(lookup_widget("Median_dialog"));
 }
 
-void on_spin_w_changed(GtkSpinButton *spinbutton, gpointer user_data) {
-	gtk_widget_set_sensitive(lookup_widget("button_apply_w"), TRUE);
-}
-
-void on_menuitem_wavelets_activate(GtkMenuItem *menuitem, gpointer user_data) {
-
-	if (single_image_is_loaded()) {
-		reset_scale_w();
-		gtk_widget_show_all(lookup_widget("wavelets_dialog"));
-	}
-}
-
-void on_wavelets_dialog_hide(GtkWidget *widget, gpointer user_data) {
-	gtk_widget_set_sensitive(lookup_widget("grid_w"), FALSE);
-}
-
-void on_button_apply_w_clicked(GtkButton *button, gpointer user_data) {
-	update_wavelets();
-	gtk_widget_set_sensitive(lookup_widget("button_apply_w"), FALSE);
-}
-
-void on_button_reset_w_clicked(GtkButton *button, gpointer user_data) {
-	float scale[6];
-	static GtkSpinButton *spin_w[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
-	int i;
-
-	if (spin_w[0] == NULL) {
-		spin_w[0] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w0"));
-		spin_w[1] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w1"));
-		spin_w[2] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w2"));
-		spin_w[3] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w3"));
-		spin_w[4] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w4"));
-		spin_w[5] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w5"));
-	}
-
-	for (i = 0; i < 6; i++)
-		scale[i] = (float) gtk_spin_button_get_value(spin_w[i]);
-
-	if (scale[0] == 1.f && scale[1] == 1.f && scale[2] == 1.f && scale[3] == 1.f
-			&& scale[4] == 1.f && scale[5] == 1.f)
-		return;
-	reset_scale_w();
-	update_wavelets();
-}
-
-void on_button_ok_w_clicked(GtkButton *button, gpointer user_data) {
-	int need_to_be_updated = gtk_widget_get_sensitive(
-			lookup_widget("button_apply_w"));
-	if (need_to_be_updated) {
-		update_wavelets();
-		gtk_widget_set_sensitive(lookup_widget("button_apply_w"), FALSE);
-	}
-	gtk_widget_hide(lookup_widget("wavelets_dialog"));
-}
-
-void on_button_cancel_w_clicked(GtkButton *button, gpointer user_data) {
-	float scale[6];
-	static GtkSpinButton *spin_w[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
-	int i;
-
-	if (spin_w[0] == NULL) {
-		spin_w[0] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w0"));
-		spin_w[1] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w1"));
-		spin_w[2] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w2"));
-		spin_w[3] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w3"));
-		spin_w[4] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w4"));
-		spin_w[5] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spin_w5"));
-	}
-
-	for (i = 0; i < 6; i++)
-		scale[i] = (float) gtk_spin_button_get_value(spin_w[i]);
-
-	if (!(scale[0] == 1.f && scale[1] == 1.f && scale[2] == 1.f
-			&& scale[3] == 1.f && scale[4] == 1.f && scale[5] == 1.f)) {
-		if (gtk_widget_get_sensitive(lookup_widget("grid_w")) == TRUE) {
-			reset_scale_w();
-			update_wavelets();
-		}
-	}
-	gtk_widget_hide(lookup_widget("wavelets_dialog"));
-}
-
-void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
-	int Type_Transform, Nbr_Plan, maxplan, mins, i;
-	int nb_chan = gfit.naxes[2];
-	float *Imag;
-	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
-			"b_rawdata.wave" }, *dir[3];
-	const char *tmpdir;
-
-	assert(nb_chan == 1 || nb_chan == 3);
-
-	tmpdir = g_get_tmp_dir();
-
-	Nbr_Plan = gtk_spin_button_get_value(
-			GTK_SPIN_BUTTON(lookup_widget("spinbutton_plans_w")));
-	Type_Transform = gtk_combo_box_get_active(
-			GTK_COMBO_BOX(lookup_widget("combobox_type_w"))) + 1;
-
-	mins = min(gfit.rx, gfit.ry);
-	maxplan = log(mins) / log(2) - 2;
-
-	if (Nbr_Plan > maxplan) {
-		char *msg = siril_log_message(
-				_("Wavelet: maximum number of plans for this image size is %d\n"),
-				maxplan);
-		siril_message_dialog(GTK_MESSAGE_WARNING, _("Warning"), msg);
-		Nbr_Plan = maxplan;
-		gtk_spin_button_set_value(
-				GTK_SPIN_BUTTON(lookup_widget("spinbutton_plans_w")), Nbr_Plan);
-	}
-
-	if (Type_Transform != TO_PAVE_LINEAR && Type_Transform != TO_PAVE_BSPLINE) {
-		char *msg = siril_log_message(_("Wavelet: type must be %d or %d\n"),
-		TO_PAVE_LINEAR, TO_PAVE_BSPLINE);
-		siril_message_dialog(GTK_MESSAGE_WARNING, _("Warning"), msg);
-	}
-
-	set_cursor_waiting(TRUE);
-
-	Imag = (float *) malloc(gfit.rx * gfit.ry * sizeof(float));
-
-	for (i = 0; i < nb_chan; i++) {
-		dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
-		strcpy(dir[i], tmpdir);
-		strcat(dir[i], G_DIR_SEPARATOR_S);
-		strcat(dir[i], File_Name_Transform[i]);
-		wavelet_transform_file(Imag, gfit.ry, gfit.rx, dir[i], Type_Transform, Nbr_Plan,
-				gfit.pdata[i]);
-		free(dir[i]);
-	}
-
-	free(Imag);
-	Imag = NULL;
-	gtk_widget_set_sensitive(lookup_widget("grid_w"), TRUE);
-	set_cursor_waiting(FALSE);
-	return;
-}
 
 /****************** GUI for Wavelet Layers Extraction *****************/
 
@@ -5163,7 +4866,6 @@ void on_menu_wavelet_separation_activate(GtkMenuItem *menuitem,
 		gpointer user_data) {
 
 	if (single_image_is_loaded()) {
-		reset_scale_w();
 		gtk_widget_show_all(lookup_widget("extract_wavelets_layers_dialog"));
 	}
 }
@@ -5254,7 +4956,7 @@ void on_Median_Apply_clicked(GtkButton *button, gpointer user_data) {
 		args->ksize = 15;
 		break;
 	}
-	undo_save_state("Processing: Median Filter (filter=%dx%d px)",
+	undo_save_state(&gfit, "Processing: Median Filter (filter=%dx%d px)",
 			args->ksize, args->ksize);
 
 	args->fit = &gfit;
@@ -5339,7 +5041,7 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 		args->seq = &com.seq;
 		apply_cosmetic_to_sequence(args);
 	} else {
-		undo_save_state("Processing: Cosmetic Correction");
+		undo_save_state(&gfit, "Processing: Cosmetic Correction");
 		start_in_new_thread(autoDetectThreaded, args);
 	}
 }
@@ -5368,7 +5070,7 @@ void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
 	args->sigma = gtk_range_get_value(sigma);
 	args->iter = gtk_spin_button_get_value(iter);
 
-	undo_save_state("Processing: Deconvolution (iter=%d, sig=%.3f)", args->iter,
+	undo_save_state(&gfit, "Processing: Deconvolution (iter=%d, sig=%.3f)", args->iter,
 			args->sigma);
 	start_in_new_thread(LRdeconv, args);
 }
@@ -5424,9 +5126,9 @@ void on_button_apply_fixbanding_clicked(GtkButton *button, gpointer user_data) {
 			toggle_protect_highlights_banding);
 
 	if (!protect_highlights)
-		undo_save_state("Processing: Canon Banding Reduction (amount=%.2lf)", amount);
+		undo_save_state(&gfit, "Processing: Canon Banding Reduction (amount=%.2lf)", amount);
 	else
-		undo_save_state("Processing: Canon Banding Reduction (amount=%.2lf, Protect=TRUE, invsigma=%.2lf)",
+		undo_save_state(&gfit, "Processing: Canon Banding Reduction (amount=%.2lf, Protect=TRUE, invsigma=%.2lf)",
 				amount, invsigma);
 
 	args->fit = &gfit;
@@ -5575,12 +5277,12 @@ void on_menu_rgb_align_select(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_rgb_align_dft_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	undo_save_state("Processing: RGB alignment (DFT)");
+	undo_save_state(&gfit, "Processing: RGB alignment (DFT)");
 	rgb_align(1);
 }
 
 void on_rgb_align_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	undo_save_state("Processing: RGB alignment (PSF)");
+	undo_save_state(&gfit, "Processing: RGB alignment (PSF)");
 	rgb_align(0);
 }
 

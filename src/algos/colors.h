@@ -20,7 +20,7 @@ struct extract_channels_data {
 
 /* color saturation data from GUI */
 struct enhance_saturation_data {
-	fits *fit;
+	fits *input, *output;
 	double coeff, h_min, h_max;
 	gboolean preserve;
 };

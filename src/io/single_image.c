@@ -326,6 +326,7 @@ void init_layers_hi_and_lo_values(sliders_mode force_minmax) {
 void adjust_cutoff_from_updated_gfit() {
 	invalidate_stats_from_fit(&gfit);
 	if (!com.script) {
+		invalidate_gfit_histogram();
 		update_gfit_histogram_if_needed();
 		init_layers_hi_and_lo_values(com.sliders);
 		set_cutoff_sliders_values();
