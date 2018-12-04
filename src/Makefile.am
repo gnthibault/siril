@@ -16,7 +16,7 @@ siril_SOURCES = \
 	gui/callbacks.c gui/callbacks.h gui/histogram.c gui/histogram.h gui/save_dialog.c gui/save_dialog.h gui/message_dialog.c gui/message_dialog.h \
 	gui/PSF_list.h gui/PSF_list.c gui/sequence_list.c gui/registration_preview.c \
 	gui/statistics_list.c gui/script_menu.c gui/script_menu.h \
-	gui/plot.c gui/plot.h gui/asinh.c gui/saturation.c \
+	gui/plot.c gui/plot.h gui/asinh.c gui/saturation.c gui/wavelets.c \
 	gui/gnuplot_i/gnuplot_i.c gui/gnuplot_i/gnuplot_i.h \
 	gui/progress_and_log.c gui/progress_and_log.h \
 	gui/about_dialog.c \
@@ -31,7 +31,7 @@ siril_SOURCES = \
 	algos/geometry.c algos/geometry.h \
 	algos/demosaicing.c algos/demosaicing.h \
 	algos/pave.c algos/transform.c algos/io_wave.c algos/reconstr.c \
-	algos/Def_Math.h algos/Def_Wavelet.h algos/Def_Mem.h algos/wavelets.c \
+	algos/Def_Math.h algos/Def_Wavelet.h algos/Def_Mem.h \
 	algos/PSF.c algos/PSF.h algos/star_finder.c algos/star_finder.h \
 	algos/cosmetic_correction.c algos/cosmetic_correction.h \
 	algos/quantize.c \
