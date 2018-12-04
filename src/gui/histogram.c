@@ -425,9 +425,6 @@ static void apply_mtf_to_fits(fits *from, fits *to) {
 	nb_chan = from->naxes[2];
 	ndata = from->rx * from->ry;
 
-	fprintf(stdout, "Applying histogram (mid=%.3lf, low=%.3lf, high=%.3lf)\n",
-			_midtones, _shadows, _highlights);
-
 	for (chan = 0; chan < nb_chan; chan++) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
@@ -712,9 +709,9 @@ void on_histogram_window_show(GtkWidget *object, gpointer user_data) {
 }
 
 void on_button_histo_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("histogram_window"));
 	reset_curors_and_values();
 	histo_close(TRUE);
+	gtk_widget_hide(lookup_widget("histogram_window"));
 }
 
 void on_button_histo_cancel_clicked(GtkButton *button, gpointer user_data) {
@@ -737,8 +734,10 @@ void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
 	// the apply button resets everything after recomputing with the current values
 	histo_recompute();
 	// partial cleanup
+	fprintf(stdout, "Applying histogram (mid=%.3lf, lo=%.3lf, hi=%.3lf)\n",
+			_midtones, _shadows, _highlights);
 	undo_save_state(&histo_gfit_backup, "Processing: Histogram Transformation "
-			"(mid=%.3lf, low=%.3lf, high=%.3lf)", _midtones, _shadows, _highlights);
+			"(mid=%.3lf, lo=%.3lf, hi=%.3lf)", _midtones, _shadows, _highlights);
 	clearfits(&histo_gfit_backup);
 	clear_hist_backup();
 	// reinit

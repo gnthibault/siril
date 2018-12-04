@@ -24,19 +24,19 @@ static void satu_close(gboolean revert) {
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 	} else {
-		undo_save_state(&satu_gfit_backup, "Processing: color saturation: %7.1lf", satu_amount);
+		undo_save_state(&satu_gfit_backup, "Processing: Saturation enhancement (amount=%4.2lf)", satu_amount);
 	}
 	clearfits(&satu_gfit_backup);
 }
 
 void on_satu_cancel_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("satu_dialog"));
 	satu_close(TRUE);
+	gtk_widget_hide(lookup_widget("satu_dialog"));
 }
 
 void on_satu_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("satu_dialog"));
 	satu_close(FALSE);
+	gtk_widget_hide(lookup_widget("satu_dialog"));
 }
 
 void on_satu_dialog_close(GtkDialog *dialog, gpointer user_data) {
@@ -53,7 +53,6 @@ void satu_recompute() {
 	set_cursor_waiting(TRUE);
 
 	struct enhance_saturation_data *args = malloc(sizeof(struct enhance_saturation_data));
-	undo_save_state(&gfit, "Processing: Saturation enhancement (%lf)", args->coeff);
 
 	switch (satu_hue_type) {
 	case 0:		// Pink-Red to Red-Orange

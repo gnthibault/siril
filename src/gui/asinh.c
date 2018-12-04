@@ -20,7 +20,7 @@ static void asinh_close(gboolean revert) {
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 	} else {
-		undo_save_state(&asinh_gfit_backup, "Processing: Asinh Transformation: %7.1lf/%lf",
+		undo_save_state(&asinh_gfit_backup, "Processing: Asinh Transformation: (stretch=%6.1lf, bp=%7.5lf)",
 				asinh_stretch_value, asinh_black_value);
 	}
 	clearfits(&asinh_gfit_backup);
@@ -49,13 +49,13 @@ void on_menuitem_asinh_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_asinh_cancel_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("asinh_dialog"));
 	asinh_close(TRUE);
+	gtk_widget_hide(lookup_widget("asinh_dialog"));
 }
 
 void on_asinh_ok_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("asinh_dialog"));
 	asinh_close(FALSE);
+	gtk_widget_hide(lookup_widget("asinh_dialog"));
 }
 
 void on_asinh_dialog_close(GtkDialog *dialog, gpointer user_data) {

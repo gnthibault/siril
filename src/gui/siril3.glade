@@ -10351,6 +10351,9 @@ WARNING: ensure you have a good reason to change this value because it may degra
     <property name="type_hint">normal</property>
     <property name="urgency_hint">True</property>
     <property name="transient_for">main_window</property>
+    <accel-groups>
+      <group name="accelgroup1"/>
+    </accel-groups>
     <signal name="delete-event" handler="on_button_cancel_w_clicked" swapped="no"/>
     <signal name="hide" handler="on_wavelets_dialog_hide" swapped="no"/>
     <child>
@@ -11136,21 +11139,21 @@ WARNING: ensure you have a good reason to change this value because it may degra
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="removegreen">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Remove Green Noise...</property>
-                        <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_removegreen_activate" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkMenuItem" id="menuitem_satu">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Color Saturation...</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_menuitem_satu_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="removegreen">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Remove Green Noise...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_removegreen_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
