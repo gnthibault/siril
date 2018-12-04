@@ -102,7 +102,6 @@ static void histo_close(gboolean revert) {
 }
 
 static void histo_recompute() {
-	int i;
 	set_cursor_waiting(TRUE);
 	copyfits(&histo_gfit_backup, &gfit, CP_COPYA, -1);
 
@@ -923,9 +922,6 @@ void on_histoSpinZoom_value_changed(GtkRange *range, gpointer user_data) {
 
 void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) {
 	double m, shadows = 0.0, highlights = 0.0;
-	int i;
-	unsigned int data;
-	double norm = (double)gsl_histogram_bins(com.layers_hist[0]) - 1;
 	static GtkRange *scale_transfert_function[3] = { NULL, NULL, NULL };
 
 	if (scale_transfert_function[1] == NULL) {
