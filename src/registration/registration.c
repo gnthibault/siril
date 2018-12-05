@@ -896,7 +896,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->run_in_thread = TRUE;
 	reg_args->prefix = gtk_entry_get_text(
 			GTK_ENTRY(gtk_builder_get_object(builder, "regseqname_entry")));
-	reg_args->load_new_sequence = TRUE;
+	reg_args->load_new_sequence = FALSE; // only TRUE for global registration. Will be updated in this case
 
 	msg = siril_log_color_message(_("Registration: processing using method: %s\n"),
 			"red", method->name);
@@ -928,6 +928,7 @@ gpointer register_thread_func(gpointer p) {
 static gboolean end_register_idle(gpointer p) {
 	struct registration_args *args = (struct registration_args *) p;
 	stop_processing_thread();
+
 	if (!args->retval) {
 		if (!args->load_new_sequence) {
 			fill_sequence_list(args->seq, com.cvport, FALSE);

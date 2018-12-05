@@ -347,12 +347,11 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 			// explicit sequence creation to copy imgparam and regparam
 			create_output_sequence_for_global_star(regargs);
 			// will be loaded in the idle function if (load_new_sequence)
+			regargs->load_new_sequence = TRUE; // only case where a new sequence must be loaded
 		}
-		else regargs->load_new_sequence = FALSE;
 	}
 	else {
 		siril_log_message(_("Registration aborted.\n"));
-		regargs->load_new_sequence = FALSE;
 	}
 	return regargs->new_total == 0;
 	// TODO: args is never freed because we don't call an end function for
