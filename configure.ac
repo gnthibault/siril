@@ -11,9 +11,9 @@ m4_define([siril_version_full],
 dnl change siril_version_full by siril_version for stable release
 AC_INIT([siril], [siril_version_full],
 dnl AC_INIT([siril], [siril_version],
-        [https://free-astro.org/bugs/view_all_bug_page.php],
+        [https://gitlab.com/free-astro/siril/issues],
         [siril],
-        [https://free-astro.org/index.php/Siril/fr]) 
+        [https://www.siril.org]) 
         
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_HEADERS(config.h)
