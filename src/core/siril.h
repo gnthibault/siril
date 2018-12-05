@@ -463,6 +463,8 @@ struct ffit {
 	WORD *data;		// 16-bit image data (depending on image type)
 	WORD *pdata[3];		// pointers on data, per layer data access (RGB)
 	char *header;		// entire header of the FITS file. NULL for non-FITS file.
+
+	GSList *history;	// Former HISTORY comments of FITS file
 };
 
 /* This structure is used for all the elements in the box libraw_settings.
