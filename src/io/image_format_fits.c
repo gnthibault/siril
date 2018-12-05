@@ -136,11 +136,10 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 
 /* copy the complete header in a heap-allocated string */
 static void fits_read_history(fitsfile *fptr, GSList **history, int *status) {
-	int i, hdupos, nkeys, strsize, strlength;
+	int i, hdupos, nkeys;
 	char card[FLEN_CARD];
 	GSList *list = NULL;
 
-	strlength = 0;
 	fits_get_hdu_num(fptr, &hdupos); /*Get the current HDU position */
 	for (; !*status; hdupos++) {
 		fits_get_hdrspace(fptr, &nkeys, NULL, status);
