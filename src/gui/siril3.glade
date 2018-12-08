@@ -7609,6 +7609,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="urgency_hint">True</property>
     <property name="transient_for">main_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+    <signal name="show" handler="on_savepopup_show" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -7906,6 +7907,7 @@ Uncheck if images come from a monochrome sensor.</property>
                                         <property name="can_focus">True</property>
                                         <property name="wrap_mode">word</property>
                                         <property name="accepts_tab">False</property>
+                                        <property name="monospace">True</property>
                                       </object>
                                     </child>
                                   </object>
@@ -7951,6 +7953,7 @@ Uncheck if images come from a monochrome sensor.</property>
                                         <property name="can_focus">True</property>
                                         <property name="wrap_mode">word</property>
                                         <property name="accepts_tab">False</property>
+                                        <property name="monospace">True</property>
                                       </object>
                                     </child>
                                   </object>
