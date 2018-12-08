@@ -886,15 +886,16 @@ int debayer(fits* fit, interpolation_method interpolation) {
 	fit->pdata[RLAYER] = fit->data;
 	fit->pdata[GLAYER] = fit->data + npixels;
 	fit->pdata[BLAYER] = fit->data + npixels * 2;
+	fit->bitpix = fit->orig_bitpix;
 	for (i = 0, j = 0; j < npixels; i += 3, j++) {
 		fit->pdata[RLAYER][j] =
-				(fit->orig_bitpix == 8) ?
+				(fit->bitpix == 8) ?
 						round_to_BYTE(newbuf[i + RLAYER]) : newbuf[i + RLAYER];
 		fit->pdata[GLAYER][j] =
-				(fit->orig_bitpix == 8) ?
+				(fit->bitpix == 8) ?
 						round_to_BYTE(newbuf[i + GLAYER]) : newbuf[i + GLAYER];
 		fit->pdata[BLAYER][j] =
-				(fit->orig_bitpix == 8) ?
+				(fit->bitpix == 8) ?
 						round_to_BYTE(newbuf[i + BLAYER]) : newbuf[i + BLAYER];
 	}
 	free(newbuf);
