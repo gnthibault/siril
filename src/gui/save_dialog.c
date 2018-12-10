@@ -143,7 +143,7 @@ static void set_programm_name_in_TIFF() {
 static void set_description_in_TIFF() {
 	static GtkTextView *TIFF_txt = NULL;
 	GtkTextBuffer *tbuf;
-	GtkTextIter itDebut, itFin;
+	GtkTextIter itStart, itEnd;
 	int i;
 
 	if (TIFF_txt == NULL)
@@ -151,15 +151,27 @@ static void set_description_in_TIFF() {
 
 	tbuf = gtk_text_view_get_buffer(TIFF_txt);
 
-	gtk_text_buffer_get_bounds(tbuf, &itDebut, &itFin);
-	gtk_text_buffer_delete(tbuf, &itDebut, &itFin);
+	gtk_text_buffer_get_bounds(tbuf, &itStart, &itEnd);
+	gtk_text_buffer_delete(tbuf, &itStart, &itEnd);
+	/* History already written in header */
+	if (gfit.history) {
+		GSList *list = gfit.history;
+		while (list) {
+			gtk_text_buffer_get_end_iter(tbuf, &itEnd);
+			gtk_text_buffer_insert(tbuf, &itEnd, (gchar *)list->data, -1);
+			gtk_text_buffer_get_end_iter(tbuf, &itEnd);
+			gtk_text_buffer_insert(tbuf, &itEnd, "\n", 1);
+			list = list->next;
+		}
+	}
+	/* New history */
 	if (com.history) {
 		for (i = 0; i < com.hist_display; i++) {
 			if (com.history[i].history[0] != '\0') {
-				gtk_text_buffer_get_end_iter(tbuf, &itFin);
-				gtk_text_buffer_insert(tbuf, &itFin, com.history[i].history, strlen(com.history[i].history));
-				gtk_text_buffer_get_end_iter(tbuf, &itFin);
-				gtk_text_buffer_insert(tbuf, &itFin, "\n", 1);
+				gtk_text_buffer_get_end_iter(tbuf, &itEnd);
+				gtk_text_buffer_insert(tbuf, &itEnd, com.history[i].history, strlen(com.history[i].history));
+				gtk_text_buffer_get_end_iter(tbuf, &itEnd);
+				gtk_text_buffer_insert(tbuf, &itEnd, "\n", 1);
 			}
 		}
 	}
