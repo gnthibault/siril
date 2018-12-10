@@ -159,6 +159,16 @@ static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	return retval;
 }
 
+static uint16_t get_compression_mode() {
+	GtkToggleButton *button;
+
+	button = GTK_TOGGLE_BUTTON(lookup_widget("radiobuttonCompDeflate"));
+	if (gtk_toggle_button_get_active(button))
+		return (uint16_t) COMPRESSION_ADOBE_DEFLATE;
+	else
+		return (uint16_t) COMPRESSION_NONE;
+}
+
 static TIFF* Siril_TIFFOpen(const char *name, const char *mode) {
 #ifdef _WIN32
 	wchar_t *wname;
@@ -322,7 +332,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tif, -1));
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, nsamples);
-	TIFFSetField(tif, TIFFTAG_COMPRESSION, COMPRESSION_NONE);
+	TIFFSetField(tif, TIFFTAG_COMPRESSION, get_compression_mode());
 	TIFFSetField(tif, TIFFTAG_IMAGEDESCRIPTION, img_desc);
 	TIFFSetField(tif, TIFFTAG_COPYRIGHT, img_copy);
 	TIFFSetField(tif, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
