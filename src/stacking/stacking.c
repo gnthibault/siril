@@ -1921,7 +1921,7 @@ int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack) {
 void stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
 	int i, j;
 	int ref_image = args->seq->reference_image;
-	for (i=0, j=0; i<args->seq->number; i++) {
+	for (i = 0, j = 0; i < args->seq->number; i++) {
 		if (args->filtering_criterion(
 					args->seq, i,
 					args->filtering_parameter)) {
@@ -2057,6 +2057,13 @@ double compute_lowest_accepted_roundness(double percent) {
 	return lowest_accepted;
 }
 
+void on_stacksel_changed(GtkComboBox *widget, gpointer user_data) {
+	update_stack_interface(TRUE);
+}
+
+void on_spinbut_percent_change(GtkSpinButton *spinbutton, gpointer user_data) {
+	update_stack_interface(TRUE);
+}
 
 /* Activates or not the stack button if there are 2 or more selected images,
  * all data related to stacking is set in stackparam, except the method itself,
@@ -2085,8 +2092,11 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 	if (!sequence_is_loaded()) return;
 	stackparam.seq = &com.seq;
 
-	if (!dont_change_stack_type && stackparam.seq->selnum < stackparam.seq->number)
+	if (!dont_change_stack_type && stackparam.seq->selnum < stackparam.seq->number) {
+		g_signal_handlers_block_by_func(stack_type, on_stacksel_changed, NULL);
 		gtk_combo_box_set_active(stack_type, SELECTED_IMAGES);
+		g_signal_handlers_unblock_by_func(stack_type, on_stacksel_changed, NULL);
+	}
 
 	switch (gtk_combo_box_get_active(method_combo)) {
 	default:
@@ -2223,14 +2233,6 @@ void update_stack_interface(gboolean dont_change_stack_type) {	// was adjuststac
 		}
 		gtk_widget_set_sensitive(go_stack, FALSE);
 	}
-}
-
-void on_stacksel_changed(GtkComboBox *widget, gpointer user_data) {
-	update_stack_interface(TRUE);
-}
-
-void on_spinbut_percent_change(GtkSpinButton *spinbutton, gpointer user_data) {
-	update_stack_interface(TRUE);
 }
 
 /*****************************************************************
