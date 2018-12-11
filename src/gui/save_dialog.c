@@ -122,7 +122,7 @@ static int get_filetype(const gchar *filter) {
 static void set_programm_name_in_TIFF() {
 	static GtkTextView *TIFF_txt = NULL;
 	GtkTextBuffer *tbuf;
-	GtkTextIter itDebut, itFin;
+	GtkTextIter itStart, itEnd;
 	gchar *copyright;
 
 	if (TIFF_txt == NULL)
@@ -133,8 +133,8 @@ static void set_programm_name_in_TIFF() {
 	copyright = g_strdup_printf("%s v%s", PACKAGE, VERSION);
 	copyright[0] = toupper(copyright[0]);			// convert siril to Siril
 
-	gtk_text_buffer_get_bounds(tbuf, &itDebut, &itFin);
-	gtk_text_buffer_delete(tbuf, &itDebut, &itFin);
+	gtk_text_buffer_get_bounds(tbuf, &itStart, &itEnd);
+	gtk_text_buffer_delete(tbuf, &itStart, &itEnd);
 	gtk_text_buffer_set_text(tbuf, copyright, strlen(copyright));
 
 	g_free(copyright);
@@ -290,12 +290,12 @@ static int save_dialog() {
 	return res;
 }
 
-// idle function executed at the end of the Ssave Data processing
+// idle function executed at the end of the Save Data processing
 gboolean end_save(gpointer p) {
 	struct savedial_data *args = (struct savedial_data *) p;
 
-	gtk_widget_hide(lookup_widget("savepopup"));
 	gtk_entry_set_text(args->entry, "");
+	gtk_widget_hide(lookup_widget("savepopup"));
 	stop_processing_thread();
 	set_cursor_waiting(FALSE);
 	close_dialog();
@@ -541,26 +541,6 @@ void on_menu_rgb_savejpg_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	}
 }
 
-gboolean on_savetxt_key_press_event(GtkWidget *widget, GdkEventKey *event,
-		gpointer user_data) {
-	GtkWidget *button = lookup_widget("button_savepopup");
-	gboolean handled = FALSE;
-
-	switch (event->keyval) {
-	case GDK_KEY_Return:
-	case GDK_KEY_KP_Enter:
-		handled = TRUE;
-		gtk_widget_set_can_default(button, TRUE);
-		gtk_widget_grab_focus(widget);
-		struct savedial_data *args = malloc(sizeof(struct savedial_data));
-		set_cursor_waiting(TRUE);
-		initialize_data(args);
-		start_in_new_thread(minisavedial, args);
-		break;
-	}
-	return handled;
-}
-
 void on_savetxt_changed(GtkEditable *editable, gpointer user_data) {
 	GtkEntry *entry = GTK_ENTRY(editable);
 	GtkWidget *button = lookup_widget("button_savepopup");
@@ -570,6 +550,14 @@ void on_savetxt_changed(GtkEditable *editable, gpointer user_data) {
 }
 
 void on_button_savepopup_clicked(GtkButton *button, gpointer user_data) {
+	struct savedial_data *args = malloc(sizeof(struct savedial_data));
+
+	set_cursor_waiting(TRUE);
+	initialize_data(args);
+	start_in_new_thread(minisavedial, args);
+}
+
+void on_savetxt_activate(GtkEntry *entry, gpointer user_data) {
 	struct savedial_data *args = malloc(sizeof(struct savedial_data));
 
 	set_cursor_waiting(TRUE);
@@ -612,7 +600,7 @@ void on_savepopup_show(GtkWidget *widget, gpointer user_data) {
 	gint height, width;
 
 	if (whichminisave == TYPETIFF) {
-		width = 300;
+		width = 400;
 		height = 100;
 	} else {
 		width = -1;
@@ -622,4 +610,3 @@ void on_savepopup_show(GtkWidget *widget, gpointer user_data) {
 	gtk_scrolled_window_set_min_content_height(scrolled_window, height);
 	gtk_scrolled_window_set_min_content_width(scrolled_window, width);
 }
-

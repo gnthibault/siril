@@ -7687,8 +7687,8 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="margin_right">11</property>
                     <property name="invisible_char">•</property>
                     <property name="width_chars">26</property>
+                    <signal name="activate" handler="on_savetxt_activate" swapped="no"/>
                     <signal name="changed" handler="on_savetxt_changed" swapped="no"/>
-                    <signal name="key-press-event" handler="on_savetxt_key_press_event" swapped="no"/>
                   </object>
                 </child>
               </object>
@@ -10388,7 +10388,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
             </child>
             <child>
               <object class="GtkButton" id="button_ok_w">
-                <property name="label">gtk-ok</property>
+                <property name="label">gtk-apply</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="has_focus">True</property>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-04 11:31+0100\n"
+"POT-Creation-Date: 2018-12-11 09:54+0100\n"
 "PO-Revision-Date: 2018-05-15 16:19+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -1445,36 +1445,36 @@ msgid "None"
 msgstr "Κανένα"
 
 #: ../src/gui/siril3.glade.h:320
-msgid "ZIP"
-msgstr "ZIP"
+msgid "Deflate compression"
+msgstr ""
 
 #: ../src/gui/siril3.glade.h:321
-msgid "Not available"
-msgstr "Δεν είναι διαθέσιμο"
-
-#: ../src/gui/siril3.glade.h:322
 msgid "<b>Compression</b>"
 msgstr "<b>Συμπίεση</b>"
 
-#: ../src/gui/siril3.glade.h:323
+#: ../src/gui/siril3.glade.h:322
 msgid "<b>Image Description</b>"
 msgstr "<b>Περιγραφή Εικόνας</b>"
 
-#: ../src/gui/siril3.glade.h:324
+#: ../src/gui/siril3.glade.h:323
 msgid "<b>Image Copyright</b>"
 msgstr "<b>Πνευματικά δικαιώματα εικόνας</b>"
 
-#: ../src/gui/siril3.glade.h:325
+#: ../src/gui/siril3.glade.h:324
 msgid "TIFF"
 msgstr "TIFF"
 
-#: ../src/gui/siril3.glade.h:326
+#: ../src/gui/siril3.glade.h:325
 msgid "Quality: "
 msgstr "Ποιότητα: "
 
-#: ../src/gui/siril3.glade.h:327
+#: ../src/gui/siril3.glade.h:326
 msgid "JPEG"
 msgstr "JPEG"
+
+#: ../src/gui/siril3.glade.h:327
+msgid "Not available"
+msgstr "Δεν είναι διαθέσιμο"
 
 #: ../src/gui/siril3.glade.h:328
 msgid "16-bit signed integer"
@@ -2195,13 +2195,13 @@ msgid "Color Calibration..."
 msgstr "Βαθμονόμηση Χρώματος..."
 
 #: ../src/gui/siril3.glade.h:481
-msgid "Remove Green Noise..."
-msgstr "Αφαίρεση Πράσινου Θορύβου..."
-
-#: ../src/gui/siril3.glade.h:482
 #, fuzzy
 msgid "Color Saturation..."
 msgstr "Κορεσμός χρώματος..."
+
+#: ../src/gui/siril3.glade.h:482
+msgid "Remove Green Noise..."
+msgstr "Αφαίρεση Πράσινου Θορύβου..."
 
 #: ../src/gui/siril3.glade.h:483
 #, fuzzy
@@ -3099,8 +3099,8 @@ msgstr ""
 "επεξεργασία των εικόνων drizzle πολλαπλασιάζεται με το τετράγωνο του "
 "παράγοντα drizzle."
 
-#: ../src/gui/siril3.glade.h:666 ../src/registration/registration.c:704
-#: ../src/registration/registration.c:717
+#: ../src/gui/siril3.glade.h:666 ../src/registration/registration.c:707
+#: ../src/registration/registration.c:720
 msgid "Load a sequence first."
 msgstr "Φορτώστε πρώτα μια αληλλουχία."
 
@@ -3433,7 +3433,7 @@ msgid ""
 msgstr ""
 "καλύτερες εικόνες, επιλέχθηκαν αυτόματα από τα δεδομένα εγγραφής (Πλανητική)"
 
-#: ../src/gui/siril3.glade.h:743 ../src/stacking/stacking.c:2153
+#: ../src/gui/siril3.glade.h:743 ../src/stacking/stacking.c:2163
 #, c-format
 msgid "Based on FWHM"
 msgstr "Βασισμένο στο FWHM"
@@ -3949,7 +3949,7 @@ msgstr "Ενίσχυση κορεσμού: γίνεται επεξεργασία
 #: ../src/algos/cosmetic_correction.c:398 ../src/algos/star_finder.c:50
 #: ../src/core/command.c:1714 ../src/core/siril.c:669 ../src/core/siril.c:835
 #: ../src/core/siril.c:1026 ../src/core/siril.c:1316 ../src/core/siril.c:1406
-#: ../src/core/siril.c:1498 ../src/gui/histogram.c:628
+#: ../src/core/siril.c:1498 ../src/gui/histogram.c:637
 #: ../src/gui/statistics_list.c:308
 #, fuzzy
 msgid "Error: statistics computation failed.\n"
@@ -4045,12 +4045,12 @@ msgstr ""
 "Πρέπει να κάνετε μια μεγαλύτερη επιλογή.\n"
 
 #. Matching information
-#: ../src/algos/plateSolver.c:683 ../src/registration/global.c:443
+#: ../src/algos/plateSolver.c:683 ../src/registration/global.c:442
 #, c-format
 msgid "%d pair matches.\n"
 msgstr "%d ζεύγη ταιριάζουν.\n"
 
-#: ../src/algos/plateSolver.c:685 ../src/registration/global.c:445
+#: ../src/algos/plateSolver.c:685 ../src/registration/global.c:444
 #, c-format
 msgid "Inliers:%*.3f\n"
 msgstr "Inliers:%*.3f\n"
@@ -4173,30 +4173,12 @@ msgstr "Peaker"
 msgid "wavelet_transform_data: bad plane number\n"
 msgstr "wavelet_transform_data: κακός αριθμός επιπέδου\n"
 
-#: ../src/algos/wavelets.c:151 ../src/core/command.c:588
-#: ../src/core/command.c:2397 ../src/gui/callbacks.c:4893
-#, c-format
-msgid "Wavelet: maximum number of plans for this image size is %d\n"
-msgstr ""
-"Κυματίδιο: ο μέγιστος αριθμός σχεδίων για αυτό το μέγεθος εικόνας είναι %d\n"
-
-#: ../src/algos/wavelets.c:153 ../src/algos/wavelets.c:162
-#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4895
-#: ../src/io/conversion.c:576 ../src/registration/registration.c:848
-msgid "Warning"
-msgstr "Προειδοποίηση"
-
-#: ../src/algos/wavelets.c:160 ../src/core/command.c:594
-#, c-format
-msgid "Wavelet: type must be %d or %d\n"
-msgstr "Κυματίδιο: ο τύπος πρέπει να είναι %d ή %d\n"
-
 #: ../src/compositing/align_rgb.c:131 ../src/compositing/compositing.c:601
 msgid "Error in layers alignment."
 msgstr "Σφάλμα στην ευθυγράμμιση επιπέδων."
 
 #: ../src/compositing/align_rgb.c:133 ../src/compositing/compositing.c:602
-#: ../src/registration/registration.c:938
+#: ../src/registration/registration.c:942
 msgid "Registration complete."
 msgstr "Η εγγραφή ολοκληρώθηκε."
 
@@ -4243,6 +4225,12 @@ msgstr "Αποτέλεσμα σύνθεσης το οποίο δεν αποθη�
 msgid "You must at least load two layers before!\n"
 msgstr "Πρέπει να φορτώσετε τουλάχιστον δυο επίπεδα!\n"
 
+#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4895
+#: ../src/gui/wavelets.c:153 ../src/gui/wavelets.c:162
+#: ../src/io/conversion.c:576 ../src/registration/registration.c:851
+msgid "Warning"
+msgstr "Προειδοποίηση"
+
 #. fix for the cancelling check in processing
 #: ../src/compositing/compositing.c:596
 #, c-format
@@ -4283,7 +4271,7 @@ msgstr "Γίνεται αναπροσαρμογή του επιπέδου %d μ�
 #: ../src/gui/callbacks.c:4769 ../src/gui/callbacks.c:4929
 #: ../src/gui/callbacks.c:5108 ../src/gui/saturation.c:49
 #: ../src/gui/script_menu.c:154 ../src/io/conversion.c:518
-#: ../src/registration/registration.c:830 ../src/stacking/stacking.c:1486
+#: ../src/registration/registration.c:833 ../src/stacking/stacking.c:1486
 #: ../src/stacking/stacking.c:1610
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Μια άλλη λειτουργία είναι σε εξέλιξη, το νέο αίτημα αγνοείται.\n"
@@ -4324,6 +4312,18 @@ msgstr ""
 #: ../src/core/command.c:505 ../src/core/command.c:980
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Περικοπή: επιλέξτε μια περιοχή ή δώστε τα x,y, πλάτος, ύψος\n"
+
+#: ../src/core/command.c:588 ../src/core/command.c:2397
+#: ../src/gui/callbacks.c:4893 ../src/gui/wavelets.c:151
+#, c-format
+msgid "Wavelet: maximum number of plans for this image size is %d\n"
+msgstr ""
+"Κυματίδιο: ο μέγιστος αριθμός σχεδίων για αυτό το μέγεθος εικόνας είναι %d\n"
+
+#: ../src/core/command.c:594 ../src/gui/wavelets.c:160
+#, c-format
+msgid "Wavelet: type must be %d or %d\n"
+msgstr "Κυματίδιο: ο τύπος πρέπει να είναι %d ή %d\n"
 
 #: ../src/core/command.c:663
 msgid "Cannot list files, set working directory first.\n"
@@ -4562,17 +4562,18 @@ msgstr "Μετατροπή: γίνεται επεξεργασία...\n"
 msgid "Conversion: no working directory set.\n"
 msgstr "Μετατροπή: δεν έχει οριστεί κατάλογος εργασίας.\n"
 
-#: ../src/core/command.c:1848 ../src/registration/registration.c:99
+#: ../src/core/command.c:1848 ../src/registration/registration.c:100
 msgid "Global Star Alignment (deep-sky)"
 msgstr "Ευθυγράμμιση Καθολικών Αστεριών (βαθύ ουρανού)"
 
-#: ../src/core/command.c:1885 ../src/registration/registration.c:881
+#: ../src/core/command.c:1885 ../src/registration/registration.c:884
 msgid "Not enough disk space to perform Drizzle operation!\n"
 msgstr ""
 "Δεν υπάρχει αρκετός διαθέσιμος χώρος στον δίσκο για την εκτέλεση της "
 "λειτουργίας Drizzle!! \n"
 
-#: ../src/core/command.c:1902 ../src/registration/registration.c:898
+#. only TRUE for global registration. Will be updated in this case
+#: ../src/core/command.c:1902 ../src/registration/registration.c:901
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "Εγγραφή: γίνεται επεξεργασία με την μέθοδο: %s\n"
@@ -4683,7 +4684,7 @@ msgstr "Χρόνος εκτέλεσης"
 msgid "Script execution failed.\n"
 msgstr "Η εκτέλεση της δέσμης ενεργειών απέτυχε.\n"
 
-#: ../src/core/command.c:2558 ../src/gui/script_menu.c:169 ../src/main.c:474
+#: ../src/core/command.c:2558 ../src/gui/script_menu.c:169 ../src/main.c:479
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Το αρχείο [%s] δεν υπάρχει\n"
@@ -5840,7 +5841,7 @@ msgstr "_Άνοιγμα"
 #: ../src/gui/callbacks.c:893 ../src/gui/callbacks.c:896
 #: ../src/gui/callbacks.c:907 ../src/gui/callbacks.c:910
 #: ../src/gui/callbacks.c:922 ../src/gui/callbacks.c:925
-#: ../src/gui/save_dialog.c:177 ../src/gui/save_dialog.c:180
+#: ../src/gui/save_dialog.c:237 ../src/gui/save_dialog.c:240
 msgid "_Cancel"
 msgstr "_Άκυρο"
 
@@ -6338,40 +6339,39 @@ msgstr "Αρχεία PNG (*.png)"
 msgid "TIFF Files (*.tif, *.tiff)"
 msgstr "Αρχεία TIFF (*.tif, *.tiff)"
 
-#: ../src/gui/save_dialog.c:139 ../src/gui/save_dialog.c:465
+#: ../src/gui/save_dialog.c:197 ../src/gui/save_dialog.c:508
 msgid "Saving BMP"
 msgstr "Γίνεται αποθήκευση του ΒΜΡ"
 
-#: ../src/gui/save_dialog.c:143 ../src/gui/save_dialog.c:423
+#: ../src/gui/save_dialog.c:201 ../src/gui/save_dialog.c:466
 msgid "Saving PNG"
 msgstr "Γίνεται αποθήκευση του PNG"
 
-#: ../src/gui/save_dialog.c:147 ../src/gui/save_dialog.c:444
+#: ../src/gui/save_dialog.c:205 ../src/gui/save_dialog.c:487
 msgid "Saving Netpbm"
 msgstr "Γίνεται αποθήκευση του Netpbm"
 
-#: ../src/gui/save_dialog.c:151 ../src/gui/save_dialog.c:486
+#: ../src/gui/save_dialog.c:209 ../src/gui/save_dialog.c:528
 msgid "Saving JPG"
 msgstr "Γίνεται αποθήκευση του JPG"
 
-#. Write "Siril Version X.Y in Copyright_Txt
-#: ../src/gui/save_dialog.c:155 ../src/gui/save_dialog.c:401
+#: ../src/gui/save_dialog.c:213 ../src/gui/save_dialog.c:444
 msgid "Saving TIFF"
 msgstr "Γίνεται αποθήκευση του TIFF"
 
-#: ../src/gui/save_dialog.c:160 ../src/gui/save_dialog.c:359
+#: ../src/gui/save_dialog.c:220 ../src/gui/save_dialog.c:420
 msgid "Saving FITS"
 msgstr "Γίνεται αποθήκευση του FITS"
 
-#: ../src/gui/save_dialog.c:177 ../src/gui/save_dialog.c:180
+#: ../src/gui/save_dialog.c:237 ../src/gui/save_dialog.c:240
 msgid "_Save"
 msgstr "_Αποθήκευση"
 
-#: ../src/gui/save_dialog.c:179
+#: ../src/gui/save_dialog.c:239
 msgid "Save File"
 msgstr "Αποθήκευση Αρχείου"
 
-#: ../src/gui/save_dialog.c:326
+#: ../src/gui/save_dialog.c:386
 msgid "This type of file is not handled. Should not happen"
 msgstr "Αυτός ο τύπος αρχείου δεν μπορεί να χειριστεί. Δεν θα έπρεπε να συμβεί"
 
@@ -6676,54 +6676,54 @@ msgstr "Σφάλμα στο άνοιγμα του %s: ο τύπος του αρ�
 msgid "FILM ERROR: incompatible format\n"
 msgstr "ΣΦΑΛΜΑ ΤΑΙΝΙΑΣ: ασύμβατος τύπος\n"
 
-#: ../src/io/image_format_fits.c:159
+#: ../src/io/image_format_fits.c:184
 #, fuzzy, c-format
 msgid "Loaded FITS file has a BSCALE different than 1 (%lf)\n"
 msgstr "Το αρχείο FITS που φορτώθηκε έχει διαφορετικό BSCALE από 1 (%d)\n"
 
-#: ../src/io/image_format_fits.c:343
+#: ../src/io/image_format_fits.c:370
 #, c-format
 msgid "FITS error: %s\n"
 msgstr "Σφάλμα FITS: %s\n"
 
-#: ../src/io/image_format_fits.c:410
+#: ../src/io/image_format_fits.c:437
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "Άγνωστα δεδομένα FITS κατά την εσωτερική μετατροπή\n"
 
-#: ../src/io/image_format_fits.c:490 ../src/io/image_format_fits.c:567
+#: ../src/io/image_format_fits.c:517 ../src/io/image_format_fits.c:594
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr "Ο τύπος εικόνας FITS %d δεν υποστηρίζεται από το Siril.\n"
 
-#: ../src/io/image_format_fits.c:495
+#: ../src/io/image_format_fits.c:522
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Σφάλμα ανάγνωσης δεδομένω fitsio, αρχείο: %s.\n"
 
-#: ../src/io/image_format_fits.c:844
+#: ../src/io/image_format_fits.c:880
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr ""
 "%s.[any_allowed_extension] δεν βρέθηκε.\n"
 "\n"
 
-#: ../src/io/image_format_fits.c:851
+#: ../src/io/image_format_fits.c:887
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr "Το αρχείο %s δεν είναι αρχείο FITS ή δεν υπάρχει με προεκτάσεις FITS\n"
 
-#: ../src/io/image_format_fits.c:873
+#: ../src/io/image_format_fits.c:909
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "Σφάλμα FITSIO στην λήψη των παραμέτρων εικόνας, αρχείο %s.\n"
 
-#: ../src/io/image_format_fits.c:909
+#: ../src/io/image_format_fits.c:945
 #, c-format
 msgid "Unsupported FITS image with %ld channels.\n"
 msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
 
-#: ../src/io/image_format_fits.c:927
+#: ../src/io/image_format_fits.c:963
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -6731,35 +6731,35 @@ msgstr ""
 "Οι εικόνες FITS με 64 bit ακέραιο με πρόσημο ανά εικονοστοιχεία.κανάλι δεν "
 "υποστηρίζονται.\n"
 
-#: ../src/io/image_format_fits.c:967
+#: ../src/io/image_format_fits.c:1003
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται ανάγνωση του FITS: αρχείο %s, %ld επίπεδο(α), %ux%u εικονοστοιχεία\n"
 
-#: ../src/io/image_format_fits.c:1054
+#: ../src/io/image_format_fits.c:1092
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "Μερική ανάγνωση FITS: δεν υπάρχει επίπεδο %d στην εικόνα %s\n"
 
-#: ../src/io/image_format_fits.c:1062
+#: ../src/io/image_format_fits.c:1100
 #, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Άγνωστος τύπος εικόνας FITS (%ld άξονες).\n"
 
-#: ../src/io/image_format_fits.c:1111
+#: ../src/io/image_format_fits.c:1149
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Έγινε μερική φόρτωση του αρχείου FITS %s\n"
 
-#: ../src/io/image_format_fits.c:1237
+#: ../src/io/image_format_fits.c:1275
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 "ΣΦΑΛΜΑ: γίνεται προσπάθεια αποθήκευσης εικόνας FITS σε μη υποστηριζόμενο "
 "τύπο (%d).\n"
 
-#: ../src/io/image_format_fits.c:1248
+#: ../src/io/image_format_fits.c:1286
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
@@ -6891,73 +6891,73 @@ msgstr "Άγνωστο αρχείο TIFF.\n"
 # is the %s value ok where it is? this way it will make more sense in greek
 # Sure, the most important is to keep order if you have
 # %d %s %d in this order then you must keep it.
-#: ../src/io/image_formats_libraries.c:191
+#: ../src/io/image_formats_libraries.c:201
 #, c-format
 msgid "Could not open the TIFF file %s\n"
 msgstr "Το αρχείο TIFF %s δεν μπορούσε να ανοιχτεί\n"
 
-#: ../src/io/image_formats_libraries.c:221
+#: ../src/io/image_formats_libraries.c:231
 msgid "Siril only works with 8/16-bit TIFF format.\n"
 msgstr "To Siril δουλεύει μόνο με τύπους TIFF 8/16-bit.\n"
 
-#: ../src/io/image_formats_libraries.c:255
+#: ../src/io/image_formats_libraries.c:265
 #, c-format
 msgid "Reading TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνευαι ανάγνωση του TIFF: %d-bit αρχείο %s, %ld επίπεδο(α), %ux%u "
 "εικονοστοιχεία\n"
 
-#: ../src/io/image_formats_libraries.c:283
+#: ../src/io/image_formats_libraries.c:293
 msgid "Siril cannot create TIFF file.\n"
 msgstr "Το Siril δεν μπορεί να δημιουργήσει αρχείο TIFF.\n"
 
-#: ../src/io/image_formats_libraries.c:339
+#: ../src/io/image_formats_libraries.c:349
 msgid "TIFF file has unexpected number of channels (not 1 or 3).\n"
 msgstr "Το αρχείο TIFF έχει ένα απροσδόκητο αριθμό καναλιών (όχι 1 ή 3).\n"
 
-#: ../src/io/image_formats_libraries.c:382
+#: ../src/io/image_formats_libraries.c:392
 #, c-format
 msgid "Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται αποθήκευση του TIFF: %d-bit αρχείο %s, %ld επίπεδο(α), %ux%u "
 "εικονοστοιχεία\n"
 
-#: ../src/io/image_formats_libraries.c:404
-#: ../src/io/image_formats_libraries.c:555
+#: ../src/io/image_formats_libraries.c:414
+#: ../src/io/image_formats_libraries.c:565
 #, c-format
 msgid "Sorry but Siril cannot open the file: %s.\n"
 msgstr "Συγγνώμη αλλά το Siril δεν μπορεί να ανοίξει το αρχείο: %s.\n"
 
-#: ../src/io/image_formats_libraries.c:449
+#: ../src/io/image_formats_libraries.c:459
 #, c-format
 msgid "Reading JPG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται ανάγνωση του JPG: αρχείο %s, %ld επίπεδο(α), %ux%u εικονοστοιχεία\n"
 
-#: ../src/io/image_formats_libraries.c:477
+#: ../src/io/image_formats_libraries.c:487
 msgid "Siril cannot create JPG file.\n"
 msgstr "Το Siril δεν μπορεί να δημιουργήσει το αρχείο JPG.\n"
 
-#: ../src/io/image_formats_libraries.c:531
+#: ../src/io/image_formats_libraries.c:541
 #, c-format
 msgid "Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται αποθήκευση του JPG: αρχείο %s, ποιότητα=%d%%, %ld επίπεδο(α), %ux%u "
 "εικονοστοιχεία\n"
 
-#: ../src/io/image_formats_libraries.c:670
+#: ../src/io/image_formats_libraries.c:680
 #, c-format
 msgid "Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται ανάγνωση του PNG: %d-bit αρχείο %s, %ld επίπεδο(α), %ux%u "
 "εικονοστοιχεία\n"
 
-#: ../src/io/image_formats_libraries.c:817
+#: ../src/io/image_formats_libraries.c:827
 #, c-format
 msgid "Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Αποθήκευση του PNG: αρχείο %s, %ld επίπεδο(α), %ux%u εικονοστοιχεία\n"
 
-#: ../src/io/image_formats_libraries.c:886
+#: ../src/io/image_formats_libraries.c:896
 #, c-format
 msgid "Error in libraw %s\n"
 msgstr "Σφάλμα στο libraw %s\n"
@@ -6965,40 +6965,40 @@ msgstr "Σφάλμα στο libraw %s\n"
 # eg. Decoding 30% DSC001 file (ISO=800, Exposure=30) correct example?
 # No.
 # Decoding Canon EOS 500D file (ISO=800, Exposure=10s)
-#: ../src/io/image_formats_libraries.c:893
+#: ../src/io/image_formats_libraries.c:903
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%gs)\n"
 msgstr "Αποκωδικοποίηση του αρχείου από %s %s (ISO=%g, Έκθεση=%gs)\n"
 
 # Decoding Canon EOS 500D file (ISO=800, Exposure=10s)
-#: ../src/io/image_formats_libraries.c:896
+#: ../src/io/image_formats_libraries.c:906
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
 msgstr "Αποκωδικοποίηση του αρχείου %s %s (ISO=%g, Έκθεση=1/%gs)\n"
 
-#: ../src/io/image_formats_libraries.c:916
-#: ../src/io/image_formats_libraries.c:925
+#: ../src/io/image_formats_libraries.c:926
+#: ../src/io/image_formats_libraries.c:935
 #, c-format
 msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Πολλαπλασιαστές φωτός ημέρας: %f, %f, %f\n"
 
-#: ../src/io/image_formats_libraries.c:932
+#: ../src/io/image_formats_libraries.c:942
 msgid "Bilinear interpolation...\n"
 msgstr "Διγραμμική παρεμβολή...\n"
 
-#: ../src/io/image_formats_libraries.c:936
+#: ../src/io/image_formats_libraries.c:946
 msgid "VNG interpolation...\n"
 msgstr "Παρεμβολή VNG...\n"
 
-#: ../src/io/image_formats_libraries.c:940
+#: ../src/io/image_formats_libraries.c:950
 msgid "PPG interpolation...\n"
 msgstr "Παρεμβολή PPG...\n"
 
-#: ../src/io/image_formats_libraries.c:945
+#: ../src/io/image_formats_libraries.c:955
 msgid "AHD interpolation...\n"
 msgstr "Παρεμβολή AHD...\n"
 
-#: ../src/io/image_formats_libraries.c:1105
+#: ../src/io/image_formats_libraries.c:1115
 msgid ""
 "Siril cannot open this file in CFA mode (no data available). Try to switch "
 "into RGB.\n"
@@ -7006,24 +7006,24 @@ msgstr ""
 "Το Siril δεν μπορεί να ανοίξει αυτό το αρχείο σε λειτουργία CFA (δεν "
 "υπάρχουν διαθέσιμα δεδομένα). Δοκιμάστε να γυρίσετε σε RGB.\n"
 
-#: ../src/io/image_formats_libraries.c:1132
+#: ../src/io/image_formats_libraries.c:1142
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 msgstr "Γίνεται αποκωδικοποίηση %s %s αρχείο (ISO=%g, Έκθεση=1/%0.1f sec)\n"
 
-#: ../src/io/image_formats_libraries.c:1135
+#: ../src/io/image_formats_libraries.c:1145
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 msgstr ""
 "Γίνεται αποκωδικοποίηση %s %s αρχείο (ISO=%g, Έκθεση=%0.1f sec)\n"
 "\n"
 
-#: ../src/io/image_formats_libraries.c:1158
+#: ../src/io/image_formats_libraries.c:1168
 #, fuzzy, c-format
 msgid "CFA pattern: %s\n"
 msgstr "Διάταξη Bayer: %s\n"
 
-#: ../src/io/image_formats_libraries.c:1228
+#: ../src/io/image_formats_libraries.c:1238
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
@@ -7404,12 +7404,12 @@ msgstr "απενεργοποιημένο"
 msgid "Deconvoltuion applied"
 msgstr "Deconvolution"
 
-#: ../src/registration/global.c:70 ../src/registration/registration.c:201
+#: ../src/registration/global.c:70 ../src/registration/registration.c:202
 msgid "Recomputing already existing registration for this layer\n"
 msgstr ""
 "Γίνεται επαναϋπολογισμός της ήδη υπάρχουσας εγγραφής για αυτό το επίπεδο\n"
 
-#: ../src/registration/global.c:84 ../src/registration/registration.c:516
+#: ../src/registration/global.c:84 ../src/registration/registration.c:517
 msgid "Could not load reference image\n"
 msgstr "Η εικόνα αναφοράς δεν μπορούσε να φορτωθεί\n"
 
@@ -7433,12 +7433,12 @@ msgstr ""
 msgid "Reference Image: Limiting to %d brightest stars\n"
 msgstr "Εικόνα Αναφοράς: Περιορισμός στα %d πιο φωτεινά αστέρια\n"
 
-#: ../src/registration/global.c:149 ../src/registration/global.c:464
+#: ../src/registration/global.c:149 ../src/registration/global.c:463
 #, c-format
 msgid "FWHMx:%*.2f px\n"
 msgstr "FWHMx:%*.2f px\n"
 
-#: ../src/registration/global.c:150 ../src/registration/global.c:465
+#: ../src/registration/global.c:150 ../src/registration/global.c:464
 #, c-format
 msgid "FWHMy:%*.2f px\n"
 msgstr "FWHMy:%*.2f px\n"
@@ -7470,9 +7470,9 @@ msgstr ""
 "Δεν μπορεί να πραγματοποιηθεί αντιστοίχηση αστεριών. Η εικόνα %d "
 "παραλήφθηκε\n"
 
-#: ../src/registration/global.c:341 ../src/registration/registration.c:386
-#: ../src/registration/registration.c:476
-#: ../src/registration/registration.c:619
+#: ../src/registration/global.c:341 ../src/registration/registration.c:387
+#: ../src/registration/registration.c:477
+#: ../src/registration/registration.c:622
 msgid "Registration finished.\n"
 msgstr "Η εγγραφή ολοκληρώθηκε.\n"
 
@@ -7490,48 +7490,48 @@ msgstr "Σύνολο: %d απέτυχαν, %d εγγράφηκαν.\n"
 msgid "Registration aborted.\n"
 msgstr "Η εγγραφή ακυρώθηκε.\n"
 
-#: ../src/registration/global.c:381
+#: ../src/registration/global.c:380
 #, fuzzy
 msgid "Global star registration"
 msgstr "Χειροκίνητη εγγραφή"
 
 #. Matching information
-#: ../src/registration/global.c:442
+#: ../src/registration/global.c:441
 #, fuzzy, c-format
 msgid "Matching stars in image %d: done\n"
 msgstr "Ταίριασμα αστεριών: έγινε\n"
 
-#: ../src/registration/global.c:451
+#: ../src/registration/global.c:450
 #, c-format
 msgid "scaleX:%*.3f\n"
 msgstr "κλίμακαX:%*.3f\n"
 
-#: ../src/registration/global.c:452
+#: ../src/registration/global.c:451
 #, c-format
 msgid "scaleY:%*.3f\n"
 msgstr "κλίμακαY:%*.3f\n"
 
-#: ../src/registration/global.c:453
+#: ../src/registration/global.c:452
 #, c-format
 msgid "scale:%*.3f\n"
 msgstr "κλίμακα:%*.3f\n"
 
-#: ../src/registration/global.c:457
+#: ../src/registration/global.c:456
 #, c-format
 msgid "rotation:%+*.2f deg\n"
 msgstr "περιστροφή:%+*.2f μοίρες\n"
 
-#: ../src/registration/global.c:462
+#: ../src/registration/global.c:461
 #, c-format
 msgid "dx:%+*.2f px\n"
 msgstr "dx:%+*.2f px\n"
 
-#: ../src/registration/global.c:463
+#: ../src/registration/global.c:462
 #, c-format
 msgid "dy:%+*.2f px\n"
 msgstr "dy:%+*.2f px\n"
 
-#: ../src/registration/registration.c:56
+#: ../src/registration/registration.c:57
 msgid ""
 "One Star Registration: This is the simplest method to register deep-sky "
 "images. Because only one star is concerned for register, images are aligned "
@@ -7544,7 +7544,7 @@ msgstr ""
 "εικονοστοιχείου). Δεν γίνεται περιστροφή η αλλαγή κλίμακας. Οι μετατοπίσεις "
 "σε ακρίβεια εικονοστοιχείου αποθηκεύονται σε ένα αρχείο seq."
 
-#: ../src/registration/registration.c:60
+#: ../src/registration/registration.c:61
 msgid ""
 "Global Star Alignment: This is a more powerful and accurate algorithm (but "
 "also slower) to perform deep-sky images. The global matching is based on "
@@ -7558,7 +7558,7 @@ msgstr ""
 "αυτόματη ταυτοποίηση κοινών αστέρων σε κάθε εικόνα. Δημιουργείται μια νέα "
 "αλληλουχία με πρόθεμα της επιλογής σας (r_ είναι προεπιλεγμένο)."
 
-#: ../src/registration/registration.c:64
+#: ../src/registration/registration.c:65
 msgid ""
 "Image Pattern Alignment: This is a simple registration by translation method "
 "using cross correlation in the spatial domain. This method is fast and is "
@@ -7572,7 +7572,7 @@ msgstr ""
 "βαθύ ουρανού. Οι μετατοπίσεις ακρίβειας εικονοστοιχείου αποθηκεύονται σε ένα "
 "αρχείο seq."
 
-#: ../src/registration/registration.c:68
+#: ../src/registration/registration.c:69
 msgid ""
 "Enhanced Correlation Coefficient Maximization: It is based on the enhanced "
 "correlation coefficient maximization algorithm. This method is more complex "
@@ -7586,86 +7586,86 @@ msgstr ""
 "επιλογή. Είναι καλή για την εγγραφή εικόνων της επιφάνειας του φεγγαριού. "
 "Μόνο η μετατόπιση λαμβάνεται υπόψη προς το παρόν."
 
-#: ../src/registration/registration.c:97
+#: ../src/registration/registration.c:98
 msgid "One Star Registration (deep-sky)"
 msgstr "Εγγραφή ενός αστέρα (βαθύ ουρανού)"
 
-#: ../src/registration/registration.c:101
+#: ../src/registration/registration.c:102
 msgid "Image Pattern Alignment (planetary - full disk)"
 msgstr "Ευθυγράμμιση Διάταξης Εικόνας (πλανητική - πλήρης δίσκος)"
 
-#: ../src/registration/registration.c:103
+#: ../src/registration/registration.c:104
 msgid "Enhanced Correlation Coefficient (planetary - surfaces)"
 msgstr "Συντελεστής Ενισχυμένης Συσχέτισης (πλανητική - επιφάνειες)"
 
-#: ../src/registration/registration.c:124
+#: ../src/registration/registration.c:125
 #, c-format
 msgid "Added a registration method: %s\n"
 msgstr "Έγινε προσθήκη μέθοδος εγγραφής: %s\n"
 
-#: ../src/registration/registration.c:217
+#: ../src/registration/registration.c:218
 msgid "Register DFT: loading and processing reference frame"
 msgstr "Εγγραφή DFT: γίνεται φόρτωση και επεξεργασία καρέ αναφοράς"
 
-#: ../src/registration/registration.c:224
+#: ../src/registration/registration.c:225
 msgid "Register: could not load first image to register, aborting.\n"
 msgstr ""
 "Εγγραφή:δεν ήταν δυνατό να φορτωθεί η πρώτη εικόνα για εγγραφή, γίνεται "
 "ακύρωση.\n"
 
-#: ../src/registration/registration.c:278
-#: ../src/registration/registration.c:555
+#: ../src/registration/registration.c:279
+#: ../src/registration/registration.c:557
 #, fuzzy, c-format
 msgid "Register: processing image %s"
 msgstr "Εγγραφή: γίνεται επεξεργασία της εικόνας %s\n"
 
-#: ../src/registration/registration.c:387
-#: ../src/registration/registration.c:622
+#: ../src/registration/registration.c:388
+#: ../src/registration/registration.c:625
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "Καλύτερο καρέ: #%d.\n"
 
-#: ../src/registration/registration.c:427
+#: ../src/registration/registration.c:428
 msgid "Registration PSF: failed to compute PSF for reference frame at least\n"
 msgstr ""
 "Εγγραφή PSF: αποτυχία υπολογισμού του PSF τουλάχιστον για το καρέ αναφοράς\n"
 
-#: ../src/registration/registration.c:477
+#: ../src/registration/registration.c:478
 #, c-format
 msgid "Best frame: #%d with fwhm=%.3g.\n"
 msgstr "Καλύτερο καρέ: #%d με fwhm=%.3g.\n"
 
-#: ../src/registration/registration.c:568
+#: ../src/registration/registration.c:571
 #, c-format
 msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "Δεν μπορεί να πραγματοποιηθεί ευθυγράμμιση ECC για το καρέ %d\n"
 
-#: ../src/registration/registration.c:621
+#: ../src/registration/registration.c:624
 #, c-format
 msgid "%d frames were excluded.\n"
 msgstr "%d καρέ εξαιρέθηκαν.\n"
 
-#: ../src/registration/registration.c:720
+#: ../src/registration/registration.c:723
 msgid "Select an area in image first, and select images in the sequence."
 msgstr ""
 "Επιλέξτε πρώτα μια περιοχή στην εικόνα, και επιλέξτε εικόνες στην αλληλουχία."
 
-#: ../src/registration/registration.c:722
+#: ../src/registration/registration.c:725
 msgid "Select images in the sequence."
 msgstr "Επιλέξτε εικόνες στην αλληλουχία."
 
-#: ../src/registration/registration.c:724
+#: ../src/registration/registration.c:727
 msgid "Select an area in image first."
 msgstr "Επιλέξτε πρώτα μια περιοχή στην εικόνα."
 
-#: ../src/registration/registration.c:847
+#: ../src/registration/registration.c:850
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
 msgstr ""
 "Δεν υπάρχουν οι προϋποθέσεις για την εγγραφή. Επιλέξτε πρώτα ένα ορθογώνιο.\n"
 
-#: ../src/registration/registration.c:882
+#: ../src/registration/registration.c:885
 #, fuzzy
 msgid "Not enough disk space"
 msgstr "Δεν υπάρχουν αρκετά αστέρια. Η εικόνα %d παραλείφθηκε\n"
@@ -7683,7 +7683,8 @@ msgstr ""
 "μια άλλη εικόνα αναφοράς.\n"
 
 #: ../src/stacking/normalization.c:120
-msgid "Normalisation skipped.\n"
+#, fuzzy
+msgid "Normalization skipped.\n"
 msgstr "Η ομαλοποίηση παραλείφθηκε.\n"
 
 #: ../src/stacking/normalization.c:133
@@ -8005,17 +8006,17 @@ msgstr ""
 "εικόνες δεν έχουν διαθέσιμη αυτού του είδους την πληροφορία για το κανάλι #"
 "%d.\n"
 
-#: ../src/stacking/stacking.c:2112
+#: ../src/stacking/stacking.c:2122
 #, c-format
 msgid "Stacking all images in the sequence (%d)\n"
 msgstr "Γίνεται σώρευση όλων των εικόνων της αλληλουχίας (%d)\n"
 
-#: ../src/stacking/stacking.c:2121
+#: ../src/stacking/stacking.c:2131
 #, c-format
 msgid "Stacking only selected images in the sequence (%d)\n"
 msgstr "Γίνεται σώρευση μόνο των επιλεγμένων εικόνων της αλληλουχίας (%d)\n"
 
-#: ../src/stacking/stacking.c:2144
+#: ../src/stacking/stacking.c:2154
 #, c-format
 msgid ""
 "Stacking images of the sequence with a FWHM lower or equal than %g (%d)\n"
@@ -8023,12 +8024,12 @@ msgstr ""
 "Γίνεται σώρευση των εικόνων της αλληλουχίας με FWHM μικρότερο ή ίσο του %g "
 "(%d)\n"
 
-#: ../src/stacking/stacking.c:2149
+#: ../src/stacking/stacking.c:2159
 #, c-format
 msgid "Based on FWHM < %.2f (%d images)"
 msgstr "Βασισμένο σε FWHM < %.2f (%d εικόνες)"
 
-#: ../src/stacking/stacking.c:2176
+#: ../src/stacking/stacking.c:2186
 #, c-format
 msgid ""
 "Stacking images of the sequence with a roundness higher or equal than %g "
@@ -8037,17 +8038,17 @@ msgstr ""
 "Γίνεται σώρευση των εικόνων της αλληλουχίας με στρογγυλότητα μεγαλύτερη ή "
 "ίση του %g (%d)\n"
 
-#: ../src/stacking/stacking.c:2182
+#: ../src/stacking/stacking.c:2192
 #, c-format
 msgid "Based on roundness > %.2f (%d images)"
 msgstr "Βασισμένο στη στρογγυλότητα > %.2f (%d εικόνες)"
 
-#: ../src/stacking/stacking.c:2185
+#: ../src/stacking/stacking.c:2195
 #, c-format
 msgid "Based on roundness"
 msgstr "Βασισμένο στη στρογγυλότητα"
 
-#: ../src/stacking/stacking.c:2196
+#: ../src/stacking/stacking.c:2206
 #, c-format
 msgid ""
 "Stacking images of the sequence with a quality higher or equal than %g (%d)\n"
@@ -8055,19 +8056,22 @@ msgstr ""
 "Γίνεται σώρευση των εικόνων της αλληλουχίας με ποιότητα μεγαλύτερη ή ίση του "
 "%g (%d)\n"
 
-#: ../src/stacking/stacking.c:2202
+#: ../src/stacking/stacking.c:2212
 #, c-format
 msgid "Based on quality > %.2f (%d images)"
 msgstr "Βασισμένο σε ποιότητα > %.2f (%d εικόνες)"
 
-#: ../src/stacking/stacking.c:2205
+#: ../src/stacking/stacking.c:2215
 #, c-format
 msgid "Based on quality"
 msgstr "Βασισμένο σε ποιότητα"
 
-#: ../src/stacking/stacking.c:2279
+#: ../src/stacking/stacking.c:2281
 msgid "Up-scaling sequence for stacking"
 msgstr "Αλληλουχία  μεγέθυνσης για σώρευση"
+
+#~ msgid "ZIP"
+#~ msgstr "ZIP"
 
 #~ msgid "Performs transformation"
 #~ msgstr "Εκτελεί τον μετασχηματισμό"
