@@ -112,6 +112,8 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	/* We copy metadata from reference to the final fit */
 	if (args->seq->type == SEQ_REGULAR) {
 		int ref = 0;
+		// FIXME: sum stacking does not have a reference, should we add
+		// it or use another image here?
 		if (args->seq->reference_image > 0)
 			ref = args->seq->reference_image;
 		if (!seq_open_image(args->seq, ref)) {

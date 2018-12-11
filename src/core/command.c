@@ -1659,6 +1659,11 @@ int select_unselect(gboolean select) {
 			if (i == com.seq.current)
 				current_updated = TRUE;
 		}
+		if (!select && com.seq.reference_image == i) {
+			com.seq.reference_image = -1;
+			sequence_list_change_reference();
+			adjust_refimage(com.seq.current);
+		}
 	}
 
 	if (current_updated) {

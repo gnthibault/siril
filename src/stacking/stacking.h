@@ -47,6 +47,7 @@ struct normalization_coeff {
 struct stacking_args {
 	stack_method method;
 	sequence *seq;
+	int ref_image;	// takes precedences over seq->reference_image which may not be applicable
 	seq_image_filter filtering_criterion;
 	double filtering_parameter;
 	int nb_images_to_stack; // calculated from the above, for display purposes

@@ -88,8 +88,7 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 }
 
 static int compute_normalization(struct stacking_args *args) {
-	int i, ref_image, ref_image_filtred_idx = -1, retval = 0,
-			cur_nb = 1;
+	int i, ref_image_filtred_idx = -1, retval = 0, cur_nb = 1;
 	double scale0, mul0, offset0;	// for reference frame
 	char *tmpmsg;
 	norm_coeff *coeff = &args->coeff;
@@ -108,9 +107,8 @@ static int compute_normalization(struct stacking_args *args) {
 	set_progress_bar_data(tmpmsg, PROGRESS_RESET);
 
 	// first, find the index of the ref image in the filtered image list
-	ref_image = sequence_find_refimage(args->seq);
 	for (i = 0; i < args->nb_images_to_stack; i++)
-		if (args->image_indices[i] == ref_image) {
+		if (args->image_indices[i] == args->ref_image) {
 			ref_image_filtred_idx = i;
 			break;
 		}

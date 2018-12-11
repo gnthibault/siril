@@ -1176,7 +1176,10 @@ static void sequence_setselect_all(gboolean include_all) {
 		siril_log_message(_("Selected all images from sequence\n"));
 	} else {
 		com.seq.selnum = 0;
+		com.seq.reference_image = -1;
 		siril_log_message(_("Unselected all images from sequence\n"));
+		sequence_list_change_reference();
+		adjust_refimage(com.seq.current);
 	}
 	adjust_exclude(com.seq.current, TRUE);
 	update_reg_interface(FALSE);
