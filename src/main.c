@@ -427,7 +427,12 @@ int main(int argc, char *argv[]) {
 	if (!com.headless) {
 		update_spinCPU(com.max_thread);
 
-		if (com.have_dark_theme) {
+		GtkSettings *settings;
+		gboolean prefere_dark;
+		settings = gtk_settings_get_default();
+		g_object_get(settings, "gtk-application-prefer-dark-theme", &prefere_dark, NULL);
+		if (prefere_dark || com.have_dark_theme) {
+			com.have_dark_theme = TRUE;
 			/* Put dark icons */
 			printf("Loading dark theme...\n");
 			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_anticlock_button")), lookup_widget("rotate90-acw_dark"));
