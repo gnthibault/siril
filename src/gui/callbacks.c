@@ -1027,10 +1027,12 @@ static void opendial(void) {
 
 static void update_fwhm_units_ok() {
 	GtkWidget *label_ok = GTK_WIDGET(lookup_widget("label_ok"));
+	gboolean update;
 
-	gtk_widget_set_visible(label_ok,
-			gfit.focal_length > 0.0 && gfit.pixel_size_x > 0.0f
-					&& gfit.pixel_size_y > 0.0f);
+	update = gfit.focal_length > 0.0 && gfit.pixel_size_x > 0.0f && gfit.pixel_size_y > 0.0f;
+
+	gtk_widget_set_visible(label_ok, update);
+	refresh_stars_list(com.stars);
 }
 
 /*
@@ -2886,6 +2888,15 @@ void on_pitchY_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar* pitchY_entry = gtk_entry_get_text(GTK_ENTRY(editable));
 	gfit.pixel_size_y = (float)atof(pitchY_entry);
 	update_fwhm_units_ok();
+}
+
+void on_toggleButtonUnbinned_toggled(GtkToggleButton *button, gpointer user_data) {
+	GtkWidget *box;
+
+	box = lookup_widget("combobinning");
+
+	gfit.unbinned = gtk_toggle_button_get_active(button);
+	gtk_widget_set_sensitive(box, gfit.unbinned);
 }
 
 void on_button_clear_sample_clicked(GtkButton *button, gpointer user_data) {

@@ -691,9 +691,12 @@ void psf_update_units(fits* fit, fitted_PSF **result) {
 			|| fit->binning_y <= 0)
 		return;
 
-	(*result)->fwhmx *= (radian_conversion * fit->pixel_size_x
-			/ fit->focal_length) * (double) fit->binning_x;
-	(*result)->fwhmy *= (radian_conversion * fit->pixel_size_y
-			/ fit->focal_length) * (double) fit->binning_y;
+	double bin_X, bin_Y;
+
+	bin_X = fit->unbinned ? (double) fit->binning_x : 1.0;
+	bin_Y = fit->unbinned ? (double) fit->binning_y : 1.0;
+
+	(*result)->fwhmx *= (radian_conversion * fit->pixel_size_x / fit->focal_length) * bin_X;
+	(*result)->fwhmy *= (radian_conversion * fit->pixel_size_y / fit->focal_length) * bin_Y;
 	(*result)->units = "\"";
 }

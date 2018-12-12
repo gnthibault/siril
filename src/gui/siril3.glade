@@ -9042,14 +9042,13 @@ PixInsight, and probably others ...)</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="tooltip_text" translatable="yes">Clear all the fields. If you save your image after, the header will not contain any data about the focal or sensor size.</property>
-                                <property name="halign">end</property>
-                                <property name="hexpand">False</property>
+                                <property name="halign">start</property>
                                 <property name="use_stock">True</property>
                                 <signal name="clicked" handler="on_button_clear_sample_clicked" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">4</property>
+                                <property name="top_attach">5</property>
                               </packing>
                             </child>
                             <child>
@@ -9087,15 +9086,16 @@ PixInsight, and probably others ...)</property>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
-                                <property name="top_attach">3</property>
+                                <property name="top_attach">4</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkComboBoxText" id="combobinning">
                                 <property name="visible">True</property>
+                                <property name="sensitive">False</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">If the binning is not automatically loaded, using file's header, you can update this combo box.</property>
-                                <property name="halign">end</property>
+                                <property name="halign">start</property>
                                 <property name="active">0</property>
                                 <items>
                                   <item>1x1</item>
@@ -9111,7 +9111,7 @@ PixInsight, and probably others ...)</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="top_attach">3</property>
+                                <property name="top_attach">4</property>
                               </packing>
                             </child>
                             <child>
@@ -9126,7 +9126,7 @@ PixInsight, and probably others ...)</property>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
-                                <property name="top_attach">4</property>
+                                <property name="top_attach">5</property>
                               </packing>
                             </child>
                             <child>
@@ -9156,6 +9156,22 @@ PixInsight, and probably others ...)</property>
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="top_attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="toggleButtonUnbinned">
+                                <property name="label" translatable="yes">Binning is not in the pixel size value</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Check this button if binning is not taken into account in the pixel size value. In this case, the binning value in the combo box below will be used.</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_toggleButtonUnbinned_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">3</property>
+                                <property name="width">2</property>
                               </packing>
                             </child>
                           </object>
