@@ -43,6 +43,6 @@ double psf_get_fwhm(fits *, int, double *);
 fitted_PSF *psf_get_minimisation(fits *, int, rectangle *, gboolean);
 fitted_PSF *psf_global_minimisation(gsl_matrix *, double, int, gboolean, gboolean);
 void psf_display_result(fitted_PSF *, rectangle *);
-void psf_update_units(fits*, fitted_PSF**);
+void fwhm_to_arcsec_if_needed(fits*, fitted_PSF**);
 
 #endif

@@ -601,7 +601,7 @@ fitted_PSF *psf_get_minimisation(fits *fit, int layer, rectangle *area, gboolean
 	}
 	result = psf_global_minimisation(z, bg, layer, TRUE, for_photometry);
 	if (result)
-		psf_update_units(fit, &result);
+		fwhm_to_arcsec_if_needed(fit, &result);
 	gsl_matrix_free(z);
 	return result;
 }
@@ -684,19 +684,24 @@ void psf_display_result(fitted_PSF *result, rectangle *area) {
 /* If the pixel pitch and the focal length are known and filled in the 
  * setting box, we convert FWHM in pixel to arcsec by multiplying
  * the FWHM value with the sampling value */
-void psf_update_units(fits* fit, fitted_PSF **result) {
+void fwhm_to_arcsec_if_needed(fits* fit, fitted_PSF **result) {
 
+	if (result == NULL) return;
 	if (fit->focal_length <= 0.0 || fit->pixel_size_x <= 0.0
 			|| fit->pixel_size_y <= 0.0 || fit->binning_x <= 0
 			|| fit->binning_y <= 0)
 		return;
 
 	double bin_X, bin_Y;
+	double fwhmx, fwhmy;
+
+	fwhmx = sqrt((*result)->sx / 2.0) * 2 * sqrt(log(2.0) * 2);
+	fwhmy = sqrt((*result)->sy / 2.0) * 2 * sqrt(log(2.0) * 2);
 
 	bin_X = fit->unbinned ? (double) fit->binning_x : 1.0;
 	bin_Y = fit->unbinned ? (double) fit->binning_y : 1.0;
 
-	(*result)->fwhmx *= (radian_conversion * fit->pixel_size_x / fit->focal_length) * bin_X;
-	(*result)->fwhmy *= (radian_conversion * fit->pixel_size_y / fit->focal_length) * bin_Y;
+	(*result)->fwhmx = fwhmx * (radian_conversion * fit->pixel_size_x / fit->focal_length) * bin_X;
+	(*result)->fwhmy = fwhmy * (radian_conversion * fit->pixel_size_y / fit->focal_length) * bin_Y;
 	(*result)->units = "\"";
 }

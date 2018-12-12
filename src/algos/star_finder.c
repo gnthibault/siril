@@ -248,7 +248,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 					fitted_PSF *cur_star = psf_global_minimisation(z, bg, layer,
 							FALSE, FALSE);
 					if (cur_star) {
-						psf_update_units(fit, &cur_star);
+						fwhm_to_arcsec_if_needed(fit, &cur_star);
 						if (is_star(cur_star, sf)) {
 							cur_star->xpos = x + cur_star->x0 - sf->radius - 1;
 							cur_star->ypos = y + cur_star->y0 - sf->radius;

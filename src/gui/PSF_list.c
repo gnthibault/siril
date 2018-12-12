@@ -96,12 +96,16 @@ void add_star_to_list(fitted_PSF *star) {
 			-1);
 }
 
-void fill_stars_list(fitted_PSF **star) {
-	int i=0;
-	if (star == NULL) return;
-	add_star_to_list(NULL);	// clear  
-	while (star[i]) {
-		add_star_to_list(star[i]);
+void fill_stars_list(fits *fit, fitted_PSF **stars) {
+	int i = 0;
+	if (stars == NULL)
+		return;
+	add_star_to_list(NULL);	// clear
+
+	while (stars[i]) {
+		/* update units if needed */
+		fwhm_to_arcsec_if_needed(fit, &stars[i]);
+		add_star_to_list(stars[i]);
 		i++;
 	}
 	com.selected_star = -1;
@@ -111,7 +115,7 @@ void fill_stars_list(fitted_PSF **star) {
 void refresh_stars_list(fitted_PSF **star){
 	get_stars_list_store();
 	gtk_list_store_clear(liststore_stars);
-	fill_stars_list(com.stars);
+	fill_stars_list(&gfit, com.stars);
 	redraw(com.cvport, REMAP_NONE);
 }
 

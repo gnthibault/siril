@@ -1032,7 +1032,6 @@ static void update_fwhm_units_ok() {
 	update = gfit.focal_length > 0.0 && gfit.pixel_size_x > 0.0f && gfit.pixel_size_y > 0.0f;
 
 	gtk_widget_set_visible(label_ok, update);
-	refresh_stars_list(com.stars);
 }
 
 /*
@@ -2869,6 +2868,7 @@ void on_close_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_libraw_interface();
 	update_photometry_interface();
 	fill_script_paths_list();
+	refresh_stars_list(com.stars);
 	gtk_widget_hide(lookup_widget("settings_window"));
 }
 
@@ -4628,7 +4628,7 @@ void on_export_button_clicked(GtkButton *button, gpointer user_data) {
 
 void on_stars_list_window_show(GtkWidget *widget, gpointer user_data) {
 	update_peaker_GUI();
-	fill_stars_list(com.stars);
+	fill_stars_list(&gfit, com.stars);
 }
 
 void on_button_stars_list_ok_clicked(GtkButton *button, gpointer user_data) {
