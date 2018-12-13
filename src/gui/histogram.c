@@ -655,8 +655,8 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 			c0 += median + shadowsClipping * mad;
 			m += median;
 		}
-		c0 /= n;
-		double m2 = m / n - c0;
+		c0 /= (double) n;
+		double m2 = m / (double) n - c0;
 		m = MTF(m2, targetBackground, 0.0, 1.0);
 		*shadows = c0;
 		*highlights = 1.0;
@@ -673,8 +673,8 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 			m += median;
 			c1 += median - shadowsClipping * mad;
 		}
-		c1 /= n;
-		double m2 = c1 - m / n;
+		c1 /= (double) n;
+		double m2 = c1 - m / (double) n;
 		m = 1.0 - MTF(m2, targetBackground, 0.0, 1.0);
 		*shadows = 0.0;
 		*highlights = c1;
