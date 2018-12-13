@@ -61,8 +61,8 @@ gpointer rgradient_filter(gpointer p) {
 	fits imB = { 0 };
 	point center = {args->xc, args->yc};
 	int x, y, layer, cur_nb = 0;
-    int w = args->fit->rx- 1;
-    int h = args->fit->ry - 1;
+	int w = args->fit->rx - 1;
+	int h = args->fit->ry - 1;
 	double dAlpha = M_PI / 180.0 * args->da;
 
 	double total = (double)(args->fit->rx * args->fit->ry * args->fit->naxes[2]);	// only used for progress bar
@@ -86,7 +86,7 @@ gpointer rgradient_filter(gpointer p) {
 				WORD *Abuf = imA.pdata[layer];
 				WORD *Bbuf = imB.pdata[layer];
 
-				if (!(y % 256))
+				if (!(i % 256))
 					set_progress_bar_data(NULL, (double) cur_nb / total);
 
 				to_polar(x, y, center, &r, &theta);
@@ -125,8 +125,8 @@ gpointer rgradient_filter(gpointer p) {
 
 	clearfits(&imA);
 	clearfits(&imB);
-	update_gfit_histogram_if_needed();
 	invalidate_stats_from_fit(args->fit);
+	update_gfit_histogram_if_needed();
 	siril_add_idle(end_rgradient_filter, args);
 
 	return GINT_TO_POINTER(0);
