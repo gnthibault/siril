@@ -454,7 +454,8 @@ int stack_median(struct stacking_args *args) {
 				retval = -1;
 				break;
 			}
-			set_progress_bar_data(NULL, (double)cur_nb/total);
+			if (!(y % 16))	// every 16 iterations
+				set_progress_bar_data(NULL, (double)cur_nb/total);
 
 			for (x = 0; x < naxes[0]; ++x){
 				int ii;
@@ -1176,7 +1177,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				retval = -1;
 				break;
 			}
-			if (y & 15)	// every 16 iterations
+			if (!(y % 16))	// every 16 iterations
 				set_progress_bar_data(NULL, (double)cur_nb/total);
 
 			double sigma = -1.0;
