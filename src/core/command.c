@@ -63,6 +63,7 @@
 #include "algos/cosmetic_correction.h"
 #include "algos/statistics.h"
 #include "algos/geometry.h"
+#include "algos/rgradient.h"
 #include "stacking/stacking.h"
 #include "stacking/sum.h"
 #include "registration/registration.h"
@@ -142,6 +143,7 @@ static command commands[] = {
 	
 	{"register", 1, "register sequence [-norot] [-drizzle]", process_register, STR_REGISTER, TRUE},
 	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE, TRUE},
+	{"rgradient", 4, "rgradient xc yc dr dalpha", process_rgradient, STR_RGRADIENT, TRUE},
 	{"rl", 2, "rl iterations sigma", process_rl, STR_RL, TRUE},
 	{"rmgreen", 1, "rmgreen type", process_scnr, STR_RMGREEN, TRUE},
 	{"rotate", 1, "rotate degree", process_rotate, STR_ROTATE, TRUE},
@@ -769,6 +771,27 @@ int process_resample(int nb) {
 	return 0;
 }
 
+int process_rgradient(int nb) {
+	if (get_thread_run()) {
+		siril_log_message(_("Another task is already in progress, ignoring new request.\n"));
+		return 1;
+	}
+
+	if (!single_image_is_loaded()) return 1;
+
+	struct rgradient_filter_data *args = malloc(sizeof(struct rgradient_filter_data));
+	args->xc = atof(word[1]);
+	args->yc = atof(word[2]);
+	args->dR = atof(word[3]);
+	args->da = atof(word[4]);
+	args->fit = &gfit;
+
+	set_cursor_waiting(TRUE);
+
+	start_in_new_thread(rgradient_filter, args);
+	return 0;
+}
+
 int process_rotate(int nb) {
 	double degree;
 	
@@ -1351,11 +1374,12 @@ int process_cosme(int nb) {
 				retval = 1;
 				continue;
 			}
+			point center = {gfit.rx / 2.0, gfit.ry / 2.0};
 			dev.type = HOT_PIXEL; // we force it
 			dev.p.y = gfit.rx - dev.p.y - 1; /* FITS are stored bottom to top */
-			cvRotateImage(&gfit, 90.0, -1, OPENCV_LINEAR);
+			cvRotateImage(&gfit, center, 90.0, -1, OPENCV_LINEAR);
 			cosmeticCorrOneLine(&gfit, dev, is_cfa);
-			cvRotateImage(&gfit, -90.0, -1, OPENCV_LINEAR);
+			cvRotateImage(&gfit, center, -90.0, -1, OPENCV_LINEAR);
 
 			break;
 		default:

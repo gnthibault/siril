@@ -1304,7 +1304,8 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 	double invsigma = 1.0 / sigma;
 
 	if (applyRotation) {
-		cvRotateImage(fit, 90.0, -1, OPENCV_LINEAR);
+		point center = {gfit.rx / 2.0, gfit.ry / 2.0};
+		cvRotateImage(fit, center, 90.0, -1, OPENCV_LINEAR);
 	}
 
 	if (new_fit_image(&fiximage, fit->rx, fit->ry, fit->naxes[2]))
@@ -1366,8 +1367,11 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 
 	invalidate_stats_from_fit(fit);
 	clearfits(fiximage);
-	if ((!ret) && applyRotation)
-		cvRotateImage(fit, -90.0, -1, OPENCV_LINEAR);
+	if ((!ret) && applyRotation) {
+		point center = {gfit.rx / 2.0, gfit.ry / 2.0};
+		cvRotateImage(fit, center, -90.0, -1, OPENCV_LINEAR);
+	}
+
 	return ret;
 }
 

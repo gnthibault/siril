@@ -85,6 +85,7 @@ int process_convertraw(int nb);
 int	process_mirrorx(int nb);
 int	process_mirrory(int nb);
 int	process_resample(int nb);
+int process_rgradient(int nb);
 int	process_rl(int nb);
 int	process_rotate(int nb);
 int	process_rotatepi(int nb);

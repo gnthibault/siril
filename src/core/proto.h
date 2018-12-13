@@ -148,6 +148,12 @@ struct median_filter_data {
 	int iterations;
 };
 
+/* rgradient filter data from GUI */
+struct rgradient_filter_data {
+	fits *fit;
+	double xc, yc, dR, da;
+};
+
 /* Banding data from GUI */
 struct banding_data {
 	fits *fit;

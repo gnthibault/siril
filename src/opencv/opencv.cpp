@@ -140,8 +140,58 @@ int cvResizeGaussian(fits *image, int toX, int toY, int interpolation) {
 	return 0;
 }
 
+int cvTranslateImage(fits *image, point shift, int interpolation) {
+	assert(image->data);
+	assert(image->rx);
+	assert(image->ry);
+
+	int ndata = image->rx * image->ry;
+
+	WORD *bgrbgr = fits_to_bgrbgr(image);
+
+	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
+	Mat out(image->ry, image->rx, CV_16UC3);
+
+	Mat M = (Mat_<double>(2,3) << 1, 0, shift.x, 0, 1, shift.y);
+
+	warpAffine(in, out, M, in.size(), interpolation);
+
+	Mat channel[3];
+	split(out, channel);
+
+	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
+	if (image->naxes[2] == 3) {
+		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
+		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
+	}
+
+	if (image->naxes[2] == 1) {
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data;
+		image->pdata[BLAYER] = image->data;
+	} else {
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data + ndata;
+		image->pdata[BLAYER] = image->data + ndata * 2;
+	}
+	image->rx = out.cols;
+	image->ry = out.rows;
+	image->naxes[0] = image->rx;
+	image->naxes[1] = image->ry;
+	invalidate_stats_from_fit(image);
+
+	/* free data */
+	delete[] bgrbgr;
+	in.release();
+	out.release();
+	channel[0].release();
+	channel[1].release();
+	channel[2].release();
+	return 0;
+}
+
 /* Rotate an image with the angle "angle" */
-int cvRotateImage(fits *image, double angle, int interpolation, int cropped) {
+int cvRotateImage(fits *image, point center, double angle, int interpolation, int cropped) {
 	assert(image->data);
 	assert(image->rx);
 	assert(image->ry);
@@ -160,7 +210,7 @@ int cvRotateImage(fits *image, double angle, int interpolation, int cropped) {
 		else // 270, -90
 			flip(out, out, 1);
 	} else {
-		Point2f pt(in.cols / 2.0, in.rows / 2.0);// We take the center of the image. Should we pass this in function parameters ?
+		Point2f pt(center.x, center.y);
 		Mat r = getRotationMatrix2D(pt, angle, 1.0);
 		if (cropped == 1) {
 			warpAffine(in, out, r, in.size(), interpolation);

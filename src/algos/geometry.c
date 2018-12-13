@@ -203,7 +203,8 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
 			str_inter, angle);
 	gettimeofday(&t_start, NULL);
 
-	cvRotateImage(&gfit, angle, interpolation, cropped);
+	point center = {gfit.rx / 2.0, gfit.ry / 2.0};
+	cvRotateImage(&gfit, center, angle, interpolation, cropped);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);

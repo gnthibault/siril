@@ -1,5 +1,6 @@
 #include "core/siril.h"
 #include "core/proto.h"
+#include "algos/statistics.h"
 #include "io/single_image.h"
 #include "callbacks.h"
 #include "progress_and_log.h"
@@ -20,6 +21,7 @@ static void asinh_close(gboolean revert) {
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 	} else {
+		invalidate_stats_from_fit(&gfit);
 		undo_save_state(&asinh_gfit_backup, "Processing: Asinh Transformation: (stretch=%6.1lf, bp=%7.5lf)",
 				asinh_stretch_value, asinh_black_value);
 	}

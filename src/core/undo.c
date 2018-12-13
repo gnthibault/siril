@@ -206,6 +206,7 @@ int undo_display_data(int dir) {
 			com.hist_display--;
 			undo_get_data(&gfit, com.history[com.hist_display]);
 			update_gfit_histogram_if_needed();
+			invalidate_stats_from_fit(&gfit);
 			redraw(com.cvport, REMAP_ALL);
 			redraw_previews();
 		}
@@ -215,6 +216,7 @@ int undo_display_data(int dir) {
 			com.hist_display++;
 			undo_get_data(&gfit, com.history[com.hist_display]);
 			update_gfit_histogram_if_needed();
+			invalidate_stats_from_fit(&gfit);
 			redraw(com.cvport, REMAP_ALL);
 			redraw_previews();
 		}

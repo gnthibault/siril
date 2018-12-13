@@ -26,6 +26,7 @@ siril_SOURCES = \
 	stacking/stacking.c stacking/stacking.h stacking/sum.c stacking/sum.h stacking/normalization.c \
 	algos/gradient.c algos/gradient.h algos/quality.c algos/quality.h \
 	algos/statistics.c \
+	algos/rgradient.c algos/rgradient.h \
 	algos/fft.c algos/fft.h \
 	algos/colors.c algos/colors.h \
 	algos/geometry.c algos/geometry.h \
