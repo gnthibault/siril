@@ -1961,6 +1961,7 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		}
 		siril_log_message(_("Stacking sequence %s\n"), seq->seqname);
 		args.seq = seq;
+		args.ref_image = sequence_find_refimage(seq);
 		args.filtering_criterion = stack_filter_all;
 		args.filtering_parameter = 0.0;
 		args.nb_images_to_stack = seq->number;
