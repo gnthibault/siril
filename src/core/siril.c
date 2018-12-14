@@ -1123,7 +1123,7 @@ gpointer median_filter(gpointer p) {
 	int ny = args->fit->ry;
 	int radius = (args->ksize - 1) / 2;
 	double norm = (double) get_normalized_value(args->fit);
-	double cur, total;
+	double cur = 0.0, total;
 	assert(nx > 0 && ny > 0);
 
 	struct timeval t_start, t_end;
@@ -1148,10 +1148,10 @@ gpointer median_filter(gpointer p) {
 			for (y = 0; y < ny; y++) {
 				if (!get_thread_run())
 					break;
-				total = ny * args->iterations;
-				cur = (double) y + (ny * iter);
+				total = ny * args->fit->naxes[2] * args->iterations;
 				if (!(y % 16))	// every 16 iterations
 					set_progress_bar_data(NULL, cur / total);
+				cur++;
 				for (x = 0; x < nx; x++) {
 					WORD *data = calloc(args->ksize * args->ksize,
 							sizeof(WORD));
