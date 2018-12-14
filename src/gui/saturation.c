@@ -34,7 +34,7 @@ void on_satu_cancel_clicked(GtkButton *button, gpointer user_data) {
 	gtk_widget_hide(lookup_widget("satu_dialog"));
 }
 
-void on_satu_close_clicked(GtkButton *button, gpointer user_data) {
+void on_satu_apply_clicked(GtkButton *button, gpointer user_data) {
 	satu_close(FALSE);
 	gtk_widget_hide(lookup_widget("satu_dialog"));
 }
