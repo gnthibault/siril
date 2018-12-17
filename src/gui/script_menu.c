@@ -257,7 +257,7 @@ void fill_script_paths_list() {
 void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	gboolean ret;
 	const char *locale = setlocale(LC_MESSAGES, NULL);
-	const char *supported_languages[] = { "fr", NULL }; // en is NULL: default language
+	const char *supported_languages[] = { "fr", "it", NULL }; // en is NULL: default language
 	gchar *lang = NULL;
 	int i = 0;
 
