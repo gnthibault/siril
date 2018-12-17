@@ -175,13 +175,13 @@ int open_single_image(const char* filename) {
 		return 0;
 	}
 	if (retval == 2) {
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error oppening file"),
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error opening file"),
 				_("This file could not be opened because "
 						"its extension is not supported."));
 		return 1;
 	}
 	if (retval == 1) {
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error oppening file"),
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error opening file"),
 				_("There was an error when opening this image. "
 						"See the log for more information."));
 		return 1;

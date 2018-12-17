@@ -1197,7 +1197,7 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 
 void on_GtkButton_IPS_metadata_clicked(GtkButton *button, gpointer user_data) {
 	if (!has_any_keywords()) {
-		char *msg = siril_log_message(_("There are no keywords storred in the FITS header.\n"));
+		char *msg = siril_log_message(_("There are no keywords stored in the FITS header.\n"));
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("No metadata"), msg);
 	} else {
 		update_image_parameters_GUI();
