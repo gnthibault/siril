@@ -130,7 +130,6 @@ gpointer rgradient_filter(gpointer p) {
 	siril_add_idle(end_rgradient_filter, args);
 
 	return GINT_TO_POINTER(0);
-	return 0;
 }
 
 /// GUI
