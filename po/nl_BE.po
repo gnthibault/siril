@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-14 11:02+0100\n"
+"POT-Creation-Date: 2018-12-20 00:13+0100\n"
 "PO-Revision-Date: 2018-05-26 10:34+0200\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
@@ -4112,7 +4112,7 @@ msgstr ""
 
 #: ../src/algos/plateSolver.c:1200
 #, fuzzy
-msgid "There are no keywords storred in the FITS header.\n"
+msgid "There are no keywords stored in the FITS header.\n"
 msgstr "Bayerpatroon niet gevonden in de header van het bestand.\n"
 
 #: ../src/algos/plateSolver.c:1201
@@ -4140,7 +4140,7 @@ msgstr "Verwerping stacking bezig..."
 msgid "Rotational gradient complete."
 msgstr "Registratie klaar."
 
-#: ../src/algos/rgradient.c:182 ../src/core/command.c:219
+#: ../src/algos/rgradient.c:181 ../src/core/command.c:219
 #: ../src/core/command.c:456 ../src/core/command.c:776
 #: ../src/core/command.c:944 ../src/core/command.c:979
 #: ../src/core/command.c:1059 ../src/core/command.c:1404
@@ -4225,7 +4225,7 @@ msgstr "Minimaal twee lagen moeten eerst geladen worden!\n"
 
 #: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4910
 #: ../src/gui/wavelets.c:153 ../src/gui/wavelets.c:162
-#: ../src/io/conversion.c:576 ../src/registration/registration.c:851
+#: ../src/io/conversion.c:587 ../src/registration/registration.c:851
 msgid "Warning"
 msgstr "Opgelet"
 
@@ -4526,16 +4526,16 @@ msgstr ""
 "%s laag: Gemiddelde: %0.1lf, Mediaan: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, "
 "Min: %0.1lf, Max: %0.1lf\n"
 
-#: ../src/core/command.c:1793 ../src/io/conversion.c:581
+#: ../src/core/command.c:1793 ../src/io/conversion.c:592
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Conversie: fout bij het opnenen van de werkfolder %s.\n"
 
-#: ../src/core/command.c:1811 ../src/io/conversion.c:564
+#: ../src/core/command.c:1811 ../src/io/conversion.c:575
 msgid "Conversion: processing...\n"
 msgstr "Cnversie: bezig...\n"
 
-#: ../src/core/command.c:1822 ../src/io/conversion.c:575
+#: ../src/core/command.c:1822 ../src/io/conversion.c:586
 msgid "Conversion: no working directory set.\n"
 msgstr "Cenversie: geen werkfolder gedefiniëerd.\n"
 
@@ -5497,7 +5497,7 @@ msgstr "Afbeeldingen hebben niet dezelfde afmetingen (w = %d|%d, h = %d|%d)\n"
 #: ../src/gui/callbacks.c:4375 ../src/gui/callbacks.c:4396
 #: ../src/gui/callbacks.c:4800 ../src/gui/callbacks.c:4806
 #: ../src/gui/callbacks.c:4831 ../src/gui/plot.c:381 ../src/gui/plot.c:441
-#: ../src/io/conversion.c:582 ../src/io/single_image.c:129
+#: ../src/io/conversion.c:593 ../src/io/single_image.c:129
 msgid "Error"
 msgstr "Fout"
 
@@ -6464,53 +6464,63 @@ msgstr "PNG beelden"
 msgid "Supported file types: %s\n"
 msgstr "Ondersteunde bestandstypes: %s\n"
 
-#: ../src/io/conversion.c:523
+#: ../src/io/conversion.c:528
+msgid "Invalid char"
+msgstr ""
+
+#: ../src/io/conversion.c:528
+msgid ""
+"Please remove invalid char in the sequence name before trying to convert "
+"images into a new sequence again."
+msgstr ""
+
+#: ../src/io/conversion.c:534
 #, c-format
 msgid "A file named %s already exists. Do you want to replace it?\n"
 msgstr ""
 
-#: ../src/io/conversion.c:525
+#: ../src/io/conversion.c:536
 msgid "The file already exists. Replacing it will overwrite its contents."
 msgstr ""
 
-#: ../src/io/conversion.c:551 ../src/io/conversion.c:556
+#: ../src/io/conversion.c:562 ../src/io/conversion.c:567
 msgid "A conflict has been detected."
 msgstr ""
 
-#: ../src/io/conversion.c:552
+#: ../src/io/conversion.c:563
 msgid ""
 "The Debayer option is not allowed in SER conversion, please uncheck the "
 "option."
 msgstr ""
 
-#: ../src/io/conversion.c:557
+#: ../src/io/conversion.c:568
 msgid ""
 "The Multiple SER option is not allowed in SER conversion, please uncheck the "
 "option."
 msgstr ""
 
-#: ../src/io/conversion.c:627
+#: ../src/io/conversion.c:638
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
 msgstr "SER output krijgt voorrang over de optie \"één kanaal per beeld\"\n"
 
-#: ../src/io/conversion.c:633 ../src/io/conversion.c:685
+#: ../src/io/conversion.c:644 ../src/io/conversion.c:696
 #: ../src/io/sequence.c:1286 ../src/io/sequence_export.c:104
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "Fout bij het aanmaken van SER bestand, stopgezet.\n"
 
-#: ../src/io/conversion.c:650 ../src/io/conversion.c:651
+#: ../src/io/conversion.c:661 ../src/io/conversion.c:662
 #, c-format
 msgid "Converting %s..."
 msgstr "Conversie %s..."
 
-#: ../src/io/conversion.c:657
+#: ../src/io/conversion.c:668
 #, c-format
 msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr ""
 
-#: ../src/io/conversion.c:658
+#: ../src/io/conversion.c:669
 #, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -6528,51 +6538,51 @@ msgstr ""
 "Is het ingevoerde bestandstype in de lijst van ondersteunde types staat, "
 "gelieve de developpers te verwittigen."
 
-#: ../src/io/conversion.c:677
+#: ../src/io/conversion.c:688
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Fout bij het openen van de fil %s, gestopt.\n"
 
-#: ../src/io/conversion.c:697 ../src/io/conversion.c:763
+#: ../src/io/conversion.c:708 ../src/io/conversion.c:774
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Fout tijdens het lezen van frame %d tot %s, stopt.\n"
 
-#: ../src/io/conversion.c:709 ../src/io/conversion.c:775
-#: ../src/io/conversion.c:802 ../src/io/sequence.c:1316
+#: ../src/io/conversion.c:720 ../src/io/conversion.c:786
+#: ../src/io/conversion.c:813 ../src/io/sequence.c:1316
 #: ../src/io/sequence_export.c:317
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Fout bij de conversie naar SER (geen plaats meer?)\n"
 
-#: ../src/io/conversion.c:717 ../src/io/conversion.c:783
-#: ../src/io/conversion.c:808
+#: ../src/io/conversion.c:728 ../src/io/conversion.c:794
+#: ../src/io/conversion.c:819
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr "Fout bij de conversie naar FITS (geel plaats meer?)\n"
 
-#: ../src/io/conversion.c:733
+#: ../src/io/conversion.c:744
 msgid ""
 "Joining SER files is only possible with a list only containing SER files. "
 "Please, remove non SER files.\n"
 msgstr ""
 
-#: ../src/io/conversion.c:742
+#: ../src/io/conversion.c:753
 #, fuzzy, c-format
 msgid "Error while opening ser file %s, aborting.\n"
 msgstr "Fout bij het openen van de fil %s, gestopt.\n"
 
-#: ../src/io/conversion.c:750
+#: ../src/io/conversion.c:761
 msgid "Input SER files must have the same size to be joined.\n"
 msgstr ""
 
-#: ../src/io/conversion.c:849
+#: ../src/io/conversion.c:860
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "Kan debayering niet uitvoeren op een beeld met meer dan één kanaal\n"
 
-#: ../src/io/conversion.c:862 ../src/io/ser.c:827 ../src/io/ser.c:1033
+#: ../src/io/conversion.c:873 ../src/io/ser.c:827 ../src/io/ser.c:1033
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Bayerpatroon niet gevonden in de header van het bestand.\n"
 
-#: ../src/io/conversion.c:865 ../src/io/ser.c:831 ../src/io/ser.c:1037
+#: ../src/io/conversion.c:876 ../src/io/ser.c:831 ../src/io/ser.c:1037
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -6581,20 +6591,20 @@ msgstr ""
 "Bayerpatroon gevonden in de header (%s) is verschillend van het Bayerpatroon "
 "van de instellingen (%s). Instellingen gewijzigd.\n"
 
-#: ../src/io/conversion.c:874
+#: ../src/io/conversion.c:885
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr "XTRANS Sensor gedetecteerd. Gebruikt een speciaal algoritme.\n"
 
-#: ../src/io/conversion.c:879
+#: ../src/io/conversion.c:890
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Filter Pattern: %s\n"
 
-#: ../src/io/conversion.c:883
+#: ../src/io/conversion.c:894
 msgid "Cannot perform debayering\n"
 msgstr "Can debayering niet uitvoeren\n"
 
-#: ../src/io/conversion.c:933
+#: ../src/io/conversion.c:944
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
@@ -6603,7 +6613,7 @@ msgstr ""
 "gebeuren\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:938
+#: ../src/io/conversion.c:949
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "Fout bij het openen van %s: type niet ondersteund.\n"
@@ -7241,7 +7251,7 @@ msgstr "%s openen gefaald.\n"
 
 #: ../src/io/single_image.c:178 ../src/io/single_image.c:184
 #, fuzzy
-msgid "Error oppening file"
+msgid "Error opening file"
 msgstr "Fout bij het openen van het GIF bestand: %s\n"
 
 #: ../src/io/single_image.c:179

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-14 11:02+0100\n"
+"POT-Creation-Date: 2018-12-20 00:13+0100\n"
 "PO-Revision-Date: 2018-05-29 09:04+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -3907,7 +3907,7 @@ msgstr "参考帧中没有足够数量的星点用于执行对齐\n"
 
 #: ../src/algos/plateSolver.c:1200
 #, fuzzy
-msgid "There are no keywords storred in the FITS header.\n"
+msgid "There are no keywords stored in the FITS header.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
 #: ../src/algos/plateSolver.c:1201
@@ -3935,7 +3935,7 @@ msgstr "叠加（像素剔除）执行中..."
 msgid "Rotational gradient complete."
 msgstr "对齐完成。"
 
-#: ../src/algos/rgradient.c:182 ../src/core/command.c:219
+#: ../src/algos/rgradient.c:181 ../src/core/command.c:219
 #: ../src/core/command.c:456 ../src/core/command.c:776
 #: ../src/core/command.c:944 ../src/core/command.c:979
 #: ../src/core/command.c:1059 ../src/core/command.c:1404
@@ -4020,7 +4020,7 @@ msgstr "必须先期载入至少两个通道！\n"
 
 #: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4910
 #: ../src/gui/wavelets.c:153 ../src/gui/wavelets.c:162
-#: ../src/io/conversion.c:576 ../src/registration/registration.c:851
+#: ../src/io/conversion.c:587 ../src/registration/registration.c:851
 msgid "Warning"
 msgstr "警告"
 
@@ -4306,16 +4306,16 @@ msgstr ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
 "%0.1lf, Max: %0.1lf\n"
 
-#: ../src/core/command.c:1793 ../src/io/conversion.c:581
+#: ../src/core/command.c:1793 ../src/io/conversion.c:592
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "转化：无法打开工作目录 %s.\n"
 
-#: ../src/core/command.c:1811 ../src/io/conversion.c:564
+#: ../src/core/command.c:1811 ../src/io/conversion.c:575
 msgid "Conversion: processing...\n"
 msgstr "转化：处理中...\n"
 
-#: ../src/core/command.c:1822 ../src/io/conversion.c:575
+#: ../src/core/command.c:1822 ../src/io/conversion.c:586
 msgid "Conversion: no working directory set.\n"
 msgstr "转化：工作目录未设置。\n"
 
@@ -5261,7 +5261,7 @@ msgstr "图像不具有统一大小 (w = %d|%d, h = %d|%d)\n"
 #: ../src/gui/callbacks.c:4375 ../src/gui/callbacks.c:4396
 #: ../src/gui/callbacks.c:4800 ../src/gui/callbacks.c:4806
 #: ../src/gui/callbacks.c:4831 ../src/gui/plot.c:381 ../src/gui/plot.c:441
-#: ../src/io/conversion.c:582 ../src/io/single_image.c:129
+#: ../src/io/conversion.c:593 ../src/io/single_image.c:129
 msgid "Error"
 msgstr "错误"
 
@@ -6203,53 +6203,63 @@ msgstr "PNG图像"
 msgid "Supported file types: %s\n"
 msgstr "支持的文件类型: %s\n"
 
-#: ../src/io/conversion.c:523
+#: ../src/io/conversion.c:528
+msgid "Invalid char"
+msgstr ""
+
+#: ../src/io/conversion.c:528
+msgid ""
+"Please remove invalid char in the sequence name before trying to convert "
+"images into a new sequence again."
+msgstr ""
+
+#: ../src/io/conversion.c:534
 #, c-format
 msgid "A file named %s already exists. Do you want to replace it?\n"
 msgstr ""
 
-#: ../src/io/conversion.c:525
+#: ../src/io/conversion.c:536
 msgid "The file already exists. Replacing it will overwrite its contents."
 msgstr ""
 
-#: ../src/io/conversion.c:551 ../src/io/conversion.c:556
+#: ../src/io/conversion.c:562 ../src/io/conversion.c:567
 msgid "A conflict has been detected."
 msgstr ""
 
-#: ../src/io/conversion.c:552
+#: ../src/io/conversion.c:563
 msgid ""
 "The Debayer option is not allowed in SER conversion, please uncheck the "
 "option."
 msgstr ""
 
-#: ../src/io/conversion.c:557
+#: ../src/io/conversion.c:568
 msgid ""
 "The Multiple SER option is not allowed in SER conversion, please uncheck the "
 "option."
 msgstr ""
 
-#: ../src/io/conversion.c:627
+#: ../src/io/conversion.c:638
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
 msgstr "SER输出将获得超过新建单通道图像的优先权。\n"
 
-#: ../src/io/conversion.c:633 ../src/io/conversion.c:685
+#: ../src/io/conversion.c:644 ../src/io/conversion.c:696
 #: ../src/io/sequence.c:1286 ../src/io/sequence_export.c:104
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "创建SER文件失败，异常终止。\n"
 
-#: ../src/io/conversion.c:650 ../src/io/conversion.c:651
+#: ../src/io/conversion.c:661 ../src/io/conversion.c:662
 #, c-format
 msgid "Converting %s..."
 msgstr "转化 %s..."
 
-#: ../src/io/conversion.c:657
+#: ../src/io/conversion.c:668
 #, c-format
 msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr ""
 
-#: ../src/io/conversion.c:658
+#: ../src/io/conversion.c:669
 #, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -6264,51 +6274,51 @@ msgstr ""
 "如果确认无错，那么你需要安装第三方软件来激活这种文件类型，详见README\n"
 "如果你所试图载入的文件类型在支持列表内，那么可以向开发团队提交一个缺陷报告。"
 
-#: ../src/io/conversion.c:677
+#: ../src/io/conversion.c:688
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Error while opening film %s, aborting.\n"
 
-#: ../src/io/conversion.c:697 ../src/io/conversion.c:763
+#: ../src/io/conversion.c:708 ../src/io/conversion.c:774
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Error while reading frame %d from %s, aborting.\n"
 
-#: ../src/io/conversion.c:709 ../src/io/conversion.c:775
-#: ../src/io/conversion.c:802 ../src/io/sequence.c:1316
+#: ../src/io/conversion.c:720 ../src/io/conversion.c:786
+#: ../src/io/conversion.c:813 ../src/io/sequence.c:1316
 #: ../src/io/sequence_export.c:317
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Error while converting to SER (no space left?)\n"
 
-#: ../src/io/conversion.c:717 ../src/io/conversion.c:783
-#: ../src/io/conversion.c:808
+#: ../src/io/conversion.c:728 ../src/io/conversion.c:794
+#: ../src/io/conversion.c:819
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr "Error while converting to FITS (no space left?)\n"
 
-#: ../src/io/conversion.c:733
+#: ../src/io/conversion.c:744
 msgid ""
 "Joining SER files is only possible with a list only containing SER files. "
 "Please, remove non SER files.\n"
 msgstr ""
 
-#: ../src/io/conversion.c:742
+#: ../src/io/conversion.c:753
 #, fuzzy, c-format
 msgid "Error while opening ser file %s, aborting.\n"
 msgstr "Error while opening film %s, aborting.\n"
 
-#: ../src/io/conversion.c:750
+#: ../src/io/conversion.c:761
 msgid "Input SER files must have the same size to be joined.\n"
 msgstr ""
 
-#: ../src/io/conversion.c:849
+#: ../src/io/conversion.c:860
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "在超过一个通道的图像上无法执行debayer\n"
 
-#: ../src/io/conversion.c:862 ../src/io/ser.c:827 ../src/io/ser.c:1033
+#: ../src/io/conversion.c:873 ../src/io/ser.c:827 ../src/io/ser.c:1033
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
-#: ../src/io/conversion.c:865 ../src/io/ser.c:831 ../src/io/ser.c:1037
+#: ../src/io/conversion.c:876 ../src/io/ser.c:831 ../src/io/ser.c:1037
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -6316,27 +6326,27 @@ msgid ""
 msgstr ""
 "文件头中含有的拜耳滤镜排列模式 (%s) 不同于设置中的排列 (%s)。 设置被覆盖。\n"
 
-#: ../src/io/conversion.c:874
+#: ../src/io/conversion.c:885
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr "发现XTRANS传感器。特殊算法将被采用。\n"
 
-#: ../src/io/conversion.c:879
+#: ../src/io/conversion.c:890
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "拜耳阵列模式： %s\n"
 
-#: ../src/io/conversion.c:883
+#: ../src/io/conversion.c:894
 msgid "Cannot perform debayering\n"
 msgstr "无法执行debayer\n"
 
-#: ../src/io/conversion.c:933
+#: ../src/io/conversion.c:944
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
 msgstr "将一个队列文件转化为单个FITS文件的请求是违法的\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:938
+#: ../src/io/conversion.c:949
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "文件打开错误 %s: 文件类型不支持。\n"
@@ -6946,7 +6956,7 @@ msgstr "打开 %s 失败。\n"
 
 #: ../src/io/single_image.c:178 ../src/io/single_image.c:184
 #, fuzzy
-msgid "Error oppening file"
+msgid "Error opening file"
 msgstr "Error opening GIF file: %s\n"
 
 #: ../src/io/single_image.c:179

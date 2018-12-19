@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-14 11:02+0100\n"
+"POT-Creation-Date: 2018-12-20 00:13+0100\n"
 "PO-Revision-Date: 2018-12-14 11:09+0200\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -4238,7 +4238,8 @@ msgstr ""
 "αστέρια."
 
 #: ../src/algos/plateSolver.c:1200
-msgid "There are no keywords storred in the FITS header.\n"
+#, fuzzy
+msgid "There are no keywords stored in the FITS header.\n"
 msgstr ""
 "Δεν υπάρχουν λέξεις κλειδιά αποθηκευμένα στην κεφαλίδα FITS.\n"
 "\n"
@@ -4270,7 +4271,7 @@ msgstr "Σώρευση απόρριψης σε εξέλιξη..."
 msgid "Rotational gradient complete."
 msgstr "Η εγγραφή ολοκληρώθηκε."
 
-#: ../src/algos/rgradient.c:182 ../src/core/command.c:219
+#: ../src/algos/rgradient.c:181 ../src/core/command.c:219
 #: ../src/core/command.c:456 ../src/core/command.c:776
 #: ../src/core/command.c:944 ../src/core/command.c:979
 #: ../src/core/command.c:1059 ../src/core/command.c:1404
@@ -4358,7 +4359,7 @@ msgstr "Πρέπει να φορτώσετε τουλάχιστον δυο επ�
 
 #: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4910
 #: ../src/gui/wavelets.c:153 ../src/gui/wavelets.c:162
-#: ../src/io/conversion.c:576 ../src/registration/registration.c:851
+#: ../src/io/conversion.c:587 ../src/registration/registration.c:851
 msgid "Warning"
 msgstr "Προειδοποίηση"
 
@@ -4665,16 +4666,16 @@ msgstr ""
 "Επίπεδο %s : Μέσος όρος: %0.1lf, Διάμεσος: %0.1lf, Σίγμα: %0.1lf, Απόκλιση "
 "Μέσου Όρου: %0.1lf, Ελάχιστο: %0.1lf, Μέγιστο: %0.1lf\n"
 
-#: ../src/core/command.c:1793 ../src/io/conversion.c:581
+#: ../src/core/command.c:1793 ../src/io/conversion.c:592
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Μετατροπή: σφάλμα ανοίγματος καταλόγου εργασίας %s.\n"
 
-#: ../src/core/command.c:1811 ../src/io/conversion.c:564
+#: ../src/core/command.c:1811 ../src/io/conversion.c:575
 msgid "Conversion: processing...\n"
 msgstr "Μετατροπή: γίνεται επεξεργασία...\n"
 
-#: ../src/core/command.c:1822 ../src/io/conversion.c:575
+#: ../src/core/command.c:1822 ../src/io/conversion.c:586
 msgid "Conversion: no working directory set.\n"
 msgstr "Μετατροπή: δεν έχει οριστεί κατάλογος εργασίας.\n"
 
@@ -5669,7 +5670,7 @@ msgstr "Οι εικόνες δεν έχουν το ίδιο μέγεθος (π =
 #: ../src/gui/callbacks.c:4375 ../src/gui/callbacks.c:4396
 #: ../src/gui/callbacks.c:4800 ../src/gui/callbacks.c:4806
 #: ../src/gui/callbacks.c:4831 ../src/gui/plot.c:381 ../src/gui/plot.c:441
-#: ../src/io/conversion.c:582 ../src/io/single_image.c:129
+#: ../src/io/conversion.c:593 ../src/io/single_image.c:129
 msgid "Error"
 msgstr "Σφάλμα"
 
@@ -6640,22 +6641,35 @@ msgstr "Εικόνες PNG"
 msgid "Supported file types: %s\n"
 msgstr "Τύποι αρχείων που υποστηρίζονται: %s\n"
 
-#: ../src/io/conversion.c:523
+#: ../src/io/conversion.c:528
+msgid "Invalid char"
+msgstr ""
+
+#: ../src/io/conversion.c:528
+#, fuzzy
+msgid ""
+"Please remove invalid char in the sequence name before trying to convert "
+"images into a new sequence again."
+msgstr ""
+"Παρακαλώ φορτώστε μια αλληλουχία πριν την εφαρμογή του PSF για την "
+"αλληλουχία."
+
+#: ../src/io/conversion.c:534
 #, c-format
 msgid "A file named %s already exists. Do you want to replace it?\n"
 msgstr "Ένα αρχείο με το όνομα %s υπάρχει ήδη. Θέλετε να το αντικαταστήσετε;\n"
 
-#: ../src/io/conversion.c:525
+#: ../src/io/conversion.c:536
 msgid "The file already exists. Replacing it will overwrite its contents."
 msgstr ""
 "Το αρχείο αυτό υπάρχει. Αντικαθιστώντας το θα αντικαταστήσετε τα περιεχόμενα "
 "του."
 
-#: ../src/io/conversion.c:551 ../src/io/conversion.c:556
+#: ../src/io/conversion.c:562 ../src/io/conversion.c:567
 msgid "A conflict has been detected."
 msgstr "Εντοπίστηκε αντίθεση."
 
-#: ../src/io/conversion.c:552
+#: ../src/io/conversion.c:563
 msgid ""
 "The Debayer option is not allowed in SER conversion, please uncheck the "
 "option."
@@ -6663,7 +6677,7 @@ msgstr ""
 "Η επιλογή Debayer δεν επιτρέπεται στη μετατροπή του SER , παρακαλώ αφαιρέστε "
 "την επιλογή."
 
-#: ../src/io/conversion.c:557
+#: ../src/io/conversion.c:568
 msgid ""
 "The Multiple SER option is not allowed in SER conversion, please uncheck the "
 "option."
@@ -6671,7 +6685,7 @@ msgstr ""
 "Η επιλογή πολλαπλών SER δεν επιτρέπεται στη μετατροπή των SER, παρακαλώ "
 "αφαιρέστε την επιλογή."
 
-#: ../src/io/conversion.c:627
+#: ../src/io/conversion.c:638
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
@@ -6679,22 +6693,22 @@ msgstr ""
 "Η έξοδος SER θα έχει προτεραιότητα από την επιλογή δημιουργίας ενός καναλιού "
 "ανά εικόνα.\n"
 
-#: ../src/io/conversion.c:633 ../src/io/conversion.c:685
+#: ../src/io/conversion.c:644 ../src/io/conversion.c:696
 #: ../src/io/sequence.c:1286 ../src/io/sequence_export.c:104
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "Η δημιουργία του αρχείου SER απέτυχε, γίνεται ακύρωση.\n"
 
-#: ../src/io/conversion.c:650 ../src/io/conversion.c:651
+#: ../src/io/conversion.c:661 ../src/io/conversion.c:662
 #, c-format
 msgid "Converting %s..."
 msgstr "Γίνεται μετατροπή %s..."
 
-#: ../src/io/conversion.c:657
+#: ../src/io/conversion.c:668
 #, c-format
 msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr "Ο τύπος αρχείου δεν υποστηρίζετε, δεν μπορεί να γίνει μετατροπή: %s\n"
 
-#: ../src/io/conversion.c:658
+#: ../src/io/conversion.c:669
 #, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -6715,28 +6729,28 @@ msgstr ""
 "δημιουργούς ότι η προέκταση που προσπαθείτε να χρησιμοποιήστε θα έπρεπε να "
 "αναγνωρίζετε γι'αυτο τον τύπο."
 
-#: ../src/io/conversion.c:677
+#: ../src/io/conversion.c:688
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Σφάλμα κατά το άνοιγμα της ταινίας %s, γίνεται ακύρωση.\n"
 
-#: ../src/io/conversion.c:697 ../src/io/conversion.c:763
+#: ../src/io/conversion.c:708 ../src/io/conversion.c:774
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Σφάλμα κατά την ανάγνωση του καρέ %d από %s, γίνεται ακύρωση.\n"
 
-#: ../src/io/conversion.c:709 ../src/io/conversion.c:775
-#: ../src/io/conversion.c:802 ../src/io/sequence.c:1316
+#: ../src/io/conversion.c:720 ../src/io/conversion.c:786
+#: ../src/io/conversion.c:813 ../src/io/sequence.c:1316
 #: ../src/io/sequence_export.c:317
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Σφάλμα κατά την μετατροπή σε SER (δεν υπάρχει χώρος;)\n"
 
-#: ../src/io/conversion.c:717 ../src/io/conversion.c:783
-#: ../src/io/conversion.c:808
+#: ../src/io/conversion.c:728 ../src/io/conversion.c:794
+#: ../src/io/conversion.c:819
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr "Σφάλμα κατά την μετατροπή σε FITS (δεν υπάρχει χώρος;)\n"
 
-#: ../src/io/conversion.c:733
+#: ../src/io/conversion.c:744
 msgid ""
 "Joining SER files is only possible with a list only containing SER files. "
 "Please, remove non SER files.\n"
@@ -6744,25 +6758,25 @@ msgstr ""
 "Η ένωση των αρχείων SER είναι δυνατή μόνο με μια λίστα που περιέχει μόνο "
 "αρχεία SER. Παρακαλώ, αφαιρέστε τα μη-SER αρχεία.\n"
 
-#: ../src/io/conversion.c:742
+#: ../src/io/conversion.c:753
 #, c-format
 msgid "Error while opening ser file %s, aborting.\n"
 msgstr "Σφάλμα κατά το άνοιγμα του αρχείου ser %s, γίνεται ακύρωση.\n"
 
-#: ../src/io/conversion.c:750
+#: ../src/io/conversion.c:761
 msgid "Input SER files must have the same size to be joined.\n"
 msgstr ""
 "Τα αρχεία εισόδου SER πρέπει να έχουν το ίδιο μέγεθος για να ενωθούν.\n"
 
-#: ../src/io/conversion.c:849
+#: ../src/io/conversion.c:860
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "Δεν μπορεί να γίνει debayer σε εικόνα με πάνω από ένα κανάλι\n"
 
-#: ../src/io/conversion.c:862 ../src/io/ser.c:827 ../src/io/ser.c:1033
+#: ../src/io/conversion.c:873 ../src/io/ser.c:827 ../src/io/ser.c:1033
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Δεν βρέθηκε διάταξη Bayer στην κεφαλίδα του αρχείου.\n"
 
-#: ../src/io/conversion.c:865 ../src/io/ser.c:831 ../src/io/ser.c:1037
+#: ../src/io/conversion.c:876 ../src/io/ser.c:831 ../src/io/ser.c:1037
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -6771,20 +6785,20 @@ msgstr ""
 "Η διάταξη Bayer που βρέθηκε στην επικεφαλίδα (%s) είναι διαφορετική από την "
 "διάταξη Bayer στις ρυθμίσεις (%s). Γίνεται παράκαμψη των ρυθμίσεων.\n"
 
-#: ../src/io/conversion.c:874
+#: ../src/io/conversion.c:885
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr "Αισθητήρας XTRANS ανιχνεύτηκε. Χρησιμοποιώντας ειδικό αλγόριθμο. \n"
 
-#: ../src/io/conversion.c:879
+#: ../src/io/conversion.c:890
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Διάταξη Φίλτρου: %s\n"
 
-#: ../src/io/conversion.c:883
+#: ../src/io/conversion.c:894
 msgid "Cannot perform debayering\n"
 msgstr "Δεν μπορεί να γίνει debayer\n"
 
-#: ../src/io/conversion.c:933
+#: ../src/io/conversion.c:944
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
@@ -6793,7 +6807,7 @@ msgstr ""
 "έπρεπε να συμβεί\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:938
+#: ../src/io/conversion.c:949
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "Σφάλμα στο άνοιγμα του %s: ο τύπος του αρχείου δεν υποστηρίζεται .\n"
@@ -7463,7 +7477,8 @@ msgid "Opening %s failed.\n"
 msgstr "Το άνοιγμα του %s απέτυχε.\n"
 
 #: ../src/io/single_image.c:178 ../src/io/single_image.c:184
-msgid "Error oppening file"
+#, fuzzy
+msgid "Error opening file"
 msgstr "Σφάλμα στο άνοιγμα του αρχείου"
 
 #: ../src/io/single_image.c:179

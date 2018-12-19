@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-14 11:02+0100\n"
-"PO-Revision-Date: 2018-12-13 15:53+0100\n"
+"POT-Creation-Date: 2018-12-20 00:13+0100\n"
+"PO-Revision-Date: 2018-12-20 00:14+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -4184,7 +4184,7 @@ msgstr ""
 "alignement. Au moins %d étoiles sont nécessaires."
 
 #: ../src/algos/plateSolver.c:1200
-msgid "There are no keywords storred in the FITS header.\n"
+msgid "There are no keywords stored in the FITS header.\n"
 msgstr "Il n'y a aucun mot clé stocké dans l'entête du fichier.\n"
 
 #: ../src/algos/plateSolver.c:1201
@@ -4212,7 +4212,7 @@ msgstr "Gradient rotationnel en cours..."
 msgid "Rotational gradient complete."
 msgstr "Gradient rotationnel terminé."
 
-#: ../src/algos/rgradient.c:182 ../src/core/command.c:219
+#: ../src/algos/rgradient.c:181 ../src/core/command.c:219
 #: ../src/core/command.c:456 ../src/core/command.c:776
 #: ../src/core/command.c:944 ../src/core/command.c:979
 #: ../src/core/command.c:1059 ../src/core/command.c:1404
@@ -4299,7 +4299,7 @@ msgstr "Vous devez au moins charger 2 canaux\n"
 
 #: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4910
 #: ../src/gui/wavelets.c:153 ../src/gui/wavelets.c:162
-#: ../src/io/conversion.c:576 ../src/registration/registration.c:851
+#: ../src/io/conversion.c:587 ../src/registration/registration.c:851
 msgid "Warning"
 msgstr "Attention"
 
@@ -4606,16 +4606,16 @@ msgstr ""
 "Canal %s : Moyenne : %0.1lf, Médiane : %0.1lf, Sigma : %0.1lf, AvgDev : "
 "%0.1lf, Min : %0.1lf, Max : %0.1lf\n"
 
-#: ../src/core/command.c:1793 ../src/io/conversion.c:581
+#: ../src/core/command.c:1793 ../src/io/conversion.c:592
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Conversion : erreur lors de l'ouverture du répertoire de travail %s.\n"
 
-#: ../src/core/command.c:1811 ../src/io/conversion.c:564
+#: ../src/core/command.c:1811 ../src/io/conversion.c:575
 msgid "Conversion: processing...\n"
 msgstr "Conversion : en cours...\n"
 
-#: ../src/core/command.c:1822 ../src/io/conversion.c:575
+#: ../src/core/command.c:1822 ../src/io/conversion.c:586
 msgid "Conversion: no working directory set.\n"
 msgstr "Conversion: aucun répertoire de travail défini.\n"
 
@@ -5594,7 +5594,7 @@ msgstr "Les images n'ont pas la même taille (l = %d|%d, h = %d|%d)\n"
 #: ../src/gui/callbacks.c:4375 ../src/gui/callbacks.c:4396
 #: ../src/gui/callbacks.c:4800 ../src/gui/callbacks.c:4806
 #: ../src/gui/callbacks.c:4831 ../src/gui/plot.c:381 ../src/gui/plot.c:441
-#: ../src/io/conversion.c:582 ../src/io/single_image.c:129
+#: ../src/io/conversion.c:593 ../src/io/single_image.c:129
 msgid "Error"
 msgstr "Erreur"
 
@@ -6558,20 +6558,32 @@ msgstr "Images PNG"
 msgid "Supported file types: %s\n"
 msgstr "Type de fichiers supportés : %s\n"
 
-#: ../src/io/conversion.c:523
+#: ../src/io/conversion.c:528
+msgid "Invalid char"
+msgstr "Caractère non valide"
+
+#: ../src/io/conversion.c:528
+msgid ""
+"Please remove invalid char in the sequence name before trying to convert "
+"images into a new sequence again."
+msgstr ""
+"Veuillez supprimer le caractère non valide dans le nom de la séquence avant "
+"de tenter de convertir à nouveau les images en une nouvelle séquence."
+
+#: ../src/io/conversion.c:534
 #, c-format
 msgid "A file named %s already exists. Do you want to replace it?\n"
 msgstr "Un fichier nommé %s existe déjà. Voulez-vous le remplacer ?\n"
 
-#: ../src/io/conversion.c:525
+#: ../src/io/conversion.c:536
 msgid "The file already exists. Replacing it will overwrite its contents."
 msgstr "Le fichier existe déjà. Le remplacer écrasera son contenu."
 
-#: ../src/io/conversion.c:551 ../src/io/conversion.c:556
+#: ../src/io/conversion.c:562 ../src/io/conversion.c:567
 msgid "A conflict has been detected."
 msgstr "Un conflit a été détecté."
 
-#: ../src/io/conversion.c:552
+#: ../src/io/conversion.c:563
 msgid ""
 "The Debayer option is not allowed in SER conversion, please uncheck the "
 "option."
@@ -6579,7 +6591,7 @@ msgstr ""
 "L'option de dématriçage n'est pas autorisée dans la conversion SER, veuillez "
 "décocher l'option."
 
-#: ../src/io/conversion.c:557
+#: ../src/io/conversion.c:568
 msgid ""
 "The Multiple SER option is not allowed in SER conversion, please uncheck the "
 "option."
@@ -6587,29 +6599,29 @@ msgstr ""
 "L'option de conversion en fichier SER multiple n'est pas autorisée dans la "
 "conversion SER, veuillez décocher l'option."
 
-#: ../src/io/conversion.c:627
+#: ../src/io/conversion.c:638
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
 msgstr ""
 "La sortie du format SER aura priorité sur l'option 1 canal par image.\n"
 
-#: ../src/io/conversion.c:633 ../src/io/conversion.c:685
+#: ../src/io/conversion.c:644 ../src/io/conversion.c:696
 #: ../src/io/sequence.c:1286 ../src/io/sequence_export.c:104
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "La création du fichier SER a échoué, abandon.\n"
 
-#: ../src/io/conversion.c:650 ../src/io/conversion.c:651
+#: ../src/io/conversion.c:661 ../src/io/conversion.c:662
 #, c-format
 msgid "Converting %s..."
 msgstr "Conversion de %s..."
 
-#: ../src/io/conversion.c:657
+#: ../src/io/conversion.c:668
 #, c-format
 msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr "Le type de fichier n'est pas supporté, impossible de convertir : %s\n"
 
-#: ../src/io/conversion.c:658
+#: ../src/io/conversion.c:669
 #, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -6629,30 +6641,30 @@ msgstr ""
 "supportés, vous devriez contacter les développeurs pour leur notifier que "
 "l'extension que vous essayez d'utiliser devrait être reconnue."
 
-#: ../src/io/conversion.c:677
+#: ../src/io/conversion.c:688
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Erreur pendant l'ouverture du film %s, abandon.\n"
 
-#: ../src/io/conversion.c:697 ../src/io/conversion.c:763
+#: ../src/io/conversion.c:708 ../src/io/conversion.c:774
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Erreur pendant la lecture de l'image %d de %s, abandon.\n"
 
-#: ../src/io/conversion.c:709 ../src/io/conversion.c:775
-#: ../src/io/conversion.c:802 ../src/io/sequence.c:1316
+#: ../src/io/conversion.c:720 ../src/io/conversion.c:786
+#: ../src/io/conversion.c:813 ../src/io/sequence.c:1316
 #: ../src/io/sequence_export.c:317
 msgid "Error while converting to SER (no space left?)\n"
 msgstr ""
 "Erreur pendant la conversion en fichier SER (plus d'espace disponible ?)\n"
 
-#: ../src/io/conversion.c:717 ../src/io/conversion.c:783
-#: ../src/io/conversion.c:808
+#: ../src/io/conversion.c:728 ../src/io/conversion.c:794
+#: ../src/io/conversion.c:819
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr ""
 "Erreur pendant la conversion en fichier FITS (plus d'espace disponible ?)\n"
 
-#: ../src/io/conversion.c:733
+#: ../src/io/conversion.c:744
 msgid ""
 "Joining SER files is only possible with a list only containing SER files. "
 "Please, remove non SER files.\n"
@@ -6661,26 +6673,26 @@ msgstr ""
 "uniquement des fichiers SER. Veuillez s'il vous plaît, supprimer les "
 "fichiers non SER.\n"
 
-#: ../src/io/conversion.c:742
+#: ../src/io/conversion.c:753
 #, c-format
 msgid "Error while opening ser file %s, aborting.\n"
 msgstr "Erreur pendant l'ouverture du fichier ser %s, abandon.\n"
 
-#: ../src/io/conversion.c:750
+#: ../src/io/conversion.c:761
 msgid "Input SER files must have the same size to be joined.\n"
 msgstr "Les fichiers SER doivent avoir la même taille pour être joints.\n"
 
-#: ../src/io/conversion.c:849
+#: ../src/io/conversion.c:860
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr ""
 "Impossible de dématricer une image dont le nombre de canaux est supérieur à "
 "1\n"
 
-#: ../src/io/conversion.c:862 ../src/io/ser.c:827 ../src/io/ser.c:1033
+#: ../src/io/conversion.c:873 ../src/io/ser.c:827 ../src/io/ser.c:1033
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Aucun motif de Bayer trouvé dans l'entête du fichier.\n"
 
-#: ../src/io/conversion.c:865 ../src/io/ser.c:831 ../src/io/ser.c:1037
+#: ../src/io/conversion.c:876 ../src/io/ser.c:831 ../src/io/ser.c:1037
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -6689,20 +6701,20 @@ msgstr ""
 "Le motif de Bayer trouvé dans l'entête (%s) est différent du motif de Bayer "
 "enregistré dans les paramètres (%s). Outrepasser les paramètres.\n"
 
-#: ../src/io/conversion.c:874
+#: ../src/io/conversion.c:885
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr "Capteur XTRANS détecté. Utilisation d'un algorithme spécial.\n"
 
-#: ../src/io/conversion.c:879
+#: ../src/io/conversion.c:890
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Motif du Filtre : %s\n"
 
-#: ../src/io/conversion.c:883
+#: ../src/io/conversion.c:894
 msgid "Cannot perform debayering\n"
 msgstr "Dématriçage impossible\n"
 
-#: ../src/io/conversion.c:933
+#: ../src/io/conversion.c:944
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
@@ -6711,7 +6723,7 @@ msgstr ""
 "devrait pas arriver\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:938
+#: ../src/io/conversion.c:949
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "Erreur à l'ouverture de %s : type de fichier non supporté.\n"
@@ -7342,7 +7354,7 @@ msgid "Opening %s failed.\n"
 msgstr "Échec de l'ouverture de %s.\n"
 
 #: ../src/io/single_image.c:178 ../src/io/single_image.c:184
-msgid "Error oppening file"
+msgid "Error opening file"
 msgstr "Erreur lors de l'ouverture du fichier"
 
 #: ../src/io/single_image.c:179

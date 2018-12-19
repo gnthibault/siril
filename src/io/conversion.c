@@ -519,6 +519,17 @@ static void initialize_convert() {
 		return;
 	}
 
+	/* test if forbidden chars exist */
+	char *forbid_char = strchr(destroot, '/');
+	if (forbid_char == NULL) {
+		forbid_char = strchr(destroot, '\\');
+	}
+	if (forbid_char != NULL) {
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Invalid char"), _("Please remove invalid char in the sequence name "
+				"before trying to convert images into a new sequence again."));
+		return;
+	}
+
 	if (g_file_test(destroot, G_FILE_TEST_EXISTS)) {
 		char *title = siril_log_message(_("A file named %s already exists. "
 				"Do you want to replace it?\n"), destroot);
