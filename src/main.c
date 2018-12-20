@@ -442,6 +442,9 @@ int main(int argc, char *argv[]) {
 			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("histogram_button")), lookup_widget("image_histogram_dark"));
 			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("seqlist_button")), lookup_widget("image_seqlist_dark"));
 		}
+
+		g_object_ref(G_OBJECT(lookup_widget("main_window"))); // don't destroy it on removal
+		g_object_ref(G_OBJECT(lookup_widget("rgb_window")));  // don't destroy it on removal
 	}
 
 	/* handling OS-X integration */

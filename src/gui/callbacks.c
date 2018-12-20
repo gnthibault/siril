@@ -3037,14 +3037,12 @@ static rectangle get_window_position(GtkWidget *widget) {
 
 	window = GTK_WINDOW(widget);
 
-	if (GTK_IS_WINDOW(window)) {
-		gtk_window_get_position(window, &x, &y);
-		gtk_window_get_size(window, &w, &h);
-		rec.x = x;
-		rec.y = y;
-		rec.w = w;
-		rec.h = h;
-	}
+	gtk_window_get_position(window, &x, &y);
+	gtk_window_get_size(window, &w, &h);
+	rec.x = x;
+	rec.y = y;
+	rec.w = w;
+	rec.h = h;
 	return rec;
 }
 
@@ -3052,6 +3050,9 @@ static void save_all_windows_position() {
 	if (!com.script) {
 		com.main_w_pos = get_window_position(lookup_widget("main_window"));
 		com.rgb_w_pos = get_window_position(lookup_widget("rgb_window"));
+
+		g_object_unref(G_OBJECT(lookup_widget("main_window")));
+		g_object_unref(G_OBJECT(lookup_widget("rgb_window")));
 
 		writeinitfile();
 	}
