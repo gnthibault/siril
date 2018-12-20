@@ -1,27 +1,28 @@
 siril 0.9.10
 xxxxxxxx
 
-* Fixed default rotation algorithm for register command
-* Preserve history in FITS file when former history exists
-* Improved ECC alignment algorithm
-* New external command stream option
-* Preview for color saturation, asinh mapping, histogram transform and wavelets
-* Preserve FITS keywords in sum stacked image
-* Check if the number of FITS can be stacked by Siril on the system
-* Fixed crash on sequence export with normalization
-* Scripts with Windows end of line (CR+LF) are now usable
+* New astrometry tool that solves acquisition parameters from stars in the image (requires Web access)
+* Enabled previews for color saturation, asinh stretching, histogram transform and wavelets
+* Added ability to join SER files
+* Added a command stream using named pipes
 * Added RGB flat normalisation for CFA images and command GREY_FLAT
 * Added SETFINDSTAR command to define sigma and roundness parameters
-* Added ASINH command and GUI function
+* Added ASINH command and GUI function, for asinh stretching of images
 * Added RGRADIENT command and GUI function
-* Make command SEQCROP scriptable
-* New astrometric tool
+* Made command SEQCROP scriptable
+* Improved ECC alignment algorithm
 * Improved global registration and fixed a bug
-* Fixed crash on startup on Windows with a session owning a wide char
+* Redesigned all dialog windows to conform to GNOME guidelines
+* Preserving history in FITS file header when former history exists
+* Preserving FITS keywords in sum stacked image
+* Checking and increasing if needed maximum number of FITS that can be stacked on the system
+* Automatically detecting GTK+ dark theme preference
 * Fixed issue with wide chars on Windows
-* Redesigned all dialog windows to conform to GNOME guideness
-* Added ability to join SER files
-* Fixed bad behavior of excluded reference image
+* Fixed some erratic behaviour when reference image was outside selection
+* Fixed default rotation interpolation algorithm for register command
+* Fixed crash on sequence export with normalization
+* Fixed line endings in scripts for all OS
+* Fixed compilation for OpenCV 4.0
 
 siril 0.9.9
 06/07/18
