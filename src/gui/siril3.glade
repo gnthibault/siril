@@ -11974,6 +11974,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
                         <property name="hexpand">True</property>
                         <signal name="activate" handler="on_entry2_activate" swapped="no"/>
                         <signal name="changed" handler="on_convtoroot_changed" swapped="no"/>
+                        <signal name="insert-text" handler="insert_text_handler" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -12575,6 +12576,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                         <property name="can_focus">True</property>
                         <property name="tooltip_text" translatable="yes">Base name for the exported sequence</property>
                         <property name="width_chars">50</property>
+                        <signal name="insert-text" handler="insert_text_handler" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>

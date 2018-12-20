@@ -519,17 +519,6 @@ static void initialize_convert() {
 		return;
 	}
 
-	/* test if forbidden chars exist */
-	char *forbid_char = strchr(destroot, '/');
-	if (forbid_char == NULL) {
-		forbid_char = strchr(destroot, '\\');
-	}
-	if (forbid_char != NULL) {
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("Invalid char"), _("Please remove invalid char in the sequence name "
-				"before trying to convert images into a new sequence again."));
-		return;
-	}
-
 	if (g_file_test(destroot, G_FILE_TEST_EXISTS)) {
 		char *title = siril_log_message(_("A file named %s already exists. "
 				"Do you want to replace it?\n"), destroot);
@@ -962,6 +951,48 @@ void unset_debayer_in_convflags() {
 }
 
 /******************Callback functions*******************************************************************/
+
+static gchar forbidden_char[] = { '/', '\\' };
+
+static int get_nb_forbidden_char() {
+	return sizeof(forbidden_char) / sizeof(gchar);
+}
+
+static gboolean is_forbiden(gchar c) {
+	int i, n;
+
+	n = get_nb_forbidden_char();
+	for (i = 0; i < n; i++) {
+		if (c == forbidden_char[i]) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+void insert_text_handler(GtkEntry *entry, const gchar *text, gint length,
+		gint *position, gpointer data) {
+	GtkEditable *editable = GTK_EDITABLE(entry);
+	int i, count = 0;
+	gchar *result = g_new(gchar, length);
+
+	for (i = 0; i < length; i++) {
+		if (is_forbiden(text[i]))
+			continue;
+		result[count++] = text[i];
+	}
+
+	if (count > 0) {
+		g_signal_handlers_block_by_func(G_OBJECT (editable),
+				G_CALLBACK (insert_text_handler), data);
+		gtk_editable_insert_text(editable, result, count, position);
+		g_signal_handlers_unblock_by_func(G_OBJECT (editable),
+				G_CALLBACK (insert_text_handler), data);
+	}
+	g_signal_stop_emission_by_name(G_OBJECT(editable), "insert_text");
+
+	g_free(result);
+}
 
 // truncates destroot if it's more than 120 characters, append a '_' if it
 // doesn't end with one or a '-'. SER extensions are accepted and unmodified.
