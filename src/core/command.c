@@ -262,7 +262,7 @@ int process_save(int nb){
 int process_savebmp(int nb){
 	char filename[256];
 	
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	sprintf(filename, "%s", strcat(word[1], ".bmp"));
 	set_cursor_waiting(TRUE);
@@ -275,7 +275,7 @@ int process_savebmp(int nb){
 int process_savejpg(int nb){
 	char filename[256];
 
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	int quality = 100;
 	
@@ -295,7 +295,7 @@ int process_savepng(int nb){
 	char filename[256];
 	uint32_t bytes_per_sample;
 
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	strcpy(filename, word[1]);
 	strcat(filename, ".png");
@@ -312,7 +312,7 @@ int process_savetif(int nb){
 	char filename[256];
 	uint16 bitspersample = 16;
 	
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	if (strcasecmp(word[0], "savetif8") == 0) bitspersample=8;
 	sprintf(filename,"%s", strcat(word[1],".tif"));
@@ -324,7 +324,7 @@ int process_savetif(int nb){
 #endif
 
 int process_savepnm(int nb){
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	saveNetPBM(word[1], &gfit);
 	return 0;
@@ -397,7 +397,7 @@ int process_entropy(int nb){
 	rectangle area;
 	double e;
 
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	if (com.selection.w > 0 && com.selection.h > 0) {
 		memcpy(&area, &com.selection, sizeof(rectangle));
@@ -917,7 +917,7 @@ int process_unset_mag_seq(int nb) {
 }
 
 int process_psf(int nb){
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
 	if (layer != -1) {
@@ -1046,7 +1046,7 @@ int process_seq_crop(int nb) {
 }
 
 int process_bg(int nb){
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	WORD bg = round_to_WORD(background(&gfit, -1, &com.selection));
 	siril_log_message(_("Background value: %d\n"), bg);
@@ -1060,7 +1060,7 @@ int process_bgnoise(int nb){
 		return 1;
 	}
 
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	struct noise_data *args = malloc(sizeof(struct noise_data));
 
@@ -1085,7 +1085,7 @@ int process_histo(int nb){
 	char* clayer;
 	char name [20];
 	
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	if (nlayer>3 || nlayer <0)
 		return 1;
@@ -1182,8 +1182,6 @@ int process_ddp(int nb){
 int process_new(int nb){
 	int width, height, layers;
 	
-	if (!single_image_is_loaded()) return 1;
-
 	width = atof(word[1]);
 	height = atof(word[2]);
 	layers = atoi(word[3]);
@@ -1207,7 +1205,7 @@ int process_new(int nb){
 int process_visu(int nb){
 	int low, high;
 	
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	low = atoi(word[1]);
 	high = atoi(word[2]);
@@ -1255,7 +1253,7 @@ int process_findstar(int nb){
 	int nbstars;
 	int layer = RLAYER;
 
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	if (isrgb(&gfit)) layer = GLAYER;
 	delete_selected_area();
@@ -1271,7 +1269,7 @@ int process_findhot(int nb){
 	int i;
 	char type;
 
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	if (gfit.naxes[2] != 1) {
 		siril_log_message(_("find_hot must be applied on an one-channel master-dark frame"));
@@ -1437,7 +1435,7 @@ int process_fmedian(int nb){
 int process_cdg(int nb) {
 	double x_avg, y_avg;
 
-	if (!single_image_is_loaded() && !sequence_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	FindCentre(&gfit, &x_avg, &y_avg);
 	y_avg = gfit.ry - y_avg;	// FITS are stored bottom to top
@@ -1458,7 +1456,7 @@ int process_clear(int nb) {
 }
 
 int process_clearstar(int nb){
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	clear_stars_list();
 	adjust_cutoff_from_updated_gfit();
@@ -1533,7 +1531,7 @@ int process_scnr(int nb){
 		return 1;
 	}
 
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 	if (gfit.naxes[2] == 1) return 1;
 
 	struct scnr_data *args = malloc(sizeof(struct scnr_data));
@@ -1713,7 +1711,7 @@ int process_unselect(int nb){
 int process_split(int nb){
 	char R[256], G[256], B[256];
 	
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	if (!isrgb(&gfit)) {
 		siril_log_message(_("Siril cannot split layers. Make sure your image is in RGB mode.\n"));
@@ -1733,7 +1731,7 @@ int process_stat(int nb){
 	int layer;
 	char layername[6];
 
-	if (!single_image_is_loaded()) return 1;
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	nplane = gfit.naxes[2];
 
