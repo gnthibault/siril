@@ -640,41 +640,39 @@ int lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb) {
 }
 
 static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
-	double noise = 0;
-	fits *dark_tmp = NULL, *fit_tmp = NULL;
+	double noise = 0.0;
+	fits dark_tmp, fit_tmp;
 	int chan, ret = 0;
+	rectangle area = { 0 };
 
-	if (new_fit_image(&dark_tmp, dark->rx, dark->ry, 1)) {
-		return -1.0;
-	}
-	if (new_fit_image(&fit_tmp, fit->rx, fit->ry, 1)) {
-		clearfits(dark_tmp);
-		return -1.0;
-	}
+	/* square of 512x512 in the center of the image */
+	area.x = (fit->rx / 2) - 256;
+	area.y = (fit->ry / 2) - 256;
+	area.w = 512;
+	area.h = 512;
 
-	copyfits(dark, dark_tmp, CP_ALLOC | CP_EXTRACT, 0);
-	copyfits(fit, fit_tmp, CP_ALLOC | CP_EXTRACT, 0);
+	copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	copyfits(fit, &fit_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 
-	soper(dark_tmp, k, OPER_MUL);
-	ret = imoper(fit_tmp, dark_tmp, OPER_SUB);
+	soper(&dark_tmp, k, OPER_MUL);
+	ret = imoper(&fit_tmp, &dark_tmp, OPER_SUB);
 	if (ret) {
-		clearfits(dark_tmp);
-		clearfits(fit_tmp);
+		clearfits(&dark_tmp);
+		clearfits(&fit_tmp);
 		return -1.0;
 	}
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, fit_tmp, chan, NULL, STATS_NOISE);
+		imstats *stat = statistics(NULL, -1, &fit_tmp, chan, &area, STATS_BASIC | STATS_NOISE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			return 0.0;
 		}
-		noise += stat->bgnoise;
-		//printf("noise=%lf, k=%lf\n", noise, k);
+		noise += stat->sigma;
 		free_stats(stat);
 	}
-	clearfits(dark_tmp);
-	clearfits(fit_tmp);
+	clearfits(&dark_tmp);
+	clearfits(&fit_tmp);
 
 	return noise;
 }
@@ -690,7 +688,7 @@ static double goldenSectionSearch(fits *brut, fits *dark, double a, double b,
 	c = b - GR * (b - a);
 	d = a + GR * (b - a);
 	do {
-		fprintf(stdout, "Iter: %d\n", ++iter);
+		fprintf(stdout, "Iter: %d (%1.2lf, %1.2lf)\n", ++iter, c, d);
 		fc = evaluateNoiseOfCalibratedImage(brut, dark, c);
 		fd = evaluateNoiseOfCalibratedImage(brut, dark, d);
 		if (fc < 0.0 || fd < 0.0)
@@ -705,7 +703,7 @@ static double goldenSectionSearch(fits *brut, fits *dark, double a, double b,
 			d = a + GR * (b - a);
 		}
 	} while (fabs(c - d) > tol);
-	return ((b + a) / 2);
+	return ((b + a) / 2.0);
 }
 
 static int preprocess(fits *brut, fits *offset, fits *dark, fits *flat, float level) {
@@ -732,40 +730,38 @@ static int preprocess(fits *brut, fits *offset, fits *dark, fits *flat, float le
 }
 
 static int darkOptimization(fits *brut, fits *dark, fits *offset) {
-	double k;
+	double k0;
 	double lo = 0.0;
 	double up = 2.0;
 	int ret = 0;
-	fits *dark_tmp = NULL;
+	fits dark_tmp;
 
 	if (brut->rx != dark->rx ||
 			brut->ry != dark->ry) {
 		return -1;
 	}
 
-	if (new_fit_image(&dark_tmp, dark->rx, dark->ry, 1))
-		return -1;
-	copyfits(dark, dark_tmp, CP_ALLOC | CP_EXTRACT, 0);
+	copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 
 	/* Minimization of background noise to find better k */
 	invalidate_stats_from_fit(brut);
-	k = goldenSectionSearch(brut, dark_tmp, lo, up, 1E-3);
-	if (k < 0.0)
+	k0 = goldenSectionSearch(brut, &dark_tmp, lo, up, 1E-3);
+	if (k0 < 0.0)
 		return -1;
 
-	siril_log_message(_("Dark optimization: %.3lf\n"), k);
+	siril_log_message(_("Dark optimization: k0=%1.3lf\n"), k0);
 	/* Multiply coefficient to master-dark */
 	if (com.preprostatus & USE_OFFSET) {
-		ret = imoper(dark_tmp, offset, OPER_SUB);
+		ret = imoper(&dark_tmp, offset, OPER_SUB);
 		if (ret) {
-			clearfits(dark_tmp);
+			clearfits(&dark_tmp);
 			return ret;
 		}
 	}
-	soper(dark_tmp, k, OPER_MUL);
-	ret = imoper(brut, dark_tmp, OPER_SUB);
+	soper(&dark_tmp, k0, OPER_MUL);
+	ret = imoper(brut, &dark_tmp, OPER_SUB);
 
-	clearfits(dark_tmp);
+	clearfits(&dark_tmp);
 	return ret;
 }
 
