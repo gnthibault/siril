@@ -138,7 +138,7 @@ static command commands[] = {
 	
 	{"offset", 1, "offset value", process_offset, STR_OFFSET, TRUE},
 	
-	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-flip] [-equalize_cfa]", process_preprocess, STR_PREPROCESS, TRUE},
+	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-flip] [-equalize_cfa] [-opt]", process_preprocess, STR_PREPROCESS, TRUE},
 	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 	
 	{"register", 1, "register sequence [-norot] [-drizzle]", process_register, STR_REGISTER, TRUE},
@@ -2232,7 +2232,7 @@ int process_stackone(int nb) {
 // preprocess sequencename -bias= -dark= -flat= -cfa -debayer
 int process_preprocess(int nb) {
 	struct preprocessing_data *args = malloc(sizeof(struct preprocessing_data));
-	int nb_command_max = 8;
+	int nb_command_max = 9;
 
 	com.preprostatus = 0;
 	gboolean is_cfa = FALSE;
@@ -2305,6 +2305,8 @@ int process_preprocess(int nb) {
 					retvalue = 1;
 					break;
 				}
+			} else if (!strcmp(word[i], "-opt")) {
+				com.preprostatus |= USE_OPTD;
 			} else if (!strcmp(word[i], "-cfa")) {
 				is_cfa = TRUE;
 			}  else if (!strcmp(word[i], "-debayer")) {
