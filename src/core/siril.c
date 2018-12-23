@@ -641,7 +641,7 @@ int lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb) {
 
 static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	double noise = 0.0;
-	fits dark_tmp, fit_tmp;
+	fits dark_tmp = { 0 }, fit_tmp = { 0 };
 	int chan, ret = 0;
 	rectangle area = { 0 };
 
@@ -735,7 +735,7 @@ static int darkOptimization(fits *brut, fits *dark, fits *offset) {
 	double lo = 0.0;
 	double up = 2.0;
 	int ret = 0;
-	fits dark_tmp;
+	fits dark_tmp = { 0 };
 
 	if (brut->rx != dark->rx ||
 			brut->ry != dark->ry) {
