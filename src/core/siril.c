@@ -646,10 +646,11 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	rectangle area = { 0 };
 
 	/* square of 512x512 in the center of the image */
-	area.x = (fit->rx / 2) - 256;
-	area.y = (fit->ry / 2) - 256;
-	area.w = 512;
-	area.h = 512;
+	int size = 512;
+	area.x = (fit->rx - size) / 2;
+	area.y = (fit->ry - size) / 2;
+	area.w = size;
+	area.h = size;
 
 	copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 	copyfits(fit, &fit_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
@@ -663,7 +664,7 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	}
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, &fit_tmp, chan, &area, STATS_BASIC | STATS_NOISE);
+		imstats *stat = statistics(NULL, -1, &fit_tmp, chan, &area, STATS_BASIC);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			return 0.0;
