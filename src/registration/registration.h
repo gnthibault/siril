@@ -21,6 +21,7 @@ struct registration_args {
 	gboolean matchSelection;	// Match stars found in the seleciton of reference image
 	rectangle selection;		// the selection rectangle
 	gboolean x2upscale;		// apply an x2 upscale for pseudo drizzle
+	gboolean cumul;			// cumul reg data with previous one
 
 	/* data for generated sequence, for star alignment registration */
 	gboolean translation_only;	// don't rotate images => no new sequence
@@ -47,6 +48,12 @@ typedef enum {
 	PLANETARY_FULLDISK, PLANETARY_SURFACE
 } planetary_type;
 
+typedef enum {
+	REG_PAGE_GLOBAL,
+	REG_PAGE_COMET,
+	REG_PAGE_MISC
+} reg_notebook_page;
+
 /* used to register a registration method */
 struct registration_method {
 	const char *name;
@@ -63,6 +70,7 @@ int register_shift_dft(struct registration_args *args);
 int register_shift_fwhm(struct registration_args *args);
 int register_star_alignment(struct registration_args *args);
 int register_ecc(struct registration_args *args);
+int register_comet(struct registration_args *regargs);
 void update_reg_interface(gboolean dont_change_reg_radio);
 void compute_fitting_selection(rectangle *area, int hsteps, int vsteps, int preserve_square);
 void get_the_registration_area(struct registration_args *reg_args,

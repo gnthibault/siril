@@ -69,7 +69,10 @@ static char *tooltip_text[] = { N_("One Star Registration: This is the simplest 
 		N_("Enhanced Correlation Coefficient Maximization: It is based on the enhanced correlation "
 		"coefficient maximization algorithm. This method is more complex and slower than Image Pattern Alignment "
 		"but no selection is required. It is good for moon surface images registration. Only translation is taken "
-		"into account yet.")
+		"into account yet."),
+		N_("Comet/Asteroid Registration: This algorithm is dedicated to the comet and asteroid registration. It is necessary to have timestamps "
+		"stored in FITS header and to load a sequence of star aligned images. This methods makes a translation of a certain number of pixels depending on "
+		"the timestamp of each images and the global shift of the object between the first and the last image.")
 };
 /* callback for the selected area event */
 void _reg_selected_area_callback() {
@@ -103,6 +106,8 @@ void initialize_registration_methods() {
 			&register_shift_dft, REQUIRES_SQUARED_SELECTION, REGTYPE_PLANETARY);
 	reg_methods[i++] = new_reg_method(_("Enhanced Correlation Coefficient (planetary - surfaces)"),
 			&register_ecc, REQUIRES_NO_SELECTION, REGTYPE_PLANETARY);
+	reg_methods[i++] = new_reg_method(_("Comet/Asteroid Registration"),
+			&register_comet, REQUIRES_NO_SELECTION, REGTYPE_DEEPSKY);
 	reg_methods[i] = NULL;
 
 	tip = g_string_new ("");
@@ -511,7 +516,6 @@ int register_ecc(struct registration_args *args) {
 
 	memset(&ref, 0, sizeof(fits));
 
-	/* first we're looking for stars in reference image */
 	ret = seq_read_frame(args->seq, ref_image, &ref);
 	if (ret) {
 		siril_log_message(_("Could not load reference image\n"));
@@ -668,22 +672,22 @@ int get_registration_layer(sequence *seq) {
  * Verifies that enough images are selected and an area is selected.
  */
 void update_reg_interface(gboolean dont_change_reg_radio) {
-	static GtkWidget *go_register = NULL, *newSequence = NULL, *follow = NULL;
+	static GtkWidget *go_register = NULL, *follow = NULL, *cumul_data = NULL;
 	static GtkLabel *labelreginfo = NULL;
 	static GtkToggleButton *reg_all = NULL, *reg_sel = NULL;
+	static GtkNotebook *notebook_reg = NULL;
 	int nb_images_reg; /* the number of images to register */
 	struct registration_method *method;
+	gboolean selection_is_done;
 
 	if (!go_register) {
 		go_register = lookup_widget("goregister_button");
-		newSequence = lookup_widget("box29");
 		follow = lookup_widget("followStarCheckButton");
-		reg_all = GTK_TOGGLE_BUTTON(
-				gtk_builder_get_object(builder, "regallbutton"));
-		reg_sel = GTK_TOGGLE_BUTTON(
-				gtk_builder_get_object(builder, "regselbutton"));
-		labelreginfo = GTK_LABEL(
-				gtk_builder_get_object(builder, "labelregisterinfo"));
+		reg_all = GTK_TOGGLE_BUTTON(lookup_widget("regallbutton"));
+		reg_sel = GTK_TOGGLE_BUTTON(lookup_widget("regselbutton"));
+		labelreginfo = GTK_LABEL(lookup_widget("labelregisterinfo"));
+		notebook_reg = GTK_NOTEBOOK(lookup_widget("notebook_registration"));
+		cumul_data = lookup_widget("check_button_comet");
 	}
 
 	if (!dont_change_reg_radio) {
@@ -693,38 +697,44 @@ void update_reg_interface(gboolean dont_change_reg_radio) {
 			gtk_toggle_button_set_active(reg_all, TRUE);
 	}
 
+	selection_is_done = (com.selection.w > 0 && com.selection.h > 0);
+
+	/* initialize default */
+	gtk_notebook_set_current_page(notebook_reg, REG_PAGE_MISC);
+	gtk_widget_set_visible(cumul_data, FALSE);
+	gtk_widget_set_sensitive(go_register, FALSE);
+	gtk_label_set_text(labelreginfo, _("Load a sequence first."));
+
 	/* getting the selected registration method */
 	method = get_selected_registration_method();
 
-	if (gtk_toggle_button_get_active(reg_all))
-		nb_images_reg = com.seq.number;
-	else
-		nb_images_reg = com.seq.selnum;
+	/* number of registered image */
+	nb_images_reg = gtk_toggle_button_get_active(reg_all) ? com.seq.number : com.seq.selnum;
 
-	if (method && method->sel != REQUIRES_NO_SELECTION && com.seq.current == SCALED_IMAGE) {
-		gtk_widget_set_sensitive(go_register, FALSE);
-		gtk_widget_set_visible(newSequence, FALSE);
-		gtk_label_set_text(labelreginfo, _("Load a sequence first."));
-	}
-	else if (method && ((nb_images_reg > 1 && com.selection.w > 0 && com.selection.h > 0)
-			|| (nb_images_reg > 1 && method->sel == REQUIRES_NO_SELECTION))) {
+	if (method && ((nb_images_reg > 1 && selection_is_done)	|| (nb_images_reg > 1 && method->sel == REQUIRES_NO_SELECTION))) {
+		if (method->method_ptr == &register_star_alignment) {
+			gtk_notebook_set_current_page(notebook_reg, REG_PAGE_GLOBAL);
+		} else if (method->method_ptr == &register_comet) {
+			gtk_notebook_set_current_page(notebook_reg, REG_PAGE_COMET);
+		}
+		gtk_widget_set_visible(follow, method->method_ptr == &register_shift_fwhm);
+		gtk_widget_set_visible(cumul_data, method->method_ptr == &register_comet);
 		gtk_widget_set_sensitive(go_register, TRUE);
 		gtk_label_set_text(labelreginfo, "");
-		gtk_widget_set_visible(newSequence, method->method_ptr == &register_star_alignment);
-		gtk_widget_set_visible(follow, method->method_ptr == &register_shift_fwhm);
 	} else {
-		gtk_widget_set_sensitive(go_register, FALSE);
-		gtk_widget_set_visible(newSequence, FALSE);
-		if (nb_images_reg <= 1 && com.selection.w <= 0 && com.selection.h <= 0)
-			if (!sequence_is_loaded())
-				gtk_label_set_text(labelreginfo, _("Load a sequence first."));
-			else
-				gtk_label_set_text(labelreginfo,
-					_("Select an area in image first, and select images in the sequence."));
-		else if (nb_images_reg <= 1)
+		if (nb_images_reg <= 1 && !selection_is_done) {
+			if (sequence_is_loaded()) {
+				if (method->sel == REQUIRES_NO_SELECTION) {
+					gtk_label_set_text(labelreginfo, _("Select images in the sequence."));
+				} else {
+					gtk_label_set_text(labelreginfo, _("Select an area in image first, and select images in the sequence."));
+				}
+			}
+		} else if (nb_images_reg <= 1) {
 			gtk_label_set_text(labelreginfo, _("Select images in the sequence."));
-		else
+		} else {
 			gtk_label_set_text(labelreginfo, _("Select an area in image first."));
+		}
 	}
 }
 
@@ -824,7 +834,8 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	struct registration_args *reg_args;
 	struct registration_method *method;
 	char *msg;
-	GtkToggleButton *regall, *follow, *matchSel, *no_translate, *x2upscale;
+	GtkToggleButton *regall, *follow, *matchSel, *no_translate, *x2upscale,
+			*cumul;
 	GtkComboBox *cbbt_layers;
 	GtkComboBoxText *ComboBoxRegInter;
 
@@ -863,10 +874,9 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	matchSel = GTK_TOGGLE_BUTTON(lookup_widget("checkStarSelect"));
 	no_translate = GTK_TOGGLE_BUTTON(lookup_widget("regTranslationOnly"));
 	x2upscale = GTK_TOGGLE_BUTTON(lookup_widget("upscaleCheckButton"));
-	cbbt_layers = GTK_COMBO_BOX(
-			gtk_builder_get_object(builder, "comboboxreglayer"));
-	ComboBoxRegInter = GTK_COMBO_BOX_TEXT(
-			gtk_builder_get_object(builder, "ComboBoxRegInter"));
+	cbbt_layers = GTK_COMBO_BOX(lookup_widget("comboboxreglayer"));
+	ComboBoxRegInter = GTK_COMBO_BOX_TEXT(lookup_widget("ComboBoxRegInter"));
+	cumul = GTK_TOGGLE_BUTTON(lookup_widget("check_button_comet"));
 
 	reg_args->func = method->method_ptr;
 	reg_args->seq = &com.seq;
@@ -876,6 +886,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->matchSelection = gtk_toggle_button_get_active(matchSel);
 	reg_args->translation_only = gtk_toggle_button_get_active(no_translate);
 	reg_args->x2upscale = gtk_toggle_button_get_active(x2upscale);
+	reg_args->cumul = gtk_toggle_button_get_active(cumul);
 	/* Here we should test available free disk space for Drizzle operation */
 	if (reg_args->x2upscale) {
 		double size = seq_compute_size(reg_args->seq);
