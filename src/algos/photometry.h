@@ -1,10 +1,3 @@
-/*
- * photometry.h
- *
- *  Created on: 9 mars 2018
- *      Author: cyril
- */
-
 #ifndef SRC_ALGOS_PHOTOMETRY_H_
 #define SRC_ALGOS_PHOTOMETRY_H_
 
