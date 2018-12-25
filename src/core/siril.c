@@ -689,7 +689,7 @@ static double goldenSectionSearch(fits *brut, fits *dark, double a, double b,
 	c = b - GR * (b - a);
 	d = a + GR * (b - a);
 	do {
-		fprintf(stdout, "Iter: %d (%1.2lf, %1.2lf)\n", ++iter, c, d);
+		siril_debug_print("Iter: %d (%1.2lf, %1.2lf)\n", ++iter, c, d);
 		fc = evaluateNoiseOfCalibratedImage(brut, dark, c);
 		fd = evaluateNoiseOfCalibratedImage(brut, dark, d);
 		if (fc < 0.0 || fd < 0.0)
