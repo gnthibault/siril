@@ -31,6 +31,7 @@
 #include "io/sequence.h"
 #include "geometry.h"
 
+#include <string.h>
 #include <math.h>
 
 /* this method rotates the image 180 degrees, useful after german mount flip.
