@@ -28,7 +28,6 @@
 #include "gui/message_dialog.h"
 #include "registration.h"
 
-
 static point velocity = { 0.0, 0.0 };
 static time_t t_of_image_1 = { 0 };
 static time_t t_of_image_2 = { 0 };
@@ -79,14 +78,10 @@ static point compute_velocity(time_t t1, time_t t2, point d1, point d2) {
 	return px_per_hour;
 }
 
-static int get_comet_shift(fits *ref, fits *img, point px_per_hour, float *reg_x, float *reg_y) {
-	time_t t_ref, t_img;
+static int get_comet_shift(time_t ref, time_t img, point px_per_hour, float *reg_x, float *reg_y) {
 	double delta_t;
 
-	t_ref = FITS_date_key_to_sec(ref->date_obs);
-	t_img = FITS_date_key_to_sec(img->date_obs);
-
-	delta_t = (double) t_img - (double) t_ref;
+	delta_t = (double)img - (double)ref;
 	delta_t /= 3600.0;
 	*reg_x = delta_t * px_per_hour.x;
 	*reg_y = delta_t * px_per_hour.y;
@@ -189,93 +184,6 @@ void on_button2_comet_clicked(GtkButton *button, gpointer p) {
 	}
 }
 
-int register_comet(struct registration_args *args) {
-	int frame, ref_image, ret;
-	int abort = 0;
-	float cur_nb;
-	regdata *current_regdata;
-	fits ref = { 0 }, im = { 0 };
-
-	if (args->seq->regparam[args->layer]) {
-		current_regdata = args->seq->regparam[args->layer];
-	} else {
-		current_regdata = calloc(args->seq->number, sizeof(regdata));
-		if (current_regdata == NULL) {
-			fprintf(stderr, "Error allocating registration data\n");
-			return -2;
-		}
-	}
-
-	/* loading reference frame */
-	ref_image = sequence_find_refimage(args->seq);
-
-	ret = seq_read_frame(args->seq, ref_image, &ref);
-	if (ret) {
-		siril_log_message(_("Could not load reference image\n"));
-		args->seq->regparam[args->layer] = NULL;
-		free(current_regdata);
-		return 1;
-	}
-
-	/* then we compare to other frames */
-	if (args->process_all_frames)
-		args->new_total = args->seq->number;
-	else args->new_total = args->seq->selnum;
-
-	cur_nb = 0.f;
-
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) firstprivate(im) schedule(static) \
-	if((args->seq->type == SEQ_REGULAR && fits_is_reentrant()) || args->seq->type == SEQ_SER)
-#endif
-	for (frame = 0; frame < args->seq->number; frame++) {
-		if (!abort) {
-			if (args->run_in_thread && !get_thread_run()) {
-				abort = 1;
-				continue;
-			}
-			char tmpmsg[1024], tmpfilename[256];
-			float reg_x, reg_y;
-
-			if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
-				continue;
-
-			if (!args->cumul) {
-				/* data initialization */
-				current_regdata[frame].shiftx = 0.0;
-				current_regdata[frame].shifty = 0.0;
-			}
-
-			seq_get_image_filename(args->seq, frame, tmpfilename);
-			g_snprintf(tmpmsg, 1024, _("Register: processing image %s"),
-					tmpfilename);
-			set_progress_bar_data(tmpmsg, PROGRESS_NONE);
-			ret = seq_read_frame(args->seq, frame, &im);
-			if (!ret) {
-				get_comet_shift(&ref, &im, velocity, &reg_x, &reg_y);
-
-				current_regdata[frame].shiftx += -reg_x;
-				current_regdata[frame].shifty += reg_y;
-
-			}
-			cur_nb += 1.f;
-			set_progress_bar_data(NULL, cur_nb / args->new_total);
-			clearfits(&im);
-		}
-	}
-	args->seq->regparam[args->layer] = current_regdata;
-	if (args->x2upscale)
-		args->seq->upscale_at_stacking = 2.0;
-	else
-		args->seq->upscale_at_stacking = 1.0;
-
-	clearfits(&ref);
-	update_used_memory();
-	siril_log_message(_("Registration finished.\n"));
-
-	return 0;
-}
-
 void on_entry_comet_changed(GtkEditable *editable, gpointer user_data) {
 	GtkEntry *entry1_x = GTK_ENTRY(lookup_widget("entry1_x_comet"));
 	GtkEntry *entry1_y = GTK_ENTRY(lookup_widget("entry1_y_comet"));
@@ -289,3 +197,120 @@ void on_entry_comet_changed(GtkEditable *editable, gpointer user_data) {
 
 	update_velocity();
 }
+
+/***** generic moving object registration *****/
+
+struct comet_align_data {
+	struct registration_args *regargs;
+	regdata *current_regdata;
+	time_t reference_date;
+};
+
+static int comet_align_prepare_hook(struct generic_seq_args *args) {
+	struct comet_align_data *cadata = args->user;
+	struct registration_args *regargs = cadata->regargs;
+	int ref_image;
+	fits ref = { 0 };
+
+	if (args->seq->regparam[regargs->layer]) {
+		cadata->current_regdata = args->seq->regparam[regargs->layer];
+	} else {
+		cadata->current_regdata = calloc(args->seq->number, sizeof(regdata));
+		if (cadata->current_regdata == NULL) {
+			fprintf(stderr, "Error allocating registration data\n");
+			return -2;
+		}
+	}
+
+	/* loading reference frame */
+	ref_image = sequence_find_refimage(args->seq);
+
+	if (seq_read_frame(args->seq, ref_image, &ref)) {
+		siril_log_message(_("Could not load reference image\n"));
+		args->seq->regparam[regargs->layer] = NULL;
+		free(cadata->current_regdata);
+		return 1;
+	}
+
+	cadata->reference_date = FITS_date_key_to_sec(ref.date_obs);
+	clearfits(&ref);
+
+	if (regargs->x2upscale)
+		args->seq->upscale_at_stacking = 2.0;
+	else args->seq->upscale_at_stacking = 1.0;
+	return 0;
+}
+
+static int comet_align_image_hook(struct generic_seq_args *args, int out_index, int in_index, fits *fit, rectangle *_) {
+	struct comet_align_data *cadata = args->user;
+	struct registration_args *regargs = cadata->regargs;
+	float reg_x, reg_y;
+
+	if (!regargs->cumul) {
+		/* data initialization */
+		cadata->current_regdata[in_index].shiftx = 0.0;
+		cadata->current_regdata[in_index].shifty = 0.0;
+	}
+
+	time_t date_obs = FITS_date_key_to_sec(fit->date_obs);
+	get_comet_shift(cadata->reference_date, date_obs, velocity, &reg_x, &reg_y);
+
+	cadata->current_regdata[in_index].shiftx += -reg_x;
+	cadata->current_regdata[in_index].shifty += reg_y;
+	return 0;
+}
+
+static int comet_align_finalize_hook(struct generic_seq_args *args) {
+	struct comet_align_data *cadata = args->user;
+	struct registration_args *regargs = cadata->regargs;
+
+	if (!args->retval)
+		args->seq->regparam[regargs->layer] = cadata->current_regdata;
+
+	free(args->user);
+	args->user = NULL;
+	return 0;
+}
+
+int register_comet(struct registration_args *regargs) {
+	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	args->seq = regargs->seq;
+	/* we don't need to read image data, for simplicity we just read one
+	 * pixel from it, making sure the header is read */
+	args->partial_image = TRUE;
+	args->area.x = 0; args->area.y = 0;
+	args->area.w = 1; args->area.h = 1;
+	args->layer_for_partial = 0;
+	args->regdata_for_partial = FALSE;
+	args->get_photometry_data_for_partial = TRUE;
+
+	if (regargs->process_all_frames) {
+		args->filtering_criterion = seq_filter_all;
+		args->nb_filtered_images = regargs->seq->number;
+	} else {
+		args->filtering_criterion = seq_filter_included;
+		args->nb_filtered_images = regargs->seq->selnum;
+	}
+	args->prepare_hook = comet_align_prepare_hook;
+	args->image_hook = comet_align_image_hook;
+	args->save_hook = NULL;
+	args->finalize_hook = comet_align_finalize_hook;
+	args->idle_function = NULL;
+	args->stop_on_error = TRUE;
+	args->description = _("Moving object registration");
+	args->has_output = FALSE;
+	args->already_in_a_thread = TRUE;
+	args->parallel = TRUE;
+
+	struct comet_align_data *cadata = calloc(1, sizeof(struct comet_align_data));
+	if (!cadata) {
+		free(args);
+		return -1;
+	}
+	cadata->regargs = regargs;
+	args->user = cadata;
+
+	generic_sequence_worker(args);
+	return args->retval;
+}
+
