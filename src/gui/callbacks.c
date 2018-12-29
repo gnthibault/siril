@@ -1922,6 +1922,7 @@ void set_layers_for_assign() {
 	}
 }
 
+/* updates the combo box of registration layers to reflect data availability */
 void set_layers_for_registration() {
 	static GtkComboBoxText *cbbt_layers = NULL;
 	int i;
@@ -1931,6 +1932,7 @@ void set_layers_for_registration() {
 		cbbt_layers = GTK_COMBO_BOX_TEXT(
 				gtk_builder_get_object(builder, "comboboxreglayer"));
 	reminder = gtk_combo_box_get_active(GTK_COMBO_BOX(cbbt_layers));
+
 	gtk_combo_box_text_remove_all(cbbt_layers);
 	for (i = 0; i < com.seq.nb_layers; i++) {
 		char layer[100];
@@ -1940,7 +1942,6 @@ void set_layers_for_registration() {
 		else
 			g_snprintf(layer, sizeof(layer), _("%d: not affected yet"), i);
 		if (com.seq.regparam[i]) {
-			// calculate average quality for this layer
 			strcat(layer, " (*)");
 			if (reminder == -1)	// set as default selection
 			       	reminder = i;
@@ -1954,7 +1955,7 @@ void set_layers_for_registration() {
 		else
 			gtk_combo_box_set_active(GTK_COMBO_BOX(cbbt_layers), 0);
 	}
-	/* Already initialized */
+	/* Already initialized or default selection to channel with data */
 	else
 		gtk_combo_box_set_active(GTK_COMBO_BOX(cbbt_layers), reminder);
 }
@@ -4233,6 +4234,8 @@ void on_combozoom_changed(GtkComboBox *widget, gpointer user_data) {
 }
 
 void on_comboboxreglayer_changed(GtkComboBox *widget, gpointer user_data) {
+	if (gtk_combo_box_get_active(widget) == -1)
+		return;
 	free_reference_image();
 	update_stack_interface(TRUE);
 }

@@ -1934,7 +1934,7 @@ void stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
 		args->ref_image = args->image_indices[0];
 		siril_log_message(_("Using image %d as temporary reference image\n"), args->ref_image);
 	}
-	g_assert(j <= args->nb_images_to_stack);
+	g_assert(j == args->nb_images_to_stack);
 }
 
 /****************************************************************/

@@ -66,7 +66,6 @@ void set_output_filename_to_sequence_name();
 void close_tab();
 void activate_tab(int vport);
 void control_window_switch_to_tab(main_tabs tab);
-void on_comboboxreglayer_changed(GtkComboBox *widget, gpointer user_data);
 
 void update_prepro_interface();
 
