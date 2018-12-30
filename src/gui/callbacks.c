@@ -3047,20 +3047,21 @@ static rectangle get_window_position(GtkWidget *widget) {
 	return rec;
 }
 
-static void save_all_windows_position() {
+void save_all_windows_position() {
 	if (!com.script) {
-		com.main_w_pos = get_window_position(lookup_widget("main_window"));
-		com.rgb_w_pos = get_window_position(lookup_widget("rgb_window"));
+		GtkWidget *main = lookup_widget("main_window");
+		GtkWidget *rgb = lookup_widget("rgb_window");
+		com.main_w_pos = get_window_position(main);
+		com.rgb_w_pos = get_window_position(rgb);
 
-		g_object_unref(G_OBJECT(lookup_widget("main_window")));
-		g_object_unref(G_OBJECT(lookup_widget("rgb_window")));
+		g_object_unref(G_OBJECT(main));
+		g_object_unref(G_OBJECT(rgb));
 
 		writeinitfile();
 	}
 }
 
 void gtk_main_quit() {
-	save_all_windows_position();
 	close_sequence(FALSE);	// save unfinished business
 	close_single_image();	// close the previous image and free resources
 	undo_flush();

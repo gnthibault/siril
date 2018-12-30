@@ -73,6 +73,8 @@ void update_statusbar_convert();
 
 void update_spinCPU(int max);
 
+void save_all_windows_position();
+
 /*****************************************************************************
 *      P U B L I C      C A L L B A C K      F U N C T I O N S               *
  ****************************************************************************/
