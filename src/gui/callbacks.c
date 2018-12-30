@@ -2004,7 +2004,7 @@ void show_main_gray_window() {
 
 	gtk_check_menu_item_set_active(graycheck, TRUE);
 	gtk_widget_show_all(win);
-	if (x != 0 && y != 0) {
+	if (x >= 0 && y >= 0) {
 		gtk_window_move(GTK_WINDOW(win), x, y);
 //		gtk_window_resize(GTK_WINDOW(win), w, h);
 	}
@@ -3031,12 +3031,9 @@ void on_combobox_ext_changed(GtkComboBox *box, gpointer user_data) {
 	initialize_FITS_name_entries();
 }
 
-static rectangle get_window_position(GtkWidget *widget) {
+static rectangle get_window_position(GtkWindow *window) {
 	gint x, y, w, h;
 	rectangle rec = { 0 };
-	GtkWindow *window;
-
-	window = GTK_WINDOW(widget);
 
 	gtk_window_get_position(window, &x, &y);
 	gtk_window_get_size(window, &w, &h);
@@ -3049,14 +3046,8 @@ static rectangle get_window_position(GtkWidget *widget) {
 
 void save_all_windows_position() {
 	if (!com.script) {
-		GtkWidget *main = lookup_widget("main_window");
-		GtkWidget *rgb = lookup_widget("rgb_window");
-		com.main_w_pos = get_window_position(main);
-		com.rgb_w_pos = get_window_position(rgb);
-
-		g_object_unref(G_OBJECT(main));
-		g_object_unref(G_OBJECT(rgb));
-
+		com.main_w_pos = get_window_position(GTK_WINDOW(lookup_widget("main_window")));
+		com.rgb_w_pos = get_window_position(GTK_WINDOW(lookup_widget("rgb_window")));
 		writeinitfile();
 	}
 }
@@ -3064,6 +3055,8 @@ void save_all_windows_position() {
 void gtk_main_quit() {
 	close_sequence(FALSE);	// save unfinished business
 	close_single_image();	// close the previous image and free resources
+	g_object_unref(G_OBJECT(lookup_widget("main_window")));
+	g_object_unref(G_OBJECT(lookup_widget("rgb_window")));
 	undo_flush();
 	exit(EXIT_SUCCESS);
 }
@@ -3072,7 +3065,7 @@ void siril_quit() {
 	if (com.dontShowConfirm) {
 		gtk_main_quit();
 	}
-	gboolean quit = siril_confirm_dialog(_("Closing application"), _("Are you sure you want to quit ?"), TRUE);
+	gboolean quit = siril_confirm_dialog(_("Closing application"), _("Are you sure you want to quit?"), TRUE);
 	if (quit) {
 		gtk_main_quit();
 	} else {
@@ -3371,7 +3364,7 @@ void on_drawingarea_entry_notify_event(GtkWidget *widget, GdkEvent *event, gpoin
 	static GdkDisplay *display = NULL;
 	static GdkCursor *cross = NULL;
 	if (!window) {
-		window = gtk_widget_get_window(lookup_widget("main_window"));
+		window = gtk_widget_get_window(widget);
 		display = gdk_window_get_display(window);
 		cross = gdk_cursor_new_for_display(display, GDK_CROSSHAIR);
 	}
@@ -3381,7 +3374,7 @@ void on_drawingarea_entry_notify_event(GtkWidget *widget, GdkEvent *event, gpoin
 void on_drawingarea_leave_notify_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
 	static GdkWindow *window = NULL;
 	if (!window) {
-		window = gtk_widget_get_window(lookup_widget("main_window"));
+		window = gtk_widget_get_window(widget);
 	}
 	gdk_window_set_cursor(window, NULL);
 }
