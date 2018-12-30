@@ -564,6 +564,7 @@ struct cominf {
 	double zoom_value;		// 1.0 is normal zoom, use get_zoom_val() to access it
 
 	/* positions of all windows */
+	gboolean remember_windows;
 	rectangle main_w_pos;
 	rectangle rgb_w_pos;
 

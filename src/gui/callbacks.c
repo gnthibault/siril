@@ -2004,7 +2004,7 @@ void show_main_gray_window() {
 
 	gtk_check_menu_item_set_active(graycheck, TRUE);
 	gtk_widget_show_all(win);
-	if (x >= 0 && y >= 0) {
+	if (com.remember_windows && x >= 0 && y >= 0) {
 		gtk_window_move(GTK_WINDOW(win), x, y);
 //		gtk_window_resize(GTK_WINDOW(win), w, h);
 	}
@@ -2299,6 +2299,8 @@ void set_GUI_misc() {
 	gtk_toggle_button_set_active(ToggleButton, com.dontShowConfirm);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("darkThemeCheck"));
 	gtk_toggle_button_set_active(ToggleButton, com.have_dark_theme);
+	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck"));
+	gtk_toggle_button_set_active(ToggleButton, com.remember_windows);
 }
 
 /* size is in kiB */
@@ -3045,7 +3047,7 @@ static rectangle get_window_position(GtkWindow *window) {
 }
 
 void save_all_windows_position() {
-	if (!com.script) {
+	if (!com.script && com.remember_windows) {
 		com.main_w_pos = get_window_position(GTK_WINDOW(lookup_widget("main_window")));
 		com.rgb_w_pos = get_window_position(GTK_WINDOW(lookup_widget("rgb_window")));
 		writeinitfile();
@@ -5246,6 +5248,10 @@ void on_redo_item1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 void on_darkThemeCheck_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	com.have_dark_theme = gtk_toggle_button_get_active(togglebutton);
+}
+
+void on_rememberWindowsCheck_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	com.remember_windows = gtk_toggle_button_get_active(togglebutton);
 }
 
 void on_entryAviWidth_changed(GtkEditable *editable, gpointer user_data) {
