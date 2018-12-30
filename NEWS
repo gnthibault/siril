@@ -1,7 +1,7 @@
 v0.9.10, xxxxx
 Stability update for v0.9.9
 
-* New astrometry tool that solves acquisition parameters from stars in the image (requires Web access)
+* New astrometry tool that solves acquisition parameters from stars in the image (requires Web access and libcurl)
 * New comet registration method
 * Enabled previews for color saturation, asinh stretching, histogram transform and wavelets
 * Added ability to join SER files
@@ -19,13 +19,15 @@ Stability update for v0.9.9
 * Preserving FITS keywords in sum stacked image
 * Checking and increasing if needed maximum number of FITS that can be stacked on the system
 * Automatically detecting GTK+ dark theme preference
-* Fixed issue with wide chars on Windows
+* Adding a setting to activate image window positioning from the last session
+* Fixed an issue with wide chars on Windows
 * Fixed some erratic behaviour when reference image was outside selection
 * Fixed default rotation interpolation algorithm for register command
-* Fixed crash on sequence export with normalization
+* Fixed a crash on sequence export with normalization
 * Fixed line endings in scripts for all OS
 * Fixed compilation for OpenCV 4.0
 * Fixed dark optimization and added -opt option in PREPROCESS command
+* Fixed a crash in global registration with unselected images
 
 v0.9.9, Jun 07, 2018
 Stability update for v0.9.8
