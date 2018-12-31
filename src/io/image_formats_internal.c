@@ -234,9 +234,18 @@ int readbmp(const char *name, fits *fit) {
 	padsize = (4 - (width * nbplane) % 4) % 4;
 	nbdata = width * height * nbplane + height * padsize;
 
-	fseek(file, data_offset, SEEK_SET);
+	if (fseek(file, data_offset, SEEK_SET) == -1) {
+		perror("BMP fseek for data");
+		fclose(file);
+		return -1;
+	}
 	if (nbplane == 1) {
 		buf = malloc(nbdata + 1024);
+		if (!buf) {
+			fprintf(stderr, "could not allocate buffer for BMP read\n");
+			fclose(file);
+			return -1;
+		}
 		if ((count = fread(buf, 1, 1024, file)) != 1024) {
 			fprintf(stderr, "readbmp: %ld byte read instead of 1024\n", count);
 			perror("readbmp: failed to read the lut");
@@ -246,9 +255,19 @@ int readbmp(const char *name, fits *fit) {
 		}
 	} else {
 		buf = malloc(nbdata);
+		if (!buf) {
+			fprintf(stderr, "could not allocate buffer for BMP read\n");
+			fclose(file);
+			return -1;
+		}
 	}
 
-	fread(buf, 1, nbdata, file);
+	if (nbdata != fread(buf, 1, nbdata, file)) {
+		fprintf(stderr, "readbmp: could not read all data\n");
+		free(buf);
+		fclose(file);
+		return -1;
+	}
 	fclose(file);
 
 	switch (nbplane) {
