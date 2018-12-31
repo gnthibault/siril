@@ -724,7 +724,7 @@ void update_reg_interface(gboolean dont_change_reg_radio) {
 	} else {
 		if (nb_images_reg <= 1 && !selection_is_done) {
 			if (sequence_is_loaded()) {
-				if (method->sel == REQUIRES_NO_SELECTION) {
+				if (method && method->sel == REQUIRES_NO_SELECTION) {
 					gtk_label_set_text(labelreginfo, _("Select images in the sequence."));
 				} else {
 					gtk_label_set_text(labelreginfo, _("Select an area in image first, and select images in the sequence."));
