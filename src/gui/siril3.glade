@@ -172,7 +172,7 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="title" translatable="yes">RGB image</property>
     <property name="default_width">660</property>
     <property name="default_height">500</property>
-    <property name="icon">pixmaps/siril_1.svg</property>
+    <property name="icon">pixmaps/siril.svg</property>
     <accel-groups>
       <group name="accelgroup1"/>
     </accel-groups>
@@ -1453,7 +1453,7 @@ enter a visible wavelength in nm</property>
     <property name="title">siril-0.9</property>
     <property name="default_width">700</property>
     <property name="default_height">600</property>
-    <property name="icon">pixmaps/siril_1.svg</property>
+    <property name="icon">pixmaps/siril.svg</property>
     <accel-groups>
       <group name="accelgroup1"/>
     </accel-groups>
@@ -11194,7 +11194,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Siril control center</property>
     <property name="window_position">center</property>
-    <property name="icon">pixmaps/siril_1.svg</property>
+    <property name="icon">pixmaps/siril.svg</property>
     <property name="urgency_hint">True</property>
     <accel-groups>
       <group name="accelgroup1"/>
@@ -13547,55 +13547,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="box10">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">center</property>
-                    <child>
-                      <object class="GtkRadioButton" id="regallbutton">
-                        <property name="label" translatable="yes">Register all images from sequence</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkRadioButton" id="regselbutton">
-                        <property name="label" translatable="yes">Register selected images only</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">regallbutton</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -13670,6 +13621,55 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="padding">5</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkRadioButton" id="regallbutton">
+                        <property name="label" translatable="yes">Register all images from sequence</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="regselbutton">
+                        <property name="label" translatable="yes">Register selected images only</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">regallbutton</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
