@@ -41,6 +41,7 @@
 #include <stdlib.h>
 #include <libproc.h>
 #endif
+#include <getopt.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -160,8 +161,18 @@ static void initialize_path_directory() {
 		gtk_file_chooser_set_filename (swap_dir, g_get_tmp_dir());
 }
 
+struct option long_opts[] = {
+		{"version", no_argument, 0, 'v'},
+		{"help", no_argument, 0, 'h'},
+		{"format", no_argument, 0, 'f'},
+		{"directory", required_argument, 0, 'd'},
+		{"script",    required_argument, 0, 's'},
+		{0, 0, 0, 0}
+	};
+
+
 int main(int argc, char *argv[]) {
-	int i;
+	int i, c;
 	extern char *optarg;
 	extern int opterr;
 	gchar *siril_path = NULL;
@@ -193,31 +204,7 @@ int main(int argc, char *argv[]) {
 	/* Caught signals */
 	signal(SIGINT, signal_handled);
 
-	while (1) {
-		signed char c = getopt(argc, argv, "i:phfvd:s:");
-		if (c == '?') {
-			for (i = 1; i < argc; i++) {
-				if (argv[i][1] == '-') {
-					if (!strcmp(argv[i], "--version"))
-						c = 'v';
-					else if (!strcmp(argv[i], "--help"))
-						c = 'h';
-					else if (!strcmp(argv[i], "--format"))
-						c = 'f';
-					else if (!strcmp(argv[i], "--directory"))
-						c = 'd';
-					else if (!strcmp(argv[i], "--script"))
-						c = 's';
-					else {
-						usage(argv[0]);
-						exit(EXIT_FAILURE);
-					}
-				}
-			}
-		}
-
-		if (c == -1)
-			break;
+	while ((c = getopt_long(argc, argv, "i:phfvd:s:", long_opts, NULL)) != -1) {
 		switch (c) {
 			case 'i':
 				com.initfile = g_strdup(optarg);
