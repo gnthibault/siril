@@ -439,7 +439,7 @@ double findTransform_ECC(InputArray templateImage, InputArray inputImage,
 	Mat errorProjection = Mat(numberOfParameters, 1, CV_32F);
 
 	Mat deltaP = Mat(numberOfParameters, 1, CV_32F); //transformation parameter correction
-	Mat error = Mat(hs, ws, CV_32F); //error as 2D matrix
+	Mat err = Mat(hs, ws, CV_32F); //error as 2D matrix
 
 	const int imageFlags = INTER_LINEAR + WARP_INVERSE_MAP;
 	const int maskFlags = INTER_NEAREST + WARP_INVERSE_MAP;
@@ -540,8 +540,8 @@ double findTransform_ECC(InputArray templateImage, InputArray inputImage,
 		const double lambda = (lambda_n / lambda_d);
 
 		// estimate the update step delta_p
-		error = lambda * templateZM - imageWarped;
-		project_onto_jacobian_ECC(jacobian, error, errorProjection);
+		err = lambda * templateZM - imageWarped;
+		project_onto_jacobian_ECC(jacobian, err, errorProjection);
 		deltaP = hessianInv * errorProjection;
 
 		// update warping matrix
