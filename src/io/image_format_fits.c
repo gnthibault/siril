@@ -372,6 +372,15 @@ static void report_fits_error(int status) {
 	}
 }
 
+static void conv_8_to_16(WORD *data, unsigned int nbdata) {
+	int i;
+
+	for (i = 0; i < nbdata; i++) {
+		double tmp = (double) data[i] / UCHAR_MAX_DOUBLE * USHRT_MAX_DOUBLE;
+		data[i] = round_to_WORD(tmp);
+	}
+}
+
 /* convert FITS data formats to siril native.
  * nbdata is the number of pixels, w * h.
  * from is not freed, to must be allocated and can be the same as from */
@@ -462,7 +471,6 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		if (status) break;
 		convert_data(fit->bitpix, data8, fit->data, nbdata, FALSE);
 		free(data8);
-		fit->bitpix = USHORT_IMG;
 		break;
 	case SHORT_IMG:
 		fits_read_pix(fit->fptr, TSHORT, orig, nbdata, &zero,
@@ -1256,12 +1264,18 @@ int savefits(const char *name, fits *f) {
 		free(data8);
 		break;
 	case SHORT_IMG:
+		if (f->orig_bitpix == BYTE_IMG) {
+			conv_8_to_16(f->data, pixel_count);
+		}
 		if (fits_write_pix(f->fptr, TSHORT, orig, pixel_count, f->data, &status)) {
 			report_fits_error(status);
 			return 1;
 		}
 		break;
 	case USHORT_IMG:
+		if (f->orig_bitpix == BYTE_IMG) {
+			conv_8_to_16(f->data, pixel_count);
+		}
 		if (fits_write_pix(f->fptr, TUSHORT, orig, pixel_count, f->data, &status)) {
 			report_fits_error(status);
 			return 1;

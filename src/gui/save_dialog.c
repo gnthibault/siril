@@ -309,6 +309,7 @@ static void initialize_data(gpointer p) {
 
 	GtkToggleButton *fits_8 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit8"));
 	GtkToggleButton *fits_16s = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16s"));
+	GtkToggleButton *update_hilo = (GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_update_hilo")));
 #ifdef HAVE_LIBJPEG
 	GtkSpinButton *qlty_spin_button = GTK_SPIN_BUTTON(lookup_widget("quality_spinbutton"));
 	args->quality = gtk_spin_button_get_value_as_int(qlty_spin_button);
@@ -326,6 +327,8 @@ static void initialize_data(gpointer p) {
 		args->bitpix = SHORT_IMG;
 	else
 		args->bitpix = USHORT_IMG;
+
+	args->update_hilo = gtk_toggle_button_get_active(update_hilo);
 }
 
 static gpointer minisavedial(gpointer p) {
@@ -357,8 +360,7 @@ static gpointer minisavedial(gpointer p) {
 			gfit.bitpix = args->bitpix;
 			/* Check if MIPS-HI and MIPS-LO must be updated. If yes,
 			 * Values are taken from the layer 0 */
-			if (gtk_toggle_button_get_active(
-					GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_update_hilo"))) == TRUE) {
+			if (args->update_hilo) {
 				if (sequence_is_loaded() && !single_image_is_loaded()) {
 					gfit.hi = com.seq.layers[RLAYER].hi;
 					gfit.lo = com.seq.layers[RLAYER].lo;
@@ -375,7 +377,10 @@ static gpointer minisavedial(gpointer p) {
 					gfit.hi = UCHAR_MAX;
 					gfit.lo = 0;
 				}
-
+				if (gfit.orig_bitpix == BYTE_IMG && gfit.bitpix > BYTE_IMG) {
+					gfit.hi = USHRT_MAX;
+					gfit.lo = 0;
+				}
 			}
 			savefits(args->filename, &gfit);
 			break;
