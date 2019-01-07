@@ -23,7 +23,7 @@
 #endif
 
 #ifdef MAC_INTEGRATION
-#include "gtkmacintegration/gtkosxapplication.h"
+#include <gtkosxapplication.h>
 #endif
 #include <stdio.h>
 #include <unistd.h>

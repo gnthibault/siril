@@ -20,7 +20,7 @@
 
 #include <gtk/gtk.h>
 #ifdef MAC_INTEGRATION
-#include "gtkmacintegration/gtkosxapplication.h"
+#include <gtkosxapplication.h>
 #endif
 #include <stdlib.h>
 #include <stdio.h>

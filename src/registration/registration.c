@@ -28,7 +28,7 @@
 #include <math.h>
 #include <gtk/gtk.h>
 #ifdef MAC_INTEGRATION
-#include "gtkmacintegration/gtkosxapplication.h"
+#include <gtkosxapplication.h>
 #endif
 
 #include "core/siril.h"

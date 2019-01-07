@@ -25,7 +25,7 @@
 
 #include <gtk/gtk.h>
 #ifdef MAC_INTEGRATION
-#include "gtkmacintegration/gtkosxapplication.h"
+#include <gtkosxapplication.h>
 #endif
 #ifdef _WIN32
 #include <windows.h>
