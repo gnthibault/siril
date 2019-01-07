@@ -113,7 +113,7 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 	gtk_widget_hide(file_quit_menu_item);
 	gtk_widget_hide(help_menu);
 	
-	icon_path = g_build_filename(siril_path, "pixmaps/siril.png", NULL);
+	icon_path = g_build_filename(siril_path, "pixmaps/siril.svg", NULL);
 	icon = gdk_pixbuf_new_from_file(icon_path, NULL);
 	gtkosx_application_set_dock_icon_pixbuf(osx_app, icon);
 		
