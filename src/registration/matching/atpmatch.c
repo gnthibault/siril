@@ -1319,7 +1319,7 @@ double **darray /* array of distances between stars */
 ) {
 	static int id_number = 0;
 	double d12, d23, d13;
-	double a, b, c;
+	double a = 0.0, b, c;
 	s_star *star1, *star2, *star3;
 
 	g_assert(tri != NULL);
