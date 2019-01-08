@@ -64,6 +64,7 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 
 static struct object platedObject[RESOLVER_NUMBER];
 static GtkListStore *list_IPS = NULL;
+static int selectedItem = -1;
 static image_solved is_result;
 
 static RA convert_ra(double var) {
@@ -494,13 +495,19 @@ static online_catalog get_online_catalog(double fov, double m) {
 	}
 }
 
-static gchar *download_catalog(online_catalog onlineCatalog, point catalog_center, double fov, double m) {
+static gchar *download_catalog(online_catalog onlineCatalog, double fov, double m) {
 	gchar *url;
 	char *buffer = NULL;
 	FILE *catalog = NULL;
 	FILE *fproj = NULL;
 	gchar *filename, *foutput;
+	int index = selectedItem;
+	point catalog_center;
 
+	if (index < 0)
+		return NULL;
+
+	catalog_center = get_center_of_catalog();
 
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
 
@@ -530,12 +537,12 @@ static gchar *download_catalog(online_catalog onlineCatalog, point catalog_cente
 		return NULL;
 	}
 
-	convert_catalog_coords(filename, catalog_center, fproj);
+	convert_catalog_coords(filename, platedObject[index].imageCenter, fproj);
 	fclose(fproj);
 
 	/* -------------------------------------------------------------------------------- */
 
-	is_result.px_cat_center = catalog_center;
+	is_result.px_cat_center = platedObject[index].imageCenter;
 
 	g_free(filename);
 	return foutput;
@@ -552,6 +559,7 @@ static void get_list_IPS() {
 
 static void clear_all_objects() {
 	gtk_list_store_clear(list_IPS);
+	selectedItem = -1;
 }
 
 static void add_object_to_list() {
@@ -602,23 +610,7 @@ static void update_coordinates(RA ra, DEC Dec, gboolean south) {
 static gboolean has_any_keywords() {
 	return (gfit.focal_length > 0.0 ||
 			gfit.pixel_size_x > 0.0 ||
-			gfit.pixel_size_y > 0.0 ||
-			gfit.wcs.crval1 != 0.0 ||
-			gfit.wcs.crval2 != 0.0);
-}
-
-static void update_coords() {
-	RA k_ra;
-	DEC k_dec;
-	gboolean south;
-
-	// first transform coords to RA and DEC
-	k_ra = convert_ra(gfit.wcs.crval1);
-	k_dec = convert_dec(gfit.wcs.crval2);
-	south = k_dec.degree < 0.0;
-
-	k_dec.degree = abs(k_dec.degree);
-	update_coordinates(k_ra, k_dec, south);
+			gfit.pixel_size_y > 0.0);
 }
 
 static void update_pixel_size() {
@@ -665,7 +657,6 @@ static void update_image_parameters_GUI() {
 	  */
 	update_focal();
 	update_pixel_size();
-	update_coords();
 }
 
 static void update_gfit(image_solved image) {
@@ -1139,18 +1130,15 @@ static void start_image_plate_solve() {
 	set_cursor_waiting(TRUE);
 
 	double fov, px_size, scale, m;
-	point cat_center;
 
 	px_size = get_pixel();
 	scale = get_resolution(get_focal(), px_size);
 	fov = get_fov(scale, gfit.ry > gfit.rx ? gfit.ry : gfit.rx);
 	m = get_mag_limit(fov);
-	cat_center = get_center_of_catalog();
-
 
 	/* Filling structure */
 	args->onlineCatalog = get_online_catalog(fov, m);
-	args->catalogStars = download_catalog(args->onlineCatalog, cat_center, fov, m);
+	args->catalogStars = download_catalog(args->onlineCatalog, fov, m);
 	args->scale = scale;
 	args->pixel_size = px_size;
 	args->manual = is_detection_manual();
@@ -1182,7 +1170,6 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (tree_view);
 	GtkTreeIter iter;
 	GValue value = G_VALUE_INIT;
-	int selected_item;
 
 	if (gtk_tree_model_get_iter_first(treeModel, &iter) == FALSE)
 		return;	//The tree is empty
@@ -1190,18 +1177,18 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 		gtk_tree_model_get_value(treeModel, &iter, COLUMN_RESOLVER, &value);
 		const gchar *res = g_value_get_string(&value);
 		if (!g_strcmp0(res, "NED")) {
-			selected_item = 0;
+			selectedItem = 0;
 		} else if (!g_strcmp0(res, "Simbad")) {
-			selected_item = 1;
+			selectedItem = 1;
 		} else if (!g_strcmp0(res, "VizieR")) {
-			selected_item = 2;
+			selectedItem = 2;
 		} else {
-			selected_item = -1;
+			selectedItem = -1;
 		}
 
-		if (selected_item >= 0) {
-			update_coordinates(platedObject[selected_item].RA,
-					platedObject[selected_item].Dec, platedObject[selected_item].south);
+		if (selectedItem >= 0) {
+			update_coordinates(platedObject[selectedItem].RA,
+					platedObject[selectedItem].Dec, platedObject[selectedItem].south);
 		}
 
 		g_value_unset(&value);
