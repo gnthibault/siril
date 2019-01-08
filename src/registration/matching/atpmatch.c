@@ -1331,6 +1331,7 @@ double **darray /* array of distances between stars */
 
 	tri->id = id_number++;
 	tri->index = -1;
+	a = 0.0;
 
 	/*
 	 * figure out which sides is longest and shortest, and assign
