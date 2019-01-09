@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-02 13:38+0100\n"
-"PO-Revision-Date: 2018-05-28 14:59+0100\n"
+"PO-Revision-Date: 2019-01-09 07:31+0000\n"
 "Last-Translator: David Vazquez Garcia <davidvazquezgijon@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.7\n"
+"X-Generator: Poedit 2.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-Bookmarks: -1,-1,459,-1,-1,-1,-1,-1,-1,-1\n"
 
@@ -614,15 +614,17 @@ msgstr "Esto aplicará la corrección seleccionada."
 
 #: ../src/gui/siril3.glade.h:132
 msgid "Image Plate Solver"
-msgstr ""
+msgstr "Resolutor de imágenes"
 
 #: ../src/gui/siril3.glade.h:133
 msgid "Start the plate solving algorithm."
-msgstr ""
+msgstr "Iniciar el algoritmo resolutor de imágenes."
 
 #: ../src/gui/siril3.glade.h:134
 msgid "Initial equatorial coordinates. Input value must be inside the image."
 msgstr ""
+"Coordenadas ecuatoriales iniciales. El valor de entrada debe estar dentro de "
+"la imagen."
 
 #: ../src/gui/siril3.glade.h:135
 #, fuzzy
@@ -631,7 +633,7 @@ msgstr "x0"
 
 #: ../src/gui/siril3.glade.h:136
 msgid "Right Ascension: "
-msgstr ""
+msgstr "Ascensión derecha: "
 
 #: ../src/gui/siril3.glade.h:137
 #, fuzzy
@@ -640,21 +642,22 @@ msgstr "Desviación: "
 
 #: ../src/gui/siril3.glade.h:138
 msgid "S"
-msgstr ""
+msgstr "S"
 
 #: ../src/gui/siril3.glade.h:139
 msgid "This button is checked for negative declination (southern hemisphere)."
-msgstr ""
+msgstr "Marque este botón para una declinación negativa (hemisferio sur)."
 
 #: ../src/gui/siril3.glade.h:140
 msgid ""
 "Enter the identifier or the name of the object which must be in the image."
 msgstr ""
+"Introduzca el identificador o el nombre del objeto que debería estar en la "
+"imagen."
 
 #: ../src/gui/siril3.glade.h:141
-#, fuzzy
 msgid "Start searching."
-msgstr "Comenzar apilado"
+msgstr "Comenzar búsqueda."
 
 #: ../src/gui/siril3.glade.h:143
 #, no-c-format
@@ -663,45 +666,51 @@ msgid ""
 "input value has not to be very accurate, try to give a value with an error "
 "not exceeding 20%."
 msgstr ""
+"Distancia focal efectiva del sistema óptico en milímetros. Incluso si el "
+"valor de entrada no es muy preciso, intente proporcionar un valor cuyo error "
+"no exceda del 20%."
 
 #: ../src/gui/siril3.glade.h:144
 msgid "Pixel size in micrometer. The image is assumed to have square pixels."
 msgstr ""
+"Tamaño de píxel en micrómetros. Se asume que la imagen tiene píxeles "
+"cuadrados."
 
 #: ../src/gui/siril3.glade.h:145
-#, fuzzy
 msgid "Focal distance (mm):"
-msgstr "Longitud focal (mm): "
+msgstr "Longitud focal (mm):"
 
 #: ../src/gui/siril3.glade.h:146
-#, fuzzy
 msgid "Pixel size (µm):"
-msgstr "Dim. de píxles X (micrones): "
+msgstr "Tamaño de píxel (µm):"
 
 #: ../src/gui/siril3.glade.h:147
-#, fuzzy
 msgid "Resolution: "
-msgstr "Deconvolución"
+msgstr "Resolución: "
 
 #: ../src/gui/siril3.glade.h:148
 msgid ""
 "The resolution of the image that is automatically determined from the focal "
 "and pixel size value."
 msgstr ""
+"La resolución de la imagen se determina automáticamente con la focal y el "
+"tamaño de píxel."
 
 #: ../src/gui/siril3.glade.h:149
 msgid "Get Metadata From Image"
-msgstr ""
+msgstr "Tomar metadatos de la imagen"
 
 #: ../src/gui/siril3.glade.h:150
 msgid ""
 "Click on this button to get focal and pixel size value from the header of "
 "the file if they exist."
 msgstr ""
+"Pulse este botón para tomar los valores de focal y tamaño de píxel de la "
+"cabecera del fichero, si existen."
 
 #: ../src/gui/siril3.glade.h:151
 msgid "Resolver"
-msgstr ""
+msgstr "Resolutor"
 
 #: ../src/gui/siril3.glade.h:152
 msgid "Name"
@@ -714,13 +723,15 @@ msgstr "<b>Copyright de la imagen</b>"
 
 #: ../src/gui/siril3.glade.h:154
 msgid "Catalogue Limit Mag: "
-msgstr ""
+msgstr "Catálogo Limit Mag: "
 
 #: ../src/gui/siril3.glade.h:155
 msgid ""
 "Maximum star magnitude used in the catalog queries. Wider is the field, "
 "lower is the value."
 msgstr ""
+"Magnitud máxima de las estrellas empleada en la consulta del catálogo. "
+"Cuanto más ancho sea el campo, menor será el valor."
 
 #: ../src/gui/siril3.glade.h:156
 #, fuzzy
@@ -732,10 +743,12 @@ msgid ""
 "The limit magnitude is automatically determined using the approximation of "
 "the Field Of View."
 msgstr ""
+"La magnitud límite se determina automáticamente usando la aproximación del "
+"Campo de Visión."
 
 #: ../src/gui/siril3.glade.h:158
 msgid "Online Star Catalogue: "
-msgstr ""
+msgstr "Catálogo online de Estrellas: "
 
 #: ../src/gui/siril3.glade.h:159
 msgid ""
@@ -755,12 +768,30 @@ msgid ""
 "stellar magnitude 6.5 or brighter, which is roughly every star visible to "
 "the naked eye from Earth. The catalog contains 9,110 objects."
 msgstr ""
+"Escoja el catálogo online contra el que quiere comparar la imagen.\n"
+"* TYCHO-2 contiene las posiciones, movimientos y datos fotométricos en dos "
+"colores de las 2,539,913 más brillantes en la Vía Láctea.\n"
+"* NOMAD es una mezcla simple de los catálogos Hipparcos, Tycho-2, UCAC-2 y "
+"USNO-B1, complementada con información fotométrica del lanzamiento final del "
+"catálogo 2MASS.\n"
+"* El Gaia Data Release 2 se lanzó el 25 de Abril de 2018. Contiene la "
+"solución astrométrica de cinco parámetros, posiciones en el cielo (α, δ), "
+"paralajes, y movimientos de más de 1.3 billones de fuentes con una magnitud "
+"límite de G = 21.\n"
+"* PPMXL es un catálogo de posiciones, movimientos, 2MASS, y fotometría "
+"óptica de 900 millones de estrellas y galaxias.\n"
+"* El catálogo Bright Star es un catálogo de estrellas que lista todas las "
+"estrellas con una magnitud estelas de 6.5 o más brillantes, que es "
+"aproximadamente cada estrella visible a simple vista desde la Tierra. Este "
+"catálogo contiene 9.110 objetos."
 
 #: ../src/gui/siril3.glade.h:165
 msgid ""
 "The online catalogue is automatically determined using the approximation of "
 "the Field Of View and magnitude."
 msgstr ""
+"Se determinará el catálogo online usando la aproximación de la magnitud del "
+"Campo de Visión."
 
 #: ../src/gui/siril3.glade.h:166
 #, fuzzy
@@ -778,6 +809,9 @@ msgid ""
 "useful in some cases where Siril can't find enough stars. Please, try to "
 "choose the brightest stars in the image."
 msgstr ""
+"Marque esta opción si quiere seleccionar las estrellas manualmente. Puede "
+"ser útil en los casos donde Siril no puede encontrar suficientes estrellas. "
+"Por favor intente elegir las estrellas más brillantes en la imagen."
 
 #: ../src/gui/siril3.glade.h:169
 #, fuzzy
@@ -848,29 +882,29 @@ msgid "No Selection"
 msgstr "Sin selección"
 
 #: ../src/gui/siril3.glade.h:185
-#, fuzzy
 msgid "Asinh Transformation"
-msgstr "Transformación de histograma..."
+msgstr "Transformación Asinh"
 
 #: ../src/gui/siril3.glade.h:186
 msgid "Stretch factor: "
-msgstr ""
+msgstr "Factor de extensión: "
 
 #: ../src/gui/siril3.glade.h:187
 msgid "The parameter stretch factor allows to adjust the non-linearity factor."
 msgstr ""
+"El parámetro factor de extensión permite ajustar el factor de no linealidad."
 
 #: ../src/gui/siril3.glade.h:188
 msgid "Black Point: "
-msgstr ""
+msgstr "Punto Negro:"
 
 #: ../src/gui/siril3.glade.h:189
 msgid "Constant value that is subtracted from the image."
-msgstr ""
+msgstr "Valor constante que se resta a la imagen."
 
 #: ../src/gui/siril3.glade.h:190
 msgid "Use RGB working space"
-msgstr ""
+msgstr "Usar espacio de trabajo RGB"
 
 #: ../src/gui/siril3.glade.h:191 ../src/core/siril.c:1249
 msgid "Banding Reduction"
@@ -1404,11 +1438,11 @@ msgstr "Lanczos-4"
 
 #: ../src/gui/siril3.glade.h:313
 msgid "Rotational Gradient"
-msgstr ""
+msgstr "Gradiente Rotacional"
 
 #: ../src/gui/siril3.glade.h:314
 msgid "The rotational gradient will be applied."
-msgstr ""
+msgstr "Se aplicará el gradiente rotacional."
 
 #: ../src/gui/siril3.glade.h:315
 #, fuzzy
@@ -1418,33 +1452,32 @@ msgstr "Radio: "
 #: ../src/gui/siril3.glade.h:316
 msgid "Radial shift used to compute rotational gradient."
 msgstr ""
+"Desplazamiento radial utilizado para calcular el gradiente de rotación."
 
 #: ../src/gui/siril3.glade.h:317
-#, fuzzy
 msgid "Rotational shift: "
-msgstr "Rotación"
+msgstr "Cambio rotacional: "
 
 #: ../src/gui/siril3.glade.h:318
 msgid "Rotational shift used to compute rotational gradient."
 msgstr ""
+"Desplazamiento rotacional utilizado para calcular el gradiente de rotación."
 
 #: ../src/gui/siril3.glade.h:319
-#, fuzzy
 msgid "X coordinate of the center of polar coordinates."
-msgstr "Devuelve las coordenadas del centro de gravedad de la imagen"
+msgstr "Coordenada X del centro de las coordenadas polares."
 
 #: ../src/gui/siril3.glade.h:320
-#, fuzzy
 msgid "Y coordinate of the center of polar coordinates."
-msgstr "Devuelve las coordenadas del centro de gravedad de la imagen"
+msgstr "Coordenada Y del centro de las coordenadas polares."
 
 #: ../src/gui/siril3.glade.h:321
 msgid "X centre:"
-msgstr ""
+msgstr "Centro X:"
 
 #: ../src/gui/siril3.glade.h:322
 msgid "Y centre:"
-msgstr ""
+msgstr "Centro Y:"
 
 #: ../src/gui/siril3.glade.h:323
 msgid "root name of the converted images (the &apos;dest&apos; in dest1.fit)"
@@ -1480,7 +1513,7 @@ msgstr "Ningungo"
 
 #: ../src/gui/siril3.glade.h:330
 msgid "Deflate compression"
-msgstr ""
+msgstr "Rebajar compresión"
 
 #: ../src/gui/siril3.glade.h:331
 msgid "<b>Compression</b>"
@@ -1798,7 +1831,7 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:397
 msgid "FWHM will be converted into arcsec"
-msgstr ""
+msgstr "FWHM se convertirá en arcsec"
 
 #: ../src/gui/siril3.glade.h:398
 msgid ""
@@ -1818,13 +1851,15 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:400
 msgid "Binning is not in the pixel size value"
-msgstr ""
+msgstr "El valor Binning no es el valor del tamaño de píxel"
 
 #: ../src/gui/siril3.glade.h:401
 msgid ""
 "Check this button if binning is not taken into account in the pixel size "
 "value. In this case, the binning value in the combo box below will be used."
 msgstr ""
+"Marque este botón si el valor binning no se tendrá en cuenta en el tamaño de "
+"píxel. En este caso, se usará el valor binning de la caja de debajo."
 
 #: ../src/gui/siril3.glade.h:402
 msgid "<b>Camera and Optics</b>"
@@ -1989,13 +2024,15 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:435
 msgid "Remember window positions"
-msgstr ""
+msgstr "Recordar posiciones de las ventanas"
 
 #: ../src/gui/siril3.glade.h:436
 msgid ""
 "Remember positions of image displaying windows. This feature may not work on "
 "all architectures."
 msgstr ""
+"Recordad posiciones de las ventanas mostradas. Esta característica puede no "
+"funcionar en todas las arquitecturas."
 
 #: ../src/gui/siril3.glade.h:437
 msgid "<b>Look and feel</b>"
@@ -2051,7 +2088,7 @@ msgstr "FWHMy"
 
 #: ../src/gui/siril3.glade.h:448
 msgid "Mag"
-msgstr ""
+msgstr "Mag"
 
 #: ../src/gui/siril3.glade.h:449
 msgid "r"
@@ -2252,9 +2289,8 @@ msgid "Remove Green Noise..."
 msgstr "Eliminar ruido verde..."
 
 #: ../src/gui/siril3.glade.h:497
-#, fuzzy
 msgid "Negative Transformation"
-msgstr "Transformación de histograma..."
+msgstr "Transformación Negativa"
 
 #: ../src/gui/siril3.glade.h:498
 msgid "À trous Wavelets Transform..."
@@ -3096,14 +3132,12 @@ msgid ""
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:675
-#, fuzzy
 msgid "Core X-coordinates of the first image."
-msgstr "Devuelve las coordenadas del centro de gravedad de la imagen"
+msgstr "Coordenadas X del núcleo de la primea imagen."
 
 #: ../src/gui/siril3.glade.h:676
-#, fuzzy
 msgid "Core Y-coordinates of the first image."
-msgstr "Devuelve las coordenadas del centro de gravedad de la imagen"
+msgstr "Coordenadas Y del núcleo de la primea imagen."
 
 #: ../src/gui/siril3.glade.h:677
 msgid "Peak object in #2"
@@ -3117,14 +3151,12 @@ msgid ""
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:679
-#, fuzzy
 msgid "Core X-coordinates of the second image."
-msgstr "Devuelve las coordenadas del centro de gravedad de la imagen"
+msgstr "Coordenadas X del núcleo de la segunda imagen."
 
 #: ../src/gui/siril3.glade.h:680
-#, fuzzy
 msgid "Core Y-coordinates of the second image."
-msgstr "Devuelve las coordenadas del centro de gravedad de la imagen"
+msgstr "Coordenadas Y del núcleo de la segunda imagen."
 
 #: ../src/gui/siril3.glade.h:681
 msgid "Comet velocity in pixel per hour."
@@ -4050,9 +4082,8 @@ msgstr "SCNR: procesando...\n"
 #: ../src/algos/colors.c:606 ../src/algos/colors.c:726
 #: ../src/algos/colors.c:762 ../src/algos/colors.c:935
 #: ../src/algos/colors.c:946
-#, fuzzy
 msgid "There is no selection"
-msgstr "fwhm: sin selección"
+msgstr "Sin selección"
 
 #: ../src/algos/colors.c:607 ../src/algos/colors.c:727
 #: ../src/algos/colors.c:936
@@ -4146,28 +4177,28 @@ msgstr "Inliers: %*.3f\n"
 
 #. we assume square pixels
 #: ../src/algos/plateSolver.c:691
-#, fuzzy, c-format
+#, c-format
 msgid "Resolution:%*.3lf arcsec/px\n"
-msgstr "Deconvolución"
+msgstr "Resolución:%*.3lf arcsec/px\n"
 
 #: ../src/algos/plateSolver.c:705
-#, fuzzy, c-format
+#, c-format
 msgid "Rotation:%+*.2lf deg %s\n"
-msgstr "rotación:%+*.2f deg\n"
+msgstr "Rotación:%+*.2lf deg %s\n"
 
 #: ../src/algos/plateSolver.c:705
 msgid "(flipped)"
 msgstr ""
 
 #: ../src/algos/plateSolver.c:711
-#, fuzzy, c-format
+#, c-format
 msgid "Focal:%*.2lf mm\n"
-msgstr "escala: %*.3f\n"
+msgstr "Focal:%*.2lf mm\n"
 
 #: ../src/algos/plateSolver.c:712
-#, fuzzy, c-format
+#, c-format
 msgid "Pixel size:%*.2lf µm\n"
-msgstr "Dim. de píxles X (micrones): "
+msgstr "Tamaó de píxel:%*.2lf µm\n"
 
 #: ../src/algos/plateSolver.c:715
 #, c-format
@@ -4220,12 +4251,12 @@ msgid ""
 msgstr ""
 
 #: ../src/algos/plateSolver.c:998
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "There are not enough stars picked in the image. At least %d stars are needed."
 msgstr ""
-"No hay suficientes estrellas en la imagen de referencia para realizar el "
-"alineamiento\n"
+"No hay suficientes estrellas seleccionadas en la imagen. Se necesitan como "
+"mínimo %d estrellas."
 
 #: ../src/algos/plateSolver.c:1200
 #, fuzzy
@@ -5257,13 +5288,12 @@ msgstr ""
 "añaden con los valores correspondientes a los niveles de visión actuales"
 
 #: ../src/core/command_def.h:77
-#, fuzzy
 msgid ""
 "Saves current image under the form of a bitmap file with 8-bit per channel: "
 "\"filename\".bmp (BMP 24-bit)."
 msgstr ""
-"Guarda la imagen actual con formato TIFF sin comprimir y 16 bits por canal: "
-"\"filename\".tif"
+"Guarda la imagen actual con formato mapa de bits con 8 bits por canal: "
+"\"nombrefichero\".bmp (BMP 24-bits)."
 
 #: ../src/core/command_def.h:78
 msgid ""
@@ -5529,9 +5559,8 @@ msgstr ""
 "guardado ya no está disponible\n"
 
 #: ../src/core/pipe.c:133 ../src/core/pipe.c:145
-#, fuzzy
 msgid "Could not create the named pipe "
-msgstr "No se puede abrir el archivo TIFF %s\n"
+msgstr "No se puede crear la tubería con nombre "
 
 #: ../src/core/pipe.c:139 ../src/core/pipe.c:151
 msgid "The named pipe file "
@@ -6120,9 +6149,8 @@ msgid "undefined"
 msgstr "sin defeinir"
 
 #: ../src/gui/callbacks.c:3767
-#, fuzzy
 msgid "Exclude all images ?"
-msgstr "Excluir todas"
+msgstr "¿Excluir todas las imágenes?"
 
 #: ../src/gui/callbacks.c:3768 ../src/gui/callbacks.c:3778
 #, fuzzy
@@ -6133,9 +6161,8 @@ msgstr ""
 "... y no es posible deshacer)"
 
 #: ../src/gui/callbacks.c:3777
-#, fuzzy
 msgid "Include all images ?"
-msgstr "Incluir todas"
+msgstr "¿Incluir todas las imágenes?"
 
 #: ../src/gui/callbacks.c:3799
 msgid "Opening dark image..."
@@ -6215,17 +6242,14 @@ msgid "The file stars.lst has been created.\n"
 msgstr "Se ha creado el archivo stars.lst.\n"
 
 #: ../src/gui/callbacks.c:4704 ../src/gui/callbacks.c:4752
-#, fuzzy
 msgid "Current selection is too large"
-msgstr "fwhm: la selección es muy grande"
+msgstr "La selección actual es demasiado grande"
 
 #: ../src/gui/callbacks.c:4705 ../src/gui/callbacks.c:4753
-#, fuzzy
 msgid "To determine the PSF, please make a selection around a star."
 msgstr ""
-"La selección actual es demasiado grande.\n"
 "Para determinar el PSF, por favor realice una selección alrededor de una "
-"estrella.\n"
+"estrella."
 
 #: ../src/gui/callbacks.c:4717
 #, c-format
@@ -6277,9 +6301,8 @@ msgstr ""
 "\t\tRMSE=%.3e"
 
 #: ../src/gui/callbacks.c:4734
-#, fuzzy
 msgid "PSF for the sequence only applies on sequences"
-msgstr "Ejecutar un PSF para la secuencia primero (ver seqpsf)\n"
+msgstr "El PSF de la secuencia sólo es aplicable en secuencias"
 
 #: ../src/gui/callbacks.c:4735
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
@@ -7189,9 +7212,8 @@ msgid "internal sequence"
 msgstr "secuencia interna"
 
 #: ../src/io/sequence.c:1288
-#, fuzzy
 msgid "Processing..."
-msgstr "Procesando...\n"
+msgstr "Procesando..."
 
 #: ../src/io/sequence.c:1414
 #, c-format
@@ -7377,14 +7399,12 @@ msgid "Opening %s failed.\n"
 msgstr "Fallo al abrir %s.\n"
 
 #: ../src/io/single_image.c:178 ../src/io/single_image.c:184
-#, fuzzy
 msgid "Error opening file"
-msgstr "Error abriendo BMP.\n"
+msgstr "Error abriendo fichero"
 
 #: ../src/io/single_image.c:179
-#, fuzzy
 msgid "This file could not be opened because its extension is not supported."
-msgstr "Este archivo no puede abrirse porque su extensión no está soportada.\n"
+msgstr "Este archivo no puede abrirse porque su extensión no está soportada."
 
 #: ../src/io/single_image.c:185
 msgid ""
@@ -7438,9 +7458,8 @@ msgid "Deconvoltuion applied"
 msgstr "Deconvolución aplicada"
 
 #: ../src/registration/comet.c:152 ../src/registration/comet.c:176
-#, fuzzy
 msgid "There is no timestamp stored in the file"
-msgstr "Aviso: no hay marcas temporales almacenadas en la secuencia SER.\n"
+msgstr "No hay marcas temporales almacenadas en el fichero"
 
 #: ../src/registration/comet.c:153 ../src/registration/comet.c:177
 msgid ""
@@ -7676,9 +7695,9 @@ msgstr ""
 
 #: ../src/registration/registration.c:284
 #: ../src/registration/registration.c:561
-#, fuzzy, c-format
+#, c-format
 msgid "Register: processing image %s"
-msgstr "Registro: procesando imagen %s\n"
+msgstr "Registro: procesando imagen %s"
 
 #: ../src/registration/registration.c:393
 #: ../src/registration/registration.c:629
@@ -7730,9 +7749,8 @@ msgstr ""
 "rectángulo primero.\n"
 
 #: ../src/registration/registration.c:896
-#, fuzzy
 msgid "Not enough disk space"
-msgstr "No hay suficientes estrellas. Descartada imagen %d\n"
+msgstr "No hay suficiente espacio en disco"
 
 #: ../src/stacking/normalization.c:105
 msgid "Computing normalization...\n"
@@ -8052,9 +8070,9 @@ msgstr ""
 "\n"
 
 #: ../src/stacking/stacking.c:1935
-#, fuzzy, c-format
+#, c-format
 msgid "Using image %d as temporary reference image\n"
-msgstr "Mostrar imagen de referencia"
+msgstr "Usndo imagen %d como imagen temporal de referencia\n"
 
 #: ../src/stacking/stacking.c:1973 ../src/stacking/stacking.c:2049
 #, c-format
