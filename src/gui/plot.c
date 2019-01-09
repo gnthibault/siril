@@ -210,6 +210,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 			case MAGNITUDE:
 				plot->data[j].y = psfs[i]->mag;
 				plot->err[j].y = psfs[i]->s_mag;
+
 				if (seq->reference_star >= 0) {
 					/* we have a reference star for the sequence,
 					 * with photometry data */
@@ -309,6 +310,7 @@ static int lightCurve(pldata *plot, sequence *seq) {
 			if (tmp_plot->err[k].x == tmp_plot->data[j].x)
 				err[j] = tmp_plot->err[k].y;
 		}
+
 		x[j] = tmp_plot->data[j].x;
 		real_x[j] = x[j] + (double) julian0;
 		tmp_plot = tmp_plot->next;

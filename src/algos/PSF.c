@@ -584,6 +584,7 @@ fitted_PSF *psf_get_minimisation(fits *fit, int layer, rectangle *area, gboolean
 	int stridefrom, i, j;
 	fitted_PSF *result;
 	double bg = background(fit, layer, area);
+
 	//~ fprintf(stdout, "background: %g\n", bg);
 
 	// create the matrix with values from the selected rectangle
@@ -622,14 +623,31 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg, int layer,
 
 	// To compute good starting values, we first compute with no angle
 	if ((psf = psf_minimiz_no_angle(z, bg, layer)) != NULL) {
-		if (fit_angle && fabs(psf->sx - psf->sy) >= EPSILON) {
+		if (fit_angle) {
+			/* This next check is to avoid possible angle divergence
+			 * when sx and sy are too close (star is quite round).
+			 * However, in this case we need to compute photometry if needed
+			 */
+			if ((fabs(psf->sx - psf->sy) >= EPSILON)) {
+				// Photometry
+				if (for_photometry)
+					psf->phot = getPhotometryData(z, psf);
+				else psf->phot = NULL;
+				// get Magnitude
+				if (psf->phot != NULL) {
+					psf->mag = psf->phot->mag;
+					psf->s_mag = psf->phot->s_mag;
+				}
+			} else {
 			fitted_PSF *tmp_psf;
+
 			if ((tmp_psf = psf_minimiz_angle(z, psf, for_photometry)) == NULL) {
 				free(psf);
 				return NULL;
 			}
 			free(psf);
 			psf = tmp_psf;
+			}
 		}
 		// Solve symmetry problem in order to have Sx>Sy in any case !!!
 		if (psf->sy > psf->sx) {
