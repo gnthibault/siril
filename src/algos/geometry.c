@@ -79,7 +79,6 @@ static void fits_rotate_pi(fits *fit) {
 }
 
 static void mirrorx_gui(fits *fit) {
-	if (single_image_is_loaded()) {
 		if (confirm_delete_wcs_keywords(fit)) {
 			set_cursor_waiting(TRUE);
 			undo_save_state(&gfit, "Processing: Mirror X");
@@ -88,11 +87,9 @@ static void mirrorx_gui(fits *fit) {
 			redraw_previews();
 			set_cursor_waiting(FALSE);
 		}
-	}
 }
 
 static void mirrory_gui(fits *fit) {
-	if (single_image_is_loaded()) {
 		if (confirm_delete_wcs_keywords(fit)) {
 			set_cursor_waiting(TRUE);
 			undo_save_state(&gfit, "Processing: Mirror Y");
@@ -101,7 +98,6 @@ static void mirrory_gui(fits *fit) {
 			redraw_previews();
 			set_cursor_waiting(FALSE);
 		}
-	}
 }
 
 static void rotate_gui(fits *fit) {
