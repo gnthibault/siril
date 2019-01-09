@@ -42,6 +42,9 @@
 #elif defined (__gnu_hurd__)
 #define fseek64 fseeko64  // GNU/Hurd
 #define ftell64 ftello64  // GNU/Hurd
+#elif defined(__CYGWIN__)
+#define fseek64 fseeko  // CYGWIN
+#define ftell64 ftello  // CYGWIN
 #else
 #define fseek64 _fseeki64  // Windows
 #define ftell64 _ftelli64  // Windows

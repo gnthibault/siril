@@ -585,7 +585,7 @@ static double find_space(const gchar *name) {
 }
 #endif /*HAVE_SYS_STATVFS_H*/
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__CYGWIN__)
 static unsigned long update_used_RAM_memory() {
 	unsigned long size, resident, share, text, lib, data, dt;
 	static int page_size_in_k = 0;
@@ -673,7 +673,7 @@ double test_available_space(double seq_size) {
  * Gets available memory for stacking process
  * @return available memory in MB, 2048 if it fails.
  */
-#if defined(__linux__)
+#if defined(__linux__) || defined(__CYGWIN__)
 int get_available_memory_in_MB() {
 	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	FILE* fp = fopen("/proc/meminfo", "r");
