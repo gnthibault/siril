@@ -578,6 +578,13 @@ static void add_object_to_list() {
 	}
 }
 
+static void unselect_all_items() {
+	GtkTreeSelection *selection;
+
+	selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder, "gtkselectionIPS"));
+	gtk_tree_selection_unselect_all(selection);
+}
+
 static void update_coordinates(RA ra, DEC Dec, gboolean south) {
 	gchar *RA_sec, *Dec_sec;
 
@@ -601,7 +608,25 @@ static void update_coordinates(RA ra, DEC Dec, gboolean south) {
 static gboolean has_any_keywords() {
 	return (gfit.focal_length > 0.0 ||
 			gfit.pixel_size_x > 0.0 ||
-			gfit.pixel_size_y > 0.0);
+			gfit.pixel_size_y > 0.0 ||
+			(gfit.wcs.crval1 > 0.0	&&	gfit.wcs.crval2 != 0.0));
+}
+
+static void update_coords() {
+	RA k_ra;
+	DEC k_dec;
+	gboolean south;
+
+	// first transform coords to RA and DEC
+	k_ra = convert_ra(gfit.wcs.crval1);
+	k_dec = convert_dec(gfit.wcs.crval2);
+	south = k_dec.degree < 0.0;
+
+	k_dec.degree = abs(k_dec.degree);
+	if (gfit.wcs.crval1 != 0.0 && gfit.wcs.crval2 != 0.0) {
+		update_coordinates(k_ra, k_dec, south);
+		unselect_all_items();
+	}
 }
 
 static void update_pixel_size() {
@@ -648,6 +673,7 @@ static void update_image_parameters_GUI() {
 	  */
 	update_focal();
 	update_pixel_size();
+	update_coords();
 }
 
 static void update_gfit(image_solved image) {
