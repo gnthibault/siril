@@ -64,7 +64,6 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 
 static struct object platedObject[RESOLVER_NUMBER];
 static GtkListStore *list_IPS = NULL;
-static int selectedItem = -1;
 static image_solved is_result;
 
 static RA convert_ra(double var) {
@@ -495,19 +494,12 @@ static online_catalog get_online_catalog(double fov, double m) {
 	}
 }
 
-static gchar *download_catalog(online_catalog onlineCatalog, double fov, double m) {
+static gchar *download_catalog(online_catalog onlineCatalog, point catalog_center, double fov, double m) {
 	gchar *url;
 	char *buffer = NULL;
 	FILE *catalog = NULL;
 	FILE *fproj = NULL;
 	gchar *filename, *foutput;
-	int index = selectedItem;
-	point catalog_center;
-
-	if (index < 0)
-		return NULL;
-
-	catalog_center = get_center_of_catalog();
 
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
 
@@ -537,12 +529,12 @@ static gchar *download_catalog(online_catalog onlineCatalog, double fov, double 
 		return NULL;
 	}
 
-	convert_catalog_coords(filename, platedObject[index].imageCenter, fproj);
+	convert_catalog_coords(filename, catalog_center, fproj);
 	fclose(fproj);
 
 	/* -------------------------------------------------------------------------------- */
 
-	is_result.px_cat_center = platedObject[index].imageCenter;
+	is_result.px_cat_center = catalog_center;
 
 	g_free(filename);
 	return foutput;
@@ -559,7 +551,6 @@ static void get_list_IPS() {
 
 static void clear_all_objects() {
 	gtk_list_store_clear(list_IPS);
-	selectedItem = -1;
 }
 
 static void add_object_to_list() {
@@ -742,7 +733,7 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = y + shift_y; // shift_y is here because in get_stars of misc.c we have "image_size.y - s[i]->ypos"
+		star->ypos = -y + shift_y; // shift_y is here because in get_stars of misc.c we have "image_size.y - s[i]->ypos"
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
 		cstars[i] = star;
@@ -776,7 +767,7 @@ static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) 
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = y + shift_y;
+		star->ypos = -y + shift_y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
 		cstars[i] = star;
@@ -810,7 +801,7 @@ static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = y + shift_y;
+		star->ypos = -y + shift_y;
 		star->mag = Gmag;
 		star->BV = -99.9;
 		cstars[i] = star;
@@ -844,7 +835,7 @@ static int read_PPMXL_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = y + shift_y;
+		star->ypos = -y + shift_y;
 		star->mag = Jmag;
 		star->BV = -99;
 		cstars[i] = star;
@@ -879,7 +870,7 @@ static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars,
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = y + shift_y;
+		star->ypos = -y + shift_y;
 		star->mag = Vmag;
 		star->BV = BV;
 		cstars[i] = star;
@@ -1130,15 +1121,17 @@ static void start_image_plate_solve() {
 	set_cursor_waiting(TRUE);
 
 	double fov, px_size, scale, m;
+	point catalog_center;
 
 	px_size = get_pixel();
 	scale = get_resolution(get_focal(), px_size);
 	fov = get_fov(scale, gfit.ry > gfit.rx ? gfit.ry : gfit.rx);
 	m = get_mag_limit(fov);
+	catalog_center = get_center_of_catalog();
 
 	/* Filling structure */
 	args->onlineCatalog = get_online_catalog(fov, m);
-	args->catalogStars = download_catalog(args->onlineCatalog, fov, m);
+	args->catalogStars = download_catalog(args->onlineCatalog, catalog_center, fov, m);
 	args->scale = scale;
 	args->pixel_size = px_size;
 	args->manual = is_detection_manual();
@@ -1170,6 +1163,7 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (tree_view);
 	GtkTreeIter iter;
 	GValue value = G_VALUE_INIT;
+	int selected_item;
 
 	if (gtk_tree_model_get_iter_first(treeModel, &iter) == FALSE)
 		return;	//The tree is empty
@@ -1177,18 +1171,18 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 		gtk_tree_model_get_value(treeModel, &iter, COLUMN_RESOLVER, &value);
 		const gchar *res = g_value_get_string(&value);
 		if (!g_strcmp0(res, "NED")) {
-			selectedItem = 0;
+			selected_item = 0;
 		} else if (!g_strcmp0(res, "Simbad")) {
-			selectedItem = 1;
+			selected_item = 1;
 		} else if (!g_strcmp0(res, "VizieR")) {
-			selectedItem = 2;
+			selected_item = 2;
 		} else {
-			selectedItem = -1;
+			selected_item = -1;
 		}
 
-		if (selectedItem >= 0) {
-			update_coordinates(platedObject[selectedItem].RA,
-					platedObject[selectedItem].Dec, platedObject[selectedItem].south);
+		if (selected_item >= 0) {
+			update_coordinates(platedObject[selected_item].RA,
+					platedObject[selected_item].Dec, platedObject[selected_item].south);
 		}
 
 		g_value_unset(&value);

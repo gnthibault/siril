@@ -639,12 +639,13 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg, int layer,
 					psf->s_mag = psf->phot->s_mag;
 				}
 			} else {
-			fitted_PSF *tmp_psf;
+				fitted_PSF *tmp_psf;
 
-			if ((tmp_psf = psf_minimiz_angle(z, psf, for_photometry)) == NULL) {
-				free(psf);
-				return NULL;
-			}
+				if ((tmp_psf = psf_minimiz_angle(z, psf, for_photometry))
+						== NULL) {
+					free(psf);
+					return NULL;
+				}
 			free(psf);
 			psf = tmp_psf;
 			}

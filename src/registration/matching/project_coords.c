@@ -162,9 +162,7 @@ int doASEC /* I: if > 0, write offsets in arcsec */
 		}
 
 		shAssert(MAX_DATA_COL >= 20);
-		ncol =
-				sscanf(line,
-						"%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s",
+		ncol = sscanf(line, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s",
 						&(col[0][0]), &(col[1][0]), &(col[2][0]), &(col[3][0]),
 						&(col[4][0]), &(col[5][0]), &(col[6][0]), &(col[7][0]),
 						&(col[8][0]), &(col[9][0]), &(col[10][0]),
