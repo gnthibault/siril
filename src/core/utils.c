@@ -890,6 +890,42 @@ void quicksort_s(WORD *a, int n) {
 }
 
 /**
+ * quickselect returns the k-th smallest item in array a of length len
+ * @param a array to search
+ * @param n size of the array
+ * @param k index of the smallest element to search for
+ * @return kth smallest element in array a
+ */
+#define SWAP(i, j) { tmp = a[i]; a[i] = a[j]; a[j] = tmp; }
+WORD quickselect_s(WORD *a, int n, int k) {
+	int i;
+	int pindex;		// pivot index
+	int left = 0; 		// left index
+	int right = n - 1; 	// right index
+	WORD pivot, tmp;	// pivot and temporary value
+
+	while (left < right) {
+		pivot = a[k];
+		SWAP(k, right);
+
+		for (i = pindex = left; i < right; i++) {
+			if (a[i] < pivot) {
+				SWAP(i, pindex);
+				pindex++;
+			}
+		}
+
+		SWAP(right, pindex);
+
+		if (pindex == k) break;
+		if (pindex < k) left = pindex + 1;
+		else right = pindex - 1;
+	}
+
+	return a[k];
+}
+
+/**
  * Removes extension of the filename
  * @param filename file path with extension
  * @return newly allocated filename without extension
