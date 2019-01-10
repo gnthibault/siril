@@ -1,4 +1,18 @@
-Reconfigure siril with --disable-openmp because we don't needed and that's less flags to manage here.
-Run ./build.sh
+There are different kinds of files in this directory:
+- compare_fits is a program that can be used to compare FITS files, to verify
+  that an algorithm always computes the same thing for example
+- sorting is a unit test on the three sorting implementations that provide the
+  median. It also contains a performance evaluation between them.
 
-If linking error occur, add the missing functions in dummy.c.
+Other files are used for the build of these executables. Since they depend on
+siril's code and we don't want to pull all the files here, we had to redefine
+the functions used in the direct dependencies in dummy.c, they should not be
+used in the tests.
+
+To compile the test programs, compile siril then run ./build.sh.
+Since sorting makes some performance tests, siril has to be compiled with -O2
+to have real use values.
+
+If build error occurs, check that the basic build script has all required
+package links for your OS and options for your compiler.
+If link error occurs, add the missing functions in dummy.c

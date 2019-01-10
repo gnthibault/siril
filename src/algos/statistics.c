@@ -151,7 +151,7 @@ static double siril_stats_ushort_mad(WORD* data, const size_t stride,
 		const WORD delta = fabs(data[i * stride] - m);
 		tmp[i] = delta;
 	}
-	median = siril_stats_ushort_median(tmp, n);
+	median = (double)siril_stats_ushort_median(tmp, n);
 	free(tmp);
 
 	return median;
