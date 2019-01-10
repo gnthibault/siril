@@ -69,7 +69,8 @@ static void select_area(fits *fit, WORD *data, int layer, rectangle *bounds) {
 #define ELEM_SWAP_WORD(a,b) { register WORD t=(a);(a)=(b);(b)=t; }
 
 // warning: data is modified, sorted in-place
-static double siril_stats_ushort_median(WORD *arr, int n) {
+// removed from the static list because of the unit test
+WORD siril_stats_ushort_median(WORD *arr, int n) {
 	int low, high;
 	int median;
 	int middle, ll, hh;
@@ -79,12 +80,12 @@ static double siril_stats_ushort_median(WORD *arr, int n) {
 	median = (low + high) / 2;
 	for (;;) {
 		if (high <= low) /* One element only */
-			return (double) arr[median];
+			return arr[median];
 
 		if (high == low + 1) { /* Two elements only */
 			if (arr[low] > arr[high])
 				ELEM_SWAP_WORD(arr[low], arr[high]);
-			return (double) arr[median];
+			return arr[median];
 		}
 
 		/* Find median of low, middle and high items; swap into position low */
@@ -125,7 +126,8 @@ static double siril_stats_ushort_median(WORD *arr, int n) {
 		if (hh >= median)
 			high = hh - 1;
 	}
-	return -1;
+	fprintf(stderr, "error in median, returning 0\n");
+	return 0;
 }
 
 #undef ELEM_SWAP_WORD
@@ -145,6 +147,7 @@ static double siril_stats_ushort_mad(WORD* data, const size_t stride,
 
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 	for (i = 0; i < n; i++) {
+		// We should not use floating point for that, median is WORD
 		const WORD delta = fabs(data[i * stride] - m);
 		tmp[i] = delta;
 	}
@@ -395,7 +398,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	if (compute_median && stat->median < 0.) {
 		if (!data) return NULL;	// not in cache, don't compute
 		siril_debug_print("- stats %p fit %p (%d): computing median\n", stat, fit, layer);
-		stat->median = siril_stats_ushort_median(data, stat->ngoodpix);
+		stat->median = (double)siril_stats_ushort_median(data, stat->ngoodpix);
 	}
 
 	/* Calculation of average absolute deviation from the median */

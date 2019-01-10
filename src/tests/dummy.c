@@ -27,6 +27,7 @@ sequence * readseqfile(const char *name){
 	return NULL;
 }
 
+#ifndef HAVE_STATS
 imstats* free_stats(imstats *stat) {
         fprintf(stderr, "ERROR: calling undefined function free_stats\n");
 	return NULL;
@@ -35,6 +36,16 @@ imstats* free_stats(imstats *stat) {
 void add_stats_to_fit(fits *fit, int layer, imstats *stat) {
         fprintf(stderr, "ERROR: calling undefined function add_stats_to_fit\n");
 }
+#else
+int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck, WORD
+		nullvalue, long *ngoodpix, WORD *minvalue, WORD *maxvalue,
+		double *mean, double *sigma, double *noise1, double *noise2,
+		double *noise3, double *noise5, int *status)
+{
+        fprintf(stderr, "ERROR: calling undefined function pipe_send_message\n");
+	return -1;
+}
+#endif
 
 int pipe_send_message(pipe_message msgtype, pipe_verb verb, const char *arg) {
         fprintf(stderr, "ERROR: calling undefined function pipe_send_message\n");
