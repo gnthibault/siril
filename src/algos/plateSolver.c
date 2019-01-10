@@ -617,13 +617,13 @@ static void update_coords() {
 	DEC k_dec;
 	gboolean south;
 
-	// first transform coords to RA and DEC
-	k_ra = convert_ra(gfit.wcs.crval1);
-	k_dec = convert_dec(gfit.wcs.crval2);
-	south = k_dec.degree < 0.0;
-
-	k_dec.degree = abs(k_dec.degree);
 	if (gfit.wcs.crval1 != 0.0 && gfit.wcs.crval2 != 0.0) {
+		// first transform coords to RA and DEC
+		k_ra = convert_ra(gfit.wcs.crval1);
+		k_dec = convert_dec(gfit.wcs.crval2);
+		south = k_dec.degree < 0.0;
+
+		k_dec.degree = abs(k_dec.degree);
 		update_coordinates(k_ra, k_dec, south);
 		unselect_all_items();
 	}
