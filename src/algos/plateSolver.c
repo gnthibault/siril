@@ -96,16 +96,14 @@ static double dec_to_y(DEC dec) {
 
 static void deg_to_HMS(double var, gchar *type, gchar *HMS) {
 	if (!strncasecmp(type, "ra", 2)) {
-		char rs = ' ';
 		int raH, raM;
 		double raS;
 
-		if (var < 0) rs = '-';
 		var = fabs(var);
 		raH = (int)(var / 15.0);
 		raM = (int)(((var / 15.0) - raH) * 60.0);
 		raS = ((((var / 15.0) - raH) * 60.0) - raM) * 60.0;
-		g_snprintf(HMS, 256, "%c%02d %02d %.3lf", rs, raH, raM, raS);
+		g_snprintf(HMS, 256, "%02d %02d %.3lf", raH, raM, raS);
 	} else if (!strncasecmp(type, "dec", 2)) {
 		char ds = ' ';
 		int deg, decM;
@@ -609,7 +607,8 @@ static gboolean has_any_keywords() {
 	return (gfit.focal_length > 0.0 ||
 			gfit.pixel_size_x > 0.0 ||
 			gfit.pixel_size_y > 0.0 ||
-			(gfit.wcs.crval1 > 0.0	&&	gfit.wcs.crval2 != 0.0));
+			(gfit.wcs.crval1 > 0.0 && gfit.wcs.crval2 != 0.0) ||
+			(gfit.wcs.objctra[0] != '\0' && gfit.wcs.objctdec[0] != '\0'));
 }
 
 static void update_coords() {
@@ -621,6 +620,14 @@ static void update_coords() {
 		// first transform coords to RA and DEC
 		k_ra = convert_ra(gfit.wcs.crval1);
 		k_dec = convert_dec(gfit.wcs.crval2);
+		south = k_dec.degree < 0.0;
+
+		k_dec.degree = abs(k_dec.degree);
+		update_coordinates(k_ra, k_dec, south);
+		unselect_all_items();
+	} else if (gfit.wcs.objctra[0] != '\0' && gfit.wcs.objctdec[0] != '\0') {
+		sscanf(gfit.wcs.objctra, "%d %d %lf", &k_ra.hour, &k_ra.min, &k_ra.sec);
+		sscanf(gfit.wcs.objctdec, "%d %d %lf", &k_dec.degree, &k_dec.min, &k_dec.sec);
 		south = k_dec.degree < 0.0;
 
 		k_dec.degree = abs(k_dec.degree);
@@ -695,6 +702,13 @@ static void print_platesolving_results(Homography H, image_solved image) {
 	char DEC[256] = { 0 };
 	char field_x[256] = { 0 };
 	char field_y[256] = { 0 };
+
+	/* first we do not forget that we read data bottom to up ....
+	 * So we need to do that in order to display data in the right orientation
+	 */
+	H.h10 = -H.h10;
+	H.h11 = -H.h11;
+	H.h12 = -H.h12;
 
 	/* Matching information */
 	siril_log_message(_("%d pair matches.\n"), H.pair_matched);
@@ -1057,6 +1071,7 @@ static gpointer match_catalog(gpointer p) {
 		/* we only want to compare with linear function
 		 * Maybe one day we will apply match with homography matrix
 		 */
+
 		TRANS trans = H_to_linear_TRANS(H);
 		if (check_affine_TRANS_sanity(trans)) {
 
