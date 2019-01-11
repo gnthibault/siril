@@ -82,6 +82,74 @@ void measure_quickselect() {
 	free(data3);
 }
 
+void measure2() {
+	WORD *data, *data_backup, result_qsel1, result_qsel2, result_qsort;
+	int i, draws, times, datasize = 8, nb_draws = 100, nb_times_each = 300000;
+	clock_t t1, t2, t3, t4;
+
+	data = malloc(datasize * sizeof(WORD));
+	data_backup = malloc(datasize * sizeof(WORD));
+	t1 = clock();
+
+	for (draws = 0; draws < nb_draws; draws++) {
+		for (i=0; i<datasize; i++) {
+			int val = rand() % USHRT_MAX;
+			data[i] = (WORD)val;
+			data_backup[i] = (WORD)val;
+		}
+
+		for (times = 0; times < nb_times_each; times++) {
+			quicksort_s(data, datasize);
+			result_qsort = data[(datasize-1)/2];
+
+			for (i=0; i<datasize; i++)
+				data[i] = data_backup[i];
+			data[times % datasize] = times % USHRT_MAX;
+		}
+	}
+	t2 = clock();
+
+	for (draws = 0; draws < nb_draws; draws++) {
+		for (i=0; i<datasize; i++) {
+			int val = rand() % USHRT_MAX;
+			data[i] = (WORD)val;
+			data_backup[i] = (WORD)val;
+		}
+
+		for (times = 0; times < nb_times_each; times++) {
+			result_qsel1 = quickselect_s(data, datasize, (datasize-1)/2);
+
+			for (i=0; i<datasize; i++)
+				data[i] = data_backup[i];
+			data[times % datasize] = times % USHRT_MAX;
+		}
+	}
+	t3 = clock();
+
+	for (draws = 0; draws < nb_draws; draws++) {
+		for (i=0; i<datasize; i++) {
+			int val = rand() % USHRT_MAX;
+			data[i] = (WORD)val;
+			data_backup[i] = (WORD)val;
+		}
+
+		for (times = 0; times < nb_times_each; times++) {
+			result_qsel2 = siril_stats_ushort_median(data, datasize);
+
+			for (i=0; i<datasize; i++)
+				data[i] = data_backup[i];
+			data[times % datasize] = times % USHRT_MAX;
+		}
+	}
+	t4 = clock();
+
+	fprintf(stdout, "siril quicksort time:\t%ld\n", t2-t1);
+	fprintf(stdout, "quicksselect_s time:\t%ld\n", t3-t2);
+	fprintf(stdout, "stats_median time:\t%ld\n", t4-t3);
+
+	free(data);
+	free(data_backup);
+}
 
 int main(void)
 {
@@ -94,7 +162,8 @@ int main(void)
 		}
 	}
 
-	measure_quickselect();
+	//measure_quickselect();	// for big data
+	measure2();			// for small data
 	return 0;
 }
 
