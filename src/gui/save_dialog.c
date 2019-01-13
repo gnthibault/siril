@@ -608,8 +608,8 @@ void on_savepopup_show(GtkWidget *widget, gpointer user_data) {
 		width = 400;
 		height = 100;
 	} else {
-		width = -1;
-		height = -1;
+		width = 100;
+		height = 50;
 	}
 
 	gtk_scrolled_window_set_min_content_height(scrolled_window, height);
