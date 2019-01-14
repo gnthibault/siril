@@ -191,10 +191,10 @@ static void prepare_savepopup(int type) {
 		savetxt = lookup_widget("filenameframe");
 	}
 	parent = siril_get_active_window();
-	gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
 	if (!GTK_IS_WINDOW(parent)) {
 		parent = GTK_WINDOW(lookup_widget("control_window"));
 	}
+	gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
 
 	switch (type) {
 	case TYPEBMP:
@@ -591,10 +591,10 @@ void on_save1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		if (whichminisave != TYPEBMP && whichminisave != TYPEPNG
 				&& whichminisave != TYPEPNM) {
 			GtkWindow *parent = siril_get_active_window();
-			gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
 			if (!GTK_IS_WINDOW(parent)) {
 				parent = GTK_WINDOW(lookup_widget("control_window"));
 			}
+			gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
 			gtk_widget_show(savepopup);
 			close_dialog();
 		}
