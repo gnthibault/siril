@@ -567,6 +567,7 @@ void ser_display_info(struct ser_struct *ser_file) {
 }
 
 int ser_write_and_close(struct ser_struct *ser_file) {
+	if (ser_file == NULL) return -1;
 	if (!ser_file->frame_count) {
 		siril_log_color_message(_("The SER sequence is being created with no image in it.\n"), "red");
 		char *filename = ser_file->filename;
