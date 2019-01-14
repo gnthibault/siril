@@ -103,6 +103,11 @@ void on_scale_button_release_event(GtkWidget *widget,
 	update_wavelets();
 }
 
+void on_scale_w_key_release_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	update_wavelets();
+}
+
 void on_wavelets_dialog_hide(GtkWidget *widget, gpointer user_data) {
 	gtk_widget_set_sensitive(lookup_widget("grid_w"), FALSE);
 	clearfits(&wavelets_gfit_backup);
