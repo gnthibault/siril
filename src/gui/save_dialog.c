@@ -181,6 +181,7 @@ static void prepare_savepopup(int type) {
 	static GtkNotebook* notebookFormat = NULL;
 	static GtkWidget *savepopup = NULL;
 	static GtkWidget *savetxt = NULL;
+	GtkWindow *parent;
 	int tab;
 
 	if (notebookFormat == NULL) {
@@ -189,8 +190,11 @@ static void prepare_savepopup(int type) {
 		savepopup = lookup_widget("savepopup");
 		savetxt = lookup_widget("filenameframe");
 	}
-
-	gtk_window_set_transient_for (GTK_WINDOW(savepopup), siril_get_active_window());
+	parent = siril_get_active_window();
+	gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
+	if (!GTK_IS_WINDOW(parent)) {
+		parent = GTK_WINDOW(lookup_widget("control_window"));
+	}
 
 	switch (type) {
 	case TYPEBMP:
@@ -586,9 +590,13 @@ void on_save1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		/* now it is not needed for some formats */
 		if (whichminisave != TYPEBMP && whichminisave != TYPEPNG
 				&& whichminisave != TYPEPNM) {
-				gtk_window_set_transient_for (GTK_WINDOW(savepopup), siril_get_active_window());
-				gtk_widget_show(savepopup);
-				close_dialog();
+			GtkWindow *parent = siril_get_active_window();
+			gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
+			if (!GTK_IS_WINDOW(parent)) {
+				parent = GTK_WINDOW(lookup_widget("control_window"));
+			}
+			gtk_widget_show(savepopup);
+			close_dialog();
 		}
 		else {
 			struct savedial_data *args = malloc(sizeof(struct savedial_data));
