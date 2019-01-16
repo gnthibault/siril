@@ -1186,7 +1186,7 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 			open_max = MAX_NO_FILE;
 		}
 	} else {
-		open_max = sysconf(_SC_OPEN_MAX); // if no sucess with getrlimit, try with sysconf
+		open_max = sysconf(_SC_OPEN_MAX); // if no success with getrlimit, try with sysconf
 	}
 #endif // _WIN32
 
