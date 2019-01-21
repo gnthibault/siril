@@ -1,6 +1,6 @@
 ############################################
-# Script pour Siril 0.9.9
-# Juin 2018
+# Script pour Siril 0.9
+# Janvier 2019
 # (C) Cyril Richard
 # Adapté, modifié et traduit par Colmic
 # 
@@ -23,7 +23,7 @@ cd ..
 cd flats
 #Pré-traitement des flats
 convertraw flat_
-preprocess flat_ -bias=../offsets/offset_stacked.fit
+preprocess flat_ -bias=../offsets/offset_stacked
 
 #Création du master-flat
 stack pp_flat_ rej 3 3 -norm=mul
@@ -32,7 +32,7 @@ cd ..
 #pré-traitement des brutes
 cd brutes
 convertraw brute_
-preprocess brute_ -bias=../offsets/offset_stacked.fit -flat=../flats/pp_flat_stacked.fit -equalize_cfa -debayer
+preprocess brute_ -bias=../offsets/offset_stacked -flat=../flats/pp_flat_stacked -equalize_cfa -debayer
 
 #Alignement des brutes
 register pp_brute_
@@ -41,9 +41,9 @@ register pp_brute_
 stack r_pp_brute_ rej 3 3 -norm=addscale
 
 #Chargement de l'image résultante en mémoire
-load r_pp_brute_stacked.fit
+load r_pp_brute_stacked
 
 #Sauvegarde de l'image à la racine du dossier de travail
 cd  ..
-save resultat.fit
+save resultat
 close

@@ -1,6 +1,6 @@
 ############################################
-# Script pour Siril 0.9.9
-# Juin 2018
+# Script pour Siril 0.9
+# Janvier 2019
 # (C) Cyril Richard
 # Adapté, modifié et traduit par Colmic
 # 
@@ -23,7 +23,7 @@ cd ..
 #pré-traitement des brutes
 cd brutes
 convertraw brute_
-preprocess brute_ -bias=../offsets/offset_stacked.fit -debayer
+preprocess brute_ -bias=../offsets/offset_stacked -debayer
 
 #Alignement des brutes
 register pp_brute_
@@ -32,9 +32,9 @@ register pp_brute_
 stack r_pp_brute_ rej 3 3 -norm=addscale
 
 #Chargement de l'image résultante en mémoire
-load r_pp_brute_stacked.fit
+load r_pp_brute_stacked
 
 #Sauvegarde de l'image à la racine du dossier de travail
 cd  ..
-save resultat.fit
+save resultat
 close
