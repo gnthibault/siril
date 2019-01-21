@@ -71,12 +71,25 @@ gboolean on_scale_asinh_button_release_event(GtkWidget *widget,
 	return FALSE;
 }
 
+void on_scale_asinh_key_release_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	asinh_stretch_value = gtk_range_get_value(GTK_RANGE(widget));
+	asinh_recompute();
+}
+
 gboolean on_black_point_asinh_button_release_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 	asinh_black_value = gtk_range_get_value(GTK_RANGE(widget));
 	asinh_recompute();
 	return FALSE;
 }
+
+void on_black_point_asinh_key_release_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	asinh_black_value = gtk_range_get_value(GTK_RANGE(widget));
+	asinh_recompute();
+}
+
 
 void on_asinh_RGBspace_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	asinh_rgb_space = gtk_toggle_button_get_active(togglebutton);
