@@ -2216,10 +2216,17 @@ void initialize_shortcuts() {
 	gtk_widget_add_accelerator(lookup_widget("undo_item1"), "activate", accel,
 	GDK_KEY_z, get_default_modifier(), GTK_ACCEL_VISIBLE);
 	/* REDO */
+#ifdef _WIN32
+	gtk_widget_add_accelerator(lookup_widget("redo_item"), "activate", accel,
+	GDK_KEY_y, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	gtk_widget_add_accelerator(lookup_widget("redo_item1"), "activate", accel,
+	GDK_KEY_y, get_default_modifier(), GTK_ACCEL_VISIBLE);
+#else
 	gtk_widget_add_accelerator(lookup_widget("redo_item"), "activate", accel,
 	GDK_KEY_z, get_default_modifier() | GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE);
 	gtk_widget_add_accelerator(lookup_widget("redo_item1"), "activate", accel,
 	GDK_KEY_z, get_default_modifier() | GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE);
+#endif
 	/* OPEN */
 	gtk_widget_add_accelerator(lookup_widget("open1"), "activate", accel,
 	GDK_KEY_o, get_default_modifier(), GTK_ACCEL_VISIBLE);

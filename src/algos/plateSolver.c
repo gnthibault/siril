@@ -123,7 +123,7 @@ static void fov_in_DHMS(double var, gchar *fov) {
 	double decS;
 
 	if (var < 0) {
-		fprintf(stdout, "fov_in_DHMS: negative value, should not happend\n");
+		fprintf(stdout, "fov_in_DHMS: negative value, should not happened\n");
 		return;
 	}
 	deg = (int) var;

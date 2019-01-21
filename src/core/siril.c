@@ -1565,7 +1565,7 @@ void compute_grey_flat(fits *fit) {
 		config = 1;
 	}
 
-	/* apllies coefficients to cfa image */
+	/* applies coefficients to cfa image */
 	equalize_cfa_fit_with_coeffs(fit, coeff1, coeff2, config);
 
 }
