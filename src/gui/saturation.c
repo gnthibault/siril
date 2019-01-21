@@ -114,6 +114,13 @@ gboolean on_scale_satu_button_release_event(GtkWidget *widget,
 	return FALSE;
 }
 
+gboolean on_scale_satu_key_release_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	satu_amount = gtk_range_get_value(GTK_RANGE(widget));
+	satu_recompute();
+	return FALSE;
+}
+
 void on_preserve_bg_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	satu_preserve_bkg = gtk_toggle_button_get_active(togglebutton);
 	satu_recompute();

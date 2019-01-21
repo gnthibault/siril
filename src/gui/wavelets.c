@@ -98,14 +98,16 @@ void on_menuitem_wavelets_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	}
 }
 
-void on_scale_button_release_event(GtkWidget *widget,
+gboolean on_scale_button_release_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 	update_wavelets();
+	return FALSE;
 }
 
-void on_scale_w_key_release_event(GtkWidget *widget, GdkEvent *event,
+gboolean on_scale_w_key_release_event(GtkWidget *widget, GdkEvent *event,
 		gpointer user_data) {
 	update_wavelets();
+	return FALSE;
 }
 
 void on_wavelets_dialog_hide(GtkWidget *widget, gpointer user_data) {
