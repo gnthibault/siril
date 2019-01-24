@@ -19,9 +19,10 @@
  */
 
 #include "core/siril.h"
+#include "core/proto.h"
 #include "gui/callbacks.h"
 
-static const gchar* copyright = N_("Copyright © 2004-2011 François Meyer\n"
+static const gchar* copyright = ("Copyright © 2004-2011 François Meyer\n"
 		"Copyright © 2012-2019 team free-astro");
 
 static gchar **authors = (gchar *[] ) { "Vincent Hourdin <vh@free-astro.vinvin.tf>",
@@ -47,7 +48,7 @@ void on_about_activate(GtkMenuItem *menuitem, gpointer user_data) {
 			"title", _("About Siril"),
 			"logo", icon,
 			"version", VERSION,
-			"copyright", _(copyright),
+			"copyright", copyright,
 			"authors", authors,
 			"documenters", documenters,
 			"artists", artists,

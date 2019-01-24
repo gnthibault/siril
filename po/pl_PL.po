@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-02 13:38+0100\n"
+"POT-Creation-Date: 2019-01-24 08:21+0100\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -3020,14 +3020,22 @@ msgid "Image registration"
 msgstr "Rejestracja obrazu"
 
 #: ../src/gui/siril3.glade.h:655
+msgid "Register all images from sequence"
+msgstr "Zarejestruj wszystkie obrazy z sekwencji"
+
+#: ../src/gui/siril3.glade.h:656
+msgid "Register selected images only"
+msgstr "Zarejestruj tylko wybrane obrazy"
+
+#: ../src/gui/siril3.glade.h:657
 msgid "Choose registration method:"
 msgstr "Wybierz metodę rejestracji:"
 
-#: ../src/gui/siril3.glade.h:656
+#: ../src/gui/siril3.glade.h:658
 msgid "Select registration layer:"
 msgstr "Wybierz warstwę rejestracji:"
 
-#: ../src/gui/siril3.glade.h:657
+#: ../src/gui/siril3.glade.h:659
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -3043,14 +3051,6 @@ msgstr ""
 "Podczas przetwarzania obrazów dane rejestracyjne są pobierane z warstwy "
 "domyślnej, o ile są dostępne (w przypadku obrazów RGB: zielony, w przeciwnym "
 "razie w kolorze niebieskim, a następnie w kolorze czerwonym)."
-
-#: ../src/gui/siril3.glade.h:660
-msgid "Register all images from sequence"
-msgstr "Zarejestruj wszystkie obrazy z sekwencji"
-
-#: ../src/gui/siril3.glade.h:661
-msgid "Register selected images only"
-msgstr "Zarejestruj tylko wybrane obrazy"
 
 #: ../src/gui/siril3.glade.h:662
 msgid "Prefix:"
@@ -3107,7 +3107,7 @@ msgstr ""
 "przechowywane w oryginalnej sekwencji."
 
 #: ../src/gui/siril3.glade.h:673
-msgid "Peak object in #1"
+msgid "Pick object in #1"
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:674
@@ -3128,7 +3128,7 @@ msgid "Core Y-coordinates of the first image."
 msgstr "współrzędna x początku wyboru tła"
 
 #: ../src/gui/siril3.glade.h:677
-msgid "Peak object in #2"
+msgid "Pick object in #2"
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:678
@@ -3350,7 +3350,7 @@ msgstr "Usuń ostatnią krzywą dodaną w fotometrii."
 
 #. This is the button for plotting variable star graph
 #. Plotting light curve
-#: ../src/gui/siril3.glade.h:721 ../src/gui/plot.c:362
+#: ../src/gui/siril3.glade.h:721 ../src/gui/plot.c:364
 msgid "Light Curve"
 msgstr "Krzywa jasności"
 
@@ -3380,11 +3380,11 @@ msgstr "Wybierz informacje do wyświetlenia z danych fotometrycznych."
 msgid "Roundness"
 msgstr "Okrągłość"
 
-#: ../src/gui/siril3.glade.h:727 ../src/gui/plot.c:563 ../src/gui/plot.c:725
+#: ../src/gui/siril3.glade.h:727 ../src/gui/plot.c:565 ../src/gui/plot.c:727
 msgid "FWHM"
 msgstr "FWHM"
 
-#: ../src/gui/siril3.glade.h:728 ../src/gui/plot.c:728
+#: ../src/gui/siril3.glade.h:728 ../src/gui/plot.c:730
 msgid "Amplitude"
 msgstr "Amplituda"
 
@@ -3984,19 +3984,6 @@ msgstr "Górna granica: "
 msgid "White reference"
 msgstr "Obraz odniesienia"
 
-#: ../src/algos/PSF.c:671
-#, c-format
-msgid ""
-"PSF fit Result:\n"
-"x0=%0.2f px, y0=%0.2f px\n"
-"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
-"Angle=%0.2f deg\n"
-"Background value=%0.6f\n"
-"Maximal intensity=%0.6f\n"
-"Magnitude (%s)=%0.2f\n"
-"RMSE=%.3e\n"
-msgstr ""
-
 #: ../src/algos/colors.c:355
 msgid "Siril cannot extract layers. Make sure your image is in RGB mode.\n"
 msgstr ""
@@ -4114,83 +4101,83 @@ msgid ""
 msgstr ""
 
 #. Matching information
-#: ../src/algos/plateSolver.c:683 ../src/registration/global.c:442
+#: ../src/algos/plateSolver.c:714 ../src/registration/global.c:442
 #, c-format
 msgid "%d pair matches.\n"
 msgstr "%d dopasowanych par.\n"
 
-#: ../src/algos/plateSolver.c:685 ../src/registration/global.c:444
+#: ../src/algos/plateSolver.c:716 ../src/registration/global.c:444
 #, c-format
 msgid "Inliers:%*.3f\n"
 msgstr ""
 
 #. we assume square pixels
-#: ../src/algos/plateSolver.c:691
+#: ../src/algos/plateSolver.c:722
 #, c-format
 msgid "Resolution:%*.3lf arcsec/px\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:705
+#: ../src/algos/plateSolver.c:736
 #, fuzzy, c-format
 msgid "Rotation:%+*.2lf deg %s\n"
 msgstr "obrót:%+*.2f stopnia\n"
 
-#: ../src/algos/plateSolver.c:705
+#: ../src/algos/plateSolver.c:736
 msgid "(flipped)"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:711
+#: ../src/algos/plateSolver.c:742
 #, fuzzy, c-format
 msgid "Focal:%*.2lf mm\n"
 msgstr "skala:%*.3f\n"
 
-#: ../src/algos/plateSolver.c:712
+#: ../src/algos/plateSolver.c:743
 #, c-format
 msgid "Pixel size:%*.2lf µm\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:715
+#: ../src/algos/plateSolver.c:746
 #, c-format
 msgid "Field of view:    %s x %s\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:718
+#: ../src/algos/plateSolver.c:749
 #, c-format
 msgid "Image center: RA: %s, DEC: %s\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:753
+#: ../src/algos/plateSolver.c:784
 #, c-format
 msgid "Catalog NOMAD size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:787
+#: ../src/algos/plateSolver.c:818
 #, c-format
 msgid "Catalog TYCHO-2 size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:821
+#: ../src/algos/plateSolver.c:852
 #, c-format
 msgid "Catalog Gaia DR2 size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:855
+#: ../src/algos/plateSolver.c:886
 #, c-format
 msgid "Catalog PPMXL size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:890
+#: ../src/algos/plateSolver.c:921
 #, c-format
 msgid "Catalog Bright stars size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:950
+#: ../src/algos/plateSolver.c:981
 msgid ""
 "Plate Solving failed. The image could not be aligned with the reference "
 "stars.\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:953
+#: ../src/algos/plateSolver.c:984
 msgid ""
 "This is usually because the initial parameters (pixel size, focal length, "
 "initial coordinates) are too far from the real metadata of the image.\n"
@@ -4199,7 +4186,7 @@ msgid ""
 "linear image."
 msgstr ""
 
-#: ../src/algos/plateSolver.c:998
+#: ../src/algos/plateSolver.c:1029
 #, fuzzy, c-format
 msgid ""
 "There are not enough stars picked in the image. At least %d stars are needed."
@@ -4207,22 +4194,35 @@ msgstr ""
 "W obrazie referencyjnym nie ma wystarczającej liczby gwiazd, aby wykonać "
 "wyrównanie\n"
 
-#: ../src/algos/plateSolver.c:1200
+#: ../src/algos/plateSolver.c:1235
 msgid "There are no keywords stored in the FITS header.\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1201
+#: ../src/algos/plateSolver.c:1236
 msgid "No metadata"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1248
+#: ../src/algos/plateSolver.c:1283
 msgid "Astrometric solution detected"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1248
+#: ../src/algos/plateSolver.c:1283
 msgid ""
 "The astrometric solution contained in the image will be erased by the "
 "geometric transformation and no undo will be possible."
+msgstr ""
+
+#: ../src/algos/PSF.c:690
+#, c-format
+msgid ""
+"PSF fit Result:\n"
+"x0=%0.2f px, y0=%0.2f px\n"
+"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
+"Angle=%0.2f deg\n"
+"Background value=%0.6f\n"
+"Maximal intensity=%0.6f\n"
+"Magnitude (%s)=%0.2f\n"
+"RMSE=%.3e\n"
 msgstr ""
 
 #. only used for progress bar
@@ -4243,11 +4243,11 @@ msgstr "Rejestracja zakończona."
 #: ../src/core/command.c:1530 ../src/core/command.c:1553
 #: ../src/core/command.c:1581 ../src/core/command.c:1607
 #: ../src/core/command.c:1779 ../src/core/command.c:1847
-#: ../src/core/command.c:2578 ../src/gui/callbacks.c:3923
-#: ../src/gui/callbacks.c:4128 ../src/gui/callbacks.c:4290
-#: ../src/gui/callbacks.c:4323 ../src/gui/callbacks.c:4650
-#: ../src/gui/callbacks.c:4784 ../src/gui/callbacks.c:4944
-#: ../src/gui/callbacks.c:5123 ../src/gui/saturation.c:49
+#: ../src/core/command.c:2578 ../src/gui/callbacks.c:3934
+#: ../src/gui/callbacks.c:4139 ../src/gui/callbacks.c:4301
+#: ../src/gui/callbacks.c:4334 ../src/gui/callbacks.c:4661
+#: ../src/gui/callbacks.c:4795 ../src/gui/callbacks.c:4955
+#: ../src/gui/callbacks.c:5134 ../src/gui/saturation.c:49
 #: ../src/gui/script_menu.c:154 ../src/io/conversion.c:518
 #: ../src/registration/registration.c:844 ../src/stacking/stacking.c:1483
 #: ../src/stacking/stacking.c:1607
@@ -4323,8 +4323,8 @@ msgstr "Niezapisany wynik kompozycyji"
 msgid "You must at least load two layers before!\n"
 msgstr "Musisz wczytać wcześniej przynajmniej dwie warstwy !\n"
 
-#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4910
-#: ../src/gui/wavelets.c:153 ../src/gui/wavelets.c:162
+#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4921
+#: ../src/gui/wavelets.c:161 ../src/gui/wavelets.c:170
 #: ../src/io/conversion.c:587 ../src/registration/registration.c:862
 msgid "Warning"
 msgstr "Ostrzeżenie"
@@ -4392,12 +4392,12 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Przytnij: wybierz regionu lub podaj x, y, szerokość, wysokość\n"
 
 #: ../src/core/command.c:590 ../src/core/command.c:2427
-#: ../src/gui/callbacks.c:4908 ../src/gui/wavelets.c:151
+#: ../src/gui/callbacks.c:4919 ../src/gui/wavelets.c:159
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
 
-#: ../src/core/command.c:596 ../src/gui/wavelets.c:160
+#: ../src/core/command.c:596 ../src/gui/wavelets.c:168
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: typ musi być %d lub %d\n"
@@ -4537,7 +4537,7 @@ msgstr ""
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr ""
 
-#: ../src/core/command.c:1261 ../src/gui/callbacks.c:4605
+#: ../src/core/command.c:1261 ../src/gui/callbacks.c:4616
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Znaleziono %d gwiazd w zdjęciu, kanał #%d\n"
@@ -4688,7 +4688,7 @@ msgstr ""
 msgid "Stacked sequence successfully.\n"
 msgstr "Sekwencja stackowania: %s\n"
 
-#: ../src/core/command.c:2330 ../src/gui/callbacks.c:3935
+#: ../src/core/command.c:2330 ../src/gui/callbacks.c:3946
 msgid "Preprocessing...\n"
 msgstr "Wstępne przetwarzanie ...\n"
 
@@ -4749,7 +4749,7 @@ msgstr "Lokalne odrzucenie"
 msgid "Script execution failed.\n"
 msgstr "Normalizacja nie powiodła się."
 
-#: ../src/core/command.c:2588 ../src/gui/script_menu.c:169 ../src/main.c:482
+#: ../src/core/command.c:2588 ../src/gui/script_menu.c:169 ../src/main.c:469
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Plik [%s] nie istnieje\n"
@@ -4847,7 +4847,12 @@ msgid "Same function that COSME but applying to RAW CFA images"
 msgstr ""
 
 #: ../src/core/command_def.h:20
-msgid "Crops the current image within the rectangle previously selected"
+msgid ""
+"It can be used with the GUI: if a selection has been made with the mouse, "
+"calling the crop command without arguments crops it on this selection. "
+"Otherwise, or in scripts, arguments have to be given, with x and y being the "
+"coordinates of the top left corner, and width and height the size of the "
+"selection"
 msgstr ""
 
 #: ../src/core/command_def.h:22
@@ -5414,12 +5419,13 @@ msgstr ""
 msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 msgstr "Obrazy nie mają tego samego rozmiaru (w =%d|%d, h =%d|%d)\n"
 
-#: ../src/core/siril.c:213 ../src/gui/PSF_list.c:158 ../src/gui/callbacks.c:997
-#: ../src/gui/callbacks.c:2064 ../src/gui/callbacks.c:3004
-#: ../src/gui/callbacks.c:4375 ../src/gui/callbacks.c:4396
-#: ../src/gui/callbacks.c:4800 ../src/gui/callbacks.c:4806
-#: ../src/gui/callbacks.c:4831 ../src/gui/plot.c:381 ../src/gui/plot.c:441
-#: ../src/io/conversion.c:593 ../src/io/single_image.c:129
+#: ../src/core/siril.c:213 ../src/gui/callbacks.c:997
+#: ../src/gui/callbacks.c:2064 ../src/gui/callbacks.c:3011
+#: ../src/gui/callbacks.c:4386 ../src/gui/callbacks.c:4407
+#: ../src/gui/callbacks.c:4811 ../src/gui/callbacks.c:4817
+#: ../src/gui/callbacks.c:4842 ../src/gui/plot.c:383 ../src/gui/plot.c:443
+#: ../src/gui/PSF_list.c:158 ../src/io/conversion.c:593
+#: ../src/io/single_image.c:129
 msgid "Error"
 msgstr "Błąd"
 
@@ -5587,7 +5593,7 @@ msgstr "Brak takiego pliku lub katalogu\n"
 msgid "\"%s\" is not a directory\n"
 msgstr "\"% s\" nie jest katalogiem\n"
 
-#: ../src/core/utils.c:360 ../src/gui/callbacks.c:3003
+#: ../src/core/utils.c:360 ../src/gui/callbacks.c:3010
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "Nie masz uprawnień do zapisu w tym katalogu: %s\n"
@@ -5606,50 +5612,46 @@ msgstr "Nie można zmienić katalogu na '% s'.\n"
 msgid "Filename is too long, not expanding it\n"
 msgstr "Nazwa pliku jest za długa, a nie jest rozszerzana\n"
 
-#: ../src/core/utils.c:983
+#: ../src/core/utils.c:1019
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Sprawdzanie wersji GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:1006
+#: ../src/core/utils.c:1042
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "Wersja GTK nie spełnia wymagań: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:1012
+#: ../src/core/utils.c:1048
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 msgstr ""
 "Nie można załadować pliku arkusza stylu CSS: %s. Zainstaluj ponownie %s\n"
 
-#: ../src/core/utils.c:1022 ../src/main.c:270
+#: ../src/core/utils.c:1058 ../src/main.c:257
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Pomyślnie załadowano '%s'\n"
 
-#: ../src/gui/PSF_list.c:158
-msgid "Stars must have the same units."
-msgstr "Gwiazdy muszą mieć te same jednostki."
-
-#: ../src/gui/PSF_list.c:171
-#, c-format
+#. translator names
+#: ../src/gui/about_dialog.c:37
 msgid ""
-"Average Gaussian PSF\n"
-"\n"
-"N:\t%d stars\n"
-"B:\t%.6f\n"
-"A:\t%.6f\n"
-"FWHMx:\t%.2f%s\n"
-"FWHMy:\t%.2f%s\n"
-"r:\t%.3f\n"
-"Angle:\t%.2f deg\n"
-"rmse:\t%.3e\n"
-msgstr ""
+"Cyril Richard <cyril@free-astro.org>\n"
+"Vincent Hourdin <vh@free-astro.vinvin.tf>"
+msgstr "Michał Powałko <m.powalko@gmail.com>"
 
-#: ../src/gui/PSF_list.c:236
-#, c-format
-msgid "Star %d of %d"
-msgstr "Gwiazda %d z %d"
+#: ../src/gui/about_dialog.c:48
+#, fuzzy
+msgid "About Siril"
+msgstr "O siril"
+
+#: ../src/gui/about_dialog.c:55
+msgid "Astronomical image (pre-)processing program"
+msgstr "Program przetwarzania obrazu  astronomicznego"
+
+#: ../src/gui/about_dialog.c:58
+msgid "Visit the Siril website"
+msgstr "Odwiedź stronę internetową Siril"
 
 #: ../src/gui/callbacks.c:758 ../src/gui/save_dialog.c:61
 msgid "FITS Files (*.fit, *.fits, *.fts)"
@@ -5700,7 +5702,7 @@ msgstr "_Otwórz"
 #: ../src/gui/callbacks.c:893 ../src/gui/callbacks.c:896
 #: ../src/gui/callbacks.c:907 ../src/gui/callbacks.c:910
 #: ../src/gui/callbacks.c:922 ../src/gui/callbacks.c:925
-#: ../src/gui/save_dialog.c:237 ../src/gui/save_dialog.c:240
+#: ../src/gui/save_dialog.c:241 ../src/gui/save_dialog.c:244
 msgid "_Cancel"
 msgstr "_Anuluj"
 
@@ -5819,41 +5821,41 @@ msgstr "Kanał czerwony"
 msgid "%d files loaded"
 msgstr "Wczytano %d plików"
 
-#: ../src/gui/callbacks.c:2310
+#: ../src/gui/callbacks.c:2317
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Pamięć: %ldMB"
 
-#: ../src/gui/callbacks.c:2312
+#: ../src/gui/callbacks.c:2319
 #, c-format
 msgid "Mem: N/A"
 msgstr "Pamięć: Niedostępna"
 
-#: ../src/gui/callbacks.c:2325
+#: ../src/gui/callbacks.c:2332
 #, c-format
 msgid "Disk Space: %.0lf%s"
 msgstr "Miejsce na dysku: %.0lf%s"
 
-#: ../src/gui/callbacks.c:2327
+#: ../src/gui/callbacks.c:2334
 #, c-format
 msgid "Disk Space: N/A"
 msgstr "Miejsce na dysku: N/A"
 
-#: ../src/gui/callbacks.c:2388
+#: ../src/gui/callbacks.c:2395
 msgid "This binning is not handled yet\n"
 msgstr "Ten binning nie jest jeszcze obsługiwany\n"
 
-#: ../src/gui/callbacks.c:2825 ../src/gui/callbacks.c:2826
+#: ../src/gui/callbacks.c:2832 ../src/gui/callbacks.c:2833
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:2838
+#: ../src/gui/callbacks.c:2845
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:2839 ../src/gui/callbacks.c:2851
+#: ../src/gui/callbacks.c:2846 ../src/gui/callbacks.c:2858
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -5861,52 +5863,52 @@ msgstr ""
 "Ta wartość może być za wysoka. Proszę rozważyć zmianę wartości sigma lub "
 "odznaczenie tego pola."
 
-#: ../src/gui/callbacks.c:2842
+#: ../src/gui/callbacks.c:2849
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Zimny :%ld px"
 
-#: ../src/gui/callbacks.c:2850
+#: ../src/gui/callbacks.c:2857
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:2854
+#: ../src/gui/callbacks.c:2861
 #, fuzzy, c-format
 msgid "Hot: %ld px"
 msgstr "dx:%+*.2f px\n"
 
-#: ../src/gui/callbacks.c:3070
+#: ../src/gui/callbacks.c:3077
 #, fuzzy
 msgid "Closing application"
 msgstr "Kalibracja kolorów"
 
-#: ../src/gui/callbacks.c:3070
+#: ../src/gui/callbacks.c:3077
 #, fuzzy
 msgid "Are you sure you want to quit?"
 msgstr "Czy na pewno chcesz zakończyć?"
 
-#: ../src/gui/callbacks.c:3630
+#: ../src/gui/callbacks.c:3641
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "nowa wartość powiększenia: %f\n"
 
-#: ../src/gui/callbacks.c:3669
+#: ../src/gui/callbacks.c:3680
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3671
+#: ../src/gui/callbacks.c:3682
 #, c-format
 msgid "undefined"
 msgstr "niezdefiniowany"
 
-#: ../src/gui/callbacks.c:3767
+#: ../src/gui/callbacks.c:3778
 #, fuzzy
 msgid "Exclude all images ?"
 msgstr "Wyklucz wszystkie"
 
-#: ../src/gui/callbacks.c:3768 ../src/gui/callbacks.c:3778
+#: ../src/gui/callbacks.c:3779 ../src/gui/callbacks.c:3789
 #, fuzzy
 msgid "This erases previous image selection and there's no possible undo."
 msgstr ""
@@ -5914,105 +5916,105 @@ msgstr ""
 "  (to skasuje poprzedni wybór obrazu\n"
 "  ... i nie ma odwrotu)"
 
-#: ../src/gui/callbacks.c:3777
+#: ../src/gui/callbacks.c:3788
 #, fuzzy
 msgid "Include all images ?"
 msgstr "Uwzględnij wszystkie"
 
-#: ../src/gui/callbacks.c:3799
+#: ../src/gui/callbacks.c:3810
 #, fuzzy
 msgid "Opening dark image..."
 msgstr "Błąd otwarcia pliku BMP.\n"
 
-#: ../src/gui/callbacks.c:3802
+#: ../src/gui/callbacks.c:3813
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "BRAK UŻYCIA DARK: nie można otworzyć pliku\n"
 
-#: ../src/gui/callbacks.c:3809
+#: ../src/gui/callbacks.c:3820
 msgid "NOT USING DARK: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:3847
+#: ../src/gui/callbacks.c:3858
 #, fuzzy
 msgid "Opening flat image..."
 msgstr "Błąd otwarcia pliku BMP.\n"
 
-#: ../src/gui/callbacks.c:3850
+#: ../src/gui/callbacks.c:3861
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "NOT USING FLAT: cannot open the file\n"
 
-#: ../src/gui/callbacks.c:3857
+#: ../src/gui/callbacks.c:3868
 msgid "NOT USING FLAT: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:3884
+#: ../src/gui/callbacks.c:3895
 msgid "Opening offset image..."
 msgstr "Otwieranie obrazu przesunięcia..."
 
-#: ../src/gui/callbacks.c:3887
+#: ../src/gui/callbacks.c:3898
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "NOT USING OFFSET: cannot open the file\n"
 
-#: ../src/gui/callbacks.c:3894
+#: ../src/gui/callbacks.c:3905
 #, fuzzy
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/gui/callbacks.c:3988
+#: ../src/gui/callbacks.c:3999
 #, fuzzy
 msgid "Error in preprocessing."
 msgstr "Wstępne przetwarzanie ...\n"
 
-#: ../src/gui/callbacks.c:4065
+#: ../src/gui/callbacks.c:4076
 #, fuzzy, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Wybrano %s, %d zdjęć"
 
-#: ../src/gui/callbacks.c:4134
+#: ../src/gui/callbacks.c:4145
 msgid "Searching for sequences in the current working directory..."
 msgstr "Wyszukiwanie sekwencji w bieżącym katalogu roboczym..."
 
-#: ../src/gui/callbacks.c:4373
+#: ../src/gui/callbacks.c:4384
 msgid ""
 "Background cannot be extracted from itself. Please, click on Show Image\n"
 msgstr ""
 "Tło nie może zostać wyodrębnione z samego siebie. Proszę kliknąć Show Image\n"
 
-#: ../src/gui/callbacks.c:4395
+#: ../src/gui/callbacks.c:4406
 #, fuzzy
 msgid "Please, apply correction on the image by clicking on Show Image\n"
 msgstr "zastosować korektę na obrazie, klikając przycisk Pokaż obraz\n"
 
-#: ../src/gui/callbacks.c:4417
+#: ../src/gui/callbacks.c:4428
 msgid "Subtraction done ...\n"
 msgstr "Odejmowanie wykonane…\n"
 
-#: ../src/gui/callbacks.c:4424
+#: ../src/gui/callbacks.c:4435
 #, fuzzy
 msgid "Division done ...\n"
 msgstr "Dzielenie"
 
-#: ../src/gui/callbacks.c:4597
+#: ../src/gui/callbacks.c:4608
 msgid "Load an image first, aborted.\n"
 msgstr "Najpierw załaduj obraz, proces przerwany.\n"
 
-#: ../src/gui/callbacks.c:4627
+#: ../src/gui/callbacks.c:4638
 msgid "The file stars.lst has been created.\n"
 msgstr "Plik 'stars.lst' został utworzony.\n"
 
-#: ../src/gui/callbacks.c:4704 ../src/gui/callbacks.c:4752
+#: ../src/gui/callbacks.c:4715 ../src/gui/callbacks.c:4763
 #, fuzzy
 msgid "Current selection is too large"
 msgstr "fwhm: wybór jest zbyt duży"
 
-#: ../src/gui/callbacks.c:4705 ../src/gui/callbacks.c:4753
+#: ../src/gui/callbacks.c:4716 ../src/gui/callbacks.c:4764
 #, fuzzy
 msgid "To determine the PSF, please make a selection around a star."
 msgstr ""
 "Bieżące zaznaczenie jest zbyt duże.\n"
 "Aby określić PSF, dokonaj wyboru wokół gwiazdy.\n"
 
-#: ../src/gui/callbacks.c:4717
+#: ../src/gui/callbacks.c:4728
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -6039,24 +6041,24 @@ msgid ""
 "\t\tRMSE=%.3e"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4734
+#: ../src/gui/callbacks.c:4745
 #, fuzzy
 msgid "PSF for the sequence only applies on sequences"
 msgstr "Uruchom najpierw PSF dla sekwencji (patrz seqpsf)\n"
 
-#: ../src/gui/callbacks.c:4735
+#: ../src/gui/callbacks.c:4746
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr ""
 
-#: ../src/gui/callbacks.c:4799
+#: ../src/gui/callbacks.c:4810
 msgid "FFT does not work with sequences !\n"
 msgstr "FFT nie działa z sekwencjami !\n"
 
-#: ../src/gui/callbacks.c:4805
+#: ../src/gui/callbacks.c:4816
 msgid "Open an image first !\n"
 msgstr "Najpierw otwórz obraz !\n"
 
-#: ../src/gui/callbacks.c:4830
+#: ../src/gui/callbacks.c:4841
 msgid "Select magnitude and phase before !\n"
 msgstr ""
 
@@ -6064,11 +6066,11 @@ msgstr ""
 msgid "_Do not show this dialog again"
 msgstr ""
 
-#: ../src/gui/plot.c:183 ../src/gui/plot.c:640
+#: ../src/gui/plot.c:183 ../src/gui/plot.c:642
 msgid "Frames"
 msgstr "Klatki"
 
-#: ../src/gui/plot.c:278
+#: ../src/gui/plot.c:279
 #, fuzzy
 msgid ""
 "Please consider to install it before trying to plot a graph of a variable "
@@ -6077,55 +6079,55 @@ msgstr ""
 "Gnuplot jest niedostępny. Rozważ zainstalowanie go przed próbą wyświetlenia "
 "diagramu  zmiennej gwiazdy.\n"
 
-#: ../src/gui/plot.c:281
+#: ../src/gui/plot.c:282
 #, fuzzy
 msgid "Gnuplot is unavailable"
 msgstr "Niedostępne"
 
-#: ../src/gui/plot.c:377
+#: ../src/gui/plot.c:379
 #, c-format
 msgid "%s has been saved.\n"
 msgstr "%s został zapisany.\n"
 
-#: ../src/gui/plot.c:378 ../src/gui/plot.c:439
+#: ../src/gui/plot.c:380 ../src/gui/plot.c:441
 msgid "Information"
 msgstr "Informacja"
 
-#: ../src/gui/plot.c:382 ../src/gui/plot.c:442
+#: ../src/gui/plot.c:384 ../src/gui/plot.c:444
 msgid "Something went wrong while saving plot"
 msgstr "Coś poszło nie tak podczas zapisywania diagramu"
 
-#: ../src/gui/plot.c:438
+#: ../src/gui/plot.c:440
 #, c-format
 msgid "%s.csv has been saved.\n"
 msgstr "%s.csv został zapisany.\n"
 
-#: ../src/gui/plot.c:566
+#: ../src/gui/plot.c:568
 msgid "Quality"
 msgstr "Jakość"
 
-#: ../src/gui/plot.c:722
+#: ../src/gui/plot.c:724
 msgid "Star roundness (1 is round)"
 msgstr "Okrągłość gwiazdy (1 = okrągła)"
 
-#: ../src/gui/plot.c:732
+#: ../src/gui/plot.c:734
 #, fuzzy
 msgid "Star magnitude (absolute)"
 msgstr "Obserwuj ruch gwiazdy"
 
-#: ../src/gui/plot.c:734
+#: ../src/gui/plot.c:736
 msgid "Star magnitude (relative, use setmag)"
 msgstr ""
 
-#: ../src/gui/plot.c:737
+#: ../src/gui/plot.c:739
 msgid "Background value"
 msgstr "Wartość tła"
 
-#: ../src/gui/plot.c:740
+#: ../src/gui/plot.c:742
 msgid "Star position on X axis"
 msgstr "Pozycja gwiazdy na osi X"
 
-#: ../src/gui/plot.c:743
+#: ../src/gui/plot.c:745
 msgid "Star position on Y axis"
 msgstr "Pozycja gwiazdy na osi Y"
 
@@ -6148,6 +6150,30 @@ msgstr ""
 #, c-format
 msgid "%s: %.2f s.\n"
 msgstr ""
+
+#: ../src/gui/PSF_list.c:158
+msgid "Stars must have the same units."
+msgstr "Gwiazdy muszą mieć te same jednostki."
+
+#: ../src/gui/PSF_list.c:171
+#, c-format
+msgid ""
+"Average Gaussian PSF\n"
+"\n"
+"N:\t%d stars\n"
+"B:\t%.6f\n"
+"A:\t%.6f\n"
+"FWHMx:\t%.2f%s\n"
+"FWHMy:\t%.2f%s\n"
+"r:\t%.3f\n"
+"Angle:\t%.2f deg\n"
+"rmse:\t%.3e\n"
+msgstr ""
+
+#: ../src/gui/PSF_list.c:236
+#, c-format
+msgid "Star %d of %d"
+msgstr "Gwiazda %d z %d"
 
 #: ../src/gui/registration_preview.c:66
 #, c-format
@@ -6180,42 +6206,42 @@ msgstr "Pliki IRIS PIC (*.pic)"
 msgid "TIFF Files (*.tif, *.tiff)"
 msgstr "Pliki FITS (*.fit, *.fits, *.fts)"
 
-#: ../src/gui/save_dialog.c:197 ../src/gui/save_dialog.c:508
+#: ../src/gui/save_dialog.c:201 ../src/gui/save_dialog.c:517
 msgid "Saving BMP"
 msgstr "Zapisz BMP"
 
-#: ../src/gui/save_dialog.c:201 ../src/gui/save_dialog.c:466
+#: ../src/gui/save_dialog.c:205 ../src/gui/save_dialog.c:475
 #, fuzzy
 msgid "Saving PNG"
 msgstr "Zapisiwanie JPG"
 
 # NetPBM ?
-#: ../src/gui/save_dialog.c:205 ../src/gui/save_dialog.c:487
+#: ../src/gui/save_dialog.c:209 ../src/gui/save_dialog.c:496
 msgid "Saving Netpbm"
 msgstr "Zapisywanie NetPBM"
 
-#: ../src/gui/save_dialog.c:209 ../src/gui/save_dialog.c:528
+#: ../src/gui/save_dialog.c:213 ../src/gui/save_dialog.c:537
 msgid "Saving JPG"
 msgstr "Zapisiwanie JPG"
 
-#: ../src/gui/save_dialog.c:213 ../src/gui/save_dialog.c:444
+#: ../src/gui/save_dialog.c:217 ../src/gui/save_dialog.c:453
 msgid "Saving TIFF"
 msgstr "Zapisywanie TIFF"
 
-#: ../src/gui/save_dialog.c:220 ../src/gui/save_dialog.c:420
+#: ../src/gui/save_dialog.c:224 ../src/gui/save_dialog.c:429
 #, fuzzy
 msgid "Saving FITS"
 msgstr "Zapisywanie TIFF"
 
-#: ../src/gui/save_dialog.c:237 ../src/gui/save_dialog.c:240
+#: ../src/gui/save_dialog.c:241 ../src/gui/save_dialog.c:244
 msgid "_Save"
 msgstr "_Zapisz"
 
-#: ../src/gui/save_dialog.c:239
+#: ../src/gui/save_dialog.c:243
 msgid "Save File"
 msgstr "Zapisz plik"
 
-#: ../src/gui/save_dialog.c:386
+#: ../src/gui/save_dialog.c:395
 msgid "This type of file is not handled. Should not happen"
 msgstr "Ten typ pliku nie jest obsługiwany. Nie powinno się zdarzyć"
 
@@ -6485,11 +6511,11 @@ msgstr ""
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "Nie można wykonać debayer na obrazie z więcej niż jednym kanałem\n"
 
-#: ../src/io/conversion.c:873 ../src/io/ser.c:827 ../src/io/ser.c:1033
+#: ../src/io/conversion.c:873 ../src/io/ser.c:828 ../src/io/ser.c:1034
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Nie znaleziono wzorca Bayera w nagłówku pliku.\n"
 
-#: ../src/io/conversion.c:876 ../src/io/ser.c:831 ../src/io/ser.c:1037
+#: ../src/io/conversion.c:876 ../src/io/ser.c:832 ../src/io/ser.c:1038
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -6539,44 +6565,44 @@ msgstr "Załadowany plik FITS ma wartość BSCALE inną niż 1 (%d)\n"
 msgid "FITS error: %s\n"
 msgstr "Błąd FITS: %s\n"
 
-#: ../src/io/image_format_fits.c:437
+#: ../src/io/image_format_fits.c:446
 #, fuzzy
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "Nieznany format obrazu FITS (%ld osi).\n"
 
-#: ../src/io/image_format_fits.c:517 ../src/io/image_format_fits.c:594
+#: ../src/io/image_format_fits.c:525 ../src/io/image_format_fits.c:602
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr ""
 
-#: ../src/io/image_format_fits.c:522
+#: ../src/io/image_format_fits.c:530
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Fitsio błąd odczytu danych, plik: %s.\n"
 
-#: ../src/io/image_format_fits.c:880
+#: ../src/io/image_format_fits.c:888
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr ""
 
-#: ../src/io/image_format_fits.c:887
+#: ../src/io/image_format_fits.c:895
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr "Plik %s nie jest plikiem FITS lub nie istnieje z rozszerzeniem FITS.\n"
 
-#: ../src/io/image_format_fits.c:909
+#: ../src/io/image_format_fits.c:917
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "FITSIO błąd uzyskania parametrów obrazu, plik %s.\n"
 
-#: ../src/io/image_format_fits.c:945
+#: ../src/io/image_format_fits.c:953
 #, fuzzy, c-format
 msgid "Unsupported FITS image with %ld channels.\n"
 msgstr "Nieznany format obrazu FITS (%ld osi).\n"
 
 # Should the "." be there ?
-#: ../src/io/image_format_fits.c:963
+#: ../src/io/image_format_fits.c:971
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -6584,32 +6610,32 @@ msgstr ""
 "Obrazy FITS z 64-bitową liczbą całkowitą ze znakiem na piksel nie są "
 "obsługiwane.\n"
 
-#: ../src/io/image_format_fits.c:1003
+#: ../src/io/image_format_fits.c:1011
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Odczyt FITS: plik %s, warstwa(y) %ld, %ux%u pikseli\n"
 
-#: ../src/io/image_format_fits.c:1092
+#: ../src/io/image_format_fits.c:1100
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "Wczytywanie częściowe FITS: nie ma warstwy %d w obrazie % s\n"
 
-#: ../src/io/image_format_fits.c:1100
+#: ../src/io/image_format_fits.c:1108
 #, fuzzy, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Nieznany format obrazu FITS (%ld osi).\n"
 
-#: ../src/io/image_format_fits.c:1149
+#: ../src/io/image_format_fits.c:1157
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Załadowany częściowy plik FITS %s\n"
 
-#: ../src/io/image_format_fits.c:1275
+#: ../src/io/image_format_fits.c:1289
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr "BŁĄD: próba zapisania obrazu FITS w nieobsługiwanym formacie (%d).\n"
 
-#: ../src/io/image_format_fits.c:1286
+#: ../src/io/image_format_fits.c:1300
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Zapisywanie FITS: plik %s, warstwa %ld, %ux%u pikseli\n"
@@ -7116,34 +7142,34 @@ msgstr ""
 "Zapisywanie do plików SER z ponad 16-bitowych obrazów FITS nie zostało "
 "jeszcze zaimplementowane\n"
 
-#: ../src/io/ser.c:571
+#: ../src/io/ser.c:572
 msgid "The SER sequence is being created with no image in it.\n"
 msgstr "Sekwencja SER jest tworzona bez obrazu.\n"
 
-#: ../src/io/ser.c:609
+#: ../src/io/ser.c:610
 msgid "Compacting SER file after parallel output to it...\n"
 msgstr ""
 
-#: ../src/io/ser.c:692
+#: ../src/io/ser.c:693
 #, c-format
 msgid "Created SER file %s\n"
 msgstr ""
 "Utworzono plik SER %s\n"
 "\n"
 
-#: ../src/io/ser.c:868 ../src/io/ser.c:1095
+#: ../src/io/ser.c:869 ../src/io/ser.c:1096
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "Ten rodzaj wzoru Bayera nie jest jeszcze obsługiwany.\n"
 
-#: ../src/io/ser.c:1047
+#: ../src/io/ser.c:1048
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr "Dla obrazy po debayer, warstwa musi być R, G lub B (0 do 2).\n"
 
-#: ../src/io/ser.c:1058
+#: ../src/io/ser.c:1059
 msgid "Out of memory - aborting\n"
 msgstr "Brak pamięci - przerwanie\n"
 
-#: ../src/io/ser.c:1123
+#: ../src/io/ser.c:1124
 msgid "Trying to add an image of different size in a SER\n"
 msgstr "Próbujesz dodać obraz o różnej wielkości w SER\n"
 
@@ -7178,45 +7204,45 @@ msgstr ""
 "Wystąpił błąd podczas otwierania tego obrazu. Zobacz dziennik, aby uzyskać "
 "więcej informacji."
 
-#: ../src/main.c:250
+#: ../src/main.c:237
 #, c-format
 msgid "unknown command line parameter '%c'\n"
 msgstr "nieznany parametr wiersza poleceń  '%c'\n"
 
-#: ../src/main.c:274
+#: ../src/main.c:261
 #, fuzzy, c-format
 msgid "%s. Looking into another directory...\n"
 msgstr "Katalog: %s\n"
 
-#: ../src/main.c:280
+#: ../src/main.c:267
 #, c-format
 msgid "%s was not found or contains errors, cannot render GUI. Exiting.\n"
 msgstr ""
 "%s nie został znaleziony lub zawiera błędy, nie może renderować GUI. "
 "Wychodzę.\n"
 
-#: ../src/main.c:301
+#: ../src/main.c:288
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Witaj w %s v%s\n"
 
-#: ../src/main.c:371
+#: ../src/main.c:358
 msgid "Could not load or create settings file, exiting.\n"
 msgstr ""
 "Nie można załadować lub utworzyć pliku ustawień. Wychodzę.\n"
 "\n"
 
 #. Get CPU number and set the number of threads
-#: ../src/main.c:419
+#: ../src/main.c:406
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor(s).\n"
 msgstr "Przetwarzanie równoległe %s: użycie procesorów logicznych %d.\n"
 
-#: ../src/main.c:421
+#: ../src/main.c:408
 msgid "enabled"
 msgstr "włączony"
 
-#: ../src/main.c:423
+#: ../src/main.c:410
 msgid "disabled"
 msgstr "wyłączony"
 
@@ -7924,6 +7950,14 @@ msgstr "Na podstawie jakości"
 msgid "Up-scaling sequence for stacking"
 msgstr "Skalowanie w górę dla stackowania"
 
+#, fuzzy
+#~ msgid ""
+#~ "Copyright © 2004-2011 François Meyer\n"
+#~ "Copyright © 2012-2019 team free-astro"
+#~ msgstr ""
+#~ "Copyright © 2004-2011 François Meyer\n"
+#~ "Copyright © 2012-2018 team free-astro"
+
 #~ msgid "Vertical Zoom"
 #~ msgstr "Powiększenie w pionie"
 
@@ -8015,27 +8049,6 @@ msgstr "Skalowanie w górę dla stackowania"
 
 #~ msgid "NetPBM Files"
 #~ msgstr "Pliki NetPBM"
-
-#~ msgid ""
-#~ "Copyright © 2004-2011 François Meyer\n"
-#~ "Copyright © 2012-2018 team free-astro"
-#~ msgstr ""
-#~ "Copyright © 2004-2011 François Meyer\n"
-#~ "Copyright © 2012-2018 team free-astro"
-
-#~ msgid ""
-#~ "Cyril Richard <cyril@free-astro.org>\n"
-#~ "Vincent Hourdin <vh@free-astro.vinvin.tf>"
-#~ msgstr "Michał Powałko <m.powalko@gmail.com>"
-
-#~ msgid "About siril"
-#~ msgstr "O siril"
-
-#~ msgid "Astronomical image (pre-)processing program"
-#~ msgstr "Program przetwarzania obrazu  astronomicznego"
-
-#~ msgid "Visit the Siril website"
-#~ msgstr "Odwiedź stronę internetową Siril"
 
 #~ msgid ""
 #~ "Include all images ?\n"
