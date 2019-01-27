@@ -39,8 +39,8 @@
 
 static char *MIPSHI[] = {"MIPS-HI", "CWHITE", "DATAMAX", NULL };
 static char *MIPSLO[] = {"MIPS-LO", "CBLACK", "DATAMIN", NULL };
-static char *PixSizeX[] = { "XPIXSZ", "XPIXELSZ", NULL };
-static char *PixSizeY[] = { "YPIXSZ", "YPIXELSZ", NULL };
+static char *PixSizeX[] = { "XPIXSZ", "XPIXELSZ", "PIXSIZE1", NULL };
+static char *PixSizeY[] = { "YPIXSZ", "YPIXELSZ", "PIXSIZE2", NULL };
 static char *BinX[] = { "XBINNING", "BINX", NULL };
 static char *BinY[] = { "YBINNING", "BINY", NULL };
 static char *Focal[] = { "FOCAL", "FOCALLEN", NULL };
