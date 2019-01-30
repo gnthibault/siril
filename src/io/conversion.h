@@ -4,7 +4,6 @@
 typedef struct {
 	char *extension;			// name of the extension of raw
 	char *manufacturer;			// name of the manufacturer
-	sensor_pattern suggested_pattern;// type of bayer pattern. Not used for now
 } supported_raw_list;
 
 struct _convert_data {

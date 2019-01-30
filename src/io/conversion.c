@@ -50,28 +50,28 @@ static unsigned int supported_filetypes = 0;	// initialized by initialize_conver
 char **supported_extensions;
 
 supported_raw_list supported_raw[] = {
-	{"dng",	"Adobe", BAYER_FILTER_RGGB},
-	{"mos",	"Aptus", BAYER_FILTER_RGGB},
-	{"cr2",	"Canon", BAYER_FILTER_RGGB},
-	{"crw",	"Canon", BAYER_FILTER_RGGB},
-	{"bay",	"Casio", BAYER_FILTER_NONE},		// Not tested
-	{"erf",	"Epson", BAYER_FILTER_RGGB},
-	{"raf",	"Fuji", BAYER_FILTER_GBRG},		// Not really supported, specially XTRANS
-	{"3fr",	"Hasselblad", BAYER_FILTER_GRBG},	// GRBG, RGGB		
-	{"kdc",	"Kodak", BAYER_FILTER_GRBG},
-	{"dcr",	"Kodak", BAYER_FILTER_GRBG},
-	{"mef",	"Mamiya", BAYER_FILTER_RGGB},
-	{"mrw",	"Minolta", BAYER_FILTER_RGGB},
-	{"nef",	"Nikon", BAYER_FILTER_RGGB},
-	{"nrw",	"Nikon", BAYER_FILTER_RGGB},
-	{"orf",	"Olympus", BAYER_FILTER_GRBG},
-	{"raw",	"Leica", BAYER_FILTER_RGGB},
-	{"rw2",	"Panasonic", BAYER_FILTER_BGGR},
-	{"pef",	"Pentax", BAYER_FILTER_BGGR},
-	{"ptx",	"Pentax", BAYER_FILTER_NONE},		// Not tested
-	{"x3f",	"Sigma", BAYER_FILTER_NONE},		// Not supported yet
-	{"srw",	"Samsung", BAYER_FILTER_BGGR},
-	{"arw",	"Sony", BAYER_FILTER_RGGB}
+	{"dng",	"Adobe"},
+	{"mos",	"Aptus"},
+	{"cr2",	"Canon"},
+	{"crw",	"Canon"},
+	{"bay",	"Casio"},		// Not tested
+	{"erf",	"Epson"},
+	{"raf",	"Fuji"},
+	{"3fr",	"Hasselblad"},
+	{"kdc",	"Kodak"},
+	{"dcr",	"Kodak"},
+	{"mef",	"Mamiya"},
+	{"mrw",	"Minolta"},
+	{"nef",	"Nikon"},
+	{"nrw",	"Nikon"},
+	{"orf",	"Olympus"},
+	{"raw",	"Leica"},
+	{"rw2",	"Panasonic"},
+	{"pef",	"Pentax"},
+	{"ptx",	"Pentax"},		// Not tested
+	{"x3f",	"Sigma"},		// Not supported yet
+	{"srw",	"Samsung"},
+	{"arw",	"Sony"}
 };
 
 char *filter_pattern[] = {
