@@ -32,10 +32,10 @@ typedef enum {
 	RESOLVER_NUMBER
 } resolver;
 
-/* median filter data from GUI */
 struct plate_solver_data {
 	online_catalog onlineCatalog;
 	gchar *catalogStars;
+	gboolean for_photometry_cc;
 	double scale; // scale (resolution)
 	fits *fit;
 	gchar *message; // error message
@@ -78,6 +78,10 @@ struct image_solved_struct {
 };
 typedef struct image_solved_struct image_solved;
 
+#ifdef HAVE_LIBCURL
+void fill_plate_solver_structure(struct plate_solver_data *args);
+gpointer match_catalog(gpointer p);
+#endif
 
 gboolean confirm_delete_wcs_keywords(fits *fit);
 void invalidate_WCS_keywords(fits *fit);

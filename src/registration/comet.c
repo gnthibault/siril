@@ -142,7 +142,7 @@ void on_button1_comet_clicked(GtkButton *button, gpointer p) {
 
 	if (com.selection.h && com.selection.w) {
 		set_cursor_waiting(TRUE);
-		result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE);
+		result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE, FALSE);
 		if (result) {
 			pos_of_image1.x = result->x0 + com.selection.x;
 			pos_of_image1.y = com.selection.y + com.selection.h - result->y0;
@@ -166,7 +166,7 @@ void on_button2_comet_clicked(GtkButton *button, gpointer p) {
 
 	if (com.selection.h && com.selection.w) {
 		set_cursor_waiting(TRUE);
-		result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE);
+		result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE, FALSE);
 		if (result) {
 			pos_of_image2.x = result->x0 + com.selection.x;
 			pos_of_image2.y = com.selection.y + com.selection.h - result->y0;

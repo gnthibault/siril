@@ -1520,6 +1520,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menuitem_satu"), is_a_singleRGB_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_negative"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitemcalibration"), is_a_singleRGB_image_loaded);
+	gtk_widget_set_sensitive(lookup_widget("menuitemphotometriccalibration"), is_a_singleRGB_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_channel_separation"), is_a_singleRGB_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_histo"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_asinh"), any_image_is_loaded);
@@ -4713,7 +4714,7 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 		return;
 	}
-	result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE);
+	result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE);
 	if (!result)
 		return;
 

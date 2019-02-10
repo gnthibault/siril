@@ -291,12 +291,13 @@ static void convert_MatH_to_H(Mat from, Homography *to) {
     to->h22 = from.at<double>(2, 2);
 }
 
-int cvCalculH(s_star *star_array_img,
+unsigned char *cvCalculH(s_star *star_array_img,
 		struct s_star *star_array_ref, int n, Homography *Hom) {
 
 	std::vector<Point2f> ref;
 	std::vector<Point2f> img;
 	Mat mask;
+	unsigned char *ret;
 	int i;
 
 	/* build vectors with lists of stars. */
@@ -307,15 +308,19 @@ int cvCalculH(s_star *star_array_img,
 
 	Mat H = findHomography(img, ref, CV_RANSAC, defaultRANSACReprojThreshold, mask);
 	if (countNonZero(H) < 1) {
-		return 1;
+		return NULL;
 	}
 	Hom->Inliers = countNonZero(mask);
+	ret = (unsigned char *) malloc(n * sizeof(unsigned char));
+	for (i = 0; i < n; i++) {
+		ret[i] = mask.at<uchar>(i);
+	}
 
 	convert_MatH_to_H(H, Hom);
 
 	mask.release();
 	H.release();
-	return 0;
+	return ret;
 }
 
 /**

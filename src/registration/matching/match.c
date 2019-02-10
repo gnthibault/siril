@@ -122,7 +122,7 @@ static int prepare_to_recalc(int num_matched_A,
 		TRANS *trans);
 
 int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override, double s_min, double s_max,
-		Homography *H, point image_size) {
+		Homography *H, point image_size, gboolean print_output) {
 	int ret;
 	int numA, numB;
 	int num_matched_A, num_matched_B;
@@ -428,7 +428,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override, d
 	Hom->pair_matched = num_matches;
 
 	if (atPrepareHomography(num_matched_A, matched_list_A, num_matched_B,
-			matched_list_B, Hom)) {
+			matched_list_B, Hom, print_output, image_size)) {
 		fprintf(stderr,"atPrepareHomography fails on computing H\n");
 		/** */
 		atTransDel(trans);

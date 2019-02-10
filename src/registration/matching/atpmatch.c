@@ -145,6 +145,7 @@
 #include "registration/matching/misc.h"
 #include "registration/matching/atpmatch.h"
 #include "opencv/opencv.h"
+#include "gui/photometric_cc.h"
 
 #undef DEBUG           /* get some of diagnostic output */
 #undef DEBUG2          /* get LOTS more diagnostic output */
@@ -590,13 +591,16 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 		struct s_star *listA, /* I: match this set of objects with list B */
 		int numB, /* I: number of stars in list B */
 		struct s_star *listB, /* I: match this set of objects with list A */
-		Homography *H
+		Homography *H,
+		gboolean print_output,
+		point image_size
 ) {
 	int ret = 0;
 	int num_stars_B; /* number of stars in chain B */
 
 	s_star *star_array_A;
 	s_star *star_array_B;
+	unsigned char *mask;
 
 	num_stars_B = numB;
 	star_array_A = list_to_array(numA, listA);
@@ -605,24 +609,27 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 	g_assert(star_array_A != NULL);
 	g_assert(star_array_B != NULL);
 
-	ret = cvCalculH(star_array_A, star_array_B, num_stars_B, H);
-//
-//	int i;
-//	s_star *star;
-//
-//	for (i = 0; i < numB; i++) {
-//		star = &(star_array_B[i]);
-//		g_assert(star != NULL);
-//		printf(" %4d %11.4e %11.4e %6.2f\n", i, star->x,
-//				star->y, star->BV);
-//	}
-//
-//	for (i = 0; i < numA; i++) {
-//		star = &(star_array_A[i]);
-//		g_assert(star != NULL);
-//		printf(" %4d %11.4e %11.4e %6.2f\n", i, star->x,
-//				star->y, star->BV);
-//	}
+	mask = cvCalculH(star_array_A, star_array_B, num_stars_B, H);
+	ret = (mask == NULL ? 1 : 0);
+
+	if (print_output) {
+		int i;
+		s_star *starA, *starB;
+		FILE *BV_file = open_bv_file("w+t");
+
+		for (i = 0; i < numB; i++) {
+			starA = &(star_array_A[i]);
+			starB = &(star_array_B[i]);
+			g_assert(starA != NULL);
+			g_assert(starB != NULL);
+			if (mask[i] && starB->BV != -99.9) {
+				fprintf(BV_file,
+						" %4d %11.4e %11.4e %.3f\n",
+						i, starA->x, image_size.y - starA->y, starB->BV);
+			}
+		}
+		fclose(BV_file);
+	}
 
 
 	/*

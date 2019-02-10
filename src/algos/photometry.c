@@ -190,10 +190,10 @@ static int robustmean(int n, double *x, double *mean, double *stdev)
 	return 0;
 }
 
-static photometry *phot_alloc(size_t size) {
+static photometry *phot_alloc() {
 	photometry *phot;
 
-	phot = (photometry*) calloc((unsigned) size * sizeof(photometry), 1);
+	phot = (photometry*) calloc(sizeof(photometry), 1);
 	if (phot == NULL) {
 		printf("photometry: memory error\n");
 	}
@@ -232,7 +232,7 @@ static double getMagErr(double intensity, double area, int nsky, double skysig) 
 }
 
 /* Function that compute all photometric data. The result must be freed */
-photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf) {
+photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) {
 	int width = z->size2;
 	int height = z->size1;
 	int n_sky = 0, ret;
@@ -251,8 +251,10 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf) {
 	r2 = getOuterRadius();
 	appRadius = sqrt(psf->sx / 2.0) * 2 * sqrt(log(2.0) * 2) + 0.5;
 	if (appRadius >= r1) {
-		/* Translator note: radii is plural for radius */
-		siril_log_message(_("Inner and outer radii are too small. Please update values in setting box.\n"));
+		if (verbose) {
+			/* Translator note: radii is plural for radius */
+			siril_log_message(_("Inner and outer radii are too small. Please update values in setting box.\n"));
+		}
 		return NULL;
 	}
 
@@ -300,8 +302,10 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf) {
 	}
 
 	if (n_sky < min_sky) {
-		siril_log_message(_("Warning: There aren't enough pixels"
-				" in the sky annulus. You need to make a larger selection.\n"));
+		if (verbose) {
+			siril_log_message(_("Warning: There aren't enough pixels"
+					" in the sky annulus. You need to make a larger selection.\n"));
+		}
 		free(data);
 		return NULL;
 	}
@@ -312,9 +316,10 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf) {
 		return NULL;
 	}
 
-	phot = phot_alloc(1);
+	phot = phot_alloc();
 	if (phot) {
 		signalIntensity = apmag - (area * mean);
+
 		phot->mag = getMagnitude(signalIntensity);
 		phot->s_mag = getMagErr(signalIntensity, area, n_sky, stdev);
 	}

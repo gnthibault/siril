@@ -9,6 +9,6 @@ struct photometry_struct {
 };
 typedef struct photometry_struct photometry;
 
-photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf);
+photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose);
 
 #endif /* SRC_ALGOS_PHOTOMETRY_H_ */

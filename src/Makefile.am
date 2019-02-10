@@ -20,6 +20,7 @@ siril_SOURCES = \
 	gui/gnuplot_i/gnuplot_i.c gui/gnuplot_i/gnuplot_i.h \
 	gui/progress_and_log.c gui/progress_and_log.h \
 	gui/about_dialog.c \
+	gui/photometric_cc.c gui/photometric_cc.h \
 	registration/registration.c registration/registration.h registration/global.c registration/comet.c \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
 	registration/matching/project_coords.c registration/matching/project_coords.h registration/matching/degtorad.h registration/matching/apply_match.c \

@@ -36,6 +36,7 @@
 #include "core/processing.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "gui/photometric_cc.h"
 
 #ifdef HAVE_LIBCURL
 
@@ -65,6 +66,32 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 static struct object platedObject[RESOLVER_NUMBER];
 static GtkListStore *list_IPS = NULL;
 static image_solved is_result;
+
+static void initialize_ips_dialog() {
+	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box,
+			*catalog_auto, *frame_cc_bkg, *frame_cc_norm;
+	GtkWindow *parent;
+
+	button_ips_ok = lookup_widget("buttonIPS_ok");
+	button_cc_ok = lookup_widget("button_cc_ok");
+	catalog_label = lookup_widget("GtkLabelCatalog");
+	catalog_box = lookup_widget("ComboBoxIPSCatalog");
+	catalog_auto = lookup_widget("GtkCheckButton_OnlineCat");
+	frame_cc_bkg = lookup_widget("frame_cc_background");
+	frame_cc_norm = lookup_widget("frame_cc_norm");
+
+	parent = GTK_WINDOW(lookup_widget("ImagePlateSolver_Dial"));
+
+	gtk_widget_set_visible(button_ips_ok, TRUE);
+	gtk_widget_set_visible(button_cc_ok, FALSE);
+	gtk_widget_set_visible(catalog_label, TRUE);
+	gtk_widget_set_visible(catalog_box, TRUE);
+	gtk_widget_set_visible(catalog_auto, TRUE);
+	gtk_widget_set_visible(frame_cc_bkg, FALSE);
+	gtk_widget_set_visible(frame_cc_norm, FALSE);
+
+	gtk_window_set_title(parent, _("Image Plate Solver"));
+}
 
 static RA convert_ra(double var) {
 	RA ra;
@@ -877,7 +904,7 @@ static int read_PPMXL_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 		star->xpos = x;
 		star->ypos = -y + shift_y;
 		star->mag = Jmag;
-		star->BV = -99;
+		star->BV = -99.9;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -997,6 +1024,9 @@ static gboolean end_plate_solver(gpointer p) {
 		update_coordinates(ra, Dec, is_result.dec < 0.0);
 
 		control_window_switch_to_tab(OUTPUT_LOGS);
+		if (args->for_photometry_cc) {
+			apply_photometric_cc();
+		}
 	}
 	g_free(args->catalogStars);
 	g_free(args->message);
@@ -1005,7 +1035,7 @@ static gboolean end_plate_solver(gpointer p) {
 	return FALSE;
 }
 
-static gpointer match_catalog(gpointer p) {
+gpointer match_catalog(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	FILE *catalog;
 	fitted_PSF **cstars;
@@ -1051,7 +1081,6 @@ static gpointer match_catalog(gpointer p) {
 		siril_add_idle(end_plate_solver, args);
 		return GINT_TO_POINTER(1);
 	}
-
 	n_cat = read_catalog(catalog, cstars, image_size.y, args->onlineCatalog);
 
 	/* make sure that arrays are not too small
@@ -1062,7 +1091,7 @@ static gpointer match_catalog(gpointer p) {
 	args->ret = 1;
 	while (args->ret && attempt < NB_OF_MATCHING_TRY){
 		args->ret = new_star_match(com.stars, cstars, n, nobj,
-				args->scale - 0.2, args->scale + 0.2, &H, image_size);
+				args->scale - 0.2, args->scale + 0.2, &H, image_size, args->for_photometry_cc);
 		nobj += 50;
 		attempt++;
 	}
@@ -1157,26 +1186,11 @@ static void search_object_in_catalogs(const gchar *object) {
 }
 
 static void start_image_plate_solve() {
-
 	struct plate_solver_data *args = malloc(sizeof(struct plate_solver_data));
 	set_cursor_waiting(TRUE);
 
-	double fov, px_size, scale, m;
-	point catalog_center;
-
-	px_size = get_pixel();
-	scale = get_resolution(get_focal(), px_size);
-	fov = get_fov(scale, gfit.ry > gfit.rx ? gfit.ry : gfit.rx);
-	m = get_mag_limit(fov);
-	catalog_center = get_center_of_catalog();
-
-	/* Filling structure */
-	args->onlineCatalog = get_online_catalog(fov, m);
-	args->catalogStars = download_catalog(args->onlineCatalog, catalog_center, fov, m);
-	args->scale = scale;
-	args->pixel_size = px_size;
-	args->manual = is_detection_manual();
-	args->fit = &gfit;
+	args->for_photometry_cc = FALSE;
+	fill_plate_solver_structure(args);
 
 	start_in_new_thread(match_catalog, args);
 }
@@ -1190,7 +1204,8 @@ void on_GtkEntry_IPS_changed(GtkEditable *editable, gpointer user_data) {
 }
 
 void on_menuitem_IPS_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	gtk_widget_show_all(lookup_widget("ImagePlateSolver_Dial"));
+	initialize_ips_dialog();
+	gtk_widget_show(lookup_widget("ImagePlateSolver_Dial"));
 }
 
 void on_buttonIPS_close_clicked(GtkButton *button, gpointer user_data) {
@@ -1269,12 +1284,32 @@ void on_GtkCheckButton_OnlineCat_toggled(GtkToggleButton *button,
 	combobox = lookup_widget("ComboBoxIPSCatalog");
 	gtk_widget_set_sensitive(combobox, !gtk_toggle_button_get_active(button));
 }
-#endif
 
 /******
  *
  * Public functions
  */
+
+void fill_plate_solver_structure(struct plate_solver_data *args) {
+	double fov, px_size, scale, m;
+	point catalog_center;
+
+	px_size = get_pixel();
+	scale = get_resolution(get_focal(), px_size);
+	fov = get_fov(scale, gfit.ry > gfit.rx ? gfit.ry : gfit.rx);
+	m = get_mag_limit(fov);
+	catalog_center = get_center_of_catalog();
+
+	/* Filling structure */
+	args->onlineCatalog = args->for_photometry_cc ? NOMAD : get_online_catalog(fov, m);
+	args->catalogStars = download_catalog(args->onlineCatalog, catalog_center, fov, m);
+	args->scale = scale;
+	args->pixel_size = px_size;
+	args->manual = is_detection_manual();
+	args->fit = &gfit;
+}
+
+#endif
 
 gboolean confirm_delete_wcs_keywords(fits *fit) {
 	gboolean erase = TRUE;

@@ -809,14 +809,14 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 			return;
 		}
 		bg[chan] = stat->median / stat->normValue;
-		siril_log_message("B%d : %.5e\n", chan, bg[chan]);
+		siril_log_message("B%d: %.5e\n", chan, bg[chan]);
 		free_stats(stat);
 
 	}
 
 	siril_log_message(_("White reference:\n"));
 	for (chan = 0; chan < 3; chan++) {
-		siril_log_message("W%d : %.5e\n", chan, kw[chan]);
+		siril_log_message("W%d: %.5e\n", chan, kw[chan]);
 		kw[chan] = fabs(kw[chan] - bg[chan]);
 	}
 
@@ -824,7 +824,7 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 					((kw[1] > kw[2]) ? 1 : 2);
 	for (chan = 0; chan < 3; chan++) {
 		if (chan == rc)
-			tmp[chan] = 1;
+			tmp[chan] = 1.0;
 		else
 			tmp[chan] = kw[rc] / kw[chan];
 	}
@@ -832,7 +832,7 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 	siril_log_message(_("Color calibration factors:\n"));
 	for (chan = 0; chan < 3; chan++) {
 		kw[chan] = tmp[chan];
-		siril_log_message("K%d : %5.3lf\n", chan, kw[chan]);
+		siril_log_message("K%d: %5.3lf\n", chan, kw[chan]);
 	}
 }
 
