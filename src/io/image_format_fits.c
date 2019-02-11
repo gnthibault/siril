@@ -461,6 +461,8 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	// orig ^ gives the coordinate in each dimension of the first pixel to be read
 	unsigned int nbdata = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 
+	fits_movabs_hdu(fit->fptr, 1, 0, &status); // make sure reading primary HDU
+
 	switch (fit->bitpix) {
 	case SBYTE_IMG:	// UNTESTED, may not exist while reading data
 	case BYTE_IMG:
