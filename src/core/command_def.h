@@ -17,7 +17,7 @@
 #define STR_CONVERT N_("Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" is the basename of the new sequence. The option \"-debayer\" applies demosaicing to images")
 #define STR_COSME N_("Apply the local mean to a set of pixels on the in-memory image (cosmetic correction). The coordinates of these pixels are in an ASCII file [.lst file]. COSME is adapted to correct residual hot and cold pixels after preprocessing")
 #define STR_COSME_CFA N_("Same function that COSME but applying to RAW CFA images")
-#define STR_CROP N_("It can be used with the GUI: if a selection has been made with the mouse, calling the crop command without arguments crops it on this selection. Otherwise, or in scripts, arguments have to be given, with x and y being the coordinates of the top left corner, and width and height the size of the selection")
+#define STR_CROP N_("It can be used with the GUI: if a selection has been made with the mouse, calling the CROP command without arguments crops it on this selection. Otherwise, or in scripts, arguments have to be given, with \"x\" and \"y\" being the coordinates of the top left corner, and \"width\" and \"height\" the size of the selection")
 
 #define STR_DDP N_("Performs a DDP (digital development processing) as described first by Kunihiko Okano. This implementation is the one described in IRIS. It combines a linear distribution on low levels (below \"level\") and a non-linear on high levels. It uses a Gaussian filter of sigma \"sigma\" and multiplies the resulting image by \"coef\". The typical values for \"sigma\" are included between 0.7 and 2")
 

@@ -315,7 +315,8 @@ int struct_cmp(const void *a, const void *b) {
 }
 
 static int determine_chan_for_norm(coeff bg[], int n_f) {
-	/* make copy bg coefficients */
+	/* make a copy of bg coefficients because we don't
+	 * want to sort original data */
 	coeff tmp[3];
 	memcpy(tmp, bg, 3 * sizeof(coeff));
 	/* ascending order */
@@ -362,7 +363,7 @@ static gpointer photometric_cc(gpointer p) {
 
 	get_background_coefficients(&gfit, bkg_sel, bg);
 	chan = determine_chan_for_norm(bg, args->n_f);
-	siril_log_message(_("Normalizing on %s channel\n"), (chan == 0) ? "red" : ((chan == 1) ? "green" : "blue"));
+	siril_log_message(_("Normalizing on %s channel.\n"), (chan == 0) ? _("red") : ((chan == 1) ? _("green") : _("blue")));
 	get_white_balance_coeff(args->stars, nb_stars, &gfit, kw, chan);
 	norm = (double) get_normalized_value(&gfit);
 
