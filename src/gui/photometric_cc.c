@@ -169,11 +169,39 @@ static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits
 	return 0;
 }
 
+static double siril_stats_trmean_from_sorted_data(const double trim,
+		const double sorted_data[], const size_t stride, const size_t size) {
+#if (GSL_MAJOR_VERSION == 2) && (GSL_MINOR_VERSION < 5)
+	if (trim >= 0.5) {
+		return gsl_stats_median_from_sorted_data(sorted_data, stride, size);
+	} else {
+		size_t ilow = (size_t) floor(trim * size);
+		size_t ihigh = size - ilow - 1;
+		double mean = 0.0;
+		double k = 0.0;
+		size_t i;
+
+		/* compute mean of middle samples in [ilow,ihigh] */
+		for (i = ilow; i <= ihigh; ++i) {
+			double delta = sorted_data[i * stride] - mean;
+			k += 1.0;
+			mean += delta / k;
+		}
+
+		return mean;
+	}
+}
+#else
+	return gsl_stats_trmean_from_sorted_data(trim, sorted_data, stride, size);
+}
+#endif
+
 static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_f) {
 	int i = 0;
 	int chan;
 
 	double *data[3];
+	double alpha = 0.3;
 
 	data[RED] = calloc(sizeof(double), nb_stars);
 	data[GREEN] = calloc(sizeof(double), nb_stars);
@@ -184,7 +212,6 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 	while (stars[i]) {
 		rectangle area = { 0 };
 		double flux[3] = { 0.0, 0.0, 0.0 };
-		double kw_tmp[3] = { 0.0, 0.0, 0.0 };
 		double r, g, b, bv;
 
 		if (make_selection_around_a_star(stars[i], &area, fit)) {
@@ -204,22 +231,14 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 		bv = stars[i]->BV;
 		bv2rgb(&r, &g, &b, bv);
 
-		/* get white balance coeff for current star */
-		kw_tmp[RED] = flux[n_f] / flux[RED] * r;
-		kw_tmp[GREEN] = flux[n_f] / flux[GREEN] * g;
-		kw_tmp[BLUE] = flux[n_f] / flux[BLUE] * b;
-		if (isnan(kw_tmp[RED]) || (isnan(kw_tmp[GREEN]) || (isnan(kw_tmp[BLUE])))
-				|| isinf(kw_tmp[RED]) || (isinf(kw_tmp[GREEN]) || (isinf(kw_tmp[BLUE])))) {
-			i++;
-			continue;
-		}
-
-		data[RED][i] = kw_tmp[RED];
-		data[GREEN][i] = kw_tmp[GREEN];
-		data[BLUE][i] = kw_tmp[BLUE];
+		/* get Color calibration factors for current star */
+		data[RED][i] = (flux[n_f] / flux[RED]) * r;
+		data[GREEN][i] = (flux[n_f] / flux[GREEN]) * g;
+		data[BLUE][i] = (flux[n_f] / flux[BLUE]) * b;
 
 //		printf("%d: %.3lf %.3lf %.3lf (%.2lf/%.2lf)\n", i, flux[RED], flux[GREEN], flux[BLUE], stars[i]->xpos, stars[i]->ypos);
-//		printf("%d: %.3lf %.3lf %.3lf\n", i, kw_tmp[RED], kw_tmp[GREEN], kw_tmp[BLUE]);
+//		printf("%d: %.3lf %.3lf\n", i, stars[i]->BV, flux[BLUE] / flux[GREEN]);
+//		printf("%d: %.3lf %.3lf %.3lf\n", i, data[RED][i], data[GREEN][i], data[BLUE][i]);
 
 		i++;
 	}
@@ -229,17 +248,9 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 	gsl_sort(data[GREEN], 1, nb_stars);
 	gsl_sort(data[BLUE], 1, nb_stars);
 
-#if (GSL_MAJOR_VERSION == 2) && (GSL_MINOR_VERSION > 4)
-	double alpha = 0.3;
-
-	kw[RED] = gsl_stats_trmean_from_sorted_data(alpha, data[RED], 1, nb_stars);
-	kw[GREEN] = gsl_stats_trmean_from_sorted_data(alpha, data[GREEN], 1, nb_stars);
-	kw[BLUE] = gsl_stats_trmean_from_sorted_data(alpha, data[BLUE], 1, nb_stars);
-#else
-	kw[RED] = gsl_stats_median_from_sorted_data(data[RED], 1, nb_stars);
-	kw[GREEN] = gsl_stats_median_from_sorted_data(data[GREEN], 1, nb_stars);
-	kw[BLUE] = gsl_stats_median_from_sorted_data(data[BLUE], 1, nb_stars);
-#endif
+	kw[RED] = siril_stats_trmean_from_sorted_data(alpha, data[RED], 1, nb_stars);
+	kw[GREEN] = siril_stats_trmean_from_sorted_data(alpha, data[GREEN], 1, nb_stars);
+	kw[BLUE] = siril_stats_trmean_from_sorted_data(alpha, data[BLUE], 1, nb_stars);
 
 	/* normalize factors */
 	kw[RED] /= (kw[n_f]);
