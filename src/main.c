@@ -58,6 +58,7 @@
 #include "core/undo.h"
 #include "io/single_image.h"
 #include "algos/star_finder.h"
+#include "algos/photometry.h"
 
 #define GLADE_FILE "siril3.glade"
 
@@ -289,6 +290,9 @@ int main(int argc, char *argv[]) {
 
 	/* initialize converters (utilities used for different image types importing) */
 	initialize_converters();
+
+	/* initialize photometric variables */
+	initialize_photometric_param();
 
 	/* initializing internal structures with widgets (drawing areas) */
 	if (!com.headless) {

@@ -370,6 +370,11 @@ static gpointer photometric_cc(gpointer p) {
 		bkg_sel = NULL;
 	}
 
+	/* make sure parameters are initialized in a good way */
+	if (com.phot_set.outer == 0.0) {
+		initialize_photometric_param();
+	}
+
 	read_photometry_cc_file(args->BV_file, args->stars, &nb_stars);
 
 	get_background_coefficients(&gfit, bkg_sel, bg);
