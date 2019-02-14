@@ -18,7 +18,7 @@ struct photometric_cc_data {
 	FILE *BV_file;
 	rectangle bg_area;
 	gboolean bg_auto;
-	int n_f;
+	int n_channel;
 };
 
 FILE *open_bv_file(const gchar *mode);

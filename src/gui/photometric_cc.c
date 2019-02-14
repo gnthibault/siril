@@ -148,8 +148,8 @@ static void bv2rgb(double *r, double *g, double *b, double bv) { // RGB <0,1> <-
 
 static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits *fit) {
 	/* make a selection around the star */
-	area->x = (int) (stars->xpos - com.phot_set.outer / 2);
-	area->y = (int) (stars->ypos - com.phot_set.outer / 2);
+	area->x = (int) (stars->xpos - com.phot_set.outer / 2.0);
+	area->y = (int) (stars->ypos - com.phot_set.outer / 2.0);
 	area->w = area->h = (int) com.phot_set.outer;
 
 	/* Don't want stars to close of the edge */
@@ -196,7 +196,7 @@ static double siril_stats_trmean_from_sorted_data(const double trim,
 }
 #endif
 
-static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_f) {
+static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
 	int i = 0;
 	int chan;
 
@@ -232,9 +232,9 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 		bv2rgb(&r, &g, &b, bv);
 
 		/* get Color calibration factors for current star */
-		data[RED][i] = (flux[n_f] / flux[RED]) * r;
-		data[GREEN][i] = (flux[n_f] / flux[GREEN]) * g;
-		data[BLUE][i] = (flux[n_f] / flux[BLUE]) * b;
+		data[RED][i] = (flux[n_channel] / flux[RED]) * r;
+		data[GREEN][i] = (flux[n_channel] / flux[GREEN]) * g;
+		data[BLUE][i] = (flux[n_channel] / flux[BLUE]) * b;
 
 //		printf("%d: %.3lf %.3lf %.3lf (%.2lf/%.2lf)\n", i, flux[RED], flux[GREEN], flux[BLUE], stars[i]->xpos, stars[i]->ypos);
 //		printf("%d: %.3lf %.3lf\n", i, stars[i]->BV, flux[BLUE] / flux[GREEN]);
@@ -253,9 +253,9 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 	kw[BLUE] = siril_stats_trmean_from_sorted_data(alpha, data[BLUE], 1, nb_stars);
 
 	/* normalize factors */
-	kw[RED] /= (kw[n_f]);
-	kw[GREEN] /= (kw[n_f]);
-	kw[BLUE] /= (kw[n_f]);
+	kw[RED] /= (kw[n_channel]);
+	kw[GREEN] /= (kw[n_channel]);
+	kw[BLUE] /= (kw[n_channel]);
 	siril_log_message(_("Color calibration factors:\n"));
 	for (chan = 0; chan < 3; chan++) {
 		siril_log_message("K%d: %5.3lf\n", chan, kw[chan]);
@@ -300,11 +300,11 @@ static int calibrate_colors(fits *fit, double kw[], coeff bg[], double norm) {
 }
 
 /* This function equalize the background by giving equal value for all layers */
-static void background_neutralize(fits* fit, coeff bg[], int n_f, double norm) {
+static void background_neutralize(fits* fit, coeff bg[], int n_channel, double norm) {
 	int chan, i;
 
 	for (chan = 0; chan < 3; chan++) {
-		int offset = (bg[chan].value - bg[n_f].value) * norm;
+		int offset = (bg[chan].value - bg[n_channel].value) * norm;
 		siril_debug_print("offset: %d, %d\n", chan, offset);
 		WORD *buf = fit->pdata[chan];
 		for (i = 0; i < fit->rx * fit->ry; i++) {
@@ -314,7 +314,7 @@ static void background_neutralize(fits* fit, coeff bg[], int n_f, double norm) {
 	invalidate_stats_from_fit(fit);
 }
 
-int struct_cmp(const void *a, const void *b) {
+static int cmp_coeff(const void *a, const void *b) {
 	coeff *a1 = (coeff *) a;
 	coeff *a2 = (coeff*) b;
 	if ((*a1).value > (*a2).value)
@@ -325,17 +325,17 @@ int struct_cmp(const void *a, const void *b) {
 		return 0;
 }
 
-static int determine_chan_for_norm(coeff bg[], int n_f) {
+static int determine_chan_for_norm(coeff bg[], int n_channel) {
 	/* make a copy of bg coefficients because we don't
 	 * want to sort original data */
 	coeff tmp[3];
 	memcpy(tmp, bg, 3 * sizeof(coeff));
 	/* ascending order */
-	qsort(tmp, 3, sizeof(tmp[0]), struct_cmp);
+	qsort(tmp, 3, sizeof(tmp[0]), cmp_coeff);
 
-	if (n_f == 0) { /* on highest */
+	if (n_channel == 0) { /* on highest */
 		return tmp[2].channel;
-	} else if (n_f == 1) { /* on middle */
+	} else if (n_channel == 1) { /* on middle */
 		return tmp[1].channel;
 	} else { /* on lowest */
 		return tmp[0].channel;
@@ -373,7 +373,7 @@ static gpointer photometric_cc(gpointer p) {
 	read_photometry_cc_file(args->BV_file, args->stars, &nb_stars);
 
 	get_background_coefficients(&gfit, bkg_sel, bg);
-	chan = determine_chan_for_norm(bg, args->n_f);
+	chan = determine_chan_for_norm(bg, args->n_channel);
 	siril_log_message(_("Normalizing on %s channel.\n"), (chan == 0) ? _("red") : ((chan == 1) ? _("green") : _("blue")));
 	get_white_balance_coeff(args->stars, nb_stars, &gfit, kw, chan);
 	norm = (double) get_normalized_value(&gfit);
@@ -460,7 +460,7 @@ int apply_photometric_cc() {
 
 	args->stars = stars;
 	args->BV_file = BV_file;
-	args->n_f = gtk_combo_box_get_active(norm_box);
+	args->n_channel = gtk_combo_box_get_active(norm_box);
 	args->bg_area = get_bkg_selection();
 	args->bg_auto = gtk_toggle_button_get_active(auto_bkg);
 

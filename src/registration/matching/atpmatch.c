@@ -612,6 +612,7 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 	mask = cvCalculH(star_array_A, star_array_B, num_stars_B, H);
 	ret = (mask == NULL ? 1 : 0);
 
+#ifdef HAVE_LIBCURL
 	if (print_output) {
 		int i;
 		s_star *starA, *starB;
@@ -630,6 +631,7 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 		}
 		fclose(BV_file);
 	}
+#endif
 
 
 	/*

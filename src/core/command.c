@@ -413,7 +413,7 @@ int process_entropy(int nb){
 int process_gauss(int nb){
 	if (!single_image_is_loaded()) return 1;
 
-	unsharp(&(gfit), atof(word[1]), (double)0, TRUE);
+	unsharp(&(gfit), atof(word[1]), 0.0, TRUE);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
