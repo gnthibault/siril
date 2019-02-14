@@ -162,7 +162,7 @@ static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits
 	if (area->y + area->h >= fit->ry) {
 		return 1;
 	}
-	if (area->y + area->h <= 0) {
+	if (area->y - area->h <= 0) {
 		return 1;
 	}
 
