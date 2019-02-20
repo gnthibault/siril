@@ -53,7 +53,6 @@
 #include "io/sequence.h"
 #include "io/single_image.h"
 #include "io/ser.h"
-#include "algos/gradient.h"
 #include "algos/colors.h"
 #include "algos/Def_Math.h"
 #include "algos/Def_Wavelet.h"

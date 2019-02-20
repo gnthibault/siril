@@ -56,7 +56,6 @@
 #include "algos/star_finder.h"
 #include "algos/Def_Math.h"
 #include "algos/Def_Wavelet.h"
-#include "algos/gradient.h"
 #include "algos/demosaicing.h"
 #include "algos/fft.h"
 #include "algos/quality.h"

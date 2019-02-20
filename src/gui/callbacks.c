@@ -48,7 +48,7 @@
 #include "algos/fft.h"
 #include "algos/Def_Wavelet.h"
 #include "algos/cosmetic_correction.h"
-#include "algos/gradient.h"
+#include "algos/background_extraction.h"
 #include "io/conversion.h"
 #include "io/films.h"
 #include "io/sequence.h"
@@ -1533,7 +1533,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation270"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_mirrorx"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_mirrory"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_bkg_extraction"), is_a_single_image_loaded);
+	gtk_widget_set_sensitive(lookup_widget("menuitem_background_extraction"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_wavelets"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_wavelet_separation"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_medianfilter"), is_a_single_image_loaded);
@@ -2657,19 +2657,19 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	}
 
 	/* draw background removal gradient selection boxes */
-	if (com.grad && com.grad_boxes_drawn) {
-		int i = 0;
-		while (i < com.grad_nb_boxes) {
-			if (com.grad[i].boxvalue[0] != -1.0) {
-				cairo_set_line_width(cr, 1.5 / zoom);
-				cairo_set_source_rgba(cr, 0.2, 1.0, 0.3, 1.0);
-				cairo_rectangle(cr, com.grad[i].centre.x - com.grad_size_boxes,
-						com.grad[i].centre.y - com.grad_size_boxes,
-						com.grad_size_boxes, com.grad_size_boxes);
-				cairo_stroke(cr);
-			}
-			i++;
+	GSList *list = com.grad_samples;
+	while (list) {
+		background_sample *sample = (background_sample *)list->data;
+		if (sample->valid) {
+			int radius = (int) (sample->size / 2);
+			cairo_set_line_width(cr, 1.5 / zoom);
+			cairo_set_source_rgba(cr, 0.2, 1.0, 0.3, 1.0);
+			cairo_rectangle(cr, sample->position.x - radius, sample->position.y - radius,
+					sample->size, sample->size);
+			cairo_stroke(cr);
 		}
+
+		list = list->next;
 	}
 	return FALSE;
 }
@@ -3190,42 +3190,39 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 					com.selection.w = 0;
 				}
 				gtk_widget_queue_draw(widget);
-			}
-			else if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
+			} else if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
 				double zoom = get_zoom_val();
-				if (!com.grad) {
-					com.grad = malloc(NB_MAX_OF_SAMPLES * sizeof(gradient));
-					com.grad_boxes_drawn = TRUE;
-					com.grad_nb_boxes = 0;
-				}
-				int i = com.grad_nb_boxes;
-				if (i < NB_MAX_OF_SAMPLES) {
-					int layer;
-					GtkSpinButton *size = GTK_SPIN_BUTTON(
-							lookup_widget("spinbutton_bkg_sizebox"));
-					point pt;
-					int midbox;
+				point pt;
+				int radius = (int) (25 / 2);
 
-					midbox = (size_t) gtk_spin_button_get_value(size);
-					com.grad_size_boxes = midbox * 2;
-					pt.x = (event->x / zoom);
-					pt.y = (event->y / zoom);
+				pt.x = (event->x / zoom) - radius;
+				pt.y = (event->y / zoom) - radius;
 
-					if (pt.x + midbox <= gfit.rx && pt.y + midbox <= gfit.ry
-							&& pt.x - midbox >= 0 && pt.y - midbox >= 0) {
-						com.grad[i].centre.x = pt.x + midbox;
-						com.grad[i].centre.y = pt.y + midbox;
-						for (layer = 0; layer < gfit.naxes[2]; layer++)
-							com.grad[i].boxvalue[layer] = get_value_from_box(
-									&gfit, pt, com.grad_size_boxes, layer);
-						com.grad_nb_boxes++;
-						redraw(com.cvport, REMAP_NONE);
-						redraw_previews();
-					}
+				if (pt.x + radius <= gfit.rx && pt.y + radius <= gfit.ry
+						&& pt.x - radius >= 0 && pt.y - radius >= 0) {
+					com.grad_samples = add_background_sample(com.grad_samples, &gfit, pt);
+
+					redraw(com.cvport, REMAP_NONE);
+					redraw_previews();
 				}
 			}
-		} else if (event->button == 2) {	// middle click
+		} else if (event->button == 3) {	// right click
+			if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
+				double zoom = get_zoom_val();
+				point pt;
+				int radius = (int) (25 / 2);
 
+				pt.x = (event->x / zoom) - radius;
+				pt.y = (event->y / zoom) - radius;
+
+				if (pt.x + radius <= gfit.rx && pt.y + radius <= gfit.ry
+						&& pt.x - radius >= 0 && pt.y - radius >= 0) {
+					com.grad_samples = remove_background_sample(com.grad_samples, &gfit, pt);
+
+					redraw(com.cvport, REMAP_NONE);
+					redraw_previews();
+				}
+			}
 		}
 	}
 	return FALSE;
@@ -3297,7 +3294,9 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 			}
 
 		} else if (event->button == 3) {
-			do_popup_graymenu(widget, NULL);
+			if (mouse_status != MOUSE_ACTION_DRAW_SAMPLES) {
+				do_popup_graymenu(widget, NULL);
+			}
 		}
 	}
 	return FALSE;
@@ -4347,174 +4346,6 @@ void on_menuitem_stat_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	computeStat();
 	gtk_widget_show_all(lookup_widget("StatWindow"));
-	set_cursor_waiting(FALSE);
-}
-/**************** GUI for Background extraction *******************/
-
-void on_menuitem_bkg_extraction_activate(GtkMenuItem *menuitem,
-		gpointer user_data) {
-	if (single_image_is_loaded()) {
-		update_bkg_interface();
-		gtk_widget_show(lookup_widget("Bkg_extract_window"));
-	}
-}
-
-void on_bkgButtonManual_toggled(GtkToggleButton *togglebutton,
-		gpointer user_data) {
-
-	update_bkg_interface();
-	redraw(com.cvport, REMAP_NONE);
-	redraw_previews();
-}
-
-void on_bkgCompute_clicked(GtkButton *button, gpointer user_data) {
-	static GtkToggleButton *imgbutton = NULL, *bgkAutoButton = NULL;
-	gboolean automatic;
-
-	if (imgbutton == NULL) {
-		imgbutton = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_bkg_img"));
-		bgkAutoButton = GTK_TOGGLE_BUTTON(lookup_widget("bkgButtonAuto"));
-	}
-	automatic = gtk_toggle_button_get_active(bgkAutoButton);
-
-	if (!gtk_toggle_button_get_active(imgbutton)) {
-		char *msg =	siril_log_message(_("Background cannot be extracted"
-				" from itself. Please, click on Show Image\n"));
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), msg);
-		return;
-	}
-
-	set_cursor_waiting(TRUE);
-	bkgExtractBackground(&background_fit, automatic);
-	redraw(com.cvport, REMAP_NONE);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
-}
-
-void on_button_bkg_correct_clicked(GtkButton *button, gpointer user_data) {
-	static GtkToggleButton *imgbutton = NULL;
-
-	if (imgbutton == NULL)
-		imgbutton = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_bkg_img"));
-
-	if (!gtk_toggle_button_get_active(imgbutton)) {
-		char *msg =
-				siril_log_message(
-						_("Please, apply correction on the image by clicking on Show Image\n"));
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), msg);
-		return;
-	}
-
-	int layer;
-	GtkComboBox *operation = GTK_COMBO_BOX(lookup_widget("combo_correction"));
-	int correction = gtk_combo_box_get_active(operation);
-
-	set_cursor_waiting(TRUE);
-	undo_save_state(&gfit, "Processing: Background extraction (Correction: %s)",
-			correction ? "Division" : "Subtraction");
-
-	switch (correction) {
-	default:
-	case 0:
-		for (layer = 0; layer < com.uniq->nb_layers; layer++) {
-			if (sub_background(&gfit, &background_fit, layer)) {
-				set_cursor_waiting(FALSE);
-				return;
-			}
-		}
-		siril_log_message(_("Subtraction done ...\n"));
-		break;
-	case 1:
-		if (siril_ndiv(&gfit, &background_fit)) {
-			set_cursor_waiting(FALSE);
-			return;
-		}
-		siril_log_message(_("Division done ...\n"));
-		break;
-	}
-
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
-}
-
-void on_checkbutton_bkg_boxes_toggled(GtkToggleButton *togglebutton,
-		gpointer user_data) {
-	com.grad_boxes_drawn = gtk_toggle_button_get_active(togglebutton);
-	redraw(com.cvport, REMAP_NONE);
-	redraw_previews();
-}
-
-void on_radiobutton_bkg_toggled(GtkToggleButton *togglebutton,
-		gpointer user_data) {
-	fits tmp;
-	memcpy(&tmp, &gfit, sizeof(fits));
-	memcpy(&gfit, &background_fit, sizeof(fits));
-	memcpy(&background_fit, &tmp, sizeof(fits));
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-}
-
-void on_combobox_gradient_inter_changed(GtkComboBox* box, gpointer user_data) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(
-			gtk_builder_get_object(builder, "notebook_bkg"));
-
-	gtk_notebook_set_current_page(notebook, gtk_combo_box_get_active(box));
-}
-
-void on_bkgClearSamples_clicked(GtkButton *button, gpointer user_data) {
-	static GtkToggleButton *imgbutton = NULL, *bkgbutton = NULL;
-	int remap_option;
-
-	if (imgbutton == NULL) {
-		imgbutton = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_bkg_img"));
-		bkgbutton = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_bkg_bkg"));
-	}
-	gtk_widget_set_sensitive(lookup_widget("frame_bkg_tools"), FALSE);
-	gtk_widget_set_sensitive(lookup_widget("button_bkg_correct"), FALSE);
-	remap_option = REMAP_NONE;
-
-	set_cursor_waiting(TRUE);
-	if (gtk_toggle_button_get_active(bkgbutton)) {
-		gtk_toggle_button_set_active(imgbutton, TRUE);
-		remap_option = REMAP_ALL;
-	}
-	clearSamples();
-	redraw(com.cvport, remap_option);
-	redraw_previews();
-	clearfits(&background_fit);
-	set_cursor_waiting(FALSE);
-}
-
-void on_button_bkg_extract_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("Bkg_extract_window"));
-}
-
-void on_Bkg_extract_window_hide(GtkWidget *widget, gpointer user_data) {
-	static GtkToggleButton *imgbutton = NULL, *bkgbutton = NULL, *bgkManButton = NULL;
-	int remap_option;
-
-	if (imgbutton == NULL) {
-		imgbutton = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_bkg_img"));
-		bkgbutton = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_bkg_bkg"));
-		bgkManButton = GTK_TOGGLE_BUTTON(lookup_widget("bkgButtonManual"));
-	}
-	gtk_widget_set_sensitive(lookup_widget("frame_bkg_tools"), FALSE);
-	gtk_widget_set_sensitive(lookup_widget("button_bkg_correct"), FALSE);
-	gtk_toggle_button_set_active(bgkManButton, TRUE);
-	remap_option = REMAP_NONE;
-
-	set_cursor_waiting(TRUE);
-	if (gtk_toggle_button_get_active(bkgbutton)) {
-		gtk_toggle_button_set_active(imgbutton, TRUE);
-		remap_option = REMAP_ALL;
-	}
-	clearSamples();
-	mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
-	redraw(com.cvport, remap_option);
-	redraw_previews();
-	clearfits(&background_fit);
 	set_cursor_waiting(FALSE);
 }
 

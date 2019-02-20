@@ -267,10 +267,11 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">0.10000000000000001</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkAdjustment" id="adj_bkg_unbalance">
-    <property name="upper">10</property>
-    <property name="value">1.8</property>
-    <property name="step_increment">0.01</property>
+  <object class="GtkAdjustment" id="adj_background_nb_samples">
+    <property name="lower">0.69999999999999996</property>
+    <property name="upper">2</property>
+    <property name="value">1</property>
+    <property name="step_increment">0.10000000000000001</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_black_point_asinh">
@@ -453,45 +454,18 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkAdjustment" id="adjustment_bkg_Box_sep">
-    <property name="upper">200</property>
-    <property name="value">5</property>
+  <object class="GtkAdjustment" id="adjustment_background_nb_samples">
+    <property name="lower">5</property>
+    <property name="upper">100</property>
+    <property name="value">20</property>
     <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="adjustment_bkg_deviation">
-    <property name="upper">10</property>
-    <property name="value">2</property>
-    <property name="step_increment">0.01</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_bkg_h">
-    <property name="upper">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="adjustment_bkg_s_p_row">
-    <property name="lower">4</property>
-    <property name="upper">100</property>
-    <property name="value">10</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="adjustment_bkg_size_box">
-    <property name="lower">1</property>
-    <property name="upper">300</property>
-    <property name="value">50</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="adjustment_bkg_tolerance">
-    <property name="upper">10</property>
-    <property name="value">1.5</property>
-    <property name="step_increment">0.01</property>
-    <property name="page_increment">0.10000000000000001</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_bkg_w">
-    <property name="upper">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
@@ -500,7 +474,6 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_bkg_y">
-    <property name="upper">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
@@ -2594,1028 +2567,6 @@ enter a visible wavelength in nm</property>
       </object>
     </child>
   </object>
-  <object class="GtkDialog" id="Bkg_extract_window">
-    <property name="can_focus">False</property>
-    <property name="border_width">5</property>
-    <property name="title" translatable="yes">Background Extraction</property>
-    <property name="resizable">False</property>
-    <property name="type_hint">normal</property>
-    <property name="transient_for">main_window</property>
-    <accel-groups>
-      <group name="accelgroup1"/>
-    </accel-groups>
-    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <signal name="hide" handler="on_Bkg_extract_window_hide" swapped="no"/>
-    <child>
-      <placeholder/>
-    </child>
-    <child internal-child="vbox">
-      <object class="GtkBox" id="dialog-vbox18">
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">10</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox" id="dialog-action_area19">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <object class="GtkButton" id="button_bkg_extract_close">
-                <property name="label">gtk-close</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="receives_default">True</property>
-                <property name="has_tooltip">True</property>
-                <property name="tooltip_markup" translatable="yes">Close the window.</property>
-                <property name="tooltip_text" translatable="yes">Close the window.</property>
-                <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_button_bkg_extract_close_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="box51">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">10</property>
-            <child>
-              <object class="GtkFrame" id="frame_extraction_type">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label_xalign">0</property>
-                <property name="shadow_type">none</property>
-                <child>
-                  <object class="GtkAlignment" id="alignment3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="left_padding">12</property>
-                    <child>
-                      <object class="GtkBox" id="box43">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkBox" id="box46">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <property name="homogeneous">True</property>
-                            <child>
-                              <object class="GtkComboBoxText" id="combobox_gradient_inter">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="halign">start</property>
-                                <items>
-                                  <item translatable="yes">Polynomial Interpolation</item>
-                                </items>
-                                <signal name="changed" handler="on_combobox_gradient_inter_changed" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkBox" id="box60">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="spacing">5</property>
-                                <property name="homogeneous">True</property>
-                                <child>
-                                  <object class="GtkRadioButton" id="bkgButtonManual">
-                                    <property name="label" translatable="yes">Manual</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">You must click on the picture to pick your own background samples.</property>
-                                    <property name="active">True</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_bkgButtonManual_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkRadioButton" id="bkgButtonAuto">
-                                    <property name="label" translatable="yes">Automatic</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Siril picks background samples automatically.</property>
-                                    <property name="draw_indicator">True</property>
-                                    <property name="group">bkgButtonManual</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="bkgClearSamples">
-                                    <property name="label">gtk-clear</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="tooltip_text" translatable="yes">Clear background samples.</property>
-                                    <property name="use_stock">True</property>
-                                    <signal name="clicked" handler="on_bkgClearSamples_clicked" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">2</property>
-                                  </packing>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="padding">10</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_bkg_boxes">
-                            <property name="label" translatable="yes">Draw samples</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="on_checkbutton_bkg_boxes_toggled" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child type="label">
-                  <object class="GtkLabel" id="label6">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Type of Extraction&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="padding">10</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="box47">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="spacing">10</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <object class="GtkNotebook" id="notebook_bkg">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="show_tabs">False</property>
-                    <property name="show_border">False</property>
-                    <child>
-                      <object class="GtkBox" id="box58">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="orientation">vertical</property>
-                        <property name="spacing">10</property>
-                        <child>
-                          <object class="GtkFrame" id="frame17">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
-                            <property name="shadow_type">none</property>
-                            <child>
-                              <object class="GtkAlignment" id="alignment21">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="left_padding">12</property>
-                                <child>
-                                  <object class="GtkGrid" id="grid28">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="row_spacing">10</property>
-                                    <property name="row_homogeneous">True</property>
-                                    <property name="column_homogeneous">True</property>
-                                    <child>
-                                      <object class="GtkLabel" id="label18">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Box radius:</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="label44">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Box separation: </property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton_bkg_Box_sep">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">This is the distance in pixels between two adjacent background sample boxes.</property>
-                                        <property name="width_chars">6</property>
-                                        <property name="input_purpose">number</property>
-                                        <property name="adjustment">adjustment_bkg_Box_sep</property>
-                                        <property name="climb_rate">1</property>
-                                        <property name="snap_to_ticks">True</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">5</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton_bkg_sizebox">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">This is the radius in pixels of a background sample box. Multiply by 2 to have the length of a box.</property>
-                                        <property name="width_chars">6</property>
-                                        <property name="max_width_chars">3</property>
-                                        <property name="input_purpose">number</property>
-                                        <property name="adjustment">adjustment_bkg_size_box</property>
-                                        <property name="climb_rate">1</property>
-                                        <property name="snap_to_ticks">True</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">50</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child type="label">
-                              <object class="GtkLabel" id="label108">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Sample Generation</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkFrame" id="frame23">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
-                            <property name="shadow_type">none</property>
-                            <child>
-                              <object class="GtkAlignment" id="alignment27">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="left_padding">12</property>
-                                <child>
-                                  <object class="GtkGrid" id="grid29">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="column_homogeneous">True</property>
-                                    <child>
-                                      <object class="GtkLabel" id="label17">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Tolerance: </property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton_bkg_tolerance">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">This parameter indicates the tolerance of local sample rejection, in sigma units.</property>
-                                        <property name="width_chars">6</property>
-                                        <property name="input_purpose">number</property>
-                                        <property name="adjustment">adjustment_bkg_tolerance</property>
-                                        <property name="climb_rate">0.01</property>
-                                        <property name="digits">3</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">1</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child type="label">
-                              <object class="GtkLabel" id="label109">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Local Rejection</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkFrame" id="frame24">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
-                            <property name="shadow_type">none</property>
-                            <child>
-                              <object class="GtkAlignment" id="alignment28">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="left_padding">12</property>
-                                <child>
-                                  <object class="GtkGrid" id="grid8">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="row_spacing">10</property>
-                                    <property name="column_homogeneous">True</property>
-                                    <child>
-                                      <object class="GtkLabel" id="label66">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Deviation: </property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton_bkg_deviation">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">Tolerance of global sample rejection, in sigma units.</property>
-                                        <property name="width_chars">6</property>
-                                        <property name="input_purpose">number</property>
-                                        <property name="adjustment">adjustment_bkg_deviation</property>
-                                        <property name="climb_rate">0.01</property>
-                                        <property name="digits">3</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">0.80000000000000004</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="label141">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Unbalance:</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton_bkg_unbalance">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">This is the factor multiplied by the deviation parameter in order to include more dark pixels in the background evaluation.</property>
-                                        <property name="width_chars">6</property>
-                                        <property name="input_purpose">number</property>
-                                        <property name="adjustment">adj_bkg_unbalance</property>
-                                        <property name="climb_rate">0.01</property>
-                                        <property name="digits">3</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">1.8</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child type="label">
-                              <object class="GtkLabel" id="label110">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Global Rejection</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                      </object>
-                    </child>
-                    <child type="tab">
-                      <object class="GtkLabel" id="label65">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label">page 1</property>
-                      </object>
-                      <packing>
-                        <property name="tab_fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="box61">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="orientation">vertical</property>
-                        <property name="spacing">10</property>
-                        <child>
-                          <object class="GtkFrame" id="frame18">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
-                            <property name="shadow_type">none</property>
-                            <child>
-                              <object class="GtkAlignment" id="alignment22">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="left_padding">12</property>
-                                <child>
-                                  <object class="GtkGrid" id="grid9">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="row_spacing">10</property>
-                                    <property name="column_homogeneous">True</property>
-                                    <child>
-                                      <object class="GtkLabel" id="label112">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Box radius:</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="label113">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Samples per row: </property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton_bkg_Box_s_p_row">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">This is the number of sample box in a row.</property>
-                                        <property name="text">5</property>
-                                        <property name="adjustment">adjustment_bkg_s_p_row</property>
-                                        <property name="climb_rate">1</property>
-                                        <property name="snap_to_ticks">True</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">10</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <placeholder/>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child type="label">
-                              <object class="GtkLabel" id="label114">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Sample Generation</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkFrame" id="frame27">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
-                            <property name="shadow_type">none</property>
-                            <child>
-                              <object class="GtkAlignment" id="alignment31">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="left_padding">12</property>
-                                <child>
-                                  <object class="GtkGrid" id="grid30">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="row_spacing">10</property>
-                                    <property name="column_homogeneous">True</property>
-                                    <child>
-                                      <object class="GtkLabel" id="label115">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Tolerance: </property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton_bkg_tolerance1">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">This parameter indicates the tolerance of local sample rejection, in sigma units.</property>
-                                        <property name="text">1,00</property>
-                                        <property name="adjustment">adjustment_bkg_tolerance</property>
-                                        <property name="climb_rate">0.01</property>
-                                        <property name="digits">3</property>
-                                        <property name="snap_to_ticks">True</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">1.5</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child type="label">
-                              <object class="GtkLabel" id="label116">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Local Rejection</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkFrame" id="frame1">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
-                            <property name="shadow_type">none</property>
-                            <child>
-                              <object class="GtkAlignment" id="alignment1">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="left_padding">12</property>
-                                <child>
-                                  <object class="GtkGrid" id="grid1">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="row_spacing">10</property>
-                                    <property name="column_homogeneous">True</property>
-                                    <child>
-                                      <object class="GtkLabel" id="label1">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Deviation: </property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton_bkg_deviation1">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">Tolerance of global sample rejection, in sigma units.</property>
-                                        <property name="text">0,80</property>
-                                        <property name="adjustment">adjustment_bkg_deviation</property>
-                                        <property name="climb_rate">0.01</property>
-                                        <property name="digits">3</property>
-                                        <property name="snap_to_ticks">True</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">2</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkSpinButton" id="spinbutton_bkg_unbalance1">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">This is the factor multiplied by the deviation parameter in order to include more dark pixels in the background evaluation</property>
-                                        <property name="adjustment">adj_bkg_unbalance</property>
-                                        <property name="climb_rate">0.01</property>
-                                        <property name="digits">3</property>
-                                        <property name="numeric">True</property>
-                                        <property name="value">1.8</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="label142">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Unbalance:</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child type="label">
-                              <object class="GtkLabel" id="label2">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Global Rejection</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child type="tab">
-                      <object class="GtkLabel" id="label111">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label">page 2</property>
-                      </object>
-                      <packing>
-                        <property name="position">1</property>
-                        <property name="tab_fill">False</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="box45">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="vexpand">True</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">10</property>
-                    <child>
-                      <object class="GtkFrame" id="frame25">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label_xalign">0</property>
-                        <property name="shadow_type">none</property>
-                        <child>
-                          <object class="GtkAlignment" id="alignment29">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="left_padding">12</property>
-                            <child>
-                              <object class="GtkBox" id="box59">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="homogeneous">True</property>
-                                <child>
-                                  <object class="GtkLabel" id="label41">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">Degree Order: </property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBoxText" id="combo_polyorder">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Choose the degree order of the polynomial function used in the fit.
-By default the value is of 4.
-The higher the degree order is, the stronger the gradient can be remove.</property>
-                                    <property name="valign">center</property>
-                                    <property name="active">0</property>
-                                    <items>
-                                      <item>1</item>
-                                      <item>2</item>
-                                      <item>3</item>
-                                      <item>4</item>
-                                    </items>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child type="label">
-                          <object class="GtkLabel" id="label107">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Interpolation</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                            </attributes>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkFrame" id="frame_bkg_tools">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="can_focus">False</property>
-                        <property name="valign">end</property>
-                        <property name="label_xalign">0</property>
-                        <property name="shadow_type">none</property>
-                        <child>
-                          <object class="GtkAlignment" id="alignment20">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="left_padding">12</property>
-                            <child>
-                              <object class="GtkBox" id="box64">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="orientation">vertical</property>
-                                <property name="spacing">10</property>
-                                <property name="homogeneous">True</property>
-                                <child>
-                                  <object class="GtkRadioButton" id="radiobutton_bkg_img">
-                                    <property name="label" translatable="yes">Show Image</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="has_tooltip">True</property>
-                                    <property name="tooltip_markup" translatable="yes">Click on this button to show the image.</property>
-                                    <property name="tooltip_text" translatable="yes">Click on this button to show the image.</property>
-                                    <property name="halign">start</property>
-                                    <property name="active">True</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_radiobutton_bkg_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkRadioButton" id="radiobutton_bkg_bkg">
-                                    <property name="label" translatable="yes">Show Background</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="has_tooltip">True</property>
-                                    <property name="tooltip_markup" translatable="yes">Click on this button to show the background computed.</property>
-                                    <property name="tooltip_text" translatable="yes">Click on this button to show the background computed.</property>
-                                    <property name="halign">start</property>
-                                    <property name="draw_indicator">True</property>
-                                    <property name="group">radiobutton_bkg_img</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBoxText" id="combo_correction">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Choose the type of correction you want apply:
-Subtraction: it is mainly used to correct additive effects, such as gradients caused by light pollution or by the Moon.
-Division: it is mainly used to correct multiplicative phenomena, such as vignetting or differential atmospheric absorption for example. However, this kind of operation should be done by master-flat correction.</property>
-                                    <property name="valign">center</property>
-                                    <property name="active">0</property>
-                                    <items>
-                                      <item translatable="yes">Subtraction</item>
-                                      <item translatable="yes">Division</item>
-                                    </items>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">2</property>
-                                  </packing>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child type="label">
-                          <object class="GtkLabel" id="label10">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">&lt;b&gt;Correction&lt;/b&gt;</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="box57">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <object class="GtkButton" id="bkgCompute">
-                    <property name="label" translatable="yes">Compute</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="tooltip_text" translatable="yes">This will compute the synthetic background.</property>
-                    <property name="margin_left">20</property>
-                    <property name="margin_right">20</property>
-                    <signal name="clicked" handler="on_bkgCompute_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="button_bkg_correct">
-                    <property name="label" translatable="yes">Apply</property>
-                    <property name="visible">True</property>
-                    <property name="sensitive">False</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="tooltip_text" translatable="yes">This will apply the selected correction.</property>
-                    <property name="valign">center</property>
-                    <property name="margin_left">20</property>
-                    <property name="margin_right">20</property>
-                    <signal name="clicked" handler="on_button_bkg_correct_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-    <action-widgets>
-      <action-widget response="0">button_bkg_extract_close</action-widget>
-    </action-widgets>
-  </object>
   <object class="GtkDialog" id="ImagePlateSolver_Dial">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Image Plate Solver</property>
@@ -5021,6 +3972,331 @@ This is useful when modulation parameter is different to 1 helping the whole pro
     <action-widgets>
       <action-widget response="0">asinh_Apply</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkDialog" id="background_extraction_dialog">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Background Extraction</property>
+    <property name="resizable">False</property>
+    <property name="window_position">center</property>
+    <property name="type_hint">normal</property>
+    <property name="transient_for">main_window</property>
+    <accel-groups>
+      <group name="accelgroup1"/>
+    </accel-groups>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+    <signal name="hide" handler="on_background_extraction_dialog_hide" swapped="no"/>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="box_dialog_bkg">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="background_close_button">
+                <property name="label">gtk-close</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Close the window.</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_background_close_button_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="background_ok_button">
+                <property name="label">gtk-apply</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">This will compute the synthetic background and will apply the selected correction.</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_background_ok_button_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFrame" id="frame_background">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">none</property>
+            <child>
+              <object class="GtkAlignment">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="left_padding">12</property>
+                <child>
+                  <object class="GtkBox" id="background_box">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkGrid" id="grid_background">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="row_spacing">5</property>
+                        <property name="column_homogeneous">True</property>
+                        <child>
+                          <object class="GtkLabel" id="background_label_degree">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="label" translatable="yes">Degree order: </property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkComboBoxText" id="box_background_order">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Choose the degree order of the polynomial function used in the fit.
+By default the value is of 4.
+The higher the degree order is, the stronger the gradient can be remove.</property>
+                            <property name="active">3</property>
+                            <items>
+                              <item>1</item>
+                              <item>2</item>
+                              <item>3</item>
+                              <item>4</item>
+                            </items>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="background_label_samples">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="label" translatable="yes">Samples per line: </property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="spin_background_nb_samples">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Number of sample per line that will be automatically placed.</property>
+                            <property name="input_purpose">digits</property>
+                            <property name="adjustment">adjustment_background_nb_samples</property>
+                            <property name="numeric">True</property>
+                            <property name="value">20</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="scale_background_nb_samples">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Tolerance of global sample rejection, in sigma units. By decreasing this value, Siril will be more restrictive to select background samples.</property>
+                            <property name="adjustment">adj_background_nb_samples</property>
+                            <property name="round_digits">1</property>
+                            <property name="value_pos">right</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="background_label_tolorence">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="label" translatable="yes">Tolerance: </property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkButton" id="background_generate">
+                            <property name="label" translatable="yes">Generate</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">Click here to generate the automatically defined samples.
+
+</property>
+                            <property name="halign">center</property>
+                            <property name="valign">center</property>
+                            <signal name="clicked" handler="on_background_generate_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="background_clear_all">
+                            <property name="label">gtk-clear</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">Click here to clear all the samples.
+
+</property>
+                            <property name="halign">center</property>
+                            <property name="valign">center</property>
+                            <property name="use_stock">True</property>
+                            <signal name="clicked" handler="on_background_clear_all_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="pack_type">end</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="label">
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Polynomial interpolation</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                </attributes>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFrame" id="frame_background_correction">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">none</property>
+            <child>
+              <object class="GtkAlignment">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="left_padding">12</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkLabel" id="background_label_correction">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Correction: </property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="box_background_correction">
+                        <property name="width_request">210</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Choose the type of correction you want apply:
+Subtraction: it is mainly used to correct additive effects, such as gradients caused by light pollution or by the Moon.
+Division: it is mainly used to correct multiplicative phenomena, such as vignetting or differential atmospheric absorption for example. However, this kind of operation should be done by master-flat correction.</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                        <property name="active">0</property>
+                        <items>
+                          <item translatable="yes">Subtraction</item>
+                          <item translatable="yes">Division</item>
+                        </items>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="label">
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Correction</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                </attributes>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
   </object>
   <object class="GtkDialog" id="canon_fixbanding_dialog">
     <property name="width_request">300</property>
@@ -11797,12 +11073,12 @@ WARNING: ensure you have a good reason to change this value because it may degra
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="menuitem_bkg_extraction">
+                      <object class="GtkMenuItem" id="menuitem_background_extraction">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Background Extraction...</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_menuitem_bkg_extraction_activate" swapped="no"/>
+                        <signal name="activate" handler="on_menuitem_background_extraction_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -13790,55 +13066,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="box10">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">center</property>
-                    <child>
-                      <object class="GtkRadioButton" id="regallbutton">
-                        <property name="label" translatable="yes">Register all images from sequence</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkRadioButton" id="regselbutton">
-                        <property name="label" translatable="yes">Register selected images only</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">regallbutton</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -13913,6 +13140,55 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="padding">5</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkRadioButton" id="regallbutton">
+                        <property name="label" translatable="yes">Register all images from sequence</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="regselbutton">
+                        <property name="label" translatable="yes">Register selected images only</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">regallbutton</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">4</property>
                   </packing>
                 </child>

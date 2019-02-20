@@ -25,7 +25,7 @@ siril_SOURCES = \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
 	registration/matching/project_coords.c registration/matching/project_coords.h registration/matching/degtorad.h registration/matching/apply_match.c \
 	stacking/stacking.c stacking/stacking.h stacking/sum.c stacking/sum.h stacking/normalization.c \
-	algos/gradient.c algos/gradient.h algos/quality.c algos/quality.h \
+	algos/background_extraction.c algos/background_extraction.h algos/quality.c algos/quality.h \
 	algos/statistics.c \
 	algos/rgradient.c algos/rgradient.h \
 	algos/fft.c algos/fft.h \

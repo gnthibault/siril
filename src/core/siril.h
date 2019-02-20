@@ -197,7 +197,7 @@ typedef struct cominf cominfo;
 typedef struct image_stats imstats;
 typedef struct rectangle_struct rectangle;
 typedef struct point_struct point;
-typedef struct gradient_struct gradient;
+//typedef struct gradient_struct gradient;
 typedef struct historic_struct historic;
 typedef struct dateTime_struct dateTime;
 typedef struct fwhm_struct fitted_PSF;
@@ -627,9 +627,7 @@ struct cominf {
 	int selected_star;		// current selected star in the GtkListStore
 	double magOffset;		// offset to reduce the real magnitude, single image
 	
-	gradient *grad;
-	int grad_nb_boxes, grad_size_boxes;
-	gboolean grad_boxes_drawn;
+	GSList *grad_samples;
 
 	int max_thread;			// maximum of thread used for parallel execution
 

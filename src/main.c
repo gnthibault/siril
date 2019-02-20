@@ -309,8 +309,7 @@ int main(int argc, char *argv[]) {
 	com.star_is_seqdata = FALSE;
 	com.stars = NULL;
 	com.uniq = NULL;
-	com.grad = NULL;
-	com.grad_boxes_drawn = TRUE;
+//	com.grad_sample = NULL;
 	com.color = NORMAL_COLOR;
 	for (i=0; i<MAXVPORT; i++)
 		com.buf_is_dirty[i] = TRUE;
@@ -336,12 +335,6 @@ int main(int argc, char *argv[]) {
 	com.zoom_value = ZOOM_DEFAULT;
 	if (!com.headless) {
 		zoomcombo_update_display_for_zoom();
-
-		/* initialize comboboxs of extraction background */
-		GtkComboBox *order = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combo_polyorder"));
-		gtk_combo_box_set_active(order, POLY_4);
-		GtkComboBox *grad_inter = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combobox_gradient_inter"));
-		gtk_combo_box_set_active(grad_inter, 0);
 	}
 
 	/* initialize sequence-related stuff */
