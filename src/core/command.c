@@ -2465,6 +2465,12 @@ static void parseLine(char *myline, int len, int *nb) {
 	*nb = wordnb;
 }
 
+static void removeEOL(char *text) {
+	int i = strlen(text) - 1;
+	while (i >= 0 && (text[i] == '\n' || text[i] == '\r'))
+		text[i] = '\0';
+}
+
 static int executeCommand(int wordnb) {
 	int i;
 	// search for the command in the list
@@ -2538,7 +2544,9 @@ gpointer execute_script(gpointer p) {
 		myline = strdup(linef);
 		parseLine(myline, read, &wordnb);
 		if ((retval = executeCommand(wordnb))) {
-			siril_log_message(_("Error in line %d. Exiting batch processing\n"), line);
+			removeEOL(linef);
+			siril_log_message(_("Error in line %d: '%s'.\n"), line, linef);
+			siril_log_message(_("Exiting batch processing.\n"));
 			free(myline);
 			break;
 		}
