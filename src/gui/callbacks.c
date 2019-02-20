@@ -1533,7 +1533,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation270"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_mirrorx"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_mirrory"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_background_extraction"), is_a_single_image_loaded);
+	gtk_widget_set_sensitive(lookup_widget("menuitem_background_extraction"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_wavelets"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_wavelet_separation"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_medianfilter"), is_a_single_image_loaded);

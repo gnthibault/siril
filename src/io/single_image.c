@@ -26,6 +26,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "algos/statistics.h"
+#include "algos/background_extraction.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "io/conversion.h"
@@ -62,6 +63,8 @@ void free_image_data() {
 		clear_stars_list();
 		delete_selected_area();
 		clear_sampling_setting_box();	// clear focal and pixel pitch info
+		free_background_sample_list(com.grad_samples);
+		com.grad_samples = NULL;
 	}
 	clear_histograms();
 
