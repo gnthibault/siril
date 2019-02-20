@@ -453,6 +453,10 @@ static void remove_gradient(double *img, double *background, int ndata, int type
 
 /************* PUBLIC FUNCTIONS *************/
 
+int get_sample_radius() {
+	return (int) (SAMPLE_SIZE / 2);
+}
+
 void free_background_sample_list(GSList *list) {
 	if (list == NULL) return;
 	g_slist_free_full(list, g_free);
@@ -489,7 +493,7 @@ GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 	while (list) {
 		background_sample *sample = (background_sample *)list->data;
 		if ((fabs(pt.x - sample->position.x) <= sample->size * 2)
-				&& (abs(pt.y - sample->position.y) <= sample->size * 2)) {
+				&& (fabs(pt.y - sample->position.y) <= sample->size * 2)) {
 			orig = g_slist_remove(orig, sample);
 			break;
 		}

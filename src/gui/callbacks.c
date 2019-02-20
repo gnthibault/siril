@@ -3193,7 +3193,7 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 			} else if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
 				double zoom = get_zoom_val();
 				point pt;
-				int radius = (int) (25 / 2);
+				int radius = get_sample_radius();
 
 				pt.x = (event->x / zoom) - radius;
 				pt.y = (event->y / zoom) - radius;
