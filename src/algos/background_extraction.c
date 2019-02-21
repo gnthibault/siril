@@ -339,7 +339,7 @@ static void convert_img_to_fits(double *image, fits *fit, int channel) {
 	mirrorx(fit, FALSE);
 }
 
-static GSList *generate_samples(fits *fit, int nb_per_line, double tolerence) {
+static GSList *generate_samples(fits *fit, int nb_per_line, double tolerence, size_t size) {
 	int nx = fit->rx;
 	int ny = fit->ry;
 	int dist;
@@ -352,7 +352,7 @@ static GSList *generate_samples(fits *fit, int nb_per_line, double tolerence) {
 	dist = (int) (nx / nb_per_line);
 	mean = gsl_stats_mean(image, 1, nx * ny);
 
-	for (y = dist / 2; y < ny; y = y + dist) {
+	for (y = 2 * size; y < ny -  2 * size ; y = y + dist) {
 		for (x = dist / 2; x < nx - dist / 2; x = x + dist) {
 			background_sample *sample = get_sample(image, x, y, nx, ny);
 			if (sample->mean < tolerence * mean) {
@@ -517,7 +517,7 @@ void on_background_generate_clicked(GtkButton *button, gpointer user_data) {
 	nb_of_samples = get_nb_samples_per_line();
 	tolerence = get_tolerence_value();
 	free_background_sample_list(com.grad_samples);
-	com.grad_samples = generate_samples(&gfit, nb_of_samples, tolerence);
+	com.grad_samples = generate_samples(&gfit, nb_of_samples, tolerence, SAMPLE_SIZE);
 	if (gfit.naxes[2] > 1) {
 		com.grad_samples = update_median_for_rgb_samples(com.grad_samples, &gfit);
 	}
