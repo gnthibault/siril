@@ -234,13 +234,13 @@ static background_sample *get_sample(double *buf, const int xx,
 
 static double get_sample_median(double *buf, const int xx,
 		const int yy, const int w, const int h) {
-	int radius, x, y;
+	int radius, x, y, n;
 	double *data, median;
 	size_t size = SAMPLE_SIZE * SAMPLE_SIZE;
 
-	radius = (int) (SAMPLE_SIZE / 2);
+	radius = get_sample_radius();
 
-	int n = 0;
+	n = 0;
 	data = calloc(size, sizeof(double));
 	for (y = yy - radius; y <= yy + radius; y ++) {
 		for (x = xx - radius; x <= xx + radius; x ++) {
@@ -339,7 +339,7 @@ static void convert_img_to_fits(double *image, fits *fit, int channel) {
 	mirrorx(fit, FALSE);
 }
 
-static GSList *generate_samples(fits *fit, int nb_per_line, double tolerence, size_t size) {
+static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, size_t size) {
 	int nx = fit->rx;
 	int ny = fit->ry;
 	int dist;
@@ -352,10 +352,10 @@ static GSList *generate_samples(fits *fit, int nb_per_line, double tolerence, si
 	dist = (int) (nx / nb_per_line);
 	mean = gsl_stats_mean(image, 1, nx * ny);
 
-	for (y = 2 * size; y < ny -  2 * size ; y = y + dist) {
-		for (x = dist / 2; x < nx - dist / 2; x = x + dist) {
+	for (y = 2 * size; y <= ny -  2 * size ; y = y + dist) {
+		for (x = dist / 2; x <= nx - dist / 2; x = x + dist) {
 			background_sample *sample = get_sample(image, x, y, nx, ny);
-			if (sample->mean < tolerence * mean) {
+			if (sample->mean <= tolerance * mean) {
 				list = g_slist_append(list, sample);
 			} else {
 				g_free(sample);
@@ -423,7 +423,7 @@ static int get_nb_samples_per_line() {
 	return gtk_spin_button_get_value_as_int(nb_samples);
 }
 
-static double get_tolerence_value() {
+static double get_tolerance_value() {
 	GtkRange *tol = GTK_RANGE(lookup_widget("scale_background_nb_samples"));
 
 	return gtk_range_get_value(tol);
@@ -512,12 +512,12 @@ void on_menuitem_background_extraction_activate(GtkMenuItem *menuitem,
 void on_background_generate_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	int nb_of_samples;
-	double tolerence;
+	double tolerance;
 
 	nb_of_samples = get_nb_samples_per_line();
-	tolerence = get_tolerence_value();
+	tolerance = get_tolerance_value();
 	free_background_sample_list(com.grad_samples);
-	com.grad_samples = generate_samples(&gfit, nb_of_samples, tolerence, SAMPLE_SIZE);
+	com.grad_samples = generate_samples(&gfit, nb_of_samples, tolerance, SAMPLE_SIZE);
 	if (gfit.naxes[2] > 1) {
 		com.grad_samples = update_median_for_rgb_samples(com.grad_samples, &gfit);
 	}
@@ -548,9 +548,10 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 				correction ? "Division" : "Subtraction");
 
 	for (channel = 0; channel < gfit.naxes[2]; channel++) {
+		/* compute background */
 		image[channel] = convert_fits_to_img(&gfit, channel, TRUE);
-
 		background = computeBackground(com.grad_samples, channel, gfit.rx, gfit.ry, get_poly_order());
+		/* remove background */
 		remove_gradient(image[channel], background, gfit.rx * gfit.ry, correction);
 		convert_img_to_fits(image[channel], &gfit, channel);
 		free(image[channel]);
