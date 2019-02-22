@@ -197,15 +197,19 @@ static double siril_stats_trmean_from_sorted_data(const double trim,
 #endif
 
 static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
-	int i = 0;
+	int i = 0, n = 0;
 	int chan;
 
 	double *data[3];
 	double alpha = 0.3;
 
-	data[RED] = calloc(sizeof(double), nb_stars);
-	data[GREEN] = calloc(sizeof(double), nb_stars);
-	data[BLUE] = calloc(sizeof(double), nb_stars);
+	data[RED] = malloc(sizeof(double) * nb_stars);
+	data[GREEN] = malloc(sizeof(double) * nb_stars);
+	data[BLUE] = malloc(sizeof(double) * nb_stars);
+
+	memset(data[RED], 99999.9, sizeof(double) * nb_stars);
+	memset(data[GREEN], 99999.9, sizeof(double) * nb_stars);
+	memset(data[BLUE], 99999.9, sizeof(double) * nb_stars);
 
 	siril_log_message(_("Applying aperture photometry to %d stars.\n"), nb_stars);
 
@@ -222,6 +226,7 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 		for (chan = 0; chan < 3; chan ++) {
 			fitted_PSF *photometry = psf_get_minimisation(fit, chan, &area, TRUE, FALSE);
 			if (!photometry) {
+				i++;
 				continue;
 			}
 			flux[chan] = pow(10, -0.4 * photometry->mag);
@@ -233,24 +238,26 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 
 		/* get Color calibration factors for current star */
 		data[RED][i] = (flux[n_channel] / flux[RED]) * r;
+		if (isnan(data[RED][i])) data[RED][i] = 99999.9;
 		data[GREEN][i] = (flux[n_channel] / flux[GREEN]) * g;
+		if (isnan(data[GREEN][i])) data[GREEN][i] = 99999.9;
 		data[BLUE][i] = (flux[n_channel] / flux[BLUE]) * b;
-
-//		printf("%d: %.3lf %.3lf %.3lf (%.2lf/%.2lf)\n", i, flux[RED], flux[GREEN], flux[BLUE], stars[i]->xpos, stars[i]->ypos);
-//		printf("%d: %.3lf %.3lf\n", i, stars[i]->BV, flux[BLUE] / flux[GREEN]);
-//		printf("%d: %.3lf %.3lf %.3lf\n", i, data[RED][i], data[GREEN][i], data[BLUE][i]);
+		if (isnan(data[BLUE][i])) data[BLUE][i] = 99999.9;
 
 		i++;
+		n++;
 	}
 
-	/* sort in ascending order before using gsl_stats_trmean_from_sorted_data */
+	/* sort in ascending order before using gsl_stats_trmean_from_sorted_data 
+	Hence, 99999.9 are at the end of the tab */
 	gsl_sort(data[RED], 1, nb_stars);
 	gsl_sort(data[GREEN], 1, nb_stars);
 	gsl_sort(data[BLUE], 1, nb_stars);
 
-	kw[RED] = siril_stats_trmean_from_sorted_data(alpha, data[RED], 1, nb_stars);
-	kw[GREEN] = siril_stats_trmean_from_sorted_data(alpha, data[GREEN], 1, nb_stars);
-	kw[BLUE] = siril_stats_trmean_from_sorted_data(alpha, data[BLUE], 1, nb_stars);
+	/* we do not take into account 99999.9 values */
+	kw[RED] = siril_stats_trmean_from_sorted_data(alpha, data[RED], 1, n);
+	kw[GREEN] = siril_stats_trmean_from_sorted_data(alpha, data[GREEN], 1, n);
+	kw[BLUE] = siril_stats_trmean_from_sorted_data(alpha, data[BLUE], 1, n);
 
 	/* normalize factors */
 	kw[RED] /= (kw[n_channel]);
