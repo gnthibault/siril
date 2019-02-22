@@ -197,7 +197,7 @@ static double siril_stats_trmean_from_sorted_data(const double trim,
 #endif
 
 static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
-	int i = 0, n = 0;
+	int i = 0, ngood = 0;
 	int chan;
 
 	double *data[3];
@@ -238,14 +238,18 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 
 		/* get Color calibration factors for current star */
 		data[RED][i] = (flux[n_channel] / flux[RED]) * r;
-		if (isnan(data[RED][i])) data[RED][i] = 99999.9;
 		data[GREEN][i] = (flux[n_channel] / flux[GREEN]) * g;
-		if (isnan(data[GREEN][i])) data[GREEN][i] = 99999.9;
 		data[BLUE][i] = (flux[n_channel] / flux[BLUE]) * b;
-		if (isnan(data[BLUE][i])) data[BLUE][i] = 99999.9;
 
+		if (isnan(data[RED][i]) || isnan(data[GREEN][i]) || isnan(data[BLUE][i])) {
+			data[RED][i] = 99999.9;
+			data[GREEN][i] = 99999.9;
+			data[BLUE][i] = 99999.9;
+			i++;
+			continue;
+		}
 		i++;
-		n++;
+		ngood++;
 	}
 
 	/* sort in ascending order before using gsl_stats_trmean_from_sorted_data 
@@ -255,9 +259,9 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 	gsl_sort(data[BLUE], 1, nb_stars);
 
 	/* we do not take into account 99999.9 values */
-	kw[RED] = siril_stats_trmean_from_sorted_data(alpha, data[RED], 1, n);
-	kw[GREEN] = siril_stats_trmean_from_sorted_data(alpha, data[GREEN], 1, n);
-	kw[BLUE] = siril_stats_trmean_from_sorted_data(alpha, data[BLUE], 1, n);
+	kw[RED] = siril_stats_trmean_from_sorted_data(alpha, data[RED], 1, ngood);
+	kw[GREEN] = siril_stats_trmean_from_sorted_data(alpha, data[GREEN], 1, ngood);
+	kw[BLUE] = siril_stats_trmean_from_sorted_data(alpha, data[BLUE], 1, ngood);
 
 	/* normalize factors */
 	kw[RED] /= (kw[n_channel]);
