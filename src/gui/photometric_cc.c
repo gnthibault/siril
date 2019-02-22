@@ -327,7 +327,7 @@ static void background_neutralize(fits* fit, coeff bg[], int n_channel, double n
 
 static int cmp_coeff(const void *a, const void *b) {
 	coeff *a1 = (coeff *) a;
-	coeff *a2 = (coeff*) b;
+	coeff *a2 = (coeff *) b;
 	if ((*a1).value > (*a2).value)
 		return 1;
 	else if ((*a1).value < (*a2).value)
@@ -468,6 +468,8 @@ int apply_photometric_cc() {
 	stars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
 	if (stars == NULL) {
 		printf("Memory allocation failed: apply_photometric_cc\n");
+		set_cursor_waiting(FALSE);
+		fclose(BV_file);
 		return 1;
 	}
 
