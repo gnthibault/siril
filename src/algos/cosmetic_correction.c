@@ -31,7 +31,9 @@
 #include "io/ser.h"
 #include "algos/cosmetic_correction.h"
 #include "algos/statistics.h"
+#include "algos/sorting.h"
 
+/* see also getMedian3x3 in algos/PSF.c */
 static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,
 		const int h, gboolean is_cfa) {
 	int step, radius, x, y;
@@ -51,18 +53,16 @@ static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,
 	value = calloc(24, sizeof(WORD));
 	for (y = yy - radius; y <= yy + radius; y += step) {
 		for (x = xx - radius; x <= xx + radius; x += step) {
-			if (y >= 0 && y < h) {
-				if (x >= 0 && x < w) {
-					if ((x != xx) || (y != yy)) {
-						value[n++] = buf[x + y * w];
-					}
+			if (y >= 0 && y < h && x >= 0 && x < w) {
+				// ^ limit to image bounds ^
+				// v exclude centre pixel v
+				if (x != xx || y != yy) {
+					value[n++] = buf[x + y * w];
 				}
 			}
 		}
 	}
-	start = 24 - n - 1;
-	quicksort_s(value, 24);
-	median = round_to_WORD(gsl_stats_ushort_median_from_sorted_data(value + start, 1, n));
+	median = round_to_WORD (quickmedian (value, n));
 	free(value);
 	return median;
 }
@@ -85,11 +85,9 @@ static WORD *getAverage3x3Line(WORD *buf, const int yy, const int w, const int h
 		for (y = yy - radius; y <= yy + radius; y += step) {
 			if (y != yy) {	// we skip the line
 				for (x = xx - radius; x <= xx + radius; x += step) {
-					if (y >= 0 && y < h) {
-						if (x >= 0 && x < w) {
-							value += (double) buf[x + y * w];
-							n++;
-						}
+					if (y >= 0 && y < h && x >= 0 && x < w) {
+						value += (double) buf[x + y * w];
+						n++;
 					}
 				}
 			}

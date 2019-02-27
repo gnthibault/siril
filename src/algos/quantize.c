@@ -30,6 +30,7 @@
 
 #include "core/proto.h"
 #include "core/siril.h"
+#include "sorting.h"
 
 /* more than this many standard deviations from the mean is an outlier */
 #define SIGMA_CLIP     5.
@@ -50,8 +51,6 @@ static int FnNoise5_ushort(WORD *array, long nx, long ny, int nullcheck,
 		double *n3, double *n5, int *status);
 
 static int FnCompare_double(const void *, const void *);
-
-static int quick_select_int(int arr[], int n);
 
 /*--------------------------------------------------------------------------*/
 int fits_img_stats_ushort(WORD *array, /*  2 dimensional array of image pixels */
@@ -102,6 +101,7 @@ int *status) /* error status */
 		*noise1 = xnoise;
 	}
 
+	/* this following code is not used for now */
 	if (minvalue || maxvalue || noise2 || noise3 || noise5) {
 		FnNoise5_ushort(array, nx, ny, nullcheck, nullvalue, &ngood, &minval,
 				&maxval, &xnoise2, &xnoise3, &xnoise5, status);
@@ -596,14 +596,14 @@ int *status) /* error status */
 			diffs3[nrows] = differences3[0];
 			diffs5[nrows] = differences5[0];
 		} else {
-			/* quick_select returns the median MUCH faster than using qsort */
+			// quickmedian returns the median MUCH faster than using quicksort
 			if (nvals2 > 1) {
-				diffs2[nrows2] = quick_select_int(differences2, nvals);
+				diffs2[nrows2] = quickmedian_int(differences2, nvals);
 				nrows2++;
 			}
 
-			diffs3[nrows] = quick_select_int(differences3, nvals);
-			diffs5[nrows] = quick_select_int(differences5, nvals);
+			diffs3[nrows] = quickmedian_int(differences3, nvals);
+			diffs5[nrows] = quickmedian_int(differences5, nvals);
 		}
 
 		nrows++;
@@ -770,8 +770,7 @@ int *status) /* error status */
 	} else if (nrows == 1) {
 		xnoise = diffs[0];
 	} else {
-		quicksort_d(diffs, nrows);
-		xnoise = (diffs[(nrows - 1) / 2] + diffs[nrows / 2]) / 2.;
+		xnoise = quickmedian_double (diffs, nrows);
 	}
 
 	*noise = .70710678 * xnoise;
@@ -794,70 +793,3 @@ static int FnCompare_double(const void *v1, const void *v2) {
 	else
 		return (0);
 }
-
-/*--------------------------------------------------------------------------*/
-
-#define ELEM_SWAP(a,b) { register int t=(a);(a)=(b);(b)=t; }
-
-static int quick_select_int(int arr[], int n) {
-	int low, high;
-	int median;
-	int middle, ll, hh;
-
-	low = 0;
-	high = n - 1;
-	median = (low + high) / 2;
-	for (;;) {
-		if (high <= low) /* One element only */
-			return arr[median];
-
-		if (high == low + 1) { /* Two elements only */
-			if (arr[low] > arr[high])
-				ELEM_SWAP(arr[low], arr[high]);
-			return arr[median];
-		}
-
-		/* Find median of low, middle and high items; swap into position low */
-		middle = (low + high) / 2;
-		if (arr[middle] > arr[high])
-			ELEM_SWAP(arr[middle], arr[high]);
-		if (arr[low] > arr[high])
-			ELEM_SWAP(arr[low], arr[high]);
-		if (arr[middle] > arr[low])
-			ELEM_SWAP(arr[middle], arr[low]);
-
-		/* Swap low item (now in position middle) into position (low+1) */
-		ELEM_SWAP(arr[middle], arr[low + 1]);
-
-		/* Nibble from each end towards middle, swapping items when stuck */
-		ll = low + 1;
-		hh = high;
-		for (;;) {
-			do
-				ll++;
-			while (arr[low] > arr[ll]);
-			do
-				hh--;
-			while (arr[hh] > arr[low]);
-
-			if (hh < ll)
-				break;
-
-			ELEM_SWAP(arr[ll], arr[hh]);
-		}
-
-		/* Swap middle item (in position low) back into correct position */
-		ELEM_SWAP(arr[low], arr[hh]);
-
-		/* Re-set active partition */
-		if (hh <= median)
-			low = ll;
-		if (hh >= median)
-			high = hh - 1;
-	}
-	return 0;
-}
-
-#undef ELEM_SWAP
-
-/*--------------------------------------------------------------------------*/

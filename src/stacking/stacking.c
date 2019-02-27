@@ -42,6 +42,7 @@
 #include "registration/registration.h"
 #include "stacking/stacking.h"
 #include "algos/PSF.h"
+#include "algos/sorting.h"
 #include "gui/PSF_list.h"
 #include "gui/histogram.h"	// update_gfit_histogram_if_needed();
 #include "io/ser.h"
@@ -75,6 +76,8 @@ struct _data_block {
 	WORD *tmp;	// the actual single buffer for pix
 	WORD *stack;	// the reordered stack for one pixel in all images
 	int *rejected;  // 0 if pixel ok, 1 or -1 if rejected
+	WORD *w_stack;	// stack for the winsorized rejection
+	double *xf, *yf;// data for the linear fit rejection
 };
 
 void initialize_stacking_methods() {
@@ -454,7 +457,7 @@ int stack_median(struct stacking_args *args) {
 				retval = -1;
 				break;
 			}
-			if (!(y % 16))	// every 16 iterations
+			if (!(cur_nb % 16))	// every 16 iterations
 				set_progress_bar_data(NULL, (double)cur_nb/total);
 
 			for (x = 0; x < naxes[0]; ++x){
@@ -482,9 +485,7 @@ int stack_median(struct stacking_args *args) {
 							break;
 					}
 				}
-				quicksort_s(data->stack, nb_frames);
-				fit.pdata[my_block->channel][pixel_idx] =
-						gsl_stats_ushort_median_from_sorted_data(data->stack, 1, nb_frames);
+				fit.pdata[my_block->channel][pixel_idx] = round_to_WORD(quickmedian (data->stack, nb_frames));
 				pixel_idx++;
 			}
 		}
@@ -736,11 +737,9 @@ static int sigma_clipping(WORD pixel, double sig[], double sigma, double median,
 	else return 0;
 }
 
-static int Winsorized(WORD *pixel, double m0, double m1) {
+static void Winsorize(WORD *pixel, double m0, double m1) {
 	if (*pixel < m0) *pixel = round_to_WORD(m0);
 	else if (*pixel > m1) *pixel = round_to_WORD(m1);
-
-	return 0;
 }
 
 static int line_clipping(WORD pixel, double sig[], double sigma, int i, double a, double b, uint64_t rej[]) {
@@ -756,10 +755,6 @@ static int line_clipping(WORD pixel, double sig[], double sigma, int i, double a
 		return 1;
 	}
 	else return 0;
-}
-
-static void remove_pixel(WORD *arr, int i, int N) {
-	memmove(&arr[i], &arr[i + 1], (N - i - 1) * sizeof(*arr));
 }
 
 static void normalize_to16bit(int bitpix, double *sum) {
@@ -1057,10 +1052,35 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 		data_pool[i].stack = malloc(nb_frames * sizeof(WORD));
 		data_pool[i].rejected = calloc(nb_frames, sizeof(int));
 		if (!data_pool[i].pix || !data_pool[i].tmp || !data_pool[i].stack || !data_pool[i].rejected) {
-			fprintf(stderr, "Memory allocation error on pix.\n");
+			fprintf(stderr, "Memory allocation error on rejection stacking data pools.\n");
 			fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
 			retval = -1;
 			goto free_and_close;
+		}
+		if (args->type_of_rejection == WINSORIZED) {
+			data_pool[i].w_stack = malloc(nb_frames * sizeof(WORD));
+			if (!data_pool[i].w_stack) {
+				fprintf(stderr, "Memory allocation error on rejection stacking data pools.\n");
+				fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
+				retval = -1;
+				goto free_and_close;
+			}
+		}
+		else data_pool[i].w_stack = NULL;
+
+		if (args->type_of_rejection == LINEARFIT) {
+			data_pool[i].xf = malloc(nb_frames * sizeof(double));
+			data_pool[i].yf = malloc(nb_frames * sizeof(double));
+			if (!data_pool[i].xf || !data_pool[i].yf) {
+				fprintf(stderr, "Memory allocation error on rejection stacking data pools.\n");
+				fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
+				retval = -1;
+				goto free_and_close;
+			}
+		}
+		else {
+			data_pool[i].xf = NULL;
+			data_pool[i].yf = NULL;
 		}
 		for (j=0; j<nb_frames; ++j) {
 			data_pool[i].pix[j] = data_pool[i].tmp + j * npixels_in_block;
@@ -1177,7 +1197,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				retval = -1;
 				break;
 			}
-			if (!(y % 16))	// every 16 iterations
+			if (!(cur_nb % 16))	// every 16 iterations
 				set_progress_bar_data(NULL, (double)cur_nb/total);
 
 			double sigma = -1.0;
@@ -1221,53 +1241,54 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 
 				int N = nb_frames;// N is the number of pixels kept from the current stack
 				double median;
-				int n, j, r = 0;
+				int pixel, output, changed, n, j, r = 0;
 				switch (args->type_of_rejection) {
 				case PERCENTILE:
-					quicksort_s(data->stack, N);
-					median = gsl_stats_ushort_median_from_sorted_data(data->stack, 1, N);
+					median = quickmedian (data->stack, N);
 					for (frame = 0; frame < N; frame++) {
 						data->rejected[frame] =	percentile_clipping(data->stack[frame], args->sig, median, crej);
 					}
-					for (frame = 0, j = 0; frame < N; frame++, j++) {
-						if (data->rejected[j] != 0 && N > 1) {
-							remove_pixel(data->stack, frame, N);
-							frame--;
-							N--;
+
+					for (pixel = 0, output = 0; pixel < N; pixel++) {
+						if (!data->rejected[pixel]) {
+							// copy only if there was a rejection
+							if (pixel != output)
+								data->stack[output] = data->stack[pixel];
+							output++;
 						}
 					}
+					N = output;
 					break;
 				case SIGMA:
 					do {
 						sigma = gsl_stats_ushort_sd(data->stack, 1, N);
-						quicksort_s(data->stack, N);
-						median = gsl_stats_ushort_median_from_sorted_data(data->stack, 1, N);
-						n = 0;
+						median = quickmedian (data->stack, N);
 						for (frame = 0; frame < N; frame++) {
 							data->rejected[frame] =	sigma_clipping(data->stack[frame], args->sig, sigma, median, crej);
 							if (data->rejected[frame])
 								r++;
 							if (N - r <= 4) break;
 						}
-						for (frame = 0, j = 0; frame < N - n; frame++, j++) {
-							if (data->rejected[j] != 0) {
-								remove_pixel(data->stack, frame, N - n);
-								n++;
-								frame--;
+						for (pixel = 0, output = 0; pixel < N; pixel++) {
+							if (!data->rejected[pixel]) {
+								// copy only if there was a rejection
+								if (pixel != output)
+									data->stack[output] = data->stack[pixel];
+								output++;
 							}
 						}
-						N = N - n;
-					} while (n > 0 && N > 3);
+						changed = N != output;
+						N = output;
+					} while (changed && N > 3);
 					break;
 				case SIGMEDIAN:
 					do {
 						sigma = gsl_stats_ushort_sd(data->stack, 1, N);
-						quicksort_s(data->stack, N);
-						median = gsl_stats_ushort_median_from_sorted_data(data->stack, 1, N);
+						median = quickmedian (data->stack, N);
 						n = 0;
 						for (frame = 0; frame < N; frame++) {
 							if (sigma_clipping(data->stack[frame], args->sig, sigma, median, crej)) {
-								data->stack[frame] = round_to_WORD(median);
+								data->stack[frame] = median;
 								n++;
 							}
 						}
@@ -1277,23 +1298,18 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 					do {
 						double sigma0;
 						sigma = gsl_stats_ushort_sd(data->stack, 1, N);
-						quicksort_s(data->stack, N);
-						median = gsl_stats_ushort_median_from_sorted_data(data->stack, 1, N);
-						WORD *w_stack = malloc(N * sizeof(WORD));
-						memcpy(w_stack, data->stack, N * sizeof(WORD));
+						median = quickmedian (data->stack, N);
+						memcpy(data->w_stack, data->stack, N * sizeof(WORD));
 						do {
 							int jj;
 							double m0 = median - 1.5 * sigma;
 							double m1 = median + 1.5 * sigma;
 							for (jj = 0; jj < N; jj++)
-								Winsorized(&w_stack[jj], m0, m1);
-							quicksort_s(w_stack, N);
-							median = gsl_stats_ushort_median_from_sorted_data(w_stack, 1, N);
+								Winsorize(data->w_stack+jj, m0, m1);
+							median = quickmedian (data->w_stack, N);
 							sigma0 = sigma;
-							sigma = 1.134 * gsl_stats_ushort_sd(w_stack, 1, N);
+							sigma = 1.134 * gsl_stats_ushort_sd(data->w_stack, 1, N);
 						} while ((fabs(sigma - sigma0) / sigma0) > 0.0005);
-						free(w_stack);
-						n = 0;
 						for (frame = 0; frame < N; frame++) {
 							data->rejected[frame] = sigma_clipping(
 									data->stack[frame], args->sig, sigma,
@@ -1303,32 +1319,31 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 							if (N - r <= 4) break;
 
 						}
-						for (frame = 0, j = 0; frame < N - n; frame++, j++) {
-							if (data->rejected[j] != 0) {
-								remove_pixel(data->stack, frame, N - n);
-								frame--;
-								n++;
+						for (pixel = 0, output = 0; pixel < N; pixel++) {
+							if (!data->rejected[pixel]) {
+								// copy only if there was a rejection
+								if (pixel != output)
+									data->stack[output] = data->stack[pixel];
+								output++;
 							}
 						}
-						N = N - n;
-					} while (n > 0 && N > 3);
+						changed = N != output;
+						N = output;
+					} while (changed && N > 3);
 					break;
 				case LINEARFIT:
 					do {
-						double *xf = g_malloc(N * sizeof(double));
-						double *yf = g_malloc(N * sizeof(double));
 						double a, b, cov00, cov01, cov11, sumsq;
 						quicksort_s(data->stack, N);
 						for (frame = 0; frame < N; frame++) {
-							xf[frame] = (double) frame;
-							yf[frame] = (double) data->stack[frame];
+							data->xf[frame] = (double)frame;
+							data->yf[frame] = (double)data->stack[frame];
 						}
-						gsl_fit_linear(xf, 1, yf, 1, N, &b, &a, &cov00, &cov01, &cov11, &sumsq);
+						gsl_fit_linear(data->xf, 1, data->yf, 1, N, &b, &a, &cov00, &cov01, &cov11, &sumsq);
 						sigma = 0.0;
 						for (frame = 0; frame < N; frame++)
 							sigma += (fabs((double)data->stack[frame] - (a*(double)frame + b)));
 						sigma /= (double)N;
-						n = 0;
 						for (frame = 0; frame < N; frame++) {
 							data->rejected[frame] =
 									line_clipping(data->stack[frame], args->sig, sigma, frame, a, b, crej);
@@ -1336,17 +1351,17 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 								r++;
 							if (N - r <= 4) break;
 						}
-						for (frame = 0, j = 0; frame < N - n; frame++, j++) {
-							if (data->rejected[j] != 0) {
-								remove_pixel(data->stack, frame, N - n);
-								frame--;
-								n++;
+						for (pixel = 0, output = 0; pixel < N; pixel++) {
+							if (!data->rejected[pixel]) {
+								// copy only if there was a rejection
+								if (pixel != output)
+									data->stack[output] = data->stack[pixel];
+								output++;
 							}
 						}
-						N = N - n;
-						g_free(xf);
-						g_free(yf);
-					} while (n > 0 && N > 3);
+						changed = N != output;
+						N = output;
+					} while (changed && N > 3);
 					break;
 				default:
 				case NO_REJEC:
@@ -1357,7 +1372,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				for (frame = 0; frame < N; ++frame) {
 					sum += data->stack[frame];
 				}
-				sum /= (double) N;
+				sum /= (double)N;
 				if (args->norm_to_16) {
 					normalize_to16bit(bitpix, &sum);
 					fit.bitpix = fit.orig_bitpix = USHORT_IMG;
@@ -1409,6 +1424,9 @@ free_and_close:
 			if (data_pool[i].pix) free(data_pool[i].pix);
 			if (data_pool[i].tmp) free(data_pool[i].tmp);
 			if (data_pool[i].rejected) free(data_pool[i].rejected);
+			if (data_pool[i].w_stack) free(data_pool[i].w_stack);
+			if (data_pool[i].xf) free(data_pool[i].xf);
+			if (data_pool[i].yf) free(data_pool[i].yf);
 		}
 		free(data_pool);
 	}
@@ -2008,6 +2026,7 @@ double compute_highest_accepted_quality(double percent) {
 	quicksort_d(val, com.seq.number);
 
 	// get highest accepted
+	// FIXME: goes out of bounds when percent = 0, use round_to_int()?
 	highest_accepted = val[(int)((100.0 - percent) * (double)com.seq.number
 			/ 100.0)];
 	free(val);

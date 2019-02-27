@@ -1,7 +1,7 @@
 SIRIL
 =====
 
-> Copyright &copy; 2012-2018, Team free-astro
+> Copyright &copy; 2012-2019, Team free-astro
 > <<https://free-astro.org/index.php/Siril>>
 > <<https://www.siril.org>>
 

@@ -40,6 +40,7 @@
 #include <gsl/gsl_statistics.h>
 #include "core/siril.h"
 #include "core/proto.h"
+#include "sorting.h"
 #include "statistics.h"
 
 // copies the area of an image into the memory buffer data
@@ -59,102 +60,26 @@ static void select_area(fits *fit, WORD *data, int layer, rectangle *bounds) {
 	}
 }
 
-/*
- *  This Quickselect routine is based on the algorithm described in
- *  "Numerical recipes in C", Second Edition,
- *  Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
- *  This code by Nicolas Devillard - 1998. Public domain.
- */
-
-#define ELEM_SWAP_WORD(a,b) { register WORD t=(a);(a)=(b);(b)=t; }
-
-// warning: data is modified, sorted in-place
-// removed from the static list because of the unit test
-WORD siril_stats_ushort_median(WORD *arr, int n) {
-	int low, high;
-	int median;
-	int middle, ll, hh;
-
-	low = 0;
-	high = n - 1;
-	median = (low + high) / 2;
-	for (;;) {
-		if (high <= low) /* One element only */
-			return arr[median];
-
-		if (high == low + 1) { /* Two elements only */
-			if (arr[low] > arr[high])
-				ELEM_SWAP_WORD(arr[low], arr[high]);
-			return arr[median];
-		}
-
-		/* Find median of low, middle and high items; swap into position low */
-		middle = (low + high) / 2;
-		if (arr[middle] > arr[high])
-			ELEM_SWAP_WORD(arr[middle], arr[high]);
-		if (arr[low] > arr[high])
-			ELEM_SWAP_WORD(arr[low], arr[high]);
-		if (arr[middle] > arr[low])
-			ELEM_SWAP_WORD(arr[middle], arr[low]);
-
-		/* Swap low item (now in position middle) into position (low+1) */
-		ELEM_SWAP_WORD(arr[middle], arr[low + 1]);
-
-		/* Nibble from each end towards middle, swapping items when stuck */
-		ll = low + 1;
-		hh = high;
-		for (;;) {
-			do
-				ll++;
-			while (arr[low] > arr[ll]);
-			do
-				hh--;
-			while (arr[hh] > arr[low]);
-
-			if (hh < ll)
-				break;
-
-			ELEM_SWAP_WORD(arr[ll], arr[hh]);
-		}
-
-		/* Swap middle item (in position low) back into correct position */
-		ELEM_SWAP_WORD(arr[low], arr[hh]);
-
-		/* Re-set active partition */
-		if (hh <= median)
-			low = ll;
-		if (hh >= median)
-			high = hh - 1;
-	}
-	fprintf(stderr, "error in median, returning 0\n");
-	return 0;
-}
-
-#undef ELEM_SWAP_WORD
-
 /* For a univariate data set X1, X2, ..., Xn, the MAD is defined as the median
  * of the absolute deviations from the data's median:
  *  MAD = median (| Xi − median(X) |)
  */
-
 static double siril_stats_ushort_mad(WORD* data, const size_t stride,
 		const size_t n, const double m) {
 	size_t i;
-	double median;
-	WORD *tmp;
+	double mad;
+	int median = round_to_int(m);	// we use it on integer data anyway
+	WORD *tmp = calloc(n, sizeof(WORD));
 
-	tmp = calloc(n, sizeof(WORD));
-
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) if(n > 10000) private(i) schedule(static)
 	for (i = 0; i < n; i++) {
-		// We should not use floating point for that, median is WORD
-		const WORD delta = fabs(data[i * stride] - m);
-		tmp[i] = delta;
+		int delta = data[i * stride] - median;
+		tmp[i] = (WORD)abs(delta);
 	}
-	median = (double)siril_stats_ushort_median(tmp, n);
-	free(tmp);
 
-	return median;
+	mad = histogram_median (tmp, n);
+	free(tmp);
+	return mad;
 }
 
 /* Here this is a bit tricky. This function computes the median from sorted data
@@ -163,23 +88,19 @@ static double siril_stats_ushort_mad(WORD* data, const size_t stride,
  * However, this function is used in a function where sorting is mandatory.
  */
 static double siril_stats_double_mad(const double* data, const size_t stride,
-		const size_t n, const double m) {
+		const size_t n, const double median) {
 	size_t i;
-	double median;
-	double *tmp;
+	double *tmp = calloc(n, sizeof(double));
+	double mad;
 
-	tmp = calloc(n, sizeof(double));
-
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) if(n > 10000) private(i) schedule(static)
 	for (i = 0; i < n; i++) {
-		const double delta = fabs(data[i * stride] - m);
-		tmp[i] = delta;
+		tmp[i] = fabs(data[i * stride] - median);
 	}
-	quicksort_d(tmp, n);
-	median = gsl_stats_median_from_sorted_data(tmp, stride, n);
-	free(tmp);
 
-	return median;
+	mad = histogram_median_double (tmp, n);
+	free(tmp);
+	return mad;
 }
 
 static double siril_stats_ushort_bwmv(const WORD* data, const size_t n,
@@ -300,7 +221,7 @@ static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
 	WORD max = data[0 * stride];
 	size_t i;
 
-#pragma omp parallel for num_threads(com.max_thread) schedule(static) reduction(max:max) reduction(min:min)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static) if(n > 10000) reduction(max:max) reduction(min:min)
 	for (i = 0; i < n; i++) {
 		WORD xi = data[i * stride];
 
@@ -398,7 +319,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	if (compute_median && stat->median < 0.) {
 		if (!data) return NULL;	// not in cache, don't compute
 		siril_debug_print("- stats %p fit %p (%d): computing median\n", stat, fit, layer);
-		stat->median = (double)siril_stats_ushort_median(data, stat->ngoodpix);
+		stat->median = histogram_median (data, stat->ngoodpix);
 	}
 
 	/* Calculation of average absolute deviation from the median */
@@ -433,7 +354,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		/* we convert in the [0, 1] range */
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 		for (i = 0; i < stat->ngoodpix; i++) {
-			newdata[i] = (double) data[i] / stat->normValue;
+			newdata[i] = (double)data[i] / stat->normValue;
 		}
 		IKSS(newdata, stat->ngoodpix, &stat->location, &stat->scale);
 		/* go back to the original range */
@@ -476,7 +397,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 			fprintf(stderr, "- stats failed for fit %p (%d)\n", fit, layer);
 			if (oldstat)
 				allocate_stats(&oldstat);
-		       	return NULL;
+			return NULL;
 		}
 		if (!oldstat)
 			add_stats_to_fit(fit, layer, stat);

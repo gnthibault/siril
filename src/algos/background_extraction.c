@@ -31,6 +31,7 @@
 #include "io/single_image.h"
 #include "algos/statistics.h"
 #include "algos/geometry.h"
+#include "algos/sorting.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "registration/registration.h"	// for mouse_status
@@ -220,8 +221,7 @@ static background_sample *get_sample(double *buf, const int xx,
 	}
 	gsl_stats_minmax(&sample->min, &sample->max, data, 1, size);
 	sample->mean = gsl_stats_mean(data, 1, size);
-	quicksort_d(data, size);
-	sample->median[RLAYER] = gsl_stats_median_from_sorted_data(data, 1, size);
+	sample->median[RLAYER] = quickmedian_double(data, size);
 	sample->median[GLAYER] = sample->median[BLAYER] = sample->median[RLAYER];
 	sample->position.x = x;
 	sample->position.y = y;
@@ -251,8 +251,7 @@ static double get_sample_median(double *buf, const int xx,
 			}
 		}
 	}
-	quicksort_d(data, size);
-	median = gsl_stats_median_from_sorted_data(data, 1, size);
+	median = quickmedian_double(data, size);
 
 	free(data);
 	return median;

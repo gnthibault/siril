@@ -2,19 +2,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#define USE_ALL_SORTING_ALGOS
+#include "../algos/sorting.h"
 
 /* This program tests the new implementation of the quickselect from Emmanuel
  * and the old from statistics.
  * It compares the results with the quicksort*/
 
-#define NBTRIES 200
+#define NBTRIES 200	// for result checking, unit test of implementations
 
-WORD quickselect_s(WORD *a, int n, int k);
-void quicksort_s(WORD *a, int n);
-WORD siril_stats_ushort_median(WORD *arr, int n);	// from algos/statistics.c
+double median_from_sorted_array(WORD *arr, int size) {
+	if (size % 2)
+		return arr[(size-1)/2];
+	int sum = (int)arr[(size-1)/2] + (int)arr[size/2];
+	return (double)sum/2.0;
+}
 
 int test_quickselect(int datasize) {
-	WORD *data1, *data2, *data3, result_qsel1, result_qsel2, result_qsort;
+	WORD *data1, *data2, *data3;
+	double result_qsel1, result_qsel2, result_qsort;
 	int i, retval = 0;
 
 	data1 = malloc(datasize * sizeof(WORD));
@@ -28,15 +34,15 @@ int test_quickselect(int datasize) {
 	}
 
 	quicksort_s(data1, datasize);
-	result_qsort = data1[(datasize-1)/2];
-	result_qsel1 = quickselect_s(data2, datasize, (datasize-1)/2);
-	result_qsel2 = siril_stats_ushort_median(data3, datasize);
+	result_qsort = median_from_sorted_array(data1, datasize);
+	result_qsel1 = quickmedian(data2, datasize);
+	result_qsel2 = histogram_median(data3, datasize);
 
 	if (result_qsel1 != result_qsort || result_qsel2 != result_qsort) {
 		for (i=0; i<datasize; i++)
 			fprintf(stdout, "%hu ", data1[i]);
 		fputc('\n', stdout);
-		fprintf(stdout, "got %hu (qsel1), %hu (qsel2) and %hu (qsort)\n",
+		fprintf(stdout, "got %g (qsel1), %g (qsel2) and %g (qsort)\n",
 				result_qsel1, result_qsel2, result_qsort);
 		retval = 1;
 	}
@@ -50,9 +56,9 @@ int test_quickselect(int datasize) {
 	return retval;
 }
 
-void measure_quickselect() {
+void measure_big() {
 	WORD *data1, *data2, *data3, result_qsel1, result_qsel2, result_qsort;
-	int i, datasize = 40000000;
+	int i, datasize = 30000000;
 	clock_t t1, t2, t3, t4;
 
 	data1 = malloc(datasize * sizeof(WORD));
@@ -67,24 +73,24 @@ void measure_quickselect() {
 
 	t1 = clock();
 	quicksort_s(data1, datasize);
-	result_qsort = data1[(datasize-1)/2];
+	result_qsort = median_from_sorted_array(data1, datasize);
 	t2 = clock();
-	result_qsel1 = quickselect_s(data2, datasize, (datasize-1)/2);
+	result_qsel1 = quickmedian(data2, datasize);
 	t3 = clock();
-	result_qsel2 = siril_stats_ushort_median(data3, datasize);
+	result_qsel2 = histogram_median(data3, datasize);
 	t4 = clock();
 	fprintf(stdout, "siril quicksort time:\t%ld\n", t2-t1);
-	fprintf(stdout, "quicksselect_s time:\t%ld\n", t3-t2);
-	fprintf(stdout, "stats_median time:\t%ld\n", t4-t3);
+	fprintf(stdout, "quickmedian time:\t%ld\n", t3-t2);
+	fprintf(stdout, "histogram_median time:\t%ld\n", t4-t3);
 
 	free(data1);
 	free(data2);
 	free(data3);
 }
 
-void measure2() {
+void measure_small() {
 	WORD *data, *data_backup, result_qsel1, result_qsel2, result_qsort;
-	int i, draws, times, datasize = 8, nb_draws = 100, nb_times_each = 300000;
+	int i, draws, times, datasize = 8, nb_draws = 100, nb_times_each = 200000;
 	clock_t t1, t2, t3, t4;
 
 	data = malloc(datasize * sizeof(WORD));
@@ -100,7 +106,7 @@ void measure2() {
 
 		for (times = 0; times < nb_times_each; times++) {
 			quicksort_s(data, datasize);
-			result_qsort = data[(datasize-1)/2];
+			result_qsort = median_from_sorted_array(data, datasize);
 
 			for (i=0; i<datasize; i++)
 				data[i] = data_backup[i];
@@ -117,7 +123,7 @@ void measure2() {
 		}
 
 		for (times = 0; times < nb_times_each; times++) {
-			result_qsel1 = quickselect_s(data, datasize, (datasize-1)/2);
+			result_qsel1 = quickmedian(data, datasize);
 
 			for (i=0; i<datasize; i++)
 				data[i] = data_backup[i];
@@ -134,7 +140,7 @@ void measure2() {
 		}
 
 		for (times = 0; times < nb_times_each; times++) {
-			result_qsel2 = siril_stats_ushort_median(data, datasize);
+			result_qsel2 = histogram_median(data, datasize);
 
 			for (i=0; i<datasize; i++)
 				data[i] = data_backup[i];
@@ -144,8 +150,8 @@ void measure2() {
 	t4 = clock();
 
 	fprintf(stdout, "siril quicksort time:\t%ld\n", t2-t1);
-	fprintf(stdout, "quicksselect_s time:\t%ld\n", t3-t2);
-	fprintf(stdout, "stats_median time:\t%ld\n", t4-t3);
+	fprintf(stdout, "quickmedian time:\t%ld\n", t3-t2);
+	fprintf(stdout, "histogram_median time:\t%ld\n", t4-t3);
 
 	free(data);
 	free(data_backup);
@@ -162,8 +168,8 @@ int main(void)
 		}
 	}
 
-	//measure_quickselect();	// for big data
-	measure2();			// for small data
+	measure_big();
+	measure_small();
 	return 0;
 }
 
