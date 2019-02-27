@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-24 08:21+0100\n"
-"PO-Revision-Date: 2019-02-24 21:48+0100\n"
+"PO-Revision-Date: 2019-02-25 20:07+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -445,7 +445,7 @@ msgstr "Verwerfe Hintergrund-Stichproben."
 
 #: ../src/gui/siril3.glade.h:95
 msgid "Draw samples"
-msgstr "Nimm Stichproben"
+msgstr "Stichproben einzeichnen"
 
 #: ../src/gui/siril3.glade.h:96
 msgid "<b>Type of Extraction</b>"
@@ -2159,7 +2159,7 @@ msgstr "Typ:"
 
 #: ../src/gui/siril3.glade.h:470
 msgid "Nb of plans:"
-msgstr "Anzahl an Plänen:"
+msgstr "Anzahl der Ebenen:"
 
 #: ../src/gui/siril3.glade.h:471
 msgid "Number of wavelet layers that will be used"
@@ -3395,7 +3395,7 @@ msgstr "Y-Position"
 
 #: ../src/gui/siril3.glade.h:732
 msgid "Plot"
-msgstr "Einzeichnen"
+msgstr "Grafischer Plot"
 
 #: ../src/gui/siril3.glade.h:733
 msgid ""
@@ -3451,7 +3451,7 @@ msgid ""
 "intensity is lower."
 msgstr ""
 "Aufsummierung: Dies ist die einfachste Methode.\n"
-"Pixel-Werte werden aufsummiert und in einem neuen Bild, auf 16bit "
+"Pixel-Werte werden aufsummiert und in einem neuen Bild, auf 16-bit "
 "normalisiert, dargestellt.\n"
 "Dabei steigt das Signal-Rausch-Verhältnis (SNR) mit der Quadratwurzel aus "
 "der Anzahl der Bilder.\n"
@@ -3656,10 +3656,10 @@ msgid ""
 "However you may want to disable this option when building master frames of 8-"
 "bit sequences."
 msgstr ""
-"Wenn gesetzt, wird das fertige Bild auf 16bit pro Kanal normalisiert. Dies "
-"ist wichtig, da die Eingangs-Sequenz eine Tiefe von nur 8bit je Kanal "
+"Wenn gesetzt, wird das fertige Bild auf 16-bit pro Kanal normalisiert. Dies "
+"ist wichtig, da die Eingangs-Sequenz eine Tiefe von nur 8-bit je Kanal "
 "aufweist.\n"
-"Für Master-Frames in 8bit-Sequenzen sollte diese Option eher nicht gewählt "
+"Für Master-Frames in 8-bit-Sequenzen sollte diese Option eher nicht gewählt "
 "werden."
 
 #: ../src/gui/siril3.glade.h:801
@@ -3688,7 +3688,7 @@ msgid ""
 msgstr ""
 "Starte das Stacking der aktuellen Bild-Sequenz mit den oben ausgewählten "
 "Optionen, Informationen und Methoden.\n"
-"SIRIL bearbeitet den Stack intern in einem 32bit-Prozess und gibt das unten "
+"SIRIL bearbeitet den Stack intern in einem 32-bit-Prozess und gibt das unten "
 "genannte Bild mit 16bit aus."
 
 #: ../src/gui/siril3.glade.h:808
@@ -4313,12 +4313,9 @@ msgstr "Dieser stern wurde bereits ausgewählt!\n"
 msgid "Peaker"
 msgstr "Ausrichtung"
 
-# fr: 'plans' => de: 'Pläne'?
-# De quelle sorte de plan s'agit-il ici?
 #: ../src/algos/transform.c:212
-#, fuzzy
 msgid "wavelet_transform_data: bad plane number\n"
-msgstr "wavelet_transform_data: falsche Anzahl Pläne\n"
+msgstr "wavelet_transform_data: falsche Ebenen-Anzahl\n"
 
 #: ../src/compositing/align_rgb.c:131 ../src/compositing/compositing.c:601
 msgid "Error in layers alignment."
@@ -4439,12 +4436,11 @@ msgstr ""
 "Zuschnitt: wählen Sie einen Bereich aus oder geben Sie X und Y bzw. Breite "
 "und Höhe an\n"
 
-# "Pläne"? Bestimmt nicht, aber was ist es?
 #: ../src/core/command.c:590 ../src/core/command.c:2427
 #: ../src/gui/callbacks.c:4919 ../src/gui/wavelets.c:159
-#, fuzzy, c-format
+#, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
-msgstr "Wavelet: maximale Anzahl der \"Plans\" für dieses Bild ist %d\n"
+msgstr "Wavelet: maximale Anzahl der Ebenen für dieses Bild ist %d\n"
 
 #: ../src/core/command.c:596 ../src/gui/wavelets.c:168
 #, c-format
@@ -4953,10 +4949,10 @@ msgstr ""
 msgid "Quits the application"
 msgstr "Verläßt die Anwendung"
 
-# plans/planes??? Unklar!
 #: ../src/core/command_def.h:26
 msgid "Extracts \"NbPlans\" planes of wavelet domain"
-msgstr "Extrahiert \"NbPlans\" aus dem Bereich der Wavelets"
+msgstr ""
+"Extrahiert \"NbPlans\" (Anzahl der Ebenen) aus dem Bereich der Wavelets"
 
 #: ../src/core/command_def.h:28
 msgid ""
@@ -5160,7 +5156,7 @@ msgid ""
 "afterwards"
 msgstr ""
 "Erstellt eine neue, schwarze Bilddatei der Größe \"Breite\" mal \"Höhe\" im "
-"16bit-Format. Es enthält \"nb_channel\" Kanäle mit \"nb_channel\" = 1 oder "
+"16-bit-Format. Es enthält \"nb_channel\" Kanäle mit \"nb_channel\" = 1 oder "
 "3. Es wird nicht gespeichert, kann aber anschließend abgespeichert werden"
 
 #: ../src/core/command_def.h:60
@@ -5181,7 +5177,7 @@ msgstr ""
 "Addiert einen konstanten \"Wert\" zum aktuellen Bild. Diese Konstante kann "
 "auch negative Werte annehmen. Da SIRIL unsignierte FITS-Dateien verwendet, "
 "wenn die Pixel-Helligkeit negativ werden sollte, wird dessen Wert auf 0 "
-"gesetzt bzw. auf 65535 (bei 16bit) gesetzt, wenn die Pixel-Helligkeit "
+"gesetzt bzw. auf 65535 (bei 16-bit) gesetzt, wenn die Pixel-Helligkeit "
 "übersteuert"
 
 #: ../src/core/command_def.h:64
@@ -5305,8 +5301,8 @@ msgid ""
 "Saves current image under the form of a bitmap file with 8-bit per channel: "
 "\"filename\".bmp (BMP 24-bit)."
 msgstr ""
-"Speichert das aktuelle Bild als Bitmap mit 8bit je Kanal ab: \"filename\"."
-"bmp (BMP 24-bit)."
+"Speichert das aktuelle Bild als Bitmap mit 8-bit je Kanal ab: \"filename\"."
+"bmp (BMP 24--bit)."
 
 #: ../src/core/command_def.h:78
 msgid ""
@@ -5329,7 +5325,7 @@ msgid ""
 "channel. The extension of the output will be \"filename\".ppm for RGB image "
 "and \"filename\".pgm for gray-level image"
 msgstr ""
-"Speichert das aktuelle Bild als NetPBM mit einer Tiefe von 16bit je Kanal "
+"Speichert das aktuelle Bild als NetPBM mit einer Tiefe von 16-bit je Kanal "
 "ab. Die Extension der Ausgabedatei wird zu \"filename\".ppm für RGB-Bilder "
 "und \"filename\".pgm für monochrome Bilder"
 
@@ -5338,15 +5334,15 @@ msgid ""
 "Saves current image under the form of a uncompressed TIFF file with 16-bit "
 "per channel: \"filename\".tif"
 msgstr ""
-"Speichert das aktuelle Bild als unkomprimierte TIFF-Datei mit 16bit je Kanal "
-"ab: \"filename\".tif"
+"Speichert das aktuelle Bild als unkomprimierte TIFF-Datei mit 16-bit je "
+"Kanal ab: \"filename\".tif"
 
 #: ../src/core/command_def.h:82
 msgid ""
 "Same command than SAVE_TIF but the output file is saved in 8-bit per "
 "channel: \"filename\".tif"
 msgstr ""
-"Gleicher Befehl wie SAVE_TIF,aber mit einer Tiefe von 8bit je Kanal: "
+"Gleicher Befehl wie SAVE_TIF,aber mit einer Tiefe von 8-bit je Kanal: "
 "\"filename\".tif"
 
 #: ../src/core/command_def.h:83
@@ -5537,8 +5533,7 @@ msgid ""
 "Displays an image with \"low\" and \"high\" as the low and high threshold"
 msgstr "Zeigt ein Bild an mit \"hi\" bzw. \"lo\" als Schwellwerte"
 
-# encore les "plans" resp. "planes"...
-# ne me satisfait pas...
+# "a trous" alors la, j'ai besoin encore d'une explication
 #: ../src/core/command_def.h:109
 #, fuzzy
 msgid ""
@@ -5547,24 +5542,21 @@ msgid ""
 "in a file as a structure containing the planes, ready for weighted "
 "reconstruction with WRECONS"
 msgstr ""
-"Berechnet die Wavelet Transformation von \"nbr_plan\" \"Plans\" unter "
+"Berechnet die Wavelet Transformation von \"nbr_plan\" Ebenen unter "
 "Verwendung der linearen- (Typ=1) or bspline- (Typ=2) Version des \"Auf-Loch"
 "\" Algorithmus. Das Ergebnis wird als Struktur in einer Datei abgespeichert, "
-"die enthält die Pla, gebrauchsfertig für eine gewichtete Rekonstruktion mit "
-"WRECONS"
+"die enthält die Ebenen, gebrauchsfertig für eine gewichtete Rekonstruktion "
+"mit WRECONS"
 
-# bon dieu! Ces "plans" me confusent...
 #: ../src/core/command_def.h:110
-#, fuzzy
 msgid ""
 "Reconstructs to current image from the planes previously computed with "
 "wavelets and weighted with coefficients \"c1\", \"c2\", ..., \"cn\" "
 "according to the number of planes used for wavelet transform"
 msgstr ""
 "Rekonstruiert das Bild anhand der zuvor berechneten Wavelets und mit den "
-"Koeffizienten \"c1\", \"c2\", ... , \"cn\" gewichteten Planes entsprechend "
-"der Anzahl von \"Planes\", die bei der Wavelet-Transformation verwendet "
-"wurden"
+"Koeffizienten \"c1\", \"c2\", ... , \"cn\" gewichteten Ebenen entsprechend "
+"der Anzahl von Ebenen, die bei der Wavelet-Transformation verwendet wurden"
 
 #: ../src/core/initfile.c:60
 #, c-format
@@ -6331,7 +6323,7 @@ msgstr ""
 
 #: ../src/gui/plot.c:282
 msgid "Gnuplot is unavailable"
-msgstr "Gnuplot ist niht verfügbar"
+msgstr "Gnuplot ist nicht verfügbar"
 
 #: ../src/gui/plot.c:379
 #, c-format
@@ -6862,7 +6854,7 @@ msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
 msgstr ""
-"FITS-Dateien mit 64bit \"Signed Integer\" je Pixel/Kanal werden nicht "
+"FITS-Dateien mit 64-bit \"Signed Integer\" je Pixel/Kanal werden nicht "
 "unterstützt.\n"
 
 #: ../src/io/image_format_fits.c:1011
@@ -6937,15 +6929,15 @@ msgstr ""
 
 #: ../src/io/image_formats_internal.c:503
 msgid "Error reading 8-bit PPM image data.\n"
-msgstr "Fehler beim Einlesen der 8bit PPM Daten.\n"
+msgstr "Fehler beim Einlesen der 8-bit PPM Daten.\n"
 
 #: ../src/io/image_formats_internal.c:534
 msgid "Error reading 16-bit gray PPM image data.\n"
-msgstr "Fehler beim Einlesen der 16bit Graubild PPM Daten.\n"
+msgstr "Fehler beim Einlesen der 16-bit Graubild PPM Daten.\n"
 
 #: ../src/io/image_formats_internal.c:566
 msgid "Error reading 16-bit color PPM image data.\n"
-msgstr "Fehler beim Einlesen der 16bit Farbbild PPM Daten.\n"
+msgstr "Fehler beim Einlesen der 16-bit Farbbild PPM Daten.\n"
 
 #: ../src/io/image_formats_internal.c:580
 #, c-format
@@ -7017,7 +7009,7 @@ msgstr "Konnte TIFF-Datei %s nicht öffnen\n"
 
 #: ../src/io/image_formats_libraries.c:231
 msgid "Siril only works with 8/16-bit TIFF format.\n"
-msgstr "SIRIL arbeitet derzeit nur im 8/16bit TIFF-Format.\n"
+msgstr "SIRIL arbeitet derzeit nur im 8/16-bit TIFF-Format.\n"
 
 #: ../src/io/image_formats_libraries.c:265
 #, c-format
@@ -7388,7 +7380,7 @@ msgid ""
 "Writing to SER files from larger than 16-bit FITS images is not yet "
 "implemented\n"
 msgstr ""
-"Das Erstellen einer SER-Datei mit mehr 16bit Tiefe ist noch nicht "
+"Das Erstellen einer SER-Datei mit mehr 16-bit Tiefe ist noch nicht "
 "implementiert\n"
 
 #: ../src/io/ser.c:572
