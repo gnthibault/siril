@@ -56,8 +56,8 @@ struct pic_struct {
 	unsigned short nbplane;
 	unsigned short hi;
 	unsigned short lo;
-	char *date;			
-	char *time;		
+	char *date;
+	char *time;
 
 	// internal stuff
 	FILE *file;
@@ -103,27 +103,25 @@ gchar *siril_get_startup_dir();
 int	changedir(const char *dir, gchar **err);
 gchar *get_locale_filename(const gchar *path);
 int	update_sequences_list(const char *sequence_name_to_select);
-void	update_used_memory();
-double test_available_space(double seq_size);
-int	get_available_memory_in_MB();
-#ifdef _WIN32
-gchar *get_special_folder(int csidl);
-#endif
 void	expand_home_in_filename(char *filename, int size);
 WORD	get_normalized_value(fits*);
 void	read_and_show_textfile(char*, char*);
 void	swap_param(double *, double *);
-void	quicksort_d (double *a, int n);
-void	quicksort_s (WORD *a, int n);
 char*	remove_ext_from_filename(const char *basename);
 char*	str_append(char** data, const char* newdata);
 char*	format_basename(char *root);
 float	computePente(WORD *lo, WORD *hi);
 void	load_css_style_sheet (char *path);
 double	encodeJD(dateTime dt);
-gint strcompare(gconstpointer *a, gconstpointer *b);
 gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file);
-GtkWindow *siril_get_active_window();
+
+/**************** OS_utils.h *****************/
+void	update_used_memory();
+double test_available_space(double seq_size);
+int	get_available_memory_in_MB();
+#ifdef _WIN32
+gchar *get_special_folder(int csidl);
+#endif
 
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,

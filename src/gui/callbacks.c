@@ -48,6 +48,7 @@
 #include "algos/fft.h"
 #include "algos/Def_Wavelet.h"
 #include "algos/cosmetic_correction.h"
+#include "algos/sorting.h"
 #include "algos/background_extraction.h"
 #include "io/conversion.h"
 #include "io/films.h"
@@ -2039,6 +2040,27 @@ void hide_rgb_window() {
 
 void hide_gray_window() {
 	gtk_widget_hide(lookup_widget("main_window"));
+}
+
+/**
+ * Get the active window on toplevels
+ * @return the GtkWindow activated
+ */
+GtkWindow *siril_get_active_window() {
+	GtkWindow *win = NULL;
+	GList *list, *l;
+
+	list = gtk_window_list_toplevels();
+
+	for (l = list; l; l = l->next) {
+		if (gtk_window_is_active((GtkWindow *) l->data)) {
+			win = (GtkWindow *) l->data;
+			break;
+		}
+	}
+
+	g_list_free(list);
+	return win;
 }
 
 void zoomcombo_update_display_for_zoom() {

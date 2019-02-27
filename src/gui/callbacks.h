@@ -56,6 +56,7 @@ void show_main_gray_window();
 void show_rgb_window();
 void hide_rgb_window();
 void hide_gray_window();
+GtkWindow *siril_get_active_window();
 
 void zoomcombo_update_display_for_zoom();
 void initialize_FITS_name_entries();

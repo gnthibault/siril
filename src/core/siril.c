@@ -58,6 +58,7 @@
 #include "algos/Def_Wavelet.h"
 #include "algos/cosmetic_correction.h"
 #include "algos/statistics.h"
+#include "algos/sorting.h"
 #include "algos/plateSolver.h"
 #include "opencv/opencv.h"
 
@@ -1118,6 +1119,7 @@ gpointer median_filter(gpointer p) {
 	int nx = args->fit->rx;
 	int ny = args->fit->ry;
 	int radius = (args->ksize - 1) / 2;
+	int ksize_squared = args->ksize * args->ksize;
 	double norm = (double) get_normalized_value(args->fit);
 	double cur = 0.0, total;
 	assert(nx > 0 && ny > 0);
@@ -1128,6 +1130,14 @@ gpointer median_filter(gpointer p) {
 	msg[strlen(msg) - 1] = '\0';
 	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
+
+	WORD *data = calloc(ksize_squared, sizeof(WORD));
+	if (data == NULL) {
+		printf("median filter: error allocating data\n");
+		siril_add_idle(end_median_filter, args);
+		set_progress_bar_data(_("Median filter failed"), PROGRESS_DONE);
+		return GINT_TO_POINTER(1);
+	}
 
 	do {
 		for (layer = 0; layer < args->fit->naxes[2]; layer++) {
@@ -1149,27 +1159,18 @@ gpointer median_filter(gpointer p) {
 					set_progress_bar_data(NULL, cur / total);
 				cur++;
 				for (x = 0; x < nx; x++) {
-					WORD *data = calloc(args->ksize * args->ksize,
-							sizeof(WORD));
-					if (data == NULL) {
-						printf("median filter: error allocating data\n");
-						free(image);
-						siril_add_idle(end_median_filter, args);
-						set_progress_bar_data(_("Median filter failed"), PROGRESS_DONE);
-						return GINT_TO_POINTER(1);
-					}
 					i = 0;
 					for (yy = y - radius; yy <= y + radius; yy++) {
 						for (xx = x - radius; xx <= x + radius; xx++) {
 							WORD tmp;
 							if (xx < 0 && yy >= 0) {
 								if (yy >= ny)
-									tmp = image[ny - 1][00];
+									tmp = image[ny - 1][0];
 								else
 									tmp = image[yy][0];
 							} else if (xx > 0 && yy <= 0) {
 								if (xx >= nx)
-									tmp = image[00][nx - 1];
+									tmp = image[0][nx - 1];
 								else
 									tmp = image[0][xx];
 							} else if (xx <= 0 && yy <= 0) {
@@ -1187,13 +1188,11 @@ gpointer median_filter(gpointer p) {
 							data[i++] = tmp;
 						}
 					}
-					quicksort_s(data, args->ksize * args->ksize);
-					WORD median = round_to_WORD(gsl_stats_ushort_median_from_sorted_data(data, 1, args->ksize * args->ksize));
+					WORD median = round_to_WORD(quickmedian(data,ksize_squared));
 					double pixel = args->amount * (median / norm);
 					pixel += (1.0 - args->amount)
 							* ((double) image[y][x] / norm);
 					image[y][x] = round_to_WORD(pixel * norm);
-					free(data);
 				}
 			}
 			free(image);
@@ -1201,6 +1200,7 @@ gpointer median_filter(gpointer p) {
 		iter++;
 	} while (iter < args->iterations && get_thread_run());
 	invalidate_stats_from_fit(args->fit);
+	free(data);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 	set_progress_bar_data(_("Median filter applied"), PROGRESS_DONE);
@@ -1334,8 +1334,9 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 			}
 			memcpy(cpyline, line, fit->rx * sizeof(WORD));
 			int n = fit->rx;
-			quicksort_s(cpyline, n);
+			double median;
 			if (protect_highlights) {
+				quicksort_s(cpyline, n);
 				WORD reject = round_to_WORD(
 						background + invsigma * globalsigma);
 				for (i = fit->rx - 1; i >= 0; i--) {
@@ -1343,9 +1344,11 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 						break;
 					n--;
 				}
+				median = gsl_stats_ushort_median_from_sorted_data(cpyline, 1, n);
+			} else {
+				median = round_to_WORD(quickmedian(cpyline, n));
 			}
 
-			double median = gsl_stats_ushort_median_from_sorted_data(cpyline, 1, n);
 			rowvalue[row] = background - median;
 			minimum = min(minimum, rowvalue[row]);
 			free(cpyline);

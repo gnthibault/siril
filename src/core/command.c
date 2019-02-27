@@ -36,13 +36,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "core/siril.h"
-#include "core/command.h"
-#include "core/command_def.h"
-#include "core/proto.h"
-#include "core/undo.h"
-#include "core/initfile.h"
-#include "core/processing.h"
+#include "siril.h"
+#include "command.h"
+#include "command_def.h"
+#include "proto.h"
+#include "undo.h"
+#include "initfile.h"
+#include "processing.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
@@ -61,6 +61,7 @@
 #include "algos/quality.h"
 #include "algos/cosmetic_correction.h"
 #include "algos/statistics.h"
+#include "algos/sorting.h"
 #include "algos/geometry.h"
 #include "algos/rgradient.h"
 #include "stacking/stacking.h"
