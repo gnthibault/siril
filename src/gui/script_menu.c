@@ -136,9 +136,9 @@ static GSList *search_script(const char *path) {
 	}
 	while ((file = g_dir_read_name(dir)) != NULL) {
 		if (g_str_has_suffix(file, EXT)) {
-			char *str = remove_ext_from_filename(file);
+			gchar *str = (gchar*) remove_ext_from_filename(file);
 
-			list = g_slist_append(list, str);
+			list = g_slist_prepend(list, str);
 		}
 	}
 	list = g_slist_sort(list, (GCompareFunc) strcompare);

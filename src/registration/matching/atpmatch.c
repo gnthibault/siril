@@ -639,6 +639,7 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 	 */
 	free_star_array(star_array_A);
 	free_star_array(star_array_B);
+	free(mask);
 
 	return ret;
 }
@@ -2905,6 +2906,9 @@ TRANS *trans /* O: place solved coefficients into this */
 			sa = &(star_array_A[winner_index_A[i]]);
 			if (calc_trans_coords(sa, trans, &newx, &newy) != SH_SUCCESS) {
 				shError("iter_trans: calc_trans_coords fails");
+				shFree(dist2);
+				shFree(dist2_sorted);
+				shFree(a_prime);
 				return (SH_GENERIC_ERROR);
 			}
 			a_prime[i].x = newx;
@@ -3095,6 +3099,9 @@ TRANS *trans /* O: place solved coefficients into this */
 				winner_votes, winner_index_A, winner_index_B,
 				trans) != SH_SUCCESS) {
 			shError("iter_trans: calc_trans returns with error");
+			shFree(dist2);
+			shFree(dist2_sorted);
+			shFree(a_prime);
 			return (SH_GENERIC_ERROR);
 		}
 

@@ -297,7 +297,7 @@ unsigned char *cvCalculH(s_star *star_array_img,
 	std::vector<Point2f> ref;
 	std::vector<Point2f> img;
 	Mat mask;
-	unsigned char *ret;
+	unsigned char *ret = NULL;
 	int i;
 
 	/* build vectors with lists of stars. */
@@ -311,9 +311,11 @@ unsigned char *cvCalculH(s_star *star_array_img,
 		return NULL;
 	}
 	Hom->Inliers = countNonZero(mask);
-	ret = (unsigned char *) malloc(n * sizeof(unsigned char));
-	for (i = 0; i < n; i++) {
-		ret[i] = mask.at<uchar>(i);
+	if (n > 0) {
+		ret = (unsigned char *) malloc(n * sizeof(unsigned char));
+		for (i = 0; i < n; i++) {
+			ret[i] = mask.at<uchar>(i);
+		}
 	}
 
 	convert_MatH_to_H(H, Hom);

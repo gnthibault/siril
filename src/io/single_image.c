@@ -87,10 +87,9 @@ void free_image_data() {
 		com.rgbbuf = NULL;
 	}
 	if (com.uniq) {
-		if (com.uniq->filename)
-			free(com.uniq->filename);
-		if (com.uniq->comment)
-			free(com.uniq->comment);
+		free(com.uniq->filename);
+		free(com.uniq->comment);
+		free(com.uniq->layers);
 		free(com.uniq);
 		com.uniq = NULL;
 	}

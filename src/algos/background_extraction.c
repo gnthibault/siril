@@ -367,12 +367,13 @@ static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, si
 			background_sample *sample = get_sample(image, x, y, nx, ny);
 			if (sample->mean <= tolerance * mean) {
 //				printf("median=%lf, mean=%lf / global mean=%lf\n", sample->median[0], sample->mean, mean);
-				list = g_slist_append(list, sample);
+				list = g_slist_prepend(list, sample);
 			} else {
 				g_free(sample);
 			}
 		}
 	}
+	list = g_slist_reverse(list);
 	free(image);
 
 	return list;
@@ -502,9 +503,18 @@ GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 	list = orig;
 
 	while (list) {
-		background_sample *sample = (background_sample *)list->data;
-		if ((fabs(pt.x - sample->position.x) <= sample->size * 2)
-				&& (fabs(pt.y - sample->position.y) <= sample->size * 2)) {
+		background_sample *sample;
+		double radius;
+		double dx;
+		double dy;
+
+		sample = (background_sample *)list->data;
+		dx = pt.x - sample->position.x;
+		dy = pt.y - sample->position.y;
+		radius = sqrt(dx * dx + dy * dy);
+
+		if (radius <= sample->size * 2) {
+			g_free(sample);
 			orig = g_slist_remove(orig, sample);
 			break;
 		}
@@ -537,6 +547,7 @@ void on_background_generate_clicked(GtkButton *button, gpointer user_data) {
 
 	mouse_status = MOUSE_ACTION_DRAW_SAMPLES;
 	redraw(com.cvport, REMAP_ALL);
+	update_used_memory();
 	set_cursor_waiting(FALSE);
 }
 

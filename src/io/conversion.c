@@ -545,7 +545,7 @@ static void initialize_convert() {
 	while (valid) {
 		gtk_tree_model_get(model, &iter, COLUMN_FILENAME, &file_data,
 				COLUMN_DATE, &file_date, -1);
-		list = g_list_append (list, file_data);
+		list = g_list_prepend(list, file_data);
 
 		const char *src_ext = get_filename_ext(file_data);
 		if (count != 0) {
@@ -554,18 +554,20 @@ static void initialize_convert() {
 			}
 		}
 		imagetype = get_type_for_extension(src_ext);
-		valid = gtk_tree_model_iter_next (model, &iter);
-		count ++;
+		valid = gtk_tree_model_iter_next(model, &iter);
+		count++;
 	}
 
 	if ((convflags & CONVDEBAYER) && (imagetype == TYPESER) && (several_type_of_files == FALSE)) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
 				_("The Debayer option is not allowed in SER conversion, please uncheck the option."));
+		g_list_free_full(list, g_free);
 		set_cursor_waiting(FALSE);
 		return;
 	} else if ((convflags & CONVMULTIPLE) && (imagetype == TYPESER) && (several_type_of_files == FALSE)) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
 				_("The Multiple SER option is not allowed in SER conversion, please uncheck the option."));
+		g_list_free_full(list, g_free);
 		set_cursor_waiting(FALSE);
 		return;
 	}
@@ -585,6 +587,7 @@ static void initialize_convert() {
 	if (!com.wd) {
 		tmpmsg = siril_log_message(_("Conversion: no working directory set.\n"));
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("Warning"), tmpmsg);
+		g_list_free_full(list, g_free);
 		set_cursor_waiting(FALSE);
 		return;
 	}
@@ -592,9 +595,16 @@ static void initialize_convert() {
 		tmpmsg = siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), tmpmsg);
 		fprintf (stderr, "Conversion: %s\n", error->message);
+		g_list_free_full(list, g_free);
 		set_cursor_waiting(FALSE);
 		return ;
 	}
+
+	/* g_list_append() has to traverse the entire list to find the end,
+	 * which is inefficient when adding multiple elements. A common idiom
+	 * to avoid the inefficiency is to use g_list_prepend() and reverse the
+	 * list with g_list_reverse() when all elements have been added. */
+	list = g_list_reverse(list);
 
 	args = malloc(sizeof(struct _convert_data));
 	args->start = (atof(indice) == 0 || atof(indice) > USHRT_MAX) ? 1 : atof(indice);

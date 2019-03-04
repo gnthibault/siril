@@ -149,13 +149,14 @@ static void fits_read_history(fitsfile *fptr, GSList **history, int *status) {
 				break;
 			cardlen = strlen(card);
 			if (!strncmp(card, "HISTORY", 7)) {
-				list = g_slist_append(list, g_strdup(card + 8));
+				list = g_slist_prepend(list, g_strdup(card + 8));
 			}
 		}
 		fits_movrel_hdu(fptr, 1, NULL, status);
 	}
 	if (*history)
 		g_slist_free_full(*history, free);
+	list = g_slist_reverse(list);
 	*history = list;
 }
 
