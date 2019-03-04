@@ -49,7 +49,6 @@ static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,
 	}
 
 	int n = 0;
-	int start;
 	value = calloc(24, sizeof(WORD));
 	for (y = yy - radius; y <= yy + radius; y += step) {
 		for (x = xx - radius; x <= xx + radius; x += step) {

@@ -25,6 +25,7 @@
 #ifdef HAVE_LIBCURL
 
 #include <math.h>
+#include <float.h>
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_sort.h>
 #include <gsl/gsl_version.h>
@@ -198,6 +199,7 @@ static double siril_stats_trmean_from_sorted_data(const double trim,
 
 static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
 	int i = 0, ngood = 0;
+	int k;
 	int chan;
 
 	double *data[3];
@@ -207,9 +209,12 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 	data[GREEN] = malloc(sizeof(double) * nb_stars);
 	data[BLUE] = malloc(sizeof(double) * nb_stars);
 
-	memset(data[RED], 99999.9, sizeof(double) * nb_stars);
-	memset(data[GREEN], 99999.9, sizeof(double) * nb_stars);
-	memset(data[BLUE], 99999.9, sizeof(double) * nb_stars);
+	/* initialize to DBL_MAX */
+	for (k = 0; k < nb_stars; k++) {
+		data[RED][k] = DBL_MAX;
+		data[GREEN][k] = DBL_MAX;
+		data[BLUE][k] = DBL_MAX;
+	}
 
 	siril_log_message(_("Applying aperture photometry to %d stars.\n"), nb_stars);
 
@@ -242,9 +247,9 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 		data[BLUE][i] = (flux[n_channel] / flux[BLUE]) * b;
 
 		if (isnan(data[RED][i]) || isnan(data[GREEN][i]) || isnan(data[BLUE][i])) {
-			data[RED][i] = 99999.9;
-			data[GREEN][i] = 99999.9;
-			data[BLUE][i] = 99999.9;
+			data[RED][i] = DBL_MAX;
+			data[GREEN][i] = DBL_MAX;
+			data[BLUE][i] = DBL_MAX;
 			i++;
 			continue;
 		}
@@ -253,12 +258,12 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 	}
 
 	/* sort in ascending order before using gsl_stats_trmean_from_sorted_data 
-	Hence, 99999.9 are at the end of the tab */
+	Hence, DBL_MAX are at the end of the tab */
 	gsl_sort(data[RED], 1, nb_stars);
 	gsl_sort(data[GREEN], 1, nb_stars);
 	gsl_sort(data[BLUE], 1, nb_stars);
 
-	/* we do not take into account 99999.9 values */
+	/* we do not take into account DBL_MAX values */
 	kw[RED] = siril_stats_trmean_from_sorted_data(alpha, data[RED], 1, ngood);
 	kw[GREEN] = siril_stats_trmean_from_sorted_data(alpha, data[GREEN], 1, ngood);
 	kw[BLUE] = siril_stats_trmean_from_sorted_data(alpha, data[BLUE], 1, ngood);
