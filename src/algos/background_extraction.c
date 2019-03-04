@@ -167,12 +167,14 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 	int status = gsl_multifit_wlinear(J, w, y, c, cov, &chisq, work);
 	if (status != GSL_SUCCESS) {
 		printf("GSL multifit error: %s\n", gsl_strerror(status));
+		gsl_matrix_free(J);
+		gsl_vector_free(y);
+		gsl_vector_free(w);
+		gsl_vector_free(c);
+		gsl_matrix_free(cov);
+
 		return NULL;
 	}
-	gsl_multifit_linear_free(work);
-	gsl_matrix_free(J);
-	gsl_vector_free(y);
-	gsl_vector_free(w);
 
 // Calculation of the background with the same dimension that the input matrix.
 	double *background = malloc(height * width * sizeof(double));
@@ -196,6 +198,15 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 			background[j + i * width] = pixel;
 		}
 	}
+
+	/* free memory */
+	gsl_multifit_linear_free(work);
+	gsl_matrix_free(J);
+	gsl_vector_free(y);
+	gsl_vector_free(w);
+	gsl_vector_free(c);
+	gsl_matrix_free(cov);
+
 	return background;
 }
 
@@ -355,6 +366,7 @@ static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, si
 		for (x = dist / 2; x <= nx - dist / 2; x = x + dist) {
 			background_sample *sample = get_sample(image, x, y, nx, ny);
 			if (sample->mean <= tolerance * mean) {
+//				printf("median=%lf, mean=%lf / global mean=%lf\n", sample->median[0], sample->mean, mean);
 				list = g_slist_append(list, sample);
 			} else {
 				g_free(sample);
@@ -498,6 +510,8 @@ GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 		}
 		list = list->next;
 	}
+	free(image);
+
 	return orig;
 }
 
@@ -550,16 +564,20 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 		/* compute background */
 		image[channel] = convert_fits_to_img(&gfit, channel, TRUE);
 		background = computeBackground(com.grad_samples, channel, gfit.rx, gfit.ry, get_poly_order());
+
 		/* remove background */
 		remove_gradient(image[channel], background, gfit.rx * gfit.ry, correction);
 		convert_img_to_fits(image[channel], &gfit, channel);
+
+		/* free memory */
 		free(image[channel]);
+		free(background);
 	}
 
-	free(background);
 	invalidate_stats_from_fit(&gfit);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
+	update_used_memory();
 	set_cursor_waiting(FALSE);
 }
 

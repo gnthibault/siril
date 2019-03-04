@@ -82,11 +82,6 @@ static double siril_stats_ushort_mad(WORD* data, const size_t stride,
 	return mad;
 }
 
-/* Here this is a bit tricky. This function computes the median from sorted data
- * because this function is called in IKSS where a quick select algorithm for
- * finding median is very inefficient.
- * However, this function is used in a function where sorting is mandatory.
- */
 static double siril_stats_double_mad(const double* data, const size_t stride,
 		const size_t n, const double median) {
 	size_t i;
@@ -319,7 +314,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	if (compute_median && stat->median < 0.) {
 		if (!data) return NULL;	// not in cache, don't compute
 		siril_debug_print("- stats %p fit %p (%d): computing median\n", stat, fit, layer);
-		stat->median = histogram_median (data, stat->ngoodpix);
+		stat->median = histogram_median(data, stat->ngoodpix);
 	}
 
 	/* Calculation of average absolute deviation from the median */

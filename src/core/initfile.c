@@ -488,5 +488,7 @@ int checkinitfile() {
 		com.ext = strdup(".fit");
 		return (writeinitfile());
 	}
+	g_free(home);
+
 	return 0;
 }
