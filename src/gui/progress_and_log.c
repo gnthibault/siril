@@ -228,19 +228,31 @@ void show_time(struct timeval t_start, struct timeval t_end) {
 }
 
 void show_time_msg(struct timeval t_start, struct timeval t_end, const char *msg) {
-	float time = (float) (((t_end.tv_sec - t_start.tv_sec) * 1000000L
-			+ t_end.tv_usec) - t_start.tv_usec) / 1000000.0;
+	double start, end, diff;
 
-	if (time > 60.f) {
-		int min = (int) time / 60;
-		int sec = (int) time % 60 + 1;
-		siril_log_color_message(_("%s: %d min %.2d s.\n"), "green",
-				msg, min, sec);
-	} else if (time < 1.f) {
-		float ms = time * 1000.f;
-		siril_log_color_message(_("%s: %.2f ms.\n"), "green", msg, ms);
-	} else {
-		siril_log_color_message(_("%s: %.2f s.\n"), "green", msg, time);
+	start = (double) (t_start.tv_sec + t_start.tv_usec / 1.0E6);
+	end = (double) (t_end.tv_sec + t_end.tv_usec / 1.0E6);
+	diff = end - start;
+
+	if (diff >= 0.0) {
+		if (diff >= 3600.0) {
+			int hour = (int) diff / 3600;
+			int sec = (int) diff % 3600;
+			int min = sec / 60;
+			sec = sec % 60;
+			siril_log_color_message(_("%s: %d h %02d min %.2d s.\n"), "green",
+					msg, hour, min, sec);
+		} else if (diff >= 60.0) {
+			int min = (int) diff / 60;
+			int sec = (int) diff % 60;
+			siril_log_color_message(_("%s: %d min %02d s.\n"), "green", msg,
+					min, sec);
+		} else if (diff < 1.0) {
+			double ms = diff * 1.0E3;
+			siril_log_color_message(_("%s: %.2lf ms.\n"), "green", msg, ms);
+		} else {
+			siril_log_color_message(_("%s: %.2lf s.\n"), "green", msg, diff);
+		}
 	}
 }
 

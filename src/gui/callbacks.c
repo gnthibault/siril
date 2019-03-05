@@ -3087,9 +3087,9 @@ void save_all_windows_position() {
 void gtk_main_quit() {
 	close_sequence(FALSE);	// save unfinished business
 	close_single_image();	// close the previous image and free resources
+	g_slist_free_full(com.script_path, g_free);
 	g_object_unref(G_OBJECT(lookup_widget("main_window")));
 	g_object_unref(G_OBJECT(lookup_widget("rgb_window")));
-	undo_flush();
 	exit(EXIT_SUCCESS);
 }
 

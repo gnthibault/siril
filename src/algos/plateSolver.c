@@ -173,16 +173,13 @@ static int parse_curl_buffer(char *buffer, struct object *obj) {
 	nargs = g_strv_length(token);
 
 	while (i < nargs) {
-		if (g_strrstr (token[i], "NED")) {
+		if (g_strrstr (token[i], "=NED")) {
 			resolver = RESOLVER_NED;
-		}
-		else if (g_strrstr (token[i], "Simbad")) {
+		} else if (g_strrstr (token[i], "=Simbad")) {
 			resolver = RESOLVER_SIMBAD;
-		}
-		else if (g_strrstr(token[i], "VizieR")) {
+		} else if (g_strrstr(token[i], "=VizieR")) {
 			resolver = RESOLVER_VIZIER;
-		}
-		else if (g_str_has_prefix (token[i], "%J ")) {
+		} else if (g_str_has_prefix (token[i], "%J ")) {
 			fields = g_strsplit(token[i], " ", -1);
 			sscanf(fields[1], "%lf", &center.x);
 			sscanf(fields[2], "%lf", &center.y);
@@ -198,8 +195,7 @@ static int parse_curl_buffer(char *buffer, struct object *obj) {
 				platedObject[resolver].south = (center.y < 0.0);
 			}
 			g_strfreev(fields);
-		}
-		else if (g_str_has_prefix (token[i], "%I.0 ")) {
+		} else if (g_str_has_prefix (token[i], "%I.0 ")) {
 			if (resolver != -1) {
 				gchar *name = g_strstr_len(token[i], strlen(token[i]), "%I.0 ");
 				gchar *realname;

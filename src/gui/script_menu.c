@@ -46,7 +46,7 @@ static GSList *initialize_script_paths(){
 #ifdef _WIN32
 	wchar_t wFilename[MAX_PATH];
 
-	list = g_slist_append(list, g_build_filename (get_special_folder (CSIDL_APPDATA),
+	list = g_slist_prepend(list, g_build_filename (get_special_folder (CSIDL_APPDATA),
 			"siril", "scripts", NULL));
 
 	if (!GetModuleFileNameW(NULL, wFilename, MAX_PATH)) {
@@ -55,15 +55,16 @@ static GSList *initialize_script_paths(){
 		gchar *fName = g_utf16_to_utf8(wFilename, -1, NULL, NULL, NULL);
 		gchar *path = g_path_get_dirname(fName);
 		path[strlen(path) - 4] = '\0';		/* remove "/bin" */
-		list = g_slist_append(list, g_build_filename(path, "scripts", NULL));
+		list = g_slist_prepend(list, g_build_filename(path, "scripts", NULL));
 		g_free(fName);
 		g_free(path);
 	}
 #else
-	list = g_slist_append(list, g_build_filename(PACKAGE_DATA_DIR, "scripts", NULL));	
-	list = g_slist_append(list, g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL));
-	list = g_slist_append(list, g_build_filename(g_get_home_dir(), "siril", "scripts", NULL));
+	list = g_slist_prepend(list, g_build_filename(PACKAGE_DATA_DIR, "scripts", NULL));
+	list = g_slist_prepend(list, g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL));
+	list = g_slist_prepend(list, g_build_filename(g_get_home_dir(), "siril", "scripts", NULL));
 #endif
+	list = g_slist_reverse(list);
 	return list;
 }
 
@@ -85,9 +86,10 @@ static GSList *get_list_from_textview() {
 		gchar **token = g_strsplit(txt, "\n", -1);
 		while (token[i]) {
 			if (*token[i] != '\0')
-				list = g_slist_append(list, g_strdup(token[i]));
+				list = g_slist_prepend(list, g_strdup(token[i]));
 			i++;
 		}
+		list = g_slist_reverse(list);
 		g_strfreev(token);
 	}
 

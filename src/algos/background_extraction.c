@@ -386,19 +386,9 @@ static GSList *update_median_for_rgb_samples(GSList *orig, fits *fit) {
 	int channel, i;
 	double *rgb[3];
 
-	rgb[RLAYER] = malloc(nx * ny * sizeof(double));
-	rgb[GLAYER] = malloc(nx * ny * sizeof(double));
-	rgb[BLAYER] = malloc(nx * ny * sizeof(double));
-
-	mirrorx(fit, FALSE);
-
-	for (i = 0; i < ny * nx; i++) {
-		rgb[RLAYER][i] = (double) fit->pdata[RLAYER][i] / USHRT_MAX_DOUBLE;
-		rgb[GLAYER][i] = (double) fit->pdata[GLAYER][i] / USHRT_MAX_DOUBLE;
-		rgb[BLAYER][i] = (double) fit->pdata[BLAYER][i] / USHRT_MAX_DOUBLE;
-	}
-
-	mirrorx(fit, FALSE);
+	rgb[RLAYER] = convert_fits_to_img(fit, RLAYER, FALSE);
+	rgb[GLAYER] = convert_fits_to_img(fit, GLAYER, FALSE);
+	rgb[BLAYER] = convert_fits_to_img(fit, BLAYER, FALSE);
 
 	while (list) {
 		background_sample *sample = (background_sample *)list->data;

@@ -1466,9 +1466,8 @@ int process_clearstar(int nb){
 }
 
 int process_close(int nb) {
-	free_image_data();
+	close_single_image();
 	close_sequence(FALSE);
-	undo_flush();
 	if (!com.script) {
 		hide_rgb_window();
 		hide_gray_window();
