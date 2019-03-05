@@ -199,6 +199,7 @@ static double siril_stats_trmean_from_sorted_data(const double trim,
 
 static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
 	int i = 0, ngood = 0;
+	gboolean no_phot = FALSE;
 	int k;
 	int chan;
 
@@ -231,11 +232,16 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 		for (chan = 0; chan < 3; chan ++) {
 			fitted_PSF *photometry = psf_get_minimisation(fit, chan, &area, TRUE, FALSE);
 			if (!photometry) {
-				i++;
-				continue;
+				no_phot = TRUE;
+				break;
 			}
 			flux[chan] = pow(10, -0.4 * photometry->mag);
 			free(photometry);
+		}
+		if (no_phot) {
+			i++;
+			no_phot = FALSE;
+			continue;
 		}
 		/* get r g b coefficient from bv color index */
 		bv = stars[i]->BV;
