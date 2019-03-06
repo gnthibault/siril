@@ -203,6 +203,7 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 			FFMS_RESIZER_BICUBIC, &film->errinfo)) {
 		/* handle error */
 		fprintf(stderr, "FILM error: %s\n", film->errmsg);
+		film_close_file(film);
 		return FILM_ERROR;
 	}
 
@@ -361,6 +362,8 @@ int film_read_frame(struct film_struct *film, int frame_no, fits *fit) {
 
 void film_close_file(struct film_struct *film) {
 	/* now it's time to clean up */
+	free(film->errmsg);
+	free(film->filename);
 	FFMS_DestroyVideoSource(film->videosource);
 }
 

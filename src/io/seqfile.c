@@ -334,6 +334,7 @@ sequence * readseqfile(const char *name){
 						filmString = g_string_new(seqfilename);
 						g_string_truncate(filmString, strlen(seqfilename) - 3);
 						g_string_append(filmString, supported_film[i].extension);
+						g_free(filmname);
 						filmname = g_string_free(filmString, FALSE);
 
 						if (g_file_test(filmname, G_FILE_TEST_EXISTS)) {
@@ -343,6 +344,7 @@ sequence * readseqfile(const char *name){
 							gchar *upcase;
 
 							g_free(filmname);
+							filmname = NULL;
 
 							filmString = g_string_new(seqfilename);
 							g_string_truncate(filmString, strlen(seqfilename) - 3);
@@ -362,11 +364,13 @@ sequence * readseqfile(const char *name){
 					if (film_open_file(filmname, seq->film_file)) {
 						free(seq->film_file);
 						seq->film_file = NULL;
+						g_free(filmname);
 						goto error;
 					}
 					else {
 						film_display_info(seq->film_file);
 						seq->ext = strdup(get_filename_ext(seq->film_file->filename));
+						g_free(filmname);
 					}
 				}
 				else seq->ext = "fit";

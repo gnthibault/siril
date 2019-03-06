@@ -1895,6 +1895,9 @@ void display_filename() {
 		g_snprintf(str, sizeof(str), _("%s (channel 2)"), filename);
 		gtk_label_set_text(fn_label, str);
 	}
+	if (!com.uniq) {
+		free(filename);
+	}
 }
 
 /* set available layers in the layer list of registration */

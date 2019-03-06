@@ -383,7 +383,7 @@ static GSList *update_median_for_rgb_samples(GSList *orig, fits *fit) {
 	GSList *list = orig;
 	int nx = fit->rx;
 	int ny = fit->ry;
-	int channel, i;
+	int channel;
 	double *rgb[3];
 
 	rgb[RLAYER] = convert_fits_to_img(fit, RLAYER, FALSE);
