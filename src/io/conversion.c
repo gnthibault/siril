@@ -901,6 +901,10 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 			siril_log_message(_("Filter Pattern: %s\n"), filter_pattern[com.debayer.bayer_pattern]);
 		}
 
+		if (stretch_cfa && fit->maximum_pixel_value) {
+			siril_log_message(_("The FITS file is being normalized to 16-bit\n"));
+		}
+
 		if (debayer(fit, com.debayer.bayer_inter, stretch_cfa)) {
 			siril_log_message(_("Cannot perform debayering\n"));
 			retval = -1;
