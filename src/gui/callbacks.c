@@ -2476,13 +2476,14 @@ void set_GUI_LIBRAW() {
 	GtkComboBox *inter = GTK_COMBO_BOX(lookup_widget("comboBayer_inter"));
 	GtkToggleButton *compat = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility"));
 	GtkToggleButton *use_header = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_SER_use_header"));
+	GtkToggleButton *stretch_cfa = GTK_TOGGLE_BUTTON(lookup_widget("stretch_CFA_to16_button"));
 	GtkToggleButton *demosaicingButton = GTK_TOGGLE_BUTTON(lookup_widget("demosaicingButton"));
 	gtk_combo_box_set_active(pattern, com.debayer.bayer_pattern);
 	gtk_combo_box_set_active(inter, com.debayer.bayer_inter);
 	gtk_toggle_button_set_active(compat, com.debayer.compatibility);
 	gtk_toggle_button_set_active(use_header, com.debayer.use_bayer_header);
 	gtk_toggle_button_set_active(demosaicingButton,	com.debayer.open_debayer);
-	gtk_toggle_button_set_active(use_header, com.debayer.stretch);
+	gtk_toggle_button_set_active(stretch_cfa, com.debayer.stretch);
 
 }
 
@@ -3949,7 +3950,7 @@ static int test_for_master_files() {
 void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	GtkEntry *entry;
 	GtkWidget *autobutton;
-	GtkToggleButton *CFA, *debayer, *equalize_cfa;
+	GtkToggleButton *CFA, *debayer, *equalize_cfa, *compatibility, *stretch_cfa;
 	GtkSpinButton *sigHot, *sigCold;
 
 	if (!single_image_is_loaded() && !sequence_is_loaded())
@@ -3985,6 +3986,8 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 
 	CFA = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
 	debayer = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_pp_dem"));
+	compatibility = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility"));
+	stretch_cfa = GTK_TOGGLE_BUTTON(lookup_widget("stretch_CFA_to16_button"));
 	equalize_cfa = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
 	sigHot = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeHot"));
 	sigCold = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeCold"));
@@ -4000,7 +4003,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 		args->sigma[1] = -1.0;
 
 	args->is_cfa = gtk_toggle_button_get_active(CFA);
-	args->compatibility = com.debayer.compatibility;
+	args->compatibility = gtk_toggle_button_get_active(compatibility);
 	args->debayer = gtk_toggle_button_get_active(debayer);
 	args->equalize_cfa = gtk_toggle_button_get_active(equalize_cfa);
 

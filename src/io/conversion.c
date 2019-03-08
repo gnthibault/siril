@@ -615,6 +615,7 @@ static void initialize_convert() {
 	args->t_start.tv_sec = t_start.tv_sec;
 	args->t_start.tv_usec = t_start.tv_usec;
 	args->compatibility = com.debayer.compatibility;
+	args->stretch_cfa = com.debayer.stretch;
 	args->command_line = FALSE;
 	args->several_type_of_files = several_type_of_files;
 	args->destroot = g_strdup(destroot);
