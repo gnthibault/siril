@@ -1,9 +1,9 @@
 ############################################
 # Script for Siril 0.9
-# January 2019
+# March 2019
 # (C) Cyril Richard
 # Modified by Colmic
-# DSLR_preprocessing+CC v1.0
+# DSLR_preprocessing+CC v1.4
 ########### PREPROCESSING SCRIPT ###########
 # Script for DSLR color camera preprocessing
 # needs 4 sets of RAW images in the working
@@ -45,7 +45,7 @@ preprocess light_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cf
 seqfind_cosme_cfa pp_light_ 3 3
 
 #debayer images
-preprocess cc_pp_light_ -debayer
+preprocess cc_pp_light_ -debayer -stretch
 
 #align lights
 register pp_cc_pp_light_ -drizzle

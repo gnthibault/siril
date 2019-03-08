@@ -885,7 +885,7 @@ gpointer seqpreprocess(gpointer p) {
 		}
 
 		if (args->debayer) {
-			debayer_if_needed(TYPEFITS, fit, args->compatibility, TRUE);
+			debayer_if_needed(TYPEFITS, fit, args->compatibility, TRUE, args->stretch_cfa);
 		}
 
 		gchar *filename = g_path_get_basename(com.uniq->filename);
@@ -978,7 +978,7 @@ gpointer seqpreprocess(gpointer p) {
 				cosmeticCorrection(fit, dev, icold + ihot, args->is_cfa);
 
 			if (args->debayer && args->seq->type == SEQ_REGULAR) {
-				debayer_if_needed(TYPEFITS, fit, args->compatibility, TRUE);
+				debayer_if_needed(TYPEFITS, fit, args->compatibility, TRUE, args->stretch_cfa);
 			}
 
 			snprintf(dest_filename, 255, "%s%s", args->seq->ppprefix,

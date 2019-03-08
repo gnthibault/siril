@@ -269,14 +269,14 @@ static int save_to_target_fits(fits *fit, const char *dest_filename) {
 }
 
 /* open the file with path source from any image type and load it into a new FITS object */
-static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility) {
+static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility, gboolean stretch_cfa) {
 	int retval = 0;
 	fits *tmpfit = calloc(1, sizeof(fits));
 
 	retval = any_to_fits(imagetype, source, tmpfit);
 
 	if (!retval)
-		retval = debayer_if_needed(imagetype, tmpfit, compatibility, FALSE);
+		retval = debayer_if_needed(imagetype, tmpfit, compatibility, FALSE, stretch_cfa);
 
 	if (retval) {
 		clearfits(tmpfit);
@@ -814,7 +814,7 @@ gpointer convert_thread_worker(gpointer p) {
 			free(fit);
 		}
 		else {	// single image
-			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility);
+			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility, args->stretch_cfa);
 			if (fit) {
 				if (convflags & CONVDSTSER) {
 					if (convflags & CONV1X1)
@@ -857,7 +857,7 @@ clean_exit:
 	return NULL;
 }
 
-int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer) {
+int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer, gboolean stretch_cfa) {
 	int retval = 0;
 	sensor_pattern tmp;
 	/* What the hell?
@@ -900,7 +900,7 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 			siril_log_message(_("Filter Pattern: %s\n"), filter_pattern[com.debayer.bayer_pattern]);
 		}
 
-		if (debayer(fit, com.debayer.bayer_inter)) {
+		if (debayer(fit, com.debayer.bayer_inter, stretch_cfa)) {
 			siril_log_message(_("Cannot perform debayering\n"));
 			retval = -1;
 		} else {

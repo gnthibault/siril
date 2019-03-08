@@ -856,7 +856,7 @@ static int retrieveXTRANSPattern(char *bayer, int xtrans[6][6]) {
 	return 0;
 }
 
-int debayer(fits* fit, interpolation_method interpolation) {
+int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa) {
 	int i, j;
 	int width = fit->rx;
 	int height = fit->ry;
@@ -888,15 +888,21 @@ int debayer(fits* fit, interpolation_method interpolation) {
 	fit->pdata[BLAYER] = fit->data + npixels * 2;
 	fit->bitpix = fit->orig_bitpix;
 	for (i = 0, j = 0; j < npixels; i += 3, j++) {
+		double r = (double) newbuf[i + RLAYER];
+		double g = (double) newbuf[i + GLAYER];
+		double b = (double) newbuf[i + BLAYER];
+		if (stretch_cfa && fit->maximum_pixel_value) {
+			double norm = fit->bitpix == 8 ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
+			r = (r / (double) fit->maximum_pixel_value) * norm;
+			g = (g / (double) fit->maximum_pixel_value) * norm;
+			b = (b / (double) fit->maximum_pixel_value) * norm;
+		}
 		fit->pdata[RLAYER][j] =
-				(fit->bitpix == 8) ?
-						round_to_BYTE(newbuf[i + RLAYER]) : newbuf[i + RLAYER];
+				(fit->bitpix == 8) ? round_to_BYTE(r) : round_to_WORD(r);
 		fit->pdata[GLAYER][j] =
-				(fit->bitpix == 8) ?
-						round_to_BYTE(newbuf[i + GLAYER]) : newbuf[i + GLAYER];
+				(fit->bitpix == 8) ? round_to_BYTE(g) : round_to_WORD(g);
 		fit->pdata[BLAYER][j] =
-				(fit->bitpix == 8) ?
-						round_to_BYTE(newbuf[i + BLAYER]) : newbuf[i + BLAYER];
+				(fit->bitpix == 8) ? round_to_BYTE(b) : round_to_WORD(b);
 	}
 	free(newbuf);
 	return 0;

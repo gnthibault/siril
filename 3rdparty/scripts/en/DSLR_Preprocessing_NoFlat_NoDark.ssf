@@ -1,9 +1,9 @@
 ############################################
 # Script for Siril 0.9
-# January 2019
+# March 2019
 # (C) Cyril Richard
 # Modified by Colmic
-# DSLR_preprocessing v1.2
+# DSLR_preprocessing v1.4
 ########### PREPROCESSING SCRIPT ###########
 #             No Flat No Dark
 #
@@ -23,7 +23,7 @@ cd ..
 #preprocess lights
 cd lights
 convertraw light_
-preprocess light_ -bias=../biases/bias_stacked -debayer
+preprocess light_ -bias=../biases/bias_stacked -debayer -stretch
 
 #align lights
 register pp_light_

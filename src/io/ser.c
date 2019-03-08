@@ -838,7 +838,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 				warning = TRUE;
 			}
 		}
-		debayer(fit, com.debayer.bayer_inter);
+		debayer(fit, com.debayer.bayer_inter, FALSE);
 		com.debayer.bayer_pattern = sensortmp;
 		break;
 	case SER_BGR:

@@ -1,9 +1,9 @@
 ############################################
 # Script pour Siril 0.9
-# Janvier 2019
+# Mars 2019
 # (C) Cyril Richard
 # Adapté, modifié et traduit par Colmic
-# 
+# Pre-traitement_APN v1.4
 # 
 # Pré-traitement pour APN
 # Sans Flat
@@ -24,7 +24,7 @@ cd ..
 #pré-traitement des brutes
 cd brutes
 convertraw brute_
-preprocess brute_ -dark=../darks/dark_stacked -cfa -debayer
+preprocess brute_ -dark=../darks/dark_stacked -cfa -debayer -stretch
 
 #Alignement des brutes
 register pp_brute_

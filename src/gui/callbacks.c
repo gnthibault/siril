@@ -1800,6 +1800,8 @@ void update_libraw_interface() {
 			GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_SER_use_header")));
 	com.debayer.compatibility = gtk_toggle_button_get_active(
 			GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility")));
+	com.debayer.stretch = gtk_toggle_button_get_active(
+			GTK_TOGGLE_BUTTON(lookup_widget("stretch_CFA_to16_button")));
 	writeinitfile();
 }
 
@@ -2480,6 +2482,8 @@ void set_GUI_LIBRAW() {
 	gtk_toggle_button_set_active(compat, com.debayer.compatibility);
 	gtk_toggle_button_set_active(use_header, com.debayer.use_bayer_header);
 	gtk_toggle_button_set_active(demosaicingButton,	com.debayer.open_debayer);
+	gtk_toggle_button_set_active(use_header, com.debayer.stretch);
+
 }
 
 void set_GUI_photometry() {

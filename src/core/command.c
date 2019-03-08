@@ -2231,11 +2231,12 @@ int process_stackone(int nb) {
 // preprocess sequencename -bias= -dark= -flat= -cfa -debayer
 int process_preprocess(int nb) {
 	struct preprocessing_data *args = malloc(sizeof(struct preprocessing_data));
-	int nb_command_max = 9;
+	int nb_command_max = 10;
 
 	com.preprostatus = 0;
 	gboolean is_cfa = FALSE;
 	gboolean do_debayer = FALSE;
+	gboolean stretch_cfa = FALSE;
 	gboolean flip = FALSE;
 	gboolean equalize_cfa = FALSE;
 	gchar *file;
@@ -2308,8 +2309,10 @@ int process_preprocess(int nb) {
 				com.preprostatus |= USE_OPTD;
 			} else if (!strcmp(word[i], "-cfa")) {
 				is_cfa = TRUE;
-			}  else if (!strcmp(word[i], "-debayer")) {
+			} else if (!strcmp(word[i], "-debayer")) {
 				do_debayer = TRUE;
+			} else if (!strcmp(word[i], "-stretch")) {
+				stretch_cfa = TRUE;
 			} else if (!strcmp(word[i], "-flip")) {
 				flip = TRUE;
 			} else if (!strcmp(word[i], "-equalize_cfa")) {
@@ -2340,6 +2343,7 @@ int process_preprocess(int nb) {
 	args->compatibility = flip;
 
 	args->debayer = do_debayer;
+	args->stretch_cfa = stretch_cfa;
 	args->is_cfa = is_cfa;
 	args->equalize_cfa = equalize_cfa;
 

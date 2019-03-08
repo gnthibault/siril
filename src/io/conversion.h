@@ -14,6 +14,7 @@ struct _convert_data {
 	int total;
 	int nb_converted;
 	gboolean compatibility;
+	gboolean stretch_cfa;
 	gboolean command_line;
 	gboolean several_type_of_files;
 	gchar *destroot;
@@ -28,7 +29,7 @@ image_type get_type_for_extension(const char *extension);
 void initialize_converters();
 int count_selected_files();
 gpointer convert_thread_worker(gpointer p);
-int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer);
+int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer, gboolean stretch_cfa);
 int any_to_fits(image_type imagetype, const char *source, fits *dest);
 void set_debayer_in_convflags();
 void unset_debayer_in_convflags();

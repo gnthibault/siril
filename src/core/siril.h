@@ -308,6 +308,7 @@ struct preprocessing_data {
 	gboolean is_cfa;
 	gboolean debayer;
 	gboolean compatibility;
+	gboolean stretch_cfa;
 	gboolean equalize_cfa;
 	float normalisation;
 	int retval;
@@ -437,6 +438,7 @@ struct ffit {
 	WORD lo;	// MIPS-LO key in FITS file, which is "Lower visualization cutoff"
 	WORD hi;	// MIPS-HI key in FITS file, which is "Upper visualization cutoff"
 	double data_max; // used to check if 32b float is between 0 and 1
+	unsigned int maximum_pixel_value; // value obtained from libraw, Maximum pixel value. Calculated from the data for most cameras, hardcoded for others.
 	float pixel_size_x, pixel_size_y;	// XPIXSZ and YPIXSZ keys
 	unsigned int binning_x, binning_y;		// XBINNING and YBINNING keys
 	gboolean unbinned;
@@ -492,6 +494,7 @@ struct debayer_config {
 	sensor_pattern bayer_pattern;		// user-defined Bayer pattern
 	interpolation_method bayer_inter;	// interpolation method for non-libraw debayer
 	gboolean compatibility;				// ensure KSTARS compatibility if TRUE
+	gboolean stretch;                  // stretch DSLR CFA data to 16-bit if wanted
 };
 
 struct stack_config {

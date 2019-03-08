@@ -107,6 +107,8 @@ static int readinitfile() {
 		int inter;
 		config_setting_lookup_int(debayer_setting, "inter", &inter);
 		com.debayer.bayer_inter = inter;
+		config_setting_lookup_bool(debayer_setting, "stretch",
+						&com.debayer.stretch);
 	}
 
 	/* Preprocessing settings */
@@ -268,6 +270,10 @@ static void _save_debayer(config_t *config, config_setting_t *root) {
 	debayer_setting = config_setting_add(debayer_group, "inter",
 			CONFIG_TYPE_INT);
 	config_setting_set_int(debayer_setting, com.debayer.bayer_inter);
+
+	debayer_setting = config_setting_add(debayer_group, "stretch",
+			CONFIG_TYPE_BOOL);
+	config_setting_set_bool(debayer_setting, com.debayer.stretch);
 }
 
 static void _save_preprocessing(config_t *config, config_setting_t *root) {

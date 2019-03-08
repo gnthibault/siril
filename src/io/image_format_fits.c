@@ -83,6 +83,10 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 
 	double meanval = 0., minval = 1.E33, maxval = -1.E33;
 
+	/* initialize value in case where it does not work */
+	*mini = 0;
+	*maxi = 0;
+
 	fits_get_img_dim(fit->fptr, &(fit->naxis), &status);
 	fits_get_img_size(fit->fptr, 2, fit->naxes, &status);
 
@@ -196,6 +200,11 @@ static void read_fits_header(fits *fit) {
 	if (status == KEY_NO_EXIST) {
 		fit->data_max = maxi;
 	}
+
+	status = 0;
+	fits_read_key(fit->fptr, TUINT, "MAXCFA", &(fit->maximum_pixel_value),
+			NULL, &status);
+
 
 	/*******************************************************************
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
@@ -678,6 +687,11 @@ static void save_fits_header(fits *fit) {
 	zero = 1.0;
 	fits_update_key(fit->fptr, TDOUBLE, "BSCALE", &zero, "default scaling factor",
 			&status);
+
+	status = 0;
+	if (fit->maximum_pixel_value)
+		fits_update_key(fit->fptr, TUINT, "MAXCFA",
+				&(fit->maximum_pixel_value), "maximum raw pixel value", &status);
 
 	/*******************************************************************
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
@@ -1420,6 +1434,8 @@ int copy_fits_metadata(fits *from, fits *to) {
 	to->pixel_size_y = from->pixel_size_y;
 	to->binning_x = from->binning_x;
 	to->binning_y = from->binning_y;
+
+	to->maximum_pixel_value = from->maximum_pixel_value;
 
 	strncpy(to->date_obs, from->date_obs, FLEN_VALUE);
 	strncpy(to->date, from->date, FLEN_VALUE);
