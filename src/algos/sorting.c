@@ -339,7 +339,7 @@ double histogram_median(WORD *a, int n) {
 
 	unsigned int i, j, k = n / 2;
 	size_t s = sizeof(unsigned int);
-	unsigned int *h = (unsigned int *) calloc(USHRT_MAX, s);
+	unsigned int *h = (unsigned int *) calloc(USHRT_MAX + 1, s);
 
 	for (i = 0; i < n; i++)
 		h[a[i]]++;
@@ -370,7 +370,7 @@ double histogram_median(WORD *a, int n) {
 double histogram_median_double(double *a, int n) {
 	unsigned int i, j, k = n / 2, nb_bins = 100000;
 	size_t s = sizeof(unsigned int);
-	unsigned int *h = (unsigned int *) calloc(nb_bins, s);
+	unsigned int *h = (unsigned int *) calloc(nb_bins + 1, s);
 
 	for (i = 0; i < n; i++)
 		h[(unsigned int) (a[i] * nb_bins)]++;
