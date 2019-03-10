@@ -352,7 +352,7 @@ static void convert_img_to_fits(double *image, fits *fit, int channel) {
 
 static double siril_stats_mad(const double data[], const size_t stride,
 		const size_t n, double work[]) {
-#if (GSL_MAJOR_VERSION == 2) && (GSL_MINOR_VERSION < 50)
+#if (GSL_MAJOR_VERSION == 2) && (GSL_MINOR_VERSION < 5)
 	  double median, mad;
 	  size_t i;
 
@@ -423,7 +423,8 @@ static GSList *update_median_for_rgb_samples(GSList *orig, fits *fit) {
 	while (list) {
 		background_sample *sample = (background_sample *)list->data;
 		for (channel = 0; channel < fit->naxes[2]; channel++) {
-			sample->median[channel] = get_sample_median(rgb[channel], sample->position.x, sample->position.y, nx, ny);
+			sample->median[channel] = get_sample_median(rgb[channel],
+					sample->position.x, sample->position.y, nx, ny);
 		}
 		list = list->next;
 	}
