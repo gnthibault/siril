@@ -4005,6 +4005,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	args->is_cfa = gtk_toggle_button_get_active(CFA);
 	args->compatibility = gtk_toggle_button_get_active(compatibility);
 	args->debayer = gtk_toggle_button_get_active(debayer);
+	args->stretch_cfa =  gtk_toggle_button_get_active(stretch_cfa);
 	args->equalize_cfa = gtk_toggle_button_get_active(equalize_cfa);
 
 	/****/

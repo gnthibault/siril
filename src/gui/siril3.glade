@@ -268,10 +268,10 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_background_nb_samples">
-    <property name="lower">0.69999999999999996</property>
-    <property name="upper">2</property>
+    <property name="lower">0.01</property>
+    <property name="upper">3</property>
     <property name="value">1</property>
-    <property name="step_increment">0.10000000000000001</property>
+    <property name="step_increment">0.01</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_black_point_asinh">
@@ -3985,6 +3985,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
     </accel-groups>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <signal name="hide" handler="on_background_extraction_dialog_hide" swapped="no"/>
+    <signal name="show" handler="on_background_extraction_dialog_show" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -4077,7 +4078,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
                             <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Choose the degree order of the polynomial function used in the fit.
 By default the value is of 4.
-The higher the degree order is, the stronger the gradient can be remove.</property>
+the more complex the gradient can be removed would be.</property>
                             <property name="active">3</property>
                             <items>
                               <item>1</item>
@@ -4125,6 +4126,7 @@ The higher the degree order is, the stronger the gradient can be remove.</proper
                             <property name="tooltip_text" translatable="yes">Tolerance of global sample rejection, in sigma units. By decreasing this value, Siril will be more restrictive to select background samples.</property>
                             <property name="adjustment">adj_background_nb_samples</property>
                             <property name="round_digits">1</property>
+                            <property name="digits">2</property>
                             <property name="value_pos">right</property>
                           </object>
                           <packing>
@@ -4196,6 +4198,19 @@ The higher the degree order is, the stronger the gradient can be remove.</proper
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label_samples">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">You also can set samples manually.
+Left click adds samples while right click removes them.</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                   </object>

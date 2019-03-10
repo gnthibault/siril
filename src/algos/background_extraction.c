@@ -24,6 +24,7 @@
 #include <gsl/gsl_multifit.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
+#include <gsl/gsl_version.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -349,24 +350,52 @@ static void convert_img_to_fits(double *image, fits *fit, int channel) {
 	mirrorx(fit, FALSE);
 }
 
+static double siril_stats_mad(const double data[], const size_t stride,
+		const size_t n, double work[]) {
+#if (GSL_MAJOR_VERSION == 2) && (GSL_MINOR_VERSION < 50)
+	  double median, mad;
+	  size_t i;
+
+	  /* copy input data to work */
+	  for (i = 0; i < n; ++i)
+	    work[i] = (double) data[i * stride];
+
+	  /* compute median of input data using double version */
+	  median = histogram_median_double(work, n);
+
+	  /* compute absolute deviations from median */
+	  for (i = 0; i < n; ++i)
+	    work[i] = fabs((double) data[i * stride] - median);
+
+	  mad = histogram_median_double(work, n);
+
+	  return mad;
+#else
+	  return gsl_stats_mad0(data, stride, n, work);
+#endif
+}
+
 static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, size_t size) {
 	int nx = fit->rx;
 	int ny = fit->ry;
 	int dist;
 	int x, y;
-	double mean;
+	double median, mad0, *work;
 	GSList *list = NULL;
 
 	double *image = convert_fits_to_luminance(fit);
 
-	dist = (int) (nx / nb_per_line);
-	mean = gsl_stats_mean(image, 1, nx * ny);
+	work = malloc(nx * ny * sizeof(double));
 
-	for (y = 2 * size; y <= ny -  2 * size ; y = y + dist) {
+	dist = (int) (nx / nb_per_line);
+	mad0 = siril_stats_mad(image, 1, nx * ny, work);
+	median = histogram_median_double(image, nx * ny);
+
+	for (y = 2 * size; y <= ny -  size ; y = y + dist) {
 		for (x = dist / 2; x <= nx - dist / 2; x = x + dist) {
 			background_sample *sample = get_sample(image, x, y, nx, ny);
-			if (sample->mean <= tolerance * mean) {
-//				printf("median=%lf, mean=%lf / global mean=%lf\n", sample->median[0], sample->mean, mean);
+			if (sample->median[RLAYER] > 0.0
+					&& sample->median[RLAYER] <= (mad0 * tolerance) + median) {
 				list = g_slist_prepend(list, sample);
 			} else {
 				g_free(sample);
@@ -375,6 +404,7 @@ static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, si
 	}
 	list = g_slist_reverse(list);
 	free(image);
+	free(work);
 
 	return list;
 }
@@ -535,7 +565,6 @@ void on_background_generate_clicked(GtkButton *button, gpointer user_data) {
 		com.grad_samples = update_median_for_rgb_samples(com.grad_samples, &gfit);
 	}
 
-	mouse_status = MOUSE_ACTION_DRAW_SAMPLES;
 	redraw(com.cvport, REMAP_ALL);
 	update_used_memory();
 	set_cursor_waiting(FALSE);
@@ -591,4 +620,8 @@ void on_background_extraction_dialog_hide(GtkWidget *widget, gpointer user_data)
 	com.grad_samples = NULL;
 	mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
 	redraw(com.cvport, REMAP_ALL);
+}
+
+void on_background_extraction_dialog_show(GtkWidget *widget, gpointer user_data) {
+	mouse_status = MOUSE_ACTION_DRAW_SAMPLES;
 }
