@@ -241,6 +241,8 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 	xc = psf->x0 - 1;
 	yc = psf->y0 - 1;
 
+	if ((xc <= 0.0) || (yc <= 0.0)) return NULL;
+
 	r1 = getInnerRadius();
 	r2 = getOuterRadius();
 	appRadius = sqrt(psf->sx / 2.0) * 2 * sqrt(log(2.0) * 2) + 0.5;

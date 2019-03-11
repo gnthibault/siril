@@ -86,6 +86,8 @@ static void histo_startup() {
 static void histo_close(gboolean revert) {
 	int i;
 	if (revert) {
+		set_cursor_waiting(TRUE);
+
 		for (i = 0; i < gfit.naxes[2]; i++) {
 			set_histogram(hist_backup[i], i);
 			hist_backup[i] = NULL;
@@ -94,6 +96,7 @@ static void histo_close(gboolean revert) {
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
+		set_cursor_waiting(FALSE);
 	}
 
 	// free data
@@ -854,7 +857,7 @@ void on_histoMidEntry_changed(GtkEditable *editable, gpointer user_data) {
 	g_signal_handlers_block_by_func(MidRange, on_scale_midtones_value_changed, NULL);
 	gtk_range_set_value(MidRange, value);
 	g_signal_handlers_unblock_by_func(MidRange, on_scale_midtones_value_changed, NULL);
-	update_histo_mtf();
+	histo_recompute();
 }
 
 void on_histoShadEntry_changed(GtkEditable *editable, gpointer user_data) {
@@ -885,7 +888,7 @@ void on_histoShadEntry_changed(GtkEditable *editable, gpointer user_data) {
 	g_signal_handlers_block_by_func(ShadRange, on_scale_shadows_value_changed, NULL);
 	gtk_range_set_value(ShadRange, _shadows);
 	g_signal_handlers_unblock_by_func(ShadRange, on_scale_shadows_value_changed, NULL);
-	update_histo_mtf();
+	histo_recompute();
 }
 
 void on_histoHighEntry_changed(GtkEditable *editable, gpointer user_data) {
@@ -916,7 +919,7 @@ void on_histoHighEntry_changed(GtkEditable *editable, gpointer user_data) {
 	g_signal_handlers_block_by_func(HighRange, on_scale_highlights_value_changed, NULL);
 	gtk_range_set_value(HighRange, _highlights);
 	g_signal_handlers_unblock_by_func(HighRange, on_scale_highlights_value_changed, NULL);
-	update_histo_mtf();
+	histo_recompute();
 }
 
 void on_histoZoom100_clicked(GtkButton *button, gpointer user_data) {
