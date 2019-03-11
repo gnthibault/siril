@@ -3424,13 +3424,13 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	//static int delay = 5;
 	gchar label[32] = "labeldensity";
 	fits *fit = &(gfit);
+	double zoom = get_zoom_val();
+	gint zoomedX, zoomedY;
 
 	if (inimage((GdkEvent *) event)) {
 		char buffer[45];
 		char format[25], *format_base = "x: %%.%dd y: %%.%dd = %%.%dd";
 		int coords_width = 3, val_width = 3;
-		double zoom = get_zoom_val();
-		gint zoomedX, zoomedY;
 		zoomedX = (gint) (event->x / zoom);
 		zoomedY = (gint) (event->y / zoom);
 		if (fit->rx >= 1000 || fit->ry >= 1000)
@@ -3455,34 +3455,53 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 			return FALSE;
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder, label)),
 				buffer);
+	}
 
-		if (com.drawing) {	// with button 1 down
-			if (!com.freezeX) {
-				if (zoomedX > com.startX) {
-					com.selection.x = com.startX;
-					com.selection.w = zoomedX - com.selection.x;
-				} else {
-					com.selection.x = zoomedX;
-					com.selection.w = com.startX - zoomedX;
-				}
-			}
-			if (!com.freezeY) {
-				if (zoomedY > com.startY) {
-					com.selection.y = com.startY;
-					if (is_shift_on)
-						com.selection.h = com.selection.w;
-					else
-						com.selection.h = zoomedY - com.selection.y;
-				} else {
-					com.selection.y = zoomedY;
-					if (is_shift_on)
-						com.selection.h = com.selection.w;
-					else
-						com.selection.h = com.startY - zoomedY;
-				}
-			}
-			gtk_widget_queue_draw(widget);
+	if (com.drawing) {	// with button 1 down
+		if (inimage((GdkEvent *) event)) {
+			zoomedX = event->x / zoom;
+			zoomedY = event->y / zoom;
+		} else {
+			if (event->x < 0)
+				zoomedX = 0.0;
+			else if (event->x > gfit.rx * zoom)
+				zoomedX = gfit.rx;
+			else
+				zoomedX = event->x / zoom;
+			if (event->y < 0)
+				zoomedY = 0.0;
+			else if (event->y > gfit.ry * zoom)
+				zoomedY = gfit.ry;
+			else
+				zoomedY = event->y / zoom;
 		}
+		if (!com.freezeX) {
+			if (zoomedX > com.startX) {
+				com.selection.x = com.startX;
+				com.selection.w = zoomedX - com.selection.x;
+			} else {
+				com.selection.x = zoomedX;
+				com.selection.w = com.startX - zoomedX;
+			}
+		}
+		if (!com.freezeY) {
+			if (zoomedY > com.startY) {
+				com.selection.y = com.startY;
+				if (is_shift_on)
+					com.selection.h = com.selection.w;
+				else
+					com.selection.h = zoomedY - com.selection.y;
+			} else {
+				com.selection.y = zoomedY;
+				if (is_shift_on)
+					com.selection.h = com.selection.w;
+				else
+					com.selection.h = com.startY - zoomedY;
+			}
+		}
+		gtk_widget_queue_draw(widget);
+	}
+	if (inimage((GdkEvent *) event)) {
 
 		if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
 			set_cursor("cell", TRUE);
@@ -3499,8 +3518,8 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 				set_cursor("crosshair", TRUE);
 			}
 		}
-
 	}
+
 	return FALSE;
 }
 
