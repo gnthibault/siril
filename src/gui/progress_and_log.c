@@ -258,7 +258,8 @@ void show_time_msg(struct timeval t_start, struct timeval t_end, const char *msg
 
 struct _cursor_data {
 	gboolean change;
-	GdkCursorType cursor_type;
+//	GdkCursorType cursor_type;
+	const gchar* cursor_name;
 };
 
 /* thread-safe cursor change */
@@ -271,7 +272,8 @@ static gboolean idle_set_cursor(gpointer garg) {
 	GList *list;
 
 	display = gdk_display_get_default ();
-	new = gdk_cursor_new_for_display(display, arg->cursor_type);
+//	new = gdk_cursor_new_for_display(display, arg->cursor_type);
+	new = gdk_cursor_new_from_name (display, arg->cursor_name);
 	screen = gdk_screen_get_default();
 	list = gdk_screen_get_toplevel_windows(screen);
 
@@ -296,18 +298,18 @@ void set_cursor_waiting(gboolean waiting) {
 	struct _cursor_data *arg = malloc(sizeof (struct _cursor_data));
 
 	arg->change = waiting;
-	arg->cursor_type = GDK_WATCH;
+	arg->cursor_name = "progress";
 
 	if (com.script)
 		gdk_threads_add_idle(idle_set_cursor, arg);
 	else idle_set_cursor(arg);
 }
 
-void set_cursor(GdkCursorType cursor_type, gboolean change) {
+void set_cursor(const gchar* cursor_name, gboolean change) {
 	struct _cursor_data *arg = malloc(sizeof (struct _cursor_data));
 
 	arg->change = change;
-	arg->cursor_type = cursor_type;
+	arg->cursor_name = cursor_name;
 
 	if (com.script)
 		gdk_threads_add_idle(idle_set_cursor, arg);

@@ -399,7 +399,7 @@ static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, si
 		for (x = startx; x <= nx - radius; x = x + dist) {
 			background_sample *sample = get_sample(image, x, y, nx, ny);
 			if (sample->median[RLAYER] > 0.0
-					&& sample->median[RLAYER] <= (mad0 * exp(tolerance)/10.0) + median) {
+					&& sample->median[RLAYER] <= (mad0 * exp(tolerance)) + median) {
 				list = g_slist_prepend(list, sample);
 			} else {
 				g_free(sample);

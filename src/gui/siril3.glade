@@ -1617,7 +1617,6 @@ enter a visible wavelength in nm</property>
                                 <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                 <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
                                 <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
-                                <signal name="enter-notify-event" handler="on_drawingarea_entry_notify_event" swapped="no"/>
                                 <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                 <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
                               </object>
@@ -1767,7 +1766,6 @@ enter a visible wavelength in nm</property>
                                 <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                 <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
                                 <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
-                                <signal name="enter-notify-event" handler="on_drawingarea_entry_notify_event" swapped="no"/>
                                 <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                 <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
                               </object>
@@ -1920,7 +1918,6 @@ enter a visible wavelength in nm</property>
                                 <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                 <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
                                 <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
-                                <signal name="enter-notify-event" handler="on_drawingarea_entry_notify_event" swapped="no"/>
                                 <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                 <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
                               </object>
@@ -13090,18 +13087,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSeparator" id="separator3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="padding">5</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box10">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -13213,6 +13198,18 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="padding">2</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator" id="separator3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">5</property>
                     <property name="position">4</property>
                   </packing>
                 </child>

@@ -574,6 +574,7 @@ struct cominf {
 	/* selection rectangle for registration, FWHM, PSF */
 	gboolean drawing;		// true if the rectangle is being set (clicked motion)
 	gint startX, startY;		// where the mouse was originally clicked to
+	gboolean freezeX, freezeY;
 	rectangle selection;		// coordinates of the selection rectangle
 
 	/* alignment preview data */

@@ -3194,6 +3194,46 @@ gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
 }
 
 /* mouse callbacks */
+
+static gboolean is_over_the_left_side_of_sel(double zoomedX, double zoomedY) {
+	if ((zoomedX > com.selection.x - 50 && zoomedX < com.selection.x + 50)) {
+		if (zoomedY > com.selection.y - 50
+				&& zoomedY < com.selection.y + com.selection.h + 50)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+static gboolean is_over_the_right_side_of_sel(double zoomedX, double zoomedY) {
+	if ((zoomedX > com.selection.x + com.selection.w - 50
+			&& zoomedX < com.selection.x + com.selection.w + 50)) {
+		if (zoomedY > com.selection.y - 50
+				&& zoomedY < com.selection.y + com.selection.h + 50)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+static gboolean is_over_the_bottom_of_sel(double zoomedX, double zoomedY) {
+	if ((zoomedY > com.selection.y + com.selection.h - 50
+			&& zoomedY < com.selection.y + com.selection.h + 50)) {
+		if (zoomedX > com.selection.x - 50
+				&& zoomedX < com.selection.x + com.selection.w + 50)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+static gboolean is_over_the_top_of_sel(double zoomedX, double zoomedY) {
+	if ((zoomedY > com.selection.y - 50 && zoomedY < com.selection.y + 50)) {
+		if (zoomedX > com.selection.x - 50
+				&& zoomedX < com.selection.x + com.selection.w + 50)
+			return TRUE;
+	}
+	return FALSE;
+}
+
 gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 	if (inimage((GdkEvent *) event)) {
@@ -3213,11 +3253,38 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 					com.drawing = FALSE;
 				} else {
 					double zoom = get_zoom_val();
-					com.drawing = TRUE;
-					com.startX = event->x / zoom;
-					com.startY = event->y / zoom;
-					com.selection.h = 0;
-					com.selection.w = 0;
+					if (is_over_the_left_side_of_sel(event->x / zoom,
+							event->y / zoom)) {
+						com.drawing = TRUE;
+						com.startX = com.selection.x + com.selection.w;
+						com.freezeY = TRUE;
+						com.freezeX = FALSE;
+					} else if (is_over_the_right_side_of_sel(event->x / zoom,
+							event->y / zoom)) {
+						com.drawing = TRUE;
+						com.startX = com.selection.x;
+						com.freezeY = TRUE;
+						com.freezeX = FALSE;
+					} else if (is_over_the_bottom_of_sel(event->x / zoom,
+							event->y / zoom)) {
+						com.drawing = TRUE;
+						com.startY = com.selection.y;
+						com.freezeY = FALSE;
+						com.freezeX = TRUE;
+					} else if (is_over_the_top_of_sel(event->x / zoom,
+							event->y / zoom)) {
+						com.drawing = TRUE;
+						com.startY = com.selection.y + com.selection.h;
+						com.freezeY = FALSE;
+						com.freezeX = TRUE;
+					} else {
+						com.drawing = TRUE;
+						com.startX = event->x / zoom;
+						com.startY = event->y / zoom;
+						com.selection.h = 0;
+						com.selection.w = 0;
+						com.freezeX = com.freezeY = FALSE;
+					}
 				}
 				gtk_widget_queue_draw(widget);
 			} else if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
@@ -3260,15 +3327,31 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 
 gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
+	double zoom = get_zoom_val();
+	gdouble zoomedX, zoomedY;
+
 	if (inimage((GdkEvent *) event)) {
-		double zoom = get_zoom_val();
-		gdouble zoomedX, zoomedY;
 		zoomedX = event->x / zoom;
 		zoomedY = event->y / zoom;
-		if (event->button == 1) {
-			if (com.drawing && mouse_status == MOUSE_ACTION_SELECT_REG_AREA) {
-				com.drawing = FALSE;
-				/* finalize selection rectangle coordinates */
+	} else {
+		if (event->x < 0)
+			zoomedX = 0.0;
+		else if (event->x > gfit.rx * zoom)
+			zoomedX = gfit.rx;
+		else
+			zoomedX = event->x / zoom;
+		if (event->y < 0)
+			zoomedY = 0.0;
+		else if (event->y > gfit.ry * zoom)
+			zoomedY = gfit.ry;
+		else
+			zoomedY = event->y / zoom;
+	}
+	if (event->button == 1) {
+		if (com.drawing && mouse_status == MOUSE_ACTION_SELECT_REG_AREA) {
+			com.drawing = FALSE;
+			/* finalize selection rectangle coordinates */
+			if (!com.freezeX) {
 				if (zoomedX > com.startX) {
 					com.selection.x = com.startX;
 					com.selection.w = zoomedX - com.selection.x;
@@ -3276,6 +3359,8 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 					com.selection.x = zoomedX;
 					com.selection.w = com.startX - zoomedX;
 				}
+			}
+			if (!com.freezeY) {
 				if (zoomedY > com.startY) {
 					com.selection.y = com.startY;
 					com.selection.h = zoomedY - com.selection.y;
@@ -3283,26 +3368,28 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 					com.selection.y = zoomedY;
 					com.selection.h = com.startY - zoomedY;
 				}
-				/* we have a new rectangular selection zone,
-				 * or an unselection (empty zone) */
-				new_selection_zone();
-
-				/* calculate and display FWHM - not in event
-				 * callbacks because it's in the same file and
-				 * requires a special argument */
-				calculate_fwhm(widget);
-			} else if (mouse_status == MOUSE_ACTION_SELECT_PREVIEW1) {
-				set_preview_area(0, zoomedX, zoomedY);
-				mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
-				// redraw to get the position of the new preview area
-				gtk_widget_queue_draw(widget);
-			} else if (mouse_status == MOUSE_ACTION_SELECT_PREVIEW2) {
-				set_preview_area(1, zoomedX, zoomedY);
-				mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
-				gtk_widget_queue_draw(widget);
 			}
-			is_shift_on = FALSE;
-		} else if (event->button == 2) {
+			/* we have a new rectangular selection zone,
+			 * or an unselection (empty zone) */
+			new_selection_zone();
+
+			/* calculate and display FWHM - not in event
+			 * callbacks because it's in the same file and
+			 * requires a special argument */
+			calculate_fwhm(widget);
+		} else if (mouse_status == MOUSE_ACTION_SELECT_PREVIEW1) {
+			set_preview_area(0, zoomedX, zoomedY);
+			mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
+			// redraw to get the position of the new preview area
+			gtk_widget_queue_draw(widget);
+		} else if (mouse_status == MOUSE_ACTION_SELECT_PREVIEW2) {
+			set_preview_area(1, zoomedX, zoomedY);
+			mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
+			gtk_widget_queue_draw(widget);
+		}
+		is_shift_on = FALSE;
+	} else if (event->button == 2) {
+		if (inimage((GdkEvent *) event)) {
 			double dX, dY, w, h;
 
 			dX = 1.5 * com.phot_set.outer;
@@ -3322,11 +3409,11 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 				new_selection_zone();
 				calculate_fwhm(widget);
 			}
+		}
 
-		} else if (event->button == 3) {
-			if (mouse_status != MOUSE_ACTION_DRAW_SAMPLES) {
-				do_popup_graymenu(widget, NULL);
-			}
+	} else if (event->button == 3) {
+		if (mouse_status != MOUSE_ACTION_DRAW_SAMPLES) {
+			do_popup_graymenu(widget, NULL);
 		}
 	}
 	return FALSE;
@@ -3370,50 +3457,57 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 				buffer);
 
 		if (com.drawing) {	// with button 1 down
-			if (zoomedX > com.startX) {
-				com.selection.x = com.startX;
-				com.selection.w = zoomedX - com.selection.x;
-			} else {
-				com.selection.x = zoomedX;
-				com.selection.w = com.startX - zoomedX;
+			if (!com.freezeX) {
+				if (zoomedX > com.startX) {
+					com.selection.x = com.startX;
+					com.selection.w = zoomedX - com.selection.x;
+				} else {
+					com.selection.x = zoomedX;
+					com.selection.w = com.startX - zoomedX;
+				}
 			}
-
-			if (zoomedY > com.startY) {
-				com.selection.y = com.startY;
-				if (is_shift_on)
-					com.selection.h = com.selection.w;
-				else
-					com.selection.h = zoomedY - com.selection.y;
-			} else {
-				com.selection.y = zoomedY;
-				if (is_shift_on)
-					com.selection.h = com.selection.w;
-				else
-					com.selection.h = com.startY - zoomedY;
+			if (!com.freezeY) {
+				if (zoomedY > com.startY) {
+					com.selection.y = com.startY;
+					if (is_shift_on)
+						com.selection.h = com.selection.w;
+					else
+						com.selection.h = zoomedY - com.selection.y;
+				} else {
+					com.selection.y = zoomedY;
+					if (is_shift_on)
+						com.selection.h = com.selection.w;
+					else
+						com.selection.h = com.startY - zoomedY;
+				}
 			}
 			gtk_widget_queue_draw(widget);
+		}
+
+		if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
+			set_cursor("cell", TRUE);
+		} else {
+			if (is_over_the_left_side_of_sel(zoomedX, zoomedY)) {
+				set_cursor("w-resize", TRUE);
+			} else if (is_over_the_right_side_of_sel(zoomedX, zoomedY)) {
+				set_cursor("e-resize", TRUE);
+			} else if (is_over_the_bottom_of_sel(zoomedX, zoomedY)) {
+				set_cursor("s-resize", TRUE);
+			} else if (is_over_the_top_of_sel(zoomedX, zoomedY)) {
+				set_cursor("n-resize", TRUE);
+			} else {
+				set_cursor("crosshair", TRUE);
+			}
 		}
 
 	}
 	return FALSE;
 }
 
-void on_drawingarea_entry_notify_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
-	GdkWindow *window;
-	GdkDisplay *display;
-	GdkCursor *cross;
-
-	window = gtk_widget_get_window(widget);
-	display = gdk_window_get_display(window);
-	cross = gdk_cursor_new_for_display(display, GDK_CROSSHAIR);
-	gdk_window_set_cursor(window, cross);
-}
-
-void on_drawingarea_leave_notify_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
-	GdkWindow *window;
-
-	window = gtk_widget_get_window(widget);
-	gdk_window_set_cursor(window, NULL);
+void on_drawingarea_leave_notify_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	/* trick to get default cursor */
+	set_cursor_waiting(FALSE);
 }
 
 /* We give one signal event by toggle button to fix a bug. Without this solution

@@ -19,6 +19,6 @@ void show_time(struct timeval, struct timeval);
 void show_time_msg(struct timeval t_start, struct timeval t_end, const char *msg);
 
 void set_cursor_waiting(gboolean waiting);
-void set_cursor(GdkCursorType cursor_type, gboolean change);
+void set_cursor(const gchar* cursor_name, gboolean change);
 
 #endif

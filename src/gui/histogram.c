@@ -963,14 +963,14 @@ void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) 
 gboolean on_scale_midtones_enter_notify_event(GtkWidget *widget,
 		GdkEvent *event, gpointer user_data) {
 
-	set_cursor(GDK_HAND2, TRUE);
+	set_cursor("grab", TRUE);
 	return FALSE;
 }
 
 gboolean on_scale_midtones_leave_notify_event(GtkWidget *widget,
 		GdkEvent *event, gpointer user_data) {
 
-	set_cursor(GDK_HAND2, FALSE);
+	set_cursor("grab", FALSE);
 	return FALSE;
 }
 
