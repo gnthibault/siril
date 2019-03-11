@@ -305,10 +305,10 @@ void set_cursor_waiting(gboolean waiting) {
 	else idle_set_cursor(arg);
 }
 
-void set_cursor(const gchar* cursor_name, gboolean change) {
+void set_cursor(const gchar* cursor_name) {
 	struct _cursor_data *arg = malloc(sizeof (struct _cursor_data));
 
-	arg->change = change;
+	arg->change = TRUE;
 	arg->cursor_name = cursor_name;
 
 	if (com.script)

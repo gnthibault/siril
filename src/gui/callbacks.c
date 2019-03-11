@@ -3504,18 +3504,18 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	if (inimage((GdkEvent *) event)) {
 
 		if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
-			set_cursor("cell", TRUE);
+			set_cursor("cell");
 		} else {
 			if (is_over_the_left_side_of_sel(zoomedX, zoomedY)) {
-				set_cursor("w-resize", TRUE);
+				set_cursor("w-resize");
 			} else if (is_over_the_right_side_of_sel(zoomedX, zoomedY)) {
-				set_cursor("e-resize", TRUE);
+				set_cursor("e-resize");
 			} else if (is_over_the_bottom_of_sel(zoomedX, zoomedY)) {
-				set_cursor("s-resize", TRUE);
+				set_cursor("s-resize");
 			} else if (is_over_the_top_of_sel(zoomedX, zoomedY)) {
-				set_cursor("n-resize", TRUE);
+				set_cursor("n-resize");
 			} else {
-				set_cursor("crosshair", TRUE);
+				set_cursor("crosshair");
 			}
 		}
 	}
