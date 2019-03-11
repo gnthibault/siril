@@ -3194,41 +3194,46 @@ gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
 }
 
 /* mouse callbacks */
+double marge_size = 10;
 
-static gboolean is_over_the_left_side_of_sel(double zoomedX, double zoomedY) {
-	if ((zoomedX > com.selection.x - 50 && zoomedX < com.selection.x + 50)) {
-		if (zoomedY > com.selection.y - 50
-				&& zoomedY < com.selection.y + com.selection.h + 50)
+static gboolean is_over_the_left_side_of_sel(double zoomedX, double zoomedY, double zoom) {
+	double s = marge_size / zoom;
+	if ((zoomedX > com.selection.x - s && zoomedX < com.selection.x + s)) {
+		if (zoomedY > com.selection.y - s
+				&& zoomedY < com.selection.y + com.selection.h + s)
 			return TRUE;
 	}
 
 	return FALSE;
 }
 
-static gboolean is_over_the_right_side_of_sel(double zoomedX, double zoomedY) {
-	if ((zoomedX > com.selection.x + com.selection.w - 50
-			&& zoomedX < com.selection.x + com.selection.w + 50)) {
-		if (zoomedY > com.selection.y - 50
-				&& zoomedY < com.selection.y + com.selection.h + 50)
+static gboolean is_over_the_right_side_of_sel(double zoomedX, double zoomedY, double zoom) {
+	double s = marge_size / zoom;
+	if ((zoomedX > com.selection.x + com.selection.w - s
+			&& zoomedX < com.selection.x + com.selection.w + s)) {
+		if (zoomedY > com.selection.y - s
+				&& zoomedY < com.selection.y + com.selection.h + s)
 			return TRUE;
 	}
 	return FALSE;
 }
 
-static gboolean is_over_the_bottom_of_sel(double zoomedX, double zoomedY) {
-	if ((zoomedY > com.selection.y + com.selection.h - 50
-			&& zoomedY < com.selection.y + com.selection.h + 50)) {
-		if (zoomedX > com.selection.x - 50
-				&& zoomedX < com.selection.x + com.selection.w + 50)
+static gboolean is_over_the_bottom_of_sel(double zoomedX, double zoomedY, double zoom) {
+	double s = marge_size / zoom;
+	if ((zoomedY > com.selection.y + com.selection.h - s
+			&& zoomedY < com.selection.y + com.selection.h + s)) {
+		if (zoomedX > com.selection.x - s
+				&& zoomedX < com.selection.x + com.selection.w + s)
 			return TRUE;
 	}
 	return FALSE;
 }
 
-static gboolean is_over_the_top_of_sel(double zoomedX, double zoomedY) {
-	if ((zoomedY > com.selection.y - 50 && zoomedY < com.selection.y + 50)) {
-		if (zoomedX > com.selection.x - 50
-				&& zoomedX < com.selection.x + com.selection.w + 50)
+static gboolean is_over_the_top_of_sel(double zoomedX, double zoomedY, double zoom) {
+	double s = marge_size / zoom;
+	if ((zoomedY > com.selection.y - s && zoomedY < com.selection.y + s)) {
+		if (zoomedX > com.selection.x - s
+				&& zoomedX < com.selection.x + com.selection.w + s)
 			return TRUE;
 	}
 	return FALSE;
@@ -3254,25 +3259,25 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 				} else {
 					double zoom = get_zoom_val();
 					if (is_over_the_left_side_of_sel(event->x / zoom,
-							event->y / zoom)) {
+							event->y / zoom, zoom)) {
 						com.drawing = TRUE;
 						com.startX = com.selection.x + com.selection.w;
 						com.freezeY = TRUE;
 						com.freezeX = FALSE;
 					} else if (is_over_the_right_side_of_sel(event->x / zoom,
-							event->y / zoom)) {
+							event->y / zoom, zoom)) {
 						com.drawing = TRUE;
 						com.startX = com.selection.x;
 						com.freezeY = TRUE;
 						com.freezeX = FALSE;
 					} else if (is_over_the_bottom_of_sel(event->x / zoom,
-							event->y / zoom)) {
+							event->y / zoom, zoom)) {
 						com.drawing = TRUE;
 						com.startY = com.selection.y;
 						com.freezeY = FALSE;
 						com.freezeX = TRUE;
 					} else if (is_over_the_top_of_sel(event->x / zoom,
-							event->y / zoom)) {
+							event->y / zoom, zoom)) {
 						com.drawing = TRUE;
 						com.startY = com.selection.y + com.selection.h;
 						com.freezeY = FALSE;
@@ -3506,13 +3511,13 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
 			set_cursor("cell");
 		} else {
-			if (is_over_the_left_side_of_sel(zoomedX, zoomedY)) {
+			if (is_over_the_left_side_of_sel(zoomedX, zoomedY, zoom)) {
 				set_cursor("w-resize");
-			} else if (is_over_the_right_side_of_sel(zoomedX, zoomedY)) {
+			} else if (is_over_the_right_side_of_sel(zoomedX, zoomedY, zoom)) {
 				set_cursor("e-resize");
-			} else if (is_over_the_bottom_of_sel(zoomedX, zoomedY)) {
+			} else if (is_over_the_bottom_of_sel(zoomedX, zoomedY, zoom)) {
 				set_cursor("s-resize");
-			} else if (is_over_the_top_of_sel(zoomedX, zoomedY)) {
+			} else if (is_over_the_top_of_sel(zoomedX, zoomedY, zoom)) {
 				set_cursor("n-resize");
 			} else {
 				set_cursor("crosshair");
