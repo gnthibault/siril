@@ -269,7 +269,7 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   </object>
   <object class="GtkAdjustment" id="adj_background_nb_samples">
     <property name="lower">0.01</property>
-    <property name="upper">3</property>
+    <property name="upper">4</property>
     <property name="value">1</property>
     <property name="step_increment">0.01</property>
     <property name="page_increment">10</property>
@@ -4039,12 +4039,13 @@ This is useful when modulation parameter is different to 1 helping the whole pro
         </child>
         <child>
           <object class="GtkFrame" id="frame_background">
+            <property name="width_request">400</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label_xalign">0</property>
             <property name="shadow_type">none</property>
             <child>
-              <object class="GtkAlignment">
+              <object class="GtkAlignment" id="alignment_samples_poly">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="left_padding">12</property>
@@ -4053,7 +4054,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">5</property>
+                    <property name="spacing">10</property>
                     <child>
                       <object class="GtkGrid" id="grid_background">
                         <property name="visible">True</property>
@@ -4078,7 +4079,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
                             <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Choose the degree order of the polynomial function used in the fit.
 By default the value is of 4.
-the more complex the gradient can be removed would be.</property>
+The higher the degree order is, the more complex the gradient can be removed.</property>
                             <property name="active">3</property>
                             <items>
                               <item>1</item>
@@ -4154,7 +4155,7 @@ the more complex the gradient can be removed would be.</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox">
+                      <object class="GtkBox" id="box_generate">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
@@ -4241,15 +4242,15 @@ Left click adds samples while right click removes them.</property>
             <property name="label_xalign">0</property>
             <property name="shadow_type">none</property>
             <child>
-              <object class="GtkAlignment">
+              <object class="GtkAlignment" id="alignment_samples_correction">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="left_padding">12</property>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="box_samples_correction">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="spacing">5</property>
+                    <property name="spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="background_label_correction">
                         <property name="visible">True</property>
@@ -13089,55 +13090,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="box10">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">center</property>
-                    <child>
-                      <object class="GtkRadioButton" id="regallbutton">
-                        <property name="label" translatable="yes">Register all images from sequence</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkRadioButton" id="regselbutton">
-                        <property name="label" translatable="yes">Register selected images only</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">regallbutton</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -13212,6 +13164,55 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="padding">5</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkRadioButton" id="regallbutton">
+                        <property name="label" translatable="yes">Register all images from sequence</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="regselbutton">
+                        <property name="label" translatable="yes">Register selected images only</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">regallbutton</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">4</property>
                   </packing>
                 </child>

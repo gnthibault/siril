@@ -378,9 +378,10 @@ static double siril_stats_mad(const double data[], const size_t stride,
 static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, size_t size) {
 	int nx = fit->rx;
 	int ny = fit->ry;
-	int dist;
+	int dist, starty;
 	int x, y;
 	double median, mad0, *work;
+	size_t radius;
 	GSList *list = NULL;
 
 	double *image = convert_fits_to_luminance(fit);
@@ -388,11 +389,13 @@ static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, si
 	work = malloc(nx * ny * sizeof(double));
 
 	dist = (int) (nx / nb_per_line);
+	radius = size / 2;
+	starty = ((ny - size) % dist) / 2;
 	mad0 = siril_stats_mad(image, 1, nx * ny, work);
 	median = histogram_median_double(image, nx * ny);
 
-	for (y = 2 * size; y <= ny -  size ; y = y + dist) {
-		for (x = dist / 2; x <= nx - dist / 2; x = x + dist) {
+	for (y = starty; y <= ny - radius; y = y + dist) {
+		for (x = dist - radius; x <= nx - dist - radius; x = x + dist) {
 			background_sample *sample = get_sample(image, x, y, nx, ny);
 			if (sample->median[RLAYER] > 0.0
 					&& sample->median[RLAYER] <= (mad0 * tolerance) + median) {
