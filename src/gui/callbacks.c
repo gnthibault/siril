@@ -3399,22 +3399,20 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 }
 
 void on_drawingarea_entry_notify_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
-	static GdkWindow *window = NULL;
-	static GdkDisplay *display = NULL;
-	static GdkCursor *cross = NULL;
-	if (!window) {
-		window = gtk_widget_get_window(widget);
-		display = gdk_window_get_display(window);
-		cross = gdk_cursor_new_for_display(display, GDK_CROSSHAIR);
-	}
+	GdkWindow *window;
+	GdkDisplay *display;
+	GdkCursor *cross;
+
+	window = gtk_widget_get_window(widget);
+	display = gdk_window_get_display(window);
+	cross = gdk_cursor_new_for_display(display, GDK_CROSSHAIR);
 	gdk_window_set_cursor(window, cross);
 }
 
 void on_drawingarea_leave_notify_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
-	static GdkWindow *window = NULL;
-	if (!window) {
-		window = gtk_widget_get_window(widget);
-	}
+	GdkWindow *window;
+
+	window = gtk_widget_get_window(widget);
 	gdk_window_set_cursor(window, NULL);
 }
 
