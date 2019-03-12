@@ -196,49 +196,6 @@ int imoper(fits *a, fits *b, char oper) {
 	return 0;
 }
 
-/* This function applies a subtraction but contrary to Sub in imoper
- * it will use double type format.
- */
-int sub_background(fits* image, fits* background, int layer) {
-	double *pxl_image, *pxl_bkg;
-	WORD *image_buf = image->pdata[layer];
-	WORD *bkg_buf = background->pdata[layer];
-	size_t i, ndata;
-	double median;
-
-	if ((image->rx) != (background->rx) || ((image->ry) != (background->ry))) {
-		char *msg = siril_log_message(
-				_("Images don't have the same size (w = %d|%d, h = %d|%d)\n"),
-				image->rx, background->rx, image->ry, background->ry);
-		siril_message_dialog( GTK_MESSAGE_ERROR, _("Error"), msg);
-		return 1;
-	}
-	ndata = image->rx * image->ry;
-
-	/* First step we convert data, apply the subtraction, normalize with median,
-	 * and re-convert data to USHORT
-	 */
-	imstats *stat = statistics(NULL, -1, image, layer, NULL, STATS_BASIC);
-	median = stat->median / USHRT_MAX_DOUBLE;
-	pxl_image = malloc(sizeof(double) * ndata);
-	pxl_bkg = malloc(sizeof(double) * ndata);
-
-	for (i = 0; i < ndata; i++) {
-		pxl_image[i] = (double) image_buf[i] / USHRT_MAX_DOUBLE;
-		pxl_bkg[i] = (double) bkg_buf[i] / USHRT_MAX_DOUBLE;
-		pxl_image[i] -= pxl_bkg[i];
-		pxl_image[i] += median;
-		image_buf[i] = round_to_WORD(pxl_image[i] * USHRT_MAX_DOUBLE);
-	}
-
-	invalidate_stats_from_fit(image);
-	// We free memory
-	free_stats(stat);
-	free(pxl_image);
-	free(pxl_bkg);
-	return 0;
-}
-
 int addmax(fits *a, fits *b) {
 	WORD *gbuf[3] = { a->pdata[RLAYER], a->pdata[GLAYER], a->pdata[BLAYER] };
 	WORD *buf[3] = { b->pdata[RLAYER], b->pdata[GLAYER], b->pdata[BLAYER] };
