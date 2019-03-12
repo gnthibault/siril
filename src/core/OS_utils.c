@@ -322,4 +322,65 @@ gchar *get_special_folder(int csidl) {
 }
 #endif
 
+/**
+ * Check how many files a process can have open and try to extend the limit if possible.
+ * The max files depends of the Operating System and of cfitsio (NMAXFILES)
+ * @param nb_frames number of file processed
+ * @param nb_allowed_file the maximum of file that can be opened
+ * @return TRUE if the system can open all the files, FALSE otherwise
+ */
+gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
+	int open_max, maxfile, MAX_NO_FILE_CFITSIO, MAX_NO_FILE;
+	float version;
+
+	/* get the limit of cfitsio */
+	fits_get_version(&version);
+	MAX_NO_FILE_CFITSIO = (version < 3.45) ? 1000 : 10000;
+
+	/* get the OS limit and extend it if possible */
+#ifdef _WIN32
+	MAX_NO_FILE = min(MAX_NO_FILE_CFITSIO, 2048);
+	open_max = _getmaxstdio();
+	if (open_max < MAX_NO_FILE) {
+		/* extend the limit to 2048 if possible
+		 * 2048 is the maximum on WINDOWS */
+		_setmaxstdio(MAX_NO_FILE);
+		open_max = _getmaxstdio();
+	}
+#else
+	struct rlimit rlp;
+
+/* we first set the limit to the CFITSIO limit */
+	MAX_NO_FILE = MAX_NO_FILE_CFITSIO;
+	if (getrlimit(RLIMIT_NOFILE, &rlp) == 0) {
+		MAX_NO_FILE = (rlp.rlim_max == RLIM_INFINITY) ?
+						MAX_NO_FILE_CFITSIO : rlp.rlim_max;
+
+		if (rlp.rlim_cur != RLIM_INFINITY) {
+			open_max = rlp.rlim_cur;
+			MAX_NO_FILE = min(MAX_NO_FILE_CFITSIO, MAX_NO_FILE);
+			if (open_max < MAX_NO_FILE) {
+				rlp.rlim_cur = MAX_NO_FILE;
+				/* extend the limit to NMAXFILES if possible */
+				int retval = setrlimit(RLIMIT_NOFILE, &rlp);
+				if (!retval) {
+					getrlimit(RLIMIT_NOFILE, &rlp);
+					open_max = rlp.rlim_cur;
+				}
+			}
+		} else { // no soft limits
+			open_max = MAX_NO_FILE;
+		}
+	} else {
+		open_max = sysconf(_SC_OPEN_MAX); // if no success with getrlimit, try with sysconf
+	}
+#endif // _WIN32
+
+	maxfile = min(open_max, MAX_NO_FILE);
+	siril_debug_print("Maximum of files that will be opened=%d\n", maxfile);
+	*nb_allowed_file = maxfile;
+
+	return nb_frames < maxfile;
+}
+
 
