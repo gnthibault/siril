@@ -25,15 +25,9 @@
 #  include <config.h>
 #endif
 
-// TODO: remove unused
 #include <stdio.h>
-#include <ctype.h>
-#include <math.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <dirent.h>
+
 #ifdef _WIN32
 #include <windows.h>
 #include <psapi.h>
@@ -53,9 +47,6 @@
 #include <sys/sysctl.h>
 #include <mach/vm_statistics.h>
 #endif
-#include <string.h>
-#include <assert.h>
-#include <fitsio.h>
 #ifdef HAVE_SYS_STATVFS_H
 #include <sys/statvfs.h>
 #endif
