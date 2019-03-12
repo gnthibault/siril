@@ -30,6 +30,9 @@
 #include <fcntl.h>
 #include <string.h>
 #include <assert.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include "core/siril.h"
 #include "core/proto.h"
