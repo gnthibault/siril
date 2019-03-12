@@ -25,41 +25,11 @@
  *
  */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-
-// TODO: remove unused
 #include <stdio.h>
-#include <ctype.h>
-#include <math.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <dirent.h>
-#ifdef _WIN32
-#include <windows.h>
-#include <psapi.h>
-#include <direct.h>
-#include <shlobj.h>
-#else
-#include <sys/resource.h>
-#endif
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-#include <sys/param.h>		// define or not BSD macro
-#endif
-#if (defined(__APPLE__) && defined(__MACH__))
-#include <mach/task.h>
-#include <mach/mach_init.h>
-#include <mach/mach_types.h>
-#include <mach/mach_host.h>
-#include <sys/sysctl.h>
-#include <mach/vm_statistics.h>
-#endif
 #include <string.h>
 #include <assert.h>
-#include <fitsio.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
