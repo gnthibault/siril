@@ -24,6 +24,8 @@
 
 #ifdef HAVE_LIBCURL
 
+#include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include <float.h>
 #include <gsl/gsl_statistics.h>

@@ -148,10 +148,8 @@ static void fits_read_history(fitsfile *fptr, GSList **history, int *status) {
 	for (; !*status; hdupos++) {
 		fits_get_hdrspace(fptr, &nkeys, NULL, status);
 		for (i = 1; i <= nkeys; i++) {
-			int cardlen;
 			if (fits_read_record(fptr, i, card, status))
 				break;
-			cardlen = strlen(card);
 			if (!strncmp(card, "HISTORY", 7)) {
 				list = g_slist_prepend(list, g_strdup(card + 8));
 			}

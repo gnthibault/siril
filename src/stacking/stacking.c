@@ -1241,7 +1241,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 
 				int N = nb_frames;// N is the number of pixels kept from the current stack
 				double median;
-				int pixel, output, changed, n, j, r = 0;
+				int pixel, output, changed, n, r = 0;
 				switch (args->type_of_rejection) {
 				case PERCENTILE:
 					median = quickmedian (data->stack, N);

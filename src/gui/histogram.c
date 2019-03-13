@@ -421,7 +421,6 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 
 static void apply_mtf_to_fits(fits *from, fits *to) {
 	int i, chan, nb_chan, ndata;
-	WORD *buf[3] = { from->pdata[RLAYER], from->pdata[GLAYER], from->pdata[BLAYER] };
 	double norm = (double)get_normalized_value(from);
 
 	assert(from->naxes[2] == 1 || from->naxes[2] == 3);

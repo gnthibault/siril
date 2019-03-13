@@ -519,8 +519,6 @@ GSList *add_background_sample(GSList *orig, fits *fit, point pt) {
 
 GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 	GSList *list;
-	int nx = fit->rx;
-	int ny = fit->ry;
 	double *image;
 
 	image = convert_fits_to_luminance(fit);
