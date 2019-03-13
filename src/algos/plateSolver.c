@@ -985,8 +985,8 @@ static gboolean check_affine_TRANS_sanity(TRANS trans) {
 	double var2 = fabs(trans.c / trans.e);
 	siril_debug_print("abs(b/f)=%lf et abs(c/e)=%lf\n", var1, var2);
 
-	if (0.9 < var1 && var1 < 1.1) {
-		if (0.9 < var2 && var2 < 1.1) {
+	if (0.8 < var1 && var1 < 1.2) {
+		if (0.8 < var2 && var2 < 1.2) {
 			ok = TRUE;
 		}
 	}
