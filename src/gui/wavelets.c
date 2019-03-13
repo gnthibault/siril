@@ -98,13 +98,74 @@ void on_menuitem_wavelets_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	}
 }
 
-gboolean on_scale_button_release_event(GtkWidget *widget,
+gboolean on_scale_w0_button_release_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 	update_wavelets();
 	return FALSE;
 }
 
-gboolean on_scale_w_key_release_event(GtkWidget *widget, GdkEvent *event,
+gboolean on_scale_w1_button_release_event(GtkWidget *widget,
+		GdkEventButton *event, gpointer user_data) {
+	update_wavelets();
+	return FALSE;
+}
+
+gboolean on_scale_w2_button_release_event(GtkWidget *widget,
+		GdkEventButton *event, gpointer user_data) {
+	update_wavelets();
+	return FALSE;
+}
+
+gboolean on_scale_w3_button_release_event(GtkWidget *widget,
+		GdkEventButton *event, gpointer user_data) {
+	update_wavelets();
+	return FALSE;
+}
+
+gboolean on_scale_w4_button_release_event(GtkWidget *widget,
+		GdkEventButton *event, gpointer user_data) {
+	update_wavelets();
+	return FALSE;
+}
+
+gboolean on_scale_w5_button_release_event(GtkWidget *widget,
+		GdkEventButton *event, gpointer user_data) {
+	update_wavelets();
+	return FALSE;
+}
+
+
+gboolean on_scale_w0_key_release_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	update_wavelets();
+	return FALSE;
+}
+
+gboolean on_scale_w1_key_release_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	update_wavelets();
+	return FALSE;
+}
+
+gboolean on_scale_w2_key_release_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	update_wavelets();
+	return FALSE;
+}
+
+gboolean on_scale_w3_key_release_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	update_wavelets();
+	return FALSE;
+}
+
+gboolean on_scale_w4_key_release_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	update_wavelets();
+	return FALSE;
+}
+
+gboolean on_scale_w5_key_release_event(GtkWidget *widget, GdkEvent *event,
 		gpointer user_data) {
 	update_wavelets();
 	return FALSE;
