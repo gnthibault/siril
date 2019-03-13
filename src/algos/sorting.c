@@ -1,4 +1,5 @@
 #include "sorting.h"
+#include <string.h>
 #include <math.h>
 
 /*
