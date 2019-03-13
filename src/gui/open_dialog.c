@@ -89,6 +89,7 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 			g_free(ext);
 			g_free(upcase);
 		}
+		raw[strlen(raw) - 1] = '\0';
 		if (whichdial != OD_CONVERT) {
 			gtk_filter_add(chooser, _("RAW DSLR Camera Files"), raw,
 				com.filter == TYPERAW);
@@ -96,6 +97,7 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 			all_filter = g_string_append(all_filter, ";");
 			all_filter = g_string_append(all_filter, raw);
 		}
+
 		free(raw);
 
 #endif
@@ -138,7 +140,6 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 			gtk_filter_add(chooser, _("SER files (*.ser)"), ser_filter,
 					com.filter == TYPESER);
 		} else {
-			all_filter = g_string_append(all_filter, ";");
 			all_filter = g_string_append(all_filter, graphics_filter);
 			all_filter = g_string_append(all_filter, ";");
 			all_filter = g_string_append(all_filter, netpbm_filter);
@@ -169,11 +170,12 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 			g_free(ext);
 			g_free(upcase);
 		}
+		film_filter[strlen(film_filter) - 1] = '\0';
+
 		if (whichdial != OD_CONVERT) {
 		gtk_filter_add(chooser, _("Film Files (*.avi, *.mpg, ...)"), film_filter,
 				com.filter == TYPEAVI);
 		} else {
-			all_filter = g_string_append(all_filter, ";");
 			all_filter = g_string_append(all_filter, film_filter);
 		}
 		free(film_filter);
