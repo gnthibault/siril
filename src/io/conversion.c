@@ -976,6 +976,56 @@ void unset_debayer_in_convflags() {
 	convflags &= ~CONVDEBAYER;
 }
 
+/**************** Conversion tree managment ***********************************/
+/*
+ * Main conversion list static functions
+ */
+
+static GtkListStore *liststore_convert = NULL;
+
+static void add_convert_to_list(char *filename, GStatBuf st) {
+	GtkTreeIter iter;
+	char *date;
+
+	date = ctime(&st.st_mtime);
+	date[strlen(date) - 1] = 0;	// removing '\n' at the end of the string
+
+	gtk_list_store_append(liststore_convert, &iter);
+	gtk_list_store_set(liststore_convert, &iter, COLUMN_FILENAME, filename,	// copied in the store
+			COLUMN_DATE, date, -1);
+}
+static void get_convert_list_store() {
+	if (liststore_convert == NULL)
+		liststore_convert = GTK_LIST_STORE(
+				gtk_builder_get_object(builder, "liststore_convert"));
+}
+
+void fill_convert_list(GSList *list) {
+	GStatBuf st;
+
+	get_convert_list_store();
+
+	while (list) {
+		char *filename;
+
+		filename = (char *) list->data;
+		if (g_stat(filename, &st) == 0) {
+			add_convert_to_list(filename, st);
+			list = list->next;
+		} else
+			break;	// no infinite loop
+		g_free(filename);
+	}
+	check_for_conversion_form_completeness();
+}
+
+void on_clear_convert_button_clicked(GtkButton *button, gpointer user_data) {
+	get_convert_list_store();
+	gtk_list_store_clear(liststore_convert);
+	check_for_conversion_form_completeness();
+}
+
+
 /******************Callback functions*******************************************************************/
 
 static gchar forbidden_char[] = { '/', '\\' };

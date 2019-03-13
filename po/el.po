@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-11 16:33+0100\n"
+"POT-Creation-Date: 2019-03-13 16:31+0100\n"
 "PO-Revision-Date: 2019-01-14 09:39+0200\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -265,7 +265,7 @@ msgid "current red file"
 msgstr "τρέχων κόκκινο αρχείο"
 
 #: ../src/gui/siril3.glade.h:54 ../src/compositing/compositing.c:456
-#: ../src/gui/callbacks.c:2180
+#: ../src/gui/callbacks.c:1848
 msgid "Red channel"
 msgstr "Κόκκινο κανάλι"
 
@@ -893,7 +893,7 @@ msgstr "Διαιρετική"
 msgid "Correction"
 msgstr "<b>Διόρθωση</b>"
 
-#: ../src/gui/siril3.glade.h:186 ../src/core/siril.c:1248
+#: ../src/gui/siril3.glade.h:186 ../src/core/siril.c:1205
 msgid "Banding Reduction"
 msgstr "Μείωση Λωρίδων"
 
@@ -4053,10 +4053,10 @@ msgstr "Ενίσχυση κορεσμού: γίνεται επεξεργασία
 #: ../src/algos/colors.c:808 ../src/algos/cosmetic_correction.c:135
 #: ../src/algos/cosmetic_correction.c:184
 #: ../src/algos/cosmetic_correction.c:395 ../src/algos/star_finder.c:50
-#: ../src/core/command.c:1740 ../src/core/siril.c:669 ../src/core/siril.c:832
-#: ../src/core/siril.c:1023 ../src/core/siril.c:1313 ../src/core/siril.c:1409
-#: ../src/core/siril.c:1501 ../src/gui/histogram.c:640
-#: ../src/gui/photometric_cc.c:298 ../src/gui/statistics_list.c:308
+#: ../src/core/command.c:1740 ../src/core/siril.c:626 ../src/core/siril.c:789
+#: ../src/core/siril.c:980 ../src/core/siril.c:1270 ../src/core/siril.c:1366
+#: ../src/core/siril.c:1458 ../src/gui/histogram.c:639
+#: ../src/gui/photometric_cc.c:300 ../src/gui/statistics_list.c:308
 msgid "Error: statistics computation failed.\n"
 msgstr "Σφάλμα: ο υπολογισμός των στατιστικών απέτυχε.\n"
 
@@ -4066,14 +4066,14 @@ msgstr "SCNR: γίνεται επεξεργασία...\n"
 
 #: ../src/algos/colors.c:606 ../src/algos/colors.c:726
 #: ../src/algos/colors.c:762 ../src/algos/colors.c:935
-#: ../src/algos/colors.c:946 ../src/gui/photometric_cc.c:516
-#: ../src/gui/photometric_cc.c:534
+#: ../src/algos/colors.c:946 ../src/gui/photometric_cc.c:518
+#: ../src/gui/photometric_cc.c:536
 msgid "There is no selection"
 msgstr "Δεν υπάρχει επιλογή"
 
 #: ../src/algos/colors.c:607 ../src/algos/colors.c:727
-#: ../src/algos/colors.c:936 ../src/gui/photometric_cc.c:517
-#: ../src/gui/photometric_cc.c:535
+#: ../src/algos/colors.c:936 ../src/gui/photometric_cc.c:519
+#: ../src/gui/photometric_cc.c:537
 msgid "Make a selection of the background area"
 msgstr "Κάντε μια επιλογή της περιοχής υποβάθρου"
 
@@ -4081,7 +4081,7 @@ msgstr "Κάντε μια επιλογή της περιοχής υποβάθρ�
 msgid "Make a selection of the white reference area"
 msgstr "Κάντε μια επιλογή της περιοχής λευκού υποβάθρου"
 
-#: ../src/algos/colors.c:804 ../src/gui/photometric_cc.c:294
+#: ../src/algos/colors.c:804 ../src/gui/photometric_cc.c:296
 msgid "Background reference:\n"
 msgstr "Αναφορά υποβάθρου:\n"
 
@@ -4089,7 +4089,7 @@ msgstr "Αναφορά υποβάθρου:\n"
 msgid "White reference:\n"
 msgstr "Αναφορά άσπρου:\n"
 
-#: ../src/algos/colors.c:832 ../src/gui/photometric_cc.c:281
+#: ../src/algos/colors.c:832 ../src/gui/photometric_cc.c:283
 msgid "Color calibration factors:\n"
 msgstr "Παράγοντες βαθμονόμησης χρώματος:\n"
 
@@ -4106,8 +4106,8 @@ msgstr "Εικόνα %d: %ld εικονοστοιχεία διορθώθηκαν
 msgid "Cosmetic Correction: processing...\n"
 msgstr "Αισθητική Διόρθωση: γίνεται επεξεργασία...\n"
 
-#: ../src/algos/cosmetic_correction.c:371 ../src/core/siril.c:876
-#: ../src/core/siril.c:925
+#: ../src/algos/cosmetic_correction.c:371 ../src/core/siril.c:833
+#: ../src/core/siril.c:882
 #, c-format
 msgid "%ld pixels corrected (%ld + %ld)\n"
 msgstr "%ld εικονοστοιχεία διορθώθηκαν (%ld + %ld)\n"
@@ -4299,11 +4299,11 @@ msgstr "Φίλτρο Βαθμιδωτής Περιστροφής ολοκληρ�
 #: ../src/core/command.c:1529 ../src/core/command.c:1552
 #: ../src/core/command.c:1580 ../src/core/command.c:1606
 #: ../src/core/command.c:1778 ../src/core/command.c:1846
-#: ../src/core/command.c:2589 ../src/gui/callbacks.c:4071
-#: ../src/gui/callbacks.c:4279 ../src/gui/callbacks.c:4441
-#: ../src/gui/callbacks.c:4474 ../src/gui/callbacks.c:4633
-#: ../src/gui/callbacks.c:4767 ../src/gui/callbacks.c:4927
-#: ../src/gui/callbacks.c:5106 ../src/gui/saturation.c:49
+#: ../src/core/command.c:2589 ../src/gui/callbacks.c:3719
+#: ../src/gui/callbacks.c:3927 ../src/gui/callbacks.c:4089
+#: ../src/gui/callbacks.c:4122 ../src/gui/callbacks.c:4281
+#: ../src/gui/callbacks.c:4415 ../src/gui/callbacks.c:4575
+#: ../src/gui/callbacks.c:4754 ../src/gui/saturation.c:49
 #: ../src/gui/script_menu.c:157 ../src/io/conversion.c:518
 #: ../src/registration/registration.c:844 ../src/stacking/stacking.c:1501
 #: ../src/stacking/stacking.c:1625
@@ -4378,8 +4378,8 @@ msgstr "Αποτέλεσμα σύνθεσης το οποίο δεν αποθη�
 msgid "You must at least load two layers before!\n"
 msgstr "Πρέπει να φορτώσετε τουλάχιστον δυο επίπεδα!\n"
 
-#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4893
-#: ../src/gui/wavelets.c:161 ../src/gui/wavelets.c:170
+#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4541
+#: ../src/gui/wavelets.c:222 ../src/gui/wavelets.c:231
 #: ../src/io/conversion.c:589 ../src/registration/registration.c:862
 msgid "Warning"
 msgstr "Προειδοποίηση"
@@ -4450,13 +4450,13 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Περικοπή: επιλέξτε μια περιοχή ή δώστε τα x,y, πλάτος, ύψος\n"
 
 #: ../src/core/command.c:590 ../src/core/command.c:2430
-#: ../src/gui/callbacks.c:4891 ../src/gui/wavelets.c:159
+#: ../src/gui/callbacks.c:4539 ../src/gui/wavelets.c:220
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
 "Κυματίδιο: ο μέγιστος αριθμός σχεδίων για αυτό το μέγεθος εικόνας είναι %d\n"
 
-#: ../src/core/command.c:596 ../src/gui/wavelets.c:168
+#: ../src/core/command.c:596 ../src/gui/wavelets.c:229
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Κυματίδιο: ο τύπος πρέπει να είναι %d ή %d\n"
@@ -4604,7 +4604,7 @@ msgstr "Λάθος παράμετροι.\n"
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: επιλέξτε μια περιοχή ή δώστε τα x, y, πλάτος, ύψος\n"
 
-#: ../src/core/command.c:1261 ../src/gui/callbacks.c:4588
+#: ../src/core/command.c:1261 ../src/gui/callbacks.c:4236
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Βρέθηκαν %d αστέρια στην εικόνα, κανάλι #%d\n"
@@ -4760,7 +4760,7 @@ msgstr "Ο παρεχόμενος τύπος σώρευσης είναι άγν�
 msgid "Stacked sequence successfully.\n"
 msgstr "Έγινε σώρευση της αλληλουχίας με επιτυχία.\n"
 
-#: ../src/core/command.c:2332 ../src/gui/callbacks.c:4083
+#: ../src/core/command.c:2332 ../src/gui/callbacks.c:3731
 msgid "Preprocessing...\n"
 msgstr "Γίνεται προ-επεξεργασία...\n"
 
@@ -5700,21 +5700,7 @@ msgstr "Η διαδικασία ακυρώθηκε από τον χρήστη\n"
 msgid "imoper: images don't have the same size (w = %u|%u, h = %u|%u)\n"
 msgstr "imoper: οι εικόνες δεν έχουν το ίδιο μέγεθος (π = %u|%u, υ = %u|%u)\n"
 
-#: ../src/core/siril.c:211
-#, c-format
-msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
-msgstr "Οι εικόνες δεν έχουν το ίδιο μέγεθος (π = %d|%d, υ = %d|%d)\n"
-
-#: ../src/core/siril.c:213 ../src/gui/callbacks.c:998
-#: ../src/gui/callbacks.c:2092 ../src/gui/callbacks.c:3042
-#: ../src/gui/callbacks.c:4783 ../src/gui/callbacks.c:4789
-#: ../src/gui/callbacks.c:4814 ../src/gui/plot.c:383 ../src/gui/plot.c:443
-#: ../src/gui/PSF_list.c:158 ../src/io/conversion.c:596
-#: ../src/io/single_image.c:131
-msgid "Error"
-msgstr "Σφάλμα"
-
-#: ../src/core/siril.c:249
+#: ../src/core/siril.c:206
 #, c-format
 msgid ""
 "addmax: images don't have the same size (w = %d|%d, h = %d|%d, layers = %d|"
@@ -5723,95 +5709,95 @@ msgstr ""
 "addmax: οι εικόνες δεν έχουν το ίδιο μέγεθος (π = %d|%d, υ = %d|%d, επίπεδα "
 "= %d|%d)\n"
 
-#: ../src/core/siril.c:337
+#: ../src/core/siril.c:294
 msgid "Unsharp: processing...\n"
 msgstr "Όξυνση: γίνεται επεξεργασία...\n"
 
-#: ../src/core/siril.c:587
+#: ../src/core/siril.c:544
 msgid "Could not compute normalization values for the images, aborting.\n"
 msgstr ""
 "Δεν ήταν δυνατός ο υπολογισμός των τιμών κανονικοποίησης για τις εικόνες, "
 "ματαίωση.\n"
 
-#: ../src/core/siril.c:753
+#: ../src/core/siril.c:710
 #, c-format
 msgid "Dark optimization: k0=%1.3lf\n"
 msgstr ""
 "Βελτιστοποίηση dark: k0=%1.3lf\n"
 "\n"
 
-#: ../src/core/siril.c:836
+#: ../src/core/siril.c:793
 #, c-format
 msgid "Normalisation value auto evaluated: %.2lf\n"
 msgstr "Η τιμή ομαλοποίησης αξιολογήθηκε αυτόματα: %.2lf\n"
 
-#: ../src/core/siril.c:843
+#: ../src/core/siril.c:800
 #, c-format
 msgid "Pre-processing image %s"
 msgstr "Γίνεται προ-επεξεργασία της εικόνας %s"
 
-#: ../src/core/siril.c:883 ../src/core/siril.c:928
+#: ../src/core/siril.c:840 ../src/core/siril.c:885
 msgid ""
 "Darkmap cosmetic correction is only supported with single channel images\n"
 msgstr ""
 "Η αισθητική διόρθωση Darkmap υποστηρίζεται μόνο με εικόνες μονού καναλιού\n"
 
-#: ../src/core/siril.c:895
+#: ../src/core/siril.c:852
 #, c-format
 msgid "Saving image %s"
 msgstr "Γίνεται αποθήκευση της εικόνας %s"
 
-#: ../src/core/siril.c:944
+#: ../src/core/siril.c:901
 #, c-format
 msgid "Loading and pre-processing image %d/%d (%s)"
 msgstr "Γίνεται φόρτωμα και προ-επεξεργασία της εικόνας %d/%d (%s)"
 
-#: ../src/core/siril.c:950
+#: ../src/core/siril.c:907
 #, c-format
 msgid "Could not read one of the raw files: %s. Aborting preprocessing."
 msgstr ""
 "Δεν μπορούσε να γίνει ανάγνωση σε ένα από τα αρχεία RAW:  %s. Γίνεται "
 "ακύρωση της προ-επεξεργασίας."
 
-#: ../src/core/siril.c:1087
+#: ../src/core/siril.c:1044
 #, c-format
 msgid "Extracting %s..."
 msgstr "Γίνεται εξαγωγή %s..."
 
-#: ../src/core/siril.c:1129
+#: ../src/core/siril.c:1086
 msgid "Median Filter: processing...\n"
 msgstr "Φίλτρο Διαμέσου: γίνεται επεξεργασία...\n"
 
-#: ../src/core/siril.c:1138
+#: ../src/core/siril.c:1095
 msgid "Median filter failed"
 msgstr "Αποτυχία φίλτρου διαμέσου"
 
-#: ../src/core/siril.c:1206
+#: ../src/core/siril.c:1163
 msgid "Median filter applied"
 msgstr "Εφαρμογή φίλτρου διαμέσου"
 
-#: ../src/core/siril.c:1283
+#: ../src/core/siril.c:1240
 msgid "Banding Reducing: processing...\n"
 msgstr "Μείωση Λωρίδων: γίνεται επεξεργασία...\n"
 
-#: ../src/core/siril.c:1452
+#: ../src/core/siril.c:1409
 msgid "backgroundnoise: Error, no data computed\n"
 msgstr "backgroundnoise: Σφάλμα, δεν υπολογίστηκαν δεδομένα\n"
 
-#: ../src/core/siril.c:1462
+#: ../src/core/siril.c:1419
 msgid "backgroundnoise: does not converge\n"
 msgstr "backgroundnoise: δεν μπορεί να γίνει σύγκλιση\n"
 
-#: ../src/core/siril.c:1492
+#: ../src/core/siril.c:1449
 msgid "Noise standard deviation: calculating...\n"
 msgstr "Τυπική απόκλιση θορύβου: γίνεται υπολογισμός...\n"
 
-#: ../src/core/siril.c:1512
+#: ../src/core/siril.c:1469
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
 msgstr "Τιμή θορύβου υποβάθρου (κανάλι: #%d): %0.3lf (%.3e)\n"
 
-#: ../src/core/siril.c:1527
+#: ../src/core/siril.c:1484
 msgid "Lucy-Richardson deconvolution: processing...\n"
 msgstr "Lucy-Richardson deconvolution: γίνεται επεξεργασία...\n"
 
@@ -5871,59 +5857,59 @@ msgstr ""
 "Σφάλμα Ι/Ο Αρχείου: Δεν ήταν δυνατή η εγγραφή αρχείου αναίρεσης στο %s: "
 "[%s]\n"
 
-#: ../src/core/utils.c:340
+#: ../src/core/utils.c:313
 msgid "Unknown error\n"
 msgstr "Άγνωστο σφάλμα\n"
 
-#: ../src/core/utils.c:343
+#: ../src/core/utils.c:316
 msgid "No such file or directory\n"
 msgstr "Δεν υπάρχει αυτό το αρχείο ή ο κατάλογος\n"
 
-#: ../src/core/utils.c:346
+#: ../src/core/utils.c:319
 #, c-format
 msgid "\"%s\" is not a directory\n"
 msgstr ""
 "Το \"%s\" δεν είναι κατάλογος\n"
 "\n"
 
-#: ../src/core/utils.c:349 ../src/gui/callbacks.c:3041
+#: ../src/core/utils.c:322 ../src/gui/callbacks.c:2684
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr ""
 "Δεν έχετε άδεια να γράψετε σε αυτό τον κατάλογο: %s\n"
 "\n"
 
-#: ../src/core/utils.c:362
+#: ../src/core/utils.c:335
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "Γίνεται ορισμός του τρέχοντος καταλόγου εργασίας στο '%s'\n"
 
-#: ../src/core/utils.c:369
+#: ../src/core/utils.c:342
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr "Δεν ήταν δυνατή η αλλαγή του καταλόγου στο '%s'.\n"
 
-#: ../src/core/utils.c:537
+#: ../src/core/utils.c:510
 msgid "Filename is too long, not expanding it\n"
 msgstr "Το όνομα του αρχείου είναι πολύ μεγάλο, δεν γίνεται επέκταση του\n"
 
-#: ../src/core/utils.c:666
+#: ../src/core/utils.c:639
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Γίνεται έλεγχος της έκδοσης GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:689
+#: ../src/core/utils.c:662
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "Η έκδοση του GTK δεν ταιριάζει με τις απαιτήσεις: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:695
+#: ../src/core/utils.c:668
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall %s\n"
 msgstr ""
 "Δεν ήταν δυνατό να φορτωθεί το αρχείο CSS: %s. Παρακαλώ εγκαταστήστε ξανά%s\n"
 
-#: ../src/core/utils.c:705 ../src/main.c:258
+#: ../src/core/utils.c:678 ../src/main.c:258
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Το '%s' φορτώθηκε με επιτυχία\n"
@@ -5947,124 +5933,71 @@ msgstr "Πρόγραμμα (προ-)επεξεργασίας αστρονομι�
 msgid "Visit the Siril website"
 msgstr "Επισκεφτείτε την ιστοσελίδα του Siril"
 
-#: ../src/gui/callbacks.c:759 ../src/gui/save_dialog.c:61
-msgid "FITS Files (*.fit, *.fits, *.fts)"
-msgstr "Αρχεία FITS (*.fit, *.fits, *.fts)"
-
-#: ../src/gui/callbacks.c:783
-msgid "RAW DSLR Camera Files"
-msgstr "Αρχεία RAW κάμερας DSLR"
-
-#: ../src/gui/callbacks.c:791
-msgid "Graphics Files (*.bmp"
-msgstr "Αρχεία Γραφικών (*.bmp"
-
-#. NETPBM FILES
-#: ../src/gui/callbacks.c:816 ../src/gui/save_dialog.c:84
-msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
-msgstr "Αρχεία Netpbm (*.ppm, *.pnm, *.pgm)"
-
-#. IRIS FILES
-#: ../src/gui/callbacks.c:819
-msgid "IRIS PIC Files (*.pic)"
-msgstr "Αρχεία IRIS PIC (*.pic)"
-
-#. SER FILES
-#: ../src/gui/callbacks.c:822
-msgid "SER files (*.ser)"
-msgstr "Αρχεία SER (*.ser)"
-
-#: ../src/gui/callbacks.c:846
-msgid "Film Files (*.avi, *.mpg, ...)"
-msgstr "Αρχεία ταινίας (*.avi, *.mpg, ...)"
-
-#: ../src/gui/callbacks.c:878 ../src/gui/callbacks.c:881
-#: ../src/gui/callbacks.c:893 ../src/gui/callbacks.c:896
-#: ../src/gui/callbacks.c:907 ../src/gui/callbacks.c:910
-#: ../src/gui/callbacks.c:922 ../src/gui/callbacks.c:925
-msgid "Open File"
-msgstr "Άνοιγμα αρχείου"
-
-#: ../src/gui/callbacks.c:879 ../src/gui/callbacks.c:883
-#: ../src/gui/callbacks.c:894 ../src/gui/callbacks.c:897
-#: ../src/gui/callbacks.c:908 ../src/gui/callbacks.c:912
-#: ../src/gui/callbacks.c:923 ../src/gui/callbacks.c:927
-msgid "_Open"
-msgstr "_Άνοιγμα"
-
-#: ../src/gui/callbacks.c:879 ../src/gui/callbacks.c:882
-#: ../src/gui/callbacks.c:894 ../src/gui/callbacks.c:897
-#: ../src/gui/callbacks.c:908 ../src/gui/callbacks.c:911
-#: ../src/gui/callbacks.c:923 ../src/gui/callbacks.c:926
-#: ../src/gui/save_dialog.c:241 ../src/gui/save_dialog.c:244
-msgid "_Cancel"
-msgstr "_Άκυρο"
-
-#: ../src/gui/callbacks.c:1134
+#: ../src/gui/callbacks.c:802
 #, c-format
 msgid "Image %d has been unselected from sequence\n"
 msgstr "Η εικόνα %d έχει αποεπιλεγεί από την αλληλουχία\n"
 
-#: ../src/gui/callbacks.c:1144
+#: ../src/gui/callbacks.c:812
 #, c-format
 msgid "Image %d has been selected from sequence\n"
 msgstr "Η εικόνα %d έχει επιλεχθεί από την αλληλουχία\n"
 
-#: ../src/gui/callbacks.c:1178
+#: ../src/gui/callbacks.c:846
 msgid "Selected all images from sequence\n"
 msgstr "Όλες οι εικόνες της αλληλουχίας έχουν επιλεχθεί\n"
 
-#: ../src/gui/callbacks.c:1182
+#: ../src/gui/callbacks.c:850
 msgid "Unselected all images from sequence\n"
 msgstr "Όλες οι εικόνες της αλληλουχίας έχουν αποεπιλεγεί\n"
 
-#: ../src/gui/callbacks.c:1314
+#: ../src/gui/callbacks.c:982
 #, c-format
 msgid "Setting MAX value for cutoff sliders adjustments\n"
 msgstr ""
 "Γίνεται ρύθμιση της τιμής MAX για τις ρυθμίσεις των ολισθητήρων αποκοπής\n"
 
 #. there should be no other normal cases
-#: ../src/gui/callbacks.c:1357
+#: ../src/gui/callbacks.c:1025
 #, c-format
 msgid "setting ranges scalemin=%d, scalemax=%d\n"
 msgstr "γίνεται ρύθμιση των κλιμάκων scalemin=%d, scalemax=%d\n"
 
-#: ../src/gui/callbacks.c:1463
+#: ../src/gui/callbacks.c:1131
 #, c-format
 msgid "<%%s.seq>: %%d images selected out of %%d, reference image is %%d"
 msgstr ""
 "<%%s.seq>: %%d εικόνες έχουν επιλεχθεί από %%d, η εικόνα αναφοράς είναι η %%d"
 
-#: ../src/gui/callbacks.c:1466
+#: ../src/gui/callbacks.c:1134
 #, c-format
 msgid "<%%s.seq>: %%d images selected out of %%d, reference image is %%.%dd"
 msgstr ""
 "<%%s.seq>: %%d εικονες έχουν επιλεχθεί από %%d, η εικόνα αναφοράς είναι η %%."
 "%dd"
 
-#: ../src/gui/callbacks.c:1475
+#: ../src/gui/callbacks.c:1143
 #, c-format
 msgid "<%s.seq>: %d images selected out of %d, no reference image set"
 msgstr ""
 "<%s.seq>: %d εικόνες έχουν επιλεχθεί από %d, δεν έχει ορισθεί εικόνα αναφοράς"
 
-#: ../src/gui/callbacks.c:1478
+#: ../src/gui/callbacks.c:1146
 #, c-format
 msgid "%s, %d images selected"
 msgstr "%s, %d εικόνες επιλέχθηκαν"
 
-#: ../src/gui/callbacks.c:1482
+#: ../src/gui/callbacks.c:1150
 #, c-format
 msgid "No sequence"
 msgstr "Δεν υπάρχει αλληλουχία"
 
-#: ../src/gui/callbacks.c:1483
+#: ../src/gui/callbacks.c:1151
 #, c-format
 msgid "- none -"
 msgstr "- κανένα -"
 
-#: ../src/gui/callbacks.c:1565
+#: ../src/gui/callbacks.c:1233
 #, c-format
 msgid ""
 "redraw: maximum number of layers supported is %d (current image has %d).\n"
@@ -6072,89 +6005,97 @@ msgstr ""
 "redraw: ο μέγιστος αριθμός των επιπέδων που υποστηρίζονται είναι %d (η "
 "τρέχουσα εικόνα έχει %d).\n"
 
-#: ../src/gui/callbacks.c:1861
+#: ../src/gui/callbacks.c:1529
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "fwhm: η επιλογή είναι πολύ μεγάλη"
 
-#: ../src/gui/callbacks.c:1863
+#: ../src/gui/callbacks.c:1531
 #, c-format
 msgid "fwhm: no selection"
 msgstr "fwhm: δεν υπάρχει επιλογή"
 
-#: ../src/gui/callbacks.c:1888
+#: ../src/gui/callbacks.c:1556
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (κανάλι 0)"
 
-#: ../src/gui/callbacks.c:1893
+#: ../src/gui/callbacks.c:1561
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (κανάλι 1)"
 
-#: ../src/gui/callbacks.c:1897
+#: ../src/gui/callbacks.c:1565
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (κανάλι 2)"
 
 # whre does this string appear?
-#: ../src/gui/callbacks.c:1924
+#: ../src/gui/callbacks.c:1592
 msgid "Unassigned"
 msgstr "Δεν έχει προσδιοριστεί"
 
-#: ../src/gui/callbacks.c:1950
+#: ../src/gui/callbacks.c:1618
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: δεν έχει επηρεαστεί ακόμα"
 
-#: ../src/gui/callbacks.c:2091
+#: ../src/gui/callbacks.c:1759
 msgid "Unknown zoom_value value, what is the current zoom?\n"
 msgstr "Άγνωστ τιμή zoom_value, ποια είναι η τρέχουσα μεγέθυνση;\n"
 
-#: ../src/gui/callbacks.c:2177
+#: ../src/gui/callbacks.c:1760 ../src/gui/callbacks.c:2685
+#: ../src/gui/callbacks.c:4431 ../src/gui/callbacks.c:4437
+#: ../src/gui/callbacks.c:4462 ../src/gui/open_dialog.c:320
+#: ../src/gui/plot.c:383 ../src/gui/plot.c:443 ../src/gui/PSF_list.c:158
+#: ../src/io/conversion.c:596 ../src/io/single_image.c:131
+msgid "Error"
+msgstr "Σφάλμα"
+
+#: ../src/gui/callbacks.c:1845
 msgid "B&W channel"
 msgstr "Ασπρόμαυρο κανάλι"
 
-#: ../src/gui/callbacks.c:2210
+#: ../src/gui/callbacks.c:1878
 #, c-format
 msgid "%d files loaded"
 msgstr "%d αρχεία φορτώθηκαν"
 
-#: ../src/gui/callbacks.c:2345
+#: ../src/gui/callbacks.c:2013
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Μνήμη: %ldMB"
 
-#: ../src/gui/callbacks.c:2347
+#: ../src/gui/callbacks.c:2015
 #, c-format
 msgid "Mem: N/A"
 msgstr "Μνήμη: N/A"
 
-#: ../src/gui/callbacks.c:2360
+#: ../src/gui/callbacks.c:2028
 #, c-format
 msgid "Disk Space: %.0lf%s"
 msgstr "Μέγεθος Δίσκου: %.0lf%s"
 
-#: ../src/gui/callbacks.c:2362
+#: ../src/gui/callbacks.c:2030
 #, c-format
 msgid "Disk Space: N/A"
 msgstr "Μέγεθος Δίσκου: Δεν είναι διαθέσιμο"
 
-#: ../src/gui/callbacks.c:2423
+#: ../src/gui/callbacks.c:2091
 msgid "This binning is not handled yet\n"
 msgstr "Αυτή η ομαδοποίηση δεν υποστηρίζεται ακόμα\n"
 
-#: ../src/gui/callbacks.c:2863 ../src/gui/callbacks.c:2864
+#: ../src/gui/callbacks.c:2506 ../src/gui/callbacks.c:2507
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr "<span foreground=\"red\">ΣΦΑΛΜΑ</span>"
 
-#: ../src/gui/callbacks.c:2876
+#: ../src/gui/callbacks.c:2519
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">Ψυχρά: %ld εικονοστοιχεία</span>"
 
-#: ../src/gui/callbacks.c:2877 ../src/gui/callbacks.c:2889
+#: ../src/gui/callbacks.c:2520 ../src/gui/callbacks.c:2532
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -6162,125 +6103,125 @@ msgstr ""
 "Αυτή η τιμή μπορεί να είναι πολύ υψηλή. Παρακαλώ, λάβετε υπόψη να αλλάξετε "
 "την τιμή σίγμα ή να αποεπιλέξετε του κουτί."
 
-#: ../src/gui/callbacks.c:2880
+#: ../src/gui/callbacks.c:2523
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Ψυχρά: %ld εικονοστοιχεία"
 
-#: ../src/gui/callbacks.c:2888
+#: ../src/gui/callbacks.c:2531
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">Θερμά: %ld εικονοστοιχεία</span>"
 
-#: ../src/gui/callbacks.c:2892
+#: ../src/gui/callbacks.c:2535
 #, c-format
 msgid "Hot: %ld px"
 msgstr "Θερμά: %ld εικονοστοιχεία"
 
-#: ../src/gui/callbacks.c:3108
+#: ../src/gui/callbacks.c:2751
 msgid "Closing application"
 msgstr "Κλείσιμο της εφαρμογής"
 
-#: ../src/gui/callbacks.c:3108
+#: ../src/gui/callbacks.c:2751
 msgid "Are you sure you want to quit?"
 msgstr "Είστε σίγουροι ότι θέλετε να κλείσετε το πρόγραμμα;"
 
-#: ../src/gui/callbacks.c:3778
+#: ../src/gui/callbacks.c:3426
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "νέα τιμή μεγέθυνσης: %f\n"
 
-#: ../src/gui/callbacks.c:3817
+#: ../src/gui/callbacks.c:3465
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3819
+#: ../src/gui/callbacks.c:3467
 #, c-format
 msgid "undefined"
 msgstr "δεν έχει ορισθεί"
 
-#: ../src/gui/callbacks.c:3915
+#: ../src/gui/callbacks.c:3563
 msgid "Exclude all images ?"
 msgstr "Να εξαίρεθούν όλες οι εικόνες;"
 
-#: ../src/gui/callbacks.c:3916 ../src/gui/callbacks.c:3926
+#: ../src/gui/callbacks.c:3564 ../src/gui/callbacks.c:3574
 msgid "This erases previous image selection and there's no possible undo."
 msgstr ""
 "Αυτό διαγράφει προηγούμενες επιλογές εικόνας και δεν είναι δυνατή η αναίρεση."
 
-#: ../src/gui/callbacks.c:3925
+#: ../src/gui/callbacks.c:3573
 msgid "Include all images ?"
 msgstr "Να συμπερηληφθούν όλες οι εικόνες;"
 
-#: ../src/gui/callbacks.c:3947
+#: ../src/gui/callbacks.c:3595
 msgid "Opening dark image..."
 msgstr "Γίνεται άνοιγμα της εικόνας dark..."
 
-#: ../src/gui/callbacks.c:3950
+#: ../src/gui/callbacks.c:3598
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:3957
+#: ../src/gui/callbacks.c:3605
 msgid "NOT USING DARK: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:3995
+#: ../src/gui/callbacks.c:3643
 msgid "Opening flat image..."
 msgstr "Γίνεται άνοιγμα της εικόνας flat..."
 
-#: ../src/gui/callbacks.c:3998
+#: ../src/gui/callbacks.c:3646
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:4005
+#: ../src/gui/callbacks.c:3653
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:4032
+#: ../src/gui/callbacks.c:3680
 msgid "Opening offset image..."
 msgstr "Γίνεται άνοιγμα της εικόνας offset..."
 
-#: ../src/gui/callbacks.c:4035
+#: ../src/gui/callbacks.c:3683
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:4042
+#: ../src/gui/callbacks.c:3690
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr ""
 "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:4139
+#: ../src/gui/callbacks.c:3787
 msgid "Error in preprocessing."
 msgstr "Σφάλμα στην προ-επεξεργασία."
 
-#: ../src/gui/callbacks.c:4216
+#: ../src/gui/callbacks.c:3864
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Έγινε επιλογή %s αλληλουχίας %s..."
 
-#: ../src/gui/callbacks.c:4285
+#: ../src/gui/callbacks.c:3933
 msgid "Searching for sequences in the current working directory..."
 msgstr "Γίνεται αναζήτηση για αλληλουχίες στον τρέχων κατάλογο εργασίας..."
 
-#: ../src/gui/callbacks.c:4580
+#: ../src/gui/callbacks.c:4228
 msgid "Load an image first, aborted.\n"
 msgstr "Έγινε ακύρωση, φορτώστε πρώτα μια εικόνα.\n"
 
-#: ../src/gui/callbacks.c:4610
+#: ../src/gui/callbacks.c:4258
 msgid "The file stars.lst has been created.\n"
 msgstr "Το αρχείο stars.lst δημιουργήθηκε.\n"
 
-#: ../src/gui/callbacks.c:4687 ../src/gui/callbacks.c:4735
+#: ../src/gui/callbacks.c:4335 ../src/gui/callbacks.c:4383
 msgid "Current selection is too large"
 msgstr "Η τρέχουσα επιλογή είναι πολύ μεγάλη"
 
-#: ../src/gui/callbacks.c:4688 ../src/gui/callbacks.c:4736
+#: ../src/gui/callbacks.c:4336 ../src/gui/callbacks.c:4384
 msgid "To determine the PSF, please make a selection around a star."
 msgstr ""
 "Για να προσδιορίσετε τοPSF, παρακαλώ κάντε μια επιλογή γύρω από ένα αστέρι."
 
-#: ../src/gui/callbacks.c:4700
+#: ../src/gui/callbacks.c:4348
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -6329,25 +6270,25 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:4717
+#: ../src/gui/callbacks.c:4365
 msgid "PSF for the sequence only applies on sequences"
 msgstr "Το PSF για την αλληλουχία ισχύει μόνο σε αλληλουχίες"
 
-#: ../src/gui/callbacks.c:4718
+#: ../src/gui/callbacks.c:4366
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr ""
 "Παρακαλώ φορτώστε μια αλληλουχία πριν την εφαρμογή του PSF για την "
 "αλληλουχία."
 
-#: ../src/gui/callbacks.c:4782
+#: ../src/gui/callbacks.c:4430
 msgid "FFT does not work with sequences !\n"
 msgstr "Το FFT δεν λειτουργεί με αλληλουχίες!/n\n"
 
-#: ../src/gui/callbacks.c:4788
+#: ../src/gui/callbacks.c:4436
 msgid "Open an image first !\n"
 msgstr "Ανοίξτε πρώτα μια εικόνα!\n"
 
-#: ../src/gui/callbacks.c:4813
+#: ../src/gui/callbacks.c:4461
 msgid "Select magnitude and phase before !\n"
 msgstr "Επιλέξτε πρώτα το μέγεθος και την φάση!\n"
 
@@ -6355,32 +6296,81 @@ msgstr "Επιλέξτε πρώτα το μέγεθος και την φάση!\
 msgid "_Do not show this dialog again"
 msgstr "_Να μην εμφανιστεί ξανά αυτό το παράθυρο διαλόγου"
 
-#: ../src/gui/photometric_cc.c:75
+#: ../src/gui/open_dialog.c:66 ../src/gui/save_dialog.c:61
+msgid "FITS Files (*.fit, *.fits, *.fts)"
+msgstr "Αρχεία FITS (*.fit, *.fits, *.fts)"
+
+#: ../src/gui/open_dialog.c:93
+msgid "RAW DSLR Camera Files"
+msgstr "Αρχεία RAW κάμερας DSLR"
+
+#: ../src/gui/open_dialog.c:106
+msgid "Graphics Files (*.bmp"
+msgstr "Αρχεία Γραφικών (*.bmp"
+
+#. NETPBM FILES
+#: ../src/gui/open_dialog.c:132 ../src/gui/save_dialog.c:84
+msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
+msgstr "Αρχεία Netpbm (*.ppm, *.pnm, *.pgm)"
+
+#. IRIS FILES
+#: ../src/gui/open_dialog.c:135
+msgid "IRIS PIC Files (*.pic)"
+msgstr "Αρχεία IRIS PIC (*.pic)"
+
+#. SER FILES
+#: ../src/gui/open_dialog.c:138
+msgid "SER files (*.ser)"
+msgstr "Αρχεία SER (*.ser)"
+
+#: ../src/gui/open_dialog.c:173
+msgid "Film Files (*.avi, *.mpg, ...)"
+msgstr "Αρχεία ταινίας (*.avi, *.mpg, ...)"
+
+#: ../src/gui/open_dialog.c:186
+#, fuzzy
+msgid "All supported files"
+msgstr "Τύποι αρχείων που υποστηρίζονται:"
+
+#: ../src/gui/open_dialog.c:195 ../src/gui/open_dialog.c:202
+msgid "Open File"
+msgstr "Άνοιγμα αρχείου"
+
+#: ../src/gui/open_dialog.c:196 ../src/gui/open_dialog.c:203
+msgid "_Open"
+msgstr "_Άνοιγμα"
+
+#: ../src/gui/open_dialog.c:196 ../src/gui/open_dialog.c:203
+#: ../src/gui/save_dialog.c:241 ../src/gui/save_dialog.c:244
+msgid "_Cancel"
+msgstr "_Άκυρο"
+
+#: ../src/gui/photometric_cc.c:77
 #, fuzzy
 msgid "Photometric Color Calibration"
 msgstr "Βαθμονόμηση Χρώματος..."
 
-#: ../src/gui/photometric_cc.c:220
+#: ../src/gui/photometric_cc.c:222
 #, c-format
 msgid "Applying aperture photometry to %d stars.\n"
 msgstr ""
 
-#: ../src/gui/photometric_cc.c:404
+#: ../src/gui/photometric_cc.c:406
 #, fuzzy, c-format
 msgid "Normalizing on %s channel.\n"
 msgstr "Η ομαλοποίηση παραλείφθηκε.\n"
 
-#: ../src/gui/photometric_cc.c:404
+#: ../src/gui/photometric_cc.c:406
 #, fuzzy
 msgid "red"
 msgstr "Κόκκινο"
 
-#: ../src/gui/photometric_cc.c:404
+#: ../src/gui/photometric_cc.c:406
 #, fuzzy
 msgid "green"
 msgstr "Πράσινο"
 
-#: ../src/gui/photometric_cc.c:404
+#: ../src/gui/photometric_cc.c:406
 msgid "blue"
 msgstr ""
 
@@ -6893,54 +6883,54 @@ msgstr "Σφάλμα στο άνοιγμα του %s: ο τύπος του αρ�
 msgid "FILM ERROR: incompatible format\n"
 msgstr "ΣΦΑΛΜΑ ΤΑΙΝΙΑΣ: ασύμβατος τύπος\n"
 
-#: ../src/io/image_format_fits.c:189
+#: ../src/io/image_format_fits.c:187
 #, c-format
 msgid "Loaded FITS file has a BSCALE different than 1 (%lf)\n"
 msgstr "Το αρχείο FITS που φορτώθηκε έχει διαφορετικό BSCALE από 1 (%lf)\n"
 
-#: ../src/io/image_format_fits.c:380
+#: ../src/io/image_format_fits.c:378
 #, c-format
 msgid "FITS error: %s\n"
 msgstr "Σφάλμα FITS: %s\n"
 
-#: ../src/io/image_format_fits.c:456
+#: ../src/io/image_format_fits.c:454
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "Άγνωστα δεδομένα FITS κατά την εσωτερική μετατροπή\n"
 
-#: ../src/io/image_format_fits.c:537 ../src/io/image_format_fits.c:614
+#: ../src/io/image_format_fits.c:535 ../src/io/image_format_fits.c:612
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr "Ο τύπος εικόνας FITS %d δεν υποστηρίζεται από το Siril.\n"
 
-#: ../src/io/image_format_fits.c:542
+#: ../src/io/image_format_fits.c:540
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Σφάλμα ανάγνωσης δεδομένω fitsio, αρχείο: %s.\n"
 
-#: ../src/io/image_format_fits.c:905
+#: ../src/io/image_format_fits.c:903
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr ""
 "%s.[any_allowed_extension] δεν βρέθηκε.\n"
 "\n"
 
-#: ../src/io/image_format_fits.c:912
+#: ../src/io/image_format_fits.c:910
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr "Το αρχείο %s δεν είναι αρχείο FITS ή δεν υπάρχει με προεκτάσεις FITS\n"
 
-#: ../src/io/image_format_fits.c:934
+#: ../src/io/image_format_fits.c:932
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "Σφάλμα FITSIO στην λήψη των παραμέτρων εικόνας, αρχείο %s.\n"
 
-#: ../src/io/image_format_fits.c:970
+#: ../src/io/image_format_fits.c:968
 #, c-format
 msgid "Unsupported FITS image with %ld channels.\n"
 msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
 
-#: ../src/io/image_format_fits.c:988
+#: ../src/io/image_format_fits.c:986
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -6948,35 +6938,35 @@ msgstr ""
 "Οι εικόνες FITS με 64 bit ακέραιο με πρόσημο ανά εικονοστοιχεία.κανάλι δεν "
 "υποστηρίζονται.\n"
 
-#: ../src/io/image_format_fits.c:1028
+#: ../src/io/image_format_fits.c:1026
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται ανάγνωση του FITS: αρχείο %s, %ld επίπεδο(α), %ux%u εικονοστοιχεία\n"
 
-#: ../src/io/image_format_fits.c:1117
+#: ../src/io/image_format_fits.c:1115
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "Μερική ανάγνωση FITS: δεν υπάρχει επίπεδο %d στην εικόνα %s\n"
 
-#: ../src/io/image_format_fits.c:1125
+#: ../src/io/image_format_fits.c:1123
 #, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Άγνωστος τύπος εικόνας FITS (%ld άξονες).\n"
 
-#: ../src/io/image_format_fits.c:1174
+#: ../src/io/image_format_fits.c:1172
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Έγινε μερική φόρτωση του αρχείου FITS %s\n"
 
-#: ../src/io/image_format_fits.c:1306
+#: ../src/io/image_format_fits.c:1304
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 "ΣΦΑΛΜΑ: γίνεται προσπάθεια αποθήκευσης εικόνας FITS σε μη υποστηριζόμενο "
 "τύπο (%d).\n"
 
-#: ../src/io/image_format_fits.c:1317
+#: ../src/io/image_format_fits.c:1315
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
@@ -8339,6 +8329,9 @@ msgstr "Βασισμένο σε ποιότητα"
 #: ../src/stacking/stacking.c:2300
 msgid "Up-scaling sequence for stacking"
 msgstr "Αλληλουχία  μεγέθυνσης για σώρευση"
+
+#~ msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
+#~ msgstr "Οι εικόνες δεν έχουν το ίδιο μέγεθος (π = %d|%d, υ = %d|%d)\n"
 
 #~ msgid ""
 #~ "Ensure compatibility with images stored\n"

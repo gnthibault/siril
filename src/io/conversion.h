@@ -23,6 +23,8 @@ struct _convert_data {
 extern supported_raw_list supported_raw[];	//supported raw extensions
 int get_nb_raw_supported();
 
+void fill_convert_list(GSList *list);
+
 void list_format_available();
 void check_for_conversion_form_completeness();
 image_type get_type_for_extension(const char *extension);

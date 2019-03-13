@@ -33,7 +33,7 @@
 
 
 static image_type whichminisave = TYPEUNDEF;
-#ifdef _WIN32
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
 static GtkFileChooserNative *saveDialog = NULL;
 #else
 static GtkWidget *saveDialog = NULL;
@@ -236,7 +236,7 @@ static void init_dialog() {
 		GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
 		parent = siril_get_active_window();
 
-#ifdef _WIN32
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
 		saveDialog = gtk_file_chooser_native_new("Save File", parent, action,
 				_("_Save"), _("_Cancel"));
 #else
@@ -249,7 +249,7 @@ static void init_dialog() {
 
 static void close_dialog() {
 	if (saveDialog != NULL) {
-#ifdef _WIN32
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
 		g_object_unref(saveDialog);
 #else
 		gtk_widget_destroy(saveDialog);
@@ -271,7 +271,7 @@ static int save_dialog() {
 	gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
 	set_filters_save_dialog(chooser);
 
-#ifdef _WIN32
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
 	res = gtk_native_dialog_run(GTK_NATIVE_DIALOG(saveDialog));
 #else
 	res = gtk_dialog_run(GTK_DIALOG(saveDialog));
