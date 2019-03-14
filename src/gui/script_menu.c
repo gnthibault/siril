@@ -134,6 +134,7 @@ static GSList *search_script(const char *path) {
 	dir = g_dir_open(path, 0, &error);
 	if (!dir) {
 		fprintf(stderr, "scripts: %s\n", error->message);
+		g_error_free(error);
 		return NULL;
 	}
 	while ((file = g_dir_read_name(dir)) != NULL) {

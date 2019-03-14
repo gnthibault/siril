@@ -171,6 +171,10 @@ struct option long_opts[] = {
 		{0, 0, 0, 0}
 	};
 
+static GtkTargetEntry drop_types[] = {
+  {"text/uri-list", 0, 0}
+};
+
 
 int main(int argc, char *argv[]) {
 	int i, c;
@@ -284,6 +288,11 @@ int main(int argc, char *argv[]) {
 		gtk_text_buffer_create_tag (tbuf, "green", "foreground", "#01b301", NULL);
 		gtk_text_buffer_create_tag (tbuf, "blue", "foreground", "#7a7af8", NULL);
 		gtk_text_buffer_create_tag (tbuf, "plum", "foreground", "#8e4585", NULL);
+
+		/* support for opening a file by dragging onto the GtkTree */
+		gtk_drag_dest_set(lookup_widget("treeview_convert"),
+				GTK_DEST_DEFAULT_MOTION, drop_types, G_N_ELEMENTS(drop_types),
+				GDK_ACTION_COPY);
 	}
 
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
@@ -429,6 +438,7 @@ int main(int argc, char *argv[]) {
 
 		g_object_ref(G_OBJECT(lookup_widget("main_window"))); // don't destroy it on removal
 		g_object_ref(G_OBJECT(lookup_widget("rgb_window")));  // don't destroy it on removal
+
 	}
 
 	/* handling OS-X integration */

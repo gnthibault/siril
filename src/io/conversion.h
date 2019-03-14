@@ -36,4 +36,9 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest);
 void set_debayer_in_convflags();
 void unset_debayer_in_convflags();
 
+void on_treeview_convert_drag_data_received(GtkWidget *widget,
+		GdkDragContext *context, gint x, gint y,
+		GtkSelectionData *selection_data, guint info, guint time,
+		gpointer user_data);
+
 #endif

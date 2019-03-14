@@ -39,6 +39,7 @@
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "algos/demosaicing.h"
+#include "algos/sorting.h"
 
 #define MAX_OF_EXTENSIONS 50	// actual size of supported_extensions
 
@@ -489,6 +490,8 @@ int count_selected_files() {
 				COLUMN_DATE, &file_date, -1);
 		valid = gtk_tree_model_iter_next (model, &iter);
 		count ++;
+		g_free(file_name);
+		g_free(file_date);
 	}
 	return count;
 }
@@ -595,6 +598,7 @@ static void initialize_convert() {
 		tmpmsg = siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), tmpmsg);
 		fprintf (stderr, "Conversion: %s\n", error->message);
+		g_error_free(error);
 		g_list_free_full(list, g_free);
 		set_cursor_waiting(FALSE);
 		return ;
@@ -1025,6 +1029,46 @@ void on_clear_convert_button_clicked(GtkButton *button, gpointer user_data) {
 	check_for_conversion_form_completeness();
 }
 
+void on_treeview_convert_drag_data_received(GtkWidget *widget,
+		GdkDragContext *context, gint x, gint y,
+		GtkSelectionData *selection_data, guint info, guint time,
+		gpointer user_data) {
+
+	gchar **uris, **str;
+	const guchar *data;
+	GSList *list = NULL;
+
+	if (info != 0)
+		return;
+
+	data = gtk_selection_data_get_data(selection_data);
+	uris = g_uri_list_extract_uris((gchar *) data);
+
+	for (str = uris; *str; str++) {
+		GError *error = NULL;
+		gchar *path = g_filename_from_uri(*str, NULL, &error);
+		if (path) {
+			const char *src_ext = get_filename_ext(path);
+			if (src_ext) {
+				image_type imagetype;
+
+				imagetype = get_type_for_extension(src_ext);
+				if (imagetype != TYPEUNDEF) {
+					list = g_slist_prepend(list, path);
+				}
+			}
+		} else {
+			fprintf(stderr, "Could not convert uri to local path: %s",
+					error->message);
+			g_error_free(error);
+		}
+	}
+	list = g_slist_sort(list, (GCompareFunc) strcompare);
+	fill_convert_list(list);
+	g_strfreev(uris);
+	g_slist_free(list);
+}
+
 
 /******************Callback functions*******************************************************************/
 
@@ -1131,4 +1175,3 @@ void on_conv1_1plane_toggled (GtkToggleButton *togglebutton, gpointer user_data)
 	convflags |= CONV1X1;
 	convflags &= ~(CONV3X1|CONV1X3);
 }
-
