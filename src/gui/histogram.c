@@ -104,7 +104,7 @@ static void histo_close(gboolean revert) {
 	clear_hist_backup();
 }
 
-static void histo_recompute(gchar *status) {
+static void histo_recompute() {
 	set_cursor("progress");
 	copyfits(&histo_gfit_backup, &gfit, CP_COPYA, -1);
 
@@ -114,7 +114,6 @@ static void histo_recompute(gchar *status) {
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
-	set_cursor(status);
 }
 
 static void _init_clipped_pixels() {
@@ -488,7 +487,7 @@ static void set_ranges_in_the_gui(double min_shadows, double max_highlight) {
 	gtk_range_set_range(scale_transfert_function[2], min_shadows, 1.0);
 }
 
-static void reset_curors_and_values() {
+static void reset_cursors_and_values() {
 	static GtkRange *scale_transfert_function[3] = { NULL, NULL, NULL };
 	if (scale_transfert_function[0] == NULL) {
 		scale_transfert_function[0] = GTK_RANGE(lookup_widget("scale_shadows"));
@@ -726,14 +725,14 @@ void on_histogram_window_show(GtkWidget *object, gpointer user_data) {
 }
 
 void on_button_histo_close_clicked(GtkButton *button, gpointer user_data) {
-	reset_curors_and_values();
+	reset_cursors_and_values();
 	histo_close(TRUE);
 	gtk_widget_hide(lookup_widget("histogram_window"));
 }
 
 void on_button_histo_cancel_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
-	reset_curors_and_values();
+	reset_cursors_and_values();
 	histo_close(TRUE);
 	histo_startup();
 	set_cursor_waiting(FALSE);
@@ -749,7 +748,7 @@ gboolean on_scale_key_release_event(GtkWidget *widget, GdkEvent *event,
 
 void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
 	// the apply button resets everything after recomputing with the current values
-	histo_recompute("defaut");
+	histo_recompute();
 	// partial cleanup
 	fprintf(stdout, "Applying histogram (mid=%.3lf, lo=%.3lf, hi=%.3lf)\n",
 			_midtones, _shadows, _highlights);
@@ -759,27 +758,31 @@ void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
 	clear_hist_backup();
 	// reinit
 	histo_startup();
-	reset_curors_and_values();
+	reset_cursors_and_values();
+	set_cursor("default");
 }
 
 gboolean on_scale_midtones_button_release_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 	_midtones = gtk_range_get_value(GTK_RANGE(widget));
-	histo_recompute("grab");
+	histo_recompute();
+	set_cursor("grab");
 	return FALSE;
 }
 
 gboolean on_scale_shadows_button_release_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 	_shadows = gtk_range_get_value(GTK_RANGE(widget));
-	histo_recompute("default");
+	histo_recompute();
+	set_cursor("default");
 	return FALSE;
 }
 
 gboolean on_scale_highlights_button_release_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 	_highlights = gtk_range_get_value(GTK_RANGE(widget));
-	histo_recompute("default");
+	histo_recompute();
+	set_cursor("default");
 	return FALSE;
 }
 
@@ -856,7 +859,8 @@ void on_histoMidEntry_changed(GtkEditable *editable, gpointer user_data) {
 	g_signal_handlers_block_by_func(MidRange, on_scale_midtones_value_changed, NULL);
 	gtk_range_set_value(MidRange, value);
 	g_signal_handlers_unblock_by_func(MidRange, on_scale_midtones_value_changed, NULL);
-	histo_recompute("default");
+	histo_recompute();
+	set_cursor("default");
 }
 
 void on_histoShadEntry_changed(GtkEditable *editable, gpointer user_data) {
@@ -887,7 +891,8 @@ void on_histoShadEntry_changed(GtkEditable *editable, gpointer user_data) {
 	g_signal_handlers_block_by_func(ShadRange, on_scale_shadows_value_changed, NULL);
 	gtk_range_set_value(ShadRange, _shadows);
 	g_signal_handlers_unblock_by_func(ShadRange, on_scale_shadows_value_changed, NULL);
-	histo_recompute("default");
+	histo_recompute();
+	set_cursor("default");
 }
 
 void on_histoHighEntry_changed(GtkEditable *editable, gpointer user_data) {
@@ -918,7 +923,8 @@ void on_histoHighEntry_changed(GtkEditable *editable, gpointer user_data) {
 	g_signal_handlers_block_by_func(HighRange, on_scale_highlights_value_changed, NULL);
 	gtk_range_set_value(HighRange, _highlights);
 	g_signal_handlers_unblock_by_func(HighRange, on_scale_highlights_value_changed, NULL);
-	histo_recompute("default");
+	histo_recompute();
+	set_cursor("default");
 }
 
 void on_histoZoom100_clicked(GtkButton *button, gpointer user_data) {
@@ -982,7 +988,7 @@ gboolean on_scale_midtones_leave_notify_event(GtkWidget *widget,
 void on_menuitem_histo_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	histo_startup();
-	reset_curors_and_values();
+	reset_cursors_and_values();
 	compute_histo_for_gfit();
 	gtk_widget_show(lookup_widget("histogram_window"));
 	set_cursor_waiting(FALSE);
