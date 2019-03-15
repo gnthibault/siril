@@ -95,7 +95,7 @@ static gboolean end_convert_idle(gpointer p);
 
 
 int get_nb_raw_supported() {
-	return sizeof(supported_raw) / sizeof(supported_raw_list);
+	return G_N_ELEMENTS(supported_raw);
 }
 
 /* This function is used with command line only */ 
@@ -1051,10 +1051,7 @@ void on_treeview_convert_drag_data_received(GtkWidget *widget,
 		if (path) {
 			const char *src_ext = get_filename_ext(path);
 			if (src_ext) {
-				image_type imagetype;
-
-				imagetype = get_type_for_extension(src_ext);
-				if (imagetype == TYPEUNDEF) {
+				if (get_type_for_extension(src_ext) == TYPEUNDEF) {
 					bad_files++;
 				} else {
 					list = g_slist_prepend(list, path);
@@ -1083,15 +1080,10 @@ void on_treeview_convert_drag_data_received(GtkWidget *widget,
 
 static gchar forbidden_char[] = { '/', '\\' };
 
-static int get_nb_forbidden_char() {
-	return sizeof(forbidden_char) / sizeof(gchar);
-}
-
 static gboolean is_forbiden(gchar c) {
-	int i, n;
+	int i;
 
-	n = get_nb_forbidden_char();
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < G_N_ELEMENTS(forbidden_char); i++) {
 		if (c == forbidden_char[i]) {
 			return TRUE;
 		}

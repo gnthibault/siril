@@ -32,7 +32,7 @@ narrow_filter narrow_band_filters[] = {
 };
 
 int get_nb_narrow_filters() {
-	return sizeof(narrow_band_filters) / sizeof(narrow_filter);
+	return G_N_ELEMENTS(narrow_band_filters);
 }
 
 /*

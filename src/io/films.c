@@ -45,7 +45,7 @@ supported_film_list supported_film[] = {
 };
 
 int get_nb_film_ext_supported() {
-	return sizeof(supported_film) / sizeof(supported_film_list);
+	return G_N_ELEMENTS(supported_film);
 }
 
 static void film_init_struct(struct film_struct *film) {
