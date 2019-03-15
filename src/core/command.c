@@ -1100,11 +1100,12 @@ int process_histo(int nb){
 		free(clayer);
 		return 1;
 	}
-	for (i=0; i < USHRT_MAX + 1; i++)
+	for (i = 0; i < USHRT_MAX + 1; i++)
 		fprintf(f, "%zu %d\n", i, (int) gsl_histogram_get (histo, i));
 	fclose(f);
 	gsl_histogram_free(histo);
 	siril_log_message(_("The file %s has been created for the %s layer.\n"), name, clayer);
+	free(clayer);
 	return 0;
 }
 

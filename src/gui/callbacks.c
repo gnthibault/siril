@@ -3110,6 +3110,7 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 			zoomedX = event->x / zoom;
 			zoomedY = event->y / zoom;
 		} else {
+			set_cursor("crosshair");
 			if (event->x < 0)
 				zoomedX = 0.0;
 			else if (event->x > gfit.rx * zoom)
@@ -3150,15 +3151,13 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		gtk_widget_queue_draw(widget);
 	}
 	if (inimage((GdkEvent *) event)) {
-
 		if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
 			set_cursor("cell");
 		} else {
 			if (!com.drawing) {
 				if (is_over_the_left_side_of_sel(zoomedX, zoomedY, zoom)) {
 					set_cursor("w-resize");
-				} else if (is_over_the_right_side_of_sel(zoomedX, zoomedY,
-						zoom)) {
+				} else if (is_over_the_right_side_of_sel(zoomedX, zoomedY, zoom)) {
 					set_cursor("e-resize");
 				} else if (is_over_the_bottom_of_sel(zoomedX, zoomedY, zoom)) {
 					set_cursor("s-resize");

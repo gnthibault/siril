@@ -1037,6 +1037,7 @@ void on_treeview_convert_drag_data_received(GtkWidget *widget,
 	gchar **uris, **str;
 	const guchar *data;
 	GSList *list = NULL;
+	gint bad_files = 0;
 
 	if (info != 0)
 		return;
@@ -1053,22 +1054,30 @@ void on_treeview_convert_drag_data_received(GtkWidget *widget,
 				image_type imagetype;
 
 				imagetype = get_type_for_extension(src_ext);
-				if (imagetype != TYPEUNDEF) {
+				if (imagetype == TYPEUNDEF) {
+					bad_files++;
+				} else {
 					list = g_slist_prepend(list, path);
 				}
-			}
+			} else bad_files++;
 		} else {
 			fprintf(stderr, "Could not convert uri to local path: %s",
 					error->message);
+			bad_files++;
 			g_error_free(error);
 		}
 	}
 	list = g_slist_sort(list, (GCompareFunc) strcompare);
 	fill_convert_list(list);
+	if (bad_files) {
+		char *msg = siril_log_message(_("%d file(s) were ignored while drag and drop\n"), bad_files);
+		siril_message_dialog(GTK_MESSAGE_INFO, msg,
+				"Files with unknown extension cannot be dropped in this area. "
+						"Therefore they are ignored.");
+	}
 	g_strfreev(uris);
 	g_slist_free(list);
 }
-
 
 /******************Callback functions*******************************************************************/
 
