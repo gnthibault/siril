@@ -3154,16 +3154,19 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
 			set_cursor("cell");
 		} else {
-			if (is_over_the_left_side_of_sel(zoomedX, zoomedY, zoom)) {
-				set_cursor("w-resize");
-			} else if (is_over_the_right_side_of_sel(zoomedX, zoomedY, zoom)) {
-				set_cursor("e-resize");
-			} else if (is_over_the_bottom_of_sel(zoomedX, zoomedY, zoom)) {
-				set_cursor("s-resize");
-			} else if (is_over_the_top_of_sel(zoomedX, zoomedY, zoom)) {
-				set_cursor("n-resize");
-			} else {
-				set_cursor("crosshair");
+			if (!com.drawing) {
+				if (is_over_the_left_side_of_sel(zoomedX, zoomedY, zoom)) {
+					set_cursor("w-resize");
+				} else if (is_over_the_right_side_of_sel(zoomedX, zoomedY,
+						zoom)) {
+					set_cursor("e-resize");
+				} else if (is_over_the_bottom_of_sel(zoomedX, zoomedY, zoom)) {
+					set_cursor("s-resize");
+				} else if (is_over_the_top_of_sel(zoomedX, zoomedY, zoom)) {
+					set_cursor("n-resize");
+				} else {
+					set_cursor("crosshair");
+				}
 			}
 		}
 	}

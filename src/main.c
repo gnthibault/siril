@@ -289,7 +289,7 @@ int main(int argc, char *argv[]) {
 		gtk_text_buffer_create_tag (tbuf, "blue", "foreground", "#7a7af8", NULL);
 		gtk_text_buffer_create_tag (tbuf, "plum", "foreground", "#8e4585", NULL);
 
-		/* support for opening a file by dragging onto the GtkTree */
+		/* support for converting files by dragging onto the GtkTreeView */
 		gtk_drag_dest_set(lookup_widget("treeview_convert"),
 				GTK_DEST_DEFAULT_MOTION, drop_types, G_N_ELEMENTS(drop_types),
 				GDK_ACTION_COPY);
