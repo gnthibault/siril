@@ -960,7 +960,7 @@ void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) 
 	_midtones = m;
 	_highlights = 1.0;
 	update_histo_mtf();
-	histo_recompute("default");
+	histo_recompute();
 	update_curors_and_values();
 	set_cursor_waiting(FALSE);
 }
