@@ -30,6 +30,8 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <tchar.h>
+#include <io.h>
+#include <fcntl.h>
 #endif
 #include <unistd.h>
 #include <signal.h>
@@ -122,6 +124,50 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 	g_free(icon_path);
 }
 
+#endif
+#ifdef _WIN32
+/* origine du source: https://stackoverflow.com/questions/24171017/win32-console-application-that-can-open-windows */
+int ReconnectIO(int OpenNewConsole)
+{
+    int    hConHandle;
+    HANDLE lStdHandle;
+    FILE  *fp;
+    int    MadeConsole;
+
+    MadeConsole=0;
+    if(!AttachConsole(ATTACH_PARENT_PROCESS))
+    {
+        if(!OpenNewConsole)
+            return 0;
+
+        MadeConsole=1;
+        if(!AllocConsole())
+            return 0;  
+    }
+
+    // STDOUT to the console
+    lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+    fp = _fdopen( hConHandle, "w" );
+    *stdout = *fp;
+    setvbuf( stdout, NULL, _IONBF, 0 );
+
+     // STDIN to the console
+    lStdHandle = GetStdHandle(STD_INPUT_HANDLE);
+    hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+    fp = _fdopen( hConHandle, "r" );
+    *stdin = *fp;
+    setvbuf( stdin, NULL, _IONBF, 0 );
+
+    // STDERR to the console
+    lStdHandle = GetStdHandle(STD_ERROR_HANDLE);
+    hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+    fp = _fdopen( hConHandle, "w" );
+    *stderr = *fp;
+    setvbuf( stderr, NULL, _IONBF, 0 );
+
+    return MadeConsole;
+}	
 #endif
 
 char *siril_sources[] = {
@@ -476,6 +522,9 @@ int main(int argc, char *argv[]) {
 				siril_log_message(_("File [%s] does not exist\n"), start_script);
 				exit(1);
 			}
+#ifdef _WIN32			
+			ReconnectIO(1);
+#endif
 			execute_script(fp);
 		}
 		else {
