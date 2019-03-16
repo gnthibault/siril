@@ -55,6 +55,7 @@ static void initialize_photometric_cc_dialog() {
 	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box,
 			*catalog_auto, *frame_cc_bkg, *frame_cc_norm;
 	GtkWindow *parent;
+	GtkAdjustment *selection_cc_black_adjustment[4];
 
 	button_ips_ok = lookup_widget("buttonIPS_ok");
 	button_cc_ok = lookup_widget("button_cc_ok");
@@ -66,6 +67,11 @@ static void initialize_photometric_cc_dialog() {
 
 	parent = GTK_WINDOW(lookup_widget("ImagePlateSolver_Dial"));
 
+	selection_cc_black_adjustment[0] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_x"));
+	selection_cc_black_adjustment[1] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_y"));
+	selection_cc_black_adjustment[2] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_w"));
+	selection_cc_black_adjustment[3] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_h"));
+
 	gtk_widget_set_visible(button_ips_ok, FALSE);
 	gtk_widget_set_visible(button_cc_ok, TRUE);
 	gtk_widget_set_visible(catalog_label, FALSE);
@@ -75,6 +81,16 @@ static void initialize_photometric_cc_dialog() {
 	gtk_widget_set_visible(frame_cc_norm, TRUE);
 
 	gtk_window_set_title(parent, _("Photometric Color Calibration"));
+
+	gtk_adjustment_set_upper(selection_cc_black_adjustment[0], gfit.rx);
+	gtk_adjustment_set_upper(selection_cc_black_adjustment[1], gfit.ry);
+	gtk_adjustment_set_upper(selection_cc_black_adjustment[2], gfit.rx);
+	gtk_adjustment_set_upper(selection_cc_black_adjustment[3], gfit.ry);
+	gtk_adjustment_set_value(selection_cc_black_adjustment[0], 0);
+	gtk_adjustment_set_value(selection_cc_black_adjustment[1], 0);
+	gtk_adjustment_set_value(selection_cc_black_adjustment[2], 0);
+	gtk_adjustment_set_value(selection_cc_black_adjustment[3], 0);
+
 }
 
 static void start_photometric_cc() {
@@ -530,7 +546,7 @@ void on_button_cc_bkg_auto_toggled(GtkToggleButton *button,
 }
 
 void on_button_cc_bkg_selection_clicked(GtkButton *button, gpointer user_data) {
-	static GtkSpinButton *selection_bkg_value[4] = { NULL, NULL, NULL, NULL };
+	static GtkSpinButton *selection_cc_bkg_value[4] = { NULL, NULL, NULL, NULL };
 
 	if ((!com.selection.h) || (!com.selection.w)) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("There is no selection"),
@@ -538,17 +554,17 @@ void on_button_cc_bkg_selection_clicked(GtkButton *button, gpointer user_data) {
 		return;
 	}
 
-	if (!selection_bkg_value[0]) {
-		selection_bkg_value[0] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_x"));
-		selection_bkg_value[1] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_y"));
-		selection_bkg_value[2] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_w"));
-		selection_bkg_value[3] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_h"));
+	if (!selection_cc_bkg_value[0]) {
+		selection_cc_bkg_value[0] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_x"));
+		selection_cc_bkg_value[1] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_y"));
+		selection_cc_bkg_value[2] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_w"));
+		selection_cc_bkg_value[3] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_h"));
 	}
 
-	gtk_spin_button_set_value(selection_bkg_value[0], com.selection.x);
-	gtk_spin_button_set_value(selection_bkg_value[1], com.selection.y);
-	gtk_spin_button_set_value(selection_bkg_value[2], com.selection.w);
-	gtk_spin_button_set_value(selection_bkg_value[3], com.selection.h);
+	gtk_spin_button_set_value(selection_cc_bkg_value[0], com.selection.x);
+	gtk_spin_button_set_value(selection_cc_bkg_value[1], com.selection.y);
+	gtk_spin_button_set_value(selection_cc_bkg_value[2], com.selection.w);
+	gtk_spin_button_set_value(selection_cc_bkg_value[3], com.selection.h);
 }
 
 #endif
