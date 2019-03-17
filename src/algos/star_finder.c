@@ -48,6 +48,8 @@ static WORD Compute_threshold(fits *fit, double starfinder, int layer, WORD *nor
 	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
+		*norm = 0;
+		*bg = 0.0;
 		return 0;
 	}
 	threshold = (WORD) stat->median + starfinder * (WORD) stat->sigma;
@@ -171,6 +173,10 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 
 	results[0] = NULL;
 	threshold = Compute_threshold(fit, sf->sigma, layer, &norm, &bg);
+	if (norm == 0) {
+		free(results);
+		return NULL;
+	}
 
 	copyfits(fit, &wave_fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
 	get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
