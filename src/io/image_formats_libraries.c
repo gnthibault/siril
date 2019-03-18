@@ -897,8 +897,8 @@ static float estimate_pixel_pitch(libraw_data_t *raw) {
 		break;
 	}
 //	printf("s_width=%f\n", s_width);
-	double pitch = s_width / (float) raw->sizes.width * 1000;
-	return roundf(pitch * 100) / 100;
+	float pitch = s_width / (float) raw->sizes.width * 1000.f;
+	return roundf(pitch * 100.f) / 100.f;
 }
 
 static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
