@@ -117,7 +117,7 @@ fi
 
 dnl ================ OPTIONAL DEPENDECIES ================ 
 dnl check raw lib
-PKG_CHECK_MODULES(LIBRAW, [libraw],
+PKG_CHECK_MODULES(LIBRAW, [libraw >= 0.17],
  		  [AC_DEFINE([HAVE_LIBRAW], [1], [Using RAW images])],
  		  AC_MSG_WARN([libraw not found. Not using RAW importer.]))
 
