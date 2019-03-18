@@ -1183,8 +1183,6 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 	}
 
 	pitch = estimate_pixel_pitch(raw);
-	printf("pitch=%.2f, width=%d, raw_width=%d\n", pitch, width, raw_width);
-
 	npixels = width * height;
 	
 	if (raw->other.shutter > 0 && raw->other.shutter < 1)
