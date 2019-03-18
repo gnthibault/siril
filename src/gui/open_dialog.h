@@ -10,10 +10,4 @@
 #define OD_OPEN 	5
 #define OD_CONVERT 	6
 
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-#define SirilWidget GtkFileChooserNative
-#else
-#define SirilWidget GtkWidget
-#endif
-
 #endif /* SRC_GUI_OPEN_DIALOG_H_ */

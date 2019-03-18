@@ -77,6 +77,13 @@ typedef unsigned short WORD;		// default type for internal image data
 #define SN_NORM 1.1926
 #define QN_NORM 2.2191
 
+/* used for open and savedialog */
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#define SirilWidget GtkFileChooserNative
+#else
+#define SirilWidget GtkWidget
+#endif
+
 /* when requesting an image redraw, it can be asked to remap its data before redrawing it.
  * REMAP_NONE	doesn't remaps the data,
  * REMAP_ONLY	remaps only the current viewport (color channel) and the mixed (RGB) image
@@ -86,16 +93,10 @@ typedef unsigned short WORD;		// default type for internal image data
 #define REMAP_ONLY	1
 #define REMAP_ALL	2
 
-enum {
-	COLUMN_FILENAME,		// string
-	COLUMN_DATE,		// string
-	N_COLUMNS_CONVERT
-};
-
 typedef enum {
-	TYPEUNDEF=(1 << 1),
-	TYPEFITS= (1 << 2),
-	TYPETIFF= (1 << 3),
+	TYPEUNDEF = (1 << 1),
+	TYPEFITS = (1 << 2),
+	TYPETIFF = (1 << 3),
 	TYPEBMP = (1 << 4),
 	TYPEPNG = (1 << 5),
 	TYPEJPG = (1 << 6),
@@ -105,7 +106,7 @@ typedef enum {
 	TYPEAVI = (1 << 10),
 	TYPESER = (1 << 11),
 	TYPEMP4 = (1 << 12),
-	TYPEWEBM= (1 << 13),
+	TYPEWEBM = (1 << 13),
 } image_type;
 
 #define USE_DARK	0x01

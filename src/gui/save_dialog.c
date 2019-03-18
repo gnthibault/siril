@@ -33,11 +33,7 @@
 
 
 static image_type whichminisave = TYPEUNDEF;
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-static GtkFileChooserNative *saveDialog = NULL;
-#else
-static GtkWidget *saveDialog = NULL;
-#endif
+static SirilWidget *saveDialog = NULL;
 
 static void gtk_filter_add(GtkFileChooser *file_chooser, const gchar *title,
 		const gchar *pattern, gboolean set_default) {
@@ -230,30 +226,44 @@ static void prepare_savepopup(int type) {
 	gtk_notebook_set_current_page(notebookFormat, tab);
 }
 
+static gint siril_dialog_run(SirilWidget *widgetdialog) {
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+	return gtk_native_dialog_run(GTK_NATIVE_DIALOG(widgetdialog));
+#else
+	return gtk_dialog_run(GTK_DIALOG(GTK_FILE_CHOOSER(widgetdialog)));
+#endif
+}
+
+static void siril_widget_destroy(SirilWidget *widgetdialog) {
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+	g_object_unref(widgetdialog);
+#else
+	gtk_widget_destroy(widgetdialog);
+#endif
+}
+
+static SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action) {
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+	return gtk_file_chooser_native_new(_("Save File"), parent, action,
+			_("_Save"), _("_Cancel"));
+#else
+	return gtk_file_chooser_dialog_new(_("Save File"), parent, action,
+			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT,
+			NULL);
+#endif
+}
+
 static void init_dialog() {
 	GtkWindow *parent;
 	if (saveDialog == NULL) {
-		GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
 		parent = siril_get_active_window();
-
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-		saveDialog = gtk_file_chooser_native_new("Save File", parent, action,
-				_("_Save"), _("_Cancel"));
-#else
-		saveDialog = gtk_file_chooser_dialog_new(_("Save File"), parent, action,
-				_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"),
-				GTK_RESPONSE_ACCEPT, NULL);
-#endif				
+		saveDialog = siril_file_chooser_save(parent, GTK_FILE_CHOOSER_ACTION_SAVE);
 	}
 }
 
 static void close_dialog() {
 	if (saveDialog != NULL) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-		g_object_unref(saveDialog);
-#else
-		gtk_widget_destroy(saveDialog);
-#endif
+		siril_widget_destroy(saveDialog);
 		saveDialog = NULL;
 	}
 }
@@ -271,11 +281,7 @@ static int save_dialog() {
 	gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
 	set_filters_save_dialog(chooser);
 
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	res = gtk_native_dialog_run(GTK_NATIVE_DIALOG(saveDialog));
-#else
-	res = gtk_dialog_run(GTK_DIALOG(saveDialog));
-#endif	
+	res = siril_dialog_run(saveDialog);
 	if (res == GTK_RESPONSE_ACCEPT) {
 
 		gchar *filename = gtk_file_chooser_get_filename(chooser);
@@ -585,8 +591,7 @@ void on_save1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		savepopup = lookup_widget("savepopup");
 	}
 
-	int res = save_dialog();
-	if (res == GTK_RESPONSE_ACCEPT) {
+	if (save_dialog() == GTK_RESPONSE_ACCEPT) {
 		/* now it is not needed for some formats */
 		if (whichminisave != TYPEBMP && whichminisave != TYPEPNG
 				&& whichminisave != TYPEPNM) {

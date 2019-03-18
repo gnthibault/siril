@@ -1,6 +1,12 @@
 #ifndef CONVERSION_H
 #define CONVERSION_H
 
+enum {
+	COLUMN_FILENAME,		// string
+	COLUMN_DATE,		// string
+	N_COLUMNS_CONVERT
+};
+
 typedef struct {
 	char *extension;			// name of the extension of raw
 	char *manufacturer;			// name of the manufacturer

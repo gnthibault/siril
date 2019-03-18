@@ -23,7 +23,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+#include <math.h>
 
 #ifdef HAVE_LIBTIFF
 #define uint64 uint64_hack_
@@ -860,6 +860,47 @@ static void get_FITS_date(time_t date, char *date_obs) {
 	}
 }
 
+/* this is an estimation of the pixel size. Indeed, we cannot know
+ * the real width resolution with libraw.
+ * However, this approximation should be good enough.
+ */
+static float estimate_pixel_pitch(libraw_data_t *raw) {
+	float s_width;
+
+	switch (raw->lens.makernotes.CameraFormat) {
+	case LIBRAW_FORMAT_APSC:
+		if (!g_ascii_strncasecmp("Canon", raw->idata.make, 5))
+			s_width = 22.3;
+		else
+			s_width = 23.6;
+		break;
+	case LIBRAW_FORMAT_FF:
+		if (!g_ascii_strncasecmp("Sony", raw->idata.make, 4))
+			s_width = 35.6;
+		else
+			s_width = 36.0;
+		break;
+	case LIBRAW_FORMAT_FT:
+		s_width = 17.3;
+		break;
+	case LIBRAW_FORMAT_APSH:
+		s_width = 28.7;
+		break;
+	case LIBRAW_FORMAT_1INCH:
+		s_width = 13.2;
+		break;
+	case LIBRAW_FORMAT_MF:
+		s_width = 44.0;
+		break;
+	default:
+		s_width = 0.0;
+		break;
+	}
+//	printf("s_width=%f\n", s_width);
+	double pitch = s_width / (float) raw->sizes.width * 1000;
+	return roundf(pitch * 100) / 100;
+}
+
 static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
 /* libraw_open_wfile is not defined for all windows compilers */
 #if defined(_WIN32) && !defined(__MINGW32__) && defined(_MSC_VER) && (_MSC_VER > 1310)
@@ -886,6 +927,7 @@ static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
 static int readraw(const char *name, fits *fit) {
 	ushort width, height;
 	int npixels, i;
+	double pitch;
 	WORD *data = NULL;
 	libraw_data_t *raw = libraw_init(0);
 	libraw_processed_image_t *image = NULL;
@@ -909,13 +951,13 @@ static int readraw(const char *name, fits *fit) {
 	raw->params.output_bps = 16;						/* 16-bits files                           */
 	raw->params.four_color_rgb = 0;						/* If == 1, interpolate RGB as four colors.*/
 	raw->params.no_auto_bright = 1;						/* no auto_bright                          */
-	raw->params.gamm[0] = 1./com.raw_set.gamm[0];		/* Gamma curve set by the user             */
+	raw->params.gamm[0] = 1.0 / com.raw_set.gamm[0];    /* Gamma curve set by the user             */
 	raw->params.gamm[1] = com.raw_set.gamm[1];	                                         
 	raw->params.bright = com.raw_set.bright;			/* Brightness                              */
 	raw->params.user_flip = 0;							/* no flip                                 */
 	raw->params.use_camera_wb = com.raw_set.use_camera_wb;
 	raw->params.use_auto_wb = com.raw_set.use_auto_wb;
-	if (com.raw_set.user_black==1)
+	if (com.raw_set.user_black == 1)
 		raw->params.user_black = 0;						/* user black level equivalent to dcraw -k 0 */
 	raw->params.output_color = 0;						/* output colorspace, 0=raw, 1=sRGB, 2=Adobe, 3=Wide, 4=ProPhoto, 5=XYZ*/
 		
@@ -959,6 +1001,7 @@ static int readraw(const char *name, fits *fit) {
 	
 	width = raw->sizes.iwidth;
 	height = raw->sizes.iheight;
+	pitch = estimate_pixel_pitch(raw);
 
 	npixels = width * height;
 
@@ -1035,13 +1078,15 @@ static int readraw(const char *name, fits *fit) {
 		fit->pdata[GLAYER] = fit->data + npixels;
 		fit->pdata[BLAYER] = fit->data + npixels * 2;
 		fit->binning_x = fit->binning_y = 1;
-		if (raw->other.focal_len > 0.)
+		if (pitch > 0.f)
+			fit->pixel_size_x = fit->pixel_size_y = pitch;
+		if (raw->other.focal_len > 0.f)
 			fit->focal_length = raw->other.focal_len;
-		if (raw->other.iso_speed > 0.)
+		if (raw->other.iso_speed > 0.f)
 			fit->iso_speed = raw->other.iso_speed;
-		if (raw->other.shutter > 0.)
+		if (raw->other.shutter > 0.f)
 			fit->exposure = raw->other.shutter;
-		if (raw->other.aperture > 0.)
+		if (raw->other.aperture > 0.f)
 			fit->aperture = raw->other.aperture;
 		g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make,
 				raw->idata.model);
@@ -1088,6 +1133,7 @@ static int fcol(libraw_data_t *raw, int row, int col) {
 static int readraw_in_cfa(const char *name, fits *fit) {
 	libraw_data_t *raw = libraw_init(0);
 	unsigned int i, j, c, col, row;
+	float pitch;
 	char pattern[FLEN_VALUE];
 	ushort raw_width, raw_height, left_margin, top_margin;
 	ushort width, height;
@@ -1135,6 +1181,9 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 		width = raw->sizes.iwidth;
 		height = raw->sizes.iheight;
 	}
+
+	pitch = estimate_pixel_pitch(raw);
+	printf("pitch=%.2f, width=%d, raw_width=%d\n", pitch, width, raw_width);
 
 	npixels = width * height;
 	
@@ -1201,13 +1250,15 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 		fit->pdata[BLAYER] = fit->data;
 		fit->binning_x = fit->binning_y = 1;
 		fit->maximum_pixel_value = raw->color.maximum;
-		if (raw->other.focal_len > 0.)
+		if (pitch > 0.f)
+			fit->pixel_size_x = fit->pixel_size_y = pitch;
+		if (raw->other.focal_len > 0.f)
 			fit->focal_length = raw->other.focal_len;
-		if (raw->other.iso_speed > 0.)
+		if (raw->other.iso_speed > 0.f)
 			fit->iso_speed = raw->other.iso_speed;
-		if (raw->other.shutter > 0.)
+		if (raw->other.shutter > 0.f)
 			fit->exposure = raw->other.shutter;
-		if (raw->other.aperture > 0.)
+		if (raw->other.aperture > 0.f)
 			fit->aperture = raw->other.aperture;
 		g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make,
 				raw->idata.model);
