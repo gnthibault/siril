@@ -61,6 +61,7 @@
 #endif
 
 #include "core/siril.h"
+#include "core/proto.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
@@ -187,7 +188,7 @@ gchar *pretty_print_memory(int64_t bytes) {
 		mem = mem / 1024.0;
 		i++;
 	}
-	g_snprintf(str, 10, _("%.1f%s"), mem, units[i]);
+	g_snprintf(str, 10, "%.1f%s", mem, units[i]);
 	return str;
 }
 
