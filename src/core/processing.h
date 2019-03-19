@@ -102,6 +102,10 @@ void stop_processing_thread();
 void set_thread_run(gboolean b);
 gboolean get_thread_run();
 
+void start_in_reserved_thread(gpointer (*f)(gpointer), gpointer p);
+gboolean reserve_thread();
+void unreserve_thread();
+
 gboolean end_generic(gpointer arg);
 guint siril_add_idle(GSourceFunc idle_function, gpointer data);
 

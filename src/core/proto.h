@@ -117,7 +117,8 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file);
 
 /**************** OS_utils.h *****************/
 void	update_used_memory();
-double test_available_space(double seq_size);
+gchar *pretty_print_memory(int64_t bytes);
+int test_available_space(int64_t req_size);
 int	get_available_memory_in_MB();
 #ifdef _WIN32
 gchar *get_special_folder(int csidl);

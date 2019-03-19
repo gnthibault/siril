@@ -839,7 +839,8 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	GtkComboBox *cbbt_layers;
 	GtkComboBoxText *ComboBoxRegInter;
 
-	if (get_thread_run()) {
+
+	if (!reserve_thread()) {	// reentrant from here
 		siril_log_message(
 				_("Another task is already in progress, ignoring new request.\n"));
 		return;
@@ -849,10 +850,10 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 		fprintf(stderr, "regparam should have been created before\n");
 		// means that a call to seq_check_basic_data() or
 		// check_or_allocate_regparam() is missing somewhere else
+		unreserve_thread();
 		return;
 	}
 
-	/* getting the selected registration method */
 	method = get_selected_registration_method();
 
 	if (com.selection.w <= 0 && com.selection.h <= 0
@@ -860,9 +861,9 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 		msg = siril_log_message(
 				_("All prerequisites are not filled for registration. Select a rectangle first.\n"));
 		siril_message_dialog( GTK_MESSAGE_WARNING, _("Warning"), msg);
+		unreserve_thread();
 		return;
 	}
-	// TODO: check for reentrance
 
 	reg_args = calloc(1, sizeof(struct registration_args));
 
@@ -887,14 +888,22 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->translation_only = gtk_toggle_button_get_active(no_translate);
 	reg_args->x2upscale = gtk_toggle_button_get_active(x2upscale);
 	reg_args->cumul = gtk_toggle_button_get_active(cumul);
-	/* Here we should test available free disk space for Drizzle operation */
-	if (reg_args->x2upscale) {
-		double size = seq_compute_size(reg_args->seq);
-		double diff = test_available_space(size * 4.0); //FIXME: 4 is only ok for x2 Drizzle
-		if (diff < 0.0) {
-			msg = siril_log_message(_("Not enough disk space to perform Drizzle operation!\n"));
-			siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough disk space"), msg);
+
+	/* We check that available disk space is enough when:
+	 * - activating the subpixel alignment, which requires generating a new
+	 *   sequence with bigger images
+	 * - using global star registration with rotation enabled, also generating a
+	 *   new sequence */
+	if (reg_args->x2upscale ||
+			(method->method_ptr == register_star_alignment &&
+			 !reg_args->translation_only)) {
+		int nb_frames = reg_args->process_all_frames ? reg_args->seq->number : reg_args->seq->selnum;
+		int64_t size = seq_compute_size(reg_args->seq, nb_frames);
+		if (reg_args->x2upscale)
+			size *= 4;
+		if (test_available_space(size) > 0) {
 			free(reg_args);
+			unreserve_thread();
 			return;
 		}
 	}
@@ -915,7 +924,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	set_progress_bar_data(msg, PROGRESS_RESET);
 
-	start_in_new_thread(register_thread_func, reg_args);
+	start_in_reserved_thread(register_thread_func, reg_args);
 }
 
 // worker thread function for the registration

@@ -62,43 +62,36 @@
 
 #include "core/siril.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
+#include "gui/message_dialog.h"
 
 /**
- * Find the space remaining in a directory, in bytes. A double for >32bit
- * problem avoidance. <0 for error.
+ * Find the space remaining in a directory, in bytes.
  * @param name the path of the directory to be tested
- * @return the disk space remaining in bytes, or a value less than 0 if error
+ * @return the disk space remaining in bytes, or a negative value if error
  */
 #ifdef HAVE_SYS_STATVFS_H
-static double find_space(const gchar *name) {
+static int64_t find_space(const gchar *name) {
 	struct statvfs st;
-	double sz;
-
+	int64_t available;
 	if (statvfs (name, &st))
-		/* Set to error value.
-		 */
-		sz = -1;
-	else
-		sz = (double) st.f_frsize * st.f_bavail;
-
-	return (sz);
+		return -1LL;
+	available = st.f_bavail;        // force 64 bits
+	return available * st.f_frsize;
 }
 #elif (HAVE_SYS_VFS_H || HAVE_SYS_MOUNT_H)
-static double find_space(const gchar *name) {
+static int64_t find_space(const gchar *name) {
 	struct statfs st;
-	double sz;
-
+	int64_t available;
 	if (statfs (name, &st))
-		sz = -1;
-	else
-		sz = (double) st.f_bsize * st.f_bavail;
-
-	return (sz);
+		return -1LL;
+	available = st.f_bavail;        // force 64 bits
+        return available * st.f_bsize;
 }
 #elif defined _WIN32
-static double find_space(const gchar *name) {
+static int64_t find_space(const gchar *name) {
 	ULARGE_INTEGER avail;
-	double sz;
+	int64_t sz;
 
 	gchar *localdir = g_path_get_dirname(name);
 	wchar_t *wdirname = g_utf8_to_utf16(localdir, -1, NULL, NULL, NULL);
@@ -106,15 +99,15 @@ static double find_space(const gchar *name) {
 	if (!GetDiskFreeSpaceExW(wdirname, &avail, NULL, NULL))
 		sz = -1;
 	else
-		sz = (double) avail.QuadPart;
+		sz = avail.QuadPart;
 
 	g_free(localdir);
 	g_free(wdirname);
-	return (sz);
+	return sz;
 }
 #else
-static double find_space(const gchar *name) {
-	return (-1);
+static int64_t find_space(const gchar *name) {
+	return -1LL;
 }
 #endif /*HAVE_SYS_STATVFS_H*/
 
@@ -175,31 +168,54 @@ static unsigned long update_used_RAM_memory() {
  * and displays information on the control window.
  */
 void update_used_memory() {
-	unsigned long ram;
-	double freeDisk;
+	unsigned long ram = update_used_RAM_memory();
+	int64_t freeDisk = find_space(com.wd);
 
-	ram = update_used_RAM_memory();
-	freeDisk = find_space(com.wd);
 	/* update GUI */
 	set_GUI_MEM(ram);
-	set_GUI_DiskSpace(freeDisk);
+	set_GUI_DiskSpace((double)freeDisk);
+}
+
+// from a number of bytes in input, returns a string (to be freed) comprehensible by a
+// human for this size, for example 1.5G instead of 1500000000
+gchar *pretty_print_memory(int64_t bytes) {
+	gchar *str = malloc(10);
+	const char *units[] = { "", "k", "M", "G", "T", "P", "E", "Z", "Y" };
+	int i = 0;
+	double mem = (double)bytes;
+	while (mem >= 1000.0 && i < sizeof units) {
+		mem = mem / 1024.0;
+		i++;
+	}
+	g_snprintf(str, 10, _("%.1f%s"), mem, units[i]);
+	return str;
 }
 
 /**
  * Test if there is enough free disk space by returning the difference
- * between available free disk space and the size given in parameters
- * @param seq_size size to be tested
- * @return a value greater than 0 if there is enough disk space, a value
- * less than 0 otherwise. The function returns -1 if an error occurs.
+ * in bytes between available free disk space and the size given as parameter
+ * @param req_size available space to be tested
+ * @return 0 if there is enough disk space, 1 otherwise, -1 on error.
  */
-double test_available_space(double seq_size) {
-	double freeDisk;
-
-	freeDisk = find_space(com.wd);
-	if ((freeDisk < 0) || (seq_size < 0)) {
+int test_available_space(int64_t req_size) {
+	int64_t free_space = find_space(com.wd);
+	if (free_space < 0 || req_size <= 0)
 		return -1;
+
+	if (req_size > free_space) {
+		gchar *avail = pretty_print_memory(free_space);
+		gchar *required = pretty_print_memory(req_size);
+		gchar *missing = pretty_print_memory(req_size - free_space);
+		char *msg = siril_log_message(_("Not enough free disk space to perform this operation: "
+					"%sB available for %sB needed (missing %sB)\n"),
+				avail, required, missing);
+		queue_message_dialog(GTK_MESSAGE_ERROR, _("Not enough disk space"), msg);
+		free(avail);
+		free(required);
+		free(missing);
+		return 1;
 	}
-	return (freeDisk - seq_size);
+	return 0;
 }
 
 /**

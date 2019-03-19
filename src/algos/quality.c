@@ -194,7 +194,7 @@ double QualityEstimate(fits *fit, int layer, int qtype) {
 							/ (subsample * subsample))); // New scheme
 		}
 
-		//printf("dval val : %lf\n", dval);
+		//printf("dval val : %f\n", dval);
 
 		do {
 			subsample += QSUBSAMPLE_INC;

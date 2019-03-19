@@ -9,6 +9,7 @@ struct savedial_data {
 	const gchar *filename;
 	int bitpix;
 	gboolean update_hilo;
+	int retval;
 };
 
 enum {

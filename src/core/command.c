@@ -240,6 +240,7 @@ int process_satu(int nb){
 
 int process_save(int nb){
 	char filename[256];
+	int retval;
 	
 	if (sequence_is_loaded() && !single_image_is_loaded()) {
 		gfit.hi = com.seq.layers[RLAYER].hi;
@@ -254,9 +255,9 @@ int process_save(int nb){
 
 	sprintf(filename, "%s", word[1]);
 	set_cursor_waiting(TRUE);
-	savefits(filename, &(gfit));
+	retval = savefits(filename, &(gfit));
 	set_cursor_waiting(FALSE);
-	return 0;
+	return retval;
 }
 
 int process_savebmp(int nb){
@@ -1905,17 +1906,21 @@ int process_register(int nb) {
 			}
 		}
 	}
-	/* Here we should test available free disk space for Drizzle operation */
-	if (reg_args->x2upscale) {
-		double size = seq_compute_size(reg_args->seq);
-		double diff = test_available_space(size * 4.0); //FIXME: 4 is only ok for x2 Drizzle
-		if (diff < 0.0) {
-			msg = siril_log_message(_("Not enough disk space to "
-					"perform Drizzle operation!\n"));
+
+	// testing free space
+	if (reg_args->x2upscale ||
+			(method->method_ptr == register_star_alignment &&
+			 !reg_args->translation_only)) {
+		int nb_frames = reg_args->process_all_frames ? reg_args->seq->number : reg_args->seq->selnum;
+		int64_t size = seq_compute_size(reg_args->seq, nb_frames);
+		if (reg_args->x2upscale)
+			size *= 4;
+		if (test_available_space(size) > 0) {
 			free(reg_args);
 			return 1;
 		}
 	}
+
 	/* getting the selected registration layer from the combo box. The value is the index
 	 * of the selected line, and they are in the same order than layers so there should be
 	 * an exact matching between the two */
