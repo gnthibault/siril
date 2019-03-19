@@ -1,6 +1,7 @@
 #ifndef _SEQUENCE_H_
 #define _SEQUENCE_H_
 
+#include <stdint.h>
 #include "../core/siril.h"
 
 int	read_single_sequence(char *realname, int imagetype);

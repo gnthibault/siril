@@ -2,6 +2,7 @@
 #define CALLBACKS_H
 
 #include <sys/time.h>
+#include <stdint.h>
 #include "core/siril.h"	// for sliders_mode
 
 GtkWidget* lookup_widget (const gchar *widget_name);
