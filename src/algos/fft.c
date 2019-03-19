@@ -43,9 +43,6 @@ static void fft_to_spectra(fits* fit, fftw_complex *frequency_repr, double *as,
 		double *ps, double nbdata) {
 	unsigned int i;
 
-	#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) if(nbdata > 3000)
-#endif
 	for (i = 0; i < nbdata; i++) {
 		as[i] = hypot(creal(frequency_repr[i]), cimag(frequency_repr[i]));
 		ps[i] = atan2(cimag(frequency_repr[i]), creal(frequency_repr[i]));
