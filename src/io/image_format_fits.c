@@ -804,10 +804,9 @@ static void save_fits_header(fits *fit) {
 
 	status = 0;
 	if (fit->history) {
-		GSList *list = fit->history;
-		while (list) {
+		GSList *list;
+		for (list = fit->history; list; list = list->next) {
 			fits_write_history(fit->fptr, (char *)list->data, &status);
-			list = list->next;
 		}
 	}
 

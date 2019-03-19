@@ -87,6 +87,7 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 	double row, col;
 	gsl_matrix *J, *cov;
 	gsl_vector *y, *w, *c;
+	GSList *l;
 
 	n = g_slist_length(list);
 
@@ -116,8 +117,8 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 	c = gsl_vector_calloc(nbParam);
 	cov = gsl_matrix_calloc(nbParam, nbParam);
 
-	while (list) {
-		background_sample *sample = (background_sample *) list->data;
+	for (l = list; l; l = l->next) {
+		background_sample *sample = (background_sample *) l->data;
 
 		col = sample->position.x;
 		row = sample->position.y;
@@ -156,8 +157,6 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 		gsl_vector_set(y, k, pixel);
 		gsl_vector_set(w, k, 1.0);
 
-		/* go to the next item */
-		list = list->next;
 		k++;
 	}
 
@@ -414,7 +413,7 @@ static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, si
 }
 
 static GSList *update_median_for_rgb_samples(GSList *orig, fits *fit) {
-	GSList *list = orig;
+	GSList *list;
 	int nx = fit->rx;
 	int ny = fit->ry;
 	int channel;
@@ -424,13 +423,12 @@ static GSList *update_median_for_rgb_samples(GSList *orig, fits *fit) {
 	rgb[GLAYER] = convert_fits_to_img(fit, GLAYER, FALSE);
 	rgb[BLAYER] = convert_fits_to_img(fit, BLAYER, FALSE);
 
-	while (list) {
+	for (list = orig; list; list = list->next) {
 		background_sample *sample = (background_sample *)list->data;
 		for (channel = 0; channel < fit->naxes[2]; channel++) {
 			sample->median[channel] = get_sample_median(rgb[channel],
 					sample->position.x, sample->position.y, nx, ny);
 		}
-		list = list->next;
 	}
 
 	free(rgb[RLAYER]);
@@ -523,9 +521,7 @@ GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 
 	image = convert_fits_to_luminance(fit);
 
-	list = orig;
-
-	while (list) {
+	for (list = orig; list; list = list->next) {
 		background_sample *sample;
 		double radius;
 		double dx;
@@ -541,7 +537,6 @@ GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 			orig = g_slist_remove(orig, sample);
 			break;
 		}
-		list = list->next;
 	}
 	free(image);
 

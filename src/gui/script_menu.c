@@ -187,7 +187,7 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 
 int initialize_script_menu() {
 	static GtkWidget *menuscript = NULL;
-	GSList *list, *script;
+	GSList *list, *script, *s;
 	GtkWidget *menu;
 	gint nb_item = 0;
 
@@ -205,9 +205,10 @@ int initialize_script_menu() {
 
 	menu = gtk_menu_new();
 
-	while (script) {
-		list = search_script(script->data);
+	for (s = script; s; s = s->next) {
+		list = search_script(s->data);
 		if (list) {
+			GSList *l;
 			gtk_widget_show(menuscript);
 			gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuscript), menu);
 			/* write separator but not for the first one */
@@ -216,28 +217,23 @@ int initialize_script_menu() {
 				gtk_menu_shell_append(GTK_MENU_SHELL(menu), separator);
 				gtk_widget_show(separator);
 			}
-			siril_log_message(_("Searching scripts in: %s...\n"), script->data);
-			while (list) {
+			siril_log_message(_("Searching scripts in: %s...\n"), s->data);
+			for (l = list; l; l = l->next) {
 				nb_item ++;
 				/* write an item per script file */
 				GtkWidget *menu_item;
 
-				menu_item = gtk_menu_item_new_with_label(list->data);
+				menu_item = gtk_menu_item_new_with_label(l->data);
 				gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-				gchar *full_path = g_build_filename(script->data, list->data,
+				gchar *full_path = g_build_filename(s->data, l->data,
 						NULL);
 				g_signal_connect(G_OBJECT(menu_item), "activate",
 						G_CALLBACK(on_script_execution), (gchar * ) full_path);
-				siril_log_message(_("Loading script: %s\n"), list->data);
+				siril_log_message(_("Loading script: %s\n"), l->data);
 				gtk_widget_show(menu_item);
-
-				/* go to the next item */
-				list = list->next;
 			}
 			g_slist_free_full(list, g_free);
 		}
-		/* go to the next path */
-		script = script->next;
 	}
 	writeinitfile();
 

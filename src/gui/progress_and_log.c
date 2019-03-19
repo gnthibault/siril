@@ -269,10 +269,9 @@ static gboolean idle_set_cursor(gpointer garg) {
 	GdkCursor *new;
 	GdkDisplay *display;
 	GdkScreen *screen;
-	GList *list;
+	GList *list, *l;
 
 	display = gdk_display_get_default ();
-//	new = gdk_cursor_new_for_display(display, arg->cursor_type);
 	new = gdk_cursor_new_from_name (display, arg->cursor_name);
 	screen = gdk_screen_get_default();
 	list = gdk_screen_get_toplevel_windows(screen);
@@ -282,12 +281,11 @@ static gboolean idle_set_cursor(gpointer garg) {
 	} else {
 		cursor = NULL;
 	}
-	while (list) {
-		GdkWindow *window = GDK_WINDOW(list->data);
+	for (l = list; l; l = l->next) {
+		GdkWindow *window = GDK_WINDOW(l->data);
 		gdk_window_set_cursor(window, cursor);
 		gdk_display_sync(gdk_window_get_display(window));
 		gdk_display_flush(display);
-		list = g_list_next(list);
 	}
 	g_list_free(list);
 	free(arg);

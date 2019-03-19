@@ -645,7 +645,6 @@ gpointer convert_thread_worker(gpointer p) {
 	struct _convert_data *args = (struct _convert_data *) p;
 	GList *list;
 	
-	list = g_list_first(args->list);
 	indice = args->start;
 
 	if (convflags & CONVDSTSER) {
@@ -663,7 +662,7 @@ gpointer convert_thread_worker(gpointer p) {
 		}
 	}
 
-	while (list) {
+	for (list = args->list; list; list = list->next) {
 		gchar *src_filename = (gchar *)list->data;
 		const char *src_ext = get_filename_ext(src_filename);
 		image_type imagetype;
@@ -843,8 +842,6 @@ gpointer convert_thread_worker(gpointer p) {
 		set_progress_bar_data(msg_bar, progress/((double)args->total));
 		progress += 1.0;
 		args->nb_converted++;
-
-		list = g_list_next(list);
 	}
 
 clean_exit:
@@ -1004,20 +1001,58 @@ static void get_convert_list_store() {
 				gtk_builder_get_object(builder, "liststore_convert"));
 }
 
+static GList *get_row_references_of_selected_rows(GtkTreeSelection *selection,
+		GtkTreeModel *model) {
+	GList *ref = NULL;
+	GList *sel, *s;
+
+	sel = gtk_tree_selection_get_selected_rows(selection, &model);
+
+	for (s = sel; s; s = s->next) {
+		GtkTreeRowReference *rowref = gtk_tree_row_reference_new(model,	(GtkTreePath *) s->data);
+		ref = g_list_prepend(ref, rowref);
+	}
+	g_list_free_full(sel, (GDestroyNotify) gtk_tree_path_free);
+	return ref;
+}
+
+static void remove_selected_files_from_list() {
+	GtkTreeSelection *selection;
+	GtkTreeModel *model;
+	GList *references, *list;
+	GtkTreeView *tree_view;
+
+	tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview_convert"));
+	model = gtk_tree_view_get_model(tree_view);
+	selection = gtk_tree_view_get_selection(tree_view);
+	references = get_row_references_of_selected_rows(selection, model);
+	for (list = references; list; list = list->next) {
+		GtkTreeIter iter;
+		GtkTreePath *path = gtk_tree_row_reference_get_path((GtkTreeRowReference*)list->data);
+		if (path) {
+			if (gtk_tree_model_get_iter(model, &iter, path)) {
+				gtk_list_store_remove(liststore_convert, &iter);
+			}
+			gtk_tree_path_free(path);
+		}
+	}
+	g_list_free(references);
+	gtk_tree_selection_unselect_all(selection);
+}
+
 void fill_convert_list(GSList *list) {
 	GStatBuf st;
+	GSList *l;
 
 	get_convert_list_store();
 
-	while (list) {
+	for (l = list; l; l = l->next) {
 		char *filename;
 
-		filename = (char *) list->data;
+		filename = (char *) l->data;
 		if (g_stat(filename, &st) == 0) {
 			add_convert_to_list(filename, st);
-			list = list->next;
-		} else
-			break;	// no infinite loop
+		}
 		g_free(filename);
 	}
 	check_for_conversion_form_completeness();
@@ -1026,6 +1061,11 @@ void fill_convert_list(GSList *list) {
 void on_clear_convert_button_clicked(GtkButton *button, gpointer user_data) {
 	get_convert_list_store();
 	gtk_list_store_clear(liststore_convert);
+	check_for_conversion_form_completeness();
+}
+
+void on_remove_convert_button_clicked(GtkWidget *button, gpointer user_data) {
+	remove_selected_files_from_list();
 	check_for_conversion_form_completeness();
 }
 
@@ -1075,6 +1115,18 @@ void on_treeview_convert_drag_data_received(GtkWidget *widget,
 	g_strfreev(uris);
 	g_slist_free(list);
 }
+
+gboolean on_treeview_convert_key_release_event(GtkWidget *widget, GdkEventKey *event,
+		gpointer user_data) {
+	if (event->keyval == GDK_KEY_Delete || event->keyval == GDK_KEY_KP_Delete
+			|| event->keyval == GDK_KEY_BackSpace) {
+		remove_selected_files_from_list();
+		check_for_conversion_form_completeness();
+		return TRUE;
+	}
+	return FALSE;
+}
+
 
 /******************Callback functions*******************************************************************/
 

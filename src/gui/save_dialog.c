@@ -152,13 +152,12 @@ static void set_description_in_TIFF() {
 	gtk_text_buffer_delete(tbuf, &itStart, &itEnd);
 	/* History already written in header */
 	if (gfit.history) {
-		GSList *list = gfit.history;
-		while (list) {
+		GSList *list;
+		for (list = gfit.history; list; list = list->next) {
 			gtk_text_buffer_get_end_iter(tbuf, &itEnd);
 			gtk_text_buffer_insert(tbuf, &itEnd, (gchar *)list->data, -1);
 			gtk_text_buffer_get_end_iter(tbuf, &itEnd);
 			gtk_text_buffer_insert(tbuf, &itEnd, "\n", 1);
-			list = list->next;
 		}
 	}
 	/* New history */

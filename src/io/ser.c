@@ -537,10 +537,11 @@ void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp) {
 	ser_file->ts = calloc(8, ser_file->frame_count);
 	ser_file->ts_alloc = ser_file->frame_count;
 
-	while (timestamp && i < ser_file->frame_count) {
+	GSList *t = timestamp;
+	while (t && i < ser_file->frame_count) {
 		uint64_t utc, local;
-		FITS_date_key_to_Unix_time(timestamp->data, &utc, &local);
-		timestamp = timestamp->next;
+		FITS_date_key_to_Unix_time(t->data, &utc, &local);
+		t = t->next;
 		memcpy(&ser_file->ts[i], &utc, 8);
 		i++;
 	}

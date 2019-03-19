@@ -2351,8 +2351,8 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	}
 
 	/* draw background removal gradient selection boxes */
-	GSList *list = com.grad_samples;
-	while (list) {
+	GSList *list;
+	for (list = com.grad_samples; list; list = list->next) {
 		background_sample *sample = (background_sample *)list->data;
 		if (sample->valid) {
 			int radius = (int) (sample->size / 2);
@@ -2362,8 +2362,6 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 					sample->size, sample->size);
 			cairo_stroke(cr);
 		}
-
-		list = list->next;
 	}
 	return FALSE;
 }
@@ -4803,23 +4801,6 @@ void on_checkbutton_fixbanding_toggled(GtkToggleButton *togglebutton,
 
 	is_active = gtk_toggle_button_get_active(togglebutton);
 	gtk_widget_set_sensitive(bandingHighlightBox, is_active);
-}
-
-void on_remove_convert_button_clicked(GtkWidget *button, gpointer user_data) {
-	GtkTreeSelection *selection = GTK_TREE_SELECTION(
-			gtk_builder_get_object(builder, "treeview-selection5"));
-	GtkTreeIter iter;
-	GtkTreeModel *model;
-	gchararray string;
-
-	if (gtk_tree_selection_get_selected(selection, &model, &iter)) {//get selected item
-		gtk_tree_model_get(model, &iter, 0, &string, -1);
-		if (string) {
-			gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
-			gtk_tree_selection_unselect_all(selection);
-		}
-	}
-	check_for_conversion_form_completeness();
 }
 
 void on_spinCPU_value_changed (GtkSpinButton *spinbutton, gpointer user_data) {

@@ -1442,8 +1442,8 @@ gboolean end_seqpsf(gpointer p) {
 		photometry_index = i;
 	}
 
-	GSList *iterator = spsfargs->list;
-	while (iterator) {
+	GSList *iterator;
+	for (iterator = spsfargs->list; iterator; iterator = iterator->next) {
 		struct seqpsf_data *data = iterator->data;
 		/* check exposure consistency (only obtained when !for_registration) */
 		if (!spsfargs->for_registration && seq->exposure > 0.0 &&
@@ -1466,8 +1466,6 @@ gboolean end_seqpsf(gpointer p) {
 		if (!spsfargs->for_registration) {
 			seq->photometry[photometry_index][data->image_index] = data->psf;
 		}
-
-		iterator = g_slist_next(iterator);
 	}
 
 	// for registration use: store data in seq->regparam
