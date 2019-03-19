@@ -1436,7 +1436,7 @@ double **darray /* array of distances between stars */
 			star_array[tri->a_index].y - star_array[tri->b_index].y,
 			star_array[tri->a_index].x - star_array[tri->b_index].x);
 #ifdef DEBUG2
-	printf(" triangle %5d  has side_a_angle %lf = %lf deg \n",
+	printf(" triangle %5d  has side_a_angle %f = %f deg \n",
 			tri->id, tri->side_a_angle, tri->side_a_angle*(180/3.14159));
 #endif
 

@@ -2016,16 +2016,12 @@ void set_GUI_MEM(unsigned long size) {
 	set_label_text_from_main_thread("labelmem", str);
 }
 
-void set_GUI_DiskSpace(double mem) {
+void set_GUI_DiskSpace(int64_t space) {
 	gchar str[20];
-	const char *units[] = { "B", "k", "M", "G", "T", "P", "E", "Z", "Y" };
-	size_t i = 0;
-	if (mem != 0.0 && i < 9) {
-		while (mem >= 1000.0) {
-			mem = mem / 1024.0;
-			i++;
-		}
-		g_snprintf(str, sizeof(str), _("Disk Space: %.0lf%s"), mem, units[i]);
+	if (space > 0) {
+		gchar *mem = pretty_print_memory(space);
+		g_snprintf(str, sizeof(str), _("Disk Space: %s"), mem);
+		free(mem);
 	} else
 		g_snprintf(str, sizeof(str), _("Disk Space: N/A"));
 	set_label_text_from_main_thread("labelFreeSpace", str);

@@ -852,7 +852,7 @@ gpointer seqpreprocess(gpointer p) {
 		snprintf(msg, 255, _("Saving image %s"), filename_noext);
 		msg[255] = '\0';
 		set_progress_bar_data(msg, PROGRESS_NONE);
-		savefits(dest_filename, fit);
+		args->retval = savefits(dest_filename, fit);
 		clearfits(fit);
 		free(fit);
 		g_free(filename);
@@ -863,6 +863,11 @@ gpointer seqpreprocess(gpointer p) {
 		int i;
 		long icold = 0L, ihot = 0L;
 		deviant_pixel *dev = NULL;
+
+		int64_t size = seq_compute_size(args->seq, args->seq->number);
+		if (args->debayer) size *= 3;
+		if (test_available_space(size))
+			return GINT_TO_POINTER(1);
 
 		// creating a SER file if the input data is SER
 		if (args->seq->type == SEQ_SER) {
@@ -944,11 +949,15 @@ gpointer seqpreprocess(gpointer p) {
 			snprintf(msg, 255, "Saving image %d/%d (%s)", i + 1, args->seq->number,
 					dest_filename);
 			if (args->seq->type == SEQ_SER) {
-				ser_write_frame_from_fit(new_ser_file, fit, i);
+				args->retval = ser_write_frame_from_fit(new_ser_file, fit, i);
 			} else {
-				savefits(dest_filename, fit);
+				args->retval = savefits(dest_filename, fit);
 			}
 			clearfits(fit);
+			if (args->retval) {
+				set_progress_bar_data(msg, PROGRESS_RESET);
+				break;
+			}
 		}
 		free(fit);
 		// closing SER file if it applies
@@ -1044,7 +1053,8 @@ int extract_plans(fits *fit, int Nbr_Plan, int Type) {
 		snprintf(msg, 256, _("Extracting %s..."), filename);
 		set_progress_bar_data(msg, (float)i / Nbr_Plan);
 		get_wavelet_layers(fit, Nbr_Plan, i, Type, -1);
-		savefits(filename, fit);
+		if (savefits(filename, fit))
+			break;
 	}
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_DONE);
 	return 0;

@@ -112,6 +112,31 @@ void siril_message_dialog(GtkMessageType type, char *title, char *text) {
 	show_modal_dialog(args);
 }
 
+struct message_data {
+	GtkMessageType type;
+	char *title;
+	char *text;
+};
+
+static gboolean siril_message_dialog_idle(gpointer p) {
+	struct message_data *data = (struct message_data *) p;
+	siril_message_dialog(data->type, data->title, data->text);
+	free(data->title);
+	free(data->text);
+	free(data);
+	return FALSE;
+}
+
+void queue_message_dialog(GtkMessageType type, char *title, char *text) {
+	if (com.headless || com.script)
+		return;	// show_dialog usually follows a siril_log_message() call
+	struct message_data *data = malloc(sizeof(struct message_data));
+	data->type = type;
+	data->title = strdup(title);
+	data->text = strdup(text);
+	gdk_threads_add_idle(siril_message_dialog_idle, data);
+}
+
 void siril_data_dialog(GtkMessageType type, char *title, char *text, gchar *data) {
 	if (com.headless || com.script)
 		return;	// show_dialog usually follows a siril_log_message() call

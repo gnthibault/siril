@@ -321,7 +321,7 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 	gchar *mag;
 	gchar *fov;
 
-	coordinates = g_strdup_printf("%lf+%lf", center.x, center.y);
+	coordinates = g_strdup_printf("%f+%f", center.x, center.y);
 	mag = g_strdup_printf("%2.2lf", mag_limit);
 	fov = g_strdup_printf("%2.1lf", dfov / 2);
 
@@ -983,7 +983,7 @@ static gboolean check_affine_TRANS_sanity(TRANS trans) {
 
 	double var1 = fabs(trans.b / trans.f);
 	double var2 = fabs(trans.c / trans.e);
-	siril_debug_print("abs(b/f)=%lf et abs(c/e)=%lf\n", var1, var2);
+	siril_debug_print("abs(b/f)=%f et abs(c/e)=%f\n", var1, var2);
 
 	if (0.8 < var1 && var1 < 1.2) {
 		if (0.8 < var2 && var2 < 1.2) {

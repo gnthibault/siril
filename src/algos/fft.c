@@ -219,7 +219,7 @@ void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 
 // idle function executed at the end of the fourier_transform processing
 gboolean end_fourier_transform(gpointer p) {
-	struct fft_data *args = (struct fft_data *) p;
+	struct fft_data *args = (struct fft_data *)p;
 	stop_processing_thread();
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
@@ -243,6 +243,7 @@ gpointer fourier_transform(gpointer p) {
 
 	siril_log_color_message(_("Fourier Transform: processing...\n"), "red");
 	gettimeofday(&t_start, NULL);
+	args->retval = 0;
 
 	//type must be either "ffti" or "fftd"
 	switch (args->type[3]) {
@@ -250,34 +251,49 @@ gpointer fourier_transform(gpointer p) {
 	case 'd':
 	case 'D':
 		/* We transform the image in a squared picture */
-		if (args->fit->rx != args->fit->ry) {
+		if (width != height) {
 			int size = max(width, height);
-			if (new_fit_image(&tmp, size, size, args->fit->naxes[2]))
-				return GINT_TO_POINTER(1);
+			if (new_fit_image(&tmp, size, size, args->fit->naxes[2])) {
+				args->retval = 1;
+				goto end;
+			}
 			for (chan = 0; chan < args->fit->naxes[2]; chan++) {
 				from[chan] = args->fit->pdata[chan];
 				to[chan] = tmp->pdata[chan];
 				memcpy(to[chan], from[chan], ndata * sizeof(WORD));
 			}
-			copyfits(tmp, args->fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
+			if (copyfits(tmp, args->fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 1)) {
+				args->retval = 1;
+				goto end;
+			}
 		}
 		/* ******************************************* */
-		new_fit_image(&tmp1, args->fit->rx, args->fit->ry,
-				args->fit->naxes[2]);
-		new_fit_image(&tmp2, args->fit->rx, args->fit->ry,
-				args->fit->naxes[2]);
+		if (new_fit_image(&tmp1, width, height, args->fit->naxes[2]) ||
+				new_fit_image(&tmp2, width, height, args->fit->naxes[2])) {
+			args->retval = 1;
+			goto end;
+		}
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
 			FFTD(args->fit, tmp1, tmp2, args->type_order, chan);
 		/* we save the original size in the FITS HEADER */
 		tmp1->dft.rx = tmp2->dft.rx = width;
 		tmp1->dft.ry = tmp2->dft.ry = height;
 		strcpy(tmp1->dft.type, "SPECTRUM");
-		savefits(args->modulus, tmp1);
+		if (savefits(args->modulus, tmp1)) {
+			args->retval = 1;
+			goto end;
+		}
 		strcpy(tmp2->dft.type, "PHASE");
-		savefits(args->phase, tmp2);
+		if (savefits(args->phase, tmp2)) {
+			args->retval = 1;
+			goto end;
+		}
 
 		/* We display the modulus on screen */
-		copyfits(tmp1, &gfit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
+		if (copyfits(tmp1, &gfit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0)) {
+			args->retval = 1;
+			goto end;
+		}
 
 		/* we copy the header informations */
 		save_dft_information_in_gfit(tmp1);
@@ -285,28 +301,23 @@ gpointer fourier_transform(gpointer p) {
 	case 'i':
 	case 'I':
 		tmp = calloc(1, sizeof(fits));
-		if (readfits(args->modulus, tmp, NULL)) {
-			free(tmp);
-			siril_add_idle(end_fourier_transform, args);
-			return GINT_TO_POINTER(1);
+		if (!tmp || readfits(args->modulus, tmp, NULL)) {
+			args->retval = 1;
+			goto end;
 		}
 		tmp1 = calloc(1, sizeof(fits));
-		if (readfits(args->phase, tmp1, NULL)) {
-			free(tmp);
-			free(tmp1);
-			siril_add_idle(end_fourier_transform, args);
-			return GINT_TO_POINTER(1);
+		if (!tmp1 || readfits(args->phase, tmp1, NULL)) {
+			args->retval = 1;
+			goto end;
 		}
 		if (tmp->dft.ord[0] == 'C')		// CENTERED
 			args->type_order = 0;
 		else if (tmp->dft.ord[0] == 'R')	// REGULAR
 			args->type_order = 1;
 		else {
-			free(tmp);
-			free(tmp1);
+			args->retval = 1;
 			siril_log_message(_("There is something wrong in your files\n"));
-			siril_add_idle(end_fourier_transform, args);
-			return GINT_TO_POINTER(1);
+			goto end;
 		}
 		new_fit_image(&tmp2, tmp->rx, tmp->ry, tmp->naxes[2]);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
@@ -320,17 +331,16 @@ gpointer fourier_transform(gpointer p) {
 					tmp->dft.rx * tmp->dft.ry * sizeof(WORD));
 		}
 	}
+
+end:
 	invalidate_stats_from_fit(args->fit);
-	clearfits(tmp);
-	clearfits(tmp1);
-	clearfits(tmp2);
-	free(tmp);
-	free(tmp1);
-	free(tmp2);
+	if (tmp)  { clearfits(tmp);  free(tmp);  }
+	if (tmp1) { clearfits(tmp1); free(tmp1); }
+	if (tmp2) { clearfits(tmp2); free(tmp2); }
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 	siril_add_idle(end_fourier_transform, args);
 
-	return GINT_TO_POINTER(0);
+	return GINT_TO_POINTER(args->retval);
 }

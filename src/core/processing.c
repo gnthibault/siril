@@ -87,6 +87,14 @@ gpointer generic_sequence_worker(gpointer p) {
 		}
 	}
 
+	if (args->has_output && !args->partial_image) {	// TODO partial
+		int64_t size = seq_compute_size(args->seq, args->nb_filtered_images);
+		if (test_available_space(size)) {
+			args->retval = 1;
+			goto the_end;
+		}
+	}
+
 	/* Output print of algorithm description */
 	desc = g_string_new(args->description);
 	if (desc) {
@@ -328,6 +336,20 @@ void start_in_new_thread(gpointer (*f)(gpointer), gpointer p) {
 	com.thread = g_thread_new("processing", f, p);
 }
 
+void start_in_reserved_thread(gpointer (*f)(gpointer), gpointer p) {
+	g_mutex_lock(&com.mutex);
+	if (com.thread) {
+		fprintf(stderr, "The processing thread is busy, stop it first.\n");
+		g_mutex_unlock(&com.mutex);
+		free(p);
+		return;
+	}
+
+	com.run_thread = TRUE;
+	g_mutex_unlock(&com.mutex);
+	com.thread = g_thread_new("processing", f, p);
+}
+
 gpointer waiting_for_thread() {
 	gpointer retval = NULL;
 	if (com.thread) {
@@ -363,6 +385,21 @@ gboolean get_thread_run() {
 	retval = com.run_thread;
 	g_mutex_unlock(&com.mutex);
 	return retval;
+}
+
+// equivalent to atomic get and set if not running
+gboolean reserve_thread() {
+	gboolean retval;
+	g_mutex_lock(&com.mutex);
+	retval = !com.run_thread;
+	if (retval)
+		com.run_thread = TRUE;
+	g_mutex_unlock(&com.mutex);
+	return retval;
+}
+
+void unreserve_thread() {
+	set_thread_run(FALSE);
 }
 
 /* should be called in a threaded function if nothing special has to be done at the end.

@@ -7,6 +7,7 @@ struct fft_data {
 	char *type;
 	const char *modulus, *phase;
 	int type_order;
+	int retval;
 };
 
 void fft_to_spectra(fits *, fftw_complex *, double *, double *);

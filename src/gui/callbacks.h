@@ -20,7 +20,7 @@ void adjust_refimage(int n);
 int adjust_sellabel();
 void set_GUI_CWD();
 void set_GUI_MEM(unsigned long size);
-void set_GUI_DiskSpace(double mem);
+void set_GUI_DiskSpace(int64_t mem);
 void set_GUI_misc();
 void initialize_preprocessing();
 void update_MenuItem();

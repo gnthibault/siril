@@ -210,7 +210,7 @@ sequence * readseqfile(const char *name){
 							!com.debayer.open_debayer) {
 						fprintf(stdout, "- using CFA registration info\n");
 						to_backup = 0;
-					} else { ;
+					} else {
 						fprintf(stdout, "- backing up CFA registration info\n");
 						to_backup = 1;
 					}
@@ -401,7 +401,7 @@ sequence * readseqfile(const char *name){
 							!com.debayer.open_debayer) {
 						fprintf(stdout, "- stats: using CFA stats\n");
 						to_backup = 0;
-					} else { ;
+					} else {
 						fprintf(stdout, "- stats: backing up CFA stats\n");
 						to_backup = 1;
 					}

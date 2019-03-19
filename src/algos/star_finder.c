@@ -261,7 +261,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 							if (nbstars < MAX_STARS) {
 								results[nbstars] = cur_star;
 								results[nbstars + 1] = NULL;
-//								printf("%lf\t\t%lf\t\t%lf\n", cur_star->xpos, cur_star->ypos, cur_star->mag);
+//								printf("%f\t\t%f\t\t%f\n", cur_star->xpos, cur_star->ypos, cur_star->mag);
 								nbstars++;
 							}
 

@@ -543,63 +543,44 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 }
 
 /**
- * Computes size of the sequence in B. If sequence is a SER or film file
- * it returns the size of the file. If it is regular sequence, then
- * the total of selected images times the size of the reference
- * is returned
+ * Computes size of an opened sequence in bytes for a passed number of frames.
+ * For SER or films, it returns the size of the file.
+ * For FITS sequences, the reference image's size is used as baseline.
+ * Unsupported for internal sequences.
  * @param seq input sequence
- * @return the size of the sequence in B
+ * @param nb_frames number of frames to compute the size of the sequence of
+ * @return the size of the sequence in bytes, or -1 if an error happened.
  */
-double seq_compute_size(sequence *seq) {
-	double size = -1.0;
-	double frame_size = 0;
-	int nb_of_frame = 0;
+int64_t seq_compute_size(sequence *seq, int nb_frames) {
+	int64_t frame_size, size = -1LL;
 	char filename[256];
 	GStatBuf sts;
 	int ref;
 
 	switch(seq->type) {
 	case SEQ_SER:
-		size = (double) seq->ser_file->filesize;
-		/* We remove size of un-selected frames */
-		frame_size = (size - SER_HEADER_LEN) / seq->ser_file->frame_count; /* frame_size also contain trailer associated */
-		nb_of_frame = seq->ser_file->frame_count - seq->selnum;
-		size -= (nb_of_frame * frame_size);
-		/* don't forget we can demosaiced on the fly in
-		 * the case of a new ser is created. We should test
-		 * how many channels are displayed on screen if
-		 * there is a Bayer pattern */
-		switch (seq->ser_file->color_id) {
-		case SER_BAYER_BGGR:
-		case SER_BAYER_GBRG:
-		case SER_BAYER_GRBG:
-		case SER_BAYER_RGGB:
-			size *= seq->nb_layers;
-			break;
-		default:
-			break;
-		}
+		size = ser_compute_file_size(seq->ser_file, nb_frames);
 		break;
 	case SEQ_REGULAR:
 		ref = sequence_find_refimage(seq);
-		fit_sequence_get_image_filename(seq, ref, filename, TRUE);
-		if (g_stat(filename, &sts) == 0) {
-			size = (double) sts.st_size;
-			size *= (double) seq->selnum;
+		if (fit_sequence_get_image_filename(seq, ref, filename, TRUE)) {
+			if (!g_stat(filename, &sts)) {
+				frame_size = sts.st_size;       // force 64 bits
+				size = frame_size * nb_frames;
+			}
 		}
 		break;
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 	case SEQ_AVI:
 		if (g_stat(seq->film_file->filename, &sts) == 0) {
-			size = (double) sts.st_size;
-			frame_size = size / seq->film_file->frame_count;
-			nb_of_frame = seq->film_file->frame_count - seq->selnum;
-			size -= (nb_of_frame * frame_size);
+			// this is a close approximation
+			frame_size = sts.st_size / seq->film_file->frame_count;
+			size = nb_frames * frame_size;
 		}
 		break;
 #endif
 	default:
-		fprintf(stderr, "seq_compute_size: Should not happen\n");
+		fprintf(stderr, "Failure: computing sequence size on internal sequence is unsupported\n");
 	}
 	return size;
 }
@@ -1289,7 +1270,7 @@ gpointer crop_sequence(gpointer p) {
 	}
 	set_progress_bar_data(_("Processing..."), PROGRESS_RESET);
 	for (frame = 0, cur_nb = 0.f; frame < args->seq->number; frame++) {
-		if (!get_thread_run())
+		if (!get_thread_run() || args->retvalue)
 			break;
 		fits fit;
 		memset(&fit, 0, sizeof(fits));
@@ -1303,7 +1284,7 @@ gpointer crop_sequence(gpointer p) {
 				fit_sequence_get_image_filename(args->seq, frame, filename,
 				TRUE);
 				sprintf(dest, "%s%s", args->prefix, filename);
-				savefits(dest, &fit);
+				args->retvalue = savefits(dest, &fit);
 				break;
 			case SEQ_SER:
 				if (ser_file) {
@@ -1311,6 +1292,7 @@ gpointer crop_sequence(gpointer p) {
 					ser_file->image_height = fit.ry;
 					if (ser_write_frame_from_fit(ser_file, &fit, frame)) {
 						siril_log_message(_("Error while converting to SER (no space left?)\n"));
+						args->retvalue = 1;
 					}
 				}
 				break;

@@ -28,6 +28,7 @@
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
 #include "gui/save_dialog.h"
+#include "gui/message_dialog.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
 
@@ -303,12 +304,14 @@ static int save_dialog() {
 // idle function executed at the end of the Save Data processing
 gboolean end_save(gpointer p) {
 	struct savedial_data *args = (struct savedial_data *) p;
+	if (args->retval)
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), _("File saving failed. Check the logs for more info."));
 
 	gtk_entry_set_text(args->entry, "");
 	gtk_widget_hide(lookup_widget("savepopup"));
 	stop_processing_thread();
 	set_cursor_waiting(FALSE);
-	close_dialog();
+	close_dialog();	// is this different from the hide above?
 	update_used_memory();
 	free(args);
 	return FALSE;
@@ -344,26 +347,27 @@ static void initialize_data(gpointer p) {
 static gpointer minisavedial(gpointer p) {
 	struct savedial_data *args = (struct savedial_data *) p;
 	uint32_t bytes_per_sample;
+	args->retval = 0;
 
 	if (args->filename[0] != '\0') {
 		switch (whichminisave) {
 		case TYPEBMP:
-			savebmp(args->filename, &gfit);
+			args->retval = savebmp(args->filename, &gfit);
 			break;
 #ifdef HAVE_LIBJPEG
 		case TYPEJPG:
-			savejpg(args->filename, &gfit, args->quality);
+			args->retval = savejpg(args->filename, &gfit, args->quality);
 			break;
 #endif
 #ifdef HAVE_LIBTIFF
 		case TYPETIFF:
-			savetif(args->filename, &gfit, args->bitspersamples);
+			args->retval = savetif(args->filename, &gfit, args->bitspersamples);
 			break;
 #endif
 #ifdef HAVE_LIBPNG
 		case TYPEPNG:
 			bytes_per_sample = gfit.orig_bitpix > BYTE_IMG ? 2 : 1;
-			savepng(args->filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
+			args->retval = savepng(args->filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
 			break;
 #endif
 		case TYPEFITS:
@@ -392,10 +396,10 @@ static gpointer minisavedial(gpointer p) {
 					gfit.lo = 0;
 				}
 			}
-			savefits(args->filename, &gfit);
+			args->retval = savefits(args->filename, &gfit);
 			break;
 		case TYPEPNM:
-			saveNetPBM(args->filename, &gfit);
+			args->retval = saveNetPBM(args->filename, &gfit);
 			break;
 		default:
 			siril_log_message(_("This type of file is not handled. Should not happen"));
@@ -403,7 +407,6 @@ static gpointer minisavedial(gpointer p) {
 		}
 	}
 	siril_add_idle(end_save, args);
-
 	return NULL;
 }
 
