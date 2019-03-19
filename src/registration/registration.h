@@ -3,7 +3,7 @@
 
 #include "core/siril.h"
 
-#define NUMBER_OF_METHODS 5
+#define NUMBER_OF_METHODS 6
 
 struct registration_args;
 typedef int (*registration_function)(struct registration_args *);

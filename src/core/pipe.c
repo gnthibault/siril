@@ -195,7 +195,7 @@ int pipe_send_message(pipe_message msgtype, pipe_verb verb, const char *arg) {
 #else
 	if (pipe_fd_w <= 0) return -1;
 #endif
-	char *msg;
+	char *msg = NULL;
 
 	switch (msgtype) {
 		case PIPE_LOG:
@@ -227,11 +227,13 @@ int pipe_send_message(pipe_message msgtype, pipe_verb verb, const char *arg) {
 			break;
 	}
 
-	g_mutex_lock(&write_mutex);
-	pending_writes = g_list_append(pending_writes, msg);
+	if (msg) {
+		g_mutex_lock(&write_mutex);
+		pending_writes = g_list_append(pending_writes, msg);
 
-	g_cond_signal(&write_cond);
-	g_mutex_unlock(&write_mutex);
+		g_cond_signal(&write_cond);
+		g_mutex_unlock(&write_mutex);
+	}
 	return 0;
 }
 

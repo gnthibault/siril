@@ -235,8 +235,8 @@ static background_sample *get_sample(double *buf, const int xx,
 	sample->mean = gsl_stats_mean(data, 1, size);
 	sample->median[RLAYER] = quickmedian_double(data, size);
 	sample->median[GLAYER] = sample->median[BLAYER] = sample->median[RLAYER];
-	sample->position.x = x;
-	sample->position.y = y;
+	sample->position.x = xx;
+	sample->position.y = yy;
 	sample->size = SAMPLE_SIZE;
 	sample->valid = TRUE;
 

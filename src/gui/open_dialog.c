@@ -221,7 +221,6 @@ static void siril_widget_destroy(SirilWidget *widgetdialog) {
 static void opendial(int whichdial) {
 	SirilWidget *widgetdialog;
 	GtkFileChooser *dialog = NULL;
-	GtkFileChooserAction action;
 	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
 	gint res;
 
