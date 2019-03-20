@@ -180,7 +180,6 @@ void update_used_memory() {
 // from a number of bytes in input, returns a string (to be freed) comprehensible by a
 // human for this size, for example 1.5G instead of 1500000000
 gchar *pretty_print_memory(int64_t bytes) {
-	gchar *str = malloc(10);
 	const char *units[] = { "", "k", "M", "G", "T", "P", "E", "Z", "Y" };
 	int i = 0;
 	double mem = (double)bytes;
@@ -188,8 +187,7 @@ gchar *pretty_print_memory(int64_t bytes) {
 		mem = mem / 1024.0;
 		i++;
 	}
-	g_snprintf(str, 10, "%.1f%s", mem, units[i]);
-	return str;
+	return g_strdup_printf("%.1f%s", mem, units[i]);
 }
 
 /**
