@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-20 12:48+0100\n"
+"POT-Creation-Date: 2019-03-20 16:30+0100\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -3008,22 +3008,14 @@ msgid "Image registration"
 msgstr "Rejestracja obrazu"
 
 #: ../src/gui/siril3.glade.h:651
-msgid "Register all images from sequence"
-msgstr "Zarejestruj wszystkie obrazy z sekwencji"
-
-#: ../src/gui/siril3.glade.h:652
-msgid "Register selected images only"
-msgstr "Zarejestruj tylko wybrane obrazy"
-
-#: ../src/gui/siril3.glade.h:653
 msgid "Choose registration method:"
 msgstr "Wybierz metodę rejestracji:"
 
-#: ../src/gui/siril3.glade.h:654
+#: ../src/gui/siril3.glade.h:652
 msgid "Select registration layer:"
 msgstr "Wybierz warstwę rejestracji:"
 
-#: ../src/gui/siril3.glade.h:655
+#: ../src/gui/siril3.glade.h:653
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -3039,6 +3031,14 @@ msgstr ""
 "Podczas przetwarzania obrazów dane rejestracyjne są pobierane z warstwy "
 "domyślnej, o ile są dostępne (w przypadku obrazów RGB: zielony, w przeciwnym "
 "razie w kolorze niebieskim, a następnie w kolorze czerwonym)."
+
+#: ../src/gui/siril3.glade.h:656
+msgid "Register all images from sequence"
+msgstr "Zarejestruj wszystkie obrazy z sekwencji"
+
+#: ../src/gui/siril3.glade.h:657
+msgid "Register selected images only"
+msgstr "Zarejestruj tylko wybrane obrazy"
 
 #: ../src/gui/siril3.glade.h:658
 msgid "Prefix:"
@@ -4194,12 +4194,12 @@ msgstr "Rejestracja zakończona."
 #: ../src/core/command.c:1539 ../src/core/command.c:1562
 #: ../src/core/command.c:1590 ../src/core/command.c:1616
 #: ../src/core/command.c:1788 ../src/core/command.c:1857
-#: ../src/core/command.c:2605 ../src/gui/callbacks.c:3715
-#: ../src/gui/callbacks.c:3923 ../src/gui/callbacks.c:4085
-#: ../src/gui/callbacks.c:4118 ../src/gui/callbacks.c:4277
-#: ../src/gui/callbacks.c:4411 ../src/gui/callbacks.c:4571
-#: ../src/gui/callbacks.c:4750 ../src/gui/saturation.c:49
-#: ../src/gui/script_menu.c:158 ../src/io/conversion.c:521
+#: ../src/core/command.c:2605 ../src/gui/callbacks.c:3729
+#: ../src/gui/callbacks.c:3937 ../src/gui/callbacks.c:4099
+#: ../src/gui/callbacks.c:4132 ../src/gui/callbacks.c:4291
+#: ../src/gui/callbacks.c:4425 ../src/gui/callbacks.c:4585
+#: ../src/gui/callbacks.c:4764 ../src/gui/saturation.c:49
+#: ../src/gui/script_menu.c:158 ../src/io/conversion.c:528
 #: ../src/registration/registration.c:845 ../src/stacking/stacking.c:1501
 #: ../src/stacking/stacking.c:1625
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4274,9 +4274,9 @@ msgstr "Niezapisany wynik kompozycyji"
 msgid "You must at least load two layers before!\n"
 msgstr "Musisz wczytać wcześniej przynajmniej dwie warstwy !\n"
 
-#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4537
+#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4551
 #: ../src/gui/wavelets.c:222 ../src/gui/wavelets.c:231
-#: ../src/io/conversion.c:592 ../src/registration/registration.c:863
+#: ../src/io/conversion.c:599 ../src/registration/registration.c:863
 msgid "Warning"
 msgstr "Ostrzeżenie"
 
@@ -4343,7 +4343,7 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Przytnij: wybierz regionu lub podaj x, y, szerokość, wysokość\n"
 
 #: ../src/core/command.c:591 ../src/core/command.c:2446
-#: ../src/gui/callbacks.c:4535 ../src/gui/wavelets.c:220
+#: ../src/gui/callbacks.c:4549 ../src/gui/wavelets.c:220
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
@@ -4488,7 +4488,7 @@ msgstr ""
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr ""
 
-#: ../src/core/command.c:1271 ../src/gui/callbacks.c:4232
+#: ../src/core/command.c:1271 ../src/gui/callbacks.c:4246
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Znaleziono %d gwiazd w zdjęciu, kanał #%d\n"
@@ -4566,16 +4566,16 @@ msgid ""
 "%0.1lf, Max: %0.1lf\n"
 msgstr ""
 
-#: ../src/core/command.c:1800 ../src/io/conversion.c:598
+#: ../src/core/command.c:1800 ../src/io/conversion.c:605
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Konwersja: błąd otwarcia katalogu roboczego %s.\n"
 
-#: ../src/core/command.c:1819 ../src/io/conversion.c:580
+#: ../src/core/command.c:1819 ../src/io/conversion.c:587
 msgid "Conversion: processing...\n"
 msgstr "Konwersja: przetwarzanie...\n"
 
-#: ../src/core/command.c:1830 ../src/io/conversion.c:591
+#: ../src/core/command.c:1830 ../src/io/conversion.c:598
 msgid "Conversion: no working directory set.\n"
 msgstr "Konwersja: brak ustawienia katalogu roboczego.\n"
 
@@ -4634,7 +4634,7 @@ msgstr ""
 msgid "Stacked sequence successfully.\n"
 msgstr "Sekwencja stackowania: %s\n"
 
-#: ../src/core/command.c:2348 ../src/gui/callbacks.c:3727
+#: ../src/core/command.c:2348 ../src/gui/callbacks.c:3741
 msgid "Preprocessing...\n"
 msgstr "Wstępne przetwarzanie ...\n"
 
@@ -5542,7 +5542,7 @@ msgstr "Brak takiego pliku lub katalogu\n"
 msgid "\"%s\" is not a directory\n"
 msgstr "\"% s\" nie jest katalogiem\n"
 
-#: ../src/core/utils.c:322 ../src/gui/callbacks.c:2678
+#: ../src/core/utils.c:322 ../src/gui/callbacks.c:2692
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "Nie masz uprawnień do zapisu w tym katalogu: %s\n"
@@ -5707,11 +5707,11 @@ msgstr "Ten binning nie jest jeszcze obsługiwany\n"
 msgid "Unknown zoom_value value, what is the current zoom?\n"
 msgstr "Nieznana wartość powiększenia, jaki jest bieżące powiększenie?\n"
 
-#: ../src/gui/callbacks.c:1760 ../src/gui/callbacks.c:2679
-#: ../src/gui/callbacks.c:4427 ../src/gui/callbacks.c:4433
-#: ../src/gui/callbacks.c:4458 ../src/gui/open_dialog.c:316
+#: ../src/gui/callbacks.c:1760 ../src/gui/callbacks.c:2693
+#: ../src/gui/callbacks.c:4441 ../src/gui/callbacks.c:4447
+#: ../src/gui/callbacks.c:4472 ../src/gui/open_dialog.c:316
 #: ../src/gui/plot.c:383 ../src/gui/plot.c:443 ../src/gui/PSF_list.c:158
-#: ../src/gui/save_dialog.c:307 ../src/io/conversion.c:599
+#: ../src/gui/save_dialog.c:307 ../src/io/conversion.c:606
 #: ../src/io/single_image.c:131
 msgid "Error"
 msgstr "Błąd"
@@ -5721,46 +5721,61 @@ msgstr "Błąd"
 msgid "B&W channel"
 msgstr "Kanał czerwony"
 
-#: ../src/gui/callbacks.c:1878
+#: ../src/gui/callbacks.c:1880
+#, fuzzy, c-format
+msgid "%d file loaded"
+msgstr "Wczytano %d plików"
+
+#: ../src/gui/callbacks.c:1882
 #, c-format
 msgid "%d files loaded"
 msgstr "Wczytano %d plików"
 
-#: ../src/gui/callbacks.c:2013
+#: ../src/gui/callbacks.c:1887
+#, fuzzy, c-format
+msgid "%d file selected, %s"
+msgstr "Wczytano %d plików"
+
+#: ../src/gui/callbacks.c:1889
+#, fuzzy, c-format
+msgid "%d files selected, %s"
+msgstr "Wczytano %d plików"
+
+#: ../src/gui/callbacks.c:2027
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Pamięć: %ldMB"
 
-#: ../src/gui/callbacks.c:2015
+#: ../src/gui/callbacks.c:2029
 #, c-format
 msgid "Mem: N/A"
 msgstr "Pamięć: Niedostępna"
 
-#: ../src/gui/callbacks.c:2023
+#: ../src/gui/callbacks.c:2037
 #, fuzzy, c-format
 msgid "Disk Space: %s"
 msgstr "Miejsce na dysku: %.0lf%s"
 
-#: ../src/gui/callbacks.c:2026
+#: ../src/gui/callbacks.c:2040
 #, c-format
 msgid "Disk Space: N/A"
 msgstr "Miejsce na dysku: N/A"
 
-#: ../src/gui/callbacks.c:2087
+#: ../src/gui/callbacks.c:2101
 msgid "This binning is not handled yet\n"
 msgstr "Ten binning nie jest jeszcze obsługiwany\n"
 
-#: ../src/gui/callbacks.c:2500 ../src/gui/callbacks.c:2501
+#: ../src/gui/callbacks.c:2514 ../src/gui/callbacks.c:2515
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:2513
+#: ../src/gui/callbacks.c:2527
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:2514 ../src/gui/callbacks.c:2526
+#: ../src/gui/callbacks.c:2528 ../src/gui/callbacks.c:2540
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -5768,52 +5783,52 @@ msgstr ""
 "Ta wartość może być za wysoka. Proszę rozważyć zmianę wartości sigma lub "
 "odznaczenie tego pola."
 
-#: ../src/gui/callbacks.c:2517
+#: ../src/gui/callbacks.c:2531
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Zimny :%ld px"
 
-#: ../src/gui/callbacks.c:2525
+#: ../src/gui/callbacks.c:2539
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:2529
+#: ../src/gui/callbacks.c:2543
 #, fuzzy, c-format
 msgid "Hot: %ld px"
 msgstr "dx:%+*.2f px\n"
 
-#: ../src/gui/callbacks.c:2745
+#: ../src/gui/callbacks.c:2759
 #, fuzzy
 msgid "Closing application"
 msgstr "Kalibracja kolorów"
 
-#: ../src/gui/callbacks.c:2745
+#: ../src/gui/callbacks.c:2759
 #, fuzzy
 msgid "Are you sure you want to quit?"
 msgstr "Czy na pewno chcesz zakończyć?"
 
-#: ../src/gui/callbacks.c:3422
+#: ../src/gui/callbacks.c:3436
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "nowa wartość powiększenia: %f\n"
 
-#: ../src/gui/callbacks.c:3461
+#: ../src/gui/callbacks.c:3475
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3463
+#: ../src/gui/callbacks.c:3477
 #, c-format
 msgid "undefined"
 msgstr "niezdefiniowany"
 
-#: ../src/gui/callbacks.c:3559
+#: ../src/gui/callbacks.c:3573
 #, fuzzy
 msgid "Exclude all images ?"
 msgstr "Wyklucz wszystkie"
 
-#: ../src/gui/callbacks.c:3560 ../src/gui/callbacks.c:3570
+#: ../src/gui/callbacks.c:3574 ../src/gui/callbacks.c:3584
 #, fuzzy
 msgid "This erases previous image selection and there's no possible undo."
 msgstr ""
@@ -5821,85 +5836,85 @@ msgstr ""
 "  (to skasuje poprzedni wybór obrazu\n"
 "  ... i nie ma odwrotu)"
 
-#: ../src/gui/callbacks.c:3569
+#: ../src/gui/callbacks.c:3583
 #, fuzzy
 msgid "Include all images ?"
 msgstr "Uwzględnij wszystkie"
 
-#: ../src/gui/callbacks.c:3591
+#: ../src/gui/callbacks.c:3605
 #, fuzzy
 msgid "Opening dark image..."
 msgstr "Błąd otwarcia pliku BMP.\n"
 
-#: ../src/gui/callbacks.c:3594
+#: ../src/gui/callbacks.c:3608
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "BRAK UŻYCIA DARK: nie można otworzyć pliku\n"
 
-#: ../src/gui/callbacks.c:3601
+#: ../src/gui/callbacks.c:3615
 msgid "NOT USING DARK: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:3639
+#: ../src/gui/callbacks.c:3653
 #, fuzzy
 msgid "Opening flat image..."
 msgstr "Błąd otwarcia pliku BMP.\n"
 
-#: ../src/gui/callbacks.c:3642
+#: ../src/gui/callbacks.c:3656
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "NOT USING FLAT: cannot open the file\n"
 
-#: ../src/gui/callbacks.c:3649
+#: ../src/gui/callbacks.c:3663
 msgid "NOT USING FLAT: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:3676
+#: ../src/gui/callbacks.c:3690
 msgid "Opening offset image..."
 msgstr "Otwieranie obrazu przesunięcia..."
 
-#: ../src/gui/callbacks.c:3679
+#: ../src/gui/callbacks.c:3693
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "NOT USING OFFSET: cannot open the file\n"
 
-#: ../src/gui/callbacks.c:3686
+#: ../src/gui/callbacks.c:3700
 #, fuzzy
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/gui/callbacks.c:3783
+#: ../src/gui/callbacks.c:3797
 #, fuzzy
 msgid "Error in preprocessing."
 msgstr "Wstępne przetwarzanie ...\n"
 
-#: ../src/gui/callbacks.c:3860
+#: ../src/gui/callbacks.c:3874
 #, fuzzy, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Wybrano %s, %d zdjęć"
 
-#: ../src/gui/callbacks.c:3929
+#: ../src/gui/callbacks.c:3943
 msgid "Searching for sequences in the current working directory..."
 msgstr "Wyszukiwanie sekwencji w bieżącym katalogu roboczym..."
 
-#: ../src/gui/callbacks.c:4224
+#: ../src/gui/callbacks.c:4238
 msgid "Load an image first, aborted.\n"
 msgstr "Najpierw załaduj obraz, proces przerwany.\n"
 
-#: ../src/gui/callbacks.c:4254
+#: ../src/gui/callbacks.c:4268
 msgid "The file stars.lst has been created.\n"
 msgstr "Plik 'stars.lst' został utworzony.\n"
 
-#: ../src/gui/callbacks.c:4331 ../src/gui/callbacks.c:4379
+#: ../src/gui/callbacks.c:4345 ../src/gui/callbacks.c:4393
 #, fuzzy
 msgid "Current selection is too large"
 msgstr "fwhm: wybór jest zbyt duży"
 
-#: ../src/gui/callbacks.c:4332 ../src/gui/callbacks.c:4380
+#: ../src/gui/callbacks.c:4346 ../src/gui/callbacks.c:4394
 #, fuzzy
 msgid "To determine the PSF, please make a selection around a star."
 msgstr ""
 "Bieżące zaznaczenie jest zbyt duże.\n"
 "Aby określić PSF, dokonaj wyboru wokół gwiazdy.\n"
 
-#: ../src/gui/callbacks.c:4344
+#: ../src/gui/callbacks.c:4358
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -5926,24 +5941,24 @@ msgid ""
 "\t\tRMSE=%.3e"
 msgstr ""
 
-#: ../src/gui/callbacks.c:4361
+#: ../src/gui/callbacks.c:4375
 #, fuzzy
 msgid "PSF for the sequence only applies on sequences"
 msgstr "Uruchom najpierw PSF dla sekwencji (patrz seqpsf)\n"
 
-#: ../src/gui/callbacks.c:4362
+#: ../src/gui/callbacks.c:4376
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr ""
 
-#: ../src/gui/callbacks.c:4426
+#: ../src/gui/callbacks.c:4440
 msgid "FFT does not work with sequences !\n"
 msgstr "FFT nie działa z sekwencjami !\n"
 
-#: ../src/gui/callbacks.c:4432
+#: ../src/gui/callbacks.c:4446
 msgid "Open an image first !\n"
 msgstr "Najpierw otwórz obraz !\n"
 
-#: ../src/gui/callbacks.c:4457
+#: ../src/gui/callbacks.c:4471
 msgid "Select magnitude and phase before !\n"
 msgstr ""
 
@@ -6367,42 +6382,42 @@ msgstr "Obrazy PNG"
 msgid "Supported file types: %s\n"
 msgstr "Obsługiwane typy plików: %s\n"
 
-#: ../src/io/conversion.c:531
+#: ../src/io/conversion.c:538
 msgid "Invalid char"
 msgstr ""
 
-#: ../src/io/conversion.c:531
+#: ../src/io/conversion.c:538
 msgid ""
 "Please remove invalid char in the sequence name before trying to convert "
 "images into a new sequence again."
 msgstr ""
 
-#: ../src/io/conversion.c:537
+#: ../src/io/conversion.c:544
 #, c-format
 msgid "A file named %s already exists. Do you want to replace it?\n"
 msgstr ""
 
-#: ../src/io/conversion.c:539
+#: ../src/io/conversion.c:546
 msgid "The file already exists. Replacing it will overwrite its contents."
 msgstr ""
 
-#: ../src/io/conversion.c:565 ../src/io/conversion.c:571
+#: ../src/io/conversion.c:572 ../src/io/conversion.c:578
 msgid "A conflict has been detected."
 msgstr ""
 
-#: ../src/io/conversion.c:566
+#: ../src/io/conversion.c:573
 msgid ""
 "The Debayer option is not allowed in SER conversion, please uncheck the "
 "option."
 msgstr ""
 
-#: ../src/io/conversion.c:572
+#: ../src/io/conversion.c:579
 msgid ""
 "The Multiple SER option is not allowed in SER conversion, please uncheck the "
 "option."
 msgstr ""
 
-#: ../src/io/conversion.c:652
+#: ../src/io/conversion.c:659
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
@@ -6410,22 +6425,22 @@ msgstr ""
 "Dane wyjściowe SER będą miały pierwszeństwo przed opcją tworzenia jednego "
 "kanału dla każdego obrazu.\n"
 
-#: ../src/io/conversion.c:658 ../src/io/conversion.c:710
+#: ../src/io/conversion.c:665 ../src/io/conversion.c:717
 #: ../src/io/sequence.c:1265 ../src/io/sequence_export.c:104
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "Tworzenie pliku SER nie powiodło się, przerwanie.\n"
 
-#: ../src/io/conversion.c:675 ../src/io/conversion.c:676
+#: ../src/io/conversion.c:682 ../src/io/conversion.c:683
 #, c-format
 msgid "Converting %s..."
 msgstr "Konwersja %s..."
 
-#: ../src/io/conversion.c:682
+#: ../src/io/conversion.c:689
 #, c-format
 msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr ""
 
-#: ../src/io/conversion.c:683
+#: ../src/io/conversion.c:690
 #, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -6444,51 +6459,51 @@ msgstr ""
 "formatach, możesz powiadomić programistów, że rozszerzenie, którego "
 "próbujesz użyć, powinno zostać rozpoznane dla tego typu."
 
-#: ../src/io/conversion.c:702
+#: ../src/io/conversion.c:709
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Błąd podczas otwierania filmu %s, przerwanie.\n"
 
-#: ../src/io/conversion.c:722 ../src/io/conversion.c:788
+#: ../src/io/conversion.c:729 ../src/io/conversion.c:795
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Błąd podczas odczytu klatki %d z %s, przerwanie.\n"
 
-#: ../src/io/conversion.c:734 ../src/io/conversion.c:800
-#: ../src/io/conversion.c:827 ../src/io/sequence.c:1295
+#: ../src/io/conversion.c:741 ../src/io/conversion.c:807
+#: ../src/io/conversion.c:834 ../src/io/sequence.c:1295
 #: ../src/io/sequence_export.c:317
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Błąd podczas konwersji do SER (brak wolnego miejsca?)\n"
 
-#: ../src/io/conversion.c:742 ../src/io/conversion.c:808
-#: ../src/io/conversion.c:833
+#: ../src/io/conversion.c:749 ../src/io/conversion.c:815
+#: ../src/io/conversion.c:840
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr "Błąd podczas konwersji do FITS (brak wolnego miejsca?)\n"
 
-#: ../src/io/conversion.c:758
+#: ../src/io/conversion.c:765
 msgid ""
 "Joining SER files is only possible with a list only containing SER files. "
 "Please, remove non SER files.\n"
 msgstr ""
 
-#: ../src/io/conversion.c:767
+#: ../src/io/conversion.c:774
 #, fuzzy, c-format
 msgid "Error while opening ser file %s, aborting.\n"
 msgstr "Błąd podczas otwierania filmu %s, przerwanie.\n"
 
-#: ../src/io/conversion.c:775
+#: ../src/io/conversion.c:782
 msgid "Input SER files must have the same size to be joined.\n"
 msgstr ""
 
-#: ../src/io/conversion.c:872
+#: ../src/io/conversion.c:879
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "Nie można wykonać debayer na obrazie z więcej niż jednym kanałem\n"
 
-#: ../src/io/conversion.c:885 ../src/io/ser.c:829 ../src/io/ser.c:1035
+#: ../src/io/conversion.c:892 ../src/io/ser.c:829 ../src/io/ser.c:1035
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Nie znaleziono wzorca Bayera w nagłówku pliku.\n"
 
-#: ../src/io/conversion.c:888 ../src/io/ser.c:833 ../src/io/ser.c:1039
+#: ../src/io/conversion.c:895 ../src/io/ser.c:833 ../src/io/ser.c:1039
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -6497,24 +6512,24 @@ msgstr ""
 "Wzorzec Bayera znaleziony w nagłówku (%s) różni się od wzorca Bayera w "
 "ustawieniach (%s). Zastępuję ustawienia.\n"
 
-#: ../src/io/conversion.c:897
+#: ../src/io/conversion.c:904
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr ""
 
-#: ../src/io/conversion.c:902
+#: ../src/io/conversion.c:909
 #, fuzzy, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Filtr mediany"
 
-#: ../src/io/conversion.c:906
+#: ../src/io/conversion.c:913
 msgid "The FITS file is being normalized to 16-bit\n"
 msgstr ""
 
-#: ../src/io/conversion.c:910
+#: ../src/io/conversion.c:917
 msgid "Cannot perform debayering\n"
 msgstr "Nie można wykonać debayer\n"
 
-#: ../src/io/conversion.c:960
+#: ../src/io/conversion.c:967
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
@@ -6523,17 +6538,17 @@ msgstr ""
 "powinno się odbywać\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:965
+#: ../src/io/conversion.c:972
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "Błąd podczas otwierania%s: typ pliku nie jest obsługiwany.\n"
 
-#: ../src/io/conversion.c:1110
+#: ../src/io/conversion.c:1117
 #, c-format
 msgid "%d file(s) were ignored while drag and drop\n"
 msgstr ""
 
-#: ../src/io/conversion.c:1112
+#: ../src/io/conversion.c:1119
 msgid ""
 "Files with unknown extension cannot be dropped in this area. Therefore they "
 "are ignored."
@@ -7946,6 +7961,10 @@ msgstr "Na podstawie jakości"
 #: ../src/stacking/stacking.c:2300
 msgid "Up-scaling sequence for stacking"
 msgstr "Skalowanie w górę dla stackowania"
+
+#, fuzzy
+#~ msgid "%s"
+#~ msgstr "%"
 
 #~ msgid "Images don't have the same size (w = %d|%d, h = %d|%d)\n"
 #~ msgstr "Obrazy nie mają tego samego rozmiaru (w =%d|%d, h =%d|%d)\n"

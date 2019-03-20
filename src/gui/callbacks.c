@@ -1870,13 +1870,27 @@ void update_statusbar_convert() {
 	GtkLabel *status_label = GTK_LABEL(
 			gtk_builder_get_object(builder, "statuslabel_convert"));
 
-	int nb_files = count_selected_files();
+	int nb_files = count_converted_files();
 	if (nb_files == 0)
 		gtk_label_set_text(status_label, " ");
 	else {
-		char str[64];
-		g_snprintf(str, sizeof(str), _("%d files loaded"), nb_files);
-		gtk_label_set_text(status_label, str);
+		int selected = count_selected_files();
+		gchar *str, *total;
+		if (nb_files == 1) {
+			str = g_strdup_printf(_("%d file loaded"), nb_files);
+		} else {
+			str = g_strdup_printf(_("%d files loaded"), nb_files);
+		}
+		if (selected == 0) {
+			total = g_strdup_printf("%s", str);
+		} else if (selected == 1) {
+			total = g_strdup_printf(_("%d file selected, %s"), selected, str);
+		} else {
+			total = g_strdup_printf(_("%d files selected, %s"), selected, str);
+		}
+		gtk_label_set_text(status_label, total);
+		g_free(str);
+		g_free(total);
 	}
 }
 

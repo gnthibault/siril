@@ -471,7 +471,7 @@ image_type get_type_for_extension(const char *extension) {
 	return TYPEUNDEF; // not recognized or not supported
 }
 
-int count_selected_files() {
+int count_converted_files() {
 	static GtkTreeView *tree_convert = NULL;
 	GtkTreeModel *model = NULL;
 	GtkTreeIter iter;
@@ -494,6 +494,13 @@ int count_selected_files() {
 		g_free(file_date);
 	}
 	return count;
+}
+
+int count_selected_files() {
+	GtkTreeView *tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview_convert"));
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(tree_view);
+
+	return gtk_tree_selection_count_selected_rows(selection);
 }
 
 static void initialize_convert() {
@@ -1165,6 +1172,11 @@ void insert_text_handler(GtkEntry *entry, const gchar *text, gint length,
 	g_signal_stop_emission_by_name(G_OBJECT(editable), "insert_text");
 
 	g_free(result);
+}
+
+void on_treeview_selection5_changed(GtkTreeSelection *treeselection,
+		gpointer user_data) {
+	update_statusbar_convert();
 }
 
 // truncates destroot if it's more than 120 characters, append a '_' if it
