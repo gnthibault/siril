@@ -66,6 +66,7 @@ static int readinitfile() {
 					"the saved directory is not available anymore\n"));
 			if (changedir(com.wd, NULL)) {
 				fprintf(stderr, "Could not change to start-up directory, aborting\n");
+				config_destroy(&config);
 				return 1;
 			}
 			set_GUI_CWD();
@@ -202,6 +203,7 @@ static int readinitfile() {
 		com.ext = strdup(".fit");
 	}
 	com.script_path = list;
+	config_destroy(&config);
 	return 0;
 }
 
