@@ -1861,14 +1861,12 @@ void activate_tab(int vport) {
 }
 
 void control_window_switch_to_tab(main_tabs tab) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(
-			gtk_builder_get_object(builder, "notebook2"));
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook2"));
 	gtk_notebook_set_current_page(notebook, tab);
 }
 
 void update_statusbar_convert() {
-	GtkLabel *status_label = GTK_LABEL(
-			gtk_builder_get_object(builder, "statuslabel_convert"));
+	GtkLabel *status_label = GTK_LABEL(lookup_widget("statuslabel_convert"));
 
 	int nb_files = count_converted_files();
 	if (nb_files == 0)

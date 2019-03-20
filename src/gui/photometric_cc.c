@@ -45,6 +45,7 @@
 #include "gui/message_dialog.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "gui/histogram.h"
 
 enum {
 	RED, GREEN, BLUE
@@ -389,10 +390,10 @@ static gboolean end_photometric_cc(gpointer p) {
 	free_fitted_stars(args->stars);
 	fclose(args->BV_file);
 	free(args);
-	update_used_memory();
 
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	update_used_memory();
 	set_cursor_waiting(FALSE);
 	return FALSE;
 }
@@ -490,6 +491,7 @@ int apply_photometric_cc() {
 
 	undo_save_state(&gfit, "Processing: Photometric CC");
 	invalidate_stats_from_fit(&gfit);
+	invalidate_gfit_histogram();
 
 	set_cursor_waiting(TRUE);
 	BV_file = open_bv_file("r+t");
