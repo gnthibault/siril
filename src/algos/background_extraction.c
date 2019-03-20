@@ -35,6 +35,7 @@
 #include "algos/sorting.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "gui/message_dialog.h"
 #include "registration/registration.h"	// for mouse_status
 #include "background_extraction.h"
 
@@ -80,7 +81,7 @@ static double poly_1(gsl_vector *c, double x, double y) {
 	return (value);
 }
 
-static double *computeBackground(GSList *list, int channel, size_t width, size_t height, poly_order order) {
+static double *computeBackground(GSList *list, int channel, size_t width, size_t height, poly_order order, gchar **err) {
 	size_t n, i, j;
 	size_t k = 0;
 	double chisq, pixel;
@@ -90,8 +91,6 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 	GSList *l;
 
 	n = g_slist_length(list);
-
-	if (n == 0) return NULL;
 
 	int nbParam;
 	switch (order) {
@@ -107,6 +106,12 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 	case POLY_4:
 	default:
 		nbParam = NPARAM_POLY4;
+	}
+
+	if (n < nbParam) {
+		*err = siril_log_message(_("There are not enough background samples. "
+				"The background to be extracted cannot be computed.\n"));
+		return NULL;
 	}
 
 	// J is the Jacobian
@@ -172,6 +177,8 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 		gsl_vector_free(w);
 		gsl_vector_free(c);
 		gsl_matrix_free(cov);
+
+		*err = NULL; // error not handled
 
 		return NULL;
 	}
@@ -579,6 +586,7 @@ void on_background_clear_all_clicked(GtkButton *button, gpointer user_data) {
 void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 	double *background, *image[3] = {0};
 	int correction, channel;
+	gchar *error;
 
 	if (com.grad_samples == NULL) return;
 
@@ -591,8 +599,15 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 	for (channel = 0; channel < gfit.naxes[2]; channel++) {
 		/* compute background */
 		image[channel] = convert_fits_to_img(&gfit, channel, TRUE);
-		background = computeBackground(com.grad_samples, channel, gfit.rx, gfit.ry, get_poly_order());
-
+		background = computeBackground(com.grad_samples, channel, gfit.rx, gfit.ry, get_poly_order(), &error);
+		if (background == NULL) {
+			if (error) {
+				siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
+			}
+			update_used_memory();
+			set_cursor_waiting(FALSE);
+			return;
+		}
 		/* remove background */
 		remove_gradient(image[channel], background, gfit.rx * gfit.ry, correction);
 		convert_img_to_fits(image[channel], &gfit, channel);
