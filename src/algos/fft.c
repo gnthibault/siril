@@ -49,12 +49,9 @@ static void fft_to_spectra(fits* fit, fftw_complex *frequency_repr, double *as,
 	}
 }
 
-static void fft_to_freq(fits* fit, fftw_complex *frequency_repr, double *as, double *ps) {
+static void fft_to_freq(fits* fit, fftw_complex *frequency_repr, double *as, double *ps, double nbdata) {
 	unsigned int i;
-	int nbdata = fit->rx * fit->ry;
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) if(nbdata > 3000)
-#endif
+
 	for (i = 0; i < nbdata; i++) {
 		frequency_repr[i] = as[i] * (cos(ps[i]) + I * sin(ps[i]));
 	}
@@ -199,7 +196,7 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 	fftw_complex* frequency_repr = (fftw_complex*) fftw_malloc(
 			sizeof(fftw_complex) * nbdata);
 
-	fft_to_freq(fit, frequency_repr, modulus, phase);
+	fft_to_freq(fit, frequency_repr, modulus, phase, nbdata);
 
 	fftw_plan p = fftw_plan_dft_2d(width, height, frequency_repr, spatial_repr,
 			FFTW_BACKWARD, FFTW_ESTIMATE);

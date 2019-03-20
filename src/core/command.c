@@ -1194,13 +1194,21 @@ int process_new(int nb){
 	if (!height || !width) return 1;
 
 	close_single_image();
+	close_sequence(FALSE);
 
 	fits *fit = &gfit;
 	if (new_fit_image(&fit, width, height, layers))
 		return 1;
-	memset(gfit.data, 0, width*height*layers*sizeof(WORD));
+	memset(gfit.data, 0, width * height * layers * sizeof(WORD));
 
-	open_single_image_from_gfit(strdup(_("new empty image")));
+	com.seq.current = UNRELATED_IMAGE;
+	com.uniq = calloc(1, sizeof(single));
+	com.uniq->filename = strdup(_("new empty image"));
+	com.uniq->nb_layers = gfit.naxes[2];
+	com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
+	com.uniq->fit = &gfit;
+
+	open_single_image_from_gfit(com.uniq->filename);
 	return 0;
 }
 

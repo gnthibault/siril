@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-19 14:35+0100\n"
-"PO-Revision-Date: 2019-03-19 14:37+0100\n"
+"POT-Creation-Date: 2019-03-20 12:48+0100\n"
+"PO-Revision-Date: 2019-03-20 13:34+0100\n"
 "Last-Translator: Cyril Richard <cyril@free-astro.fr>\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -3989,6 +3989,18 @@ msgstr "Limite haute : "
 msgid "White reference"
 msgstr "Référence des blancs"
 
+#: ../src/algos/background_extraction.c:112
+msgid ""
+"There are not enough background samples. The background to be extracted "
+"cannot be computed.\n"
+msgstr ""
+"Il n'y a pas assez d'échantillons de fond de ciel. Le fond à extraire ne "
+"peut pas être calculé.\n"
+
+#: ../src/algos/background_extraction.c:605
+msgid "Not enough samples."
+msgstr "Échantillons insuffisants."
+
 #: ../src/algos/colors.c:355
 msgid "Siril cannot extract layers. Make sure your image is in RGB mode.\n"
 msgstr ""
@@ -4008,7 +4020,7 @@ msgstr "Rehaussement de la saturation : en cours...\n"
 #: ../src/algos/colors.c:808 ../src/algos/cosmetic_correction.c:135
 #: ../src/algos/cosmetic_correction.c:184
 #: ../src/algos/cosmetic_correction.c:395 ../src/algos/star_finder.c:50
-#: ../src/core/command.c:1742 ../src/core/siril.c:626 ../src/core/siril.c:789
+#: ../src/core/command.c:1750 ../src/core/siril.c:626 ../src/core/siril.c:789
 #: ../src/core/siril.c:989 ../src/core/siril.c:1280 ../src/core/siril.c:1376
 #: ../src/core/siril.c:1468 ../src/gui/histogram.c:638
 #: ../src/gui/photometric_cc.c:316 ../src/gui/statistics_list.c:308
@@ -4067,11 +4079,11 @@ msgstr "Correction cosmétique : en cours...\n"
 msgid "%ld pixels corrected (%ld + %ld)\n"
 msgstr "%ld pixels corrigés (%ld + %ld)\n"
 
-#: ../src/algos/fft.c:244
+#: ../src/algos/fft.c:243
 msgid "Fourier Transform: processing...\n"
 msgstr "Transformée de Fourier : en cours...\n"
 
-#: ../src/algos/fft.c:319
+#: ../src/algos/fft.c:320
 msgid "There is something wrong in your files\n"
 msgstr "Fichiers corrompus\n"
 
@@ -4246,11 +4258,11 @@ msgstr "Gradient rotationnel terminé."
 #: ../src/algos/rgradient.c:181 ../src/core/command.c:219
 #: ../src/core/command.c:457 ../src/core/command.c:777
 #: ../src/core/command.c:945 ../src/core/command.c:980
-#: ../src/core/command.c:1060 ../src/core/command.c:1404
-#: ../src/core/command.c:1531 ../src/core/command.c:1554
-#: ../src/core/command.c:1582 ../src/core/command.c:1608
-#: ../src/core/command.c:1780 ../src/core/command.c:1849
-#: ../src/core/command.c:2597 ../src/gui/callbacks.c:3715
+#: ../src/core/command.c:1060 ../src/core/command.c:1412
+#: ../src/core/command.c:1539 ../src/core/command.c:1562
+#: ../src/core/command.c:1590 ../src/core/command.c:1616
+#: ../src/core/command.c:1788 ../src/core/command.c:1857
+#: ../src/core/command.c:2605 ../src/gui/callbacks.c:3715
 #: ../src/gui/callbacks.c:3923 ../src/gui/callbacks.c:4085
 #: ../src/gui/callbacks.c:4118 ../src/gui/callbacks.c:4277
 #: ../src/gui/callbacks.c:4411 ../src/gui/callbacks.c:4571
@@ -4402,7 +4414,7 @@ msgstr ""
 "Recadrage : sélectionner une zone ou entrer les valeurs de x, y, largeur et "
 "hauteur\n"
 
-#: ../src/core/command.c:591 ../src/core/command.c:2438
+#: ../src/core/command.c:591 ../src/core/command.c:2446
 #: ../src/gui/callbacks.c:4535 ../src/gui/wavelets.c:220
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
@@ -4442,7 +4454,7 @@ msgstr "Séquence : %s\n"
 msgid "Image: %s\n"
 msgstr "Image : %s\n"
 
-#: ../src/core/command.c:729 ../src/core/command.c:2417
+#: ../src/core/command.c:729 ../src/core/command.c:2425
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* FIN DE LA LISTE***********\n"
 
@@ -4511,11 +4523,11 @@ msgid "Running the PSF on the loaded sequence, layer %d\n"
 msgstr "Exécution de la PSF sur la séquence chargée, canal %d\n"
 
 #: ../src/core/command.c:1018 ../src/core/command.c:1024
-#: ../src/core/command.c:1623 ../src/core/command.c:1629
-#: ../src/core/command.c:1861 ../src/core/command.c:1867
-#: ../src/core/command.c:2018 ../src/core/command.c:2163
-#: ../src/core/command.c:2170 ../src/core/command.c:2268
-#: ../src/core/command.c:2275
+#: ../src/core/command.c:1631 ../src/core/command.c:1637
+#: ../src/core/command.c:1869 ../src/core/command.c:1875
+#: ../src/core/command.c:2026 ../src/core/command.c:2171
+#: ../src/core/command.c:2178 ../src/core/command.c:2276
+#: ../src/core/command.c:2283
 #, c-format
 msgid "No sequence %s found.\n"
 msgstr "La séquence %s n'a pas été pas trouvée.\n"
@@ -4534,101 +4546,101 @@ msgstr "Le fichier %s a été créé pour le canal %s.\n"
 msgid "Number of layers MUST be 1 or 3\n"
 msgstr "Le nombre de canal DOIT être de 1 ou 3\n"
 
-#: ../src/core/command.c:1203
+#: ../src/core/command.c:1206
 msgid "new empty image"
 msgstr "nouvelle image vide"
 
-#: ../src/core/command.c:1215
+#: ../src/core/command.c:1223
 #, c-format
 msgid "Values must be positive and less than %d.\n"
 msgstr "Les valeurs doivent être positives et inférieures à %d.\n"
 
-#: ../src/core/command.c:1235 ../src/core/command.c:1496
+#: ../src/core/command.c:1243 ../src/core/command.c:1504
 msgid "Wrong parameters.\n"
 msgstr "Mauvais paramètres.\n"
 
-#: ../src/core/command.c:1240
+#: ../src/core/command.c:1248
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr ""
 "Fill2 : sélectionner une zone ou entrer les valeurs de x, y, largeur et "
 "hauteur\n"
 
-#: ../src/core/command.c:1263 ../src/gui/callbacks.c:4232
+#: ../src/core/command.c:1271 ../src/gui/callbacks.c:4232
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "%d étoiles trouvées dans l'image, canal #%d\n"
 
-#: ../src/core/command.c:1277
+#: ../src/core/command.c:1285
 msgid "find_hot must be applied on an one-channel master-dark frame"
 msgstr ""
 "find_hot doit être appliqué sur les images master-dark avec un seul canal"
 
-#: ../src/core/command.c:1285
+#: ../src/core/command.c:1293
 #, c-format
 msgid "%ld cold and %ld hot pixels\n"
 msgstr "%ld pixels froids et %ld pixels chauds\n"
 
-#: ../src/core/command.c:1290 ../src/core/command.c:1325
+#: ../src/core/command.c:1298 ../src/core/command.c:1333
 #, c-format
 msgid "Cannot open file: %s\n"
 msgstr "Impossible d'ouvrir le fichier : %s\n"
 
-#: ../src/core/command.c:1386
+#: ../src/core/command.c:1394
 #, c-format
 msgid "cosmetic correction: cosme file format error at line %d: %s\n"
 msgstr ""
 "correction cosmétique : le fichier cosme a une erreur de format à la ligne "
 "%d : %s\n"
 
-#: ../src/core/command.c:1394
+#: ../src/core/command.c:1402
 msgid "There were some errors, please check your input file.\n"
 msgstr "Des erreurs ont été rencontrées, veuillez vérifier les fichiers.\n"
 
-#: ../src/core/command.c:1416
+#: ../src/core/command.c:1424
 msgid "The size of the kernel MUST be odd and greater than 1.\n"
 msgstr "La taille du filtre DOIT être impaire et plus grande que 1.\n"
 
-#: ../src/core/command.c:1421
+#: ../src/core/command.c:1429
 msgid "Modulation value MUST be between 0 and 1\n"
 msgstr "La valeur de la modulation DOIT être entre 0 et 1\n"
 
 #. FITS are stored bottom to top
-#: ../src/core/command.c:1444
+#: ../src/core/command.c:1452
 #, c-format
 msgid "Center of gravity coordinates are (%.3lf, %.3lf)\n"
 msgstr "Les coordonnées du centre de gravité sont (%.3lf, %.3lf)\n"
 
-#: ../src/core/command.c:1559
+#: ../src/core/command.c:1567
 msgid "FFT does not work with sequences\n"
 msgstr "La FFT ne fonctionne pas avec des séquences\n"
 
-#: ../src/core/command.c:1663
+#: ../src/core/command.c:1671
 msgid ""
 "Use this command to select images in a sequence, load a sequence first.\n"
 msgstr ""
 "Utiliser cette commande pour sélectionner les images dans la séquence, "
 "charger une séquence d'abord.\n"
 
-#: ../src/core/command.c:1669
+#: ../src/core/command.c:1677
 msgid ""
 "The first argument must be between 0 and the number of images minus one.\n"
 msgstr ""
 "Le premier argument doit se situer entre 0 et le nombre d'images - 1.\n"
 
-#: ../src/core/command.c:1699
+#: ../src/core/command.c:1707
 #, c-format
 msgid "Selection update finished, %d images are selected in the sequence\n"
 msgstr ""
 "Mise à jour de la sélection finie. %d images sont sélectionnées dans la "
 "séquence\n"
 
-#: ../src/core/command.c:1718
+#: ../src/core/command.c:1726
 msgid "Siril cannot split layers. Make sure your image is in RGB mode.\n"
 msgstr ""
 "Impossible d'éclater l'image. Assurez-vous que cette dernière soit une image "
 "RVB.\n"
 
-#: ../src/core/command.c:1762
+#: ../src/core/command.c:1770
 #, c-format
 msgid ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
@@ -4637,58 +4649,58 @@ msgstr ""
 "Canal %s : Moyenne : %0.1lf, Médiane : %0.1lf, Sigma : %0.1lf, AvgDev : "
 "%0.1lf, Min : %0.1lf, Max : %0.1lf\n"
 
-#: ../src/core/command.c:1792 ../src/io/conversion.c:598
+#: ../src/core/command.c:1800 ../src/io/conversion.c:598
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Conversion : erreur lors de l'ouverture du répertoire de travail %s.\n"
 
-#: ../src/core/command.c:1811 ../src/io/conversion.c:580
+#: ../src/core/command.c:1819 ../src/io/conversion.c:580
 msgid "Conversion: processing...\n"
 msgstr "Conversion : en cours...\n"
 
-#: ../src/core/command.c:1822 ../src/io/conversion.c:591
+#: ../src/core/command.c:1830 ../src/io/conversion.c:591
 msgid "Conversion: no working directory set.\n"
 msgstr "Conversion: aucun répertoire de travail défini.\n"
 
-#: ../src/core/command.c:1877 ../src/registration/registration.c:103
+#: ../src/core/command.c:1885 ../src/registration/registration.c:103
 msgid "Global Star Alignment (deep-sky)"
 msgstr "Alignement global (ciel profond)"
 
 #. only TRUE for global registration. Will be updated in this case
-#: ../src/core/command.c:1935 ../src/registration/registration.c:921
+#: ../src/core/command.c:1943 ../src/registration/registration.c:921
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "Alignement : traitement en cours utilisant la méthode : %s\n"
 
-#: ../src/core/command.c:1966
+#: ../src/core/command.c:1974
 #, c-format
 msgid "Stacking sequence %s\n"
 msgstr "Empile la séquence %s\n"
 
-#: ../src/core/command.c:2011
+#: ../src/core/command.c:2019
 #, c-format
 msgid "Could not save the stacking result %s\n"
 msgstr "Impossible d'enregistrer le résultat de l'empilement %s\n"
 
-#: ../src/core/command.c:2032 ../src/core/command.c:2130
+#: ../src/core/command.c:2040 ../src/core/command.c:2138
 msgid "Looking for sequences in current working directory...\n"
 msgstr "Cherche les séquences dans le répertoire de travail...\n"
 
-#: ../src/core/command.c:2034
+#: ../src/core/command.c:2042
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr ""
 "Erreur pendant la recherche des séquences ou l'ouverture du répertoire.\n"
 
-#: ../src/core/command.c:2040
+#: ../src/core/command.c:2048
 msgid "Starting stacking of found sequences...\n"
 msgstr "Début de l'empilement des séquences trouvées...\n"
 
-#: ../src/core/command.c:2051
+#: ../src/core/command.c:2059
 #, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr "%d séquences empilées avec succès.\n"
 
-#: ../src/core/command.c:2090 ../src/core/command.c:2206
+#: ../src/core/command.c:2098 ../src/core/command.c:2214
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
@@ -4697,20 +4709,20 @@ msgstr ""
 "Winsorized ici et requiert deux arguments supplémentaires : sigma bas et "
 "haut.\n"
 
-#: ../src/core/command.c:2111 ../src/core/command.c:2227
+#: ../src/core/command.c:2119 ../src/core/command.c:2235
 #, c-format
 msgid "The provided type of stacking is unknown (%s).\n"
 msgstr "Le type de séquence proposée est inconnu (%s).\n"
 
-#: ../src/core/command.c:2136
+#: ../src/core/command.c:2144
 msgid "Stacked sequence successfully.\n"
 msgstr "Séquence empilée avec succès.\n"
 
-#: ../src/core/command.c:2340 ../src/gui/callbacks.c:3727
+#: ../src/core/command.c:2348 ../src/gui/callbacks.c:3727
 msgid "Preprocessing...\n"
 msgstr "Prétraitement...\n"
 
-#: ../src/core/command.c:2390
+#: ../src/core/command.c:2398
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -4718,85 +4730,85 @@ msgid ""
 msgstr ""
 "Le nombre de processeurs doit être supérieur à 0 et inférieur ou égal à %d.\n"
 
-#: ../src/core/command.c:2402
+#: ../src/core/command.c:2410
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "Utilise maintenant %d processeurs\n"
 
-#: ../src/core/command.c:2412
+#: ../src/core/command.c:2420
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* LISTE DES COMMANDES DISPONIBLES *********\n"
 
-#: ../src/core/command.c:2493
+#: ../src/core/command.c:2501
 #, c-format
 msgid "Unknown command: '%s' or not implemented yet\n"
 msgstr "Commande inconnue : '%s' ou pas encore implémentée\n"
 
-#: ../src/core/command.c:2500
+#: ../src/core/command.c:2508
 #, c-format
 msgid "Usage: %s\n"
 msgstr "Usage : %s\n"
 
-#: ../src/core/command.c:2507
+#: ../src/core/command.c:2515
 #, c-format
 msgid "This command cannot be used in a script: %s\n"
 msgstr "Cette commande ne peut pas être utilisée dans un script : %s\n"
 
 #. process the command
-#: ../src/core/command.c:2513
+#: ../src/core/command.c:2521
 #, c-format
 msgid "Running command: %s\n"
 msgstr "Exécution de la commande : %s\n"
 
-#: ../src/core/command.c:2560
+#: ../src/core/command.c:2568
 #, c-format
 msgid "Error in line %d: '%s'.\n"
 msgstr "Erreur à la ligne %d : '%s'.\n"
 
-#: ../src/core/command.c:2561
+#: ../src/core/command.c:2569
 msgid "Exiting batch processing.\n"
 msgstr "Sortie du traitement par lot.\n"
 
-#: ../src/core/command.c:2577
+#: ../src/core/command.c:2585
 msgid "Script execution finished successfully.\n"
 msgstr "L'exécution du script s'est terminée avec succès.\n"
 
-#: ../src/core/command.c:2579
+#: ../src/core/command.c:2587
 msgid "Total execution time"
 msgstr "Temps d'exécution total"
 
-#: ../src/core/command.c:2581
+#: ../src/core/command.c:2589
 msgid "Script execution failed.\n"
 msgstr "L'exécution du script a échoué.\n"
 
-#: ../src/core/command.c:2607 ../src/gui/script_menu.c:173 ../src/main.c:522
+#: ../src/core/command.c:2615 ../src/gui/script_menu.c:173 ../src/main.c:522
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Le fichier [%s] n'existe pas\n"
 
 #. Then, run script
-#: ../src/core/command.c:2615 ../src/gui/script_menu.c:182
+#: ../src/core/command.c:2623 ../src/gui/script_menu.c:182
 #, c-format
 msgid "Starting script %s\n"
 msgstr "Début du script %s\n"
 
-#: ../src/core/command.c:2622
+#: ../src/core/command.c:2630
 msgid "Command execution failed.\n"
 msgstr "L'exécution de la commande a échoué.\n"
 
-#: ../src/core/command.c:2747
+#: ../src/core/command.c:2755
 msgid "Can be used in a script: "
 msgstr "Peut être utilisé dans un script : "
 
-#: ../src/core/command.c:2750
+#: ../src/core/command.c:2758
 msgid "YES"
 msgstr "OUI"
 
-#: ../src/core/command.c:2752
+#: ../src/core/command.c:2760
 msgid "NO"
 msgstr "NON"
 
-#: ../src/core/command.c:2762
+#: ../src/core/command.c:2770
 msgid "No help for this command"
 msgstr "Aucune aide pour cette commande"
 
@@ -5550,7 +5562,7 @@ msgstr ""
 "Le répertoire de travail sauvegardé n'est plus accessible. Le répertoire par "
 "défaut vient d'être défini comme nouveau répertoire de travail\n"
 
-#: ../src/core/OS_utils.c:210
+#: ../src/core/OS_utils.c:208
 #, c-format
 msgid ""
 "Not enough free disk space to perform this operation: %sB available for %sB "
@@ -5559,7 +5571,7 @@ msgstr ""
 "Espace disque libre insuffisant pour effectuer cette opération : %sB "
 "disponible pour %sB nécessaire (manque %sB)\n"
 
-#: ../src/core/OS_utils.c:213
+#: ../src/core/OS_utils.c:211
 msgid "Not enough disk space"
 msgstr "Espace disque insuffisant"
 
@@ -8460,9 +8472,6 @@ msgstr "Mise à l'échelle de la séquence pour l’empilement"
 #, fuzzy
 #~ msgid "Bright stars"
 #~ msgstr "Luminosité"
-
-#~ msgid "Not enough stars.\n"
-#~ msgstr "Pas assez d'étoiles.\n"
 
 #~ msgid "Converting from SER is not yet supported\n"
 #~ msgstr ""
