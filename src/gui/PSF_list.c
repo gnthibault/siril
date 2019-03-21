@@ -270,14 +270,15 @@ static void remove_selected_star(int index) {
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(gtk_builder_get_object(builder, "Stars_stored")));
 	GtkTreeIter iter;
 
-	gtk_tree_selection_get_selected (selection, &model, &iter);
-	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
-	gtk_tree_selection_unselect_all(selection);
+	if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
+		gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+		gtk_tree_selection_unselect_all(selection);
 
-	remove_star(index);
+		remove_star(index);
 
-	com.selected_star = -1;
-	display_status();
+		com.selected_star = -1;
+		display_status();
+	}
 }
 
 static void remove_all_stars(){
