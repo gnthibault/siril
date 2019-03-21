@@ -4919,7 +4919,3 @@ void on_rgb_align_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_gotoStacking_button_clicked(GtkButton *button, gpointer user_data) {
 	control_window_switch_to_tab(STACKING);
 }
-
-void on_clear_log_button_clicked(GtkButton *button, gpointer user_data) {
-	process_clear(0);
-}

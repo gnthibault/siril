@@ -421,12 +421,10 @@ int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list, point
 void free_stars(struct s_star *head) {
 	struct s_star* tmp;
 
-	int i = 0;
 	while (head != NULL) {
 		tmp = head;
 		head = head->next;
 		shFree(tmp);
-		i++;
 	}
 }
 
