@@ -18,6 +18,12 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef _WIN32
+#define SIRIL_EOL "\r\n"
+#else
+#define SIRIL_EOL "\n"
+#endif
+
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -45,7 +51,8 @@ static void save_log_file(gchar *filename) {
 	GtkTextBuffer *log;
 	GtkTextView *tv;
 	GtkTextIter start, end;
-	gchar *str;
+	gchar *str, **token;
+	guint nargs, i;
 	FILE *f;
 
 	tv = GTK_TEXT_VIEW(lookup_widget("output"));
@@ -53,10 +60,18 @@ static void save_log_file(gchar *filename) {
 	gtk_text_buffer_get_bounds(log, &start, &end);
 	str = gtk_text_buffer_get_text(log, &start, &end, FALSE);
 
+	token = g_strsplit(str, "\n", -1);
+	nargs = g_strv_length(token);
+
 	f = g_fopen(filename, "w");
-	fprintf(f, "%s", str);
+
+	for (i = 0; i < nargs; i++) {
+		fprintf(f, "%s%s", token[i], SIRIL_EOL);
+	}
+
 	fclose(f);
 	g_free(str);
+	g_strfreev(token);
 }
 
 static SirilWidget *siril_file_chooser_save_log(GtkWindow *parent, GtkFileChooserAction action) {
@@ -117,6 +132,8 @@ static void save_log_dialog() {
 	if (res == GTK_RESPONSE_ACCEPT) {
 		gchar *file = gtk_file_chooser_get_filename(dialog);
 		save_log_file(file);
+
+		g_free(file);
 	}
 	siril_widget_destroy(widgetdialog);
 	g_free(filename);
