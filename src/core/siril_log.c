@@ -31,6 +31,16 @@ static gchar *build_timestamp() {
 	return g_time_val_to_iso8601(&time);
 }
 
+static void remove_not_valid_char(gchar *str, gchar c, gchar n) {
+	gchar *s = str;
+	while (*s) {
+		if (*s == c) {
+			*s = n;
+		}
+		s++;
+	}
+}
+
 static void save_log_file(gchar *filename) {
 	GtkTextBuffer *log;
 	GtkTextView *tv;
@@ -46,6 +56,7 @@ static void save_log_file(gchar *filename) {
 	f = g_fopen(filename, "w");
 	fprintf(f, "%s", str);
 	fclose(f);
+	g_free(str);
 }
 
 static SirilWidget *siril_file_chooser_save_log(GtkWindow *parent, GtkFileChooserAction action) {
@@ -91,6 +102,7 @@ static void save_log_dialog() {
 	gchar *filename;
 
 	filename = build_timestamp();
+	remove_not_valid_char(filename, ':', '.');
 	filename = str_append(&filename, ".log");
 
 	widgetdialog = siril_file_chooser_save_log(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);
