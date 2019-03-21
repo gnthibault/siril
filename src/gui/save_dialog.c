@@ -181,8 +181,7 @@ static void prepare_savepopup(int type) {
 	int tab;
 
 	if (notebookFormat == NULL) {
-		notebookFormat = GTK_NOTEBOOK(
-				gtk_builder_get_object(builder, "notebookFormat"));
+		notebookFormat = GTK_NOTEBOOK(lookup_widget("notebookFormat"));
 		savepopup = lookup_widget("savepopup");
 		savetxt = lookup_widget("filenameframe");
 	}

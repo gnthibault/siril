@@ -40,7 +40,7 @@ enum {
 	COLUMN_SHIFTX,		// int
 	COLUMN_SHIFTY,		// int
 	COLUMN_SELECTED,	// gboolean
-	COLUMN_FWHM,		// converted to string, not pure double
+	COLUMN_FWHM,		// gdouble
 	COLUMN_CURRENT,		// int weight, current file loaded, display IMNAME in bold
 	COLUMN_REFERENCE,	// background color depending on the image being reference
 	COLUMN_INDEX,		// int

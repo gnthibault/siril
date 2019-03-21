@@ -41,7 +41,7 @@
 
 #define MAX_ITER_NO_ANGLE  10		//Number of iteration in the minimization with no angle
 #define MAX_ITER_ANGLE     10		//Number of iteration in the minimization with angle
-#define EPSILON            0.01
+#define EPSILON            0.001
 
 const double radian_conversion = ((3600.0 * 180.0) / M_PI) / 1.0E3;
 
@@ -631,7 +631,7 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg, int layer,
 			 * when sx and sy are too close (star is quite round).
 			 * However, in this case we need to compute photometry if needed
 			 */
-			if ((fabs(psf->sx - psf->sy) >= EPSILON)) {
+			if ((fabs(psf->sx - psf->sy) < EPSILON)) {
 				// Photometry
 				if (for_photometry)
 					psf->phot = getPhotometryData(z, psf, verbose);

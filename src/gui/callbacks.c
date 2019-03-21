@@ -1880,7 +1880,7 @@ void update_statusbar_convert() {
 			str = g_strdup_printf(_("%d files loaded"), nb_files);
 		}
 		if (selected == 0) {
-			total = g_strdup_printf("%s", str);
+			total = g_strdup(str);
 		} else if (selected == 1) {
 			total = g_strdup_printf(_("%d file selected, %s"), selected, str);
 		} else {
@@ -4169,64 +4169,6 @@ void on_menuitemPSF_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_data)
 		gtk_widget_show_all(lookup_widget("stars_list_window"));
 	else
 		gtk_widget_hide(lookup_widget("stars_list_window"));
-}
-
-void on_stars_list_window_hide(GtkWidget *object, gpointer user_data) {
-	GtkCheckMenuItem *PSFcheck = GTK_CHECK_MENU_ITEM(
-			gtk_builder_get_object(builder, "menuitemPSF"));
-	gtk_check_menu_item_set_active(PSFcheck, FALSE);
-	com.selected_star = -1;
-}
-
-void on_sum_button_clicked(GtkButton *button, gpointer user_data) {
-	display_PSF(com.stars);
-}
-
-gboolean on_Stars_stored_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	GtkTreeView *tree = GTK_TREE_VIEW(
-			gtk_builder_get_object(builder, "Stars_stored"));
-	GtkTreeSelection *selection = GTK_TREE_SELECTION(
-			gtk_builder_get_object(builder, "treeview-selection"));
-	GtkTreeModel *tree_stars = gtk_tree_view_get_model(tree);
-	GtkTreeIter iter;
-
-	if (event->button == 1) {
-		if (com.stars) {
-			if (gtk_tree_model_get_iter_first(tree_stars, &iter) == FALSE)
-				return FALSE;	//The tree is empty
-			if (gtk_tree_selection_get_selected(selection, &tree_stars,
-					&iter)) {	//get selected item
-				GtkTreePath *path = gtk_tree_model_get_path(tree_stars, &iter);
-				int *index = gtk_tree_path_get_indices(path);
-				if (!index)
-					return FALSE;
-				com.selected_star = index[0];
-				display_status(com.selected_star);
-				gtk_tree_path_free(path);
-				redraw(com.cvport, REMAP_NONE);
-				redraw_previews();
-			}
-		}
-	}
-	return TRUE;
-}
-
-void on_Stars_stored_key_release_event(GtkWidget *widget, GdkEventKey *event,
-		gpointer user_data) {
-	if (event->keyval == GDK_KEY_Delete || event->keyval == GDK_KEY_KP_Delete
-			|| event->keyval == GDK_KEY_BackSpace) {
-		remove_selected_line();
-	}
-	move_selected_line();
-}
-
-void on_remove_button_clicked(GtkButton *button, gpointer user_data) {
-	remove_selected_line();
-}
-
-void on_remove_all_button_clicked(GtkButton *button, gpointer user_data) {
-	remove_all_lines();
 }
 
 void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data) {

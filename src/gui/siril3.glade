@@ -1273,25 +1273,25 @@ enter a visible wavelength in nm</property>
       <!-- column-name channel -->
       <column type="gint"/>
       <!-- column-name B -->
-      <column type="gchararray"/>
+      <column type="gdouble"/>
       <!-- column-name A -->
-      <column type="gchararray"/>
+      <column type="gdouble"/>
       <!-- column-name xpos -->
-      <column type="gchararray"/>
+      <column type="gdouble"/>
       <!-- column-name ypos -->
-      <column type="gchararray"/>
+      <column type="gdouble"/>
       <!-- column-name FWHMx -->
-      <column type="gchararray"/>
+      <column type="gdouble"/>
       <!-- column-name FWHMy -->
-      <column type="gchararray"/>
+      <column type="gdouble"/>
       <!-- column-name mag -->
-      <column type="gchararray"/>
+      <column type="gdouble"/>
       <!-- column-name r -->
-      <column type="gchararray"/>
+      <column type="gdouble"/>
       <!-- column-name angle -->
-      <column type="gchararray"/>
+      <column type="gdouble"/>
       <!-- column-name rmse -->
-      <column type="gchararray"/>
+      <column type="gdouble"/>
     </columns>
   </object>
   <object class="GtkAdjustment" id="lowWhiteColorCalibAdj">
@@ -9584,7 +9584,7 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
     </action-widgets>
   </object>
   <object class="GtkDialog" id="stars_list_window">
-    <property name="width_request">650</property>
+    <property name="width_request">800</property>
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Dynamic PSF</property>
@@ -9649,18 +9649,19 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                 <property name="hscroll_policy">natural</property>
                 <property name="vscroll_policy">natural</property>
                 <property name="model">liststore_stars</property>
-                <property name="headers_clickable">False</property>
+                <property name="reorderable">True</property>
                 <property name="rules_hint">True</property>
                 <property name="search_column">0</property>
                 <property name="show_expanders">False</property>
                 <property name="enable_grid_lines">horizontal</property>
-                <signal name="button-release-event" handler="on_Stars_stored_button_release_event" swapped="no"/>
+                <signal name="cursor-changed" handler="on_treeview_cursor_changed" swapped="no"/>
                 <signal name="key-release-event" handler="on_Stars_stored_key_release_event" swapped="no"/>
                 <child internal-child="selection">
                   <object class="GtkTreeSelection" id="treeview-selection"/>
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn13">
+                    <property name="sizing">fixed</property>
                     <property name="title" translatable="yes">Ch.</property>
                     <property name="alignment">0.5</property>
                     <child>
@@ -9673,9 +9674,13 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn11">
+                    <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">B</property>
                     <property name="expand">True</property>
+                    <property name="clickable">True</property>
                     <property name="alignment">0.5</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_column_id">1</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_B">
                         <property name="alignment">right</property>
@@ -9688,9 +9693,13 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn12">
+                    <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">A</property>
                     <property name="expand">True</property>
+                    <property name="clickable">True</property>
                     <property name="alignment">0.5</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_column_id">2</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_A">
                         <property name="alignment">right</property>
@@ -9703,10 +9712,13 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn7">
-                    <property name="resizable">True</property>
+                    <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">x0</property>
                     <property name="expand">True</property>
+                    <property name="clickable">True</property>
                     <property name="alignment">0.5</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_column_id">3</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_x0">
                         <property name="alignment">right</property>
@@ -9719,10 +9731,13 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn8">
-                    <property name="resizable">True</property>
+                    <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">y0</property>
                     <property name="expand">True</property>
+                    <property name="clickable">True</property>
                     <property name="alignment">0.5</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_column_id">4</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_y0">
                         <property name="alignment">right</property>
@@ -9735,10 +9750,13 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn9">
-                    <property name="resizable">True</property>
+                    <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">FWHMx</property>
                     <property name="expand">True</property>
+                    <property name="clickable">True</property>
                     <property name="alignment">0.5</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_column_id">5</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_fwhmx">
                         <property name="alignment">right</property>
@@ -9754,7 +9772,10 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                     <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">FWHMy</property>
                     <property name="expand">True</property>
+                    <property name="clickable">True</property>
                     <property name="alignment">0.5</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_column_id">6</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_fwhmy">
                         <property name="alignment">right</property>
@@ -9769,7 +9790,10 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                   <object class="GtkTreeViewColumn" id="treeviewcolumn_mag">
                     <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">Mag</property>
+                    <property name="clickable">True</property>
                     <property name="alignment">0.5</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_column_id">7</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_mag">
                         <property name="alignment">right</property>
@@ -9782,9 +9806,13 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn14">
+                    <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">r</property>
                     <property name="expand">True</property>
+                    <property name="clickable">True</property>
                     <property name="alignment">0.5</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_column_id">8</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_r">
                         <property name="alignment">right</property>
@@ -9797,9 +9825,13 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn6">
+                    <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">Angle</property>
                     <property name="expand">True</property>
+                    <property name="clickable">True</property>
                     <property name="alignment">0.5</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_column_id">9</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_angle">
                         <property name="alignment">right</property>
@@ -9812,9 +9844,13 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn15">
+                    <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">RMSE</property>
                     <property name="expand">True</property>
+                    <property name="clickable">True</property>
                     <property name="alignment">0.5</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_column_id">10</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_rmse">
                         <property name="alignment">right</property>
@@ -10073,7 +10109,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
                     <property name="tooltip_markup" translatable="yes">Remove all stars from the list</property>
                     <property name="tooltip_text" translatable="yes">Remove all stars from the list</property>
                     <property name="use_underline">True</property>
-                    <property name="stock_id">gtk-remove</property>
+                    <property name="stock_id">gtk-clear</property>
                     <signal name="clicked" handler="on_remove_all_button_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -13108,18 +13144,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSeparator" id="separator3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="padding">5</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box10">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -13231,6 +13255,18 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="padding">2</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator" id="separator3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">5</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
