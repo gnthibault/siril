@@ -192,8 +192,6 @@ static void get_stars_list_store() {
 	gtk_tree_view_column_set_cell_data_func(col, cell, gdouble_rmse_cell_data_function, NULL, NULL);
 }
 
-
-
 static void display_PSF(fitted_PSF **result){
 	if (result && result[0]) {
 		int i = 0;
@@ -231,33 +229,6 @@ static void display_PSF(fitted_PSF **result){
 			i++;
 		}
 	}
-}
-
-/* This function returns the index of a selected row.
- * The index corresponds to the index of the com.stars.
- * If no rows are selected, the function returns the value -1.
- * If "remove_row" is true, then the selected row will
- * be removed from the list */
-static int get_index_of_selected_line(gboolean remove_row){
-	GtkTreeSelection *selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder, "treeview-selection"));
-	GtkTreeModel *tree_stars = gtk_tree_view_get_model(GTK_TREE_VIEW(gtk_builder_get_object(builder, "Stars_stored")));
-	GtkTreeIter iter;
-	int retvalue = -1;
-	
-	if (com.stars){
-		if (gtk_tree_model_get_iter_first(tree_stars, &iter) == FALSE) return retvalue;	//The tree is empty
-		if (gtk_tree_selection_get_selected(selection, &tree_stars, &iter)){	//get selected item	
-			GtkTreePath *path = gtk_tree_model_get_path(tree_stars, &iter);
-			int *index = gtk_tree_path_get_indices(path);
-			if (index) retvalue = index[0];
-			gtk_tree_path_free(path);
-		}
-	}
-	if (remove_row == TRUE && retvalue != -1) {
-		gtk_list_store_remove(GTK_LIST_STORE(tree_stars), &iter);
-		gtk_tree_selection_unselect_all(selection);
-	}
-	return retvalue;
 }
 
 static gint get_index_of_selected_star(gdouble x, gdouble y) {
