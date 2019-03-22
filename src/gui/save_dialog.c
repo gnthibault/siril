@@ -553,7 +553,7 @@ void on_menu_rgb_savejpg_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		whichminisave = TYPEJPG;
 		gtk_notebook_set_current_page(notebookFormat, PAGE_JPG);
 		gtk_widget_set_visible(savetxt, TRUE);
-		(savepopup);
+		gtk_widget_show(savepopup);
 	}
 }
 
