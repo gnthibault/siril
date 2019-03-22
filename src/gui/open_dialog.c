@@ -355,6 +355,6 @@ void on_open1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	opendial(OD_OPEN);
 }
 
-void on_select_convert_button_clicked(GtkButton *button, gpointer user_data) {
+void on_select_convert_button_clicked(GtkToolButton *button, gpointer user_data) {
 	opendial(OD_CONVERT);
 }

@@ -1065,13 +1065,13 @@ void fill_convert_list(GSList *list) {
 	check_for_conversion_form_completeness();
 }
 
-void on_clear_convert_button_clicked(GtkButton *button, gpointer user_data) {
+void on_clear_convert_button_clicked(GtkToolButton *button, gpointer user_data) {
 	get_convert_list_store();
 	gtk_list_store_clear(liststore_convert);
 	check_for_conversion_form_completeness();
 }
 
-void on_remove_convert_button_clicked(GtkWidget *button, gpointer user_data) {
+void on_remove_convert_button_clicked(GtkToolButton *button, gpointer user_data) {
 	remove_selected_files_from_list();
 	check_for_conversion_form_completeness();
 }

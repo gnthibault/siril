@@ -1728,7 +1728,6 @@ GtkWindow *siril_get_active_window() {
 	for (l = list; l; l = l->next) {
 		if (gtk_window_is_active((GtkWindow *) l->data)) {
 			win = (GtkWindow *) l->data;
-			printf("title: %s\n", gtk_window_get_title(win));
 			break;
 		}
 	}

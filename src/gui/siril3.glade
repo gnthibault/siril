@@ -219,11 +219,6 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
       </object>
     </child>
   </object>
-  <object class="GtkImage" id="add_convert_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-add</property>
-  </object>
   <object class="GtkAdjustment" id="adjCPU">
     <property name="lower">1</property>
     <property name="upper">1024</property>
@@ -962,11 +957,6 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkImage" id="clear_convert_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-clear</property>
-  </object>
   <object class="GtkColorChooserDialog" id="colorchooserdialog">
     <property name="can_focus">False</property>
     <property name="destroy_with_parent">True</property>
@@ -1175,11 +1165,6 @@ enter a visible wavelength in nm</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="pixbuf">pixmaps/neg.png</property>
-  </object>
-  <object class="GtkImage" id="image_remove1">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">pixmaps/remove1.png</property>
   </object>
   <object class="GtkImage" id="image_seqlist">
     <property name="visible">True</property>
@@ -1404,11 +1389,6 @@ enter a visible wavelength in nm</property>
     <property name="halign">center</property>
     <property name="valign">center</property>
     <property name="pixbuf">pixmaps/siril_logo.svg</property>
-  </object>
-  <object class="GtkImage" id="remove_convert_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-remove</property>
   </object>
   <object class="GtkAdjustment" id="resample_X">
     <property name="lower">0.01</property>
@@ -9994,7 +9974,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
                     <property name="tooltip_markup" translatable="yes">Remove selected star from the list</property>
                     <property name="tooltip_text" translatable="yes">Remove selected star from the list</property>
                     <property name="use_underline">True</property>
-                    <property name="icon_widget">image_remove1</property>
+                    <property name="stock_id">gtk-remove</property>
                     <signal name="clicked" handler="on_remove_button_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -11364,60 +11344,51 @@ WARNING: ensure you have a good reason to change this value because it may degra
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="box8">
+                      <object class="GtkToolbar" id="convert_toolbar">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
-                        <property name="spacing">2</property>
+                        <property name="toolbar_style">both</property>
                         <child>
-                          <object class="GtkButton" id="select_convert_button">
+                          <object class="GtkToolButton" id="select_convert_button">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
+                            <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Add files to convert</property>
-                            <property name="halign">start</property>
-                            <property name="image">add_convert_image</property>
-                            <property name="always_show_image">True</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-add</property>
                             <signal name="clicked" handler="on_select_convert_button_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
+                            <property name="homogeneous">True</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="remove_convert_button">
+                          <object class="GtkToolButton" id="remove_convert_button">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
+                            <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Remove selected files</property>
-                            <property name="halign">start</property>
-                            <property name="image">remove_convert_image</property>
-                            <property name="always_show_image">True</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-remove</property>
                             <signal name="clicked" handler="on_remove_convert_button_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="homogeneous">True</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="clear_convert_button">
+                          <object class="GtkToolButton" id="clear_convert_button">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
+                            <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Remove all files from the list</property>
-                            <property name="halign">start</property>
-                            <property name="image">clear_convert_image</property>
-                            <property name="always_show_image">True</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-clear</property>
                             <signal name="clicked" handler="on_clear_convert_button_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="homogeneous">True</property>
                           </packing>
                         </child>
                       </object>
@@ -13046,6 +13017,18 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkSeparator" id="separator3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">5</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkBox" id="box10">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -13157,18 +13140,6 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="padding">2</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSeparator" id="separator3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="padding">5</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
