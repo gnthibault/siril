@@ -553,7 +553,7 @@ void on_menu_rgb_savejpg_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		whichminisave = TYPEJPG;
 		gtk_notebook_set_current_page(notebookFormat, PAGE_JPG);
 		gtk_widget_set_visible(savetxt, TRUE);
-		gtk_widget_show(savepopup);
+		(savepopup);
 	}
 }
 
@@ -586,23 +586,20 @@ void on_button_cancelpopup_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_save1_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	static GtkWidget *savepopup = NULL;
-
-	if (savepopup == NULL) {
-		savepopup = lookup_widget("savepopup");
-	}
+	GtkWidget *savepopup = lookup_widget("savepopup");
 
 	if (save_dialog() == GTK_RESPONSE_ACCEPT) {
 		/* now it is not needed for some formats */
 		if (whichminisave != TYPEBMP && whichminisave != TYPEPNG
 				&& whichminisave != TYPEPNM) {
+			close_dialog();
 			GtkWindow *parent = siril_get_active_window();
 			if (!GTK_IS_WINDOW(parent)) {
 				parent = GTK_WINDOW(lookup_widget("control_window"));
 			}
 			gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
-			gtk_widget_show(savepopup);
-			close_dialog();
+			gtk_widget_show_all(savepopup);
+			gtk_window_present(GTK_WINDOW(savepopup));
 		}
 		else {
 			struct savedial_data *args = malloc(sizeof(struct savedial_data));

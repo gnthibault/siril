@@ -1724,15 +1724,14 @@ GtkWindow *siril_get_active_window() {
 	GList *list, *l;
 
 	list = gtk_window_list_toplevels();
-	printf("n = %d\n", g_list_length(list));
 
 	for (l = list; l; l = l->next) {
 		if (gtk_window_is_active((GtkWindow *) l->data)) {
 			win = (GtkWindow *) l->data;
+			printf("title: %s\n", gtk_window_get_title(win));
 			break;
 		}
 	}
-
 	g_list_free(list);
 	return win;
 }
@@ -1745,7 +1744,7 @@ void zoomcombo_update_display_for_zoom() {
 	char *msg;
 
 	if (zoomcombo == NULL)
-		zoomcombo = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combozoom"));
+		zoomcombo = GTK_COMBO_BOX(lookup_widget("combozoom"));
 	for (i = 0; i < sizeof(indexes) / sizeof(double); i++) {
 		if (indexes[i] == com.zoom_value) {
 			g_signal_handlers_block_by_func(zoomcombo, on_combozoom_changed,
