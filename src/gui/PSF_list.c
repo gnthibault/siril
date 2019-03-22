@@ -192,42 +192,43 @@ static void get_stars_list_store() {
 	gtk_tree_view_column_set_cell_data_func(col, cell, gdouble_rmse_cell_data_function, NULL, NULL);
 }
 
-static void display_PSF(fitted_PSF **result){
-	if (result && result[0]) {
+static void display_PSF(fitted_PSF **result) {
+	if (result) {
+		gchar *msg;
 		int i = 0;
 		double FWHMx = 0.0, FWHMy = 0.0, B = 0.0, A = 0.0, r = 0.0, angle = 0.0,
 				rmse = 0.0;
 
 		while (result[i]) {
-			gchar *msg;
 			B += result[i]->B;
 			A += result[i]->A;
 			FWHMx += result[i]->fwhmx;
 			FWHMy += result[i]->fwhmy;
 			angle += result[i]->angle;
 			rmse += result[i]->rmse;
-			if (i > 1) {
-				if (strcmp(result[i]->units, result[i - 1]->units)) {
-					siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), _("Stars must have the same units."));
-					return;
-				}
-
-				B = B / (double) i;
-				A = A / (double) i;
-				FWHMx = FWHMx / (double) i;
-				FWHMy = FWHMy / (double) i;
-				r = FWHMy / FWHMx;
-				angle = angle / (double) i;
-				rmse = rmse / (double) i;
-
-				msg = g_strdup_printf(_("Average Gaussian PSF\n\n"
-						"N:\t%d stars\nB:\t%.6f\nA:\t%.6f\nFWHMx:\t%.2f%s\n"
-						"FWHMy:\t%.2f%s\nr:\t%.3f\nAngle:\t%.2f deg\nrmse:\t%.3e\n"),
-						i, B, A, FWHMx, result[0]->units, FWHMy, result[0]->units, r, angle, rmse);
-				show_data_dialog(msg, "Average Star Data");
+			if (i > 1 && (strcmp(result[i]->units, result[i - 1]->units))) {
+				siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"),
+						_("Stars must have the same units."));
+				return;
 			}
 			i++;
 		}
+		/* compute average */
+		B = B / (double) i;
+		A = A / (double) i;
+		FWHMx = FWHMx / (double) i;
+		FWHMy = FWHMy / (double) i;
+		r = FWHMy / FWHMx;
+		angle = angle / (double) i;
+		rmse = rmse / (double) i;
+
+		msg = g_strdup_printf(_("Average Gaussian PSF\n\n"
+				"N:\t%d stars\nB:\t%.6f\nA:\t%.6f\nFWHMx:\t%.2f%s\n"
+				"FWHMy:\t%.2f%s\nr:\t%.3f\nAngle:\t%.2f deg\nrmse:\t%.3e\n"),
+				i, B, A, FWHMx, result[0]->units, FWHMy,
+				result[0]->units, r, angle, rmse);
+		show_data_dialog(msg, _("Average Star Data"));
+		g_free(msg);
 	}
 }
 
