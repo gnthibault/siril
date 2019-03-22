@@ -667,7 +667,7 @@ static void update_pixel_size() {
 	pixel = gfit.pixel_size_x > gfit.pixel_size_y ? gfit.pixel_size_x : gfit.pixel_size_y;
 
 	if (pixel > 0.0) {
-		cpixels = g_strdup_printf("%1.2lf", pixel);
+		cpixels = g_strdup_printf("%.2lf", pixel);
 		gtk_entry_set_text(entry, cpixels);
 		g_free(cpixels);
 	}
@@ -1015,6 +1015,7 @@ static gboolean end_plate_solver(gpointer p) {
 		DEC Dec;
 
 		update_image_parameters_GUI();
+		set_GUI_CAMERA();
 		ra = convert_ra(is_result.ra);
 		Dec = convert_dec(is_result.dec);
 		update_coordinates(ra, Dec, is_result.dec < 0.0);

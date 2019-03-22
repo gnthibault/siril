@@ -1724,6 +1724,7 @@ GtkWindow *siril_get_active_window() {
 	GList *list, *l;
 
 	list = gtk_window_list_toplevels();
+	printf("n = %d\n", g_list_length(list));
 
 	for (l = list; l; l = l->next) {
 		if (gtk_window_is_active((GtkWindow *) l->data)) {
@@ -2058,23 +2059,22 @@ void set_libraw_settings_menu_available(gboolean activate) {
 }
 
 void set_GUI_CAMERA() {
-	GtkComboBox *binning = GTK_COMBO_BOX(
-			gtk_builder_get_object(builder, "combobinning"));
+	GtkComboBox *binning = GTK_COMBO_BOX(lookup_widget("combobinning"));
 
 	if (gfit.focal_length) {
-		char focal[8];
-		g_snprintf(focal, sizeof(focal), "%g", gfit.focal_length);
+		gchar *focal = g_strdup_printf("%.3lf", gfit.focal_length);
 		gtk_entry_set_text(GTK_ENTRY(lookup_widget("focal_entry")), focal);
+		g_free(focal);
 	}
 	if (gfit.pixel_size_x) {
-		char pitchX[8];
-		g_snprintf(pitchX, sizeof(pitchX), "%g", gfit.pixel_size_x);
+		gchar *pitchX = g_strdup_printf("%.2lf", gfit.pixel_size_x);
 		gtk_entry_set_text(GTK_ENTRY(lookup_widget("pitchX_entry")), pitchX);
+		g_free(pitchX);
 	}
 	if (gfit.pixel_size_y) {
-		char pitchY[8];
-		g_snprintf(pitchY, sizeof(pitchY), "%g", gfit.pixel_size_y);
+		gchar *pitchY = g_strdup_printf("%.2lf", gfit.pixel_size_y);
 		gtk_entry_set_text(GTK_ENTRY(lookup_widget("pitchY_entry")), pitchY);
+		g_free(pitchY);
 	}
 
 	if (!gfit.binning_x || !gfit.binning_y) {
@@ -2571,13 +2571,13 @@ void on_focal_entry_changed(GtkEditable *editable, gpointer user_data) {
 
 void on_pitchX_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar* pitchX_entry = gtk_entry_get_text(GTK_ENTRY(editable));
-	gfit.pixel_size_x = (float)atof(pitchX_entry);
+	gfit.pixel_size_x = (float) atof(pitchX_entry);
 	update_fwhm_units_ok();
 }
 
 void on_pitchY_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar* pitchY_entry = gtk_entry_get_text(GTK_ENTRY(editable));
-	gfit.pixel_size_y = (float)atof(pitchY_entry);
+	gfit.pixel_size_y = (float) atof(pitchY_entry);
 	update_fwhm_units_ok();
 }
 
@@ -3956,10 +3956,6 @@ void on_confirmDontShowButton_toggled(GtkToggleButton *togglebutton,
 	com.dontShowConfirm = gtk_toggle_button_get_active(togglebutton);
 	set_GUI_misc();
 	writeinitfile();
-}
-
-void on_dialog1_OK(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("dialog1"));
 }
 
 void on_button_data_ok_clicked(GtkButton *button, gpointer user_data) {

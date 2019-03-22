@@ -557,6 +557,7 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">rgb_window</property>
     <accel-groups>
@@ -748,6 +749,7 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="title" translatable="yes">Subtractive Chromatic Green Noise Reduction</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">rgb_window</property>
     <accel-groups>
@@ -1443,6 +1445,7 @@ enter a visible wavelength in nm</property>
     <property name="title">siril-0.9</property>
     <property name="default_width">700</property>
     <property name="default_height">600</property>
+    <property name="destroy_with_parent">True</property>
     <property name="icon">pixmaps/siril.svg</property>
     <accel-groups>
       <group name="accelgroup1"/>
@@ -2585,6 +2588,7 @@ enter a visible wavelength in nm</property>
     <property name="title" translatable="yes">Image Plate Solver</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
@@ -3445,6 +3449,7 @@ enter a visible wavelength in nm</property>
     <property name="title" translatable="yes">Median Filter</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
@@ -3649,6 +3654,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
   <object class="GtkDialog" id="StatWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Statistics</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
@@ -3835,6 +3841,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
@@ -3990,6 +3997,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
     <property name="title" translatable="yes">Background Extraction</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
@@ -4328,6 +4336,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
     <property name="title" translatable="yes">Banding Reduction</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="urgency_hint">True</property>
     <property name="transient_for">main_window</property>
@@ -4960,6 +4969,7 @@ Modifying parameters in this windows afterward will void the colour balance, and
     <property name="title" translatable="yes">Cosmetic Correction</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
@@ -5255,6 +5265,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="title" translatable="yes">Crop sequence</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <child>
@@ -5441,6 +5452,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="title" translatable="yes">Deconvolution</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
@@ -5603,128 +5615,12 @@ Uncheck if images come from a monochrome sensor.</property>
       <action-widget response="0">deconvolution_Apply</action-widget>
     </action-widgets>
   </object>
-  <object class="GtkDialog" id="dialog1">
-    <property name="can_focus">False</property>
-    <property name="border_width">5</property>
-    <property name="title" translatable="yes">Siril message</property>
-    <property name="resizable">False</property>
-    <property name="modal">True</property>
-    <property name="window_position">center</property>
-    <property name="type_hint">dialog</property>
-    <property name="transient_for">main_window</property>
-    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
-      <placeholder/>
-    </child>
-    <child internal-child="vbox">
-      <object class="GtkBox" id="dialog-vbox2">
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox" id="dialog-action_area2">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <object class="GtkButton" id="button4">
-                <property name="label">gtk-ok</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="has_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_dialog1_OK" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkGrid" id="grid3">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
-              <object class="GtkImage" id="image1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="valign">start</property>
-                <property name="margin_left">6</property>
-                <property name="margin_right">6</property>
-                <property name="stock">gtk-dialog-warning</property>
-                <property name="icon_size">6</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="labeldialog1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">center</property>
-                <property name="valign">start</property>
-                <property name="margin_left">6</property>
-                <property name="margin_right">6</property>
-                <property name="hexpand">True</property>
-                <property name="label">msg</property>
-                <property name="wrap">True</property>
-                <property name="selectable">True</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow" id="dialog_scrollbar">
-            <property name="height_request">200</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="shadow_type">in</property>
-            <child>
-              <object class="GtkTextView" id="dialog_data">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="editable">False</property>
-                <property name="cursor_visible">False</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-    <action-widgets>
-      <action-widget response="0">button4</action-widget>
-    </action-widgets>
-  </object>
   <object class="GtkDialog" id="dialog_FFT">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Fourier Transform</property>
     <property name="resizable">False</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
@@ -6031,6 +5927,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="title" translatable="yes">Channel Extraction</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
@@ -6230,6 +6127,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="title" translatable="yes">Wavelets Layers Extraction</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
@@ -6922,6 +6820,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="title" translatable="yes">Resample</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
@@ -7130,6 +7029,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="title" translatable="yes">Rotational Gradient</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
@@ -7318,9 +7218,9 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
-    <property name="urgency_hint">True</property>
     <property name="transient_for">main_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <signal name="show" handler="on_savepopup_show" swapped="no"/>
@@ -8017,6 +7917,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
@@ -9589,6 +9490,7 @@ WARNING: Reducing the ratio of memory allocated to computation will degrade perf
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Dynamic PSF</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
@@ -10145,8 +10047,8 @@ WARNING: ensure you have a good reason to change this value because it may degra
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
-    <property name="urgency_hint">True</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
       <group name="accelgroup1"/>
@@ -10590,6 +10492,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
     <property name="title" translatable="yes">Rotation</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
@@ -13144,55 +13047,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="box10">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">center</property>
-                    <child>
-                      <object class="GtkRadioButton" id="regallbutton">
-                        <property name="label" translatable="yes">Register all images from sequence</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkRadioButton" id="regselbutton">
-                        <property name="label" translatable="yes">Register selected images only</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">regallbutton</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -13267,6 +13121,55 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="padding">5</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkRadioButton" id="regallbutton">
+                        <property name="label" translatable="yes">Register all images from sequence</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="regselbutton">
+                        <property name="label" translatable="yes">Register selected images only</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">regallbutton</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
@@ -15152,6 +15055,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
     <property name="title" translatable="yes">Color Calibration</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">main_window</property>
     <accel-groups>
