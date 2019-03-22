@@ -387,7 +387,7 @@ void on_treeview_cursor_changed(GtkTreeView *tree_view,
 		g_value_unset(&value_y);
 
 		com.selected_star = get_index_of_selected_star(x0, y0);
-		display_status(com.selected_star);
+		display_status();
 		redraw(com.cvport, REMAP_NONE);
 	}
 }
