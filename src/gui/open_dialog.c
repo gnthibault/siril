@@ -176,6 +176,7 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 		gtk_filter_add(chooser, _("Film Files (*.avi, *.mpg, ...)"), film_filter,
 				com.filter == TYPEAVI);
 		} else {
+			all_filter = g_string_append(all_filter, ";");
 			all_filter = g_string_append(all_filter, film_filter);
 		}
 		free(film_filter);
