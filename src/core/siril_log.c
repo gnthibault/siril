@@ -37,7 +37,7 @@ static gchar *build_timestamp() {
 	return g_time_val_to_iso8601(&time);
 }
 
-static void remove_not_valid_char(gchar *str, gchar c, gchar n) {
+static void replace_not_valid_char(gchar *str, gchar c, gchar n) {
 	gchar *s = str;
 	while (*s) {
 		if (*s == c) {
@@ -80,8 +80,8 @@ static SirilWidget *siril_file_chooser_save_log(GtkWindow *parent, GtkFileChoose
 			_("_Save"), _("_Cancel"));
 #else
 	return gtk_file_chooser_dialog_new(_("Save File"), parent, action,
-				_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT,
-				NULL);
+			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT,
+			NULL);
 #endif
 }
 
@@ -103,7 +103,7 @@ static void siril_widget_destroy(SirilWidget *widgetdialog) {
 
 static void set_filter(GtkFileChooser *dialog) {
 	GtkFileFilter *f = gtk_file_filter_new();
-	gtk_file_filter_set_name(f, "log files (*.log)");
+	gtk_file_filter_set_name(f, _("log files (*.log)"));
 	gtk_file_filter_add_pattern(f, "*.log");
 	gtk_file_chooser_add_filter(dialog, f);
 	gtk_file_chooser_set_filter(dialog, f);
@@ -117,7 +117,7 @@ static void save_log_dialog() {
 	gchar *filename;
 
 	filename = build_timestamp();
-	remove_not_valid_char(filename, ':', '.');
+	replace_not_valid_char(filename, ':', '.');
 	filename = str_append(&filename, ".log");
 
 	widgetdialog = siril_file_chooser_save_log(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);

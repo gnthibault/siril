@@ -203,6 +203,7 @@ static void initialize_libraw_settings() {
 static void initialize_ser_debayer_settings() {
 	com.debayer.open_debayer = FALSE;
 	com.debayer.use_bayer_header = TRUE;
+	com.debayer.stretch = TRUE;
 	com.debayer.compatibility = FALSE;
 	com.debayer.bayer_pattern = BAYER_FILTER_RGGB;
 	com.debayer.bayer_inter = BAYER_VNG;
