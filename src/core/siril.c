@@ -694,8 +694,7 @@ static int darkOptimization(fits *brut, fits *dark, fits *offset) {
 	int ret = 0;
 	fits dark_tmp = { 0 };
 
-	if (brut->rx != dark->rx ||
-			brut->ry != dark->ry) {
+	if (brut->rx != dark->rx || brut->ry != dark->ry) {
 		return -1;
 	}
 
@@ -704,21 +703,14 @@ static int darkOptimization(fits *brut, fits *dark, fits *offset) {
 	/* Minimization of background noise to find better k */
 	invalidate_stats_from_fit(brut);
 	k0 = goldenSectionSearch(brut, &dark_tmp, lo, up, 1E-3);
-	if (k0 < 0.0)
-		return -1;
-
-	siril_log_message(_("Dark optimization: k0=%1.3lf\n"), k0);
-	/* Multiply coefficient to master-dark */
-	if (com.preprostatus & USE_OFFSET) {
-		ret = imoper(&dark_tmp, offset, OPER_SUB);
-		if (ret) {
-			clearfits(&dark_tmp);
-			return ret;
-		}
+	if (k0 < 0.0) {
+		ret = -1;
+	} else {
+		siril_log_message(_("Dark optimization: k0=%.3lf\n"), k0);
+		/* Multiply coefficient to master-dark */
+		soper(&dark_tmp, k0, OPER_MUL);
+		ret = imoper(brut, &dark_tmp, OPER_SUB);
 	}
-	soper(&dark_tmp, k0, OPER_MUL);
-	ret = imoper(brut, &dark_tmp, OPER_SUB);
-
 	clearfits(&dark_tmp);
 	return ret;
 }
