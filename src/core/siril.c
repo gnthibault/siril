@@ -645,20 +645,25 @@ static double goldenSectionSearch(fits *brut, fits *dark, double a, double b,
 
 	c = b - GR * (b - a);
 	d = a + GR * (b - a);
+	fc = evaluateNoiseOfCalibratedImage(brut, dark, c);
+	fd = evaluateNoiseOfCalibratedImage(brut, dark, d);
 	do {
 		siril_debug_print("Iter: %d (%1.2lf, %1.2lf)\n", ++iter, c, d);
-		fc = evaluateNoiseOfCalibratedImage(brut, dark, c);
-		fd = evaluateNoiseOfCalibratedImage(brut, dark, d);
 		if (fc < 0.0 || fd < 0.0)
 			return -1.0;
 		if (fc < fd) {
 			b = d;
 			d = c;
+			fd = fc;
 			c = b - GR * (b - a);
+			fc = evaluateNoiseOfCalibratedImage(brut, dark, c);
 		} else {
 			a = c;
 			c = d;
+			fc = fd;
 			d = a + GR * (b - a);
+			fd = evaluateNoiseOfCalibratedImage(brut, dark, d);
+
 		}
 	} while (fabs(c - d) > tol);
 	return ((b + a) / 2.0);
