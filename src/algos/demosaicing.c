@@ -671,7 +671,7 @@ static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
 		sensor_pattern pattern, int xtrans[6][6]) {
 	uint32_t filters = 9;
 	const int height = sy, width = sx;
-	int row, col;
+	int row;
 
 	/* start - code from border_interpolate(int border) */
 	{
@@ -700,9 +700,10 @@ static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
 	}
 	/* end - code from border_interpolate(int border) */
 #ifdef _OPENMP
-#pragma omp parallel for
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
 	for (row = 1; row < (height - 1); row ++) {
+		int col;
 		for (col = 1; col < (width - 1); col ++) {
 			float sum[3] = { 0.f };
 
