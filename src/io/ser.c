@@ -839,7 +839,10 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 				user_warned = TRUE;
 			}
 		}
-		debayer(fit, com.debayer.bayer_inter, FALSE);
+		/* for performance consideration (and many others) we force the interpolation algorithm
+		 * to be BAYER_BILINEAR
+		 */
+		debayer(fit, BAYER_BILINEAR, FALSE);
 		com.debayer.bayer_pattern = sensortmp;
 		break;
 	case SER_BGR:
@@ -1064,9 +1067,12 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 			return -1;
 		ser_manage_endianess_and_depth(ser_file, rawbuf, debayer_area.w * debayer_area.h);
 
+		/* for performance consideration (and many others) we force the interpolation algorithm
+		 * to be BAYER_BILINEAR
+		 */
 		demosaiced_buf = debayer_buffer(rawbuf, &debayer_area.w,
-				&debayer_area.h, com.debayer.bayer_inter,
-				com.debayer.bayer_pattern, NULL);
+				&debayer_area.h, BAYER_BILINEAR, com.debayer.bayer_pattern,
+				NULL);
 		free(rawbuf);
 		if (demosaiced_buf == NULL) {
 			return -1;
