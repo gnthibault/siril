@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-27 11:40+0100\n"
+"POT-Creation-Date: 2019-03-27 16:59+0100\n"
 "PO-Revision-Date: 2019-03-13 14:53+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1929,8 +1929,9 @@ msgid "<b>Swap Storage Directory</b>"
 msgstr "<b>Swap-Speicher Verzeichnis</b>"
 
 #: ../src/gui/siril3.glade.h:416
-msgid "Ratio of Available Memory Used: "
-msgstr "Wieviel des verfügbaren Speicherplatzes soll verwendet werden: "
+#, fuzzy
+msgid "RAM ratio: "
+msgstr "Box-Zwischenraum: "
 
 #: ../src/gui/siril3.glade.h:417
 msgid ""
@@ -3003,16 +3004,24 @@ msgid "Image registration"
 msgstr "Bild Registrierung"
 
 #: ../src/gui/siril3.glade.h:651
+msgid "Register all images from sequence"
+msgstr "Registriere alle Bilder der Sequenz"
+
+#: ../src/gui/siril3.glade.h:652
+msgid "Register selected images only"
+msgstr "Registriere nur die ausgewählten Bilder der Sequenz"
+
+#: ../src/gui/siril3.glade.h:653
 msgid "Choose registration method:"
 msgstr "Wählen Sie eine Registrierungs-Methode:"
 
 # l'original utilise "reference" et non "registration"
 # Comment choisir?
-#: ../src/gui/siril3.glade.h:652
+#: ../src/gui/siril3.glade.h:654
 msgid "Select registration layer:"
 msgstr "Wählen Sie den Registrierungs-Layer:"
 
-#: ../src/gui/siril3.glade.h:653
+#: ../src/gui/siril3.glade.h:655
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -3027,14 +3036,6 @@ msgstr ""
 "verfügbar sind.\n"
 "Für die Bearbeitung werden die Registrierungs-Daten aus dem Default-Layer "
 "entnommen (Grün, wenn verfügbar, sonst Blau, dann Rot)."
-
-#: ../src/gui/siril3.glade.h:656
-msgid "Register all images from sequence"
-msgstr "Registriere alle Bilder der Sequenz"
-
-#: ../src/gui/siril3.glade.h:657
-msgid "Register selected images only"
-msgstr "Registriere nur die ausgewählten Bilder der Sequenz"
 
 #: ../src/gui/siril3.glade.h:658
 msgid "Prefix:"
@@ -8226,6 +8227,9 @@ msgstr "Basierend auf Qualität"
 msgid "Up-scaling sequence for stacking"
 msgstr "Skaliere Sequenz für's Stacken"
 
+#~ msgid "Ratio of Available Memory Used: "
+#~ msgstr "Wieviel des verfügbaren Speicherplatzes soll verwendet werden: "
+
 #~ msgid "Siril message"
 #~ msgstr "Nachrichtvon SIRIL"
 
@@ -8278,9 +8282,6 @@ msgstr "Skaliere Sequenz für's Stacken"
 
 #~ msgid "Box radius:"
 #~ msgstr "Box-Radius:"
-
-#~ msgid "Box separation: "
-#~ msgstr "Box-Zwischenraum: "
 
 #~ msgid ""
 #~ "This is the distance in pixels between two adjacent background sample "

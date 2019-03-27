@@ -83,6 +83,8 @@ static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
 	}
 	return 0;
 }
+
+
 /***************************************************
  * 
  * Written by Damien Douxchamps and Frederic Devernay
@@ -249,8 +251,6 @@ static int bayer_NearestNeighbor(const WORD *bayer, WORD *rgb, int sx, int sy,
 	return 0;
 }
 
-#define LIM(x,min,max) MAX(min,MIN(x,max)) 
-#define ULIM(x,y,z) ((y) < (z) ? LIM(x,y,z) : LIM(x,z,y))
 #define ABSOLU(x) (((int)(x) ^ ((int)(x) >> 31)) - ((int)(x) >> 31))
 
 static int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
@@ -419,6 +419,8 @@ static int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
 /* AHD interpolation ported from dcraw to libdc1394 by Samuel Audet */
 static gboolean ahd_inited = FALSE; /* WARNING: not multi-processor safe */
 
+#define LIM(x,min,max) MAX(min,MIN(x,max))
+#define ULIM(x,y,z) ((y) < (z) ? LIM(x,y,z) : LIM(x,z,y))
 #define CLIPOUT(x) LIM(x,0,255)
 #define CLIPOUT16(x,bits) LIM(x,0,((1<<bits)-1))
 

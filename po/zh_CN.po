@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-27 11:40+0100\n"
+"POT-Creation-Date: 2019-03-27 16:59+0100\n"
 "PO-Revision-Date: 2018-05-29 09:04+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -1831,8 +1831,9 @@ msgid "<b>Swap Storage Directory</b>"
 msgstr "<b>Swap目录</b>"
 
 #: ../src/gui/siril3.glade.h:416
-msgid "Ratio of Available Memory Used: "
-msgstr "所使用的可用内存的比例: "
+#, fuzzy
+msgid "RAM ratio: "
+msgstr "格子间隔: "
 
 #: ../src/gui/siril3.glade.h:417
 msgid ""
@@ -2845,14 +2846,22 @@ msgid "Image registration"
 msgstr "图像对齐"
 
 #: ../src/gui/siril3.glade.h:651
+msgid "Register all images from sequence"
+msgstr "对齐队列中的所有图像"
+
+#: ../src/gui/siril3.glade.h:652
+msgid "Register selected images only"
+msgstr "仅对齐所选中的图像"
+
+#: ../src/gui/siril3.glade.h:653
 msgid "Choose registration method:"
 msgstr "选择对齐方法:"
 
-#: ../src/gui/siril3.glade.h:652
+#: ../src/gui/siril3.glade.h:654
 msgid "Select registration layer:"
 msgstr "选择对齐的通道:"
 
-#: ../src/gui/siril3.glade.h:653
+#: ../src/gui/siril3.glade.h:655
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -2865,14 +2874,6 @@ msgstr ""
 "名字中有(*)所标注的为对齐数据已经可用的通道。\n"
 "当图像被处理时，对齐数据是从可用的缺省通道所获取的（对于RBG图像：绿色，然后是"
 "蓝色和红色）。"
-
-#: ../src/gui/siril3.glade.h:656
-msgid "Register all images from sequence"
-msgstr "对齐队列中的所有图像"
-
-#: ../src/gui/siril3.glade.h:657
-msgid "Register selected images only"
-msgstr "仅对齐所选中的图像"
 
 #: ../src/gui/siril3.glade.h:658
 msgid "Prefix:"
@@ -7836,6 +7837,9 @@ msgstr "基于品质"
 msgid "Up-scaling sequence for stacking"
 msgstr "超分辨率叠加"
 
+#~ msgid "Ratio of Available Memory Used: "
+#~ msgstr "所使用的可用内存的比例: "
+
 #, fuzzy
 #~ msgid "20,00"
 #~ msgstr "0.00"
@@ -7893,9 +7897,6 @@ msgstr "超分辨率叠加"
 
 #~ msgid "Box radius:"
 #~ msgstr "格子半径:"
-
-#~ msgid "Box separation: "
-#~ msgstr "格子间隔: "
 
 #~ msgid ""
 #~ "This is the distance in pixels between two adjacent background sample "
