@@ -29,6 +29,11 @@
 #include "algos/demosaicing.h"
 #include "algos/statistics.h"
 
+/** Calculate the bayer pattern color from the row and column **/
+static inline int FC(const size_t row, const size_t col, const uint32_t filters) {
+	return filters >> (((row << 1 & 14) + (col & 1)) << 1) & 3;
+}
+
 /* width and height are sizes of the original image */
 static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
 		sensor_pattern pattern) {
@@ -244,46 +249,37 @@ static int bayer_NearestNeighbor(const WORD *bayer, WORD *rgb, int sx, int sy,
 	return 0;
 }
 
-static const signed char bayervng_terms[] = { -2, -2, +0, -1, 0, 0x01, -2, -2,
-		+0, +0, 1, 0x01, -2, -1, -1, +0, 0, 0x01, -2, -1, +0, -1, 0, 0x02, -2,
-		-1, +0, +0, 0, 0x03, -2, -1, +0, +1, 1, 0x01, -2, +0, +0, -1, 0, 0x06,
-		-2, +0, +0, +0, 1, 0x02, -2, +0, +0, +1, 0, 0x03, -2, +1, -1, +0, 0,
-		0x04, -2, +1, +0, -1, 1, 0x04, -2, +1, +0, +0, 0, 0x06, -2, +1, +0, +1,
-		0, 0x02, -2, +2, +0, +0, 1, 0x04, -2, +2, +0, +1, 0, 0x04, -1, -2, -1,
-		+0, 0, 0x80, -1, -2, +0, -1, 0, 0x01, -1, -2, +1, -1, 0, 0x01, -1, -2,
-		+1, +0, 1, 0x01, -1, -1, -1, +1, 0, 0x88, -1, -1, +1, -2, 0, 0x40, -1,
-		-1, +1, -1, 0, 0x22, -1, -1, +1, +0, 0, 0x33, -1, -1, +1, +1, 1, 0x11,
-		-1, +0, -1, +2, 0, 0x08, -1, +0, +0, -1, 0, 0x44, -1, +0, +0, +1, 0,
-		0x11, -1, +0, +1, -2, 1, 0x40, -1, +0, +1, -1, 0, 0x66, -1, +0, +1, +0,
-		1, 0x22, -1, +0, +1, +1, 0, 0x33, -1, +0, +1, +2, 1, 0x10, -1, +1, +1,
-		-1, 1, 0x44, -1, +1, +1, +0, 0, 0x66, -1, +1, +1, +1, 0, 0x22, -1, +1,
-		+1, +2, 0, 0x10, -1, +2, +0, +1, 0, 0x04, -1, +2, +1, +0, 1, 0x04, -1,
-		+2, +1, +1, 0, 0x04, +0, -2, +0, +0, 1, 0x80, +0, -1, +0, +1, 1, 0x88,
-		+0, -1, +1, -2, 0, 0x40, +0, -1, +1, +0, 0, 0x11, +0, -1, +2, -2, 0,
-		0x40, +0, -1, +2, -1, 0, 0x20, +0, -1, +2, +0, 0, 0x30, +0, -1, +2, +1,
-		1, 0x10, +0, +0, +0, +2, 1, 0x08, +0, +0, +2, -2, 1, 0x40, +0, +0, +2,
-		-1, 0, 0x60, +0, +0, +2, +0, 1, 0x20, +0, +0, +2, +1, 0, 0x30, +0, +0,
-		+2, +2, 1, 0x10, +0, +1, +1, +0, 0, 0x44, +0, +1, +1, +2, 0, 0x10, +0,
-		+1, +2, -1, 1, 0x40, +0, +1, +2, +0, 0, 0x60, +0, +1, +2, +1, 0, 0x20,
-		+0, +1, +2, +2, 0, 0x10, +1, -2, +1, +0, 0, 0x80, +1, -1, +1, +1, 0,
-		0x88, +1, +0, +1, +2, 0, 0x08, +1, +0, +2, -1, 0, 0x40, +1, +0, +2, +1,
-		0, 0x10 }, bayervng_chood[] = { -1, -1, -1, 0, -1, +1, 0, +1, +1, +1,
-		+1, 0, +1, -1, 0, -1 };
-
-#define FORC3 for (c=0; c < 3; c++)
 #define LIM(x,min,max) MAX(min,MIN(x,max)) 
 #define ULIM(x,y,z) ((y) < (z) ? LIM(x,y,z) : LIM(x,z,y))
 #define ABSOLU(x) (((int)(x) ^ ((int)(x) >> 31)) - ((int)(x) >> 31))
-#define FC(row,col) \
-(filters >> ((((row) << 1 & 14) + ((col) & 1)) << 1) & 3)
-
-#define CLIP16(in, out, bits)\
-in = in < 0 ? 0 : in;\
-in = in > ((1<<bits)-1) ? ((1<<bits)-1) : in;\
-out=in;
 
 static int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
 		sensor_pattern pattern) {
+	static const signed char bayervng_terms[] = { -2, -2, +0, -1, 0, 0x01, -2, -2,
+			+0, +0, 1, 0x01, -2, -1, -1, +0, 0, 0x01, -2, -1, +0, -1, 0, 0x02, -2,
+			-1, +0, +0, 0, 0x03, -2, -1, +0, +1, 1, 0x01, -2, +0, +0, -1, 0, 0x06,
+			-2, +0, +0, +0, 1, 0x02, -2, +0, +0, +1, 0, 0x03, -2, +1, -1, +0, 0,
+			0x04, -2, +1, +0, -1, 1, 0x04, -2, +1, +0, +0, 0, 0x06, -2, +1, +0, +1,
+			0, 0x02, -2, +2, +0, +0, 1, 0x04, -2, +2, +0, +1, 0, 0x04, -1, -2, -1,
+			+0, 0, 0x80, -1, -2, +0, -1, 0, 0x01, -1, -2, +1, -1, 0, 0x01, -1, -2,
+			+1, +0, 1, 0x01, -1, -1, -1, +1, 0, 0x88, -1, -1, +1, -2, 0, 0x40, -1,
+			-1, +1, -1, 0, 0x22, -1, -1, +1, +0, 0, 0x33, -1, -1, +1, +1, 1, 0x11,
+			-1, +0, -1, +2, 0, 0x08, -1, +0, +0, -1, 0, 0x44, -1, +0, +0, +1, 0,
+			0x11, -1, +0, +1, -2, 1, 0x40, -1, +0, +1, -1, 0, 0x66, -1, +0, +1, +0,
+			1, 0x22, -1, +0, +1, +1, 0, 0x33, -1, +0, +1, +2, 1, 0x10, -1, +1, +1,
+			-1, 1, 0x44, -1, +1, +1, +0, 0, 0x66, -1, +1, +1, +1, 0, 0x22, -1, +1,
+			+1, +2, 0, 0x10, -1, +2, +0, +1, 0, 0x04, -1, +2, +1, +0, 1, 0x04, -1,
+			+2, +1, +1, 0, 0x04, +0, -2, +0, +0, 1, 0x80, +0, -1, +0, +1, 1, 0x88,
+			+0, -1, +1, -2, 0, 0x40, +0, -1, +1, +0, 0, 0x11, +0, -1, +2, -2, 0,
+			0x40, +0, -1, +2, -1, 0, 0x20, +0, -1, +2, +0, 0, 0x30, +0, -1, +2, +1,
+			1, 0x10, +0, +0, +0, +2, 1, 0x08, +0, +0, +2, -2, 1, 0x40, +0, +0, +2,
+			-1, 0, 0x60, +0, +0, +2, +0, 1, 0x20, +0, +0, +2, +1, 0, 0x30, +0, +0,
+			+2, +2, 1, 0x10, +0, +1, +1, +0, 0, 0x44, +0, +1, +1, +2, 0, 0x10, +0,
+			+1, +2, -1, 1, 0x40, +0, +1, +2, +0, 0, 0x60, +0, +1, +2, +1, 0, 0x20,
+			+0, +1, +2, +2, 0, 0x10, +1, -2, +1, +0, 0, 0x80, +1, -1, +1, +1, 0,
+			0x88, +1, +0, +1, +2, 0, 0x08, +1, +0, +2, -1, 0, 0x40, +1, +0, +2, +1,
+			0, 0x10 }, bayervng_chood[] = { -1, -1, -1, 0, -1, +1, 0, +1, +1, +1,
+			+1, 0, +1, -1, 0, -1 };
 	const int height = sy, width = sx;
 	const signed char *cp;
 	/* the following has the same type as the image */
@@ -324,11 +320,11 @@ static int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
 				x2 = *cp++;
 				weight = *cp++;
 				grads = *cp++;
-				color = FC(row + y1, col + x1);
-				if (FC(row+y2,col+x2) != (unsigned int) color)
+				color = FC(row + y1, col + x1, filters);
+				if (FC(row+y2,col+x2, filters) != (unsigned int) color)
 					continue;
-				diag = (FC(row,col+1) == (unsigned int) color
-						&& FC(row+1,col) == (unsigned int) color) ? 2 : 1;
+				diag = (FC(row,col+1, filters) == (unsigned int) color
+						&& FC(row+1,col, filters) == (unsigned int) color) ? 2 : 1;
 				if (abs(y1 - y2) == diag && abs(x1 - x2) == diag)
 					continue;
 				*ip++ = (y1 * width + x1) * 3 + color; /* [FD] */
@@ -344,9 +340,9 @@ static int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
 				y = *cp++;
 				x = *cp++;
 				*ip++ = (y * width + x) * 3; /* [FD] */
-				color = FC(row, col);
-				if (FC(row+y,col+x) != (unsigned int) color
-						&& FC(row+y*2,col+x*2) == (unsigned int) color)
+				color = FC(row, col, filters);
+				if (FC(row+y,col+x, filters) != (unsigned int) color
+						&& FC(row+y*2,col+x*2, filters) == (unsigned int) color)
 					*ip++ = (y * width + x) * 6 + color; /* [FD] */
 				else
 					*ip++ = 0;
@@ -386,7 +382,7 @@ static int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
 			}
 			thold = gmin + (gmax >> 1);
 			memset(sum, 0, sizeof sum);
-			color = FC(row, col);
+			color = FC(row, col, filters);
 			for (num = g = 0; g < 8; g++, ip += 2) { /* Average the neighbors */
 				if (gval[g] <= thold) {
 					for (c = 0; c < 3; c++) /* [FD] */
@@ -450,7 +446,7 @@ static void cam_to_cielab(uint16_t cam[3], float lab[3]) /* [SA] */
 		int c;
 
 		xyz[0] = xyz[1] = xyz[2] = 0.5;
-		FORC3
+		for (c = 0; c < 3; c++)
 		{ /* [SA] */
 			xyz[0] += xyz_cam[0][c] * cam[c];
 			xyz[1] += xyz_cam[1][c] * cam[c];
@@ -513,7 +509,7 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 	/* fill-in destination with known exact values */
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			int channel = FC(y, x);
+			int channel = FC(y, x, filters);
 			dst[(y * width + x) * 3 + channel] = bayer[y * width + x];
 		}
 	}
@@ -534,12 +530,12 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 					for (x = col - 1; x != col + 2; x++)
 						if (y < (unsigned int) height
 								&& x < (unsigned int) width) {
-							f = FC(y, x);
+							f = FC(y, x, filters);
 							sum[f] += dst[(y * width + x) * 3 + f]; /* [SA] */
 							sum[f + 4]++;
 						}
-				f = FC(row, col);
-				FORC3
+				f = FC(row, col, filters);
+				for (c = 0; c < 3; c++)
 					if (c != f && sum[c + 4]) /* [SA] */
 						dst[(row * width + col) * 3 + c] = sum[c] / sum[c + 4]; /* [SA] */
 			}
@@ -559,10 +555,10 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 			/* Interpolate green horizontally and vertically: */
 			for (row = ((top < 2) ? 2 : top);
 					row < top + TS && row < height - 2; row++) {
-				col = left + (FC(row,left) == 1);
+				col = left + (FC(row,left, filters) == 1);
 				if (col < 2)
 					col += 2;
-				for (fc = FC(row, col); col < left + TS && col < width - 2;
+				for (fc = FC(row, col, filters); col < left + TS && col < width - 2;
 						col += 2) {
 					pix = (uint16_t (*)[3]) dst + (row * width + col); /* [SA] */
 					val = ((pix[-1][1] + pix[0][fc] + pix[1][1]) * 2
@@ -583,8 +579,8 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 							col++) {
 						pix = (uint16_t (*)[3]) dst + (row * width + col); /* [SA] */
 						rix = &rgb[d][row - top][col - left];
-						if ((c = 2 - FC(row, col)) == 1) {
-							c = FC(row + 1, col);
+						if ((c = 2 - FC(row, col, filters)) == 1) {
+							c = FC(row + 1, col, filters);
 							val = pix[0][1]
 									+ ((pix[-1][2 - c] + pix[1][2 - c]
 											- rix[-1][1] - rix[1][1]) >> 1);
@@ -601,10 +597,10 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 											- rix[+TS - 1][1] - rix[+TS + 1][1]
 											+ 1) >> 2);
 						rix[0][c] = round_to_WORD((double) val); /* [SA] */
-						c = FC(row, col);
+						c = FC(row, col, filters);
 						rix[0][c] = pix[0][c];
 						cam_to_cielab(rix[0], flab);
-						FORC3
+						for (c = 0; c < 3; c++)
 							lab[d][row - top][col - left][c] = 64 * flab[c];
 					}
 			/* Build homogeneity maps from the CIELab images: */
@@ -647,11 +643,11 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 							for (j = tc - 1; j <= tc + 1; j++)
 								hm[d] += homo[d][i][j];
 					if (hm[0] != hm[1])
-						FORC3
+						for (c = 0; c < 3; c++)
 							dst[(row * width + col) * 3 + c] = round_to_WORD(
 									rgb[hm[1] > hm[0]][tr][tc][c]); /* [SA] */
 					else
-						FORC3
+						for (c = 0; c < 3; c++)
 							dst[(row * width + col) * 3 + c] = round_to_WORD(
 									(rgb[0][tr][tc][c] + rgb[1][tr][tc][c])
 											>> 1); /* [SA] */
@@ -688,12 +684,12 @@ static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
 					for (x = col - 1; x != col + 2; x++)
 						if (y < (unsigned int) height
 								&& x < (unsigned int) width) {
-							f = FC(y, x);
+							f = FC(y, x, filters);
 							sum[f] += dst[(y * width + x) * 3 + f]; /* [SA] */
 							sum[f + 4]++;
 						}
-				f = FC(row, col);
-				FORC3
+				f = FC(row, col, filters);
+				for (c = 0; c < 3; c++)
 					if (c != f && sum[c + 4]) /* [SA] */
 						dst[(row * width + col) * 3 + c] = sum[c] / sum[c + 4]; /* [SA] */
 			}
