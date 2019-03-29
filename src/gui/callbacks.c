@@ -2553,11 +2553,15 @@ void on_menu_FITS_header_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	show_FITS_header(&gfit);
 }
 
-void on_close_settings_button_clicked(GtkButton *button, gpointer user_data) {
+void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_libraw_interface();
 	update_photometry_interface();
 	fill_script_paths_list();
 	refresh_stars_list(com.stars);
+	gtk_widget_hide(lookup_widget("settings_window"));
+}
+
+void on_cancel_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	gtk_widget_hide(lookup_widget("settings_window"));
 }
 
