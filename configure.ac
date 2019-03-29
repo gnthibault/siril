@@ -13,8 +13,8 @@ AC_INIT([siril], [siril_version_full],
 dnl AC_INIT([siril], [siril_version],
         [https://gitlab.com/free-astro/siril/issues],
         [siril],
-        [https://www.siril.org]) 
-        
+        [https://www.siril.org])
+
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR([src/main.c])
@@ -63,7 +63,7 @@ AC_CHECK_FUNCS(timegm gmtime_r)
 dnl Set PACKAGE_DOC_DIR in config.h.
 dnl AC_DEFINE_UNQUOTED(PACKAGE_DOC_DIR, "${ac_default_prefix}/share/doc/${PACKAGE}", "package doc dir")
 
-dnl ================ MANDATORY DEPENDECIES ================ 
+dnl ================ MANDATORY DEPENDECIES ================
 dnl check math lib
 AC_CHECK_LIB(m, log, LIBS="$LIBS -lm")
 
@@ -87,18 +87,18 @@ PKG_CHECK_MODULES(CFITSIO, [cfitsio])
 dnl check libconfig
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig >= 1.4],,
 	AC_MSG_ERROR([libconfig 1.4 or newer not found.]))
-	
+
 dnl check opencv
 AC_PROG_CXX
 if test -n "$CXX" && ( test "X$CXX" != "Xno" &&
 		      ( (test "X$CXX" = "Xg++" && `g++ -v >/dev/null 2>&1` ) ||
 		      (test "X$CXX" != "Xg++"))) ; then
 	AC_PROG_CXXCPP
-	
+
 	dnl check for C++11 support
 	m4_include([m4/ax_cxx_compile_stdcxx.m4])
 	AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
-	
+
 	dnl AC_MSG_WARN(CXX is "$CXX")
 	dnl http://nerdland.net/2009/07/detecting-c-libraries-with-autotools/ solution 2
 	dnl we handle 2 opencv versions because of a debian bug with opencv2 and GTK3
@@ -113,9 +113,9 @@ if test -n "$CXX" && ( test "X$CXX" != "Xno" &&
 			  )
 else
 	AC_MSG_ERROR([no C++ compiler found])
-fi	
+fi
 
-dnl ================ OPTIONAL DEPENDECIES ================ 
+dnl ================ OPTIONAL DEPENDECIES ================
 dnl check raw lib
 PKG_CHECK_MODULES(LIBRAW, [libraw >= 0.17],
  		  [AC_DEFINE([HAVE_LIBRAW], [1], [Using RAW images])],
@@ -153,7 +153,7 @@ dnl checking libcurl
 PKG_CHECK_MODULES(CURL, [libcurl],
 		  [AC_DEFINE([HAVE_LIBCURL], [1], [Using Libcurl ])],
 		  AC_MSG_WARN([libcurl not found. Not using web interaction.]))
-		  
+
 dnl ================================================================
 dnl Collect some arguments.
 dnl ================================================================
@@ -171,6 +171,21 @@ fi
 
 dnl Compute the canonical host-system type variable (need config.guess and config.sub)
 AC_CANONICAL_HOST
+
+#######################
+# Check for UNIX flavor
+#######################
+AC_MSG_CHECKING([if compiling for Linux])
+case "$host_os" in
+  linux-*)
+    os_linux=yes
+    ;;
+  *)
+    os_linux=no
+    ;;
+esac
+AC_MSG_RESULT([$os_linux])
+AM_CONDITIONAL([PLATFORM_LINUX], [test "$os_linux" = "yes"])
 
 #################
 # Check for Win32
@@ -278,11 +293,11 @@ fi
 
 if test `uname` != "Darwin"; then
 	if (test "$platform_win32" = "yes" || test "os_win32" = "yes" ) ; then
-		AC_SUBST(EXTRA_LIBS,'-lpsapi')	
+		AC_SUBST(EXTRA_LIBS,'-lpsapi')
 	fi
 fi
 
 AC_SUBST([AM_LDFLAGS])
 
-AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in])
+AC_CONFIG_FILES([Makefile src/Makefile pixmaps/Makefile pixmaps/icons/Makefile platform-specific/Makefile platform-specific/linux/Makefile po/Makefile.in])
 AC_OUTPUT
