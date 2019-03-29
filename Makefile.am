@@ -2,35 +2,29 @@
 
 export CC CFLAGS CPPFLAGS
 
-SUBDIRS = deps/kplot po src
+SUBDIRS = deps/kplot \
+	po \
+	src \
+	pixmaps \
+	platform-specific
 
-# set language of the scripts to be installed (en or fr)
-SCRIPT_LANG = en
+# TODO add a conditionnal and a configure switch
+# to be able to choose the language. Also, this should
+# be a recussive make with a separate file list.
+scriptsdir = $(pkgdatadir)/scripts
+scripts_DATA = scripts/DSLR_preprocessing.ssf \
+	3rdparty/scripts/en/DSLR_preprocessing_Cosmetic.ssf \
+	3rdparty/scripts/en/DSLR_preprocessing_Drizzle_Cosmetic.ssf \
+	3rdparty/scripts/en/DSLR_Preprocessing_Drizzle.ssf \
+	3rdparty/scripts/en/DSLR_Preprocessing_NoDark.ssf \
+	3rdparty/scripts/en/DSLR_Preprocessing_NoFlat_NoDark_NoBias.ssf \
+	3rdparty/scripts/en/DSLR_Preprocessing_NoFlat_NoDark.ssf \
+	3rdparty/scripts/en/DSLR_Preprocessing_NoFlat.ssf
 
-install-data-local:
-	@$(NORMAL_INSTALL)
-	if test -d $(srcdir)/pixmaps; then \
-		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/pixmaps; \
-		for pixmap in $(srcdir)/pixmaps/*; do \
-			if test -f $$pixmap; then \
-				$(INSTALL_DATA) $$pixmap $(DESTDIR)$(pkgdatadir)/pixmaps; \
-			fi \
-		done \
-	fi
-	$(INSTALL_DATA) src/gui/siril3.glade $(DESTDIR)$(pkgdatadir)
-	$(INSTALL_DATA) src/gui/gtk_old.css $(DESTDIR)$(pkgdatadir)
-	$(INSTALL_DATA) src/gui/gtk.css $(DESTDIR)$(pkgdatadir)
-	$(mkinstalldirs) $(DESTDIR)$(docdir)
-	$(INSTALL_DATA) AUTHORS LICENSE.md $(DESTDIR)$(docdir)
-	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
-	$(INSTALL_DATA) siril.1.gz $(DESTDIR)$(mandir)/man1
-	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/scripts/
-	for script in $(srcdir)/scripts/*; do \
-		$(INSTALL_DATA) $$script $(DESTDIR)$(pkgdatadir)/scripts; \
-	done
-	for script in $(srcdir)/3rdparty/scripts/$(SCRIPT_LANG)/*; do \
-		$(INSTALL_DATA) $$script $(DESTDIR)$(pkgdatadir)/scripts; \
-	done
+doc_DATA = AUTHORS \
+	LICENSE.md
+
+man_MANS = siril.1.gz
 
 ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = config.rpath

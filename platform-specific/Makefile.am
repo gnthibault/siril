@@ -1,0 +1,5 @@
+if PLATFORM_LINUX
+LINUX = linux
+endif
+
+SUBDIRS = $(LINUX)
