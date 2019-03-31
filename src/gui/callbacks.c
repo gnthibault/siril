@@ -956,6 +956,62 @@ GtkWidget *popover_new(GtkWidget *widget, const gchar *text) {
 	return popover;
 }
 
+static void update_theme_button(const gchar *button_name, const gchar *path) {
+	gchar *image = g_build_filename(PACKAGE_DATA_DIR, path, NULL);
+	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget(button_name)),
+			gtk_image_new_from_file(image));
+	gtk_widget_show_all(lookup_widget(button_name));
+	g_free(image);
+}
+
+static void update_icons_to_theme(gboolean is_dark) {
+	siril_debug_print("Loading %s theme...\n", is_dark ? "dark" : "light");
+	if (is_dark) {
+		update_theme_button("rotate90_anticlock_button", "/pixmaps/rotate-acw_dark.png");
+		update_theme_button("rotate90_clock_button", "/pixmaps/rotate-cw_dark.png");
+		update_theme_button("mirrorx_button", "/pixmaps/mirrorx_dark.png");
+		update_theme_button("mirrory_button", "/pixmaps/mirrory_dark.png");
+
+		update_theme_button("process_starfinder_button", "/pixmaps/starfinder_dark.png");
+		update_theme_button("sum_button", "/pixmaps/sum_dark.png");
+		update_theme_button("export_button", "/pixmaps/export_dark.png");
+	} else {
+		update_theme_button("rotate90_anticlock_button", "/pixmaps/rotate-acw.png");
+		update_theme_button("rotate90_clock_button", "/pixmaps/rotate-cw.png");
+		update_theme_button("mirrorx_button", "/pixmaps/mirrorx.png");
+		update_theme_button("mirrory_button", "/pixmaps/mirrory.png");
+
+		update_theme_button("process_starfinder_button", "/pixmaps/starfinder.png");
+		update_theme_button("sum_button", "/pixmaps/sum.png");
+		update_theme_button("export_button", "/pixmaps/export.png");
+	}
+}
+
+void on_combo_theme_changed(GtkComboBox *box, gpointer user_data) {
+	GtkSettings *settings;
+
+	com.combo_theme = gtk_combo_box_get_active(box);
+
+	settings = gtk_settings_get_default();
+	g_object_set(settings, "gtk-application-prefer-dark-theme",
+			com.have_dark_theme || com.combo_theme == 1, NULL);
+	update_icons_to_theme(com.have_dark_theme || com.combo_theme == 1);
+}
+
+void initialize_theme() {
+	GtkComboBox *box;
+	GtkSettings *settings;
+	gboolean prefere_dark;
+
+	box = GTK_COMBO_BOX(lookup_widget("combo_theme"));
+	settings = gtk_settings_get_default();
+
+	g_object_get(settings, "gtk-application-prefer-dark-theme", &prefere_dark,
+			NULL);
+	com.have_dark_theme = prefere_dark;
+	gtk_combo_box_set_active(box, com.combo_theme);
+}
+
 void set_sliders_value_to_gfit() {
 	static GtkAdjustment *adj1 = NULL, *adj2 = NULL;
 
@@ -2011,8 +2067,6 @@ void set_GUI_misc() {
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.dontShowConfirm);
-	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("darkThemeCheck"));
-	gtk_toggle_button_set_active(ToggleButton, com.have_dark_theme);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck"));
 	gtk_toggle_button_set_active(ToggleButton, com.remember_windows);
 }
@@ -2558,10 +2612,6 @@ void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_photometry_interface();
 	fill_script_paths_list();
 	refresh_stars_list(com.stars);
-	gtk_widget_hide(lookup_widget("settings_window"));
-}
-
-void on_cancel_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	gtk_widget_hide(lookup_widget("settings_window"));
 }
 
@@ -4795,10 +4845,6 @@ void on_redo_item1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		undo_display_data(REDO);
 		set_cursor_waiting(FALSE);
 	}
-}
-
-void on_darkThemeCheck_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	com.have_dark_theme = gtk_toggle_button_get_active(togglebutton);
 }
 
 void on_rememberWindowsCheck_toggled(GtkToggleButton *togglebutton, gpointer user_data) {

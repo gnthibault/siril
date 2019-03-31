@@ -44,8 +44,10 @@ static void fft_to_spectra(fits* fit, fftw_complex *frequency_repr, double *as,
 	unsigned int i;
 
 	for (i = 0; i < nbdata; i++) {
-		as[i] = hypot(creal(frequency_repr[i]), cimag(frequency_repr[i]));
-		ps[i] = atan2(cimag(frequency_repr[i]), creal(frequency_repr[i]));
+		double r = creal(frequency_repr[i]);
+		double im = cimag(frequency_repr[i]);
+		as[i] = hypot(r, im);
+		ps[i] = atan2(im, r);
 	}
 }
 
@@ -125,27 +127,25 @@ static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
 	int width = fit->rx, height = fit->ry;
 	int nbdata = width * height;
 
-	assert(nbdata);
-	fftw_complex *spatial_repr = (fftw_complex*) fftw_malloc(
-			sizeof(fftw_complex) * nbdata);
-	fftw_complex *frequency_repr = (fftw_complex*) fftw_malloc(
-			sizeof(fftw_complex) * nbdata);
+	fftw_complex *spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
+	fftw_complex *frequency_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
 
 	/* copying image selection into the fftw data */
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) if(nbdata > 15000)
 #endif
-	for (i = 0; i < nbdata; i++)
+	for (i = 0; i < nbdata; i++) {
 		spatial_repr[i] = (double) gbuf[i];
+	}
 
 	/* we run the Fourier Transform */
 	fftw_plan p = fftw_plan_dft_2d(width, height, spatial_repr, frequency_repr,
-			FFTW_FORWARD, FFTW_ESTIMATE);
+			FFTW_FORWARD, FFTW_MEASURE);
 	fftw_execute(p);
 
 	/* we compute modulus and phase */
-	double *modulus = calloc(1, nbdata * sizeof(double));
-	double *phase = calloc(1, nbdata * sizeof(double));
+	double *modulus = malloc(nbdata * sizeof(double));
+	double *phase = malloc(nbdata * sizeof(double));
 
 	fft_to_spectra(fit, frequency_repr, modulus, phase, nbdata);
 
@@ -191,15 +191,13 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 		}
 	}
 
-	fftw_complex* spatial_repr = (fftw_complex*) fftw_malloc(
-			sizeof(fftw_complex) * nbdata);
-	fftw_complex* frequency_repr = (fftw_complex*) fftw_malloc(
-			sizeof(fftw_complex) * nbdata);
+	fftw_complex* spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
+	fftw_complex* frequency_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
 
 	fft_to_freq(fit, frequency_repr, modulus, phase, nbdata);
 
 	fftw_plan p = fftw_plan_dft_2d(width, height, frequency_repr, spatial_repr,
-			FFTW_BACKWARD, FFTW_ESTIMATE);
+			FFTW_BACKWARD, FFTW_MEASURE);
 	fftw_execute(p);
 
 	for (i = 0; i < nbdata; i++) {

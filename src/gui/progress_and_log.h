@@ -10,6 +10,8 @@
 #define PROGRESS_DONE 1.0		// fill the progress bar
 #define PROGRESS_TEXT_RESET ""		// reset the progress bar's text
 
+void initialize_log_tags();
+
 char* siril_log_message(const char* format, ...);
 char* siril_log_color_message(const char* format, const char* color, ...);
 

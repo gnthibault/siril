@@ -1,18 +1,23 @@
 pixmaps = \
+	b.png \
 	chain.png \
 	cm.png \
 	curve.png \
 	export.png \
+	export_dark.png \
+	g.png \
 	grid.png \
-	histo_dark.png \
 	histo.png \
-	list_dark.png \
 	list.png \
 	mirrorx_dark.png \
 	mirrorx.png \
 	mirrory_dark.png \
 	mirrory.png \
+	monochrome.png \
+	monochrome_dark.png \
 	neg.png \
+	neg_dark.png \
+	r.png \
 	rotate-acw_dark.png \
 	rotate-acw.png \
 	rotate-cw_dark.png \
@@ -21,4 +26,6 @@ pixmaps = \
 	siril_logo.svg \
 	siril.svg \
 	starfinder.png \
-	sum.png
+	starfinder_dark.png \
+	sum.png \
+	sum_dark.png

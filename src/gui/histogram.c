@@ -158,17 +158,12 @@ static int is_histogram_visible() {
 
 static void init_toggles() {
 	if (!toggles[0]) {
-		toggles[0] = GTK_TOGGLE_TOOL_BUTTON(
-				gtk_builder_get_object(builder, "histoToolRed"));
-		toggles[1] = GTK_TOGGLE_TOOL_BUTTON(
-				gtk_builder_get_object(builder, "histoToolGreen"));
-		toggles[2] = GTK_TOGGLE_TOOL_BUTTON(
-				gtk_builder_get_object(builder, "histoToolBlue"));
+		toggles[0] = GTK_TOGGLE_TOOL_BUTTON(lookup_widget("histoToolRed"));
+		toggles[1] = GTK_TOGGLE_TOOL_BUTTON(lookup_widget("histoToolGreen"));
+		toggles[2] = GTK_TOGGLE_TOOL_BUTTON(lookup_widget("histoToolBlue"));
 		toggles[3] = NULL;
-		toggleGrid = GTK_TOGGLE_TOOL_BUTTON(
-				gtk_builder_get_object(builder, "histoToolGrid"));
-		toggleCurve = GTK_TOGGLE_TOOL_BUTTON(
-				gtk_builder_get_object(builder, "histoToolCurve"));
+		toggleGrid = GTK_TOGGLE_TOOL_BUTTON(lookup_widget("histoToolGrid"));
+		toggleCurve = GTK_TOGGLE_TOOL_BUTTON(lookup_widget("histoToolCurve"));
 	}
 }
 
@@ -178,11 +173,10 @@ static void set_histo_toggles_names() {
 	init_toggles();
 
 	if (gfit.naxis == 2) {
-		const char* test = gtk_tool_button_get_label(GTK_TOOL_BUTTON(toggles[0]));
-		if (strcmp(test, "K")) {
-			gtk_tool_button_set_label(GTK_TOOL_BUTTON(toggles[0]), "K");
-			gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), "Gray channel");
-		}
+		gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), _("Gray channel"));
+		GtkWidget *w = gtk_image_new_from_file(PACKAGE_DATA_DIR"/pixmaps/monochrome.png");
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggles[0]), w);
+		gtk_widget_show(w);
 		gtk_toggle_tool_button_set_active(toggles[0], TRUE);
 		gtk_widget_set_visible(GTK_WIDGET(toggles[1]), FALSE);
 		gtk_widget_set_visible(GTK_WIDGET(toggles[2]), FALSE);
@@ -195,11 +189,10 @@ static void set_histo_toggles_names() {
 			gtk_widget_set_visible(GTK_WIDGET(toggles[3]), FALSE);
 
 	} else {
-		const char* test = gtk_tool_button_get_label(GTK_TOOL_BUTTON(toggles[0]));
-		if (strcmp(test, "R")) {
-			gtk_tool_button_set_label(GTK_TOOL_BUTTON(toggles[0]), "R");
-			gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), "Red channel");
-		}
+		gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), _("Red channel"));
+		GtkWidget *w = gtk_image_new_from_file(PACKAGE_DATA_DIR"/pixmaps/r.png");
+		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggles[0]), w);
+		gtk_widget_show(w);
 		gtk_toggle_tool_button_set_active(toggles[0], TRUE);
 		gtk_toggle_tool_button_set_active(toggles[1], TRUE);
 		gtk_toggle_tool_button_set_active(toggles[2], TRUE);

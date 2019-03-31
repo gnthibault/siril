@@ -152,7 +152,7 @@ static int readinitfile() {
 	if (misc_setting) {
 
 		config_setting_lookup_bool(misc_setting, "confirm",	&com.dontShowConfirm);
-		config_setting_lookup_bool(misc_setting, "darktheme", &com.have_dark_theme);
+		config_setting_lookup_int(misc_setting, "theme", &com.combo_theme);
 		config_setting_lookup_bool(misc_setting, "remember_winpos", &com.remember_windows);
 		config_setting_lookup_string(misc_setting, "swap_directory", &swap_dir);
 		config_setting_lookup_string(misc_setting, "extension", &extension);
@@ -348,9 +348,8 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 	misc_setting = config_setting_add(misc_group, "confirm", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.dontShowConfirm);
 
-	misc_setting = config_setting_add(misc_group, "darktheme",
-			CONFIG_TYPE_BOOL);
-	config_setting_set_bool(misc_setting, com.have_dark_theme);
+	misc_setting = config_setting_add(misc_group, "theme", CONFIG_TYPE_INT);
+	config_setting_set_int(misc_setting, com.combo_theme);
 
 	misc_setting = config_setting_add(misc_group, "remember_winpos",
 			CONFIG_TYPE_BOOL);

@@ -203,6 +203,21 @@ static char* siril_log_internal(const char* format, const char* color, va_list a
 	return msg;
 }
 
+void initialize_log_tags() {
+	/* Create tags associated with the buffer for the output text. */
+	GtkTextBuffer *tbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(lookup_widget("output")));
+	/* Tag with weight bold and tag name "bold" . */
+	gtk_text_buffer_create_tag (tbuf, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
+	/* Tag with style normal */
+	gtk_text_buffer_create_tag (tbuf, "normal", "weight", PANGO_WEIGHT_NORMAL, NULL);
+	/* Couleur Tags */
+	gtk_text_buffer_create_tag (tbuf, "red", "foreground", "#e72828", NULL);
+	gtk_text_buffer_create_tag (tbuf, "salmon", "foreground", "#ff9898", NULL);
+	gtk_text_buffer_create_tag (tbuf, "green", "foreground", "#01b301", NULL);
+	gtk_text_buffer_create_tag (tbuf, "blue", "foreground", "#7a7af8", NULL);
+	gtk_text_buffer_create_tag (tbuf, "plum", "foreground", "#8e4585", NULL);
+}
+
 char* siril_log_message(const char* format, ...) {
 	va_list args;
 	va_start(args, format);

@@ -313,8 +313,8 @@ int main(int argc, char *argv[]) {
 			g_error_free(err);
 			g_free(gladefile);
 			i++;
-		} while (i < sizeof(siril_sources)/sizeof(char *));
-		if (i == sizeof(siril_sources) / sizeof(char *)) {
+		} while (i < G_N_ELEMENTS(siril_sources));
+		if (i == G_N_ELEMENTS(siril_sources)) {
 			fprintf(stderr, _("%s was not found or contains errors, cannot render GUI. Exiting.\n"), GLADE_FILE);
 			exit(EXIT_FAILURE);
 		}
@@ -322,18 +322,7 @@ int main(int argc, char *argv[]) {
 
 		gtk_builder_connect_signals (builder, NULL);
 
-		/* Create tags associated with the buffer for the output text. */
-		GtkTextBuffer *tbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(gtk_builder_get_object(builder, "output")));
-		/* Tag with weight bold and tag name "bold" . */
-		gtk_text_buffer_create_tag (tbuf, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
-		/* Tag with style normal */
-		gtk_text_buffer_create_tag (tbuf, "normal", "weight", PANGO_WEIGHT_NORMAL, NULL);
-		/* Couleur Tags */
-		gtk_text_buffer_create_tag (tbuf, "red", "foreground", "#e72828", NULL);
-		gtk_text_buffer_create_tag (tbuf, "salmon", "foreground", "#ff9898", NULL);
-		gtk_text_buffer_create_tag (tbuf, "green", "foreground", "#01b301", NULL);
-		gtk_text_buffer_create_tag (tbuf, "blue", "foreground", "#7a7af8", NULL);
-		gtk_text_buffer_create_tag (tbuf, "plum", "foreground", "#8e4585", NULL);
+		initialize_log_tags();
 
 		/* support for converting files by dragging onto the GtkTreeView */
 		gtk_drag_dest_set(lookup_widget("treeview_convert"),
@@ -412,6 +401,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (!com.headless) {
+		/* initialize theme */
+		initialize_theme();
+
 		/* initialize menu gui */
 		update_MenuItem();
 		initialize_script_menu();
@@ -465,22 +457,6 @@ int main(int argc, char *argv[]) {
 
 	if (!com.headless) {
 		update_spinCPU(com.max_thread);
-
-		GtkSettings *settings;
-		gboolean prefere_dark;
-		settings = gtk_settings_get_default();
-		g_object_get(settings, "gtk-application-prefer-dark-theme", &prefere_dark, NULL);
-		if (prefere_dark || com.have_dark_theme) {
-			com.have_dark_theme = TRUE;
-			/* Put dark icons */
-			printf("Loading dark theme...\n");
-			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_anticlock_button")), lookup_widget("rotate90-acw_dark"));
-			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("rotate90_clock_button")), lookup_widget("rotate90-cw_dark"));
-			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("mirrorx_button")), lookup_widget("image_mirrorx_dark"));
-			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("mirrory_button")), lookup_widget("image_mirrory_dark"));
-			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("histogram_button")), lookup_widget("image_histogram_dark"));
-			gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget("seqlist_button")), lookup_widget("image_seqlist_dark"));
-		}
 
 		g_object_ref(G_OBJECT(lookup_widget("main_window"))); // don't destroy it on removal
 		g_object_ref(G_OBJECT(lookup_widget("rgb_window")));  // don't destroy it on removal

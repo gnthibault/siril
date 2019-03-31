@@ -66,6 +66,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 	char format[6];
 	char rvalue[20], gvalue[20], bvalue[20];
 	double normValue[] = { 1.0, 1.0, 1.0 };
+	int color;
 
 	get_statlist_store();
 	if (!selection)
@@ -94,12 +95,14 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 		sprintf(bvalue, "--");
 	}
 
+	color = (com.have_dark_theme || com.combo_theme == 1) ? 1 : 0;
+
 	gtk_list_store_append(list_store, &iter);
 	gtk_list_store_set(list_store, &iter, COLUMN_NAME, _(statName[0]),
 			COLUMN_RVALUE, rvalue,
 			COLUMN_GVALUE, gvalue,
 			COLUMN_BVALUE, bvalue,
-			COLUMN_COLOR, first_colour[com.have_dark_theme],
+			COLUMN_COLOR, first_colour[color],
 			-1);
 
 	sprintf(rvalue, "%lu", stat[RLAYER]->total);
@@ -116,7 +119,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			COLUMN_RVALUE, rvalue,
 			COLUMN_GVALUE, gvalue,
 			COLUMN_BVALUE, bvalue,
-			COLUMN_COLOR, second_colour[com.have_dark_theme],
+			COLUMN_COLOR, second_colour[color],
 			-1);
 
 	/** Mean */
@@ -134,7 +137,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			COLUMN_RVALUE, rvalue,
 			COLUMN_GVALUE, gvalue,
 			COLUMN_BVALUE, bvalue,
-			COLUMN_COLOR, first_colour[com.have_dark_theme],
+			COLUMN_COLOR, first_colour[color],
 			-1);
 
 	/* median */
@@ -152,7 +155,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			COLUMN_RVALUE, rvalue,
 			COLUMN_GVALUE, gvalue,
 			COLUMN_BVALUE, bvalue,
-			COLUMN_COLOR, second_colour[com.have_dark_theme],
+			COLUMN_COLOR, second_colour[color],
 			-1);
 
 	/* sigma */
@@ -170,7 +173,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			COLUMN_RVALUE, rvalue,
 			COLUMN_GVALUE, gvalue,
 			COLUMN_BVALUE, bvalue,
-			COLUMN_COLOR, first_colour[com.have_dark_theme],
+			COLUMN_COLOR, first_colour[color],
 			-1);
 
 	/* avgDev */
@@ -188,7 +191,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			COLUMN_RVALUE, rvalue,
 			COLUMN_GVALUE, gvalue,
 			COLUMN_BVALUE, bvalue,
-			COLUMN_COLOR, second_colour[com.have_dark_theme],
+			COLUMN_COLOR, second_colour[color],
 			-1);
 
 	/* MAD */
@@ -206,7 +209,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			COLUMN_RVALUE, rvalue,
 			COLUMN_GVALUE, gvalue,
 			COLUMN_BVALUE, bvalue,
-			COLUMN_COLOR, first_colour[com.have_dark_theme],
+			COLUMN_COLOR, first_colour[color],
 			-1);
 
 	/* sqrt(BWMV) */
@@ -224,7 +227,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			COLUMN_RVALUE, rvalue,
 			COLUMN_GVALUE, gvalue,
 			COLUMN_BVALUE, bvalue,
-			COLUMN_COLOR, second_colour[com.have_dark_theme],
+			COLUMN_COLOR, second_colour[color],
 			-1);
 
 	/* min */
@@ -242,7 +245,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			COLUMN_RVALUE, rvalue,
 			COLUMN_GVALUE, gvalue,
 			COLUMN_BVALUE, bvalue,
-			COLUMN_COLOR, first_colour[com.have_dark_theme],
+			COLUMN_COLOR, first_colour[color],
 			-1);
 
 	/* max */
@@ -260,7 +263,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			COLUMN_RVALUE, rvalue,
 			COLUMN_GVALUE, gvalue,
 			COLUMN_BVALUE, bvalue,
-			COLUMN_COLOR, second_colour[com.have_dark_theme],
+			COLUMN_COLOR, second_colour[color],
 			-1);
 
 }
