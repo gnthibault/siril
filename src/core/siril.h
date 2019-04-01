@@ -80,8 +80,10 @@ typedef unsigned short WORD;		// default type for internal image data
 /* used for open and savedialog */
 #if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
 #define SirilWidget GtkFileChooserNative
+#define SIRIL_EOL "\r\n"
 #else
 #define SirilWidget GtkWidget
+#define SIRIL_EOL "\n"
 #endif
 
 /* when requesting an image redraw, it can be asked to remap its data before redrawing it.

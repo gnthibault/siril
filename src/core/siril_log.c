@@ -18,13 +18,6 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef _WIN32
-#define SIRIL_EOL "\r\n"
-#else
-#define SIRIL_EOL "\n"
-#endif
-
-
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/command.h"
@@ -74,33 +67,6 @@ static void save_log_file(gchar *filename) {
 	g_strfreev(token);
 }
 
-static SirilWidget *siril_file_chooser_save_log(GtkWindow *parent, GtkFileChooserAction action) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	return gtk_file_chooser_native_new(_("Save File"), parent, action,
-			_("_Save"), _("_Cancel"));
-#else
-	return gtk_file_chooser_dialog_new(_("Save File"), parent, action,
-			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT,
-			NULL);
-#endif
-}
-
-static gint siril_dialog_run(SirilWidget *widgetdialog) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	return gtk_native_dialog_run(GTK_NATIVE_DIALOG(widgetdialog));
-#else
-	return gtk_dialog_run(GTK_DIALOG(GTK_FILE_CHOOSER(widgetdialog)));
-#endif
-}
-
-static void siril_widget_destroy(SirilWidget *widgetdialog) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	g_object_unref(widgetdialog);
-#else
-	gtk_widget_destroy(widgetdialog);
-#endif
-}
-
 static void set_filter(GtkFileChooser *dialog) {
 	GtkFileFilter *f = gtk_file_filter_new();
 	gtk_file_filter_set_name(f, _("log files (*.log)"));
@@ -120,7 +86,7 @@ static void save_log_dialog() {
 	replace_not_valid_char(filename, ':', '.');
 	filename = str_append(&filename, ".log");
 
-	widgetdialog = siril_file_chooser_save_log(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);
+	widgetdialog = siril_file_chooser_save(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);
 	dialog = GTK_FILE_CHOOSER(widgetdialog);
 	gtk_file_chooser_set_current_folder(dialog, com.wd);
 	gtk_file_chooser_set_select_multiple(dialog, FALSE);
@@ -139,11 +105,6 @@ static void save_log_dialog() {
 	g_free(filename);
 }
 
-static void export_siril_log() {
-	save_log_dialog();
-}
-
-
 /************** Callbacks function ***********/
 
 void on_clear_log_button_clicked(GtkButton *button, gpointer user_data) {
@@ -151,5 +112,5 @@ void on_clear_log_button_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_export_log_button_clicked(GtkButton *button, gpointer user_data) {
-	export_siril_log();
+	save_log_dialog();
 }

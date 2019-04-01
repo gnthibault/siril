@@ -390,4 +390,40 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 	return nb_frames < maxfile;
 }
 
+SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction action) {
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+	return gtk_file_chooser_native_new(_("Open File"), parent, action,
+			_("_Open"), _("_Cancel"));
+#else
+	return gtk_file_chooser_dialog_new(_("Open File"), parent, action,
+				_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT,
+				NULL);
+#endif
+}
 
+SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action) {
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+	return gtk_file_chooser_native_new(_("Save File"), parent, action,
+			_("_Save"), _("_Cancel"));
+#else
+	return gtk_file_chooser_dialog_new(_("Save File"), parent, action,
+			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT,
+			NULL);
+#endif
+}
+
+gint siril_dialog_run(SirilWidget *widgetdialog) {
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+	return gtk_native_dialog_run(GTK_NATIVE_DIALOG(widgetdialog));
+#else
+	return gtk_dialog_run(GTK_DIALOG(GTK_FILE_CHOOSER(widgetdialog)));
+#endif
+}
+
+void siril_widget_destroy(SirilWidget *widgetdialog) {
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+	g_object_unref(widgetdialog);
+#else
+	gtk_widget_destroy(widgetdialog);
+#endif
+}

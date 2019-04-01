@@ -24,8 +24,11 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "io/single_image.h"
+#include "io/sequence.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
+#include "gui/progress_and_log.h"
 #include "algos/PSF.h"
 #include "gui/PSF_list.h"
 #include "algos/star_finder.h"
@@ -289,6 +292,59 @@ static void remove_all_stars(){
 	redraw(com.cvport, REMAP_NONE);
 }
 
+static int save_list(gchar *file) {
+	int i = 0;
+	if (!com.stars)
+		return 1;
+	FILE *f = g_fopen(file, "w");
+
+	if (f) {
+		while (com.stars[i]) {
+			fprintf(f,
+					"%d\t%d\t%10.6f %10.6f %10.2f %10.2f %10.2f %10.2f %3.2f %10.3e %10.2f%s",
+					i + 1, com.stars[i]->layer, com.stars[i]->B, com.stars[i]->A,
+					com.stars[i]->xpos, com.stars[i]->ypos, com.stars[i]->fwhmx,
+					com.stars[i]->fwhmy, com.stars[i]->angle, com.stars[i]->rmse, com.stars[i]->mag, SIRIL_EOL);
+			i++;
+		}
+		fclose(f);
+		siril_log_message(_("The file stars.lst has been created.\n"));
+	}
+	return 0;
+}
+
+static void set_filter(GtkFileChooser *dialog) {
+	GtkFileFilter *f = gtk_file_filter_new();
+	gtk_file_filter_set_name(f, _("star files (*.lst)"));
+	gtk_file_filter_add_pattern(f, "*.lst");
+	gtk_file_chooser_add_filter(dialog, f);
+	gtk_file_chooser_set_filter(dialog, f);
+}
+
+static void save_stars_dialog() {
+	SirilWidget *widgetdialog;
+	GtkFileChooser *dialog = NULL;
+	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
+	gint res;
+
+	widgetdialog = siril_file_chooser_save(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);
+	dialog = GTK_FILE_CHOOSER(widgetdialog);
+	gtk_file_chooser_set_current_folder(dialog, com.wd);
+	gtk_file_chooser_set_select_multiple(dialog, FALSE);
+	gtk_file_chooser_set_do_overwrite_confirmation(dialog, TRUE);
+	gtk_file_chooser_set_current_name(dialog, "stars.lst");
+	set_filter(dialog);
+
+	res = siril_dialog_run(widgetdialog);
+	if (res == GTK_RESPONSE_ACCEPT) {
+		gchar *file = gtk_file_chooser_get_filename(dialog);
+		save_list(file);
+
+		g_free(file);
+	}
+	siril_widget_destroy(widgetdialog);
+}
+
 /********************* public ***********************/
 
 void add_star_to_list(fitted_PSF *star) {
@@ -420,3 +476,41 @@ void on_remove_button_clicked(GtkButton *button, gpointer user_data) {
 void on_remove_all_button_clicked(GtkButton *button, gpointer user_data) {
 	remove_all_stars();
 }
+
+void on_menuitemPSF_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(checkmenuitem))
+		gtk_widget_show_all(lookup_widget("stars_list_window"));
+	else
+		gtk_widget_hide(lookup_widget("stars_list_window"));
+}
+
+void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data) {
+	int nbstars;
+	int layer = RLAYER;
+	if (!single_image_is_loaded() && !sequence_is_loaded()) {
+		siril_log_color_message(_("Load an image first, aborted.\n"), "red");
+		return;
+	}
+	set_cursor_waiting(TRUE);
+	if (gfit.naxes[2] == 3)
+		layer = GLAYER;
+	delete_selected_area();
+	com.stars = peaker(&gfit, layer, &com.starfinder_conf, &nbstars, NULL, TRUE);
+	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);
+	refresh_stars_list(com.stars);
+	set_cursor_waiting(FALSE);
+}
+
+void on_export_button_clicked(GtkButton *button, gpointer user_data) {
+	save_stars_dialog();
+}
+
+void on_stars_list_window_show(GtkWidget *widget, gpointer user_data) {
+	update_peaker_GUI();
+	fill_stars_list(&gfit, com.stars);
+}
+
+void on_button_stars_list_ok_clicked(GtkButton *button, gpointer user_data) {
+	gtk_widget_hide(lookup_widget("stars_list_window"));
+}
+

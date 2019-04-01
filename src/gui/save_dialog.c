@@ -225,33 +225,6 @@ static void prepare_savepopup(int type) {
 	gtk_notebook_set_current_page(notebookFormat, tab);
 }
 
-static gint siril_dialog_run(SirilWidget *widgetdialog) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	return gtk_native_dialog_run(GTK_NATIVE_DIALOG(widgetdialog));
-#else
-	return gtk_dialog_run(GTK_DIALOG(GTK_FILE_CHOOSER(widgetdialog)));
-#endif
-}
-
-static void siril_widget_destroy(SirilWidget *widgetdialog) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	g_object_unref(widgetdialog);
-#else
-	gtk_widget_destroy(widgetdialog);
-#endif
-}
-
-static SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	return gtk_file_chooser_native_new(_("Save File"), parent, action,
-			_("_Save"), _("_Cancel"));
-#else
-	return gtk_file_chooser_dialog_new(_("Save File"), parent, action,
-			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT,
-			NULL);
-#endif
-}
-
 static void init_dialog() {
 	GtkWindow *parent;
 	if (saveDialog == NULL) {

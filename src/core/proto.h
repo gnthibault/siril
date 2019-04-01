@@ -123,6 +123,10 @@ int	get_available_memory_in_MB();
 #ifdef _WIN32
 gchar *get_special_folder(int csidl);
 #endif
+SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction action);
+SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action);
+gint siril_dialog_run(SirilWidget *widgetdialog);
+void siril_widget_destroy(SirilWidget *widgetdialog);
 
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,

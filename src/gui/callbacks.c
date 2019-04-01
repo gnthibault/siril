@@ -4216,59 +4216,6 @@ void on_menuitemcalibration_activate(GtkMenuItem *menuitem, gpointer user_data) 
 	}
 }
 
-void on_menuitemPSF_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_data) {
-	if (gtk_check_menu_item_get_active(checkmenuitem))
-		gtk_widget_show_all(lookup_widget("stars_list_window"));
-	else
-		gtk_widget_hide(lookup_widget("stars_list_window"));
-}
-
-void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data) {
-	int nbstars;
-	int layer = RLAYER;
-	if (!single_image_is_loaded() && !sequence_is_loaded()) {
-		siril_log_color_message(_("Load an image first, aborted.\n"), "red");
-		return;
-	}
-	set_cursor_waiting(TRUE);
-	if (gfit.naxes[2] == 3)
-		layer = GLAYER;
-	delete_selected_area();
-	com.stars = peaker(&gfit, layer, &com.starfinder_conf, &nbstars, NULL, TRUE);
-	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);
-	refresh_stars_list(com.stars);
-	set_cursor_waiting(FALSE);
-}
-
-void on_export_button_clicked(GtkButton *button, gpointer user_data) {
-	int i = 0;
-	if (!com.stars)
-		return;
-	FILE *f = g_fopen("stars.lst", "w");
-
-	if (f == NULL)
-		return;
-	while (com.stars[i]) {
-		fprintf(f,
-				"%d\t%d\t%10.6f %10.6f %10.2f %10.2f %10.2f %10.2f %3.2f %10.3e %10.2f \n",
-				i + 1, com.stars[i]->layer, com.stars[i]->B, com.stars[i]->A,
-				com.stars[i]->xpos, com.stars[i]->ypos, com.stars[i]->fwhmx,
-				com.stars[i]->fwhmy, com.stars[i]->angle, com.stars[i]->rmse, com.stars[i]->mag);
-		i++;
-	}
-	fclose(f);
-	siril_log_message(_("The file stars.lst has been created.\n"));
-}
-
-void on_stars_list_window_show(GtkWidget *widget, gpointer user_data) {
-	update_peaker_GUI();
-	fill_stars_list(&gfit, com.stars);
-}
-
-void on_button_stars_list_ok_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("stars_list_window"));
-}
-
 void on_extract_channel_button_close_clicked(GtkButton *button,
 		gpointer user_data) {
 	gtk_widget_hide(lookup_widget("extract_channel_dialog"));

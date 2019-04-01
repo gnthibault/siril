@@ -192,33 +192,6 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 	}
 }
 
-static SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction action) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	return gtk_file_chooser_native_new(_("Open File"), parent, action,
-			_("_Open"), _("_Cancel"));
-#else
-	return gtk_file_chooser_dialog_new(_("Open File"), parent, action,
-				_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT,
-				NULL);
-#endif
-}
-
-static gint siril_dialog_run(SirilWidget *widgetdialog) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	return gtk_native_dialog_run(GTK_NATIVE_DIALOG(widgetdialog));
-#else
-	return gtk_dialog_run(GTK_DIALOG(GTK_FILE_CHOOSER(widgetdialog)));
-#endif
-}
-
-static void siril_widget_destroy(SirilWidget *widgetdialog) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	g_object_unref(widgetdialog);
-#else
-	gtk_widget_destroy(widgetdialog);
-#endif
-}
-
 static void opendial(int whichdial) {
 	SirilWidget *widgetdialog;
 	GtkFileChooser *dialog = NULL;
