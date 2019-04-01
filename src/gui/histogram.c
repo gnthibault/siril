@@ -174,7 +174,12 @@ static void set_histo_toggles_names() {
 
 	if (gfit.naxis == 2) {
 		gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), _("Gray channel"));
-		GtkWidget *w = gtk_image_new_from_file(PACKAGE_DATA_DIR"/pixmaps/monochrome.png");
+		GtkWidget *w;
+		if (com.want_dark) {
+			w = gtk_image_new_from_file(PACKAGE_DATA_DIR"/pixmaps/monochrome_dark.png");
+		} else {
+			w = gtk_image_new_from_file(PACKAGE_DATA_DIR"/pixmaps/monochrome.png");
+		}
 		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggles[0]), w);
 		gtk_widget_show(w);
 		gtk_toggle_tool_button_set_active(toggles[0], TRUE);

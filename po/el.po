@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-27 16:59+0100\n"
+"POT-Creation-Date: 2019-04-01 10:51+0200\n"
 "PO-Revision-Date: 2019-01-14 09:39+0200\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -265,7 +265,7 @@ msgid "current red file"
 msgstr "τρέχων κόκκινο αρχείο"
 
 #: ../src/gui/siril3.glade.h:54 ../src/compositing/compositing.c:456
-#: ../src/gui/callbacks.c:1847
+#: ../src/gui/callbacks.c:1907 ../src/gui/histogram.c:197
 msgid "Red channel"
 msgstr "Κόκκινο κανάλι"
 
@@ -321,8 +321,8 @@ msgstr ""
 "Εμφάνιση/Απόκρυψη της λίστας εικόνων στην αλληλουχία με δεδομένα εγγραφής"
 
 #: ../src/gui/siril3.glade.h:67
-msgid "Negative view"
-msgstr "Αρνητική προβολή"
+msgid "Switch to normal and negative view"
+msgstr ""
 
 #: ../src/gui/siril3.glade.h:68
 msgid "Switch to normal and rainbow colormap (false color rendering)"
@@ -1319,244 +1319,232 @@ msgid "Highlights clipping"
 msgstr "Αποκοπή Ανοιχτών τόνων"
 
 #: ../src/gui/siril3.glade.h:279
-msgid "R"
-msgstr "R"
-
-#: ../src/gui/siril3.glade.h:280
-msgid "G"
-msgstr "G"
-
-#: ../src/gui/siril3.glade.h:281
-msgid "B"
-msgstr "B"
-
-#: ../src/gui/siril3.glade.h:282
 msgid "Show grids"
 msgstr "Προβολή πλεγμάτων"
 
-#: ../src/gui/siril3.glade.h:283
+#: ../src/gui/siril3.glade.h:280
 msgid "Show MTF curve"
 msgstr "Προβολή καμπύλης MTF"
 
-#: ../src/gui/siril3.glade.h:284
+#: ../src/gui/siril3.glade.h:281
 msgid "Apply autostretch algorithm to image"
 msgstr "Εφαρμογή αυτόματου τεντώματος στην εικόνα"
 
-#: ../src/gui/siril3.glade.h:285
+#: ../src/gui/siril3.glade.h:282
 msgid "autoStretch"
 msgstr "Τέντωμα"
 
-#: ../src/gui/siril3.glade.h:286
+#: ../src/gui/siril3.glade.h:283
 msgid "Highlights: "
 msgstr "Ανοιχτοί τόνοι: "
 
-#: ../src/gui/siril3.glade.h:287
+#: ../src/gui/siril3.glade.h:284
 msgid "Midtones: "
 msgstr "Ενδιάμεσοι τόνοι: "
 
-#: ../src/gui/siril3.glade.h:288
+#: ../src/gui/siril3.glade.h:285
 msgid "Shadows: "
 msgstr "Σκοτεινοί τόνοι: "
 
-#: ../src/gui/siril3.glade.h:290
+#: ../src/gui/siril3.glade.h:287
 #, no-c-format
 msgid "Clip (%)"
 msgstr "Αποκοπή (%)"
 
-#: ../src/gui/siril3.glade.h:291
+#: ../src/gui/siril3.glade.h:288
 msgid "Clipped pixels count (shadows)"
 msgstr "Αριθμός αποκομένων εικονοστοιχείων (σκοτεινοί τόνοι)"
 
-#: ../src/gui/siril3.glade.h:292
+#: ../src/gui/siril3.glade.h:289
 msgid "Clipped pixels count (highlights)"
 msgstr "Αριθμός αποκομένων εικονοστοιχείων (ανοιχτοί τόνοι)"
 
-#: ../src/gui/siril3.glade.h:293
+#: ../src/gui/siril3.glade.h:290
 msgid "Reset"
 msgstr "Επαναφορά"
 
-#: ../src/gui/siril3.glade.h:294
+#: ../src/gui/siril3.glade.h:291
 msgid "Apply histogram transformation"
 msgstr "Εφαρμογή μετασχηματισμού ιστογράμματος"
 
-#: ../src/gui/siril3.glade.h:295
+#: ../src/gui/siril3.glade.h:292
 msgid "Resample"
 msgstr "Αναδειγματοληψία"
 
-#: ../src/gui/siril3.glade.h:297
+#: ../src/gui/siril3.glade.h:294
 #, no-c-format
 msgid "X scale (%): "
 msgstr "Κλίμακα X (%): "
 
-#: ../src/gui/siril3.glade.h:299
+#: ../src/gui/siril3.glade.h:296
 #, no-c-format
 msgid "Y scale (%): "
 msgstr "Κλίμακα Y (%): "
 
-#: ../src/gui/siril3.glade.h:300
+#: ../src/gui/siril3.glade.h:297
 msgid "Preserve Aspect Ratio"
 msgstr "Διατήρηση Λόγου Διαστάσεων"
 
-#: ../src/gui/siril3.glade.h:301
+#: ../src/gui/siril3.glade.h:298
 msgid "Type of algorithm used for resampling"
 msgstr "Τύπος αλγόριθμου που θα χρησιμοποιηθεί για αναδειγματοληψία"
 
-#: ../src/gui/siril3.glade.h:302
+#: ../src/gui/siril3.glade.h:299
 msgid "Nearest Neighbor"
 msgstr "Κοντινότερο Γειτονικό"
 
-#: ../src/gui/siril3.glade.h:303
+#: ../src/gui/siril3.glade.h:300
 msgid "Bilinear (default)"
 msgstr "Διγραμμική παρεμβολή (προεπιλεγμένο)"
 
-#: ../src/gui/siril3.glade.h:304
+#: ../src/gui/siril3.glade.h:301
 msgid "Pixel Area Relation"
 msgstr "Σχέση Περιοχής Εικονοστοιχείου"
 
-#: ../src/gui/siril3.glade.h:305
+#: ../src/gui/siril3.glade.h:302
 msgid "Bicubic"
 msgstr "Δικυβική"
 
-#: ../src/gui/siril3.glade.h:306
+#: ../src/gui/siril3.glade.h:303
 msgid "Lanczos-4"
 msgstr "Lanczos-4"
 
-#: ../src/gui/siril3.glade.h:307
+#: ../src/gui/siril3.glade.h:304
 msgid "Rotational Gradient"
 msgstr "Φίλτρο Βαθμιδωτής Περιστροφής"
 
-#: ../src/gui/siril3.glade.h:308
+#: ../src/gui/siril3.glade.h:305
 msgid "The rotational gradient will be applied."
 msgstr "Θα εφαρμοστεί Φίλτρο Βαθμιδωτής Περιστροφής."
 
-#: ../src/gui/siril3.glade.h:309
+#: ../src/gui/siril3.glade.h:306
 msgid "Radial shift: "
 msgstr "Ακτινωτή μετατόπιση:"
 
-#: ../src/gui/siril3.glade.h:310
+#: ../src/gui/siril3.glade.h:307
 msgid "Radial shift used to compute rotational gradient."
 msgstr ""
 "Η ακτινική μετατόπιση χρησιμοποιείται για τον υπολογισμό της βαθμιδωτής "
 "περιστροφής."
 
-#: ../src/gui/siril3.glade.h:311
+#: ../src/gui/siril3.glade.h:308
 msgid "Rotational shift: "
 msgstr "Μετατόπιση περιστροφής:"
 
-#: ../src/gui/siril3.glade.h:312
+#: ../src/gui/siril3.glade.h:309
 msgid "Rotational shift used to compute rotational gradient."
 msgstr ""
 "Μετατόπιση περιστροφής που χρησιμοποιείται για τον υπολογισμό της βαθμιδωτής "
 "περιστροφής"
 
-#: ../src/gui/siril3.glade.h:313
+#: ../src/gui/siril3.glade.h:310
 msgid "X coordinate of the center of polar coordinates."
 msgstr "Συντεταγμένη X του κέντρου των πολικών συντεταγμένων."
 
-#: ../src/gui/siril3.glade.h:314
+#: ../src/gui/siril3.glade.h:311
 msgid "Y coordinate of the center of polar coordinates."
 msgstr "Συντεταγμένη X του κέντρου των πολικών συντεταγμένων."
 
-#: ../src/gui/siril3.glade.h:315
+#: ../src/gui/siril3.glade.h:312
 msgid "X centre:"
 msgstr "Κέντρο Χ:"
 
-#: ../src/gui/siril3.glade.h:316
+#: ../src/gui/siril3.glade.h:313
 msgid "Y centre:"
 msgstr "Κέντρο Y:"
 
-#: ../src/gui/siril3.glade.h:317
+#: ../src/gui/siril3.glade.h:314
 msgid "root name of the converted images (the &apos;dest&apos; in dest1.fit)"
 msgstr ""
 "όνομα βάσης των εικόνων που έχουν μετατραπεί (o &apos;προορισμός&apos; στο "
 "dest1.fit)"
 
-#: ../src/gui/siril3.glade.h:318
+#: ../src/gui/siril3.glade.h:315
 msgid "root name of the converted images (the 'dest' in dest1.fit)"
 msgstr ""
 "όνομα βάσης των εικόνων που έχουν μετατραπεί (ο 'προορισμός' στο dest1.fit)"
 
-#: ../src/gui/siril3.glade.h:319
+#: ../src/gui/siril3.glade.h:316
 msgid "<b>Filename</b>"
 msgstr "<b>Όνομα Αρχείου</b>"
 
-#: ../src/gui/siril3.glade.h:320
+#: ../src/gui/siril3.glade.h:317
 msgid "8-bit unsigned integer"
 msgstr "Ακέραιος 8-bit χωρίς πρόσημο"
 
-#: ../src/gui/siril3.glade.h:321
+#: ../src/gui/siril3.glade.h:318
 msgid "16-bit unsigned integer"
 msgstr "Ακέραιος 16-bit χωρίς πρόσημο"
 
-#: ../src/gui/siril3.glade.h:322
+#: ../src/gui/siril3.glade.h:319
 msgid "<b>Sample Format</b>"
 msgstr "<b>Τύπος Δείγματος</b>"
 
-#: ../src/gui/siril3.glade.h:323
+#: ../src/gui/siril3.glade.h:320
 msgid "None"
 msgstr "Κανένα"
 
-#: ../src/gui/siril3.glade.h:324
+#: ../src/gui/siril3.glade.h:321
 msgid "Deflate compression"
 msgstr "Συμπίεση deflate"
 
-#: ../src/gui/siril3.glade.h:325
+#: ../src/gui/siril3.glade.h:322
 msgid "<b>Compression</b>"
 msgstr "<b>Συμπίεση</b>"
 
-#: ../src/gui/siril3.glade.h:326
+#: ../src/gui/siril3.glade.h:323
 msgid "<b>Image Description</b>"
 msgstr "<b>Περιγραφή Εικόνας</b>"
 
-#: ../src/gui/siril3.glade.h:327
+#: ../src/gui/siril3.glade.h:324
 msgid "<b>Image Copyright</b>"
 msgstr "<b>Πνευματικά δικαιώματα εικόνας</b>"
 
-#: ../src/gui/siril3.glade.h:328
+#: ../src/gui/siril3.glade.h:325
 msgid "TIFF"
 msgstr "TIFF"
 
-#: ../src/gui/siril3.glade.h:329
+#: ../src/gui/siril3.glade.h:326
 msgid "Quality: "
 msgstr "Ποιότητα: "
 
-#: ../src/gui/siril3.glade.h:330
+#: ../src/gui/siril3.glade.h:327
 msgid "JPEG"
 msgstr "JPEG"
 
-#: ../src/gui/siril3.glade.h:331
+#: ../src/gui/siril3.glade.h:328
 msgid "Not available"
 msgstr "Δεν είναι διαθέσιμο"
 
-#: ../src/gui/siril3.glade.h:332
+#: ../src/gui/siril3.glade.h:329
 msgid "16-bit signed integer"
 msgstr "Ακέραιος 16-bit με πρόσημο"
 
-#: ../src/gui/siril3.glade.h:333
+#: ../src/gui/siril3.glade.h:330
 msgid "Sample Format"
 msgstr "Τύπος Δείγματος"
 
-#: ../src/gui/siril3.glade.h:334
+#: ../src/gui/siril3.glade.h:331
 msgid "Save MIPS-HI and MIPS-LO values"
 msgstr "Αποθήκευση τιμών MIPS-HI και MIPS-LO"
 
-#: ../src/gui/siril3.glade.h:335
+#: ../src/gui/siril3.glade.h:332
 msgid "Embedded Data"
 msgstr "Ενσωματωμένα Δεδομένα"
 
-#: ../src/gui/siril3.glade.h:336
+#: ../src/gui/siril3.glade.h:333
 msgid "FITS"
 msgstr "FITS"
 
-#: ../src/gui/siril3.glade.h:337
+#: ../src/gui/siril3.glade.h:334
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: ../src/gui/siril3.glade.h:338
+#: ../src/gui/siril3.glade.h:335
 msgid "Use automatic daylight multiplier"
 msgstr "Χρήση αυτόματου πολλαπλασιαστή φωτός ημέρας"
 
-#: ../src/gui/siril3.glade.h:339
+#: ../src/gui/siril3.glade.h:336
 msgid ""
 "When this option is enabled, coefficients for each channel are automatically "
 "computed. You can choose your own multiplier by unchecking this box."
@@ -1565,7 +1553,7 @@ msgstr ""
 "υπολογίζονται αυτόματα. Μπορείτε να επιλέξετε τον δικό σας πολλαπλασιαστή με "
 "το να αποεπιλέξετε αυτό το κουτί."
 
-#: ../src/gui/siril3.glade.h:340
+#: ../src/gui/siril3.glade.h:337
 msgid ""
 "Specify your own raw white balance. The value for the Red scale is relative "
 "to the Green."
@@ -1573,7 +1561,7 @@ msgstr ""
 "Ορίστε την ισορροπία λευκού στο RAW. Η τιμή για την Κόκκινη κλίμακα είναι "
 "σχετική με Πράσινη."
 
-#: ../src/gui/siril3.glade.h:341
+#: ../src/gui/siril3.glade.h:338
 msgid ""
 "Specify your own raw white balance. The value for the Blue scale is relative "
 "to the Green."
@@ -1581,19 +1569,19 @@ msgstr ""
 "Ορίστε την ισορροπία λευκού στο RAW. Η τιμή για την Μπλε κλίμακα είναι "
 "σχετική με Πράσινη."
 
-#: ../src/gui/siril3.glade.h:342
+#: ../src/gui/siril3.glade.h:339
 msgid "Brightness"
 msgstr "Φωτεινότητα"
 
-#: ../src/gui/siril3.glade.h:343
+#: ../src/gui/siril3.glade.h:340
 msgid "Divide the white level by this number."
 msgstr "Διαίρεση του άσπρου επιπέδου με αυτό τον αριθμό."
 
-#: ../src/gui/siril3.glade.h:344
+#: ../src/gui/siril3.glade.h:341
 msgid "No black point correction"
 msgstr "Να μην γίνει διόρθωση μαύρου σημείου"
 
-#: ../src/gui/siril3.glade.h:345
+#: ../src/gui/siril3.glade.h:342
 msgid ""
 "When this option is enabled, no black point correction is applied to raw "
 "images."
@@ -1601,62 +1589,62 @@ msgstr ""
 "Όταν αυτή η επιλογή ενεργοποιηθεί, δεν εφαρμόζεται διόρθωση μαύρου σημείου "
 "στις εικόνες RAW."
 
-#: ../src/gui/siril3.glade.h:346
+#: ../src/gui/siril3.glade.h:343
 msgid "<b>Image Color Adjustement</b>"
 msgstr "<b>Ρύθμιση Χρώματος Εικόνας</b>"
 
-#: ../src/gui/siril3.glade.h:347
-msgid "No gamma correction is applied to the image."
-msgstr "Δεν έχει εφαρμοστεί διόρθωση γάμμα στην εικόνα."
-
-#: ../src/gui/siril3.glade.h:348
-msgid "BT.709 curve"
-msgstr "Καμπύλη BT.709"
-
-#: ../src/gui/siril3.glade.h:349
-msgid "Apply a specific gamma curve to the image."
-msgstr "Εφαρμόστε μια συγκεκριμένη καμπύλη γάμμα στην εικόνα."
-
-#: ../src/gui/siril3.glade.h:350
-msgid "sRGB curve"
-msgstr "Καμπύλη sRGB"
-
-#: ../src/gui/siril3.glade.h:351
-msgid "Apply a specific gamma curve to the image"
-msgstr "Εφαρμόστε μια συγκεκριμένη καμπύλη γάμμα στην εικόνα"
-
-#: ../src/gui/siril3.glade.h:352
-msgid "<b>Image Gamma Correction</b>"
-msgstr "<b>Διρόρθωση Γάμμα Εικόνας</b>"
-
-#: ../src/gui/siril3.glade.h:353
+#: ../src/gui/siril3.glade.h:344
 msgid ""
 "Select an interpolation method to perform demosaicing before opening image."
 msgstr ""
 "Επιλέξτε μια μέθοδο παρεμβολής για την εκτέλεση demosaic πριν το άνοιγμα της "
 "εικόνας."
 
-#: ../src/gui/siril3.glade.h:354
+#: ../src/gui/siril3.glade.h:345
 msgid "High-speed, low-quality bilinear"
 msgstr "Υψηλής ταχύτητας, διγραμμική χαμηλής ποιότητας"
 
-#: ../src/gui/siril3.glade.h:355
+#: ../src/gui/siril3.glade.h:346
 msgid "Adaptive Homogeneity-Directed (AHD)"
 msgstr "Adaptive Homogeneity-Directed (AHD)"
 
-#: ../src/gui/siril3.glade.h:356
+#: ../src/gui/siril3.glade.h:347
 msgid "Variable Number of Gradients (VNG)"
 msgstr "Variable Number of Gradients (VNG)"
 
-#: ../src/gui/siril3.glade.h:357
+#: ../src/gui/siril3.glade.h:348
 msgid "Patterned Pixel Grouping (PPG)"
 msgstr "Patterned Pixel Grouping (PPG)"
 
-#: ../src/gui/siril3.glade.h:358
+#: ../src/gui/siril3.glade.h:349
 msgid "Image Matrix Interpolation"
 msgstr "Παρεμβολή Πίνακα Εικόνας"
 
-#: ../src/gui/siril3.glade.h:359
+#: ../src/gui/siril3.glade.h:350
+msgid "No gamma correction is applied to the image."
+msgstr "Δεν έχει εφαρμοστεί διόρθωση γάμμα στην εικόνα."
+
+#: ../src/gui/siril3.glade.h:351
+msgid "BT.709 curve"
+msgstr "Καμπύλη BT.709"
+
+#: ../src/gui/siril3.glade.h:352
+msgid "Apply a specific gamma curve to the image."
+msgstr "Εφαρμόστε μια συγκεκριμένη καμπύλη γάμμα στην εικόνα."
+
+#: ../src/gui/siril3.glade.h:353
+msgid "sRGB curve"
+msgstr "Καμπύλη sRGB"
+
+#: ../src/gui/siril3.glade.h:354
+msgid "Apply a specific gamma curve to the image"
+msgstr "Εφαρμόστε μια συγκεκριμένη καμπύλη γάμμα στην εικόνα"
+
+#: ../src/gui/siril3.glade.h:355
+msgid "<b>Image Gamma Correction</b>"
+msgstr "<b>Διρόρθωση Γάμμα Εικόνας</b>"
+
+#: ../src/gui/siril3.glade.h:356
 msgid ""
 "Use the white balance \n"
 "specified by the camera"
@@ -1664,7 +1652,7 @@ msgstr ""
 "Χρήση ισορροπίας άσπρου,\n"
 "καθορισμένη από την κάμερα"
 
-#: ../src/gui/siril3.glade.h:361
+#: ../src/gui/siril3.glade.h:358
 msgid ""
 "By default, libraw uses a fixed white balance based on a color chart "
 "illuminated with a standard D65 lamp. If you check this box, libraw will try "
@@ -1675,7 +1663,7 @@ msgstr ""
 "κουτί, το libraw θα προσπαθήσει να χρησιμοποιήσει δεδομένα καθορισμένα από "
 "την κάμερα σας."
 
-#: ../src/gui/siril3.glade.h:362
+#: ../src/gui/siril3.glade.h:359
 msgid ""
 "Calculate the white balance \n"
 "by averaging the entire image"
@@ -1683,7 +1671,7 @@ msgstr ""
 "Υπολογισμός της ισορροπίας άσπρου με υπολογισμό\n"
 " του μέσου όρου ολόκληρης της εικόνας"
 
-#: ../src/gui/siril3.glade.h:364
+#: ../src/gui/siril3.glade.h:361
 msgid ""
 "By default, libraw uses a fixed white balance based on a color chart "
 "illuminated with a standard D65 lamp. If you check this box, libraw will "
@@ -1694,24 +1682,24 @@ msgstr ""
 "κουτί, το libraw θα υπολογίσει την λευκή ισορροπία υπολογίζοντας τον μέσο "
 "όρο ολόκληρης της εικόνας."
 
-#: ../src/gui/siril3.glade.h:365
+#: ../src/gui/siril3.glade.h:362
 msgid "Image White Balance"
 msgstr "Ισορροπία Άσπρου εικόνας"
 
-#: ../src/gui/siril3.glade.h:366
+#: ../src/gui/siril3.glade.h:363
 msgid "DSLR RAW file format decoder based on the libraw library."
 msgstr ""
 "Αποκωδικοποιητής τύπου αρχείων DSLR RAW βασισμένος στην βιβλιοθήκη libraw."
 
-#: ../src/gui/siril3.glade.h:367
+#: ../src/gui/siril3.glade.h:364
 msgid "DSLR RAW debayer"
 msgstr "Debayer DSLR RAW"
 
-#: ../src/gui/siril3.glade.h:368
+#: ../src/gui/siril3.glade.h:365
 msgid "Bayer pattern from file's header if available"
 msgstr "Διάταξη Βayer από την επικεφαλίδα του αρχείου αν είναι διαθέσιμη"
 
-#: ../src/gui/siril3.glade.h:369
+#: ../src/gui/siril3.glade.h:366
 msgid ""
 "If this box is checked, Siril will automatically apply the Bayer pattern "
 "found in the file's header. If the result looks wrong uncheck this box and "
@@ -1722,30 +1710,30 @@ msgstr ""
 "λάθος αποεπιλέξτε αυτό το κουτί και διαλέξτε χειροκίνητα την διάταξη Bayer "
 "από το παρακάτω κουτί."
 
-#: ../src/gui/siril3.glade.h:370
+#: ../src/gui/siril3.glade.h:367
 #, fuzzy
 msgid "Debayer in up-bottom orientation"
 msgstr "Παρεμβολή Debayer: "
 
-#: ../src/gui/siril3.glade.h:371
+#: ../src/gui/siril3.glade.h:368
 msgid ""
 "Siril read FITS data in the bottom-up orientation. If capture software "
 "stored data in up-bottom orientation (as they usual do), you need to check "
 "this box in order to debayer the file in the right orientation."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:372
+#: ../src/gui/siril3.glade.h:369
 msgid "Stretch CFA FITS from DSLR to 16-bit"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:373
+#: ../src/gui/siril3.glade.h:370
 msgid ""
 "If the RAW data comes from DSLR camera and if normalisation information was "
 "storred in the FITS header, then checking this option will stretch the image "
 "to 16-bit."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:374
+#: ../src/gui/siril3.glade.h:371
 msgid ""
 "Due to algorithm constraints more complex demosaicing algorithms cannot be "
 "used in the rejection stacking. Our tests also showed that there is no gain "
@@ -1753,61 +1741,61 @@ msgid ""
 "fold. "
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:375
+#: ../src/gui/siril3.glade.h:372
 msgid ""
 "Warning: For SER on-the-fly demosaicing, the bilinear algorithm is always "
 "used."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:376
+#: ../src/gui/siril3.glade.h:373
 msgid "Select your camera's Bayer pattern."
 msgstr "Επιλέξτε τη διάταξη Bayer της κάμερας σας."
 
-#: ../src/gui/siril3.glade.h:377
+#: ../src/gui/siril3.glade.h:374
 msgid "Bayer/mosaic pattern: "
 msgstr "Διάταξη Bayer/mosaic: "
 
-#: ../src/gui/siril3.glade.h:378
+#: ../src/gui/siril3.glade.h:375
 msgid "Select an interpolation method to perform demosaicing."
 msgstr "Επιλέξτε μια μέθοδο παρεμβολής για την εκτέλεση demosaic."
 
-#: ../src/gui/siril3.glade.h:379
+#: ../src/gui/siril3.glade.h:376
 msgid "Debayer interpolation: "
 msgstr "Παρεμβολή Debayer: "
 
-#: ../src/gui/siril3.glade.h:380
+#: ../src/gui/siril3.glade.h:377
 msgid "Bilinear"
 msgstr "Διγραμμική"
 
-#: ../src/gui/siril3.glade.h:381
+#: ../src/gui/siril3.glade.h:378
 msgid "VNG"
 msgstr "VNG"
 
-#: ../src/gui/siril3.glade.h:382
+#: ../src/gui/siril3.glade.h:379
 msgid "AHD"
 msgstr "AHD"
 
-#: ../src/gui/siril3.glade.h:383
+#: ../src/gui/siril3.glade.h:380
 msgid "Super Pixel"
 msgstr "Υπερ-εικονοστοιχείο"
 
-#: ../src/gui/siril3.glade.h:384
+#: ../src/gui/siril3.glade.h:381
 msgid "Debayer"
 msgstr "Debayer"
 
-#: ../src/gui/siril3.glade.h:385
+#: ../src/gui/siril3.glade.h:382
 msgid "Other debayer"
 msgstr "Άλλο debayer"
 
-#: ../src/gui/siril3.glade.h:386
+#: ../src/gui/siril3.glade.h:383
 msgid "Focal length (mm): "
 msgstr "Εστιακή απόσταση (mm): "
 
-#: ../src/gui/siril3.glade.h:387
+#: ../src/gui/siril3.glade.h:384
 msgid "Pixel X dim. (micron): "
 msgstr "Διάσταση Χ εικονοστοιχείου (μικρά): "
 
-#: ../src/gui/siril3.glade.h:388
+#: ../src/gui/siril3.glade.h:385
 msgid ""
 "Clear all the fields. If you save your image after, the header will not "
 "contain any data about the focal or sensor size."
@@ -1816,7 +1804,7 @@ msgstr ""
 "θα περιέχει δεδομένα σχετικά με την εστιακή απόσταση ή το μέγεθος του "
 "αισθητήρα."
 
-#: ../src/gui/siril3.glade.h:389
+#: ../src/gui/siril3.glade.h:386
 msgid ""
 "If the Pixel Y size is not automatically loaded, using file's header, you "
 "can update the field by yourself."
@@ -1824,15 +1812,15 @@ msgstr ""
 "Αν η διάσταση του εικονοστοιχείου Y δεν φορτωθεί αυτόματα, χρησιμοποιώντας "
 "την επικεφαλίδα του αρχείου, μπορείτε να ενημερώσετε το πεδίο αυτό."
 
-#: ../src/gui/siril3.glade.h:390
+#: ../src/gui/siril3.glade.h:387
 msgid "Pixel Y dim. (micron): "
 msgstr "Διάσταση Y εικονοστοιχείου (μικρά): "
 
-#: ../src/gui/siril3.glade.h:391
+#: ../src/gui/siril3.glade.h:388
 msgid "Binning: "
 msgstr "Ομαδοποίηση: "
 
-#: ../src/gui/siril3.glade.h:392
+#: ../src/gui/siril3.glade.h:389
 msgid ""
 "If the binning is not automatically loaded, using file's header, you can "
 "update this combo box."
@@ -1840,12 +1828,12 @@ msgstr ""
 "Αν η ομαδοποίηση δεν φορτωθεί αυτόματα, μπορείτε να ενημερώσετε αυτό το "
 "σύνθετο πλαίσιο, χρησιμοποιώντας την επικεφαλίδα του αρχείου."
 
-#: ../src/gui/siril3.glade.h:393
+#: ../src/gui/siril3.glade.h:390
 #, fuzzy
 msgid "FWHM is converted into arcsec"
 msgstr "Το FWHM θα μετατραπεί σε arcsec"
 
-#: ../src/gui/siril3.glade.h:394
+#: ../src/gui/siril3.glade.h:391
 msgid ""
 "If the focal length is not automatically loaded, using file's header, you "
 "can update the field by yourself."
@@ -1853,7 +1841,7 @@ msgstr ""
 "Αν η εστιακή απόσταση δεν φορτωθεί αυτόματα, χρησιμοποιώντας την επικεφαλίδα "
 "του αρχείου, μπορείτε να ενημερώσετε το πεδίο."
 
-#: ../src/gui/siril3.glade.h:395
+#: ../src/gui/siril3.glade.h:392
 msgid ""
 "If the Pixel X size is not automatically loaded, using file's header, you "
 "can update the field by yourself."
@@ -1861,12 +1849,12 @@ msgstr ""
 "Αν η διάσταση εικονοστοιχείου Χ δεν φορτωθεί αυτόματα, χρησιμοποιώντας την "
 "επικεφαλίδα του αρχείου, μπορείτε να ενημερώσετε το πεδίο αυτό."
 
-#: ../src/gui/siril3.glade.h:396
+#: ../src/gui/siril3.glade.h:393
 #, fuzzy
 msgid "No binning in pixel size value"
 msgstr "Η ομαδοποίηση δεν είναι στην τιμή του μεγέθους του εικονοστοιχείου"
 
-#: ../src/gui/siril3.glade.h:397
+#: ../src/gui/siril3.glade.h:394
 msgid ""
 "Check this button if binning is not taken into account in the pixel size "
 "value. In this case, the binning value in the combo box below will be used."
@@ -1875,11 +1863,7 @@ msgstr ""
 "μεγέθους του εικονοστοιχείου. Σε αυτή την περίπτωση, θα χρησιμοποιηθεί η "
 "τιμή της ομαδοποίησης στο παρακάτω κουτί συνδυασμού."
 
-#: ../src/gui/siril3.glade.h:398
-msgid "<b>Camera and Optics</b>"
-msgstr "<b>Κάμερα και Οπτικά</b>"
-
-#: ../src/gui/siril3.glade.h:399
+#: ../src/gui/siril3.glade.h:395
 msgid ""
 "WARNING: these fields are automatically read from FITS file on opening and "
 "setting them here will only work for the currently loaded file."
@@ -1888,32 +1872,36 @@ msgstr ""
 "άνοιγμα του και ρυθμίζοντας τα εδώ θα δουλέψουν μόνο για το τρέχων φορτωμένο "
 "αρχείο."
 
-#: ../src/gui/siril3.glade.h:400
+#: ../src/gui/siril3.glade.h:396
+msgid "<b>Camera and Optics</b>"
+msgstr "<b>Κάμερα και Οπτικά</b>"
+
+#: ../src/gui/siril3.glade.h:397
 msgid "Camera & Optics"
 msgstr "Κάμερα & Οπτικά"
 
-#: ../src/gui/siril3.glade.h:401
+#: ../src/gui/siril3.glade.h:398
 msgid "A/D converter gain in electrons per ADU. Default value is 2.300."
 msgstr ""
 "Κέρδος μετατροπέα A/D σε ηλεκτρόνια ανά ADU. Προεπιλεγμένη τιμή είναι 2.300."
 
-#: ../src/gui/siril3.glade.h:402
+#: ../src/gui/siril3.glade.h:399
 msgid "ADC gain:"
 msgstr "Κέρδος ADC:"
 
-#: ../src/gui/siril3.glade.h:403
+#: ../src/gui/siril3.glade.h:400
 msgid "Camera"
 msgstr "Κάμερα"
 
-#: ../src/gui/siril3.glade.h:404
+#: ../src/gui/siril3.glade.h:401
 msgid "Inner radius: "
 msgstr "Εσωτερική ακτίνα: "
 
-#: ../src/gui/siril3.glade.h:405
+#: ../src/gui/siril3.glade.h:402
 msgid "Outer radius:"
 msgstr "Εξωτερική ακτίνα:"
 
-#: ../src/gui/siril3.glade.h:406
+#: ../src/gui/siril3.glade.h:403
 msgid ""
 "Inner radius of the annulus used to measure local background. Default value "
 "is 20.00."
@@ -1921,7 +1909,7 @@ msgstr ""
 "Εσωτερική ακτίνα του δακτυλίου που χρησιμοποιείται για τη μέτρηση του "
 "τοπικού υποβάθρου. Προεπιλεγμένη τιμή είναι 20,00."
 
-#: ../src/gui/siril3.glade.h:407
+#: ../src/gui/siril3.glade.h:404
 msgid ""
 "Outer radius of the annulus used to measure local background. Default value "
 "is 30.00."
@@ -1929,29 +1917,25 @@ msgstr ""
 "Εξωτερική ακτίνα του δακτυλίου χρησιμοποιείται για τη μέτρηση του τοπικού "
 "υποβάθρου. Προεπιλεγμένη τιμή είναι 30,00."
 
-#: ../src/gui/siril3.glade.h:408
+#: ../src/gui/siril3.glade.h:405
 #, fuzzy
-msgid "Size of the annulus for background level measurement (pixels)"
+msgid "Size of the annulus for background level measurement"
 msgstr ""
 "Μέγεθος του δακτυλίου μέτρησης του επιπέδου υποβάθρου (εικονοστοιχεία):"
 
-#: ../src/gui/siril3.glade.h:409
+#: ../src/gui/siril3.glade.h:406
 msgid "Restore to Default"
 msgstr "Επαναφορά των προεπιλογών"
 
-#: ../src/gui/siril3.glade.h:410
+#: ../src/gui/siril3.glade.h:407
 msgid "Restore the defaut parameters"
 msgstr "Επαναφορά των προεπιλεγμένων παραμέτρων"
 
-#: ../src/gui/siril3.glade.h:411
+#: ../src/gui/siril3.glade.h:408
 msgid "Photometry"
 msgstr "Φωτομετρία"
 
-#: ../src/gui/siril3.glade.h:412
-msgid "Restore the defaut swap storage directory"
-msgstr "Επαναφορά του προεπιλεγμένου καταλόγου αποθήκευσης αναίρεσης"
-
-#: ../src/gui/siril3.glade.h:413
+#: ../src/gui/siril3.glade.h:409
 msgid ""
 "Select an existing directory. Make sure you have write permissions and "
 "enough spaces."
@@ -1959,20 +1943,19 @@ msgstr ""
 "Επιλέξτε ένα υπάρχων κατάλογο. Σιγουρευτείτε ότι έχετε άδειες εγγραφής και "
 "αρκετό χώρο."
 
-#: ../src/gui/siril3.glade.h:414
+#: ../src/gui/siril3.glade.h:410
 msgid "Select Swap Directory"
 msgstr "Επιλέξτε κατάλογο αποθήκευσης αναίρεσης"
 
-#: ../src/gui/siril3.glade.h:415
+#: ../src/gui/siril3.glade.h:411
+msgid "Restore the defaut swap storage directory"
+msgstr "Επαναφορά του προεπιλεγμένου καταλόγου αποθήκευσης αναίρεσης"
+
+#: ../src/gui/siril3.glade.h:412
 msgid "<b>Swap Storage Directory</b>"
 msgstr "<b>Κατάλογος Αποθήκευσης Αναίρεσης</b>"
 
-#: ../src/gui/siril3.glade.h:416
-#, fuzzy
-msgid "RAM ratio: "
-msgstr "Διαχωρισμός κουτιού: "
-
-#: ../src/gui/siril3.glade.h:417
+#: ../src/gui/siril3.glade.h:413
 msgid ""
 "The memory used corresponds to this value times the total of available "
 "memory.\n"
@@ -1984,61 +1967,61 @@ msgstr ""
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Μειώνοντας τον λόγο της διαθέσιμης μνήμης για τους "
 "υπολογισμούς θα μειώσει τις επιδόσεις."
 
-#: ../src/gui/siril3.glade.h:419
-msgid "<b>Memory Managment</b>"
-msgstr "<b>Διαχείρηση Μνήμης</b>"
+#: ../src/gui/siril3.glade.h:415
+#, fuzzy
+msgid "<b>RAM ratio</b>"
+msgstr "Διαχωρισμός κουτιού: "
 
-#: ../src/gui/siril3.glade.h:420
+#: ../src/gui/siril3.glade.h:416
 msgid "Type of extension: "
 msgstr "Τύπος προέκτασης: "
 
-#: ../src/gui/siril3.glade.h:421
+#: ../src/gui/siril3.glade.h:417
 msgid ".fit"
 msgstr ".fit"
 
-#: ../src/gui/siril3.glade.h:422
+#: ../src/gui/siril3.glade.h:418
 msgid ".fits"
 msgstr ".fits"
 
-#: ../src/gui/siril3.glade.h:423
+#: ../src/gui/siril3.glade.h:419
 msgid ".fts"
 msgstr ".fts"
 
-#: ../src/gui/siril3.glade.h:424
+#: ../src/gui/siril3.glade.h:420
 msgid "<b>FITS Format</b>"
 msgstr "<b>Τύπος Αρχείου FITS</b>"
 
-#: ../src/gui/siril3.glade.h:425
+#: ../src/gui/siril3.glade.h:421
 msgid "Don't ask before quitting"
 msgstr "Να μην ρωτηθώ πριν την έξοδο"
 
-#: ../src/gui/siril3.glade.h:426
+#: ../src/gui/siril3.glade.h:422
 msgid "<b>Confirmation dialog</b>"
 msgstr "<b>Διάλογος επικύρωσης</b>"
 
+#: ../src/gui/siril3.glade.h:423
+msgid "Change the theme of the interface."
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:424
+msgid "Automatic"
+msgstr "Αυτόματο"
+
+#: ../src/gui/siril3.glade.h:425
+msgid "Dark theme"
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:426
+#, fuzzy
+msgid "Light theme"
+msgstr "Καμπύλη Φωτός"
+
 #: ../src/gui/siril3.glade.h:427
-msgid ""
-"Using dark GTK theme\n"
-"(may require restarting)"
-msgstr ""
-"Γίνεται χρήση σκοτεινού θέματος GTK\n"
-"(μπορεί να χρειαστεί επανεκκίνηση)"
-
-#: ../src/gui/siril3.glade.h:429
-msgid ""
-"Some dialogs of Siril have non-standard bright colours. With a dark theme, "
-"where the text is bright too, that's unreadable. Checking here will change "
-"these non-standard colours to dark."
-msgstr ""
-"Μερικοί διάλογοι του Siril έχουν μη τυποποιημένα φωτεινά χρώματα. Με ένα "
-"σκοτεινό θέμα, όπου το κείμενο είναι επίσης φωτεινό, δεν είναι αναγνώσιμο. "
-"Επιλέγοντας εδώ θα αλλάξει τα μη τυποποιημένα χρώματα σε σκοτεινά."
-
-#: ../src/gui/siril3.glade.h:430
 msgid "Remember window positions"
 msgstr "Αποθήκευση θέσεων των παραθύρων"
 
-#: ../src/gui/siril3.glade.h:431
+#: ../src/gui/siril3.glade.h:428
 msgid ""
 "Remember positions of image displaying windows. This feature may not work on "
 "all architectures."
@@ -2046,11 +2029,11 @@ msgstr ""
 "Θυμάται τις θέσεις των παραθύρων προβολής. Αυτή η δυνατότητα ενδέχεται να "
 "μην λειτουργεί σε όλες τις αρχιτεκτονικές."
 
-#: ../src/gui/siril3.glade.h:432
+#: ../src/gui/siril3.glade.h:429
 msgid "<b>Look and feel</b>"
 msgstr "<b>Look and feel</b>"
 
-#: ../src/gui/siril3.glade.h:433
+#: ../src/gui/siril3.glade.h:430
 msgid ""
 "The paths written in this text box will be checked in order to load scripts "
 "that have been put inside. Write a path per line with as many lines you "
@@ -2062,63 +2045,67 @@ msgstr ""
 "διαδρομή ανά γραμμή με όσες γραμμές θέλετε. Ωστόσο, θα πρέπει να έχετε υπόψη "
 "ότι όσο περισσότερα μονοπάτια ελέγχονται τόσο αργότερη είναι η εκκίνηση."
 
-#: ../src/gui/siril3.glade.h:434
+#: ../src/gui/siril3.glade.h:431
 msgid "<b>Scripts Storage Directories</b>"
 msgstr "<b>Κατάλογοι Αποθήκευσης Δεσμών Ενεργειών</b>"
 
-#: ../src/gui/siril3.glade.h:435
+#: ../src/gui/siril3.glade.h:432
 msgid "Misc."
 msgstr "Διάφορα"
 
-#: ../src/gui/siril3.glade.h:436
+#: ../src/gui/siril3.glade.h:433
 msgid "Dynamic PSF"
 msgstr "Δυναμικό PSF"
 
-#: ../src/gui/siril3.glade.h:437
+#: ../src/gui/siril3.glade.h:434
 msgid "Ch."
 msgstr "Κανάλι "
 
-#: ../src/gui/siril3.glade.h:438
+#: ../src/gui/siril3.glade.h:435
+msgid "B"
+msgstr "B"
+
+#: ../src/gui/siril3.glade.h:436
 msgid "A"
 msgstr "A"
 
-#: ../src/gui/siril3.glade.h:439
+#: ../src/gui/siril3.glade.h:437
 msgid "x0"
 msgstr "x0"
 
-#: ../src/gui/siril3.glade.h:440
+#: ../src/gui/siril3.glade.h:438
 msgid "y0"
 msgstr "y0"
 
-#: ../src/gui/siril3.glade.h:441
+#: ../src/gui/siril3.glade.h:439
 msgid "FWHMx"
 msgstr "FWHMx"
 
-#: ../src/gui/siril3.glade.h:442
+#: ../src/gui/siril3.glade.h:440
 msgid "FWHMy"
 msgstr "FWHMy"
 
-#: ../src/gui/siril3.glade.h:443
+#: ../src/gui/siril3.glade.h:441
 msgid "Mag"
 msgstr "Μέγεθος"
 
-#: ../src/gui/siril3.glade.h:444
+#: ../src/gui/siril3.glade.h:442
 msgid "r"
 msgstr "r"
 
-#: ../src/gui/siril3.glade.h:445
+#: ../src/gui/siril3.glade.h:443
 msgid "Angle"
 msgstr "Γωνία"
 
-#: ../src/gui/siril3.glade.h:446
+#: ../src/gui/siril3.glade.h:444
 msgid "RMSE"
 msgstr "RMSE"
 
-#: ../src/gui/siril3.glade.h:447
+#: ../src/gui/siril3.glade.h:445
 msgid "Size in pixels of the search box."
 msgstr "Μέγεθος σε εικονοστοιχεία του κουτιού αναζήτησης."
 
-#: ../src/gui/siril3.glade.h:448
+#: ../src/gui/siril3.glade.h:446
 msgid ""
 "Threshold value above the noise for stars detection.\n"
 "The median and standard deviation values of the image are determined, then "
@@ -2130,19 +2117,19 @@ msgstr ""
 "κατώφλι είναι: μέση + [κατώφλι] x τυπική απόκλιση.\n"
 "Η προκαθορισμένη τιμή για το κατώφλι είναι 1.00."
 
-#: ../src/gui/siril3.glade.h:451
+#: ../src/gui/siril3.glade.h:449
 msgid "Radius: "
 msgstr "Ακτίνα: "
 
-#: ../src/gui/siril3.glade.h:452
+#: ../src/gui/siril3.glade.h:450
 msgid "Threshold: "
 msgstr "Κατώφλι: "
 
-#: ../src/gui/siril3.glade.h:453
+#: ../src/gui/siril3.glade.h:451
 msgid "Roundness threshold:"
 msgstr "Κατώφλι Στρογγυλότητας:"
 
-#: ../src/gui/siril3.glade.h:454
+#: ../src/gui/siril3.glade.h:452
 msgid ""
 "Threshold value of star roundnesses. Decrease this value if your stars show "
 "small trails.\n"
@@ -2156,272 +2143,272 @@ msgstr ""
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: βεβαιωθείτε ότι έχετε καλό λόγο για να αλλάξετε αυτή την τιμή "
 "επειδή μπορεί να υποβαθμίσει την ανίχνευση αστεριών."
 
-#: ../src/gui/siril3.glade.h:457
+#: ../src/gui/siril3.glade.h:455
 msgid "Export PSF parameters in a ASCII file"
 msgstr "Εξαγωγή παραμέτρων PSF σε αρχείο ASCII"
 
-#: ../src/gui/siril3.glade.h:458
+#: ../src/gui/siril3.glade.h:456
 msgid "Remove selected star from the list"
 msgstr "Αφαίρεση του επιλεγμένου αστεριού από την λίστα"
 
-#: ../src/gui/siril3.glade.h:459
+#: ../src/gui/siril3.glade.h:457
 msgid "Remove all stars from the list"
 msgstr "Αφαίρεση όλων των αστεριών από την λίστα"
 
-#: ../src/gui/siril3.glade.h:460
+#: ../src/gui/siril3.glade.h:458
 msgid "Wavelets control"
 msgstr "Έλεγχος κυματιδίων"
 
-#: ../src/gui/siril3.glade.h:461
+#: ../src/gui/siril3.glade.h:459
 msgid "Cancel all changes applied"
 msgstr "Ακύρωση όλων των εφαρμοσμένων αλλαγών"
 
-#: ../src/gui/siril3.glade.h:462
+#: ../src/gui/siril3.glade.h:460
 msgid "Select an algorithm type to perform wavelets"
 msgstr "Επιλέξτε ένα τύπο αλγόριθμου για την εκτέλεση κυματιδίων"
 
-#: ../src/gui/siril3.glade.h:463
+#: ../src/gui/siril3.glade.h:461
 msgid "Type:"
 msgstr "Τύπος:"
 
-#: ../src/gui/siril3.glade.h:464
+#: ../src/gui/siril3.glade.h:462
 msgid "Nb of plans:"
 msgstr "Αρ. σχεδίων:"
 
-#: ../src/gui/siril3.glade.h:465
+#: ../src/gui/siril3.glade.h:463
 msgid "Number of wavelet layers that will be used"
 msgstr "Αριθμός των επιπέδων κυματιδίων που θα χρησιμοποιηθούν"
 
-#: ../src/gui/siril3.glade.h:466
+#: ../src/gui/siril3.glade.h:464
 msgid "Compute wavelets"
 msgstr "Υπολογισμός κυματιδίων"
 
-#: ../src/gui/siril3.glade.h:467
+#: ../src/gui/siril3.glade.h:465
 msgid "1st Plan:"
 msgstr "1ο Σχέδιο:"
 
-#: ../src/gui/siril3.glade.h:468
+#: ../src/gui/siril3.glade.h:466
 msgid "2nd Plan:"
 msgstr "2ο Σχέδιο:"
 
-#: ../src/gui/siril3.glade.h:469
+#: ../src/gui/siril3.glade.h:467
 msgid "3th Plan:"
 msgstr "3ο Σχέδιο:"
 
-#: ../src/gui/siril3.glade.h:470
+#: ../src/gui/siril3.glade.h:468
 msgid "4th Plan:"
 msgstr "4ο Σχέδιο:"
 
-#: ../src/gui/siril3.glade.h:471
+#: ../src/gui/siril3.glade.h:469
 msgid "5th Plan:"
 msgstr "5ο Σχέδιο:"
 
-#: ../src/gui/siril3.glade.h:472
+#: ../src/gui/siril3.glade.h:470
 msgid "6th Plan:"
 msgstr "6ο Σχέδιο:"
 
-#: ../src/gui/siril3.glade.h:473
+#: ../src/gui/siril3.glade.h:471
 msgid "Reset changes"
 msgstr "Επαναφορά αλλαγών"
 
-#: ../src/gui/siril3.glade.h:474
+#: ../src/gui/siril3.glade.h:472
 msgid "Adjust"
 msgstr "Ρύθμιση"
 
-#: ../src/gui/siril3.glade.h:475
+#: ../src/gui/siril3.glade.h:473
 msgid "Rotation"
 msgstr "Περιστροφή"
 
-#: ../src/gui/siril3.glade.h:476
+#: ../src/gui/siril3.glade.h:474
 msgid "Angle (°): "
 msgstr "Γωνία (°): "
 
-#: ../src/gui/siril3.glade.h:477
+#: ../src/gui/siril3.glade.h:475
 msgid "Checking this box will crop the output image."
 msgstr "Επιλέγοντας αυτό το κουτί η εικόνα εξόδου θα περικοπεί."
 
-#: ../src/gui/siril3.glade.h:478
+#: ../src/gui/siril3.glade.h:476
 msgid "Angle in degrees. Rotation center is the center of the image."
 msgstr "Γωνία σε μοίρες. Το κέντρο περιστροφής είναι το κέντρο της εικόνας."
 
-#: ../src/gui/siril3.glade.h:479
+#: ../src/gui/siril3.glade.h:477
 msgid "Type of algorithm used for rotation"
 msgstr "Τύπος αλγόριθμου που θα χρησιμοποιηθεί για την περιστροφή"
 
-#: ../src/gui/siril3.glade.h:480
+#: ../src/gui/siril3.glade.h:478
 msgid "Siril control center"
 msgstr "Κέντρο ελέγχου Siril"
 
-#: ../src/gui/siril3.glade.h:481
+#: ../src/gui/siril3.glade.h:479
 msgid "_File"
 msgstr "_Αρχείο"
 
-#: ../src/gui/siril3.glade.h:482
+#: ../src/gui/siril3.glade.h:480
 msgid "Save as..."
 msgstr "Αποθήκευση ως..."
 
-#: ../src/gui/siril3.glade.h:483
+#: ../src/gui/siril3.glade.h:481
 msgid "FITS Header..."
 msgstr "Επικεφαλίδα FITS..."
 
-#: ../src/gui/siril3.glade.h:484
+#: ../src/gui/siril3.glade.h:482
 msgid "_Edit"
 msgstr "_Επεξεργασία"
 
-#: ../src/gui/siril3.glade.h:485
+#: ../src/gui/siril3.glade.h:483
 msgid "_Image Processing"
 msgstr "_Επεξεργασία Εικόνας"
 
-#: ../src/gui/siril3.glade.h:486
+#: ../src/gui/siril3.glade.h:484
 msgid "Asinh Transformation..."
 msgstr "Μετασχηματισμός Asinh..."
 
-#: ../src/gui/siril3.glade.h:487
+#: ../src/gui/siril3.glade.h:485
 msgid "Histogram Transformation..."
 msgstr "Μετασχηματισμός Ιστογράμματος..."
 
-#: ../src/gui/siril3.glade.h:488
+#: ../src/gui/siril3.glade.h:486
 msgid "Color Calibration"
 msgstr "Βαθμονόμηση Χρώματος"
 
-#: ../src/gui/siril3.glade.h:489
+#: ../src/gui/siril3.glade.h:487
 msgid "Color Calibration..."
 msgstr "Βαθμονόμηση Χρώματος..."
 
-#: ../src/gui/siril3.glade.h:490
+#: ../src/gui/siril3.glade.h:488
 #, fuzzy
 msgid "Photometric Color Calibration..."
 msgstr "Βαθμονόμηση Χρώματος..."
 
-#: ../src/gui/siril3.glade.h:491
+#: ../src/gui/siril3.glade.h:489
 msgid "Color Saturation..."
 msgstr "Κορεσμός χρώματος..."
 
-#: ../src/gui/siril3.glade.h:492
+#: ../src/gui/siril3.glade.h:490
 msgid "Remove Green Noise..."
 msgstr "Αφαίρεση Πράσινου Θορύβου..."
 
-#: ../src/gui/siril3.glade.h:493
+#: ../src/gui/siril3.glade.h:491
 msgid "Negative Transformation"
 msgstr "Αρνητικός Μετασχηματισμός"
 
-#: ../src/gui/siril3.glade.h:494
+#: ../src/gui/siril3.glade.h:492
 msgid "À trous Wavelets Transform..."
 msgstr "Μετασχηματισμός Κυματιδίων À trous..."
 
-#: ../src/gui/siril3.glade.h:495
+#: ../src/gui/siril3.glade.h:493
 msgid "Banding Reduction..."
 msgstr "Μείωση Λωρίδων..."
 
-#: ../src/gui/siril3.glade.h:496
+#: ../src/gui/siril3.glade.h:494
 msgid "Cosmetic Correction..."
 msgstr "Αισθητική Διόρθωση..."
 
-#: ../src/gui/siril3.glade.h:497 ../src/opencv/opencv.cpp:549
+#: ../src/gui/siril3.glade.h:495 ../src/opencv/opencv.cpp:549
 msgid "Deconvolution..."
 msgstr "Γίνεται Deconvolution..."
 
-#: ../src/gui/siril3.glade.h:498
+#: ../src/gui/siril3.glade.h:496
 msgid "Fourier Transform..."
 msgstr "Μετασχηματισμός Fourier..."
 
-#: ../src/gui/siril3.glade.h:499
+#: ../src/gui/siril3.glade.h:497
 msgid "Median Filter..."
 msgstr "Φίλτρο Διαμέσου..."
 
-#: ../src/gui/siril3.glade.h:500
+#: ../src/gui/siril3.glade.h:498
 msgid "Rotational Gradient..."
 msgstr "Φίλτρο Βαθμιδωτής Περιστροφής..."
 
-#: ../src/gui/siril3.glade.h:501
+#: ../src/gui/siril3.glade.h:499
 msgid "Geometry"
 msgstr "Γεωμετρία"
 
-#: ../src/gui/siril3.glade.h:502
+#: ../src/gui/siril3.glade.h:500
 msgid "Horizontal Mirror"
 msgstr "Οριζόντια αναστροφή"
 
-#: ../src/gui/siril3.glade.h:503
+#: ../src/gui/siril3.glade.h:501
 msgid "Vertical Mirror"
 msgstr "Κατακόρυφη αναστροφή"
 
-#: ../src/gui/siril3.glade.h:504
+#: ../src/gui/siril3.glade.h:502
 msgid "Rotation..."
 msgstr "Περιστροφή..."
 
-#: ../src/gui/siril3.glade.h:505
+#: ../src/gui/siril3.glade.h:503
 msgid "Resample..."
 msgstr "Αναδειγματοληψία..."
 
-#: ../src/gui/siril3.glade.h:506
+#: ../src/gui/siril3.glade.h:504
 msgid "Background Extraction..."
 msgstr "Εξαγωγή Υποβάθρου..."
 
-#: ../src/gui/siril3.glade.h:507
+#: ../src/gui/siril3.glade.h:505
 msgid "Extraction"
 msgstr "Εξαγωγή"
 
-#: ../src/gui/siril3.glade.h:508
+#: ../src/gui/siril3.glade.h:506
 msgid "Channels..."
 msgstr "Κανάλια..."
 
-#: ../src/gui/siril3.glade.h:509
+#: ../src/gui/siril3.glade.h:507
 msgid "Wavelet Layers..."
 msgstr "Επίπεδα Κυματιδίου..."
 
-#: ../src/gui/siril3.glade.h:510
+#: ../src/gui/siril3.glade.h:508
 msgid "RGB Compositing..."
 msgstr "Σύνθεση RGB..."
 
-#: ../src/gui/siril3.glade.h:511
+#: ../src/gui/siril3.glade.h:509
 msgid "_Scripts"
 msgstr "_Δέσμες Ενεργειών"
 
-#: ../src/gui/siril3.glade.h:512
+#: ../src/gui/siril3.glade.h:510
 msgid "_Analysis"
 msgstr "_Ανάλυση"
 
-#: ../src/gui/siril3.glade.h:513
+#: ../src/gui/siril3.glade.h:511
 msgid "Dynamic PSF..."
 msgstr "Δυναμικό PSF..."
 
-#: ../src/gui/siril3.glade.h:514
+#: ../src/gui/siril3.glade.h:512
 msgid "Image Plate Solver..."
 msgstr "Επίλυση Εικόνας..."
 
-#: ../src/gui/siril3.glade.h:515
+#: ../src/gui/siril3.glade.h:513
 msgid "Statistics..."
 msgstr "Στατιστικά..."
 
-#: ../src/gui/siril3.glade.h:516
+#: ../src/gui/siril3.glade.h:514
 msgid "Noise Estimation"
 msgstr "Εκτίμηση Θορύβου"
 
-#: ../src/gui/siril3.glade.h:517
+#: ../src/gui/siril3.glade.h:515
 msgid "_Windows"
 msgstr "_Παράθυρα"
 
-#: ../src/gui/siril3.glade.h:518
+#: ../src/gui/siril3.glade.h:516
 msgid "Gray Channels Images"
 msgstr "Εικόνες Καναλιών Γκρι Τόνων"
 
-#: ../src/gui/siril3.glade.h:519
+#: ../src/gui/siril3.glade.h:517
 msgid "Color Image"
 msgstr "Έγχρωμη Εικόνα"
 
-#: ../src/gui/siril3.glade.h:520
+#: ../src/gui/siril3.glade.h:518
 msgid "_Help"
 msgstr "_Βοήθεια"
 
-#: ../src/gui/siril3.glade.h:521
+#: ../src/gui/siril3.glade.h:519
 msgid "Check For Updates"
 msgstr "Έλεγχος ενημερώσεων"
 
-#: ../src/gui/siril3.glade.h:522
+#: ../src/gui/siril3.glade.h:520
 msgid "Get scripts"
 msgstr "Ανάκτηση δεσμών ενεργειών"
 
-#: ../src/gui/siril3.glade.h:523
+#: ../src/gui/siril3.glade.h:521
 msgid ""
 "This conversion tab is used to import files and convert them into a format "
 "with which Siril can work: FITS or SER."
@@ -2430,35 +2417,35 @@ msgstr ""
 "μετατροπής τους σε μορφή αρχείου με το οποίο το Siril μπορεί να δουλέψει: "
 "FITS ή SER."
 
-#: ../src/gui/siril3.glade.h:524
+#: ../src/gui/siril3.glade.h:522
 msgid "Source"
 msgstr "Πηγή"
 
-#: ../src/gui/siril3.glade.h:525
+#: ../src/gui/siril3.glade.h:523
 msgid "Date"
 msgstr "Ημερομηνία"
 
-#: ../src/gui/siril3.glade.h:526
+#: ../src/gui/siril3.glade.h:524
 msgid "Add files to convert"
 msgstr "Προσθήκη αρχείων για μετατροπή"
 
-#: ../src/gui/siril3.glade.h:527
+#: ../src/gui/siril3.glade.h:525
 msgid "Remove selected files"
 msgstr "Αφαίρεση επιλεγμένων αρχείων"
 
-#: ../src/gui/siril3.glade.h:528
+#: ../src/gui/siril3.glade.h:526
 msgid "Remove all files from the list"
 msgstr "Αφαίρεση όλων των αρχείων από την λίστα"
 
-#: ../src/gui/siril3.glade.h:529
+#: ../src/gui/siril3.glade.h:527
 msgid "Destination"
 msgstr "Προορισμός"
 
-#: ../src/gui/siril3.glade.h:530
+#: ../src/gui/siril3.glade.h:528
 msgid "Sequence name:"
 msgstr "Όνομα αλληλουχίας:"
 
-#: ../src/gui/siril3.glade.h:531
+#: ../src/gui/siril3.glade.h:529
 msgid ""
 "Enter the base name of the sequence, for example NGC_6822-L. It will create "
 "images in the form NGC_6822-L_00001.fit. The name can also end with .ser, "
@@ -2469,15 +2456,15 @@ msgstr ""
 "να τελειώνει με .ser το οποίο θα ενεργοποιήσει την μορφή εξόδου SER για την "
 "μετατροπή."
 
-#: ../src/gui/siril3.glade.h:532
+#: ../src/gui/siril3.glade.h:530
 msgid "Colour image target"
 msgstr "Στόχος έγχρωμης εικόνας"
 
-#: ../src/gui/siril3.glade.h:533
+#: ../src/gui/siril3.glade.h:531
 msgid "Keep three channels"
 msgstr "Διατήρηση τριών καναλιών"
 
-#: ../src/gui/siril3.glade.h:534
+#: ../src/gui/siril3.glade.h:532
 msgid ""
 "Keep the destination image with RGB channels, do not change the channels "
 "configuration."
@@ -2485,25 +2472,25 @@ msgstr ""
 "Διατήρηση της εικόνας προορισμού με κανάλια RGB, να μην αλλαχτεί η "
 "διαμόρφωση των καναλιών."
 
-#: ../src/gui/siril3.glade.h:535
+#: ../src/gui/siril3.glade.h:533
 msgid "Create three images"
 msgstr "Δημιουργία τριών εικόνων"
 
-#: ../src/gui/siril3.glade.h:536
+#: ../src/gui/siril3.glade.h:534
 msgid "Split an RGB image into three images, R, G and B."
 msgstr "Διαχωρισμός εικόνας RGB σε τρεις εικόνες, R,G και Β."
 
-#: ../src/gui/siril3.glade.h:537
+#: ../src/gui/siril3.glade.h:535
 msgid "Keep only first channel"
 msgstr "Διατήρηση μόνο του πρώτου καναλιού"
 
-#: ../src/gui/siril3.glade.h:538
+#: ../src/gui/siril3.glade.h:536
 msgid "For an RGB image, only keep R. Useful for grey images stored as RGB."
 msgstr ""
 "Για μια εικόνα RGB, να κρατηθεί μόνο το R. Χρήσιμο για εικόνες γκρι τόνων "
 "αποθηκευμένες σαν RGB."
 
-#: ../src/gui/siril3.glade.h:539
+#: ../src/gui/siril3.glade.h:537
 msgid ""
 "Indicates the start indice of your converted files. This value must be "
 "included in the [1, 65535] range."
@@ -2511,7 +2498,7 @@ msgstr ""
 "Υποδηλώνει την αρχή του δείκτη των αρχείων που έχουν μετατραπεί. Αυτή η τιμή "
 "πρέπει να είναι στην περιοχή [1,65535]."
 
-#: ../src/gui/siril3.glade.h:540
+#: ../src/gui/siril3.glade.h:538
 msgid ""
 "Debayer single-channel images (CFA format) using the Bayer matrix layout "
 "given in the settings. Also applies to image opening, not only conversion.\n"
@@ -2525,7 +2512,7 @@ msgstr ""
 "Ο στόχος της έγχρωμης εικόνας εφαρμόζεται επίσης και στο αποτέλεσμα debayer "
 "για μετατροπή."
 
-#: ../src/gui/siril3.glade.h:543
+#: ../src/gui/siril3.glade.h:541
 msgid ""
 "Start conversion of all source files into the configured output files, FITS "
 "or SER, with colour processing or not."
@@ -2533,11 +2520,11 @@ msgstr ""
 "Να ξεκινήσει η μετατροπή όλων των πηγαίων αρχείων στα προκαθορισμένα αρχεία "
 "εξόδου, FITS ή SER, με ή χωρίς έγχρωμη επεξεργασία."
 
-#: ../src/gui/siril3.glade.h:544
+#: ../src/gui/siril3.glade.h:542
 msgid "Create as many SER files as input files"
 msgstr "Να δημιουργηθούν τόσα αρχεία SER όσο και τα εισαγώμενα αρχεία"
 
-#: ../src/gui/siril3.glade.h:545
+#: ../src/gui/siril3.glade.h:543
 msgid ""
 "Tick this to create several SER files instead of a single SER file for all "
 "input elements. Use this if input elements (films) don't share the same "
@@ -2548,11 +2535,11 @@ msgstr ""
 "στοιχεία εισόδου (ταινίες) δεν μοιράζονται το ίδιο μέγεθος εικόνας ή δεν "
 "πρέπει να επεξεργαστούν μαζί."
 
-#: ../src/gui/siril3.glade.h:546
+#: ../src/gui/siril3.glade.h:544
 msgid "Supported file types:"
 msgstr "Τύποι αρχείων που υποστηρίζονται:"
 
-#: ../src/gui/siril3.glade.h:547
+#: ../src/gui/siril3.glade.h:545
 msgid ""
 "Supported types depend on compile-time libraries availability. See "
 "documentation.\n"
@@ -2570,11 +2557,11 @@ msgstr ""
 "Τα αρχεία SER μπορούν να χειριστούν απευθείας σαν μια αλληλουχία, και δεν "
 "είναι ακόμα διαθέσιμα για μετατροπή."
 
-#: ../src/gui/siril3.glade.h:551
+#: ../src/gui/siril3.glade.h:549
 msgid "File conversion"
 msgstr "Μετατροπή αρχείου"
 
-#: ../src/gui/siril3.glade.h:552
+#: ../src/gui/siril3.glade.h:550
 msgid ""
 "Images are manipulated in sequences. Siril can find sequences in CWD, and "
 "you can filter images out."
@@ -2582,29 +2569,29 @@ msgstr ""
 "Οι εικόνες χειρίζονται σαν αλληλουχίες. Το Siril μπορεί να βρει αλληλουχίες "
 "σε CWD, και μπορείτε να φιλτράρετε τις εικόνες."
 
-#: ../src/gui/siril3.glade.h:553
+#: ../src/gui/siril3.glade.h:551
 msgid "Sequence selection"
 msgstr "Επιλογή αλληλουχίας"
 
-#: ../src/gui/siril3.glade.h:554
+#: ../src/gui/siril3.glade.h:552
 msgid "Sequence:"
 msgstr "Αλληλουχία:"
 
-#: ../src/gui/siril3.glade.h:555
+#: ../src/gui/siril3.glade.h:553
 msgid "Search sequences"
 msgstr "Αναζήτηση αλληλουχιών"
 
-#: ../src/gui/siril3.glade.h:556
+#: ../src/gui/siril3.glade.h:554
 msgid ""
 "Search current directory for sequences of FITS images, SER or film videos."
 msgstr ""
 "Επιλέξτε τον τρέχων κατάλογο για αλληλουχίες εικόνων FITS, SER ή ταινιών."
 
-#: ../src/gui/siril3.glade.h:557
+#: ../src/gui/siril3.glade.h:555
 msgid "Force .seq recomputation"
 msgstr "Εξαναγκασμός επαναϋπολογισμού .seq"
 
-#: ../src/gui/siril3.glade.h:558
+#: ../src/gui/siril3.glade.h:556
 msgid ""
 "By default, Siril takes the data from seq file if already computed. However "
 "you can force Siril to recompute the file if some changes have not been "
@@ -2620,15 +2607,15 @@ msgstr ""
 "\n"
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: θα σβήσει όλα τα στατιστικά δεδομένα και δεδομένα εγγραφής."
 
-#: ../src/gui/siril3.glade.h:562
+#: ../src/gui/siril3.glade.h:560
 msgid "Image selection in sequence"
 msgstr "Επιλογή εικόνων στην αλληλουχία"
 
-#: ../src/gui/siril3.glade.h:563
+#: ../src/gui/siril3.glade.h:561
 msgid "No sequence selected"
 msgstr "Δεν έχει επιλεχθεί αλληλουχία"
 
-#: ../src/gui/siril3.glade.h:564
+#: ../src/gui/siril3.glade.h:562
 msgid ""
 "Image index in the sequence. You can also use arrow keys to browse images, "
 "and the SPACE key to toggle exclude for the current image."
@@ -2638,22 +2625,22 @@ msgstr ""
 "όχι την τρέχουσα εικόνα."
 
 # is it singular or plural?
-#: ../src/gui/siril3.glade.h:565
+#: ../src/gui/siril3.glade.h:563
 msgid "Excluded"
 msgstr "Eξαιρέθηκε"
 
-#: ../src/gui/siril3.glade.h:566
+#: ../src/gui/siril3.glade.h:564
 msgid ""
 "Whether or not the image is excluded from processing (the file itself is not "
 "deleted)"
 msgstr ""
 "Αν η εικόνα εξαιρέθηκε ή όχι από την επεξεργασία (το αρχείο δεν διαγράφετε)"
 
-#: ../src/gui/siril3.glade.h:567
+#: ../src/gui/siril3.glade.h:565
 msgid "Reference image"
 msgstr "Εικόνα αναφοράς"
 
-#: ../src/gui/siril3.glade.h:568
+#: ../src/gui/siril3.glade.h:566
 msgid ""
 "If set, the current image will be the reference image for registration.\n"
 "Only one image can be the reference image in a sequence, setting it will "
@@ -2666,37 +2653,37 @@ msgstr ""
 "Αν δεν οριστεί χειροκίνητα, η πρώτη εικόνα της αλληλουχίας θα οριστεί σαν "
 "εικόνα αναφοράς."
 
-#: ../src/gui/siril3.glade.h:571
+#: ../src/gui/siril3.glade.h:569
 msgid "Exclude All"
 msgstr "Εξαίρεση όλων"
 
-#: ../src/gui/siril3.glade.h:572
+#: ../src/gui/siril3.glade.h:570
 msgid "Exclude all images of the sequence from the processing schedule"
 msgstr ""
 "Να εξαιρεθούν όλες οι εικόνες της αλληλουχίας από το πρόγραμμα επεξεργασίας"
 
-#: ../src/gui/siril3.glade.h:573
+#: ../src/gui/siril3.glade.h:571
 msgid "Include All"
 msgstr "Να συμπερηληφθούν όλα"
 
-#: ../src/gui/siril3.glade.h:574
+#: ../src/gui/siril3.glade.h:572
 msgid "includes all images of the sequence in the processing schedule"
 msgstr ""
 "συμπεριλαμβάνει όλες τις εικόνες της αλληλουχίας στο πρόγραμμα επεξεργασίας"
 
-#: ../src/gui/siril3.glade.h:575
+#: ../src/gui/siril3.glade.h:573
 msgid "Sequence export"
 msgstr "Εξαγωγή αλληλουχίας"
 
-#: ../src/gui/siril3.glade.h:576
+#: ../src/gui/siril3.glade.h:574
 msgid "Base name:"
 msgstr "Όνομα βάσης:"
 
-#: ../src/gui/siril3.glade.h:577
+#: ../src/gui/siril3.glade.h:575
 msgid "Base name for the exported sequence"
 msgstr "Όνομα βάσης για την εξαγόμενη αλληλουχία"
 
-#: ../src/gui/siril3.glade.h:578
+#: ../src/gui/siril3.glade.h:576
 msgid ""
 "Export sequence format. MP4 and WEBM replaces GIF for modern Web "
 "publication, AVI is not compressed."
@@ -2704,11 +2691,11 @@ msgstr ""
 "Αλληλουχία εξαγωγής τύπου αρχείου. Τα MP4 και WEBM αντικαθιστούν το GIF για "
 "σύγχρονη έκδοση στο Web, το AVI δεν συμπιέζεται."
 
-#: ../src/gui/siril3.glade.h:579
+#: ../src/gui/siril3.glade.h:577
 msgid "Export sequence"
 msgstr "Εξαγωγή αλληλουχίας"
 
-#: ../src/gui/siril3.glade.h:580
+#: ../src/gui/siril3.glade.h:578
 msgid ""
 "Export the loaded sequence in the selected format. It can be used to store a "
 "sequence in another format, make animated movies, or store a lighter version "
@@ -2722,11 +2709,11 @@ msgstr ""
 "να περικοπούν και να επιλεχθούν με τα ίδια κριτήρια όπως στην επιλογή "
 "σώρευσης εικόνας."
 
-#: ../src/gui/siril3.glade.h:581
+#: ../src/gui/siril3.glade.h:579
 msgid "Normalize images"
 msgstr "Κανονικοποίηση εικόνων"
 
-#: ../src/gui/siril3.glade.h:582
+#: ../src/gui/siril3.glade.h:580
 msgid ""
 "Activate image normalisation for the export. This will make all images the "
 "same brightness and is thus recommended for sequences with inconsistent "
@@ -2743,19 +2730,19 @@ msgstr ""
 "αλληλουχίας.\n"
 "\t\t\t"
 
-#: ../src/gui/siril3.glade.h:585
+#: ../src/gui/siril3.glade.h:583
 msgid "Fps:"
 msgstr "Fps:"
 
-#: ../src/gui/siril3.glade.h:586
+#: ../src/gui/siril3.glade.h:584
 msgid "Frame rate"
 msgstr "Ρυθμός καρέ"
 
-#: ../src/gui/siril3.glade.h:587
+#: ../src/gui/siril3.glade.h:585
 msgid "Resize"
 msgstr "Αλλαγή διαστάσεων"
 
-#: ../src/gui/siril3.glade.h:588
+#: ../src/gui/siril3.glade.h:586
 msgid ""
 "Check this box if you want to resize exported sequence. Note that this will "
 "degrade image quality."
@@ -2763,19 +2750,19 @@ msgstr ""
 "Επιλέξτε αυτό το κουτί αν θέλετε να αλλάξετε τις διαστάσεις της εξαγόμενης "
 "αλληλουχίας. Σημειώστε ότι αυτό θα μειώσει την ποιότητα της εικόνας."
 
-#: ../src/gui/siril3.glade.h:589
+#: ../src/gui/siril3.glade.h:587
 msgid "Width of output video"
 msgstr "Πλάτος βίντεο εξόδου"
 
-#: ../src/gui/siril3.glade.h:590
+#: ../src/gui/siril3.glade.h:588
 msgid "x"
 msgstr "x"
 
-#: ../src/gui/siril3.glade.h:591
+#: ../src/gui/siril3.glade.h:589
 msgid "Height of output video"
 msgstr "Ύψος βίντεο εξόδου"
 
-#: ../src/gui/siril3.glade.h:592
+#: ../src/gui/siril3.glade.h:590
 msgid ""
 "Film quality: lower value will use more compression and less bitrate, also "
 "resulting is smaller file size."
@@ -2783,29 +2770,29 @@ msgstr ""
 "Ποιότητα ταινίας: μια χαμηλή τιμή θα χρησιμοποιήσει περισσότερη συμπίεση και "
 "λιγότερο bitrate, επίσης θα προκύψει σε μικρότερο μέγεθος αρχείου."
 
-#: ../src/gui/siril3.glade.h:593 ../src/io/sequence_export.c:502
+#: ../src/gui/siril3.glade.h:591 ../src/io/sequence_export.c:502
 msgid "Select area to crop"
 msgstr "Επιλέξτε περιοχή για περικοπή"
 
-#: ../src/gui/siril3.glade.h:594
+#: ../src/gui/siril3.glade.h:592
 msgid "Image selection uses the same controls as for stacking"
 msgstr "Η επιλογή εικόνας χρησιμοποιεί τον ίδιο έλεγχο όπως η σώρευση"
 
-#: ../src/gui/siril3.glade.h:595
+#: ../src/gui/siril3.glade.h:593
 msgid "Go to the stacking tab"
 msgstr "Μετάβαση στη καρτέλα σώρευσης"
 
-#: ../src/gui/siril3.glade.h:596
+#: ../src/gui/siril3.glade.h:594
 msgid "Sequence"
 msgstr "Αλληλουχία"
 
-#: ../src/gui/siril3.glade.h:597
+#: ../src/gui/siril3.glade.h:595
 msgid "Pre-processing is an optional step to apply to a sequence of images."
 msgstr ""
 "Η προ-επεξεργασία είναι ένα προαιρετικό βήμα εφαρμογής σε μια αλληλουχία "
 "εικόνων."
 
-#: ../src/gui/siril3.glade.h:598
+#: ../src/gui/siril3.glade.h:596
 msgid ""
 "The single file is often called the master file, which is the result of the "
 "processing of several frames, for each type of master image."
@@ -2814,17 +2801,17 @@ msgstr ""
 "αποτέλεσμα της επεξεργασίας αρκετών καρέ, για τον κάθε τύπο της κύριας "
 "εικόνας."
 
-#: ../src/gui/siril3.glade.h:599
+#: ../src/gui/siril3.glade.h:597
 msgid "Dark, offset (bias) and flat files can only be a single FITS file."
 msgstr ""
 "Τα αρχεία dark, offset (bias) και flat μπορούν να είναι ένα αρχείο FITS."
 
 #. Flat is the kind of the picture used here. In french I
-#: ../src/gui/siril3.glade.h:601
+#: ../src/gui/siril3.glade.h:599
 msgid "Use flat"
 msgstr "Χρήση flat"
 
-#: ../src/gui/siril3.glade.h:602
+#: ../src/gui/siril3.glade.h:600
 msgid ""
 "All images in the sequence will be divided by the master flat image (each "
 "pixel value)."
@@ -2832,7 +2819,7 @@ msgstr ""
 "Όλες οι εικόνες της αλληλουχίας θα διαιρεθούν με την εικόνα του κυρίως flat "
 "(κάθε τιμή εικονοστοιχείων)."
 
-#: ../src/gui/siril3.glade.h:603
+#: ../src/gui/siril3.glade.h:601
 msgid ""
 "Enter the master flat file name here, or use the browse button.\n"
 "All images in the sequence will be divided by the master flat image (each "
@@ -2843,21 +2830,21 @@ msgstr ""
 "Όλες οι εικόνες της αλληλουχίας θα διαιρεθούν με την εικόνα του κυρίως flat "
 "(κάθε τιμή εικονοστοιχείων)."
 
-#: ../src/gui/siril3.glade.h:605
+#: ../src/gui/siril3.glade.h:603
 msgid "Browse..."
 msgstr "Προεπισκόπηση..."
 
 #. Dark is the kind of the picture used here. In french I
-#: ../src/gui/siril3.glade.h:607
+#: ../src/gui/siril3.glade.h:605
 msgid "Use dark"
 msgstr "Χρήση dark"
 
-#: ../src/gui/siril3.glade.h:608
+#: ../src/gui/siril3.glade.h:606
 msgid "The dark master image will be removed from all images in the sequence."
 msgstr ""
 "Η εικόνα του Κυρίως-dark θα αφαιρεθεί από όλες τις εικόνες της αλληλουχίας."
 
-#: ../src/gui/siril3.glade.h:609
+#: ../src/gui/siril3.glade.h:607
 msgid ""
 "Enter the master dark file name here, or use the browse button.\n"
 "The dark master image will be removed from all images in the sequence."
@@ -2867,18 +2854,18 @@ msgstr ""
 "Η εικόνα του Κυρίως-dark θα αφαιρεθεί από όλες τις εικόνες της αλληλουχίας."
 
 #. Offset is the kind of the picture used here. In french I
-#: ../src/gui/siril3.glade.h:612
+#: ../src/gui/siril3.glade.h:610
 msgid "Use offset"
 msgstr "Χρήση offset"
 
-#: ../src/gui/siril3.glade.h:613
+#: ../src/gui/siril3.glade.h:611
 msgid ""
 "The bias/offset master image will be removed from all images in the sequence."
 msgstr ""
 "Η εικόνα του Κυρίως-bias/offset θα αφαιρεθεί από όλες τις εικόνες της "
 "αλληλουχίας."
 
-#: ../src/gui/siril3.glade.h:614
+#: ../src/gui/siril3.glade.h:612
 msgid ""
 "Enter the master bias/offset file name here, or use the browse button.\n"
 "The bias/offset master image will be removed from all images in the sequence."
@@ -2888,19 +2875,19 @@ msgstr ""
 "Η εικόνα του Κυρίως-bias/offset θα αφαιρεθεί από όλες τις εικόνες της "
 "αλληλουχίας."
 
-#: ../src/gui/siril3.glade.h:616
+#: ../src/gui/siril3.glade.h:614
 msgid "Choose your own normalisation value."
 msgstr "Επιλέξτε την δική σας τιμή ομαλοποίησης."
 
-#: ../src/gui/siril3.glade.h:617
+#: ../src/gui/siril3.glade.h:615
 msgid "Normalisation value for flat division"
 msgstr "Τιμή ομαλοποίησης για διαίρεση flat"
 
-#: ../src/gui/siril3.glade.h:618
+#: ../src/gui/siril3.glade.h:616
 msgid "Dark optimization"
 msgstr "Βελτιστοποίηση dark"
 
-#: ../src/gui/siril3.glade.h:619
+#: ../src/gui/siril3.glade.h:617
 msgid ""
 "Dark subtraction can be optionally optimized so that the noise of the "
 "resulting picture (light frame minus dark frame) is minimized by applying a "
@@ -2918,11 +2905,11 @@ msgstr ""
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Μην εφαρμόσετε βελτιστοποίηση dark στο Κυρίως-dark αν "
 "προηγουμένως δεν έχει αφαιρεθεί το Κυρίως-bias."
 
-#: ../src/gui/siril3.glade.h:622
+#: ../src/gui/siril3.glade.h:620
 msgid "Auto evaluate normalisation value"
 msgstr "Αυτόματη αξιολόγηση της τιμής ομαλοποίησης"
 
-#: ../src/gui/siril3.glade.h:623
+#: ../src/gui/siril3.glade.h:621
 msgid ""
 "If this box is checked, Siril will auto-evaluate the normalisation value.\n"
 "This value is the mean of the master flat calibrated with the master offset."
@@ -2932,22 +2919,22 @@ msgstr ""
 "Αυτή η τιμή είναι ο μέσος όρος του Κυρίως-flat βαθμονομημένο με το Κυρίως-"
 "offset."
 
-#: ../src/gui/siril3.glade.h:625
+#: ../src/gui/siril3.glade.h:623
 msgid "Equalize CFA"
 msgstr "Εξίσωση CFA"
 
-#: ../src/gui/siril3.glade.h:626
+#: ../src/gui/siril3.glade.h:624
 msgid ""
 "This option equalizes the mean intensity of RGB layers in a CFA flat image."
 msgstr ""
 "Αυτή η επιλογή εξισώνει τη μέση ένταση των επιπέδων RGB σε μια επίπεδη "
 "εικόνα CFA."
 
-#: ../src/gui/siril3.glade.h:627
+#: ../src/gui/siril3.glade.h:625
 msgid "Cosmetic correction (using master-dark)"
 msgstr "Αισθητική διόρθωση (χρησιμοποιώντας το Κυρίως-dark)"
 
-#: ../src/gui/siril3.glade.h:628
+#: ../src/gui/siril3.glade.h:626
 msgid ""
 "How many times the standard deviation, the pixel value must differ to be "
 "considered as defective."
@@ -2955,11 +2942,11 @@ msgstr ""
 "Πόσες φορές της τυπικής απόκλισης, η τιμή του εικονοστοιχείου πρέπει να "
 "διαφέρει ώστε να θεωρηθεί ελαττωματικό."
 
-#: ../src/gui/siril3.glade.h:629
+#: ../src/gui/siril3.glade.h:627
 msgid "Enable Cosmectic Correction"
 msgstr "Ενεργοποίηση Αισθητικής Διόρθωσης"
 
-#: ../src/gui/siril3.glade.h:630
+#: ../src/gui/siril3.glade.h:628
 msgid ""
 "Check if you want to apply a hot pixel removal.\n"
 "Hot pixels are located on the master-dark."
@@ -2967,11 +2954,11 @@ msgstr ""
 "Επιλέξτε αν θέλετε να εφαρμόσετε αφαίρεση θερμού εικονοστοιχείου.\n"
 "Τα θερμά εικονοστοιχεία εντοπίζονται στο Κυρίως-dark."
 
-#: ../src/gui/siril3.glade.h:632
+#: ../src/gui/siril3.glade.h:630
 msgid "Estimate"
 msgstr "Εκτίμηση"
 
-#: ../src/gui/siril3.glade.h:634
+#: ../src/gui/siril3.glade.h:632
 #, no-c-format
 msgid ""
 "Click on this button to evaluate the number of deviant pixels. If values are "
@@ -2982,23 +2969,23 @@ msgstr ""
 "εικονοστοιχείων. Αν οι τιμές είναι πάνω από 1% των συνολικών "
 "εικονοστοιχείων, τότε θα σας προταθεί να αλλάξετε τις τιμές σίγμα."
 
-#: ../src/gui/siril3.glade.h:635
+#: ../src/gui/siril3.glade.h:633
 msgid "Cold: 0 px"
 msgstr "Ψυχρό: 0 εικονοστοιχεία"
 
-#: ../src/gui/siril3.glade.h:636
+#: ../src/gui/siril3.glade.h:634
 msgid "Hot: 0 px"
 msgstr "Θερμό: 0 εικονοστοιχεία"
 
-#: ../src/gui/siril3.glade.h:637
+#: ../src/gui/siril3.glade.h:635
 msgid "Output sequence"
 msgstr "Εξαγωγή αλληλουχίας"
 
-#: ../src/gui/siril3.glade.h:638
+#: ../src/gui/siril3.glade.h:636
 msgid "Debayer FITS images before saving"
 msgstr "Πραγματοποιείται debayer στις εικόνες FITS πριν την αποθήκευση"
 
-#: ../src/gui/siril3.glade.h:639
+#: ../src/gui/siril3.glade.h:637
 msgid ""
 "Check this option if you want to apply a demosaicing algorithm to your FITS "
 "images right after they were preprocessed. By doing this, you skip one "
@@ -3014,20 +3001,20 @@ msgstr ""
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: αυτή η επιλογή είναι διαθέσιμη μόνο για εικόνες FITS καθώς "
 "στις αλληλουχίες SER μπορεί να γίνει demosaic στη στιγμή."
 
-#: ../src/gui/siril3.glade.h:642
+#: ../src/gui/siril3.glade.h:640
 msgid "Store resulting sequence with prefix:"
 msgstr "Αποθήκευση της επακόλουθης αλληλουχίας με πρόθεμα:"
 
-#: ../src/gui/siril3.glade.h:643
+#: ../src/gui/siril3.glade.h:641
 msgid "Prefix of the image names resulting from the pre-processing."
 msgstr ""
 "Πρόθεμα του ονόματος των εικόνων που προκύπτουν από την προ-επεξεργασία."
 
-#: ../src/gui/siril3.glade.h:644
+#: ../src/gui/siril3.glade.h:642
 msgid "Start pre-processing"
 msgstr "Έναρξη προ-επεξεργασίας"
 
-#: ../src/gui/siril3.glade.h:645
+#: ../src/gui/siril3.glade.h:643
 msgid ""
 "Pre-process sequence with the above master files, resulting sequence will be "
 "in pp_<seq.name> or another prefix given aside.\n"
@@ -3043,11 +3030,11 @@ msgstr ""
 "Η επόμενη ενέργεια για εικόνες από DSLR θα είναι να γίνει debayer των πρεο-"
 "επεξεργασμένων εικόνων, πηγαίνετε στην καρτέλα Μετατροπή."
 
-#: ../src/gui/siril3.glade.h:648
+#: ../src/gui/siril3.glade.h:646
 msgid "Pre-processing"
 msgstr "Προ-επεξεργασία"
 
-#: ../src/gui/siril3.glade.h:649
+#: ../src/gui/siril3.glade.h:647
 msgid ""
 "Registration is basically aligning the images from a sequence to be able to "
 "process them afterwards."
@@ -3055,29 +3042,29 @@ msgstr ""
 "Η εγγραφή βασικά είναι η ευθυγράμμιση των εικόνων από μια αλληλουχία για την "
 "δυνατότητα επεξεργασίας τους μετά."
 
-#: ../src/gui/siril3.glade.h:650
+#: ../src/gui/siril3.glade.h:648
 msgid "Image registration"
 msgstr "Εγγραφή εικόνας"
 
-#: ../src/gui/siril3.glade.h:651
+#: ../src/gui/siril3.glade.h:649
 msgid "Register all images from sequence"
 msgstr "Εγγραφή όλων των εικόνων από την αλληλουχία"
 
-#: ../src/gui/siril3.glade.h:652
+#: ../src/gui/siril3.glade.h:650
 msgid "Register selected images only"
 msgstr "Εγγραφή μόνο των επιλεγμένων εικόνων"
 
-#: ../src/gui/siril3.glade.h:653
+#: ../src/gui/siril3.glade.h:651
 msgid "Choose registration method:"
 msgstr "Επιλέξτε μέθοδο εγγραφής:"
 
-#: ../src/gui/siril3.glade.h:654
+#: ../src/gui/siril3.glade.h:652
 msgid "Select registration layer:"
 msgstr "Επιλέξτε επίπεδο εγγραφής:"
 
 #  It can only be done on one layer at a time, so on monochrome images
 # Do you mean:  It can only be done on one layer at a time, on monochrome images
-#: ../src/gui/siril3.glade.h:655
+#: ../src/gui/siril3.glade.h:653
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -3094,23 +3081,23 @@ msgstr ""
 "προεπιλεγμένο επίπεδο αν είναι διαθέσιμα (για εικόνες RGB: το Πράσινο, "
 "εναλλακτικά το Μπλε μετά το Κόκκινο)."
 
-#: ../src/gui/siril3.glade.h:658
+#: ../src/gui/siril3.glade.h:656
 msgid "Prefix:"
 msgstr "Πρόθεμα:"
 
-#: ../src/gui/siril3.glade.h:659
+#: ../src/gui/siril3.glade.h:657
 msgid "Prefix of the image names resulting from the registration."
 msgstr "Πρόθεμα του ονόματος των εικόνων που προκύπτουν από την εγγραφή."
 
-#: ../src/gui/siril3.glade.h:660
+#: ../src/gui/siril3.glade.h:658
 msgid "Algorithm: "
 msgstr "Αλγόριθμος: "
 
-#: ../src/gui/siril3.glade.h:661
+#: ../src/gui/siril3.glade.h:659
 msgid "Match stars in selection"
 msgstr "Ταίριασμα αστεριών στην επιλογή"
 
-#: ../src/gui/siril3.glade.h:662
+#: ../src/gui/siril3.glade.h:660
 msgid ""
 "Check this box if you want to perform the Global Star Alignment algorithm "
 "within the selected area in the reference image. If no selection are done, "
@@ -3123,11 +3110,11 @@ msgstr ""
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Σιγουρευτείτε να σχεδιάσετε μια επιλογή με αρκετό αριθμό "
 "αστεριών."
 
-#: ../src/gui/siril3.glade.h:664
+#: ../src/gui/siril3.glade.h:662
 msgid "Translation only"
 msgstr "Μόνο μετατόπιση"
 
-#: ../src/gui/siril3.glade.h:665
+#: ../src/gui/siril3.glade.h:663
 msgid ""
 "This is the only registration that can detect and apply rotations on images. "
 "However, rotating images will degrade them to a certain extent. Activating "
@@ -3148,11 +3135,11 @@ msgstr ""
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: δεν δημιουργείται νέα αλληλουχία, μόνο τα στοιχεία εγγραφής "
 "αποθηκεύονται στην αρχική αλληλουχία."
 
-#: ../src/gui/siril3.glade.h:669
+#: ../src/gui/siril3.glade.h:667
 msgid "Pick object in #1"
 msgstr "Επιλέξτε ένα αντικείμενο στο #1"
 
-#: ../src/gui/siril3.glade.h:670
+#: ../src/gui/siril3.glade.h:668
 msgid ""
 "Select an area around the asteroid or the comet core in the first selected "
 "image, then click on this button. The pixel coordinates of the object will "
@@ -3163,19 +3150,19 @@ msgstr ""
 "συντεταγμένες του εικονοστοιχείου του αντικειμένου θα υπολογιστούν και θα "
 "εμφανιστούν."
 
-#: ../src/gui/siril3.glade.h:671
+#: ../src/gui/siril3.glade.h:669
 msgid "Core X-coordinates of the first image."
 msgstr "Συντεταγμένες Χ του πυρήνα της πρώτης εικόνας."
 
-#: ../src/gui/siril3.glade.h:672
+#: ../src/gui/siril3.glade.h:670
 msgid "Core Y-coordinates of the first image."
 msgstr "Συντεταγμένες Υ του πυρήνα της πρώτης εικόνας."
 
-#: ../src/gui/siril3.glade.h:673
+#: ../src/gui/siril3.glade.h:671
 msgid "Pick object in #2"
 msgstr "Επιλέξτε ένα αντικείμενο στο #2"
 
-#: ../src/gui/siril3.glade.h:674
+#: ../src/gui/siril3.glade.h:672
 msgid ""
 "Select an area around the asteroid or the comet core in the last selected "
 "image, then click on this button. The pixel coordinates of the object will "
@@ -3186,27 +3173,27 @@ msgstr ""
 "συντεταγμένες του εικονοστοιχείου του αντικειμένου θα υπολογιστούν και θα "
 "εμφανιστούν."
 
-#: ../src/gui/siril3.glade.h:675
+#: ../src/gui/siril3.glade.h:673
 msgid "Core X-coordinates of the second image."
 msgstr "Συντεταγμένες Χ του πυρήνα της δεύτερης εικόνας."
 
-#: ../src/gui/siril3.glade.h:676
+#: ../src/gui/siril3.glade.h:674
 msgid "Core Y-coordinates of the second image."
 msgstr "Συντεταγμένες Υ του πυρήνα της δεύτερης εικόνας."
 
-#: ../src/gui/siril3.glade.h:677
+#: ../src/gui/siril3.glade.h:675
 msgid "Comet velocity in pixel per hour."
 msgstr "Ταχύτητα κομήτη σε εικονοστοιχεία ανά ώρα."
 
-#: ../src/gui/siril3.glade.h:678
+#: ../src/gui/siril3.glade.h:676
 msgid "Velocity: "
 msgstr "Ταχύτητα: "
 
-#: ../src/gui/siril3.glade.h:679
+#: ../src/gui/siril3.glade.h:677
 msgid "Go register"
 msgstr "Εκκίνηση εγγραφής"
 
-#: ../src/gui/siril3.glade.h:680
+#: ../src/gui/siril3.glade.h:678
 msgid ""
 "Start the registration process. It will register images in the loaded "
 "sequence using the selected method and reference layer (loaded in the 'Image "
@@ -3217,16 +3204,16 @@ msgstr ""
 "αναφοράς (φορτωμένο στην καρτέλα 'Αλληλουχίες Εικόνων', το τρέχων όνομα της "
 "αλληλουχίας είναι επίσης στο κάτω μέρος του παραθύρου)."
 
-#: ../src/gui/siril3.glade.h:681 ../src/registration/registration.c:706
+#: ../src/gui/siril3.glade.h:679 ../src/registration/registration.c:706
 msgid "Load a sequence first."
 msgstr "Φορτώστε πρώτα μια αληλλουχία."
 
-#: ../src/gui/siril3.glade.h:682
+#: ../src/gui/siril3.glade.h:680
 msgid "Simplified Drizzle x2"
 msgstr "Απολοποιημένο Drizzle x2"
 
 # counterpart, do you mean the drawback of this method?
-#: ../src/gui/siril3.glade.h:683
+#: ../src/gui/siril3.glade.h:681
 msgid ""
 "Activate the simplified drizzle algorithm for the processing of this "
 "sequence. An up-scale (x2) will be applied to the registered frame or during "
@@ -3258,11 +3245,11 @@ msgstr ""
 "επεξεργασία των εικόνων drizzle πολλαπλασιάζεται με το τετράγωνο του "
 "παράγοντα drizzle."
 
-#: ../src/gui/siril3.glade.h:688
+#: ../src/gui/siril3.glade.h:686
 msgid "Cumul reg. data"
 msgstr "Σωρευτικά δεδομένα εγγραφής"
 
-#: ../src/gui/siril3.glade.h:689
+#: ../src/gui/siril3.glade.h:687
 msgid ""
 "Check this button if you want the new registration data to be added to the "
 "previous one.\n"
@@ -3277,11 +3264,11 @@ msgstr ""
 "πρέπει να μην είναι επιλεγμένη όταν ο αλγόριθμος κομήτη/αστεροειδή "
 "εφαρμόζεται αρκετές φορές."
 
-#: ../src/gui/siril3.glade.h:691
+#: ../src/gui/siril3.glade.h:689
 msgid "Follow star movement"
 msgstr "Ακολούθηση κίνησης αστεριού"
 
-#: ../src/gui/siril3.glade.h:692
+#: ../src/gui/siril3.glade.h:690
 msgid ""
 "Use this option to use the position of the star found in the previous image "
 "as new centre for the current image registration. This allows the selection "
@@ -3298,15 +3285,15 @@ msgstr ""
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: ενεργοποιώντας αυτή την επιλογή απαιτείται η εγγραφή να μην "
 "είναι παράλληλη, θα τρέξει μόνο σε ένα πυρήνα του επεξεργαστή."
 
-#: ../src/gui/siril3.glade.h:694
+#: ../src/gui/siril3.glade.h:692
 msgid "Manual registration"
 msgstr "Χειροκίνητη εγγραφή"
 
-#: ../src/gui/siril3.glade.h:695
+#: ../src/gui/siril3.glade.h:693
 msgid "Display reference image"
 msgstr "Προβολή εικόνας αναφοράς"
 
-#: ../src/gui/siril3.glade.h:697
+#: ../src/gui/siril3.glade.h:695
 #, no-c-format
 msgid ""
 "Display the reference image over the current image using a 50% "
@@ -3319,7 +3306,7 @@ msgstr ""
 "Για να ενεργοποιηθεί, η εικόνα αναφοράς πρέπει να έχει οριστεί και να φανεί "
 "μια φορά στο επιλεγμένο επίπεδο εγγραφής."
 
-#: ../src/gui/siril3.glade.h:699
+#: ../src/gui/siril3.glade.h:697
 msgid ""
 "Change this value, using mouse wheel or up and down arrows, to align the "
 "image with the reference image on the X axis."
@@ -3328,11 +3315,11 @@ msgstr ""
 "κάτω βέλος, για να ευθυγραμμίσετε την εικόνα με την εικόνα αναφοράς στον "
 "άξονα Χ."
 
-#: ../src/gui/siril3.glade.h:700
+#: ../src/gui/siril3.glade.h:698
 msgid "X translation:"
 msgstr "Χ μετατόπιση:"
 
-#: ../src/gui/siril3.glade.h:701
+#: ../src/gui/siril3.glade.h:699
 msgid ""
 "Change this value, using mouse wheel or up and down arrows, to align the "
 "image with the reference image on the Y axis."
@@ -3341,19 +3328,19 @@ msgstr ""
 "κάτω βέλος, για να ευθυγραμμίσετε την εικόνα με την εικόνα αναφοράς στον "
 "άξονα Υ."
 
-#: ../src/gui/siril3.glade.h:702
+#: ../src/gui/siril3.glade.h:700
 msgid "Y translation:"
 msgstr "Y μετατόπιση:"
 
-#: ../src/gui/siril3.glade.h:703
+#: ../src/gui/siril3.glade.h:701
 msgid "Set reference image first."
 msgstr "Ορίστε πρώτα την εικόνα αναφοράς."
 
-#: ../src/gui/siril3.glade.h:704
+#: ../src/gui/siril3.glade.h:702
 msgid "Set first preview"
 msgstr "Ορίστε την πρώτη προεπισκόπηση"
 
-#: ../src/gui/siril3.glade.h:705
+#: ../src/gui/siril3.glade.h:703
 msgid ""
 "Allows a preview area to be displayed just below. After clicking on this "
 "button, click on the image to position the preview area's centre"
@@ -3362,53 +3349,53 @@ msgstr ""
 "κλικ σε αυτό το κουμπί, κάντε κλικ στην εικόνα για να τοποθετήσετε το κέντρο "
 "της περιοχής προεπισκόπησης"
 
-#: ../src/gui/siril3.glade.h:706
+#: ../src/gui/siril3.glade.h:704
 msgid "Set second preview"
 msgstr "Ορίστε την δεύτερη προεπισκόπηση"
 
-#: ../src/gui/siril3.glade.h:707
+#: ../src/gui/siril3.glade.h:705
 msgid "Registration"
 msgstr "Εγγραφή"
 
-#: ../src/gui/siril3.glade.h:708
+#: ../src/gui/siril3.glade.h:706
 msgid "Filename:"
 msgstr "Όνομα αρχείου:"
 
-#: ../src/gui/siril3.glade.h:709
+#: ../src/gui/siril3.glade.h:707
 msgid "Enter the filename of the exported CSV file."
 msgstr "Εισάγετε το όνομα του εξαγώμενου αρχείου CSV."
 
-#: ../src/gui/siril3.glade.h:710
+#: ../src/gui/siril3.glade.h:708
 msgid "Export to CSV"
 msgstr "Εξαγωγή σε CSV"
 
-#: ../src/gui/siril3.glade.h:711
+#: ../src/gui/siril3.glade.h:709
 msgid "Export displayed plot to a CSV file."
 msgstr "Εξαγωγή του τρέχοντος διαγράμματος σε αρχείο CSV."
 
-#: ../src/gui/siril3.glade.h:712
+#: ../src/gui/siril3.glade.h:710
 msgid "Clear all"
 msgstr "Καθαρισμός όλων"
 
-#: ../src/gui/siril3.glade.h:713
+#: ../src/gui/siril3.glade.h:711
 msgid "Clear all curves displayed in photometry."
 msgstr "Καθαρισμός όλων των καμπυλών που προβάλλονται στη φωτομετρία."
 
-#: ../src/gui/siril3.glade.h:714
+#: ../src/gui/siril3.glade.h:712
 msgid "Clear latest"
 msgstr "Καθαρισμός του τελευταίου"
 
-#: ../src/gui/siril3.glade.h:715
+#: ../src/gui/siril3.glade.h:713
 msgid "Clear the last curve added in photometry."
 msgstr "Καθαρισμός της τελευταίας καμπύλης που προστέθηκε στη φωτομετρία."
 
 #. This is the button for plotting variable star graph
 #. Plotting light curve
-#: ../src/gui/siril3.glade.h:717 ../src/gui/plot.c:364
+#: ../src/gui/siril3.glade.h:715 ../src/gui/plot.c:364
 msgid "Light Curve"
 msgstr "Καμπύλη Φωτός"
 
-#: ../src/gui/siril3.glade.h:718
+#: ../src/gui/siril3.glade.h:716
 msgid ""
 "Plot a graph of the variable star. The variable star must be analysed in "
 "first, then other PSF are applied to references. A maximum of 6 references "
@@ -3422,47 +3409,47 @@ msgstr ""
 "\"Μέγεθος\" στον τύπο του εμφανιζόμενου διαγράμματος.\n"
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: το gnuplot πρέπει να είναι εγκατεστημένο."
 
-#: ../src/gui/siril3.glade.h:720
+#: ../src/gui/siril3.glade.h:718
 msgid "Select the source of graph information."
 msgstr "Επιλέξτε την πηγή των πληροφοριών του γραφήματος."
 
-#: ../src/gui/siril3.glade.h:721
+#: ../src/gui/siril3.glade.h:719
 msgid "Select which information to display from photometry data."
 msgstr "Επιλέξτε ποιές πληροφορίες θα εμφανιστούν από δεδομένα φωτομετρίας."
 
-#: ../src/gui/siril3.glade.h:722
+#: ../src/gui/siril3.glade.h:720
 msgid "Roundness"
 msgstr "Στρογγυλότητα"
 
-#: ../src/gui/siril3.glade.h:723 ../src/gui/plot.c:565 ../src/gui/plot.c:727
+#: ../src/gui/siril3.glade.h:721 ../src/gui/plot.c:565 ../src/gui/plot.c:729
 msgid "FWHM"
 msgstr "FWHM"
 
-#: ../src/gui/siril3.glade.h:724 ../src/gui/plot.c:730
+#: ../src/gui/siril3.glade.h:722 ../src/gui/plot.c:732
 msgid "Amplitude"
 msgstr "Πλάτος"
 
-#: ../src/gui/siril3.glade.h:725
+#: ../src/gui/siril3.glade.h:723
 msgid "Magnitude"
 msgstr "Μέγεθος"
 
-#: ../src/gui/siril3.glade.h:726
+#: ../src/gui/siril3.glade.h:724
 msgid "Background"
 msgstr "Υπόβαθρο"
 
-#: ../src/gui/siril3.glade.h:727
+#: ../src/gui/siril3.glade.h:725
 msgid "X position"
 msgstr "Θέση Χ"
 
-#: ../src/gui/siril3.glade.h:728
+#: ../src/gui/siril3.glade.h:726
 msgid "Y position"
 msgstr "Θέση Υ"
 
-#: ../src/gui/siril3.glade.h:729
+#: ../src/gui/siril3.glade.h:727
 msgid "Plot"
 msgstr "Σχεδιασμός"
 
-#: ../src/gui/siril3.glade.h:730
+#: ../src/gui/siril3.glade.h:728
 msgid ""
 "Stacking of images, either summing, median, mean with rejection or pixel "
 "minimum/maximum."
@@ -3470,19 +3457,19 @@ msgstr ""
 "Σώρευση εικόνων, είτε αθροιστικά, διαμέσου, μέσου όρου με απόρριψη ή μέγιστο/"
 "ελάχιστο εικονοστοιχείο."
 
-#: ../src/gui/siril3.glade.h:731
+#: ../src/gui/siril3.glade.h:729
 msgid "Sequence stacking"
 msgstr "Αλληλουχία σώρευσης"
 
-#: ../src/gui/siril3.glade.h:732
+#: ../src/gui/siril3.glade.h:730
 msgid "Stacking Methods:"
 msgstr "Μέθοδοι Σώρευσης:"
 
-#: ../src/gui/siril3.glade.h:733
+#: ../src/gui/siril3.glade.h:731
 msgid "Stack this set of images:"
 msgstr "Να γίνει σώρευση αυτής της σειράς εικόνων:"
 
-#: ../src/gui/siril3.glade.h:734
+#: ../src/gui/siril3.glade.h:732
 msgid ""
 "Sum: This is the simplest method.\n"
 "Pixel values are added in an image normalized to 16-bit values.\n"
@@ -3549,27 +3536,27 @@ msgstr ""
 "Τα εικονοστοιχεία στην εικόνα αντικαθιστώνται από εικονοστοιχεία στις ίδιες "
 "συντεταγμένες αν η ένταση είναι χαμηλότερη."
 
-#: ../src/gui/siril3.glade.h:757 ../src/stacking/sum.c:161
+#: ../src/gui/siril3.glade.h:755 ../src/stacking/sum.c:161
 msgid "Sum stacking"
 msgstr "Αθροιστική σώρευση"
 
-#: ../src/gui/siril3.glade.h:758
+#: ../src/gui/siril3.glade.h:756
 msgid "Average stacking with rejection"
 msgstr "Σώρευση μέσου όρου με απόρριψη"
 
-#: ../src/gui/siril3.glade.h:759
+#: ../src/gui/siril3.glade.h:757
 msgid "Median stacking"
 msgstr "Σώρευση διαμέσου"
 
-#: ../src/gui/siril3.glade.h:760
+#: ../src/gui/siril3.glade.h:758
 msgid "Pixel maximum stacking"
 msgstr "Σώρευση μέγιστου εικονοστοιχείου"
 
-#: ../src/gui/siril3.glade.h:761
+#: ../src/gui/siril3.glade.h:759
 msgid "Pixel minimum stacking"
 msgstr "Σώρευση ελάχιστου εικονοστοιχείου"
 
-#: ../src/gui/siril3.glade.h:762
+#: ../src/gui/siril3.glade.h:760
 msgid ""
 "Select the set of images to be stacked. All the images or only the manually "
 "selected can be used. But it is possible to only select the percentage of "
@@ -3580,21 +3567,21 @@ msgstr ""
 "δυνατό να επιλέξετε μόνο το ποσοστό των καλύτερων εικόνων σύμφωνα με τα "
 "κριτήρια ποιότητας (πλανητικό στρογγυλότητα ή fwhm)."
 
-#: ../src/gui/siril3.glade.h:763
+#: ../src/gui/siril3.glade.h:761
 msgid "all the images of the sequence"
 msgstr "όλες οι εικόνες τις αλληλουχίας"
 
-#: ../src/gui/siril3.glade.h:764
+#: ../src/gui/siril3.glade.h:762
 msgid "images previously manually selected from the sequence"
 msgstr "εικόνες που επιλέχθηκαν χειροκίνητα από την αλληλουχία"
 
-#: ../src/gui/siril3.glade.h:765
+#: ../src/gui/siril3.glade.h:763
 msgid ""
 "best images, automatically selected from the registration data (PSF - FWHM)"
 msgstr ""
 "καλύτερες εικόνες, επιλέχθηκαν αυτόματα από τα δεδομένα εγγραφής (PSF - FWHM)"
 
-#: ../src/gui/siril3.glade.h:766
+#: ../src/gui/siril3.glade.h:764
 msgid ""
 "best images, automatically selected from the registration data (PSF - "
 "roundness)"
@@ -3602,30 +3589,30 @@ msgstr ""
 "καλύτερες εικόνες, επιλέχθηκαν αυτόματα από τα δεδομένα εγγραφής (PSF - "
 "στρογγυλότητα)"
 
-#: ../src/gui/siril3.glade.h:767
+#: ../src/gui/siril3.glade.h:765
 msgid ""
 "best images, automatically selected from the registration data (Planetary)"
 msgstr ""
 "καλύτερες εικόνες, επιλέχθηκαν αυτόματα από τα δεδομένα εγγραφής (Πλανητική)"
 
-#: ../src/gui/siril3.glade.h:768 ../src/stacking/stacking.c:2182
+#: ../src/gui/siril3.glade.h:766 ../src/stacking/stacking.c:2182
 #, c-format
 msgid "Based on FWHM"
 msgstr "Βασισμένο στο FWHM"
 
-#: ../src/gui/siril3.glade.h:769
+#: ../src/gui/siril3.glade.h:767
 msgid "Stack best:"
 msgstr "Σώρευση καλύτερων:"
 
-#: ../src/gui/siril3.glade.h:770
+#: ../src/gui/siril3.glade.h:768
 msgid "Sigma low: "
 msgstr "Κάτω Σίγμα: "
 
-#: ../src/gui/siril3.glade.h:771
+#: ../src/gui/siril3.glade.h:769
 msgid "Sigma high: "
 msgstr "Άνω Σίγμα: "
 
-#: ../src/gui/siril3.glade.h:772
+#: ../src/gui/siril3.glade.h:770
 msgid ""
 "Five rejection algorithms are available.\n"
 "- Percentile Clipping is a one-step rejection algorithm ideal for small sets "
@@ -3676,31 +3663,31 @@ msgstr ""
 "Wiley\n"
 "[2] Juan Conejero, ImageIntegration, Pixinsight Tutorial"
 
-#: ../src/gui/siril3.glade.h:788
+#: ../src/gui/siril3.glade.h:786
 msgid "No rejection"
 msgstr "Χωρίς απόρριψη"
 
-#: ../src/gui/siril3.glade.h:789
+#: ../src/gui/siril3.glade.h:787
 msgid "Percentile Clipping"
 msgstr "Εκατοστιαία αποκοπή"
 
-#: ../src/gui/siril3.glade.h:790
+#: ../src/gui/siril3.glade.h:788
 msgid "Sigma Clipping"
 msgstr "Αποκοπή Σίγμα"
 
-#: ../src/gui/siril3.glade.h:791
+#: ../src/gui/siril3.glade.h:789
 msgid "Median Sigma Clipping"
 msgstr "Αποκοπή Διαμέσου Σίγμα"
 
-#: ../src/gui/siril3.glade.h:792
+#: ../src/gui/siril3.glade.h:790
 msgid "Winsorized Sigma Clipping"
 msgstr "Αποκοπή Σίγμα Winsor"
 
-#: ../src/gui/siril3.glade.h:793
+#: ../src/gui/siril3.glade.h:791
 msgid "Linear Fit Clipping"
 msgstr "Αποκοπή Γραμμικού Fit"
 
-#: ../src/gui/siril3.glade.h:794
+#: ../src/gui/siril3.glade.h:792
 msgid ""
 "Normalise to 16-bit\n"
 "(Don't check for Masters)"
@@ -3708,7 +3695,7 @@ msgstr ""
 "Κανονικοποίηση σε 16-bit\n"
 "(να μην γίνει έλεγχος για Κύρια αρχεία)"
 
-#: ../src/gui/siril3.glade.h:796
+#: ../src/gui/siril3.glade.h:794
 msgid ""
 "If you check this button, the final image will be normalized to 16-bit per "
 "channel. This is important when input sequence has a depth of 8-bit per "
@@ -3722,24 +3709,24 @@ msgstr ""
 "Όμως αν θέλετε μπορείτε να απενεργοποιήσετε αυτή την επιλογή όταν "
 "δημιουργείτε master frames αλληλουχιών 8-bit."
 
-#: ../src/gui/siril3.glade.h:798
+#: ../src/gui/siril3.glade.h:796
 msgid "Rejection:"
 msgstr "Απόρριψη:"
 
-#: ../src/gui/siril3.glade.h:800
+#: ../src/gui/siril3.glade.h:798
 #, no-c-format
 msgid "%"
 msgstr "%"
 
-#: ../src/gui/siril3.glade.h:801
+#: ../src/gui/siril3.glade.h:799
 msgid "Normalisation:"
 msgstr "Ομαλοποίηση:"
 
-#: ../src/gui/siril3.glade.h:802
+#: ../src/gui/siril3.glade.h:800
 msgid "Start stacking"
 msgstr "Έναρξη σώρευσης"
 
-#: ../src/gui/siril3.glade.h:803
+#: ../src/gui/siril3.glade.h:801
 msgid ""
 "Start stacking the current sequence of images, using the method and other "
 "information provided above.\n"
@@ -3752,19 +3739,19 @@ msgstr ""
 "σώρευση, η οποία μετά αποθηκεύεται σε μια 16-bit εικόνα της οποίας το όνομα "
 "δίνεται παρακάτω."
 
-#: ../src/gui/siril3.glade.h:805
+#: ../src/gui/siril3.glade.h:803
 msgid "Store result in file:"
 msgstr "Το αποτέλεσμα να αποθκευτεί στο αρχείο:"
 
-#: ../src/gui/siril3.glade.h:806
+#: ../src/gui/siril3.glade.h:804
 msgid "Overwrite"
 msgstr "Αντικατάσταση αρχείου"
 
-#: ../src/gui/siril3.glade.h:807
+#: ../src/gui/siril3.glade.h:805
 msgid "Overwrite file without notice if it already exists."
 msgstr "Να γίνει αντικατάσταση του αρχείου χωρίς προειδοποίηση αν υπάρχει ήδη."
 
-#: ../src/gui/siril3.glade.h:808
+#: ../src/gui/siril3.glade.h:806
 msgid ""
 "If one of these items is selected, a normalisation process will be applied "
 "to all input\n"
@@ -3807,31 +3794,31 @@ msgstr ""
 "Όμως, η πολλαπλασιαστική ομαλοποίηση θα πρέπει να χρησιμοποιηθεί με flat "
 "καρέ."
 
-#: ../src/gui/siril3.glade.h:820
+#: ../src/gui/siril3.glade.h:818
 msgid "No normalisation"
 msgstr "Χωρίς ομαλοποίηση"
 
-#: ../src/gui/siril3.glade.h:821
+#: ../src/gui/siril3.glade.h:819
 msgid "Additive"
 msgstr "Προσθετική"
 
-#: ../src/gui/siril3.glade.h:822
+#: ../src/gui/siril3.glade.h:820
 msgid "Multiplicative"
 msgstr "Πολλαπλασιαστική"
 
-#: ../src/gui/siril3.glade.h:823
+#: ../src/gui/siril3.glade.h:821
 msgid "Additive with scaling"
 msgstr "Προσθετική με κλιμάκωση"
 
-#: ../src/gui/siril3.glade.h:824
+#: ../src/gui/siril3.glade.h:822
 msgid "Multiplicative with scaling"
 msgstr "Πολλαπλασιαστική με κλιμάκωση"
 
-#: ../src/gui/siril3.glade.h:825
+#: ../src/gui/siril3.glade.h:823
 msgid "Force recomputing"
 msgstr "Εξαναγκασμός επαναϋπολιγσμού"
 
-#: ../src/gui/siril3.glade.h:826
+#: ../src/gui/siril3.glade.h:824
 msgid ""
 "By default, Siril takes the normalisation coefficients from seq file if "
 "already computed. However you can force Siril to recompute it before "
@@ -3841,11 +3828,11 @@ msgstr ""
 "έχουν υπολογιστεί. Όμως μπορείτε να εξαναγκάσετε το Siril να τις "
 "επαναϋπολογίσει πριν την σώρευση."
 
-#: ../src/gui/siril3.glade.h:827
+#: ../src/gui/siril3.glade.h:825
 msgid "Stacking"
 msgstr "Σώρευση"
 
-#: ../src/gui/siril3.glade.h:828
+#: ../src/gui/siril3.glade.h:826
 msgid ""
 "Siril output window, displays messages about what has been done and in "
 "response to command inputs."
@@ -3853,48 +3840,48 @@ msgstr ""
 "Παράθυρο εξόδου Siril, εμφανίζει μηνύματα σχετικά με το τι έχει γίνει καθώς "
 "και σε ανταπόκριση εντολών εισόδου."
 
-#: ../src/gui/siril3.glade.h:829
+#: ../src/gui/siril3.glade.h:827
 #, fuzzy
 msgid "Export the log"
 msgstr "Εξαγωγή σε CSV"
 
-#: ../src/gui/siril3.glade.h:830
+#: ../src/gui/siril3.glade.h:828
 #, fuzzy
 msgid "Clear the log"
 msgstr "Καθαρισμός του τελευταίου"
 
-#: ../src/gui/siril3.glade.h:831
+#: ../src/gui/siril3.glade.h:829
 msgid "Output logs"
 msgstr "Αρχεία καταγραφής εξόδου"
 
-#: ../src/gui/siril3.glade.h:832
+#: ../src/gui/siril3.glade.h:830
 msgid ""
 "Input command. Typing 'help' here will bring the list of supported commands."
 msgstr ""
 "Εντολή εισόδου. Γράφοντας `help' εδώ θα εμφανιστεί μια λίστα με τις "
 "υποστηριζόμενες εντολές."
 
-#: ../src/gui/siril3.glade.h:833
+#: ../src/gui/siril3.glade.h:831
 msgid "Type help for the list of supported commands"
 msgstr "Γράψτε help για την λίστα των υποστηριζόμενων εντολών"
 
-#: ../src/gui/siril3.glade.h:834
+#: ../src/gui/siril3.glade.h:832
 msgid "Displays manual of the command written in the console."
 msgstr "Προβολή του εγχειριδίου της εντολής που γράφτηκε στην κονσόλα."
 
-#: ../src/gui/siril3.glade.h:835
+#: ../src/gui/siril3.glade.h:833
 msgid "<b>Console</b>"
 msgstr "<b>Κονσόλα</b>"
 
-#: ../src/gui/siril3.glade.h:836 ../src/gui/progress_and_log.c:41
+#: ../src/gui/siril3.glade.h:834 ../src/gui/progress_and_log.c:41
 msgid "Ready."
 msgstr "Έτοιμο."
 
-#: ../src/gui/siril3.glade.h:837
+#: ../src/gui/siril3.glade.h:835
 msgid "Current working directory:"
 msgstr "Τρέχων κατάλος εργασίας:"
 
-#: ../src/gui/siril3.glade.h:838
+#: ../src/gui/siril3.glade.h:836
 msgid ""
 "The directory in which files will be read from and written to. Can be "
 "changed with the button Change dir on the right, or with the cd command."
@@ -3902,23 +3889,23 @@ msgstr ""
 "Ο κατάλογος στον οποίο τα αρχεία θα διαβάζονται και γράφονται. Μπορεί να "
 "αλλαχτεί με το κουμπί Αλλαγή καταλόγου στα δεξιά, ή με την εντολή cd."
 
-#: ../src/gui/siril3.glade.h:839
+#: ../src/gui/siril3.glade.h:837
 msgid "Change dir..."
 msgstr "Αλλαγή καταλόγου..."
 
-#: ../src/gui/siril3.glade.h:840
+#: ../src/gui/siril3.glade.h:838
 msgid "Change current working directory"
 msgstr "Αλλάζει τον τρέχων κατάλογο εργασίας"
 
-#: ../src/gui/siril3.glade.h:841
+#: ../src/gui/siril3.glade.h:839
 msgid "Stop running processes"
 msgstr "Να σταματήσει η εκτέλση της διαδικασίας"
 
-#: ../src/gui/siril3.glade.h:842
+#: ../src/gui/siril3.glade.h:840
 msgid "Current working sequence:"
 msgstr "Τρέχουσα αλληλουχία:"
 
-#: ../src/gui/siril3.glade.h:843
+#: ../src/gui/siril3.glade.h:841
 msgid ""
 "Set number of threads manually.\n"
 "WARNING: Reducing the number of allowed processors too much will degrade "
@@ -3928,11 +3915,11 @@ msgstr ""
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Μειώνοντας τον αριθμό των επιτρεπόμενων επεξεργαστών πάρα "
 "πολύ θα μειωθούν οι επιδόσεις."
 
-#: ../src/gui/siril3.glade.h:845
+#: ../src/gui/siril3.glade.h:843
 msgid "Displays the amount of used RAM memory by Siril."
 msgstr "Δείχνει την ποσότητα της μνήμης RAM που χρησιμοποιεί το Siril."
 
-#: ../src/gui/siril3.glade.h:846
+#: ../src/gui/siril3.glade.h:844
 msgid ""
 "Displays the amount of disk space available on the file system containing "
 "the working directory."
@@ -3941,12 +3928,12 @@ msgstr ""
 "λειτουργίας."
 
 #. Must be short !!
-#: ../src/gui/siril3.glade.h:848
+#: ../src/gui/siril3.glade.h:846
 msgctxt "GUI"
 msgid "Disk Space: N/A"
 msgstr "Μέγεθος Δίσκου: Δεν είναι διαθέσιμο"
 
-#: ../src/gui/siril3.glade.h:849
+#: ../src/gui/siril3.glade.h:847
 msgid ""
 "A set of three color calibration factors will be computed and multiplied "
 "with every color channel.\n"
@@ -3957,11 +3944,11 @@ msgstr ""
 "Η Ουδετεροποίηση Υποβάθρου θα πρέπει να εφαρμοστεί πριν από αυτή την "
 "λειτουργία."
 
-#: ../src/gui/siril3.glade.h:851
+#: ../src/gui/siril3.glade.h:849
 msgid "Background Neutralization"
 msgstr "Ουδετεροποίηση Υποβάθρου"
 
-#: ../src/gui/siril3.glade.h:852
+#: ../src/gui/siril3.glade.h:850
 msgid ""
 "Background Neutralization will compute the mean of each color channel and "
 "will equalize the sky background in a neutral grey.\n"
@@ -3972,15 +3959,15 @@ msgstr ""
 "Αυτό το βήμα δεν θα πρέπει να γίνει πριν από κάθε απόπειρα βαθμονόμησης "
 "χρώματος."
 
-#: ../src/gui/siril3.glade.h:854
+#: ../src/gui/siril3.glade.h:852
 msgid "Background reference"
 msgstr "Αναφορά υποβάθρου"
 
-#: ../src/gui/siril3.glade.h:855
+#: ../src/gui/siril3.glade.h:853
 msgid "Manual White Balance"
 msgstr "Χειροκίνητη Ισσοροπία Άσπρου"
 
-#: ../src/gui/siril3.glade.h:856
+#: ../src/gui/siril3.glade.h:854
 msgid ""
 "By clicking on this option, you will use your own color calibration factors. "
 "This option is disabled by default."
@@ -3988,35 +3975,35 @@ msgstr ""
 "Κάνοντας κλικ σε αυτή την επιλογή, θα χρησιμοποιήσετε τους δικούς σας "
 "παράγοντες βαθμονόμησης χρώματος. Αυτή η επιλογή είναι απενεργοποιημένη."
 
-#: ../src/gui/siril3.glade.h:857
+#: ../src/gui/siril3.glade.h:855
 msgid "Red:"
 msgstr "Κόκκινο:"
 
-#: ../src/gui/siril3.glade.h:858
+#: ../src/gui/siril3.glade.h:856
 msgid "Green:"
 msgstr "Πράσινο:"
 
-#: ../src/gui/siril3.glade.h:859
+#: ../src/gui/siril3.glade.h:857
 msgid "Blue:"
 msgstr "Μπλέ:"
 
-#: ../src/gui/siril3.glade.h:860
+#: ../src/gui/siril3.glade.h:858
 msgid "x coordinate of the start of the white reference selection"
 msgstr "x συντεταγμένη της αρχής της επιλογής της αναφοράς του άσπρου"
 
-#: ../src/gui/siril3.glade.h:861
+#: ../src/gui/siril3.glade.h:859
 msgid "y coordinate of the start of the white reference selection"
 msgstr "y συντεταγμένη της αρχής της επιλογής της αναφοράς του άσπρου"
 
-#: ../src/gui/siril3.glade.h:862
+#: ../src/gui/siril3.glade.h:860
 msgid "Width of the white reference selection"
 msgstr "Πλάτος της επιλογής της αναφοράς του άσπρου"
 
-#: ../src/gui/siril3.glade.h:863
+#: ../src/gui/siril3.glade.h:861
 msgid "Height of the white reference selection"
 msgstr "Ύψος της επιλογής της αναφοράς του άσπρου"
 
-#: ../src/gui/siril3.glade.h:864
+#: ../src/gui/siril3.glade.h:862
 msgid ""
 "You should specify a selection that represents an average of suitable white "
 "reference.\n"
@@ -4027,7 +4014,7 @@ msgstr ""
 "Αν αυτή η επιλογή είναι κενή, τότε ολόκληρη η εικόνα θα χρησιμοποιηθεί σαν "
 "αναφορά."
 
-#: ../src/gui/siril3.glade.h:866
+#: ../src/gui/siril3.glade.h:864
 msgid ""
 "Lower rejection bound for white selection. Pixels below this value are not "
 "taken into account. Black pixels are always excluded from computation."
@@ -4036,7 +4023,7 @@ msgstr ""
 "αυτή την τιμή δεν θα ληφθούν υπόψη. Τα μαύρα εικονοστοιχεία εξαιρούνται "
 "πάντα από τον υπολογισμό."
 
-#: ../src/gui/siril3.glade.h:867
+#: ../src/gui/siril3.glade.h:865
 msgid ""
 "Upper rejection bound for white selection. Pixels above this value are not "
 "taken into account. Saturated pixels are always excluded from computation."
@@ -4045,15 +4032,15 @@ msgstr ""
 "αυτή την τιμή δεν θα ληφθούν υπόψη. Τα κορεσμένα εικονοστοιχεία εξαιρούνται "
 "πάντα από τον υπολογισμό."
 
-#: ../src/gui/siril3.glade.h:868
+#: ../src/gui/siril3.glade.h:866
 msgid "Lower limit: "
 msgstr "Κάτω όριο: "
 
-#: ../src/gui/siril3.glade.h:869
+#: ../src/gui/siril3.glade.h:867
 msgid "Upper limit: "
 msgstr "Άνω όριο: "
 
-#: ../src/gui/siril3.glade.h:870
+#: ../src/gui/siril3.glade.h:868
 msgid "White reference"
 msgstr "Αναφορά άσπρου"
 
@@ -4089,8 +4076,8 @@ msgstr "Ενίσχυση κορεσμού: γίνεται επεξεργασία
 #: ../src/algos/cosmetic_correction.c:395 ../src/algos/star_finder.c:50
 #: ../src/core/command.c:1750 ../src/core/siril.c:626 ../src/core/siril.c:786
 #: ../src/core/siril.c:986 ../src/core/siril.c:1277 ../src/core/siril.c:1373
-#: ../src/core/siril.c:1465 ../src/gui/histogram.c:638
-#: ../src/gui/photometric_cc.c:317 ../src/gui/statistics_list.c:308
+#: ../src/core/siril.c:1465 ../src/gui/histogram.c:636
+#: ../src/gui/photometric_cc.c:317 ../src/gui/statistics_list.c:311
 msgid "Error: statistics computation failed.\n"
 msgstr "Σφάλμα: ο υπολογισμός των στατιστικών απέτυχε.\n"
 
@@ -4146,11 +4133,11 @@ msgstr "Αισθητική Διόρθωση: γίνεται επεξεργασί
 msgid "%ld pixels corrected (%ld + %ld)\n"
 msgstr "%ld εικονοστοιχεία διορθώθηκαν (%ld + %ld)\n"
 
-#: ../src/algos/fft.c:243
+#: ../src/algos/fft.c:241
 msgid "Fourier Transform: processing...\n"
 msgstr "Μετασχηματισμός Fourier: γίνεται επεξεργασία...\n"
 
-#: ../src/algos/fft.c:320
+#: ../src/algos/fft.c:318
 msgid "There is something wrong in your files\n"
 msgstr "Υπάρχει κάτι λάθος με τα αρχεία σας\n"
 
@@ -4333,11 +4320,11 @@ msgstr "Φίλτρο Βαθμιδωτής Περιστροφής ολοκληρ�
 #: ../src/core/command.c:1539 ../src/core/command.c:1562
 #: ../src/core/command.c:1590 ../src/core/command.c:1616
 #: ../src/core/command.c:1788 ../src/core/command.c:1857
-#: ../src/core/command.c:2605 ../src/gui/callbacks.c:3725
-#: ../src/gui/callbacks.c:3933 ../src/gui/callbacks.c:4091
-#: ../src/gui/callbacks.c:4124 ../src/gui/callbacks.c:4225
-#: ../src/gui/callbacks.c:4359 ../src/gui/callbacks.c:4519
-#: ../src/gui/callbacks.c:4698 ../src/gui/saturation.c:49
+#: ../src/core/command.c:2605 ../src/gui/callbacks.c:3783
+#: ../src/gui/callbacks.c:3991 ../src/gui/callbacks.c:4149
+#: ../src/gui/callbacks.c:4182 ../src/gui/callbacks.c:4230
+#: ../src/gui/callbacks.c:4364 ../src/gui/callbacks.c:4524
+#: ../src/gui/callbacks.c:4703 ../src/gui/saturation.c:49
 #: ../src/gui/script_menu.c:158 ../src/io/conversion.c:529
 #: ../src/registration/registration.c:845 ../src/stacking/stacking.c:1501
 #: ../src/stacking/stacking.c:1625
@@ -4412,7 +4399,7 @@ msgstr "Αποτέλεσμα σύνθεσης το οποίο δεν αποθη�
 msgid "You must at least load two layers before!\n"
 msgstr "Πρέπει να φορτώσετε τουλάχιστον δυο επίπεδα!\n"
 
-#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4485
+#: ../src/compositing/compositing.c:547 ../src/gui/callbacks.c:4490
 #: ../src/gui/wavelets.c:222 ../src/gui/wavelets.c:231
 #: ../src/io/conversion.c:600 ../src/registration/registration.c:863
 msgid "Warning"
@@ -4484,7 +4471,7 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Περικοπή: επιλέξτε μια περιοχή ή δώστε τα x,y, πλάτος, ύψος\n"
 
 #: ../src/core/command.c:591 ../src/core/command.c:2446
-#: ../src/gui/callbacks.c:4483 ../src/gui/wavelets.c:220
+#: ../src/gui/callbacks.c:4488 ../src/gui/wavelets.c:220
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
@@ -4638,7 +4625,7 @@ msgstr "Λάθος παράμετροι.\n"
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: επιλέξτε μια περιοχή ή δώστε τα x, y, πλάτος, ύψος\n"
 
-#: ../src/core/command.c:1271 ../src/gui/callbacks.c:4180
+#: ../src/core/command.c:1271 ../src/gui/PSF_list.c:499
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Βρέθηκαν %d αστέρια στην εικόνα, κανάλι #%d\n"
@@ -4788,7 +4775,7 @@ msgstr "Ο παρεχόμενος τύπος σώρευσης είναι άγν�
 msgid "Stacked sequence successfully.\n"
 msgstr "Έγινε σώρευση της αλληλουχίας με επιτυχία.\n"
 
-#: ../src/core/command.c:2348 ../src/gui/callbacks.c:3737
+#: ../src/core/command.c:2348 ../src/gui/callbacks.c:3795
 msgid "Preprocessing...\n"
 msgstr "Γίνεται προ-επεξεργασία...\n"
 
@@ -4855,7 +4842,7 @@ msgstr "Χρόνος εκτέλεσης"
 msgid "Script execution failed.\n"
 msgstr "Η εκτέλεση της δέσμης ενεργειών απέτυχε.\n"
 
-#: ../src/core/command.c:2615 ../src/gui/script_menu.c:173 ../src/main.c:522
+#: ../src/core/command.c:2615 ../src/gui/script_menu.c:173 ../src/main.c:498
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Το αρχείο [%s] δεν υπάρχει\n"
@@ -5653,6 +5640,27 @@ msgstr ""
 msgid "Not enough disk space"
 msgstr "Δεν υπάρχει αρκετός ελεύθερος χώρος στον δίσκο"
 
+#: ../src/core/OS_utils.c:395 ../src/core/OS_utils.c:398
+msgid "Open File"
+msgstr "Άνοιγμα αρχείου"
+
+#: ../src/core/OS_utils.c:396 ../src/core/OS_utils.c:399
+msgid "_Open"
+msgstr "_Άνοιγμα"
+
+#: ../src/core/OS_utils.c:396 ../src/core/OS_utils.c:399
+#: ../src/core/OS_utils.c:407 ../src/core/OS_utils.c:410
+msgid "_Cancel"
+msgstr "_Άκυρο"
+
+#: ../src/core/OS_utils.c:406 ../src/core/OS_utils.c:409
+msgid "Save File"
+msgstr "Αποθήκευση Αρχείου"
+
+#: ../src/core/OS_utils.c:407 ../src/core/OS_utils.c:410
+msgid "_Save"
+msgstr "_Αποθήκευση"
+
 # is the %s value ok where it is? this way it will make more sense in greek
 # Sure, the most important is to keep order if you have
 # %d %s %d in this order then you must keep it.
@@ -5842,23 +5850,7 @@ msgstr "Τιμή θορύβου υποβάθρου (κανάλι: #%d): %0.3lf (
 msgid "Lucy-Richardson deconvolution: processing...\n"
 msgstr "Lucy-Richardson deconvolution: γίνεται επεξεργασία...\n"
 
-#: ../src/core/siril_log.c:79 ../src/core/siril_log.c:82
-#: ../src/gui/save_dialog.c:246 ../src/gui/save_dialog.c:249
-msgid "Save File"
-msgstr "Αποθήκευση Αρχείου"
-
-#: ../src/core/siril_log.c:80 ../src/core/siril_log.c:83
-#: ../src/gui/save_dialog.c:247 ../src/gui/save_dialog.c:250
-msgid "_Save"
-msgstr "_Αποθήκευση"
-
-#: ../src/core/siril_log.c:80 ../src/core/siril_log.c:83
-#: ../src/gui/open_dialog.c:198 ../src/gui/open_dialog.c:201
-#: ../src/gui/save_dialog.c:247 ../src/gui/save_dialog.c:250
-msgid "_Cancel"
-msgstr "_Άκυρο"
-
-#: ../src/core/siril_log.c:106
+#: ../src/core/siril_log.c:72
 #, fuzzy
 msgid "log files (*.log)"
 msgstr "Αρχεία SER (*.ser)"
@@ -5934,7 +5926,7 @@ msgstr ""
 "Το \"%s\" δεν είναι κατάλογος\n"
 "\n"
 
-#: ../src/core/utils.c:305 ../src/gui/callbacks.c:2688
+#: ../src/core/utils.c:305 ../src/gui/callbacks.c:2746
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr ""
@@ -6013,53 +6005,53 @@ msgstr "Όλες οι εικόνες της αλληλουχίας έχουν ε
 msgid "Unselected all images from sequence\n"
 msgstr "Όλες οι εικόνες της αλληλουχίας έχουν αποεπιλεγεί\n"
 
-#: ../src/gui/callbacks.c:982
+#: ../src/gui/callbacks.c:1042
 #, c-format
 msgid "Setting MAX value for cutoff sliders adjustments\n"
 msgstr ""
 "Γίνεται ρύθμιση της τιμής MAX για τις ρυθμίσεις των ολισθητήρων αποκοπής\n"
 
 #. there should be no other normal cases
-#: ../src/gui/callbacks.c:1025
+#: ../src/gui/callbacks.c:1085
 #, c-format
 msgid "setting ranges scalemin=%d, scalemax=%d\n"
 msgstr "γίνεται ρύθμιση των κλιμάκων scalemin=%d, scalemax=%d\n"
 
-#: ../src/gui/callbacks.c:1131
+#: ../src/gui/callbacks.c:1191
 #, c-format
 msgid "<%%s.seq>: %%d images selected out of %%d, reference image is %%d"
 msgstr ""
 "<%%s.seq>: %%d εικόνες έχουν επιλεχθεί από %%d, η εικόνα αναφοράς είναι η %%d"
 
-#: ../src/gui/callbacks.c:1134
+#: ../src/gui/callbacks.c:1194
 #, c-format
 msgid "<%%s.seq>: %%d images selected out of %%d, reference image is %%.%dd"
 msgstr ""
 "<%%s.seq>: %%d εικονες έχουν επιλεχθεί από %%d, η εικόνα αναφοράς είναι η %%."
 "%dd"
 
-#: ../src/gui/callbacks.c:1143
+#: ../src/gui/callbacks.c:1203
 #, c-format
 msgid "<%s.seq>: %d images selected out of %d, no reference image set"
 msgstr ""
 "<%s.seq>: %d εικόνες έχουν επιλεχθεί από %d, δεν έχει ορισθεί εικόνα αναφοράς"
 
-#: ../src/gui/callbacks.c:1146
+#: ../src/gui/callbacks.c:1206
 #, c-format
 msgid "%s, %d images selected"
 msgstr "%s, %d εικόνες επιλέχθηκαν"
 
-#: ../src/gui/callbacks.c:1150
+#: ../src/gui/callbacks.c:1210
 #, c-format
 msgid "No sequence"
 msgstr "Δεν υπάρχει αλληλουχία"
 
-#: ../src/gui/callbacks.c:1151
+#: ../src/gui/callbacks.c:1211
 #, c-format
 msgid "- none -"
 msgstr "- κανένα -"
 
-#: ../src/gui/callbacks.c:1233
+#: ../src/gui/callbacks.c:1293
 #, c-format
 msgid ""
 "redraw: maximum number of layers supported is %d (current image has %d).\n"
@@ -6067,113 +6059,113 @@ msgstr ""
 "redraw: ο μέγιστος αριθμός των επιπέδων που υποστηρίζονται είναι %d (η "
 "τρέχουσα εικόνα έχει %d).\n"
 
-#: ../src/gui/callbacks.c:1529
+#: ../src/gui/callbacks.c:1589
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "fwhm: η επιλογή είναι πολύ μεγάλη"
 
-#: ../src/gui/callbacks.c:1531
+#: ../src/gui/callbacks.c:1591
 #, c-format
 msgid "fwhm: no selection"
 msgstr "fwhm: δεν υπάρχει επιλογή"
 
-#: ../src/gui/callbacks.c:1556
+#: ../src/gui/callbacks.c:1616
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (κανάλι 0)"
 
-#: ../src/gui/callbacks.c:1561
+#: ../src/gui/callbacks.c:1621
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (κανάλι 1)"
 
-#: ../src/gui/callbacks.c:1565
+#: ../src/gui/callbacks.c:1625
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (κανάλι 2)"
 
 # whre does this string appear?
-#: ../src/gui/callbacks.c:1592
+#: ../src/gui/callbacks.c:1652
 msgid "Unassigned"
 msgstr "Δεν έχει προσδιοριστεί"
 
-#: ../src/gui/callbacks.c:1618
+#: ../src/gui/callbacks.c:1678
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: δεν έχει επηρεαστεί ακόμα"
 
-#: ../src/gui/callbacks.c:1758
+#: ../src/gui/callbacks.c:1818
 msgid "Unknown zoom_value value, what is the current zoom?\n"
 msgstr "Άγνωστ τιμή zoom_value, ποια είναι η τρέχουσα μεγέθυνση;\n"
 
-#: ../src/gui/callbacks.c:1759 ../src/gui/callbacks.c:2689
-#: ../src/gui/callbacks.c:4375 ../src/gui/callbacks.c:4381
-#: ../src/gui/callbacks.c:4406 ../src/gui/open_dialog.c:317
-#: ../src/gui/plot.c:383 ../src/gui/plot.c:443 ../src/gui/PSF_list.c:210
-#: ../src/gui/save_dialog.c:306 ../src/io/conversion.c:607
+#: ../src/gui/callbacks.c:1819 ../src/gui/callbacks.c:2747
+#: ../src/gui/callbacks.c:4380 ../src/gui/callbacks.c:4386
+#: ../src/gui/callbacks.c:4411 ../src/gui/open_dialog.c:290
+#: ../src/gui/plot.c:383 ../src/gui/plot.c:443 ../src/gui/PSF_list.c:213
+#: ../src/gui/save_dialog.c:279 ../src/io/conversion.c:607
 #: ../src/io/single_image.c:131
 msgid "Error"
 msgstr "Σφάλμα"
 
-#: ../src/gui/callbacks.c:1844
+#: ../src/gui/callbacks.c:1904
 msgid "B&W channel"
 msgstr "Ασπρόμαυρο κανάλι"
 
-#: ../src/gui/callbacks.c:1877
+#: ../src/gui/callbacks.c:1937
 #, fuzzy, c-format
 msgid "%d file loaded"
 msgstr "%d αρχεία φορτώθηκαν"
 
-#: ../src/gui/callbacks.c:1879
+#: ../src/gui/callbacks.c:1939
 #, c-format
 msgid "%d files loaded"
 msgstr "%d αρχεία φορτώθηκαν"
 
-#: ../src/gui/callbacks.c:1884
+#: ../src/gui/callbacks.c:1944
 #, fuzzy, c-format
 msgid "%d file selected, %s"
 msgstr "%d αρχεία φορτώθηκαν"
 
-#: ../src/gui/callbacks.c:1886
+#: ../src/gui/callbacks.c:1946
 #, fuzzy, c-format
 msgid "%d files selected, %s"
 msgstr "%d αρχεία φορτώθηκαν"
 
-#: ../src/gui/callbacks.c:2024
+#: ../src/gui/callbacks.c:2082
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Μνήμη: %ldMB"
 
-#: ../src/gui/callbacks.c:2026
+#: ../src/gui/callbacks.c:2084
 #, c-format
 msgid "Mem: N/A"
 msgstr "Μνήμη: N/A"
 
-#: ../src/gui/callbacks.c:2034
+#: ../src/gui/callbacks.c:2092
 #, fuzzy, c-format
 msgid "Disk Space: %s"
 msgstr "Μέγεθος Δίσκου: %.0lf%s"
 
-#: ../src/gui/callbacks.c:2037
+#: ../src/gui/callbacks.c:2095
 #, c-format
 msgid "Disk Space: N/A"
 msgstr "Μέγεθος Δίσκου: Δεν είναι διαθέσιμο"
 
-#: ../src/gui/callbacks.c:2097
+#: ../src/gui/callbacks.c:2155
 msgid "This binning is not handled yet\n"
 msgstr "Αυτή η ομαδοποίηση δεν υποστηρίζεται ακόμα\n"
 
-#: ../src/gui/callbacks.c:2510 ../src/gui/callbacks.c:2511
+#: ../src/gui/callbacks.c:2568 ../src/gui/callbacks.c:2569
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr "<span foreground=\"red\">ΣΦΑΛΜΑ</span>"
 
-#: ../src/gui/callbacks.c:2523
+#: ../src/gui/callbacks.c:2581
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">Ψυχρά: %ld εικονοστοιχεία</span>"
 
-#: ../src/gui/callbacks.c:2524 ../src/gui/callbacks.c:2536
+#: ../src/gui/callbacks.c:2582 ../src/gui/callbacks.c:2594
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -6181,125 +6173,117 @@ msgstr ""
 "Αυτή η τιμή μπορεί να είναι πολύ υψηλή. Παρακαλώ, λάβετε υπόψη να αλλάξετε "
 "την τιμή σίγμα ή να αποεπιλέξετε του κουτί."
 
-#: ../src/gui/callbacks.c:2527
+#: ../src/gui/callbacks.c:2585
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Ψυχρά: %ld εικονοστοιχεία"
 
-#: ../src/gui/callbacks.c:2535
+#: ../src/gui/callbacks.c:2593
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">Θερμά: %ld εικονοστοιχεία</span>"
 
-#: ../src/gui/callbacks.c:2539
+#: ../src/gui/callbacks.c:2597
 #, c-format
 msgid "Hot: %ld px"
 msgstr "Θερμά: %ld εικονοστοιχεία"
 
-#: ../src/gui/callbacks.c:2755
+#: ../src/gui/callbacks.c:2813
 msgid "Closing application"
 msgstr "Κλείσιμο της εφαρμογής"
 
-#: ../src/gui/callbacks.c:2755
+#: ../src/gui/callbacks.c:2813
 msgid "Are you sure you want to quit?"
 msgstr "Είστε σίγουροι ότι θέλετε να κλείσετε το πρόγραμμα;"
 
-#: ../src/gui/callbacks.c:3432
+#: ../src/gui/callbacks.c:3490
 #, c-format
 msgid "new zoom value: %f\n"
 msgstr "νέα τιμή μεγέθυνσης: %f\n"
 
-#: ../src/gui/callbacks.c:3471
+#: ../src/gui/callbacks.c:3529
 #, c-format
 msgid "%g nm"
 msgstr "%g nm"
 
-#: ../src/gui/callbacks.c:3473
+#: ../src/gui/callbacks.c:3531
 #, c-format
 msgid "undefined"
 msgstr "δεν έχει ορισθεί"
 
-#: ../src/gui/callbacks.c:3569
+#: ../src/gui/callbacks.c:3627
 msgid "Exclude all images ?"
 msgstr "Να εξαίρεθούν όλες οι εικόνες;"
 
-#: ../src/gui/callbacks.c:3570 ../src/gui/callbacks.c:3580
+#: ../src/gui/callbacks.c:3628 ../src/gui/callbacks.c:3638
 msgid "This erases previous image selection and there's no possible undo."
 msgstr ""
 "Αυτό διαγράφει προηγούμενες επιλογές εικόνας και δεν είναι δυνατή η αναίρεση."
 
-#: ../src/gui/callbacks.c:3579
+#: ../src/gui/callbacks.c:3637
 msgid "Include all images ?"
 msgstr "Να συμπερηληφθούν όλες οι εικόνες;"
 
-#: ../src/gui/callbacks.c:3601
+#: ../src/gui/callbacks.c:3659
 msgid "Opening dark image..."
 msgstr "Γίνεται άνοιγμα της εικόνας dark..."
 
-#: ../src/gui/callbacks.c:3604
+#: ../src/gui/callbacks.c:3662
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:3611
+#: ../src/gui/callbacks.c:3669
 msgid "NOT USING DARK: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:3649
+#: ../src/gui/callbacks.c:3707
 msgid "Opening flat image..."
 msgstr "Γίνεται άνοιγμα της εικόνας flat..."
 
-#: ../src/gui/callbacks.c:3652
+#: ../src/gui/callbacks.c:3710
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:3659
+#: ../src/gui/callbacks.c:3717
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:3686
+#: ../src/gui/callbacks.c:3744
 msgid "Opening offset image..."
 msgstr "Γίνεται άνοιγμα της εικόνας offset..."
 
-#: ../src/gui/callbacks.c:3689
+#: ../src/gui/callbacks.c:3747
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:3696
+#: ../src/gui/callbacks.c:3754
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr ""
 "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:3793
+#: ../src/gui/callbacks.c:3851
 msgid "Error in preprocessing."
 msgstr "Σφάλμα στην προ-επεξεργασία."
 
-#: ../src/gui/callbacks.c:3870
+#: ../src/gui/callbacks.c:3928
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Έγινε επιλογή %s αλληλουχίας %s..."
 
-#: ../src/gui/callbacks.c:3939
+#: ../src/gui/callbacks.c:3997
 msgid "Searching for sequences in the current working directory..."
 msgstr "Γίνεται αναζήτηση για αλληλουχίες στον τρέχων κατάλογο εργασίας..."
 
-#: ../src/gui/callbacks.c:4172
-msgid "Load an image first, aborted.\n"
-msgstr "Έγινε ακύρωση, φορτώστε πρώτα μια εικόνα.\n"
-
-#: ../src/gui/callbacks.c:4202
-msgid "The file stars.lst has been created.\n"
-msgstr "Το αρχείο stars.lst δημιουργήθηκε.\n"
-
-#: ../src/gui/callbacks.c:4279 ../src/gui/callbacks.c:4327
+#: ../src/gui/callbacks.c:4284 ../src/gui/callbacks.c:4332
 msgid "Current selection is too large"
 msgstr "Η τρέχουσα επιλογή είναι πολύ μεγάλη"
 
-#: ../src/gui/callbacks.c:4280 ../src/gui/callbacks.c:4328
+#: ../src/gui/callbacks.c:4285 ../src/gui/callbacks.c:4333
 msgid "To determine the PSF, please make a selection around a star."
 msgstr ""
 "Για να προσδιορίσετε τοPSF, παρακαλώ κάντε μια επιλογή γύρω από ένα αστέρι."
 
-#: ../src/gui/callbacks.c:4292
+#: ../src/gui/callbacks.c:4297
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -6348,27 +6332,32 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/gui/callbacks.c:4309
+#: ../src/gui/callbacks.c:4314
 msgid "PSF for the sequence only applies on sequences"
 msgstr "Το PSF για την αλληλουχία ισχύει μόνο σε αλληλουχίες"
 
-#: ../src/gui/callbacks.c:4310
+#: ../src/gui/callbacks.c:4315
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr ""
 "Παρακαλώ φορτώστε μια αλληλουχία πριν την εφαρμογή του PSF για την "
 "αλληλουχία."
 
-#: ../src/gui/callbacks.c:4374
+#: ../src/gui/callbacks.c:4379
 msgid "FFT does not work with sequences !\n"
 msgstr "Το FFT δεν λειτουργεί με αλληλουχίες!/n\n"
 
-#: ../src/gui/callbacks.c:4380
+#: ../src/gui/callbacks.c:4385
 msgid "Open an image first !\n"
 msgstr "Ανοίξτε πρώτα μια εικόνα!\n"
 
-#: ../src/gui/callbacks.c:4405
+#: ../src/gui/callbacks.c:4410
 msgid "Select magnitude and phase before !\n"
 msgstr "Επιλέξτε πρώτα το μέγεθος και την φάση!\n"
+
+#: ../src/gui/histogram.c:176
+#, fuzzy
+msgid "Gray channel"
+msgstr "Πράσινο κανάλι"
 
 #: ../src/gui/message_dialog.c:185
 msgid "_Do not show this dialog again"
@@ -6409,14 +6398,6 @@ msgstr "Αρχεία ταινίας (*.avi, *.mpg, ...)"
 #, fuzzy
 msgid "All supported files"
 msgstr "Τύποι αρχείων που υποστηρίζονται:"
-
-#: ../src/gui/open_dialog.c:197 ../src/gui/open_dialog.c:200
-msgid "Open File"
-msgstr "Άνοιγμα αρχείου"
-
-#: ../src/gui/open_dialog.c:198 ../src/gui/open_dialog.c:201
-msgid "_Open"
-msgstr "_Άνοιγμα"
 
 #: ../src/gui/photometric_cc.c:84
 #, fuzzy
@@ -6485,59 +6466,59 @@ msgstr "%s.csv έχει αποθηκευτεί.\n"
 msgid "Quality"
 msgstr "Ποιότητα"
 
-#: ../src/gui/plot.c:724
+#: ../src/gui/plot.c:726
 msgid "Star roundness (1 is round)"
 msgstr "Στρογγυλότητα αστέρα (1 είναι στρογγυλό)"
 
-#: ../src/gui/plot.c:734
+#: ../src/gui/plot.c:736
 msgid "Star magnitude (absolute)"
 msgstr "Μέγεθος αστέρα (απόλυτο)"
 
-#: ../src/gui/plot.c:736
+#: ../src/gui/plot.c:738
 msgid "Star magnitude (relative, use setmag)"
 msgstr "Μέγεθος αστέρα (σχετικό, χρησιμοποιώντας setmag)"
 
-#: ../src/gui/plot.c:739
+#: ../src/gui/plot.c:741
 msgid "Background value"
 msgstr "Τιμή υποβάθρου"
 
-#: ../src/gui/plot.c:742
+#: ../src/gui/plot.c:744
 msgid "Star position on X axis"
 msgstr "Θέση αστεριού στον άξονα Χ"
 
-#: ../src/gui/plot.c:745
+#: ../src/gui/plot.c:747
 msgid "Star position on Y axis"
 msgstr "Θέση αστεριού στον άξονα Υ"
 
-#: ../src/gui/progress_and_log.c:227
+#: ../src/gui/progress_and_log.c:242
 msgid "Execution time"
 msgstr "Χρόνος εκτέλεσης"
 
-#: ../src/gui/progress_and_log.c:243
+#: ../src/gui/progress_and_log.c:258
 #, fuzzy, c-format
 msgid "%s: %d h %02d min %.2d s.\n"
 msgstr "%s: %d min %.2d s.\n"
 
-#: ../src/gui/progress_and_log.c:248
+#: ../src/gui/progress_and_log.c:263
 #, fuzzy, c-format
 msgid "%s: %d min %02d s.\n"
 msgstr "%s: %d min %.2d s.\n"
 
-#: ../src/gui/progress_and_log.c:252
+#: ../src/gui/progress_and_log.c:267
 #, fuzzy, c-format
 msgid "%s: %.2lf ms.\n"
 msgstr "%s: %.2f ms.\n"
 
-#: ../src/gui/progress_and_log.c:254
+#: ../src/gui/progress_and_log.c:269
 #, fuzzy, c-format
 msgid "%s: %.2lf s.\n"
 msgstr "%s: %.2f s.\n"
 
-#: ../src/gui/PSF_list.c:211
+#: ../src/gui/PSF_list.c:214
 msgid "Stars must have the same units."
 msgstr "Τα αστέρια πρέπει να έχουν τις ίδιες μονάδες."
 
-#: ../src/gui/PSF_list.c:225
+#: ../src/gui/PSF_list.c:228
 #, c-format
 msgid ""
 "Average Gaussian PSF\n"
@@ -6562,20 +6543,33 @@ msgstr ""
 "Γωνία:\t%.2f μοίρες\n"
 "rmse:\t%.3e\n"
 
-#: ../src/gui/PSF_list.c:230
+#: ../src/gui/PSF_list.c:233
 #, fuzzy
 msgid "Average Star Data"
 msgstr "Ουδέτερο Μέσου Όρου"
 
-#: ../src/gui/PSF_list.c:258
+#: ../src/gui/PSF_list.c:261
 #, fuzzy, c-format
 msgid "%d stars"
 msgstr "Φωτεινότητα"
 
-#: ../src/gui/PSF_list.c:263
+#: ../src/gui/PSF_list.c:266
 #, c-format
 msgid "Star %d of %d"
 msgstr "Αστέρι %d από %d"
+
+#: ../src/gui/PSF_list.c:311
+msgid "The file stars.lst has been created.\n"
+msgstr "Το αρχείο stars.lst δημιουργήθηκε.\n"
+
+#: ../src/gui/PSF_list.c:318
+#, fuzzy
+msgid "Star list file (*.lst)"
+msgstr "Αρχεία SER (*.ser)"
+
+#: ../src/gui/PSF_list.c:491
+msgid "Load an image first, aborted.\n"
+msgstr "Έγινε ακύρωση, φορτώστε πρώτα μια εικόνα.\n"
 
 #: ../src/gui/registration_preview.c:66
 #, c-format
@@ -6604,36 +6598,36 @@ msgstr "Αρχεία PNG (*.png)"
 msgid "TIFF Files (*.tif, *.tiff)"
 msgstr "Αρχεία TIFF (*.tif, *.tiff)"
 
-#: ../src/gui/save_dialog.c:196 ../src/gui/save_dialog.c:524
+#: ../src/gui/save_dialog.c:196 ../src/gui/save_dialog.c:497
 msgid "Saving BMP"
 msgstr "Γίνεται αποθήκευση του ΒΜΡ"
 
-#: ../src/gui/save_dialog.c:200 ../src/gui/save_dialog.c:482
+#: ../src/gui/save_dialog.c:200 ../src/gui/save_dialog.c:455
 msgid "Saving PNG"
 msgstr "Γίνεται αποθήκευση του PNG"
 
-#: ../src/gui/save_dialog.c:204 ../src/gui/save_dialog.c:503
+#: ../src/gui/save_dialog.c:204 ../src/gui/save_dialog.c:476
 msgid "Saving Netpbm"
 msgstr "Γίνεται αποθήκευση του Netpbm"
 
-#: ../src/gui/save_dialog.c:208 ../src/gui/save_dialog.c:544
+#: ../src/gui/save_dialog.c:208 ../src/gui/save_dialog.c:517
 msgid "Saving JPG"
 msgstr "Γίνεται αποθήκευση του JPG"
 
-#: ../src/gui/save_dialog.c:212 ../src/gui/save_dialog.c:460
+#: ../src/gui/save_dialog.c:212 ../src/gui/save_dialog.c:433
 msgid "Saving TIFF"
 msgstr "Γίνεται αποθήκευση του TIFF"
 
-#: ../src/gui/save_dialog.c:219 ../src/gui/save_dialog.c:436
+#: ../src/gui/save_dialog.c:219 ../src/gui/save_dialog.c:409
 msgid "Saving FITS"
 msgstr "Γίνεται αποθήκευση του FITS"
 
-#: ../src/gui/save_dialog.c:306
+#: ../src/gui/save_dialog.c:279
 #, fuzzy
 msgid "File saving failed. Check the logs for more info."
 msgstr "Αποτυχία σώρευσης Διαμέσου: Δείτε το αρχείο καταγραφής."
 
-#: ../src/gui/save_dialog.c:403
+#: ../src/gui/save_dialog.c:376
 msgid "This type of file is not handled. Should not happen"
 msgstr "Αυτός ο τύπος αρχείου δεν μπορεί να χειριστεί. Δεν θα έπρεπε να συμβεί"
 
@@ -6655,16 +6649,16 @@ msgstr "Δεν ήταν δυνατή η εμφάνιση της σύνδεσης
 msgid "Please go to <a href=\""
 msgstr "Παρακαλώ πηγαίνετε στο <a href=\""
 
-#: ../src/gui/sequence_list.c:197
+#: ../src/gui/sequence_list.c:200
 #, c-format
 msgid "%s image %d in sequence %s\n"
 msgstr "%s εικόνα %d στην αλληλουχία %s\n"
 
-#: ../src/gui/sequence_list.c:198
+#: ../src/gui/sequence_list.c:201
 msgid "excluding"
 msgstr "εξαίρεση"
 
-#: ../src/gui/sequence_list.c:198
+#: ../src/gui/sequence_list.c:201
 msgid "including"
 msgstr "συμπεριλαμβάνεται"
 
@@ -6712,22 +6706,22 @@ msgstr "μέγιστο"
 msgid "normalization"
 msgstr "ομαλοποίηση"
 
-#: ../src/gui/statistics_list.c:288
+#: ../src/gui/statistics_list.c:291
 #, c-format
 msgid "Image %d/%d from the sequence %s"
 msgstr "Εικόνα %d/%d από την αλληλουχία %s"
 
-#: ../src/gui/statistics_list.c:291
+#: ../src/gui/statistics_list.c:294
 #, c-format
 msgid "unknown image"
 msgstr "άγνωστη εικόνα"
 
-#: ../src/gui/statistics_list.c:297
+#: ../src/gui/statistics_list.c:300
 #, c-format
 msgid "Size of selection in pixel: (%d,%d)"
 msgstr "Μέγεθος της επιλογής σε εικονοστοιχεία: (%d,%d)"
 
-#: ../src/gui/statistics_list.c:300
+#: ../src/gui/statistics_list.c:303
 #, c-format
 msgid "No selection"
 msgstr "Δεν υπάρχει επιλογή"
@@ -7680,29 +7674,29 @@ msgstr ""
 "Το %s δεν βρέθηκε ή περιέχει σφάλματα, δεν μπορεί να γίνει render του GUI. "
 "Γίνεται έξοδος.\n"
 
-#: ../src/main.c:344
+#: ../src/main.c:333
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Καλώς ήρθατε στο %s v%s\n"
 
-#: ../src/main.c:410
+#: ../src/main.c:399
 msgid "Could not load or create settings file, exiting.\n"
 msgstr ""
 "Δεν ήταν δυνατό να φορτωθεί ή να δημιουργηθεί αρχείο ρυθμίσεων, γίνεται "
 "έξοδος.\n"
 
 #. Get CPU number and set the number of threads
-#: ../src/main.c:458
+#: ../src/main.c:450
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor(s).\n"
 msgstr ""
 "Παράλληλη επεξεργασία %s : Γίνεται χρήση %d λογικού(ών) επεξεργαστή(ών).\n"
 
-#: ../src/main.c:460
+#: ../src/main.c:452
 msgid "enabled"
 msgstr "ενεργοποιημένο"
 
-#: ../src/main.c:462
+#: ../src/main.c:454
 msgid "disabled"
 msgstr "απενεργοποιημένο"
 
@@ -8417,6 +8411,35 @@ msgstr "Βασισμένο σε ποιότητα"
 msgid "Up-scaling sequence for stacking"
 msgstr "Αλληλουχία  μεγέθυνσης για σώρευση"
 
+#~ msgid "Negative view"
+#~ msgstr "Αρνητική προβολή"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "G"
+#~ msgstr "G"
+
+#~ msgid "<b>Memory Managment</b>"
+#~ msgstr "<b>Διαχείρηση Μνήμης</b>"
+
+#~ msgid ""
+#~ "Using dark GTK theme\n"
+#~ "(may require restarting)"
+#~ msgstr ""
+#~ "Γίνεται χρήση σκοτεινού θέματος GTK\n"
+#~ "(μπορεί να χρειαστεί επανεκκίνηση)"
+
+#~ msgid ""
+#~ "Some dialogs of Siril have non-standard bright colours. With a dark "
+#~ "theme, where the text is bright too, that's unreadable. Checking here "
+#~ "will change these non-standard colours to dark."
+#~ msgstr ""
+#~ "Μερικοί διάλογοι του Siril έχουν μη τυποποιημένα φωτεινά χρώματα. Με ένα "
+#~ "σκοτεινό θέμα, όπου το κείμενο είναι επίσης φωτεινό, δεν είναι "
+#~ "αναγνώσιμο. Επιλέγοντας εδώ θα αλλάξει τα μη τυποποιημένα χρώματα σε "
+#~ "σκοτεινά."
+
 #~ msgid "Ratio of Available Memory Used: "
 #~ msgstr "Αναλογία της διαθέσιμης μνήμης που χρησιμοποιείται: "
 
@@ -8454,9 +8477,6 @@ msgstr "Αλληλουχία  μεγέθυνσης για σώρευση"
 #~ msgstr ""
 #~ "Πρέπει να κάνετε κλικ στην εικόνα για να διαλέξετε τα δικά σας δείγματα "
 #~ "υποβάθρου."
-
-#~ msgid "Automatic"
-#~ msgstr "Αυτόματο"
 
 #~ msgid "Siril picks background samples automatically."
 #~ msgstr "Το Sirl επιλέγει αυτόματα τα δείγματα υποβάθρου."

@@ -315,7 +315,7 @@ static int save_list(gchar *file) {
 
 static void set_filter(GtkFileChooser *dialog) {
 	GtkFileFilter *f = gtk_file_filter_new();
-	gtk_file_filter_set_name(f, _("star files (*.lst)"));
+	gtk_file_filter_set_name(f, _("Star list file (*.lst)"));
 	gtk_file_filter_add_pattern(f, "*.lst");
 	gtk_file_chooser_add_filter(dialog, f);
 	gtk_file_chooser_set_filter(dialog, f);
