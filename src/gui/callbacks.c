@@ -975,7 +975,9 @@ static void update_icons_to_theme(gboolean is_dark) {
 		update_theme_button("process_starfinder_button", "/pixmaps/starfinder_dark.png");
 		update_theme_button("sum_button", "/pixmaps/sum_dark.png");
 		update_theme_button("export_button", "/pixmaps/export_dark.png");
-	} else {
+
+		update_theme_button("histoToolAutoStretch", "/pixmaps/mtf_dark.png");
+} else {
 		update_theme_button("rotate90_anticlock_button", "/pixmaps/rotate-acw.png");
 		update_theme_button("rotate90_clock_button", "/pixmaps/rotate-cw.png");
 		update_theme_button("mirrorx_button", "/pixmaps/mirrorx.png");
@@ -984,6 +986,8 @@ static void update_icons_to_theme(gboolean is_dark) {
 		update_theme_button("process_starfinder_button", "/pixmaps/starfinder.png");
 		update_theme_button("sum_button", "/pixmaps/sum.png");
 		update_theme_button("export_button", "/pixmaps/export.png");
+
+		update_theme_button("histoToolAutoStretch", "/pixmaps/mtf.png");
 	}
 }
 
@@ -1002,18 +1006,31 @@ void on_combo_theme_changed(GtkComboBox *box, gpointer user_data) {
 	update_icons_to_theme(com.want_dark);
 }
 
-void initialize_theme() {
+void initialize_theme_GUI() {
 	GtkComboBox *box;
-	GtkSettings *settings;
-	gboolean prefere_dark;
 
 	box = GTK_COMBO_BOX(lookup_widget("combo_theme"));
-	settings = gtk_settings_get_default();
 
-	g_object_get(settings, "gtk-application-prefer-dark-theme", &prefere_dark,
-			NULL);
-	com.have_dark_theme = prefere_dark;
+	g_signal_handlers_block_by_func(box, on_combo_theme_changed, NULL);
 	gtk_combo_box_set_active(box, com.combo_theme);
+	g_signal_handlers_unblock_by_func(box, on_combo_theme_changed, NULL);
+	update_icons_to_theme(com.want_dark);
+}
+
+void load_prefered_theme(gint theme) {
+	GtkSettings *settings;
+
+	settings = gtk_settings_get_default();
+	g_object_get(settings, "gtk-application-prefer-dark-theme", &com.have_dark_theme,
+				NULL);
+
+	if ((theme == 1) || (com.have_dark_theme && theme == 0)) {
+		com.want_dark = TRUE;
+	} else {
+		com.want_dark = FALSE;
+	}
+
+	g_object_set(settings, "gtk-application-prefer-dark-theme", com.want_dark, NULL);
 }
 
 void set_sliders_value_to_gfit() {

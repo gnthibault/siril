@@ -68,7 +68,6 @@
 cominfo com;	// the main data struct
 fits gfit;	// currently loaded image
 GtkBuilder *builder;	// get widget references anywhere
-void initialize_scrollbars();
 
 #ifdef MAC_INTEGRATION
 
@@ -198,6 +197,23 @@ void signal_handled(int s) {
 	gtk_main_quit();
 }
 
+static void initialize_scrollbars() {
+	int i;
+	char *vport_names[] = { "r", "g", "b", "rgb" };
+	char window_name[32];
+
+	for (i = 0; i < sizeof(vport_names) / sizeof(char *); i++) {
+		sprintf(window_name, "scrolledwindow%s", vport_names[i]);
+		GtkScrolledWindow *win = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, window_name));
+		com.hadj[i] = gtk_scrolled_window_get_hadjustment(win);
+		g_signal_connect(com.hadj[i], "value-changed",
+				G_CALLBACK(scrollbars_hadjustment_changed_handler), NULL);
+		com.vadj[i] = gtk_scrolled_window_get_vadjustment(win);
+		g_signal_connect(com.vadj[i], "value-changed",
+				G_CALLBACK(scrollbars_vadjustment_changed_handler), NULL);
+	}
+}
+
 static void initialize_path_directory() {
 	GtkFileChooser *swap_dir;
 
@@ -292,12 +308,40 @@ int main(int argc, char *argv[]) {
 				exit(EXIT_SUCCESS);
 		}
 	}
+	com.cvport = RED_VPORT;
+	com.show_excluded = TRUE;
+	com.selected_star = -1;
+	com.star_is_seqdata = FALSE;
+	com.stars = NULL;
+	com.uniq = NULL;
+	com.color = NORMAL_COLOR;
+	for (i = 0; i < MAXVPORT; i++)
+		com.buf_is_dirty[i] = TRUE;
+	memset(&com.selection, 0, sizeof(rectangle));
+	memset(com.layers_hist, 0, sizeof(com.layers_hist));
+	/* initialize the com struct and zoom level */
+	com.sliders = MINMAX;
+	com.zoom_value = ZOOM_DEFAULT;
+
+	/* set default CWD */
+	com.wd = siril_get_startup_dir();
+	current_cwd = g_get_current_dir();
+
+	/* load init file */
+	if (checkinitfile()) {
+		siril_log_message(_("Could not load or create settings file, exiting.\n"));
+		exit(1);
+	}
 
 	if (!com.headless) {
-		gtk_init (&argc, &argv);
+		gtk_init(&argc, &argv);
+
+		/* load prefered theme */
+		load_prefered_theme(com.combo_theme);
 
 		/* try to load the glade file, from the sources defined above */
 		builder = gtk_builder_new();
+
 		i = 0;
 		do {
 			GError *err = NULL;
@@ -321,13 +365,6 @@ int main(int argc, char *argv[]) {
 		siril_path = siril_sources[i];
 
 		gtk_builder_connect_signals (builder, NULL);
-
-		initialize_log_tags();
-
-		/* support for converting files by dragging onto the GtkTreeView */
-		gtk_drag_dest_set(lookup_widget("treeview_convert"),
-				GTK_DEST_DEFAULT_MOTION, drop_types, G_N_ELEMENTS(drop_types),
-				GDK_ACTION_COPY);
 	}
 
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
@@ -338,6 +375,9 @@ int main(int argc, char *argv[]) {
 	/* initialize photometric variables */
 	initialize_photometric_param();
 
+	/* initialize sequence-related stuff */
+	initialize_sequence(&com.seq, TRUE);
+
 	/* initializing internal structures with widgets (drawing areas) */
 	if (!com.headless) {
 		com.vport[RED_VPORT] = lookup_widget("drawingarear");
@@ -346,63 +386,25 @@ int main(int argc, char *argv[]) {
 		com.vport[RGB_VPORT] = lookup_widget("drawingareargb");
 		com.preview_area[0] = lookup_widget("drawingarea_preview1");
 		com.preview_area[1] = lookup_widget("drawingarea_preview2");
-	}
-	com.cvport = RED_VPORT;
-	com.show_excluded = TRUE;
-	com.selected_star = -1;
-	com.star_is_seqdata = FALSE;
-	com.stars = NULL;
-	com.uniq = NULL;
-//	com.grad_sample = NULL;
-	com.color = NORMAL_COLOR;
-	for (i=0; i<MAXVPORT; i++)
-		com.buf_is_dirty[i] = TRUE;
-	memset(&com.selection, 0, sizeof(rectangle));
-	memset(com.layers_hist, 0, sizeof(com.layers_hist));
-	if (!com.headless) {
 		initialize_remap();
 		initialize_scrollbars();
 		init_mouse();
-	}
 
-	if (!com.headless) {
 		/* Keybord Shortcuts */
 		initialize_shortcuts();
 
 		/* Select combo boxes that trigger some text display or other things */
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods")), 0);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstacksel")), 0);
-	}
-
-	/* initialize the com struct and zoom level */
-	com.sliders = MINMAX;
-	com.zoom_value = ZOOM_DEFAULT;
-	if (!com.headless) {
 		zoomcombo_update_display_for_zoom();
-	}
 
-	/* initialize sequence-related stuff */
-	initialize_sequence(&com.seq, TRUE);
-	if (!com.headless) {
 		adjust_sellabel();
 
 		/* load the css sheet for general style */
-		load_css_style_sheet (siril_path);
-	}
+		load_css_style_sheet(siril_path);
 
-	/* set default CWD */
-	com.wd = siril_get_startup_dir();
-	current_cwd = g_get_current_dir();
-
-	/* load init file */
-	if (checkinitfile()) {
-		siril_log_message(_("Could not load or create settings file, exiting.\n"));
-		exit(1);
-	}
-
-	if (!com.headless) {
 		/* initialize theme */
-		initialize_theme();
+		initialize_theme_GUI();
 
 		/* initialize menu gui */
 		update_MenuItem();
@@ -435,12 +437,28 @@ int main(int argc, char *argv[]) {
 		gtk_combo_box_set_active_id(box, com.ext);
 		initialize_FITS_name_entries();
 
+		initialize_log_tags();
+
+		/* support for converting files by dragging onto the GtkTreeView */
+		gtk_drag_dest_set(lookup_widget("treeview_convert"),
+				GTK_DEST_DEFAULT_MOTION, drop_types, G_N_ELEMENTS(drop_types),
+				GDK_ACTION_COPY);
+
+		set_GUI_CWD();
+
 #ifdef HAVE_LIBRAW
 		set_GUI_LIBRAW();
 #endif
 		set_GUI_photometry();
 
 		init_peaker_GUI();
+
+		update_spinCPU(com.max_thread);
+
+		g_object_ref(G_OBJECT(lookup_widget("main_window"))); // don't destroy it on removal
+		g_object_ref(G_OBJECT(lookup_widget("rgb_window")));  // don't destroy it on removal
+
+		update_used_memory();
 	}
 	else {
 		init_peaker_default();
@@ -455,14 +473,6 @@ int main(int argc, char *argv[]) {
 #endif
 			);
 
-	if (!com.headless) {
-		update_spinCPU(com.max_thread);
-
-		g_object_ref(G_OBJECT(lookup_widget("main_window"))); // don't destroy it on removal
-		g_object_ref(G_OBJECT(lookup_widget("rgb_window")));  // don't destroy it on removal
-
-	}
-
 	/* handling OS-X integration */
 #ifdef MAC_INTEGRATION
 	GtkosxApplication *osx_app = gtkosx_application_get();
@@ -472,8 +482,6 @@ int main(int argc, char *argv[]) {
 #endif //MAC_INTEGRATION
 
 	/* start Siril */
-	if (!com.headless) update_used_memory();
-
 	if (argv[optind] != NULL) {
 		if (current_cwd) {
 			changedir(current_cwd, NULL);
@@ -489,6 +497,10 @@ int main(int argc, char *argv[]) {
 
 	if (forcecwd && cwd_forced) {
 		changedir(cwd_forced, NULL);
+	}
+
+	if (!com.script) {
+		set_GUI_CWD();
 	}
 
 	if (com.headless) {
@@ -518,21 +530,4 @@ int main(int argc, char *argv[]) {
 	g_object_unref(osx_app);
 #endif //MAC_INTEGRATION
 	return 0;
-}
-
-void initialize_scrollbars() {
-	int i;
-	char *vport_names[] = { "r", "g", "b", "rgb" };
-	char window_name[32];
-
-	for (i = 0; i < sizeof(vport_names) / sizeof(char *); i++) {
-		sprintf(window_name, "scrolledwindow%s", vport_names[i]);
-		GtkScrolledWindow *win = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, window_name));
-		com.hadj[i] = gtk_scrolled_window_get_hadjustment(win);
-		g_signal_connect(com.hadj[i], "value-changed",
-				G_CALLBACK(scrollbars_hadjustment_changed_handler), NULL);
-		com.vadj[i] = gtk_scrolled_window_get_vadjustment(win);
-		g_signal_connect(com.vadj[i], "value-changed",
-				G_CALLBACK(scrollbars_vadjustment_changed_handler), NULL);
-	}
 }

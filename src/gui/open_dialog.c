@@ -286,6 +286,7 @@ static void opendial(int whichdial) {
 		case OD_CWD:
 			if (!changedir(filename, &err)) {
 				writeinitfile();
+				set_GUI_CWD();
 			} else {
 				siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), err);
 			}

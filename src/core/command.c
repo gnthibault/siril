@@ -531,6 +531,9 @@ int process_cd(int nb) {
 	retval = changedir(filename, NULL);
 	if (!retval) {
 		writeinitfile();
+		if (!com.script) {
+			set_GUI_CWD();
+		}
 	}
 	return retval;
 }

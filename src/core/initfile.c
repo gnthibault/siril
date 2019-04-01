@@ -69,11 +69,9 @@ static int readinitfile() {
 				config_destroy(&config);
 				return 1;
 			}
-			set_GUI_CWD();
 			writeinitfile();
 		}
 	}
-	else set_GUI_CWD();
 
 	/* Libraw setting */
 	config_setting_t *raw_setting = config_lookup(&config, keywords[RAW]);
@@ -168,8 +166,8 @@ static int readinitfile() {
 				list = g_slist_append(list, g_strdup(tmp));
 			}
 
-			if (!com.script)
-				set_GUI_misc();
+//			if (!com.script)
+//				set_GUI_misc();
 		}
 		misc_setting = config_lookup(&config, "misc-settings.main_w_pos");
 		if (misc_setting != NULL) {
@@ -460,7 +458,6 @@ int checkinitfile() {
 	if (readinitfile()) {	// couldn't read it
 		char filename[255];
 
-		set_GUI_CWD();
 		// if that fails, check and create the default ini file
 #if (defined(__APPLE__) && defined(__MACH__))
 		snprintf(filename, 255, "%s", homefolder);

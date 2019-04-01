@@ -15,6 +15,8 @@ pixmaps = \
 	mirrory.png \
 	monochrome.png \
 	monochrome_dark.png \
+	mtf.png \
+	mtf_dark.png \
 	neg.png \
 	neg_dark.png \
 	r.png \

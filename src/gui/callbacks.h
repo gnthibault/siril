@@ -8,7 +8,8 @@
 GtkWidget* lookup_widget (const gchar *widget_name);
 GtkWidget *popover_new(GtkWidget *widget, const gchar *text);
 
-void initialize_theme();
+void initialize_theme_GUI();
+void load_prefered_theme();
 void initialize_shortcuts();
 void fill_about_dialog();
 void initialize_remap();

@@ -1376,6 +1376,11 @@ enter a visible wavelength in nm</property>
       </object>
     </child>
   </object>
+  <object class="GtkImage" id="mtf">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">pixmaps/mtf.png</property>
+  </object>
   <object class="GtkImage" id="pixmap1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -1400,7 +1405,6 @@ enter a visible wavelength in nm</property>
   <object class="GtkImage" id="rotate90-acw">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="tooltip_text" translatable="yes">Rotate 90 degrees, counter-clockwise</property>
     <property name="pixbuf">pixmaps/rotate-acw.png</property>
   </object>
   <object class="GtkImage" id="rotate90-cw">
@@ -2054,6 +2058,7 @@ enter a visible wavelength in nm</property>
                     <property name="name">rotate90_anticlock_button</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Rotate 90 degrees, counter-clockwise</property>
                     <property name="use_underline">True</property>
                     <property name="icon_widget">rotate90-acw</property>
                     <signal name="clicked" handler="on_menuitem_rotation270_activate" swapped="no"/>
@@ -6532,9 +6537,8 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Apply autostretch algorithm to image</property>
-                <property name="label" translatable="yes">autoStretch</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-execute</property>
+                <property name="icon_widget">mtf</property>
                 <signal name="clicked" handler="on_histoToolAutoStretch_clicked" swapped="no"/>
               </object>
               <packing>
@@ -12975,6 +12979,55 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkBox" id="box10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkRadioButton" id="regallbutton">
+                        <property name="label" translatable="yes">Register all images from sequence</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="regselbutton">
+                        <property name="label" translatable="yes">Register selected images only</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">regallbutton</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkBox" id="box5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -13049,55 +13102,6 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="padding">5</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="box10">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">center</property>
-                    <child>
-                      <object class="GtkRadioButton" id="regallbutton">
-                        <property name="label" translatable="yes">Register all images from sequence</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkRadioButton" id="regselbutton">
-                        <property name="label" translatable="yes">Register selected images only</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">regallbutton</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
                     <property name="position">4</property>
                   </packing>
                 </child>

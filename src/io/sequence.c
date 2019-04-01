@@ -104,8 +104,12 @@ int read_single_sequence(char *realname, int imagetype) {
 	int retval=3;		// needs to return 3 if ok !!!
 	char *name = strdup(realname);
 	gchar *dirname = g_path_get_dirname(realname);
-	if (!changedir(dirname, NULL))
+	if (!changedir(dirname, NULL)) {
 		writeinitfile();
+		if (!com.script) {
+			set_GUI_CWD();
+		}
+	}
 	g_free(dirname);
 
 	if (check_only_one_film_seq(realname)) retval = 1;
