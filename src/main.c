@@ -453,8 +453,6 @@ int main(int argc, char *argv[]) {
 
 		init_peaker_GUI();
 
-		update_spinCPU(com.max_thread);
-
 		g_object_ref(G_OBJECT(lookup_widget("main_window"))); // don't destroy it on removal
 		g_object_ref(G_OBJECT(lookup_widget("rgb_window")));  // don't destroy it on removal
 
@@ -472,6 +470,9 @@ int main(int argc, char *argv[]) {
 			_("disabled"), com.max_thread = 1
 #endif
 			);
+	if (!com.headless) {
+		update_spinCPU(com.max_thread);
+	}
 
 	/* handling OS-X integration */
 #ifdef MAC_INTEGRATION

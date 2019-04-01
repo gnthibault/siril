@@ -217,7 +217,7 @@ int initialize_script_menu() {
 				gtk_menu_shell_append(GTK_MENU_SHELL(menu), separator);
 				gtk_widget_show(separator);
 			}
-			siril_log_message(_("Searching scripts in: %s...\n"), s->data);
+			siril_log_message(_("Searching scripts in: \"%s\"...\n"), s->data);
 			for (l = list; l; l = l->next) {
 				nb_item ++;
 				/* write an item per script file */
