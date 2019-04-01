@@ -991,11 +991,15 @@ void on_combo_theme_changed(GtkComboBox *box, gpointer user_data) {
 	GtkSettings *settings;
 
 	com.combo_theme = gtk_combo_box_get_active(box);
+	if ((com.combo_theme == 1) || (com.have_dark_theme && com.combo_theme == 0)) {
+		com.want_dark = TRUE;
+	} else {
+		com.want_dark = FALSE;
+	}
 
 	settings = gtk_settings_get_default();
-	g_object_set(settings, "gtk-application-prefer-dark-theme",
-			com.have_dark_theme || com.combo_theme == 1, NULL);
-	update_icons_to_theme(com.have_dark_theme || com.combo_theme == 1);
+	g_object_set(settings, "gtk-application-prefer-dark-theme", com.want_dark, NULL);
+	update_icons_to_theme(com.want_dark);
 }
 
 void initialize_theme() {

@@ -586,8 +586,9 @@ struct cominf {
 	
 	gboolean dontShowConfirm;
 
-	gboolean have_dark_theme;	// we have a dark theme, use bright colours
-	gint combo_theme;
+	gboolean have_dark_theme;	// global theme is dark
+	gint combo_theme;           // value of the combobox theme
+	gboolean want_dark;			// User want dark theme for siril
 
 	stackconf stack;
 	

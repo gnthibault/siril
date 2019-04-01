@@ -99,7 +99,7 @@ void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 			fwhm = seq->regparam[layer][index].quality;
 	}
 
-	color = (com.have_dark_theme || com.combo_theme == 1) ? 1 : 0;
+	color = com.want_dark ? 1 : 0;
 
 	basename = g_path_get_basename(seq_get_image_filename(seq, index, imname));
 	gtk_list_store_append (list_store, &iter);
