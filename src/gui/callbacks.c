@@ -1746,9 +1746,6 @@ void show_main_gray_window() {
 			gtk_builder_get_object(builder, "menuitemgray"));
 	GtkWidget *win;
 
-	printf("x=%d et y=%d\n\n", com.main_w_pos.x, com.main_w_pos.y);
-
-
 	win = lookup_widget("main_window");
 	int x = com.main_w_pos.x;
 	int y = com.main_w_pos.y;
@@ -2792,7 +2789,6 @@ void on_spinbutton_mem_value_changed(GtkSpinButton *button, gpointer user_data) 
 }
 
 void on_combobox_ext_changed(GtkComboBox *box, gpointer user_data) {
-
 	if (com.ext)
 		free(com.ext);
 
@@ -2818,11 +2814,25 @@ void save_all_windows_position() {
 	if (!com.script && com.remember_windows) {
 		com.main_w_pos = get_window_position(GTK_WINDOW(lookup_widget("main_window")));
 		com.rgb_w_pos = get_window_position(GTK_WINDOW(lookup_widget("rgb_window")));
-		writeinitfile();
 	}
 }
 
+gboolean on_rgb_window_configure_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+
+	save_all_windows_position();
+	return FALSE;
+}
+
+gboolean on_main_window_configure_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+
+	save_all_windows_position();
+	return FALSE;
+}
+
 void gtk_main_quit() {
+	writeinitfile();		// save settings (like window positions)
 	close_sequence(FALSE);	// save unfinished business
 	close_single_image();	// close the previous image and free resources
 	g_slist_free_full(com.script_path, g_free);

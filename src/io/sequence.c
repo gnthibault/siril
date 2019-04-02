@@ -1096,7 +1096,6 @@ void close_sequence(int loading_another) {
 	if (sequence_is_loaded()) {
 		siril_log_message(_("Closing sequence %s\n"), com.seq.seqname);
 		if (!com.headless) {
-			save_all_windows_position();
 			free_cbbt_layers();
 			clear_sequence_list();
 		}
