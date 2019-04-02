@@ -1746,6 +1746,9 @@ void show_main_gray_window() {
 			gtk_builder_get_object(builder, "menuitemgray"));
 	GtkWidget *win;
 
+	printf("x=%d et y=%d\n\n", com.main_w_pos.x, com.main_w_pos.y);
+
+
 	win = lookup_widget("main_window");
 	int x = com.main_w_pos.x;
 	int y = com.main_w_pos.y;
@@ -2085,11 +2088,14 @@ void set_GUI_CWD() {
 
 void set_GUI_misc() {
 	GtkToggleButton *ToggleButton;
+	GtkSpinButton *memory_percent;
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.dontShowConfirm);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck"));
 	gtk_toggle_button_set_active(ToggleButton, com.remember_windows);
+	memory_percent = GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem"));
+	gtk_spin_button_set_value(memory_percent, com.stack.memory_percent);
 }
 
 /* size is in kiB */
@@ -2125,10 +2131,12 @@ void initialize_preprocessing() {
 }
 
 void set_libraw_settings_menu_available(gboolean activate) {
-	GtkNotebook *notebook = GTK_NOTEBOOK(lookup_widget("notebook3"));
-	GtkWidget *widget = gtk_notebook_get_nth_page (notebook, 0);
+	if (!com.script) {
+		GtkNotebook *notebook = GTK_NOTEBOOK(lookup_widget("notebook3"));
+		GtkWidget *widget = gtk_notebook_get_nth_page(notebook, 0);
 
-	gtk_widget_set_visible(widget, activate);
+		gtk_widget_set_visible(widget, activate);
+	}
 }
 
 void set_GUI_CAMERA() {

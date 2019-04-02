@@ -34,7 +34,7 @@ void fill_convert_list(GSList *list);
 void list_format_available();
 void check_for_conversion_form_completeness();
 image_type get_type_for_extension(const char *extension);
-void initialize_converters();
+gchar *initialize_converters();
 int count_selected_files();
 int count_converted_files();
 gpointer convert_thread_worker(gpointer p);

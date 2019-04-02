@@ -26,6 +26,7 @@
 #include "core/proto.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "gui/message_dialog.h"
 #include "algos/PSF.h"
 #include "algos/photometry.h"
 
@@ -338,5 +339,33 @@ void on_button_reset_photometry_clicked(GtkButton *button, gpointer user_data) {
 	gfit.cvf = 0.0;
 	set_GUI_photometry();
 	gfit.cvf = tmp;
+}
+
+void on_spinInner_value_changed(GtkSpinButton *inner, gpointer user_data) {
+	GtkSpinButton *outer;
+	double in, out;
+
+	outer = GTK_SPIN_BUTTON(lookup_widget("spinOuter"));
+	in = gtk_spin_button_get_value(inner);
+	out = gtk_spin_button_get_value(outer);
+
+	if (in >= out) {
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Wrong value"),
+				_("Inner radius value must be less than outer. Please change the value."));
+	}
+}
+
+void on_spinOuter_value_changed(GtkSpinButton *outer, gpointer user_data) {
+	GtkSpinButton *inner;
+	double in, out;
+
+	inner = GTK_SPIN_BUTTON(lookup_widget("spinInner"));
+	in = gtk_spin_button_get_value(inner);
+	out = gtk_spin_button_get_value(outer);
+
+	if (in >= out) {
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Wrong value"),
+				_("Inner radius value must be less than outer. Please change the value."));
+	}
 }
 

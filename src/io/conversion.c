@@ -328,8 +328,7 @@ void check_for_conversion_form_completeness() {
 /* initialize converters (utilities used for different image types importing) *
  * updates the label listing the supported input file formats, and modifies the
  * list of file types used in convflags */
-void initialize_converters() {
-	GtkLabel *label_supported;
+gchar *initialize_converters() {
 	GString *string;
 	gchar *text;
 	int count_ext = 0;
@@ -347,7 +346,7 @@ void initialize_converters() {
 	/* internal extensions */
 	if (supported_extensions == NULL) {
 		fprintf(stderr, "initialize_converters: error allocating data\n");
-		return;
+		return NULL;
 	}
 	supported_extensions[count_ext++] = ".fit";
 	supported_extensions[count_ext++] = ".fits";
@@ -366,7 +365,6 @@ void initialize_converters() {
 	supported_filetypes |= TYPERAW;
 	g_string_append(string, ", ");
 	g_string_append(string, _("RAW images"));
-	if (!com.script) set_libraw_settings_menu_available(TRUE);	// enable libraw settings
 	initialize_libraw_settings();	// below in the file
 	
 	nb_raw = get_nb_raw_supported();
@@ -376,8 +374,6 @@ void initialize_converters() {
 		strcat(supported_extensions[count_ext+i], supported_raw[i].extension);
 	}
 	count_ext += nb_raw;
-#else
-	if (!com.script) set_libraw_settings_menu_available(FALSE);	// disable libraw settings
 #endif
 	g_string_append(string, ", ");
 	g_string_append(string, _("FITS-CFA images"));
@@ -419,12 +415,9 @@ void initialize_converters() {
 
 	g_string_append(string, ".");
 	text = g_string_free(string, FALSE);
-	if (!com.script) {
-		label_supported = GTK_LABEL(gtk_builder_get_object(builder, "label_supported_types"));
-		gtk_label_set_text(label_supported, text);
-	}
+
 	siril_log_message(_("Supported file types: %s\n"), text + 1);
-	g_free(text);
+	return text;
 }
 
 int check_for_raw_extensions(const char *extension) {

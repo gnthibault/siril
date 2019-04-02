@@ -45,6 +45,7 @@ void close_single_image() {
 	if (sequence_is_loaded() && com.seq.current >= 0)
 		return;
 	fprintf(stdout, "MODE: closing single image\n");
+	save_all_windows_position();
 	free_image_data();
 	undo_flush();
 }

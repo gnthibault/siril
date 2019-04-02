@@ -323,6 +323,12 @@ int main(int argc, char *argv[]) {
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
 
+	/* initialize converters (utilities used for different image types importing) */
+	gchar *supported_files = initialize_converters();
+
+	/* initialize photometric variables */
+	initialize_photometric_param();
+
 	/* set default CWD */
 	com.wd = siril_get_startup_dir();
 	current_cwd = g_get_current_dir();
@@ -369,12 +375,6 @@ int main(int argc, char *argv[]) {
 
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
 
-	/* initialize converters (utilities used for different image types importing) */
-	initialize_converters();
-
-	/* initialize photometric variables */
-	initialize_photometric_param();
-
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
 
@@ -397,6 +397,10 @@ int main(int argc, char *argv[]) {
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods")), 0);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstacksel")), 0);
 		zoomcombo_update_display_for_zoom();
+
+		GtkLabel *label_supported = GTK_LABEL(gtk_builder_get_object(builder, "label_supported_types"));
+		gtk_label_set_text(label_supported, supported_files);
+
 
 		adjust_sellabel();
 
@@ -445,14 +449,15 @@ int main(int argc, char *argv[]) {
 				GDK_ACTION_COPY);
 
 		set_GUI_CWD();
-
-#ifdef HAVE_LIBRAW
-		set_GUI_LIBRAW();
-#endif
+		set_GUI_misc();
 		set_GUI_photometry();
-
 		init_peaker_GUI();
-
+#ifdef HAVE_LIBRAW
+		set_libraw_settings_menu_available(TRUE);	// enable libraw settings
+		set_GUI_LIBRAW();
+#else
+		set_libraw_settings_menu_available(FALSE);	// disable libraw settings
+#endif
 		g_object_ref(G_OBJECT(lookup_widget("main_window"))); // don't destroy it on removal
 		g_object_ref(G_OBJECT(lookup_widget("rgb_window")));  // don't destroy it on removal
 
@@ -461,6 +466,8 @@ int main(int argc, char *argv[]) {
 	else {
 		init_peaker_default();
 	}
+
+	g_free(supported_files);
 
 	/* Get CPU number and set the number of threads */
 	siril_log_message(_("Parallel processing %s: Using %d logical processor(s).\n"),

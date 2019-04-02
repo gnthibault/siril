@@ -165,9 +165,6 @@ static int readinitfile() {
 				tmp = config_setting_get_string_elem(misc_setting, i);
 				list = g_slist_append(list, g_strdup(tmp));
 			}
-
-//			if (!com.script)
-//				set_GUI_misc();
 		}
 		misc_setting = config_lookup(&config, "misc-settings.main_w_pos");
 		if (misc_setting != NULL) {
@@ -176,6 +173,7 @@ static int readinitfile() {
 			com.main_w_pos.w = config_setting_get_int_elem(misc_setting, 2);
 			com.main_w_pos.h = config_setting_get_int_elem(misc_setting, 3);
 		}
+
 		misc_setting = config_lookup(&config, "misc-settings.rgb_w_pos");
 		if (misc_setting != NULL) {
 			com.rgb_w_pos.x = config_setting_get_int_elem(misc_setting, 0);
