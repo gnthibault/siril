@@ -315,10 +315,7 @@ int changedir(const char *dir, gchar **err) {
 			 update_sequence_list();*/
 			g_free(com.wd);
 			com.wd = g_get_current_dir();
-			siril_log_message(_("Setting CWD (Current "
-					"Working Directory) to '%s'\n"), com.wd);
-//			if (!com.script)
-//				set_GUI_CWD();
+			siril_log_message(_("Setting CWD (Current Working Directory) to '%s'\n"), com.wd);
 			retval = 0;
 		} else {
 			error = siril_log_message(_("Could not change directory to '%s'.\n"), dir);

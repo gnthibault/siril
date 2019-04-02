@@ -67,7 +67,7 @@
 /* the global variables of the whole project */
 cominfo com;	// the main data struct
 fits gfit;	// currently loaded image
-GtkBuilder *builder;	// get widget references anywhere
+GtkBuilder *builder = NULL;	// get widget references anywhere
 
 #ifdef MAC_INTEGRATION
 
@@ -197,33 +197,6 @@ void signal_handled(int s) {
 	gtk_main_quit();
 }
 
-static void initialize_scrollbars() {
-	int i;
-	char *vport_names[] = { "r", "g", "b", "rgb" };
-	char window_name[32];
-
-	for (i = 0; i < sizeof(vport_names) / sizeof(char *); i++) {
-		sprintf(window_name, "scrolledwindow%s", vport_names[i]);
-		GtkScrolledWindow *win = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, window_name));
-		com.hadj[i] = gtk_scrolled_window_get_hadjustment(win);
-		g_signal_connect(com.hadj[i], "value-changed",
-				G_CALLBACK(scrollbars_hadjustment_changed_handler), NULL);
-		com.vadj[i] = gtk_scrolled_window_get_vadjustment(win);
-		g_signal_connect(com.vadj[i], "value-changed",
-				G_CALLBACK(scrollbars_vadjustment_changed_handler), NULL);
-	}
-}
-
-static void initialize_path_directory() {
-	GtkFileChooser *swap_dir;
-
-	swap_dir = GTK_FILE_CHOOSER(lookup_widget("filechooser_swap"));
-	if (com.swap_dir && com.swap_dir[0] != '\0')
-		gtk_file_chooser_set_filename (swap_dir, com.swap_dir);
-	else
-		gtk_file_chooser_set_filename (swap_dir, g_get_tmp_dir());
-}
-
 struct option long_opts[] = {
 		{"version", no_argument, 0, 'v'},
 		{"help", no_argument, 0, 'h'},
@@ -232,11 +205,6 @@ struct option long_opts[] = {
 		{"script",    required_argument, 0, 's'},
 		{0, 0, 0, 0}
 	};
-
-static GtkTargetEntry drop_types[] = {
-  {"text/uri-list", 0, 0}
-};
-
 
 int main(int argc, char *argv[]) {
 	int i, c;
@@ -324,28 +292,38 @@ int main(int argc, char *argv[]) {
 	com.zoom_value = ZOOM_DEFAULT;
 	com.stack.memory_percent = 0.9;
 
+	if (!com.headless) {
+		gtk_init(&argc, &argv);
+	}
+
+	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
+
+	/***************
+	 *  initialization of some parameters that need to be done before
+	 * checkinitfile
+	 ***************/
 	/* initialize converters (utilities used for different image types importing) */
 	gchar *supported_files = initialize_converters();
-
 	/* initialize photometric variables */
 	initialize_photometric_param();
+	/* initialize peaker variables */
+	init_peaker_default();
+	/* initialize sequence-related stuff */
+	initialize_sequence(&com.seq, TRUE);
 
-	/* set default CWD */
+	/* set default CWD, and load init file
+	 * checkinitfile will load all saved parameters
+	 * */
 	com.wd = siril_get_startup_dir();
 	current_cwd = g_get_current_dir();
-
-	/* load init file */
 	if (checkinitfile()) {
-		siril_log_message(_("Could not load or create settings file, exiting.\n"));
+		fprintf(stderr, _("Could not load or create settings file, exiting.\n"));
 		exit(1);
 	}
 
 	if (!com.headless) {
-		gtk_init(&argc, &argv);
-
 		/* load prefered theme */
 		load_prefered_theme(com.combo_theme);
-
 		/* try to load the glade file, from the sources defined above */
 		builder = gtk_builder_new();
 
@@ -372,100 +350,8 @@ int main(int argc, char *argv[]) {
 		siril_path = siril_sources[i];
 
 		gtk_builder_connect_signals (builder, NULL);
-	}
 
-	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
-
-	/* initialize sequence-related stuff */
-	initialize_sequence(&com.seq, TRUE);
-
-	/* initializing internal structures with widgets (drawing areas) */
-	if (!com.headless) {
-		com.vport[RED_VPORT] = lookup_widget("drawingarear");
-		com.vport[GREEN_VPORT] = lookup_widget("drawingareag");
-		com.vport[BLUE_VPORT] = lookup_widget("drawingareab");
-		com.vport[RGB_VPORT] = lookup_widget("drawingareargb");
-		com.preview_area[0] = lookup_widget("drawingarea_preview1");
-		com.preview_area[1] = lookup_widget("drawingarea_preview2");
-		initialize_remap();
-		initialize_scrollbars();
-		init_mouse();
-
-		/* Keybord Shortcuts */
-		initialize_shortcuts();
-
-		/* Select combo boxes that trigger some text display or other things */
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods")), 0);
-		gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstacksel")), 0);
-		zoomcombo_update_display_for_zoom();
-
-		GtkLabel *label_supported = GTK_LABEL(gtk_builder_get_object(builder, "label_supported_types"));
-		gtk_label_set_text(label_supported, supported_files);
-
-
-		adjust_sellabel();
-
-		/* load the css sheet for general style */
-		load_css_style_sheet(siril_path);
-
-		/* initialize theme */
-		initialize_theme_GUI();
-
-		/* initialize menu gui */
-		update_MenuItem();
-		initialize_script_menu();
-
-		/* initialize command completion */
-		init_completion_command();
-
-		/* initialize preprocessing */
-		initialize_preprocessing();
-
-		/* initialize registration methods */
-		initialize_registration_methods();
-
-		/* initialize stacking methods */
-		initialize_stacking_methods();
-
-		/* register some callbacks */
-		register_selection_update_callback(update_export_crop_label);
-
-		/* initialization of the binning parameters */
-		GtkComboBox *binning = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combobinning"));
-		gtk_combo_box_set_active(binning, 0);
-
-		/* initialization of some paths */
-		initialize_path_directory();
-
-		/* initialization of default FITS extension */
-		GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
-		gtk_combo_box_set_active_id(box, com.ext);
-		initialize_FITS_name_entries();
-
-		initialize_log_tags();
-
-		/* support for converting files by dragging onto the GtkTreeView */
-		gtk_drag_dest_set(lookup_widget("treeview_convert"),
-				GTK_DEST_DEFAULT_MOTION, drop_types, G_N_ELEMENTS(drop_types),
-				GDK_ACTION_COPY);
-
-		set_GUI_CWD();
-		set_GUI_misc();
-		set_GUI_photometry();
-		init_peaker_GUI();
-#ifdef HAVE_LIBRAW
-		set_libraw_settings_menu_available(TRUE);	// enable libraw settings
-		set_GUI_LIBRAW();
-#else
-		set_libraw_settings_menu_available(FALSE);	// disable libraw settings
-#endif
-		g_object_ref(G_OBJECT(lookup_widget("main_window"))); // don't destroy it on removal
-		g_object_ref(G_OBJECT(lookup_widget("rgb_window")));  // don't destroy it on removal
-
-		update_used_memory();
-	}
-	else {
-		init_peaker_default();
+		initialize_all_GUI(siril_path, supported_files);
 	}
 
 	g_free(supported_files);

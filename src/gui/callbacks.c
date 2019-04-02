@@ -1006,7 +1006,7 @@ void on_combo_theme_changed(GtkComboBox *box, gpointer user_data) {
 	update_icons_to_theme(com.want_dark);
 }
 
-void initialize_theme_GUI() {
+static void initialize_theme_GUI() {
 	GtkComboBox *box;
 
 	box = GTK_COMBO_BOX(lookup_widget("combo_theme"));
@@ -1812,7 +1812,7 @@ GtkWindow *siril_get_active_window() {
 	return win;
 }
 
-void zoomcombo_update_display_for_zoom() {
+static void zoomcombo_update_display_for_zoom() {
 	static GtkComboBox *zoomcombo = NULL;
 	static double indexes[] = { 16., 8., 4., 2., 1., .5, .25, .125, /*.0625, */
 	-1. };
@@ -1836,7 +1836,7 @@ void zoomcombo_update_display_for_zoom() {
 	siril_message_dialog( GTK_MESSAGE_ERROR, _("Error"), msg);
 }
 
-void initialize_FITS_name_entries() {
+static void initialize_FITS_name_entries() {
 	GtkEntry *moffset, *mdark, *mflat, *final_stack;
 	GString *str[4];
 	gchar *txt[4];
@@ -1984,7 +1984,7 @@ void update_spinCPU(int max) {
  *             I N I T I A L I S A T I O N      F U N C T I O N S            *
  ****************************************************************************/
 
-void initialize_shortcuts() {
+static void initialize_shortcuts() {
 	/* activate accelerators (keyboard shortcut in GTK language) */
 	static GtkAccelGroup *accel = NULL;
 
@@ -2116,7 +2116,7 @@ void set_GUI_DiskSpace(int64_t space) {
 	set_label_text_from_main_thread("labelFreeSpace", str);
 }
 
-void initialize_preprocessing() {
+static void initialize_preprocessing() {
 	GtkToggleButton *cfaButton, *eqButton;
 
 	cfaButton = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
@@ -2179,7 +2179,7 @@ void set_GUI_CAMERA() {
 	}
 }
 
-void set_GUI_LIBRAW() {
+static void set_GUI_LIBRAW() {
 
 	/**********COLOR ADJUSTEMENT**************/
 	gtk_spin_button_set_value(
@@ -2256,6 +2256,122 @@ void set_GUI_photometry() {
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinOuter")),
 				com.phot_set.outer);
 	}
+}
+
+static void initialize_path_directory() {
+	GtkFileChooser *swap_dir;
+
+	swap_dir = GTK_FILE_CHOOSER(lookup_widget("filechooser_swap"));
+	if (com.swap_dir && com.swap_dir[0] != '\0')
+		gtk_file_chooser_set_filename (swap_dir, com.swap_dir);
+	else
+		gtk_file_chooser_set_filename (swap_dir, g_get_tmp_dir());
+}
+
+static void initialize_scrollbars() {
+	int i;
+	char *vport_names[] = { "r", "g", "b", "rgb" };
+	char window_name[32];
+
+	for (i = 0; i < sizeof(vport_names) / sizeof(char *); i++) {
+		sprintf(window_name, "scrolledwindow%s", vport_names[i]);
+		GtkScrolledWindow *win = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, window_name));
+		com.hadj[i] = gtk_scrolled_window_get_hadjustment(win);
+		g_signal_connect(com.hadj[i], "value-changed",
+				G_CALLBACK(scrollbars_hadjustment_changed_handler), NULL);
+		com.vadj[i] = gtk_scrolled_window_get_vadjustment(win);
+		g_signal_connect(com.vadj[i], "value-changed",
+				G_CALLBACK(scrollbars_vadjustment_changed_handler), NULL);
+	}
+}
+
+static GtkTargetEntry drop_types[] = {
+  {"text/uri-list", 0, 0}
+};
+
+void initialize_all_GUI(gchar *siril_path, gchar *supported_files) {
+	/* initializing internal structures with widgets (drawing areas) */
+	com.vport[RED_VPORT] = lookup_widget("drawingarear");
+	com.vport[GREEN_VPORT] = lookup_widget("drawingareag");
+	com.vport[BLUE_VPORT] = lookup_widget("drawingareab");
+	com.vport[RGB_VPORT] = lookup_widget("drawingareargb");
+	com.preview_area[0] = lookup_widget("drawingarea_preview1");
+	com.preview_area[1] = lookup_widget("drawingarea_preview2");
+	initialize_remap();
+	initialize_scrollbars();
+	init_mouse();
+
+	/* Keybord Shortcuts */
+	initialize_shortcuts();
+
+	/* Select combo boxes that trigger some text display or other things */
+	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods")), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstacksel")), 0);
+	zoomcombo_update_display_for_zoom();
+
+	GtkLabel *label_supported = GTK_LABEL(gtk_builder_get_object(builder, "label_supported_types"));
+	gtk_label_set_text(label_supported, supported_files);
+
+	adjust_sellabel();
+
+	/* load the css sheet for general style */
+	load_css_style_sheet(siril_path);
+
+	/* initialize theme */
+	initialize_theme_GUI();
+
+	/* initialize menu gui */
+	update_MenuItem();
+	initialize_script_menu();
+
+	/* initialize command completion */
+	init_completion_command();
+
+	/* initialize preprocessing */
+	initialize_preprocessing();
+
+	/* initialize registration methods */
+	initialize_registration_methods();
+
+	/* initialize stacking methods */
+	initialize_stacking_methods();
+
+	/* register some callbacks */
+	register_selection_update_callback(update_export_crop_label);
+
+	/* initialization of the binning parameters */
+	GtkComboBox *binning = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combobinning"));
+	gtk_combo_box_set_active(binning, 0);
+
+	/* initialization of some paths */
+	initialize_path_directory();
+
+	/* initialization of default FITS extension */
+	GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
+	gtk_combo_box_set_active_id(box, com.ext);
+	initialize_FITS_name_entries();
+
+	initialize_log_tags();
+
+	/* support for converting files by dragging onto the GtkTreeView */
+	gtk_drag_dest_set(lookup_widget("treeview_convert"),
+			GTK_DEST_DEFAULT_MOTION, drop_types, G_N_ELEMENTS(drop_types),
+			GDK_ACTION_COPY);
+
+	set_GUI_CWD();
+	set_GUI_misc();
+	set_GUI_photometry();
+	init_peaker_GUI();
+#ifdef HAVE_LIBRAW
+	set_libraw_settings_menu_available(TRUE);	// enable libraw settings
+	set_GUI_LIBRAW();
+#else
+	set_libraw_settings_menu_available(FALSE);	// disable libraw settings
+#endif
+	g_object_ref(G_OBJECT(lookup_widget("main_window"))); // don't destroy it on removal
+	g_object_ref(G_OBJECT(lookup_widget("rgb_window")));  // don't destroy it on removal
+
+	update_used_memory();
 }
 
 /*****************************************************************************
@@ -2836,8 +2952,10 @@ void gtk_main_quit() {
 	close_sequence(FALSE);	// save unfinished business
 	close_single_image();	// close the previous image and free resources
 	g_slist_free_full(com.script_path, g_free);
-	g_object_unref(G_OBJECT(lookup_widget("main_window")));
-	g_object_unref(G_OBJECT(lookup_widget("rgb_window")));
+	if (!com.headless) {
+		g_object_unref(G_OBJECT(lookup_widget("main_window")));
+		g_object_unref(G_OBJECT(lookup_widget("rgb_window")));
+	}
 	exit(EXIT_SUCCESS);
 }
 

@@ -8,9 +8,8 @@
 GtkWidget* lookup_widget (const gchar *widget_name);
 GtkWidget *popover_new(GtkWidget *widget, const gchar *text);
 
-void initialize_theme_GUI();
+void initialize_all_GUI(gchar *path, gchar *files);
 void load_prefered_theme();
-void initialize_shortcuts();
 void fill_about_dialog();
 void initialize_remap();
 void set_cutoff_sliders_max_values();		// was set_upper_minmax
@@ -25,7 +24,6 @@ void set_GUI_CWD();
 void set_GUI_MEM(unsigned long size);
 void set_GUI_DiskSpace(int64_t mem);
 void set_GUI_misc();
-void initialize_preprocessing();
 void update_MenuItem();
 void queue_redraw(int doremap);
 gboolean redraw(int vport, int remap);
@@ -37,7 +35,6 @@ void update_photometry_interface();
 void set_libraw_settings_menu_available(gboolean);
 void clear_sampling_setting_box();
 void set_GUI_CAMERA();
-void set_GUI_LIBRAW();
 void set_GUI_photometry();
 
 typedef void (*selection_update_callback)();
@@ -61,8 +58,6 @@ void hide_rgb_window();
 void hide_gray_window();
 GtkWindow *siril_get_active_window();
 
-void zoomcombo_update_display_for_zoom();
-void initialize_FITS_name_entries();
 void adjust_vport_size_to_image();
 void scrollbars_hadjustment_changed_handler(GtkAdjustment *adjustment, gpointer user_data);
 void scrollbars_vadjustment_changed_handler(GtkAdjustment *adjustment, gpointer user_data);
