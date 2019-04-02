@@ -322,6 +322,7 @@ int main(int argc, char *argv[]) {
 	/* initialize the com struct and zoom level */
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
+	com.stack.memory_percent = 0.9;
 
 	/* initialize converters (utilities used for different image types importing) */
 	gchar *supported_files = initialize_converters();
