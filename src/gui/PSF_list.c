@@ -324,10 +324,10 @@ static void set_filter(GtkFileChooser *dialog) {
 static void save_stars_dialog() {
 	SirilWidget *widgetdialog;
 	GtkFileChooser *dialog = NULL;
-	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
+	GtkWindow *parent = GTK_WINDOW(lookup_widget("stars_list_window"));
 	gint res;
 
-	widgetdialog = siril_file_chooser_save(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);
+	widgetdialog = siril_file_chooser_save(parent, GTK_FILE_CHOOSER_ACTION_SAVE);
 	dialog = GTK_FILE_CHOOSER(widgetdialog);
 	gtk_file_chooser_set_current_folder(dialog, com.wd);
 	gtk_file_chooser_set_select_multiple(dialog, FALSE);

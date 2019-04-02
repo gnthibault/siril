@@ -1174,14 +1174,12 @@ enter a visible wavelength in nm</property>
   <object class="GtkImage" id="image_starfinder">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="tooltip_markup" translatable="yes">Detect stars in the current loaded image (not sequence image) and compute PSF</property>
     <property name="tooltip_text" translatable="yes">Detect stars in the current loaded image (not sequence image) and compute PSF</property>
     <property name="pixbuf">pixmaps/starfinder.png</property>
   </object>
   <object class="GtkImage" id="image_sum">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="tooltip_markup" translatable="yes">Average PSF parameters for selected stars</property>
     <property name="tooltip_text" translatable="yes">Average PSF parameters for selected stars</property>
     <property name="pixbuf">pixmaps/sum.png</property>
   </object>
@@ -9882,6 +9880,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
                   <object class="GtkToolButton" id="process_starfinder_button">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Detect stars in the current loaded image (not sequence image) and compute PSF</property>
                     <property name="use_underline">True</property>
                     <property name="icon_widget">image_starfinder</property>
                     <signal name="clicked" handler="on_process_starfinder_button_clicked" swapped="no"/>
@@ -9895,6 +9894,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
                   <object class="GtkToolButton" id="sum_button">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Average PSF parameters for selected stars</property>
                     <property name="is_important">True</property>
                     <property name="icon_widget">image_sum</property>
                     <signal name="clicked" handler="on_sum_button_clicked" swapped="no"/>
@@ -9918,9 +9918,7 @@ WARNING: ensure you have a good reason to change this value because it may degra
                   <object class="GtkToolButton" id="export_button">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="has_tooltip">True</property>
-                    <property name="tooltip_markup" translatable="yes">Export PSF parameters in a ASCII file</property>
-                    <property name="tooltip_text" translatable="yes">Export PSF parameters in a ASCII file</property>
+                    <property name="tooltip_text" translatable="yes">Export PSF parameters in an ASCII file</property>
                     <property name="use_underline">True</property>
                     <property name="icon_widget">image_export</property>
                     <signal name="clicked" handler="on_export_button_clicked" swapped="no"/>
@@ -9944,8 +9942,6 @@ WARNING: ensure you have a good reason to change this value because it may degra
                   <object class="GtkToolButton" id="remove_button">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="has_tooltip">True</property>
-                    <property name="tooltip_markup" translatable="yes">Remove selected star from the list</property>
                     <property name="tooltip_text" translatable="yes">Remove selected star from the list</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-remove</property>
@@ -9960,8 +9956,6 @@ WARNING: ensure you have a good reason to change this value because it may degra
                   <object class="GtkToolButton" id="remove_all_button">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="has_tooltip">True</property>
-                    <property name="tooltip_markup" translatable="yes">Remove all stars from the list</property>
                     <property name="tooltip_text" translatable="yes">Remove all stars from the list</property>
                     <property name="use_underline">True</property>
                     <property name="stock_id">gtk-clear</property>
@@ -12984,6 +12978,67 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkSeparator" id="separator3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">5</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkRadioButton" id="regallbutton">
+                        <property name="label" translatable="yes">Register all images from sequence</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="regselbutton">
+                        <property name="label" translatable="yes">Register selected images only</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">regallbutton</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkBox" id="box5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -13046,67 +13101,6 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="padding">2</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSeparator" id="separator3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="padding">5</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="box10">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">center</property>
-                    <child>
-                      <object class="GtkRadioButton" id="regallbutton">
-                        <property name="label" translatable="yes">Register all images from sequence</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkRadioButton" id="regselbutton">
-                        <property name="label" translatable="yes">Register selected images only</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">regallbutton</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
