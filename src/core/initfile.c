@@ -61,16 +61,8 @@ static int readinitfile() {
 
 	/* Working directory */
 	if (config_lookup_string(&config, keywords[WD], &dir)) {
-		if (changedir(dir, NULL)) {
-			siril_log_message(_("Reverting current working directory to startup directory, "
-					"the saved directory is not available anymore\n"));
-			if (changedir(com.wd, NULL)) {
-				fprintf(stderr, "Could not change to start-up directory, aborting\n");
-				config_destroy(&config);
-				return 1;
-			}
-			writeinitfile();
-		}
+		free(com.wd);
+		com.wd = g_strdup(dir);
 	}
 
 	/* Libraw setting */

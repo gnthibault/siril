@@ -169,7 +169,7 @@ int ReconnectIO(int OpenNewConsole)
 }	
 #endif
 
-char *siril_sources[] = {
+static char *siril_sources[] = {
 #ifdef _WIN32
     "../share/siril",
 #elif (defined(__APPLE__) && defined(__MACH__))
@@ -181,7 +181,7 @@ char *siril_sources[] = {
 	""
 };
 
-void usage(const char *command) {
+static void usage(const char *command) {
     printf("\nUsage:  %s [OPTIONS] [IMAGE_FILE_TO_OPEN]\n\n", command);
     puts("    -d, --directory CWD        changing the current working directory as the argument");
     puts("    -s, --script    SCRIPTFILE run the siril commands script in console mode");
@@ -192,7 +192,7 @@ void usage(const char *command) {
     puts("    -h, --help                 show this message");
 }
 
-void signal_handled(int s) {
+static void signal_handled(int s) {
 	// printf("Caught signal %d\n", s);
 	gtk_main_quit();
 }
@@ -205,6 +205,35 @@ struct option long_opts[] = {
 		{"script",    required_argument, 0, 's'},
 		{0, 0, 0, 0}
 	};
+
+static char *load_glade_file(char *start_cwd) {
+	int i = 0;
+
+	/* try to load the glade file, from the sources defined above */
+	builder = gtk_builder_new();
+
+	do {
+		GError *err = NULL;
+		gchar *gladefile;
+
+		gladefile = g_build_filename (siril_sources[i], GLADE_FILE, NULL);
+		if (gtk_builder_add_from_file (builder, gladefile, &err)) {
+			fprintf(stdout, _("Successfully loaded '%s'\n"), gladefile);
+			g_free(gladefile);
+			break;
+		}
+		fprintf (stderr, _("%s. Looking into another directory...\n"), err->message);
+		g_error_free(err);
+		g_free(gladefile);
+		i++;
+	} while (i < G_N_ELEMENTS(siril_sources));
+	if (i == G_N_ELEMENTS(siril_sources)) {
+		fprintf(stderr, _("%s was not found or contains errors, cannot render GUI. Exiting.\n"), GLADE_FILE);
+		exit(EXIT_FAILURE);
+	}
+	/* get back to the saved working directory */
+	return siril_sources[i];
+}
 
 int main(int argc, char *argv[]) {
 	int i, c;
@@ -317,43 +346,23 @@ int main(int argc, char *argv[]) {
 	com.wd = siril_get_startup_dir();
 	current_cwd = g_get_current_dir();
 	if (checkinitfile()) {
-		fprintf(stderr, _("Could not load or create settings file, exiting.\n"));
+		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
 		exit(1);
 	}
 
 	if (!com.headless) {
 		/* load prefered theme */
 		load_prefered_theme(com.combo_theme);
-		/* try to load the glade file, from the sources defined above */
-		builder = gtk_builder_new();
-
-		i = 0;
-		do {
-			GError *err = NULL;
-			gchar *gladefile;
-
-			gladefile = g_build_filename (siril_sources[i], GLADE_FILE, NULL);
-			if (gtk_builder_add_from_file (builder, gladefile, &err)) {
-				fprintf(stdout, _("Successfully loaded '%s'\n"), gladefile);
-				g_free(gladefile);
-				break;
-			}
-			fprintf (stderr, _("%s. Looking into another directory...\n"), err->message);
-			g_error_free(err);
-			g_free(gladefile);
-			i++;
-		} while (i < G_N_ELEMENTS(siril_sources));
-		if (i == G_N_ELEMENTS(siril_sources)) {
-			fprintf(stderr, _("%s was not found or contains errors, cannot render GUI. Exiting.\n"), GLADE_FILE);
-			exit(EXIT_FAILURE);
-		}
-		siril_path = siril_sources[i];
-
-		gtk_builder_connect_signals (builder, NULL);
-
-		initialize_all_GUI(siril_path, supported_files);
+		/* Load glade file */
+		siril_path = load_glade_file(current_cwd);
 	}
 
+	changedir(com.wd, NULL);
+
+	if (!com.headless) {
+		gtk_builder_connect_signals (builder, NULL);
+		initialize_all_GUI(siril_path, supported_files);
+	}
 	g_free(supported_files);
 
 	/* Get CPU number and set the number of threads */
