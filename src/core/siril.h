@@ -402,6 +402,7 @@ struct wcs_struct {
 };
 
 struct dft_struct {
+	double norm[3];			// Normalization value
 	char type[FLEN_VALUE];		// spectrum, phase
 	char ord[FLEN_VALUE];		// regular, centered
 };

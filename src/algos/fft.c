@@ -39,19 +39,21 @@ enum {
 	TYPE_REGULAR
 };
 
-static void fft_to_spectra(fits* fit, fftw_complex *frequency_repr, double *as,
-		double *ps, int nbdata) {
+static void fft_to_spectra(fftw_complex *frequency_repr, double *as,
+		double *ps, double *maxi, int nbdata) {
 	unsigned int i;
+	*maxi = 0.0;
 
 	for (i = 0; i < nbdata; i++) {
 		double r = creal(frequency_repr[i]);
 		double im = cimag(frequency_repr[i]);
 		as[i] = hypot(r, im);
 		ps[i] = atan2(im, r);
+		*maxi = max(as[i], *maxi);
 	}
 }
 
-static void fft_to_freq(fits* fit, fftw_complex *frequency_repr, double *as, double *ps, int nbdata) {
+static void fft_to_freq(fftw_complex *frequency_repr, double *as, double *ps, int nbdata) {
 	unsigned int i;
 
 	for (i = 0; i < nbdata; i++) {
@@ -59,29 +61,34 @@ static void fft_to_freq(fits* fit, fftw_complex *frequency_repr, double *as, dou
 	}
 }
 
-void change_symmetry(unsigned int width, unsigned int height, unsigned int i, unsigned int j, unsigned int *x,
-		unsigned int *y) {
+static void change_symmetry_forward(unsigned int width, unsigned int height,
+		unsigned int i, unsigned int j, unsigned int *x, unsigned int *y) {
 
-	if (i < width / 2 && j < height / 2) {
-		*x = i + width / 2;
-		*y = j + height / 2;
+	*x = i + width / 2;
+	if (*x >= width) {
+		*x = *x - width;
 	}
-	if (i >= width / 2 && j < height / 2) {
-		*x = i - width / 2;
-		*y = j + height / 2;
-	}
-	if (i < width / 2 && j >= height / 2) {
-		*x = i + width / 2;
-		*y = j - height / 2;
-	}
-	if (i >= width / 2 && j >= height / 2) {
-		*x = i - width / 2;
-		*y = j - height / 2;
+	*y = j + height / 2;
+	if (*y >= height) {
+		*y = *y - height;
 	}
 }
 
-static void centered(WORD *buf, unsigned int width,
-		unsigned int height) {
+static void change_symmetry_backward(unsigned int width, unsigned int height,
+		unsigned int i, unsigned int j, unsigned int *x, unsigned int *y) {
+
+	*x = i + width - width / 2;
+	if (*x >= width) {
+		*x = *x - width;
+	}
+	*y = j + height - height / 2;
+	if (*y >= height) {
+		*y = *y - height;
+	}
+}
+
+static void centered(WORD *buf, unsigned int width, unsigned int height,
+		int type) {
 	unsigned int i, j;
 
 	WORD *temp = malloc(width * height * sizeof(WORD));
@@ -89,7 +96,11 @@ static void centered(WORD *buf, unsigned int width,
 		for (i = 0; i < width; i++) {
 			unsigned int x = i;
 			unsigned int y = j;
-			change_symmetry(width, height, i, j, &x, &y);
+			if (type == FFTW_FORWARD) {
+				change_symmetry_forward(width, height, i, j, &x, &y);
+			} else {
+				change_symmetry_backward(width, height, i, j, &x, &y);
+			}
 
 			temp[j * width + i] = buf[y * width + x];
 		}
@@ -99,19 +110,24 @@ static void centered(WORD *buf, unsigned int width,
 	free(temp);
 }
 
-static void normalisation_spectra(unsigned int w, unsigned int h, double *modulus, double *phase,
-		WORD *abuf, WORD *pbuf) {
+static void normalisation_spectra(unsigned int w, unsigned int h, double *modul, double *phase,
+		WORD *abuf, WORD *pbuf, double maxi) {
 	unsigned int i;
 
 	for (i = 0; i < h * w; i++) {
 		pbuf[i] = round_to_WORD(((phase[i] + M_PI) * USHRT_MAX_DOUBLE / (2 * M_PI)));
-		abuf[i] = round_to_WORD((modulus[i] / w / h));
+		abuf[i] = round_to_WORD((modul[i] * USHRT_MAX_DOUBLE / maxi));
 	}
 }
 
 static void save_dft_information_in_gfit(fits *fit) {
+	int i;
+
 	strcpy(gfit.dft.ord, fit->dft.type);
 	strcpy(gfit.dft.ord, fit->dft.ord);
+	for (i = 0; i < fit->naxes[2]; i++)
+		gfit.dft.norm[i] = fit->dft.norm[i];
+
 }
 
 static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
@@ -120,6 +136,7 @@ static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
 	WORD *gbuf = fit->pdata[layer];
 	unsigned int i;
 	unsigned int width = fit->rx, height = fit->ry;
+	double maxi;
 	int nbdata = width * height;
 
 	fftw_complex *spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
@@ -146,23 +163,24 @@ static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
 	fftw_execute(p);
 
 	/* we compute modulus and phase */
-	double *modulus = malloc(nbdata * sizeof(double));
+	double *modul = malloc(nbdata * sizeof(double));
 	double *phase = malloc(nbdata * sizeof(double));
 
-	fft_to_spectra(fit, frequency_repr, modulus, phase, nbdata);
+	fft_to_spectra(frequency_repr, modul, phase, &maxi, nbdata);
 
 	//We normalize the modulus and the phase
-	normalisation_spectra(width, height, modulus, phase, xbuf, ybuf);
+	normalisation_spectra(width, height, modul, phase, xbuf, ybuf, maxi);
 	if (type_order == TYPE_CENTERED) {
 		strcpy(x->dft.ord, "CENTERED");
-		centered(xbuf, width, height);
-		centered(ybuf, width, height);
+		centered(xbuf, width, height, FFTW_FORWARD);
+		centered(ybuf, width, height, FFTW_FORWARD);
 	} else {
 		strcpy(x->dft.ord, "REGULAR");
 	}
 	strcpy(y->dft.ord, x->dft.ord);
+	x->dft.norm[layer] = maxi / USHRT_MAX_DOUBLE;
 
-	free(modulus);
+	free(modul);
 	free(phase);
 	fftw_destroy_plan(p);
 	fftw_free(spatial_repr);
@@ -178,16 +196,16 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 	unsigned int height = xfit->ry;
 	int nbdata = width * height;
 
-	double *modulus = calloc(1, nbdata * sizeof(double));
+	double *modul = calloc(1, nbdata * sizeof(double));
 	double *phase = calloc(1, nbdata * sizeof(double));
 
 	if (type_order == TYPE_CENTERED) {
-		centered(xbuf, width, height);
-		centered(ybuf, width, height);
+		centered(xbuf, width, height, FFTW_BACKWARD);
+		centered(ybuf, width, height, FFTW_BACKWARD);
 	}
 
 	for (i = 0; i < height * width; i++) {
-		modulus[i] = (double) xbuf[i] * (width * height);
+		modul[i] = (double) xbuf[i] * (xfit->dft.norm[layer]);
 		phase[i] = (double) ybuf[i] * (2 * M_PI / USHRT_MAX_DOUBLE);
 		phase[i] -= M_PI;
 	}
@@ -203,7 +221,7 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 		return;
 	}
 
-	fft_to_freq(fit, frequency_repr, modulus, phase, nbdata);
+	fft_to_freq(frequency_repr, modul, phase, nbdata);
 
 	fftw_plan p = fftw_plan_dft_2d(height, width, frequency_repr, spatial_repr,
 			FFTW_BACKWARD, FFTW_ESTIMATE);
@@ -216,7 +234,7 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 	delete_selected_area();
 	invalidate_stats_from_fit(fit);
 
-	free(modulus);
+	free(modul);
 	free(phase);
 	fftw_destroy_plan(p);
 	fftw_free(spatial_repr);

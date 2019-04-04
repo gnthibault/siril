@@ -291,11 +291,21 @@ static void read_fits_header(fits *fit) {
 	 * ****************************************************************/
 
 	status = 0;
-	fits_read_key(fit->fptr, TSTRING, "DFT_ORD", &(fit->dft.ord), NULL,
+	fits_read_key(fit->fptr, TDOUBLE, "DFTNORM0", &(fit->dft.norm[0]), NULL,
+			&status);
+	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "DFTNORM1", &(fit->dft.norm[1]), NULL,
+			&status);
+	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "DFTNORM2", &(fit->dft.norm[2]), NULL,
 			&status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TSTRING, "DFT_TYPE", &(fit->dft.type), NULL,
+	fits_read_key(fit->fptr, TSTRING, "DFTORD", &(fit->dft.ord), NULL,
+			&status);
+
+	status = 0;
+	fits_read_key(fit->fptr, TSTRING, "DFTTYPE", &(fit->dft.type), NULL,
 			&status);
 
 	status = 0;
@@ -816,7 +826,7 @@ static void save_fits_header(fits *fit) {
 			strcpy(comment, "Phase of a Discrete Fourier Transform");
 		else
 			status = 1;			// should not happen
-		fits_update_key(fit->fptr, TSTRING, "DFT_TYPE", &(fit->dft.type),
+		fits_update_key(fit->fptr, TSTRING, "DFTTYPE", &(fit->dft.type),
 				comment, &status);
 	}
 
@@ -828,10 +838,22 @@ static void save_fits_header(fits *fit) {
 			strcpy(comment, "High spatial freq. are located at image center");
 		else
 			status = 1;			// should not happen
-		fits_update_key(fit->fptr, TSTRING, "DFT_ORD", &(fit->dft.ord), comment,
+		fits_update_key(fit->fptr, TSTRING, "DFTORD", &(fit->dft.ord), comment,
 				&status);
 	}
 
+	for (i = 0; i < fit->naxes[2]; i++) {
+		if (fit->dft.norm[i] > 0.) {
+			char str1[] = "DFTNORM";
+			char str2[] = "Normalisation value for channel #";
+			char key_str[FLEN_KEYWORD], comment_str[FLEN_VALUE];
+			sprintf(key_str, "%s%d", str1, i);
+			sprintf(comment_str, "%s%d", str2, i);
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, key_str, &(fit->dft.norm[i]),
+					comment_str, &status);
+		}
+	}
 }
 
 /********************** public functions ************************************/
@@ -1415,6 +1437,9 @@ int copy_fits_metadata(fits *from, fits *to) {
 	to->aperture = from->aperture;
 	to->ccd_temp = from->ccd_temp;
 	to->cvf = from->cvf;
+	to->dft.norm[0] = from->dft.norm[0];
+	to->dft.norm[1] = from->dft.norm[1];
+	to->dft.norm[2] = from->dft.norm[2];
 
 	return 0;
 }
