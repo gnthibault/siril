@@ -4541,10 +4541,7 @@ void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
 		GtkEntry *entry_mag = GTK_ENTRY(lookup_widget("fftd_mag_entry"));
 		GtkEntry *entry_phase = GTK_ENTRY(lookup_widget("fftd_phase_entry"));
 
-		if (gtk_toggle_button_get_active(order) == TRUE)
-			type_order = 0;		// centered fftd
-		else
-			type_order = 1;	// regular fftd
+		type_order = !gtk_toggle_button_get_active(order);
 		type = strdup("fftd");
 		mag = gtk_entry_get_text(entry_mag);
 		phase = gtk_entry_get_text(entry_phase);

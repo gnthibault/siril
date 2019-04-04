@@ -59,10 +59,9 @@ static void fft_to_freq(fits* fit, fftw_complex *frequency_repr, double *as, dou
 	}
 }
 
-static void change_symmetry(fits* fit, unsigned int i, unsigned int j, unsigned int *x,
+void change_symmetry(unsigned int width, unsigned int height, unsigned int i, unsigned int j, unsigned int *x,
 		unsigned int *y) {
-	int width = fit->rx;
-	int height = fit->ry;
+
 	if (i < width / 2 && j < height / 2) {
 		*x = i + width / 2;
 		*y = j + height / 2;
@@ -81,23 +80,32 @@ static void change_symmetry(fits* fit, unsigned int i, unsigned int j, unsigned 
 	}
 }
 
-static void normalisation_spectra(fits* fit, double *modulus, double* phase,
-		WORD *abuf, WORD *pbuf, int type_order) {
+static void centered(WORD *buf, unsigned int width,
+		unsigned int height) {
 	unsigned int i, j;
-	int width = fit->rx;
-	int height = fit->ry;
 
+	WORD *temp = malloc(width * height * sizeof(WORD));
 	for (j = 0; j < height; j++) {
 		for (i = 0; i < width; i++) {
 			unsigned int x = i;
 			unsigned int y = j;
+			change_symmetry(width, height, i, j, &x, &y);
 
-			if (type_order == TYPE_CENTERED)
-				change_symmetry(fit, i, j, &x, &y);
-			pbuf[j * width + i] = round_to_WORD(((phase[y * width + x] + M_PI) * USHRT_MAX_DOUBLE
-							/ (2 * M_PI)));
-			abuf[j * width + i] = round_to_WORD((modulus[y * width + x] / width / height));
+			temp[j * width + i] = buf[y * width + x];
 		}
+	}
+
+	memcpy(buf, temp, sizeof(WORD) * width * height);
+	free(temp);
+}
+
+static void normalisation_spectra(unsigned int w, unsigned int h, double *modulus, double *phase,
+		WORD *abuf, WORD *pbuf) {
+	unsigned int i;
+
+	for (i = 0; i < h * w; i++) {
+		pbuf[i] = round_to_WORD(((phase[i] + M_PI) * USHRT_MAX_DOUBLE / (2 * M_PI)));
+		abuf[i] = round_to_WORD((modulus[i] / w / h));
 	}
 }
 
@@ -111,7 +119,7 @@ static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
 	WORD *ybuf = y->pdata[layer];
 	WORD *gbuf = fit->pdata[layer];
 	unsigned int i;
-	int width = fit->rx, height = fit->ry;
+	unsigned int width = fit->rx, height = fit->ry;
 	int nbdata = width * height;
 
 	fftw_complex *spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
@@ -144,11 +152,14 @@ static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
 	fft_to_spectra(fit, frequency_repr, modulus, phase, nbdata);
 
 	//We normalize the modulus and the phase
-	normalisation_spectra(fit, modulus, phase, xbuf, ybuf, type_order);
-	if (type_order == TYPE_CENTERED)
+	normalisation_spectra(width, height, modulus, phase, xbuf, ybuf);
+	if (type_order == TYPE_CENTERED) {
 		strcpy(x->dft.ord, "CENTERED");
-	else
+		centered(xbuf, width, height);
+		centered(ybuf, width, height);
+	} else {
 		strcpy(x->dft.ord, "REGULAR");
+	}
 	strcpy(y->dft.ord, x->dft.ord);
 
 	free(modulus);
@@ -162,25 +173,23 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 	WORD *xbuf = xfit->pdata[layer];
 	WORD *ybuf = yfit->pdata[layer];
 	WORD *gbuf = fit->pdata[layer];
-	unsigned int i, j;
-	int width = xfit->rx;
-	int height = xfit->ry;
+	unsigned int i;
+	unsigned int width = xfit->rx;
+	unsigned int height = xfit->ry;
 	int nbdata = width * height;
 
 	double *modulus = calloc(1, nbdata * sizeof(double));
 	double *phase = calloc(1, nbdata * sizeof(double));
 
-	for (j = 0; j < height; j++) {
-		for (i = 0; i < width; i++) {
-			unsigned int x = i;
-			unsigned int y = j;
+	if (type_order == TYPE_CENTERED) {
+		centered(xbuf, width, height);
+		centered(ybuf, width, height);
+	}
 
-			if (type_order == TYPE_CENTERED)
-				change_symmetry(fit, i, j, &x, &y);
-			modulus[j * width + i] = (double) xbuf[y * width + x] * (width * height);
-			phase[j * width + i] = (double) ybuf[y * width + x]	* (2 * M_PI / USHRT_MAX_DOUBLE);
-			phase[j * width + i] -= M_PI;
-		}
+	for (i = 0; i < height * width; i++) {
+		modulus[i] = (double) xbuf[i] * (width * height);
+		phase[i] = (double) ybuf[i] * (2 * M_PI / USHRT_MAX_DOUBLE);
+		phase[i] -= M_PI;
 	}
 
 	fftw_complex* spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
@@ -231,8 +240,8 @@ static gboolean end_fourier_transform(gpointer p) {
 
 gpointer fourier_transform(gpointer p) {
 	struct fft_data *args = (struct fft_data *) p;
-	int width = args->fit->rx;
-	int height = args->fit->ry;
+	unsigned int width = args->fit->rx;
+	unsigned int height = args->fit->ry;
 	int ndata = width * height, chan;
 	struct timeval t_start, t_end;
 	WORD *from[3], *to[3];
@@ -299,11 +308,10 @@ gpointer fourier_transform(gpointer p) {
 		new_fit_image(&tmp2, width, height, tmp->naxes[2]);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
 			FFTI(tmp2, tmp, tmp1, args->type_order, chan);
-		new_fit_image(&args->fit, width, height, tmp->naxes[2]);
-		for (chan = 0; chan < args->fit->naxes[2]; chan++) {
-			from[chan] = tmp2->pdata[chan];
-			to[chan] = args->fit->pdata[chan];
-			memcpy(to[chan], from[chan], ndata * sizeof(WORD));
+		/* We display the result on screen */
+		if (copyfits(tmp2, &gfit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0)) {
+			args->retval = 1;
+			goto end;
 		}
 	}
 
