@@ -1,4 +1,4 @@
-if PLATFORM_LINUX
+if PLATFORM_UNIX
 LINUX = linux
 endif
 
