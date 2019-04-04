@@ -2314,9 +2314,6 @@ void initialize_all_GUI(gchar *siril_path, gchar *supported_files) {
 
 	adjust_sellabel();
 
-	/* load the css sheet for general style */
-	load_css_style_sheet(siril_path);
-
 	/* initialize theme */
 	initialize_theme_GUI();
 

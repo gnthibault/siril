@@ -355,6 +355,8 @@ int main(int argc, char *argv[]) {
 		load_prefered_theme(com.combo_theme);
 		/* Load glade file */
 		siril_path = load_glade_file(current_cwd);
+		/* load the css sheet for general style */
+		load_css_style_sheet(siril_path);
 	}
 
 	changedir(com.wd, NULL);
