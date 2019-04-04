@@ -291,26 +291,12 @@ static void read_fits_header(fits *fit) {
 	 * ****************************************************************/
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "DFT_NOR0", &(fit->dft.norm[0]), NULL,
-			&status);
-	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "DFT_NOR1", &(fit->dft.norm[1]), NULL,
-			&status);
-	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "DFT_NOR2", &(fit->dft.norm[2]), NULL,
-			&status);
-
-	status = 0;
 	fits_read_key(fit->fptr, TSTRING, "DFT_ORD", &(fit->dft.ord), NULL,
 			&status);
 
 	status = 0;
 	fits_read_key(fit->fptr, TSTRING, "DFT_TYPE", &(fit->dft.type), NULL,
 			&status);
-
-	status = 0;
-	fits_read_key(fit->fptr, TUSHORT, "DFT_RX", &(fit->dft.rx), NULL, &status);
-	fits_read_key(fit->fptr, TUSHORT, "DFT_RY", &(fit->dft.ry), NULL, &status);
 
 	status = 0;
 	fits_read_history(fit->fptr, &(fit->history), &status);
@@ -846,26 +832,6 @@ static void save_fits_header(fits *fit) {
 				&status);
 	}
 
-	for (i = 0; i < fit->naxes[2]; i++) {
-		if (fit->dft.norm[i] > 0.) {
-			char str1[] = "DFT_NOR";
-			char str2[] = "Normalisation value for channel #";
-			char key_str[FLEN_KEYWORD], comment_str[FLEN_VALUE];
-			sprintf(key_str, "%s%d", str1, i);
-			sprintf(comment_str, "%s%d", str2, i);
-			status = 0;
-			fits_update_key(fit->fptr, TDOUBLE, key_str, &(fit->dft.norm[i]),
-					comment_str, &status);
-		}
-	}
-
-	status = 0;
-	if (fit->dft.rx) { /* may not be initialized */
-		fits_update_key(fit->fptr, TUSHORT, "DFT_RX", &(fit->dft.rx),
-				"Original width size", &status);
-		fits_update_key(fit->fptr, TUSHORT, "DFT_RY", &(fit->dft.ry),
-				"Original height size", &status);
-	}
 }
 
 /********************** public functions ************************************/
@@ -1449,11 +1415,6 @@ int copy_fits_metadata(fits *from, fits *to) {
 	to->aperture = from->aperture;
 	to->ccd_temp = from->ccd_temp;
 	to->cvf = from->cvf;
-	to->dft.norm[0] = from->dft.norm[0];
-	to->dft.norm[1] = from->dft.norm[1];
-	to->dft.norm[2] = from->dft.norm[2];
-	to->dft.rx = from->dft.rx;
-	to->dft.ry = from->dft.ry;
 
 	return 0;
 }

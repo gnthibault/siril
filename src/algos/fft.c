@@ -40,7 +40,7 @@ enum {
 };
 
 static void fft_to_spectra(fits* fit, fftw_complex *frequency_repr, double *as,
-		double *ps, double nbdata) {
+		double *ps, int nbdata) {
 	unsigned int i;
 
 	for (i = 0; i < nbdata; i++) {
@@ -51,7 +51,7 @@ static void fft_to_spectra(fits* fit, fftw_complex *frequency_repr, double *as,
 	}
 }
 
-static void fft_to_freq(fits* fit, fftw_complex *frequency_repr, double *as, double *ps, double nbdata) {
+static void fft_to_freq(fits* fit, fftw_complex *frequency_repr, double *as, double *ps, int nbdata) {
 	unsigned int i;
 
 	for (i = 0; i < nbdata; i++) {
@@ -81,15 +81,11 @@ static void change_symmetry(fits* fit, unsigned int i, unsigned int j, unsigned 
 	}
 }
 
-static double normalisation_spectra(fits* fit, double *modulus, double* phase,
+static void normalisation_spectra(fits* fit, double *modulus, double* phase,
 		WORD *abuf, WORD *pbuf, int type_order) {
 	unsigned int i, j;
 	int width = fit->rx;
 	int height = fit->ry;
-	double max_m = 0.0;
-
-	for (i = 0; i < width * height; i++)
-		max_m = max(max_m, modulus[i]);
 
 	for (j = 0; j < height; j++) {
 		for (i = 0; i < width; i++) {
@@ -98,25 +94,16 @@ static double normalisation_spectra(fits* fit, double *modulus, double* phase,
 
 			if (type_order == TYPE_CENTERED)
 				change_symmetry(fit, i, j, &x, &y);
-			pbuf[j * width + i] = round_to_WORD(
-					((phase[y * width + x] + M_PI) * USHRT_MAX_DOUBLE
+			pbuf[j * width + i] = round_to_WORD(((phase[y * width + x] + M_PI) * USHRT_MAX_DOUBLE
 							/ (2 * M_PI)));
-			abuf[j * width + i] = round_to_WORD(
-					(modulus[y * width + x] * USHRT_MAX_DOUBLE / max_m));
+			abuf[j * width + i] = round_to_WORD((modulus[y * width + x] / width / height));
 		}
 	}
-	return max_m / USHRT_MAX_DOUBLE;
 }
 
 static void save_dft_information_in_gfit(fits *fit) {
-	int i;
-
 	strcpy(gfit.dft.ord, fit->dft.type);
 	strcpy(gfit.dft.ord, fit->dft.ord);
-	for (i = 0; i < fit->naxes[2]; i++)
-		gfit.dft.norm[i] = fit->dft.norm[i];
-	gfit.dft.rx = fit->dft.rx;
-	gfit.dft.ry = fit->dft.ry;
 }
 
 static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
@@ -128,7 +115,14 @@ static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
 	int nbdata = width * height;
 
 	fftw_complex *spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
+	if (!spatial_repr) {
+		return;
+	}
 	fftw_complex *frequency_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
+	if (!frequency_repr) {
+		fftw_free(spatial_repr);
+		return;
+	}
 
 	/* copying image selection into the fftw data */
 #ifdef _OPENMP
@@ -139,8 +133,8 @@ static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
 	}
 
 	/* we run the Fourier Transform */
-	fftw_plan p = fftw_plan_dft_2d(width, height, spatial_repr, frequency_repr,
-			FFTW_FORWARD, FFTW_MEASURE);
+	fftw_plan p = fftw_plan_dft_2d(height, width, spatial_repr, frequency_repr,
+			FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(p);
 
 	/* we compute modulus and phase */
@@ -150,8 +144,7 @@ static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
 	fft_to_spectra(fit, frequency_repr, modulus, phase, nbdata);
 
 	//We normalize the modulus and the phase
-	x->dft.norm[layer] = normalisation_spectra(fit, modulus, phase, xbuf, ybuf,
-			type_order);
+	normalisation_spectra(fit, modulus, phase, xbuf, ybuf, type_order);
 	if (type_order == TYPE_CENTERED)
 		strcpy(x->dft.ord, "CENTERED");
 	else
@@ -181,23 +174,30 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 		for (i = 0; i < width; i++) {
 			unsigned int x = i;
 			unsigned int y = j;
+
 			if (type_order == TYPE_CENTERED)
 				change_symmetry(fit, i, j, &x, &y);
-			modulus[j * width + i] = (double) xbuf[y * width + x]
-					* (xfit->dft.norm[layer]);
-			phase[j * width + i] = (double) ybuf[y * width + x]
-					* (2 * M_PI / USHRT_MAX_DOUBLE);
+			modulus[j * width + i] = (double) xbuf[y * width + x] * (width * height);
+			phase[j * width + i] = (double) ybuf[y * width + x]	* (2 * M_PI / USHRT_MAX_DOUBLE);
 			phase[j * width + i] -= M_PI;
 		}
 	}
 
 	fftw_complex* spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
+	if (!spatial_repr) {
+		return;
+	}
+
 	fftw_complex* frequency_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
+	if (!frequency_repr) {
+		fftw_free(spatial_repr);
+		return;
+	}
 
 	fft_to_freq(fit, frequency_repr, modulus, phase, nbdata);
 
-	fftw_plan p = fftw_plan_dft_2d(width, height, frequency_repr, spatial_repr,
-			FFTW_BACKWARD, FFTW_MEASURE);
+	fftw_plan p = fftw_plan_dft_2d(height, width, frequency_repr, spatial_repr,
+			FFTW_BACKWARD, FFTW_ESTIMATE);
 	fftw_execute(p);
 
 	for (i = 0; i < nbdata; i++) {
@@ -247,36 +247,14 @@ gpointer fourier_transform(gpointer p) {
 	default:
 	case 'd':
 	case 'D':
-		/* We transform the image in a squared picture */
-		if (width != height) {
-			int size = max(width, height);
-			if (new_fit_image(&tmp, size, size, args->fit->naxes[2])) {
-				args->retval = 1;
-				goto end;
-			}
-			for (chan = 0; chan < args->fit->naxes[2]; chan++) {
-				from[chan] = args->fit->pdata[chan];
-				to[chan] = tmp->pdata[chan];
-				memcpy(to[chan], from[chan], ndata * sizeof(WORD));
-			}
-			if (copyfits(tmp, args->fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0)) {
-				args->retval = 1;
-				goto end;
-			}
-		}
-		/* ******************************************* */
-		/* WARNING: args->fit->rx = args->fit->ry now */
-		if (new_fit_image(&tmp1, args->fit->rx, args->fit->ry, args->fit->naxes[2]) ||
-				new_fit_image(&tmp2, args->fit->rx, args->fit->ry, args->fit->naxes[2])) {
+		if (new_fit_image(&tmp1, width, height, args->fit->naxes[2]) ||
+				new_fit_image(&tmp2, width, height, args->fit->naxes[2])) {
 			args->retval = 1;
 			goto end;
 		}
 
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
 			FFTD(args->fit, tmp1, tmp2, args->type_order, chan);
-		/* we save the original size in the FITS HEADER */
-		tmp1->dft.rx = tmp2->dft.rx = width;
-		tmp1->dft.ry = tmp2->dft.ry = height;
 		strcpy(tmp1->dft.type, "SPECTRUM");
 		if (savefits(args->modulus, tmp1)) {
 			args->retval = 1;
@@ -318,16 +296,14 @@ gpointer fourier_transform(gpointer p) {
 			siril_log_message(_("There is something wrong in your files\n"));
 			goto end;
 		}
-		new_fit_image(&tmp2, tmp->rx, tmp->ry, tmp->naxes[2]);
+		new_fit_image(&tmp2, width, height, tmp->naxes[2]);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
 			FFTI(tmp2, tmp, tmp1, args->type_order, chan);
-		new_fit_image(&args->fit, tmp->dft.rx, tmp->dft.ry,
-				tmp->naxes[2]);
+		new_fit_image(&args->fit, width, height, tmp->naxes[2]);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++) {
 			from[chan] = tmp2->pdata[chan];
 			to[chan] = args->fit->pdata[chan];
-			memcpy(to[chan], from[chan],
-					tmp->dft.rx * tmp->dft.ry * sizeof(WORD));
+			memcpy(to[chan], from[chan], ndata * sizeof(WORD));
 		}
 	}
 

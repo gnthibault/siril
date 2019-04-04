@@ -1755,11 +1755,11 @@ void show_main_gray_window() {
 	***/
 
 	gtk_check_menu_item_set_active(graycheck, TRUE);
-	gtk_widget_show_all(win);
 	if (com.remember_windows && x >= 0 && y >= 0) {
 		gtk_window_move(GTK_WINDOW(win), x, y);
 //		gtk_window_resize(GTK_WINDOW(win), w, h);
 	}
+	gtk_widget_show_all(win);
 	gtk_window_present(GTK_WINDOW(win));
 }
 
@@ -1777,11 +1777,11 @@ void show_rgb_window() {
 	***/
 
 	gtk_check_menu_item_set_active(rgbcheck, TRUE);
-	gtk_widget_show_all(win);
 	if (x != 0 && y != 0) {
 		gtk_window_move(GTK_WINDOW(win), x, y);
 //		gtk_window_resize(GTK_WINDOW(win), w, h);
 	}
+	gtk_widget_show_all(win);
 }
 
 void hide_rgb_window() {
@@ -4536,7 +4536,6 @@ void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
 			siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), msg);
 			set_cursor_waiting(FALSE);
 			return;
-
 		}
 
 		GtkEntry *entry_mag = GTK_ENTRY(lookup_widget("fftd_mag_entry"));
@@ -4577,10 +4576,8 @@ void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
 		args->type_order = type_order;
 		set_cursor_waiting(TRUE);
 		start_in_new_thread(fourier_transform, args);
-	}
-	else {
-		if (type)
-			free(type);
+	} else {
+		free(type);
 	}
 }
 

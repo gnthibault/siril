@@ -495,7 +495,7 @@ int process_crop(int nb) {
 				siril_log_message(_("Crop: width and height must be greater than 0.\n"));
 				return 1;
 			}
-			if (atoi(word[3]) > gfit.rx || atoi(word[4]) > gfit.ry) {
+			if (atoi(word[1]) + atoi(word[3]) > gfit.rx || atoi(word[2]) + atoi(word[4]) > gfit.ry) {
 				siril_log_message(_("Crop: width and height, respectively, must be less than %d and %d.\n"), gfit.rx,gfit.ry);
 				return 1;
 			}

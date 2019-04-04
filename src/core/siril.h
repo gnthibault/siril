@@ -402,10 +402,8 @@ struct wcs_struct {
 };
 
 struct dft_struct {
-	double norm[3];			// Normalization value
 	char type[FLEN_VALUE];		// spectrum, phase
 	char ord[FLEN_VALUE];		// regular, centered
-	unsigned int rx, ry;		// padding: original value of picture size
 };
 
 struct ffit {
