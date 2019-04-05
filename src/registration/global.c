@@ -282,7 +282,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		regargs->regparam[out_index].roundness = sadata->current_regdata[in_index].roundness;
 	} else {
 		sadata->current_regdata[in_index].shiftx = +H.h02;
-		sadata->current_regdata[in_index].shifty = -H.h12;
+		sadata->current_regdata[in_index].shifty = +H.h12;
 		args->seq->imgparam[out_index].incl = SEQUENCE_DEFAULT_INCLUDE;
 	}
 	sadata->success[out_index] = 1;
