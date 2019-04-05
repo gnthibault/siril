@@ -240,18 +240,37 @@ static void close_dialog() {
 	}
 }
 
+static gchar *get_filename() {
+	gchar *basename;
+
+	if (sequence_is_loaded() && com.seq.current != RESULT_IMAGE) {
+		char fname[256];
+		/* set the output file name default as the current image.jpg */
+		seq_get_image_filename(&com.seq, com.seq.current, fname);
+		basename = g_path_get_basename(fname);
+	} else {
+		basename = g_path_get_basename(com.uniq->filename);
+	}
+
+	return remove_ext_from_filename(basename);
+}
+
 static int save_dialog() {
 	GtkFileChooser *chooser;
 	GtkFileFilter *filter;
 	GtkEntry *savetext;
 	gint res;
+	gchar *fname;
 
 	init_dialog();
 
 	chooser = GTK_FILE_CHOOSER(saveDialog);
+	fname = get_filename();
 
+	gtk_file_chooser_set_current_name(chooser, fname);
 	gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
 	set_filters_save_dialog(chooser);
+	g_free(fname);
 
 	res = siril_dialog_run(saveDialog);
 	if (res == GTK_RESPONSE_ACCEPT) {
@@ -571,7 +590,7 @@ void on_save1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 				parent = GTK_WINDOW(lookup_widget("control_window"));
 			}
 			gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
-			gtk_widget_show_all(savepopup);
+			gtk_widget_show(savepopup);
 			gtk_window_present(GTK_WINDOW(savepopup));
 		}
 		else {
