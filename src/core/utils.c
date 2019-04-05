@@ -510,20 +510,6 @@ WORD get_normalized_value(fits *fit) {
 }
 
 /**
- * Switch the two parameters of the function:
- * Useful in Dynamic PSF (PSF.c)
- * @param a first parameter to switch
- * @param b second parameter to switch
- * TODO: why not use the SWAP macros?
- */
-void swap_param(double *a, double *b) {
-	double tmp;
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
-}
-
-/**
  * Removes extension of the filename
  * @param filename file path with extension
  * @return newly allocated filename without extension

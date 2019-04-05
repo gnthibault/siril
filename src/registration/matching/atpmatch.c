@@ -5642,7 +5642,6 @@ double *vector /* I/O: vector which holds "b" values in input */
  * </AUTO>
  */
 
-#define SWAP(a,b)  { double temp = (a); (a) = (b); (b) = temp; }
 
 static int gauss_pivot(double **matrix, /* I/O: a square 2-D matrix we are inverting */
 int num, /* I: number of rows and cols in matrix */
