@@ -39,8 +39,8 @@ enum {
 	TYPE_REGULAR
 };
 
-static void fft_to_spectra(fftw_complex *frequency_repr, double *as,
-		double *ps, double *maxi, int nbdata) {
+static void fft_to_spectra(fftw_complex *frequency_repr, double *as, double *ps,
+		double *maxi, int nbdata) {
 	unsigned int i;
 	*maxi = 0.0;
 
@@ -53,7 +53,8 @@ static void fft_to_spectra(fftw_complex *frequency_repr, double *as,
 	}
 }
 
-static void fft_to_freq(fftw_complex *frequency_repr, double *as, double *ps, int nbdata) {
+static void fft_to_freq(fftw_complex *frequency_repr, double *as, double *ps,
+		int nbdata) {
 	unsigned int i;
 
 	for (i = 0; i < nbdata; i++) {
