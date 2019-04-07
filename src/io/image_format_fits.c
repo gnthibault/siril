@@ -231,6 +231,14 @@ static void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TSTRING, "BAYERPAT", &(fit->bayer_pattern), NULL,
 			&status);
 
+	status = 0;
+	fits_read_key(fit->fptr, TINT, "XBAYROFF", &(fit->bayer_xoffset), NULL,
+			&status);
+
+	status = 0;
+	fits_read_key(fit->fptr, TINT, "YBAYROFF", &(fit->bayer_yoffset), NULL,
+			&status);
+
 	read_fits_date_obs_header(fit);
 
 	status = 0;
@@ -654,7 +662,6 @@ static void save_wcs_keywords(fits *fit) {
 static void save_fits_header(fits *fit) {
 	int i, status = 0;
 	double zero;
-	unsigned int offset = 0;
 	char comment[FLEN_COMMENT];
 
 	if (fit->hi) { /* may not be initialized */
@@ -764,11 +771,11 @@ static void save_fits_header(fits *fit) {
 				"Bayer color pattern", &status);
 
 		status = 0;
-		fits_update_key(fit->fptr, TUINT, "XBAYROFF", &(offset),
+		fits_update_key(fit->fptr, TINT, "XBAYROFF", &(fit->bayer_xoffset),
 				"X offset of Bayer array", &status);
 
 		status = 0;
-		fits_update_key(fit->fptr, TUINT, "YBAYROFF", &(offset),
+		fits_update_key(fit->fptr, TINT, "YBAYROFF", &(fit->bayer_yoffset),
 				"Y offset of Bayer array", &status);
 	}
 
@@ -1431,6 +1438,8 @@ int copy_fits_metadata(fits *from, fits *to) {
 	strncpy(to->dft.ord, from->dft.ord, FLEN_VALUE);
 	strncpy(to->bayer_pattern, from->bayer_pattern, FLEN_VALUE);
 
+	to->bayer_xoffset = from->bayer_xoffset;
+	to->bayer_yoffset = from->bayer_yoffset;
 	to->focal_length = from->focal_length;
 	to->iso_speed = from->iso_speed;
 	to->exposure = from->exposure;

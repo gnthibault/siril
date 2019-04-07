@@ -444,6 +444,7 @@ struct ffit {
 	char telescop[FLEN_VALUE];		// TELESCOP key
 	char observer[FLEN_VALUE];		// OBSERVER key
 	char bayer_pattern[FLEN_VALUE];	// BAYERPAT key Bayer Pattern if available
+	int bayer_xoffset, bayer_yoffset;
 	/* data obtained from FITS or RAW files */
 	double focal_length, iso_speed, exposure, aperture, ccd_temp;
 	double cvf; // Conversion factor (e-/adu)

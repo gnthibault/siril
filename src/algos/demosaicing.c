@@ -93,6 +93,30 @@ static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
  * 
  * *************************************************/
 
+
+static void ClearBorders(WORD *rgb, int sx, int sy, int w) {
+	int i, j;
+
+	/* black edges: */
+	i = 3 * sx * w - 1;
+	j = 3 * sx * sy - 1;
+	while (i >= 0) {
+		rgb[i--] = 0;
+		rgb[j--] = 0;
+	}
+
+	int low = sx * (w - 1) * 3 - 1 + w * 3;
+	i = low + sx * (sy - w * 2 + 1) * 3;
+	while (i > low) {
+		j = 6 * w;
+		while (j > 0) {
+			rgb[i--] = 0;
+			j--;
+		}
+		i -= (sx - 2 * w) * 3;
+	}
+}
+
 /* OpenCV's Bayer decoding */
 static int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
 		sensor_pattern tile) {
@@ -107,6 +131,7 @@ static int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
 	if ((tile > BAYER_FILTER_MAX) || (tile < BAYER_FILTER_MIN))
 		return -1;
 
+	ClearBorders(rgb, sx, sy, 1);
 	rgb += rgbStep + 3 + 1;
 	height -= 2;
 	width -= 2;
@@ -866,6 +891,15 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 
 	retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
 	full_stats_invalidation_from_fit(fit);
+
+    if (fit->bayer_yoffset == 1) {
+		buf += width;
+		height--;
+	}
+
+	if (fit->bayer_xoffset == 1) {
+		buf++;
+	}
 
 	newbuf = debayer_buffer(buf, &width, &height, interpolation,
 			com.debayer.bayer_pattern, xtrans);
