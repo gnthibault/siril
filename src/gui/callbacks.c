@@ -1256,6 +1256,7 @@ void update_MenuItem() {
 	/* File Menu */
 	gtk_widget_set_sensitive(lookup_widget("save1"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_FITS_header"), any_image_is_loaded && gfit.header != NULL);
+	gtk_widget_set_sensitive(lookup_widget("menu_file_information"), is_a_single_image_loaded);
 
 	/* Edit Menu */
 	gtk_widget_set_sensitive(lookup_widget("undo_item"), is_undo_available());
@@ -2772,10 +2773,42 @@ void on_pitchY_entry_changed(GtkEditable *editable, gpointer user_data) {
 	update_fwhm_units_ok();
 }
 
+void on_combobinning_changed(GtkComboBox *box, gpointer user_data) {
+	gint index = gtk_combo_box_get_active(box);
+
+	switch (index) {
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+		gfit.binning_x = gfit.binning_y = (short) index + 1;
+		break;
+	case 4:
+		gfit.binning_x = 1;
+		gfit.binning_x = 2;
+		break;
+	case 5:
+		gfit.binning_x = 1;
+		gfit.binning_y = 3;
+		break;
+	default:
+		fprintf(stderr, "Should not happen\n");
+	}
+}
+
+void on_menu_file_information_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	gtk_widget_show(lookup_widget("file_information"));
+}
+
+void on_file_information_close_clicked(GtkButton *button, gpointer user_data) {
+	gtk_widget_hide(lookup_widget("file_information"));
+}
+
+
 void on_toggleButtonUnbinned_toggled(GtkToggleButton *button, gpointer user_data) {
 	GtkWidget *box;
 
-	box = lookup_widget("combobinning");
+	box = lookup_widget("box_binning_info");
 
 	gfit.unbinned = gtk_toggle_button_get_active(button);
 	gtk_widget_set_sensitive(box, gfit.unbinned);
@@ -2830,29 +2863,6 @@ void on_checkbutton_auto_evaluate_toggled(GtkToggleButton *button,
 	GtkWidget *entry = lookup_widget("entry_flat_norm");
 
 	gtk_widget_set_sensitive(entry, !gtk_toggle_button_get_active(button));
-}
-
-void on_combobinning_changed(GtkComboBox *box, gpointer user_data) {
-	gint index = gtk_combo_box_get_active(box);
-
-	switch (index) {
-	case 0:
-	case 1:
-	case 2:
-	case 3:
-		gfit.binning_x = gfit.binning_y = (short) index + 1;
-		break;
-	case 4:
-		gfit.binning_x = 1;
-		gfit.binning_x = 2;
-		break;
-	case 5:
-		gfit.binning_x = 1;
-		gfit.binning_y = 3;
-		break;
-	default:
-		fprintf(stderr, "Should not happen\n");
-	}
 }
 
 void on_checkbutton_multipliers_toggled(GtkToggleButton *button,
