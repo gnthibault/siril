@@ -399,6 +399,7 @@ struct wcs_struct {
 	unsigned int equinox;
 	double crpix1, crpix2;
 	double crval1, crval2;
+	double crota1, crota2;
 	char objctra[FLEN_VALUE];
 	char objctdec[FLEN_VALUE];
 };

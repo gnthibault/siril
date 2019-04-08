@@ -716,6 +716,7 @@ static void update_gfit(image_solved image) {
 	gfit.wcs.equinox = 2000;
 	deg_to_HMS(image.ra, "ra", gfit.wcs.objctra);
 	deg_to_HMS(image.dec, "dec", gfit.wcs.objctdec);
+	gfit.wcs.crota1 = gfit.wcs.crota2 = image.crota;
 }
 
 static void print_platesolving_results(Homography H, image_solved image) {
@@ -757,6 +758,14 @@ static void print_platesolving_results(Homography H, image_solved image) {
 	if (rotation > 180)
 		rotation -= 360;
 	siril_log_message(_("Rotation:%+*.2lf deg %s\n"), 12, rotation, det < 0 ? _("(flipped)") : "");
+
+	/* set CROTA */
+	image.crota = rotation - 180.0;
+	if (image.crota < -180)
+		image.crota += 360;
+	if (image.crota > 180)
+		image.crota -= 360;
+
 	image.focal = RADCONV * image.pixel_size / image.resolution;
 
 	image.fov.x = get_fov(image.resolution, image.px_size.x);
@@ -1326,6 +1335,8 @@ void invalidate_WCS_keywords(fits *fit) {
 		fit->wcs.crpix2 = 0.0;
 		fit->wcs.crval1 = 0.0;
 		fit->wcs.crval2 = 0.0;
+		fit->wcs.crota1 = 0.0;
+		fit->wcs.crota2 = 0.0;
 		memset(fit->wcs.objctra, 0, FLEN_VALUE);
 		memset(fit->wcs.objctdec, 0, FLEN_VALUE);
 	}

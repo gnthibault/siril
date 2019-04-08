@@ -288,6 +288,12 @@ static void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcs.crval2), NULL, &status);
 
 	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcs.crota1), NULL, &status);
+
+	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcs.crota2), NULL, &status);
+
+	status = 0;
 	fits_read_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcs.objctra), NULL, &status);
 
 	status = 0;
@@ -650,6 +656,12 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcs.crval2),
 				"axis2 reference value", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcs.crota1),
+				"axis1 rotation angle (deg)", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcs.crota2),
+				"axis2 rotation angle (deg)", &status);
 		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcs.objctra),
 				"image center R.A. (hms)", &status);

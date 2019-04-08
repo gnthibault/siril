@@ -75,6 +75,7 @@ struct image_solved_struct {
 	double x, y;
 	double ra, dec;
 	double resolution, pixel_size, focal;
+	double crota;
 };
 typedef struct image_solved_struct image_solved;
 
