@@ -300,9 +300,7 @@ static int retrieveBayerPattern(char *bayer) {
 	return BAYER_FILTER_NONE;
 }
 
-/**************************Public functions***********************************************************/
-
-void check_for_conversion_form_completeness() {
+static void check_for_conversion_form_completeness() {
 	static GtkTreeView *tree_convert = NULL;
 	GtkTreeIter iter;
 	GtkTreeModel *model = NULL;
@@ -310,7 +308,7 @@ void check_for_conversion_form_completeness() {
 	GtkWidget *go_button = lookup_widget("convert_button");
 
 	if (tree_convert == NULL)
-		tree_convert = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview_convert"));
+		tree_convert = GTK_TREE_VIEW(lookup_widget("treeview_convert"));
 
 	model = gtk_tree_view_get_model(tree_convert);
 	valid = gtk_tree_model_get_iter_first(model, &iter);
@@ -324,6 +322,11 @@ void check_for_conversion_form_completeness() {
 	update_statusbar_convert();
 }
 
+static void unset_debayer_in_convflags() {
+	convflags &= ~CONVDEBAYER;
+}
+
+/**************************Public functions***********************************************************/
 
 /* initialize converters (utilities used for different image types importing) *
  * updates the label listing the supported input file formats, and modifies the
@@ -333,14 +336,13 @@ gchar *initialize_converters() {
 	gchar *text;
 	int count_ext = 0;
 
-	string = g_string_new("\t");
 	/* internal converters */
 	supported_filetypes |= TYPEBMP;
-	g_string_append(string, _("BMP images, "));
+	string = g_string_new("BMP images, ");
 	supported_filetypes |= TYPEPIC;
-	g_string_append(string, _("PIC images (IRIS), "));
+	string = g_string_append(string, _("PIC images (IRIS), "));
 	supported_filetypes |= TYPEPNM;
-	g_string_append(string, _("PGM and PPM binary images"));
+	string = g_string_append(string, _("PGM and PPM binary images"));
 		
 	supported_extensions = malloc(MAX_OF_EXTENSIONS * sizeof(char*));
 	/* internal extensions */
@@ -363,8 +365,8 @@ gchar *initialize_converters() {
 	int i, nb_raw;
 	
 	supported_filetypes |= TYPERAW;
-	g_string_append(string, ", ");
-	g_string_append(string, _("RAW images"));
+	string = g_string_append(string, ", ");
+	string = g_string_append(string, _("RAW images"));
 	initialize_libraw_settings();	// below in the file
 	
 	nb_raw = get_nb_raw_supported();
@@ -375,45 +377,45 @@ gchar *initialize_converters() {
 	}
 	count_ext += nb_raw;
 #endif
-	g_string_append(string, ", ");
-	g_string_append(string, _("FITS-CFA images"));
+	string = g_string_append(string, ", ");
+	string = g_string_append(string, _("FITS-CFA images"));
 
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 	supported_filetypes |= TYPEAVI;
-	g_string_append(string, ", ");
-	g_string_append(string, _("Films"));
+	string = g_string_append(string, ", ");
+	string = g_string_append(string, _("Films"));
 #endif
 
 	supported_filetypes |= TYPESER;
-	g_string_append(string, ", ");
-	g_string_append(string, _("SER sequences"));
+	string = g_string_append(string, ", ");
+	string = g_string_append(string, _("SER sequences"));
 
 	/* library converters (detected by configure) */
 #ifdef HAVE_LIBTIFF
 	supported_filetypes |= TYPETIFF;
-	g_string_append(string, ", ");
-	g_string_append(string, _("TIFF images"));
+	string = g_string_append(string, ", ");
+	string = g_string_append(string, _("TIFF images"));
 	supported_extensions[count_ext++] = ".tif";
 	supported_extensions[count_ext++] = ".tiff";
 #endif
 
 #ifdef HAVE_LIBJPEG
 	supported_filetypes |= TYPEJPG;
-	g_string_append(string, ", ");
-	g_string_append(string, _("JPG images"));
+	string = g_string_append(string, ", ");
+	string = g_string_append(string, _("JPG images"));
 	supported_extensions[count_ext++] = ".jpg";
 	supported_extensions[count_ext++] = ".jpeg";
 #endif
 
 #ifdef HAVE_LIBPNG
 	supported_filetypes |= TYPEPNG;
-	g_string_append(string, ", ");
-	g_string_append(string, _("PNG images"));
+	string = g_string_append(string, ", ");
+	string = g_string_append(string, _("PNG images"));
 	supported_extensions[count_ext++] = ".png";
 #endif
 	supported_extensions[count_ext++] = NULL;		// NULL-terminated array
 
-	g_string_append(string, ".");
+	string = g_string_append(string, ".");
 	text = g_string_free(string, FALSE);
 
 	siril_log_message(_("Supported file types: %s\n"), text + 1);
@@ -491,7 +493,7 @@ int count_converted_files() {
 }
 
 int count_selected_files() {
-	GtkTreeView *tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview_convert"));
+	GtkTreeView *tree_view = GTK_TREE_VIEW(lookup_widget("treeview_convert"));
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(tree_view);
 
 	return gtk_tree_selection_count_selected_rows(selection);
@@ -512,8 +514,8 @@ static void initialize_convert() {
 	int count = 0;
 	
 	if (tree_convert == NULL) {
-		tree_convert = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview_convert"));
-		startEntry = GTK_ENTRY(gtk_builder_get_object(builder, "startIndiceEntry"));
+		tree_convert = GTK_TREE_VIEW(lookup_widget("treeview_convert"));
+		startEntry = GTK_ENTRY(lookup_widget("startIndiceEntry"));
 	}
 
 	struct timeval t_start;
@@ -974,10 +976,6 @@ void set_debayer_in_convflags() {
 	convflags |= CONVDEBAYER;
 }
 
-void unset_debayer_in_convflags() {
-	convflags &= ~CONVDEBAYER;
-}
-
 /**************** Conversion tree managment ***********************************/
 /*
  * Main conversion list static functions
@@ -1023,7 +1021,7 @@ static void remove_selected_files_from_list() {
 	GList *references, *list;
 	GtkTreeView *tree_view;
 
-	tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview_convert"));
+	tree_view = GTK_TREE_VIEW(lookup_widget("treeview_convert"));
 	model = gtk_tree_view_get_model(tree_view);
 	selection = gtk_tree_view_get_selection(tree_view);
 	references = get_row_references_of_selected_rows(selection, model);

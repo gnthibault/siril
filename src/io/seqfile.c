@@ -332,8 +332,8 @@ sequence * readseqfile(const char *name){
 						GString *filmString;
 						/* test for extension in lowercase */
 						filmString = g_string_new(seqfilename);
-						g_string_truncate(filmString, strlen(seqfilename) - 3);
-						g_string_append(filmString, supported_film[i].extension);
+						filmString = g_string_truncate(filmString, strlen(seqfilename) - 3);
+						filmString = g_string_append(filmString, supported_film[i].extension);
 						g_free(filmname);
 						filmname = g_string_free(filmString, FALSE);
 
@@ -350,7 +350,7 @@ sequence * readseqfile(const char *name){
 							g_string_truncate(filmString, strlen(seqfilename) - 3);
 							len_ext = strlen(supported_film[i].extension);
 							upcase = g_ascii_strup(supported_film[i].extension, len_ext);
-							g_string_append(filmString, upcase);
+							filmString = g_string_append(filmString, upcase);
 							filmname = g_string_free(filmString, FALSE);
 							g_free(upcase);
 

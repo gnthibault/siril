@@ -112,9 +112,9 @@ void initialize_registration_methods() {
 
 	tip = g_string_new ("");
 	for (j = 0; j < i; j ++) {
-		g_string_append(tip, _(tooltip_text[j]));
+		tip = g_string_append(tip, _(tooltip_text[j]));
 		if (j < i - 1)
-			g_string_append(tip, "\n\n");
+			tip = g_string_append(tip, "\n\n");
 	}
 	ctip = g_string_free (tip, FALSE);
 	gtk_widget_set_tooltip_text(lookup_widget("comboboxregmethod"), ctip);

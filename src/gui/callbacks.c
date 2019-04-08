@@ -1853,7 +1853,7 @@ static void initialize_FITS_name_entries() {
 	str[3] = g_string_new("stack_result");
 
 	for (i = 0; i < 4; i++) {
-		g_string_append(str[i], com.ext);
+		str[i] = g_string_append(str[i], com.ext);
 		txt[i] = g_string_free(str[i], FALSE);
 	}
 	gtk_entry_set_text(moffset, txt[0]);
@@ -2305,11 +2305,11 @@ void initialize_all_GUI(gchar *siril_path, gchar *supported_files) {
 	initialize_shortcuts();
 
 	/* Select combo boxes that trigger some text display or other things */
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods")), 0);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstacksel")), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("comboboxstack_methods")), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("comboboxstacksel")), 0);
 	zoomcombo_update_display_for_zoom();
 
-	GtkLabel *label_supported = GTK_LABEL(gtk_builder_get_object(builder, "label_supported_types"));
+	GtkLabel *label_supported = GTK_LABEL(lookup_widget("label_supported_types"));
 	gtk_label_set_text(label_supported, supported_files);
 
 	adjust_sellabel();
@@ -2337,7 +2337,7 @@ void initialize_all_GUI(gchar *siril_path, gchar *supported_files) {
 	register_selection_update_callback(update_export_crop_label);
 
 	/* initialization of the binning parameters */
-	GtkComboBox *binning = GTK_COMBO_BOX(gtk_builder_get_object(builder, "combobinning"));
+	GtkComboBox *binning = GTK_COMBO_BOX(lookup_widget("combobinning"));
 	gtk_combo_box_set_active(binning, 0);
 
 	/* initialization of some paths */
