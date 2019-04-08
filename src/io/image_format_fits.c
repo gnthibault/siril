@@ -276,6 +276,12 @@ static void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TUINT, "EQUINOX", &(fit->wcs.equinox), NULL, &status);
 
 	status = 0;
+	fits_read_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcs.objctra), NULL, &status);
+
+	status = 0;
+	fits_read_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcs.objctdec), NULL, &status);
+
+	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->wcs.crpix1), NULL, &status);
 
 	status = 0;
@@ -288,16 +294,16 @@ static void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcs.crval2), NULL, &status);
 
 	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "CDELT1", &(fit->wcs.cdelt1), NULL, &status);
+
+	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcs.cdelt2), NULL, &status);
+
+	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcs.crota1), NULL, &status);
 
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcs.crota2), NULL, &status);
-
-	status = 0;
-	fits_read_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcs.objctra), NULL, &status);
-
-	status = 0;
-	fits_read_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcs.objctdec), NULL, &status);
 
 
 	/*******************************************************************
