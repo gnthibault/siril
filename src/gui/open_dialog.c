@@ -96,7 +96,6 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 		} else {
 			all_filter = g_string_append(all_filter, ";");
 			all_filter = g_string_append(all_filter, raw);
-			all_filter = g_string_append(all_filter, ";");
 		}
 
 		free(raw);
@@ -141,6 +140,7 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 			gtk_filter_add(chooser, _("SER files (*.ser)"), ser_filter,
 					com.filter == TYPESER);
 		} else {
+			all_filter = g_string_append(all_filter, ";");
 			all_filter = g_string_append(all_filter, graphics_filter);
 			all_filter = g_string_append(all_filter, ";");
 			all_filter = g_string_append(all_filter, netpbm_filter);
