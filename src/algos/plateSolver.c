@@ -716,6 +716,7 @@ static void update_gfit(image_solved image) {
 	gfit.wcs.equinox = 2000;
 	deg_to_HMS(image.ra, "ra", gfit.wcs.objctra);
 	deg_to_HMS(image.dec, "dec", gfit.wcs.objctdec);
+	gfit.wcs.cdelt1 = gfit.wcs.cdelt2 = image.resolution / 3600.0;
 	gfit.wcs.crota1 = gfit.wcs.crota2 = image.crota;
 }
 
@@ -1335,6 +1336,8 @@ void invalidate_WCS_keywords(fits *fit) {
 		fit->wcs.crpix2 = 0.0;
 		fit->wcs.crval1 = 0.0;
 		fit->wcs.crval2 = 0.0;
+		fit->wcs.cdelt1 = 0.0;
+		fit->wcs.cdelt2 = 0.0;
 		fit->wcs.crota1 = 0.0;
 		fit->wcs.crota2 = 0.0;
 		memset(fit->wcs.objctra, 0, FLEN_VALUE);

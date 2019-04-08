@@ -639,35 +639,29 @@ static void save_wcs_keywords(fits *fit) {
 		fits_update_key(fit->fptr, TUINT, "EQUINOX", &(fit->wcs.equinox),
 						"Equatorial equinox", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TSTRING, "CTYPE1", "RA---TA",
-				"the coordinate type for the first axis", &status);
+		fits_update_key(fit->fptr, TSTRING, "CTYPE1", "RA---TA", "Coordinate type for the first axis", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TSTRING, "CTYPE2", "DEC--TA",
-				"the coordinate type for the second axis", &status);
+		fits_update_key(fit->fptr, TSTRING, "CTYPE2", "DEC--TA", "Coordinate type for the second axis", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->wcs.crpix1),
-				"axis1 reference pixel", &status);
+		fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcs.objctra),	"Image center R.A. (hms)", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CRPIX2", &(fit->wcs.crpix2),
-				"axis2 reference pixel", &status);
+		fits_update_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcs.objctdec), "Image center declination (dms)", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcs.crval1),
-				"axis1 reference value", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->wcs.crpix1), "Axis1 reference pixel", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcs.crval2),
-				"axis2 reference value", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CRPIX2", &(fit->wcs.crpix2), "Axis2 reference pixel", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcs.crota1),
-				"axis1 rotation angle (deg)", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcs.crval1), "Axis1 reference value", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcs.crota2),
-				"axis2 rotation angle (deg)", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcs.crval2), "Axis2 reference value", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcs.objctra),
-				"image center R.A. (hms)", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CDELT1", &(fit->wcs.cdelt1), "Axis1 scale", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcs.objctdec),
-				"image center declination (dms)", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcs.cdelt2), "Axis2 scale", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcs.crota1), "Axis1 rotation angle (deg)", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcs.crota2), "Axis2 rotation angle (deg)", &status);
 	}
 }
 
