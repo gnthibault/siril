@@ -4,11 +4,6 @@
 #include "core/siril.h"
 #include "registration/matching/degtorad.h"
 
-/* multiply by this to convert degrees to radians */
-#ifndef PI
-#define PI 3.14159265359
-#endif
-
 #define BRIGHTEST_STARS 2500
 #define AT_MATCH_CATALOG_NBRIGHT   60
 
