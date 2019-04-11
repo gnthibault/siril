@@ -216,11 +216,12 @@ AM_CONDITIONAL(HAVE_WINDRES, test "x$WINDRES" != "x:")
 
 AC_SUBST(WINDRES)
 
-dnl check for native osx
+#####################################
+# Check for gdk windowing style
+#####################################
+AC_MSG_CHECKING([for native gdk windows style])
 gdk_targets=`$PKG_CONFIG --variable=targets gdk-3.0`
-
 gdk_windowing="x11"
-
 for target in $gdk_targets;
 do
 	case "$target" in
@@ -230,19 +231,12 @@ do
 		win32)
 			gdk_windowing=win32
 			;;
-
 	esac
 done
 
-AC_MSG_CHECKING([for native Mac OS X])
-if test "$gdk_windowing" = "quartz"; then
-	os_osx=yes
-else
-	os_osx=no
-fi
-AC_MSG_RESULT([$os_osx])
-AM_CONDITIONAL(OS_OSX, test "$os_osx" = "yes")
-
+AC_MSG_RESULT([$gdk_windowing])
+AM_CONDITIONAL(GDK_WINDOWING_QUARTZ, test "$gdk_windowing" = "quartz")
+AM_CONDITIONAL(GDK_WINDOWING_WIN32, test "$gdk_windowing" = "win32")
 AM_CONDITIONAL(GDK_WINDOWING_X11, test "$gdk_windowing" = "x11")
 
 if test "$platform" = "osx"; then
