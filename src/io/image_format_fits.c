@@ -1255,7 +1255,7 @@ int savefits(const char *name, fits *f) {
 	}
 	status = 0;
 	/* some float cases where it is USHORT saved as float */
-	if (f->bitpix > BYTE_IMG && f->data_max > 1.0 && f->data_max <= USHRT_MAX) {
+	if (f->bitpix != BYTE_IMG && f->data_max > 1.0 && f->data_max <= USHRT_MAX) {
 		f->bitpix = USHORT_IMG;
 	}
 	if (fits_create_img(f->fptr, f->bitpix, f->naxis, f->naxes, &status)) {

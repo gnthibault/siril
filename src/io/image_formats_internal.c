@@ -358,7 +358,7 @@ int savebmp(const char *name, fits *fit) {
 		return 1;
 	}
 
-	norm = (fit->orig_bitpix > BYTE_IMG ?
+	norm = (fit->orig_bitpix != BYTE_IMG ?
 			UCHAR_MAX_DOUBLE / USHRT_MAX_DOUBLE : 1.0);
 
 	fwrite(bmpfileheader, sizeof(bmpfileheader), 1, f);
@@ -601,7 +601,7 @@ static int saveppm(const char *name, fits *fit) {
 	WORD *gbuf[3] =
 			{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 	fits_flip_top_to_bottom(fit);
-	norm = (fit->orig_bitpix > BYTE_IMG) ? 1.0 : USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE;
+	norm = (fit->orig_bitpix != BYTE_IMG) ? 1.0 : USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE;
 	for (i = 0; i < ndata; i++) {
 		WORD color[3];
 		color[0] = *gbuf[RLAYER]++ * norm;
@@ -640,7 +640,7 @@ static int savepgm(const char *name, fits *fit) {
 	fprintf(fp, "P5\n%s\n%u %u\n%u\n", comment, fit->rx, fit->ry, USHRT_MAX);
 
 	fits_flip_top_to_bottom(fit);
-	norm = (fit->orig_bitpix > BYTE_IMG) ? 1.0 : USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE;
+	norm = (fit->orig_bitpix != BYTE_IMG) ? 1.0 : USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE;
 	for (i = 0; i < ndata; i++) {
 		WORD tmp = *gbuf++ * norm;
 		/* change endianness in place */

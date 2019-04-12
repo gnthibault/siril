@@ -356,7 +356,7 @@ static gpointer minisavedial(gpointer p) {
 #endif
 #ifdef HAVE_LIBPNG
 		case TYPEPNG:
-			bytes_per_sample = gfit.orig_bitpix > BYTE_IMG ? 2 : 1;
+			bytes_per_sample = gfit.orig_bitpix != BYTE_IMG ? 2 : 1;
 			args->retval = savepng(args->filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
 			break;
 #endif
@@ -381,7 +381,7 @@ static gpointer minisavedial(gpointer p) {
 					gfit.hi = UCHAR_MAX;
 					gfit.lo = 0;
 				}
-				if (gfit.orig_bitpix == BYTE_IMG && gfit.bitpix > BYTE_IMG) {
+				if (gfit.orig_bitpix == BYTE_IMG && gfit.bitpix != BYTE_IMG) {
 					gfit.hi = USHRT_MAX;
 					gfit.lo = 0;
 				}

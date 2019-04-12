@@ -301,7 +301,7 @@ int process_savepng(int nb){
 	strcpy(filename, word[1]);
 	strcat(filename, ".png");
 	set_cursor_waiting(TRUE);
-	bytes_per_sample = gfit.orig_bitpix > BYTE_IMG ? 2 : 1;
+	bytes_per_sample = gfit.orig_bitpix != BYTE_IMG ? 2 : 1;
 	savepng(filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
 	set_cursor_waiting(FALSE);
 	return 0;

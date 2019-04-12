@@ -357,7 +357,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	switch (bitspersample) {
 	case 8:
 		buf8 = _TIFFmalloc(width * sizeof(unsigned char) * nsamples);
-		norm = fit->orig_bitpix > BYTE_IMG ? UCHAR_MAX_DOUBLE / USHRT_MAX_DOUBLE : 1.0;
+		norm = fit->orig_bitpix != BYTE_IMG ? UCHAR_MAX_DOUBLE / USHRT_MAX_DOUBLE : 1.0;
 		for (row = 0; row < height; row++) {
 			for (col = 0; col < width; col++) {
 				for (n = 0; n < nsamples; n++) {
@@ -372,7 +372,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		break;
 	case 16:
 		buf16 = _TIFFmalloc(width * sizeof(WORD) * nsamples);
-		norm = (fit->orig_bitpix > BYTE_IMG) ? 1.0 : USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE;
+		norm = (fit->orig_bitpix != BYTE_IMG) ? 1.0 : USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE;
 
 		for (row = 0; row < height; row++) {
 			for (col = 0; col < width; col++) {
@@ -505,7 +505,7 @@ int savejpg(const char *name, fits *fit, int quality){
 	unsigned char *image_buffer = (unsigned char*) malloc(
 			cinfo.image_width * cinfo.image_height * cinfo.num_components);
 
-	norm = (fit->orig_bitpix > BYTE_IMG ?
+	norm = (fit->orig_bitpix != BYTE_IMG ?
 			UCHAR_MAX_DOUBLE / USHRT_MAX_DOUBLE : 1.0);
 
 	for (i = (cinfo.image_height - 1); i >= 0; i--) {

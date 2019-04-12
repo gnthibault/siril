@@ -1376,7 +1376,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				if (args->norm_to_16) {
 					normalize_to16bit(bitpix, &sum);
 					fit.bitpix = fit.orig_bitpix = USHORT_IMG;
-				} else if (fit.orig_bitpix > BYTE_IMG) {
+				} else if (fit.orig_bitpix != BYTE_IMG) {
 					fit.bitpix = fit.orig_bitpix = USHORT_IMG;
 				}
 				fit.pdata[my_block->channel][pdata_idx++] = round_to_WORD(sum);
