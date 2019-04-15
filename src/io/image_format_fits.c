@@ -419,11 +419,6 @@ static void convert_data(int bitpix, const void *from, WORD *to, unsigned int nb
 	unsigned long *data32;
 
 	switch (bitpix) {
-		case SBYTE_IMG:		// TO BE TESTED
-			sdata8 = (int8_t *)from;
-			for (i = 0; i < nbdata; i++)
-				to[i] = (WORD)sdata8[i] + 128;
-			break;
 		case BYTE_IMG:
 			data8 = (BYTE *)from;
 			for (i = 0; i < nbdata; i++)
@@ -440,7 +435,6 @@ static void convert_data(int bitpix, const void *from, WORD *to, unsigned int nb
 				to[i] = (WORD)sum;
 			}
 			break;
-
 		case ULONG_IMG:		// 32-bit unsigned integer pixels
 			data32 = (unsigned long *)from;
 			for (i = 0; i < nbdata; i++)
@@ -451,7 +445,6 @@ static void convert_data(int bitpix, const void *from, WORD *to, unsigned int nb
 			for (i = 0; i < nbdata; i++)
 				to[i] = (WORD)((sdata32[i] >> 16) + 32768);
 			break;
-
 		case DOUBLE_IMG:	// 64-bit floating point pixels
 		case FLOAT_IMG:		// 32-bit floating point pixels
 			pixels_double = (double *)from;
@@ -464,7 +457,6 @@ static void convert_data(int bitpix, const void *from, WORD *to, unsigned int nb
 				to[i] = round_to_WORD(norm * pixels_double[i]);
 			}
 			break;
-
 		case LONGLONG_IMG:	// 64-bit integer pixels
 		default:
 			siril_log_message(_("Unknown FITS data format in internal conversion\n"));
@@ -488,7 +480,6 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	fits_movabs_hdu(fit->fptr, 1, 0, &status); // make sure reading primary HDU
 
 	switch (fit->bitpix) {
-	case SBYTE_IMG:	// UNTESTED, may not exist while reading data
 	case BYTE_IMG:
 		data8 = malloc(nbdata * sizeof(BYTE));
 		datatype = fit->bitpix == BYTE_IMG ? TBYTE : TSBYTE;
@@ -584,7 +575,6 @@ static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
 	unsigned int nbdata = area->w * area->h;
 
 	switch (bitpix) {
-		case SBYTE_IMG:
 		case BYTE_IMG:
 			data8 = malloc(nbdata * sizeof(BYTE));
 			datatype = bitpix == BYTE_IMG ? TBYTE : TSBYTE;
