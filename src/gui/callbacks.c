@@ -2480,7 +2480,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			cairo_set_line_width(cr, 2.0 / zoom);
 			fitted_PSF *the_psf = com.seq.photometry[i][com.seq.current];
 			if (the_psf) {
-				double size = sqrt(the_psf->sx / 2.) * 2 * sqrt(log(2.) * 2) + 0.5;
+				double size = the_psf->sx;
 				cairo_arc(cr, the_psf->xpos, the_psf->ypos, size, 0., 2. * M_PI);
 				cairo_stroke(cr);
 				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.phot_set.inner, 0.,
