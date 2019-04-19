@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-19 10:37+0200\n"
+"POT-Creation-Date: 2019-04-19 17:08+0200\n"
 "PO-Revision-Date: 2019-01-15 21:36+0000\n"
 "Last-Translator: David Vazquez Garcia <davidvazquezgijon@gmail.com>\n"
 "Language-Team: \n"
@@ -1828,73 +1828,70 @@ msgstr "Restaurar el directorio de intercambio por defecto"
 msgid "<b>Swap Storage Directory</b>"
 msgstr "<b>Directorio de almacenamiento de intercambio</b>"
 
-#: ../src/gui/siril3.glade.h:394
+#: ../src/gui/siril3.glade.h:394 ../src/core/command_def.h:93
 msgid ""
-"The memory used corresponds to this value times the total of available "
-"memory.\n"
-"WARNING: Reducing the ratio of memory allocated to computation will degrade "
-"performances."
+"Sets a new ratio of free memory on memory used for stacking. Value should be "
+"between 0.05 and 2, depending on other activities of the machine. A higher "
+"ratio should allow siril to stack faster, but setting the ratio of memory "
+"used for stacking above 1 will require the use of on-disk memory, which is "
+"very slow and unrecommended"
 msgstr ""
-"La memoria usada se corresponde a este valor multiplicado por el total de "
-"memoria disponible.\n"
-"ADVERTENCIA: Reducir la proporción de memoria asignada al proceso puede "
-"degradar su rendimiento."
 
-#: ../src/gui/siril3.glade.h:396
+#: ../src/gui/siril3.glade.h:395
 #, fuzzy
 msgid "<b>RAM ratio</b>"
 msgstr "Separación de la caja: "
 
-#: ../src/gui/siril3.glade.h:397
+#: ../src/gui/siril3.glade.h:396
 msgid "Type of extension: "
 msgstr "Tipo de extensión: "
 
-#: ../src/gui/siril3.glade.h:398
+#: ../src/gui/siril3.glade.h:397
 msgid ".fit"
 msgstr ".fit"
 
-#: ../src/gui/siril3.glade.h:399
+#: ../src/gui/siril3.glade.h:398
 msgid ".fits"
 msgstr ".fits"
 
-#: ../src/gui/siril3.glade.h:400
+#: ../src/gui/siril3.glade.h:399
 msgid ".fts"
 msgstr ".fts"
 
-#: ../src/gui/siril3.glade.h:401
+#: ../src/gui/siril3.glade.h:400
 msgid "<b>FITS Format</b>"
 msgstr "<b>Formato FITS</b>"
 
-#: ../src/gui/siril3.glade.h:402
+#: ../src/gui/siril3.glade.h:401
 msgid "Don't ask before quitting"
 msgstr "No preguntar antes de salir"
 
-#: ../src/gui/siril3.glade.h:403
+#: ../src/gui/siril3.glade.h:402
 msgid "<b>Confirmation dialog</b>"
 msgstr "<b>Diálogo de confirmación</b>"
 
-#: ../src/gui/siril3.glade.h:404
+#: ../src/gui/siril3.glade.h:403
 msgid "Change the theme of the interface."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:405
+#: ../src/gui/siril3.glade.h:404
 msgid "Automatic"
 msgstr "Automático"
 
-#: ../src/gui/siril3.glade.h:406
+#: ../src/gui/siril3.glade.h:405
 msgid "Dark theme"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:407
+#: ../src/gui/siril3.glade.h:406
 #, fuzzy
 msgid "Light theme"
 msgstr "Curva de luz"
 
-#: ../src/gui/siril3.glade.h:408
+#: ../src/gui/siril3.glade.h:407
 msgid "Remember window positions"
 msgstr "Recordar posiciones de las ventanas"
 
-#: ../src/gui/siril3.glade.h:409
+#: ../src/gui/siril3.glade.h:408
 msgid ""
 "Remember positions of image displaying windows. This feature may not work on "
 "all architectures."
@@ -1902,11 +1899,11 @@ msgstr ""
 "Recordad posiciones de las ventanas mostradas. Esta característica puede no "
 "funcionar en todas las arquitecturas."
 
-#: ../src/gui/siril3.glade.h:410
+#: ../src/gui/siril3.glade.h:409
 msgid "<b>Look and feel</b>"
 msgstr "<b>Aspecto y comportamiento</b>"
 
-#: ../src/gui/siril3.glade.h:411
+#: ../src/gui/siril3.glade.h:410
 msgid ""
 "The paths written in this text box will be checked in order to load scripts "
 "that have been put inside. Write a path per line with as many lines you "
@@ -1918,67 +1915,67 @@ msgstr ""
 "tantas líneas como necesite. Sin embargo, tenga en cuenta que cuántas más "
 "rutas, más lento será el arranque."
 
-#: ../src/gui/siril3.glade.h:412
+#: ../src/gui/siril3.glade.h:411
 msgid "<b>Scripts Storage Directories</b>"
 msgstr "<b>Directorio de almacenamiento de intercambio</b>"
 
-#: ../src/gui/siril3.glade.h:413
+#: ../src/gui/siril3.glade.h:412
 msgid "Misc."
 msgstr "Misc."
 
-#: ../src/gui/siril3.glade.h:414
+#: ../src/gui/siril3.glade.h:413
 msgid "Dynamic PSF"
 msgstr "PSF Dinámico"
 
-#: ../src/gui/siril3.glade.h:415
+#: ../src/gui/siril3.glade.h:414
 msgid "Ch."
 msgstr "Ch."
 
-#: ../src/gui/siril3.glade.h:416
+#: ../src/gui/siril3.glade.h:415
 msgid "B"
 msgstr "B"
 
-#: ../src/gui/siril3.glade.h:417
+#: ../src/gui/siril3.glade.h:416
 msgid "A"
 msgstr "A"
 
-#: ../src/gui/siril3.glade.h:418
+#: ../src/gui/siril3.glade.h:417
 msgid "x0"
 msgstr "x0"
 
-#: ../src/gui/siril3.glade.h:419
+#: ../src/gui/siril3.glade.h:418
 msgid "y0"
 msgstr "y0"
 
-#: ../src/gui/siril3.glade.h:420
+#: ../src/gui/siril3.glade.h:419
 msgid "FWHMx"
 msgstr "FWHMx"
 
-#: ../src/gui/siril3.glade.h:421
+#: ../src/gui/siril3.glade.h:420
 msgid "FWHMy"
 msgstr "FWHMy"
 
-#: ../src/gui/siril3.glade.h:422
+#: ../src/gui/siril3.glade.h:421
 msgid "Mag"
 msgstr "Mag"
 
-#: ../src/gui/siril3.glade.h:423
+#: ../src/gui/siril3.glade.h:422
 msgid "r"
 msgstr "r"
 
-#: ../src/gui/siril3.glade.h:424
+#: ../src/gui/siril3.glade.h:423
 msgid "Angle"
 msgstr "Ángulo"
 
-#: ../src/gui/siril3.glade.h:425
+#: ../src/gui/siril3.glade.h:424
 msgid "RMSE"
 msgstr "RMSE"
 
-#: ../src/gui/siril3.glade.h:426
+#: ../src/gui/siril3.glade.h:425
 msgid "Size in pixels of the search box."
 msgstr "Tamaño en píxeles del cuadro de búsqueda."
 
-#: ../src/gui/siril3.glade.h:427
+#: ../src/gui/siril3.glade.h:426
 msgid ""
 "Threshold value above the noise for stars detection.\n"
 "The median and standard deviation values of the image are determined, then "
@@ -1990,19 +1987,19 @@ msgstr ""
 "umbral es: mediana + [umbral]x desv. típica.\n"
 "El valor por defecto del umbral es 1.00."
 
-#: ../src/gui/siril3.glade.h:430
+#: ../src/gui/siril3.glade.h:429
 msgid "Radius: "
 msgstr "Radio: "
 
-#: ../src/gui/siril3.glade.h:431
+#: ../src/gui/siril3.glade.h:430
 msgid "Threshold: "
 msgstr "Umbral: "
 
-#: ../src/gui/siril3.glade.h:432
+#: ../src/gui/siril3.glade.h:431
 msgid "Roundness threshold:"
 msgstr "Umbral de redondez:"
 
-#: ../src/gui/siril3.glade.h:433
+#: ../src/gui/siril3.glade.h:432
 msgid ""
 "Threshold value of star roundnesses. Decrease this value if your stars show "
 "small trails.\n"
@@ -2016,280 +2013,280 @@ msgstr ""
 "PRECAUCIÓN: asegúrese tener una buena rezón para cambiar este valor ya que "
 "puede degradar la detección de estrellas."
 
-#: ../src/gui/siril3.glade.h:436
+#: ../src/gui/siril3.glade.h:435
 #, fuzzy
 msgid "Export PSF parameters in an ASCII file"
 msgstr "Exportar los parámetros PSF en un fichero ASCII"
 
-#: ../src/gui/siril3.glade.h:437
+#: ../src/gui/siril3.glade.h:436
 msgid "Remove selected star from the list"
 msgstr "Borrar estrella seleccionada de la lista"
 
-#: ../src/gui/siril3.glade.h:438
+#: ../src/gui/siril3.glade.h:437
 msgid "Remove all stars from the list"
 msgstr "Borrar todas las estrellas de la lista"
 
-#: ../src/gui/siril3.glade.h:439
+#: ../src/gui/siril3.glade.h:438
 msgid "Wavelets control"
 msgstr "Control Wavelets"
 
-#: ../src/gui/siril3.glade.h:440
+#: ../src/gui/siril3.glade.h:439
 msgid "Cancel all changes applied"
 msgstr "Descartar los cambios aplicados"
 
-#: ../src/gui/siril3.glade.h:441
+#: ../src/gui/siril3.glade.h:440
 msgid "Select an algorithm type to perform wavelets"
 msgstr "Seleccione un tipo de algoritmo para hacer los wavelets"
 
-#: ../src/gui/siril3.glade.h:442
+#: ../src/gui/siril3.glade.h:441
 msgid "Type:"
 msgstr "Tipo:"
 
-#: ../src/gui/siril3.glade.h:443
+#: ../src/gui/siril3.glade.h:442
 msgid "Nb of plans:"
 msgstr "Nº de planos:"
 
-#: ../src/gui/siril3.glade.h:444
+#: ../src/gui/siril3.glade.h:443
 msgid "Number of wavelet layers that will be used"
 msgstr "Número de capas wavelet que se usuarán"
 
-#: ../src/gui/siril3.glade.h:445
+#: ../src/gui/siril3.glade.h:444
 msgid "Compute wavelets"
 msgstr "Procesar wavelets"
 
-#: ../src/gui/siril3.glade.h:446
+#: ../src/gui/siril3.glade.h:445
 msgid "1st Plan:"
 msgstr "1er plano:"
 
-#: ../src/gui/siril3.glade.h:447
+#: ../src/gui/siril3.glade.h:446
 msgid "2nd Plan:"
 msgstr "2º plano:"
 
-#: ../src/gui/siril3.glade.h:448
+#: ../src/gui/siril3.glade.h:447
 msgid "3th Plan:"
 msgstr "3er plano:"
 
-#: ../src/gui/siril3.glade.h:449
+#: ../src/gui/siril3.glade.h:448
 msgid "4th Plan:"
 msgstr "4º plano:"
 
-#: ../src/gui/siril3.glade.h:450
+#: ../src/gui/siril3.glade.h:449
 msgid "5th Plan:"
 msgstr ""
 "5\n"
 "º plano:"
 
-#: ../src/gui/siril3.glade.h:451
+#: ../src/gui/siril3.glade.h:450
 msgid "6th Plan:"
 msgstr "6º plano:"
 
-#: ../src/gui/siril3.glade.h:452
+#: ../src/gui/siril3.glade.h:451
 msgid "Reset changes"
 msgstr "Reiniciar cambios"
 
-#: ../src/gui/siril3.glade.h:453
+#: ../src/gui/siril3.glade.h:452
 msgid "Adjust"
 msgstr "Ajuste"
 
-#: ../src/gui/siril3.glade.h:454
+#: ../src/gui/siril3.glade.h:453
 msgid "Rotation"
 msgstr "Rotación"
 
-#: ../src/gui/siril3.glade.h:455
+#: ../src/gui/siril3.glade.h:454
 msgid "Angle (°): "
 msgstr "Ángulo (º): "
 
-#: ../src/gui/siril3.glade.h:456
+#: ../src/gui/siril3.glade.h:455
 msgid "Checking this box will crop the output image."
 msgstr "Al marcar esta casilla se cortará la imagen de salida."
 
-#: ../src/gui/siril3.glade.h:457
+#: ../src/gui/siril3.glade.h:456
 msgid "Angle in degrees. Rotation center is the center of the image."
 msgstr "Ángulo en grados. El centro de rotación es el centro de la imagen."
 
-#: ../src/gui/siril3.glade.h:458
+#: ../src/gui/siril3.glade.h:457
 msgid "Type of algorithm used for rotation"
 msgstr "Tipo de algoritmo usado en la rotación"
 
-#: ../src/gui/siril3.glade.h:459
+#: ../src/gui/siril3.glade.h:458
 msgid "Siril control center"
 msgstr "Centro de control de Siril"
 
-#: ../src/gui/siril3.glade.h:460
+#: ../src/gui/siril3.glade.h:459
 msgid "_File"
 msgstr "_Archivo"
 
-#: ../src/gui/siril3.glade.h:461
+#: ../src/gui/siril3.glade.h:460
 msgid "Save as..."
 msgstr "Guardar como..."
 
-#: ../src/gui/siril3.glade.h:462
+#: ../src/gui/siril3.glade.h:461
 #, fuzzy
 msgid "Informations..."
 msgstr "Información"
 
-#: ../src/gui/siril3.glade.h:463
+#: ../src/gui/siril3.glade.h:462
 msgid "FITS Header..."
 msgstr "Cabecera FITS..."
 
-#: ../src/gui/siril3.glade.h:464
+#: ../src/gui/siril3.glade.h:463
 msgid "_Edit"
 msgstr "_Editar"
 
-#: ../src/gui/siril3.glade.h:465
+#: ../src/gui/siril3.glade.h:464
 msgid "_Image Processing"
 msgstr "_Procesado de imagen"
 
-#: ../src/gui/siril3.glade.h:466
+#: ../src/gui/siril3.glade.h:465
 msgid "Asinh Transformation..."
 msgstr "Transformación Asinh..."
 
-#: ../src/gui/siril3.glade.h:467
+#: ../src/gui/siril3.glade.h:466
 msgid "Histogram Transformation..."
 msgstr "Transformación de histograma..."
 
-#: ../src/gui/siril3.glade.h:468
+#: ../src/gui/siril3.glade.h:467
 msgid "Color Calibration"
 msgstr "Calibración del color"
 
-#: ../src/gui/siril3.glade.h:469
+#: ../src/gui/siril3.glade.h:468
 msgid "Color Calibration..."
 msgstr "Calibración de color..."
 
-#: ../src/gui/siril3.glade.h:470
+#: ../src/gui/siril3.glade.h:469
 #, fuzzy
 msgid "Photometric Color Calibration..."
 msgstr "Calibración de color..."
 
-#: ../src/gui/siril3.glade.h:471
+#: ../src/gui/siril3.glade.h:470
 msgid "Color Saturation..."
 msgstr "Saturación de color..."
 
-#: ../src/gui/siril3.glade.h:472
+#: ../src/gui/siril3.glade.h:471
 msgid "Remove Green Noise..."
 msgstr "Eliminar ruido verde..."
 
-#: ../src/gui/siril3.glade.h:473
+#: ../src/gui/siril3.glade.h:472
 msgid "Negative Transformation"
 msgstr "Transformación Negativa"
 
-#: ../src/gui/siril3.glade.h:474
+#: ../src/gui/siril3.glade.h:473
 msgid "À trous Wavelets Transform..."
 msgstr "Transformación Wavelets en los agujeros..."
 
-#: ../src/gui/siril3.glade.h:475
+#: ../src/gui/siril3.glade.h:474
 msgid "Banding Reduction..."
 msgstr "Reducción de bandas..."
 
-#: ../src/gui/siril3.glade.h:476
+#: ../src/gui/siril3.glade.h:475
 msgid "Cosmetic Correction..."
 msgstr "Corrección cosmética..."
 
-#: ../src/gui/siril3.glade.h:477 ../src/opencv/opencv.cpp:565
+#: ../src/gui/siril3.glade.h:476 ../src/opencv/opencv.cpp:565
 msgid "Deconvolution..."
 msgstr "Deconvolución..."
 
-#: ../src/gui/siril3.glade.h:478
+#: ../src/gui/siril3.glade.h:477
 msgid "Fourier Transform..."
 msgstr "Transformada de fourier..."
 
-#: ../src/gui/siril3.glade.h:479
+#: ../src/gui/siril3.glade.h:478
 msgid "Median Filter..."
 msgstr "Flitro mediano..."
 
-#: ../src/gui/siril3.glade.h:480
+#: ../src/gui/siril3.glade.h:479
 msgid "Rotational Gradient..."
 msgstr "Gradiente rotacional..."
 
-#: ../src/gui/siril3.glade.h:481
+#: ../src/gui/siril3.glade.h:480
 msgid "Geometry"
 msgstr "Geometría"
 
-#: ../src/gui/siril3.glade.h:482
+#: ../src/gui/siril3.glade.h:481
 msgid "Horizontal Mirror"
 msgstr "Espejo horizontal"
 
-#: ../src/gui/siril3.glade.h:483
+#: ../src/gui/siril3.glade.h:482
 msgid "Vertical Mirror"
 msgstr "Espejo vertical"
 
-#: ../src/gui/siril3.glade.h:484
+#: ../src/gui/siril3.glade.h:483
 msgid "Rotation..."
 msgstr "Rotación..."
 
-#: ../src/gui/siril3.glade.h:485
+#: ../src/gui/siril3.glade.h:484
 msgid "Resample..."
 msgstr "Volver a muestrear..."
 
-#: ../src/gui/siril3.glade.h:486
+#: ../src/gui/siril3.glade.h:485
 msgid "Background Extraction..."
 msgstr "Extracción del fondo..."
 
-#: ../src/gui/siril3.glade.h:487
+#: ../src/gui/siril3.glade.h:486
 msgid "Extraction"
 msgstr "Extracción"
 
-#: ../src/gui/siril3.glade.h:488
+#: ../src/gui/siril3.glade.h:487
 msgid "Channels..."
 msgstr "Canales..."
 
-#: ../src/gui/siril3.glade.h:489
+#: ../src/gui/siril3.glade.h:488
 msgid "Wavelet Layers..."
 msgstr "Capas Wavelet..."
 
-#: ../src/gui/siril3.glade.h:490
+#: ../src/gui/siril3.glade.h:489
 msgid "RGB Compositing..."
 msgstr "Composición RGB..."
 
-#: ../src/gui/siril3.glade.h:491
+#: ../src/gui/siril3.glade.h:490
 msgid "_Scripts"
 msgstr "_Scritps"
 
-#: ../src/gui/siril3.glade.h:492
+#: ../src/gui/siril3.glade.h:491
 msgid "_Analysis"
 msgstr "_Análisis"
 
-#: ../src/gui/siril3.glade.h:493
+#: ../src/gui/siril3.glade.h:492
 msgid "Dynamic PSF..."
 msgstr "PSF Dinámico..."
 
-#: ../src/gui/siril3.glade.h:494
+#: ../src/gui/siril3.glade.h:493
 msgid "Image Plate Solver..."
 msgstr "Solucionador de imágenes..."
 
-#: ../src/gui/siril3.glade.h:495
+#: ../src/gui/siril3.glade.h:494
 msgid "Statistics..."
 msgstr "Estadísticas..."
 
-#: ../src/gui/siril3.glade.h:496
+#: ../src/gui/siril3.glade.h:495
 msgid "Noise Estimation"
 msgstr "Estimación de ruido"
 
-#: ../src/gui/siril3.glade.h:497
+#: ../src/gui/siril3.glade.h:496
 msgid "_Windows"
 msgstr "_Ventanas"
 
-#: ../src/gui/siril3.glade.h:498
+#: ../src/gui/siril3.glade.h:497
 msgid "Gray Channels Images"
 msgstr "Imágenes en canal gris"
 
-#: ../src/gui/siril3.glade.h:499
+#: ../src/gui/siril3.glade.h:498
 msgid "Color Image"
 msgstr "Color de la imgen"
 
-#: ../src/gui/siril3.glade.h:500
+#: ../src/gui/siril3.glade.h:499
 msgid "_Help"
 msgstr "_Ayuda"
 
-#: ../src/gui/siril3.glade.h:501
+#: ../src/gui/siril3.glade.h:500
 msgid "Check For Updates"
 msgstr "Buscar actualizaciones"
 
-#: ../src/gui/siril3.glade.h:502
+#: ../src/gui/siril3.glade.h:501
 msgid "Get scripts"
 msgstr "Obtener scritps"
 
-#: ../src/gui/siril3.glade.h:503
+#: ../src/gui/siril3.glade.h:502
 msgid ""
 "This conversion tab is used to import files and convert them into a format "
 "with which Siril can work: FITS or SER."
@@ -2297,35 +2294,35 @@ msgstr ""
 "Esta pestaña se usa para importar ficheros y convertirlos a un formato con "
 "el que Siril pueda trabajar: FITS o SER."
 
-#: ../src/gui/siril3.glade.h:504
+#: ../src/gui/siril3.glade.h:503
 msgid "Source"
 msgstr "Origen"
 
-#: ../src/gui/siril3.glade.h:505
+#: ../src/gui/siril3.glade.h:504
 msgid "Date"
 msgstr "Fecha"
 
-#: ../src/gui/siril3.glade.h:506
+#: ../src/gui/siril3.glade.h:505
 msgid "Add files to convert"
 msgstr "Añadir archivos a convertir"
 
-#: ../src/gui/siril3.glade.h:507
+#: ../src/gui/siril3.glade.h:506
 msgid "Remove selected files"
 msgstr "Eliminar los archivos seleccionados"
 
-#: ../src/gui/siril3.glade.h:508
+#: ../src/gui/siril3.glade.h:507
 msgid "Remove all files from the list"
 msgstr "Eliminar todos los ficheros de la lista"
 
-#: ../src/gui/siril3.glade.h:509
+#: ../src/gui/siril3.glade.h:508
 msgid "Destination"
 msgstr "Destino"
 
-#: ../src/gui/siril3.glade.h:510
+#: ../src/gui/siril3.glade.h:509
 msgid "Sequence name:"
 msgstr "Nombre de la secuencia:"
 
-#: ../src/gui/siril3.glade.h:511
+#: ../src/gui/siril3.glade.h:510
 msgid ""
 "Enter the base name of the sequence, for example NGC_6822-L. It will create "
 "images in the form NGC_6822-L_00001.fit. The name can also end with .ser, "
@@ -2335,15 +2332,15 @@ msgstr ""
 "imágenes como NGC_6822-L_00001.fit. El nombre  puede terminar en .ser, lo "
 "que habilita el formato de salida SER para la conversión."
 
-#: ../src/gui/siril3.glade.h:512
+#: ../src/gui/siril3.glade.h:511
 msgid "Colour image target"
 msgstr "Color de la imagen destino"
 
-#: ../src/gui/siril3.glade.h:513
+#: ../src/gui/siril3.glade.h:512
 msgid "Keep three channels"
 msgstr "Mantener tres canales"
 
-#: ../src/gui/siril3.glade.h:514
+#: ../src/gui/siril3.glade.h:513
 msgid ""
 "Keep the destination image with RGB channels, do not change the channels "
 "configuration."
@@ -2351,25 +2348,25 @@ msgstr ""
 "Mantener la imagen destino con los canales RGB, no cambia la configuración "
 "de los canales."
 
-#: ../src/gui/siril3.glade.h:515
+#: ../src/gui/siril3.glade.h:514
 msgid "Create three images"
 msgstr "Crear tres imágenes"
 
-#: ../src/gui/siril3.glade.h:516
+#: ../src/gui/siril3.glade.h:515
 msgid "Split an RGB image into three images, R, G and B."
 msgstr "Dividir una imagen RGB en tres imágenes, R, G y B."
 
-#: ../src/gui/siril3.glade.h:517
+#: ../src/gui/siril3.glade.h:516
 msgid "Keep only first channel"
 msgstr "Conservar sólo el primer canal"
 
-#: ../src/gui/siril3.glade.h:518
+#: ../src/gui/siril3.glade.h:517
 msgid "For an RGB image, only keep R. Useful for grey images stored as RGB."
 msgstr ""
 "Para una imagen RGB, conservar sólo R. Útil para imágenes en escala de "
 "grises guardadas como RGB."
 
-#: ../src/gui/siril3.glade.h:519
+#: ../src/gui/siril3.glade.h:518
 msgid ""
 "Indicates the start indice of your converted files. This value must be "
 "included in the [1, 65535] range."
@@ -2377,7 +2374,7 @@ msgstr ""
 "Define el índice inicial de los ficheros convertidos. Este valor debe estar "
 "en el rango [1, 65535]"
 
-#: ../src/gui/siril3.glade.h:520
+#: ../src/gui/siril3.glade.h:519
 msgid ""
 "Debayer single-channel images (CFA format) using the Bayer matrix layout "
 "given in the settings. Also applies to image opening, not only conversion.\n"
@@ -2391,7 +2388,7 @@ msgstr ""
 "\"Color de la imagen destino\" también se aplica al resultado del "
 "debayerizado en la conversión."
 
-#: ../src/gui/siril3.glade.h:523
+#: ../src/gui/siril3.glade.h:522
 msgid ""
 "Start conversion of all source files into the configured output files, FITS "
 "or SER, with colour processing or not."
@@ -2399,11 +2396,11 @@ msgstr ""
 "Iniciar la conversión de todos los archivos de entrada en los ficheros de "
 "salida configurados, FITS o SER, con procesamiento de color o no."
 
-#: ../src/gui/siril3.glade.h:524
+#: ../src/gui/siril3.glade.h:523
 msgid "Create as many SER files as input files"
 msgstr "Crear tantos ficheros SER como ficheros de entrada"
 
-#: ../src/gui/siril3.glade.h:525
+#: ../src/gui/siril3.glade.h:524
 msgid ""
 "Tick this to create several SER files instead of a single SER file for all "
 "input elements. Use this if input elements (films) don't share the same "
@@ -2413,11 +2410,11 @@ msgstr ""
 "elementos de entrada. Usarlo si los elementos de entrada (vídeo) no tienen "
 "el mismo tamaño de imagen o no pueden procesarse juntos."
 
-#: ../src/gui/siril3.glade.h:526
+#: ../src/gui/siril3.glade.h:525
 msgid "Supported file types:"
 msgstr "Tipos de archivo soportados:"
 
-#: ../src/gui/siril3.glade.h:527
+#: ../src/gui/siril3.glade.h:526
 msgid ""
 "Supported types depend on compile-time libraries availability. See "
 "documentation.\n"
@@ -2435,11 +2432,11 @@ msgstr ""
 "Los ficheros SER se tratan directamente como una secuencia, y no es posible "
 "por el momento su conversión."
 
-#: ../src/gui/siril3.glade.h:531
+#: ../src/gui/siril3.glade.h:530
 msgid "File conversion"
 msgstr "Conversión de archivos"
 
-#: ../src/gui/siril3.glade.h:532
+#: ../src/gui/siril3.glade.h:531
 msgid ""
 "Images are manipulated in sequences. Siril can find sequences in CWD, and "
 "you can filter images out."
@@ -2447,30 +2444,30 @@ msgstr ""
 "Las imágenes se manipulan como secuencias. Siril puede encontrar secuencias "
 "en el directorio de trabajo actual y pueden filtrarse las imágenes."
 
-#: ../src/gui/siril3.glade.h:533
+#: ../src/gui/siril3.glade.h:532
 msgid "Sequence selection"
 msgstr "Selección de secuencia"
 
-#: ../src/gui/siril3.glade.h:534
+#: ../src/gui/siril3.glade.h:533
 msgid "Sequence:"
 msgstr "Secuencia:"
 
-#: ../src/gui/siril3.glade.h:535
+#: ../src/gui/siril3.glade.h:534
 msgid "Search sequences"
 msgstr "Buscar secuencias"
 
-#: ../src/gui/siril3.glade.h:536
+#: ../src/gui/siril3.glade.h:535
 msgid ""
 "Search current directory for sequences of FITS images, SER or film videos."
 msgstr ""
 "Buscar secuencias de imágenes FITS, SER o archivos de video en el directorio "
 "actual."
 
-#: ../src/gui/siril3.glade.h:537
+#: ../src/gui/siril3.glade.h:536
 msgid "Force .seq recomputation"
 msgstr "Forzar el recálculo de la secuencia"
 
-#: ../src/gui/siril3.glade.h:538
+#: ../src/gui/siril3.glade.h:537
 msgid ""
 "By default, Siril takes the data from seq file if already computed. However "
 "you can force Siril to recompute the file if some changes have not been "
@@ -2486,15 +2483,15 @@ msgstr ""
 "\n"
 "AVISO: borrará todos los datos de registro y estadística."
 
-#: ../src/gui/siril3.glade.h:542
+#: ../src/gui/siril3.glade.h:541
 msgid "Image selection in sequence"
 msgstr "Selección de imagen en la secuencia"
 
-#: ../src/gui/siril3.glade.h:543
+#: ../src/gui/siril3.glade.h:542
 msgid "No sequence selected"
 msgstr "No hay secuencia seleccionada"
 
-#: ../src/gui/siril3.glade.h:544
+#: ../src/gui/siril3.glade.h:543
 msgid ""
 "Image index in the sequence. You can also use arrow keys to browse images, "
 "and the SPACE key to toggle exclude for the current image."
@@ -2503,21 +2500,21 @@ msgstr ""
 "navegar entre las imágenes, y la tecla ESPACIO para seleccionar o excluir la "
 "imagen actual."
 
-#: ../src/gui/siril3.glade.h:545
+#: ../src/gui/siril3.glade.h:544
 msgid "Excluded"
 msgstr "Excluída"
 
-#: ../src/gui/siril3.glade.h:546
+#: ../src/gui/siril3.glade.h:545
 msgid ""
 "Whether or not the image is excluded from processing (the file itself is not "
 "deleted)"
 msgstr "Excluir o no la imagen del proceso (no se borra el fichero)"
 
-#: ../src/gui/siril3.glade.h:547
+#: ../src/gui/siril3.glade.h:546
 msgid "Reference image"
 msgstr "Imagen de refernecia"
 
-#: ../src/gui/siril3.glade.h:548
+#: ../src/gui/siril3.glade.h:547
 msgid ""
 "If set, the current image will be the reference image for registration.\n"
 "Only one image can be the reference image in a sequence, setting it will "
@@ -2529,35 +2526,35 @@ msgstr ""
 "Sólo una imagen puede ser la de referencia en una secuencia, seleccionándola "
 "hará que se deseleccione la anteriormente indicada para referencia."
 
-#: ../src/gui/siril3.glade.h:551
+#: ../src/gui/siril3.glade.h:550
 msgid "Exclude All"
 msgstr "Excluir todas"
 
-#: ../src/gui/siril3.glade.h:552
+#: ../src/gui/siril3.glade.h:551
 msgid "Exclude all images of the sequence from the processing schedule"
 msgstr "Excluir todas las imágenes de la secuencia del programa de procesado"
 
-#: ../src/gui/siril3.glade.h:553
+#: ../src/gui/siril3.glade.h:552
 msgid "Include All"
 msgstr "Incluir todas"
 
-#: ../src/gui/siril3.glade.h:554
+#: ../src/gui/siril3.glade.h:553
 msgid "includes all images of the sequence in the processing schedule"
 msgstr "incluir todas las imágenes de la secuencia en el esquema de procesado"
 
-#: ../src/gui/siril3.glade.h:555
+#: ../src/gui/siril3.glade.h:554
 msgid "Sequence export"
 msgstr "Exportar Secuencia"
 
-#: ../src/gui/siril3.glade.h:556
+#: ../src/gui/siril3.glade.h:555
 msgid "Base name:"
 msgstr "Nombre base:"
 
-#: ../src/gui/siril3.glade.h:557
+#: ../src/gui/siril3.glade.h:556
 msgid "Base name for the exported sequence"
 msgstr "Nombre base de la secuencia exportada"
 
-#: ../src/gui/siril3.glade.h:558
+#: ../src/gui/siril3.glade.h:557
 msgid ""
 "Export sequence format. MP4 and WEBM replaces GIF for modern Web "
 "publication, AVI is not compressed."
@@ -2565,11 +2562,11 @@ msgstr ""
 "Formato de exportación de la secuencia. MP4 y WEBM reemplazan al GIF en las "
 "publicaciones Web modernas. AVI no está comprimido."
 
-#: ../src/gui/siril3.glade.h:559
+#: ../src/gui/siril3.glade.h:558
 msgid "Export sequence"
 msgstr "Exportar secuencia"
 
-#: ../src/gui/siril3.glade.h:560
+#: ../src/gui/siril3.glade.h:559
 msgid ""
 "Export the loaded sequence in the selected format. It can be used to store a "
 "sequence in another format, make animated movies, or store a lighter version "
@@ -2582,11 +2579,11 @@ msgstr ""
 "selección exportada pueden cortarse y seleccionarse con el mismo criterio "
 "que la selección de imágenes apiladas."
 
-#: ../src/gui/siril3.glade.h:561
+#: ../src/gui/siril3.glade.h:560
 msgid "Normalize images"
 msgstr "Normalizar imágenes"
 
-#: ../src/gui/siril3.glade.h:562
+#: ../src/gui/siril3.glade.h:561
 msgid ""
 "Activate image normalisation for the export. This will make all images the "
 "same brightness and is thus recommended for sequences with inconsistent "
@@ -2603,19 +2600,19 @@ msgstr ""
 "secuencia.\n"
 "\t\t\t"
 
-#: ../src/gui/siril3.glade.h:565
+#: ../src/gui/siril3.glade.h:564
 msgid "Fps:"
 msgstr "Fps:"
 
-#: ../src/gui/siril3.glade.h:566
+#: ../src/gui/siril3.glade.h:565
 msgid "Frame rate"
 msgstr "Ratio de frames"
 
-#: ../src/gui/siril3.glade.h:567
+#: ../src/gui/siril3.glade.h:566
 msgid "Resize"
 msgstr "Redimensionar"
 
-#: ../src/gui/siril3.glade.h:568
+#: ../src/gui/siril3.glade.h:567
 msgid ""
 "Check this box if you want to resize exported sequence. Note that this will "
 "degrade image quality."
@@ -2623,19 +2620,19 @@ msgstr ""
 "Marque esta casilla si quiere redimensionar la secuencia exportada. Tenga en "
 "cuenta que esto degradará la calidad de imagen."
 
-#: ../src/gui/siril3.glade.h:569
+#: ../src/gui/siril3.glade.h:568
 msgid "Width of output video"
 msgstr "Ancho del vídeo de salida"
 
-#: ../src/gui/siril3.glade.h:570
+#: ../src/gui/siril3.glade.h:569
 msgid "x"
 msgstr "x"
 
-#: ../src/gui/siril3.glade.h:571
+#: ../src/gui/siril3.glade.h:570
 msgid "Height of output video"
 msgstr "Alto del vídeo de salida"
 
-#: ../src/gui/siril3.glade.h:572
+#: ../src/gui/siril3.glade.h:571
 msgid ""
 "Film quality: lower value will use more compression and less bitrate, also "
 "resulting is smaller file size."
@@ -2643,28 +2640,28 @@ msgstr ""
 "Calidad de la película: un valor bajo dará lugar a más compresión y menos "
 "tasa de bits, así como un fichero más pequeño."
 
-#: ../src/gui/siril3.glade.h:573 ../src/io/sequence_export.c:482
+#: ../src/gui/siril3.glade.h:572 ../src/io/sequence_export.c:482
 msgid "Select area to crop"
 msgstr "Seleccione un área para recortar"
 
-#: ../src/gui/siril3.glade.h:574
+#: ../src/gui/siril3.glade.h:573
 msgid "Image selection uses the same controls as for stacking"
 msgstr "La selección de imágenes usa los mismos controles que el apilado"
 
-#: ../src/gui/siril3.glade.h:575
+#: ../src/gui/siril3.glade.h:574
 msgid "Go to the stacking tab"
 msgstr "Ir a la pestaña de apilado"
 
-#: ../src/gui/siril3.glade.h:576
+#: ../src/gui/siril3.glade.h:575
 msgid "Sequence"
 msgstr "Secuencia"
 
-#: ../src/gui/siril3.glade.h:577
+#: ../src/gui/siril3.glade.h:576
 msgid "Pre-processing is an optional step to apply to a sequence of images."
 msgstr ""
 "El pre-procesado es un paso opcional para aplicar a la secuencia de imágenes."
 
-#: ../src/gui/siril3.glade.h:578
+#: ../src/gui/siril3.glade.h:577
 msgid ""
 "The single file is often called the master file, which is the result of the "
 "processing of several frames, for each type of master image."
@@ -2672,18 +2669,18 @@ msgstr ""
 "El fichero único a menudo se denomina fichero maestro, es el resultado del "
 "proceso de varios frames, por cada tipo de imagen maestra."
 
-#: ../src/gui/siril3.glade.h:579
+#: ../src/gui/siril3.glade.h:578
 msgid "Dark, offset (bias) and flat files can only be a single FITS file."
 msgstr ""
 "Los ficheros negros, de compensación (bias) y planos śólo pueden ser un "
 "único archivo FITS."
 
 #. Flat is the kind of the picture used here. In french I
-#: ../src/gui/siril3.glade.h:581
+#: ../src/gui/siril3.glade.h:580
 msgid "Use flat"
 msgstr "Usar plano"
 
-#: ../src/gui/siril3.glade.h:582
+#: ../src/gui/siril3.glade.h:581
 msgid ""
 "All images in the sequence will be divided by the master flat image (each "
 "pixel value)."
@@ -2691,7 +2688,7 @@ msgstr ""
 "Todas las secuencias de imágenes se dividirán por la imagen plana maestra "
 "(el valor de cada píxel)."
 
-#: ../src/gui/siril3.glade.h:583
+#: ../src/gui/siril3.glade.h:582
 msgid ""
 "Enter the master flat file name here, or use the browse button.\n"
 "All images in the sequence will be divided by the master flat image (each "
@@ -2702,21 +2699,21 @@ msgstr ""
 "Todas las imágenes de la secuencia se dividirán por el fichero maestro plano "
 "(el valor de cada píxel)."
 
-#: ../src/gui/siril3.glade.h:585
+#: ../src/gui/siril3.glade.h:584
 msgid "Browse..."
 msgstr "Navegar..."
 
 #. Dark is the kind of the picture used here. In french I
-#: ../src/gui/siril3.glade.h:587
+#: ../src/gui/siril3.glade.h:586
 msgid "Use dark"
 msgstr "Usar negro"
 
-#: ../src/gui/siril3.glade.h:588
+#: ../src/gui/siril3.glade.h:587
 msgid "The dark master image will be removed from all images in the sequence."
 msgstr ""
 "La imagen negra maestra se borrará de todas las imágenes de la secuencia."
 
-#: ../src/gui/siril3.glade.h:589
+#: ../src/gui/siril3.glade.h:588
 msgid ""
 "Enter the master dark file name here, or use the browse button.\n"
 "The dark master image will be removed from all images in the sequence."
@@ -2725,18 +2722,18 @@ msgstr ""
 "El fichero negro maestro se borrará de todas las imágenes de la secuencia."
 
 #. Offset is the kind of the picture used here. In french I
-#: ../src/gui/siril3.glade.h:592
+#: ../src/gui/siril3.glade.h:591
 msgid "Use offset"
 msgstr "Usar compensación"
 
-#: ../src/gui/siril3.glade.h:593
+#: ../src/gui/siril3.glade.h:592
 msgid ""
 "The bias/offset master image will be removed from all images in the sequence."
 msgstr ""
 "La imagen maestra offset/bias se borrará de todas las imágenes de la "
 "secuencia."
 
-#: ../src/gui/siril3.glade.h:594
+#: ../src/gui/siril3.glade.h:593
 msgid ""
 "Enter the master bias/offset file name here, or use the browse button.\n"
 "The bias/offset master image will be removed from all images in the sequence."
@@ -2746,19 +2743,19 @@ msgstr ""
 "El fichero maestro de bias/offsset se borraría de todas las imagénes de la "
 "secuencia."
 
-#: ../src/gui/siril3.glade.h:596
+#: ../src/gui/siril3.glade.h:595
 msgid "Choose your own normalisation value."
 msgstr "Escoja su propio valor de normalización."
 
-#: ../src/gui/siril3.glade.h:597
+#: ../src/gui/siril3.glade.h:596
 msgid "Normalisation value for flat division"
 msgstr "Valor de normalización de la división plana"
 
-#: ../src/gui/siril3.glade.h:598
+#: ../src/gui/siril3.glade.h:597
 msgid "Dark optimization"
 msgstr "Optimización de negro"
 
-#: ../src/gui/siril3.glade.h:599
+#: ../src/gui/siril3.glade.h:598
 msgid ""
 "Dark subtraction can be optionally optimized so that the noise of the "
 "resulting picture (light frame minus dark frame) is minimized by applying a "
@@ -2776,11 +2773,11 @@ msgstr ""
 "PRECAUCIÓN: no aplicar la optimización al negro en el negro maestro si no se "
 "ha restado previamente el bias maestro."
 
-#: ../src/gui/siril3.glade.h:602
+#: ../src/gui/siril3.glade.h:601
 msgid "Auto evaluate normalisation value"
 msgstr "Auto-evalular el valor de normalización"
 
-#: ../src/gui/siril3.glade.h:603
+#: ../src/gui/siril3.glade.h:602
 msgid ""
 "If this box is checked, Siril will auto-evaluate the normalisation value.\n"
 "This value is the mean of the master flat calibrated with the master offset."
@@ -2788,22 +2785,22 @@ msgstr ""
 "Si marca esta casilla, Siril auto-evaluará el valor de normalización.\n"
 "Este valor es la media del plano maestro calibrado con el offset maestro."
 
-#: ../src/gui/siril3.glade.h:605
+#: ../src/gui/siril3.glade.h:604
 msgid "Equalize CFA"
 msgstr "Igualar CFA"
 
-#: ../src/gui/siril3.glade.h:606
+#: ../src/gui/siril3.glade.h:605
 msgid ""
 "This option equalizes the mean intensity of RGB layers in a CFA flat image."
 msgstr ""
 "Esta opción ecualiza la intensidad media de las capas RGB en una imagen "
 "plana CFA."
 
-#: ../src/gui/siril3.glade.h:607
+#: ../src/gui/siril3.glade.h:606
 msgid "Cosmetic correction (using master-dark)"
 msgstr "Corrección cosmética (usando el negro maestro)"
 
-#: ../src/gui/siril3.glade.h:608
+#: ../src/gui/siril3.glade.h:607
 msgid ""
 "How many times the standard deviation, the pixel value must differ to be "
 "considered as defective."
@@ -2811,11 +2808,11 @@ msgstr ""
 "Cuántas veces la desviación estándar el valor de un píxel debe diferir para "
 "considerarlo defectuoso."
 
-#: ../src/gui/siril3.glade.h:609
+#: ../src/gui/siril3.glade.h:608
 msgid "Enable Cosmectic Correction"
 msgstr "Habilitar Corrección Cosmética"
 
-#: ../src/gui/siril3.glade.h:610
+#: ../src/gui/siril3.glade.h:609
 msgid ""
 "Check if you want to apply a hot pixel removal.\n"
 "Hot pixels are located on the master-dark."
@@ -2823,11 +2820,11 @@ msgstr ""
 "Marcar si quiere aplicar la eliminación de píxeles calientes.\n"
 "Los píxeles calientes se encuentran en el negro maestro."
 
-#: ../src/gui/siril3.glade.h:612
+#: ../src/gui/siril3.glade.h:611
 msgid "Estimate"
 msgstr "Estimar"
 
-#: ../src/gui/siril3.glade.h:614
+#: ../src/gui/siril3.glade.h:613
 #, no-c-format
 msgid ""
 "Click on this button to evaluate the number of deviant pixels. If values are "
@@ -2838,23 +2835,23 @@ msgstr ""
 "valores son mayores que el 1% del total de píxeles, se le pedirá cambiar los "
 "valores sigma."
 
-#: ../src/gui/siril3.glade.h:615
+#: ../src/gui/siril3.glade.h:614
 msgid "Cold: 0 px"
 msgstr "Fríos: 0 px"
 
-#: ../src/gui/siril3.glade.h:616
+#: ../src/gui/siril3.glade.h:615
 msgid "Hot: 0 px"
 msgstr "Calientes: 0 px"
 
-#: ../src/gui/siril3.glade.h:617
+#: ../src/gui/siril3.glade.h:616
 msgid "Output sequence"
 msgstr "Secuencia de salida"
 
-#: ../src/gui/siril3.glade.h:618
+#: ../src/gui/siril3.glade.h:617
 msgid "Debayer FITS images before saving"
 msgstr "Aplicar Debayer a las imágenes FITS antes de guardar"
 
-#: ../src/gui/siril3.glade.h:619
+#: ../src/gui/siril3.glade.h:618
 msgid ""
 "Check this option if you want to apply a demosaicing algorithm to your FITS "
 "images right after they were preprocessed. By doing this, you skip one "
@@ -2870,19 +2867,19 @@ msgstr ""
 "AVISO: esta opción sólo está disponible para imágenes FITS en una secuencia "
 "SER a la que pueda aplicarse el demosaico al vuelo."
 
-#: ../src/gui/siril3.glade.h:622
+#: ../src/gui/siril3.glade.h:621
 msgid "Store resulting sequence with prefix:"
 msgstr "Guardar la secuencia de salida con el prefijo:"
 
-#: ../src/gui/siril3.glade.h:623
+#: ../src/gui/siril3.glade.h:622
 msgid "Prefix of the image names resulting from the pre-processing."
 msgstr "Prefijo de los nombre de imagen resultantes del preprocesado."
 
-#: ../src/gui/siril3.glade.h:624
+#: ../src/gui/siril3.glade.h:623
 msgid "Start pre-processing"
 msgstr "Comenzar pre-proceso"
 
-#: ../src/gui/siril3.glade.h:625
+#: ../src/gui/siril3.glade.h:624
 msgid ""
 "Pre-process sequence with the above master files, resulting sequence will be "
 "in pp_<seq.name> or another prefix given aside.\n"
@@ -2899,11 +2896,11 @@ msgstr ""
 "La siguiente acción para imágenes tomadas con DSLR debería ser el debayer de "
 "las imágenes preprocesadas, vaya a la pestaña conversión."
 
-#: ../src/gui/siril3.glade.h:628
+#: ../src/gui/siril3.glade.h:627
 msgid "Pre-processing"
 msgstr "Pre-proceso"
 
-#: ../src/gui/siril3.glade.h:629
+#: ../src/gui/siril3.glade.h:628
 msgid ""
 "Registration is basically aligning the images from a sequence to be able to "
 "process them afterwards."
@@ -2911,27 +2908,19 @@ msgstr ""
 "El registro es básicamente alinear las imágenes de una secuencia para poder "
 "procesarlas después."
 
-#: ../src/gui/siril3.glade.h:630
+#: ../src/gui/siril3.glade.h:629
 msgid "Image registration"
 msgstr "Registro de imagen"
 
-#: ../src/gui/siril3.glade.h:631
-msgid "Register all images from sequence"
-msgstr "Registrar todas las imágenes de la secuencia"
-
-#: ../src/gui/siril3.glade.h:632
-msgid "Register selected images only"
-msgstr "Registrar sólo las imágenes seleccionadas"
-
-#: ../src/gui/siril3.glade.h:633
+#: ../src/gui/siril3.glade.h:630
 msgid "Choose registration method:"
 msgstr "Escoger el método de registro:"
 
-#: ../src/gui/siril3.glade.h:634
+#: ../src/gui/siril3.glade.h:631
 msgid "Select registration layer:"
 msgstr "Escoger la capa de registro:"
 
-#: ../src/gui/siril3.glade.h:635
+#: ../src/gui/siril3.glade.h:632
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -2948,23 +2937,31 @@ msgstr ""
 "por defecto si está disponible (en imágenes RGB: Verde, en caso contrario "
 "Azul y de lo contrario rojo)."
 
-#: ../src/gui/siril3.glade.h:638
+#: ../src/gui/siril3.glade.h:635
+msgid "Register all images from sequence"
+msgstr "Registrar todas las imágenes de la secuencia"
+
+#: ../src/gui/siril3.glade.h:636
+msgid "Register selected images only"
+msgstr "Registrar sólo las imágenes seleccionadas"
+
+#: ../src/gui/siril3.glade.h:637
 msgid "Prefix:"
 msgstr "Prefijo:"
 
-#: ../src/gui/siril3.glade.h:639
+#: ../src/gui/siril3.glade.h:638
 msgid "Prefix of the image names resulting from the registration."
 msgstr "Prefijo de los nombres de imagen resultantes del registro."
 
-#: ../src/gui/siril3.glade.h:640
+#: ../src/gui/siril3.glade.h:639
 msgid "Algorithm: "
 msgstr "Algoritmo: "
 
-#: ../src/gui/siril3.glade.h:641
+#: ../src/gui/siril3.glade.h:640
 msgid "Match stars in selection"
 msgstr "Igualar las estrellas en la selección"
 
-#: ../src/gui/siril3.glade.h:642
+#: ../src/gui/siril3.glade.h:641
 msgid ""
 "Check this box if you want to perform the Global Star Alignment algorithm "
 "within the selected area in the reference image. If no selection are done, "
@@ -2975,11 +2972,11 @@ msgstr ""
 "dentro del área seleccionada en la imagen de referencia. Si no se realiza "
 "selección se ignora esta opción."
 
-#: ../src/gui/siril3.glade.h:644
+#: ../src/gui/siril3.glade.h:643
 msgid "Translation only"
 msgstr "Sólo traslación"
 
-#: ../src/gui/siril3.glade.h:645
+#: ../src/gui/siril3.glade.h:644
 msgid ""
 "This is the only registration that can detect and apply rotations on images. "
 "However, rotating images will degrade them to a certain extent. Activating "
@@ -3000,11 +2997,11 @@ msgstr ""
 "AVISO: no se construye una nueva secuencia, los datos de registro se guardan "
 "en la secuencia original."
 
-#: ../src/gui/siril3.glade.h:649
+#: ../src/gui/siril3.glade.h:648
 msgid "Pick object in #1"
 msgstr "Escoger objeto en #1"
 
-#: ../src/gui/siril3.glade.h:650
+#: ../src/gui/siril3.glade.h:649
 msgid ""
 "Select an area around the asteroid or the comet core in the first selected "
 "image, then click on this button. The pixel coordinates of the object will "
@@ -3014,19 +3011,19 @@ msgstr ""
 "imagen seleccionada, entonces haga click en este botón. Las coordenadas del "
 "píxel del objeto serán calculadas y mostradas."
 
-#: ../src/gui/siril3.glade.h:651
+#: ../src/gui/siril3.glade.h:650
 msgid "Core X-coordinates of the first image."
 msgstr "Coordenadas X del núcleo de la primea imagen."
 
-#: ../src/gui/siril3.glade.h:652
+#: ../src/gui/siril3.glade.h:651
 msgid "Core Y-coordinates of the first image."
 msgstr "Coordenadas Y del núcleo de la primea imagen."
 
-#: ../src/gui/siril3.glade.h:653
+#: ../src/gui/siril3.glade.h:652
 msgid "Pick object in #2"
 msgstr "Escoger objeto en #2"
 
-#: ../src/gui/siril3.glade.h:654
+#: ../src/gui/siril3.glade.h:653
 msgid ""
 "Select an area around the asteroid or the comet core in the last selected "
 "image, then click on this button. The pixel coordinates of the object will "
@@ -3036,27 +3033,27 @@ msgstr ""
 "imagen seleccionada, entonces haga click en este botón. Las coordenadas del "
 "píxel del objeto serán calculadas y mostradas."
 
-#: ../src/gui/siril3.glade.h:655
+#: ../src/gui/siril3.glade.h:654
 msgid "Core X-coordinates of the second image."
 msgstr "Coordenadas X del núcleo de la segunda imagen."
 
-#: ../src/gui/siril3.glade.h:656
+#: ../src/gui/siril3.glade.h:655
 msgid "Core Y-coordinates of the second image."
 msgstr "Coordenadas Y del núcleo de la segunda imagen."
 
-#: ../src/gui/siril3.glade.h:657
+#: ../src/gui/siril3.glade.h:656
 msgid "Comet velocity in pixel per hour."
 msgstr "Velocidad del cometa en píxeles por hora."
 
-#: ../src/gui/siril3.glade.h:658
+#: ../src/gui/siril3.glade.h:657
 msgid "Velocity: "
 msgstr "Velocidad: "
 
-#: ../src/gui/siril3.glade.h:659
+#: ../src/gui/siril3.glade.h:658
 msgid "Go register"
 msgstr "Hacer registro"
 
-#: ../src/gui/siril3.glade.h:660
+#: ../src/gui/siril3.glade.h:659
 msgid ""
 "Start the registration process. It will register images in the loaded "
 "sequence using the selected method and reference layer (loaded in the 'Image "
@@ -3067,15 +3064,15 @@ msgstr ""
 "apartado 'Secuencia de imágenes', el nombre de la secuencia de imágenes "
 "actual está en el fondo de la ventana."
 
-#: ../src/gui/siril3.glade.h:661 ../src/registration/registration.c:702
+#: ../src/gui/siril3.glade.h:660 ../src/registration/registration.c:702
 msgid "Load a sequence first."
 msgstr "Cargar una secuencia primero."
 
-#: ../src/gui/siril3.glade.h:662
+#: ../src/gui/siril3.glade.h:661
 msgid "Simplified Drizzle x2"
 msgstr "Drizzle Simplificado x2"
 
-#: ../src/gui/siril3.glade.h:663
+#: ../src/gui/siril3.glade.h:662
 msgid ""
 "Activate the simplified drizzle algorithm for the processing of this "
 "sequence. An up-scale (x2) will be applied to the registered frame or during "
@@ -3106,11 +3103,11 @@ msgstr ""
 "disco necesarios para crear y procesar las imágenes se multiplica por el "
 "cuadrado del factor Drizzle."
 
-#: ../src/gui/siril3.glade.h:668
+#: ../src/gui/siril3.glade.h:667
 msgid "Cumul reg. data"
 msgstr "Datos de registro del cúmulo"
 
-#: ../src/gui/siril3.glade.h:669
+#: ../src/gui/siril3.glade.h:668
 msgid ""
 "Check this button if you want the new registration data to be added to the "
 "previous one.\n"
@@ -3124,11 +3121,11 @@ msgstr ""
 "método que no cree una nueva secuencia, pero debe ser desmarcado cuando se "
 "aplique varias veces el algoritmo de cometas/asteroides."
 
-#: ../src/gui/siril3.glade.h:671
+#: ../src/gui/siril3.glade.h:670
 msgid "Follow star movement"
 msgstr "Seguir el movimiento de las estrellas"
 
-#: ../src/gui/siril3.glade.h:672
+#: ../src/gui/siril3.glade.h:671
 msgid ""
 "Use this option to use the position of the star found in the previous image "
 "as new centre for the current image registration. This allows the selection "
@@ -3144,15 +3141,15 @@ msgstr ""
 "PRECAUCIÓN: habilitar esta opción requiere que el registro no sea "
 "paralelizado."
 
-#: ../src/gui/siril3.glade.h:674
+#: ../src/gui/siril3.glade.h:673
 msgid "Manual registration"
 msgstr "Registro manual"
 
-#: ../src/gui/siril3.glade.h:675
+#: ../src/gui/siril3.glade.h:674
 msgid "Display reference image"
 msgstr "Mostrar imagen de referencia"
 
-#: ../src/gui/siril3.glade.h:677
+#: ../src/gui/siril3.glade.h:676
 #, no-c-format
 msgid ""
 "Display the reference image over the current image using a 50% "
@@ -3165,7 +3162,7 @@ msgstr ""
 "Para habilitarlo, la imagen de referencia debe haberse establecido y "
 "mostrado al menos una vez en la capa de registro actual."
 
-#: ../src/gui/siril3.glade.h:679
+#: ../src/gui/siril3.glade.h:678
 msgid ""
 "Change this value, using mouse wheel or up and down arrows, to align the "
 "image with the reference image on the X axis."
@@ -3173,11 +3170,11 @@ msgstr ""
 "Modifique este valor, usando la rueda del ratón o las flechas arriba y "
 "abajo, para alinear la imagen con la imagen de referencia en el eje X."
 
-#: ../src/gui/siril3.glade.h:680
+#: ../src/gui/siril3.glade.h:679
 msgid "X translation:"
 msgstr "Traslación X:"
 
-#: ../src/gui/siril3.glade.h:681
+#: ../src/gui/siril3.glade.h:680
 msgid ""
 "Change this value, using mouse wheel or up and down arrows, to align the "
 "image with the reference image on the Y axis."
@@ -3185,19 +3182,19 @@ msgstr ""
 "Modifique este valor, usando la rueda del ratón o las flechas arriba y "
 "abajo, para alinear la imagen con la imagen de referencia en el eje Y."
 
-#: ../src/gui/siril3.glade.h:682
+#: ../src/gui/siril3.glade.h:681
 msgid "Y translation:"
 msgstr "Traslación Y:"
 
-#: ../src/gui/siril3.glade.h:683
+#: ../src/gui/siril3.glade.h:682
 msgid "Set reference image first."
 msgstr "Establecer imagen de referencia primero."
 
-#: ../src/gui/siril3.glade.h:684
+#: ../src/gui/siril3.glade.h:683
 msgid "Set first preview"
 msgstr "Establecer la primera vista previa"
 
-#: ../src/gui/siril3.glade.h:685
+#: ../src/gui/siril3.glade.h:684
 msgid ""
 "Allows a preview area to be displayed just below. After clicking on this "
 "button, click on the image to position the preview area's centre"
@@ -3206,53 +3203,53 @@ msgstr ""
 "este botón, pulse en la imagen para colocar el centro del área de "
 "previsualización"
 
-#: ../src/gui/siril3.glade.h:686
+#: ../src/gui/siril3.glade.h:685
 msgid "Set second preview"
 msgstr "Establecer la segunda vista previa"
 
-#: ../src/gui/siril3.glade.h:687
+#: ../src/gui/siril3.glade.h:686
 msgid "Registration"
 msgstr "Registro"
 
-#: ../src/gui/siril3.glade.h:688
+#: ../src/gui/siril3.glade.h:687
 msgid "Filename:"
 msgstr "Nombre del archivo:"
 
-#: ../src/gui/siril3.glade.h:689
+#: ../src/gui/siril3.glade.h:688
 msgid "Enter the filename of the exported CSV file."
 msgstr "Introduzca el nombre del fichero CSV exporotado."
 
-#: ../src/gui/siril3.glade.h:690
+#: ../src/gui/siril3.glade.h:689
 msgid "Export to CSV"
 msgstr "Exportar a CSV"
 
-#: ../src/gui/siril3.glade.h:691
+#: ../src/gui/siril3.glade.h:690
 msgid "Export displayed plot to a CSV file."
 msgstr "Exportar el trazado actual a un fichero CSV."
 
-#: ../src/gui/siril3.glade.h:692
+#: ../src/gui/siril3.glade.h:691
 msgid "Clear all"
 msgstr "Borrar todo"
 
-#: ../src/gui/siril3.glade.h:693
+#: ../src/gui/siril3.glade.h:692
 msgid "Clear all curves displayed in photometry."
 msgstr "Borrar todas las curvas mostradas en la fotometría."
 
-#: ../src/gui/siril3.glade.h:694
+#: ../src/gui/siril3.glade.h:693
 msgid "Clear latest"
 msgstr "Borrar las últimas"
 
-#: ../src/gui/siril3.glade.h:695
+#: ../src/gui/siril3.glade.h:694
 msgid "Clear the last curve added in photometry."
 msgstr "Borrar la última curva añadida a la fotometría."
 
 #. This is the button for plotting variable star graph
 #. Plotting light curve
-#: ../src/gui/siril3.glade.h:697 ../src/gui/plot.c:364
+#: ../src/gui/siril3.glade.h:696 ../src/gui/plot.c:364
 msgid "Light Curve"
 msgstr "Curva de luz"
 
-#: ../src/gui/siril3.glade.h:698
+#: ../src/gui/siril3.glade.h:697
 msgid ""
 "Plot a graph of the variable star. The variable star must be analysed in "
 "first, then other PSF are applied to references. A maximum of 6 references "
@@ -3266,47 +3263,47 @@ msgstr ""
 "en el tipo de gráfica a mostrar.\n"
 "AVISO: debe estar instalado gnuplot."
 
-#: ../src/gui/siril3.glade.h:700
+#: ../src/gui/siril3.glade.h:699
 msgid "Select the source of graph information."
 msgstr "Selecciones la fuente de información gráfica."
 
-#: ../src/gui/siril3.glade.h:701
+#: ../src/gui/siril3.glade.h:700
 msgid "Select which information to display from photometry data."
 msgstr "Seleccione qué información mostrar de los datos de fotometría."
 
-#: ../src/gui/siril3.glade.h:702
+#: ../src/gui/siril3.glade.h:701
 msgid "Roundness"
 msgstr "Redondez"
 
-#: ../src/gui/siril3.glade.h:703 ../src/gui/plot.c:565 ../src/gui/plot.c:729
+#: ../src/gui/siril3.glade.h:702 ../src/gui/plot.c:565 ../src/gui/plot.c:729
 msgid "FWHM"
 msgstr "FWHM"
 
-#: ../src/gui/siril3.glade.h:704 ../src/gui/plot.c:732
+#: ../src/gui/siril3.glade.h:703 ../src/gui/plot.c:732
 msgid "Amplitude"
 msgstr "Amplitud"
 
-#: ../src/gui/siril3.glade.h:705
+#: ../src/gui/siril3.glade.h:704
 msgid "Magnitude"
 msgstr "Magnitud"
 
-#: ../src/gui/siril3.glade.h:706
+#: ../src/gui/siril3.glade.h:705
 msgid "Background"
 msgstr "Fondo"
 
-#: ../src/gui/siril3.glade.h:707
+#: ../src/gui/siril3.glade.h:706
 msgid "X position"
 msgstr "Posición X"
 
-#: ../src/gui/siril3.glade.h:708
+#: ../src/gui/siril3.glade.h:707
 msgid "Y position"
 msgstr "Posición Y"
 
-#: ../src/gui/siril3.glade.h:709
+#: ../src/gui/siril3.glade.h:708
 msgid "Plot"
 msgstr "Trazar"
 
-#: ../src/gui/siril3.glade.h:710
+#: ../src/gui/siril3.glade.h:709
 msgid ""
 "Stacking of images, either summing, median, mean with rejection or pixel "
 "minimum/maximum."
@@ -3314,15 +3311,15 @@ msgstr ""
 "Apilar imágenes, bien sumando, mediana, media con rechazo o píxeles mínimos/"
 "máximos."
 
-#: ../src/gui/siril3.glade.h:711
+#: ../src/gui/siril3.glade.h:710
 msgid "Sequence stacking"
 msgstr "Apilar secuencia"
 
-#: ../src/gui/siril3.glade.h:712
+#: ../src/gui/siril3.glade.h:711
 msgid "Stacking Methods:"
 msgstr "Métodos de apilado:"
 
-#: ../src/gui/siril3.glade.h:713
+#: ../src/gui/siril3.glade.h:712
 msgid ""
 "Sum: This is the simplest method.\n"
 "Pixel values are added in an image normalized to 16-bit values.\n"
@@ -3387,35 +3384,35 @@ msgstr ""
 "Los píxeles de la imagen se reemplazan con los de la misma coordenada si su "
 "intensidad es menor."
 
-#: ../src/gui/siril3.glade.h:736 ../src/stacking/sum.c:161
+#: ../src/gui/siril3.glade.h:735 ../src/stacking/sum.c:161
 msgid "Sum stacking"
 msgstr "Apilar con el total"
 
-#: ../src/gui/siril3.glade.h:737
+#: ../src/gui/siril3.glade.h:736
 msgid "Average stacking with rejection"
 msgstr "Apilar con el promedio con rechazo"
 
-#: ../src/gui/siril3.glade.h:738
+#: ../src/gui/siril3.glade.h:737
 msgid "Median stacking"
 msgstr "Apilar con la mediana"
 
-#: ../src/gui/siril3.glade.h:739
+#: ../src/gui/siril3.glade.h:738
 msgid "Pixel maximum stacking"
 msgstr "Apilar con píxel máximo"
 
-#: ../src/gui/siril3.glade.h:740
+#: ../src/gui/siril3.glade.h:739
 msgid "Pixel minimum stacking"
 msgstr "Apilar con píxel mínimo"
 
-#: ../src/gui/siril3.glade.h:741
+#: ../src/gui/siril3.glade.h:740
 msgid "Sigma low: "
 msgstr "Sigma bajo: "
 
-#: ../src/gui/siril3.glade.h:742
+#: ../src/gui/siril3.glade.h:741
 msgid "Sigma high: "
 msgstr "Sigma alto: "
 
-#: ../src/gui/siril3.glade.h:743
+#: ../src/gui/siril3.glade.h:742
 msgid ""
 "Five rejection algorithms are available.\n"
 "- Percentile Clipping is a one-step rejection algorithm ideal for small sets "
@@ -3467,43 +3464,43 @@ msgstr ""
 "Wiley\n"
 "[2] Juan Conejero, ImageIntegration, Pixinsight Tutorial"
 
-#: ../src/gui/siril3.glade.h:759
+#: ../src/gui/siril3.glade.h:758
 msgid "No rejection"
 msgstr "Sin rechazo"
 
-#: ../src/gui/siril3.glade.h:760
+#: ../src/gui/siril3.glade.h:759
 msgid "Percentile Clipping"
 msgstr "Recorte de percentiles"
 
-#: ../src/gui/siril3.glade.h:761
+#: ../src/gui/siril3.glade.h:760
 msgid "Sigma Clipping"
 msgstr "Recorte Sigma"
 
-#: ../src/gui/siril3.glade.h:762
+#: ../src/gui/siril3.glade.h:761
 msgid "Median Sigma Clipping"
 msgstr "Recorte sigma mediana"
 
-#: ../src/gui/siril3.glade.h:763
+#: ../src/gui/siril3.glade.h:762
 msgid "Winsorized Sigma Clipping"
 msgstr "Recorte winsorized sigma"
 
-#: ../src/gui/siril3.glade.h:764
+#: ../src/gui/siril3.glade.h:763
 msgid "Linear Fit Clipping"
 msgstr "Recorte de ajuste lineal"
 
-#: ../src/gui/siril3.glade.h:765
+#: ../src/gui/siril3.glade.h:764
 msgid "Rejection:"
 msgstr "Descarte:"
 
-#: ../src/gui/siril3.glade.h:766
+#: ../src/gui/siril3.glade.h:765
 msgid "Normalisation:"
 msgstr "Normalización:"
 
-#: ../src/gui/siril3.glade.h:767
+#: ../src/gui/siril3.glade.h:766
 msgid "Start stacking"
 msgstr "Comenzar apilado"
 
-#: ../src/gui/siril3.glade.h:768
+#: ../src/gui/siril3.glade.h:767
 msgid ""
 "Start stacking the current sequence of images, using the method and other "
 "information provided above.\n"
@@ -3515,19 +3512,19 @@ msgstr ""
 "Siril usa imágenes internas de 32 bits para el apilado, el cuál se guarda "
 "como una imagen de 16bits cuyo nombre se establece debajo."
 
-#: ../src/gui/siril3.glade.h:770
+#: ../src/gui/siril3.glade.h:769
 msgid "Store result in file:"
 msgstr "Guardar el resultado en el fichero:"
 
-#: ../src/gui/siril3.glade.h:771
+#: ../src/gui/siril3.glade.h:770
 msgid "Overwrite"
 msgstr "Sobreescribir"
 
-#: ../src/gui/siril3.glade.h:772
+#: ../src/gui/siril3.glade.h:771
 msgid "Overwrite file without notice if it already exists."
 msgstr "Sobrescribir sin avisar si ya existe."
 
-#: ../src/gui/siril3.glade.h:773
+#: ../src/gui/siril3.glade.h:772
 msgid ""
 "If one of these items is selected, a normalisation process will be applied "
 "to all input\n"
@@ -3567,31 +3564,31 @@ msgstr ""
 "Sin embargo la normalización multiplicativa se debe usar con frames de campo "
 "plano."
 
-#: ../src/gui/siril3.glade.h:785
+#: ../src/gui/siril3.glade.h:784
 msgid "No normalisation"
 msgstr "Sin normalización"
 
-#: ../src/gui/siril3.glade.h:786
+#: ../src/gui/siril3.glade.h:785
 msgid "Additive"
 msgstr "Aditiva"
 
-#: ../src/gui/siril3.glade.h:787
+#: ../src/gui/siril3.glade.h:786
 msgid "Multiplicative"
 msgstr "Multiplicativa"
 
-#: ../src/gui/siril3.glade.h:788
+#: ../src/gui/siril3.glade.h:787
 msgid "Additive with scaling"
 msgstr "Aditiva con escalado"
 
-#: ../src/gui/siril3.glade.h:789
+#: ../src/gui/siril3.glade.h:788
 msgid "Multiplicative with scaling"
 msgstr "Multiplicativa con escalado"
 
-#: ../src/gui/siril3.glade.h:790
+#: ../src/gui/siril3.glade.h:789
 msgid "Force recomputing"
 msgstr "Forzar recálculo"
 
-#: ../src/gui/siril3.glade.h:791
+#: ../src/gui/siril3.glade.h:790
 msgid ""
 "By default, Siril takes the normalisation coefficients from seq file if "
 "already computed. However you can force Siril to recompute it before "
@@ -3601,16 +3598,16 @@ msgstr ""
 "secuencia ya procesado. Sin embargo puede forzar a Siril a recalcularlo "
 "antes del apilado."
 
-#: ../src/gui/siril3.glade.h:792
+#: ../src/gui/siril3.glade.h:791
 msgid "Add another filter"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:793
+#: ../src/gui/siril3.glade.h:792
 #, fuzzy
 msgid "Remove this filter"
 msgstr "Eliminar los archivos seleccionados"
 
-#: ../src/gui/siril3.glade.h:794
+#: ../src/gui/siril3.glade.h:793
 msgid ""
 "Select the set of images to be stacked:\n"
 "- selected: only use image that have not been unselected from the sequence\n"
@@ -3619,26 +3616,26 @@ msgid ""
 "- quality: images with best quality (planetary DFT or ECC registrations)"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:799
+#: ../src/gui/siril3.glade.h:798
 msgid "all"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:800
+#: ../src/gui/siril3.glade.h:799
 #, fuzzy
 msgid "selected"
 msgstr "Área seleccionada"
 
-#: ../src/gui/siril3.glade.h:801
+#: ../src/gui/siril3.glade.h:800
 #, fuzzy
 msgid "roundness"
 msgstr "Redondez"
 
-#: ../src/gui/siril3.glade.h:802
+#: ../src/gui/siril3.glade.h:801
 #, fuzzy
 msgid "Percents of the images of the sequence."
 msgstr "todas las imágenes de la secuencia"
 
-#: ../src/gui/siril3.glade.h:803
+#: ../src/gui/siril3.glade.h:802
 msgid ""
 "Select the set of images to be stacked. All the images or only the manually "
 "selected can be used. But it is possible to only select the percentage of "
@@ -3648,16 +3645,16 @@ msgstr ""
 "sólo las seleccionadas manualmente. También es posible seleccionar sólo un "
 "porcentaje de las mejores siguiendo criterios de calidad (planetaria o fwhm)."
 
-#: ../src/gui/siril3.glade.h:804
+#: ../src/gui/siril3.glade.h:803
 msgid "Stack this set of images:"
 msgstr "Apilar este set de imágenes:"
 
-#: ../src/gui/siril3.glade.h:805
+#: ../src/gui/siril3.glade.h:804
 #, fuzzy
 msgid "Stacking 0 images of the 0 of the sequence"
 msgstr "Apilando todas las imágenes de la secuencia (%d)\n"
 
-#: ../src/gui/siril3.glade.h:806
+#: ../src/gui/siril3.glade.h:805
 msgid ""
 "Normalise to 16-bit\n"
 "(Don't check for Masters)"
@@ -3665,7 +3662,7 @@ msgstr ""
 "Normalizar a 16 bits\n"
 "(No buscar Maestros)"
 
-#: ../src/gui/siril3.glade.h:808
+#: ../src/gui/siril3.glade.h:807
 msgid ""
 "If you check this button, the final image will be normalized to 16-bit per "
 "channel. This is important when input sequence has a depth of 8-bit per "
@@ -3679,11 +3676,11 @@ msgstr ""
 "Sin embago, puede deshabilitar esta opción cuando construya tramas maestras "
 "de secuencias de 8 bits."
 
-#: ../src/gui/siril3.glade.h:810
+#: ../src/gui/siril3.glade.h:809
 msgid "Stacking"
 msgstr "Apilado"
 
-#: ../src/gui/siril3.glade.h:811
+#: ../src/gui/siril3.glade.h:810
 msgid ""
 "Siril output window, displays messages about what has been done and in "
 "response to command inputs."
@@ -3691,48 +3688,48 @@ msgstr ""
 "Ventana de salida de Siril, muestra mensajes sobre qué se ha hecho en "
 "respuesta a los comandos de entrada."
 
-#: ../src/gui/siril3.glade.h:812
+#: ../src/gui/siril3.glade.h:811
 #, fuzzy
 msgid "Export the log"
 msgstr "Exportar a CSV"
 
-#: ../src/gui/siril3.glade.h:813
+#: ../src/gui/siril3.glade.h:812
 #, fuzzy
 msgid "Clear the log"
 msgstr "Borrar las últimas"
 
-#: ../src/gui/siril3.glade.h:814
+#: ../src/gui/siril3.glade.h:813
 msgid "Output logs"
 msgstr "Logs de salida"
 
-#: ../src/gui/siril3.glade.h:815
+#: ../src/gui/siril3.glade.h:814
 msgid ""
 "Input command. Typing 'help' here will bring the list of supported commands."
 msgstr ""
 "Introducir comando. Escribir 'help' aquí muestra la lista de comandos "
 "soportados."
 
-#: ../src/gui/siril3.glade.h:816
+#: ../src/gui/siril3.glade.h:815
 msgid "Type help for the list of supported commands"
 msgstr "Escribir 'help' para obtener la lista de comandos soportados"
 
-#: ../src/gui/siril3.glade.h:817
+#: ../src/gui/siril3.glade.h:816
 msgid "Displays manual of the command written in the console."
 msgstr "Muestra el manual para el comando escrito en la consola."
 
-#: ../src/gui/siril3.glade.h:818
+#: ../src/gui/siril3.glade.h:817
 msgid "<b>Console</b>"
 msgstr "<b>Consola</b>"
 
-#: ../src/gui/siril3.glade.h:819 ../src/gui/progress_and_log.c:41
+#: ../src/gui/siril3.glade.h:818 ../src/gui/progress_and_log.c:41
 msgid "Ready."
 msgstr "Listo."
 
-#: ../src/gui/siril3.glade.h:820
+#: ../src/gui/siril3.glade.h:819
 msgid "Current working directory:"
 msgstr "Directorio de trabajo actual:"
 
-#: ../src/gui/siril3.glade.h:821
+#: ../src/gui/siril3.glade.h:820
 msgid ""
 "The directory in which files will be read from and written to. Can be "
 "changed with the button Change dir on the right, or with the cd command."
@@ -3741,23 +3738,23 @@ msgstr ""
 "cambiarse usando el botón Cambiar directorio de la derecha, o con el comando "
 "cd."
 
-#: ../src/gui/siril3.glade.h:822
+#: ../src/gui/siril3.glade.h:821
 msgid "Change dir..."
 msgstr "Cambiar directorio..."
 
-#: ../src/gui/siril3.glade.h:823
+#: ../src/gui/siril3.glade.h:822
 msgid "Change current working directory"
 msgstr "Cambiar el directorio de trabajo actual"
 
-#: ../src/gui/siril3.glade.h:824
+#: ../src/gui/siril3.glade.h:823
 msgid "Stop running processes"
 msgstr "Parar el proceso en ejecución"
 
-#: ../src/gui/siril3.glade.h:825
+#: ../src/gui/siril3.glade.h:824
 msgid "Current working sequence:"
 msgstr "Secuencia de trabajo actual:"
 
-#: ../src/gui/siril3.glade.h:826
+#: ../src/gui/siril3.glade.h:825
 msgid ""
 "Set number of threads manually.\n"
 "WARNING: Reducing the number of allowed processors too much will degrade "
@@ -3767,11 +3764,11 @@ msgstr ""
 "PRECAUCIÓN: reducir demasiado el número de procesadores permitidos puede "
 "degradar el rendimiento."
 
-#: ../src/gui/siril3.glade.h:828
+#: ../src/gui/siril3.glade.h:827
 msgid "Displays the amount of used RAM memory by Siril."
 msgstr "Muestra la cantidad de memoria RAM usada por Siril."
 
-#: ../src/gui/siril3.glade.h:829
+#: ../src/gui/siril3.glade.h:828
 msgid ""
 "Displays the amount of disk space available on the file system containing "
 "the working directory."
@@ -3780,25 +3777,25 @@ msgstr ""
 "que contiene al directorio de trabajo."
 
 #. Must be short !!
-#: ../src/gui/siril3.glade.h:831
+#: ../src/gui/siril3.glade.h:830
 msgctxt "GUI"
 msgid "Disk Space: N/A"
 msgstr "Espacio en disco: N/A"
 
-#: ../src/gui/siril3.glade.h:832
+#: ../src/gui/siril3.glade.h:831
 #, fuzzy
 msgid "Informations"
 msgstr "Información"
 
-#: ../src/gui/siril3.glade.h:833
+#: ../src/gui/siril3.glade.h:832
 msgid "Focal length (mm): "
 msgstr "Longitud focal (mm): "
 
-#: ../src/gui/siril3.glade.h:834
+#: ../src/gui/siril3.glade.h:833
 msgid "Pixel X dim. (micron): "
 msgstr "Dim. de píxles X (micrones): "
 
-#: ../src/gui/siril3.glade.h:835
+#: ../src/gui/siril3.glade.h:834
 msgid ""
 "Clear all the fields. If you save your image after, the header will not "
 "contain any data about the focal or sensor size."
@@ -3806,7 +3803,7 @@ msgstr ""
 "Borrar todos los campos. Si guarda su imagen después, la cabecera no "
 "contendrá ningún dato sobre la focal o el tamaño del sensor."
 
-#: ../src/gui/siril3.glade.h:836
+#: ../src/gui/siril3.glade.h:835
 msgid ""
 "If the Pixel Y size is not automatically loaded, using file's header, you "
 "can update the field by yourself."
@@ -3814,11 +3811,11 @@ msgstr ""
 "Si el tamaño del píxel Y no se carga automáticamente usando la cabecera del "
 "fichero, puede actualizar la celda usted mismo."
 
-#: ../src/gui/siril3.glade.h:837
+#: ../src/gui/siril3.glade.h:836
 msgid "Pixel Y dim. (micron): "
 msgstr "Dim. del píxel Y (micrones): "
 
-#: ../src/gui/siril3.glade.h:838
+#: ../src/gui/siril3.glade.h:837
 msgid ""
 "If the focal length is not automatically loaded, using file's header, you "
 "can update the field by yourself."
@@ -3826,7 +3823,7 @@ msgstr ""
 "Si la longitud focal no se carga automáticamente usando la cabecera del "
 "fichero, puede actualizar la casilla usted mismo."
 
-#: ../src/gui/siril3.glade.h:839
+#: ../src/gui/siril3.glade.h:838
 msgid ""
 "If the Pixel X size is not automatically loaded, using file's header, you "
 "can update the field by yourself."
@@ -3834,12 +3831,12 @@ msgstr ""
 "Si el tamaño del píxel X no se carga automáticamente usando la cabecera del "
 "fichero, puede actualizar la casilla usted mismo."
 
-#: ../src/gui/siril3.glade.h:840
+#: ../src/gui/siril3.glade.h:839
 #, fuzzy
 msgid "No binning in pixel size value"
 msgstr "El valor Binning no es el valor del tamaño de píxel"
 
-#: ../src/gui/siril3.glade.h:841
+#: ../src/gui/siril3.glade.h:840
 msgid ""
 "Check this button if binning is not taken into account in the pixel size "
 "value. In this case, the binning value in the combo box below will be used."
@@ -3847,16 +3844,16 @@ msgstr ""
 "Marque este botón si el valor binning no se tendrá en cuenta en el tamaño de "
 "píxel. En este caso, se usará el valor binning de la caja de debajo."
 
-#: ../src/gui/siril3.glade.h:842
+#: ../src/gui/siril3.glade.h:841
 #, fuzzy
 msgid "FWHM is converted into arcsec"
 msgstr "FWHM se convertirá en arcsec"
 
-#: ../src/gui/siril3.glade.h:843
+#: ../src/gui/siril3.glade.h:842
 msgid "Binning: "
 msgstr "Binning: "
 
-#: ../src/gui/siril3.glade.h:844
+#: ../src/gui/siril3.glade.h:843
 msgid ""
 "If the binning is not automatically loaded, using file's header, you can "
 "update this combo box."
@@ -3864,7 +3861,7 @@ msgstr ""
 "Si el binnig no se carga automáticamente usando la cabecera del fichero, "
 "puede actualizar esta casilla."
 
-#: ../src/gui/siril3.glade.h:845
+#: ../src/gui/siril3.glade.h:844
 msgid ""
 "A set of three color calibration factors will be computed and multiplied "
 "with every color channel.\n"
@@ -3874,11 +3871,11 @@ msgstr ""
 "color  con cada canal de color.\n"
 "Se debe aplicar una neutralización del fondo antes de esta operación."
 
-#: ../src/gui/siril3.glade.h:847
+#: ../src/gui/siril3.glade.h:846
 msgid "Background Neutralization"
 msgstr "Neutralización del fondo"
 
-#: ../src/gui/siril3.glade.h:848
+#: ../src/gui/siril3.glade.h:847
 msgid ""
 "Background Neutralization will compute the mean of each color channel and "
 "will equalize the sky background in a neutral grey.\n"
@@ -3889,15 +3886,15 @@ msgstr ""
 "Este paso es necesario realizarlo antes ningún intento de calibración del "
 "color."
 
-#: ../src/gui/siril3.glade.h:850
+#: ../src/gui/siril3.glade.h:849
 msgid "Background reference"
 msgstr "Referencia de fondo"
 
-#: ../src/gui/siril3.glade.h:851
+#: ../src/gui/siril3.glade.h:850
 msgid "Manual White Balance"
 msgstr "Balance de blancos manual"
 
-#: ../src/gui/siril3.glade.h:852
+#: ../src/gui/siril3.glade.h:851
 msgid ""
 "By clicking on this option, you will use your own color calibration factors. "
 "This option is disabled by default."
@@ -3905,35 +3902,35 @@ msgstr ""
 "Seleccionando esta opción podrá usar sus propios factores de calibración del "
 "color. Esta opción está deshabilitada por defecto."
 
-#: ../src/gui/siril3.glade.h:853
+#: ../src/gui/siril3.glade.h:852
 msgid "Red:"
 msgstr "Rojo:"
 
-#: ../src/gui/siril3.glade.h:854
+#: ../src/gui/siril3.glade.h:853
 msgid "Green:"
 msgstr "Verde:"
 
-#: ../src/gui/siril3.glade.h:855
+#: ../src/gui/siril3.glade.h:854
 msgid "Blue:"
 msgstr "Azul:"
 
-#: ../src/gui/siril3.glade.h:856
+#: ../src/gui/siril3.glade.h:855
 msgid "x coordinate of the start of the white reference selection"
 msgstr "coordenada x del principio de la selección blanca de referencia"
 
-#: ../src/gui/siril3.glade.h:857
+#: ../src/gui/siril3.glade.h:856
 msgid "y coordinate of the start of the white reference selection"
 msgstr "coordenada y del principio de la selección blanca de referencia"
 
-#: ../src/gui/siril3.glade.h:858
+#: ../src/gui/siril3.glade.h:857
 msgid "Width of the white reference selection"
 msgstr "Ancho de la selección blanca de referencia"
 
-#: ../src/gui/siril3.glade.h:859
+#: ../src/gui/siril3.glade.h:858
 msgid "Height of the white reference selection"
 msgstr "Alto de la selección blanca de referencia"
 
-#: ../src/gui/siril3.glade.h:860
+#: ../src/gui/siril3.glade.h:859
 msgid ""
 "You should specify a selection that represents an average of suitable white "
 "reference.\n"
@@ -3943,7 +3940,7 @@ msgstr ""
 "referencia blanca.\n"
 "Si la selección está vacía se usará toda la imagen como referencia."
 
-#: ../src/gui/siril3.glade.h:862
+#: ../src/gui/siril3.glade.h:861
 msgid ""
 "Lower rejection bound for white selection. Pixels below this value are not "
 "taken into account. Black pixels are always excluded from computation."
@@ -3952,7 +3949,7 @@ msgstr ""
 "umbral no se tendrán en cuenta. Los píxeles negros siempre se excluyen de "
 "los cálculos."
 
-#: ../src/gui/siril3.glade.h:863
+#: ../src/gui/siril3.glade.h:862
 msgid ""
 "Upper rejection bound for white selection. Pixels above this value are not "
 "taken into account. Saturated pixels are always excluded from computation."
@@ -3961,15 +3958,15 @@ msgstr ""
 "encima de este valor no se tendrán en cuenta. Los píxeles saturados siempre "
 "se excluyen de este cálculo."
 
-#: ../src/gui/siril3.glade.h:864
+#: ../src/gui/siril3.glade.h:863
 msgid "Lower limit: "
 msgstr "Límite inferior: "
 
-#: ../src/gui/siril3.glade.h:865
+#: ../src/gui/siril3.glade.h:864
 msgid "Upper limit: "
 msgstr "Límite superior: "
 
-#: ../src/gui/siril3.glade.h:866
+#: ../src/gui/siril3.glade.h:865
 msgid "White reference"
 msgstr "Referencia de blanco"
 
@@ -4260,7 +4257,7 @@ msgstr "Gradiente rotacional completado."
 #: ../src/core/command.c:1545 ../src/core/command.c:1568
 #: ../src/core/command.c:1596 ../src/core/command.c:1622
 #: ../src/core/command.c:1798 ../src/core/command.c:1867
-#: ../src/core/command.c:2718 ../src/gui/callbacks.c:3939
+#: ../src/core/command.c:2716 ../src/gui/callbacks.c:3939
 #: ../src/gui/callbacks.c:4147 ../src/gui/callbacks.c:4305
 #: ../src/gui/callbacks.c:4338 ../src/gui/callbacks.c:4386
 #: ../src/gui/callbacks.c:4520 ../src/gui/callbacks.c:4674
@@ -4408,7 +4405,7 @@ msgstr ""
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Recortar: seleccione una región o proporcione x, y, ancho y alto\n"
 
-#: ../src/core/command.c:597 ../src/core/command.c:2555
+#: ../src/core/command.c:597 ../src/core/command.c:2553
 #: ../src/gui/callbacks.c:4638 ../src/gui/wavelets.c:220
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
@@ -4448,7 +4445,7 @@ msgstr "Secuencia: %s\n"
 msgid "Image: %s\n"
 msgstr "Imagen: %s\n"
 
-#: ../src/core/command.c:735 ../src/core/command.c:2534
+#: ../src/core/command.c:735 ../src/core/command.c:2532
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* FIN DE LA LISTA **********\n"
 
@@ -4756,106 +4753,106 @@ msgstr ""
 "El número de procesadores lógicos debe ser mayor que 0 y menor o igual que "
 "%d.\n"
 
-#: ../src/core/command.c:2503
+#: ../src/core/command.c:2501
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "Usando %d procesadores lógicos\n"
 
-#: ../src/core/command.c:2515
+#: ../src/core/command.c:2513
 msgid ""
 "The accepted range for the ratio of memory used for stacking is [0.05, 2], "
 "with values below the available memory recommended\n"
 msgstr ""
 
-#: ../src/core/command.c:2519
+#: ../src/core/command.c:2517
 #, c-format
 msgid ""
 "Setting the ratio of memory used for stacking above 1 will require the use "
 "of on-disk memory, which is very slow and unrecommended (%g requested)\n"
 msgstr ""
 
-#: ../src/core/command.c:2523
+#: ../src/core/command.c:2521
 #, c-format
 msgid "Usable memory for stacking changed to %g\n"
 msgstr ""
 
-#: ../src/core/command.c:2529
+#: ../src/core/command.c:2527
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "******* LISTA DE COMANDOS DISPONIBLES *******\n"
 
-#: ../src/core/command.c:2610
+#: ../src/core/command.c:2608
 #, c-format
 msgid "Unknown command: '%s' or not implemented yet\n"
 msgstr "Comando desconocido: '%s' todavía no implementado\n"
 
-#: ../src/core/command.c:2617
+#: ../src/core/command.c:2615
 #, c-format
 msgid "Usage: %s\n"
 msgstr "Uso: %s\n"
 
-#: ../src/core/command.c:2624
+#: ../src/core/command.c:2622
 #, c-format
 msgid "This command cannot be used in a script: %s\n"
 msgstr "Este comando no puede usarse en un script: %s\n"
 
 #. process the command
-#: ../src/core/command.c:2630
+#: ../src/core/command.c:2628
 #, c-format
 msgid "Running command: %s\n"
 msgstr "Ejecutando comando: %s\n"
 
-#: ../src/core/command.c:2679
+#: ../src/core/command.c:2677
 #, fuzzy, c-format
 msgid "Error in line %d: '%s'.\n"
 msgstr "Error en libraw %s\n"
 
-#: ../src/core/command.c:2680
+#: ../src/core/command.c:2678
 #, fuzzy
 msgid "Exiting batch processing.\n"
 msgstr ""
 "Error en la línea: %d. Saliendo del proceso por lotes\n"
 "\n"
 
-#: ../src/core/command.c:2698
+#: ../src/core/command.c:2696
 msgid "Script execution finished successfully.\n"
 msgstr "Script ejecutado correctamente.\n"
 
-#: ../src/core/command.c:2700
+#: ../src/core/command.c:2698
 msgid "Total execution time"
 msgstr "Tiempo total de ejecución"
 
-#: ../src/core/command.c:2702
+#: ../src/core/command.c:2700
 msgid "Script execution failed.\n"
 msgstr "Ejecución de script fallida.\n"
 
-#: ../src/core/command.c:2728 ../src/gui/script_menu.c:173 ../src/main.c:416
+#: ../src/core/command.c:2726 ../src/gui/script_menu.c:173 ../src/main.c:416
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "El fichero [%s] no existe\n"
 
 #. Then, run script
-#: ../src/core/command.c:2736 ../src/gui/script_menu.c:182
+#: ../src/core/command.c:2734 ../src/gui/script_menu.c:182
 #, c-format
 msgid "Starting script %s\n"
 msgstr "Iniciando script %s\n"
 
-#: ../src/core/command.c:2743
+#: ../src/core/command.c:2741
 msgid "Command execution failed.\n"
 msgstr "Ejecución de comando fallida.\n"
 
-#: ../src/core/command.c:2868
+#: ../src/core/command.c:2866
 msgid "Can be used in a script: "
 msgstr "Puede usarse en un script: "
 
-#: ../src/core/command.c:2871
+#: ../src/core/command.c:2869
 msgid "YES"
 msgstr "SI"
 
-#: ../src/core/command.c:2873
+#: ../src/core/command.c:2871
 msgid "NO"
 msgstr "NO"
 
-#: ../src/core/command.c:2883
+#: ../src/core/command.c:2881
 msgid "No help for this command"
 msgstr "Escribir help para obtener la lista de comandos soportados"
 
@@ -5468,13 +5465,6 @@ msgstr ""
 "referencia. Mostrar el dibujo de la magnitud antes de ejecutar el comando "
 "hace más fácil su comprensión. Para reiniciar la estrella de referencia y el "
 "desplazamiento de magnitud, vea UNSETMAGSEQ"
-
-#: ../src/core/command_def.h:93
-msgid ""
-"Sets a new ratio of free memory on memory used for stacking. Value should be "
-"between 0 and 1, depending on other activities of the machine. A higher "
-"ratio should allow siril to stack faster"
-msgstr ""
 
 #: ../src/core/command_def.h:94
 msgid ""
@@ -8350,6 +8340,17 @@ msgstr ""
 #: ../src/stacking/upscaling.c:186
 msgid "Up-scaling sequence for stacking"
 msgstr "Secuencia de escalado para el apilado"
+
+#~ msgid ""
+#~ "The memory used corresponds to this value times the total of available "
+#~ "memory.\n"
+#~ "WARNING: Reducing the ratio of memory allocated to computation will "
+#~ "degrade performances."
+#~ msgstr ""
+#~ "La memoria usada se corresponde a este valor multiplicado por el total de "
+#~ "memoria disponible.\n"
+#~ "ADVERTENCIA: Reducir la proporción de memoria asignada al proceso puede "
+#~ "degradar su rendimiento."
 
 #~ msgid "images previously manually selected from the sequence"
 #~ msgstr "imágenes seleccionadas previamente a mano de la secuencia"
