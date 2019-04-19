@@ -221,7 +221,7 @@ int convert_stack_data_to_filter(struct stacking_configuration *arg, struct stac
 		filters[nb_filters].filter = seq_filter_quality;
 		filters[nb_filters].param = arg->f_quality > 0.f ? arg->f_quality :
 			compute_lowest_accepted_quality(stackargs->seq, layer, arg->f_quality_p);
-		siril_log_message(_("Using image quality images filter (below %f)\n"),
+		siril_log_message(_("Using image quality filter (below %f)\n"),
 				filters[nb_filters].param);
 		nb_filters++;
 	}
@@ -402,7 +402,7 @@ char *describe_filter(sequence *seq, seq_image_filter filtering_criterion, doubl
 			g_free(descr);
 			f++;
 		}
-		g_string_append_printf(str, _("for a total of images processed of %d\n)"),
+		g_string_append_printf(str, _("for a total of images processed of %d)\n"),
 				nb_images_to_stack);
 	}
 	//fprintf(stdout, "FILTERING DECRIPTION: %s", str->str);

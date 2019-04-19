@@ -2686,8 +2686,7 @@ gpointer execute_script(gpointer p) {
 			break;	// abort script on command failure
 		}
 		endmem = get_available_memory_in_MB();
-		//fprintf(stdout, "End of command %s, memory difference: %d MB\n", word[0], startmem - endmem);
-		startmem = endmem;
+		siril_debug_print("End of command %s, memory difference: %d MB\n", word[0], startmem - endmem);
 		memset(word, 0, sizeof word);
 		free(myline);
 	}
