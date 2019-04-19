@@ -2153,8 +2153,10 @@ static gpointer stackall_worker(gpointer garg) {
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
 	if (check_seq(FALSE) || (dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
-		fprintf(stderr, "stackall: %s\n", error->message);
-		g_error_free(error);
+		if (error) {
+			fprintf(stderr, "stackall: %s\n", error->message);
+			g_error_free(error);
+		}
 		siril_add_idle(end_generic, NULL);
 		return NULL;
 	}
