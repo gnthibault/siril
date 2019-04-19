@@ -2494,9 +2494,7 @@ int process_set_cpu(int nb){
 	}
 	omp_set_num_threads(proc_in);
 
-#ifdef _OPENMP
 #pragma omp parallel
-#endif
 	{
 		proc_out = omp_get_num_threads();
 	}
@@ -2536,8 +2534,8 @@ int process_help(int nb){
 }
 
 int process_exit(int nb){
-	undo_flush();
-	exit(EXIT_SUCCESS);
+	gtk_main_quit();
+	return 0;
 }
 
 int process_extract(int nb) {
