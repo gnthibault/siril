@@ -165,26 +165,28 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 		k++;
 	}
 
-    // Must turn off error handler or it aborts on error
-    gsl_set_error_handler_off();
+	// Must turn off error handler or it aborts on error
+	gsl_set_error_handler_off();
 
 	gsl_multifit_linear_workspace *work = gsl_multifit_linear_alloc(n, nbParam);
 	int status = gsl_multifit_wlinear(J, w, y, c, cov, &chisq, work);
 	if (status != GSL_SUCCESS) {
-		printf("GSL multifit error: %s\n", gsl_strerror(status));
+		*err = siril_log_message("GSL multifit error: %s\n", gsl_strerror(status));
 		gsl_matrix_free(J);
 		gsl_vector_free(y);
 		gsl_vector_free(w);
 		gsl_vector_free(c);
 		gsl_matrix_free(cov);
-
-		*err = NULL; // error not handled
-
 		return NULL;
 	}
 
-// Calculation of the background with the same dimension that the input matrix.
+	// Calculation of the background with the same dimension that the input matrix.
 	double *background = malloc(height * width * sizeof(double));
+	if (!background) {
+		PRINT_ALLOC_ERR;
+		*err = _("Out of memory - aborting");
+		return NULL;
+	}
 
 	for (i = 0; i < height; i++) {
 		for (j = 0; j < width; j++) {

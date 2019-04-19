@@ -23,7 +23,7 @@ int cvRotateImage(fits *, point, double, int, int);
 unsigned char *cvCalculH(s_star *star_array_img,
 		struct s_star *star_array_ref, int n, Homography *H);
 int cvApplyScaleToH(Homography *H1, double scale);
-int cvTransformImage(fits *, point, Homography, int);
+int cvTransformImage(fits *image, long width, long height, Homography Hom, int interpolation);
 int cvUnsharpFilter(fits*, double, double);
 int cvComputeFinestScale(fits *image);
 int cvLucyRichardson(fits *image, double sigma, int iterations);

@@ -59,6 +59,11 @@ static int readinitfile() {
 		return 1;
 	siril_log_message(_("Loading init file: '%s'\n"), com.initfile);
 
+	/* Keeping the up-scaled files poses a few problems with sequence
+	 * filtering changing and user comprehension, so for now it can only be
+	 * enabled by uncommenting the following line. */
+	//com.cache_upscaled = TRUE;
+
 	/* Working directory */
 	if (config_lookup_string(&config, keywords[WD], &dir)) {
 		free(com.wd);

@@ -19,6 +19,8 @@ void set_progress_bar_data(const char *text, double percent);
 
 void show_time(struct timeval, struct timeval);
 void show_time_msg(struct timeval t_start, struct timeval t_end, const char *msg);
+void get_min_sec_from_timevals(struct timeval t_start, struct timeval t_end,
+		int *min, int *sec);
 
 void set_cursor_waiting(gboolean waiting);
 void set_cursor(const gchar* cursor_name);

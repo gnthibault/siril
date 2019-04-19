@@ -21,11 +21,14 @@ int do_normalization(struct stacking_args *args) {
 	args->coeff.scale = malloc(nb_frames * sizeof(double));
 	if (!args->coeff.offset || !args->coeff.mul || !args->coeff.scale) {
 		printf("allocation issue in stacking normalization\n");
+		args->retval = -1;
 		return -1;
 	}
 
-	if (compute_normalization(args))
+	if (compute_normalization(args)) {
+		args->retval = -1;
 		return -1;
+	}
 
 	if (args->seq->needs_saving)	// if we had to compute new stats
 		writeseqfile(args->seq);
@@ -87,6 +90,26 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 	return 0;
 }
 
+static int normalization_get_max_number_of_threads(sequence *seq) {
+	int max_memory_MB = round_to_int(com.stack.memory_percent *
+			(double)get_available_memory_in_MB());
+	uint64_t memory_per_image = seq->rx * seq->ry * seq->nb_layers * (2 * sizeof(WORD) + 2 * sizeof(double));
+	unsigned int memory_per_image_MB = memory_per_image / BYTES_IN_A_MB;
+
+	fprintf(stdout, "Memory per image: %u MB. Max memory: %d MB\n", memory_per_image_MB, max_memory_MB);
+
+	if (memory_per_image_MB > max_memory_MB) {
+		siril_log_color_message(_("Your system does not have enough memory to normalize images for stacking operation (%d MB free for %d MB required)\n"), "red", max_memory_MB, memory_per_image_MB);
+		return 0;
+	}
+
+	int nb_threads = max_memory_MB / memory_per_image_MB;
+	if (nb_threads > com.max_thread)
+		nb_threads = com.max_thread;
+	siril_log_message(_("With the current memory (%.2f) and thread (%d) limits, up to %d thread(s) can be used for sequence normalization\n"), com.stack.memory_percent, com.max_thread, nb_threads);
+	return nb_threads;
+}
+
 static int compute_normalization(struct stacking_args *args) {
 	int i, ref_image_filtred_idx = -1, retval = 0, cur_nb = 1;
 	double scale0, mul0, offset0;	// for reference frame
@@ -107,15 +130,19 @@ static int compute_normalization(struct stacking_args *args) {
 	set_progress_bar_data(tmpmsg, PROGRESS_RESET);
 
 	// first, find the index of the ref image in the filtered image list
-	for (i = 0; i < args->nb_images_to_stack; i++)
-		if (args->image_indices[i] == args->ref_image) {
-			ref_image_filtred_idx = i;
-			break;
-		}
+	ref_image_filtred_idx = find_refimage_in_indices(args->image_indices,
+			args->nb_images_to_stack, args->ref_image);
 	if (ref_image_filtred_idx == -1) {
 		siril_log_color_message(_("The reference image is not in the selected set of images. "
 				"Please choose another reference image.\n"), "red");
 		siril_log_color_message(_("Normalization skipped.\n"), "red");
+		return 1;
+	}
+
+	// check memory first
+	int nb_threads = normalization_get_max_number_of_threads(args->seq);
+	if (nb_threads == 0) {
+		set_progress_bar_data(_("Normalization failed."), PROGRESS_NONE);
 		return 1;
 	}
 
@@ -135,7 +162,7 @@ static int compute_normalization(struct stacking_args *args) {
 	set_progress_bar_data(NULL, 1.0 / (double)args->nb_images_to_stack);
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) if (args->seq->type == SEQ_SER || fits_is_reentrant())
+#pragma omp parallel for num_threads(nb_threads) private(i) schedule(static) if (args->seq->type == SEQ_SER || fits_is_reentrant())
 #endif
 	for (i = 0; i < args->nb_images_to_stack; ++i) {
 		if (!retval && i != ref_image_filtred_idx) {

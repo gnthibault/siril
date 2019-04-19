@@ -20,6 +20,8 @@ void	seq_close_image(sequence *seq, int index);
 int	seq_opened_read_region(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area);
 void	set_fwhm_star_as_star_list(sequence *seq);
 char *	fit_sequence_get_image_filename(sequence *seq, int index, char *name_buffer, gboolean add_fits_ext);
+void fit_sequence_get_image_filename_prefixed(sequence *seq, const char *prefix,
+		int index, char *name_buffer, int bufsize);
 char *	get_possible_image_filename(sequence *seq, int image_number, char *name_buffer);
 int	get_index_and_basename(const char *filename, char **basename, int *index, int *fixed);
 void	initialize_sequence(sequence *seq, gboolean is_zeroed);
@@ -49,6 +51,7 @@ int	do_fwhm_sequence_processing(sequence *seq, int layer, gboolean print_psf, gb
 #endif
 int	sequence_find_refimage(sequence *seq);
 void	check_or_allocate_regparam(sequence *seq, int layer);
+void	set_shifts(sequence *seq, int frame, int layer, float shiftx, float shifty, gboolean data_is_top_down);
 sequence *create_internal_sequence(int size);
 void	internal_sequence_set(sequence *seq, int index, fits *fit);
 int	internal_sequence_find_index(sequence *seq, fits *fit);

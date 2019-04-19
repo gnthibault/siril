@@ -261,9 +261,8 @@ gpointer fourier_transform(gpointer p) {
 	struct fft_data *args = (struct fft_data *) p;
 	unsigned int width = args->fit->rx;
 	unsigned int height = args->fit->ry;
-	int ndata = width * height, chan;
+	int chan;
 	struct timeval t_start, t_end;
-	WORD *from[3], *to[3];
 	fits *tmp = NULL, *tmp1 = NULL, *tmp2 = NULL;
 
 	siril_log_color_message(_("Fourier Transform: processing...\n"), "red");

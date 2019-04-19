@@ -697,6 +697,7 @@ int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const r
 						index, seq->seqname); 
 				return 1;
 			}
+
 			break;
 #if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 		case SEQ_AVI:
@@ -716,6 +717,7 @@ int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const r
 			extract_region_from_fits(seq->internal_fits[index], 0, dest, area);
 			break;
 	}
+
 	return 0;
 }
 
@@ -848,7 +850,7 @@ char *fit_sequence_get_image_filename(sequence *seq, int index, char *name_buffe
 	char format[20];
 	if (index < 0 || index > seq->number || name_buffer == NULL)
 		return NULL;
-	if (seq->fixed <= 1){
+	if (seq->fixed <= 1) {
 		sprintf(format, "%%s%%d");
 	} else {
 		sprintf(format, "%%s%%.%dd", seq->fixed);
@@ -859,6 +861,15 @@ char *fit_sequence_get_image_filename(sequence *seq, int index, char *name_buffe
 			seq->seqname, seq->imgparam[index].filenum);
 	name_buffer[255] = '\0';
 	return name_buffer;
+}
+
+void fit_sequence_get_image_filename_prefixed(sequence *seq, const char *prefix,
+		int index, char *name_buffer, int bufsize) {
+	char format[16];
+	sprintf(format, "%%s%%s%%0%dd%%s", seq->fixed);
+	snprintf(name_buffer, bufsize, format, prefix,
+			seq->seqname, seq->imgparam[index].filenum,
+			com.ext);
 }
 
 /* Returns a filename for an image that could be in a sequence, but the sequence structure
@@ -1002,6 +1013,13 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 			}
 		}
 		free(seq->stats_bkp);
+	}
+
+	// free name of the layers
+	if (seq->nb_layers > 0) {
+		for (layer = 0; layer < seq->nb_layers; layer++) {
+			free(seq->layers[layer].name);
+		}
 	}
 
 	for (j=0; j<seq->number; j++) {
@@ -1174,6 +1192,14 @@ void check_or_allocate_regparam(sequence *seq, int layer) {
 	}
 	if (seq->regparam && !seq->regparam[layer] && seq->number > 0) {
 		seq->regparam[layer] = calloc(seq->number, sizeof(regdata));
+	}
+}
+
+/* assign shift values for registration data of a sequence, depending on its type and sign */
+void set_shifts(sequence *seq, int frame, int layer, float shiftx, float shifty, gboolean data_is_top_down) {
+	if (seq->regparam[layer]) {
+		seq->regparam[layer][frame].shiftx = shiftx;
+		seq->regparam[layer][frame].shifty = data_is_top_down ? -shifty : shifty;
 	}
 }
 
@@ -1381,15 +1407,14 @@ int seqpsf_image_hook(struct generic_seq_args *args, int out_index, int index, f
 	data->psf = psf_get_minimisation(fit, 0, &psfarea, !spsfargs->for_registration, TRUE);
 	if (data->psf) {
 		data->psf->xpos = data->psf->x0 + area->x;
-		// for Y, it's a bit special because FITS are upside-down
-		if (args->seq->type == SEQ_SER)
+		if (fit->top_down)
 			data->psf->ypos = data->psf->y0 + area->y;
 		else data->psf->ypos = area->y + area->h - data->psf->y0;
 
 		/* let's move args->area to center it on the star */
 		if (spsfargs->framing == FOLLOW_STAR_FRAME) {
-			args->area.x = round_to_int(data->psf->xpos - args->area.w/2.0);
-			args->area.y = round_to_int(data->psf->ypos - args->area.h/2.0);
+			args->area.x = round_to_int(data->psf->xpos - args->area.w*0.5);
+			args->area.y = round_to_int(data->psf->ypos - args->area.h*0.5);
 			//fprintf(stdout, "moving area to %d, %d\n", args->area.x, args->area.y);
 		}
 

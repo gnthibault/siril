@@ -750,6 +750,8 @@ static gboolean end_sequence_prepro(gpointer p) {
 	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
 	g_object_unref (osx_app);
 #endif
+	if (com.headless)
+		free_sequence(args->seq, TRUE);
 	free(args);
 	return FALSE;
 }

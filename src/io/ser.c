@@ -884,6 +884,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	}
 
 	fits_flip_top_to_bottom(fit);
+	fit->top_down = FALSE;
 	return 0;
 }
 
@@ -1060,7 +1061,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		// allocating a buffer for WORD because it's going to be converted in-place
 		rawbuf = malloc(debayer_area.w * debayer_area.h * sizeof(WORD));
 		if (!rawbuf) {
-			siril_log_message(_("Out of memory - aborting\n"));
+			PRINT_ALLOC_ERR;
 			return -1;
 		}
 		if (read_area_from_image(ser_file, frame_no, rawbuf, &debayer_area, -1))
@@ -1111,6 +1112,14 @@ int ser_read_opened_partial_fits(struct ser_struct *ser_file, int layer,
 		int frame_no, fits *fit, const rectangle *area) {
 	if (new_fit_image(&fit, area->w, area->h, 1))
 		return -1;
+	fit->top_down = TRUE;
+	if (ser_file->ts) {
+		char *timestamp = ser_timestamp(ser_file->ts[frame_no]);
+		if (timestamp) {
+			g_snprintf(fit->date_obs, FLEN_VALUE, "%s", timestamp);
+			free(timestamp);
+		}
+	}
 	return ser_read_opened_partial(ser_file, layer, frame_no, fit->pdata[0], area);
 }
 

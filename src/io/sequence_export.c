@@ -59,8 +59,8 @@ static uint8_t *fits_to_uint8(fits *fit) {
 }
 
 static gpointer export_sequence(gpointer ptr) {
-	int i, x, y, nx, ny, shiftx, shifty, layer, retval = 0, reglayer, nb_layers, skipped;
-	float cur_nb = 0.f, nb_frames;
+	int i, x, y, nx, ny, shiftx, shifty, layer, retval = 0, reglayer,
+	    nb_layers, skipped, nb_frames, cur_nb = 0;
 	unsigned int out_width, out_height, in_width, in_height, nbdata = 0;
 	uint8_t *data;
 	fits fit = { 0 };
@@ -68,6 +68,7 @@ static gpointer export_sequence(gpointer ptr) {
 	char filename[256], dest[256];
 	struct ser_struct *ser_file = NULL;
 	GSList *timestamp = NULL;
+	char *filter_descr;
 	gchar *strTime;
 #ifdef HAVE_FFMPEG
 	struct mp4_struct *mp4_file = NULL;
@@ -170,18 +171,26 @@ static gpointer export_sequence(gpointer ptr) {
 			break;
 	}
 
+	nb_frames = compute_nb_filtered_images(args->seq,
+			args->filtering_criterion, args->filtering_parameter);
+	filter_descr = describe_filter(args->seq, args->filtering_criterion,
+			args->filtering_parameter);
+	siril_log_message(filter_descr);
+	g_free(filter_descr);
+
 	if (args->normalize) {
-		struct stacking_args stackargs;
+		struct stacking_args stackargs = { 0 };
 		stackargs.force_norm = FALSE;
 		stackargs.seq = args->seq;
-		stackargs.nb_images_to_stack = args->seq->number;
-		stackargs.filtering_criterion = stack_filter_all;
+		stackargs.filtering_criterion = args->filtering_criterion;
+		stackargs.filtering_parameter = args->filtering_parameter;
+		stackargs.nb_images_to_stack = nb_frames; 
 		stackargs.normalize = ADDITIVE_SCALING;
 		stackargs.reglayer = reglayer;
 
 		// build image indices used by normalization
-		stackargs.image_indices = malloc(stackargs.nb_images_to_stack * sizeof(int));
-		stack_fill_list_of_unfiltered_images(&stackargs);
+		if (stack_fill_list_of_unfiltered_images(&stackargs))
+			goto free_and_reset_progress_bar;
 
 		do_normalization(&stackargs);
 		coeff.offset = stackargs.coeff.offset;
@@ -191,8 +200,6 @@ static gpointer export_sequence(gpointer ptr) {
 		// and dispose them, because we don't need them anymore
 		free(stackargs.image_indices);
 	}
-
-	nb_frames = (float)args->seq->number;
 
 	set_progress_bar_data(NULL, PROGRESS_RESET);
 	for (i = 0, skipped = 0; i < args->seq->number; ++i) {
@@ -212,8 +219,7 @@ static gpointer export_sequence(gpointer ptr) {
 		}
 		char *tmpmsg = strdup(_("Processing image "));
 		tmpmsg = str_append(&tmpmsg, filename);
-		set_progress_bar_data(tmpmsg,
-				(double) cur_nb / ((double) nb_frames + 1.));
+		set_progress_bar_data(tmpmsg, (double)cur_nb / (double)nb_frames);
 		free(tmpmsg);
 
 		if (seq_read_frame(args->seq, i, &fit)) {
@@ -337,9 +343,7 @@ static gpointer export_sequence(gpointer ptr) {
 				break;
 #endif
 		}
-		cur_nb += 1.f;
-		set_progress_bar_data(NULL, cur_nb / nb_frames);
-
+		cur_nb++;
 		clearfits(&fit);
 	}
 
@@ -385,13 +389,10 @@ free_and_reset_progress_bar:
 void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	int selected = gtk_combo_box_get_active(GTK_COMBO_BOX(lookup_widget("comboExport")));
 	const char *bname = gtk_entry_get_text(GTK_ENTRY(lookup_widget("entryExportSeq")));
-	GtkAdjustment *stackadj = GTK_ADJUSTMENT(gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(lookup_widget("stackspin"))));
-	GtkComboBox *stack_type = GTK_COMBO_BOX(lookup_widget("comboboxstacksel"));
 	struct exportseq_args *args;
 	GtkToggleButton *exportNormalize, *checkResize;
 	GtkEntry *fpsEntry, *widthEntry, *heightEntry;
 	GtkAdjustment *adjQual;
-	double percent;
 
 	if (bname[0] == '\0') return;
 	if (selected == -1) return;
@@ -407,28 +408,7 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 		memcpy(&args->crop_area, &com.selection, sizeof(rectangle));
 
 	// filtering
-	switch (gtk_combo_box_get_active(stack_type)) {
-		case ALL_IMAGES:
-			args->filtering_criterion = stack_filter_all;
-			break;
-		case SELECTED_IMAGES:
-			args->filtering_criterion = stack_filter_included;
-			break;
-		case BEST_PSF_IMAGES:
-			percent = gtk_adjustment_get_value(stackadj);
-			args->filtering_criterion = stack_filter_fwhm;
-			args->filtering_parameter = compute_highest_accepted_fwhm(percent);
-			break;
-		case BEST_ROUND_IMAGES:
-			percent = gtk_adjustment_get_value(stackadj);
-			args->filtering_criterion = stack_filter_roundness;
-			args->filtering_parameter = compute_lowest_accepted_roundness(percent);
-			break;
-		case BEST_QUALITY_IMAGES:
-			percent = gtk_adjustment_get_value(stackadj);
-			args->filtering_criterion = stack_filter_quality;
-			args->filtering_parameter = compute_highest_accepted_quality(percent);
-	}
+	get_sequence_filtering_from_gui(&args->filtering_criterion, &args->filtering_parameter);
 
 	// format
 	switch (selected) {

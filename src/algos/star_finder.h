@@ -10,6 +10,6 @@ int remove_star(int index);
 void sort_stars(fitted_PSF **stars, int total);
 void free_fitted_stars(fitted_PSF **stars);
 int count_stars(fitted_PSF **stars);
-void FWHM_average(fitted_PSF **stars, float *FWHMx, float *FWHMy, int max);
+void FWHM_average(fitted_PSF **stars, int nb, float *FWHMx, float *FWHMy, char **units);
 
 #endif

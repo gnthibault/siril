@@ -339,12 +339,17 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		stat->sqrtbwmv = sqrt(bwmv);
 	}
 
-	/* Calculation of IKSS. Only used for stacking */
+	/* Calculation of IKSS. Only used for stacking normalization */
 	if ((option & STATS_IKSS) && (stat->location < 0. || stat->scale < 0.)) {
 		if (!data) return NULL;	// not in cache
 		siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
 		long i;
 		double *newdata = malloc(stat->ngoodpix * sizeof(double));
+		if (!newdata) {
+			if (stat_is_local) free(stat);
+			PRINT_ALLOC_ERR;
+			return NULL;
+		}
 
 		/* we convert in the [0, 1] range */
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
