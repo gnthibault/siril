@@ -389,7 +389,9 @@ int register_star_alignment(struct registration_args *regargs) {
 	args->user = sadata;
 
 	generic_sequence_worker(args);
-	return args->retval;
+	regargs->retval = args->retval;
+	free(args);
+	return regargs->retval;
 }
 
 static void create_output_sequence_for_global_star(struct registration_args *args) {
