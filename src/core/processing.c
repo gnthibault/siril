@@ -24,6 +24,7 @@
 
 #include "siril.h"
 #include "processing.h"
+#include "sequence_filtering.h"
 #include "proto.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
@@ -43,7 +44,6 @@ gpointer generic_sequence_worker(gpointer p) {
 	float nb_framesf;
 	int abort = 0;	// variable for breaking out of loop
 	GString *desc;	// temporary string description for logs
-	gchar *msg;	// final string description for logs
 	fits fit = { 0 };
 
 	assert(args);
@@ -54,7 +54,15 @@ gpointer generic_sequence_worker(gpointer p) {
 
 	if (args->nb_filtered_images > 0)	// XXX can it be zero?
 		nb_frames = args->nb_filtered_images;
-	else 	nb_frames = args->seq->number;
+	else {
+		nb_frames = compute_nb_filtered_images(args->seq, args->filtering_criterion, args->filtering_parameter);
+		args->nb_filtered_images = nb_frames;
+		if (nb_frames <= 0) {
+			siril_log_message(_("No image selected for processing, aborting\n"));
+			args->retval = 1;
+			goto the_end;
+		}
+	}
 	nb_framesf = (float)nb_frames + 0.3f;	// leave margin for rounding errors and post processing
 	args->retval = 0;
 
@@ -88,7 +96,7 @@ gpointer generic_sequence_worker(gpointer p) {
 	}
 
 	if (args->has_output && !args->partial_image) {	// TODO partial
-		int64_t size = seq_compute_size(args->seq, args->nb_filtered_images);
+		int64_t size = seq_compute_size(args->seq, nb_frames);
 		if (test_available_space(size)) {
 			args->retval = 1;
 			goto the_end;
@@ -99,9 +107,8 @@ gpointer generic_sequence_worker(gpointer p) {
 	desc = g_string_new(args->description);
 	if (desc) {
 		desc = g_string_append(desc, _(": processing...\n"));
-		msg = g_string_free(desc, FALSE);
-		siril_log_color_message(msg, "red");
-		g_free(msg);
+		siril_log_color_message(desc->str, "red");
+		g_string_free(desc, TRUE);
 	}
 
 #ifdef _OPENMP
@@ -156,6 +163,7 @@ gpointer generic_sequence_worker(gpointer p) {
 				sprintf(tmpfn, "/tmp/partial_%d.fit", input_idx);
 				savefits(tmpfn, &fit);*/
 			} else {
+				// image is obtained bottom to top here, while it's in natural order for partial images!
 				if (seq_read_frame(args->seq, input_idx, &fit)) {
 					abort = 1;
 					clearfits(&fit);
@@ -303,12 +311,7 @@ int generic_save(struct generic_seq_args *args, int out_index, int in_index, fit
 	if (args->force_ser_output || args->seq->type == SEQ_SER) {
 		return ser_write_frame_from_fit(args->new_ser, fit, out_index);
 	} else {
-		char format[16];
-		sprintf(format, "%%s%%s%%0%dd%%s", args->seq->fixed);
-		snprintf(dest, 256, format, args->new_seq_prefix,
-				args->seq->seqname, 
-				args->seq->imgparam[in_index].filenum,
-				/*in_index,*/ com.ext);
+		fit_sequence_get_image_filename_prefixed(args->seq, args->new_seq_prefix, in_index, dest, sizeof dest);
 		fit->bitpix = fit->orig_bitpix;
 		return savefits(dest, fit);
 	}
@@ -433,12 +436,3 @@ void on_processes_button_cancel_clicked(GtkButton *button, gpointer user_data) {
 	stop_processing_thread();
 	wait_for_script_thread();
 }
-
-int seq_filter_all(sequence *seq, int nb_img, double any) {
-	return 1;
-}
-
-int seq_filter_included(sequence *seq, int nb_img, double any) {
-	return (seq->imgparam[nb_img].incl);
-}
-

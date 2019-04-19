@@ -220,6 +220,7 @@ static int comet_align_prepare_hook(struct generic_seq_args *args) {
 			fprintf(stderr, "Error allocating registration data\n");
 			return -2;
 		}
+		args->seq->regparam[regargs->layer] = cadata->current_regdata;
 	}
 
 	/* loading reference frame */
@@ -231,7 +232,6 @@ static int comet_align_prepare_hook(struct generic_seq_args *args) {
 		free(cadata->current_regdata);
 		return 1;
 	}
-
 	cadata->reference_date = FITS_date_key_to_sec(ref.date_obs);
 	clearfits(&ref);
 
@@ -248,15 +248,14 @@ static int comet_align_image_hook(struct generic_seq_args *args, int out_index, 
 
 	if (!regargs->cumul) {
 		/* data initialization */
-		cadata->current_regdata[in_index].shiftx = 0.0;
-		cadata->current_regdata[in_index].shifty = 0.0;
+		set_shifts(args->seq, in_index, regargs->layer, 0.0, 0.0, FALSE);
 	}
 
 	time_t date_obs = FITS_date_key_to_sec(fit->date_obs);
 	get_comet_shift(cadata->reference_date, date_obs, velocity, &reg_x, &reg_y);
 
-	cadata->current_regdata[in_index].shiftx += -reg_x;
-	cadata->current_regdata[in_index].shifty += reg_y;
+	/* get_comet_shift does not car about orientation of image */
+	set_shifts(args->seq, in_index, regargs->layer, -reg_x, reg_y, FALSE);
 	return 0;
 }
 
@@ -264,8 +263,10 @@ static int comet_align_finalize_hook(struct generic_seq_args *args) {
 	struct comet_align_data *cadata = args->user;
 	struct registration_args *regargs = cadata->regargs;
 
-	if (!args->retval)
-		args->seq->regparam[regargs->layer] = cadata->current_regdata;
+	if (args->retval) {
+		free(args->seq->regparam[regargs->layer]);
+		args->seq->regparam[regargs->layer] = NULL;
+	}
 
 	free(args->user);
 	args->user = NULL;

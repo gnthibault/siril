@@ -18,6 +18,9 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
 #include "core/siril.h"
 #include "core/processing.h"
 #include "core/proto.h"		// FITS functions
@@ -28,6 +31,7 @@ struct sum_stacking_data {
 	unsigned long *sum[3];	// the new image's channels
 	double exposure;	// sum of the exposures
 	int reglayer;		// layer used for registration data
+	int ref_image;		// reference image index in the stacked sequence
 };
 
 static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
@@ -61,8 +65,8 @@ static int sum_stacking_image_hook(struct generic_seq_args *args, int o, int i, 
 	ssdata->exposure += fit->exposure;
 	
 	if (ssdata->reglayer != -1 && args->seq->regparam[ssdata->reglayer]) {
-		shiftx = roundf_to_int(args->seq->regparam[ssdata->reglayer][i].shiftx * args->seq->upscale_at_stacking);
-		shifty = roundf_to_int(args->seq->regparam[ssdata->reglayer][i].shifty * args->seq->upscale_at_stacking);
+		shiftx = round_to_int(args->seq->regparam[ssdata->reglayer][i].shiftx * args->seq->upscale_at_stacking);
+		shifty = round_to_int(args->seq->regparam[ssdata->reglayer][i].shifty * args->seq->upscale_at_stacking);
 	} else {
 		shiftx = 0;
 		shifty = 0;
@@ -111,11 +115,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 
 	/* We copy metadata from reference to the final fit */
 	if (args->seq->type == SEQ_REGULAR) {
-		int ref = 0;
-		// FIXME: sum stacking does not have a reference, should we add
-		// it or use another image here?
-		if (args->seq->reference_image > 0)
-			ref = args->seq->reference_image;
+		int ref = ssdata->ref_image;
 		if (!seq_open_image(args->seq, ref)) {
 			import_metadata_from_fitsfile(args->seq->fptr[ref], &gfit);
 			seq_close_image(args->seq, ref);
@@ -165,9 +165,10 @@ int stack_summing_generic(struct stacking_args *stackargs) {
 
 	struct sum_stacking_data *ssdata = malloc(sizeof(struct sum_stacking_data));
 	ssdata->reglayer = stackargs->reglayer;
+	ssdata->ref_image = stackargs->ref_image;
+	assert(ssdata->ref_image >= 0 && ssdata->ref_image < args->seq->number);
 	args->user = ssdata;
 
-	//start_in_new_thread(generic_sequence_worker, args);
 	generic_sequence_worker(args);
 	return args->retval;
 }

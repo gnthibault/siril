@@ -220,6 +220,16 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
       </object>
     </child>
   </object>
+  <object class="GtkImage" id="addfilter1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-add</property>
+  </object>
+  <object class="GtkImage" id="addfilter2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-add</property>
+  </object>
   <object class="GtkAdjustment" id="adjCPU">
     <property name="lower">1</property>
     <property name="upper">1024</property>
@@ -438,8 +448,26 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
+  <object class="GtkAdjustment" id="adjustment4">
+    <property name="upper">100</property>
+    <property name="value">90</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="adjustment5">
     <property name="upper">1</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment6">
+    <property name="upper">100</property>
+    <property name="value">90</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment7">
+    <property name="upper">100</property>
+    <property name="value">90</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
@@ -1386,6 +1414,16 @@ enter a visible wavelength in nm</property>
     <property name="halign">center</property>
     <property name="valign">center</property>
     <property name="pixbuf">pixmaps/siril_logo.svg</property>
+  </object>
+  <object class="GtkImage" id="removefilter2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-remove</property>
+  </object>
+  <object class="GtkImage" id="removefilter3">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-remove</property>
   </object>
   <object class="GtkAdjustment" id="resample_X">
     <property name="lower">0.01</property>
@@ -12700,6 +12738,67 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkSeparator" id="separator3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">5</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkRadioButton" id="regallbutton">
+                        <property name="label" translatable="yes">Register all images from sequence</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="regselbutton">
+                        <property name="label" translatable="yes">Register selected images only</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">regallbutton</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkBox" id="box5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -12762,67 +12861,6 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="padding">2</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSeparator" id="separator3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="padding">5</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="box10">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">center</property>
-                    <child>
-                      <object class="GtkRadioButton" id="regallbutton">
-                        <property name="label" translatable="yes">Register all images from sequence</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkRadioButton" id="regselbutton">
-                        <property name="label" translatable="yes">Register selected images only</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">regallbutton</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
@@ -13719,19 +13757,6 @@ WARNING: gnuplot must be installed.</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label24">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="margin_top">7</property>
-                        <property name="label" translatable="yes">Stack this set of images:</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">3</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkComboBoxText" id="comboboxstack_methods">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -13772,77 +13797,6 @@ Pixels of the image are replaced by pixels at the same coordinates if intensity 
                         <property name="left_attach">1</property>
                         <property name="top_attach">0</property>
                         <property name="width">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkComboBoxText" id="comboboxstacksel">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip_text" translatable="yes">Select the set of images to be stacked. All the images or only the manually selected can be used. But it is possible to only select the percentage of best images following quality criteria (planetary, roundness or fwhm).</property>
-                        <items>
-                          <item translatable="yes">all the images of the sequence</item>
-                          <item translatable="yes">images previously manually selected from the sequence</item>
-                          <item translatable="yes">best images, automatically selected from the registration data (PSF - FWHM)</item>
-                          <item translatable="yes">best images, automatically selected from the registration data (PSF - roundness)</item>
-                          <item translatable="yes">best images, automatically selected from the registration data (Planetary)</item>
-                        </items>
-                        <signal name="changed" handler="on_stacksel_changed" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">3</property>
-                        <property name="width">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="label27">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="margin_left">5</property>
-                        <property name="hexpand">True</property>
-                        <property name="label" translatable="yes">Based on FWHM</property>
-                        <property name="justify">center</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">4</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSpinButton" id="stackspin">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="can_focus">True</property>
-                        <property name="halign">end</property>
-                        <property name="invisible_char">●</property>
-                        <property name="width_chars">6</property>
-                        <property name="max_width_chars">5</property>
-                        <property name="input_purpose">number</property>
-                        <property name="adjustment">adjustment_stack_filter</property>
-                        <property name="climb_rate">1</property>
-                        <property name="digits">2</property>
-                        <property name="numeric">True</property>
-                        <signal name="changed" handler="on_spinbut_percent_change" swapped="no"/>
-                        <signal name="value-changed" handler="on_spinbut_percent_change" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">4</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="label26">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">end</property>
-                        <property name="label" translatable="yes">Stack best:</property>
-                        <property name="justify">center</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">4</property>
                       </packing>
                     </child>
                     <child>
@@ -13970,6 +13924,7 @@ gradients with differing spatial distributions and orientations.
 
 [1] Peter J. Huber and E. Ronchetti (2009), Robust Statistics, 2nd Ed., Wiley
 [2] Juan Conejero, ImageIntegration, Pixinsight Tutorial</property>
+                                        <property name="halign">start</property>
                                         <property name="hexpand">True</property>
                                         <property name="active">4</property>
                                         <items>
@@ -13988,20 +13943,7 @@ gradients with differing spatial distributions and orientations.
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkCheckButton" id="check_normalise_to_16b">
-                                        <property name="label" translatable="yes">Normalise to 16-bit
-(Don't check for Masters)</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">If you check this button, the final image will be normalized to 16-bit per channel. This is important when input sequence has a depth of 8-bit per channel.
-However you may want to disable this option when building master frames of 8-bit sequences.</property>
-                                        <property name="active">True</property>
-                                        <property name="draw_indicator">True</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">0</property>
-                                        <property name="top_attach">1</property>
-                                      </packing>
+                                      <placeholder/>
                                     </child>
                                   </object>
                                 </child>
@@ -14110,18 +14052,7 @@ However you may want to disable this option when building master frames of 8-bit
                       <packing>
                         <property name="left_attach">1</property>
                         <property name="top_attach">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="label143">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">%</property>
-                      </object>
-                      <packing>
-                        <property name="left_attach">2</property>
-                        <property name="top_attach">4</property>
+                        <property name="width">2</property>
                       </packing>
                     </child>
                     <child>
@@ -14147,12 +14078,13 @@ However you may want to disable this option when building master frames of 8-bit
 Siril uses a 32-bit internal image to process the stacking, which is then saved to a 16-bit image whose name is given below.</property>
                         <property name="margin_left">20</property>
                         <property name="margin_right">20</property>
+                        <property name="margin_top">3</property>
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_seqstack_button_clicked" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
-                        <property name="top_attach">6</property>
+                        <property name="top_attach">5</property>
                         <property name="width">3</property>
                       </packing>
                     </child>
@@ -14166,7 +14098,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
-                        <property name="top_attach">5</property>
+                        <property name="top_attach">4</property>
                       </packing>
                     </child>
                     <child>
@@ -14178,7 +14110,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
-                        <property name="top_attach">5</property>
+                        <property name="top_attach">4</property>
                       </packing>
                     </child>
                     <child>
@@ -14188,12 +14120,13 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="tooltip_text" translatable="yes">Overwrite file without notice if it already exists.</property>
+                        <property name="halign">start</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
-                        <property name="top_attach">5</property>
+                        <property name="top_attach">4</property>
                       </packing>
                     </child>
                     <child>
@@ -14257,10 +14190,291 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkGrid" id="stackfilteringgrid">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="row_spacing">5</property>
+                        <property name="column_spacing">10</property>
+                        <child>
+                          <object class="GtkButton" id="filter_add1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">Add another filter</property>
+                            <property name="halign">end</property>
+                            <property name="image">addfilter1</property>
+                            <property name="always_show_image">True</property>
+                            <signal name="clicked" handler="on_filter_add1_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">3</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="filter_add2">
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">Add another filter</property>
+                            <property name="halign">end</property>
+                            <property name="image">addfilter2</property>
+                            <property name="always_show_image">True</property>
+                            <signal name="clicked" handler="on_filter_add2_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">3</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="filter_rem3">
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">Remove this filter</property>
+                            <property name="halign">end</property>
+                            <property name="image">removefilter3</property>
+                            <property name="always_show_image">True</property>
+                            <signal name="clicked" handler="on_filter_rem3_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="filter_rem2">
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">Remove this filter</property>
+                            <property name="halign">end</property>
+                            <property name="image">removefilter2</property>
+                            <property name="always_show_image">True</property>
+                            <signal name="clicked" handler="on_filter_rem2_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">4</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkComboBoxText" id="combofilter1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Select the set of images to be stacked:
+- selected: only use image that have not been unselected from the sequence
+- FWHM: images with best computed FWHM (star-based registration only)
+- roundness: images with best star roundness (star-based registration only)
+- quality: images with best quality (planetary DFT or ECC registrations)</property>
+                            <property name="active">0</property>
+                            <items>
+                              <item translatable="yes">all</item>
+                              <item translatable="yes">selected</item>
+                              <item translatable="yes">FWHM</item>
+                              <item translatable="yes">roundness</item>
+                              <item translatable="yes">quality</item>
+                            </items>
+                            <signal name="changed" handler="on_stacksel_changed" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="stackspin1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Percents of the images of the sequence.</property>
+                            <property name="halign">end</property>
+                            <property name="invisible_char">●</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">5</property>
+                            <property name="text" translatable="yes">90.00</property>
+                            <property name="input_purpose">number</property>
+                            <property name="adjustment">adjustment4</property>
+                            <property name="climb_rate">1</property>
+                            <property name="digits">2</property>
+                            <property name="numeric">True</property>
+                            <property name="value">90</property>
+                            <signal name="changed" handler="on_spinbut_percent_change" swapped="no"/>
+                            <signal name="value-changed" handler="on_spinbut_percent_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="stackspin2">
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Percents of the images of the sequence.</property>
+                            <property name="halign">end</property>
+                            <property name="invisible_char">●</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">5</property>
+                            <property name="text" translatable="yes">90.00</property>
+                            <property name="input_purpose">number</property>
+                            <property name="adjustment">adjustment6</property>
+                            <property name="climb_rate">1</property>
+                            <property name="digits">2</property>
+                            <property name="numeric">True</property>
+                            <property name="value">90</property>
+                            <signal name="changed" handler="on_spinbut_percent_change" swapped="no"/>
+                            <signal name="value-changed" handler="on_spinbut_percent_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="stackspin3">
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Percents of the images of the sequence.</property>
+                            <property name="halign">end</property>
+                            <property name="invisible_char">●</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">5</property>
+                            <property name="text" translatable="yes">90.00</property>
+                            <property name="input_purpose">number</property>
+                            <property name="adjustment">adjustment7</property>
+                            <property name="climb_rate">1</property>
+                            <property name="digits">2</property>
+                            <property name="numeric">True</property>
+                            <property name="value">90</property>
+                            <signal name="changed" handler="on_spinbut_percent_change" swapped="no"/>
+                            <signal name="value-changed" handler="on_spinbut_percent_change" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkComboBoxText" id="combofilter2">
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Select the set of images to be stacked. All the images or only the manually selected can be used. But it is possible to only select the percentage of best images following quality criteria (planetary, roundness or fwhm).</property>
+                            <property name="active">0</property>
+                            <items>
+                              <item translatable="yes">all</item>
+                              <item translatable="yes">selected</item>
+                              <item translatable="yes">FWHM</item>
+                              <item translatable="yes">roundness</item>
+                              <item translatable="yes">quality</item>
+                            </items>
+                            <signal name="changed" handler="on_stacksel_changed" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkComboBoxText" id="combofilter3">
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Select the set of images to be stacked. All the images or only the manually selected can be used. But it is possible to only select the percentage of best images following quality criteria (planetary, roundness or fwhm).</property>
+                            <property name="active">0</property>
+                            <items>
+                              <item translatable="yes">all</item>
+                              <item translatable="yes">selected</item>
+                              <item translatable="yes">FWHM</item>
+                              <item translatable="yes">roundness</item>
+                              <item translatable="yes">quality</item>
+                            </items>
+                            <signal name="changed" handler="on_stacksel_changed" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="labelfilter1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="width_chars">10</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">2</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="labelfilter2">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="width_chars">10</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">2</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="labelfilter3">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="width_chars">10</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">2</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">3</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="label1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">end</property>
+                        <property name="margin_top">7</property>
+                        <property name="label" translatable="yes">Stack this set of images:</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="stackfilter_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Stacking 0 images of the 0 of the sequence</property>
+                        <property name="wrap">True</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="top_attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="check_normalise_to_16b">
+                        <property name="label" translatable="yes">Normalise to 16-bit
+(Don't check for Masters)</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="tooltip_text" translatable="yes">If you check this button, the final image will be normalized to 16-bit per channel. This is important when input sequence has a depth of 8-bit per channel.
+However you may want to disable this option when building master frames of 8-bit sequences.</property>
+                        <property name="halign">start</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="top_attach">1</property>
+                      </packing>
                     </child>
                     <child>
                       <placeholder/>

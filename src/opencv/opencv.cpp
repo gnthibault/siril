@@ -91,13 +91,28 @@ int cvResizeGaussian(fits *image, int toX, int toY, int interpolation) {
 	assert(image->data);
 	assert(image->rx);
 
-	WORD *bgrbgr = fits_to_bgrbgr(image);
+	// preparing data
+	Mat in, out;
+	WORD *bgrbgr = NULL;
 
-	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
-	Mat out(toY, toX, CV_16UC3);
+	if (image->naxes[2] == 1) {
+		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
+		out = Mat(toY, toX, CV_16UC1);
+	}
+	else if (image->naxes[2] == 3) {
+		bgrbgr = fits_to_bgrbgr(image);
+		in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
+		out = Mat(toY, toX, CV_16UC3);
+	}
+	else {
+		siril_log_message("Image resizing is not supported for images with %d channels\n", image->naxes[2]);
+		return -1;
+	}
 
+	// OpenCV function
 	resize(in, out, out.size(), 0, 0, interpolation);
 
+	// saving result
 	WORD *newdata = (WORD*) realloc(image->data,
 			toX * toY * sizeof(WORD) * image->naxes[2]);
 	if (!newdata) {
@@ -108,34 +123,33 @@ int cvResizeGaussian(fits *image, int toX, int toY, int interpolation) {
 	image->naxes[0] = toX;
 	image->ry = toY;
 	image->naxes[1] = toY;
-
 	image->data = newdata;
-	Mat channel[3];
-	split(out, channel);
 
-	memcpy(image->data, channel[2].data, toX * toY * sizeof(WORD));
-	if (image->naxes[2] == 3) {
-		memcpy(image->data + toX * toY, channel[1].data,
-				toX * toY * sizeof(WORD));
-		memcpy(image->data + toX * toY * 2, channel[0].data,
-				toX * toY * sizeof(WORD));
-	}
-
+	unsigned int dataSize = toX * toY;
 	if (image->naxes[2] == 1) {
+		memcpy(image->data, out.data, dataSize * sizeof(WORD));
 		image->pdata[0] = image->data;
 		image->pdata[1] = image->data;
 		image->pdata[2] = image->data;
-	} else {
-		image->pdata[0] = image->data;
-		image->pdata[1] = image->data + (toX * toY);
-		image->pdata[2] = image->data + (toX * toY) * 2;
 	}
-	delete[] bgrbgr;
+	else {
+		Mat channel[3];
+		split(out, channel);
+		memcpy(image->data, channel[2].data, dataSize * sizeof(WORD));
+		memcpy(image->data + dataSize, channel[1].data, dataSize * sizeof(WORD));
+		memcpy(image->data + dataSize * 2, channel[0].data, dataSize * sizeof(WORD));
+
+		image->pdata[0] = image->data;
+		image->pdata[1] = image->data + dataSize;
+		image->pdata[2] = image->data + dataSize * 2;
+
+		channel[0].release();
+		channel[1].release();
+		channel[2].release();
+		delete[] bgrbgr;
+	}
 	in.release();
 	out.release();
-	channel[0].release();
-	channel[1].release();
-	channel[2].release();
 	invalidate_stats_from_fit(image);
 	return 0;
 }
@@ -357,65 +371,67 @@ int cvApplyScaleToH(Homography *H1, double s) {
 	return 0;
 }
 
-int cvTransformImage(fits *image, point ref, Homography Hom, int interpolation) {
+// transform an image using the homography.
+int cvTransformImage(fits *image, long width, long height, Homography Hom, int interpolation) {
 	assert(image->data);
 	assert(image->rx);
 	assert(image->ry);
+	// for now, assuming input and output are same size
+	assert(image->rx == width);
+	assert(image->ry == height);
 
-	int ndata = ref.x * ref.y;
-	WORD *newdata;
-	WORD *bgrbgr = fits_to_bgrbgr(image);
-
-	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
-	Mat out(ref.y, ref.x, CV_16UC3);
-	Mat H = Mat::eye(3, 3, CV_64FC1);
-
-	convert_H_to_MatH(&Hom, H);
-
-	warpPerspective(in, out, H, Size(ref.x, ref.y), interpolation);
-
-	Mat channel[3];
-	split(out, channel);
-
-	if (image->ry != ref.y || image->rx != ref.x) {
-		newdata = (WORD*) realloc(image->data,
-				ref.x * ref.y * sizeof(WORD) * image->naxes[2]);
-		if (!newdata) {
-			free(newdata);
-			return 1;
-		}
-		image->data = newdata;
-	}
-
-	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
-	if (image->naxes[2] == 3) {
-		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
-		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
-	}
+	// preparing data
+	Mat in, out;
+	WORD *bgrbgr = NULL;
 
 	if (image->naxes[2] == 1) {
+		in = Mat(height, width, CV_16UC1, image->data);
+		out = Mat(height, width, CV_16UC1);
+	}
+	else if (image->naxes[2] == 3) {
+		bgrbgr = fits_to_bgrbgr(image);
+		in = Mat(height, width, CV_16UC3, bgrbgr);
+		out = Mat(height, width, CV_16UC3);
+	}
+	else {
+		siril_log_message("Image resizing is not supported for images with %d channels\n", image->naxes[2]);
+		return -1;
+	}
+
+
+	Mat H = Mat::eye(3, 3, CV_64FC1);
+	convert_H_to_MatH(&Hom, H);
+
+	// OpenCV function
+	warpPerspective(in, out, H, Size(width, height), interpolation);
+
+	// saving result
+	long ndata = height * width;
+	if (image->naxes[2] == 1) {
+		memcpy(image->data, out.data, ndata * sizeof(WORD));
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data;
 		image->pdata[BLAYER] = image->data;
 	} else {
+		Mat channel[3];
+		split(out, channel);
+		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
+		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
+		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
+
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data + ndata;
 		image->pdata[BLAYER] = image->data + ndata * 2;
-	}
-	image->rx = out.cols;
-	image->ry = out.rows;
-	image->naxes[0] = image->rx;
-	image->naxes[1] = image->ry;
-	invalidate_stats_from_fit(image);
 
-	/* free data */
-	delete[] bgrbgr;
+		channel[0].release();
+		channel[1].release();
+		channel[2].release();
+		delete[] bgrbgr;
+	}
+	H.release();
 	in.release();
 	out.release();
-	channel[0].release();
-	channel[1].release();
-	channel[2].release();
-	H.release();
+	invalidate_stats_from_fit(image);
 	return 0;
 }
 

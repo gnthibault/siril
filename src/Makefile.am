@@ -9,6 +9,7 @@ siril_SOURCES = \
 	core/siril.c core/siril.h core/command.c core/command.h core/command_def.h core/proto.h \
 	core/undo.c core/undo.h core/utils.c core/processing.c core/pipe.c core/pipe.h \
 	core/initfile.c core/initfile.h core/siril_update.c core/siril_update.h \
+	core/sequence_filtering.c core/sequence_filtering.h \
 	core/OS_utils.c core/siril_log.c \
 	io/conversion.c io/conversion.h io/ser.c io/ser.h io/films.c io/films.h \
 	io/image_formats_libraries.c io/image_formats_internal.c io/image_format_fits.c \
@@ -26,6 +27,7 @@ siril_SOURCES = \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
 	registration/matching/project_coords.c registration/matching/project_coords.h registration/matching/degtorad.h registration/matching/apply_match.c \
 	stacking/stacking.c stacking/stacking.h stacking/sum.c stacking/sum.h stacking/normalization.c \
+	stacking/median_and_mean.c stacking/upscaling.c \
 	algos/statistics.c algos/sorting.h algos/sorting.c \
 	algos/background_extraction.c algos/background_extraction.h algos/quality.c algos/quality.h \
 	algos/rgradient.c algos/rgradient.h \

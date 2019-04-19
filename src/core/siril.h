@@ -29,6 +29,8 @@
 #define siril_debug_print(fmt, ...) \
    do { if (DEBUG_TEST) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
 
+#define PRINT_ALLOC_ERR fprintf(stderr, "Out of memory in %s (%s:%d) - aborting\n", __func__, __FILE__, __LINE__)
+
 #undef max
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
@@ -49,6 +51,8 @@
 #define USHRT_MAX_SINGLE ((float)USHRT_MAX)
 #define UCHAR_MAX_DOUBLE ((double)UCHAR_MAX)
 #define UCHAR_MAX_SINGLE ((float)UCHAR_MAX)
+
+#define BYTES_IN_A_MB 1048576	// 1024�
 
 #define SEQUENCE_DEFAULT_INCLUDE TRUE	// select images by default
 
@@ -433,6 +437,7 @@ struct ffit {
 	 * */
 
 	/* data obtained from the FITS file */
+	char *header;	// entire header of the FITS file. NULL for non-FITS file.
 	WORD lo;	// MIPS-LO key in FITS file, which is "Lower visualization cutoff"
 	WORD hi;	// MIPS-HI key in FITS file, which is "Upper visualization cutoff"
 	double data_max; // used to check if 32b float is between 0 and 1
@@ -464,7 +469,8 @@ struct ffit {
 	fitsfile *fptr;		// file descriptor. Only used for file read and write.
 	WORD *data;		// 16-bit image data (depending on image type)
 	WORD *pdata[3];		// pointers on data, per layer data access (RGB)
-	char *header;		// entire header of the FITS file. NULL for non-FITS file.
+
+	gboolean top_down;	// image data is stored top-down, normally false for FITS, true for SER
 
 	GSList *history;	// Former HISTORY comments of FITS file
 };
@@ -597,6 +603,8 @@ struct cominf {
 	gboolean want_dark;			// User want dark theme for siril
 
 	stackconf stack;
+
+	gboolean cache_upscaled;	// keep up-scaled files for 'drizzle' (only used by developers)
 	
 	int filter;			// file extension filter for open/save dialogs
 

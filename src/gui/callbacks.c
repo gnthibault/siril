@@ -217,8 +217,7 @@ static void remaprgb(void) {
 		com.rgbbuf = realloc(com.rgbbuf,
 				com.surface_stride[RGB_VPORT] * gfit.ry * sizeof(guchar));
 		if (com.rgbbuf == NULL) {
-			fprintf(stderr,
-					"Could not allocate memory for RGB buffer (out of memory?)\n");
+			PRINT_ALLOC_ERR;
 			if (oldbuf)
 				free(oldbuf);
 			return;
@@ -408,9 +407,7 @@ static void remap(int vport) {
 		com.graybuf[vport] = realloc(com.graybuf[vport],
 				com.surface_stride[vport] * gfit.ry * sizeof(guchar));
 		if (com.graybuf[vport] == NULL) {
-			fprintf(stderr,
-					"Could not allocate memory for gray buffer %d (out of memory?)\n",
-					vport);
+			PRINT_ALLOC_ERR;
 			if (oldbuf)
 				free(oldbuf);
 			return;
@@ -2021,6 +2018,9 @@ static void initialize_shortcuts() {
 	/* NEGATIVE */
 	gtk_widget_add_accelerator(lookup_widget("menu_negative"), "activate", accel,
 	GDK_KEY_i, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	/* SETTINGS */
+	gtk_widget_add_accelerator(lookup_widget("settings"), "activate", accel,
+	GDK_KEY_k, get_default_modifier(), GTK_ACCEL_VISIBLE);
 }
 
 void initialize_remap() {
@@ -2306,8 +2306,7 @@ void initialize_all_GUI(gchar *siril_path, gchar *supported_files) {
 	initialize_shortcuts();
 
 	/* Select combo boxes that trigger some text display or other things */
-	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("comboboxstack_methods")), 0);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("comboboxstacksel")), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods")), 0);
 	zoomcombo_update_display_for_zoom();
 
 	GtkLabel *label_supported = GTK_LABEL(lookup_widget("label_supported_types"));
@@ -3295,7 +3294,7 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	gchar label[32] = "labeldensity";
 	fits *fit = &(gfit);
 	double zoom = get_zoom_val();
-	gint zoomedX, zoomedY;
+	gint zoomedX = 0, zoomedY = 0;
 
 	if (inimage((GdkEvent *) event)) {
 		char buffer[45];
@@ -3328,23 +3327,20 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	}
 
 	if (com.drawing) {	// with button 1 down
-		if (inimage((GdkEvent *) event)) {
-			zoomedX = event->x / zoom;
-			zoomedY = event->y / zoom;
-		} else {
+		if (!inimage((GdkEvent *) event)) {
 			set_cursor("crosshair");
 			if (event->x < 0)
-				zoomedX = 0.0;
+				zoomedX = 0;
 			else if (event->x > gfit.rx * zoom)
 				zoomedX = gfit.rx;
 			else
-				zoomedX = event->x / zoom;
+				zoomedX = round_to_int(event->x / zoom);
 			if (event->y < 0)
-				zoomedY = 0.0;
+				zoomedY = 0;
 			else if (event->y > gfit.ry * zoom)
 				zoomedY = gfit.ry;
 			else
-				zoomedY = event->y / zoom;
+				zoomedY = round_to_int(event->y / zoom);
 		}
 		if (!com.freezeX) {
 			if (zoomedX > com.startX) {

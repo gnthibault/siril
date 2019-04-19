@@ -2,7 +2,7 @@
 # Script for Siril 0.9
 # January 2019
 # (C) Cyril Richard
-# DSLR_preprocessing+CC v1.0
+# DSLR_preprocessing+CC v1.5
 ########### PREPROCESSING SCRIPT ###########
 # Script for DSLR color camera preprocessing
 # needs 4 sets of RAW images in the working
@@ -49,14 +49,7 @@ preprocess cc_pp_light_ -debayer -stretch
 register pp_cc_pp_light_
 
 #stack calibrated lights
-stack r_pp_cc_pp_light_ rej 3 3 -norm=addscale
+stack r_pp_cc_pp_light_ rej 3 3 -norm=addscale -out=../result
 
-#That's a workaround here to save result in another place.
-#These lines are not mandatory
-#load image in memory
-load r_pp_cc_pp_light_stacked
-
-#and save it at root
-cd  ..
-save result
+cd ..
 close

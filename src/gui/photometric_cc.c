@@ -168,9 +168,9 @@ static void bv2rgb(double *r, double *g, double *b, double bv) { // RGB <0,1> <-
 
 static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits *fit) {
 	/* make a selection around the star */
-	area->x = (int) (stars->xpos - com.phot_set.outer / 2.0);
-	area->y = (int) (stars->ypos - com.phot_set.outer / 2.0);
-	area->w = area->h = (int) com.phot_set.outer;
+	area->x = round_to_int(stars->xpos - com.phot_set.outer * 0.5);
+	area->y = round_to_int(stars->ypos - com.phot_set.outer * 0.5);
+	area->w = area->h = (int)com.phot_set.outer;
 
 	/* Don't want stars to close of the edge */
 	if (area->x + area->w >= fit->rx) {

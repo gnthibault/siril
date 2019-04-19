@@ -3,7 +3,7 @@
 # March 2019
 # (C) Cyril Richard
 #  Modified by Colmic
-# DSLR_preprocessing v1.4
+# DSLR_preprocessing v1.5
 ########### PREPROCESSING SCRIPT ###########
 #                 No Darks
 #
@@ -23,14 +23,7 @@ preprocess light_ -debayer -stretch
 register pp_light_
 
 #stack calibrated lights
-stack r_pp_light_ rej 3 3 -norm=addscale
+stack r_pp_light_ rej 3 3 -norm=addscale -out=../result
 
-#That's a workaround here to save result in another place.
-#These lines are not mandatory
-#load image in memory
-load r_pp_light_stacked
-
-#and save it at root
-cd  ..
-save result
+cd ..
 close

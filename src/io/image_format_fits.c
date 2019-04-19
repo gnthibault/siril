@@ -410,7 +410,6 @@ static void conv_8_to_16(WORD *data, unsigned int nbdata) {
  * from is not freed, to must be allocated and can be the same as from */
 static void convert_data(int bitpix, const void *from, WORD *to, unsigned int nbdata, gboolean values_above_1) {
 	int i;
-	int8_t *sdata8;
 	BYTE *data8;
 	int16_t *data16;
 	double *pixels_double;
@@ -1011,6 +1010,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	read_fits_header(fit);	// stores useful header data in fit
 
 	retval = read_fits_with_convert(fit, filename);
+	fit->top_down = FALSE;
 
 	if (!retval) {
 		// copy the entire header

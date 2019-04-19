@@ -76,7 +76,8 @@ static char *tooltip_text[] = { N_("One Star Registration: This is the simplest 
 };
 /* callback for the selected area event */
 void _reg_selected_area_callback() {
-	update_reg_interface(TRUE);
+	if (!com.headless)
+		update_reg_interface(TRUE);
 }
 
 static struct registration_method *reg_methods[NUMBER_OF_METHODS];
@@ -214,6 +215,7 @@ int register_shift_dft(struct registration_args *args) {
 			printf("Error allocating registration data\n");
 			return -2;
 		}
+		args->seq->regparam[args->layer] = current_regdata;
 	}
 
 	/* loading reference frame */
@@ -224,6 +226,7 @@ int register_shift_dft(struct registration_args *args) {
 			PROGRESS_NONE);
 	ret = seq_read_frame_part(args->seq, args->layer, ref_image, &fit_ref,
 			&args->selection, FALSE);
+
 
 	if (ret) {
 		siril_log_message(
@@ -255,8 +258,7 @@ int register_shift_dft(struct registration_args *args) {
 	current_regdata[ref_image].quality = QualityEstimate(&fit_ref, args->layer, QUALTYPE_NORMAL);
 	clearfits(&fit_ref);
 	fftw_execute_dft(p, ref, in); /* repeat as needed */
-	current_regdata[ref_image].shiftx = 0.0;
-	current_regdata[ref_image].shifty = 0.0;
+	set_shifts(args->seq, ref_image, args->layer, 0.0, 0.0, FALSE);
 
 	q_min = q_max = current_regdata[ref_image].quality;
 	q_index = ref_image;
@@ -295,11 +297,8 @@ int register_shift_dft(struct registration_args *args) {
 				for (x = 0; x < sqsize; x++)
 					img[x] = (double) fit.data[x];
 
-				// We don't need fit anymore, we can destroy it.
 				current_regdata[frame].quality = QualityEstimate(&fit, args->layer,
 						QUALTYPE_NORMAL);
-
-				clearfits(&fit);
 
 #ifdef _OPENMP
 #pragma omp critical
@@ -340,11 +339,12 @@ int register_shift_dft(struct registration_args *args) {
 					shiftx -= size;
 				}
 
-				/* for Y, it's a bit special because FITS are upside-down */
-				float sign = args->seq->type == SEQ_SER ? -1 : 1;
+				set_shifts(args->seq, frame, args->layer, (float)shiftx, (float)shifty,
+						fit.top_down);
 
-				current_regdata[frame].shiftx = (float) shiftx;
-				current_regdata[frame].shifty = (float) shifty * sign;
+				// We don't need fit anymore, we can destroy it.
+				clearfits(&fit);
+
 
 				/* shiftx and shifty are the x and y values for translation that
 				 * would make this image aligned with the reference image.
@@ -382,7 +382,6 @@ int register_shift_dft(struct registration_args *args) {
 	fftw_free(ref);
 	fftw_free(convol);
 	if (!ret) {
-		args->seq->regparam[args->layer] = current_regdata;
 		if (args->x2upscale)
 			args->seq->upscale_at_stacking = 2.0;
 		else
@@ -391,6 +390,9 @@ int register_shift_dft(struct registration_args *args) {
 		update_used_memory();
 		siril_log_message(_("Registration finished.\n"));
 		siril_log_color_message(_("Best frame: #%d.\n"), "bold", q_index);
+	} else {
+		free(args->seq->regparam[args->layer]);
+		args->seq->regparam[args->layer] = NULL;
 	}
 	return ret;
 }
@@ -401,7 +403,7 @@ int register_shift_dft(struct registration_args *args) {
  */
 int register_shift_fwhm(struct registration_args *args) {
 	int frame, ref_image;
-	float nb_frames, cur_nb;
+	float nb_frames, cur_nb = 0.f;
 	double reference_xpos, reference_ypos;
 	double fwhm_min = DBL_MAX;
 	int fwhm_index = -1;
@@ -441,15 +443,14 @@ int register_shift_fwhm(struct registration_args *args) {
 	fwhm_index = ref_image;
 
 	/* Second step: align image by aligning star coordinates together */
-	for (frame = 0, cur_nb = 0.f; frame < args->seq->number; frame++) {
+	for (frame = 0; frame < args->seq->number; frame++) {
 		double tmp;
 		if (args->run_in_thread && !get_thread_run())
 			break;
 		if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
 			continue;
 		if (frame == ref_image || !current_regdata[frame].fwhm_data) {
-			current_regdata[frame].shiftx = 0.0;
-			current_regdata[frame].shifty = 0.0;
+			set_shifts(args->seq, frame, args->layer, 0.0, 0.0, FALSE);
 			continue;
 		}
 		if (current_regdata[frame].fwhm < fwhm_min
@@ -462,11 +463,6 @@ int register_shift_fwhm(struct registration_args *args) {
 		tmp = current_regdata[frame].fwhm_data->ypos - reference_ypos;
 		current_regdata[frame].shifty = tmp;
 
-		/* shiftx and shifty are the x and y values for translation that
-		 * would make this image aligned with the reference image.
-		 * WARNING: the y value is counted backwards, since the FITS is
-		 * stored down from up.
-		 */
 		fprintf(stderr, "reg: file %d, shiftx=%f shifty=%f\n",
 				args->seq->imgparam[frame].filenum,
 				current_regdata[frame].shiftx, current_regdata[frame].shifty);
@@ -504,6 +500,7 @@ int register_ecc(struct registration_args *args) {
 			printf("Error allocating registration data\n");
 			return -2;
 		}
+		args->seq->regparam[args->layer] = current_regdata;
 	}
 
 	if (args->process_all_frames)
@@ -552,8 +549,7 @@ int register_ecc(struct registration_args *args) {
 			}
 			if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
 				continue;
-			current_regdata[frame].shiftx = 0.0;
-			current_regdata[frame].shifty = 0.0;
+			set_shifts(args->seq, frame, args->layer, 0.0, 0.0, FALSE);
 
 			char tmpmsg[1024], tmpfilename[256];
 
@@ -601,9 +597,8 @@ int register_ecc(struct registration_args *args) {
 						q_min = min(q_min, qual);
 					}
 
-					current_regdata[frame].shiftx = -reg_param.dx;
-					current_regdata[frame].shifty = -reg_param.dy;
-
+					set_shifts(args->seq, frame, args->layer, -reg_param.dx,
+							-reg_param.dy, im.top_down);
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
@@ -614,7 +609,7 @@ int register_ecc(struct registration_args *args) {
 			}
 		}
 	}
-	args->seq->regparam[args->layer] = current_regdata;
+
 	if (args->x2upscale)
 		args->seq->upscale_at_stacking = 2.0;
 	else
@@ -624,8 +619,9 @@ int register_ecc(struct registration_args *args) {
 	clearfits(&ref);
 	update_used_memory();
 	siril_log_message(_("Registration finished.\n"));
-	if (failed)
+	if (failed) {
 		siril_log_color_message(_("%d frames were excluded.\n"), "red", failed);
+	}
 	siril_log_color_message(_("Best frame: #%d.\n"), "bold", q_index);
 
 	return 0;
@@ -975,6 +971,8 @@ static gboolean end_register_idle(gpointer p) {
 	g_object_unref (osx_app);
 #endif
 
+	if (com.headless)
+		free_sequence(args->seq, TRUE);
 	free(args);
 	return FALSE;
 }

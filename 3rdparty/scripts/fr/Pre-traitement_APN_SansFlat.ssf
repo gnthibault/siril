@@ -3,7 +3,7 @@
 # Mars 2019
 # (C) Cyril Richard
 # Adapté, modifié et traduit par Colmic
-# Pre-traitement_APN v1.4
+# Pre-traitement_APN v1.5
 # 
 # Pré-traitement pour APN
 # Sans Flat
@@ -30,12 +30,7 @@ preprocess brute_ -dark=../darks/dark_stacked -cfa -debayer -stretch
 register pp_brute_
 
 #Empilement des brutes calibrées
-stack r_pp_brute_ rej 3 3 -norm=addscale
+stack r_pp_brute_ rej 3 3 -norm=addscale -out=../resultat
 
-#Chargement de l'image résultante en mémoire
-load r_pp_brute_stacked
-
-#Sauvegarde de l'image à la racine du dossier de travail
-cd  ..
-save resultat
+cd ..
 close

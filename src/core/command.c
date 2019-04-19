@@ -26,6 +26,7 @@
 #include <gtkosxapplication.h>
 #endif
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
 #include <dirent.h>
@@ -43,6 +44,7 @@
 #include "undo.h"
 #include "initfile.h"
 #include "processing.h"
+#include "sequence_filtering.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
@@ -175,9 +177,10 @@ static command commands[] = {
 	{"setfindstar", 2, "setfindstar sigma roundness", process_set_findstar, STR_SETFINDSTAR, TRUE},
 	{"setmag", 1, "setmag magnitude", process_set_mag, STR_SETMAG, FALSE},
 	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, FALSE},
+	{"setmem", 1, "setmem ratio", process_set_mem, STR_SETMEM, TRUE},
 	{"split", 3, "split R G B", process_split, STR_SPLIT, TRUE},
-	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackone, STR_STACK, TRUE},
-	{"stackall", 0, "stackall [type] [sigma low] [sigma high] [-nonorm, norm=]", process_stackall, STR_STACKALL, TRUE},
+	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=] [-out=result_filename] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackone, STR_STACK, TRUE},
+	{"stackall", 0, "stackall [type] [sigma low] [sigma high] [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackall, STR_STACKALL, TRUE},
 	{"stat", 0, "stat", process_stat, STR_STAT, TRUE},
 	
 	{"threshlo", 1, "threshlo level", process_threshlo, STR_THRESHLO, TRUE},
@@ -1018,13 +1021,13 @@ int process_seq_crop(int nb) {
 
 	if (!existseq(file)) {
 		if (check_seq(FALSE)) {
-			siril_log_message(_("No sequence %s found.\n"), file);
+			siril_log_message(_("No sequence `%s' found.\n"), file);
 			return 1;
 		}
 	}
 	seq = readseqfile(file);
 	if (seq == NULL) {
-		siril_log_message(_("No sequence %s found.\n"), file);
+		siril_log_message(_("No sequence `%s' found.\n"), file);
 		return 1;
 	}
 	if (seq_check_basic_data(seq, FALSE) == -1) {
@@ -1631,13 +1634,13 @@ int process_findcosme(int nb) {
 
 		if (!existseq(file)) {
 			if (check_seq(FALSE)) {
-				siril_log_message(_("No sequence %s found.\n"), file);
+				siril_log_message(_("No sequence `%s' found.\n"), file);
 				return 1;
 			}
 		}
 		seq = readseqfile(file);
 		if (seq == NULL) {
-			siril_log_message(_("No sequence %s found.\n"), file);
+			siril_log_message(_("No sequence `%s' found.\n"), file);
 			return 1;
 		}
 		if (seq_check_basic_data(seq, FALSE) == -1) {
@@ -1686,7 +1689,8 @@ int select_unselect(gboolean select) {
 		if (i >= com.seq.number) break;
 		if (com.seq.imgparam[i].incl != select) {
 			com.seq.imgparam[i].incl = select;
-			sequence_list_change_selection_index(i);
+			if (!com.headless)
+				sequence_list_change_selection_index(i);
 			if (select)
 				com.seq.selnum++;
 			else	com.seq.selnum--;
@@ -1695,17 +1699,20 @@ int select_unselect(gboolean select) {
 		}
 		if (!select && com.seq.reference_image == i) {
 			com.seq.reference_image = -1;
-			sequence_list_change_reference();
-			adjust_refimage(com.seq.current);
+			if (!com.headless) {
+				sequence_list_change_reference();
+				adjust_refimage(com.seq.current);
+			}
 		}
 	}
 
-	if (current_updated) {
-		adjust_exclude(com.seq.current, TRUE);
+	if (!com.headless) {
+		if (current_updated) {
+			adjust_exclude(com.seq.current, TRUE);
+		}
+		update_reg_interface(FALSE);
+		adjust_sellabel();
 	}
-
-	update_reg_interface(FALSE);
-	adjust_sellabel();
 	writeseqfile(&com.seq);
 	siril_log_message(_("Selection update finished, %d images are selected in the sequence\n"), com.seq.selnum);
 
@@ -1869,20 +1876,24 @@ int process_register(int nb) {
 
 	if (!existseq(file)) {
 		if (check_seq(FALSE)) {
-			siril_log_message(_("No sequence %s found.\n"), file);
+			siril_log_message(_("No sequence `%s' found.\n"), file);
+			g_free(file);
 			return 1;
 		}
 	}
 	sequence *seq = readseqfile(file);
 	if (seq == NULL) {
-		siril_log_message(_("No sequence %s found.\n"), file);
+		siril_log_message(_("No sequence `%s' found.\n"), file);
+		g_free(file);
 		return 1;
 	}
 	if (seq_check_basic_data(seq, FALSE) == -1) {
+		g_free(file);
 		free(seq);
 		return 1;
 	}
 
+	g_free(file);
 	/* getting the selected registration method */
 	struct registration_method *reg = malloc(sizeof(struct registration_method));
 	reg->name = strdup(_("Global Star Alignment (deep-sky)"));
@@ -1954,22 +1965,113 @@ int process_register(int nb) {
 	return 0;
 }
 
-struct _stackall_data {
-	struct timeval t_start;
-	const gchar *file;
-	stack_method method;
-	double sig[2];
-	gboolean force_no_norm;
-	normalization norm;
-	int number_of_loaded_sequences;
-};
+// parse normalization and filters from the stack command line, starting at word `first'
+static int parse_stack_command_line(struct stacking_configuration *arg, int first, gboolean norm_allowed, gboolean out_allowed) {
+	while (word[first]) {
+		char *current = word[first], *value;
+		if (!strcmp(current, "-nonorm") || !strcmp(current, "-no_norm"))
+			arg->force_no_norm = TRUE;
+		else if (g_str_has_prefix(current, "-norm=")) {
+			if (!norm_allowed) {
+				siril_log_message(_("Normalization options are not allowed in this context, ignoring.\n"));
+			} else {
+				value = current+6;
+				if (!strcmp(value, "add"))
+					arg->norm = ADDITIVE;
+				else if (!strcmp(value, "addscale"))
+					arg->norm = ADDITIVE_SCALING;
+				else if (!strcmp(value, "mul"))
+					arg->norm = MULTIPLICATIVE;
+				else if (!strcmp(value, "mulscale"))
+					arg->norm = MULTIPLICATIVE_SCALING;
+			}
+		}
 
-static int stack_one_seq(struct _stackall_data *arg) {
+		else if (g_str_has_prefix(current, "-filter-fwhm=")) {
+			value = strchr(current, '=') + 1;
+			if (value[0] != '\0') {
+				char *end;
+				float val = strtof(value, &end);
+				if (end == value) {
+					siril_log_message(_("Could not parse argument `%s' to the filter `%s', aborting.\n"), value, current);
+					return 1;
+				}
+				if (*end == '%')
+					arg->f_fwhm_p = val;
+				else arg->f_fwhm = val;
+			} else {
+				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+				return 1;
+			}
+		}
+		else if (g_str_has_prefix(current, "-filter-round=") ||
+				g_str_has_prefix(current, "-filter-roundness=")) {
+			value = strchr(current, '=') + 1;
+			if (value[0] != '\0') {
+				char *end;
+				float val = strtof(value, &end);
+				if (end == value) {
+					siril_log_message(_("Could not parse argument `%s' to the filter `%s', aborting.\n"), value, current);
+					return 1;
+				}
+				if (*end == '%')
+					arg->f_round_p = val;
+				else arg->f_round = val;
+			} else {
+				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+				return 1;
+			}
+		}
+		else if (g_str_has_prefix(current, "-filter-qual=") ||
+				g_str_has_prefix(current, "-filter-quality=")) {
+			value = strchr(current, '=') + 1;
+			if (value[0] != '\0') {
+				char *end;
+				float val = strtof(value, &end);
+				if (end == value) {
+					siril_log_message(_("Could not parse argument `%s' to the filter `%s', aborting.\n"), value, current);
+					return 1;
+				}
+				if (*end == '%')
+					arg->f_quality_p = val;
+				else arg->f_quality = val;
+			} else {
+				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+				return 1;
+			}
+		}
+		else if (g_str_has_prefix(current, "-filter-incl") ||
+				g_str_has_prefix(current, "-filter-included")) {
+			arg->filter_included = TRUE;
+		}
+
+		else if (g_str_has_prefix(current, "-out=")) {
+			if (out_allowed) {
+				value = current + 5;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
+				}
+				arg->result_file = strdup(value);
+			}
+			else {
+				siril_log_message(_("Output filename option is not allowed in this context, ignoring.\n"));
+			}
+		}
+		else {
+			siril_log_message(_("Unexpected argument to stacking `%s', aborting.\n"), current);
+			return 1;
+		}
+		first++;
+	}
+	return 0;
+}
+
+static int stack_one_seq(struct stacking_configuration *arg) {
 	int retval = -1;
-	sequence *seq = readseqfile(arg->file);
+	sequence *seq = readseqfile(arg->seqfile);
 	if (seq != NULL) {
-		char filename[256];
-		struct stacking_args args;
+		struct stacking_args args = { 0 };
 		if (seq_check_basic_data(seq, FALSE) == -1) {
 			free(seq);
 			return 1;
@@ -1977,15 +2079,15 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		siril_log_message(_("Stacking sequence %s\n"), seq->seqname);
 		args.seq = seq;
 		args.ref_image = sequence_find_refimage(seq);
-		args.filtering_criterion = stack_filter_all;
-		args.filtering_parameter = 0.0;
-		args.nb_images_to_stack = seq->number;
-		args.image_indices = malloc(seq->number * sizeof(int));
-		args.max_number_of_rows = stack_get_max_number_of_rows(seq, seq->number);
 		// the three below: used only if method is average w/ rejection
-		args.sig[0] = arg->sig[0];
-		args.sig[1] = arg->sig[1];
-		args.type_of_rejection = WINSORIZED;
+		if (arg->method == stack_mean_with_rejection && (arg->sig[0] != 0.0 || arg->sig[1] != 0.0)) {
+			args.sig[0] = arg->sig[0];
+			args.sig[1] = arg->sig[1];
+			args.type_of_rejection = WINSORIZED;
+		} else {
+			args.type_of_rejection = NO_REJEC;
+			siril_log_message(_("Not using rejection for stacking\n"));
+		}
 		args.coeff.offset = NULL;
 		args.coeff.mul = NULL;
 		args.coeff.scale = NULL;
@@ -1997,36 +2099,44 @@ static int stack_one_seq(struct _stackall_data *arg) {
 		args.force_norm = FALSE;
 		args.norm_to_16 = TRUE;
 		args.reglayer = args.seq->nb_layers == 1 ? 0 : 1;
-		stack_fill_list_of_unfiltered_images(&args);
 
-		char *suffix = ends_with(seq->seqname, "_") ? "" :
-		       	(ends_with(com.seq.seqname, "-") ? "" : "_");
-		snprintf(filename, 256, "%s%sstacked%s",
-				seq->seqname, suffix, com.ext);
+		// manage filters
+		if (convert_stack_data_to_filter(arg, &args) ||
+				setup_filtered_data(&args)) {
+			free_sequence(seq, TRUE);
+			return 1;
+		}
+		args.description = describe_filter(seq, args.filtering_criterion, args.filtering_parameter);
 
-		// 1. normalization
-		do_normalization(&args);	// does nothing if NO_NORM
-		// 2. up-scale
-		upscale_sequence(&args); // does nothing if args->seq->upscale_at_stacking <= 1.05
-		// 3. stack
-		retval = args.retval = arg->method(&args);
+		if (!arg->result_file) {
+			char filename[256];
+			char *suffix = ends_with(seq->seqname, "_") ? "" :
+				(ends_with(com.seq.seqname, "-") ? "" : "_");
+			snprintf(filename, 256, "%s%sstacked%s",
+					seq->seqname, suffix, com.ext);
+			arg->result_file = strdup(filename);
+		}
 
+		main_stack(&args);
+
+		retval = args.retval;
 		clean_end_stacking(&args);
 		free_sequence(seq, TRUE);
 		free(args.image_indices);
+		free(args.description);
 
 		if (!retval) {
 			struct noise_data noise_args = { .fit = &gfit, .verbose = FALSE, .use_idle = FALSE };
 			noise(&noise_args);
-			if (savefits(filename, &gfit))
+			if (savefits(arg->result_file, &gfit))
 				siril_log_color_message(_("Could not save the stacking result %s\n"),
-						"red", filename);
+						"red", arg->result_file);
 			++arg->number_of_loaded_sequences;
 		}
 		else if (!get_thread_run()) return -1;
 
 	} else {
-		siril_log_message(_("No sequence %s found.\n"), arg->file);
+		siril_log_message(_("No sequence `%s' found.\n"), arg->seqfile);
 	}
 	return retval;
 }
@@ -2036,25 +2146,23 @@ static gpointer stackall_worker(gpointer garg) {
 	GError *error = NULL;
 	const gchar *file;
 	struct timeval t_end;
-	struct _stackall_data *arg = (struct _stackall_data *)garg;
+	struct stacking_configuration *arg = (struct stacking_configuration *)garg;
+	gboolean was_in_script = com.script;
+	com.script = TRUE;
 
-	if (!com.script)
-		control_window_switch_to_tab(OUTPUT_LOGS);
 	siril_log_message(_("Looking for sequences in current working directory...\n"));
 	if (check_seq(FALSE) || (dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		siril_log_message(_("Error while searching sequences or opening the directory.\n"));
-		fprintf (stderr, "stackall: %s\n", error->message);
+		fprintf(stderr, "stackall: %s\n", error->message);
 		g_error_free(error);
 		siril_add_idle(end_generic, NULL);
 		return NULL;
 	}
-	siril_log_message(_("Starting stacking of found sequences...\n"));
-	arg->number_of_loaded_sequences = 0;
-	while ((file = g_dir_read_name(dir)) != NULL) {
-		char *suf;
 
-		if ((suf = strstr(file, ".seq")) && strlen(suf) == 4) {
-			arg->file = file;
+	siril_log_message(_("Starting stacking of found sequences...\n"));
+	while ((file = g_dir_read_name(dir)) != NULL) {
+		if (ends_with(file, ".seq")) {
+			arg->seqfile = strdup(file);
 			stack_one_seq(arg);
 		}
 	}
@@ -2063,84 +2171,81 @@ static gpointer stackall_worker(gpointer garg) {
 	gettimeofday(&t_end, NULL);
 	show_time(arg->t_start, t_end);
 	g_dir_close(dir);
+	g_free(arg->result_file);
+	g_free(arg->seqfile);
 	free(arg);
+	com.script = was_in_script;
 	siril_add_idle(end_generic, NULL);
 	return NULL;
 }
 
 int process_stackall(int nb) {
-	struct _stackall_data *arg = malloc(sizeof (struct _stackall_data));
-	arg->force_no_norm = FALSE;
-	arg->norm = ADDITIVE_SCALING;
+	struct stacking_configuration *arg;
 
-	if (!word[1] || !strcmp(word[1], "sum"))
+	arg = calloc(1, sizeof(struct stacking_configuration));
+	arg->f_fwhm = -1.f; arg->f_fwhm_p = -1.f; arg->f_round = -1.f;
+	arg->f_round_p = -1.f; arg->f_quality = -1.f; arg->f_quality_p = -1.f;
+	arg->filter_included = FALSE; arg->norm = NO_NORM; arg->force_no_norm = FALSE;
+
+	// stackall { sum | min | max } [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]
+	// stackall { med | median } [-nonorm, norm=] [-filter-incl[uded]]
+	// stackall { rej | mean } sigma_low sigma_high [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]
+	if (!word[1]) {
 		arg->method = stack_summing_generic;
-	else if (!strcmp(word[1], "max"))
-		arg->method = stack_addmax;
-	else if (!strcmp(word[1], "min"))
-		arg->method = stack_addmin;
-	else if (!strcmp(word[1], "med") || !strcmp(word[1], "median")) {
-		arg->method = stack_median;
-		if (word[2] && (!strcmp(word[2], "-nonorm") || !strcmp(word[2], "-no_norm")))
-			arg->force_no_norm = TRUE;
-		else if (word[2] && g_str_has_prefix(word[2], "-norm=")) {
-			if (!strcmp(word[2], "-norm=add")) {
-				arg->norm = ADDITIVE;
-			} else if (!strcmp(word[2], "-norm=addscale")) {
-				arg->norm = ADDITIVE_SCALING;
-			} else if (!strcmp(word[2], "-norm=mul")) {
-				arg->norm = MULTIPLICATIVE;
-			} else if (!strcmp(word[2], "-norm=mulscale")) {
-				arg->norm = MULTIPLICATIVE_SCALING;
+	} else {
+		int start_arg_opt = 2;
+		gboolean allow_norm = FALSE;
+		if (!strcmp(word[1], "sum")) {
+			arg->method = stack_summing_generic;
+		} else if (!strcmp(word[1], "max")) {
+			arg->method = stack_addmax;
+		} else if (!strcmp(word[1], "min")) {
+			arg->method = stack_addmin;
+		} else if (!strcmp(word[1], "med") || !strcmp(word[1], "median")) {
+			arg->method = stack_median;
+			allow_norm = TRUE;
+		} else if (!strcmp(word[1], "rej") || !strcmp(word[1], "mean")) {
+			if (!word[2] || !word[3] || (arg->sig[0] = atof(word[2])) < 0.0
+					|| (arg->sig[1] = atof(word[3])) < 0.0) {
+				siril_log_message(_("The average stacking with rejection uses the Winsorized "
+										"rejection here and requires two extra arguments: sigma low and high.\n"));
+				goto failure;
 			}
+			arg->method = stack_mean_with_rejection;
+			start_arg_opt = 4;
+			allow_norm = TRUE;
 		}
-	} else if (!strcmp(word[1], "rej") || !strcmp(word[1], "mean")) {
-		if (!word[2] || !word[3] ||
-				(arg->sig[0] = atof(word[2])) < 0.001 ||
-				(arg->sig[1] = atof(word[3])) < 0.001) {
-			siril_log_message(_("The average stacking with rejection uses the Winsorized "
-					"rejection here and requires two extra arguments: sigma low and high.\n"));
-			free(arg);
-			return 1;
+		else {
+			siril_log_message(_("Stacking method type '%s' is invalid\n"), word[1]);
+			goto failure;
 		}
-		arg->method = stack_mean_with_rejection;
-		if (word[4] && (!strcmp(word[4], "-nonorm") || !strcmp(word[4], "-no_norm")))
-			arg->force_no_norm = TRUE;
-		else if (word[4] && g_str_has_prefix(word[4], "-norm=")) {
-			if (!strcmp(word[4], "-norm=add")) {
-				arg->norm = ADDITIVE;
-			} else if (!strcmp(word[4], "-norm=addscale")) {
-				arg->norm = ADDITIVE_SCALING;
-			} else if (!strcmp(word[4], "-norm=mul")) {
-				arg->norm = MULTIPLICATIVE;
-			} else if (!strcmp(word[4], "-norm=mulscale")) {
-				arg->norm = MULTIPLICATIVE_SCALING;
-			}
-		}
+		if (parse_stack_command_line(arg, start_arg_opt, allow_norm, FALSE))
+			goto failure;
 	}
-	else {
-		siril_log_message(_("The provided type of stacking is unknown (%s).\n"), word[1]);
-		free(arg);
-		return 1;
-	}
-
 	set_cursor_waiting(TRUE);
+	if (!com.headless)
+		control_window_switch_to_tab(OUTPUT_LOGS);
 	gettimeofday(&arg->t_start, NULL);
 
 	start_in_new_thread(stackall_worker, arg);
 	return 0;
+
+failure:
+	g_free(arg->result_file);
+	g_free(arg->seqfile);
+	free(arg);
+	return 1;
 }
 
 static gpointer stackone_worker(gpointer garg) {
 	char *suf;
 	int retval = 0;
 	struct timeval t_end;
+	struct stacking_configuration *arg = (struct stacking_configuration *)garg;
+	gboolean was_in_script = com.script;
+	com.script = TRUE;
 
-	struct _stackall_data *arg = (struct _stackall_data *)garg;
-
-	siril_log_message(_("Looking for sequences in current working directory...\n"));
-
-	if ((suf = strstr(arg->file, ".seq")) && strlen(suf) == 4) {
+	if ((suf = strstr(arg->seqfile, ".seq")) && strlen(suf) == 4) {
 		retval = stack_one_seq(arg);
 	}
 	if (!retval)
@@ -2148,103 +2253,85 @@ static gpointer stackone_worker(gpointer garg) {
 
 	gettimeofday(&t_end, NULL);
 	show_time(arg->t_start, t_end);
+
+	g_free(arg->result_file);
+	g_free(arg->seqfile);
 	free(arg);
+	com.script = was_in_script;
 	siril_add_idle(end_generic, NULL);
 	return NULL;
 }
 
 int process_stackone(int nb) {
-	struct _stackall_data *arg = malloc(sizeof (struct _stackall_data));
+	struct stacking_configuration *arg;
 	gchar *file;
 
-	if (word[1][0] == '\0') {
-		free(arg);
-		return -1;
-	}
-
-	arg->force_no_norm = FALSE;
+	arg = calloc(1, sizeof(struct stacking_configuration));
+	arg->f_fwhm = -1.f; arg->f_fwhm_p = -1.f; arg->f_round = -1.f;
+	arg->f_round_p = -1.f; arg->f_quality = -1.f; arg->f_quality_p = -1.f;
+	arg->filter_included = FALSE; arg->norm = NO_NORM; arg->force_no_norm = FALSE;
 
 	file = g_strdup(word[1]);
 	if (!ends_with(file, ".seq")) {
-		str_append(&file, ".seq");
+		str_append(&file, ".seq"); // reallocs file
 	}
 
 	if (!existseq(file)) {
 		if (check_seq(FALSE)) {
-			siril_log_message(_("No sequence %s found.\n"), file);
-			free(arg);
-			return 1;
+			siril_log_message(_("No sequence `%s' found.\n"), file);
+			goto failure;
 		}
 	}
-	sequence *seq = readseqfile(file);
-	if (seq == NULL) {
-		siril_log_message(_("No sequence %s found.\n"), file);
-		free(arg);
-		return 1;
-	}
-	if (seq_check_basic_data(seq, FALSE) == -1) {
-		free(seq);
-		free(arg);
-		return 1;
-	}
+	arg->seqfile = file;
 
-	arg->file = file;
-	if (!word[2] || !strcmp(word[2], "sum"))
+	// stack seqfilename { sum | min | max } [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]] -out=result_filename
+	// stack seqfilename { med | median } [-nonorm, norm=] [-filter-incl[uded]] -out=result_filename
+	// stack seqfilename { rej | mean } sigma_low sigma_high [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]] -out=result_filename
+	if (!word[2]) {
 		arg->method = stack_summing_generic;
-	else if (!strcmp(word[2], "max"))
-		arg->method = stack_addmax;
-	else if (!strcmp(word[2], "min"))
-		arg->method = stack_addmin;
-	else if (!strcmp(word[2], "med") || !strcmp(word[2], "median")) {
-		arg->method = stack_median;
-		if (word[3] && (!strcmp(word[3], "-nonorm") || !strcmp(word[3], "-no_norm")))
-			arg->force_no_norm = TRUE;
-		else if (word[3] && g_str_has_prefix(word[3], "-norm=")) {
-			if (!strcmp(word[3], "-norm=add")) {
-				arg->norm = ADDITIVE;
-			} else if (!strcmp(word[3], "-norm=addscale")) {
-				arg->norm = ADDITIVE_SCALING;
-			} else if (!strcmp(word[3], "-norm=mul")) {
-				arg->norm = MULTIPLICATIVE;
-			} else if (!strcmp(word[3], "-norm=mulscale")) {
-				arg->norm = MULTIPLICATIVE_SCALING;
+	} else {
+		int start_arg_opt = 3;
+		gboolean allow_norm = FALSE;
+		if (!strcmp(word[2], "sum")) {
+			arg->method = stack_summing_generic;
+		} else if (!strcmp(word[2], "max")) {
+			arg->method = stack_addmax;
+		} else if (!strcmp(word[2], "min")) {
+			arg->method = stack_addmin;
+		} else if (!strcmp(word[2], "med") || !strcmp(word[2], "median")) {
+			arg->method = stack_median;
+			allow_norm = TRUE;
+		} else if (!strcmp(word[2], "rej") || !strcmp(word[2], "mean")) {
+			if (!word[3] || !word[4] || (arg->sig[0] = atof(word[3])) < 0.0
+					|| (arg->sig[1] = atof(word[4])) < 0.0) {
+				siril_log_message(_("The average stacking with rejection uses the Winsorized "
+										"rejection here and requires two extra arguments: sigma low and high.\n"));
+				goto failure;
 			}
+			arg->method = stack_mean_with_rejection;
+			start_arg_opt = 5;
+			allow_norm = TRUE;
 		}
-	} else if (!strcmp(word[2], "rej") || !strcmp(word[2], "mean")) {
-		if (!word[3] || !word[4] ||
-				(arg->sig[0] = atof(word[3])) < 0.001 ||
-				(arg->sig[1] = atof(word[4])) < 0.001) {
-			siril_log_message(_("The average stacking with rejection uses the Winsorized "
-					"rejection here and requires two extra arguments: sigma low and high.\n"));
-			free(arg);
-			return 1;
+		else {
+			siril_log_message(_("Stacking method type '%s' is invalid\n"), word[2]);
+			goto failure;
 		}
-		arg->method = stack_mean_with_rejection;
-		if (word[5] && (!strcmp(word[5], "-nonorm") || !strcmp(word[5], "-no_norm")))
-			arg->force_no_norm = TRUE;
-		else if (word[5] && g_str_has_prefix(word[5], "-norm=")) {
-			if (!strcmp(word[5], "-norm=add")) {
-				arg->norm = ADDITIVE;
-			} else if (!strcmp(word[5], "-norm=addscale")) {
-				arg->norm = ADDITIVE_SCALING;
-			} else if (!strcmp(word[5], "-norm=mul")) {
-				arg->norm = MULTIPLICATIVE;
-			} else if (!strcmp(word[5], "-norm=mulscale")) {
-				arg->norm = MULTIPLICATIVE_SCALING;
-			}
-		}
+		if (parse_stack_command_line(arg, start_arg_opt, allow_norm, TRUE))
+			goto failure;
 	}
-	else {
-		siril_log_message(_("The provided type of stacking is unknown (%s).\n"), word[2]);
-		free(arg);
-		return 1;
-	}
-
 	set_cursor_waiting(TRUE);
 	gettimeofday(&arg->t_start, NULL);
+	if (!com.headless)
+		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	start_in_new_thread(stackone_worker, arg);
 	return 0;
+
+failure:
+	g_free(arg->result_file);
+	g_free(arg->seqfile);
+	free(arg);
+	return 1;
 }
 
 // preprocess sequencename -bias= -dark= -flat= -cfa -debayer
@@ -2276,23 +2363,26 @@ int process_preprocess(int nb) {
 
 	if (!existseq(file)) {
 		if (check_seq(FALSE)) {
-			siril_log_message(_("No sequence %s found.\n"), file);
+			siril_log_message(_("No sequence `%s' found.\n"), file);
+			g_free(file);
 			free(args);
 			return 1;
 		}
 	}
 	sequence *seq = readseqfile(file);
 	if (seq == NULL) {
-		siril_log_message(_("No sequence %s found.\n"), file);
+		siril_log_message(_("No sequence `%s' found.\n"), file);
+		g_free(file);
 		free(args);
 		return 1;
 	}
 	if (seq_check_basic_data(seq, FALSE) == -1) {
 		free(seq);
+		g_free(file);
 		free(args);
 		return 1;
 	}
-
+	g_free(file);
 	/* checking for options */
 	for (i = 2; i < nb_command_max; i++) {
 		if (word[i]) {
@@ -2412,11 +2502,27 @@ int process_set_cpu(int nb){
 	}
 	siril_log_message(_("Using now %d logical processors\n"), proc_out);
 	com.max_thread = proc_out;
-	update_spinCPU(0);
+	if (!com.headless)
+		update_spinCPU(0);
 
 	return 0;
 }
 #endif
+
+int process_set_mem(int nb){
+	double ratio = atof(word[1]);
+	if (ratio < 0.05 || ratio > 2.0) {
+		siril_log_message(_("The accepted range for the ratio of memory used for stacking is [0.05, 2], with values below the available memory recommended\n"));
+		return 1;
+	}
+	if (ratio > 1.0) {
+		siril_log_message(_("Setting the ratio of memory used for stacking above 1 will require the use of on-disk memory, which is very slow and unrecommended (%g requested)\n"), ratio);
+	}
+	com.stack.memory_percent = ratio;
+	if (!writeinitfile())
+		siril_log_message(_("Usable memory for stacking changed to %g\n"), ratio);
+	return 0;
+}
 
 int process_help(int nb){
 	command *current = commands;
@@ -2538,11 +2644,13 @@ gpointer execute_script(gpointer p) {
 	char *linef, *myline;
 	int line = 0, retval = 0;
 	int wordnb;
+	int startmem, endmem;
 	struct timeval t_start, t_end;
 
 	com.script = TRUE;
 	com.stop_script = FALSE;
 	gettimeofday(&t_start, NULL);
+	startmem = get_available_memory_in_MB();
 #if (_POSIX_C_SOURCE < 200809L)
 	linef = calloc(256, sizeof(char));
 	while (fgets(linef, 256, fp)) {
@@ -2577,6 +2685,9 @@ gpointer execute_script(gpointer p) {
 			free(myline);
 			break;	// abort script on command failure
 		}
+		endmem = get_available_memory_in_MB();
+		//fprintf(stdout, "End of command %s, memory difference: %d MB\n", word[0], startmem - endmem);
+		startmem = endmem;
 		memset(word, 0, sizeof word);
 		free(myline);
 	}

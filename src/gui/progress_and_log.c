@@ -271,6 +271,16 @@ void show_time_msg(struct timeval t_start, struct timeval t_end, const char *msg
 	}
 }
 
+void get_min_sec_from_timevals(struct timeval t_start, struct timeval t_end,
+		int *min, int *sec) {
+	double start, end, diff;
+	start = (double)(t_start.tv_sec + t_start.tv_usec / 1.0E6);
+	end = (double)(t_end.tv_sec + t_end.tv_usec / 1.0E6);
+	diff = end - start;
+	*min = (int)diff / 60;
+	*sec = (int)diff % 60;
+}
+
 struct _cursor_data {
 	gboolean change;
 //	GdkCursorType cursor_type;
