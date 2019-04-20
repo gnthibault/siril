@@ -130,6 +130,11 @@ int stack_median(struct stacking_args *args) {
 	if ((retval = stack_create_result_fit(&fit, bitpix, naxis, naxes))) {
 		goto free_and_close;
 	}
+	if (args->norm_to_16 || fit.orig_bitpix != BYTE_IMG) {
+		fit.bitpix = USHORT_IMG;
+		if (args->norm_to_16)
+			fit.orig_bitpix = USHORT_IMG;
+	}
 
 	/* Define some useful constants */
 	double total = (double)(naxes[2] * naxes[1] + 2);	// only used for progress bar
@@ -774,6 +779,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 								layerparam[args->image_indices[frame]].shiftx *
 								args->seq->upscale_at_stacking);
 					}
+
 					if (shiftx && (x - shiftx >= naxes[0] || x - shiftx < 0)) {
 						/* outside bounds, images are black. We could
 						 * also set the background value instead, if available */
