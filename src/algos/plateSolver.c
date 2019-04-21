@@ -432,7 +432,7 @@ static size_t cbk_curl(void *buffer, size_t size, size_t nmemb, void *userp) {
 
 static char *fetch_url(const char *url) {
 	struct ucontent *content = malloc(sizeof(struct ucontent));
-	char *result;
+	char *result, *error;
 	long code;
 	int retries;
 	unsigned int s;
@@ -479,7 +479,8 @@ static char *fetch_url(const char *url) {
 
 			break;
 		default:
-			printf("Fetch failed with code %ld for URL %s\n", code, url);
+			error = siril_log_message("Fetch failed with code %ld for URL %s\n", code, url);
+			siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), error);
 		}
 	}
 

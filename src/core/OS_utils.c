@@ -288,12 +288,11 @@ int get_available_memory_in_MB() {
 #elif defined(_WIN32) /* Windows */
 int get_available_memory_in_MB() {
 	int mem = 2048; /* this is the default value if we can't retrieve any values */
-	MEMORYSTATUSEX memStatusEx = {0};
+	MEMORYSTATUSEX memStatusEx = { 0 };
 	memStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
-	const DWORD dwMBFactor = 1024 * 1024;
-	DWORDLONG dwTotalPhys = memStatusEx.ullTotalPhys / dwMBFactor;
-	if (dwTotalPhys > 0)
-		mem = (int) dwTotalPhys;
+	if (GlobalMemoryStatusEx(&memStatusEx)) {
+		mem = (int) (memStatusEx.ullTotalPhys / (1024 * 1024));
+	}
 	return mem;
 }
 #else
