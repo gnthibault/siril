@@ -81,3 +81,9 @@ void set_GUI_CWD() {
 void update_used_memory() {
         fprintf(stderr, "ERROR: calling undefined function update_used_memory\n");
 }
+
+void *lookup_widget(char *w) {
+        fprintf(stderr, "ERROR: calling undefined function lookup_widget\n");
+	return NULL;
+}
+
