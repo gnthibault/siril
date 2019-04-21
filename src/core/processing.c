@@ -273,22 +273,24 @@ gboolean end_generic_sequence(gpointer p) {
 }
 
 int ser_prepare_hook(struct generic_seq_args *args) {
-	char dest[256];
+	gchar *dest;
 	const char *ptr;
 
 	if (args->force_ser_output || args->seq->type == SEQ_SER) {
 		ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
 		if (ptr)
-			snprintf(dest, 255, "%s%s.ser", args->new_seq_prefix, ptr + 1);
-		else snprintf(dest, 255, "%s%s.ser", args->new_seq_prefix, args->seq->seqname);
+			dest = g_strdup_printf("%s%s.ser", args->new_seq_prefix, ptr + 1);
+		else dest = g_strdup_printf("%s%s.ser", args->new_seq_prefix, args->seq->seqname);
 
 		args->new_ser = malloc(sizeof(struct ser_struct));
 		if (ser_create_file(dest, args->new_ser, TRUE, args->seq->ser_file)) {
 			free(args->new_ser);
 			args->new_ser = NULL;
+			g_free(dest);
 			return 1;
 		}
 	}
+	g_free(dest);
 	return 0;
 }
 
