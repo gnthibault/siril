@@ -2131,6 +2131,7 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 			if (savefits(arg->result_file, &gfit))
 				siril_log_color_message(_("Could not save the stacking result %s\n"),
 						"red", arg->result_file);
+			clearfits(&gfit);
 			++arg->number_of_loaded_sequences;
 		}
 		else if (!get_thread_run()) return -1;
@@ -2240,16 +2241,14 @@ failure:
 }
 
 static gpointer stackone_worker(gpointer garg) {
-	char *suf;
 	int retval = 0;
 	struct timeval t_end;
 	struct stacking_configuration *arg = (struct stacking_configuration *)garg;
 	gboolean was_in_script = com.script;
 	com.script = TRUE;
 
-	if ((suf = strstr(arg->seqfile, ".seq")) && strlen(suf) == 4) {
-		retval = stack_one_seq(arg);
-	}
+	retval = stack_one_seq(arg);
+
 	if (!retval)
 		siril_log_message(_("Stacked sequence successfully.\n"));
 
@@ -2378,13 +2377,12 @@ int process_preprocess(int nb) {
 		free(args);
 		return 1;
 	}
+	g_free(file);
 	if (seq_check_basic_data(seq, FALSE) == -1) {
 		free(seq);
-		g_free(file);
 		free(args);
 		return 1;
 	}
-	g_free(file);
 	/* checking for options */
 	for (i = 2; i < nb_command_max; i++) {
 		if (word[i]) {

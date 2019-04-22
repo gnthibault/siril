@@ -194,7 +194,6 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 	int attempt = 1;
 	float FWHMx, FWHMy;
 	char *units;
-	fitted_PSF **stars;
 	Homography H = { 0 };
 	point image_size = { 0 };
 	int filenum = args->seq->imgparam[in_index].filenum;	// for display purposes
@@ -207,6 +206,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 	}
 
 	if (in_index != regargs->reference_image) {
+		fitted_PSF **stars;
 		if (args->seq->type == SEQ_SER) {
 			siril_log_color_message(_("Frame %d:\n"), "bold", filenum);
 		}
@@ -221,6 +221,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		if (nb_stars < AT_MATCH_MINPAIRS) {
 			siril_log_message(
 					_("Not enough stars. Image %d skipped\n"), filenum);
+			free_fitted_stars(stars);
 			return 1;
 		}
 
