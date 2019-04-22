@@ -2685,6 +2685,7 @@ gpointer execute_script(gpointer p) {
 		}
 		endmem = get_available_memory_in_MB();
 		siril_debug_print("End of command %s, memory difference: %d MB\n", word[0], startmem - endmem);
+		startmem = endmem;
 		memset(word, 0, sizeof word);
 		free(myline);
 	}
