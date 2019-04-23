@@ -308,14 +308,15 @@ int ser_finalize_hook(struct generic_seq_args *args) {
  * input file number all along (in_index is the index in the sequence, not the name).
  */
 int generic_save(struct generic_seq_args *args, int out_index, int in_index, fits *fit) {
-	char dest[256];
-
 	if (args->force_ser_output || args->seq->type == SEQ_SER) {
 		return ser_write_frame_from_fit(args->new_ser, fit, out_index);
 	} else {
-		fit_sequence_get_image_filename_prefixed(args->seq, args->new_seq_prefix, in_index, dest, sizeof dest);
+		char *dest = fit_sequence_get_image_filename_prefixed(args->seq,
+				args->new_seq_prefix, in_index);
 		fit->bitpix = fit->orig_bitpix;
-		return savefits(dest, fit);
+		int retval = savefits(dest, fit);
+		free(dest);
+		return retval;
 	}
 }
 

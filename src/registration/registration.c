@@ -884,6 +884,8 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->translation_only = gtk_toggle_button_get_active(no_translate);
 	reg_args->x2upscale = gtk_toggle_button_get_active(x2upscale);
 	reg_args->cumul = gtk_toggle_button_get_active(cumul);
+	reg_args->prefix = gtk_entry_get_text(
+			GTK_ENTRY(gtk_builder_get_object(builder, "regseqname_entry")));
 
 	/* We check that available disk space is enough when:
 	 * - activating the subpixel alignment, which requires generating a new
@@ -893,6 +895,9 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	if (reg_args->x2upscale ||
 			(method->method_ptr == register_star_alignment &&
 			 !reg_args->translation_only)) {
+		// first, remove the files that we are about to create
+		remove_prefixed_sequence_files(reg_args->seq, reg_args->prefix);
+
 		int nb_frames = reg_args->process_all_frames ? reg_args->seq->number : reg_args->seq->selnum;
 		int64_t size = seq_compute_size(reg_args->seq, nb_frames);
 		if (reg_args->x2upscale)
@@ -910,8 +915,6 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->interpolation = gtk_combo_box_get_active(GTK_COMBO_BOX(ComboBoxRegInter));
 	get_the_registration_area(reg_args, method);	// sets selection
 	reg_args->run_in_thread = TRUE;
-	reg_args->prefix = gtk_entry_get_text(
-			GTK_ENTRY(gtk_builder_get_object(builder, "regseqname_entry")));
 	reg_args->load_new_sequence = FALSE; // only TRUE for global registration. Will be updated in this case
 
 	msg = siril_log_color_message(_("Registration: processing using method: %s\n"),

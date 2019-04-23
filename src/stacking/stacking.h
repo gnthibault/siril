@@ -141,6 +141,6 @@ int find_refimage_in_indices(int *indices, int nb, int ref);
 	/* up-scaling functions */
 
 int upscale_sequence(struct stacking_args *args);
-void remove_tmp_drizzle_files(struct stacking_args *args, gboolean remove_seqfile);
+void remove_tmp_drizzle_files(struct stacking_args *args);
 
 #endif

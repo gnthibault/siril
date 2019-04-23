@@ -20,10 +20,10 @@ void	seq_close_image(sequence *seq, int index);
 int	seq_opened_read_region(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area);
 void	set_fwhm_star_as_star_list(sequence *seq);
 char *	fit_sequence_get_image_filename(sequence *seq, int index, char *name_buffer, gboolean add_fits_ext);
-void fit_sequence_get_image_filename_prefixed(sequence *seq, const char *prefix,
-		int index, char *name_buffer, int bufsize);
+char *	fit_sequence_get_image_filename_prefixed(sequence *seq, const char *prefix, int index);
 char *	get_possible_image_filename(sequence *seq, int image_number, char *name_buffer);
 int	get_index_and_basename(const char *filename, char **basename, int *index, int *fixed);
+void	remove_prefixed_sequence_files(sequence *seq, const char *prefix);
 void	initialize_sequence(sequence *seq, gboolean is_zeroed);
 void	free_sequence(sequence *seq, gboolean free_seq_too);
 void	sequence_free_preprocessing_data(sequence *seq);

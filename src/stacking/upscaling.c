@@ -32,51 +32,35 @@
 
 #define TMP_UPSCALED_PREFIX "tmp_upscaled_"
 
-void remove_tmp_drizzle_files(struct stacking_args *args, gboolean remove_seqfile) {
-	gboolean requires_prefix = TRUE;
+void remove_tmp_drizzle_files(struct stacking_args *args) {
 	int i;
 	if (args->seq->upscale_at_stacking < 1.05)
 		return;
 
 	gchar *basename = g_path_get_basename(args->seq->seqname);
-	if (g_str_has_prefix(basename, TMP_UPSCALED_PREFIX)) {
-		requires_prefix = FALSE;
-		// also means that we are removing files after processing and that
-		// we have access to files that were created for this processing
+	if (!g_str_has_prefix(basename, TMP_UPSCALED_PREFIX)) {
+		remove_prefixed_sequence_files(args->seq, TMP_UPSCALED_PREFIX);
+		return;
 	}
+	// else means that we are removing files after processing and that
+	// we have access to files that were created for this processing
 
-	if (remove_seqfile) {
-		gchar *seqname;
-		if (requires_prefix) {
-			int len = strlen(basename) + 5 + strlen(TMP_UPSCALED_PREFIX);
-			seqname = malloc(len);
-			g_snprintf(seqname, len, "%s%s.seq", TMP_UPSCALED_PREFIX, basename);
-		} else {
-			int len = strlen(basename) + 5;
-			seqname = malloc(len);
-			g_snprintf(seqname, len, "%s.seq", basename);
-		}
-		/* remove seq file */
-		g_unlink(seqname);
-		g_free(seqname);
-	}
+	gchar *seqname;
+	int len = strlen(basename) + 5;
+	seqname = malloc(len);
+	g_snprintf(seqname, len, "%s.seq", basename);
+	siril_debug_print("Removing %s\n", seqname);
+	g_unlink(seqname);
+	free(seqname);
 	g_free(basename);
 
 	switch (args->seq->type) {
 	default:
 	case SEQ_REGULAR:
 		for (i = 0; i < args->seq->number; i++) {
-			char filename[512];
-			if (requires_prefix) {
-				// if we work with the original sequence, all images
-				// may exist, don't use mapped indices
-				// TODO: use com.cache_upscaled and the current sequence
-				// filter to leave the images to be up-scaled.
-				fit_sequence_get_image_filename_prefixed(args->seq,
-						TMP_UPSCALED_PREFIX, i, filename, sizeof filename);
-			} else {
-				fit_sequence_get_image_filename(args->seq, args->image_indices[i], filename, TRUE);
-			}
+			char filename[500];
+			// FIXME: no preallocation of file name
+			fit_sequence_get_image_filename(args->seq, args->image_indices[i], filename, TRUE);
 			siril_debug_print("Removing %s\n", filename);
 			g_unlink(filename);
 		}
@@ -192,7 +176,7 @@ int upscale_sequence(struct stacking_args *stackargs) {
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
 
-	remove_tmp_drizzle_files(stackargs, TRUE);
+	remove_tmp_drizzle_files(stackargs);
 
 	generic_sequence_worker(args);
 

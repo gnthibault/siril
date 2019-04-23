@@ -1233,7 +1233,7 @@ static void _show_bgnoise(gpointer p) {
 void clean_end_stacking(struct stacking_args *args) {
 	if (!args->retval)
 		_show_summary(args);
-	remove_tmp_drizzle_files(args, TRUE);
+	remove_tmp_drizzle_files(args);
 }
 
 /* because this idle function is called after one of many stacking method
@@ -1288,7 +1288,7 @@ static gboolean end_stacking(gpointer p) {
 			display_filename();
 		}
 		/* remove tmp files if exist (Drizzle) */
-		remove_tmp_drizzle_files(args, TRUE);
+		remove_tmp_drizzle_files(args);
 
 		waiting_for_thread();		// bgnoise
 		adjust_cutoff_from_updated_gfit();	// computes min and max

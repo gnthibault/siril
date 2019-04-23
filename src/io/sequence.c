@@ -637,7 +637,7 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
 			fit_sequence_get_image_filename(seq, index, filename, TRUE);
 			if (readfits(filename, dest, NULL)) {
 				siril_log_message(_("Could not load image %d from sequence %s\n"),
-						index, seq->seqname); 
+						index, seq->seqname);
 				return 1;
 			}
 			break;
@@ -645,7 +645,7 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
 			assert(seq->ser_file);
 			if (ser_read_frame(seq->ser_file, index, dest)) {
 				siril_log_message(_("Could not load frame %d from SER sequence %s\n"),
-						index, seq->seqname); 
+						index, seq->seqname);
 				return 1;
 			}
 			break;
@@ -654,7 +654,7 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
 			assert(seq->film_file);
 			if (film_read_frame(seq->film_file, index, dest)) {
 				siril_log_message(_("Could not load frame %d from AVI sequence %s\n"),
-						index, seq->seqname); 
+						index, seq->seqname);
 				return 1;
 			}
 			// should dest->maxi be set to 255 here?
@@ -686,7 +686,7 @@ int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const r
 			fit_sequence_get_image_filename(seq, index, filename, TRUE);
 			if (readfits_partial(filename, layer, dest, area, do_photometry)) {
 				siril_log_message(_("Could not load partial image %d from sequence %s\n"),
-						index, seq->seqname); 
+						index, seq->seqname);
 				return 1;
 			}
 			break;
@@ -694,7 +694,7 @@ int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const r
 			assert(seq->ser_file);
 			if (ser_read_opened_partial_fits(seq->ser_file, layer, index, dest, area)) {
 				siril_log_message(_("Could not load frame %d from SER sequence %s\n"),
-						index, seq->seqname); 
+						index, seq->seqname);
 				return 1;
 			}
 
@@ -705,7 +705,7 @@ int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const r
 			memset(&tmp_fit, 0, sizeof(fits));
 			if (film_read_frame(seq->film_file, index, &tmp_fit)) {
 				siril_log_message(_("Could not load frame %d from AVI sequence %s\n"),
-						index, seq->seqname); 
+						index, seq->seqname);
 				return 1;
 			}
 			extract_region_from_fits(&tmp_fit, layer, dest, area);
@@ -863,13 +863,14 @@ char *fit_sequence_get_image_filename(sequence *seq, int index, char *name_buffe
 	return name_buffer;
 }
 
-void fit_sequence_get_image_filename_prefixed(sequence *seq, const char *prefix,
-		int index, char *name_buffer, int bufsize) {
+char *fit_sequence_get_image_filename_prefixed(sequence *seq, const char *prefix, int index) {
 	char format[16];
+	GString *str = g_string_sized_new(70);
 	sprintf(format, "%%s%%s%%0%dd%%s", seq->fixed);
-	snprintf(name_buffer, bufsize, format, prefix,
+	g_string_printf(str, format, prefix,
 			seq->seqname, seq->imgparam[index].filenum,
 			com.ext);
+	return g_string_free(str, FALSE);
 }
 
 /* Returns a filename for an image that could be in a sequence, but the sequence structure
@@ -933,6 +934,43 @@ int	get_index_and_basename(const char *filename, char **basename, int *index, in
 	return 0;
 }
 
+void remove_prefixed_sequence_files(sequence *seq, const char *prefix) {
+	int i, len;
+	gchar *basename, *seqname;
+	if (!prefix || prefix[0] == '\0')
+		return;
+	basename = g_path_get_basename(seq->seqname);
+	len = strlen(basename) + 5 + strlen(prefix);
+	seqname = malloc(len);
+	g_snprintf(seqname, len, "%s%s.seq", prefix, basename);
+	g_unlink(seqname); // removing the seqfile
+	free(seqname);
+	g_free(basename);
+
+	switch (seq->type) {
+	default:
+	case SEQ_REGULAR:
+		for (i = 0; i < seq->number; i++) {
+			// TODO: use com.cache_upscaled and the current sequence
+			// filter to leave the images to be up-scaled.
+			char *filename = fit_sequence_get_image_filename_prefixed(
+					seq, prefix, i);
+			siril_debug_print("Removing %s\n", filename);
+			g_unlink(filename);
+			free(filename);
+		}
+		break;
+	case SEQ_SER:
+		basename = seq->ser_file->filename;
+		len = strlen(basename) + 5 + strlen(prefix);
+		seqname = malloc(len);
+		g_snprintf(seqname, len, "%s%s", prefix, basename);
+		siril_debug_print("Removing %s\n", seqname);
+		g_unlink(seqname);
+		break;
+	}
+}
+
 /* sets default values for the sequence */
 void initialize_sequence(sequence *seq, gboolean is_zeroed) {
 	int i;
@@ -956,7 +994,7 @@ void initialize_sequence(sequence *seq, gboolean is_zeroed) {
  * (= do it for com.seq) */
 void free_sequence(sequence *seq, gboolean free_seq_too) {
 	int layer, j;
-	
+
 	if (seq == NULL) return;
 	// free regparam
 	if (seq->nb_layers > 0 && seq->regparam) {
@@ -1177,7 +1215,7 @@ int sequence_find_refimage(sequence *seq) {
 			}
 		}
 	}
-	
+
 	if (best == -1) best = 0;	// the first anyway if no regdata and no selected
 
 	return best;

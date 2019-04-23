@@ -104,14 +104,14 @@ int compute_nb_filtered_images(sequence *seq, seq_image_filter filtering_criteri
 static const char *_filter_prefix;
 
 static int seq_filter_output_doesnt_already_exists(sequence *seq, int in_index, double any) {
-	char dest[256];
 	if (!_filter_prefix)
 		fprintf(stderr, "USING FILTER PREFIX WITHOUT INITIALIZATION\n");
 	if (seq->type != SEQ_REGULAR || !_filter_prefix)
 		return 0;
-	fit_sequence_get_image_filename_prefixed(seq, _filter_prefix, in_index, dest, sizeof dest);
+	char *dest = fit_sequence_get_image_filename_prefixed(seq, _filter_prefix, in_index);
 	int retval = is_readable_file(dest);
 	//fprintf(stdout, "file %s exists: %d\n", dest, retval);
+	free(dest);
 	return !retval;
 }
 
