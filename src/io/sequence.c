@@ -943,6 +943,7 @@ void remove_prefixed_sequence_files(sequence *seq, const char *prefix) {
 	len = strlen(basename) + 5 + strlen(prefix);
 	seqname = malloc(len);
 	g_snprintf(seqname, len, "%s%s.seq", prefix, basename);
+	siril_debug_print("Removing %s\n", seqname);
 	g_unlink(seqname); // removing the seqfile
 	free(seqname);
 	g_free(basename);
@@ -962,7 +963,7 @@ void remove_prefixed_sequence_files(sequence *seq, const char *prefix) {
 		break;
 	case SEQ_SER:
 		basename = seq->ser_file->filename;
-		len = strlen(basename) + 5 + strlen(prefix);
+		len = strlen(basename) + strlen(prefix) + 1;
 		seqname = malloc(len);
 		g_snprintf(seqname, len, "%s%s", prefix, basename);
 		siril_debug_print("Removing %s\n", seqname);
