@@ -377,8 +377,8 @@ int cvTransformImage(fits *image, long width, long height, Homography Hom, int i
 	assert(image->rx);
 	assert(image->ry);
 	// for now, assuming input and output are same size
-	assert(image->rx == width);
-	assert(image->ry == height);
+	assert((long)image->rx == width);
+	assert((long)image->ry == height);
 
 	// preparing data
 	Mat in, out;
