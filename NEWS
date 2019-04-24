@@ -1,20 +1,30 @@
-v0.9.11, -- --, 2019
-Stability update for v0.9.10
+v0.9.11, May --, 2019
+Performance, feature and stability update for v0.9.10
 
-* New Photometric color calibration tool
-* New background extraction tool handling working in 64-bit precision
-* Added Drag and Drop capability in the conversion treeview
+* New photometric color calibration tool
+* New background extraction tool working with 64-bit precision and dither
+* Improved processing speed by optimizing sorting algorithms to each use
+* New image filtering for sequence processing: possible from the command line and with multiple filters
+* Improved free disk space feedback and checks before running preprocess, global registration and up-scaling at stacking
+* New GTK+ theme settings: it can now be set from siril to dark or light, or kept to automatic detection
+* New normalization to 16 bits for RAW images with less dynamic range (in general 12 or 14).
+* Improved mouse selection by making it more dynamic
+* Added drag and drop capability in the conversion treeview
+* Added output file name argument to stacking commands
+* New command setmem to limit used memory from scripts
+* New clear and save buttons for the log in GUI
+* Taking into account the Bayer matrix offset keywords from FITS headers
+* Displaying script line when error occurs
 * Allow registration on CFA SER sequences
-* Improve mouse selection by making it more dynamic
-* Display script line when error occurs
-* Fixed build fail with OpenCV 4.0.1
-* Code optimization: Speed-up algorithms using statistics
-* Fixed free disk space detection for 32-bit systems
+* Processing monochrome images requires less memory, or can be more paralellized if memory was the limiting factor
+* Fixed dark optimization
+* Fixed free disk space detection and usual processing commands on 32-bit systems
+* Fixed free memory detection for stacking in case of up-scaling ('drizzle') and memory distribution to threads
 * Fixed bug in FFT module
 * Fixed bug in the drawn circle of photometry
-* Improve free disk space feedback and check it before running preprocess, global registration and the generic function.
+* Fixed build fail with OpenCV 4.0.1
+* Fixed SER sequence cropping
 * Added German translation
-* Added ability to set theme
 
 v0.9.10, Jan 16, 2019
 Stability update for v0.9.9

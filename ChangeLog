@@ -1,20 +1,30 @@
 siril 0.9.11
---/--/--
+--/05/19
 
-* New Photometric color calibration tool
-* New background extraction tool handling working in 64-bit precision
-* Added Drag and Drop capability in the conversion treeview
+* New photometric color calibration tool
+* New background extraction tool working with 64-bit precision and dither
+* Improved processing speed by optimizing sorting algorithms to each use
+* New image filtering for sequence processing: possible from the command line and with multiple filters
+* Improved free disk space feedback and checks before running preprocess, global registration and up-scaling at stacking
+* New GTK+ theme settings: it can now be set from siril to dark or light, or kept to automatic detection
+* New normalization to 16 bits for RAW images with less dynamic range (in general 12 or 14).
+* Improved mouse selection by making it more dynamic
+* Added drag and drop capability in the conversion treeview
+* Added output file name argument to stacking commands
+* New command setmem to limit used memory from scripts
+* New clear and save buttons for the log in GUI
+* Taking into account the Bayer matrix offset keywords from FITS headers
+* Displaying script line when error occurs
 * Allow registration on CFA SER sequences
-* Improve mouse selection by making it more dynamic
-* Display script line when error occurs
-* Fixed build fail with OpenCV 4.0.1
-* Code optimization: Speed-up algorithms using statistics
-* Fixed free disk space detection for 32-bit systems
+* Processing monochrome images requires less memory, or can be more paralellized if memory was the limiting factor
+* Fixed dark optimization
+* Fixed free disk space detection and usual processing commands on 32-bit systems
+* Fixed free memory detection for stacking in case of up-scaling ('drizzle') and memory distribution to threads
 * Fixed bug in FFT module
 * Fixed bug in the drawn circle of photometry
-* Improve free disk space feedback and check it before running preprocess, global registration and the generic function.
+* Fixed build fail with OpenCV 4.0.1
+* Fixed SER sequence cropping
 * Added German translation
-* Added ability to set theme
 
 siril 0.9.10
 16/01/19
@@ -79,7 +89,7 @@ siril 0.9.8.3
 * Fixed SaveBMP that added tif extension
 * Fixed Registration on all images that was done on selected images instead
 * Fixed Target directory that was ignored when saving as image
-* Fixed crash with Wrong SER timestamp 
+* Fixed crash with Wrong SER timestamp
 
 siril 0.9.8
 01/31/18
@@ -147,37 +157,37 @@ siril 0.9.5
 siril 0.9.4
 08/17/16
 
- * Fixed issues with SER in generic processing function
- * Fixed inability to open FITS when filename had parenthesis
- * Fixed selecting new images did not update the number of selected images
- * Fixed histogram sliders lag on OS-X
- * Fixed message "Error in highest quality accepted for sequence processing....." during stack of %, even if quality data are computed
- * Fixed sequence export to SER with unselected images
- * Fixed global star alignment with angle close to 180deg
- * Fixed undo cosmetic correction
- * Fixed crash in peaker function
- * Fixed aborting global star registration summary
- * Fixed sequence list which was unreadable with dark GTK theme
- * Fixed the update of the list of images
- * Added support of internationalization: French, Dutch, Chinese, Italian, Arabic
- * Option for logarithm scale in histogram transformation
- * Add siril.desktop in archlinux
- * Added support for exporting sequence in avi format
- * Option to make a selection for global star registration in a smaller region
- * Read commands from a file
- * Option to follow star in registration
- * Added support for resizing exported sequence
- * Added support for reading and writing SER timestamps
- * Added support for RGB alignment
- * Added functionality to fix broken (0 framecount) SER files.
+* Fixed issues with SER in generic processing function
+* Fixed inability to open FITS when filename had parenthesis
+* Fixed selecting new images did not update the number of selected images
+* Fixed histogram sliders lag on OS-X
+* Fixed message "Error in highest quality accepted for sequence processing....." during stack of %, even if quality data are computed
+* Fixed sequence export to SER with unselected images
+* Fixed global star alignment with angle close to 180deg
+* Fixed undo cosmetic correction
+* Fixed crash in peaker function
+* Fixed aborting global star registration summary
+* Fixed sequence list which was unreadable with dark GTK theme
+* Fixed the update of the list of images
+* Added support of internationalization: French, Dutch, Chinese, Italian, Arabic
+* Option for logarithm scale in histogram transformation
+* Add siril.desktop in archlinux
+* Added support for exporting sequence in avi format
+* Option to make a selection for global star registration in a smaller region
+* Read commands from a file
+* Option to follow star in registration
+* Added support for resizing exported sequence
+* Added support for reading and writing SER timestamps
+* Added support for RGB alignment
+* Added functionality to fix broken (0 framecount) SER files.
 
 siril 0.9.3
 04/16/16
 
- * Fixed bug in preprocessing
- * Fixed compilation error in some conditions 
- * Fixed uninitialized values
- * Fixed typos
+* Fixed bug in preprocessing
+* Fixed compilation error in some conditions
+* Fixed uninitialized values
+* Fixed typos
 
 siril 0.9.2
 04/04/16
