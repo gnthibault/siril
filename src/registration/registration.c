@@ -929,6 +929,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 // worker thread function for the registration
 gpointer register_thread_func(gpointer p) {
 	struct registration_args *args = (struct registration_args *) p;
+	int retval;
 
 	args->retval = args->func(args);
 
@@ -938,8 +939,12 @@ gpointer register_thread_func(gpointer p) {
 		args->seq->reference_image = sequence_find_refimage(args->seq);
 	}
 	writeseqfile(args->seq);
-	siril_add_idle(end_register_idle, args);
-	return GINT_TO_POINTER(args->retval);
+	retval = args->retval;
+	if (!siril_add_idle(end_register_idle, args)) {
+		free_sequence(args->seq, TRUE);
+		free(args);
+	}
+	return GINT_TO_POINTER(retval);
 }
 
 // end of registration, GTK thread. Executed when started from the GUI and in
@@ -973,9 +978,6 @@ static gboolean end_register_idle(gpointer p) {
 	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
 	g_object_unref (osx_app);
 #endif
-
-	if (com.headless)
-		free_sequence(args->seq, TRUE);
 	free(args);
 	return FALSE;
 }
