@@ -1917,6 +1917,7 @@ int process_register(int nb) {
 	reg_args->matchSelection = FALSE;
 	reg_args->translation_only = FALSE;
 	reg_args->x2upscale = FALSE;
+	reg_args->prefix = "r_";
 
 	/* check for options */
 	for (i = 2; i < 4; i++) {
@@ -1933,6 +1934,9 @@ int process_register(int nb) {
 	if (reg_args->x2upscale ||
 			(method->method_ptr == register_star_alignment &&
 			 !reg_args->translation_only)) {
+		// first, remove the files that we are about to create
+		remove_prefixed_sequence_files(reg_args->seq, reg_args->prefix);
+
 		int nb_frames = reg_args->process_all_frames ? reg_args->seq->number : reg_args->seq->selnum;
 		int64_t size = seq_compute_size(reg_args->seq, nb_frames);
 		if (reg_args->x2upscale)
@@ -1950,7 +1954,6 @@ int process_register(int nb) {
 	reg_args->interpolation = OPENCV_CUBIC;
 	get_the_registration_area(reg_args, method);	// sets selection
 	reg_args->run_in_thread = TRUE;
-	reg_args->prefix = "r_";
 	reg_args->load_new_sequence = FALSE;	// don't load it for command line execution
 
 	msg = siril_log_color_message(
