@@ -19,9 +19,6 @@
  */
 
 #include <gtk/gtk.h>
-#ifdef MAC_INTEGRATION
-#include <gtkosxapplication.h>
-#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
