@@ -409,8 +409,9 @@ gpointer seqpreprocess(gpointer p) {
 		set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 		if (dev) free(dev);
 	}
+	ret = args->retval;
 	if (!siril_add_idle(end_sequence_prepro, args))
 		prepro_cleanup(args);
-	return GINT_TO_POINTER(args->retval);
+	return GINT_TO_POINTER(ret);
 }
 
