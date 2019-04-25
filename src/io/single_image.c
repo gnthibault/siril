@@ -335,29 +335,6 @@ void adjust_cutoff_from_updated_gfit() {
 	}
 }
 
-void unique_free_preprocessing_data(single *uniq) {
-	// free opened files
-	if (uniq->ppprefix) {
-		free(uniq->ppprefix);
-		uniq->ppprefix = NULL;
-	}
-	if (uniq->offset) {
-		clearfits(uniq->offset);
-		free(uniq->offset);
-		uniq->offset = NULL;
-	}
-	if (uniq->dark) {
-		clearfits(uniq->dark);
-		free(uniq->dark);
-		uniq->dark = NULL;
-	}
-	if (uniq->flat) {
-		clearfits(uniq->flat);
-		free(uniq->flat);
-		uniq->flat = NULL;
-	}
-}
-
 int single_image_is_loaded() {
 	return (com.uniq != NULL && com.uniq->nb_layers > 0);
 }

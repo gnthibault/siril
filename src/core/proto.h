@@ -204,7 +204,6 @@ int	visu(fits *fit, int low, int high);
 int	fill(fits *fit, int level, rectangle *arearg);
 int 	off(fits *a, int level);
 int	lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb);
-gpointer seqpreprocess(gpointer empty);
 double	background(fits* fit, int reqlayer, rectangle *selection);
 int backgroundnoise(fits* fit, double sigma[]);
 void	show_FITS_header(fits *);
