@@ -39,7 +39,7 @@
 
 #define WAVELET_SCALE 3
 
-static WORD Compute_threshold(fits *fit, double starfinder, int layer, WORD *norm, double *bg) {
+static WORD Compute_threshold(fits *fit, double ksigma, int layer, WORD *norm, double *bg) {
 	WORD threshold;
 	imstats *stat;
 
@@ -52,8 +52,8 @@ static WORD Compute_threshold(fits *fit, double starfinder, int layer, WORD *nor
 		*bg = 0.0;
 		return 0;
 	}
-	threshold = (WORD) stat->median + starfinder * (WORD) stat->sigma;
-	*norm = (WORD) stat->normValue;
+	threshold = round_to_WORD(stat->median + ksigma * stat->sigma);
+	*norm = (WORD)stat->normValue;
 	*bg = stat->median;
 	free_stats(stat);
 

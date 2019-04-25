@@ -9479,6 +9479,7 @@ by averaging the entire image</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="left_padding">12</property>
+		<property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                 <child>
                   <object class="GtkGrid" id="grid35">
                     <property name="visible">True</property>
@@ -9505,9 +9506,9 @@ by averaging the entire image</property>
                       <object class="GtkSpinButton" id="spinstarfinder_threshold">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip_text" translatable="yes">Threshold value above the noise for stars detection.
-The median and standard deviation values of the image are determined, then the threshold is: median + [threshold] x stdev.
-The default value for threshold is 1.00.</property>
+                        <property name="tooltip_text" translatable="yes">Threshold value above the noise for star detection.
+The median and standard deviation of the image are computed, then the threshold is: median + [threshold] x stdev.
+The default value for threshold is 1.00. Increasing this value will detect less dim stars, which should be done only when images have a lot of signal or low noise (high S/N).</property>
                         <property name="width_chars">5</property>
                         <property name="input_purpose">number</property>
                         <property name="adjustment">adjstarfinder_threshold</property>
@@ -9527,6 +9528,7 @@ The default value for threshold is 1.00.</property>
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Radius: </property>
+                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -9539,6 +9541,7 @@ The default value for threshold is 1.00.</property>
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Threshold: </property>
+                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -9550,6 +9553,7 @@ The default value for threshold is 1.00.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Roundness threshold:</property>
+                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -9560,9 +9564,8 @@ The default value for threshold is 1.00.</property>
                       <object class="GtkSpinButton" id="spinstarfinder_round">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip_text" translatable="yes">Threshold value of star roundnesses. Decrease this value if your stars show small trails.
-
-WARNING: ensure you have a good reason to change this value because it may degrade the star detection.</property>
+                        <property name="tooltip_text" translatable="yes">Threshold value of star roundnesses. Decrease this value if stars in the images show small trails, conversely, increase it if they are very round to avoid false positives.
+The default value is 0.5, suitable for stars twice as big in one direction as the other.</property>
                         <property name="width_chars">5</property>
                         <property name="input_purpose">number</property>
                         <property name="adjustment">adjstarfinder_roundness</property>
