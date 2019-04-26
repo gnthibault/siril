@@ -35,14 +35,17 @@
 #include "io/conversion.h"
 #include "io/ser.h"
 
+#define SQUARE_SIZE 512
+#define GR ((sqrt(5.0) - 1.0) / 2.0)
+
 static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	double noise = 0.0;
 	fits dark_tmp = { 0 }, fit_tmp = { 0 };
 	int chan, ret = 0;
 	rectangle area = { 0 };
 
-	/* square of 512x512 in the center of the image */
-	int size = 512;
+	/* square of SQUARE_SIZExSQUARE_SIZE in the center of the image */
+	int size = SQUARE_SIZE;
 	area.x = (fit->rx - size) / 2;
 	area.y = (fit->ry - size) / 2;
 	area.w = size;
@@ -73,9 +76,6 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 
 	return noise;
 }
-
-// TODO: is this computed as double?
-#define GR ((sqrt(5) - 1) / 2)
 
 static double goldenSectionSearch(fits *brut, fits *dark, double a, double b,
 		double tol) {
@@ -201,15 +201,17 @@ static gboolean end_sequence_prepro(gpointer p) {
 }
 
 int preprocess_single_image(struct preprocessing_data *args) {
-	char dest_filename[256], msg[256];
+	gchar *dest_filename, *msg;
 	fits *dark, *offset, *flat;
 	fits fit = { 0 };
 	int ret = 0;
+
 	dark = args->dark;
 	offset = args->offset;
 	flat = args->flat;
-	snprintf(msg, 255, _("Pre-processing image %s"), com.uniq->filename);
-	msg[255] = '\0';
+
+	msg = g_strdup_printf(_("Pre-processing image %s"), com.uniq->filename);
+
 	set_progress_bar_data(msg, 0.5);
 
 	copyfits(com.uniq->fit, &fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
@@ -219,6 +221,7 @@ int preprocess_single_image(struct preprocessing_data *args) {
 		ret = darkOptimization(&fit, dark, offset);
 		if (ret) {
 			set_progress_bar_data(msg, PROGRESS_NONE);
+			g_free(msg);
 			clearfits(&fit);
 			return 1;
 		}
@@ -227,9 +230,12 @@ int preprocess_single_image(struct preprocessing_data *args) {
 	ret = preprocess(&fit, offset, dark, flat, args->normalisation);
 	if (ret) {
 		set_progress_bar_data(msg, PROGRESS_NONE);
+		g_free(msg);
 		clearfits(&fit);
 		return 1;
 	}
+
+	g_free(msg);
 
 	if ((com.preprostatus & USE_COSME) && (com.preprostatus & USE_DARK)) {
 		if (dark->naxes[2] == 1) {
@@ -253,14 +259,16 @@ int preprocess_single_image(struct preprocessing_data *args) {
 
 	gchar *filename = g_path_get_basename(com.uniq->filename);
 	char *filename_noext = remove_ext_from_filename(filename);
-	snprintf(dest_filename, 255, "%s%s", com.uniq->ppprefix, filename_noext);
-	dest_filename[255] = '\0';
-	snprintf(msg, 255, _("Saving image %s"), filename_noext);
-	msg[255] = '\0';
+	dest_filename = g_strdup_printf("%s%s", com.uniq->ppprefix, filename_noext);
+	msg = g_strdup_printf(_("Saving image %s"), filename_noext);
 	set_progress_bar_data(msg, PROGRESS_NONE);
 	args->retval = savefits(dest_filename, &fit);
+
+	/* free everything */
 	clearfits(&fit);
 	g_free(filename);
+	g_free(msg);
+	g_free(dest_filename);
 	free(filename_noext);
 	return 0;
 }
