@@ -9479,8 +9479,8 @@ by averaging the entire image</property>
               <object class="GtkAlignment" id="alignment39">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                 <property name="left_padding">12</property>
-		<property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                 <child>
                   <object class="GtkGrid" id="grid35">
                     <property name="visible">True</property>
@@ -9527,9 +9527,9 @@ The default value for threshold is 1.00. Increasing this value will detect less 
                       <object class="GtkLabel" id="label148">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Radius: </property>
-                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -9540,9 +9540,9 @@ The default value for threshold is 1.00. Increasing this value will detect less 
                       <object class="GtkLabel" id="label149">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Threshold: </property>
-                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -9553,8 +9553,8 @@ The default value for threshold is 1.00. Increasing this value will detect less 
                       <object class="GtkLabel" id="label49">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Roundness threshold:</property>
                         <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
+                        <property name="label" translatable="yes">Roundness threshold:</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -12740,18 +12740,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSeparator" id="separator3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="padding">5</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box10">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -12863,6 +12851,18 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="padding">2</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator" id="separator3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">5</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
@@ -14916,6 +14916,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
   <object class="GtkDialog" id="file_information">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Informations</property>
+    <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
     <property name="urgency_hint">True</property>
     <property name="transient_for">control_window</property>
@@ -15021,6 +15022,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="tooltip_text" translatable="yes">If the Pixel Y size is not automatically loaded, using file's header, you can update the field by yourself.</property>
                         <property name="hexpand">True</property>
                         <property name="invisible_char">●</property>
+                        <property name="width_chars">10</property>
                         <property name="input_purpose">number</property>
                         <signal name="changed" handler="on_pitchY_entry_changed" swapped="no"/>
                       </object>
@@ -15049,6 +15051,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="tooltip_text" translatable="yes">If the focal length is not automatically loaded, using file's header, you can update the field by yourself.</property>
                         <property name="hexpand">True</property>
                         <property name="invisible_char">●</property>
+                        <property name="width_chars">10</property>
                         <property name="input_purpose">number</property>
                         <signal name="changed" handler="on_focal_entry_changed" swapped="no"/>
                       </object>
@@ -15065,6 +15068,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="tooltip_text" translatable="yes">If the Pixel X size is not automatically loaded, using file's header, you can update the field by yourself.</property>
                         <property name="hexpand">True</property>
                         <property name="invisible_char">●</property>
+                        <property name="width_chars">10</property>
                         <property name="input_purpose">number</property>
                         <signal name="changed" handler="on_pitchX_entry_changed" swapped="no"/>
                       </object>

@@ -781,23 +781,19 @@ static int _pic_close_file(struct pic_struct *pic_file) {
 		retval = fclose(pic_file->file);
 		pic_file->file = NULL;
 	}
-	if (pic_file->date)
-		free(pic_file->date);
-	if (pic_file->time)
-		free(pic_file->time);
-	memset(pic_file, 0, sizeof(struct pic_struct));
+	g_free(pic_file->date);
+	g_free(pic_file->time);
 	free(pic_file);
 	return retval;
 }
 
 int readpic(const char *name, fits *fit) {
-	char header[290];
+	char header[290] = { 0 };
 	struct pic_struct *pic_file;
 	WORD *buf;
 	int retval = 0;
 	unsigned int nbdata;
 
-	memset(&header, 0, sizeof(header));
 	pic_file = calloc(1, sizeof(struct pic_struct));
 
 	if ((pic_file->file = g_fopen(name, "rb")) == NULL) {
@@ -817,7 +813,7 @@ int readpic(const char *name, fits *fit) {
 	fit->lo = pic_file->lo;
 
 	nbdata = fit->rx * fit->ry;
-	assert(nbdata > 0);
+
 	fseek(pic_file->file, sizeof(header), SEEK_SET);
 	buf = malloc(nbdata * pic_file->nbplane * sizeof(WORD));
 
@@ -844,7 +840,6 @@ int readpic(const char *name, fits *fit) {
 	char *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading PIC: file %s, %ld layer(s), %ux%u pixels\n"),
 			basename, fit->naxes[2], fit->rx, fit->ry);
-	g_free(basename);
 	siril_log_message("(%d,%d)-(%d,%d) - Binning %dx%d\n", pic_file->bin[0],
 			pic_file->bin[1], pic_file->bin[2], pic_file->bin[3],
 			fit->binning_x, fit->binning_y);
@@ -859,6 +854,7 @@ int readpic(const char *name, fits *fit) {
 	}
 
 	_pic_close_file(pic_file);
+	g_free(basename);
 	free(buf);
 	return retval;
 }
