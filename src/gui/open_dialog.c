@@ -230,7 +230,7 @@ static void opendial(int whichdial) {
 		set_filters_dialog(dialog, whichdial);
 		break;
 	case OD_CONVERT:
-		widgetdialog = siril_file_chooser_open(control_window, GTK_FILE_CHOOSER_ACTION_OPEN);
+		widgetdialog = siril_file_chooser_add(control_window, GTK_FILE_CHOOSER_ACTION_OPEN);
 		dialog = GTK_FILE_CHOOSER(widgetdialog);
 		gtk_file_chooser_set_current_folder(dialog, com.wd);
 		gtk_file_chooser_set_select_multiple(dialog, TRUE);

@@ -140,6 +140,8 @@ static int readinitfile() {
 		config_setting_lookup_float(photometry_setting, "gain", &com.phot_set.gain);
 		config_setting_lookup_float(photometry_setting, "inner-radius", &com.phot_set.inner);
 		config_setting_lookup_float(photometry_setting, "outer-radius", &com.phot_set.outer);
+		config_setting_lookup_int(photometry_setting, "minval", &com.phot_set.minval);
+		config_setting_lookup_int(photometry_setting, "maxval", &com.phot_set.maxval);
 	}
 
 	/* Misc setting */
@@ -312,16 +314,16 @@ static void _save_photometry(config_t *config, config_setting_t *root) {
 
 	photometry_group = config_setting_add(root, keywords[PTM], CONFIG_TYPE_GROUP);
 
-	photometry_setting = config_setting_add(photometry_group, "gain",
-			CONFIG_TYPE_FLOAT);
+	photometry_setting = config_setting_add(photometry_group, "gain", CONFIG_TYPE_FLOAT);
 	config_setting_set_float(photometry_setting, com.phot_set.gain);
-	photometry_setting = config_setting_add(photometry_group, "inner-radius",
-			CONFIG_TYPE_FLOAT);
+	photometry_setting = config_setting_add(photometry_group, "inner-radius", CONFIG_TYPE_FLOAT);
 	config_setting_set_float(photometry_setting, com.phot_set.inner);
-	photometry_setting = config_setting_add(photometry_group, "outer-radius",
-			CONFIG_TYPE_FLOAT);
+	photometry_setting = config_setting_add(photometry_group, "outer-radius", CONFIG_TYPE_FLOAT);
 	config_setting_set_float(photometry_setting, com.phot_set.outer);
-
+	photometry_setting = config_setting_add(photometry_group, "minval", CONFIG_TYPE_INT);
+	config_setting_set_int(photometry_setting, com.phot_set.minval);
+	photometry_setting = config_setting_add(photometry_group, "maxval", CONFIG_TYPE_INT);
+	config_setting_set_int(photometry_setting, com.phot_set.maxval);
 }
 
 static void _save_misc(config_t *config, config_setting_t *root) {

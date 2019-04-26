@@ -1555,6 +1555,10 @@ void update_photometry_interface() {
 			GTK_SPIN_BUTTON(lookup_widget("spinInner")));
 	com.phot_set.outer = gtk_spin_button_get_value(
 			GTK_SPIN_BUTTON(lookup_widget("spinOuter")));
+	com.phot_set.minval = gtk_spin_button_get_value(
+			GTK_SPIN_BUTTON(lookup_widget("spinMinPhot")));
+	com.phot_set.maxval = gtk_spin_button_get_value(
+			GTK_SPIN_BUTTON(lookup_widget("spinMaxPhot")));
 	writeinitfile();
 }
 
@@ -2256,6 +2260,14 @@ void set_GUI_photometry() {
 	if (com.phot_set.outer > 0.0) {
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinOuter")),
 				com.phot_set.outer);
+	}
+	if (com.phot_set.minval > 0.0) {
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinMinPhot")),
+				com.phot_set.minval);
+	}
+	if (com.phot_set.maxval > 0.0) {
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinMaxPhot")),
+				com.phot_set.maxval);
 	}
 }
 

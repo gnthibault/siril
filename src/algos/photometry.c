@@ -37,8 +37,6 @@
 #define epsilon(x) 0.00000001
 #define maxit      50
 #define min_sky    5
-#define lo_data    0.0
-#define hi_data    USHRT_MAX_DOUBLE
 
 static double hampel(double x) {
 	if (x >= 0) {
@@ -226,6 +224,14 @@ static double getMagErr(double intensity, double area, int nsky, double skysig) 
 	return fmin(9.999, 1.0857 * sqrt(err1 + err2 + err3) / intensity);
 }
 
+static int lo_data() {
+	return com.phot_set.minval;
+}
+
+static int hi_data() {
+	return com.phot_set.maxval;
+}
+
 /* Function that compute all photometric data. The result must be freed */
 photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) {
 	int width = z->size2;
@@ -279,7 +285,7 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 		for (x = x1; x <= x2; ++x) {
 			r = yp + (x - xc) * (x - xc);
 			double pixel = gsl_matrix_get(z, y, x);
-			if (pixel > lo_data && pixel < hi_data) {
+			if (pixel > lo_data() && pixel < hi_data()) {
 				double f = (r < rmin_sq ? 1 : appRadius - sqrt(r) + 0.5);
 				if (f >= 0) {
 					area += f;
@@ -329,6 +335,8 @@ void initialize_photometric_param() {
 	com.phot_set.inner = 20;
 	com.phot_set.outer = 30;
 	com.phot_set.gain = 2.3;
+	com.phot_set.minval = 0;
+	com.phot_set.maxval = 65535;
 }
 
 void on_button_reset_photometry_clicked(GtkButton *button, gpointer user_data) {
