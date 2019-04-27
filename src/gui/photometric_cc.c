@@ -250,7 +250,7 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 
 		for (chan = 0; chan < 3; chan ++) {
 			fitted_PSF *photometry = psf_get_minimisation(fit, chan, &area, TRUE, FALSE);
-			if (!photometry) {
+			if (!photometry || !photometry->phot) {
 				no_phot = TRUE;
 				break;
 			}

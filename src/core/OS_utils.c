@@ -400,6 +400,17 @@ SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction act
 #endif
 }
 
+SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction action) {
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+	return gtk_file_chooser_native_new(_("Add Files"), parent, action,
+			_("_Add"), _("_Cancel"));
+#else
+	return gtk_file_chooser_dialog_new(_("Add Files"), parent, action,
+				_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Add"), GTK_RESPONSE_ACCEPT,
+				NULL);
+#endif
+}
+
 SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action) {
 #if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
 	return gtk_file_chooser_native_new(_("Save File"), parent, action,

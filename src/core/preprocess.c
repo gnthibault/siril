@@ -321,4 +321,3 @@ int preprocess_single_image(struct preprocessing_data *args) {
 	// we may want to open the new image?
 	return ret;
 }
-

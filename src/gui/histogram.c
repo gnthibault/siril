@@ -750,7 +750,7 @@ void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
 	// partial cleanup
 	fprintf(stdout, "Applying histogram (mid=%.3lf, lo=%.3lf, hi=%.3lf)\n",
 			_midtones, _shadows, _highlights);
-	undo_save_state(&histo_gfit_backup, "Processing: Histogram Transformation "
+	undo_save_state(&histo_gfit_backup, "Processing: Histogram Transf. "
 			"(mid=%.3lf, lo=%.3lf, hi=%.3lf)", _midtones, _shadows, _highlights);
 	clearfits(&histo_gfit_backup);
 	clear_hist_backup();

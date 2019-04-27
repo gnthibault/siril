@@ -409,6 +409,17 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">0.01</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adjmaxpxval">
+    <property name="upper">65535</property>
+    <property name="value">65535</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adjminpxval">
+    <property name="upper">65535</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="adjstarfinder_radius">
     <property name="lower">1</property>
     <property name="upper">50</property>
@@ -6704,6 +6715,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <object class="GtkButtonBox" id="dialog-action_area18">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_right">10</property>
             <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="button_histo_close">
@@ -8567,7 +8579,7 @@ by averaging the entire image</property>
                 <property name="can_focus">False</property>
                 <property name="row_spacing">20</property>
                 <child>
-                  <object class="GtkFrame" id="framedebayer2">
+                  <object class="GtkFrame" id="framePhotCamera">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_left">10</property>
@@ -8635,11 +8647,11 @@ by averaging the entire image</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
-                    <property name="top_attach">0</property>
+                    <property name="top_attach">1</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkFrame" id="framedebayer1">
+                  <object class="GtkFrame" id="framePhotAnnulus">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_left">10</property>
@@ -8731,7 +8743,7 @@ by averaging the entire image</property>
                         <property name="can_focus">False</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
-                        <property name="label" translatable="yes">Size of the annulus for background level measurement</property>
+                        <property name="label" translatable="yes">Background Annulus</property>
                         <property name="single_line_mode">True</property>
                         <attributes>
                           <attribute name="weight" value="bold"/>
@@ -8741,7 +8753,7 @@ by averaging the entire image</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
-                    <property name="top_attach">1</property>
+                    <property name="top_attach">0</property>
                   </packing>
                 </child>
                 <child>
@@ -8752,6 +8764,7 @@ by averaging the entire image</property>
                     <property name="receives_default">True</property>
                     <property name="tooltip_text" translatable="yes">Restore the defaut parameters</property>
                     <property name="halign">start</property>
+                    <property name="valign">center</property>
                     <property name="margin_left">10</property>
                     <signal name="clicked" handler="on_button_reset_photometry_clicked" swapped="no"/>
                   </object>
@@ -8759,6 +8772,113 @@ by averaging the entire image</property>
                     <property name="left_attach">0</property>
                     <property name="top_attach">2</property>
                   </packing>
+                </child>
+                <child>
+                  <object class="GtkFrame" id="framePhotRange">
+                    <property name="name">framephotorange</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_left">10</property>
+                    <property name="label_xalign">0</property>
+                    <property name="shadow_type">none</property>
+                    <child>
+                      <object class="GtkAlignment">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkGrid" id="grid1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="valign">start</property>
+                            <property name="row_spacing">20</property>
+                            <property name="column_spacing">4</property>
+                            <child>
+                              <object class="GtkLabel" id="label2">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">Min. pixel value:</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label6">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">Max. pixel value:</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="spinMinPhot">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Bad pixels have value equal to or less than.</property>
+                                <property name="halign">start</property>
+                                <property name="max_width_chars">7</property>
+                                <property name="text">0</property>
+                                <property name="input_purpose">number</property>
+                                <property name="adjustment">adjminpxval</property>
+                                <property name="numeric">True</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="spinMaxPhot">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Overexposed pixels have value equal to or greater than.</property>
+                                <property name="halign">start</property>
+                                <property name="max_width_chars">7</property>
+                                <property name="text">65535</property>
+                                <property name="input_purpose">number</property>
+                                <property name="adjustment">adjmaxpxval</property>
+                                <property name="numeric">True</property>
+                                <property name="value">65535</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_top">10</property>
+                        <property name="margin_bottom">10</property>
+                        <property name="label" translatable="yes">Pixel Value Range</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -8898,7 +9018,7 @@ by averaging the entire image</property>
                         <property name="can_focus">False</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
-                        <property name="label" translatable="yes">&lt;b&gt;RAM ratio&lt;/b&gt;</property>
+                        <property name="label" translatable="yes">&lt;b&gt;RAM Ratio&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                         <property name="single_line_mode">True</property>
                       </object>
@@ -9014,7 +9134,7 @@ by averaging the entire image</property>
                         <property name="can_focus">False</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Confirmation dialog&lt;/b&gt;</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Confirmation Dialog&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                         <property name="single_line_mode">True</property>
                       </object>
@@ -9092,7 +9212,7 @@ by averaging the entire image</property>
                         <property name="can_focus">False</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Look and feel&lt;/b&gt;</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Look and Feel&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
                     </child>
@@ -9478,8 +9598,8 @@ by averaging the entire image</property>
               <object class="GtkAlignment" id="alignment39">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                 <property name="left_padding">12</property>
-		<property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                 <child>
                   <object class="GtkGrid" id="grid35">
                     <property name="visible">True</property>
@@ -9526,9 +9646,9 @@ The default value for threshold is 1.00. Increasing this value will detect less 
                       <object class="GtkLabel" id="label148">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Radius: </property>
-                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -9539,9 +9659,9 @@ The default value for threshold is 1.00. Increasing this value will detect less 
                       <object class="GtkLabel" id="label149">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Threshold: </property>
-                        <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -9552,8 +9672,8 @@ The default value for threshold is 1.00. Increasing this value will detect less 
                       <object class="GtkLabel" id="label49">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Roundness threshold:</property>
                         <property name="tooltip_text" translatable="yes">Changes of these three values should be tested on one representative image before using them for registration.</property>
+                        <property name="label" translatable="yes">Roundness threshold:</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -14915,6 +15035,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
   <object class="GtkDialog" id="file_information">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Informations</property>
+    <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
     <property name="urgency_hint">True</property>
     <property name="transient_for">control_window</property>
@@ -15020,6 +15141,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="tooltip_text" translatable="yes">If the Pixel Y size is not automatically loaded, using file's header, you can update the field by yourself.</property>
                         <property name="hexpand">True</property>
                         <property name="invisible_char">●</property>
+                        <property name="width_chars">10</property>
                         <property name="input_purpose">number</property>
                         <signal name="changed" handler="on_pitchY_entry_changed" swapped="no"/>
                       </object>
@@ -15048,6 +15170,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="tooltip_text" translatable="yes">If the focal length is not automatically loaded, using file's header, you can update the field by yourself.</property>
                         <property name="hexpand">True</property>
                         <property name="invisible_char">●</property>
+                        <property name="width_chars">10</property>
                         <property name="input_purpose">number</property>
                         <signal name="changed" handler="on_focal_entry_changed" swapped="no"/>
                       </object>
@@ -15064,6 +15187,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="tooltip_text" translatable="yes">If the Pixel X size is not automatically loaded, using file's header, you can update the field by yourself.</property>
                         <property name="hexpand">True</property>
                         <property name="invisible_char">●</property>
+                        <property name="width_chars">10</property>
                         <property name="input_purpose">number</property>
                         <signal name="changed" handler="on_pitchX_entry_changed" swapped="no"/>
                       </object>
