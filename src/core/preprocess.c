@@ -292,7 +292,6 @@ int start_sequence_preprocessing(struct preprocessing_data *prepro) {
 /********** SINGLE IMAGE ************/
 int preprocess_single_image(struct preprocessing_data *args) {
 	char dest_filename[256], msg[256];
-	fits *dark, *offset, *flat;
 	fits fit = { 0 };
 	int ret = 0;
 	snprintf(msg, 255, _("Pre-processing image %s"), com.uniq->filename);
