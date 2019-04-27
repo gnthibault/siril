@@ -16,6 +16,7 @@ struct fwhm_struct {
 	double mag; /* magnitude of the star : this parameter is not fitted but calculated with the vector G and the parameter B */
 	double s_mag; /* error on the magnitude */
 	photometry *phot; /* photometry data */
+	gboolean phot_is_valid; /* valid if computed by photometry and no saturated pixel detected */
 	double xpos, ypos; /* position of the star in the image, not set by Minimization */
 	double rmse; /* RMSE of the minimization */
 	double BV; /* only use in BV calibration */
