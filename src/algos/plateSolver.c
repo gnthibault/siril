@@ -682,7 +682,7 @@ static void update_focal() {
 	focal = gfit.focal_length;
 
 	if (focal > 0.0) {
-		cfocal = g_strdup_printf("%.3lf", focal);
+		cfocal = g_strdup_printf("%.1lf", focal);
 		gtk_entry_set_text(entry, cfocal);
 		g_free(cfocal);
 	}
@@ -1209,6 +1209,31 @@ static void start_image_plate_solve() {
 
 void on_GtkEntry_IPS_changed(GtkEditable *editable, gpointer user_data) {
 	update_resolution_field();
+}
+
+void on_GtkEntry_IPS_insert_text(GtkEntry *entry, const gchar *text, gint length,
+		gint *position, gpointer data) {
+	GtkEditable *editable = GTK_EDITABLE(entry);
+	int i, count = 0;
+
+	gchar *result = g_strndup(text, length);
+
+	for (i = 0; i < length; i++) {
+		if (!g_ascii_isdigit(text[i]) && text[i] != '.')
+			continue;
+		result[count++] = text[i];
+	}
+
+	if (count > 0) {
+		g_signal_handlers_block_by_func(G_OBJECT (editable),
+				G_CALLBACK (on_GtkEntry_IPS_insert_text), data);
+		gtk_editable_insert_text(editable, result, count, position);
+		g_signal_handlers_unblock_by_func(G_OBJECT (editable),
+				G_CALLBACK (on_GtkEntry_IPS_insert_text), data);
+	}
+	g_signal_stop_emission_by_name(G_OBJECT(editable), "insert_text");
+
+	g_free(result);
 }
 
 void on_menuitem_IPS_activate(GtkMenuItem *menuitem, gpointer user_data) {
