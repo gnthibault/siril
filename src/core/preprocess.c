@@ -242,8 +242,10 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 	if (prepro->use_cosmetic_correction && prepro->use_dark && prepro->dark->naxes[2] == 1)
 		cosmeticCorrection(fit, prepro->dev, prepro->icold + prepro->ihot, prepro->is_cfa);
 
-	if (prepro->debayer && prepro->seq->type == SEQ_REGULAR) {	// why not for SER?
-		debayer_if_needed(TYPEFITS, fit, prepro->compatibility, TRUE, prepro->stretch_cfa);
+	if (prepro->debayer) {
+		if (!prepro->seq || (prepro->seq->type == SEQ_REGULAR)) { // No SER because it is done on-the-fly
+			debayer_if_needed(TYPEFITS, fit, prepro->compatibility, TRUE, prepro->stretch_cfa);
+		}
 	}
 
 	return 0;
