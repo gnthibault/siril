@@ -75,7 +75,9 @@ struct generic_seq_args {
 	/** user data: pointer to operation-specific data */
 	void *user;
 
-	/** do not run the sequence processing in a new thread */
+	/** if the generic sequence processing is run from an existing thread,
+	 * the idle function is not executed in the GTK+ main thread but in this
+	 * same thread. If this is false, the generic idle function is run. */
 	gboolean already_in_a_thread;
 	/** activate parallel execution */
 	gboolean parallel;

@@ -3810,10 +3810,9 @@ void on_seqselectall_button_clicked(GtkButton *button, gpointer user_data) {
 	}
 }
 
-static int test_for_master_files(struct preprocessing_data *args) {
+static void test_for_master_files(struct preprocessing_data *args) {
 	GtkToggleButton *tbutton;
 	GtkEntry *entry;
-	int ret_value = 0;
 
 	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("useoffset_button"));
 	if (gtk_toggle_button_get_active(tbutton)) {
@@ -3944,7 +3943,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 
 	// set output filename (preprocessed file name prefix)
 	entry = GTK_ENTRY(lookup_widget("preproseqname_entry"));
-	args->ppprefix = strdup(gtk_entry_get_text(entry));
+	args->ppprefix = gtk_entry_get_text(entry);
 
 	autobutton = lookup_widget("checkbutton_auto_evaluate");
 	args->autolevel = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autobutton));
@@ -3982,7 +3981,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 		args->seq = &com.seq;
 		set_cursor_waiting(TRUE);
 		control_window_switch_to_tab(OUTPUT_LOGS);
-		start_sequence_preprocessing(args);
+		start_sequence_preprocessing(args, FALSE);
 	} else {
 		int retval;
 		args->is_sequence = FALSE;

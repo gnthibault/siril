@@ -2339,7 +2339,6 @@ failure:
 	return 1;
 }
 
-// preprocess sequencename -bias= -dark= -flat= -cfa -debayer
 int process_preprocess(int nb) {
 	struct preprocessing_data *args;
 	int nb_command_max = 10;
@@ -2436,12 +2435,12 @@ int process_preprocess(int nb) {
 	args->normalisation = 1.0f;	// will be updated anyway
 	args->sigma[0] = -1.00; /* cold pixels: it is better to deactive it */
 	args->sigma[1] =  3.00; /* hot pixels */
-	args->ppprefix = strdup("pp_");
+	args->ppprefix = "pp_";
 
 	// start preprocessing
 	set_cursor_waiting(TRUE);
 
-	start_sequence_preprocessing(args);
+	start_sequence_preprocessing(args, TRUE);
 	return 0;
 }
 

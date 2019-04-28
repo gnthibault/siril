@@ -161,30 +161,6 @@ static int darkOptimization(fits *raw, fits *dark, fits *offset) {
 	return ret;
 }
 
-static void prepro_cleanup(struct preprocessing_data *args) {
-	free_sequence(args->seq, TRUE);
-	free(args);
-}
-
-// idle function executed at the end of the sequence preprocessing
-static gboolean end_sequence_prepro(gpointer p) {
-	struct preprocessing_data *args = (struct preprocessing_data *)p;
-	struct timeval t_end;
-	fprintf(stdout, "Ending sequence prepro, retval=%d\n", args->retval);
-	stop_processing_thread();
-	set_cursor_waiting(FALSE);
-	gettimeofday(&t_end, NULL);
-	show_time(args->t_start, t_end);
-	update_used_memory();
-#ifdef MAC_INTEGRATION
-	GtkosxApplication *osx_app = gtkosx_application_get();
-	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
-	g_object_unref (osx_app);
-#endif
-	free(args);
-	return FALSE;
-}
-
 static int prepro_prepare_hook(struct generic_seq_args *args) {
 	struct preprocessing_data *prepro = args->user;
 
@@ -243,28 +219,38 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 		cosmeticCorrection(fit, prepro->dev, prepro->icold + prepro->ihot, prepro->is_cfa);
 
 	if (prepro->debayer) {
-		if (!prepro->seq || (prepro->seq->type == SEQ_REGULAR)) { // No SER because it is done on-the-fly
-			debayer_if_needed(TYPEFITS, fit, prepro->compatibility, TRUE, prepro->stretch_cfa);
+		if (!prepro->seq || prepro->seq->type == SEQ_REGULAR) {
+			// not for SER because it is done on-the-fly
+			debayer_if_needed(TYPEFITS, fit,
+					prepro->compatibility, TRUE, prepro->stretch_cfa);
 		}
 	}
 
 	return 0;
 }
 
-
 static int prepro_finalize_hook(struct generic_seq_args *args) {
 	struct preprocessing_data *prepro = args->user;
-	free(prepro->ppprefix);
 	if (prepro->use_bias && prepro->bias)
 		free(prepro->bias);
 	if (prepro->use_dark && prepro->dark)
 		free(prepro->dark);
 	if (prepro->use_flat && prepro->flat)
 		free(prepro->flat);
+	free(args->user);
 	return 0;
 }
 
-int start_sequence_preprocessing(struct preprocessing_data *prepro) {
+gpointer prepro_worker(gpointer p) {
+	gpointer retval = generic_sequence_worker(p);
+
+	struct generic_seq_args *args = (struct generic_seq_args *)p;
+	free_sequence(args->seq, TRUE);
+	free(args);
+	return retval;
+}
+
+void start_sequence_preprocessing(struct preprocessing_data *prepro, gboolean from_script) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = prepro->seq;
 	args->partial_image = FALSE;
@@ -274,21 +260,23 @@ int start_sequence_preprocessing(struct preprocessing_data *prepro) {
 	args->image_hook = prepro_image_hook;
 	args->save_hook = NULL;
 	args->finalize_hook = prepro_finalize_hook;
-	args->idle_function = end_sequence_prepro;
+	args->idle_function = NULL;
 	args->stop_on_error = TRUE;
 	args->description = _("Preprocessing");
 	args->has_output = TRUE;
 	args->new_seq_prefix = prepro->ppprefix;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
-	args->already_in_a_thread = FALSE;
 	args->parallel = TRUE;
 	args->user = prepro;
 
-	start_in_new_thread(generic_sequence_worker, args);
-
-	prepro->retval = args->retval;
-	return prepro->retval;
+	if (from_script) {
+		args->already_in_a_thread = TRUE;
+		start_in_new_thread(prepro_worker, args);
+	} else {
+		args->already_in_a_thread = FALSE;
+		start_in_new_thread(generic_sequence_worker, args);
+	}
 }
 
 /********** SINGLE IMAGE ************/

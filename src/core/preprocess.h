@@ -23,10 +23,10 @@ struct preprocessing_data {
 	gboolean equalize_cfa;
 	float normalisation;
 	int retval;
-	char *ppprefix;	 // prefix for output files
+	const char *ppprefix;	 // prefix for output files
 };
 
 int preprocess_single_image(struct preprocessing_data *args);
-int start_sequence_preprocessing(struct preprocessing_data *prepro);
+void start_sequence_preprocessing(struct preprocessing_data *prepro, gboolean from_script);
 
 #endif
