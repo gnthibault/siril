@@ -1397,6 +1397,8 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 				if (from->stats[i])
 					add_stats_to_fit(to, i, from->stats[i]);
 			}
+		} else {
+			invalidate_stats_from_fit(to);
 		}
 	}
 

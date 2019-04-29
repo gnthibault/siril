@@ -3990,9 +3990,17 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 
 		retval = preprocess_single_image(args);
 
+		set_cursor_waiting(FALSE);
+		free(args);
+
 		if (retval)
 			set_progress_bar_data(_("Error in preprocessing."), PROGRESS_NONE);
-		else set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
+		else {
+			set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
+			adjust_cutoff_from_updated_gfit();
+			open_single_image_from_gfit();
+			redraw(com.cvport, REMAP_ALL);
+		}
 	}
 }
 

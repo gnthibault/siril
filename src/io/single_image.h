@@ -5,7 +5,7 @@ void close_single_image();
 void free_image_data();
 int read_single_image(const char* filename, fits *dest, char **realname_out);
 int open_single_image(const char* filename);
-void open_single_image_from_gfit(char *realname);
+void open_single_image_from_gfit();
 
 int image_find_minmax(fits *fit);
 double fit_get_max(fits *fit, int layer);

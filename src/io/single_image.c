@@ -153,8 +153,7 @@ int read_single_image(const char* filename, fits *dest, char **realname_out) {
 }
 
 static gboolean end_open_single_image(gpointer arg) {
-	char *name = (char *)arg;
-	open_single_image_from_gfit(name);
+	open_single_image_from_gfit();
 	return FALSE;
 }
 
@@ -203,10 +202,8 @@ int open_single_image(const char* filename) {
 }
 
 /* creates a single_image structure and displays a single image, found in gfit.
- * The argument, realname, should be the file path, and it must be allocated
- * on the heap, since destroying the single image will attempt to free it.
  */
-void open_single_image_from_gfit(char *realname) {
+void open_single_image_from_gfit() {
 	/* now initializing everything
 	 * code based on seq_load_image or set_seq (sequence.c) */
 

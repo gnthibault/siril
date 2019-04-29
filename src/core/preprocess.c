@@ -164,14 +164,16 @@ static int darkOptimization(fits *raw, fits *dark, fits *offset) {
 static int prepro_prepare_hook(struct generic_seq_args *args) {
 	struct preprocessing_data *prepro = args->user;
 
-	// checking disk space: removing old sequence and computing free space
-	remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
+	if (prepro->seq) {
+		// checking disk space: removing old sequence and computing free space
+		remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
 
-	int64_t size = seq_compute_size(args->seq, args->seq->number);
-	if (prepro->debayer)
-		size *= 3;
-	if (test_available_space(size))
-		return 1;
+		int64_t size = seq_compute_size(args->seq, args->seq->number);
+		if (prepro->debayer)
+			size *= 3;
+		if (test_available_space(size))
+			return 1;
+	}
 
 	// precompute flat levels
 	if (prepro->use_flat) {
@@ -229,14 +231,18 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 	return 0;
 }
 
+static void clear_preprocessing_data(struct preprocessing_data *prepro) {
+	if (prepro->use_bias && prepro->bias)
+		clearfits(prepro->bias);
+	if (prepro->use_dark && prepro->dark)
+		clearfits(prepro->dark);
+	if (prepro->use_flat && prepro->flat)
+		clearfits(prepro->flat);
+}
+
 static int prepro_finalize_hook(struct generic_seq_args *args) {
 	struct preprocessing_data *prepro = args->user;
-	if (prepro->use_bias && prepro->bias)
-		free(prepro->bias);
-	if (prepro->use_dark && prepro->dark)
-		free(prepro->dark);
-	if (prepro->use_flat && prepro->flat)
-		free(prepro->flat);
+	clear_preprocessing_data(prepro);
 	free(args->user);
 	return 0;
 }
@@ -292,21 +298,31 @@ int preprocess_single_image(struct preprocessing_data *args) {
 	copyfits(com.uniq->fit, &fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
 	copy_fits_metadata(com.uniq->fit, &fit);
 
-	ret = prepro_image_hook(&generic, 0, 0, &fit, NULL);
-	prepro_finalize_hook(&generic);
+	ret = prepro_prepare_hook(&generic);
+	if (!ret)
+		ret = prepro_image_hook(&generic, 0, 0, &fit, NULL);
+	clear_preprocessing_data(args);
 
-	gchar *filename = g_path_get_basename(com.uniq->filename);
-	char *filename_noext = remove_ext_from_filename(filename);
-	snprintf(dest_filename, 255, "%s%s", args->ppprefix, filename_noext);
-	dest_filename[255] = '\0';
-	snprintf(msg, 255, _("Saving image %s"), filename_noext);
-	msg[255] = '\0';
-	set_progress_bar_data(msg, PROGRESS_NONE);
-	args->retval = savefits(dest_filename, &fit);
-	clearfits(&fit);
-	g_free(filename);
-	free(filename_noext);
+	if (!ret) {
+		gchar *filename = g_path_get_basename(com.uniq->filename);
+		char *filename_noext = remove_ext_from_filename(filename);
+		g_free(filename);
+		snprintf(dest_filename, 256, "%s%s%s", args->ppprefix, filename_noext, com.ext);
+		snprintf(msg, 256, _("Saving image %s"), filename_noext);
+		set_progress_bar_data(msg, PROGRESS_NONE);
+		ret = savefits(dest_filename, &fit);
 
-	// we may want to open the new image?
+		if (!ret) {
+			// open the new image?
+			copyfits(&fit, com.uniq->fit, CP_COPYA, 0);
+			if (com.uniq->filename)
+				free(com.uniq->filename);
+			com.uniq->filename = strdup(dest_filename);
+		}
+
+		clearfits(&fit);
+		free(filename_noext);
+	}
+
 	return ret;
 }
