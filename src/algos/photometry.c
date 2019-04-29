@@ -243,6 +243,7 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 	double apmag = 0.0, mean = 0.0, stdev = 0.0, area = 0.0;
 	double signalIntensity;
 	double *data;
+	gboolean valid = TRUE;
 	photometry *phot;
 
 	xc = psf->x0 - 1;
@@ -296,6 +297,8 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 					data[n_sky] = pixel;
 					n_sky++;
 				}
+			} else {
+				valid = FALSE;
 			}
 		}
 	}
@@ -303,7 +306,6 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 		free(data);
 		return NULL;
 	}
-
 	if (n_sky < min_sky) {
 		if (verbose) {
 			siril_log_message(_("Warning: There aren't enough pixels"
@@ -325,6 +327,7 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 
 		phot->mag = getMagnitude(signalIntensity);
 		phot->s_mag = getMagErr(signalIntensity, area, n_sky, stdev);
+		phot->valid = valid;
 	}
 
 	free(data);

@@ -1146,7 +1146,8 @@ void insert_text_handler(GtkEntry *entry, const gchar *text, gint length,
 		gint *position, gpointer data) {
 	GtkEditable *editable = GTK_EDITABLE(entry);
 	int i, count = 0;
-	gchar *result = g_new(gchar, length);
+
+	gchar *result = g_strndup(text, length);
 
 	for (i = 0; i < length; i++) {
 		if (is_forbiden(text[i]))

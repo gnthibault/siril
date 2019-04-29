@@ -168,9 +168,9 @@ static void bv2rgb(double *r, double *g, double *b, double bv) { // RGB <0,1> <-
 
 static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits *fit) {
 	/* make a selection around the star */
-	area->x = round_to_int(stars->xpos - com.phot_set.outer * 0.5);
-	area->y = round_to_int(stars->ypos - com.phot_set.outer * 0.5);
-	area->w = area->h = (int)com.phot_set.outer;
+	area->x = round_to_int(stars->xpos - com.phot_set.outer);
+	area->y = round_to_int(stars->ypos - com.phot_set.outer);
+	area->w = area->h = round_to_int(com.phot_set.outer * 2);
 
 	/* Don't want stars to close of the edge */
 	if (area->x + area->w >= fit->rx) {
@@ -216,7 +216,7 @@ static double siril_stats_trmean_from_sorted_data(const double trim,
 }
 #endif
 
-static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
+static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
 	int i = 0, ngood = 0;
 	gboolean no_phot = FALSE;
 	int k;
@@ -250,7 +250,7 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 
 		for (chan = 0; chan < 3; chan ++) {
 			fitted_PSF *photometry = psf_get_minimisation(fit, chan, &area, TRUE, FALSE);
-			if (!photometry || !photometry->phot) {
+			if (!photometry || !photometry->phot_is_valid) {
 				no_phot = TRUE;
 				break;
 			}
@@ -282,15 +282,22 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 		ngood++;
 	}
 
-	/* sort in ascending order before using gsl_stats_trmean_from_sorted_data 
-	Hence, DBL_MAX are at the end of the tab */
+	siril_log_message(_("%d stars excluded from the calculation.\n"), nb_stars - ngood);
+
+	if (ngood == 0) {
+		siril_log_message(_("No valid stars found.\n"));
+		return 1;
+	}
+	/* sort in ascending order before using gsl_stats_trmean_from_sorted_data
+	 Hence, DBL_MAX are at the end of the tab */
 	gsl_sort(data[RED], 1, nb_stars);
 	gsl_sort(data[GREEN], 1, nb_stars);
 	gsl_sort(data[BLUE], 1, nb_stars);
 
 	/* we do not take into account DBL_MAX values */
 	kw[RED] = siril_stats_trmean_from_sorted_data(alpha, data[RED], 1, ngood);
-	kw[GREEN] = siril_stats_trmean_from_sorted_data(alpha, data[GREEN], 1, ngood);
+	kw[GREEN] = siril_stats_trmean_from_sorted_data(alpha, data[GREEN], 1,
+			ngood);
 	kw[BLUE] = siril_stats_trmean_from_sorted_data(alpha, data[BLUE], 1, ngood);
 
 	/* normalize factors */
@@ -305,6 +312,8 @@ static void get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit,
 	free(data[RED]);
 	free(data[GREEN]);
 	free(data[BLUE]);
+
+	return 0;
 }
 
 static void get_background_coefficients(fits *fit, rectangle *area, coeff bg[]) {
@@ -421,14 +430,15 @@ static gpointer photometric_cc(gpointer p) {
 	get_background_coefficients(&gfit, bkg_sel, bg);
 	chan = determine_chan_for_norm(bg, args->n_channel);
 	siril_log_message(_("Normalizing on %s channel.\n"), (chan == 0) ? _("red") : ((chan == 1) ? _("green") : _("blue")));
-	get_white_balance_coeff(args->stars, nb_stars, &gfit, kw, chan);
-	norm = (double) get_normalized_value(&gfit);
-
-	calibrate_colors(&gfit, kw, bg, norm);
-	background_neutralize(&gfit, bg, chan, norm);
+	int ret = get_white_balance_coeff(args->stars, nb_stars, &gfit, kw, chan);
+	if (!ret) {
+		norm = (double) get_normalized_value(&gfit);
+		calibrate_colors(&gfit, kw, bg, norm);
+		background_neutralize(&gfit, bg, chan, norm);
+	}
 
 	siril_add_idle(end_photometric_cc, args);
-	return GINT_TO_POINTER(0);
+	return GINT_TO_POINTER(ret);
 }
 
 static gboolean is_selection_ok() {

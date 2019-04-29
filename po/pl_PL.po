@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-26 23:44+0200\n"
+"POT-Creation-Date: 2019-04-27 23:07+0200\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -3985,7 +3985,7 @@ msgstr "Korekcja nasycenia: przetwarzanie...\n"
 #: ../src/core/command.c:1760 ../src/core/preprocess.c:68
 #: ../src/core/preprocess.c:305 ../src/core/siril.c:609 ../src/core/siril.c:900
 #: ../src/core/siril.c:996 ../src/core/siril.c:1088 ../src/gui/histogram.c:636
-#: ../src/gui/photometric_cc.c:317 ../src/gui/statistics_list.c:311
+#: ../src/gui/photometric_cc.c:327 ../src/gui/statistics_list.c:311
 #, fuzzy
 msgid "Error: statistics computation failed.\n"
 msgstr "Błąd: brak danych.\n"
@@ -3996,15 +3996,15 @@ msgstr "SCNR: przetwarzanie …\n"
 
 #: ../src/algos/colors.c:606 ../src/algos/colors.c:726
 #: ../src/algos/colors.c:762 ../src/algos/colors.c:935
-#: ../src/algos/colors.c:946 ../src/gui/photometric_cc.c:536
-#: ../src/gui/photometric_cc.c:554
+#: ../src/algos/colors.c:946 ../src/gui/photometric_cc.c:546
+#: ../src/gui/photometric_cc.c:564
 #, fuzzy
 msgid "There is no selection"
 msgstr "fwhm: brak wyboru"
 
 #: ../src/algos/colors.c:607 ../src/algos/colors.c:727
-#: ../src/algos/colors.c:936 ../src/gui/photometric_cc.c:537
-#: ../src/gui/photometric_cc.c:555
+#: ../src/algos/colors.c:936 ../src/gui/photometric_cc.c:547
+#: ../src/gui/photometric_cc.c:565
 #, fuzzy
 msgid "Make a selection of the background area"
 msgstr "Wybierz najpierw obszar tła"
@@ -4014,7 +4014,7 @@ msgstr "Wybierz najpierw obszar tła"
 msgid "Make a selection of the white reference area"
 msgstr "Wybierz najpierw obszar tła"
 
-#: ../src/algos/colors.c:804 ../src/gui/photometric_cc.c:313
+#: ../src/algos/colors.c:804 ../src/gui/photometric_cc.c:323
 #, fuzzy
 msgid "Background reference:\n"
 msgstr "Obraz odniesienia"
@@ -4024,7 +4024,7 @@ msgstr "Obraz odniesienia"
 msgid "White reference:\n"
 msgstr "Obraz odniesienia:\n"
 
-#: ../src/algos/colors.c:832 ../src/gui/photometric_cc.c:300
+#: ../src/algos/colors.c:832 ../src/gui/photometric_cc.c:304
 msgid "Color calibration factors:\n"
 msgstr "Współczynniki kalibracji kolorów:\n"
 
@@ -4056,25 +4056,25 @@ msgid "There is something wrong in your files\n"
 msgstr "Coś jest nie tak z twoimi plikami\n"
 
 #. Translator note: radii is plural for radius
-#: ../src/algos/photometry.c:259
+#: ../src/algos/photometry.c:260
 msgid ""
 "Inner and outer radii are too small. Please update values in setting box.\n"
 msgstr ""
 "Wewnętrzne i zewnętrzne promienie są zbyt małe. Zaktualizuj wartości w polu "
 "ustawień.\n"
 
-#: ../src/algos/photometry.c:309
+#: ../src/algos/photometry.c:311
 msgid ""
 "Warning: There aren't enough pixels in the sky annulus. You need to make a "
 "larger selection.\n"
 msgstr ""
 
-#: ../src/algos/photometry.c:361 ../src/algos/photometry.c:375
+#: ../src/algos/photometry.c:364 ../src/algos/photometry.c:378
 #, fuzzy
 msgid "Wrong value"
 msgstr "Wartość tła"
 
-#: ../src/algos/photometry.c:362 ../src/algos/photometry.c:376
+#: ../src/algos/photometry.c:365 ../src/algos/photometry.c:379
 msgid "Inner radius value must be less than outer. Please change the value."
 msgstr ""
 
@@ -4199,7 +4199,7 @@ msgid ""
 "geometric transformation and no undo will be possible."
 msgstr ""
 
-#: ../src/algos/PSF.c:693
+#: ../src/algos/PSF.c:704
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -6219,22 +6219,31 @@ msgstr "Kalibracja kolorów..."
 msgid "Applying aperture photometry to %d stars.\n"
 msgstr ""
 
-#: ../src/gui/photometric_cc.c:423
+#: ../src/gui/photometric_cc.c:286
+#, fuzzy, c-format
+msgid "%d stars excluded from the calculation.\n"
+msgstr "obraz %d zostnanie wykluczony z eksportu\n"
+
+#: ../src/gui/photometric_cc.c:309
+msgid "No valid stars found.\n"
+msgstr ""
+
+#: ../src/gui/photometric_cc.c:433
 #, fuzzy, c-format
 msgid "Normalizing on %s channel.\n"
 msgstr "Normalizacja została pominięta.\n"
 
-#: ../src/gui/photometric_cc.c:423
+#: ../src/gui/photometric_cc.c:433
 #, fuzzy
 msgid "red"
 msgstr "Czerwony"
 
-#: ../src/gui/photometric_cc.c:423
+#: ../src/gui/photometric_cc.c:433
 #, fuzzy
 msgid "green"
 msgstr "Zielony"
 
-#: ../src/gui/photometric_cc.c:423
+#: ../src/gui/photometric_cc.c:433
 msgid "blue"
 msgstr ""
 

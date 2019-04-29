@@ -405,6 +405,7 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background,
 	psf->units = "px";
 	// Magnitude
 	psf->mag = psf_get_mag(z, psf->B);
+	psf->phot_is_valid = FALSE;
 	// Layer: not fitted
 	psf->layer = layer;
 	// RMSE
@@ -528,14 +529,20 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf, gboolean fo
 	// Photometry
 	if (for_photometry)
 		psf_angle->phot = getPhotometryData(z, psf_angle, verbose);
-	else psf_angle->phot = NULL;
+	else {
+		psf_angle->phot = NULL;
+		psf_angle->phot_is_valid = FALSE;
+	}
 	// Magnitude
 	if (psf_angle->phot != NULL) {
 		psf_angle->mag = psf_angle->phot->mag;
 		psf_angle->s_mag = psf_angle->phot->s_mag;
+		psf_angle->phot_is_valid = psf_angle->phot->valid;
+
 	} else {
 		psf_angle->mag = psf_get_mag(z, psf_angle->B);
 		psf_angle->s_mag = 9.999;
+		psf_angle->phot_is_valid = FALSE;
 	}
 	//Layer: not fitted
 	psf_angle->layer = psf->layer;
@@ -635,11 +642,15 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg, int layer,
 				// Photometry
 				if (for_photometry)
 					psf->phot = getPhotometryData(z, psf, verbose);
-				else psf->phot = NULL;
+				else {
+					psf->phot = NULL;
+					psf->phot_is_valid = FALSE;
+				}
 				// get Magnitude
 				if (psf->phot != NULL) {
 					psf->mag = psf->phot->mag;
 					psf->s_mag = psf->phot->s_mag;
+					psf->phot_is_valid = psf->phot->valid;
 				}
 			} else {
 				fitted_PSF *tmp_psf;

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-26 23:44+0200\n"
+"POT-Creation-Date: 2019-04-27 23:07+0200\n"
 "PO-Revision-Date: 2019-03-21 01:24+0100\n"
 "Last-Translator: Luca Benassi <bennolo@gmail.com>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
@@ -4079,7 +4079,7 @@ msgstr "Miglioramento della saturazione: elaborazione...\n"
 #: ../src/core/command.c:1760 ../src/core/preprocess.c:68
 #: ../src/core/preprocess.c:305 ../src/core/siril.c:609 ../src/core/siril.c:900
 #: ../src/core/siril.c:996 ../src/core/siril.c:1088 ../src/gui/histogram.c:636
-#: ../src/gui/photometric_cc.c:317 ../src/gui/statistics_list.c:311
+#: ../src/gui/photometric_cc.c:327 ../src/gui/statistics_list.c:311
 msgid "Error: statistics computation failed.\n"
 msgstr ""
 "Errore, calcolo delle statistiche non riuscito.\n"
@@ -4091,14 +4091,14 @@ msgstr "SCNR: elaborazione...\n"
 
 #: ../src/algos/colors.c:606 ../src/algos/colors.c:726
 #: ../src/algos/colors.c:762 ../src/algos/colors.c:935
-#: ../src/algos/colors.c:946 ../src/gui/photometric_cc.c:536
-#: ../src/gui/photometric_cc.c:554
+#: ../src/algos/colors.c:946 ../src/gui/photometric_cc.c:546
+#: ../src/gui/photometric_cc.c:564
 msgid "There is no selection"
 msgstr "Non c'è alcuna selezione"
 
 #: ../src/algos/colors.c:607 ../src/algos/colors.c:727
-#: ../src/algos/colors.c:936 ../src/gui/photometric_cc.c:537
-#: ../src/gui/photometric_cc.c:555
+#: ../src/algos/colors.c:936 ../src/gui/photometric_cc.c:547
+#: ../src/gui/photometric_cc.c:565
 msgid "Make a selection of the background area"
 msgstr "Crea una selezione dell'area di sfondo"
 
@@ -4106,7 +4106,7 @@ msgstr "Crea una selezione dell'area di sfondo"
 msgid "Make a selection of the white reference area"
 msgstr "Crea una selezione dell'area bianca di riferimento"
 
-#: ../src/algos/colors.c:804 ../src/gui/photometric_cc.c:313
+#: ../src/algos/colors.c:804 ../src/gui/photometric_cc.c:323
 msgid "Background reference:\n"
 msgstr "Sfondo di riferimento:\n"
 
@@ -4114,7 +4114,7 @@ msgstr "Sfondo di riferimento:\n"
 msgid "White reference:\n"
 msgstr "Riferimento al bianco:\n"
 
-#: ../src/algos/colors.c:832 ../src/gui/photometric_cc.c:300
+#: ../src/algos/colors.c:832 ../src/gui/photometric_cc.c:304
 msgid "Color calibration factors:\n"
 msgstr "Fattori di calibrazione dei colori:\n"
 
@@ -4146,14 +4146,14 @@ msgid "There is something wrong in your files\n"
 msgstr "C'è qualcosa di sbagliato nei tuoi file\n"
 
 #. Translator note: radii is plural for radius
-#: ../src/algos/photometry.c:259
+#: ../src/algos/photometry.c:260
 msgid ""
 "Inner and outer radii are too small. Please update values in setting box.\n"
 msgstr ""
 "I raggi interno ed esterno sono troppo piccoli. Si prega di aggiornare i "
 "valori nel riquadro delle impostazioni.\n"
 
-#: ../src/algos/photometry.c:309
+#: ../src/algos/photometry.c:311
 msgid ""
 "Warning: There aren't enough pixels in the sky annulus. You need to make a "
 "larger selection.\n"
@@ -4161,12 +4161,12 @@ msgstr ""
 "Attenzione: non ci sono abbastanza pixel nell'anello di cielo. È necessario "
 "specificare una selezione più ampia.\n"
 
-#: ../src/algos/photometry.c:361 ../src/algos/photometry.c:375
+#: ../src/algos/photometry.c:364 ../src/algos/photometry.c:378
 #, fuzzy
 msgid "Wrong value"
 msgstr "Valore dello sfondo"
 
-#: ../src/algos/photometry.c:362 ../src/algos/photometry.c:376
+#: ../src/algos/photometry.c:365 ../src/algos/photometry.c:379
 msgid "Inner radius value must be less than outer. Please change the value."
 msgstr ""
 
@@ -4301,7 +4301,7 @@ msgstr ""
 "La soluzione astrometrica contenuta nell'immagine verrà rimossa dalla "
 "trasformazione geometrica e non sarà possibile annullare l'operazione."
 
-#: ../src/algos/PSF.c:693
+#: ../src/algos/PSF.c:704
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -6568,20 +6568,29 @@ msgstr "Calibrazione fotometrica del colore"
 msgid "Applying aperture photometry to %d stars.\n"
 msgstr "Applicazione della fotometria di apertura a %d stelle.\n"
 
-#: ../src/gui/photometric_cc.c:423
+#: ../src/gui/photometric_cc.c:286
+#, fuzzy, c-format
+msgid "%d stars excluded from the calculation.\n"
+msgstr "l'immagine %d è stata esclusa dall'esportazione\n"
+
+#: ../src/gui/photometric_cc.c:309
+msgid "No valid stars found.\n"
+msgstr ""
+
+#: ../src/gui/photometric_cc.c:433
 #, c-format
 msgid "Normalizing on %s channel.\n"
 msgstr "Normalizzazione del canale %s.\n"
 
-#: ../src/gui/photometric_cc.c:423
+#: ../src/gui/photometric_cc.c:433
 msgid "red"
 msgstr "rosso"
 
-#: ../src/gui/photometric_cc.c:423
+#: ../src/gui/photometric_cc.c:433
 msgid "green"
 msgstr "verde"
 
-#: ../src/gui/photometric_cc.c:423
+#: ../src/gui/photometric_cc.c:433
 msgid "blue"
 msgstr "blu"
 
