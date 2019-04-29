@@ -314,7 +314,7 @@ int preprocess_single_image(struct preprocessing_data *args) {
 
 		if (!ret) {
 			// open the new image?
-			copyfits(&fit, com.uniq->fit, CP_COPYA, 0);
+			copyfits(&fit, com.uniq->fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
 			if (com.uniq->filename)
 				free(com.uniq->filename);
 			com.uniq->filename = strdup(dest_filename);
