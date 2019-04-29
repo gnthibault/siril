@@ -287,12 +287,13 @@ void start_sequence_preprocessing(struct preprocessing_data *prepro, gboolean fr
 
 /********** SINGLE IMAGE ************/
 int preprocess_single_image(struct preprocessing_data *args) {
-	char dest_filename[256], msg[256];
+	gchar *dest_filename, *msg;
 	fits fit = { 0 };
 	int ret = 0;
-	snprintf(msg, 255, _("Pre-processing image %s"), com.uniq->filename);
-	msg[255] = '\0';
+
+	msg = g_strdup_printf(_("Pre-processing image %s"), com.uniq->filename);
 	set_progress_bar_data(msg, 0.5);
+	g_free(msg);
 	struct generic_seq_args generic = { .user = args };
 
 	copyfits(com.uniq->fit, &fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
@@ -307,8 +308,8 @@ int preprocess_single_image(struct preprocessing_data *args) {
 		gchar *filename = g_path_get_basename(com.uniq->filename);
 		char *filename_noext = remove_ext_from_filename(filename);
 		g_free(filename);
-		snprintf(dest_filename, 256, "%s%s%s", args->ppprefix, filename_noext, com.ext);
-		snprintf(msg, 256, _("Saving image %s"), filename_noext);
+		dest_filename = g_strdup_printf("%s%s%s", args->ppprefix, filename_noext, com.ext);
+		msg = g_strdup_printf(_("Saving image %s"), filename_noext);
 		set_progress_bar_data(msg, PROGRESS_NONE);
 		ret = savefits(dest_filename, &fit);
 
@@ -322,6 +323,8 @@ int preprocess_single_image(struct preprocessing_data *args) {
 
 		clearfits(&fit);
 		free(filename_noext);
+		g_free(dest_filename);
+		g_free(msg);
 	}
 
 	return ret;
