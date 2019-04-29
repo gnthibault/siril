@@ -1215,7 +1215,7 @@ int process_new(int nb){
 	com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
 	com.uniq->fit = &gfit;
 
-	open_single_image_from_gfit(com.uniq->filename);
+	open_single_image_from_gfit();
 	return 0;
 }
 
