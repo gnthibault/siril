@@ -18,9 +18,6 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef MAC_INTEGRATION
-#include <gtkosxapplication.h>
-#endif
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -113,7 +110,6 @@ static double goldenSectionSearch(fits *raw, fits *dark, double a, double b,
 
 static int preprocess(fits *raw, struct preprocessing_data *args) {
 	int ret = 0;
-
 	if (args->use_bias) {
 		ret = imoper(raw, args->bias, OPER_SUB);
 	}
@@ -316,6 +312,10 @@ int preprocess_single_image(struct preprocessing_data *args) {
 		if (!ret) {
 			// open the new image?
 			copyfits(&fit, com.uniq->fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
+			if (com.uniq->nb_layers != fit.naxes[2]) {
+				com.uniq->nb_layers = fit.naxes[2];
+				com.uniq->layers = realloc(com.uniq->layers, com.uniq->nb_layers * sizeof(layer_info));
+			}
 			if (com.uniq->filename)
 				free(com.uniq->filename);
 			com.uniq->filename = strdup(dest_filename);
