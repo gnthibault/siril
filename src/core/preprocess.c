@@ -161,6 +161,9 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 	struct preprocessing_data *prepro = args->user;
 
 	if (prepro->seq) {
+		if (ser_prepare_hook(args))
+			return 1;
+
 		// checking disk space: removing old sequence and computing free space
 		remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
 
@@ -237,10 +240,11 @@ static void clear_preprocessing_data(struct preprocessing_data *prepro) {
 }
 
 static int prepro_finalize_hook(struct generic_seq_args *args) {
+	int retval = ser_finalize_hook(args);
 	struct preprocessing_data *prepro = args->user;
 	clear_preprocessing_data(prepro);
 	free(args->user);
-	return 0;
+	return retval;
 }
 
 gpointer prepro_worker(gpointer p) {
