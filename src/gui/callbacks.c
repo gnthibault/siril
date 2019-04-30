@@ -36,6 +36,7 @@
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "core/undo.h"
+#include "core/preprocess.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/PSF_list.h"
@@ -3809,136 +3810,116 @@ void on_seqselectall_button_clicked(GtkButton *button, gpointer user_data) {
 	}
 }
 
-static int test_for_master_files() {
+static void test_for_master_files(struct preprocessing_data *args) {
 	GtkToggleButton *tbutton;
 	GtkEntry *entry;
-	int ret_value = 0;
 
-	// if dark selected
-	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("usedark_button"));
-	if (gtk_toggle_button_get_active(tbutton) == TRUE) {
-		const char *filename;
-		entry = GTK_ENTRY(lookup_widget("darkname_entry"));
-		filename = gtk_entry_get_text(entry);
-		if (filename[0] == '\0') {
-			gtk_toggle_button_set_active(tbutton, FALSE);
-		} else {
-			fits *dark_fit;
-			set_progress_bar_data(_("Opening dark image..."), PROGRESS_NONE);
-			dark_fit = calloc(1, sizeof(fits));
-			if (readfits(filename, dark_fit, NULL)) {
-				const char *msg = _("NOT USING DARK: cannot open the file\n");
-				siril_log_message("%s\n", msg);
-				set_progress_bar_data(msg, PROGRESS_DONE);
-				free(dark_fit);
-				gtk_entry_set_text(entry, "");
-			} else {
-				if (dark_fit->naxes[2] != gfit.naxes[2]) {
-					const char *msg = _("NOT USING DARK: number of channels is different");
-					siril_log_message("%s\n", msg);
-					set_progress_bar_data(msg, PROGRESS_DONE);
-					free(dark_fit);
-					gtk_entry_set_text(entry, "");
-				}
-				else {
-					ret_value |= USE_DARK;
-					if (single_image_is_loaded())
-						com.uniq->dark = dark_fit;
-					else
-						com.seq.dark = dark_fit;
-				}
-			}
-		}
-		// if dark optimization selected
-		tbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkDarkOptimize"));
-		if (gtk_toggle_button_get_active(tbutton) == TRUE) {
-			ret_value |= USE_OPTD;
-		}
-
-		// if cosmetic correction selected
-		tbutton = GTK_TOGGLE_BUTTON(lookup_widget("cosmEnabledCheck"));
-		if (gtk_toggle_button_get_active(tbutton) == TRUE) {
-			ret_value |= USE_COSME;
-		}
-	}
-
-	// if flat selected
-	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("useflat_button"));
-	if (gtk_toggle_button_get_active(tbutton) == TRUE) {
-		const char *filename;
-		entry = GTK_ENTRY(lookup_widget("flatname_entry"));
-		filename = gtk_entry_get_text(entry);
-		if (filename[0] == '\0') {
-			gtk_toggle_button_set_active(tbutton, FALSE);
-		} else {
-			fits *flat_fit;
-			set_progress_bar_data(_("Opening flat image..."), PROGRESS_NONE);
-			flat_fit = calloc(1, sizeof(fits));
-			if (readfits(filename, flat_fit, NULL)) {
-				const char *msg =_("NOT USING FLAT: cannot open the file\n");
-				siril_log_message("%s\n", msg);
-				set_progress_bar_data(msg, PROGRESS_DONE);
-				free(flat_fit);
-				gtk_entry_set_text(entry, "");
-			} else {
-				if (flat_fit->naxes[2] != gfit.naxes[2]) {
-					const char *msg = _("NOT USING FLAT: number of channels is different");
-					siril_log_message("%s\n", msg);
-					set_progress_bar_data(msg, PROGRESS_DONE);
-					free(flat_fit);
-					gtk_entry_set_text(entry, "");
-				}
-				else {
-					ret_value |= USE_FLAT;
-					if (single_image_is_loaded())
-						com.uniq->flat = flat_fit;
-					else
-						com.seq.flat = flat_fit;
-				}
-			}
-		}
-	}
-
-	// if offset selected
 	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("useoffset_button"));
-	if (gtk_toggle_button_get_active(tbutton) == TRUE) {
+	if (gtk_toggle_button_get_active(tbutton)) {
 		const char *filename;
 		entry = GTK_ENTRY(lookup_widget("offsetname_entry"));
 		filename = gtk_entry_get_text(entry);
 		if (filename[0] == '\0') {
 			gtk_toggle_button_set_active(tbutton, FALSE);
 		} else {
-			fits *bias_fit;
+			const char *error = NULL;
 			set_progress_bar_data(_("Opening offset image..."), PROGRESS_NONE);
-			bias_fit = calloc(1, sizeof(fits));
-			if (readfits(filename, bias_fit, NULL)) {
-				const char *msg =_("NOT USING OFFSET: cannot open the file\n");
-				siril_log_message("%s\n", msg);
-				set_progress_bar_data(msg, PROGRESS_DONE);
-				free(bias_fit);
+			args->bias = calloc(1, sizeof(fits));
+			if (!readfits(filename, args->bias, NULL)) {
+				if (args->bias->naxes[2] != gfit.naxes[2]) {
+					error = _("NOT USING OFFSET: number of channels is different");
+				} else if (args->bias->naxes[0] != gfit.naxes[0] ||
+					args->bias->naxes[1] != gfit.naxes[1]) {
+					error = _("NOT USING OFFSET: image dimensions are different");
+				} else {
+					args->use_bias = TRUE;
+				}
+
+			} else error = _("NOT USING OFFSET: cannot open the file\n");
+			if (error) {
+				siril_log_message("%s\n", error);
+				set_progress_bar_data(error, PROGRESS_DONE);
+				free(args->bias);
 				gtk_entry_set_text(entry, "");
-			} else {
-				if (bias_fit->naxes[2] != gfit.naxes[2]) {
-					const char *msg = _("NOT USING OFFSET: number of channels is different");
-					siril_log_message("%s\n", msg);
-					set_progress_bar_data(msg, PROGRESS_DONE);
-					free(bias_fit);
-					gtk_entry_set_text(entry, "");
-				}
-				else {
-					ret_value |= USE_OFFSET;
-					if (single_image_is_loaded())
-						com.uniq->offset = bias_fit;
-					else
-						com.seq.offset = bias_fit;
-				}
+				args->use_bias = FALSE;
 			}
 		}
 	}
-	return ret_value;
+
+	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("usedark_button"));
+	if (gtk_toggle_button_get_active(tbutton)) {
+		const char *filename;
+		entry = GTK_ENTRY(lookup_widget("darkname_entry"));
+		filename = gtk_entry_get_text(entry);
+		if (filename[0] == '\0') {
+			gtk_toggle_button_set_active(tbutton, FALSE);
+		} else {
+			const char *error = NULL;
+			set_progress_bar_data(_("Opening dark image..."), PROGRESS_NONE);
+			args->dark = calloc(1, sizeof(fits));
+			if (!readfits(filename, args->dark, NULL)) {
+				if (args->dark->naxes[2] != gfit.naxes[2]) {
+					error = _("NOT USING DARK: number of channels is different");
+				} else if (args->dark->naxes[0] != gfit.naxes[0] ||
+					args->dark->naxes[1] != gfit.naxes[1]) {
+					error = _("NOT USING DARK: image dimensions are different");
+				} else {
+					args->use_dark = TRUE;
+				}
+
+			} else error = _("NOT USING DARK: cannot open the file\n");
+			if (error) {
+				siril_log_message("%s\n", error);
+				set_progress_bar_data(error, PROGRESS_DONE);
+				free(args->dark);
+				gtk_entry_set_text(entry, "");
+				args->use_dark = FALSE;
+			}
+		}
+		// dark optimization
+		tbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkDarkOptimize"));
+		args->use_dark_optim = gtk_toggle_button_get_active(tbutton);
+
+		// cosmetic correction
+		tbutton = GTK_TOGGLE_BUTTON(lookup_widget("cosmEnabledCheck"));
+		args->use_cosmetic_correction = gtk_toggle_button_get_active(tbutton);
+	}
+
+	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("useflat_button"));
+	if (gtk_toggle_button_get_active(tbutton)) {
+		const char *filename;
+		entry = GTK_ENTRY(lookup_widget("flatname_entry"));
+		filename = gtk_entry_get_text(entry);
+		if (filename[0] == '\0') {
+			gtk_toggle_button_set_active(tbutton, FALSE);
+		} else {
+			const char *error = NULL;
+			set_progress_bar_data(_("Opening flat image..."), PROGRESS_NONE);
+			args->flat = calloc(1, sizeof(fits));
+			if (!readfits(filename, args->flat, NULL)) {
+				if (args->flat->naxes[2] != gfit.naxes[2]) {
+					error = _("NOT USING FLAT: number of channels is different");
+				} else if (args->flat->naxes[0] != gfit.naxes[0] ||
+					args->flat->naxes[1] != gfit.naxes[1]) {
+					error = _("NOT USING FLAT: image dimensions are different");
+				} else {
+					args->use_flat = TRUE;
+				}
+
+			} else error = _("NOT USING FLAT: cannot open the file\n");
+			if (error) {
+				siril_log_message("%s\n", error);
+				set_progress_bar_data(error, PROGRESS_DONE);
+				free(args->flat);
+				gtk_entry_set_text(entry, "");
+				args->use_flat = FALSE;
+			}
+		}
+	}
 }
 
 void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
+	struct preprocessing_data *args;
 	GtkEntry *entry;
 	GtkWidget *autobutton;
 	GtkToggleButton *CFA, *debayer, *equalize_cfa, *compatibility, *stretch_cfa;
@@ -3953,24 +3934,20 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 		return;
 	}
 
-	com.preprostatus = test_for_master_files();
-
-	if (com.preprostatus == 0)
-		return;
-
-	struct preprocessing_data *args = malloc(sizeof(struct preprocessing_data));
-	gettimeofday(&args->t_start, NULL);
+	args = calloc(1, sizeof(struct preprocessing_data));
+	test_for_master_files(args);
 	siril_log_color_message(_("Preprocessing...\n"), "red");
+	gettimeofday(&args->t_start, NULL);
+	args->autolevel = TRUE;
+	args->normalisation = 1.0f;	// will be updated anyway
 
 	// set output filename (preprocessed file name prefix)
 	entry = GTK_ENTRY(lookup_widget("preproseqname_entry"));
+	args->ppprefix = gtk_entry_get_text(entry);
 
-	/* Get parameters */
 	autobutton = lookup_widget("checkbutton_auto_evaluate");
 	args->autolevel = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autobutton));
-	if (args->autolevel) {
-		args->normalisation = 1.0f;	// will be updated anyway
-	} else {
+	if (!args->autolevel) {
 		GtkEntry *norm_entry = GTK_ENTRY(lookup_widget("entry_flat_norm"));
 		args->normalisation = atof(gtk_entry_get_text(norm_entry));
 	}
@@ -3985,13 +3962,11 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkSigCold"))))
 		args->sigma[0] = gtk_spin_button_get_value(sigCold);
-	else
-		args->sigma[0] = -1.0;
+	else args->sigma[0] = -1.0;
 
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkSigHot"))))
 		args->sigma[1] = gtk_spin_button_get_value(sigHot);
-	else
-		args->sigma[1] = -1.0;
+	else args->sigma[1] = -1.0;
 
 	args->is_cfa = gtk_toggle_button_get_active(CFA);
 	args->compatibility = gtk_toggle_button_get_active(compatibility);
@@ -4001,40 +3976,30 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 
 	/****/
 
-	if (single_image_is_loaded()) {
-		int success = 0;
-		args->offset = com.uniq->offset;
-		args->dark = com.uniq->dark;
-		args->flat = com.uniq->flat;
-		args->is_sequence = FALSE;
-
-		com.uniq->ppprefix = strdup(gtk_entry_get_text(entry));
-		// start preprocessing
-		set_cursor_waiting(TRUE);
-		control_window_switch_to_tab(OUTPUT_LOGS);
-		success = seqpreprocess(args) == GPOINTER_TO_INT(0);
-		if (success)
-			set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
-		else
-			set_progress_bar_data(_("Error in preprocessing."), PROGRESS_NONE);
-		// end_sequence_prepro is also executed there by seqpreprocess
-
-		free(com.uniq->ppprefix);
-		com.uniq->ppprefix = NULL;
-		unique_free_preprocessing_data(com.uniq);
-	} else {	// sequence, executed in a background thread
-		args->seq = &com.seq;
-		args->offset = args->seq->offset;
-		args->dark = args->seq->dark;
-		args->flat = args->seq->flat;
+	if (sequence_is_loaded()) {
 		args->is_sequence = TRUE;
-
-		args->seq->ppprefix = strdup(gtk_entry_get_text(entry));
-
-		// start preprocessing
+		args->seq = &com.seq;
 		set_cursor_waiting(TRUE);
 		control_window_switch_to_tab(OUTPUT_LOGS);
-		start_in_new_thread(seqpreprocess, args);
+		start_sequence_preprocessing(args, FALSE);
+	} else {
+		int retval;
+		args->is_sequence = FALSE;
+		set_cursor_waiting(TRUE);
+		control_window_switch_to_tab(OUTPUT_LOGS);
+
+		retval = preprocess_single_image(args);
+
+		free(args);
+
+		if (retval)
+			set_progress_bar_data(_("Error in preprocessing."), PROGRESS_NONE);
+		else {
+			set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
+			invalidate_gfit_histogram();
+			open_single_image_from_gfit();
+		}
+		set_cursor_waiting(FALSE);
 	}
 }
 

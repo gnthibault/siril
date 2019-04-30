@@ -153,8 +153,7 @@ int read_single_image(const char* filename, fits *dest, char **realname_out) {
 }
 
 static gboolean end_open_single_image(gpointer arg) {
-	char *name = (char *)arg;
-	open_single_image_from_gfit(name);
+	open_single_image_from_gfit();
 	return FALSE;
 }
 
@@ -203,10 +202,8 @@ int open_single_image(const char* filename) {
 }
 
 /* creates a single_image structure and displays a single image, found in gfit.
- * The argument, realname, should be the file path, and it must be allocated
- * on the heap, since destroying the single image will attempt to free it.
  */
-void open_single_image_from_gfit(char *realname) {
+void open_single_image_from_gfit() {
 	/* now initializing everything
 	 * code based on seq_load_image or set_seq (sequence.c) */
 
@@ -228,7 +225,6 @@ void open_single_image_from_gfit(char *realname) {
 	update_MenuItem();
 
 	redraw(com.cvport, REMAP_ALL);
-	update_used_memory();
 	show_main_gray_window();
 	adjust_vport_size_to_image();
 	update_gfit_histogram_if_needed();
@@ -237,6 +233,7 @@ void open_single_image_from_gfit(char *realname) {
 	else
 		hide_rgb_window();
 	close_tab();
+	update_used_memory();
 }
 
 /* searches the image for minimum and maximum pixel value, on each layer
@@ -332,29 +329,6 @@ void adjust_cutoff_from_updated_gfit() {
 		update_gfit_histogram_if_needed();
 		init_layers_hi_and_lo_values(com.sliders);
 		set_cutoff_sliders_values();
-	}
-}
-
-void unique_free_preprocessing_data(single *uniq) {
-	// free opened files
-	if (uniq->ppprefix) {
-		free(uniq->ppprefix);
-		uniq->ppprefix = NULL;
-	}
-	if (uniq->offset) {
-		clearfits(uniq->offset);
-		free(uniq->offset);
-		uniq->offset = NULL;
-	}
-	if (uniq->dark) {
-		clearfits(uniq->dark);
-		free(uniq->dark);
-		uniq->dark = NULL;
-	}
-	if (uniq->flat) {
-		clearfits(uniq->flat);
-		free(uniq->flat);
-		uniq->flat = NULL;
 	}
 }
 

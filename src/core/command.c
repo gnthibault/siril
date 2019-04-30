@@ -43,6 +43,7 @@
 #include "proto.h"
 #include "undo.h"
 #include "initfile.h"
+#include "preprocess.h"
 #include "processing.h"
 #include "sequence_filtering.h"
 #include "io/conversion.h"
@@ -1214,7 +1215,7 @@ int process_new(int nb){
 	com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
 	com.uniq->fit = &gfit;
 
-	open_single_image_from_gfit(com.uniq->filename);
+	open_single_image_from_gfit();
 	return 0;
 }
 
@@ -2338,25 +2339,13 @@ failure:
 	return 1;
 }
 
-// preprocess sequencename -bias= -dark= -flat= -cfa -debayer
 int process_preprocess(int nb) {
-	struct preprocessing_data *args = malloc(sizeof(struct preprocessing_data));
+	struct preprocessing_data *args;
 	int nb_command_max = 10;
-
-	com.preprostatus = 0;
-	gboolean is_cfa = FALSE;
-	gboolean do_debayer = FALSE;
-	gboolean stretch_cfa = FALSE;
-	gboolean flip = FALSE;
-	gboolean equalize_cfa = FALSE;
 	gchar *file;
-	fits *master_bias = NULL;
-	fits *master_dark = NULL;
-	fits *master_flat = NULL;
 	int i, retvalue = 0;
 
 	if (word[1][0] == '\0') {
-		free(args);
 		return -1;
 	}
 
@@ -2369,7 +2358,6 @@ int process_preprocess(int nb) {
 		if (check_seq(FALSE)) {
 			siril_log_message(_("No sequence `%s' found.\n"), file);
 			g_free(file);
-			free(args);
 			return 1;
 		}
 	}
@@ -2377,109 +2365,82 @@ int process_preprocess(int nb) {
 	if (seq == NULL) {
 		siril_log_message(_("No sequence `%s' found.\n"), file);
 		g_free(file);
-		free(args);
 		return 1;
 	}
 	g_free(file);
 	if (seq_check_basic_data(seq, FALSE) == -1) {
 		free(seq);
-		free(args);
 		return 1;
 	}
+
+	args = calloc(1, sizeof(struct preprocessing_data));
+
 	/* checking for options */
 	for (i = 2; i < nb_command_max; i++) {
 		if (word[i]) {
 			if (g_str_has_prefix(word[i], "-bias=")) {
-				master_bias = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, master_bias, NULL)) {
-					com.preprostatus |= USE_OFFSET;
-					seq->offset = master_bias;
+				args->bias = calloc(1, sizeof(fits));
+				if (!readfits(word[i] + 6, args->bias, NULL)) {
+					args->use_bias = TRUE;
 				} else {
 					retvalue = 1;
+					free(args->bias);
 					break;
 				}
 			} else if (g_str_has_prefix(word[i], "-dark=")) {
-				master_dark = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, master_dark, NULL)) {
-					com.preprostatus |= USE_DARK;
-					com.preprostatus |= USE_COSME;
-					seq->dark = master_dark;
+				args->dark = calloc(1, sizeof(fits));
+				if (!readfits(word[i] + 6, args->dark, NULL)) {
+					args->use_dark = TRUE;
+					args->use_cosmetic_correction = TRUE;
 				} else {
 					retvalue = 1;
+					free(args->dark);
 					break;
 				}
 			} else if (g_str_has_prefix(word[i], "-flat=")) {
-				master_flat = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, master_flat, NULL)) {
-					com.preprostatus |= USE_FLAT;
-					seq->flat = master_flat;
+				args->flat = calloc(1, sizeof(fits));
+				if (!readfits(word[i] + 6, args->flat, NULL)) {
+					args->use_flat = TRUE;
 				} else {
 					retvalue = 1;
+					free(args->flat);
 					break;
 				}
 			} else if (!strcmp(word[i], "-opt")) {
-				com.preprostatus |= USE_OPTD;
+				args->use_dark_optim = TRUE;
 			} else if (!strcmp(word[i], "-cfa")) {
-				is_cfa = TRUE;
+				args->is_cfa = TRUE;
 			} else if (!strcmp(word[i], "-debayer")) {
-				do_debayer = TRUE;
+				args->debayer = TRUE;
 			} else if (!strcmp(word[i], "-stretch")) {
-				stretch_cfa = TRUE;
+				args->stretch_cfa = TRUE;
 			} else if (!strcmp(word[i], "-flip")) {
-				flip = TRUE;
+				args->compatibility = TRUE;
 			} else if (!strcmp(word[i], "-equalize_cfa")) {
-				equalize_cfa = TRUE;
+				args->equalize_cfa = TRUE;
 			}
 		}
 	}
 
 	if (retvalue) {
-		if (master_bias) free(master_bias);
-		if (master_dark) free(master_dark);
-		if (master_flat) free(master_flat);
 		free(args);
 		return -1;
 	}
 
 	siril_log_color_message(_("Preprocessing...\n"), "red");
 	gettimeofday(&args->t_start, NULL);
-
-	/* Get parameters */
 	args->seq = seq;
+	args->is_sequence = TRUE;
 	args->autolevel = TRUE;
 	args->normalisation = 1.0f;	// will be updated anyway
-
 	args->sigma[0] = -1.00; /* cold pixels: it is better to deactive it */
-	args->sigma[1] =  3.00; /* hot poxels */
-
-	args->compatibility = flip;
-
-	args->debayer = do_debayer;
-	args->stretch_cfa = stretch_cfa;
-	args->is_cfa = is_cfa;
-	args->equalize_cfa = equalize_cfa;
-
-	args->offset = args->seq->offset;
-	args->dark = args->seq->dark;
-	args->flat = args->seq->flat;
-	args->is_sequence = TRUE;
-
-	/****/
-
-	// sequence, executed in a background thread
-	args->seq->ppprefix = strdup("pp_");
-
-	// remove old sequence
-	char *ppseqname = malloc(
-			strlen(args->seq->ppprefix) + strlen(args->seq->seqname) + 5);
-	sprintf(ppseqname, "%s%s.seq", args->seq->ppprefix, args->seq->seqname);
-	unlink(ppseqname);
-	free(ppseqname);
+	args->sigma[1] =  3.00; /* hot pixels */
+	args->ppprefix = "pp_";
 
 	// start preprocessing
 	set_cursor_waiting(TRUE);
-	start_in_new_thread(seqpreprocess, args);
 
+	start_sequence_preprocessing(args, TRUE);
 	return 0;
 }
 

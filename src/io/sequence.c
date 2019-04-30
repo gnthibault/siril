@@ -1115,32 +1115,7 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 		free_photometry_set(seq, j);
 	}
 
-	sequence_free_preprocessing_data(seq);
-
 	if (free_seq_too)	free(seq);
-}
-
-void sequence_free_preprocessing_data(sequence *seq) {
-	// free opened files
-	if (seq->ppprefix) {
-		free(seq->ppprefix);
-		seq->ppprefix = NULL;
-	}
-	if (seq->offset) {
-		clearfits(seq->offset);
-		free(seq->offset);
-		seq->offset = NULL;
-	}
-	if (seq->dark) {
-		clearfits(seq->dark);
-		free(seq->dark);
-		seq->dark = NULL;
-	}
-	if (seq->flat) {
-		clearfits(seq->flat);
-		free(seq->flat);
-		seq->flat = NULL;
-	}
 }
 
 gboolean sequence_is_loaded() {

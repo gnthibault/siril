@@ -117,13 +117,6 @@ typedef enum {
 	TYPEWEBM = (1 << 13),
 } image_type;
 
-#define USE_DARK	0x01
-#define USE_FLAT	0x02
-#define USE_OFFSET	0x04
-#define USE_COSME	0x08	/* cosmetic correction */
-#define USE_OPTD	0x10	/* dark optimization */
-
-
 /* indices of the image data layers */
 #define BW_LAYER 	0
 #define RLAYER		0
@@ -298,23 +291,6 @@ struct imdata {
 	char *date_obs;		/* date of the observation, processed and copied from the header */
 };
 
-/* preprocessing data from GUI */
-struct preprocessing_data {
-	struct timeval t_start;
-	fits *dark, *offset, *flat;
-	gboolean is_sequence;
-	sequence *seq;
-	gboolean autolevel;
-	double sigma[2];
-	gboolean is_cfa;
-	gboolean debayer;
-	gboolean compatibility;
-	gboolean stretch_cfa;
-	gboolean equalize_cfa;
-	float normalisation;
-	int retval;
-};
-
 /* registration data, exists once for each image and each layer */
 struct registration_data {
 	float shiftx, shifty;	// we could have a subpixel precision, but is it needed? saved
@@ -364,10 +340,6 @@ struct sequ {
 	omp_lock_t *fd_lock;	// locks for open-mode threaded operations
 #endif
 
-	fits *offset;		// the image containing offset data
-	fits *dark;		// the image containing dark data
-	fits *flat;		// the image containing flat data
-	char *ppprefix;		// prefix for filename output of preprocessing
 	int current;		// file number currently loaded in gfit (or displayed)
 
 	/* registration previsualisation and manual alignment data */
@@ -391,12 +363,6 @@ struct single_image {
 	int nb_layers;		// number of layers embedded in each image file
 	layer_info *layers;	// info about layers
 	fits *fit;		// the fits is still gfit, but a reference doesn't hurt
-
-	/* enabling pre-processing on a single image */
-	fits *offset;		// the image containing offset data
-	fits *dark;		// the image containing dark data
-	fits *flat;		// the image containing flat data
-	char *ppprefix;		// prefix for filename output of preprocessing
 };
 
 struct wcs_struct {
@@ -566,7 +532,6 @@ struct cominf {
 	GtkAdjustment *hadj[MAXVPORT];	// adjustments of vport scrollbars
 	GtkAdjustment *vadj[MAXVPORT];	// adjustments of vport scrollbars
 	sliders_mode sliders;		// 0: min/max, 1: MIPS-LO/HI, 2: user
-	int preprostatus;
 	gboolean prepro_cfa;	// Use to save type of sensor for cosmetic correction in preprocessing
 	gboolean prepro_equalize_cfa;  // Use to save if flat will be equalized in preprocessing
 	gboolean show_excluded;		// show excluded images in sequences
