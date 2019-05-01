@@ -161,9 +161,6 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 	struct preprocessing_data *prepro = args->user;
 
 	if (prepro->seq) {
-		if (ser_prepare_hook(args))
-			return 1;
-
 		// checking disk space: removing old sequence and computing free space
 		remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
 
@@ -171,6 +168,10 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 		if (prepro->debayer)
 			size *= 3;
 		if (test_available_space(size))
+			return 1;
+
+		// handling SER
+		if (ser_prepare_hook(args))
 			return 1;
 	}
 
