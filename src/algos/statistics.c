@@ -212,23 +212,25 @@ static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
 		const WORD data[], const size_t stride, const size_t n) {
 	/* finds the smallest and largest members of a dataset */
 
-	WORD min = data[0 * stride];
-	WORD max = data[0 * stride];
-	size_t i;
+	if (n > 0 && data) {
+		WORD min = data[0 * stride];
+		WORD max = data[0 * stride];
+		size_t i;
 
 #pragma omp parallel for num_threads(com.max_thread) schedule(static) if(n > 10000) reduction(max:max) reduction(min:min)
-	for (i = 0; i < n; i++) {
-		WORD xi = data[i * stride];
+		for (i = 0; i < n; i++) {
+			WORD xi = data[i * stride];
 
-		if (xi < min)
-			min = xi;
+			if (xi < min)
+				min = xi;
 
-		if (xi > max)
-			max = xi;
+			if (xi > max)
+				max = xi;
+		}
+
+		*min_out = min;
+		*max_out = max;
 	}
-
-	*min_out = min;
-	*max_out = max;
 }
 
 /* this function tries to get the requested stats from the passed stats,
@@ -266,7 +268,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	/* Calculation of min and max */
 	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min < 0. || stat->max < 0.)) {
 		// TODO 1.0: change to double
-		WORD min, max, norm;
+		WORD min = 0, max = 0, norm = 0;
 		if (!data) return NULL;	// not in cache, don't compute
 		siril_debug_print("- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
 		siril_stats_ushort_minmax(&min, &max, data, 1, stat->total);

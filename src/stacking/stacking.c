@@ -1613,7 +1613,10 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 		norm_to_16 = lookup_widget("check_normalise_to_16b");
 		result_label = GTK_LABEL(lookup_widget("stackfilter_label"));
 	}
-	if (!sequence_is_loaded()) return;
+	if (!sequence_is_loaded()) {
+		gtk_widget_set_sensitive(go_stack, FALSE);
+		return;
+	}
 	stackparam.seq = &com.seq;
 
 	if (!dont_change_stack_type && stackparam.seq->selnum < stackparam.seq->number) {

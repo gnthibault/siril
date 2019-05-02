@@ -4009,23 +4009,25 @@ void on_showexcluded_button_toggled(GtkToggleButton *togglebutton,
 }
 
 void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	free_reference_image();
-	if ((gtk_toggle_button_get_active(togglebutton) == FALSE)) {
-		if (com.seq.reference_image == com.seq.current)
-			com.seq.reference_image = -1;
-	} else {
-		com.seq.reference_image = com.seq.current;
-		test_and_allocate_reference_image(-1);
-		// a reference image should not be excluded to avoid confusion
-		if (!com.seq.imgparam[com.seq.current].incl) {
-			toggle_image_selection(com.seq.current);
+	if (sequence_is_loaded()) {
+		free_reference_image();
+		if ((gtk_toggle_button_get_active(togglebutton) == FALSE)) {
+			if (com.seq.reference_image == com.seq.current)
+				com.seq.reference_image = -1;
+		} else {
+			com.seq.reference_image = com.seq.current;
+			test_and_allocate_reference_image(-1);
+			// a reference image should not be excluded to avoid confusion
+			if (!com.seq.imgparam[com.seq.current].incl) {
+				toggle_image_selection(com.seq.current);
+			}
 		}
+		sequence_list_change_reference();
+		update_stack_interface(FALSE);// get stacking info and enable the Go button
+		adjust_sellabel();	// reference image is named in the label
+		writeseqfile(&com.seq);
+		drawPlot();		// update plots
 	}
-	sequence_list_change_reference();
-	update_stack_interface(FALSE);	// get stacking info and enable the Go button
-	adjust_sellabel();	// reference image is named in the label
-	writeseqfile(&com.seq);
-	drawPlot();		// update plots
 }
 
 
