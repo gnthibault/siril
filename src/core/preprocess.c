@@ -169,6 +169,10 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 			size *= 3;
 		if (test_available_space(size))
 			return 1;
+
+		// handling SER
+		if (ser_prepare_hook(args))
+			return 1;
 	}
 
 	// precompute flat levels
@@ -237,10 +241,11 @@ static void clear_preprocessing_data(struct preprocessing_data *prepro) {
 }
 
 static int prepro_finalize_hook(struct generic_seq_args *args) {
+	int retval = ser_finalize_hook(args);
 	struct preprocessing_data *prepro = args->user;
 	clear_preprocessing_data(prepro);
 	free(args->user);
-	return 0;
+	return retval;
 }
 
 gpointer prepro_worker(gpointer p) {
