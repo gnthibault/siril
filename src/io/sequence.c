@@ -22,6 +22,10 @@
 #include <config.h>
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -58,6 +62,7 @@
 #include "algos/geometry.h"
 #include "registration/registration.h"
 #include "stacking/stacking.h"	// for update_stack_interface
+
 
 /* com.seq is a static struct containing the sequence currently selected by the
  * user from the interface. It may change to be a pointer to any sequence
@@ -569,8 +574,25 @@ int64_t seq_compute_size(sequence *seq, int nb_frames) {
 	case SEQ_REGULAR:
 		ref = sequence_find_refimage(seq);
 		if (fit_sequence_get_image_filename(seq, ref, filename, TRUE)) {
-			if (!g_stat(filename, &sts)) {
-				frame_size = sts.st_size;       // force 64 bits
+			if (!g_lstat(filename, &sts)) {				
+#ifndef _WIN32
+				if ( S_ISLNK(sts.st_mode) )
+#else
+				if (GetFileAttributesA(filename) & FILE_ATTRIBUTE_REPARSE_POINT )
+#endif					
+				{
+					gchar *target_link = g_file_read_link(filename,NULL) ; 
+					if ( !g_lstat(target_link, &sts) )
+					{
+						frame_size = sts.st_size;       // force 64 bits
+					}
+					g_free(target_link);
+				}
+				else
+				{
+					frame_size = sts.st_size;       // force 64 bits
+				}
+
 				size = frame_size * nb_frames;
 			}
 		}
