@@ -485,7 +485,7 @@ void on_menuitemPSF_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_data)
 }
 
 void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data) {
-	int nbstars;
+	int nbstars = 0;
 	int layer = RLAYER;
 	if (!single_image_is_loaded() && !sequence_is_loaded()) {
 		siril_log_color_message(_("Load an image first, aborted.\n"), "red");
@@ -497,7 +497,8 @@ void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data)
 	delete_selected_area();
 	com.stars = peaker(&gfit, layer, &com.starfinder_conf, &nbstars, NULL, TRUE);
 	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);
-	refresh_stars_list(com.stars);
+	if (com.stars)
+		refresh_stars_list(com.stars);
 	set_cursor_waiting(FALSE);
 }
 

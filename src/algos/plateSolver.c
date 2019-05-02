@@ -1047,7 +1047,7 @@ gpointer match_catalog(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	FILE *catalog;
 	fitted_PSF **cstars;
-	int n_fit, n_cat, n, i = 0;
+	int n_fit = 0, n_cat = 0, n = 0, i = 0;
 	int attempt = 1;
 	point image_size = { args->fit->rx, args->fit->ry };
 	Homography H = { 0 };
@@ -1063,7 +1063,7 @@ gpointer match_catalog(gpointer p) {
 		}
 		n_fit = i;
 	}
-	if (n_fit < AT_MATCH_STARTN_LINEAR) {
+	if (!com.stars || n_fit < AT_MATCH_STARTN_LINEAR) {
 		args->message = g_strdup_printf(_("There are not enough stars picked in the image. "
 				"At least %d stars are needed."), AT_MATCH_STARTN_LINEAR);
 		siril_log_message("%s\n", args->message);
@@ -1074,7 +1074,7 @@ gpointer match_catalog(gpointer p) {
 
 	cstars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
 	if (cstars == NULL) {
-		printf("Memory allocation failed: peaker\n");
+		PRINT_ALLOC_ERR;
 		args->ret = 1;
 		siril_add_idle(end_plate_solver, args);
 		return GINT_TO_POINTER(1);
@@ -1083,7 +1083,7 @@ gpointer match_catalog(gpointer p) {
 	/* open the file */
 	catalog = g_fopen(args->catalogStars, "r");
 	if (catalog == NULL) {
-		fprintf(stderr, "match_catalog: error opening file: %s\n", args->catalogStars);
+		PRINT_ALLOC_ERR;
 		free(cstars);
 		args->ret = 1;
 		siril_add_idle(end_plate_solver, args);
