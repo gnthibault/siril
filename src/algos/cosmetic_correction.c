@@ -160,7 +160,7 @@ long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 	*ihot = 0;
 	for (i = 0; i < fit->rx * fit->ry; i++) {
 		if (buf[i] >= thresHot) (*ihot)++;
-		else if (buf[i] <= thresCold) (*icold)++;
+		else if (buf[i] < thresCold) (*icold)++;
 	}
 
 	return (*icold + *ihot);
@@ -209,7 +209,7 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 	*ihot = 0;
 	for (i = 0; i < fit->rx * fit->ry; i++) {
 		if (buf[i] >= thresHot) (*ihot)++;
-		else if (buf[i] <= thresCold) (*icold)++;
+		else if (buf[i] < thresCold) (*icold)++;
 	}
 
 	/** Second we store deviant pixels in p*/

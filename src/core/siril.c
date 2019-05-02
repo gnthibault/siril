@@ -235,7 +235,7 @@ int siril_fdiv(fits *a, fits *b, float coef) {
 				buf[i] = 1;		// avoid division by 0
 			temp = ((double) coef * ((double) gbuf[i] / (double) buf[i]));
 			if (temp > USHRT_MAX_DOUBLE) {
-				fprintf(stderr, "OVERFLOW in FDIV\n");
+				siril_debug_print(stderr, "OVERFLOW in FDIV\n");
 				retvalue = 1;
 			}
 			gbuf[i] = round_to_WORD(temp);
