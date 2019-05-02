@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.5)
 #################
 #  Generic Part #
 #################
-project(siril)
-set(OUTPUT_NAME siril)
+project(libsiril)
+set(OUTPUT_NAME libsiril)
 
 ###############
 #  Src files  #
@@ -141,7 +141,6 @@ include_directories(
 )
 
 set(sources
-  main.c
   ${core_sources}
   ${io_sources}
   ${gui_sources}
@@ -162,7 +161,7 @@ set(sources
 #  Executable  #
 ################
 
-add_executable(${OUTPUT_NAME} SHARED ${sources})
+add_library(${OUTPUT_NAME} SHARED ${sources})
 target_link_libraries(${OUTPUT_NAME}
   ${boost_deps}
   ${tiff_deps}

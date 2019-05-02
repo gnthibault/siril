@@ -3,14 +3,13 @@ cmake_minimum_required(VERSION 3.5)
 ####################
 #  Lib Dependancy  #
 ####################
-
 include_directories( "${PRJ_ROOT_DIR}/src" )
-set(lib_deps pdwt)
+set(lib_deps libsiril)
 
 ################
 #  Build test  #
 ################
-add_lib_executable(Buffer ${lib_deps})
+#add_lib_executable(Buffer ${lib_deps})
 
 if (CUDA_FOUND AND USE_CUDA)
   #add_cuda_lib_executable(CudaBuffer ${lib_deps})
@@ -19,7 +18,7 @@ endif ()
 ##############
 #  Unit test #
 ##############
-add_test(NAME Buffer COMMAND Buffer)
+#add_test(NAME Buffer COMMAND Buffer)
 
 if (CUDA_FOUND AND USE_CUDA)
 #  add_test(NAME CudaBuffer COMMAND CudaBuffer)
@@ -32,5 +31,5 @@ endif ()
 #  "${TEST_ROOT_DIR}/common/data/lena.dat"
 #)
 
-install(FILES ${DATA_FILES}
-  DESTINATION ${TEST_BIN_DIR} COMPONENT data)
+#install(FILES ${DATA_FILES}
+#  DESTINATION ${TEST_BIN_DIR} COMPONENT data)

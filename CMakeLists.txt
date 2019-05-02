@@ -1,4 +1,4 @@
-make_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5)
 
 project(siril)
 set(PROJECT_NAME siril)
@@ -255,7 +255,7 @@ endif ()
 #############
 # Use the package PkgConfig to detect GTK+ headers/library files
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK, gtk+-3.0 >= 3.12.0)
+pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
 include_directories(${GTK3_INCLUDE_DIRS})
 link_directories(${GTK3_LIBRARY_DIRS})
 add_definitions(${GTK3_CFLAGS_OTHER})
@@ -294,7 +294,7 @@ endif ()
 
 # Add a target to generate Cppcheck report
 include(${PRJ_CMAKE_DIR}/gen_cppcheck.cmake)
-GENERATE_CPPCHECK(SOURCEDIRS src app test 
+GENERATE_CPPCHECK(SOURCEDIRS src 
   ENABLE_IDS warning style performance portability information
   INCLUDES ${CURRENT_SOURCE_DIR}
   PROJECT_NAME ${PROJECT_NAME}
