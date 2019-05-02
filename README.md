@@ -5,7 +5,43 @@ SIRIL
 > <<https://free-astro.org/index.php/Siril>>
 > <<https://www.siril.org>>
 
-Summary
+
+Shame on the fork
+-----------------
+
+I promise I will copy 100x I won't destroy other's work in my fork. Now lets talk about serious business.
+
+## Installation
+
+# Cloning this repository
+
+* The simplest option is:
+    ```bash
+    git clone --recursive https://gitlab.com/gnthibault/siril.git
+    ```
+    This will download the submodule up to the version that is used in this project. To update to the latest commit of the submodule itself:
+
+    ```bash
+    git submodule update --remote
+    ```
+
+* One could also directly download the submodule from the source:
+
+    ```bash
+    git clone https://gitlab.com/gnthibault/siril.git
+    cd ./binding/python/pybind11/
+    git submodule init
+    git submodule update
+    ```
+
+* Dependencies for ubuntu
+    See mainly here for dependencies: <https://free-astro.org/index.php/Siril:install>
+
+    ```bash
+    sudo apt-get -y install automake autoconf build-essential intltool libgtk-3-dev fftw3-dev libgsl-dev libcfitsio3-dev libconfig++-dev libtiff-dev libjpeg-dev libraw-dev libffms2-dev libopencv-dev libcurl4-gnutls-dev libboost-all-dev
+    ```
+
+mmary
 -------
 SIRIL is an astronomical image processing tool.
 
