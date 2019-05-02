@@ -38,10 +38,55 @@ I promise I will copy 100x I won't destroy other's work in my fork. Now lets tal
     See mainly here for dependencies: <https://free-astro.org/index.php/Siril:install>
 
     ```bash
-    sudo apt-get -y install automake autoconf build-essential intltool libgtk-3-dev fftw3-dev libgsl-dev libcfitsio3-dev libconfig++-dev libtiff-dev libjpeg-dev libraw-dev libffms2-dev libopencv-dev libcurl4-gnutls-dev libboost-all-dev
+    sudo apt-get -y install automake autoconf build-essential intltool libgtk-3-dev fftw3-dev libgsl-dev libcfitsio3-dev libconfig++-dev libtiff-dev libjpeg-dev libraw-dev libffms2-dev libopencv-dev libcurl4-gnutls-dev libboost-all-dev doxygen graphviz cppcheck
+
     ```
 
-mmary
+### Compilation
+
+* How to build ?
+
+  You can initialize the build project and build:
+
+  ```bash
+  cd siril
+  mkdir build; cd build  
+  cmake -DINSTALLDIR=/path-to-install-dir -DUSE_CUDA=ON -DUSE_NVTX=OFF -DCMAKE_BUILD_TYPE=Release -DWITH_PYTHON=ON -DPYBIND11_PYTHON_VERSION=3.6 -DTESTING_ENABLED=ON ..  
+  make -j8 install
+  ``` 
+
+  In case you are using a local anaconda python distribution, use the following line:
+
+  ```bash
+  cmake -DUSE_CUDA=OFF -DCMAKE_BUILD_TYPE=Release -DWITH_PYTHON=ON -DPYBIND11_PYTHON_VERSION=3.6 -DPYTHON_INCLUDE_DIR=~/anaconda3/include/python3.6m/ -DPYTHON_LIBRARY=~/anaconda3/lib/libpython3.6m.so -DTESTING_ENABLED=ON ..
+  ```
+
+## How to test
+In the build directory, do:
+
+  ```bash
+  bash
+  make test  
+  ```
+
+## How to generate doxygen documentation
+In the build directory, do:  
+
+  ```bash
+  make doc  
+  ```
+The documentation should be build in the "doc" directory
+
+## How to perform static code analysis with cppcheck
+In the build directory, do:
+
+  ```bash
+  make cppcheck  
+  ```
+The cppcheck report can be found in the directory cppcheckdir-report
+
+
+Summary
 -------
 SIRIL is an astronomical image processing tool.
 
