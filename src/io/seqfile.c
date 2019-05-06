@@ -208,10 +208,10 @@ sequence * readseqfile(const char *name){
 					 * channel, both would have layer number 0 otherwise */
 					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
 							!com.debayer.open_debayer) {
-						fprintf(stdout, "- using CFA registration info\n");
+						siril_debug_print("- using CFA registration info\n");
 						to_backup = 0;
 					} else {
-						fprintf(stdout, "- backing up CFA registration info\n");
+						siril_debug_print("- backing up CFA registration info\n");
 						to_backup = 1;
 					}
 					current_layer = 0;
@@ -221,7 +221,7 @@ sequence * readseqfile(const char *name){
 					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
 							!com.debayer.open_debayer) {
 						to_backup = 1;
-						fprintf(stdout, "- stats: backing up demosaiced stats\n");
+						siril_debug_print("- stats: backing up demosaiced stats\n");
 					}
 					current_layer = line[1] - '0';
 				}
@@ -399,10 +399,10 @@ sequence * readseqfile(const char *name){
 					 * would have layer number 0 otherwise */
 					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
 							!com.debayer.open_debayer) {
-						fprintf(stdout, "- stats: using CFA stats\n");
+						siril_debug_print("- stats: using CFA stats\n");
 						to_backup = 0;
 					} else {
-						fprintf(stdout, "- stats: backing up CFA stats\n");
+						siril_debug_print("- stats: backing up CFA stats\n");
 						to_backup = 1;
 					}
 					current_layer = 0;
@@ -412,7 +412,7 @@ sequence * readseqfile(const char *name){
 					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
 							!com.debayer.open_debayer) {
 						to_backup = 1;
-						fprintf(stdout, "- stats: backing up demosaiced stats\n");
+						siril_debug_print("- stats: backing up demosaiced stats\n");
 					}
 					current_layer = line[1] - '0';
 				}

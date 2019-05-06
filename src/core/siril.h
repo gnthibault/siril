@@ -26,8 +26,9 @@
 #define DEBUG_TEST 0
 #endif
 
+/* https://stackoverflow.com/questions/1644868/define-macro-for-debug-printing-in-c */
 #define siril_debug_print(fmt, ...) \
-   do { if (DEBUG_TEST) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
+   do { if (DEBUG_TEST) fprintf(stdout, fmt, ##__VA_ARGS__); } while (0)
 
 #define PRINT_ALLOC_ERR fprintf(stderr, "Out of memory in %s (%s:%d) - aborting\n", __func__, __FILE__, __LINE__)
 
