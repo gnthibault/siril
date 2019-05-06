@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(siril)
 set(PROJECT_NAME siril)
+add_definitions(-DPACKAGE="${PROJECT_NAME}")
+add_definitions(-DVERSION="0.0")
 
 #Default build destination
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
@@ -15,6 +17,10 @@ else ()
   set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
   set(LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 endif ()
+
+add_definitions(-DPACKAGE_DATA_DIR="${LIBRARY_OUTPUT_DIRECTORY}")
+add_definitions(-DPACKAGE_DOC_DIR="${DOC_INSTALL_DIR}")
+add_definitions(-DLOCALEDIR="${PRJ_ROOT_DIR}/po")
 
 #cmake ref
 set(PRJ_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -160,7 +166,6 @@ endif ()
 ##############
 # /GSL part  #
 ##############
-
 ###############
 # Boost part  #
 ###############
@@ -244,12 +249,30 @@ find_package(CURL)
 if (CURL_FOUND)
     include_directories(${CURL_INCLUDE_DIRS})
     #link_directories(${CURL_LIBRARY_DIRS})
-    #runtime libs for curl
     set(curl_deps ${CURL_LIBRARIES})
 endif ()
 ################
 # /CURL part  #
 ################
+################
+# OpenCV part  #
+################
+find_package(OpenCV REQUIRED COMPONENTS core imgproc)
+include_directories(${OpenCV_INCLUDE_DIRS})
+set(opencv_deps ${OpenCV_LIBS})
+#################
+# /OpenCV part  #
+#################
+###################
+# libconfig part  #
+###################
+find_path(LIBCONFIG_INCLUDE_DIR libconfig.h)
+find_library(LIBCONFIG_LIBRARY config)
+include_directories(${LIBCONFIG_INCLUDE_DIR})
+set(libconfig_deps ${LIBCONFIG_LIBRARY})
+####################
+# /libconfig part  #
+####################
 #############
 # GTK part  #
 #############
@@ -257,12 +280,44 @@ endif ()
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
 include_directories(${GTK3_INCLUDE_DIRS})
-link_directories(${GTK3_LIBRARY_DIRS})
+#link_directories(${GTK3_LIBRARY_DIRS})
 add_definitions(${GTK3_CFLAGS_OTHER})
-set(gtk_deps ${GTK3_LIBRARIES})
+#message("GTK DEPENDENCIES ARE ${GTK3_LIBRARIES}")
+set(gtk_deps "pangoft2-1.0;cairo;${GTK3_LIBRARIES}")
 ##############
 # /GTK part  #
 ##############
+###############
+# KPLOT part  #
+###############
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/deps/kplot DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/deps)
+add_custom_command(
+    OUTPUT libkplot.a
+    COMMAND make
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/deps/kplot
+    COMMENT "Building libkplot"
+    VERBATIM
+)
+add_custom_target(
+  kplot ALL
+  DEPENDS libkplot.a
+)
+install(
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/deps/kplot/libkplot.a
+  DESTINATION ${LIBRARY_OUTPUT_DIRECTORY}
+  PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
+)
+include_directories("deps/kplot")
+link_directories(${LIBRARY_OUTPUT_DIRECTORY})
+#find_library(LIB_KPLOT libkplot.a
+#  PATHS  ${CMAKE_CURRENT_BINARY_DIR}/deps/kplot/
+#)
+#set(kplot_deps ${LIB_KPLOT})
+set(kplot_deps ${CMAKE_CURRENT_BINARY_DIR}/deps/kplot/libkplot.a m)
+
+################
+# /KPLOT part  #
+################
 
 #############
 #  Testing  #
@@ -306,6 +361,7 @@ GENERATE_CPPCHECK(SOURCEDIRS src
 
 add_subdirectory(app)
 add_subdirectory(binding)
+add_subdirectory(deps)
 add_subdirectory(src)
 
 if (TESTING_ENABLED)

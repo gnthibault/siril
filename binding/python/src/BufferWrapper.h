@@ -12,7 +12,7 @@ class BufferWrapper {
   BufferWrapper(int) {};
   void initialize(py::array_t<T> image) {
     auto buffer = image.request();
-    if (buffer.ndim < 2) or (buffer.ndim > 3) {
+    if (buffer.ndim < 2) || (buffer.ndim > 3) {
       throw std::runtime_error("BufferWrapper::initialize : "
         "Number of dimensions must be 2 or 3");
     }
@@ -23,7 +23,7 @@ class BufferWrapper {
   }
   void set_image(py::array_t<T> image) {
     auto buffer = image.request();
-    if (buffer.ndim < 2) or (buffer.ndim > 3) {
+    if (buffer.ndim < 2) || (buffer.ndim > 3) {
       throw std::runtime_error("BufferWrapper::set_image : "
         "Number of dimensions must be 2 or 3");
     }

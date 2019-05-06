@@ -11,7 +11,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 #  Src files  #
 ###############
 set(sources
-  siril.c
+  main.c
 )
 
 ####################
@@ -24,8 +24,26 @@ include_directories("${PRJ_ROOT_DIR}/src")
 ################
 add_executable(${OUTPUT_NAME} ${sources})
 target_link_libraries(${OUTPUT_NAME}
-  libsiril
+  # own dependancies
+  #${boost_deps}
+
+  # sirilib and its dependancies
+  sirilib
+  ${cfitsio_deps}
+  ${curl_deps}
+  ${ffmpeg_deps}
+  ${ffms_deps}
+  ${fftw_deps}
+  ${gsl_deps}
+  ${gtk_deps}
+  ${jpeg_deps}
+  ${kplot_deps}
+  ${libconfig_deps}
+  ${libraw_deps}
   ${openmp_deps}
+  ${opencv_deps}
+  ${png_deps}
+  ${tiff_deps}
 )
 set_property(TARGET ${OUTPUT_NAME}
   PROPERTY OUTPUT_NAME ${OUTPUT_NAME})
