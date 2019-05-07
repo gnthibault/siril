@@ -43,6 +43,8 @@
 #include "sorting.h"
 #include "statistics.h"
 
+static void stats_set_default_values(imstats *stat);
+
 // copies the area of an image into the memory buffer data
 static void select_area(fits *fit, WORD *data, int layer, rectangle *bounds) {
 	int i, j, k = 0;
@@ -349,6 +351,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		double *newdata = malloc(stat->ngoodpix * sizeof(double));
 		if (!newdata) {
 			if (stat_is_local) free(stat);
+			if (free_data) free(data);
 			PRINT_ALLOC_ERR;
 			return NULL;
 		}
@@ -397,8 +400,10 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 		stat = statistics_internal(fit, layer, NULL, option, oldstat);
 		if (!stat) {
 			fprintf(stderr, "- stats failed for fit %p (%d)\n", fit, layer);
-			if (oldstat)
-				allocate_stats(&oldstat);
+			if (oldstat) {
+				stats_set_default_values(oldstat);
+				oldstat->_nb_refs--;
+			}
 			return NULL;
 		}
 		if (!oldstat)
@@ -416,8 +421,10 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 			if (fit)
 				fprintf(stderr, "- stats failed for %d in seq (%d)\n",
 						image_index, layer);
-			if (oldstat)
-				allocate_stats(&oldstat);
+			if (oldstat) {
+				stats_set_default_values(oldstat);
+				oldstat->_nb_refs--;
+			}
 			return NULL;
 		}
 		if (!oldstat)
@@ -541,8 +548,8 @@ void invalidate_stats_from_fit(fits *fit) {
 	if (fit->stats) {
 		int layer;
 		for (layer = 0; layer < fit->naxes[2]; layer++) {
-			free_stats(fit->stats[layer]);
 			siril_debug_print("- stats %p cleared from fit (%d)\n", fit->stats[layer], layer);
+			free_stats(fit->stats[layer]);
 			fit->stats[layer] = NULL;
 		}
 	}
@@ -557,6 +564,12 @@ void full_stats_invalidation_from_fit(fits *fit) {
 	}
 }
 
+static void stats_set_default_values(imstats *stat) {
+	stat->total = -1L;
+	stat->ngoodpix = -1L;
+	stat->mean = stat->avgDev = stat->median = stat->sigma = stat->bgnoise = stat->min = stat->max = stat->normValue = stat->mad = stat->sqrtbwmv = stat->location = stat->scale = -1.0;
+}
+
 /* allocates an imstat structure and initializes it with default values that
  * are used by the statistics() function.
  * Only use free_stats() to free the return value.
@@ -565,10 +578,8 @@ void allocate_stats(imstats **stat) {
 	if (stat) {
 		if (!*stat)
 			*stat = malloc(sizeof(imstats));
-		if (!*stat) return;	// OOM
-		(*stat)->total = -1L;
-		(*stat)->ngoodpix = -1L;
-		(*stat)->mean = (*stat)->avgDev = (*stat)->median = (*stat)->sigma = (*stat)->bgnoise = (*stat)->min = (*stat)->max = (*stat)->normValue = (*stat)->mad = (*stat)->sqrtbwmv = (*stat)->location = (*stat)->scale = -1.0;
+		if (!*stat) { PRINT_ALLOC_ERR; return; } // OOM
+		stats_set_default_values(*stat);
 		(*stat)->_nb_refs = 1;
 		siril_debug_print("- stats %p allocated\n", *stat);
 	}

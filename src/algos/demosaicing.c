@@ -892,7 +892,7 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 	retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
 	full_stats_invalidation_from_fit(fit);
 
-    if (fit->bayer_yoffset == 1) {
+	if (fit->bayer_yoffset == 1) {
 		buf += width;
 		height--;
 	}

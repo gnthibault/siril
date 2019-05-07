@@ -163,8 +163,8 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 	assert(nx > 0 && ny > 0);
 
 	results = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
-	if (results == NULL) {
-		printf("Memory allocation failed: peaker\n");
+	if (!results) {
+		PRINT_ALLOC_ERR;
 		return NULL;
 	}
 
@@ -186,7 +186,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 	if (wave_image == NULL) {
 		free(results);
 		clearfits(&wave_fit);
-		fprintf(stderr, "Memory allocation failed: peaker\n");
+		PRINT_ALLOC_ERR;
 		return NULL;
 	}
 	for (k = 0; k < ny; k++)
@@ -198,7 +198,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		free(results);
 		free(wave_image);
 		clearfits(&wave_fit);
-		fprintf(stderr, "Memory allocation failed: peaker\n");
+		PRINT_ALLOC_ERR;
 		return NULL;
 	}
 	for (k = 0; k < ny; k++)
@@ -322,8 +322,10 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 		}
 	} else {
 		com.stars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF*));
-		if (com.stars == NULL)
+		if (!com.stars) {
+			PRINT_ALLOC_ERR;
 			return NULL;
+		}
 		com.star_is_seqdata = FALSE;
 	}
 
