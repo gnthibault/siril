@@ -70,7 +70,7 @@ static WORD getMedian3x3(gsl_matrix *in, const int xx, const int yy,
 		}
 	}
 	start = 8 - n - 1;
-	quicksort_d(value, 8);
+	quickmedian_double(value, 8);
 	median = gsl_stats_median_from_sorted_data(value + start, 1, n);
 	free(value);
 	return median;
