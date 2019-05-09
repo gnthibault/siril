@@ -1168,7 +1168,7 @@ static void search_object_in_catalogs(const gchar *object) {
 
 	set_cursor_waiting(TRUE);
 
-	name = g_strdup(object);
+	name = g_utf8_strup(object, -1);
 	/* Removes leading and trailing whitespace */
 	name = g_strstrip(name);
 	/* replace whitespaces by %20 for html purposes */
