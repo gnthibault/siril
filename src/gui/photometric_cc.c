@@ -243,7 +243,7 @@ static double siril_stats_trmean_from_sorted_data(const double trim,
 }
 #endif
 
-static double siril_stats_mean_from_linearFit(const double sorted_data[],
+static double siril_stats_robust_mean(const double sorted_data[],
 		const size_t stride, const size_t size) {
 	double mx = gsl_stats_median_from_sorted_data(sorted_data, stride, size);
 	double sx = 2.2219 * Qn0(size, sorted_data);
@@ -344,9 +344,9 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 	gsl_sort(data[BLUE], 1, nb_stars);
 
 	/* we do not take into account DBL_MAX values */
-	kw[RED] = siril_stats_mean_from_linearFit(data[RED], 1, ngood);
-	kw[GREEN] = siril_stats_mean_from_linearFit(data[GREEN], 1, ngood);
-	kw[BLUE] = siril_stats_mean_from_linearFit(data[BLUE], 1, ngood);
+	kw[RED] = siril_stats_robust_mean(data[RED], 1, ngood);
+	kw[GREEN] = siril_stats_robust_mean(data[GREEN], 1, ngood);
+	kw[BLUE] = siril_stats_robust_mean(data[BLUE], 1, ngood);
 
 	/* normalize factors */
 	kw[RED] /= (kw[n_channel]);
