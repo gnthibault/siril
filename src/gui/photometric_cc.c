@@ -189,6 +189,33 @@ static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits
 	return 0;
 }
 
+static double Qn0(const size_t n, const double x[]) {
+	const size_t wsize = n * (n - 1) / 2;
+	const size_t n_2 = n / 2;
+	const size_t k = ((n_2 + 1) * n_2) / 2;
+	double *work;
+	double Qn;
+	size_t idx = 0;
+	size_t i, j;
+
+	if (n < 2)
+		return (0.0);
+
+	work = malloc(wsize * sizeof(double));
+
+	for (i = 0; i < n; ++i) {
+		for (j = i + 1; j < n; ++j)
+			work[idx++] = fabs(x[i] - x[j]);
+	}
+
+	gsl_sort(work, 1, idx);
+	Qn = work[k - 1];
+
+	free(work);
+
+	return Qn;
+}
+
 static double siril_stats_trmean_from_sorted_data(const double trim,
 		const double sorted_data[], const size_t stride, const size_t size) {
 #if (GSL_MAJOR_VERSION == 2) && (GSL_MINOR_VERSION < 5)
@@ -216,14 +243,36 @@ static double siril_stats_trmean_from_sorted_data(const double trim,
 }
 #endif
 
+static double siril_stats_mean_from_linearFit(const double sorted_data[],
+		const size_t stride, const size_t size) {
+	double mx = gsl_stats_median_from_sorted_data(sorted_data, stride, size);
+	double sx = 2.2219 * Qn0(size, sorted_data);
+	double *x, mean;
+	int i, j;
+
+	x = malloc(size * sizeof(double));
+	for (i = 0, j = 0; i < size; ++i) {
+		if (fabs(sorted_data[i] - mx) < 3 * sx) {
+			x[j++] = sorted_data[i];
+		}
+	}
+	/* not enough stars, try something anyway */
+	if (j < 5) {
+		mean = siril_stats_trmean_from_sorted_data(0.3, sorted_data, stride,
+				size);
+	} else {
+		mean = gsl_stats_mean(x, stride, j);
+	}
+	free(x);
+	return mean;
+}
+
 static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
 	int i = 0, ngood = 0;
 	gboolean no_phot = FALSE;
 	int k;
 	int chan;
-
 	double *data[3];
-	double alpha = 0.3;
 
 	data[RED] = malloc(sizeof(double) * nb_stars);
 	data[GREEN] = malloc(sizeof(double) * nb_stars);
@@ -288,17 +337,16 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 		siril_log_message(_("No valid stars found.\n"));
 		return 1;
 	}
-	/* sort in ascending order before using gsl_stats_trmean_from_sorted_data
+	/* sort in ascending order before using siril_stats_mean_from_linearFit
 	 Hence, DBL_MAX are at the end of the tab */
 	gsl_sort(data[RED], 1, nb_stars);
 	gsl_sort(data[GREEN], 1, nb_stars);
 	gsl_sort(data[BLUE], 1, nb_stars);
 
 	/* we do not take into account DBL_MAX values */
-	kw[RED] = siril_stats_trmean_from_sorted_data(alpha, data[RED], 1, ngood);
-	kw[GREEN] = siril_stats_trmean_from_sorted_data(alpha, data[GREEN], 1,
-			ngood);
-	kw[BLUE] = siril_stats_trmean_from_sorted_data(alpha, data[BLUE], 1, ngood);
+	kw[RED] = siril_stats_mean_from_linearFit(data[RED], 1, ngood);
+	kw[GREEN] = siril_stats_mean_from_linearFit(data[GREEN], 1, ngood);
+	kw[BLUE] = siril_stats_mean_from_linearFit(data[BLUE], 1, ngood);
 
 	/* normalize factors */
 	kw[RED] /= (kw[n_channel]);
