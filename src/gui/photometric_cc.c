@@ -189,12 +189,13 @@ static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits
 	return 0;
 }
 
-static double Qn0(const size_t n, const double x[]) {
+static double Qn0(const double sorted_data[], const size_t stride, const size_t n) {
+	double Qn;
+#if (GSL_MAJOR_VERSION == 2) && (GSL_MINOR_VERSION < 5)
 	const size_t wsize = n * (n - 1) / 2;
 	const size_t n_2 = n / 2;
 	const size_t k = ((n_2 + 1) * n_2) / 2;
 	double *work;
-	double Qn;
 	size_t idx = 0;
 	size_t i, j;
 
@@ -205,14 +206,21 @@ static double Qn0(const size_t n, const double x[]) {
 
 	for (i = 0; i < n; ++i) {
 		for (j = i + 1; j < n; ++j)
-			work[idx++] = fabs(x[i] - x[j]);
+			work[idx++] = fabs(sorted_data[i] - sorted_data[j]);
 	}
 
 	gsl_sort(work, 1, idx);
 	Qn = work[k - 1];
 
 	free(work);
+#else
+	double *work = malloc(3 * n * sizeof(double));
+	int *work_int = malloc(5 * n * sizeof(int));
 
+	Qn = gsl_stats_Qn0_from_sorted_data(sorted_data, stride, n, work, work_int);
+	free(work);
+	free(work_int);
+#endif
 	return Qn;
 }
 
@@ -246,7 +254,7 @@ static double siril_stats_trmean_from_sorted_data(const double trim,
 static double siril_stats_robust_mean(const double sorted_data[],
 		const size_t stride, const size_t size) {
 	double mx = gsl_stats_median_from_sorted_data(sorted_data, stride, size);
-	double sx = 2.2219 * Qn0(size, sorted_data);
+	double sx = 2.2219 * Qn0(sorted_data, 1, size);
 	double *x, mean;
 	int i, j;
 
