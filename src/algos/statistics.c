@@ -215,8 +215,8 @@ static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
 	/* finds the smallest and largest members of a dataset */
 
 	if (n > 0 && data) {
-		WORD min = data[0 * stride];
-		WORD max = data[0 * stride];
+		WORD min = data[0];
+		WORD max = data[0];
 		size_t i;
 
 #pragma omp parallel for num_threads(com.max_thread) schedule(static) if(n > 10000) reduction(max:max) reduction(min:min)
@@ -265,6 +265,10 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 			data = fit->pdata[layer];
 		}
 		stat->total = nx * ny;
+		if (stat->total == 0L) {
+			if (stat_is_local) free(stat);
+			return NULL;
+		}
 	}
 
 	/* Calculation of min and max */

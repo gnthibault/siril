@@ -216,6 +216,10 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 	int n = (*icold) + (*ihot);
 	if (n <= 0) return NULL;
 	dev = calloc(n, sizeof(deviant_pixel));
+	if (!dev) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
 	i = 0;
 	for (y = 0; y < fit->ry; y++) {
 		for (x = 0; x < fit->rx; x++) {
@@ -226,7 +230,7 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 				dev[i].type = HOT_PIXEL;
 				i++;
 			}
-			else if (pixel <= thresCold) {
+			else if (pixel < thresCold) {
 				dev[i].p.x = x;
 				dev[i].p.y = y;
 				dev[i].type = COLD_PIXEL;
