@@ -376,28 +376,25 @@ int cvTransformImage(fits *image, long width, long height, Homography Hom, int i
 	assert(image->data);
 	assert(image->rx);
 	assert(image->ry);
-	// for now, assuming input and output are same size
-	assert((long)image->rx == width);
-	assert((long)image->ry == height);
 
 	// preparing data
 	Mat in, out;
 	WORD *bgrbgr = NULL;
+	WORD *newdata;
 
 	if (image->naxes[2] == 1) {
-		in = Mat(height, width, CV_16UC1, image->data);
+		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
 		out = Mat(height, width, CV_16UC1);
 	}
 	else if (image->naxes[2] == 3) {
 		bgrbgr = fits_to_bgrbgr(image);
-		in = Mat(height, width, CV_16UC3, bgrbgr);
+		in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
 		out = Mat(height, width, CV_16UC3);
 	}
 	else {
 		siril_log_message("Image resizing is not supported for images with %d channels\n", image->naxes[2]);
 		return -1;
 	}
-
 
 	Mat H = Mat::eye(3, 3, CV_64FC1);
 	convert_H_to_MatH(&Hom, H);
@@ -407,6 +404,16 @@ int cvTransformImage(fits *image, long width, long height, Homography Hom, int i
 
 	// saving result
 	long ndata = height * width;
+
+	if (image->ry != height || image->rx != width) {
+		newdata = (WORD*) realloc(image->data, ndata * sizeof(WORD) * image->naxes[2]);
+		if (!newdata) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
+		image->data = newdata;
+	}
+
 	if (image->naxes[2] == 1) {
 		memcpy(image->data, out.data, ndata * sizeof(WORD));
 		image->pdata[RLAYER] = image->data;
@@ -423,11 +430,14 @@ int cvTransformImage(fits *image, long width, long height, Homography Hom, int i
 		image->pdata[GLAYER] = image->data + ndata;
 		image->pdata[BLAYER] = image->data + ndata * 2;
 
+
 		channel[0].release();
 		channel[1].release();
 		channel[2].release();
 		delete[] bgrbgr;
 	}
+	image->rx = image->naxes[0] = out.cols;
+	image->ry = image->naxes[1] = out.rows;
 	H.release();
 	in.release();
 	out.release();

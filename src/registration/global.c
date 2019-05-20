@@ -55,6 +55,7 @@ struct star_align_data {
 	fitted_PSF **refstars;
 	int fitted_stars;
 	BYTE *success;
+	point ref;
 };
 
 static int star_align_prepare_hook(struct generic_seq_args *args) {
@@ -110,11 +111,17 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	if (!com.script && &com.seq == args->seq && com.seq.current == regargs->reference_image)
 		queue_redraw(REMAP_NONE); // draw stars
 
+	sadata->ref.x = fit.rx;
+	sadata->ref.y = fit.ry;
+
 	clearfits(&fit);
 
 	if (regargs->x2upscale) {
 		if (regargs->translation_only) {
 			args->seq->upscale_at_stacking = 2.0;
+		} else {
+			sadata->ref.x *= 2.0;
+			sadata->ref.y *= 2.0;
 		}
 	}
 	else {
@@ -218,9 +225,6 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, NULL, FALSE);
 		}
 
-		if (!stars)
-			return 1;
-
 		siril_log_message(_("Found %d stars in image %d, channel #%d\n"), nb_stars, filenum, regargs->layer);
 
 		if (!stars || nb_stars < AT_MATCH_MINPAIRS) {
@@ -265,7 +269,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 				cvResizeGaussian(fit, fit->rx * 2, fit->ry * 2, OPENCV_NEAREST);
 				cvApplyScaleToH(&H, 2.0);
 			}
-			cvTransformImage(fit, fit->rx, fit->ry, H, regargs->interpolation);
+			cvTransformImage(fit, (long) sadata->ref.x, (long) sadata->ref.y, H, regargs->interpolation);
 		}
 
 		free_fitted_stars(stars);
