@@ -230,7 +230,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		if (!stars || nb_stars < AT_MATCH_MINPAIRS) {
 			siril_log_message(
 					_("Not enough stars. Image %d skipped\n"), filenum);
-			free_fitted_stars(stars);
+			if (stars) free_fitted_stars(stars);
 			return 1;
 		}
 
