@@ -391,7 +391,7 @@ get_value
  * Return 1 if there is an error.
  */
 
-int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list, point image_size) {
+int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list) {
 	int i = 0;
 	struct s_star *head, *last, *new;
 
@@ -399,7 +399,7 @@ int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list, point
 	last = head;
 
 	while (i < n) {
-		new = atStarNew(s[i]->xpos, image_size.y - s[i]->ypos, s[i]->mag, s[i]->BV);
+		new = atStarNew(s[i]->xpos, s[i]->ypos, s[i]->mag, s[i]->BV);
 		new->id = i;
 
 		if (head == NULL) {

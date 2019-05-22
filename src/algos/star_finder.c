@@ -256,8 +256,8 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 					if (cur_star) {
 						fwhm_to_arcsec_if_needed(fit, &cur_star);
 						if (is_star(cur_star, sf)) {
-							cur_star->xpos = x + cur_star->x0 - sf->radius - 1;
-							cur_star->ypos = y + cur_star->y0 - sf->radius;
+							cur_star->xpos = x + cur_star->x0 - sf->radius - 1.0;
+							cur_star->ypos = y + cur_star->y0 - sf->radius - 1.0;
 							if (nbstars < MAX_STARS) {
 								results[nbstars] = cur_star;
 								results[nbstars + 1] = NULL;

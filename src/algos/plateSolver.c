@@ -729,13 +729,6 @@ static void print_platesolving_results(Homography H, image_solved image) {
 	char field_x[256] = { 0 };
 	char field_y[256] = { 0 };
 
-	/* first we do not forget that we read data bottom to up ....
-	 * So we need to do that in order to display data in the right orientation
-	 */
-	H.h10 = -H.h10;
-	H.h11 = -H.h11;
-	H.h12 = -H.h12;
-
 	/* Matching information */
 	siril_log_message(_("%d pair matches.\n"), H.pair_matched);
 	inliers = 1.0 - ((((double) H.pair_matched - (double) H.Inliers)) / (double) H.pair_matched);
@@ -749,12 +742,12 @@ static void print_platesolving_results(Homography H, image_solved image) {
 
 	/* rotation */
 	rotation = atan2(H.h00 + H.h01, H.h10 + H.h11) * 180 / M_PI + 135.0;
-	det = (H.h00 * H.h11 - H.h01 * H.h10); // determinant of rotation matrix (ac - bd)
+	det = (H.h00 * H.h11 - H.h01 * H.h10); // determinant of rotation matrix (ad - bc)
 	/* If the determinant of the top-left 2x2 rotation matrix is > 0
 	 * the transformation is orientation-preserving. */
+
 	if (det < 0)
 		rotation = -90 - rotation;
-	rotation = - rotation;
 	if (rotation < -180)
 		rotation += 360;
 	if (rotation > 180)
@@ -785,7 +778,7 @@ static void print_platesolving_results(Homography H, image_solved image) {
    	update_gfit(image);
 }
 
-static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
+static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars) {
 	char line[LINELEN];
 	fitted_PSF *star;
 
@@ -807,7 +800,7 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = -y + shift_y; // shift_y is here because in get_stars of misc.c we have "image_size.y - s[i]->ypos"
+		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
 		cstars[i] = star;
@@ -819,7 +812,7 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 	return i;
 }
 
-static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
+static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars) {
 	char line[LINELEN];
 	fitted_PSF *star;
 
@@ -841,7 +834,7 @@ static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) 
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = -y + shift_y;
+		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
 		cstars[i] = star;
@@ -853,7 +846,7 @@ static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) 
 	return i;
 }
 
-static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
+static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars) {
 	char line[LINELEN];
 	fitted_PSF *star;
 
@@ -875,7 +868,7 @@ static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = -y + shift_y;
+		star->ypos = y;
 		star->mag = Gmag;
 		star->BV = -99.9;
 		cstars[i] = star;
@@ -887,7 +880,7 @@ static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 	return i;
 }
 
-static int read_PPMXL_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
+static int read_PPMXL_catalog(FILE *catalog, fitted_PSF **cstars) {
 	char line[LINELEN];
 	fitted_PSF *star;
 
@@ -909,7 +902,7 @@ static int read_PPMXL_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = -y + shift_y;
+		star->ypos = y;
 		star->mag = Jmag;
 		star->BV = -99.9;
 		cstars[i] = star;
@@ -921,8 +914,7 @@ static int read_PPMXL_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y) {
 	return i;
 }
 
-static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars,
-		int shift_y) {
+static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars) {
 	char line[LINELEN];
 	fitted_PSF *star;
 
@@ -944,7 +936,7 @@ static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars,
 
 		star = malloc(sizeof(fitted_PSF));
 		star->xpos = x;
-		star->ypos = -y + shift_y;
+		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = BV;
 		cstars[i] = star;
@@ -957,20 +949,19 @@ static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars,
 }
 
 
-static int read_catalog(FILE *catalog, fitted_PSF **cstars, int shift_y,
-		int type) {
+static int read_catalog(FILE *catalog, fitted_PSF **cstars, int type) {
 	switch (type) {
 	default:
 	case TYCHO2:
-		return read_TYCHO2_catalog(catalog, cstars, shift_y);
+		return read_TYCHO2_catalog(catalog, cstars);
 	case NOMAD:
-		return read_NOMAD_catalog(catalog, cstars, shift_y);
+		return read_NOMAD_catalog(catalog, cstars);
 	case GAIA:
-		return read_GAIA_catalog(catalog, cstars, shift_y);
+		return read_GAIA_catalog(catalog, cstars);
 	case PPMXL:
-		return read_PPMXL_catalog(catalog, cstars, shift_y);
+		return read_PPMXL_catalog(catalog, cstars);
 	case BRIGHT_STARS:
-		return read_BRIGHT_STARS_catalog(catalog, cstars, shift_y);
+		return read_BRIGHT_STARS_catalog(catalog, cstars);
 	}
 }
 
@@ -1089,7 +1080,7 @@ gpointer match_catalog(gpointer p) {
 		siril_add_idle(end_plate_solver, args);
 		return GINT_TO_POINTER(1);
 	}
-	n_cat = read_catalog(catalog, cstars, image_size.y, args->onlineCatalog);
+	n_cat = read_catalog(catalog, cstars, args->onlineCatalog);
 
 	/* make sure that arrays are not too small
 	 * make  sure that the max of stars is BRIGHTEST_STARS */
@@ -1099,7 +1090,7 @@ gpointer match_catalog(gpointer p) {
 	args->ret = 1;
 	while (args->ret && attempt < NB_OF_MATCHING_TRY){
 		args->ret = new_star_match(com.stars, cstars, n, nobj,
-				args->scale - 0.2, args->scale + 0.2, &H, image_size, args->for_photometry_cc);
+				args->scale - 0.2, args->scale + 0.2, &H, args->for_photometry_cc);
 		nobj += 50;
 		attempt++;
 	}

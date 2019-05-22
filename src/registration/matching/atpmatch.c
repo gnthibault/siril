@@ -592,8 +592,7 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 		int numB, /* I: number of stars in list B */
 		struct s_star *listB, /* I: match this set of objects with list A */
 		Homography *H,
-		gboolean print_output,
-		point image_size
+		gboolean print_output
 ) {
 	int ret = 0;
 	int num_stars_B; /* number of stars in chain B */
@@ -626,7 +625,7 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 			if (mask[i] && starB->BV != -99.9) {
 				fprintf(BV_file,
 						" %4d %11.4e %11.4e %.3f\n",
-						i, starA->x, image_size.y - starA->y, starB->BV);
+						i, starA->x, starA->y, starB->BV);
 			}
 		}
 		fclose(BV_file);

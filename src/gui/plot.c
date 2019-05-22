@@ -414,7 +414,11 @@ static int exportCSV(pldata *plot, sequence *seq) {
 					if (!seq->imgparam[i].incl)
 						continue;
 					int x = 0;
-					fprintf(csv, "%g", tmp_plot->data[j].x);
+					double date = tmp_plot->data[j].x;
+					if (julian0) {
+						date += julian0;
+					}
+					fprintf(csv, "%.10lf", date);
 					while (x < MAX_SEQPSF && seq->photometry[x]) {
 						fprintf(csv, ", %g", tmp_plot->data[j].y);
 						tmp_plot = tmp_plot->next;
@@ -428,7 +432,11 @@ static int exportCSV(pldata *plot, sequence *seq) {
 				for (i = 0, j = 0; i < plot->nb; i++) {
 					if (!seq->imgparam[i].incl)
 						continue;
-					fprintf(csv, "%g, %g\n", plot->data[j].x, plot->data[j].y);
+					double date = plot->data[j].x;
+					if (julian0) {
+						date += julian0;
+					}
+					fprintf(csv, "%.10lf, %g\n", date, plot->data[j].y);
 					j++;
 				}
 			}

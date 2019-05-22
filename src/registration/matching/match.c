@@ -122,7 +122,7 @@ static int prepare_to_recalc(int num_matched_A,
 		TRANS *trans);
 
 int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override, double s_min, double s_max,
-		Homography *H, point image_size, gboolean print_output) {
+		Homography *H, gboolean print_output) {
 	int ret;
 	int numA, numB;
 	int num_matched_A, num_matched_B;
@@ -210,7 +210,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override, d
 #endif
 
 	/* read information from the first list */
-	if (get_stars(s1, n, &numA, &star_list_A, image_size)) {
+	if (get_stars(s1, n, &numA, &star_list_A)) {
 		shFatal("can't read data\n");
 		atTransDel(trans);
 		return (SH_GENERIC_ERROR);
@@ -226,7 +226,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override, d
 	 *   so that we can restore the output matched coords
 	 *   (which have been converted to those in set B) with the original coords.
 	 */
-	if (get_stars(s1, n, &numA_copy, &star_list_A_copy, image_size)) {
+	if (get_stars(s1, n, &numA_copy, &star_list_A_copy)) {
 		atTransDel(trans);
 		free_stars(star_list_A);
 		fprintf(stderr,"can't read data\n");
@@ -243,7 +243,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override, d
 	reset_copy_ids(numA, star_list_A, star_list_A_copy);
 
 	/* read information from the second list */
-	if (get_stars(s2, n, &numB, &star_list_B, image_size)) {
+	if (get_stars(s2, n, &numB, &star_list_B)) {
 		atTransDel(trans);
 		free_stars(star_list_A);
 		free_stars(star_list_A_copy);
@@ -428,7 +428,7 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override, d
 	Hom->pair_matched = num_matches;
 
 	if (atPrepareHomography(num_matched_A, matched_list_A, num_matched_B,
-			matched_list_B, Hom, print_output, image_size)) {
+			matched_list_B, Hom, print_output)) {
 		fprintf(stderr,"atPrepareHomography fails on computing H\n");
 		/** */
 		atTransDel(trans);

@@ -8,6 +8,6 @@
 
 
 int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override, double s_min, double s_max,
-		Homography *H, point image_size, gboolean print_output);
+		Homography *H, gboolean print_output);
 
 #endif   /* MATCH_H */
