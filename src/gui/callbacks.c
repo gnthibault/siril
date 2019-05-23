@@ -963,7 +963,6 @@ static void update_theme_button(const gchar *button_name, const gchar *path) {
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget(button_name)),
 			gtk_image_new_from_file(image));
 	gtk_widget_show_all(lookup_widget(button_name));
-siril_log_message("%s\n", image);
 	g_free(filename);
 	g_free(filepath);
 	g_free(image);
