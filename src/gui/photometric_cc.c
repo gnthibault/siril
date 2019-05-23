@@ -396,10 +396,10 @@ static int calibrate_colors(fits *fit, double kw[], coeff bg[], double norm) {
 	for (chan = 0; chan < 3; chan++) {
 		if (kw[chan] == 1.0)
 			continue;
-		WORD bgNorm = bg[chan].value * norm;
+		double bgNorm = bg[chan].value * norm;
 		buf = fit->pdata[chan];
 		for (i = 0; i < fit->rx * fit->ry; ++i) {
-			buf[i] = round_to_WORD((buf[i] - bgNorm) * kw[chan] + bgNorm);
+			buf[i] = round_to_WORD(((double)buf[i] - bgNorm) * kw[chan] + bgNorm);
 		}
 	}
 	return 0;
