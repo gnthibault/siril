@@ -955,10 +955,17 @@ GtkWidget *popover_new(GtkWidget *widget, const gchar *text) {
 }
 
 static void update_theme_button(const gchar *button_name, const gchar *path) {
-	gchar *image = g_build_filename(get_application_path(), path, NULL);
+	gchar *filename, *filepath;
+
+	filename = g_find_program_in_path("siril");
+	filepath = g_path_get_dirname(filename);
+	gchar *image = g_build_filename(filepath, "..", "share", "siril", path, NULL);
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget(button_name)),
 			gtk_image_new_from_file(image));
 	gtk_widget_show_all(lookup_widget(button_name));
+siril_log_message("%s\n", image);
+	g_free(filename);
+	g_free(filepath);
 	g_free(image);
 }
 
