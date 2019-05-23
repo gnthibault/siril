@@ -1986,6 +1986,15 @@ void update_spinCPU(int max) {
 /*****************************************************************************
  *             I N I T I A L I S A T I O N      F U N C T I O N S            *
  ****************************************************************************/
+static void add_accelerator_to_tooltip(GtkWidget *widget, guint key, GdkModifierType mod) {
+	gchar *text = gtk_widget_get_tooltip_text(widget);
+	gchar *accel_str = gtk_accelerator_get_label(key, mod);
+	gchar *tip = g_strdup_printf("%s (%s)", text, accel_str);
+
+	gtk_widget_set_tooltip_text(widget, tip);
+	g_free(accel_str);
+	g_free(tip);
+}
 
 static void initialize_shortcuts() {
 	/* activate accelerators (keyboard shortcut in GTK language) */
@@ -2026,6 +2035,10 @@ static void initialize_shortcuts() {
 	/* SETTINGS */
 	gtk_widget_add_accelerator(lookup_widget("settings"), "activate", accel,
 	GDK_KEY_k, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	/* OPEN WD */
+	gtk_widget_add_accelerator(lookup_widget("cwd_button"), "clicked", accel,
+	GDK_KEY_d, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	add_accelerator_to_tooltip(lookup_widget("cwd_button"), GDK_KEY_d, get_default_modifier());
 }
 
 void initialize_remap() {
