@@ -16,6 +16,9 @@
 #undef int64
 #endif
 
+/***************** main.h ********************************/
+gchar *get_application_path();
+
 /****************** image_format_fits.h ******************/
 int	readfits(const char *filename, fits *fit, char *realname);
 double get_exposure_from_fitsfile(fitsfile *fptr);

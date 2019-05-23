@@ -955,7 +955,7 @@ GtkWidget *popover_new(GtkWidget *widget, const gchar *text) {
 }
 
 static void update_theme_button(const gchar *button_name, const gchar *path) {
-	gchar *image = g_build_filename(PACKAGE_DATA_DIR, path, NULL);
+	gchar *image = g_build_filename(get_application_path(), path, NULL);
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget(button_name)),
 			gtk_image_new_from_file(image));
 	gtk_widget_show_all(lookup_widget(button_name));

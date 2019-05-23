@@ -68,6 +68,7 @@
 cominfo com;	// the main data struct
 fits gfit;	// currently loaded image
 GtkBuilder *builder = NULL;	// get widget references anywhere
+static gchar *application_path = NULL;
 
 #ifdef MAC_INTEGRATION
 
@@ -235,6 +236,10 @@ static char *load_glade_file(char *start_cwd) {
 	return siril_sources[i];
 }
 
+gchar *get_application_path() {
+	return application_path;
+}
+
 int main(int argc, char *argv[]) {
 	int i, c;
 	extern char *optarg;
@@ -355,6 +360,7 @@ int main(int argc, char *argv[]) {
 		load_prefered_theme(com.combo_theme);
 		/* Load glade file */
 		siril_path = load_glade_file(current_cwd);
+		application_path = siril_path;
 		/* load the css sheet for general style */
 		load_css_style_sheet(siril_path);
 	}

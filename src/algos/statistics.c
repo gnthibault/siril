@@ -278,7 +278,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		if (!data) return NULL;	// not in cache, don't compute
 		siril_debug_print("- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
 		siril_stats_ushort_minmax(&min, &max, data, 1, stat->total);
-		if (max <= UCHAR_MAX)
+		if (fit->bitpix == BYTE_IMG)
 			norm = UCHAR_MAX;
 		else norm = USHRT_MAX;
 		stat->min = (double)min;
