@@ -2003,6 +2003,7 @@ int *numtriangles /* I/O: number of triangles in the t_array */
 		}
 	}
 	*numtriangles = i;
+	printf("i=%d\n", i);
 	g_assert(*numtriangles >= 0);
 }
 
