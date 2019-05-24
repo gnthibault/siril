@@ -70,6 +70,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <glib/gprintf.h>
 #include "misc.h"
 #include "project_coords.h"
 #include "degtorad.h"
@@ -236,28 +237,38 @@ int doASEC /* I: if > 0, write offsets in arcsec */
 		 * different output formats for (xi, eta) if they are expressed
 		 * in radians or arcseconds.  
 		 */
-		line[0] = '\0';
-		for (i = 0; i < ncol; i++) {
+
+		gchar *l = g_strdup(line);
+		l = g_strstrip(l);
+
+		gchar **token = g_strsplit_set(l, " \t", -1);
+		i = 0;
+		while (token[i] && strcmp(token[i], "\n")) {
 			if (i == racol) {
+				g_free(token[i]);
 				if (doASEC > 0) {
 					/* write the offsets in arcsec */
-					sprintf(line, "%s %12.5f", line, xi);
+					token[i] = g_strdup_printf("%12.5f", xi);
 				} else {
-					sprintf(line, "%s %13.6e", line, xi);
+					token[i] = g_strdup_printf("%13.6e", xi);
 				}
 			} else if (i == deccol) {
+				g_free(token[i]);
 				if (doASEC > 0) {
 					/* write the offsets in arcsec */
-					sprintf(line, "%s %12.5f", line, eta);
+					token[i] = g_strdup_printf("%12.5f", eta);
 				} else {
-					sprintf(line, "%s %13.6e", line, eta);
+					token[i] = g_strdup_printf("%13.6e", eta);
 				}
-			} else {
-				sprintf(line, "%s %s", line, col[i]);
 			}
+			i++;
 		}
-		fprintf(out_fp, "%s\n", line);
+		gchar *newline = g_strjoinv(" ", token);
+		fprintf(out_fp, "%s\n", newline);
 
+		g_strfreev(token);
+		g_free(newline);
+		g_free(l);
 	}
 
 	fclose(in_fp);
