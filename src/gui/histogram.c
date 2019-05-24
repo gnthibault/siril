@@ -170,15 +170,21 @@ static void init_toggles() {
 // sets the channel names of the toggle buttons in the histogram window, based on
 // the number of layers of gfit
 static void set_histo_toggles_names() {
+	gchar *filename = g_find_program_in_path("siril");
+	gchar *filepath = g_path_get_dirname(filename);
+	gchar *image;
+
 	init_toggles();
 
 	if (gfit.naxis == 2) {
 		gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), _("Gray channel"));
 		GtkWidget *w;
 		if (com.want_dark) {
-			w = gtk_image_new_from_file(PACKAGE_DATA_DIR"/pixmaps/monochrome_dark.png");
+			image = g_build_filename(filepath, "..", "share", "siril", "/pixmaps/monochrome_dark.png", NULL);
+			w = gtk_image_new_from_file(image);
 		} else {
-			w = gtk_image_new_from_file(PACKAGE_DATA_DIR"/pixmaps/monochrome.png");
+			image = g_build_filename(filepath, "..", "share", "siril", "/pixmaps/monochrome.png", NULL);
+			w = gtk_image_new_from_file(image);
 		}
 		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggles[0]), w);
 		gtk_widget_show(w);
@@ -194,8 +200,9 @@ static void set_histo_toggles_names() {
 			gtk_widget_set_visible(GTK_WIDGET(toggles[3]), FALSE);
 
 	} else {
+		image = g_build_filename(filepath, "..", "share", "siril", "/pixmaps/r.png", NULL);
 		gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), _("Red channel"));
-		GtkWidget *w = gtk_image_new_from_file(PACKAGE_DATA_DIR"/pixmaps/r.png");
+		GtkWidget *w = gtk_image_new_from_file(image);
 		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggles[0]), w);
 		gtk_widget_show(w);
 		gtk_toggle_tool_button_set_active(toggles[0], TRUE);
@@ -210,6 +217,9 @@ static void set_histo_toggles_names() {
 			gtk_toggle_tool_button_set_active(toggles[3], TRUE);
 		}
 	}
+	g_free(filename);
+	g_free(filepath);
+	g_free(image);
 }
 
 static double get_histoZoomValueH() {
