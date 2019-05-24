@@ -372,10 +372,10 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 	return 0;
 }
 
-static void get_background_coefficients(fits *fit, rectangle *area, coeff bg[]) {
+static void get_background_coefficients(fits *fit, rectangle *area, coeff bg[], gboolean verbose) {
 	int chan;
 
-	siril_log_message(_("Background reference:\n"));
+	if (verbose) siril_log_message(_("Background reference:\n"));
 	for (chan = 0; chan < 3; chan++) {
 		imstats *stat = statistics(NULL, -1, fit, chan, area, STATS_BASIC);
 		if (!stat) {
@@ -384,24 +384,24 @@ static void get_background_coefficients(fits *fit, rectangle *area, coeff bg[]) 
 		}
 		bg[chan].value = stat->median / stat->normValue;
 		bg[chan].channel = chan;
-		siril_log_message("B%d: %.5e\n", chan, bg[chan].value);
+		if (verbose) siril_log_message("B%d: %.5e\n", chan, bg[chan].value);
 		free_stats(stat);
 	}
 }
 
-static int calibrate_colors(fits *fit, double kw[], coeff bg[], double norm) {
+static int apply_white_balance(fits *fit, double kw[]) {
 	WORD *buf;
 	int i, chan;
 
 	for (chan = 0; chan < 3; chan++) {
 		if (kw[chan] == 1.0)
 			continue;
-		double bgNorm = bg[chan].value * norm;
 		buf = fit->pdata[chan];
 		for (i = 0; i < fit->rx * fit->ry; ++i) {
-			buf[i] = round_to_WORD(((double)buf[i] - bgNorm) * kw[chan] + bgNorm);
+			buf[i] = round_to_WORD((double)buf[i] * kw[chan]);
 		}
 	}
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -410,11 +410,11 @@ static void background_neutralize(fits* fit, coeff bg[], int n_channel, double n
 	int chan, i;
 
 	for (chan = 0; chan < 3; chan++) {
-		int offset = (bg[chan].value - bg[n_channel].value) * norm;
+		double offset = (bg[chan].value - bg[n_channel].value) * norm;
 		siril_debug_print("offset: %d, %d\n", chan, offset);
 		WORD *buf = fit->pdata[chan];
 		for (i = 0; i < fit->rx * fit->ry; i++) {
-			buf[i] = round_to_WORD(buf[i] - offset);
+			buf[i] = round_to_WORD((double)buf[i] - offset);
 		}
 	}
 	invalidate_stats_from_fit(fit);
@@ -483,13 +483,14 @@ static gpointer photometric_cc(gpointer p) {
 
 	read_photometry_cc_file(args->BV_file, args->stars, &nb_stars);
 
-	get_background_coefficients(&gfit, bkg_sel, bg);
+	get_background_coefficients(&gfit, bkg_sel, bg, FALSE);
 	chan = determine_chan_for_norm(bg, args->n_channel);
 	siril_log_message(_("Normalizing on %s channel.\n"), (chan == 0) ? _("red") : ((chan == 1) ? _("green") : _("blue")));
 	int ret = get_white_balance_coeff(args->stars, nb_stars, &gfit, kw, chan);
 	if (!ret) {
 		norm = (double) get_normalized_value(&gfit);
-		calibrate_colors(&gfit, kw, bg, norm);
+		apply_white_balance(&gfit, kw);
+		get_background_coefficients(&gfit, bkg_sel, bg, TRUE);
 		background_neutralize(&gfit, bg, chan, norm);
 	}
 

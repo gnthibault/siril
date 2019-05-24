@@ -674,7 +674,7 @@ void initialize_calibration_interface() {
 static void background_neutralize(fits* fit, rectangle black_selection) {
 	int chan, i;
 	imstats* stats[3];
-	int ref = 0;
+	double ref = 0;
 
 	assert(fit->naxes[2] == 3);
 
@@ -686,17 +686,14 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 		}
 		ref += stats[chan]->median;
 	}
-	ref /= 3;
+	ref /= 3.0;
 
 	for (chan = 0; chan < 3; chan++) {
-		int offset = stats[chan]->mean - ref;
+		double offset = stats[chan]->mean - ref;
+
 		WORD *buf = fit->pdata[chan];
 		for (i = 0; i < fit->rx * fit->ry; i++) {
-			if (buf[i] < offset)
-				buf[i] = 0;
-			else
-				buf[i] = (buf[i] - offset >= USHRT_MAX ? USHRT_MAX : buf[i] - offset);
-
+			buf[i] = round_to_WORD((double)buf[i] - offset);
 		}
 		free_stats(stats[chan]);
 	}
@@ -838,7 +835,7 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 
 static int calibrate(fits *fit, int layer, double kw, double bg, double norm) {
 	WORD *buf;
-	WORD bgNorm;
+	double bgNorm;
 	int i;
 
 	bgNorm = bg * norm;
