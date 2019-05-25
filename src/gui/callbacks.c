@@ -83,9 +83,6 @@ static display_mode last_mode[MAXGRAYVPORT];
 static gboolean stfComputed;	// Flag to know if STF parameters are available
 static double stfShadows, stfHighlights, stfM;
 
-/* background image */
-static fits background_fit = { 0 };	// Testing init
-
 /*****************************************************************************
  *                    S T A T I C      F U N C T I O N S                     *
  ****************************************************************************/
@@ -1530,12 +1527,12 @@ void update_libraw_interface() {
 
 	/********GAMMA CORRECTION**************/
 	if (gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_gamm0"))) == TRUE) {
+			GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_gamm0")))) {
 		/* Linear Gamma Curve */
 		com.raw_set.gamm[0] = 1.0;
 		com.raw_set.gamm[1] = 1.0;
 	} else if (gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_gamm1"))) == TRUE) {
+			GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_gamm1")))) {
 		/* BT.709 Gamma curve */
 		com.raw_set.gamm[0] = 2.222;
 		com.raw_set.gamm[1] = 4.5;
@@ -2093,9 +2090,6 @@ void initialize_display_mode() {
 		g_signal_handlers_unblock_by_func(chainedbutton, on_checkchain_toggled,
 				NULL);
 	}
-
-	/* initialize background gradient data */
-	memset(&background_fit, 0, sizeof(fits));
 }
 
 void set_GUI_CWD() {
@@ -2865,7 +2859,7 @@ void on_checkbutton_cam_toggled(GtkButton *button, gpointer user_data) {
 	GtkToggleButton *cam_button = GTK_TOGGLE_BUTTON(
 			lookup_widget("checkbutton_cam"));
 
-	if (gtk_toggle_button_get_active(auto_button) == TRUE) {
+	if (gtk_toggle_button_get_active(auto_button)) {
 		g_signal_handlers_block_by_func(auto_button,
 				on_checkbutton_auto_toggled, NULL);
 		gtk_toggle_button_set_active(auto_button, FALSE);
@@ -2881,7 +2875,7 @@ void on_checkbutton_auto_toggled(GtkButton *button, gpointer user_data) {
 	GtkToggleButton *cam_button = GTK_TOGGLE_BUTTON(
 			lookup_widget("checkbutton_cam"));
 
-	if (gtk_toggle_button_get_active(cam_button) == TRUE) {
+	if (gtk_toggle_button_get_active(cam_button)) {
 		g_signal_handlers_block_by_func(cam_button, on_checkbutton_cam_toggled,
 				NULL);
 		gtk_toggle_button_set_active(cam_button, FALSE);
@@ -3436,7 +3430,7 @@ void on_drawingarea_leave_notify_event(GtkWidget *widget, GdkEvent *event,
  * one call to select new button, one call to unselect previous one */
 void on_radiobutton_minmax_toggled(GtkToggleButton *togglebutton,
 		gpointer user_data) {
-	if (gtk_toggle_button_get_active(togglebutton) == TRUE) {
+	if (gtk_toggle_button_get_active(togglebutton)) {
 		com.sliders = MINMAX;
 		init_layers_hi_and_lo_values(com.sliders);
 		set_cutoff_sliders_values();
@@ -3447,7 +3441,7 @@ void on_radiobutton_minmax_toggled(GtkToggleButton *togglebutton,
 
 void on_radiobutton_hilo_toggled(GtkToggleButton *togglebutton,
 		gpointer user_data) {
-	if (gtk_toggle_button_get_active(togglebutton) == TRUE) {
+	if (gtk_toggle_button_get_active(togglebutton)) {
 		com.sliders = MIPSLOHI;
 		init_layers_hi_and_lo_values(com.sliders);
 		set_cutoff_sliders_values();
@@ -3458,7 +3452,7 @@ void on_radiobutton_hilo_toggled(GtkToggleButton *togglebutton,
 
 void on_radiobutton_user_toggled(GtkToggleButton *togglebutton,
 		gpointer user_data) {
-	if (gtk_toggle_button_get_active(togglebutton) == TRUE) {
+	if (gtk_toggle_button_get_active(togglebutton)) {
 		com.sliders = USER;
 		init_layers_hi_and_lo_values(com.sliders);
 		set_cutoff_sliders_values();
