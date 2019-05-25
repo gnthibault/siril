@@ -2000,6 +2000,7 @@ static void add_accelerator_to_tooltip(GtkWidget *widget, guint key, GdkModifier
 	gtk_widget_set_tooltip_text(widget, tip);
 	g_free(accel_str);
 	g_free(tip);
+	g_free(text);
 }
 
 static void initialize_shortcuts() {
