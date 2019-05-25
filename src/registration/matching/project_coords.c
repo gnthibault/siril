@@ -70,7 +70,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <glib/gprintf.h>
 #include "misc.h"
 #include "project_coords.h"
 #include "degtorad.h"
