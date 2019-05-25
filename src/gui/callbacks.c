@@ -2006,46 +2006,47 @@ static void add_accelerator_to_tooltip(GtkWidget *widget, guint key, GdkModifier
 static void initialize_shortcuts() {
 	/* activate accelerators (keyboard shortcut in GTK language) */
 	static GtkAccelGroup *accel = NULL;
+	GdkModifierType mod = get_default_modifier();
 
 	if (accel == NULL) {
 		accel = GTK_ACCEL_GROUP(gtk_builder_get_object(builder, "accelgroup1"));
 	}
 	/* EXIT */
 	gtk_widget_add_accelerator(lookup_widget("exit"), "activate", accel,
-	GDK_KEY_q, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	GDK_KEY_q, mod, GTK_ACCEL_VISIBLE);
 	/* UNDO */
 	gtk_widget_add_accelerator(lookup_widget("undo_item"), "activate", accel,
-	GDK_KEY_z, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	GDK_KEY_z, mod, GTK_ACCEL_VISIBLE);
 	gtk_widget_add_accelerator(lookup_widget("undo_item1"), "activate", accel,
-	GDK_KEY_z, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	GDK_KEY_z, mod, GTK_ACCEL_VISIBLE);
 	/* REDO */
 #ifdef _WIN32
 	gtk_widget_add_accelerator(lookup_widget("redo_item"), "activate", accel,
-	GDK_KEY_y, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	GDK_KEY_y, mod, GTK_ACCEL_VISIBLE);
 	gtk_widget_add_accelerator(lookup_widget("redo_item1"), "activate", accel,
-	GDK_KEY_y, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	GDK_KEY_y, mod, GTK_ACCEL_VISIBLE);
 #else
 	gtk_widget_add_accelerator(lookup_widget("redo_item"), "activate", accel,
-	GDK_KEY_z, get_default_modifier() | GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE);
+	GDK_KEY_z, mod | GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE);
 	gtk_widget_add_accelerator(lookup_widget("redo_item1"), "activate", accel,
-	GDK_KEY_z, get_default_modifier() | GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE);
+	GDK_KEY_z, mod | GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE);
 #endif
 	/* OPEN */
 	gtk_widget_add_accelerator(lookup_widget("open1"), "activate", accel,
-	GDK_KEY_o, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	GDK_KEY_o, mod, GTK_ACCEL_VISIBLE);
 	/* SAVE */
 	gtk_widget_add_accelerator(lookup_widget("save1"), "activate", accel,
-	GDK_KEY_s, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	GDK_KEY_s, mod, GTK_ACCEL_VISIBLE);
 	/* NEGATIVE */
 	gtk_widget_add_accelerator(lookup_widget("menu_negative"), "activate", accel,
-	GDK_KEY_i, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	GDK_KEY_i, mod, GTK_ACCEL_VISIBLE);
 	/* SETTINGS */
 	gtk_widget_add_accelerator(lookup_widget("settings"), "activate", accel,
-	GDK_KEY_k, get_default_modifier(), GTK_ACCEL_VISIBLE);
+	GDK_KEY_k, mod, GTK_ACCEL_VISIBLE);
 	/* OPEN WD */
 	gtk_widget_add_accelerator(lookup_widget("cwd_button"), "clicked", accel,
-	GDK_KEY_d, get_default_modifier(), GTK_ACCEL_VISIBLE);
-	add_accelerator_to_tooltip(lookup_widget("cwd_button"), GDK_KEY_d, get_default_modifier());
+	GDK_KEY_d, mod, GTK_ACCEL_VISIBLE);
+	add_accelerator_to_tooltip(lookup_widget("cwd_button"), GDK_KEY_d, mod);
 }
 
 void initialize_remap() {
