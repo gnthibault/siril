@@ -581,10 +581,14 @@ int64_t seq_compute_size(sequence *seq, int nb_frames) {
 				if (GetFileAttributesA(filename) & FILE_ATTRIBUTE_REPARSE_POINT )
 #endif					
 				{
-					gchar *target_link = g_file_read_link(filename,NULL) ; 
+					gchar *target_link = g_file_read_link(filename, NULL); 
 					if ( !g_lstat(target_link, &sts) )
 					{
 						frame_size = sts.st_size;       // force 64 bits
+					}
+					else {
+						fprintf(stderr, "Could not open reference image of the sequence\n");
+						return size;
 					}
 					g_free(target_link);
 				}

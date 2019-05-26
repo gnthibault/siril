@@ -186,7 +186,7 @@ seq_image_filter create_multiple_filter_from_list(struct filtering_tuple *filter
 int convert_stack_data_to_filter(struct stacking_configuration *arg, struct stacking_args *stackargs) {
 	int nb_filters = 0;
 	int layer = get_registration_layer(stackargs->seq);
-	struct filtering_tuple filters[5] = { 0 };
+	struct filtering_tuple filters[5] = { { NULL, 0.0 } };
 
 	if ((arg->f_fwhm_p > 0.0f && arg->f_fwhm > 0.0f) ||
 			(arg->f_round_p > 0.0f && arg->f_round > 0.0f) ||

@@ -411,7 +411,7 @@ static void background_neutralize(fits* fit, coeff bg[], int n_channel, double n
 
 	for (chan = 0; chan < 3; chan++) {
 		double offset = (bg[chan].value - bg[n_channel].value) * norm;
-		siril_debug_print("offset: %d, %d\n", chan, offset);
+		siril_debug_print("offset: %d, %f\n", chan, offset);
 		WORD *buf = fit->pdata[chan];
 		for (i = 0; i < fit->rx * fit->ry; i++) {
 			buf[i] = round_to_WORD((double)buf[i] - offset);
