@@ -2315,7 +2315,7 @@ static GtkTargetEntry drop_types[] = {
   {"text/uri-list", 0, 0}
 };
 
-void initialize_all_GUI(gchar *siril_path, gchar *supported_files) {
+void initialize_all_GUI(gchar *supported_files) {
 	/* initializing internal structures with widgets (drawing areas) */
 	com.vport[RED_VPORT] = lookup_widget("drawingarear");
 	com.vport[GREEN_VPORT] = lookup_widget("drawingareag");

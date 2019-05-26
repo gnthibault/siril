@@ -87,7 +87,7 @@ static void gui_add_osx_to_app_menu(GtkosxApplication *osx_app, const gchar *ite
 		gtkosx_application_insert_app_menu_item(osx_app, GTK_WIDGET(item), index);
 }
 
-static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
+static void set_osx_integration(GtkosxApplication *osx_app) {
 	GtkWidget *menubar = lookup_widget("menubar1");
 	GtkWidget *file_quit_menu_item = lookup_widget("exit");
 	GtkWidget *help_menu = lookup_widget("help1");
@@ -115,7 +115,7 @@ static void set_osx_integration(GtkosxApplication *osx_app, gchar *siril_path) {
 	gtk_widget_hide(file_quit_menu_item);
 	gtk_widget_hide(help_menu);
 	
-	icon_path = g_build_filename(siril_path, "pixmaps/siril.svg", NULL);
+	icon_path = g_build_filename(com.app_path, "pixmaps/siril.svg", NULL);
 	icon = gdk_pixbuf_new_from_file(icon_path, NULL);
 	gtkosx_application_set_dock_icon_pixbuf(osx_app, icon);
 		
@@ -171,7 +171,7 @@ int ReconnectIO(int OpenNewConsole)
 
 static char *siril_sources[] = {
 #ifdef _WIN32
-    "../share/siril",
+	"../share/siril",
 #elif (defined(__APPLE__) && defined(__MACH__))
 	"/tmp/siril/Contents/Resources/share/siril/",
 #endif
@@ -206,7 +206,7 @@ struct option long_opts[] = {
 		{0, 0, 0, 0}
 	};
 
-static char *load_glade_file(char *start_cwd) {
+static char *load_glade_file() {
 	int i = 0;
 
 	/* try to load the glade file, from the sources defined above */
@@ -239,7 +239,7 @@ int main(int argc, char *argv[]) {
 	int i, c;
 	extern char *optarg;
 	extern int opterr;
-	gchar *current_cwd = NULL;
+	gchar *startup_cwd = NULL;
 	gboolean forcecwd = FALSE;
 	char *cwd_forced = NULL, *start_script = NULL;
 
@@ -344,7 +344,7 @@ int main(int argc, char *argv[]) {
 	 * checkinitfile will load all saved parameters
 	 * */
 	com.wd = siril_get_startup_dir();
-	current_cwd = g_get_current_dir();
+	startup_cwd = g_get_current_dir();
 	if (checkinitfile()) {
 		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
 		exit(1);
@@ -354,21 +354,21 @@ int main(int argc, char *argv[]) {
 		/* load prefered theme */
 		load_prefered_theme(com.combo_theme);
 		/* Load glade file */
-		gchar *path = load_glade_file(current_cwd);
+		gchar *path = load_glade_file();
 		if (g_path_is_absolute(path)) {
 			com.app_path = g_strdup(path);
 		} else {
 			com.app_path = g_build_filename(g_get_current_dir(), path, NULL);
 		}
 		/* load the css sheet for general style */
-		load_css_style_sheet(com.app_path);
+		load_css_style_sheet();
 	}
 
 	changedir(com.wd, NULL);
 
 	if (!com.headless) {
 		gtk_builder_connect_signals (builder, NULL);
-		initialize_all_GUI(com.app_path, supported_files);
+		initialize_all_GUI(supported_files);
 	}
 	g_free(supported_files);
 
@@ -388,15 +388,14 @@ int main(int argc, char *argv[]) {
 #ifdef MAC_INTEGRATION
 	GtkosxApplication *osx_app = gtkosx_application_get();
 	if (!com.headless) {
-		set_osx_integration(osx_app, com.app_path);
+		set_osx_integration(osx_app);
 	}
 #endif //MAC_INTEGRATION
 
 	/* start Siril */
 	if (argv[optind] != NULL) {
-		if (current_cwd) {
-			changedir(current_cwd, NULL);
-			g_free(current_cwd);
+		if (startup_cwd) {
+			changedir(startup_cwd, NULL);
 		}
 		open_single_image(argv[optind]);
 		if (!forcecwd) {
@@ -405,6 +404,7 @@ int main(int argc, char *argv[]) {
 			g_free(newpath);
 		}
 	}
+	g_free(startup_cwd);
 
 	if (forcecwd && cwd_forced) {
 		changedir(cwd_forced, NULL);

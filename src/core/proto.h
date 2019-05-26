@@ -111,7 +111,7 @@ char*	remove_ext_from_filename(const char *basename);
 char*	str_append(char** data, const char* newdata);
 char*	format_basename(char *root);
 float	computePente(WORD *lo, WORD *hi);
-void	load_css_style_sheet (char *path);
+void	load_css_style_sheet();
 double	encodeJD(dateTime dt);
 gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file);
 

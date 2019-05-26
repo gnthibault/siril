@@ -614,9 +614,8 @@ static const gchar *checking_css_filename() {
 
 /**
  * Loads the css sheet
- * @param path path of the file being loaded
  */
-void load_css_style_sheet (char *path) {
+void load_css_style_sheet () {
 	GtkCssProvider *css_provider;
 	GdkDisplay *display;
 	GdkScreen *screen;
@@ -629,7 +628,7 @@ void load_css_style_sheet (char *path) {
 		exit(1);
 	}
 
-	CSSFile = g_build_filename (path, css_filename, NULL);
+	CSSFile = g_build_filename (com.app_path, css_filename, NULL);
 	if (!g_file_test (CSSFile, G_FILE_TEST_EXISTS)) {
 		g_error (_("Unable to load CSS style sheet file: %s. Please reinstall %s\n"), CSSFile, PACKAGE);
 	}
