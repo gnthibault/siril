@@ -239,7 +239,6 @@ int main(int argc, char *argv[]) {
 	int i, c;
 	extern char *optarg;
 	extern int opterr;
-	gchar *siril_path = NULL;
 	gchar *current_cwd = NULL;
 	gboolean forcecwd = FALSE;
 	char *cwd_forced = NULL, *start_script = NULL;
@@ -320,6 +319,7 @@ int main(int argc, char *argv[]) {
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
 	com.stack.memory_percent = 0.9;
+	com.app_path = NULL;
 
 	if (!com.headless) {
 		gtk_init(&argc, &argv);
@@ -354,16 +354,16 @@ int main(int argc, char *argv[]) {
 		/* load prefered theme */
 		load_prefered_theme(com.combo_theme);
 		/* Load glade file */
-		siril_path = load_glade_file(current_cwd);
+		com.app_path = load_glade_file(current_cwd);
 		/* load the css sheet for general style */
-		load_css_style_sheet(siril_path);
+		load_css_style_sheet(com.app_path);
 	}
 
 	changedir(com.wd, NULL);
 
 	if (!com.headless) {
 		gtk_builder_connect_signals (builder, NULL);
-		initialize_all_GUI(siril_path, supported_files);
+		initialize_all_GUI(com.app_path, supported_files);
 	}
 	g_free(supported_files);
 

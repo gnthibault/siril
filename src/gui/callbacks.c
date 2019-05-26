@@ -955,43 +955,40 @@ GtkWidget *popover_new(GtkWidget *widget, const gchar *text) {
 }
 
 static void update_theme_button(const gchar *button_name, const gchar *path) {
-	gchar *filename, *filepath;
+	gchar *images;
 
-	filename = g_find_program_in_path("siril");
-	filepath = g_path_get_dirname(filename);
-	gchar *image = g_build_filename(filepath, "..", "share", "siril", path, NULL);
+	images = g_build_filename(com.app_path, "pixmaps", path, NULL);
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget(button_name)),
-			gtk_image_new_from_file(image));
+			gtk_image_new_from_file(images));
 	gtk_widget_show_all(lookup_widget(button_name));
-	g_free(filename);
-	g_free(filepath);
-	g_free(image);
+
+	g_free(images);
 }
 
 static void update_icons_to_theme(gboolean is_dark) {
 	siril_debug_print("Loading %s theme...\n", is_dark ? "dark" : "light");
 	if (is_dark) {
-		update_theme_button("rotate90_anticlock_button", "/pixmaps/rotate-acw_dark.png");
-		update_theme_button("rotate90_clock_button", "/pixmaps/rotate-cw_dark.png");
-		update_theme_button("mirrorx_button", "/pixmaps/mirrorx_dark.png");
-		update_theme_button("mirrory_button", "/pixmaps/mirrory_dark.png");
+		update_theme_button("rotate90_anticlock_button", "rotate-acw_dark.png");
+		update_theme_button("rotate90_clock_button", "rotate-cw_dark.png");
+		update_theme_button("mirrorx_button", "mirrorx_dark.png");
+		update_theme_button("mirrory_button", "mirrory_dark.png");
 
-		update_theme_button("process_starfinder_button", "/pixmaps/starfinder_dark.png");
-		update_theme_button("sum_button", "/pixmaps/sum_dark.png");
-		update_theme_button("export_button", "/pixmaps/export_dark.png");
+		update_theme_button("process_starfinder_button", "starfinder_dark.png");
+		update_theme_button("sum_button", "sum_dark.png");
+		update_theme_button("export_button", "export_dark.png");
 
-		update_theme_button("histoToolAutoStretch", "/pixmaps/mtf_dark.png");
+		update_theme_button("histoToolAutoStretch", "mtf_dark.png");
 } else {
-		update_theme_button("rotate90_anticlock_button", "/pixmaps/rotate-acw.png");
-		update_theme_button("rotate90_clock_button", "/pixmaps/rotate-cw.png");
-		update_theme_button("mirrorx_button", "/pixmaps/mirrorx.png");
-		update_theme_button("mirrory_button", "/pixmaps/mirrory.png");
+		update_theme_button("rotate90_anticlock_button", "rotate-acw.png");
+		update_theme_button("rotate90_clock_button", "rotate-cw.png");
+		update_theme_button("mirrorx_button", "mirrorx.png");
+		update_theme_button("mirrory_button", "mirrory.png");
 
-		update_theme_button("process_starfinder_button", "/pixmaps/starfinder.png");
-		update_theme_button("sum_button", "/pixmaps/sum.png");
-		update_theme_button("export_button", "/pixmaps/export.png");
+		update_theme_button("process_starfinder_button", "starfinder.png");
+		update_theme_button("sum_button", "sum.png");
+		update_theme_button("export_button", "export.png");
 
-		update_theme_button("histoToolAutoStretch", "/pixmaps/mtf.png");
+		update_theme_button("histoToolAutoStretch", "mtf.png");
 	}
 }
 
