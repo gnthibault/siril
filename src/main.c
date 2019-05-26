@@ -388,7 +388,7 @@ int main(int argc, char *argv[]) {
 #ifdef MAC_INTEGRATION
 	GtkosxApplication *osx_app = gtkosx_application_get();
 	if (!com.headless) {
-		set_osx_integration(osx_app, siril_path);
+		set_osx_integration(osx_app, com.app_path);
 	}
 #endif //MAC_INTEGRATION
 
