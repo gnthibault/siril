@@ -354,7 +354,12 @@ int main(int argc, char *argv[]) {
 		/* load prefered theme */
 		load_prefered_theme(com.combo_theme);
 		/* Load glade file */
-		com.app_path = load_glade_file(current_cwd);
+		gchar *path = load_glade_file(current_cwd);
+		if (g_path_is_absolute(path)) {
+			com.app_path = g_strdup(path);
+		} else {
+			com.app_path = g_build_filename(g_get_current_dir(), path, NULL);
+		}
 		/* load the css sheet for general style */
 		load_css_style_sheet(com.app_path);
 	}
@@ -432,6 +437,7 @@ int main(int argc, char *argv[]) {
 	close_sequence(FALSE);	// closing a sequence if loaded
 	close_single_image();	// close the previous image and free resources
 	pipe_stop();		// close the pipes and their threads
+	g_free(com.app_path);
 #ifdef MAC_INTEGRATION
 	g_object_unref(osx_app);
 #endif //MAC_INTEGRATION
