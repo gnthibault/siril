@@ -24,7 +24,7 @@ scripts_DATA = scripts/DSLR_preprocessing.ssf \
 doc_DATA = AUTHORS \
 	LICENSE.md
 
-man_MANS = siril.1.gz
+man_MANS = siril.1
 
 ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = config.rpath

@@ -1,0 +1,40 @@
+.\" Manpage for Siril 0.9
+.TH SIRIL "1" "September 2017" "siril 0.9" "User Commands"
+.SH NAME
+siril \- image processing tool for astronomy and others
+.SH SYNOPSIS
+.B siril [-i conf_file] [-f] [-v] [-h] [-p] [-d working_directory] [-s script_file] [image_file_to_open]
+.SH DESCRIPTION
+Siril is an image processing tool specially tailored for noise reduction and improving the signal/noise ratio of an image from multiple captures, as required in astronomy. Siril can align, stack and enhance pictures from various file formats, even image sequences (movies and SER files).
+.SH OPTIONS
+.IP -i
+Starts Siril with configuration file which path is given in conf_file
+.IP -f
+(or \fB\-\-format\fR) Prints all supported image input formats, depending on the libraries detected at compile-time
+.IP -v
+(or \fB\-\-version\fR) Prints program name and version and exits
+.IP -h
+(or \fB\-\-help\fR) Short usage help
+.IP -p
+Start siril without the graphical user interface and use the named pipes to accept commands and print logs and status information. On POSIX systems, the named pipes are created in /tmp/siril_commands.in and /tmp/siril_commands.out
+.IP -d
+(or \fB\-\-directory\fR) Setting argument in cwd
+.IP -s
+Start siril without the graphical user interface and run a script instead. Scripts are text files that contain a list of commands to be executed sequentially. In these files, lines starting with a # are considered as comments.
+.IP image_file_to_open
+Open an image or sequence file right after start-up
+.SH FILES
+.I ~/.siril/siril.cfg
+.RS
+User preferences. Overridden by the
+.B -i
+option.
+.RE
+.I ~/.siril/gtk.css
+.RS
+The stylesheet used to change colours of the graphical user interface. This is useful for personalisation or if a GTK theme is incompatible with some coloured elements of Siril.
+.SH BUGS
+A list of bugs is maintained in a mantisbt bug tracker, available at https://free-astro.org/bugs/
+.SH AUTHOR
+Vincent Hourdin <debian-siril at free-astro.org>
+Cyril Richard <cyril at free-astro.org>
