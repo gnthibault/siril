@@ -46,7 +46,7 @@ static int bmp32tofits48(unsigned char *rvb, unsigned long rx, unsigned long ry,
 
 	olddata = fit->data;
 	if ((fit->data = realloc(fit->data, 3 * datasize * sizeof(WORD))) == NULL) {
-		printf("readbmp: could not alloc fit data\n");
+		PRINT_ALLOC_ERR;
 		if (olddata)
 			free(fit->data);
 		return 1;
@@ -83,7 +83,7 @@ static int bmp24tofits48(unsigned char *rvb, unsigned long rx, unsigned long ry,
 
 	olddata = fit->data;
 	if ((fit->data = realloc(fit->data, 3 * newdatasize * sizeof(WORD))) == NULL) {
-		printf("readbmp: could not alloc fit data\n");
+		PRINT_ALLOC_ERR;
 		if (olddata)
 			free(fit->data);
 		return 1;
@@ -118,7 +118,7 @@ static int bmp16tofits48(unsigned char *rvb, unsigned long rx, unsigned long ry,
 
 	olddata = fit->data;
 	if ((fit->data = realloc(fit->data, 3 * newdatasize * sizeof(WORD))) == NULL) {
-		printf("readbmp: could not alloc fit data\n");
+		PRINT_ALLOC_ERR;
 		if (olddata)
 			free(fit->data);
 		return 1;
@@ -157,7 +157,7 @@ static int bmp8tofits(unsigned char *rgb, unsigned long rx, unsigned long ry, fi
 
 	olddata = fit->data;
 	if ((fit->data = realloc(fit->data, nbdata * sizeof(WORD))) == NULL) {
-		printf("readbmp: could not alloc fit data\n");
+		PRINT_ALLOC_ERR;
 		if (olddata)
 			free(fit->data);
 		return 1;
@@ -187,7 +187,6 @@ static void get_image_size(BYTE *header, unsigned long *width,
 	unsigned short sx = 0, sy = 0;
 
 	memcpy(&bitmapinfoheader, header + 14, 4);
-	printf("test: %lu\n", bitmapinfoheader);
 	if (bitmapinfoheader == 12) {
 		memcpy(&sx, header + 18, 2);
 		memcpy(&sy, header + 20, 2);
@@ -239,31 +238,16 @@ int readbmp(const char *name, fits *fit) {
 		fclose(file);
 		return -1;
 	}
-	if (nbplane == 1) {
-		buf = malloc(nbdata + 1024);
-		if (!buf) {
-			fprintf(stderr, "could not allocate buffer for BMP read\n");
-			fclose(file);
-			return -1;
-		}
-		if ((count = fread(buf, 1, 1024, file)) != 1024) {
-			fprintf(stderr, "readbmp: %ld byte read instead of 1024\n", count);
-			perror("readbmp: failed to read the lut");
-			free(buf);
-			fclose(file);
-			return -1;
-		}
-	} else {
-		buf = malloc(nbdata);
-		if (!buf) {
-			fprintf(stderr, "could not allocate buffer for BMP read\n");
-			fclose(file);
-			return -1;
-		}
-	}
 
-	if (nbdata != fread(buf, 1, nbdata, file)) {
-		fprintf(stderr, "readbmp: could not read all data\n");
+	buf = malloc(nbdata);
+	if (!buf) {
+		PRINT_ALLOC_ERR;
+		fclose(file);
+		return -1;
+	}
+	unsigned long f;
+	if (nbdata != (f = fread(buf, 1, nbdata, file))) {
+		fprintf(stderr, "readbmp: could not read all data: (%ld, %ld)\n", nbdata, f);
 		free(buf);
 		fclose(file);
 		return -1;
@@ -490,7 +474,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		olddata = fit->data;
 		fit->data = realloc(fit->data, stride * fit->ry * sizeof(WORD));
 		if (fit->data == NULL || tmpbuf == NULL) {
-			fprintf(stderr, "error allocating fits image data\n");
+			PRINT_ALLOC_ERR;
 			fclose(file);
 			if (olddata && !fit->data)
 				free(olddata);
@@ -523,7 +507,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 			stride = fit->rx * sizeof(WORD);
 			fit->data = realloc(fit->data, stride * fit->ry * sizeof(WORD));
 			if (fit->data == NULL) {
-				fprintf(stderr, "error allocating fits image data\n");
+				PRINT_ALLOC_ERR;
 				fclose(file);
 				if (olddata)
 					free(olddata);
@@ -552,7 +536,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 			tmpbuf = malloc(stride * fit->ry);
 			fit->data = realloc(fit->data, stride * fit->ry * sizeof(WORD));
 			if (fit->data == NULL || tmpbuf == NULL) {
-				fprintf(stderr, "error allocating fits image data\n");
+				PRINT_ALLOC_ERR;
 				fclose(file);
 				if (olddata && !fit->data)
 					free(olddata);
@@ -682,7 +666,7 @@ static int pictofit(WORD *buf, fits *fit) {
 
 	nbdata = fit->rx * fit->ry;
 	if ((fit->data = realloc(fit->data, nbdata * sizeof(WORD))) == NULL) {
-		fprintf(stderr, "readpic: could not alloc fit data\n");
+		PRINT_ALLOC_ERR;
 		if (olddata)
 			free(olddata);
 		return -1;
@@ -709,7 +693,7 @@ static int pictofitrgb(WORD *buf, fits *fit) {
 
 	nbdata = fit->rx * fit->ry;
 	if ((fit->data = realloc(fit->data, nbdata * 3 * sizeof(WORD))) == NULL) {
-		fprintf(stderr, "readpic: could not alloc fit data\n");
+		PRINT_ALLOC_ERR;
 		if (olddata)
 			free(olddata);
 		return -1;
