@@ -375,7 +375,7 @@ int main(int argc, char *argv[]) {
 	/* Get CPU number and set the number of threads */
 	siril_log_message(_("Parallel processing %s: Using %d logical processor(s).\n"),
 #ifdef _OPENMP
-			_("enabled"), com.max_thread = omp_get_num_procs()
+			_("enabled"), com.max_thread = (int) g_get_num_processors()
 #else
 			_("disabled"), com.max_thread = 1
 #endif
