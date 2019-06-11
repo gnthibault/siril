@@ -1233,6 +1233,16 @@ int adjust_sellabel() {
 	return 0;
 }
 
+void set_icon_entry(GtkEntry *entry, gchar *string) {
+	const gchar *text = NULL;
+
+	gtk_entry_set_icon_from_icon_name(entry, GTK_ENTRY_ICON_SECONDARY, string);
+	if (string) {
+		text = _("This sequence name already exists!! Please change the name before converting.");
+	}
+	gtk_entry_set_icon_tooltip_text (entry, GTK_ENTRY_ICON_SECONDARY, text);
+}
+
 void update_MenuItem() {
 	gboolean is_a_single_image_loaded;		/* An image is loaded. Not a sequence or only the result of stacking process */
 	gboolean is_a_singleRGB_image_loaded;	/* A RGB image is loaded. Not a sequence or only the result of stacking process */

@@ -616,6 +616,36 @@ int64_t seq_compute_size(sequence *seq, int nb_frames) {
 	return size;
 }
 
+/**
+ * Check if a sequence with a basename 'basename' already exists
+ * @param filename
+ * @return TRUE if the name already exists, FALSE otherwise
+ */
+gboolean check_if_seq_exist(gchar *basename) {
+	GDir *dir;
+	GError *error = NULL;
+	const gchar *file;
+
+	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL) {
+		fprintf(stderr, "check_if_seq_exist: %s\n", error->message);
+		g_error_free(error);
+		g_free(com.wd);
+		com.wd = NULL;
+		return 1;
+	}
+
+	while ((file = g_dir_read_name(dir)) != NULL) {
+		gchar *seq = g_strdup_printf("%s.seq", basename);
+
+		if (!g_ascii_strcasecmp(seq, file)) {
+			g_free(seq);
+			return TRUE;
+		}
+		g_free(seq);
+	}
+	return FALSE;
+}
+
 /*****************************************************************************
  *              SEQUENCE FUNCTIONS FOR NON-OPENED SEQUENCES                  *
  * **************************************************************************/

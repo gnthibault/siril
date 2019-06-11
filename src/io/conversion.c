@@ -1175,7 +1175,7 @@ void on_treeview_selection5_changed(GtkTreeSelection *treeselection,
 
 // truncates destroot if it's more than 120 characters, append a '_' if it
 // doesn't end with one or a '-'. SER extensions are accepted and unmodified.
-void on_convtoroot_changed (GtkEditable *editable, gpointer user_data){
+void on_convtoroot_changed(GtkEditable *editable, gpointer user_data){
 	static GtkWidget *multiple_ser = NULL;
 	const gchar *name = gtk_entry_get_text(GTK_ENTRY(editable));
 
@@ -1191,12 +1191,28 @@ void on_convtoroot_changed (GtkEditable *editable, gpointer user_data){
 		if (ext && !g_ascii_strcasecmp(ext, "ser")) {
 			convflags |= CONVDSTSER;
 			gtk_widget_set_visible(multiple_ser, TRUE);
+			char *base = remove_ext_from_filename(destroot);
+			if (check_if_seq_exist(base)) {
+				set_icon_entry(GTK_ENTRY(editable), "gtk-dialog-warning");
+			} else{
+				set_icon_entry(GTK_ENTRY(editable), NULL);
+			}
+			free(base);
 		} else {
 			convflags &= ~CONVDSTSER;
 			gtk_widget_set_visible(multiple_ser, FALSE);
 			destroot = format_basename(destroot);
+			if (check_if_seq_exist(destroot)) {
+				set_icon_entry(GTK_ENTRY(editable), "gtk-dialog-warning");
+			} else{
+				set_icon_entry(GTK_ENTRY(editable), NULL);
+			}
 		}
+
 		check_for_conversion_form_completeness();
+
+	} else {
+		set_icon_entry(GTK_ENTRY(editable), NULL);
 	}
 }
 

@@ -24,6 +24,7 @@ void set_GUI_CWD();
 void set_GUI_MEM(unsigned long size);
 void set_GUI_DiskSpace(int64_t mem);
 void set_GUI_misc();
+void set_icon_entry(GtkEntry *entry, gchar *string);
 void update_MenuItem();
 void queue_redraw(int doremap);
 gboolean redraw(int vport, int remap);
