@@ -200,7 +200,7 @@ static void read_fits_header(fits *fit) {
 	}
 
 	status = 0;
-	fits_read_key(fit->fptr, TUINT, "MAXCFA", &(fit->maximum_pixel_value),
+	fits_read_key(fit->fptr, TUSHORT, "MAXCFA", &(fit->maximum_pixel_value),
 			NULL, &status);
 
 
@@ -692,7 +692,7 @@ static void save_fits_header(fits *fit) {
 
 	status = 0;
 	if (fit->maximum_pixel_value)
-		fits_update_key(fit->fptr, TUINT, "MAXCFA",
+		fits_update_key(fit->fptr, TUSHORT, "MAXCFA",
 				&(fit->maximum_pixel_value), "maximum raw pixel value", &status);
 
 	/*******************************************************************

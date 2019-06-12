@@ -1251,7 +1251,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 		fit->pdata[GLAYER] = fit->data;
 		fit->pdata[BLAYER] = fit->data;
 		fit->binning_x = fit->binning_y = 1;
-		fit->maximum_pixel_value = raw->color.maximum;
+		fit->maximum_pixel_value = (WORD) raw->color.maximum;
 		if (pitch > 0.f)
 			fit->pixel_size_x = fit->pixel_size_y = pitch;
 		if (raw->other.focal_len > 0.f)

@@ -408,7 +408,7 @@ struct ffit {
 	WORD lo;	// MIPS-LO key in FITS file, which is "Lower visualization cutoff"
 	WORD hi;	// MIPS-HI key in FITS file, which is "Upper visualization cutoff"
 	double data_max; // used to check if 32b float is between 0 and 1
-	unsigned int maximum_pixel_value; // value obtained from libraw, Maximum pixel value. Calculated from the data for most cameras, hardcoded for others.
+	WORD maximum_pixel_value; // value obtained from libraw, Maximum pixel value. Calculated from the data for most cameras, hardcoded for others.
 	float pixel_size_x, pixel_size_y;	// XPIXSZ and YPIXSZ keys
 	unsigned int binning_x, binning_y;		// XBINNING and YBINNING keys
 	gboolean unbinned;
