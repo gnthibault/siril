@@ -103,7 +103,7 @@ static int normalization_get_max_number_of_threads(sequence *seq) {
 		return 0;
 	}
 
-	int nb_threads = max_memory_MB / memory_per_image_MB;
+	int nb_threads = memory_per_image_MB ? max_memory_MB / memory_per_image_MB : 1;
 	if (nb_threads > com.max_thread)
 		nb_threads = com.max_thread;
 	siril_log_message(_("With the current memory (%.2f) and thread (%d) limits, up to %d thread(s) can be used for sequence normalization\n"), com.stack.memory_percent, com.max_thread, nb_threads);

@@ -53,7 +53,7 @@
 #define UCHAR_MAX_DOUBLE ((double)UCHAR_MAX)
 #define UCHAR_MAX_SINGLE ((float)UCHAR_MAX)
 
-#define BYTES_IN_A_MB 1048576	// 1024�
+#define BYTES_IN_A_MB 1048576	// 1024
 
 #define SEQUENCE_DEFAULT_INCLUDE TRUE	// select images by default
 
