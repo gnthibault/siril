@@ -291,7 +291,7 @@ int get_available_memory_in_MB() {
 	MEMORYSTATUSEX memStatusEx = { 0 };
 	memStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
 	if (GlobalMemoryStatusEx(&memStatusEx)) {
-		mem = (int) (memStatusEx.ullTotalPhys / (1024 * 1024));
+		mem = (int) (memStatusEx.ullAvailPhys / (1024 * 1024));
 	}
 	return mem;
 }
