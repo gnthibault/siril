@@ -74,51 +74,50 @@ static void read_fits_date_obs_header(fits *fit) {
 	}
 }
 
-/* This only work on FITS with naxis=2 */
 static int fit_stats(fits *fit, double *mini, double *maxi) {
 	int status = 0;
-	int ii;
-	long totpix, fpixel[2];
+	int ii, anaxis;
+	long npixels = 1;
+	long anaxes[3] = {1,1,1}, firstpix[3] = {1,1,1};
 	double *pix, sum = 0.;
-
 	double meanval = 0., minval = 1.E33, maxval = -1.E33;
 
 	/* initialize value in case where it does not work */
 	*mini = 0;
 	*maxi = 0;
 
-	fits_get_img_dim(fit->fptr, &(fit->naxis), &status);
-	fits_get_img_size(fit->fptr, 2, fit->naxes, &status);
+	fits_get_img_dim(fit->fptr, &anaxis, &status);
+	fits_get_img_size(fit->fptr, 2, anaxes, &status);
 
-	if (status || fit->naxis != 2) {
-		siril_debug_print("fit_stats: NAXIS = %d. Only 2-D images are supported.\n",
-				fit->naxis);
-		return (1);
-	}
+    if (status) {
+       fits_report_error(stderr, status); /* print error message */
+       return(status);
+    }
 
-	pix = (double *) malloc(fit->naxes[0] * sizeof(double)); /* memory for 1 row */
-
+    npixels = anaxes[0];  /* no. of pixels to read in each row */
+	pix = (double *) malloc(npixels * sizeof(double)); /* memory for 1 row */
 	if (pix == NULL) {
 		printf("Memory allocation error\n");
 		return (1);
 	}
 
-	totpix = fit->naxes[0] * fit->naxes[1];
-	fpixel[0] = 1; /* read starting with first pixel in each row */
+	/* loop over all planes of the cube (2D images have 1 plane) */
+	for (firstpix[2] = 1; firstpix[2] <= anaxes[2]; firstpix[2]++) {
+		/* loop over all rows of the plane */
+		for (firstpix[1] = 1; firstpix[1] <= anaxes[1]; firstpix[1]++) {
 
-	/* process image one row at a time; increment row # in each loop */
-	for (fpixel[1] = 1; fpixel[1] <= fit->naxes[1]; fpixel[1]++) {
-		/* give starting pixel coordinate and number of pixels to read */
-		if (fits_read_pix(fit->fptr, TDOUBLE, fpixel, fit->naxes[0], 0, pix, 0,
-				&status))
-			break; /* jump out of loop on error */
+			/* give starting pixel coordinate and number of pixels to read */
+			if (fits_read_pix(fit->fptr, TDOUBLE, firstpix, npixels, NULL, pix,
+					NULL, &status))
+				break; /* jump out of loop on error */
 
-		for (ii = 0; ii < fit->naxes[0]; ii++) {
-			sum += pix[ii]; /* accumlate sum */
-			if (pix[ii] < minval)
-				minval = pix[ii]; /* find min and  */
-			if (pix[ii] > maxval)
-				maxval = pix[ii]; /* max values    */
+			for (ii = 0; ii < npixels; ii++) {
+				sum += pix[ii]; /* accumlate sum */
+				if (pix[ii] < minval)
+					minval = pix[ii]; /* find min and  */
+				if (pix[ii] > maxval)
+					maxval = pix[ii]; /* max values    */
+			}
 		}
 	}
 	free(pix);
@@ -126,8 +125,8 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 	if (status) {
 		fits_report_error(stderr, status); /* print any error message */
 	} else {
-		if (totpix > 0)
-			meanval = sum / totpix;
+		if (npixels > 0)
+			meanval = sum / npixels;
 		siril_debug_print("  sum of pixels = %g\n", sum);
 		siril_debug_print("  mean value    = %g\n", meanval);
 		siril_debug_print("  minimum value = %g\n", minval);
