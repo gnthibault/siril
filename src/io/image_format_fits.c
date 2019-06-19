@@ -87,7 +87,7 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 	*maxi = 0;
 
 	fits_get_img_dim(fit->fptr, &anaxis, &status);
-	fits_get_img_size(fit->fptr, 2, anaxes, &status);
+	fits_get_img_size(fit->fptr, 3, anaxes, &status);
 
     if (status) {
        fits_report_error(stderr, status); /* print error message */
@@ -105,7 +105,6 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 	for (firstpix[2] = 1; firstpix[2] <= anaxes[2]; firstpix[2]++) {
 		/* loop over all rows of the plane */
 		for (firstpix[1] = 1; firstpix[1] <= anaxes[1]; firstpix[1]++) {
-
 			/* give starting pixel coordinate and number of pixels to read */
 			if (fits_read_pix(fit->fptr, TDOUBLE, firstpix, npixels, NULL, pix,
 					NULL, &status))
@@ -119,7 +118,7 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 					maxval = pix[ii]; /* max values    */
 			}
 		}
-	}
+	}    /* end of loop over planes */
 	free(pix);
 
 	if (status) {
