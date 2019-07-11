@@ -39,7 +39,7 @@
 #define GITLAB_URL "https://gitlab.com/free-astro/siril/"
 #define TITLE_TAG_STRING "<a class=\"item-title"
 
-static const gchar* gitlab_tags = GITLAB_URL"tags?sort=updated_desc";
+static const gchar* gitlab_tags = GITLAB_URL"-/tags?sort=updated_desc";
 static const gchar* gitlab_raw = GITLAB_URL"raw";
 static const gchar* download_url = DOMAIN_NAME"index.php?title=Siril:";
 static const int DEFAULT_FETCH_RETRIES = 5;
