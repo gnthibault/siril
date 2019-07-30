@@ -1039,6 +1039,8 @@ void on_compositing_reset_clicked(GtkButton *button, gpointer user_data){
 
 	if (com.uniq) {
 		close_single_image();
+	} else if (sequence_is_loaded()) {
+		close_sequence(FALSE);
 	}
 	if (has_fit(0))
 		clearfits(&layers[0]->the_fit);
@@ -1062,7 +1064,7 @@ void on_compositing_reset_clicked(GtkButton *button, gpointer user_data){
 		seq = NULL;
 	}
 
-	for (i=1; i<4; i++) {
+	for (i = 1; i < 4; i++) {
 		/* Create the three default layers */
 		on_layer_add(NULL, NULL);
 	}
