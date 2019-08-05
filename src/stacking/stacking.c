@@ -1373,8 +1373,8 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 1.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.2);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.1);
-			gtk_label_set_text (label_rejection[0], "Percentile low: ");
-			gtk_label_set_text (label_rejection[1], "Percentile high: ");
+			gtk_label_set_text (label_rejection[0], _("Percentile low: "));
+			gtk_label_set_text (label_rejection[1], _("Percentile high: "));
 			break;
 		case LINEARFIT:
 			gtk_widget_set_sensitive(lookup_widget("stack_siglow_button"), TRUE);
@@ -1383,8 +1383,8 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 5.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 5.0);
-			gtk_label_set_text (label_rejection[0], "Linear low: ");
-			gtk_label_set_text (label_rejection[1], "Linear high: ");
+			gtk_label_set_text (label_rejection[0], _("Linear low: "));
+			gtk_label_set_text (label_rejection[1], _("Linear high: "));
 			break;
 		default:
 		case SIGMA:
@@ -1395,8 +1395,8 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 4.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 3.0);
-			gtk_label_set_text (label_rejection[0], "Sigma low: ");
-			gtk_label_set_text (label_rejection[1], "Sigma high: ");
+			gtk_label_set_text (label_rejection[0], _("Sigma low: "));
+			gtk_label_set_text (label_rejection[1], _("Sigma high: "));
 	}
 	com.stack.rej_method = gtk_combo_box_get_active(box);
 	writeinitfile();
