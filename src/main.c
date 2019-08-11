@@ -364,7 +364,8 @@ int main(int argc, char *argv[]) {
 		load_css_style_sheet();
 	}
 
-	changedir(com.wd, NULL);
+	if (changedir(com.wd, NULL))
+		com.wd = strdup(startup_cwd);
 
 	if (!com.headless) {
 		gtk_builder_connect_signals (builder, NULL);
@@ -397,16 +398,17 @@ int main(int argc, char *argv[]) {
 	}
 #endif //MAC_INTEGRATION
 
-	/* start Siril */
+	/* open image in argument, changing dir to be in its directory too */
 	if (argv[optind] != NULL) {
+		const char *image_path = argv[optind];
 		if (startup_cwd) {
 			changedir(startup_cwd, NULL);
 		}
-		open_single_image(argv[optind]);
+		open_single_image(image_path);
 		if (!forcecwd) {
-			gchar *newpath = g_path_get_dirname(argv[optind]);
-			changedir(newpath, NULL);
-			g_free(newpath);
+			gchar *image_dir = g_path_get_dirname(image_path);
+			changedir(image_dir, NULL);
+			g_free(image_dir);
 		}
 	}
 	g_free(startup_cwd);

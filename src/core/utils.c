@@ -298,14 +298,14 @@ int changedir(const char *dir, gchar **err) {
 		error = siril_log_message(_("Unknown error\n"));
 		retval = -1;
 	} else if (!g_file_test(dir, G_FILE_TEST_EXISTS)) {
-		error = siril_log_message(_("No such file or directory\n"));
+		error = siril_log_message(_("'%s' No such file or directory\n"), dir);
 		retval = 2;
 	} else if (!g_file_test(dir, G_FILE_TEST_IS_DIR)) {
-		error = siril_log_message(_("\"%s\" is not a directory\n"), dir);
+		error = siril_log_message(_("'%s' is not a directory\n"), dir);
 		retval = 3;
 	} else if (g_access(dir, W_OK)) {
 		error = siril_log_color_message(_("You don't have permission "
-				"to write in this directory: %s\n"), "red", dir);
+				"to write in this directory: '%s'\n"), "red", dir);
 		retval = 4;
 	} else {
 		/* sequences are invalidate when cwd is changed */
