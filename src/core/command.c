@@ -2749,6 +2749,9 @@ static gboolean completion_match_func(GtkEntryCompletion *completion,
 		const gchar *key, GtkTreeIter *iter, gpointer user_data) {
 	gboolean res = FALSE;
 	char *tag = NULL;
+
+	if (*key == '\0') return FALSE;
+
 	GtkTreeModel *model = gtk_entry_completion_get_model(completion);
 	int column = gtk_entry_completion_get_text_column(completion);
 
