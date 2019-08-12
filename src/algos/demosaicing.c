@@ -1014,3 +1014,47 @@ void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 	assert(debayer_area->h > 2);
 	assert(debayer_area->w > 2);
 }
+
+int split_cfa(fits *in, fits *out, gboolean compatibility) {
+	int width = in->rx;
+	int height = in->ry;
+	int xtrans[6][6] = { 0 };
+	int i, j;
+
+	if (!compatibility)
+		fits_flip_top_to_bottom(in);
+
+	WORD *newbuf = debayer_buffer(in->data, &width, &height, BAYER_SUPER_PIXEL,
+				com.debayer.bayer_pattern, xtrans);
+
+	if (newbuf == NULL) {
+		return 1;
+	}
+	int npixels = width * height;
+
+	if (new_fit_image(&out, width, height, 3)) {
+		return 1;
+	}
+
+	// usual color RGBRGB format to fits RRGGBB format
+	out->data = realloc(out->data, 3 * npixels * sizeof(WORD));
+	for (i = 0, j = 0; j < npixels; i += 3, j++) {
+		double r = (double) newbuf[i + RLAYER];
+		double g = (double) newbuf[i + GLAYER];
+		double b = (double) newbuf[i + BLAYER];
+		out->pdata[RLAYER][j] =
+				(in->bitpix == 8) ? round_to_BYTE(r) : round_to_WORD(r);
+		out->pdata[GLAYER][j] =
+				(in->bitpix == 8) ? round_to_BYTE(g) : round_to_WORD(g);
+		out->pdata[BLAYER][j] =
+				(in->bitpix == 8) ? round_to_BYTE(b) : round_to_WORD(b);
+	}
+	free(newbuf);
+
+	if (!compatibility) {
+		fits_flip_top_to_bottom(in);
+		fits_flip_top_to_bottom(out);
+	}
+
+	return 0;
+}

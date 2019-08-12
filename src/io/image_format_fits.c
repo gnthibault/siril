@@ -111,7 +111,7 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 				break; /* jump out of loop on error */
 
 			for (ii = 0; ii < npixels; ii++) {
-				sum += pix[ii]; /* accumlate sum */
+				sum += pix[ii]; /* accumulate sum */
 				if (pix[ii] < minval)
 					minval = pix[ii]; /* find min and  */
 				if (pix[ii] > maxval)

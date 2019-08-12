@@ -180,6 +180,7 @@ static command commands[] = {
 	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, FALSE},
 	{"setmem", 1, "setmem ratio", process_set_mem, STR_SETMEM, TRUE},
 	{"split", 3, "split R G B", process_split, STR_SPLIT, TRUE},
+	{"split_cfa", 3, "split_cfa R G B", process_split_cfa, STR_SPLIT_CFA, TRUE},
 	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=] [-out=result_filename] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackone, STR_STACK, TRUE},
 	{"stackall", 0, "stackall [type] [sigma low] [sigma high] [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackall, STR_STACKALL, TRUE},
 	{"stat", 0, "stat", process_stat, STR_STAT, TRUE},
@@ -1730,20 +1731,47 @@ int process_unselect(int nb){
 }
 
 int process_split(int nb){
-	char R[256], G[256], B[256];
-	
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	if (!isrgb(&gfit)) {
 		siril_log_message(_("Siril cannot split layers. Make sure your image is in RGB mode.\n"));
 		return 1;
 	}
-	sprintf(R, "%s%s", word[1], com.ext);
-	sprintf(G, "%s%s", word[2], com.ext);
-	sprintf(B, "%s%s", word[3], com.ext);
+	gchar *R = g_strdup_printf("%s%s", word[1], com.ext);
+	gchar *G = g_strdup_printf("%s%s", word[2], com.ext);
+	gchar *B = g_strdup_printf("%s%s", word[3], com.ext);
+
 	save1fits16(R, &gfit, RLAYER);
 	save1fits16(G, &gfit, GLAYER);
 	save1fits16(B, &gfit, BLAYER);
+
+	g_free(R);
+	g_free(G);
+	g_free(B);
+	return 0;
+}
+
+int process_split_cfa(int nb) {
+	if (isrgb(&gfit)) {
+		siril_log_message(_("Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"));
+		return 1;
+	}
+	fits fit = { 0 };
+	gchar *R = g_strdup_printf("%s%s", word[1], com.ext);
+	gchar *G = g_strdup_printf("%s%s", word[2], com.ext);
+	gchar *B = g_strdup_printf("%s%s", word[3], com.ext);
+
+	split_cfa(&gfit, &fit, com.debayer.compatibility);
+
+	save1fits16(R, &fit, RLAYER);
+	save1fits16(G, &fit, GLAYER);
+	save1fits16(B, &fit, BLAYER);
+
+	g_free(R);
+	g_free(G);
+	g_free(B);
+
+	clearfits(&fit);
 	return 0;
 }
 

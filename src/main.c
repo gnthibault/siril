@@ -365,7 +365,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (changedir(com.wd, NULL))
-		com.wd = strdup(startup_cwd);
+		com.wd = siril_get_startup_dir();
 
 	if (!com.headless) {
 		gtk_builder_connect_signals (builder, NULL);
