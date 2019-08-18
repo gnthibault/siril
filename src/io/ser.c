@@ -676,7 +676,7 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 		 * SER changes from the copied SER */
 		ser_write_header(ser_file);
 	} else {	// new SER
-		ser_file->file_id = strdup("Made by Siril");
+		ser_file->file_id = strdup("LUCAM-RECORDER");
 		ser_file->lu_id = 0;
 		ser_file->color_id = SER_MONO;	// this is 0
 		ser_file->little_endian = SER_LITTLE_ENDIAN; // what will it do on big endian machine?
