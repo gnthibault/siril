@@ -247,7 +247,7 @@ int readbmp(const char *name, fits *fit) {
 	}
 	unsigned long f;
 	if (nbdata != (f = fread(buf, 1, nbdata, file))) {
-		fprintf(stderr, "readbmp: could not read all data: (%ld, %ld)\n", nbdata, f);
+		fprintf(stderr, "readbmp: could not read all data: (%lud, %lud)\n", nbdata, f);
 		free(buf);
 		fclose(file);
 		return -1;

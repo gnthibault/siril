@@ -180,7 +180,7 @@ static command commands[] = {
 	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, FALSE},
 	{"setmem", 1, "setmem ratio", process_set_mem, STR_SETMEM, TRUE},
 	{"split", 3, "split R G B", process_split, STR_SPLIT, TRUE},
-	{"split_cfa", 3, "split_cfa R G B", process_split_cfa, STR_SPLIT_CFA, TRUE},
+	{"split_cfa", 0, "split_cfa", process_split_cfa, STR_SPLIT_CFA, TRUE},
 	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=] [-out=result_filename] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackone, STR_STACK, TRUE},
 	{"stackall", 0, "stackall [type] [sigma low] [sigma high] [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackall, STR_STACKALL, TRUE},
 	{"stat", 0, "stat", process_stat, STR_STAT, TRUE},
@@ -1756,22 +1756,47 @@ int process_split_cfa(int nb) {
 		siril_log_message(_("Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"));
 		return 1;
 	}
-	fits fit = { 0 };
-	gchar *R = g_strdup_printf("%s%s", word[1], com.ext);
-	gchar *G = g_strdup_printf("%s%s", word[2], com.ext);
-	gchar *B = g_strdup_printf("%s%s", word[3], com.ext);
+	char *filename = NULL;
 
-	split_cfa(&gfit, &fit, com.debayer.compatibility);
+	fits f_cfa0 = { 0 };
+	fits f_cfa1 = { 0 };
+	fits f_cfa2 = { 0 };
+	fits f_cfa3 = { 0 };
 
-	save1fits16(R, &fit, RLAYER);
-	save1fits16(G, &fit, GLAYER);
-	save1fits16(B, &fit, BLAYER);
+	if (sequence_is_loaded() && !single_image_is_loaded()) {
+		filename = g_path_get_basename(com.seq.seqname);
+	}
+	else {
+		if (com.uniq->filename != NULL) {
+			char *tmp = remove_ext_from_filename(com.uniq->filename);
+			filename = g_path_get_basename(tmp);
+			free(tmp);
+		}
+	}
 
-	g_free(R);
-	g_free(G);
-	g_free(B);
+	gchar *cfa0 = g_strdup_printf("CFA0_%s%s", filename, com.ext);
+	gchar *cfa1 = g_strdup_printf("CFA1_%s%s", filename, com.ext);
+	gchar *cfa2 = g_strdup_printf("CFA2_%s%s", filename, com.ext);
+	gchar *cfa3 = g_strdup_printf("CFA3_%s%s", filename, com.ext);
 
-	clearfits(&fit);
+	split_cfa(&gfit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
+
+	save1fits16(cfa0, &f_cfa0, 0);
+	save1fits16(cfa1, &f_cfa1, 0);
+	save1fits16(cfa2, &f_cfa2, 0);
+	save1fits16(cfa3, &f_cfa3, 0);
+
+	g_free(cfa0);
+	g_free(cfa1);
+	g_free(cfa2);
+	g_free(cfa3);
+
+	clearfits(&f_cfa0);
+	clearfits(&f_cfa1);
+	clearfits(&f_cfa2);
+	clearfits(&f_cfa3);
+
+	free(filename);
 	return 0;
 }
 

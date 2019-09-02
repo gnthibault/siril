@@ -138,7 +138,7 @@ static void bv2rgb(double *r, double *g, double *b, double bv) { // RGB <0,1> <-
 		t = (bv - 0.00) / (0.40 - 0.00);
 		*r = 0.83 + (0.17 * t);
 	} else if ((bv >= 0.40) && (bv < 2.10)) {
-		t = (bv - 0.40) / (2.10 - 0.40);
+//		t = (bv - 0.40) / (2.10 - 0.40);
 		*r = 1.00;
 	}
 	if ((bv >= -0.40) && (bv < 0.00)) {
@@ -155,7 +155,7 @@ static void bv2rgb(double *r, double *g, double *b, double bv) { // RGB <0,1> <-
 		*g = 0.82 - (0.5 * t * t);
 	}
 	if ((bv >= -0.40) && (bv < 0.40)) {
-		t = (bv + 0.40) / (0.40 + 0.40);
+//		t = (bv + 0.40) / (0.40 + 0.40);
 		*b = 1.00;
 	} else if ((bv >= 0.40) && (bv < 1.50)) {
 		t = (bv - 0.40) / (1.50 - 0.40);

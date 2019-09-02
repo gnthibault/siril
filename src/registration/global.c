@@ -297,7 +297,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 static int star_align_finalize_hook(struct generic_seq_args *args) {
 	struct star_align_data *sadata = args->user;
 	struct registration_args *regargs = sadata->regargs;
-	int i = 0, failed = 0;
+	int i, failed = 0;
 
 	free_fitted_stars(sadata->refstars);
 

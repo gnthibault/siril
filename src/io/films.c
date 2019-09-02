@@ -220,9 +220,7 @@ static int randPixel(int nb_pixels) {
 static int *randomIndex(int n) {
 	srand(time(NULL));
 	int *index;
-	int i = 0;
-	int x = 0;
-	int tmp = 0;
+	int i, x, tmp;
 
 	index = calloc(n, sizeof (int));
 	if (index == NULL) {

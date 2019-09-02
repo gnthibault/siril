@@ -43,6 +43,7 @@
 #include "gui/histogram.h"
 #include "gui/script_menu.h"
 #include "gui/progress_and_log.h"
+#include "algos/demosaicing.h"
 #include "algos/colors.h"
 #include "algos/PSF.h"
 #include "algos/star_finder.h"
@@ -1277,6 +1278,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menuitemcalibration"), is_a_singleRGB_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitemphotometriccalibration"), is_a_singleRGB_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_channel_separation"), is_a_singleRGB_image_loaded);
+	gtk_widget_set_sensitive(lookup_widget("menu_slpitcfa"), any_image_is_loaded && !isrgb(&gfit));
 	gtk_widget_set_sensitive(lookup_widget("menuitem_histo"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_asinh"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_fixbanding"), any_image_is_loaded);
@@ -4789,6 +4791,35 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 	} else {
 		undo_save_state(&gfit, "Processing: Cosmetic Correction");
 		start_in_new_thread(autoDetectThreaded, args);
+	}
+}
+
+/******* SPLIT CFA ******************************/
+
+void on_menu_slpitcfa_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	gtk_widget_show(lookup_widget("split_cfa_dialog"));
+}
+
+void on_split_cfa_close_clicked(GtkButton *button, gpointer user_data) {
+	gtk_widget_hide(lookup_widget("split_cfa_dialog"));
+}
+
+void on_split_cfa_apply_clicked(GtkButton *button, gpointer user_data) {
+	GtkToggleButton *seq = GTK_TOGGLE_BUTTON(lookup_widget("checkSplitCFASeq"));
+	GtkEntry *entrySplitCFA;
+
+	entrySplitCFA = GTK_ENTRY(lookup_widget("entrySplitCFA"));
+
+	if (gtk_toggle_button_get_active(seq) && sequence_is_loaded()) {
+		struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
+
+		args->seq = &com.seq;
+		args->seqEntry = gtk_entry_get_text(entrySplitCFA);
+		if (args->seqEntry && args->seqEntry[0] == '\0')
+					args->seqEntry = "CFA_";
+		apply_split_cfa_to_sequence(args);
+	} else {
+		process_split_cfa(0);
 	}
 }
 

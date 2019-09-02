@@ -25,9 +25,11 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/processing.h"
 #include "gui/callbacks.h"
 #include "algos/demosaicing.h"
 #include "algos/statistics.h"
+
 
 /** Calculate the bayer pattern color from the row and column **/
 static inline int FC(const size_t row, const size_t col, const uint32_t filters) {
@@ -83,7 +85,6 @@ static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
 	}
 	return 0;
 }
-
 
 /***************************************************
  * 
@@ -786,7 +787,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		npixels = (*width) * (*height);
 		newbuf = calloc(1, 3 * npixels * sizeof(WORD));
 		if (newbuf == NULL) {
-			printf("Not enough memory for debayering\n");
+			PRINT_ALLOC_ERR;
 			return NULL;
 		}
 		//siril_log_message("Bilinear interpolation...\n");
@@ -796,7 +797,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		npixels = (*width) * (*height);
 		newbuf = calloc(1, 3 * npixels * sizeof(WORD));
 		if (newbuf == NULL) {
-			printf("Not enough memory for debayering\n");
+			PRINT_ALLOC_ERR;
 			return NULL;
 		}
 		//siril_log_message("Nearest Neighbor interpolation...\n");
@@ -807,7 +808,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		npixels = (*width) * (*height);
 		newbuf = calloc(1, 3 * npixels * sizeof(WORD));
 		if (newbuf == NULL) {
-			printf("Not enough memory for debayering\n");
+			PRINT_ALLOC_ERR;
 			return NULL;
 		}
 		//siril_log_message("VNG interpolation...\n");
@@ -817,7 +818,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		npixels = (*width) * (*height);
 		newbuf = calloc(1, 3 * npixels * sizeof(WORD));
 		if (newbuf == NULL) {
-			printf("Not enough memory for debayering\n");
+			PRINT_ALLOC_ERR;
 			return NULL;
 		}
 		//siril_log_message("AHD interpolation...\n");
@@ -827,7 +828,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		npixels = (*width / 2 + *width % 2) * (*height / 2 + *height % 2);
 		newbuf = calloc(1, 3 * npixels * sizeof(WORD));
 		if (newbuf == NULL) {
-			printf("Not enough memory for debayering\n");
+			PRINT_ALLOC_ERR;
 			return NULL;
 		}
 		//siril_log_message("Super Pixel interpolation...\n");
@@ -841,7 +842,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		npixels = (*width) * (*height);
 		newbuf = calloc(1, 3 * npixels * sizeof(WORD));
 		if (newbuf == NULL) {
-			printf("Not enough memory for debayering\n");
+			PRINT_ALLOC_ERR;
 			return NULL;
 		}
 		fast_xtrans_interpolate(buf, newbuf, *width, *height, pattern, xtrans);
@@ -1015,46 +1016,111 @@ void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 	assert(debayer_area->w > 2);
 }
 
-int split_cfa(fits *in, fits *out, gboolean compatibility) {
+int split_cfa(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 	int width = in->rx;
 	int height = in->ry;
-	int xtrans[6][6] = { 0 };
-	int i, j;
+	int j, row, col;
 
-	if (!compatibility)
-		fits_flip_top_to_bottom(in);
+	width = width / 2 + width % 2;
+	height = height / 2 + height % 2;
 
-	WORD *newbuf = debayer_buffer(in->data, &width, &height, BAYER_SUPER_PIXEL,
-				com.debayer.bayer_pattern, xtrans);
-
-	if (newbuf == NULL) {
-		return 1;
-	}
-	int npixels = width * height;
-
-	if (new_fit_image(&out, width, height, 3)) {
+	if (new_fit_image(&cfa0, width, height, 1)) {
 		return 1;
 	}
 
-	// usual color RGBRGB format to fits RRGGBB format
-	out->data = realloc(out->data, 3 * npixels * sizeof(WORD));
-	for (i = 0, j = 0; j < npixels; i += 3, j++) {
-		double r = (double) newbuf[i + RLAYER];
-		double g = (double) newbuf[i + GLAYER];
-		double b = (double) newbuf[i + BLAYER];
-		out->pdata[RLAYER][j] =
-				(in->bitpix == 8) ? round_to_BYTE(r) : round_to_WORD(r);
-		out->pdata[GLAYER][j] =
-				(in->bitpix == 8) ? round_to_BYTE(g) : round_to_WORD(g);
-		out->pdata[BLAYER][j] =
-				(in->bitpix == 8) ? round_to_BYTE(b) : round_to_WORD(b);
+	if (new_fit_image(&cfa1, width, height, 1)) {
+		return 1;
 	}
-	free(newbuf);
 
-	if (!compatibility) {
-		fits_flip_top_to_bottom(in);
-		fits_flip_top_to_bottom(out);
+	if (new_fit_image(&cfa2, width, height, 1)) {
+		return 1;
+	}
+
+	if (new_fit_image(&cfa3, width, height, 1)) {
+		return 1;
+	}
+
+	double c0, c1, c2, c3;
+	j = 0;
+
+	for (row = 0; row < in->ry - 1; row += 2) {
+		for (col = 0; col < in->rx - 1; col += 2) {
+			/* not c0, c1, c2 and c3 because of the read orientation */
+			c1 = in->data[col + row * in->rx];
+			c3 = in->data[1 + col + row * in->rx];
+			c0 = in->data[col + (1 + row) * in->rx];
+			c2 = in->data[1 + col + (1 + row) * in->rx];
+
+			cfa0->data[j] =
+					(in->bitpix == 8) ? round_to_BYTE(c0) : round_to_WORD(c0);
+			cfa1->data[j] =
+					(in->bitpix == 8) ? round_to_BYTE(c1) : round_to_WORD(c1);
+			cfa2->data[j] =
+					(in->bitpix == 8) ? round_to_BYTE(c2) : round_to_WORD(c2);
+			cfa3->data[j] =
+					(in->bitpix == 8) ? round_to_BYTE(c3) : round_to_WORD(c3);
+			j++;
+		}
 	}
 
 	return 0;
+}
+
+int split_cfa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
+	fits f_cfa0 = { 0 };
+	fits f_cfa1 = { 0 };
+	fits f_cfa2 = { 0 };
+	fits f_cfa3 = { 0 };
+
+	struct split_cfa_data *cfa_args = (struct split_cfa_data *) args->user;
+
+	gchar *cfa0 = g_strdup_printf("%s0_%s_%05d%s", cfa_args->seqEntry, com.seq.seqname, o, com.ext);
+	gchar *cfa1 = g_strdup_printf("%s1_%s_%05d%s", cfa_args->seqEntry, com.seq.seqname, o, com.ext);
+	gchar *cfa2 = g_strdup_printf("%S2_%s_%05d%s", cfa_args->seqEntry, com.seq.seqname, o, com.ext);
+	gchar *cfa3 = g_strdup_printf("%s3_%s_%05d%s", cfa_args->seqEntry, com.seq.seqname, o, com.ext);
+
+	split_cfa(fit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
+
+	save1fits16(cfa0, &f_cfa0, 0);
+	save1fits16(cfa1, &f_cfa1, 0);
+	save1fits16(cfa2, &f_cfa2, 0);
+	save1fits16(cfa3, &f_cfa3, 0);
+
+	g_free(cfa0);
+	g_free(cfa1);
+	g_free(cfa2);
+	g_free(cfa3);
+
+	clearfits(&f_cfa0);
+	clearfits(&f_cfa1);
+	clearfits(&f_cfa2);
+	clearfits(&f_cfa3);
+
+	return 0;
+}
+
+void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args) {
+	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	args->seq = split_cfa_args->seq;
+	args->partial_image = FALSE;
+	args->filtering_criterion = seq_filter_included;
+	args->nb_filtered_images = split_cfa_args->seq->selnum;
+	args->prepare_hook = ser_prepare_hook;
+	args->finalize_hook = ser_finalize_hook;
+	args->save_hook = NULL;
+	args->image_hook = split_cfa_image_hook;
+	args->idle_function = NULL;
+	args->stop_on_error = FALSE;
+	args->description = _("Split CFA");
+	args->has_output = FALSE;
+	args->new_seq_prefix = split_cfa_args->seqEntry;
+	args->load_new_sequence = FALSE;
+	args->force_ser_output = FALSE;
+	args->user = split_cfa_args;
+	args->already_in_a_thread = FALSE;
+	args->parallel = TRUE;
+
+	split_cfa_args->fit = NULL;	// not used here
+
+	start_in_new_thread(generic_sequence_worker, args);
 }

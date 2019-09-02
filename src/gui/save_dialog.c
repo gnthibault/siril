@@ -336,7 +336,9 @@ static void initialize_data(gpointer p) {
 
 static gpointer minisavedial(gpointer p) {
 	struct savedial_data *args = (struct savedial_data *) p;
+#ifdef HAVE_LIBPNG
 	uint32_t bytes_per_sample;
+#endif
 	args->retval = 0;
 
 	if (args->filename[0] != '\0') {

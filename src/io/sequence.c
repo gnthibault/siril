@@ -736,7 +736,9 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
  * have a partial RGB image. */
 int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const rectangle *area, gboolean do_photometry) {
 	char filename[256];
+#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
 	fits tmp_fit;
+#endif
 	switch (seq->type) {
 		case SEQ_REGULAR:
 			fit_sequence_get_image_filename(seq, index, filename, TRUE);
