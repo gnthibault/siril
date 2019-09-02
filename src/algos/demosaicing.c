@@ -27,6 +27,7 @@
 #include "core/proto.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "algos/demosaicing.h"
 #include "algos/statistics.h"
 
@@ -1021,6 +1022,11 @@ int split_cfa(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 	int height = in->ry;
 	int j, row, col;
 
+	if (strlen(in->bayer_pattern) > 4) {
+		siril_log_message("Splitting CFA does not work on non-Bayer pattern!\n");
+		return 1;
+	}
+
 	width = width / 2 + width % 2;
 	height = height / 2 + height % 2;
 
@@ -1079,7 +1085,18 @@ int split_cfa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 	gchar *cfa2 = g_strdup_printf("%S2_%s_%05d%s", cfa_args->seqEntry, com.seq.seqname, o, com.ext);
 	gchar *cfa3 = g_strdup_printf("%s3_%s_%05d%s", cfa_args->seqEntry, com.seq.seqname, o, com.ext);
 
-	split_cfa(fit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
+	int ret = split_cfa(fit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
+	if (ret) {
+		g_free(cfa0);
+		g_free(cfa1);
+		g_free(cfa2);
+		g_free(cfa3);
+		clearfits(&f_cfa0);
+		clearfits(&f_cfa1);
+		clearfits(&f_cfa2);
+		clearfits(&f_cfa3);
+		return ret;
+	}
 
 	save1fits16(cfa0, &f_cfa0, 0);
 	save1fits16(cfa1, &f_cfa1, 0);
@@ -1110,7 +1127,7 @@ void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args) {
 	args->save_hook = NULL;
 	args->image_hook = split_cfa_image_hook;
 	args->idle_function = NULL;
-	args->stop_on_error = FALSE;
+	args->stop_on_error = TRUE;
 	args->description = _("Split CFA");
 	args->has_output = FALSE;
 	args->new_seq_prefix = split_cfa_args->seqEntry;

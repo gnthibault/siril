@@ -1779,7 +1779,19 @@ int process_split_cfa(int nb) {
 	gchar *cfa2 = g_strdup_printf("CFA2_%s%s", filename, com.ext);
 	gchar *cfa3 = g_strdup_printf("CFA3_%s%s", filename, com.ext);
 
-	split_cfa(&gfit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
+	int ret = split_cfa(&gfit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
+	if (ret) {
+		g_free(cfa0);
+		g_free(cfa1);
+		g_free(cfa2);
+		g_free(cfa3);
+		clearfits(&f_cfa0);
+		clearfits(&f_cfa1);
+		clearfits(&f_cfa2);
+		clearfits(&f_cfa3);
+		return ret;
+	}
+
 
 	save1fits16(cfa0, &f_cfa0, 0);
 	save1fits16(cfa1, &f_cfa1, 0);
