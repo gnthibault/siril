@@ -241,7 +241,8 @@ int main(int argc, char *argv[]) {
 	extern int opterr;
 	gchar *startup_cwd = NULL;
 	gboolean forcecwd = FALSE;
-	char *cwd_forced = NULL, *start_script = NULL;
+	gchar *cwd_forced = NULL;
+	char*start_script = NULL;
 
 	g_setenv ("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
@@ -281,7 +282,11 @@ int main(int argc, char *argv[]) {
 				exit(EXIT_SUCCESS);
 				break;
 			case 'd':
-				cwd_forced = optarg;
+				if (!g_path_is_absolute (optarg)) {
+					cwd_forced = g_build_filename(g_get_current_dir(), optarg, NULL);
+				} else {
+					cwd_forced = g_strdup(optarg);
+				}
 				forcecwd = TRUE;
 				break;
 			case 's':
@@ -290,7 +295,7 @@ int main(int argc, char *argv[]) {
 				com.headless = TRUE;
 				/* need to force cwd to the current dir if no option -d */
 				if (!forcecwd) {
-					cwd_forced = g_get_current_dir();
+					cwd_forced = g_strdup(g_get_current_dir());
 					forcecwd = TRUE;
 				}
 				if (c == 's')
@@ -301,6 +306,7 @@ int main(int argc, char *argv[]) {
 				/* no break */
 			case 'h':
 				usage(argv[0]);
+				g_free(cwd_forced);
 				exit(EXIT_SUCCESS);
 		}
 	}
@@ -415,6 +421,7 @@ int main(int argc, char *argv[]) {
 
 	if (forcecwd && cwd_forced) {
 		changedir(cwd_forced, NULL);
+		g_free(cwd_forced);
 	}
 
 	if (!com.script) {
