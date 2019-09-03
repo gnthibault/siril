@@ -3098,6 +3098,7 @@ gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
 double marge_size = 10;
 
 static gboolean is_over_the_left_side_of_sel(double zoomedX, double zoomedY, double zoom) {
+	if (com.selection.w == 0 && com.selection.h == 0) return FALSE;
 	double s = marge_size / zoom;
 	if ((zoomedX > com.selection.x - s && zoomedX < com.selection.x + s)) {
 		if (zoomedY > com.selection.y - s
@@ -3109,6 +3110,7 @@ static gboolean is_over_the_left_side_of_sel(double zoomedX, double zoomedY, dou
 }
 
 static gboolean is_over_the_right_side_of_sel(double zoomedX, double zoomedY, double zoom) {
+	if (com.selection.w == 0 && com.selection.h == 0) return FALSE;
 	double s = marge_size / zoom;
 	if ((zoomedX > com.selection.x + com.selection.w - s
 			&& zoomedX < com.selection.x + com.selection.w + s)) {
@@ -3120,6 +3122,7 @@ static gboolean is_over_the_right_side_of_sel(double zoomedX, double zoomedY, do
 }
 
 static gboolean is_over_the_bottom_of_sel(double zoomedX, double zoomedY, double zoom) {
+	if (com.selection.w == 0 && com.selection.h == 0) return FALSE;
 	double s = marge_size / zoom;
 	if ((zoomedY > com.selection.y + com.selection.h - s
 			&& zoomedY < com.selection.y + com.selection.h + s)) {
@@ -3131,6 +3134,7 @@ static gboolean is_over_the_bottom_of_sel(double zoomedX, double zoomedY, double
 }
 
 static gboolean is_over_the_top_of_sel(double zoomedX, double zoomedY, double zoom) {
+	if (com.selection.w == 0 && com.selection.h == 0) return FALSE;
 	double s = marge_size / zoom;
 	if ((zoomedY > com.selection.y - s && zoomedY < com.selection.y + s)) {
 		if (zoomedX > com.selection.x - s
@@ -4813,6 +4817,7 @@ void on_split_cfa_apply_clicked(GtkButton *button, gpointer user_data) {
 	if (gtk_toggle_button_get_active(seq) && sequence_is_loaded()) {
 		struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
 
+		set_cursor_waiting(TRUE);
 		args->seq = &com.seq;
 		args->seqEntry = gtk_entry_get_text(entrySplitCFA);
 		if (args->seqEntry && args->seqEntry[0] == '\0')
