@@ -161,10 +161,22 @@ int cvTranslateImage(fits *image, point shift, int interpolation) {
 
 	int ndata = image->rx * image->ry;
 
-	WORD *bgrbgr = fits_to_bgrbgr(image);
+	WORD *bgrbgr = NULL;
+	Mat in, out;
 
-	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
-	Mat out(image->ry, image->rx, CV_16UC3);
+	if (image->naxes[2] == 1) {
+		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
+		out = Mat(image->ry, image->rx, CV_16UC1);
+	}
+	else if (image->naxes[2] == 3) {
+		bgrbgr = fits_to_bgrbgr(image);
+		in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
+		out = Mat(image->ry, image->rx, CV_16UC3);
+	}
+	else {
+		siril_log_message(_("Translate is not supported for images with %d channels\n"), image->naxes[2]);
+		return -1;
+	}
 
 	Mat M = (Mat_<double>(2,3) << 1, 0, shift.x, 0, 1, shift.y);
 
@@ -212,10 +224,22 @@ int cvRotateImage(fits *image, point center, double angle, int interpolation, in
 
 	int ndata = image->rx * image->ry;
 
-	WORD *bgrbgr = fits_to_bgrbgr(image);
+	WORD *bgrbgr = NULL;
+	Mat in, out;
 
-	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
-	Mat out(image->ry, image->rx, CV_16UC3);
+	if (image->naxes[2] == 1) {
+		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
+		out = Mat(image->ry, image->rx, CV_16UC1);
+	}
+	else if (image->naxes[2] == 3) {
+		bgrbgr = fits_to_bgrbgr(image);
+		in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
+		out = Mat(image->ry, image->rx, CV_16UC3);
+	}
+	else {
+		siril_log_message(_("Rotate is not supported for images with %d channels\n"), image->naxes[2]);
+		return -1;
+	}
 
 	if ((fmod(angle, 90.0) == 0) && interpolation == -1) {	// fast rotation
 		transpose(in, out);
@@ -392,7 +416,7 @@ int cvTransformImage(fits *image, long width, long height, Homography Hom, int i
 		out = Mat(height, width, CV_16UC3);
 	}
 	else {
-		siril_log_message("Image resizing is not supported for images with %d channels\n", image->naxes[2]);
+		siril_log_message(_("Transformation is not supported for images with %d channels\n"), image->naxes[2]);
 		return -1;
 	}
 
@@ -484,20 +508,35 @@ int cvComputeFinestScale(fits *image) {
 
 	int ndata = image->rx * image->ry;
 
-	WORD *bgrbgr = fits_to_bgrbgr(image);
+	WORD *bgrbgr = NULL;
+	Mat in, out;
 
-	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
-	Mat out(image->ry, image->rx, CV_16UC3);
+	if (image->naxes[2] == 1) {
+		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
+		out = Mat(image->ry, image->rx, CV_16UC1);
+	}
+	else if (image->naxes[2] == 3) {
+		bgrbgr = fits_to_bgrbgr(image);
+		in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
+		out = Mat(image->ry, image->rx, CV_16UC3);
+	}
+	else {
+		siril_log_message(_("Deconvolution is not supported for images with %d channels\n"), image->naxes[2]);
+		return -1;
+	}
+
 	blur(in, out, Size(3, 3));
 	out = in - out;
 
 	Mat channel[3];
 	split(out, channel);
 
-	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 	if (image->naxes[2] == 3) {
+		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
+	} else {
+		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
 	}
 
 	if (image->naxes[2] == 1) {
@@ -567,11 +606,24 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 	int ndata = image->rx * image->ry;
 	int ksize = (int)((KERNEL_SIZE_FACTOR * sigma) + 0.5);
 	ksize = ksize % 2 != 0 ? ksize : ksize + 1;
+	Mat in, out;
 
-	WORD *bgrbgr = fits_to_bgrbgr(image);
+	WORD *bgrbgr = NULL;
 
-	Mat in(image->ry, image->rx, CV_16UC3, bgrbgr);
-	Mat out(image->ry, image->rx, CV_16UC3);
+	if (image->naxes[2] == 1) {
+		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
+		out = Mat(image->ry, image->rx, CV_16UC1);
+	}
+	else if (image->naxes[2] == 3) {
+		bgrbgr = fits_to_bgrbgr(image);
+		in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
+		out = Mat(image->ry, image->rx, CV_16UC3);
+	}
+	else {
+		siril_log_message(_("Deconvolution is not supported for images with %d channels\n"), image->naxes[2]);
+		return -1;
+	}
+
 	set_progress_bar_data(_("Deconvolution..."), PROGRESS_NONE);
 
 	// From here on, use 64-bit floats
@@ -592,10 +644,12 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 	Mat channel[3];
 	split(out, channel);
 
-	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 	if (image->naxes[2] == 3) {
+		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
+	} else {
+		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
 	}
 
 	if (image->naxes[2] == 1) {
