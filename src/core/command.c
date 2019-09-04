@@ -2660,21 +2660,27 @@ static int executeCommand(int wordnb) {
 }
 
 static void display_command_on_status_bar(int line, char *myline) {
-	GtkStatusbar *statusbar_script = GTK_STATUSBAR(lookup_widget("statusbar_script"));
-	gchar *status;
-	gchar *newline;
+	if (!com.headless) {
+		GtkStatusbar *statusbar_script = GTK_STATUSBAR(
+				lookup_widget("statusbar_script"));
+		gchar *status;
+		gchar *newline;
 
-	newline = g_strdup(myline);
-	removeEOL(newline);
-	status = g_strdup_printf(_("Processing line %d: %s"), line, newline);
+		newline = g_strdup(myline);
+		removeEOL(newline);
+		status = g_strdup_printf(_("Processing line %d: %s"), line, newline);
 
-	gtk_statusbar_push(statusbar_script, 0, status);
-	g_free(newline);
-	g_free(status);
+		gtk_statusbar_push(statusbar_script, 0, status);
+		g_free(newline);
+		g_free(status);
+	}
 }
 
 static void clear_status_bar() {
-	gtk_statusbar_remove_all(GTK_STATUSBAR(lookup_widget("statusbar_script")), 0);
+	if (!com.headless) {
+		gtk_statusbar_remove_all(
+				GTK_STATUSBAR(lookup_widget("statusbar_script")), 0);
+	}
 }
 
 
