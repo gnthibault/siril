@@ -289,7 +289,7 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 	return tmpfit;
 }
 
-static int retrieveBayerPattern(char *bayer) {
+int retrieveBayerPattern(char *bayer) {
 	int i;
 
 	for (i = 0; i < (sizeof(filter_pattern) / sizeof(char *)); i++) {

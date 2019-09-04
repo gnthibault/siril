@@ -479,7 +479,7 @@ static char *fetch_url(const char *url) {
 
 			break;
 		default:
-			error = siril_log_message("Fetch failed with code %ld for URL %s\n", code, url);
+			error = siril_log_message(_("Fetch failed with code %ld for URL %s\n"), code, url);
 			siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), error);
 		}
 	}

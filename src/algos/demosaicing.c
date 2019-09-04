@@ -1023,7 +1023,7 @@ int split_cfa(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 	int j, row, col;
 
 	if (strlen(in->bayer_pattern) > 4) {
-		siril_log_message("Splitting CFA does not work on non-Bayer pattern!\n");
+		siril_log_message(_("Split CFA does not work on non-Bayer filter camera images!\n"));
 		return 1;
 	}
 

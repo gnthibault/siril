@@ -94,7 +94,7 @@ int pipe_create() {
 			NULL);                    // default security attribute
 	if (hPipe_w == INVALID_HANDLE_VALUE)
 	{
-		siril_log_message("Output pipe creation failed with error %d\n", GetLastError());
+		siril_log_message(_("Output pipe creation failed with error %d\n"), GetLastError());
 		return -1;
 	}
 
@@ -111,7 +111,7 @@ int pipe_create() {
 			NULL);                    // default security attribute
 	if (hPipe_r == INVALID_HANDLE_VALUE)
 	{
-		siril_log_message("Input pipe creation failed with error %d\n", GetLastError());
+		siril_log_message(_("Input pipe creation failed with error %d\n"), GetLastError());
 		return -1;
 	}
 #else
