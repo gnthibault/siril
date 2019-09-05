@@ -2539,7 +2539,7 @@ int process_set_cpu(int nb){
 
 int process_set_mem(int nb){
 	double ratio = atof(word[1]);
-	if (ratio < 0.05 || ratio > 2.0) {
+	if (ratio < 0.05 || ratio > 4.0) {
 		siril_log_message(_("The accepted range for the ratio of memory used for stacking is [0.05, 2], with values below the available memory recommended\n"));
 		return 1;
 	}
