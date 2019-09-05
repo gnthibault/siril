@@ -2330,7 +2330,7 @@ static gpointer stackone_worker(gpointer garg) {
 	free(arg);
 	com.script = was_in_script;
 	siril_add_idle(end_generic, NULL);
-	return NULL;
+	return GINT_TO_POINTER(retval);
 }
 
 int process_stackone(int nb) {

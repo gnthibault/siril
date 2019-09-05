@@ -438,7 +438,9 @@ int main(int argc, char *argv[]) {
 #ifdef _WIN32			
 			ReconnectIO(1);
 #endif
-			execute_script(fp);
+			if (execute_script(fp)) {
+				exit(1);
+			}
 		}
 		else {
 			pipe_start();
