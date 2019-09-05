@@ -171,6 +171,7 @@ static command commands[] = {
 	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME, TRUE},
 	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},
 	{"seqpsf", 0, "seqpsf", process_seq_psf, STR_SEQPSF, FALSE},
+	{"seqsplit_cfa", 0, "seqsplit_cfa sequencename", process_seq_split_cfa, STR_SEQSPLIT_CFA, FALSE},
 #ifdef _OPENMP
 	{"setcpu", 1, "setcpu number", process_set_cpu, STR_SETCPU, TRUE},
 #endif
@@ -1616,6 +1617,7 @@ int process_fixbanding(int nb) {
 	return 0;
 }
 
+
 int process_findcosme(int nb) {
 	gboolean is_sequence;
 	sequence *seq = NULL;
@@ -1792,7 +1794,6 @@ int process_split_cfa(int nb) {
 		return ret;
 	}
 
-
 	save1fits16(cfa0, &f_cfa0, 0);
 	save1fits16(cfa1, &f_cfa1, 0);
 	save1fits16(cfa2, &f_cfa2, 0);
@@ -1811,6 +1812,53 @@ int process_split_cfa(int nb) {
 	free(filename);
 	return 0;
 }
+
+int process_seq_split_cfa(int nb) {
+	gboolean is_sequence;
+	sequence *seq = NULL;
+	int i = 0;
+
+	if (get_thread_run()) {
+		siril_log_message(_("Another task is "
+				"already in progress, ignoring new request.\n"));
+		return 1;
+	}
+
+	gchar *file = g_strdup(word[1]);
+	if (!ends_with(file, ".seq")) {
+		str_append(&file, ".seq");
+	}
+
+	if (!existseq(file)) {
+		if (check_seq(FALSE)) {
+			siril_log_message(_("No sequence `%s' found.\n"), file);
+			return 1;
+		}
+	}
+	seq = readseqfile(file);
+	if (seq == NULL) {
+		siril_log_message(_("No sequence `%s' found.\n"), file);
+		return 1;
+	}
+	if (seq_check_basic_data(seq, FALSE) == -1) {
+		free(seq);
+		return 1;
+	}
+	i++;
+
+	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
+
+	args->seq = seq;
+	args->fit = &gfit;
+	args->seqEntry = "CFA_";
+
+	set_cursor_waiting(TRUE);
+
+	apply_split_cfa_to_sequence(args);
+
+	return 0;
+}
+
 
 int process_stat(int nb){
 	int nplane;

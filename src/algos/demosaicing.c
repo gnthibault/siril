@@ -1080,10 +1080,10 @@ int split_cfa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 
 	struct split_cfa_data *cfa_args = (struct split_cfa_data *) args->user;
 
-	gchar *cfa0 = g_strdup_printf("%s0_%s_%05d%s", cfa_args->seqEntry, com.seq.seqname, o, com.ext);
-	gchar *cfa1 = g_strdup_printf("%s1_%s_%05d%s", cfa_args->seqEntry, com.seq.seqname, o, com.ext);
-	gchar *cfa2 = g_strdup_printf("%s2_%s_%05d%s", cfa_args->seqEntry, com.seq.seqname, o, com.ext);
-	gchar *cfa3 = g_strdup_printf("%s3_%s_%05d%s", cfa_args->seqEntry, com.seq.seqname, o, com.ext);
+	gchar *cfa0 = g_strdup_printf("%s0_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
+	gchar *cfa1 = g_strdup_printf("%s1_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
+	gchar *cfa2 = g_strdup_printf("%s2_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
+	gchar *cfa3 = g_strdup_printf("%s3_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
 
 	int ret = split_cfa(fit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
 	if (ret) {

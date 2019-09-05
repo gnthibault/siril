@@ -85,6 +85,7 @@
 #define STR_SEQFIND_COSME N_("Same command than FIND_COSME but for the sequence \"sequencename\"")
 #define STR_SEQFIND_COSME_CFA N_("Same command than FIND_COSME_CFA but for the sequence \"sequencename\"")
 #define STR_SEQPSF N_("Same command than PSF but works for sequences. Results are dumped in the console in a form that can be used to produce brightness variation curves")
+#define STR_SEQSPLIT_CFA N_("Same command than SPLIT_CFA but for the sequence \"sequencename\"")
 #define STR_SETCPU N_("Defines the number of processing threads used for calculation. Can be as high as the number of virtual threads existing on the system, which is the number of CPU cores or twice this number if hyperthreading (Intel HT) is available")
 #define STR_SETEXT N_("Sets the extension used and recognized by sequences. The argument \"extension\" can be \"fit\", \"fts\" or \"fits\"")
 #define STR_SETFINDSTAR N_("Defines thresholds above the noise and star roundness for stars detection with FINDSTAR and REGISTER commands. \"Sigma\" must be greater or equal to 0.05 and \"roundness\" between 0 and 0.9")

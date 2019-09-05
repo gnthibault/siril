@@ -114,6 +114,7 @@ int	process_fixbanding(int nb);
 int	process_findcosme(int nb);
 int	process_split(int nb);
 int	process_split_cfa(int nb);
+int process_seq_split_cfa(int nb);
 int	process_select(int nb);
 int	process_set_mag(int nb);
 int	process_set_mag_seq(int nb);
