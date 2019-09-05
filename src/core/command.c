@@ -2737,6 +2737,7 @@ gpointer execute_script(gpointer p) {
 		}
 		if (waiting_for_thread()) {
 			free(myline);
+			retval = 1;
 			break;	// abort script on command failure
 		}
 		endmem = get_available_memory_in_MB();
