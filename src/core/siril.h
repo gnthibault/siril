@@ -171,7 +171,7 @@ typedef enum {
 #define SCALED_IMAGE -3		// the single image has a different size than
 				// the loaded sequence
 
-#define MAX_STARS 50000		// maximum length of com.stars
+#define MAX_STARS 200000		// maximum length of com.stars
 
 /* constants for loglut function */
 #define LOG 1
