@@ -790,12 +790,14 @@ void apply_histo_changes() {
 		undo_save_state(&histo_gfit_backup, "Processing: Histogram Transf. "
 				"(mid=%.3lf, lo=%.3lf, hi=%.3lf)", _midtones, _shadows,
 				_highlights);
+
+		clearfits(&histo_gfit_backup);
+		clear_hist_backup();
 		// reinit
 		histo_startup();
 		reset_cursors_and_values();
 	}
-	clearfits(&histo_gfit_backup);
-	clear_hist_backup();
+
 	set_cursor("default");
 }
 
