@@ -31,11 +31,13 @@
 #include "gui/histogram.h"
 #include "gui/callbacks.h"	// for lookup_widget()
 #include "gui/progress_and_log.h"
+#include "gui/dialogs.h"
 #include "core/undo.h"
 
 #define shadowsClipping -2.80 /* Shadows clipping point measured in sigma units from the main histogram peak. */
 #define targetBackground 0.25 /* final "luminance" of the image for autostretch in the [0,1] range */
 #define SLIDERBARS_HIGH 40 * 3
+#define GRADIENT_HEIGHT 0 // 12
 #undef HISTO_DEBUG
 
 /* The gsl_histogram, documented here:
@@ -358,6 +360,33 @@ static gboolean is_log_scale() {
 	if (HistoCheckLogButton == NULL)
 		HistoCheckLogButton = GTK_TOGGLE_BUTTON(lookup_widget("HistoCheckLogButton"));
 	return (gtk_toggle_button_get_active(HistoCheckLogButton));
+}
+
+
+static void draw_gradient(cairo_t *cr, int width, int height) {
+	cairo_pattern_t *pat;
+
+	pat = cairo_pattern_create_linear(0.0, 0.0, width, 0.0);
+	cairo_pattern_add_color_stop_rgb(pat, 0, 0, 0, 0);
+	cairo_pattern_add_color_stop_rgb(pat, width, 1, 1, 1);
+	cairo_rectangle(cr, 0, height - GRADIENT_HEIGHT, width, GRADIENT_HEIGHT);
+	cairo_set_source(cr, pat);
+	cairo_fill(cr);
+
+	cairo_pattern_destroy(pat);
+}
+
+static void draw_slider(cairo_t *cr, int width, int height) {
+	cairo_set_source_rgb(cr, 255.0, 255.0, 255.0);
+	cairo_move_to(cr, 0, height);
+	cairo_line_to(cr, 0, height - GRADIENT_HEIGHT);
+	cairo_line_to(cr, 35, height - GRADIENT_HEIGHT);
+	cairo_fill(cr);
+}
+
+static void display_scale(cairo_t *cr,  int width, int height) {
+	draw_gradient(cr, width, height);
+	draw_slider(cr, width, height);
 }
 
 static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int width,
@@ -710,13 +739,14 @@ gboolean redraw_histo(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 	if (height == 1)
 		return FALSE;
-	erase_histo_display(cr, width, height);
+	erase_histo_display(cr, width, height - GRADIENT_HEIGHT);
 	graph_height = 0.0;
 	for (i = 0; i < MAXVPORT; i++) {
 		if (com.layers_hist[i]
 				&& (!toggles[i] || gtk_toggle_tool_button_get_active(toggles[i])))
-			display_histo(com.layers_hist[i], cr, i, width, height, zoomH, zoomV);
+			display_histo(com.layers_hist[i], cr, i, width, height - GRADIENT_HEIGHT, zoomH, zoomV);
 	}
+	//display_scale(cr, width, height);
 	return FALSE;
 }
 
@@ -750,20 +780,27 @@ gboolean on_scale_key_release_event(GtkWidget *widget, GdkEvent *event,
 	return FALSE;
 }
 
-void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
-	// the apply button resets everything after recomputing with the current values
-	histo_recompute();
-	// partial cleanup
-	fprintf(stdout, "Applying histogram (mid=%.3lf, lo=%.3lf, hi=%.3lf)\n",
-			_midtones, _shadows, _highlights);
-	undo_save_state(&histo_gfit_backup, "Processing: Histogram Transf. "
-			"(mid=%.3lf, lo=%.3lf, hi=%.3lf)", _midtones, _shadows, _highlights);
+void apply_histo_changes() {
+	if ((_midtones != 0.5) || (_shadows != 0.0) || (_highlights != 1.0)) {
+		// the apply button resets everything after recomputing with the current values
+		histo_recompute();
+		// partial cleanup
+		fprintf(stdout, "Applying histogram (mid=%.3lf, lo=%.3lf, hi=%.3lf)\n",
+				_midtones, _shadows, _highlights);
+		undo_save_state(&histo_gfit_backup, "Processing: Histogram Transf. "
+				"(mid=%.3lf, lo=%.3lf, hi=%.3lf)", _midtones, _shadows,
+				_highlights);
+		// reinit
+		histo_startup();
+		reset_cursors_and_values();
+	}
 	clearfits(&histo_gfit_backup);
 	clear_hist_backup();
-	// reinit
-	histo_startup();
-	reset_cursors_and_values();
 	set_cursor("default");
+}
+
+void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
+	apply_histo_changes();
 }
 
 gboolean on_scale_midtones_button_release_event(GtkWidget *widget,
@@ -994,7 +1031,7 @@ void on_menuitem_histo_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	histo_startup();
 	reset_cursors_and_values();
 	compute_histo_for_gfit();
-	gtk_widget_show(lookup_widget("histogram_window"));
+	siril_open_dialog("histogram_window");
 	set_cursor_waiting(FALSE);
 }
 

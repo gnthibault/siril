@@ -36,6 +36,7 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
+#include "gui/dialogs.h"
 #include "registration/registration.h"	// for mouse_status
 #include "background_extraction.h"
 
@@ -556,7 +557,7 @@ GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 
 void on_menuitem_background_extraction_activate(GtkMenuItem *menuitem,
 		gpointer user_data) {
-	gtk_widget_show(lookup_widget("background_extraction_dialog"));
+	siril_open_dialog("background_extraction_dialog");
 }
 
 void on_background_generate_clicked(GtkButton *button, gpointer user_data) {

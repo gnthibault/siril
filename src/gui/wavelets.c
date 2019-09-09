@@ -27,6 +27,8 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
+#include "gui/dialogs.h"
+#include "gui/wavelets.h"
 #include "io/single_image.h"
 #include "algos/Def_Wavelet.h"
 
@@ -94,7 +96,7 @@ void on_menuitem_wavelets_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded()) {
 		reset_scale_w();
 		wavelets_startup();
-		gtk_widget_show_all(lookup_widget("wavelets_dialog"));
+		siril_open_dialog("wavelets_dialog");
 	}
 }
 
@@ -173,6 +175,7 @@ gboolean on_scale_w5_key_release_event(GtkWidget *widget, GdkEvent *event,
 
 void on_wavelets_dialog_hide(GtkWidget *widget, gpointer user_data) {
 	gtk_widget_set_sensitive(lookup_widget("grid_w"), FALSE);
+	gtk_widget_set_sensitive(lookup_widget("button_reset_w"), FALSE);
 	clearfits(&wavelets_gfit_backup);
 }
 
@@ -182,9 +185,15 @@ void on_button_reset_w_clicked(GtkButton *button, gpointer user_data) {
 	update_wavelets();
 }
 
+void apply_wavelets_changes() {
+	if (gtk_widget_get_sensitive(lookup_widget("grid_w")) == TRUE) {
+		update_wavelets();
+		undo_save_state(&wavelets_gfit_backup, "Processing: Wavelets Transformation");
+	}
+}
+
 void on_button_ok_w_clicked(GtkButton *button, gpointer user_data) {
-	update_wavelets();
-	undo_save_state(&wavelets_gfit_backup, "Processing: Wavelets Transformation");
+	apply_wavelets_changes();
 	gtk_widget_hide(lookup_widget("wavelets_dialog"));
 }
 
@@ -248,6 +257,7 @@ void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 	free(Imag);
 	Imag = NULL;
 	gtk_widget_set_sensitive(lookup_widget("grid_w"), TRUE);
+	gtk_widget_set_sensitive(lookup_widget("button_reset_w"), TRUE);
 	set_cursor_waiting(FALSE);
 	return;
 }

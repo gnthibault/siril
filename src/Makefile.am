@@ -18,10 +18,11 @@ siril_SOURCES = \
 	gui/callbacks.c gui/callbacks.h gui/histogram.c gui/histogram.h gui/save_dialog.c gui/save_dialog.h gui/open_dialog.c gui/open_dialog.h gui/message_dialog.c gui/message_dialog.h \
 	gui/PSF_list.h gui/PSF_list.c gui/sequence_list.c gui/registration_preview.c \
 	gui/statistics_list.c gui/script_menu.c gui/script_menu.h \
-	gui/plot.c gui/plot.h gui/asinh.c gui/saturation.c gui/wavelets.c \
+	gui/plot.c gui/plot.h gui/asinh.c gui/asinh.h gui/saturation.c gui/saturation.h gui/wavelets.c gui/wavelets.h \
 	gui/gnuplot_i/gnuplot_i.c gui/gnuplot_i/gnuplot_i.h \
 	gui/progress_and_log.c gui/progress_and_log.h \
 	gui/about_dialog.c \
+	gui/dialogs.c gui/dialogs.h \
 	gui/photometric_cc.c gui/photometric_cc.h \
 	registration/registration.c registration/registration.h registration/global.c registration/comet.c \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \

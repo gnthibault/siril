@@ -26,6 +26,7 @@
 #include "algos/statistics.h"
 #include "gui/histogram.h"
 #include "gui/callbacks.h"
+#include "gui/dialogs.h"
 #include "opencv/opencv.h"
 #include "io/single_image.h"
 #include "rgradient.h"
@@ -169,7 +170,7 @@ static double get_da() {
 ////// CALLBACKS
 
 void on_menuitem_rgradient_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	gtk_widget_show(lookup_widget("rgradient_dialog"));
+	siril_open_dialog("rgradient_dialog");
 }
 
 void on_rgradient_cancel_clicked(GtkButton *button, gpointer user_data) {

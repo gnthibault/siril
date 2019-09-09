@@ -26,6 +26,7 @@
 #include "core/processing.h"
 #include "gui/callbacks.h"
 #include "gui/PSF_list.h"
+#include "gui/dialogs.h"
 #include "opencv/opencv.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
@@ -356,7 +357,7 @@ void on_menuitem_rotation270_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 void on_menuitem_rotation_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded())
-		gtk_widget_show_all(lookup_widget("rotation_dialog"));
+		siril_open_dialog("rotation_dialog");
 }
 
 void on_button_rotation_close_clicked(GtkButton *button, gpointer user_data) {
@@ -405,7 +406,7 @@ void on_mirrory_button_clicked(GtkToolButton *button, gpointer user_data) {
 /* Resample */
 void on_menuitem_resample_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded())
-		gtk_widget_show_all(lookup_widget("resample_dialog"));
+		siril_open_dialog("resample_dialog");
 }
 
 void on_button_resample_ok_clicked(GtkButton *button, gpointer user_data) {
@@ -491,7 +492,7 @@ void on_menu_gray_crop_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_menu_gray_crop_seq_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	gtk_widget_show(lookup_widget("crop_dialog"));
+	siril_open_dialog("crop_dialog");
 }
 
 /*** GUI for crop sequence */

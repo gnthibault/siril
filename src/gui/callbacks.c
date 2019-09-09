@@ -43,6 +43,7 @@
 #include "gui/histogram.h"
 #include "gui/script_menu.h"
 #include "gui/progress_and_log.h"
+#include "gui/dialogs.h"
 #include "algos/demosaicing.h"
 #include "algos/colors.h"
 #include "algos/PSF.h"
@@ -2833,7 +2834,7 @@ void on_combobinning_changed(GtkComboBox *box, gpointer user_data) {
 }
 
 void on_menu_file_information_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	gtk_widget_show(lookup_widget("file_information"));
+	siril_open_dialog("file_information");
 }
 
 void on_file_information_close_clicked(GtkButton *button, gpointer user_data) {
@@ -4283,7 +4284,7 @@ void scrollbars_vadjustment_changed_handler(GtkAdjustment *adjustment,
 
 void on_removegreen_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded() && isrgb(&gfit))
-		gtk_widget_show_all(lookup_widget("SCNR_dialog"));
+		siril_open_dialog("SCNR_dialog");
 }
 
 void on_SCNR_dialog_show(GtkWidget *widget, gpointer user_data) {
@@ -4360,7 +4361,7 @@ void on_menuitem_noise_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_menuitem_stat_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	computeStat();
-	gtk_widget_show_all(lookup_widget("StatWindow"));
+	siril_open_dialog("StatWindow");
 	set_cursor_waiting(FALSE);
 }
 
@@ -4369,13 +4370,13 @@ void on_menuitem_stat_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_menu_channel_separation_activate(GtkMenuItem *menuitem,
 		gpointer user_data) {
 	if (single_image_is_loaded() && isrgb(&gfit))
-		gtk_widget_show_all(lookup_widget("extract_channel_dialog"));
+		siril_open_dialog("extract_channel_dialog");
 }
 
 void on_menuitemcalibration_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded() && isrgb(&gfit)) {
 		initialize_calibration_interface();
-		gtk_widget_show(lookup_widget("color_calibration"));
+		siril_open_dialog("color_calibration");
 	}
 }
 
@@ -4510,7 +4511,7 @@ void on_menu_gray_pick_star_activate(GtkMenuItem *menuitem, gpointer user_data) 
 
 void on_menu_gray_stat_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	computeStat();
-	gtk_widget_show_all(lookup_widget("StatWindow"));
+	siril_open_dialog("StatWindow");
 }
 
 /************************* GUI for FFT ********************************/
@@ -4602,13 +4603,13 @@ void on_menuitem_fft_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	phasebutton = GTK_FILE_CHOOSER_BUTTON(lookup_widget("filechooser_phase"));
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(magbutton), com.wd);
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(phasebutton), com.wd);
-	gtk_widget_show_all(lookup_widget("dialog_FFT"));
+	siril_open_dialog("dialog_FFT");
 }
 
 void on_menuitem_medianfilter_activate(GtkMenuItem *menuitem,
 		gpointer user_data) {
 	if (single_image_is_loaded())
-		gtk_widget_show(lookup_widget("Median_dialog"));
+		siril_open_dialog("Median_dialog");
 }
 
 
@@ -4618,7 +4619,7 @@ void on_menu_wavelet_separation_activate(GtkMenuItem *menuitem,
 		gpointer user_data) {
 
 	if (single_image_is_loaded()) {
-		gtk_widget_show_all(lookup_widget("extract_wavelets_layers_dialog"));
+		siril_open_dialog("extract_wavelets_layers_dialog");
 	}
 }
 
@@ -4731,7 +4732,7 @@ void on_menuitem_cosmetic_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	}
 	else
 		return;
-	gtk_widget_show(lookup_widget("cosmetic_dialog"));
+	siril_open_dialog("cosmetic_dialog");
 }
 
 void on_button_cosmetic_close_clicked(GtkButton *button, gpointer user_data) {
@@ -4801,7 +4802,7 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 /******* SPLIT CFA ******************************/
 
 void on_menu_slpitcfa_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	gtk_widget_show(lookup_widget("split_cfa_dialog"));
+	siril_open_dialog("split_cfa_dialog");
 }
 
 void on_split_cfa_close_clicked(GtkButton *button, gpointer user_data) {
@@ -4830,7 +4831,7 @@ void on_split_cfa_apply_clicked(GtkButton *button, gpointer user_data) {
 
 /************************ GUI for deconvolution ***********************/
 void on_menuitem_deconvolution_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	gtk_widget_show(lookup_widget("deconvolution_dialog"));
+	siril_open_dialog("deconvolution_dialog");
 }
 
 void on_deconvolution_cancel_clicked(GtkButton *button, gpointer user_data) {
@@ -4869,7 +4870,7 @@ void on_menuitem_fixbanding_activate(GtkMenuItem *menuitem, gpointer user_data) 
 	}
 	else
 		return;
-	gtk_widget_show(lookup_widget("canon_fixbanding_dialog"));
+	siril_open_dialog("canon_fixbanding_dialog");
 }
 
 void on_button_ok_fixbanding_clicked(GtkButton *button, gpointer user_data) {

@@ -84,6 +84,8 @@ typedef unsigned short WORD;		// default type for internal image data
 #define SN_NORM 1.1926
 #define QN_NORM 2.2191
 
+typedef struct _SirilDialogEntry SirilDialogEntry;
+
 /* used for open and savedialog */
 #if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
 #define SirilWidget GtkFileChooserNative

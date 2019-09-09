@@ -37,6 +37,7 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/photometric_cc.h"
+#include "gui/dialogs.h"
 
 #ifdef HAVE_LIBCURL
 
@@ -1229,7 +1230,7 @@ void on_GtkEntry_IPS_insert_text(GtkEntry *entry, const gchar *text, gint length
 
 void on_menuitem_IPS_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	initialize_ips_dialog();
-	gtk_widget_show(lookup_widget("ImagePlateSolver_Dial"));
+	siril_open_dialog("ImagePlateSolver_Dial");
 }
 
 void on_buttonIPS_close_clicked(GtkButton *button, gpointer user_data) {

@@ -46,6 +46,7 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/histogram.h"
+#include "gui/dialogs.h"
 
 enum {
 	RED, GREEN, BLUE
@@ -591,7 +592,7 @@ int apply_photometric_cc() {
 
 void on_menuitemphotometriccalibration_activate() {
 	initialize_photometric_cc_dialog();
-	gtk_widget_show(lookup_widget("ImagePlateSolver_Dial"));
+	siril_open_dialog("ImagePlateSolver_Dial");
 }
 
 void on_button_cc_ok_clicked(GtkButton *button, gpointer user_data) {

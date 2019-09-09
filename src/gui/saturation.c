@@ -7,6 +7,8 @@
 #include "io/single_image.h"
 #include "progress_and_log.h"
 #include "callbacks.h"
+#include "dialogs.h"
+#include "saturation.h"
 
 static gboolean satu_preserve_bkg = TRUE;
 static double satu_amount = 0.0;
@@ -35,12 +37,13 @@ void on_satu_cancel_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_satu_apply_clicked(GtkButton *button, gpointer user_data) {
-	satu_close(FALSE);
+	apply_satu_changes();
 	gtk_widget_hide(lookup_widget("satu_dialog"));
 }
 
 void on_satu_dialog_close(GtkDialog *dialog, gpointer user_data) {
-	satu_close(FALSE);
+	if (satu_amount != 0.0)
+		apply_satu_changes();
 }
 
 void satu_recompute() {
@@ -104,7 +107,7 @@ void on_menuitem_satu_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_satu")), satu_amount);
 	gtk_toggle_button_set_active(
 			GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg")), satu_preserve_bkg);
-	gtk_widget_show_all(lookup_widget("satu_dialog"));
+	siril_open_dialog("satu_dialog");
 }
 
 gboolean on_scale_satu_button_release_event(GtkWidget *widget,
@@ -129,4 +132,23 @@ void on_preserve_bg_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 void on_combo_saturation_changed(GtkComboBox* box, gpointer user_data) {
 	satu_hue_type = gtk_combo_box_get_active(box);
 	satu_recompute();
+}
+
+void on_satu_undo_clicked(GtkButton *button, gpointer user_data) {
+	satu_preserve_bkg = TRUE;
+	satu_amount = 0.0;
+	GtkToggleButton *check_button = GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg"));
+	g_signal_handlers_block_by_func(check_button, on_preserve_bg_toggled, NULL);
+	gtk_toggle_button_set_active(check_button, satu_preserve_bkg);
+	g_signal_handlers_unblock_by_func(check_button, on_preserve_bg_toggled, NULL);
+	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_satu")), satu_amount);
+	copyfits(&satu_gfit_backup, &gfit, CP_COPYA, -1);
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+}
+
+void apply_satu_changes() {
+	gboolean status = satu_amount != 0.0;
+	satu_close(!status);
 }

@@ -32,6 +32,7 @@
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/histogram.h"
+#include "gui/dialogs.h"
 #include "io/single_image.h"
 #include "algos/colors.h"
 #include "algos/statistics.h"

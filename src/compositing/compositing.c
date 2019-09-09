@@ -34,6 +34,7 @@
 #include "gui/PSF_list.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
+#include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
 #include "registration/registration.h"
 #include "compositing/filters.h"
@@ -385,7 +386,7 @@ void open_compositing_window() {
 	}
 
 	if (compositing_loaded == 1)
-		gtk_widget_show(lookup_widget("composition_dialog"));
+		siril_open_dialog("composition_dialog");
 }
 
 /* returns true if the layer number layer has a loaded FITS image */
