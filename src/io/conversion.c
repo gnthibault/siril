@@ -924,36 +924,31 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 	return retval;
 }
 #ifdef _WIN32
-char *g_real_path( const char *source )
-{
-	char *src ;
-	HANDLE hFile;	
-	DWORD   maxchar = 2048;
-	TCHAR *FilePath ;
-	gchar *gFilePath ;
-	GStatBuf sts;
-	gsize bytes_written = 0 ;
-	
-	if ( !( GetFileAttributesA(source) & FILE_ATTRIBUTE_REPARSE_POINT ) )
-	{ /* Ce n'est pas un lien symbolique , je sors */
-		return NULL ; 
+char* g_real_path(const char *source) {
+	HANDLE hFile;
+	DWORD maxchar = 2048;
+	TCHAR *FilePath;
+	gchar *gFilePath;
+
+	if (!(GetFileAttributesA(source) & FILE_ATTRIBUTE_REPARSE_POINT)) { /* Ce n'est pas un lien symbolique , je sors */
+		return NULL;
 	}
-	
-	FilePath = malloc( maxchar+1 ) ;
-	if ( !FilePath ) 
-		return NULL ;
-	FilePath[0] = 0 ;
-	
-	hFile = CreateFile(source, GENERIC_READ, FILE_SHARE_READ, NULL,    OPEN_EXISTING, 0, NULL);
-	if ( hFile == INVALID_HANDLE_VALUE)
-	{
+
+	FilePath = malloc(maxchar + 1);
+	if (!FilePath)
+		return NULL;
+	FilePath[0] = 0;
+
+	hFile = CreateFile(source, GENERIC_READ, FILE_SHARE_READ, NULL,
+			OPEN_EXISTING, 0, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) {
 		free(FilePath);
-		return NULL ;
+		return NULL;
 	}
-	GetFinalPathNameByHandleA( hFile, FilePath,maxchar,0);
-	gFilePath = g_locale_to_utf8(FilePath+4,-1, NULL, NULL,NULL) ; // +4 = enleve les 4 caracteres du prefixe "//?/"
+	GetFinalPathNameByHandleA(hFile, FilePath, maxchar, 0);
+	gFilePath = g_locale_to_utf8(FilePath + 4, -1, NULL, NULL, NULL); // +4 = enleve les 4 caracteres du prefixe "//?/"
 	CloseHandle(hFile);
-	return gFilePath ;
+	return gFilePath;
 }
 #endif
 

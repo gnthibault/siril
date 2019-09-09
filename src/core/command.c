@@ -1814,7 +1814,6 @@ int process_split_cfa(int nb) {
 }
 
 int process_seq_split_cfa(int nb) {
-	gboolean is_sequence;
 	sequence *seq = NULL;
 	int i = 0;
 

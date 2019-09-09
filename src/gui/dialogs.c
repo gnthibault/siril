@@ -57,7 +57,7 @@ static const SirilDialogEntry entries[] =
 };
 
 static SirilDialogEntry get_entry_by_id(gchar *id) {
-	int i = 0;
+	int i;
 	SirilDialogEntry retvalue = {NULL, NO_DIALOG, FALSE, NULL};
 
 	for (i = 0; i < G_N_ELEMENTS(entries); i++) {
@@ -69,7 +69,7 @@ static SirilDialogEntry get_entry_by_id(gchar *id) {
 }
 
 void siril_open_dialog(gchar *id) {
-	int i = 0;
+	int i;
 
 	if (get_entry_by_id(id).type != INFORMATION_DIALOG) {
 		for (i = 0; i < G_N_ELEMENTS(entries); i++) {

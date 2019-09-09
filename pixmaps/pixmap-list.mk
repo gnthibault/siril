@@ -24,7 +24,6 @@ pixmaps = \
 	rotate-acw.png \
 	rotate-cw_dark.png \
 	rotate-cw.png \
-	scale-slider-horz.png \
 	siril_logo.svg \
 	siril.svg \
 	starfinder.png \
