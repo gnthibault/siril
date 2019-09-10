@@ -1403,20 +1403,23 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 }
 
 int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack) {
-	int max_memory;		// maximum memory to use in MB
-	max_memory = round_to_int(com.stack.memory_percent *
-			(double)get_available_memory_in_MB());
-	siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);
-	uint64_t number_of_rows = (uint64_t)max_memory * BYTES_IN_A_MB /
-		((uint64_t)seq->rx * nb_images_to_stack * sizeof(WORD) * com.max_thread);
-	// this is how many rows we can load in parallel from all images of the
-	// sequence and be under the limit defined in config in megabytes.
-	// We want to avoid having blocks larger than the half or they will decrease parallelism
-	if (number_of_rows > seq->ry)
-		return seq->ry;
-	if (number_of_rows * 2 > seq->ry)
-		return seq->ry / 2;
-	return number_of_rows;
+	int max_memory = get_max_memory_in_MB();
+	if (max_memory > 0) {
+		siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);
+		uint64_t number_of_rows = (uint64_t)max_memory * BYTES_IN_A_MB /
+			((uint64_t)seq->rx * nb_images_to_stack * sizeof(WORD) * com.max_thread);
+		// this is how many rows we can load in parallel from all images of the
+		// sequence and be under the limit defined in config in megabytes.
+		// We want to avoid having blocks larger than the half or they will decrease parallelism
+		if (number_of_rows > seq->ry)
+			return seq->ry;
+		if (number_of_rows * 2 > seq->ry)
+			return seq->ry / 2;
+		return truncate_to_int32(number_of_rows);
+	} else {
+		siril_log_message(_("Not using limits on maximum memory for stacking\n"));
+		return (seq->ry / 4) + 1;
+	}
 }
 
 int find_refimage_in_indices(int *indices, int nb, int ref) {

@@ -91,6 +91,7 @@ int	roundf_to_int(float x);
 WORD	round_to_WORD(double x);
 BYTE	round_to_BYTE(double x);
 BYTE	conv_to_BYTE(double x);
+int	truncate_to_int32(uint64_t x);
 gboolean isrgb(fits *fit);
 char *f2utf8(const char *filename);
 gboolean ends_with(const char *str, const char *ending);
@@ -120,6 +121,7 @@ void	update_used_memory();
 gchar *pretty_print_memory(int64_t bytes);
 int test_available_space(int64_t req_size);
 int	get_available_memory_in_MB();
+int	get_max_memory_in_MB();
 #ifdef _WIN32
 gchar *get_special_folder(int csidl);
 #endif

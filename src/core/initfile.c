@@ -128,11 +128,20 @@ static int readinitfile() {
 				&com.stack.rej_method);
 		config_setting_lookup_int(stack_setting, "normalisation",
 				&com.stack.normalisation_method);
+
+		int mode = 0;
+		config_setting_lookup_int(stack_setting, "mem_mode",
+				&mode);
+		com.stack.mem_mode = mode;
 		config_setting_lookup_float(stack_setting, "maxmem",
-				&com.stack.memory_percent);
+				&com.stack.memory_ratio);
+		config_setting_lookup_float(stack_setting, "maxmem_gb",
+				&com.stack.memory_amount);
 	}
-	if (com.stack.memory_percent <= 0.0001)
-		com.stack.memory_percent = 0.9;
+	if (com.stack.mem_mode < 0 || com.stack.mem_mode > 2)
+		com.stack.mem_mode = RATIO;
+	if (com.stack.memory_ratio <= 0.05)
+		com.stack.memory_ratio = 0.9;
 
 	/* Photometry setting */
 	config_setting_t *photometry_setting = config_lookup(&config, keywords[PTM]);
@@ -147,8 +156,7 @@ static int readinitfile() {
 	/* Misc setting */
 	config_setting_t *misc_setting = config_lookup(&config, keywords[MISC]);
 	if (misc_setting) {
-
-		config_setting_lookup_bool(misc_setting, "confirm",	&com.dontShowConfirm);
+		config_setting_lookup_bool(misc_setting, "confirm", &com.dontShowConfirm);
 		config_setting_lookup_int(misc_setting, "theme", &com.combo_theme);
 		config_setting_lookup_bool(misc_setting, "remember_winpos", &com.remember_windows);
 		config_setting_lookup_string(misc_setting, "swap_directory", &swap_dir);
@@ -305,8 +313,14 @@ static void _save_stacking(config_t *config, config_setting_t *root) {
 	stk_setting = config_setting_add(stk_group, "rejection", CONFIG_TYPE_INT);
 	config_setting_set_int(stk_setting, com.stack.rej_method);
 
+	stk_setting = config_setting_add(stk_group, "mem_mode", CONFIG_TYPE_INT);
+	config_setting_set_int(stk_setting, com.stack.mem_mode);
+
 	stk_setting = config_setting_add(stk_group, "maxmem", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(stk_setting, com.stack.memory_percent);
+	config_setting_set_float(stk_setting, com.stack.memory_ratio);
+
+	stk_setting = config_setting_add(stk_group, "maxmem_gb", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(stk_setting, com.stack.memory_amount);
 }
 
 static void _save_photometry(config_t *config, config_setting_t *root) {

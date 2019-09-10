@@ -476,7 +476,9 @@ struct stack_config {
 	int method;				// 0=sum, 1=median, 2=average, 3=pixel max, 4=pixel min - Use to save preferences in the init file
 	int normalisation_method;
 	int rej_method;
-	double memory_percent;			// percent of available memory to use for stacking
+	enum { RATIO, AMOUNT, UNLIMITED } mem_mode; // mode of memory management
+	double memory_ratio;			// ratio of available memory to use for stacking (and others)
+	double memory_amount;			// amount of memory in GB to use for stacking (and others)
 };
 
 struct rectangle_struct {

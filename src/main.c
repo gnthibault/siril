@@ -324,7 +324,9 @@ int main(int argc, char *argv[]) {
 	/* initialize the com struct and zoom level */
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
-	com.stack.memory_percent = 0.9;
+	com.stack.mem_mode = 0;
+	com.stack.memory_ratio = 0.9;
+	com.stack.memory_amount = 4.0;
 	com.app_path = NULL;
 
 	if (!com.headless) {

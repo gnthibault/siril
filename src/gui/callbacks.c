@@ -2116,14 +2116,22 @@ void set_GUI_CWD() {
 
 void set_GUI_misc() {
 	GtkToggleButton *ToggleButton;
-	GtkSpinButton *memory_percent;
+	GtkSpinButton *memory_percent, *memory_amount;
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.dontShowConfirm);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck"));
 	gtk_toggle_button_set_active(ToggleButton, com.remember_windows);
-	memory_percent = GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem"));
-	gtk_spin_button_set_value(memory_percent, com.stack.memory_percent);
+
+	memory_percent = GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_ratio"));
+	gtk_spin_button_set_value(memory_percent, com.stack.memory_ratio);
+	memory_amount = GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_amount"));
+	gtk_spin_button_set_value(memory_amount, com.stack.memory_amount);
+
+	GtkToggleButton *modes[3] = { GTK_TOGGLE_BUTTON(lookup_widget("memfreeratio_radio")),
+		GTK_TOGGLE_BUTTON(lookup_widget("memfixed_radio")),
+		GTK_TOGGLE_BUTTON(lookup_widget("memunlimited_radio")) };
+	gtk_toggle_button_set_active(modes[com.stack.mem_mode], TRUE);
 }
 
 /* size is in kiB */
@@ -2940,12 +2948,39 @@ void on_button_reset_swap_clicked(GtkButton *button, gpointer user_data) {
 	reset_swapdir();
 }
 
-void on_spinbutton_mem_value_changed(GtkSpinButton *button, gpointer user_data) {
-	gdouble mem;
-
-	mem = gtk_spin_button_get_value(button);
-	com.stack.memory_percent = mem;
+void on_spinbutton_mem_ratio_value_changed(GtkSpinButton *button, gpointer user_data) {
+	gdouble mem = gtk_spin_button_get_value(button);
+	com.stack.memory_ratio = mem;
 	writeinitfile();
+}
+
+void on_spinbutton_mem_amount_value_changed(GtkSpinButton *button, gpointer user_data) {
+	gdouble mem = gtk_spin_button_get_value(button);
+	com.stack.memory_amount = mem;
+	writeinitfile();
+}
+
+void on_mem_radio_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	GtkToggleButton *ratio = GTK_TOGGLE_BUTTON(lookup_widget("memfreeratio_radio")),
+			*amount = GTK_TOGGLE_BUTTON(lookup_widget("memfixed_radio")),
+			*unlimited = GTK_TOGGLE_BUTTON(lookup_widget("memunlimited_radio"));
+	GtkWidget *ratio_spin = lookup_widget("spinbutton_mem_ratio"),
+		  *amount_spin = lookup_widget("spinbutton_mem_amount");
+	if (!gtk_toggle_button_get_active(togglebutton)) return;
+
+	if (togglebutton == ratio) {
+		com.stack.mem_mode = 0;
+		gtk_widget_set_sensitive(ratio_spin, TRUE);
+		gtk_widget_set_sensitive(amount_spin, FALSE);
+	} else if (togglebutton == amount) {
+		com.stack.mem_mode = 1;
+		gtk_widget_set_sensitive(ratio_spin, FALSE);
+		gtk_widget_set_sensitive(amount_spin, TRUE);
+	} else if (togglebutton == unlimited) {
+		com.stack.mem_mode = 2;
+		gtk_widget_set_sensitive(ratio_spin, FALSE);
+		gtk_widget_set_sensitive(amount_spin, FALSE);
+	}
 }
 
 void on_combobox_ext_changed(GtkComboBox *box, gpointer user_data) {

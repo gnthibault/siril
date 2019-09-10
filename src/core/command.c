@@ -2587,13 +2587,13 @@ int process_set_cpu(int nb){
 int process_set_mem(int nb){
 	double ratio = atof(word[1]);
 	if (ratio < 0.05 || ratio > 4.0) {
-		siril_log_message(_("The accepted range for the ratio of memory used for stacking is [0.05, 2], with values below the available memory recommended\n"));
+		siril_log_message(_("The accepted range for the ratio of memory used for stacking is [0.05, 4], with values below the available memory recommended\n"));
 		return 1;
 	}
 	if (ratio > 1.0) {
-		siril_log_message(_("Setting the ratio of memory used for stacking above 1 will require the use of on-disk memory, which is very slow and unrecommended (%g requested)\n"), ratio);
+		siril_log_message(_("Setting the ratio of memory used for stacking above 1 will require the use of on-disk memory, which can be very slow and is unrecommended (%g requested)\n"), ratio);
 	}
-	com.stack.memory_percent = ratio;
+	com.stack.memory_ratio = ratio;
 	if (!writeinitfile())
 		siril_log_message(_("Usable memory for stacking changed to %g\n"), ratio);
 	return 0;

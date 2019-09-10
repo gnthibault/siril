@@ -91,10 +91,14 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 }
 
 static int normalization_get_max_number_of_threads(sequence *seq) {
-	int max_memory_MB = round_to_int(com.stack.memory_percent *
-			(double)get_available_memory_in_MB());
+	int max_memory_MB = get_max_memory_in_MB();
 	uint64_t memory_per_image = seq->rx * seq->ry * seq->nb_layers * (2 * sizeof(WORD) + 2 * sizeof(double));
 	unsigned int memory_per_image_MB = memory_per_image / BYTES_IN_A_MB;
+
+	if (max_memory_MB < 0) {
+		fprintf(stdout, "Memory per image: %u MB (unlimited memory use).\n", memory_per_image_MB);
+		return com.max_thread;
+	}
 
 	fprintf(stdout, "Memory per image: %u MB. Max memory: %d MB\n", memory_per_image_MB, max_memory_MB);
 
@@ -106,7 +110,7 @@ static int normalization_get_max_number_of_threads(sequence *seq) {
 	int nb_threads = memory_per_image_MB ? max_memory_MB / memory_per_image_MB : 1;
 	if (nb_threads > com.max_thread)
 		nb_threads = com.max_thread;
-	siril_log_message(_("With the current memory (%.2f) and thread (%d) limits, up to %d thread(s) can be used for sequence normalization\n"), com.stack.memory_percent, com.max_thread, nb_threads);
+	siril_log_message(_("With the current memory and thread (%d) limits, up to %d thread(s) can be used for sequence normalization\n"), com.max_thread, nb_threads);
 	return nb_threads;
 }
 

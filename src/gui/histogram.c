@@ -867,8 +867,6 @@ gboolean on_drawingarea_histograms_motion_notify_event(GtkWidget *widget, GdkEve
 	}
 
 	if (_click_on_histo) {
-		int width = gtk_widget_get_allocated_width(widget);
-		int height = gtk_widget_get_allocated_height(widget);
 		gdouble xpos = ((GdkEventButton*) event)->x / (gdouble) width;
 		gchar *buffer = NULL;
 		GtkEntry *histoMidEntry = GTK_ENTRY(lookup_widget("histoMidEntry"));

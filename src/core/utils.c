@@ -109,6 +109,17 @@ BYTE conv_to_BYTE(double x) {
 }
 
 /**
+ * truncate a 64 bit unsigned int to a 32 bit signed int
+ * @param x value to truncate
+ * @return an int
+ */
+int truncate_to_int32(uint64_t x) {
+	if (x > (uint64_t)INT_MAX)
+		return INT_MAX;
+	return (int)x;
+}
+
+/**
  * Test if fit has 3 channels
  * @param fit input FITS image
  * @return TRUE if fit image has 3 channels
