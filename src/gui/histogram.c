@@ -977,7 +977,7 @@ void on_histoMidEntry_activate(GtkEntry *entry, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	update_histo_mtf();
 	histo_recompute();
-	gchar *str = g_strdup_printf("%9.8f", mid);
+	gchar *str = g_strdup_printf("%8.7f", mid);
 	gtk_entry_set_text(entry, str);
 	g_free(str);
 	set_cursor_waiting(FALSE);
@@ -991,7 +991,7 @@ void on_histoShadEntry_activate(GtkEntry *entry, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	update_histo_mtf();
 	histo_recompute();
-	gchar *str = g_strdup_printf("%9.8f", lo);
+	gchar *str = g_strdup_printf("%8.7f", lo);
 	gtk_entry_set_text(entry, str);
 	g_free(str);
 	set_cursor_waiting(FALSE);
@@ -1005,7 +1005,7 @@ void on_histoHighEntry_activate(GtkEntry *entry, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	update_histo_mtf();
 	histo_recompute();
-	gchar *str = g_strdup_printf("%9.8f", hi);
+	gchar *str = g_strdup_printf("%8.7f", hi);
 	gtk_entry_set_text(entry, str);
 	g_free(str);
 	set_cursor_waiting(FALSE);

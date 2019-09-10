@@ -52,7 +52,6 @@ enum {
 	RED, GREEN, BLUE
 };
 
-
 static void initialize_photometric_cc_dialog() {
 	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box,
 			*catalog_auto, *frame_cc_bkg, *frame_cc_norm;
@@ -192,7 +191,7 @@ static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits
 
 static double Qn0(const double sorted_data[], const size_t stride, const size_t n) {
 	double Qn;
-#if (GSL_MAJOR_VERSION == 2) && (GSL_MINOR_VERSION < 5)
+#if (GSL_MAJOR_VERSION <= 2) || ((GSL_MAJOR_VERSION == 2) && GSL_MINOR_VERSION < 5)
 	const size_t wsize = n * (n - 1) / 2;
 	const size_t n_2 = n / 2;
 	const size_t k = ((n_2 + 1) * n_2) / 2;
@@ -227,7 +226,7 @@ static double Qn0(const double sorted_data[], const size_t stride, const size_t 
 
 static double siril_stats_trmean_from_sorted_data(const double trim,
 		const double sorted_data[], const size_t stride, const size_t size) {
-#if (GSL_MAJOR_VERSION == 2) && (GSL_MINOR_VERSION < 5)
+#if (GSL_MAJOR_VERSION <= 2) || ((GSL_MAJOR_VERSION == 2) && GSL_MINOR_VERSION < 5)
 	if (trim >= 0.5) {
 		return gsl_stats_median_from_sorted_data(sorted_data, stride, size);
 	} else {

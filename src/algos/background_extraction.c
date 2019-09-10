@@ -361,8 +361,8 @@ static void convert_img_to_fits(double *image, fits *fit, int channel) {
 
 static double siril_stats_mad(const double data[], const size_t stride,
 		const size_t n, double work[]) {
-#if (GSL_MAJOR_VERSION == 2) && (GSL_MINOR_VERSION < 5)
-	  double median, mad;
+#if (GSL_MAJOR_VERSION <= 2) || ((GSL_MAJOR_VERSION == 2) && GSL_MINOR_VERSION < 5)
+	double median, mad;
 	  size_t i;
 
 	  /* copy input data to work */
