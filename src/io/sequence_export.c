@@ -34,6 +34,15 @@ struct exportseq_args {
 	double filtering_parameter;
 };
 
+enum {
+	EXPORT_FITS,
+	EXPORT_TIFF,
+	EXPORT_SER,
+	EXPORT_AVI,
+	EXPORT_MP4,
+	EXPORT_WEBM
+};
+
 /* Used for avi exporter */
 static uint8_t *fits_to_uint8(fits *fit) {
 	uint8_t *data;
@@ -309,11 +318,19 @@ static gpointer export_sequence(gpointer ptr) {
 
 		switch (args->convflags) {
 			case TYPEFITS:
-				snprintf(dest, 255, "%s%05d%s", args->basename, i, com.ext);
+				snprintf(dest, 255, "%s%05d", args->basename, i);
 				if (savefits(dest, &destfit)) {
 					retval = -1;
 					goto free_and_reset_progress_bar;
 				}
+				break;
+			case TYPETIFF:
+				snprintf(dest, 255, "%s%05d%s", args->basename, i, com.ext);
+				if (savetif(dest, &destfit, 16)) {
+					retval = -1;
+					goto free_and_reset_progress_bar;
+				}
+
 				break;
 			case TYPESER:
 				strTime = strdup(destfit.date_obs);
@@ -412,16 +429,20 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 
 	// format
 	switch (selected) {
-	case 0:
+	case EXPORT_FITS:
 		args->convflags = TYPEFITS;
 		args->basename = format_basename(args->basename);
 		break;
-	case 1:
+	case EXPORT_TIFF:
+		args->convflags = TYPETIFF;
+		args->basename = format_basename(args->basename);
+		break;
+	case EXPORT_SER:
 		args->convflags = TYPESER;
 		break;
-	case 2:
-	case 3:
-	case 4:
+	case EXPORT_AVI:
+	case EXPORT_MP4:
+	case EXPORT_WEBM:
 		fpsEntry = GTK_ENTRY(lookup_widget("entryAviFps"));
 		args->avi_fps = atoi(gtk_entry_get_text(fpsEntry));
 		widthEntry = GTK_ENTRY(lookup_widget("entryAviWidth"));
@@ -443,9 +464,9 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 			args->resize = gtk_toggle_button_get_active(checkResize);
 		}
 		args->convflags = TYPEAVI;
-		if (selected == 3)
+		if (selected == EXPORT_MP4)
 			args->convflags = TYPEMP4;
-		else if (selected == 4)
+		else if (selected == EXPORT_WEBM)
 			args->convflags = TYPEWEBM;
 		break;
 	default:
@@ -460,8 +481,8 @@ void on_comboExport_changed(GtkComboBox *box, gpointer user_data) {
 	GtkWidget *avi_options = lookup_widget("boxAviOptions");
 	GtkWidget *checkAviResize = lookup_widget("checkAviResize");
 	GtkWidget *quality = lookup_widget("exportQualScale");
-	gtk_widget_set_visible(avi_options, gtk_combo_box_get_active(box) >= 2);
-	gtk_widget_set_visible(quality, gtk_combo_box_get_active(box) >= 3);
+	gtk_widget_set_visible(avi_options, gtk_combo_box_get_active(box) >= 3);
+	gtk_widget_set_visible(quality, gtk_combo_box_get_active(box) >= 4);
 	gtk_widget_set_sensitive(checkAviResize, TRUE);
 
 }
