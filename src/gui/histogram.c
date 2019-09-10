@@ -836,18 +836,6 @@ void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) 
 	set_cursor_waiting(FALSE);
 }
 
-gboolean on_scale_midtones_enter_notify_event(GtkWidget *widget,
-		GdkEvent *event, gpointer user_data) {
-	set_cursor("grab");
-	return FALSE;
-}
-
-gboolean on_scale_midtones_leave_notify_event(GtkWidget *widget,
-		GdkEvent *event, gpointer user_data) {
-	set_cursor("default");
-	return FALSE;
-}
-
 void on_menuitem_histo_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	histo_startup();
@@ -869,6 +857,15 @@ void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_dat
 gboolean on_drawingarea_histograms_motion_notify_event(GtkWidget *widget, GdkEventMotion *event,
 		gpointer user_data) {
 
+	int width = gtk_widget_get_allocated_width(widget);
+	int height = gtk_widget_get_allocated_height(widget);
+
+	if (on_gradient((GdkEvent *) event, width, height)) {
+		set_cursor("grab");
+	} else {
+		set_cursor("default");
+	}
+
 	if (_click_on_histo) {
 		int width = gtk_widget_get_allocated_width(widget);
 		int height = gtk_widget_get_allocated_height(widget);
@@ -877,7 +874,6 @@ gboolean on_drawingarea_histograms_motion_notify_event(GtkWidget *widget, GdkEve
 		GtkEntry *histoMidEntry = GTK_ENTRY(lookup_widget("histoMidEntry"));
 		GtkEntry *histoShadEntry = GTK_ENTRY(lookup_widget("histoShadEntry"));
 		GtkEntry *histoHighEntry = GTK_ENTRY(lookup_widget("histoHighEntry"));
-		set_cursor("grabbing");
 
 		if (xpos < 0.0)
 			xpos = 0.0;
@@ -917,10 +913,9 @@ gboolean on_drawingarea_histograms_motion_notify_event(GtkWidget *widget, GdkEve
 			gtk_entry_set_text(histoHighEntry, buffer);
 			break;
 		}
+		set_cursor("grabbing");
 		update_histo_mtf();
 		g_free(buffer);
-	} else {
-		set_cursor("default");
 	}
 	return FALSE;
 }
@@ -951,6 +946,7 @@ gboolean on_drawingarea_histograms_button_press_event(GtkWidget *widget,
 		} else {
 			_type_of_scale = SCALE_MID;
 		}
+		set_cursor("grabbing");
 	}
 
 	return FALSE;
