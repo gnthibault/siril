@@ -74,10 +74,7 @@ static int get_width_of_histo() {
 }
 
 static int get_height_of_histo() {
-	GtkWidget *hbar = gtk_scrolled_window_get_hscrollbar(
-			GTK_SCROLLED_WINDOW(lookup_widget("histoScroll")));
-	return gtk_widget_get_allocated_height(lookup_widget("drawingarea_histograms"))
-			- gtk_widget_get_allocated_height(hbar);
+	return gtk_widget_get_allocated_height(lookup_widget("drawingarea_histograms"));
 }
 
 static void clear_hist_backup() {
@@ -268,19 +265,18 @@ static double get_histoZoomValueV() {
 }
 
 static void adjust_histogram_vport_size() {
-	GtkWidget *drawarea, *vport, *hbar;
+	GtkWidget *drawarea, *vport;
 	int targetW, targetH, cur_width, cur_height;
 	double zoomH = get_histoZoomValueH();
 	double zoomV = get_histoZoomValueV();
 
-	hbar = gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(lookup_widget("histoScroll")));
 	drawarea = lookup_widget("drawingarea_histograms");
 	vport = lookup_widget("viewport1");
 
 	cur_width = gtk_widget_get_allocated_width(vport);
 	cur_height = gtk_widget_get_allocated_height(vport);
 	targetW = (int) (((double)cur_width) * zoomH);
-	targetH = (int) (((double)cur_height) * zoomV) - gtk_widget_get_allocated_height(hbar);
+	targetH = (int) (((double)cur_height) * zoomV);
 	gtk_widget_set_size_request(drawarea, targetW, targetH);
 #ifdef HISTO_DEBUG
 	fprintf(stdout, "Histo vport size (%d, %d)\n", targetW, targetH);
