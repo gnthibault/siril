@@ -36,7 +36,6 @@
 
 #define shadowsClipping -2.80 /* Shadows clipping point measured in sigma units from the main histogram peak. */
 #define targetBackground 0.25 /* final "luminance" of the image for autostretch in the [0,1] range */
-#define SLIDERBARS_HIGH 40 * 3
 #define GRADIENT_HEIGHT 12
 
 #undef HISTO_DEBUG
@@ -69,6 +68,17 @@ static ScaleType _type_of_scale;
 
 static void apply_mtf_to_fits(fits *from, fits *to);
 static void set_histogram(gsl_histogram *histo, int layer);
+
+static int get_width_of_histo() {
+	return gtk_widget_get_allocated_width(lookup_widget("drawingarea_histograms"));
+}
+
+static int get_height_of_histo() {
+	GtkWidget *hbar = gtk_scrolled_window_get_hscrollbar(
+			GTK_SCROLLED_WINDOW(lookup_widget("histoScroll")));
+	return gtk_widget_get_allocated_height(lookup_widget("drawingarea_histograms"))
+			- gtk_widget_get_allocated_height(hbar);
+}
 
 static void clear_hist_backup() {
 	if (hist_backup[0]) {
@@ -258,17 +268,19 @@ static double get_histoZoomValueV() {
 }
 
 static void adjust_histogram_vport_size() {
-	GtkWidget *drawarea, *vport;
-	int targetW, targetH;
+	GtkWidget *drawarea, *vport, *hbar;
+	int targetW, targetH, cur_width, cur_height;
 	double zoomH = get_histoZoomValueH();
 	double zoomV = get_histoZoomValueV();
 
+	hbar = gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(lookup_widget("histoScroll")));
 	drawarea = lookup_widget("drawingarea_histograms");
 	vport = lookup_widget("viewport1");
-	int cur_width = gtk_widget_get_allocated_width(vport);
-	int cur_height = gtk_widget_get_allocated_height(vport);
+
+	cur_width = gtk_widget_get_allocated_width(vport);
+	cur_height = gtk_widget_get_allocated_height(vport);
 	targetW = (int) (((double)cur_width) * zoomH);
-	targetH = (int) (((double)cur_height) * zoomV) - SLIDERBARS_HIGH;
+	targetH = (int) (((double)cur_height) * zoomV) - gtk_widget_get_allocated_height(hbar);
 	gtk_widget_set_size_request(drawarea, targetW, targetH);
 #ifdef HISTO_DEBUG
 	fprintf(stdout, "Histo vport size (%d, %d)\n", targetW, targetH);
@@ -728,8 +740,8 @@ gboolean redraw_histo(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	double zoomH, zoomV;
 
 	init_toggles();
-	width = gtk_widget_get_allocated_width(widget);
-	height = gtk_widget_get_allocated_height(widget);
+	width = get_width_of_histo();
+	height = get_height_of_histo();
 #ifdef HISTO_DEBUG
 	fprintf(stdout, "histogram redraw\n");
 	fprintf(stdout, "w = %d and h = %d\n", width, height);
@@ -857,8 +869,8 @@ void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_dat
 gboolean on_drawingarea_histograms_motion_notify_event(GtkWidget *widget, GdkEventMotion *event,
 		gpointer user_data) {
 
-	int width = gtk_widget_get_allocated_width(widget);
-	int height = gtk_widget_get_allocated_height(widget);
+	int width = get_width_of_histo();
+	int height = get_height_of_histo();
 
 	if (on_gradient((GdkEvent *) event, width, height)) {
 		set_cursor("grab");
@@ -925,8 +937,8 @@ void on_drawingarea_histograms_leave_notify_event(GtkWidget *widget,
 
 gboolean on_drawingarea_histograms_button_press_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
-	int width = gtk_widget_get_allocated_width(widget);
-	int height = gtk_widget_get_allocated_height(widget);
+	int width = get_width_of_histo();
+	int height = get_height_of_histo();
 
 	if (on_gradient((GdkEvent *) event, width, height)) {
 		double delta = ((_highlights - _shadows) * _midtones) + _shadows;
