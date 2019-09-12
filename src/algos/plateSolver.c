@@ -69,14 +69,17 @@ static GtkListStore *list_IPS = NULL;
 static image_solved is_result;
 
 static void initialize_ips_dialog() {
-	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box,
-			*catalog_auto, *frame_cc_bkg, *frame_cc_norm;
+	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box_ips,
+			*catalog_box_pcc, *catalog_auto, *frame_cc_bkg, *frame_cc_norm,
+			*catalog_label_pcc;
 	GtkWindow *parent;
 
 	button_ips_ok = lookup_widget("buttonIPS_ok");
 	button_cc_ok = lookup_widget("button_cc_ok");
 	catalog_label = lookup_widget("GtkLabelCatalog");
-	catalog_box = lookup_widget("ComboBoxIPSCatalog");
+	catalog_label_pcc = lookup_widget("GtkLabelCatalogPCC");
+	catalog_box_ips = lookup_widget("ComboBoxIPSCatalog");
+	catalog_box_pcc = lookup_widget("ComboBoxPCCCatalog");
 	catalog_auto = lookup_widget("GtkCheckButton_OnlineCat");
 	frame_cc_bkg = lookup_widget("frame_cc_background");
 	frame_cc_norm = lookup_widget("frame_cc_norm");
@@ -86,7 +89,9 @@ static void initialize_ips_dialog() {
 	gtk_widget_set_visible(button_ips_ok, TRUE);
 	gtk_widget_set_visible(button_cc_ok, FALSE);
 	gtk_widget_set_visible(catalog_label, TRUE);
-	gtk_widget_set_visible(catalog_box, TRUE);
+	gtk_widget_set_visible(catalog_label_pcc, FALSE);
+	gtk_widget_set_visible(catalog_box_ips, TRUE);
+	gtk_widget_set_visible(catalog_box_pcc, FALSE);
 	gtk_widget_set_visible(catalog_auto, TRUE);
 	gtk_widget_set_visible(frame_cc_bkg, FALSE);
 	gtk_widget_set_visible(frame_cc_norm, FALSE);
@@ -384,6 +389,17 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 		url = g_string_append(url, "&Vmag=<");
 		url = g_string_append(url, mag);
 		break;
+	case APASS: // for photometry only
+		url = g_string_append(url, "APASS&-out.meta=-h-u-D&-out.add=_r&-sort=_r");
+		url = g_string_append(url, "&-out=%20RAJ2000%20DEJ2000%20Vmag%20Bmag");
+		url = g_string_append(url, "&-out.max=200000");
+		url = g_string_append(url, "&-c=");
+		url = g_string_append(url, coordinates);
+		url = g_string_append(url, "&-c.rm=");
+		url = g_string_append(url, fov);
+		url = g_string_append(url, "&Vmag=<");
+		url = g_string_append(url, mag);
+		break;
 	}
 
 	g_free(coordinates);
@@ -392,8 +408,6 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 
 	return g_string_free(url, FALSE);
 }
-
-// http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source=V/50/catalog&-c=56.803081 24.323643&-c.r=1.384364&-c.u=deg&-out.form=|&-out.add=_RAJ,_DEJ&-out=pmRA&-out=pmDE&-out=Name&-out=HR&-out=HD&-out=DM&-out=SAO&-out=Vmag&-out=B-V&-out=U-B&-out=R-I&-out=SpType&Vmag=<13.14
 
 /*****
  * HTTP functions
@@ -949,6 +963,39 @@ static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars) {
 	return i;
 }
 
+static int read_APASS_catalog(FILE *catalog, fitted_PSF **cstars) {
+	char line[LINELEN];
+	fitted_PSF *star;
+
+	int i = 0;
+
+	while (fgets(line, LINELEN, catalog) != NULL) {
+		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
+
+		if (line[0] == COMMENT_CHAR) {
+			continue;
+		}
+		if (is_blank(line)) {
+			continue;
+		}
+		if (g_str_has_prefix(line, "---")) {
+			continue;
+		}
+		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &Bmag);
+
+		star = malloc(sizeof(fitted_PSF));
+		star->xpos = x;
+		star->ypos = y;
+		star->mag = Vmag;
+		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
+		cstars[i] = star;
+		cstars[i + 1] = NULL;
+		i++;
+	}
+	sort_stars(cstars, i);
+	siril_log_message(_("Catalog APASS size: %d objects\n"), i);
+	return i;
+}
 
 static int read_catalog(FILE *catalog, fitted_PSF **cstars, int type) {
 	switch (type) {
@@ -963,6 +1010,8 @@ static int read_catalog(FILE *catalog, fitted_PSF **cstars, int type) {
 		return read_PPMXL_catalog(catalog, cstars);
 	case BRIGHT_STARS:
 		return read_BRIGHT_STARS_catalog(catalog, cstars);
+	case APASS:
+		return read_APASS_catalog(catalog, cstars);
 	}
 }
 
@@ -1326,7 +1375,7 @@ void fill_plate_solver_structure(struct plate_solver_data *args) {
 	catalog_center = get_center_of_catalog();
 
 	/* Filling structure */
-	args->onlineCatalog = args->for_photometry_cc ? NOMAD : get_online_catalog(fov, m);
+	args->onlineCatalog = args->for_photometry_cc ? get_photometry_catalog() : get_online_catalog(fov, m);
 	args->catalogStars = download_catalog(args->onlineCatalog, catalog_center, fov, m);
 	args->scale = scale;
 	args->pixel_size = px_size;

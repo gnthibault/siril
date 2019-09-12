@@ -53,15 +53,18 @@ enum {
 };
 
 static void initialize_photometric_cc_dialog() {
-	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box,
-			*catalog_auto, *frame_cc_bkg, *frame_cc_norm;
+	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box_ips,
+			*catalog_box_pcc, *catalog_auto, *frame_cc_bkg, *frame_cc_norm,
+			*catalog_label_pcc;
 	GtkWindow *parent;
 	GtkAdjustment *selection_cc_black_adjustment[4];
 
 	button_ips_ok = lookup_widget("buttonIPS_ok");
 	button_cc_ok = lookup_widget("button_cc_ok");
 	catalog_label = lookup_widget("GtkLabelCatalog");
-	catalog_box = lookup_widget("ComboBoxIPSCatalog");
+	catalog_label_pcc = lookup_widget("GtkLabelCatalogPCC");
+	catalog_box_ips = lookup_widget("ComboBoxIPSCatalog");
+	catalog_box_pcc = lookup_widget("ComboBoxPCCCatalog");
 	catalog_auto = lookup_widget("GtkCheckButton_OnlineCat");
 	frame_cc_bkg = lookup_widget("frame_cc_background");
 	frame_cc_norm = lookup_widget("frame_cc_norm");
@@ -76,7 +79,9 @@ static void initialize_photometric_cc_dialog() {
 	gtk_widget_set_visible(button_ips_ok, FALSE);
 	gtk_widget_set_visible(button_cc_ok, TRUE);
 	gtk_widget_set_visible(catalog_label, FALSE);
-	gtk_widget_set_visible(catalog_box, FALSE);
+	gtk_widget_set_visible(catalog_label_pcc, TRUE);
+	gtk_widget_set_visible(catalog_box_ips, FALSE);
+	gtk_widget_set_visible(catalog_box_pcc, TRUE);
 	gtk_widget_set_visible(catalog_auto, FALSE);
 	gtk_widget_set_visible(frame_cc_bkg, TRUE);
 	gtk_widget_set_visible(frame_cc_norm, TRUE);
@@ -583,6 +588,20 @@ int apply_photometric_cc() {
 	start_in_new_thread(photometric_cc, args);
 
 	return 0;
+}
+
+int get_photometry_catalog() {
+	GtkComboBox *box;
+	int ret;
+
+	box = GTK_COMBO_BOX(lookup_widget("ComboBoxPCCCatalog"));
+	ret = gtk_combo_box_get_active(box);
+
+	if (ret == 1) {
+		return APASS;
+	} else {
+		return NOMAD;
+	}
 }
 
 /*****

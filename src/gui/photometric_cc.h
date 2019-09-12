@@ -23,5 +23,6 @@ struct photometric_cc_data {
 
 FILE *open_bv_file(const gchar *mode);
 int apply_photometric_cc();
+int get_photometry_catalog();
 
 #endif /* SRC_GUI_PHOTOMETRIC_CC_H_ */

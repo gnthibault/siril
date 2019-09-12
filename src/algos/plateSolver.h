@@ -17,7 +17,8 @@ typedef enum {
 	NOMAD,
 	GAIA,
 	PPMXL,
-	BRIGHT_STARS
+	BRIGHT_STARS,
+	APASS
 } online_catalog;
 
 typedef enum {
