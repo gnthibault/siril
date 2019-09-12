@@ -33,12 +33,12 @@ static void satu_close(gboolean revert) {
 
 void on_satu_cancel_clicked(GtkButton *button, gpointer user_data) {
 	satu_close(TRUE);
-	gtk_widget_hide(lookup_widget("satu_dialog"));
+	siril_close_dialog("satu_dialog");
 }
 
 void on_satu_apply_clicked(GtkButton *button, gpointer user_data) {
 	apply_satu_changes();
-	gtk_widget_hide(lookup_widget("satu_dialog"));
+	siril_close_dialog("satu_dialog");
 }
 
 void on_satu_dialog_close(GtkDialog *dialog, gpointer user_data) {

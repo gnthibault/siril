@@ -4362,7 +4362,7 @@ void on_SCNR_Apply_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_SCNR_cancel_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("SCNR_dialog"));
+	siril_close_dialog("SCNR_dialog");
 }
 
 void on_combo_scnr_changed(GtkComboBoxText *box, gpointer user_data) {
@@ -4417,7 +4417,7 @@ void on_menuitemcalibration_activate(GtkMenuItem *menuitem, gpointer user_data) 
 
 void on_extract_channel_button_close_clicked(GtkButton *button,
 		gpointer user_data) {
-	gtk_widget_hide(lookup_widget("extract_channel_dialog"));
+	siril_close_dialog("extract_channel_dialog");
 }
 
 void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data) {
@@ -4628,7 +4628,7 @@ void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_button_fft_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("dialog_FFT"));
+	siril_close_dialog("dialog_FFT");
 }
 
 void on_menuitem_fft_activate(GtkMenuItem *menuitem, gpointer user_data) {
@@ -4695,13 +4695,13 @@ void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_button_extract_w_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("extract_wavelets_layers_dialog"));
+	siril_close_dialog("extract_wavelets_layers_dialog");
 }
 
 /********************** GUI for Median Filter *************************/
 
 void on_Median_cancel_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("Median_dialog"));
+	siril_close_dialog("Median_dialog");
 }
 
 void on_Median_Apply_clicked(GtkButton *button, gpointer user_data) {
@@ -4771,7 +4771,7 @@ void on_menuitem_cosmetic_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_button_cosmetic_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("cosmetic_dialog"));
+	siril_close_dialog("cosmetic_dialog");
 }
 
 void on_checkSigCosme_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
@@ -4841,7 +4841,7 @@ void on_menu_slpitcfa_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_split_cfa_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("split_cfa_dialog"));
+	siril_close_dialog("split_cfa_dialog");
 }
 
 void on_split_cfa_apply_clicked(GtkButton *button, gpointer user_data) {
@@ -4870,7 +4870,7 @@ void on_menuitem_deconvolution_activate(GtkMenuItem *menuitem, gpointer user_dat
 }
 
 void on_deconvolution_cancel_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("deconvolution_dialog"));
+	siril_close_dialog("deconvolution_dialog");
 }
 
 void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
@@ -4909,7 +4909,7 @@ void on_menuitem_fixbanding_activate(GtkMenuItem *menuitem, gpointer user_data) 
 }
 
 void on_button_ok_fixbanding_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("canon_fixbanding_dialog"));
+	siril_close_dialog("canon_fixbanding_dialog");
 }
 
 void on_button_apply_fixbanding_clicked(GtkButton *button, gpointer user_data) {

@@ -56,7 +56,7 @@
 
 static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
 	unsigned int npixels;
-	int  i, j, scanline, retval=nsamples;
+	int i, j, scanline, retval = nsamples;
 	WORD *buf;
 	uint32 rowsperstrip;
 	uint16 config;

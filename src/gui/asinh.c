@@ -53,7 +53,7 @@ void on_menuitem_asinh_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 void on_asinh_cancel_clicked(GtkButton *button, gpointer user_data) {
 	asinh_close(TRUE);
-	gtk_widget_hide(lookup_widget("asinh_dialog"));
+	siril_close_dialog("asinh_dialog");
 }
 
 void apply_asinh_changes() {
@@ -62,7 +62,7 @@ void apply_asinh_changes() {
 }
 void on_asinh_ok_clicked(GtkButton *button, gpointer user_data) {
 	apply_asinh_changes();
-	gtk_widget_hide(lookup_widget("asinh_dialog"));
+	siril_close_dialog("asinh_dialog");
 }
 
 void on_asinh_dialog_close(GtkDialog *dialog, gpointer user_data) {

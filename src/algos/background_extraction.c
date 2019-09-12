@@ -628,7 +628,7 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_background_close_button_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("background_extraction_dialog"));
+	siril_close_dialog("background_extraction_dialog");
 }
 
 void on_background_extraction_dialog_hide(GtkWidget *widget, gpointer user_data) {

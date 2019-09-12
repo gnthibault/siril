@@ -1283,7 +1283,7 @@ void on_menuitem_IPS_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_buttonIPS_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("ImagePlateSolver_Dial"));
+	siril_close_dialog("ImagePlateSolver_Dial");
 }
 
 void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,

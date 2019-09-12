@@ -194,7 +194,7 @@ void apply_wavelets_changes() {
 
 void on_button_ok_w_clicked(GtkButton *button, gpointer user_data) {
 	apply_wavelets_changes();
-	gtk_widget_hide(lookup_widget("wavelets_dialog"));
+	siril_close_dialog("wavelets_dialog");
 }
 
 void on_button_cancel_w_clicked(GtkButton *button, gpointer user_data) {
@@ -203,7 +203,7 @@ void on_button_cancel_w_clicked(GtkButton *button, gpointer user_data) {
 		reset_scale_w();
 		update_wavelets();
 	}
-	gtk_widget_hide(lookup_widget("wavelets_dialog"));
+	siril_close_dialog("wavelets_dialog");
 }
 
 void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {

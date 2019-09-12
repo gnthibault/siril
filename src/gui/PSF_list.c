@@ -27,6 +27,7 @@
 #include "io/single_image.h"
 #include "io/sequence.h"
 #include "gui/callbacks.h"
+#include "gui/dialogs.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "algos/PSF.h"
@@ -479,9 +480,9 @@ void on_remove_all_button_clicked(GtkButton *button, gpointer user_data) {
 
 void on_menuitemPSF_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_data) {
 	if (gtk_check_menu_item_get_active(checkmenuitem))
-		gtk_widget_show_all(lookup_widget("stars_list_window"));
+		siril_open_dialog("stars_list_window");
 	else
-		gtk_widget_hide(lookup_widget("stars_list_window"));
+		siril_close_dialog("stars_list_window");
 }
 
 void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data) {
@@ -512,6 +513,6 @@ void on_stars_list_window_show(GtkWidget *widget, gpointer user_data) {
 }
 
 void on_button_stars_list_ok_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("stars_list_window"));
+	siril_close_dialog("stars_list_window");
 }
 

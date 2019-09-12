@@ -174,7 +174,7 @@ void on_menuitem_rgradient_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_rgradient_cancel_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("rgradient_dialog"));
+	siril_close_dialog("rgradient_dialog");
 }
 
 void on_rgradient_Apply_clicked(GtkButton *button, gpointer user_data) {

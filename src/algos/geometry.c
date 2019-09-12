@@ -361,7 +361,7 @@ void on_menuitem_rotation_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_button_rotation_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("rotation_dialog"));
+	siril_close_dialog("rotation_dialog");
 }
 
 void on_spinbutton_rotation_value_changed(GtkSpinButton *spin_button,
@@ -434,7 +434,7 @@ void on_button_resample_ok_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_button_resample_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("resample_dialog"));
+	siril_close_dialog("resample_dialog");
 }
 
 void on_spinbutton_resample_X_value_changed(GtkSpinButton *spinbutton,
@@ -527,5 +527,5 @@ void on_crop_Apply_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_crop_close_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("crop_dialog"));
+	siril_close_dialog("crop_dialog");
 }

@@ -24,6 +24,7 @@
 #include "algos/statistics.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "gui/dialogs.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
 
@@ -269,7 +270,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 }
 
 void on_statButtonClose_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("StatWindow"));
+	siril_close_dialog("StatWindow");
 }
 
 void computeStat() {

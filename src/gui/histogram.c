@@ -769,7 +769,7 @@ void on_histogram_window_show(GtkWidget *object, gpointer user_data) {
 void on_button_histo_close_clicked(GtkButton *button, gpointer user_data) {
 	reset_cursors_and_values();
 	histo_close(TRUE);
-	gtk_widget_hide(lookup_widget("histogram_window"));
+	siril_close_dialog("histogram_window");
 }
 
 void on_button_histo_cancel_clicked(GtkButton *button, gpointer user_data) {
@@ -854,9 +854,8 @@ void on_menuitem_histo_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_data) {
-	GtkWidget *window = lookup_widget("histogram_window");
-	if (gtk_widget_get_visible(window))
-		gtk_widget_hide(window);
+	if (gtk_widget_get_visible(lookup_widget("histogram_window")))
+		siril_close_dialog("histogram_window");
 	else {
 		on_menuitem_histo_activate(NULL, NULL);
 	}

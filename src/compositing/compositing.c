@@ -826,7 +826,7 @@ void luminance_and_colors_align_and_compose() {
 }
 
 void on_compositing_cancel_clicked(GtkButton *button, gpointer user_data){
-	gtk_widget_hide(lookup_widget("composition_dialog"));
+	siril_close_dialog("composition_dialog");
 }
 
 /* When summing all layers to get the RGB values for one pixel, it may overflow.

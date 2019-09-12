@@ -83,3 +83,7 @@ void siril_open_dialog(gchar *id) {
 	}
 	gtk_widget_show(lookup_widget(id));
 }
+
+void siril_close_dialog(gchar *id) {
+	gtk_widget_hide(lookup_widget(id));
+}

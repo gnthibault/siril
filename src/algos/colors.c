@@ -963,7 +963,7 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 }
 
 void on_calibration_close_button_clicked(GtkButton *button, gpointer user_data) {
-	gtk_widget_hide(lookup_widget("color_calibration"));
+	siril_close_dialog("color_calibration");
 }
 
 void on_checkbutton_manual_calibration_toggled(GtkToggleButton *togglebutton,
