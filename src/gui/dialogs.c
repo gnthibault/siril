@@ -81,7 +81,7 @@ void siril_open_dialog(gchar *id) {
 			}
 		}
 	}
-	gtk_widget_show(lookup_widget(id));
+	gtk_window_present_with_time(GTK_WINDOW(lookup_widget(id)), GDK_CURRENT_TIME);
 }
 
 void siril_close_dialog(gchar *id) {
