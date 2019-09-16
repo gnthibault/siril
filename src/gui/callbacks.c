@@ -2785,7 +2785,7 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_settings_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	gtk_widget_show(lookup_widget("settings_window"));
+	siril_open_dialog("settings_window");
 }
 
 void on_menu_FITS_header_activate(GtkMenuItem *menuitem, gpointer user_data) {
@@ -2797,7 +2797,7 @@ void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_photometry_interface();
 	fill_script_paths_list();
 	refresh_stars_list(com.stars);
-	gtk_widget_hide(lookup_widget("settings_window"));
+	siril_close_dialog("settings_window");
 }
 
 void on_focal_entry_changed(GtkEditable *editable, gpointer user_data) {
