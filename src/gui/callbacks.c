@@ -1769,7 +1769,7 @@ void show_main_gray_window() {
 	int h = com.main_w_pos.h;
 
 	gtk_check_menu_item_set_active(graycheck, TRUE);
-	if (com.remember_windows && x >= 0 && y >= 0) {
+	if (com.remember_windows && w >= 0 && h >= 0) {
 		gtk_window_move(GTK_WINDOW(win), x, y);
 		gtk_window_resize(GTK_WINDOW(win), w, h);
 	}
@@ -1789,7 +1789,7 @@ void show_rgb_window() {
 	int h = com.rgb_w_pos.h;
 
 	gtk_check_menu_item_set_active(rgbcheck, TRUE);
-	if (com.remember_windows && x >= 0 && y >= 0) {
+	if (com.remember_windows && w >= 0 && h >= 0) {
 		gtk_window_move(GTK_WINDOW(win), x, y);
 		gtk_window_resize(GTK_WINDOW(win), w, h);
 	}
@@ -1899,8 +1899,7 @@ void set_output_filename_to_sequence_name() {
 	static GtkEntry *output_file = NULL;
 	gchar msg[256];
 	if (!output_file)
-		output_file = GTK_ENTRY(
-				gtk_builder_get_object(builder, "entryresultfile"));
+		output_file = GTK_ENTRY(lookup_widget("entryresultfile"));
 	if (!com.seq.seqname || *com.seq.seqname == '\0')
 		return;
 	g_snprintf(msg, sizeof(msg), "%s%sstacked%s", com.seq.seqname,
