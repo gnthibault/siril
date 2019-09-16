@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-12 15:30+0200\n"
+"POT-Creation-Date: 2019-09-13 14:27+0200\n"
 "PO-Revision-Date: 2019-05-07 20:26+0200\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
@@ -1150,14 +1150,22 @@ msgid "Image registration"
 msgstr "Registratie van Afbeeldingen"
 
 #: ../src/gui/siril3.glade.h:248
+msgid "Register all images from sequence"
+msgstr "Registreer alle beelden van de sequentie"
+
+#: ../src/gui/siril3.glade.h:249
+msgid "Register selected images only"
+msgstr "Registreer enkel de geselecteerde afbeeldingen"
+
+#: ../src/gui/siril3.glade.h:250
 msgid "Choose registration method:"
 msgstr "Kies een registratiemethode:"
 
-#: ../src/gui/siril3.glade.h:249
+#: ../src/gui/siril3.glade.h:251
 msgid "Select registration layer:"
 msgstr "Kies een registratie laag:"
 
-#: ../src/gui/siril3.glade.h:250
+#: ../src/gui/siril3.glade.h:252
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -1173,14 +1181,6 @@ msgstr ""
 "Bij het verwerken van de beelden worden de registratiegegevens, indien "
 "beschikbaark, uit de standaardlaag genomen (voor RGB beelden: Groen, anders "
 "Blauw, dan Rood)."
-
-#: ../src/gui/siril3.glade.h:253
-msgid "Register all images from sequence"
-msgstr "Registreer alle beelden van de sequentie"
-
-#: ../src/gui/siril3.glade.h:254
-msgid "Register selected images only"
-msgstr "Registreer enkel de geselecteerde afbeeldingen"
 
 #: ../src/gui/siril3.glade.h:255
 msgid "Prefix:"
@@ -4092,7 +4092,7 @@ msgstr "Verhoging van de saturatie: bezig...\n"
 #: ../src/core/command.c:1874 ../src/core/preprocess.c:63
 #: ../src/core/preprocess.c:186 ../src/core/siril.c:607 ../src/core/siril.c:898
 #: ../src/core/siril.c:994 ../src/core/siril.c:1086 ../src/gui/histogram.c:679
-#: ../src/gui/photometric_cc.c:387 ../src/gui/statistics_list.c:311
+#: ../src/gui/photometric_cc.c:387 ../src/gui/statistics_list.c:312
 msgid "Error: statistics computation failed.\n"
 msgstr "Fout: berekening van de statistiek gefaald.\n"
 
@@ -4193,7 +4193,7 @@ msgstr ""
 #: ../src/gui/callbacks.c:2937 ../src/gui/callbacks.c:4579
 #: ../src/gui/callbacks.c:4585 ../src/gui/callbacks.c:4606
 #: ../src/gui/open_dialog.c:293 ../src/gui/plot.c:383 ../src/gui/plot.c:451
-#: ../src/gui/PSF_list.c:213 ../src/gui/save_dialog.c:298
+#: ../src/gui/PSF_list.c:214 ../src/gui/save_dialog.c:298
 #: ../src/io/conversion.c:605 ../src/io/single_image.c:132
 msgid "Error"
 msgstr "Fout"
@@ -4672,7 +4672,7 @@ msgstr "Foute parameters.\n"
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: kies een regio of voer x, y, breedte en hoogte in\n"
 
-#: ../src/core/command.c:1280 ../src/gui/PSF_list.c:499
+#: ../src/core/command.c:1280 ../src/gui/PSF_list.c:500
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "%d sterren gevonden, kanaal #%d\n"
@@ -6746,11 +6746,11 @@ msgstr "%s: %.2lf ms.\n"
 msgid "%s: %.2lf s.\n"
 msgstr "%s: %.2lf s.\n"
 
-#: ../src/gui/PSF_list.c:214
+#: ../src/gui/PSF_list.c:215
 msgid "Stars must have the same units."
 msgstr "Sterren moeten dezelfde eenheden hebben."
 
-#: ../src/gui/PSF_list.c:228
+#: ../src/gui/PSF_list.c:229
 #, c-format
 msgid ""
 "Average Gaussian PSF\n"
@@ -6775,29 +6775,29 @@ msgstr ""
 "Hoek:\t%.2f deg\n"
 "rmse:\t%.3e\n"
 
-#: ../src/gui/PSF_list.c:233
+#: ../src/gui/PSF_list.c:234
 msgid "Average Star Data"
 msgstr "Gemiddelde Ster Gegevens"
 
-#: ../src/gui/PSF_list.c:261
+#: ../src/gui/PSF_list.c:262
 #, c-format
 msgid "%d stars"
 msgstr "%d sterren"
 
-#: ../src/gui/PSF_list.c:266
+#: ../src/gui/PSF_list.c:267
 #, c-format
 msgid "Star %d of %d"
 msgstr "Ster %d van %d"
 
-#: ../src/gui/PSF_list.c:311
+#: ../src/gui/PSF_list.c:312
 msgid "The file stars.lst has been created.\n"
 msgstr "Het bestand stars.lst werd aangemaakt.\n"
 
-#: ../src/gui/PSF_list.c:318
+#: ../src/gui/PSF_list.c:319
 msgid "Star list file (*.lst)"
 msgstr "Ster lijst bestand (*.lst)"
 
-#: ../src/gui/PSF_list.c:491
+#: ../src/gui/PSF_list.c:492
 msgid "Load an image first, aborted.\n"
 msgstr "Laad eerst een beeld, gestopt.\n"
 
@@ -6893,66 +6893,66 @@ msgstr "exclusief"
 msgid "including"
 msgstr "inclusief"
 
-#: ../src/gui/statistics_list.c:45
+#: ../src/gui/statistics_list.c:46
 msgid "count (%)"
 msgstr "aantal (%)"
 
-#: ../src/gui/statistics_list.c:46
+#: ../src/gui/statistics_list.c:47
 msgid "count (px)"
 msgstr "aantal (px)"
 
-#: ../src/gui/statistics_list.c:47
+#: ../src/gui/statistics_list.c:48
 msgid "mean"
 msgstr "gemiddelde"
 
-#: ../src/gui/statistics_list.c:48
+#: ../src/gui/statistics_list.c:49
 msgid "median"
 msgstr "mediaan"
 
-#: ../src/gui/statistics_list.c:49
+#: ../src/gui/statistics_list.c:50
 msgid "sigma"
 msgstr "sigma"
 
-#: ../src/gui/statistics_list.c:50
+#: ../src/gui/statistics_list.c:51
 msgid "avgDev"
 msgstr "avgDev"
 
-#: ../src/gui/statistics_list.c:51
+#: ../src/gui/statistics_list.c:52
 msgid "MAD"
 msgstr "MAD"
 
-#: ../src/gui/statistics_list.c:52
+#: ../src/gui/statistics_list.c:53
 msgid "sqrt(BWMV)"
 msgstr "sqrt(BWMV)"
 
-#: ../src/gui/statistics_list.c:53
+#: ../src/gui/statistics_list.c:54
 msgid "min"
 msgstr "min"
 
-#: ../src/gui/statistics_list.c:54
+#: ../src/gui/statistics_list.c:55
 msgid "max"
 msgstr "max"
 
-#: ../src/gui/statistics_list.c:55
+#: ../src/gui/statistics_list.c:56
 msgid "normalization"
 msgstr "normalisatie"
 
-#: ../src/gui/statistics_list.c:291
+#: ../src/gui/statistics_list.c:292
 #, c-format
 msgid "Image %d/%d from the sequence %s"
 msgstr "Beeld  %d/%d van de sequentie %s"
 
-#: ../src/gui/statistics_list.c:294
+#: ../src/gui/statistics_list.c:295
 #, c-format
 msgid "unknown image"
 msgstr "onbekend beeld"
 
-#: ../src/gui/statistics_list.c:300
+#: ../src/gui/statistics_list.c:301
 #, c-format
 msgid "Size of selection in pixel: (%d,%d)"
 msgstr "Grootte van de selectie in pixels: (%d,%d)"
 
-#: ../src/gui/statistics_list.c:303
+#: ../src/gui/statistics_list.c:304
 #, c-format
 msgid "No selection"
 msgstr "Geen selectie"

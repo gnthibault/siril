@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-12 15:30+0200\n"
+"POT-Creation-Date: 2019-09-13 14:27+0200\n"
 "PO-Revision-Date: 2019-05-08 16:02+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -1175,16 +1175,24 @@ msgid "Image registration"
 msgstr "Εγγραφή εικόνας"
 
 #: ../src/gui/siril3.glade.h:248
+msgid "Register all images from sequence"
+msgstr "Εγγραφή όλων των εικόνων από την αλληλουχία"
+
+#: ../src/gui/siril3.glade.h:249
+msgid "Register selected images only"
+msgstr "Εγγραφή μόνο των επιλεγμένων εικόνων"
+
+#: ../src/gui/siril3.glade.h:250
 msgid "Choose registration method:"
 msgstr "Επιλέξτε μέθοδο εγγραφής:"
 
-#: ../src/gui/siril3.glade.h:249
+#: ../src/gui/siril3.glade.h:251
 msgid "Select registration layer:"
 msgstr "Επιλέξτε επίπεδο εγγραφής:"
 
 #  It can only be done on one layer at a time, so on monochrome images
 # Do you mean:  It can only be done on one layer at a time, on monochrome images
-#: ../src/gui/siril3.glade.h:250
+#: ../src/gui/siril3.glade.h:252
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -1200,14 +1208,6 @@ msgstr ""
 "Όταν γίνεται επεξεργασία εικόνων, τα δεδομένα εγγραφής παίρνονται από το "
 "προεπιλεγμένο επίπεδο αν είναι διαθέσιμα (για εικόνες RGB: το Πράσινο, "
 "εναλλακτικά το Μπλε μετά το Κόκκινο)."
-
-#: ../src/gui/siril3.glade.h:253
-msgid "Register all images from sequence"
-msgstr "Εγγραφή όλων των εικόνων από την αλληλουχία"
-
-#: ../src/gui/siril3.glade.h:254
-msgid "Register selected images only"
-msgstr "Εγγραφή μόνο των επιλεγμένων εικόνων"
 
 #: ../src/gui/siril3.glade.h:255
 msgid "Prefix:"
@@ -4198,7 +4198,7 @@ msgstr "Ενίσχυση κορεσμού: γίνεται επεξεργασία
 #: ../src/core/command.c:1874 ../src/core/preprocess.c:63
 #: ../src/core/preprocess.c:186 ../src/core/siril.c:607 ../src/core/siril.c:898
 #: ../src/core/siril.c:994 ../src/core/siril.c:1086 ../src/gui/histogram.c:679
-#: ../src/gui/photometric_cc.c:387 ../src/gui/statistics_list.c:311
+#: ../src/gui/photometric_cc.c:387 ../src/gui/statistics_list.c:312
 msgid "Error: statistics computation failed.\n"
 msgstr "Σφάλμα: ο υπολογισμός των στατιστικών απέτυχε.\n"
 
@@ -4300,7 +4300,7 @@ msgstr ""
 #: ../src/gui/callbacks.c:2937 ../src/gui/callbacks.c:4579
 #: ../src/gui/callbacks.c:4585 ../src/gui/callbacks.c:4606
 #: ../src/gui/open_dialog.c:293 ../src/gui/plot.c:383 ../src/gui/plot.c:451
-#: ../src/gui/PSF_list.c:213 ../src/gui/save_dialog.c:298
+#: ../src/gui/PSF_list.c:214 ../src/gui/save_dialog.c:298
 #: ../src/io/conversion.c:605 ../src/io/single_image.c:132
 msgid "Error"
 msgstr "Σφάλμα"
@@ -4783,7 +4783,7 @@ msgstr "Λάθος παράμετροι.\n"
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: επιλέξτε μια περιοχή ή δώστε τα x, y, πλάτος, ύψος\n"
 
-#: ../src/core/command.c:1280 ../src/gui/PSF_list.c:499
+#: ../src/core/command.c:1280 ../src/gui/PSF_list.c:500
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Βρέθηκαν %d αστέρια στην εικόνα, κανάλι #%d\n"
@@ -6918,11 +6918,11 @@ msgstr "%s: %.2lf ms.\n"
 msgid "%s: %.2lf s.\n"
 msgstr "%s: %.2lf s.\n"
 
-#: ../src/gui/PSF_list.c:214
+#: ../src/gui/PSF_list.c:215
 msgid "Stars must have the same units."
 msgstr "Τα αστέρια πρέπει να έχουν τις ίδιες μονάδες."
 
-#: ../src/gui/PSF_list.c:228
+#: ../src/gui/PSF_list.c:229
 #, c-format
 msgid ""
 "Average Gaussian PSF\n"
@@ -6947,29 +6947,29 @@ msgstr ""
 "Γωνία:\t%.2f μοίρες\n"
 "rmse:\t%.3e\n"
 
-#: ../src/gui/PSF_list.c:233
+#: ../src/gui/PSF_list.c:234
 msgid "Average Star Data"
 msgstr "Μέσος Όρος Δεδομένων Αστεριών"
 
-#: ../src/gui/PSF_list.c:261
+#: ../src/gui/PSF_list.c:262
 #, c-format
 msgid "%d stars"
 msgstr "%d stars αστέρια"
 
-#: ../src/gui/PSF_list.c:266
+#: ../src/gui/PSF_list.c:267
 #, c-format
 msgid "Star %d of %d"
 msgstr "Αστέρι %d από %d"
 
-#: ../src/gui/PSF_list.c:311
+#: ../src/gui/PSF_list.c:312
 msgid "The file stars.lst has been created.\n"
 msgstr "Το αρχείο stars.lst δημιουργήθηκε.\n"
 
-#: ../src/gui/PSF_list.c:318
+#: ../src/gui/PSF_list.c:319
 msgid "Star list file (*.lst)"
 msgstr "Αρχείο λίστας αστεριών (*.lst)"
 
-#: ../src/gui/PSF_list.c:491
+#: ../src/gui/PSF_list.c:492
 msgid "Load an image first, aborted.\n"
 msgstr "Έγινε ακύρωση, φορτώστε πρώτα μια εικόνα.\n"
 
@@ -7067,66 +7067,66 @@ msgstr "εξαίρεση"
 msgid "including"
 msgstr "συμπεριλαμβάνεται"
 
-#: ../src/gui/statistics_list.c:45
+#: ../src/gui/statistics_list.c:46
 msgid "count (%)"
 msgstr "αριθμός (%)"
 
-#: ../src/gui/statistics_list.c:46
+#: ../src/gui/statistics_list.c:47
 msgid "count (px)"
 msgstr "αριθμός (εικονοστοιχεία)"
 
-#: ../src/gui/statistics_list.c:47
+#: ../src/gui/statistics_list.c:48
 msgid "mean"
 msgstr "μέσος όρος"
 
-#: ../src/gui/statistics_list.c:48
+#: ../src/gui/statistics_list.c:49
 msgid "median"
 msgstr "διάμεσος"
 
-#: ../src/gui/statistics_list.c:49
+#: ../src/gui/statistics_list.c:50
 msgid "sigma"
 msgstr "σίγμα"
 
-#: ../src/gui/statistics_list.c:50
+#: ../src/gui/statistics_list.c:51
 msgid "avgDev"
 msgstr "Απόκλιση Μέσου Όρου"
 
-#: ../src/gui/statistics_list.c:51
+#: ../src/gui/statistics_list.c:52
 msgid "MAD"
 msgstr "ΜΑD"
 
-#: ../src/gui/statistics_list.c:52
+#: ../src/gui/statistics_list.c:53
 msgid "sqrt(BWMV)"
 msgstr "Τετραγωνική ρίζα (BWMV)"
 
-#: ../src/gui/statistics_list.c:53
+#: ../src/gui/statistics_list.c:54
 msgid "min"
 msgstr "ελάχιστο"
 
-#: ../src/gui/statistics_list.c:54
+#: ../src/gui/statistics_list.c:55
 msgid "max"
 msgstr "μέγιστο"
 
-#: ../src/gui/statistics_list.c:55
+#: ../src/gui/statistics_list.c:56
 msgid "normalization"
 msgstr "ομαλοποίηση"
 
-#: ../src/gui/statistics_list.c:291
+#: ../src/gui/statistics_list.c:292
 #, c-format
 msgid "Image %d/%d from the sequence %s"
 msgstr "Εικόνα %d/%d από την αλληλουχία %s"
 
-#: ../src/gui/statistics_list.c:294
+#: ../src/gui/statistics_list.c:295
 #, c-format
 msgid "unknown image"
 msgstr "άγνωστη εικόνα"
 
-#: ../src/gui/statistics_list.c:300
+#: ../src/gui/statistics_list.c:301
 #, c-format
 msgid "Size of selection in pixel: (%d,%d)"
 msgstr "Μέγεθος της επιλογής σε εικονοστοιχεία: (%d,%d)"
 
-#: ../src/gui/statistics_list.c:303
+#: ../src/gui/statistics_list.c:304
 #, c-format
 msgid "No selection"
 msgstr "Δεν υπάρχει επιλογή"
