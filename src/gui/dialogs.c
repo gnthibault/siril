@@ -82,7 +82,9 @@ void siril_open_dialog(gchar *id) {
 			}
 		}
 	}
-	gtk_window_present_with_time(GTK_WINDOW(lookup_widget(id)), GDK_CURRENT_TIME);
+	GtkWindow *win = GTK_WINDOW(lookup_widget(id));
+	gtk_window_set_transient_for(win, GTK_WINDOW(lookup_widget("main_window")));
+	gtk_window_present_with_time(win, GDK_CURRENT_TIME);
 }
 
 void siril_close_dialog(gchar *id) {

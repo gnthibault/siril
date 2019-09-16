@@ -225,15 +225,16 @@ void open_single_image_from_gfit() {
 	/* update menus */
 	update_MenuItem();
 
-	redraw(com.cvport, REMAP_ALL);
 	show_main_gray_window();
-	adjust_vport_size_to_image();
-	update_gfit_histogram_if_needed();
-	if (gfit.naxes[2] == 3)
-		show_rgb_window();
-	else
-		hide_rgb_window();
 	close_tab();
+	if (gfit.naxes[2] == 3) {
+		show_rgb_window();
+	} else {
+		hide_rgb_window();
+	}
+	update_gfit_histogram_if_needed();
+	adjust_vport_size_to_image();
+	redraw(com.cvport, REMAP_ALL);
 	update_used_memory();
 }
 

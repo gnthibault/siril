@@ -1773,7 +1773,7 @@ void show_main_gray_window() {
 		gtk_window_move(GTK_WINDOW(win), x, y);
 		gtk_window_resize(GTK_WINDOW(win), w, h);
 	}
-	gtk_widget_show_all(win);
+	gtk_widget_show(win);
 	gtk_window_present(GTK_WINDOW(win));
 }
 
@@ -1789,11 +1789,11 @@ void show_rgb_window() {
 	int h = com.rgb_w_pos.h;
 
 	gtk_check_menu_item_set_active(rgbcheck, TRUE);
-	if (x != 0 && y != 0) {
+	if (com.remember_windows && x >= 0 && y >= 0) {
 		gtk_window_move(GTK_WINDOW(win), x, y);
 		gtk_window_resize(GTK_WINDOW(win), w, h);
 	}
-	gtk_widget_show_all(win);
+	gtk_widget_show(win);
 }
 
 void hide_rgb_window() {
