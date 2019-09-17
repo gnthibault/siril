@@ -3363,6 +3363,9 @@ Colour image target also applies to the debayer result for conversion.</property
                             <property name="use_stock">True</property>
                             <property name="always_show_image">True</property>
                             <signal name="clicked" handler="on_convert_button_clicked" swapped="no"/>
+                            <style>
+                              <class name="suggested-action"/>
+                            </style>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -3567,6 +3570,9 @@ SER files are directly handled as a sequence, and are not yet available for conv
                         <property name="tooltip_text" translatable="yes">Search current directory for sequences of FITS images, SER or film videos.</property>
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_checkseqbutton_clicked" swapped="no"/>
+                        <style>
+                          <class name="suggested-action"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -4701,6 +4707,9 @@ Once completed, the sequence of pre-processed images is automatically loaded as 
 The next action for DSLR images would be to debayer the preprocessed images, go to the Conversion tab.</property>
                     <property name="use_underline">True</property>
                     <signal name="clicked" handler="on_prepro_button_clicked" swapped="no"/>
+                    <style>
+                      <class name="suggested-action"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -4777,6 +4786,18 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator" id="separator3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">5</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -4891,18 +4912,6 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="padding">2</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSeparator" id="separator3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="padding">5</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
@@ -5218,6 +5227,9 @@ WARNING: no new sequence is built, registration data is stored in the original s
                         <property name="tooltip_text" translatable="yes">Start the registration process. It will register images in the loaded sequence using the selected method and reference layer (loaded in the 'Image sequences' tab, current sequence name is at the bottom of the window too).</property>
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_seqregister_button_clicked" swapped="no"/>
+                        <style>
+                          <class name="suggested-action"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -6123,6 +6135,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                         <property name="margin_top">3</property>
                         <property name="use_underline">True</property>
                         <signal name="clicked" handler="on_seqstack_button_clicked" swapped="no"/>
+                        <style>
+                          <class name="suggested-action"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -6579,6 +6594,9 @@ However you may want to disable this option when building master frames of 8-bit
                             <property name="wrap_mode">word</property>
                             <property name="cursor_visible">False</property>
                             <property name="accepts_tab">False</property>
+                            <style>
+                              <class name="monospace"/>
+                            </style>
                           </object>
                         </child>
                       </object>
@@ -6824,6 +6842,9 @@ However you may want to disable this option when building master frames of 8-bit
                 <property name="use_underline">True</property>
                 <property name="always_show_image">True</property>
                 <signal name="clicked" handler="on_cwd_btton_clicked" swapped="no"/>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
