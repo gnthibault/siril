@@ -71,11 +71,15 @@ static SirilDialogEntry get_entry_by_id(gchar *id) {
 
 void siril_open_dialog(gchar *id) {
 	int i;
+	gint x, y;
+	gboolean win_already_shown = FALSE;
 
 	if (get_entry_by_id(id).type != INFORMATION_DIALOG) {
 		for (i = 0; i < G_N_ELEMENTS(entries); i++) {
 			GtkWidget *w = lookup_widget(entries[i].identifier);
 			if (gtk_widget_get_visible(w) && entries[i].type != INFORMATION_DIALOG) {
+				win_already_shown = TRUE;
+				gtk_window_get_position(GTK_WINDOW(w), &x, &y);
 				if (entries[i].has_preview)
 					entries[i].apply_function();
 				gtk_widget_hide(w);
@@ -83,6 +87,11 @@ void siril_open_dialog(gchar *id) {
 		}
 	}
 	GtkWindow *win = GTK_WINDOW(lookup_widget(id));
+	if (win_already_shown && x >=0 && y >= 0) {
+		gtk_window_move(win, x, y);
+	} else {
+		gtk_window_set_position (win, GTK_WIN_POS_MOUSE);
+	}
 	gtk_window_set_transient_for(win, GTK_WINDOW(lookup_widget("main_window")));
 	gtk_window_present_with_time(win, GDK_CURRENT_TIME);
 }

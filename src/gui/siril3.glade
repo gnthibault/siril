@@ -4780,6 +4780,55 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkBox" id="box10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkRadioButton" id="regallbutton">
+                        <property name="label" translatable="yes">Register all images from sequence</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="regselbutton">
+                        <property name="label" translatable="yes">Register selected images only</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">regallbutton</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkBox" id="box5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -4854,55 +4903,6 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="padding">5</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="box10">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">center</property>
-                    <child>
-                      <object class="GtkRadioButton" id="regallbutton">
-                        <property name="label" translatable="yes">Register all images from sequence</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkRadioButton" id="regselbutton">
-                        <property name="label" translatable="yes">Register selected images only</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">regallbutton</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
@@ -7948,13 +7948,11 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="row_spacing">10</property>
-                <property name="row_homogeneous">True</property>
                 <child>
                   <object class="GtkComboBoxText" id="combo_ksize_median">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Kernel Size. This is the odd size of the neighborhood considered for each pixel.</property>
-                    <property name="halign">end</property>
                     <property name="hexpand">True</property>
                     <property name="active">0</property>
                     <items>
@@ -8032,7 +8030,7 @@ If the parameters is null, so no filter is apply at all.</property>
                     <property name="can_focus">True</property>
                     <property name="tooltip_text" translatable="yes">Number of iterations of the algorithm.
 This is useful when modulation parameter is different to 1 helping the whole process to converge to better result.</property>
-                    <property name="halign">end</property>
+                    <property name="hexpand">False</property>
                     <property name="width_chars">3</property>
                     <property name="input_purpose">number</property>
                     <property name="adjustment">adj_median_iterations</property>
@@ -8047,7 +8045,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
+                <property name="fill">False</property>
                 <property name="position">0</property>
               </packing>
             </child>
@@ -8309,6 +8307,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
+            <property name="halign">start</property>
             <property name="draw_indicator">True</property>
             <signal name="toggled" handler="on_statCheckButton_toggled" swapped="no"/>
           </object>
@@ -8574,16 +8573,15 @@ This is useful when modulation parameter is different to 1 helping the whole pro
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="halign">end</property>
                 <property name="draw_indicator">True</property>
                 <signal name="toggled" handler="on_asinh_RGBspace_toggled" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">1</property>
+                <property name="left_attach">0</property>
                 <property name="top_attach">2</property>
+                <property name="width">2</property>
               </packing>
-            </child>
-            <child>
-              <placeholder/>
             </child>
           </object>
           <packing>
@@ -8599,6 +8597,8 @@ This is useful when modulation parameter is different to 1 helping the whole pro
     </action-widgets>
   </object>
   <object class="GtkDialog" id="background_extraction_dialog">
+    <property name="width_request">400</property>
+    <property name="height_request">200</property>
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Background Extraction</property>
@@ -8686,17 +8686,48 @@ This is useful when modulation parameter is different to 1 helping the whole pro
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="row_spacing">10</property>
-                        <property name="column_homogeneous">True</property>
                         <child>
-                          <object class="GtkLabel" id="background_label_degree">
+                          <object class="GtkScale" id="scale_background_nb_samples">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Tolerance of global sample rejection, in sigma units. By decreasing this value, Siril will be more restrictive to select background samples.</property>
+                            <property name="hexpand">True</property>
+                            <property name="adjustment">adj_background_nb_samples</property>
+                            <property name="round_digits">1</property>
+                            <property name="digits">2</property>
+                            <property name="value_pos">right</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="background_label_tolorence">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="halign">start</property>
-                            <property name="label" translatable="yes">Degree order: </property>
+                            <property name="label" translatable="yes">Tolerance: </property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="spin_background_nb_samples">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Number of sample per line that will be automatically placed.</property>
+                            <property name="hexpand">True</property>
+                            <property name="input_purpose">digits</property>
+                            <property name="adjustment">adjustment_background_nb_samples</property>
+                            <property name="numeric">True</property>
+                            <property name="value">20</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">1</property>
                           </packing>
                         </child>
                         <child>
@@ -8706,6 +8737,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
                             <property name="tooltip_text" translatable="yes">Choose the degree order of the polynomial function used in the fit.
 By default the value is of 4.
 The higher the degree order is, the more complex the gradient can be removed.</property>
+                            <property name="hexpand">True</property>
                             <property name="active">3</property>
                             <items>
                               <item>1</item>
@@ -8732,51 +8764,21 @@ The higher the degree order is, the more complex the gradient can be removed.</p
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkSpinButton" id="spin_background_nb_samples">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Number of sample per line that will be automatically placed.</property>
-                            <property name="input_purpose">digits</property>
-                            <property name="adjustment">adjustment_background_nb_samples</property>
-                            <property name="numeric">True</property>
-                            <property name="value">20</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkScale" id="scale_background_nb_samples">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Tolerance of global sample rejection, in sigma units. By decreasing this value, Siril will be more restrictive to select background samples.</property>
-                            <property name="adjustment">adj_background_nb_samples</property>
-                            <property name="round_digits">1</property>
-                            <property name="digits">2</property>
-                            <property name="value_pos">right</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="background_label_tolorence">
+                          <object class="GtkLabel" id="background_label_degree">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="halign">start</property>
-                            <property name="label" translatable="yes">Tolerance: </property>
+                            <property name="label" translatable="yes">Degree order: </property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
-                            <property name="top_attach">2</property>
+                            <property name="top_attach">0</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
+                        <property name="fill">False</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -8938,6 +8940,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
   </object>
   <object class="GtkDialog" id="canon_fixbanding_dialog">
     <property name="width_request">300</property>
+    <property name="height_request">200</property>
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Banding Reduction</property>
@@ -9041,7 +9044,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="halign">start</property>
+                <property name="halign">end</property>
                 <property name="draw_indicator">True</property>
                 <signal name="toggled" handler="on_checkbutton_fixbanding_toggled" swapped="no"/>
               </object>
@@ -9058,7 +9061,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="tooltip_text" translatable="yes">Check this box if banding is vertical.</property>
-                <property name="halign">start</property>
+                <property name="halign">end</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -9130,6 +9133,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                   <object class="GtkScale" id="scale_fixbanding_invsigma">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="hexpand">True</property>
                     <property name="adjustment">adj_fixbanding_invsigma</property>
                     <property name="round_digits">2</property>
                     <property name="digits">2</property>
@@ -9313,7 +9317,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="halign">end</property>
+                <property name="halign">start</property>
                 <property name="draw_indicator">True</property>
                 <signal name="toggled" handler="on_composition_use_lum_toggled" swapped="no"/>
               </object>
@@ -9652,6 +9656,7 @@ Modifying parameters in this windows afterward will void the colour balance, and
                     <property name="receives_default">False</property>
                     <property name="tooltip_text" translatable="yes">Check if the target frames are CFA images.
 Uncheck if images come from a monochrome sensor.</property>
+                    <property name="halign">start</property>
                     <property name="draw_indicator">True</property>
                   </object>
                   <packing>
@@ -9666,6 +9671,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
                     <property name="tooltip_text" translatable="yes">If a sequence is loaded and this is activated, perform the processing on all images of the sequence instead of only the loaded image.</property>
+                    <property name="halign">start</property>
                     <property name="draw_indicator">True</property>
                   </object>
                   <packing>
@@ -9715,7 +9721,6 @@ Uncheck if images come from a monochrome sensor.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="row_spacing">10</property>
-                            <property name="column_homogeneous">True</property>
                             <child>
                               <object class="GtkCheckButton" id="checkSigColdBox">
                                 <property name="label" translatable="yes">Cold Sigma:</property>
@@ -9738,7 +9743,6 @@ Uncheck if images come from a monochrome sensor.</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="tooltip_text" translatable="yes">How many times (in averrage deviation units) a pixel value must differ from the value of surrounding neighbors to be considered as a cold pixel.</property>
-                                <property name="halign">end</property>
                                 <property name="hexpand">True</property>
                                 <property name="invisible_char">●</property>
                                 <property name="width_chars">6</property>
@@ -9777,7 +9781,6 @@ Uncheck if images come from a monochrome sensor.</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="tooltip_text" translatable="yes">How many times (in averrage deviation units) a pixel value must differ from the value of surrounding neighbors to be considered as a hot pixel.</property>
-                                <property name="halign">end</property>
                                 <property name="hexpand">True</property>
                                 <property name="width_chars">6</property>
                                 <property name="text">50,00</property>
@@ -9833,6 +9836,7 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkLabel" id="label163">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">end</property>
                     <property name="label" translatable="yes">Amount:</property>
                   </object>
                   <packing>
@@ -9930,12 +9934,12 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="can_focus">False</property>
             <property name="row_spacing">10</property>
             <property name="column_spacing">5</property>
-            <property name="row_homogeneous">True</property>
             <child>
               <object class="GtkEntry" id="cropped_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Prefix of the image names resulting from the cropping process.</property>
+                <property name="hexpand">True</property>
                 <property name="max_length">10</property>
                 <property name="width_chars">10</property>
                 <property name="max_width_chars">10</property>
@@ -10073,7 +10077,6 @@ Uncheck if images come from a monochrome sensor.</property>
               <object class="GtkComboBoxText" id="combo_deconvolution">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="halign">end</property>
                 <property name="hexpand">True</property>
                 <property name="active">0</property>
                 <items>
@@ -10114,7 +10117,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Number of iterations.</property>
-                <property name="halign">end</property>
+                <property name="hexpand">True</property>
                 <property name="width_chars">6</property>
                 <property name="text">0</property>
                 <property name="input_purpose">number</property>
@@ -10462,10 +10465,8 @@ Uncheck if images come from a monochrome sensor.</property>
               <object class="GtkGrid" id="grid37">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="hexpand">True</property>
                 <property name="row_spacing">10</property>
                 <property name="column_spacing">5</property>
-                <property name="row_homogeneous">True</property>
                 <child>
                   <object class="GtkEntry" id="Ch1_extract_channel_entry">
                     <property name="visible">True</property>
@@ -10506,10 +10507,11 @@ Uncheck if images come from a monochrome sensor.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label164">
+                  <object class="GtkLabel" id="label_extract_c1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Channel #1:</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Red: </property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -10517,10 +10519,11 @@ Uncheck if images come from a monochrome sensor.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label165">
+                  <object class="GtkLabel" id="label_extract_c2">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Channel #2:</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Green: </property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -10528,10 +10531,11 @@ Uncheck if images come from a monochrome sensor.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label166">
+                  <object class="GtkLabel" id="label_extract_c3">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Channel #3:</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Blue: </property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -10543,7 +10547,6 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Select the color space corresponding to the three extracted images</property>
-                    <property name="halign">end</property>
                     <property name="valign">start</property>
                     <property name="hexpand">True</property>
                     <property name="active">0</property>
@@ -10553,6 +10556,7 @@ Uncheck if images come from a monochrome sensor.</property>
                       <item id="HSV" translatable="yes">HSV</item>
                       <item id="CIE L*a*b*" translatable="yes">CIE L*a*b*</item>
                     </items>
+                    <signal name="changed" handler="on_combo_extract_colors_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -10563,6 +10567,7 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkLabel" id="label167">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">start</property>
                     <property name="label" translatable="yes">Color Space:</property>
                   </object>
                   <packing>
@@ -10572,7 +10577,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
@@ -10665,7 +10670,6 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Number of wavelet layers. You can choose up to 6 layers for wavelets computing.</property>
-                <property name="halign">end</property>
                 <property name="hexpand">True</property>
                 <property name="invisible_char">●</property>
                 <property name="max_width_chars">7</property>
@@ -10686,8 +10690,8 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Type of algorithm</property>
-                <property name="halign">end</property>
                 <property name="valign">center</property>
+                <property name="hexpand">True</property>
                 <property name="active">1</property>
                 <items>
                   <item translatable="yes">Linear</item>
@@ -10716,7 +10720,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="label" translatable="yes">Interpolation Algorithm:</property>
+                <property name="label" translatable="yes">Interpolation: </property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -11088,6 +11092,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
                     <property name="tooltip_text" translatable="yes">Logarithmic scale</property>
+                    <property name="halign">end</property>
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="on_histo_toggled" swapped="no"/>
                   </object>
@@ -11600,7 +11605,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">start</property>
-                    <property name="label" translatable="yes">Interpolation Algorithm:</property>
+                    <property name="label" translatable="yes">Interpolation: </property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -11612,8 +11617,8 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Type of algorithm used for resampling</property>
-                    <property name="halign">end</property>
                     <property name="valign">center</property>
+                    <property name="hexpand">True</property>
                     <property name="active">1</property>
                     <items>
                       <item translatable="yes">Nearest Neighbor</item>
@@ -11632,7 +11637,6 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkSpinButton" id="spinbutton_resample_Y">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="halign">end</property>
                     <property name="hexpand">True</property>
                     <property name="width_chars">9</property>
                     <property name="text">100,00</property>
@@ -11653,7 +11657,6 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkSpinButton" id="spinbutton_resample_X">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="halign">end</property>
                     <property name="hexpand">True</property>
                     <property name="invisible_char">●</property>
                     <property name="width_chars">9</property>
@@ -11819,7 +11822,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">X coordinate of the center of polar coordinates.</property>
-                <property name="halign">start</property>
+                <property name="hexpand">True</property>
                 <property name="width_chars">7</property>
                 <property name="text">1.00</property>
                 <property name="input_purpose">number</property>
@@ -11834,7 +11837,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Y coordinate of the center of polar coordinates.</property>
-                <property name="halign">start</property>
+                <property name="hexpand">True</property>
                 <property name="width_chars">7</property>
                 <property name="text">1.00</property>
                 <property name="input_purpose">number</property>
@@ -11982,7 +11985,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
-                <property name="label" translatable="yes">Interpolation Algorithm:</property>
+                <property name="label" translatable="yes">Interpolation: </property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
@@ -11994,7 +11997,6 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Angle in degrees. Rotation center is the center of the image.</property>
-                <property name="halign">end</property>
                 <property name="hexpand">True</property>
                 <property name="invisible_char">●</property>
                 <property name="width_chars">6</property>
@@ -12017,8 +12019,8 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Type of algorithm used for rotation</property>
-                <property name="halign">end</property>
                 <property name="valign">center</property>
+                <property name="hexpand">True</property>
                 <property name="active">1</property>
                 <items>
                   <item translatable="yes">Nearest Neighbor</item>
@@ -12164,7 +12166,6 @@ Uncheck if images come from a monochrome sensor.</property>
               <object class="GtkComboBoxText" id="combo_saturation">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="halign">end</property>
                 <property name="hexpand">True</property>
                 <property name="active">6</property>
                 <items>
@@ -14092,6 +14093,7 @@ by averaging the entire image</property>
                                 <property name="tooltip_text" translatable="yes">Siril will limit itself to a ratio of the amount of free physical memory and will decrease the size of work tasks if needed.
 A value above 1 means that some memory paged on a configured storage will be used and that the overall process will be slower and the system will likely be unresponsive during some operations.
 If you don't have paged memory configured on some storage, a value of 1 or above will likely result in a crash of siril or of the operating system.</property>
+                                <property name="halign">start</property>
                                 <property name="margin_bottom">1</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
@@ -14110,6 +14112,7 @@ If you don't have paged memory configured on some storage, a value of 1 or above
                                 <property name="receives_default">False</property>
                                 <property name="tooltip_text" translatable="yes">Siril will limit itself to a fixed amount of memory and will decrease the size of work tasks if needed.
 Configuring a memory amount larger than what is available on your system may result in a crash of siril or of the operating system.</property>
+                                <property name="halign">start</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">memfreeratio_radio</property>
                                 <signal name="toggled" handler="on_mem_radio_toggled" swapped="no"/>
@@ -14126,6 +14129,7 @@ Configuring a memory amount larger than what is available on your system may res
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="tooltip_text" translatable="yes">Siril will not enforce memory limits and will let the operating system manage the required memory. Using a smaller number of threads parameter will still decrease used memory.</property>
+                                <property name="halign">start</property>
                                 <property name="margin_top">4</property>
                                 <property name="draw_indicator">True</property>
                                 <property name="group">memfreeratio_radio</property>
@@ -14213,6 +14217,7 @@ Configuring a memory amount larger than what is available on your system may res
                               <object class="GtkComboBoxText" id="combobox_ext">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Choose the type of extension used by Siril. By default it is .fit.</property>
                                 <property name="valign">center</property>
                                 <property name="margin_top">4</property>
                                 <property name="active">0</property>
@@ -14270,7 +14275,6 @@ Configuring a memory amount larger than what is available on your system may res
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="halign">start</property>
-                            <property name="valign">center</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_confirmDontShowButton_toggled" swapped="no"/>
                           </object>
@@ -14318,7 +14322,7 @@ Configuring a memory amount larger than what is available on your system may res
                               <object class="GtkComboBoxText" id="combo_theme">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">Change the theme of the interface.</property>
+                                <property name="tooltip_text" translatable="yes">Change the theme of the interface. This feature may not work on all architectures.</property>
                                 <property name="halign">start</property>
                                 <property name="active">0</property>
                                 <items>
@@ -14336,11 +14340,11 @@ Configuring a memory amount larger than what is available on your system may res
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="rememberWindowsCheck">
-                                <property name="label" translatable="yes">Remember window positions</property>
+                                <property name="label" translatable="yes">Remember window size and position</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Remember positions of image displaying windows. This feature may not work on all architectures.</property>
+                                <property name="tooltip_text" translatable="yes">Remember position and size of image displaying windows. This feature may not work on all architectures.</property>
                                 <property name="halign">start</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="on_rememberWindowsCheck_toggled" swapped="no"/>
@@ -14526,6 +14530,7 @@ Configuring a memory amount larger than what is available on your system may res
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="tooltip_text" translatable="yes">Prefix of the image names resulting from the split cfa process.</property>
+                <property name="hexpand">True</property>
                 <property name="max_length">10</property>
                 <property name="width_chars">10</property>
                 <property name="max_width_chars">10</property>
@@ -14554,6 +14559,7 @@ Configuring a memory amount larger than what is available on your system may res
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="tooltip_text" translatable="yes">If a sequence is loaded and this is activated, perform the processing on all images of the sequence instead of only the loaded image.</property>
+                <property name="halign">start</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -15303,6 +15309,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                             <property name="tooltip_text" translatable="yes">Compute wavelets</property>
                             <property name="halign">center</property>
                             <property name="use_stock">True</property>
+                            <property name="always_show_image">True</property>
                             <signal name="clicked" handler="on_button_compute_w_clicked" swapped="no"/>
                           </object>
                           <packing>

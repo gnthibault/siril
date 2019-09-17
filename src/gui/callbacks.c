@@ -296,8 +296,7 @@ static void enable_view_reference_checkbox(gboolean status) {
 	static GtkToggleButton *check_display_ref = NULL;
 	static GtkWidget *widget = NULL, *labelRegRef = NULL;
 	if (check_display_ref == NULL) {
-		check_display_ref = GTK_TOGGLE_BUTTON(
-				gtk_builder_get_object(builder, "checkbutton_displayref"));
+		check_display_ref = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_displayref"));
 		widget = GTK_WIDGET(check_display_ref);
 		labelRegRef = lookup_widget("labelRegRef");
 	}
@@ -312,8 +311,7 @@ static void enable_view_reference_checkbox(gboolean status) {
 static void test_and_allocate_reference_image(int vport) {
 	static GtkComboBox *cbbt_layers = NULL;
 	if (cbbt_layers == NULL) {
-		cbbt_layers = GTK_COMBO_BOX(
-				gtk_builder_get_object(builder, "comboboxreglayer"));
+		cbbt_layers = GTK_COMBO_BOX(lookup_widget("comboboxreglayer"));
 	}
 	if (vport == -1)
 		vport = gtk_combo_box_get_active(cbbt_layers);
@@ -1376,8 +1374,7 @@ void sliders_mode_set_state(sliders_mode sliders) {
 	void *func[] = { on_radiobutton_hilo_toggled, on_radiobutton_minmax_toggled,
 			on_radiobutton_user_toggled };
 
-	radiobutton = GTK_TOGGLE_BUTTON(
-			gtk_builder_get_object(builder, str[sliders]));
+	radiobutton = GTK_TOGGLE_BUTTON(lookup_widget(str[sliders]));
 
 	g_signal_handlers_block_by_func(radiobutton, func[sliders], NULL);
 	gtk_toggle_button_set_active(radiobutton, TRUE);
@@ -4413,6 +4410,31 @@ void on_menuitemcalibration_activate(GtkMenuItem *menuitem, gpointer user_data) 
 void on_extract_channel_button_close_clicked(GtkButton *button,
 		gpointer user_data) {
 	siril_close_dialog("extract_channel_dialog");
+}
+
+void on_combo_extract_colors_changed(GtkComboBox *box, gpointer user_data) {
+	switch(gtk_combo_box_get_active(box)) {
+	default:
+	case 0: // RGB
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c1")), _("Red: "));
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c2")), _("Green: "));
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c3")), _("Blue: "));
+		break;
+	case 1: // HSL
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c1")), _("Hue: "));
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c2")), _("Saturation: "));
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c3")), _("Lightness: "));
+		break;
+	case 2: // HSV
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c1")), _("Hue: "));
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c2")), _("Saturation: "));
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c3")), _("Value: "));
+		break;
+	case 3: // CIE L*a*b*
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c1")), "L*: ");
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c2")), "a*: ");
+		gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c3")), "b*: ");
+	}
 }
 
 void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data) {
