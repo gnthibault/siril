@@ -1255,11 +1255,12 @@ void on_convtoroot_changed(GtkEditable *editable, gpointer user_data){
 			}
 		}
 
-		check_for_conversion_form_completeness();
-
 	} else {
 		set_icon_entry(GTK_ENTRY(editable), NULL);
+		g_free(destroot);
+		destroot = NULL;
 	}
+	check_for_conversion_form_completeness();
 }
 
 void on_demosaicing_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
