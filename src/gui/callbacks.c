@@ -2789,7 +2789,7 @@ void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_photometry_interface();
 	fill_script_paths_list();
 	refresh_stars_list(com.stars);
-	if (com.remember_windows) save_all_windows_position();
+	save_all_windows_position();
 	siril_close_dialog("settings_window");
 }
 
