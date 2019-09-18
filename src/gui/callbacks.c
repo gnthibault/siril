@@ -5040,6 +5040,7 @@ void on_redo_item1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 void on_rememberWindowsCheck_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	com.remember_windows = gtk_toggle_button_get_active(togglebutton);
+	if (com.remember_windows) save_all_windows_position();
 }
 
 void on_entryAviWidth_changed(GtkEditable *editable, gpointer user_data) {
