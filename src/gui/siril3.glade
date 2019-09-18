@@ -4789,18 +4789,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSeparator" id="separator3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="padding">5</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box10">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -4912,6 +4900,18 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="padding">2</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator" id="separator3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">5</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
@@ -14488,6 +14488,7 @@ Configuring a memory amount larger than what is available on your system may res
     <accel-groups>
       <group name="accelgroup1"/>
     </accel-groups>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <child>
       <placeholder/>
     </child>
