@@ -1771,7 +1771,7 @@ void show_main_gray_window() {
 		gtk_window_resize(GTK_WINDOW(win), w, h);
 	}
 	gtk_widget_show(win);
-	gtk_window_present(GTK_WINDOW(win));
+	gtk_window_present(GTK_WINDOW(lookup_widget("control_window")));
 }
 
 void show_rgb_window() {
@@ -1791,6 +1791,7 @@ void show_rgb_window() {
 		gtk_window_resize(GTK_WINDOW(win), w, h);
 	}
 	gtk_widget_show(win);
+	gtk_window_present(GTK_WINDOW(lookup_widget("control_window")));
 }
 
 void hide_rgb_window() {
