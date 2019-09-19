@@ -593,7 +593,7 @@ void on_save1_activate(GtkMenuItem *menuitem, gpointer user_data) {
 			}
 			gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
 			gtk_widget_show(savepopup);
-			gtk_window_present(GTK_WINDOW(savepopup));
+			gtk_window_present_with_time(GTK_WINDOW(savepopup), GDK_CURRENT_TIME);
 		}
 		else {
 			struct savedial_data *args = malloc(sizeof(struct savedial_data));
