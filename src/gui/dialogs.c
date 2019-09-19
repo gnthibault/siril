@@ -90,7 +90,7 @@ void siril_open_dialog(gchar *id) {
 	if (win_already_shown && x >=0 && y >= 0) {
 		gtk_window_move(win, x, y);
 	} else {
-		gtk_window_set_position (win, GTK_WIN_POS_MOUSE);
+		gtk_window_set_position (win, GTK_WIN_POS_CENTER_ON_PARENT);
 	}
 	gtk_window_set_transient_for(win, GTK_WINDOW(lookup_widget("main_window")));
 	gtk_window_present_with_time(win, GDK_CURRENT_TIME);

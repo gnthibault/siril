@@ -530,6 +530,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		show_main_gray_window();
 		show_rgb_window();
 		sequence_list_change_current();
+		gtk_window_present(GTK_WINDOW(lookup_widget("composition_dialog")));
 	}
 	else {
 		update_MenuItem();

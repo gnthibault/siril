@@ -3000,8 +3000,13 @@ static rectangle get_window_position(GtkWindow *window) {
 
 void save_all_windows_position() {
 	if (!com.script && com.remember_windows) {
-		com.main_w_pos = get_window_position(GTK_WINDOW(lookup_widget("main_window")));
-		com.rgb_w_pos = get_window_position(GTK_WINDOW(lookup_widget("rgb_window")));
+		GtkWidget *main_w = lookup_widget("main_window");
+		GtkWidget *rgb_w = lookup_widget("rgb_window");
+
+		if (gtk_widget_get_visible(main_w))
+			com.main_w_pos = get_window_position(GTK_WINDOW(main_w));
+		if (gtk_widget_get_visible(rgb_w))
+			com.rgb_w_pos = get_window_position(GTK_WINDOW(rgb_w));
 	}
 }
 
