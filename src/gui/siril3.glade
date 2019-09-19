@@ -167,6 +167,59 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
       </object>
     </child>
   </object>
+  <object class="GtkWindow" id="rgb_window">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">RGB image</property>
+    <property name="default_width">660</property>
+    <property name="default_height">500</property>
+    <property name="icon">pixmaps/siril.svg</property>
+    <accel-groups>
+      <group name="accelgroup1"/>
+    </accel-groups>
+    <signal name="configure-event" handler="on_rgb_window_configure_event" swapped="no"/>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+    <signal name="hide" handler="on_rgb_window_hide" swapped="no"/>
+    <signal name="key-press-event" handler="on_main_window_key_press_event" swapped="no"/>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkBox" id="vbox15">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkScrolledWindow" id="scrolledwindowrgb">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkViewport" id="viewport2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkDrawingArea" id="drawingareargb">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="events">GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+                    <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
+                    <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
+                    <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
+                    <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
+                    <signal name="popup-menu" handler="rgb_area_popup_menu_handler" swapped="no"/>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkImage" id="addfilter1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -2307,60 +2360,6 @@ enter a visible wavelength in nm</property>
     <action-widgets>
       <action-widget response="0">button_data_ok</action-widget>
     </action-widgets>
-  </object>
-  <object class="GtkWindow" id="rgb_window">
-    <property name="can_focus">False</property>
-    <property name="title" translatable="yes">RGB image</property>
-    <property name="default_width">660</property>
-    <property name="default_height">500</property>
-    <property name="icon">pixmaps/siril.svg</property>
-    <property name="transient_for">main_window</property>
-    <accel-groups>
-      <group name="accelgroup1"/>
-    </accel-groups>
-    <signal name="configure-event" handler="on_rgb_window_configure_event" swapped="no"/>
-    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <signal name="hide" handler="on_rgb_window_hide" swapped="no"/>
-    <signal name="key-press-event" handler="on_main_window_key_press_event" swapped="no"/>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
-    <child>
-      <object class="GtkBox" id="vbox15">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkScrolledWindow" id="scrolledwindowrgb">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
-              <object class="GtkViewport" id="viewport2">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkDrawingArea" id="drawingareargb">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="events">GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK</property>
-                    <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
-                    <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
-                    <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
-                    <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
-                    <signal name="popup-menu" handler="rgb_area_popup_menu_handler" swapped="no"/>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-      </object>
-    </child>
   </object>
   <object class="GtkAdjustment" id="rotation_angle">
     <property name="lower">-359.99000000000001</property>
@@ -4789,55 +4788,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="box10">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">center</property>
-                    <child>
-                      <object class="GtkRadioButton" id="regallbutton">
-                        <property name="label" translatable="yes">Register all images from sequence</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkRadioButton" id="regselbutton">
-                        <property name="label" translatable="yes">Register selected images only</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="border_width">2</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">regallbutton</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">16</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -4912,6 +4862,55 @@ When processing images, registration data is taken from the default layer if ava
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="padding">5</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">center</property>
+                    <child>
+                      <object class="GtkRadioButton" id="regallbutton">
+                        <property name="label" translatable="yes">Register all images from sequence</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_register_all_toggle" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="regselbutton">
+                        <property name="label" translatable="yes">Register selected images only</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="border_width">2</property>
+                        <property name="use_underline">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">regallbutton</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">16</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
