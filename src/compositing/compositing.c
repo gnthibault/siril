@@ -830,6 +830,12 @@ void on_compositing_cancel_clicked(GtkButton *button, gpointer user_data){
 	siril_close_dialog("composition_dialog");
 }
 
+void on_composition_dialog_hide(GtkWidget *widget, gpointer   user_data) {
+	if (gtk_widget_get_visible(lookup_widget("color_calibration"))) {
+		siril_close_dialog("color_calibration");
+	}
+}
+
 /* When summing all layers to get the RGB values for one pixel, it may overflow.
  * This procedure defines what happens in that case. */
 void rgb_pixel_limiter(GdkRGBA *pixel) {
@@ -1193,8 +1199,10 @@ void coeff_clear() {
 }
 
 void on_composition_rgbcolor_clicked(GtkButton *button, gpointer user_data){
+	GtkWidget *win = lookup_widget("color_calibration");
 	initialize_calibration_interface();
-	gtk_widget_show(lookup_widget("color_calibration"));
+	gtk_window_set_transient_for(GTK_WINDOW(win), GTK_WINDOW(lookup_widget("composition_dialog")));
+	gtk_widget_show(win);
 }
 
 
