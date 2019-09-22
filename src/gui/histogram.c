@@ -138,9 +138,8 @@ static void _initialize_clip_text() {
 	static GtkEntry *clip_high = NULL, *clip_low = NULL;
 
 	if (clip_high == NULL) {
-		clip_high = GTK_ENTRY(
-				gtk_builder_get_object(builder, "clip_highlights"));
-		clip_low = GTK_ENTRY(gtk_builder_get_object(builder, "clip_shadows"));
+		clip_high = GTK_ENTRY(lookup_widget("clip_highlights"));
+		clip_low = GTK_ENTRY(lookup_widget("clip_shadows"));
 	}
 	gtk_entry_set_text(clip_low, "0.000%");
 	gtk_entry_set_text(clip_high, "0.000%");
@@ -788,7 +787,7 @@ gboolean on_scale_key_release_event(GtkWidget *widget, GdkEvent *event,
 	return FALSE;
 }
 
-void apply_histo_changes() {
+static void apply_histo() {
 	if ((_midtones != 0.5) || (_shadows != 0.0) || (_highlights != 1.0)) {
 		// the apply button resets everything after recomputing with the current values
 		histo_recompute();
@@ -810,7 +809,12 @@ void apply_histo_changes() {
 }
 
 void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
-	apply_histo_changes();
+	apply_histo();
+}
+
+void apply_histo_changes() {
+	apply_histo();
+	histo_close(!((_midtones != 0.5) || (_shadows != 0.0) || (_highlights != 1.0)));
 }
 
 void on_histoZoom100_clicked(GtkButton *button, gpointer user_data) {
