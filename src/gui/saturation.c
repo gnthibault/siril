@@ -31,6 +31,12 @@ static void satu_close(gboolean revert) {
 	clearfits(&satu_gfit_backup);
 }
 
+
+static void apply_satu_changes() {
+	gboolean status = satu_amount != 0.0;
+	satu_close(!status);
+}
+
 void on_satu_cancel_clicked(GtkButton *button, gpointer user_data) {
 	satu_close(TRUE);
 	siril_close_dialog("satu_dialog");
@@ -98,6 +104,11 @@ void satu_recompute() {
 void on_menuitem_satu_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (!single_image_is_loaded() || !isrgb(&gfit))
 		return;
+
+	siril_open_dialog("satu_dialog");
+}
+
+void on_satu_dialog_show(GtkWidget *widget, gpointer user_data) {
 	satu_startup();
 	satu_amount = 0.0;
 	satu_hue_type = 6;
@@ -105,9 +116,7 @@ void on_menuitem_satu_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("combo_saturation")), satu_hue_type);
 	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_satu")), satu_amount);
-	gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg")), satu_preserve_bkg);
-	siril_open_dialog("satu_dialog");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg")), satu_preserve_bkg);
 }
 
 gboolean on_scale_satu_button_release_event(GtkWidget *widget,
@@ -148,7 +157,6 @@ void on_satu_undo_clicked(GtkButton *button, gpointer user_data) {
 	redraw_previews();
 }
 
-void apply_satu_changes() {
-	gboolean status = satu_amount != 0.0;
-	satu_close(!status);
+void apply_satu_cancel() {
+	satu_close(TRUE);
 }

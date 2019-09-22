@@ -16,7 +16,7 @@ void update_gfit_histogram_if_needed();
 void clear_histograms();
 double MTF(double x, double m, double lo, double hi);
 double findMidtonesBalance(fits *fit, double *shadows, double *highlights);
-void apply_histo_changes();
+void apply_histo_cancel();
 
 void on_histoMidEntry_changed(GtkEditable *editable, gpointer user_data);
 void on_histoShadEntry_changed(GtkEditable *editable, gpointer user_data);

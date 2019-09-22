@@ -762,7 +762,10 @@ void on_histo_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 }
 
 void on_histogram_window_show(GtkWidget *object, gpointer user_data) {
+	histo_startup();
 	_initialize_clip_text();
+	reset_cursors_and_values();
+	compute_histo_for_gfit();
 }
 
 void on_button_histo_close_clicked(GtkButton *button, gpointer user_data) {
@@ -787,7 +790,7 @@ gboolean on_scale_key_release_event(GtkWidget *widget, GdkEvent *event,
 	return FALSE;
 }
 
-static void apply_histo() {
+void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
 	if ((_midtones != 0.5) || (_shadows != 0.0) || (_highlights != 1.0)) {
 		// the apply button resets everything after recomputing with the current values
 		histo_recompute();
@@ -808,13 +811,9 @@ static void apply_histo() {
 	set_cursor("default");
 }
 
-void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
-	apply_histo();
-}
-
-void apply_histo_changes() {
-	apply_histo();
-	histo_close(!((_midtones != 0.5) || (_shadows != 0.0) || (_highlights != 1.0)));
+void apply_histo_cancel() {
+	reset_cursors_and_values();
+	histo_close(TRUE);
 }
 
 void on_histoZoom100_clicked(GtkButton *button, gpointer user_data) {
@@ -850,9 +849,7 @@ void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) 
 
 void on_menuitem_histo_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	set_cursor_waiting(TRUE);
-	histo_startup();
-	reset_cursors_and_values();
-	compute_histo_for_gfit();
+
 	siril_open_dialog("histogram_window");
 	set_cursor_waiting(FALSE);
 }

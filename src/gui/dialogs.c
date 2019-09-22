@@ -30,7 +30,7 @@
 
 static const SirilDialogEntry entries[] =
 {
-		{"asinh_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_asinh_changes},
+		{"asinh_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_asinh_cancel},
 		{"background_extraction_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"canon_fixbanding_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"composition_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
@@ -42,19 +42,19 @@ static const SirilDialogEntry entries[] =
 		{"extract_channel_dialog", OTHER_DIALOG, FALSE, NULL},
 		{"extract_wavelets_layers_dialog", OTHER_DIALOG, FALSE, NULL},
 		{"file_information", INFORMATION_DIALOG, FALSE, NULL},
-		{"histogram_window", IMAGE_PROCESSING_DIALOG, TRUE, apply_histo_changes},
+		{"histogram_window", IMAGE_PROCESSING_DIALOG, TRUE, apply_histo_cancel},
 		{"ImagePlateSolver_Dial", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"Median_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"resample_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"rgradient_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"rotation_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
-		{"satu_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_satu_changes},
+		{"satu_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_satu_cancel},
 		{"SCNR_dialog", IMAGE_PROCESSING_DIALOG,  FALSE, NULL},
 		{"settings_window", INFORMATION_DIALOG, FALSE, NULL},
 		{"split_cfa_dialog", OTHER_DIALOG, FALSE, NULL},
 		{"stars_list_window", INFORMATION_DIALOG, FALSE, NULL},
 		{"StatWindow", INFORMATION_DIALOG, FALSE, NULL},
-		{"wavelets_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_wavelets_changes}
+		{"wavelets_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_wavelets_cancel}
 };
 
 static SirilDialogEntry get_entry_by_id(gchar *id) {

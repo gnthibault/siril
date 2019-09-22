@@ -94,10 +94,13 @@ static void wavelets_startup() {
 
 void on_menuitem_wavelets_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded()) {
-		reset_scale_w();
-		wavelets_startup();
 		siril_open_dialog("wavelets_dialog");
 	}
+}
+
+void on_wavelets_dialog_show(GtkWidget *widget, gpointer user_data) {
+	reset_scale_w();
+	wavelets_startup();
 }
 
 gboolean on_scale_w0_button_release_event(GtkWidget *widget,
@@ -185,24 +188,23 @@ void on_button_reset_w_clicked(GtkButton *button, gpointer user_data) {
 	update_wavelets();
 }
 
-void apply_wavelets_changes() {
-	if (gtk_widget_get_sensitive(lookup_widget("grid_w")) == TRUE) {
-		update_wavelets();
-		undo_save_state(&wavelets_gfit_backup, "Processing: Wavelets Transformation");
-	}
-}
-
-void on_button_ok_w_clicked(GtkButton *button, gpointer user_data) {
-	apply_wavelets_changes();
-	siril_close_dialog("wavelets_dialog");
-}
-
-void on_button_cancel_w_clicked(GtkButton *button, gpointer user_data) {
-
+void apply_wavelets_cancel() {
 	if (gtk_widget_get_sensitive(lookup_widget("grid_w")) == TRUE) {
 		reset_scale_w();
 		update_wavelets();
 	}
+}
+
+void on_button_ok_w_clicked(GtkButton *button, gpointer user_data) {
+	if (gtk_widget_get_sensitive(lookup_widget("grid_w")) == TRUE) {
+		update_wavelets();
+		undo_save_state(&wavelets_gfit_backup, "Processing: Wavelets Transformation");
+	}
+	siril_close_dialog("wavelets_dialog");
+}
+
+void on_button_cancel_w_clicked(GtkButton *button, gpointer user_data) {
+	apply_wavelets_cancel();
 	siril_close_dialog("wavelets_dialog");
 }
 

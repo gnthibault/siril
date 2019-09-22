@@ -40,23 +40,29 @@ static void asinh_recompute() {
 }
 
 void on_menuitem_asinh_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	siril_open_dialog("asinh_dialog");
+}
+
+void on_asinh_dialog_show(GtkWidget *widget, gpointer user_data) {
 	asinh_startup();
 	asinh_stretch_value = 1.0;
 	asinh_black_value = 0.0;
 	asinh_rgb_space = FALSE;
-	gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_RGBspace")), asinh_rgb_space);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_RGBspace")), asinh_rgb_space);
 	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_asinh")), asinh_stretch_value);
 	gtk_range_set_value(GTK_RANGE(lookup_widget("black_point_asinh")), asinh_black_value);
-	siril_open_dialog("asinh_dialog");
 }
 
-void on_asinh_cancel_clicked(GtkButton *button, gpointer user_data) {
+void apply_asinh_cancel() {
 	asinh_close(TRUE);
 	siril_close_dialog("asinh_dialog");
 }
 
-void apply_asinh_changes() {
+void on_asinh_cancel_clicked(GtkButton *button, gpointer user_data) {
+	apply_asinh_cancel();
+}
+
+static void apply_asinh_changes() {
 	gboolean status = (asinh_stretch_value != 1.0) || (asinh_black_value != 0.0) || asinh_rgb_space;
 	asinh_close(!status);
 }
