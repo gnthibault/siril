@@ -83,6 +83,7 @@ void siril_open_dialog(gchar *id) {
 				if (entries[i].has_preview)
 					entries[i].apply_function();
 				gtk_widget_hide(w);
+				break;
 			}
 		}
 	}

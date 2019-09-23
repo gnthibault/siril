@@ -16,6 +16,7 @@ static void asinh_startup() {
 }
 
 static void asinh_close(gboolean revert) {
+	set_cursor_waiting(TRUE);
 	if (revert) {
 		copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
 		adjust_cutoff_from_updated_gfit();
@@ -27,6 +28,7 @@ static void asinh_close(gboolean revert) {
 				asinh_stretch_value, asinh_black_value);
 	}
 	clearfits(&asinh_gfit_backup);
+	set_cursor_waiting(FALSE);
 }
 
 static void asinh_recompute() {
@@ -109,6 +111,7 @@ void on_asinh_RGBspace_toggled(GtkToggleButton *togglebutton, gpointer user_data
 }
 
 void on_asinh_undo_clicked(GtkButton *button, gpointer user_data) {
+	set_cursor_waiting(TRUE);
 	asinh_stretch_value = 1.0;
 	asinh_black_value = 0.0;
 	asinh_rgb_space = FALSE;
@@ -122,4 +125,5 @@ void on_asinh_undo_clicked(GtkButton *button, gpointer user_data) {
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	set_cursor_waiting(FALSE);
 }

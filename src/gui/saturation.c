@@ -20,6 +20,7 @@ static void satu_startup() {
 }
 
 static void satu_close(gboolean revert) {
+	set_cursor_waiting(TRUE);
 	if (revert) {
 		copyfits(&satu_gfit_backup, &gfit, CP_COPYA, -1);
 		adjust_cutoff_from_updated_gfit();
@@ -29,6 +30,7 @@ static void satu_close(gboolean revert) {
 		undo_save_state(&satu_gfit_backup, "Processing: Saturation enhancement (amount=%4.2lf)", satu_amount);
 	}
 	clearfits(&satu_gfit_backup);
+	set_cursor_waiting(FALSE);
 }
 
 
@@ -144,6 +146,7 @@ void on_combo_saturation_changed(GtkComboBox* box, gpointer user_data) {
 }
 
 void on_satu_undo_clicked(GtkButton *button, gpointer user_data) {
+	set_cursor_waiting(TRUE);
 	satu_preserve_bkg = TRUE;
 	satu_amount = 0.0;
 	GtkToggleButton *check_button = GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg"));
@@ -155,6 +158,7 @@ void on_satu_undo_clicked(GtkButton *button, gpointer user_data) {
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	set_cursor_waiting(FALSE);
 }
 
 void apply_satu_cancel() {
