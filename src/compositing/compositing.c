@@ -1202,6 +1202,7 @@ void on_composition_rgbcolor_clicked(GtkButton *button, gpointer user_data){
 	GtkWidget *win = lookup_widget("color_calibration");
 	initialize_calibration_interface();
 	gtk_window_set_transient_for(GTK_WINDOW(win), GTK_WINDOW(lookup_widget("composition_dialog")));
+	/* Here this is wanted that we do not use siril_open_dialog */
 	gtk_widget_show(win);
 }
 

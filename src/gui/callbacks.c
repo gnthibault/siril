@@ -1755,8 +1755,7 @@ void show_data_dialog(char *text, char *title) {
 }
 
 void show_main_gray_window() {
-	GtkCheckMenuItem *graycheck = GTK_CHECK_MENU_ITEM(
-			gtk_builder_get_object(builder, "menuitemgray"));
+	GtkCheckMenuItem *graycheck = GTK_CHECK_MENU_ITEM(lookup_widget("menuitemgray"));
 	GtkWidget *win;
 
 	win = lookup_widget("main_window");
@@ -1775,8 +1774,7 @@ void show_main_gray_window() {
 }
 
 void show_rgb_window() {
-	GtkCheckMenuItem *rgbcheck = GTK_CHECK_MENU_ITEM(
-			gtk_builder_get_object(builder, "menuitemcolor"));
+	GtkCheckMenuItem *rgbcheck = GTK_CHECK_MENU_ITEM(lookup_widget("menuitemcolor"));
 	GtkWidget *win;
 
 	win = lookup_widget("rgb_window");
