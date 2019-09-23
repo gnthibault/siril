@@ -772,11 +772,11 @@ void on_button_histo_close_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	reset_cursors_and_values();
 	histo_close(TRUE);
-	siril_close_dialog("histogram_window");
 	set_cursor_waiting(FALSE);
+	siril_close_dialog("histogram_window");
 }
 
-void on_button_histo_cancel_clicked(GtkButton *button, gpointer user_data) {
+void on_button_histo_reset_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	reset_cursors_and_values();
 	histo_close(TRUE);
