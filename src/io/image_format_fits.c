@@ -1301,13 +1301,20 @@ int savefits(const char *name, fits *f) {
 		return 1;
 	}
 
-	if (!status)
+	if (!status) {
 		save_fits_header(f);
+		// copy the entire header
+		if (f->header)
+			free(f->header);
+		f->header = copy_header(f);
+	}
+
 	status = 0;
 	fits_close_file(f->fptr, &status);
-	if (!status)
+	if (!status) {
 		siril_log_message(_("Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"),
 				filename, f->naxes[2], f->rx, f->ry);
+	}
 	return 0;
 }
 

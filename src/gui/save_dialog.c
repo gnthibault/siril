@@ -302,6 +302,7 @@ gboolean end_save(gpointer p) {
 	stop_processing_thread();
 	set_cursor_waiting(FALSE);
 	close_dialog();	// is this different from the hide above?
+	update_MenuItem();
 	update_used_memory();
 	free(args);
 	return FALSE;
