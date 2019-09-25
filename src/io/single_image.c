@@ -307,7 +307,7 @@ void init_layers_hi_and_lo_values(sliders_mode force_minmax) {
 		nb_layers = com.seq.nb_layers;
 		layers = com.seq.layers;
 	} else {
-		//fprintf(stderr, "COULD NOT INIT HI AND LO VALUES\n");
+		fprintf(stderr, "COULD NOT INIT HI AND LO VALUES\n");
 		return;
 	}
 	for (i=0; i<nb_layers; i++) {

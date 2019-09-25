@@ -106,9 +106,11 @@ void siril_close_all_dialogs() {
 	int i;
 	for (i = 0; i < G_N_ELEMENTS(entries); i++) {
 		GtkWidget *w = lookup_widget(entries[i].identifier);
-		if (entries[i].has_preview)
-			entries[i].apply_function();
-		gtk_widget_hide(w);
+		if (gtk_widget_get_visible(w)) {
+			if (entries[i].has_preview)
+				entries[i].apply_function();
+			gtk_widget_hide(w);
+		}
 	}
 
 }
