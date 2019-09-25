@@ -409,7 +409,6 @@ void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
 			free(type);
 			return;
 		}
-		close_single_image();
 		open_single_image(mag);
 	}
 

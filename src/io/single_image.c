@@ -50,7 +50,7 @@ void close_single_image() {
 	 * with previews
 	 */
 	if (!com.headless) {
-		siril_close_all_dialogs();
+		siril_close_preview_dialogs();
 	}
 	free_image_data();
 	undo_flush();

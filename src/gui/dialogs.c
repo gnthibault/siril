@@ -102,13 +102,12 @@ void siril_close_dialog(gchar *id) {
 	gtk_widget_hide(lookup_widget(id));
 }
 
-void siril_close_all_dialogs() {
+void siril_close_preview_dialogs() {
 	int i;
 	for (i = 0; i < G_N_ELEMENTS(entries); i++) {
 		GtkWidget *w = lookup_widget(entries[i].identifier);
-		if (gtk_widget_get_visible(w)) {
-			if (entries[i].has_preview)
-				entries[i].apply_function();
+		if (gtk_widget_get_visible(w) && (entries[i].has_preview)) {
+			entries[i].apply_function();
 			gtk_widget_hide(w);
 		}
 	}
