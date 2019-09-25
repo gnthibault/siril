@@ -24,7 +24,8 @@
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "gui/callbacks.h"
-#include "gui/message_dialog.h"
+
+#include "message_dialog.h"
 
 static gboolean show_modal_dialog(gpointer p) {
 	struct siril_dialog_data *args = (struct siril_dialog_data *) p;

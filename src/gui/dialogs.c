@@ -22,9 +22,9 @@
 #include "core/proto.h"
 #include "gui/callbacks.h"
 #include "gui/histogram.h"
-#include "gui/asinh.h"
-#include "gui/saturation.h"
-#include "gui/wavelets.h"
+#include "filters/asinh.h"
+#include "filters/saturation.h"
+#include "filters/wavelets.h"
 
 #include "gui/dialogs.h"
 

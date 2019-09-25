@@ -146,30 +146,6 @@ struct crop_sequence_data {
 	int retvalue;
 };
 
-/* median filter data from GUI */
-struct median_filter_data {
-	fits *fit;
-	int ksize;
-	double amount;
-	int iterations;
-};
-
-/* rgradient filter data from GUI */
-struct rgradient_filter_data {
-	fits *fit;
-	double xc, yc, dR, da;
-};
-
-/* Banding data from GUI */
-struct banding_data {
-	fits *fit;
-	double sigma;
-	double amount;
-	gboolean protect_highlights;
-	gboolean applyRotation;
-	const gchar *seqEntry;
-};
-
 /* Noise data from GUI */
 struct noise_data {
 	gboolean verbose;
@@ -179,14 +155,6 @@ struct noise_data {
 	struct timeval t_start;
 	int retval;
 };
-
-/* Lucy-Richardson data from GUI */
-struct RL_data {
-	fits *fit;
-	double sigma;
-	int iter;
-};
-
 
 int 	threshlo(fits *fit, int level);
 int 	threshhi(fits *fit, int level);
@@ -213,12 +181,7 @@ void	show_FITS_header(fits *);
 double gauss_cvf(double p);
 int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer);
 int extract_plans(fits *fit, int Nbr_Plan, int Type);
-gpointer median_filter(gpointer p);
-void apply_banding_to_sequence(struct banding_data *banding_args);
-gpointer BandingEngineThreaded(gpointer p);
-int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highlights, gboolean applyRotation);
 gpointer noise(gpointer p);
-gpointer LRdeconv(gpointer p);
 void compute_grey_flat(fits *fit);
 
 /****************** seqfile.h ******************/

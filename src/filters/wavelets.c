@@ -28,9 +28,10 @@
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
 #include "gui/dialogs.h"
-#include "gui/wavelets.h"
 #include "io/single_image.h"
 #include "algos/Def_Wavelet.h"
+
+#include "wavelets.h"
 
 static fits wavelets_gfit_backup;
 

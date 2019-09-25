@@ -1,14 +1,6 @@
 #ifndef _COLORS_H_
 #define _COLORS_H_
 
-/* scnr data from GUI */
-struct scnr_data {
-	fits *fit;
-	int type;
-	double amount;
-	gboolean preserve;
-};
-
 /* extract_channels data from GUI */
 struct extract_channels_data {
 	gboolean process;
@@ -16,13 +8,6 @@ struct extract_channels_data {
 	const char *channel[3];
 	int type;
 	const char* str_type;
-};
-
-/* color saturation data from GUI */
-struct enhance_saturation_data {
-	fits *input, *output;
-	double coeff, h_min, h_max;
-	gboolean preserve;
 };
 
 void rgb_to_hsl(double, double, double, double *, double *, double *);
@@ -38,8 +23,6 @@ double BV_to_T(double BV);
 int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2, int config);
 
 gpointer extract_channels(gpointer p);
-gpointer enhance_saturation(gpointer p);
-gpointer scnr(gpointer p);
 
 void initialize_calibration_interface();
 

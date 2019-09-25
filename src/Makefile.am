@@ -18,13 +18,15 @@ siril_SOURCES = \
 	gui/callbacks.c gui/callbacks.h gui/histogram.c gui/histogram.h gui/save_dialog.c gui/save_dialog.h gui/open_dialog.c gui/open_dialog.h gui/message_dialog.c gui/message_dialog.h \
 	gui/PSF_list.h gui/PSF_list.c gui/sequence_list.c gui/registration_preview.c \
 	gui/statistics_list.c gui/script_menu.c gui/script_menu.h \
-	gui/plot.c gui/plot.h gui/asinh.c gui/asinh.h gui/saturation.c gui/saturation.h gui/wavelets.c gui/wavelets.h \
+	gui/plot.c gui/plot.h \
 	gui/gnuplot_i/gnuplot_i.c gui/gnuplot_i/gnuplot_i.h \
 	gui/progress_and_log.c gui/progress_and_log.h \
 	gui/about_dialog.c \
 	gui/dialogs.c gui/dialogs.h \
 	gui/photometric_cc.c gui/photometric_cc.h \
-	gui/clahe.c gui/clahe.h \
+	filters/clahe.c filters/clahe.h filters/asinh.c filters/asinh.h filters/saturation.c filters/saturation.h filters/wavelets.c filters/wavelets.h \
+	filters/median.c filters/median.h filters/rgradient.c filters/rgradient.h filters/fft.c filters/fft.h filters/scnr.c filters/scnr.h \
+	filters/banding.c filters/banding.h filters/deconv.c filters/deconv.h \
 	registration/registration.c registration/registration.h registration/global.c registration/comet.c \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
 	registration/matching/project_coords.c registration/matching/project_coords.h registration/matching/degtorad.h registration/matching/apply_match.c \
@@ -32,8 +34,6 @@ siril_SOURCES = \
 	stacking/median_and_mean.c stacking/upscaling.c \
 	algos/statistics.c algos/sorting.h algos/sorting.c \
 	algos/background_extraction.c algos/background_extraction.h algos/quality.c algos/quality.h \
-	algos/rgradient.c algos/rgradient.h \
-	algos/fft.c algos/fft.h \
 	algos/colors.c algos/colors.h \
 	algos/geometry.c algos/geometry.h \
 	algos/demosaicing.c algos/demosaicing.h \

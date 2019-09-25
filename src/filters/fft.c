@@ -26,13 +26,17 @@
 #include <fftw3.h>
 
 #include "gui/callbacks.h"
+#include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
+#include "gui/message_dialog.h"
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
 #include "io/single_image.h"
+#include "io/sequence.h"
 #include "algos/statistics.h"
-#include "algos/fft.h"
+
+#include "fft.h"
 
 enum {
 	TYPE_CENTERED,
@@ -345,3 +349,96 @@ end:
 
 	return GINT_TO_POINTER(args->retval);
 }
+
+/************************* GUI for FFT ********************************/
+
+void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
+	const char *mag, *phase;
+	char *type = NULL, page;
+	int type_order = -1;
+	static GtkToggleButton *order = NULL;
+	static GtkNotebook* notebookFFT = NULL;
+
+	if (get_thread_run()) {
+		siril_log_message(
+				_("Another task is already in progress, ignoring new request.\n"));
+		return;
+	}
+
+	if (notebookFFT == NULL) {
+		notebookFFT = GTK_NOTEBOOK(
+				gtk_builder_get_object(builder, "notebook_fft"));
+		order = GTK_TOGGLE_BUTTON(
+				gtk_builder_get_object(builder, "fft_centered"));
+	}
+
+	page = gtk_notebook_get_current_page(notebookFFT);
+
+	if (page == 0) {
+		if (sequence_is_loaded()) {
+			char *msg = siril_log_message(_("FFT does not work with sequences !\n"));
+			siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), msg);
+			set_cursor_waiting(FALSE);
+			return;
+		}
+		if (!single_image_is_loaded()) {
+			char *msg = siril_log_message(_("Open an image first !\n"));
+			siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), msg);
+			set_cursor_waiting(FALSE);
+			return;
+		}
+
+		GtkEntry *entry_mag = GTK_ENTRY(lookup_widget("fftd_mag_entry"));
+		GtkEntry *entry_phase = GTK_ENTRY(lookup_widget("fftd_phase_entry"));
+
+		type_order = !gtk_toggle_button_get_active(order);
+		type = strdup("fftd");
+		mag = gtk_entry_get_text(entry_mag);
+		phase = gtk_entry_get_text(entry_phase);
+	} else {
+		type = strdup("ffti");
+		mag = gtk_file_chooser_get_filename(
+				GTK_FILE_CHOOSER(lookup_widget("filechooser_mag")));
+		phase = gtk_file_chooser_get_filename(
+				GTK_FILE_CHOOSER(lookup_widget("filechooser_phase")));
+
+		if (mag == NULL || phase == NULL) {
+			char *msg = siril_log_message(_("Select magnitude and phase before !\n"));
+			siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), msg);
+			set_cursor_waiting(FALSE);
+			free(type);
+			return;
+		}
+		close_single_image();
+		open_single_image(mag);
+	}
+
+	if ((mag != NULL) && (phase != NULL)) {
+		set_cursor_waiting(TRUE);
+		struct fft_data *args = malloc(sizeof(struct fft_data));
+		args->fit = &gfit;
+		args->type = type;
+		args->modulus = mag;
+		args->phase = phase;
+		args->type_order = type_order;
+		set_cursor_waiting(TRUE);
+		start_in_new_thread(fourier_transform, args);
+	} else {
+		free(type);
+	}
+}
+
+void on_button_fft_close_clicked(GtkButton *button, gpointer user_data) {
+	siril_close_dialog("dialog_FFT");
+}
+
+void on_menuitem_fft_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	GtkFileChooserButton *magbutton, *phasebutton;
+
+	magbutton = GTK_FILE_CHOOSER_BUTTON(lookup_widget("filechooser_mag"));
+	phasebutton = GTK_FILE_CHOOSER_BUTTON(lookup_widget("filechooser_phase"));
+	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(magbutton), com.wd);
+	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(phasebutton), com.wd);
+	siril_open_dialog("dialog_FFT");
+}
+

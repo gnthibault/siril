@@ -1,13 +1,37 @@
+/*
+ * This file is part of Siril, an astronomy image processor.
+ * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
+ * Copyright (C) 2012-2019 team free-astro (see more in AUTHORS file)
+ * Reference site is https://free-astro.org/index.php/Siril
+ *
+ * Siril is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Siril is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Siril. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <stdlib.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/undo.h"
 #include "core/processing.h"
 #include "algos/colors.h"
+#include "algos/statistics.h"
 #include "io/single_image.h"
-#include "progress_and_log.h"
-#include "callbacks.h"
-#include "dialogs.h"
+#include "gui/progress_and_log.h"
+#include "gui/callbacks.h"
+#include "gui/histogram.h"
+#include "gui/dialogs.h"
+
 #include "saturation.h"
 
 static gboolean satu_preserve_bkg = TRUE;
@@ -102,6 +126,98 @@ void satu_recompute() {
 	args->preserve = satu_preserve_bkg;
 	start_in_new_thread(enhance_saturation, args);
 }
+
+// idle function executed at the end of the enhance_saturation processing
+gboolean end_enhance_saturation(gpointer p) {
+	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
+	stop_processing_thread();
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	update_gfit_histogram_if_needed();
+	free(args);
+	set_cursor_waiting(FALSE);
+	update_used_memory();
+
+	return FALSE;
+}
+
+gpointer enhance_saturation(gpointer p) {
+	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
+	struct timeval t_start, t_end;
+	double bg = 0;
+	int i;
+
+	if (!isrgb(args->input) || !isrgb(args->output) ||
+			args->input->naxes[0] != args->output->naxes[0] ||
+			args->input->naxes[1] != args->output->naxes[1]) {
+		siril_add_idle(end_enhance_saturation, args);
+		return GINT_TO_POINTER(1);
+	}
+	if (args->coeff == 0.0) {
+		siril_add_idle(end_enhance_saturation, args);
+		return GINT_TO_POINTER(1);
+	}
+
+	WORD *in[3] = { args->input->pdata[RLAYER], args->input->pdata[GLAYER],
+			args->input->pdata[BLAYER] };
+	WORD *out[3] = { args->output->pdata[RLAYER], args->output->pdata[GLAYER],
+			args->output->pdata[BLAYER] };
+
+	siril_log_color_message(_("Saturation enhancement: processing...\n"), "red");
+	gettimeofday(&t_start, NULL);
+
+	args->h_min /= 360.0;
+	args->h_max /= 360.0;
+	if (args->preserve) {
+		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC);
+		if (!stat) {
+			siril_log_message(_("Error: statistics computation failed.\n"));
+			siril_add_idle(end_enhance_saturation, args);
+			return GINT_TO_POINTER(1);
+		}
+		bg = stat->median + stat->sigma;
+		bg /= stat->normValue;
+		free_stats(stat);
+	}
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#endif
+	for (i = 0; i < args->input->rx * args->input->ry; i++) {
+		double h, s, l;
+		double r = (double) in[RLAYER][i] / USHRT_MAX_DOUBLE;
+		double g = (double) in[GLAYER][i] / USHRT_MAX_DOUBLE;
+		double b = (double) in[BLAYER][i] / USHRT_MAX_DOUBLE;
+		rgb_to_hsl(r, g, b, &h, &s, &l);
+		if (l > bg) {
+			if (args->h_min > args->h_max) {// Red case. TODO: find a nicer way to do it
+				if (h >= args->h_min || h <= args->h_max) {
+					s += (s * args->coeff);
+				}
+			} else {
+				if (h >= args->h_min && h <= args->h_max) {
+					s += (s * args->coeff);
+				}
+			}
+			if (s < 0.0)
+				s = 0.0;
+			else if (s > 1.0)
+				s = 1.0;
+		}
+		hsl_to_rgb(h, s, l, &r, &g, &b);
+		out[RLAYER][i] = round_to_WORD(r * USHRT_MAX_DOUBLE);
+		out[GLAYER][i] = round_to_WORD(g * USHRT_MAX_DOUBLE);
+		out[BLAYER][i] = round_to_WORD(b * USHRT_MAX_DOUBLE);
+	}
+	invalidate_stats_from_fit(args->output);
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
+	siril_add_idle(end_enhance_saturation, args);
+
+	return GINT_TO_POINTER(0);
+}
+
 
 void on_menuitem_satu_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (!single_image_is_loaded() || !isrgb(&gfit))

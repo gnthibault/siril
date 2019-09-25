@@ -29,6 +29,7 @@
 #include "gui/dialogs.h"
 #include "opencv/opencv.h"
 #include "io/single_image.h"
+
 #include "rgradient.h"
 
 static void to_polar(int x, int y, point center, double *r, double *theta) {
