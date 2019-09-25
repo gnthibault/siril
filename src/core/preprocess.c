@@ -22,16 +22,17 @@
 #include <math.h>
 #include <string.h>
 
-#include "core/preprocess.h"
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
 #include "algos/statistics.h"
-#include "algos/cosmetic_correction.h"
+#include "filters/cosmetic_correction.h"
 #include "gui/progress_and_log.h"
 #include "io/sequence.h"
 #include "io/conversion.h"
 #include "io/ser.h"
+
+#include "preprocess.h"
 
 static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	double noise = 0.0;

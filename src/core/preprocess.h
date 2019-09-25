@@ -2,7 +2,7 @@
 #define _PREPRO_H_
 
 #include "siril.h"
-#include "algos/cosmetic_correction.h"
+#include "filters/cosmetic_correction.h"
 
 /* preprocessing data from GUI */
 struct preprocessing_data {

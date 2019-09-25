@@ -189,16 +189,13 @@ int cvTranslateImage(fits *image, point shift, int interpolation) {
 	if (image->naxes[2] == 3) {
 		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
-	}
-
-	if (image->naxes[2] == 1) {
-		image->pdata[RLAYER] = image->data;
-		image->pdata[GLAYER] = image->data;
-		image->pdata[BLAYER] = image->data;
-	} else {
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data + ndata;
 		image->pdata[BLAYER] = image->data + ndata * 2;
+	} else {
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data;
+		image->pdata[BLAYER] = image->data;
 	}
 	image->rx = out.cols;
 	image->ry = out.rows;
@@ -278,16 +275,13 @@ int cvRotateImage(fits *image, point center, double angle, int interpolation, in
 	if (image->naxes[2] == 3) {
 		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
-	}
-
-	if (image->naxes[2] == 1) {
-		image->pdata[RLAYER] = image->data;
-		image->pdata[GLAYER] = image->data;
-		image->pdata[BLAYER] = image->data;
-	} else {
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data + ndata;
 		image->pdata[BLAYER] = image->data + ndata * 2;
+	} else {
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data;
+		image->pdata[BLAYER] = image->data;
 	}
 	image->rx = out.cols;
 	image->ry = out.rows;
@@ -535,19 +529,16 @@ int cvComputeFinestScale(fits *image) {
 		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
-	} else {
-		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
-	}
-
-	if (image->naxes[2] == 1) {
-		image->pdata[RLAYER] = image->data;
-		image->pdata[GLAYER] = image->data;
-		image->pdata[BLAYER] = image->data;
-	} else {
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data + ndata;
 		image->pdata[BLAYER] = image->data + ndata * 2;
+	} else {
+		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data;
+		image->pdata[BLAYER] = image->data;
 	}
+
 	image->rx = out.cols;
 	image->ry = out.rows;
 	image->naxes[0] = image->rx;
@@ -648,19 +639,16 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
-	} else {
-		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
-	}
-
-	if (image->naxes[2] == 1) {
-		image->pdata[RLAYER] = image->data;
-		image->pdata[GLAYER] = image->data;
-		image->pdata[BLAYER] = image->data;
-	} else {
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data + ndata;
 		image->pdata[BLAYER] = image->data + ndata * 2;
+	} else {
+		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data;
+		image->pdata[BLAYER] = image->data;
 	}
+
 	image->rx = out.cols;
 	image->ry = out.rows;
 	image->naxes[0] = image->rx;
@@ -690,7 +678,6 @@ int cvClahe(fits *image, double clip_limit, int size) {
 	int ndata = image->rx * image->ry;
 
 	// preparing data
-	set_progress_bar_data(_("CLAHE..."), PROGRESS_NONE);
 	Mat in, out;
 
 	Ptr<CLAHE> clahe = createCLAHE();
@@ -739,25 +726,21 @@ int cvClahe(fits *image, double clip_limit, int size) {
 		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
-	} else {
-		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
-	}
-
-	if (image->naxes[2] == 1) {
-		image->pdata[RLAYER] = image->data;
-		image->pdata[GLAYER] = image->data;
-		image->pdata[BLAYER] = image->data;
-	} else {
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data + ndata;
 		image->pdata[BLAYER] = image->data + ndata * 2;
+	} else {
+		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data;
+		image->pdata[BLAYER] = image->data;
 	}
+
 	image->rx = out.cols;
 	image->ry = out.rows;
 	image->naxes[0] = image->rx;
 	image->naxes[1] = image->ry;
 
-	set_progress_bar_data(_("CLAHE applied"), PROGRESS_DONE);
 	/* free data */
 	in.release();
 	out.release();

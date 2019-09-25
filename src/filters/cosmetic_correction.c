@@ -29,9 +29,10 @@
 #include "gui/progress_and_log.h"
 #include "io/single_image.h"
 #include "io/ser.h"
-#include "algos/cosmetic_correction.h"
 #include "algos/statistics.h"
 #include "algos/sorting.h"
+
+#include "cosmetic_correction.h"
 
 /* see also getMedian3x3 in algos/PSF.c */
 static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,

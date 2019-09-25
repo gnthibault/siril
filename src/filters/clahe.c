@@ -63,7 +63,9 @@ gpointer clahe(gpointer p) {
 	struct CLAHE_data *args = (struct CLAHE_data *) p;
 	struct timeval t_start, t_end;
 
-	siril_log_color_message(_("CLAHE: processing...\n"), "red");
+	char *msg = siril_log_color_message(_("CLAHE: processing...\n"), "red");
+	msg[strlen(msg) - 1] = '\0';
+	set_progress_bar_data(msg, PROGRESS_PULSATE);
 	gettimeofday(&t_start, NULL);
 
 	cvClahe(args->fit, args->clip, args->tileSize);
@@ -72,6 +74,7 @@ gpointer clahe(gpointer p) {
 	show_time(t_start, t_end);
 
 	siril_add_idle(end_generic, args);
+	set_progress_bar_data(_("CLAHE applied"), PROGRESS_DONE);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();

@@ -53,7 +53,6 @@
 #include "algos/colors.h"
 #include "algos/Def_Math.h"
 #include "algos/Def_Wavelet.h"
-#include "algos/cosmetic_correction.h"
 #include "algos/statistics.h"
 #include "algos/sorting.h"
 #include "algos/plateSolver.h"

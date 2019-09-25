@@ -26,7 +26,7 @@ siril_SOURCES = \
 	gui/photometric_cc.c gui/photometric_cc.h \
 	filters/clahe.c filters/clahe.h filters/asinh.c filters/asinh.h filters/saturation.c filters/saturation.h filters/wavelets.c filters/wavelets.h \
 	filters/median.c filters/median.h filters/rgradient.c filters/rgradient.h filters/fft.c filters/fft.h filters/scnr.c filters/scnr.h \
-	filters/banding.c filters/banding.h filters/deconv.c filters/deconv.h \
+	filters/banding.c filters/banding.h filters/deconv.c filters/deconv.h filters/cosmetic_correction.c filters/cosmetic_correction.h \
 	registration/registration.c registration/registration.h registration/global.c registration/comet.c \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
 	registration/matching/project_coords.c registration/matching/project_coords.h registration/matching/degtorad.h registration/matching/apply_match.c \
@@ -40,7 +40,6 @@ siril_SOURCES = \
 	algos/pave.c algos/transform.c algos/io_wave.c algos/reconstr.c \
 	algos/Def_Math.h algos/Def_Wavelet.h algos/Def_Mem.h \
 	algos/PSF.c algos/PSF.h algos/star_finder.c algos/star_finder.h \
-	algos/cosmetic_correction.c algos/cosmetic_correction.h \
 	algos/quantize.c \
 	algos/photometry.h algos/photometry.c \
 	algos/plateSolver.c algos/plateSolver.h \
