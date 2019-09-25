@@ -27,6 +27,7 @@ int cvTransformImage(fits *image, long width, long height, Homography Hom, int i
 int cvUnsharpFilter(fits*, double, double);
 int cvComputeFinestScale(fits *image);
 int cvLucyRichardson(fits *image, double sigma, int iterations);
+int cvClahe(fits *image, double clip_limit, int size);
 #ifdef __cplusplus
 }
 #endif

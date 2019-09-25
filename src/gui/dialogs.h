@@ -22,5 +22,6 @@ struct _SirilDialogEntry {
 
 void siril_open_dialog(gchar *id);
 void siril_close_dialog(gchar *id);
+void siril_close_all_dialogs();
 
 #endif /* SRC_GUI_DIALOGS_H_ */

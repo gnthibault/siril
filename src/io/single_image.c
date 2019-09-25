@@ -28,6 +28,7 @@
 #include "algos/statistics.h"
 #include "algos/background_extraction.h"
 #include "gui/callbacks.h"
+#include "gui/dialogs.h"
 #include "gui/message_dialog.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
@@ -45,6 +46,12 @@ void close_single_image() {
 	if (sequence_is_loaded() && com.seq.current >= 0)
 		return;
 	fprintf(stdout, "MODE: closing single image\n");
+	/* we need to close all dialogs in order to avoid bugs
+	 * with previews
+	 */
+	if (!com.headless) {
+		siril_close_all_dialogs();
+	}
 	free_image_data();
 	undo_flush();
 }

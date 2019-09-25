@@ -33,6 +33,7 @@ static const SirilDialogEntry entries[] =
 		{"asinh_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_asinh_cancel},
 		{"background_extraction_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"canon_fixbanding_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
+		{"CLAHE_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"composition_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"color_calibration", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"cosmetic_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
@@ -99,4 +100,15 @@ void siril_open_dialog(gchar *id) {
 
 void siril_close_dialog(gchar *id) {
 	gtk_widget_hide(lookup_widget(id));
+}
+
+void siril_close_all_dialogs() {
+	int i;
+	for (i = 0; i < G_N_ELEMENTS(entries); i++) {
+		GtkWidget *w = lookup_widget(entries[i].identifier);
+		if (entries[i].has_preview)
+			entries[i].apply_function();
+		gtk_widget_hide(w);
+	}
+
 }

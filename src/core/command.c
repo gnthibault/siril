@@ -54,6 +54,7 @@
 #include "gui/histogram.h"
 #include "gui/plot.h"
 #include "gui/progress_and_log.h"
+#include "gui/clahe.h"
 #include "algos/colors.h"
 #include "algos/PSF.h"
 #include "algos/star_finder.h"
@@ -85,6 +86,7 @@ static command commands[] = {
 	
 	{"cd", 1, "cd directory", process_cd, STR_CD, TRUE},
 	{"cdg", 0, "cdg", process_cdg, STR_CDG, TRUE},
+	{"clahe", 2, "clahe cliplimit tileSize", process_clahe, STR_CLAHE, TRUE},
 	{"clear", 0, "clear", process_clear, STR_CLEAR, FALSE},
 	{"clearstar", 0, "clearstar", process_clearstar, STR_CLEARSTAR, FALSE},
 	{"close", 0, "close", process_close, STR_CLOSE, TRUE},
@@ -638,6 +640,46 @@ int process_asinh(int nb) {
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	return 0;
+}
+
+int process_clahe(int nb) {
+	double clip_limit;
+	int size;
+
+	if (!single_image_is_loaded()) return 1;
+
+	if (!com.script)
+		control_window_switch_to_tab(OUTPUT_LOGS);
+	clip_limit = atof(word[1]);
+
+	if (clip_limit <= 0.0) {
+		siril_log_message(_("Clip limit must be > 0.\n"));
+		return 1;
+	}
+
+	size = atoi(word[2]);
+
+	if (size <= 0.0) {
+		siril_log_message(_("Tile size must be > 0.\n"));
+		return 1;
+	}
+
+	if (get_thread_run()) {
+		siril_log_message(
+				_("Another task is already in progress, ignoring new request.\n"));
+		return 1;
+	}
+
+	struct CLAHE_data *args = malloc(sizeof(struct CLAHE_data));
+
+	args->fit = &gfit;
+	args->clip = clip_limit;
+
+	set_cursor_waiting(TRUE);
+
+	start_in_new_thread(clahe, args);
+
 	return 0;
 }
 

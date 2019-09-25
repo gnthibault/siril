@@ -677,5 +677,94 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 	invalidate_stats_from_fit(image);
 
 	return 0;
+}
 
+/* Work on grey images. If image is in RGB it must be first converted
+ * in CieLAB. Then, only the first channel is applied
+ */
+int cvClahe(fits *image, double clip_limit, int size) {
+	assert(image->data);
+	assert(image->rx);
+	assert(image->ry);
+
+	int ndata = image->rx * image->ry;
+
+	// preparing data
+	set_progress_bar_data(_("CLAHE..."), PROGRESS_NONE);
+	Mat in, out;
+
+	Ptr<CLAHE> clahe = createCLAHE();
+	clahe->setClipLimit(clip_limit);
+	clahe->setTilesGridSize(Size(size, size));
+
+	if (image->naxes[2] == 3) {
+		WORD *bgrbgr = fits_to_bgrbgr(image);
+		in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
+		in.convertTo(in, CV_32F, 1.0 / USHRT_MAX_DOUBLE);
+		out = Mat();
+
+		// convert the RGB color image to Lab
+		Mat lab_image;
+		cvtColor(in, lab_image, CV_BGR2Lab);
+
+		// Extract the L channel
+		std::vector<Mat> lab_planes(3);
+		split(lab_image, lab_planes); // now we have the L image in lab_planes[0]
+
+		// apply the CLAHE algorithm to the L channel (does not work with 32F images)
+		lab_planes[0].convertTo(lab_planes[0], CV_16U, USHRT_MAX_DOUBLE / 100.0);
+		clahe->apply(lab_planes[0], lab_planes[0]);
+		lab_planes[0].convertTo(lab_planes[0], CV_32F, 100.0 / USHRT_MAX_DOUBLE);
+
+		// Merge the color planes back into an Lab image
+		merge(lab_planes, lab_image);
+
+		// convert back to RGB
+		cvtColor(lab_image, out, CV_Lab2BGR);
+		out.convertTo(out, CV_16UC3, USHRT_MAX_DOUBLE);
+
+		delete[] bgrbgr;
+
+	} else {
+		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
+		out = Mat(image->ry, image->rx, CV_16UC1);
+
+		clahe->apply(in, out);
+	}
+
+	Mat channel[3];
+	split(out, channel);
+
+	if (image->naxes[2] == 3) {
+		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
+		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
+		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
+	} else {
+		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
+	}
+
+	if (image->naxes[2] == 1) {
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data;
+		image->pdata[BLAYER] = image->data;
+	} else {
+		image->pdata[RLAYER] = image->data;
+		image->pdata[GLAYER] = image->data + ndata;
+		image->pdata[BLAYER] = image->data + ndata * 2;
+	}
+	image->rx = out.cols;
+	image->ry = out.rows;
+	image->naxes[0] = image->rx;
+	image->naxes[1] = image->ry;
+
+	set_progress_bar_data(_("CLAHE applied"), PROGRESS_DONE);
+	/* free data */
+	in.release();
+	out.release();
+	channel[0].release();
+	channel[1].release();
+	channel[2].release();
+	invalidate_stats_from_fit(image);
+
+	return 0;
 }

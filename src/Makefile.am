@@ -24,6 +24,7 @@ siril_SOURCES = \
 	gui/about_dialog.c \
 	gui/dialogs.c gui/dialogs.h \
 	gui/photometric_cc.c gui/photometric_cc.h \
+	gui/clahe.c gui/clahe.h \
 	registration/registration.c registration/registration.h registration/global.c registration/comet.c \
 	registration/matching/match.c registration/matching/atpmatch.c registration/matching/misc.c \
 	registration/matching/project_coords.c registration/matching/project_coords.h registration/matching/degtorad.h registration/matching/apply_match.c \
