@@ -621,14 +621,14 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 	// Convert original_image to float
 	Mat float_image;
 	in.convertTo(float_image, CV_64FC3);
-	float_image *= 1.0 / 65535.0;
+	float_image *= 1.0 / USHRT_MAX_DOUBLE;
 
 	Mat psf = getGaussianKernel(ksize, sigma);
 
 	double mu = 0.01;
 
 	Mat estimation = RLTikh_deconvolution(float_image, psf, mu, iterations);
-	estimation *= 65535.0;
+	estimation *= USHRT_MAX_DOUBLE;
 
 	estimation.convertTo(out, CV_16UC3);
 

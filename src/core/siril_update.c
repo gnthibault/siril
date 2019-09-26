@@ -228,7 +228,7 @@ static gchar *get_changelog(gint x, gint y, gint z, gint p) {
 
 	changelog_url = g_string_free(url, FALSE);
 	curl_easy_setopt(curl, CURLOPT_URL, changelog_url);
-
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, changelog);
 	if (curl_easy_perform(curl) == CURLE_OK) {
 		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
@@ -330,6 +330,7 @@ static gpointer fetch_url(gpointer p) {
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cbk_curl);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, content);
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, "siril/0.0");
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
 	if (curl_easy_perform(curl) == CURLE_OK) {
 		if (retries == DEFAULT_FETCH_RETRIES) set_progress_bar_data(NULL, 0.4);
