@@ -78,5 +78,5 @@ gpointer clahe(gpointer p) {
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
-	return 0;
+	return GINT_TO_POINTER(0);
 }
