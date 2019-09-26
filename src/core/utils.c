@@ -641,7 +641,7 @@ void load_css_style_sheet () {
 
 	CSSFile = g_build_filename (com.app_path, css_filename, NULL);
 	if (!g_file_test (CSSFile, G_FILE_TEST_EXISTS)) {
-		g_error (_("Unable to load CSS style sheet file: %s. Please reinstall %s\n"), CSSFile, PACKAGE);
+		g_error (_("Unable to load CSS style sheet file: %s. Please reinstall Siril\n"), CSSFile);
 	}
 	else {
 		css_provider = gtk_css_provider_new();
