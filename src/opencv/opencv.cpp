@@ -692,7 +692,7 @@ int cvClahe(fits *image, double clip_limit, int size) {
 
 		// convert the RGB color image to Lab
 		Mat lab_image;
-		cvtColor(in, lab_image, CV_BGR2Lab);
+		cvtColor(in, lab_image, COLOR_BGR2Lab);
 
 		// Extract the L channel
 		std::vector<Mat> lab_planes(3);
@@ -707,7 +707,7 @@ int cvClahe(fits *image, double clip_limit, int size) {
 		merge(lab_planes, lab_image);
 
 		// convert back to RGB
-		cvtColor(lab_image, out, CV_Lab2BGR);
+		cvtColor(lab_image, out, COLOR_Lab2BGR);
 		out.convertTo(out, CV_16UC3, USHRT_MAX_DOUBLE);
 
 		delete[] bgrbgr;
