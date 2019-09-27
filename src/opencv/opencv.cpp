@@ -133,7 +133,7 @@ int cvResizeGaussian(fits *image, int toX, int toY, int interpolation) {
 		image->pdata[2] = image->data;
 	}
 	else {
-		Mat channel[3];
+		std::vector<Mat> channel(3);
 		split(out, channel);
 		memcpy(image->data, channel[2].data, dataSize * sizeof(WORD));
 		memcpy(image->data + dataSize, channel[1].data, dataSize * sizeof(WORD));
@@ -182,7 +182,7 @@ int cvTranslateImage(fits *image, point shift, int interpolation) {
 
 	warpAffine(in, out, M, in.size(), interpolation);
 
-	Mat channel[3];
+	std::vector<Mat> channel(3);
 	split(out, channel);
 
 	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
@@ -268,7 +268,7 @@ int cvRotateImage(fits *image, point center, double angle, int interpolation, in
 			image->data = newdata;
 		}
 	}
-	Mat channel[3];
+	std::vector<Mat> channel(3);
 	split(out, channel);
 
 	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
@@ -438,7 +438,7 @@ int cvTransformImage(fits *image, long width, long height, Homography Hom, int i
 		image->pdata[GLAYER] = image->data;
 		image->pdata[BLAYER] = image->data;
 	} else {
-		Mat channel[3];
+		std::vector<Mat> channel(3);
 		split(out, channel);
 		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
@@ -522,7 +522,7 @@ int cvComputeFinestScale(fits *image) {
 	blur(in, out, Size(3, 3));
 	out = in - out;
 
-	Mat channel[3];
+	std::vector<Mat> channel(3);
 	split(out, channel);
 
 	if (image->naxes[2] == 3) {
@@ -632,7 +632,7 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 
 	estimation.convertTo(out, CV_16UC3);
 
-	Mat channel[3];
+	std::vector<Mat> channel(3);
 	split(out, channel);
 
 	if (image->naxes[2] == 3) {
@@ -719,7 +719,7 @@ int cvClahe(fits *image, double clip_limit, int size) {
 		clahe->apply(in, out);
 	}
 
-	Mat channel[3];
+	std::vector<Mat> channel(3);
 	split(out, channel);
 
 	if (image->naxes[2] == 3) {

@@ -1886,7 +1886,7 @@ void adjust_vport_size_to_image() {
 	h = (int) (((double) gfit.ry) * zoom);
 	for (vport = 0; vport < MAXVPORT; vport++)
 		gtk_widget_set_size_request(com.vport[vport], w, h);
-	fprintf(stdout, "set new vport size (%d, %d)\n", w, h);
+	siril_debug_print("set new vport size (%d, %d)\n", w, h);
 }
 
 /* when a sequence is loaded, the processing (stacking) output file name is
@@ -3013,6 +3013,8 @@ gboolean on_rgb_window_configure_event(GtkWidget *widget, GdkEvent *event,
 		gpointer user_data) {
 
 	save_all_windows_position();
+	if (com.zoom_value == -1)
+		adjust_vport_size_to_image();
 	return FALSE;
 }
 
@@ -3020,6 +3022,8 @@ gboolean on_main_window_configure_event(GtkWidget *widget, GdkEvent *event,
 		gpointer user_data) {
 
 	save_all_windows_position();
+	if (com.zoom_value == -1)
+		adjust_vport_size_to_image();
 	return FALSE;
 }
 
