@@ -1768,9 +1768,9 @@ void show_main_gray_window() {
 	if (com.remember_windows && w >= 0 && h >= 0) {
 		gtk_window_move(GTK_WINDOW(win), x, y);
 		gtk_window_resize(GTK_WINDOW(win), w, h);
+		gtk_window_present_with_time(GTK_WINDOW(lookup_widget("control_window")), GDK_CURRENT_TIME);
 	}
 	gtk_widget_show(win);
-	gtk_window_present_with_time(GTK_WINDOW(lookup_widget("control_window")), GDK_CURRENT_TIME);
 }
 
 void show_rgb_window() {
@@ -1787,9 +1787,9 @@ void show_rgb_window() {
 	if (com.remember_windows && w >= 0 && h >= 0) {
 		gtk_window_move(GTK_WINDOW(win), x, y);
 		gtk_window_resize(GTK_WINDOW(win), w, h);
+		gtk_window_present_with_time(GTK_WINDOW(lookup_widget("control_window")), GDK_CURRENT_TIME);
 	}
 	gtk_widget_show(win);
-	gtk_window_present_with_time(GTK_WINDOW(lookup_widget("control_window")), GDK_CURRENT_TIME);
 }
 
 void hide_rgb_window() {
