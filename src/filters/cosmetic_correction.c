@@ -25,9 +25,12 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
+#include "core/undo.h"
 #include "gui/callbacks.h"
+#include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
 #include "io/single_image.h"
+#include "io/sequence.h"
 #include "io/ser.h"
 #include "algos/statistics.h"
 #include "algos/sorting.h"
@@ -435,4 +438,81 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 	}
 	invalidate_stats_from_fit(fit);
 	return 0;
+}
+
+void on_menuitem_cosmetic_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	if (sequence_is_loaded()) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq")), TRUE);
+	}
+	else if (single_image_is_loaded()) {
+		// not a processing result
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq")), FALSE);
+	}
+	else
+		return;
+	siril_open_dialog("cosmetic_dialog");
+}
+
+void on_button_cosmetic_close_clicked(GtkButton *button, gpointer user_data) {
+	siril_close_dialog("cosmetic_dialog");
+}
+
+void on_checkSigCosme_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	static GtkWidget *cosmeticApply = NULL;
+	static GtkToggleButton *checkCosmeSigCold = NULL;
+	static GtkToggleButton *checkCosmeSigHot = NULL;
+	gboolean checkCold, checkHot;
+
+	if (cosmeticApply == NULL) {
+		cosmeticApply = lookup_widget("button_cosmetic_ok");
+		checkCosmeSigCold = GTK_TOGGLE_BUTTON(lookup_widget("checkSigColdBox"));
+		checkCosmeSigHot = GTK_TOGGLE_BUTTON(lookup_widget("checkSigHotBox"));
+	}
+	checkCold = gtk_toggle_button_get_active(checkCosmeSigCold);
+	checkHot = gtk_toggle_button_get_active(checkCosmeSigHot);
+	gtk_widget_set_sensitive(cosmeticApply, checkCold || checkHot);
+}
+
+void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
+	GtkEntry *cosmeticSeqEntry;
+	GtkToggleButton *CFA, *seq;
+	GtkSpinButton *sigma[2];
+	GtkAdjustment *adjCosmeAmount;
+
+	CFA = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"cosmCFACheckBox"));
+	sigma[0] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinSigCosmeColdBox"));
+	sigma[1] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinSigCosmeHotBox"));
+	seq = GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq"));
+	cosmeticSeqEntry = GTK_ENTRY(lookup_widget("entryCosmeticSeq"));
+	adjCosmeAmount = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjCosmeAmount"));
+
+	struct cosmetic_data *args = malloc(sizeof(struct cosmetic_data));
+
+	if (gtk_toggle_button_get_active(
+			GTK_TOGGLE_BUTTON(lookup_widget("checkSigColdBox"))))
+		args->sigma[0] = gtk_spin_button_get_value(sigma[0]);
+	else
+		args->sigma[0] = -1.0;
+
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkSigHotBox"))))
+		args->sigma[1] = gtk_spin_button_get_value(sigma[1]);
+	else
+		args->sigma[1] = -1.0;
+
+	args->is_cfa = gtk_toggle_button_get_active(CFA);
+	args->amount = gtk_adjustment_get_value(adjCosmeAmount);
+
+	args->fit = &gfit;
+	args->seqEntry = gtk_entry_get_text(cosmeticSeqEntry);
+	set_cursor_waiting(TRUE);
+
+	if (gtk_toggle_button_get_active(seq) && sequence_is_loaded()) {
+		if (args->seqEntry && args->seqEntry[0] == '\0')
+			args->seqEntry = "cc_";
+		args->seq = &com.seq;
+		apply_cosmetic_to_sequence(args);
+	} else {
+		undo_save_state(&gfit, "Processing: Cosmetic Correction");
+		start_in_new_thread(autoDetectThreaded, args);
+	}
 }
