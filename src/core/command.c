@@ -277,7 +277,8 @@ int process_savebmp(int nb){
 	
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	sprintf(filename, "%s", strcat(word[1], ".bmp"));
+	g_sprintf(filename, "%s.bmp", word[1]);
+
 	set_cursor_waiting(TRUE);
 	savebmp(filename, &(gfit));
 	set_cursor_waiting(FALSE);
@@ -294,8 +295,9 @@ int process_savejpg(int nb){
 	
 	if ((nb == 3) && atoi(word[2]) <= 100 && atoi(word[2]) > 0)
 		quality = atoi(word[2]);
-	strcpy(filename, word[1]);
-	strcat(filename, ".jpg");
+
+	g_sprintf(filename, "%s.jpg", word[1]);
+
 	set_cursor_waiting(TRUE);
 	savejpg(filename, &gfit, quality);
 	set_cursor_waiting(FALSE);
@@ -310,8 +312,8 @@ int process_savepng(int nb){
 
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	strcpy(filename, word[1]);
-	strcat(filename, ".png");
+	g_sprintf(filename, "%s.png", word[1]);
+
 	set_cursor_waiting(TRUE);
 	bytes_per_sample = gfit.orig_bitpix != BYTE_IMG ? 2 : 1;
 	savepng(filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
@@ -324,11 +326,13 @@ int process_savepng(int nb){
 int process_savetif(int nb){
 	char filename[256];
 	uint16 bitspersample = 16;
-	
-	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	if (strcasecmp(word[0], "savetif8") == 0) bitspersample=8;
-	sprintf(filename,"%s", strcat(word[1],".tif"));
+	if (!(single_image_is_loaded() || sequence_is_loaded()))
+		return 1;
+
+	if (strcasecmp(word[0], "savetif8") == 0)
+		bitspersample = 8;
+	g_sprintf(filename, "%s.tif", word[1]);
 	set_cursor_waiting(TRUE);
 	savetif(filename, &gfit, bitspersample);
 	set_cursor_waiting(FALSE);

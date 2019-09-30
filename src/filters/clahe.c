@@ -69,8 +69,7 @@ gpointer clahe(gpointer p) {
 	siril_message_dialog(GTK_MESSAGE_ERROR, _("Upgrade your system"), error);
 	siril_add_idle(end_generic, args);
 	return GINT_TO_POINTER(1);
-#endif
-
+#else
 	char *msg = siril_log_color_message(_("CLAHE: processing...\n"), "red");
 	msg[strlen(msg) - 1] = '\0';
 	set_progress_bar_data(msg, PROGRESS_PULSATE);
@@ -87,4 +86,5 @@ gpointer clahe(gpointer p) {
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	return GINT_TO_POINTER(0);
+#endif
 }
