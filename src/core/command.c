@@ -77,6 +77,7 @@
 #include "registration/registration.h"
 #include "registration/matching/match.h"
 #include "opencv/opencv.h"
+#include "opencv2/core/version.hpp"
 
 static char *word[MAX_COMMAND_WORDS];	// NULL terminated
 
@@ -90,7 +91,9 @@ static command commands[] = {
 	
 	{"cd", 1, "cd directory", process_cd, STR_CD, TRUE},
 	{"cdg", 0, "cdg", process_cdg, STR_CDG, TRUE},
+#if CV_MAJOR_VERSION >= 3
 	{"clahe", 2, "clahe cliplimit tileSize", process_clahe, STR_CLAHE, TRUE},
+#endif
 	{"clear", 0, "clear", process_clear, STR_CLEAR, FALSE},
 	{"clearstar", 0, "clearstar", process_clearstar, STR_CLEARSTAR, FALSE},
 	{"close", 0, "close", process_close, STR_CLOSE, TRUE},
@@ -651,6 +654,7 @@ int process_asinh(int nb) {
 	return 0;
 }
 
+#if CV_MAJOR_VERSION >= 3
 int process_clahe(int nb) {
 	double clip_limit;
 	int size;
@@ -690,6 +694,7 @@ int process_clahe(int nb) {
 
 	return 0;
 }
+#endif
 
 #ifndef _WIN32
 int process_ls(int nb){

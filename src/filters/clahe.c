@@ -29,6 +29,9 @@
 #include "io/single_image.h"
 #include "opencv/opencv.h"
 #include "opencv2/core/version.hpp"
+#if CV_MAJOR_VERSION < 3
+#include "gui/message_dialog.h"
+#endif
 
 #include "clahe.h"
 
@@ -43,6 +46,12 @@ void on_clahe_cancel_clicked(GtkMenuItem *menuitem, gpointer user_data) {
 void on_clahe_Apply_clicked(GtkButton *button, gpointer user_data) {
 	GtkRange *clip;
 	GtkSpinButton *size;
+
+#if CV_MAJOR_VERSION < 3
+	char *error = siril_log_message(_("Your version of opencv is too old for this feature. Please upgrade your system."));
+	siril_message_dialog(GTK_MESSAGE_ERROR, _("Upgrade your system"), error);
+	return;
+#endif
 
 	clip = GTK_RANGE(gtk_builder_get_object(builder, "scale_clahe"));
 	size = GTK_SPIN_BUTTON(lookup_widget("clahe_tiles_size_spin"));
@@ -64,12 +73,6 @@ gpointer clahe(gpointer p) {
 	struct CLAHE_data *args = (struct CLAHE_data *) p;
 	struct timeval t_start, t_end;
 
-#if CV_MAJOR_VERSION < 3
-	char *error = siril_log_message(_("Your version of opencv is too old for this feature. Please upgrade your system."));
-	siril_message_dialog(GTK_MESSAGE_ERROR, _("Upgrade your system"), error);
-	siril_add_idle(end_generic, args);
-	return GINT_TO_POINTER(1);
-#else
 	char *msg = siril_log_color_message(_("CLAHE: processing...\n"), "red");
 	msg[strlen(msg) - 1] = '\0';
 	set_progress_bar_data(msg, PROGRESS_PULSATE);
@@ -86,5 +89,4 @@ gpointer clahe(gpointer p) {
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	return GINT_TO_POINTER(0);
-#endif
 }
