@@ -254,7 +254,7 @@ int process_satu(int nb){
 }
 
 int process_save(int nb){
-	char filename[256];
+	gchar *filename;
 	int retval;
 	
 	if (sequence_is_loaded() && !single_image_is_loaded()) {
@@ -268,29 +268,31 @@ int process_save(int nb){
 		return 1;
 	}
 
-	sprintf(filename, "%s", word[1]);
+	filename = g_strdup(word[1]);
 	set_cursor_waiting(TRUE);
 	retval = savefits(filename, &(gfit));
 	set_cursor_waiting(FALSE);
+	g_free(filename);
 	return retval;
 }
 
 int process_savebmp(int nb){
-	char filename[256];
+	gchar *filename;
 	
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	g_sprintf(filename, "%s.bmp", word[1]);
+	filename = g_strdup_printf("%s.bmp", word[1]);
 
 	set_cursor_waiting(TRUE);
 	savebmp(filename, &(gfit));
 	set_cursor_waiting(FALSE);
+	g_free(filename);
 	return 0;
 }
 
 #ifdef HAVE_LIBJPEG
 int process_savejpg(int nb){
-	char filename[256];
+	gchar *filename;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
@@ -299,35 +301,37 @@ int process_savejpg(int nb){
 	if ((nb == 3) && atoi(word[2]) <= 100 && atoi(word[2]) > 0)
 		quality = atoi(word[2]);
 
-	g_sprintf(filename, "%s.jpg", word[1]);
+	filename = g_strdup_printf("%s.jpg", word[1]);
 
 	set_cursor_waiting(TRUE);
 	savejpg(filename, &gfit, quality);
 	set_cursor_waiting(FALSE);
+	g_free(filename);
 	return 0;
 }
 #endif
 
 #ifdef HAVE_LIBPNG
 int process_savepng(int nb){
-	char filename[256];
+	gchar *filename;
 	uint32_t bytes_per_sample;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	g_sprintf(filename, "%s.png", word[1]);
+	filename = g_strdup_printf("%s.png", word[1]);
 
 	set_cursor_waiting(TRUE);
 	bytes_per_sample = gfit.orig_bitpix != BYTE_IMG ? 2 : 1;
 	savepng(filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
 	set_cursor_waiting(FALSE);
+	g_free(filename);
 	return 0;
 }
 #endif
 
 #ifdef HAVE_LIBTIFF
 int process_savetif(int nb){
-	char filename[256];
+	gchar *filename;
 	uint16 bitspersample = 16;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded()))
@@ -335,10 +339,11 @@ int process_savetif(int nb){
 
 	if (strcasecmp(word[0], "savetif8") == 0)
 		bitspersample = 8;
-	g_sprintf(filename, "%s.tif", word[1]);
+	filename = g_strdup_printf("%s.tif", word[1]);
 	set_cursor_waiting(TRUE);
 	savetif(filename, &gfit, bitspersample);
 	set_cursor_waiting(FALSE);
+	g_free(filename);
 	return 0;
 }
 #endif
@@ -1383,6 +1388,7 @@ int process_findhot(int nb){
 int process_cosme(int nb) {
 	FILE* cosme_file = NULL;
 	deviant_pixel dev;
+	char *filename;
 	double dirty;
 	int is_cfa, i = 0, retval = 0;
 	int nb_tokens;
@@ -1391,13 +1397,18 @@ int process_cosme(int nb) {
 
 	if (!single_image_is_loaded()) return 1;
 
-	if (!ends_with(word[1], ".lst"))
-		strcat(word[1], ".lst");
-	cosme_file = g_fopen(word[1], "r");
+	if (!ends_with(word[1], ".lst")) {
+		filename = g_strdup_printf("%s.lst", word[1]);
+	} else {
+		filename = g_strdup(word[1]);
+	}
+	cosme_file = g_fopen(filename, "r");
 	if (cosme_file == NULL) {
-		siril_log_message(_("Cannot open file: %s\n"), word[1]);
+		siril_log_message(_("Cannot open file: %s\n"), filename);
+		g_free(filename);
 		return 1;
 	}
+	g_free(filename);
 	if (word[0][5] == '_')
 		is_cfa = 1;
 	else
