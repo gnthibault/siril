@@ -7032,6 +7032,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
     <property name="title" translatable="yes">Contrast-Limited Adaptive Histogram Equalization...</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
+    <property name="default_width">400</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <accel-groups>
@@ -7158,7 +7159,9 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
               <object class="GtkLabel" id="label_clahe">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Please, make sure to remove all black borders or other stacking residuals by cropping the image. If you don't, artifacts may appear.</property>
+                <property name="label" translatable="yes" comments="Try to have 3 lines here.">Please, make sure to remove all black borders or other
+stacking residuals by cropping the image. If you don't,
+artifacts may appear.</property>
                 <property name="wrap">True</property>
               </object>
               <packing>
