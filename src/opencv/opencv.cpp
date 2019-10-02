@@ -69,6 +69,17 @@ static WORD *fits_to_bgrbgr(fits *image) {
 	return bgrbgr;
 }
 
+static BYTE *fits8_to_bgrbgr(fits *image) {
+	int ndata = image->rx * image->ry;
+	BYTE *bgrbgr = new BYTE[ndata * 3];
+	for (int i = 0, j = 0; i < ndata * 3; i += 3, j++) {
+		bgrbgr[i + 0] = (BYTE)image->pdata[BLAYER][j];
+		bgrbgr[i + 1] = (BYTE)image->pdata[GLAYER][j];
+		bgrbgr[i + 2] = (BYTE)image->pdata[RLAYER][j];
+	}
+	return bgrbgr;
+}
+
 int cvResizeGaussian_data8(uint8_t *dataIn, int rx, int ry, uint8_t *dataOut,
 		int toX, int toY, int chan, int interpolation) {
 	int mode = (chan == 1 ? CV_8UC1 : CV_8UC3);
@@ -685,32 +696,63 @@ int cvClahe(fits *image, double clip_limit, int size) {
 	clahe->setTilesGridSize(Size(size, size));
 
 	if (image->naxes[2] == 3) {
-		WORD *bgrbgr = fits_to_bgrbgr(image);
-		in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
-		in.convertTo(in, CV_32F, 1.0 / USHRT_MAX_DOUBLE);
-		out = Mat();
-
-		// convert the RGB color image to Lab
 		Mat lab_image;
-		cvtColor(in, lab_image, COLOR_BGR2Lab);
-
-		// Extract the L channel
 		std::vector<Mat> lab_planes(3);
-		split(lab_image, lab_planes); // now we have the L image in lab_planes[0]
+		BYTE *bgrbgr8;
+		WORD *bgrbgr;
 
-		// apply the CLAHE algorithm to the L channel (does not work with 32F images)
-		lab_planes[0].convertTo(lab_planes[0], CV_16U, USHRT_MAX_DOUBLE / 100.0);
-		clahe->apply(lab_planes[0], lab_planes[0]);
-		lab_planes[0].convertTo(lab_planes[0], CV_32F, 100.0 / USHRT_MAX_DOUBLE);
+		switch (image->bitpix) {
+		case BYTE_IMG:
+			bgrbgr8 = fits8_to_bgrbgr(image);
+			in = Mat(image->ry, image->rx, CV_8UC3, bgrbgr8);
+			out = Mat();
+			// convert the RGB color image to Lab
+			cvtColor(in, lab_image, COLOR_BGR2Lab);
 
-		// Merge the color planes back into an Lab image
-		merge(lab_planes, lab_image);
+			// Extract the L channel
+			split(lab_image, lab_planes); // now we have the L image in lab_planes[0]
 
-		// convert back to RGB
-		cvtColor(lab_image, out, COLOR_Lab2BGR);
-		out.convertTo(out, CV_16UC3, USHRT_MAX_DOUBLE);
+			// apply the CLAHE algorithm to the L channel (does not work with 32F images)
+			clahe->apply(lab_planes[0], lab_planes[0]);
 
-		delete[] bgrbgr;
+			// Merge the color planes back into an Lab image
+			merge(lab_planes, lab_image);
+
+			// convert back to RGB
+			cvtColor(lab_image, out, COLOR_Lab2BGR);
+			out.convertTo(out, CV_16UC3, 1.0);
+
+			delete[] bgrbgr8;
+
+			break;
+		default:
+		case USHORT_IMG:
+			bgrbgr = fits_to_bgrbgr(image);
+			in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
+			in.convertTo(in, CV_32F, 1.0 / USHRT_MAX_DOUBLE);
+			out = Mat();
+
+			// convert the RGB color image to Lab
+			Mat lab_image;
+			cvtColor(in, lab_image, COLOR_BGR2Lab);
+
+			// Extract the L channel
+			split(lab_image, lab_planes); // now we have the L image in lab_planes[0]
+
+			// apply the CLAHE algorithm to the L channel (does not work with 32F images)
+			lab_planes[0].convertTo(lab_planes[0], CV_16U,	USHRT_MAX_DOUBLE / 100.0);
+			clahe->apply(lab_planes[0], lab_planes[0]);
+			lab_planes[0].convertTo(lab_planes[0], CV_32F, 100.0 / USHRT_MAX_DOUBLE);
+
+			// Merge the color planes back into an Lab image
+			merge(lab_planes, lab_image);
+
+			// convert back to RGB
+			cvtColor(lab_image, out, COLOR_Lab2BGR);
+			out.convertTo(out, CV_16UC3, USHRT_MAX_DOUBLE);
+
+			delete[] bgrbgr;
+		}
 
 	} else {
 		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
