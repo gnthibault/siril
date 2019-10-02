@@ -712,7 +712,7 @@ int cvClahe(fits *image, double clip_limit, int size) {
 			// Extract the L channel
 			split(lab_image, lab_planes); // now we have the L image in lab_planes[0]
 
-			// apply the CLAHE algorithm to the L channel (does not work with 32F images)
+			// apply the CLAHE algorithm to the L channel
 			clahe->apply(lab_planes[0], lab_planes[0]);
 
 			// Merge the color planes back into an Lab image
@@ -756,9 +756,17 @@ int cvClahe(fits *image, double clip_limit, int size) {
 
 	} else {
 		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
-		out = Mat(image->ry, image->rx, CV_16UC1);
-
-		clahe->apply(in, out);
+		out = Mat();
+		switch (image->bitpix) {
+		case BYTE_IMG:
+			in.convertTo(in, CV_8U, 1.0);
+			clahe->apply(in, out);
+			out.convertTo(out, CV_16UC3, 1.0);
+			break;
+		default:
+		case USHORT_IMG:
+			clahe->apply(in, out);
+		}
 	}
 
 	std::vector<Mat> channel(3);
