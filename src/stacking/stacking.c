@@ -1311,6 +1311,7 @@ static gboolean end_stacking(gpointer p) {
 		update_stack_interface(TRUE);
 	}
 
+	stackparam.nb_images_to_stack = -1;
 	set_cursor_waiting(FALSE);
 #ifdef MAC_INTEGRATION
 	GtkosxApplication *osx_app = gtkosx_application_get();
