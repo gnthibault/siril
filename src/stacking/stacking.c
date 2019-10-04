@@ -64,6 +64,8 @@ stack_method stacking_methods[] = {
 
 static gboolean end_stacking(gpointer p);
 static int stack_addminmax(struct stacking_args *args, gboolean ismax);
+static void stacking_args_deep_copy(struct stacking_args *from, struct stacking_args *to);
+static void stacking_args_deep_free(struct stacking_args *args);
 
 
 void initialize_stacking_methods() {
@@ -1129,7 +1131,9 @@ static void start_stacking() {
 	stackparam.output_filename = gtk_entry_get_text(output_file);
 
 	/* Stacking. Result is in gfit if success */
-	start_in_new_thread(stack_function_handler, &stackparam);
+	struct stacking_args *params = malloc(sizeof(struct stacking_args));
+	stacking_args_deep_copy(&stackparam, params);
+	start_in_new_thread(stack_function_handler, params);
 }
 
 static void _show_summary(struct stacking_args *args) {
@@ -1311,7 +1315,6 @@ static gboolean end_stacking(gpointer p) {
 		update_stack_interface(TRUE);
 	}
 
-	stackparam.nb_images_to_stack = -1;
 	set_cursor_waiting(FALSE);
 #ifdef MAC_INTEGRATION
 	GtkosxApplication *osx_app = gtkosx_application_get();
@@ -1326,6 +1329,7 @@ static gboolean end_stacking(gpointer p) {
 		gettimeofday(&t_end, NULL);
 		show_time(args->t_start, t_end);
 	}
+	stacking_args_deep_free(args);
 	return FALSE;
 }
 
@@ -1674,3 +1678,17 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 	}
 }
 
+static void stacking_args_deep_copy(struct stacking_args *from, struct stacking_args *to) {
+	memcpy(to, from, sizeof(struct stacking_args));
+	// sequence is not duplicated
+	to->image_indices = malloc(from->nb_images_to_stack * sizeof(int));
+	memcpy(to->image_indices, from->image_indices, from->nb_images_to_stack * sizeof(int));
+	to->description = strdup(from->description);
+	// output_filename is not duplicated, can be changed until the last minute
+}
+
+static void stacking_args_deep_free(struct stacking_args *args) {
+	free(args->image_indices);
+	free(args->description);
+	free(args);
+}
