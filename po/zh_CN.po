@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-01 15:26+0200\n"
+"POT-Creation-Date: 2019-10-04 21:43+0200\n"
 "PO-Revision-Date: 2019-05-06 18:04+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -387,7 +387,7 @@ msgstr ""
 msgid "Cosmetic Correction..."
 msgstr "降噪..."
 
-#: ../src/gui/siril3.glade.h:86 ../src/opencv/opencv.cpp:618
+#: ../src/gui/siril3.glade.h:86 ../src/opencv/opencv.cpp:629
 msgid "Deconvolution..."
 msgstr "反卷积…"
 
@@ -1092,14 +1092,22 @@ msgid "Image registration"
 msgstr "图像对齐"
 
 #: ../src/gui/siril3.glade.h:249
+msgid "Register all images from sequence"
+msgstr "对齐队列中的所有图像"
+
+#: ../src/gui/siril3.glade.h:250
+msgid "Register selected images only"
+msgstr "仅对齐所选中的图像"
+
+#: ../src/gui/siril3.glade.h:251
 msgid "Choose registration method:"
 msgstr "选择对齐方法:"
 
-#: ../src/gui/siril3.glade.h:250
+#: ../src/gui/siril3.glade.h:252
 msgid "Select registration layer:"
 msgstr "选择对齐的通道:"
 
-#: ../src/gui/siril3.glade.h:251
+#: ../src/gui/siril3.glade.h:253
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -1112,14 +1120,6 @@ msgstr ""
 "名字中有(*)所标注的为对齐数据已经可用的通道。\n"
 "当图像被处理时，对齐数据是从可用的缺省通道所获取的（对于RBG图像：绿色，然后是"
 "蓝色和红色）。"
-
-#: ../src/gui/siril3.glade.h:254
-msgid "Register all images from sequence"
-msgstr "对齐队列中的所有图像"
-
-#: ../src/gui/siril3.glade.h:255
-msgid "Register selected images only"
-msgstr "仅对齐所选中的图像"
 
 #: ../src/gui/siril3.glade.h:256
 msgid "Prefix:"
@@ -1574,11 +1574,11 @@ msgstr "像素最大化叠加"
 msgid "Pixel minimum stacking"
 msgstr "像素最小化叠加"
 
-#: ../src/gui/siril3.glade.h:366 ../src/stacking/stacking.c:1398
+#: ../src/gui/siril3.glade.h:366 ../src/stacking/stacking.c:1399
 msgid "Sigma low: "
 msgstr "Sigma低值: "
 
-#: ../src/gui/siril3.glade.h:367 ../src/stacking/stacking.c:1399
+#: ../src/gui/siril3.glade.h:367 ../src/stacking/stacking.c:1400
 msgid "Sigma high: "
 msgstr "Sigma高值: "
 
@@ -7262,44 +7262,49 @@ msgstr "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
 msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Daylight multipliers: %f, %f, %f\n"
 
-#: ../src/io/image_formats_libraries.c:988
+#: ../src/io/image_formats_libraries.c:986
+#, fuzzy
+msgid "XTRANS Sensor detected.\n"
+msgstr "发现XTRANS传感器。特殊算法将被采用。\n"
+
+#: ../src/io/image_formats_libraries.c:992
 msgid "Bilinear interpolation...\n"
 msgstr "双线性插值…\n"
 
-#: ../src/io/image_formats_libraries.c:992
+#: ../src/io/image_formats_libraries.c:996
 msgid "VNG interpolation...\n"
 msgstr "VNG插值...\n"
 
-#: ../src/io/image_formats_libraries.c:996
+#: ../src/io/image_formats_libraries.c:1000
 msgid "PPG interpolation...\n"
 msgstr "PPG插值...\n"
 
-#: ../src/io/image_formats_libraries.c:1001
+#: ../src/io/image_formats_libraries.c:1005
 msgid "AHD interpolation...\n"
 msgstr "AHD插值…\n"
 
-#: ../src/io/image_formats_libraries.c:1165
+#: ../src/io/image_formats_libraries.c:1168
 msgid ""
 "Siril cannot open this file in CFA mode (no data available). Try to switch "
 "into RGB.\n"
 msgstr "Siril无法以CFA模式打开此文件（无可用数据）。请尝试使用RGB。\n"
 
-#: ../src/io/image_formats_libraries.c:1193
+#: ../src/io/image_formats_libraries.c:1196
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 msgstr "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 
-#: ../src/io/image_formats_libraries.c:1196
+#: ../src/io/image_formats_libraries.c:1199
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 msgstr "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 
-#: ../src/io/image_formats_libraries.c:1219
+#: ../src/io/image_formats_libraries.c:1222
 #, c-format
 msgid "CFA pattern: %s\n"
 msgstr "拜耳阵列：%s\n"
 
-#: ../src/io/image_formats_libraries.c:1292
+#: ../src/io/image_formats_libraries.c:1295
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
@@ -7653,27 +7658,27 @@ msgstr "并行计算%s：当前使用 %d 逻辑处理器\n"
 msgid "disabled"
 msgstr "关闭"
 
-#: ../src/opencv/opencv.cpp:177
+#: ../src/opencv/opencv.cpp:188
 #, fuzzy, c-format
 msgid "Translate is not supported for images with %d channels\n"
 msgstr "Unsupported FITS image with %ld channels.\n"
 
-#: ../src/opencv/opencv.cpp:237
+#: ../src/opencv/opencv.cpp:248
 #, fuzzy, c-format
 msgid "Rotate is not supported for images with %d channels\n"
 msgstr "Unsupported FITS image with %ld channels.\n"
 
-#: ../src/opencv/opencv.cpp:413
+#: ../src/opencv/opencv.cpp:424
 #, fuzzy, c-format
 msgid "Transformation is not supported for images with %d channels\n"
 msgstr "Unsupported FITS image with %ld channels.\n"
 
-#: ../src/opencv/opencv.cpp:518 ../src/opencv/opencv.cpp:614
+#: ../src/opencv/opencv.cpp:529 ../src/opencv/opencv.cpp:625
 #, fuzzy, c-format
 msgid "Deconvolution is not supported for images with %d channels\n"
 msgstr "Unsupported FITS image with %ld channels.\n"
 
-#: ../src/opencv/opencv.cpp:657
+#: ../src/opencv/opencv.cpp:668
 #, fuzzy
 msgid "Deconvolution applied"
 msgstr "反卷积已应用"
@@ -8237,37 +8242,37 @@ msgstr "叠加最终目标图像"
 msgid "Unsaved stacking result"
 msgstr "未保存的叠加结果"
 
-#: ../src/stacking/stacking.c:1376
+#: ../src/stacking/stacking.c:1377
 #, fuzzy
 msgid "Percentile low: "
 msgstr "Percentile Clipping"
 
-#: ../src/stacking/stacking.c:1377
+#: ../src/stacking/stacking.c:1378
 #, fuzzy
 msgid "Percentile high: "
 msgstr "Percentile Clipping"
 
-#: ../src/stacking/stacking.c:1386
+#: ../src/stacking/stacking.c:1387
 #, fuzzy
 msgid "Linear low: "
 msgstr "Sigma低值: "
 
-#: ../src/stacking/stacking.c:1387
+#: ../src/stacking/stacking.c:1388
 #, fuzzy
 msgid "Linear high: "
 msgstr "Sigma高值: "
 
-#: ../src/stacking/stacking.c:1408
+#: ../src/stacking/stacking.c:1409
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "叠加操作共使用内存%d MB\n"
 
-#: ../src/stacking/stacking.c:1420
+#: ../src/stacking/stacking.c:1421
 #, fuzzy
 msgid "Not using limits on maximum memory for stacking\n"
 msgstr "Not using rejection for stacking\n"
 
-#: ../src/stacking/stacking.c:1663
+#: ../src/stacking/stacking.c:1664
 #, c-format
 msgid "Stacking %d images of the %d of the sequence"
 msgstr "叠加 %d 个图像于队列 %d"

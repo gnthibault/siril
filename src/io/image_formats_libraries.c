@@ -982,6 +982,10 @@ static int readraw(const char *name, fits *fit) {
 				mul[1], mul[2]);
 	}
 
+	if (raw->idata.filters == 9) {
+		siril_log_color_message(_("XTRANS Sensor detected.\n"), "red");
+	}
+
 	switch (com.raw_set.user_qual) { /* Set interpolation                                        */
 	case 0: /* bilinear interpolaton */
 		raw->params.user_qual = 0;
@@ -1001,7 +1005,6 @@ static int readraw(const char *name, fits *fit) {
 		siril_log_message(_("AHD interpolation...\n"));
 		break;
 	}
-
 	
 	width = raw->sizes.iwidth;
 	height = raw->sizes.iheight;

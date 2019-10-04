@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-01 15:26+0200\n"
+"POT-Creation-Date: 2019-10-04 21:43+0200\n"
 "PO-Revision-Date: 2019-05-08 16:02+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -400,7 +400,7 @@ msgstr ""
 msgid "Cosmetic Correction..."
 msgstr "Αισθητική Διόρθωση..."
 
-#: ../src/gui/siril3.glade.h:86 ../src/opencv/opencv.cpp:618
+#: ../src/gui/siril3.glade.h:86 ../src/opencv/opencv.cpp:629
 msgid "Deconvolution..."
 msgstr "Γίνεται Deconvolution..."
 
@@ -1179,16 +1179,24 @@ msgid "Image registration"
 msgstr "Εγγραφή εικόνας"
 
 #: ../src/gui/siril3.glade.h:249
+msgid "Register all images from sequence"
+msgstr "Εγγραφή όλων των εικόνων από την αλληλουχία"
+
+#: ../src/gui/siril3.glade.h:250
+msgid "Register selected images only"
+msgstr "Εγγραφή μόνο των επιλεγμένων εικόνων"
+
+#: ../src/gui/siril3.glade.h:251
 msgid "Choose registration method:"
 msgstr "Επιλέξτε μέθοδο εγγραφής:"
 
-#: ../src/gui/siril3.glade.h:250
+#: ../src/gui/siril3.glade.h:252
 msgid "Select registration layer:"
 msgstr "Επιλέξτε επίπεδο εγγραφής:"
 
 #  It can only be done on one layer at a time, so on monochrome images
 # Do you mean:  It can only be done on one layer at a time, on monochrome images
-#: ../src/gui/siril3.glade.h:251
+#: ../src/gui/siril3.glade.h:253
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -1204,14 +1212,6 @@ msgstr ""
 "Όταν γίνεται επεξεργασία εικόνων, τα δεδομένα εγγραφής παίρνονται από το "
 "προεπιλεγμένο επίπεδο αν είναι διαθέσιμα (για εικόνες RGB: το Πράσινο, "
 "εναλλακτικά το Μπλε μετά το Κόκκινο)."
-
-#: ../src/gui/siril3.glade.h:254
-msgid "Register all images from sequence"
-msgstr "Εγγραφή όλων των εικόνων από την αλληλουχία"
-
-#: ../src/gui/siril3.glade.h:255
-msgid "Register selected images only"
-msgstr "Εγγραφή μόνο των επιλεγμένων εικόνων"
 
 #: ../src/gui/siril3.glade.h:256
 msgid "Prefix:"
@@ -1712,11 +1712,11 @@ msgstr "Σώρευση μέγιστου εικονοστοιχείου"
 msgid "Pixel minimum stacking"
 msgstr "Σώρευση ελάχιστου εικονοστοιχείου"
 
-#: ../src/gui/siril3.glade.h:366 ../src/stacking/stacking.c:1398
+#: ../src/gui/siril3.glade.h:366 ../src/stacking/stacking.c:1399
 msgid "Sigma low: "
 msgstr "Κάτω Σίγμα: "
 
-#: ../src/gui/siril3.glade.h:367 ../src/stacking/stacking.c:1399
+#: ../src/gui/siril3.glade.h:367 ../src/stacking/stacking.c:1400
 msgid "Sigma high: "
 msgstr "Άνω Σίγμα: "
 
@@ -7798,23 +7798,28 @@ msgstr "Αποκωδικοποίηση του αρχείου %s %s (ISO=%g, Έκ
 msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Πολλαπλασιαστές φωτός ημέρας: %f, %f, %f\n"
 
-#: ../src/io/image_formats_libraries.c:988
+#: ../src/io/image_formats_libraries.c:986
+#, fuzzy
+msgid "XTRANS Sensor detected.\n"
+msgstr "Αισθητήρας XTRANS ανιχνεύτηκε. Χρησιμοποιώντας ειδικό αλγόριθμο. \n"
+
+#: ../src/io/image_formats_libraries.c:992
 msgid "Bilinear interpolation...\n"
 msgstr "Διγραμμική παρεμβολή...\n"
 
-#: ../src/io/image_formats_libraries.c:992
+#: ../src/io/image_formats_libraries.c:996
 msgid "VNG interpolation...\n"
 msgstr "Παρεμβολή VNG...\n"
 
-#: ../src/io/image_formats_libraries.c:996
+#: ../src/io/image_formats_libraries.c:1000
 msgid "PPG interpolation...\n"
 msgstr "Παρεμβολή PPG...\n"
 
-#: ../src/io/image_formats_libraries.c:1001
+#: ../src/io/image_formats_libraries.c:1005
 msgid "AHD interpolation...\n"
 msgstr "Παρεμβολή AHD...\n"
 
-#: ../src/io/image_formats_libraries.c:1165
+#: ../src/io/image_formats_libraries.c:1168
 msgid ""
 "Siril cannot open this file in CFA mode (no data available). Try to switch "
 "into RGB.\n"
@@ -7822,24 +7827,24 @@ msgstr ""
 "Το Siril δεν μπορεί να ανοίξει αυτό το αρχείο σε λειτουργία CFA (δεν "
 "υπάρχουν διαθέσιμα δεδομένα). Δοκιμάστε να γυρίσετε σε RGB.\n"
 
-#: ../src/io/image_formats_libraries.c:1193
+#: ../src/io/image_formats_libraries.c:1196
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 msgstr "Γίνεται αποκωδικοποίηση %s %s αρχείο (ISO=%g, Έκθεση=1/%0.1f sec)\n"
 
-#: ../src/io/image_formats_libraries.c:1196
+#: ../src/io/image_formats_libraries.c:1199
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 msgstr ""
 "Γίνεται αποκωδικοποίηση %s %s αρχείο (ISO=%g, Έκθεση=%0.1f sec)\n"
 "\n"
 
-#: ../src/io/image_formats_libraries.c:1219
+#: ../src/io/image_formats_libraries.c:1222
 #, c-format
 msgid "CFA pattern: %s\n"
 msgstr "Διάταξη CFA: %s\n"
 
-#: ../src/io/image_formats_libraries.c:1292
+#: ../src/io/image_formats_libraries.c:1295
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
@@ -8232,27 +8237,27 @@ msgstr ""
 msgid "disabled"
 msgstr "απενεργοποιημένο"
 
-#: ../src/opencv/opencv.cpp:177
+#: ../src/opencv/opencv.cpp:188
 #, fuzzy, c-format
 msgid "Translate is not supported for images with %d channels\n"
 msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
 
-#: ../src/opencv/opencv.cpp:237
+#: ../src/opencv/opencv.cpp:248
 #, fuzzy, c-format
 msgid "Rotate is not supported for images with %d channels\n"
 msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
 
-#: ../src/opencv/opencv.cpp:413
+#: ../src/opencv/opencv.cpp:424
 #, fuzzy, c-format
 msgid "Transformation is not supported for images with %d channels\n"
 msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
 
-#: ../src/opencv/opencv.cpp:518 ../src/opencv/opencv.cpp:614
+#: ../src/opencv/opencv.cpp:529 ../src/opencv/opencv.cpp:625
 #, fuzzy, c-format
 msgid "Deconvolution is not supported for images with %d channels\n"
 msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
 
-#: ../src/opencv/opencv.cpp:657
+#: ../src/opencv/opencv.cpp:668
 #, fuzzy
 msgid "Deconvolution applied"
 msgstr "Έγινε εφαρμογή Deconvolution"
@@ -8860,37 +8865,37 @@ msgstr "Σώρευση εικόνας"
 msgid "Unsaved stacking result"
 msgstr "Αποτέλεσμα σώρευσης χωρίς να έχει αποθηκευτεί"
 
-#: ../src/stacking/stacking.c:1376
+#: ../src/stacking/stacking.c:1377
 #, fuzzy
 msgid "Percentile low: "
 msgstr "Εκατοστιαία αποκοπή"
 
-#: ../src/stacking/stacking.c:1377
+#: ../src/stacking/stacking.c:1378
 #, fuzzy
 msgid "Percentile high: "
 msgstr "Εκατοστιαία αποκοπή"
 
-#: ../src/stacking/stacking.c:1386
+#: ../src/stacking/stacking.c:1387
 #, fuzzy
 msgid "Linear low: "
 msgstr "Κάτω Σίγμα: "
 
-#: ../src/stacking/stacking.c:1387
+#: ../src/stacking/stacking.c:1388
 #, fuzzy
 msgid "Linear high: "
 msgstr "Άνω Σίγμα: "
 
-#: ../src/stacking/stacking.c:1408
+#: ../src/stacking/stacking.c:1409
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "Χρησιμοποιούνται %d MB μέγιστης μνήμης για σώρευση\n"
 
-#: ../src/stacking/stacking.c:1420
+#: ../src/stacking/stacking.c:1421
 #, fuzzy
 msgid "Not using limits on maximum memory for stacking\n"
 msgstr "Δεν γίνεται χρήση απόρριψης στη σώρευση\n"
 
-#: ../src/stacking/stacking.c:1663
+#: ../src/stacking/stacking.c:1664
 #, c-format
 msgid "Stacking %d images of the %d of the sequence"
 msgstr "Γίνεται σώρευση %d εικόνων από τις %d της αλληλουχίας"
