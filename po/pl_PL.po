@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-01 15:26+0200\n"
+"POT-Creation-Date: 2019-10-04 21:43+0200\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -403,7 +403,7 @@ msgstr ""
 msgid "Cosmetic Correction..."
 msgstr "Korekta kosmetyczna..."
 
-#: ../src/gui/siril3.glade.h:86 ../src/opencv/opencv.cpp:618
+#: ../src/gui/siril3.glade.h:86 ../src/opencv/opencv.cpp:629
 msgid "Deconvolution..."
 msgstr "Dekonwolucja..."
 
@@ -1172,14 +1172,22 @@ msgid "Image registration"
 msgstr "Rejestracja obrazu"
 
 #: ../src/gui/siril3.glade.h:249
+msgid "Register all images from sequence"
+msgstr "Zarejestruj wszystkie obrazy z sekwencji"
+
+#: ../src/gui/siril3.glade.h:250
+msgid "Register selected images only"
+msgstr "Zarejestruj tylko wybrane obrazy"
+
+#: ../src/gui/siril3.glade.h:251
 msgid "Choose registration method:"
 msgstr "Wybierz metodę rejestracji:"
 
-#: ../src/gui/siril3.glade.h:250
+#: ../src/gui/siril3.glade.h:252
 msgid "Select registration layer:"
 msgstr "Wybierz warstwę rejestracji:"
 
-#: ../src/gui/siril3.glade.h:251
+#: ../src/gui/siril3.glade.h:253
 msgid ""
 "Layer on which the registration is done. It can only be done on one layer at "
 "a time, so on monochrome images.\n"
@@ -1195,14 +1203,6 @@ msgstr ""
 "Podczas przetwarzania obrazów dane rejestracyjne są pobierane z warstwy "
 "domyślnej, o ile są dostępne (w przypadku obrazów RGB: zielony, w przeciwnym "
 "razie w kolorze niebieskim, a następnie w kolorze czerwonym)."
-
-#: ../src/gui/siril3.glade.h:254
-msgid "Register all images from sequence"
-msgstr "Zarejestruj wszystkie obrazy z sekwencji"
-
-#: ../src/gui/siril3.glade.h:255
-msgid "Register selected images only"
-msgstr "Zarejestruj tylko wybrane obrazy"
 
 #: ../src/gui/siril3.glade.h:256
 msgid "Prefix:"
@@ -1694,12 +1694,12 @@ msgstr "Rozmiar pixela X (micron): "
 msgid "Pixel minimum stacking"
 msgstr "Rozmiar pixela X (micron): "
 
-#: ../src/gui/siril3.glade.h:366 ../src/stacking/stacking.c:1398
+#: ../src/gui/siril3.glade.h:366 ../src/stacking/stacking.c:1399
 #, fuzzy
 msgid "Sigma low: "
 msgstr "Sigma:"
 
-#: ../src/gui/siril3.glade.h:367 ../src/stacking/stacking.c:1399
+#: ../src/gui/siril3.glade.h:367 ../src/stacking/stacking.c:1400
 #, fuzzy
 msgid "Sigma high: "
 msgstr "Sigma:"
@@ -7316,24 +7316,28 @@ msgstr "Dekodowanie pliku %s %s (ISO=%g, Ekspozycja=1/%gs)\n"
 msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Mnożniki dnia: %f, %f, %f\n"
 
-#: ../src/io/image_formats_libraries.c:988
+#: ../src/io/image_formats_libraries.c:986
+msgid "XTRANS Sensor detected.\n"
+msgstr ""
+
+#: ../src/io/image_formats_libraries.c:992
 #, fuzzy
 msgid "Bilinear interpolation...\n"
 msgstr "Bilinear (domyślnie)"
 
-#: ../src/io/image_formats_libraries.c:992
+#: ../src/io/image_formats_libraries.c:996
 msgid "VNG interpolation...\n"
 msgstr "Interpolacja VNG...\n"
 
-#: ../src/io/image_formats_libraries.c:996
+#: ../src/io/image_formats_libraries.c:1000
 msgid "PPG interpolation...\n"
 msgstr "Interpolacja PPG...\n"
 
-#: ../src/io/image_formats_libraries.c:1001
+#: ../src/io/image_formats_libraries.c:1005
 msgid "AHD interpolation...\n"
 msgstr "Interpolacja AHD...\n"
 
-#: ../src/io/image_formats_libraries.c:1165
+#: ../src/io/image_formats_libraries.c:1168
 msgid ""
 "Siril cannot open this file in CFA mode (no data available). Try to switch "
 "into RGB.\n"
@@ -7341,22 +7345,22 @@ msgstr ""
 "Siril nie może otworzyć tego pliku w trybie CFA (brak dostępnych danych). "
 "Spróbuj przełączyć tryb na RGB.\n"
 
-#: ../src/io/image_formats_libraries.c:1193
+#: ../src/io/image_formats_libraries.c:1196
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 msgstr "Dekodowanie pliku %s %s (ISO=%g, Ekspozycja=1/%0.1f sek)\n"
 
-#: ../src/io/image_formats_libraries.c:1196
+#: ../src/io/image_formats_libraries.c:1199
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 msgstr "Dekodowanie pliku %s %s (ISO=%g, Ekspozycja=%0.1f sek)\n"
 
-#: ../src/io/image_formats_libraries.c:1219
+#: ../src/io/image_formats_libraries.c:1222
 #, fuzzy, c-format
 msgid "CFA pattern: %s\n"
 msgstr "Wybierz wzór Bayera dla aparatu."
 
-#: ../src/io/image_formats_libraries.c:1292
+#: ../src/io/image_formats_libraries.c:1295
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Odczyt RAW: plik %s, warstwa(y) %ld, %ux%u pikseli\n"
@@ -7743,27 +7747,27 @@ msgstr "Przetwarzanie równoległe %s: użycie procesorów logicznych %d.\n"
 msgid "disabled"
 msgstr "wyłączony"
 
-#: ../src/opencv/opencv.cpp:177
+#: ../src/opencv/opencv.cpp:188
 #, fuzzy, c-format
 msgid "Translate is not supported for images with %d channels\n"
 msgstr "Nieznany format obrazu FITS (%ld osi).\n"
 
-#: ../src/opencv/opencv.cpp:237
+#: ../src/opencv/opencv.cpp:248
 #, fuzzy, c-format
 msgid "Rotate is not supported for images with %d channels\n"
 msgstr "Nieznany format obrazu FITS (%ld osi).\n"
 
-#: ../src/opencv/opencv.cpp:413
+#: ../src/opencv/opencv.cpp:424
 #, fuzzy, c-format
 msgid "Transformation is not supported for images with %d channels\n"
 msgstr "Nieznany format obrazu FITS (%ld osi).\n"
 
-#: ../src/opencv/opencv.cpp:518 ../src/opencv/opencv.cpp:614
+#: ../src/opencv/opencv.cpp:529 ../src/opencv/opencv.cpp:625
 #, fuzzy, c-format
 msgid "Deconvolution is not supported for images with %d channels\n"
 msgstr "Nieznany format obrazu FITS (%ld osi).\n"
 
-#: ../src/opencv/opencv.cpp:657
+#: ../src/opencv/opencv.cpp:668
 #, fuzzy
 msgid "Deconvolution applied"
 msgstr "Dekonwolucja"
@@ -8366,37 +8370,37 @@ msgstr "Zapisz wynik do pliku:"
 msgid "Unsaved stacking result"
 msgstr "Zapisz wynik do pliku:"
 
-#: ../src/stacking/stacking.c:1376
+#: ../src/stacking/stacking.c:1377
 #, fuzzy
 msgid "Percentile low: "
 msgstr "Przycinanie cieni"
 
-#: ../src/stacking/stacking.c:1377
+#: ../src/stacking/stacking.c:1378
 #, fuzzy
 msgid "Percentile high: "
 msgstr "Przycinanie cieni"
 
-#: ../src/stacking/stacking.c:1386
+#: ../src/stacking/stacking.c:1387
 #, fuzzy
 msgid "Linear low: "
 msgstr "Sigma:"
 
-#: ../src/stacking/stacking.c:1387
+#: ../src/stacking/stacking.c:1388
 #, fuzzy
 msgid "Linear high: "
 msgstr "Sigma:"
 
-#: ../src/stacking/stacking.c:1408
+#: ../src/stacking/stacking.c:1409
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr ""
 
-#: ../src/stacking/stacking.c:1420
+#: ../src/stacking/stacking.c:1421
 #, fuzzy
 msgid "Not using limits on maximum memory for stacking\n"
 msgstr "Skalowanie w górę dla stackowania"
 
-#: ../src/stacking/stacking.c:1663
+#: ../src/stacking/stacking.c:1664
 #, fuzzy, c-format
 msgid "Stacking %d images of the %d of the sequence"
 msgstr ""
