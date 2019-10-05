@@ -1039,7 +1039,7 @@ void main_stack(struct stacking_args *args) {
 	/* first of all we need to check if we can process the files */
 	if (args->seq->type == SEQ_REGULAR) {
 		if (!allow_to_open_files(args->nb_images_to_stack, &nb_allowed_files)) {
-			siril_log_message(_("Your system does not allow to open more than %d files at the same time. "
+			siril_log_message(_("Your system does not allow to one open more than %d files at the same time. "
 						"You may consider either to enhance this limit (the method depends of "
 						"your Operating System) or to convert your FITS sequence into a SER "
 						"sequence before stacking, or to stack with the \"sum\" method.\n"),

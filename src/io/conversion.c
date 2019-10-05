@@ -691,7 +691,7 @@ gpointer convert_thread_worker(gpointer p) {
 				"If so, you may need to install third-party software to enable "
 				"this file type conversion, look at the README file.\n"
 				"If the file type you are trying to load is listed in supported "
-				"formats, you may notify the developpers that the extension you are "
+				"formats, you may notify the developers that the extension you are "
 				"trying to use should be recognized for this type."), src_ext);
 			siril_message_dialog(GTK_MESSAGE_ERROR, title, msg);
 			break;	// avoid 100 error popups
