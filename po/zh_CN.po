@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-04 21:43+0200\n"
+"POT-Creation-Date: 2019-10-06 00:59+0200\n"
 "PO-Revision-Date: 2019-05-06 18:04+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -1574,11 +1574,11 @@ msgstr "像素最大化叠加"
 msgid "Pixel minimum stacking"
 msgstr "像素最小化叠加"
 
-#: ../src/gui/siril3.glade.h:366 ../src/stacking/stacking.c:1399
+#: ../src/gui/siril3.glade.h:366 ../src/stacking/stacking.c:1403
 msgid "Sigma low: "
 msgstr "Sigma低值: "
 
-#: ../src/gui/siril3.glade.h:367 ../src/stacking/stacking.c:1400
+#: ../src/gui/siril3.glade.h:367 ../src/stacking/stacking.c:1404
 msgid "Sigma high: "
 msgstr "Sigma高值: "
 
@@ -3331,7 +3331,7 @@ msgstr "拉伸DSLR的CFA FITS到16位"
 #, fuzzy
 msgid ""
 "If the RAW data comes from DSLR camera and if normalisation information was "
-"storred in the FITS header, then checking this option will stretch the image "
+"stored in the FITS header, then checking this option will stretch the image "
 "to 16-bit.\n"
 "May not work with some camera."
 msgstr ""
@@ -4260,8 +4260,8 @@ msgstr "Readjusting layer %d to %g times bright\n"
 #: ../src/gui/callbacks.c:3996 ../src/gui/callbacks.c:4190
 #: ../src/gui/callbacks.c:4323 ../src/gui/callbacks.c:4396
 #: ../src/gui/script_menu.c:158 ../src/io/conversion.c:526
-#: ../src/registration/registration.c:841 ../src/stacking/stacking.c:1097
-#: ../src/stacking/stacking.c:1219
+#: ../src/registration/registration.c:841 ../src/stacking/stacking.c:1099
+#: ../src/stacking/stacking.c:1223
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Another task is already in progress, ignoring new request.\n"
 
@@ -6880,15 +6880,15 @@ msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr "文件类型错误，无法转化：%s\n"
 
 #: ../src/io/conversion.c:689
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
 "Verify that you typed the extension correctly.\n"
 "If so, you may need to install third-party software to enable this file type "
 "conversion, look at the README file.\n"
 "If the file type you are trying to load is listed in supported formats, you "
-"may notify the developpers that the extension you are trying to use should "
-"be recognized for this type."
+"may notify the developers that the extension you are trying to use should be "
+"recognized for this type."
 msgstr ""
 "文件扩展名'%s'不被支持。请确认输入了正确的扩展名。\n"
 "如果确认无错，那么你需要安装第三方软件来激活这种文件类型，详见README\n"
@@ -7493,7 +7493,7 @@ msgstr ""
 msgid "image %d is excluded from export\n"
 msgstr "图像%d被排除于导出列表\n"
 
-#: ../src/io/sequence_export.c:229 ../src/stacking/stacking.c:389
+#: ../src/io/sequence_export.c:229 ../src/stacking/stacking.c:391
 msgid "Processing image "
 msgstr "处理图像 "
 
@@ -8031,248 +8031,248 @@ msgstr "参考帧不在所选定的队列里。请重新选择参考帧。\n"
 msgid "Normalization failed."
 msgstr "归一化失败。"
 
-#: ../src/stacking/stacking.c:110 ../src/stacking/stacking.c:581
+#: ../src/stacking/stacking.c:112 ../src/stacking/stacking.c:583
 msgid "Select at least two frames for stacking. Aborting.\n"
 msgstr "至少选择两幅图像用于叠加，异常中止。\n"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:123
+#: ../src/stacking/stacking.c:125
 msgid "Median stack error: uninitialized sequence\n"
 msgstr "中位数叠加错误：队列未初始化\n"
 
-#: ../src/stacking/stacking.c:153 ../src/stacking/stacking.c:629
+#: ../src/stacking/stacking.c:155 ../src/stacking/stacking.c:631
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Your version of cfitsio does not support multi-threading\n"
 
-#: ../src/stacking/stacking.c:162 ../src/stacking/stacking.c:638
+#: ../src/stacking/stacking.c:164 ../src/stacking/stacking.c:640
 msgid "Processing the sequence as RGB\n"
 msgstr "以RGB模式处理当前队列\n"
 
-#: ../src/stacking/stacking.c:205 ../src/stacking/stacking.c:703
+#: ../src/stacking/stacking.c:207 ../src/stacking/stacking.c:705
 msgid "Starting stacking...\n"
 msgstr "开始叠加...\n"
 
-#: ../src/stacking/stacking.c:206
+#: ../src/stacking/stacking.c:208
 msgid "Median stacking in progress..."
 msgstr "中位数叠加处理中..."
 
-#: ../src/stacking/stacking.c:298 ../src/stacking/stacking.c:473
-#: ../src/stacking/stacking.c:981
+#: ../src/stacking/stacking.c:300 ../src/stacking/stacking.c:475
+#: ../src/stacking/stacking.c:983
 msgid "Finalizing stacking..."
 msgstr "叠加最终定稿..."
 
-#: ../src/stacking/stacking.c:327
+#: ../src/stacking/stacking.c:329
 msgid "Median stacking failed. Check the log."
 msgstr "中位数叠加错误。 请查询日志。"
 
-#: ../src/stacking/stacking.c:328 ../src/stacking/stacking.c:494
-#: ../src/stacking/stacking.c:1024
+#: ../src/stacking/stacking.c:330 ../src/stacking/stacking.c:496
+#: ../src/stacking/stacking.c:1026
 msgid "Stacking failed.\n"
 msgstr "叠加失败。\n"
 
-#: ../src/stacking/stacking.c:330
+#: ../src/stacking/stacking.c:332
 msgid "Median stacking complete."
 msgstr "中位数叠加完成。"
 
-#: ../src/stacking/stacking.c:331
+#: ../src/stacking/stacking.c:333
 #, c-format
 msgid "Median stacking complete. %d have been stacked.\n"
 msgstr "中位数叠加完成。共%d帧图像被叠加。\n"
 
-#: ../src/stacking/stacking.c:368
+#: ../src/stacking/stacking.c:370
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"
 msgstr "没有图像被选中用于叠加（至少2），异常中止。\n"
 
-#: ../src/stacking/stacking.c:397
+#: ../src/stacking/stacking.c:399
 msgid "Stacking: could not read frame, aborting\n"
 msgstr "叠加：无法读取帧，异常中止\n"
 
-#: ../src/stacking/stacking.c:420
+#: ../src/stacking/stacking.c:422
 msgid "Stacking: image in sequence doesn't has the same dimensions\n"
 msgstr "叠加：队列中的图像尺寸不一致\n"
 
-#: ../src/stacking/stacking.c:493
+#: ../src/stacking/stacking.c:495
 msgid "Stacking failed. Check the log."
 msgstr "叠加失败，请检查日志。"
 
-#: ../src/stacking/stacking.c:496
+#: ../src/stacking/stacking.c:498
 msgid "Stacking complete."
 msgstr "叠加完成。"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:599
+#: ../src/stacking/stacking.c:601
 msgid "Rejection stack error: uninitialized sequence\n"
 msgstr "叠加（像素剔除）：队列未初始化\n"
 
-#: ../src/stacking/stacking.c:704
+#: ../src/stacking/stacking.c:706
 msgid "Rejection stacking in progress..."
 msgstr "叠加（像素剔除）执行中..."
 
-#: ../src/stacking/stacking.c:985
+#: ../src/stacking/stacking.c:987
 #, c-format
 msgid "Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"
 msgstr "像素剔除于通道 #%d: %.3lf%% - %.3lf%%\n"
 
-#: ../src/stacking/stacking.c:1023
+#: ../src/stacking/stacking.c:1025
 msgid "Rejection stacking failed. Check the log."
 msgstr "叠加（像素剔除）失败，请检查日志。"
 
-#: ../src/stacking/stacking.c:1026
+#: ../src/stacking/stacking.c:1028
 msgid "Rejection stacking complete."
 msgstr "叠加（像素剔除）完成。"
 
-#: ../src/stacking/stacking.c:1040
-#, c-format
+#: ../src/stacking/stacking.c:1042
+#, fuzzy, c-format
 msgid ""
-"Your system does not allow to open more than %d files at the same time. You "
-"may consider either to enhance this limit (the method depends of your "
+"Your system does not allow to one open more than %d files at the same time. "
+"You may consider either to enhance this limit (the method depends of your "
 "Operating System) or to convert your FITS sequence into a SER sequence "
 "before stacking, or to stack with the \"sum\" method.\n"
 msgstr ""
 "你的系统不支持同时打开超过 %d 个文件。您需要修改操作系统的限制，或者在叠加之"
 "前将FITS文件队列转化为一个SER文件，或者使用“加法叠加”。\n"
 
-#: ../src/stacking/stacking.c:1118
+#: ../src/stacking/stacking.c:1120
 #, c-format
 msgid "Stacking will use registration data of layer %d if some exist.\n"
 msgstr "Stacking will use registration data of layer %d if some exist.\n"
 
-#: ../src/stacking/stacking.c:1124
+#: ../src/stacking/stacking.c:1126
 msgid "Stacking: processing...\n"
 msgstr "叠加：处理中...\n"
 
-#: ../src/stacking/stacking.c:1138
+#: ../src/stacking/stacking.c:1142
 #, c-format
 msgid "Integration of %d images:\n"
 msgstr "共叠加%d帧图像：\n"
 
-#: ../src/stacking/stacking.c:1142
+#: ../src/stacking/stacking.c:1146
 msgid "Pixel combination ......... average\n"
 msgstr "Pixel combination ......... average\n"
 
-#: ../src/stacking/stacking.c:1144
+#: ../src/stacking/stacking.c:1148
 msgid "Pixel combination ......... normalized sum\n"
 msgstr "Pixel combination ......... normalized sum\n"
 
-#: ../src/stacking/stacking.c:1146
+#: ../src/stacking/stacking.c:1150
 msgid "Pixel combination ......... median\n"
 msgstr "Pixel combination ......... median\n"
 
-#: ../src/stacking/stacking.c:1148
+#: ../src/stacking/stacking.c:1152
 msgid "Pixel combination ......... minimum\n"
 msgstr "Pixel combination ......... minimum\n"
 
-#: ../src/stacking/stacking.c:1150
+#: ../src/stacking/stacking.c:1154
 msgid "Pixel combination ......... maximum\n"
 msgstr "Pixel combination ......... maximum\n"
 
-#: ../src/stacking/stacking.c:1152
+#: ../src/stacking/stacking.c:1156
 msgid "Pixel combination ......... none\n"
 msgstr "Pixel combination ......... none\n"
 
-#: ../src/stacking/stacking.c:1158 ../src/stacking/stacking.c:1163
-#: ../src/stacking/stacking.c:1192
+#: ../src/stacking/stacking.c:1162 ../src/stacking/stacking.c:1167
+#: ../src/stacking/stacking.c:1196
 msgid "none"
 msgstr "无"
 
-#: ../src/stacking/stacking.c:1166
+#: ../src/stacking/stacking.c:1170
 msgid "additive"
 msgstr "累加"
 
-#: ../src/stacking/stacking.c:1169
+#: ../src/stacking/stacking.c:1173
 msgid "multiplicative"
 msgstr "累乘"
 
-#: ../src/stacking/stacking.c:1172
+#: ../src/stacking/stacking.c:1176
 msgid "additive + scaling"
 msgstr "累加带拉伸"
 
-#: ../src/stacking/stacking.c:1175
+#: ../src/stacking/stacking.c:1179
 msgid "multiplicative + scaling"
 msgstr "累乘带拉伸"
 
-#: ../src/stacking/stacking.c:1180
+#: ../src/stacking/stacking.c:1184
 #, c-format
 msgid "Normalization ............. %s\n"
 msgstr "Normalization ............. %s\n"
 
-#: ../src/stacking/stacking.c:1184
+#: ../src/stacking/stacking.c:1188
 msgid "Pixel rejection ........... none\n"
 msgstr "Pixel rejection ........... none\n"
 
-#: ../src/stacking/stacking.c:1185
+#: ../src/stacking/stacking.c:1189
 msgid "Rejection parameters ...... none\n"
 msgstr "Rejection parameters ...... none\n"
 
-#: ../src/stacking/stacking.c:1195
+#: ../src/stacking/stacking.c:1199
 msgid "percentile clipping"
 msgstr "percentile clipping"
 
-#: ../src/stacking/stacking.c:1198
+#: ../src/stacking/stacking.c:1202
 msgid "sigma clipping"
 msgstr "sigma clipping"
 
-#: ../src/stacking/stacking.c:1201
+#: ../src/stacking/stacking.c:1205
 msgid "median sigma clipping"
 msgstr "median sigma clipping"
 
-#: ../src/stacking/stacking.c:1204
+#: ../src/stacking/stacking.c:1208
 msgid "Winsorized sigma clipping"
 msgstr "Winsorized sigma clipping"
 
-#: ../src/stacking/stacking.c:1207
+#: ../src/stacking/stacking.c:1211
 msgid "linear fit clipping"
 msgstr "linear fit clipping"
 
-#: ../src/stacking/stacking.c:1210
+#: ../src/stacking/stacking.c:1214
 #, c-format
 msgid "Pixel rejection ........... %s\n"
 msgstr "像素剔除 ........... %s\n"
 
-#: ../src/stacking/stacking.c:1211
+#: ../src/stacking/stacking.c:1215
 #, c-format
 msgid "Rejection parameters ...... low=%.3f high=%.3f\n"
 msgstr "Rejection parameters ...... low=%.3f high=%.3f\n"
 
-#: ../src/stacking/stacking.c:1258
+#: ../src/stacking/stacking.c:1262
 msgid "Stacking result image"
 msgstr "叠加最终目标图像"
 
-#: ../src/stacking/stacking.c:1281 ../src/stacking/stacking.c:1286
+#: ../src/stacking/stacking.c:1285 ../src/stacking/stacking.c:1290
 msgid "Unsaved stacking result"
 msgstr "未保存的叠加结果"
 
-#: ../src/stacking/stacking.c:1377
+#: ../src/stacking/stacking.c:1381
 #, fuzzy
 msgid "Percentile low: "
 msgstr "Percentile Clipping"
 
-#: ../src/stacking/stacking.c:1378
+#: ../src/stacking/stacking.c:1382
 #, fuzzy
 msgid "Percentile high: "
 msgstr "Percentile Clipping"
 
-#: ../src/stacking/stacking.c:1387
+#: ../src/stacking/stacking.c:1391
 #, fuzzy
 msgid "Linear low: "
 msgstr "Sigma低值: "
 
-#: ../src/stacking/stacking.c:1388
+#: ../src/stacking/stacking.c:1392
 #, fuzzy
 msgid "Linear high: "
 msgstr "Sigma高值: "
 
-#: ../src/stacking/stacking.c:1409
+#: ../src/stacking/stacking.c:1413
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "叠加操作共使用内存%d MB\n"
 
-#: ../src/stacking/stacking.c:1421
+#: ../src/stacking/stacking.c:1425
 #, fuzzy
 msgid "Not using limits on maximum memory for stacking\n"
 msgstr "Not using rejection for stacking\n"
 
-#: ../src/stacking/stacking.c:1664
+#: ../src/stacking/stacking.c:1668
 #, c-format
 msgid "Stacking %d images of the %d of the sequence"
 msgstr "叠加 %d 个图像于队列 %d"
