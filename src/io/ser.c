@@ -1069,8 +1069,10 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 			PRINT_ALLOC_ERR;
 			return -1;
 		}
-		if (read_area_from_image(ser_file, frame_no, rawbuf, &debayer_area, -1))
+		if (read_area_from_image(ser_file, frame_no, rawbuf, &debayer_area, -1)) {
+			free(rawbuf);
 			return -1;
+		}
 		ser_manage_endianess_and_depth(ser_file, rawbuf, debayer_area.w * debayer_area.h);
 
 		/* for performance consideration (and many others) we force the interpolation algorithm
@@ -1080,9 +1082,8 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 				&debayer_area.h, BAYER_BILINEAR, com.debayer.bayer_pattern,
 				NULL);
 		free(rawbuf);
-		if (demosaiced_buf == NULL) {
+		if (!demosaiced_buf)
 			return -1;
-		}
 
 		/* area is the destination area.
 		 * debayer_area is the demosaiced buf area.

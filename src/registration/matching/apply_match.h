@@ -30,5 +30,5 @@
 
 int apply_match(image_solved *solved, TRANS trans);
 
-#endif /* SRC_REGISTRATION_MATCHING_APPLY_MATCH_H_ */
 #endif
+#endif /* SRC_REGISTRATION_MATCHING_APPLY_MATCH_H_ */

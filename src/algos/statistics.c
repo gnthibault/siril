@@ -275,7 +275,10 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min < 0. || stat->max < 0.)) {
 		// TODO 1.0: change to double
 		WORD min = 0, max = 0, norm = 0;
-		if (!data) return NULL;	// not in cache, don't compute
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
+		}
 		siril_debug_print("- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
 		siril_stats_ushort_minmax(&min, &max, data, 1, stat->total);
 		if (fit->bitpix == BYTE_IMG)
@@ -290,7 +293,10 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 	if ((option & (STATS_NOISE | STATS_BASIC)) && (stat->ngoodpix <= 0L || stat->mean < 0. ||
 			stat->sigma < 0. || stat->bgnoise < 0.)) {
 		int status = 0;
-		if (!data) return NULL;	// not in cache, don't compute
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
+		}
 		siril_debug_print("- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
 		fits_img_stats_ushort(data, nx, ny, 1, 0, &stat->ngoodpix,
 				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
@@ -320,28 +326,40 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 
 	/* Calculation of median */
 	if (compute_median && stat->median < 0.) {
-		if (!data) return NULL;	// not in cache, don't compute
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
+		}
 		siril_debug_print("- stats %p fit %p (%d): computing median\n", stat, fit, layer);
 		stat->median = histogram_median(data, stat->ngoodpix);
 	}
 
 	/* Calculation of average absolute deviation from the median */
 	if ((option & STATS_AVGDEV) && stat->avgDev < 0.) {
-		if (!data) return NULL;	// not in cache, don't compute
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
+		}
 		siril_debug_print("- stats %p fit %p (%d): computing absdev\n", stat, fit, layer);
 		stat->avgDev = gsl_stats_ushort_absdev_m(data, 1, stat->ngoodpix, stat->median);
 	}
 
 	/* Calculation of median absolute deviation */
 	if (((option & STATS_MAD) || (option & STATS_BWMV)) && stat->mad < 0.) {
-		if (!data) return NULL;	// not in cache
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
+		}
 		siril_debug_print("- stats %p fit %p (%d): computing mad\n", stat, fit, layer);
 		stat->mad = siril_stats_ushort_mad(data, 1, stat->ngoodpix, stat->median);
 	}
 
 	/* Calculation of Bidweight Midvariance */
 	if ((option & STATS_BWMV) && stat->sqrtbwmv < 0.) {
-		if (!data) return NULL;	// not in cache
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
+		}
 		siril_debug_print("- stats %p fit %p (%d): computing bimid\n", stat, fit, layer);
 		double bwmv = siril_stats_ushort_bwmv(data, stat->ngoodpix, stat->mad, stat->median);
 		stat->sqrtbwmv = sqrt(bwmv);
@@ -349,7 +367,10 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 
 	/* Calculation of IKSS. Only used for stacking normalization */
 	if ((option & STATS_IKSS) && (stat->location < 0. || stat->scale < 0.)) {
-		if (!data) return NULL;	// not in cache
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
+		}
 		siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
 		long i;
 		double *newdata = malloc(stat->ngoodpix * sizeof(double));

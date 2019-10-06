@@ -244,7 +244,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 							j++, jj++) {
 						for (ii = 0, i = x - sf->radius; i < x + sf->radius;
 								i++, ii++) {
-							gsl_matrix_set(z, ii, jj, (double) real_image[j][i]);
+							gsl_matrix_set(z, ii, jj, (double)real_image[j][i]);
 						}
 					}
 					/* ****** */

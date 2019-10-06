@@ -363,24 +363,24 @@ static double siril_stats_mad(const double data[], const size_t stride,
 		const size_t n, double work[]) {
 #if (GSL_MAJOR_VERSION <= 2) || ((GSL_MAJOR_VERSION == 2) && GSL_MINOR_VERSION < 5)
 	double median, mad;
-	  size_t i;
+	size_t i;
 
-	  /* copy input data to work */
-	  for (i = 0; i < n; ++i)
-	    work[i] = (double) data[i * stride];
+	/* copy input data to work */
+	for (i = 0; i < n; ++i)
+		work[i] = (double) data[i * stride];
 
-	  /* compute median of input data using double version */
-	  median = histogram_median_double(work, n);
+	/* compute median of input data using double version */
+	median = histogram_median_double(work, n);
 
-	  /* compute absolute deviations from median */
-	  for (i = 0; i < n; ++i)
-	    work[i] = fabs((double) data[i * stride] - median);
+	/* compute absolute deviations from median */
+	for (i = 0; i < n; ++i)
+		work[i] = fabs((double) data[i * stride] - median);
 
-	  mad = histogram_median_double(work, n);
+	mad = histogram_median_double(work, n);
 
-	  return mad;
+	return mad;
 #else
-	  return gsl_stats_mad0(data, stride, n, work);
+	return gsl_stats_mad0(data, stride, n, work);
 #endif
 }
 

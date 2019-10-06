@@ -2075,13 +2075,11 @@ int process_register(int nb) {
 
 	g_free(file);
 	/* getting the selected registration method */
-	struct registration_method *reg = malloc(sizeof(struct registration_method));
-	reg->name = strdup(_("Global Star Alignment (deep-sky)"));
-	reg->method_ptr = &register_star_alignment;
-	reg->sel = REQUIRES_NO_SELECTION;
-	reg->type = REGTYPE_DEEPSKY;
-
-	method = reg;
+	method = malloc(sizeof(struct registration_method));
+	method->name = strdup(_("Global Star Alignment (deep-sky)"));
+	method->method_ptr = &register_star_alignment;
+	method->sel = REQUIRES_NO_SELECTION;
+	method->type = REGTYPE_DEEPSKY;
 
 	reg_args = calloc(1, sizeof(struct registration_args));
 
@@ -2123,6 +2121,7 @@ int process_register(int nb) {
 			size *= 4;
 		if (test_available_space(size) > 0) {
 			free(reg_args);
+			free(method);
 			return 1;
 		}
 	}
@@ -2139,6 +2138,7 @@ int process_register(int nb) {
 	msg = siril_log_color_message(
 			_("Registration: processing using method: %s\n"), "red",
 			method->name);
+	free(method);
 	msg[strlen(msg) - 1] = '\0';
 	set_progress_bar_data(msg, PROGRESS_RESET);
 

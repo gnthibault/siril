@@ -657,13 +657,13 @@ gpointer convert_thread_worker(gpointer p) {
 		if (convflags & CONV3X1) {
 			siril_log_color_message(_("SER output will take precedence over the one-channel per image creation option.\n"), "salmon");
 			convflags &= ~CONV3X1;
-		} else {
-			ser_file = malloc(sizeof(struct ser_struct));
-			if (!(convflags & CONVMULTIPLE)) {
-				if (ser_create_file(args->destroot, ser_file, TRUE, NULL)) {
-					siril_log_message(_("Creating the SER file failed, aborting.\n"));
-					goto clean_exit;
-				}
+		}
+
+		ser_file = malloc(sizeof(struct ser_struct));
+		if (!(convflags & CONVMULTIPLE)) {
+			if (ser_create_file(args->destroot, ser_file, TRUE, NULL)) {
+				siril_log_message(_("Creating the SER file failed, aborting.\n"));
+				goto clean_exit;
 			}
 		}
 	}

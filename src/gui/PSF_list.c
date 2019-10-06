@@ -217,14 +217,15 @@ static void display_PSF(fitted_PSF **result) {
 			}
 			i++;
 		}
+		if (i <= 0) return;
 		/* compute average */
-		B = B / (double) i;
-		A = A / (double) i;
-		FWHMx = FWHMx / (double) i;
-		FWHMy = FWHMy / (double) i;
+		B = B / (double)i;
+		A = A / (double)i;
+		FWHMx = FWHMx / (double)i;
+		FWHMy = FWHMy / (double)i;
 		r = FWHMy / FWHMx;
-		angle = angle / (double) i;
-		rmse = rmse / (double) i;
+		angle = angle / (double)i;
+		rmse = rmse / (double)i;
 
 		msg = g_strdup_printf(_("Average Gaussian PSF\n\n"
 				"N:\t%d stars\nB:\t%.6f\nA:\t%.6f\nFWHMx:\t%.2f%s\n"

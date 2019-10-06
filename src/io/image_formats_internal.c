@@ -786,7 +786,10 @@ int readpic(const char *name, fits *fit) {
 		return -1;
 	}
 
-	_pic_read_header(pic_file);
+	if (_pic_read_header(pic_file)) {
+		_pic_close_file(pic_file);
+		return -1;
+	}
 
 	fit->rx = (unsigned int) pic_file->width;
 	fit->ry = (unsigned int) pic_file->height;
@@ -819,6 +822,12 @@ int readpic(const char *name, fits *fit) {
 		retval = -1;
 		siril_log_message(_("Sorry but Siril cannot open this file.\n"));
 	}
+	free(buf);
+
+	if (retval) {
+		_pic_close_file(pic_file);
+		return -1;
+	}
 
 	char *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading PIC: file %s, %ld layer(s), %ux%u pixels\n"),
@@ -838,6 +847,5 @@ int readpic(const char *name, fits *fit) {
 
 	_pic_close_file(pic_file);
 	g_free(basename);
-	free(buf);
 	return retval;
 }
