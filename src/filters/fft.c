@@ -217,12 +217,16 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 
 	fftw_complex* spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
 	if (!spatial_repr) {
+		free(modul);
+		free(phase);
 		return;
 	}
 
 	fftw_complex* frequency_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
 	if (!frequency_repr) {
 		fftw_free(spatial_repr);
+		free(modul);
+		free(phase);
 		return;
 	}
 

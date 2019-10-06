@@ -777,7 +777,7 @@ static uint8_t *convert_data8(fits *image) {
 	int ch = image->naxes[2];
 	int i, j;
 
-	uint8_t *buffer = malloc(ndata * ch * sizeof(WORD));
+	uint8_t *buffer = malloc(ndata * ch * sizeof(uint8_t));
 	for (i = 0, j = 0; i < ndata * ch; i += ch, j++) {
 		buffer[i + 0] = (uint8_t)image->pdata[RLAYER][j];
 		if (ch > 1) {

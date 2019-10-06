@@ -147,6 +147,7 @@ gpointer median_filter(gpointer p) {
 			if (image == NULL) {
 				printf("median filter: error allocating data\n");
 				siril_add_idle(end_median_filter, args);
+				free(data);
 				return GINT_TO_POINTER(1);
 			}
 			for (i = 0; i < ny; i++)

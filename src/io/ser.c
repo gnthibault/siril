@@ -615,18 +615,22 @@ int ser_compact_file(struct ser_struct *ser_file, unsigned char *successful_fram
 
 			if ((int64_t)-1 == fseek64(ser_file->file, offsetj, SEEK_SET)) {
 				perror("seek");
+				free(buffer);
 				return 1;
 			}
 			if (fread(buffer, 1, frame_size, ser_file->file) != frame_size) {
 				perror("fread");
+				free(buffer);
 				return 1;
 			}
 			if ((int64_t)-1 == fseek64(ser_file->file, offseti, SEEK_SET)) {
 				perror("seek");
+				free(buffer);
 				return 1;
 			}
 			if (fwrite(buffer, 1, frame_size, ser_file->file) != frame_size) {
 				perror("fwrite");
+				free(buffer);
 				return 1;
 			}
 
@@ -634,7 +638,7 @@ int ser_compact_file(struct ser_struct *ser_file, unsigned char *successful_fram
 		}
 	}
 
-	if (buffer) free(buffer);
+	free(buffer);
 	return 0;
 }
 
@@ -957,8 +961,9 @@ static int read_area_from_image(struct ser_struct *ser_file, const int frame_no,
 		perror("fseek in SER");
 		retval = -1;
 	} else {
-		if (fread(read_buffer, 1, read_size, ser_file->file) != read_size)
+		if (fread(read_buffer, 1, read_size, ser_file->file) != read_size) {
 			retval = -1;
+		}
 	}
 #ifdef _OPENMP
 	omp_unset_lock(&ser_file->fd_lock);

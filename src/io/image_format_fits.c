@@ -514,7 +514,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		break;
 	case ULONG_IMG:		// 32-bit unsigned integer pixels
 	case LONG_IMG:		// 32-bit signed integer pixels
-		pixels_long = malloc(nbdata * sizeof(long));
+		pixels_long = malloc(nbdata * sizeof(uint32_t));
 		status = 0;
 		datatype = fit->bitpix == LONG_IMG ? TLONG : TULONG;
 		fits_read_pix(fit->fptr, datatype, orig, nbdata, &zero,

@@ -543,8 +543,8 @@ GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 		radius = sqrt(dx * dx + dy * dy);
 
 		if (radius <= sample->size * 2) {
-			g_free(sample);
 			orig = g_slist_remove(orig, sample);
+			g_free((background_sample *) sample);
 			break;
 		}
 	}
@@ -609,6 +609,7 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 			}
 			update_used_memory();
 			set_cursor_waiting(FALSE);
+			free(image[channel]);
 			return;
 		}
 		/* remove background */

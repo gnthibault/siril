@@ -278,7 +278,7 @@ void computeStat() {
 	GtkLabel *statNameLabel, *statSelecLabel;
 	gboolean normalized;
 	int channel;
-	char name[256], selection[256];
+	gchar *name, *selection;
 	imstats *stat[3] = { NULL, NULL, NULL };
 
 	checkButton = GTK_TOGGLE_BUTTON(lookup_widget("statCheckButton"));
@@ -287,24 +287,25 @@ void computeStat() {
 	normalized = gtk_toggle_button_get_active(checkButton);
 
 	if (single_image_is_loaded())
-		g_snprintf(name, sizeof(name), "%s", com.uniq->filename);
+		name = g_strdup_printf("%s", com.uniq->filename);
 	else if (sequence_is_loaded())
-		g_snprintf(name, sizeof(name), _("Image %d/%d from the sequence %s"),
+		name = g_strdup_printf(_("Image %d/%d from the sequence %s"),
 				com.seq.current, com.seq.number, com.seq.seqname);
 	else
-		g_snprintf(name, sizeof(name), _("unknown image"));
+		name = g_strdup_printf(_("unknown image"));
 
 	gtk_label_set_text(statNameLabel, name);
+	g_free(name);
 
 	if (com.selection.h && com.selection.w) {
-		g_snprintf(selection, sizeof(selection),
-				_("Size of selection in pixel: (%d,%d)"), com.selection.w,
-				com.selection.h);
+		selection = g_strdup_printf(_("Size of selection in pixel: (%d,%d)"),
+				com.selection.w, com.selection.h);
 	} else {
-		g_snprintf(selection, sizeof(selection), _("No selection"));
+		selection = g_strdup_printf(_("No selection"));
 	}
 
 	gtk_label_set_text(statSelecLabel, selection);
+	g_free(selection);
 
 	for (channel = 0; channel < gfit.naxes[2]; channel++) {
 		stat[channel] = statistics(NULL, -1, &gfit, channel, &com.selection, STATS_MAIN);

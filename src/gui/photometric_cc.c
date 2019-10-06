@@ -348,6 +348,9 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 
 	if (ngood == 0) {
 		siril_log_message(_("No valid stars found.\n"));
+		free(data[RED]);
+		free(data[GREEN]);
+		free(data[BLUE]);
 		return 1;
 	}
 	/* sort in ascending order before using siril_stats_mean_from_linearFit

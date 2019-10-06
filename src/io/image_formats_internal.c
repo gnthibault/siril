@@ -772,7 +772,6 @@ static int _pic_close_file(struct pic_struct *pic_file) {
 }
 
 int readpic(const char *name, fits *fit) {
-	char header[290] = { 0 };
 	struct pic_struct *pic_file;
 	WORD *buf;
 	int retval = 0;
@@ -798,7 +797,7 @@ int readpic(const char *name, fits *fit) {
 
 	nbdata = fit->rx * fit->ry;
 
-	fseek(pic_file->file, sizeof(header), SEEK_SET);
+	fseek(pic_file->file, 290, SEEK_SET);
 	buf = malloc(nbdata * pic_file->nbplane * sizeof(WORD));
 
 	if ((fread(buf, 1, nbdata * pic_file->nbplane * sizeof(WORD), pic_file->file))

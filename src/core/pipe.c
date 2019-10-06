@@ -389,6 +389,7 @@ void *read_pipe(void *p) {
 
 								if (enqueue_command(command)) {
 									retval = -1;
+									free(command);
 									break;
 								}
 							}

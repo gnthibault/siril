@@ -622,7 +622,7 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 			starB = &(star_array_B[i]);
 			g_assert(starA != NULL);
 			g_assert(starB != NULL);
-			if (mask[i] && starB->BV != -99.9) {
+			if (mask && mask[i] && starB->BV != -99.9) {
 				fprintf(BV_file,
 						" %4d %11.4e %11.4e %.3f\n",
 						i, starA->x, starA->y, starB->BV);
