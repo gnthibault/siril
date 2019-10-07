@@ -212,13 +212,25 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	redraw(com.cvport, REMAP_NONE);
 }
 
-/* double click on an image -> open it */
-void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
-		GtkTreeViewColumn *column, gpointer user_data) {
-	gint index = get_image_index_from_path(path);
-	if (index < 0 || index >= com.seq.number) return;
-	fprintf(stdout, "loading image %d\n", index);
-	seq_load_image(&com.seq, index, TRUE);
+void on_treeview1_cursor_changed(GtkTreeView *tree_view,
+		gpointer user_data) {
+	GtkTreeModel *treeModel;
+	GtkTreeSelection *selection;
+	GtkTreeIter iter;
+
+	treeModel = gtk_tree_view_get_model(tree_view);
+	selection = gtk_tree_view_get_selection (tree_view);
+
+	if (gtk_tree_selection_get_selected(selection, &treeModel, &iter)) {
+		gint idx;
+		GValue value = G_VALUE_INIT;
+
+		gtk_tree_model_get_value(treeModel, &iter, COLUMN_INDEX, &value);
+		idx = g_value_get_int(&value);
+		fprintf(stdout, "loading image %d\n", idx);
+		seq_load_image(&com.seq, idx, TRUE);
+		g_value_unset(&value);
+	}
 }
 
 /****************** modification of the list store (tree model) ******************/
@@ -278,5 +290,7 @@ void sequence_list_change_reference() {
 
 void clear_sequence_list() {
 	get_list_store();
+	g_signal_handlers_block_by_func(lookup_widget("treeview1"), on_treeview1_cursor_changed, NULL);
 	gtk_list_store_clear(list_store);
+	g_signal_handlers_unblock_by_func(lookup_widget("treeview1"), on_treeview1_cursor_changed, NULL);
 }
