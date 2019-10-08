@@ -408,15 +408,25 @@ int main(int argc, char *argv[]) {
 
 	/* open image in argument, changing dir to be in its directory too */
 	if (argv[optind] != NULL) {
-		const char *image_path = argv[optind];
-		if (startup_cwd) {
-			changedir(startup_cwd, NULL);
-		}
-		open_single_image(image_path);
-		if (!forcecwd) {
-			gchar *image_dir = g_path_get_dirname(image_path);
-			changedir(image_dir, NULL);
-			g_free(image_dir);
+		const char *ext = get_filename_ext(argv[optind]);
+		if (!strncmp(ext, "seq", 4)) {
+			changedir(g_path_get_dirname(argv[optind]), NULL);
+			if (check_seq(FALSE)) {
+				siril_log_message(_("No sequence `%s' found.\n"), argv[optind]);
+				return 1;
+			}
+			set_seq(argv[optind]);
+		} else {
+			const char *image_path = argv[optind];
+			if (startup_cwd) {
+				changedir(startup_cwd, NULL);
+			}
+			open_single_image(image_path);
+			if (!forcecwd) {
+				gchar *image_dir = g_path_get_dirname(image_path);
+				changedir(image_dir, NULL);
+				g_free(image_dir);
+			}
 		}
 	}
 	g_free(startup_cwd);

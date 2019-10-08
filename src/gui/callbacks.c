@@ -1727,8 +1727,7 @@ void set_layers_for_registration() {
 void display_image_number(int index) {
 	static GtkSpinButton *spin = NULL;
 	if (!spin)
-		spin = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "imagenumber_spin"));
+		spin = GTK_SPIN_BUTTON(lookup_widget("imagenumber_spin"));
 	char text[16];
 	char format[10];
 	if (com.seq.fixed <= 1)
@@ -3766,7 +3765,7 @@ void on_layer_assign_selected(GtkComboBox *widget, gpointer user_data) {
 }
 
 /* Returns :	TRUE if the value has been displayed */
-gboolean on_imagenumberspin_output(GtkSpinButton *spin, gpointer user_data) {
+gboolean on_imagenumber_spin_output(GtkSpinButton *spin, gpointer user_data) {
 	static GtkAdjustment *adjustment = NULL;
 	int index, do_display;
 	if (adjustment == NULL)
