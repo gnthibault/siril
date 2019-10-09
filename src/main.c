@@ -422,7 +422,7 @@ int main(int argc, char *argv[]) {
 				g_free(pathname);
 				return 1;
 			}
-			set_seq(argv[optind]);
+			set_seq(pathname);
 			g_free(pathname);
 		} else {
 			const char *image_path = argv[optind];
