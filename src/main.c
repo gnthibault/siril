@@ -406,11 +406,11 @@ int main(int argc, char *argv[]) {
 	}
 #endif //MAC_INTEGRATION
 
-	/* open image in argument, changing dir to be in its directory too */
+	/* open image, or sequence in argument, changing dir to be in its directory too */
 	if (argv[optind] != NULL) {
 		gchar *pathname;
 #ifdef _WIN32
-		pathname = g_strescape(argv[optind], NULL);
+		pathname = siril_replace_backslash(argv[optind]);
 #else
 		pathname = g_strdup(argv[optind]);
 #endif
@@ -423,7 +423,6 @@ int main(int argc, char *argv[]) {
 				return 1;
 			}
 			set_seq(pathname);
-			g_free(pathname);
 		} else {
 			const char *image_path = argv[optind];
 			if (startup_cwd) {
@@ -436,6 +435,7 @@ int main(int argc, char *argv[]) {
 				g_free(image_dir);
 			}
 		}
+		g_free(pathname);
 	}
 	g_free(startup_cwd);
 

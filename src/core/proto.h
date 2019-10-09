@@ -114,6 +114,7 @@ char*	format_basename(char *root);
 float	computePente(WORD *lo, WORD *hi);
 void	load_css_style_sheet();
 double	encodeJD(dateTime dt);
+gchar* siril_replace_backslash(gchar *source);
 
 /**************** OS_utils.h *****************/
 void	update_used_memory();
