@@ -114,7 +114,7 @@ char*	format_basename(char *root);
 float	computePente(WORD *lo, WORD *hi);
 void	load_css_style_sheet();
 double	encodeJD(dateTime dt);
-gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file);
+gchar* siril_escape_filename(const gchar *pathname);
 
 /**************** OS_utils.h *****************/
 void	update_used_memory();
@@ -130,6 +130,7 @@ SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction acti
 SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action);
 gint siril_dialog_run(SirilWidget *widgetdialog);
 void siril_widget_destroy(SirilWidget *widgetdialog);
+gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file);
 
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,

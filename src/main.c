@@ -408,14 +408,22 @@ int main(int argc, char *argv[]) {
 
 	/* open image in argument, changing dir to be in its directory too */
 	if (argv[optind] != NULL) {
-		const char *ext = get_filename_ext(argv[optind]);
+		gchar *pathname;
+#ifdef _WIN32
+		pathname = siril_escape_filename(argv[optind]);
+#else
+		pathname = g_strdup(argv[optind]);
+#endif
+		const char *ext = get_filename_ext(pathname);
 		if (!strncmp(ext, "seq", 4)) {
-			changedir(g_path_get_dirname(argv[optind]), NULL);
+			changedir(g_path_get_dirname(pathname), NULL);
 			if (check_seq(FALSE)) {
-				siril_log_message(_("No sequence `%s' found.\n"), argv[optind]);
+				siril_log_message(_("No sequence `%s' found.\n"), pathname);
+				g_free(pathname);
 				return 1;
 			}
 			set_seq(argv[optind]);
+			g_free(pathname);
 		} else {
 			const char *image_path = argv[optind];
 			if (startup_cwd) {
