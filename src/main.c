@@ -410,7 +410,7 @@ int main(int argc, char *argv[]) {
 	if (argv[optind] != NULL) {
 		gchar *pathname;
 #ifdef _WIN32
-		pathname = siril_escape_filename(argv[optind]);
+		pathname = g_strescape(argv[optind], NULL);
 #else
 		pathname = g_strdup(argv[optind]);
 #endif

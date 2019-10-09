@@ -708,23 +708,3 @@ double encodeJD(dateTime dt) {
 		return jd1 + 2 - (dt.year / 100) + (dt.year / 400);
 	}
 }
-
-/**
- * 	Turn backslashes into forward slashes.
- * @param pathname the pathname to convert
- * @return an escaped version of pathname . The returned string should be freed when no longer needed.
- */
-gchar* siril_escape_filename(const gchar *pathname) {
-	gchar *p, *backslash;
-
-	pathname = g_strdup(pathname);
-	p = (gchar*) pathname;
-
-	while ((backslash = strchr(p, '\\')) != NULL) {
-		*backslash = '/';
-		p = backslash + 1;
-	}
-	g_free((gchar*) pathname);
-
-	return backslash;
-}
