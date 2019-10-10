@@ -416,13 +416,14 @@ int main(int argc, char *argv[]) {
 #endif
 		const char *ext = get_filename_ext(pathname);
 		if (ext && !strncmp(ext, "seq", 4)) {
-			changedir(g_path_get_dirname(pathname), NULL);
-			if (check_seq(FALSE)) {
-				siril_log_message(_("No sequence `%s' found.\n"), pathname);
-				g_free(pathname);
-				return 1;
+			if (!changedir(g_path_get_dirname(pathname), NULL)) {
+				if (check_seq(FALSE)) {
+					siril_log_message(_("No sequence `%s' found.\n"), pathname);
+					g_free(pathname);
+				} else {
+					set_seq(pathname);
+				}
 			}
-			set_seq(pathname);
 		} else {
 			const char *image_path = argv[optind];
 			if (startup_cwd) {
