@@ -410,7 +410,9 @@ int main(int argc, char *argv[]) {
 	if (argv[optind] != NULL) {
 		gchar *pathname;
 #ifdef _WIN32
-		pathname = siril_replace_backslash(argv[optind]);
+		gchar *tmp = siril_replace_backslash(argv[optind]);
+		pathname = g_win32_locale_filename_from_utf8(name);
+		g_free(name);
 #else
 		pathname = g_strdup(argv[optind]);
 #endif
