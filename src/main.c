@@ -415,7 +415,7 @@ int main(int argc, char *argv[]) {
 		pathname = g_strdup(argv[optind]);
 #endif
 		const char *ext = get_filename_ext(pathname);
-		if (!strncmp(ext, "seq", 4)) {
+		if (ext && !strncmp(ext, "seq", 4)) {
 			changedir(g_path_get_dirname(pathname), NULL);
 			if (check_seq(FALSE)) {
 				siril_log_message(_("No sequence `%s' found.\n"), pathname);
