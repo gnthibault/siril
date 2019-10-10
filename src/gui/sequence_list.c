@@ -227,8 +227,10 @@ void on_treeview1_cursor_changed(GtkTreeView *tree_view,
 
 		gtk_tree_model_get_value(treeModel, &iter, COLUMN_INDEX, &value);
 		idx = g_value_get_int(&value);
-		fprintf(stdout, "loading image %d\n", idx);
-		seq_load_image(&com.seq, idx, TRUE);
+		if (idx != com.seq.current) {
+			fprintf(stdout, "loading image %d\n", idx);
+			seq_load_image(&com.seq, idx, TRUE);
+		}
 		g_value_unset(&value);
 	}
 }
