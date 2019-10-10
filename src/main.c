@@ -419,7 +419,6 @@ int main(int argc, char *argv[]) {
 			if (!changedir(g_path_get_dirname(pathname), NULL)) {
 				if (check_seq(FALSE)) {
 					siril_log_message(_("No sequence `%s' found.\n"), pathname);
-					g_free(pathname);
 				} else {
 					set_seq(pathname);
 				}
