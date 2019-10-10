@@ -3764,7 +3764,19 @@ void on_layer_assign_selected(GtkComboBox *widget, gpointer user_data) {
 	gtk_entry_set_text(entry_wl, wl);
 }
 
-/* Returns :	TRUE if the value has been displayed */
+struct load_img_data {
+	int index, do_display;
+};
+
+static gboolean seq_load_image_as_idle(gpointer p) {
+	struct load_img_data *data = (struct load_img_data *)p;
+	if (com.seq.current != data->index) // avoid double click
+		seq_load_image(&com.seq, data->index, data->do_display);
+	free(data);
+	return FALSE;
+}
+
+/* Returns TRUE if the value has been displayed */
 gboolean on_imagenumber_spin_output(GtkSpinButton *spin, gpointer user_data) {
 	static GtkAdjustment *adjustment = NULL;
 	int index, do_display;
@@ -3774,19 +3786,22 @@ gboolean on_imagenumber_spin_output(GtkSpinButton *spin, gpointer user_data) {
 
 	//fprintf(stdout, "spinchanged output: index=%d\n", index);
 	if (!sequence_is_loaded()) {
-		// no sequence has been loaded yet
-		//fprintf(stderr, "No sequence loaded\n");
 		return FALSE;
 	}
 	if (index > com.seq.number || com.seq.current == index) {// already done for this one
-	//fprintf(stderr, "index already processed or data not init. Current: %d, idx: %d\n",
-	//		com.seq.current, index);
+		//fprintf(stderr, "index already processed or data not init. Current: %d, idx: %d\n",
+		//		com.seq.current, index);
 		return TRUE;
 	}
 	//fprintf(stdout, "SPINCHANGED: index=%d\n", index);
 
 	do_display = (com.seq.imgparam[index].incl || com.show_excluded);
-	return !seq_load_image(&com.seq, index, do_display);
+	struct load_img_data *data = malloc(sizeof(struct load_img_data));
+	data->index = index;
+	data->do_display = do_display;
+	//return !seq_load_image(&com.seq, index, do_display);
+	gdk_threads_add_idle(seq_load_image_as_idle, data);
+	return TRUE;
 }
 
 /* for the spin button to be able to display number which are not the actual value of
