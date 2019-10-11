@@ -250,20 +250,16 @@ int main(int argc, char *argv[]) {
 #ifdef _WIN32
 	setlocale(LC_ALL, "");
 
-	wchar_t exnameU[MAX_PATH + 1] = { 0 };
-	GetModuleFileNameW(NULL, exnameU, MAX_PATH);
-
-	gchar *exname = g_utf16_to_utf8(exnameU, -1, NULL, NULL, NULL);
-	gchar *dirname = g_path_get_dirname(exname);
-	gchar *localedir = g_build_filename(dirname, "\\..\\share\\locale", NULL);
+	gchar *dirname = g_win32_get_package_installation_directory_of_module(NULL);
+	gchar *localedir = g_build_filename(dirname, "share", "locale", NULL);
 	gchar *localefilename = g_win32_locale_filename_from_utf8(localedir);
 
 	bindtextdomain(PACKAGE, localefilename);
 	bind_textdomain_codeset(PACKAGE, "UTF-8");
+
 	g_free(localefilename);
 	g_free(localedir);
 	g_free(dirname);
-	g_free(exname);
 #else
 	bindtextdomain(PACKAGE, LOCALEDIR);
 #endif
