@@ -422,12 +422,14 @@ int main(int argc, char *argv[]) {
 #endif
 		const char *ext = get_filename_ext(pathname);
 		if (ext && !strncmp(ext, "seq", 4)) {
-			if (!changedir(g_path_get_dirname(pathname), NULL)) {
+			gchar *sequence_dir = g_path_get_dirname(pathname);
+			if (!changedir(sequence_dir, NULL)) {
 				if (check_seq(FALSE)) {
 					siril_log_message(_("No sequence `%s' found.\n"), pathname);
 				} else {
 					set_seq(pathname);
 				}
+				g_free(sequence_dir);
 			}
 		} else {
 			if (startup_cwd) {

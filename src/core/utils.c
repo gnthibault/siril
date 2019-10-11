@@ -708,21 +708,3 @@ double encodeJD(dateTime dt) {
 		return jd1 + 2 - (dt.year / 100) + (dt.year / 400);
 	}
 }
-
-gchar* siril_replace_backslash(gchar *source) {
-
-	gchar *qstr = g_malloc((strlen(source) + 1) * sizeof qstr[0]);
-	gchar *c1, *c2;
-	for (c1 = source, c2 = qstr; *c1 != '\0'; c1++) {
-		if (*c1 == '\\') {
-			*c2 = '/';
-			c2 ++;
-		} else {
-			*c2 = *c1;
-			c2++;
-		}
-	}
-	*c2 = '\0';
-	return qstr;
-}
-
