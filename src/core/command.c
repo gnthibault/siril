@@ -1881,7 +1881,6 @@ int process_split_cfa(int nb) {
 
 int process_seq_split_cfa(int nb) {
 	sequence *seq = NULL;
-	int i = 0;
 
 	if (get_thread_run()) {
 		siril_log_message(_("Another task is "
@@ -1909,7 +1908,6 @@ int process_seq_split_cfa(int nb) {
 		free(seq);
 		return 1;
 	}
-	i++;
 
 	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
 

@@ -410,9 +410,7 @@ int main(int argc, char *argv[]) {
 	if (argv[optind] != NULL) {
 		gchar *pathname;
 #ifdef _WIN32
-		gchar *tmp = siril_replace_backslash(argv[optind]);
-		pathname = g_win32_locale_filename_from_utf8(tmp);
-		g_free(tmp);
+		pathname = platform_get_argv1();
 #else
 		pathname = g_strdup(argv[optind]);
 #endif
@@ -426,13 +424,12 @@ int main(int argc, char *argv[]) {
 				}
 			}
 		} else {
-			const char *image_path = argv[optind];
 			if (startup_cwd) {
 				changedir(startup_cwd, NULL);
 			}
-			open_single_image(image_path);
+			open_single_image(pathname);
 			if (!forcecwd) {
-				gchar *image_dir = g_path_get_dirname(image_path);
+				gchar *image_dir = g_path_get_dirname(pathname);
 				changedir(image_dir, NULL);
 				g_free(image_dir);
 			}

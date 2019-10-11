@@ -376,7 +376,7 @@ int check_only_one_film_seq(char* name) {
 int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 	if (seq->nb_layers == -1 || seq->rx == 0) {	// not init yet, first loading of the sequence
 		int image_to_load = sequence_find_refimage(seq);
-		fits tmpfit, *fit;
+		fits tmpfit = { 0 }, *fit;
 
 		if (load_ref_into_gfit) {
 			clearfits(&gfit);
