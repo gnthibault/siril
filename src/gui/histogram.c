@@ -443,8 +443,10 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 		nb_bins_allocated = width;
 		tmp = realloc(displayed_values, nb_bins_allocated * sizeof(double));
 		if (!tmp) {
-			if (displayed_values)
+			if (displayed_values) {
 				free(displayed_values);
+				displayed_values = NULL;
+			}
 			fprintf(stderr, "Failed to reallocate histogram bins\n");
 			histo_close(TRUE);
 			return;
