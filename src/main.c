@@ -410,7 +410,9 @@ int main(int argc, char *argv[]) {
 	if (argv[optind] != NULL) {
 		gchar *pathname;
 #ifdef _WIN32
-		pathname = win32_get_argv1();
+		gchar **strv = g_win32_get_command_line();
+		pathname = g_strdup(strv[1]);
+		g_strfreev(strv);
 #else
 		pathname = g_strdup(argv[optind]);
 #endif

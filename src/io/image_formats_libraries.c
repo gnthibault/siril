@@ -1239,38 +1239,37 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 			buf[i++] = raw->rawdata.raw_image[offset + col + (raw_width * row)];
 		}
 	}
-	
-	if (data != NULL) {
-		clearfits(fit);
-		fit->bitpix = fit->orig_bitpix = USHORT_IMG;
-		fit->rx = (unsigned int) (width);
-		fit->ry = (unsigned int) (height);
-		fit->naxes[0] = (long) (width);
-		fit->naxes[1] = (long) (height);
-		fit->naxes[2] = 1;
-		fit->naxis = 2;
-		fit->data = data;
-		fit->pdata[RLAYER] = fit->data;
-		fit->pdata[GLAYER] = fit->data;
-		fit->pdata[BLAYER] = fit->data;
-		fit->binning_x = fit->binning_y = 1;
-		fit->maximum_pixel_value = (WORD) raw->color.maximum;
-		if (pitch > 0.f)
-			fit->pixel_size_x = fit->pixel_size_y = pitch;
-		if (raw->other.focal_len > 0.f)
-			fit->focal_length = raw->other.focal_len;
-		if (raw->other.iso_speed > 0.f)
-			fit->iso_speed = raw->other.iso_speed;
-		if (raw->other.shutter > 0.f)
-			fit->exposure = raw->other.shutter;
-		if (raw->other.aperture > 0.f)
-			fit->aperture = raw->other.aperture;
-		g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make,
-				raw->idata.model);
-		get_FITS_date(raw->other.timestamp, fit->date_obs);
-		if (filters)
-			g_snprintf(fit->bayer_pattern, FLEN_VALUE, "%s", pattern);
-	}
+
+	clearfits(fit);
+	fit->bitpix = fit->orig_bitpix = USHORT_IMG;
+	fit->rx = (unsigned int) (width);
+	fit->ry = (unsigned int) (height);
+	fit->naxes[0] = (long) (width);
+	fit->naxes[1] = (long) (height);
+	fit->naxes[2] = 1;
+	fit->naxis = 2;
+	fit->data = data;
+	fit->pdata[RLAYER] = fit->data;
+	fit->pdata[GLAYER] = fit->data;
+	fit->pdata[BLAYER] = fit->data;
+	fit->binning_x = fit->binning_y = 1;
+	fit->maximum_pixel_value = (WORD) raw->color.maximum;
+	if (pitch > 0.f)
+		fit->pixel_size_x = fit->pixel_size_y = pitch;
+	if (raw->other.focal_len > 0.f)
+		fit->focal_length = raw->other.focal_len;
+	if (raw->other.iso_speed > 0.f)
+		fit->iso_speed = raw->other.iso_speed;
+	if (raw->other.shutter > 0.f)
+		fit->exposure = raw->other.shutter;
+	if (raw->other.aperture > 0.f)
+		fit->aperture = raw->other.aperture;
+	g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make,
+			raw->idata.model);
+	get_FITS_date(raw->other.timestamp, fit->date_obs);
+	if (filters)
+		g_snprintf(fit->bayer_pattern, FLEN_VALUE, "%s", pattern);
+
 
 	libraw_recycle(raw);
 	libraw_close(raw);

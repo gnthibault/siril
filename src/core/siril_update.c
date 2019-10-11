@@ -270,13 +270,13 @@ static gboolean end_update_idle(gpointer p) {
 		gint x = last_version_available.major_version;
 		gint y = last_version_available.minor_version;
 		gint z = last_version_available.micro_version;
-		gint p = last_version_available.patched_version;
+		gint patch = last_version_available.patched_version;
 
 		if (compare_version(current_version, last_version_available) < 0) {
 			msg = siril_log_message(_("New version is available. You can download it at "
 							"<a href=\"%s%d.%d.%d\">%s%d.%d.%d</a>\n"),
 					download_url, x, y, z, download_url, x, y, z);
-			changelog = get_changelog(x, y, z, p);
+			changelog = get_changelog(x, y, z, patch);
 			data = parse_changelog(changelog);
 		} else if (compare_version(current_version, last_version_available) > 0) {
 			msg = siril_log_message(_("No update check: this is a development version\n"));

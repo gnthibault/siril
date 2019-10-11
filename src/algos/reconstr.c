@@ -166,7 +166,7 @@ int wavelet_reconstruct_file(char *File_Name_Transform, float *coef, WORD *data)
 	reget_rawdata(Imag, Nl, Nc, data);
 
 	wave_io_free(&Wavelet);
-	free((char *) Imag);
+	free(Imag);
 	return 0;
 }
 

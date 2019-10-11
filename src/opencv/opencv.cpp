@@ -733,7 +733,6 @@ int cvClahe(fits *image, double clip_limit, int size) {
 			out = Mat();
 
 			// convert the RGB color image to Lab
-			Mat lab_image;
 			cvtColor(in, lab_image, COLOR_BGR2Lab);
 
 			// Extract the L channel

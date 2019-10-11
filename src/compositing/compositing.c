@@ -1008,13 +1008,12 @@ gboolean on_color_button_motion_event(GtkWidget *widget, GdkEventMotion *event, 
 
 /* fill the combo box containing filter names */
 void populate_filter_lists() {
-	GtkComboBoxText *box;
 	int i, nb_filters;
-	box = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "comboboxtext_filters"));
+	GtkComboBoxText *cbox = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "comboboxtext_filters"));
 	nb_filters = get_nb_narrow_filters();
-	gtk_combo_box_text_remove_all(box);
+	gtk_combo_box_text_remove_all(cbox);
 	for (i=0; i<nb_filters; i++)
-		gtk_combo_box_text_append_text(box, narrow_band_filters[i].name);
+		gtk_combo_box_text_append_text(cbox, narrow_band_filters[i].name);
 	//gtk_combo_box_set_active(GTK_COMBO_BOX(box), -1);
 }
 

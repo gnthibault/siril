@@ -131,9 +131,7 @@ SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction act
 gint siril_dialog_run(SirilWidget *widgetdialog);
 void siril_widget_destroy(SirilWidget *widgetdialog);
 gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file);
-#ifdef _WIN32
-char* win32_get_argv1(void);
-#endif
+
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,
 		WORD nullvalue, long *ngoodpix, WORD *minvalue, WORD *maxvalue,
