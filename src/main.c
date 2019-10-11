@@ -411,7 +411,7 @@ int main(int argc, char *argv[]) {
 		gchar *pathname;
 #ifdef _WIN32
 		gchar *tmp = siril_replace_backslash(argv[optind]);
-		pathname = g_win32_locale_filename_from_utf8(name);
+		pathname = g_win32_locale_filename_from_utf8(tmp);
 		g_free(name);
 #else
 		pathname = g_strdup(argv[optind]);
