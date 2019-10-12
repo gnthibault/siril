@@ -27,7 +27,7 @@
 #ifdef MAC_INTEGRATION
 #include <gtkosxapplication.h>
 #endif
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 #include <windows.h>
 #include <tchar.h>
 #include <io.h>
@@ -124,7 +124,7 @@ static void set_osx_integration(GtkosxApplication *osx_app) {
 }
 
 #endif
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 /* origine du source: https://stackoverflow.com/questions/24171017/win32-console-application-that-can-open-windows */
 int ReconnectIO(int OpenNewConsole)
 {
@@ -170,7 +170,7 @@ int ReconnectIO(int OpenNewConsole)
 #endif
 
 static char *siril_sources[] = {
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 	"../share/siril",
 #elif (defined(__APPLE__) && defined(__MACH__))
 	"/tmp/siril/Contents/Resources/share/siril/",
@@ -247,7 +247,7 @@ int main(int argc, char *argv[]) {
 	g_setenv ("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
 	/* for translation */
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 	setlocale(LC_ALL, "");
 
 	gchar *dirname = g_win32_get_package_installation_directory_of_module(NULL);
@@ -412,22 +412,20 @@ int main(int argc, char *argv[]) {
 
 	/* open image, or sequence in argument, changing dir to be in its directory too */
 	if (argv[optind] != NULL) {
-		gchar *pathname;
-#ifdef _WIN32
-		gchar **strv = g_win32_get_command_line();
-		pathname = g_strdup(strv[1]);
-		g_strfreev(strv);
+		gchar **args;
+#ifdef G_OS_WIN32
+		args = g_win32_get_command_line();
 #else
-		pathname = g_strdup(argv[optind]);
+		args = g_strdupv(argv);
 #endif
-		const char *ext = get_filename_ext(pathname);
+		const char *ext = get_filename_ext(args[1]);
 		if (ext && !strncmp(ext, "seq", 4)) {
-			gchar *sequence_dir = g_path_get_dirname(pathname);
+			gchar *sequence_dir = g_path_get_dirname(args[1]);
 			if (!changedir(sequence_dir, NULL)) {
 				if (check_seq(FALSE)) {
-					siril_log_message(_("No sequence `%s' found.\n"), pathname);
+					siril_log_message(_("No sequence `%s' found.\n"), args[1]);
 				} else {
-					set_seq(pathname);
+					set_seq(args[1]);
 				}
 				g_free(sequence_dir);
 			}
@@ -435,14 +433,14 @@ int main(int argc, char *argv[]) {
 			if (startup_cwd) {
 				changedir(startup_cwd, NULL);
 			}
-			open_single_image(pathname);
+			open_single_image(args[1]);
 			if (!forcecwd) {
-				gchar *image_dir = g_path_get_dirname(pathname);
+				gchar *image_dir = g_path_get_dirname(args[1]);
 				changedir(image_dir, NULL);
 				g_free(image_dir);
 			}
 		}
-		g_free(pathname);
+		g_strfreev(args);
 	}
 	g_free(startup_cwd);
 
@@ -462,7 +460,7 @@ int main(int argc, char *argv[]) {
 				siril_log_message(_("File [%s] does not exist\n"), start_script);
 				exit(1);
 			}
-#ifdef _WIN32			
+#ifdef G_OS_WIN32			
 			ReconnectIO(1);
 #endif
 			if (execute_script(fp)) {

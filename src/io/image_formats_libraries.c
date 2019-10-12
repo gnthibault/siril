@@ -170,7 +170,7 @@ static uint16_t get_compression_mode() {
 }
 
 static TIFF* Siril_TIFFOpen(const char *name, const char *mode) {
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 	wchar_t *wname;
 
 	wname = g_utf8_to_utf16(name, -1, NULL, NULL, NULL);
@@ -842,7 +842,7 @@ static void get_FITS_date(time_t date, char *date_obs) {
 	struct tm t_;
 #endif
 
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 	t = gmtime (&date);
 #else
 #ifdef HAVE_GMTIME_R
@@ -850,7 +850,7 @@ static void get_FITS_date(time_t date, char *date_obs) {
 #else
 	t = gmtime(&date);
 #endif /* HAVE_GMTIME_R */
-#endif /* _WIN32 */
+#endif /* G_OS_WIN32 */
 
 	/* If the gmtime() call has failed, "secs" is too big. */
 	if (t) {
@@ -907,7 +907,7 @@ static float estimate_pixel_pitch(libraw_data_t *raw) {
 
 static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
 /* libraw_open_wfile is not defined for all windows compilers */
-#if defined(_WIN32) && !defined(__MINGW32__) && defined(_MSC_VER) && (_MSC_VER > 1310)
+#if defined(G_OS_WIN32) && !defined(__MINGW32__) && defined(_MSC_VER) && (_MSC_VER > 1310)
 	wchar_t *wname;
 
 	wname = g_utf8_to_utf16(name, -1, NULL, NULL, NULL);
@@ -918,7 +918,7 @@ static int siril_libraw_open_file(libraw_data_t* rawdata, const char *name) {
 	int ret = libraw_open_wfile(rawdata, wname);
 	g_free(wname);
 	return ret;
-#elif defined(_WIN32)
+#elif defined(G_OS_WIN32)
 	gchar *localefilename = g_win32_locale_filename_from_utf8(name);
 	int ret = libraw_open_file(rawdata, localefilename);
 	g_free(localefilename);

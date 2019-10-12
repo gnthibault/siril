@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef _WIN32
+#ifndef G_OS_WIN32
 #include <sys/wait.h>
 #endif
 
@@ -111,7 +111,7 @@ static double serTimestamp_toJulian(uint64_t timestamp) {
 	struct tm t_;
 #endif
 
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 	t = gmtime (&secs);
 #else
 #ifdef HAVE_GMTIME_R
@@ -119,7 +119,7 @@ static double serTimestamp_toJulian(uint64_t timestamp) {
 #else
 	t = gmtime(&secs);
 #endif /* HAVE_GMTIME_R */
-#endif /* _WIN32 */
+#endif /* G_OS_WIN32 */
 
 	/* If the gmtime() call has failed, "secs" is too big. */
 	if (t == NULL) {
@@ -245,7 +245,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 	plot->nb = j;
 }
 
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 /* returns true if the gnuplot.exe exists in the wanted folder */
 static gchar *possible_path[] = { "C:\\Program Files\\gnuplot\\bin\\gnuplot.exe" };
 static gboolean gnuplot_is_available() {

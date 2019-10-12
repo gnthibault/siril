@@ -25,7 +25,7 @@
 #include <sys/stat.h>
 #include <gio/gio.h>
 #include <glib/gstdio.h>
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 #define DATADIR datadir
 /* Constant available since Shell32.dll 4.72 */
 #ifndef CSIDL_APPDATA
@@ -430,7 +430,7 @@ int checkinitfile() {
 	}
 
 	// no file given on command line, set initfile to default location
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 	home = g_build_filename (get_special_folder (CSIDL_APPDATA),
 			"siril", NULL);
 	if( g_mkdir_with_parents( home, 1 ) == 0 ) {
@@ -460,7 +460,7 @@ int checkinitfile() {
 		fprintf(stderr, "Failed to create homefolder %s.\n", homefolder);
 	}
 
-#elif defined (_WIN32)
+#elif defined (G_OS_WIN32)
 	com.initfile = g_build_filename(home, CFG_FILE, NULL);
 #else
 	com.initfile = g_new(gchar, strlen(home) + 20);
@@ -473,7 +473,7 @@ int checkinitfile() {
 #if (defined(__APPLE__) && defined(__MACH__))
 		snprintf(filename, 255, "%s", homefolder);
 		g_free(homefolder);
-#elif defined (_WIN32)
+#elif defined (G_OS_WIN32)
 		snprintf(filename, 255, "%s", home);
 #else
 		snprintf(filename, 255, "%s/.siril", home);

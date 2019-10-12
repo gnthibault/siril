@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 #include <windows.h>
 #include <psapi.h>
 #include <direct.h>
@@ -89,7 +89,7 @@ static int64_t find_space(const gchar *name) {
 	available = st.f_bavail;        // force 64 bits
         return available * st.f_bsize;
 }
-#elif defined _WIN32
+#elif defined G_OS_WIN32
 static int64_t find_space(const gchar *name) {
 	ULARGE_INTEGER avail;
 	int64_t sz;
@@ -150,7 +150,7 @@ static unsigned long update_used_RAM_memory() {
 	getrusage(RUSAGE_SELF, &usage);
 	return ((unsigned long) usage.ru_maxrss);
 }
-#elif defined(_WIN32) /* Windows */
+#elif defined(G_OS_WIN32) /* Windows */
 static unsigned long update_used_RAM_memory() {
     PROCESS_MEMORY_COUNTERS memCounter;
     
@@ -285,7 +285,7 @@ int get_available_memory_in_MB() {
 	}
 	return mem;
 }
-#elif defined(_WIN32) /* Windows */
+#elif defined(G_OS_WIN32) /* Windows */
 int get_available_memory_in_MB() {
 	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	MEMORYSTATUSEX memStatusEx = { 0 };
@@ -322,7 +322,7 @@ int get_max_memory_in_MB() {
  * @param filename
  * @param size
  */
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 /* stolen from gimp which in turn stole it from glib 2.35 */
 gchar *get_special_folder(int csidl) {
 	wchar_t path[MAX_PATH + 1];
@@ -359,7 +359,7 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 	MAX_NO_FILE_CFITSIO = (version < 3.45) ? 1000 : 10000;
 
 	/* get the OS limit and extend it if possible */
-#ifdef _WIN32
+#ifdef G_OS_WIN32
 	MAX_NO_FILE = min(MAX_NO_FILE_CFITSIO, 2048);
 	open_max = _getmaxstdio();
 	if (open_max < MAX_NO_FILE) {
@@ -395,7 +395,7 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 	} else {
 		open_max = sysconf(_SC_OPEN_MAX); // if no success with getrlimit, try with sysconf
 	}
-#endif // _WIN32
+#endif // G_OS_WIN32
 
 	maxfile = min(open_max, MAX_NO_FILE);
 	siril_debug_print("Maximum of files that will be opened=%d\n", maxfile);
@@ -405,7 +405,7 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 }
 
 SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction action) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if (defined G_OS_WIN32) || (defined(__APPLE__) && defined(__MACH__))
 	return gtk_file_chooser_native_new(_("Open File"), parent, action,
 			_("_Open"), _("_Cancel"));
 #else
@@ -416,7 +416,7 @@ SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction act
 }
 
 SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction action) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if (defined G_OS_WIN32) || (defined(__APPLE__) && defined(__MACH__))
 	return gtk_file_chooser_native_new(_("Add Files"), parent, action,
 			_("_Add"), _("_Cancel"));
 #else
@@ -427,7 +427,7 @@ SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction acti
 }
 
 SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if (defined G_OS_WIN32) || (defined(__APPLE__) && defined(__MACH__))
 	return gtk_file_chooser_native_new(_("Save File"), parent, action,
 			_("_Save"), _("_Cancel"));
 #else
@@ -438,7 +438,7 @@ SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction act
 }
 
 gint siril_dialog_run(SirilWidget *widgetdialog) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if (defined G_OS_WIN32) || (defined(__APPLE__) && defined(__MACH__))
 	return gtk_native_dialog_run(GTK_NATIVE_DIALOG(widgetdialog));
 #else
 	return gtk_dialog_run(GTK_DIALOG(GTK_FILE_CHOOSER(widgetdialog)));
@@ -446,7 +446,7 @@ gint siril_dialog_run(SirilWidget *widgetdialog) {
 }
 
 void siril_widget_destroy(SirilWidget *widgetdialog) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if (defined G_OS_WIN32) || (defined(__APPLE__) && defined(__MACH__))
 	g_object_unref(widgetdialog);
 #else
 	gtk_widget_destroy(widgetdialog);
