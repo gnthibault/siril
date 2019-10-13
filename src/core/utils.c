@@ -30,7 +30,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <assert.h>
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -196,7 +196,7 @@ int is_readable_file(const char *filename) {
 	if (g_lstat(filename, &sts))
 		return 0;
 	if (S_ISREG (sts.st_mode)
-#ifndef G_OS_WIN32
+#ifndef _WIN32
 			|| S_ISLNK(sts.st_mode)
 #else
 		|| (GetFileAttributesA(filename) & FILE_ATTRIBUTE_REPARSE_POINT )
@@ -347,15 +347,15 @@ int changedir(const char *dir, gchar **err) {
  */
 gchar *get_locale_filename(const gchar *path) {
 	gchar *str;
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	str = g_win32_locale_filename_from_utf8(path);
-#else // G_OS_WIN32
+#else // _WIN32
 	str = g_strdup(path);
-#endif // G_OS_WIN32
+#endif // _WIN32
 	return str;
 }
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 static int ListSequences(const gchar *sDir, const char *sequence_name_to_select,
 		GtkComboBoxText *seqcombo, int *index_of_seq_to_load) {
 	WIN32_FIND_DATAW fdFile;
@@ -436,7 +436,7 @@ int update_sequences_list(const char *sequence_name_to_select) {
 	       }
 	}
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	number_of_loaded_sequences = ListSequences(com.wd, seqname, seqcombo, &index_of_seq_to_load);
 #else
 	int i, n;

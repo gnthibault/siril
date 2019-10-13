@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
 */
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 #include <gdk/gdkkeysyms.h>
@@ -923,7 +923,7 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 	}
 	return retval;
 }
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 char* g_real_path(const char *source) {
 	HANDLE hFile;
 	DWORD maxchar = 2048;
@@ -988,7 +988,7 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest) {
 		case TYPERAW:
 			{
 				const char *src = source ;
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 				char *rsrc = g_real_path( source ) ;
 				if ( rsrc != NULL )
 				{
@@ -996,7 +996,7 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest) {
 				}
 #endif
 				retval = (open_raw_files(src , dest, !(convflags & CONVDEBAYER)) < 0);
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 				if ( rsrc != NULL )
 				{
 					g_free( rsrc ) ;					

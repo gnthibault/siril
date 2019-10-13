@@ -27,7 +27,7 @@
 #ifdef MAC_INTEGRATION
 #include <gtkosxapplication.h>
 #endif
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <tchar.h>
 #include <io.h>
@@ -124,7 +124,7 @@ static void set_osx_integration(GtkosxApplication *osx_app) {
 }
 
 #endif
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 /* origine du source: https://stackoverflow.com/questions/24171017/win32-console-application-that-can-open-windows */
 int ReconnectIO(int OpenNewConsole)
 {
@@ -170,7 +170,7 @@ int ReconnectIO(int OpenNewConsole)
 #endif
 
 static char *siril_sources[] = {
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	"../share/siril",
 #elif (defined(__APPLE__) && defined(__MACH__))
 	"/tmp/siril/Contents/Resources/share/siril/",
@@ -181,30 +181,39 @@ static char *siril_sources[] = {
 	""
 };
 
-static void usage(const char *command) {
-    printf("\nUsage:  %s [OPTIONS] [IMAGE_FILE_TO_OPEN]\n\n", command);
-    puts("    -d, --directory CWD        changing the current working directory as the argument");
-    puts("    -s, --script    SCRIPTFILE run the siril commands script in console mode");
-    puts("    -i              INITFILE   load configuration from file name instead of the default configuration file");
-    puts("    -p                         run in console mode with command and log stream through named pipes");
-    puts("    -f, --format               print all supported image file formats (depending on installed libraries)");
-    puts("    -v, --version              print program name and version and exit");
-    puts("    -h, --help                 show this message");
-}
-
 static void signal_handled(int s) {
 	// printf("Caught signal %d\n", s);
 	gtk_main_quit();
 }
 
-struct option long_opts[] = {
-		{"version", no_argument, 0, 'v'},
-		{"help", no_argument, 0, 'h'},
-		{"format", no_argument, 0, 'f'},
-		{"directory", required_argument, 0, 'd'},
-		{"script",    required_argument, 0, 's'},
-		{0, 0, 0, 0}
-	};
+static gchar *main_option_directory = NULL;
+static gchar *main_option_script = NULL;
+static gchar *main_option_initfile = NULL;
+static gboolean main_option_pipe = FALSE;
+
+static gboolean _print_version_and_exit(const gchar *option_name,
+		const gchar *value, gpointer data, GError **error) {
+	g_print("%s %s\n", PACKAGE, VERSION);
+	exit(EXIT_SUCCESS);
+	return TRUE;
+}
+
+static gboolean _print_list_of_formats_and_exit(const gchar *option_name,
+		const gchar *value, gpointer data, GError **error) {
+	list_format_available();
+	exit(EXIT_SUCCESS);
+	return TRUE;
+}
+
+static GOptionEntry main_option[] = {
+		{ "directory", 'd', 0, G_OPTION_ARG_FILENAME, &main_option_directory, N_("changing the current working directory as the argument"), NULL },
+		{ "script", 's', 0, G_OPTION_ARG_FILENAME, &main_option_script, N_("run the siril commands script in console mode"), NULL },
+		{ "initfile", 'i', 0, G_OPTION_ARG_FILENAME, &main_option_initfile, N_("load configuration from file name instead of the default configuration file"), NULL },
+		{ "pipe", 'p', 0, G_OPTION_ARG_NONE, &main_option_pipe, N_("run in console mode with command and log stream through named pipes"), NULL },
+		{ "format", 'f', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, _print_list_of_formats_and_exit, N_("print all supported image file formats (depending on installed libraries)" ), NULL },
+		{ "version", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, _print_version_and_exit, N_("Show the application’s version"), NULL},
+		{ NULL },
+};
 
 static char *load_glade_file() {
 	int i = 0;
@@ -236,9 +245,9 @@ static char *load_glade_file() {
 }
 
 int main(int argc, char *argv[]) {
-	int i, c;
-	extern char *optarg;
-	extern int opterr;
+	GError *error = NULL;
+	GOptionContext *ctx;
+	gchar **args;
 	gchar *startup_cwd = NULL;
 	gboolean forcecwd = FALSE;
 	gchar *cwd_forced = NULL;
@@ -247,7 +256,7 @@ int main(int argc, char *argv[]) {
 	g_setenv ("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
 	/* for translation */
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	setlocale(LC_ALL, "");
 
 	gchar *dirname = g_win32_get_package_installation_directory_of_module(NULL);
@@ -265,55 +274,63 @@ int main(int argc, char *argv[]) {
 #endif
 	textdomain(PACKAGE);
 
-	opterr = 0;
 	memset(&com, 0, sizeof(struct cominf));	// needed?
 	com.initfile = NULL;
 
 	/* Caught signals */
 	signal(SIGINT, signal_handled);
 
-	while ((c = getopt_long(argc, argv, "i:phfvd:s:", long_opts, NULL)) != -1) {
-		switch (c) {
-			case 'i':
-				com.initfile = g_strdup(optarg);
-				break;
-			case 'v':
-				fprintf(stdout, "%s %s\n", PACKAGE, VERSION);
-				exit(EXIT_SUCCESS);
-				break;
-			case 'f':
-				list_format_available();
-				exit(EXIT_SUCCESS);
-				break;
-			case 'd':
-				if (!g_path_is_absolute (optarg)) {
-					cwd_forced = g_build_filename(g_get_current_dir(), optarg, NULL);
-				} else {
-					cwd_forced = g_strdup(optarg);
-				}
-				forcecwd = TRUE;
-				break;
-			case 's':
-			case 'p':
-				com.script = TRUE;
-				com.headless = TRUE;
-				/* need to force cwd to the current dir if no option -d */
-				if (!forcecwd) {
-					cwd_forced = g_strdup(g_get_current_dir());
-					forcecwd = TRUE;
-				}
-				if (c == 's')
-					start_script = optarg;
-				break;
-			default:
-				fprintf(stderr, _("unknown command line parameter '%c'\n"), argv[argc - 1][1]);
-				/* no break */
-			case 'h':
-				usage(argv[0]);
-				g_free(cwd_forced);
-				exit(EXIT_SUCCESS);
-		}
+#ifdef _WIN32
+	args = g_win32_get_command_line();
+#else
+	args = g_strdupv(argv);
+#endif
+
+	ctx = g_option_context_new(_("[FILE…]"));
+	g_option_context_add_main_entries(ctx, main_option, PACKAGE);
+	g_option_context_add_group(ctx, gtk_get_option_group(FALSE));
+
+	if (!g_option_context_parse_strv(ctx, &args, &error)) {
+		gchar *help_msg;
+
+		help_msg = g_strdup_printf(_("Run “%s --help” to see a full "
+				"list of available command line "
+				"options."), args[0]);
+		g_printerr("%s\n%s\n", error->message, help_msg);
+		g_error_free(error);
+		g_free(help_msg);
+		g_option_context_free(ctx);
+		g_strfreev(args);
+
+		return 1;
 	}
+	g_option_context_free(ctx);
+
+	if (main_option_script || main_option_pipe) {
+		com.script = TRUE;
+		com.headless = TRUE;
+		/* need to force cwd to the current dir if no option -d */
+		if (!forcecwd) {
+			cwd_forced = g_strdup(g_get_current_dir());
+			forcecwd = TRUE;
+		}
+		if (main_option_script)
+			start_script = main_option_script;
+	}
+
+	if (main_option_initfile) {
+		com.initfile = g_strdup(main_option_initfile);
+	}
+
+	if (main_option_directory) {
+		if (!g_path_is_absolute(main_option_directory)) {
+			cwd_forced = g_build_filename(g_get_current_dir(), main_option_directory, NULL);
+		} else {
+			cwd_forced = g_strdup(main_option_directory);
+		}
+		forcecwd = TRUE;
+	}
+
 	com.cvport = RED_VPORT;
 	com.show_excluded = TRUE;
 	com.selected_star = -1;
@@ -321,6 +338,8 @@ int main(int argc, char *argv[]) {
 	com.stars = NULL;
 	com.uniq = NULL;
 	com.color = NORMAL_COLOR;
+	int i;
+
 	for (i = 0; i < MAXVPORT; i++)
 		com.buf_is_dirty[i] = TRUE;
 	memset(&com.selection, 0, sizeof(rectangle));
@@ -334,7 +353,7 @@ int main(int argc, char *argv[]) {
 	com.app_path = NULL;
 
 	if (!com.headless) {
-		gtk_init(&argc, &argv);
+		gtk_init(&argc, &args);
 	}
 
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
@@ -359,6 +378,7 @@ int main(int argc, char *argv[]) {
 	startup_cwd = g_get_current_dir();
 	if (checkinitfile()) {
 		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
+		g_strfreev(args);
 		exit(1);
 	}
 
@@ -390,8 +410,8 @@ int main(int argc, char *argv[]) {
 	int num_proc = (int) g_get_num_processors();
 	int omp_num_proc = omp_get_num_procs();
 	if (num_proc != omp_num_proc) {
-	        siril_log_message(_("Questionable parallel processing efficiency - openmp reports %d processors. "
-	        		"Possibly broken opencv/openblas installation.\n"), omp_num_proc);
+		siril_log_message(_("Questionable parallel processing efficiency - openmp reports %d processors. "
+				"Possibly broken opencv/openblas installation.\n"), omp_num_proc);
 	}
 	siril_log_message(_("Parallel processing %s: Using %d logical processor(s).\n"), _("enabled"), com.max_thread = num_proc);
 #else
@@ -411,13 +431,7 @@ int main(int argc, char *argv[]) {
 #endif //MAC_INTEGRATION
 
 	/* open image, or sequence in argument, changing dir to be in its directory too */
-	if (argv[optind] != NULL) {
-		gchar **args;
-#ifdef G_OS_WIN32
-		args = g_win32_get_command_line();
-#else
-		args = g_strdupv(argv);
-#endif
+	if (g_strv_length(args) > 1) {
 		const char *ext = get_filename_ext(args[1]);
 		if (ext && !strncmp(ext, "seq", 4)) {
 			gchar *sequence_dir = g_path_get_dirname(args[1]);
@@ -440,9 +454,9 @@ int main(int argc, char *argv[]) {
 				g_free(image_dir);
 			}
 		}
-		g_strfreev(args);
 	}
 	g_free(startup_cwd);
+	g_strfreev(args);
 
 	if (forcecwd && cwd_forced) {
 		changedir(cwd_forced, NULL);
@@ -460,7 +474,7 @@ int main(int argc, char *argv[]) {
 				siril_log_message(_("File [%s] does not exist\n"), start_script);
 				exit(1);
 			}
-#ifdef G_OS_WIN32			
+#ifdef _WIN32			
 			ReconnectIO(1);
 #endif
 			if (execute_script(fp)) {

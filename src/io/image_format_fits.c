@@ -25,7 +25,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <gsl/gsl_statistics.h>
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 

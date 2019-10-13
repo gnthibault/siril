@@ -18,7 +18,7 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 #include <Windows.h>
 /* Constant available since Shell32.dll 4.72 */
 #ifndef CSIDL_APPDATA
@@ -43,7 +43,7 @@
 
 static GSList *initialize_script_paths(){
 	GSList *list = NULL;
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	wchar_t wFilename[MAX_PATH];
 
 	list = g_slist_prepend(list, g_build_filename (get_special_folder (CSIDL_APPDATA),

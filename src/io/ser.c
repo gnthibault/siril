@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 #include <io.h>
 #endif
 
@@ -62,7 +62,7 @@ static char *ser_timestamp(uint64_t timestamp) {
 	struct tm t_;
 #endif
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	t = gmtime (&secs);
 #else
 #ifdef HAVE_GMTIME_R
@@ -70,7 +70,7 @@ static char *ser_timestamp(uint64_t timestamp) {
 #else
 	t = gmtime(&secs);
 #endif /* HAVE_GMTIME_R */
-#endif /* G_OS_WIN32 */
+#endif /* _WIN32 */
 
 	/* If the gmtime() call has failed, "secs" is too big. */
 	if (t == NULL) {

@@ -121,7 +121,7 @@ gchar *pretty_print_memory(int64_t bytes);
 int test_available_space(int64_t req_size);
 int	get_available_memory_in_MB();
 int	get_max_memory_in_MB();
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 gchar *get_special_folder(int csidl);
 #endif
 SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction action);

@@ -34,7 +34,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <signal.h>
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 // doc at: https://docs.microsoft.com/en-us/windows/desktop/ipc/named-pipes
 // samples from: https://docs.microsoft.com/en-us/windows/desktop/ipc/using-pipes
 // With windows, pipes can be bidirectional. To keep common code between windows and the
@@ -57,7 +57,7 @@
 	gboolean get_thread_run();
 #include "gui/progress_and_log.h"
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 LPTSTR lpszPipename_r = TEXT("\\\\.\\pipe\\" PIPE_NAME_R);
 LPTSTR lpszPipename_w = TEXT("\\\\.\\pipe\\" PIPE_NAME_W);
 HANDLE hPipe_r = INVALID_HANDLE_VALUE;
@@ -77,7 +77,7 @@ static GList *command_list, *pending_writes;
 static void sigpipe_handler(int signum) { }	// do nothing
 
 int pipe_create() {
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	if (hPipe_w != INVALID_HANDLE_VALUE || hPipe_r != INVALID_HANDLE_VALUE)
 		return 0;
 
@@ -156,7 +156,7 @@ int pipe_create() {
 }
 
 static int pipe_write(const char *string) {
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	int length;
 	DWORD  retval ;
 	if (hPipe_w == INVALID_HANDLE_VALUE)
@@ -190,7 +190,7 @@ static int pipe_write(const char *string) {
 }
 
 int pipe_send_message(pipe_message msgtype, pipe_verb verb, const char *arg) {
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	if (hPipe_w == INVALID_HANDLE_VALUE) return -1;
 #else
 	if (pipe_fd_w <= 0) return -1;
@@ -260,7 +260,7 @@ void empty_command_queue() {
 }
 
 void *read_pipe(void *p) {
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	do {
 		/* try to open the pipe */
 		// will block until the other end is opened
@@ -450,7 +450,7 @@ void *process_commands(void *p) {
 static void *write_pipe(void *p) {
 	do {
 		fprintf(stdout, "write pipe waiting to be opened...\n");
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 		// will block until the other end is opened
 		if (!ConnectNamedPipe(hPipe_w, NULL) && GetLastError() != ERROR_PIPE_CONNECTED) {
 			siril_log_message(_("Could not open the named pipe\n"));
@@ -482,7 +482,7 @@ static void *write_pipe(void *p) {
 			g_mutex_unlock(&write_mutex);
 
 			if (pipe_write(msg)) {
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 				CloseHandle(hPipe_w);
 				hPipe_w = INVALID_HANDLE_VALUE;
 #else
@@ -519,7 +519,7 @@ void pipe_stop() {
 	g_mutex_lock(&read_mutex);
 	g_mutex_lock(&write_mutex);
 	pipe_active = 0;
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	if (hPipe_r != INVALID_HANDLE_VALUE)
 		CloseHandle(hPipe_r);
 	hPipe_r = INVALID_HANDLE_VALUE;

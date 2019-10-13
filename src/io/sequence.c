@@ -22,7 +22,7 @@
 #include <config.h>
 #endif
 
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -575,7 +575,7 @@ int64_t seq_compute_size(sequence *seq, int nb_frames) {
 		ref = sequence_find_refimage(seq);
 		if (fit_sequence_get_image_filename(seq, ref, filename, TRUE)) {
 			if (!g_lstat(filename, &sts)) {				
-#ifndef G_OS_WIN32
+#ifndef _WIN32
 				if ( S_ISLNK(sts.st_mode) )
 #else
 				if (GetFileAttributesA(filename) & FILE_ATTRIBUTE_REPARSE_POINT )

@@ -2016,7 +2016,7 @@ static void initialize_shortcuts() {
 	gtk_widget_add_accelerator(lookup_widget("undo_item1"), "activate", accel,
 	GDK_KEY_z, mod, GTK_ACCEL_VISIBLE);
 	/* REDO */
-#ifdef G_OS_WIN32
+#ifdef _WIN32
 	gtk_widget_add_accelerator(lookup_widget("redo_item"), "activate", accel,
 	GDK_KEY_y, mod, GTK_ACCEL_VISIBLE);
 	gtk_widget_add_accelerator(lookup_widget("redo_item1"), "activate", accel,
