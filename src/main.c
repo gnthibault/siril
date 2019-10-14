@@ -215,7 +215,7 @@ static GOptionEntry main_option[] = {
 		{ NULL },
 };
 
-static char *load_glade_file() {
+static gchar *load_glade_file() {
 	int i = 0;
 
 	/* try to load the glade file, from the sources defined above */
@@ -225,8 +225,8 @@ static char *load_glade_file() {
 		GError *err = NULL;
 		gchar *gladefile;
 
-		gladefile = g_build_filename (siril_sources[i], GLADE_FILE, NULL);
-		if (gtk_builder_add_from_file (builder, gladefile, &err)) {
+		gladefile = g_build_filename(siril_sources[i], GLADE_FILE, NULL);
+		if (gtk_builder_add_from_file(builder, gladefile, &err)) {
 			fprintf(stdout, _("Successfully loaded '%s'\n"), gladefile);
 			g_free(gladefile);
 			break;
@@ -237,11 +237,23 @@ static char *load_glade_file() {
 		i++;
 	} while (i < G_N_ELEMENTS(siril_sources));
 	if (i == G_N_ELEMENTS(siril_sources)) {
+#ifdef _WIN32 // in the case where the app is started with double click
+		gchar *execname = g_win32_get_package_installation_directory_of_module(NULL);
+		gchar *prefix = g_build_filename(execname, "/share/siril", NULL);
+		g_free(execname);
+		gchar *gladefile = g_build_filename(prefix, GLADE_FILE, NULL);
+		if (gtk_builder_add_from_file(builder, gladefile, NULL)) {
+			fprintf(stdout, _("Successfully loaded '%s'\n"), gladefile);
+			g_free(gladefile);
+			return prefix;
+		}
+		g_free(gladefile);
+#endif
 		fprintf(stderr, _("%s was not found or contains errors, cannot render GUI. Exiting.\n"), GLADE_FILE);
 		exit(EXIT_FAILURE);
 	}
 	/* get back to the saved working directory */
-	return siril_sources[i];
+	return g_strdup(siril_sources[i]);
 }
 
 int main(int argc, char *argv[]) {
@@ -392,6 +404,7 @@ int main(int argc, char *argv[]) {
 		} else {
 			com.app_path = g_build_filename(g_get_current_dir(), path, NULL);
 		}
+		g_free(path);
 		/* load the css sheet for general style */
 		load_css_style_sheet();
 	}

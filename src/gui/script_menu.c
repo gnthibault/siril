@@ -39,26 +39,18 @@
 #include "algos/sorting.h"
 #include "script_menu.h"
 
-#define EXT ".ssf"
+#define SCRIPT_EXT ".ssf"
 
 static GSList *initialize_script_paths(){
 	GSList *list = NULL;
 #ifdef _WIN32
-	wchar_t wFilename[MAX_PATH];
+	list = g_slist_prepend(list, g_build_filename(get_special_folder(CSIDL_APPDATA), "siril",
+					"scripts", NULL));
 
-	list = g_slist_prepend(list, g_build_filename (get_special_folder (CSIDL_APPDATA),
-			"siril", "scripts", NULL));
+	gchar *execpath = g_win32_get_package_installation_directory_of_module(NULL);
 
-	if (!GetModuleFileNameW(NULL, wFilename, MAX_PATH)) {
-		fprintf(stderr, "initialize_script_menu error: %d\n", GetLastError());
-	} else {
-		gchar *fName = g_utf16_to_utf8(wFilename, -1, NULL, NULL, NULL);
-		gchar *path = g_path_get_dirname(fName);
-		path[strlen(path) - 4] = '\0';		/* remove "/bin" */
-		list = g_slist_prepend(list, g_build_filename(path, "scripts", NULL));
-		g_free(fName);
-		g_free(path);
-	}
+	list = g_slist_prepend(list, g_build_filename(execpath, "scripts", NULL));
+	g_free(execpath);
 #else
 	list = g_slist_prepend(list, g_build_filename(PACKAGE_DATA_DIR, "scripts", NULL));
 	list = g_slist_prepend(list, g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL));
@@ -138,7 +130,7 @@ static GSList *search_script(const char *path) {
 		return NULL;
 	}
 	while ((file = g_dir_read_name(dir)) != NULL) {
-		if (g_str_has_suffix(file, EXT)) {
+		if (g_str_has_suffix(file, SCRIPT_EXT)) {
 			gchar *str = (gchar*) remove_ext_from_filename(file);
 
 			list = g_slist_prepend(list, str);
@@ -165,7 +157,7 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 
 	/* append script file extension */
 	str = g_string_new((gchar *) user_data);
-	str = g_string_append(str, EXT);
+	str = g_string_append(str, SCRIPT_EXT);
 	script_file = g_string_free(str, FALSE);
 
 	FILE* fp = g_fopen(script_file, "r");
