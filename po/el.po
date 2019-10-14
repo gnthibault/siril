@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-06 01:05+0200\n"
-"PO-Revision-Date: 2019-05-08 16:02+0300\n"
+"POT-Creation-Date: 2019-10-04 21:43+0200\n"
+"PO-Revision-Date: 2019-10-13 19:59+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.2.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../src/gui/siril3.glade.h:1
@@ -394,7 +394,7 @@ msgstr "Μείωση Λωρίδων..."
 
 #: ../src/gui/siril3.glade.h:84
 msgid "Contrast-Limited Adaptive Histogram Equalization..."
-msgstr ""
+msgstr "Προσαρμοστκή Εξίσωση Ιστογράμματος με χρηση Περιορισμού-Αντίθεσης..."
 
 #: ../src/gui/siril3.glade.h:85
 msgid "Cosmetic Correction..."
@@ -450,7 +450,7 @@ msgstr "Κανάλια..."
 
 #: ../src/gui/siril3.glade.h:98
 msgid "Split CFA..."
-msgstr ""
+msgstr "Διαχωρισμός CFA..."
 
 #: ../src/gui/siril3.glade.h:99
 msgid "Wavelet Layers..."
@@ -1712,11 +1712,11 @@ msgstr "Σώρευση μέγιστου εικονοστοιχείου"
 msgid "Pixel minimum stacking"
 msgstr "Σώρευση ελάχιστου εικονοστοιχείου"
 
-#: ../src/gui/siril3.glade.h:366 ../src/stacking/stacking.c:1403
+#: ../src/gui/siril3.glade.h:366 ../src/stacking/stacking.c:1399
 msgid "Sigma low: "
 msgstr "Κάτω Σίγμα: "
 
-#: ../src/gui/siril3.glade.h:367 ../src/stacking/stacking.c:1404
+#: ../src/gui/siril3.glade.h:367 ../src/stacking/stacking.c:1400
 msgid "Sigma high: "
 msgstr "Άνω Σίγμα: "
 
@@ -2094,28 +2094,28 @@ msgid "Disk Space: N/A"
 msgstr "Μέγεθος Δίσκου: Δεν είναι διαθέσιμο"
 
 #: ../src/gui/siril3.glade.h:457
-#, fuzzy
 msgid "Clip Limit: "
-msgstr "Άνω όριο: "
+msgstr "Όριο αποκοπής: "
 
 #: ../src/gui/siril3.glade.h:458
 msgid "Sets threshold for contrast limiting."
-msgstr ""
+msgstr "Θέτει το όριο για τον περιορισμό του κοντράστ."
 
 #: ../src/gui/siril3.glade.h:459
-#, fuzzy
 msgid "Tiles Grid Size: "
-msgstr "Μέγεθος πυρήνα: "
+msgstr "Μέγεθος τμημάτων πλέγματος: "
 
 #: ../src/gui/siril3.glade.h:460
 msgid ""
 "Sets size of grid for histogram equalization. Input image will be divided "
 "into equally sized rectangular tiles. "
 msgstr ""
+"Ορίζει το μέγεθος του πλέγματος για την εξίσωση ιστογράμματος. Η εικόνα "
+"εισόδου θα διαιρεθεί σε ίσου μέγεθος ορθογώνιες περιοχές. "
 
 #: ../src/gui/siril3.glade.h:461
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #. Try to have 3 lines here.
 #: ../src/gui/siril3.glade.h:463
@@ -2124,6 +2124,9 @@ msgid ""
 "stacking residuals by cropping the image. If you don't,\n"
 "artifacts may appear."
 msgstr ""
+"Παρακαλώ, φροντίστε να αφαιρέσετε όλα τα μαύρα σύνορα ή άλλα\n"
+"κατάλοιπα της σώρευσης με περικοπή της εικόνα. Αν δεν το κάνετε,\n"
+"μπορεί να εμφανιστούν αντικείμενα."
 
 #: ../src/gui/siril3.glade.h:466 ../src/algos/plateSolver.c:99
 msgid "Image Plate Solver"
@@ -2312,7 +2315,6 @@ msgstr ""
 "και του μεγέθους."
 
 #: ../src/gui/siril3.glade.h:501
-#, fuzzy
 msgid ""
 "Choose the online catalogue against one want to compare the image and "
 "compute photometry.\n"
@@ -2325,34 +2327,25 @@ msgid ""
 "V, plus Sloan u', g′, r′, i′, z_s and Z. It is valid from about 7th "
 "magnitude to about 17th magnitude for over 37 million stars."
 msgstr ""
-"Επιλέξτε τον online κατάλογο με τον οποίο θέλετε να συγκρίνετε την εικόνα.\n"
-"* Ο κατάλογος TYCHO-2 περιέχει θέσεις, κατάλληλες κινήσεις και φωτομετρικά "
-"δεδομένα δύο χρωμάτων για 2.539.913 από τα φωτεινότερα αστέρια του γαλαξία "
-"μας.\n"
+"Επιλέξτε τον online κατάλογο με τον οποίο θέλετε να συγκρίνετε την εικόνα "
+"και να υπολογίσετε τη φωτομετρία.\n"
 "* Ο NOMAD είναι μια απλή συγχώνευση δεδομένων από τους καταλόγους Hipparcos, "
-"Tycho-2, UCAC2, Yellow-Blue 6 και USNO-B, για αστρομετρία και οπτική "
-"φωτομετρία και συμπληρώνονται με το 2MASS στο σχεδόν υπέρυθρο. Η σχεδόν 100 "
-"GB βάση δεδομένων περιέχει αστρομετρικά και φωτομετρικά δεδομένα για σχεδόν "
-"1.1 δισεκατομμύρια αστέρια.\n"
-"* Το Gaia Data Release 2 κυκλοφόρησε στις 25 Απριλίου 2018. Η αστρομετρική "
-"λύση των πέντε παραμέτρων, οι θέσεις στον ουρανό (α, δ), οι παράλλαξες, και "
-"οι κατάλληλες κινήσεις, δίνονται για περισσότερες από 1.300.000.000 πηγές, "
-"με περιορισμό μεγέθους G = 21.\n"
-"* Το PPMXL είναι ένας κατάλογος των θέσεων, κατάλληλων κινήσεων, 2MASS-και "
-"οπτική φωτομετρία των 900.000.000 αστεριών και γαλαξιών.\n"
-"* Ο Κατάλογος Φωτεινών Αστέρων είναι ένας κατάλογος αστεριών που απαριθμεί "
-"όλα τα αστέρια αστρικού μεγέθους 6,5 ή φωτεινότερου, το οποίο είναι περίπου "
-"κάθε αστέρι ορατό στο γυμνό μάτι από την Γη. Ο κατάλογος περιέχει 9.110 "
-"αντικείμενα."
+"Tycho-2, UCAC2, Yellow-Blue 6, και USNO-B για την αστρομετρία και την οπτική "
+"φωτομετρία, συμπληρώνονται από τον 2MASS κοντά στο υπέρυθρο. Το σχεδόν 100 "
+"GB σύνολο δεδομένων περιέχει αστρομετρικά και φωτομετρικά δεδομένα για "
+"περίπου 1.1 δισεκατομμύρια αστέρια.\n"
+"* Το APASS, η φωτομετρική μελέτη όλου του ουρανού AAVSO, εκτελεί μια "
+"φωτομετρική έρευνα όλου του ουρανού. Αυτή η έρευνα διεξάγεται σε οκτώ "
+"φίλτρα: Johnson B και V, συν Sloan u ', g ′, r ′, i ′, z_s και Z. Ισχύει από "
+"μέγεθος περίπου 7 σε περίπου 17 μεγέθους για πάνω από 37 εκατομμύρια αστέρια."
 
 #: ../src/gui/siril3.glade.h:504
 msgid "APASS"
-msgstr ""
+msgstr "APASS"
 
 #: ../src/gui/siril3.glade.h:505
-#, fuzzy
 msgid "Photometric Star Catalogue: "
-msgstr "Online "
+msgstr "Φωτομετρικός Κατάλογος Αστεριού: "
 
 #: ../src/gui/siril3.glade.h:506
 msgid "Catalogue Parameters"
@@ -2725,18 +2718,16 @@ msgstr ""
 "λωρίδων."
 
 #: ../src/gui/siril3.glade.h:587
-#, fuzzy
 msgid "1/Sigma Factor: "
-msgstr "1/Παράγοντα Σίγμα"
+msgstr "1/Παράγοντας Σίγμα: "
 
 #: ../src/gui/siril3.glade.h:588
 msgid "Protect from Highlights"
 msgstr "Προστασία από Ανοιχτούς Τόνους"
 
 #: ../src/gui/siril3.glade.h:589
-#, fuzzy
 msgid "Amount: "
-msgstr "Ποσότητα:"
+msgstr "Ποσότητα: "
 
 #: ../src/gui/siril3.glade.h:590
 msgid "Image compositing"
@@ -2988,19 +2979,16 @@ msgstr "Όνομα αρχείου για το τρίτο αρχείο FITS πο�
 
 #. RGB
 #: ../src/gui/siril3.glade.h:642 ../src/gui/callbacks.c:4369
-#, fuzzy
 msgid "Red: "
-msgstr "Κόκκινο:"
+msgstr "Κόκκινο: "
 
 #: ../src/gui/siril3.glade.h:643 ../src/gui/callbacks.c:4370
-#, fuzzy
 msgid "Green: "
-msgstr "Πράσινο:"
+msgstr "Πράσινο: "
 
 #: ../src/gui/siril3.glade.h:644 ../src/gui/callbacks.c:4371
-#, fuzzy
 msgid "Blue: "
-msgstr "Μπλέ:"
+msgstr "Μπλέ: "
 
 #: ../src/gui/siril3.glade.h:645
 msgid "Select the color space corresponding to the three extracted images"
@@ -3061,9 +3049,8 @@ msgid "Nb. of Layers: "
 msgstr "Αρ. Επιπέδων: "
 
 #: ../src/gui/siril3.glade.h:658
-#, fuzzy
 msgid "Interpolation: "
-msgstr "Παρεμβολή"
+msgstr "Παρεμβολή: "
 
 #: ../src/gui/siril3.glade.h:659
 msgid "Informations"
@@ -3248,7 +3235,7 @@ msgstr "Θα εφαρμοστεί Φίλτρο Βαθμιδωτής Περιστ
 
 #: ../src/gui/siril3.glade.h:700
 msgid "Radial shift: "
-msgstr "Ακτινωτή μετατόπιση:"
+msgstr "Ακτινωτή μετατόπιση: "
 
 #: ../src/gui/siril3.glade.h:701
 msgid "Radial shift used to compute rotational gradient."
@@ -3258,13 +3245,13 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:702
 msgid "Rotational shift: "
-msgstr "Μετατόπιση περιστροφής:"
+msgstr "Μετατόπιση περιστροφής: "
 
 #: ../src/gui/siril3.glade.h:703
 msgid "Rotational shift used to compute rotational gradient."
 msgstr ""
 "Μετατόπιση περιστροφής που χρησιμοποιείται για τον υπολογισμό της βαθμιδωτής "
-"περιστροφής"
+"περιστροφής."
 
 #: ../src/gui/siril3.glade.h:704
 msgid "X coordinate of the center of polar coordinates."
@@ -3596,9 +3583,8 @@ msgstr ""
 "από το παρακάτω κουτί."
 
 #: ../src/gui/siril3.glade.h:774
-#, fuzzy
 msgid "Debayer FITS files in up-bottom orientation"
-msgstr "Debayer με προσανατολισμό από κάτω προς τα πάνω"
+msgstr "Debayer αρχείων FITS με προσανατολισμό από πάνω προς τα κάνω"
 
 #: ../src/gui/siril3.glade.h:775
 msgid ""
@@ -3616,16 +3602,15 @@ msgid "Stretch CFA FITS from DSLR to 16-bit"
 msgstr "Τέντωμα του CFA FITS από DSLR σε 16-bit"
 
 #: ../src/gui/siril3.glade.h:777
-#, fuzzy
 msgid ""
 "If the RAW data comes from DSLR camera and if normalisation information was "
-"stored in the FITS header, then checking this option will stretch the image "
+"storred in the FITS header, then checking this option will stretch the image "
 "to 16-bit.\n"
 "May not work with some camera."
 msgstr ""
 "Εάν τα δεδομένα RAW προέρχονται από DSLR κάμερα και εάν οι πληροφορίες "
-"ομαλοποίησης ήταν αποθηκευμένες στην κεφαλίδα του FITS, τότε επιλέγοντας "
-"αυτή την επιλογή θα γινει τεντώμα της εικόνας σε 16-bit."
+"ομαλοποίησης αποθηκεύτηκαν στην κεφαλίδα FITS, τότε επιλέγοντας αυτή την "
+"επιλογή θα γίνει τέντωμα της εικόνας σε 16-bit."
 
 #: ../src/gui/siril3.glade.h:779
 msgid ""
@@ -3716,9 +3701,8 @@ msgstr ""
 "υποβάθρου. Προεπιλεγμένη τιμή είναι 30,00."
 
 #: ../src/gui/siril3.glade.h:796
-#, fuzzy
 msgid "Background Annulus"
-msgstr "Τιμή υποβάθρου"
+msgstr "Δακτύλιος Υποβάθρου"
 
 #: ../src/gui/siril3.glade.h:797
 msgid "Restore to Default"
@@ -3730,24 +3714,23 @@ msgstr "Επαναφορά των προεπιλεγμένων παραμέτρ�
 
 #: ../src/gui/siril3.glade.h:799
 msgid "Min. pixel value:"
-msgstr ""
+msgstr "Ελάχιστη τιμή εικονοστοιχείου:"
 
 #: ../src/gui/siril3.glade.h:800
 msgid "Max. pixel value:"
-msgstr ""
+msgstr "Μέγιστη τιμή εικονοστοιχείου:"
 
 #: ../src/gui/siril3.glade.h:801
 msgid "Bad pixels have value equal to or less than."
-msgstr ""
+msgstr "Τα κακά εικονοστοιχεία έχουν τιμή ίση ή μικρότερη από."
 
 #: ../src/gui/siril3.glade.h:802
 msgid "Overexposed pixels have value equal to or greater than."
-msgstr ""
+msgstr "Τα υπερεκτεθειμένα εικονοστοιχεία έχουν τιμή ίση ή μεγαλύτερη από."
 
 #: ../src/gui/siril3.glade.h:803
-#, fuzzy
 msgid "Pixel Value Range"
-msgstr "Σώρευση μέγιστου εικονοστοιχείου"
+msgstr "Εύρος τιμών εικονοστοιχείου"
 
 #: ../src/gui/siril3.glade.h:804
 msgid ""
@@ -3785,9 +3768,8 @@ msgstr ""
 "τον δίσκο, η οποία είναι πολύ αργή και δεν συνιστάται"
 
 #: ../src/gui/siril3.glade.h:809
-#, fuzzy
 msgid "Ratio of available"
-msgstr "Δεν είναι διαθέσιμο"
+msgstr "Λόγος διαθεσιμότητας "
 
 #: ../src/gui/siril3.glade.h:810
 msgid ""
@@ -3799,10 +3781,19 @@ msgid ""
 "If you don't have paged memory configured on some storage, a value of 1 or "
 "above will likely result in a crash of siril or of the operating system."
 msgstr ""
+"Το Siril θα περιοριστεί σε μια αναλογία του ποσού της ελεύθερης φυσικής "
+"μνήμης και θα μειώσει το μέγεθος των εργασιών, αν χρειαστεί.\n"
+"Μια τιμή άνω του 1 σημαίνει ότι κάποια σελιδοποιημένη μνήμη σε έναν "
+"διαμορφωμένο χώρο αποθήκευσης θα χρησιμοποιηθεί και η συνολική διαδικασία θα "
+"είναι πιο αργή και το σύστημα πιθανότατα να μην αποκρίνεται κατά τη διάρκεια "
+"ορισμένων λειτουργιών.\n"
+"Εάν δεν έχετε σελιδοποιημένη μνήμη ρυθμισμένη σε κάποιο αποθηκευτικό χώρο, η "
+"τιμή 1 ή άνω θα έχει ως αποτέλεσμα το κρασάρισμα του siril ή του "
+"λειτουργικού συστήματος."
 
 #: ../src/gui/siril3.glade.h:813
 msgid "Fixed amount (GB)"
-msgstr ""
+msgstr "Σταθερή ποσότητα (GB)"
 
 #: ../src/gui/siril3.glade.h:814
 msgid ""
@@ -3811,10 +3802,15 @@ msgid ""
 "Configuring a memory amount larger than what is available on your system may "
 "result in a crash of siril or of the operating system."
 msgstr ""
+"Το Siril θα περιοριστεί σε ένα σταθερό ποσό της μνήμης και θα μειώσει το "
+"μέγεθος των εργασιών, αν χρειαστεί.\n"
+"Η ρύθμιση ενός ποσού μνήμης μεγαλύτερου από αυτό που είναι διαθέσιμο στο "
+"σύστημά σας μπορεί να οδηγήσει σε κρασάρισμα του siril ή του λειτουργικού "
+"συστήματος."
 
 #: ../src/gui/siril3.glade.h:816
 msgid "Unlimited"
-msgstr ""
+msgstr "Χωρίς όριο"
 
 #: ../src/gui/siril3.glade.h:817
 msgid ""
@@ -3822,9 +3818,11 @@ msgid ""
 "manage the required memory. Using a smaller number of threads parameter will "
 "still decrease used memory."
 msgstr ""
+"Το siril δεν θα επιβάλει όρια μνήμης και θα αφήσει το λειτουργικό σύστημα να "
+"διαχειριστεί την απαιτούμενη μνήμη. Χρησιμοποιόντας μικρότερο αριθμό "
+"παραμέτρου νημάτων θα να μειώσει τη χρησιμοποιούμενη μνήμη."
 
 #: ../src/gui/siril3.glade.h:818
-#, fuzzy
 msgid "<b>Memory management</b>"
 msgstr "<b>Διαχείρηση Μνήμης</b>"
 
@@ -3835,6 +3833,8 @@ msgstr "Τύπος προέκτασης: "
 #: ../src/gui/siril3.glade.h:820
 msgid "Choose the type of extension used by Siril. By default it is .fit."
 msgstr ""
+"Επιλέξτε τον τύπο επέκτασης που θα χρησιμοποιείται από το Siril. Η "
+"προεπιλογή είναι σε .fit."
 
 #: ../src/gui/siril3.glade.h:821
 msgid ".fit"
@@ -3857,18 +3857,16 @@ msgid "Don't ask before quitting"
 msgstr "Να μην ρωτηθώ πριν την έξοδο"
 
 #: ../src/gui/siril3.glade.h:826
-#, fuzzy
 msgid "<b>Confirmation Dialog</b>"
-msgstr "<b>Διάλογος επικύρωσης</b>"
+msgstr "<b>Διάλογος Επικύρωσης</b>"
 
 #: ../src/gui/siril3.glade.h:827
-#, fuzzy
 msgid ""
 "Change the theme of the interface. This feature may not work on all "
 "architectures."
 msgstr ""
-"Θυμάται τις θέσεις των παραθύρων προβολής. Αυτή η δυνατότητα ενδέχεται να "
-"μην λειτουργεί σε όλες τις αρχιτεκτονικές."
+"Αλλαγή του θέματος της διεπαφής. Αυτή η δυνατότητα ενδέχεται να μην "
+"λειτουργεί σε όλες τις αρχιτεκτονικές."
 
 #: ../src/gui/siril3.glade.h:828
 msgid "Automatic"
@@ -3883,21 +3881,18 @@ msgid "Light theme"
 msgstr "Φωτεινό θέμα"
 
 #: ../src/gui/siril3.glade.h:831
-#, fuzzy
 msgid "Remember window size and position"
-msgstr "Αποθήκευση θέσεων των παραθύρων"
+msgstr "Αποθήκευση του μεγέθους και της θέσης του παραθύρου"
 
 #: ../src/gui/siril3.glade.h:832
-#, fuzzy
 msgid ""
 "Remember position and size of image displaying windows. This feature may not "
 "work on all architectures."
 msgstr ""
-"Θυμάται τις θέσεις των παραθύρων προβολής. Αυτή η δυνατότητα ενδέχεται να "
-"μην λειτουργεί σε όλες τις αρχιτεκτονικές."
+"Αποθήκευση της θέσηα και του μεγέθους των παραθύρων προβολής της εικόνας. "
+"Αυτή η δυνατότητα ενδέχεται να μην λειτουργεί σε όλες τις αρχιτεκτονικές."
 
 #: ../src/gui/siril3.glade.h:833
-#, fuzzy
 msgid "<b>Look and Feel</b>"
 msgstr "<b>Look and feel</b>"
 
@@ -3923,17 +3918,16 @@ msgstr "Διάφορα"
 
 #: ../src/gui/siril3.glade.h:837 ../src/algos/demosaicing.c:1131
 msgid "Split CFA"
-msgstr ""
+msgstr "Διαχωρισμός CFA"
 
 #: ../src/gui/siril3.glade.h:838
 msgid "Apply Split CFA"
-msgstr ""
+msgstr "Εφαρμογή Διαχωρισμού CFA"
 
 #: ../src/gui/siril3.glade.h:839
-#, fuzzy
 msgid "Prefix of the image names resulting from the split cfa process."
 msgstr ""
-"Πρόθεμα του ονόματος των εικόνων που προκύπτουν από την διαδικασία περικοπής."
+"Πρόθεμα των ονομάτων εικόνας που προκύπτουν από τη διαδικασία διαίρεσης cfa."
 
 #: ../src/gui/siril3.glade.h:840
 msgid "Dynamic PSF"
@@ -4234,7 +4228,7 @@ msgstr "Δεν υπάρχει μνήμη - γίνεται ακύρωση"
 
 #: ../src/algos/background_extraction.c:608
 msgid "Not enough samples."
-msgstr "Δεν υπάρχουν αρκετά δείγματα"
+msgstr "Δεν υπάρχουν αρκετά δείγματα."
 
 #: ../src/algos/colors.c:356
 msgid "Siril cannot extract layers. Make sure your image is in RGB mode.\n"
@@ -4295,6 +4289,7 @@ msgstr "Βαθμονόμηση Χρώματος: γίνεται επεξεργα
 #: ../src/algos/demosaicing.c:1026
 msgid "Split CFA does not work on non-Bayer filter camera images!\n"
 msgstr ""
+"Ο Διαχωρισμός CFA δεν λειτουργεί σε εικόνες κάμερας φίλτρου μη-Bayer!\n"
 
 #. Translator note: radii is plural for radius
 #: ../src/algos/photometry.c:260
@@ -4325,7 +4320,7 @@ msgstr ""
 #: ../src/algos/plateSolver.c:497
 #, c-format
 msgid "Fetch failed with code %ld for URL %s\n"
-msgstr ""
+msgstr "Η ανάκτηση απέτυχε με κωδικό %ld για τη διεύθυνση URL %s\n"
 
 #: ../src/algos/plateSolver.c:498 ../src/filters/fft.c:380
 #: ../src/filters/fft.c:386 ../src/filters/fft.c:407
@@ -4412,9 +4407,9 @@ msgid "Catalog Bright stars size: %d objects\n"
 msgstr "Κατάλογος μεγέθους Φωτεινών Αστέρων: % d αντικείμενα\n"
 
 #: ../src/algos/plateSolver.c:996
-#, fuzzy, c-format
+#, c-format
 msgid "Catalog APASS size: %d objects\n"
-msgstr "Κατάλογος μεγέθους NOMAD: % d αντικείμενα\n"
+msgstr "Μέγεθος του καταλόγου APASS: % d αντικείμενα\n"
 
 #: ../src/algos/plateSolver.c:1056
 msgid ""
@@ -4489,9 +4484,8 @@ msgstr ""
 "RMSE=%.3e\n"
 
 #: ../src/algos/reconstr.c:189
-#, fuzzy
 msgid "Unknown transform\n"
-msgstr "Άγνωστο σφάλμα\n"
+msgstr "Άγνωστος μετασχηματισμός\n"
 
 #: ../src/algos/star_finder.c:171
 msgid "Findstar: processing...\n"
@@ -4609,8 +4603,8 @@ msgstr "Γίνεται αναπροσαρμογή του επιπέδου %d μ�
 #: ../src/gui/callbacks.c:3996 ../src/gui/callbacks.c:4190
 #: ../src/gui/callbacks.c:4323 ../src/gui/callbacks.c:4396
 #: ../src/gui/script_menu.c:158 ../src/io/conversion.c:526
-#: ../src/registration/registration.c:841 ../src/stacking/stacking.c:1099
-#: ../src/stacking/stacking.c:1223
+#: ../src/registration/registration.c:841 ../src/stacking/stacking.c:1097
+#: ../src/stacking/stacking.c:1219
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Μια άλλη λειτουργία είναι σε εξέλιξη, το νέο αίτημα αγνοείται.\n"
 
@@ -4664,14 +4658,12 @@ msgid "Wavelet: type must be %d or %d\n"
 msgstr "Κυματίδιο: ο τύπος πρέπει να είναι %d ή %d\n"
 
 #: ../src/core/command.c:674
-#, fuzzy
 msgid "Clip limit must be > 0.\n"
-msgstr "Το Σίγμα πρέπει να είναι >0.\n"
+msgstr "Το όριο αποκοπής πρέπει να είναι >0.\n"
 
 #: ../src/core/command.c:681
-#, fuzzy
 msgid "Tile size must be > 0.\n"
-msgstr "Το Σίγμα πρέπει να είναι >0.\n"
+msgstr "Το μέγεθος του τετραγώνου πρέπει να είναι > 0.\n"
 
 #: ../src/core/command.c:735
 msgid "Cannot list files, set working directory first.\n"
@@ -4891,11 +4883,10 @@ msgstr ""
 "σε λειτουργία RGB.\n"
 
 #: ../src/core/command.c:1824
-#, fuzzy
 msgid "Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"
 msgstr ""
-"Το Siril δεν μπορεί να χωρίσει επίπεδα. Σιγουρευτείτε ότι η εικόνα σας είναι "
-"σε λειτουργία RGB.\n"
+"Το Siril δεν μπορεί να χωρίσει το κανάλι CFA. Σιγουρευτείτε ότι η εικόνα σας "
+"είναι σε λειτουργία CFA.\n"
 
 #: ../src/core/command.c:1960
 #, c-format
@@ -5027,23 +5018,22 @@ msgid "Using now %d logical processors\n"
 msgstr "Γίνεται χρήση %d λογικών επεξεργαστών\n"
 
 #: ../src/core/command.c:2656
-#, fuzzy
 msgid ""
 "The accepted range for the ratio of memory used for stacking is [0.05, 4], "
 "with values below the available memory recommended\n"
 msgstr ""
 "Το αποδεκτό εύρος για το λόγο της μνήμης που χρησιμοποιείται για την σωρευση "
-"είναι [0.05, 2], με τιμές κάτω από τη διαθέσιμη μνήμη που συνιστάται\n"
+"είναι [0.05, 4], με τιμές κάτω από τη διαθέσιμη μνήμη που συνιστάται\n"
 
 #: ../src/core/command.c:2660
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Setting the ratio of memory used for stacking above 1 will require the use "
 "of on-disk memory, which can be very slow and is unrecommended (%g "
 "requested)\n"
 msgstr ""
-"Η ρύθμιση του λόγου της μνήμης που χρησιμοποιείται για σώρευση πάνω από 1 θα "
-"απαιτήσει τη χρήση μνήμης στο δίσκο, η οποία είναι πολύ αργή και δεν "
+"Η ρύθμιση του λόγου της μνήμης που χρησιμοποιείται για σώρευση πάνω από το 1 "
+"θα απαιτήσει τη χρήση μνήμης στο δίσκο, η οποία είναι πολύ αργή και δεν "
 "συνιστάται (%g ζητήθηκε)\n"
 
 #: ../src/core/command.c:2664
@@ -5079,9 +5069,9 @@ msgid "Running command: %s\n"
 msgstr "Γίνεται εκτέλεση τηε εντολής: %s\n"
 
 #: ../src/core/command.c:2784
-#, fuzzy, c-format
+#, c-format
 msgid "Processing line %d: %s"
-msgstr "%s. Γίνεται επεξεργασία της εικόνας %d (%s)"
+msgstr " Γίνεται επεξεργασία της γραμμής %d: %s"
 
 #: ../src/core/command.c:2846
 #, c-format
@@ -5182,6 +5172,8 @@ msgid ""
 "Equalizes the histogram of an image using Contrast Limited Adaptive "
 "Histogram Equalization"
 msgstr ""
+"Εξισώνει το ιστόγραμμα μιας εικόνας χρησιμοποιώντας Προσαρμοστκή Εξίσωση "
+"Ιστογράμματος με χρηση Περιορισμού-Αντίθεσης"
 
 #: ../src/core/command_def.h:15
 msgid "Clears the graphical output logs"
@@ -5582,7 +5574,6 @@ msgstr ""
 "\" είναι ο αριθμός των επαναλήψεων που θα πραγματοποιηθούν (τυπικά ανάμεσα "
 "σε 10 και 50). \"Sigma\" είναι το μέγεθος του πυρήνα που θα εφαρμοστεί"
 
-# Do i need to translate the "Type" and "type"?
 #: ../src/core/command_def.h:72
 msgid ""
 "Chromatic noise reduction filter. It removes green noise in the current "
@@ -5707,10 +5698,8 @@ msgstr ""
 "την παραγωγή καμπυλών διακύμανσης φωτεινότητας"
 
 #: ../src/core/command_def.h:89
-#, fuzzy
 msgid "Same command than SPLIT_CFA but for the sequence \"sequencename\""
-msgstr ""
-"Ίδια εντολή με τη FIND_COSME_CFA αλλά για την αλληλουχία \"sequencename\""
+msgstr "Ίδια εντολή με τη SPLIT_CFA αλλά για την αλληλουχία \"sequencename\""
 
 #: ../src/core/command_def.h:90
 msgid ""
@@ -5779,22 +5768,20 @@ msgstr ""
 "UNSETMAGSEQ"
 
 #: ../src/core/command_def.h:96
-#, fuzzy
 msgid ""
 "Splits the color image into three distinct files (one for each color) and "
 "save them in \"r\" \"g\" and \"b\" file"
 msgstr ""
 "Χωρίζει την έγχρωμη εικόνα σε τρία ξεχωριστά αρχεία (ένα για κάθε χρώμα) και "
-"τις αποθηκεύει σε αρχείο \"r\" \"g\" και \"b\""
+"τα αποθηκεύει σε αρχείο \"r\" \"g\" και \"b\""
 
 #: ../src/core/command_def.h:97
-#, fuzzy
 msgid ""
 "Splits the CFA image into four distinct files (one for each channel) and "
 "save them in files"
 msgstr ""
-"Χωρίζει την έγχρωμη εικόνα σε τρία ξεχωριστά αρχεία (ένα για κάθε χρώμα) και "
-"τις αποθηκεύει σε αρχείο \"r\" \"g\" και \"b\""
+"Διαιρεί την εικόνα CFA σε τέσσερα διακριτά αρχεία (ένα για κάθε κανάλι) και "
+"τα αποθηκεύει σε αρχεία"
 
 #: ../src/core/command_def.h:98
 msgid ""
@@ -5824,7 +5811,7 @@ msgstr ""
 "Αν δεν δοθεί άλλο όρισμα πλην του ονόματος της αλληλουχίας, θα ληφθεί υπόψη "
 "η αθροιστική σώρευση.\n"
 "Το τελικό όνομα της εικόνας μπορεί να οριστεί με την επιλογή \"-out=\".\n"
-"Δείτε την αναφορά της εντολής για την πλήρη περιγραφή της εντολής."
+"Δείτε την αναφορά της εντολής για την πλήρη περιγραφή της εντολής"
 
 #: ../src/core/command_def.h:99
 msgid ""
@@ -5949,13 +5936,12 @@ msgid "_Cancel"
 msgstr "_Άκυρο"
 
 #: ../src/core/OS_utils.c:420 ../src/core/OS_utils.c:423
-#, fuzzy
 msgid "Add Files"
-msgstr "Αρχεία JPEG"
+msgstr "Προσθήκη Αρχείων"
 
 #: ../src/core/OS_utils.c:421 ../src/core/OS_utils.c:424
 msgid "_Add"
-msgstr ""
+msgstr "_Προσθήκη"
 
 #: ../src/core/OS_utils.c:431 ../src/core/OS_utils.c:434
 msgid "Save File"
@@ -5966,14 +5952,16 @@ msgid "_Save"
 msgstr "_Αποθήκευση"
 
 #: ../src/core/pipe.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Output pipe creation failed with error %d\n"
-msgstr "Ο σχεδιασμός του δείκτη εξόδου απέτυχε (%d/%d).\n"
+msgstr ""
+"Η δημιουργία διοχέτευσης εξόδου απέτυχε με σφάλμα %d\n"
+"\n"
 
 #: ../src/core/pipe.c:114
 #, c-format
 msgid "Input pipe creation failed with error %d\n"
-msgstr ""
+msgstr "Η δημιουργία διοχέτευσης εισόδου απέτυχε με σφάλμα %d\n"
 
 # is the %s value ok where it is? this way it will make more sense in greek
 # Sure, the most important is to keep order if you have
@@ -6000,7 +5988,7 @@ msgstr "η εντολή είναι πολύ μεγάλη ή αλλοιωμένη
 
 #: ../src/core/pipe.c:333 ../src/core/pipe.c:409
 msgid "command interrupted\n"
-msgstr "Η εντολή διακόπηκε\n"
+msgstr "η εντολή διακόπηκε\n"
 
 #: ../src/core/preprocess.c:152
 #, c-format
@@ -6026,9 +6014,8 @@ msgstr ""
 "Η αισθητική διόρθωση Darkmap υποστηρίζεται μόνο με εικόνες μονού καναλιού\n"
 
 #: ../src/core/preprocess.c:273
-#, fuzzy
 msgid "Preprocessing"
-msgstr "Προ-επεξεργασία"
+msgstr "Γίνεται Προ-επεξεργασία"
 
 #: ../src/core/preprocess.c:296
 #, c-format
@@ -6316,23 +6303,19 @@ msgid "Unknown error\n"
 msgstr "Άγνωστο σφάλμα\n"
 
 #: ../src/core/utils.c:312
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' No such file or directory\n"
-msgstr "Δεν υπάρχει αυτό το αρχείο ή ο κατάλογος\n"
+msgstr "'%s' Δεν υπάρχει αυτό το αρχείο ή ο κατάλογος\n"
 
 #: ../src/core/utils.c:315
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' is not a directory\n"
-msgstr ""
-"Το \"%s\" δεν είναι κατάλογος\n"
-"\n"
+msgstr "Το '%s' δεν είναι κατάλογος\n"
 
 #: ../src/core/utils.c:318
-#, fuzzy, c-format
+#, c-format
 msgid "You don't have permission to write in this directory: '%s'\n"
-msgstr ""
-"Δεν έχετε άδεια να γράψετε σε αυτό τον κατάλογο: %s\n"
-"\n"
+msgstr "Δεν έχετε άδεια να γράψετε σε αυτό τον κατάλογο: '%s'\n"
 
 #: ../src/core/utils.c:331
 #, c-format
@@ -6359,10 +6342,11 @@ msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "Η έκδοση του GTK δεν ταιριάζει με τις απαιτήσεις: (GTK-%d.%d)\n"
 
 #: ../src/core/utils.c:644
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr ""
-"Δεν ήταν δυνατό να φορτωθεί το αρχείο CSS: %s. Παρακαλώ εγκαταστήστε ξανά%s\n"
+"Δεν ήταν δυνατό να φορτωθεί το αρχείο CSS: %s. Παρακαλώ εγκαταστήστε ξανά το "
+"Siril\n"
 
 #: ../src/core/utils.c:654 ../src/main.c:221
 #, c-format
@@ -6378,19 +6362,20 @@ msgid ""
 "Your version of opencv is too old for this feature. Please upgrade your "
 "system."
 msgstr ""
+"Η έκδοση του OpenCV σας είναι πολύ παλιά για αυτό το χαρακτηριστικό. "
+"Αναβαθμίστε το σύστημά σας."
 
 #: ../src/filters/clahe.c:52
 msgid "Upgrade your system"
-msgstr ""
+msgstr "Αναβαθμίστε το σύστημα σας"
 
 #: ../src/filters/clahe.c:76
-#, fuzzy
 msgid "CLAHE: processing...\n"
-msgstr ": γίνεται επεξεργασία...\n"
+msgstr "CLAHE: γίνεται επεξεργασία...\n"
 
 #: ../src/filters/clahe.c:87
 msgid "CLAHE applied"
-msgstr ""
+msgstr "Το CLAHE εφαρμόστηκε"
 
 #: ../src/filters/cosmetic_correction.c:319
 #, c-format
@@ -6541,6 +6526,8 @@ msgstr "- κανένα -"
 msgid ""
 "This sequence name already exists!! Please change the name before converting."
 msgstr ""
+"Tο όνομα αυτής της αλληλουχίας υπάρχει ήδη!! Παρακαλώ αλλάξτε το όνομα πριν "
+"από τη μετατροπή."
 
 #: ../src/gui/callbacks.c:1319
 #, c-format
@@ -6723,10 +6710,8 @@ msgstr ""
 "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: ο αριθμός των καναλιών είναι διαφορετικός"
 
 #: ../src/gui/callbacks.c:3897
-#, fuzzy
 msgid "NOT USING OFFSET: image dimensions are different"
-msgstr ""
-"ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: ο αριθμός των καναλιών είναι διαφορετικός"
+msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ OFFSET: οι διαστάσεις της εικόνας είναι διαφορετικές"
 
 #: ../src/gui/callbacks.c:3902
 msgid "NOT USING OFFSET: cannot open the file\n"
@@ -6741,9 +6726,8 @@ msgid "NOT USING DARK: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: ο αριθμός των καναλιών είναι διαφορετικός"
 
 #: ../src/gui/callbacks.c:3929
-#, fuzzy
 msgid "NOT USING DARK: image dimensions are different"
-msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: ο αριθμός των καναλιών είναι διαφορετικός"
+msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ DARK: οι διαστάσεις της εικόνας είναι διαφορετικές"
 
 #: ../src/gui/callbacks.c:3934
 msgid "NOT USING DARK: cannot open the file\n"
@@ -6758,9 +6742,8 @@ msgid "NOT USING FLAT: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: ο αριθμός των καναλιών είναι διαφορετικός"
 
 #: ../src/gui/callbacks.c:3968
-#, fuzzy
 msgid "NOT USING FLAT: image dimensions are different"
-msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: ο αριθμός των καναλιών είναι διαφορετικός"
+msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ FLAT: οι διαστάσεις της εικόνας είναι διαφορετικές"
 
 #: ../src/gui/callbacks.c:3973
 msgid "NOT USING FLAT: cannot open the file\n"
@@ -6782,24 +6765,20 @@ msgstr "Γίνεται αναζήτηση για αλληλουχίες στον
 #. HSL
 #. HSV
 #: ../src/gui/callbacks.c:4374 ../src/gui/callbacks.c:4379
-#, fuzzy
 msgid "Hue: "
-msgstr "Απόχρωση:"
+msgstr "Απόχρωση: "
 
 #: ../src/gui/callbacks.c:4375 ../src/gui/callbacks.c:4380
-#, fuzzy
 msgid "Saturation: "
-msgstr "Επαναλήψεις:"
+msgstr "Κορεσμός: "
 
 #: ../src/gui/callbacks.c:4376
-#, fuzzy
 msgid "Lightness: "
-msgstr "Φωτεινότητα"
+msgstr "Φωτεινότητα: "
 
 #: ../src/gui/callbacks.c:4381
-#, fuzzy
 msgid "Value: "
-msgstr "Μπλέ:"
+msgstr "Τιμή: "
 
 #: ../src/gui/callbacks.c:4450 ../src/gui/callbacks.c:4498
 msgid "Current selection is too large"
@@ -6922,13 +6901,13 @@ msgid "Applying aperture photometry to %d stars.\n"
 msgstr "Γίνεται εφαρμογή φωτομετρίας διαφράγματος σε%d αστέρια.\n"
 
 #: ../src/gui/photometric_cc.c:347
-#, fuzzy, c-format
+#, c-format
 msgid "%d stars excluded from the calculation.\n"
-msgstr "η εικόνα %d εξαιρείται από την εξαγωγή\n"
+msgstr "%d αστέρια εξαιρέθηκαν από τον υπολογισμό.\n"
 
 #: ../src/gui/photometric_cc.c:350
 msgid "No valid stars found.\n"
-msgstr ""
+msgstr "Δεν βρέθηκαν έγκυρα αστέρια.\n"
 
 #: ../src/gui/photometric_cc.c:493
 #, c-format
@@ -6937,7 +6916,7 @@ msgstr "Γίνεται ομαλοποίηση στο κανάλι %s.\n"
 
 #: ../src/gui/photometric_cc.c:493
 msgid "red"
-msgstr "Κόκκινο"
+msgstr "κόκκινο"
 
 #: ../src/gui/photometric_cc.c:493
 msgid "green"
@@ -7366,15 +7345,15 @@ msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr "Ο τύπος αρχείου δεν υποστηρίζετε, δεν μπορεί να γίνει μετατροπή: %s\n"
 
 #: ../src/io/conversion.c:689
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
 "Verify that you typed the extension correctly.\n"
 "If so, you may need to install third-party software to enable this file type "
 "conversion, look at the README file.\n"
 "If the file type you are trying to load is listed in supported formats, you "
-"may notify the developers that the extension you are trying to use should be "
-"recognized for this type."
+"may notify the developpers that the extension you are trying to use should "
+"be recognized for this type."
 msgstr ""
 "Η προέκταση του αρχείου '%s' δεν υποστηρίζεται.\n"
 "Σιγουρευτείτε ότι έχετε τυπώσει την προέκταση σωστά.\n"
@@ -7799,9 +7778,8 @@ msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Πολλαπλασιαστές φωτός ημέρας: %f, %f, %f\n"
 
 #: ../src/io/image_formats_libraries.c:986
-#, fuzzy
 msgid "XTRANS Sensor detected.\n"
-msgstr "Αισθητήρας XTRANS ανιχνεύτηκε. Χρησιμοποιώντας ειδικό αλγόριθμο. \n"
+msgstr "Ανιχνεύτηκε αισθητήρας XTRANS.\n"
 
 #: ../src/io/image_formats_libraries.c:992
 msgid "Bilinear interpolation...\n"
@@ -8051,7 +8029,7 @@ msgstr ""
 msgid "image %d is excluded from export\n"
 msgstr "η εικόνα %d εξαιρείται από την εξαγωγή\n"
 
-#: ../src/io/sequence_export.c:229 ../src/stacking/stacking.c:391
+#: ../src/io/sequence_export.c:229 ../src/stacking/stacking.c:389
 msgid "Processing image "
 msgstr "Γίνεται επεξεργασία της εικόνας "
 
@@ -8216,6 +8194,9 @@ msgid ""
 "Questionable parallel processing efficiency - openmp reports %d processors. "
 "Possibly broken opencv/openblas installation.\n"
 msgstr ""
+"Αμφίβολη αποτελεσματικότητα παράλληλης επεξεργασίας - το openmp αναφέρει % d "
+"επεξεργαστές. Ενδεχομένως η εγκατάσταση του opencv/openblas να είναι "
+"προβληματική.\n"
 
 #: ../src/main.c:392
 #, c-format
@@ -8228,37 +8209,35 @@ msgid "enabled"
 msgstr "ενεργοποιημένο"
 
 #: ../src/main.c:394
-#, fuzzy, c-format
+#, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
-msgstr ""
-"Παράλληλη επεξεργασία %s : Γίνεται χρήση %d λογικού(ών) επεξεργαστή(ών).\n"
+msgstr "Παράλληλη επεξεργασία %s : Γίνεται χρήση %d λογικού επεξεργαστή.\n"
 
 #: ../src/main.c:394
 msgid "disabled"
 msgstr "απενεργοποιημένο"
 
 #: ../src/opencv/opencv.cpp:188
-#, fuzzy, c-format
+#, c-format
 msgid "Translate is not supported for images with %d channels\n"
-msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
+msgstr "Η μετάφραση δεν υποστηρίζεται για εικόνες με %d κανάλια\n"
 
 #: ../src/opencv/opencv.cpp:248
-#, fuzzy, c-format
+#, c-format
 msgid "Rotate is not supported for images with %d channels\n"
-msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
+msgstr "Η περιστροφή δεν υποστηρίζεται για εικόνες με %d κανάλια\n"
 
 #: ../src/opencv/opencv.cpp:424
-#, fuzzy, c-format
+#, c-format
 msgid "Transformation is not supported for images with %d channels\n"
-msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
+msgstr "Ο μετασχηματισμός δεν υποστηρίζεται για εικόνες με %d κανάλια\n"
 
 #: ../src/opencv/opencv.cpp:529 ../src/opencv/opencv.cpp:625
-#, fuzzy, c-format
+#, c-format
 msgid "Deconvolution is not supported for images with %d channels\n"
-msgstr "Άγνωστος τύπος εικόνας FITS με %ld κανάλια.\n"
+msgstr "Το deconvolution δεν υποστηρίζεται για εικόνες με %d κανάλια\n"
 
 #: ../src/opencv/opencv.cpp:668
-#, fuzzy
 msgid "Deconvolution applied"
 msgstr "Έγινε εφαρμογή Deconvolution"
 
@@ -8478,7 +8457,7 @@ msgstr ""
 "ευθυγραμμισμένων εικόνων αστερίων. Αυτές οι μέθοδοι κάνουν μια μετατόπιση "
 "ενός ορισμένου αριθμού εικονοστοιχείων ανάλογα με τη σφραγίδα χρόνου κάθε "
 "εικόνας και την καθολική μετατόπιση του αντικειμένου μεταξύ της πρώτης και "
-"της τελευταίας εικόνα. "
+"της τελευταίας εικόνας."
 
 #: ../src/registration/registration.c:102
 msgid "One Star Registration (deep-sky)"
@@ -8622,13 +8601,13 @@ msgstr ""
 "τη λειτουργία σώρευσης (%d MB ελεύθερα από %d MB που απαιτούνται)\n"
 
 #: ../src/stacking/normalization.c:113
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "With the current memory and thread (%d) limits, up to %d thread(s) can be "
 "used for sequence normalization\n"
 msgstr ""
-"Με την τρέχουσα μνήμη (%.2f) και τα όρια νήματος (%d), μπορούν να "
-"χρησιμοποιηθούν έως %d νήματα για την ομαλοποίηση της ακολουθίας\n"
+"Με την τρέχουσα μνήμη και τα όρια νήματος (%d), μπορούν να χρησιμοποιηθούν "
+"έως %d νήματα για την ομαλοποίηση της ακολουθίας\n"
 
 #: ../src/stacking/normalization.c:132
 msgid "Computing normalization...\n"
@@ -8646,103 +8625,103 @@ msgstr ""
 msgid "Normalization failed."
 msgstr "Η ομαλοποίηση απέτυχε."
 
-#: ../src/stacking/stacking.c:112 ../src/stacking/stacking.c:583
+#: ../src/stacking/stacking.c:110 ../src/stacking/stacking.c:581
 msgid "Select at least two frames for stacking. Aborting.\n"
 msgstr "Επιλέξτε τουλάχιστον δύο καρέ για σώρευση. Γίνεται ακύρωση.\n"
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:125
+#: ../src/stacking/stacking.c:123
 msgid "Median stack error: uninitialized sequence\n"
 msgstr "Σφάλμα σώρευσης Διαμέσου: ανενεργή αλληλουχία\n"
 
-#: ../src/stacking/stacking.c:155 ../src/stacking/stacking.c:631
+#: ../src/stacking/stacking.c:153 ../src/stacking/stacking.c:629
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Η έκδοση σας του cfitsio δεν υποστηρίζει πολυδιεργασίες\n"
 
-#: ../src/stacking/stacking.c:164 ../src/stacking/stacking.c:640
+#: ../src/stacking/stacking.c:162 ../src/stacking/stacking.c:638
 msgid "Processing the sequence as RGB\n"
 msgstr "Γίνεται επεξεργασία της αλληλουχίας σαν RGB\n"
 
-#: ../src/stacking/stacking.c:207 ../src/stacking/stacking.c:705
+#: ../src/stacking/stacking.c:205 ../src/stacking/stacking.c:703
 msgid "Starting stacking...\n"
 msgstr "Γίνεται εκκίνηση της σώρευσης...\n"
 
-#: ../src/stacking/stacking.c:208
+#: ../src/stacking/stacking.c:206
 msgid "Median stacking in progress..."
 msgstr "Σώρευση διαμέσου σε εξέλιξη..."
 
-#: ../src/stacking/stacking.c:300 ../src/stacking/stacking.c:475
-#: ../src/stacking/stacking.c:983
+#: ../src/stacking/stacking.c:298 ../src/stacking/stacking.c:473
+#: ../src/stacking/stacking.c:981
 msgid "Finalizing stacking..."
 msgstr "Οριστικοποίηση σώρευσης..."
 
-#: ../src/stacking/stacking.c:329
+#: ../src/stacking/stacking.c:327
 msgid "Median stacking failed. Check the log."
 msgstr "Αποτυχία σώρευσης Διαμέσου: Δείτε το αρχείο καταγραφής."
 
-#: ../src/stacking/stacking.c:330 ../src/stacking/stacking.c:496
-#: ../src/stacking/stacking.c:1026
+#: ../src/stacking/stacking.c:328 ../src/stacking/stacking.c:494
+#: ../src/stacking/stacking.c:1024
 msgid "Stacking failed.\n"
 msgstr "Η σώρευση απέτυχε.\n"
 
-#: ../src/stacking/stacking.c:332
+#: ../src/stacking/stacking.c:330
 msgid "Median stacking complete."
 msgstr "H σώρευση Διαμέσου ολοκληρώθηκε."
 
-#: ../src/stacking/stacking.c:333
+#: ../src/stacking/stacking.c:331
 #, c-format
 msgid "Median stacking complete. %d have been stacked.\n"
 msgstr "H σώρευση Διαμέσου ολοκληρώθηκε. %d έχουν σωρευτεί.\n"
 
-#: ../src/stacking/stacking.c:370
+#: ../src/stacking/stacking.c:368
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"
 msgstr ""
 "Δεν έχει γίνει επιλογή καρέ για σώρευση (επιλέξτε τουλάχιστον 2). Γίνεται "
 "ακύρωση.\n"
 
-#: ../src/stacking/stacking.c:399
+#: ../src/stacking/stacking.c:397
 msgid "Stacking: could not read frame, aborting\n"
 msgstr "Σώρευση: δεν ήταν δυνατή η ανάγνωση του καρέ, γίνεται ακύρωση\n"
 
-#: ../src/stacking/stacking.c:422
+#: ../src/stacking/stacking.c:420
 msgid "Stacking: image in sequence doesn't has the same dimensions\n"
 msgstr "Σώρευση: η εικόνα στην αλληλουχία δεν έχει τις ίδιες διαστάσεις\n"
 
-#: ../src/stacking/stacking.c:495
+#: ../src/stacking/stacking.c:493
 msgid "Stacking failed. Check the log."
 msgstr "Η σώρευση απέτυχε. Δείτε το αρχείο καταγραφής."
 
-#: ../src/stacking/stacking.c:498
+#: ../src/stacking/stacking.c:496
 msgid "Stacking complete."
 msgstr "Η σώρευση ολοκληρώθηκε."
 
 #. no image has been loaded
-#: ../src/stacking/stacking.c:601
+#: ../src/stacking/stacking.c:599
 msgid "Rejection stack error: uninitialized sequence\n"
 msgstr "Σφάλμα σώρευσης Απόρριψης: ανενεργή αλληλουχία\n"
 
-#: ../src/stacking/stacking.c:706
+#: ../src/stacking/stacking.c:704
 msgid "Rejection stacking in progress..."
 msgstr "Σώρευση απόρριψης σε εξέλιξη..."
 
-#: ../src/stacking/stacking.c:987
+#: ../src/stacking/stacking.c:985
 #, c-format
 msgid "Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"
 msgstr "Απόρριψη εικονοστοιχείων στο κανάλι #%d: %.3lf%% - %.3lf%%\n"
 
-#: ../src/stacking/stacking.c:1025
+#: ../src/stacking/stacking.c:1023
 msgid "Rejection stacking failed. Check the log."
 msgstr "Η σώρευση απόρριψης απέτυχε. Δείτε το αρχείο καταγραφής."
 
-#: ../src/stacking/stacking.c:1028
+#: ../src/stacking/stacking.c:1026
 msgid "Rejection stacking complete."
 msgstr "Η σώρευση απόρριψης ολοκληρώθηκε."
 
-#: ../src/stacking/stacking.c:1042
-#, fuzzy, c-format
+#: ../src/stacking/stacking.c:1040
+#, c-format
 msgid ""
-"Your system does not allow one to open more than %d files at the same time. "
-"You may consider either to enhance this limit (the method depends of your "
+"Your system does not allow to open more than %d files at the same time. You "
+"may consider either to enhance this limit (the method depends of your "
 "Operating System) or to convert your FITS sequence into a SER sequence "
 "before stacking, or to stack with the \"sum\" method.\n"
 msgstr ""
@@ -8752,150 +8731,145 @@ msgstr ""
 "μια αλληλουχία SER πριν από τη σώρευση, ή να σωρεύσετε με την \"αθροιστική\" "
 "μέθοδο.\n"
 
-#: ../src/stacking/stacking.c:1120
+#: ../src/stacking/stacking.c:1118
 #, c-format
 msgid "Stacking will use registration data of layer %d if some exist.\n"
 msgstr ""
 "Η σώρευση θα χρησιμοποιήσει τα δεδομένα καταγραφής του επιπέδου %d εφόσον "
 "υπάρχουν.\n"
 
-#: ../src/stacking/stacking.c:1126
+#: ../src/stacking/stacking.c:1124
 msgid "Stacking: processing...\n"
 msgstr "Σώρευση: γίνεται επεξεργασία...\n"
 
-#: ../src/stacking/stacking.c:1142
+#: ../src/stacking/stacking.c:1138
 #, c-format
 msgid "Integration of %d images:\n"
 msgstr "Ολοκλήρωση %d εικόνων:\n"
 
-#: ../src/stacking/stacking.c:1146
+#: ../src/stacking/stacking.c:1142
 msgid "Pixel combination ......... average\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... μέσος όρος\n"
 
-#: ../src/stacking/stacking.c:1148
+#: ../src/stacking/stacking.c:1144
 msgid "Pixel combination ......... normalized sum\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... ομαλοποιημένος αθροιστικός\n"
 
-#: ../src/stacking/stacking.c:1150
+#: ../src/stacking/stacking.c:1146
 msgid "Pixel combination ......... median\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... διάμεσος\n"
 
-#: ../src/stacking/stacking.c:1152
+#: ../src/stacking/stacking.c:1148
 msgid "Pixel combination ......... minimum\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... μέγιστο\n"
 
-#: ../src/stacking/stacking.c:1154
+#: ../src/stacking/stacking.c:1150
 msgid "Pixel combination ......... maximum\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... ελάχιστο\n"
 
-#: ../src/stacking/stacking.c:1156
+#: ../src/stacking/stacking.c:1152
 msgid "Pixel combination ......... none\n"
 msgstr "Συνδυασμός εικονοστοιχείων ......... κανένα\n"
 
-#: ../src/stacking/stacking.c:1162 ../src/stacking/stacking.c:1167
-#: ../src/stacking/stacking.c:1196
+#: ../src/stacking/stacking.c:1158 ../src/stacking/stacking.c:1163
+#: ../src/stacking/stacking.c:1192
 msgid "none"
 msgstr "κανένα"
 
-#: ../src/stacking/stacking.c:1170
+#: ../src/stacking/stacking.c:1166
 msgid "additive"
 msgstr "προσθετική"
 
-#: ../src/stacking/stacking.c:1173
+#: ../src/stacking/stacking.c:1169
 msgid "multiplicative"
 msgstr "πολλαπλασιαστική"
 
-#: ../src/stacking/stacking.c:1176
+#: ../src/stacking/stacking.c:1172
 msgid "additive + scaling"
 msgstr "προσθετική + κλιμάκωση"
 
-#: ../src/stacking/stacking.c:1179
+#: ../src/stacking/stacking.c:1175
 msgid "multiplicative + scaling"
 msgstr "πολλαπλασιαστική + κλιμάκωση"
 
-#: ../src/stacking/stacking.c:1184
+#: ../src/stacking/stacking.c:1180
 #, c-format
 msgid "Normalization ............. %s\n"
 msgstr "Ομαλοποίηση ............. %s\n"
 
-#: ../src/stacking/stacking.c:1188
+#: ../src/stacking/stacking.c:1184
 msgid "Pixel rejection ........... none\n"
 msgstr "Απόρριψη εικονοστοιχείων ........... κανένα\n"
 
-#: ../src/stacking/stacking.c:1189
+#: ../src/stacking/stacking.c:1185
 msgid "Rejection parameters ...... none\n"
 msgstr "Παράμετροι απόρριψης ...... κανένα\n"
 
-#: ../src/stacking/stacking.c:1199
+#: ../src/stacking/stacking.c:1195
 msgid "percentile clipping"
 msgstr "εκατοστιαία αποκοπή"
 
-#: ../src/stacking/stacking.c:1202
+#: ../src/stacking/stacking.c:1198
 msgid "sigma clipping"
 msgstr "αποκοπή σίγμα"
 
-#: ../src/stacking/stacking.c:1205
+#: ../src/stacking/stacking.c:1201
 msgid "median sigma clipping"
 msgstr "αποκοπή διαμέσου σίγμα"
 
-#: ../src/stacking/stacking.c:1208
+#: ../src/stacking/stacking.c:1204
 msgid "Winsorized sigma clipping"
 msgstr "Αποκοπή σίγμα Winsor"
 
-#: ../src/stacking/stacking.c:1211
+#: ../src/stacking/stacking.c:1207
 msgid "linear fit clipping"
 msgstr "αποκοπή γραμμικού fit"
 
-#: ../src/stacking/stacking.c:1214
+#: ../src/stacking/stacking.c:1210
 #, c-format
 msgid "Pixel rejection ........... %s\n"
 msgstr "Απόρριψη εικονοστοιχείων ........... %s\n"
 
 # check again
-#: ../src/stacking/stacking.c:1215
+#: ../src/stacking/stacking.c:1211
 #, c-format
 msgid "Rejection parameters ...... low=%.3f high=%.3f\n"
 msgstr "Παράμετροι απόρριψης ...... low=%.3f high=%.3f\n"
 
-#: ../src/stacking/stacking.c:1262
+#: ../src/stacking/stacking.c:1258
 msgid "Stacking result image"
 msgstr "Σώρευση εικόνας"
 
-#: ../src/stacking/stacking.c:1285 ../src/stacking/stacking.c:1290
+#: ../src/stacking/stacking.c:1281 ../src/stacking/stacking.c:1286
 msgid "Unsaved stacking result"
 msgstr "Αποτέλεσμα σώρευσης χωρίς να έχει αποθηκευτεί"
 
-#: ../src/stacking/stacking.c:1381
-#, fuzzy
+#: ../src/stacking/stacking.c:1377
 msgid "Percentile low: "
-msgstr "Εκατοστιαία αποκοπή"
+msgstr "Εκατοστιαία κάτω τιμή: "
 
-#: ../src/stacking/stacking.c:1382
-#, fuzzy
+#: ../src/stacking/stacking.c:1378
 msgid "Percentile high: "
-msgstr "Εκατοστιαία αποκοπή"
+msgstr "Εκατοστιαία άνω τιμή: "
 
-#: ../src/stacking/stacking.c:1391
-#, fuzzy
+#: ../src/stacking/stacking.c:1387
 msgid "Linear low: "
-msgstr "Κάτω Σίγμα: "
+msgstr "Γραμμική κάτω τιμή: "
 
-#: ../src/stacking/stacking.c:1392
-#, fuzzy
+#: ../src/stacking/stacking.c:1388
 msgid "Linear high: "
-msgstr "Άνω Σίγμα: "
+msgstr "Γραμμική άνω τιμή: "
 
-#: ../src/stacking/stacking.c:1413
+#: ../src/stacking/stacking.c:1409
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "Χρησιμοποιούνται %d MB μέγιστης μνήμης για σώρευση\n"
 
-#: ../src/stacking/stacking.c:1425
-#, fuzzy
+#: ../src/stacking/stacking.c:1421
 msgid "Not using limits on maximum memory for stacking\n"
-msgstr "Δεν γίνεται χρήση απόρριψης στη σώρευση\n"
+msgstr "Δεν γίνεται χρήση ορίων στη μέγιστη μνήμη για σώρευση\n"
 
-#: ../src/stacking/stacking.c:1668
+#: ../src/stacking/stacking.c:1664
 #, c-format
 msgid "Stacking %d images of the %d of the sequence"
 msgstr "Γίνεται σώρευση %d εικόνων από τις %d της αλληλουχίας"
@@ -8910,13 +8884,13 @@ msgstr ""
 "για τη λειτουργία 'drizzle' (% d MB ελέυθερα για% d MB που απαιτούνται)\n"
 
 #: ../src/stacking/upscaling.c:103
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "With the current memory and thread (%d) limits, up to %d thread(s) can be "
 "used for sequence up-scaling\n"
 msgstr ""
-"Με την τρέχουσα μνήμη (%.2f) και τα όρια νήματος (%d), μπορούν να "
-"χρησιμοποιηθούν έως %d νήματα για την αύξηση στην κλίμακα της ακολουθίας\n"
+"Με την τρέχουσα μνήμη και τα όρια νήματος (%d), μπορούν να χρησιμοποιηθούν "
+"έως %d νήματα για την αύξηση στην κλίμακα της ακολουθίας\n"
 
 #: ../src/stacking/upscaling.c:140
 msgid "Stacking will be done without up-scaling (disabling 'drizzle')\n"
