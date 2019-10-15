@@ -100,11 +100,11 @@ int get_nb_raw_supported() {
 	return G_N_ELEMENTS(supported_raw);
 }
 
-/* This function is used with command line only */ 
+/* This function is used with command line only */
 void list_format_available() {
-	puts("======================================================="); 
+	puts("=======================================================");
 	puts("[            Supported image file formats             ]");
-	puts("======================================================="); 
+	puts("=======================================================");
 	puts("FITS\t(*.fit, *.fits, *.fts)");
 	puts("BMP\t(*.bmp)");
 	puts("NetPBM\t(*.ppm, *.pgm, *.pnm)");

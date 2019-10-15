@@ -115,7 +115,7 @@ static void set_osx_integration(GtkosxApplication *osx_app) {
 	gtk_widget_hide(file_quit_menu_item);
 	gtk_widget_hide(help_menu);
 	
-	icon_path = g_build_filename(com.app_path, "pixmaps/siril.svg", NULL);
+	icon_path = g_build_filename(com.app_path, "pixmaps", "siril.svg", NULL);
 	icon = gdk_pixbuf_new_from_file(icon_path, NULL);
 	gtkosx_application_set_dock_icon_pixbuf(osx_app, icon);
 		
@@ -211,7 +211,7 @@ static GOptionEntry main_option[] = {
 		{ "initfile", 'i', 0, G_OPTION_ARG_FILENAME, &main_option_initfile, N_("load configuration from file name instead of the default configuration file"), NULL },
 		{ "pipe", 'p', 0, G_OPTION_ARG_NONE, &main_option_pipe, N_("run in console mode with command and log stream through named pipes"), NULL },
 		{ "format", 'f', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, _print_list_of_formats_and_exit, N_("print all supported image file formats (depending on installed libraries)" ), NULL },
-		{ "version", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, _print_version_and_exit, N_("Show the application’s version"), NULL},
+		{ "version", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, _print_version_and_exit, N_("print the application’s version"), NULL},
 		{ NULL },
 };
 
@@ -239,7 +239,7 @@ static gchar *load_glade_file() {
 	if (i == G_N_ELEMENTS(siril_sources)) {
 #ifdef _WIN32 // in the case where the app is started with double click
 		gchar *execname = g_win32_get_package_installation_directory_of_module(NULL);
-		gchar *prefix = g_build_filename(execname, "/share/siril", NULL);
+		gchar *prefix = g_build_filename(execname, "share", PACKAGE, NULL);
 		g_free(execname);
 		gchar *gladefile = g_build_filename(prefix, GLADE_FILE, NULL);
 		if (gtk_builder_add_from_file(builder, gladefile, NULL)) {
@@ -254,6 +254,29 @@ static gchar *load_glade_file() {
 	}
 	/* get back to the saved working directory */
 	return g_strdup(siril_sources[i]);
+}
+
+static void global_initialization() {
+	com.cvport = RED_VPORT;
+	com.show_excluded = TRUE;
+	com.selected_star = -1;
+	com.star_is_seqdata = FALSE;
+	com.stars = NULL;
+	com.uniq = NULL;
+	com.color = NORMAL_COLOR;
+	int i;
+
+	for (i = 0; i < MAXVPORT; i++)
+		com.buf_is_dirty[i] = TRUE;
+	memset(&com.selection, 0, sizeof(rectangle));
+	memset(com.layers_hist, 0, sizeof(com.layers_hist));
+	/* initialize the com struct and zoom level */
+	com.sliders = MINMAX;
+	com.zoom_value = ZOOM_DEFAULT;
+	com.stack.mem_mode = 0;
+	com.stack.memory_ratio = 0.9;
+	com.stack.memory_amount = 4.0;
+	com.app_path = NULL;
 }
 
 int main(int argc, char *argv[]) {
@@ -343,26 +366,7 @@ int main(int argc, char *argv[]) {
 		forcecwd = TRUE;
 	}
 
-	com.cvport = RED_VPORT;
-	com.show_excluded = TRUE;
-	com.selected_star = -1;
-	com.star_is_seqdata = FALSE;
-	com.stars = NULL;
-	com.uniq = NULL;
-	com.color = NORMAL_COLOR;
-	int i;
-
-	for (i = 0; i < MAXVPORT; i++)
-		com.buf_is_dirty[i] = TRUE;
-	memset(&com.selection, 0, sizeof(rectangle));
-	memset(com.layers_hist, 0, sizeof(com.layers_hist));
-	/* initialize the com struct and zoom level */
-	com.sliders = MINMAX;
-	com.zoom_value = ZOOM_DEFAULT;
-	com.stack.mem_mode = 0;
-	com.stack.memory_ratio = 0.9;
-	com.stack.memory_amount = 4.0;
-	com.app_path = NULL;
+	global_initialization();
 
 	if (!com.headless) {
 		gtk_init(&argc, &args);
@@ -391,7 +395,7 @@ int main(int argc, char *argv[]) {
 	if (checkinitfile()) {
 		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
 		g_strfreev(args);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	if (!com.headless) {
@@ -485,13 +489,13 @@ int main(int argc, char *argv[]) {
 			FILE* fp = g_fopen(start_script, "r");
 			if (fp == NULL) {
 				siril_log_message(_("File [%s] does not exist\n"), start_script);
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 #ifdef _WIN32			
 			ReconnectIO(1);
 #endif
 			if (execute_script(fp)) {
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 		}
 		else {
