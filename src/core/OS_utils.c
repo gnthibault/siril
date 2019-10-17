@@ -164,6 +164,22 @@ static unsigned long update_used_RAM_memory() {
 }
 #endif
 
+
+gchar* get_siril_locale_dir() {
+#ifdef _WIN32
+	gchar *win32_dir;
+
+	win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
+	gchar *siril_locale_dir = g_build_filename(win32_dir, "share", "locale", NULL);
+
+	g_free(win32_dir);
+
+	return siril_locale_dir;
+#else
+	return(g_strdup(LOCALEDIR));
+#endif
+}
+
 /**
  * Updates RAM memory used by siril, available free disk space
  * and displays information on the control window.

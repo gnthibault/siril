@@ -279,6 +279,25 @@ static void global_initialization() {
 	com.app_path = NULL;
 }
 
+static void init_num_procs() {
+	/* Get CPU number and set the number of threads */
+#ifdef _OPENMP
+	int num_proc = (int) g_get_num_processors();
+	int omp_num_proc = omp_get_num_procs();
+	if (num_proc != omp_num_proc) {
+		siril_log_message(_("Questionable parallel processing efficiency - openmp reports %d processors. "
+				"Possibly broken opencv/openblas installation.\n"), omp_num_proc);
+	}
+	siril_log_message(_("Parallel processing %s: Using %d logical processor(s).\n"), _("enabled"), com.max_thread = num_proc);
+#else
+	siril_log_message(_("Parallel processing %s: Using %d logical processor.\n"), _("disabled"), com.max_thread = 1);
+#endif
+
+	if (!com.headless) {
+		update_spinCPU(com.max_thread);
+	}
+}
+
 int main(int argc, char *argv[]) {
 	GError *error = NULL;
 	GOptionContext *ctx;
@@ -286,28 +305,18 @@ int main(int argc, char *argv[]) {
 	gchar *startup_cwd = NULL;
 	gboolean forcecwd = FALSE;
 	gchar *cwd_forced = NULL;
-	char*start_script = NULL;
+	gchar *dir;
 
-	g_setenv ("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
+	g_setenv("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
 	/* for translation */
-#ifdef _WIN32
-	setlocale(LC_ALL, "");
 
-	gchar *dirname = g_win32_get_package_installation_directory_of_module(NULL);
-	gchar *localedir = g_build_filename(dirname, "share", "locale", NULL);
-	gchar *localefilename = g_win32_locale_filename_from_utf8(localedir);
-
-	bindtextdomain(PACKAGE, localefilename);
+	dir = get_siril_locale_dir();
+	setlocale (LC_ALL, "");
+	bindtextdomain(PACKAGE, dir);
 	bind_textdomain_codeset(PACKAGE, "UTF-8");
-
-	g_free(localefilename);
-	g_free(localedir);
-	g_free(dirname);
-#else
-	bindtextdomain(PACKAGE, LOCALEDIR);
-#endif
 	textdomain(PACKAGE);
+	g_free(dir);
 
 	memset(&com, 0, sizeof(struct cominf));	// needed?
 	com.initfile = NULL;
@@ -349,8 +358,6 @@ int main(int argc, char *argv[]) {
 			cwd_forced = g_strdup(g_get_current_dir());
 			forcecwd = TRUE;
 		}
-		if (main_option_script)
-			start_script = main_option_script;
 	}
 
 	if (main_option_initfile) {
@@ -422,22 +429,7 @@ int main(int argc, char *argv[]) {
 	}
 	g_free(supported_files);
 
-	/* Get CPU number and set the number of threads */
-#ifdef _OPENMP
-	int num_proc = (int) g_get_num_processors();
-	int omp_num_proc = omp_get_num_procs();
-	if (num_proc != omp_num_proc) {
-		siril_log_message(_("Questionable parallel processing efficiency - openmp reports %d processors. "
-				"Possibly broken opencv/openblas installation.\n"), omp_num_proc);
-	}
-	siril_log_message(_("Parallel processing %s: Using %d logical processor(s).\n"), _("enabled"), com.max_thread = num_proc);
-#else
-	siril_log_message(_("Parallel processing %s: Using %d logical processor.\n"), _("disabled"), com.max_thread = 1);
-#endif
-
-	if (!com.headless) {
-		update_spinCPU(com.max_thread);
-	}
+	init_num_procs();
 
 	/* handling OS-X integration */
 #ifdef MAC_INTEGRATION
@@ -485,10 +477,10 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (com.headless) {
-		if (start_script) {
-			FILE* fp = g_fopen(start_script, "r");
+		if (main_option_script) {
+			FILE* fp = g_fopen(main_option_script, "r");
 			if (fp == NULL) {
-				siril_log_message(_("File [%s] does not exist\n"), start_script);
+				siril_log_message(_("File [%s] does not exist\n"), main_option_script);
 				exit(EXIT_FAILURE);
 			}
 #ifdef _WIN32			

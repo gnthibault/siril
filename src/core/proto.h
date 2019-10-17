@@ -116,6 +116,7 @@ void	load_css_style_sheet();
 double	encodeJD(dateTime dt);
 
 /**************** OS_utils.h *****************/
+gchar *get_siril_locale_dir();
 void	update_used_memory();
 gchar *pretty_print_memory(int64_t bytes);
 int test_available_space(int64_t req_size);
