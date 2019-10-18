@@ -48,7 +48,7 @@
 #include "gui/callbacks.h"
 #include "gui/plot.h"
 #include "ser.h"
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 #include "films.h"
 #endif
 #include "avi_pipp/avi_writer.h"
@@ -119,14 +119,14 @@ int read_single_sequence(char *realname, int imagetype) {
 
 	if (check_only_one_film_seq(realname)) retval = 1;
 	else {
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 		const char *ext;
 #endif
 		switch (imagetype) {
 			case TYPESER:
 				name[strlen(name)-1] = 'q';
 				break;
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 			case TYPEAVI:
 				ext = get_filename_ext(realname);
 				assert(ext);
@@ -212,7 +212,7 @@ int check_seq(int recompute_stats) {
 			nb_seq++;
 			fprintf(stdout, "Found a SER sequence (number %d)\n", nb_seq);
 		}
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 		else if (!check_for_film_extensions(ext)) {
 			struct film_struct *film_file = malloc(sizeof(struct film_struct));
 			if (film_open_file(file, film_file)) {
@@ -340,7 +340,7 @@ int check_only_one_film_seq(char* name) {
 		new_seq->type = SEQ_SER;
 		new_seq->ser_file = ser_file;
 	}
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 	else if (!check_for_film_extensions(ext)) {
 		struct film_struct *film_file = malloc(sizeof(struct film_struct));
 		if (film_open_file(name, film_file)) {
@@ -601,7 +601,7 @@ int64_t seq_compute_size(sequence *seq, int nb_frames) {
 			}
 		}
 		break;
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 	case SEQ_AVI:
 		if (g_stat(seq->film_file->filename, &sts) == 0) {
 			// this is a close approximation
@@ -665,7 +665,7 @@ char *seq_get_image_filename(sequence *seq, int index, char *name_buf) {
 			snprintf(name_buf, 255, "%s_%d.ser", seq->seqname,  index);
 			name_buf[255] = '\0';
 			return name_buf;
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 		case SEQ_AVI:
 			if (!name_buf || index < 0 || index > seq->end) {
 				return NULL;
@@ -705,7 +705,7 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
 				return 1;
 			}
 			break;
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 		case SEQ_AVI:
 			assert(seq->film_file);
 			if (film_read_frame(seq->film_file, index, dest)) {
@@ -736,7 +736,7 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
  * have a partial RGB image. */
 int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const rectangle *area, gboolean do_photometry) {
 	char filename[256];
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 	fits tmp_fit;
 #endif
 	switch (seq->type) {
@@ -757,7 +757,7 @@ int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const r
 			}
 
 			break;
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 		case SEQ_AVI:
 			assert(seq->film_file);
 			memset(&tmp_fit, 0, sizeof(fits));
@@ -829,7 +829,7 @@ int seq_open_image(sequence *seq, int index) {
 		case SEQ_SER:
 			assert(seq->ser_file->file == NULL);
 			break;
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 		case SEQ_AVI:
 			siril_log_message(_("This operation is not supported on AVI sequences (seq_open_image)\n"));
 			return 1;
@@ -1147,7 +1147,7 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 		ser_close_file(seq->ser_file);	// frees the data too
 		free(seq->ser_file);
 	}
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 	if (seq->film_file) {
 		film_close_file(seq->film_file);	// frees the data too
 		free(seq->film_file);

@@ -503,7 +503,7 @@ void on_crop_Apply_clicked(GtkButton *button, gpointer user_data) {
 		return;
 	}
 
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 	if (com.seq.type == SEQ_AVI) {
 		siril_log_message(_("Crop does not work with "
 				"avi film. Please, convert your file to SER first.\n"));

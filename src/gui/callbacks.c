@@ -4130,7 +4130,7 @@ void on_seqproc_entry_changed(GtkComboBox *widget, gpointer user_data) {
 		if (!strcmp(ext, "ser")) {
 			name[strlen(name) - 1] = 'q';
 			type = " SER";
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 		} else if (!check_for_film_extensions(ext)) {
 			int len = strlen(ext);
 			strncpy(name + strlen(name) - len - 1, "seq", len + 1);

@@ -137,12 +137,10 @@ PKG_CHECK_MODULES(LIBPNG, [libpng >= 1.6],
 		  AC_MSG_WARN([libpng not found. Not using PNG importer and exporter.]))
 
 dnl check ffms2
-PKG_CHECK_MODULES(FFMS2, [ffms2 < 2.21],
-		  [AC_DEFINE([HAVE_FFMS2_1], [1], [Use FFMS2 < 2.21])],
-		  [PKG_CHECK_MODULES(FFMS2, [ffms2 >= 2.21],
-		  [AC_DEFINE([HAVE_FFMS2_2], [1], [Use FFMS2 > 2.21])],
+PKG_CHECK_MODULES(FFMS2, [ffms2 ],
+		  [AC_DEFINE([HAVE_FFMS2], [1], [Using FFMS2])],
 		  AC_MSG_WARN([libffms2 not found. Not using AVI importer.]))
-		  ])
+
 
 dnl checking several ffmpeg libraries
 PKG_CHECK_MODULES(FFMPEG, [libavformat libavutil >= 55.20 libavcodec libswscale libswresample],

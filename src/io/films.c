@@ -22,7 +22,7 @@
 #include <config.h>
 #endif
 
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,7 +80,7 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 	 * present on disk.
 	 * Index is saved using this pattern for the file name "film_filename.idx" */
 	FFMS_Index *index;
-#ifdef HAVE_FFMS2_2
+#if (FFMS_VERSION > ((2 << 20) | (23 << 16) | (0 << 8) | 0))
 	FFMS_Indexer *indexer;
 #endif
 	char *idxfilename;
@@ -88,7 +88,7 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 	sprintf(idxfilename, "%s.idx", sourcefile);
 	index = FFMS_ReadIndex(idxfilename, &film->errinfo);
 	if (index == NULL) {
-#ifdef HAVE_FFMS2_2
+#if (FFMS_VERSION > ((2 << 20) | (23 << 16) | (0 << 8) | 0))
 		/* we need to create the indexer */
 		indexer = FFMS_CreateIndexer(sourcefile, &film->errinfo);
 		if (indexer == NULL) {
@@ -103,7 +103,7 @@ int film_open_file(const char *sourcefile, struct film_struct *film) {
 			free(idxfilename);
 			return FILM_ERROR;
 		}
-#ifdef HAVE_FFMS2_2
+#if (FFMS_VERSION > ((2 << 20) | (23 << 16) | (0 << 8) | 0))
 		/* we need to create the index */
 		index = FFMS_DoIndexing2(indexer, FFMS_IEH_ABORT, &film->errinfo);
 		if (index == NULL) {

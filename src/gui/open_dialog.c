@@ -150,7 +150,7 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 			all_filter = g_string_append(all_filter, ser_filter);
 		}
 
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 		/* FILM FILES */
 		int nb_film;
 		char *film_filter;

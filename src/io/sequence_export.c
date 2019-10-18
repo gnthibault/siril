@@ -9,7 +9,7 @@
 #include "registration/registration.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
-#if defined(HAVE_FFMS2_1) || defined(HAVE_FFMS2_2)
+#ifdef HAVE_FFMS2
 #include "io/films.h"
 #endif
 #include "avi_pipp/avi_writer.h"
