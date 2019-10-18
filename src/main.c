@@ -406,7 +406,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (!com.headless) {
-		/* load prefered theme */
+		/* load preferred theme */
 		load_prefered_theme(com.combo_theme);
 		/* Load glade file */
 		gchar *path = load_glade_file();

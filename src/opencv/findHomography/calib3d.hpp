@@ -43,7 +43,7 @@
 #ifndef __OPENCV_CALIB3D_HPP__
 #define __OPENCV_CALIB3D_HPP__
 
-#include "opencv2/core/version.hpp"
+#include <opencv2/core/version.hpp>
 #if CV_MAJOR_VERSION == 2
 
 #include <opencv2/core/core.hpp>

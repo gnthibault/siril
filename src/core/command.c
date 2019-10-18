@@ -36,6 +36,8 @@
 #include <gsl/gsl_histogram.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <opencv/opencv.h>
+#include <opencv2/core/version.hpp>
 
 #include "siril.h"
 #include "command.h"
@@ -76,8 +78,6 @@
 #include "stacking/sum.h"
 #include "registration/registration.h"
 #include "registration/matching/match.h"
-#include "opencv/opencv.h"
-#include "opencv2/core/version.hpp"
 
 static char *word[MAX_COMMAND_WORDS];	// NULL terminated
 

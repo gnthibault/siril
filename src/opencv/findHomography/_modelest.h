@@ -43,7 +43,7 @@
 #ifndef _CV_MODEL_EST_H_
 #define _CV_MODEL_EST_H_
 
-#include "opencv2/core/version.hpp"
+#include <opencv2/core/version.hpp>
 #if CV_MAJOR_VERSION == 2
 
 #include "calib3d.hpp"
