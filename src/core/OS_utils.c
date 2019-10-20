@@ -165,6 +165,10 @@ static unsigned long update_used_RAM_memory() {
 #endif
 
 
+/**
+ * This function search for the locale dir
+ * @return the locale dir
+ */
 gchar* get_siril_locale_dir() {
 #ifdef _WIN32
 	gchar *win32_dir;
@@ -193,8 +197,12 @@ void update_used_memory() {
 	set_GUI_DiskSpace((double)freeDisk);
 }
 
-// from a number of bytes in input, returns a string (to be freed) comprehensible by a
-// human for this size, for example 1.5G instead of 1500000000
+/**
+ * From a number of bytes in input, returns a string (to be freed) comprehensible by a
+ * human for this size, for example 1.5G instead of 1500000000
+ * @param bytes
+ * @return a formated string showing memory
+ */
 gchar *pretty_print_memory(int64_t bytes) {
 	const char *units[] = { "", "k", "M", "G", "T", "P", "E", "Z", "Y" };
 	int i = 0;
@@ -318,7 +326,10 @@ int get_available_memory_in_MB() {
 }
 #endif
 
-// get max memory depending on memory management mode, -1 for unlimited
+/**
+ * Get max memory depending on memory management mode
+ * @return return the max memory, and -1 for unlimited
+ */
 int get_max_memory_in_MB() {
 	switch (com.stack.mem_mode) {
 		default:
@@ -354,7 +365,6 @@ gchar *get_special_folder(int csidl) {
 			retval = g_utf16_to_utf8(path, -1, NULL, NULL, NULL);
 		CoTaskMemFree(pidl);
 	}
-
 	return retval;
 }
 #endif
