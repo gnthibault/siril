@@ -42,17 +42,12 @@
 #include "gui/message_dialog.h"
 #include "gui/histogram.h"
 #include "gui/progress_and_log.h"
-#include "gui/PSF_list.h"
-#include "io/conversion.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
-#include "io/ser.h"
 #include "algos/colors.h"
 #include "algos/Def_Math.h"
 #include "algos/Def_Wavelet.h"
 #include "algos/statistics.h"
-#include "algos/sorting.h"
-#include "algos/plateSolver.h"
 #include "opencv/opencv.h"
 
 /* this file contains all functions for image processing */

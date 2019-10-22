@@ -37,13 +37,7 @@
 #include "core/initfile.h"
 #include "core/undo.h"
 #include "core/preprocess.h"
-#include "gui/callbacks.h"
-#include "gui/message_dialog.h"
-#include "gui/PSF_list.h"
-#include "gui/histogram.h"
-#include "gui/script_menu.h"
-#include "gui/progress_and_log.h"
-#include "gui/dialogs.h"
+#include "core/command.h"	// for processcommand()
 #include "algos/demosaicing.h"
 #include "algos/colors.h"
 #include "algos/PSF.h"
@@ -56,13 +50,20 @@
 #include "io/sequence.h"
 #include "io/ser.h"
 #include "io/single_image.h"
-#include "core/command.h"	// for processcommand()
 #include "registration/registration.h"
 #include "stacking/stacking.h"
 #include "compositing/compositing.h"
 #include "compositing/align_rgb.h"
-#include "plot.h"
 #include "opencv/opencv.h"
+
+#include "callbacks.h"
+#include "message_dialog.h"
+#include "PSF_list.h"
+#include "histogram.h"
+#include "script_menu.h"
+#include "progress_and_log.h"
+#include "dialogs.h"
+#include "plot.h"
 
 static gboolean is_shift_on = FALSE;
 

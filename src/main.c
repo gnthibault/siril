@@ -50,17 +50,17 @@
 #include "core/initfile.h"
 #include "core/command.h"
 #include "core/pipe.h"
+#include "core/undo.h"
+#include "algos/star_finder.h"
+#include "algos/photometry.h"
 #include "io/sequence.h"
 #include "io/conversion.h"
+#include "io/single_image.h"
 #include "gui/callbacks.h"
 #include "gui/script_menu.h"
 #include "gui/progress_and_log.h"
 #include "registration/registration.h"
 #include "stacking/stacking.h"
-#include "core/undo.h"
-#include "io/single_image.h"
-#include "algos/star_finder.h"
-#include "algos/photometry.h"
 
 #define GLADE_FILE "siril3.glade"
 
@@ -70,10 +70,23 @@ fits gfit;	// currently loaded image
 GtkBuilder *builder = NULL;	// get widget references anywhere
 
 #ifdef MAC_INTEGRATION
-
-static gboolean osx_open_file(GtkosxApplication *osx_app, gchar *path, gpointer data){
+static gboolean osx_open_file(GtkosxApplication *osx_app, gchar *path,
+		gpointer data) {
 	if (path != NULL) {
-		open_single_image(path);
+		const char *ext = get_filename_ext(path);
+		if (ext && !strncmp(ext, "seq", 4)) {
+			gchar *sequence_dir = g_path_get_dirname(path);
+			if (!changedir(sequence_dir, NULL)) {
+				if (check_seq(FALSE)) {
+					siril_log_message(_("No sequence `%s' found.\n"), path);
+				} else {
+					set_seq(path);
+				}
+				g_free(sequence_dir);
+			}
+		} else {
+			open_single_image(path);
+		}
 		return FALSE;
 	}
 	return TRUE;
@@ -237,7 +250,7 @@ static gchar *load_glade_file() {
 		i++;
 	} while (i < G_N_ELEMENTS(siril_sources));
 	if (i == G_N_ELEMENTS(siril_sources)) {
-#ifdef _WIN32 // in the case where the app is started with double click
+#ifdef _WIN32 // in the case where the app is started with double click on seq file
 		gchar *execname = g_win32_get_package_installation_directory_of_module(NULL);
 		gchar *prefix = g_build_filename(execname, "share", PACKAGE, NULL);
 		g_free(execname);
