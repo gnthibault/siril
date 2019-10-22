@@ -559,7 +559,7 @@ char* str_append(char** data, const char* newdata) {
 	int len = (*data ? strlen(*data) : 0);
 	if ((p = realloc(*data, len + strlen(newdata) + 1)) == NULL) {
 		free(p);
-		printf("str_append: error allocating data\n");
+		PRINT_ALLOC_ERR;
 		return NULL;
 	}
 	*data = p;

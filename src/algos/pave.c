@@ -137,8 +137,10 @@ int pave_2d_tfo(float *Pict, float *Pave, int Nl, int Nc, int Nbr_Plan,
 	float *Imag, *Plan;
 
 	Imag = f_vector_alloc(Nl * Nc);
-	if (Imag == NULL)
+	if (Imag == NULL) {
+		PRINT_ALLOC_ERR;
 		return 1;
+	}
 	memcpy(Imag, Pict, Nl * Nc * sizeof(float));
 
 	for (Num_Plan = 0; Num_Plan < Nbr_Plan - 1; Num_Plan++) {

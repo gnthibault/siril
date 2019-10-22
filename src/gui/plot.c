@@ -60,15 +60,19 @@ void on_GtkEntryCSV_changed(GtkEditable *editable, gpointer user_data);
 
 static pldata *alloc_plot_data(int size) {
 	pldata *plot = calloc(1, sizeof(pldata));
-	if (!plot)
+	if (!plot) {
+		PRINT_ALLOC_ERR;
 		return NULL;
+	}
 	plot->data = calloc(size, sizeof(struct kpair));
 	if (!plot->data) {
+		PRINT_ALLOC_ERR;
 		free(plot);
 		return NULL;
 	}
 	plot->err = calloc(size, sizeof(struct kpair));
 	if (!plot->err) {
+		PRINT_ALLOC_ERR;
 		free(plot->data);
 		free(plot);
 		return NULL;

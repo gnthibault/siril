@@ -573,7 +573,7 @@ int apply_photometric_cc() {
 
 	stars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
 	if (stars == NULL) {
-		printf("Memory allocation failed: apply_photometric_cc\n");
+		PRINT_ALLOC_ERR;
 		set_cursor_waiting(FALSE);
 		fclose(BV_file);
 		return 1;

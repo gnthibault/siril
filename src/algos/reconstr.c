@@ -158,8 +158,10 @@ int wavelet_reconstruct_file(char *File_Name_Transform, float *coef, WORD *data)
 	Nl = Wavelet.Nbr_Ligne;
 	Nc = Wavelet.Nbr_Col;
 	Imag = f_vector_alloc(Nl * Nc);
-	if (Imag == NULL)
+	if (Imag == NULL) {
+		PRINT_ALLOC_ERR;
 		return 1;
+	}
 	wavelet_reconstruct_data(&Wavelet, Imag, coef);
 
 	/* get and view result */

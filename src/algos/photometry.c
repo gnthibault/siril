@@ -188,7 +188,7 @@ static photometry *phot_alloc() {
 
 	phot = (photometry*) calloc(sizeof(photometry), 1);
 	if (phot == NULL) {
-		printf("photometry: memory error\n");
+		PRINT_ALLOC_ERR;
 	}
 	return (phot);
 }

@@ -191,8 +191,10 @@ static int IKSS(double *data, int n, double *location, double *scale) {
 static WORD* reassign_to_non_null_data(WORD *data, long inputlen, long outputlen, int free_input) {
 	int i, j = 0;
 	WORD *ndata = malloc(outputlen * sizeof(WORD));
-	if (!ndata)
+	if (!ndata) {
+		PRINT_ALLOC_ERR;
 		return NULL;
+	}
 
 	for (i = 0; i < inputlen; i++) {
 		if (data[i] > 0) {

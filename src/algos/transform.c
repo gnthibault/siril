@@ -139,7 +139,7 @@ float *f_vector_alloc(Nbr_Elem)
 
 	Vector = (float*) calloc((unsigned) Nbr_Elem * sizeof(float), 1);
 	if (Vector == NULL) {
-		printf("wavelet: memory error\n");
+		PRINT_ALLOC_ERR;
 	}
 	return (Vector);
 }
@@ -219,6 +219,7 @@ int wavelet_transform_data(float *Imag, int Nl, int Nc,
 		Size = Nl * Nc * Nbr_Plan;
 		Wavelet->Pave.Data = f_vector_alloc(Size);
 		if (Wavelet->Pave.Data == NULL) {
+			PRINT_ALLOC_ERR;
 			return 1;
 		}
 		Pave = Wavelet->Pave.Data;

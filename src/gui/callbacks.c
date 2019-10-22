@@ -324,8 +324,7 @@ static void test_and_allocate_reference_image(int vport) {
 			com.refimage_regbuffer = realloc(com.refimage_regbuffer,
 					com.surface_stride[vport] * gfit.ry * sizeof(guchar));
 			if (com.refimage_regbuffer == NULL) {
-				fprintf(stderr,
-						"Could not allocate memory for the reference image buffer\n");
+				PRINT_ALLOC_ERR;
 				if (oldbuf)
 					free(oldbuf);
 				return;
@@ -4394,10 +4393,9 @@ void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data)
 		return;
 	}
 
-	struct extract_channels_data *args = malloc(
-			sizeof(struct extract_channels_data));
+	struct extract_channels_data *args = malloc(sizeof(struct extract_channels_data));
 	if (args == NULL) {
-		printf("allocation error: extract_channel\n");
+		PRINT_ALLOC_ERR;
 		return;
 	}
 

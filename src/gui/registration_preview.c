@@ -224,7 +224,7 @@ void on_spinbut_shift_value_change(GtkSpinButton *spinbutton, gpointer user_data
 		printf("Allocating registration data for this layer\n");
 		com.seq.regparam[current_layer] = calloc(com.seq.number, sizeof(regdata));
 		if (com.seq.regparam[current_layer] == NULL) {
-			printf("FAILED: could not allocate registration data\n");
+			PRINT_ALLOC_ERR;
 			return;
 		}
 	}

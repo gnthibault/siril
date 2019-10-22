@@ -211,6 +211,7 @@ static gchar *get_changelog(gint x, gint y, gint z, gint p) {
 
 	changelog = g_try_malloc(sizeof(struct ucontent));
 	if (changelog == NULL) {
+		PRINT_ALLOC_ERR;
 		return NULL;
 	}
 
@@ -309,6 +310,7 @@ static gpointer fetch_url(gpointer p) {
 
 	content = g_try_malloc(sizeof(struct ucontent));
 	if (content == NULL) {
+		PRINT_ALLOC_ERR;
 		return NULL;
 	}
 

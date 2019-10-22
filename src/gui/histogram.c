@@ -447,7 +447,7 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 				free(displayed_values);
 				displayed_values = NULL;
 			}
-			fprintf(stderr, "Failed to reallocate histogram bins\n");
+			PRINT_ALLOC_ERR;
 			histo_close(TRUE);
 			return;
 		}

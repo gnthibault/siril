@@ -140,6 +140,7 @@ static int undo_get_data(fits *fit, historic hist) {
 	}
 	WORD *newdata = (WORD*) realloc(fit->data, size * sizeof(WORD));
 	if (!newdata) {
+		PRINT_ALLOC_ERR;
 		free(newdata);
 		free(buf);
 		g_close(fd, NULL);
