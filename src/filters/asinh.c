@@ -18,6 +18,8 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <math.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "algos/statistics.h"
@@ -61,6 +63,44 @@ static void asinh_recompute() {
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
+}
+
+int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
+	int i, layer;
+	WORD *buf[3] = { fit->pdata[RLAYER],
+			fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	double norm;
+
+	norm = get_normalized_value(fit);
+
+	for (i = 0; i < fit->ry * fit->rx; i++) {
+		double x, k;
+		if (fit->naxes[2] > 1) {
+			double r, g, b;
+
+			r = (double) buf[RLAYER][i] / norm;
+			g = (double) buf[GLAYER][i] / norm;
+			b = (double) buf[BLAYER][i] / norm;
+			/* RGB space */
+			if (RGBspace)
+				x = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+			else
+				x = 0.3333 * r + 0.3333 * g + 0.3333 * b;
+		} else {
+			x = buf[RLAYER][i] / norm;
+		}
+
+		k = asinh(beta * x) / (x * asinh(beta));
+
+		for (layer = 0; layer < fit->naxes[2]; ++layer) {
+			double px = (double) buf[layer][i] / norm;
+			px -= offset;
+			px *= k;
+			buf[layer][i] = round_to_WORD(px * norm);
+		}
+	}
+	invalidate_stats_from_fit(fit);
+	return 0;
 }
 
 void on_menuitem_asinh_activate(GtkMenuItem *menuitem, gpointer user_data) {

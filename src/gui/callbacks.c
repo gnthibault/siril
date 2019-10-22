@@ -4331,24 +4331,6 @@ void scrollbars_vadjustment_changed_handler(GtkAdjustment *adjustment,
 	}
 }
 
-void on_menuitem_noise_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (get_thread_run()) {
-		siril_log_message(
-				_("Another task is already in progress, ignoring new request.\n"));
-		return;
-	}
-
-	set_cursor_waiting(TRUE);
-	control_window_switch_to_tab(OUTPUT_LOGS);
-
-	struct noise_data *args = malloc(sizeof(struct noise_data));
-	args->fit = &gfit;
-	args->verbose = TRUE;
-	args->use_idle = TRUE;
-	memset(args->bgnoise, 0.0, sizeof(double[3]));
-	start_in_new_thread(noise, args);
-}
-
 void on_menuitem_stat_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	computeStat();

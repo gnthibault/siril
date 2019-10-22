@@ -28,9 +28,6 @@
 #include <sys/time.h>
 #include <fcntl.h>
 #include <math.h>
-#include <gsl/gsl_integration.h>
-#include <gsl/gsl_sf_erf.h>
-#include <gsl/gsl_statistics.h>
 #include <fitsio.h>
 #include <complex.h>
 #include <float.h>
@@ -57,9 +54,6 @@
 #include "algos/sorting.h"
 #include "algos/plateSolver.h"
 #include "opencv/opencv.h"
-
-#define MAX_ITER 15
-#define EPSILON 1E-4
 
 /* this file contains all functions for image processing */
 
@@ -385,44 +379,6 @@ int loglut(fits *fit) {
 	return 0;
 }
 
-int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
-	int i, layer;
-	WORD *buf[3] = { fit->pdata[RLAYER],
-			fit->pdata[GLAYER], fit->pdata[BLAYER] };
-	double norm;
-
-	norm = get_normalized_value(fit);
-
-	for (i = 0; i < fit->ry * fit->rx; i++) {
-		double x, k;
-		if (fit->naxes[2] > 1) {
-			double r, g, b;
-
-			r = (double) buf[RLAYER][i] / norm;
-			g = (double) buf[GLAYER][i] / norm;
-			b = (double) buf[BLAYER][i] / norm;
-			/* RGB space */
-			if (RGBspace)
-				x = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-			else
-				x = 0.3333 * r + 0.3333 * g + 0.3333 * b;
-		} else {
-			x = buf[RLAYER][i] / norm;
-		}
-
-		k = asinh(beta * x) / (x * asinh(beta));
-
-		for (layer = 0; layer < fit->naxes[2]; ++layer) {
-			double px = (double) buf[layer][i] / norm;
-			px -= offset;
-			px *= k;
-			buf[layer][i] = round_to_WORD(px * norm);
-		}
-	}
-	invalidate_stats_from_fit(fit);
-	return 0;
-}
-
 int ddp(fits *a, int level, float coeff, float sigma) {
 	fits fit;
 	memset(&fit, 0, sizeof(fits));
@@ -675,153 +631,6 @@ int extract_plans(fits *fit, int Nbr_Plan, int Type) {
 	}
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_DONE);
 	return 0;
-}
-
-
-/*****************************************************************************
- *       N O I S E     C O M P U T A T I O N      M A N A G E M E N T        *
- ****************************************************************************/
-
-/* Based on Jean-Luc Starck and Fionn Murtagh (1998), Automatic Noise
- * Estimation from the Multiresolution Support, Publications of the
- * Royal Astronomical Society of the Pacific, vol. 110, pp. 193–199.
- * slow algorithm. For now it is replaced by faster one. BUT, we need to keep it
- * in case we need it -. */
-int backgroundnoise(fits* fit, double sigma[]) {
-	int layer, k;
-	fits *waveimage = calloc(1, sizeof(fits));
-
-	if (waveimage == NULL) {
-		fprintf(stderr, "backgroundnoise: error allocating data\n");
-		return 1;
-	}
-
-	copyfits(fit, waveimage, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
-	cvComputeFinestScale(waveimage);
-
-	for (layer = 0; layer < fit->naxes[2]; layer++) {
-		double sigma0, mean, norm_val;
-		double epsilon = 0.0;
-		WORD lo, hi;
-		WORD *buf = waveimage->pdata[layer];
-		unsigned int i;
-		unsigned int ndata = fit->rx * fit->ry;
-		assert(ndata > 0);
-
-		imstats *stat = statistics(NULL, -1, waveimage, layer, NULL, STATS_BASIC);
-		if (!stat) {
-			siril_log_message(_("Error: statistics computation failed.\n"));
-			return 1;
-		}
-		sigma0 = stat->sigma;
-		mean = stat->mean;
-		norm_val = stat->normValue;
-		free_stats(stat);
-
-		WORD *array1 = calloc(ndata, sizeof(WORD));
-		WORD *array2 = calloc(ndata, sizeof(WORD));
-		if (array1 == NULL || array2 == NULL) {
-			printf("backgroundnoise: Error allocating data\n");
-			if (array1)
-				free(array1);
-			if (array2)
-				free(array2);
-			return 1;
-		}
-		WORD *set = array1, *subset = array2;
-		memcpy(set, buf, ndata * sizeof(WORD));
-
-		lo = round_to_WORD(LOW_BOUND * norm_val);
-		hi = round_to_WORD(HIGH_BOUND * norm_val);
-
-		sigma[layer] = sigma0;
-
-		int n = 0;
-		do {
-			sigma0 = sigma[layer];
-			for (i = 0, k = 0; i < ndata; i++) {
-				if (set[i] >= lo && set[i] <= hi) {
-					if (fabs(set[i] - mean) < 3.0 * sigma0) {
-						subset[k++] = set[i];
-					}
-				}
-			}
-			ndata = k;
-			sigma[layer] = gsl_stats_ushort_sd(subset, 1, ndata);
-			set = subset;
-			(set == array1) ? (subset = array2) : (subset = array1);
-			if (ndata == 0) {
-				free(array1);
-				free(array2);
-				siril_log_message(_("backgroundnoise: Error, no data computed\n"));
-				sigma[layer] = 0.0;
-				return 1;
-			}
-			n++;
-			epsilon = fabs(sigma[layer] - sigma0) / sigma[layer];
-		} while (epsilon > EPSILON && n < MAX_ITER);
-		sigma[layer] *= SIGMA_PER_FWHM; // normalization
-		sigma[layer] /= 0.974; // correct for 2% systematic bias
-		if (n == MAX_ITER)
-			siril_log_message(_("backgroundnoise: does not converge\n"));
-		free(array1);
-		free(array2);
-	}
-	clearfits(waveimage);
-	invalidate_stats_from_fit(fit);
-
-	return 0;
-}
-
-gboolean end_noise(gpointer p) {
-	struct noise_data *args = (struct noise_data *) p;
-	stop_processing_thread();
-	set_cursor_waiting(FALSE);
-	update_used_memory();
-	if (args->verbose) {
-		struct timeval t_end;
-		gettimeofday(&t_end, NULL);
-		show_time(args->t_start, t_end);
-	}
-	free(args);
-	return FALSE;
-}
-
-gpointer noise(gpointer p) {
-	struct noise_data *args = (struct noise_data *) p;
-	int chan;
-	args->retval = 0;
-
-	if (args->verbose) {
-		siril_log_color_message(_("Noise standard deviation: calculating...\n"),
-				"red");
-		gettimeofday(&args->t_start, NULL);
-	}
-
-	for (chan = 0; chan < args->fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_NOISE);
-		if (!stat) {
-			args->retval = 1;
-			siril_log_message(_("Error: statistics computation failed.\n"));
-			break;
-		}
-		args->bgnoise[chan] = stat->bgnoise;
-		free_stats(stat);
-	}
-
-	if (!args->retval) {
-		double norm = (double) get_normalized_value(args->fit);
-		for (chan = 0; chan < args->fit->naxes[2]; chan++)
-			siril_log_message(
-					_("Background noise value (channel: #%d): %0.3lf (%.3e)\n"), chan,
-					args->bgnoise[chan], args->bgnoise[chan] / norm);
-	}
-
-	int retval = args->retval;
-	if (args->use_idle)
-		siril_add_idle(end_noise, args);
-
-	return GINT_TO_POINTER(retval);
 }
 
 void compute_grey_flat(fits *fit) {

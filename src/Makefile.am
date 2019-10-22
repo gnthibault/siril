@@ -34,6 +34,7 @@ siril_SOURCES = \
 	stacking/median_and_mean.c stacking/upscaling.c \
 	algos/statistics.c algos/sorting.h algos/sorting.c \
 	algos/background_extraction.c algos/background_extraction.h algos/quality.c algos/quality.h \
+	algos/noise.c algos/noise.h \
 	algos/colors.c algos/colors.h \
 	algos/geometry.c algos/geometry.h \
 	algos/demosaicing.c algos/demosaicing.h \

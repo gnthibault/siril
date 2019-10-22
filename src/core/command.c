@@ -56,6 +56,7 @@
 #include "gui/histogram.h"
 #include "gui/plot.h"
 #include "gui/progress_and_log.h"
+#include "filters/asinh.h"
 #include "filters/banding.h"
 #include "filters/clahe.h"
 #include "filters/cosmetic_correction.h"
