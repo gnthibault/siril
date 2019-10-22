@@ -20,7 +20,7 @@ int do_normalization(struct stacking_args *args) {
 	args->coeff.mul = malloc(nb_frames * sizeof(double));
 	args->coeff.scale = malloc(nb_frames * sizeof(double));
 	if (!args->coeff.offset || !args->coeff.mul || !args->coeff.scale) {
-		printf("allocation issue in stacking normalization\n");
+		PRINT_ALLOC_ERR;
 		args->retval = -1;
 		return -1;
 	}

@@ -242,6 +242,10 @@ int siril_ndiv(fits *a, fits *b) {
 	}
 	nb_pixels = a->rx * a->ry;
 	div = malloc(nb_pixels * sizeof(double));
+	if (div == NULL) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
 
 	for (layer = 0; layer < a->naxes[2]; ++layer) {
 		double max = 0, norm;
@@ -577,8 +581,10 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 	assert(fit->naxes[2] <= 3);
 
 	float *Imag = f_vector_alloc(fit->ry * fit->rx);
-	if (Imag == NULL)
+	if (Imag == NULL) {
+		PRINT_ALLOC_ERR;
 		return 1;
+	}
 
 	if (reqlayer < 0 || reqlayer > 3) {
 		start = 0;

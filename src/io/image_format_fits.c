@@ -97,7 +97,7 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
     npixels = anaxes[0];  /* no. of pixels to read in each row */
 	pix = (double *) malloc(npixels * sizeof(double)); /* memory for 1 row */
 	if (pix == NULL) {
-		printf("Memory allocation error\n");
+		PRINT_ALLOC_ERR;
 		return (1);
 	}
 
@@ -343,8 +343,10 @@ static char *copy_header(fits *fit) {
 	 * reallocations are 7 lines, 567 */
 	strsize = 1620;
 	header = malloc(strsize);
-	if (header == NULL)
+	if (header == NULL) {
+		PRINT_ALLOC_ERR;
 		return NULL;
+	}
 	header[0] = '\0';
 	strlength = 0;
 	fits_get_hdu_num(fit->fptr, &hdupos); /*Get the current HDU position */
@@ -361,6 +363,7 @@ static char *copy_header(fits *fit) {
 				strsize += 567;
 				newstr = realloc(header, strsize);
 				if (newstr == NULL) {
+					PRINT_ALLOC_ERR;
 					free(header);
 					return NULL;
 				}
@@ -986,8 +989,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	WORD *olddata = fit->data;
 	if ((fit->data = realloc(fit->data, nbdata * fit->naxes[2] * sizeof(WORD)))
 			== NULL) {
-		fprintf(stderr, "readfits: error realloc %s %lu\n", filename,
-				nbdata * fit->naxes[2]);
+		PRINT_ALLOC_ERR;
 		status = 0;
 		fits_close_file(fit->fptr, &status);
 		if (olddata)
@@ -1133,7 +1135,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	/* realloc fit->data to the image size */
 	WORD *olddata = fit->data;
 	if ((fit->data = realloc(fit->data, nbdata * sizeof(WORD))) == NULL) {
-		fprintf(stderr, "readfits: error realloc %s %u\n", filename, nbdata);
+		PRINT_ALLOC_ERR;
 		status = 0;
 		fits_close_file(fit->fptr, &status);
 		if (olddata)
@@ -1374,7 +1376,7 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		// allocating to->data and assigning to->pdata
 		WORD *olddata = to->data;
 		if (!(to->data = realloc(to->data, nbdata * depth * sizeof(WORD)))) {
-			fprintf(stderr, "copyfits: error reallocating data\n");
+			PRINT_ALLOC_ERR;
 			if (olddata)
 				free(olddata);
 			return -1;
@@ -1616,7 +1618,7 @@ int new_fit_image(fits **fit, int width, int height, int nblayer) {
 	npixels = width * height;
 	data = malloc(npixels * nblayer * sizeof(WORD));
 	if (data == NULL) {
-		fprintf(stderr, "Could not allocate memory\n");
+		PRINT_ALLOC_ERR;
 		return -1;
 	}
 
@@ -1625,6 +1627,7 @@ int new_fit_image(fits **fit, int width, int height, int nblayer) {
 	else {
 		*fit = calloc(1, sizeof(fits));
 		if (!*fit) {
+			PRINT_ALLOC_ERR;
 			free(data);
 			return -1;
 		}

@@ -96,7 +96,7 @@ static int add_stream(struct mp4_struct *ost, AVCodec **codec,
 	ost->st->id = ost->oc->nb_streams-1;
 	c = avcodec_alloc_context3(*codec);
 	if (!c) {
-		fprintf(stderr, "Could not alloc an encoding context\n");
+		PRINT_ALLOC_ERR;
 		return 1;
 	}
 	ost->enc = c;
@@ -142,8 +142,10 @@ static AVFrame *alloc_picture(enum AVPixelFormat pix_fmt, int width, int height)
 	int ret;
 
 	picture = av_frame_alloc();
-	if (!picture)
+	if (!picture) {
+		PRINT_ALLOC_ERR;
 		return NULL;
+	}
 
 	picture->format = pix_fmt;
 	picture->width  = width;
@@ -178,6 +180,7 @@ static int open_video(AVCodec *codec, struct mp4_struct *ost, AVDictionary *opt_
 	/* allocate and init a re-usable frame */
 	ost->frame = alloc_picture(c->pix_fmt, c->width, c->height);
 	if (!ost->frame) {
+		PRINT_ALLOC_ERR;
 		fprintf(stderr, "Could not allocate video frame\n");
 		return 1;
 	}
@@ -189,6 +192,7 @@ static int open_video(AVCodec *codec, struct mp4_struct *ost, AVDictionary *opt_
 		enum AVPixelFormat pix_fmt = (nb_layers == 1) ? AV_PIX_FMT_GRAY8 : AV_PIX_FMT_RGB24;
 		ost->tmp_frame = alloc_picture(pix_fmt, ost->src_w, ost->src_h);
 		if (!ost->tmp_frame) {
+			PRINT_ALLOC_ERR;
 			fprintf(stderr, "Could not allocate temporary picture\n");
 			return 1;
 		}

@@ -39,7 +39,7 @@ static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 	unsigned int nbdata = args->seq->ry * args->seq->rx;
 	ssdata->sum[0] = calloc(nbdata, sizeof(unsigned long)*args->seq->nb_layers);
 	if (ssdata->sum[0] == NULL){
-		printf("Stacking: memory allocation failure\n");
+		PRINT_ALLOC_ERR;
 		return -1;
 	}
 	if(args->seq->nb_layers == 3){

@@ -272,7 +272,7 @@ int check_seq(int recompute_stats) {
 			if (tmp)
 				sequences = tmp;
 			else {
-				siril_log_message(_("Could not allocate more space for the large number of sequences found.\n"));
+				PRINT_ALLOC_ERR;
 				break;
 			}
 		}
@@ -791,7 +791,7 @@ static int _allocate_sequence_locks(sequence *seq) {
 		int i;
 		seq->fd_lock = malloc(seq->number * sizeof(omp_lock_t));
 		if (!seq->fd_lock) {
-			fprintf(stderr, "Allocation error when opening images, aborting\n");
+			PRINT_ALLOC_ERR;
 			return 1;
 		}
 
@@ -811,8 +811,8 @@ int seq_open_image(sequence *seq, int index) {
 			if (!seq->fptr) {
 				seq->fptr = calloc(seq->number, sizeof(fitsfile *));
 				if (!seq->fptr) {
-				       fprintf(stderr, "Allocation error when opening images, aborting\n");
-			       	       return 1;
+					PRINT_ALLOC_ERR;
+					return 1;
 				}
 			}
 			if (_allocate_sequence_locks(seq))
@@ -1359,7 +1359,7 @@ gpointer crop_sequence(gpointer p) {
 
 		ser_file = malloc(sizeof(struct ser_struct));
 		if (ser_file == NULL) {
-			fprintf(stderr, "memory error: crop_sequence\n");
+			PRINT_ALLOC_ERR;
 			args->retvalue = 1;
 			siril_add_idle(end_crop_sequence, args);
 		}

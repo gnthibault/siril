@@ -240,7 +240,7 @@ sequence * readseqfile(const char *name){
 				if (!regparam) {
 					regparam = calloc(seq->number, sizeof(regdata));
 					if (!regparam) {
-						fprintf(stderr, "readseqfile: could not allocate registration data\n");
+						PRINT_ALLOC_ERR;
 						goto error;
 					}
 					i = 0;	// one line per image, starting with 0
@@ -658,7 +658,7 @@ int buildseqfile(sequence *seq, int force_recompute) {
 
 	filename = malloc(strlen(seq->seqname) + 20);
 	if (filename == NULL) {
-		printf("alloc error: buildseqfile\n");
+		PRINT_ALLOC_ERR;
 		return 1;
 	}
 	if (seq->type == SEQ_REGULAR) {
@@ -696,7 +696,7 @@ int buildseqfile(sequence *seq, int force_recompute) {
 					alloc_size += 25;
 					oldparam = seq->imgparam;
 					if (!(seq->imgparam = realloc(seq->imgparam, alloc_size*sizeof(imgdata)))) {
-						fprintf(stderr, "Could not reallocate image parameters structure in sequence\n");
+						PRINT_ALLOC_ERR;
 						if (oldparam) free(oldparam);
 						free(filename);
 						return 2;

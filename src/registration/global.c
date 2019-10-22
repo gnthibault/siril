@@ -75,7 +75,7 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	} else {
 		sadata->current_regdata = calloc(args->seq->number, sizeof(regdata));
 		if (sadata->current_regdata == NULL) {
-			fprintf(stderr, "Error allocating registration data\n");
+			PRINT_ALLOC_ERR;
 			return -2;
 		}
 		args->seq->regparam[regargs->layer] = sadata->current_regdata;

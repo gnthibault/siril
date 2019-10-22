@@ -224,7 +224,7 @@ static int *randomIndex(int n) {
 
 	index = calloc(n, sizeof (int));
 	if (index == NULL) {
-		printf("alloc error: randomIndex\n");
+		PRINT_ALLOC_ERR;
 		return NULL;
 	}
 
@@ -304,7 +304,7 @@ int film_read_frame(struct film_struct *film, int frame_no, fits *fit) {
 
 	if ((ptr = realloc(fit->data, nb_pixels * film->nb_layers * sizeof(WORD)))
 			== NULL) {
-		fprintf(stderr,"FILM: NULL realloc for FITS data\n");
+		PRINT_ALLOC_ERR;
 		free(fit->data);
 		return -1;
 	}

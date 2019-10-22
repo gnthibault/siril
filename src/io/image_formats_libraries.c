@@ -78,7 +78,10 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 
 	scanline = TIFFScanlineSize(tif);
 	buf = _TIFFmalloc(TIFFStripSize(tif));
-	if (!buf) return -1;
+	if (!buf) {
+		PRINT_ALLOC_ERR;
+		return -1;
+	}
 	for (row = 0; row < height; row += rowsperstrip){
 		nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
 		switch(config){
@@ -1013,8 +1016,10 @@ static int readraw(const char *name, fits *fit) {
 	npixels = width * height;
 
 	data = malloc(npixels * sizeof(WORD) * 3);
-	if (!data)
+	if (!data) {
+		PRINT_ALLOC_ERR;
 		return -1;
+	}
 	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 	ret = libraw_unpack(raw);
 	if (ret) {
@@ -1224,6 +1229,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 
 	data = (WORD*) calloc(1, npixels * sizeof(WORD));
 	if (!data) {
+		PRINT_ALLOC_ERR;
 		libraw_recycle(raw);
 		libraw_close(raw);
 		return -1;

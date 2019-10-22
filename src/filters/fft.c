@@ -146,10 +146,12 @@ static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
 
 	fftw_complex *spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
 	if (!spatial_repr) {
+		PRINT_ALLOC_ERR;
 		return;
 	}
 	fftw_complex *frequency_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
 	if (!frequency_repr) {
+		PRINT_ALLOC_ERR;
 		fftw_free(spatial_repr);
 		return;
 	}
@@ -217,6 +219,7 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 
 	fftw_complex* spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
 	if (!spatial_repr) {
+		PRINT_ALLOC_ERR;
 		free(modul);
 		free(phase);
 		return;
@@ -224,6 +227,7 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 
 	fftw_complex* frequency_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
 	if (!frequency_repr) {
+		PRINT_ALLOC_ERR;
 		fftw_free(spatial_repr);
 		free(modul);
 		free(phase);
@@ -314,11 +318,13 @@ gpointer fourier_transform(gpointer p) {
 	case 'I':
 		tmp = calloc(1, sizeof(fits));
 		if (!tmp || readfits(args->modulus, tmp, NULL)) {
+			PRINT_ALLOC_ERR;
 			args->retval = 1;
 			goto end;
 		}
 		tmp1 = calloc(1, sizeof(fits));
 		if (!tmp1 || readfits(args->phase, tmp1, NULL)) {
+			PRINT_ALLOC_ERR;
 			args->retval = 1;
 			goto end;
 		}

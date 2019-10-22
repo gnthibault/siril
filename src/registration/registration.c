@@ -212,7 +212,7 @@ int register_shift_dft(struct registration_args *args) {
 	} else {
 		current_regdata = calloc(args->seq->number, sizeof(regdata));
 		if (current_regdata == NULL) {
-			printf("Error allocating registration data\n");
+			PRINT_ALLOC_ERR;
 			return -2;
 		}
 		args->seq->regparam[args->layer] = current_regdata;
@@ -497,7 +497,7 @@ int register_ecc(struct registration_args *args) {
 	} else {
 		current_regdata = calloc(args->seq->number, sizeof(regdata));
 		if (current_regdata == NULL) {
-			printf("Error allocating registration data\n");
+			PRINT_ALLOC_ERR;
 			return -2;
 		}
 		args->seq->regparam[args->layer] = current_regdata;

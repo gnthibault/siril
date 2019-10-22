@@ -504,6 +504,7 @@ static int ser_alloc_ts(struct ser_struct *ser_file, int frame_no) {
 	if (ser_file->ts_alloc <= frame_no) {
 		uint64_t *new = realloc(ser_file->ts, (frame_no + 1) * 2 * sizeof(uint64_t));
 		if (!new) {
+			PRINT_ALLOC_ERR;
 			retval = 1;
 		} else {
 			ser_file->ts = new;
@@ -607,7 +608,10 @@ int ser_compact_file(struct ser_struct *ser_file, unsigned char *successful_fram
 			// move image j to i
 			if (!buffer) {
 				buffer = malloc(frame_size);
-				if (!buffer) return 1;
+				if (!buffer) {
+					PRINT_ALLOC_ERR;
+					return 1;
+				}
 				siril_log_message(_("Compacting SER file after parallel output to it...\n"));
 			}
 			offseti = SER_HEADER_LEN + frame_size * (int64_t)i;
@@ -767,7 +771,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 
 	olddata = fit->data;
 	if ((fit->data = realloc(fit->data, frame_size * sizeof(WORD))) == NULL) {
-		fprintf(stderr, "ser_read: error realloc %s %"G_GUINT64_FORMAT"\n", ser_file->filename, frame_size);
+		PRINT_ALLOC_ERR;
 		if (olddata)
 			free(olddata);
 		return -1;

@@ -217,7 +217,7 @@ static int comet_align_prepare_hook(struct generic_seq_args *args) {
 	} else {
 		cadata->current_regdata = calloc(args->seq->number, sizeof(regdata));
 		if (cadata->current_regdata == NULL) {
-			fprintf(stderr, "Error allocating registration data\n");
+			PRINT_ALLOC_ERR;
 			return -2;
 		}
 		args->seq->regparam[regargs->layer] = cadata->current_regdata;

@@ -349,7 +349,7 @@ gchar *initialize_converters() {
 	supported_extensions = malloc(MAX_OF_EXTENSIONS * sizeof(char*));
 	/* internal extensions */
 	if (supported_extensions == NULL) {
-		fprintf(stderr, "initialize_converters: error allocating data\n");
+		PRINT_ALLOC_ERR;
 		return NULL;
 	}
 	supported_extensions[count_ext++] = ".fit";
@@ -935,8 +935,10 @@ char* g_real_path(const char *source) {
 	}
 
 	FilePath = malloc(maxchar + 1);
-	if (!FilePath)
+	if (!FilePath) {
+		PRINT_ALLOC_ERR;
 		return NULL;
+	}
 	FilePath[0] = 0;
 
 	hFile = CreateFile(source, GENERIC_READ, FILE_SHARE_READ, NULL,

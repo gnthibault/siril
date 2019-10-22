@@ -134,7 +134,7 @@ gpointer median_filter(gpointer p) {
 
 	WORD *data = calloc(ksize_squared, sizeof(WORD));
 	if (data == NULL) {
-		printf("median filter: error allocating data\n");
+		PRINT_ALLOC_ERR;
 		siril_add_idle(end_median_filter, args);
 		set_progress_bar_data(_("Median filter failed"), PROGRESS_DONE);
 		return GINT_TO_POINTER(1);
@@ -145,7 +145,7 @@ gpointer median_filter(gpointer p) {
 			/* FILL image upside-down */
 			WORD **image = malloc(ny * sizeof(WORD *));
 			if (image == NULL) {
-				printf("median filter: error allocating data\n");
+				PRINT_ALLOC_ERR;
 				siril_add_idle(end_median_filter, args);
 				free(data);
 				return GINT_TO_POINTER(1);

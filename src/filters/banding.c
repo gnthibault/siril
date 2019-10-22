@@ -142,7 +142,7 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 		double background = stat->median;
 		double *rowvalue = calloc(fit->ry, sizeof(double));
 		if (rowvalue == NULL) {
-			fprintf(stderr, "BandingEngine: error allocating data\n");
+			PRINT_ALLOC_ERR;
 			free_stats(stat);
 			return 1;
 		}
@@ -154,7 +154,7 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 			line = fit->pdata[chan] + row * fit->rx;
 			WORD *cpyline = calloc(fit->rx, sizeof(WORD));
 			if (cpyline == NULL) {
-				fprintf(stderr, "BandingEngine: error allocating data\n");
+				PRINT_ALLOC_ERR;
 				free(rowvalue);
 				return 1;
 			}

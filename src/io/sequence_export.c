@@ -248,7 +248,7 @@ static gpointer export_sequence(gpointer ptr) {
 			destfit.data = calloc(nbdata * fit.naxes[2], sizeof(WORD));
 			destfit.stats = NULL;
 			if (!destfit.data) {
-				fprintf(stderr, "Could not allocate memory for the export, aborting\n");
+				PRINT_ALLOC_ERR;
 				retval = -1;
 				goto free_and_reset_progress_bar;
 			}
