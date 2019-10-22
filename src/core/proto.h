@@ -176,12 +176,10 @@ int	fill(fits *fit, int level, rectangle *arearg);
 int 	off(fits *a, int level);
 int	lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb);
 double	background(fits* fit, int reqlayer, rectangle *selection);
-int backgroundnoise(fits* fit, double sigma[]);
 void	show_FITS_header(fits *);
 double gauss_cvf(double p);
 int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer);
 int extract_plans(fits *fit, int Nbr_Plan, int Type);
-gpointer noise(gpointer p);
 void compute_grey_flat(fits *fit);
 
 /****************** seqfile.h ******************/

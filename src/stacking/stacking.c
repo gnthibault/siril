@@ -45,6 +45,7 @@
 #include "io/ser.h"
 #include "registration/registration.h"
 #include "algos/PSF.h"
+#include "algos/noise.h"
 #include "algos/sorting.h"
 #include "stacking.h"
 #include "sum.h"

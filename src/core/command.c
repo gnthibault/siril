@@ -72,6 +72,7 @@
 #include "algos/Def_Wavelet.h"
 #include "algos/demosaicing.h"
 #include "algos/quality.h"
+#include "algos/noise.h"
 #include "algos/statistics.h"
 #include "algos/sorting.h"
 #include "algos/geometry.h"

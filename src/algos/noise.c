@@ -29,6 +29,8 @@
 #include "gui/progress_and_log.h"
 #include "opencv/opencv.h"
 
+#include "noise.h"
+
 #define MAX_ITER 15
 #define EPSILON 1E-4
 
@@ -127,7 +129,7 @@ int backgroundnoise(fits* fit, double sigma[]) {
 	return 0;
 }
 
-gboolean end_noise(gpointer p) {
+static gboolean end_noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
 	stop_processing_thread();
 	set_cursor_waiting(FALSE);
