@@ -241,7 +241,7 @@ int enqueue_command(char *command) {
 	if (!strncmp(command, "cancel", 6))
 		return 1;
 	if ((command[0] >= 'a' && command[0] <= 'z') ||
-			(command[0] >= 'A' && command[0] <= '2')) {
+			(command[0] >= 'A' && command[0] <= 'Z')) {
 		g_mutex_lock(&read_mutex);
 		command_list = g_list_append(command_list, command);
 		g_cond_signal(&read_cond);
