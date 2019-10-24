@@ -19,7 +19,7 @@ Main development is done with most recent versions of libraries.
 
 Requirements
 ------------
- * **GTK+ 3**, (>= 3.6) as GUI toolkit
+ * **GTK+ 3**, (>= 3.16) as GUI toolkit
  * **cfitsio** for FITS image read and write
  * **fftw3** for Fourier transforms
  * **GSL** (The GNU Scientific Library) for PSF implementation, histograms and background extraction
