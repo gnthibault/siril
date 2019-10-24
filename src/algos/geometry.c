@@ -18,10 +18,10 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "algos/plateSolver.h"
-#include "algos/statistics.h"
 #include "core/siril.h"
 #include "core/proto.h"
+#include "algos/plateSolver.h"
+#include "algos/statistics.h"
 #include "core/undo.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"

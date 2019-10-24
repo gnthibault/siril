@@ -787,12 +787,11 @@ void delete_selected_area() {
  */
 
 static void toggle_image_selection(int image_num) {
-	char msg[60];
+	gchar *msg;
 	if (com.seq.imgparam[image_num].incl) {
 		com.seq.imgparam[image_num].incl = FALSE;
 		--com.seq.selnum;
-		g_snprintf(msg, sizeof(msg),
-				_("Image %d has been unselected from sequence\n"), image_num);
+		msg = g_strdup_printf(_("Image %d has been unselected from sequence\n"), image_num);
 		if (image_num == com.seq.reference_image) {
 			com.seq.reference_image = -1;
 			sequence_list_change_reference();
@@ -801,10 +800,10 @@ static void toggle_image_selection(int image_num) {
 	} else {
 		com.seq.imgparam[image_num].incl = TRUE;
 		++com.seq.selnum;
-		g_snprintf(msg, sizeof(msg),
-				_("Image %d has been selected from sequence\n"), image_num);
+		msg = g_strdup_printf(_("Image %d has been selected from sequence\n"), image_num);
 	}
 	siril_log_message(msg);
+	g_free(msg);
 	sequence_list_change_selection_index(image_num);
 	update_reg_interface(FALSE);
 	update_stack_interface(TRUE);
@@ -1891,15 +1890,17 @@ void adjust_vport_size_to_image() {
  * modified to include the name of the sequence */
 void set_output_filename_to_sequence_name() {
 	static GtkEntry *output_file = NULL;
-	gchar msg[256];
+	gchar *msg;
 	if (!output_file)
 		output_file = GTK_ENTRY(lookup_widget("entryresultfile"));
 	if (!com.seq.seqname || *com.seq.seqname == '\0')
 		return;
-	g_snprintf(msg, sizeof(msg), "%s%sstacked%s", com.seq.seqname,
+	msg = g_strdup_printf("%s%sstacked%s", com.seq.seqname,
 			ends_with(com.seq.seqname, "_") ?
 					"" : (ends_with(com.seq.seqname, "-") ? "" : "_"), com.ext);
 	gtk_entry_set_text(output_file, msg);
+
+	g_free(msg);
 }
 
 void adjust_refimage(int n) {
@@ -1913,8 +1914,7 @@ void adjust_refimage(int n) {
 }
 
 void close_tab() {
-	GtkNotebook* Color_Layers = GTK_NOTEBOOK(
-			gtk_builder_get_object(builder, "notebook1"));
+	GtkNotebook* Color_Layers = GTK_NOTEBOOK(lookup_widget("notebook1"));
 	GtkWidget* page;
 
 	if (com.seq.nb_layers == 1 || gfit.naxes[2] == 1) {
@@ -1935,8 +1935,7 @@ void close_tab() {
 }
 
 void activate_tab(int vport) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(
-			gtk_builder_get_object(builder, "notebook1"));
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook1"));
 	gtk_notebook_set_current_page(notebook, vport);
 	// com.cvport is set in the event handler for changed page
 }
@@ -1974,7 +1973,7 @@ void update_statusbar_convert() {
 }
 
 void update_spinCPU(int max) {
-	static GtkSpinButton * spin_cpu = NULL;
+	static GtkSpinButton *spin_cpu = NULL;
 
 	if (spin_cpu == NULL) {
 		spin_cpu = GTK_SPIN_BUTTON(lookup_widget("spinCPU"));
@@ -2094,13 +2093,14 @@ void initialize_display_mode() {
 void set_GUI_CWD() {
 	if (!com.wd)
 		return;
-	gchar str[256];
+	gchar *str;
 	GtkLabel *label = GTK_LABEL(lookup_widget("labelcwd"));
 
 	gtk_label_set_text(label, com.wd);
 
-	g_snprintf(str, 255, "%s v%s - %s", PACKAGE, VERSION, com.wd);
+	str = g_strdup_printf("%s v%s - %s", PACKAGE, VERSION, com.wd);
 	gtk_window_set_title(GTK_WINDOW(lookup_widget("main_window")), str);
+	g_free(str);
 }
 
 void set_GUI_misc() {
@@ -2125,23 +2125,25 @@ void set_GUI_misc() {
 
 /* size is in kiB */
 void set_GUI_MEM(unsigned long size) {
-	char str[20];
+	char *str;
 	if (size != 0)
-		g_snprintf(str, sizeof(str), _("Mem: %ldMB"), size / 1024);
+		str = g_strdup_printf(_("Mem: %ldMB"), size / 1024);
 	else
-		g_snprintf(str, sizeof(str), _("Mem: N/A"));
+		str = g_strdup(_("Mem: N/A"));
 	set_label_text_from_main_thread("labelmem", str);
+	g_free(str);
 }
 
 void set_GUI_DiskSpace(int64_t space) {
-	gchar str[20];
+	gchar *str;
 	if (space > 0) {
 		gchar *mem = pretty_print_memory(space);
-		g_snprintf(str, sizeof(str), _("Disk Space: %s"), mem);
+		str = g_strdup_printf(_("Disk Space: %s"), mem);
 		g_free(mem);
 	} else
-		g_snprintf(str, sizeof(str), _("Disk Space: N/A"));
+		str = g_strdup(_("Disk Space: N/A"));
 	set_label_text_from_main_thread("labelFreeSpace", str);
+	g_free(str);
 }
 
 static void initialize_preprocessing() {
@@ -2608,21 +2610,23 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
  * in the related layer_info. Does not change display until cursor is released. */
 void on_minscale_changed(GtkRange *range, gpointer user_data) {
 	static GtkEntry *minentry = NULL;
-	char buffer[10];
+	gchar *buffer;
 	if (minentry == NULL)
 		minentry = GTK_ENTRY(gtk_builder_get_object(builder, "min_entry"));
 
 	if (single_image_is_loaded() && com.seq.current < RESULT_IMAGE &&
 			com.cvport < com.uniq->nb_layers) {
 		com.uniq->layers[com.cvport].lo = (int) gtk_range_get_value(range);
-		g_snprintf(buffer, 6, "%u", com.uniq->layers[com.cvport].lo);
+		buffer = g_strdup_printf("%u", com.uniq->layers[com.cvport].lo);
 	} else if (sequence_is_loaded() && com.cvport < com.seq.nb_layers) {
 		com.seq.layers[com.cvport].lo = (int) gtk_range_get_value(range);
-		g_snprintf(buffer, 6, "%u", com.seq.layers[com.cvport].lo);
+		buffer = g_strdup_printf("%u", com.seq.layers[com.cvport].lo);
+
 	} else return;
 	g_signal_handlers_block_by_func(minentry, on_min_entry_changed, NULL);
 	gtk_entry_set_text(minentry, buffer);
 	g_signal_handlers_unblock_by_func(minentry, on_min_entry_changed, NULL);
+	g_free(buffer);
 }
 
 gboolean on_minscale_release(GtkWidget *widget, GdkEvent *event,
@@ -2643,21 +2647,22 @@ gboolean on_minscale_release(GtkWidget *widget, GdkEvent *event,
  * in the related layer_info. Does not change display until cursor is released. */
 void on_maxscale_changed(GtkRange *range, gpointer user_data) {
 	static GtkEntry *maxentry = NULL;
-	char buffer[10];
+	gchar *buffer;
 	if (maxentry == NULL)
 		maxentry = GTK_ENTRY(gtk_builder_get_object(builder, "max_entry"));
 
 	if (single_image_is_loaded() && com.seq.current < RESULT_IMAGE &&
 			com.cvport < com.uniq->nb_layers) {
 		com.uniq->layers[com.cvport].hi = (int) gtk_range_get_value(range);
-		g_snprintf(buffer, 6, "%u", com.uniq->layers[com.cvport].hi);
+		buffer = g_strdup_printf("%u", com.uniq->layers[com.cvport].hi);
 	} else if (sequence_is_loaded() && com.cvport < com.seq.nb_layers) {
 		com.seq.layers[com.cvport].hi = (int) gtk_range_get_value(range);
-		g_snprintf(buffer, 6, "%u", com.seq.layers[com.cvport].hi);
+		buffer = g_strdup_printf("%u", com.seq.layers[com.cvport].hi);
 	} else return;
 	g_signal_handlers_block_by_func(maxentry, on_max_entry_changed, NULL);
 	gtk_entry_set_text(maxentry, buffer);
 	g_signal_handlers_unblock_by_func(maxentry, on_max_entry_changed, NULL);
+	g_free(buffer);
 }
 
 gboolean on_maxscale_release(GtkWidget *widget, GdkEvent *event,
@@ -2719,7 +2724,7 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	GtkLabel *label[2];
 	GtkWidget *widget[2];
 	const char *filename;
-	char *str[2];
+	gchar *str[2];
 	double sig[2];
 	long icold = 0L, ihot = 0L;
 	double rate, total;
@@ -3367,7 +3372,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		GdkEventMotion *event, gpointer user_data) {
 	//static int delay = 5;
-	gchar label[32] = "labeldensity";
+	char label[32] = "labeldensity";
 	fits *fit = &(gfit);
 	double zoom = get_zoom_val();
 	gint zoomedX = 0, zoomedY = 0;
@@ -3735,35 +3740,6 @@ void on_excludebutton_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 	toggle_image_selection(com.seq.current);
 }
 
-void on_layer_assign_selected(GtkComboBox *widget, gpointer user_data) {
-	static GtkEntry *entry_name = NULL, *entry_wl = NULL;
-	static GtkComboBox *cbbt_colors = NULL, *cbbt_sel = NULL;
-	int layer, predef_idx;
-	char wl[30];
-	if (entry_name == NULL) {
-		entry_name = GTK_ENTRY(gtk_builder_get_object(builder, "entrycolor"));
-		entry_wl = GTK_ENTRY(gtk_builder_get_object(builder, "entrywavelen"));
-		cbbt_colors = GTK_COMBO_BOX(
-				gtk_builder_get_object(builder, "cbbt_colors"));
-		cbbt_sel = widget;
-	}
-	layer = gtk_combo_box_get_active(cbbt_sel);
-	if (layer == -1)
-		return;
-
-	predef_idx = get_index_in_predefined_colors_for_wavelength(
-			com.seq.layers[layer].wavelength);
-	if (predef_idx >= 0)
-		gtk_combo_box_set_active(cbbt_colors, predef_idx);
-
-	gtk_entry_set_text(entry_name, com.seq.layers[layer].name);
-	if (com.seq.layers[layer].wavelength > 0.0)
-		g_snprintf(wl, sizeof(wl), _("%g nm"), com.seq.layers[layer].wavelength);
-	else
-		g_snprintf(wl, sizeof(wl), _("undefined"));
-	gtk_entry_set_text(entry_wl, wl);
-}
-
 struct load_img_data {
 	int index, do_display;
 };
@@ -4120,11 +4096,11 @@ void on_regTranslationOnly_toggled(GtkToggleButton *togglebutton, gpointer user_
 }
 
 void on_seqproc_entry_changed(GtkComboBox *widget, gpointer user_data) {
-	gchar *name = gtk_combo_box_text_get_active_text(
-			GTK_COMBO_BOX_TEXT(widget));
-	gchar msg[256];
+	gchar *name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
 	if (name && name[0] != '\0') {
+		gchar *msg;
 		gchar *type;
+
 		set_cursor_waiting(TRUE);
 		const char *ext = get_filename_ext(name);
 		if (!strcmp(ext, "ser")) {
@@ -4138,14 +4114,14 @@ void on_seqproc_entry_changed(GtkComboBox *widget, gpointer user_data) {
 #endif
 		} else
 			type = "";
-		g_snprintf(msg, sizeof(msg), _("Selected %s sequence %s..."), type, name);
+		msg = g_strdup_printf(_("Selected %s sequence %s..."), type, name);
 		set_progress_bar_data(msg, PROGRESS_DONE);
 		set_seq(name);
 		set_cursor_waiting(FALSE);
 		set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
+		g_free(msg);
 	}
-	if (name)
-		g_free(name);
+	g_free(name);
 }
 
 /* signal handler for the gray window layer change */
@@ -4640,35 +4616,36 @@ void on_rememberWindowsCheck_toggled(GtkToggleButton *togglebutton, gpointer use
 
 void on_entryAviWidth_changed(GtkEditable *editable, gpointer user_data) {
 	double ratio, width, height;
-	char c_height[6];
+	gchar *c_height;
 	GtkEntry *heightEntry = GTK_ENTRY(lookup_widget("entryAviHeight"));
 
 	if (com.selection.w && com.selection.h) return;
 	ratio = (double) com.seq.ry / (double) com.seq.rx;
 	width = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
 	height = ratio * width;
-	g_snprintf(c_height, sizeof(c_height), "%d", (int)(height));
+	c_height = g_strdup_printf("%d", (int)(height));
 
 	g_signal_handlers_block_by_func(heightEntry, on_entryAviHeight_changed, NULL);
 	gtk_entry_set_text(heightEntry, c_height);
 	g_signal_handlers_unblock_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+	g_free(c_height);
 }
 
 void on_entryAviHeight_changed(GtkEditable *editable, gpointer user_data) {
 	double ratio, width, height;
-	char c_width[6];
+	gchar *c_width;
 	GtkEntry *widthEntry = GTK_ENTRY(lookup_widget("entryAviWidth"));
 
 	if (com.selection.w && com.selection.h) return;
 	ratio = (double) com.seq.rx / (double) com.seq.ry;
 	height = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
 	width = ratio * height;
-	g_snprintf(c_width, sizeof(c_width), "%d", (int)(width));
+	c_width = g_strdup_printf("%d", (int)(width));
 
 	g_signal_handlers_block_by_func(widthEntry, on_entryAviWidth_changed, NULL);
 	gtk_entry_set_text(widthEntry, c_width);
 	g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
-
+	g_free(c_width);
 }
 
 

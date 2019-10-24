@@ -2789,6 +2789,14 @@ static void display_command_on_status_bar(int line, char *myline) {
 	}
 }
 
+static void update_log_icon(gboolean is_running) {
+	GtkImage *image = GTK_IMAGE(lookup_widget("image_log"));
+	if (is_running)
+		gtk_image_set_from_icon_name(image, "gtk-yes", GTK_ICON_SIZE_LARGE_TOOLBAR);
+	else
+		gtk_image_set_from_icon_name(image, "gtk-no", GTK_ICON_SIZE_LARGE_TOOLBAR);
+}
+
 static void clear_status_bar() {
 	if (!com.headless) {
 		gtk_statusbar_remove_all(
@@ -2817,6 +2825,7 @@ gpointer execute_script(gpointer p) {
 	com.stop_script = FALSE;
 	gettimeofday(&t_start, NULL);
 	startmem = get_available_memory_in_MB();
+	update_log_icon(TRUE);
 #if (_POSIX_C_SOURCE < 200809L)
 	linef = calloc(256, sizeof(char));
 	while (fgets(linef, 256, fp)) {
@@ -2874,6 +2883,7 @@ gpointer execute_script(gpointer p) {
 	}
 	fprintf(stderr, "Script thread exiting\n");
 	clear_status_bar();
+	update_log_icon(FALSE);
 	return GINT_TO_POINTER(retval);
 }
 
