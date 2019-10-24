@@ -2138,7 +2138,7 @@ void set_GUI_DiskSpace(int64_t space) {
 	if (space > 0) {
 		gchar *mem = pretty_print_memory(space);
 		g_snprintf(str, sizeof(str), _("Disk Space: %s"), mem);
-		free(mem);
+		g_free(mem);
 	} else
 		g_snprintf(str, sizeof(str), _("Disk Space: N/A"));
 	set_label_text_from_main_thread("labelFreeSpace", str);

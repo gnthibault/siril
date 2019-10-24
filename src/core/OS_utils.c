@@ -233,9 +233,9 @@ int test_available_space(int64_t req_size) {
 					"%sB available for %sB needed (missing %sB)\n"),
 				avail, required, missing);
 		queue_message_dialog(GTK_MESSAGE_ERROR, _("Not enough disk space"), msg);
-		free(avail);
-		free(required);
-		free(missing);
+		g_free(avail);
+		g_free(required);
+		g_free(missing);
 		return 1;
 	}
 	return 0;

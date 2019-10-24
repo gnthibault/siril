@@ -175,10 +175,6 @@ typedef enum {
 
 #define MAX_STARS 200000		// maximum length of com.stars
 
-/* constants for loglut function */
-#define LOG 1
-#define EXP -1
-
 typedef struct imdata imgdata;
 typedef struct registration_data regdata;
 typedef struct layer_info_struct layer_info;
@@ -194,7 +190,6 @@ typedef struct cominf cominfo;
 typedef struct image_stats imstats;
 typedef struct rectangle_struct rectangle;
 typedef struct point_struct point;
-//typedef struct gradient_struct gradient;
 typedef struct historic_struct historic;
 typedef struct dateTime_struct dateTime;
 typedef struct fwhm_struct fitted_PSF;
