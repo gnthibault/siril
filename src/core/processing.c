@@ -269,7 +269,7 @@ gboolean end_generic_sequence(gpointer p) {
 	}
 	
 	free(p);
-	return FALSE;
+	return end_generic(NULL);
 }
 
 int ser_prepare_hook(struct generic_seq_args *args) {
