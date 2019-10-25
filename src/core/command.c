@@ -2772,23 +2772,6 @@ static int executeCommand(int wordnb) {
 	return commands[i].process(wordnb);
 }
 
-static void display_command_on_status_bar(int line, char *myline) {
-	if (!com.headless) {
-		GtkStatusbar *statusbar_script = GTK_STATUSBAR(
-				lookup_widget("statusbar_script"));
-		gchar *status;
-		gchar *newline;
-
-		newline = g_strdup(myline);
-		removeEOL(newline);
-		status = g_strdup_printf(_("Processing line %d: %s"), line, newline);
-
-		gtk_statusbar_push(statusbar_script, 0, status);
-		g_free(newline);
-		g_free(status);
-	}
-}
-
 static void update_log_icon(gboolean is_running) {
 	GtkImage *image = GTK_IMAGE(lookup_widget("image_log"));
 	if (is_running)
@@ -2797,15 +2780,55 @@ static void update_log_icon(gboolean is_running) {
 		gtk_image_set_from_icon_name(image, "gtk-no", GTK_ICON_SIZE_LARGE_TOOLBAR);
 }
 
-static void clear_status_bar() {
+struct log_status_bar_idle_data {
+	char *myline;
+	int line;
+};
+
+static gboolean log_status_bar_idle_callback(gpointer p) {
+	struct log_status_bar_idle_data *data = (struct log_status_bar_idle_data *) p;
+
+	GtkStatusbar *statusbar_script = GTK_STATUSBAR(lookup_widget("statusbar_script"));
+	gchar *status;
+	gchar *newline;
+
+	update_log_icon(TRUE);
+
+	newline = g_strdup(data->myline);
+	removeEOL(newline);
+	status = g_strdup_printf(_("Processing line %d: %s"), data->line, newline);
+
+	gtk_statusbar_push(statusbar_script, 0, status);
+	g_free(newline);
+	g_free(status);
+
+	free(data->myline);
+	free(data);
+
+	return FALSE;	// only run once
+}
+
+static void display_command_on_status_bar(int line, char *myline) {
 	if (!com.headless) {
-		gtk_statusbar_remove_all(
-				GTK_STATUSBAR(lookup_widget("statusbar_script")), 0);
+		struct log_status_bar_idle_data *data;
+
+		data = malloc(sizeof(struct log_status_bar_idle_data));
+		data->line = line;
+		data->myline = myline ? strdup(myline) : NULL;
+		gdk_threads_add_idle(log_status_bar_idle_callback, data);
 	}
 }
 
+static void clear_status_bar() {
+	if (!com.headless) {
+		GtkStatusbar *bar = GTK_STATUSBAR(lookup_widget("statusbar_script"));
+		gtk_statusbar_remove_all(bar, 0);
+		update_log_icon(FALSE);
+	}
+}
 
 gboolean end_script(gpointer p) {
+	clear_status_bar();
 	set_GUI_CWD();
 	update_used_memory();
 	set_cursor_waiting(FALSE);
@@ -2825,7 +2848,6 @@ gpointer execute_script(gpointer p) {
 	com.stop_script = FALSE;
 	gettimeofday(&t_start, NULL);
 	startmem = get_available_memory_in_MB();
-	update_log_icon(TRUE);
 #if (_POSIX_C_SOURCE < 200809L)
 	linef = calloc(256, sizeof(char));
 	while (fgets(linef, 256, fp)) {
@@ -2882,8 +2904,6 @@ gpointer execute_script(gpointer p) {
 		set_progress_bar_data(msg, PROGRESS_DONE);
 	}
 	fprintf(stderr, "Script thread exiting\n");
-	clear_status_bar();
-	update_log_icon(FALSE);
 	return GINT_TO_POINTER(retval);
 }
 
