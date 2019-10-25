@@ -811,16 +811,6 @@ static void toggle_image_selection(int image_num) {
 	writeseqfile(&com.seq);
 }
 
-static int get_index_in_predefined_colors_for_wavelength(double wl) {
-	int i;
-	for (i = 0; i < sizeof(predefined_layers_colors) / sizeof(layer_info);
-			i++) {
-		if (predefined_layers_colors[i].wavelength == wl)
-			return i;
-	}
-	return -1;
-}
-
 /* method handling all include or all exclude from a sequence */
 static void sequence_setselect_all(gboolean include_all) {
 	int i;

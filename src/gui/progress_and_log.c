@@ -145,7 +145,6 @@ static gboolean idle_messaging(gpointer p) {
 	GtkTextMark *insert_mark = gtk_text_buffer_get_insert(tbuf);
 	gtk_text_buffer_place_cursor(tbuf, &iter);
 	gtk_text_view_scroll_to_mark(text, insert_mark, 0.0, TRUE, 0.0, 1.0);
-	gtk_widget_queue_draw(GTK_WIDGET(text));
 
 	free(log->timestamp);
 	free(log->message);
