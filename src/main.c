@@ -74,7 +74,7 @@ static gboolean osx_open_file(GtkosxApplication *osx_app, gchar *path,
 		gpointer data) {
 	if (path != NULL) {
 		const char *ext = get_filename_ext(path);
-		if (ext && !strncmp(ext, "seq", 4)) {
+		if (ext && !strncmp(ext, "seq", 3)) {
 			gchar *sequence_dir = g_path_get_dirname(path);
 			if (!changedir(sequence_dir, NULL)) {
 				if (check_seq(FALSE)) {
@@ -137,54 +137,53 @@ static void set_osx_integration(GtkosxApplication *osx_app) {
 }
 
 #endif
+
 #ifdef _WIN32
 /* origine du source: https://stackoverflow.com/questions/24171017/win32-console-application-that-can-open-windows */
-int ReconnectIO(int OpenNewConsole)
-{
-    int    hConHandle;
-    HANDLE lStdHandle;
-    FILE  *fp;
-    int    MadeConsole;
+int ReconnectIO(int OpenNewConsole) {
+	int hConHandle;
+	HANDLE lStdHandle;
+	FILE *fp;
+	int MadeConsole;
 
-    MadeConsole=0;
-    if(!AttachConsole(ATTACH_PARENT_PROCESS))
-    {
-        if(!OpenNewConsole)
-            return 0;
+	MadeConsole = 0;
+	if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
+		if (!OpenNewConsole)
+			return 0;
 
-        MadeConsole=1;
-        if(!AllocConsole())
-            return 0;  
-    }
+		MadeConsole = 1;
+		if (!AllocConsole())
+			return 0;
+	}
 
-    // STDOUT to the console
-    lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-    hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
-    fp = _fdopen( hConHandle, "w" );
-    *stdout = *fp;
-    setvbuf( stdout, NULL, _IONBF, 0 );
+	// STDOUT to the console
+	lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	hConHandle = _open_osfhandle((intptr_t) lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "w");
+	*stdout = *fp;
+	setvbuf( stdout, NULL, _IONBF, 0);
 
-     // STDIN to the console
-    lStdHandle = GetStdHandle(STD_INPUT_HANDLE);
-    hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
-    fp = _fdopen( hConHandle, "r" );
-    *stdin = *fp;
-    setvbuf( stdin, NULL, _IONBF, 0 );
+	// STDIN to the console
+	lStdHandle = GetStdHandle(STD_INPUT_HANDLE);
+	hConHandle = _open_osfhandle((intptr_t) lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "r");
+	*stdin = *fp;
+	setvbuf( stdin, NULL, _IONBF, 0);
 
-    // STDERR to the console
-    lStdHandle = GetStdHandle(STD_ERROR_HANDLE);
-    hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
-    fp = _fdopen( hConHandle, "w" );
-    *stderr = *fp;
-    setvbuf( stderr, NULL, _IONBF, 0 );
+	// STDERR to the console
+	lStdHandle = GetStdHandle(STD_ERROR_HANDLE);
+	hConHandle = _open_osfhandle((intptr_t) lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "w");
+	*stderr = *fp;
+	setvbuf(stderr, NULL, _IONBF, 0);
 
-    return MadeConsole;
-}	
+	return MadeConsole;
+}
 #endif
 
 static char *siril_sources[] = {
 #ifdef _WIN32
-	"../share/siril",
+	"../share/siril/",
 #elif (defined(__APPLE__) && defined(__MACH__))
 	"/tmp/siril/Contents/Resources/share/siril/",
 #endif

@@ -2016,6 +2016,9 @@ static void initialize_shortcuts() {
 	gtk_widget_add_accelerator(lookup_widget("redo_item1"), "activate", accel,
 	GDK_KEY_z, mod | GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE);
 #endif
+	/* PREFERENCES */
+	gtk_widget_add_accelerator(lookup_widget("settings"), "activate", accel,
+	GDK_KEY_p, mod, GTK_ACCEL_VISIBLE);
 	/* OPEN */
 	gtk_widget_add_accelerator(lookup_widget("open1"), "activate", accel,
 	GDK_KEY_o, mod, GTK_ACCEL_VISIBLE);
@@ -2025,9 +2028,6 @@ static void initialize_shortcuts() {
 	/* NEGATIVE */
 	gtk_widget_add_accelerator(lookup_widget("menu_negative"), "activate", accel,
 	GDK_KEY_i, mod, GTK_ACCEL_VISIBLE);
-	/* SETTINGS */
-	gtk_widget_add_accelerator(lookup_widget("settings"), "activate", accel,
-	GDK_KEY_k, mod, GTK_ACCEL_VISIBLE);
 	/* OPEN WD */
 	gtk_widget_add_accelerator(lookup_widget("cwd_button"), "clicked", accel,
 	GDK_KEY_d, mod, GTK_ACCEL_VISIBLE);

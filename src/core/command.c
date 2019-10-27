@@ -791,7 +791,7 @@ int process_ls(int nb){
 				siril_log_color_message(_("Image: %s\n"), "plum", list[i]->d_name);
 			else
 				siril_log_color_message(_("Image: %s\n"), "red", list[i]->d_name);
-		} else if (!strncmp(ext, "seq", 4))
+		} else if (!strncmp(ext, "seq", 3))
 			siril_log_color_message(_("Sequence: %s\n"), "blue", list[i]->d_name);
 	}
 	for (i = 0; i < n; i++)
