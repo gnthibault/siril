@@ -140,7 +140,7 @@ static void set_osx_integration(GtkosxApplication *osx_app) {
 
 #ifdef _WIN32
 /* origine du source: https://stackoverflow.com/questions/24171017/win32-console-application-that-can-open-windows */
-int ReconnectIO(int OpenNewConsole) {
+static int ReconnectIO(int OpenNewConsole) {
 	int hConHandle;
 	HANDLE lStdHandle;
 	FILE *fp;
