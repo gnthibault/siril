@@ -34,7 +34,6 @@
 #include <fcntl.h>
 #endif
 #include <unistd.h>
-#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -51,6 +50,7 @@
 #include "core/command.h"
 #include "core/pipe.h"
 #include "core/undo.h"
+#include "core/signals.h"
 #include "algos/star_finder.h"
 #include "algos/photometry.h"
 #include "io/sequence.h"
@@ -193,11 +193,6 @@ static char *siril_sources[] = {
 	""
 };
 
-static void signal_handled(int s) {
-	// printf("Caught signal %d\n", s);
-	gtk_main_quit();
-}
-
 static gchar *main_option_directory = NULL;
 static gchar *main_option_script = NULL;
 static gchar *main_option_initfile = NULL;
@@ -333,8 +328,7 @@ int main(int argc, char *argv[]) {
 	memset(&com, 0, sizeof(struct cominf));	// needed?
 	com.initfile = NULL;
 
-	/* Caught signals */
-	signal(SIGINT, signal_handled);
+	signals_init();
 
 #ifdef _WIN32
 	args = g_win32_get_command_line();
