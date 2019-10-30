@@ -33,7 +33,8 @@
 
 static void signal_handled(int s) {
 	g_printf("Error, signal %d:\n", s);
-#ifndef _WIN32
+
+#if (!defined _WIN32 && defined HAVE_EXECINFO_H)
 	int i;
 	void *stack[STACK_DEPTH];
 
