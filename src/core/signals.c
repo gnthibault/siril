@@ -21,6 +21,9 @@
 #define _GNU_SOURCE
 
 
+#define ANSI_COLOR_RED     "\e[1m\x1b[31m"
+#define ANSI_COLOR_RESET   "\x1b[0m\e[0m"
+
 #include <signal.h>
 #ifdef _WIN32
 #include <windows.h>
@@ -40,7 +43,8 @@ static void signal_handled(int s) {
 	switch (s) {
 	case SIGSEGV:
 	case SIGFPE:
-		g_printf(_("Please report this bug to: %s\n"), PACKAGE_BUGREPORT);
+	case SIGABRT:
+		g_printf(_(ANSI_COLOR_RED"Please report this bug to: %s\n"ANSI_COLOR_RESET), PACKAGE_BUGREPORT);
 	}
 
 #if (!defined _WIN32 && defined HAVE_EXECINFO_H)
@@ -52,7 +56,7 @@ static void signal_handled(int s) {
 	char **message = backtrace_symbols(stack, size);
 	if (message != NULL && message[0] != NULL) {
 		for (i = 0; i < size && message != NULL; ++i) {
-			g_printf("[#%02d] 0x%x in %s\n", i, stack[i], message[i]);
+			g_printf("[#%02d] 0x%x in %s\n", i, (long) stack[i], message[i]);
 		}
 		free(message);
 	}
