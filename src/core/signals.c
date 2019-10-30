@@ -26,7 +26,6 @@
 #include <windows.h>
 #include <dbghelp.h>
 #else
-#include <dlfcn.h>
 #include <execinfo.h>
 #endif
 
@@ -38,6 +37,11 @@
 
 static void signal_handled(int s) {
 	g_printf("Error, signal %d:\n", s);
+	switch (s) {
+	case SIGSEGV:
+	case SIGFPE:
+		g_printf(_("Please report this bug to: %s\n"), PACKAGE_BUGREPORT);
+	}
 
 #if (!defined _WIN32 && defined HAVE_EXECINFO_H)
 	int i;
