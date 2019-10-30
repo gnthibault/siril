@@ -59,14 +59,14 @@ static void signal_handled(int s) {
 	char **message = backtrace_symbols(stack, size);
 	if (message != NULL && message[0] != NULL) {
 		for (i = 0; i < size && message != NULL; ++i) {
-			g_printf("[#%02d] in %s\n", i, message[i]);
+			g_printf("[#%i] in %s\n", i, message[i]);
 		}
 		free(message);
 	}
 #else
-/*	unsigned int i;
+	unsigned int i;
 	void *stack[STACK_DEPTH];
-	unsigned short frames;
+	unsigned short size;
 	SYMBOL_INFO *symbol;
 	HANDLE process;
 
@@ -74,22 +74,18 @@ static void signal_handled(int s) {
 
 	SymInitialize(process, NULL, TRUE);
 
-	frames = CaptureStackBackTrace(0, sizeof(stack) / sizeof(void*), stack, NULL);
+	size = CaptureStackBackTrace(0, sizeof(stack) / sizeof(void*), stack, NULL);
 	symbol = (SYMBOL_INFO*) calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
 	symbol->MaxNameLen = 255;
 	symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
-	IMAGEHLP_LINE *line = (IMAGEHLP_LINE*) malloc(sizeof(IMAGEHLP_LINE));
-	line->SizeOfStruct = sizeof(IMAGEHLP_LINE);
 
-	for (i = 0; i < frames; i++) {
+	for (i = 0; i < size; i++) {
 		SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
-		SymGetLineFromAddr(process, (DWORD64)(stack[i]), 0, line);
 
-		g_printf("[bt]: %i: %s - 0x%0X\n", frames - i - 1, symbol->Name,
-				symbol->Address);
+		g_printf("[#%i]: in %s\n", i, symbol->Name);
 	}
 
-	free(symbol);*/
+	free(symbol);
 #endif
 	g_free(visit);
 	gtk_main_quit();
