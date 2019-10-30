@@ -18,16 +18,21 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define _GNU_SOURCE
+
+
 #include <signal.h>
 #ifdef _WIN32
 #include <windows.h>
 #include <dbghelp.h>
 #else
+#include <dlfcn.h>
 #include <execinfo.h>
 #endif
 
 #include "siril.h"
 #include "signals.h"
+#include "gui/message_dialog.h"
 
 #define STACK_DEPTH 256
 
@@ -43,7 +48,7 @@ static void signal_handled(int s) {
 	char **message = backtrace_symbols(stack, size);
 	if (message != NULL && message[0] != NULL) {
 		for (i = 0; i < size && message != NULL; ++i) {
-			g_printf("[bt]: (%d) %s\n", i, message[i]);
+			g_printf("[#%02d] 0x%x in %s\n", i, stack[i], message[i]);
 		}
 		free(message);
 	}
@@ -66,9 +71,8 @@ static void signal_handled(int s) {
 	line->SizeOfStruct = sizeof(IMAGEHLP_LINE);
 
 	for (i = 0; i < frames; i++) {
-		DWORD dwDisplacement;
-		SymFromAddr(process, (DWORD64)(stack[i]), &dwDisplacement, symbol);
-		SymGetLineFromAddr(process, (DWORD64)(stack[i]), &dwDisplacement, line);
+		SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
+		SymGetLineFromAddr(process, (DWORD64)(stack[i]), 0, line);
 
 		g_printf("[bt]: %i: %s - 0x%0X\n", frames - i - 1, symbol->Name,
 				symbol->Address);
