@@ -34,17 +34,20 @@
 
 #include "siril.h"
 #include "signals.h"
-#include "gui/message_dialog.h"
 
 #define STACK_DEPTH 256
 
 static void signal_handled(int s) {
+	gchar *visit = NULL;
+
 	g_printf("Error, signal %d:\n", s);
+	visit = g_strdup_printf(_("Please report this bug to: %s"), PACKAGE_BUGREPORT);
 	switch (s) {
 	case SIGSEGV:
 	case SIGFPE:
 	case SIGABRT:
-		g_printf(_(ANSI_COLOR_RED"Please report this bug to: %s\n"ANSI_COLOR_RESET), PACKAGE_BUGREPORT);
+	case SIGILL:
+		g_printf(ANSI_COLOR_RED"%s\n"ANSI_COLOR_RESET, visit);
 	}
 
 #if (!defined _WIN32 && defined HAVE_EXECINFO_H)
@@ -56,7 +59,7 @@ static void signal_handled(int s) {
 	char **message = backtrace_symbols(stack, size);
 	if (message != NULL && message[0] != NULL) {
 		for (i = 0; i < size && message != NULL; ++i) {
-			g_printf("[#%02d] 0x%x in %s\n", i, (long) stack[i], message[i]);
+			g_printf("[#%02d] in %s\n", i, message[i]);
 		}
 		free(message);
 	}
@@ -88,6 +91,7 @@ static void signal_handled(int s) {
 
 	free(symbol);*/
 #endif
+	g_free(visit);
 	gtk_main_quit();
 }
 
@@ -97,9 +101,11 @@ void signals_init() {
 	signal(SIGQUIT, signal_handled);
 	signal(SIGBUS, signal_handled);
 	signal(SIGINT, signal_handled);
+	signal(SIGTRAP, signal_handled);
 #endif
 	signal(SIGABRT, signal_handled);
 	signal(SIGFPE, signal_handled);
 	signal(SIGSEGV, signal_handled);
 	signal(SIGTERM, signal_handled);
+	signal(SIGILL, signal_handled);
 }
