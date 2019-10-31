@@ -2830,6 +2830,7 @@ static void clear_status_bar() {
 gboolean end_script(gpointer p) {
 	clear_status_bar();
 	set_GUI_CWD();
+	update_MenuItem();
 	update_used_memory();
 	set_cursor_waiting(FALSE);
 	return FALSE;
