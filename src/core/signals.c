@@ -18,9 +18,6 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define _GNU_SOURCE
-
-
 #define ANSI_COLOR_RED     "\e[1m\x1b[31m"
 #define ANSI_COLOR_RESET   "\x1b[0m\e[0m"
 
