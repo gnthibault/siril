@@ -36,8 +36,8 @@ siril_SOURCES = \
 	algos/noise.c \
 	algos/noise.h \
 	algos/pave.c \
-	algos/photometry.h \
 	algos/photometry.c \
+	algos/photometry.h \
 	algos/plateSolver.c \
 	algos/plateSolver.h \
 	algos/PSF.c \
@@ -86,12 +86,12 @@ siril_SOURCES = \
 	filters/asinh.h \
 	filters/banding.c \
 	filters/banding.h \
+	filters/clahe.c \
+	filters/clahe.h \
 	filters/cosmetic_correction.c \
 	filters/cosmetic_correction.h \
 	filters/deconv.c \
 	filters/deconv.h \
-	filters/clahe.c \
-	filters/clahe.h \
 	filters/fft.c \
 	filters/fft.h \
 	filters/median.c \
@@ -136,11 +136,11 @@ siril_SOURCES = \
 	io/conversion.h \
 	io/films.c \
 	io/films.h \
-	io/image_formats_libraries.c \
-	io/image_formats_internal.c \
 	io/image_format_fits.c \
-	io/mp4_output.h \
+	io/image_formats_internal.c \
+	io/image_formats_libraries.c \
 	io/mp4_output.c \
+	io/mp4_output.h \
 	io/seqfile.c \
 	io/sequence.c \
 	io/sequence.h \

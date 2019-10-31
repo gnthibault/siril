@@ -33,6 +33,7 @@
 #endif
 
 #include "siril.h"
+#include "proto.h"
 #include "signals.h"
 
 #define STACK_DEPTH 256
