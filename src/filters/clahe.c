@@ -30,10 +30,7 @@
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
 #include "io/single_image.h"
-
-#if CV_MAJOR_VERSION < 3
 #include "gui/message_dialog.h"
-#endif
 
 #include "clahe.h"
 
@@ -49,11 +46,12 @@ void on_clahe_Apply_clicked(GtkButton *button, gpointer user_data) {
 	GtkRange *clip;
 	GtkSpinButton *size;
 
-#if CV_MAJOR_VERSION < 3
-	char *error = siril_log_message(_("Your version of opencv is too old for this feature. Please upgrade your system."));
-	siril_message_dialog(GTK_MESSAGE_ERROR, _("Upgrade your system"), error);
-	return;
-#endif
+	if (CV_MAJOR_VERSION < 3) {
+		char *error = siril_log_message(_("Your version of opencv is "
+				"too old for this feature. Please upgrade your system."));
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Upgrade your system"), error);
+		return;
+	}
 
 	clip = GTK_RANGE(gtk_builder_get_object(builder, "scale_clahe"));
 	size = GTK_SPIN_BUTTON(lookup_widget("clahe_tiles_size_spin"));
