@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-31 10:30+0100\n"
-"PO-Revision-Date: 2019-05-24 18:41+0200\n"
+"PO-Revision-Date: 2019-11-03 15:49+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.2.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../src/gui/siril3.glade.h:1
@@ -1719,9 +1719,9 @@ msgid ""
 "[2] Juan Conejero, ImageIntegration, Pixinsight Tutorial"
 msgstr ""
 "Fünf Verfahren stehen zur Verfügung:\n"
-"- Percentile Clipping ist ein einstufiger Ausschleusungs-Algorithmus für "
-"kleine Bildsätze\n"
-"(bis zu 6 Bilder).\n"
+"- Percentile Clipping ist ein einstufiger Ablehnungsalgorithmus, der sich "
+"ideal für kleine Datensätze eignet.\n"
+"bis zu 6 Bilder).\n"
 "- Sigma Clipping ist ein iterativer Algorithmus, der Pixel ausschleust, "
 "deren Abweichung\n"
 "vom Median-Wert größer ist als der der beiden vorgegebenen Werte.\n"
@@ -2067,18 +2067,16 @@ msgid "Disk Space: N/A"
 msgstr "Disk Space: n/v"
 
 #: ../src/gui/siril3.glade.h:456
-#, fuzzy
 msgid "Clip Limit: "
-msgstr "Obere Grenze: "
+msgstr "Clip-Begrenzung "
 
 #: ../src/gui/siril3.glade.h:457
 msgid "Sets threshold for contrast limiting."
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:458
-#, fuzzy
 msgid "Tiles Grid Size: "
-msgstr "Filter-Größe: "
+msgstr "Filter Rastergröße: "
 
 #: ../src/gui/siril3.glade.h:459
 msgid ""
@@ -2273,7 +2271,6 @@ msgstr ""
 "Sichtwinkel und die Magnitude."
 
 #: ../src/gui/siril3.glade.h:500
-#, fuzzy
 msgid ""
 "Choose the online catalogue against one want to compare the image and "
 "compute photometry.\n"
@@ -2286,30 +2283,25 @@ msgid ""
 "V, plus Sloan u', g′, r′, i′, z_s and Z. It is valid from about 7th "
 "magnitude to about 17th magnitude for over 37 million stars."
 msgstr ""
-"Online-Katalog auswählen, mit dem das Bild verglichen werden soll.\n"
-"* TYCHO-2 Katalog enthält Daten zu Positionen, Eigenbewegung und 2-Farb-"
-"Photometrie zu 2.539.913 der hellsten Milchstraßen-Sterne.\n"
-"* NOMAD ist eine Vereinigung der Kataloge Hipparcos, Tycho-2, UCAC-2 und "
-"USNO-B1, ergänzt durch photometrische Information aus dem \"2MASS Final "
-"Release Point Source Catalogue\".\n"
-"* Gaia Data Release 2 (DR2) wurde am 25. April 2018 veröffentlicht. Sie "
-"liefert astrometrische Daten in 5 Parametern, Position am Himmel (α, δ), "
-"Parallaxen, und Eigenbewegung für über 1,3 Milliarden Punktquellen mit einer "
-"Grenz-Magnitude bis G = 21.\n"
-"* PPMXL ist ein Katalog über Positionen, Eigenbewegungs-Daten, 2MASS- und "
-"optische Photometrie mit über 900 Millionen Sternen und Galaxien.\n"
-"* Der Bright Star Catalogue enthält 9.110 helle Sterne bis Mag 6,5 und "
-"entspricht damit etwa dem mit freiem Auge sichtbaren Sternenhimmel von der "
-"Erde aus."
+"Wählen Sie den Online-Katalog aus, gegen den Sie das Bild vergleichen und "
+"die Photometrie berechnen möchten.\n"
+"* NOMAD ist eine einfache Zusammenführung von Daten aus den Katalogen "
+"Hipparcos, Tycho-2, UCAC2, Yellow-Blue 6 und USNO-B für Astrometrie und "
+"optische Photometrie, ergänzt durch 2MASS Nahinfrarot. Der fast 100 GB große "
+"Datensatz enthält astrometrische und photometrische Daten für etwa 1,1 "
+"Milliarden Sterne.\n"
+"* APASS, die AAVSO Photometric All Sky Survey, führt eine photometrische "
+"Himmelüberwachung durch. Die Überwachung wird mit acht Filtern durchgeführt: "
+"Johnson B und V, plus Sloan u’, g′, r′, i′, z_s und Z. Die Daten sind "
+"zuverlässig von etwa 7. bis 17. Größenordnung für über 37 Millionen Sterne."
 
 #: ../src/gui/siril3.glade.h:503
 msgid "APASS"
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:504
-#, fuzzy
 msgid "Photometric Star Catalogue: "
-msgstr "Online Sterne-Katalog: "
+msgstr "Photometrischer Sternkatalog "
 
 #: ../src/gui/siril3.glade.h:505
 msgid "Catalogue Parameters"
@@ -2675,18 +2667,16 @@ msgid "Prefix of the image names resulting from the unband process."
 msgstr "Namens-Prefix, das aus dem Raster-Unterdrückungs-Prozess stammt."
 
 #: ../src/gui/siril3.glade.h:586
-#, fuzzy
 msgid "1/Sigma Factor: "
-msgstr "1/Sigma Faktor"
+msgstr "1/Sigma Faktor "
 
 #: ../src/gui/siril3.glade.h:587
 msgid "Protect from Highlights"
 msgstr "Schütze vor Highlights"
 
 #: ../src/gui/siril3.glade.h:588
-#, fuzzy
 msgid "Amount: "
-msgstr "Wert/Menge/Anzahl:"
+msgstr "Wert: "
 
 #: ../src/gui/siril3.glade.h:589
 msgid "Image compositing"
@@ -2937,19 +2927,16 @@ msgstr "Dateiname für die als drittes zu speichernde FITS-Datei."
 
 #. RGB
 #: ../src/gui/siril3.glade.h:641 ../src/gui/callbacks.c:4331
-#, fuzzy
 msgid "Red: "
-msgstr "Rot:"
+msgstr "Rot "
 
 #: ../src/gui/siril3.glade.h:642 ../src/gui/callbacks.c:4332
-#, fuzzy
 msgid "Green: "
-msgstr "Grün:"
+msgstr "Grün "
 
 #: ../src/gui/siril3.glade.h:643 ../src/gui/callbacks.c:4333
-#, fuzzy
 msgid "Blue: "
-msgstr "Blau:"
+msgstr "Blau "
 
 #: ../src/gui/siril3.glade.h:644
 msgid "Select the color space corresponding to the three extracted images"
@@ -3008,9 +2995,8 @@ msgid "Nb. of Layers: "
 msgstr "Anzahl der Layer: "
 
 #: ../src/gui/siril3.glade.h:657
-#, fuzzy
 msgid "Interpolation: "
-msgstr "Interpolation"
+msgstr "Interpolation "
 
 #: ../src/gui/siril3.glade.h:658
 msgid "Informations"
@@ -3537,7 +3523,6 @@ msgstr ""
 "in dieser Box und wählen Sie das Bayer-Matrix manuell."
 
 #: ../src/gui/siril3.glade.h:774
-#, fuzzy
 msgid "Debayer FITS files in up-bottom orientation"
 msgstr "Debayern in umgekehrter Reihenfolge (unten nach oben)"
 
@@ -3556,16 +3541,16 @@ msgid "Stretch CFA FITS from DSLR to 16-bit"
 msgstr "Strecke CFA FITS der DSLR auf 16bit"
 
 #: ../src/gui/siril3.glade.h:777
-#, fuzzy
 msgid ""
 "If the RAW data comes from DSLR camera and if normalisation information was "
 "stored in the FITS header, then checking this option will stretch the image "
 "to 16-bit.\n"
 "May not work with some camera."
 msgstr ""
-"Wenn die RAW-Daten aus einer DSLR stammen und die Normalisierungs-Info aus "
-"dem FITS-Header, können diese durch Setzen dieser Option auf 16bit gestreckt "
-"werden."
+"Wenn die RAW-Daten von einer DSLR-Kamera stammen und "
+"Normierungsinformationen im FITS-Header gespeichert wurden, wird das Bild "
+"durch Aktivieren dieser Option auf 16-Bit erweitert.\n"
+"Funktioniert möglicherweise nicht mit jeder Kamera."
 
 #: ../src/gui/siril3.glade.h:779
 msgid ""
@@ -3657,9 +3642,8 @@ msgstr ""
 "Standardwert ist 30,00."
 
 #: ../src/gui/siril3.glade.h:796
-#, fuzzy
 msgid "Background Annulus"
-msgstr "Hintergrund-Wert"
+msgstr "Hintergrundwert"
 
 #: ../src/gui/siril3.glade.h:797
 msgid "Restore to Default"
@@ -3686,9 +3670,8 @@ msgid "Overexposed pixels have value equal to or greater than."
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:803
-#, fuzzy
 msgid "Pixel Value Range"
-msgstr "Pixel Maximum Stacking"
+msgstr "Pixel-Wertebereich"
 
 #: ../src/gui/siril3.glade.h:804
 msgid ""
@@ -3711,7 +3694,6 @@ msgid "<b>Swap Storage Directory</b>"
 msgstr "<b>Swap-Speicher Verzeichnis</b>"
 
 #: ../src/gui/siril3.glade.h:808 ../src/core/command_def.h:95
-#, fuzzy
 msgid ""
 "Sets a new ratio of free memory on memory used for stacking. Value should be "
 "between 0.05 and 2, depending on other activities of the machine. A higher "
@@ -3719,12 +3701,15 @@ msgid ""
 "used for stacking above 1 will require the use of on-disk memory, which is "
 "very slow and unrecommended"
 msgstr ""
-"Legt ein neues Verhältnis von verfügbarem zu genutztem Speicher fest. Der "
-"Wert sollte zwischen 0 und 1 liegen, abhängig von anderen Aktivitäten des "
-"Rechners. Ein höherer Wert erlaubt Siril schneller zu stacken"
+"Setzt ein neues Verhältnis von freiem Speicher zu Speicher, der für das "
+"Stacking verwendet wird. Der Wert sollte zwischen 0,05 und 2 liegen, "
+"abhängig von parallel laufenden Prozessen. Ein höheres Verhältnis sollte es "
+"siril ermöglichen, schneller zu stacken, aber ein Verhältnis über 1 "
+"erfordert die Verwendung von Festplattenspeicher, der sehr langsam ist und "
+"hierfür nicht empfohlen wird"
 
+# Ratio  not available ???
 #: ../src/gui/siril3.glade.h:809
-#, fuzzy
 msgid "Ratio of available"
 msgstr "Nicht verfügbar"
 
@@ -3763,7 +3748,6 @@ msgid ""
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:818
-#, fuzzy
 msgid "<b>Memory management</b>"
 msgstr "<b>Speicher-Verwaltung</b>"
 
@@ -3796,18 +3780,16 @@ msgid "Don't ask before quitting"
 msgstr "Nicht nachfragen vor dem Verlassen"
 
 #: ../src/gui/siril3.glade.h:826
-#, fuzzy
 msgid "<b>Confirmation Dialog</b>"
-msgstr "<b>Bestätigungs-Dialog</b>"
+msgstr "<b>Bestätigungsdialog</b>"
 
 #: ../src/gui/siril3.glade.h:827
-#, fuzzy
 msgid ""
 "Change the theme of the interface. This feature may not work on all "
 "architectures."
 msgstr ""
-"Behalte Positionen der Bildanzeige-Fenster bei. Dieses Feature funktioniert "
-"ggfs. nicht in allen System-Architekturen."
+"Ändern Sie das Design der Benutzeroberfläche. Diese Funktion funktioniert "
+"möglicherweise nicht auf allen Architekturen."
 
 #: ../src/gui/siril3.glade.h:828
 msgid "Automatic"
@@ -3822,21 +3804,18 @@ msgid "Light theme"
 msgstr "Light Theme"
 
 #: ../src/gui/siril3.glade.h:831
-#, fuzzy
 msgid "Remember window size and position"
-msgstr "Behalte Fenster-Position bei"
+msgstr "Fenstergröße und -position speichern"
 
 #: ../src/gui/siril3.glade.h:832
-#, fuzzy
 msgid ""
 "Remember position and size of image displaying windows. This feature may not "
 "work on all architectures."
 msgstr ""
-"Behalte Positionen der Bildanzeige-Fenster bei. Dieses Feature funktioniert "
-"ggfs. nicht in allen System-Architekturen."
+"Speichern Sie Position und Größe des Bilddarstellungsfensters. Diese "
+"Funktion funktioniert möglicherweise nicht auf allen Architekturen."
 
 #: ../src/gui/siril3.glade.h:833
-#, fuzzy
 msgid "<b>Look and Feel</b>"
 msgstr "<b>Aussehen</b>"
 
@@ -3862,16 +3841,16 @@ msgstr "Verschiedenes."
 
 #: ../src/gui/siril3.glade.h:837 ../src/algos/demosaicing.c:1131
 msgid "Split CFA"
-msgstr ""
+msgstr "CFA aufteilen"
 
 #: ../src/gui/siril3.glade.h:838
 msgid "Apply Split CFA"
-msgstr ""
+msgstr "CFA Aufteilung anwenden"
 
 #: ../src/gui/siril3.glade.h:839
-#, fuzzy
 msgid "Prefix of the image names resulting from the split cfa process."
-msgstr "Namens-Präfix der Ergebnis-Datei nach der Bild-Zuschnitt-Bearbeitung."
+msgstr ""
+"Präfix der Bildnamen, die sich aus dem aufgeteilten CFA-Prozess ergeben."
 
 #: ../src/gui/siril3.glade.h:840
 msgid "Dynamic PSF"
@@ -3932,7 +3911,6 @@ msgid "Size in pixels of the search box."
 msgstr "Größe der Such-Box in Pixeln."
 
 #: ../src/gui/siril3.glade.h:854
-#, fuzzy
 msgid ""
 "Threshold value above the noise for star detection.\n"
 "The median and standard deviation of the image are computed, then the "
@@ -3941,10 +3919,12 @@ msgid ""
 "less dim stars, which should be done only when images have a lot of signal "
 "or low noise (high S/N)."
 msgstr ""
-"Schwellwert oberhalb des Rauschens zur Sternerkennung.\n"
-"Zunächst werden die Werte zu Median und Standard-Abweichung bestimmt und "
-"daraus dann der Schwellwert berechnet nach Median + [Schwellwert] x stdev\n"
-"Standard-Schwellwert ist 1,00."
+"Schwellenwert oberhalb des Rauschens für die Sternerkennung.\n"
+"Der Median und die Standardabweichung des Bildes werden berechnet. Der "
+"Schwellenwert ist dann: Median +[threshold] x stdev.\n"
+"Der Standardwert für den Schwellenwert ist 1,00. Eine Erhöhung dieses Wertes "
+"führt zu geringerer Sternerkennung, was nur bei Bildern mit viel Signal oder "
+"geringem Rauschen (hohes S/N) erfolgen sollte."
 
 #: ../src/gui/siril3.glade.h:857
 msgid "Radius: "
@@ -3959,14 +3939,18 @@ msgid "Roundness threshold:"
 msgstr "Rundheits-Schwellwert:"
 
 #: ../src/gui/siril3.glade.h:860
-#, fuzzy
 msgid ""
 "Threshold value of star roundnesses. Decrease this value if stars in the "
 "images show small trails, conversely, increase it if they are very round to "
 "avoid false positives.\n"
 "The default value is 0.5, suitable for stars twice as big in one direction "
 "as the other."
-msgstr "Schwellwert für Stern-Rundheit."
+msgstr ""
+"Schwellenwert der Sternenrundheit. Verringern Sie diesen Wert, wenn Sterne "
+"in den Bildern kleine Spuren zeigen. Erhöhen Sie ihn umgekehrt, wenn die "
+"Sterne sehr rund sind, um Fehletektion zu vermeiden.\n"
+"Der Standardwert ist 0,5 und geeignet für Sterne, die in einer Richtung "
+"doppelt so groß sind wie die andere."
 
 #: ../src/gui/siril3.glade.h:862
 msgid "Export PSF parameters in an ASCII file"
@@ -4222,46 +4206,41 @@ msgstr "Farb-Kalibrierung: bearbeite...\n"
 #: ../src/algos/demosaicing.c:1026
 msgid "Split CFA does not work on non-Bayer filter camera images!\n"
 msgstr ""
+"CFA Aufteilen funktioniert nicht bei Nicht-Bayer-Filterkamerabildern!\n"
 
 #: ../src/algos/geometry.c:141 ../src/algos/geometry.c:182
-#, fuzzy
 msgid "Nearest-Neighbor"
 msgstr "Nächster Nachbar"
 
 #: ../src/algos/geometry.c:154 ../src/algos/geometry.c:195
-#, fuzzy
 msgid "Lanczos4"
 msgstr "Lanczos-4"
 
 #: ../src/algos/geometry.c:158
-#, fuzzy, c-format
+#, c-format
 msgid "Resample (%s interpolation): processing...\n"
-msgstr "%s Kanal Extraction: in Bearbeitung...\n"
+msgstr "Resample (%s Interpolation): in Bearbeitung...\n"
 
 #: ../src/algos/geometry.c:179
-#, fuzzy
 msgid "No"
 msgstr "Keine"
 
 #: ../src/algos/geometry.c:200
-#, fuzzy, c-format
+#, c-format
 msgid "Rotation (%s interpolation, angle=%g): processing...\n"
-msgstr "Erhöhung der Sättigung: in Bearbeitung...\n"
+msgstr "Rotation (%s Interpolation, Winkel=%g): in Bearbeitung...\n"
 
 #: ../src/algos/geometry.c:221
-#, fuzzy
 msgid "Horizontal mirror: processing...\n"
-msgstr "Finde Stern: in Bearbeitung...\n"
+msgstr "Horizontale Spiegelung: in Bearbeitung...\n"
 
 #: ../src/algos/geometry.c:250
-#, fuzzy
 msgid "Vertical mirror: processing...\n"
-msgstr "Median Filter: in Bearbeitung...\n"
+msgstr "Vertikale Spiegelung: in Bearbeitung...\n"
 
 #: ../src/algos/geometry.c:278
-#, fuzzy
 msgid "Crop: processing...\n"
-msgstr ": in Bearbeitung...\n"
+msgstr "Zuschneiden: in Bearbeitung...\n"
 
 #: ../src/algos/geometry.c:508
 msgid ""
@@ -4269,9 +4248,8 @@ msgid ""
 msgstr ""
 
 #: ../src/algos/geometry.c:514
-#, fuzzy
 msgid "Not a valid sequence for cropping.\n"
-msgstr "Skaliere Sequenz für's Stacken"
+msgstr "Keine gültige Sequenz für das Cropping\n"
 
 #: ../src/algos/noise.c:112
 msgid "backgroundnoise: Error, no data computed\n"
@@ -4418,9 +4396,9 @@ msgid "Catalog Bright stars size: %d objects\n"
 msgstr "Bright Stars Kataloggröße: %d objects\n"
 
 #: ../src/algos/plateSolver.c:996
-#, fuzzy, c-format
+#, c-format
 msgid "Catalog APASS size: %d objects\n"
-msgstr "NOMAD Kataloggröße: %d objects\n"
+msgstr "APASS Kataloggröße: %d objects\n"
 
 #: ../src/algos/plateSolver.c:1056
 msgid ""
@@ -4495,9 +4473,8 @@ msgstr ""
 "RMSE=%.3e\n"
 
 #: ../src/algos/reconstr.c:191
-#, fuzzy
 msgid "Unknown transform\n"
-msgstr "Unbekannter Fehler\n"
+msgstr "Unbekannte Transformation\n"
 
 #: ../src/algos/star_finder.c:171
 msgid "Findstar: processing...\n"
@@ -4646,14 +4623,12 @@ msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: Typ muß %d or %d sein\n"
 
 #: ../src/core/command.c:676
-#, fuzzy
 msgid "Clip limit must be > 0.\n"
-msgstr "Sigma muß > 0 sein.\n"
+msgstr "Cli Grenze muss > 0 sein.\n"
 
 #: ../src/core/command.c:683
-#, fuzzy
 msgid "Tile size must be > 0.\n"
-msgstr "Sigma muß > 0 sein.\n"
+msgstr "Kachel-Größe muß > 0 sein.\n"
 
 #: ../src/core/command.c:737
 msgid "Cannot list files, set working directory first.\n"
@@ -4863,9 +4838,10 @@ msgid "Siril cannot split layers. Make sure your image is in RGB mode.\n"
 msgstr "SIRIL kann die Layer nicht trennen. Das Bild muß im RGB-Modus sein.\n"
 
 #: ../src/core/command.c:1826
-#, fuzzy
 msgid "Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"
-msgstr "SIRIL kann die Layer nicht trennen. Das Bild muß im RGB-Modus sein.\n"
+msgstr ""
+"Siril kann den CFA-Kanal nicht aufteilen. Stellen Sie sicher, dass sich Ihr "
+"Bild im RGB-Modus befindet.\n"
 
 #: ../src/core/command.c:1960
 #, c-format
@@ -4995,23 +4971,25 @@ msgid "Using now %d logical processors\n"
 msgstr "Verwendete Prozessoren: %d\n"
 
 #: ../src/core/command.c:2656
-#, fuzzy
 msgid ""
 "The accepted range for the ratio of memory used for stacking is [0.05, 4], "
 "with values below the available memory recommended\n"
 msgstr ""
-"Der zulässige Bereich für das Verhältnis von Speichernutzung is [0,05/2], "
-"empfohlen werden Werte unterhalb des Maximums\n"
+"Der akzeptierte Bereich für das Speicherverhältnis zum Stacken ist [0.05, "
+"4]. Werte sollten unter dem empfohlenen verfügbaren Speicher liegen.\n"
+"\n"
+"\n"
 
 #: ../src/core/command.c:2660
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Setting the ratio of memory used for stacking above 1 will require the use "
 "of on-disk memory, which can be very slow and is unrecommended (%g "
 "requested)\n"
 msgstr ""
-"Ein Verhältnis größer 1 fürs Stacken bewirkt ein Auslagern auf Festplatte. "
-"Geht, ist aber sehr langsam und nicht empfehlenswert (%g angefordert)\n"
+"Ein Stacking-Verhältnis über 1 verwendet erfordert die Verwendung von "
+"Auslagerungsspeicher. Dieser ist sehr langsam und wir nicht empfohlen (%g "
+"erforderlich).\n"
 
 #: ../src/core/command.c:2664
 #, c-format
@@ -5044,9 +5022,9 @@ msgid "Running command: %s\n"
 msgstr "Befehlsausführung: %s\n"
 
 #: ../src/core/command.c:2799
-#, fuzzy, c-format
+#, c-format
 msgid "Processing line %d: %s"
-msgstr "%s. Bearbeite Bild %d (%s)"
+msgstr "Bearbeite Bildzeile %d: (%s)"
 
 #: ../src/core/command.c:2877
 #, c-format
@@ -5146,6 +5124,8 @@ msgid ""
 "Equalizes the histogram of an image using Contrast Limited Adaptive "
 "Histogram Equalization"
 msgstr ""
+"Gleicht das Histogramm eines Bildes mit Contrast Limited Adaptive Histogram "
+"Equalization aus"
 
 #: ../src/core/command_def.h:15
 msgid "Clears the graphical output logs"
@@ -5657,10 +5637,8 @@ msgstr ""
 "erstellt werden können"
 
 #: ../src/core/command_def.h:89
-#, fuzzy
 msgid "Same command than SPLIT_CFA but for the sequence \"sequencename\""
-msgstr ""
-"Gleicher Befehl wie FIND_COSME_CFA, aber für die Sequenz \"sequencename\""
+msgstr "Gleicher Befehl wie SPLIT_CFA, jedoch für die Sequenz „Sequenzname“."
 
 #: ../src/core/command_def.h:90
 msgid ""
@@ -5727,22 +5705,21 @@ msgstr ""
 "Offstes zurückzusetzen, siehe UNSETMAGSEQ"
 
 #: ../src/core/command_def.h:96
-#, fuzzy
 msgid ""
 "Splits the color image into three distinct files (one for each color) and "
 "save them in \"r\" \"g\" and \"b\" file"
 msgstr ""
-"Teilt ein Farbbild in 3 einzelne Dateien auf (eine für jede Farbe) und "
-"speichert diese eine \"r-\", \"g-\" und \"b-\" Datei ab"
+"Teilt das Farbbild in drei verschiedene Dateien (eine für jede Farbe) und "
+"speichert sie in der Datei „r“ „g“ und „b“"
 
+# should keep „CFA“ or use „RGB“?
 #: ../src/core/command_def.h:97
-#, fuzzy
 msgid ""
 "Splits the CFA image into four distinct files (one for each channel) and "
 "save them in files"
 msgstr ""
-"Teilt ein Farbbild in 3 einzelne Dateien auf (eine für jede Farbe) und "
-"speichert diese eine \"r-\", \"g-\" und \"b-\" Datei ab"
+"Teilt das CFA-Bild in vier verschiedene Dateien (eine für jeden Kanal) und "
+"speichert sie in Dateien"
 
 #: ../src/core/command_def.h:98
 msgid ""
@@ -5899,11 +5876,11 @@ msgstr "_Cancel"
 
 #: ../src/core/OS_utils.c:446 ../src/core/OS_utils.c:449
 msgid "Add Files"
-msgstr ""
+msgstr "Dateien hinzufügen"
 
 #: ../src/core/OS_utils.c:447 ../src/core/OS_utils.c:450
 msgid "_Add"
-msgstr ""
+msgstr "hinzufügen"
 
 #: ../src/core/OS_utils.c:457 ../src/core/OS_utils.c:460
 msgid "Save File"
@@ -5914,14 +5891,15 @@ msgid "_Save"
 msgstr "_Speichern"
 
 #: ../src/core/pipe.c:97
-#, fuzzy, c-format
+#, c-format
 msgid "Output pipe creation failed with error %d\n"
-msgstr "Ausgabe Index-Mapping fehlgeschlagen (%d/%d).\n"
+msgstr ""
+"Die Erstellung der Ausgabe-Pipe ist fehlgeschlagen (Fehlermeldung %d).\n"
 
 #: ../src/core/pipe.c:114
 #, c-format
 msgid "Input pipe creation failed with error %d\n"
-msgstr ""
+msgstr "Die Erstellung der Eingangsleitung ist mit Fehler %d fehlgeschlagen.\n"
 
 #: ../src/core/pipe.c:133 ../src/core/pipe.c:145
 msgid "Could not create the named pipe "
@@ -5968,9 +5946,8 @@ msgstr ""
 "Bilder unterstützt\n"
 
 #: ../src/core/preprocess.c:273
-#, fuzzy
 msgid "Preprocessing"
-msgstr "Pre-Processing"
+msgstr "Vorverarbeitung"
 
 #: ../src/core/preprocess.c:296
 #, c-format
@@ -6150,7 +6127,7 @@ msgstr ""
 #: ../src/core/signals.c:45
 #, c-format
 msgid "Please report this bug to: %s"
-msgstr ""
+msgstr "Bitte melden Sie diesen Fehler an: %s"
 
 #: ../src/core/siril.c:149
 #, c-format
@@ -6239,19 +6216,23 @@ msgid "Unknown error\n"
 msgstr "Unbekannter Fehler\n"
 
 #: ../src/core/utils.c:312
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' No such file or directory\n"
-msgstr "Unbekannter Datei- oder Verzeichnis-Name\n"
+msgstr "‚%s‘  Unbekannter Datei- oder Verzeichnis-Name\n"
 
 #: ../src/core/utils.c:315
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' is not a directory\n"
-msgstr "\"%s\" ist kein Verzeichnis\n"
+msgstr ""
+"\"%s\" ist kein Verzeichnis\n"
+" \n"
 
 #: ../src/core/utils.c:318
-#, fuzzy, c-format
+#, c-format
 msgid "You don't have permission to write in this directory: '%s'\n"
-msgstr "Sie haben keine Schreib-Berechtigung im Verzeichnis: %s\n"
+msgstr ""
+"Sie haben keine Schreib-Berechtigung im Verzeichnis: %s\n"
+" \n"
 
 #: ../src/core/utils.c:331
 #, c-format
@@ -6278,10 +6259,11 @@ msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "GTK-Version entspricht nicht den Anforderungen: (GTK-%d.%d)\n"
 
 #: ../src/core/utils.c:644
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr ""
-"Kann CSS Style-Sheet-Datei nicht laden: %s. Bitte %s erneut installieren\n"
+"CSS-Stylesheet-Datei kann nicht geladen werden: %s. Bitte installieren Sie "
+"Siril erneut.\n"
 
 #: ../src/core/utils.c:654 ../src/main.c:237 ../src/main.c:253
 #, c-format
@@ -6297,19 +6279,22 @@ msgid ""
 "Your version of opencv is too old for this feature. Please upgrade your "
 "system."
 msgstr ""
+"Deine Version von opencv ist zu alt für diese Funktion. Bitte aktualisiere "
+"das System."
 
 #: ../src/filters/clahe.c:54
 msgid "Upgrade your system"
-msgstr ""
+msgstr "Aktualisieren Sie Ihr System"
 
 #: ../src/filters/clahe.c:78
-#, fuzzy
 msgid "CLAHE: processing...\n"
-msgstr ": in Bearbeitung...\n"
+msgstr ""
+": in Bearbeitung...\n"
+" \n"
 
 #: ../src/filters/clahe.c:89
 msgid "CLAHE applied"
-msgstr ""
+msgstr "CLAHE angewendet"
 
 #: ../src/filters/cosmetic_correction.c:319
 #, c-format
@@ -6458,6 +6443,8 @@ msgstr "- keins -"
 msgid ""
 "This sequence name already exists!! Please change the name before converting."
 msgstr ""
+"Dieser Sequenzname ist bereits vorhanden! Bitte ändern Sie den Namen vor der "
+"Konvertierung."
 
 #: ../src/gui/callbacks.c:1308
 #, c-format
@@ -6622,9 +6609,8 @@ msgid "NOT USING OFFSET: number of channels is different"
 msgstr "KEINE Offset-Frame-Benutzung: Anzahl der Kanäle unterschiedlich"
 
 #: ../src/gui/callbacks.c:3877
-#, fuzzy
 msgid "NOT USING OFFSET: image dimensions are different"
-msgstr "KEINE Offset-Frame-Benutzung: Anzahl der Kanäle unterschiedlich"
+msgstr "KEINE OFFSET Verwendung: Die Bilddimensionen sind unterschiedlich"
 
 #: ../src/gui/callbacks.c:3882
 msgid "NOT USING OFFSET: cannot open the file\n"
@@ -6639,7 +6625,6 @@ msgid "NOT USING DARK: number of channels is different"
 msgstr "KEINE Dark-Frame-Benutzung: Anzahl der Kanäle unterschiedlich"
 
 #: ../src/gui/callbacks.c:3909
-#, fuzzy
 msgid "NOT USING DARK: image dimensions are different"
 msgstr "KEINE Dark-Frame-Benutzung: Anzahl der Kanäle unterschiedlich"
 
@@ -6656,7 +6641,6 @@ msgid "NOT USING FLAT: number of channels is different"
 msgstr "KEINE Flat-Frame-Benutzung: Anzahl der Kanäle unterschiedlich"
 
 #: ../src/gui/callbacks.c:3948
-#, fuzzy
 msgid "NOT USING FLAT: image dimensions are different"
 msgstr "KEINE Flat-Frame-Benutzung: Anzahl der Kanäle unterschiedlich"
 
@@ -6680,24 +6664,20 @@ msgstr "Suche nach Sequenzen im aktuellen Arbeitsverzeichnis..."
 #. HSL
 #. HSV
 #: ../src/gui/callbacks.c:4336 ../src/gui/callbacks.c:4341
-#, fuzzy
 msgid "Hue: "
-msgstr "Farbton:"
+msgstr "Farbton "
 
 #: ../src/gui/callbacks.c:4337 ../src/gui/callbacks.c:4342
-#, fuzzy
 msgid "Saturation: "
-msgstr "Iterationen:"
+msgstr "Iterationen "
 
 #: ../src/gui/callbacks.c:4338
-#, fuzzy
 msgid "Lightness: "
-msgstr "Helligkeit"
+msgstr "Helligkeit "
 
 #: ../src/gui/callbacks.c:4343
-#, fuzzy
 msgid "Value: "
-msgstr "Blau:"
+msgstr "Wert "
 
 #: ../src/gui/callbacks.c:4411 ../src/gui/callbacks.c:4459
 msgid "Current selection is too large"
@@ -6818,13 +6798,13 @@ msgid "Applying aperture photometry to %d stars.\n"
 msgstr "Verwende Apertur Photometrie für %d Sterne.\n"
 
 #: ../src/gui/photometric_cc.c:347
-#, fuzzy, c-format
+#, c-format
 msgid "%d stars excluded from the calculation.\n"
-msgstr "Bild %d vom Export ausgeschlossen\n"
+msgstr "%d Sterne von der Berechnung ausgeschlossen.\n"
 
 #: ../src/gui/photometric_cc.c:350
 msgid "No valid stars found.\n"
-msgstr ""
+msgstr "Keine gültigen Sterne gefunden.\n"
 
 #: ../src/gui/photometric_cc.c:496
 #, c-format
@@ -7253,7 +7233,7 @@ msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr "Datei-Typ nicht unterstützt, Konvertierung nicht möglich: %s\n"
 
 #: ../src/io/conversion.c:689
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
 "Verify that you typed the extension correctly.\n"
@@ -7263,12 +7243,14 @@ msgid ""
 "may notify the developers that the extension you are trying to use should be "
 "recognized for this type."
 msgstr ""
-"Datei-Erweiterung '%s' nicht unterstützt.\n"
-"Überprüfen Sie auf korrekte Schreibweise.\n"
-"Falls doch, muß eine Drittanbieter-Software zur Konvertierung installiert "
-"werden. Siehe README-Datei\n"
-"Taucht Ihre Datei-Erweiterung darin auf, versuchen Sie die Entwickler darauf "
-"hinzuweisen, daß diese Erweiterung erkannt werden sollte."
+"Die Dateiendung’%s’ wird nicht unterstützt.\n"
+"Vergewissern Sie sich, dass Sie die Erweiterung korrekt eingegeben haben.\n"
+"Wenn ja, müssen Sie möglicherweise Software von Drittanbietern installieren, "
+"um diese Dateityp-Konvertierung zu ermöglichen, schauen Sie ggf. die README-"
+"Datei an.\n"
+"Wenn der Dateityp, den Sie zu laden versuchen, in unterstützten Formaten "
+"aufgeführt ist, können Sie die Entwickler darüber informieren, dass die von "
+"Ihnen zu verwendende Erweiterung für diesen Typ erkannt werden sollte."
 
 #: ../src/io/conversion.c:708
 #, c-format
@@ -7652,9 +7634,8 @@ msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Tageslicht-Multiplikatoren: %f, %f, %f\n"
 
 #: ../src/io/image_formats_libraries.c:989
-#, fuzzy
 msgid "XTRANS Sensor detected.\n"
-msgstr "XTRANS Sensor detektiert. Benutze speziellen Algorithmus.\n"
+msgstr "XTRANS Sensor detektiert.\n"
 
 #: ../src/io/image_formats_libraries.c:995
 msgid "Bilinear interpolation...\n"
@@ -8019,32 +8000,34 @@ msgstr ""
 "Protokoll für weitere Informationen."
 
 #: ../src/main.c:216
-#, fuzzy
 msgid "changing the current working directory as the argument"
-msgstr "Wechsle aktuelles Arbeitsverzeichnis"
+msgstr "Wechsle das aktuelle Arbeitsverzeichnis"
 
 #: ../src/main.c:217
 msgid "run the siril commands script in console mode"
-msgstr ""
+msgstr "das siril-befehlsskript im konsolenmodus ausführen"
 
 #: ../src/main.c:218
 msgid ""
 "load configuration from file name instead of the default configuration file"
 msgstr ""
+"Laden der Konfiguration aus dem Dateinamen anstelle der "
+"Standardkonfigurationsdatei"
 
 #: ../src/main.c:219
 msgid "run in console mode with command and log stream through named pipes"
-msgstr ""
+msgstr "im Konsolenmodus mit Befehls- und Protokoll Datenströmen laufen lassen"
 
 #: ../src/main.c:220
 msgid ""
 "print all supported image file formats (depending on installed libraries)"
 msgstr ""
+"alle unterstützten Bilddateiformate anzeigen (abhängig von den installierten "
+"Bibliotheken)"
 
 #: ../src/main.c:221
-#, fuzzy
 msgid "print the application’s version"
-msgstr "Verläßt die Anwendung"
+msgstr "die Version der Anwendung anzeigen"
 
 #: ../src/main.c:241
 #, c-format
@@ -8064,6 +8047,8 @@ msgid ""
 "Questionable parallel processing efficiency - openmp reports %d processors. "
 "Possibly broken opencv/openblas installation.\n"
 msgstr ""
+"Bedenkliche parallele Verarbeitungseffizienz - openmp berichtet %d-"
+"Prozessoren. Möglicherweise defekte opencv/openblas Installation.\n"
 
 #: ../src/main.c:298
 #, c-format
@@ -8075,9 +8060,9 @@ msgid "enabled"
 msgstr "aktiviert"
 
 #: ../src/main.c:300
-#, fuzzy, c-format
+#, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
-msgstr "Parallel-Verarbeitung %s: Benutze %d logische Prozessoren.\n"
+msgstr "Parallelverarbeitung %s: Verwendung des logischen Prozessors %d.\n"
 
 #: ../src/main.c:300
 msgid "disabled"
@@ -8085,12 +8070,14 @@ msgstr "deaktiviert"
 
 #: ../src/main.c:339
 msgid "[FILE…]"
-msgstr ""
+msgstr "[DATEI…]"
 
 #: ../src/main.c:346
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr ""
+"Führen Sie „%s —help“ aus, um eine vollständige Liste der verfügbaren "
+"Befehlszeilenoptionen anzuzeigen."
 
 #: ../src/main.c:388
 #, c-format
@@ -8103,29 +8090,28 @@ msgid "Could not load or create settings file, exiting.\n"
 msgstr "Konnte Settings-Datei nicht laden oder erstellen.\n"
 
 #: ../src/opencv/opencv.cpp:188
-#, fuzzy, c-format
+#, c-format
 msgid "Translate is not supported for images with %d channels\n"
-msgstr "Nicht unterstütztes FITS-Format mit %ld Kanälen.\n"
+msgstr "Verschieben wird für Bilder mit %d-Kanälen nicht unterstützt.\n"
 
 #: ../src/opencv/opencv.cpp:248
-#, fuzzy, c-format
+#, c-format
 msgid "Rotate is not supported for images with %d channels\n"
-msgstr "Nicht unterstütztes FITS-Format mit %ld Kanälen.\n"
+msgstr "Rotation wird für Bilder mit %d-Kanälen nicht unterstützt.\n"
 
 #: ../src/opencv/opencv.cpp:424
-#, fuzzy, c-format
+#, c-format
 msgid "Transformation is not supported for images with %d channels\n"
-msgstr "Nicht unterstütztes FITS-Format mit %ld Kanälen.\n"
+msgstr "Transformation wird für Bilder mit %d-Kanälen nicht unterstützt.\n"
 
 #: ../src/opencv/opencv.cpp:529 ../src/opencv/opencv.cpp:625
-#, fuzzy, c-format
+#, c-format
 msgid "Deconvolution is not supported for images with %d channels\n"
-msgstr "Nicht unterstütztes FITS-Format mit %ld Kanälen.\n"
+msgstr "Deconvolution wird für Bilder mit %d-Kanälen nicht unterstützt.\n"
 
 #: ../src/opencv/opencv.cpp:668
-#, fuzzy
 msgid "Deconvolution applied"
-msgstr "Dekonvolution angewandt"
+msgstr "Deconvolution angewandt"
 
 #: ../src/registration/comet.c:152 ../src/registration/comet.c:176
 msgid "There is no timestamp stored in the file"
@@ -8478,13 +8464,13 @@ msgstr ""
 "zu normalisieren (%d MB frei, %d MB benötigt)\n"
 
 #: ../src/stacking/normalization.c:113
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "With the current memory and thread (%d) limits, up to %d thread(s) can be "
 "used for sequence normalization\n"
 msgstr ""
-"Bei aktuell verfügbarem Speicherbereich- (%.2f) und eingestellter Threads-"
-"Anzahl (%d) wären bis zu (%d) weitere Threads möglich\n"
+"Bei aktuell verfügbarem Speicherbereich und eingestellter Threads-Anzahl "
+"(%d) sind bis zu (%d) weitere Threads möglich\n"
 
 #: ../src/stacking/normalization.c:132
 msgid "Computing normalization...\n"
@@ -8594,17 +8580,17 @@ msgid "Rejection stacking complete."
 msgstr "Stacken mit Ausschleusung abgeschlossen."
 
 #: ../src/stacking/stacking.c:1043
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Your system does not allow one to open more than %d files at the same time. "
 "You may consider either to enhance this limit (the method depends of your "
 "Operating System) or to convert your FITS sequence into a SER sequence "
 "before stacking, or to stack with the \"sum\" method.\n"
 msgstr ""
-"Ihr System kann nicht mehr als %d Dateien gleichzeitig öffnen. Sie könnten "
-"dieses Limit erhöhen (abhängig von den Möglichekeiten Ihres Betriebssystems) "
-"oder konvertieren Ihre FITS-Sequenz vor dem Stacken in eine SER-Sequenz. "
-"Oder Sie benutzen die Aufsummierungsmethode zum Stacken.\n"
+"Das System erlaubt es nicht, mehr als %d-Dateien gleichzeitig zu öffnen. Sie "
+"können in Betracht ziehen, entweder diese Grenze zu erhöhen (die Methode "
+"hängt von Ihrem Betriebssystem ab), Ihre FITS-Sequenz vor dem Stacken in "
+"eine SER-Sequenz zu konvertieren oder mit der „Summen“-Methode zu stacken.\n"
 
 #: ../src/stacking/stacking.c:1121
 #, c-format
@@ -8682,7 +8668,7 @@ msgstr "Ausschleusungs-Parameter ...... none\n"
 
 #: ../src/stacking/stacking.c:1200
 msgid "percentile clipping"
-msgstr "Percentiles Clipping"
+msgstr "Percentile Clipping"
 
 #: ../src/stacking/stacking.c:1203
 msgid "sigma clipping"
@@ -8719,24 +8705,20 @@ msgid "Unsaved stacking result"
 msgstr "Nicht gespeichertes Stacking-Ergebnis"
 
 #: ../src/stacking/stacking.c:1382
-#, fuzzy
 msgid "Percentile low: "
-msgstr "Prozentuales Clipping"
+msgstr "Percentile Clipping niedrig "
 
 #: ../src/stacking/stacking.c:1383
-#, fuzzy
 msgid "Percentile high: "
-msgstr "Prozentuales Clipping"
+msgstr "Percentile Clipping hoch "
 
 #: ../src/stacking/stacking.c:1392
-#, fuzzy
 msgid "Linear low: "
-msgstr "Sigma niedrig: "
+msgstr "Linear niedrig: "
 
 #: ../src/stacking/stacking.c:1393
-#, fuzzy
 msgid "Linear high: "
-msgstr "Sigma hoch: "
+msgstr "Linear hoch: "
 
 #: ../src/stacking/stacking.c:1414
 #, c-format
@@ -8744,9 +8726,8 @@ msgid "Using %d MB memory maximum for stacking\n"
 msgstr "Verwende höchstens %d MB Speicher zum Satcken\n"
 
 #: ../src/stacking/stacking.c:1426
-#, fuzzy
 msgid "Not using limits on maximum memory for stacking\n"
-msgstr "Keine Ausschleusung beim Stacken\n"
+msgstr "Keine Speicherbgrenzung beim Stacken verwendet\n"
 
 #: ../src/stacking/stacking.c:1669
 #, c-format
@@ -8763,14 +8744,13 @@ msgstr ""
 "\"Drizzle\" (%d MB frei, %d MB benötigt)\n"
 
 #: ../src/stacking/upscaling.c:103
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "With the current memory and thread (%d) limits, up to %d thread(s) can be "
 "used for sequence up-scaling\n"
 msgstr ""
-"Bei aktuell verfügbarem Speicherbereich- (%.2f) und eingestellter Threads-"
-"Anzahl (%d) wären bis zu (%d) weitere Threads möglich\n"
-"\n"
+"Bei aktuell verfügbarem Speicherbereich und eingestellter Threads-Anzahl "
+"(%d) sind bis zu (%d) weitere Threads möglich\n"
 
 #: ../src/stacking/upscaling.c:140
 msgid "Stacking will be done without up-scaling (disabling 'drizzle')\n"
