@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-31 10:30+0100\n"
-"PO-Revision-Date: 2019-11-03 15:49+0100\n"
+"PO-Revision-Date: 2019-11-04 19:31+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -389,7 +389,7 @@ msgstr "Banding Reduzierung..."
 
 #: ../src/gui/siril3.glade.h:83
 msgid "Contrast-Limited Adaptive Histogram Equalization..."
-msgstr ""
+msgstr "Kontrastbegrenzte adaptive Histogrammausgleichung….."
 
 #: ../src/gui/siril3.glade.h:84
 msgid "Cosmetic Correction..."
@@ -446,7 +446,7 @@ msgstr "Kanäle..."
 
 #: ../src/gui/siril3.glade.h:97
 msgid "Split CFA..."
-msgstr ""
+msgstr "CFA trennen…"
 
 #: ../src/gui/siril3.glade.h:98
 msgid "Wavelet Layers..."
@@ -2072,7 +2072,7 @@ msgstr "Clip-Begrenzung "
 
 #: ../src/gui/siril3.glade.h:457
 msgid "Sets threshold for contrast limiting."
-msgstr ""
+msgstr "Legt den Schwellenwert für die Kontrastbegrenzung fest."
 
 #: ../src/gui/siril3.glade.h:458
 msgid "Tiles Grid Size: "
@@ -2083,10 +2083,12 @@ msgid ""
 "Sets size of grid for histogram equalization. Input image will be divided "
 "into equally sized rectangular tiles. "
 msgstr ""
+"Legt die Größe des Gitters für den Histogrammausgleich fest. Das "
+"Eingangsbild wird in gleich große rechteckige Kacheln unterteilt. "
 
 #: ../src/gui/siril3.glade.h:460
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #. Try to have 3 lines here.
 #: ../src/gui/siril3.glade.h:462
@@ -2095,6 +2097,10 @@ msgid ""
 "stacking residuals by cropping the image. If you don't,\n"
 "artifacts may appear."
 msgstr ""
+"Bitte achten Sie darauf, dass Sie alle schwarzen Ränder oder andere Bereiche "
+"entfernen.\n"
+"Stapeln von Residuen durch Zuschneiden des Bildes. Es können sonst\n"
+"Artefakte auftreten."
 
 #: ../src/gui/siril3.glade.h:465 ../src/algos/plateSolver.c:99
 msgid "Image Plate Solver"
@@ -2297,7 +2303,7 @@ msgstr ""
 
 #: ../src/gui/siril3.glade.h:503
 msgid "APASS"
-msgstr ""
+msgstr "APASS"
 
 #: ../src/gui/siril3.glade.h:504
 msgid "Photometric Star Catalogue: "
@@ -3655,19 +3661,19 @@ msgstr "Standard-Parameter wiederherstellen"
 
 #: ../src/gui/siril3.glade.h:799
 msgid "Min. pixel value:"
-msgstr ""
+msgstr "Min. Pixelwert:"
 
 #: ../src/gui/siril3.glade.h:800
 msgid "Max. pixel value:"
-msgstr ""
+msgstr "Max. Pixelwert:"
 
 #: ../src/gui/siril3.glade.h:801
 msgid "Bad pixels have value equal to or less than."
-msgstr ""
+msgstr "Schlechte Pixel haben einen Wert gleich oder kleiner als."
 
 #: ../src/gui/siril3.glade.h:802
 msgid "Overexposed pixels have value equal to or greater than."
-msgstr ""
+msgstr "Überbelichtete Pixel haben einen Wert gleich oder größer als."
 
 #: ../src/gui/siril3.glade.h:803
 msgid "Pixel Value Range"
@@ -3723,10 +3729,18 @@ msgid ""
 "If you don't have paged memory configured on some storage, a value of 1 or "
 "above will likely result in a crash of siril or of the operating system."
 msgstr ""
+"Siril beschränkt sich auf ein Verhältnis aus freiem physikalischen Speicher "
+"und verringert bei Bedarf die Größe der Arbeitspakete.\n"
+"Ein Wert über 1 bedeutet, dass ein Auslagerungsspeicher verwendet wird und "
+"dass der Gesamtprozess langsamer wird oder sogar das System während einiger "
+"Operationen wahrscheinlich nicht reagiert.\n"
+"Wenn Sie keinen Auslagerungsspeicher konfiguriert haben, wird ein Wert von 1 "
+"oder höher wahrscheinlich zu einem Absturz von Siril oder des "
+"Betriebssystems führen."
 
 #: ../src/gui/siril3.glade.h:813
 msgid "Fixed amount (GB)"
-msgstr ""
+msgstr "Fester Wert (GB)"
 
 #: ../src/gui/siril3.glade.h:814
 msgid ""
@@ -3735,10 +3749,15 @@ msgid ""
 "Configuring a memory amount larger than what is available on your system may "
 "result in a crash of siril or of the operating system."
 msgstr ""
+"Siril beschränkt sich auf eine feste Speichermenge und verringert bei Bedarf "
+"die Größe der Arbeitspakete.\n"
+"Die Konfiguration einer Speichermenge, die größer ist als die auf Ihrem "
+"System verfügbare, kann zu einem Absturz von Siril oder des Betriebssystems "
+"führen."
 
 #: ../src/gui/siril3.glade.h:816
 msgid "Unlimited"
-msgstr ""
+msgstr "Unbegrenzt"
 
 #: ../src/gui/siril3.glade.h:817
 msgid ""
@@ -3746,6 +3765,9 @@ msgid ""
 "manage the required memory. Using a smaller number of threads parameter will "
 "still decrease used memory."
 msgstr ""
+"Siril erzwingt keine Speicherbegrenzungen und lässt das Betriebssystem den "
+"benötigten Speicher verwalten. Bei Verwendung einer kleineren Anzahl von "
+"Threads verringert der Parameter den belegten Speicherplatz."
 
 #: ../src/gui/siril3.glade.h:818
 msgid "<b>Memory management</b>"
@@ -3758,6 +3780,8 @@ msgstr "Datei-Extension Typ: "
 #: ../src/gui/siril3.glade.h:820
 msgid "Choose the type of extension used by Siril. By default it is .fit."
 msgstr ""
+"Wählen Sie die Art der von Siril verwendeten Dateierweiterung. Standardmäßig "
+"ist es .fit."
 
 #: ../src/gui/siril3.glade.h:821
 msgid ".fit"
@@ -3905,6 +3929,8 @@ msgid ""
 "Changes of these three values should be tested on one representative image "
 "before using them for registration."
 msgstr ""
+"Änderungen dieser drei Werte sollten an einem repräsentativen Bild getestet "
+"werden, bevor sie zur Registrierung verwendet werden."
 
 #: ../src/gui/siril3.glade.h:853
 msgid "Size in pixels of the search box."
@@ -4246,6 +4272,8 @@ msgstr "Zuschneiden: in Bearbeitung...\n"
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr ""
+"Crop funktioniert nicht mit avi-Film. Bitte konvertieren Sie zuerst Ihre "
+"Datei in SER.\n"
 
 #: ../src/algos/geometry.c:514
 msgid "Not a valid sequence for cropping.\n"
@@ -4313,7 +4341,7 @@ msgstr "Der innere Radiuwert muß kleiner sein als der äußere. Bitte anpassen.
 #: ../src/algos/plateSolver.c:497
 #, c-format
 msgid "Fetch failed with code %ld for URL %s\n"
-msgstr ""
+msgstr "Holen fehlgeschlagen mit Code %ld für URL %s\n"
 
 #: ../src/algos/plateSolver.c:498 ../src/filters/fft.c:390
 #: ../src/filters/fft.c:396 ../src/filters/fft.c:417
@@ -6360,13 +6388,13 @@ msgstr ""
 "SCNR: bearbeite...\n"
 "\n"
 
+# est-ce OK de donner ton adresse email si on veut me contacter?
 #. translator names
 #: ../src/gui/about_dialog.c:37
 msgid ""
 "Cyril Richard <cyril@free-astro.org>\n"
 "Vincent Hourdin <vh@free-astro.vinvin.tf>"
-msgstr "Jörg Schipke, <joergsbox@gmx.net>\n"
-"Stephan Wörmke"
+msgstr "Jörg Schipke, <joergsbox@gmx.net>"
 
 #: ../src/gui/about_dialog.c:48
 msgid "About Siril"
