@@ -18,6 +18,7 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
 */
 #include <float.h>
+#include <string.h>
 #include <gsl/gsl_statistics.h>
 
 #include "core/siril.h"

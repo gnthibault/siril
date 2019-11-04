@@ -19,6 +19,7 @@
  */
 
 #include <math.h>
+#include <string.h>
 #include <gsl/gsl_statistics.h>
 
 #include "core/siril.h"

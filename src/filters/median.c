@@ -18,6 +18,8 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <string.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/undo.h"

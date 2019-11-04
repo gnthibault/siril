@@ -19,6 +19,7 @@
  */
 
 #include <opencv/opencv.h>
+#include <string.h>
 #include <opencv2/core/version.hpp>
 
 #include "core/siril.h"
