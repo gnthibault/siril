@@ -36,7 +36,6 @@
 #include <gsl/gsl_histogram.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <opencv/opencv.h>
 #include <opencv2/core/version.hpp>
 
 #include "siril.h"
@@ -76,6 +75,7 @@
 #include "algos/statistics.h"
 #include "algos/sorting.h"
 #include "algos/geometry.h"
+#include "opencv/opencv.h"
 #include "stacking/stacking.h"
 #include "stacking/sum.h"
 #include "registration/registration.h"

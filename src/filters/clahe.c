@@ -18,7 +18,6 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <opencv/opencv.h>
 #include <string.h>
 #include <opencv2/core/version.hpp>
 
@@ -27,6 +26,7 @@
 #include "core/undo.h"
 #include "core/processing.h"
 #include "algos/colors.h"
+#include "opencv/opencv.h"
 #include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
