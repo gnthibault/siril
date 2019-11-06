@@ -664,7 +664,7 @@ int process_clahe(int nb) {
 	int size;
 
 	if (CV_MAJOR_VERSION < 3) {
-		char *error = siril_log_message(_("Your version of opencv is "
+		siril_log_message(_("Your version of opencv is "
 				"too old for this feature. Please upgrade your system."));
 		return 1;
 	}
