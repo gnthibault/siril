@@ -225,7 +225,7 @@ pkgdata_DATA = \
 	gui/gtk_old.css \
 	gui/gtk.css
 
-if OS_WIN32
+if PLATFORM_WIN32
 AM_LDFLAGS += -Wl,--export-all-symbols
 if !SIRIL_DEBUG
 AM_LDFLAGS += -mwindows
@@ -236,9 +236,9 @@ $(top_builddir)/platform-specific/windows/siril.res.o: $(top_builddir)/platform-
 siril_LDADD += $(top_builddir)/platform-specific/windows/siril.res.o
 endif #HAVE_WINDRES
 else
-if !OS_OSX
+if !PLATFORM_OSX
 AM_LDFLAGS += -rdynamic
-endif #!OS_OSX
-endif #OS_WIN32
+endif #!PLATFORM_OSX
+endif #PLATFORM_WIN32
 
 siril_LINK = $(CXXLINK)
