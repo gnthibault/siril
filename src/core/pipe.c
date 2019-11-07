@@ -50,7 +50,7 @@
 
 #include "core/siril.h"
 #include "pipe.h"
-#include "command.h"
+#include "command_line_processor.h"
 //#include "processing.h"
 	void stop_processing_thread();	// avoid including everything
 	gpointer waiting_for_thread();

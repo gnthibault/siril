@@ -31,7 +31,8 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
-#include "core/command.h"
+#include "core/command.h" // for process_close()
+#include "core/command_line_processor.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"

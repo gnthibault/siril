@@ -37,7 +37,8 @@
 #include "core/initfile.h"
 #include "core/undo.h"
 #include "core/preprocess.h"
-#include "core/command.h"	// for processcommand()
+#include "core/command.h"
+#include "core/command_line_processor.h"
 #include "algos/demosaicing.h"
 #include "algos/colors.h"
 #include "algos/PSF.h"
@@ -712,29 +713,6 @@ static void reset_swapdir() {
 		gtk_file_chooser_set_filename(swap_dir, dir);
 		writeinitfile();
 	}
-}
-
-/*
- * Command line history static function
- */
-
-static void history_add_line(char *line) {
-	if (!com.cmd_history) {
-		com.cmd_hist_size = CMD_HISTORY_SIZE;
-		com.cmd_history = calloc(com.cmd_hist_size, sizeof(const char*));
-		com.cmd_hist_current = 0;
-		com.cmd_hist_display = 0;
-	}
-	com.cmd_history[com.cmd_hist_current] = line;
-	com.cmd_hist_current++;
-	// circle at the end
-	if (com.cmd_hist_current == com.cmd_hist_size)
-		com.cmd_hist_current = 0;
-	if (com.cmd_history[com.cmd_hist_current]) {
-		free(com.cmd_history[com.cmd_hist_current]);
-		com.cmd_history[com.cmd_hist_current] = NULL;
-	}
-	com.cmd_hist_display = com.cmd_hist_current;
 }
 
 /*
@@ -3048,81 +3026,6 @@ void on_exit_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	siril_quit();
 }
 
-/* handler for the single-line console */
-gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
-		gpointer user_data) {
-	const gchar *text;
-	int handled = 0;
-	static GtkEntry *entry = NULL;
-	if (!entry)
-		entry = GTK_ENTRY(widget);
-	GtkEditable *editable = GTK_EDITABLE(entry);
-	int entrylength = 0;
-
-	switch (event->keyval) {
-	case GDK_KEY_Return:
-	case GDK_KEY_KP_Enter:
-		handled = 1;
-		text = gtk_entry_get_text(entry);
-		history_add_line(strdup(text));
-		if (!(processcommand(text)))
-			gtk_entry_set_text(entry, "");
-		break;
-	case GDK_KEY_Up:
-		handled = 1;
-		if (!com.cmd_history)
-			break;
-		if (com.cmd_hist_display > 0) {
-			if (com.cmd_history[com.cmd_hist_display - 1])
-				--com.cmd_hist_display;
-			// display previous entry
-			gtk_entry_set_text(entry, com.cmd_history[com.cmd_hist_display]);
-		} else if (com.cmd_history[com.cmd_hist_size - 1]) {
-			// ring back, display previous
-			com.cmd_hist_display = com.cmd_hist_size - 1;
-			gtk_entry_set_text(entry, com.cmd_history[com.cmd_hist_display]);
-		}
-		entrylength = gtk_entry_get_text_length(entry);
-		gtk_editable_set_position(editable, entrylength);
-		break;
-	case GDK_KEY_Down:
-		handled = 1;
-		if (!com.cmd_history)
-			break;
-		if (com.cmd_hist_display == com.cmd_hist_current)
-			break;
-		if (com.cmd_hist_display == com.cmd_hist_size - 1) {
-			if (com.cmd_hist_current == 0) {
-				// ring forward, end
-				gtk_entry_set_text(entry, "");
-				com.cmd_hist_display++;
-			} else if (com.cmd_history[0]) {
-				// ring forward, display next
-				com.cmd_hist_display = 0;
-				gtk_entry_set_text(entry, com.cmd_history[0]);
-			}
-		} else {
-			if (com.cmd_hist_display == com.cmd_hist_current - 1) {
-				// end
-				gtk_entry_set_text(entry, "");
-				com.cmd_hist_display++;
-			} else if (com.cmd_history[com.cmd_hist_display + 1]) {
-				// display next
-				gtk_entry_set_text(entry,
-						com.cmd_history[++com.cmd_hist_display]);
-			}
-		}
-		entrylength = gtk_entry_get_text_length(entry);
-		gtk_editable_set_position(editable, entrylength);
-		break;
-	case GDK_KEY_Page_Up:
-	case GDK_KEY_Page_Down:
-		handled = 1;
-		// go to first and last in history
-		break;
-	}
-	return (handled == 1);
-}
 
 /* mouse callbacks */
 double marge_size = 10;

@@ -61,6 +61,9 @@ siril_SOURCES = \
 	core/command.c \
 	core/command.h \
 	core/command_def.h \
+	core/command_line_processor.c \
+	core/command_line_processor.h \
+	core/command_list.h \
 	core/initfile.c \
 	core/initfile.h \
 	core/OS_utils.c \

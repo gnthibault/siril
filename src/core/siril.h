@@ -60,8 +60,6 @@
 typedef unsigned char BYTE;		// default type for image display data
 typedef unsigned short WORD;		// default type for internal image data
 
-#define MAX_COMMAND_WORDS 16		// max number of words to split in command line input
-
 #define MAX_SEQPSF 7			// max number of stars for which seqpsf can be run
 
 #define CMD_HISTORY_SIZE 50		// size of the command line history

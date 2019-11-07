@@ -47,7 +47,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
-#include "core/command.h"
+#include "core/command_line_processor.h"
 #include "core/pipe.h"
 #include "core/undo.h"
 #include "core/signals.h"

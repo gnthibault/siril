@@ -20,7 +20,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
-#include "core/command.h"
+#include "core/command.h" // for process_clear()
 #include "gui/callbacks.h"
 
 #if !GLIB_CHECK_VERSION(2,62,0)
