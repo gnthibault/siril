@@ -183,6 +183,7 @@ case "$host_os" in
 		platform=windows
 		;;
 	mingw*)
+		platform=windows
 		PATHSEP=';'
 		case "$host_cpu" in
 			x86_64)
