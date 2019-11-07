@@ -171,7 +171,7 @@ siril_SOURCES = \
 	stacking/sum.h \
 	stacking/upscaling.c
 
-if OS_WIN32
+if PLATFORM_WIN32
 libdbghelp = -ldbghelp
 endif
 
