@@ -684,7 +684,7 @@ static int pictofit(WORD *buf, fits *fit) {
 	fit->naxes[1] = fit->ry;
 	fit->naxes[2] = 1;
 	fit->naxis = 2;
-	return 1;
+	return 0;
 }
 
 static int pictofitrgb(WORD *buf, fits *fit) {
@@ -724,7 +724,7 @@ static int pictofitrgb(WORD *buf, fits *fit) {
 	fit->naxes[0] = fit->rx;
 	fit->naxes[1] = fit->ry;
 	fit->naxes[2] = 3;
-	return 3;
+	return 0;
 }
 
 static int _pic_read_header(struct pic_struct *pic_file) {
