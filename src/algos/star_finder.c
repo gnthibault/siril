@@ -32,10 +32,11 @@
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
-#include "algos/PSF.h"
 #include "gui/PSF_list.h"
+#include "algos/PSF.h"
 #include "algos/star_finder.h"
 #include "algos/statistics.h"
+#include "filters/wavelets.h"
 
 #define WAVELET_SCALE 3
 

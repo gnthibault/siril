@@ -24,6 +24,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/undo.h"
+#include "core/processing.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
@@ -92,6 +93,87 @@ static void update_wavelets() {
 static void wavelets_startup() {
 	copyfits(&gfit, &wavelets_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 }
+
+/* This function computes wavelets with the number of Nbr_Plan and
+ * extracts plan "Plan" in fit parameters */
+
+int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer) {
+	int chan, start, end, retval = 0;
+	wave_transf_des wavelet[3];
+
+	g_assert(fit->naxes[2] <= 3);
+
+	float *Imag = f_vector_alloc(fit->ry * fit->rx);
+	if (Imag == NULL) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
+
+	if (reqlayer < 0 || reqlayer > 3) {
+		start = 0;
+		end = fit->naxes[2];
+	}
+	else {
+		start = reqlayer;
+		end = start + 1;
+	}
+
+	for (chan = start; chan < end; chan++) {
+		int Nl, Nc;
+
+		if (wavelet_transform(Imag, fit->ry, fit->rx, &wavelet[chan],
+					Type, Nbr_Plan, fit->pdata[chan])) {
+			retval = 1;
+			break;
+		}
+		Nl = wavelet[chan].Nbr_Ligne;
+		Nc = wavelet[chan].Nbr_Col;
+		pave_2d_extract_plan(wavelet[chan].Pave.Data, Imag, Nl, Nc, Plan);
+		reget_rawdata(Imag, Nl, Nc, fit->pdata[chan]);
+		wave_io_free(&wavelet[chan]);
+	}
+
+	/* Free */
+	free(Imag);
+	return retval;
+}
+
+static gboolean end_wavelets_filter(gpointer p) {
+	struct wavelets_filter_data *args = (struct wavelets_filter_data *) p;
+	stop_processing_thread();// can it be done here in case there is no thread?
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_DONE);
+	update_used_memory();
+	set_cursor_waiting(FALSE);
+	free(args);
+	return FALSE;
+}
+
+gpointer extract_plans(gpointer p) {
+	int i;
+	fits fit = { 0 };
+	struct wavelets_filter_data *args = (struct wavelets_filter_data *) p;
+
+	copyfits(args->fit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
+
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
+
+	for (i = 0; i < args->Nbr_Plan; i++) {
+		gchar *filename, *msg;
+
+		filename = g_strdup_printf("layer%02d", i);
+		msg = g_strdup_printf(_("Extracting %s..."), filename);
+		set_progress_bar_data(msg, (float)i / args->Nbr_Plan);
+		get_wavelet_layers(&fit, args->Nbr_Plan, i, args->Type, -1);
+		savefits(filename, &fit);
+		g_free(filename);
+		g_free(msg);
+	}
+	clearfits(&fit);
+	siril_add_idle(end_wavelets_filter, args);
+	return GINT_TO_POINTER(0);
+}
+
+
 
 void on_menuitem_wavelets_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded()) {
@@ -263,4 +345,52 @@ void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 	gtk_widget_set_sensitive(lookup_widget("button_reset_w"), TRUE);
 	set_cursor_waiting(FALSE);
 	return;
+}
+
+/****************** GUI for Wavelet Layers Extraction *****************/
+
+void on_menu_wavelet_separation_activate(GtkMenuItem *menuitem,
+		gpointer user_data) {
+
+	if (single_image_is_loaded()) {
+		siril_open_dialog("extract_wavelets_layers_dialog");
+	}
+}
+
+void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
+	int Nbr_Plan, Type, maxplan, mins;
+	static GtkSpinButton *Spin_Nbr_Plan = NULL;
+	static GtkComboBox *Combo_Wavelets_Type = NULL;
+
+	if (Spin_Nbr_Plan == NULL) {
+		Spin_Nbr_Plan = GTK_SPIN_BUTTON(lookup_widget("spinbutton_extract_w"));
+		Combo_Wavelets_Type = GTK_COMBO_BOX(
+				lookup_widget("combo_interpolation_extract_w"));
+	}
+
+	Nbr_Plan = gtk_spin_button_get_value(Spin_Nbr_Plan);
+	Type = gtk_combo_box_get_active(Combo_Wavelets_Type) + 1;// 1: linear, 2: bspline
+
+	set_cursor_waiting(TRUE);
+	mins = min(gfit.rx, gfit.ry);
+	maxplan = log(mins) / log(2) - 2;
+
+	if (Nbr_Plan > maxplan) {
+		char *msg = siril_log_message(_("Wavelet: maximum number "
+				"of plans for this image size is %d\n"), maxplan);
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("Warning"), msg);
+		set_cursor_waiting(FALSE);
+		return;
+	}
+
+	struct wavelets_filter_data *args = malloc(sizeof(struct wavelets_filter_data));
+
+	args->Type = Type;
+	args->Nbr_Plan = Nbr_Plan;
+	args->fit = &gfit;
+	start_in_new_thread(extract_plans, args);
+}
+
+void on_button_extract_w_close_clicked(GtkButton *button, gpointer user_data) {
+	siril_close_dialog("extract_wavelets_layers_dialog");
 }

@@ -4381,56 +4381,6 @@ void on_menu_gray_stat_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 
-/****************** GUI for Wavelet Layers Extraction *****************/
-
-void on_menu_wavelet_separation_activate(GtkMenuItem *menuitem,
-		gpointer user_data) {
-
-	if (single_image_is_loaded()) {
-		siril_open_dialog("extract_wavelets_layers_dialog");
-	}
-}
-
-void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
-	fits fit = { 0 };
-	int Nbr_Plan, Type, maxplan, mins;
-	static GtkSpinButton *Spin_Nbr_Plan = NULL;
-	static GtkComboBox *Combo_Wavelets_Type = NULL;
-
-	if (Spin_Nbr_Plan == NULL) {
-		Spin_Nbr_Plan = GTK_SPIN_BUTTON(lookup_widget("spinbutton_extract_w"));
-		Combo_Wavelets_Type = GTK_COMBO_BOX(
-				lookup_widget("combo_interpolation_extract_w"));
-	}
-
-	Nbr_Plan = gtk_spin_button_get_value(Spin_Nbr_Plan);
-	Type = gtk_combo_box_get_active(Combo_Wavelets_Type) + 1;// 1: linear, 2: bspline
-
-	set_cursor_waiting(TRUE);
-	mins = min(gfit.rx, gfit.ry);
-	maxplan = log(mins) / log(2) - 2;
-
-	if (Nbr_Plan > maxplan) {
-		char *msg = siril_log_message(_("Wavelet: maximum number "
-				"of plans for this image size is %d\n"), maxplan);
-		siril_message_dialog(GTK_MESSAGE_WARNING, _("Warning"), msg);
-		set_cursor_waiting(FALSE);
-		return;
-	}
-
-	copyfits(&gfit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
-
-	extract_plans(&fit, Nbr_Plan, Type);
-
-	clearfits(&fit);
-	update_used_memory();
-	set_cursor_waiting(FALSE);
-}
-
-void on_button_extract_w_close_clicked(GtkButton *button, gpointer user_data) {
-	siril_close_dialog("extract_wavelets_layers_dialog");
-}
-
 /******* SPLIT CFA ******************************/
 
 void on_menu_slpitcfa_activate(GtkMenuItem *menuitem, gpointer user_data) {

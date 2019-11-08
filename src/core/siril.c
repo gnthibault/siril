@@ -571,69 +571,6 @@ void show_FITS_header(fits *fit) {
 		show_data_dialog(fit->header, "FITS Header");
 }
 
-/* This function computes wavelets with the number of Nbr_Plan and
- * extracts plan "Plan" in fit parameters */
-
-int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer) {
-	int chan, start, end, retval = 0;
-	wave_transf_des wavelet[3];
-
-	assert(fit->naxes[2] <= 3);
-
-	float *Imag = f_vector_alloc(fit->ry * fit->rx);
-	if (Imag == NULL) {
-		PRINT_ALLOC_ERR;
-		return 1;
-	}
-
-	if (reqlayer < 0 || reqlayer > 3) {
-		start = 0;
-		end = fit->naxes[2];
-	}
-	else {
-		start = reqlayer;
-		end = start + 1;
-	}
-
-	for (chan = start; chan < end; chan++) {
-		int Nl, Nc;
-
-		if (wavelet_transform(Imag, fit->ry, fit->rx, &wavelet[chan],
-					Type, Nbr_Plan, fit->pdata[chan])) {
-			retval = 1;
-			break;
-		}
-		Nl = wavelet[chan].Nbr_Ligne;
-		Nc = wavelet[chan].Nbr_Col;
-		pave_2d_extract_plan(wavelet[chan].Pave.Data, Imag, Nl, Nc, Plan);
-		reget_rawdata(Imag, Nl, Nc, fit->pdata[chan]);
-		wave_io_free(&wavelet[chan]);
-	}
-
-	/* Free */
-	free(Imag);
-	return retval;
-}
-
-int extract_plans(fits *fit, int Nbr_Plan, int Type) {
-	int i;
-
-	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
-
-	for (i = 0; i < Nbr_Plan; i++) {
-		char filename[256], msg[256];
-
-		g_snprintf(filename, sizeof(filename), "layer%02d", i);
-		snprintf(msg, 256, _("Extracting %s..."), filename);
-		set_progress_bar_data(msg, (float)i / Nbr_Plan);
-		get_wavelet_layers(fit, Nbr_Plan, i, Type, -1);
-		if (savefits(filename, fit))
-			break;
-	}
-	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_DONE);
-	return 0;
-}
-
 void compute_grey_flat(fits *fit) {
 	double mean[4];
 	double diag1, diag2, coeff1, coeff2;

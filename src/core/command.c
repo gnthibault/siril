@@ -57,6 +57,7 @@
 #include "filters/rgradient.h"
 #include "filters/saturation.h"
 #include "filters/scnr.h"
+#include "filters/wavelets.h"
 #include "algos/PSF.h"
 #include "algos/star_finder.h"
 #include "algos/Def_Math.h"
@@ -2551,7 +2552,6 @@ int process_exit(int nb){
 
 int process_extract(int nb) {
 	int Nbr_Plan, maxplan, mins;
-	fits fit = { 0 };
 	
 	if (!single_image_is_loaded()) return 1;
 
@@ -2565,11 +2565,13 @@ int process_extract(int nb) {
 				maxplan);
 		return 1;
 	}
-	copyfits(&gfit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 	
-	extract_plans(&fit, Nbr_Plan, TO_PAVE_BSPLINE);
+	struct wavelets_filter_data *args = malloc(sizeof(struct wavelets_filter_data));
 
-	clearfits(&fit);
-	update_used_memory();
+	args->Type = TO_PAVE_BSPLINE;
+	args->Nbr_Plan = Nbr_Plan;
+	args->fit = &gfit;
+	start_in_new_thread(extract_plans, args);
+
 	return 0;
 }
