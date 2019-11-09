@@ -1180,7 +1180,7 @@ gboolean on_treeview_convert_key_release_event(GtkWidget *widget, GdkEventKey *e
 
 /******************Callback functions*******************************************************************/
 
-static gchar forbidden_char[] = { '/', '\\' };
+static gchar forbidden_char[] = { '/', '\\', '"', '\'' };
 
 static gboolean is_forbiden(gchar c) {
 	int i;
