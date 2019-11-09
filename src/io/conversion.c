@@ -209,6 +209,8 @@ static void initialize_ser_debayer_settings() {
 	com.debayer.compatibility = FALSE;
 	com.debayer.bayer_pattern = BAYER_FILTER_RGGB;
 	com.debayer.bayer_inter = BAYER_VNG;
+	com.debayer.xbayeroff= 0;
+	com.debayer.ybayeroff= 0;
 }
 
 static gboolean end_convert_idle(gpointer p) {

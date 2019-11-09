@@ -1474,7 +1474,7 @@ void clear_sampling_setting_box() {
 	gtk_combo_box_set_active(binning, 0);
 }
 
-void update_libraw_interface() {
+void update_libraw_and_debayer_interface() {
 	/**********COLOR ADJUSTEMENT**************/
 	com.raw_set.bright = gtk_spin_button_get_value(
 			GTK_SPIN_BUTTON(lookup_widget("Brightness_spinbutton")));
@@ -1522,6 +1522,8 @@ void update_libraw_interface() {
 			GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility")));
 	com.debayer.stretch = gtk_toggle_button_get_active(
 			GTK_TOGGLE_BUTTON(lookup_widget("stretch_CFA_to16_button")));
+	com.debayer.xbayeroff = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget("xbayeroff_spin")));
+	com.debayer.ybayeroff = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget("ybayeroff_spin")));
 	writeinitfile();
 }
 
@@ -2230,13 +2232,16 @@ static void set_GUI_LIBRAW() {
 	GtkToggleButton *use_header = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_SER_use_header"));
 	GtkToggleButton *stretch_cfa = GTK_TOGGLE_BUTTON(lookup_widget("stretch_CFA_to16_button"));
 	GtkToggleButton *demosaicingButton = GTK_TOGGLE_BUTTON(lookup_widget("demosaicingButton"));
+	GtkSpinButton *xbayer_spin = GTK_SPIN_BUTTON(lookup_widget("xbayeroff_spin"));
+	GtkSpinButton *ybayer_spin = GTK_SPIN_BUTTON(lookup_widget("ybayeroff_spin"));
 	gtk_combo_box_set_active(pattern, com.debayer.bayer_pattern);
 	gtk_combo_box_set_active(inter, com.debayer.bayer_inter);
 	gtk_toggle_button_set_active(compat, com.debayer.compatibility);
 	gtk_toggle_button_set_active(use_header, com.debayer.use_bayer_header);
 	gtk_toggle_button_set_active(demosaicingButton,	com.debayer.open_debayer);
 	gtk_toggle_button_set_active(stretch_cfa, com.debayer.stretch);
-
+	gtk_spin_button_set_value(xbayer_spin, com.debayer.xbayeroff);
+	gtk_spin_button_set_value(ybayer_spin, com.debayer.ybayeroff);
 }
 
 void set_GUI_photometry() {
@@ -2755,7 +2760,7 @@ void on_menu_FITS_header_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
-	update_libraw_interface();
+	update_libraw_and_debayer_interface();
 	update_photometry_interface();
 	fill_script_paths_list();
 	refresh_stars_list(com.stars);

@@ -100,11 +100,13 @@ static int readinitfile() {
 				&com.debayer.bayer_pattern);
 		config_setting_lookup_bool(debayer_setting, "compatibility",
 						&com.debayer.compatibility);
-		int inter;
+		int inter = com.debayer.bayer_inter;
 		config_setting_lookup_int(debayer_setting, "inter", &inter);
-		com.debayer.bayer_inter = inter;
 		config_setting_lookup_bool(debayer_setting, "stretch",
 						&com.debayer.stretch);
+		config_setting_lookup_int(debayer_setting, "xbayeroff", &com.debayer.xbayeroff);
+		config_setting_lookup_int(debayer_setting, "ybayeroff", &com.debayer.ybayeroff);
+
 	}
 
 	/* Preprocessing settings */
@@ -260,25 +262,25 @@ static void _save_debayer(config_t *config, config_setting_t *root) {
 
 	debayer_group = config_setting_add(root, keywords[BAY], CONFIG_TYPE_GROUP);
 
-	debayer_setting = config_setting_add(debayer_group, "ser_use_bayer_header",
-			CONFIG_TYPE_BOOL);
+	debayer_setting = config_setting_add(debayer_group, "ser_use_bayer_header",	CONFIG_TYPE_BOOL);
 	config_setting_set_bool(debayer_setting, com.debayer.use_bayer_header);
 
-	debayer_setting = config_setting_add(debayer_group, "pattern",
-			CONFIG_TYPE_INT);
+	debayer_setting = config_setting_add(debayer_group, "pattern", CONFIG_TYPE_INT);
 	config_setting_set_int(debayer_setting, com.debayer.bayer_pattern);
 
-	debayer_setting = config_setting_add(debayer_group, "compatibility",
-			CONFIG_TYPE_BOOL);
+	debayer_setting = config_setting_add(debayer_group, "compatibility", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(debayer_setting, com.debayer.compatibility);
 
-	debayer_setting = config_setting_add(debayer_group, "inter",
-			CONFIG_TYPE_INT);
+	debayer_setting = config_setting_add(debayer_group, "inter", CONFIG_TYPE_INT);
 	config_setting_set_int(debayer_setting, com.debayer.bayer_inter);
 
-	debayer_setting = config_setting_add(debayer_group, "stretch",
-			CONFIG_TYPE_BOOL);
+	debayer_setting = config_setting_add(debayer_group, "stretch", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(debayer_setting, com.debayer.stretch);
+
+	debayer_setting = config_setting_add(debayer_group, "xbayeroff", CONFIG_TYPE_INT);
+	config_setting_set_int(debayer_setting, com.debayer.xbayeroff);
+	debayer_setting = config_setting_add(debayer_group, "ybayeroff", CONFIG_TYPE_INT);
+	config_setting_set_int(debayer_setting, com.debayer.ybayeroff);
 }
 
 static void _save_preprocessing(config_t *config, config_setting_t *root) {

@@ -463,6 +463,7 @@ struct debayer_config {
 	interpolation_method bayer_inter;	// interpolation method for non-libraw debayer
 	gboolean compatibility;				// ensure KSTARS compatibility if TRUE
 	gboolean stretch;                  // stretch DSLR CFA data to 16-bit if wanted
+	int xbayeroff, ybayeroff;			// x and y Bayer offsets
 };
 
 struct stack_config {

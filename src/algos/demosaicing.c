@@ -890,16 +890,26 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 	WORD *buf = fit->data;
 	WORD *newbuf;
 	int xtrans[6][6] = { 0 };
+	int xbayeroff = 0;
+	int ybayeroff = 0;
 
 	retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
 	full_stats_invalidation_from_fit(fit);
 
-	if (fit->bayer_yoffset == 1) {
+	if (!com.debayer.use_bayer_header) {
+		xbayeroff = com.debayer.xbayeroff;
+		ybayeroff = com.debayer.ybayeroff;
+	} else {
+		xbayeroff = fit->bayer_xoffset;
+		ybayeroff = fit->bayer_yoffset;
+	}
+
+	if (xbayeroff == 1) {
 		buf += width;
 		height--;
 	}
 
-	if (fit->bayer_xoffset == 1) {
+	if (ybayeroff == 1) {
 		buf++;
 	}
 
