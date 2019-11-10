@@ -196,18 +196,20 @@ int cvTranslateImage(fits *image, point shift, int interpolation) {
 	std::vector<Mat> channel(3);
 	split(out, channel);
 
-	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 	if (image->naxes[2] == 3) {
+		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data + ndata;
 		image->pdata[BLAYER] = image->data + ndata * 2;
 	} else {
+		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data;
 		image->pdata[BLAYER] = image->data;
 	}
+
 	image->rx = out.cols;
 	image->ry = out.rows;
 	image->naxes[0] = image->rx;
@@ -282,14 +284,15 @@ int cvRotateImage(fits *image, point center, double angle, int interpolation, in
 	std::vector<Mat> channel(3);
 	split(out, channel);
 
-	memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 	if (image->naxes[2] == 3) {
+		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
 		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data + ndata;
 		image->pdata[BLAYER] = image->data + ndata * 2;
 	} else {
+		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data;
 		image->pdata[BLAYER] = image->data;
