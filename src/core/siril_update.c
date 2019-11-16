@@ -384,7 +384,7 @@ static gpointer fetch_url(gpointer p) {
 	return NULL;
 }
 
-void on_help_update_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void siril_check_updates() {
 	struct _update_data *args;
 
 	args = malloc(sizeof(struct _update_data));

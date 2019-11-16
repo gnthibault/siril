@@ -24,6 +24,7 @@
 #include "core/proto.h"
 #include "algos/statistics.h"
 #include "io/single_image.h"
+#include "gui/image_display.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/dialogs.h"

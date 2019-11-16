@@ -31,6 +31,8 @@
 #include "algos/colors.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
+#include "gui/image_display.h"
+#include "gui/image_interactions.h"
 #include "gui/PSF_list.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
@@ -527,8 +529,6 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		set_display_mode();
 		redraw(com.cvport, REMAP_ALL);
 		update_used_memory();
-		show_main_gray_window();
-		show_rgb_window();
 		sequence_list_change_current();
 		gtk_window_present_with_time(GTK_WINDOW(lookup_widget("composition_dialog")), GDK_CURRENT_TIME);
 	}
@@ -1036,13 +1036,6 @@ void on_wavelength_changed(GtkEditable *editable, gpointer user_data){
 
 void on_compositing_reset_clicked(GtkButton *button, gpointer user_data){
 	int i;
-	static GtkWidget *main_window = NULL;
-	static GtkWidget *rgb_window = NULL;
-
-	if (main_window == NULL) {
-		main_window = lookup_widget("main_window");
-		rgb_window = lookup_widget("rgb_window");
-	}
 
 	if (com.uniq) {
 		close_single_image();
@@ -1088,12 +1081,6 @@ void on_compositing_reset_clicked(GtkButton *button, gpointer user_data){
 
 	update_compositing_interface();
 	open_compositing_window();	// update the CWD just in case
-
-	/* Close all oppened windows */
-	if (gtk_widget_get_visible(main_window))
-		gtk_widget_hide(main_window);
-	if (gtk_widget_get_visible(rgb_window))
-		gtk_widget_hide(rgb_window);
 
 	update_used_memory();
 }

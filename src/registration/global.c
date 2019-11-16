@@ -29,6 +29,7 @@
 #include "core/proto.h"
 #include "algos/star_finder.h"
 #include "algos/PSF.h"
+#include "gui/image_display.h"
 #include "gui/PSF_list.h"
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"

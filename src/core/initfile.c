@@ -18,28 +18,18 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <errno.h>
 #include <libconfig.h>
 #include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <gio/gio.h>
-#include <glib/gstdio.h>
-#ifdef _WIN32
-#define DATADIR datadir
-/* Constant available since Shell32.dll 4.72 */
-#ifndef CSIDL_APPDATA
-#define CSIDL_APPDATA 0x001a
-#endif
-#endif
 
 #include "core/siril.h"
 #include "core/proto.h"
-#include "core/initfile.h"
+#include "core/siril_app_dirs.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 
-#define CFG_FILE "siril.cfg"
+#include "initfile.h"
+
+#define CONFIG_FILE "siril.config"
 
 static const char *keywords[] = { "working-directory", "libraw-settings",
 		"debayer-settings", "prepro-settings", "registration-settings",
@@ -55,8 +45,9 @@ static int readinitfile() {
 
 	config_init(&config);
 
-	if (config_read_file(&config, com.initfile) == CONFIG_FALSE)
+	if (config_read_file(&config, com.initfile) == CONFIG_FALSE) {
 		return 1;
+	}
 	siril_log_message(_("Loading init file: '%s'\n"), com.initfile);
 
 	/* Keeping the up-scaled files poses a few problems with sequence
@@ -161,8 +152,11 @@ static int readinitfile() {
 		config_setting_lookup_bool(misc_setting, "confirm", &com.dontShowConfirm);
 		config_setting_lookup_int(misc_setting, "theme", &com.combo_theme);
 		config_setting_lookup_bool(misc_setting, "remember_winpos", &com.remember_windows);
+		config_setting_lookup_bool(misc_setting, "is_maximized", &com.is_maximized);
 		config_setting_lookup_string(misc_setting, "swap_directory", &swap_dir);
+		if (swap_dir) com.swap_dir = g_strdup(swap_dir);
 		config_setting_lookup_string(misc_setting, "extension", &extension);
+		if (extension) com.ext = g_strdup(extension);
 
 		misc_setting = config_lookup(&config, "misc-settings.scripts_paths");
 		if (misc_setting != NULL) {
@@ -182,30 +176,6 @@ static int readinitfile() {
 			com.main_w_pos.w = config_setting_get_int_elem(misc_setting, 2);
 			com.main_w_pos.h = config_setting_get_int_elem(misc_setting, 3);
 		}
-
-		misc_setting = config_lookup(&config, "misc-settings.rgb_w_pos");
-		if (misc_setting != NULL) {
-			com.rgb_w_pos.x = config_setting_get_int_elem(misc_setting, 0);
-			com.rgb_w_pos.y = config_setting_get_int_elem(misc_setting, 1);
-			com.rgb_w_pos.w = config_setting_get_int_elem(misc_setting, 2);
-			com.rgb_w_pos.h = config_setting_get_int_elem(misc_setting, 3);
-		}
-
-	}
-	if (swap_dir && swap_dir[0] != '\0') {
-		if (com.swap_dir)
-			g_free(com.swap_dir);
-		com.swap_dir = g_strdup(swap_dir);
-	} else {
-		const char* sw_dir = g_get_tmp_dir();
-		com.swap_dir = g_strdup(sw_dir);
-	}
-	if (extension && extension[0] != '\0') {
-		if (com.ext)
-			free(com.ext);
-		com.ext = strdup(extension);
-	} else {
-		com.ext = strdup(".fit");
 	}
 	com.script_path = list;
 	config_destroy(&config);
@@ -348,12 +318,10 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_group = config_setting_add(root, keywords[MISC], CONFIG_TYPE_GROUP);
 
-	misc_setting = config_setting_add(misc_group, "swap_directory",
-			CONFIG_TYPE_STRING);
+	misc_setting = config_setting_add(misc_group, "swap_directory", CONFIG_TYPE_STRING);
 	config_setting_set_string(misc_setting, com.swap_dir);
 
-	misc_setting = config_setting_add(misc_group, "extension",
-			CONFIG_TYPE_STRING);
+	misc_setting = config_setting_add(misc_group, "extension", CONFIG_TYPE_STRING);
 	config_setting_set_string(misc_setting, com.ext);
 
 	misc_setting = config_setting_add(misc_group, "confirm", CONFIG_TYPE_BOOL);
@@ -362,28 +330,23 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 	misc_setting = config_setting_add(misc_group, "theme", CONFIG_TYPE_INT);
 	config_setting_set_int(misc_setting, com.combo_theme);
 
-	misc_setting = config_setting_add(misc_group, "remember_winpos",
-			CONFIG_TYPE_BOOL);
+	misc_setting = config_setting_add(misc_group, "remember_winpos", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.remember_windows);
 
-	misc_setting = config_setting_add(misc_group, "scripts_paths",
-			CONFIG_TYPE_LIST);
+	misc_setting = config_setting_add(misc_group, "scripts_paths", CONFIG_TYPE_LIST);
 	while (list) {
 		config_setting_set_string_elem(misc_setting, -1, (char *)list->data);
 		list = list->next;
 	}
-	misc_setting = config_setting_add(misc_group, "main_w_pos",
-			CONFIG_TYPE_LIST);
+	misc_setting = config_setting_add(misc_group, "main_w_pos",	CONFIG_TYPE_LIST);
 	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.x);
 	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.y);
 	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.w);
 	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.h);
-	misc_setting = config_setting_add(misc_group, "rgb_w_pos",
-			CONFIG_TYPE_LIST);
-	config_setting_set_int_elem(misc_setting, -1, com.rgb_w_pos.x);
-	config_setting_set_int_elem(misc_setting, -1, com.rgb_w_pos.y);
-	config_setting_set_int_elem(misc_setting, -1, com.rgb_w_pos.w);
-	config_setting_set_int_elem(misc_setting, -1, com.rgb_w_pos.h);
+
+	misc_setting = config_setting_add(misc_group, "is_maximized", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(misc_setting, com.is_maximized);
+
 }
 
 static int siril_config_write_file(config_t *config, const char *filename) {
@@ -423,89 +386,29 @@ int writeinitfile() {
 }
 
 int checkinitfile() {
-	gchar *home = NULL;
-	GStatBuf sts;
-
-	// try to read the file given on command line
+	/* First we try to read the file given on command line */
 	if (com.initfile && !readinitfile()) {
 		return 0;
 	}
-
-	// no file given on command line, set initfile to default location
-#ifdef _WIN32
-	home = g_build_filename (get_special_folder (CSIDL_APPDATA),
-			"siril", NULL);
-	if( g_mkdir_with_parents( home, 1 ) == 0 ) {
-		fprintf( stderr, "Created homefolder %s!\n", home );
-	} else {
-		fprintf( stderr, "Failed to create homefolder %s!\n", com.initfile );
-	}
-#else
-	const gchar *tmp = g_get_home_dir();
-	if (tmp == NULL) {
-		fprintf(stderr,
-				"Could not get the environment variable $HOME, no config file.\n");
-		return 1;
-	}
-	home = g_strdup(tmp);
-#endif
-
-#if (defined(__APPLE__) && defined(__MACH__))
-	fprintf(stderr, "Creating initfile in Application Support.\n");
-	gchar *homefolder;
-	homefolder = g_build_filename(g_get_home_dir(),
-			"Library", "Application Support", "siril", NULL);
-	if (g_mkdir_with_parents(homefolder, 0755) == 0) {
-		com.initfile = g_build_filename(homefolder, CFG_FILE, NULL);
-		fprintf(stderr, "The initfile name is %s.\n", com.initfile);
-	} else {
-		fprintf(stderr, "Failed to create homefolder %s.\n", homefolder);
-	}
-
-#elif defined (_WIN32)
-	com.initfile = g_build_filename(home, CFG_FILE, NULL);
-#else
-	com.initfile = g_new(gchar, strlen(home) + 20);
-	sprintf(com.initfile, "%s/.siril/%s", home, CFG_FILE);
-#endif
-	if (readinitfile()) {	// couldn't read it
-		char filename[255];
-
-		// if that fails, check and create the default ini file
-#if (defined(__APPLE__) && defined(__MACH__))
-		snprintf(filename, 255, "%s", homefolder);
-		g_free(homefolder);
-#elif defined (_WIN32)
-		snprintf(filename, 255, "%s", home);
-#else
-		snprintf(filename, 255, "%s/.siril", home);
-#endif
-		g_free(home);
-		if (g_stat(filename, &sts) != 0) {
-			if (errno == ENOENT) {
-				if (g_mkdir(filename, 0755)) {
-					fprintf(stderr, "Could not create dir %s, please check\n",
-							filename);
-					return 1;
-				}
-				com.swap_dir = g_strdup(g_get_tmp_dir());
-				com.ext = strdup(".fit");
-				return (writeinitfile());
-			}
-		}
-
-		if (!(S_ISDIR(sts.st_mode))) {
-			fprintf(stderr,
-					"There is a file named %s, that is not a directory.\n"
-							"Remove or rename it first\n", filename);
+	/* no file given on command line, set initfile to default location */
+	gchar *pathname = g_build_filename(siril_get_config_dir(), PACKAGE, NULL);
+	gchar *config_file = g_build_filename(pathname, CONFIG_FILE, NULL);
+	if (!g_file_test(config_file, G_FILE_TEST_EXISTS)) {
+		if (g_mkdir(pathname, 0755) == 0) {
+			g_fprintf(stderr, "Created config dir %s\n", pathname);
+		} else {
+			g_fprintf(stderr, "Failed to create config dir %s!\n", pathname);
+			g_free(pathname);
 			return 1;
 		}
-
-		com.swap_dir = g_strdup(g_get_tmp_dir());
-		com.ext = strdup(".fit");
-		return (writeinitfile());
 	}
-	g_free(home);
+	g_free(pathname);
 
+	com.initfile = g_strdup(config_file);
+
+	if (readinitfile()) {
+		/* init file does not exist, so we create it */
+		return writeinitfile();
+	}
 	return 0;
 }

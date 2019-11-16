@@ -22,6 +22,8 @@
 #include "core/proto.h"
 #include "gui/callbacks.h"
 
+#include "about_dialog.h"
+
 static const gchar* copyright = ("Copyright © 2004-2011 François Meyer\n"
 		"Copyright © 2012-2019 team free-astro");
 
@@ -37,7 +39,7 @@ static gchar **artists = (gchar *[] ) { "Maxime Oudoux <max.oudoux@gmail.com>",
 static gchar *translator = N_("Cyril Richard <cyril@free-astro.org>\n"
 		"Vincent Hourdin <vh@free-astro.vinvin.tf>");
 
-void on_about_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void siril_show_about_dialog() {
 	GdkPixbuf *icon;
 	GtkWindow *parent;
 

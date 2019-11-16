@@ -26,6 +26,7 @@
 #include "io/sequence.h"
 #include "io/ser.h"
 #include "gui/progress_and_log.h"
+#include "gui/image_interactions.h"
 #include "gui/callbacks.h" // for delete_selected_area()
 #include "opencv/opencv.h"
 #include <string.h>

@@ -47,6 +47,8 @@
 #include "gui/histogram.h"
 #include "gui/plot.h"
 #include "gui/progress_and_log.h"
+#include "gui/image_display.h"
+#include "gui/image_interactions.h"
 #include "filters/asinh.h"
 #include "filters/banding.h"
 #include "filters/clahe.h"
@@ -1425,8 +1427,6 @@ int process_close(int nb) {
 	close_single_image();
 	close_sequence(FALSE);
 	if (!com.script) {
-		hide_rgb_window();
-		hide_gray_window();
 		update_MenuItem();
 		reset_plot(); // reset all plots
 		close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded

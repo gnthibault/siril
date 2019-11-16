@@ -20,6 +20,8 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/deps/kplot
 
 siril_SOURCES = \
+	core/siril.h \
+	core/proto.h \
 	main.c \
 	algos/background_extraction.c \
 	algos/background_extraction.h \
@@ -72,13 +74,13 @@ siril_SOURCES = \
 	core/preprocess.c \
 	core/preprocess.h \
 	core/processing.c \
-	core/proto.h \
 	core/sequence_filtering.c \
 	core/sequence_filtering.h \
 	core/signals.c \
 	core/signals.h \
 	core/siril.c \
-	core/siril.h \
+	core/siril_app_dirs.c \
+	core/siril_app_dirs.h \
 	core/siril_log.c \
 	core/siril_update.c \
 	core/siril_update.h \
@@ -108,6 +110,7 @@ siril_SOURCES = \
 	filters/wavelets.c \
 	filters/wavelets.h \
 	gui/about_dialog.c \
+	gui/about_dialog.h \
 	gui/callbacks.c \
 	gui/callbacks.h \
 	gui/dialogs.c \
@@ -116,6 +119,10 @@ siril_SOURCES = \
 	gui/gnuplot_i/gnuplot_i.h \
 	gui/histogram.c \
 	gui/histogram.h \
+	gui/image_display.c \
+	gui/image_display.h \
+	gui/image_interactions.c \
+	gui/image_interactions.h \
 	gui/message_dialog.c \
 	gui/message_dialog.h \
 	gui/open_dialog.c \

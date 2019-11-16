@@ -124,9 +124,6 @@ int reget_rawdata(float *Imag, int Nl, int Nc, WORD *buf) {
 	float maximum = FLT_MIN;
 	int i;
 
-	gfit.ry = Nl;
-	gfit.rx = Nc;
-
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static) reduction(min:minimum) reduction(max:maximum)
 #endif
@@ -136,7 +133,6 @@ int reget_rawdata(float *Imag, int Nl, int Nc, WORD *buf) {
 		if (im[i] > maximum)
 			maximum = im[i];
 	}
-	printf("min=%f et max=%f\n", minimum, maximum);
 	float ratio = USHRT_MAX_SINGLE / (maximum - minimum);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static)

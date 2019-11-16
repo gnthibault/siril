@@ -184,7 +184,7 @@ int initialize_script_menu() {
 	gint nb_item = 0;
 
 	if (!menuscript) {
-		menuscript = lookup_widget("menuscript");
+		menuscript = lookup_widget("header_scripts_button");
 	}
 
 	if (!com.script_path) {
@@ -202,7 +202,8 @@ int initialize_script_menu() {
 		if (list) {
 			GSList *l;
 			gtk_widget_show(menuscript);
-			gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuscript), menu);
+//			gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuscript), menu);
+			gtk_menu_button_set_popup(GTK_MENU_BUTTON(menuscript), menu);
 			/* write separator but not for the first one */
 			if (nb_item != 0) {
 				GtkWidget *separator = gtk_separator_menu_item_new();
@@ -246,7 +247,7 @@ void fill_script_paths_list() {
 
 #define GET_SCRIPTS_URL "https://free-astro.org/index.php?title=Siril:scripts"
 
-void on_help_get_scripts_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void siril_get_on_script_pages() {
 	gboolean ret;
 	const char *locale = setlocale(LC_MESSAGES, NULL);
 	const char *supported_languages[] = { "el", "fr", "it", NULL }; // en is NULL: default language

@@ -42,6 +42,7 @@
 #include "algos/PSF.h"
 #include "algos/plateSolver.h"
 #include "algos/star_finder.h"
+#include "gui/image_display.h"
 #include "gui/message_dialog.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"

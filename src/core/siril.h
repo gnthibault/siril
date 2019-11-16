@@ -26,6 +26,8 @@
 #define DEBUG_TEST 0
 #endif
 
+#define GLADE_FILE "siril3.glade"
+
 /* https://stackoverflow.com/questions/1644868/define-macro-for-debug-printing-in-c */
 #define siril_debug_print(fmt, ...) \
    do { if (DEBUG_TEST) fprintf(stdout, fmt, ##__VA_ARGS__); } while (0)
@@ -536,10 +538,10 @@ struct cominf {
 	gboolean show_excluded;		// show excluded images in sequences
 	double zoom_value;		// 1.0 is normal zoom, use get_zoom_val() to access it
 
-	/* positions of all windows */
+	/* state of window */
 	gboolean remember_windows;
 	rectangle main_w_pos;
-	rectangle rgb_w_pos;
+	gboolean is_maximized;
 
 	/* selection rectangle for registration, FWHM, PSF */
 	gboolean drawing;		// true if the rectangle is being set (clicked motion)
@@ -556,7 +558,6 @@ struct cominf {
 
 	gchar *wd;			// working directory, where images and sequences are
 	gchar *initfile;	// the path of the init file
-	gchar *app_path;	// the path of the application
 	
 	char *ext;		// FITS extension used in SIRIL
 
@@ -564,9 +565,7 @@ struct cominf {
 	
 	gboolean dontShowConfirm;
 
-	gboolean have_dark_theme;	// global theme is dark
 	gint combo_theme;           // value of the combobox theme
-	gboolean want_dark;			// User want dark theme for siril
 
 	stackconf stack;
 

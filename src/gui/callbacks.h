@@ -11,7 +11,6 @@ GtkWidget *popover_new(GtkWidget *widget, const gchar *text);
 void initialize_all_GUI(gchar *files);
 void load_prefered_theme();
 void fill_about_dialog();
-void initialize_remap();
 void set_cutoff_sliders_max_values();		// was set_upper_minmax
 void set_cutoff_sliders_values();		// was set_ranges
 void set_sliders_value_to_gfit();
@@ -26,8 +25,6 @@ void set_GUI_DiskSpace(int64_t mem);
 void set_GUI_misc();
 void set_icon_entry(GtkEntry *entry, gchar *string);
 void update_MenuItem();
-void queue_redraw(int doremap);
-gboolean redraw(int vport, int remap);
 void sliders_mode_set_state(sliders_mode);
 int copy_rendering_settings_when_chained(gboolean from_GUI);
 
@@ -36,11 +33,6 @@ void set_libraw_settings_menu_available(gboolean);
 void clear_sampling_setting_box();
 void set_GUI_CAMERA();
 void set_GUI_photometry();
-
-typedef void (*selection_update_callback)();
-void register_selection_update_callback(selection_update_callback f);
-void unregister_selection_update_callback(selection_update_callback f);
-void delete_selected_area();
 
 int match_drawing_area_widget(GtkWidget *drawing_area, gboolean allow_rgb);
 char *vport_number_to_name(int);
@@ -52,10 +44,6 @@ void display_image_number(int index);
 void show_dialog(const char *text, const char *title, const char *icon);
 void show_txt_and_data_dialog(const char *text, const char *data, const char *title, const char *icon);
 void show_data_dialog(char *text, char *title);
-void show_main_gray_window();
-void show_rgb_window();
-void hide_rgb_window();
-void hide_gray_window();
 GtkWindow *siril_get_active_window();
 
 void adjust_vport_size_to_image();
@@ -72,7 +60,13 @@ void update_statusbar_convert();
 
 void update_spinCPU(int max);
 
-void save_all_windows_position();
+void save_main_window_state();
+void load_main_window_state();
+void siril_quit();
+
+/* for image_display */
+void test_and_allocate_reference_image(int vport);
+void set_viewer_mode_widgets_sensitive(gboolean sensitive);
 
 /*****************************************************************************
 *      P U B L I C      C A L L B A C K      F U N C T I O N S               *
@@ -98,6 +92,5 @@ void on_checkbutton_cam_toggled(GtkButton *button, gpointer user_data);
 void on_checkbutton_auto_toggled(GtkButton *button, gpointer user_data);
 
 gboolean on_drawingarea_key_press_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data);
-
 
 #endif

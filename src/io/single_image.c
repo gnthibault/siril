@@ -27,6 +27,8 @@
 #include "core/proto.h"
 #include "algos/statistics.h"
 #include "algos/background_extraction.h"
+#include "gui/image_interactions.h"
+#include "gui/image_display.h"
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"
 #include "gui/message_dialog.h"
@@ -232,13 +234,7 @@ void open_single_image_from_gfit() {
 	/* update menus */
 	update_MenuItem();
 
-	show_main_gray_window();
 	close_tab();
-	if (gfit.naxes[2] == 3) {
-		show_rgb_window();
-	} else {
-		hide_rgb_window();
-	}
 	update_gfit_histogram_if_needed();
 	adjust_vport_size_to_image();
 	redraw(com.cvport, REMAP_ALL);
