@@ -21,6 +21,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/image_display.h"
 #include "gui/progress_and_log.h"
 #include "io/sequence.h"
 #include "algos/PSF.h"
@@ -99,7 +100,7 @@ void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 			fwhm = seq->regparam[layer][index].quality;
 	}
 
-	color = com.want_dark ? 1 : 0;
+	color = (com.combo_theme == 0) ? 1 : 0;
 
 	basename = g_path_get_basename(seq_get_image_filename(seq, index, imname));
 	gtk_list_store_append (list_store, &iter);
@@ -158,7 +159,7 @@ void show_seqlist(GtkWidget *widget, gboolean show) {
 	static gboolean was_extended = FALSE;
 	if (!was_extended) {
 		gint w, h;
-		GtkWindow *window = GTK_WINDOW(lookup_widget("main_window"));
+		GtkWindow *window = GTK_WINDOW(lookup_widget("control_window"));
 		gtk_window_get_size(window, &w, &h);
 		gtk_window_resize(window, w+200, h);
 		was_extended = TRUE;
@@ -276,7 +277,7 @@ void sequence_list_change_reference() {
 	gint row_count = 0;
 	int color;
 
-	color = (com.have_dark_theme || com.combo_theme == 1) ? 1 : 0;
+	color = (com.combo_theme == 0) ? 1 : 0;
 
 	get_list_store();
 	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store), &iter);

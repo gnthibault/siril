@@ -43,7 +43,7 @@ static const SirilDialogEntry entries[] =
 		{"extract_channel_dialog", OTHER_DIALOG, FALSE, NULL},
 		{"extract_wavelets_layers_dialog", OTHER_DIALOG, FALSE, NULL},
 		{"file_information", INFORMATION_DIALOG, FALSE, NULL},
-		{"histogram_window", IMAGE_PROCESSING_DIALOG, TRUE, apply_histo_cancel},
+		{"histogram_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_histo_cancel},
 		{"ImagePlateSolver_Dial", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"Median_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"resample_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
@@ -94,7 +94,7 @@ void siril_open_dialog(gchar *id) {
 	} else {
 		gtk_window_set_position (win, GTK_WIN_POS_CENTER_ON_PARENT);
 	}
-	gtk_window_set_transient_for(win, GTK_WINDOW(lookup_widget("main_window")));
+	gtk_window_set_transient_for(win, GTK_WINDOW(lookup_widget("control_window")));
 	gtk_window_present_with_time(win, GDK_CURRENT_TIME);
 }
 

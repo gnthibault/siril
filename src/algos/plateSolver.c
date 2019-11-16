@@ -1277,7 +1277,7 @@ void on_GtkEntry_IPS_insert_text(GtkEntry *entry, const gchar *text, gint length
 	g_free(result);
 }
 
-void on_menuitem_IPS_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void on_info_menu_astrometry_clicked(GtkButton *button, gpointer user_data) {
 	initialize_ips_dialog();
 	siril_open_dialog("ImagePlateSolver_Dial");
 }

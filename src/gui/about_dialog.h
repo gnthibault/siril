@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2015 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2019 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -17,25 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SRC_CORE_SIRIL_UPDATE_H_
-#define SRC_CORE_SIRIL_UPDATE_H_
+#ifndef SRC_GUI_ABOUT_DIALOG_H_
+#define SRC_GUI_ABOUT_DIALOG_H_
 
-#ifdef HAVE_LIBCURL
+void siril_show_about_dialog();
 
-typedef struct {
-	gint major_version;
-	gint minor_version;
-	gint micro_version;
-	gint patched_version;
-} version_number;
-
-struct _update_data {
-	gchar *url;
-	long code;
-	gchar *content;
-};
-
-void siril_check_updates();
-
-#endif /* HAVE_LIBCURL */
-#endif /* SRC_CORE_SIRIL_UPDATE_H_ */
+#endif /* SRC_GUI_ABOUT_DIALOG_H_ */

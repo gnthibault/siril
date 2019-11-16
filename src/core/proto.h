@@ -100,7 +100,6 @@ int	is_readable_file(const char *filename);
 int	stat_file(const char *filename2, image_type *type, char **realname);
 const char *get_filename_ext(const char *filename);
 
-gchar *siril_get_startup_dir();
 int	changedir(const char *dir, gchar **err);
 gchar *get_locale_filename(const gchar *path);
 int	update_sequences_list(const char *sequence_name_to_select);
@@ -124,6 +123,7 @@ int	get_available_memory_in_MB();
 int	get_max_memory_in_MB();
 #ifdef _WIN32
 gchar *get_special_folder(int csidl);
+int ReconnectIO(int OpenNewConsole);
 #endif
 SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction action);
 SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction action);

@@ -27,6 +27,8 @@
 #include "io/single_image.h"
 #include "io/sequence.h"
 #include "gui/callbacks.h"
+#include "gui/image_display.h"
+#include "gui/image_interactions.h"
 #include "gui/dialogs.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
@@ -461,9 +463,6 @@ void on_Stars_stored_key_release_event(GtkWidget *widget, GdkEventKey *event,
 }
 
 void on_stars_list_window_hide(GtkWidget *object, gpointer user_data) {
-	GtkCheckMenuItem *PSFcheck = GTK_CHECK_MENU_ITEM(
-			gtk_builder_get_object(builder, "menuitemPSF"));
-	gtk_check_menu_item_set_active(PSFcheck, FALSE);
 	com.selected_star = -1;
 }
 
@@ -479,11 +478,8 @@ void on_remove_all_button_clicked(GtkButton *button, gpointer user_data) {
 	remove_all_stars();
 }
 
-void on_menuitemPSF_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_data) {
-	if (gtk_check_menu_item_get_active(checkmenuitem))
+void on_info_menu_dynamic_psf_clicked(GtkButton *button, gpointer user_data) {
 		siril_open_dialog("stars_list_window");
-	else
-		siril_close_dialog("stars_list_window");
 }
 
 void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data) {

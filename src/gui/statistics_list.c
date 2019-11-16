@@ -96,7 +96,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 		sprintf(bvalue, "--");
 	}
 
-	color = com.want_dark ? 1 : 0;
+	color = (com.combo_theme == 0) ? 1 : 0;
 
 	gtk_list_store_append(list_store, &iter);
 	gtk_list_store_set(list_store, &iter, COLUMN_NAME, _(statName[0]),

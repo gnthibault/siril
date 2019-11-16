@@ -54,6 +54,7 @@
 #include "avi_pipp/avi_writer.h"
 #include "single_image.h"
 #include "gui/histogram.h"
+#include "gui/image_display.h"
 #include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"	// clear_stars_list
 #include "algos/PSF.h"
@@ -453,9 +454,6 @@ int set_seq(const char *name){
 	close_sequence(TRUE);
 	memcpy(&com.seq, seq, sizeof(sequence));
 
-	if (seq->nb_layers > 1)
-		show_rgb_window();
-	else hide_rgb_window();
 	init_layers_hi_and_lo_values(MIPSLOHI); // set some hi and lo values in seq->layers,
 	set_cutoff_sliders_max_values();// update min and max values for contrast sliders
 	set_cutoff_sliders_values();	// update values for contrast sliders for this image
@@ -488,7 +486,7 @@ int set_seq(const char *name){
 	set_GUI_photometry();
 
 	/* redraw and display image */
-	show_main_gray_window();
+//	show_main_gray_window();
 	close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
 	adjust_vport_size_to_image();	// resize viewports to the displayed image size
 	redraw(com.cvport, REMAP_ALL);

@@ -37,6 +37,7 @@
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "gui/callbacks.h"
+#include "gui/image_display.h"
 #include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"
 #include "gui/histogram.h"	// update_gfit_histogram_if_needed();

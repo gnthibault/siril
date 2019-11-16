@@ -34,6 +34,9 @@
 #include <psapi.h>
 #include <direct.h>
 #include <shlobj.h>
+#include <tchar.h>
+#include <io.h>
+#include <fcntl.h>
 #else
 #include <sys/resource.h>
 #endif
@@ -431,13 +434,24 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 }
 
 SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction action) {
+	gchar *title;
+	GtkWidget *w;
+	if (action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER) {
+		title = g_strdup(_("Select Folder"));
+	} else {
+		title = g_strdup(_("Open File"));
+	}
 #if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
-	return gtk_file_chooser_native_new(_("Open File"), parent, action,
+	w = gtk_file_chooser_native_new(title, parent, action,
 			_("_Open"), _("_Cancel"));
+	g_free(title);
+	return w;
 #else
-	return gtk_file_chooser_dialog_new(_("Open File"), parent, action,
-				_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT,
-				NULL);
+	w = gtk_file_chooser_dialog_new(title, parent, action,
+			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT,
+			NULL);
+	g_free(title);
+	return w;
 #endif
 }
 
@@ -478,3 +492,46 @@ void siril_widget_destroy(SirilWidget *widgetdialog) {
 	gtk_widget_destroy(widgetdialog);
 #endif
 }
+
+#ifdef _WIN32
+/* origin of sources: https://stackoverflow.com/questions/24171017/win32-console-application-that-can-open-windows */
+int ReconnectIO(int OpenNewConsole) {
+	int hConHandle;
+	HANDLE lStdHandle;
+	FILE *fp;
+	int MadeConsole;
+
+	MadeConsole = 0;
+	if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
+		if (!OpenNewConsole)
+			return 0;
+
+		MadeConsole = 1;
+		if (!AllocConsole())
+			return 0;
+	}
+
+	// STDOUT to the console
+	lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	hConHandle = _open_osfhandle((intptr_t) lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "w");
+	*stdout = *fp;
+	setvbuf( stdout, NULL, _IONBF, 0);
+
+	// STDIN to the console
+	lStdHandle = GetStdHandle(STD_INPUT_HANDLE);
+	hConHandle = _open_osfhandle((intptr_t) lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "r");
+	*stdin = *fp;
+	setvbuf( stdin, NULL, _IONBF, 0);
+
+	// STDERR to the console
+	lStdHandle = GetStdHandle(STD_ERROR_HANDLE);
+	hConHandle = _open_osfhandle((intptr_t) lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "w");
+	*stderr = *fp;
+	setvbuf(stderr, NULL, _IONBF, 0);
+
+	return MadeConsole;
+}
+#endif

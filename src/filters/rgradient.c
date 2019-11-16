@@ -24,6 +24,7 @@
 #include "core/processing.h"
 #include "core/undo.h"
 #include "algos/statistics.h"
+#include "gui/image_display.h"
 #include "gui/histogram.h"
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"

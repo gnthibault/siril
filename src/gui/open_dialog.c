@@ -33,10 +33,11 @@
 #include "io/films.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
-#include "open_dialog.h"
 #include "callbacks.h"
 #include "progress_and_log.h"
 #include "message_dialog.h"
+
+#include "open_dialog.h"
 
 static void gtk_filter_add(GtkFileChooser *file_chooser, const gchar *title,
 		const gchar *pattern, gboolean set_default) {
@@ -316,7 +317,7 @@ void on_darkfile_button_clicked(GtkButton *button, gpointer user_data) {
 	opendial(OD_DARK);
 }
 
-void on_cwd_btton_clicked(GtkButton *button, gpointer user_data) {
+void on_cwd_btton_clicked() {
 	opendial(OD_CWD);
 }
 
@@ -328,7 +329,7 @@ void on_flatfile_button_clicked(GtkButton *button, gpointer user_data) {
 	opendial(OD_FLAT);
 }
 
-void on_open1_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void on_header_open_button_clicked() {
 	opendial(OD_OPEN);
 }
 

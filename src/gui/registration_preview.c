@@ -22,9 +22,8 @@
 #include "core/proto.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "gui/image_interactions.h"
 #include "registration/registration.h"
-
-mouse_status_enum mouse_status;
 
 gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	int current_preview, shiftx = 0, shifty = 0;

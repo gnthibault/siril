@@ -36,6 +36,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_app_dirs.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
 #include "gui/callbacks.h"
@@ -265,34 +266,6 @@ int stat_file(const char *filename, image_type *type, char **realname) {
 		}
 	}
 	return 1;
-}
-
-static GUserDirectory sdir[] = { G_USER_DIRECTORY_PICTURES,
-		G_USER_DIRECTORY_DOCUMENTS };
-/** This function tries to set a startup directory. It first looks at the "Pictures" directory,
- *  then if it does not exist, the "Document" one, Finally, if it fails on some UNIX systems
- *  the dir is set to the home directory.
- *  @return a working directory path if success, NULL if error
- */
-gchar *siril_get_startup_dir() {
-	const gchar *dir = NULL;
-	gchar *startup_dir = NULL;
-	gint i = 0;
-	size_t size;
-
-	size = sizeof(sdir) / sizeof(GUserDirectory);
-
-	while (dir == NULL && i < size) {
-		dir = g_get_user_special_dir(sdir[i]);
-		i++;
-	}
-	/* Not every platform has a directory for these logical id */
-	if (dir == NULL) {
-		dir = g_get_home_dir();
-	}
-	if (dir)
-		startup_dir = g_strdup(dir);
-	return startup_dir;
 }
 
 /** Try to change the CWD to the argument, absolute or relative.
@@ -639,7 +612,7 @@ void load_css_style_sheet () {
 		exit(1);
 	}
 
-	CSSFile = g_build_filename (com.app_path, css_filename, NULL);
+	CSSFile = g_build_filename(siril_get_system_data_dir(), css_filename, NULL);
 	if (!g_file_test (CSSFile, G_FILE_TEST_EXISTS)) {
 		g_error (_("Unable to load CSS style sheet file: %s. Please reinstall Siril\n"), CSSFile);
 	}
@@ -651,8 +624,8 @@ void load_css_style_sheet () {
 				GTK_STYLE_PROVIDER(css_provider),
 				GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		gtk_css_provider_load_from_path(css_provider, CSSFile, NULL);
-		fprintf(stdout, _("Successfully loaded '%s'\n"), CSSFile);
-		g_object_unref (css_provider);
+		g_fprintf(stdout, _("Successfully loaded '%s'\n"), CSSFile);
+		g_object_unref(css_provider);
 	}
 	g_free(CSSFile);
 }

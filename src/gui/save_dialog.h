@@ -16,4 +16,6 @@ enum {
 	PAGE_TIFF, PAGE_JPG, PAGE_FITS, PAGE_MISC
 } confirm;
 
+void on_header_save_button_clicked();
+
 #endif /* SRC_GUI_SAVE_DIALOG_H_ */

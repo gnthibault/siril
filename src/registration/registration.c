@@ -33,6 +33,8 @@
 
 #include "core/siril.h"
 #include "gui/callbacks.h"
+#include "gui/image_display.h"
+#include "gui/image_interactions.h"
 #include "gui/message_dialog.h"
 #include "gui/plot.h"
 #include "gui/progress_and_log.h"

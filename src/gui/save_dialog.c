@@ -27,10 +27,11 @@
 #include "core/processing.h"
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
-#include "gui/save_dialog.h"
 #include "gui/message_dialog.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
+
+#include "save_dialog.h"
 
 
 static image_type whichminisave = TYPEUNDEF;
@@ -429,7 +430,6 @@ void on_menu_rgb_savefits_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		}
 		whichminisave = TYPEFITS;
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving FITS"));
-		gtk_window_set_transient_for (GTK_WINDOW(savepopup), GTK_WINDOW(lookup_widget("rgb_window")));
 		gtk_notebook_set_current_page(notebookFormat, PAGE_FITS);
 		gtk_widget_set_visible(savetxt, TRUE);
 		gtk_widget_show(savepopup);
@@ -453,7 +453,6 @@ void on_menu_rgb_savetiff_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		set_programm_name_in_TIFF(); //Write "Siril Version X.Y in Copyright_Txt
 		set_description_in_TIFF();
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving TIFF"));
-		gtk_window_set_transient_for (GTK_WINDOW(savepopup), GTK_WINDOW(lookup_widget("rgb_window")));
 		gtk_notebook_set_current_page(notebookFormat, PAGE_TIFF);
 		gtk_widget_set_visible(savetxt, TRUE);
 		gtk_widget_show(savepopup);
@@ -475,7 +474,6 @@ void on_menu_rgb_savepng_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded() || sequence_is_loaded()) {
 		whichminisave = TYPEPNG;
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving PNG"));
-		gtk_window_set_transient_for (GTK_WINDOW(savepopup), GTK_WINDOW(lookup_widget("rgb_window")));
 		gtk_notebook_set_current_page(notebookFormat, PAGE_MISC);
 		gtk_widget_set_visible(savetxt, TRUE);
 		gtk_widget_show(savepopup);
@@ -496,7 +494,6 @@ void on_menu_rgb_save8ppm_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded() || sequence_is_loaded()) {
 		whichminisave = TYPEPNM;
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving Netpbm"));
-		gtk_window_set_transient_for (GTK_WINDOW(savepopup), GTK_WINDOW(lookup_widget("rgb_window")));
 		gtk_notebook_set_current_page(notebookFormat, PAGE_MISC);
 		gtk_widget_set_visible(savetxt, TRUE);
 		gtk_widget_show(savepopup);
@@ -517,7 +514,6 @@ void on_menu_rgb_savebmp_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (single_image_is_loaded() || sequence_is_loaded()) {
 		whichminisave = TYPEBMP;
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving BMP"));
-		gtk_window_set_transient_for (GTK_WINDOW(savepopup), GTK_WINDOW(lookup_widget("rgb_window")));
 		gtk_notebook_set_current_page(notebookFormat, PAGE_MISC);
 		gtk_widget_set_visible(savetxt, TRUE);
 		gtk_widget_show(savepopup);
@@ -537,7 +533,6 @@ void on_menu_rgb_savejpg_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 	if (single_image_is_loaded() || sequence_is_loaded()) {
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving JPG"));
-		gtk_window_set_transient_for (GTK_WINDOW(savepopup), GTK_WINDOW(lookup_widget("rgb_window")));
 		if (sequence_is_loaded() && !single_image_is_loaded()) {
 			char filename[256];
 			/* set the output file name default as the current image.jpg */
@@ -580,7 +575,7 @@ void on_button_cancelpopup_clicked(GtkButton *button, gpointer user_data) {
 	gtk_widget_hide(lookup_widget("savepopup"));
 }
 
-void on_save1_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void on_header_save_button_clicked() {
 	GtkWidget *savepopup = lookup_widget("savepopup");
 
 	if (save_dialog() == GTK_RESPONSE_ACCEPT) {

@@ -182,7 +182,7 @@ gpointer noise(gpointer p) {
 }
 
 
-void on_menuitem_noise_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void on_info_menu_noise_estimation_clicked(GtkButton *button, gpointer user_data) {
 	if (get_thread_run()) {
 		siril_log_message(
 				_("Another task is already in progress, ignoring new request.\n"));

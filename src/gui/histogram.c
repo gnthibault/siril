@@ -26,8 +26,10 @@
 #include <float.h>
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_app_dirs.h"
 #include "algos/statistics.h"
 #include "io/single_image.h"
+#include "gui/image_display.h"
 #include "gui/histogram.h"
 #include "gui/callbacks.h"	// for lookup_widget()
 #include "gui/progress_and_log.h"
@@ -181,7 +183,7 @@ static void _update_clipped_pixels(int data) {
 }
 
 static int is_histogram_visible() {
-	GtkWidget *window = lookup_widget("histogram_window");
+	GtkWidget *window = lookup_widget("histogram_dialog");
 	return gtk_widget_get_visible(window);
 }
 
@@ -206,11 +208,11 @@ static void set_histo_toggles_names() {
 	if (gfit.naxis == 2) {
 		gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), _("Gray channel"));
 		GtkWidget *w;
-		if (com.want_dark) {
-			image = g_build_filename(com.app_path, "pixmaps", "monochrome_dark.png", NULL);
+		if (com.combo_theme == 0) {
+			image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "monochrome_dark.png", NULL);
 			w = gtk_image_new_from_file(image);
 		} else {
-			image = g_build_filename(com.app_path, "pixmaps", "monochrome.png", NULL);
+			image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "monochrome.png", NULL);
 			w = gtk_image_new_from_file(image);
 		}
 		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggles[0]), w);
@@ -227,7 +229,7 @@ static void set_histo_toggles_names() {
 			gtk_widget_set_visible(GTK_WIDGET(toggles[3]), FALSE);
 
 	} else {
-		image = g_build_filename(com.app_path, "pixmaps", "r.png", NULL);
+		image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "r.png", NULL);
 		gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), _("Red channel"));
 		GtkWidget *w = gtk_image_new_from_file(image);
 		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggles[0]), w);
@@ -427,6 +429,7 @@ static void display_scale(cairo_t *cr, int width, int height) {
 
 static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int width,
 		int height, double zoomH, double zoomV) {
+	if (width <= 0) return;
 	int current_bin;
 	size_t norm = gsl_histogram_bins(histo) - 1;
 
@@ -434,17 +437,17 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 	size_t i, nb_orig_bins = gsl_histogram_bins(histo);
 
 	// We need to store the binned histogram in order to find the binned maximum
-	static double *displayed_values = NULL;
+	static gdouble *displayed_values = NULL;
 	static int nb_bins_allocated = 0;
 	/* we create a bin for each pixel in the displayed width.
 	 * nb_bins_allocated is thus equal to the width of the image */
 	if (nb_bins_allocated != width) {
-		double *tmp;
+		gdouble *tmp;
 		nb_bins_allocated = width;
-		tmp = realloc(displayed_values, nb_bins_allocated * sizeof(double));
+		tmp = realloc(displayed_values, nb_bins_allocated * sizeof(gdouble));
 		if (!tmp) {
-			if (displayed_values) {
-				free(displayed_values);
+			if (displayed_values != NULL) {
+				g_free(displayed_values);
 				displayed_values = NULL;
 			}
 			PRINT_ALLOC_ERR;
@@ -454,7 +457,6 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 		displayed_values = tmp;
 		memset(displayed_values, 0, nb_bins_allocated);
 	}
-	assert(displayed_values);
 
 	if (gfit.naxis == 2)
 		cairo_set_source_rgb(cr, 255.0, 255.0, 255.0);
@@ -775,7 +777,7 @@ void on_button_histo_close_clicked(GtkButton *button, gpointer user_data) {
 	reset_cursors_and_values();
 	histo_close(TRUE);
 	set_cursor_waiting(FALSE);
-	siril_close_dialog("histogram_window");
+	siril_close_dialog("histogram_dialog");
 }
 
 void on_button_histo_reset_clicked(GtkButton *button, gpointer user_data) {
@@ -856,13 +858,13 @@ void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) 
 void on_menuitem_histo_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 
-	siril_open_dialog("histogram_window");
+	siril_open_dialog("histogram_dialog");
 	set_cursor_waiting(FALSE);
 }
 
 void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_data) {
-	if (gtk_widget_get_visible(lookup_widget("histogram_window")))
-		siril_close_dialog("histogram_window");
+	if (gtk_widget_get_visible(lookup_widget("histogram_dialog")))
+		siril_close_dialog("histogram_dialog");
 	else {
 		on_menuitem_histo_activate(NULL, NULL);
 	}

@@ -25,6 +25,8 @@
 #include "core/undo.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
+#include "gui/image_display.h"
+#include "gui/image_interactions.h"
 #include "gui/PSF_list.h"
 #include "gui/dialogs.h"
 #include "opencv/opencv.h"
@@ -80,25 +82,25 @@ static void fits_rotate_pi(fits *fit) {
 }
 
 static void mirrorx_gui(fits *fit) {
-		if (confirm_delete_wcs_keywords(fit)) {
-			set_cursor_waiting(TRUE);
-			undo_save_state(&gfit, "Processing: Mirror X");
-			mirrorx(fit, TRUE);
-			redraw(com.cvport, REMAP_ALL);
-			redraw_previews();
-			set_cursor_waiting(FALSE);
-		}
+	if (confirm_delete_wcs_keywords(fit)) {
+		set_cursor_waiting(TRUE);
+		undo_save_state(&gfit, "Processing: Mirror X");
+		mirrorx(fit, TRUE);
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+		set_cursor_waiting(FALSE);
+	}
 }
 
 static void mirrory_gui(fits *fit) {
-		if (confirm_delete_wcs_keywords(fit)) {
-			set_cursor_waiting(TRUE);
-			undo_save_state(&gfit, "Processing: Mirror Y");
-			mirrory(fit, TRUE);
-			redraw(com.cvport, REMAP_ALL);
-			redraw_previews();
-			set_cursor_waiting(FALSE);
-		}
+	if (confirm_delete_wcs_keywords(fit)) {
+		set_cursor_waiting(TRUE);
+		undo_save_state(&gfit, "Processing: Mirror Y");
+		mirrory(fit, TRUE);
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+		set_cursor_waiting(FALSE);
+	}
 }
 
 static void rotate_gui(fits *fit) {

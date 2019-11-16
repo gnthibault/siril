@@ -27,6 +27,7 @@
 #include "core/processing.h"
 #include "algos/colors.h"
 #include "opencv/opencv.h"
+#include "gui/image_display.h"
 #include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
