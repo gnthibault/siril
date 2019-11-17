@@ -8,6 +8,11 @@ m4_define([siril_version],
 m4_define([siril_version_full],
           [siril_major_version().siril_minor_version().siril_micro_version()m4_bpatsubst(siril_prerelease_version(), [^], [-])])
 
+m4_define([siril_unstable],
+          m4_if(m4_eval(siril_minor_version % 2), [1], [yes], [no]))
+m4_define([siril_stable],
+          m4_if(m4_eval(siril_minor_version % 2), [0], [yes], [no]))
+
 dnl change siril_version_full by siril_version for stable release
 dnl AC_INIT([siril], [siril_version_full],
 AC_INIT([siril], [siril_version],
@@ -20,11 +25,14 @@ AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_MACRO_DIR([m4])
 
+SIRIL_UNSTABLE=siril_unstable
+
 dnl ================================================================
 dnl Gettext stuff.
 dnl ================================================================
 IT_PROG_INTLTOOL([0.50])
 AC_SUBST([GETTEXT_PACKAGE], [siril])
+AC_SUBST(SIRIL_UNSTABLE)
 
 remember_set_CFLAGS="$CFLAGS"
 
@@ -46,6 +54,12 @@ fi
 
 CFLAGS="$CFLAGS $OPENMP_CFLAGS"
 CXXFLAGS="$CFLAGS"
+
+if test "x$SIRIL_UNSTABLE" = "xyes"; then
+  AC_DEFINE(SIRIL_UNSTABLE, 1,
+            [Define to 1 if this is an unstable version of Siril])
+fi
+AM_CONDITIONAL(SIRIL_UNSTABLE, test "x$SIRIL_UNSTABLE" = "xyes")
 
 dnl Set PACKAGE_SOURCE_DIR in config.h.
 packagesrcdir=`cd $srcdir && pwd`

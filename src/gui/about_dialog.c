@@ -21,11 +21,12 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "git-version.h"
 
 #include "about_dialog.h"
 
-static const gchar* copyright = ("Copyright © 2004-2011 François Meyer\n"
-		"Copyright © 2012-2019 team free-astro");
+//static const gchar* copyright = ("Copyright © 2004-2011 François Meyer\n"
+//		"Copyright © 2012-2019 team free-astro");
 
 static gchar **authors = (gchar *[] ) { "Vincent Hourdin <vh@free-astro.vinvin.tf>",
 				"Cyril Richard <cyril@free-astro.org>", "François Meyer", NULL };
@@ -42,6 +43,10 @@ static gchar *translator = N_("Cyril Richard <cyril@free-astro.org>\n"
 void siril_show_about_dialog() {
 	GdkPixbuf *icon;
 	GtkWindow *parent;
+	gchar *copyright;
+
+	copyright = g_strdup_printf("Copyright © 2004-2011 François Meyer\n"
+			"Copyright © 2012-%s team free-astro", SIRIL_GIT_LAST_COMMIT_YEAR);
 
 	parent = GTK_WINDOW(lookup_widget("control_window"));
 	icon = gtk_image_get_pixbuf(GTK_IMAGE(lookup_widget("pixmap1")));
@@ -60,4 +65,5 @@ void siril_show_about_dialog() {
 			"website-label", _("Visit the Siril website"),
 			"license-type", GTK_LICENSE_GPL_3_0,
 			NULL);
+	g_free(copyright);
 }

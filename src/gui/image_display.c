@@ -31,6 +31,7 @@
 #include "image_display.h"
 #include "callbacks.h"
 #include "histogram.h"
+#include "git-version.h"
 
 /* remap index data, an index for each layer */
 static BYTE *remap_index[MAXGRAYVPORT];
@@ -103,6 +104,50 @@ static void draw_empty_image(cairo_t *cr, guint width, guint height) {
 	cairo_paint(cr);
 	cairo_fill(cr);
 
+#ifdef SIRIL_UNSTABLE
+	{
+		GtkWidget *widget = lookup_widget("drawingareargb");
+		GtkStyleContext *context = gtk_widget_get_style_context(widget);
+		GtkStateFlags state = gtk_widget_get_state_flags(widget);
+		PangoLayout *layout;
+		gchar *msg;
+		GtkAllocation allocation;
+		gint width;
+		gint height;
+		gdouble scale;
+		GdkRGBA color;
+
+		layout = gtk_widget_create_pango_layout(widget, NULL);
+
+		msg = g_strdup_printf(_("<big>Unstable Development Version</big>\n\n"
+				"<small>commit <tt>%s</tt></small>\n\n"
+				"<small>Please test bugs against "
+				"latest git master branch\n"
+				"before reporting them.</small>"),
+				SIRIL_GIT_VERSION_ABBREV);
+		pango_layout_set_markup(layout, msg, -1);
+		g_free(msg);
+		pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
+
+		pango_layout_get_pixel_size(layout, &width, &height);
+		gtk_widget_get_allocation(widget, &allocation);
+
+		scale = MIN(((gdouble ) allocation.width / 2.0) / (gdouble ) width,
+				((gdouble ) allocation.height / 2.0) / (gdouble ) height);
+
+		gtk_style_context_get_color(context, state, &color);
+		gdk_cairo_set_source_rgba(cr, &color);
+
+		cairo_move_to(cr, (allocation.width - (width * scale)) / 2,
+				(allocation.height - (height * scale)) / 2 - pix_h);
+
+		cairo_scale(cr, scale, scale);
+
+		pango_cairo_show_layout(cr, layout);
+
+		g_object_unref(layout);
+	}
+#endif /* SIRIL_UNSTABLE */
 	g_free(image);
 	if (pix != NULL) {
 		g_object_unref(pix);
