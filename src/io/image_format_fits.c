@@ -865,6 +865,12 @@ static void save_fits_header(fits *fit) {
 	}
 }
 
+static int read_data_cube(fits *fit) {
+	if (fit->naxis == 3) fit->naxes[2] = 3;
+
+	return 0;
+}
+
 /********************** public functions ************************************/
 
 double get_exposure_from_fitsfile(fitsfile *fptr) {
@@ -961,14 +967,8 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	nbdata = fit->rx * fit->ry;
 
 	if (fit->naxis == 3 && fit->naxes[2] != 3) {
-		siril_log_message(_("Unsupported FITS image with %ld channels.\n"),
-				fit->naxes[2]);
-		status = 0;
-		fits_close_file(fit->fptr, &status);
-		return -1;
+		read_data_cube(fit);
 	}
-	// comment the above if and uncomment below for tests with 4 channels or more
-	//if (fit->naxis == 3) fit->naxes[2] = 3;
 
 	if (fit->naxis == 2 && fit->naxes[2] == 0) {
 		fit->naxes[2] = 1;

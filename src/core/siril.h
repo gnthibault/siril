@@ -117,7 +117,7 @@ typedef enum {
 	TYPEAVI = (1 << 10),
 	TYPESER = (1 << 11),
 	TYPEMP4 = (1 << 12),
-	TYPEWEBM = (1 << 13),
+	TYPEWEBM = (1 << 13)
 } image_type;
 
 /* indices of the image data layers */
@@ -275,7 +275,7 @@ struct layer_info_struct {
 	display_mode rendering_mode;	// defaults to NORMAL_DISPLAY
 };
 
-typedef enum { SEQ_REGULAR, SEQ_SER,
+typedef enum { SEQ_REGULAR, SEQ_SER, SEQ_CUBE,
 #ifdef HAVE_FFMS2
 	SEQ_AVI,
 #endif

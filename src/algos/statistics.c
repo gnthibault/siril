@@ -40,6 +40,7 @@
 #include <gsl/gsl_statistics.h>
 #include "core/siril.h"
 #include "core/proto.h"
+#include "gui/dialogs.h"
 #include "sorting.h"
 #include "statistics.h"
 
@@ -637,4 +638,11 @@ void clear_stats(sequence *seq, int layer) {
 			}
 		}
 	}
+}
+
+/**** callbacks *****/
+
+void on_menu_gray_stat_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	computeStat();
+	siril_open_dialog("StatWindow");
 }

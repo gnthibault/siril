@@ -112,8 +112,6 @@ static void draw_empty_image(cairo_t *cr, guint width, guint height) {
 		PangoLayout *layout;
 		gchar *msg;
 		GtkAllocation allocation;
-		gint width;
-		gint height;
 		gdouble scale;
 		GdkRGBA color;
 

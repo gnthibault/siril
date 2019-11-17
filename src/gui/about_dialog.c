@@ -61,9 +61,10 @@ void siril_show_about_dialog() {
 			"artists", artists,
 			"comments", _("Astronomical image (pre-)processing program"),
 			"translator-credits", _(translator),
-			"website", "https://siril.org",
+			"website", PACKAGE_URL,
 			"website-label", _("Visit the Siril website"),
 			"license-type", GTK_LICENSE_GPL_3_0,
 			NULL);
+
 	g_free(copyright);
 }

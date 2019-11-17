@@ -144,14 +144,13 @@ int read_single_image(const char* filename, fits *dest, char **realname_out) {
 		return 1;
 	}
 	if (imagetype == TYPESER || imagetype == TYPEAVI) {
-			/* Returns 3 if ok */
 		retval = read_single_sequence(realname, imagetype);
 	} else {
 		retval = any_to_fits(imagetype, realname, dest);
 		if (!retval)
 			debayer_if_needed(imagetype, dest, com.debayer.compatibility, FALSE, com.debayer.stretch);
 	}
-	if (retval != 0 && retval != 3)
+	if (retval)
 		siril_log_message(_("Opening %s failed.\n"), realname);
 	if (realname_out)
 		*realname_out = realname;

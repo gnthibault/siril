@@ -33,11 +33,19 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/command.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
-#include "algos/PSF.h"
+#include "gui/message_dialog.h"
+#include "gui/image_display.h"
+#include "gui/PSF_list.h"
 #include "algos/photometry.h"
 #include "algos/sorting.h"
+#include "algos/star_finder.h"
+#include "io/sequence.h"
+
+#include "PSF.h"
+
 
 #define MAX_ITER_NO_ANGLE  10		//Number of iteration in the minimization with no angle
 #define MAX_ITER_ANGLE     10		//Number of iteration in the minimization with angle
@@ -737,4 +745,78 @@ void fwhm_to_arcsec_if_needed(fits* fit, fitted_PSF **result) {
 	(*result)->fwhmx = fwhmx * (radian_conversion * fit->pixel_size_x / fit->focal_length) * bin_X;
 	(*result)->fwhmy = fwhmy * (radian_conversion * fit->pixel_size_y / fit->focal_length) * bin_Y;
 	(*result)->units = "\"";
+}
+
+/******************* POPUP GRAY MENU *******************************/
+
+void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	gchar *msg;
+	fitted_PSF *result = NULL;
+	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
+	char *str;
+
+	if (layer == -1)
+		return;
+	if (!(com.selection.h && com.selection.w))
+		return;
+	if (com.selection.w > 300 || com.selection.h > 300) {
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("Current selection is too large"),
+				_("To determine the PSF, please make a selection around a star."));
+
+		return;
+	}
+	result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE);
+	if (!result)
+		return;
+
+	if (com.magOffset > 0.0)
+		str = "true reduced";
+	else
+		str = "relative";
+	msg = g_strdup_printf(_("Centroid Coordinates:\n\t\tx0=%.2fpx\n\t\ty0=%.2fpx\n\n"
+				"Full Width Half Maximum:\n\t\tFWHMx=%.2f%s\n\t\tFWHMy=%.2f%s\n\n"
+				"Angle:\n\t\t%0.2fdeg\n\n"
+				"Background Value:\n\t\tB=%.6f\n\n"
+				"Maximal Intensity:\n\t\tA=%.6f\n\n"
+				"Magnitude (%s):\n\t\tm=%.4f\u00B1%.4f\n\n"
+				"RMSE:\n\t\tRMSE=%.3e"), result->x0 + com.selection.x,
+			com.selection.y + com.selection.h - result->y0, result->fwhmx,
+			result->units, result->fwhmy, result->units, result->angle, result->B,
+			result->A, str, result->mag + com.magOffset, result->s_mag, result->rmse);
+	show_data_dialog(msg, "PSF Results");
+	g_free(msg);
+	free(result);
+}
+
+void on_menu_gray_seqpsf_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	if (!sequence_is_loaded()) {
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("PSF for the sequence only applies on sequences"),
+				_("Please load a sequence before trying to apply the PSF for the sequence."));
+	} else {
+		process_seq_psf(0);
+	}
+}
+
+void on_menu_gray_pick_star_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
+	int new_index;
+	GtkWidget *window = lookup_widget("stars_list_window");
+
+	if (layer != -1) {
+		if (!(com.selection.h && com.selection.w))
+			return;
+		if (com.selection.w > 300 || com.selection.h > 300) {
+			siril_message_dialog(GTK_MESSAGE_WARNING, _("Current selection is too large"),
+					_("To determine the PSF, please make a selection around a star."));
+			return;
+		}
+		fitted_PSF *new_star = add_star(&gfit, layer, &new_index);
+		if (new_star) {
+			add_star_to_list(new_star);
+			if (!(gtk_widget_get_visible(window)))//We open the stars_list_window
+				gtk_widget_show_all(window);
+		} else
+			return;
+	}
+	redraw(com.cvport, REMAP_NONE);
 }

@@ -80,8 +80,6 @@ void on_max_entry_changed(GtkEditable *editable, gpointer user_data);
 void on_min_entry_changed(GtkEditable *editable, gpointer user_data);
 void on_combozoom_changed(GtkComboBox *widget, gpointer user_data);
 
-void on_entryAviHeight_changed(GtkEditable *editable, gpointer user_data);
-
 void on_seqproc_entry_changed (GtkComboBox *widget,	gpointer user_data);
 void on_excludebutton_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data);

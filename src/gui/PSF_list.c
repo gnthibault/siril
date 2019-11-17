@@ -31,9 +31,9 @@
 #include "gui/image_interactions.h"
 #include "gui/dialogs.h"
 #include "gui/message_dialog.h"
+#include "gui/PSF_list.h"
 #include "gui/progress_and_log.h"
 #include "algos/PSF.h"
-#include "gui/PSF_list.h"
 #include "algos/star_finder.h"
 
 static GtkListStore *liststore_stars = NULL;

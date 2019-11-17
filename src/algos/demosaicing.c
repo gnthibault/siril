@@ -26,8 +26,12 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
+#include "core/command.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "gui/message_dialog.h"
+#include "gui/dialogs.h"
+#include "io/sequence.h"
 #include "algos/demosaicing.h"
 #include "algos/statistics.h"
 
@@ -1150,4 +1154,34 @@ void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args) {
 	split_cfa_args->fit = NULL;	// not used here
 
 	start_in_new_thread(generic_sequence_worker, args);
+}
+
+/******* SPLIT CFA ******************************/
+
+void on_menu_slpitcfa_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	siril_open_dialog("split_cfa_dialog");
+}
+
+void on_split_cfa_close_clicked(GtkButton *button, gpointer user_data) {
+	siril_close_dialog("split_cfa_dialog");
+}
+
+void on_split_cfa_apply_clicked(GtkButton *button, gpointer user_data) {
+	GtkToggleButton *seq = GTK_TOGGLE_BUTTON(lookup_widget("checkSplitCFASeq"));
+	GtkEntry *entrySplitCFA;
+
+	entrySplitCFA = GTK_ENTRY(lookup_widget("entrySplitCFA"));
+
+	if (gtk_toggle_button_get_active(seq) && sequence_is_loaded()) {
+		struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
+
+		set_cursor_waiting(TRUE);
+		args->seq = &com.seq;
+		args->seqEntry = gtk_entry_get_text(entrySplitCFA);
+		if (args->seqEntry && args->seqEntry[0] == '\0')
+			args->seqEntry = "CFA_";
+		apply_split_cfa_to_sequence(args);
+	} else {
+		process_split_cfa(0);
+	}
 }

@@ -107,7 +107,7 @@ static void fillSeqAviExport() {
 /* when opening a file outside the main sequence loading system and that file
  * is a sequence (SER/AVI), this function is called to load this sequence. */
 int read_single_sequence(char *realname, int imagetype) {
-	int retval=3;		// needs to return 3 if ok !!!
+	int retval = 0;
 	char *name = strdup(realname);
 	gchar *dirname = g_path_get_dirname(realname);
 	if (!changedir(dirname, NULL)) {

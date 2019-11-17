@@ -527,3 +527,39 @@ void on_entryExportSeq_changed(GtkEditable *editable, gpointer user_data){
 		set_icon_entry(GTK_ENTRY(editable), NULL);
 	}
 }
+
+void on_entryAviHeight_changed(GtkEditable *editable, gpointer user_data);
+
+void on_entryAviWidth_changed(GtkEditable *editable, gpointer user_data) {
+	double ratio, width, height;
+	gchar *c_height;
+	GtkEntry *heightEntry = GTK_ENTRY(lookup_widget("entryAviHeight"));
+
+	if (com.selection.w && com.selection.h) return;
+	ratio = (double) com.seq.ry / (double) com.seq.rx;
+	width = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
+	height = ratio * width;
+	c_height = g_strdup_printf("%d", (int)(height));
+
+	g_signal_handlers_block_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+	gtk_entry_set_text(heightEntry, c_height);
+	g_signal_handlers_unblock_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+	g_free(c_height);
+}
+
+void on_entryAviHeight_changed(GtkEditable *editable, gpointer user_data) {
+	double ratio, width, height;
+	gchar *c_width;
+	GtkEntry *widthEntry = GTK_ENTRY(lookup_widget("entryAviWidth"));
+
+	if (com.selection.w && com.selection.h) return;
+	ratio = (double) com.seq.rx / (double) com.seq.ry;
+	height = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
+	width = ratio * height;
+	c_width = g_strdup_printf("%d", (int)(width));
+
+	g_signal_handlers_block_by_func(widthEntry, on_entryAviWidth_changed, NULL);
+	gtk_entry_set_text(widthEntry, c_width);
+	g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
+	g_free(c_width);
+}
