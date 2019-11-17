@@ -559,7 +559,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
  * @param nb_frames number of frames to compute the size of the sequence of
  * @return the size of the sequence in bytes, or -1 if an error happened.
  */
-int64_t seq_compute_size(sequence *seq, int nb_frames) {
+int64_t seq_compute_size(sequence *seq, int nb_frames, data_type type) {
 	int64_t frame_size, size = -1LL;
 	char filename[256];
 	GStatBuf sts;

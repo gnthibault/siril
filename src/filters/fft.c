@@ -288,8 +288,8 @@ gpointer fourier_transform(gpointer p) {
 	default:
 	case 'd':
 	case 'D':
-		if (new_fit_image(&tmp1, width, height, args->fit->naxes[2]) ||
-				new_fit_image(&tmp2, width, height, args->fit->naxes[2])) {
+		if (new_fit_image(&tmp1, width, height, args->fit->naxes[2], DATA_USHORT) ||
+				new_fit_image(&tmp2, width, height, args->fit->naxes[2], DATA_USHORT)) {
 			args->retval = 1;
 			goto end;
 		}
@@ -339,7 +339,7 @@ gpointer fourier_transform(gpointer p) {
 			siril_log_message(_("There is something wrong in your files\n"));
 			goto end;
 		}
-		new_fit_image(&tmp2, width, height, tmp->naxes[2]);
+		new_fit_image(&tmp2, width, height, tmp->naxes[2], DATA_USHORT);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
 			FFTI(tmp2, tmp, tmp1, args->type_order, chan);
 		/* We display the result on screen */

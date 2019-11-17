@@ -1138,7 +1138,7 @@ int process_new(int nb){
 	close_sequence(FALSE);
 
 	fits *fit = &gfit;
-	if (new_fit_image(&fit, width, height, layers))
+	if (new_fit_image(&fit, width, height, layers, DATA_USHORT))
 		return 1;
 	memset(gfit.data, 0, width * height * layers * sizeof(WORD));
 
@@ -1985,7 +1985,7 @@ int process_register(int nb) {
 		remove_prefixed_sequence_files(reg_args->seq, reg_args->prefix);
 
 		int nb_frames = reg_args->process_all_frames ? reg_args->seq->number : reg_args->seq->selnum;
-		int64_t size = seq_compute_size(reg_args->seq, nb_frames);
+		int64_t size = seq_compute_size(reg_args->seq, nb_frames, DATA_USHORT);
 		if (reg_args->x2upscale)
 			size *= 4;
 		if (test_available_space(size) > 0) {

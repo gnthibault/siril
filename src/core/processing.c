@@ -95,8 +95,8 @@ gpointer generic_sequence_worker(gpointer p) {
 		}
 	}
 
-	if (args->has_output && !args->partial_image) {	// TODO partial
-		int64_t size = seq_compute_size(args->seq, nb_frames);
+	if (args->has_output && !args->partial_image) {	// TODO partial, float
+		int64_t size = seq_compute_size(args->seq, nb_frames, DATA_USHORT);
 		if (test_available_space(size)) {
 			args->retval = 1;
 			goto the_end;

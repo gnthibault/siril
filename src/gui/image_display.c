@@ -374,7 +374,7 @@ static void remap(int vport) {
 			guint src_index = y * gfit.rx + x;
 			BYTE dst_pixel_value;
 			WORD tmp_pixel_value;
-			if (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY)	// special case, no lo & hi
+			if (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY) // special case, no lo & hi
 				dst_pixel_value = index[src[src_index]];
 			else if (do_cut_over && src[src_index] > hi)	// cut
 				dst_pixel_value = 0;

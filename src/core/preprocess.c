@@ -165,7 +165,8 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 		// checking disk space: removing old sequence and computing free space
 		remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
 
-		int64_t size = seq_compute_size(args->seq, args->seq->number);
+		int64_t size = seq_compute_size(args->seq, args->seq->number,
+				prepro->use_flat ? DATA_FLOAT : DATA_USHORT);
 		if (prepro->debayer)
 			size *= 3;
 		if (test_available_space(size))

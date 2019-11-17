@@ -201,32 +201,41 @@ int addmax(fits *a, fits *b) {
 	return 0;
 }
 
-/* If siril_fdiv is ok, function returns 0. If overflow, siril_fdiv returns 1*/
+/* a = coef * a / b
+ * a is expected as USHORT, returned as FLOAT. b is expected as USHORT.
+ * If overflow, siril_fdiv returns 1*/
 int siril_fdiv(fits *a, fits *b, float coef) {
-	int i, layer;
+	int i, o = 0, layer;
 	int retvalue = 0;
-	double temp;
+	unsigned int nbpix;
+	float *newdata;
 
+	if (a->type != DATA_USHORT || b->type != DATA_USHORT) {
+		siril_log_message(_("siril_fdiv: not yet working with 32-bit data."));
+		return -1;
+	}
 	if (a->rx != b->rx || a->ry != b->ry || a->naxes[2] != b->naxes[2]) {
 		fprintf(stderr, "Wrong size or channel count: %u=%u? / %u=%u?\n", a->rx,
 				b->rx, a->ry, b->ry);
 		return -1;
 	}
+
+	nbpix = a->rx * a->ry;
+	newdata = malloc(nbpix * a->naxes[2] * sizeof(float));
 	for (layer = 0; layer < a->naxes[2]; ++layer) {
-		WORD *buf = b->pdata[layer];
-		WORD *gbuf = a->pdata[layer];
-		for (i = 0; i < b->rx * b->ry; ++i) {
-			if (buf[i] == 0)
-				buf[i] = 1;		// avoid division by 0
-			temp = ((double) coef * ((double) gbuf[i] / (double) buf[i]));
-			if (temp > USHRT_MAX_DOUBLE) {
-				siril_debug_print("OVERFLOW in FDIV: %lf\n", temp);
-				retvalue = 1;
-			}
-			gbuf[i] = round_to_WORD(temp);
+		WORD *abuf = b->pdata[layer];
+		WORD *bbuf = a->pdata[layer];
+		for (i = 0; i < nbpix; ++i) {
+			double val, denominator = (double)bbuf[i];
+			if (denominator == 0.0)
+				denominator = 1.0;
+			if (coef != 1.0)
+				val = ((double)coef * (double)abuf[i] / denominator);
+			else val = (double)abuf[i] / denominator;
+			newdata[o++] = (float)val;
 		}
 	}
-	invalidate_stats_from_fit(a);
+	fit_replace_buffer(a, newdata, DATA_FLOAT);
 	return retvalue;
 }
 

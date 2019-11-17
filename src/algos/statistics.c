@@ -581,6 +581,7 @@ void invalidate_stats_from_fit(fits *fit) {
 			fit->stats[layer] = NULL;
 		}
 	}
+	fit->maxi = -1;
 }
 
 /* if image data and image structure has changed, invalidate the complete stats data structure */

@@ -897,6 +897,10 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 	int xbayeroff = 0;
 	int ybayeroff = 0;
 
+	if (fit->type != DATA_USHORT) {
+		siril_log_message(_("debayer: not yet working with 32-bit data."));
+		return -1;
+	}
 	retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
 	full_stats_invalidation_from_fit(fit);
 
@@ -947,11 +951,11 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 			b = (b / (double) fit->maximum_pixel_value) * norm;
 		}
 		fit->pdata[RLAYER][j] =
-				(fit->bitpix == 8) ? round_to_BYTE(r) : round_to_WORD(r);
+			(fit->bitpix == 8) ? round_to_BYTE(r) : round_to_WORD(r);
 		fit->pdata[GLAYER][j] =
-				(fit->bitpix == 8) ? round_to_BYTE(g) : round_to_WORD(g);
+			(fit->bitpix == 8) ? round_to_BYTE(g) : round_to_WORD(g);
 		fit->pdata[BLAYER][j] =
-				(fit->bitpix == 8) ? round_to_BYTE(b) : round_to_WORD(b);
+			(fit->bitpix == 8) ? round_to_BYTE(b) : round_to_WORD(b);
 	}
 	free(newbuf);
 	return 0;
@@ -1040,23 +1044,27 @@ int split_cfa(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 		siril_log_message(_("Split CFA does not work on non-Bayer filter camera images!\n"));
 		return 1;
 	}
+	if (in->type != DATA_USHORT) {
+		siril_log_message(_("debayer: not yet working with 32-bit data."));
+		return -1;
+	}
 
 	width = width / 2 + width % 2;
 	height = height / 2 + height % 2;
 
-	if (new_fit_image(&cfa0, width, height, 1)) {
+	if (new_fit_image(&cfa0, width, height, 1, DATA_USHORT)) {
 		return 1;
 	}
 
-	if (new_fit_image(&cfa1, width, height, 1)) {
+	if (new_fit_image(&cfa1, width, height, 1, DATA_USHORT)) {
 		return 1;
 	}
 
-	if (new_fit_image(&cfa2, width, height, 1)) {
+	if (new_fit_image(&cfa2, width, height, 1, DATA_USHORT)) {
 		return 1;
 	}
 
-	if (new_fit_image(&cfa3, width, height, 1)) {
+	if (new_fit_image(&cfa3, width, height, 1, DATA_USHORT)) {
 		return 1;
 	}
 
@@ -1072,13 +1080,13 @@ int split_cfa(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 			c2 = in->data[1 + col + (1 + row) * in->rx];
 
 			cfa0->data[j] =
-					(in->bitpix == 8) ? round_to_BYTE(c0) : round_to_WORD(c0);
+				(in->bitpix == 8) ? round_to_BYTE(c0) : round_to_WORD(c0);
 			cfa1->data[j] =
-					(in->bitpix == 8) ? round_to_BYTE(c1) : round_to_WORD(c1);
+				(in->bitpix == 8) ? round_to_BYTE(c1) : round_to_WORD(c1);
 			cfa2->data[j] =
-					(in->bitpix == 8) ? round_to_BYTE(c2) : round_to_WORD(c2);
+				(in->bitpix == 8) ? round_to_BYTE(c2) : round_to_WORD(c2);
 			cfa3->data[j] =
-					(in->bitpix == 8) ? round_to_BYTE(c3) : round_to_WORD(c3);
+				(in->bitpix == 8) ? round_to_BYTE(c3) : round_to_WORD(c3);
 			j++;
 		}
 	}

@@ -431,6 +431,10 @@ static GSList *update_median_for_rgb_samples(GSList *orig, fits *fit) {
 	int channel;
 	double *rgb[3];
 
+	if (fit->type != DATA_USHORT) {
+		siril_log_message(_("background extraction: not yet working with 32-bit data."));
+		return NULL;
+	}
 	rgb[RLAYER] = convert_fits_to_img(fit, RLAYER, FALSE);
 	rgb[GLAYER] = convert_fits_to_img(fit, GLAYER, FALSE);
 	rgb[BLAYER] = convert_fits_to_img(fit, BLAYER, FALSE);
@@ -594,6 +598,10 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 	gchar *error;
 
 	if (com.grad_samples == NULL) return;
+	if (gfit.type != DATA_USHORT) {
+		siril_log_message(_("background extraction: not yet working with 32-bit data."));
+		return;
+	}
 
 	set_cursor_waiting(TRUE);
 

@@ -901,7 +901,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 		remove_prefixed_sequence_files(reg_args->seq, reg_args->prefix);
 
 		int nb_frames = reg_args->process_all_frames ? reg_args->seq->number : reg_args->seq->selnum;
-		int64_t size = seq_compute_size(reg_args->seq, nb_frames);
+		int64_t size = seq_compute_size(reg_args->seq, nb_frames, DATA_USHORT);
 		if (reg_args->x2upscale)
 			size *= 4;
 		if (test_available_space(size) > 0) {

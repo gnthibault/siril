@@ -110,7 +110,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 
 	clearfits(&gfit);
 	fits *fit = &gfit;
-	if (new_fit_image(&fit, args->seq->rx, args->seq->ry, args->seq->nb_layers))
+	if (new_fit_image(&fit, args->seq->rx, args->seq->ry, args->seq->nb_layers, DATA_FLOAT))
 		return -1;
 
 	/* We copy metadata from reference to the final fit */
@@ -126,18 +126,14 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	gfit.exposure = ssdata->exposure;
 	gfit.bitpix = gfit.orig_bitpix = USHORT_IMG;
 
-	double ratio = 1.0;
-	if (max > USHRT_MAX)
-		ratio = USHRT_MAX_DOUBLE / (double)max;
+	double ratio = 2.0 / (double)max;
 
 	nbdata = args->seq->ry * args->seq->rx;
 	for (layer=0; layer<args->seq->nb_layers; ++layer){
 		unsigned long* from = ssdata->sum[layer];
-		WORD *to = gfit.pdata[layer];
+		float *to = gfit.fpdata[layer];
 		for (i=0; i < nbdata; ++i) {
-			if (ratio == 1.0)
-				*to++ = round_to_WORD(*from++);
-			else	*to++ = round_to_WORD((double)(*from++) * ratio);
+			*to++ = (float)((double)(*from++) * ratio - 1.0);
 		}
 	}
 

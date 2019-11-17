@@ -379,6 +379,8 @@ struct dft_struct {
 	char ord[FLEN_VALUE];		// regular, centered
 };
 
+typedef enum { DATA_USHORT, DATA_FLOAT } data_type;
+
 struct ffit {
 	unsigned int rx;	// image width	(naxes[0])
 	unsigned int ry;	// image height	(naxes[1])
@@ -431,8 +433,12 @@ struct ffit {
 	double mini, maxi;	// min and max of the stats->max[3]
 
 	fitsfile *fptr;		// file descriptor. Only used for file read and write.
+
+	data_type type;	// use of data or fdata is managed by this
 	WORD *data;		// 16-bit image data (depending on image type)
 	WORD *pdata[3];		// pointers on data, per layer data access (RGB)
+	float *fdata;		// same with float
+	float *fpdata[3];	// same with float
 
 	gboolean top_down;	// image data is stored top-down, normally false for FITS, true for SER
 

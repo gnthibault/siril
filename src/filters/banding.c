@@ -132,7 +132,7 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 		cvRotateImage(fit, center, 90.0, -1, OPENCV_LINEAR);
 	}
 
-	if (new_fit_image(&fiximage, fit->rx, fit->ry, fit->naxes[2]))
+	if (new_fit_image(&fiximage, fit->rx, fit->ry, fit->naxes[2], DATA_USHORT))
 		return 1;
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
