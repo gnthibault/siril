@@ -172,7 +172,7 @@ void load_glade_file() {
 		g_free(gladefile);
 		return;
 	}
-	fprintf(stderr, _("%s was not found or contains errors, cannot render GUI. Exiting.\n"), gladefile);
+	fprintf(stderr, _("%s was not found or contains errors, cannot render GUI:\n%s\n Exiting.\n"), gladefile, err->message);
 	exit(EXIT_FAILURE);
 }
 

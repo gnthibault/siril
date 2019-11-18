@@ -21,6 +21,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/dialogs.h"
 #include "gui/image_display.h"
 #include "gui/progress_and_log.h"
 #include "io/sequence.h"
@@ -63,6 +64,32 @@ void fwhm_quality_cell_data_function (GtkTreeViewColumn *col,
 	g_object_set(renderer, "text", buf, NULL);
 }
 
+void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data) {
+//	int active = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+//	g_signal_handlers_block_by_func(GTK_COMBO_BOX(widget), on_seqlist_dialog_combo_changed, NULL);
+//	fill_sequence_list(&com.seq, active, TRUE);
+//	g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(widget), on_seqlist_dialog_combo_changed, NULL);
+}
+
+static void initialize_seqlist_dialog_combo() {
+	int i;
+	if (!sequence_is_loaded()) return;
+
+	GtkComboBoxText *seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("seqlist_dialog_combo"));
+	g_signal_handlers_block_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
+	gtk_combo_box_text_remove_all(seqcombo);
+
+	if (com.seq.nb_layers == 1) {
+		gtk_combo_box_text_append_text(seqcombo, _("B&W Channel"));
+	} else {
+		gtk_combo_box_text_append_text(seqcombo, _("Red Channel"));
+		gtk_combo_box_text_append_text(seqcombo, _("Green Channel"));
+		gtk_combo_box_text_append_text(seqcombo, _("Blue Channel"));
+	}
+	gtk_combo_box_set_active(GTK_COMBO_BOX(seqcombo), 0);
+	g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
+}
+
 void get_list_store() {
 	if (list_store == NULL) {
 		list_store = GTK_LIST_STORE(gtk_builder_get_object(builder, "liststore1"));
@@ -71,6 +98,7 @@ void get_list_store() {
 		GtkCellRenderer *cell = GTK_CELL_RENDERER(gtk_builder_get_object(builder, "cellrenderertext5"));
 		gtk_tree_view_column_set_cell_data_func(col, cell, fwhm_quality_cell_data_function, NULL, NULL);
 	}
+	initialize_seqlist_dialog_combo();
 }
 
 /* Add an image to the list. If seq is NULL, the list is cleared. */
@@ -155,23 +183,12 @@ static gboolean fill_sequence_list_idle(gpointer p) {
 	return FALSE;
 }
 
-void show_seqlist(GtkWidget *widget, gboolean show) {
-	static gboolean was_extended = FALSE;
-	if (!was_extended) {
-		gint w, h;
-		GtkWindow *window = GTK_WINDOW(lookup_widget("control_window"));
-		gtk_window_get_size(window, &w, &h);
-		gtk_window_resize(window, w+200, h);
-		was_extended = TRUE;
+void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
+	if (gtk_widget_get_visible(lookup_widget("seqlist_dialog"))) {
+		siril_close_dialog("seqlist_dialog");
+	} else {
+		siril_open_dialog("seqlist_dialog");
 	}
-	gtk_paned_set_position(GTK_PANED(widget), show ? 200 : 0);
-}
-
-void on_toggle_show_seqlist_toggled(GtkToggleToolButton *togglebutton, gpointer user_data) {
-	static GtkWidget *paned = NULL;
-	if (!paned)
-		paned = lookup_widget("paned1");
-	show_seqlist(paned, gtk_toggle_tool_button_get_active(togglebutton));
 }
 
 int get_image_index_from_path(GtkTreePath *path) {
@@ -191,11 +208,6 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	gint index = get_image_index_from_path(gtk_tree_path_new_from_string(path));
 	if (index < 0 || index >= com.seq.number) return;
 	fprintf(stdout, "toggle selection index = %d\n", index);
-	/*if (gtk_cell_renderer_toggle_get_active(cell_renderer) ==
-			com.seq.imgparam[index].incl) {
-		fprintf(stdout, "mismatch in selection toggle, what should I do?\n");
-		return;
-	}*/
 
 	sequence_list_change_selection(path, !com.seq.imgparam[index].incl);
 	siril_log_message(_("%s image %d in sequence %s\n"),

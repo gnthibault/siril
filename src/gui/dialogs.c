@@ -52,6 +52,7 @@ static const SirilDialogEntry entries[] =
 		{"satu_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_satu_cancel},
 		{"SCNR_dialog", IMAGE_PROCESSING_DIALOG,  FALSE, NULL},
 		{"settings_window", INFORMATION_DIALOG, FALSE, NULL},
+		{"seqlist_dialog", INFORMATION_DIALOG, FALSE, NULL},
 		{"split_cfa_dialog", OTHER_DIALOG, FALSE, NULL},
 		{"stars_list_window", INFORMATION_DIALOG, FALSE, NULL},
 		{"StatWindow", INFORMATION_DIALOG, FALSE, NULL},
