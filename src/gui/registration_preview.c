@@ -194,24 +194,28 @@ void init_mouse() {
 
 /* display registration data (shift{x|y} for now) in the manual adjustments */
 void adjust_reginfo() {
-	static GtkSpinButton *spin_shiftx = NULL, *spin_shifty = NULL;
+	GtkSpinButton *spin_shiftx, *spin_shifty;
+	GtkComboBoxText *seqcombo;
 	gboolean set_sensitive;
+	gint cvport;
 
-	if (spin_shiftx == NULL) {
-		spin_shiftx = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbut_shiftx"));
-		spin_shifty = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbut_shifty"));
-	}
+	spin_shiftx = GTK_SPIN_BUTTON(lookup_widget("spinbut_shiftx"));
+	spin_shifty = GTK_SPIN_BUTTON(lookup_widget("spinbut_shifty"));
+	seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("seqlist_dialog_combo"));
 	
+	cvport = gtk_combo_box_get_active(GTK_COMBO_BOX(seqcombo));
+	if (cvport < 0) return;
+
 	g_signal_handlers_block_by_func(spin_shiftx, on_spinbut_shift_value_change, NULL);
 	g_signal_handlers_block_by_func(spin_shifty, on_spinbut_shift_value_change, NULL);
-	if (com.seq.regparam == NULL || com.seq.regparam[com.cvport] == NULL) {
+	if (com.seq.regparam == NULL || com.seq.regparam[cvport] == NULL) {
 		gtk_spin_button_set_value(spin_shiftx, 0.);
 		gtk_spin_button_set_value(spin_shifty, 0.);
 	} else {
 		gtk_spin_button_set_value(spin_shiftx,
-				roundf_to_int(com.seq.regparam[com.cvport][com.seq.current].shiftx));
+				roundf_to_int(com.seq.regparam[cvport][com.seq.current].shiftx));
 		gtk_spin_button_set_value(spin_shifty,
-				roundf_to_int(com.seq.regparam[com.cvport][com.seq.current].shifty));
+				roundf_to_int(com.seq.regparam[cvport][com.seq.current].shifty));
 	}
 	g_signal_handlers_unblock_by_func(spin_shiftx, on_spinbut_shift_value_change, NULL);
 	g_signal_handlers_unblock_by_func(spin_shifty, on_spinbut_shift_value_change, NULL);
