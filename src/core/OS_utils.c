@@ -435,7 +435,7 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 
 SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction action) {
 	gchar *title;
-	GtkWidget *w;
+	SirilWidget *w;
 	if (action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER) {
 		title = g_strdup(_("Select Folder"));
 	} else {
