@@ -111,6 +111,20 @@ static void initialize_seqlist_dialog_combo() {
 	gtk_combo_box_set_active(GTK_COMBO_BOX(seqcombo), 0);
 }
 
+static void initialize_title() {
+	GtkHeaderBar *bar = GTK_HEADER_BAR(lookup_widget("seqlistbar"));
+	gchar *seq_basename;
+
+	if (sequence_is_loaded())
+		seq_basename = g_path_get_basename(com.seq.seqname);
+	else
+		seq_basename = g_strdup(_("No sequence loaded"));
+
+	gtk_header_bar_set_subtitle(bar, seq_basename);
+
+	g_free(seq_basename);
+}
+
 void get_list_store() {
 	if (list_store == NULL) {
 		list_store = GTK_LIST_STORE(gtk_builder_get_object(builder, "liststore1"));
@@ -119,6 +133,7 @@ void get_list_store() {
 		GtkCellRenderer *cell = GTK_CELL_RENDERER(gtk_builder_get_object(builder, "cellrenderertext5"));
 		gtk_tree_view_column_set_cell_data_func(col, cell, fwhm_quality_cell_data_function, NULL, NULL);
 	}
+	initialize_title();
 }
 
 /* Add an image to the list. If seq is NULL, the list is cleared. */

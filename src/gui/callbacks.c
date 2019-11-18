@@ -1320,12 +1320,13 @@ void set_GUI_CWD() {
 		return;
 	gchar *str;
 	GtkLabel *label = GTK_LABEL(lookup_widget("labelcwd"));
+	GtkHeaderBar *bar = GTK_HEADER_BAR(lookup_widget("headebar"));
 
 	gtk_label_set_text(label, com.wd);
 
-	str = g_strdup_printf("Siril v%s", VERSION);
-	gtk_header_bar_set_title(GTK_HEADER_BAR(lookup_widget("headebar")), str);
-	gtk_header_bar_set_subtitle(GTK_HEADER_BAR(lookup_widget("headebar")), com.wd);
+	str = g_strdup_printf("Siril-%s", VERSION);
+	gtk_header_bar_set_title(bar , str);
+	gtk_header_bar_set_subtitle(bar, com.wd);
 
 	g_free(str);
 }

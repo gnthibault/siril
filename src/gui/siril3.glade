@@ -1382,7 +1382,7 @@ enter a visible wavelength in nm</property>
       <object class="GtkMenuItem" id="menuitem_histo">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Asinh Transformation...</property>
+        <property name="label" translatable="yes">Histogram Transformation...</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_menuitem_histo_activate" swapped="no"/>
       </object>
@@ -13153,9 +13153,10 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <child type="titlebar">
-      <object class="GtkHeaderBar">
+      <object class="GtkHeaderBar" id="seqlistbar">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="title" translatable="yes">Sequence List</property>
         <property name="show_close_button">True</property>
         <child>
           <object class="GtkComboBoxText" id="seqlist_dialog_combo">

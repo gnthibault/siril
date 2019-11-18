@@ -1200,6 +1200,7 @@ void close_sequence(int loading_another) {
 			GtkComboBox *seqcombo = GTK_COMBO_BOX(lookup_widget("sequence_list_combobox"));
 			gtk_combo_box_set_active(seqcombo, -1);
 		}
+		adjust_sellabel();
 	}
 }
 
