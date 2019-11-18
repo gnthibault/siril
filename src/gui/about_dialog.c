@@ -44,7 +44,13 @@ void siril_show_about_dialog() {
 	GdkPixbuf *icon;
 	GtkWindow *parent;
 	gchar *copyright;
-
+	gchar *version;
+#ifdef SIRIL_UNSTABLE
+	version = g_strdup_printf(_("%s\nThis is an unstable development release\n"
+					"commit %s\n"), VERSION, SIRIL_GIT_VERSION_ABBREV);
+#else
+	version = g_strdup(VERSION);
+#endif
 	copyright = g_strdup_printf("Copyright © 2004-2011 François Meyer\n"
 			"Copyright © 2012-%s team free-astro", SIRIL_GIT_LAST_COMMIT_YEAR);
 
@@ -54,7 +60,7 @@ void siril_show_about_dialog() {
 			"program-name", PACKAGE,
 			"title", _("About Siril"),
 			"logo", icon,
-			"version", VERSION,
+			"version", version,
 			"copyright", copyright,
 			"authors", authors,
 			"documenters", documenters,
@@ -67,4 +73,5 @@ void siril_show_about_dialog() {
 			NULL);
 
 	g_free(copyright);
+	g_free(version);
 }
