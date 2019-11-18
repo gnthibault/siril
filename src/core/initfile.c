@@ -394,7 +394,7 @@ int checkinitfile() {
 	gchar *pathname = g_build_filename(siril_get_config_dir(), PACKAGE, NULL);
 	gchar *config_file = g_build_filename(pathname, CONFIG_FILE, NULL);
 	if (!g_file_test(config_file, G_FILE_TEST_EXISTS)) {
-		if (g_mkdir(pathname, 0755) == 0) {
+		if (g_mkdir_with_parents(pathname, 0755) == 0) {
 			g_fprintf(stderr, "Created config dir %s\n", pathname);
 		} else {
 			g_fprintf(stderr, "Failed to create config dir %s!\n", pathname);
