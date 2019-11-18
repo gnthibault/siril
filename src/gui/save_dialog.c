@@ -314,6 +314,7 @@ static void initialize_data(gpointer p) {
 
 	GtkToggleButton *fits_8 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit8"));
 	GtkToggleButton *fits_16s = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16s"));
+	GtkToggleButton *fits_16 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16"));
 	GtkToggleButton *update_hilo = (GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_update_hilo")));
 #ifdef HAVE_LIBJPEG
 	GtkSpinButton *qlty_spin_button = GTK_SPIN_BUTTON(lookup_widget("quality_spinbutton"));
@@ -330,8 +331,10 @@ static void initialize_data(gpointer p) {
 		args->bitpix = BYTE_IMG;
 	else if (gtk_toggle_button_get_active(fits_16s))
 		args->bitpix = SHORT_IMG;
-	else
+	else if (gtk_toggle_button_get_active(fits_16))
 		args->bitpix = USHORT_IMG;
+	else
+		args->bitpix = FLOAT_IMG;
 
 	args->update_hilo = gtk_toggle_button_get_active(update_hilo);
 }

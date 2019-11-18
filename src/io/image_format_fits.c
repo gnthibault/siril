@@ -637,7 +637,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	case FLOAT_IMG:		// 32-bit floating point pixels
 		fits_read_pix(fit->fptr, TFLOAT, orig, nbdata, &zero,
 				fit->fdata, &zero, &status);
-		if (status) break;
+		break;
 	case DOUBLE_IMG:	// 64-bit floating point pixels
 		pixels_double = malloc(nbdata * sizeof(double));
 		fits_read_pix(fit->fptr, TDOUBLE, orig, nbdata, &zero,
@@ -1328,9 +1328,9 @@ int savefits(const char *name, fits *f) {
 	}
 	status = 0;
 	/* some float cases where it is USHORT saved as float */
-	if (f->bitpix != BYTE_IMG && f->data_max > 1.0 && f->data_max <= USHRT_MAX) {
-		f->bitpix = USHORT_IMG;
-	}
+//	if (f->bitpix != BYTE_IMG && f->data_max > 1.0 && f->data_max <= USHRT_MAX) {
+//		f->bitpix = USHORT_IMG;
+//	}
 	if (fits_create_img(f->fptr, f->bitpix, f->naxis, f->naxes, &status)) {
 		report_fits_error(status);
 		return 1;
@@ -1376,6 +1376,11 @@ int savefits(const char *name, fits *f) {
 		}
 		break;
 	case FLOAT_IMG:
+		if (f->fdata == NULL) { // case where loaded data are 16bits
+			// TODO: convert WORD data to float data
+			fprintf(stderr, "Not available yet\n");
+			return 1;
+		}
 		if (fits_write_pix(f->fptr, TFLOAT, orig, pixel_count, f->fdata, &status)) {
 			report_fits_error(status);
 			return 1;
