@@ -114,6 +114,8 @@ static void draw_empty_image(cairo_t *cr, guint width, guint height) {
 		GtkAllocation allocation;
 		gdouble scale;
 		GdkRGBA color;
+		gint w = (gint) width;
+		gint h = (gint) height;
 
 		layout = gtk_widget_create_pango_layout(widget, NULL);
 
@@ -127,17 +129,17 @@ static void draw_empty_image(cairo_t *cr, guint width, guint height) {
 		g_free(msg);
 		pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
 
-		pango_layout_get_pixel_size(layout, &width, &height);
+		pango_layout_get_pixel_size(layout, &w, &h);
 		gtk_widget_get_allocation(widget, &allocation);
 
-		scale = MIN(((gdouble ) allocation.width / 2.0) / (gdouble ) width,
-				((gdouble ) allocation.height / 2.0) / (gdouble ) height);
+		scale = MIN(((gdouble ) allocation.width / 2.0) / (gdouble ) w,
+				((gdouble ) allocation.height / 2.0) / (gdouble ) h);
 
 		gtk_style_context_get_color(context, state, &color);
 		gdk_cairo_set_source_rgba(cr, &color);
 
-		cairo_move_to(cr, (allocation.width - (width * scale)) / 2,
-				(allocation.height - (height * scale)) / 2 - pix_h);
+		cairo_move_to(cr, (allocation.width - (w * scale)) / 2,
+				(allocation.height - (h * scale)) / 2 - pix_h);
 
 		cairo_scale(cr, scale, scale);
 
