@@ -74,6 +74,7 @@ static void read_fits_date_obs_header(fits *fit) {
 	}
 }
 
+/* TO BE REMOVED, BAD CODE */
 static int fit_stats(fits *fit, double *mini, double *maxi) {
 	int status = 0;
 	int ii, anaxis;

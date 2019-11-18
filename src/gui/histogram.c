@@ -284,21 +284,33 @@ static void adjust_histogram_vport_size() {
 #endif
 }
 
+size_t get_histo_size(fits *fit) {
+	if (fit->type == DATA_USHORT)
+		return (size_t)get_normalized_value(fit);
+	return (size_t)100000;
+}
+
 // create a new histrogram object for the passed fit and layer
 gsl_histogram* computeHisto(fits* fit, int layer) {
 	assert(layer < 3);
 	size_t i, ndata, size;
-	WORD *buf;
 
-	size = (size_t)get_normalized_value(fit);
+	size = get_histo_size(fit);
 	gsl_histogram* histo = gsl_histogram_alloc(size + 1);
 	gsl_histogram_set_ranges_uniform(histo, 0, size);
-
-	buf = fit->pdata[layer];
 	ndata = fit->rx * fit->ry;
-//#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) // cause errors !!!
-	for (i = 0; i < ndata; i++) {
-		gsl_histogram_increment(histo, (double)buf[i]);
+
+	if (fit->type == DATA_USHORT) {
+		WORD *buf = fit->pdata[layer];
+		//#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) // causes errors !!!
+		for (i = 0; i < ndata; i++) {
+			gsl_histogram_increment(histo, (double)buf[i]);
+		}
+	} else if (fit->type = DATA_FLOAT) {
+		float *buf = fit->fpdata[layer];
+		for (i = 0; i < ndata; i++) {
+			gsl_histogram_increment(histo, (double)buf[i]);
+		}
 	}
 	return histo;
 }
@@ -606,7 +618,7 @@ gsl_histogram* computeHisto_Selection(fits* fit, int layer,
 	WORD *from;
 	size_t stridefrom, i, j, size;
 
-	size = (size_t)get_normalized_value(fit);
+	size = get_histo_size(fit);
 	gsl_histogram* histo = gsl_histogram_alloc(size + 1);
 	gsl_histogram_set_ranges_uniform(histo, 0, size);
 

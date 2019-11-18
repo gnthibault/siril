@@ -222,12 +222,30 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 		int vport);
 static int make_index_for_rainbow(BYTE index[][3]);
 
+/* Siril float format is [-1, 1]. The UI still uses unsigned short controls,
+ * for lo and hi cursors for example, that we convert to a float value here */
+static BYTE display_for_float_pixel(float pixel, display_mode mode, WORD lo, WORD hi) {
+	float tmp = pixel - ((float)lo / (float)65536);
+	float slope;
+	BYTE disp;
+	switch (mode) {
+		case NORMAL_DISPLAY:
+		default:
+			slope = 32768.0f * UCHAR_MAX_SINGLE / (float)(hi - lo);
+			disp = (tmp + 1.0f) * slope;
+			break;
+
+	}
+	return disp;
+}
+
 static void remap(int vport) {
 	// This function maps fit data with a linear LUT between lo and hi levels
 	// to the buffer to be displayed; display only is modified
 	guint y;
 	BYTE *dst, *index, rainbow_index[UCHAR_MAX + 1][3];
 	WORD *src, hi, lo;
+	float *fsrc;
 	display_mode mode;
 	color_map color;
 	gboolean do_cut_over, inverted;
@@ -346,8 +364,10 @@ static void remap(int vport) {
 		last_mode[vport] = mode;
 		set_viewer_mode_widgets_sensitive(FALSE);
 	} else {
-		// for all other modes, the index can be reused
-		make_index_for_current_display(mode, lo, hi, vport);
+		// for all other modes and ushort data, the index can be reused
+		if (gfit.type == DATA_USHORT) {
+			make_index_for_current_display(mode, lo, hi, vport);
+		}
 		if (mode == STF_DISPLAY)
 			set_viewer_mode_widgets_sensitive(FALSE);
 		else
@@ -355,7 +375,7 @@ static void remap(int vport) {
 	}
 
 	src = gfit.pdata[vport];
-	/* Siril's FITS are stored bottom to top, so mapping needs to revert data order */
+	fsrc = gfit.fpdata[vport];
 	dst = com.graybuf[vport];
 
 	color = gtk_toggle_tool_button_get_active(
@@ -373,21 +393,26 @@ static void remap(int vport) {
 		for (x = 0; x < gfit.rx; x++) {
 			guint src_index = y * gfit.rx + x;
 			BYTE dst_pixel_value;
-			WORD tmp_pixel_value;
-			if (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY) // special case, no lo & hi
-				dst_pixel_value = index[src[src_index]];
-			else if (do_cut_over && src[src_index] > hi)	// cut
-				dst_pixel_value = 0;
-			else {
-				if (src[src_index] - lo < 0)
-					tmp_pixel_value = 0;
-				else
-					tmp_pixel_value = src[src_index] - lo;
-				dst_pixel_value = index[tmp_pixel_value];
+			if (gfit.type == DATA_USHORT) {
+				WORD tmp_pixel_value;
+				if (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY) // special case, no lo & hi
+					dst_pixel_value = index[src[src_index]];
+				else if (do_cut_over && src[src_index] > hi)	// cut
+					dst_pixel_value = 0;
+				else {
+					if (src[src_index] - lo < 0)
+						tmp_pixel_value = 0;
+					else
+						tmp_pixel_value = src[src_index] - lo;
+					dst_pixel_value = index[tmp_pixel_value];
+				}
+			} else {
+				dst_pixel_value = display_for_float_pixel(fsrc[src_index], mode, lo, hi);
 			}
 			if (inverted)
 				dst_pixel_value = UCHAR_MAX - dst_pixel_value;
 
+			// Siril's FITS are stored bottom to top, so mapping needs to revert data order
 			guint dst_index = ((gfit.ry - 1 - y) * gfit.rx + x) * 4;
 			switch (color) {
 				default:
