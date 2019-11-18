@@ -53,17 +53,39 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 	/* display current image with shifts */
 	if (!com.preview_surface[current_preview]) {
-		gchar text[32];
-		cairo_set_source_rgba(cr, 0.5, 0.5, 0.5, 0.5);
-		cairo_rectangle(cr, 0, 0, area_width, area_height);
-		cairo_fill(cr);
-		cairo_select_font_face(cr, "Arial", CAIRO_FONT_SLANT_NORMAL,
-				CAIRO_FONT_WEIGHT_BOLD);
-		cairo_set_font_size(cr, 15);
-		cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-		cairo_move_to(cr, area_width / 2.0 - 30, area_height / 2.0);
-		g_snprintf(text, sizeof(text), _("Preview %d"), current_preview + 1);
-		cairo_show_text(cr, text);
+		GtkStyleContext *context = gtk_widget_get_style_context(widget);
+		GtkStateFlags state = gtk_widget_get_state_flags(widget);
+		PangoLayout *layout;
+		gchar *msg;
+		GtkAllocation allocation;
+		gdouble scale;
+		GdkRGBA color;
+		gint w, h;
+
+		layout = gtk_widget_create_pango_layout(widget, NULL);
+
+		msg = g_strdup_printf(_("Preview %d"), current_preview + 1);
+		pango_layout_set_markup(layout, msg, -1);
+		g_free(msg);
+		pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
+
+		pango_layout_get_pixel_size(layout, &w, &h);
+		gtk_widget_get_allocation(widget, &allocation);
+
+		scale = MIN(((gdouble ) allocation.width / 2.0) / (gdouble ) w,
+				((gdouble ) allocation.height / 2.0) / (gdouble ) h);
+
+		gtk_style_context_get_color(context, state, &color);
+		gdk_cairo_set_source_rgba(cr, &color);
+
+		cairo_move_to(cr, (allocation.width - (w * scale)) / 2,
+				(allocation.height - (h * scale)) / 2);
+
+		cairo_scale(cr, scale, scale);
+
+		pango_cairo_show_layout(cr, layout);
+
+		g_object_unref(layout);
 		return TRUE;
 	}
 	cairo_translate(cr, area_width / 2.0 - com.seq.previewX[current_preview],
