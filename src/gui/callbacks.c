@@ -1323,8 +1323,10 @@ void set_GUI_CWD() {
 
 	gtk_label_set_text(label, com.wd);
 
-	str = g_strdup_printf("%s v%s - %s", PACKAGE, VERSION, com.wd);
-	gtk_window_set_title(GTK_WINDOW(lookup_widget("control_window")), str);
+	str = g_strdup_printf("Siril v%s", VERSION);
+	gtk_header_bar_set_title(GTK_HEADER_BAR(lookup_widget("headebar")), str);
+	gtk_header_bar_set_subtitle(GTK_HEADER_BAR(lookup_widget("headebar")), com.wd);
+
 	g_free(str);
 }
 
