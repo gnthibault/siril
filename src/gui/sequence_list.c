@@ -97,7 +97,6 @@ void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data
 static void initialize_seqlist_dialog_combo() {
 	if (!sequence_is_loaded()) return;
 
-	int i;
 	GtkComboBoxText *seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("seqlist_dialog_combo"));
 	g_signal_handlers_block_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
 	gtk_combo_box_text_remove_all(seqcombo);
