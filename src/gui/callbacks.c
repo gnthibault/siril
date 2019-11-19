@@ -63,6 +63,7 @@
 #include "callbacks.h"
 #include "message_dialog.h"
 #include "PSF_list.h"
+#include "sequence_list.h"
 #include "histogram.h"
 #include "script_menu.h"
 #include "progress_and_log.h"
@@ -2986,18 +2987,15 @@ gboolean on_right_panel_image_button_press_event(GtkWidget *button,
 
 		gtk_container_child_set(GTK_CONTAINER(paned), widget, "shrink",
 				panel_is_extended, NULL);
+		gtk_widget_set_visible(widget, !panel_is_extended);
 
 		if (!panel_is_extended) {
-			gtk_paned_set_position(GTK_PANED(lookup_widget("main_panel")), -1);
 			gtk_image_set_from_icon_name(image, "pan-end-symbolic",
 					GTK_ICON_SIZE_BUTTON);
 			panel_is_extended = TRUE;
 		} else {
-			gint w, h;
-			GtkWindow *window = GTK_WINDOW(lookup_widget("control_window"));
-			gtk_window_get_size(window, &w, &h);
+			gtk_widget_hide(widget);
 
-			gtk_paned_set_position(paned, w);
 			gtk_image_set_from_icon_name(image, "pan-start-symbolic",
 					GTK_ICON_SIZE_BUTTON);
 			panel_is_extended = FALSE;
