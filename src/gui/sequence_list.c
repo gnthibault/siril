@@ -99,6 +99,7 @@ static void initialize_seqlist_dialog_combo() {
 
 	int i;
 	GtkComboBoxText *seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("seqlist_dialog_combo"));
+	g_signal_handlers_block_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
 	gtk_combo_box_text_remove_all(seqcombo);
 
 	if (com.seq.nb_layers == 1) {
@@ -109,6 +110,7 @@ static void initialize_seqlist_dialog_combo() {
 		gtk_combo_box_text_append_text(seqcombo, _("Blue Channel"));
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(seqcombo), 0);
+	g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
 }
 
 static void initialize_title() {
@@ -134,6 +136,7 @@ void get_list_store() {
 		gtk_tree_view_column_set_cell_data_func(col, cell, fwhm_quality_cell_data_function, NULL, NULL);
 	}
 	initialize_title();
+	initialize_seqlist_dialog_combo();
 }
 
 /* Add an image to the list. If seq is NULL, the list is cleared. */
@@ -222,10 +225,6 @@ void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
 	if (gtk_widget_get_visible(lookup_widget("seqlist_dialog"))) {
 		siril_close_dialog("seqlist_dialog");
 	} else {
-		GtkComboBoxText *seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("seqlist_dialog_combo"));
-		g_signal_handlers_block_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
-		initialize_seqlist_dialog_combo();
-		g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
 		siril_open_dialog("seqlist_dialog");
 	}
 }
