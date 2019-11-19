@@ -194,14 +194,6 @@ void	init_mouse();
 void	adjust_reginfo();
 void	on_spinbut_shift_value_change(GtkSpinButton *spinbutton, gpointer user_data);
 
-/****************** sequence_list.h ******************/
-void	sequence_list_change_selection(gchar *path, gboolean new_value);
-void	sequence_list_change_selection_index(int index);
-void	sequence_list_change_current();
-void	sequence_list_change_reference();
-void	fill_sequence_list(sequence *seq, int layer, gboolean as_idle);
-void	clear_sequence_list();
-
 /****************** statistics_list.h ******************/
 void computeStat();
 

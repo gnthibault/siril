@@ -38,6 +38,7 @@
 #include "gui/message_dialog.h"
 #include "gui/plot.h"
 #include "gui/progress_and_log.h"
+#include "gui/sequence_list.h"
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "registration/registration.h"
@@ -957,6 +958,7 @@ static gboolean end_register_idle(gpointer p) {
 
 	if (!args->retval) {
 		if (!args->load_new_sequence) {
+			initialize_seqlist();
 			fill_sequence_list(args->seq, RLAYER, FALSE); // TODO: which layer must be chosen
 			set_layers_for_registration();	// update display of available reg data
 		}

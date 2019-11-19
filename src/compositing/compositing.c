@@ -38,6 +38,7 @@
 #include "gui/message_dialog.h"
 #include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
+#include "gui/sequence_list.h"
 #include "registration/registration.h"
 #include "compositing/filters.h"
 #include "stacking/stacking.h"

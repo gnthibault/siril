@@ -29,6 +29,8 @@
 #include "registration/registration.h"	// for update_reg_interface
 #include "stacking/stacking.h"	// for update_stack_interface
 
+#include "sequence_list.h"
+
 static gboolean fill_sequence_list_idle(gpointer p);
 
 static const char *bg_colour[] = { "WhiteSmoke", "#1B1B1B" };
@@ -72,7 +74,7 @@ void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
 	}
 }
 
-void fwhm_quality_cell_data_function (GtkTreeViewColumn *col,
+static void fwhm_quality_cell_data_function (GtkTreeViewColumn *col,
 		GtkCellRenderer   *renderer,
 		GtkTreeModel      *model,
 		GtkTreeIter       *iter,
@@ -97,8 +99,8 @@ void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data
 static void initialize_seqlist_dialog_combo() {
 	if (!sequence_is_loaded()) return;
 
-	int i;
 	GtkComboBoxText *seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("seqlist_dialog_combo"));
+	g_signal_handlers_block_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
 	gtk_combo_box_text_remove_all(seqcombo);
 
 	if (com.seq.nb_layers == 1) {
@@ -109,6 +111,7 @@ static void initialize_seqlist_dialog_combo() {
 		gtk_combo_box_text_append_text(seqcombo, _("Blue Channel"));
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(seqcombo), 0);
+	g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
 }
 
 static void initialize_title() {
@@ -125,7 +128,12 @@ static void initialize_title() {
 	g_free(seq_basename);
 }
 
-void get_list_store() {
+void initialize_seqlist() {
+	initialize_title();
+	initialize_seqlist_dialog_combo();
+}
+
+static void get_list_store() {
 	if (list_store == NULL) {
 		list_store = GTK_LIST_STORE(gtk_builder_get_object(builder, "liststore1"));
 
@@ -133,11 +141,10 @@ void get_list_store() {
 		GtkCellRenderer *cell = GTK_CELL_RENDERER(gtk_builder_get_object(builder, "cellrenderertext5"));
 		gtk_tree_view_column_set_cell_data_func(col, cell, fwhm_quality_cell_data_function, NULL, NULL);
 	}
-	initialize_title();
 }
 
 /* Add an image to the list. If seq is NULL, the list is cleared. */
-void add_image_to_sequence_list(sequence *seq, int index, int layer) {
+static void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 	static GtkTreeSelection *selection = NULL;
 	GtkTreeIter iter;
 	char imname[256];
@@ -222,10 +229,6 @@ void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
 	if (gtk_widget_get_visible(lookup_widget("seqlist_dialog"))) {
 		siril_close_dialog("seqlist_dialog");
 	} else {
-		GtkComboBoxText *seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("seqlist_dialog_combo"));
-		g_signal_handlers_block_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
-		initialize_seqlist_dialog_combo();
-		g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
 		siril_open_dialog("seqlist_dialog");
 	}
 }

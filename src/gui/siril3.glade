@@ -1952,7 +1952,6 @@ enter a visible wavelength in nm</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="position_set">True</property>
-                <property name="wide_handle">True</property>
                 <child>
                   <object class="GtkNotebook" id="notebook1">
                     <property name="visible">True</property>
@@ -6540,22 +6539,22 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="right_panel_button">
+              <object class="GtkEventBox">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="relief">none</property>
-                <signal name="clicked" handler="on_right_panel_button_clicked" swapped="no"/>
+                <property name="can_focus">False</property>
+                <property name="events">GDK_BUTTON_PRESS_MASK</property>
+                <signal name="button-press-event" handler="on_right_panel_image_button_press_event" swapped="no"/>
                 <child>
                   <object class="GtkImage" id="right_panel_image">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="events"/>
                     <property name="icon_name">pan-end-symbolic</property>
                   </object>
                 </child>
@@ -13195,25 +13194,41 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="layout_style">expand</property>
             <child>
               <object class="GtkButton">
-                <property name="label" translatable="yes">Exclude All</property>
+                <property name="name">undo-button</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Exclude all images of the sequence from the processing schedule</property>
                 <signal name="clicked" handler="on_seqexcludeall_button_clicked" swapped="no"/>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">edit-delete-symbolic</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton">
-                <property name="label" translatable="yes">Include All</property>
+                <property name="name">undo-button</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">includes all images of the sequence in the processing schedule</property>
                 <signal name="clicked" handler="on_seqselectall_button_clicked" swapped="no"/>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">edit-select-all-symbolic</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">True</property>

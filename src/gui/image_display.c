@@ -132,7 +132,7 @@ static void draw_empty_image(cairo_t *cr, guint width, guint height) {
 		gtk_widget_get_allocation(widget, &allocation);
 
 		scale = MIN(((gdouble ) allocation.width / 2.0) / (gdouble ) w,
-				((gdouble ) allocation.height / 2.0) / (gdouble ) h);
+				((gdouble ) allocation.height / 2.0) / (gdouble ) h / 2);
 
 		gtk_style_context_get_color(context, state, &color);
 		gdk_cairo_set_source_rgba(cr, &color);
