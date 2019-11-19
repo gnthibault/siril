@@ -40,6 +40,7 @@
 #include "gui/image_display.h"
 #include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"
+#include "gui/sequence_list.h"
 #include "gui/histogram.h"	// update_gfit_histogram_if_needed();
 #include "io/sequence.h"
 #include "io/single_image.h"

@@ -23,6 +23,7 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/image_interactions.h"
+#include "gui/sequence_list.h"
 #include "registration/registration.h"
 
 gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
@@ -257,6 +258,7 @@ void on_spinbut_shift_value_change(GtkSpinButton *spinbutton, gpointer user_data
 		com.seq.regparam[current_layer][com.seq.current].shiftx = (float) new_value;
 	else com.seq.regparam[current_layer][com.seq.current].shifty = (float) new_value;
 	writeseqfile(&com.seq);
+	initialize_seqlist();
 	fill_sequence_list(&com.seq, current_layer, FALSE);	// update list with new regparam
 	redraw_previews();
 }

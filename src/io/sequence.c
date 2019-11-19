@@ -57,6 +57,7 @@
 #include "gui/image_display.h"
 #include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"	// clear_stars_list
+#include "gui/sequence_list.h"
 #include "algos/PSF.h"
 #include "algos/quality.h"
 #include "algos/statistics.h"
@@ -460,6 +461,7 @@ int set_seq(const char *name){
 	seqsetnum(seq->current);	// set limits for spin button and display loaded filenum
 	set_layers_for_assign();	// set default layers assign and populate combo box
 	set_layers_for_registration();	// set layers in the combo box for registration
+	initialize_seqlist();
 	fill_sequence_list(seq, RLAYER, FALSE);// display list of files in the sequence
 	set_output_filename_to_sequence_name();
 	sliders_mode_set_state(com.sliders);
@@ -1586,8 +1588,10 @@ gboolean end_seqpsf(gpointer p) {
 		 * Most of these things are already done in end_register_idle
 		 * in case seqpsf is called for registration. */
 		// update the list in the GUI
-		if (seq->type != SEQ_INTERNAL)
+		if (seq->type != SEQ_INTERNAL) {
+			initialize_seqlist();
 			fill_sequence_list(seq, layer, FALSE);
+		}
 
 		set_layers_for_registration();	// update display of available reg data
 		drawPlot();

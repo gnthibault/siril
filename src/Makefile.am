@@ -141,6 +141,7 @@ siril_SOURCES = \
 	gui/script_menu.c \
 	gui/script_menu.h \
 	gui/sequence_list.c \
+	gui/sequence_list.h \
 	gui/statistics_list.c \
 	io/conversion.c \
 	io/conversion.h \
