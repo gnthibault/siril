@@ -460,7 +460,7 @@ int set_seq(const char *name){
 	seqsetnum(seq->current);	// set limits for spin button and display loaded filenum
 	set_layers_for_assign();	// set default layers assign and populate combo box
 	set_layers_for_registration();	// set layers in the combo box for registration
-	fill_sequence_list(seq, 0, FALSE);// display list of files in the sequence
+	fill_sequence_list(seq, RLAYER, FALSE);// display list of files in the sequence
 	set_output_filename_to_sequence_name();
 	sliders_mode_set_state(com.sliders);
 	initialize_display_mode();
@@ -1200,6 +1200,7 @@ void close_sequence(int loading_another) {
 			GtkComboBox *seqcombo = GTK_COMBO_BOX(lookup_widget("sequence_list_combobox"));
 			gtk_combo_box_set_active(seqcombo, -1);
 		}
+		adjust_sellabel();
 	}
 }
 

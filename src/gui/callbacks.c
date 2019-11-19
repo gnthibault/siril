@@ -1161,11 +1161,17 @@ void set_output_filename_to_sequence_name() {
 
 void adjust_refimage(int n) {
 	static GtkWidget *ref_butt = NULL;
-	if (ref_butt == NULL)
+	static GtkWidget *ref_butt2 = NULL;
+	if (ref_butt == NULL) {
 		ref_butt = lookup_widget("refframe");
+		ref_butt2 = lookup_widget("refframe2");
+	}
 
 	g_signal_handlers_block_by_func(ref_butt, on_ref_frame_toggled, NULL);
+	g_signal_handlers_block_by_func(ref_butt2, on_ref_frame_toggled, NULL);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ref_butt), com.seq.reference_image == n);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ref_butt2), com.seq.reference_image == n);
+	g_signal_handlers_unblock_by_func(ref_butt2, on_ref_frame_toggled, NULL);
 	g_signal_handlers_unblock_by_func(ref_butt, on_ref_frame_toggled, NULL);
 }
 
@@ -1314,11 +1320,14 @@ void set_GUI_CWD() {
 		return;
 	gchar *str;
 	GtkLabel *label = GTK_LABEL(lookup_widget("labelcwd"));
+	GtkHeaderBar *bar = GTK_HEADER_BAR(lookup_widget("headebar"));
 
 	gtk_label_set_text(label, com.wd);
 
-	str = g_strdup_printf("%s v%s - %s", PACKAGE, VERSION, com.wd);
-	gtk_window_set_title(GTK_WINDOW(lookup_widget("control_window")), str);
+	str = g_strdup_printf("Siril-%s", VERSION);
+	gtk_header_bar_set_title(bar , str);
+	gtk_header_bar_set_subtitle(bar, com.wd);
+
 	g_free(str);
 }
 
@@ -1645,33 +1654,22 @@ void on_minscale_changed(GtkRange *range, gpointer user_data) {
 	if (minentry == NULL)
 		minentry = GTK_ENTRY(gtk_builder_get_object(builder, "min_entry"));
 
-	if (single_image_is_loaded() && com.seq.current < RESULT_IMAGE &&
-			com.cvport < com.uniq->nb_layers) {
-		com.uniq->layers[com.cvport].lo = (int) gtk_range_get_value(range);
-		buffer = g_strdup_printf("%u", com.uniq->layers[com.cvport].lo);
-	} else if (sequence_is_loaded() && com.cvport < com.seq.nb_layers) {
-		com.seq.layers[com.cvport].lo = (int) gtk_range_get_value(range);
-		buffer = g_strdup_printf("%u", com.seq.layers[com.cvport].lo);
+	if (single_image_is_loaded() && com.seq.current < RESULT_IMAGE) {
+		int value = (int) gtk_range_get_value(range);
+		if (com.cvport < com.uniq->nb_layers)
+			com.uniq->layers[com.cvport].lo = value;
+		buffer = g_strdup_printf("%u", value);
+	} else if (sequence_is_loaded()) {
+		int value = (int) gtk_range_get_value(range);
+		if (com.cvport < com.seq.nb_layers)
+			com.seq.layers[com.cvport].lo = value;
+		buffer = g_strdup_printf("%u", value);
 
 	} else return;
 	g_signal_handlers_block_by_func(minentry, on_min_entry_changed, NULL);
 	gtk_entry_set_text(minentry, buffer);
 	g_signal_handlers_unblock_by_func(minentry, on_min_entry_changed, NULL);
 	g_free(buffer);
-}
-
-gboolean on_minscale_release(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	if (com.sliders != USER) {
-		com.sliders = USER;
-		sliders_mode_set_state(com.sliders);
-	}
-	if (copy_rendering_settings_when_chained(FALSE))
-		redraw(com.cvport, REMAP_ALL);
-	else
-		redraw(com.cvport, REMAP_ONLY);
-	redraw_previews();
-	return FALSE;
 }
 
 /* when the cursor moves, update the value displayed in the textbox and save it
@@ -1682,18 +1680,35 @@ void on_maxscale_changed(GtkRange *range, gpointer user_data) {
 	if (maxentry == NULL)
 		maxentry = GTK_ENTRY(gtk_builder_get_object(builder, "max_entry"));
 
-	if (single_image_is_loaded() && com.seq.current < RESULT_IMAGE &&
-			com.cvport < com.uniq->nb_layers) {
-		com.uniq->layers[com.cvport].hi = (int) gtk_range_get_value(range);
-		buffer = g_strdup_printf("%u", com.uniq->layers[com.cvport].hi);
-	} else if (sequence_is_loaded() && com.cvport < com.seq.nb_layers) {
-		com.seq.layers[com.cvport].hi = (int) gtk_range_get_value(range);
-		buffer = g_strdup_printf("%u", com.seq.layers[com.cvport].hi);
+	if (single_image_is_loaded() && com.seq.current < RESULT_IMAGE) {
+		int value = (int) gtk_range_get_value(range);
+		if (com.cvport < com.uniq->nb_layers)
+			com.uniq->layers[com.cvport].hi = value;
+		buffer = g_strdup_printf("%u", value);
+	} else if (sequence_is_loaded()) {
+		int value = (int) gtk_range_get_value(range);
+		if (com.cvport < com.seq.nb_layers)
+			com.seq.layers[com.cvport].hi = value;
+		buffer = g_strdup_printf("%u", value);
 	} else return;
 	g_signal_handlers_block_by_func(maxentry, on_max_entry_changed, NULL);
 	gtk_entry_set_text(maxentry, buffer);
 	g_signal_handlers_unblock_by_func(maxentry, on_max_entry_changed, NULL);
 	g_free(buffer);
+}
+
+gboolean on_minscale_release(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+	if (com.sliders != USER) {
+		com.sliders = USER;
+		sliders_mode_set_state(com.sliders);
+	}
+	if (copy_rendering_settings_when_chained(TRUE))
+		redraw(com.cvport, REMAP_ALL);
+	else
+		redraw(com.cvport, REMAP_ONLY);
+	redraw_previews();
+	return FALSE;
 }
 
 gboolean on_maxscale_release(GtkWidget *widget, GdkEvent *event,
@@ -2692,7 +2707,6 @@ void on_notebook1_switch_page(GtkNotebook *notebook, GtkWidget *page,
 	set_display_mode();		// change the mode in the combo box if needed
 	redraw(com.cvport, REMAP_ONLY);
 	calculate_fwhm(com.vport[com.cvport]);
-	fill_sequence_list(&com.seq, com.cvport, FALSE);
 }
 
 struct checkSeq_filter_data {

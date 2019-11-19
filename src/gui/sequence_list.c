@@ -21,6 +21,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/dialogs.h"
 #include "gui/image_display.h"
 #include "gui/progress_and_log.h"
 #include "io/sequence.h"
@@ -48,6 +49,29 @@ enum {
 	N_COLUMNS
 };
 
+void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
+		GtkTreeViewColumn *column, gpointer user_data) {
+	GtkTreeModel *treeModel;
+	GtkTreeSelection *selection;
+	GtkTreeIter iter;
+
+	treeModel = gtk_tree_view_get_model(tree_view);
+	selection = gtk_tree_view_get_selection (tree_view);
+
+	if (gtk_tree_selection_get_selected(selection, &treeModel, &iter)) {
+		gint idx;
+		GValue value = G_VALUE_INIT;
+
+		gtk_tree_model_get_value(treeModel, &iter, COLUMN_INDEX, &value);
+		idx = g_value_get_int(&value) - 1;
+		if (idx != com.seq.current) {
+			fprintf(stdout, "loading image %d\n", idx);
+			seq_load_image(&com.seq, idx, TRUE);
+		}
+		g_value_unset(&value);
+	}
+}
+
 void fwhm_quality_cell_data_function (GtkTreeViewColumn *col,
 		GtkCellRenderer   *renderer,
 		GtkTreeModel      *model,
@@ -63,6 +87,44 @@ void fwhm_quality_cell_data_function (GtkTreeViewColumn *col,
 	g_object_set(renderer, "text", buf, NULL);
 }
 
+void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data) {
+	int active = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	if (active >= 0) {
+		fill_sequence_list(&com.seq, active, FALSE);
+	}
+}
+
+static void initialize_seqlist_dialog_combo() {
+	if (!sequence_is_loaded()) return;
+
+	int i;
+	GtkComboBoxText *seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("seqlist_dialog_combo"));
+	gtk_combo_box_text_remove_all(seqcombo);
+
+	if (com.seq.nb_layers == 1) {
+		gtk_combo_box_text_append_text(seqcombo, _("B&W Channel"));
+	} else {
+		gtk_combo_box_text_append_text(seqcombo, _("Red Channel"));
+		gtk_combo_box_text_append_text(seqcombo, _("Green Channel"));
+		gtk_combo_box_text_append_text(seqcombo, _("Blue Channel"));
+	}
+	gtk_combo_box_set_active(GTK_COMBO_BOX(seqcombo), 0);
+}
+
+static void initialize_title() {
+	GtkHeaderBar *bar = GTK_HEADER_BAR(lookup_widget("seqlistbar"));
+	gchar *seq_basename;
+
+	if (sequence_is_loaded())
+		seq_basename = g_path_get_basename(com.seq.seqname);
+	else
+		seq_basename = g_strdup(_("No sequence loaded"));
+
+	gtk_header_bar_set_subtitle(bar, seq_basename);
+
+	g_free(seq_basename);
+}
+
 void get_list_store() {
 	if (list_store == NULL) {
 		list_store = GTK_LIST_STORE(gtk_builder_get_object(builder, "liststore1"));
@@ -71,6 +133,7 @@ void get_list_store() {
 		GtkCellRenderer *cell = GTK_CELL_RENDERER(gtk_builder_get_object(builder, "cellrenderertext5"));
 		gtk_tree_view_column_set_cell_data_func(col, cell, fwhm_quality_cell_data_function, NULL, NULL);
 	}
+	initialize_title();
 }
 
 /* Add an image to the list. If seq is NULL, the list is cleared. */
@@ -115,7 +178,7 @@ void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 			// http://developer.gnome.org/gtk3/stable/GtkCellRendererText.html#GtkCellRendererText--weight
 			COLUMN_REFERENCE, index == seq->reference_image ?
 			ref_bg_colour[color] : bg_colour[color],
-			COLUMN_INDEX, index,
+			COLUMN_INDEX, (index + 1),
 			-1);
 	/* see example at http://developer.gnome.org/gtk3/3.5/GtkListStore.html */
 	if (index == seq->current) {
@@ -145,9 +208,9 @@ void fill_sequence_list(sequence *seq, int layer, gboolean as_idle) {
 static gboolean fill_sequence_list_idle(gpointer p) {
 	int i;
 	struct _seq_list *args = (struct _seq_list *)p;
-	add_image_to_sequence_list(NULL, 0, 0);	// clear  
+	add_image_to_sequence_list(NULL, 0, 0);	// clear
 	if (args->seq->number > 0) {
-		for (i=0; i<args->seq->number; i++) {
+		for (i = 0; i < args->seq->number; i++) {
 			add_image_to_sequence_list(args->seq, i, args->layer);
 		}
 	}
@@ -155,23 +218,16 @@ static gboolean fill_sequence_list_idle(gpointer p) {
 	return FALSE;
 }
 
-void show_seqlist(GtkWidget *widget, gboolean show) {
-	static gboolean was_extended = FALSE;
-	if (!was_extended) {
-		gint w, h;
-		GtkWindow *window = GTK_WINDOW(lookup_widget("control_window"));
-		gtk_window_get_size(window, &w, &h);
-		gtk_window_resize(window, w+200, h);
-		was_extended = TRUE;
+void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
+	if (gtk_widget_get_visible(lookup_widget("seqlist_dialog"))) {
+		siril_close_dialog("seqlist_dialog");
+	} else {
+		GtkComboBoxText *seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("seqlist_dialog_combo"));
+		g_signal_handlers_block_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
+		initialize_seqlist_dialog_combo();
+		g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
+		siril_open_dialog("seqlist_dialog");
 	}
-	gtk_paned_set_position(GTK_PANED(widget), show ? 200 : 0);
-}
-
-void on_toggle_show_seqlist_toggled(GtkToggleToolButton *togglebutton, gpointer user_data) {
-	static GtkWidget *paned = NULL;
-	if (!paned)
-		paned = lookup_widget("paned1");
-	show_seqlist(paned, gtk_toggle_tool_button_get_active(togglebutton));
 }
 
 int get_image_index_from_path(GtkTreePath *path) {
@@ -181,7 +237,7 @@ int get_image_index_from_path(GtkTreePath *path) {
 	get_list_store();
 	gtk_tree_model_get_iter(GTK_TREE_MODEL(list_store), &iter, path);
 	gtk_tree_model_get_value(GTK_TREE_MODEL(list_store), &iter, COLUMN_INDEX, &value);
-	index = g_value_get_int(&value);
+	index = g_value_get_int(&value) - 1;
 	g_value_unset(&value);
 	return index;
 }
@@ -191,11 +247,6 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	gint index = get_image_index_from_path(gtk_tree_path_new_from_string(path));
 	if (index < 0 || index >= com.seq.number) return;
 	fprintf(stdout, "toggle selection index = %d\n", index);
-	/*if (gtk_cell_renderer_toggle_get_active(cell_renderer) ==
-			com.seq.imgparam[index].incl) {
-		fprintf(stdout, "mismatch in selection toggle, what should I do?\n");
-		return;
-	}*/
 
 	sequence_list_change_selection(path, !com.seq.imgparam[index].incl);
 	siril_log_message(_("%s image %d in sequence %s\n"),
@@ -211,29 +262,6 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	update_stack_interface(FALSE);
 	writeseqfile(&com.seq);
 	redraw(com.cvport, REMAP_NONE);
-}
-
-void on_treeview1_cursor_changed(GtkTreeView *tree_view,
-		gpointer user_data) {
-	GtkTreeModel *treeModel;
-	GtkTreeSelection *selection;
-	GtkTreeIter iter;
-
-	treeModel = gtk_tree_view_get_model(tree_view);
-	selection = gtk_tree_view_get_selection (tree_view);
-
-	if (gtk_tree_selection_get_selected(selection, &treeModel, &iter)) {
-		gint idx;
-		GValue value = G_VALUE_INIT;
-
-		gtk_tree_model_get_value(treeModel, &iter, COLUMN_INDEX, &value);
-		idx = g_value_get_int(&value);
-		if (idx != com.seq.current) {
-			fprintf(stdout, "loading image %d\n", idx);
-			seq_load_image(&com.seq, idx, TRUE);
-		}
-		g_value_unset(&value);
-	}
 }
 
 /****************** modification of the list store (tree model) ******************/
@@ -262,7 +290,7 @@ void sequence_list_change_current() {
 		GValue value = G_VALUE_INIT;
 
 		gtk_tree_model_get_value (GTK_TREE_MODEL(list_store), &iter, COLUMN_INDEX, &value);
-		index = g_value_get_int(&value);
+		index = g_value_get_int(&value) - 1;
 		g_value_unset(&value);
 		gtk_list_store_set(list_store, &iter,
 				COLUMN_CURRENT, (index == com.seq.current) ? 800 : 400,
@@ -293,7 +321,5 @@ void sequence_list_change_reference() {
 
 void clear_sequence_list() {
 	get_list_store();
-	g_signal_handlers_block_by_func(lookup_widget("treeview1"), on_treeview1_cursor_changed, NULL);
 	gtk_list_store_clear(list_store);
-	g_signal_handlers_unblock_by_func(lookup_widget("treeview1"), on_treeview1_cursor_changed, NULL);
 }

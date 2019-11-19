@@ -114,8 +114,7 @@ static void draw_empty_image(cairo_t *cr, guint width, guint height) {
 		GtkAllocation allocation;
 		gdouble scale;
 		GdkRGBA color;
-		gint w = (gint) width;
-		gint h = (gint) height;
+		gint w, h;
 
 		layout = gtk_widget_create_pango_layout(widget, NULL);
 

@@ -957,7 +957,7 @@ static gboolean end_register_idle(gpointer p) {
 
 	if (!args->retval) {
 		if (!args->load_new_sequence) {
-			fill_sequence_list(args->seq, com.cvport, FALSE);
+			fill_sequence_list(args->seq, RLAYER, FALSE); // TODO: which layer must be chosen
 			set_layers_for_registration();	// update display of available reg data
 		}
 		else {
