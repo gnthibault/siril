@@ -91,8 +91,7 @@ static int readinitfile() {
 				&com.debayer.bayer_pattern);
 		config_setting_lookup_bool(debayer_setting, "compatibility",
 						&com.debayer.compatibility);
-		int inter = com.debayer.bayer_inter;
-		config_setting_lookup_int(debayer_setting, "inter", &inter);
+		config_setting_lookup_int(debayer_setting, "inter", &com.debayer.bayer_inter);
 		config_setting_lookup_bool(debayer_setting, "stretch",
 						&com.debayer.stretch);
 		config_setting_lookup_int(debayer_setting, "xbayeroff", &com.debayer.xbayeroff);
