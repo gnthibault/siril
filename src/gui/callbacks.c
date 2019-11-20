@@ -339,14 +339,16 @@ GtkWidget *popover_new(GtkWidget *widget, const gchar *text) {
 }
 
 static void update_theme_button(const gchar *button_name, const gchar *path) {
-	gchar *images;
+	gchar *image;
+	GtkWidget *w_image;
 
-	images = g_build_filename(siril_get_system_data_dir(), "pixmaps", path, NULL);
-	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget(button_name)),
-			gtk_image_new_from_file(images));
-	gtk_widget_show_all(lookup_widget(button_name));
+	image = g_build_filename(siril_get_system_data_dir(), "pixmaps", path, NULL);
+	w_image = gtk_image_new_from_file(image);
+	gtk_widget_show(w_image);
+	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget(button_name)), w_image);
+	gtk_widget_show(lookup_widget(button_name));
 
-	g_free(images);
+	g_free(image);
 }
 
 static void update_icons_to_theme(gboolean is_dark) {
@@ -1073,7 +1075,7 @@ void show_data_dialog(char *text, char *title) {
 	gtk_text_buffer_set_text(tbuf, text, strlen(text));
 	gtk_window_set_title(GTK_WINDOW(lookup_widget("data_dialog")), title);
 
-	gtk_widget_show_all(lookup_widget("data_dialog"));
+	gtk_widget_show(lookup_widget("data_dialog"));
 }
 
 /**

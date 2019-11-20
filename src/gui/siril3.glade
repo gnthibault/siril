@@ -13240,6 +13240,21 @@ If not set manually, the first image of the sequence is taken as reference.</pro
             <property name="position">2</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkSearchEntry" id="seqlistsearch">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="primary_icon_name">edit-find-symbolic</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">False</property>
+            <property name="input_purpose">digits</property>
+            <signal name="search-changed" handler="on_seqlistsearch_search_changed" swapped="no"/>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
       </object>
     </child>
     <child>

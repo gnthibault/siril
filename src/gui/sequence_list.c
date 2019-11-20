@@ -128,9 +128,14 @@ static void initialize_title() {
 	g_free(seq_basename);
 }
 
+static void initialize_search_entry() {
+	gtk_entry_set_text (GTK_ENTRY(lookup_widget("seqlistsearch")), "");
+}
+
 void initialize_seqlist() {
 	initialize_title();
 	initialize_seqlist_dialog_combo();
+	initialize_search_entry();
 }
 
 static void get_list_store() {
@@ -225,6 +230,13 @@ static gboolean fill_sequence_list_idle(gpointer p) {
 	return FALSE;
 }
 
+static void sequence_list_change_selection(gchar *path, gboolean new_value) {
+	GtkTreeIter iter;
+	get_list_store();
+	gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(list_store), &iter, path);
+	gtk_list_store_set(list_store, &iter, COLUMN_SELECTED, new_value, -1);
+}
+
 void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
 	if (gtk_widget_get_visible(lookup_widget("seqlist_dialog"))) {
 		siril_close_dialog("seqlist_dialog");
@@ -267,14 +279,42 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	redraw(com.cvport, REMAP_NONE);
 }
 
-/****************** modification of the list store (tree model) ******************/
-
-void sequence_list_change_selection(gchar *path, gboolean new_value) {
+void on_seqlistsearch_search_changed(GtkEntry *entry, gpointer user_data) {
+	const gchar *text = gtk_entry_get_text(entry);
+	gint int_entry;
 	GtkTreeIter iter;
+	gboolean valid;
+	GtkTreeView *tree_view;
+
+	if (text[0] == '\0')
+		return;
+	int_entry = atoi(text);
+	tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview1"));
+
 	get_list_store();
-	gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(list_store), &iter, path);
-	gtk_list_store_set(list_store, &iter, COLUMN_SELECTED, new_value, -1);
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store), &iter);
+	while (valid) {
+		gint index = 0;
+		GValue value = G_VALUE_INIT;
+
+		gtk_tree_model_get_value (GTK_TREE_MODEL(list_store), &iter, COLUMN_INDEX, &value);
+		index = g_value_get_int(&value);
+		g_value_unset(&value);
+		if (int_entry == index) {
+			GtkTreeViewColumn *t_col = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, "treeviewcolumn16"));
+			GtkTreeSelection *selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder, "treeview-selection1"));
+			gchar *path = g_strdup_printf("%d", index - 1);
+			GtkTreePath *tree_path = gtk_tree_path_new_from_string(path);
+			gtk_tree_view_scroll_to_cell(tree_view, tree_path, t_col, TRUE, 0.5, 0.5);
+			gtk_tree_selection_select_iter(selection, &iter);
+			g_free(path);
+			break;
+		}
+		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store), &iter);
+	}
 }
+
+/****************** modification of the list store (tree model) ******************/
 
 void sequence_list_change_selection_index(int index) {
 	sequence_list_change_selection(

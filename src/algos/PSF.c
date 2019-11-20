@@ -35,6 +35,7 @@
 #include "core/proto.h"
 #include "core/command.h"
 #include "gui/callbacks.h"
+#include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
 #include "gui/image_display.h"
@@ -800,7 +801,6 @@ void on_menu_gray_seqpsf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_menu_gray_pick_star_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
 	int new_index;
-	GtkWidget *window = lookup_widget("stars_list_window");
 
 	if (layer != -1) {
 		if (!(com.selection.h && com.selection.w))
@@ -813,8 +813,7 @@ void on_menu_gray_pick_star_activate(GtkMenuItem *menuitem, gpointer user_data) 
 		fitted_PSF *new_star = add_star(&gfit, layer, &new_index);
 		if (new_star) {
 			add_star_to_list(new_star);
-			if (!(gtk_widget_get_visible(window)))//We open the stars_list_window
-				gtk_widget_show_all(window);
+			siril_open_dialog("stars_list_window");
 		} else
 			return;
 	}
