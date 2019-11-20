@@ -91,7 +91,7 @@ static int readinitfile() {
 				&com.debayer.bayer_pattern);
 		config_setting_lookup_bool(debayer_setting, "compatibility",
 						&com.debayer.compatibility);
-		config_setting_lookup_int(debayer_setting, "inter", &com.debayer.bayer_inter);
+		config_setting_lookup_int(debayer_setting, "inter", (int*)&com.debayer.bayer_inter);
 		config_setting_lookup_bool(debayer_setting, "stretch",
 						&com.debayer.stretch);
 		config_setting_lookup_int(debayer_setting, "xbayeroff", &com.debayer.xbayeroff);
@@ -121,14 +121,9 @@ static int readinitfile() {
 		config_setting_lookup_int(stack_setting, "normalisation",
 				&com.stack.normalisation_method);
 
-		int mode = 0;
-		config_setting_lookup_int(stack_setting, "mem_mode",
-				&mode);
-		com.stack.mem_mode = mode;
-		config_setting_lookup_float(stack_setting, "maxmem",
-				&com.stack.memory_ratio);
-		config_setting_lookup_float(stack_setting, "maxmem_gb",
-				&com.stack.memory_amount);
+		config_setting_lookup_int(stack_setting, "mem_mode", (int*)&com.stack.mem_mode);
+		config_setting_lookup_float(stack_setting, "maxmem", &com.stack.memory_ratio);
+		config_setting_lookup_float(stack_setting, "maxmem_gb",	&com.stack.memory_amount);
 	}
 	if (com.stack.mem_mode < 0 || com.stack.mem_mode > 2)
 		com.stack.mem_mode = RATIO;
@@ -211,8 +206,7 @@ static void _save_libraw(config_t *config, config_setting_t *root) {
 	raw_setting = config_setting_add(libraw_group, "auto_wb", CONFIG_TYPE_INT);
 	config_setting_set_int(raw_setting, com.raw_set.use_auto_wb);
 
-	raw_setting = config_setting_add(libraw_group, "user_qual",
-	CONFIG_TYPE_INT);
+	raw_setting = config_setting_add(libraw_group, "user_qual",	CONFIG_TYPE_INT);
 	config_setting_set_int(raw_setting, com.raw_set.user_qual);
 
 	raw_setting = config_setting_add(libraw_group, "gamm_0", CONFIG_TYPE_FLOAT);
@@ -221,8 +215,7 @@ static void _save_libraw(config_t *config, config_setting_t *root) {
 	raw_setting = config_setting_add(libraw_group, "gamm_1", CONFIG_TYPE_FLOAT);
 	config_setting_set_float(raw_setting, com.raw_set.gamm[1]);
 
-	raw_setting = config_setting_add(libraw_group, "user_black",
-	CONFIG_TYPE_INT);
+	raw_setting = config_setting_add(libraw_group, "user_black", CONFIG_TYPE_INT);
 	config_setting_set_int(raw_setting, com.raw_set.user_black);
 }
 

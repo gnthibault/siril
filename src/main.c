@@ -220,7 +220,7 @@ static void siril_app_startup (GApplication *application) {
 
 	g_set_application_name(PACKAGE_NAME);
 	gtk_window_set_default_icon_name("siril");
-	g_application_set_resource_base_path(application, "/org/freeastro/siril/pixmaps/");
+	g_application_set_resource_base_path(application, "/org/free_astro/siril/pixmaps/");
 
 	g_action_map_add_action_entries(G_ACTION_MAP(application), app_entries,
 			G_N_ELEMENTS(app_entries), application);
@@ -321,8 +321,7 @@ static void siril_app_activate(GApplication *application) {
 		/* Load the css sheet for general style */
 		load_css_style_sheet();
 		/* Passing GApplication to the control center */
-		gtk_window_set_application(GTK_WINDOW(lookup_widget("control_window")),
-				GTK_APPLICATION(application));
+		gtk_window_set_application(GTK_WINDOW(lookup_widget("control_window")),	GTK_APPLICATION(application));
 		/* Load state of the main windows (position and mximized) */
 		load_main_window_state();
 	}
@@ -383,7 +382,7 @@ int main(int argc, char *argv[]) {
 	g_free(dir);
 	g_setenv("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
-	app = gtk_application_new("org.freeastro.siril", G_APPLICATION_HANDLES_OPEN);
+	app = gtk_application_new("org.free_astro.siril", G_APPLICATION_HANDLES_OPEN);
 
 	g_signal_connect(app, "startup", G_CALLBACK(siril_app_startup), NULL);
 	g_signal_connect(app, "activate", G_CALLBACK(siril_app_activate), NULL);

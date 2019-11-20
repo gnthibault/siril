@@ -1264,9 +1264,7 @@ static void add_accelerator(GtkApplication *app, const gchar *action_name,
 }
 
 static void load_accels() {
-	GtkApplication *application;
-
-	application = gtk_window_get_application(GTK_WINDOW(lookup_widget("control_window")));
+	GApplication *application = g_application_get_default();
 
 	add_accelerator(GTK_APPLICATION(application), "app.quit", "<Primary>Q");
 	add_accelerator(GTK_APPLICATION(application), "app.preferences", "<Primary>P");
@@ -1387,7 +1385,7 @@ static void initialize_preprocessing() {
 	update_prepro_interface(FALSE);
 }
 
-void set_libraw_settings_menu_available(gboolean activate) {
+static void set_libraw_settings_menu_available(gboolean activate) {
 	if (!com.script) {
 		GtkNotebook *notebook = GTK_NOTEBOOK(lookup_widget("notebook3"));
 		GtkWidget *widget = gtk_notebook_get_nth_page(notebook, 0);
