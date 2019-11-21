@@ -148,9 +148,10 @@ static int readinitfile() {
 		config_setting_lookup_bool(misc_setting, "remember_winpos", &com.remember_windows);
 		config_setting_lookup_bool(misc_setting, "is_maximized", &com.is_maximized);
 		config_setting_lookup_string(misc_setting, "swap_directory", &swap_dir);
-		if (swap_dir) com.swap_dir = g_strdup(swap_dir);
+		com.swap_dir = swap_dir ? g_strdup(swap_dir) : g_strdup(g_get_tmp_dir());
 		config_setting_lookup_string(misc_setting, "extension", &extension);
-		if (extension) com.ext = g_strdup(extension);
+		com.ext = extension ? g_strdup(extension) : g_strdup(".fit");
+
 
 		misc_setting = config_lookup(&config, "misc-settings.scripts_paths");
 		if (misc_setting != NULL) {

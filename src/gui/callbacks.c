@@ -1614,7 +1614,6 @@ void initialize_all_GUI(gchar *supported_files) {
 	initialize_path_directory();
 
 	/* initialization of default FITS extension */
-	com.ext = com.ext ? com.ext : g_strdup(".fit");
 	GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
 	gtk_combo_box_set_active_id(box, com.ext);
 	initialize_FITS_name_entries();
