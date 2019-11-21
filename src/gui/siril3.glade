@@ -13180,13 +13180,13 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Exclude all images of the sequence from the processing schedule</property>
+                <property name="tooltip_text" translatable="yes">Excludes all images of the sequence from the processing schedule</property>
                 <signal name="clicked" handler="on_seqexcludeall_button_clicked" swapped="no"/>
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="icon_name">edit-delete-symbolic</property>
+                    <property name="icon_name">list-remove-all-symbolic</property>
                   </object>
                 </child>
               </object>
@@ -13194,6 +13194,28 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="name">undo-button</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Exclude selected images of the sequence from the processing schedule</property>
+                <signal name="clicked" handler="on_selected_frames_unselect" swapped="no"/>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">list-remove-symbolic</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -13215,7 +13237,29 @@ Uncheck if images come from a monochrome sensor.</property>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="name">undo-button</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Includes selected images of the sequence from the processing schedule</property>
+                <signal name="clicked" handler="on_selected_frames_select" swapped="no"/>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">list-add-symbolic</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
               </packing>
             </child>
           </object>
@@ -13278,7 +13322,9 @@ If not set manually, the first image of the sequence is taken as reference.</pro
             <property name="activate_on_single_click">True</property>
             <signal name="row-activated" handler="on_treeview1_row_activated" swapped="no"/>
             <child internal-child="selection">
-              <object class="GtkTreeSelection" id="treeview-selection1"/>
+              <object class="GtkTreeSelection" id="treeview-selection1">
+                <property name="mode">multiple</property>
+              </object>
             </child>
             <child>
               <object class="GtkTreeViewColumn" id="treeviewcolumn16">

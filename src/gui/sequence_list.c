@@ -53,18 +53,21 @@ enum {
 
 void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
 		GtkTreeViewColumn *column, gpointer user_data) {
-	GtkTreeModel *treeModel;
+	GtkTreeModel *tree_model;
 	GtkTreeSelection *selection;
 	GtkTreeIter iter;
+	GList *list;
 
-	treeModel = gtk_tree_view_get_model(tree_view);
+	tree_model = gtk_tree_view_get_model(tree_view);
 	selection = gtk_tree_view_get_selection (tree_view);
 
-	if (gtk_tree_selection_get_selected(selection, &treeModel, &iter)) {
+	list = gtk_tree_selection_get_selected_rows(selection, &tree_model);
+	if (g_list_length(list) == 1) {
 		gint idx;
 		GValue value = G_VALUE_INIT;
+		gtk_tree_model_get_iter(tree_model, &iter, path);
 
-		gtk_tree_model_get_value(treeModel, &iter, COLUMN_INDEX, &value);
+		gtk_tree_model_get_value(tree_model, &iter, COLUMN_INDEX, &value);
 		idx = g_value_get_int(&value) - 1;
 		if (idx != com.seq.current) {
 			fprintf(stdout, "loading image %d\n", idx);
@@ -72,6 +75,7 @@ void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
 		}
 		g_value_unset(&value);
 	}
+	g_list_free_full(list, (GDestroyNotify) gtk_tree_path_free);
 }
 
 static void fwhm_quality_cell_data_function(GtkTreeViewColumn *col,
@@ -239,6 +243,62 @@ static void sequence_list_change_selection(gchar *path, gboolean new_value) {
 	gtk_list_store_set(list_store, &iter, COLUMN_SELECTED, new_value, -1);
 }
 
+static GList *get_row_references_of_selected_rows(GtkTreeSelection *selection,
+		GtkTreeModel *model) {
+	GList *ref = NULL;
+	GList *sel, *s;
+
+	sel = gtk_tree_selection_get_selected_rows(selection, &model);
+
+	for (s = sel; s; s = s->next) {
+		GtkTreeRowReference *rowref = gtk_tree_row_reference_new(model,	(GtkTreePath *) s->data);
+		ref = g_list_prepend(ref, rowref);
+	}
+	g_list_free_full(sel, (GDestroyNotify) gtk_tree_path_free);
+	return ref;
+}
+
+static void unselect_select_frame_from_list(gboolean select) {
+	GtkTreeSelection *selection;
+	GtkTreeModel *model;
+	GList *references, *list;
+	GtkTreeView *tree_view;
+	get_list_store();
+
+	tree_view = GTK_TREE_VIEW(lookup_widget("treeview1"));
+	model = gtk_tree_view_get_model(tree_view);
+	selection = gtk_tree_view_get_selection(tree_view);
+	references = get_row_references_of_selected_rows(selection, model);
+	for (list = references; list; list = list->next) {
+		GtkTreeIter iter;
+		GtkTreePath *path = gtk_tree_row_reference_get_path((GtkTreeRowReference*)list->data);
+		if (path) {
+			if (gtk_tree_model_get_iter(model, &iter, path)) {
+				gint idx;
+				gtk_tree_model_get(model, &iter, COLUMN_INDEX, &idx, -1);
+				idx --; // we count frames from 1 !!
+				com.seq.imgparam[idx].incl = select;
+				if (com.seq.imgparam[idx].incl)
+					com.seq.selnum++;
+				else 	{
+					com.seq.selnum--;
+					if (idx == com.seq.reference_image) {
+						com.seq.reference_image = -1;
+						sequence_list_change_reference();
+						adjust_refimage(idx);
+					}
+				}
+				sequence_list_change_selection_index(idx);
+				update_reg_interface(FALSE);
+				update_stack_interface(TRUE);
+				adjust_exclude(idx, TRUE);
+			}
+			gtk_tree_path_free(path);
+		}
+	}
+	g_list_free(references);
+}
+
 void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
 	if (gtk_widget_get_visible(lookup_widget("seqlist_dialog"))) {
 		siril_close_dialog("seqlist_dialog");
@@ -279,6 +339,14 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	update_stack_interface(FALSE);
 	writeseqfile(&com.seq);
 	redraw(com.cvport, REMAP_NONE);
+}
+
+void on_selected_frames_unselect(GtkButton *button, gpointer user_data) {
+	unselect_select_frame_from_list(FALSE);
+}
+
+void on_selected_frames_select(GtkButton *button, gpointer user_data) {
+	unselect_select_frame_from_list(TRUE);
 }
 
 /****************** modification of the list store (tree model) ******************/
