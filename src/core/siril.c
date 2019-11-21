@@ -235,6 +235,9 @@ int siril_fdiv(fits *a, fits *b, float coef) {
 			newdata[o++] = (float)val;
 		}
 	}
+
+	// TODO: normalize
+
 	fit_replace_buffer(a, newdata, DATA_FLOAT);
 	return retvalue;
 }

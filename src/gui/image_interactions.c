@@ -409,21 +409,33 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 
 	if (inimage((GdkEvent *) event)) {
 		char buffer[45];
-		char format[25], *format_base = "x: %%.%dd y: %%.%dd = %%.%dd";
-		int coords_width = 3, val_width = 3;
+		char format[25];
+		int coords_width = 3;
 		zoomedX = (gint) (event->x / zoom);
 		zoomedY = (gint) (event->y / zoom);
 		if (fit->rx >= 1000 || fit->ry >= 1000)
 			coords_width = 4;
-		if (fit->hi >= 1000)
-			val_width = 4;
-		if (fit->hi >= 10000)
-			val_width = 5;
-		g_snprintf(format, sizeof(format), format_base, coords_width,
-				coords_width, val_width);
-		g_snprintf(buffer, sizeof(buffer), format, zoomedX, zoomedY,
-				fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
-				+ zoomedX]);
+		if (fit->type == DATA_USHORT) {
+			int val_width = 3;
+			char *format_base_ushort = "x: %%.%dd y: %%.%dd = %%.%dd";
+			if (fit->hi >= 1000)
+				val_width = 4;
+			if (fit->hi >= 10000)
+				val_width = 5;
+			g_snprintf(format, sizeof(format), format_base_ushort,
+					coords_width, coords_width, val_width);
+			g_snprintf(buffer, sizeof(buffer), format, zoomedX, zoomedY,
+					fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
+					+ zoomedX]);
+		} else if (fit->type == DATA_FLOAT) {
+			char *format_base_float = "x: %%.%dd y: %%.%dd = %%f";
+			g_snprintf(format, sizeof(format), format_base_float,
+					coords_width, coords_width);
+			g_snprintf(buffer, sizeof(buffer), format, zoomedX, zoomedY,
+					fit->fpdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
+					+ zoomedX]);
+		}
+
 		/* TODO: fix to use the new function vport_number_to_name() */
 		if (widget == com.vport[RED_VPORT])
 			strcat(label, "r");
