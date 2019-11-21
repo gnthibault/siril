@@ -1125,6 +1125,8 @@ void clearfits(fits *fit) {
 		return;
 	if (fit->data)
 		free(fit->data);
+	if (fit->fdata)
+		free(fit->fdata);
 	if (fit->header)
 		free(fit->header);
 	if (fit->history)
@@ -1765,14 +1767,13 @@ int new_fit_image(fits **fit, int width, int height, int nblayer, data_type type
 }
 
 void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype) {
-	if (fit->data)
-		free(fit->data);
 	fit->type = newtype;
 	invalidate_stats_from_fit(fit);
 
 	unsigned int nbdata = fit->rx * fit->ry;
 	if (newtype == DATA_USHORT) {
 		fit->bitpix = USHORT_IMG;
+		fit->orig_bitpix = USHORT_IMG;
 		fit->data = (WORD *)newbuf;
 		fit->pdata[RLAYER] = fit->data;
 		if (fit->naxis == 3) {
@@ -1782,8 +1783,17 @@ void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype) {
 			fit->pdata[GLAYER] = fit->data;
 			fit->pdata[BLAYER] = fit->data;
 		}
+		if (fit->fdata) {
+			free(fit->fdata);
+			fit->fdata = NULL;
+		}
+		fit->fpdata[0] = NULL;
+		fit->fpdata[1] = NULL;
+		fit->fpdata[2] = NULL;
+		fprintf(stdout, "Changed a fit data to WORD\n");
 	} else if (newtype == DATA_FLOAT) {
 		fit->bitpix = FLOAT_IMG;
+		fit->orig_bitpix = FLOAT_IMG;
 		fit->fdata = (float *)newbuf;
 		fit->fpdata[RLAYER] = fit->fdata;
 		if (fit->naxis == 3) {
@@ -1793,6 +1803,14 @@ void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype) {
 			fit->fpdata[GLAYER] = fit->fdata;
 			fit->fpdata[BLAYER] = fit->fdata;
 		}
+		if (fit->data) {
+			free(fit->data);
+			fit->data = NULL;
+		}
+		fit->pdata[0] = NULL;
+		fit->pdata[1] = NULL;
+		fit->pdata[2] = NULL;
+		fprintf(stdout, "Changed a fit data to FLOAT\n");
 	}
 }
 
