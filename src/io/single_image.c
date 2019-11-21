@@ -250,7 +250,7 @@ int image_find_minmax(fits *fit) {
 		// calling statistics() saves stats in the fit already, we don't need
 		// to use the returned handle
 		free_stats(statistics(NULL, -1, fit, layer, NULL, STATS_MINMAX));
-		if (!fit->stats[layer])
+		if (!fit->stats || !fit->stats[layer])
 			return -1;
 		fit->maxi = max(fit->maxi, fit->stats[layer]->max);
 		fit->mini = min(fit->mini, fit->stats[layer]->min);
