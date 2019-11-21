@@ -416,8 +416,7 @@ void on_menu_rgb_savefits_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	GtkToggleButton *b16bits = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16s"));
 
 	if (notebookFormat == NULL) {
-		notebookFormat = GTK_NOTEBOOK(
-				gtk_builder_get_object(builder, "notebookFormat"));
+		notebookFormat = GTK_NOTEBOOK(lookup_widget("notebookFormat"));
 		savepopup = lookup_widget("savepopup");
 	}
 	if (single_image_is_loaded() || sequence_is_loaded()) {
@@ -446,8 +445,7 @@ void on_menu_rgb_savetiff_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 
 	if (notebookFormat == NULL) {
-		notebookFormat = GTK_NOTEBOOK(
-				gtk_builder_get_object(builder, "notebookFormat"));
+		notebookFormat = GTK_NOTEBOOK(lookup_widget("notebookFormat"));
 		savepopup = lookup_widget("savepopup");
 	}
 
@@ -469,8 +467,7 @@ void on_menu_rgb_savepng_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 
 	if (notebookFormat == NULL) {
-		notebookFormat = GTK_NOTEBOOK(
-				gtk_builder_get_object(builder, "notebookFormat"));
+		notebookFormat = GTK_NOTEBOOK(lookup_widget("notebookFormat"));
 		savepopup = lookup_widget("savepopup");
 	}
 
@@ -489,8 +486,7 @@ void on_menu_rgb_save8ppm_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	GtkWidget *savetxt = lookup_widget("filenameframe");
 
 	if (notebookFormat == NULL) {
-		notebookFormat = GTK_NOTEBOOK(
-				gtk_builder_get_object(builder, "notebookFormat"));
+		notebookFormat = GTK_NOTEBOOK(lookup_widget("notebookFormat"));
 		savepopup = lookup_widget("savepopup");
 	}
 
@@ -509,8 +505,7 @@ void on_menu_rgb_savebmp_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	GtkWidget *savetxt = lookup_widget("filenameframe");
 
 	if (notebookFormat == NULL) {
-		notebookFormat = GTK_NOTEBOOK(
-				gtk_builder_get_object(builder, "notebookFormat"));
+		notebookFormat = GTK_NOTEBOOK(lookup_widget("notebookFormat"));
 		savepopup = lookup_widget("savepopup");
 	}
 
@@ -529,8 +524,7 @@ void on_menu_rgb_savejpg_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	GtkWidget *savetxt = lookup_widget("filenameframe");
 
 	if (notebookFormat == NULL) {
-		notebookFormat = GTK_NOTEBOOK(
-				gtk_builder_get_object(builder, "notebookFormat"));
+		notebookFormat = GTK_NOTEBOOK(lookup_widget("notebookFormat"));
 		savepopup = lookup_widget("savepopup");
 	}
 

@@ -10,7 +10,6 @@ GtkWidget *popover_new(GtkWidget *widget, const gchar *text);
 
 void initialize_all_GUI(gchar *files);
 void load_prefered_theme();
-void fill_about_dialog();
 void set_cutoff_sliders_max_values();		// was set_upper_minmax
 void set_cutoff_sliders_values();		// was set_ranges
 void set_sliders_value_to_gfit();
@@ -29,7 +28,6 @@ void sliders_mode_set_state(sliders_mode);
 int copy_rendering_settings_when_chained(gboolean from_GUI);
 
 void update_photometry_interface();
-void set_libraw_settings_menu_available(gboolean);
 void clear_sampling_setting_box();
 void set_GUI_CAMERA();
 void set_GUI_photometry();

@@ -22,7 +22,6 @@
 #ifndef SRC_GUI_SEQUENCE_LIST_H_
 #define SRC_GUI_SEQUENCE_LIST_H_
 
-void	sequence_list_change_selection(gchar *path, gboolean new_value);
 void	sequence_list_change_selection_index(int index);
 void	sequence_list_change_current();
 void	sequence_list_change_reference();

@@ -73,12 +73,12 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   <object class="GtkImage" id="addfilter1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-add</property>
+    <property name="icon_name">gtk-add</property>
   </object>
   <object class="GtkImage" id="addfilter2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-add</property>
+    <property name="icon_name">gtk-add</property>
   </object>
   <object class="GtkAdjustment" id="adjCPU">
     <property name="lower">1</property>
@@ -1680,12 +1680,12 @@ enter a visible wavelength in nm</property>
   <object class="GtkImage" id="removefilter2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-remove</property>
+    <property name="icon_name">gtk-remove</property>
   </object>
   <object class="GtkImage" id="removefilter3">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-remove</property>
+    <property name="icon_name">gtk-remove</property>
   </object>
   <object class="GtkAdjustment" id="resample_X">
     <property name="lower">0.01</property>
@@ -2658,8 +2658,9 @@ enter a visible wavelength in nm</property>
                                         <property name="can_focus">False</property>
                                         <property name="tooltip_text" translatable="yes">Add files to convert</property>
                                         <property name="valign">center</property>
+                                        <property name="label" translatable="yes">Add</property>
                                         <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-add</property>
+                                        <property name="icon_name">gtk-add</property>
                                         <signal name="clicked" handler="on_select_convert_button_clicked" swapped="no"/>
                                       </object>
                                       <packing>
@@ -2673,8 +2674,9 @@ enter a visible wavelength in nm</property>
                                         <property name="can_focus">False</property>
                                         <property name="tooltip_text" translatable="yes">Remove selected files</property>
                                         <property name="valign">center</property>
+                                        <property name="label" translatable="yes">Remove</property>
                                         <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-remove</property>
+                                        <property name="icon_name">gtk-remove</property>
                                         <signal name="clicked" handler="on_remove_convert_button_clicked" swapped="no"/>
                                       </object>
                                       <packing>
@@ -2688,8 +2690,9 @@ enter a visible wavelength in nm</property>
                                         <property name="can_focus">False</property>
                                         <property name="tooltip_text" translatable="yes">Remove all files from the list</property>
                                         <property name="valign">center</property>
+                                        <property name="label" translatable="yes">Clear</property>
                                         <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-clear</property>
+                                        <property name="icon_name">gtk-clear</property>
                                         <signal name="clicked" handler="on_clear_convert_button_clicked" swapped="no"/>
                                       </object>
                                       <packing>
@@ -4323,6 +4326,18 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                               </packing>
                             </child>
                             <child>
+                              <object class="GtkSeparator" id="separator3">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="padding">5</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
                               <object class="GtkBox" id="box10">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
@@ -4433,18 +4448,6 @@ When processing images, registration data is taken from the default layer if ava
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="padding">2</property>
-                                <property name="position">4</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkSeparator" id="separator3">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="padding">5</property>
                                 <property name="position">4</property>
                               </packing>
                             </child>
@@ -13183,6 +13186,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <object class="GtkComboBoxText" id="seqlist_dialog_combo">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="tooltip_text" translatable="yes">Select the channel you want to display.</property>
             <signal name="changed" handler="on_seqlist_dialog_combo_changed" swapped="no"/>
           </object>
         </child>
@@ -13259,6 +13263,21 @@ If not set manually, the first image of the sequence is taken as reference.</pro
             <property name="position">2</property>
           </packing>
         </child>
+        <child>
+          <object class="GtkSearchEntry" id="seqlistsearch">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="tooltip_text" translatable="yes">Enter the number of the image you want to reach.</property>
+            <property name="primary_icon_name">edit-find-symbolic</property>
+            <property name="primary_icon_activatable">False</property>
+            <property name="primary_icon_sensitive">False</property>
+            <property name="input_purpose">digits</property>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
       </object>
     </child>
     <child>
@@ -13275,7 +13294,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
             <property name="vscroll_policy">natural</property>
             <property name="model">liststore1</property>
             <property name="reorderable">True</property>
-            <property name="search_column">0</property>
+            <property name="search_column">7</property>
             <property name="show_expanders">False</property>
             <property name="enable_grid_lines">horizontal</property>
             <property name="activate_on_single_click">True</property>
@@ -14014,7 +14033,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Remove selected star from the list</property>
                     <property name="use_underline">True</property>
-                    <property name="stock_id">gtk-remove</property>
+                    <property name="icon_name">gtk-remove</property>
                     <signal name="clicked" handler="on_remove_button_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -14028,7 +14047,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Remove all stars from the list</property>
                     <property name="use_underline">True</property>
-                    <property name="stock_id">gtk-clear</property>
+                    <property name="icon_name">gtk-clear</property>
                     <signal name="clicked" handler="on_remove_all_button_clicked" swapped="no"/>
                   </object>
                   <packing>

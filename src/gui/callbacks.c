@@ -339,14 +339,16 @@ GtkWidget *popover_new(GtkWidget *widget, const gchar *text) {
 }
 
 static void update_theme_button(const gchar *button_name, const gchar *path) {
-	gchar *images;
+	gchar *image;
+	GtkWidget *w_image;
 
-	images = g_build_filename(siril_get_system_data_dir(), "pixmaps", path, NULL);
-	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget(button_name)),
-			gtk_image_new_from_file(images));
-	gtk_widget_show_all(lookup_widget(button_name));
+	image = g_build_filename(siril_get_system_data_dir(), "pixmaps", path, NULL);
+	w_image = gtk_image_new_from_file(image);
+	gtk_widget_show(w_image);
+	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(lookup_widget(button_name)), w_image);
+	gtk_widget_show(lookup_widget(button_name));
 
-	g_free(images);
+	g_free(image);
 }
 
 static void update_icons_to_theme(gboolean is_dark) {
@@ -950,7 +952,7 @@ void calculate_fwhm(GtkWidget *widget) {
 void display_filename() {
 	GtkLabel *fn_label;
 	int nb_layers;
-	char str[64], *filename;
+	char *str, *filename;
 	if (com.uniq) {	// unique image
 		filename = com.uniq->filename;
 		nb_layers = com.uniq->nb_layers;
@@ -960,17 +962,23 @@ void display_filename() {
 		nb_layers = com.seq.nb_layers;
 	}
 	fn_label = GTK_LABEL(gtk_builder_get_object(builder, "labelfilename_red"));
-	g_snprintf(str, sizeof(str), _("%s (channel 0)"), filename);
+	str = g_strdup_printf(_("%s (channel 0)"), filename);
 	gtk_label_set_text(fn_label, str);
+	g_free(str);
+
 	if (nb_layers == 3) {	//take in charge both sequence and single image
 		fn_label = GTK_LABEL(
 				gtk_builder_get_object(builder, "labelfilename_green"));
-		g_snprintf(str, sizeof(str), _("%s (channel 1)"), filename);
+		str = g_strdup_printf(_("%s (channel 1)"), filename);
 		gtk_label_set_text(fn_label, str);
+		g_free(str);
+
 		fn_label = GTK_LABEL(
 				gtk_builder_get_object(builder, "labelfilename_blue"));
-		g_snprintf(str, sizeof(str), _("%s (channel 2)"), filename);
+		str = g_strdup_printf(_("%s (channel 2)"), filename);
 		gtk_label_set_text(fn_label, str);
+		g_free(str);
+
 	}
 	if (!com.uniq) {
 		free(filename);
@@ -1067,7 +1075,7 @@ void show_data_dialog(char *text, char *title) {
 	gtk_text_buffer_set_text(tbuf, text, strlen(text));
 	gtk_window_set_title(GTK_WINDOW(lookup_widget("data_dialog")), title);
 
-	gtk_widget_show_all(lookup_widget("data_dialog"));
+	gtk_widget_show(lookup_widget("data_dialog"));
 }
 
 /**
@@ -1116,8 +1124,7 @@ static void zoomcombo_update_display_for_zoom() {
 
 static void initialize_FITS_name_entries() {
 	GtkEntry *moffset, *mdark, *mflat, *final_stack;
-	GString *str[4];
-	gchar *txt[4];
+	gchar *str[4];
 	gint i;
 
 	moffset = GTK_ENTRY(lookup_widget("offsetname_entry"));
@@ -1125,22 +1132,18 @@ static void initialize_FITS_name_entries() {
 	mflat = GTK_ENTRY(lookup_widget("flatname_entry"));
 	final_stack = GTK_ENTRY(lookup_widget("entryresultfile"));
 
-	str[0] = g_string_new("master-offset");
-	str[1] = g_string_new("master-dark");
-	str[2] = g_string_new("master-flat");
-	str[3] = g_string_new("stack_result");
+	str[0] = g_strdup_printf("master-offset%s", com.ext);
+	str[1] = g_strdup_printf("master-dark%s", com.ext);
+	str[2] = g_strdup_printf("master-flat%s", com.ext);
+	str[3] = g_strdup_printf("stack_result%s", com.ext);
 
-	for (i = 0; i < 4; i++) {
-		str[i] = g_string_append(str[i], com.ext);
-		txt[i] = g_string_free(str[i], FALSE);
-	}
-	gtk_entry_set_text(moffset, txt[0]);
-	gtk_entry_set_text(mdark, txt[1]);
-	gtk_entry_set_text(mflat, txt[2]);
-	gtk_entry_set_text(final_stack, txt[3]);
+	gtk_entry_set_text(moffset, str[0]);
+	gtk_entry_set_text(mdark, str[1]);
+	gtk_entry_set_text(mflat, str[2]);
+	gtk_entry_set_text(final_stack, str[3]);
 
 	for (i = 0; i < 4; i++)
-		g_free(txt[i]);
+		g_free(str[i]);
 }
 
 /* when a sequence is loaded, the processing (stacking) output file name is
@@ -1263,9 +1266,7 @@ static void add_accelerator(GtkApplication *app, const gchar *action_name,
 }
 
 static void load_accels() {
-	GtkApplication *application;
-
-	application = gtk_window_get_application(GTK_WINDOW(lookup_widget("control_window")));
+	GApplication *application = g_application_get_default();
 
 	add_accelerator(GTK_APPLICATION(application), "app.quit", "<Primary>Q");
 	add_accelerator(GTK_APPLICATION(application), "app.preferences", "<Primary>P");
@@ -1386,7 +1387,7 @@ static void initialize_preprocessing() {
 	update_prepro_interface(FALSE);
 }
 
-void set_libraw_settings_menu_available(gboolean activate) {
+static void set_libraw_settings_menu_available(gboolean activate) {
 	if (!com.script) {
 		GtkNotebook *notebook = GTK_NOTEBOOK(lookup_widget("notebook3"));
 		GtkWidget *widget = gtk_notebook_get_nth_page(notebook, 0);
@@ -1613,7 +1614,6 @@ void initialize_all_GUI(gchar *supported_files) {
 	initialize_path_directory();
 
 	/* initialization of default FITS extension */
-	com.ext = com.ext ? com.ext : g_strdup(".fit");
 	GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
 	gtk_combo_box_set_active_id(box, com.ext);
 	initialize_FITS_name_entries();
@@ -2981,25 +2981,19 @@ gboolean on_right_panel_image_button_press_event(GtkWidget *button,
 		GdkEventButton *event, gpointer user_data) {
 	if (event->button == 1) {
 		static gboolean panel_is_extended = TRUE;
-		GtkPaned *paned = GTK_PANED(lookup_widget("main_panel"));
 		GtkImage *image = GTK_IMAGE(lookup_widget("right_panel_image"));
-		GtkWidget *widget = gtk_paned_get_child2(paned);
+		GtkWidget *widget = gtk_paned_get_child2(GTK_PANED(lookup_widget("main_panel")));
 
-		gtk_container_child_set(GTK_CONTAINER(paned), widget, "shrink",
-				panel_is_extended, NULL);
 		gtk_widget_set_visible(widget, !panel_is_extended);
 
 		if (!panel_is_extended) {
 			gtk_image_set_from_icon_name(image, "pan-end-symbolic",
 					GTK_ICON_SIZE_BUTTON);
-			panel_is_extended = TRUE;
 		} else {
-			gtk_widget_hide(widget);
-
 			gtk_image_set_from_icon_name(image, "pan-start-symbolic",
 					GTK_ICON_SIZE_BUTTON);
-			panel_is_extended = FALSE;
 		}
+		panel_is_extended = !panel_is_extended;
 	}
 	return TRUE;
 }
