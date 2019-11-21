@@ -53,6 +53,9 @@ siril_SOURCES = \
 	algos/star_finder.c \
 	algos/star_finder.h \
 	algos/statistics.c \
+	algos/statistics.h \
+	algos/statistics_float.c \
+	algos/statistics_float.h \
 	algos/transform.c \
 	compositing/align_rgb.c \
 	compositing/align_rgb.h \
