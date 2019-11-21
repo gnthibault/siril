@@ -74,18 +74,16 @@ void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
 	}
 }
 
-static void fwhm_quality_cell_data_function (GtkTreeViewColumn *col,
-		GtkCellRenderer   *renderer,
-		GtkTreeModel      *model,
-		GtkTreeIter       *iter,
-		gpointer           user_data)
-{
+static void fwhm_quality_cell_data_function(GtkTreeViewColumn *col,
+		GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter,
+		gpointer user_data) {
 	gdouble quality;
 	gchar buf[20];
 	gtk_tree_model_get(model, iter, COLUMN_FWHM, &quality, -1);
 	if (quality >= 0.0)
 		g_snprintf(buf, sizeof(buf), "%.3f", quality);
-	else g_strlcpy(buf, "N/A", sizeof(buf));
+	else
+		g_strlcpy(buf, "N/A", sizeof(buf));
 	g_object_set(renderer, "text", buf, NULL);
 }
 
@@ -104,11 +102,11 @@ static void initialize_seqlist_dialog_combo() {
 	gtk_combo_box_text_remove_all(seqcombo);
 
 	if (com.seq.nb_layers == 1) {
-		gtk_combo_box_text_append_text(seqcombo, _("B&W Channel"));
+		gtk_combo_box_text_append_text(seqcombo, _("B&W channel"));
 	} else {
-		gtk_combo_box_text_append_text(seqcombo, _("Red Channel"));
-		gtk_combo_box_text_append_text(seqcombo, _("Green Channel"));
-		gtk_combo_box_text_append_text(seqcombo, _("Blue Channel"));
+		gtk_combo_box_text_append_text(seqcombo, _("Red channel"));
+		gtk_combo_box_text_append_text(seqcombo, _("Green channel"));
+		gtk_combo_box_text_append_text(seqcombo, _("Blue channel"));
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(seqcombo), 0);
 	g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
@@ -129,7 +127,11 @@ static void initialize_title() {
 }
 
 static void initialize_search_entry() {
-	gtk_entry_set_text (GTK_ENTRY(lookup_widget("seqlistsearch")), "");
+	GtkTreeView *tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview1"));
+	GtkEntry *entry = GTK_ENTRY(lookup_widget("seqlistsearch"));
+
+	gtk_entry_set_text (entry, "");
+	gtk_tree_view_set_search_entry(tree_view, entry);
 }
 
 void initialize_seqlist() {
@@ -279,41 +281,6 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	redraw(com.cvport, REMAP_NONE);
 }
 
-void on_seqlistsearch_search_changed(GtkEntry *entry, gpointer user_data) {
-	const gchar *text = gtk_entry_get_text(entry);
-	gint int_entry;
-	GtkTreeIter iter;
-	gboolean valid;
-	GtkTreeView *tree_view;
-
-	if (text[0] == '\0')
-		return;
-	int_entry = atoi(text);
-	tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview1"));
-
-	get_list_store();
-	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store), &iter);
-	while (valid) {
-		gint index = 0;
-		GValue value = G_VALUE_INIT;
-
-		gtk_tree_model_get_value (GTK_TREE_MODEL(list_store), &iter, COLUMN_INDEX, &value);
-		index = g_value_get_int(&value);
-		g_value_unset(&value);
-		if (int_entry == index) {
-			GtkTreeViewColumn *t_col = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, "treeviewcolumn16"));
-			GtkTreeSelection *selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder, "treeview-selection1"));
-			gchar *path = g_strdup_printf("%d", index - 1);
-			GtkTreePath *tree_path = gtk_tree_path_new_from_string(path);
-			gtk_tree_view_scroll_to_cell(tree_view, tree_path, t_col, TRUE, 0.5, 0.5);
-			gtk_tree_selection_select_iter(selection, &iter);
-			g_free(path);
-			break;
-		}
-		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store), &iter);
-	}
-}
-
 /****************** modification of the list store (tree model) ******************/
 
 void sequence_list_change_selection_index(int index) {
@@ -335,9 +302,8 @@ void sequence_list_change_current() {
 		gtk_tree_model_get_value (GTK_TREE_MODEL(list_store), &iter, COLUMN_INDEX, &value);
 		index = g_value_get_int(&value) - 1;
 		g_value_unset(&value);
-		gtk_list_store_set(list_store, &iter,
-				COLUMN_CURRENT, (index == com.seq.current) ? 800 : 400,
-				-1);
+		gtk_list_store_set(list_store, &iter, COLUMN_CURRENT,
+				(index == com.seq.current) ? 800 : 400, -1);
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store), &iter);
 	}
 }

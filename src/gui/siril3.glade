@@ -13164,6 +13164,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <object class="GtkComboBoxText" id="seqlist_dialog_combo">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="tooltip_text" translatable="yes">Select the channel you want to display.</property>
             <signal name="changed" handler="on_seqlist_dialog_combo_changed" swapped="no"/>
           </object>
         </child>
@@ -13244,11 +13245,11 @@ If not set manually, the first image of the sequence is taken as reference.</pro
           <object class="GtkSearchEntry" id="seqlistsearch">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="tooltip_text" translatable="yes">Enter the number of the image you want to reach.</property>
             <property name="primary_icon_name">edit-find-symbolic</property>
             <property name="primary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">False</property>
             <property name="input_purpose">digits</property>
-            <signal name="search-changed" handler="on_seqlistsearch_search_changed" swapped="no"/>
           </object>
           <packing>
             <property name="pack_type">end</property>
@@ -13271,7 +13272,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
             <property name="vscroll_policy">natural</property>
             <property name="model">liststore1</property>
             <property name="reorderable">True</property>
-            <property name="search_column">0</property>
+            <property name="search_column">7</property>
             <property name="show_expanders">False</property>
             <property name="enable_grid_lines">horizontal</property>
             <property name="activate_on_single_click">True</property>
