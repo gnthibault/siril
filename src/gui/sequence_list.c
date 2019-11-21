@@ -277,21 +277,7 @@ static void unselect_select_frame_from_list(gboolean select) {
 				gint idx;
 				gtk_tree_model_get(model, &iter, COLUMN_INDEX, &idx, -1);
 				idx --; // we count frames from 1 !!
-				com.seq.imgparam[idx].incl = select;
-				if (com.seq.imgparam[idx].incl)
-					com.seq.selnum++;
-				else 	{
-					com.seq.selnum--;
-					if (idx == com.seq.reference_image) {
-						com.seq.reference_image = -1;
-						sequence_list_change_reference();
-						adjust_refimage(idx);
-					}
-				}
-				sequence_list_change_selection_index(idx);
-				update_reg_interface(FALSE);
-				update_stack_interface(TRUE);
-				adjust_exclude(idx, TRUE);
+				toggle_image_selection(idx);
 			}
 			gtk_tree_path_free(path);
 		}
@@ -339,6 +325,31 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	update_stack_interface(FALSE);
 	writeseqfile(&com.seq);
 	redraw(com.cvport, REMAP_NONE);
+}
+
+void toggle_image_selection(int image_num) {
+	gchar *msg;
+	if (com.seq.imgparam[image_num].incl) {
+		com.seq.imgparam[image_num].incl = FALSE;
+		--com.seq.selnum;
+		msg = g_strdup_printf(_("Image %d has been unselected from sequence\n"), image_num);
+		if (image_num == com.seq.reference_image) {
+			com.seq.reference_image = -1;
+			sequence_list_change_reference();
+			adjust_refimage(image_num);
+		}
+	} else {
+		com.seq.imgparam[image_num].incl = TRUE;
+		++com.seq.selnum;
+		msg = g_strdup_printf(_("Image %d has been selected from sequence\n"), image_num);
+	}
+	siril_log_message(msg);
+	g_free(msg);
+	sequence_list_change_selection_index(image_num);
+	update_reg_interface(FALSE);
+	update_stack_interface(TRUE);
+	adjust_exclude(image_num, TRUE);
+	writeseqfile(&com.seq);
 }
 
 void on_selected_frames_unselect(GtkButton *button, gpointer user_data) {
