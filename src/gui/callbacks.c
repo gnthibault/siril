@@ -255,31 +255,6 @@ static void reset_swapdir() {
  * MISC static functions
  */
 
-static void toggle_image_selection(int image_num) {
-	gchar *msg;
-	if (com.seq.imgparam[image_num].incl) {
-		com.seq.imgparam[image_num].incl = FALSE;
-		--com.seq.selnum;
-		msg = g_strdup_printf(_("Image %d has been unselected from sequence\n"), image_num);
-		if (image_num == com.seq.reference_image) {
-			com.seq.reference_image = -1;
-			sequence_list_change_reference();
-			adjust_refimage(image_num);
-		}
-	} else {
-		com.seq.imgparam[image_num].incl = TRUE;
-		++com.seq.selnum;
-		msg = g_strdup_printf(_("Image %d has been selected from sequence\n"), image_num);
-	}
-	siril_log_message(msg);
-	g_free(msg);
-	sequence_list_change_selection_index(image_num);
-	update_reg_interface(FALSE);
-	update_stack_interface(TRUE);
-	adjust_exclude(image_num, TRUE);
-	writeseqfile(&com.seq);
-}
-
 /* method handling all include or all exclude from a sequence */
 static void sequence_setselect_all(gboolean include_all) {
 	int i;

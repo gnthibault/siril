@@ -439,6 +439,7 @@ void on_composition_use_lum_toggled(GtkToggleButton *togglebutton, gpointer user
 void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 	int layer, retval;
 	char buf[48], *filename;
+	gboolean is_sequence;
 
 	for (layer = 0; layers[layer]; layer++)
 		if (layers[layer]->chooser == widget)
@@ -451,7 +452,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 	if (layers[layer]->the_fit.rx == 0) {	// already loaded image
 		clearfits(&layers[layer]->the_fit);
 	}
-	if ((retval = read_single_image(filename, &layers[layer]->the_fit, NULL))) {
+	if ((retval = read_single_image(filename, &layers[layer]->the_fit, NULL, NULL))) {
 		gtk_label_set_text(layers[layer]->label, _("ERROR"));
 	} else {
 		/* Force first tab to be Red and not B&W if an image was already loaded */

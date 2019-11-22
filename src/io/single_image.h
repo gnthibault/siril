@@ -3,7 +3,7 @@
 
 void close_single_image();
 void free_image_data();
-int read_single_image(const char* filename, fits *dest, char **realname_out);
+int read_single_image(const char* filename, fits *dest, char **realname_out, gboolean *is_sequence);
 int open_single_image(const char* filename);
 void open_single_image_from_gfit();
 
