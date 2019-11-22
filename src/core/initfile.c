@@ -401,9 +401,6 @@ int checkinitfile() {
 
 	if (readinitfile()) {
 		/* init file does not exist, so we create it */
-		/* we also initialize two important variables */
-		com.ext = g_strdup(".fit");
-		com.swap_dir = g_strdup(g_get_tmp_dir());
 		return writeinitfile();
 	}
 	return 0;

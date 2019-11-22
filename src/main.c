@@ -251,6 +251,10 @@ static void siril_app_activate(GApplication *application) {
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
 
+	/* we also initialize two important variables */
+	com.ext = g_strdup(".fit");
+	com.swap_dir = g_strdup(g_get_tmp_dir());
+
 	/* set default CWD, and load init file
 	 * checkinitfile will load all saved parameters
 	 * */
