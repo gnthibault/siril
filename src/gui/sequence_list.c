@@ -41,7 +41,6 @@ struct _seq_list {
 	int layer;
 };
 
-
 static GtkListStore *list_store = NULL;
 
 enum {
@@ -55,6 +54,11 @@ enum {
 	COLUMN_INDEX,		// int
 	N_COLUMNS
 };
+
+enum {					//different context_id of the GtkStatusBar
+	COUNT_STATE
+};
+
 
 /******* Static functions **************/
 static void fwhm_quality_cell_data_function(GtkTreeViewColumn *col,
@@ -220,6 +224,17 @@ static void unselect_select_frame_from_list(gboolean select) {
 	g_list_free(references);
 }
 
+static void display_status() {
+	gchar *text;
+	GtkStatusbar *statusbar;
+
+	statusbar = GTK_STATUSBAR(lookup_widget("seqlist_statusbar"));
+
+	text = g_strdup_printf("%d/%d", com.seq.current + 1, com.seq.number);
+	gtk_statusbar_push(statusbar, COUNT_STATE, text);
+	g_free(text);
+}
+
 /**** Callbacs *****/
 
 void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
@@ -247,6 +262,7 @@ void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
 		g_value_unset(&value);
 	}
 	g_list_free_full(list, (GDestroyNotify) gtk_tree_path_free);
+	display_status();
 }
 
 void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data) {
@@ -260,6 +276,7 @@ void initialize_seqlist() {
 	initialize_title();
 	initialize_seqlist_dialog_combo();
 	initialize_search_entry();
+	display_status();
 }
 
 /* called on sequence loading (set_seq), on layer tab change and on registration data update.
