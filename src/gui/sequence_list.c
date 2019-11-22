@@ -36,6 +36,11 @@ static gboolean fill_sequence_list_idle(gpointer p);
 static const char *bg_colour[] = { "WhiteSmoke", "#1B1B1B" };
 static const char *ref_bg_colour[] = { "Beige", "#4A4A39" };
 
+struct _seq_list {
+	sequence *seq;
+	int layer;
+};
+
 
 static GtkListStore *list_store = NULL;
 
@@ -51,33 +56,7 @@ enum {
 	N_COLUMNS
 };
 
-void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
-		GtkTreeViewColumn *column, gpointer user_data) {
-	GtkTreeModel *tree_model;
-	GtkTreeSelection *selection;
-	GtkTreeIter iter;
-	GList *list;
-
-	tree_model = gtk_tree_view_get_model(tree_view);
-	selection = gtk_tree_view_get_selection (tree_view);
-
-	list = gtk_tree_selection_get_selected_rows(selection, &tree_model);
-	if (g_list_length(list) == 1) {
-		gint idx;
-		GValue value = G_VALUE_INIT;
-		gtk_tree_model_get_iter(tree_model, &iter, path);
-
-		gtk_tree_model_get_value(tree_model, &iter, COLUMN_INDEX, &value);
-		idx = g_value_get_int(&value) - 1;
-		if (idx != com.seq.current) {
-			fprintf(stdout, "loading image %d\n", idx);
-			seq_load_image(&com.seq, idx, TRUE);
-		}
-		g_value_unset(&value);
-	}
-	g_list_free_full(list, (GDestroyNotify) gtk_tree_path_free);
-}
-
+/******* Static functions **************/
 static void fwhm_quality_cell_data_function(GtkTreeViewColumn *col,
 		GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter,
 		gpointer user_data) {
@@ -89,13 +68,6 @@ static void fwhm_quality_cell_data_function(GtkTreeViewColumn *col,
 	else
 		g_strlcpy(buf, "N/A", sizeof(buf));
 	g_object_set(renderer, "text", buf, NULL);
-}
-
-void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data) {
-	int active = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
-	if (active >= 0) {
-		fill_sequence_list(&com.seq, active, FALSE);
-	}
 }
 
 static void initialize_seqlist_dialog_combo() {
@@ -136,12 +108,6 @@ static void initialize_search_entry() {
 
 	gtk_entry_set_text (entry, "");
 	gtk_tree_view_set_search_entry(tree_view, entry);
-}
-
-void initialize_seqlist() {
-	initialize_title();
-	initialize_seqlist_dialog_combo();
-	initialize_search_entry();
 }
 
 static void get_list_store() {
@@ -205,37 +171,6 @@ static void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 	g_free(basename);
 }
 
-struct _seq_list {
-	sequence *seq;
-	int layer;
-};
-
-/* called on sequence loading (set_seq), on layer tab change and on registration data update.
- * It is executed safely in the GTK thread if as_idle is true. */
-void fill_sequence_list(sequence *seq, int layer, gboolean as_idle) {
-	struct _seq_list *args;
-	if (seq == NULL || layer >= seq->nb_layers) return;
-	args = malloc(sizeof(struct _seq_list));
-	args->seq = seq;
-	args->layer = layer;
-	if (as_idle)
-		gdk_threads_add_idle(fill_sequence_list_idle, args);
-	else fill_sequence_list_idle(args);
-}
-
-static gboolean fill_sequence_list_idle(gpointer p) {
-	int i;
-	struct _seq_list *args = (struct _seq_list *)p;
-	add_image_to_sequence_list(NULL, 0, 0);	// clear
-	if (args->seq->number > 0) {
-		for (i = 0; i < args->seq->number; i++) {
-			add_image_to_sequence_list(args->seq, i, args->layer);
-		}
-	}
-	free(args);
-	return FALSE;
-}
-
 static void sequence_list_change_selection(gchar *path, gboolean new_value) {
 	GtkTreeIter iter;
 	get_list_store();
@@ -283,6 +218,74 @@ static void unselect_select_frame_from_list(gboolean select) {
 		}
 	}
 	g_list_free(references);
+}
+
+/**** Callbacs *****/
+
+void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
+		GtkTreeViewColumn *column, gpointer user_data) {
+	GtkTreeModel *tree_model;
+	GtkTreeSelection *selection;
+	GtkTreeIter iter;
+	GList *list;
+
+	tree_model = gtk_tree_view_get_model(tree_view);
+	selection = gtk_tree_view_get_selection (tree_view);
+
+	list = gtk_tree_selection_get_selected_rows(selection, &tree_model);
+	if (g_list_length(list) == 1) {
+		gint idx;
+		GValue value = G_VALUE_INIT;
+		gtk_tree_model_get_iter(tree_model, &iter, path);
+
+		gtk_tree_model_get_value(tree_model, &iter, COLUMN_INDEX, &value);
+		idx = g_value_get_int(&value) - 1;
+		if (idx != com.seq.current) {
+			fprintf(stdout, "loading image %d\n", idx);
+			seq_load_image(&com.seq, idx, TRUE);
+		}
+		g_value_unset(&value);
+	}
+	g_list_free_full(list, (GDestroyNotify) gtk_tree_path_free);
+}
+
+void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data) {
+	int active = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	if (active >= 0) {
+		fill_sequence_list(&com.seq, active, FALSE);
+	}
+}
+
+void initialize_seqlist() {
+	initialize_title();
+	initialize_seqlist_dialog_combo();
+	initialize_search_entry();
+}
+
+/* called on sequence loading (set_seq), on layer tab change and on registration data update.
+ * It is executed safely in the GTK thread if as_idle is true. */
+void fill_sequence_list(sequence *seq, int layer, gboolean as_idle) {
+	struct _seq_list *args;
+	if (seq == NULL || layer >= seq->nb_layers) return;
+	args = malloc(sizeof(struct _seq_list));
+	args->seq = seq;
+	args->layer = layer;
+	if (as_idle)
+		gdk_threads_add_idle(fill_sequence_list_idle, args);
+	else fill_sequence_list_idle(args);
+}
+
+static gboolean fill_sequence_list_idle(gpointer p) {
+	int i;
+	struct _seq_list *args = (struct _seq_list *)p;
+	add_image_to_sequence_list(NULL, 0, 0);	// clear
+	if (args->seq->number > 0) {
+		for (i = 0; i < args->seq->number; i++) {
+			add_image_to_sequence_list(args->seq, i, args->layer);
+		}
+	}
+	free(args);
+	return FALSE;
 }
 
 void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
