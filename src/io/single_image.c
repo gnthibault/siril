@@ -125,15 +125,22 @@ static gboolean end_read_single_image(gpointer p) {
 	return FALSE;
 }
 
-/* Reads an image from disk and stores it in the user allocated destination
- * fits. The realname_out argument can be NULL, and if not, it is set to the
+/**
+ * Reads an image from disk and stores it in the user allocated destination
+ * fits.
+ * @param filename
+ * @param dest
+ * @param realname_out argument can be NULL, and if not, it is set to the
  * real file name of the loaded file, since the given filename can be without
- * extension. This realname output has to be freed by user.
+ * extension.
+ * @param is_sequence is set to TRUE if the loaded image is in fact a SER or AVI sequence. Can be NULL
+ * @return
  */
-int read_single_image(const char* filename, fits *dest, char **realname_out) {
+int read_single_image(const char* filename, fits *dest, char **realname_out, gboolean *is_sequence) {
 	int retval;
 	image_type imagetype;
 	char *realname = NULL;
+	gboolean single_sequence = FALSE;
 
 	retval = stat_file(filename, &imagetype, &realname);
 	if (retval) {
@@ -145,10 +152,14 @@ int read_single_image(const char* filename, fits *dest, char **realname_out) {
 	}
 	if (imagetype == TYPESER || imagetype == TYPEAVI) {
 		retval = read_single_sequence(realname, imagetype);
+		single_sequence = TRUE;
 	} else {
 		retval = any_to_fits(imagetype, realname, dest);
 		if (!retval)
 			debayer_if_needed(imagetype, dest, com.debayer.compatibility, FALSE, com.debayer.stretch);
+	}
+	if (is_sequence) {
+		*is_sequence = single_sequence;
 	}
 	if (retval)
 		siril_log_message(_("Opening %s failed.\n"), realname);
@@ -174,16 +185,12 @@ static gboolean end_open_single_image(gpointer arg) {
 int open_single_image(const char* filename) {
 	int retval;
 	char *realname;
+	gboolean is_single_sequence;
 
 	close_sequence(FALSE);	// closing a sequence if loaded
 	close_single_image();	// close the previous image and free resources
 
-	retval = read_single_image(filename, &gfit, &realname);
-	
-	/* A single sequence has been loaded */
-	if (retval == 3) {
-		return 0;
-	}
+	retval = read_single_image(filename, &gfit, &realname, &is_single_sequence);
 	if (retval == 2) {
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error opening file"),
 				_("This file could not be opened because "
@@ -197,16 +204,18 @@ int open_single_image(const char* filename) {
 		return 1;
 	}
 
-	fprintf(stdout, "Loading image OK, now displaying\n");
+	if (!is_single_sequence) {
+		fprintf(stdout, "Loading image OK, now displaying\n");
 
-	/* Now initializing com struct */
-	com.seq.current = UNRELATED_IMAGE;
-	com.uniq = calloc(1, sizeof(single));
-	com.uniq->filename = realname;
-	com.uniq->nb_layers = gfit.naxes[2];
-	com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
-	com.uniq->fit = &gfit;
-	siril_add_idle(end_open_single_image, realname);
+		/* Now initializing com struct */
+		com.seq.current = UNRELATED_IMAGE;
+		com.uniq = calloc(1, sizeof(single));
+		com.uniq->filename = realname;
+		com.uniq->nb_layers = gfit.naxes[2];
+		com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
+		com.uniq->fit = &gfit;
+		siril_add_idle(end_open_single_image, realname);
+	}
 	return 0;
 }
 
