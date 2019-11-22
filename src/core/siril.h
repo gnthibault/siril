@@ -406,6 +406,7 @@ struct ffit {
 	char *header;	// entire header of the FITS file. NULL for non-FITS file.
 	WORD lo;	// MIPS-LO key in FITS file, which is "Lower visualization cutoff"
 	WORD hi;	// MIPS-HI key in FITS file, which is "Upper visualization cutoff"
+	float flo, fhi;	// the same for float data
 	double data_max; // used to check if 32b float is between 0 and 1
 	WORD maximum_pixel_value; // value obtained from libraw, Maximum pixel value. Calculated from the data for most cameras, hardcoded for others.
 	float pixel_size_x, pixel_size_y;	// XPIXSZ and YPIXSZ keys

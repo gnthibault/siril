@@ -165,7 +165,7 @@ static void fits_read_history(fitsfile *fptr, GSList **history, int *status) {
 static void read_fits_header(fits *fit) {
 	/* about the status argument: http://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node28.html */
 	int status = 0;
-	double zero, mini, maxi;
+	double mini, maxi;
 
 	fit_stats(fit, &mini, &maxi);
 
@@ -179,17 +179,19 @@ static void read_fits_header(fits *fit) {
 			fit->hi += 32768;
 	}
 
+#if 0
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "BSCALE", &zero, NULL, &status);
-	if (!status && 1.0 != zero) {
+	fits_read_key(fit->fptr, TDOUBLE, "BSCALE", &scale, NULL, &status);
+	if (!status && 1.0 != scale) {
 		siril_log_message(_("Loaded FITS file has "
-				"a BSCALE different than 1 (%f)\n"), zero);
+				"a BSCALE different than 1 (%f)\n"), scale);
 		status = 0;
 		/* We reset the scaling factors as we don't use it */
 		fits_set_bscale(fit->fptr, 1.0, 0.0, &status);
 	}
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &zero, NULL, &status);
+#endif
 
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &(fit->data_max), NULL, &status);
@@ -768,7 +770,7 @@ static void save_wcs_keywords(fits *fit) {
 
 static void save_fits_header(fits *fit) {
 	int i, status = 0;
-	double zero;
+	double zero, scale;
 	char comment[FLEN_COMMENT];
 
 	if (fit->hi) { /* may not be initialized */
@@ -777,23 +779,29 @@ static void save_fits_header(fits *fit) {
 		fits_update_key(fit->fptr, TUSHORT, "MIPS-LO", &(fit->lo),
 				"Lower visualization cutoff ", &status);
 	}
-	status = 0;
+	// physical_value = BZERO + BSCALE * array_value
 	switch (fit->bitpix) {
 	case BYTE_IMG:
 	case SHORT_IMG:
 		zero = 0.0;
+		scale = 1.0;
+		break;
+	case FLOAT_IMG:
+		zero = 0.5;	// siril format [-1, 1]
+		scale = 0.5;
 		break;
 	default:
 	case USHORT_IMG:
 		zero = 32768.0;
+		scale = 1.0;
 		break;
 	}
+	status = 0;
 	fits_update_key(fit->fptr, TDOUBLE, "BZERO", &zero,
 			"offset data range to that of unsigned short", &status);
 
 	status = 0;
-	zero = 1.0;
-	fits_update_key(fit->fptr, TDOUBLE, "BSCALE", &zero, "default scaling factor",
+	fits_update_key(fit->fptr, TDOUBLE, "BSCALE", &scale, "default scaling factor",
 			&status);
 
 	status = 0;
@@ -1739,9 +1747,11 @@ int new_fit_image(fits **fit, int width, int height, int nblayer, data_type type
 	(*fit)->naxes[0] = width;
 	(*fit)->naxes[1] = height;
 	(*fit)->naxes[2] = nblayer;
+	(*fit)->type = type;
 
 	if (type == DATA_USHORT) {
 		(*fit)->bitpix = USHORT_IMG;
+		(*fit)->orig_bitpix = USHORT_IMG;
 		(*fit)->data = (WORD *)data;
 		(*fit)->pdata[RLAYER] = (*fit)->data;
 		if ((*fit)->naxis == 3) {
@@ -1753,6 +1763,7 @@ int new_fit_image(fits **fit, int width, int height, int nblayer, data_type type
 		}
 	} else if (type == DATA_FLOAT) {
 		(*fit)->bitpix = FLOAT_IMG;
+		(*fit)->orig_bitpix = FLOAT_IMG;
 		(*fit)->fdata = (float *)data;
 		(*fit)->fpdata[RLAYER] = (*fit)->fdata;
 		if ((*fit)->naxis == 3) {
