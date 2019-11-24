@@ -1425,8 +1425,8 @@ int process_clearstar(int nb){
 }
 
 int process_close(int nb) {
-	close_single_image();
 	close_sequence(FALSE);
+	close_single_image();
 	if (!com.script) {
 		update_MenuItem();
 		reset_plot(); // reset all plots
@@ -1651,7 +1651,9 @@ int select_unselect(gboolean select) {
 
 	if (!com.headless) {
 		if (current_updated) {
-			adjust_exclude(com.seq.current, TRUE);
+			redraw(com.cvport, REMAP_NONE);
+			drawPlot();
+			adjust_sellabel();
 		}
 		update_reg_interface(FALSE);
 		adjust_sellabel();

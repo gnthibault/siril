@@ -38,7 +38,6 @@ void calculate_fwhm(GtkWidget *);
 void display_filename();
 void set_layers_for_assign();
 void set_layers_for_registration();
-void display_image_number(int index);
 void show_dialog(const char *text, const char *title, const char *icon);
 void show_txt_and_data_dialog(const char *text, const char *data, const char *title, const char *icon);
 void show_data_dialog(char *text, char *title);
@@ -64,6 +63,7 @@ void siril_quit();
 
 /* for image_display */
 void test_and_allocate_reference_image(int vport);
+void enable_view_reference_checkbox(gboolean status);
 void set_viewer_mode_widgets_sensitive(gboolean sensitive);
 
 /*****************************************************************************

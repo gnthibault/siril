@@ -22,8 +22,10 @@
 #include "core/proto.h"
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"
+#include "gui/message_dialog.h"
 #include "gui/image_display.h"
 #include "gui/progress_and_log.h"
+#include "gui/plot.h"
 #include "io/sequence.h"
 #include "algos/PSF.h"
 #include "registration/registration.h"	// for update_reg_interface
@@ -74,7 +76,7 @@ static void fwhm_quality_cell_data_function(GtkTreeViewColumn *col,
 	g_object_set(renderer, "text", buf, NULL);
 }
 
-static void initialize_seqlist_dialog_combo() {
+static void update_seqlist_dialog_combo() {
 	if (!sequence_is_loaded()) return;
 
 	GtkComboBoxText *seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("seqlist_dialog_combo"));
@@ -101,7 +103,11 @@ static void initialize_title() {
 	else
 		seq_basename = g_strdup(_("No sequence loaded"));
 
+	gtk_header_bar_set_title(bar, _("Frame List"));
 	gtk_header_bar_set_subtitle(bar, seq_basename);
+	gtk_widget_set_sensitive(lookup_widget("seqlist_buttonbar"), sequence_is_loaded());
+	gtk_widget_set_sensitive(lookup_widget("seqlist_dialog_combo"), sequence_is_loaded());
+	gtk_widget_set_sensitive(lookup_widget("refframe2"), sequence_is_loaded());
 
 	g_free(seq_basename);
 }
@@ -126,7 +132,7 @@ static void get_list_store() {
 
 /* Add an image to the list. If seq is NULL, the list is cleared. */
 static void add_image_to_sequence_list(sequence *seq, int index, int layer) {
-	static GtkTreeSelection *selection = NULL;
+	GtkTreeSelection *selection;
 	GtkTreeIter iter;
 	char imname[256];
 	char *basename;
@@ -135,8 +141,7 @@ static void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 	int color;
 
 	get_list_store();
-	if (!selection)
-		selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder, "treeview-selection1"));
+
 	if (seq == NULL) {
 		gtk_list_store_clear(list_store);
 		return;		// just clear the list
@@ -152,6 +157,8 @@ static void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 	}
 
 	color = (com.combo_theme == 0) ? 1 : 0;
+
+	selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder, "treeview-selection1"));
 
 	basename = g_path_get_basename(seq_get_image_filename(seq, index, imname));
 	gtk_list_store_append (list_store, &iter);
@@ -170,7 +177,8 @@ static void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 			-1);
 	/* see example at http://developer.gnome.org/gtk3/3.5/GtkListStore.html */
 	if (index == seq->current) {
-		gtk_tree_selection_select_iter(selection, &iter);
+		if (selection)
+			gtk_tree_selection_select_iter(selection, &iter);
 	}
 	g_free(basename);
 }
@@ -235,7 +243,37 @@ static void display_status() {
 	g_free(text);
 }
 
-/**** Callbacs *****/
+/* method handling all include or all exclude from a sequence */
+static void sequence_setselect_all(gboolean include_all) {
+	int i;
+
+	if (!com.seq.imgparam)
+		return;
+	for (i = 0; i < com.seq.number; ++i) {
+		if (com.seq.imgparam[i].incl != include_all) {
+			com.seq.imgparam[i].incl = include_all;
+			sequence_list_change_selection_index(i);
+		}
+	}
+	if (include_all) {
+		com.seq.selnum = com.seq.number;
+		siril_log_message(_("Selected all images from sequence\n"));
+	} else {
+		com.seq.selnum = 0;
+		com.seq.reference_image = -1;
+		siril_log_message(_("Unselected all images from sequence\n"));
+		sequence_list_change_reference();
+		adjust_refimage(com.seq.current);
+	}
+	update_reg_interface(FALSE);
+	update_stack_interface(TRUE);
+	writeseqfile(&com.seq);
+	redraw(com.cvport, REMAP_NONE);
+	drawPlot();
+	adjust_sellabel();
+}
+
+/**** Callbacks *****/
 
 void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
 		GtkTreeViewColumn *column, gpointer user_data) {
@@ -272,9 +310,9 @@ void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data
 	}
 }
 
-void initialize_seqlist() {
+void update_seqlist() {
 	initialize_title();
-	initialize_seqlist_dialog_combo();
+	update_seqlist_dialog_combo();
 	initialize_search_entry();
 	display_status();
 }
@@ -309,6 +347,7 @@ void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
 	if (gtk_widget_get_visible(lookup_widget("seqlist_dialog"))) {
 		siril_close_dialog("seqlist_dialog");
 	} else {
+		update_seqlist();
 		siril_open_dialog("seqlist_dialog");
 	}
 }
@@ -340,11 +379,12 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	if (com.seq.imgparam[index].incl)
 		com.seq.selnum++;
 	else 	com.seq.selnum--;
-	adjust_exclude(index, TRUE);	// check or uncheck excluded checkbox in seq tab
 	update_reg_interface(FALSE);
 	update_stack_interface(FALSE);
-	writeseqfile(&com.seq);
 	redraw(com.cvport, REMAP_NONE);
+	drawPlot();
+	adjust_sellabel();
+	writeseqfile(&com.seq);
 }
 
 void toggle_image_selection(int image_num) {
@@ -368,7 +408,9 @@ void toggle_image_selection(int image_num) {
 	sequence_list_change_selection_index(image_num);
 	update_reg_interface(FALSE);
 	update_stack_interface(TRUE);
-	adjust_exclude(image_num, TRUE);
+	redraw(com.cvport, REMAP_NONE);
+	drawPlot();
+	adjust_sellabel();
 	writeseqfile(&com.seq);
 }
 
@@ -378,6 +420,48 @@ void on_selected_frames_unselect(GtkButton *button, gpointer user_data) {
 
 void on_selected_frames_select(GtkButton *button, gpointer user_data) {
 	unselect_select_frame_from_list(TRUE);
+}
+
+void on_seqexcludeall_button_clicked(GtkButton *button, gpointer user_data) {
+	gboolean exclude_all;
+
+	exclude_all = siril_confirm_dialog(_("Exclude all images ?"),
+			_("This erases previous image selection and there's no possible undo."), FALSE);
+	if (exclude_all) {
+		sequence_setselect_all(FALSE);
+	}
+}
+
+void on_seqselectall_button_clicked(GtkButton *button, gpointer user_data) {
+	gboolean select_all;
+
+	select_all = siril_confirm_dialog(_("Include all images ?"),
+			_("This erases previous image selection and there's no possible undo."), FALSE);
+	if (select_all) {
+		sequence_setselect_all(TRUE);
+	}
+}
+
+void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	if (sequence_is_loaded()) {
+		free_reference_image();
+		if ((gtk_toggle_button_get_active(togglebutton) == FALSE)) {
+			if (com.seq.reference_image == com.seq.current)
+				com.seq.reference_image = -1;
+		} else {
+			com.seq.reference_image = com.seq.current;
+			test_and_allocate_reference_image(-1);
+			// a reference image should not be excluded to avoid confusion
+			if (!com.seq.imgparam[com.seq.current].incl) {
+				toggle_image_selection(com.seq.current);
+			}
+		}
+		sequence_list_change_reference();
+		update_stack_interface(FALSE);// get stacking info and enable the Go button
+		adjust_sellabel();	// reference image is named in the label
+		writeseqfile(&com.seq);
+		drawPlot();		// update plots
+	}
 }
 
 /****************** modification of the list store (tree model) ******************/

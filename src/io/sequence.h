@@ -63,6 +63,7 @@ void	enforce_area_in_image(rectangle *area, sequence *seq);
 
 int seqpsf(sequence *seq, int layer, gboolean for_registration, gboolean regall,
 		framing_mode framing, gboolean run_in_thread);
+void free_reference_image();
 
 /* in export.c now */
 void	update_export_crop_label();

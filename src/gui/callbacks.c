@@ -107,12 +107,8 @@ static void set_label_text_from_main_thread(const char *label_name, const char *
 	gdk_threads_add_idle(set_label_text_idle, data);
 }
 
-/*
- * Image display static functions
- */
-
 /* enables or disables the "display reference" checkbox in registration preview */
-static void enable_view_reference_checkbox(gboolean status) {
+void enable_view_reference_checkbox(gboolean status) {
 	static GtkToggleButton *check_display_ref = NULL;
 	static GtkWidget *widget = NULL, *labelRegRef = NULL;
 	if (check_display_ref == NULL) {
@@ -203,24 +199,6 @@ void test_and_allocate_reference_image(int vport) {
 }
 
 /*
- * Free reference image
- */
-
-static void free_reference_image() {
-	fprintf(stdout, "Purging previously saved reference frame data.\n");
-	if (com.refimage_regbuffer) {
-		free(com.refimage_regbuffer);
-		com.refimage_regbuffer = NULL;
-	}
-	if (com.refimage_surface) {
-		cairo_surface_destroy(com.refimage_surface);
-		com.refimage_surface = NULL;
-	}
-	if (com.seq.reference_image == -1)
-		enable_view_reference_checkbox(FALSE);
-}
-
-/*
  * Update FWHM UNITS static function
  */
 
@@ -249,38 +227,6 @@ static void reset_swapdir() {
 		gtk_file_chooser_set_filename(swap_dir, dir);
 		writeinitfile();
 	}
-}
-
-/*
- * MISC static functions
- */
-
-/* method handling all include or all exclude from a sequence */
-static void sequence_setselect_all(gboolean include_all) {
-	int i;
-
-	if (!com.seq.imgparam)
-		return;
-	for (i = 0; i < com.seq.number; ++i) {
-		if (com.seq.imgparam[i].incl != include_all) {
-			com.seq.imgparam[i].incl = include_all;
-			sequence_list_change_selection_index(i);
-		}
-	}
-	if (include_all) {
-		com.seq.selnum = com.seq.number;
-		siril_log_message(_("Selected all images from sequence\n"));
-	} else {
-		com.seq.selnum = 0;
-		com.seq.reference_image = -1;
-		siril_log_message(_("Unselected all images from sequence\n"));
-		sequence_list_change_reference();
-		adjust_refimage(com.seq.current);
-	}
-	adjust_exclude(com.seq.current, TRUE);
-	update_reg_interface(FALSE);
-	update_stack_interface(TRUE);
-	writeseqfile(&com.seq);
 }
 
 /*****************************************************************************
@@ -467,21 +413,6 @@ void set_cutoff_sliders_values() {
 	gtk_toggle_button_set_active(cutmax, cut_over);
 }
 
-/* sets the maximum value for the spin button and display the initial file name */
-int seqsetnum(int image_number) {
-	GtkSpinButton *spin;
-	GtkAdjustment *adj;
-	if (com.seq.number <= 0 || image_number >= com.seq.number)
-		return 1;
-	spin = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "imagenumber_spin"));
-	adj = gtk_spin_button_get_adjustment(spin);
-
-	gtk_adjustment_set_upper(adj, (gdouble) com.seq.number - 1);
-	gtk_adjustment_set_value(adj, (gdouble) image_number);	// 0 is default
-	display_image_number(image_number);
-	return 0;
-}
-
 /* Sets the display mode combo box to the value stored in the relevant struct.
  * The operation is purely graphical. */
 void set_display_mode() {
@@ -505,44 +436,14 @@ void set_display_mode() {
 	g_signal_handlers_unblock_by_func(modecombo, on_combodisplay_changed, NULL);
 }
 
-/* called when an image is included or excluded from the sequence.
- * it sets the toggle button "exclude_button" so it matches the inclusion state.
- * n is the image number in the sequence
- * changed indicates if a value was changed and if the display needs to be refreshed.
- */
-void adjust_exclude(int n, gboolean changed) {
-	static GtkWidget *excl_butt = NULL;
-	if (!com.seq.imgparam || n < 0 || n >= com.seq.number)
-		return;
-	if (excl_butt == NULL)
-		excl_butt = lookup_widget("exclude_button");
-
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(excl_butt))
-			== com.seq.imgparam[n].incl) {
-		g_signal_handlers_block_by_func(excl_butt, on_excludebutton_toggled,
-				NULL);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(excl_butt),
-				!com.seq.imgparam[n].incl);
-		g_signal_handlers_unblock_by_func(excl_butt, on_excludebutton_toggled,
-				NULL);
-	}
-
-	if (changed) {
-		redraw(com.cvport, REMAP_NONE);
-		drawPlot();
-		adjust_sellabel();
-	}
-}
-
 /* fill the label indicating how many images are selected in the gray and
  * which one is the reference image, at the bottom of the main window */
 int adjust_sellabel() {
-	static GtkLabel *local_label = NULL, *global_label = NULL;
-	char bufferlocal[256], bufferglobal[256];
+	static GtkLabel *global_label = NULL;
+	char bufferglobal[256];
 	gchar *seq_basename = NULL;
 
-	if (local_label == NULL) {
-		local_label = GTK_LABEL(lookup_widget("imagesel_label"));
+	if (global_label == NULL) {
 		global_label = GTK_LABEL(lookup_widget("labelseq"));
 	}
 
@@ -559,25 +460,15 @@ int adjust_sellabel() {
 						_("<%%s.seq>: %%d images selected out of %%d, reference image is %%.%dd"),
 						com.seq.fixed);
 			}
-			g_snprintf(bufferlocal, sizeof(bufferlocal), format,
-					seq_basename, com.seq.selnum, com.seq.number,
-					com.seq.imgparam[com.seq.reference_image].filenum);
-
-		} else {
-			g_snprintf(bufferlocal, sizeof(bufferlocal),
-					_("<%s.seq>: %d images selected out of %d, no reference image set"),
-					seq_basename, com.seq.selnum, com.seq.number);
 		}
 		g_snprintf(bufferglobal, sizeof(bufferglobal), _("%s, %d images selected"),
 				seq_basename, com.seq.selnum);
 		//gtk_widget_set_sensitive(lookup_widget("goregister_button"), com.seq.selnum>0?TRUE:FALSE);
 	} else {
-		g_snprintf(bufferlocal, sizeof(bufferlocal), _("No sequence"));
 		g_snprintf(bufferglobal, sizeof(bufferglobal), _("- none -"));
 		gtk_widget_set_sensitive(lookup_widget("goregister_button"), FALSE);
 	}
 
-	gtk_label_set_text(local_label, bufferlocal);
 	gtk_label_set_text(global_label, bufferglobal);
 	g_free(seq_basename);
 	return 0;
@@ -1025,20 +916,6 @@ void set_layers_for_registration() {
 		gtk_combo_box_set_active(GTK_COMBO_BOX(cbbt_layers), reminder);
 }
 
-void display_image_number(int index) {
-	static GtkSpinButton *spin = NULL;
-	if (!spin)
-		spin = GTK_SPIN_BUTTON(lookup_widget("imagenumber_spin"));
-	char text[16];
-	char format[10];
-	if (com.seq.fixed <= 1)
-		g_snprintf(format, sizeof(format), "%%d");
-	else
-		g_snprintf(format, sizeof(format), "%%.%dd", com.seq.fixed);
-	g_snprintf(text, sizeof(text), format, com.seq.imgparam[index].filenum);
-	gtk_entry_set_text(GTK_ENTRY(spin), text);
-}
-
 void show_data_dialog(char *text, char *title) {
 	GtkTextView *tv = GTK_TEXT_VIEW(lookup_widget("data_txt"));
 	GtkTextBuffer *tbuf = gtk_text_view_get_buffer(tv);
@@ -1139,19 +1016,14 @@ void set_output_filename_to_sequence_name() {
 }
 
 void adjust_refimage(int n) {
-	static GtkWidget *ref_butt = NULL;
 	static GtkWidget *ref_butt2 = NULL;
-	if (ref_butt == NULL) {
-		ref_butt = lookup_widget("refframe");
+	if (ref_butt2 == NULL) {
 		ref_butt2 = lookup_widget("refframe2");
 	}
 
-	g_signal_handlers_block_by_func(ref_butt, on_ref_frame_toggled, NULL);
 	g_signal_handlers_block_by_func(ref_butt2, on_ref_frame_toggled, NULL);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ref_butt), com.seq.reference_image == n);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ref_butt2), com.seq.reference_image == n);
 	g_signal_handlers_unblock_by_func(ref_butt2, on_ref_frame_toggled, NULL);
-	g_signal_handlers_unblock_by_func(ref_butt, on_ref_frame_toggled, NULL);
 }
 
 void close_tab() {
@@ -2284,137 +2156,6 @@ void on_min_entry_changed(GtkEditable *editable, gpointer user_data) {
 	}
 }
 
-void on_excludebutton_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	if (!sequence_is_loaded() || com.seq.current < 0) {
-		return;
-	}
-	toggle_image_selection(com.seq.current);
-}
-
-struct load_img_data {
-	int index, do_display;
-};
-
-static gboolean seq_load_image_as_idle(gpointer p) {
-	struct load_img_data *data = (struct load_img_data *)p;
-	if (com.seq.current != data->index) // avoid double click
-		seq_load_image(&com.seq, data->index, data->do_display);
-	free(data);
-	return FALSE;
-}
-
-/* Returns TRUE if the value has been displayed */
-gboolean on_imagenumber_spin_output(GtkSpinButton *spin, gpointer user_data) {
-	static GtkAdjustment *adjustment = NULL;
-	int index, do_display;
-	if (adjustment == NULL)
-		adjustment = gtk_spin_button_get_adjustment(spin);
-	index = (int) gtk_adjustment_get_value(adjustment);
-
-	//fprintf(stdout, "spinchanged output: index=%d\n", index);
-	if (!sequence_is_loaded()) {
-		return FALSE;
-	}
-	if (index > com.seq.number || com.seq.current == index) {// already done for this one
-		//fprintf(stderr, "index already processed or data not init. Current: %d, idx: %d\n",
-		//		com.seq.current, index);
-		return TRUE;
-	}
-	//fprintf(stdout, "SPINCHANGED: index=%d\n", index);
-
-	do_display = (com.seq.imgparam[index].incl || com.show_excluded);
-	struct load_img_data *data = malloc(sizeof(struct load_img_data));
-	data->index = index;
-	data->do_display = do_display;
-	//return !seq_load_image(&com.seq, index, do_display);
-	gdk_threads_add_idle(seq_load_image_as_idle, data);
-	return TRUE;
-}
-
-/* for the spin button to be able to display number which are not the actual value of
- * the adjustment, the output callback is used to modify the way they are displayed,
- * but the input callback is also required to do the opposite operation, i.e. convert
- * real image number into the number in the sequence, which is the value of the adj. */
-gboolean on_imagenumberspin_input(GtkSpinButton *spin, gdouble *new_val,
-		gpointer p) {
-	const char *imgname = gtk_entry_get_text(GTK_ENTRY(spin));
-	int imgname_int = atoi(imgname);
-	int i;
-	if (!sequence_is_loaded()) {
-		//fprintf(stderr, "No sequence loaded\n");
-		return FALSE;
-	}
-	i = com.seq.current;
-	//fprintf(stdout, "current index in input is %d (looking for %d)\n", i, imgname_int);
-	if (com.seq.imgparam[i].filenum == imgname_int) {
-		*new_val = (gdouble) i;
-		//fprintf(stdout, "found at 0 %d\n", i);
-		return TRUE;
-	} else if (i > 0 && com.seq.imgparam[i - 1].filenum == imgname_int) {
-		*new_val = (gdouble) (i - 1);
-		//fprintf(stdout, "found at -1 %d\n", i-1);
-		return TRUE;
-	} else if (i < com.seq.number - 1
-			&& com.seq.imgparam[i + 1].filenum == imgname_int) {
-		*new_val = (gdouble) (i + 1);
-		//fprintf(stdout, "found at +1 %d\n", i+1);
-		return TRUE;
-	} else {
-		/* no luck with neighbours, sweep it all */
-		for (i = 0; i < com.seq.number; i++) {
-			if (com.seq.imgparam[i].filenum == imgname_int) {
-				*new_val = (gdouble) i;
-				//fprintf(stdout, "sweep found at %d\n", i);
-				return TRUE;
-			}
-		}
-	}
-	return GTK_INPUT_ERROR;
-}
-
-/* Returns:	TRUE to stop other handlers from being invoked for the event.
- *		FALSE to propagate the event further. */
-gboolean on_imagenumberspin_key_release_event(GtkWidget *widget,
-		GdkEventKey *event, gpointer user_data) {
-	static GtkAdjustment *adj = NULL;
-	int n;
-
-	if (!sequence_is_loaded()) {
-		//fprintf(stderr, "No sequence loaded\n");
-		return TRUE;
-	}
-	if (!adj)
-		adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(widget));
-	n = (int) gtk_adjustment_get_value(adj);
-	if (n > com.seq.number) {
-		return TRUE;
-	}
-	if (event->keyval == GDK_KEY_space) {
-		toggle_image_selection(n);
-	}
-	return FALSE;
-}
-
-void on_seqexcludeall_button_clicked(GtkButton *button, gpointer user_data) {
-	gboolean exclude_all;
-
-	exclude_all = siril_confirm_dialog(_("Exclude all images ?"),
-			_("This erases previous image selection and there's no possible undo."), FALSE);
-	if (exclude_all) {
-		sequence_setselect_all(FALSE);
-	}
-}
-
-void on_seqselectall_button_clicked(GtkButton *button, gpointer user_data) {
-	gboolean select_all;
-
-	select_all = siril_confirm_dialog(_("Include all images ?"),
-			_("This erases previous image selection and there's no possible undo."), FALSE);
-	if (select_all) {
-		sequence_setselect_all(TRUE);
-	}
-}
-
 static void test_for_master_files(struct preprocessing_data *args) {
 	GtkToggleButton *tbutton;
 	GtkEntry *entry;
@@ -2607,34 +2348,6 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 		set_cursor_waiting(FALSE);
 	}
 }
-
-void on_showexcluded_button_toggled(GtkToggleButton *togglebutton,
-		gpointer user_data) {
-	com.show_excluded = gtk_toggle_button_get_active(togglebutton);
-}
-
-void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	if (sequence_is_loaded()) {
-		free_reference_image();
-		if ((gtk_toggle_button_get_active(togglebutton) == FALSE)) {
-			if (com.seq.reference_image == com.seq.current)
-				com.seq.reference_image = -1;
-		} else {
-			com.seq.reference_image = com.seq.current;
-			test_and_allocate_reference_image(-1);
-			// a reference image should not be excluded to avoid confusion
-			if (!com.seq.imgparam[com.seq.current].incl) {
-				toggle_image_selection(com.seq.current);
-			}
-		}
-		sequence_list_change_reference();
-		update_stack_interface(FALSE);// get stacking info and enable the Go button
-		adjust_sellabel();	// reference image is named in the label
-		writeseqfile(&com.seq);
-		drawPlot();		// update plots
-	}
-}
-
 
 void on_regTranslationOnly_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	GtkWidget *Algo, *Prefix;
