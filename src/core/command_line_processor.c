@@ -341,6 +341,28 @@ static gboolean completion_match_func(GtkEntryCompletion *completion,
 	return res;
 }
 
+static GtkWidget *popover_new(GtkWidget *widget, const gchar *text) {
+	GtkWidget *popover, *box, *image, *label;
+
+	popover = gtk_popover_new(widget);
+	label = gtk_label_new(NULL);
+	box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+	image = gtk_image_new_from_icon_name("dialog-information-symbolic",
+			GTK_ICON_SIZE_DIALOG);
+
+	gtk_label_set_markup(GTK_LABEL(label), text);
+	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
+	gtk_label_set_max_width_chars(GTK_LABEL(label), 64);
+
+	gtk_box_pack_start(GTK_BOX(box), image, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(popover), box);
+
+	gtk_widget_show_all(box);
+
+	return popover;
+}
+
 void init_completion_command() {
 	GtkEntryCompletion *completion = gtk_entry_completion_new();
 	GtkListStore *model = gtk_list_store_new(1, G_TYPE_STRING);

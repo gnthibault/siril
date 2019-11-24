@@ -237,28 +237,6 @@ GtkWidget* lookup_widget(const gchar *widget_name) {
 	return GTK_WIDGET(gtk_builder_get_object(builder, widget_name));
 }
 
-GtkWidget *popover_new(GtkWidget *widget, const gchar *text) {
-	GtkWidget *popover, *box, *image, *label;
-
-	popover = gtk_popover_new(widget);
-	label = gtk_label_new(NULL);
-	box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-	image = gtk_image_new_from_icon_name("dialog-information-symbolic",
-			GTK_ICON_SIZE_DIALOG);
-
-	gtk_label_set_markup(GTK_LABEL(label), text);
-	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-	gtk_label_set_max_width_chars(GTK_LABEL(label), 64);
-
-	gtk_box_pack_start(GTK_BOX(box), image, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
-	gtk_container_add(GTK_CONTAINER(popover), box);
-
-	gtk_widget_show_all(box);
-
-	return popover;
-}
-
 static void update_theme_button(const gchar *button_name, const gchar *path) {
 	gchar *image;
 	GtkWidget *w_image;
@@ -1952,10 +1930,6 @@ void siril_quit() {
 	}
 }
 
-void on_exit_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_quit();
-}
-
 /* We give one signal event by toggle button to fix a bug. Without this solution
  * the toggled function was called 2 times
  * one call to select new button, one call to unselect previous one */
@@ -2534,104 +2508,6 @@ void scrollbars_vadjustment_changed_handler(GtkAdjustment *adjustment,
 		if (com.vadj[i] != adjustment) {
 			gtk_adjustment_set_value(com.vadj[i], value);
 		}
-	}
-}
-
-void on_info_menu_statistics_clicked(GtkButton *button, gpointer user_data) {
-	set_cursor_waiting(TRUE);
-	computeStat();
-	siril_open_dialog("StatWindow");
-	set_cursor_waiting(FALSE);
-}
-
-/**********************************************************************/
-
-void on_menu_channel_separation_activate(GtkMenuItem *menuitem,
-		gpointer user_data) {
-	if (single_image_is_loaded() && isrgb(&gfit))
-		siril_open_dialog("extract_channel_dialog");
-}
-
-void on_menuitemcalibration_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (single_image_is_loaded() && isrgb(&gfit)) {
-		initialize_calibration_interface();
-		siril_open_dialog("color_calibration");
-	}
-}
-
-void on_extract_channel_button_close_clicked(GtkButton *button,
-		gpointer user_data) {
-	siril_close_dialog("extract_channel_dialog");
-}
-
-void on_combo_extract_colors_changed(GtkComboBox *box, gpointer user_data) {
-	switch(gtk_combo_box_get_active(box)) {
-		default:
-		case 0: // RGB
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c1")), _("Red: "));
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c2")), _("Green: "));
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c3")), _("Blue: "));
-			break;
-		case 1: // HSL
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c1")), _("Hue: "));
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c2")), _("Saturation: "));
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c3")), _("Lightness: "));
-			break;
-		case 2: // HSV
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c1")), _("Hue: "));
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c2")), _("Saturation: "));
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c3")), _("Value: "));
-			break;
-		case 3: // CIE L*a*b*
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c1")), "L*: ");
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c2")), "a*: ");
-			gtk_label_set_text(GTK_LABEL(lookup_widget("label_extract_c3")), "b*: ");
-	}
-}
-
-void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data) {
-	static GtkEntry *channel_extract_entry[3] = { NULL, NULL, NULL };
-	static GtkComboBox *combo_extract_channel = NULL;
-
-	if (get_thread_run()) {
-		siril_log_message(
-				_("Another task is already in progress, ignoring new request.\n"));
-		return;
-	}
-
-	struct extract_channels_data *args = malloc(sizeof(struct extract_channels_data));
-	if (args == NULL) {
-		PRINT_ALLOC_ERR;
-		return;
-	}
-
-	if (combo_extract_channel == NULL) {
-		combo_extract_channel = GTK_COMBO_BOX(
-				lookup_widget("combo_extract_colors"));
-		channel_extract_entry[0] = GTK_ENTRY(
-				lookup_widget("Ch1_extract_channel_entry"));
-		channel_extract_entry[1] = GTK_ENTRY(
-				lookup_widget("Ch2_extract_channel_entry"));
-		channel_extract_entry[2] = GTK_ENTRY(
-				lookup_widget("Ch3_extract_channel_entry"));
-	}
-
-	args->type = gtk_combo_box_get_active(combo_extract_channel);
-	args->str_type = gtk_combo_box_get_active_id(combo_extract_channel);
-
-	args->channel[0] = gtk_entry_get_text(channel_extract_entry[0]);
-	args->channel[1] = gtk_entry_get_text(channel_extract_entry[1]);
-	args->channel[2] = gtk_entry_get_text(channel_extract_entry[2]);
-
-	if ((args->channel[0][0] != '\0') && (args->channel[1][0] != '\0')
-			&& (args->channel[2][0] != '\0')) {
-		args->fit = calloc(1, sizeof(fits));
-		set_cursor_waiting(TRUE);
-		copyfits(&gfit, args->fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
-		start_in_new_thread(extract_channels, args);
-	}
-	else {
-		free(args);
 	}
 }
 
