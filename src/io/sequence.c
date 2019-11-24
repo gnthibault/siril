@@ -458,10 +458,9 @@ int set_seq(const char *name){
 	init_layers_hi_and_lo_values(MIPSLOHI); // set some hi and lo values in seq->layers,
 	set_cutoff_sliders_max_values();// update min and max values for contrast sliders
 	set_cutoff_sliders_values();	// update values for contrast sliders for this image
-	seqsetnum(seq->current);	// set limits for spin button and display loaded filenum
 	set_layers_for_assign();	// set default layers assign and populate combo box
 	set_layers_for_registration();	// set layers in the combo box for registration
-	initialize_seqlist();
+	update_seqlist();
 	fill_sequence_list(seq, RLAYER, FALSE);// display list of files in the sequence
 	set_output_filename_to_sequence_name();
 	sliders_mode_set_state(com.sliders);
@@ -471,7 +470,6 @@ int set_seq(const char *name){
 	/* initialize image-related runtime data */
 	set_display_mode();		// display the display mode in the combo box
 	display_filename();		// display filename in gray window
-	adjust_exclude(seq->current, FALSE);	// check or uncheck excluded checkbox
 	adjust_refimage(seq->current);	// check or uncheck reference image checkbox
 	update_prepro_interface(seq->type == SEQ_REGULAR); // enable or not the preprobutton
 	update_reg_interface(FALSE);	// change the registration prereq message
@@ -544,9 +542,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 	}
 
 	update_MenuItem();		// initialize menu gui
-	display_image_number(index);	// in the gray window
 	sequence_list_change_current();
-	adjust_exclude(index, FALSE);	// check or uncheck excluded checkbox
 	adjust_refimage(index);	// check or uncheck reference image checkbox
 	update_used_memory();
 	return 0;
@@ -1203,6 +1199,7 @@ void close_sequence(int loading_another) {
 			gtk_combo_box_set_active(seqcombo, -1);
 		}
 		adjust_sellabel();
+		update_seqlist();
 	}
 }
 
@@ -1589,7 +1586,7 @@ gboolean end_seqpsf(gpointer p) {
 		 * in case seqpsf is called for registration. */
 		// update the list in the GUI
 		if (seq->type != SEQ_INTERNAL) {
-			initialize_seqlist();
+			update_seqlist();
 			fill_sequence_list(seq, layer, FALSE);
 		}
 
@@ -1668,4 +1665,19 @@ int seqpsf(sequence *seq, int layer, gboolean for_registration, gboolean regall,
 		return retval;
 	}
 }
+
+void free_reference_image() {
+	fprintf(stdout, "Purging previously saved reference frame data.\n");
+	if (com.refimage_regbuffer) {
+		free(com.refimage_regbuffer);
+		com.refimage_regbuffer = NULL;
+	}
+	if (com.refimage_surface) {
+		cairo_surface_destroy(com.refimage_surface);
+		com.refimage_surface = NULL;
+	}
+	if (com.seq.reference_image == -1)
+		enable_view_reference_checkbox(FALSE);
+}
+
 

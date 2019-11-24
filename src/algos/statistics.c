@@ -41,6 +41,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/dialogs.h"
+#include "gui/progress_and_log.h"
 #include "sorting.h"
 #include "statistics.h"
 #include "statistics_float.h"
@@ -655,6 +656,15 @@ void clear_stats(sequence *seq, int layer) {
 /**** callbacks *****/
 
 void on_menu_gray_stat_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	set_cursor_waiting(TRUE);
 	computeStat();
 	siril_open_dialog("StatWindow");
+	set_cursor_waiting(FALSE);
+}
+
+void on_info_menu_statistics_clicked(GtkButton *button, gpointer user_data) {
+	set_cursor_waiting(TRUE);
+	computeStat();
+	siril_open_dialog("StatWindow");
+	set_cursor_waiting(FALSE);
 }

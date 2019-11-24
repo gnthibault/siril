@@ -18,13 +18,14 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "progress_and_log.h"
 #include <gtk/gtk.h>
 #include <unistd.h>
 #include <assert.h>
 #include <string.h>
 #include "callbacks.h"
 #include "core/pipe.h"
+
+#include "progress_and_log.h"
 
 /*
  * Progress bar static functions

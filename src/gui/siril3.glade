@@ -336,11 +336,6 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkAdjustment" id="adjustment5">
-    <property name="upper">1</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
   <object class="GtkAdjustment" id="adjustment6">
     <property name="upper">100</property>
     <property name="value">90</property>
@@ -2521,6 +2516,7 @@ enter a visible wavelength in nm</property>
                       <object class="GtkNotebook" id="notebook2">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="scrollable">True</property>
                         <child>
                           <object class="GtkBox" id="box52">
                             <property name="visible">True</property>
@@ -3165,155 +3161,18 @@ WARNING: it will erase all registration and statistics data.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkSeparator" id="hseparator4">
+                              <object class="GtkButton">
+                                <property name="label" translatable="yes">Open Frame List</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="margin_top">6</property>
-                                <property name="margin_bottom">6</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="halign">center</property>
+                                <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">6</property>
                                 <property name="position">5</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="label4">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="margin_bottom">6</property>
-                                <property name="label" translatable="yes">Image selection in sequence</property>
-                                <property name="justify">center</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">6</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="imagesel_label">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="halign">start</property>
-                                <property name="label" translatable="yes">No sequence selected</property>
-                                <property name="justify">right</property>
-                                <property name="ellipsize">middle</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="padding">5</property>
-                                <property name="position">7</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkGrid" id="grid20">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="column_spacing">8</property>
-                                <property name="column_homogeneous">True</property>
-                                <child>
-                                  <object class="GtkSpinButton" id="imagenumber_spin">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip_text" translatable="yes">Image index in the sequence. You can also use arrow keys to browse images, and the SPACE key to toggle exclude for the current image.</property>
-                                    <property name="valign">center</property>
-                                    <property name="text">1</property>
-                                    <property name="input_purpose">number</property>
-                                    <property name="adjustment">adjustment5</property>
-                                    <property name="numeric">True</property>
-                                    <property name="value">1</property>
-                                    <signal name="input" handler="on_imagenumberspin_input" swapped="no"/>
-                                    <signal name="key-release-event" handler="on_imagenumberspin_key_release_event" swapped="no"/>
-                                    <signal name="output" handler="on_imagenumber_spin_output" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="exclude_button">
-                                    <property name="label" translatable="yes">Excluded</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Whether or not the image is excluded from processing (the file itself is not deleted)</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">center</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_excludebutton_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="refframe">
-                                    <property name="label" translatable="yes">Reference image</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">If set, the current image will be the reference image for registration.
-Only one image can be the reference image in a sequence, setting it will unset the image previously set as reference.
-If not set manually, the first image of the sequence is taken as reference.</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">center</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_ref_frame_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="seqexcludeall_button">
-                                    <property name="label" translatable="yes">Exclude All</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Exclude all images of the sequence from the processing schedule</property>
-                                    <property name="border_width">5</property>
-                                    <property name="use_underline">True</property>
-                                    <signal name="clicked" handler="on_seqexcludeall_button_clicked" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="seqselectall_button">
-                                    <property name="label" translatable="yes">Include All</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">includes all images of the sequence in the processing schedule</property>
-                                    <property name="valign">center</property>
-                                    <property name="use_underline">True</property>
-                                    <signal name="clicked" handler="on_seqselectall_button_clicked" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">8</property>
                               </packing>
                             </child>
                             <child>
@@ -13191,7 +13050,7 @@ Uncheck if images come from a monochrome sensor.</property>
           </object>
         </child>
         <child>
-          <object class="GtkButtonBox">
+          <object class="GtkButtonBox" id="seqlist_buttonbar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="homogeneous">True</property>
@@ -13246,7 +13105,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">includes all images of the sequence in the processing schedule</property>
+                <property name="tooltip_text" translatable="yes">Includes all images of the sequence in the processing schedule</property>
                 <signal name="clicked" handler="on_seqselectall_button_clicked" swapped="no"/>
                 <child>
                   <object class="GtkImage">
@@ -13274,7 +13133,7 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="icon_name">list-add-symbolic</property>
+                    <property name="icon_name">emblem-ok-symbolic</property>
                   </object>
                 </child>
               </object>
@@ -13325,120 +13184,147 @@ If not set manually, the first image of the sequence is taken as reference.</pro
       </object>
     </child>
     <child>
-      <object class="GtkScrolledWindow" id="scrolledwindow1">
+      <object class="GtkBox">
         <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="shadow_type">in</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkTreeView" id="treeview1">
+          <object class="GtkScrolledWindow" id="scrolledwindow1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="tooltip_text" translatable="yes">List of images in the sequence, with their state and quality information. Quality is FWHM when PSF registration is used, so lower is better, and gradient estimator for DFT registration, higher is better. X and Y columns are the translation relative to the reference image.</property>
-            <property name="hscroll_policy">natural</property>
-            <property name="vscroll_policy">natural</property>
-            <property name="model">liststore1</property>
-            <property name="reorderable">True</property>
-            <property name="search_column">7</property>
-            <property name="show_expanders">False</property>
-            <property name="enable_grid_lines">horizontal</property>
-            <property name="activate_on_single_click">True</property>
-            <signal name="row-activated" handler="on_treeview1_row_activated" swapped="no"/>
-            <child internal-child="selection">
-              <object class="GtkTreeSelection" id="treeview-selection1">
-                <property name="mode">multiple</property>
-              </object>
-            </child>
+            <property name="shadow_type">in</property>
             <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn16">
-                <property name="resizable">True</property>
-                <property name="title">#</property>
-                <property name="clickable">True</property>
+              <object class="GtkTreeView" id="treeview1">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">List of images in the sequence, with their state and quality information. Quality is FWHM when PSF registration is used, so lower is better, and gradient estimator for DFT registration, higher is better. X and Y columns are the translation relative to the reference image.</property>
+                <property name="hscroll_policy">natural</property>
+                <property name="vscroll_policy">natural</property>
+                <property name="model">liststore1</property>
                 <property name="reorderable">True</property>
-                <property name="sort_indicator">True</property>
-                <property name="sort_column_id">7</property>
-                <child>
-                  <object class="GtkCellRendererText" id="cellrenderertext6"/>
-                  <attributes>
-                    <attribute name="background">6</attribute>
-                    <attribute name="text">7</attribute>
-                  </attributes>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn1">
-                <property name="resizable">True</property>
-                <property name="title" translatable="yes">File</property>
-                <property name="expand">True</property>
-                <child>
-                  <object class="GtkCellRendererText" id="cellrenderertext1"/>
-                  <attributes>
-                    <attribute name="background">6</attribute>
-                    <attribute name="text">0</attribute>
-                    <attribute name="weight">5</attribute>
-                  </attributes>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn2">
-                <property name="resizable">True</property>
-                <property name="title" translatable="yes">X</property>
-                <child>
-                  <object class="GtkCellRendererText" id="cellrenderertext2"/>
-                  <attributes>
-                    <attribute name="background">6</attribute>
-                    <attribute name="text">1</attribute>
-                  </attributes>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn3">
-                <property name="resizable">True</property>
-                <property name="title" translatable="yes">Y</property>
-                <child>
-                  <object class="GtkCellRendererText" id="cellrenderertext3"/>
-                  <attributes>
-                    <attribute name="background">6</attribute>
-                    <attribute name="text">2</attribute>
-                  </attributes>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn4">
-                <property name="resizable">True</property>
-                <property name="title" translatable="yes">Sel</property>
-                <child>
-                  <object class="GtkCellRendererToggle" id="cellrenderertext4">
-                    <signal name="toggled" handler="on_seqlist_image_selection_toggled" swapped="no"/>
+                <property name="search_column">7</property>
+                <property name="show_expanders">False</property>
+                <property name="enable_grid_lines">horizontal</property>
+                <property name="activate_on_single_click">True</property>
+                <signal name="row-activated" handler="on_treeview1_row_activated" swapped="no"/>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection">
+                    <property name="mode">multiple</property>
                   </object>
-                  <attributes>
-                    <attribute name="cell-background">6</attribute>
-                    <attribute name="active">3</attribute>
-                  </attributes>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn5">
-                <property name="resizable">True</property>
-                <property name="title" translatable="yes">Quality</property>
-                <property name="clickable">True</property>
-                <property name="reorderable">True</property>
-                <property name="sort_indicator">True</property>
-                <property name="sort_column_id">4</property>
                 <child>
-                  <object class="GtkCellRendererText" id="cellrenderertext5"/>
-                  <attributes>
-                    <attribute name="background">6</attribute>
-                    <attribute name="text">4</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn" id="treeviewcolumn16">
+                    <property name="resizable">True</property>
+                    <property name="title">#</property>
+                    <property name="clickable">True</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_indicator">True</property>
+                    <property name="sort_column_id">7</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="cellrenderertext6"/>
+                      <attributes>
+                        <attribute name="background">6</attribute>
+                        <attribute name="text">7</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn" id="treeviewcolumn1">
+                    <property name="resizable">True</property>
+                    <property name="title" translatable="yes">File</property>
+                    <property name="expand">True</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                      <attributes>
+                        <attribute name="background">6</attribute>
+                        <attribute name="text">0</attribute>
+                        <attribute name="weight">5</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn" id="treeviewcolumn2">
+                    <property name="resizable">True</property>
+                    <property name="title" translatable="yes">X</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="cellrenderertext2"/>
+                      <attributes>
+                        <attribute name="background">6</attribute>
+                        <attribute name="text">1</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn" id="treeviewcolumn3">
+                    <property name="resizable">True</property>
+                    <property name="title" translatable="yes">Y</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="cellrenderertext3"/>
+                      <attributes>
+                        <attribute name="background">6</attribute>
+                        <attribute name="text">2</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn" id="treeviewcolumn4">
+                    <property name="resizable">True</property>
+                    <property name="title" translatable="yes">Sel</property>
+                    <child>
+                      <object class="GtkCellRendererToggle" id="cellrenderertext4">
+                        <signal name="toggled" handler="on_seqlist_image_selection_toggled" swapped="no"/>
+                      </object>
+                      <attributes>
+                        <attribute name="cell-background">6</attribute>
+                        <attribute name="active">3</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn" id="treeviewcolumn5">
+                    <property name="resizable">True</property>
+                    <property name="title" translatable="yes">Quality</property>
+                    <property name="clickable">True</property>
+                    <property name="reorderable">True</property>
+                    <property name="sort_indicator">True</property>
+                    <property name="sort_column_id">4</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="cellrenderertext5"/>
+                      <attributes>
+                        <attribute name="background">6</attribute>
+                        <attribute name="text">4</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
               </object>
             </child>
           </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkStatusbar" id="seqlist_statusbar">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">2</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
         </child>
       </object>
     </child>
