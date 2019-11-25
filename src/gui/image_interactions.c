@@ -556,16 +556,17 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 
 		switch (event->direction) {
 		case GDK_SCROLL_SMOOTH:
+			handled = TRUE;
 			gdk_event_get_scroll_deltas((GdkEvent*) (event), &delta_x,	&delta_y);
-			if (delta_y == -1) {
-				if (com.zoom_value * 1.5 > 16.0) {
-					return TRUE;
+			if (delta_y < 0) {
+				if (com.zoom_value * 1.5 > ZOOM_MAX) {
+					return handled;
 				}
 				com.zoom_value *= 1.5;
 			}
-			if (delta_y == 1) {
-				if (com.zoom_value / 1.5 < 0.03125) {
-					return TRUE;
+			if (delta_y > 0) {
+				if (com.zoom_value / 1.5 < ZOOM_MIN) {
+					return handled;
 				}
 				com.zoom_value = com.zoom_value / 1.5 ;
 			}
@@ -573,29 +574,28 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 			set_scroll_position(widget,	image_x * com.zoom_value - (pix_width / 2) / com.zoom_value,
 					image_y * com.zoom_value - (pix_height / 2) / com.zoom_value);
 			redraw(com.cvport, REMAP_NONE);
-			handled = TRUE;
 			break;
 		case GDK_SCROLL_DOWN:
-			if (com.zoom_value / 1.5 < 0.03125) {
-				return TRUE;
+			handled = TRUE;
+			if (com.zoom_value / 1.5 < ZOOM_MIN) {
+				return handled;
 			}
 			com.zoom_value = com.zoom_value / 1.5 ;
 			adjust_vport_size_to_image();
 			set_scroll_position(widget,	image_x * com.zoom_value - (pix_width / 2) / com.zoom_value,
 					image_y * com.zoom_value - (pix_height / 2) / com.zoom_value);
 			redraw(com.cvport, REMAP_NONE);
-			handled = TRUE;
 			break;
 		case GDK_SCROLL_UP:
-			if (com.zoom_value * 1.5 > 16.0) {
-				return FALSE;
+			handled = TRUE;
+			if (com.zoom_value * 1.5 > ZOOM_MAX) {
+				return handled;
 			}
 			com.zoom_value *= 1.5;
 			adjust_vport_size_to_image();
 			set_scroll_position(widget,	image_x * com.zoom_value - (pix_width / 2) / com.zoom_value,
 					image_y * com.zoom_value - (pix_height / 2) / com.zoom_value);
 			redraw(com.cvport, REMAP_NONE);
-			handled = TRUE;
 			break;
 		}
 	}
