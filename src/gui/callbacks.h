@@ -75,7 +75,6 @@ void on_combodisplay_changed (GtkComboBox *widget, gpointer user_data);
 void on_checkchain_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_max_entry_changed(GtkEditable *editable, gpointer user_data);
 void on_min_entry_changed(GtkEditable *editable, gpointer user_data);
-void on_combozoom_changed(GtkComboBox *widget, gpointer user_data);
 
 void on_seqproc_entry_changed (GtkComboBox *widget,	gpointer user_data);
 void on_excludebutton_toggled(GtkToggleButton *togglebutton, gpointer user_data);

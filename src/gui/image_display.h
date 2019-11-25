@@ -1,6 +1,8 @@
 #ifndef _IMAGE_DISPLAY_H_
 #define _IMAGE_DISPLAY_H_
 
+#include "core/siril.h"
+
 void initialize_image_display();
 
 void queue_redraw(int doremap);

@@ -28,10 +28,12 @@
 #include "algos/PSF.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
-#include "image_display.h"
 #include "callbacks.h"
 #include "histogram.h"
 #include "git-version.h"
+
+#include "image_display.h"
+
 
 /* remap index data, an index for each layer */
 static BYTE *remap_index[MAXGRAYVPORT];

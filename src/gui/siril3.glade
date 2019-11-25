@@ -1969,12 +1969,13 @@ enter a visible wavelength in nm</property>
                                   <object class="GtkDrawingArea" id="drawingarear">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_SCROLL_MASK</property>
                                     <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
+                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" swapped="no"/>
                                   </object>
                                 </child>
                               </object>
@@ -2118,12 +2119,13 @@ enter a visible wavelength in nm</property>
                                   <object class="GtkDrawingArea" id="drawingareag">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_SCROLL_MASK</property>
                                     <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
+                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" swapped="no"/>
                                   </object>
                                 </child>
                               </object>
@@ -2270,12 +2272,13 @@ enter a visible wavelength in nm</property>
                                   <object class="GtkDrawingArea" id="drawingareab">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_SCROLL_MASK</property>
                                     <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
+                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" swapped="no"/>
                                   </object>
                                 </child>
                               </object>
@@ -6595,6 +6598,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
               <object class="GtkToolItem" id="toolbarView">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="valign">center</property>
                 <child>
                   <object class="GtkComboBoxText" id="combodisplay">
                     <property name="visible">True</property>
@@ -6602,7 +6606,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                     <property name="has_tooltip">True</property>
                     <property name="tooltip_markup" translatable="yes">Display mode</property>
                     <property name="tooltip_text" translatable="yes">Display mode</property>
-                    <property name="halign">end</property>
+                    <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="border_width">6</property>
                     <property name="active">0</property>
@@ -6639,24 +6643,15 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkComboBoxText" id="combozoom">
+                  <object class="GtkCheckButton" id="zoom_to_fit_check_button">
+                    <property name="label" translatable="yes">Zoom to fit</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Zoom level</property>
-                    <property name="halign">end</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
                     <property name="valign">center</property>
-                    <items>
-                      <item>16:1</item>
-                      <item>8:1</item>
-                      <item>4:1</item>
-                      <item>2:1</item>
-                      <item>1:1</item>
-                      <item>1:2</item>
-                      <item>1:4</item>
-                      <item>1:8</item>
-                      <item translatable="yes">Zoom to fit</item>
-                    </items>
-                    <signal name="changed" handler="on_combozoom_changed" swapped="no"/>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_zoom_to_fit_check_button_toggled" swapped="no"/>
                   </object>
                 </child>
               </object>
