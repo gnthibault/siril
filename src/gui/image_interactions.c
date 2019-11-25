@@ -519,3 +519,117 @@ void on_drawingarea_leave_notify_event(GtkWidget *widget, GdkEvent *event,
 	/* trick to get default cursor */
 	set_cursor_waiting(FALSE);
 }
+
+static void get_scroll_position(GtkWidget *widget, int *x, int *y, int *width, int *height) {
+	// the GtkScrolledWindow are the grand parents of the drawing areas
+	GtkWidget *scrwindow = gtk_widget_get_parent(gtk_widget_get_parent(widget));
+	GtkAdjustment *hadj = gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(scrwindow));
+	GtkAdjustment *vadj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrwindow));
+
+	*x = gtk_adjustment_get_value(hadj);
+	*y = gtk_adjustment_get_value(vadj);
+	*width = gtk_adjustment_get_page_size(hadj);
+	*height = gtk_adjustment_get_page_size(vadj);
+
+	siril_debug_print("get_scroll_position: %d %d %d %d\n", *x, *y, *width, *height);
+}
+
+static void set_scroll_position(GtkWidget *widget, int x, int y) {
+	GtkWidget *scrwindow = gtk_widget_get_parent(gtk_widget_get_parent(widget));
+	GtkAdjustment *hadj = gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(scrwindow));
+	GtkAdjustment *vadj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrwindow));
+
+	siril_debug_print("set_scroll_position: %d %d (for adj of size %g and %g)\n", x,
+			y, gtk_adjustment_get_upper(hadj), gtk_adjustment_get_upper(vadj));
+
+	x = CLAMP(x, 0, gtk_adjustment_get_upper(hadj) - gtk_adjustment_get_page_size(hadj));
+	y = CLAMP(y, 0, gtk_adjustment_get_upper(vadj) - gtk_adjustment_get_page_size(vadj));
+
+//	g_signal_handlers_block_matched(hadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL,
+//			scrwindow);
+//	g_signal_handlers_block_matched(vadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL,
+//			scrwindow);
+
+	gtk_adjustment_set_value(hadj, x);
+	gtk_adjustment_set_value(vadj, y);
+
+//	g_signal_handlers_unblock_matched(hadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL,
+//			NULL, scrwindow);
+//	g_signal_handlers_unblock_matched(vadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL,
+//			NULL, scrwindow);
+
+}
+
+gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer data) {
+	GtkToggleButton *button;
+	gdouble delta_x, delta_y;
+	gboolean handled = FALSE;
+	int pix_x, pix_y, pix_width, pix_height;
+
+	if (!single_image_is_loaded() && !sequence_is_loaded())
+		return FALSE;
+
+	if (event->state & GDK_CONTROL_MASK) {
+		button = GTK_TOGGLE_BUTTON(lookup_widget("zoom_to_fit_check_button"));
+		if (gtk_toggle_button_get_active(button))
+			gtk_toggle_button_set_active(button, FALSE);
+
+		get_scroll_position(widget, &pix_x, &pix_y, &pix_width, &pix_height);
+
+		switch (event->direction) {
+		case GDK_SCROLL_SMOOTH:
+			handled = TRUE;
+			gdk_event_get_scroll_deltas((GdkEvent*) event, &delta_x, &delta_y);
+			if (delta_y < 0) {
+				if (com.zoom_value * 1.5 > ZOOM_MAX) {
+					return handled;
+				}
+				com.zoom_value *= 1.5;
+			}
+			if (delta_y > 0) {
+				if (com.zoom_value / 1.5 < ZOOM_MIN) {
+					return handled;
+				}
+				com.zoom_value /= 1.5 ;
+			}
+			adjust_vport_size_to_image();
+			set_scroll_position(widget,	(event->x - (pix_width / 2)) / com.zoom_value,
+					(event->y - (pix_height / 2)) / com.zoom_value);
+			redraw(com.cvport, REMAP_NONE);
+			break;
+		case GDK_SCROLL_DOWN:
+			handled = TRUE;
+			if (com.zoom_value / 1.5 < ZOOM_MIN) {
+				return handled;
+			}
+			com.zoom_value /= 1.5 ;
+			adjust_vport_size_to_image();
+			set_scroll_position(widget,	(event->x - (pix_width / 2)) / com.zoom_value,
+					(event->y - (pix_height / 2)) / com.zoom_value);
+			redraw(com.cvport, REMAP_NONE);
+			break;
+		case GDK_SCROLL_UP:
+			handled = TRUE;
+			if (com.zoom_value * 1.5 > ZOOM_MAX) {
+				return handled;
+			}
+			com.zoom_value *= 1.5;
+			adjust_vport_size_to_image();
+			set_scroll_position(widget,	(event->x - (pix_width / 2)) / com.zoom_value,
+					(event->y - (pix_height / 2)) / com.zoom_value);
+			redraw(com.cvport, REMAP_NONE);
+			break;
+		}
+	}
+	return handled;
+}
+
+void on_zoom_to_fit_check_button_toggled(GtkToggleButton *button, gpointer data) {
+	if (gtk_toggle_button_get_active(button)) {
+		com.zoom_value = -1;
+		adjust_vport_size_to_image();
+		redraw(com.cvport, REMAP_NONE);
+	} else {
+		com.zoom_value = get_zoom_val();
+	}
+}

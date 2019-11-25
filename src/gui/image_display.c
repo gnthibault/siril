@@ -28,10 +28,12 @@
 #include "algos/PSF.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
-#include "image_display.h"
 #include "callbacks.h"
 #include "histogram.h"
 #include "git-version.h"
+
+#include "image_display.h"
+
 
 /* remap index data, an index for each layer */
 static BYTE *remap_index[MAXGRAYVPORT];
@@ -647,6 +649,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		if (com.rgbbuf) {
 			cairo_scale(cr, zoom, zoom);
 			cairo_set_source_surface(cr, com.surface[RGB_VPORT], 0, 0);
+			cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_FAST);
 			cairo_paint(cr);
 		} else {
 			//			fprintf(stdout, "RGB buffer is empty, drawing black image\n");
@@ -656,6 +659,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		if (com.graybuf[vport]) {
 			cairo_scale(cr, zoom, zoom);
 			cairo_set_source_surface(cr, com.surface[vport], 0, 0);
+			cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_FAST);
 			cairo_paint(cr);
 		} else {
 			//			fprintf(stdout, "Buffer %d is empty, drawing black image\n", vport);

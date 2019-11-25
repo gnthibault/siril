@@ -928,30 +928,6 @@ GtkWindow *siril_get_active_window() {
 	return win;
 }
 
-static void zoomcombo_update_display_for_zoom() {
-	static GtkComboBox *zoomcombo = NULL;
-	static double indexes[] = { 16., 8., 4., 2., 1., .5, .25, .125, /*.0625, */
-		-1. };
-	int i;
-	char *msg;
-
-	if (zoomcombo == NULL)
-		zoomcombo = GTK_COMBO_BOX(lookup_widget("combozoom"));
-	for (i = 0; i < sizeof(indexes) / sizeof(double); i++) {
-		if (indexes[i] == com.zoom_value) {
-			g_signal_handlers_block_by_func(zoomcombo, on_combozoom_changed,
-					NULL);
-			gtk_combo_box_set_active(zoomcombo, i);
-			g_signal_handlers_unblock_by_func(zoomcombo, on_combozoom_changed,
-					NULL);
-			return;
-		}
-	}
-	msg = siril_log_message(
-			_("Unknown zoom_value value, what is the current zoom?\n"));
-	siril_message_dialog( GTK_MESSAGE_ERROR, _("Error"), msg);
-}
-
 static void initialize_FITS_name_entries() {
 	GtkEntry *moffset, *mdark, *mflat, *final_stack;
 	gchar *str[4];
@@ -1402,7 +1378,6 @@ void initialize_all_GUI(gchar *supported_files) {
 
 	/* Select combo boxes that trigger some text display or other things */
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods")), 0);
-	zoomcombo_update_display_for_zoom();
 
 	GtkLabel *label_supported = GTK_LABEL(lookup_widget("label_supported_types"));
 	gtk_label_set_text(label_supported, supported_files);
@@ -2444,42 +2419,42 @@ void on_button_data_ok_clicked(GtkButton *button, gpointer user_data) {
 	gtk_widget_hide(lookup_widget("data_dialog"));
 }
 
-void on_combozoom_changed(GtkComboBox *widget, gpointer user_data) {
-	gint active = gtk_combo_box_get_active(widget);
-	switch (active) {
-		case 0: /* 16:1 */
-			com.zoom_value = 16.;
-			break;
-		case 1: /* 8:1 */
-			com.zoom_value = 8.;
-			break;
-		case 2: /* 4:1 */
-			com.zoom_value = 4.;
-			break;
-		case 3: /* 2:1 */
-			com.zoom_value = 2.;
-			break;
-		case -1:
-		case 4: /* 1:1 */
-			com.zoom_value = 1.;
-			break;
-		case 5: /* 1:2 */
-			com.zoom_value = .5;
-			break;
-		case 6: /* 1:4 */
-			com.zoom_value = .25;
-			break;
-		case 7: /* 1:8 */
-			com.zoom_value = .125;
-			break;
-		case 8: /* fit to window */
-			com.zoom_value = -1.;
-			break;
-	}
-	fprintf(stdout, "zoom is now %f\n", com.zoom_value);
-	adjust_vport_size_to_image();
-	redraw(com.cvport, REMAP_NONE);
-}
+//void on_combozoom_changed(GtkComboBox *widget, gpointer user_data) {
+//	gint active = gtk_combo_box_get_active(widget);
+//	switch (active) {
+//		case 0: /* 16:1 */
+//			com.zoom_value = 16.;
+//			break;
+//		case 1: /* 8:1 */
+//			com.zoom_value = 8.;
+//			break;
+//		case 2: /* 4:1 */
+//			com.zoom_value = 4.;
+//			break;
+//		case 3: /* 2:1 */
+//			com.zoom_value = 2.;
+//			break;
+//		case -1:
+//		case 4: /* 1:1 */
+//			com.zoom_value = 1.;
+//			break;
+//		case 5: /* 1:2 */
+//			com.zoom_value = .5;
+//			break;
+//		case 6: /* 1:4 */
+//			com.zoom_value = .25;
+//			break;
+//		case 7: /* 1:8 */
+//			com.zoom_value = .125;
+//			break;
+//		case 8: /* fit to window */
+//			com.zoom_value = -1.;
+//			break;
+//	}
+//	fprintf(stdout, "zoom is now %f\n", com.zoom_value);
+//	adjust_vport_size_to_image();
+//	redraw(com.cvport, REMAP_NONE);
+//}
 
 void on_comboboxreglayer_changed(GtkComboBox *widget, gpointer user_data) {
 	if (gtk_combo_box_get_active(widget) == -1)
