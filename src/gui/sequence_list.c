@@ -414,10 +414,6 @@ void toggle_image_selection(int image_num) {
 	writeseqfile(&com.seq);
 }
 
-void on_selected_frames_unselect(GtkButton *button, gpointer user_data) {
-	unselect_select_frame_from_list(FALSE);
-}
-
 void on_selected_frames_select(GtkButton *button, gpointer user_data) {
 	unselect_select_frame_from_list(TRUE);
 }
