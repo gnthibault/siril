@@ -624,6 +624,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		if (com.rgbbuf) {
 			cairo_scale(cr, zoom, zoom);
 			cairo_set_source_surface(cr, com.surface[RGB_VPORT], 0, 0);
+			cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_FAST);
 			cairo_paint(cr);
 		} else {
 			//			fprintf(stdout, "RGB buffer is empty, drawing black image\n");
@@ -633,6 +634,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		if (com.graybuf[vport]) {
 			cairo_scale(cr, zoom, zoom);
 			cairo_set_source_surface(cr, com.surface[vport], 0, 0);
+			cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_FAST);
 			cairo_paint(cr);
 		} else {
 			//			fprintf(stdout, "Buffer %d is empty, drawing black image\n", vport);
