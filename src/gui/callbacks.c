@@ -376,8 +376,8 @@ void set_cutoff_sliders_values() {
 	WORD maxvalue = get_normalized_value(&gfit);
 	gtk_adjustment_set_lower(adjmin, 0.0);
 	gtk_adjustment_set_lower(adjmax, 0.0);
-	gtk_adjustment_set_upper(adjmin, (double) maxvalue);
-	gtk_adjustment_set_upper(adjmax, (double) maxvalue);
+	gtk_adjustment_set_upper(adjmin, (gdouble) maxvalue);
+	gtk_adjustment_set_upper(adjmax, (gdouble) maxvalue);
 	gtk_adjustment_set_value(adjmin, (gdouble) lo);
 	gtk_adjustment_set_value(adjmax, (gdouble) hi);
 	g_snprintf(buffer, 6, "%u", hi);
@@ -2512,7 +2512,7 @@ void scrollbars_vadjustment_changed_handler(GtkAdjustment *adjustment,
 }
 
 void on_spinCPU_value_changed (GtkSpinButton *spinbutton, gpointer user_data) {
-	com.max_thread = (int)gtk_spin_button_get_value(spinbutton);
+	com.max_thread = gtk_spin_button_get_value_as_int(spinbutton);
 }
 
 void on_rememberWindowsCheck_toggled(GtkToggleButton *togglebutton, gpointer user_data) {

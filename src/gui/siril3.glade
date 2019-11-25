@@ -4185,18 +4185,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkSeparator" id="separator3">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="padding">5</property>
-                                <property name="position">4</property>
-                              </packing>
-                            </child>
-                            <child>
                               <object class="GtkBox" id="box10">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
@@ -4307,6 +4295,18 @@ When processing images, registration data is taken from the default layer if ava
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="padding">2</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator" id="separator3">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="padding">5</property>
                                 <property name="position">4</property>
                               </packing>
                             </child>
@@ -13061,28 +13061,6 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Exclude selected images of the sequence from the processing schedule</property>
-                <signal name="clicked" handler="on_selected_frames_unselect" swapped="no"/>
-                <child>
-                  <object class="GtkImage">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="icon_name">list-remove-symbolic</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="name">undo-button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
                 <property name="tooltip_text" translatable="yes">Includes all images of the sequence in the processing schedule</property>
                 <signal name="clicked" handler="on_seqselectall_button_clicked" swapped="no"/>
                 <child>
@@ -13105,7 +13083,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Includes selected images of the sequence from the processing schedule</property>
+                <property name="tooltip_text" translatable="yes">Includes/excludes selected images of the sequence from the processing schedule</property>
                 <signal name="clicked" handler="on_selected_frames_select" swapped="no"/>
                 <child>
                   <object class="GtkImage">
