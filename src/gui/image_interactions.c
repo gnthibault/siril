@@ -552,7 +552,7 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 	GtkToggleButton *button;
 	gdouble delta_x, delta_y;
 	gboolean handled = FALSE;
-	int pix_left, pix_top, pix_width, pix_height;
+	int pix_x, pix_y, pix_width, pix_height;
 	int image_x, image_y;
 
 	if (!single_image_is_loaded() && !sequence_is_loaded())
@@ -563,9 +563,9 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 		if (gtk_toggle_button_get_active(button))
 			gtk_toggle_button_set_active(button, FALSE);
 
-		get_scroll_position(widget, &pix_left, &pix_top, &pix_width, &pix_height);
-		image_x = (pix_left + event->x) / com.zoom_value;
-		image_y = (pix_top + event->y) / com.zoom_value;
+		get_scroll_position(widget, &pix_x, &pix_y, &pix_width, &pix_height);
+		image_x = (event->x) / com.zoom_value;
+		image_y = (event->y) / com.zoom_value;
 
 		switch (event->direction) {
 		case GDK_SCROLL_SMOOTH:

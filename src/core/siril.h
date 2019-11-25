@@ -66,7 +66,7 @@ typedef unsigned short WORD;		// default type for internal image data
 
 #define CMD_HISTORY_SIZE 50		// size of the command line history
 
-#define ZOOM_MAX	16.0
+#define ZOOM_MAX	128
 #define ZOOM_MIN	0.03125
 #define ZOOM_NONE	1.0
 #define ZOOM_FIT	-1.0	// or any value < 0
