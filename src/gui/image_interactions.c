@@ -553,7 +553,6 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 	gdouble delta_x, delta_y;
 	gboolean handled = FALSE;
 	int pix_x, pix_y, pix_width, pix_height;
-	int image_x, image_y;
 
 	if (!single_image_is_loaded() && !sequence_is_loaded())
 		return FALSE;
@@ -564,8 +563,6 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 			gtk_toggle_button_set_active(button, FALSE);
 
 		get_scroll_position(widget, &pix_x, &pix_y, &pix_width, &pix_height);
-		image_x = (event->x) / com.zoom_value;
-		image_y = (event->y) / com.zoom_value;
 
 		switch (event->direction) {
 		case GDK_SCROLL_SMOOTH:
@@ -584,8 +581,8 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 				com.zoom_value /= 1.5 ;
 			}
 			adjust_vport_size_to_image();
-			set_scroll_position(widget,	image_x * com.zoom_value - (pix_width / 2) / com.zoom_value,
-					image_y * com.zoom_value - (pix_height / 2) / com.zoom_value);
+			set_scroll_position(widget,	(event->x - (pix_width / 2)) / com.zoom_value,
+					(event->y - (pix_height / 2)) / com.zoom_value);
 			redraw(com.cvport, REMAP_NONE);
 			break;
 		case GDK_SCROLL_DOWN:
@@ -593,10 +590,10 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 			if (com.zoom_value / 1.5 < ZOOM_MIN) {
 				return handled;
 			}
-			com.zoom_value = com.zoom_value / 1.5 ;
+			com.zoom_value /= 1.5 ;
 			adjust_vport_size_to_image();
-			set_scroll_position(widget,	image_x * com.zoom_value - (pix_width / 2) / com.zoom_value,
-					image_y * com.zoom_value - (pix_height / 2) / com.zoom_value);
+			set_scroll_position(widget,	(event->x - (pix_width / 2)) / com.zoom_value,
+					(event->y - (pix_height / 2)) / com.zoom_value);
 			redraw(com.cvport, REMAP_NONE);
 			break;
 		case GDK_SCROLL_UP:
@@ -606,8 +603,8 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 			}
 			com.zoom_value *= 1.5;
 			adjust_vport_size_to_image();
-			set_scroll_position(widget,	image_x * com.zoom_value - (pix_width / 2) / com.zoom_value,
-					image_y * com.zoom_value - (pix_height / 2) / com.zoom_value);
+			set_scroll_position(widget,	(event->x - (pix_width / 2)) / com.zoom_value,
+					(event->y - (pix_height / 2)) / com.zoom_value);
 			redraw(com.cvport, REMAP_NONE);
 			break;
 		}
