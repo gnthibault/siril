@@ -4233,13 +4233,15 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">4</property>
+                                <property name="position">3</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkBox" id="box5">
+                              <object class="GtkGrid">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="row_spacing">5</property>
+                                <property name="column_spacing">10</property>
                                 <child>
                                   <object class="GtkLabel" id="label31">
                                     <property name="visible">True</property>
@@ -4247,35 +4249,31 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                                     <property name="label" translatable="yes">Choose registration method:</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">12</property>
-                                    <property name="position">0</property>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkComboBoxText" id="comboboxregmethod">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
                                     <signal name="changed" handler="on_comboboxregmethod_changed" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="label14">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Select registration layer:</property>
+                                    <property name="label" translatable="yes">Select registration layer: </property>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">16</property>
-                                    <property name="position">2</property>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -4285,19 +4283,18 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                                     <property name="tooltip_text" translatable="yes">Layer on which the registration is done. It can only be done on one layer at a time, so on monochrome images.
 The (*) sign appearing after the layer's name means that registration data is already available for this layer.
 When processing images, registration data is taken from the default layer if available (for RGB images: Green, else fallback to Blue then Red).</property>
+                                    <property name="halign">start</property>
                                     <signal name="changed" handler="on_comboboxreglayer_changed" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">3</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
                                   </packing>
                                 </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">2</property>
                                 <property name="position">4</property>
                               </packing>
                             </child>
@@ -4310,7 +4307,7 @@ When processing images, registration data is taken from the default layer if ava
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
                                 <property name="padding">5</property>
-                                <property name="position">4</property>
+                                <property name="position">5</property>
                               </packing>
                             </child>
                             <child>
@@ -6648,6 +6645,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="tooltip_text" translatable="yes">Check this button to automatically adapt the image to the window size.</property>
                     <property name="valign">center</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>

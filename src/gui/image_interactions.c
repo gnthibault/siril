@@ -530,8 +530,22 @@ static void set_scroll_position(GtkWidget *widget, int x, int y) {
 	siril_debug_print("set_scroll_position: %d %d (for adj of size %g and %g)\n", x,
 			y, gtk_adjustment_get_upper(hadj), gtk_adjustment_get_upper(vadj));
 
+	x = CLAMP(x, 0, gtk_adjustment_get_upper(hadj) - gtk_adjustment_get_page_size(hadj));
+	y = CLAMP(y, 0, gtk_adjustment_get_upper(vadj) - gtk_adjustment_get_page_size(vadj));
+
+//	g_signal_handlers_block_matched(hadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL,
+//			scrwindow);
+//	g_signal_handlers_block_matched(vadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL,
+//			scrwindow);
+
 	gtk_adjustment_set_value(hadj, x);
 	gtk_adjustment_set_value(vadj, y);
+
+//	g_signal_handlers_unblock_matched(hadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL,
+//			NULL, scrwindow);
+//	g_signal_handlers_unblock_matched(vadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL,
+//			NULL, scrwindow);
+
 }
 
 gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer data) {
@@ -549,15 +563,14 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 		if (gtk_toggle_button_get_active(button))
 			gtk_toggle_button_set_active(button, FALSE);
 
-		get_scroll_position(widget, &pix_left, &pix_top, &pix_width,
-				&pix_height);
+		get_scroll_position(widget, &pix_left, &pix_top, &pix_width, &pix_height);
 		image_x = (pix_left + event->x) / com.zoom_value;
 		image_y = (pix_top + event->y) / com.zoom_value;
 
 		switch (event->direction) {
 		case GDK_SCROLL_SMOOTH:
 			handled = TRUE;
-			gdk_event_get_scroll_deltas((GdkEvent*) (event), &delta_x,	&delta_y);
+			gdk_event_get_scroll_deltas((GdkEvent*) event, &delta_x, &delta_y);
 			if (delta_y < 0) {
 				if (com.zoom_value * 1.5 > ZOOM_MAX) {
 					return handled;
@@ -568,7 +581,7 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 				if (com.zoom_value / 1.5 < ZOOM_MIN) {
 					return handled;
 				}
-				com.zoom_value = com.zoom_value / 1.5 ;
+				com.zoom_value /= 1.5 ;
 			}
 			adjust_vport_size_to_image();
 			set_scroll_position(widget,	image_x * com.zoom_value - (pix_width / 2) / com.zoom_value,
