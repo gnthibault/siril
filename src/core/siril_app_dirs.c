@@ -20,9 +20,6 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
 #include "siril_app_dirs.h"
 
@@ -44,7 +41,8 @@ static void search_for_data_dir() {
 	}
 	g_free(path);
 #elif (defined(__APPLE__) && defined(__MACH__))
-	path = g_build_filename("tmp", PACKAGE, "Contents", "Resources", "share", PACKAGE, NULL);
+	path = g_build_filename("tmp", PACKAGE, "Contents", "Resources", "share",
+			PACKAGE, NULL);
 	if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
 		siril_share_dir = g_strdup(path);
 	}
@@ -53,9 +51,6 @@ static void search_for_data_dir() {
 	path = g_build_filename(PACKAGE_DATA_DIR, NULL);
 	if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
 		siril_share_dir = g_strdup(path);
-
-		g_free(path);
-		return;
 	}
 	g_free(path);
 #endif
