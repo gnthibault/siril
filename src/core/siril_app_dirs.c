@@ -30,57 +30,59 @@ static const gchar *siril_share_dir = NULL;
 static const gchar *siril_config_dir = NULL;
 static const gchar *siril_startup_dir = NULL;
 
+/* To set the data dir we are looking for the glade file */
 static void search_for_data_dir() {
 	gchar *path;
 
-	int i = 0;
-	const gchar *const*system_data_dirs;
+	/* First we are looking for in the package_data_dir */
+#ifdef _WIN32 // in the case where the app is started with double click on seq file
+	gchar *execname = g_win32_get_package_installation_directory_of_module(NULL);
+	path = g_build_filename(execname, "share", PACKAGE, NULL);
+	g_free(execname);
+	if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
+		siril_share_dir = g_strdup(path);
+	}
+	g_free(path);
+#elif (defined(__APPLE__) && defined(__MACH__))
+	path = g_build_filename("tmp", PACKAGE, "Contents", "Resources", "share", PACKAGE, NULL);
+	if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
+		siril_share_dir = g_strdup(path);
+	}
+	g_free(path);
+#else
+	path = g_build_filename(PACKAGE_DATA_DIR, NULL);
+	if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
+		siril_share_dir = g_strdup(path);
 
-	system_data_dirs = g_get_system_data_dirs();
+		g_free(path);
+		return;
+	}
+	g_free(path);
+#endif
+	/* if not found we are looking for in the common dirs */
+	if (siril_share_dir == NULL) {
+		int i = 0;
+		const gchar *const*system_data_dirs;
 
-	do {
-		path = g_build_filename(system_data_dirs[i], PACKAGE, NULL);
-		gchar *gladefile = g_build_filename(path, GLADE_FILE, NULL);
+		system_data_dirs = g_get_system_data_dirs();
 
-		/* data dir is the dir when a glade file is found */
-		if (g_file_test(gladefile, G_FILE_TEST_EXISTS)) {
-			siril_share_dir = g_strdup(path);
+		do {
+			path = g_build_filename(system_data_dirs[i], PACKAGE, NULL);
+			gchar *gladefile = g_build_filename(path, GLADE_FILE, NULL);
 
+			/* data dir is the dir when a glade file is found */
+			if (g_file_test(gladefile, G_FILE_TEST_EXISTS)) {
+				siril_share_dir = g_strdup(path);
+
+				g_free(path);
+				g_free(gladefile);
+				break;
+			}
 			g_free(path);
 			g_free(gladefile);
-			break;
-		}
-		g_free(path);
-		g_free(gladefile);
 
-		i++;
-	} while (system_data_dirs[i] != NULL);
-	/* Now we are looking for in local path */
-	if (siril_share_dir == NULL) {
-#ifdef _WIN32 // in the case where the app is started with double click on seq file
-		gchar *execname = g_win32_get_package_installation_directory_of_module(NULL);
-		path = g_build_filename(execname, "share", PACKAGE, NULL);
-		g_free(execname);
-		if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
-			siril_share_dir = g_strdup(path);
-		}
-		g_free(path);
-#elif (defined(__APPLE__) && defined(__MACH__))
-		path = g_build_filename("tmp", PACKAGE, "Contents", "Resources", "share", PACKAGE, NULL);
-		if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
-			siril_share_dir = g_strdup(path);
-		}
-		g_free(path);
-#else
-		path = g_build_filename(PACKAGE_DATA_DIR, NULL);
-		if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
-			siril_share_dir = g_strdup(path);
-
-			g_free(path);
-			return;
-		}
-		g_free(path);
-#endif
+			i++;
+		} while (system_data_dirs[i] != NULL);
 	}
 }
 
