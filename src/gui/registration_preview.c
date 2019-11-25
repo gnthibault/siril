@@ -98,9 +98,8 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	if (shiftx || shifty)
 		cairo_translate(cr, shiftx, -shifty);
 	cairo_set_source_surface(cr, com.preview_surface[current_preview], 0, 0);
-	/*if (display_ref_image)
-		cairo_paint_with_alpha(cr, 0.7);
-	else*/ cairo_paint(cr);
+	cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_FAST);
+	cairo_paint(cr);
 
 	/* display reference image */
 	if (display_ref_image) {
