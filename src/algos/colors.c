@@ -28,6 +28,7 @@
 #include "core/proto.h"
 #include "core/processing.h"
 #include "core/undo.h"
+#include "core/OS_utils.h"
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
 #include "gui/image_display.h"

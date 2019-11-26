@@ -1,9 +1,11 @@
 #include <string.h>
+
 #include "core/siril.h"
+#include "core/proto.h"
+#include "core/OS_utils.h"
 #include "algos/statistics.h"
 #include "stacking.h"
 #include "io/sequence.h"
-#include "core/proto.h"
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
 

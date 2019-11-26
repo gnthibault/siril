@@ -69,6 +69,8 @@
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
 
+#include "OS_utils.h"
+
 /**
  * Find the space remaining in a directory, in bytes.
  * @param name the path of the directory to be tested

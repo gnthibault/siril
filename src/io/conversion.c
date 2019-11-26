@@ -30,8 +30,10 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/types.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "core/processing.h"
 #include "io/conversion.h"
 #include "io/films.h"

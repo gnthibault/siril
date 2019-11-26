@@ -30,6 +30,7 @@
 #include "core/command.h"
 #include "core/command_line_processor.h"
 #include "core/siril_app_dirs.h"
+#include "core/OS_utils.h"
 #include "algos/star_finder.h"
 #include "io/conversion.h"
 #include "io/films.h"

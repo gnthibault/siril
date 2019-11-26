@@ -24,6 +24,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
 #include "gui/callbacks.h"

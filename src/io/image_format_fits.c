@@ -31,6 +31,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "io/sequence.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"

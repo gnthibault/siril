@@ -18,8 +18,12 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
+#include <math.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "algos/plateSolver.h"
 #include "algos/statistics.h"
 #include "core/undo.h"
@@ -32,10 +36,8 @@
 #include "opencv/opencv.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
-#include "geometry.h"
 
-#include <string.h>
-#include <math.h>
+#include "geometry.h"
 
 /* this method rotates the image 180 degrees, useful after german mount flip.
  * fit->rx, fit->ry, fit->naxes[2] and fit->pdata[*] are required to be assigned correctly */

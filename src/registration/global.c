@@ -22,11 +22,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <assert.h>
-#include "registration/registration.h"
+
 #include "core/siril.h"
 #include "core/processing.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "algos/star_finder.h"
 #include "algos/PSF.h"
 #include "gui/image_display.h"
@@ -35,6 +35,7 @@
 #include "gui/callbacks.h"
 #include "io/sequence.h"
 #include "io/ser.h"
+#include "registration/registration.h"
 #include "registration/matching/atpmatch.h"
 #include "registration/matching/match.h"
 #include "registration/matching/misc.h"
@@ -314,7 +315,7 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 			int j;
 			for (i = 0, j = 0; i < regargs->new_total; i++, j++) {
 				while (!sadata->success[j] && j < args->nb_filtered_images) j++;
-				assert(sadata->success[j]);
+				g_assert(sadata->success[j]);
 				if (i != j) {
 					regargs->imgparam[i] = regargs->imgparam[j];
 					regargs->regparam[i] = regargs->regparam[j];

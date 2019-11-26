@@ -18,18 +18,21 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "core/processing.h"
 #include "core/sequence_filtering.h"
-#include "stacking.h"
 #include "io/sequence.h"
 #include "io/ser.h"
 #include "gui/progress_and_log.h"
 #include "gui/image_interactions.h"
 #include "gui/callbacks.h" // for delete_selected_area()
 #include "opencv/opencv.h"
-#include <string.h>
+
+#include "stacking.h"
 
 #define TMP_UPSCALED_PREFIX "tmp_upscaled_"
 
