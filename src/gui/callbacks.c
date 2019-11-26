@@ -21,16 +21,6 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
-#include <ctype.h>
-#include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <stdarg.h>
-#include <math.h>	// for M_PI
-#include <libgen.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -40,35 +30,28 @@
 #include "core/command.h"
 #include "core/command_line_processor.h"
 #include "core/siril_app_dirs.h"
-#include "algos/demosaicing.h"
-#include "algos/colors.h"
-#include "algos/PSF.h"
 #include "algos/star_finder.h"
-#include "algos/Def_Wavelet.h"
-#include "algos/sorting.h"
-#include "algos/background_extraction.h"
 #include "io/conversion.h"
 #include "io/films.h"
 #include "io/sequence.h"
-#include "io/ser.h"
 #include "io/single_image.h"
 #include "registration/registration.h"
 #include "stacking/stacking.h"
-#include "compositing/compositing.h"
 #include "compositing/align_rgb.h"
-#include "opencv/opencv.h"
 #include "image_display.h"
 #include "image_interactions.h"
 
 #include "callbacks.h"
 #include "message_dialog.h"
 #include "PSF_list.h"
-#include "sequence_list.h"
 #include "histogram.h"
 #include "script_menu.h"
 #include "progress_and_log.h"
 #include "dialogs.h"
-#include "plot.h"
+
+#ifndef W_OK
+#define W_OK 2
+#endif
 
 layer_info predefined_layers_colors[] = {
 	/* name, lambda, lo, hi, c/over, c/under, mode */
@@ -124,23 +107,14 @@ void enable_view_reference_checkbox(gboolean status) {
 }
 
 void set_viewer_mode_widgets_sensitive(gboolean sensitive) {
-	static GtkWidget *scalemax = NULL;
-	static GtkWidget *scalemin = NULL;
-	static GtkWidget *entrymin = NULL;
-	static GtkWidget *entrymax = NULL;
-	static GtkWidget *minmax = NULL;
-	static GtkWidget *hilo = NULL;
-	static GtkWidget *user = NULL;
+	GtkWidget *scalemax = lookup_widget("scalemax");
+	GtkWidget *scalemin = lookup_widget("scalemin");
+	GtkWidget *entrymin = lookup_widget("min_entry");
+	GtkWidget *entrymax = lookup_widget("max_entry");
+	GtkWidget *minmax = lookup_widget("radiobutton_minmax");
+	GtkWidget *hilo = lookup_widget("radiobutton_hilo");
+	GtkWidget *user = lookup_widget("radiobutton_user");
 
-	if (!scalemax) {
-		scalemax = lookup_widget("scalemax");
-		scalemin = lookup_widget("scalemin");
-		entrymin = lookup_widget("min_entry");
-		entrymax = lookup_widget("max_entry");
-		minmax = lookup_widget("radiobutton_minmax");
-		hilo = lookup_widget("radiobutton_hilo");
-		user = lookup_widget("radiobutton_user");
-	}
 	gtk_widget_set_sensitive(scalemax, sensitive);
 	gtk_widget_set_sensitive(scalemin, sensitive);
 	gtk_widget_set_sensitive(entrymin, sensitive);
@@ -228,10 +202,6 @@ static void reset_swapdir() {
 		writeinitfile();
 	}
 }
-
-/*****************************************************************************
- *                    P U B L I C      F U N C T I O N S                     *
- ****************************************************************************/
 
 GtkWidget* lookup_widget(const gchar *widget_name) {
 	return GTK_WIDGET(gtk_builder_get_object(builder, widget_name));
@@ -329,7 +299,7 @@ void set_cutoff_sliders_max_values() {
 		adj1 = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment1"));// scalemax
 		adj2 = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment2"));// scalemin
 	}
-	fprintf(stdout, _("Setting MAX value for cutoff sliders adjustments\n"));
+	siril_debug_print(_("Setting MAX value for cutoff sliders adjustments\n"));
 	/* set max value for range according to number of bits of original image
 	 * We should use gfit.bitpix for this, but it's currently always USHORT_IMG.
 	 * Since 0.9.8 we have orig_bitpix, but it's not filled for SER and other images.
@@ -372,7 +342,7 @@ void set_cutoff_sliders_values() {
 		cut_over = com.seq.layers[com.cvport].cut_over;
 	} else
 		return;	// there should be no other normal cases
-	fprintf(stdout, _("setting ranges scalemin=%d, scalemax=%d\n"), lo, hi);
+	siril_debug_print(_("setting ranges scalemin=%d, scalemax=%d\n"), lo, hi);
 	WORD maxvalue = get_normalized_value(&gfit);
 	gtk_adjustment_set_lower(adjmin, 0.0);
 	gtk_adjustment_set_lower(adjmax, 0.0);
@@ -418,15 +388,14 @@ void set_display_mode() {
  * which one is the reference image, at the bottom of the main window */
 int adjust_sellabel() {
 	static GtkLabel *global_label = NULL;
-	char bufferglobal[256];
-	gchar *seq_basename = NULL;
+	char *bufferglobal;
 
 	if (global_label == NULL) {
 		global_label = GTK_LABEL(lookup_widget("labelseq"));
 	}
 
 	if (sequence_is_loaded()) {
-		seq_basename = g_path_get_basename(com.seq.seqname);
+		gchar *seq_basename = g_path_get_basename(com.seq.seqname);
 
 		if (com.seq.reference_image != -1) {
 			char format[150];
@@ -439,27 +408,28 @@ int adjust_sellabel() {
 						com.seq.fixed);
 			}
 		}
-		g_snprintf(bufferglobal, sizeof(bufferglobal), _("%s, %d images selected"),
-				seq_basename, com.seq.selnum);
-		//gtk_widget_set_sensitive(lookup_widget("goregister_button"), com.seq.selnum>0?TRUE:FALSE);
+		bufferglobal = g_strdup_printf(_("%s, %d images selected"), seq_basename, com.seq.selnum);
+		g_free(seq_basename);
 	} else {
-		g_snprintf(bufferglobal, sizeof(bufferglobal), _("- none -"));
+		bufferglobal = g_strdup("- none -");
 		gtk_widget_set_sensitive(lookup_widget("goregister_button"), FALSE);
 	}
 
 	gtk_label_set_text(global_label, bufferglobal);
-	g_free(seq_basename);
+	g_free(bufferglobal);
 	return 0;
 }
 
 void set_icon_entry(GtkEntry *entry, gchar *string) {
-	const gchar *text = NULL;
 
 	gtk_entry_set_icon_from_icon_name(entry, GTK_ENTRY_ICON_SECONDARY, string);
 	if (string) {
-		text = _("This sequence name already exists!! Please change the name before converting.");
+		gchar *text = g_strdup(_("This sequence name already exists!! "
+				"Please change the name before converting."));
+		gtk_entry_set_icon_tooltip_text (entry, GTK_ENTRY_ICON_SECONDARY, text);
+
+		g_free(text);
 	}
-	gtk_entry_set_icon_tooltip_text (entry, GTK_ENTRY_ICON_SECONDARY, text);
 }
 
 void update_MenuItem() {
@@ -527,7 +497,7 @@ void update_MenuItem() {
 
 void sliders_mode_set_state(sliders_mode sliders) {
 	GtkToggleButton *radiobutton;	// Must not be static
-	char *str[] =
+	gchar *str[] =
 	{ "radiobutton_hilo", "radiobutton_minmax", "radiobutton_user" };
 	void *func[] = { on_radiobutton_hilo_toggled, on_radiobutton_minmax_toggled,
 		on_radiobutton_user_toggled };
@@ -869,18 +839,19 @@ void set_layers_for_registration() {
 
 	gtk_combo_box_text_remove_all(cbbt_layers);
 	for (i = 0; i < com.seq.nb_layers; i++) {
-		char layer[100];
+		gchar *layer;
 		if (com.seq.layers[i].name)
-			g_snprintf(layer, sizeof(layer), "%d: %s", i,
-					com.seq.layers[i].name);
+			layer = g_strdup_printf("%d: %s", i, com.seq.layers[i].name);
 		else
-			g_snprintf(layer, sizeof(layer), _("%d: not affected yet"), i);
+			layer = g_strdup_printf(_("%d: not affected yet"), i);
 		if (com.seq.regparam[i]) {
-			strcat(layer, " (*)");
+			str_append(&layer,  " (*)");
 			if (reminder == -1)	// set as default selection
 				reminder = i;
 		}
 		gtk_combo_box_text_append_text(cbbt_layers, layer);
+
+		g_free(layer);
 	}
 	/* First initialization */
 	if (reminder == -1) {
@@ -1343,10 +1314,10 @@ static void initialize_path_directory() {
 static void initialize_scrollbars() {
 	int i;
 	char *vport_names[] = { "r", "g", "b", "rgb" };
-	char window_name[32];
+	char *window_name;
 
 	for (i = 0; i < sizeof(vport_names) / sizeof(char *); i++) {
-		sprintf(window_name, "scrolledwindow%s", vport_names[i]);
+		window_name = g_strdup_printf("scrolledwindow%s", vport_names[i]);
 		GtkScrolledWindow *win = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, window_name));
 		com.hadj[i] = gtk_scrolled_window_get_hadjustment(win);
 		g_signal_connect(com.hadj[i], "value-changed",
@@ -1354,6 +1325,8 @@ static void initialize_scrollbars() {
 		com.vadj[i] = gtk_scrolled_window_get_vadjustment(win);
 		g_signal_connect(com.vadj[i], "value-changed",
 				G_CALLBACK(scrollbars_vadjustment_changed_handler), NULL);
+
+		g_free(window_name);
 	}
 }
 
@@ -1770,7 +1743,7 @@ void on_filechooser_swap_file_set(GtkFileChooserButton *fileChooser, gpointer us
 
 	dir = gtk_file_chooser_get_filename (swap_dir);
 
-	if (g_access (dir, W_OK)) {
+	if (g_access(dir, W_OK)) {
 		gchar *msg = siril_log_color_message(_("You don't have permission to write in this directory: %s\n"), "red", dir);
 		siril_message_dialog( GTK_MESSAGE_ERROR, _("Error"), msg);
 		gtk_file_chooser_set_filename(swap_dir, com.swap_dir);
@@ -2418,43 +2391,6 @@ void on_confirmDontShowButton_toggled(GtkToggleButton *togglebutton,
 void on_button_data_ok_clicked(GtkButton *button, gpointer user_data) {
 	gtk_widget_hide(lookup_widget("data_dialog"));
 }
-
-//void on_combozoom_changed(GtkComboBox *widget, gpointer user_data) {
-//	gint active = gtk_combo_box_get_active(widget);
-//	switch (active) {
-//		case 0: /* 16:1 */
-//			com.zoom_value = 16.;
-//			break;
-//		case 1: /* 8:1 */
-//			com.zoom_value = 8.;
-//			break;
-//		case 2: /* 4:1 */
-//			com.zoom_value = 4.;
-//			break;
-//		case 3: /* 2:1 */
-//			com.zoom_value = 2.;
-//			break;
-//		case -1:
-//		case 4: /* 1:1 */
-//			com.zoom_value = 1.;
-//			break;
-//		case 5: /* 1:2 */
-//			com.zoom_value = .5;
-//			break;
-//		case 6: /* 1:4 */
-//			com.zoom_value = .25;
-//			break;
-//		case 7: /* 1:8 */
-//			com.zoom_value = .125;
-//			break;
-//		case 8: /* fit to window */
-//			com.zoom_value = -1.;
-//			break;
-//	}
-//	fprintf(stdout, "zoom is now %f\n", com.zoom_value);
-//	adjust_vport_size_to_image();
-//	redraw(com.cvport, REMAP_NONE);
-//}
 
 void on_comboboxreglayer_changed(GtkComboBox *widget, gpointer user_data) {
 	if (gtk_combo_box_get_active(widget) == -1)

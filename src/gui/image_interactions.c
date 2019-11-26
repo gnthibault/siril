@@ -123,7 +123,7 @@ void unregister_selection_update_callback(selection_update_callback f) {
 // send the events
 static void new_selection_zone() {
 	int i;
-	fprintf(stdout, "selection: %d,%d,\t%dx%d\n", com.selection.x, com.selection.y,
+	siril_debug_print("selection: %d,%d,\t%dx%d\n", com.selection.x, com.selection.y,
 			com.selection.w, com.selection.h);
 	for (i = 0; i < _nb_registered_callbacks; ++i) {
 		_registered_callbacks[i]();
@@ -408,33 +408,11 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	gint zoomedX = 0, zoomedY = 0;
 
 	if (inimage((GdkEvent *) event)) {
-		char buffer[45];
-		char format[25];
+		char *buffer;
+		char *format;
 		int coords_width = 3;
 		zoomedX = (gint) (event->x / zoom);
 		zoomedY = (gint) (event->y / zoom);
-		if (fit->rx >= 1000 || fit->ry >= 1000)
-			coords_width = 4;
-		if (fit->type == DATA_USHORT) {
-			int val_width = 3;
-			char *format_base_ushort = "x: %%.%dd y: %%.%dd = %%.%dd";
-			if (fit->hi >= 1000)
-				val_width = 4;
-			if (fit->hi >= 10000)
-				val_width = 5;
-			g_snprintf(format, sizeof(format), format_base_ushort,
-					coords_width, coords_width, val_width);
-			g_snprintf(buffer, sizeof(buffer), format, zoomedX, zoomedY,
-					fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
-					+ zoomedX]);
-		} else if (fit->type == DATA_FLOAT) {
-			char *format_base_float = "x: %%.%dd y: %%.%dd = %%f";
-			g_snprintf(format, sizeof(format), format_base_float,
-					coords_width, coords_width);
-			g_snprintf(buffer, sizeof(buffer), format, zoomedX, zoomedY,
-					fit->fpdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
-					+ zoomedX]);
-		}
 
 		/* TODO: fix to use the new function vport_number_to_name() */
 		if (widget == com.vport[RED_VPORT])
@@ -445,8 +423,34 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 			strcat(label, "b");
 		else
 			return FALSE;
+
+		if (fit->rx >= 1000 || fit->ry >= 1000)
+			coords_width = 4;
+		if (fit->type == DATA_USHORT) {
+			int val_width = 3;
+			char *format_base_ushort = "x: %%.%dd y: %%.%dd = %%.%dd";
+			if (fit->hi >= 1000)
+				val_width = 4;
+			if (fit->hi >= 10000)
+				val_width = 5;
+			format = g_strdup_printf(format_base_ushort,
+					coords_width, coords_width, val_width);
+			buffer = g_strdup_printf(format, zoomedX, zoomedY,
+					fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
+					+ zoomedX]);
+		} else if (fit->type == DATA_FLOAT) {
+			char *format_base_float = "x: %%.%dd y: %%.%dd = %%f";
+			format = g_strdup_printf(format_base_float,
+					coords_width, coords_width);
+			buffer = g_strdup_printf(format, zoomedX, zoomedY,
+					fit->fpdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
+					+ zoomedX]);
+		}
+
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder, label)),
 				buffer);
+		g_free(buffer);
+		g_free(format);
 	}
 
 	if (com.drawing) {	// with button 1 down
@@ -619,6 +623,8 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 					(event->y - (pix_height / 2)) / com.zoom_value);
 			redraw(com.cvport, REMAP_NONE);
 			break;
+		default:
+			handled = FALSE;
 		}
 	}
 	return handled;

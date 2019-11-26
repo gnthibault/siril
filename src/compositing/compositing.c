@@ -439,7 +439,6 @@ void on_composition_use_lum_toggled(GtkToggleButton *togglebutton, gpointer user
 void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 	int layer, retval;
 	char buf[48], *filename;
-	gboolean is_sequence;
 
 	for (layer = 0; layers[layer]; layer++)
 		if (layers[layer]->chooser == widget)
