@@ -31,6 +31,7 @@
 #include <assert.h>
 
 #include "core/siril.h"
+#include "core/OS_utils.h"
 #include "algos/statistics.h"
 #include "io/ser.h"
 #include "io/sequence.h"

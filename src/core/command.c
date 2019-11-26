@@ -32,13 +32,14 @@
 #include <sys/stat.h>
 #include <opencv2/core/version.hpp>
 
-#include "siril.h"
-#include "proto.h"
-#include "undo.h"
-#include "initfile.h"
-#include "preprocess.h"
-#include "processing.h"
-#include "sequence_filtering.h"
+#include "core/siril.h"
+#include "core/proto.h"
+#include "core/undo.h"
+#include "core/initfile.h"
+#include "core/preprocess.h"
+#include "core/processing.h"
+#include "core/sequence_filtering.h"
+#include "core/OS_utils.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
 #include "io/single_image.h"

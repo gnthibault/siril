@@ -29,6 +29,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/undo.h"
+#include "core/OS_utils.h"
 #include "io/single_image.h"
 #include "algos/statistics.h"
 #include "algos/geometry.h"

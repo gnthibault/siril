@@ -18,13 +18,15 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "stacking.h"
 #include "io/sequence.h"
 #include "io/ser.h"
 #include "gui/progress_and_log.h"
-#include <string.h>
 
 int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, double *exposure, fits *fit) {
 	char msg[256], filename[256];

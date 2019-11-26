@@ -25,6 +25,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "algos/statistics.h"
 #include "algos/background_extraction.h"
 #include "gui/image_interactions.h"

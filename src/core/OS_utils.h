@@ -17,16 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SRC_CORE_SIRIL_APP_DIRS_H_
-#define SRC_CORE_SIRIL_APP_DIRS_H_
+#ifndef SRC_CORE_OS_UTILS_H_
+#define SRC_CORE_OS_UTILS_H_
 
-static GUserDirectory sdir[] = { G_USER_DIRECTORY_PICTURES,
-		G_USER_DIRECTORY_DOCUMENTS };
+void update_used_memory();
+gchar* pretty_print_memory(int64_t bytes);
+int test_available_space(int64_t req_size);
+int get_available_memory_in_MB();
+int get_max_memory_in_MB();
+#ifdef _WIN32
+gchar *get_special_folder(int csidl);
+int ReconnectIO(int OpenNewConsole);
+#endif
+SirilWidget* siril_file_chooser_open(GtkWindow *parent,
+		GtkFileChooserAction action);
+SirilWidget* siril_file_chooser_add(GtkWindow *parent,
+		GtkFileChooserAction action);
+SirilWidget* siril_file_chooser_save(GtkWindow *parent,
+		GtkFileChooserAction action);
+gint siril_dialog_run(SirilWidget *widgetdialog);
+void siril_widget_destroy(SirilWidget *widgetdialog);
+gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file);
 
-void initialize_siril_directories();
-const gchar* siril_get_locale_dir();
-const gchar *siril_get_startup_dir();
-const gchar *siril_get_system_data_dir();
-const gchar* siril_get_config_dir();
-
-#endif /* SRC_CORE_SIRIL_APP_DIRS_H_ */
+#endif /* SRC_CORE_OS_UTILS_H_ */

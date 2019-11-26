@@ -72,6 +72,7 @@ siril_SOURCES = \
 	core/initfile.c \
 	core/initfile.h \
 	core/OS_utils.c \
+	core/OS_utils.h \
 	core/pipe.c \
 	core/pipe.h \
 	core/preprocess.c \

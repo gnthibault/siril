@@ -26,13 +26,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "siril.h"
-#include "proto.h"
+#include "core/siril.h"
+#include "core/proto.h"
+#include "core/OS_utils.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
-#include "processing.h"
+#include "core/processing.h"
+#include "core/command_list.h"
 
-#include "command_list.h"
 #include "command_line_processor.h"
 
 static void parseLine(char *myline, int len, int *nb) {

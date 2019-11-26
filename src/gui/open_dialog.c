@@ -27,6 +27,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "core/initfile.h"
 #include "algos/sorting.h"
 #include "io/conversion.h"

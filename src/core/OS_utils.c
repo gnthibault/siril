@@ -69,6 +69,8 @@
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
 
+#include "OS_utils.h"
+
 /**
  * Find the space remaining in a directory, in bytes.
  * @param name the path of the directory to be tested
@@ -167,25 +169,6 @@ static unsigned long update_used_RAM_memory() {
 }
 #endif
 
-
-/**
- * This function search for the locale dir
- * @return the locale dir
- */
-gchar* get_siril_locale_dir() {
-#ifdef _WIN32
-	gchar *win32_dir;
-
-	win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
-	gchar *siril_locale_dir = g_build_filename(win32_dir, "share", "locale", NULL);
-
-	g_free(win32_dir);
-
-	return siril_locale_dir;
-#else
-	return(g_strdup(LOCALEDIR));
-#endif
-}
 
 /**
  * Updates RAM memory used by siril, available free disk space

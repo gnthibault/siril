@@ -34,6 +34,7 @@
 #include "core/proto.h"
 #include "gui/message_dialog.h"
 #include "core/processing.h"
+#include "core/OS_utils.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/photometric_cc.h"

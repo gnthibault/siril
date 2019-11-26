@@ -3,12 +3,20 @@
 
 #include "core/siril.h"
 
-int	verbose_resize_gaussian(fits *, int, int, int);
-int	verbose_rotate_image(fits *, double, int, int);
+/* crop sequence data from GUI */
+struct crop_sequence_data {
+	sequence *seq;
+	rectangle area;
+	const char *prefix;
+	int retvalue;
+};
 
-void 	mirrorx(fits *fit, gboolean verbose);
-void 	mirrory(fits *fit, gboolean verbose);
+int verbose_resize_gaussian(fits *, int, int, int);
+int verbose_rotate_image(fits *, double, int, int);
 
-int	crop(fits *fit, rectangle *bounds);
+void mirrorx(fits *fit, gboolean verbose);
+void mirrory(fits *fit, gboolean verbose);
+
+int crop(fits *fit, rectangle *bounds);
 
 #endif /* SRC_ALGOS_GEOMETRY_H_ */

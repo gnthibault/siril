@@ -28,6 +28,7 @@
 #include "compositing/compositing.h"
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "algos/colors.h"
 #include "io/sequence.h"
 #include "io/single_image.h"

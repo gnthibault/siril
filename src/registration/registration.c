@@ -41,6 +41,7 @@
 #include "gui/sequence_list.h"
 #include "core/proto.h"
 #include "core/initfile.h"
+#include "core/OS_utils.h"
 #include "registration/registration.h"
 #include "registration/matching/misc.h"
 #include "registration/matching/match.h"

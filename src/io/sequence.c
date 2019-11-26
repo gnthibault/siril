@@ -41,7 +41,7 @@
 #include <libgen.h>
 
 #include "core/siril.h"
-#include "sequence.h"
+#include "core/OS_utils.h"
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "core/undo.h"
@@ -64,6 +64,8 @@
 #include "algos/geometry.h"
 #include "registration/registration.h"
 #include "stacking/stacking.h"	// for update_stack_interface
+
+#include "sequence.h"
 
 
 /* com.seq is a static struct containing the sequence currently selected by the

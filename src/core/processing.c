@@ -22,10 +22,11 @@
 #include <string.h>
 #include <glib.h>
 
-#include "siril.h"
-#include "processing.h"
-#include "sequence_filtering.h"
-#include "proto.h"
+#include "core/siril.h"
+#include "core/proto.h"
+#include "core/processing.h"
+#include "core/sequence_filtering.h"
+#include "core/OS_utils.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "io/sequence.h"
