@@ -123,7 +123,7 @@ void unregister_selection_update_callback(selection_update_callback f) {
 // send the events
 static void new_selection_zone() {
 	int i;
-	fprintf(stdout, "selection: %d,%d,\t%dx%d\n", com.selection.x, com.selection.y,
+	siril_debug_print("selection: %d,%d,\t%dx%d\n", com.selection.x, com.selection.y,
 			com.selection.w, com.selection.h);
 	for (i = 0; i < _nb_registered_callbacks; ++i) {
 		_registered_callbacks[i]();
@@ -408,8 +408,8 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	gint zoomedX = 0, zoomedY = 0;
 
 	if (inimage((GdkEvent *) event)) {
-		char buffer[45];
-		char format[25], *format_base = "x: %%.%dd y: %%.%dd = %%.%dd";
+		char *buffer;
+		char *format, *format_base = "x: %%.%dd y: %%.%dd = %%.%dd";
 		int coords_width = 3, val_width = 3;
 		zoomedX = (gint) (event->x / zoom);
 		zoomedY = (gint) (event->y / zoom);
@@ -419,11 +419,7 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 			val_width = 4;
 		if (fit->hi >= 10000)
 			val_width = 5;
-		g_snprintf(format, sizeof(format), format_base, coords_width,
-				coords_width, val_width);
-		g_snprintf(buffer, sizeof(buffer), format, zoomedX, zoomedY,
-				fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
-				+ zoomedX]);
+
 		/* TODO: fix to use the new function vport_number_to_name() */
 		if (widget == com.vport[RED_VPORT])
 			strcat(label, "r");
@@ -433,8 +429,17 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 			strcat(label, "b");
 		else
 			return FALSE;
+
+		format = g_strdup_printf(format_base, coords_width,
+				coords_width, val_width);
+		buffer = g_strdup_printf(format, zoomedX, zoomedY,
+				fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
+				+ zoomedX]);
 		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder, label)),
 				buffer);
+
+		g_free(buffer);
+		g_free(format);
 	}
 
 	if (com.drawing) {	// with button 1 down
@@ -607,6 +612,8 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 					(event->y - (pix_height / 2)) / com.zoom_value);
 			redraw(com.cvport, REMAP_NONE);
 			break;
+		default:
+			handled = FALSE;
 		}
 	}
 	return handled;

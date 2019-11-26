@@ -527,16 +527,16 @@ char *remove_ext_from_filename(const char *filename) {
  * @param newdata suffix to add
  * @return a new string that should be freed when no longer needed
  */
-char* str_append(char** data, const char* newdata) {
-	char* p;
+gchar* str_append(gchar** data, const gchar* newdata) {
+	gchar* p;
 	int len = (*data ? strlen(*data) : 0);
-	if ((p = realloc(*data, len + strlen(newdata) + 1)) == NULL) {
-		free(p);
+	if ((p = g_try_realloc(*data, len + strlen(newdata) + 1)) == NULL) {
+		g_free(p);
 		PRINT_ALLOC_ERR;
 		return NULL;
 	}
 	*data = p;
-	strcpy(*data + len, newdata);
+	g_strlcpy(*data + len, newdata, len + strlen(newdata));
 	return *data;
 }
 

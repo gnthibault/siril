@@ -72,7 +72,6 @@ double get_zoom_val() {
 		return 1.0;
 	wtmp = (double) window_width / (double) gfit.rx;
 	htmp = (double) window_height / (double) gfit.ry;
-	//fprintf(stdout, "computed fit to window zooms: %f, %f\n", wtmp, htmp);
 	return min(wtmp, htmp);
 }
 
@@ -161,7 +160,7 @@ static void remaprgb(void) {
 	gint i, j;
 	int nbdata;
 
-	fprintf(stderr, "remaprgb\n");
+	siril_debug_print("remaprgb\n");
 	if (!isrgb(&gfit))
 		return;
 
@@ -171,7 +170,7 @@ static void remaprgb(void) {
 			|| gfit.ry != com.surface_height[RGB_VPORT]
 			|| !com.surface[RGB_VPORT] || !com.rgbbuf) {
 		guchar *oldbuf = com.rgbbuf;
-		fprintf(stderr, "RGB display buffers and surface (re-)allocation\n");
+		siril_debug_print("RGB display buffers and surface (re-)allocation\n");
 		com.surface_stride[RGB_VPORT] = cairo_format_stride_for_width(
 				CAIRO_FORMAT_RGB24, gfit.rx);
 		com.surface_height[RGB_VPORT] = gfit.ry;
@@ -190,8 +189,7 @@ static void remaprgb(void) {
 				com.surface_stride[RGB_VPORT]);
 		if (cairo_surface_status(com.surface[RGB_VPORT])
 				!= CAIRO_STATUS_SUCCESS) {
-			fprintf(stderr,
-					"Error creating the Cairo image surface for the RGB image\n");
+			siril_debug_print("Error creating the Cairo image surface for the RGB image\n");
 			cairo_surface_destroy(com.surface[RGB_VPORT]);
 			com.surface[RGB_VPORT] = NULL;
 			return;
@@ -203,7 +201,7 @@ static void remaprgb(void) {
 	bufg = com.graybuf[GREEN_VPORT];
 	bufb = com.graybuf[BLUE_VPORT];
 	if (bufr == NULL || bufg == NULL || bufb == NULL) {
-		fprintf(stderr, "remaprgb: gray buffers not allocated for display\n");
+		siril_debug_print("remaprgb: gray buffers not allocated for display\n");
 		return;
 	}
 	dst = com.rgbbuf;	// index is j
@@ -235,7 +233,7 @@ static void remap(int vport) {
 	color_map color;
 	gboolean do_cut_over, inverted;
 
-	fprintf(stderr, "remap %d\n", vport);
+	siril_debug_print("remap %d\n", vport);
 	if (vport == RGB_VPORT) {
 		remaprgb();
 		return;
@@ -252,7 +250,7 @@ static void remap(int vport) {
 	}
 	else no_data = 1;
 	if (no_data) {
-		fprintf(stderr, "vport is out of bounds or data is not loaded yet\n");
+		siril_debug_print("vport is out of bounds or data is not loaded yet\n");
 		return;
 	}
 
@@ -263,9 +261,9 @@ static void remap(int vport) {
 			!com.surface[vport] ||
 			!com.graybuf[vport]) {
 		guchar *oldbuf = com.graybuf[vport];
-		fprintf(stderr, "Gray display buffers and surface (re-)allocation\n");
+		siril_debug_print("Gray display buffers and surface (re-)allocation\n");
 		if (gfit.rx == 0 || gfit.ry == 0) {
-			fprintf(stderr, "gfit has a zero size, must not happen!\n");
+			siril_debug_print("gfit has a zero size, must not happen!\n");
 			return;
 		}
 		com.surface_stride[vport] = cairo_format_stride_for_width(
@@ -285,8 +283,7 @@ static void remap(int vport) {
 				com.graybuf[vport], CAIRO_FORMAT_RGB24, gfit.rx, gfit.ry,
 				com.surface_stride[vport]);
 		if (cairo_surface_status(com.surface[vport]) != CAIRO_STATUS_SUCCESS) {
-			fprintf(stderr,
-					"Error creating the Cairo image surface for vport %d\n",
+			siril_debug_print("Error creating the Cairo image surface for vport %d\n",
 					vport);
 			cairo_surface_destroy(com.surface[vport]);
 			com.surface[vport] = NULL;
@@ -306,7 +303,7 @@ static void remap(int vport) {
 		lo = com.seq.layers[vport].lo;
 		do_cut_over = com.seq.layers[vport].cut_over;
 	} else {
-		fprintf(stderr, "BUG in unique image remap\n");
+		siril_debug_print("BUG in unique image remap\n");
 		return;
 	}
 
@@ -329,10 +326,7 @@ static void remap(int vport) {
 		compute_histo_for_gfit();
 		histo = com.layers_hist[vport];
 		hist_nb_bins = gsl_histogram_bins(histo);
-		/*if (hist_nb_bins <= USHRT_MAX) {
-		  fprintf(stderr, "Error remapping: histogram is not the correct size\n");
-		  return;
-		  }*/
+
 		nb_pixels = (double) (gfit.rx * gfit.ry);
 		// build the remap_index
 		if (!remap_index[vport])
@@ -452,17 +446,16 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 	}
 	if ((mode != HISTEQ_DISPLAY && mode != STF_DISPLAY) && pente == last_pente[vport]
 			&& mode == last_mode[vport]) {
-		fprintf(stdout, "Re-using previous remap_index\n");
+		siril_debug_print("Re-using previous remap_index\n");
 		return 0;
 	}
-	fprintf(stdout, "Rebuilding remap_index\n");
+	siril_debug_print("Rebuilding remap_index\n");
 
 	/************* Building the remap_index **************/
 	if (!remap_index[vport]) {
 		remap_index[vport] = malloc(USHRT_MAX + 1);
 		if (!remap_index[vport]) {
-			fprintf(stderr,
-					"allocation error in remap_index, aborting remap\n");
+			PRINT_ALLOC_ERR;
 			return 1;
 		}
 	}
@@ -540,7 +533,7 @@ void redraw(int vport, int doremap) {
 	GtkWidget *widget;
 
 	if (vport >= MAXVPORT) {
-		fprintf(stderr, _("redraw: maximum number of layers supported is %d"
+		siril_debug_print(_("redraw: maximum number of layers supported is %d"
 					" (current image has %d).\n"), MAXVPORT, vport);
 		return;
 	}
@@ -581,7 +574,7 @@ void redraw(int vport, int doremap) {
 			}
 			break;
 		default:
-			fprintf(stderr, "redraw: unknown viewport number %d\n", vport);
+			siril_debug_print("redraw: unknown viewport number %d\n", vport);
 			break;
 	}
 }
@@ -627,7 +620,6 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_FAST);
 			cairo_paint(cr);
 		} else {
-			//			fprintf(stdout, "RGB buffer is empty, drawing black image\n");
 			draw_empty_image(cr, window_width, window_height);
 		}
 	} else {
@@ -637,7 +629,6 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_FAST);
 			cairo_paint(cr);
 		} else {
-			//			fprintf(stdout, "Buffer %d is empty, drawing black image\n", vport);
 			draw_empty_image(cr, window_width, window_height);
 		}
 	}
@@ -645,8 +636,6 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	/* draw the selection rectangle */
 	if (com.selection.w > 0 && com.selection.h > 0) {
 		static double dash_format[] = { 4.0, 2.0 };
-		/* fprintf(stdout, "drawing the selection rectangle (%d,%d) (%d,%d)\n",
-		   com.selection.x, com.selection.y, com.selection.w, com.selection.h); */
 		cairo_set_line_width(cr, 0.8 / zoom);
 		cairo_set_dash(cr, dash_format, 2, 0);
 		cairo_set_source_rgb(cr, 0.8, 1.0, 0.8);
@@ -714,9 +703,11 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 					cairo_show_text(cr, "V");
 				}
 				else {
-					char tmp[2];
-					g_snprintf(tmp, 2, "%d", i);
+					gchar *tmp;
+					tmp = g_strdup_printf("%d", i);
 					cairo_show_text(cr, tmp);
+
+					g_free(tmp);
 				}
 				cairo_stroke(cr);
 			}
@@ -743,7 +734,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		for (i = 0; i < PREVIEW_NB; i++) {
 			if (com.seq.previewX[i] >= 0) {
 				int textX, textY;
-				char text[3];
+				gchar *text;
 				cairo_set_line_width(cr, 0.5 / zoom);
 				cairo_set_source_rgb(cr, 0.1, 0.6, 0.0);
 				cairo_rectangle(cr,
@@ -762,11 +753,13 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 					textY += com.seq.previewH[i] - 15;
 				else
 					textY += 20;
-				g_snprintf(text, sizeof(text), "%d", i + 1);
+
+				text = g_strdup_printf("%d", i + 1);
 
 				cairo_set_font_size(cr, 12.0 / zoom);
 				cairo_move_to(cr, textX, textY);
 				cairo_show_text(cr, text);
+				g_free(text);
 			}
 		}
 	}
