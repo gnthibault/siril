@@ -234,7 +234,6 @@ static void siril_app_activate(GApplication *application) {
 	com.initfile = NULL;
 
 	global_initialization();
-	initialize_siril_directories();
 
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
 
@@ -375,15 +374,17 @@ static void siril_app_open(GApplication *application, GFile **files, gint n_file
 
 int main(int argc, char *argv[]) {
 	GtkApplication *app;
-	gchar *dir;
+	const gchar *dir;
 	gint status;
 
-	dir = get_siril_locale_dir();
+	initialize_siril_directories();
+
+	dir = siril_get_locale_dir();
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, dir);
 	bind_textdomain_codeset(PACKAGE, "UTF-8");
 	textdomain(PACKAGE);
-	g_free(dir);
+
 	g_setenv("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
 	app = gtk_application_new("org.free_astro.siril", G_APPLICATION_HANDLES_OPEN);
@@ -406,9 +407,6 @@ int main(int argc, char *argv[]) {
 		g_free(help_msg);
 	}
 
-	/* quit Siril */
-	close_sequence(FALSE);	// closing a sequence if loaded
-	close_single_image();	// close the previous image and free resources
 	pipe_stop();		// close the pipes and their threads
 	g_object_unref(app);
 	return status;

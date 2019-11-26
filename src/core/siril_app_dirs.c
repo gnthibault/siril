@@ -26,6 +26,7 @@
 static const gchar *siril_share_dir = NULL;
 static const gchar *siril_config_dir = NULL;
 static const gchar *siril_startup_dir = NULL;
+static const gchar *siril_locale_dir = NULL;
 
 /* To set the data dir we are looking for the glade file */
 static void search_for_data_dir() {
@@ -110,8 +111,34 @@ static void search_for_startup_dir() {
 		siril_startup_dir = g_strdup(dir);
 }
 
+/**
+ * This function search for the locale dir
+ * @return the locale dir
+ */
+static void search_for_locale_dir() {
+#ifdef _WIN32
+	gchar *win32_dir;
+
+	win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
+	gchar *locale_dir = g_build_filename(win32_dir, "share", "locale", NULL);
+
+	g_free(win32_dir);
+
+	siril_locale_dir = locale_dir;
+#else
+	gchar *path = g_build_filename(LOCALEDIR, NULL);
+		if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
+			siril_locale_dir = g_strdup(path);
+		}
+		g_free(path);
+#endif
+}
+
 /** Public functions **/
 
+const gchar* siril_get_locale_dir() {
+	return siril_locale_dir;
+}
 const gchar* siril_get_startup_dir() {
 	return siril_startup_dir;
 }
@@ -125,6 +152,7 @@ const gchar* siril_get_config_dir() {
 }
 
 void initialize_siril_directories() {
+	search_for_locale_dir();
 	search_for_startup_dir();
 	search_for_config_dir();
 	search_for_data_dir();

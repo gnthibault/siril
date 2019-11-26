@@ -1,13 +1,7 @@
 #ifndef PROTO_H_
 #define PROTO_H_
-#include "core/siril.h"
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-#include <fftw3.h>
-#include <gsl/gsl_histogram.h>
 #include <stdint.h>
-
+#include "core/siril.h"
 #ifdef HAVE_LIBTIFF
 #define uint64 uint64_hack_
 #define int64 int64_hack_
@@ -93,7 +87,6 @@ BYTE	round_to_BYTE(double x);
 BYTE	conv_to_BYTE(double x);
 int	truncate_to_int32(uint64_t x);
 gboolean isrgb(fits *fit);
-char *f2utf8(const char *filename);
 gboolean ends_with(const char *str, const char *ending);
 int	get_extension_index(const char *filename);
 int	is_readable_file(const char *filename);
@@ -105,7 +98,6 @@ gchar *get_locale_filename(const gchar *path);
 int	update_sequences_list(const char *sequence_name_to_select);
 void	expand_home_in_filename(char *filename, int size);
 WORD	get_normalized_value(fits*);
-void	read_and_show_textfile(char*, char*);
 void	swap_param(double *, double *);
 char*	remove_ext_from_filename(const char *basename);
 gchar*	str_append(char** data, const char* newdata);
@@ -115,7 +107,6 @@ void	load_css_style_sheet();
 double	encodeJD(dateTime dt);
 
 /**************** OS_utils.h *****************/
-gchar *get_siril_locale_dir();
 void	update_used_memory();
 gchar *pretty_print_memory(int64_t bytes);
 int test_available_space(int64_t req_size);
