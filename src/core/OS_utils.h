@@ -20,6 +20,8 @@
 #ifndef SRC_CORE_OS_UTILS_H_
 #define SRC_CORE_OS_UTILS_H_
 
+#include <stdint.h>
+
 void update_used_memory();
 gchar* pretty_print_memory(int64_t bytes);
 int test_available_space(int64_t req_size);
