@@ -27,6 +27,9 @@ struct _convert_data {
 };
 
 extern supported_raw_list supported_raw[];	//supported raw extensions
+extern char **supported_extensions;
+extern char *filter_pattern[];
+
 int get_nb_raw_supported();
 
 void fill_convert_list(GSList *list);

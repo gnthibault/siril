@@ -33,13 +33,14 @@
 #ifdef _WIN32
 #include <io.h>
 #endif
-
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "algos/demosaicing.h"
-#include "io/ser.h"
+#include "io/conversion.h"
+
+#include "ser.h"
 
 static gboolean user_warned = FALSE;
 
