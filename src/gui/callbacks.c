@@ -1847,8 +1847,6 @@ gboolean on_control_window_configure_event(GtkWidget *widget, GdkEvent *event,
 		gpointer user_data) {
 
 	save_main_window_state();
-	if (com.zoom_value == -1)
-		adjust_vport_size_to_image();
 	return FALSE;
 }
 

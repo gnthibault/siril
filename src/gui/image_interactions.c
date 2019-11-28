@@ -219,7 +219,7 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 	if (inimage((GdkEvent *) event)) {
 		/* click on RGB image */
 		if (widget == com.vport[RGB_VPORT]) {
-			if (event->button == 3) {
+			if (event->button == 3) {	// right click
 				do_popup_rgbmenu(widget, event);
 				return TRUE;
 			}
@@ -327,7 +327,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 		else
 			zoomedY = event->y / zoom;
 	}
-	if (event->button == 1) {
+	if (event->button == 1) {	// left click
 		if (com.drawing && mouse_status == MOUSE_ACTION_SELECT_REG_AREA) {
 			com.drawing = FALSE;
 			/* finalize selection rectangle coordinates */
@@ -368,7 +368,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 			gtk_widget_queue_draw(widget);
 		}
 		is_shift_on = FALSE;
-	} else if (event->button == 2) {
+	} else if (event->button == 2) {	// middle click
 		if (inimage((GdkEvent *) event)) {
 			double dX, dY, w, h;
 
@@ -391,7 +391,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 			}
 		}
 
-	} else if (event->button == 3) {
+	} else if (event->button == 3) {	// right click
 		if (mouse_status != MOUSE_ACTION_DRAW_SAMPLES) {
 			do_popup_graymenu(widget, NULL);
 		}
@@ -555,7 +555,7 @@ static void set_scroll_position(GtkWidget *widget, int x, int y) {
 
 gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer data) {
 	GtkToggleButton *button;
-	gdouble delta_x, delta_y;
+	gdouble delta_x, delta_y, evpos_x, evpos_y;
 	gboolean handled = FALSE;
 	int pix_x, pix_y, pix_width, pix_height;
 
@@ -568,6 +568,9 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 			gtk_toggle_button_set_active(button, FALSE);
 
 		get_scroll_position(widget, &pix_x, &pix_y, &pix_width, &pix_height);
+		// event position in image coordinates before changing the zoom value
+		evpos_x = (event->x) / com.zoom_value;
+		evpos_y = (event->y) / com.zoom_value;
 
 		switch (event->direction) {
 		case GDK_SCROLL_SMOOTH:
@@ -586,7 +589,7 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 				com.zoom_value /= 1.5 ;
 			}
 			adjust_vport_size_to_image();
-			set_scroll_position(widget,	(event->x - (pix_width / 2)) / com.zoom_value,
+			set_scroll_position(widget, (event->x - (pix_width / 2)) / com.zoom_value,
 					(event->y - (pix_height / 2)) / com.zoom_value);
 			redraw(com.cvport, REMAP_NONE);
 			break;
@@ -597,8 +600,10 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 			}
 			com.zoom_value /= 1.5 ;
 			adjust_vport_size_to_image();
-			set_scroll_position(widget,	(event->x - (pix_width / 2)) / com.zoom_value,
-					(event->y - (pix_height / 2)) / com.zoom_value);
+			fprintf(stdout, "zoom out (%f) at %f,%f + %d,%d,%d,%d\n", com.zoom_value, evpos_x, evpos_y, pix_x, pix_y, pix_width, pix_height);
+			// evpos_x * zoom_value is the coordinates of the event in the new zoom value
+			set_scroll_position(widget, evpos_x * com.zoom_value - pix_width/2,
+					 evpos_y * com.zoom_value - pix_height/2);
 			redraw(com.cvport, REMAP_NONE);
 			break;
 		case GDK_SCROLL_UP:
@@ -608,8 +613,9 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 			}
 			com.zoom_value *= 1.5;
 			adjust_vport_size_to_image();
-			set_scroll_position(widget,	(event->x - (pix_width / 2)) / com.zoom_value,
-					(event->y - (pix_height / 2)) / com.zoom_value);
+			fprintf(stdout, "zoom in (%f) at %f,%f + %d,%d,%d,%d\n", com.zoom_value, evpos_x, evpos_y, pix_x, pix_y, pix_width, pix_height);
+			set_scroll_position(widget, evpos_x * com.zoom_value - pix_width/2,
+					 evpos_y * com.zoom_value - pix_height/2);
 			redraw(com.cvport, REMAP_NONE);
 			break;
 		default:
