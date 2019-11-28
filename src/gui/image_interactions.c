@@ -589,8 +589,8 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 				com.zoom_value /= 1.5 ;
 			}
 			adjust_vport_size_to_image();
-			set_scroll_position(widget, (event->x - (pix_width / 2)) / com.zoom_value,
-					(event->y - (pix_height / 2)) / com.zoom_value);
+			set_scroll_position(widget, evpos_x * com.zoom_value - pix_width / 2,
+					evpos_y * com.zoom_value - pix_height / 2);
 			redraw(com.cvport, REMAP_NONE);
 			break;
 		case GDK_SCROLL_DOWN:
@@ -600,10 +600,12 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 			}
 			com.zoom_value /= 1.5 ;
 			adjust_vport_size_to_image();
-			fprintf(stdout, "zoom out (%f) at %f,%f + %d,%d,%d,%d\n", com.zoom_value, evpos_x, evpos_y, pix_x, pix_y, pix_width, pix_height);
+			siril_debug_print("zoom out (%f) at %f,%f + %d,%d,%d,%d\n",
+					com.zoom_value, evpos_x, evpos_y, pix_x, pix_y, pix_width,
+					pix_height);
 			// evpos_x * zoom_value is the coordinates of the event in the new zoom value
-			set_scroll_position(widget, evpos_x * com.zoom_value - pix_width/2,
-					 evpos_y * com.zoom_value - pix_height/2);
+			set_scroll_position(widget, evpos_x * com.zoom_value - pix_width / 2,
+					 evpos_y * com.zoom_value - pix_height / 2);
 			redraw(com.cvport, REMAP_NONE);
 			break;
 		case GDK_SCROLL_UP:
@@ -613,9 +615,11 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 			}
 			com.zoom_value *= 1.5;
 			adjust_vport_size_to_image();
-			fprintf(stdout, "zoom in (%f) at %f,%f + %d,%d,%d,%d\n", com.zoom_value, evpos_x, evpos_y, pix_x, pix_y, pix_width, pix_height);
-			set_scroll_position(widget, evpos_x * com.zoom_value - pix_width/2,
-					 evpos_y * com.zoom_value - pix_height/2);
+			siril_debug_print("zoom in (%f) at %f,%f + %d,%d,%d,%d\n",
+					com.zoom_value, evpos_x, evpos_y, pix_x, pix_y, pix_width,
+					pix_height);
+			set_scroll_position(widget, evpos_x * com.zoom_value - pix_width / 2,
+					 evpos_y * com.zoom_value - pix_height / 2);
 			redraw(com.cvport, REMAP_NONE);
 			break;
 		default:
