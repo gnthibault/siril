@@ -34,6 +34,7 @@
 #include "core/command.h" // for process_close()
 #include "core/command_line_processor.h"
 #include "core/processing.h"
+#include "core/OS_utils.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"

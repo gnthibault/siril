@@ -941,17 +941,6 @@ void set_output_filename_to_sequence_name() {
 	g_free(msg);
 }
 
-void adjust_refimage(int n) {
-	static GtkWidget *ref_butt2 = NULL;
-	if (ref_butt2 == NULL) {
-		ref_butt2 = lookup_widget("refframe2");
-	}
-
-	g_signal_handlers_block_by_func(ref_butt2, on_ref_frame_toggled, NULL);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ref_butt2), com.seq.reference_image == n);
-	g_signal_handlers_unblock_by_func(ref_butt2, on_ref_frame_toggled, NULL);
-}
-
 void close_tab() {
 	GtkNotebook* Color_Layers = GTK_NOTEBOOK(lookup_widget("notebook1"));
 	GtkWidget* page;
@@ -1847,8 +1836,6 @@ gboolean on_control_window_configure_event(GtkWidget *widget, GdkEvent *event,
 		gpointer user_data) {
 
 	save_main_window_state();
-	if (com.zoom_value == -1)
-		adjust_vport_size_to_image();
 	return FALSE;
 }
 

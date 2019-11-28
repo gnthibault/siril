@@ -89,6 +89,7 @@ void adjust_vport_size_to_image() {
 	for (vport = 0; vport < MAXVPORT; vport++)
 		gtk_widget_set_size_request(com.vport[vport], w, h);
 	siril_debug_print("set new vport size (%d, %d)\n", w, h);
+	fprintf(stdout, "set new vport size (%d, %d)\n", w, h);
 }
 
 static void draw_empty_image(cairo_t *cr, guint width, guint height) {
@@ -677,8 +678,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		cairo_set_line_width(cr, 1.5 / zoom);
 
 		while (com.stars[i]) {
-			// by design Sx>Sy, we redefine FWHM to be sure to have the value in px
-			double size = sqrt(com.stars[i]->sx / 2.) * 2 * sqrt(log(2.) * 3);
+			double size = com.stars[i]->sx + 0.5;
 
 			if (i == com.selected_star) {
 				// We draw horizontal and vertical lines to show the star
@@ -711,7 +711,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			cairo_set_line_width(cr, 2.0 / zoom);
 			fitted_PSF *the_psf = com.seq.photometry[i][com.seq.current];
 			if (the_psf) {
-				double size = the_psf->sx;
+				double size = the_psf->sx + 0.5;
 				cairo_arc(cr, the_psf->xpos, the_psf->ypos, size, 0., 2. * M_PI);
 				cairo_stroke(cr);
 				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.phot_set.inner, 0.,

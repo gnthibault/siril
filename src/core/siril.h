@@ -668,8 +668,6 @@ struct image_layer_struct {
 extern GtkBuilder *builder;	// get widget references anywhere
 extern cominfo com;		// the main data struct
 extern fits gfit;		// currently loaded image
-extern char **supported_extensions;
-extern char *filter_pattern[];
 #endif
 
 #endif /*SIRIL */

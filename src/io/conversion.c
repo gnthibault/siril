@@ -35,7 +35,6 @@
 #include "core/proto.h"
 #include "core/OS_utils.h"
 #include "core/processing.h"
-#include "io/conversion.h"
 #include "io/films.h"
 #include "io/sequence.h"
 #include "io/ser.h"
@@ -44,6 +43,8 @@
 #include "gui/progress_and_log.h"
 #include "algos/demosaicing.h"
 #include "algos/sorting.h"
+
+#include "conversion.h"
 
 #define MAX_OF_EXTENSIONS 50	// actual size of supported_extensions
 

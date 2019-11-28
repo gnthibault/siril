@@ -15,7 +15,6 @@ void set_sliders_value_to_gfit();
 void initialize_display_mode();
 void set_display_mode();
 void adjust_exclude(int n, gboolean changed);
-void adjust_refimage(int n);
 int adjust_sellabel();
 void set_GUI_CWD();
 void set_GUI_MEM(unsigned long size);

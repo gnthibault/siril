@@ -30,6 +30,7 @@ void fill_sequence_list(sequence *seq, int layer, gboolean as_idle);
 void clear_sequence_list();
 void update_seqlist();
 void toggle_image_selection(int image_num);
+void adjust_refimage(int n);
 
 
 #endif /* SRC_GUI_SEQUENCE_LIST_H_ */

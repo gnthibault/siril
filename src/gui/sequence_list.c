@@ -205,14 +205,13 @@ static GList *get_row_references_of_selected_rows(GtkTreeSelection *selection,
 	return ref;
 }
 
-static void unselect_select_frame_from_list(gboolean select) {
+static void unselect_select_frame_from_list(gboolean select, GtkTreeView *tree_view) {
 	GtkTreeSelection *selection;
 	GtkTreeModel *model;
 	GList *references, *list;
-	GtkTreeView *tree_view;
+
 	get_list_store();
 
-	tree_view = GTK_TREE_VIEW(lookup_widget("treeview1"));
 	model = gtk_tree_view_get_model(tree_view);
 	selection = gtk_tree_view_get_selection(tree_view);
 	references = get_row_references_of_selected_rows(selection, model);
@@ -415,7 +414,7 @@ void toggle_image_selection(int image_num) {
 }
 
 void on_selected_frames_select(GtkButton *button, gpointer user_data) {
-	unselect_select_frame_from_list(TRUE);
+	unselect_select_frame_from_list(TRUE, (GtkTreeView *)user_data);
 }
 
 void on_seqexcludeall_button_clicked(GtkButton *button, gpointer user_data) {
@@ -510,4 +509,15 @@ void sequence_list_change_reference() {
 void clear_sequence_list() {
 	get_list_store();
 	gtk_list_store_clear(list_store);
+}
+
+void adjust_refimage(int n) {
+	static GtkWidget *ref_butt2 = NULL;
+	if (ref_butt2 == NULL) {
+		ref_butt2 = lookup_widget("refframe2");
+	}
+
+	g_signal_handlers_block_by_func(ref_butt2, on_ref_frame_toggled, NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ref_butt2), com.seq.reference_image == n);
+	g_signal_handlers_unblock_by_func(ref_butt2, on_ref_frame_toggled, NULL);
 }
