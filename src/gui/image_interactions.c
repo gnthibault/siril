@@ -538,22 +538,45 @@ static void set_scroll_position(GtkWidget *widget, int x, int y) {
 	x = CLAMP(x, 0, gtk_adjustment_get_upper(hadj) - gtk_adjustment_get_page_size(hadj));
 	y = CLAMP(y, 0, gtk_adjustment_get_upper(vadj) - gtk_adjustment_get_page_size(vadj));
 
-//	g_signal_handlers_block_matched(hadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL,
-//			scrwindow);
-//	g_signal_handlers_block_matched(vadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL,
-//			scrwindow);
-
 	gtk_adjustment_set_value(hadj, x);
 	gtk_adjustment_set_value(vadj, y);
-
-//	g_signal_handlers_unblock_matched(hadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL,
-//			NULL, scrwindow);
-//	g_signal_handlers_unblock_matched(vadj, G_SIGNAL_MATCH_DATA, 0, 0, NULL,
-//			NULL, scrwindow);
-
 }
 
-gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer data) {
+/*
+ * Returns the modifier mask. For Linux it is Control key, but for Apple - OS X
+ * it should be Apple Key -> Mod2
+ */
+static GdkModifierType get_default_modifier() {
+	GdkDisplay *display = gdk_display_get_default();
+	GdkKeymap *keymap = gdk_keymap_get_for_display(display);
+	GdkModifierType primary, real;
+
+	g_return_val_if_fail(GDK_IS_KEYMAP (keymap), 0);
+
+	/* Retrieve the real modifier mask */
+	real = gdk_keymap_get_modifier_mask(keymap,
+			GDK_MODIFIER_INTENT_PRIMARY_ACCELERATOR);
+
+	primary = real;
+
+	/* We need to translate the real modifiers into a virtual modifier
+	 (like Super, Meta, etc.).
+	 The following call adds the virtual modifiers for each real modifier
+	 defined in primary.
+	 */
+	gdk_keymap_add_virtual_modifiers(keymap, &primary);
+
+	if (primary != real) {
+		/* In case the virtual and real modifiers are different, we need to
+		 remove the real modifier from the result, and keep only the
+		 virtual one.
+		 */
+		primary &= ~real;
+	}
+	return primary;
+}
+
+gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer user_data) {
 	GtkToggleButton *button;
 	gdouble delta_x, delta_y, evpos_x, evpos_y;
 	gboolean handled = FALSE;
@@ -562,8 +585,8 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 	if (!single_image_is_loaded() && !sequence_is_loaded())
 		return FALSE;
 
-	if (event->state & GDK_CONTROL_MASK) {
-		button = GTK_TOGGLE_BUTTON(lookup_widget("zoom_to_fit_check_button"));
+	if (event->state & get_default_modifier()) {
+		button = GTK_TOGGLE_BUTTON((GtkCheckButton *)user_data);
 		if (gtk_toggle_button_get_active(button))
 			gtk_toggle_button_set_active(button, FALSE);
 

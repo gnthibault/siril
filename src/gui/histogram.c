@@ -19,7 +19,6 @@
  */
 
 #include <gsl/gsl_histogram.h>
-#include <assert.h>
 #include <string.h>
 #include <stdint.h>
 #include <math.h>
@@ -30,11 +29,12 @@
 #include "algos/statistics.h"
 #include "io/single_image.h"
 #include "gui/image_display.h"
-#include "gui/histogram.h"
 #include "gui/callbacks.h"	// for lookup_widget()
 #include "gui/progress_and_log.h"
 #include "gui/dialogs.h"
 #include "core/undo.h"
+
+#include "histogram.h"
 
 #define shadowsClipping -2.80 /* Shadows clipping point measured in sigma units from the main histogram peak. */
 #define targetBackground 0.25 /* final "luminance" of the image for autostretch in the [0,1] range */
@@ -286,7 +286,7 @@ static void adjust_histogram_vport_size() {
 
 // create a new histrogram object for the passed fit and layer
 gsl_histogram* computeHisto(fits* fit, int layer) {
-	assert(layer < 3);
+	g_assert(layer < 3);
 	size_t i, ndata, size;
 	WORD *buf;
 
@@ -495,7 +495,7 @@ static void apply_mtf_to_fits(fits *from, fits *to) {
 	int i, chan, nb_chan, ndata;
 	double norm = (double)get_normalized_value(from);
 
-	assert(from->naxes[2] == 1 || from->naxes[2] == 3);
+	g_assert(from->naxes[2] == 1 || from->naxes[2] == 3);
 	nb_chan = from->naxes[2];
 	ndata = from->rx * from->ry;
 
@@ -583,7 +583,7 @@ static void update_histo_mtf() {
 }
 
 static void set_histogram(gsl_histogram *histo, int layer) {
-	assert(layer >= 0 && layer < MAXVPORT);
+	g_assert(layer >= 0 && layer < MAXVPORT);
 	if (com.layers_hist[layer])
 		gsl_histogram_free(com.layers_hist[layer]);
 	com.layers_hist[layer] = histo;
@@ -602,7 +602,7 @@ static gboolean on_gradient(GdkEvent *event, int width, int height) {
 
 gsl_histogram* computeHisto_Selection(fits* fit, int layer,
 		rectangle *selection) {
-	assert(layer < 3);
+	g_assert(layer < 3);
 	WORD *from;
 	size_t stridefrom, i, j, size;
 
@@ -863,7 +863,7 @@ void on_menuitem_histo_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_data) {
-	if (gtk_widget_get_visible(lookup_widget("histogram_dialog")))
+	if (gtk_widget_get_visible((GtkWidget *)user_data))
 		siril_close_dialog("histogram_dialog");
 	else {
 		on_menuitem_histo_activate(NULL, NULL);

@@ -1975,7 +1975,7 @@ enter a visible wavelength in nm</property>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
-                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" swapped="no"/>
+                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" object="zoom_to_fit_check_button" swapped="no"/>
                                   </object>
                                 </child>
                               </object>
@@ -2125,7 +2125,7 @@ enter a visible wavelength in nm</property>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
-                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" swapped="no"/>
+                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" object="zoom_to_fit_check_button" swapped="no"/>
                                   </object>
                                 </child>
                               </object>
@@ -2278,7 +2278,7 @@ enter a visible wavelength in nm</property>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
-                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" swapped="no"/>
+                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" object="zoom_to_fit_check_button" swapped="no"/>
                                   </object>
                                 </child>
                               </object>
@@ -6519,7 +6519,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                 <property name="tooltip_text" translatable="yes">Open/Close histogram toolbox</property>
                 <property name="use_underline">True</property>
                 <property name="icon_widget">image_histogram</property>
-                <signal name="clicked" handler="toggle_histogram_window_visibility" swapped="no"/>
+                <signal name="clicked" handler="toggle_histogram_window_visibility" object="histogram_dialog" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
