@@ -3112,7 +3112,7 @@ SER files are directly handled as a sequence, and are not yet available for conv
                                     <property name="receives_default">False</property>
                                     <property name="tooltip_text" translatable="yes">Search current directory for sequences of FITS images, SER or film videos.</property>
                                     <property name="use_underline">True</property>
-                                    <signal name="clicked" handler="on_checkseqbutton_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_checkseqbutton_clicked" object="checkforceseq" swapped="no"/>
                                     <style>
                                       <class name="suggested-action"/>
                                     </style>
@@ -3775,7 +3775,7 @@ This value is the mean of the master flat calibrated with the master offset.</pr
                                         <property name="halign">end</property>
                                         <property name="active">True</property>
                                         <property name="draw_indicator">True</property>
-                                        <signal name="toggled" handler="on_checkbutton_auto_evaluate_toggled" swapped="no"/>
+                                        <signal name="toggled" handler="on_checkbutton_auto_evaluate_toggled" object="entry_flat_norm" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -6411,7 +6411,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="events">GDK_BUTTON_PRESS_MASK</property>
-                <signal name="button-press-event" handler="on_right_panel_image_button_press_event" swapped="no"/>
+                <signal name="button-press-event" handler="on_right_panel_image_button_press_event" object="main_panel" swapped="no"/>
                 <child>
                   <object class="GtkImage" id="right_panel_image">
                     <property name="visible">True</property>
@@ -6569,7 +6569,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                 <property name="tooltip_text" translatable="yes">Switch to normal and negative view</property>
                 <property name="use_underline">True</property>
                 <property name="icon_widget">image_neg</property>
-                <signal name="clicked" handler="on_neg_button_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_neg_button_clicked" object="checkbutton_chain" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -6742,7 +6742,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="digits">0</property>
                         <property name="draw_value">False</property>
                         <signal name="button-release-event" handler="on_maxscale_release" swapped="no"/>
-                        <signal name="value-changed" handler="on_maxscale_changed" swapped="no"/>
+                        <signal name="value-changed" handler="on_maxscale_changed" object="max_entry" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -6801,7 +6801,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="digits">0</property>
                         <property name="draw_value">False</property>
                         <signal name="button-release-event" handler="on_minscale_release" swapped="no"/>
-                        <signal name="value-changed" handler="on_minscale_changed" swapped="no"/>
+                        <signal name="value-changed" handler="on_minscale_changed" object="min_entry" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -10997,7 +10997,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="tooltip_text" translatable="yes">Check this button if binning is not taken into account in the pixel size value. In this case, the binning value in the combo box below will be used.</property>
                 <property name="halign">start</property>
                 <property name="draw_indicator">True</property>
-                <signal name="toggled" handler="on_toggleButtonUnbinned_toggled" swapped="no"/>
+                <signal name="toggled" handler="on_toggleButtonUnbinned_toggled" object="box_binning_info" swapped="no"/>
               </object>
               <packing>
                 <property name="left_attach">0</property>

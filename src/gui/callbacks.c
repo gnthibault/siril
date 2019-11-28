@@ -1413,10 +1413,10 @@ void on_register_all_toggle(GtkToggleButton *togglebutton, gpointer user_data) {
 /* when the cursor moves, update the value displayed in the textbox and save it
  * in the related layer_info. Does not change display until cursor is released. */
 void on_minscale_changed(GtkRange *range, gpointer user_data) {
-	static GtkEntry *minentry = NULL;
+	GtkEntry *minentry;
 	gchar *buffer;
-	if (minentry == NULL)
-		minentry = GTK_ENTRY(gtk_builder_get_object(builder, "min_entry"));
+
+	minentry = (GtkEntry *)user_data;
 
 	if (single_image_is_loaded() && com.seq.current < RESULT_IMAGE) {
 		int value = (int) gtk_range_get_value(range);
@@ -1439,10 +1439,10 @@ void on_minscale_changed(GtkRange *range, gpointer user_data) {
 /* when the cursor moves, update the value displayed in the textbox and save it
  * in the related layer_info. Does not change display until cursor is released. */
 void on_maxscale_changed(GtkRange *range, gpointer user_data) {
-	static GtkEntry *maxentry = NULL;
+	GtkEntry *maxentry;
 	gchar *buffer;
-	if (maxentry == NULL)
-		maxentry = GTK_ENTRY(gtk_builder_get_object(builder, "max_entry"));
+
+	maxentry = (GtkEntry *)user_data;
 
 	if (single_image_is_loaded() && com.seq.current < RESULT_IMAGE) {
 		int value = (int) gtk_range_get_value(range);
@@ -1654,7 +1654,7 @@ void on_file_information_close_clicked(GtkButton *button, gpointer user_data) {
 void on_toggleButtonUnbinned_toggled(GtkToggleButton *button, gpointer user_data) {
 	GtkWidget *box;
 
-	box = lookup_widget("box_binning_info");
+	box = (GtkWidget *)user_data;
 
 	gfit.unbinned = gtk_toggle_button_get_active(button);
 	gtk_widget_set_sensitive(box, gfit.unbinned);
@@ -1706,8 +1706,9 @@ void on_checkbutton_auto_toggled(GtkButton *button, gpointer user_data) {
 
 void on_checkbutton_auto_evaluate_toggled(GtkToggleButton *button,
 		gpointer user_data) {
-	GtkWidget *entry = lookup_widget("entry_flat_norm");
+	GtkWidget *entry;
 
+	entry = (GtkWidget *)user_data;
 	gtk_widget_set_sensitive(entry, !gtk_toggle_button_get_active(button));
 }
 
@@ -1904,12 +1905,12 @@ void on_radiobutton_user_toggled(GtkToggleButton *togglebutton,
 
 void on_neg_button_clicked(GtkToolButton *button, gpointer user_data) {
 	int tmp;
-	static GtkToggleButton *chainedbutton = NULL;
+	GtkToggleButton *chainedbutton;
 	gboolean is_chained;
 
 	set_cursor_waiting(TRUE);
 
-	chainedbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_chain"));
+	chainedbutton = (GtkToggleButton *)user_data;
 	is_chained = gtk_toggle_button_get_active(chainedbutton);
 
 	/* swaps values of hi and lo and redraw */
@@ -2341,12 +2342,10 @@ static gpointer checkSeq(gpointer p) {
 }
 
 void on_checkseqbutton_clicked(GtkButton *button, gpointer user_data) {
-	static GtkToggleButton *forceButton = NULL;
+	GtkToggleButton *forceButton;
 	int force;
 
-	if (forceButton == NULL) {
-		forceButton = GTK_TOGGLE_BUTTON(lookup_widget("checkforceseq"));
-	}
+	forceButton = (GtkToggleButton *)user_data;
 	force = gtk_toggle_button_get_active(forceButton);
 
 	if (get_thread_run()) {
@@ -2440,12 +2439,13 @@ void on_gotoStacking_button_clicked(GtkButton *button, gpointer user_data) {
 	control_window_switch_to_tab(STACKING);
 }
 
-gboolean on_right_panel_image_button_press_event(GtkWidget *button,
+gboolean on_right_panel_image_button_press_event(GtkWidget *event_box,
 		GdkEventButton *event, gpointer user_data) {
 	if (event->button == 1) {
 		static gboolean panel_is_extended = TRUE;
-		GtkImage *image = GTK_IMAGE(lookup_widget("right_panel_image"));
-		GtkWidget *widget = gtk_paned_get_child2(GTK_PANED(lookup_widget("main_panel")));
+		GtkPaned *paned = (GtkPaned *)user_data;
+		GtkImage *image = GTK_IMAGE(gtk_bin_get_child(GTK_BIN(event_box)));
+		GtkWidget *widget = gtk_paned_get_child2(paned);
 
 		gtk_widget_set_visible(widget, !panel_is_extended);
 
