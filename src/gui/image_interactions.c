@@ -542,38 +542,10 @@ static void set_scroll_position(GtkWidget *widget, int x, int y) {
 	gtk_adjustment_set_value(vadj, y);
 }
 
-/*
- * Returns the modifier mask. For Linux it is Control key, but for Apple - OS X
- * it should be Apple Key -> Mod2
- */
-static GdkModifierType get_default_modifier() {
-	GdkDisplay *display = gdk_display_get_default();
-	GdkKeymap *keymap = gdk_keymap_get_for_display(display);
-	GdkModifierType primary, real;
-
-	g_return_val_if_fail(GDK_IS_KEYMAP (keymap), 0);
-
-	/* Retrieve the real modifier mask */
-	real = gdk_keymap_get_modifier_mask(keymap,
+static GdkModifierType get_primary() {
+	return gdk_keymap_get_modifier_mask(
+			gdk_keymap_get_for_display(gdk_display_get_default()),
 			GDK_MODIFIER_INTENT_PRIMARY_ACCELERATOR);
-
-	primary = real;
-
-	/* We need to translate the real modifiers into a virtual modifier
-	 (like Super, Meta, etc.).
-	 The following call adds the virtual modifiers for each real modifier
-	 defined in primary.
-	 */
-	gdk_keymap_add_virtual_modifiers(keymap, &primary);
-
-	if (primary != real) {
-		/* In case the virtual and real modifiers are different, we need to
-		 remove the real modifier from the result, and keep only the
-		 virtual one.
-		 */
-		primary &= ~real;
-	}
-	return primary;
 }
 
 gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer user_data) {
@@ -585,7 +557,7 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 	if (!single_image_is_loaded() && !sequence_is_loaded())
 		return FALSE;
 
-	if (event->state & get_default_modifier()) {
+	if (event->state & get_primary()) {
 		button = GTK_TOGGLE_BUTTON((GtkCheckButton *)user_data);
 		if (gtk_toggle_button_get_active(button))
 			gtk_toggle_button_set_active(button, FALSE);
