@@ -253,7 +253,7 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 
 	r1 = getInnerRadius();
 	r2 = getOuterRadius();
-	appRadius = (psf->sx + 0.5) / 2.0;
+	appRadius = psf->sx / 2.0;
 	if (appRadius >= r1) {
 		if (verbose) {
 			/* Translator note: radii is plural for radius */

@@ -18,7 +18,6 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define SIRIL_OUTPUT_DEBUG
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/undo.h"
