@@ -214,8 +214,6 @@ static void init_num_procs() {
 #endif
 }
 
-
-
 static void siril_app_startup (GApplication *application) {
 	signals_init();
 
@@ -388,7 +386,7 @@ int main(int argc, char *argv[]) {
 
 	g_setenv("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
-	app = gtk_application_new("org.free_astro.siril", G_APPLICATION_HANDLES_OPEN);
+	app = gtk_application_new("org.free_astro.siril", G_APPLICATION_HANDLES_OPEN | G_APPLICATION_NON_UNIQUE);
 
 	g_signal_connect(app, "startup", G_CALLBACK(siril_app_startup), NULL);
 	g_signal_connect(app, "activate", G_CALLBACK(siril_app_activate), NULL);
