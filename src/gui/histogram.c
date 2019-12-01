@@ -306,7 +306,7 @@ gsl_histogram* computeHisto(fits* fit, int layer) {
 		for (i = 0; i < ndata; i++) {
 			gsl_histogram_increment(histo, (double)buf[i]);
 		}
-	} else if (fit->type = DATA_FLOAT) {
+	} else if (fit->type == DATA_FLOAT) {
 		float *buf = fit->fpdata[layer];
 		for (i = 0; i < ndata; i++) {
 			gsl_histogram_increment(histo, (double)buf[i]);

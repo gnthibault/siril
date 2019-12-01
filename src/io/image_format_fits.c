@@ -166,7 +166,7 @@ static void fits_read_history(fitsfile *fptr, GSList **history, int *status) {
 static void read_fits_header(fits *fit) {
 	/* about the status argument: http://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node28.html */
 	int status = 0;
-	double mini, maxi;
+	double mini, maxi, scale, zero;
 
 	fit_stats(fit, &mini, &maxi);
 
@@ -180,7 +180,6 @@ static void read_fits_header(fits *fit) {
 			fit->hi += 32768;
 	}
 
-#if 0
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "BSCALE", &scale, NULL, &status);
 	if (!status && 1.0 != scale) {
@@ -190,9 +189,13 @@ static void read_fits_header(fits *fit) {
 		/* We reset the scaling factors as we don't use it */
 		fits_set_bscale(fit->fptr, 1.0, 0.0, &status);
 	}
+
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &zero, NULL, &status);
-#endif
+	if (!status && 0.0 != zero && fit->bitpix == FLOAT_IMG) {
+		fprintf(stdout, "ignoring BZERO\n");
+		fits_set_bscale(fit->fptr, 1.0, 0.0, &status);
+	}
 
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &(fit->data_max), NULL, &status);
@@ -530,7 +533,6 @@ static void convert_data_float(int bitpix, const void *from, float *to, unsigned
 static int read_fits_with_convert(fits* fit, const char* filename) {
 	int status = 0, zero = 0, datatype;
 	BYTE *data8;
-	float *pixels_float;
 	double *pixels_double;
 	uint32_t *pixels_long;
 	long orig[3] = { 1L, 1L, 1L };
@@ -640,6 +642,17 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	case FLOAT_IMG:		// 32-bit floating point pixels
 		fits_read_pix(fit->fptr, TFLOAT, orig, nbdata, &zero,
 				fit->fdata, &zero, &status);
+		{
+			int i;
+			float min = FLT_MAX, max = FLT_MIN;
+			for (i = 0; i < nbdata; i++) {
+				if (fit->fdata[i] < min)
+					min = fit->fdata[i];
+				if (fit->fdata[i] > max)
+					max = fit->fdata[i];
+			}
+			fprintf(stdout, "FLOAT FITS: [%f, %f]\n", min, max);
+		}
 		break;
 	case DOUBLE_IMG:	// 64-bit floating point pixels
 		pixels_double = malloc(nbdata * sizeof(double));
@@ -781,6 +794,7 @@ static void save_fits_header(fits *fit) {
 				"Lower visualization cutoff ", &status);
 	}
 	// physical_value = BZERO + BSCALE * array_value
+	// https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node26.html
 	switch (fit->bitpix) {
 	case BYTE_IMG:
 	case SHORT_IMG:
@@ -788,8 +802,10 @@ static void save_fits_header(fits *fit) {
 		scale = 1.0;
 		break;
 	case FLOAT_IMG:
-		zero = 0.5;	// siril format [-1, 1]
-		scale = 0.5;
+		//zero = 0.5;	// siril format [-1, 1]
+		//scale = 0.5;
+		zero = 0.0;
+		scale = 1.0;
 		break;
 	default:
 	case USHORT_IMG:
@@ -1010,7 +1026,6 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	char *name = NULL;
 	gchar *basename;
 	image_type imagetype;
-	unsigned int nbdata;
 	double offset;
 
 	fit->naxes[2] = 1; //initialization of the axis number before opening : NEED TO BE OPTIMIZED
@@ -1078,7 +1093,6 @@ int readfits(const char *filename, fits *fit, char *realname) {
 
 	fit->rx = fit->naxes[0];
 	fit->ry = fit->naxes[1];
-	nbdata = fit->rx * fit->ry;
 
 	if (fit->naxis == 3 && fit->naxes[2] != 3) {
 		read_data_cube(fit);
@@ -1387,11 +1401,6 @@ int savefits(const char *name, fits *f) {
 		}
 		break;
 	case FLOAT_IMG:
-		if (f->fdata == NULL) { // case where loaded data are 16bits
-			// TODO: convert WORD data to float data
-			fprintf(stderr, "Not available yet\n");
-			return 1;
-		}
 		if (fits_write_pix(f->fptr, TFLOAT, orig, pixel_count, f->fdata, &status)) {
 			report_fits_error(status);
 			return 1;
