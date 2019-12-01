@@ -44,8 +44,6 @@
 #include "sorting.h"
 #include "statistics.h"
 
-static void stats_set_default_values(imstats *stat);
-
 // copies the area of an image into the memory buffer data
 static void select_area_float(fits *fit, float *data, int layer, rectangle *bounds) {
 	int i, j, k = 0;
@@ -215,31 +213,6 @@ static float* reassign_to_non_null_data_float(float *data, long inputlen, long o
 	if (free_input)
 		free(data);
 	return ndata;
-}
-
-static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
-		const WORD data[], const size_t stride, const size_t n) {
-	/* finds the smallest and largest members of a dataset */
-
-	if (n > 0 && data) {
-		WORD min = data[0];
-		WORD max = data[0];
-		size_t i;
-
-#pragma omp parallel for num_threads(com.max_thread) schedule(static) if(n > 10000) reduction(max:max) reduction(min:min)
-		for (i = 0; i < n; i++) {
-			WORD xi = data[i * stride];
-
-			if (xi < min)
-				min = xi;
-
-			if (xi > max)
-				max = xi;
-		}
-
-		*min_out = min;
-		*max_out = max;
-	}
 }
 
 static void siril_stats_float_minmax(float *min_out, float *max_out,

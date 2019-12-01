@@ -20,9 +20,6 @@
 #ifndef SRC_CORE_SIRIL_APP_DIRS_H_
 #define SRC_CORE_SIRIL_APP_DIRS_H_
 
-static GUserDirectory sdir[] = { G_USER_DIRECTORY_PICTURES,
-		G_USER_DIRECTORY_DOCUMENTS };
-
 void initialize_siril_directories();
 const gchar* siril_get_locale_dir();
 const gchar *siril_get_startup_dir();

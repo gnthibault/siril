@@ -51,7 +51,9 @@
 #define SQR(x) ((x)*(x))
 
 #define USHRT_MAX_DOUBLE ((double)USHRT_MAX)
+#define SHRT_MAX_DOUBLE ((double)SHRT_MAX)
 #define USHRT_MAX_SINGLE ((float)USHRT_MAX)
+#define SHRT_MAX_SINGLE ((float)SHRT_MAX)
 #define UCHAR_MAX_DOUBLE ((double)UCHAR_MAX)
 #define UCHAR_MAX_SINGLE ((float)UCHAR_MAX)
 

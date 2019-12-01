@@ -205,13 +205,13 @@ int addmax(fits *a, fits *b) {
  * a is expected as USHORT, returned as FLOAT. b is expected as USHORT.
  * If overflow, siril_fdiv returns 1*/
 int siril_fdiv(fits *a, fits *b, float coef) {
-	int i, o = 0, layer;
-	int retvalue = 0;
-	unsigned int nbpix;
+	int i, retvalue = 0;
+	unsigned long nbdata;
 	float *newdata;
+	double coefd = (double)coef;
 
-	if (a->type != DATA_USHORT || b->type != DATA_USHORT) {
-		siril_log_message(_("siril_fdiv: not yet working with 32-bit data."));
+	if (a->type != DATA_USHORT) {
+		siril_log_message(_("siril_fdiv: not yet working with 32-bit input data."));
 		return -1;
 	}
 	if (a->rx != b->rx || a->ry != b->ry || a->naxes[2] != b->naxes[2]) {
@@ -220,23 +220,31 @@ int siril_fdiv(fits *a, fits *b, float coef) {
 		return -1;
 	}
 
-	nbpix = a->rx * a->ry;
-	newdata = malloc(nbpix * a->naxes[2] * sizeof(float));
-	for (layer = 0; layer < a->naxes[2]; ++layer) {
-		WORD *abuf = b->pdata[layer];
-		WORD *bbuf = a->pdata[layer];
-		for (i = 0; i < nbpix; ++i) {
-			double val, denominator = (double)bbuf[i];
-			if (denominator == 0.0)
-				denominator = 1.0;
-			if (coef != 1.0)
-				val = ((double)coef * (double)abuf[i] / denominator);
-			else val = (double)abuf[i] / denominator;
-			newdata[o++] = (float)val;
-		}
-	}
+	nbdata = a->rx * a->ry * a->naxes[2];
+	newdata = malloc(nbdata * sizeof(float));
+	WORD *abuf = b->data;
+	WORD *bbuf = a->data;
+	float *fbbuf = a->fdata;
 
-	// TODO: normalize
+	for (i = 0; i < nbdata; ++i) {
+		double val, denominator = 1.0;
+		if (a->type == DATA_USHORT && bbuf[i] != 0)
+			denominator = (double)bbuf[i];
+		else if (a->type == DATA_FLOAT && fbbuf[i] != 0.0f)
+			denominator = (double)fbbuf[i];
+		if (coef != 1.0f)
+			val = coefd * (double)abuf[i] / denominator;
+		else val = (double)abuf[i] / denominator;
+		if (val > USHRT_MAX_DOUBLE) {
+			siril_debug_print("OVERFLOW in FDIV: %lf\n", val);
+			retvalue = 1;
+		}
+
+		// normalize to float data range [-1, 1]
+		newdata[i] = (float)(val / SHRT_MAX_DOUBLE - 1.0);
+		if (newdata[i] > 1.0f) newdata[i] = 1.0f;
+		if (newdata[i] < -1.0f) newdata[i] = -1.0f;
+	}
 
 	fit_replace_buffer(a, newdata, DATA_FLOAT);
 	return retvalue;

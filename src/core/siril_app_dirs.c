@@ -23,6 +23,9 @@
 
 #include "siril_app_dirs.h"
 
+static GUserDirectory sdir[] = { G_USER_DIRECTORY_PICTURES,
+		G_USER_DIRECTORY_DOCUMENTS };
+
 static const gchar *siril_share_dir = NULL;
 static const gchar *siril_config_dir = NULL;
 static const gchar *siril_startup_dir = NULL;

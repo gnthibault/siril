@@ -227,16 +227,18 @@ static int make_index_for_rainbow(BYTE index[][3]);
 /* Siril float format is [-1, 1]. The UI still uses unsigned short controls,
  * for lo and hi cursors for example, that we convert to a float value here */
 static BYTE display_for_float_pixel(float pixel, display_mode mode, WORD lo, WORD hi) {
-	float tmp = pixel - ((float)lo / (float)65536);
+	float tmp = pixel - ((float)lo / USHRT_MAX_DOUBLE);
 	float slope;
 	BYTE disp;
 	switch (mode) {
 		case NORMAL_DISPLAY:
 		default:
-			slope = 32768.0f * UCHAR_MAX_SINGLE / (float)(hi - lo);
+			// slope and offset should not be computed for all pixels
+			slope = SHRT_MAX_SINGLE * UCHAR_MAX_SINGLE / (float)(hi - lo);
 			disp = (tmp + 1.0f) * slope;
+			if (disp < 0) disp = 0;
+			if (disp > UCHAR_MAX) disp = UCHAR_MAX;
 			break;
-
 	}
 	return disp;
 }
@@ -404,7 +406,7 @@ static void remap(int vport) {
 						tmp_pixel_value = src[src_index] - lo;
 					dst_pixel_value = index[tmp_pixel_value];
 				}
-			} else {
+			} else if (gfit.type == DATA_FLOAT) {
 				dst_pixel_value = display_for_float_pixel(fsrc[src_index], mode, lo, hi);
 			}
 			if (inverted)
