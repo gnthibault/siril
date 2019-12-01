@@ -222,15 +222,15 @@ int siril_fdiv(fits *a, fits *b, float coef) {
 
 	nbdata = a->rx * a->ry * a->naxes[2];
 	newdata = malloc(nbdata * sizeof(float));
-	WORD *abuf = b->data;
-	WORD *bbuf = a->data;
-	float *fbbuf = a->fdata;
+	WORD *abuf = a->data;
+	WORD *bbuf = b->data;
+	float *fbbuf = b->fdata;
 
 	for (i = 0; i < nbdata; ++i) {
 		double val, denominator = 1.0;
-		if (a->type == DATA_USHORT && bbuf[i] != 0)
+		if (b->type == DATA_USHORT && bbuf[i] != 0)
 			denominator = (double)bbuf[i];
-		else if (a->type == DATA_FLOAT && fbbuf[i] != 0.0f)
+		else if (b->type == DATA_FLOAT && fbbuf[i] != 0.0f)
 			denominator = (double)fbbuf[i];
 		if (coef != 1.0f)
 			val = coefd * (double)abuf[i] / denominator;
