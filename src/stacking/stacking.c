@@ -23,7 +23,6 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <math.h>
-#include <assert.h>
 #include <gsl/gsl_fit.h>
 #include <gsl/gsl_statistics_ushort.h>
 #ifdef _OPENMP
@@ -42,17 +41,16 @@
 #include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"
 #include "gui/sequence_list.h"
-#include "gui/histogram.h"	// update_gfit_histogram_if_needed();
 #include "io/sequence.h"
 #include "io/single_image.h"
 #include "io/ser.h"
 #include "registration/registration.h"
-#include "algos/PSF.h"
 #include "algos/noise.h"
 #include "algos/sorting.h"
-#include "stacking.h"
-#include "sum.h"
+#include "stacking/sum.h"
 #include "opencv/opencv.h"
+
+#include "stacking.h"
 
 static struct stacking_args stackparam = {	// parameters passed to stacking
 	NULL, NULL, -1, NULL, -1.0, 0, NULL, NULL, NULL, FALSE, { 0, 0 }, -1, 0,
@@ -1038,7 +1036,7 @@ free_and_close:
 /* the function that prepares the stacking and runs it */
 void main_stack(struct stacking_args *args) {
 	int nb_allowed_files;
-	assert(args->ref_image >= 0 && args->ref_image < args->seq->number);
+	g_assert(args->ref_image >= 0 && args->ref_image < args->seq->number);
 
 	/* first of all we need to check if we can process the files */
 	if (args->seq->type == SEQ_REGULAR) {
