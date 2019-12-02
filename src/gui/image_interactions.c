@@ -435,7 +435,7 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		buffer = g_strdup_printf(format, zoomedX, zoomedY,
 				fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
 				+ zoomedX]);
-		gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder, label)),
+		gtk_label_set_text(GTK_LABEL(lookup_widget(label)),
 				buffer);
 
 		g_free(buffer);
@@ -549,7 +549,7 @@ static GdkModifierType get_primary() {
 }
 
 gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer user_data) {
-	GtkToggleButton *button;
+	GtkToggleToolButton *button;
 	gdouble delta_x, delta_y, evpos_x, evpos_y;
 	gboolean handled = FALSE;
 	int pix_x, pix_y, pix_width, pix_height;
@@ -558,9 +558,9 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 		return FALSE;
 
 	if (event->state & get_primary()) {
-		button = GTK_TOGGLE_BUTTON((GtkCheckButton *)user_data);
-		if (gtk_toggle_button_get_active(button))
-			gtk_toggle_button_set_active(button, FALSE);
+		button = (GtkToggleToolButton *)user_data;
+		if (gtk_toggle_tool_button_get_active(button))
+			gtk_toggle_tool_button_set_active(button, FALSE);
 
 		get_scroll_position(widget, &pix_x, &pix_y, &pix_width, &pix_height);
 		// event position in image coordinates before changing the zoom value
@@ -625,12 +625,21 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 	return handled;
 }
 
-void on_zoom_to_fit_check_button_toggled(GtkToggleButton *button, gpointer data) {
-	if (gtk_toggle_button_get_active(button)) {
+void on_zoom_to_fit_check_button_toggled(GtkToggleToolButton *button, gpointer data) {
+	if (gtk_toggle_tool_button_get_active(button)) {
 		com.zoom_value = -1;
 		adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_NONE);
 	} else {
 		com.zoom_value = get_zoom_val();
 	}
+}
+
+void on_zoom_to_one_button_clicked(GtkToolButton *button, gpointer user_data) {
+	GtkToggleToolButton *tbutton = (GtkToggleToolButton*) user_data;
+	if (gtk_toggle_tool_button_get_active(tbutton))
+		gtk_toggle_tool_button_set_active(tbutton, FALSE);
+	com.zoom_value = 1;
+	adjust_vport_size_to_image();
+	redraw(com.cvport, REMAP_NONE);
 }
