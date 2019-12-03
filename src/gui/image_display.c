@@ -89,7 +89,6 @@ void adjust_vport_size_to_image() {
 	for (vport = 0; vport < MAXVPORT; vport++)
 		gtk_widget_set_size_request(com.vport[vport], w, h);
 	siril_debug_print("set new vport size (%d, %d)\n", w, h);
-	fprintf(stdout, "set new vport size (%d, %d)\n", w, h);
 }
 
 static void draw_empty_image(cairo_t *cr, guint width, guint height) {

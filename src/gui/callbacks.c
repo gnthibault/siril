@@ -768,6 +768,7 @@ void display_filename() {
 	GtkLabel *fn_label;
 	int nb_layers;
 	char *str, *filename;
+	gchar *base_name;
 	if (com.uniq) {	// unique image
 		filename = com.uniq->filename;
 		nb_layers = com.uniq->nb_layers;
@@ -776,21 +777,22 @@ void display_filename() {
 		seq_get_image_filename(&com.seq, com.seq.current, filename);
 		nb_layers = com.seq.nb_layers;
 	}
+	base_name = g_path_get_basename(filename);
 	fn_label = GTK_LABEL(gtk_builder_get_object(builder, "labelfilename_red"));
-	str = g_strdup_printf(_("%s (channel 0)"), filename);
+	str = g_strdup_printf(_("%s (channel 0)"), base_name);
 	gtk_label_set_text(fn_label, str);
 	g_free(str);
 
 	if (nb_layers == 3) {	//take in charge both sequence and single image
 		fn_label = GTK_LABEL(
 				gtk_builder_get_object(builder, "labelfilename_green"));
-		str = g_strdup_printf(_("%s (channel 1)"), filename);
+		str = g_strdup_printf(_("%s (channel 1)"), base_name);
 		gtk_label_set_text(fn_label, str);
 		g_free(str);
 
 		fn_label = GTK_LABEL(
 				gtk_builder_get_object(builder, "labelfilename_blue"));
-		str = g_strdup_printf(_("%s (channel 2)"), filename);
+		str = g_strdup_printf(_("%s (channel 2)"), base_name);
 		gtk_label_set_text(fn_label, str);
 		g_free(str);
 
@@ -798,6 +800,7 @@ void display_filename() {
 	if (!com.uniq) {
 		free(filename);
 	}
+	g_free(base_name);
 }
 
 /* set available layers in the layer list of registration */
