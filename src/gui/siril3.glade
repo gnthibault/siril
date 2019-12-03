@@ -1767,7 +1767,7 @@ enter a visible wavelength in nm</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Open a project</property>
+                <property name="tooltip_text" translatable="yes">Open an image or a SER/AVI sequence</property>
                 <property name="action_name">app.open</property>
                 <property name="use_underline">True</property>
               </object>
@@ -1783,7 +1783,7 @@ enter a visible wavelength in nm</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Open recent documents (Only FITS and SER files)</property>
+                <property name="tooltip_text" translatable="yes">Open recent documents (only FITS and SER files)</property>
                 <property name="popup">recent_menu</property>
                 <property name="use_popover">False</property>
                 <child>
@@ -1814,6 +1814,7 @@ enter a visible wavelength in nm</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Undo</property>
                 <property name="action_name">app.undo</property>
                 <child>
                   <object class="GtkImage">
@@ -1835,6 +1836,7 @@ enter a visible wavelength in nm</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Redo</property>
                 <property name="action_name">app.redo</property>
                 <property name="use_underline">True</property>
                 <child>
@@ -3918,7 +3920,7 @@ Uncheck if images come from a monochrome sensor.</property>
                                     <property name="halign">start</property>
                                     <property name="width_chars">7</property>
                                     <property name="max_width_chars">6</property>
-                                    <property name="text" translatable="yes">3,000</property>
+                                    <property name="text">3,000</property>
                                     <property name="input_purpose">number</property>
                                     <property name="adjustment">adjSigCosmeHot</property>
                                     <property name="digits">3</property>
@@ -6691,7 +6693,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
               <object class="GtkToggleToolButton" id="zoom_to_fit_check_button">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Zoom to fit</property>
+                <property name="tooltip_text" translatable="yes">Fit the image to the window</property>
                 <property name="use_underline">True</property>
                 <property name="icon_name">zoom-fit-best-symbolic</property>
                 <property name="active">True</property>
@@ -6706,6 +6708,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
               <object class="GtkToolButton" id="zoom_to_one_button">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Show the image at its normal size</property>
                 <property name="use_underline">True</property>
                 <property name="icon_name">zoom-original-symbolic</property>
                 <signal name="clicked" handler="on_zoom_to_one_button_clicked" object="zoom_to_fit_check_button" swapped="no"/>
