@@ -1087,7 +1087,7 @@ void set_GUI_CWD() {
 		return;
 	gchar *str;
 	GtkLabel *label = GTK_LABEL(lookup_widget("labelcwd"));
-	GtkHeaderBar *bar = GTK_HEADER_BAR(lookup_widget("headebar"));
+	GtkHeaderBar *bar = GTK_HEADER_BAR(lookup_widget("headerbar"));
 
 	gtk_label_set_text(label, com.wd);
 

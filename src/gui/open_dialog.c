@@ -337,3 +337,29 @@ void on_header_open_button_clicked() {
 void on_select_convert_button_clicked(GtkToolButton *button, gpointer user_data) {
 	opendial(OD_CONVERT);
 }
+
+/** callback function for recent document opened
+ *
+ * @param chooser
+ * @param user_data
+ */
+void on_open_recent_action_item_activated(GtkRecentChooser *chooser,
+		gpointer user_data) {
+	gchar *uri, *path;
+	GError *error = NULL;
+
+	uri = gtk_recent_chooser_get_current_uri(chooser);
+
+	path = g_filename_from_uri(uri, NULL, NULL);
+	if (error) {
+		g_warning("Could not convert uri \"%s\" to a local path: %s", uri,
+				error->message);
+		g_error_free(error);
+		return;
+	}
+
+	open_single_image(path);
+
+	g_free(uri);
+	g_free(path);
+}
