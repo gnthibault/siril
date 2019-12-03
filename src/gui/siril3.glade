@@ -1672,6 +1672,23 @@ enter a visible wavelength in nm</property>
       </object>
     </child>
   </object>
+  <object class="GtkRecentChooserMenu" id="recent_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="filter">recentfilter</property>
+    <property name="limit">10</property>
+    <property name="show_not_found">False</property>
+    <property name="show_tips">True</property>
+    <property name="sort_type">mru</property>
+    <property name="show_numbers">True</property>
+    <signal name="item-activated" handler="on_open_recent_action_item_activated" swapped="no"/>
+  </object>
+  <object class="GtkRecentFilter" id="recentfilter">
+    <mime-types>
+      <mime-type>image/fits</mime-type>
+      <mime-type>video/ser</mime-type>
+    </mime-types>
+  </object>
   <object class="GtkImage" id="removefilter2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -1735,19 +1752,54 @@ enter a visible wavelength in nm</property>
     <signal name="delete-event" handler="siril_quit" swapped="no"/>
     <signal name="window-state-event" handler="on_control_window_window_state_event" swapped="no"/>
     <child type="titlebar">
-      <object class="GtkHeaderBar" id="headebar">
+      <object class="GtkHeaderBar" id="headerbar">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="show_close_button">True</property>
         <child>
-          <object class="GtkButton" id="header_open_button">
-            <property name="label">gtk-open</property>
+          <object class="GtkBox">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.open</property>
-            <property name="use_underline">True</property>
-            <property name="use_stock">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkButton" id="header_open_button">
+                <property name="label" translatable="yes">Open</property>
+                <property name="name">open-button</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Open a project</property>
+                <property name="action_name">app.open</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="recent_menu_button">
+                <property name="name">recent-button</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Open recent documents (Only FITS and SER files)</property>
+                <property name="popup">recent_menu</property>
+                <property name="use_popover">False</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">pan-down-symbolic</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
         </child>
         <child>

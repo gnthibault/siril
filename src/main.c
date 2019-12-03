@@ -92,12 +92,12 @@ static GOptionEntry main_option[] = {
 
 static void open_action_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
-	on_header_open_button_clicked();
+	header_open_button_clicked();
 }
 
 static void cwd_action_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
-	on_cwd_btton_clicked();
+	cwd_btton_clicked();
 }
 
 static void save_as_action_activate(GSimpleAction *action, GVariant *parameter,
