@@ -10,7 +10,7 @@
 #define OD_OPEN 	5
 #define OD_CONVERT 	6
 
-void on_header_open_button_clicked();
-void on_cwd_btton_clicked();
+void header_open_button_clicked();
+void cwd_btton_clicked();
 
 #endif /* SRC_GUI_OPEN_DIALOG_H_ */

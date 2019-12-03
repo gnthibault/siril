@@ -318,7 +318,7 @@ void on_darkfile_button_clicked(GtkButton *button, gpointer user_data) {
 	opendial(OD_DARK);
 }
 
-void on_cwd_btton_clicked() {
+void cwd_btton_clicked() {
 	opendial(OD_CWD);
 }
 
@@ -330,7 +330,7 @@ void on_flatfile_button_clicked(GtkButton *button, gpointer user_data) {
 	opendial(OD_FLAT);
 }
 
-void on_header_open_button_clicked() {
+void header_open_button_clicked() {
 	opendial(OD_OPEN);
 }
 
