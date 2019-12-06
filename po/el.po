@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-03 22:49+0100\n"
+"POT-Creation-Date: 2019-12-06 22:38+0100\n"
 "PO-Revision-Date: 2019-10-13 19:59+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -4239,10 +4239,20 @@ msgstr ""
 "Αυτή η δυνατότητα ενδέχεται να μην λειτουργεί σε όλες τις αρχιτεκτονικές."
 
 #: ../src/gui/siril3.glade.h:903
+msgid "Show preview in file chooser"
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:904
+msgid ""
+"Show preview, if possible, in the file chooser dialog bow when opening an "
+"unique file."
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:905
 msgid "<b>Look and Feel</b>"
 msgstr "<b>Look and feel</b>"
 
-#: ../src/gui/siril3.glade.h:904
+#: ../src/gui/siril3.glade.h:906
 msgid ""
 "The paths written in this text box will be checked in order to load scripts "
 "that have been put inside. Write a path per line with as many lines you "
@@ -4254,11 +4264,11 @@ msgstr ""
 "διαδρομή ανά γραμμή με όσες γραμμές θέλετε. Ωστόσο, θα πρέπει να έχετε υπόψη "
 "ότι όσο περισσότερα μονοπάτια ελέγχονται τόσο αργότερη είναι η εκκίνηση."
 
-#: ../src/gui/siril3.glade.h:905
+#: ../src/gui/siril3.glade.h:907
 msgid "<b>Scripts Storage Directories</b>"
 msgstr "<b>Κατάλογοι Αποθήκευσης Δεσμών Ενεργειών</b>"
 
-#: ../src/gui/siril3.glade.h:906
+#: ../src/gui/siril3.glade.h:908
 msgid "Misc."
 msgstr "Διάφορα"
 
@@ -4363,8 +4373,8 @@ msgstr "Τιμή: "
 #: ../src/core/command_line_processor.c:248 ../src/filters/banding.c:236
 #: ../src/filters/fft.c:377 ../src/filters/median.c:60
 #: ../src/filters/rgradient.c:185 ../src/filters/saturation.c:86
-#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2192
-#: ../src/gui/callbacks.c:2355 ../src/gui/script_menu.c:151
+#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2197
+#: ../src/gui/callbacks.c:2360 ../src/gui/script_menu.c:151
 #: ../src/io/conversion.c:531 ../src/registration/registration.c:845
 #: ../src/stacking/stacking.c:1101 ../src/stacking/stacking.c:1225
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4470,7 +4480,7 @@ msgstr "Η ανάκτηση απέτυχε με κωδικό %ld για τη δ�
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1742 ../src/gui/open_dialog.c:295
+#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:458
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:300 ../src/io/conversion.c:610
 #: ../src/io/single_image.c:149
@@ -4971,7 +4981,7 @@ msgstr "Γίνεται εκτέλεση του PSF στην φορτωμένη �
 #: ../src/core/command.c:1773 ../src/core/command.c:1779
 #: ../src/core/command.c:1932 ../src/core/command.c:1939
 #: ../src/core/command.c:2196 ../src/core/command.c:2338
-#: ../src/core/command.c:2411 ../src/core/command.c:2418 ../src/main.c:353
+#: ../src/core/command.c:2411 ../src/core/command.c:2418 ../src/main.c:358
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Δεν βρέθηκε η αλληλουχία `%s' .\n"
@@ -5198,7 +5208,7 @@ msgstr "Ο τύπος μεθόδου σώρευσης '%s' δεν είναι έ�
 msgid "Stacked sequence successfully.\n"
 msgstr "Έγινε σώρευση της αλληλουχίας με επιτυχία.\n"
 
-#: ../src/core/command.c:2482 ../src/gui/callbacks.c:2199
+#: ../src/core/command.c:2482 ../src/gui/callbacks.c:2204
 msgid "Preprocessing...\n"
 msgstr "Γίνεται προ-επεξεργασία...\n"
 
@@ -6068,7 +6078,7 @@ msgid "Script execution failed.\n"
 msgstr "Η εκτέλεση της δέσμης ενεργειών απέτυχε.\n"
 
 #: ../src/core/command_line_processor.c:258 ../src/gui/script_menu.c:166
-#: ../src/main.c:302
+#: ../src/main.c:307
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Το αρχείο [%s] δεν υπάρχει\n"
@@ -6506,28 +6516,35 @@ msgstr "Γίνεται ορισμός του τρέχοντος καταλόγο
 msgid "Could not change directory to '%s'.\n"
 msgstr "Δεν ήταν δυνατή η αλλαγή του καταλόγου στο '%s'.\n"
 
-#: ../src/core/utils.c:474
+#: ../src/core/utils.c:448
+#, fuzzy
+msgid "sequence"
+msgid_plural "sequences"
+msgstr[0] "Αλληλουχία"
+msgstr[1] "Αλληλουχία"
+
+#: ../src/core/utils.c:475
 msgid "Filename is too long, not expanding it\n"
 msgstr "Το όνομα του αρχείου είναι πολύ μεγάλο, δεν γίνεται επέκταση του\n"
 
-#: ../src/core/utils.c:589
+#: ../src/core/utils.c:590
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Γίνεται έλεγχος της έκδοσης GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:611
+#: ../src/core/utils.c:612
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "Η έκδοση του GTK δεν ταιριάζει με τις απαιτήσεις: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:617
+#: ../src/core/utils.c:618
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr ""
 "Δεν ήταν δυνατό να φορτωθεί το αρχείο CSS: %s. Παρακαλώ εγκαταστήστε ξανά το "
 "Siril\n"
 
-#: ../src/core/utils.c:627 ../src/main.c:172
+#: ../src/core/utils.c:628 ../src/main.c:177
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Το '%s' φορτώθηκε με επιτυχία\n"
@@ -6733,39 +6750,39 @@ msgstr "%d αρχείο επιλέχθηκε, %s"
 msgid "%d files selected, %s"
 msgstr "%d αρχεία επιλεχθηκαν, %s"
 
-#: ../src/gui/callbacks.c:1125
+#: ../src/gui/callbacks.c:1130
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Μνήμη: %ldMB"
 
-#: ../src/gui/callbacks.c:1127
+#: ../src/gui/callbacks.c:1132
 msgid "Mem: N/A"
 msgstr "Μνήμη: N/A"
 
-#: ../src/gui/callbacks.c:1136
+#: ../src/gui/callbacks.c:1141
 #, c-format
 msgid "Disk Space: %s"
 msgstr "Χωρος Δίσκου: %s"
 
-#: ../src/gui/callbacks.c:1139
+#: ../src/gui/callbacks.c:1144
 msgid "Disk Space: N/A"
 msgstr "Μέγεθος Δίσκου: Δεν είναι διαθέσιμο"
 
-#: ../src/gui/callbacks.c:1202
+#: ../src/gui/callbacks.c:1207
 msgid "This binning is not handled yet\n"
 msgstr "Αυτή η ομαδοποίηση δεν υποστηρίζεται ακόμα\n"
 
-#: ../src/gui/callbacks.c:1556 ../src/gui/callbacks.c:1557
+#: ../src/gui/callbacks.c:1561 ../src/gui/callbacks.c:1562
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr "<span foreground=\"red\">ΣΦΑΛΜΑ</span>"
 
-#: ../src/gui/callbacks.c:1569
+#: ../src/gui/callbacks.c:1574
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">Ψυχρά: %ld εικονοστοιχεία</span>"
 
-#: ../src/gui/callbacks.c:1570 ../src/gui/callbacks.c:1582
+#: ../src/gui/callbacks.c:1575 ../src/gui/callbacks.c:1587
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -6773,93 +6790,93 @@ msgstr ""
 "Αυτή η τιμή μπορεί να είναι πολύ υψηλή. Παρακαλώ, λάβετε υπόψη να αλλάξετε "
 "την τιμή σίγμα ή να αποεπιλέξετε του κουτί."
 
-#: ../src/gui/callbacks.c:1573
+#: ../src/gui/callbacks.c:1578
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Ψυχρά: %ld εικονοστοιχεία"
 
-#: ../src/gui/callbacks.c:1581
+#: ../src/gui/callbacks.c:1586
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">Θερμά: %ld εικονοστοιχεία</span>"
 
-#: ../src/gui/callbacks.c:1585
+#: ../src/gui/callbacks.c:1590
 #, c-format
 msgid "Hot: %ld px"
 msgstr "Θερμά: %ld εικονοστοιχεία"
 
-#: ../src/gui/callbacks.c:1741
+#: ../src/gui/callbacks.c:1746
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "Δεν έχετε άδεια να γράψετε σε αυτό τον κατάλογο: %s\n"
 
-#: ../src/gui/callbacks.c:1865
+#: ../src/gui/callbacks.c:1870
 msgid "Closing application"
 msgstr "Κλείσιμο της εφαρμογής"
 
-#: ../src/gui/callbacks.c:1865
+#: ../src/gui/callbacks.c:1870
 msgid "Are you sure you want to quit?"
 msgstr "Είστε σίγουροι ότι θέλετε να κλείσετε το πρόγραμμα;"
 
-#: ../src/gui/callbacks.c:2086
+#: ../src/gui/callbacks.c:2091
 msgid "Opening offset image..."
 msgstr "Γίνεται άνοιγμα της εικόνας offset..."
 
-#: ../src/gui/callbacks.c:2090
+#: ../src/gui/callbacks.c:2095
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr ""
 "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:2093
+#: ../src/gui/callbacks.c:2098
 msgid "NOT USING OFFSET: image dimensions are different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ OFFSET: οι διαστάσεις της εικόνας είναι διαφορετικές"
 
-#: ../src/gui/callbacks.c:2098
+#: ../src/gui/callbacks.c:2103
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:2118
+#: ../src/gui/callbacks.c:2123
 msgid "Opening dark image..."
 msgstr "Γίνεται άνοιγμα της εικόνας dark..."
 
-#: ../src/gui/callbacks.c:2122
+#: ../src/gui/callbacks.c:2127
 msgid "NOT USING DARK: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:2125
+#: ../src/gui/callbacks.c:2130
 msgid "NOT USING DARK: image dimensions are different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ DARK: οι διαστάσεις της εικόνας είναι διαφορετικές"
 
-#: ../src/gui/callbacks.c:2130
+#: ../src/gui/callbacks.c:2135
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:2157
+#: ../src/gui/callbacks.c:2162
 msgid "Opening flat image..."
 msgstr "Γίνεται άνοιγμα της εικόνας flat..."
 
-#: ../src/gui/callbacks.c:2161
+#: ../src/gui/callbacks.c:2166
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:2164
+#: ../src/gui/callbacks.c:2169
 msgid "NOT USING FLAT: image dimensions are different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ FLAT: οι διαστάσεις της εικόνας είναι διαφορετικές"
 
-#: ../src/gui/callbacks.c:2169
+#: ../src/gui/callbacks.c:2174
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:2256
+#: ../src/gui/callbacks.c:2261
 msgid "Error in preprocessing."
 msgstr "Σφάλμα στην προ-επεξεργασία."
 
-#: ../src/gui/callbacks.c:2295
+#: ../src/gui/callbacks.c:2300
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Έγινε επιλογή %s αλληλουχίας %s..."
 
-#: ../src/gui/callbacks.c:2361
+#: ../src/gui/callbacks.c:2366
 msgid "Searching for sequences in the current working directory..."
 msgstr "Γίνεται αναζήτηση για αλληλουχίες στον τρέχων κατάλογο εργασίας..."
 
@@ -6890,40 +6907,47 @@ msgstr ""
 msgid "_Do not show this dialog again"
 msgstr "_Να μην εμφανιστεί ξανά αυτό το παράθυρο διαλόγου"
 
-#: ../src/gui/open_dialog.c:68 ../src/gui/save_dialog.c:60
+#: ../src/gui/open_dialog.c:74 ../src/gui/save_dialog.c:60
 msgid "FITS Files (*.fit, *.fits, *.fts)"
 msgstr "Αρχεία FITS (*.fit, *.fits, *.fts)"
 
-#: ../src/gui/open_dialog.c:96
+#: ../src/gui/open_dialog.c:102
 msgid "RAW DSLR Camera Files"
 msgstr "Αρχεία RAW κάμερας DSLR"
 
-#: ../src/gui/open_dialog.c:110
+#: ../src/gui/open_dialog.c:116
 msgid "Graphics Files (*.bmp"
 msgstr "Αρχεία Γραφικών (*.bmp"
 
 #. NETPBM FILES
-#: ../src/gui/open_dialog.c:136 ../src/gui/save_dialog.c:83
+#: ../src/gui/open_dialog.c:142 ../src/gui/save_dialog.c:83
 msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
 msgstr "Αρχεία Netpbm (*.ppm, *.pnm, *.pgm)"
 
 #. IRIS FILES
-#: ../src/gui/open_dialog.c:139
+#: ../src/gui/open_dialog.c:145
 msgid "IRIS PIC Files (*.pic)"
 msgstr "Αρχεία IRIS PIC (*.pic)"
 
 #. SER FILES
-#: ../src/gui/open_dialog.c:142
+#: ../src/gui/open_dialog.c:148
 msgid "SER files (*.ser)"
 msgstr "Αρχεία SER (*.ser)"
 
-#: ../src/gui/open_dialog.c:179
+#: ../src/gui/open_dialog.c:185
 msgid "Film Files (*.avi, *.mpg, ...)"
 msgstr "Αρχεία ταινίας (*.avi, *.mpg, ...)"
 
-#: ../src/gui/open_dialog.c:193
+#: ../src/gui/open_dialog.c:199
 msgid "All supported files"
 msgstr "Όλα τα αρχεία που υποστηρίζονται"
+
+#: ../src/gui/open_dialog.c:241
+#, fuzzy
+msgid "pixel"
+msgid_plural "pixels"
+msgstr[0] "Υπερ-εικονοστοιχείο"
+msgstr[1] "Υπερ-εικονοστοιχείο"
 
 #: ../src/gui/photometric_cc.c:91
 msgid "Photometric Color Calibration"
@@ -7518,11 +7542,18 @@ msgid "Error opening %s: file type not supported.\n"
 msgstr "Σφάλμα στο άνοιγμα του %s: ο τύπος του αρχείου δεν υποστηρίζεται .\n"
 
 #: ../src/io/conversion.c:1163
-#, c-format
-msgid "%d file(s) were ignored while drag and drop\n"
+#, fuzzy, c-format
+msgid "%d %s while drag and drop\n"
 msgstr "% d αρχείο(α) αγνοήθηκαν κατά τη το drag and drop\n"
 
-#: ../src/io/conversion.c:1165
+#: ../src/io/conversion.c:1164
+#, fuzzy
+msgid "file was ignored"
+msgid_plural "files were ignored"
+msgstr[0] "αρχείο"
+msgstr[1] "αρχείο"
+
+#: ../src/io/conversion.c:1166
 msgid ""
 "Files with unknown extension cannot be dropped in this area. Therefore they "
 "are ignored."
@@ -8234,7 +8265,7 @@ msgstr ""
 msgid "print the application’s version"
 msgstr "Έξοδος από την εφαρμογή"
 
-#: ../src/main.c:176
+#: ../src/main.c:172
 #, fuzzy, c-format
 msgid ""
 "%s was not found or contains errors, cannot render GUI:\n"
@@ -8244,53 +8275,59 @@ msgstr ""
 "Το %s δεν βρέθηκε ή περιέχει σφάλματα, δεν μπορεί να γίνει render του GUI. "
 "Γίνεται έξοδος.\n"
 
-#: ../src/main.c:208
-#, c-format
+#: ../src/main.c:209
+#, fuzzy, c-format
 msgid ""
-"Questionable parallel processing efficiency - openmp reports %d processors. "
-"Possibly broken opencv/openblas installation.\n"
+"Questionable parallel processing efficiency - openmp reports %d %s. Possibly "
+"broken opencv/openblas installation.\n"
 msgstr ""
 "Αμφίβολη αποτελεσματικότητα παράλληλης επεξεργασίας - το openmp αναφέρει % d "
 "επεξεργαστές. Ενδεχομένως η εγκατάσταση του opencv/openblas να είναι "
 "προβληματική.\n"
 
-#: ../src/main.c:211
-#, c-format
-msgid "Parallel processing %s: Using %d logical processor(s).\n"
-msgstr ""
-"Παράλληλη επεξεργασία %s : Γίνεται χρήση %d λογικού(ών) επεξεργαστή(ών).\n"
+#: ../src/main.c:211 ../src/main.c:216
+#, fuzzy
+msgid "processor"
+msgid_plural "processors"
+msgstr[0] "Γίνεται Προ-επεξεργασία"
+msgstr[1] "Γίνεται Προ-επεξεργασία"
 
-#: ../src/main.c:211
+#: ../src/main.c:214
+#, fuzzy, c-format
+msgid "Parallel processing %s: Using %d logical %s.\n"
+msgstr "Παράλληλη επεξεργασία %s : Γίνεται χρήση %d λογικού επεξεργαστή.\n"
+
+#: ../src/main.c:215
 msgid "enabled"
 msgstr "ενεργοποιημένο"
 
-#: ../src/main.c:213
+#: ../src/main.c:218
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
 msgstr "Παράλληλη επεξεργασία %s : Γίνεται χρήση %d λογικού επεξεργαστή.\n"
 
-#: ../src/main.c:213
+#: ../src/main.c:218
 msgid "disabled"
 msgstr "απενεργοποιημένο"
 
-#: ../src/main.c:237
+#: ../src/main.c:242
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Καλώς ήρθατε στο %s v%s\n"
 
-#: ../src/main.c:262
+#: ../src/main.c:267
 #, c-format
 msgid "Could not load or create settings file, exiting.\n"
 msgstr ""
 "Δεν ήταν δυνατό να φορτωθεί ή να δημιουργηθεί αρχείο ρυθμίσεων, γίνεται "
 "έξοδος.\n"
 
-#: ../src/main.c:395
+#: ../src/main.c:400
 #, fuzzy
 msgid "Siril - A free astronomical image processing software."
 msgstr "Πρόγραμμα (προ-)επεξεργασίας αστρονομικών εικόνων"
 
-#: ../src/main.c:402
+#: ../src/main.c:407
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr ""
@@ -8976,11 +9013,12 @@ msgstr ""
 msgid "Up-scaling sequence for stacking"
 msgstr "Αλληλουχία αύξησης της κλίμακας για σώρευση"
 
+#~ msgid "Parallel processing %s: Using %d logical processor(s).\n"
+#~ msgstr ""
+#~ "Παράλληλη επεξεργασία %s : Γίνεται χρήση %d λογικού(ών) επεξεργαστή(ών).\n"
+
 #~ msgid "RGB image"
 #~ msgstr "Εικόνα RGB"
-
-#~ msgid "file"
-#~ msgstr "αρχείο"
 
 #~ msgid "Zoom level"
 #~ msgstr "Επίπεδο μεγέθυνσης"

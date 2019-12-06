@@ -444,7 +444,8 @@ int update_sequences_list(const char *sequence_name_to_select) {
 		fprintf(stderr, "No valid sequence found in CWD.\n");
 		return -1;
 	} else {
-		fprintf(stdout, "Loaded %d sequence(s)\n", number_of_loaded_sequences);
+		fprintf(stdout, "Loaded %d %s\n", number_of_loaded_sequences,
+				ngettext("sequence", "sequences", number_of_loaded_sequences));
 	}
 
 	if (number_of_loaded_sequences > 1 && index_of_seq_to_load < 0) {
