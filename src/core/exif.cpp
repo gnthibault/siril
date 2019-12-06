@@ -56,11 +56,18 @@ extern "C" {
 // exiv2's readMetadata is not thread safe in 0.26. so we lock it. since readMetadata might throw an exception we
 // wrap it into some c++ magic to make sure we unlock in all cases. well, actually not magic but basic raii.
 // FIXME: check again once we rely on 0.27
+
+
 class Lock
 {
 public:
+#ifdef _OPENMP
   Lock() { omp_set_lock(&image_lock); }
   ~Lock() { omp_unset_lock(&image_lock); }
+#else
+  Lock() { void(); }
+  ~Lock() { void(); }
+#endif
 };
 
 #define read_metadata_threadsafe(image)                       \
