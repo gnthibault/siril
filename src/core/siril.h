@@ -84,17 +84,15 @@ typedef unsigned short WORD;		// default type for internal image data
 #define SN_NORM 1.1926
 #define QN_NORM 2.2191
 
-#define NATIVEFILLECHOOSER 0 // disable native file chooser
+#undef NATIVEFILLECHOOSER // disable native file chooser
 
 typedef struct _SirilDialogEntry SirilDialogEntry;
 
 /* used for open and savedialog */
-#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__)) && NATIVEFILLECHOOSER)
+#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
 #define SirilWidget GtkFileChooserNative
-#define SIRIL_EOL "\r\n"
 #else
 #define SirilWidget GtkWidget
-#define SIRIL_EOL "\n"
 #endif
 
 #if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))

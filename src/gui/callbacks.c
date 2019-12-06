@@ -1106,7 +1106,7 @@ void set_GUI_misc() {
 	gtk_toggle_button_set_active(ToggleButton, com.dontShowConfirm);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button"));
 	gtk_toggle_button_set_active(ToggleButton, com.show_preview);
-#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__)) && NATIVEFILLECHOOSER)
+#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
 	gtk_widget_set_visible(GTK_WIDGET(ToggleButton), FALSE);
 #endif
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck"));
