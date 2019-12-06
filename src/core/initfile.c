@@ -144,7 +144,11 @@ static int readinitfile() {
 	config_setting_t *misc_setting = config_lookup(&config, keywords[MISC]);
 	if (misc_setting) {
 		config_setting_lookup_bool(misc_setting, "confirm", &com.dontShowConfirm);
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+		com.show_preview = FALSE;
+#else
 		config_setting_lookup_bool(misc_setting, "show_preview", &com.show_preview);
+#endif
 		config_setting_lookup_int(misc_setting, "theme", &com.combo_theme);
 		config_setting_lookup_bool(misc_setting, "remember_winpos", &com.remember_windows);
 		config_setting_lookup_bool(misc_setting, "is_maximized", &com.is_maximized);
