@@ -230,7 +230,12 @@ siril_SOURCES += \
 	opencv/findHomography/calib3d.hpp \
 	opencv/findHomography/precomp.hpp
 
-siril_LDADD += $(OPENCV_LIBS)
+siril_SOURCES += \
+	core/exif.cpp \
+	core/exif.h
+
+siril_LDADD += $(OPENCV_LIBS) \
+               $(EXIV2_LIBS)
 
 pkgdata_DATA = \
 	gui/siril3.glade \

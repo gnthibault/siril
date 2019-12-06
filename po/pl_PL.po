@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-03 22:49+0100\n"
+"POT-Creation-Date: 2019-12-06 22:38+0100\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -4103,11 +4103,21 @@ msgid ""
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:903
+msgid "Show preview in file chooser"
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:904
+msgid ""
+"Show preview, if possible, in the file chooser dialog bow when opening an "
+"unique file."
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:905
 #, fuzzy
 msgid "<b>Look and Feel</b>"
 msgstr "<b>Wygląd i styl</b>"
 
-#: ../src/gui/siril3.glade.h:904
+#: ../src/gui/siril3.glade.h:906
 msgid ""
 "The paths written in this text box will be checked in order to load scripts "
 "that have been put inside. Write a path per line with as many lines you "
@@ -4115,11 +4125,11 @@ msgid ""
 "is the startup."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:905
+#: ../src/gui/siril3.glade.h:907
 msgid "<b>Scripts Storage Directories</b>"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:906
+#: ../src/gui/siril3.glade.h:908
 msgid "Misc."
 msgstr "Różne"
 
@@ -4232,8 +4242,8 @@ msgstr "Niebieski:"
 #: ../src/core/command_line_processor.c:248 ../src/filters/banding.c:236
 #: ../src/filters/fft.c:377 ../src/filters/median.c:60
 #: ../src/filters/rgradient.c:185 ../src/filters/saturation.c:86
-#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2192
-#: ../src/gui/callbacks.c:2355 ../src/gui/script_menu.c:151
+#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2197
+#: ../src/gui/callbacks.c:2360 ../src/gui/script_menu.c:151
 #: ../src/io/conversion.c:531 ../src/registration/registration.c:845
 #: ../src/stacking/stacking.c:1101 ../src/stacking/stacking.c:1225
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4339,7 +4349,7 @@ msgstr ""
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1742 ../src/gui/open_dialog.c:295
+#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:458
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:300 ../src/io/conversion.c:610
 #: ../src/io/single_image.c:149
@@ -4792,7 +4802,7 @@ msgstr "Uruchamianie PSF w załadowanej sekwencji, warstwa %d\n"
 #: ../src/core/command.c:1773 ../src/core/command.c:1779
 #: ../src/core/command.c:1932 ../src/core/command.c:1939
 #: ../src/core/command.c:2196 ../src/core/command.c:2338
-#: ../src/core/command.c:2411 ../src/core/command.c:2418 ../src/main.c:353
+#: ../src/core/command.c:2411 ../src/core/command.c:2418 ../src/main.c:358
 #, fuzzy, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Nie wybrano sekwencji"
@@ -5012,7 +5022,7 @@ msgstr ""
 msgid "Stacked sequence successfully.\n"
 msgstr "Sekwencja stackowania: %s\n"
 
-#: ../src/core/command.c:2482 ../src/gui/callbacks.c:2199
+#: ../src/core/command.c:2482 ../src/gui/callbacks.c:2204
 msgid "Preprocessing...\n"
 msgstr "Wstępne przetwarzanie ...\n"
 
@@ -5658,7 +5668,7 @@ msgid "Script execution failed.\n"
 msgstr "Normalizacja nie powiodła się."
 
 #: ../src/core/command_line_processor.c:258 ../src/gui/script_menu.c:166
-#: ../src/main.c:302
+#: ../src/main.c:307
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Plik [%s] nie istnieje\n"
@@ -6080,27 +6090,35 @@ msgstr "Ustawienie CWD (bieżący katalog roboczy) na '%s'\n"
 msgid "Could not change directory to '%s'.\n"
 msgstr "Nie można zmienić katalogu na '% s'.\n"
 
-#: ../src/core/utils.c:474
+#: ../src/core/utils.c:448
+#, fuzzy
+msgid "sequence"
+msgid_plural "sequences"
+msgstr[0] "Sekwencja"
+msgstr[1] "Sekwencja"
+msgstr[2] "Sekwencja"
+
+#: ../src/core/utils.c:475
 msgid "Filename is too long, not expanding it\n"
 msgstr "Nazwa pliku jest za długa, a nie jest rozszerzana\n"
 
-#: ../src/core/utils.c:589
+#: ../src/core/utils.c:590
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Sprawdzanie wersji GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:611
+#: ../src/core/utils.c:612
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "Wersja GTK nie spełnia wymagań: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:617
+#: ../src/core/utils.c:618
 #, fuzzy, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr ""
 "Nie można załadować pliku arkusza stylu CSS: %s. Zainstaluj ponownie %s\n"
 
-#: ../src/core/utils.c:627 ../src/main.c:172
+#: ../src/core/utils.c:628 ../src/main.c:177
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Pomyślnie załadowano '%s'\n"
@@ -6306,39 +6324,39 @@ msgstr "Wczytano %d plików"
 msgid "%d files selected, %s"
 msgstr "Wczytano %d plików"
 
-#: ../src/gui/callbacks.c:1125
+#: ../src/gui/callbacks.c:1130
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Pamięć: %ldMB"
 
-#: ../src/gui/callbacks.c:1127
+#: ../src/gui/callbacks.c:1132
 msgid "Mem: N/A"
 msgstr "Pamięć: Niedostępna"
 
-#: ../src/gui/callbacks.c:1136
+#: ../src/gui/callbacks.c:1141
 #, fuzzy, c-format
 msgid "Disk Space: %s"
 msgstr "Miejsce na dysku: %.0lf%s"
 
-#: ../src/gui/callbacks.c:1139
+#: ../src/gui/callbacks.c:1144
 msgid "Disk Space: N/A"
 msgstr "Miejsce na dysku: N/A"
 
-#: ../src/gui/callbacks.c:1202
+#: ../src/gui/callbacks.c:1207
 msgid "This binning is not handled yet\n"
 msgstr "Ten binning nie jest jeszcze obsługiwany\n"
 
-#: ../src/gui/callbacks.c:1556 ../src/gui/callbacks.c:1557
+#: ../src/gui/callbacks.c:1561 ../src/gui/callbacks.c:1562
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:1569
+#: ../src/gui/callbacks.c:1574
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:1570 ../src/gui/callbacks.c:1582
+#: ../src/gui/callbacks.c:1575 ../src/gui/callbacks.c:1587
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -6346,101 +6364,101 @@ msgstr ""
 "Ta wartość może być za wysoka. Proszę rozważyć zmianę wartości sigma lub "
 "odznaczenie tego pola."
 
-#: ../src/gui/callbacks.c:1573
+#: ../src/gui/callbacks.c:1578
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Zimny :%ld px"
 
-#: ../src/gui/callbacks.c:1581
+#: ../src/gui/callbacks.c:1586
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:1585
+#: ../src/gui/callbacks.c:1590
 #, fuzzy, c-format
 msgid "Hot: %ld px"
 msgstr "dx:%+*.2f px\n"
 
-#: ../src/gui/callbacks.c:1741
+#: ../src/gui/callbacks.c:1746
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "Nie masz uprawnień do zapisu w tym katalogu: %s\n"
 
-#: ../src/gui/callbacks.c:1865
+#: ../src/gui/callbacks.c:1870
 #, fuzzy
 msgid "Closing application"
 msgstr "Kalibracja kolorów"
 
-#: ../src/gui/callbacks.c:1865
+#: ../src/gui/callbacks.c:1870
 #, fuzzy
 msgid "Are you sure you want to quit?"
 msgstr "Czy na pewno chcesz zakończyć?"
 
-#: ../src/gui/callbacks.c:2086
+#: ../src/gui/callbacks.c:2091
 msgid "Opening offset image..."
 msgstr "Otwieranie obrazu przesunięcia..."
 
-#: ../src/gui/callbacks.c:2090
+#: ../src/gui/callbacks.c:2095
 #, fuzzy
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/gui/callbacks.c:2093
+#: ../src/gui/callbacks.c:2098
 #, fuzzy
 msgid "NOT USING OFFSET: image dimensions are different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/gui/callbacks.c:2098
+#: ../src/gui/callbacks.c:2103
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "NOT USING OFFSET: cannot open the file\n"
 
-#: ../src/gui/callbacks.c:2118
+#: ../src/gui/callbacks.c:2123
 #, fuzzy
 msgid "Opening dark image..."
 msgstr "Błąd otwarcia pliku BMP.\n"
 
-#: ../src/gui/callbacks.c:2122
+#: ../src/gui/callbacks.c:2127
 msgid "NOT USING DARK: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:2125
+#: ../src/gui/callbacks.c:2130
 #, fuzzy
 msgid "NOT USING DARK: image dimensions are different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/gui/callbacks.c:2130
+#: ../src/gui/callbacks.c:2135
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "BRAK UŻYCIA DARK: nie można otworzyć pliku\n"
 
-#: ../src/gui/callbacks.c:2157
+#: ../src/gui/callbacks.c:2162
 #, fuzzy
 msgid "Opening flat image..."
 msgstr "Błąd otwarcia pliku BMP.\n"
 
-#: ../src/gui/callbacks.c:2161
+#: ../src/gui/callbacks.c:2166
 msgid "NOT USING FLAT: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:2164
+#: ../src/gui/callbacks.c:2169
 #, fuzzy
 msgid "NOT USING FLAT: image dimensions are different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/gui/callbacks.c:2169
+#: ../src/gui/callbacks.c:2174
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "NOT USING FLAT: cannot open the file\n"
 
-#: ../src/gui/callbacks.c:2256
+#: ../src/gui/callbacks.c:2261
 #, fuzzy
 msgid "Error in preprocessing."
 msgstr "Wstępne przetwarzanie ...\n"
 
-#: ../src/gui/callbacks.c:2295
+#: ../src/gui/callbacks.c:2300
 #, fuzzy, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Wybrano %s, %d zdjęć"
 
-#: ../src/gui/callbacks.c:2361
+#: ../src/gui/callbacks.c:2366
 msgid "Searching for sequences in the current working directory..."
 msgstr "Wyszukiwanie sekwencji w bieżącym katalogu roboczym..."
 
@@ -6472,41 +6490,49 @@ msgstr ""
 msgid "_Do not show this dialog again"
 msgstr ""
 
-#: ../src/gui/open_dialog.c:68 ../src/gui/save_dialog.c:60
+#: ../src/gui/open_dialog.c:74 ../src/gui/save_dialog.c:60
 msgid "FITS Files (*.fit, *.fits, *.fts)"
 msgstr "Pliki FITS (*.fit, *.fits, *.fts)"
 
-#: ../src/gui/open_dialog.c:96
+#: ../src/gui/open_dialog.c:102
 msgid "RAW DSLR Camera Files"
 msgstr "Pliki RAW DSLR"
 
-#: ../src/gui/open_dialog.c:110
+#: ../src/gui/open_dialog.c:116
 msgid "Graphics Files (*.bmp"
 msgstr "Pliki graficzne (* .bmp"
 
 #. NETPBM FILES
-#: ../src/gui/open_dialog.c:136 ../src/gui/save_dialog.c:83
+#: ../src/gui/open_dialog.c:142 ../src/gui/save_dialog.c:83
 msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
 msgstr "Pliki NetPBM (*.ppm, *.pnm, *.pgm)"
 
 #. IRIS FILES
-#: ../src/gui/open_dialog.c:139
+#: ../src/gui/open_dialog.c:145
 msgid "IRIS PIC Files (*.pic)"
 msgstr "Pliki IRIS PIC (*.pic)"
 
 #. SER FILES
-#: ../src/gui/open_dialog.c:142
+#: ../src/gui/open_dialog.c:148
 msgid "SER files (*.ser)"
 msgstr "Pliki SER (*.ser)"
 
-#: ../src/gui/open_dialog.c:179
+#: ../src/gui/open_dialog.c:185
 msgid "Film Files (*.avi, *.mpg, ...)"
 msgstr "Pliki filmowe (* .avi, * .mpg, ...)"
 
-#: ../src/gui/open_dialog.c:193
+#: ../src/gui/open_dialog.c:199
 #, fuzzy
 msgid "All supported files"
 msgstr "Obsługiwane typy plików:"
+
+#: ../src/gui/open_dialog.c:241
+#, fuzzy
+msgid "pixel"
+msgid_plural "pixels"
+msgstr[0] "Super Pixel"
+msgstr[1] "Super Pixel"
+msgstr[2] "Super Pixel"
 
 #: ../src/gui/photometric_cc.c:91
 #, fuzzy
@@ -7100,10 +7126,18 @@ msgstr "Błąd podczas otwierania%s: typ pliku nie jest obsługiwany.\n"
 
 #: ../src/io/conversion.c:1163
 #, c-format
-msgid "%d file(s) were ignored while drag and drop\n"
+msgid "%d %s while drag and drop\n"
 msgstr ""
 
-#: ../src/io/conversion.c:1165
+#: ../src/io/conversion.c:1164
+#, fuzzy
+msgid "file was ignored"
+msgid_plural "files were ignored"
+msgstr[0] "plik"
+msgstr[1] "plik"
+msgstr[2] "plik"
+
+#: ../src/io/conversion.c:1166
 msgid ""
 "Files with unknown extension cannot be dropped in this area. Therefore they "
 "are ignored."
@@ -7785,7 +7819,7 @@ msgstr ""
 msgid "print the application’s version"
 msgstr ""
 
-#: ../src/main.c:176
+#: ../src/main.c:172
 #, fuzzy, c-format
 msgid ""
 "%s was not found or contains errors, cannot render GUI:\n"
@@ -7795,49 +7829,57 @@ msgstr ""
 "%s nie został znaleziony lub zawiera błędy, nie może renderować GUI. "
 "Wychodzę.\n"
 
-#: ../src/main.c:208
+#: ../src/main.c:209
 #, c-format
 msgid ""
-"Questionable parallel processing efficiency - openmp reports %d processors. "
-"Possibly broken opencv/openblas installation.\n"
+"Questionable parallel processing efficiency - openmp reports %d %s. Possibly "
+"broken opencv/openblas installation.\n"
 msgstr ""
 
-#: ../src/main.c:211
-#, c-format
-msgid "Parallel processing %s: Using %d logical processor(s).\n"
+#: ../src/main.c:211 ../src/main.c:216
+#, fuzzy
+msgid "processor"
+msgid_plural "processors"
+msgstr[0] "Wstępne przetwarzanie"
+msgstr[1] "Wstępne przetwarzanie"
+msgstr[2] "Wstępne przetwarzanie"
+
+#: ../src/main.c:214
+#, fuzzy, c-format
+msgid "Parallel processing %s: Using %d logical %s.\n"
 msgstr "Przetwarzanie równoległe %s: użycie procesorów logicznych %d.\n"
 
-#: ../src/main.c:211
+#: ../src/main.c:215
 msgid "enabled"
 msgstr "włączony"
 
-#: ../src/main.c:213
+#: ../src/main.c:218
 #, fuzzy, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
 msgstr "Przetwarzanie równoległe %s: użycie procesorów logicznych %d.\n"
 
-#: ../src/main.c:213
+#: ../src/main.c:218
 msgid "disabled"
 msgstr "wyłączony"
 
-#: ../src/main.c:237
+#: ../src/main.c:242
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Witaj w %s v%s\n"
 
-#: ../src/main.c:262
+#: ../src/main.c:267
 #, c-format
 msgid "Could not load or create settings file, exiting.\n"
 msgstr ""
 "Nie można załadować lub utworzyć pliku ustawień. Wychodzę.\n"
 "\n"
 
-#: ../src/main.c:395
+#: ../src/main.c:400
 #, fuzzy
 msgid "Siril - A free astronomical image processing software."
 msgstr "Program przetwarzania obrazu  astronomicznego"
 
-#: ../src/main.c:402
+#: ../src/main.c:407
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr ""
@@ -8524,11 +8566,11 @@ msgstr ""
 msgid "Up-scaling sequence for stacking"
 msgstr "Skalowanie w górę dla stackowania"
 
+#~ msgid "Parallel processing %s: Using %d logical processor(s).\n"
+#~ msgstr "Przetwarzanie równoległe %s: użycie procesorów logicznych %d.\n"
+
 #~ msgid "RGB image"
 #~ msgstr "Obraz RBG"
-
-#~ msgid "file"
-#~ msgstr "plik"
 
 #~ msgid "Zoom level"
 #~ msgstr "Poziom powiększenia"

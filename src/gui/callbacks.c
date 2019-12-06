@@ -1104,6 +1104,11 @@ void set_GUI_misc() {
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.dontShowConfirm);
+	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button"));
+	gtk_toggle_button_set_active(ToggleButton, com.show_preview);
+#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+	gtk_widget_set_visible(GTK_WIDGET(ToggleButton), FALSE);
+#endif
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck"));
 	gtk_toggle_button_set_active(ToggleButton, com.remember_windows);
 
@@ -2420,6 +2425,9 @@ void on_rememberWindowsCheck_toggled(GtkToggleButton *togglebutton, gpointer use
 	com.remember_windows = gtk_toggle_button_get_active(togglebutton);
 }
 
+void on_show_preview_button_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	com.show_preview = gtk_toggle_button_get_active(togglebutton);
+}
 
 void on_menu_rgb_align_select(GtkMenuItem *menuitem, gpointer user_data) {
 	gboolean sel_is_drawn = ((com.selection.w > 0.0) && (com.selection.h > 0.0));

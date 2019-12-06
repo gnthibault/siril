@@ -26,6 +26,7 @@ Requirements
  * **libconfig** (>= 1.4) for structured configuration files
  * **A C++ compiler** for opencv code and avi exporter
  * **libopencv** for various image transformation algorithms
+ * **exiv2** to manage image metadata
 
 SIRIL works internally with FITS files, but other file formats can be used as
 input and converted using the conversion tab of the control window. Some file
