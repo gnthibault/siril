@@ -333,7 +333,7 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 	start_in_new_thread(update_preview_cb_idle, data);
 }
 
-static void siril_file_chooser_add_preview(GtkWidget *widget) {
+static void siril_file_chooser_add_preview(SirilWidget *widget) {
 	if (com.show_preview) {
 		GtkWidget *vbox;
 
