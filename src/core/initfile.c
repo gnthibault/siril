@@ -144,6 +144,7 @@ static int readinitfile() {
 	config_setting_t *misc_setting = config_lookup(&config, keywords[MISC]);
 	if (misc_setting) {
 		config_setting_lookup_bool(misc_setting, "confirm", &com.dontShowConfirm);
+		config_setting_lookup_bool(misc_setting, "show_preview", &com.show_preview);
 		config_setting_lookup_int(misc_setting, "theme", &com.combo_theme);
 		config_setting_lookup_bool(misc_setting, "remember_winpos", &com.remember_windows);
 		config_setting_lookup_bool(misc_setting, "is_maximized", &com.is_maximized);
@@ -319,6 +320,9 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_setting = config_setting_add(misc_group, "confirm", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.dontShowConfirm);
+
+	misc_setting = config_setting_add(misc_group, "show_preview", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(misc_setting, com.show_preview);
 
 	misc_setting = config_setting_add(misc_group, "theme", CONFIG_TYPE_INT);
 	config_setting_set_int(misc_setting, com.combo_theme);

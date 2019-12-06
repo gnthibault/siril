@@ -27,8 +27,10 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/processing.h"
 #include "core/OS_utils.h"
 #include "core/initfile.h"
+#include "core/exif.h"
 #include "algos/sorting.h"
 #include "io/conversion.h"
 #include "io/films.h"
@@ -39,6 +41,10 @@
 #include "message_dialog.h"
 
 #include "open_dialog.h"
+
+#define preview_size 256
+
+static fileChooserPreview preview;
 
 static void gtk_filter_add(GtkFileChooser *file_chooser, const gchar *title,
 		const gchar *pattern, gboolean set_default) {
@@ -196,6 +202,162 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 	}
 }
 
+struct _updta_preview_data {
+	GtkFileChooser *file_chooser;
+	gchar *filename;
+	GdkPixbuf *pixbuf;
+	GFileInfo *file_info;
+	gboolean have_preview;
+};
+
+static gboolean end_update_preview_cb(gpointer p) {
+	struct _updta_preview_data *args = (struct _updta_preview_data *) p;
+	stop_processing_thread();// can it be done here in case there is no thread?
+
+	if (args->have_preview) {
+		int bytes;
+		int width;
+		int height;
+		const char *bytes_str;
+		char *size_str = NULL;
+		char *dim_str = NULL;
+
+		/* try to read file size */
+		bytes_str = gdk_pixbuf_get_option(args->pixbuf, "tEXt::Thumb::Size");
+		if (bytes_str != NULL) {
+			bytes = atoi(bytes_str);
+			size_str = g_format_size(bytes);
+		} else {
+			size_str = g_format_size(g_file_info_get_size(args->file_info));
+		}
+
+		/* try to read image dimensions */
+		GdkPixbufFormat *pixbuf_file_info = gdk_pixbuf_get_file_info(args->filename,
+				&width, &height);
+
+		if (pixbuf_file_info != NULL) {
+			/* Pixel size of image: width x height in pixel */
+			dim_str = g_strdup_printf("%d x %d %s", width, height,
+					ngettext("pixel", "pixels", height));
+		}
+
+		gtk_label_set_text(GTK_LABEL(preview.dim_label), dim_str);
+		gtk_label_set_text(GTK_LABEL(preview.size_label), size_str);
+		gtk_image_set_from_pixbuf(GTK_IMAGE(preview.image), args->pixbuf);
+
+		g_free(dim_str);
+		g_free(size_str);
+		g_object_unref(args->pixbuf);
+	}
+
+	gtk_file_chooser_set_preview_widget_active(args->file_chooser, args->have_preview);
+	g_object_unref(args->file_info);
+	g_free(args->filename);
+	free(args);
+	return FALSE;
+}
+
+static gpointer update_preview_cb_idle(gpointer p) {
+	uint8_t *buffer = NULL;
+	size_t size;
+	char *mime_type = NULL;
+	GdkPixbuf *pixbuf = NULL;
+	gboolean have_preview = FALSE;
+
+	struct _updta_preview_data *args = (struct _updta_preview_data *) p;
+
+	if (!siril_exif_get_thumbnail(args->filename, &buffer, &size, &mime_type)) {
+		// Scale the image to the correct size
+		GdkPixbuf *tmp;
+		GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
+		if (!gdk_pixbuf_loader_write(loader, buffer, size, NULL))
+			goto cleanup;
+		// Calling gdk_pixbuf_loader_close forces the data to be parsed by the
+		// loader. We must do this before calling gdk_pixbuf_loader_get_pixbuf.
+		if (!gdk_pixbuf_loader_close(loader, NULL))
+			goto cleanup;
+		if (!(tmp = gdk_pixbuf_loader_get_pixbuf(loader)))
+			goto cleanup;
+		float ratio = 1.0 * gdk_pixbuf_get_height(tmp)
+				/ gdk_pixbuf_get_width(tmp);
+		int width = preview_size, height = preview_size * ratio;
+		pixbuf = gdk_pixbuf_scale_simple(tmp, width, height,
+				GDK_INTERP_BILINEAR);
+
+		have_preview = TRUE;
+
+		cleanup: gdk_pixbuf_loader_close(loader, NULL);
+		free(mime_type);
+		free(buffer);
+		g_object_unref(loader); // This should clean up tmp as well
+	}
+
+	if (!have_preview) {
+		pixbuf = gdk_pixbuf_new_from_file_at_size(args->filename, preview_size, preview_size, NULL);
+	}
+	if(pixbuf != NULL) have_preview = TRUE;
+
+	args->have_preview = have_preview;
+	args->pixbuf = pixbuf;
+	siril_add_idle(end_update_preview_cb, args);
+	return GINT_TO_POINTER(0);
+}
+
+static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
+	gchar *filename;
+	char *uri;
+	GFile *file;
+	GFileInfo *file_info;
+
+	uri = gtk_file_chooser_get_preview_uri (file_chooser);
+	if (uri == NULL) {
+		gtk_file_chooser_set_preview_widget_active (file_chooser, FALSE);
+		return;
+	}
+
+	file = g_file_new_for_uri (uri);
+	file_info = g_file_query_info (file,
+				       G_FILE_ATTRIBUTE_TIME_MODIFIED ","
+				       G_FILE_ATTRIBUTE_STANDARD_TYPE ","
+				       G_FILE_ATTRIBUTE_STANDARD_SIZE ","
+				       G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+				       0, NULL, NULL);
+
+	filename = gtk_file_chooser_get_preview_filename(file_chooser);
+
+	struct _updta_preview_data *data = malloc(sizeof(struct _updta_preview_data));
+	data->filename = filename;
+	data->file_info = file_info;
+	data->file_chooser = file_chooser;
+
+	start_in_new_thread(update_preview_cb_idle, data);
+}
+
+static void siril_file_chooser_add_preview(GtkWidget *widget) {
+	if (com.show_preview) {
+		GtkWidget *vbox;
+
+		vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+		gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
+
+		preview.image = gtk_image_new();
+		preview.dim_label = gtk_label_new(NULL);
+		preview.size_label = gtk_label_new(NULL);
+
+		gtk_box_pack_start(GTK_BOX(vbox), preview.image, FALSE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), preview.dim_label, FALSE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), preview.size_label, FALSE, TRUE, 0);
+
+		gtk_widget_show_all(vbox);
+
+		gtk_file_chooser_set_preview_widget(GTK_FILE_CHOOSER(widget), vbox);
+		gtk_file_chooser_set_use_preview_label(GTK_FILE_CHOOSER(widget), FALSE);
+		gtk_file_chooser_set_preview_widget_active(GTK_FILE_CHOOSER(widget), FALSE);
+
+		g_signal_connect(widget, "update-preview", G_CALLBACK(update_preview_cb), NULL);
+	}
+}
+
 static void opendial(int whichdial) {
 	SirilWidget *widgetdialog;
 	GtkFileChooser *dialog = NULL;
@@ -230,6 +392,7 @@ static void opendial(int whichdial) {
 		gtk_file_chooser_set_current_folder(dialog, com.wd);
 		gtk_file_chooser_set_select_multiple(dialog, FALSE);
 		set_filters_dialog(dialog, whichdial);
+		siril_file_chooser_add_preview(widgetdialog);
 		break;
 	case OD_CONVERT:
 		widgetdialog = siril_file_chooser_add(control_window, GTK_FILE_CHOOSER_ACTION_OPEN);
@@ -350,7 +513,7 @@ void on_open_recent_action_item_activated(GtkRecentChooser *chooser,
 
 	uri = gtk_recent_chooser_get_current_uri(chooser);
 
-	path = g_filename_from_uri(uri, NULL, NULL);
+	path = g_filename_from_uri(uri, NULL, &error);
 	if (error) {
 		g_warning("Could not convert uri \"%s\" to a local path: %s", uri,
 				error->message);

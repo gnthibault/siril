@@ -564,6 +564,7 @@ struct cominf {
 	int reg_settings;		// Use to save registration method in the init file
 	
 	gboolean dontShowConfirm;
+	gboolean show_preview; // show or don't show preview in open dialog box
 
 	gint combo_theme;           // value of the combobox theme
 

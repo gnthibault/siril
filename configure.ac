@@ -85,6 +85,9 @@ AC_CHECK_LIB(m, log, LIBS="$LIBS -lm")
 dnl check GLIB version
 PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.56.0)
 
+dnl check libexiv2
+PKG_CHECK_MODULES(EXIV2, exiv2 >= 0.25)
+
 dnl check GTK
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.16.0)
 

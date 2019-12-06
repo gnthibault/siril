@@ -1672,6 +1672,12 @@ enter a visible wavelength in nm</property>
       </object>
     </child>
   </object>
+  <object class="GtkRecentFilter" id="recentfilter">
+    <mime-types>
+      <mime-type>image/fits</mime-type>
+      <mime-type>video/ser</mime-type>
+    </mime-types>
+  </object>
   <object class="GtkRecentChooserMenu" id="recent_menu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -1682,12 +1688,6 @@ enter a visible wavelength in nm</property>
     <property name="sort_type">mru</property>
     <property name="show_numbers">True</property>
     <signal name="item-activated" handler="on_open_recent_action_item_activated" swapped="no"/>
-  </object>
-  <object class="GtkRecentFilter" id="recentfilter">
-    <mime-types>
-      <mime-type>image/fits</mime-type>
-      <mime-type>video/ser</mime-type>
-    </mime-types>
   </object>
   <object class="GtkImage" id="removefilter2">
     <property name="visible">True</property>
@@ -16571,6 +16571,23 @@ Configuring a memory amount larger than what is available on your system may res
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="show_preview_button">
+                                <property name="label" translatable="yes">Show preview in file chooser</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Show preview, if possible, in the file chooser dialog bow when opening an unique file.</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_show_preview_button_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                           </object>
