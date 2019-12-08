@@ -91,8 +91,13 @@ int round_to_int(double x);
 int roundf_to_int(float x);
 WORD round_to_WORD(double x);
 BYTE round_to_BYTE(double x);
+BYTE roundf_to_BYTE(float f);
+WORD roundf_to_WORD(float f);
 BYTE conv_to_BYTE(double x);
 int truncate_to_int32(uint64_t x);
+float ushort_to_float_range(WORD w);
+WORD float_to_ushort_range(float f);
+
 gboolean isrgb(fits *fit);
 gboolean ends_with(const char *str, const char *ending);
 int get_extension_index(const char *filename);

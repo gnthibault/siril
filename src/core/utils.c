@@ -52,8 +52,8 @@ int round_to_int(double x) {
 	if (x <= INT_MIN + 0.5) return INT_MIN;
 	if (x >= INT_MAX - 0.5) return INT_MAX;
 	if (x >= 0.0)
-		return (int) (x + 0.5);
-	return (int) (x - 0.5);
+		return (int)(x + 0.5);
+	return (int)(x - 0.5);
 }
 
 /**
@@ -65,8 +65,8 @@ int roundf_to_int(float x) {
 	if (x <= INT_MIN + 0.5f) return INT_MIN;
 	if (x >= INT_MAX - 0.5f) return INT_MAX;
 	if (x >= 0.0f)
-		return (int) (x + 0.5f);
-	return (int) (x - 0.5f);
+		return (int)(x + 0.5f);
+	return (int)(x - 0.5f);
 }
 
 /**
@@ -76,10 +76,10 @@ int roundf_to_int(float x) {
  */
 WORD round_to_WORD(double x) {
 	if (x <= 0.0)
-		return (WORD) 0;
+		return (WORD)0;
 	if (x > USHRT_MAX_DOUBLE)
 		return USHRT_MAX;
-	return (WORD) (x + 0.5);
+	return (WORD)(x + 0.5);
 }
 
 /**
@@ -89,10 +89,32 @@ WORD round_to_WORD(double x) {
  */
 BYTE round_to_BYTE(double x) {
 	if (x <= 0.0)
-		return (BYTE) 0;
+		return (BYTE)0;
 	if (x > UCHAR_MAX_DOUBLE)
 		return UCHAR_MAX;
-	return (BYTE) (x + 0.5);
+	return (BYTE)(x + 0.5);
+}
+
+/**
+ * Round float value to a BYTE
+ * @param f value to round
+ * @return a truncated and rounded BYTE
+ */
+BYTE roundf_to_BYTE(float f) {
+	if (f <= 0.5f) return 0;
+	if (f >= UCHAR_MAX - 0.5f) return UCHAR_MAX;
+	return (BYTE)(f + 0.5f);
+}
+
+/**
+ * Round float value to a WORD
+ * @param f value to round
+ * @return a truncated and rounded WORD
+ */
+WORD roundf_to_WORD(float f) {
+	if (f <= 0.5f) return 0;
+	if (f >= USHRT_MAX - 0.5f) return USHRT_MAX;
+	return (WORD)(f + 0.5f);
 }
 
 /**
@@ -102,11 +124,11 @@ BYTE round_to_BYTE(double x) {
  */
 BYTE conv_to_BYTE(double x) {
 	if (x == 0.0)
-		return (BYTE) 0;
+		return (BYTE)0;
 	if (x == USHRT_MAX_DOUBLE)
 		return UCHAR_MAX;
 	x = ((x / USHRT_MAX_DOUBLE) * UCHAR_MAX_DOUBLE);
-	return((BYTE) (x));
+	return((BYTE)(x));
 }
 
 /**
@@ -118,6 +140,24 @@ int truncate_to_int32(uint64_t x) {
 	if (x > (uint64_t)INT_MAX)
 		return INT_MAX;
 	return (int)x;
+}
+
+/**
+ * convert an unsigned short value to siril's representation of float values [-1, 1]
+ * @param w value to convert
+ * @return the float equivalent
+ */
+float ushort_to_float_range(WORD w) {
+	return w / SHRT_MAX - 1.0f;
+}
+
+/**
+ * convert a siril float [-1, 1] to an unsigned short
+ * @param f value to convert
+ * @return the unsigned short equivalent
+ */
+WORD float_to_ushort_range(float f) {
+	return roundf_to_WORD((f + 1.0f) * SHRT_MAX_SINGLE);
 }
 
 /**
@@ -490,10 +530,14 @@ void expand_home_in_filename(char *filename, int size) {
  * @return 255 or 65535 if 8- or 16-bit image
  */
 WORD get_normalized_value(fits *fit) {
-	if (fit->data == DATA_USHORT) {
+	if (fit->type == DATA_USHORT) {
 		image_find_minmax(fit);
 		if (fit->maxi <= UCHAR_MAX)
 			return UCHAR_MAX;
+		return USHRT_MAX;
+	}
+	if (fit->type == DATA_FLOAT) {
+		// we simulate the USHORT range in the GUI for these images
 		return USHRT_MAX;
 	}
 	return 1;

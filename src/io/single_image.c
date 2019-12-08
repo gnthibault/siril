@@ -289,6 +289,17 @@ double fit_get_min(fits *fit, int layer) {
 	return fit->stats[layer]->min;
 }
 
+static void fit_lohi_to_layers(fits *fit, double lo, double hi, layer_info *layer) {
+	if (fit->type == DATA_USHORT) {
+		layer->lo = (WORD)lo;
+		layer->hi = (WORD)hi;
+	}
+	else if (fit->type == DATA_FLOAT) {
+		layer->lo = float_to_ushort_range((float)lo);
+		layer->hi = float_to_ushort_range((float)hi);
+	}
+}
+
 /* gfit has been loaded, now we copy the hi and lo values into the com.uniq or com.seq layers.
  * gfit.hi and gfit.lo may only be available in some FITS files; if they are not available, the
  * min and max value for the layer is used.
@@ -319,13 +330,12 @@ void init_layers_hi_and_lo_values(sliders_mode force_minmax) {
 		if (gfit.hi == 0 || force_minmax == MINMAX) {
 			com.sliders = MINMAX;
 			if (!is_chained) {
-				layers[i].hi = fit_get_max(&gfit, i);
-				layers[i].lo = fit_get_min(&gfit, i);
+				fit_lohi_to_layers(&gfit, fit_get_min(&gfit, i),
+						fit_get_max(&gfit, i), &layers[i]);
 			}
 			else {
 				image_find_minmax(&gfit);
-				layers[i].hi = gfit.maxi;
-				layers[i].lo = gfit.mini;
+				fit_lohi_to_layers(&gfit, gfit.mini, gfit.maxi, &layers[i]);
 			}
 		} else {
 			com.sliders = MIPSLOHI;

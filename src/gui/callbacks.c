@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define SIRIL_OUTPUT_DEBUG
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
@@ -300,12 +302,14 @@ void set_cutoff_sliders_max_values() {
 		adj1 = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment1"));// scalemax
 		adj2 = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment2"));// scalemin
 	}
-	siril_debug_print(_("Setting MAX value for cutoff sliders adjustments\n"));
 	/* set max value for range according to number of bits of original image
 	 * We should use gfit.bitpix for this, but it's currently always USHORT_IMG.
 	 * Since 0.9.8 we have orig_bitpix, but it's not filled for SER and other images.
 	 */
 	max_val = (double)get_normalized_value(&gfit);
+	siril_debug_print(_("Setting MAX value for cutoff sliders adjustments (%f)\n"), max_val);
+	gtk_adjustment_set_lower(adj1, 0.0);
+	gtk_adjustment_set_lower(adj2, 0.0);
 	gtk_adjustment_set_upper(adj1, max_val);
 	gtk_adjustment_set_upper(adj2, max_val);
 }
@@ -341,16 +345,11 @@ void set_cutoff_sliders_values() {
 		hi = com.seq.layers[com.cvport].hi;
 		lo = com.seq.layers[com.cvport].lo;
 		cut_over = com.seq.layers[com.cvport].cut_over;
-	} else
+	} else 
 		return;	// there should be no other normal cases
-	siril_debug_print(_("setting ranges scalemin=%d, scalemax=%d\n"), lo, hi);
-	WORD maxvalue = get_normalized_value(&gfit);
-	gtk_adjustment_set_lower(adjmin, 0.0);
-	gtk_adjustment_set_lower(adjmax, 0.0);
-	gtk_adjustment_set_upper(adjmin, (gdouble) maxvalue);
-	gtk_adjustment_set_upper(adjmax, (gdouble) maxvalue);
-	gtk_adjustment_set_value(adjmin, (gdouble) lo);
-	gtk_adjustment_set_value(adjmax, (gdouble) hi);
+	siril_debug_print(_("Setting ranges scalemin=%d, scalemax=%d\n"), lo, hi);
+	gtk_adjustment_set_value(adjmin, (gdouble)lo);
+	gtk_adjustment_set_value(adjmax, (gdouble)hi);
 	g_snprintf(buffer, 6, "%u", hi);
 	g_signal_handlers_block_by_func(maxentry, on_max_entry_changed, NULL);
 	gtk_entry_set_text(maxentry, buffer);
