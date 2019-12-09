@@ -152,6 +152,16 @@ float ushort_to_float_range(WORD w) {
 }
 
 /**
+ * convert an double value from the unsigned short range to siril's representation
+ * of float values [-1, 1]
+ * @param d value to convert
+ * @return the float equivalent
+ */
+float double_ushort_to_float_range(double d) {
+	return (float)(d / SHRT_MAX_DOUBLE - 1.0);
+}
+
+/**
  * convert a siril float [-1, 1] to an unsigned short
  * @param f value to convert
  * @return the unsigned short equivalent

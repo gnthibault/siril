@@ -130,35 +130,6 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 	return 0;
 }
 
-int stack_create_result_fit(fits *fit, int bitpix, int naxis, long *naxes) {
-	long nbdata;
-	nbdata = naxes[0] * naxes[1];
-	fit->data = malloc(nbdata * naxes[2] * sizeof(WORD));
-	if (!fit->data) {
-		fprintf(stderr, "Memory allocation error for result\n");
-		return 1;
-	}
-	fit->bitpix = fit->orig_bitpix = bitpix;
-	fit->naxes[0] = naxes[0];
-	fit->naxes[1] = naxes[1];
-	fit->naxes[2] = naxes[2];
-	fit->rx = naxes[0];
-	fit->ry = naxes[1];
-	fit->naxis = naxis;
-	fit->maxi = 0;
-	if (fit->naxis == 3) {
-		fit->pdata[RLAYER] = fit->data;
-		fit->pdata[GLAYER] = fit->data + nbdata;
-		fit->pdata[BLAYER] = fit->data + nbdata * 2;
-	} else {
-		fit->pdata[RLAYER] = fit->data;
-		fit->pdata[GLAYER] = fit->data;
-		fit->pdata[BLAYER] = fit->data;
-	}
-	update_used_memory();
-	return 0;
-}
-
 int stack_compute_parallel_blocks(struct _image_block **blocksptr, int max_number_of_rows,
 		int nb_channels, long *naxes, long *largest_block_height,
 		int *nb_blocks) {

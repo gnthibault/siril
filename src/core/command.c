@@ -2163,6 +2163,8 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 			return 1;
 		}
 		args.description = describe_filter(seq, args.filtering_criterion, args.filtering_parameter);
+		args.use_32bit_output = evaluate_stacking_output_data_type(args.method,
+			args.seq, args.nb_images_to_stack);
 
 		if (!arg->result_file) {
 			char filename[256];

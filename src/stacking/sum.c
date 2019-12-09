@@ -26,17 +26,22 @@
 #include "core/proto.h"		// FITS functions
 #include "io/sequence.h"
 #include "stacking.h"
+#include "gui/progress_and_log.h"
 
 struct sum_stacking_data {
 	unsigned long *sum[3];	// the new image's channels
+	//double *fsum[3];	// the new image's channels, for float input image
 	double exposure;	// sum of the exposures
 	int reglayer;		// layer used for registration data
 	int ref_image;		// reference image index in the stacked sequence
+	gboolean output_32bits;	// output a 32-bit float image instead of the default ushort
 };
 
 static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 	struct sum_stacking_data *ssdata = args->user;
 	unsigned int nbdata = args->seq->ry * args->seq->rx;
+
+	//if (args->seq->bitpix == FLOAT_IMG) {
 	ssdata->sum[0] = calloc(nbdata, sizeof(unsigned long)*args->seq->nb_layers);
 	if (ssdata->sum[0] == NULL){
 		PRINT_ALLOC_ERR;
@@ -49,6 +54,7 @@ static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 		ssdata->sum[1] = NULL;
 		ssdata->sum[2] = NULL;
 	}
+	//} else { // use ssdata->fsum instead
 
 	ssdata->exposure = 0.0;
 	return 0;
@@ -125,14 +131,33 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	gfit.exposure = ssdata->exposure;
 	gfit.fhi = 1.0f;
 
-	double ratio = 2.0 / (double)max;
+	if (ssdata->output_32bits) {
+		double ratio = 2.0 / (double)max;
 
-	nbdata = args->seq->ry * args->seq->rx;
-	for (layer=0; layer<args->seq->nb_layers; ++layer){
-		unsigned long* from = ssdata->sum[layer];
-		float *to = gfit.fpdata[layer];
-		for (i=0; i < nbdata; ++i) {
-			*to++ = (float)((double)(*from++) * ratio - 1.0);
+		nbdata = args->seq->ry * args->seq->rx;
+		for (layer=0; layer<args->seq->nb_layers; ++layer){
+			unsigned long* from = ssdata->sum[layer];
+			float *to = gfit.fpdata[layer];
+			for (i=0; i < nbdata; ++i) {
+				*to++ = (float)((double)(*from++) * ratio - 1.0);
+			}
+		}
+	} else {
+		double ratio = 1.0;
+		if (max > USHRT_MAX) {
+			ratio = USHRT_MAX_DOUBLE / (double)max;
+			siril_log_color_message(_("Reducing the stacking output to a 16-bit image will result in precision loss\n"), "salmon");
+		}
+
+		nbdata = args->seq->ry * args->seq->rx;
+		for (layer=0; layer<args->seq->nb_layers; ++layer){
+			unsigned long* from = ssdata->sum[layer];
+			WORD *to = gfit.pdata[layer];
+			for (i=0; i < nbdata; ++i) {
+				if (ratio == 1.0)
+					*to++ = round_to_WORD(*from++);
+				else *to++ = round_to_WORD((double)(*from++) * ratio);
+			}
 		}
 	}
 
@@ -158,10 +183,16 @@ int stack_summing_generic(struct stacking_args *stackargs) {
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
 
+	if (args->seq->bitpix == FLOAT_IMG) {
+		siril_log_color_message(_("Sum stacking of 32-bit sequences is not yet supported\n"), "red");
+		return -1;
+	}
+
 	struct sum_stacking_data *ssdata = malloc(sizeof(struct sum_stacking_data));
 	ssdata->reglayer = stackargs->reglayer;
 	ssdata->ref_image = stackargs->ref_image;
 	assert(ssdata->ref_image >= 0 && ssdata->ref_image < args->seq->number);
+	ssdata->output_32bits = stackargs->use_32bit_output;
 	args->user = ssdata;
 
 	generic_sequence_worker(args);

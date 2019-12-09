@@ -74,6 +74,7 @@ struct stacking_args {
 	norm_coeff coeff;		/* normalization data */
 	gboolean force_norm;		/* TRUE = force normalization */
 	gboolean norm_to_16;		/* normalize final image to 16bits */
+	gboolean use_32bit_output;	/* output to 32 bit float */
 	int reglayer;		/* layer used for registration data */
 };
 
@@ -92,6 +93,7 @@ struct stacking_configuration {
 };
 
 void initialize_stacking_methods();
+gboolean evaluate_stacking_output_data_type(stack_method method, sequence *seq, int nb_img_to_stack);
 
 int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack);
 
@@ -130,7 +132,6 @@ struct _data_block {
 };
 
 int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, double *exposure, fits *fit);
-int stack_create_result_fit(fits *fit, int bitpix, int naxis, long *naxes);
 int stack_compute_parallel_blocks(struct _image_block **blocks, int max_number_of_rows,
 		int nb_channels, long *naxes, long *largest_block_height,
 		int *nb_parallel_stacks);

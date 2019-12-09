@@ -96,6 +96,7 @@ WORD roundf_to_WORD(float f);
 BYTE conv_to_BYTE(double x);
 int truncate_to_int32(uint64_t x);
 float ushort_to_float_range(WORD w);
+float double_ushort_to_float_range(double d);
 WORD float_to_ushort_range(float f);
 
 gboolean isrgb(fits *fit);

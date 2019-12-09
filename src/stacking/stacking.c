@@ -79,6 +79,21 @@ void initialize_stacking_methods() {
 	gtk_combo_box_set_active(GTK_COMBO_BOX(rejectioncombo), com.stack.rej_method);
 }
 
+gboolean evaluate_stacking_output_data_type(stack_method method, sequence *seq, int nb_img_to_stack) {
+	if (method == stack_summing_generic) {
+		if (seq->bitpix == BYTE_IMG)
+			return nb_img_to_stack > 256;
+		return TRUE;
+	}
+	if (method == stack_mean_with_rejection) {
+		return TRUE;
+	}
+	if (method == stack_median) {
+		return TRUE;
+	}
+	return seq->bitpix == FLOAT_IMG; // for min or max, only use it if input is already float
+}
+
 static void normalize_to16bit(int bitpix, double *mean) {
 	switch(bitpix) {
 	case BYTE_IMG:
@@ -105,7 +120,7 @@ int stack_median(struct stacking_args *args) {
 	double exposure;
 	struct _data_block *data_pool = NULL;
 	struct _image_block *blocks = NULL;
-	fits fit = { 0 };
+	fits fit = { 0 }, *fptr;
 
 	nb_frames = args->nb_images_to_stack;
 	naxes[0] = naxes[1] = 0; naxes[2] = 1;
@@ -131,7 +146,9 @@ int stack_median(struct stacking_args *args) {
 	fprintf(stdout, "image size: %ldx%ld, %ld layers\n", naxes[0], naxes[1], naxes[2]);
 
 	/* initialize result image */
-	if ((retval = stack_create_result_fit(&fit, bitpix, naxis, naxes))) {
+	fptr = &fit;
+	if ((retval = new_fit_image(&fptr, naxes[0], naxes[1], naxes[2],
+					args->use_32bit_output ? DATA_FLOAT : DATA_USHORT))) {
 		goto free_and_close;
 	}
 	if (args->norm_to_16 || fit.orig_bitpix != BYTE_IMG) {
@@ -574,7 +591,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	int retval = 0;
 	struct _data_block *data_pool = NULL;
 	int pool_size = 1;
-	fits fit = { 0 };
+	fits fit = { 0 }, *fptr;
 	struct _image_block *blocks = NULL;
 	regdata *layerparam = NULL;
 
@@ -607,7 +624,10 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 	fprintf(stdout, "image size: %ldx%ld, %ld layers\n", naxes[0], naxes[1], naxes[2]);
 
 	/* initialize result image */
-	if ((retval = stack_create_result_fit(&fit, bitpix, naxis, naxes))) {
+	// TODO: ensure norm_to_16 is not activated when  use_32bit_output is, because it's useless
+	fptr = &fit;
+	if ((retval = new_fit_image(&fptr, naxes[0], naxes[1], naxes[2],
+					args->use_32bit_output ? DATA_FLOAT : DATA_USHORT))) {
 		goto free_and_close;
 	}
 	if (args->norm_to_16 || fit.orig_bitpix != BYTE_IMG) {
@@ -956,7 +976,11 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 				if (args->norm_to_16) {
 					normalize_to16bit(bitpix, &mean);
 				}
-				fit.pdata[my_block->channel][pdata_idx++] = round_to_WORD(mean);
+				if (args->use_32bit_output) {
+					fit.fpdata[my_block->channel][pdata_idx++] = double_ushort_to_float_range(mean);
+				} else {
+					fit.pdata[my_block->channel][pdata_idx++] = round_to_WORD(mean);
+				}
 			} // end of for x
 #ifdef _OPENMP
 #pragma omp critical
@@ -1114,6 +1138,7 @@ static void start_stacking() {
 	stackparam.coeff.scale = NULL;
 	stackparam.method =
 			stacking_methods[gtk_combo_box_get_active(method_combo)];
+
 	// ensure we have no normalization if not supported by the stacking method
 	if (stackparam.method != stack_median && stackparam.method != stack_mean_with_rejection)
 		stackparam.normalize = NO_NORM;
@@ -1671,6 +1696,9 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 			stackparam.nb_images_to_stack, com.seq.number);
 	gtk_label_set_text(result_label, labelbuffer);
 	g_free(labelbuffer);
+
+	stackparam.use_32bit_output = evaluate_stacking_output_data_type(stackparam.method,
+			&com.seq, stackparam.nb_images_to_stack);
 
 	if (stackparam.nb_images_to_stack >= 2) {
 		stack_fill_list_of_unfiltered_images(&stackparam);
