@@ -32,6 +32,28 @@
 #include "gui/progress_and_log.h"
 #include "algos/sorting.h"
 
+static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean);
+
+/*************************** MEDIAN AND MEAN STACKING **************************
+ * Median and mean stacking requires all images to be in memory, so we don't
+ * use the generic readfits() but directly the cfitsio routines to open them
+ * and seq_opened_read_region() to read data randomly from them.
+ * Since all data of all images cannot fit in memory, a divide and conqueer
+ * strategy is used, where each thread reads and processes only a part of the
+ * image, which size is computed depending on the available memory, image size
+ * and thread number.
+ *
+ * Median stacking does not use registration data, as it's generally used for
+ * preprocessing master file creation. Mean stacking however does.
+ * TODO: mean is sometimes used for master bias/dark/flat creation, we should
+ * deactivate registration data in this case.
+ *
+ * The difference between median and mean stacking is that once we have pixel
+ * data for all images, in the first case the result is the median of all
+ * values, in the other some values can be rejected and the average of the
+ * remaining ones is used.
+ * ****************************************************************************/
+
 int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, double *exposure, fits *fit) {
 	char msg[256], filename[256];
 	int i, status, oldbitpix = 0, oldnaxis = -1, nb_frames = args->nb_images_to_stack;
@@ -290,6 +312,16 @@ void stack_read_block_data(struct stacking_args *args, int use_regdata,
 	}
 }
 
+static void normalize_to16bit(int bitpix, double *mean) {
+	switch(bitpix) {
+		case BYTE_IMG:
+			*mean *= (USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE);
+			break;
+		default:
+			; // do nothing
+	}
+}
+
 /******************************* REJECTION STACKING ******************************
  * The functions below are those managing the rejection, the stacking code is
  * after and similar to median but takes into account the registration data and
@@ -484,3 +516,427 @@ int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stack
 	}
 	return N;
 }
+
+int stack_mean_with_rejection(struct stacking_args *args) {
+	return stack_mean_or_median(args, TRUE);
+}
+
+int stack_median(struct stacking_args *args) {
+	return stack_mean_or_median(args, FALSE);
+}
+
+static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
+	int nb_frames;		/* number of frames actually used */
+	int bitpix, i, naxis, ielem_size, cur_nb = 0, retval = 0, pool_size = 1;
+	long npixels_in_block, naxes[3];
+	double exposure = 0.0;
+	struct _data_block *data_pool = NULL;
+	struct _image_block *blocks = NULL;
+	data_type itype;
+	fits fit = { 0 }, *fptr;
+	// data for mean/rej only
+	uint64_t irej[3][2] = {{0,0}, {0,0}, {0,0}};
+	regdata *layerparam = NULL;
+
+	nb_frames = args->nb_images_to_stack;
+	naxes[0] = naxes[1] = 0; naxes[2] = 1;
+
+	if (nb_frames < 2) {
+		siril_log_message(_("Select at least two frames for stacking. Aborting.\n"));
+		return -1;
+	}
+	g_assert(nb_frames <= args->seq->number);
+
+	if (is_mean) {
+		if (args->reglayer < 0)
+			fprintf(stderr, "No registration layer passed, ignoring regdata!\n");
+		else layerparam = args->seq->regparam[args->reglayer];
+	}
+
+	set_progress_bar_data(NULL, PROGRESS_RESET);
+
+	/* first loop: open all fits files and check they are of same size */
+	if ((retval = stack_open_all_files(args, &bitpix, &naxis, naxes, &exposure, &fit))) {
+		goto free_and_close;
+	}
+
+	if (fit.bitpix == FLOAT_IMG) {
+		siril_log_message(_("rejection stacking: not yet working with 32-bit input data."));
+		goto free_and_close;
+	}
+	itype = get_data_type(bitpix);
+
+	if (naxes[0] == 0) {
+		// no image has been loaded
+		siril_log_message(_("Rejection stack error: uninitialized sequence\n"));
+		retval = -2;
+		goto free_and_close;
+	}
+	fprintf(stdout, "image size: %ldx%ld, %ld layers\n", naxes[0], naxes[1], naxes[2]);
+
+	/* initialize result image */
+	// TODO: ensure norm_to_16 is not activated when  use_32bit_output is, because it's useless
+	fptr = &fit;
+	if ((retval = new_fit_image(&fptr, naxes[0], naxes[1], naxes[2],
+					args->use_32bit_output ? DATA_FLOAT : DATA_USHORT))) {
+		goto free_and_close;
+	}
+	if (!args->use_32bit_output && (args->norm_to_16 || fit.orig_bitpix != BYTE_IMG)) {
+		fit.bitpix = USHORT_IMG;
+		if (args->norm_to_16)
+			fit.orig_bitpix = USHORT_IMG;
+	}
+
+	/* Define some useful constants */
+	double total = (double)(naxes[2] * naxes[1] + 2);	// only used for progress bar
+
+	int nb_threads;
+#ifdef _OPENMP
+	nb_threads = com.max_thread;
+	if (nb_threads > 1 && args->seq->type == SEQ_REGULAR) {
+		if (fits_is_reentrant()) {
+			fprintf(stdout, "cfitsio was compiled with multi-thread support,"
+					" stacking will be executed by several cores\n");
+		} else {
+			nb_threads = 1;
+			fprintf(stdout, "cfitsio was compiled without multi-thread support,"
+					" stacking will be executed on only one core\n");
+			siril_log_message(_("Your version of cfitsio does not support multi-threading\n"));
+		}
+	}
+#else
+	nb_threads = 1;
+#endif
+
+	int nb_channels = naxes[2];
+	if (sequence_is_rgb(args->seq) && nb_channels != 3) {
+		siril_log_message(_("Processing the sequence as RGB\n"));
+		nb_channels = 3;
+	}
+
+	long largest_block_height;
+	int nb_blocks;
+	/* Compute parallel processing data: the data blocks, later distributed to threads */
+	if ((retval = stack_compute_parallel_blocks(&blocks, args->max_number_of_rows, nb_channels,
+					naxes, &largest_block_height, &nb_blocks))) {
+		goto free_and_close;
+	}
+
+	/* Allocate the buffers.
+	 * We allocate as many as the number of threads, each thread will pick one of the buffers.
+	 * Buffers are allocated to the largest block size calculated above.
+	 */
+#ifdef _OPENMP
+	pool_size = nb_threads;
+	g_assert(pool_size > 0);
+#endif
+	npixels_in_block = largest_block_height * naxes[0];
+	g_assert(npixels_in_block > 0);
+	ielem_size = itype == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
+
+	fprintf(stdout, "allocating data for %d threads (each %'lu MB)\n", pool_size,
+			(unsigned long)(nb_frames * npixels_in_block * ielem_size) / BYTES_IN_A_MB);
+	data_pool = calloc(pool_size, sizeof(struct _data_block));
+	for (i = 0; i < pool_size; i++) {
+		int j;
+		data_pool[i].pix = malloc(nb_frames * sizeof(void *));
+		data_pool[i].tmp = malloc(nb_frames * npixels_in_block * ielem_size);
+		data_pool[i].stack = malloc(nb_frames * ielem_size);
+		if (is_mean)
+			data_pool[i].rejected = calloc(nb_frames, sizeof(int));
+		if (!data_pool[i].pix || !data_pool[i].tmp || !data_pool[i].stack || (is_mean && !data_pool[i].rejected)) {
+			PRINT_ALLOC_ERR;
+			fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
+			retval = -1;
+			goto free_and_close;
+		}
+
+		if (is_mean) {
+			if (args->type_of_rejection == WINSORIZED) {
+				data_pool[i].w_stack = malloc(nb_frames * ielem_size);
+				if (!data_pool[i].w_stack) {
+					PRINT_ALLOC_ERR;
+					fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
+					retval = -1;
+					goto free_and_close;
+				}
+			}
+			if (args->type_of_rejection == LINEARFIT) {
+				data_pool[i].xf = malloc(nb_frames * sizeof(double));
+				data_pool[i].yf = malloc(nb_frames * sizeof(double));
+				if (!data_pool[i].xf || !data_pool[i].yf) {
+					PRINT_ALLOC_ERR;
+					fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
+					retval = -1;
+					goto free_and_close;
+				}
+			}
+		}
+
+		for (j=0; j<nb_frames; ++j) {
+			data_pool[i].pix[j] = data_pool[i].tmp + j * npixels_in_block;
+		}
+	}
+	update_used_memory();
+
+	siril_log_message(_("Starting stacking...\n"));
+	if (is_mean)
+		set_progress_bar_data(_("Rejection stacking in progress..."), PROGRESS_RESET);
+	else	set_progress_bar_data(_("Median stacking in progress..."), PROGRESS_RESET);
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(nb_threads) private(i) schedule(dynamic) if (nb_threads > 1 && (args->seq->type == SEQ_SER || fits_is_reentrant()))
+#endif
+	for (i = 0; i < nb_blocks; i++)
+	{
+		/**** Step 1: get allocated memory for the current thread ****/
+		struct _image_block *my_block = blocks+i;
+		struct _data_block *data;
+		int data_idx = 0;
+		long x, y;
+
+		if (!get_thread_run()) retval = -1;
+		if (retval) continue;
+#ifdef _OPENMP
+		data_idx = omp_get_thread_num();
+#ifdef STACK_DEBUG
+		struct timeval thread_start;
+		gettimeofday(&thread_start, NULL);
+		fprintf(stdout, "Thread %d takes block %d.\n", data_idx, i);
+#endif
+#endif
+		data = &data_pool[data_idx];
+
+		/**** Step 2: load image data for the corresponding image block ****/
+		stack_read_block_data(args, 1, my_block, data, naxes);
+
+#if defined _OPENMP && defined STACK_DEBUG
+		{
+			struct timeval thread_mid;
+			int min, sec;
+			gettimeofday(&thread_mid, NULL);
+			get_min_sec_from_timevals(thread_start, thread_mid, &min, &sec);
+			fprintf(stdout, "Thread %d loaded block %d after %d min %02d s.\n\n",
+					data_idx, i, min, sec);
+		}
+#endif
+
+		/**** Step 3: iterate over the y and x of the image block and stack ****/
+		for (y = 0; y < my_block->height; y++)
+		{
+			/* index of the pixel in the result image
+			 * we read line y, but we need to store it at
+			 * ry - y - 1 to not have the image mirrored. */
+			int pdata_idx = (naxes[1] - (my_block->start_row + y) - 1) * naxes[0]; 
+			/* index of the line in the read data, data->pix[frame] */
+			int line_idx = y * naxes[0];
+			uint64_t crej[2] = {0, 0};
+			if (retval) break;
+
+			// update progress bar
+#ifdef _OPENMP
+#pragma omp atomic
+#endif
+			cur_nb++;
+
+			if (!get_thread_run()) {
+				retval = -1;
+				break;
+			}
+			if (!(cur_nb % 16))	// every 16 iterations
+				set_progress_bar_data(NULL, (double)cur_nb/total);
+
+			for (x = 0; x < naxes[0]; ++x){
+				int frame, kept_pixels;
+				/* copy all images pixel values in the same row array `stack'
+				 * to optimize caching and improve readability */
+				for (frame = 0; frame < nb_frames; ++frame) {
+					int pix_idx = line_idx + x;
+					if (is_mean) {
+						int shiftx = 0;
+						if (layerparam) {
+							shiftx = round_to_int(
+									layerparam[args->image_indices[frame]].shiftx *
+									args->seq->upscale_at_stacking);
+						}
+
+						if (shiftx && (x - shiftx >= naxes[0] || x - shiftx < 0)) {
+							/* outside bounds, images are black. We could
+							 * also set the background value instead, if available */
+							if (itype == DATA_FLOAT)
+								((float*)data->stack)[frame] = 0;
+							else	((WORD *)data->stack)[frame] = 0;
+							continue;
+						}
+
+						pix_idx -= shiftx;
+					}
+
+					WORD pixel; float fpixel;
+					if (itype == DATA_FLOAT)
+						fpixel = ((float*)data->pix[frame])[pix_idx];
+					else	pixel  = ((WORD *)data->pix[frame])[pix_idx];
+					double tmp;
+					switch (args->normalize) {
+						default:
+						case NO_NORM:
+							// no normalization (scale[frame] = 1, offset[frame] = 0, mul[frame] = 1)
+							if (itype == DATA_FLOAT)
+								((float*)data->stack)[frame] = fpixel;
+							else	((WORD *)data->stack)[frame] = pixel;
+							/* it's faster if we don't convert it to double
+							 * to make identity operations */
+							break;
+						case ADDITIVE:
+							// additive (scale[frame] = 1, mul[frame] = 1)
+						case ADDITIVE_SCALING:
+							// additive + scale (mul[frame] = 1)
+							tmp = (double)pixel * args->coeff.scale[frame];
+							if (itype == DATA_FLOAT)
+								((float*)data->stack)[frame] = (float)(tmp - args->coeff.offset[frame]);
+							else	((WORD *)data->stack)[frame] = round_to_WORD(tmp - args->coeff.offset[frame]);
+							break;
+						case MULTIPLICATIVE:
+							// multiplicative  (scale[frame] = 1, offset[frame] = 0)
+						case MULTIPLICATIVE_SCALING:
+							// multiplicative + scale (offset[frame] = 0)
+							tmp = (double)pixel * args->coeff.scale[frame];
+							if (itype == DATA_FLOAT)
+								((float*)data->stack)[frame] = (float)(tmp * args->coeff.mul[frame]);
+							else	((WORD *)data->stack)[frame] = round_to_WORD(tmp * args->coeff.mul[frame]);
+							break;
+					}
+				}
+
+				double result; // resulting pixel value, either mean or median
+				if (is_mean) {
+					double mean;
+					if (itype == DATA_USHORT) {
+						kept_pixels = apply_rejection_ushort(data, nb_frames, args, crej);
+						int64_t sum = 0L;
+						for (frame = 0; frame < kept_pixels; ++frame) {
+							sum += ((WORD *)data->stack)[frame];
+						}
+						mean = sum / (double)kept_pixels;
+					} else {
+						double sum = 0.0;
+						// NO REJECTION YET FOR FLOAT
+						kept_pixels = nb_frames;
+						for (frame = 0; frame < kept_pixels; ++frame) {
+							sum += ((float*)data->stack)[frame];
+						}
+						mean = sum / (double)kept_pixels;
+					}
+					result = mean;
+				} else {
+					result = quickmedian(data->stack, nb_frames);
+				}
+
+				if (args->norm_to_16) {
+					normalize_to16bit(bitpix, &result);
+				}
+				if (args->use_32bit_output) {
+					if (itype == DATA_USHORT)
+						fit.fpdata[my_block->channel][pdata_idx] = double_ushort_to_float_range(result);
+					else	fit.fpdata[my_block->channel][pdata_idx] = (float)result;
+				} else {
+					fit.pdata[my_block->channel][pdata_idx] = round_to_WORD(result);
+				}
+				pdata_idx++;
+			} // end of for x
+
+			if (is_mean && args->type_of_rejection != NO_REJEC) {
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+				{
+					irej[my_block->channel][0] += crej[0];
+					irej[my_block->channel][1] += crej[1];
+				}
+			}
+
+		} // end of for y
+#if defined _OPENMP && defined STACK_DEBUG
+		{
+			struct timeval thread_end;
+			int min, sec;
+			gettimeofday(&thread_end, NULL);
+			get_min_sec_from_timevals(thread_start, thread_end, &min, &sec);
+			fprintf(stdout, "Thread %d finishes block %d after %d min %02d s.\n",
+					data_idx, i, min, sec);
+		}
+#endif
+	} /* end of loop over parallel stacks */
+
+	if (retval)
+		goto free_and_close;
+
+	set_progress_bar_data(_("Finalizing stacking..."), (double)cur_nb/total);
+	if (is_mean) {
+		double nb_tot = (double)naxes[0] * naxes[1] * nb_frames;
+		long channel;
+		for (channel = 0; channel < naxes[2]; channel++) {
+			siril_log_message(_("Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"),
+					channel, irej[channel][0] / (nb_tot) * 100.0,
+					irej[channel][1] / (nb_tot) * 100.0);
+		}
+	}
+
+	/* copy result to gfit if success */
+	clearfits(&gfit);
+	copyfits(&fit, &gfit, CP_FORMAT, 0);
+	if (args->use_32bit_output) {
+		gfit.fdata = fit.fdata;
+		for (i = 0; i < fit.naxes[2]; i++)
+			gfit.fpdata[i] = fit.fpdata[i];
+	} else {
+		gfit.data = fit.data;
+		for (i = 0; i < fit.naxes[2]; i++)
+			gfit.pdata[i] = fit.pdata[i];
+	}
+	if (is_mean)
+		gfit.exposure = exposure;
+
+free_and_close:
+	fprintf(stdout, "free and close (%d)\n", retval);
+	for (i = 0; i < nb_frames; ++i) {
+		seq_close_image(args->seq, args->image_indices[i]);
+	}
+
+	if (data_pool) {
+		for (i=0; i<pool_size; i++) {
+			if (data_pool[i].stack) free(data_pool[i].stack);
+			if (data_pool[i].pix) free(data_pool[i].pix);
+			if (data_pool[i].tmp) free(data_pool[i].tmp);
+			if (data_pool[i].rejected) free(data_pool[i].rejected);
+			if (data_pool[i].w_stack) free(data_pool[i].w_stack);
+			if (data_pool[i].xf) free(data_pool[i].xf);
+			if (data_pool[i].yf) free(data_pool[i].yf);
+		}
+		free(data_pool);
+	}
+	if (blocks) free(blocks);
+	if (args->coeff.offset) free(args->coeff.offset);
+	if (args->coeff.mul) free(args->coeff.mul);
+	if (args->coeff.scale) free(args->coeff.scale);
+	if (retval) {
+		/* if retval is set, gfit has not been modified */
+		if (fit.data) free(fit.data);
+		if (fit.fdata) free(fit.fdata);
+		if (is_mean)
+			set_progress_bar_data(_("Rejection stacking failed. Check the log."), PROGRESS_RESET);
+		else	set_progress_bar_data(_("Median stacking failed. Check the log."), PROGRESS_RESET);
+		siril_log_message(_("Stacking failed.\n"));
+	} else {
+		if (is_mean) {
+			set_progress_bar_data(_("Rejection stacking complete."), PROGRESS_DONE);
+			siril_log_message(_("Rejection stacking complete. %d images have been stacked.\n"), nb_frames);
+		} else {
+			set_progress_bar_data(_("Median stacking complete."), PROGRESS_DONE);
+			siril_log_message(_("Median stacking complete. %d imageshave been stacked.\n"), nb_frames);
+		}
+	}
+	update_used_memory();
+	return retval;
+}
+
