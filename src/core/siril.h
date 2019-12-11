@@ -61,12 +61,12 @@
 
 #define SEQUENCE_DEFAULT_INCLUDE TRUE	// select images by default
 
-typedef unsigned char BYTE;		// default type for image display data
-typedef unsigned short WORD;		// default type for internal image data
+typedef unsigned char BYTE;	// default type for image display data
+typedef unsigned short WORD;	// default type for internal image data
 
-#define MAX_SEQPSF 7			// max number of stars for which seqpsf can be run
+#define MAX_SEQPSF 7	// max number of stars for which seqpsf can be run
 
-#define CMD_HISTORY_SIZE 50		// size of the command line history
+#define CMD_HISTORY_SIZE 50	// size of the command line history
 
 #define ZOOM_MAX	128
 #define ZOOM_MIN	0.03125
@@ -381,7 +381,7 @@ struct dft_struct {
 	char ord[FLEN_VALUE];		// regular, centered
 };
 
-typedef enum { DATA_USHORT, DATA_FLOAT } data_type;
+typedef enum { DATA_USHORT, DATA_FLOAT, DATA_UNSUPPORTED } data_type;
 
 struct ffit {
 	unsigned int rx;	// image width	(naxes[0])
@@ -391,7 +391,7 @@ struct ffit {
 	/* bitpix can take the following values:
 	 * BYTE_IMG	(8-bit byte pixels, 0 - 255)
 	 * SHORT_IMG	(16 bit signed integer pixels)	
-	 * USHORT_IMG	(16 bit unsigned integer pixels)	(used by Siril, quite off-standard)
+	 * USHORT_IMG	(16 bit unsigned integer pixels)	(used by Siril, a bit unusual)
 	 * LONG_IMG	(32-bit integer pixels)
 	 * FLOAT_IMG	(32-bit floating point pixels)
 	 * DOUBLE_IMG	(64-bit floating point pixels)

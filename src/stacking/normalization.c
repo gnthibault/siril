@@ -94,7 +94,8 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 
 static int normalization_get_max_number_of_threads(sequence *seq) {
 	int max_memory_MB = get_max_memory_in_MB();
-	uint64_t memory_per_image = seq->rx * seq->ry * seq->nb_layers * (2 * sizeof(WORD) + 2 * sizeof(double));
+	int elem_size = seq->bitpix == FLOAT_IMG ? sizeof(float) : sizeof(WORD);
+	uint64_t memory_per_image = seq->rx * seq->ry * seq->nb_layers * (2 * elem_size + 2 * sizeof(double));
 	unsigned int memory_per_image_MB = memory_per_image / BYTES_IN_A_MB;
 
 	if (max_memory_MB < 0) {

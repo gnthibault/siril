@@ -18,7 +18,7 @@ int64_t seq_compute_size(sequence *seq, int nb_frames, data_type type);
 gboolean check_if_seq_exist(gchar *basename);
 int	seq_open_image(sequence *seq, int index);
 void	seq_close_image(sequence *seq, int index);
-int	seq_opened_read_region(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area);
+int	seq_opened_read_region(sequence *seq, int layer, int index, void *buffer, const rectangle *area);
 void	set_fwhm_star_as_star_list(sequence *seq);
 char *	fit_sequence_get_image_filename(sequence *seq, int index, char *name_buffer, gboolean add_fits_ext);
 char *	fit_sequence_get_image_filename_prefixed(sequence *seq, const char *prefix, int index);

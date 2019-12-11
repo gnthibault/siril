@@ -855,8 +855,10 @@ void seq_close_image(sequence *seq, int index) {
 }
 
 /* read a region in a layer of an opened file from a sequence.
- * The buffer must have been allocated to the size of the area. */
-int seq_opened_read_region(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area) {
+ * The buffer must have been allocated to the size of the area, with type of
+ * float if seq->bitpix is FLOAT_IMG, with 16-bit type otherwise
+ */
+int seq_opened_read_region(sequence *seq, int layer, int index, void *buffer, const rectangle *area) {
 	switch (seq->type) {
 		case SEQ_REGULAR:
 			return read_opened_fits_partial(seq, layer, index, buffer, area);

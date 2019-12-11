@@ -11,13 +11,14 @@
 #endif
 
 /****************** image_format_fits.h ******************/
+data_type get_data_type(int bitpix);
 int readfits(const char *filename, fits *fit, char *realname);
 double get_exposure_from_fitsfile(fitsfile *fptr);
 int import_metadata_from_fitsfile(fitsfile *fptr, fits *to);
 void clearfits(fits*);
 int readfits_partial(const char *filename, int layer, fits *fit,
 		const rectangle *area, gboolean read_date);
-int read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer,
+int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
 		const rectangle *area);
 int savefits(const char*, fits*);
 int copyfits(fits *from, fits *to, unsigned char oper, int layer);

@@ -93,7 +93,7 @@ struct stacking_configuration {
 };
 
 void initialize_stacking_methods();
-gboolean evaluate_stacking_output_data_type(stack_method method, sequence *seq, int nb_img_to_stack);
+gboolean evaluate_stacking_should_output_32bits(stack_method method, sequence *seq, int nb_img_to_stack);
 
 int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack);
 
@@ -123,11 +123,11 @@ struct _image_block {
 
 /* pool of memory blocks for parallel processing */
 struct _data_block {
-	WORD **pix;	// buffer for a block on all images
-	WORD *tmp;	// the actual single buffer for pix
-	WORD *stack;	// the reordered stack for one pixel in all images
+	void **pix;	// buffer for a block on all images
+	void *tmp;	// the actual single buffer for pix
+	void *stack;	// the reordered stack for one pixel in all images
 	int *rejected;  // 0 if pixel ok, 1 or -1 if rejected
-	WORD *w_stack;	// stack for the winsorized rejection
+	void *w_stack;	// stack for the winsorized rejection
 	double *xf, *yf;// data for the linear fit rejection
 };
 
@@ -138,6 +138,8 @@ int stack_compute_parallel_blocks(struct _image_block **blocks, int max_number_o
 void stack_read_block_data(struct stacking_args *args, int use_regdata,
 		struct _image_block *my_block, struct _data_block *data, long *naxes);
 int find_refimage_in_indices(int *indices, int nb, int ref);
+
+int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]);
 
 	/* up-scaling functions */
 

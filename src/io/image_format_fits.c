@@ -394,6 +394,17 @@ static char *copy_header(fits *fit) {
 	return header;
 }
 
+/***** data reading and transformation ******/
+
+data_type get_data_type(int bitpix) {
+	if (bitpix == BYTE_IMG || bitpix == SHORT_IMG || bitpix == USHORT_IMG)
+		return DATA_USHORT;
+	if (bitpix == LONGLONG_IMG)
+		return DATA_UNSUPPORTED;
+	return DATA_FLOAT;
+}
+
+
 static void report_fits_error(int status) {
 	if (status) {
 		char errmsg[FLEN_ERRMSG];
@@ -440,6 +451,10 @@ static void convert_data_ushort(int bitpix, const void *from, WORD *to, unsigned
 				to[i] = (WORD)sum;
 			}
 			break;
+
+		/* This function is not used any more for the types below,
+		 * convert_data_float() is used instead
+		 */
 		case ULONG_IMG:		// 32-bit unsigned integer pixels
 			data32 = (unsigned long *)from;
 			for (i = 0; i < nbdata; i++)
@@ -628,6 +643,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 			fit->bitpix = USHORT_IMG;
 		}
 		break;
+
 	case ULONG_IMG:		// 32-bit unsigned integer pixels
 	case LONG_IMG:		// 32-bit signed integer pixels
 		pixels_long = malloc(nbdata * sizeof(uint32_t));
@@ -640,9 +656,10 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		free(pixels_long);
 		break;
 	case FLOAT_IMG:		// 32-bit floating point pixels
+		// siril 1.0 native, no conversion required
 		fits_read_pix(fit->fptr, TFLOAT, orig, nbdata, &zero,
 				fit->fdata, &zero, &status);
-		{
+		{	// for debug purposes
 			int i;
 			float min = FLT_MAX, max = FLT_MIN;
 			for (i = 0; i < nbdata; i++) {
@@ -656,6 +673,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		break;
 	case DOUBLE_IMG:	// 64-bit floating point pixels
 		pixels_double = malloc(nbdata * sizeof(double));
+		// TODO: could also be read as TFLOAT and let cfitsio do the conversion?
 		fits_read_pix(fit->fptr, TDOUBLE, orig, nbdata, &zero,
 				pixels_double, &zero, &status);
 		if (status) break;
@@ -676,11 +694,10 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 /* This function reads partial data on one layer from the opened FITS and
  * convert it to siril's format (USHORT) */
 static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
-		int bitpix, WORD *dest, gboolean values_above_1, int layer,
+		int bitpix, void *dest, gboolean values_above_1, int layer,
 		const rectangle *area) {
 	int datatype;
 	BYTE *data8;
-	double *pixels_double;
 	long *pixels_long;
 	long fpixel[3], lpixel[3], inc[3] = { 1L, 1L, 1L };
 	int zero = 0, status = 0;
@@ -714,6 +731,9 @@ static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
 			fits_read_subset(fptr, TUSHORT, fpixel, lpixel, inc, &zero, dest,
 					&zero, &status);
 			break;
+
+		/* types below are read as a 32-bit float image: this breaks compatibility
+		 * with functions working only with 16-bit int data */
 		case ULONG_IMG:		// 32-bit unsigned integer pixels
 		case LONG_IMG:		// 32-bit signed integer pixels
 			pixels_long = malloc(nbdata * sizeof(long));
@@ -722,17 +742,14 @@ static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
 			fits_read_subset(fptr, datatype, fpixel, lpixel, inc, &zero,
 					pixels_long, &zero, &status);
 			if (status) break;
-			convert_data_ushort(bitpix, pixels_long, dest, nbdata, FALSE);
+			convert_data_float(bitpix, pixels_long, dest, nbdata);
 			free(pixels_long);
 			break;
 		case DOUBLE_IMG:	// 64-bit floating point pixels
 		case FLOAT_IMG:		// 32-bit floating point pixels
-			pixels_double = malloc(nbdata * sizeof(double));
-			fits_read_subset(fptr, TDOUBLE, fpixel, lpixel, inc, &zero, pixels_double,
+			fits_read_subset(fptr, TFLOAT, fpixel, lpixel, inc, &zero, dest,
 					&zero, &status);
 			if (status) break;
-			convert_data_ushort(bitpix, pixels_double, dest, nbdata, values_above_1);
-			free(pixels_double);
 			break;
 		case LONGLONG_IMG:	// 64-bit integer pixels
 		default:
@@ -1172,6 +1189,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	unsigned int nbdata;
 	double offset, data_max = 0.0;
 	double mini, maxi;
+	data_type type;
 
 	status = 0;
 	if (siril_fits_open_diskfile(&(fit->fptr), filename, READONLY, &status)) {
@@ -1231,31 +1249,57 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		return -1;
 	}
 
-	status = 0;
-	if (fit->bitpix == FLOAT_IMG)
-		fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &data_max, NULL, &status);
-	if (status == KEY_NO_EXIST) {
-		data_max = maxi;
-	}
-
-
 	nbdata = area->w * area->h;
-	/* realloc fit->data to the image size */
-	WORD *olddata = fit->data;
-	if ((fit->data = realloc(fit->data, nbdata * sizeof(WORD))) == NULL) {
-		PRINT_ALLOC_ERR;
-		status = 0;
+	type = get_data_type(fit->bitpix);
+	if (type == DATA_UNSUPPORTED) {
+		siril_log_message(_("Unknown FITS data format in internal conversion\n"));
 		fits_close_file(fit->fptr, &status);
-		if (olddata)
-			free(olddata);
 		return -1;
 	}
-	fit->pdata[RLAYER] = fit->data;
-	fit->pdata[GLAYER] = fit->data;
-	fit->pdata[BLAYER] = fit->data;
 
-	status = internal_read_partial_fits(fit->fptr, fit->naxes[1],
-			fit->bitpix, fit->data, data_max > 1.0, layer, area);
+	if (type == DATA_USHORT) {
+		/* realloc fit->data to the image size */
+		WORD *olddata = fit->data;
+		if ((fit->data = realloc(fit->data, nbdata * sizeof(WORD))) == NULL) {
+			PRINT_ALLOC_ERR;
+			status = 0;
+			fits_close_file(fit->fptr, &status);
+			if (olddata)
+				free(olddata);
+			return -1;
+		}
+		fit->pdata[RLAYER] = fit->data;
+		fit->pdata[GLAYER] = fit->data;
+		fit->pdata[BLAYER] = fit->data;
+
+		status = internal_read_partial_fits(fit->fptr, fit->naxes[1],
+				fit->bitpix, fit->data, data_max > 1.0, layer, area);
+	} else {
+		if (fit->bitpix == FLOAT_IMG) {
+			status = 0;
+			fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &data_max, NULL, &status);
+			if (status == KEY_NO_EXIST) {
+				data_max = maxi;
+			}
+		}
+
+		/* realloc fit->fdata to the image size */
+		float *olddata = fit->fdata;
+		if ((fit->fdata = realloc(fit->fdata, nbdata * sizeof(WORD))) == NULL) {
+			PRINT_ALLOC_ERR;
+			status = 0;
+			fits_close_file(fit->fptr, &status);
+			if (olddata)
+				free(olddata);
+			return -1;
+		}
+		fit->fpdata[RLAYER] = fit->fdata;
+		fit->fpdata[GLAYER] = fit->fdata;
+		fit->fpdata[BLAYER] = fit->fdata;
+
+		status = internal_read_partial_fits(fit->fptr, fit->naxes[1],
+				fit->bitpix, fit->fdata, data_max > 1.0, layer, area);
+	}
 
 	if (status) {
 		report_fits_error(status);
@@ -1282,7 +1326,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
  * layer and index also start at 0.
  * buffer has to be allocated with enough space to store the area.
  */
-int read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer,
+int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
 		const rectangle *area) {
 	int status;
 
@@ -1311,12 +1355,14 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer,
 		return 1;
 
 	/* reverse the read data, because it's stored upside-down */
-	WORD *swap = malloc(area->w * sizeof(WORD));
+	int elem_size = get_data_type(seq->bitpix) == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
+	int line_size = area->w * elem_size;
+	void *swap = malloc(line_size);
 	int i;
 	for (i = 0; i < area->h/2 ; i++) {
-		memcpy(swap, buffer + i*area->w, area->w*sizeof(WORD));
-		memcpy(buffer + i*area->w, buffer + (area->h - i - 1)*area->w, area->w*sizeof(WORD));
-		memcpy(buffer + (area->h - i - 1)*area->w, swap, area->w*sizeof(WORD));
+		memcpy(swap, buffer + i*area->w, line_size);
+		memcpy(buffer + i*area->w, buffer + (area->h - i - 1)*area->w, line_size);
+		memcpy(buffer + (area->h - i - 1)*area->w, swap, line_size);
 	}
 	free(swap);
 
@@ -1482,6 +1528,10 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		to->pdata[0] = NULL;
 		to->pdata[1] = NULL;
 		to->pdata[2] = NULL;
+		to->fdata = NULL;
+		to->fpdata[0] = NULL;
+		to->fpdata[1] = NULL;
+		to->fpdata[2] = NULL;
 		to->header = NULL;
 		to->history = NULL;
 	}
