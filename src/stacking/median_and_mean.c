@@ -46,7 +46,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean);
  * Median stacking does not use registration data, as it's generally used for
  * preprocessing master file creation. Mean stacking however does.
  * TODO: mean is sometimes used for master bias/dark/flat creation, we should
- * deactivate registration data in this case.
+ * deactivate registration data in this case (see the variable use_regdata).
  *
  * The difference between median and mean stacking is that once we have pixel
  * data for all images, in the first case the result is the median of all
@@ -239,10 +239,11 @@ int stack_compute_parallel_blocks(struct _image_block **blocksptr, int max_numbe
 	return 0;
 }
 
-void stack_read_block_data(struct stacking_args *args, int use_regdata,
-		struct _image_block *my_block, struct _data_block *data, long *naxes) {
+static void stack_read_block_data(struct stacking_args *args, int use_regdata,
+		struct _image_block *my_block, struct _data_block *data,
+		long *naxes, data_type itype) {
 
-	int frame;
+	int frame, ielem_size = itype == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
 	/* Read the block from all images, store them in pix[image] */
 	for (frame = 0; frame < args->nb_images_to_stack; ++frame){
 		gboolean clear = FALSE, readdata = TRUE;
@@ -292,14 +293,18 @@ void stack_read_block_data(struct stacking_args *args, int use_regdata,
 			if (clear) {
 				/* we are reading outside an image, fill with
 				 * zeros and attempt to read lines that fit */
-				memset(data->pix[frame], 0, my_block->height * naxes[0] * sizeof(WORD));
+				memset(data->pix[frame], 0, my_block->height * naxes[0] * ielem_size);
 			}
 		}
 
 		if (!use_regdata || readdata) {
 			// reading pixels from current frame
+			void *buffer;
+			if (itype == DATA_FLOAT)
+				buffer = ((float*)data->pix[frame])+offset;
+			else 	buffer = ((WORD *)data->pix[frame])+offset;
 			int retval = seq_opened_read_region(args->seq, my_block->channel,
-					args->image_indices[frame], data->pix[frame]+offset, &area);
+					args->image_indices[frame], buffer, &area);
 			if (retval) {
 #ifdef _OPENMP
 				int tid = omp_get_thread_num();
@@ -532,11 +537,12 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	double exposure = 0.0;
 	struct _data_block *data_pool = NULL;
 	struct _image_block *blocks = NULL;
-	data_type itype;
+	data_type itype;	// input data type
 	fits fit = { 0 }, *fptr;
 	// data for mean/rej only
 	uint64_t irej[3][2] = {{0,0}, {0,0}, {0,0}};
 	regdata *layerparam = NULL;
+	gboolean use_regdata = is_mean;	// TODO see the other TODO at the top
 
 	nb_frames = args->nb_images_to_stack;
 	naxes[0] = naxes[1] = 0; naxes[2] = 1;
@@ -547,7 +553,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	}
 	g_assert(nb_frames <= args->seq->number);
 
-	if (is_mean) {
+	if (use_regdata) {
 		if (args->reglayer < 0)
 			fprintf(stderr, "No registration layer passed, ignoring regdata!\n");
 		else layerparam = args->seq->regparam[args->reglayer];
@@ -560,10 +566,6 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		goto free_and_close;
 	}
 
-	if (fit.bitpix == FLOAT_IMG) {
-		siril_log_message(_("rejection stacking: not yet working with 32-bit input data."));
-		goto free_and_close;
-	}
 	itype = get_data_type(bitpix);
 
 	if (naxes[0] == 0) {
@@ -674,7 +676,9 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		}
 
 		for (j=0; j<nb_frames; ++j) {
-			data_pool[i].pix[j] = data_pool[i].tmp + j * npixels_in_block;
+			if (itype == DATA_FLOAT)
+				data_pool[i].pix[j] = ((float*)data_pool[i].tmp) + j * npixels_in_block;
+			else 	data_pool[i].pix[j] = ((WORD *)data_pool[i].tmp) + j * npixels_in_block;
 		}
 	}
 	update_used_memory();
@@ -708,7 +712,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		data = &data_pool[data_idx];
 
 		/**** Step 2: load image data for the corresponding image block ****/
-		stack_read_block_data(args, 1, my_block, data, naxes);
+		stack_read_block_data(args, use_regdata, my_block, data, naxes, itype);
 
 #if defined _OPENMP && defined STACK_DEBUG
 		{
@@ -752,7 +756,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 				 * to optimize caching and improve readability */
 				for (frame = 0; frame < nb_frames; ++frame) {
 					int pix_idx = line_idx + x;
-					if (is_mean) {
+					if (use_regdata) {
 						int shiftx = 0;
 						if (layerparam) {
 							shiftx = round_to_int(
@@ -829,7 +833,9 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 					}
 					result = mean;
 				} else {
-					result = quickmedian(data->stack, nb_frames);
+					if (itype == DATA_USHORT)
+						result = quickmedian(data->stack, nb_frames);
+					else 	result = quickmedian_float(data->stack, nb_frames);
 				}
 
 				if (args->norm_to_16) {

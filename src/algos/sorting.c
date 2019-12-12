@@ -133,6 +133,48 @@ double quickmedian (WORD *a, int n) {
 			((double) a[k - 1] + (double) a[k]) / 2.0 : (double) a[k];
 }
 
+/* quickmedian_float returns the median from array of length n
+ * Derived from the original quickselect algorithm from Hoare
+ * warning: data are sorted in place
+ * non recurssive version modified to return median value
+ * @param a array of float to search
+ * @param n size of the array
+ * @return median as double for even size average the middle two elements
+ */
+double quickmedian_float (float *a, int n) {
+	int i;
+	int k = n / 2;		// size to sort
+	int pindex;		// pivot index
+	int left = 0; 		// left index
+	int right = n - 1; 	// right index
+	float pivot, tmp;
+
+	while (left < right) { //we stop when our indicies have crossed
+		pindex = (left + right) / 2; // pivot selection, this can be whatever
+		pivot = a[pindex];
+		a[pindex] = a[right];
+		a[right] = pivot; // SWAP(pivot,right)
+
+		for (i = pindex = left; i < right; i++) {
+			if (a[i] < pivot) { // SWAP
+				tmp = a[pindex];
+				a[pindex] = a[i];
+				a[i] = tmp;
+				pindex++;
+			}
+		}
+		a[right] = a[pindex];
+		a[pindex] = pivot; // SWAP(right,j)
+
+		if (pindex < k)
+			left = pindex + 1;
+		else
+			// pindex >= k
+			right = pindex;
+	}
+	return (n % 2 == 0) ? ((double)a[k - 1] + a[k]) / 2.0 : (double)a[k];
+}
+
 /* quickmedian_double returns the median from array of length n
  * Derived from the original quickselect algorithm from Hoare
  * warning: data are sorted in place
@@ -172,7 +214,7 @@ double quickmedian_double (double *a, int n) {
 			// pindex >= k
 			right = pindex;
 	}
-	return (n % 2 == 0) ? (a[k - 1] + a[k]) / 2 : a[k];
+	return (n % 2 == 0) ? (a[k - 1] + a[k]) / 2.0 : a[k];
 }
 
 /*

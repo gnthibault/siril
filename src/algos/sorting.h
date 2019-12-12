@@ -9,6 +9,7 @@ void quicksort_s (WORD *a, int n);
 
 /* Quick median based on quick select */
 double quickmedian (WORD *a, int n);
+double quickmedian_float (float *a, int n);
 double quickmedian_double(double *a, int n);
 double quickmedian_int (int *a, int n);
 

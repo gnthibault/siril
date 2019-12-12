@@ -749,7 +749,6 @@ static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
 		case FLOAT_IMG:		// 32-bit floating point pixels
 			fits_read_subset(fptr, TFLOAT, fpixel, lpixel, inc, &zero, dest,
 					&zero, &status);
-			if (status) break;
 			break;
 		case LONGLONG_IMG:	// 64-bit integer pixels
 		default:
@@ -1355,16 +1354,29 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
 		return 1;
 
 	/* reverse the read data, because it's stored upside-down */
-	int elem_size = get_data_type(seq->bitpix) == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
-	int line_size = area->w * elem_size;
-	void *swap = malloc(line_size);
-	int i;
-	for (i = 0; i < area->h/2 ; i++) {
-		memcpy(swap, buffer + i*area->w, line_size);
-		memcpy(buffer + i*area->w, buffer + (area->h - i - 1)*area->w, line_size);
-		memcpy(buffer + (area->h - i - 1)*area->w, swap, line_size);
+	if (get_data_type(seq->bitpix) == DATA_FLOAT) {
+		int line_size = area->w * sizeof(float);
+		void *swap = malloc(line_size);
+		float *buf = (float *)buffer;
+		int i;
+		for (i = 0; i < area->h/2 ; i++) {
+			memcpy(swap, buf + i*area->w, line_size);
+			memcpy(buf + i*area->w, buf + (area->h - i - 1)*area->w, line_size);
+			memcpy(buf + (area->h - i - 1)*area->w, swap, line_size);
+		}
+		free(swap);
+	} else {
+		int line_size = area->w * sizeof(WORD);
+		void *swap = malloc(line_size);
+		WORD *buf = (WORD *)buffer;
+		int i;
+		for (i = 0; i < area->h/2 ; i++) {
+			memcpy(swap, buf + i*area->w, line_size);
+			memcpy(buf + i*area->w, buf + (area->h - i - 1)*area->w, line_size);
+			memcpy(buf + (area->h - i - 1)*area->w, swap, line_size);
+		}
+		free(swap);
 	}
-	free(swap);
 
 	return 0;
 }

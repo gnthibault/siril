@@ -135,11 +135,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 int stack_compute_parallel_blocks(struct _image_block **blocks, int max_number_of_rows,
 		int nb_channels, long *naxes, long *largest_block_height,
 		int *nb_parallel_stacks);
-void stack_read_block_data(struct stacking_args *args, int use_regdata,
-		struct _image_block *my_block, struct _data_block *data, long *naxes);
 int find_refimage_in_indices(int *indices, int nb, int ref);
-
-int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]);
 
 	/* up-scaling functions */
 

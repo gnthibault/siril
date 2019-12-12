@@ -276,7 +276,7 @@ void main_stack(struct stacking_args *args) {
 
 	siril_log_message(args->description);
 	if (args->use_32bit_output)
-		siril_log_message(_("Stacking result will be stored as a 32 bits image"));
+		siril_log_message(_("Stacking result will be stored as a 32-bit image\n"));
 
 	// 1. normalization
 	if (do_normalization(args)) // does nothing if NO_NORM
