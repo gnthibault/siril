@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-06 22:38+0100\n"
+"POT-Creation-Date: 2019-12-12 09:43+0100\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -4134,7 +4134,7 @@ msgstr "Fetch failed with code %ld for URL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:458
+#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:474
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:300 ../src/io/conversion.c:610
 #: ../src/io/single_image.c:149
@@ -6032,64 +6032,70 @@ msgstr "文件I/O错误：无法创建交换文件于 %s: [%s]\n"
 msgid "File I/O Error: Unable to write swap file in %s: [%s]\n"
 msgstr "文件I/O错误：无法写入交换文件于 %s: [%s]\n"
 
-#: ../src/core/utils.c:282
+#: ../src/core/utils.c:283
 msgid "Unknown error\n"
 msgstr "未知错误\n"
 
-#: ../src/core/utils.c:285
+#: ../src/core/utils.c:286
 #, c-format
 msgid "'%s' No such file or directory\n"
 msgstr "‘%s’文件或目录不存在\n"
 
-#: ../src/core/utils.c:288
+#: ../src/core/utils.c:289
 #, c-format
 msgid "'%s' is not a directory\n"
 msgstr "‘%s’不是一个目录\n"
 
-#: ../src/core/utils.c:291
+#: ../src/core/utils.c:292
 #, c-format
 msgid "You don't have permission to write in this directory: '%s'\n"
 msgstr "当前用户对目录 ‘%s’ 没有写权限\n"
 
-#: ../src/core/utils.c:304
+#: ../src/core/utils.c:305
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "设置当前工作目录 (CWD) 为 '%s'\n"
 
-#: ../src/core/utils.c:307
+#: ../src/core/utils.c:308
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr "无法更改目录为 '%s'\n"
 
-#: ../src/core/utils.c:448
+#: ../src/core/utils.c:449
 #, fuzzy
 msgid "sequence"
 msgid_plural "sequences"
 msgstr[0] "队列"
 
-#: ../src/core/utils.c:475
+#: ../src/core/utils.c:476
 msgid "Filename is too long, not expanding it\n"
 msgstr "文件名太长了\n"
 
-#: ../src/core/utils.c:590
+#: ../src/core/utils.c:591
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Checking GTK version ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:612
+#: ../src/core/utils.c:613
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:618
+#: ../src/core/utils.c:619
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 
-#: ../src/core/utils.c:628 ../src/main.c:177
+#: ../src/core/utils.c:629 ../src/main.c:177
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "成功载入'%s'\n"
+
+#: ../src/core/utils.c:747
+#, fuzzy
+msgid "pixel"
+msgid_plural "pixels"
+msgstr[0] "超级像素"
 
 #: ../src/filters/banding.c:112
 msgid "Banding Reducing: processing...\n"
@@ -6439,46 +6445,45 @@ msgstr "redraw: 最大支持的通道数为 %d （当前文件为 %d）。\n"
 msgid "_Do not show this dialog again"
 msgstr "_不再显示此对话框"
 
-#: ../src/gui/open_dialog.c:74 ../src/gui/save_dialog.c:60
+#: ../src/gui/open_dialog.c:73 ../src/gui/save_dialog.c:60
 msgid "FITS Files (*.fit, *.fits, *.fts)"
 msgstr "FITS文件 (*.fit, *.fits, *.fts)"
 
-#: ../src/gui/open_dialog.c:102
+#: ../src/gui/open_dialog.c:101
 msgid "RAW DSLR Camera Files"
 msgstr "RAW DSLR相机文件"
 
-#: ../src/gui/open_dialog.c:116
+#: ../src/gui/open_dialog.c:115
 msgid "Graphics Files (*.bmp"
 msgstr "图像文件 (*.bmp"
 
 #. NETPBM FILES
-#: ../src/gui/open_dialog.c:142 ../src/gui/save_dialog.c:83
+#: ../src/gui/open_dialog.c:141 ../src/gui/save_dialog.c:83
 msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
 msgstr "Netpbm文件 (*.ppm, *.pnm, *.pgm)"
 
 #. IRIS FILES
-#: ../src/gui/open_dialog.c:145
+#: ../src/gui/open_dialog.c:144
 msgid "IRIS PIC Files (*.pic)"
 msgstr "IRIS PIC 文件 (*.pic)"
 
 #. SER FILES
-#: ../src/gui/open_dialog.c:148
+#: ../src/gui/open_dialog.c:147
 msgid "SER files (*.ser)"
 msgstr "SER文件 (*.ser)"
 
-#: ../src/gui/open_dialog.c:185
+#: ../src/gui/open_dialog.c:184
 msgid "Film Files (*.avi, *.mpg, ...)"
 msgstr "视频文件 (*.avi, *.mpg, ...)"
 
-#: ../src/gui/open_dialog.c:199
+#: ../src/gui/open_dialog.c:198
 msgid "All supported files"
 msgstr "所有支持的文件类型"
 
-#: ../src/gui/open_dialog.c:241
+#: ../src/gui/open_dialog.c:242
 #, fuzzy
-msgid "pixel"
-msgid_plural "pixels"
-msgstr[0] "超级像素"
+msgid "Folder"
+msgstr "选择相位文件"
 
 #: ../src/gui/photometric_cc.c:91
 msgid "Photometric Color Calibration"
@@ -7004,11 +7009,11 @@ msgstr "所用于连接的SER文件必须拥有相同的尺寸。\n"
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "在超过一个通道的图像上无法执行debayer\n"
 
-#: ../src/io/conversion.c:896 ../src/io/ser.c:838 ../src/io/ser.c:1049
+#: ../src/io/conversion.c:896 ../src/io/ser.c:839 ../src/io/ser.c:1050
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
-#: ../src/io/conversion.c:899 ../src/io/ser.c:842 ../src/io/ser.c:1053
+#: ../src/io/conversion.c:899 ../src/io/ser.c:843 ../src/io/ser.c:1054
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -7636,15 +7641,15 @@ msgstr "Compacting SER file after parallel output to it...\n"
 msgid "Created SER file %s\n"
 msgstr "已创建 SER 文件 %s\n"
 
-#: ../src/io/ser.c:882 ../src/io/ser.c:1115
+#: ../src/io/ser.c:883 ../src/io/ser.c:1116
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "这个类型的拜耳滤镜排列模式尚未被支持。\n"
 
-#: ../src/io/ser.c:1063
+#: ../src/io/ser.c:1064
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 
-#: ../src/io/ser.c:1151
+#: ../src/io/ser.c:1152
 msgid "Trying to add an image of different size in a SER\n"
 msgstr "试图在SER文件中加入不是一致尺寸的图像\n"
 

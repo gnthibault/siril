@@ -1674,3 +1674,37 @@ void keep_first_channel_from_fits(fits *fit) {
 			fit->mini = 0;
 	}
 }
+
+int siril_get_FITS_size_info(const char *filename, gint *width, gint *height) {
+	int status = 0;
+	fitsfile *fptr;
+	int anaxis;
+	long anaxes[3] = {1,1,1};
+
+	siril_fits_open_diskfile(&fptr, filename, READONLY, &status);
+	if (status) {
+		report_fits_error(status);
+		return status;
+	}
+
+	fits_get_img_dim(fptr, &anaxis, &status);
+	fits_get_img_size(fptr, 3, anaxes, &status);
+
+    if (status) {
+       fits_report_error(stderr, status); /* print error message */
+       return(status);
+    }
+
+    *width = anaxes[0];
+    *height = anaxes[1];
+
+	fits_close_file(fptr, &status);
+
+	return status;
+}
+
+int siril_build_FITS_thumbnail(const char *filename, uint8_t **buffer,
+		size_t *size, char **mime_type) {
+
+	return 1;
+}

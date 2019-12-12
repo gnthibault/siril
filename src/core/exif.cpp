@@ -53,7 +53,7 @@ extern "C" {
 /**
  * Get the largest possible thumbnail from the image
  */
-int siril_exif_get_thumbnail(const char *path, uint8_t **buffer, size_t *size,
+int siril_get_thumbnail_exiv(const char *path, uint8_t **buffer, size_t *size,
 		char **mime_type) {
 	try {
 		std::unique_ptr<Exiv2::Image> image(

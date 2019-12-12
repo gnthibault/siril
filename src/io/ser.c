@@ -752,6 +752,7 @@ int ser_close_file(struct ser_struct *ser_file) {
 }
 
 void ser_init_struct(struct ser_struct *ser_file) {
+	g_assert(ser_file);
 	memset(ser_file, 0, sizeof(struct ser_struct));
 }
 
@@ -1246,4 +1247,19 @@ int64_t ser_compute_file_size(struct ser_struct *ser_file, int nb_frames) {
 	if (ser_is_cfa(ser_file) && com.debayer.open_debayer)
 		size *= 3;
 	return size;
+}
+
+int siril_get_SER_size_info(const gchar *filename, int *width, int *height) {
+	struct ser_struct ser;
+	ser_init_struct(&ser);
+	if (ser_open_file(filename, &ser)) {
+		return 1;
+	}
+
+    *width = ser.image_width;
+    *height = ser.image_height;
+
+    ser_close_file(&ser);
+
+	return 0;
 }

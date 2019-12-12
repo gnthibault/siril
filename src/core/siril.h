@@ -90,9 +90,9 @@ typedef struct _SirilDialogEntry SirilDialogEntry;
 
 /* used for open and savedialog */
 #if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
-#define SirilWidget GtkFileChooserNative
+typedef GtkFileChooserNative SirilWidget;
 #else
-#define SirilWidget GtkWidget
+typedef GtkWidget SirilWidget;
 #endif
 
 #if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))

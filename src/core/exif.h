@@ -24,10 +24,11 @@
 extern "C" {
 #endif
 
-int siril_exif_get_thumbnail(const char *path, uint8_t **buffer, size_t *size, char **mime_type);
+int siril_get_thumbnail_exiv(const char *path, uint8_t **buffer, size_t *size, char **mime_type);
 
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif /* SRC_CORE_EXIF_H_ */

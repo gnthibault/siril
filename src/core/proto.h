@@ -36,6 +36,9 @@ void extract_region_from_fits(fits *from, int layer, fits *to,
 		const rectangle *area);
 int new_fit_image(fits **fit, int width, int height, int nblayer);
 void keep_first_channel_from_fits(fits *fit);
+int siril_get_FITS_size_info(const char *filename, gint *width, gint *height);
+int siril_build_FITS_thumbnail(const char *path, uint8_t **buffer, size_t *size,
+		char **mime_type);
 
 /****************** image_formats_internal.h ******************/
 /* BMP */
@@ -94,6 +97,7 @@ int truncate_to_int32(uint64_t x);
 gboolean isrgb(fits *fit);
 gboolean ends_with(const char *str, const char *ending);
 int get_extension_index(const char *filename);
+image_type get_type_from_filename(const gchar *filename);
 int is_readable_file(const char *filename);
 int stat_file(const char *filename2, image_type *type, char **realname);
 const char* get_filename_ext(const char *filename);
@@ -110,6 +114,8 @@ char* format_basename(char *root);
 float computePente(WORD *lo, WORD *hi);
 void load_css_style_sheet();
 double encodeJD(dateTime dt);
+int siril_get_thumbnail(const char *path, uint8_t **buffer, size_t *size, char **mime_type);
+gchar *siril_get_file_info(const gchar *filename);
 
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,

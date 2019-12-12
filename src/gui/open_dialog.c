@@ -30,7 +30,6 @@
 #include "core/processing.h"
 #include "core/OS_utils.h"
 #include "core/initfile.h"
-#include "core/exif.h"
 #include "algos/sorting.h"
 #include "io/conversion.h"
 #include "io/films.h"
@@ -42,7 +41,7 @@
 
 #include "open_dialog.h"
 
-#define preview_size 256
+#define preview_size 128
 
 static fileChooserPreview preview;
 
@@ -70,7 +69,7 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 	gchar *netpbm_filter = "*.ppm;*.PPM;*.pnm;*.PNM;*.pgm;*.PGM";
 	gchar *pic_filter = "*.pic;*.PIC";
 	gchar *ser_filter = "*.ser;*.SER";
-	if (whichdial != OD_CONVERT) {
+	if (whichdial != OD_CONVERT && whichdial != OD_OPEN) {
 		gtk_filter_add(chooser, _("FITS Files (*.fit, *.fits, *.fts)"),
 				fits_filter, com.filter == TYPEFITS);
 	} else {
@@ -98,7 +97,7 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 			g_free(upcase);
 		}
 		raw[strlen(raw) - 1] = '\0';
-		if (whichdial != OD_CONVERT) {
+		if (whichdial != OD_CONVERT && whichdial != OD_OPEN) {
 			gtk_filter_add(chooser, _("RAW DSLR Camera Files"), raw,
 				com.filter == TYPERAW);
 		} else {
@@ -133,7 +132,7 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 
 		graphics_supported = g_string_free(s_supported_graph, FALSE);
 		graphics_filter = g_string_free(s_pattern, FALSE);
-		if (whichdial != OD_CONVERT) {
+		if (whichdial != OD_CONVERT && whichdial != OD_OPEN) {
 			gtk_filter_add(chooser, graphics_supported, graphics_filter,
 					com.filter == TYPEBMP || com.filter == TYPEJPG
 							|| com.filter == TYPEPNG || com.filter == TYPETIFF);
@@ -181,7 +180,7 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 		}
 		film_filter[strlen(film_filter) - 1] = '\0';
 
-		if (whichdial != OD_CONVERT) {
+		if (whichdial != OD_CONVERT && whichdial != OD_OPEN) {
 		gtk_filter_add(chooser, _("Film Files (*.avi, *.mpg, ...)"), film_filter,
 				com.filter == TYPEAVI);
 		} else {
@@ -193,7 +192,7 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 		g_free(graphics_supported);
 		g_free(graphics_filter);
 
-		if (whichdial == OD_CONVERT) {
+		if (whichdial == OD_CONVERT || whichdial == OD_OPEN) {
 			gchar *filter = g_string_free(all_filter, FALSE);
 
 			gtk_filter_add(chooser, _("All supported files"), filter, TRUE);
@@ -207,50 +206,72 @@ struct _updta_preview_data {
 	gchar *filename;
 	GdkPixbuf *pixbuf;
 	GFileInfo *file_info;
-	gboolean have_preview;
 };
 
 static gboolean end_update_preview_cb(gpointer p) {
 	struct _updta_preview_data *args = (struct _updta_preview_data *) p;
-	stop_processing_thread();// can it be done here in case there is no thread?
+	stop_processing_thread();
 
-	if (args->have_preview) {
-		int bytes;
-		int width;
-		int height;
-		const char *bytes_str;
-		char *size_str = NULL;
-		char *dim_str = NULL;
+	int bytes;
+	const char *bytes_str;
+	char *size_str = NULL;
+	char *name_str = NULL;
+	char *dim_str = NULL;
+	GFileType type;
 
-		/* try to read file size */
-		bytes_str = gdk_pixbuf_get_option(args->pixbuf, "tEXt::Thumb::Size");
-		if (bytes_str != NULL) {
-			bytes = atoi(bytes_str);
-			size_str = g_format_size(bytes);
-		} else {
+	name_str = g_path_get_basename(args->filename);
+
+	type = g_file_info_get_file_type (args->file_info);
+
+	/* try to read file size */
+	if (args->pixbuf
+			&& (bytes_str = gdk_pixbuf_get_option(args->pixbuf,
+					"tEXt::Thumb::Size")) != NULL) {
+		bytes = atoi(bytes_str);
+		size_str = g_format_size(bytes);
+	} else {
+		if (type == G_FILE_TYPE_REGULAR) {
 			size_str = g_format_size(g_file_info_get_size(args->file_info));
 		}
-
-		/* try to read image dimensions */
-		GdkPixbufFormat *pixbuf_file_info = gdk_pixbuf_get_file_info(args->filename,
-				&width, &height);
-
-		if (pixbuf_file_info != NULL) {
-			/* Pixel size of image: width x height in pixel */
-			dim_str = g_strdup_printf("%d x %d %s", width, height,
-					ngettext("pixel", "pixels", height));
-		}
-
-		gtk_label_set_text(GTK_LABEL(preview.dim_label), dim_str);
-		gtk_label_set_text(GTK_LABEL(preview.size_label), size_str);
-		gtk_image_set_from_pixbuf(GTK_IMAGE(preview.image), args->pixbuf);
-
-		g_free(dim_str);
-		g_free(size_str);
-		g_object_unref(args->pixbuf);
 	}
 
-	gtk_file_chooser_set_preview_widget_active(args->file_chooser, args->have_preview);
+	if (type == G_FILE_TYPE_REGULAR) {
+		/* try to read image dimensions */
+		dim_str = siril_get_file_info(args->filename);
+	} else if (type == G_FILE_TYPE_DIRECTORY) {
+		dim_str = g_strdup(_("Folder"));
+	}
+
+	const char *format = "<span style=\"italic\">\%s</span>";
+	char *markup = g_markup_printf_escaped(format, name_str);
+	gtk_label_set_markup(GTK_LABEL(preview.name_label), markup);
+	gtk_label_set_ellipsize(GTK_LABEL(preview.name_label), PANGO_ELLIPSIZE_MIDDLE);
+	gtk_label_set_width_chars(GTK_LABEL(preview.name_label), 25);
+	gtk_label_set_max_width_chars(GTK_LABEL(preview.name_label), 25);
+
+	gtk_label_set_text(GTK_LABEL(preview.dim_label), dim_str);
+	gtk_label_set_text(GTK_LABEL(preview.size_label), size_str);
+	if (type == G_FILE_TYPE_REGULAR && args->pixbuf) {
+		gtk_image_set_from_pixbuf(GTK_IMAGE(preview.image), args->pixbuf);
+		g_object_unref(args->pixbuf);
+	} else if (type == G_FILE_TYPE_DIRECTORY) {
+		gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "folder-symbolic", GTK_ICON_SIZE_DIALOG);
+		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), preview_size);
+	} else {
+		image_type im_type = get_type_from_filename(args->filename);
+		if (im_type == TYPEAVI || im_type == TYPESER) {
+			gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "video-symbolic", GTK_ICON_SIZE_DIALOG);
+		} else {
+			gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "image-symbolic", GTK_ICON_SIZE_DIALOG);
+		}
+		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), preview_size);
+	}
+
+	g_free(markup);
+	g_free(name_str);
+	g_free(dim_str);
+	g_free(size_str);
+
 	g_object_unref(args->file_info);
 	g_free(args->filename);
 	free(args);
@@ -262,11 +283,10 @@ static gpointer update_preview_cb_idle(gpointer p) {
 	size_t size;
 	char *mime_type = NULL;
 	GdkPixbuf *pixbuf = NULL;
-	gboolean have_preview = FALSE;
 
 	struct _updta_preview_data *args = (struct _updta_preview_data *) p;
 
-	if (!siril_exif_get_thumbnail(args->filename, &buffer, &size, &mime_type)) {
+	if (!siril_get_thumbnail(args->filename, &buffer, &size, &mime_type)) {
 		// Scale the image to the correct size
 		GdkPixbuf *tmp;
 		GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
@@ -284,20 +304,17 @@ static gpointer update_preview_cb_idle(gpointer p) {
 		pixbuf = gdk_pixbuf_scale_simple(tmp, width, height,
 				GDK_INTERP_BILINEAR);
 
-		have_preview = TRUE;
-
 		cleanup: gdk_pixbuf_loader_close(loader, NULL);
 		free(mime_type);
 		free(buffer);
 		g_object_unref(loader); // This should clean up tmp as well
 	}
 
-	if (!have_preview) {
+	/* if no pixbuf created try to directly read the file */
+	if (!pixbuf) {
 		pixbuf = gdk_pixbuf_new_from_file_at_size(args->filename, preview_size, preview_size, NULL);
 	}
-	if(pixbuf != NULL) have_preview = TRUE;
 
-	args->have_preview = have_preview;
 	args->pixbuf = pixbuf;
 	siril_add_idle(end_update_preview_cb, args);
 	return GINT_TO_POINTER(0);
@@ -324,6 +341,7 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 				       0, NULL, NULL);
 
 	filename = gtk_file_chooser_get_preview_filename(file_chooser);
+	gtk_file_chooser_set_preview_widget_active(file_chooser, TRUE);
 
 	struct _updta_preview_data *data = malloc(sizeof(struct _updta_preview_data));
 	data->filename = filename;
@@ -341,12 +359,16 @@ static void siril_file_chooser_add_preview(SirilWidget *widget) {
 		gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
 
 		preview.image = gtk_image_new();
+		preview.name_label = gtk_label_new(NULL);
 		preview.dim_label = gtk_label_new(NULL);
 		preview.size_label = gtk_label_new(NULL);
 
+		gtk_widget_set_size_request(preview.image, preview_size, preview_size);
+
 		gtk_box_pack_start(GTK_BOX(vbox), preview.image, FALSE, TRUE, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), preview.dim_label, FALSE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), preview.name_label, FALSE, TRUE, 0);
 		gtk_box_pack_start(GTK_BOX(vbox), preview.size_label, FALSE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), preview.dim_label, FALSE, TRUE, 0);
 
 		gtk_widget_show_all(vbox);
 
@@ -379,6 +401,7 @@ static void opendial(int whichdial) {
 		gtk_file_chooser_set_current_folder(dialog, com.wd);
 		gtk_file_chooser_set_select_multiple(dialog, FALSE);
 		set_filters_dialog(dialog, whichdial);
+		siril_file_chooser_add_preview(widgetdialog);
 		break;
 	case OD_CWD:
 		widgetdialog = siril_file_chooser_open(control_window, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
