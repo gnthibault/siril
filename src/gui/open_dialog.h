@@ -17,6 +17,7 @@ typedef struct _fileChooserPreview fileChooserPreview;
 
 struct _fileChooserPreview {
 	GtkWidget *image;
+	GtkWidget *name_label;
 	GtkWidget *dim_label;
 	GtkWidget *size_label;
 };

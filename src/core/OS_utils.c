@@ -425,7 +425,7 @@ SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction act
 	} else {
 		title = g_strdup(_("Open File"));
 	}
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
 	w = gtk_file_chooser_native_new(title, parent, action,
 			_("_Open"), _("_Cancel"));
 	g_free(title);
@@ -440,7 +440,7 @@ SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction act
 }
 
 SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction action) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
 	return gtk_file_chooser_native_new(_("Add Files"), parent, action,
 			_("_Add"), _("_Cancel"));
 #else
@@ -451,7 +451,7 @@ SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction acti
 }
 
 SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
 	return gtk_file_chooser_native_new(_("Save File"), parent, action,
 			_("_Save"), _("_Cancel"));
 #else
@@ -462,7 +462,7 @@ SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction act
 }
 
 gint siril_dialog_run(SirilWidget *widgetdialog) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
 	return gtk_native_dialog_run(GTK_NATIVE_DIALOG(widgetdialog));
 #else
 	return gtk_dialog_run(GTK_DIALOG(GTK_FILE_CHOOSER(widgetdialog)));
@@ -470,7 +470,7 @@ gint siril_dialog_run(SirilWidget *widgetdialog) {
 }
 
 void siril_widget_destroy(SirilWidget *widgetdialog) {
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
 	g_object_unref(widgetdialog);
 #else
 	gtk_widget_destroy(widgetdialog);

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-06 22:38+0100\n"
+"POT-Creation-Date: 2019-12-12 09:43+0100\n"
 "PO-Revision-Date: 2019-10-09 10:56+0100\n"
 "Last-Translator: David Vazquez Garcia <davidvazquezgijon@gmail.com>\n"
 "Language-Team: \n"
@@ -4431,7 +4431,7 @@ msgstr "La búsqueda ha fallado con el código %ld en la URL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:458
+#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:474
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:300 ../src/io/conversion.c:610
 #: ../src/io/single_image.c:149
@@ -6422,67 +6422,74 @@ msgstr ""
 "Error de E/S: imposible escribir fichero de intercambio en %s: [%s]\n"
 "\n"
 
-#: ../src/core/utils.c:282
+#: ../src/core/utils.c:283
 msgid "Unknown error\n"
 msgstr "Error desconocido\n"
 
-#: ../src/core/utils.c:285
+#: ../src/core/utils.c:286
 #, c-format
 msgid "'%s' No such file or directory\n"
 msgstr "No existe el fichero o directorio '%s'.\n"
 
-#: ../src/core/utils.c:288
+#: ../src/core/utils.c:289
 #, c-format
 msgid "'%s' is not a directory\n"
 msgstr "'%s' no es un directorio\n"
 
-#: ../src/core/utils.c:291
+#: ../src/core/utils.c:292
 #, c-format
 msgid "You don't have permission to write in this directory: '%s'\n"
 msgstr "No dispone de permisos para escribir en este directorio: %s\n"
 
-#: ../src/core/utils.c:304
+#: ../src/core/utils.c:305
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "Estableciendo CWD (Directorio Actual de Trabajo) a '%s'\n"
 
-#: ../src/core/utils.c:307
+#: ../src/core/utils.c:308
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr "No se puede cambiar el directorio a '%s'.\n"
 
-#: ../src/core/utils.c:448
+#: ../src/core/utils.c:449
 #, fuzzy
 msgid "sequence"
 msgid_plural "sequences"
 msgstr[0] "Secuencia"
 msgstr[1] "Secuencia"
 
-#: ../src/core/utils.c:475
+#: ../src/core/utils.c:476
 msgid "Filename is too long, not expanding it\n"
 msgstr "Nombre de fichero demasiado largo, no se expande\n"
 
-#: ../src/core/utils.c:590
+#: ../src/core/utils.c:591
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Verificando la versión de GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:612
+#: ../src/core/utils.c:613
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "La versión de GTK no cumple con los requisitos: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:618
+#: ../src/core/utils.c:619
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr ""
 "Imposible cargar la hoja de estilos CSS: %s. Reinstale Siril\n"
 "\n"
 
-#: ../src/core/utils.c:628 ../src/main.c:177
+#: ../src/core/utils.c:629 ../src/main.c:177
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "'%s' cargado con éxito\n"
+
+#: ../src/core/utils.c:747
+#, fuzzy
+msgid "pixel"
+msgid_plural "pixels"
+msgstr[0] "Super píxel"
+msgstr[1] "Super píxel"
 
 #: ../src/filters/banding.c:112
 msgid "Banding Reducing: processing...\n"
@@ -6841,47 +6848,45 @@ msgstr ""
 msgid "_Do not show this dialog again"
 msgstr "_No volver a mostrar este diálogo"
 
-#: ../src/gui/open_dialog.c:74 ../src/gui/save_dialog.c:60
+#: ../src/gui/open_dialog.c:73 ../src/gui/save_dialog.c:60
 msgid "FITS Files (*.fit, *.fits, *.fts)"
 msgstr "Ficheros FITS (*.fit, *.fits, *.fts)"
 
-#: ../src/gui/open_dialog.c:102
+#: ../src/gui/open_dialog.c:101
 msgid "RAW DSLR Camera Files"
 msgstr "Ficheros RAW de cámaras DSLR"
 
-#: ../src/gui/open_dialog.c:116
+#: ../src/gui/open_dialog.c:115
 msgid "Graphics Files (*.bmp"
 msgstr "Ficheros gráficos (*.bmp)"
 
 #. NETPBM FILES
-#: ../src/gui/open_dialog.c:142 ../src/gui/save_dialog.c:83
+#: ../src/gui/open_dialog.c:141 ../src/gui/save_dialog.c:83
 msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
 msgstr "Ficheros Netpbm (*.ppm, *.pnm, *.pgm)"
 
 #. IRIS FILES
-#: ../src/gui/open_dialog.c:145
+#: ../src/gui/open_dialog.c:144
 msgid "IRIS PIC Files (*.pic)"
 msgstr "Ficheros IRIS PIC (*.pic)"
 
 #. SER FILES
-#: ../src/gui/open_dialog.c:148
+#: ../src/gui/open_dialog.c:147
 msgid "SER files (*.ser)"
 msgstr "FIcheros SER (*.ser)"
 
-#: ../src/gui/open_dialog.c:185
+#: ../src/gui/open_dialog.c:184
 msgid "Film Files (*.avi, *.mpg, ...)"
 msgstr "Ficheros de película (*.avi, *.mpg, ...)"
 
-#: ../src/gui/open_dialog.c:199
+#: ../src/gui/open_dialog.c:198
 msgid "All supported files"
 msgstr "Todos los ficheros soportados"
 
-#: ../src/gui/open_dialog.c:241
+#: ../src/gui/open_dialog.c:242
 #, fuzzy
-msgid "pixel"
-msgid_plural "pixels"
-msgstr[0] "Super píxel"
-msgstr[1] "Super píxel"
+msgid "Folder"
+msgstr "Seleccione fase"
 
 #: ../src/gui/photometric_cc.c:91
 msgid "Photometric Color Calibration"
@@ -7427,11 +7432,11 @@ msgstr ""
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "No se puede hacer el debayer en una imagen con más de un canal\n"
 
-#: ../src/io/conversion.c:896 ../src/io/ser.c:838 ../src/io/ser.c:1049
+#: ../src/io/conversion.c:896 ../src/io/ser.c:839 ../src/io/ser.c:1050
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "No se ha encontrado patrón Bayer en el fichero cabecera.\n"
 
-#: ../src/io/conversion.c:899 ../src/io/ser.c:842 ../src/io/ser.c:1053
+#: ../src/io/conversion.c:899 ../src/io/ser.c:843 ../src/io/ser.c:1054
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -8089,16 +8094,16 @@ msgstr "Compactando el fichero SER tras la salida paralela...\n"
 msgid "Created SER file %s\n"
 msgstr "Archivo SER %s creado\n"
 
-#: ../src/io/ser.c:882 ../src/io/ser.c:1115
+#: ../src/io/ser.c:883 ../src/io/ser.c:1116
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "Este tipo de patrón Bayer todavía no se maneja.\n"
 
-#: ../src/io/ser.c:1063
+#: ../src/io/ser.c:1064
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr ""
 "Para una imagen con demosaico, la capa tiene que ser R,G o B (0 a 2).\n"
 
-#: ../src/io/ser.c:1151
+#: ../src/io/ser.c:1152
 msgid "Trying to add an image of different size in a SER\n"
 msgstr "Intentando añadir una imagen de diferente tamaño en un SER\n"
 

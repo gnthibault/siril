@@ -49,45 +49,17 @@ extern "C" {
 
 #include "exif.h"
 
-#ifdef _OPENMP
-	static omp_lock_t image_lock;
-#endif
-
-// exiv2's readMetadata is not thread safe in 0.26. so we lock it. since readMetadata might throw an exception we
-// wrap it into some c++ magic to make sure we unlock in all cases. well, actually not magic but basic raii.
-// FIXME: check again once we rely on 0.27
-
-
-class Lock
-{
-public:
-#ifdef _OPENMP
-  Lock() { omp_set_lock(&image_lock); }
-  ~Lock() { omp_unset_lock(&image_lock); }
-#else
-  Lock() { void(); }
-  ~Lock() { void(); }
-#endif
-};
-
-#define read_metadata_threadsafe(image)                       \
-{                                                             \
-  Lock lock;                                                  \
-  image->readMetadata();                                      \
-}
-
-
 /** code from darktable */
 /**
  * Get the largest possible thumbnail from the image
  */
-int siril_exif_get_thumbnail(const char *path, uint8_t **buffer, size_t *size,
+int siril_get_thumbnail_exiv(const char *path, uint8_t **buffer, size_t *size,
 		char **mime_type) {
 	try {
 		std::unique_ptr<Exiv2::Image> image(
 				Exiv2::ImageFactory::open(WIDEN(path)));
 		assert(image.get() != 0);
-		read_metadata_threadsafe(image);
+		image->readMetadata();
 
 		// Get a list of preview images available in the image. The list is sorted
 		// by the preview image pixel size, starting with the smallest preview.

@@ -37,7 +37,9 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/siril_app_dirs.h"
+#include "core/exif.h"
 #include "io/conversion.h"
+#include "io/ser.h"
 #include "io/sequence.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
@@ -235,6 +237,18 @@ const char *get_filename_ext(const char *filename) {
 		return NULL;
 	}
 	return dot + 1;
+}
+
+/**
+ *
+ * @param filename
+ * @return the type of the file from its filename
+ */
+image_type get_type_from_filename(const gchar *filename) {
+	const char *ext = get_filename_ext(filename);
+	if (!ext)
+		return TYPEUNDEF;
+	return get_type_for_extension(ext);
 }
 
 /**
@@ -738,4 +752,67 @@ double encodeJD(dateTime dt) {
 	} else {
 		return jd1 + 2 - (dt.year / 100) + (dt.year / 400);
 	}
+}
+
+/**
+ * THis function try to extract a thumbnail from the image given in path
+ * @param path this is the path of the image we want to extract the thumbnail
+ * @param buffer returned buffer of the thumbnail
+ * @param size size of the allocated buffer
+ * @param mime_type mime_type of the image
+ * @return 0 when the thumbnail wa recovered, 1 otherwise
+ */
+int siril_get_thumbnail(const char *path, uint8_t **buffer, size_t *size,
+		char **mime_type) {
+	int ret;
+	image_type type;
+
+	type = get_type_from_filename(path);
+
+	if (type == TYPEUNDEF) {
+		return 1;
+	} else if (type == TYPEFITS) {
+		ret = siril_build_FITS_thumbnail(path, buffer, size, mime_type);
+	} else {
+		ret = siril_get_thumbnail_exiv(path, buffer, size, mime_type);
+	}
+	return ret;
+}
+
+
+/**
+ * Try to get file info, i.e width and height
+ * @param filename
+ * @return a newly allocated and formated string containing dimension information or NULL
+ */
+gchar *siril_get_file_info(const gchar *filename) {
+	int width;
+	int height;
+	gboolean have_info = FALSE;
+	image_type type;
+
+	type = get_type_from_filename(filename);
+
+	if (type == TYPEFITS) {
+		if (!siril_get_FITS_size_info(filename, &width, &height)) {
+			have_info = TRUE;
+		}
+	} else if (type == TYPESER) {
+		if (!siril_get_SER_size_info(filename, &width, &height)) {
+			have_info = TRUE;
+		}
+	} else {
+		GdkPixbufFormat *pixbuf_file_info = gdk_pixbuf_get_file_info(filename,
+				&width, &height);
+
+		if (pixbuf_file_info != NULL) {
+			/* Pixel size of image: width x height in pixel */
+			have_info = TRUE;
+		}
+	}
+	if (have_info) {
+		return g_strdup_printf("%d x %d %s", width, height,
+				ngettext("pixel", "pixels", height));
+	}
+	return NULL;
 }

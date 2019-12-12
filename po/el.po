@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-06 22:38+0100\n"
+"POT-Creation-Date: 2019-12-12 09:43+0100\n"
 "PO-Revision-Date: 2019-10-13 19:59+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -4480,7 +4480,7 @@ msgstr "Η ανάκτηση απέτυχε με κωδικό %ld για τη δ�
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:458
+#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:474
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:300 ../src/io/conversion.c:610
 #: ../src/io/single_image.c:149
@@ -6487,67 +6487,74 @@ msgstr ""
 "Σφάλμα Ι/Ο Αρχείου: Δεν ήταν δυνατή η εγγραφή αρχείου αναίρεσης στο %s: "
 "[%s]\n"
 
-#: ../src/core/utils.c:282
+#: ../src/core/utils.c:283
 msgid "Unknown error\n"
 msgstr "Άγνωστο σφάλμα\n"
 
-#: ../src/core/utils.c:285
+#: ../src/core/utils.c:286
 #, c-format
 msgid "'%s' No such file or directory\n"
 msgstr "'%s' Δεν υπάρχει αυτό το αρχείο ή ο κατάλογος\n"
 
-#: ../src/core/utils.c:288
+#: ../src/core/utils.c:289
 #, c-format
 msgid "'%s' is not a directory\n"
 msgstr "Το '%s' δεν είναι κατάλογος\n"
 
-#: ../src/core/utils.c:291
+#: ../src/core/utils.c:292
 #, c-format
 msgid "You don't have permission to write in this directory: '%s'\n"
 msgstr "Δεν έχετε άδεια να γράψετε σε αυτό τον κατάλογο: '%s'\n"
 
-#: ../src/core/utils.c:304
+#: ../src/core/utils.c:305
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "Γίνεται ορισμός του τρέχοντος καταλόγου εργασίας στο '%s'\n"
 
-#: ../src/core/utils.c:307
+#: ../src/core/utils.c:308
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr "Δεν ήταν δυνατή η αλλαγή του καταλόγου στο '%s'.\n"
 
-#: ../src/core/utils.c:448
+#: ../src/core/utils.c:449
 #, fuzzy
 msgid "sequence"
 msgid_plural "sequences"
 msgstr[0] "Αλληλουχία"
 msgstr[1] "Αλληλουχία"
 
-#: ../src/core/utils.c:475
+#: ../src/core/utils.c:476
 msgid "Filename is too long, not expanding it\n"
 msgstr "Το όνομα του αρχείου είναι πολύ μεγάλο, δεν γίνεται επέκταση του\n"
 
-#: ../src/core/utils.c:590
+#: ../src/core/utils.c:591
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Γίνεται έλεγχος της έκδοσης GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:612
+#: ../src/core/utils.c:613
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "Η έκδοση του GTK δεν ταιριάζει με τις απαιτήσεις: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:618
+#: ../src/core/utils.c:619
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr ""
 "Δεν ήταν δυνατό να φορτωθεί το αρχείο CSS: %s. Παρακαλώ εγκαταστήστε ξανά το "
 "Siril\n"
 
-#: ../src/core/utils.c:628 ../src/main.c:177
+#: ../src/core/utils.c:629 ../src/main.c:177
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Το '%s' φορτώθηκε με επιτυχία\n"
+
+#: ../src/core/utils.c:747
+#, fuzzy
+msgid "pixel"
+msgid_plural "pixels"
+msgstr[0] "Υπερ-εικονοστοιχείο"
+msgstr[1] "Υπερ-εικονοστοιχείο"
 
 #: ../src/filters/banding.c:112
 msgid "Banding Reducing: processing...\n"
@@ -6907,47 +6914,45 @@ msgstr ""
 msgid "_Do not show this dialog again"
 msgstr "_Να μην εμφανιστεί ξανά αυτό το παράθυρο διαλόγου"
 
-#: ../src/gui/open_dialog.c:74 ../src/gui/save_dialog.c:60
+#: ../src/gui/open_dialog.c:73 ../src/gui/save_dialog.c:60
 msgid "FITS Files (*.fit, *.fits, *.fts)"
 msgstr "Αρχεία FITS (*.fit, *.fits, *.fts)"
 
-#: ../src/gui/open_dialog.c:102
+#: ../src/gui/open_dialog.c:101
 msgid "RAW DSLR Camera Files"
 msgstr "Αρχεία RAW κάμερας DSLR"
 
-#: ../src/gui/open_dialog.c:116
+#: ../src/gui/open_dialog.c:115
 msgid "Graphics Files (*.bmp"
 msgstr "Αρχεία Γραφικών (*.bmp"
 
 #. NETPBM FILES
-#: ../src/gui/open_dialog.c:142 ../src/gui/save_dialog.c:83
+#: ../src/gui/open_dialog.c:141 ../src/gui/save_dialog.c:83
 msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
 msgstr "Αρχεία Netpbm (*.ppm, *.pnm, *.pgm)"
 
 #. IRIS FILES
-#: ../src/gui/open_dialog.c:145
+#: ../src/gui/open_dialog.c:144
 msgid "IRIS PIC Files (*.pic)"
 msgstr "Αρχεία IRIS PIC (*.pic)"
 
 #. SER FILES
-#: ../src/gui/open_dialog.c:148
+#: ../src/gui/open_dialog.c:147
 msgid "SER files (*.ser)"
 msgstr "Αρχεία SER (*.ser)"
 
-#: ../src/gui/open_dialog.c:185
+#: ../src/gui/open_dialog.c:184
 msgid "Film Files (*.avi, *.mpg, ...)"
 msgstr "Αρχεία ταινίας (*.avi, *.mpg, ...)"
 
-#: ../src/gui/open_dialog.c:199
+#: ../src/gui/open_dialog.c:198
 msgid "All supported files"
 msgstr "Όλα τα αρχεία που υποστηρίζονται"
 
-#: ../src/gui/open_dialog.c:241
+#: ../src/gui/open_dialog.c:242
 #, fuzzy
-msgid "pixel"
-msgid_plural "pixels"
-msgstr[0] "Υπερ-εικονοστοιχείο"
-msgstr[1] "Υπερ-εικονοστοιχείο"
+msgid "Folder"
+msgstr "Επιλέξτε Φάση"
 
 #: ../src/gui/photometric_cc.c:91
 msgid "Photometric Color Calibration"
@@ -7497,11 +7502,11 @@ msgstr ""
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "Δεν μπορεί να γίνει debayer σε εικόνα με πάνω από ένα κανάλι\n"
 
-#: ../src/io/conversion.c:896 ../src/io/ser.c:838 ../src/io/ser.c:1049
+#: ../src/io/conversion.c:896 ../src/io/ser.c:839 ../src/io/ser.c:1050
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Δεν βρέθηκε διάταξη Bayer στην κεφαλίδα του αρχείου.\n"
 
-#: ../src/io/conversion.c:899 ../src/io/ser.c:842 ../src/io/ser.c:1053
+#: ../src/io/conversion.c:899 ../src/io/ser.c:843 ../src/io/ser.c:1054
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -8193,17 +8198,17 @@ msgstr "Συμπίεση του αρχείου SER μετά από παράλλ�
 msgid "Created SER file %s\n"
 msgstr "Το αρχείο SER δημιουργήθηκε %s\n"
 
-#: ../src/io/ser.c:882 ../src/io/ser.c:1115
+#: ../src/io/ser.c:883 ../src/io/ser.c:1116
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "Αυτή η διάταξη Bayer δεν υποστηρίζεται ακόμα.\n"
 
-#: ../src/io/ser.c:1063
+#: ../src/io/ser.c:1064
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr ""
 "Για μια εικόνα που έχει γίνει demosaic, το επίπεδο πρέπει να είναι R, G ή B "
 "(0 έως 2).\n"
 
-#: ../src/io/ser.c:1151
+#: ../src/io/ser.c:1152
 msgid "Trying to add an image of different size in a SER\n"
 msgstr ""
 "Γίνεται προσπάθεια προσθήκης μιας εικόνας διαφορετικού μεγέθους σε ένα SER\n"
