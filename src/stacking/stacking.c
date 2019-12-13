@@ -340,6 +340,9 @@ static void start_stacking() {
 	stackparam.method =
 			stacking_methods[gtk_combo_box_get_active(method_combo)];
 
+	stackparam.use_32bit_output = evaluate_stacking_should_output_32bits(stackparam.method,
+			&com.seq, stackparam.nb_images_to_stack);
+
 	// ensure we have no normalization if not supported by the stacking method
 	if (stackparam.method != stack_median && stackparam.method != stack_mean_with_rejection)
 		stackparam.normalize = NO_NORM;
@@ -898,9 +901,6 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 			stackparam.nb_images_to_stack, com.seq.number);
 	gtk_label_set_text(result_label, labelbuffer);
 	g_free(labelbuffer);
-
-	stackparam.use_32bit_output = evaluate_stacking_should_output_32bits(stackparam.method,
-			&com.seq, stackparam.nb_images_to_stack);
 
 	if (stackparam.nb_images_to_stack >= 2) {
 		stack_fill_list_of_unfiltered_images(&stackparam);
