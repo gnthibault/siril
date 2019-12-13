@@ -1249,25 +1249,24 @@ int64_t ser_compute_file_size(struct ser_struct *ser_file, int nb_frames) {
 	return size;
 }
 
-int siril_get_SER_size_info(const gchar *filename, int *width, int *height, int *n_channel) {
+int siril_get_SER_size_info(const gchar *filename, int *width, int *height,
+		int *n_channels) {
 	struct ser_struct ser;
 	ser_init_struct(&ser);
 	if (ser_open_file(filename, &ser)) {
 		return 1;
 	}
 
-    *width = ser.image_width;
-    *height = ser.image_height;
+	*width = ser.image_width;
+	*height = ser.image_height;
 
 	switch (ser.color_id) {
 	case SER_MONO:
-		*n_channel = 1;
+		*n_channels = 1;
 		break;
 	default:
-		*n_channel = 3;
+		*n_channels = 3;
 	}
 
-	ser_close_file(&ser);
-
-	return 0;
+	return ser_close_file(&ser);
 }
