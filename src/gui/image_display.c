@@ -598,6 +598,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	int image_width, image_height, window_width, window_height;
 	int vport, i = 0;
 	double zoom;
+	cairo_filter_t filter;
 
 	// we need to identify which vport is being redrawn
 	vport = match_drawing_area_widget(widget, TRUE);
@@ -612,12 +613,14 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	image_width = (int) (((double) window_width) / zoom);
 	image_height = (int) (((double) window_height) / zoom);
 
+	filter = (zoom < 1.0) ? CAIRO_FILTER_GOOD : CAIRO_FILTER_FAST;
+
 	/* draw the RGB and gray images */
 	if (vport == RGB_VPORT) {
 		if (com.rgbbuf) {
 			cairo_scale(cr, zoom, zoom);
 			cairo_set_source_surface(cr, com.surface[RGB_VPORT], 0, 0);
-			cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_FAST);
+			cairo_pattern_set_filter(cairo_get_source(cr), filter);
 			cairo_paint(cr);
 		} else {
 			draw_empty_image(cr, window_width, window_height);
@@ -626,7 +629,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		if (com.graybuf[vport]) {
 			cairo_scale(cr, zoom, zoom);
 			cairo_set_source_surface(cr, com.surface[vport], 0, 0);
-			cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_FAST);
+			cairo_pattern_set_filter(cairo_get_source(cr), filter);
 			cairo_paint(cr);
 		} else {
 			draw_empty_image(cr, window_width, window_height);
