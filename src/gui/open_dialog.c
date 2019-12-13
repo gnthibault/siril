@@ -236,7 +236,7 @@ static gboolean end_update_preview_cb(gpointer p) {
 
 	if (type == G_FILE_TYPE_REGULAR) {
 		/* try to read image dimensions */
-		dim_str = siril_get_file_info(args->filename);
+		dim_str = siril_get_file_info(args->filename, args->pixbuf);
 	} else if (type == G_FILE_TYPE_DIRECTORY) {
 		dim_str = g_strdup(_("Folder"));
 	}
@@ -362,9 +362,9 @@ static void siril_file_chooser_add_preview(SirilWidget *widget) {
 		preview.dim_label = gtk_label_new(NULL);
 		preview.size_label = gtk_label_new(NULL);
 
-		gtk_label_set_justify(preview.name_label, GTK_JUSTIFY_CENTER);
-		gtk_label_set_justify(preview.dim_label, GTK_JUSTIFY_CENTER);
-		gtk_label_set_justify(preview.dim_label, GTK_JUSTIFY_CENTER);
+		gtk_label_set_justify(GTK_LABEL(preview.name_label), GTK_JUSTIFY_CENTER);
+		gtk_label_set_justify(GTK_LABEL(preview.dim_label), GTK_JUSTIFY_CENTER);
+		gtk_label_set_justify(GTK_LABEL(preview.dim_label), GTK_JUSTIFY_CENTER);
 
 		gtk_widget_set_size_request(preview.image, preview_size, preview_size);
 

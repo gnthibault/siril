@@ -115,7 +115,7 @@ float computePente(WORD *lo, WORD *hi);
 void load_css_style_sheet();
 double encodeJD(dateTime dt);
 int siril_get_thumbnail(const char *path, uint8_t **buffer, size_t *size, char **mime_type);
-gchar *siril_get_file_info(const gchar *filename);
+gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf);
 
 /****************** quantize.h ***************/
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,

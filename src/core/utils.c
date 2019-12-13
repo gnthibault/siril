@@ -725,10 +725,11 @@ int siril_get_thumbnail(const char *path, uint8_t **buffer, size_t *size,
 
 /**
  * Try to get file info, i.e width and height
- * @param filename
+ * @param filename name of the file
+ * @param pixbuf
  * @return a newly allocated and formated string containing dimension information or NULL
  */
-gchar *siril_get_file_info(const gchar *filename) {
+gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
 	int width;
 	int height;
 	int n_channel = 0;
@@ -751,6 +752,9 @@ gchar *siril_get_file_info(const gchar *filename) {
 
 		if (pixbuf_file_info != NULL) {
 			have_info = TRUE;
+		}
+		if (pixbuf) {
+			n_channel = gdk_pixbuf_get_n_channels(pixbuf);
 		}
 	}
 	if (have_info) {
