@@ -1675,7 +1675,7 @@ void keep_first_channel_from_fits(fits *fit) {
 	}
 }
 
-int siril_get_FITS_size_info(const char *filename, gint *width, gint *height) {
+int siril_get_FITS_size_info(const char *filename, gint *width, gint *height, gint *n_channel) {
 	int status = 0;
 	fitsfile *fptr;
 	int anaxis;
@@ -1692,11 +1692,13 @@ int siril_get_FITS_size_info(const char *filename, gint *width, gint *height) {
 
     if (status) {
        fits_report_error(stderr, status); /* print error message */
+       fits_close_file(fptr, &status);
        return(status);
     }
 
     *width = anaxes[0];
     *height = anaxes[1];
+    *n_channel = anaxes[2];
 
 	fits_close_file(fptr, &status);
 
