@@ -210,6 +210,7 @@ struct _updta_preview_data {
 
 static gboolean end_update_preview_cb(gpointer p) {
 	struct _updta_preview_data *args = (struct _updta_preview_data *) p;
+
 	stop_processing_thread();
 
 	int bytes;
@@ -221,12 +222,10 @@ static gboolean end_update_preview_cb(gpointer p) {
 
 	name_str = g_path_get_basename(args->filename);
 
-	type = g_file_info_get_file_type (args->file_info);
+	type = g_file_info_get_file_type(args->file_info);
 
 	/* try to read file size */
-	if (args->pixbuf
-			&& (bytes_str = gdk_pixbuf_get_option(args->pixbuf,
-					"tEXt::Thumb::Size")) != NULL) {
+	if (args->pixbuf && (bytes_str = gdk_pixbuf_get_option(args->pixbuf, "tEXt::Thumb::Size")) != NULL) {
 		bytes = atoi(bytes_str);
 		size_str = g_format_size(bytes);
 	} else {
@@ -237,7 +236,7 @@ static gboolean end_update_preview_cb(gpointer p) {
 
 	if (type == G_FILE_TYPE_REGULAR) {
 		/* try to read image dimensions */
-		dim_str = siril_get_file_info(args->filename);
+		dim_str = siril_get_file_info(args->filename, args->pixbuf);
 	} else if (type == G_FILE_TYPE_DIRECTORY) {
 		dim_str = g_strdup(_("Folder"));
 	}
@@ -253,7 +252,6 @@ static gboolean end_update_preview_cb(gpointer p) {
 	gtk_label_set_text(GTK_LABEL(preview.size_label), size_str);
 	if (type == G_FILE_TYPE_REGULAR && args->pixbuf) {
 		gtk_image_set_from_pixbuf(GTK_IMAGE(preview.image), args->pixbuf);
-		g_object_unref(args->pixbuf);
 	} else if (type == G_FILE_TYPE_DIRECTORY) {
 		gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "folder-symbolic", GTK_ICON_SIZE_DIALOG);
 		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), preview_size);
@@ -267,6 +265,8 @@ static gboolean end_update_preview_cb(gpointer p) {
 		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), preview_size);
 	}
 
+	if (args->pixbuf)
+		g_object_unref(args->pixbuf);
 	g_free(markup);
 	g_free(name_str);
 	g_free(dim_str);
@@ -294,15 +294,14 @@ static gpointer update_preview_cb_idle(gpointer p) {
 			goto cleanup;
 		// Calling gdk_pixbuf_loader_close forces the data to be parsed by the
 		// loader. We must do this before calling gdk_pixbuf_loader_get_pixbuf.
-		if (!gdk_pixbuf_loader_close(loader, NULL))
+		GError *error = NULL;
+		if (!gdk_pixbuf_loader_close(loader, &error))
 			goto cleanup;
 		if (!(tmp = gdk_pixbuf_loader_get_pixbuf(loader)))
 			goto cleanup;
-		float ratio = 1.0 * gdk_pixbuf_get_height(tmp)
-				/ gdk_pixbuf_get_width(tmp);
+		float ratio = 1.0 * gdk_pixbuf_get_height(tmp) / gdk_pixbuf_get_width(tmp);
 		int width = preview_size, height = preview_size * ratio;
-		pixbuf = gdk_pixbuf_scale_simple(tmp, width, height,
-				GDK_INTERP_BILINEAR);
+		pixbuf = gdk_pixbuf_scale_simple(tmp, width, height, GDK_INTERP_BILINEAR);
 
 		cleanup: gdk_pixbuf_loader_close(loader, NULL);
 		free(mime_type);
@@ -355,7 +354,7 @@ static void siril_file_chooser_add_preview(SirilWidget *widget) {
 	if (com.show_preview) {
 		GtkWidget *vbox;
 
-		vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+		vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 		gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
 
 		preview.image = gtk_image_new();
@@ -363,10 +362,14 @@ static void siril_file_chooser_add_preview(SirilWidget *widget) {
 		preview.dim_label = gtk_label_new(NULL);
 		preview.size_label = gtk_label_new(NULL);
 
+		gtk_label_set_justify(GTK_LABEL(preview.name_label), GTK_JUSTIFY_CENTER);
+		gtk_label_set_justify(GTK_LABEL(preview.dim_label), GTK_JUSTIFY_CENTER);
+		gtk_label_set_justify(GTK_LABEL(preview.dim_label), GTK_JUSTIFY_CENTER);
+
 		gtk_widget_set_size_request(preview.image, preview_size, preview_size);
 
 		gtk_box_pack_start(GTK_BOX(vbox), preview.image, FALSE, TRUE, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), preview.name_label, FALSE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), preview.name_label, FALSE, TRUE, 10);
 		gtk_box_pack_start(GTK_BOX(vbox), preview.size_label, FALSE, TRUE, 0);
 		gtk_box_pack_start(GTK_BOX(vbox), preview.dim_label, FALSE, TRUE, 0);
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-12 09:43+0100\n"
+"POT-Creation-Date: 2019-12-12 23:16+0100\n"
 "PO-Revision-Date: 2019-11-04 19:31+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -4416,7 +4416,7 @@ msgstr "Holen fehlgeschlagen mit Code %ld für URL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:474
+#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:484
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:300 ../src/io/conversion.c:610
 #: ../src/io/single_image.c:149
@@ -6384,78 +6384,85 @@ msgstr "Datei I/O-Fehler: Kann Swap-Datei nicht erstellen in %s: [%s]\n"
 msgid "File I/O Error: Unable to write swap file in %s: [%s]\n"
 msgstr "Datei I/O-Fehler: schreiben in Swap-Datei nicht möglich in %s: [%s]\n"
 
-#: ../src/core/utils.c:283
+#: ../src/core/utils.c:296
 msgid "Unknown error\n"
 msgstr "Unbekannter Fehler\n"
 
-#: ../src/core/utils.c:286
+#: ../src/core/utils.c:299
 #, c-format
 msgid "'%s' No such file or directory\n"
 msgstr "‚%s‘  Unbekannter Datei- oder Verzeichnis-Name\n"
 
-#: ../src/core/utils.c:289
+#: ../src/core/utils.c:302
 #, c-format
 msgid "'%s' is not a directory\n"
 msgstr ""
 "\"%s\" ist kein Verzeichnis\n"
 " \n"
 
-#: ../src/core/utils.c:292
+#: ../src/core/utils.c:305
 #, c-format
 msgid "You don't have permission to write in this directory: '%s'\n"
 msgstr ""
 "Sie haben keine Schreib-Berechtigung im Verzeichnis: %s\n"
 " \n"
 
-#: ../src/core/utils.c:305
+#: ../src/core/utils.c:318
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "Legen Sie das aktuelle Arbeitsverzeichnis fest '%s'\n"
 
-#: ../src/core/utils.c:308
+#: ../src/core/utils.c:321
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr "Konnte nicht wechseln zu Verzeichnis '%s'.\n"
 
-#: ../src/core/utils.c:449
+#: ../src/core/utils.c:462
 #, fuzzy
 msgid "sequence"
 msgid_plural "sequences"
 msgstr[0] "Sequenz"
 msgstr[1] "Sequenz"
 
-#: ../src/core/utils.c:476
+#: ../src/core/utils.c:489
 msgid "Filename is too long, not expanding it\n"
 msgstr "Dateiname zu lang\n"
 
-#: ../src/core/utils.c:591
+#: ../src/core/utils.c:604
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Prüfe GTK-Version ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:613
+#: ../src/core/utils.c:626
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "GTK-Version entspricht nicht den Anforderungen: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:619
+#: ../src/core/utils.c:632
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr ""
 "CSS-Stylesheet-Datei kann nicht geladen werden: %s. Bitte installieren Sie "
 "Siril erneut.\n"
 
-#: ../src/core/utils.c:629 ../src/main.c:177
+#: ../src/core/utils.c:642 ../src/main.c:177
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Erfolgreich geladen '%s'\n"
 
-#: ../src/core/utils.c:747
+#: ../src/core/utils.c:760 ../src/core/utils.c:764
 #, fuzzy
 msgid "pixel"
 msgid_plural "pixels"
 msgstr[0] "Super Pixel"
 msgstr[1] "Super Pixel"
+
+#: ../src/core/utils.c:761
+#, fuzzy
+msgid "channel"
+msgid_plural "channels"
+msgstr[0] "Rot-Kanal"
+msgstr[1] "Rot-Kanal"
 
 #: ../src/filters/banding.c:112
 msgid "Banding Reducing: processing...\n"
@@ -6850,7 +6857,7 @@ msgstr "Film-/Video-Dateien (*.avi, *.mpg, ...)"
 msgid "All supported files"
 msgstr "Alle unterstützten Datei-Formate"
 
-#: ../src/gui/open_dialog.c:242
+#: ../src/gui/open_dialog.c:241
 #, fuzzy
 msgid "Folder"
 msgstr "Phase auswählen"

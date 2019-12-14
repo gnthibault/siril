@@ -782,23 +782,25 @@ int siril_get_thumbnail(const char *path, uint8_t **buffer, size_t *size,
 
 /**
  * Try to get file info, i.e width and height
- * @param filename
+ * @param filename name of the file
+ * @param pixbuf
  * @return a newly allocated and formated string containing dimension information or NULL
  */
-gchar *siril_get_file_info(const gchar *filename) {
+gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
 	int width;
 	int height;
+	int n_channel = 0;
 	gboolean have_info = FALSE;
 	image_type type;
 
 	type = get_type_from_filename(filename);
 
 	if (type == TYPEFITS) {
-		if (!siril_get_FITS_size_info(filename, &width, &height)) {
+		if (!siril_get_FITS_size_info(filename, &width, &height, &n_channel)) {
 			have_info = TRUE;
 		}
 	} else if (type == TYPESER) {
-		if (!siril_get_SER_size_info(filename, &width, &height)) {
+		if (!siril_get_SER_size_info(filename, &width, &height, &n_channel)) {
 			have_info = TRUE;
 		}
 	} else {
@@ -806,13 +808,22 @@ gchar *siril_get_file_info(const gchar *filename) {
 				&width, &height);
 
 		if (pixbuf_file_info != NULL) {
-			/* Pixel size of image: width x height in pixel */
 			have_info = TRUE;
+		}
+		if (pixbuf) {
+			n_channel = gdk_pixbuf_get_n_channels(pixbuf);
 		}
 	}
 	if (have_info) {
-		return g_strdup_printf("%d x %d %s", width, height,
-				ngettext("pixel", "pixels", height));
+		/* Pixel size of image: width x height in pixel */
+		if (n_channel > 0) {
+			return g_strdup_printf("%d x %d %s\n%d %s", width, height,
+					ngettext("pixel", "pixels", height), n_channel,
+					ngettext("channel", "channels", n_channel));
+		} else {
+			return g_strdup_printf("%d x %d %s", width, height,
+					ngettext("pixel", "pixels", height));
+		}
 	}
 	return NULL;
 }

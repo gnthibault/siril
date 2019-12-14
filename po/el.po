@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-12 09:43+0100\n"
+"POT-Creation-Date: 2019-12-12 23:16+0100\n"
 "PO-Revision-Date: 2019-10-13 19:59+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -4480,7 +4480,7 @@ msgstr "Η ανάκτηση απέτυχε με κωδικό %ld για τη δ�
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:474
+#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:484
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:300 ../src/io/conversion.c:610
 #: ../src/io/single_image.c:149
@@ -6487,74 +6487,81 @@ msgstr ""
 "Σφάλμα Ι/Ο Αρχείου: Δεν ήταν δυνατή η εγγραφή αρχείου αναίρεσης στο %s: "
 "[%s]\n"
 
-#: ../src/core/utils.c:283
+#: ../src/core/utils.c:296
 msgid "Unknown error\n"
 msgstr "Άγνωστο σφάλμα\n"
 
-#: ../src/core/utils.c:286
+#: ../src/core/utils.c:299
 #, c-format
 msgid "'%s' No such file or directory\n"
 msgstr "'%s' Δεν υπάρχει αυτό το αρχείο ή ο κατάλογος\n"
 
-#: ../src/core/utils.c:289
+#: ../src/core/utils.c:302
 #, c-format
 msgid "'%s' is not a directory\n"
 msgstr "Το '%s' δεν είναι κατάλογος\n"
 
-#: ../src/core/utils.c:292
+#: ../src/core/utils.c:305
 #, c-format
 msgid "You don't have permission to write in this directory: '%s'\n"
 msgstr "Δεν έχετε άδεια να γράψετε σε αυτό τον κατάλογο: '%s'\n"
 
-#: ../src/core/utils.c:305
+#: ../src/core/utils.c:318
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "Γίνεται ορισμός του τρέχοντος καταλόγου εργασίας στο '%s'\n"
 
-#: ../src/core/utils.c:308
+#: ../src/core/utils.c:321
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr "Δεν ήταν δυνατή η αλλαγή του καταλόγου στο '%s'.\n"
 
-#: ../src/core/utils.c:449
+#: ../src/core/utils.c:462
 #, fuzzy
 msgid "sequence"
 msgid_plural "sequences"
 msgstr[0] "Αλληλουχία"
 msgstr[1] "Αλληλουχία"
 
-#: ../src/core/utils.c:476
+#: ../src/core/utils.c:489
 msgid "Filename is too long, not expanding it\n"
 msgstr "Το όνομα του αρχείου είναι πολύ μεγάλο, δεν γίνεται επέκταση του\n"
 
-#: ../src/core/utils.c:591
+#: ../src/core/utils.c:604
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Γίνεται έλεγχος της έκδοσης GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:613
+#: ../src/core/utils.c:626
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "Η έκδοση του GTK δεν ταιριάζει με τις απαιτήσεις: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:619
+#: ../src/core/utils.c:632
 #, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr ""
 "Δεν ήταν δυνατό να φορτωθεί το αρχείο CSS: %s. Παρακαλώ εγκαταστήστε ξανά το "
 "Siril\n"
 
-#: ../src/core/utils.c:629 ../src/main.c:177
+#: ../src/core/utils.c:642 ../src/main.c:177
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Το '%s' φορτώθηκε με επιτυχία\n"
 
-#: ../src/core/utils.c:747
+#: ../src/core/utils.c:760 ../src/core/utils.c:764
 #, fuzzy
 msgid "pixel"
 msgid_plural "pixels"
 msgstr[0] "Υπερ-εικονοστοιχείο"
 msgstr[1] "Υπερ-εικονοστοιχείο"
+
+#: ../src/core/utils.c:761
+#, fuzzy
+msgid "channel"
+msgid_plural "channels"
+msgstr[0] "Κόκκινο κανάλι"
+msgstr[1] "Κόκκινο κανάλι"
 
 #: ../src/filters/banding.c:112
 msgid "Banding Reducing: processing...\n"
@@ -6949,7 +6956,7 @@ msgstr "Αρχεία ταινίας (*.avi, *.mpg, ...)"
 msgid "All supported files"
 msgstr "Όλα τα αρχεία που υποστηρίζονται"
 
-#: ../src/gui/open_dialog.c:242
+#: ../src/gui/open_dialog.c:241
 #, fuzzy
 msgid "Folder"
 msgstr "Επιλέξτε Φάση"

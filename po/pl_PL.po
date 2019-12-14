@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-12 09:43+0100\n"
+"POT-Creation-Date: 2019-12-12 23:16+0100\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -4349,7 +4349,7 @@ msgstr ""
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:474
+#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:484
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:300 ../src/io/conversion.c:610
 #: ../src/io/single_image.c:149
@@ -6061,36 +6061,36 @@ msgstr ""
 msgid "File I/O Error: Unable to write swap file in %s: [%s]\n"
 msgstr ""
 
-#: ../src/core/utils.c:283
+#: ../src/core/utils.c:296
 msgid "Unknown error\n"
 msgstr "Nieznany błąd\n"
 
-#: ../src/core/utils.c:286
+#: ../src/core/utils.c:299
 #, fuzzy, c-format
 msgid "'%s' No such file or directory\n"
 msgstr "Brak takiego pliku lub katalogu\n"
 
-#: ../src/core/utils.c:289
+#: ../src/core/utils.c:302
 #, fuzzy, c-format
 msgid "'%s' is not a directory\n"
 msgstr "\"% s\" nie jest katalogiem\n"
 
-#: ../src/core/utils.c:292
+#: ../src/core/utils.c:305
 #, fuzzy, c-format
 msgid "You don't have permission to write in this directory: '%s'\n"
 msgstr "Nie masz uprawnień do zapisu w tym katalogu: %s\n"
 
-#: ../src/core/utils.c:305
+#: ../src/core/utils.c:318
 #, c-format
 msgid "Setting CWD (Current Working Directory) to '%s'\n"
 msgstr "Ustawienie CWD (bieżący katalog roboczy) na '%s'\n"
 
-#: ../src/core/utils.c:308
+#: ../src/core/utils.c:321
 #, c-format
 msgid "Could not change directory to '%s'.\n"
 msgstr "Nie można zmienić katalogu na '% s'.\n"
 
-#: ../src/core/utils.c:449
+#: ../src/core/utils.c:462
 #, fuzzy
 msgid "sequence"
 msgid_plural "sequences"
@@ -6098,38 +6098,46 @@ msgstr[0] "Sekwencja"
 msgstr[1] "Sekwencja"
 msgstr[2] "Sekwencja"
 
-#: ../src/core/utils.c:476
+#: ../src/core/utils.c:489
 msgid "Filename is too long, not expanding it\n"
 msgstr "Nazwa pliku jest za długa, a nie jest rozszerzana\n"
 
-#: ../src/core/utils.c:591
+#: ../src/core/utils.c:604
 #, c-format
 msgid "Checking GTK version ... GTK-%d.%d\n"
 msgstr "Sprawdzanie wersji GTK ... GTK-%d.%d\n"
 
-#: ../src/core/utils.c:613
+#: ../src/core/utils.c:626
 #, c-format
 msgid "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgstr "Wersja GTK nie spełnia wymagań: (GTK-%d.%d)\n"
 
-#: ../src/core/utils.c:619
+#: ../src/core/utils.c:632
 #, fuzzy, c-format
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr ""
 "Nie można załadować pliku arkusza stylu CSS: %s. Zainstaluj ponownie %s\n"
 
-#: ../src/core/utils.c:629 ../src/main.c:177
+#: ../src/core/utils.c:642 ../src/main.c:177
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Pomyślnie załadowano '%s'\n"
 
-#: ../src/core/utils.c:747
+#: ../src/core/utils.c:760 ../src/core/utils.c:764
 #, fuzzy
 msgid "pixel"
 msgid_plural "pixels"
 msgstr[0] "Super Pixel"
 msgstr[1] "Super Pixel"
 msgstr[2] "Super Pixel"
+
+#: ../src/core/utils.c:761
+#, fuzzy
+msgid "channel"
+msgid_plural "channels"
+msgstr[0] "Kanał czerwony"
+msgstr[1] "Kanał czerwony"
+msgstr[2] "Kanał czerwony"
 
 #: ../src/filters/banding.c:112
 msgid "Banding Reducing: processing...\n"
@@ -6534,7 +6542,7 @@ msgstr "Pliki filmowe (* .avi, * .mpg, ...)"
 msgid "All supported files"
 msgstr "Obsługiwane typy plików:"
 
-#: ../src/gui/open_dialog.c:242
+#: ../src/gui/open_dialog.c:241
 #, fuzzy
 msgid "Folder"
 msgstr "faza"
