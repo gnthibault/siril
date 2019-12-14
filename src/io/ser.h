@@ -130,7 +130,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		int frame_no, WORD *buffer, const rectangle *area);
 int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame);
 int64_t ser_compute_file_size(struct ser_struct *ser_file, int nb_frames);
-int siril_get_SER_size_info(const gchar *filename, int *width, int *height, int *n_channels);
+int siril_get_SER_size_info(const gchar *filename, int *width, int *height, int *n_channels, int *n_frames);
 
 #endif
 

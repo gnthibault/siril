@@ -733,6 +733,7 @@ gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
 	int width;
 	int height;
 	int n_channel = 0;
+	int n_frames = 1;
 	gboolean have_info = FALSE;
 	image_type type;
 
@@ -743,7 +744,7 @@ gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
 			have_info = TRUE;
 		}
 	} else if (type == TYPESER) {
-		if (!siril_get_SER_size_info(filename, &width, &height, &n_channel)) {
+		if (!siril_get_SER_size_info(filename, &width, &height, &n_channel, &n_frames)) {
 			have_info = TRUE;
 		}
 	} else {
@@ -759,13 +760,15 @@ gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
 	}
 	if (have_info) {
 		/* Pixel size of image: width x height in pixel */
-		if (n_channel > 0) {
+		if (n_frames > 1) {
+			return g_strdup_printf("%d x %d %s\n%d %s\n%d %s", width, height,
+					ngettext("pixel", "pixels", height), n_channel,
+					ngettext("channel", "channels", n_channel), n_frames,
+					ngettext("frame", "frames", n_frames));
+		} else {
 			return g_strdup_printf("%d x %d %s\n%d %s", width, height,
 					ngettext("pixel", "pixels", height), n_channel,
 					ngettext("channel", "channels", n_channel));
-		} else {
-			return g_strdup_printf("%d x %d %s", width, height,
-					ngettext("pixel", "pixels", height));
 		}
 	}
 	return NULL;

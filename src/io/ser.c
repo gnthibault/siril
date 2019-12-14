@@ -1250,7 +1250,7 @@ int64_t ser_compute_file_size(struct ser_struct *ser_file, int nb_frames) {
 }
 
 int siril_get_SER_size_info(const gchar *filename, int *width, int *height,
-		int *n_channels) {
+		int *n_channels, int *n_frames) {
 	struct ser_struct ser;
 	ser_init_struct(&ser);
 	if (ser_open_file(filename, &ser)) {
@@ -1259,6 +1259,7 @@ int siril_get_SER_size_info(const gchar *filename, int *width, int *height,
 
 	*width = ser.image_width;
 	*height = ser.image_height;
+	*n_frames = ser.frame_count;
 
 	switch (ser.color_id) {
 	case SER_MONO:
