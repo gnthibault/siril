@@ -1706,9 +1706,9 @@ int siril_get_FITS_size_info(const char *filename, gint *width, gint *height, gi
 }
 
 static void gray2rgb(float gray, guchar *rgb) {
-	*rgb++ = (guchar) (255. * gray);
-	*rgb++ = (guchar) (255. * gray);
-	*rgb++ = (guchar) (255. * gray);
+	*rgb++ = (guchar) round_to_BYTE(255. * gray);
+	*rgb++ = (guchar) round_to_BYTE(255. * gray);
+	*rgb++ = (guchar) round_to_BYTE(255. * gray);
 }
 
 static GdkPixbufDestroyNotify free_preview_data(guchar *pixels, gpointer data) {
@@ -1769,7 +1769,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename) {
 	ptr = ima_data;
 	min = max = *ptr;
 	// get statistics:
-	for (i = 0; i < h; i++)
+	for (i = 0; i < h; i++) {
 		for (j = 0; j < w; j++, ptr++) {
 			float tmp = *ptr;
 			if (tmp > max)
@@ -1777,7 +1777,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename) {
 			else if (tmp < min)
 				min = tmp;
 		}
-
+	}
 	i = (int) ceil((float) w / MAX_SIZE);
 	j = (int) ceil((float) h / MAX_SIZE);
 	pixScale = (i > j) ? i : j;	// picture scale factor
