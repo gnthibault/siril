@@ -1766,18 +1766,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename) {
 	pixbuf_data = malloc(3 * MAX_SIZE * MAX_SIZE * sizeof(guchar));
 
 	TRYFITS(fits_read_img, fp, TFLOAT, 1, sz, &nullval, ima_data, &stat);
-	ptr = ima_data;
-	min = max = *ptr;
-	// get statistics:
-	for (i = 0; i < h; i++) {
-		for (j = 0; j < w; j++, ptr++) {
-			float tmp = *ptr;
-			if (tmp > max)
-				max = tmp;
-			else if (tmp < min)
-				min = tmp;
-		}
-	}
+
 	i = (int) ceil((float) w / MAX_SIZE);
 	j = (int) ceil((float) h / MAX_SIZE);
 	pixScale = (i > j) ? i : j;	// picture scale factor
