@@ -1271,3 +1271,9 @@ int siril_get_SER_size_info(const gchar *filename, int *width, int *height,
 
 	return ser_close_file(&ser);
 }
+
+GdkPixbuf* get_thumbnail_from_ser(char *filename) {
+	GdkPixbuf *pixbuf = NULL;
+
+	return pixbuf;
+}

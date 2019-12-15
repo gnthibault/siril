@@ -21,7 +21,7 @@
 /* Management of Siril's internal image format: unsigned 16-bit FITS */
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+#include <math.h>
 #include <ctype.h>
 #include <string.h>
 #include <gsl/gsl_statistics.h>
@@ -1191,7 +1191,7 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, WORD *buffer,
 	}
 
 #ifdef _OPENMP
-	assert(seq->fd_lock);
+	g_assert(seq->fd_lock);
 	omp_set_lock(&seq->fd_lock[index]);
 #endif
 
@@ -1612,9 +1612,9 @@ void extract_region_from_fits(fits *from, int layer, fits *to,
 int new_fit_image(fits **fit, int width, int height, int nblayer) {
 	gint npixels;
 	WORD *data;
-	assert(width > 0);
-	assert(height > 0);
-	assert(nblayer == 1 || nblayer == 3);
+	g_assert(width > 0);
+	g_assert(height > 0);
+	g_assert(nblayer == 1 || nblayer == 3);
 
 	npixels = width * height;
 	data = malloc(npixels * nblayer * sizeof(WORD));
@@ -1705,8 +1705,151 @@ int siril_get_FITS_size_info(const char *filename, gint *width, gint *height, gi
 	return status;
 }
 
-int siril_build_FITS_thumbnail(const char *filename, uint8_t **buffer,
-		size_t *size, char **mime_type) {
+static void gray2rgb(float gray, guchar *rgb) {
+	*rgb++ = (guchar) (255. * gray);
+	*rgb++ = (guchar) (255. * gray);
+	*rgb++ = (guchar) (255. * gray);
+}
 
-	return 1;
+static GdkPixbufDestroyNotify free_preview_data(guchar *pixels, gpointer data) {
+	free(pixels);
+	free(data);
+	return FALSE;
+}
+
+//static double linviz(double arg) {
+//	return arg;
+//} // for PREVIEW_LINEAR
+
+static double logviz(double arg) {
+	return log1p(arg);
+} // for PREVIEW_LOG
+
+#define TRYFITS(f, ...)								\
+	do{	status = FALSE;								\
+		f(__VA_ARGS__, &status);					\
+		if(status){									\
+			free(ima_data); free(pixbuf_data);		\
+			free(pix); fits_close_file(fp, &status); \
+			return NULL;}							\
+	}while(0)
+
+/**
+ * Create a monochrome preview of a FITS file in a GdkPixbuf
+ * @param filename
+ * @return a GdkPixbuf containung the preview or NULL
+ */
+GdkPixbuf* get_thumbnail_from_fits(char *filename) {
+	gboolean status;
+	fitsfile *fp;
+	double (*color)(double);
+
+	int MAX_SIZE = thumbnail_size;
+	GdkPixbuf *pixbuf = NULL;
+	float nullval = 0.;
+	int i, j, k, l, N, M, stat;
+	int naxis, w, h, pixScale, Ws, Hs, dtype;
+	int sz;
+
+	// array for preview picture line
+	float *pix = malloc(MAX_SIZE * sizeof(float));
+	long naxes[4];
+	float *ima_data = NULL, *ptr, byte, n, m, max, min, wd, avr;
+	guchar *pptr, *pixbuf_data = NULL;
+	TRYFITS(fits_open_file, &fp, filename, READONLY);
+	TRYFITS(fits_get_img_param, fp, 4, &dtype, &naxis, naxes);
+
+	w = naxes[0];
+	h = naxes[1];
+	sz = w * h;
+	ima_data = malloc(sz * sizeof(float));
+	pixbuf_data = malloc(3 * MAX_SIZE * MAX_SIZE * sizeof(guchar));
+
+	TRYFITS(fits_read_img, fp, TFLOAT, 1, sz, &nullval, ima_data, &stat);
+	ptr = ima_data;
+	min = max = *ptr;
+	// get statistics:
+	for (i = 0; i < h; i++)
+		for (j = 0; j < w; j++, ptr++) {
+			float tmp = *ptr;
+			if (tmp > max)
+				max = tmp;
+			else if (tmp < min)
+				min = tmp;
+		}
+
+	i = (int) ceil((float) w / MAX_SIZE);
+	j = (int) ceil((float) h / MAX_SIZE);
+	pixScale = (i > j) ? i : j;	// picture scale factor
+	Ws = w / pixScale; 			// picture width in pixScale blocks
+	Hs = h / pixScale; 			// -//- height pixScale
+
+	M = 0; // line number
+	for (i = 0; i < Hs; i++) { // cycle through a blocks by lines
+		//pptr = &pixbuf_data[i * Ws * 3];
+		for (j = 0; j < MAX_SIZE; j++)
+			pix[j] = 0;
+		m = 0.; // amount of strings read in block
+		for (l = 0; l < pixScale; l++, m++) { // cycle through a block lines
+			ptr = &ima_data[M * w];
+			N = 0; // number of column
+			for (j = 0; j < Ws; j++) { // cycle through a blocks by columns
+				n = 0.;	// amount of columns read in block
+				byte = 0.; // average intensity in block
+				for (k = 0; k < pixScale; k++, n++) { // cycle through block pixels
+					if (N++ < w) // row didn't end
+						byte += *ptr++; // sum[(pix-min)/wd]/n = [sum(pix)/n-min]/wd
+					else
+						break;
+				}
+				pix[j] += byte / n; //(byte / n - min)/wd;
+			}
+			if (++M >= h)
+				break;
+		}
+		// fill unused picture pixels
+		ptr = &ima_data[i * Ws];
+		for (l = 0; l < Ws; l++)
+			*ptr++ = pix[l] / m;
+	}
+	ptr = ima_data;
+	sz = Ws * Hs;
+	max = min = *ptr;
+	avr = 0;
+	for (i = 0; i < sz; i++, ptr++) {
+		float tmp = *ptr;
+		if (tmp > max)
+			max = tmp;
+		else if (tmp < min)
+			min = tmp;
+		avr += tmp;
+	}
+	avr /= (float) sz;
+	wd = max - min;
+	avr = (avr - min) / wd;	// normal average by preview
+	avr = -log(avr);		// scale factor
+	if (avr > 1.)
+		wd /= avr;
+	ptr = ima_data;
+	color = logviz;
+	for (i = Hs - 1; i > -1; i--) {	// fill pixbuf mirroring image by vertical
+		pptr = &pixbuf_data[Ws * i * 3];
+		for (j = 0; j < Ws; j++) {
+			gray2rgb(color((*ptr++ - min) / wd), pptr);
+			pptr += 3;
+		}
+	}
+	fits_close_file(fp, &status);
+	pixbuf = gdk_pixbuf_new_from_data(pixbuf_data,		// guchar* data
+			GDK_COLORSPACE_RGB,	// only this supported
+			FALSE,				// no alpha
+			8,				// number of bits
+			Ws, Hs,				// size
+			Ws * 3,				// line length in bytes
+			(GdkPixbufDestroyNotify) free_preview_data, // function (*GdkPixbufDestroyNotify) (guchar *pixels, gpointer data);
+			NULL
+			);
+	free(ima_data);
+	free(pix);
+	return pixbuf;
 }

@@ -90,7 +90,6 @@ int siril_get_thumbnail_exiv(const char *path, uint8_t **buffer, size_t *size,
 		}
 		//std::cerr << "[exiv2] "<< path << ": found thumbnail "<< preview.width() << "x" << preview.height() << std::endl;
 		memcpy(*buffer, tmp, _size);
-
 		return 0;
 	} catch (Exiv2::AnyError &e) {
 		std::string s(e.what());

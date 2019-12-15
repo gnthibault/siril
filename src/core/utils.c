@@ -698,32 +698,6 @@ double encodeJD(dateTime dt) {
 }
 
 /**
- * THis function try to extract a thumbnail from the image given in path
- * @param path this is the path of the image we want to extract the thumbnail
- * @param buffer returned buffer of the thumbnail
- * @param size size of the allocated buffer
- * @param mime_type mime_type of the image
- * @return 0 when the thumbnail wa recovered, 1 otherwise
- */
-int siril_get_thumbnail(const char *path, uint8_t **buffer, size_t *size,
-		char **mime_type) {
-	int ret;
-	image_type type;
-
-	type = get_type_from_filename(path);
-
-	if (type == TYPEUNDEF) {
-		return 1;
-	} else if (type == TYPEFITS) {
-		ret = siril_build_FITS_thumbnail(path, buffer, size, mime_type);
-	} else {
-		ret = siril_get_thumbnail_exiv(path, buffer, size, mime_type);
-	}
-	return ret;
-}
-
-
-/**
  * Try to get file info, i.e width and height
  * @param filename name of the file
  * @param pixbuf
