@@ -254,7 +254,9 @@ static void siril_app_activate(GApplication *application) {
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
 
-	/* we also initialize two important variables */
+	/* we also initialize a couple of important variables */
+	com.show_preview = TRUE;
+	com.remember_windows = TRUE;
 	com.ext = g_strdup(".fit");
 	com.swap_dir = g_strdup(g_get_tmp_dir());
 

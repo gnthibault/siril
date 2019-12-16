@@ -68,32 +68,22 @@ static int readinitfile() {
 		config_setting_lookup_float(raw_setting, "mul_2", &com.raw_set.mul[2]);
 		config_setting_lookup_float(raw_setting, "bright", &com.raw_set.bright);
 		config_setting_lookup_int(raw_setting, "auto", &com.raw_set.auto_mul);
-		config_setting_lookup_int(raw_setting, "cam_wb",
-				&com.raw_set.use_camera_wb);
-		config_setting_lookup_int(raw_setting, "auto_wb",
-				&com.raw_set.use_auto_wb);
-		config_setting_lookup_int(raw_setting, "user_qual",
-				&com.raw_set.user_qual);
-		config_setting_lookup_float(raw_setting, "gamm_0",
-				&com.raw_set.gamm[0]);
-		config_setting_lookup_float(raw_setting, "gamm_1",
-				&com.raw_set.gamm[1]);
-		config_setting_lookup_int(raw_setting, "user_black",
-				&com.raw_set.user_black);
+		config_setting_lookup_int(raw_setting, "cam_wb", &com.raw_set.use_camera_wb);
+		config_setting_lookup_int(raw_setting, "auto_wb", &com.raw_set.use_auto_wb);
+		config_setting_lookup_int(raw_setting, "user_qual", &com.raw_set.user_qual);
+		config_setting_lookup_float(raw_setting, "gamm_0", &com.raw_set.gamm[0]);
+		config_setting_lookup_float(raw_setting, "gamm_1", &com.raw_set.gamm[1]);
+		config_setting_lookup_int(raw_setting, "user_black", &com.raw_set.user_black);
 	}
 
 	/* Debayer setting */
 	config_setting_t *debayer_setting = config_lookup(&config, keywords[BAY]);
 	if (debayer_setting) {
-		config_setting_lookup_bool(debayer_setting, "ser_use_bayer_header",
-				&com.debayer.use_bayer_header);
-		config_setting_lookup_int(debayer_setting, "pattern",
-				&com.debayer.bayer_pattern);
-		config_setting_lookup_bool(debayer_setting, "compatibility",
-						&com.debayer.compatibility);
+		config_setting_lookup_bool(debayer_setting, "ser_use_bayer_header", &com.debayer.use_bayer_header);
+		config_setting_lookup_int(debayer_setting, "pattern", &com.debayer.bayer_pattern);
+		config_setting_lookup_bool(debayer_setting, "compatibility", &com.debayer.compatibility);
 		config_setting_lookup_int(debayer_setting, "inter", (int*)&com.debayer.bayer_inter);
-		config_setting_lookup_bool(debayer_setting, "stretch",
-						&com.debayer.stretch);
+		config_setting_lookup_bool(debayer_setting, "stretch", &com.debayer.stretch);
 		config_setting_lookup_int(debayer_setting, "xbayeroff", &com.debayer.xbayeroff);
 		config_setting_lookup_int(debayer_setting, "ybayeroff", &com.debayer.ybayeroff);
 
@@ -116,10 +106,8 @@ static int readinitfile() {
 	config_setting_t *stack_setting = config_lookup(&config, keywords[STK]);
 	if (stack_setting) {
 		config_setting_lookup_int(stack_setting, "method", &com.stack.method);
-		config_setting_lookup_int(stack_setting, "rejection",
-				&com.stack.rej_method);
-		config_setting_lookup_int(stack_setting, "normalisation",
-				&com.stack.normalisation_method);
+		config_setting_lookup_int(stack_setting, "rejection", &com.stack.rej_method);
+		config_setting_lookup_int(stack_setting, "normalisation", &com.stack.normalisation_method);
 
 		config_setting_lookup_int(stack_setting, "mem_mode", (int*)&com.stack.mem_mode);
 		config_setting_lookup_float(stack_setting, "maxmem", &com.stack.memory_ratio);

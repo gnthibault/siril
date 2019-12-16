@@ -1916,36 +1916,6 @@ void keep_first_channel_from_fits(fits *fit) {
 	}
 }
 
-int siril_get_FITS_size_info(const char *filename, gint *width, gint *height, gint *n_channel) {
-	int status = 0;
-	fitsfile *fptr;
-	int anaxis;
-	long anaxes[3] = {1,1,1};
-
-	siril_fits_open_diskfile(&fptr, filename, READONLY, &status);
-	if (status) {
-		report_fits_error(status);
-		return status;
-	}
-
-	fits_get_img_dim(fptr, &anaxis, &status);
-	fits_get_img_size(fptr, 3, anaxes, &status);
-
-    if (status) {
-       fits_report_error(stderr, status); /* print error message */
-       fits_close_file(fptr, &status);
-       return(status);
-    }
-
-    *width = anaxes[0];
-    *height = anaxes[1];
-    *n_channel = anaxes[2];
-
-	fits_close_file(fptr, &status);
-
-	return status;
-}
-
 static void gray2rgb(float gray, guchar *rgb) {
 	*rgb++ = (guchar) round_to_BYTE(255. * gray);
 	*rgb++ = (guchar) round_to_BYTE(255. * gray);
@@ -1970,26 +1940,27 @@ static double logviz(double arg) {
 	do{	status = FALSE;								\
 		f(__VA_ARGS__, &status);					\
 		if(status){									\
-			free(ima_data); free(pixbuf_data);		\
-			free(pix); fits_close_file(fp, &status); \
+			free(ima_data); free(pixbuf_data);	\
+			free(description); free(pix);		\
+			fits_close_file(fp, &status);		\
 			return NULL;}							\
-	}while(0)
+	} while(0)
 
 /**
  * Create a monochrome preview of a FITS file in a GdkPixbuf
  * @param filename
  * @return a GdkPixbuf containing the preview or NULL
  */
-GdkPixbuf* get_thumbnail_from_fits(char *filename) {
+GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	gboolean status;
 	fitsfile *fp;
 	double (*color)(double);
-
 	int MAX_SIZE = thumbnail_size;
+	gchar *description = NULL;
 	GdkPixbuf *pixbuf = NULL;
 	float nullval = 0.;
 	int i, j, k, l, N, M, stat;
-	int naxis, w, h, pixScale, Ws, Hs, dtype;
+	int naxis, w, h, pixScale, Ws, Hs, dtype, n_channels;
 	int sz;
 
 	// array for preview picture line
@@ -2014,9 +1985,14 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename) {
 	Ws = w / pixScale; 			// picture width in pixScale blocks
 	Hs = h / pixScale; 			// -//- height pixScale
 
+	n_channels = naxis == 3 ? naxis : 1;
+
+	description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)", w, h,
+						ngettext("pixel", "pixels", h), n_channels,
+						ngettext("channel", "channels", n_channels), abs(dtype));
+
 	M = 0; // line number
 	for (i = 0; i < Hs; i++) { // cycle through a blocks by lines
-		//pptr = &pixbuf_data[i * Ws * 3];
 		for (j = 0; j < MAX_SIZE; j++)
 			pix[j] = 0;
 		m = 0.; // amount of strings read in block
@@ -2081,5 +2057,6 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename) {
 			);
 	free(ima_data);
 	free(pix);
+	*descr = description;
 	return pixbuf;
 }
