@@ -1364,7 +1364,7 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename) {
 	if (avr > 1.)
 		wd /= avr;
 	ptr = ima_data;
-	for (i = 0; i < Hs; i++) {
+	for (i = Hs - 1; i > -1; i--) {	// fill pixbuf mirroring image by vertical
 		pptr = &pixbuf_data[Ws * i * 3];
 		for (j = 0; j < Ws; j++) {
 			*pptr++ = (guchar) round_to_BYTE(255. * (*ptr - min) / wd);
