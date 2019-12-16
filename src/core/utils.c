@@ -755,32 +755,6 @@ double encodeJD(dateTime dt) {
 }
 
 /**
- * THis function try to extract a thumbnail from the image given in path
- * @param path this is the path of the image we want to extract the thumbnail
- * @param buffer returned buffer of the thumbnail
- * @param size size of the allocated buffer
- * @param mime_type mime_type of the image
- * @return 0 when the thumbnail wa recovered, 1 otherwise
- */
-int siril_get_thumbnail(const char *path, uint8_t **buffer, size_t *size,
-		char **mime_type) {
-	int ret;
-	image_type type;
-
-	type = get_type_from_filename(path);
-
-	if (type == TYPEUNDEF) {
-		return 1;
-	} else if (type == TYPEFITS) {
-		ret = siril_build_FITS_thumbnail(path, buffer, size, mime_type);
-	} else {
-		ret = siril_get_thumbnail_exiv(path, buffer, size, mime_type);
-	}
-	return ret;
-}
-
-
-/**
  * Try to get file info, i.e width and height
  * @param filename name of the file
  * @param pixbuf
@@ -790,6 +764,7 @@ gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
 	int width;
 	int height;
 	int n_channel = 0;
+	int n_frames = 1;
 	gboolean have_info = FALSE;
 	image_type type;
 
@@ -800,7 +775,7 @@ gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
 			have_info = TRUE;
 		}
 	} else if (type == TYPESER) {
-		if (!siril_get_SER_size_info(filename, &width, &height, &n_channel)) {
+		if (!siril_get_SER_size_info(filename, &width, &height, &n_channel, &n_frames)) {
 			have_info = TRUE;
 		}
 	} else {
@@ -816,13 +791,15 @@ gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
 	}
 	if (have_info) {
 		/* Pixel size of image: width x height in pixel */
-		if (n_channel > 0) {
+		if (n_frames > 1) {
+			return g_strdup_printf("%d x %d %s\n%d %s\n%d %s", width, height,
+					ngettext("pixel", "pixels", height), n_channel,
+					ngettext("channel", "channels", n_channel), n_frames,
+					ngettext("frame", "frames", n_frames));
+		} else {
 			return g_strdup_printf("%d x %d %s\n%d %s", width, height,
 					ngettext("pixel", "pixels", height), n_channel,
 					ngettext("channel", "channels", n_channel));
-		} else {
-			return g_strdup_printf("%d x %d %s", width, height,
-					ngettext("pixel", "pixels", height));
 		}
 	}
 	return NULL;

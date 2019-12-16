@@ -30,18 +30,18 @@
 #include "core/processing.h"
 #include "core/OS_utils.h"
 #include "core/initfile.h"
+#include "core/exif.h"
 #include "algos/sorting.h"
 #include "io/conversion.h"
 #include "io/films.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
+#include "io/ser.h"
 #include "callbacks.h"
 #include "progress_and_log.h"
 #include "message_dialog.h"
 
 #include "open_dialog.h"
-
-#define preview_size 128
 
 static fileChooserPreview preview;
 
@@ -254,7 +254,7 @@ static gboolean end_update_preview_cb(gpointer p) {
 		gtk_image_set_from_pixbuf(GTK_IMAGE(preview.image), args->pixbuf);
 	} else if (type == G_FILE_TYPE_DIRECTORY) {
 		gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "folder-symbolic", GTK_ICON_SIZE_DIALOG);
-		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), preview_size);
+		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), thumbnail_size);
 	} else {
 		image_type im_type = get_type_from_filename(args->filename);
 		if (im_type == TYPEAVI || im_type == TYPESER) {
@@ -262,7 +262,7 @@ static gboolean end_update_preview_cb(gpointer p) {
 		} else {
 			gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "image-symbolic", GTK_ICON_SIZE_DIALOG);
 		}
-		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), preview_size);
+		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), thumbnail_size);
 	}
 
 	if (args->pixbuf)
@@ -283,35 +283,48 @@ static gpointer update_preview_cb_idle(gpointer p) {
 	size_t size;
 	char *mime_type = NULL;
 	GdkPixbuf *pixbuf = NULL;
+	image_type im_type;
 
 	struct _updta_preview_data *args = (struct _updta_preview_data *) p;
 
-	if (!siril_get_thumbnail(args->filename, &buffer, &size, &mime_type)) {
-		// Scale the image to the correct size
-		GdkPixbuf *tmp;
-		GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
-		if (!gdk_pixbuf_loader_write(loader, buffer, size, NULL))
-			goto cleanup;
-		// Calling gdk_pixbuf_loader_close forces the data to be parsed by the
-		// loader. We must do this before calling gdk_pixbuf_loader_get_pixbuf.
-		GError *error = NULL;
-		if (!gdk_pixbuf_loader_close(loader, &error))
-			goto cleanup;
-		if (!(tmp = gdk_pixbuf_loader_get_pixbuf(loader)))
-			goto cleanup;
-		float ratio = 1.0 * gdk_pixbuf_get_height(tmp) / gdk_pixbuf_get_width(tmp);
-		int width = preview_size, height = preview_size * ratio;
-		pixbuf = gdk_pixbuf_scale_simple(tmp, width, height, GDK_INTERP_BILINEAR);
+	im_type = get_type_from_filename(args->filename);
 
-		cleanup: gdk_pixbuf_loader_close(loader, NULL);
-		free(mime_type);
-		free(buffer);
-		g_object_unref(loader); // This should clean up tmp as well
-	}
+	if (im_type == TYPEFITS) {
+		/* try FITS file */
+		pixbuf = get_thumbnail_from_fits(args->filename);
+	} else if (im_type == TYPESER) {
+		pixbuf = get_thumbnail_from_ser(args->filename);
+	} else {
+		if (!siril_get_thumbnail_exiv(args->filename, &buffer, &size,
+				&mime_type)) {
+			// Scale the image to the correct size
+			GdkPixbuf *tmp;
+			GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
+			if (!gdk_pixbuf_loader_write(loader, buffer, size, NULL))
+				goto cleanup;
+			// Calling gdk_pixbuf_loader_close forces the data to be parsed by the
+			// loader. We must do this before calling gdk_pixbuf_loader_get_pixbuf.
+			if (!gdk_pixbuf_loader_close(loader, NULL))
+				goto cleanup;
+			if (!(tmp = gdk_pixbuf_loader_get_pixbuf(loader)))
+				goto cleanup;
+			float ratio = 1.0 * gdk_pixbuf_get_height(tmp)
+					/ gdk_pixbuf_get_width(tmp);
+			int width = thumbnail_size, height = thumbnail_size * ratio;
+			pixbuf = gdk_pixbuf_scale_simple(tmp, width, height,
+					GDK_INTERP_BILINEAR);
 
-	/* if no pixbuf created try to directly read the file */
-	if (!pixbuf) {
-		pixbuf = gdk_pixbuf_new_from_file_at_size(args->filename, preview_size, preview_size, NULL);
+			cleanup: gdk_pixbuf_loader_close(loader, NULL);
+			free(mime_type);
+			free(buffer);
+			g_object_unref(loader); // This should clean up tmp as well
+		}
+
+		/* if no pixbuf created try to directly read the file */
+		if (!pixbuf) {
+			pixbuf = gdk_pixbuf_new_from_file_at_size(args->filename,
+					thumbnail_size, thumbnail_size, NULL);
+		}
 	}
 
 	args->pixbuf = pixbuf;
@@ -366,7 +379,7 @@ static void siril_file_chooser_add_preview(SirilWidget *widget) {
 		gtk_label_set_justify(GTK_LABEL(preview.dim_label), GTK_JUSTIFY_CENTER);
 		gtk_label_set_justify(GTK_LABEL(preview.dim_label), GTK_JUSTIFY_CENTER);
 
-		gtk_widget_set_size_request(preview.image, preview_size, preview_size);
+		gtk_widget_set_size_request(preview.image, thumbnail_size, thumbnail_size);
 
 		gtk_box_pack_start(GTK_BOX(vbox), preview.image, FALSE, TRUE, 0);
 		gtk_box_pack_start(GTK_BOX(vbox), preview.name_label, FALSE, TRUE, 10);

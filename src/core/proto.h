@@ -40,8 +40,7 @@ void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype);
 
 void keep_first_channel_from_fits(fits *fit);
 int siril_get_FITS_size_info(const char *filename, gint *width, gint *height, gint *n_channel);
-int siril_build_FITS_thumbnail(const char *path, uint8_t **buffer, size_t *size,
-		char **mime_type);
+GdkPixbuf* get_thumbnail_from_fits(char *filename);
 
 /****************** image_formats_internal.h ******************/
 /* BMP */
@@ -123,7 +122,6 @@ char* format_basename(char *root);
 float computePente(WORD *lo, WORD *hi);
 void load_css_style_sheet();
 double encodeJD(dateTime dt);
-int siril_get_thumbnail(const char *path, uint8_t **buffer, size_t *size, char **mime_type);
 gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf);
 
 /****************** quantize.h ***************/
