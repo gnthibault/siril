@@ -324,6 +324,7 @@ static gpointer update_preview_cb_idle(gpointer p) {
 		if (!pixbuf) {
 			pixbuf = gdk_pixbuf_new_from_file_at_size(args->filename,
 					thumbnail_size, thumbnail_size, NULL);
+			args->description = siril_get_file_info(args->filename, pixbuf);
 		}
 	}
 
