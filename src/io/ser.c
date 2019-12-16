@@ -29,7 +29,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
+#include <math.h>
 #ifdef _WIN32
 #include <io.h>
 #endif
@@ -1107,7 +1107,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 
 	case SER_BGR:
 	case SER_RGB:
-		assert(ser_file->number_of_planes == 3);
+		g_assert(ser_file->number_of_planes == 3);
 		if (read_area_from_image(ser_file, frame_no, buffer, area, layer))
 			return -1;
 		ser_manage_endianess_and_depth(ser_file, buffer, area->w * area->h);
@@ -1272,8 +1272,119 @@ int siril_get_SER_size_info(const gchar *filename, int *width, int *height,
 	return ser_close_file(&ser);
 }
 
+static GdkPixbufDestroyNotify free_preview_data(guchar *pixels, gpointer data) {
+	free(pixels);
+	free(data);
+	return FALSE;
+}
+
+/**
+ * Create a monochrome preview (only the first channel is displayed) of a SER file in a GdkPixbuf.
+ * @param filename
+ * @return a GdkPixbuf containing the preview or NULL
+ */
 GdkPixbuf* get_thumbnail_from_ser(char *filename) {
 	GdkPixbuf *pixbuf = NULL;
+	int MAX_SIZE = thumbnail_size;
+	int i, j, k, l, N, M;
+	int w, h, pixScale, Ws, Hs;
+	int sz;
+	struct ser_struct ser;
+	fits fit = { 0 };
 
+	ser_init_struct(&ser);
+	if (ser_open_file(filename, &ser)) {
+		return NULL;
+	}
+	float *pix = malloc(MAX_SIZE * sizeof(float));
+	float *ima_data = NULL, *ptr, byte, n, m, max, min, wd, avr;
+	guchar *pixbuf_data = NULL, *pptr;
+
+	w = ser.image_width;
+	h = ser.image_height;
+	sz = w * h;
+	ima_data = malloc(sz * sizeof(float));
+	pixbuf_data = malloc(3 * MAX_SIZE * MAX_SIZE * sizeof(guchar));
+
+	ser_read_frame(&ser, 0, &fit);
+
+	for (i = 0; i < sz; i++) {
+		ima_data[i + 0] = (float)fit.pdata[RLAYER][i];
+	}
+
+	i = (int) ceil((float) w / MAX_SIZE);
+	j = (int) ceil((float) h / MAX_SIZE);
+	pixScale = (i > j) ? i : j;	// picture scale factor
+	Ws = w / pixScale; 			// picture width in pixScale blocks
+	Hs = h / pixScale; 			// -//- height pixScale
+
+	M = 0; // line number
+	for (i = 0; i < Hs; i++) { // cycle through a blocks by lines
+		//pptr = &pixbuf_data[i * Ws * 3];
+		for (j = 0; j < MAX_SIZE; j++)
+			pix[j] = 0;
+		m = 0.; // amount of strings read in block
+		for (l = 0; l < pixScale; l++, m++) { // cycle through a block lines
+			ptr = &ima_data[M * w];
+			N = 0; // number of column
+			for (j = 0; j < Ws; j++) { // cycle through a blocks by columns
+				n = 0.;	// amount of columns read in block
+				byte = 0.; // average intensity in block
+				for (k = 0; k < pixScale; k++, n++) { // cycle through block pixels
+					if (N++ < w) // row didn't end
+						byte += *ptr++; // sum[(pix-min)/wd]/n = [sum(pix)/n-min]/wd
+					else
+						break;
+				}
+				pix[j] += byte / n; //(byte / n - min)/wd;
+			}
+			if (++M >= h)
+				break;
+		}
+		// fill unused picture pixels
+		ptr = &ima_data[i * Ws];
+		for (l = 0; l < Ws; l++)
+			*ptr++ = pix[l] / m;
+	}
+	ptr = ima_data;
+	sz = Ws * Hs;
+	max = min = *ptr;
+	avr = 0;
+	for (i = 0; i < sz; i++, ptr++) {
+		float tmp = *ptr;
+		if (tmp > max)
+			max = tmp;
+		else if (tmp < min)
+			min = tmp;
+		avr += tmp;
+	}
+	avr /= (float) sz;
+	wd = max - min;
+	avr = (avr - min) / wd;	// normal average by preview
+	if (avr > 1.)
+		wd /= avr;
+	ptr = ima_data;
+	for (i = 0; i < Hs; i++) {
+		pptr = &pixbuf_data[Ws * i * 3];
+		for (j = 0; j < Ws; j++) {
+			*pptr++ = (guchar) round_to_BYTE(255. * (*ptr - min) / wd);
+			*pptr++ = (guchar) round_to_BYTE(255. * (*ptr - min) / wd);
+			*pptr++ = (guchar) round_to_BYTE(255. * (*ptr - min) / wd);
+			ptr++;
+		}
+	}
+
+	ser_close_file(&ser);
+	pixbuf = gdk_pixbuf_new_from_data(pixbuf_data,		// guchar* data
+			GDK_COLORSPACE_RGB,	// only this supported
+			FALSE,				// no alpha
+			8,				// number of bits
+			Ws, Hs,				// size
+			Ws * 3,				// line length in bytes
+			(GdkPixbufDestroyNotify) free_preview_data, // function (*GdkPixbufDestroyNotify) (guchar *pixels, gpointer data);
+			NULL
+			);
+	free(ima_data);
+	free(pix);
 	return pixbuf;
 }

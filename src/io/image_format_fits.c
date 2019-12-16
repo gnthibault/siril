@@ -1737,7 +1737,7 @@ static double logviz(double arg) {
 /**
  * Create a monochrome preview of a FITS file in a GdkPixbuf
  * @param filename
- * @return a GdkPixbuf containung the preview or NULL
+ * @return a GdkPixbuf containing the preview or NULL
  */
 GdkPixbuf* get_thumbnail_from_fits(char *filename) {
 	gboolean status;
