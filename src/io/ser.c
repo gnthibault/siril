@@ -1249,29 +1249,6 @@ int64_t ser_compute_file_size(struct ser_struct *ser_file, int nb_frames) {
 	return size;
 }
 
-int siril_get_SER_size_info(const gchar *filename, int *width, int *height,
-		int *n_channels, int *n_frames) {
-	struct ser_struct ser;
-	ser_init_struct(&ser);
-	if (ser_open_file(filename, &ser)) {
-		return 1;
-	}
-
-	*width = ser.image_width;
-	*height = ser.image_height;
-	*n_frames = ser.frame_count;
-
-	switch (ser.color_id) {
-	case SER_MONO:
-		*n_channels = 1;
-		break;
-	default:
-		*n_channels = 3;
-	}
-
-	return ser_close_file(&ser);
-}
-
 static GdkPixbufDestroyNotify free_preview_data(guchar *pixels, gpointer data) {
 	free(pixels);
 	free(data);
@@ -1283,11 +1260,12 @@ static GdkPixbufDestroyNotify free_preview_data(guchar *pixels, gpointer data) {
  * @param filename
  * @return a GdkPixbuf containing the preview or NULL
  */
-GdkPixbuf* get_thumbnail_from_ser(char *filename) {
+GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 	GdkPixbuf *pixbuf = NULL;
 	int MAX_SIZE = thumbnail_size;
+	gchar *description = NULL;
 	int i, j, k, l, N, M;
-	int w, h, pixScale, Ws, Hs;
+	int w, h, pixScale, Ws, Hs, n_channels, n_frames, bit;
 	int sz;
 	struct ser_struct ser;
 	fits fit = { 0 };
@@ -1317,6 +1295,22 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename) {
 	pixScale = (i > j) ? i : j;	// picture scale factor
 	Ws = w / pixScale; 			// picture width in pixScale blocks
 	Hs = h / pixScale; 			// -//- height pixScale
+
+	n_frames = ser.frame_count;
+	bit = ser.bit_pixel_depth;
+
+	switch (ser.color_id) {
+	case SER_MONO:
+		n_channels = 1;
+		break;
+	default:
+		n_channels = 3;
+	}
+
+	description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)\n%d %s", w, h,
+						ngettext("pixel", "pixels", h), n_channels,
+						ngettext("channel", "channels", n_channels), bit, n_frames,
+						ngettext("frame", "frames", n_frames));
 
 	M = 0; // line number
 	for (i = 0; i < Hs; i++) { // cycle through a blocks by lines
@@ -1386,5 +1380,6 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename) {
 			);
 	free(ima_data);
 	free(pix);
+	*descr = description;
 	return pixbuf;
 }

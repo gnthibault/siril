@@ -36,8 +36,7 @@ void extract_region_from_fits(fits *from, int layer, fits *to,
 		const rectangle *area);
 int new_fit_image(fits **fit, int width, int height, int nblayer);
 void keep_first_channel_from_fits(fits *fit);
-int siril_get_FITS_size_info(const char *filename, gint *width, gint *height, gint *n_channel);
-GdkPixbuf* get_thumbnail_from_fits(char *filename);
+GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr);
 
 /****************** image_formats_internal.h ******************/
 /* BMP */
