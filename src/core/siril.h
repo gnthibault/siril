@@ -28,7 +28,7 @@
 
 #define GLADE_FILE "siril3.glade"
 
-#define thumbnail_size 128
+#define thumbnail_size 256
 
 /* https://stackoverflow.com/questions/1644868/define-macro-for-debug-printing-in-c */
 #define siril_debug_print(fmt, ...) \
