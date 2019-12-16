@@ -235,30 +235,14 @@ static gboolean end_update_preview_cb(gpointer p) {
 		}
 	}
 
-	if (type == G_FILE_TYPE_REGULAR) {
-		if (args->description) {
-			info_str = args->description;
-		} else {
-			info_str = siril_get_file_info(args->filename, args->pixbuf);
-		}
-	} else if (type == G_FILE_TYPE_DIRECTORY) {
-		info_str = g_strdup(_("Folder"));
-	}
-
-	const char *format = "<span style=\"italic\">\%s</span>";
-	char *markup = g_markup_printf_escaped(format, name_str);
-	gtk_label_set_markup(GTK_LABEL(preview.name_label), markup);
-	gtk_label_set_ellipsize(GTK_LABEL(preview.name_label), PANGO_ELLIPSIZE_MIDDLE);
-	gtk_label_set_width_chars(GTK_LABEL(preview.name_label), 25);
-	gtk_label_set_max_width_chars(GTK_LABEL(preview.name_label), 25);
-
-	gtk_label_set_text(GTK_LABEL(preview.dim_label), info_str);
-	gtk_label_set_text(GTK_LABEL(preview.size_label), size_str);
+	/* load icon */
 	if (type == G_FILE_TYPE_REGULAR && args->pixbuf) {
 		gtk_image_set_from_pixbuf(GTK_IMAGE(preview.image), args->pixbuf);
+		info_str = args->description;
 	} else if (type == G_FILE_TYPE_DIRECTORY) {
 		gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "folder-symbolic", GTK_ICON_SIZE_DIALOG);
 		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), thumbnail_size);
+		info_str = g_strdup(_("Folder"));
 	} else {
 		image_type im_type = get_type_from_filename(args->filename);
 		if (im_type == TYPEAVI || im_type == TYPESER) {
@@ -268,6 +252,17 @@ static gboolean end_update_preview_cb(gpointer p) {
 		}
 		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), thumbnail_size);
 	}
+
+	/* information strings */
+	const char *format = "<span style=\"italic\">\%s</span>";
+	char *markup = g_markup_printf_escaped(format, name_str);
+	gtk_label_set_markup(GTK_LABEL(preview.name_label), markup);
+	gtk_label_set_ellipsize(GTK_LABEL(preview.name_label), PANGO_ELLIPSIZE_MIDDLE);
+	gtk_label_set_width_chars(GTK_LABEL(preview.name_label), 25);
+	gtk_label_set_max_width_chars(GTK_LABEL(preview.name_label), 25);
+
+	gtk_label_set_text(GTK_LABEL(preview.dim_label), info_str);
+	gtk_label_set_text(GTK_LABEL(preview.size_label), size_str);
 
 	if (args->pixbuf)
 		g_object_unref(args->pixbuf);
@@ -314,11 +309,10 @@ static gpointer update_preview_cb_idle(gpointer p) {
 				goto cleanup;
 			if (!(tmp = gdk_pixbuf_loader_get_pixbuf(loader)))
 				goto cleanup;
-			float ratio = 1.0 * gdk_pixbuf_get_height(tmp)
-					/ gdk_pixbuf_get_width(tmp);
+			float ratio = 1.0 * gdk_pixbuf_get_height(tmp) / gdk_pixbuf_get_width(tmp);
 			int width = thumbnail_size, height = thumbnail_size * ratio;
-			pixbuf = gdk_pixbuf_scale_simple(tmp, width, height,
-					GDK_INTERP_BILINEAR);
+			pixbuf = gdk_pixbuf_scale_simple(tmp, width, height, GDK_INTERP_BILINEAR);
+			args->description = siril_get_file_info(args->filename, pixbuf);
 
 			cleanup: gdk_pixbuf_loader_close(loader, NULL);
 			free(mime_type);

@@ -704,9 +704,8 @@ double encodeJD(dateTime dt) {
  * @return a newly allocated and formated string containing dimension information or NULL
  */
 gchar* siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
-	int width;
-	int height;
-	int n_channel = 0;
+	int width, height;
+	int n_channel;
 
 	GdkPixbufFormat *pixbuf_file_info = gdk_pixbuf_get_file_info(filename,
 			&width, &height);
