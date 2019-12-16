@@ -1831,7 +1831,7 @@ void load_main_window_state() {
 	int y = com.main_w_pos.y;
 	int w = com.main_w_pos.w;
 	int h = com.main_w_pos.h;
-	if (com.remember_windows && w >= 0 && h >= 0) {
+	if (com.remember_windows && w > 0 && h > 0) {
 		if (com.is_maximized) {
 			gtk_window_maximize(GTK_WINDOW(lookup_widget("control_window")));
 		} else {
