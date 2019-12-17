@@ -13,13 +13,4 @@
 void header_open_button_clicked();
 void cwd_btton_clicked();
 
-typedef struct _fileChooserPreview fileChooserPreview;
-
-struct _fileChooserPreview {
-	GtkWidget *image;
-	GtkWidget *name_label;
-	GtkWidget *dim_label;
-	GtkWidget *size_label;
-};
-
 #endif /* SRC_GUI_OPEN_DIALOG_H_ */

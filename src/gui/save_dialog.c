@@ -29,11 +29,11 @@
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
+#include "gui/dialog_preview.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
 
 #include "save_dialog.h"
-
 
 static image_type whichminisave = TYPEUNDEF;
 static SirilWidget *saveDialog = NULL;
@@ -272,6 +272,7 @@ static int save_dialog() {
 	gtk_file_chooser_set_current_name(chooser, fname);
 	gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
 	set_filters_save_dialog(chooser);
+	siril_file_chooser_add_preview(saveDialog);
 	g_free(fname);
 
 	res = siril_dialog_run(saveDialog);
@@ -571,27 +572,30 @@ void on_button_cancelpopup_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_header_save_button_clicked() {
-	GtkWidget *savepopup = lookup_widget("savepopup");
+	if (single_image_is_loaded() || sequence_is_loaded()) {
+		GtkWidget *savepopup = lookup_widget("savepopup");
 
-	if (save_dialog() == GTK_RESPONSE_ACCEPT) {
-		/* now it is not needed for some formats */
-		if (whichminisave != TYPEBMP && whichminisave != TYPEPNG
-				&& whichminisave != TYPEPNM) {
-			close_dialog();
-			GtkWindow *parent = siril_get_active_window();
-			if (!GTK_IS_WINDOW(parent)) {
-				parent = GTK_WINDOW(lookup_widget("control_window"));
+		if (save_dialog() == GTK_RESPONSE_ACCEPT) {
+			/* now it is not needed for some formats */
+			if (whichminisave != TYPEBMP && whichminisave != TYPEPNG
+					&& whichminisave != TYPEPNM) {
+				close_dialog();
+				GtkWindow *parent = siril_get_active_window();
+				if (!GTK_IS_WINDOW(parent)) {
+					parent = GTK_WINDOW(lookup_widget("control_window"));
+				}
+				gtk_window_set_transient_for(GTK_WINDOW(savepopup), parent);
+				gtk_widget_show(savepopup);
+				gtk_window_present_with_time(GTK_WINDOW(savepopup),
+						GDK_CURRENT_TIME);
+			} else {
+				struct savedial_data *args = malloc(
+						sizeof(struct savedial_data));
+
+				set_cursor_waiting(TRUE);
+				initialize_data(args);
+				start_in_new_thread(minisavedial, args);
 			}
-			gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
-			gtk_widget_show(savepopup);
-			gtk_window_present_with_time(GTK_WINDOW(savepopup), GDK_CURRENT_TIME);
-		}
-		else {
-			struct savedial_data *args = malloc(sizeof(struct savedial_data));
-
-			set_cursor_waiting(TRUE);
-			initialize_data(args);
-			start_in_new_thread(minisavedial, args);
 		}
 	}
 }
