@@ -125,7 +125,7 @@ static gpointer update_preview_cb_idle(gpointer p) {
 	} else if (im_type == TYPESER) {
 		pixbuf = get_thumbnail_from_ser(args->filename, &args->description);
 	} else {
-		if (!siril_get_thumbnail_exiv(args->filename, &buffer, &size,
+		if (im_type != TYPEUNDEF && !siril_get_thumbnail_exiv(args->filename, &buffer, &size,
 				&mime_type)) {
 			// Scale the image to the correct size
 			GdkPixbuf *tmp;

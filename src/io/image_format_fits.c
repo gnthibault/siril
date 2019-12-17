@@ -1746,9 +1746,10 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 
 	n_channels = naxis == 3 ? naxis : 1;
 
-	description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)", w, h,
+	description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)\n%s", w, h,
 						ngettext("pixel", "pixels", h), n_channels,
-						ngettext("channel", "channels", n_channels), abs(dtype));
+						ngettext("channel", "channels", n_channels),
+						abs(dtype), _("(Monochrome Preview)"));
 
 	M = 0; // line number
 	for (i = 0; i < Hs; i++) { // cycle through a blocks by lines
