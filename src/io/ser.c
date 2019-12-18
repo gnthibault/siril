@@ -1307,10 +1307,10 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 		n_channels = 3;
 	}
 
-	description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)\n%d %s\n%s", w, h,
-						ngettext("pixel", "pixels", h), n_channels,
-						ngettext("channel", "channels", n_channels), bit, n_frames,
-						ngettext("frame", "frames", n_frames), _("(Monochrome Preview)"));
+	description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)\n%d %s\n%s", w,
+			h, ngettext("pixel", "pixels", h), n_channels,
+			ngettext("channel", "channels", n_channels), bit, n_frames,
+			ngettext("frame", "frames", n_frames), _("(Monochrome Preview)"));
 
 	M = 0; // line number
 	for (i = 0; i < Hs; i++) { // cycle through a blocks by lines

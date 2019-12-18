@@ -115,6 +115,11 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 		s_pattern = g_string_append(s_pattern, "*.jpg;*.JPG;*.jpeg;*.JPEG;");
 #endif
 
+#ifdef HAVE_LIBHEIF
+		s_supported_graph = g_string_append(s_supported_graph, ", *.heic, *.heif");
+		s_pattern = g_string_append(s_pattern, "*.heic;*.HEIC;*.heif;*.HEIF;");
+#endif
+
 #ifdef HAVE_LIBPNG
 		s_supported_graph = g_string_append(s_supported_graph, ", *.png");
 		s_pattern = g_string_append(s_pattern, "*.png;*.PNG;");

@@ -192,6 +192,7 @@ siril_LDADD = \
 	$(GTK_LIBS) \
 	${GTK_MAC_LIBS} \
 	$(LIBRAW_LIBS) \
+	$(LIBHEIF_LIBS) \
 	$(LIBTIFF_LIBS) \
 	$(LIBPNG_LIBS) \
 	$(FFTW_LIBS) \

@@ -85,6 +85,10 @@ int savepng(const char *filename, fits *fit, uint32_t bytes_per_sample,
 int open_raw_files(const char*, fits*, int);
 #endif
 
+#ifdef HAVE_LIBHEIF
+int readheif(const char* name, fits *fit);
+#endif
+
 /****************** utils.h ******************/
 int round_to_int(double x);
 int roundf_to_int(float x);

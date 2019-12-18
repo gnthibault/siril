@@ -133,6 +133,9 @@ void list_format_available() {
 #ifdef HAVE_LIBPNG
 	puts("PNG\t(*.png)");
 #endif
+#ifdef HAVE_LIBHEIF
+	puts("HEIF\t(*.heic, *.heif)");
+#endif
 }
 
 static gint sort_conv_tree(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
@@ -420,6 +423,14 @@ gchar *initialize_converters() {
 	string = g_string_append(string, _("PNG images"));
 	supported_extensions[count_ext++] = ".png";
 #endif
+
+#ifdef HAVE_LIBHEIF
+	supported_filetypes |= TYPEHEIF;
+	string = g_string_append(string, ", ");
+	string = g_string_append(string, _("HEIF images"));
+	supported_extensions[count_ext++] = ".heic";
+	supported_extensions[count_ext++] = ".heif";
+#endif
 	supported_extensions[count_ext++] = NULL;		// NULL-terminated array
 
 	string = g_string_append(string, ".");
@@ -447,6 +458,9 @@ image_type get_type_for_extension(const char *extension) {
 	} else if ((supported_filetypes & TYPEJPG) &&
 			(!g_ascii_strcasecmp(extension, "jpg") || !g_ascii_strcasecmp(extension, "jpeg"))) {
 		return TYPEJPG;
+	} else if ((supported_filetypes & TYPEJPG) &&
+			(!g_ascii_strcasecmp(extension, "heic") || !g_ascii_strcasecmp(extension, "heif"))) {
+		return TYPEHEIF;
 	} else if ((supported_filetypes & TYPETIFF) &&
 			(!g_ascii_strcasecmp(extension, "tif") || !g_ascii_strcasecmp(extension, "tiff"))) {
 		return TYPETIFF;
@@ -985,6 +999,11 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest) {
 		case TYPEJPG:
 			retval = (readjpg(source, dest) < 0);
 			break;		
+#endif
+#ifdef HAVE_LIBHEIF
+		case TYPEHEIF:
+			retval = (readheif(source, dest) < 0);
+			break;
 #endif
 #ifdef HAVE_LIBPNG
 		case TYPEPNG:
