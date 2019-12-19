@@ -1317,7 +1317,7 @@ int readheif(const char* name, fits *fit){
 	struct heif_context *ctx = heif_context_alloc();
 	err = heif_context_read_from_file(ctx, name, NULL);
 	if (err.code) {
-		g_printf(err.message);
+		g_printf("%s\n", err.message);
 		heif_context_free(ctx);
 		return 1;
 	}
@@ -1338,7 +1338,7 @@ int readheif(const char* name, fits *fit){
 	struct heif_image_handle *handle;
 	err = heif_context_get_primary_image_handle(ctx, &handle);
 	if (err.code) {
-		g_printf(err.message);
+		g_printf("%s\n", err.message);
 		heif_context_free(ctx);
 		return 1;
 	}
@@ -1350,7 +1350,7 @@ int readheif(const char* name, fits *fit){
 			has_alpha ? heif_chroma_interleaved_32bit :
 			heif_chroma_interleaved_24bit, NULL);
 	if (err.code) {
-		g_printf(err.message);
+		g_printf("%s\n", err.message);
 		heif_image_handle_release(handle);
 		heif_context_free(ctx);
 		return 1;
@@ -1403,4 +1403,5 @@ int readheif(const char* name, fits *fit){
 
 	return 0;
 }
+
 #endif
