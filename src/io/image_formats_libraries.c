@@ -1325,7 +1325,7 @@ static gboolean load_thumbnails(struct heif_context *heif, struct HeifImage *ima
 
 	// get list of all (top level) image IDs
 
-	uint32_t *IDs = (uint32_t*) alloca(numImages * sizeof(uint32_t));
+	uint32_t *IDs = malloc(numImages * sizeof(uint32_t));
 	heif_context_get_list_of_top_level_image_IDs(heif, IDs, numImages);
 
 	// --- Load a thumbnail for each image.
@@ -1421,7 +1421,7 @@ static gboolean load_thumbnails(struct heif_context *heif, struct HeifImage *ima
 
 			struct heif_image *scaled_img = NULL;
 
-			struct heif_error err = heif_image_scale_image(thumbnail_img,
+			err = heif_image_scale_image(thumbnail_img,
 					&scaled_img, new_width, new_height,
 					NULL);
 			if (err.code) {
@@ -1452,17 +1452,15 @@ static gboolean load_thumbnails(struct heif_context *heif, struct HeifImage *ima
 	return TRUE;
 }
 
-static gboolean dialog(struct heif_context *heif, uint32_t *selected_image) {
+static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image) {
 	GtkWidget *dlg;
 	GtkWidget *frame;
 	gboolean run = FALSE;
-
 	int i;
 
 	int numImages = heif_context_get_number_of_top_level_images(heif);
 
-	struct HeifImage *heif_images = (struct HeifImage*) alloca(
-			numImages * sizeof(struct HeifImage));
+	struct HeifImage *heif_images = malloc(numImages * sizeof(struct HeifImage));
 	gboolean success = load_thumbnails(heif, heif_images);
 	if (!success) {
 		return FALSE;
@@ -1471,19 +1469,13 @@ static gboolean dialog(struct heif_context *heif, uint32_t *selected_image) {
 	dlg = gtk_dialog_new_with_buttons(_("Load HEIF image content"),
 			GTK_WINDOW(lookup_widget("control_window")), GTK_DIALOG_MODAL,
 			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
-	gtk_window_set_resizable(GTK_WINDOW(dlg), FALSE);
+//	gtk_window_set_resizable(GTK_WINDOW(dlg), FALSE);
 
 	GtkContainer *content_area = GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dlg)));
 	gtk_container_set_border_width(GTK_CONTAINER(content_area), 12);
 
-	GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(scroll), 500);
-	gtk_container_add(content_area, GTK_WIDGET(scroll));
-
 	frame = gtk_frame_new(_("Select image"));
-	gtk_container_add(GTK_CONTAINER(scroll), GTK_WIDGET(frame));
-	gtk_widget_show(scroll);
+	gtk_container_add(content_area, GTK_WIDGET(frame));
 	gtk_widget_show(frame);
 
 // prepare list store with all thumbnails and caption
@@ -1512,7 +1504,17 @@ static gboolean dialog(struct heif_context *heif, uint32_t *selected_image) {
 	gtk_icon_view_set_model((GtkIconView*) iconview, (GtkTreeModel*) liststore);
 	gtk_icon_view_set_text_column((GtkIconView*) iconview, 0);
 	gtk_icon_view_set_pixbuf_column((GtkIconView*) iconview, 1);
-	gtk_container_add(GTK_CONTAINER(frame), iconview);
+
+	GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
+	gtk_widget_set_size_request(scroll, -1, 500);
+	g_object_set(scroll, "expand", TRUE, NULL);
+
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),	GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+
+	gtk_container_add(GTK_CONTAINER(frame), scroll);
+	gtk_container_add(GTK_CONTAINER(scroll), iconview);
+
+	gtk_widget_show(scroll);
 	gtk_widget_show(iconview);
 
 // pre-select the primary image
@@ -1557,6 +1559,8 @@ static gboolean dialog(struct heif_context *heif, uint32_t *selected_image) {
 	for (i = 0; i < numImages; i++) {
 		heif_image_release(heif_images[i].thumbnail);
 	}
+
+	free(heif_images);
 
 	return run;
 }
@@ -1604,9 +1608,10 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 
 	if (num > 1) {
 		if (!interactive) {
-		siril_log_message(_("This is a sequence of %d images: loading the primary one.\n"), num);
+			siril_log_message(_("This is a sequence of %d images: "
+					"loading the primary one.\n"), num);
 		} else {
-			if (!dialog(ctx, &selected_image)) {
+			if (!heif_dialog(ctx, &selected_image)) {
 				heif_context_free(ctx);
 				return 1;
 			}
