@@ -155,7 +155,7 @@ int read_single_image(const char* filename, fits *dest, char **realname_out, gbo
 		retval = read_single_sequence(realname, imagetype);
 		single_sequence = TRUE;
 	} else {
-		retval = any_to_fits(imagetype, realname, dest);
+		retval = any_to_fits(imagetype, realname, dest, TRUE);
 		if (!retval)
 			debayer_if_needed(imagetype, dest, com.debayer.compatibility, FALSE, com.debayer.stretch);
 	}

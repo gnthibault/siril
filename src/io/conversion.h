@@ -41,7 +41,7 @@ int count_selected_files();
 int count_converted_files();
 gpointer convert_thread_worker(gpointer p);
 int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer, gboolean stretch_cfa);
-int any_to_fits(image_type imagetype, const char *source, fits *dest);
+int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean interactive);
 void set_debayer_in_convflags();
 
 #endif

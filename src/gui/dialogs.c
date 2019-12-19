@@ -112,5 +112,4 @@ void siril_close_preview_dialogs() {
 			gtk_widget_hide(w);
 		}
 	}
-
 }

@@ -89,7 +89,7 @@ int open_raw_files(const char*, fits*, int);
 #endif
 
 #ifdef HAVE_LIBHEIF
-int readheif(const char* name, fits *fit);
+int readheif(const char* name, fits *fit, gboolean interactive);
 #endif
 
 /****************** utils.h ******************/

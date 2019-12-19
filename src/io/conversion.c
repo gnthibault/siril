@@ -285,7 +285,7 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 	int retval = 0;
 	fits *tmpfit = calloc(1, sizeof(fits));
 
-	retval = any_to_fits(imagetype, source, tmpfit);
+	retval = any_to_fits(imagetype, source, tmpfit, FALSE);
 
 	if (!retval)
 		retval = debayer_if_needed(imagetype, tmpfit, compatibility, FALSE, stretch_cfa);
@@ -458,7 +458,7 @@ image_type get_type_for_extension(const char *extension) {
 	} else if ((supported_filetypes & TYPEJPG) &&
 			(!g_ascii_strcasecmp(extension, "jpg") || !g_ascii_strcasecmp(extension, "jpeg"))) {
 		return TYPEJPG;
-	} else if ((supported_filetypes & TYPEJPG) &&
+	} else if ((supported_filetypes & TYPEHEIF) &&
 			(!g_ascii_strcasecmp(extension, "heic") || !g_ascii_strcasecmp(extension, "heif"))) {
 		return TYPEHEIF;
 	} else if ((supported_filetypes & TYPETIFF) &&
@@ -974,7 +974,7 @@ char* g_real_path(const char *source) {
 #endif
 
 /* open the file with path source from any image type and load it into the given FITS object */
-int any_to_fits(image_type imagetype, const char *source, fits *dest) {
+int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean interactive) {
 	int retval = 0;
 
 	switch (imagetype) {
@@ -1002,7 +1002,7 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest) {
 #endif
 #ifdef HAVE_LIBHEIF
 		case TYPEHEIF:
-			retval = (readheif(source, dest) < 0);
+			retval = (readheif(source, dest, interactive) < 0);
 			break;
 #endif
 #ifdef HAVE_LIBPNG
