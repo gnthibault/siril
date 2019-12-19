@@ -1603,11 +1603,14 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 	heif_item_id selected_image = primary;
 
 	if (num > 1) {
-//		siril_log_message(_("This is a sequence of %d images: loading the primary one.\n"), num);
-	    if (!dialog(ctx, &selected_image)) {
-	      heif_context_free(ctx);
-	      return 1;
-	    }
+		if (!interactive) {
+		siril_log_message(_("This is a sequence of %d images: loading the primary one.\n"), num);
+		} else {
+			if (!dialog(ctx, &selected_image)) {
+				heif_context_free(ctx);
+				return 1;
+			}
+		}
 	}
 
 	// get a handle to the primary image
