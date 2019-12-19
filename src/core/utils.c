@@ -145,31 +145,31 @@ int truncate_to_int32(uint64_t x) {
 }
 
 /**
- * convert an unsigned short value to siril's representation of float values [-1, 1]
+ * convert an unsigned short value to siril's representation of float values [0, 1]
  * @param w value to convert
  * @return the float equivalent
  */
 float ushort_to_float_range(WORD w) {
-	return w / SHRT_MAX - 1.0f;
+	return (float)w / (float)USHRT_MAX;
 }
 
 /**
  * convert an double value from the unsigned short range to siril's representation
- * of float values [-1, 1]
+ * of float values [0, 1]
  * @param d value to convert
  * @return the float equivalent
  */
 float double_ushort_to_float_range(double d) {
-	return (float)(d / SHRT_MAX_DOUBLE - 1.0);
+	return (float)(d / USHRT_MAX_DOUBLE);
 }
 
 /**
- * convert a siril float [-1, 1] to an unsigned short
+ * convert a siril float [0, 1] to an unsigned short
  * @param f value to convert
  * @return the unsigned short equivalent
  */
 WORD float_to_ushort_range(float f) {
-	return roundf_to_WORD((f + 1.0f) * SHRT_MAX_SINGLE);
+	return roundf_to_WORD(f * USHRT_MAX_SINGLE);
 }
 
 /**

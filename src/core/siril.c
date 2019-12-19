@@ -240,10 +240,10 @@ int siril_fdiv(fits *a, fits *b, float coef) {
 			retvalue = 1;
 		}
 
-		// normalize to float data range [-1, 1]
-		newdata[i] = (float)(val / SHRT_MAX_DOUBLE - 1.0);
+		// normalize to float data range [0, 1]
+		newdata[i] = (float)(val / USHRT_MAX_DOUBLE);
 		if (newdata[i] > 1.0f) newdata[i] = 1.0f;
-		if (newdata[i] < -1.0f) newdata[i] = -1.0f;
+		//if (newdata[i] < 0.0f) newdata[i] = 0.0f;
 	}
 
 	fit_replace_buffer(a, newdata, DATA_FLOAT);

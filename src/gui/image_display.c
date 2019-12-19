@@ -223,10 +223,10 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 		int vport);
 static int make_index_for_rainbow(BYTE index[][3]);
 
-/* Siril float format is [-1, 1]. The UI still uses unsigned short controls,
+/* Siril float format is [0, 1]. The UI still uses unsigned short controls,
  * for lo and hi cursors for example, that we convert to a float value here */
 static BYTE display_for_float_pixel(float pixel, display_mode mode, WORD lo, WORD hi) {
-	float offset = pixel - ((float)lo / USHRT_MAX_SINGLE) + 1.0f;
+	float offset = pixel - ((float)lo / USHRT_MAX_SINGLE);
 	float slope;
 	BYTE disp;
 	switch (mode) {
@@ -235,7 +235,7 @@ static BYTE display_for_float_pixel(float pixel, display_mode mode, WORD lo, WOR
 			if (offset < 0.0f) disp = 0;
 			else {
 				// slope and offset should not be computed for all pixels
-				slope = SHRT_MAX_SINGLE * UCHAR_MAX_SINGLE / (float)(hi - lo);
+				slope = USHRT_MAX_SINGLE * UCHAR_MAX_SINGLE / (float)(hi - lo);
 				disp = roundf_to_BYTE(offset * slope);
 			}
 			break;
@@ -243,28 +243,28 @@ static BYTE display_for_float_pixel(float pixel, display_mode mode, WORD lo, WOR
 			if (offset < 0.0f) disp = 0;
 			else {
 				slope = fabsf(UCHAR_MAX_SINGLE / logf((float)(hi - lo) * 0.1f));
-				disp = roundf_to_BYTE(logf(SHRT_MAX_SINGLE * offset / 10.f) * slope); //10.f is arbitrary: good matching with ds9
+				disp = roundf_to_BYTE(logf(USHRT_MAX_SINGLE * offset / 10.f) * slope); //10.f is arbitrary: good matching with ds9
 			}
 			break;
 		case SQRT_DISPLAY:
 			if (offset < 0.0f) disp = 0;
 			else {
 				slope = UCHAR_MAX_SINGLE / sqrtf((float)(hi - lo));
-				disp = roundf_to_BYTE(sqrtf(SHRT_MAX_SINGLE * offset) * slope);
+				disp = roundf_to_BYTE(sqrtf(USHRT_MAX_SINGLE * offset) * slope);
 			}
 			break;
 		case SQUARED_DISPLAY:
 			if (offset < 0.0f) disp = 0;
 			else {
 				slope = UCHAR_MAX_SINGLE / SQR((float)(hi - lo));
-				disp = roundf_to_BYTE(SQR(SHRT_MAX_SINGLE * offset) * slope);
+				disp = roundf_to_BYTE(SQR(USHRT_MAX_SINGLE * offset) * slope);
 			}
 			break;
 		case ASINH_DISPLAY:
 			if (offset < 0.0f) disp = 0;
 			else {
 				slope = UCHAR_MAX_SINGLE / asinhf((float)(hi - lo) * 0.001f);
-				disp = roundf_to_BYTE(asinhf(SHRT_MAX_SINGLE * offset / 1000.0f) * slope); //1000.f is arbitrary: good matching with ds9, could be asinhf(a*Q*i)/Q
+				disp = roundf_to_BYTE(asinhf(USHRT_MAX_SINGLE * offset / 1000.0f) * slope); //1000.f is arbitrary: good matching with ds9, could be asinhf(a*Q*i)/Q
 			}
 			break;
 	}

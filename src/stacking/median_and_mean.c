@@ -795,19 +795,25 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 							// additive (scale[frame] = 1, mul[frame] = 1)
 						case ADDITIVE_SCALING:
 							// additive + scale (mul[frame] = 1)
-							tmp = (double)pixel * args->coeff.scale[frame];
-							if (itype == DATA_FLOAT)
+							if (itype == DATA_FLOAT) {
+								tmp = fpixel * args->coeff.scale[frame];
 								((float*)data->stack)[frame] = (float)(tmp - args->coeff.offset[frame]);
-							else	((WORD *)data->stack)[frame] = round_to_WORD(tmp - args->coeff.offset[frame]);
+							} else {
+								tmp = (double)pixel * args->coeff.scale[frame];
+								((WORD *)data->stack)[frame] = round_to_WORD(tmp - args->coeff.offset[frame]);
+							}
 							break;
 						case MULTIPLICATIVE:
 							// multiplicative  (scale[frame] = 1, offset[frame] = 0)
 						case MULTIPLICATIVE_SCALING:
 							// multiplicative + scale (offset[frame] = 0)
-							tmp = (double)pixel * args->coeff.scale[frame];
-							if (itype == DATA_FLOAT)
+							if (itype == DATA_FLOAT) {
+								tmp = fpixel * args->coeff.scale[frame];
 								((float*)data->stack)[frame] = (float)(tmp * args->coeff.mul[frame]);
-							else	((WORD *)data->stack)[frame] = round_to_WORD(tmp * args->coeff.mul[frame]);
+							} else {
+								tmp = (double)pixel * args->coeff.scale[frame];
+								((WORD *)data->stack)[frame] = round_to_WORD(tmp * args->coeff.mul[frame]);
+							}
 							break;
 					}
 				}
