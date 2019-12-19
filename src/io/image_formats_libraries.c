@@ -1325,7 +1325,7 @@ int readheif(const char* name, fits *fit){
 	// analyze image content
 	int num = heif_context_get_number_of_top_level_images(ctx);
 	if (num == 0) {
-		siril_log_message(_("Input file contains no readable images"));
+		siril_log_message(_("Input file contains no readable images.\n"));
 		heif_context_free(ctx);
 		return 1;
 	}

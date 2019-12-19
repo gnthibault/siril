@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-17 16:57+0100\n"
+"POT-Creation-Date: 2019-12-19 07:44+0100\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -4043,7 +4043,7 @@ msgstr "值: "
 #: ../src/filters/rgradient.c:185 ../src/filters/saturation.c:86
 #: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2197
 #: ../src/gui/callbacks.c:2360 ../src/gui/script_menu.c:151
-#: ../src/io/conversion.c:531 ../src/registration/registration.c:845
+#: ../src/io/conversion.c:545 ../src/registration/registration.c:845
 #: ../src/stacking/stacking.c:1101 ../src/stacking/stacking.c:1225
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr "Another task is already in progress, ignoring new request.\n"
@@ -4139,9 +4139,9 @@ msgstr "Fetch failed with code %ld for URL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:298
+#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:303
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
-#: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:610
+#: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:624
 #: ../src/io/single_image.c:149
 msgid "Error"
 msgstr "错误"
@@ -4423,7 +4423,7 @@ msgstr "必须先期载入至少两个通道！\n"
 
 #: ../src/compositing/compositing.c:551 ../src/filters/wavelets.c:318
 #: ../src/filters/wavelets.c:327 ../src/filters/wavelets.c:383
-#: ../src/io/conversion.c:603 ../src/registration/registration.c:863
+#: ../src/io/conversion.c:617 ../src/registration/registration.c:863
 msgid "Warning"
 msgstr "警告"
 
@@ -4727,16 +4727,16 @@ msgstr ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
 "%0.1lf, Max: %0.1lf\n"
 
-#: ../src/core/command.c:1863 ../src/io/conversion.c:609
+#: ../src/core/command.c:1863 ../src/io/conversion.c:623
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "转化：无法打开工作目录 %s.\n"
 
-#: ../src/core/command.c:1882 ../src/io/conversion.c:591
+#: ../src/core/command.c:1882 ../src/io/conversion.c:605
 msgid "Conversion: processing...\n"
 msgstr "转化：处理中...\n"
 
-#: ../src/core/command.c:1893 ../src/io/conversion.c:602
+#: ../src/core/command.c:1893 ../src/io/conversion.c:616
 msgid "Conversion: no working directory set.\n"
 msgstr "转化：工作目录未设置。\n"
 
@@ -6476,25 +6476,25 @@ msgid "Graphics Files (*.bmp"
 msgstr "图像文件 (*.bmp"
 
 #. NETPBM FILES
-#: ../src/gui/open_dialog.c:137 ../src/gui/save_dialog.c:83
+#: ../src/gui/open_dialog.c:142 ../src/gui/save_dialog.c:83
 msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
 msgstr "Netpbm文件 (*.ppm, *.pnm, *.pgm)"
 
 #. IRIS FILES
-#: ../src/gui/open_dialog.c:140
+#: ../src/gui/open_dialog.c:145
 msgid "IRIS PIC Files (*.pic)"
 msgstr "IRIS PIC 文件 (*.pic)"
 
 #. SER FILES
-#: ../src/gui/open_dialog.c:143
+#: ../src/gui/open_dialog.c:148
 msgid "SER files (*.ser)"
 msgstr "SER文件 (*.ser)"
 
-#: ../src/gui/open_dialog.c:180
+#: ../src/gui/open_dialog.c:185
 msgid "Film Files (*.avi, *.mpg, ...)"
 msgstr "视频文件 (*.avi, *.mpg, ...)"
 
-#: ../src/gui/open_dialog.c:194
+#: ../src/gui/open_dialog.c:199
 msgid "All supported files"
 msgstr "所有支持的文件类型"
 
@@ -6859,110 +6859,115 @@ msgstr "所选区域尺寸－像素: (%d,%d)"
 msgid "No selection"
 msgstr "无选择"
 
-#: ../src/io/conversion.c:248
+#: ../src/io/conversion.c:251
 msgid ""
 "Saving to 3 FITS files cannot be done because the source image does not have "
 "three channels\n"
 msgstr "保存为3个FITS文件无法执行，因为源图像没有包含三个通道\n"
 
-#: ../src/io/conversion.c:350
+#: ../src/io/conversion.c:353
 msgid "PIC images (IRIS), "
 msgstr "PIC图像(IRIS)， "
 
-#: ../src/io/conversion.c:352
+#: ../src/io/conversion.c:355
 msgid "PGM and PPM binary images"
 msgstr "PGM和PPM二进制图像"
 
-#: ../src/io/conversion.c:376
+#: ../src/io/conversion.c:379
 msgid "RAW images"
 msgstr "RAW图像"
 
-#: ../src/io/conversion.c:388
+#: ../src/io/conversion.c:391
 msgid "FITS-CFA images"
 msgstr "FITS-CFA图像"
 
-#: ../src/io/conversion.c:393
+#: ../src/io/conversion.c:396
 msgid "Films"
 msgstr "视频"
 
-#: ../src/io/conversion.c:398
+#: ../src/io/conversion.c:401
 msgid "SER sequences"
 msgstr "SER队列"
 
-#: ../src/io/conversion.c:404
+#: ../src/io/conversion.c:407
 msgid "TIFF images"
 msgstr "TIFF图像"
 
-#: ../src/io/conversion.c:412
+#: ../src/io/conversion.c:415
 msgid "JPG images"
 msgstr "JPG图像"
 
-#: ../src/io/conversion.c:420
+#: ../src/io/conversion.c:423
 msgid "PNG images"
 msgstr "PNG图像"
 
-#: ../src/io/conversion.c:428
+#: ../src/io/conversion.c:430
+#, fuzzy
+msgid "HEIF images"
+msgstr "TIFF图像"
+
+#: ../src/io/conversion.c:439
 #, c-format
 msgid "Supported file types: %s\n"
 msgstr "支持的文件类型: %s\n"
 
-#: ../src/io/conversion.c:541
+#: ../src/io/conversion.c:555
 msgid "Invalid char"
 msgstr "非法字符"
 
-#: ../src/io/conversion.c:541
+#: ../src/io/conversion.c:555
 msgid ""
 "Please remove invalid char in the sequence name before trying to convert "
 "images into a new sequence again."
 msgstr "请移除队列名称中的非法字符后再尝试将图像转化为新的队列。"
 
-#: ../src/io/conversion.c:547
+#: ../src/io/conversion.c:561
 #, c-format
 msgid "A file named %s already exists. Do you want to replace it?\n"
 msgstr "名为 %s 的文件已经存在。是否要覆盖？\n"
 
-#: ../src/io/conversion.c:549
+#: ../src/io/conversion.c:563
 msgid "The file already exists. Replacing it will overwrite its contents."
 msgstr "文件已存在。覆盖操作会改变文件的内容。"
 
-#: ../src/io/conversion.c:575 ../src/io/conversion.c:582
+#: ../src/io/conversion.c:589 ../src/io/conversion.c:596
 msgid "A conflict has been detected."
 msgstr "发现冲突。"
 
-#: ../src/io/conversion.c:576
+#: ../src/io/conversion.c:590
 msgid ""
 "The Debayer option is not allowed in SER conversion, please uncheck the "
 "option."
 msgstr "Debayer选项不可用于SER文件的转化，请移除该选项。"
 
-#: ../src/io/conversion.c:583
+#: ../src/io/conversion.c:597
 msgid ""
 "The Multiple SER option is not allowed in SER conversion, please uncheck the "
 "option."
 msgstr "多重SER选项不可用于SER文件的转化，请移除该选项。"
 
-#: ../src/io/conversion.c:663
+#: ../src/io/conversion.c:677
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
 msgstr "SER输出将获得超过新建单通道图像的优先权。\n"
 
-#: ../src/io/conversion.c:670 ../src/io/conversion.c:721
+#: ../src/io/conversion.c:684 ../src/io/conversion.c:735
 #: ../src/io/sequence.c:1368 ../src/io/sequence_export.c:114
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "创建SER文件失败，异常终止。\n"
 
-#: ../src/io/conversion.c:686 ../src/io/conversion.c:687
+#: ../src/io/conversion.c:700 ../src/io/conversion.c:701
 #, c-format
 msgid "Converting %s..."
 msgstr "转化 %s..."
 
-#: ../src/io/conversion.c:693
+#: ../src/io/conversion.c:707
 #, c-format
 msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr "文件类型错误，无法转化：%s\n"
 
-#: ../src/io/conversion.c:694
+#: ../src/io/conversion.c:708
 #, fuzzy, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -6977,51 +6982,51 @@ msgstr ""
 "如果确认无错，那么你需要安装第三方软件来激活这种文件类型，详见README\n"
 "如果你所试图载入的文件类型在支持列表内，那么可以向开发团队提交一个缺陷报告。"
 
-#: ../src/io/conversion.c:713
+#: ../src/io/conversion.c:727
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Error while opening film %s, aborting.\n"
 
-#: ../src/io/conversion.c:733 ../src/io/conversion.c:799
+#: ../src/io/conversion.c:747 ../src/io/conversion.c:813
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Error while reading frame %d from %s, aborting.\n"
 
-#: ../src/io/conversion.c:745 ../src/io/conversion.c:811
-#: ../src/io/conversion.c:838 ../src/io/sequence.c:1398
+#: ../src/io/conversion.c:759 ../src/io/conversion.c:825
+#: ../src/io/conversion.c:852 ../src/io/sequence.c:1398
 #: ../src/io/sequence_export.c:340
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Error while converting to SER (no space left?)\n"
 
-#: ../src/io/conversion.c:753 ../src/io/conversion.c:819
-#: ../src/io/conversion.c:844
+#: ../src/io/conversion.c:767 ../src/io/conversion.c:833
+#: ../src/io/conversion.c:858
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr "Error while converting to FITS (no space left?)\n"
 
-#: ../src/io/conversion.c:769
+#: ../src/io/conversion.c:783
 msgid ""
 "Joining SER files is only possible with a list only containing SER files. "
 "Please, remove non SER files.\n"
 msgstr "连接SER文件只可用于仅包含SER文件的队列。请移除非SER文件。\n"
 
-#: ../src/io/conversion.c:778
+#: ../src/io/conversion.c:792
 #, c-format
 msgid "Error while opening ser file %s, aborting.\n"
 msgstr "打开SER文件 %s 失败，异常终止。\n"
 
-#: ../src/io/conversion.c:786
+#: ../src/io/conversion.c:800
 msgid "Input SER files must have the same size to be joined.\n"
 msgstr "所用于连接的SER文件必须拥有相同的尺寸。\n"
 
-#: ../src/io/conversion.c:883
+#: ../src/io/conversion.c:897
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "在超过一个通道的图像上无法执行debayer\n"
 
-#: ../src/io/conversion.c:896 ../src/io/ser.c:839 ../src/io/ser.c:1050
+#: ../src/io/conversion.c:910 ../src/io/ser.c:839 ../src/io/ser.c:1050
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "在文件头中无法找到拜耳阵列排列信息。\n"
 
-#: ../src/io/conversion.c:899 ../src/io/ser.c:843 ../src/io/ser.c:1054
+#: ../src/io/conversion.c:913 ../src/io/ser.c:843 ../src/io/ser.c:1054
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -7029,47 +7034,47 @@ msgid ""
 msgstr ""
 "文件头中含有的拜耳滤镜排列模式 (%s) 不同于设置中的排列 (%s)。 设置被覆盖。\n"
 
-#: ../src/io/conversion.c:908
+#: ../src/io/conversion.c:922
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr "发现XTRANS传感器。特殊算法将被采用。\n"
 
-#: ../src/io/conversion.c:913
+#: ../src/io/conversion.c:927
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "拜耳阵列模式： %s\n"
 
-#: ../src/io/conversion.c:917
+#: ../src/io/conversion.c:931
 msgid "The FITS file is being normalized to 16-bit\n"
 msgstr "FITS文件转化为16位\n"
 
-#: ../src/io/conversion.c:921
+#: ../src/io/conversion.c:935
 msgid "Cannot perform debayering\n"
 msgstr "无法执行debayer\n"
 
-#: ../src/io/conversion.c:1017
+#: ../src/io/conversion.c:1036
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
 msgstr "将一个队列文件转化为单个FITS文件的请求是违法的\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:1022
+#: ../src/io/conversion.c:1041
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "文件打开错误 %s: 文件类型不支持。\n"
 
-#: ../src/io/conversion.c:1163
+#: ../src/io/conversion.c:1182
 #, fuzzy, c-format
 msgid "%d %s while drag and drop\n"
 msgstr "%d个文件于拖拽操作中被忽略\n"
 
-#: ../src/io/conversion.c:1164
+#: ../src/io/conversion.c:1183
 #, fuzzy
 msgid "file was ignored"
 msgid_plural "files were ignored"
 msgstr[0] "文件"
 
-#: ../src/io/conversion.c:1166
+#: ../src/io/conversion.c:1185
 msgid ""
 "Files with unknown extension cannot be dropped in this area. Therefore they "
 "are ignored."
@@ -7257,144 +7262,158 @@ msgstr "Date (of observation): %s\n"
 msgid "Time (of observation): %s\n"
 msgstr "Time (of observation): %s\n"
 
-#: ../src/io/image_formats_libraries.c:72
-#: ../src/io/image_formats_libraries.c:132
+#: ../src/io/image_formats_libraries.c:75
+#: ../src/io/image_formats_libraries.c:135
 msgid "Alpha channel is ignored.\n"
 msgstr "Alpha channel is ignored.\n"
 
-#: ../src/io/image_formats_libraries.c:90
-#: ../src/io/image_formats_libraries.c:107
-#: ../src/io/image_formats_libraries.c:156
+#: ../src/io/image_formats_libraries.c:93
+#: ../src/io/image_formats_libraries.c:110
+#: ../src/io/image_formats_libraries.c:159
 msgid "An unexpected error was encountered while trying to read the file.\n"
 msgstr "读取文件时产生了未知的错误。\n"
 
-#: ../src/io/image_formats_libraries.c:116
+#: ../src/io/image_formats_libraries.c:119
 msgid "Unknown TIFF file.\n"
 msgstr "Unknown TIFF file.\n"
 
-#: ../src/io/image_formats_libraries.c:204
+#: ../src/io/image_formats_libraries.c:207
 #, c-format
 msgid "Could not open the TIFF file %s\n"
 msgstr "无法打开TIFF文件: %s\n"
 
-#: ../src/io/image_formats_libraries.c:234
+#: ../src/io/image_formats_libraries.c:237
 msgid "Siril only works with 8/16-bit TIFF format.\n"
 msgstr "Siril仅支持8/16位TIFF格式。\n"
 
-#: ../src/io/image_formats_libraries.c:268
+#: ../src/io/image_formats_libraries.c:271
 #, c-format
 msgid "Reading TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "读取TIFF：%d-bit 文件名 %s, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/image_formats_libraries.c:296
+#: ../src/io/image_formats_libraries.c:299
 msgid "Siril cannot create TIFF file.\n"
 msgstr "Siril无法创建TIFF文件。\n"
 
-#: ../src/io/image_formats_libraries.c:352
+#: ../src/io/image_formats_libraries.c:355
 msgid "TIFF file has unexpected number of channels (not 1 or 3).\n"
 msgstr "TIFF file has unexpected number of channels (not 1 or 3).\n"
 
-#: ../src/io/image_formats_libraries.c:395
+#: ../src/io/image_formats_libraries.c:398
 #, c-format
 msgid "Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "保存TIFF：%d-bit 文件名 %s, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/image_formats_libraries.c:417
-#: ../src/io/image_formats_libraries.c:568
+#: ../src/io/image_formats_libraries.c:420
+#: ../src/io/image_formats_libraries.c:571
 #, c-format
 msgid "Sorry but Siril cannot open the file: %s.\n"
 msgstr "抱歉，Siril无法打开文件：%s\n"
 
-#: ../src/io/image_formats_libraries.c:462
+#: ../src/io/image_formats_libraries.c:465
 #, c-format
 msgid "Reading JPG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "读取JPG：文件名 %s, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/image_formats_libraries.c:490
+#: ../src/io/image_formats_libraries.c:493
 msgid "Siril cannot create JPG file.\n"
 msgstr "Siril无法创建JPG文件。\n"
 
-#: ../src/io/image_formats_libraries.c:544
+#: ../src/io/image_formats_libraries.c:547
 #, c-format
 msgid "Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"
 msgstr "保存JPG：文件名 %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/image_formats_libraries.c:683
+#: ../src/io/image_formats_libraries.c:686
 #, c-format
 msgid "Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "读取PNG：%d-bit 文件名 %s, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/image_formats_libraries.c:830
+#: ../src/io/image_formats_libraries.c:833
 #, c-format
 msgid "Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "保存PNG：文件名 %s, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/image_formats_libraries.c:945
+#: ../src/io/image_formats_libraries.c:948
 #, c-format
 msgid "Error in libraw %s\n"
 msgstr "Error in libraw %s\n"
 
-#: ../src/io/image_formats_libraries.c:952
+#: ../src/io/image_formats_libraries.c:955
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%gs)\n"
 msgstr "Decoding %s %s file (ISO=%g, Exposure=%gs)\n"
 
-#: ../src/io/image_formats_libraries.c:955
+#: ../src/io/image_formats_libraries.c:958
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
 msgstr "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
 
-#: ../src/io/image_formats_libraries.c:975
-#: ../src/io/image_formats_libraries.c:984
+#: ../src/io/image_formats_libraries.c:978
+#: ../src/io/image_formats_libraries.c:987
 #, c-format
 msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Daylight multipliers: %f, %f, %f\n"
 
-#: ../src/io/image_formats_libraries.c:989
+#: ../src/io/image_formats_libraries.c:992
 msgid "XTRANS Sensor detected.\n"
 msgstr "侦测到XTRANS传感器。\n"
 
-#: ../src/io/image_formats_libraries.c:995
+#: ../src/io/image_formats_libraries.c:998
 msgid "Bilinear interpolation...\n"
 msgstr "双线性插值…\n"
 
-#: ../src/io/image_formats_libraries.c:999
+#: ../src/io/image_formats_libraries.c:1002
 msgid "VNG interpolation...\n"
 msgstr "VNG插值...\n"
 
-#: ../src/io/image_formats_libraries.c:1003
+#: ../src/io/image_formats_libraries.c:1006
 msgid "PPG interpolation...\n"
 msgstr "PPG插值...\n"
 
-#: ../src/io/image_formats_libraries.c:1008
+#: ../src/io/image_formats_libraries.c:1011
 msgid "AHD interpolation...\n"
 msgstr "AHD插值…\n"
 
-#: ../src/io/image_formats_libraries.c:1173
+#: ../src/io/image_formats_libraries.c:1176
 msgid ""
 "Siril cannot open this file in CFA mode (no data available). Try to switch "
 "into RGB.\n"
 msgstr "Siril无法以CFA模式打开此文件（无可用数据）。请尝试使用RGB。\n"
 
-#: ../src/io/image_formats_libraries.c:1201
+#: ../src/io/image_formats_libraries.c:1204
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 msgstr "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 
-#: ../src/io/image_formats_libraries.c:1204
+#: ../src/io/image_formats_libraries.c:1207
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 msgstr "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 
-#: ../src/io/image_formats_libraries.c:1227
+#: ../src/io/image_formats_libraries.c:1230
 #, c-format
 msgid "CFA pattern: %s\n"
 msgstr "拜耳阵列：%s\n"
 
-#: ../src/io/image_formats_libraries.c:1300
+#: ../src/io/image_formats_libraries.c:1303
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "读取RAW：文件名 %s, %ld layer(s), %ux%u pixels\n"
+
+#: ../src/io/image_formats_libraries.c:1328
+msgid "Input file contains no readable images.\n"
+msgstr ""
+
+#: ../src/io/image_formats_libraries.c:1334
+#, c-format
+msgid "This is a sequence of %d images: loading the primary one.\n"
+msgstr ""
+
+#: ../src/io/image_formats_libraries.c:1400
+#, fuzzy, c-format
+msgid "Reading HEIF: file %s, %ld layer(s), %ux%u pixels\n"
+msgstr "读取PIC：文件名 %s, %ld layer(s), %ux%u pixels\n"
 
 #: ../src/io/mp4_output.c:416
 msgid ""

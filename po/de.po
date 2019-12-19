@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-17 16:57+0100\n"
+"POT-Creation-Date: 2019-12-19 07:44+0100\n"
 "PO-Revision-Date: 2019-12-14 10:49+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -4304,7 +4304,7 @@ msgstr "Wert "
 #: ../src/filters/rgradient.c:185 ../src/filters/saturation.c:86
 #: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2197
 #: ../src/gui/callbacks.c:2360 ../src/gui/script_menu.c:151
-#: ../src/io/conversion.c:531 ../src/registration/registration.c:845
+#: ../src/io/conversion.c:545 ../src/registration/registration.c:845
 #: ../src/stacking/stacking.c:1101 ../src/stacking/stacking.c:1225
 msgid "Another task is already in progress, ignoring new request.\n"
 msgstr ""
@@ -4408,9 +4408,9 @@ msgstr "Holen fehlgeschlagen mit Code %ld für URL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:298
+#: ../src/gui/callbacks.c:1747 ../src/gui/open_dialog.c:303
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
-#: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:610
+#: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:624
 #: ../src/io/single_image.c:149
 msgid "Error"
 msgstr "Error"
@@ -4701,7 +4701,7 @@ msgstr "Sie müssen zumindest 2 Layer laden\n"
 
 #: ../src/compositing/compositing.c:551 ../src/filters/wavelets.c:318
 #: ../src/filters/wavelets.c:327 ../src/filters/wavelets.c:383
-#: ../src/io/conversion.c:603 ../src/registration/registration.c:863
+#: ../src/io/conversion.c:617 ../src/registration/registration.c:863
 msgid "Warning"
 msgstr "Warnung"
 
@@ -5016,16 +5016,16 @@ msgstr ""
 "%s Layer: Mittelwert: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, Mittl."
 "Abweichg.: %0.1lf, Min: %0.1lf, Max: %0.1lf\n"
 
-#: ../src/core/command.c:1863 ../src/io/conversion.c:609
+#: ../src/core/command.c:1863 ../src/io/conversion.c:623
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Konvertierung: Fehler beim Öffnen des Verzeichnisses %s.\n"
 
-#: ../src/core/command.c:1882 ../src/io/conversion.c:591
+#: ../src/core/command.c:1882 ../src/io/conversion.c:605
 msgid "Conversion: processing...\n"
 msgstr "Konvertierung: bearbeite...\n"
 
-#: ../src/core/command.c:1893 ../src/io/conversion.c:602
+#: ../src/core/command.c:1893 ../src/io/conversion.c:616
 msgid "Conversion: no working directory set.\n"
 msgstr "Konvertierung: kein Arbeitsverzeichnis festgelegt.\n"
 
@@ -6831,25 +6831,25 @@ msgid "Graphics Files (*.bmp"
 msgstr "Bilddateien (*.bmp)"
 
 #. NETPBM FILES
-#: ../src/gui/open_dialog.c:137 ../src/gui/save_dialog.c:83
+#: ../src/gui/open_dialog.c:142 ../src/gui/save_dialog.c:83
 msgid "Netpbm Files (*.ppm, *.pnm, *.pgm)"
 msgstr "NetPBM Dateien (*.ppm, *.pnm, *.pgm)"
 
 #. IRIS FILES
-#: ../src/gui/open_dialog.c:140
+#: ../src/gui/open_dialog.c:145
 msgid "IRIS PIC Files (*.pic)"
 msgstr "IRIS PIC Dateien (*.pic)"
 
 #. SER FILES
-#: ../src/gui/open_dialog.c:143
+#: ../src/gui/open_dialog.c:148
 msgid "SER files (*.ser)"
 msgstr "SER Dateien (*.ser)"
 
-#: ../src/gui/open_dialog.c:180
+#: ../src/gui/open_dialog.c:185
 msgid "Film Files (*.avi, *.mpg, ...)"
 msgstr "Film-/Video-Dateien (*.avi, *.mpg, ...)"
 
-#: ../src/gui/open_dialog.c:194
+#: ../src/gui/open_dialog.c:199
 msgid "All supported files"
 msgstr "Alle unterstützten Datei-Formate"
 
@@ -7215,7 +7215,7 @@ msgstr "Größe der Auswahl in Pixeln: (%d,%d)"
 msgid "No selection"
 msgstr "Keine Auswahl getroffen"
 
-#: ../src/io/conversion.c:248
+#: ../src/io/conversion.c:251
 msgid ""
 "Saving to 3 FITS files cannot be done because the source image does not have "
 "three channels\n"
@@ -7223,52 +7223,57 @@ msgstr ""
 "Ein Abspeichern in 3 FITS-Bildern ist nichtmöglich, da das Ausgangsbild "
 "keine 3 Kanäle hat\n"
 
-#: ../src/io/conversion.c:350
+#: ../src/io/conversion.c:353
 msgid "PIC images (IRIS), "
 msgstr "PIC Bilder (IRIS), "
 
-#: ../src/io/conversion.c:352
+#: ../src/io/conversion.c:355
 msgid "PGM and PPM binary images"
 msgstr "Binäre PGM und PPM Bilder"
 
-#: ../src/io/conversion.c:376
+#: ../src/io/conversion.c:379
 msgid "RAW images"
 msgstr "RAW Bilder"
 
-#: ../src/io/conversion.c:388
+#: ../src/io/conversion.c:391
 msgid "FITS-CFA images"
 msgstr "FITS-CFA Bilder"
 
-#: ../src/io/conversion.c:393
+#: ../src/io/conversion.c:396
 msgid "Films"
 msgstr "Filme/Videos"
 
-#: ../src/io/conversion.c:398
+#: ../src/io/conversion.c:401
 msgid "SER sequences"
 msgstr "SER Sequenzen"
 
-#: ../src/io/conversion.c:404
+#: ../src/io/conversion.c:407
 msgid "TIFF images"
 msgstr "TIFF Bilder"
 
-#: ../src/io/conversion.c:412
+#: ../src/io/conversion.c:415
 msgid "JPG images"
 msgstr "JPG Bilder"
 
-#: ../src/io/conversion.c:420
+#: ../src/io/conversion.c:423
 msgid "PNG images"
 msgstr "PNG Bilder"
 
-#: ../src/io/conversion.c:428
+#: ../src/io/conversion.c:430
+#, fuzzy
+msgid "HEIF images"
+msgstr "TIFF Bilder"
+
+#: ../src/io/conversion.c:439
 #, c-format
 msgid "Supported file types: %s\n"
 msgstr "Unterstützte Dateitypen: %s\n"
 
-#: ../src/io/conversion.c:541
+#: ../src/io/conversion.c:555
 msgid "Invalid char"
 msgstr "Ungültiges Zeichen"
 
-#: ../src/io/conversion.c:541
+#: ../src/io/conversion.c:555
 msgid ""
 "Please remove invalid char in the sequence name before trying to convert "
 "images into a new sequence again."
@@ -7276,20 +7281,20 @@ msgstr ""
 "Bitte korrigieren Sie ungültige Zeichen im Sequenznamen, bevor Sie einen "
 "erneuten Konvertierungsversuch starten."
 
-#: ../src/io/conversion.c:547
+#: ../src/io/conversion.c:561
 #, c-format
 msgid "A file named %s already exists. Do you want to replace it?\n"
 msgstr "Eine Datei namens %s existiert bereits. Überschreiben?\n"
 
-#: ../src/io/conversion.c:549
+#: ../src/io/conversion.c:563
 msgid "The file already exists. Replacing it will overwrite its contents."
 msgstr "Diese Datei existiert bereits. Ein Ersetzen überschreibt deren Inhalt."
 
-#: ../src/io/conversion.c:575 ../src/io/conversion.c:582
+#: ../src/io/conversion.c:589 ../src/io/conversion.c:596
 msgid "A conflict has been detected."
 msgstr "Ein Konflikt ist aufgetreten."
 
-#: ../src/io/conversion.c:576
+#: ../src/io/conversion.c:590
 msgid ""
 "The Debayer option is not allowed in SER conversion, please uncheck the "
 "option."
@@ -7297,7 +7302,7 @@ msgstr ""
 "Die De-Bayer Option ist bei der SER-Konvertierung nicht erlaubt, bitte "
 "entfernen Sie das Häkchen."
 
-#: ../src/io/conversion.c:583
+#: ../src/io/conversion.c:597
 msgid ""
 "The Multiple SER option is not allowed in SER conversion, please uncheck the "
 "option."
@@ -7305,29 +7310,29 @@ msgstr ""
 "Die Mehrfach-SER Option ist bei der SER-Konvertierung nicht erlaubt, bitte "
 "entfernen Sie das Häkchen."
 
-#: ../src/io/conversion.c:663
+#: ../src/io/conversion.c:677
 msgid ""
 "SER output will take precedence over the one-channel per image creation "
 "option.\n"
 msgstr ""
 "Die Ausgabe im SRE-Format hat Vorrang vor der Option 1 Kanal pro Bild.\n"
 
-#: ../src/io/conversion.c:670 ../src/io/conversion.c:721
+#: ../src/io/conversion.c:684 ../src/io/conversion.c:735
 #: ../src/io/sequence.c:1368 ../src/io/sequence_export.c:114
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "SER-Datei Erstellung fehlgeschlagen. Abbruch.\n"
 
-#: ../src/io/conversion.c:686 ../src/io/conversion.c:687
+#: ../src/io/conversion.c:700 ../src/io/conversion.c:701
 #, c-format
 msgid "Converting %s..."
 msgstr "Konvertiere %s..."
 
-#: ../src/io/conversion.c:693
+#: ../src/io/conversion.c:707
 #, c-format
 msgid "Filetype is not supported, cannot convert: %s\n"
 msgstr "Datei-Typ nicht unterstützt, Konvertierung nicht möglich: %s\n"
 
-#: ../src/io/conversion.c:694
+#: ../src/io/conversion.c:708
 #, c-format
 msgid ""
 "File extension '%s' is not supported.\n"
@@ -7347,28 +7352,28 @@ msgstr ""
 "aufgeführt ist, können Sie die Entwickler darüber informieren, dass die von "
 "Ihnen zu verwendende Erweiterung für diesen Typ erkannt werden sollte."
 
-#: ../src/io/conversion.c:713
+#: ../src/io/conversion.c:727
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Fehler beim Öffnen der Video-Datei %s. Abbruch.\n"
 
-#: ../src/io/conversion.c:733 ../src/io/conversion.c:799
+#: ../src/io/conversion.c:747 ../src/io/conversion.c:813
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Fehler beim Einlesen von Frame %d aus %s. Abbruch.\n"
 
-#: ../src/io/conversion.c:745 ../src/io/conversion.c:811
-#: ../src/io/conversion.c:838 ../src/io/sequence.c:1398
+#: ../src/io/conversion.c:759 ../src/io/conversion.c:825
+#: ../src/io/conversion.c:852 ../src/io/sequence.c:1398
 #: ../src/io/sequence_export.c:340
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Fehler bei der Konvertierung zu SER (zu wenig Speicherplatz?)\n"
 
-#: ../src/io/conversion.c:753 ../src/io/conversion.c:819
-#: ../src/io/conversion.c:844
+#: ../src/io/conversion.c:767 ../src/io/conversion.c:833
+#: ../src/io/conversion.c:858
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr "Fehler bei der Konvertierung zu FITS (zu wenig Speicherplatz?)\n"
 
-#: ../src/io/conversion.c:769
+#: ../src/io/conversion.c:783
 msgid ""
 "Joining SER files is only possible with a list only containing SER files. "
 "Please, remove non SER files.\n"
@@ -7376,25 +7381,25 @@ msgstr ""
 "Verknüpfung von SER-Dateien nur möglich bei sortenreinen Listen. Bitte "
 "entfernen Sie alle nicht-SER Dateien.\n"
 
-#: ../src/io/conversion.c:778
+#: ../src/io/conversion.c:792
 #, c-format
 msgid "Error while opening ser file %s, aborting.\n"
 msgstr "Fehler beim Öffnen der SER-Datei %s. Abbruch.\n"
 
-#: ../src/io/conversion.c:786
+#: ../src/io/conversion.c:800
 msgid "Input SER files must have the same size to be joined.\n"
 msgstr ""
 "SER-Dateien müssen dieselbe Größe haben, um verknüpft werden zu können.\n"
 
-#: ../src/io/conversion.c:883
+#: ../src/io/conversion.c:897
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr "De-Bayern nicht möglich bei Bildern mit mehr als einem Kanal.\n"
 
-#: ../src/io/conversion.c:896 ../src/io/ser.c:839 ../src/io/ser.c:1050
+#: ../src/io/conversion.c:910 ../src/io/ser.c:839 ../src/io/ser.c:1050
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Keine Bayer-Matrix im Datei-Header gefunden.\n"
 
-#: ../src/io/conversion.c:899 ../src/io/ser.c:843 ../src/io/ser.c:1054
+#: ../src/io/conversion.c:913 ../src/io/ser.c:843 ../src/io/ser.c:1054
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -7403,24 +7408,24 @@ msgstr ""
 "Das Bayer-Matrix im Datei-Header (%s) unterscheidet sich von jenem in den "
 "Einstellungen (%s). Überschreibe Einstellungen.\n"
 
-#: ../src/io/conversion.c:908
+#: ../src/io/conversion.c:922
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr "XTRANS Sensor detektiert. Benutze speziellen Algorithmus.\n"
 
-#: ../src/io/conversion.c:913
+#: ../src/io/conversion.c:927
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Filter Pattern: %s\n"
 
-#: ../src/io/conversion.c:917
+#: ../src/io/conversion.c:931
 msgid "The FITS file is being normalized to 16-bit\n"
 msgstr "Die FITS-Datei wird normalisiert zu 16bit\n"
 
-#: ../src/io/conversion.c:921
+#: ../src/io/conversion.c:935
 msgid "Cannot perform debayering\n"
 msgstr "Kann De-Bayerung nicht durchführen\n"
 
-#: ../src/io/conversion.c:1017
+#: ../src/io/conversion.c:1036
 msgid ""
 "Requested converting a sequence file to single FITS image, should not "
 "happen\n"
@@ -7429,23 +7434,23 @@ msgstr ""
 "sollte nicht vorkommen\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: ../src/io/conversion.c:1022
+#: ../src/io/conversion.c:1041
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "Fehler beim Öffnen von %s: Dateityp wird nicht unterstützt.\n"
 
-#: ../src/io/conversion.c:1163
+#: ../src/io/conversion.c:1182
 #, c-format
 msgid "%d %s while drag and drop\n"
 msgstr "%d %s Datei(en) wurde(n) beim Drag&Drop-Vorgang ignoriert\n"
 
-#: ../src/io/conversion.c:1164
+#: ../src/io/conversion.c:1183
 msgid "file was ignored"
 msgid_plural "files were ignored"
 msgstr[0] "Datei wurde verworfen"
 msgstr[1] "Datei"
 
-#: ../src/io/conversion.c:1166
+#: ../src/io/conversion.c:1185
 msgid ""
 "Files with unknown extension cannot be dropped in this area. Therefore they "
 "are ignored."
@@ -7639,121 +7644,121 @@ msgstr "Datum der Aufnahme: %s\n"
 msgid "Time (of observation): %s\n"
 msgstr "Uhrzeit der Aufnahme: %s\n"
 
-#: ../src/io/image_formats_libraries.c:72
-#: ../src/io/image_formats_libraries.c:132
+#: ../src/io/image_formats_libraries.c:75
+#: ../src/io/image_formats_libraries.c:135
 msgid "Alpha channel is ignored.\n"
 msgstr "Alpha-Kanal wird ignoriert.\n"
 
-#: ../src/io/image_formats_libraries.c:90
-#: ../src/io/image_formats_libraries.c:107
-#: ../src/io/image_formats_libraries.c:156
+#: ../src/io/image_formats_libraries.c:93
+#: ../src/io/image_formats_libraries.c:110
+#: ../src/io/image_formats_libraries.c:159
 msgid "An unexpected error was encountered while trying to read the file.\n"
 msgstr "Unerwarteter Fehler beim Einlesen der Datei.\n"
 
-#: ../src/io/image_formats_libraries.c:116
+#: ../src/io/image_formats_libraries.c:119
 msgid "Unknown TIFF file.\n"
 msgstr "Unbekanntes TIFF-Format.\n"
 
-#: ../src/io/image_formats_libraries.c:204
+#: ../src/io/image_formats_libraries.c:207
 #, c-format
 msgid "Could not open the TIFF file %s\n"
 msgstr "Konnte TIFF-Datei %s nicht öffnen\n"
 
-#: ../src/io/image_formats_libraries.c:234
+#: ../src/io/image_formats_libraries.c:237
 msgid "Siril only works with 8/16-bit TIFF format.\n"
 msgstr "SIRIL arbeitet derzeit nur im 8/16-bit TIFF-Format.\n"
 
-#: ../src/io/image_formats_libraries.c:268
+#: ../src/io/image_formats_libraries.c:271
 #, c-format
 msgid "Reading TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lese TIFF: %d-bit Datei %s, %ld Layer, %ux%u Pixel\n"
 
-#: ../src/io/image_formats_libraries.c:296
+#: ../src/io/image_formats_libraries.c:299
 msgid "Siril cannot create TIFF file.\n"
 msgstr "SIRIL kann TIFF-Datei nicht erstellen.\n"
 
-#: ../src/io/image_formats_libraries.c:352
+#: ../src/io/image_formats_libraries.c:355
 msgid "TIFF file has unexpected number of channels (not 1 or 3).\n"
 msgstr ""
 "TIFF-Datei enthält eine unerwartete Anzahl an Kanälen (nicht 1 oder 3).\n"
 
-#: ../src/io/image_formats_libraries.c:395
+#: ../src/io/image_formats_libraries.c:398
 #, c-format
 msgid "Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Speichere TIFF: %d-bit Datei %s, %ld Layer, %ux%u Pixel\n"
 
-#: ../src/io/image_formats_libraries.c:417
-#: ../src/io/image_formats_libraries.c:568
+#: ../src/io/image_formats_libraries.c:420
+#: ../src/io/image_formats_libraries.c:571
 #, c-format
 msgid "Sorry but Siril cannot open the file: %s.\n"
 msgstr "SIRIL kann di eDatei nicht öffnen: %s.\n"
 
-#: ../src/io/image_formats_libraries.c:462
+#: ../src/io/image_formats_libraries.c:465
 #, c-format
 msgid "Reading JPG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lese JPG: Datei %s, %ld Layer, %ux%u Pixel\n"
 
-#: ../src/io/image_formats_libraries.c:490
+#: ../src/io/image_formats_libraries.c:493
 msgid "Siril cannot create JPG file.\n"
 msgstr "SIRIL kann JPG-Datei nicht erstellen.\n"
 
-#: ../src/io/image_formats_libraries.c:544
+#: ../src/io/image_formats_libraries.c:547
 #, c-format
 msgid "Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"
 msgstr "Speichere JPG: Datei %s, Qualität=%d%%, %ld Layer, %ux%u Pixel\n"
 
-#: ../src/io/image_formats_libraries.c:683
+#: ../src/io/image_formats_libraries.c:686
 #, c-format
 msgid "Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lese PNG: %d-bit Datei %s, %ld Layer, %ux%u Pixel\n"
 
-#: ../src/io/image_formats_libraries.c:830
+#: ../src/io/image_formats_libraries.c:833
 #, c-format
 msgid "Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Speichere PNG: Datei %s, %ld Layer, %ux%u Pixel\n"
 
-#: ../src/io/image_formats_libraries.c:945
+#: ../src/io/image_formats_libraries.c:948
 #, c-format
 msgid "Error in libraw %s\n"
 msgstr "Fehler in LIBRAW %s\n"
 
-#: ../src/io/image_formats_libraries.c:952
+#: ../src/io/image_formats_libraries.c:955
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%gs)\n"
 msgstr "Dekodiere %s %s Datei (ISO=%g, Belichtungszeit=%gs)\n"
 
-#: ../src/io/image_formats_libraries.c:955
+#: ../src/io/image_formats_libraries.c:958
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
 msgstr "Dekodiere %s %s Datei (ISO=%g, Belichtungszeit=1/%gs)\n"
 
-#: ../src/io/image_formats_libraries.c:975
-#: ../src/io/image_formats_libraries.c:984
+#: ../src/io/image_formats_libraries.c:978
+#: ../src/io/image_formats_libraries.c:987
 #, c-format
 msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Tageslicht-Multiplikatoren: %f, %f, %f\n"
 
-#: ../src/io/image_formats_libraries.c:989
+#: ../src/io/image_formats_libraries.c:992
 msgid "XTRANS Sensor detected.\n"
 msgstr "XTRANS Sensor detektiert.\n"
 
-#: ../src/io/image_formats_libraries.c:995
+#: ../src/io/image_formats_libraries.c:998
 msgid "Bilinear interpolation...\n"
 msgstr "Bilineare Interpolation...\n"
 
-#: ../src/io/image_formats_libraries.c:999
+#: ../src/io/image_formats_libraries.c:1002
 msgid "VNG interpolation...\n"
 msgstr "VNG Interpolation...\n"
 
-#: ../src/io/image_formats_libraries.c:1003
+#: ../src/io/image_formats_libraries.c:1006
 msgid "PPG interpolation...\n"
 msgstr "PPG Interpolation...\n"
 
-#: ../src/io/image_formats_libraries.c:1008
+#: ../src/io/image_formats_libraries.c:1011
 msgid "AHD interpolation...\n"
 msgstr "AHD Interpolation...\n"
 
-#: ../src/io/image_formats_libraries.c:1173
+#: ../src/io/image_formats_libraries.c:1176
 msgid ""
 "Siril cannot open this file in CFA mode (no data available). Try to switch "
 "into RGB.\n"
@@ -7761,25 +7766,39 @@ msgstr ""
 "SIRIL kann diese Datei im CFA-Modus nicht öffnen (keine Daten verfügbar). "
 "Versuchen Sie es im RGB-Modus.\n"
 
-#: ../src/io/image_formats_libraries.c:1201
+#: ../src/io/image_formats_libraries.c:1204
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 msgstr "Dekodiere %s %s Datei (ISO=%g, Belichtungszeit=1/%gs)\n"
 
-#: ../src/io/image_formats_libraries.c:1204
+#: ../src/io/image_formats_libraries.c:1207
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 msgstr "Dekodiere %s %s Datei (ISO=%g, Belichtungszeit=%0.1f sec)\n"
 
-#: ../src/io/image_formats_libraries.c:1227
+#: ../src/io/image_formats_libraries.c:1230
 #, c-format
 msgid "CFA pattern: %s\n"
 msgstr "CFA Muster: %s\n"
 
-#: ../src/io/image_formats_libraries.c:1300
+#: ../src/io/image_formats_libraries.c:1303
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lese RAW: Datei %s, %ld Layer, %ux%u Pixel\n"
+
+#: ../src/io/image_formats_libraries.c:1328
+msgid "Input file contains no readable images.\n"
+msgstr ""
+
+#: ../src/io/image_formats_libraries.c:1334
+#, c-format
+msgid "This is a sequence of %d images: loading the primary one.\n"
+msgstr ""
+
+#: ../src/io/image_formats_libraries.c:1400
+#, fuzzy, c-format
+msgid "Reading HEIF: file %s, %ld layer(s), %ux%u pixels\n"
+msgstr "Lese PIC: Datei %s, %ld Layer, %ux%u Pixel\n"
 
 #: ../src/io/mp4_output.c:416
 msgid ""
