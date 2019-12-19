@@ -1496,7 +1496,6 @@ static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image)
 		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(data, GDK_COLORSPACE_RGB,
 				FALSE, 8, heif_images[i].width, heif_images[i].height, stride,
 				NULL, NULL);
-
 		gtk_list_store_set(liststore, &iter, 1, pixbuf, -1);
 	}
 
@@ -1504,9 +1503,10 @@ static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image)
 	gtk_icon_view_set_model((GtkIconView*) iconview, (GtkTreeModel*) liststore);
 	gtk_icon_view_set_text_column((GtkIconView*) iconview, 0);
 	gtk_icon_view_set_pixbuf_column((GtkIconView*) iconview, 1);
+	gtk_icon_view_set_item_width((GtkIconView*) iconview, MAX_THUMBNAIL_SIZE);
 
 	GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
-	gtk_widget_set_size_request(scroll, -1, 500);
+	gtk_widget_set_size_request(scroll, -1, 400);
 	g_object_set(scroll, "expand", TRUE, NULL);
 
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),	GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
