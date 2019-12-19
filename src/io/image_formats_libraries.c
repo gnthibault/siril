@@ -42,6 +42,9 @@
 #ifdef HAVE_LIBRAW
 #include <libraw/libraw.h>
 #endif
+#ifdef HAVE_LIBHEIF
+#include <libheif/heif.h>
+#endif
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -1302,5 +1305,102 @@ int open_raw_files(const char *name, fits *fit, int type) {
 		g_free(basename);
 	}
 	return retvalue;
+}
+#endif
+
+#ifdef HAVE_LIBHEIF
+int readheif(const char* name, fits *fit){
+	int width, height, npixels, nchannels;
+	int i, nrow, row;
+	struct heif_error err;
+
+	struct heif_context *ctx = heif_context_alloc();
+	err = heif_context_read_from_file(ctx, name, NULL);
+	if (err.code) {
+		g_printf(err.message);
+		heif_context_free(ctx);
+		return 1;
+	}
+
+	// analyze image content
+	int num = heif_context_get_number_of_top_level_images(ctx);
+	if (num == 0) {
+		siril_log_message(_("Input file contains no readable images"));
+		heif_context_free(ctx);
+		return 1;
+	}
+
+	if (num > 1) {
+		siril_log_message(_("This is a sequence of %d images: loading the primary one.\n"), num);
+	}
+
+	// get a handle to the primary image
+	struct heif_image_handle *handle;
+	err = heif_context_get_primary_image_handle(ctx, &handle);
+	if (err.code) {
+		g_printf(err.message);
+		heif_context_free(ctx);
+		return 1;
+	}
+
+	int has_alpha = heif_image_handle_has_alpha_channel(handle);
+
+	struct heif_image *img = 0;
+	err = heif_decode_image(handle, &img, heif_colorspace_RGB,
+			has_alpha ? heif_chroma_interleaved_32bit :
+			heif_chroma_interleaved_24bit, NULL);
+	if (err.code) {
+		g_printf(err.message);
+		heif_image_handle_release(handle);
+		heif_context_free(ctx);
+		return 1;
+	}
+
+	int stride;
+	const uint8_t* udata = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
+	width = heif_image_get_width(img, heif_channel_interleaved);
+	height = heif_image_get_height(img, heif_channel_interleaved);
+
+	npixels = width * height * 3;
+
+	WORD *data = malloc(npixels * sizeof(WORD) * 3);
+	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
+
+	nchannels = has_alpha ? 4 : 3;
+	for (row = 0; row < height; row += stride) {
+		nrow = (row + stride > height ? height - row : stride);
+		for (i = 0; i < width * nrow; i++) {
+			*buf[RLAYER]++ = udata[i * nchannels + RLAYER];
+			*buf[GLAYER]++ = udata[i * nchannels + GLAYER];
+			*buf[BLAYER]++ = udata[i * nchannels + BLAYER];
+		}
+	}
+
+	if (data != NULL) {
+		clearfits(fit);
+		fit->bitpix = fit->orig_bitpix = BYTE_IMG;
+		fit->naxis = 3;
+		fit->rx = width;
+		fit->ry = height;
+		fit->naxes[0] = fit->rx;
+		fit->naxes[1] = fit->ry;
+		fit->naxes[2] = 3;
+		fit->data = data;
+		fit->pdata[RLAYER] = fit->data;
+		fit->pdata[GLAYER] = fit->data + npixels;
+		fit->pdata[BLAYER] = fit->data + npixels * 2;
+		fit->binning_x = fit->binning_y = 1;
+	}
+
+	heif_image_handle_release(handle);
+	heif_context_free(ctx);
+	heif_image_release(img);
+	mirrorx(fit, FALSE);
+	gchar *basename = g_path_get_basename(name);
+	siril_log_message(_("Reading HEIF: file %s, %ld layer(s), %ux%u pixels\n"),
+			basename, fit->naxes[2], fit->rx, fit->ry);
+	g_free(basename);
+
+	return 0;
 }
 #endif

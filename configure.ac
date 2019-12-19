@@ -155,9 +155,14 @@ dnl check png lib
 PKG_CHECK_MODULES(LIBPNG, [libpng >= 1.6],
 		[AC_DEFINE([HAVE_LIBPNG], [1], [Using PNG images])],
 		AC_MSG_WARN([libpng not found. Not using PNG importer and exporter.]))
+		
+dnl check heif lib
+PKG_CHECK_MODULES(LIBHEIF, [libheif],
+		[AC_DEFINE([HAVE_LIBHEIF], [1], [Using HEIF images])],
+		AC_MSG_WARN([libheif not found. Not using HEIF importer and exporter.]))
 
 dnl check ffms2
-PKG_CHECK_MODULES(FFMS2, [ffms2 ],
+PKG_CHECK_MODULES(FFMS2, [ffms2],
 		  [AC_DEFINE([HAVE_FFMS2], [1], [Using FFMS2])],
 		  AC_MSG_WARN([libffms2 not found. Not using AVI importer.]))
 

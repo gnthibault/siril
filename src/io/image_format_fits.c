@@ -170,8 +170,8 @@ static void read_fits_header(fits *fit) {
 
 	fit_stats(fit, &mini, &maxi);
 
-	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSHI, &fit->hi);
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSLO, &fit->lo);
+	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSHI, &fit->hi);
 
 	if (fit->orig_bitpix == SHORT_IMG) {
 		if (fit->lo)
@@ -1966,7 +1966,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	// array for preview picture line
 	float *pix = malloc(MAX_SIZE * sizeof(float));
 	long naxes[4];
-	float *ima_data = NULL, *ptr, byte, n, m, max, min, wd, avr;
+	float *ima_data = NULL, *ptr, byte, n, m, max, min, wd, avr, hi, lo;
 	guchar *pptr, *pixbuf_data = NULL;
 	TRYFITS(fits_open_file, &fp, filename, READONLY);
 	TRYFITS(fits_get_img_param, fp, 4, &dtype, &naxis, naxes);
@@ -1987,9 +1987,10 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 
 	n_channels = naxis == 3 ? naxis : 1;
 
-	description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)", w, h,
+	description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)\n%s", w, h,
 						ngettext("pixel", "pixels", h), n_channels,
-						ngettext("channel", "channels", n_channels), abs(dtype));
+						ngettext("channel", "channels", n_channels),
+						abs(dtype), _("(Monochrome Preview)"));
 
 	M = 0; // line number
 	for (i = 0; i < Hs; i++) { // cycle through a blocks by lines
@@ -2031,6 +2032,17 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 		avr += tmp;
 	}
 	avr /= (float) sz;
+
+/* use FITS keyword if available for a better visualization */
+	lo = hi = 0.f;
+	__tryToFindKeywords(fp, TFLOAT, MIPSLO, &lo);
+	__tryToFindKeywords(fp, TFLOAT, MIPSHI, &hi);
+
+	if (hi != lo && hi != 0.f) {
+		min = lo;
+		max = hi;
+	}
+
 	wd = max - min;
 	avr = (avr - min) / wd;	// normal average by preview
 	avr = -log(avr);		// scale factor

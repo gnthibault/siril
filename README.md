@@ -38,6 +38,7 @@ time, or their support won't be included.
  * **libffms2** for films import (any format supported by ffmpeg)
  * **libtiff** (>= 4) for TIFF format support
  * **libjpeg** or compatible libraries like libjpeg-turbo for JPEG format support
+ * **libheif** for HEIF format files import
  * **libpng** (>= 1.6) for PNG format support
  * **libavformat**, **libavutil** (>= 55.20), **libavcodec**, **libswscale** and **libswresample** for avi export (usually provided by ffmpeg)
  * **libcurl** for the Web-based new version check and the astrometry solver
