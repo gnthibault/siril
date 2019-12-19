@@ -1463,6 +1463,7 @@ static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image)
 	struct HeifImage *heif_images = malloc(numImages * sizeof(struct HeifImage));
 	gboolean success = load_thumbnails(heif, heif_images);
 	if (!success) {
+		free(heif_images);
 		return FALSE;
 	}
 
