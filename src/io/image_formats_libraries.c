@@ -434,9 +434,9 @@ int readjpg(const char* name, fits *fit){
 	while (cinfo.output_scanline < cinfo.output_height) {
 		jpeg_read_scanlines(&cinfo, pJpegBuffer, 1);
 		for (i=0;i<cinfo.output_width;i++) {
-			*buf[RLAYER]++ = pJpegBuffer[0][cinfo.output_components*i+0];
-			*buf[GLAYER]++ = pJpegBuffer[0][cinfo.output_components*i+1];
-			*buf[BLAYER]++ = pJpegBuffer[0][cinfo.output_components*i+2];
+			*buf[RLAYER]++ = pJpegBuffer[0][cinfo.output_components * i + 0];
+			*buf[GLAYER]++ = pJpegBuffer[0][cinfo.output_components * i + 1];
+			*buf[BLAYER]++ = pJpegBuffer[0][cinfo.output_components * i + 2];
 		}
 	}
 	fclose(f);
@@ -445,7 +445,7 @@ int readjpg(const char* name, fits *fit){
 	if (data != NULL){
 		clearfits(fit);	
 		fit->bitpix = fit->orig_bitpix = BYTE_IMG;
-		if (cinfo.output_components==1)
+		if (cinfo.output_components == 1)
 			fit->naxis = 2;
 		else
 			fit->naxis = 3;
@@ -1646,7 +1646,7 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 	width = heif_image_get_width(img, heif_channel_interleaved);
 	height = heif_image_get_height(img, heif_channel_interleaved);
 
-	npixels = width * height * 3;
+	npixels = width * height;
 
 	WORD *data = malloc(npixels * sizeof(WORD) * 3);
 	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
