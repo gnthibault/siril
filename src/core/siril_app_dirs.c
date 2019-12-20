@@ -41,6 +41,12 @@ static void search_for_data_dir() {
 		siril_share_dir = g_strdup(path);
 	}
 	g_free(path);
+#elif (defined(__APPLE__) && defined(__MACH__))
+	path = g_build_filename("..", "Resources", "share", PACKAGE, NULL);
+	if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
+		siril_share_dir = g_strdup(path);
+	}
+	g_free(path);
 #else
 	path = g_build_filename(PACKAGE_DATA_DIR, NULL);
 	if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
