@@ -1470,7 +1470,7 @@ static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image)
 	dlg = gtk_dialog_new_with_buttons(_("Load HEIF image content"),
 			GTK_WINDOW(lookup_widget("control_window")), GTK_DIALOG_MODAL,
 			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
-//	gtk_window_set_resizable(GTK_WINDOW(dlg), FALSE);
+	gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_OK);
 
 	GtkContainer *content_area = GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dlg)));
 	gtk_container_set_border_width(GTK_CONTAINER(content_area), 12);
