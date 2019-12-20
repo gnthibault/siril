@@ -141,10 +141,12 @@ static void scripts_action_activate(GSimpleAction *action, GVariant *parameter,
 	siril_get_on_script_pages();
 }
 
+#ifdef HAVE_LIBCURL
 static void updates_action_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
 	siril_check_updates();
 }
+#endif
 
 static GActionEntry app_entries[] = {
 		{ "quit", quit_action_activate },
@@ -154,7 +156,9 @@ static GActionEntry app_entries[] = {
 	    { "undo", undo_action_activate },
 	    { "redo", redo_action_activate },
 	    { "scripts", scripts_action_activate },
+#ifdef HAVE_LIBCURL
 	    { "updates", updates_action_activate },
+#endif
 		{ "about", about_action_activate },
 		{ "cwd", cwd_action_activate }
 };
