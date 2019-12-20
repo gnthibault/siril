@@ -401,13 +401,13 @@ static void siril_macos_setenv(const char *progname) {
 		gchar *path;
 		gchar tmp[PATH_MAX];
 		gchar *app_dir;
-		gchar res_dir[PATH_MAX];
+		gchar lib_dir[PATH_MAX];
 		size_t path_len;
 		struct stat sb;
 
 		app_dir = g_path_get_dirname(resolved_path);
-		g_snprintf(tmp, sizeof(tmp), "%s/../Resources", app_dir);
-		if (realpath(tmp, res_dir) && !stat(res_dir, &sb) && S_ISDIR(sb.st_mode))
+		g_snprintf(tmp, sizeof(tmp), "%s/../Frameworks", app_dir);
+		if (realpath(tmp, lib_dir) && !stat(lib_dir, &sb) && S_ISDIR(sb.st_mode))
 			g_print("SiriL is started as MacOS application\n");
 		else
 			return;
@@ -426,19 +426,20 @@ static void siril_macos_setenv(const char *progname) {
 		g_free(app_dir);
 		g_setenv("PATH", path, TRUE);
 		g_free(path);
-		g_snprintf(tmp, sizeof(tmp), "%s/../Frameworks/share", res_dir);
+		g_snprintf(tmp, sizeof(tmp), "%s/share", lib_dir);
 		g_setenv("XDG_DATA_HOME", tmp, TRUE);
-		g_snprintf(tmp, sizeof(tmp), "%s/../Frameworks/share/schemas", res_dir);
+		g_snprintf(tmp, sizeof(tmp), "%s/share/schemas", lib_dir);
 		g_setenv("GSETTINGS_SCHEMA_DIR", tmp, TRUE);
-		g_snprintf(tmp, sizeof(tmp), "%s/../Frameworks/gtk-3.0/3.0.0", res_dir);
+		g_snprintf(tmp, sizeof(tmp), "%s/gtk-3.0/3.0.0", lib_dir);
 		g_setenv("GTK_PATH", tmp, TRUE);
-		g_snprintf(tmp, sizeof(tmp), "%s/../Frameworks/gdk-pixbuf-2.0/2.10.0/loaders.cache", res_dir);
+		g_snprintf(tmp, sizeof(tmp), "%s/gdk-pixbuf-2.0/2.10.0/loaders.cache", lib_dir);
 		g_setenv("GDK_PIXBUF_MODULE_FILE", tmp, TRUE);
-		g_snprintf(tmp, sizeof(tmp), "%s/../Frameworks/gdk-pixbuf-2.0/2.10.0/loaders", res_dir);
+		g_snprintf(tmp, sizeof(tmp), "%s/gdk-pixbuf-2.0/2.10.0/loaders", lib_dir);
 		g_setenv("GDK_PIXBUF_MODULE_DIR", tmp, TRUE);
-		g_snprintf(tmp, sizeof(tmp), "%s/../Frameworks/etc/fonts", res_dir);
+		g_snprintf(tmp, sizeof(tmp), "%s/etc/fonts", lib_dir);
 		g_setenv("FONTCONFIG_PATH", tmp, TRUE);
-
+		g_snprintf(tmp, sizeof(tmp), "%s", lib_dir);
+		g_setenv("DYLD_LIBRARY_PATH", tmp, TRUE);
 	}
 }
 #endif
@@ -459,6 +460,22 @@ int main(int argc, char *argv[]) {
 
 	g_setenv("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 #if defined(ENABLE_RELOCATABLE_RESOURCES) && defined(__APPLE__)
+    // Remove macOS session identifier from command line arguments.
+    // Code adopted from GIMP's app/main.c
+
+	int new_argc = 0;
+	for (int i = 0; i < argc; i++) {
+		// Rewrite argv[] without "-psn_..." argument.
+		if (!g_str_has_prefix(argv[i], "-psn_")) {
+			argv[new_argc] = argv[i];
+			new_argc++;
+		}
+	}
+	if (argc > new_argc) {
+		argv[new_argc] = NULL; // glib expects null-terminated array
+		argc = new_argc;
+	}
+
 	siril_macos_setenv(argv[0]);
 #endif
 
