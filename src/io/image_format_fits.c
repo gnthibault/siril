@@ -867,6 +867,7 @@ static void save_fits_header(fits *fit) {
 }
 
 static int read_data_cube(fits *fit) {
+	printf("fit->naxes[2]=%d\n", fit->naxes[2]);
 	if (fit->naxis == 3) fit->naxes[2] = 3;
 
 	return 0;
