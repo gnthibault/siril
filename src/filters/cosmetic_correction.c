@@ -40,10 +40,10 @@
 #include "cosmetic_correction.h"
 
 /* see also getMedian3x3 in algos/PSF.c */
-static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,
+static WORD getMedian5x5_ushort(WORD *buf, const int xx, const int yy, const int w,
 		const int h, gboolean is_cfa) {
 	int step, radius, x, y;
-	WORD *value, median;
+	WORD *values, median;
 
 	if (is_cfa) {
 		step = 2;
@@ -55,23 +55,54 @@ static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,
 	}
 
 	int n = 0;
-	value = calloc(24, sizeof(WORD));
+	values = calloc(24, sizeof(WORD));
 	for (y = yy - radius; y <= yy + radius; y += step) {
 		for (x = xx - radius; x <= xx + radius; x += step) {
 			if (y >= 0 && y < h && x >= 0 && x < w) {
 				// ^ limit to image bounds ^
 				// v exclude centre pixel v
 				if (x != xx || y != yy) {
-					value[n++] = buf[x + y * w];
+					values[n++] = buf[x + y * w];
 				}
 			}
 		}
 	}
-	median = round_to_WORD (quickmedian (value, n));
-	free(value);
+	median = round_to_WORD(quickmedian(values, n));
+	free(values);
 	return median;
 }
 
+static float getMedian5x5_float(float *buf, const int xx, const int yy, const int w,
+		const int h, gboolean is_cfa) {
+	int step, radius, x, y;
+	float *values, median;
+
+	if (is_cfa) {
+		step = 2;
+		radius = 4;
+	}
+	else {
+		step = 1;
+		radius = 2;
+	}
+
+	int n = 0;
+	values = calloc(24, sizeof(float));
+	for (y = yy - radius; y <= yy + radius; y += step) {
+		for (x = xx - radius; x <= xx + radius; x += step) {
+			if (y >= 0 && y < h && x >= 0 && x < w) {
+				// ^ limit to image bounds ^
+				// v exclude centre pixel v
+				if (x != xx || y != yy) {
+					values[n++] = buf[x + y * w];
+				}
+			}
+		}
+	}
+	median = quickmedian_float(values, n);
+	free(values);
+	return median;
+}
 
 static WORD *getAverage3x3Line(WORD *buf, const int yy, const int w, const int h,
 		gboolean is_cfa) {
@@ -103,7 +134,7 @@ static WORD *getAverage3x3Line(WORD *buf, const int yy, const int w, const int h
 }
 
 
-static WORD getAverage3x3(WORD *buf, const int xx, const int yy, const int w,
+static WORD getAverage3x3_ushort(WORD *buf, const int xx, const int yy, const int w,
 		const int h, gboolean is_cfa) {
 	int step, radius, x, y;
 	double value = 0;
@@ -119,21 +150,53 @@ static WORD getAverage3x3(WORD *buf, const int xx, const int yy, const int w,
 			if (y >= 0 && y < h) {
 				if (x >= 0 && x < w) {
 					if ((x != xx) || (y != yy)) {
-						value += (double) buf[x + y * w];
+						value += (double)buf[x + y * w];
 						n++;
 					}
 				}
 			}
 		}
 	}
-	return round_to_WORD(value / n);
+	return round_to_WORD(value / (double)n);
 }
+
+static float getAverage3x3_float(float *buf, const int xx, const int yy, const int w,
+		const int h, gboolean is_cfa) {
+	int step, radius, x, y;
+	double value = 0;
+
+	if (is_cfa)
+		step = radius = 2;
+	else
+		step = radius = 1;
+
+	int n = 0;
+	for (y = yy - radius; y <= yy + radius; y += step) {
+		for (x = xx - radius; x <= xx + radius; x += step) {
+			if (y >= 0 && y < h) {
+				if (x >= 0 && x < w) {
+					if ((x != xx) || (y != yy)) {
+						value += (double)buf[x + y * w];
+						n++;
+					}
+				}
+			}
+		}
+	}
+	return (float)(value / (double)n);
+}
+
 
 long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 	int i;
-	WORD *buf = fit->pdata[RLAYER];
+	WORD *buf;
 	imstats *stat;
 	double sigma, median, thresHot, thresCold;
+
+	if (fit->type == DATA_FLOAT) {
+		siril_log_color_message(_("Counting deviant pixels is not supported yet in 32-bit images"), "red");
+		return 0;
+	}
 
 	/** statistics **/
 	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC);
@@ -164,6 +227,7 @@ long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 	/** We count deviant pixels **/
 	*icold = 0;
 	*ihot = 0;
+	buf = fit->pdata[RLAYER];
 	for (i = 0; i < fit->rx * fit->ry; i++) {
 		if (buf[i] >= thresHot) (*ihot)++;
 		else if (buf[i] < thresCold) (*icold)++;
@@ -179,10 +243,15 @@ long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
  */
 deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 	int x, y, i;
-	WORD *buf = fit->pdata[RLAYER];
+	WORD *buf;
 	imstats *stat;
 	double sigma, median, thresHot, thresCold;
 	deviant_pixel *dev;
+
+	if (fit->type == DATA_FLOAT) {
+		siril_log_color_message(_("Finding deviant pixels is not supported yet in 32-bit images"), "red");
+		return NULL;
+	}
 
 	/** statistics **/
 	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC);
@@ -213,6 +282,7 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 	/** First we count deviant pixels **/
 	*icold = 0;
 	*ihot = 0;
+	buf = fit->pdata[RLAYER];
 	for (i = 0; i < fit->rx * fit->ry; i++) {
 		if (buf[i] >= thresHot) (*ihot)++;
 		else if (buf[i] < thresCold) (*icold)++;
@@ -229,7 +299,7 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 	i = 0;
 	for (y = 0; y < fit->ry; y++) {
 		for (x = 0; x < fit->rx; x++) {
-			double pixel = (double) buf[x + y * fit->rx];
+			double pixel = (double)buf[x + y * fit->rx];
 			if (pixel >= thresHot) {
 				dev[i].p.x = x;
 				dev[i].p.y = y;
@@ -248,29 +318,42 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 }
 
 int cosmeticCorrOnePoint(fits *fit, deviant_pixel dev, gboolean is_cfa) {
-	WORD *buf = fit->pdata[RLAYER];		// Cosmetic correction, as developed here, is only used on 1-channel images
-	WORD newpixel;
+	// Cosmetic correction, as developed here, is only used on 1-channel images
 	int width = fit->rx;
 	int height = fit->ry;
 	int x = (int) dev.p.x;
 	int y = (int) dev.p.y;
 
-	if (dev.type == COLD_PIXEL)
-		newpixel = getMedian5x5(buf, x, y, width, height, is_cfa);
-	else
-		newpixel = getAverage3x3(buf, x, y, width, height, is_cfa);
+	if (fit->type == DATA_USHORT) {
+		WORD *buf = fit->pdata[RLAYER];
+		WORD newpixel;
+		if (dev.type == COLD_PIXEL)
+			newpixel = getMedian5x5_ushort(buf, x, y, width, height, is_cfa);
+		else	newpixel = getAverage3x3_ushort(buf, x, y, width, height, is_cfa);
+		buf[x + y * fit->rx] = newpixel;
+	} else if (fit->type == DATA_FLOAT) {
+		float *buf = fit->fpdata[RLAYER];
+		float newpixel;
+		if (dev.type == COLD_PIXEL)
+			newpixel = getMedian5x5_float(buf, x, y, width, height, is_cfa);
+		else	newpixel = getAverage3x3_float(buf, x, y, width, height, is_cfa);
+		buf[x + y * fit->rx] = newpixel;
+	}
 
-	buf[x + y * fit->rx] = newpixel;
 	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
 int cosmeticCorrOneLine(fits *fit, deviant_pixel dev, gboolean is_cfa) {
+	if (fit->type == DATA_FLOAT) {
+		siril_log_color_message(_("Cosmetic correction for one line is not supported yet in 32-bit images"), "red");
+		return 1;
+	}
 	WORD *buf = fit->pdata[RLAYER];
 	WORD *line, *newline;
 	int width = fit->rx;
 	int height = fit->ry;
-	int row = (int) dev.p.y;
+	int row = (int)dev.p.y;
 
 	line = buf + row * width;
 	newline = getAverage3x3Line(buf, row, width, height, is_cfa);
@@ -283,24 +366,9 @@ int cosmeticCorrOneLine(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 
 int cosmeticCorrection(fits *fit, deviant_pixel *dev, int size, gboolean is_cfa) {
 	int i;
-	WORD *buf = fit->pdata[RLAYER];		// Cosmetic correction, as developed here, is only used on 1-channel images
-	int width = fit->rx;
-	int height = fit->ry;
-
 	for (i = 0; i < size; i++) {
-		WORD newPixel;
-		int xx = (int) dev[i].p.x;
-		int yy = (int) dev[i].p.y;
-
-		if (dev[i].type == COLD_PIXEL)
-			newPixel = getMedian5x5(buf, xx, yy, width, height, is_cfa);
-		else
-			newPixel = getAverage3x3(buf, xx, yy, width, height, is_cfa);
-
-		buf[xx + yy * width] = newPixel;
+		cosmeticCorrOnePoint(fit, dev[i], is_cfa);
 	}
-
-	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -398,6 +466,11 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 	double f1 = 1 - f0;
 	imstats *stat;
 
+	if (fit->type == DATA_FLOAT) {
+		siril_log_color_message(_("Autodetect cosmetic correction is not supported yet in 32-bit images"), "red");
+		return 1;
+	}
+
 	/* XXX: if cfa, stats are irrelevant. We should compute them taking
 	 * into account the Bayer pattern */
 	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC | STATS_AVGDEV);
@@ -414,8 +487,8 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
 			WORD pixel = buf[x + y * width];
-			WORD a = getAverage3x3(buf, x, y, width, height, is_cfa);
-			WORD m = getMedian5x5(buf, x, y, width, height, is_cfa);
+			WORD a = getAverage3x3_ushort(buf, x, y, width, height, is_cfa);
+			WORD m = getMedian5x5_ushort(buf, x, y, width, height, is_cfa);
 
 			/* Hot autodetect */
 			if (sig[1] != -1.0) {
