@@ -438,8 +438,6 @@ static void siril_macos_setenv(const char *progname) {
 		g_setenv("GDK_PIXBUF_MODULE_DIR", tmp, TRUE);
 		g_snprintf(tmp, sizeof(tmp), "%s/etc/fonts", lib_dir);
 		g_setenv("FONTCONFIG_PATH", tmp, TRUE);
-		g_snprintf(tmp, sizeof(tmp), "%s", lib_dir);
-		g_setenv("DYLD_LIBRARY_PATH", tmp, TRUE);
 	}
 }
 #endif
