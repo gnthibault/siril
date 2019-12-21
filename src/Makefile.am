@@ -258,7 +258,7 @@ AM_LDFLAGS += -rdynamic
 endif #!PLATFORM_OSX
 endif #PLATFORM_WIN32
 if ENABLE_RELOCATABLE_RESOURCES
-munix = -Wl,-rpath '-Wl,$$ORIGIN/../lib'
+munix = -Wl,-rpath '-Wl,$$ORIGIN/../Frameworks'
 endif
 
 siril_LINK = $(CXXLINK)
