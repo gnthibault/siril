@@ -133,6 +133,7 @@ int wave_io_alloc (wave_transf_des *Wave_Trans, int Type_Transform, int Nbr_Plan
 float *f_vector_alloc(int Nbr_Elem);
 int wavelet_transform_file (float *Imag, int Nl, int Nc, char *File_Name_Transform, int Type_Transform, int Nbr_Plan, WORD *data);
 int wavelet_transform(float *Imag, int Nl, int Nc, wave_transf_des *Wavelet, int Type_Transform, int Nbr_Plan, WORD *data);
+int wavelet_transform_float(float *Imag, int Nl, int Nc, wave_transf_des *Wavelet, int Type_Transform, int Nbr_Plan);
 int wavelet_transform_data (float *Imag, int Nl, int Nc, wave_transf_des *Wavelet, int Type_Transform, int Nbr_Plan);
 int pave_2d_linear_smooth (float *Imag, float *Smooth, int Nl, int Nc, int Num_Plan);
 int pave_2d_tfo (float *Pict, float *Pave, int Nl, int Nc, int Nbr_Plan, int Type_To);

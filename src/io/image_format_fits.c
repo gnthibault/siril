@@ -1550,31 +1550,64 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 
 	if ((oper & CP_ALLOC)) {
 		// allocating to->data and assigning to->pdata
-		WORD *olddata = to->data;
-		if (!(to->data = realloc(to->data, nbdata * depth * sizeof(WORD)))) {
-			PRINT_ALLOC_ERR;
-			if (olddata)
-				free(olddata);
-			return -1;
-		}
-		to->pdata[RLAYER] = to->data;
-		if (depth == 3) {
-			to->pdata[GLAYER] = to->data + nbdata;
-			to->pdata[BLAYER] = to->data + 2 * nbdata;
-		} else {
-			to->pdata[GLAYER] = to->data;
-			to->pdata[BLAYER] = to->data;
-		}
+		if (to->type == DATA_USHORT) {
+			WORD *olddata = to->data;
+			if (!(to->data = realloc(to->data, nbdata * depth * sizeof(WORD)))) {
+				PRINT_ALLOC_ERR;
+				if (olddata)
+					free(olddata);
+				return -1;
+			}
+			to->pdata[RLAYER] = to->data;
+			if (depth == 3) {
+				to->pdata[GLAYER] = to->data + nbdata;
+				to->pdata[BLAYER] = to->data + 2 * nbdata;
+			} else {
+				to->pdata[GLAYER] = to->data;
+				to->pdata[BLAYER] = to->data;
+			}
 
-		if ((oper & CP_INIT)) {
-			// clearing to->data allocated above
-			memset(to->data, 0, nbdata * depth * sizeof(WORD));
+			if ((oper & CP_INIT)) {
+				// clearing to->data allocated above
+				memset(to->data, 0, nbdata * depth * sizeof(WORD));
+			}
+		}
+		else if (to->type == DATA_FLOAT) {
+			float *olddata = to->fdata;
+			if (!(to->fdata = realloc(to->fdata, nbdata * depth * sizeof(float)))) {
+				PRINT_ALLOC_ERR;
+				if (olddata)
+					free(olddata);
+				return -1;
+			}
+			to->fpdata[RLAYER] = to->fdata;
+			if (depth == 3) {
+				to->fpdata[GLAYER] = to->fdata + nbdata;
+				to->fpdata[BLAYER] = to->fdata + 2 * nbdata;
+			} else {
+				to->fpdata[GLAYER] = to->fdata;
+				to->fpdata[BLAYER] = to->fdata;
+			}
+
+			if ((oper & CP_INIT)) {
+				// clearing to->fdata allocated above
+				memset(to->fdata, 0, nbdata * depth * sizeof(WORD));
+			}
+		}
+		else {
+			fprintf(stderr, "unsupported copy\n");
+			return -1;
 		}
 	}
 
 	if ((oper & CP_COPYA)) {
-		// copying data and stats
-		memcpy(to->data, from->data, nbdata * depth * sizeof(WORD));
+		// copying data
+		if (to->type == DATA_USHORT)
+			memcpy(to->data, from->data, nbdata * depth * sizeof(WORD));
+		else if (to->type == DATA_FLOAT)
+			memcpy(to->fdata, from->fdata, nbdata * depth * sizeof(float));
+
+		// copying stats
 		if (from->stats) {
 			for (i = 0; i < from->naxes[2]; i++) {
 				if (from->stats[i])
@@ -1598,8 +1631,13 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		if (depth != from->naxes[2]) {
 			to->maxi = -1.0;
 		}
-		memcpy(to->data, from->pdata[layer],
-				nbdata * to->naxes[2] * sizeof(WORD));
+		if (to->type == DATA_USHORT)
+			memcpy(to->data, from->pdata[layer],
+					nbdata * to->naxes[2] * sizeof(WORD));
+		if (to->type == DATA_FLOAT)
+			memcpy(to->fdata, from->fpdata[layer],
+					nbdata * to->naxes[2] * sizeof(float));
+
 		if (from->stats && from->stats[layer])
 			add_stats_to_fit(to, 0, from->stats[layer]);
 	}

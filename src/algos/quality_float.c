@@ -32,35 +32,26 @@
 #include "gui/progress_and_log.h"
 #include "algos/quality.h"
 
-static double QualityEstimate_ushort(fits *fit, int layer);
-static int32_t SubSample(WORD *ptr, int img_wid, int x_size, int y_size);
-static unsigned short *_smooth_image_16(unsigned short *buf, int width, int height);
-static double Gradient(WORD *buf, int width, int height);
-
-double QualityEstimate(fits *fit, int layer) {
-	if (fit->type == DATA_USHORT)
-		return QualityEstimate_ushort(fit, layer);
-	if (fit->type == DATA_FLOAT)
-		return QualityEstimate_float(fit, layer);
-	return -1.0;
-}
+static float SubSample(float *ptr, int img_wid, int x_size, int y_size);
+static float *_smooth_image_float(float *buf, int width, int height);
+static double Gradient(float *buf, int width, int height);
 
 // -------------------------------------------------------
 // Method to estimate quality.
 // Runs on the complete layer and destroys it.
 // -------------------------------------------------------
-static double QualityEstimate_ushort(fits *fit, int layer) {
+double QualityEstimate_float(fits *fit, int layer) {
 	int width = fit->rx;
 	int height = fit->ry;
 	int x1, y1;
 	int subsample, region_w, region_h;
 	int i, j, n, x, y, max, x_inc;
 	int x_samples, y_samples, y_last;
-	WORD *buffer, *buf, maxp[MAXP];
-	WORD *new_image = NULL;
+	float *buffer, *buf, maxp[MAXP];
+	float *new_image = NULL;
 	double q, dval = 0.0;
 
-	buffer = fit->pdata[layer];
+	buffer = fit->fpdata[layer];
 
 	// dimensions of the region we want to analyse
 	x1 = 0; y1 = 0;
@@ -68,11 +59,11 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 	region_h = height - 1;
 
 	// Allocate the intermediate buffer. Will be 16bpp greyscale
-	buf = calloc(region_w * region_h, sizeof(WORD));
+	buf = calloc(region_w * region_h, sizeof(float));
 
 	subsample = QSUBSAMPLE_MIN;
 	while (subsample <= QSUBSAMPLE_MAX) {
-		WORD* ptr;
+		float* ptr;
 
 		// Number of h & v pixels in subimage
 		x_samples = region_w / subsample;
@@ -101,7 +92,7 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 		for (y += subsample; y < y_last; y += subsample) {
 			ptr = buffer + (y * width + x1);
 			for (x = 0; x < x_samples; ++x, ptr += x_inc) {
-				WORD v = SubSample(ptr, width, subsample, subsample);
+				float v = SubSample(ptr, width, subsample, subsample);
 
 				if (v > maxp[2] && v < 65530) {
 					int slot;
@@ -139,37 +130,9 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 		// Test idea - reduce quality if histogram peak is lower
 		max /= (MAXP - j);
 
-		// Stretch histogram
-		if (max > 0) {
-			double mult = 60000.0 / (double)max;
-			for (i = 0; i < n; ++i) {
-				unsigned int v = buf[i];
-				v = (unsigned int)((double)v * mult);
-				if (v > 65535)
-					v = 65535;
-				buf[i] = v;
-			}
-		}
-
 		// 3x3 smoothing
-		new_image = _smooth_image_16(buf, x_samples, y_samples);
+		new_image = _smooth_image_float(buf, x_samples, y_samples);
 
-#ifdef DEBUG
-		/*******************************/
-		char filename[1024];
-		FILE *out;
-		sprintf(filename, "sample_%d.ppm", subsample);
-		out = g_fopen(filename, "wb");
-		if (out == NULL)
-			printf("Cannot write subsampled image %d\n", subsample);
-		else {
-			fprintf(out, "P5\n%d %d\n255\n", x_samples, y_samples);
-			for (i = 0; i < n; ++i)
-				putc(new_image[i] >> 8, out);
-			fclose(out);
-		}
-		/*********************************/
-#endif
 		q = Gradient(new_image, x_samples, y_samples);
 
 		dval += (q * ((QSUBSAMPLE_MIN * QSUBSAMPLE_MIN)
@@ -197,25 +160,26 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 /*
  * Subsample a region starting at *ptr of size X size pixels.
  */
-static int32_t SubSample(WORD *ptr, int img_wid, int x_size, int y_size) {
-	int x, y, val = 0;
+static float SubSample(float *ptr, int img_wid, int x_size, int y_size) {
+	int x, y;
+	float val = 0;
 	for (y = 0; y < y_size; ++y) {
 		for (x = 0; x < x_size; x++) {
 			val += ptr[x];
 		}
 		ptr += img_wid;
 	}
-	return round_to_WORD((double)val / (double)(x_size * y_size));
+	return val / (float)(x_size * y_size);
 }
 
-static double Gradient(WORD *buf, int width, int height) {
+static double Gradient(float *buf, int width, int height) {
 	int pixels;
 	int x, y;
 	int yborder = (int) ((double) height * QMARGIN) + 1;
 	int xborder = (int) ((double) width * QMARGIN) + 1;
 	double d1, d2;
 	double val, avg = 0;
-	int threshold = THRESHOLD_USHRT;
+	float threshold = THRESHOLD_FLOAT;
 	unsigned char *map = calloc(width * height, sizeof(unsigned char));
 
 	// pass 1 locate all pixels > threshold and flag the 3x3 region
@@ -267,116 +231,29 @@ end:
 }
 
 /* 3*3 averaging convolution filter, does nothing on the edges */
-static unsigned short *_smooth_image_16(unsigned short *buf, int width,
-		int height) {
-	unsigned short *new_buff = calloc(width * height * 2, sizeof(WORD));
+static float *_smooth_image_float(float *buf, int width, int height) {
+	float *new_buff = calloc(width * height * 2, sizeof(float));
 	int x, y;
 
 	for (y = 1; y < height - 1; ++y) {
 		int o = y * width + 1;
 		for (x = 1; x < width - 1; ++x, ++o) {
-			unsigned int v = (unsigned int) buf[o];
-			v += (unsigned int) buf[o - width - 1];
-			v += (unsigned int) buf[o - width];
-			v += (unsigned int) buf[o - width + 1];
+			float v = 0.0f;
+			v += buf[o - width - 1];
+			v += buf[o - width];
+			v += buf[o - width + 1];
 
-			v += (unsigned int) buf[o - 1];
-			v += (unsigned int) buf[o + 1];
+			v += buf[o - 1];
+			v += buf[o];
+			v += buf[o + 1];
 
-			v += (unsigned int) buf[o + width - 1];
-			v += (unsigned int) buf[o + width];
-			v += (unsigned int) buf[o + width + 1];
+			v += buf[o + width - 1];
+			v += buf[o + width];
+			v += buf[o + width + 1];
 
-			new_buff[o] = v / 9;
+			new_buff[o] = v / 9.0f;
 		}
 	}
 
 	return new_buff;
-}
-
-// Scan the region given by (x1,y1) - (x2,y2) and return the barycentre (centre of brightness)
-
-// For a pixel to be counted it's orthogonal neighbors must all be above the threshhold. This
-// stops hot pixels and isolated pixels from counting.
-// Also, a horizontal gap of 3 or more pixels will cause the last counted pixel to be un-counted.
-//
-
-int BlankImageCount = 0;
-int MinPixels = 50;
-
-static int _FindCentre_Barycentre(fits *fit, int x1, int y1, int x2, int y2,
-		double *x_avg, double *y_avg) {
-	int img_width = fit->rx;
-	int img_height = fit->ry;
-	int x, y;
-	int count = 0;	// count of significant pixels
-	double x_total = 0, y_total = 0;
-	double RealThreshHold;
-
-	// must prevent scanning near the edge due to the extended tests below that look
-	// +/- 1 pixel above and below
-	if (x1 < 1)
-		x1 = 1;
-	if (y1 < 1)
-		y1 = 1;
-	if (x2 >= img_width - 1)
-		x2 = img_width - 2;
-	if (y2 >= img_height - 1)
-		y2 = img_height - 2;
-
-	if (get_normalized_value(fit) == UCHAR_MAX)
-		RealThreshHold = THRESHOLD_UCHAR;
-	else	RealThreshHold = THRESHOLD_USHRT;
-
-	for (y = y1; y <= y2; ++y) {
-		unsigned short *iptr = fit->data + y * img_width + x1;
-		for (x = x1; x <= x2; ++x, ++iptr) {
-			if (*iptr >= RealThreshHold && *(iptr - 1) >= RealThreshHold
-					&& *(iptr + 1) >= RealThreshHold
-					&& *(iptr - img_width) >= RealThreshHold
-					&& *(iptr + img_width) >= RealThreshHold) {
-				x_total += x;
-				y_total += y;
-				count++;
-			}
-		}
-	}
-
-	if (count == 0) {
-		printf("[no image] ");
-		if (BlankImageCount >= 0)
-			++BlankImageCount;
-		return (0);
-	}
-
-	if (count < MinPixels) {
-		printf("[Not enough pixels. Found %d, require %d] ", count, MinPixels);
-		if (BlankImageCount >= 0)
-			++BlankImageCount;
-		return (0);
-	}
-
-	if (count > 0) {
-		*x_avg = ((double) x_total / (double) count + 0.5);
-		*y_avg = ((double) y_total / (double) count + 0.5);
-		BlankImageCount = 0;
-	}
-
-	*y_avg = img_height - *y_avg;
-
-	return 1;
-}
-
-// find the centre of brightness of the whole image
-int FindCentre(fits *fit, double *x_avg, double *y_avg) {
-	int x1 = 2;
-	int x2 = fit->rx - 3;
-	int y1 = 0;
-	int y2 = fit->ry - 1;
-
-	if (fit->type != DATA_USHORT) {
-		siril_log_color_message(_("Computing the centre of gravity is only possible with 16-bit images currently\n"), "red");
-		return 1;
-	}
-	return _FindCentre_Barycentre(fit, x1, y1, x2, y2, x_avg, y_avg);
 }

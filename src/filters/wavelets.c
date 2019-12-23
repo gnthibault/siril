@@ -105,10 +105,13 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 
 	g_assert(fit->naxes[2] <= 3);
 
-	float *Imag = f_vector_alloc(fit->ry * fit->rx);
-	if (Imag == NULL) {
-		PRINT_ALLOC_ERR;
-		return 1;
+	float *Imag;
+	if (fit->type == DATA_USHORT) {
+		Imag = f_vector_alloc(fit->ry * fit->rx);
+		if (Imag == NULL) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
 	}
 
 	if (reqlayer < 0 || reqlayer > 3) {
@@ -123,20 +126,32 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 	for (chan = start; chan < end; chan++) {
 		int Nl, Nc;
 
-		if (wavelet_transform(Imag, fit->ry, fit->rx, &wavelet[chan],
-					Type, Nbr_Plan, fit->pdata[chan])) {
-			retval = 1;
-			break;
+		if (fit->type == DATA_USHORT) {
+			if (wavelet_transform(Imag, fit->ry, fit->rx, &wavelet[chan],
+						Type, Nbr_Plan, fit->pdata[chan])) {
+				retval = 1;
+				break;
+			}
+		}
+		else if (fit->type == DATA_FLOAT) {
+			Imag = fit->fpdata[chan];
+			if (wavelet_transform_float(Imag, fit->ry, fit->rx, &wavelet[chan],
+						Type, Nbr_Plan)) {
+				retval = 1;
+				break;
+			}
 		}
 		Nl = wavelet[chan].Nbr_Ligne;
 		Nc = wavelet[chan].Nbr_Col;
 		pave_2d_extract_plan(wavelet[chan].Pave.Data, Imag, Nl, Nc, Plan);
-		reget_rawdata(Imag, Nl, Nc, fit->pdata[chan]);
+		if (fit->type == DATA_USHORT)
+			reget_rawdata(Imag, Nl, Nc, fit->pdata[chan]);
 		wave_io_free(&wavelet[chan]);
 	}
 
 	/* Free */
-	free(Imag);
+	if (fit->type == DATA_USHORT)
+		free(Imag);
 	return retval;
 }
 

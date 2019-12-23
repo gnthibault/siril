@@ -45,6 +45,7 @@ siril_SOURCES = \
 	algos/PSF.c \
 	algos/PSF.h \
 	algos/quality.c \
+	algos/quality_float.c \
 	algos/quality.h \
 	algos/quantize.c \
 	algos/reconstr.c \

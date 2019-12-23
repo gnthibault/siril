@@ -480,7 +480,7 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf, gboolean fo
 	for (i = 0; i < NbRows; i++) {
 		for (j = 0; j < NbCols; j++) {
 			y[NbCols * i + j] = gsl_matrix_get(z, i, j);
-			sigma[NbCols * i + j] = 1;
+			sigma[NbCols * i + j] = 1.0;
 		}
 	}
 
@@ -599,26 +599,44 @@ double psf_get_fwhm(fits *fit, int layer, double *roundness) {
  * Return value is a structure, type fitted_PSF, that has to be freed after use.
  */
 fitted_PSF *psf_get_minimisation(fits *fit, int layer, rectangle *area, gboolean for_photometry, gboolean verbose) {
-	WORD *from;
 	int stridefrom, i, j;
 	fitted_PSF *result;
 	double bg = background(fit, layer, area);
 
-	//~ fprintf(stdout, "background: %g\n", bg);
-
-	// create the matrix with values from the selected rectangle
+	// fprintf(stdout, "background: %g\n", bg);
 	gsl_matrix *z = gsl_matrix_alloc(area->h, area->w);
-	from = fit->pdata[layer] + (fit->ry - area->y - area->h) * fit->rx
-			+ area->x;
 	stridefrom = fit->rx - area->w;
 
-	for (i = 0; i < area->h; i++) {
-		for (j = 0; j < area->w; j++) {
-			gsl_matrix_set(z, i, j, (double) *from);
-			from++;
+	// create the matrix with values from the selected rectangle
+	if (fit->type == DATA_USHORT) {
+		WORD *from = fit->pdata[layer] +
+			(fit->ry - area->y - area->h) * fit->rx + area->x;
+
+		for (i = 0; i < area->h; i++) {
+			for (j = 0; j < area->w; j++) {
+				gsl_matrix_set(z, i, j, (double)*from);
+				from++;
+			}
+			from += stridefrom;
 		}
-		from += stridefrom;
 	}
+	else if (fit->type == DATA_FLOAT) {
+		float *from = fit->fpdata[layer] +
+			(fit->ry - area->y - area->h) * fit->rx + area->x;
+
+		for (i = 0; i < area->h; i++) {
+			for (j = 0; j < area->w; j++) {
+				gsl_matrix_set(z, i, j, (double)*from);
+				from++;
+			}
+			from += stridefrom;
+		}
+	}
+	else {
+		gsl_matrix_free(z);
+		return NULL;
+	}
+
 	result = psf_global_minimisation(z, bg, layer, TRUE, for_photometry, verbose);
 	if (result)
 		fwhm_to_arcsec_if_needed(fit, &result);
@@ -649,28 +667,26 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg, int layer,
 			 */
 			if ((fabs(psf->sx - psf->sy) < EPSILON)) {
 				// Photometry
-				if (for_photometry)
+				if (for_photometry) {
 					psf->phot = getPhotometryData(z, psf, verbose);
-				else {
+					if (psf->phot != NULL) {
+						psf->mag = psf->phot->mag;
+						psf->s_mag = psf->phot->s_mag;
+						psf->phot_is_valid = psf->phot->valid;
+					}
+				} else {
 					psf->phot = NULL;
 					psf->phot_is_valid = FALSE;
 				}
-				// get Magnitude
-				if (psf->phot != NULL) {
-					psf->mag = psf->phot->mag;
-					psf->s_mag = psf->phot->s_mag;
-					psf->phot_is_valid = psf->phot->valid;
-				}
 			} else {
 				fitted_PSF *tmp_psf;
-
 				if ((tmp_psf = psf_minimiz_angle(z, psf, for_photometry, verbose))
 						== NULL) {
 					free(psf);
 					return NULL;
 				}
-			free(psf);
-			psf = tmp_psf;
+				free(psf);
+				psf = tmp_psf;
 			}
 		}
 		// Solve symmetry problem in order to have Sx>Sy in any case !!!
@@ -685,10 +701,12 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg, int layer,
 		}
 
 		/* We normalize B, A and the RMSE for the output */
+		/* TODO: WHY? AND WHY GFIT?
 		WORD norm = get_normalized_value(&gfit);
 		psf->B = psf->B / (double) norm;
 		psf->A = psf->A / (double) norm;
 		psf->rmse = psf->rmse / (double) norm;
+		*/
 
 		/* We quickly test the result. If it is bad we return NULL */
 		if (!isfinite(psf->fwhmx) || !isfinite(psf->fwhmy) ||

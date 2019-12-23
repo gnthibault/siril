@@ -190,6 +190,18 @@ int wavelet_transform(float *Imag, int Nl, int Nc,
 	return 0;
 }
 
+int wavelet_transform_float(float *Imag, int Nl, int Nc,
+		wave_transf_des *Wavelet, int Type_Transform, int Nbr_Plan) {
+
+	memset(Wavelet, 0, sizeof(wave_transf_des));
+
+	if (wavelet_transform_data(Imag, Nl, Nc, Wavelet, Type_Transform,
+				Nbr_Plan)) {
+		wave_io_free(Wavelet);
+		return 1;
+	}
+	return 0;
+}
 /*****************************************************************************/
 
 

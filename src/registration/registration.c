@@ -184,7 +184,7 @@ static void normalizeQualityData(struct registration_args *args, double q_min, d
  * phases.
  */
 int register_shift_dft(struct registration_args *args) {
-	fits fit_ref = { 0 }, fit = { 0 };
+	fits fit_ref = { 0 };
 	int frame, size, sqsize;
 	fftw_complex *ref, *in, *out, *convol;
 	fftw_plan p, q;
@@ -255,11 +255,17 @@ int register_shift_dft(struct registration_args *args) {
 	q = fftw_plan_dft_2d(size, size, convol, out, FFTW_BACKWARD, plan);
 
 	// copying image selection into the fftw data
-	for (j = 0; j < sqsize; j++)
-		ref[j] = (double) fit_ref.data[j];
+	if (fit_ref.type == DATA_USHORT) {
+		for (j = 0; j < sqsize; j++)
+			ref[j] = (double)fit_ref.data[j];
+	}
+	else if (fit_ref.type == DATA_FLOAT) {
+		for (j = 0; j < sqsize; j++)
+			ref[j] = (double)fit_ref.fdata[j];
+	}
 
-	// We don't need fit anymore, we can destroy it.
-	current_regdata[ref_image].quality = QualityEstimate(&fit_ref, args->layer, QUALTYPE_NORMAL);
+	// We don't need fit_ref anymore, we can destroy it.
+	current_regdata[ref_image].quality = QualityEstimate(&fit_ref, args->layer);
 	clearfits(&fit_ref);
 	fftw_execute_dft(p, ref, in); /* repeat as needed */
 	set_shifts(args->seq, ref_image, args->layer, 0.0, 0.0, FALSE);
@@ -270,112 +276,115 @@ int register_shift_dft(struct registration_args *args) {
 	cur_nb = 0.f;
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) firstprivate(fit) schedule(static) \
+#pragma omp parallel for num_threads(com.max_thread) schedule(static) \
 	if((args->seq->type == SEQ_REGULAR && fits_is_reentrant()) || args->seq->type == SEQ_SER)
 #endif
 	for (frame = 0; frame < args->seq->number; ++frame) {
-		if (!abort) {
-			if (args->run_in_thread && !get_thread_run()) {
-				abort = 1;
-				continue;
-			}
-			if (frame == ref_image)
-				continue;
-			if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
-				continue;
+		if (abort) continue;
+		if (args->run_in_thread && !get_thread_run()) {
+			abort = 1;
+			continue;
+		}
+		if (frame == ref_image) continue;
+		if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
+			continue;
 
-			char tmpmsg[1024], tmpfilename[256];
+		fits fit = { 0 };
+		char tmpmsg[1024], tmpfilename[256];
 
-			seq_get_image_filename(args->seq, frame, tmpfilename);
-			g_snprintf(tmpmsg, 1024, _("Register: processing image %s"),
-					tmpfilename);
-			set_progress_bar_data(tmpmsg, PROGRESS_NONE);
-			if (!(seq_read_frame_part(args->seq, args->layer, frame, &fit,
-					&args->selection, FALSE))) {
+		seq_get_image_filename(args->seq, frame, tmpfilename);
+		g_snprintf(tmpmsg, 1024, _("Register: processing image %s"), tmpfilename);
+		set_progress_bar_data(tmpmsg, PROGRESS_NONE);
+		if (!(seq_read_frame_part(args->seq, args->layer, frame, &fit,
+						&args->selection, FALSE))) {
+			int x;
+			fftw_complex *img = fftw_malloc(sizeof(fftw_complex) * sqsize);
+			fftw_complex *out2 = fftw_malloc(sizeof(fftw_complex) * sqsize);
 
-				int x;
-				fftw_complex *img = fftw_malloc(sizeof(fftw_complex) * sqsize);
-				fftw_complex *out2 = fftw_malloc(sizeof(fftw_complex) * sqsize);
-
-				// copying image selection into the fftw data
+			// copying image selection into the fftw data
+			if (fit.type == DATA_USHORT) {
 				for (x = 0; x < sqsize; x++)
-					img[x] = (double) fit.data[x];
+					img[x] = (double)fit.data[x];
+			}
+			if (fit.type == DATA_FLOAT) {
+				for (x = 0; x < sqsize; x++)
+					img[x] = (double)fit.fdata[x];
+			}
 
-				current_regdata[frame].quality = QualityEstimate(&fit, args->layer,
-						QUALTYPE_NORMAL);
+			current_regdata[frame].quality = QualityEstimate(&fit, args->layer);
+			// after this call, fit data is dead
 
 #ifdef _OPENMP
 #pragma omp critical
 #endif
-				{
-					double qual = current_regdata[frame].quality;
-					if (qual > q_max) {
-						q_max = qual;
-						q_index = frame;
-					}
-					q_min = min(q_min, qual);
+			{
+				double qual = current_regdata[frame].quality;
+				if (qual > q_max) {
+					q_max = qual;
+					q_index = frame;
 				}
+				q_min = min(q_min, qual);
+			}
 
-				fftw_execute_dft(p, img, out2); /* repeat as needed */
+			fftw_execute_dft(p, img, out2); /* repeat as needed */
 
-				fftw_complex *convol2 = fftw_malloc(sizeof(fftw_complex) * sqsize);
+			fftw_complex *convol2 = fftw_malloc(sizeof(fftw_complex) * sqsize);
 
-				for (x = 0; x < sqsize; x++) {
-					convol2[x] = in[x] * conj(out2[x]);
+			for (x = 0; x < sqsize; x++) {
+				convol2[x] = in[x] * conj(out2[x]);
+			}
+
+			fftw_execute_dft(q, convol2, out2); /* repeat as needed */
+			fftw_free(convol2);
+
+			int shift = 0;
+			for (x = 1; x < sqsize; ++x) {
+				if (creal(out2[x]) > creal(out2[shift])) {
+					shift = x;
+					// break or get last value?
 				}
+			}
+			int shifty = shift / size;
+			int shiftx = shift % size;
+			if (shifty > size / 2) {
+				shifty -= size;
+			}
+			if (shiftx > size / 2) {
+				shiftx -= size;
+			}
 
-				fftw_execute_dft(q, convol2, out2); /* repeat as needed */
-				fftw_free(convol2);
+			set_shifts(args->seq, frame, args->layer, (float)shiftx, (float)shifty,
+					fit.top_down);
 
-				int shift = 0;
-				for (x = 1; x < sqsize; ++x) {
-					if (creal(out2[x]) > creal(out2[shift])) {
-						shift = x;
-						// break or get last value?
-					}
-				}
-				int shifty = shift / size;
-				int shiftx = shift % size;
-				if (shifty > size / 2) {
-					shifty -= size;
-				}
-				if (shiftx > size / 2) {
-					shiftx -= size;
-				}
-
-				set_shifts(args->seq, frame, args->layer, (float)shiftx, (float)shifty,
-						fit.top_down);
-
-				// We don't need fit anymore, we can destroy it.
-				clearfits(&fit);
+			// We don't need fit anymore, we can destroy it.
+			clearfits(&fit);
 
 
-				/* shiftx and shifty are the x and y values for translation that
-				 * would make this image aligned with the reference image.
-				 * WARNING: the y value is counted backwards, since the FITS is
-				 * stored down from up.
-				 */
+			/* shiftx and shifty are the x and y values for translation that
+			 * would make this image aligned with the reference image.
+			 * WARNING: the y value is counted backwards, since the FITS is
+			 * stored down from up.
+			 */
 #ifdef DEBUG
-				fprintf(stderr,
-						"reg: frame %d, shiftx=%f shifty=%f quality=%g\n",
-						args->seq->imgparam[frame].filenum,
-						current_regdata[frame].shiftx, current_regdata[frame].shifty,
-						current_regdata[frame].quality);
+			fprintf(stderr,
+					"reg: frame %d, shiftx=%f shifty=%f quality=%g\n",
+					args->seq->imgparam[frame].filenum,
+					current_regdata[frame].shiftx, current_regdata[frame].shifty,
+					current_regdata[frame].quality);
 #endif
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
-				cur_nb += 1.f;
-				set_progress_bar_data(NULL, cur_nb / nb_frames);
-				fftw_free(img);
-				fftw_free(out2);
-			} else {
-				//report_fits_error(ret, error_buffer);
-				args->seq->regparam[args->layer] = NULL;
-				free(current_regdata);
-				abort = ret = 1;
-				continue;
-			}
+			cur_nb += 1.f;
+			set_progress_bar_data(NULL, cur_nb / nb_frames);
+			fftw_free(img);
+			fftw_free(out2);
+		} else {
+			//report_fits_error(ret, error_buffer);
+			args->seq->regparam[args->layer] = NULL;
+			free(current_regdata);
+			abort = ret = 1;
+			continue;
 		}
 	}
 
@@ -428,9 +437,8 @@ int register_shift_fwhm(struct registration_args *args) {
 	current_regdata = args->seq->regparam[args->layer];
 
 	if (args->process_all_frames)
-		nb_frames = (float) args->seq->number;
-	else
-		nb_frames = (float) args->seq->selnum;
+		nb_frames = (float)args->seq->number;
+	else nb_frames = (float)args->seq->selnum;
 
 	/* loading reference frame */
 	ref_image = sequence_find_refimage(args->seq);
@@ -489,7 +497,7 @@ int register_ecc(struct registration_args *args) {
 	int frame, ref_image, ret, failed = 0;
 	float nb_frames, cur_nb;
 	regdata *current_regdata;
-	fits ref, im;
+	fits ref = { 0 };
 	double q_max = 0, q_min = DBL_MAX;
 	int q_index = -1;
 	int abort = 0;
@@ -508,14 +516,11 @@ int register_ecc(struct registration_args *args) {
 	}
 
 	if (args->process_all_frames)
-		nb_frames = (float) args->seq->number;
-	else
-		nb_frames = (float) args->seq->selnum;
+		nb_frames = (float)args->seq->number;
+	else nb_frames = (float)args->seq->selnum;
 
 	/* loading reference frame */
 	ref_image = sequence_find_refimage(args->seq);
-
-	memset(&ref, 0, sizeof(fits));
 
 	ret = seq_read_frame(args->seq, ref_image, &ref);
 	if (ret) {
@@ -524,7 +529,7 @@ int register_ecc(struct registration_args *args) {
 		free(current_regdata);
 		return 1;
 	}
-	current_regdata[ref_image].quality = QualityEstimate(&ref, args->layer, QUALTYPE_NORMAL);
+	current_regdata[ref_image].quality = QualityEstimate(&ref, args->layer);
 	/* we make sure to free data in the destroyed fit */
 	clearfits(&ref);
 	/* Ugly code: as QualityEstimate destroys fit we need to reload it */
@@ -539,10 +544,8 @@ int register_ecc(struct registration_args *args) {
 	else args->new_total = args->seq->selnum;
 
 	cur_nb = 0.f;
-
-	memset(&im, 0, sizeof(fits));
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) firstprivate(im) schedule(static) \
+#pragma omp parallel for num_threads(com.max_thread) schedule(static) \
 	if((args->seq->type == SEQ_REGULAR && fits_is_reentrant()) || args->seq->type == SEQ_SER)
 #endif
 	for (frame = 0; frame < args->seq->number; frame++) {
@@ -563,11 +566,10 @@ int register_ecc(struct registration_args *args) {
 			set_progress_bar_data(tmpmsg, PROGRESS_NONE);
 
 			if (frame != ref_image) {
-
+				fits im = { 0 };
 				ret = seq_read_frame(args->seq, frame, &im);
 				if (!ret) {
-					reg_ecc reg_param;
-					memset(&reg_param, 0, sizeof(reg_ecc));
+					reg_ecc reg_param = { 0 };
 					image_find_minmax(&im);
 
 					if (findTransform(&ref, &im, args->layer, &reg_param)) {
@@ -587,8 +589,7 @@ int register_ecc(struct registration_args *args) {
 					}
 
 					current_regdata[frame].quality = QualityEstimate(&im,
-							args->layer, QUALTYPE_NORMAL);
-
+							args->layer);
 #ifdef _OPENMP
 #pragma omp critical
 #endif
@@ -800,32 +801,32 @@ void get_the_registration_area(struct registration_args *reg_args,
 		struct registration_method *method) {
 	int max;
 	switch (method->sel) {
-	/* even in the case of REQUIRES_NO_SELECTION selection is needed for MatchSelection of starAlignment */
-	case REQUIRES_NO_SELECTION:
-	case REQUIRES_ANY_SELECTION:
-		memcpy(&reg_args->selection, &com.selection, sizeof(rectangle));
-		break;
-	case REQUIRES_SQUARED_SELECTION:
-		/* Passed arguments are X,Y of the center of the square and the size of
-		 * the square. */
-		if (com.selection.w > com.selection.h)
-			max = com.selection.w;
-		else
-			max = com.selection.h;
+		/* even in the case of REQUIRES_NO_SELECTION selection is needed for MatchSelection of starAlignment */
+		case REQUIRES_NO_SELECTION:
+		case REQUIRES_ANY_SELECTION:
+			memcpy(&reg_args->selection, &com.selection, sizeof(rectangle));
+			break;
+		case REQUIRES_SQUARED_SELECTION:
+			/* Passed arguments are X,Y of the center of the square and the size of
+			 * the square. */
+			if (com.selection.w > com.selection.h)
+				max = com.selection.w;
+			else
+				max = com.selection.h;
 
-		reg_args->selection.x = com.selection.x + com.selection.w / 2 - max / 2;
-		reg_args->selection.w = max;
-		reg_args->selection.y = com.selection.y + com.selection.h / 2 - max / 2;
-		reg_args->selection.h = max;
-		compute_fitting_selection(&reg_args->selection, 2, 2, 1);
+			reg_args->selection.x = com.selection.x + com.selection.w / 2 - max / 2;
+			reg_args->selection.w = max;
+			reg_args->selection.y = com.selection.y + com.selection.h / 2 - max / 2;
+			reg_args->selection.h = max;
+			compute_fitting_selection(&reg_args->selection, 2, 2, 1);
 
-		/* save it back to com.selection do display it properly */
-		memcpy(&com.selection, &reg_args->selection, sizeof(rectangle));
-		fprintf(stdout, "final area: %d,%d,\t%dx%d\n", reg_args->selection.x,
-				reg_args->selection.y, reg_args->selection.w,
-				reg_args->selection.h);
-		redraw(com.cvport, REMAP_NONE);
-		break;
+			/* save it back to com.selection do display it properly */
+			memcpy(&com.selection, &reg_args->selection, sizeof(rectangle));
+			fprintf(stdout, "final area: %d,%d,\t%dx%d\n", reg_args->selection.x,
+					reg_args->selection.y, reg_args->selection.w,
+					reg_args->selection.h);
+			redraw(com.cvport, REMAP_NONE);
+			break;
 	}
 }
 
@@ -970,11 +971,11 @@ static gboolean end_register_idle(gpointer p) {
 	}
 	set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
 
-//	if (!args->load_new_sequence) {	// already done in set_seq()
-		drawPlot();
-		update_stack_interface(TRUE);
-		adjust_sellabel();
-//	}
+	//	if (!args->load_new_sequence) {	// already done in set_seq()
+	drawPlot();
+	update_stack_interface(TRUE);
+	adjust_sellabel();
+	//	}
 	update_used_memory();
 	set_cursor_waiting(FALSE);
 
