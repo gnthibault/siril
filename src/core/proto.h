@@ -24,6 +24,7 @@ int savefits(const char*, fits*);
 int copyfits(fits *from, fits *to, unsigned char oper, int layer);
 int copy_fits_metadata(fits *from, fits *to);
 int save1fits16(const char *filename, fits *fit, int layer);
+int save1fits32(const char *filename, fits *fit, int layer);
 int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode,
 		int *status);
 

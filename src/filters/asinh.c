@@ -66,7 +66,7 @@ static void asinh_recompute() {
 	set_cursor_waiting(FALSE);
 }
 
-int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
+static int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBspace) {
 	int i, layer;
 	WORD *buf[3] = { fit->pdata[RLAYER],
 			fit->pdata[GLAYER], fit->pdata[BLAYER] };
@@ -102,6 +102,48 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 	}
 	invalidate_stats_from_fit(fit);
 	return 0;
+}
+
+static int asinhlut_float(fits *fit, double beta, double offset, gboolean RGBspace) {
+	int i, layer;
+	float *buf[3] = { fit->fpdata[RLAYER],
+			fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
+
+	for (i = 0; i < fit->ry * fit->rx; i++) {
+		double x, k;
+		if (fit->naxes[2] > 1) {
+			double r, g, b;
+			r = (double)buf[RLAYER][i];
+			g = (double)buf[GLAYER][i];
+			b = (double)buf[BLAYER][i];
+			/* RGB space */
+			if (RGBspace)
+				x = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+			else
+				x = 0.3333 * r + 0.3333 * g + 0.3333 * b;
+		} else {
+			x = buf[RLAYER][i];
+		}
+
+		k = asinh(beta * x) / (x * asinh(beta));
+
+		for (layer = 0; layer < fit->naxes[2]; ++layer) {
+			double px = (double)buf[layer][i];
+			px -= offset;
+			px *= k;
+			buf[layer][i] = px;
+		}
+	}
+	invalidate_stats_from_fit(fit);
+	return 0;
+}
+
+int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
+	if (fit->type == DATA_USHORT)
+		return asinhlut_ushort(fit, beta, offset, RGBspace);
+	if (fit->type == DATA_FLOAT)
+		return asinhlut_float(fit, beta, offset, RGBspace);
+	return 1;
 }
 
 void on_menuitem_asinh_activate(GtkMenuItem *menuitem, gpointer user_data) {

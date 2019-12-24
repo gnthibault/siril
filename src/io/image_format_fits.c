@@ -1688,6 +1688,16 @@ int save1fits16(const char *filename, fits *fit, int layer) {
 	return savefits(filename, fit);
 }
 
+int save1fits32(const char *filename, fits *fit, int layer) {
+	if (layer != RLAYER) {
+		int nbdata = fit->naxes[0] * fit->naxes[1];
+		memcpy(fit->fdata, fit->fdata + layer * nbdata, nbdata * sizeof(float));
+	}
+	fit->naxis = 2;
+	fit->naxes[2] = 1;
+	return savefits(filename, fit);
+}
+
 /* this method converts 24-bit RGB or BGR data (no padding) to 48-bit FITS data.
  * order is RGB when inverted is FALSE, BGR when inverted is TRUE
  * fit->data has to be already allocated and fit->rx and fit->ry must be correct */

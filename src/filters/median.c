@@ -114,20 +114,18 @@ static gboolean end_median_filter(gpointer p) {
 	return FALSE;
 }
 
-/* The function smoothes an image using the median filter with the
- * ksize x ksize aperture. Each channel of a multi-channel image is
- * processed independently. In-place operation is supported. */
-gpointer median_filter(gpointer p) {
-	struct median_filter_data *args = (struct median_filter_data *) p;
+static gpointer median_filter_ushort(gpointer p) {
+	struct median_filter_data *args = (struct median_filter_data *)p;
 	g_assert(args->ksize % 2 == 1 && args->ksize > 1);
 	int i, x, y, xx, yy, layer, iter = 0;
 	int nx = args->fit->rx;
 	int ny = args->fit->ry;
 	int radius = (args->ksize - 1) / 2;
 	int ksize_squared = args->ksize * args->ksize;
-	double norm = (double) get_normalized_value(args->fit);
+	double norm = (double)get_normalized_value(args->fit);
 	double cur = 0.0, total;
 	g_assert(nx > 0 && ny > 0);
+	total = ny * args->fit->naxes[2] * args->iterations;
 
 	struct timeval t_start, t_end;
 
@@ -136,8 +134,8 @@ gpointer median_filter(gpointer p) {
 	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
 
-	WORD *data = calloc(ksize_squared, sizeof(WORD));
-	if (data == NULL) {
+	WORD *buffer = calloc(ksize_squared, sizeof(WORD));
+	if (buffer == NULL) {
 		PRINT_ALLOC_ERR;
 		siril_add_idle(end_median_filter, args);
 		set_progress_bar_data(_("Median filter failed"), PROGRESS_DONE);
@@ -146,12 +144,12 @@ gpointer median_filter(gpointer p) {
 
 	do {
 		for (layer = 0; layer < args->fit->naxes[2]; layer++) {
-			/* FILL image upside-down */
+			/* Fill image upside-down (this is useless and should be avoided) */
 			WORD **image = malloc(ny * sizeof(WORD *));
 			if (image == NULL) {
 				PRINT_ALLOC_ERR;
 				siril_add_idle(end_median_filter, args);
-				free(data);
+				free(buffer);
 				return GINT_TO_POINTER(1);
 			}
 			for (i = 0; i < ny; i++)
@@ -160,7 +158,6 @@ gpointer median_filter(gpointer p) {
 			for (y = 0; y < ny; y++) {
 				if (!get_thread_run())
 					break;
-				total = ny * args->fit->naxes[2] * args->iterations;
 				if (!(y % 16))	// every 16 iterations
 					set_progress_bar_data(NULL, cur / total);
 				cur++;
@@ -191,13 +188,13 @@ gpointer median_filter(gpointer p) {
 								else
 									tmp = image[yy][xx];
 							}
-							data[i++] = tmp;
+							buffer[i++] = tmp;
 						}
 					}
-					WORD median = round_to_WORD(quickmedian(data,ksize_squared));
+					WORD median = round_to_WORD(quickmedian(buffer, i));
 					double pixel = args->amount * (median / norm);
 					pixel += (1.0 - args->amount)
-							* ((double) image[y][x] / norm);
+							* ((double)image[y][x] / norm);
 					image[y][x] = round_to_WORD(pixel * norm);
 				}
 			}
@@ -206,11 +203,119 @@ gpointer median_filter(gpointer p) {
 		iter++;
 	} while (iter < args->iterations && get_thread_run());
 	invalidate_stats_from_fit(args->fit);
-	free(data);
+	free(buffer);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 	set_progress_bar_data(_("Median filter applied"), PROGRESS_DONE);
 	siril_add_idle(end_median_filter, args);
 
 	return GINT_TO_POINTER(0);
+}
+
+static gpointer median_filter_float(gpointer p) {
+	struct median_filter_data *args = (struct median_filter_data *)p;
+	g_assert(args->ksize % 2 == 1 && args->ksize > 1);
+	int i, x, y, xx, yy, layer, iter = 0;
+	int nx = args->fit->rx;
+	int ny = args->fit->ry;
+	int radius = (args->ksize - 1) / 2;
+	int ksize_squared = args->ksize * args->ksize;
+	double cur = 0.0, total;
+	g_assert(nx > 0 && ny > 0);
+	total = ny * args->fit->naxes[2] * args->iterations;
+
+	struct timeval t_start, t_end;
+
+	char *msg = siril_log_color_message(_("Median Filter: processing...\n"), "red");
+	msg[strlen(msg) - 1] = '\0';
+	set_progress_bar_data(msg, PROGRESS_RESET);
+	gettimeofday(&t_start, NULL);
+
+	float *buffer = calloc(ksize_squared, sizeof(float));
+	if (buffer == NULL) {
+		PRINT_ALLOC_ERR;
+		siril_add_idle(end_median_filter, args);
+		set_progress_bar_data(_("Median filter failed"), PROGRESS_DONE);
+		return GINT_TO_POINTER(1);
+	}
+
+	do {
+		for (layer = 0; layer < args->fit->naxes[2]; layer++) {
+			/* Fill image upside-down (this is useless and should be avoided) */
+			float **image = malloc(ny * sizeof(float *));
+			if (image == NULL) {
+				PRINT_ALLOC_ERR;
+				siril_add_idle(end_median_filter, args);
+				free(buffer);
+				return GINT_TO_POINTER(1);
+			}
+			for (i = 0; i < ny; i++)
+				image[ny - i - 1] = args->fit->fpdata[layer] + i * nx;
+
+			for (y = 0; y < ny; y++) {
+				if (!get_thread_run())
+					break;
+				if (!(y % 16))	// every 16 iterations
+					set_progress_bar_data(NULL, cur / total);
+				cur++;
+				for (x = 0; x < nx; x++) {
+					i = 0;
+					for (yy = y - radius; yy <= y + radius; yy++) {
+						for (xx = x - radius; xx <= x + radius; xx++) {
+							float tmp;
+							if (xx < 0 && yy >= 0) {
+								if (yy >= ny)
+									tmp = image[ny - 1][0];
+								else
+									tmp = image[yy][0];
+							} else if (xx > 0 && yy <= 0) {
+								if (xx >= nx)
+									tmp = image[0][nx - 1];
+								else
+									tmp = image[0][xx];
+							} else if (xx <= 0 && yy <= 0) {
+								tmp = image[0][0];
+							} else {
+								if (xx >= nx && yy >= ny)
+									tmp = image[ny - 1][nx - 1];
+								else if (xx >= nx && yy < ny)
+									tmp = image[yy][nx - 1];
+								else if (xx < nx && yy >= ny)
+									tmp = image[ny - 1][xx];
+								else
+									tmp = image[yy][xx];
+							}
+							buffer[i++] = tmp;
+						}
+					}
+					float median = quickmedian_float(buffer, i);
+					double pixel = args->amount * median;
+					pixel += (1.0 - args->amount) * (double)image[y][x];
+					image[y][x] = (float)pixel;
+				}
+			}
+			free(image);
+		}
+		iter++;
+	} while (iter < args->iterations && get_thread_run());
+	invalidate_stats_from_fit(args->fit);
+	free(buffer);
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
+	set_progress_bar_data(_("Median filter applied"), PROGRESS_DONE);
+	siril_add_idle(end_median_filter, args);
+
+	return GINT_TO_POINTER(0);
+}
+
+/* The function smoothes an image using the median filter with the
+ * ksize x ksize aperture. Each channel of a multi-channel image is
+ * processed independently. In-place operation is supported. */
+gpointer median_filter(gpointer p) {
+	struct median_filter_data *args = (struct median_filter_data *)p;
+	if (args->fit->type == DATA_USHORT)
+		return median_filter_ushort(p);
+	if (args->fit->type == DATA_FLOAT)
+		return median_filter_float(p);
+	return GINT_TO_POINTER(1);
 }

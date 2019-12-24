@@ -510,16 +510,28 @@ static void apply_mtf_to_fits(fits *from, fits *to) {
 	g_assert(from->naxes[2] == 1 || from->naxes[2] == 3);
 	nb_chan = from->naxes[2];
 	ndata = from->rx * from->ry;
+	g_assert(from->type == to->type);
 
 	for (chan = 0; chan < nb_chan; chan++) {
+		if (from->type == DATA_USHORT) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
-		for (i = 0; i < ndata; i++) {
-			double pxl = ((double)from->pdata[chan][i] / norm);
-			double mtf = MTF(pxl, _midtones, _shadows, _highlights);
-			to->pdata[chan][i] = round_to_WORD(mtf * norm);
+			for (i = 0; i < ndata; i++) {
+				double pxl = ((double)from->pdata[chan][i] / norm);
+				double mtf = MTF(pxl, _midtones, _shadows, _highlights);
+				to->pdata[chan][i] = round_to_WORD(mtf * norm);
+			}
 		}
+		else if (from->type == DATA_FLOAT) {
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#endif
+			for (i = 0; i < ndata; i++) {
+				to->fpdata[chan][i] = MTF(from->fpdata[chan][i], _midtones, _shadows, _highlights);
+			}
+		}
+		else return;
 	}
 
 	invalidate_stats_from_fit(to);
@@ -615,22 +627,34 @@ static gboolean on_gradient(GdkEvent *event, int width, int height) {
 gsl_histogram* computeHisto_Selection(fits* fit, int layer,
 		rectangle *selection) {
 	g_assert(layer < 3);
-	WORD *from;
 	size_t stridefrom, i, j, size;
 
 	size = get_histo_size(fit);
 	gsl_histogram* histo = gsl_histogram_alloc(size + 1);
 	gsl_histogram_set_ranges_uniform(histo, 0, size);
-
-	from = fit->pdata[layer] + (fit->ry - selection->y - selection->h) * fit->rx
-			+ selection->x;
 	stridefrom = fit->rx - selection->w;
-	for (i = 0; i < selection->h; i++) {
-		for (j = 0; j < selection->w; j++) {
-			gsl_histogram_increment(histo, (double) *from);
-			from++;
+
+	if (fit->type == DATA_USHORT) {
+		WORD *from = fit->pdata[layer] + (fit->ry - selection->y - selection->h) * fit->rx
+			+ selection->x;
+		for (i = 0; i < selection->h; i++) {
+			for (j = 0; j < selection->w; j++) {
+				gsl_histogram_increment(histo, (double)*from);
+				from++;
+			}
+			from += stridefrom;
 		}
-		from += stridefrom;
+	}
+	else if (fit->type == DATA_FLOAT) {
+		float *from = fit->fpdata[layer] + (fit->ry - selection->y - selection->h) * fit->rx
+			+ selection->x;
+		for (i = 0; i < selection->h; i++) {
+			for (j = 0; j < selection->w; j++) {
+				gsl_histogram_increment(histo, (double)*from);
+				from++;
+			}
+			from += stridefrom;
+		}
 	}
 	return histo;
 }

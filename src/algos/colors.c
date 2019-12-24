@@ -310,29 +310,51 @@ int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2,
 		int config) {
 	int row, col;
 	double tmp1, tmp2;
-	WORD *data;
+	if (fit->type == DATA_USHORT) {
+		WORD *data = fit->data;
+		for (row = 0; row < fit->ry - 1; row += 2) {
+			for (col = 0; col < fit->rx - 1; col += 2) {
+				if (config == 0) {
+					tmp1 = (double)data[1 + col + row * fit->rx] / coeff1;
+					data[1 + col + row * fit->rx] = round_to_WORD(tmp1);
 
-	data = fit->data;
+					tmp2 = (double)data[col + (1 + row) * fit->rx] / coeff2;
+					data[col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
 
-	for (row = 0; row < fit->ry - 1; row += 2) {
-		for (col = 0; col < fit->rx - 1; col += 2) {
-			if (config == 0) {
-				tmp1 = (double) data[1 + col + row * fit->rx] / coeff1;
-				data[1 + col + row * fit->rx] = round_to_WORD(tmp1);
+				} else {
+					tmp1 = (double)data[col + row * fit->rx] / coeff1;
+					data[col + row * fit->rx] = round_to_WORD(tmp1);
 
-				tmp2 = (double) data[col + (1 + row) * fit->rx] / coeff2;
-				data[col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
+					tmp2 = (double)data[1 + col + (1 + row) * fit->rx] / coeff2;
+					data[1 + col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
 
-			} else {
-				tmp1 = (double) data[col + row * fit->rx] / coeff1;
-				data[col + row * fit->rx] = round_to_WORD(tmp1);
-
-				tmp2 = (double) data[1 + col + (1 + row) * fit->rx] / coeff2;
-				data[1 + col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
-
+				}
 			}
 		}
 	}
+	else if (fit->type == DATA_FLOAT) {
+		float *data = fit->fdata;
+		for (row = 0; row < fit->ry - 1; row += 2) {
+			for (col = 0; col < fit->rx - 1; col += 2) {
+				if (config == 0) {
+					tmp1 = (double)data[1 + col + row * fit->rx] / coeff1;
+					data[1 + col + row * fit->rx] = (float)tmp1;
+
+					tmp2 = (double)data[col + (1 + row) * fit->rx] / coeff2;
+					data[col + (1 + row) * fit->rx] = (float)tmp2;
+
+				} else {
+					tmp1 = (double)data[col + row * fit->rx] / coeff1;
+					data[col + row * fit->rx] = (float)tmp1;
+
+					tmp2 = (double)data[1 + col + (1 + row) * fit->rx] / coeff2;
+					data[1 + col + (1 + row) * fit->rx] = (float)tmp2;
+
+				}
+			}
+		}
+	}
+	else return 1;
 	return 0;
 }
 
@@ -346,7 +368,7 @@ static gboolean end_extract_channels(gpointer p) {
 	return FALSE;
 }
 
-gpointer extract_channels(gpointer p) {
+static gpointer extract_channels_ushort(gpointer p) {
 	struct extract_channels_data *args = (struct extract_channels_data *) p;
 	WORD *buf[3] = { args->fit->pdata[RLAYER], args->fit->pdata[GLAYER],
 			args->fit->pdata[BLAYER] };
@@ -382,7 +404,7 @@ gpointer extract_channels(gpointer p) {
 			double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
 			double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
 			rgb_to_hsl(r, g, b, &h, &s, &l);
-			buf[RLAYER][i] = round_to_WORD(h * 360.0);
+			buf[RLAYER][i] = round_to_WORD(h * 360.0);	// TODO: what's that?
 			buf[GLAYER][i] = round_to_WORD(s * USHRT_MAX_DOUBLE);
 			buf[BLAYER][i] = round_to_WORD(l * USHRT_MAX_DOUBLE);
 		}
@@ -431,6 +453,100 @@ gpointer extract_channels(gpointer p) {
 	siril_add_idle(end_extract_channels, args);
 
 	return GINT_TO_POINTER(0);
+}
+
+static gpointer extract_channels_float(gpointer p) {
+	struct extract_channels_data *args = (struct extract_channels_data *) p;
+	float *buf[3] = { args->fit->fpdata[RLAYER], args->fit->fpdata[GLAYER],
+			args->fit->fpdata[BLAYER] };
+	int i;
+	struct timeval t_start, t_end;
+	args->process = TRUE;
+
+	if (args->fit->naxes[2] != 3) {
+		siril_log_message(
+				_("Siril cannot extract layers. Make sure your image is in RGB mode.\n"));
+		args->process = FALSE;
+		clearfits(args->fit);
+		siril_add_idle(end_extract_channels, args);
+		return GINT_TO_POINTER(1);
+	}
+
+	siril_log_color_message(_("%s channel extraction: processing...\n"), "red",
+			args->str_type);
+	gettimeofday(&t_start, NULL);
+
+	switch (args->type) {
+	/* RGB space: nothing to do */
+	case 0:
+		break;
+		/* HSL space */
+	case 1:
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#endif
+		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
+			double h, s, l;
+			double r = (double)buf[RLAYER][i];
+			double g = (double)buf[GLAYER][i];
+			double b = (double)buf[BLAYER][i];
+			rgb_to_hsl(r, g, b, &h, &s, &l);
+			buf[RLAYER][i] = (float)h;
+			buf[GLAYER][i] = (float)s;
+			buf[BLAYER][i] = (float)l;
+		}
+		break;
+		/* HSV space */
+	case 2:
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#endif
+		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
+			double h, s, v;
+			double r = (double)buf[RLAYER][i];
+			double g = (double)buf[GLAYER][i];
+			double b = (double)buf[BLAYER][i];
+			rgb_to_hsv(r, g, b, &h, &s, &v);
+			buf[RLAYER][i] = (float)h;
+			buf[GLAYER][i] = (float)s;
+			buf[BLAYER][i] = (float)v;
+		}
+		break;
+		/* CIE L*a*b */
+	case 3:
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#endif
+		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
+			double x, y, z, L, a, b;
+			double red = (double)buf[RLAYER][i];
+			double green = (double)buf[GLAYER][i];
+			double blue = (double)buf[BLAYER][i];
+			rgb_to_xyz(red, green, blue, &x, &y, &z);
+			xyz_to_LAB(x, y, z, &L, &a, &b);
+			buf[RLAYER][i] = (float)(L / 100.);		// 0 < L < 100
+			buf[GLAYER][i] = (float)((a + 128.) / 255.);	// -128 < a < 127
+			buf[BLAYER][i] = (float)((b + 128.) / 255.);	// -128 < b < 127
+		}
+
+	}
+	for (i = 0; i < 3; i++)
+		save1fits16(args->channel[i], args->fit, i);
+	clearfits(args->fit);
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
+	siril_add_idle(end_extract_channels, args);
+
+	return GINT_TO_POINTER(0);
+}
+
+gpointer extract_channels(gpointer p) {
+	struct extract_channels_data *args = (struct extract_channels_data *)p;
+	if (args->fit->type == DATA_USHORT)
+		return extract_channels_ushort(p);
+	if (args->fit->type == DATA_FLOAT)
+		return extract_channels_float(p);
+	return GINT_TO_POINTER(1);
 }
 
 /****************** Color calibration ************************/
@@ -523,14 +639,25 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 	}
 	ref /= 3.0;
 
-	for (chan = 0; chan < 3; chan++) {
-		double offset = stats[chan]->mean - ref;
-
-		WORD *buf = fit->pdata[chan];
-		for (i = 0; i < fit->rx * fit->ry; i++) {
-			buf[i] = round_to_WORD((double)buf[i] - offset);
+	if (fit->type == DATA_USHORT) {
+		for (chan = 0; chan < 3; chan++) {
+			double offset = stats[chan]->mean - ref;
+			WORD *buf = fit->pdata[chan];
+			for (i = 0; i < fit->rx * fit->ry; i++) {
+				buf[i] = round_to_WORD((double)buf[i] - offset);
+			}
+			free_stats(stats[chan]);
 		}
-		free_stats(stats[chan]);
+	}
+	else if (fit->type == DATA_FLOAT) {
+		for (chan = 0; chan < 3; chan++) {
+			double offset = stats[chan]->mean - ref;
+			float *buf = fit->fpdata[chan];
+			for (i = 0; i < fit->rx * fit->ry; i++) {
+				buf[i] = (float)((double)buf[i] - offset);
+			}
+			free_stats(stats[chan]);
+		}
 	}
 
 	invalidate_stats_from_fit(fit);
@@ -606,32 +733,56 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 		double kw[], double bg[], double norm, double low, double high) {
 	int chan, i, j, n;
 	double tmp[3] = { 0.0, 0.0, 0.0 };
-	WORD lo, hi;
 
 	assert(fit->naxes[2] == 3);
 
-	lo = round_to_WORD(low * (norm));
-	hi = round_to_WORD(high * (norm));
+	if (fit->type == DATA_USHORT) {
+		WORD lo = round_to_WORD(low * (norm));
+		WORD hi = round_to_WORD(high * (norm));
 
-	for (chan = 0; chan < 3; chan++) {
-		n = 0;
-		WORD *from = fit->pdata[chan] + (fit->ry - white.y - white.h) * fit->rx
+		for (chan = 0; chan < 3; chan++) {
+			n = 0;
+			WORD *from = fit->pdata[chan] + (fit->ry - white.y - white.h) * fit->rx
 				+ white.x;
-		int stridefrom = fit->rx - white.w;
+			int stridefrom = fit->rx - white.w;
 
-		for (i = 0; i < white.h; i++) {
-			for (j = 0; j < white.w; j++) {
-				if (*from > lo && *from < hi ) {
-					kw[chan] += (double) *from / norm;
-					n++;
+			for (i = 0; i < white.h; i++) {
+				for (j = 0; j < white.w; j++) {
+					if (*from > lo && *from < hi ) {
+						kw[chan] += (double)*from / norm;
+						n++;
+					}
+					from++;
 				}
-				from++;
+				from += stridefrom;
 			}
-			from += stridefrom;
+			if (n > 0)
+				kw[chan] /= (double)n;
 		}
-		if (n > 0)
-			kw[chan] /= (double) n;
 	}
+	else if (fit->type == DATA_FLOAT) {
+		for (chan = 0; chan < 3; chan++) {
+			n = 0;
+			float *from = fit->fpdata[chan] + (fit->ry - white.y - white.h) * fit->rx
+				+ white.x;
+			int stridefrom = fit->rx - white.w;
+
+			for (i = 0; i < white.h; i++) {
+				for (j = 0; j < white.w; j++) {
+					double f = (double)*from;
+					if (f > low && f < high) {
+						kw[chan] += f;
+						n++;
+					}
+					from++;
+				}
+				from += stridefrom;
+			}
+			if (n > 0)
+				kw[chan] /= (double)n;
+		}
+	}
+	else return;
 
 	siril_log_message(_("Background reference:\n"));
 	for (chan = 0; chan < 3; chan++) {
@@ -669,16 +820,21 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 }
 
 static int calibrate(fits *fit, int layer, double kw, double bg, double norm) {
-	WORD *buf;
-	double bgNorm;
 	int i;
-
-	bgNorm = bg * norm;
-
-	buf = fit->pdata[layer];
-	for (i = 0; i < fit->rx * fit->ry; ++i) {
-		buf[i] = round_to_WORD((buf[i] - bgNorm) * kw + bgNorm);
+	if (fit->type == DATA_USHORT) {
+		double bgNorm = bg * norm;
+		WORD *buf = fit->pdata[layer];
+		for (i = 0; i < fit->rx * fit->ry; ++i) {
+			buf[i] = round_to_WORD((buf[i] - bgNorm) * kw + bgNorm);
+		}
 	}
+	else if (fit->type == DATA_FLOAT) {
+		float *buf = fit->fpdata[layer];
+		for (i = 0; i < fit->rx * fit->ry; ++i) {
+			buf[i] = (float)((double)buf[i] - bg) * kw + bg;
+		}
+	}
+	else return 1;
 	return 0;
 }
 
@@ -807,17 +963,29 @@ void on_checkbutton_manual_calibration_toggled(GtkToggleButton *togglebutton,
 }
 
 static int pos_to_neg(fits *fit) {
-	WORD norm;
 	int chan, i;
-	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER],
+	if (fit->type == DATA_USHORT) {
+		WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER],
 			fit->pdata[BLAYER] };
 
-	norm = get_normalized_value(fit);
-	for (chan = 0; chan < fit->naxes[2]; chan ++) {
-		for (i = 0; i < fit->rx * fit->ry; i++) {
-			buf[chan][i] = norm - buf[chan][i];
+		WORD norm = get_normalized_value(fit);
+		for (chan = 0; chan < fit->naxes[2]; chan ++) {
+			for (i = 0; i < fit->rx * fit->ry; i++) {
+				buf[chan][i] = norm - buf[chan][i];
+			}
 		}
 	}
+	else if (fit->type == DATA_FLOAT) {
+		float *buf[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER],
+			fit->fpdata[BLAYER] };
+
+		for (chan = 0; chan < fit->naxes[2]; chan ++) {
+			for (i = 0; i < fit->rx * fit->ry; i++) {
+				buf[chan][i] = 1.0f - buf[chan][i];
+			}
+		}
+	}
+	else return 1;
 
 	return 0;
 }
