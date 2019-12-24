@@ -90,10 +90,6 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 		free(sadata->current_regdata);
 		return 1;
 	}
-	if (fit.type == DATA_FLOAT) {
-		siril_log_color_message(_("Global registration is not yet available for 32-bit images\n"), "red");
-		return 1;
-	}
 
 	siril_log_color_message(_("Reference Image:\n"), "green");
 

@@ -1195,7 +1195,6 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	unsigned int nbdata;
 	double offset, data_max = 0.0;
 	double mini, maxi;
-	data_type type;
 
 	status = 0;
 	if (siril_fits_open_diskfile(&(fit->fptr), filename, READONLY, &status)) {
@@ -1256,14 +1255,14 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	}
 
 	nbdata = area->w * area->h;
-	type = get_data_type(fit->bitpix);
-	if (type == DATA_UNSUPPORTED) {
+	fit->type = get_data_type(fit->bitpix);
+	if (fit->type == DATA_UNSUPPORTED) {
 		siril_log_message(_("Unknown FITS data format in internal conversion\n"));
 		fits_close_file(fit->fptr, &status);
 		return -1;
 	}
 
-	if (type == DATA_USHORT) {
+	if (fit->type == DATA_USHORT) {
 		/* realloc fit->data to the image size */
 		WORD *olddata = fit->data;
 		if ((fit->data = realloc(fit->data, nbdata * sizeof(WORD))) == NULL) {
@@ -1291,7 +1290,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 
 		/* realloc fit->fdata to the image size */
 		float *olddata = fit->fdata;
-		if ((fit->fdata = realloc(fit->fdata, nbdata * sizeof(WORD))) == NULL) {
+		if ((fit->fdata = realloc(fit->fdata, nbdata * sizeof(float))) == NULL) {
 			PRINT_ALLOC_ERR;
 			status = 0;
 			fits_close_file(fit->fptr, &status);
