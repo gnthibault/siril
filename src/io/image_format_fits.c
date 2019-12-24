@@ -422,6 +422,13 @@ static void conv_8_to_16(WORD *data, unsigned int nbdata) {
 	}
 }
 
+static void conv_16_to_32(WORD *udata, float *fdata, unsigned int nbdata) {
+	int i;
+	for (i = 0; i < nbdata; i++) {
+		fdata[i] = (double) udata[i] / USHRT_MAX_DOUBLE;
+	}
+}
+
 /* convert FITS data formats to siril native.
  * nbdata is the number of pixels, w * h.
  * from is not freed, to must be allocated and can be the same as from */
@@ -1459,6 +1466,10 @@ int savefits(const char *name, fits *f) {
 		}
 		break;
 	case FLOAT_IMG:
+		if (!f->fdata && f->data) {
+			f->fdata = malloc(pixel_count * sizeof(double));
+			conv_16_to_32(f->data, f->fdata, pixel_count);
+		}
 		if (fits_write_pix(f->fptr, TFLOAT, orig, pixel_count, f->fdata, &status)) {
 			report_fits_error(status);
 			return 1;
