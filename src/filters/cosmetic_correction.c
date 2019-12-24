@@ -36,73 +36,10 @@
 #include "io/ser.h"
 #include "algos/statistics.h"
 #include "algos/sorting.h"
+#include "filters/median.h"
 
 #include "cosmetic_correction.h"
 
-/* see also getMedian3x3 in algos/PSF.c */
-static WORD getMedian5x5_ushort(WORD *buf, const int xx, const int yy, const int w,
-		const int h, gboolean is_cfa) {
-	int step, radius, x, y;
-	WORD *values, median;
-
-	if (is_cfa) {
-		step = 2;
-		radius = 4;
-	}
-	else {
-		step = 1;
-		radius = 2;
-	}
-
-	int n = 0;
-	values = calloc(24, sizeof(WORD));
-	for (y = yy - radius; y <= yy + radius; y += step) {
-		for (x = xx - radius; x <= xx + radius; x += step) {
-			if (y >= 0 && y < h && x >= 0 && x < w) {
-				// ^ limit to image bounds ^
-				// v exclude centre pixel v
-				if (x != xx || y != yy) {
-					values[n++] = buf[x + y * w];
-				}
-			}
-		}
-	}
-	median = round_to_WORD(quickmedian(values, n));
-	free(values);
-	return median;
-}
-
-static float getMedian5x5_float(float *buf, const int xx, const int yy, const int w,
-		const int h, gboolean is_cfa) {
-	int step, radius, x, y;
-	float *values, median;
-
-	if (is_cfa) {
-		step = 2;
-		radius = 4;
-	}
-	else {
-		step = 1;
-		radius = 2;
-	}
-
-	int n = 0;
-	values = calloc(24, sizeof(float));
-	for (y = yy - radius; y <= yy + radius; y += step) {
-		for (x = xx - radius; x <= xx + radius; x += step) {
-			if (y >= 0 && y < h && x >= 0 && x < w) {
-				// ^ limit to image bounds ^
-				// v exclude centre pixel v
-				if (x != xx || y != yy) {
-					values[n++] = buf[x + y * w];
-				}
-			}
-		}
-	}
-	median = quickmedian_float(values, n);
-	free(values);
-	return median;
-}
 
 static WORD *getAverage3x3Line(WORD *buf, const int yy, const int w, const int h,
 		gboolean is_cfa) {
@@ -328,14 +265,14 @@ int cosmeticCorrOnePoint(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 		WORD *buf = fit->pdata[RLAYER];
 		WORD newpixel;
 		if (dev.type == COLD_PIXEL)
-			newpixel = getMedian5x5_ushort(buf, x, y, width, height, is_cfa);
+			newpixel = get_median_ushort(buf, x, y, width, height, 2, is_cfa, FALSE);
 		else	newpixel = getAverage3x3_ushort(buf, x, y, width, height, is_cfa);
 		buf[x + y * fit->rx] = newpixel;
 	} else if (fit->type == DATA_FLOAT) {
 		float *buf = fit->fpdata[RLAYER];
 		float newpixel;
 		if (dev.type == COLD_PIXEL)
-			newpixel = getMedian5x5_float(buf, x, y, width, height, is_cfa);
+			newpixel = get_median_float(buf, x, y, width, height, 2, is_cfa, FALSE);
 		else	newpixel = getAverage3x3_float(buf, x, y, width, height, is_cfa);
 		buf[x + y * fit->rx] = newpixel;
 	}
@@ -488,7 +425,7 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 		for (x = 0; x < width; x++) {
 			WORD pixel = buf[x + y * width];
 			WORD a = getAverage3x3_ushort(buf, x, y, width, height, is_cfa);
-			WORD m = getMedian5x5_ushort(buf, x, y, width, height, is_cfa);
+			WORD m = get_median_ushort(buf, x, y, width, height, 2, is_cfa, FALSE);
 
 			/* Hot autodetect */
 			if (sig[1] != -1.0) {

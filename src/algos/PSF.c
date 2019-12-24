@@ -44,6 +44,7 @@
 #include "algos/sorting.h"
 #include "algos/star_finder.h"
 #include "io/sequence.h"
+#include "filters/median.h"
 
 #include "PSF.h"
 
@@ -54,37 +55,6 @@
 
 const double radian_conversion = ((3600.0 * 180.0) / M_PI) / 1.0E3;
 
-/* see also getMedian5x5 in algos/cosmetic_correction.c */
-static WORD getMedian3x3(gsl_matrix *in, const int xx, const int yy,
-		const int w, const int h) {
-	int step, radius, x, y;
-	double *value, median;
-
-	step = 1;
-	radius = 1;
-
-	int n = 0;
-	int start;
-	value = calloc(8, sizeof(double));
-
-	for (y = yy - radius; y <= yy + radius; y += step) {
-		for (x = xx - radius; x <= xx + radius; x += step) {
-			if (y >= 0 && y < h && x >= 0 && x < w) {
-				// ^ limit to image bounds ^
-				// v exclude centre pixel v
-				if (x != xx || y != yy) {
-					value[n++] = gsl_matrix_get(in, y, x);
-				}
-			}
-		}
-	}
-	start = 8 - n - 1;
-	quickmedian_double(value, 8);
-	median = gsl_stats_median_from_sorted_data(value + start, 1, n);
-	free(value);
-	return median;
-}
-
 static gsl_matrix *removeHotPixels(gsl_matrix *in) {
 	int width = in->size2;
 	int height = in->size1;
@@ -94,7 +64,7 @@ static gsl_matrix *removeHotPixels(gsl_matrix *in) {
 	gsl_matrix_memcpy (out, in);
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			double a = getMedian3x3(in, x, y, width, height);
+			double a = get_median_gsl(in, x, y, width, height, 1, FALSE, FALSE);
 			gsl_matrix_set(out, y, x, a);
 		}
 	}

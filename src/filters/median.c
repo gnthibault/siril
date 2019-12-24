@@ -99,6 +99,101 @@ void on_Median_Apply_clicked(GtkButton *button, gpointer user_data) {
 }
 
 /*****************************************************************************
+ *                M E D I A N     I M A G E     F I L T E R S                *
+ ****************************************************************************/
+
+/* get the median of the neighbors of pixel (xx, yy), including itself if
+ * include_self is TRUE. radius is 1 for a 3x3, 2 for a 5x5 and so on.
+ * w and h are the size of the image passed in buf.
+ */
+double get_median_ushort(WORD *buf, const int xx, const int yy, const int w,
+		const int h, int radius, gboolean is_cfa, gboolean include_self) {
+	int n = 0, step = 1, x, y, ksize;
+	WORD *values;
+	double median;
+
+	if (is_cfa) {
+		step = 2;
+		radius *= 2;
+	}
+	ksize = radius * 2 + 1;
+	values = calloc(ksize * ksize, sizeof(WORD));
+
+	for (y = yy - radius; y <= yy + radius; y += step) {
+		for (x = xx - radius; x <= xx + radius; x += step) {
+			if (y >= 0 && y < h && x >= 0 && x < w) {
+				// ^ limit to image bounds ^
+				// v exclude centre pixel v
+				if (include_self || x != xx || y != yy) {
+					values[n++] = buf[x + y * w];
+				}
+			}
+		}
+	}
+	median = quickmedian(values, n);
+	free(values);
+	return median;
+}
+
+double get_median_float(float *buf, const int xx, const int yy, const int w,
+		const int h, int radius, gboolean is_cfa, gboolean include_self) {
+	int n = 0, step = 1, x, y, ksize;
+	float *values;
+	double median;
+
+	if (is_cfa) {
+		step = 2;
+		radius *= 2;
+	}
+	ksize = radius * 2 + 1;
+	values = calloc(ksize * ksize, sizeof(float));
+
+	for (y = yy - radius; y <= yy + radius; y += step) {
+		for (x = xx - radius; x <= xx + radius; x += step) {
+			if (y >= 0 && y < h && x >= 0 && x < w) {
+				// ^ limit to image bounds ^
+				// v exclude centre pixel v
+				if (include_self || x != xx || y != yy) {
+					values[n++] = buf[x + y * w];
+				}
+			}
+		}
+	}
+	median = quickmedian_float(values, n);
+	free(values);
+	return median;
+}
+
+double get_median_gsl(gsl_matrix *mat, const int xx, const int yy, const int w,
+		const int h, int radius, gboolean is_cfa, gboolean include_self) {
+	int n = 0, step = 1, x, y, ksize;
+	double *values, median;
+
+	if (is_cfa) {
+		step = 2;
+		radius *= 2;
+	}
+	ksize = radius * 2 + 1;
+	values = calloc(ksize * ksize, sizeof(double));
+
+	for (y = yy - radius; y <= yy + radius; y += step) {
+		for (x = xx - radius; x <= xx + radius; x += step) {
+			if (y >= 0 && y < h && x >= 0 && x < w) {
+				// ^ limit to image bounds ^
+				// v exclude centre pixel v
+				if (include_self || x != xx || y != yy) {
+					values[n++] = gsl_matrix_get(mat, y, x);
+				}
+			}
+		}
+	}
+	median = quickmedian_double(values, n);
+	free(values);
+	return median;
+}
+
+
+/*****************************************************************************
  *                      M E D I A N     F I L T E R                          *
  ****************************************************************************/
 
@@ -116,94 +211,48 @@ static gboolean end_median_filter(gpointer p) {
 
 static gpointer median_filter_ushort(gpointer p) {
 	struct median_filter_data *args = (struct median_filter_data *)p;
-	g_assert(args->ksize % 2 == 1 && args->ksize > 1);
-	int i, x, y, xx, yy, layer, iter = 0;
+	int progress = 0, x, y, layer, iter = 0;
 	int nx = args->fit->rx;
 	int ny = args->fit->ry;
+	double total, norm = (double)get_normalized_value(args->fit);
+	struct timeval t_start, t_end;
 	int radius = (args->ksize - 1) / 2;
-	int ksize_squared = args->ksize * args->ksize;
-	double norm = (double)get_normalized_value(args->fit);
-	double cur = 0.0, total;
+
+	g_assert(args->ksize % 2 == 1 && args->ksize > 1);
 	g_assert(nx > 0 && ny > 0);
 	total = ny * args->fit->naxes[2] * args->iterations;
-
-	struct timeval t_start, t_end;
 
 	char *msg = siril_log_color_message(_("Median Filter: processing...\n"), "red");
 	msg[strlen(msg) - 1] = '\0';
 	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
 
-	WORD *buffer = calloc(ksize_squared, sizeof(WORD));
-	if (buffer == NULL) {
-		PRINT_ALLOC_ERR;
-		siril_add_idle(end_median_filter, args);
-		set_progress_bar_data(_("Median filter failed"), PROGRESS_DONE);
-		return GINT_TO_POINTER(1);
-	}
-
 	do {
 		for (layer = 0; layer < args->fit->naxes[2]; layer++) {
-			/* Fill image upside-down (this is useless and should be avoided) */
-			WORD **image = malloc(ny * sizeof(WORD *));
-			if (image == NULL) {
-				PRINT_ALLOC_ERR;
-				siril_add_idle(end_median_filter, args);
-				free(buffer);
-				return GINT_TO_POINTER(1);
-			}
-			for (i = 0; i < ny; i++)
-				image[ny - i - 1] = args->fit->pdata[layer] + i * nx;
-
+			WORD *data = args->fit->pdata[layer];
 			for (y = 0; y < ny; y++) {
-				if (!get_thread_run())
-					break;
+				int pix_idx = y * nx;
+				if (!get_thread_run()) break;
 				if (!(y % 16))	// every 16 iterations
-					set_progress_bar_data(NULL, cur / total);
-				cur++;
+					set_progress_bar_data(NULL, (double)progress / total);
+				progress++;
 				for (x = 0; x < nx; x++) {
-					i = 0;
-					for (yy = y - radius; yy <= y + radius; yy++) {
-						for (xx = x - radius; xx <= x + radius; xx++) {
-							WORD tmp;
-							if (xx < 0 && yy >= 0) {
-								if (yy >= ny)
-									tmp = image[ny - 1][0];
-								else
-									tmp = image[yy][0];
-							} else if (xx > 0 && yy <= 0) {
-								if (xx >= nx)
-									tmp = image[0][nx - 1];
-								else
-									tmp = image[0][xx];
-							} else if (xx <= 0 && yy <= 0) {
-								tmp = image[0][0];
-							} else {
-								if (xx >= nx && yy >= ny)
-									tmp = image[ny - 1][nx - 1];
-								else if (xx >= nx && yy < ny)
-									tmp = image[yy][nx - 1];
-								else if (xx < nx && yy >= ny)
-									tmp = image[ny - 1][xx];
-								else
-									tmp = image[yy][xx];
-							}
-							buffer[i++] = tmp;
-						}
+					double median = get_median_ushort(data, x, y, nx, ny, radius, FALSE, TRUE);
+					if (args->amount != 1.0) {
+						double pixel = args->amount * (median / norm);
+						pixel += (1.0 - args->amount)
+							* ((double)data[pix_idx] / norm);
+						data[pix_idx] = round_to_WORD(pixel * norm);
+					} else {
+						data[pix_idx] = round_to_WORD(median);
 					}
-					WORD median = round_to_WORD(quickmedian(buffer, i));
-					double pixel = args->amount * (median / norm);
-					pixel += (1.0 - args->amount)
-							* ((double)image[y][x] / norm);
-					image[y][x] = round_to_WORD(pixel * norm);
+					pix_idx++;
 				}
 			}
-			free(image);
 		}
 		iter++;
 	} while (iter < args->iterations && get_thread_run());
 	invalidate_stats_from_fit(args->fit);
-	free(buffer);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 	set_progress_bar_data(_("Median filter applied"), PROGRESS_DONE);
@@ -214,92 +263,47 @@ static gpointer median_filter_ushort(gpointer p) {
 
 static gpointer median_filter_float(gpointer p) {
 	struct median_filter_data *args = (struct median_filter_data *)p;
-	g_assert(args->ksize % 2 == 1 && args->ksize > 1);
-	int i, x, y, xx, yy, layer, iter = 0;
+	int progress = 0, x, y, layer, iter = 0;
 	int nx = args->fit->rx;
 	int ny = args->fit->ry;
+	double total;
+	struct timeval t_start, t_end;
 	int radius = (args->ksize - 1) / 2;
-	int ksize_squared = args->ksize * args->ksize;
-	double cur = 0.0, total;
+
+	g_assert(args->ksize % 2 == 1 && args->ksize > 1);
 	g_assert(nx > 0 && ny > 0);
 	total = ny * args->fit->naxes[2] * args->iterations;
-
-	struct timeval t_start, t_end;
 
 	char *msg = siril_log_color_message(_("Median Filter: processing...\n"), "red");
 	msg[strlen(msg) - 1] = '\0';
 	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
 
-	float *buffer = calloc(ksize_squared, sizeof(float));
-	if (buffer == NULL) {
-		PRINT_ALLOC_ERR;
-		siril_add_idle(end_median_filter, args);
-		set_progress_bar_data(_("Median filter failed"), PROGRESS_DONE);
-		return GINT_TO_POINTER(1);
-	}
-
 	do {
 		for (layer = 0; layer < args->fit->naxes[2]; layer++) {
-			/* Fill image upside-down (this is useless and should be avoided) */
-			float **image = malloc(ny * sizeof(float *));
-			if (image == NULL) {
-				PRINT_ALLOC_ERR;
-				siril_add_idle(end_median_filter, args);
-				free(buffer);
-				return GINT_TO_POINTER(1);
-			}
-			for (i = 0; i < ny; i++)
-				image[ny - i - 1] = args->fit->fpdata[layer] + i * nx;
-
+			float *data = args->fit->fpdata[layer];
 			for (y = 0; y < ny; y++) {
-				if (!get_thread_run())
-					break;
+				int pix_idx = y * nx;
+				if (!get_thread_run()) break;
 				if (!(y % 16))	// every 16 iterations
-					set_progress_bar_data(NULL, cur / total);
-				cur++;
+					set_progress_bar_data(NULL, (double)progress / total);
+				progress++;
 				for (x = 0; x < nx; x++) {
-					i = 0;
-					for (yy = y - radius; yy <= y + radius; yy++) {
-						for (xx = x - radius; xx <= x + radius; xx++) {
-							float tmp;
-							if (xx < 0 && yy >= 0) {
-								if (yy >= ny)
-									tmp = image[ny - 1][0];
-								else
-									tmp = image[yy][0];
-							} else if (xx > 0 && yy <= 0) {
-								if (xx >= nx)
-									tmp = image[0][nx - 1];
-								else
-									tmp = image[0][xx];
-							} else if (xx <= 0 && yy <= 0) {
-								tmp = image[0][0];
-							} else {
-								if (xx >= nx && yy >= ny)
-									tmp = image[ny - 1][nx - 1];
-								else if (xx >= nx && yy < ny)
-									tmp = image[yy][nx - 1];
-								else if (xx < nx && yy >= ny)
-									tmp = image[ny - 1][xx];
-								else
-									tmp = image[yy][xx];
-							}
-							buffer[i++] = tmp;
-						}
+					double median = get_median_float(data, x, y, nx, ny, radius, FALSE, TRUE);
+					if (args->amount != 1.0) {
+						double pixel = args->amount * median;
+						pixel += (1.0 - args->amount) * (double)data[pix_idx];
+						data[pix_idx] = (float)pixel;
+					} else {
+						data[pix_idx] = (float)median;
 					}
-					float median = quickmedian_float(buffer, i);
-					double pixel = args->amount * median;
-					pixel += (1.0 - args->amount) * (double)image[y][x];
-					image[y][x] = (float)pixel;
+					pix_idx++;
 				}
 			}
-			free(image);
 		}
 		iter++;
 	} while (iter < args->iterations && get_thread_run());
 	invalidate_stats_from_fit(args->fit);
-	free(buffer);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 	set_progress_bar_data(_("Median filter applied"), PROGRESS_DONE);
