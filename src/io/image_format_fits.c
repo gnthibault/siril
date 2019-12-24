@@ -1789,7 +1789,7 @@ void rgb48bit_to_fits48bit(WORD *rgbbuf, fits *fit, gboolean inverted,
 
 /* this method flips top-bottom of fit data.
  * fit->rx, fit->ry, fit->naxes[2] and fit->pdata[*] are required to be assigned correctly */
-void fits_flip_top_to_bottom(fits *fit) {
+static void fits_flip_top_to_bottom_ushort(fits *fit) {
 	int line, axis, line_size;
 	WORD *swapline, *src, *dst;
 
@@ -1809,6 +1809,33 @@ void fits_flip_top_to_bottom(fits *fit) {
 	free(swapline);
 }
 
+static void fits_flip_top_to_bottom_float(fits *fit) {
+	int line, axis, line_size;
+	float *swapline, *src, *dst;
+
+	line_size = fit->rx * sizeof(float);
+	swapline = malloc(line_size);
+
+	for (axis = 0; axis < fit->naxes[2]; axis++) {
+		for (line = 0; line < fit->ry / 2; line++) {
+			src = fit->fpdata[axis] + line * fit->rx;
+			dst = fit->fpdata[axis] + (fit->ry - line - 1) * fit->rx;
+
+			memcpy(swapline, src, line_size);
+			memcpy(src, dst, line_size);
+			memcpy(dst, swapline, line_size);
+		}
+	}
+	free(swapline);
+}
+
+void fits_flip_top_to_bottom(fits *fit) {
+	if (fit->type == DATA_USHORT)
+		return fits_flip_top_to_bottom_ushort(fit);
+	if (fit->type == DATA_FLOAT)
+		return fits_flip_top_to_bottom_float(fit);
+}
+
 /* This function copies an area from the fits 'from' on layer 'layer' into
  * another and initializes all relevant data */
 /* the crop function does the same but in place and for all channels without
@@ -1816,6 +1843,10 @@ void fits_flip_top_to_bottom(fits *fit) {
 void extract_region_from_fits(fits *from, int layer, fits *to,
 		const rectangle *area) {
 	int x, y, d, ystart, yend;
+	if (from->type != DATA_USHORT) {
+		siril_log_color_message(_("This operation is not yet supported for 32-bit images\n"), "red");
+		return;
+	}
 	clearfits(to);
 	to->data = malloc(area->w * area->h * sizeof(WORD));
 
@@ -1960,6 +1991,10 @@ void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype) {
 void keep_first_channel_from_fits(fits *fit) {
 	if (fit->naxis == 1)
 		return;
+	if (fit->type != DATA_USHORT) {
+		siril_log_color_message(_("This operation is not yet supported for 32-bit images\n"), "red");
+		return;
+	}
 	fit->naxis = 2;
 	fit->naxes[2] = 1;
 	fit->data = realloc(fit->data, fit->rx * fit->ry * sizeof(WORD));
