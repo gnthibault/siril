@@ -297,7 +297,7 @@ gsl_histogram* computeHisto(fits* fit, int layer) {
 
 	size = get_histo_size(fit);
 	gsl_histogram* histo = gsl_histogram_alloc(size + 1);
-	gsl_histogram_set_ranges_uniform(histo, 0, size);
+	gsl_histogram_set_ranges_uniform(histo, 0, fit->type == DATA_FLOAT ? 1.0 : size);
 	ndata = fit->rx * fit->ry;
 
 	if (fit->type == DATA_USHORT) {
@@ -445,7 +445,7 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 	int current_bin;
 	size_t norm = gsl_histogram_bins(histo) - 1;
 
-	float vals_per_px = (float)(norm) / (float)width;	// size of a bin
+	float vals_per_px = (float)norm / (float)width;	// size of a bin
 	size_t i, nb_orig_bins = gsl_histogram_bins(histo);
 
 	// We need to store the binned histogram in order to find the binned maximum
@@ -631,7 +631,7 @@ gsl_histogram* computeHisto_Selection(fits* fit, int layer,
 
 	size = get_histo_size(fit);
 	gsl_histogram* histo = gsl_histogram_alloc(size + 1);
-	gsl_histogram_set_ranges_uniform(histo, 0, size);
+	gsl_histogram_set_ranges_uniform(histo, 0, fit->type == DATA_FLOAT ? 1.0 : size);
 	stridefrom = fit->rx - selection->w;
 
 	if (fit->type == DATA_USHORT) {
