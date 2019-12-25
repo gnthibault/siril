@@ -846,7 +846,7 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 /* Work on grey images. If image is in RGB it must be first converted
  * in CieLAB. Then, only the first channel is applied
  */
-int cvClahe(fits *image, double clip_limit, int size) {
+static int cvClahe_ushort(fits *image, double clip_limit, int size) {
 	assert(image->data);
 	assert(image->rx);
 	assert(image->ry);
@@ -966,7 +966,7 @@ int cvClahe(fits *image, double clip_limit, int size) {
 	return 0;
 }
 
-int cvClahe_float(fits *image, double clip_limit, int size) {
+static int cvClahe_float(fits *image, double clip_limit, int size) {
 	assert(image->fdata);
 	assert(image->rx);
 	assert(image->ry);
@@ -1049,6 +1049,16 @@ int cvClahe_float(fits *image, double clip_limit, int size) {
 	invalidate_stats_from_fit(image);
 
 	return 0;
+}
+
+int cvClahe(fits *image, double clip_limit, int size) {
+	assert(image->rx);
+	assert(image->ry);
+	if (image->type == DATA_USHORT)
+		return cvClahe_ushort(image, clip_limit, size);
+	if (image->type == DATA_FLOAT)
+		return cvClahe_float(image, clip_limit, size);
+	return -1;
 }
 
 

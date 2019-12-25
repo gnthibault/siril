@@ -28,7 +28,6 @@ int cvUnsharpFilter(fits*, double, double);
 int cvComputeFinestScale(fits *image);
 int cvLucyRichardson(fits *image, double sigma, int iterations);
 int cvClahe(fits *image, double clip_limit, int size);
-int cvClahe_float(fits *image, double clip_limit, int size);
 #ifdef __cplusplus
 }
 #endif

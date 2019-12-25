@@ -80,10 +80,7 @@ gpointer clahe(gpointer p) {
 	set_progress_bar_data(msg, PROGRESS_PULSATE);
 	gettimeofday(&t_start, NULL);
 
-	if (args->fit->type == DATA_USHORT)
-		cvClahe(args->fit, args->clip, args->tileSize);
-	else
-		cvClahe_float(args->fit, args->clip, args->tileSize);
+	cvClahe(args->fit, args->clip, args->tileSize);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);

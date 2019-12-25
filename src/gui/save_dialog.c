@@ -614,6 +614,12 @@ void on_savepopup_show(GtkWidget *widget, gpointer user_data) {
 		width = 100;
 		height = 50;
 	}
+	if (whichminisave == TYPEFITS) {
+		GtkToggleButton *b16bitu = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16"));
+		GtkToggleButton *b32bits = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit32f"));
+		gtk_toggle_button_set_active(b32bits, gfit.type == DATA_FLOAT);
+		gtk_toggle_button_set_active(b16bitu, gfit.type == DATA_USHORT);
+	}
 
 	gtk_scrolled_window_set_min_content_height(scrolled_window, height);
 	gtk_scrolled_window_set_min_content_width(scrolled_window, width);
