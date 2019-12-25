@@ -812,10 +812,13 @@ static void save_fits_header(fits *fit) {
 	char comment[FLEN_COMMENT];
 
 	if (fit->hi) { /* may not be initialized */
-		fits_update_key(fit->fptr, TUSHORT, "MIPS-HI", &(fit->hi),
-				"Upper visualization cutoff ", &status);
-		fits_update_key(fit->fptr, TUSHORT, "MIPS-LO", &(fit->lo),
-				"Lower visualization cutoff ", &status);
+		if (fit->type != DATA_FLOAT) {
+			fits_update_key(fit->fptr, TUSHORT, "MIPS-HI", &(fit->hi),
+					"Upper visualization cutoff ", &status);
+			fits_update_key(fit->fptr, TUSHORT, "MIPS-LO", &(fit->lo),
+					"Lower visualization cutoff ", &status);
+		}
+
 	}
 	// physical_value = BZERO + BSCALE * array_value
 	// https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node26.html
@@ -1470,6 +1473,7 @@ int savefits(const char *name, fits *f) {
 		if (!f->fdata && f->data) {
 			f->fdata = malloc(pixel_count * sizeof(double));
 			conv_16_to_32(f->data, f->fdata, pixel_count);
+			fit_replace_buffer(f, f->fdata, DATA_FLOAT);
 		}
 		if (fits_write_pix(f->fptr, TFLOAT, orig, pixel_count, f->fdata, &status)) {
 			report_fits_error(status);
