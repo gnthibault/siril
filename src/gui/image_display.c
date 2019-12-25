@@ -420,7 +420,7 @@ static void remap(int vport) {
 		guint x;
 		for (x = 0; x < gfit.rx; x++) {
 			guint src_index = y * gfit.rx + x;
-			BYTE dst_pixel_value;
+			BYTE dst_pixel_value = 0;
 			if (gfit.type == DATA_USHORT) {
 				WORD tmp_pixel_value;
 				if (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY) // special case, no lo & hi

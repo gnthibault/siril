@@ -145,6 +145,37 @@ int reget_rawdata(float *Imag, int Nl, int Nc, WORD *buf) {
 	return 0;
 }
 
+/* FIXME: this function is needed to reproduce the USHORT behaviour,
+ * but need we this function?
+ * However the wavelets need a deep refactoring!!!
+ */
+int reget_rawdata_float(float *Imag, int Nl, int Nc, float *buf) {
+ 	float *im = Imag;
+ 	float minimum = 1.f;
+ 	float maximum = 0.f;
+ 	int i;
+
+ #ifdef _OPENMP
+ #pragma omp parallel for num_threads(com.max_thread) schedule(static) reduction(min:minimum) reduction(max:maximum)
+ #endif
+ 	for (i = 0; i < Nl * Nc; ++i) {
+ 		if (im[i] < minimum)
+ 			minimum = im[i];
+ 		if (im[i] > maximum)
+ 			maximum = im[i];
+ 	}
+ 	float ratio = 1.0 / (maximum - minimum);
+ #ifdef _OPENMP
+ #pragma omp parallel for num_threads(com.max_thread) schedule(static)
+ #endif
+ 	for (i = 0; i < Nl * Nc; ++i) {
+ 		double tmp = (double)im[i] - (double)minimum;
+ 		tmp *= (double) ratio;
+ 		buf[i] = (float)tmp;
+ 	}
+ 	return 0;
+ }
+
 /*****************************************************************************/
 
 int wavelet_reconstruct_file(char *File_Name_Transform, float *coef, WORD *data) {

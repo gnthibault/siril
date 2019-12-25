@@ -575,7 +575,7 @@ int findTransform(fits *reference, fits *image, int layer,
 	else if (reference->type == DATA_FLOAT) {
 		ref = new Mat(reference->ry, reference->rx, CV_32FC1, reference->fpdata[layer]);
 		im = new Mat(image->ry, image->rx, CV_32FC1, image->fpdata[layer]);
-	}
+	} else return 1;
 
 	// Define termination criteria
 	TermCriteria criteria (TermCriteria::COUNT+TermCriteria::EPS, number_of_iterations, termination_eps);

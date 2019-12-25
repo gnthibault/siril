@@ -144,3 +144,4 @@ int prepare_rawdata(float *Imag, int Nl, int Nc, WORD *data);
 int wavelet_reconstruct_data (wave_transf_des *Wavelet, float *Imag, float *coef);
 int wavelet_reconstruct_file (char *File_Name_Transform, float *coef, WORD *data);
 int reget_rawdata(float *Imag, int Nl, int Nc, WORD *buf);
+int reget_rawdata_float(float *Imag, int Nl, int Nc, float *buf);
