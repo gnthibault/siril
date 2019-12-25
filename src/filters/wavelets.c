@@ -146,8 +146,6 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 		pave_2d_extract_plan(wavelet[chan].Pave.Data, Imag, Nl, Nc, Plan);
 		if (fit->type == DATA_USHORT)
 			reget_rawdata(Imag, Nl, Nc, fit->pdata[chan]);
-		else if (fit->type == DATA_FLOAT)
-			reget_rawdata_float(Imag, Nl, Nc, fit->fpdata[chan]);
 		wave_io_free(&wavelet[chan]);
 	}
 
