@@ -25,7 +25,6 @@ unsigned char *cvCalculH(s_star *star_array_img,
 int cvApplyScaleToH(Homography *H1, double scale);
 int cvTransformImage(fits *image, long width, long height, Homography Hom, int interpolation);
 int cvUnsharpFilter(fits*, double, double);
-int cvComputeFinestScale(fits *image);
 int cvLucyRichardson(fits *image, double sigma, int iterations);
 int cvClahe(fits *image, double clip_limit, int size);
 #ifdef __cplusplus

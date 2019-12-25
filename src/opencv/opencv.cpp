@@ -671,67 +671,6 @@ int cvUnsharpFilter(fits* image, double sigma, double amount) {
 	return 0;
 }
 
-int cvComputeFinestScale(fits *image) {
-	assert(image->data);
-	assert(image->rx);
-	assert(image->ry);
-
-	int ndata = image->rx * image->ry;
-
-	WORD *bgrbgr = NULL;
-	Mat in, out;
-
-	if (image->naxes[2] == 1) {
-		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
-		out = Mat(image->ry, image->rx, CV_16UC1);
-	}
-	else if (image->naxes[2] == 3) {
-		bgrbgr = fits_to_bgrbgr_ushort(image);
-		in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
-		out = Mat(image->ry, image->rx, CV_16UC3);
-	}
-	else {
-		siril_log_message(_("Deconvolution is not supported for images with %d channels\n"), image->naxes[2]);
-		return -1;
-	}
-
-	blur(in, out, Size(3, 3));
-	out = in - out;
-
-	std::vector<Mat> channel(3);
-	split(out, channel);
-
-	if (image->naxes[2] == 3) {
-		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
-		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
-		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
-		image->pdata[RLAYER] = image->data;
-		image->pdata[GLAYER] = image->data + ndata;
-		image->pdata[BLAYER] = image->data + ndata * 2;
-	} else {
-		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
-		image->pdata[RLAYER] = image->data;
-		image->pdata[GLAYER] = image->data;
-		image->pdata[BLAYER] = image->data;
-	}
-
-	image->rx = out.cols;
-	image->ry = out.rows;
-	image->naxes[0] = image->rx;
-	image->naxes[1] = image->ry;
-	invalidate_stats_from_fit(image);
-
-	/* free data */
-	delete[] bgrbgr;
-	channel[0].release();
-	channel[1].release();
-	channel[2].release();
-	in.release();
-	out.release();
-
-	return 0;
-}
-
 static Mat RLTikh_deconvolution(Mat observed, Mat psf, double mu, int iterations) {
 
 	Mat deconv = observed.clone();
