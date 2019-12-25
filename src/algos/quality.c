@@ -214,14 +214,13 @@ static double Gradient(WORD *buf, int width, int height) {
 	int yborder = (int) ((double) height * QMARGIN) + 1;
 	int xborder = (int) ((double) width * QMARGIN) + 1;
 	double d1, d2;
-	double val, avg = 0;
+	double val;
 	int threshold = THRESHOLD_USHRT;
 	unsigned char *map = calloc(width * height, sizeof(unsigned char));
 
 	// pass 1 locate all pixels > threshold and flag the 3x3 region
 	// around them for inclusion in the algorithm
 	pixels = 0;
-	avg = 0;
 	for (y = yborder; y < height - yborder; ++y) {
 		int o = y * width + xborder;
 		for (x = xborder; x < width - xborder; ++x, ++o) {
@@ -230,7 +229,6 @@ static double Gradient(WORD *buf, int width, int height) {
 				map[o - 1] = map[o] = map[o + 1] = 1;
 				map[o + width - 1] = map[o + width] = map[o + width + 1] = 1;
 				++pixels;
-				avg += buf[o];
 			}
 		}
 	}
@@ -240,8 +238,6 @@ static double Gradient(WORD *buf, int width, int height) {
 		val = -1.0;
 		goto end;
 	}
-
-	avg /= (double)pixels;
 
 	val = 0.0;
 	pixels = 0;

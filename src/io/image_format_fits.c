@@ -24,6 +24,7 @@
 #include <math.h>
 #include <ctype.h>
 #include <string.h>
+#include <float.h>
 #include <gsl/gsl_statistics.h>
 #ifdef _WIN32
 #include <windows.h>

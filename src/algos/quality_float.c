@@ -45,7 +45,7 @@ double QualityEstimate_float(fits *fit, int layer) {
 	int height = fit->ry;
 	int x1, y1;
 	int subsample, region_w, region_h;
-	int i, j, n, x, y, max, x_inc;
+	int i, j, n, x, y, x_inc;
 	int x_samples, y_samples, y_last;
 	float *buffer, *buf, maxp[MAXP];
 	float *new_image = NULL;
@@ -120,16 +120,6 @@ double QualityEstimate_float(fits *fit, int layer) {
 			buf[n++] = SubSample(ptr, width, subsample, subsample);
 		}
 
-		// Average the bottom half brightest pixels to get the real max
-		// to reduce noise effects
-		j = MAXP / 2;
-		for (i = j, max = 0; i < MAXP; ++i) {
-			max += maxp[i];
-		}
-
-		// Test idea - reduce quality if histogram peak is lower
-		max /= (MAXP - j);
-
 		// 3x3 smoothing
 		new_image = _smooth_image_float(buf, x_samples, y_samples);
 
@@ -178,14 +168,13 @@ static double Gradient(float *buf, int width, int height) {
 	int yborder = (int) ((double) height * QMARGIN) + 1;
 	int xborder = (int) ((double) width * QMARGIN) + 1;
 	double d1, d2;
-	double val, avg = 0;
+	double val;
 	float threshold = THRESHOLD_FLOAT;
 	unsigned char *map = calloc(width * height, sizeof(unsigned char));
 
 	// pass 1 locate all pixels > threshold and flag the 3x3 region
 	// around them for inclusion in the algorithm
 	pixels = 0;
-	avg = 0;
 	for (y = yborder; y < height - yborder; ++y) {
 		int o = y * width + xborder;
 		for (x = xborder; x < width - xborder; ++x, ++o) {
@@ -194,7 +183,6 @@ static double Gradient(float *buf, int width, int height) {
 				map[o - 1] = map[o] = map[o + 1] = 1;
 				map[o + width - 1] = map[o + width] = map[o + width + 1] = 1;
 				++pixels;
-				avg += buf[o];
 			}
 		}
 	}
@@ -204,8 +192,6 @@ static double Gradient(float *buf, int width, int height) {
 		val = -1.0;
 		goto end;
 	}
-
-	avg /= (double)pixels;
 
 	val = 0.0;
 	pixels = 0;
