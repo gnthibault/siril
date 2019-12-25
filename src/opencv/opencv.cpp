@@ -965,3 +965,90 @@ int cvClahe(fits *image, double clip_limit, int size) {
 
 	return 0;
 }
+
+int cvClahe_float(fits *image, double clip_limit, int size) {
+	assert(image->fdata);
+	assert(image->rx);
+	assert(image->ry);
+
+	int ndata = image->rx * image->ry;
+
+	// preparing data
+	Mat in, out;
+
+	Ptr<CLAHE> clahe = createCLAHE();
+	clahe->setClipLimit(clip_limit);
+	clahe->setTilesGridSize(Size(size, size));
+
+	if (image->naxes[2] == 3) {
+		Mat lab_image;
+		std::vector<Mat> lab_planes(3);
+		float *bgrbgr;
+
+		bgrbgr = fits_to_bgrbgr_float(image);
+		in = Mat(image->ry, image->rx, CV_32FC3, bgrbgr);
+		out = Mat();
+
+		// convert the RGB color image to Lab
+		cvtColor(in, lab_image, COLOR_BGR2Lab);
+
+		// Extract the L channel
+		split(lab_image, lab_planes); // now we have the L image in lab_planes[0]
+
+		// apply the CLAHE algorithm to the L channel (does not work with 32F images)
+		lab_planes[0].convertTo(lab_planes[0], CV_16U, USHRT_MAX_DOUBLE / 100.0);
+		clahe->apply(lab_planes[0], lab_planes[0]);
+		lab_planes[0].convertTo(lab_planes[0], CV_32F, 100.0 / USHRT_MAX_DOUBLE);
+
+		// Merge the color planes back into an Lab image
+		merge(lab_planes, lab_image);
+
+		// convert back to RGB
+		cvtColor(lab_image, out, COLOR_Lab2BGR);
+		out.convertTo(out, CV_32FC3, 1.0);
+
+		delete[] bgrbgr;
+
+	} else {
+		in = Mat(image->ry, image->rx, CV_32FC1, image->fdata);
+		out = Mat();
+
+		in.convertTo(in, CV_16U, USHRT_MAX_DOUBLE);
+		clahe->apply(in, out);
+		out.convertTo(out, CV_32F, 1.0 / USHRT_MAX_DOUBLE);
+	}
+
+	std::vector<Mat> channel(3);
+	split(out, channel);
+
+	if (image->naxes[2] == 3) {
+		memcpy(image->fdata, channel[2].data, ndata * sizeof(float));
+		memcpy(image->fdata + ndata, channel[1].data, ndata * sizeof(float));
+		memcpy(image->fdata + ndata * 2, channel[0].data, ndata * sizeof(float));
+		image->fpdata[RLAYER] = image->fdata;
+		image->fpdata[GLAYER] = image->fdata + ndata;
+		image->fpdata[BLAYER] = image->fdata + ndata * 2;
+	} else {
+		memcpy(image->fdata, channel[0].data, ndata * sizeof(float));
+		image->fpdata[RLAYER] = image->fdata;
+		image->fpdata[GLAYER] = image->fdata;
+		image->fpdata[BLAYER] = image->fdata;
+	}
+
+	image->rx = out.cols;
+	image->ry = out.rows;
+	image->naxes[0] = image->rx;
+	image->naxes[1] = image->ry;
+
+	/* free data */
+	in.release();
+	out.release();
+	channel[0].release();
+	channel[1].release();
+	channel[2].release();
+	invalidate_stats_from_fit(image);
+
+	return 0;
+}
+
+
