@@ -16,9 +16,8 @@ extern "C" {
 
 
 int cvResizeGaussian(fits *, int, int, int);
-int cvResizeGaussian_data8(uint8_t *dataIn, int rx, int ry, uint8_t *dataOut,
+int cvResizeGaussian_uchar(uint8_t *dataIn, int rx, int ry, uint8_t *dataOut,
 		int toX, int toY, int chan, int interpolation);
-int cvTranslateImage(fits *image, point shift, int interpolation);
 int cvRotateImage(fits *, point, double, int, int);
 unsigned char *cvCalculH(s_star *star_array_img,
 		struct s_star *star_array_ref, int n, Homography *H);

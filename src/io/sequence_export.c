@@ -344,7 +344,7 @@ static gpointer export_sequence(gpointer ptr) {
 
 				if (args->resize) {
 					uint8_t *newdata = malloc(out_width * out_height * destfit.naxes[2]);
-					cvResizeGaussian_data8(data, destfit.rx, destfit.ry, newdata,
+					cvResizeGaussian_uchar(data, destfit.rx, destfit.ry, newdata,
 							out_width, out_height, destfit.naxes[2], OPENCV_CUBIC);
 					avi_file_write_frame(0, newdata);
 					free(newdata);
