@@ -512,6 +512,7 @@ struct historic_struct {
 	char *filename;
 	char history[FLEN_VALUE];
 	int rx, ry;
+	int type;
 };
 
 struct dateTime_struct {

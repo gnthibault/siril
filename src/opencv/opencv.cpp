@@ -704,7 +704,7 @@ static Mat RLTikh_deconvolution(Mat observed, Mat psf, double mu, int iterations
 
 #define KERNEL_SIZE_FACTOR 6
 
-int cvLucyRichardson(fits *image, double sigma, int iterations) {
+static int cvLucyRichardson_ushort(fits *image, double sigma, int iterations) {
 	assert(image->data);
 	assert(image->rx);
 	assert(image->ry);
@@ -735,7 +735,7 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 	// From here on, use 64-bit floats
 	// Convert original_image to float
 	Mat float_image;
-	in.convertTo(float_image, CV_64FC3);
+	in.convertTo(float_image, CV_32FC3);
 	float_image *= 1.0 / USHRT_MAX_DOUBLE;
 
 	Mat psf = getGaussianKernel(ksize, sigma);
@@ -781,6 +781,89 @@ int cvLucyRichardson(fits *image, double sigma, int iterations) {
 
 	return 0;
 }
+
+static int cvLucyRichardson_float(fits *image, double sigma, int iterations) {
+	assert(image->fdata);
+	assert(image->rx);
+	assert(image->ry);
+
+	int ndata = image->rx * image->ry;
+	int ksize = (int)((KERNEL_SIZE_FACTOR * sigma) + 0.5);
+	ksize = ksize % 2 != 0 ? ksize : ksize + 1;
+	Mat in, out;
+
+	float *bgrbgr = NULL;
+
+	if (image->naxes[2] == 1) {
+		in = Mat(image->ry, image->rx, CV_32FC1, image->fdata);
+		out = Mat(image->ry, image->rx, CV_32FC1);
+	}
+	else if (image->naxes[2] == 3) {
+		bgrbgr = fits_to_bgrbgr_float(image);
+		in = Mat(image->ry, image->rx, CV_32FC3, bgrbgr);
+		out = Mat(image->ry, image->rx, CV_32FC3);
+	}
+	else {
+		siril_log_message(_("Deconvolution is not supported for images with %d channels\n"), image->naxes[2]);
+		return -1;
+	}
+
+	set_progress_bar_data(_("Deconvolution..."), PROGRESS_NONE);
+
+
+	in.convertTo(in, CV_32FC3);
+
+	Mat psf = getGaussianKernel(ksize, sigma);
+
+	double mu = 0.01;
+
+	out = RLTikh_deconvolution(in, psf, mu, iterations);
+
+	std::vector<Mat> channel(3);
+	split(out, channel);
+
+	if (image->naxes[2] == 3) {
+		memcpy(image->fdata, channel[2].data, ndata * sizeof(float));
+		memcpy(image->fdata + ndata, channel[1].data, ndata * sizeof(float));
+		memcpy(image->fdata + ndata * 2, channel[0].data, ndata * sizeof(float));
+		image->fpdata[RLAYER] = image->fdata;
+		image->fpdata[GLAYER] = image->fdata + ndata;
+		image->fpdata[BLAYER] = image->fdata + ndata * 2;
+	} else {
+		memcpy(image->fdata, channel[0].data, ndata * sizeof(float));
+		image->fpdata[RLAYER] = image->fdata;
+		image->fpdata[GLAYER] = image->fdata;
+		image->fpdata[BLAYER] = image->fdata;
+	}
+
+	image->rx = out.cols;
+	image->ry = out.rows;
+	image->naxes[0] = image->rx;
+	image->naxes[1] = image->ry;
+
+	set_progress_bar_data(_("Deconvolution applied"), PROGRESS_DONE);
+	/* free data */
+	delete[] bgrbgr;
+	in.release();
+	out.release();
+	channel[0].release();
+	channel[1].release();
+	channel[2].release();
+	invalidate_stats_from_fit(image);
+
+	return 0;
+}
+
+int cvLucyRichardson(fits *image, double sigma, int iterations) {
+	assert(image->rx);
+	assert(image->ry);
+	if (image->type == DATA_USHORT)
+		return cvLucyRichardson_ushort(image, sigma, iterations);
+	if (image->type == DATA_FLOAT)
+		return cvLucyRichardson_float(image, sigma, iterations);
+	return -1;
+}
+
 
 /* Work on grey images. If image is in RGB it must be first converted
  * in CieLAB. Then, only the first channel is applied

@@ -109,6 +109,7 @@ static void undo_add_item(fits *fit, char *filename, char *histo) {
 	com.history[com.hist_current].filename = filename;
 	com.history[com.hist_current].rx = fit->rx;
 	com.history[com.hist_current].ry = fit->ry;
+	com.history[com.hist_current].type = fit->type;
 	snprintf(com.history[com.hist_current].history, FLEN_VALUE, "%s", histo);
 
 	if (com.hist_current == com.hist_size - 1) {
@@ -126,7 +127,7 @@ static void undo_add_item(fits *fit, char *filename, char *histo) {
 	com.hist_display = com.hist_current;
 }
 
-static int undo_get_data(fits *fit, historic hist) {
+static int undo_get_data_ushort(fits *fit, historic hist) {
 	int fd;
 	unsigned int size;
 	WORD *buf;
@@ -214,6 +215,15 @@ static int undo_get_data_float(fits *fit, historic hist) {
 	return 0;
 }
 
+static int undo_get_data(fits *fit, historic hist) {
+	if (hist.type == DATA_USHORT) {
+		return undo_get_data_ushort(fit, hist);
+	} else if (hist.type == DATA_FLOAT) {
+		return undo_get_data_float(fit, hist);
+	}
+	return 1;
+}
+
 gboolean is_undo_available() {
     return (com.history && com.hist_display > 0);
 }
@@ -260,12 +270,7 @@ int undo_display_data(int dir) {
 				com.hist_display--;
 			}
 			com.hist_display--;
-			if (gfit.type == DATA_USHORT)
-				undo_get_data(&gfit, com.history[com.hist_display]);
-			else if (gfit.type == DATA_FLOAT)
-				undo_get_data_float(&gfit, com.history[com.hist_display]);
-			else
-				break;
+			undo_get_data(&gfit, com.history[com.hist_display]);
 			invalidate_gfit_histogram();
 			invalidate_stats_from_fit(&gfit);
 			update_gfit_histogram_if_needed();
@@ -275,12 +280,7 @@ int undo_display_data(int dir) {
 	case REDO:
 		if (is_redo_available()) {
 			com.hist_display++;
-			if (gfit.type == DATA_USHORT)
-				undo_get_data(&gfit, com.history[com.hist_display]);
-			else if (gfit.type == DATA_FLOAT)
-				undo_get_data_float(&gfit, com.history[com.hist_display]);
-			else
-				break;
+			undo_get_data(&gfit, com.history[com.hist_display]);
 			invalidate_gfit_histogram();
 			invalidate_stats_from_fit(&gfit);
 			update_gfit_histogram_if_needed();
