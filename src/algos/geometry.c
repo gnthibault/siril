@@ -41,7 +41,7 @@
 
 /* this method rotates the image 180 degrees, useful after german mount flip.
  * fit->rx, fit->ry, fit->naxes[2] and fit->pdata[*] are required to be assigned correctly */
-static void fits_rotate_pi(fits *fit) {
+static void fits_rotate_pi_ushort(fits *fit) {
 	int i, line, axis, line_size;
 	WORD *line1, *line2, *src, *dst, swap;
 
@@ -81,6 +81,56 @@ static void fits_rotate_pi(fits *fit) {
 	}
 	free(line1);
 	free(line2);
+}
+
+static void fits_rotate_pi_float(fits *fit) {
+	int i, line, axis, line_size;
+	float *line1, *line2, *src, *dst, swap;
+
+	line_size = fit->rx * sizeof(float);
+	line1 = malloc(line_size);
+	line2 = malloc(line_size);
+
+	for (axis = 0; axis < fit->naxes[2]; axis++) {
+		for (line = 0; line < fit->ry / 2; line++) {
+			src = fit->fpdata[axis] + line * fit->rx;
+			dst = fit->fpdata[axis] + (fit->ry - line - 1) * fit->rx;
+
+			memcpy(line1, src, line_size);
+			for (i = 0; i < fit->rx / 2; i++) {
+				swap = line1[i];
+				line1[i] = line1[fit->rx - i - 1];
+				line1[fit->rx - i - 1] = swap;
+			}
+			memcpy(line2, dst, line_size);
+			for (i = 0; i < fit->rx / 2; i++) {
+				swap = line2[i];
+				line2[i] = line2[fit->rx - i - 1];
+				line2[fit->rx - i - 1] = swap;
+			}
+			memcpy(src, line2, line_size);
+			memcpy(dst, line1, line_size);
+		}
+		if (fit->ry & 1) {
+			/* swap the middle line */
+			src = fit->fpdata[axis] + line * fit->rx;
+			for (i = 0; i < fit->rx / 2; i++) {
+				swap = src[i];
+				src[i] = src[fit->rx - i - 1];
+				src[fit->rx - i - 1] = swap;
+			}
+		}
+	}
+	free(line1);
+	free(line2);
+}
+
+static void fits_rotate_pi(fits *fit) {
+	if (fit->type == DATA_USHORT) {
+		fits_rotate_pi_ushort(fit);
+	} else if (fit->type == DATA_FLOAT) {
+		fits_rotate_pi_float(fit);
+	}
 }
 
 static void mirrorx_gui(fits *fit) {
@@ -216,7 +266,7 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
 	return 0;
 }
 
-void mirrorx(fits *fit, gboolean verbose) {
+static void mirrorx_ushort(fits *fit, gboolean verbose) {
 	int line, axis, line_size;
 	WORD *swapline, *src, *dst;
 	struct timeval t_start, t_end;
@@ -247,6 +297,45 @@ void mirrorx(fits *fit, gboolean verbose) {
 	invalidate_WCS_keywords(fit);
 }
 
+static void mirrorx_float(fits *fit, gboolean verbose) {
+	int line, axis, line_size;
+	float *swapline, *src, *dst;
+	struct timeval t_start, t_end;
+
+	if (verbose) {
+		siril_log_color_message(_("Horizontal mirror: processing...\n"), "red");
+		gettimeofday(&t_start, NULL);
+	}
+
+	line_size = fit->rx * sizeof(float);
+	swapline = malloc(line_size);
+
+	for (axis = 0; axis < fit->naxes[2]; axis++) {
+		for (line = 0; line < fit->ry / 2; line++) {
+			src = fit->fpdata[axis] + line * fit->rx;
+			dst = fit->fpdata[axis] + (fit->ry - line - 1) * fit->rx;
+
+			memcpy(swapline, src, line_size);
+			memcpy(src, dst, line_size);
+			memcpy(dst, swapline, line_size);
+		}
+	}
+	free(swapline);
+	if (verbose) {
+		gettimeofday(&t_end, NULL);
+		show_time(t_start, t_end);
+	}
+	invalidate_WCS_keywords(fit);
+}
+
+void mirrorx(fits *fit, gboolean verbose) {
+	if (fit->type == DATA_USHORT) {
+		mirrorx_ushort(fit, verbose);
+	} else if (fit->type == DATA_FLOAT) {
+		mirrorx_float(fit, verbose);
+	}
+}
+
 void mirrory(fits *fit, gboolean verbose) {
 	struct timeval t_start, t_end;
 
@@ -270,7 +359,7 @@ void mirrory(fits *fit, gboolean verbose) {
  * data is correctly written to this new area, which makes this function
  * quite dangerous to use when fit is used for something else afterwards.
  */
-int crop(fits *fit, rectangle *bounds) {
+static int crop_ushort(fits *fit, rectangle *bounds) {
 	int i, j, layer;
 	int newnbdata;
 	struct timeval t_start, t_end;
@@ -310,6 +399,58 @@ int crop(fits *fit, rectangle *bounds) {
 	invalidate_WCS_keywords(fit);
 
 	return 0;
+}
+
+static int crop_float(fits *fit, rectangle *bounds) {
+	int i, j, layer;
+	int newnbdata;
+	struct timeval t_start, t_end;
+
+	memset(&t_start, 0, sizeof(struct timeval));
+	memset(&t_end, 0, sizeof(struct timeval));
+
+	if (fit == &gfit) {
+		siril_log_color_message(_("Crop: processing...\n"), "red");
+		gettimeofday(&t_start, NULL);
+	}
+
+	newnbdata = bounds->w * bounds->h;
+	for (layer = 0; layer < fit->naxes[2]; ++layer) {
+		float *from = fit->fpdata[layer]
+				+ (fit->ry - bounds->y - bounds->h) * fit->rx + bounds->x;
+		fit->fpdata[layer] = fit->fdata + layer * newnbdata;
+		float *to = fit->fpdata[layer];
+		int stridefrom = fit->rx - bounds->w;
+
+		for (i = 0; i < bounds->h; ++i) {
+			for (j = 0; j < bounds->w; ++j) {
+				*to++ = *from++;
+			}
+			from += stridefrom;
+		}
+	}
+	fit->rx = fit->naxes[0] = bounds->w;
+	fit->ry = fit->naxes[1] = bounds->h;
+
+	if (fit == &gfit) {
+		clear_stars_list();
+		gettimeofday(&t_end, NULL);
+		show_time(t_start, t_end);
+	}
+	invalidate_stats_from_fit(fit);
+	invalidate_WCS_keywords(fit);
+
+	return 0;
+}
+
+int crop(fits *fit, rectangle *bounds) {
+	if (fit->type == DATA_USHORT) {
+		return crop_ushort(fit, bounds);
+	} else if (fit->type == DATA_FLOAT) {
+		return crop_float(fit, bounds);
+	} else {
+		return -1;
+	}
 }
 
 /************************* CALLBACKS *************************************/
