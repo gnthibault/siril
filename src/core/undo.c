@@ -217,8 +217,16 @@ static int undo_get_data_float(fits *fit, historic hist) {
 
 static int undo_get_data(fits *fit, historic hist) {
 	if (hist.type == DATA_USHORT) {
+		if (gfit.type != DATA_USHORT) {
+			int ndata = fit->rx * fit->ry;
+			fit_replace_buffer(fit, float_buffer_to_ushort(fit->fdata, ndata), DATA_USHORT);
+		}
 		return undo_get_data_ushort(fit, hist);
 	} else if (hist.type == DATA_FLOAT) {
+		if (gfit.type != DATA_FLOAT) {
+			int ndata = fit->rx * fit->ry;
+			fit_replace_buffer(fit, ushort_buffer_to_float(fit->data, ndata), DATA_FLOAT);
+		}
 		return undo_get_data_float(fit, hist);
 	}
 	return 1;

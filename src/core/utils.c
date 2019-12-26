@@ -173,6 +173,42 @@ WORD float_to_ushort_range(float f) {
 }
 
 /**
+ * convert a float type buffer into a WORD buffer
+ * @param buffer in float
+ * @param ndata
+ * @return
+ */
+WORD *float_buffer_to_ushort(float *buffer, int ndata) {
+	int i;
+	WORD *buf;
+
+	buf = malloc(ndata * sizeof(WORD));
+
+	for (i = 0; i < ndata; i++) {
+		buf[i] = float_to_ushort_range(buffer[i]);
+	}
+	return buf;
+}
+
+/**
+ * convert a WORD type buffer into a float buffer
+ * @param buffer in WORD
+ * @param ndata
+ * @return
+ */
+float *ushort_buffer_to_float(WORD *buffer, int ndata) {
+	int i;
+	float *buf;
+
+	buf = malloc(ndata * sizeof(float));
+
+	for (i = 0; i < ndata; i++) {
+		buf[i] = ushort_to_float_range(buffer[i]);
+	}
+	return buf;
+}
+
+/**
  * Test if fit has 3 channels
  * @param fit input FITS image
  * @return TRUE if fit image has 3 channels
