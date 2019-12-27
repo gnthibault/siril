@@ -167,21 +167,21 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 
 	if (ssdata->output_32bits) {
 		if (ssdata->input_32bits) {
-			double ratio = 2.0 / fmax;
+			double ratio = 1.0 / fmax;
 			for (layer=0; layer<args->seq->nb_layers; ++layer){
 				double *from = ssdata->fsum[layer];
 				float *to = gfit.fpdata[layer];
 				for (i=0; i < nbdata; ++i) {
-					*to++ = (float)((double)(*from++) * ratio - 1.0);
+					*to++ = (float)((double)(*from++) * ratio);
 				}
 			}
 		} else {
-			double ratio = 2.0 / (double)max;
+			double ratio = 1.0 / (double)max;
 			for (layer=0; layer<args->seq->nb_layers; ++layer){
 				uint64_t *from = ssdata->sum[layer];
 				float *to = gfit.fpdata[layer];
 				for (i=0; i < nbdata; ++i) {
-					*to++ = (float)((double)(*from++) * ratio - 1.0);
+					*to++ = (float)((double)(*from++) * ratio);
 				}
 			}
 		}
