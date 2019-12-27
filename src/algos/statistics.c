@@ -475,7 +475,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 	}
 }
 
-int compute_means_from_flat_cfa(fits *fit, double mean[4]) {
+int compute_means_from_flat_cfa_ushort(fits *fit, double mean[4]) {
 	int row, col, c, i = 0;
 	WORD *data;
 	unsigned int width, height;
@@ -514,6 +514,14 @@ int compute_means_from_flat_cfa(fits *fit, double mean[4]) {
 		mean[c] /= (double) i;
 	}
 	return 0;
+}
+
+int compute_means_from_flat_cfa(fits *fit, double mean[4]) {
+	if (fit->type == DATA_USHORT)
+		return compute_means_from_flat_cfa_ushort(fit, mean);
+	if (fit->type == DATA_FLOAT)
+		return compute_means_from_flat_cfa_float(fit, mean);
+	return -1;
 }
 
 /****************** statistics caching and data management *****************/

@@ -546,6 +546,7 @@ gpointer extract_channels(gpointer p) {
 		return extract_channels_ushort(p);
 	if (args->fit->type == DATA_FLOAT)
 		return extract_channels_float(p);
+	siril_add_idle(end_extract_channels, args);
 	return GINT_TO_POINTER(1);
 }
 

@@ -396,3 +396,44 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 	if (free_data) free(data);
 	return stat;
 }
+
+int compute_means_from_flat_cfa_float(fits *fit, double mean[4]) {
+	int row, col, c, i = 0;
+	float *data;
+	unsigned int width, height;
+	unsigned int startx, starty;
+
+	mean[0] = mean[1] = mean[2] = mean[3] = 0.0;
+	data = fit->fdata;
+	width = fit->rx;
+	height = fit->ry;
+
+	/* due to vignetting it is better to take an area in the
+	 * center of the flat image
+	 */
+	startx = width / 3;
+	starty = height / 3;
+
+	/* make sure it does start at the beginning of CFA pattern */
+	startx = startx % 2 == 0 ? startx : startx + 1;
+	starty = starty % 2 == 0 ? starty : starty + 1;
+
+	siril_debug_print("Computing stat in (%d, %d, %d, %d)\n", startx, starty,
+			width - 1 - startx, height - 1 - starty);
+
+	/* Compute mean of each channel */
+	for (row = starty; row < height - 1 - starty; row += 2) {
+		for (col = startx; col < width - 1 - startx; col += 2) {
+			mean[0] += (double) data[col + row * width];
+			mean[1] += (double) data[1 + col + row * width];
+			mean[2] += (double) data[col + (1 + row) * width];
+			mean[3] += (double) data[1 + col + (1 + row) * width];
+			i++;
+		}
+	}
+
+	for (c = 0; c < 4; c++) {
+		mean[c] /= (double) i;
+	}
+	return 0;
+}

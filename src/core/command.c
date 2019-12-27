@@ -142,6 +142,7 @@ int process_save(int nb){
 	filename = g_strdup(word[1]);
 	set_cursor_waiting(TRUE);
 	retval = savefits(filename, &(gfit));
+	set_precision_switch();
 	set_cursor_waiting(FALSE);
 	g_free(filename);
 	return retval;
@@ -247,7 +248,7 @@ int process_addmax(int nb){
 
 	if (readfits(word[1], &fit, NULL))
 		return -1;
-	if (addmax(&gfit, &fit)==0) {
+	if (addmax(&gfit, &fit) == 0) {
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();

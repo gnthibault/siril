@@ -175,7 +175,7 @@ double entropy(fits *fit, int layer, rectangle *area, imstats *opt_stats) {
 	return e;
 }
 
-int loglut(fits *fit) {
+static int loglut_ushort(fits *fit) {
 	// This function maps fit with a log LUT
 	int i, layer;
 	WORD *buf[3] = { fit->pdata[RLAYER],
@@ -183,15 +183,47 @@ int loglut(fits *fit) {
 
 	double norm = USHRT_MAX_DOUBLE / log(USHRT_MAX_DOUBLE);
 
-	for (i = 0; i < fit->ry * fit->rx; i++) {
-		for (layer = 0; layer < fit->naxes[2]; ++layer) {
-			double px = (double)buf[layer][i];
-			px = (px == 0.0) ? 1.0 : px;
-			buf[layer][i] = round_to_WORD(norm * log(px));
+	for (layer = 0; layer < fit->naxes[2]; ++layer) {
+		imstats *stat = statistics(NULL, -1, fit, layer, NULL, STATS_MINMAX);
+		double min = stat->min;
+		double wd = stat->max - stat->min;
+		for (i = 0; i < fit->ry * fit->rx; i++) {
+			float px = (float)buf[layer][i];
+			buf[layer][i] = round_to_WORD(logf((px - min) / wd) * norm);
 		}
+		free_stats(stat);
 	}
 	invalidate_stats_from_fit(fit);
 	return 0;
+}
+
+static int loglut_float(fits *fit) {
+	// This function maps fit with a log LUT
+	int i, layer;
+	float *buf[3] = { fit->fpdata[RLAYER],
+			fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
+
+	for (layer = 0; layer < fit->naxes[2]; ++layer) {
+		imstats *stat = statistics(NULL, -1, fit, layer, NULL, STATS_MINMAX);
+		double min = stat->min;
+		double wd = stat->max - stat->min;
+		for (i = 0; i < fit->ry * fit->rx; i++) {
+			float px = buf[layer][i];
+			buf[layer][i] = log1pf((px - min) / wd);
+		}
+		free_stats(stat);
+	}
+	invalidate_stats_from_fit(fit);
+	return 0;
+}
+
+int loglut(fits *fit) {
+	if (fit->type == DATA_USHORT) {
+		return loglut_ushort(fit);
+	} else if (fit->type == DATA_FLOAT) {
+		return loglut_float(fit);
+	}
+	return -1;
 }
 
 int ddp(fits *a, int level, float coeff, float sigma) {
@@ -281,83 +313,6 @@ int off(fits *fit, int level) {
 		}
 	}
 	invalidate_stats_from_fit(fit);
-	return 0;
-}
-
-
-
-/* This function fills the data in the lrgb image with LRGB information from l, r, g and b
- * images. Layers are not aligned, images need to be all of the same size.
- * It may be used in the command line, currently unused. */
-int lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb) {
-	//
-	// Combines l r g and b components into resulting lrgb
-	// We transform each pixel from RGB to HSI,
-	// then take I from the luminance l fits and
-	// immediately step back to RGB to the working copy
-	//
-	guint x, y;
-	gdouble rr, gg, bb, h, s, i/*, ps3, dps3, qps3, dpi*/;
-	gint maxi;
-	WORD *pr, *pg, *pb, *dr, *dg, *db, *pl;
-
-	//
-	// some stats used to normalize
-	//
-	if (image_find_minmax(r) || image_find_minmax(g) ||
-			image_find_minmax(b) || image_find_minmax(l)) {
-		siril_log_color_message(_("Could not compute normalization values for the images, aborting.\n"), "red");
-		return -1;
-	}
-	maxi = max(r->maxi, max(g->maxi, b->maxi));
-	//
-	// initialize pointers
-	//
-	pr = r->data;
-	pg = g->data;
-	pb = b->data;
-	pl = l->data;
-	dr = lrgb->pdata[RLAYER];
-	dg = lrgb->pdata[GLAYER];
-	db = lrgb->pdata[BLAYER];
-	//
-	// some trigo constants
-	// we stick to h in radians, not in degrees
-	//
-	//dpi=2*M_PI;
-	//ps3=M_PI/3;
-	//dps3=2*M_PI;
-	//dps3=2*M_PI/3;
-	//qps3=4*M_PI/3;
-	//
-	// Main loop
-	//
-	fprintf(stderr, "HSI->RGB %u %u\n", r->ry, r->rx);
-	for (y = 0; y < r->ry; y++) {
-		for (x = 0; x < r->rx; x++) {
-			//
-			// First normalize rgb to [0 1]
-			//
-			rr = (double) (*pr++) / maxi;
-			gg = (double) (*pg++) / maxi;
-			bb = (double) (*pb++) / maxi;
-
-			rgb_to_hsl(rr, gg, bb, &h, &s, &i);
-			//
-			// replace luminance
-			//
-			i = *pl++ / (double) l->maxi;
-			//
-			// and back to RGB
-			hsl_to_rgb(h, s, i, &rr, &gg, &bb);
-			//
-			// now denormalize and store
-			//
-			*dr++ = (WORD) (rr * maxi);
-			*dg++ = (WORD) (gg * maxi);
-			*db++ = (WORD) (bb * maxi);
-		}
-	}
 	return 0;
 }
 

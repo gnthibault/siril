@@ -321,5 +321,6 @@ gpointer median_filter(gpointer p) {
 		return median_filter_ushort(p);
 	if (args->fit->type == DATA_FLOAT)
 		return median_filter_float(p);
+	siril_add_idle(end_median_filter, args);
 	return GINT_TO_POINTER(1);
 }

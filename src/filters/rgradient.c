@@ -60,7 +60,7 @@ static gboolean end_rgradient_filter(gpointer p) {
 	return FALSE;
 }
 
-gpointer rgradient_filter(gpointer p) {
+gpointer rgradient_filter_ushort(gpointer p) {
 	struct rgradient_filter_data *args = (struct rgradient_filter_data *) p;
 
 	fits imA = { 0 };
@@ -136,6 +136,96 @@ gpointer rgradient_filter(gpointer p) {
 	siril_add_idle(end_rgradient_filter, args);
 
 	return GINT_TO_POINTER(0);
+}
+
+static gpointer rgradient_filter_float(gpointer p) {
+	struct rgradient_filter_data *args = (struct rgradient_filter_data *) p;
+
+	fits imA = { 0 };
+	fits imB = { 0 };
+	point center = {args->xc, args->yc};
+	int x, y, layer, cur_nb = 0;
+	int w = args->fit->rx - 1;
+	int h = args->fit->ry - 1;
+	double dAlpha = M_PI / 180.0 * args->da;
+
+	double total = (double)(args->fit->rx * args->fit->ry * args->fit->naxes[2]);	// only used for progress bar
+	set_progress_bar_data(_("Rotational gradient in progress..."), PROGRESS_RESET);
+
+	/* convenient transformation to not inverse y sign */
+	fits_flip_top_to_bottom(args->fit);
+
+	copyfits(args->fit, &imA, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	copyfits(args->fit, &imB, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+
+	soper(args->fit, 2.0, OPER_MUL);
+
+	for (layer = 0; layer < args->fit->naxes[2]; layer++) {
+		int i = 0;
+		for (y = 0; y < args->fit->ry; y++) {
+			for (x = 0; x < args->fit->rx; x++) {
+				double r, theta;
+				point delta;
+				float *gbuf = args->fit->fpdata[layer];
+				float *Abuf = imA.fpdata[layer];
+				float *Bbuf = imB.fpdata[layer];
+
+				if (!(i % 256))
+					set_progress_bar_data(NULL, (double) cur_nb / total);
+
+				to_polar(x, y, center, &r, &theta);
+
+				// Positive differential
+				to_cartesian(r - args->dR, theta + dAlpha, center, &delta);
+				if (delta.x < 0)
+					delta.x = fabs(delta.x);
+				else if (delta.x > w)
+					delta.x = 2 * w - delta.x;
+				if (delta.y < 0)
+					delta.y = fabs(delta.y);
+				else if (delta.y > h)
+					delta.y = 2 * h - delta.y;
+				gbuf[i] -= Abuf[(int)delta.x + (int)delta.y * args->fit->rx];
+
+				// Negative differential
+				to_cartesian(r - args->dR, theta - dAlpha, center, &delta);
+				if (delta.x < 0)
+					delta.x = fabs(delta.x);
+				else if (delta.x > w)
+					delta.x = 2 * w - delta.x;
+				if (delta.y < 0)
+					delta.y = fabs(delta.y);
+				else if (delta.y > h)
+					delta.y = 2 * h - delta.y;
+				gbuf[i] -= Bbuf[(int)delta.x + (int)delta.y * args->fit->rx];
+				i++;
+				cur_nb++;
+			}
+		}
+	}
+
+	fits_flip_top_to_bottom(args->fit);
+	set_progress_bar_data(_("Rotational gradient complete."), PROGRESS_DONE);
+
+	clearfits(&imA);
+	clearfits(&imB);
+	invalidate_stats_from_fit(args->fit);
+	update_gfit_histogram_if_needed();
+	siril_add_idle(end_rgradient_filter, args);
+
+	return GINT_TO_POINTER(0);
+}
+
+gpointer rgradient_filter(gpointer p) {
+	struct rgradient_filter_data *args = (struct rgradient_filter_data*) p;
+
+	if (args->fit->type == DATA_USHORT) {
+		return rgradient_filter_ushort(args);
+	} else if (args->fit->type == DATA_FLOAT) {
+		return rgradient_filter_float(args);
+	}
+	siril_add_idle(end_rgradient_filter, args);
+	return GINT_TO_POINTER(1);
 }
 
 /// GUI
