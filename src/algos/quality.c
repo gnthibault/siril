@@ -320,7 +320,7 @@ static int _FindCentre_Barycentre(fits *fit, int x1, int y1, int x2, int y2,
 	if (y2 >= img_height - 1)
 		y2 = img_height - 2;
 
-	if (get_normalized_value(fit) == UCHAR_MAX)
+	if (get_normalized_value(fit) == UCHAR_MAX_DOUBLE)
 		RealThreshHold = THRESHOLD_UCHAR;
 	else	RealThreshHold = THRESHOLD_USHRT;
 

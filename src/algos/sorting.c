@@ -57,6 +57,36 @@ void quicksort_d (double *a, int n) {
 }
 
 /**
+ * In-place quick sort of array of float a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
+void quicksort_f (float *a, int n) {
+	if (n < 2)
+		return;
+	float pivot = a[n / 2];
+	float *left = a;
+	float *right = a + n - 1;
+	register float t;
+
+	while (left <= right) {
+		if (*left < pivot) {
+			left++;
+			continue;
+		}
+		if (*right > pivot) {
+			right--;
+			continue;
+		}
+		t = *left;
+		*left++ = *right;
+		*right-- = t;
+	}
+	quicksort_f(a, right - a + 1);
+	quicksort_f(left, a + n - left);
+}
+
+/**
  * In-place quick sort of array of WORD a of size n
  * @param a array to sort
  * @param n size of the array

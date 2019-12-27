@@ -589,18 +589,17 @@ void expand_home_in_filename(char *filename, int size) {
  * @param fit input FITS image
  * @return 255 or 65535 if 8- or 16-bit image
  */
-WORD get_normalized_value(fits *fit) {
+double get_normalized_value(fits *fit) {
 	if (fit->type == DATA_USHORT) {
 		image_find_minmax(fit);
-		if (fit->maxi <= UCHAR_MAX)
-			return UCHAR_MAX;
-		return USHRT_MAX;
+		if (fit->maxi <= UCHAR_MAX_DOUBLE)
+			return UCHAR_MAX_DOUBLE;
+		return USHRT_MAX_DOUBLE;
 	}
 	if (fit->type == DATA_FLOAT) {
-		// we simulate the USHORT range in the GUI for these images
-		return USHRT_MAX;
+		return 1.0;
 	}
-	return 1;
+	return -1.0;
 }
 
 /**

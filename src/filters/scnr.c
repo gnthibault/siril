@@ -54,7 +54,7 @@ gpointer scnr(gpointer p) {
 	double m;
 	int i, nbdata = args->fit->rx * args->fit->ry;
 	struct timeval t_start, t_end;
-	WORD norm = get_normalized_value(args->fit);
+	double norm = get_normalized_value(args->fit);
 
 	siril_log_color_message(_("SCNR: processing...\n"), "red");
 	gettimeofday(&t_start, NULL);

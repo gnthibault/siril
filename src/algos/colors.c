@@ -858,7 +858,7 @@ static void white_balance(fits *fit, gboolean is_manual, rectangle white_selecti
 	}
 
 	assert(fit->naxes[2] == 3);
-	norm = (double) get_normalized_value(fit);
+	norm = get_normalized_value(fit);
 
 	if (is_manual) {
 		kw[RLAYER] = gtk_range_get_value(scale_white_balance[RLAYER]);
@@ -969,7 +969,7 @@ static int pos_to_neg(fits *fit) {
 		WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER],
 			fit->pdata[BLAYER] };
 
-		WORD norm = get_normalized_value(fit);
+		WORD norm = (WORD)get_normalized_value(fit);
 		for (chan = 0; chan < fit->naxes[2]; chan ++) {
 			for (i = 0; i < fit->rx * fit->ry; i++) {
 				buf[chan][i] = norm - buf[chan][i];

@@ -1436,9 +1436,9 @@ int savefits(const char *name, fits *f) {
 	switch (f->bitpix) {
 	case BYTE_IMG:
 		data8 = calloc(pixel_count, sizeof(BYTE));
-		WORD norm = get_normalized_value(f);
+		double norm = get_normalized_value(f);
 		for (i = 0; i < pixel_count; i++) {
-			if (norm == USHRT_MAX)
+			if (norm == USHRT_MAX_DOUBLE)
 				data8[i] = conv_to_BYTE(f->data[i]);
 			else
 				data8[i] = (BYTE) (f->data[i]);

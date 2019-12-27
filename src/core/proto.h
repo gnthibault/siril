@@ -120,7 +120,7 @@ int changedir(const char *dir, gchar **err);
 gchar* get_locale_filename(const gchar *path);
 int update_sequences_list(const char *sequence_name_to_select);
 void expand_home_in_filename(char *filename, int size);
-WORD get_normalized_value(fits*);
+double get_normalized_value(fits*);
 void swap_param(double*, double*);
 char* remove_ext_from_filename(const char *basename);
 gchar* str_append(char **data, const char *newdata);

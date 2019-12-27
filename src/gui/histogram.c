@@ -505,7 +505,6 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 
 static void apply_mtf_to_fits(fits *from, fits *to) {
 	int i, chan, nb_chan, ndata;
-	double norm = (double)get_normalized_value(from);
 
 	g_assert(from->naxes[2] == 1 || from->naxes[2] == 3);
 	nb_chan = from->naxes[2];
@@ -514,6 +513,7 @@ static void apply_mtf_to_fits(fits *from, fits *to) {
 
 	for (chan = 0; chan < nb_chan; chan++) {
 		if (from->type == DATA_USHORT) {
+			double norm = get_normalized_value(from);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif

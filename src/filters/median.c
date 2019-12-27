@@ -214,7 +214,7 @@ static gpointer median_filter_ushort(gpointer p) {
 	int progress = 0, x, y, layer, iter = 0;
 	int nx = args->fit->rx;
 	int ny = args->fit->ry;
-	double total, norm = (double)get_normalized_value(args->fit);
+	double total, norm = get_normalized_value(args->fit);
 	struct timeval t_start, t_end;
 	int radius = (args->ksize - 1) / 2;
 

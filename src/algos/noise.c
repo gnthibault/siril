@@ -54,6 +54,7 @@ static gboolean end_noise(gpointer p) {
 gpointer noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
 	int chan;
+	double norm;
 	args->retval = 0;
 
 	if (args->verbose) {
@@ -70,11 +71,11 @@ gpointer noise(gpointer p) {
 			break;
 		}
 		args->bgnoise[chan] = stat->bgnoise;
+		norm = stat->normValue;
 		free_stats(stat);
 	}
 
 	if (!args->retval) {
-		double norm = (double) get_normalized_value(args->fit);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
 			siril_log_message(
 					_("Background noise value (channel: #%d): %0.3lf (%.3e)\n"), chan,

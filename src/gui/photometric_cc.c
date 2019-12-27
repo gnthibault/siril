@@ -519,7 +519,7 @@ static gpointer photometric_cc(gpointer p) {
 	siril_log_message(_("Normalizing on %s channel.\n"), (chan == 0) ? _("red") : ((chan == 1) ? _("green") : _("blue")));
 	int ret = get_white_balance_coeff(args->stars, nb_stars, &gfit, kw, chan);
 	if (!ret) {
-		norm = (double)get_normalized_value(&gfit);
+		norm = get_normalized_value(&gfit);
 		apply_white_balance(&gfit, kw);
 		get_background_coefficients(&gfit, bkg_sel, bg, TRUE);
 		background_neutralize(&gfit, bg, chan, norm);

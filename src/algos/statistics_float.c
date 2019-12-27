@@ -155,11 +155,11 @@ static double siril_stats_double_bwmv(const double* data, const size_t n,
 	return bwmv;
 }
 
-static int IKSS(double *data, int n, double *location, double *scale) {
+static int IKSS(float *data, int n, double *location, double *scale) {
 	size_t i, j;
 	double mad, s, s0, m, xlow, xhigh;
 
-	quicksort_d(data, n);	// this sort is mandatory
+	quicksort_f(data, n);	// this sort is mandatory
 	i = 0;
 	j = n;
 	s0 = 1;
@@ -168,9 +168,9 @@ static int IKSS(double *data, int n, double *location, double *scale) {
 			*location = *scale = 0;
 			break;
 		}
-		m = gsl_stats_median_from_sorted_data(data + i, 1, j - i);
-		mad = siril_stats_double_mad(data + i, 1, j - i, m);
-		s = sqrt(siril_stats_double_bwmv(data + i, j - i, mad, m));
+		m = gsl_stats_float_median_from_sorted_data(data + i, 1, j - i);
+		mad = siril_stats_float_mad(data + i, 1, j - i, m);
+		s = sqrt(siril_stats_float_bwmv(data + i, j - i, mad, m));
 		if (s < 2E-23) {
 			*location = m;
 			*scale = 0;
@@ -381,16 +381,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;
 		}
 
-		/* we convert in the [0, 1] range */
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
-		for (i = 0; i < stat->ngoodpix; i++) {
-			newdata[i] = (double)data[i];
-		}
-		IKSS(newdata, stat->ngoodpix, &stat->location, &stat->scale);
-		/* go back to the original range */
-		stat->location *= stat->normValue;
-		stat->scale *= stat->normValue;
-		free(newdata);
+		IKSS(data, stat->ngoodpix, &stat->location, &stat->scale);
 	}
 
 	if (free_data) free(data);

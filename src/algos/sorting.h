@@ -5,6 +5,7 @@
 
 /* the quicksorts */
 void quicksort_d (double *a, int n);
+void quicksort_f (float *a, int n);
 void quicksort_s (WORD *a, int n);
 
 /* Quick median based on quick select */

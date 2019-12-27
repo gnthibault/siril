@@ -39,16 +39,22 @@
 #include "algos/statistics.h"
 #include "opencv/opencv.h"
 
-/* this file contains all functions for image processing */
-
 int threshlo(fits *fit, int level) {
 	int i, layer;
 
 	for (layer = 0; layer < fit->naxes[2]; ++layer) {
-		WORD *buf = fit->pdata[layer];
-		for (i = 0; i < fit->rx * fit->ry; ++i) {
-			*buf = max(level, *buf);
-			buf++;
+		if (fit->type == DATA_USHORT) {
+			WORD *buf = fit->pdata[layer];
+			for (i = 0; i < fit->rx * fit->ry; ++i) {
+				*buf = max(level, *buf);
+				buf++;
+			}
+		} else if (fit->type == DATA_FLOAT) {
+			float *buf = fit->fpdata[layer];
+			for (i = 0; i < fit->rx * fit->ry; ++i) {
+				*buf = max(level, *buf);
+				buf++;
+			}
 		}
 	}
 	invalidate_stats_from_fit(fit);
@@ -59,10 +65,18 @@ int threshhi(fits *fit, int level) {
 	int i, layer;
 
 	for (layer = 0; layer < fit->naxes[2]; ++layer) {
-		WORD *buf = fit->pdata[layer];
-		for (i = 0; i < fit->rx * fit->ry; ++i) {
-			*buf = min(level, *buf);
-			buf++;
+		if (fit->type == DATA_USHORT) {
+			WORD *buf = fit->pdata[layer];
+			for (i = 0; i < fit->rx * fit->ry; ++i) {
+				*buf = min(level, *buf);
+				buf++;
+			}
+		} else if (fit->type == DATA_FLOAT) {
+			float *buf = fit->fpdata[layer];
+			for (i = 0; i < fit->rx * fit->ry; ++i) {
+				*buf = min(level, *buf);
+				buf++;
+			}
 		}
 	}
 	invalidate_stats_from_fit(fit);
@@ -73,11 +87,20 @@ int nozero(fits *fit, int level) {
 	int i, layer;
 
 	for (layer = 0; layer < fit->naxes[2]; ++layer) {
-		WORD *buf = fit->pdata[layer];
-		for (i = 0; i < fit->rx * fit->ry; ++i) {
-			if (*buf == 0)
-				*buf = level;
-			buf++;
+		if (fit->type == DATA_USHORT) {
+			WORD *buf = fit->pdata[layer];
+			for (i = 0; i < fit->rx * fit->ry; ++i) {
+				if (*buf == 0)
+					*buf = level;
+				buf++;
+			}
+		} else if (fit->type == DATA_FLOAT) {
+			float *buf = fit->fpdata[layer];
+			for (i = 0; i < fit->rx * fit->ry; ++i) {
+				if (*buf == 0)
+					*buf = level;
+				buf++;
+			}
 		}
 	}
 	invalidate_stats_from_fit(fit);
@@ -103,43 +126,6 @@ int unsharp(fits *fit, double sigma, double amount, gboolean verbose) {
 		gettimeofday(&t_end, NULL);
 		show_time(t_start, t_end);
 	}
-	return 0;
-}
-
-/* takes the image in gfit, copies it in a temporary fit to shift it, and copy it back into gfit */
-/* TODO: it can be done in the same, thus avoiding to allocate, it just needs to care
- * about the sign of sx and sy to avoid data overwriting in the same allocated space. */
-int shift(int sx, int sy) {
-	int x, y, nx, ny, i, ii, layer;
-	fits tmpfit;
-	copyfits(&(gfit), &tmpfit, CP_ALLOC | CP_FORMAT, 0);
-	i = 0;
-	/* the loop is the same than in composit() */
-	for (y = 0; y < gfit.ry; ++y) {
-		for (x = 0; x < gfit.rx; ++x) {
-			nx = (x - sx);
-			ny = (y - sy);
-			//printf("x=%d y=%d sx=%d sy=%d i=%d ii=%d\n",x,y,shiftx,shifty,i,ii);
-			if (nx >= 0 && nx < gfit.rx && ny >= 0 && ny < gfit.ry) {
-				ii = ny * gfit.rx + nx;
-				//printf("shiftx=%d shifty=%d i=%d ii=%d\n",shiftx,shifty,i,ii);
-				if (ii > 0 && ii < gfit.rx * gfit.ry) {
-					for (layer = 0; layer < gfit.naxes[2]; ++layer) {
-						tmpfit.pdata[layer][i] = gfit.pdata[layer][ii];
-					}
-				}
-			}
-			++i;
-		}
-	}
-
-	for (layer = 0; layer < gfit.naxes[2]; ++layer) {
-		memcpy(gfit.pdata[layer], tmpfit.pdata[layer],
-				gfit.rx * gfit.ry * sizeof(WORD));
-	}
-	free(tmpfit.data);
-	invalidate_stats_from_fit(&gfit);
-
 	return 0;
 }
 
