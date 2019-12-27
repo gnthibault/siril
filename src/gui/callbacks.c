@@ -804,7 +804,7 @@ void display_filename() {
 
 void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_data) {
 	if (!single_image_is_loaded()) return;
-	int ndata = gfit.rx * gfit.ry;
+	int ndata = gfit.rx * gfit.ry * gfit.naxes[2];
 
 	if (gfit.type == DATA_FLOAT) {
 		gboolean convert = siril_confirm_dialog(_("Loss precision"),
