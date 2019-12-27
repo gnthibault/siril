@@ -34,6 +34,7 @@ int match_drawing_area_widget(GtkWidget *drawing_area, gboolean allow_rgb);
 char *vport_number_to_name(int);
 void calculate_fwhm(GtkWidget *);
 void display_filename();
+void set_precision_switch();
 void set_layers_for_assign();
 void set_layers_for_registration();
 void show_dialog(const char *text, const char *title, const char *icon);

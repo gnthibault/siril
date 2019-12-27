@@ -523,6 +523,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
 		com.uniq->fit = &gfit;
 		display_filename();
+		set_precision_switch();
 		sliders_mode_set_state(com.sliders);
 
 		init_layers_hi_and_lo_values(MIPSLOHI);

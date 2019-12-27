@@ -23,6 +23,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/arithm.h"
 #include "core/undo.h"
 #include "core/processing.h"
 #include "core/OS_utils.h"

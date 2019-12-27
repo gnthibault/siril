@@ -24,6 +24,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/arithm.h"
 #include "core/processing.h"
 #include "core/OS_utils.h"
 #include "algos/statistics.h"

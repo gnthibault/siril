@@ -802,6 +802,36 @@ void display_filename() {
 	g_free(base_name);
 }
 
+void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_data) {
+	if (!single_image_is_loaded()) return;
+	int ndata = gfit.rx * gfit.ry;
+
+	if (gfit.type == DATA_FLOAT) {
+		gboolean convert = siril_confirm_dialog(_("Loss precision"),
+				_("Converting your image from 32 bits to 16 bits may lead to a loss of numerical accuracy. "
+						"Getting back to 32 bits will not recover this loss.\n"
+						"Are you sure to convert your data?"), FALSE);
+		if (convert) {
+			fit_replace_buffer(&gfit, float_buffer_to_ushort(gfit.fdata, ndata), DATA_USHORT);
+		}
+	} else if (gfit.type == DATA_USHORT) {
+		fit_replace_buffer(&gfit, ushort_buffer_to_float(gfit.data, ndata), DATA_FLOAT);
+	}
+	set_precision_switch();
+}
+
+void set_precision_switch() {
+	GtkLabel *label = GTK_LABEL(lookup_widget("precision_button_name"));
+	GtkCheckMenuItem *float_button = GTK_CHECK_MENU_ITEM(lookup_widget("32bits_item"));
+	GtkCheckMenuItem *ushort_button = GTK_CHECK_MENU_ITEM(lookup_widget("16bits_item"));
+
+	gtk_label_set_text(label, gfit.type == DATA_USHORT ? _("16 bits") : _("32 bits"));
+	g_signal_handlers_block_by_func(float_button, on_precision_item_toggled, NULL);
+	gtk_check_menu_item_set_active(float_button, gfit.type == DATA_FLOAT);
+	gtk_check_menu_item_set_active(ushort_button, gfit.type == DATA_USHORT);
+	g_signal_handlers_unblock_by_func(float_button, on_precision_item_toggled, NULL);
+}
+
 /* set available layers in the layer list of registration */
 void set_layers_for_assign() {
 	int i;

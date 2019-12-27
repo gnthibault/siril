@@ -1361,6 +1361,30 @@ enter a visible wavelength in nm</property>
     <property name="valign">center</property>
     <property name="pixbuf">pixmaps/siril_logo.svg</property>
   </object>
+  <object class="GtkMenu" id="precision_menu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkRadioMenuItem" id="16bits_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">16 bits</property>
+        <property name="use_underline">True</property>
+        <property name="group">32bits_item</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="32bits_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">32 bits</property>
+        <property name="use_underline">True</property>
+        <property name="active">True</property>
+        <property name="draw_as_radio">True</property>
+        <signal name="toggled" handler="on_precision_item_toggled" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="processing_menu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -1992,6 +2016,52 @@ enter a visible wavelength in nm</property>
           <packing>
             <property name="pack_type">end</property>
             <property name="position">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="header_precision_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="popup">precision_menu</property>
+            <property name="use_popover">False</property>
+            <child>
+              <object class="GtkBox" id="precision_button_box">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="precision_button_name">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">baseline</property>
+                    <property name="label" translatable="yes">Precision</property>
+                    <property name="use_underline">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="precision_button_arrow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">baseline</property>
+                    <property name="icon_name">pan-down-symbolic</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">6</property>
           </packing>
         </child>
       </object>

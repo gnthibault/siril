@@ -64,6 +64,8 @@ siril_SOURCES = \
 	compositing/compositing.h \
 	compositing/filters.c \
 	compositing/filters.h \
+	core/arithm.c \
+	core/arithm.h \
 	core/command.c \
 	core/command.h \
 	core/command_def.h \

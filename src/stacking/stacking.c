@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <float.h>
 #include <sys/stat.h>
 #ifdef _OPENMP
 #include <omp.h>
@@ -521,6 +522,7 @@ static gboolean end_stacking(gpointer p) {
 				else com.uniq->filename = strdup(_("Unsaved stacking result"));
 			}
 			display_filename();
+			set_precision_switch(); // set precision on screen
 		}
 		/* remove tmp files if exist (Drizzle) */
 		remove_tmp_drizzle_files(args);

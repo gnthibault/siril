@@ -34,6 +34,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/arithm.h"
 #include "core/undo.h"
 #include "core/initfile.h"
 #include "core/preprocess.h"

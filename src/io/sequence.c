@@ -472,6 +472,7 @@ int set_seq(const char *name){
 	/* initialize image-related runtime data */
 	set_display_mode();		// display the display mode in the combo box
 	display_filename();		// display filename in gray window
+	set_precision_switch(); // set precision on screen
 	adjust_refimage(seq->current);	// check or uncheck reference image checkbox
 	update_prepro_interface(seq->type == SEQ_REGULAR); // enable or not the preprobutton
 	update_reg_interface(FALSE);	// change the registration prereq message
@@ -537,6 +538,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 			redraw(com.cvport, REMAP_ONLY);
 		redraw_previews();		// redraw registration preview areas
 		display_filename();		// display filename in gray window
+		set_precision_switch(); // set precision on screen
 		adjust_reginfo();		// change registration displayed/editable values
 		calculate_fwhm(com.vport[com.cvport]);
 		update_gfit_histogram_if_needed();

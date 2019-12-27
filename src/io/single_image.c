@@ -239,6 +239,7 @@ void open_single_image_from_gfit() {
 	adjust_sellabel();
 
 	display_filename();	// display filename in gray window
+	set_precision_switch(); // set precision on screen
 
 	/* update menus */
 	update_MenuItem();

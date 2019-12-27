@@ -141,11 +141,6 @@ int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,
 int threshlo(fits *fit, int level);
 int threshhi(fits *fit, int level);
 int nozero(fits *fit, int level);
-int soper(fits *a, double scalar, char oper);
-int imoper(fits *a, fits *b, char oper);
-int addmax(fits *a, fits *b);
-int siril_fdiv(fits *a, fits *b, float scalar);
-int siril_ndiv(fits *a, fits *b);
 int unsharp(fits*, double sigma, double mult, gboolean verbose);
 double entropy(fits *fit, int layer, rectangle *area, imstats *opt_stats);
 int loglut(fits *fit);
