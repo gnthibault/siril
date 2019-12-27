@@ -1475,7 +1475,7 @@ int process_offset(int nb){
 	
 	if (!single_image_is_loaded()) return 1;
 
-	level = atoi(word[1]);
+	level = atof(word[1]);
 	off(&gfit, level);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);

@@ -147,7 +147,7 @@ int loglut(fits *fit);
 int ddp(fits *a, int lev, float coef, float sig);
 int visu(fits *fit, int low, int high);
 int fill(fits *fit, int level, rectangle *arearg);
-int off(fits *a, int level);
+int off(fits *a, float level);
 double background(fits *fit, int reqlayer, rectangle *selection);
 void show_FITS_header(fits*);
 void compute_grey_flat(fits *fit);

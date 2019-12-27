@@ -245,7 +245,6 @@ int visu(fits *fit, int low, int high) {
 
 /* fill an image or selection with the value 'level' */
 int fill(fits *fit, int level, rectangle *arearg) {
-	WORD *buf;
 	int i, j, layer;
 	rectangle area;
 
@@ -262,23 +261,35 @@ int fill(fits *fit, int level, rectangle *arearg) {
 		}
 	}
 	for (layer = 0; layer < fit->naxes[2]; ++layer) {
-		buf = fit->pdata[layer] + (fit->ry - area.y - area.h) * fit->rx
-				+ area.x;
-		int stridebuf = fit->rx - area.w;
-		for (i = 0; i < area.h; ++i) {
-			for (j = 0; j < area.w; ++j) {
-				*buf++ = level;
+		if (fit->type == DATA_USHORT) {
+			WORD *buf = fit->pdata[layer]
+					+ (fit->ry - area.y - area.h) * fit->rx + area.x;
+			int stridebuf = fit->rx - area.w;
+			for (i = 0; i < area.h; ++i) {
+				for (j = 0; j < area.w; ++j) {
+					*buf++ = level;
+				}
+				buf += stridebuf;
 			}
-			buf += stridebuf;
+		} else if (fit->type == DATA_FLOAT) {
+			float *buf = fit->fpdata[layer]
+					+ (fit->ry - area.y - area.h) * fit->rx + area.x;
+			int stridebuf = fit->rx - area.w;
+			for (i = 0; i < area.h; ++i) {
+				for (j = 0; j < area.w; ++j) {
+					*buf++ = level;
+				}
+				buf += stridebuf;
+			}
 		}
 	}
 	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
-int off(fits *fit, int level) {
-	WORD *buf[3] =
-			{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+static int off_ushort(fits *fit, float level) {
+	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER],
+			fit->pdata[BLAYER] };
 	int i, layer;
 	g_assert(fit->naxes[2] <= 3);
 	if (level == 0)
@@ -289,17 +300,44 @@ int off(fits *fit, int level) {
 		level = USHRT_MAX;
 	for (i = 0; i < fit->rx * fit->ry; ++i) {
 		for (layer = 0; layer < fit->naxes[2]; ++layer) {
-			WORD val = buf[layer][i];
-			if ((level < 0 && val < -level))
-				buf[layer][i] = 0;
-			else if (level > 0 && val > USHRT_MAX - level)
-				buf[layer][i] = USHRT_MAX;
-			else
-				buf[layer][i] = val + level;
+			float val = (float)buf[layer][i];
+			buf[layer][i] = roundf_to_WORD(val + level);
 		}
 	}
 	invalidate_stats_from_fit(fit);
 	return 0;
+}
+
+static int off_float(fits *fit, float level) {
+	float *buf[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER],
+			fit->fpdata[BLAYER] };
+	int i, layer;
+	g_assert(fit->naxes[2] <= 3);
+	if (level == 0)
+		return 0;
+	if (level < -1.f)
+		level = -1.f;
+	else if (level > 1.f)
+		level = 1.f;
+	for (i = 0; i < fit->rx * fit->ry; ++i) {
+		for (layer = 0; layer < fit->naxes[2]; ++layer) {
+			float val = buf[layer][i];
+			buf[layer][i] = val + level;
+			buf[layer][i] = buf[layer][i] > 1.f ? 1.f : buf[layer][i];
+			buf[layer][i] = buf[layer][i] < 0.f ? 0.f : buf[layer][i];
+		}
+	}
+	invalidate_stats_from_fit(fit);
+	return 0;
+}
+
+int off(fits *fit, float level) {
+	if (fit->type == DATA_USHORT) {
+		return off_ushort(fit, level);
+	} else if (fit->type == DATA_FLOAT) {
+		return off_float(fit, level);
+	}
+	return -1;
 }
 
 /* computes the background value using the histogram and/or median value.
