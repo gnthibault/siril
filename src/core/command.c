@@ -1141,9 +1141,9 @@ int process_new(int nb){
 	close_sequence(FALSE);
 
 	fits *fit = &gfit;
-	if (new_fit_image(&fit, width, height, layers, DATA_USHORT))
+	if (new_fit_image(&fit, width, height, layers, DATA_FLOAT))
 		return 1;
-	memset(gfit.data, 0, width * height * layers * sizeof(WORD));
+	memset(gfit.fdata, 0, width * height * layers * sizeof(float));
 
 	com.seq.current = UNRELATED_IMAGE;
 	com.uniq = calloc(1, sizeof(single));

@@ -21,19 +21,8 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <fcntl.h>
 #include <math.h>
-#include <fitsio.h>
-#include <complex.h>
-#include <float.h>
-#include <assert.h>
-#include <libgen.h>
-#include <fcntl.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -47,8 +36,6 @@
 #include "io/sequence.h"
 #include "io/single_image.h"
 #include "algos/colors.h"
-#include "algos/Def_Math.h"
-#include "algos/Def_Wavelet.h"
 #include "algos/statistics.h"
 #include "opencv/opencv.h"
 
@@ -176,7 +163,7 @@ double entropy(fits *fit, int layer, rectangle *area, imstats *opt_stats) {
 		histo = computeHisto_Selection(fit, layer, area);
 
 	n = fit->rx * fit->ry;
-	assert (n > 0);
+	g_assert (n > 0);
 	size = gsl_histogram_bins(histo);
 	for (i = 0; i < size; i++) {
 		double p = gsl_histogram_get(histo, i);
@@ -275,7 +262,7 @@ int off(fits *fit, int level) {
 	WORD *buf[3] =
 			{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 	int i, layer;
-	assert(fit->naxes[2] <= 3);
+	g_assert(fit->naxes[2] <= 3);
 	if (level == 0)
 		return 0;
 	if (level < -USHRT_MAX)

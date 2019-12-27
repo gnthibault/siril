@@ -302,6 +302,7 @@ gboolean end_save(gpointer p) {
 
 	gtk_entry_set_text(args->entry, "");
 	gtk_widget_hide(lookup_widget("savepopup"));
+	set_precision_switch();
 	stop_processing_thread();
 	set_cursor_waiting(FALSE);
 	close_dialog();	// is this different from the hide above?
