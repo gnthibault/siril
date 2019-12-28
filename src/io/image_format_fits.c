@@ -560,7 +560,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	int status = 0, zero = 0, datatype;
 	BYTE *data8;
 	double *pixels_double;
-	uint32_t *pixels_long;
+	unsigned long *pixels_long;
 	long orig[3] = { 1L, 1L, 1L };
 	// orig ^ gives the coordinate in each dimension of the first pixel to be read
 	unsigned int nbpix = fit->naxes[0] * fit->naxes[1];
@@ -657,7 +657,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 
 	case ULONG_IMG:		// 32-bit unsigned integer pixels
 	case LONG_IMG:		// 32-bit signed integer pixels
-		pixels_long = malloc(nbdata * sizeof(long));
+		pixels_long = malloc(nbdata * sizeof(unsigned long));
 		status = 0;
 		datatype = fit->bitpix == LONG_IMG ? TLONG : TULONG;
 		fits_read_pix(fit->fptr, datatype, orig, nbdata, &zero,
