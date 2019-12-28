@@ -38,6 +38,8 @@ remember_set_CFLAGS="$CFLAGS"
 
 AC_PROG_CC
 AC_HEADER_STDC
+
+m4_include(m4/openmp.m4)
 AC_OPENMP
 
 AC_LANG([C])
