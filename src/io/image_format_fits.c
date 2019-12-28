@@ -559,7 +559,6 @@ static void convert_data_float(int bitpix, const void *from, float *to, unsigned
 static int read_fits_with_convert(fits* fit, const char* filename) {
 	int status = 0, zero = 0, datatype;
 	BYTE *data8;
-	double *pixels_double;
 	unsigned long *pixels_long;
 	long orig[3] = { 1L, 1L, 1L };
 	// orig ^ gives the coordinate in each dimension of the first pixel to be read
@@ -668,33 +667,13 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		break;
 	case FLOAT_IMG:		// 32-bit floating point pixels
 		// siril 1.0 native, no conversion required
+	case DOUBLE_IMG:	// 64-bit floating point pixels
+		// let cfitsio do the conversion
 		fits_read_pix(fit->fptr, TFLOAT, orig, nbdata, &zero, fit->fdata, &zero,
 				&status);
-#if DEBUG_TEST
-		{
-			int i;
-			float min = FLT_MAX, max = FLT_MIN;
-			for (i = 0; i < nbdata; i++) {
-				if (fit->fdata[i] < min)
-					min = fit->fdata[i];
-				if (fit->fdata[i] > max)
-					max = fit->fdata[i];
-			}
-			fprintf(stdout, "FLOAT FITS: [%f, %f]\n", min, max);
-		}
-#endif
-		if (fit->data_max > 1.0) {
+		if (fit->data_max > 1.0) { // needed for some FLOAT_IMG
 			convert_data_float(fit->bitpix, fit->fdata, fit->fdata, nbdata);
 		}
-		break;
-	case DOUBLE_IMG:	// 64-bit floating point pixels
-		pixels_double = malloc(nbdata * sizeof(double));
-		// TODO: could also be read as TFLOAT and let cfitsio do the conversion?
-		fits_read_pix(fit->fptr, TDOUBLE, orig, nbdata, &zero,
-				pixels_double, &zero, &status);
-		if (status) break;
-		convert_data_float(fit->bitpix, pixels_double, fit->fdata, nbdata);
-		free(pixels_double);
 		break;
 	}
 
@@ -2144,7 +2123,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	__tryToFindKeywords(fp, TFLOAT, MIPSLO, &lo);
 	__tryToFindKeywords(fp, TFLOAT, MIPSHI, &hi);
 
-	if (hi != lo && hi != 0.f && dtype != LONG_IMG && dtype != ULONG_IMG) {
+	if (hi != lo && hi != 0.f && abs(dtype) <= USHORT_IMG) {
 		min = lo;
 		max = hi;
 	}
