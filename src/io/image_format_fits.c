@@ -1429,6 +1429,8 @@ int savefits(const char *name, fits *f) {
 			else
 				data8[i] = (BYTE) (f->data[i]);
 		}
+		f->lo >>= 8;
+		f->hi >>= 8;
 		if (fits_write_pix(f->fptr, TBYTE, orig, pixel_count, data8, &status)) {
 			report_fits_error(status);
 			if (data8)
@@ -1456,8 +1458,11 @@ int savefits(const char *name, fits *f) {
 		}
 		break;
 	case FLOAT_IMG:
-		if (!f->fdata && f->data) {
-			f->fdata = malloc(pixel_count * sizeof(double));
+		if (f->type == DATA_USHORT) {
+			if (f->orig_bitpix == BYTE_IMG) {
+				conv_8_to_16(f->data, pixel_count);
+			}
+			f->fdata = malloc(pixel_count * sizeof(float));
 			conv_16_to_32(f->data, f->fdata, pixel_count);
 			fit_replace_buffer(f, f->fdata, DATA_FLOAT);
 		}
