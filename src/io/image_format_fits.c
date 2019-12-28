@@ -463,28 +463,28 @@ static void convert_data_ushort(int bitpix, const void *from, WORD *to, unsigned
 		/* This function is not used any more for the types below,
 		 * convert_data_float() is used instead
 		 */
-		case ULONG_IMG:		// 32-bit unsigned integer pixels
-			data32 = (unsigned long *)from;
-			for (i = 0; i < nbdata; i++)
-				to[i] = (WORD)(data32[i] >> 16);
-			break;
-		case LONG_IMG:		// 32-bit signed integer pixels
-			sdata32 = (long *)from;
-			for (i = 0; i < nbdata; i++)
-				to[i] = (WORD)((sdata32[i] >> 16) + 32768);
-			break;
-		case DOUBLE_IMG:	// 64-bit floating point pixels
-		case FLOAT_IMG:		// 32-bit floating point pixels
-			pixels_double = (double *)from;
-			/* various data values can be found in a float or
-			 * double image. Sometimes it's normalized between 0
-			 * and 1, but sometimes, DATAMIN and DATAMAX give the range.
-			 */
-			if (!values_above_1) norm = USHRT_MAX_DOUBLE;
-			for (i = 0; i < nbdata; i++) {
-				to[i] = round_to_WORD(norm * pixels_double[i]);
-			}
-			break;
+//		case ULONG_IMG:		// 32-bit unsigned integer pixels
+//			data32 = (unsigned long *)from;
+//			for (i = 0; i < nbdata; i++)
+//				to[i] = (WORD)(data32[i] >> 16);
+//			break;
+//		case LONG_IMG:		// 32-bit signed integer pixels
+//			sdata32 = (long *)from;
+//			for (i = 0; i < nbdata; i++)
+//				to[i] = (WORD)((sdata32[i] >> 16) + 32768);
+//			break;
+//		case DOUBLE_IMG:	// 64-bit floating point pixels
+//		case FLOAT_IMG:		// 32-bit floating point pixels
+//			pixels_double = (double *)from;
+//			/* various data values can be found in a float or
+//			 * double image. Sometimes it's normalized between 0
+//			 * and 1, but sometimes, DATAMIN and DATAMAX give the range.
+//			 */
+//			if (!values_above_1) norm = USHRT_MAX_DOUBLE;
+//			for (i = 0; i < nbdata; i++) {
+//				to[i] = round_to_WORD(norm * pixels_double[i]);
+//			}
+//			break;
 		case LONGLONG_IMG:	// 64-bit integer pixels
 		default:
 			siril_log_message(_("Unknown FITS data format in internal conversion\n"));
@@ -527,12 +527,12 @@ static void convert_data_float(int bitpix, const void *from, float *to, unsigned
 		case ULONG_IMG:		// 32-bit unsigned integer pixels
 			data32 = (unsigned long *)from;
 			for (i = 0; i < nbdata; i++)
-				to[i] = (float)(data32[i] >> 16);
+				to[i] = (float)data32[i] / 4294967295;
 			break;
 		case LONG_IMG:		// 32-bit signed integer pixels
 			sdata32 = (long *)from;
 			for (i = 0; i < nbdata; i++)
-				to[i] = (float)((sdata32[i] >> 16) + 32768);
+				to[i] = (float)((sdata32[i] + 2147483647)) / 4294967295; // 2147483647 is bzero
 			break;
 		case FLOAT_IMG:		// 32-bit floating point pixels, we use it only if float is not in the [0, 1] range
 			data32f = (float *)from;
@@ -657,7 +657,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 
 	case ULONG_IMG:		// 32-bit unsigned integer pixels
 	case LONG_IMG:		// 32-bit signed integer pixels
-		pixels_long = malloc(nbdata * sizeof(uint32_t));
+		pixels_long = malloc(nbdata * sizeof(long));
 		status = 0;
 		datatype = fit->bitpix == LONG_IMG ? TLONG : TULONG;
 		fits_read_pix(fit->fptr, datatype, orig, nbdata, &zero,
@@ -710,8 +710,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 /* This function reads partial data on one layer from the opened FITS and
  * convert it to siril's format (USHORT) */
 static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
-		int bitpix, void *dest, gboolean values_above_1, int layer,
-		const rectangle *area) {
+		int bitpix, void *dest, int layer, const rectangle *area) {
 	int datatype;
 	BYTE *data8;
 	long *pixels_long;
@@ -1291,7 +1290,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		fit->pdata[BLAYER] = fit->data;
 
 		status = internal_read_partial_fits(fit->fptr, fit->naxes[1],
-				fit->bitpix, fit->data, data_max > 1.0, layer, area);
+				fit->bitpix, fit->data, layer, area);
 	} else {
 		if (fit->bitpix == FLOAT_IMG) {
 			status = 0;
@@ -1316,7 +1315,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		fit->fpdata[BLAYER] = fit->fdata;
 
 		status = internal_read_partial_fits(fit->fptr, fit->naxes[1],
-				fit->bitpix, fit->fdata, data_max > 1.0, layer, area);
+				fit->bitpix, fit->fdata, layer, area);
 	}
 
 	if (status) {
@@ -1364,7 +1363,7 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
 	omp_set_lock(&seq->fd_lock[index]);
 #endif
 
-	status = internal_read_partial_fits(seq->fptr[index], seq->ry, seq->bitpix, buffer, seq->data_max > 1.0, layer, area);
+	status = internal_read_partial_fits(seq->fptr[index], seq->ry, seq->bitpix, buffer, layer, area);
 
 #ifdef _OPENMP
 	omp_unset_lock(&seq->fd_lock[index]);
@@ -2145,7 +2144,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	__tryToFindKeywords(fp, TFLOAT, MIPSLO, &lo);
 	__tryToFindKeywords(fp, TFLOAT, MIPSHI, &hi);
 
-	if (hi != lo && hi != 0.f) {
+	if (hi != lo && hi != 0.f && dtype != LONG_IMG && dtype != ULONG_IMG) {
 		min = lo;
 		max = hi;
 	}
