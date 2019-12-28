@@ -502,6 +502,7 @@ static void convert_data_float(int bitpix, const void *from, float *to, unsigned
 	double *pixels_double;
 	long *sdata32;	// TO BE TESTED on 32-bit arch, seems to be a cfitsio bug
 	unsigned long *data32;
+	float *data32f;
 
 	switch (bitpix) {
 		case BYTE_IMG:
@@ -533,8 +534,10 @@ static void convert_data_float(int bitpix, const void *from, float *to, unsigned
 			for (i = 0; i < nbdata; i++)
 				to[i] = (float)((sdata32[i] >> 16) + 32768);
 			break;
-		case FLOAT_IMG:		// 32-bit floating point pixels
-			// nothing to do
+		case FLOAT_IMG:		// 32-bit floating point pixels, we use it only if float is not in the [0, 1] range
+			data32f = (float *)from;
+			for (i = 0; i < nbdata; i++)
+				to[i] = (data32f[i] / USHRT_MAX_SINGLE);
 			break;
 		case DOUBLE_IMG:	// 64-bit floating point pixels
 			pixels_double = (double *)from;
@@ -665,9 +668,10 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		break;
 	case FLOAT_IMG:		// 32-bit floating point pixels
 		// siril 1.0 native, no conversion required
-		fits_read_pix(fit->fptr, TFLOAT, orig, nbdata, &zero,
-				fit->fdata, &zero, &status);
-		{	// for debug purposes
+		fits_read_pix(fit->fptr, TFLOAT, orig, nbdata, &zero, fit->fdata, &zero,
+				&status);
+#if DEBUG_TEST
+		{
 			int i;
 			float min = FLT_MAX, max = FLT_MIN;
 			for (i = 0; i < nbdata; i++) {
@@ -677,6 +681,10 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 					max = fit->fdata[i];
 			}
 			fprintf(stdout, "FLOAT FITS: [%f, %f]\n", min, max);
+		}
+#endif
+		if (fit->data_max > 1.0) {
+			convert_data_float(fit->bitpix, fit->fdata, fit->fdata, nbdata);
 		}
 		break;
 	case DOUBLE_IMG:	// 64-bit floating point pixels

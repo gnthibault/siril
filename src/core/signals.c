@@ -86,7 +86,7 @@ static void signal_handled(int s) {
 	free(symbol);
 #endif
 	g_free(visit);
-	gtk_main_quit();
+	exit(EXIT_FAILURE);
 }
 
 void signals_init() {

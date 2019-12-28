@@ -809,9 +809,9 @@ void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_da
 
 	if (gfit.type == DATA_FLOAT) {
 		gboolean convert = siril_confirm_dialog(_("Loss precision"),
-				_("Converting the image from 32 to 16 bits may lead to a loss of numerical accuracy. "
+				_("Converting the image from 32 bits to 16 bits may lead to a loss of numerical accuracy. "
 						"Getting back to 32 bits will not recover this loss.\n"
-						"Are you sure to convert your data?"), FALSE);
+						"Are you sure you want to convert your data?"), FALSE);
 		if (convert) {
 			fit_replace_buffer(&gfit, float_buffer_to_ushort(gfit.fdata, ndata), DATA_USHORT);
 		}
