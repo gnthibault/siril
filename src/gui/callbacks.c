@@ -804,19 +804,23 @@ void display_filename() {
 }
 
 void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_data) {
-	if (!single_image_is_loaded()) return;
-	int ndata = gfit.rx * gfit.ry * gfit.naxes[2];
+	if (!single_image_is_loaded()) {
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("Cannot convert a sequence file"),
+				_("A sequence file cannot be converted to 32 bits. This operation can only be done on a single file."));
+	} else {
+		int ndata = gfit.rx * gfit.ry * gfit.naxes[2];
 
-	if (gfit.type == DATA_FLOAT) {
-		gboolean convert = siril_confirm_dialog(_("Loss precision"),
-				_("Converting the image from 32 bits to 16 bits may lead to a loss of numerical accuracy. "
-						"Getting back to 32 bits will not recover this loss.\n"
-						"Are you sure you want to convert your data?"), FALSE);
-		if (convert) {
-			fit_replace_buffer(&gfit, float_buffer_to_ushort(gfit.fdata, ndata), DATA_USHORT);
+		if (gfit.type == DATA_FLOAT) {
+			gboolean convert = siril_confirm_dialog(_("Loss precision"),
+					_("Converting the image from 32 bits to 16 bits may lead to a loss of numerical accuracy. "
+							"Getting back to 32 bits will not recover this loss.\n"
+							"Are you sure you want to convert your data?"), FALSE);
+			if (convert) {
+				fit_replace_buffer(&gfit, float_buffer_to_ushort(gfit.fdata, ndata), DATA_USHORT);
+			}
+		} else if (gfit.type == DATA_USHORT) {
+			fit_replace_buffer(&gfit, ushort_buffer_to_float(gfit.data, ndata), DATA_FLOAT);
 		}
-	} else if (gfit.type == DATA_USHORT) {
-		fit_replace_buffer(&gfit, ushort_buffer_to_float(gfit.data, ndata), DATA_FLOAT);
 	}
 	set_precision_switch();
 }
