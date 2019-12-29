@@ -206,7 +206,7 @@ siril_LDADD = \
 	$(GSL_LIBS) \
 	$(FFMS2_LIBS) \
 	$(LIBCONFIG_LIBS) \
-	$(CURL_LIBS) \
+	$(LIBCURL) \
 	$(EXTRA_LIBS) \
 	$(libdbghelp)
 
