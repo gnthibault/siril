@@ -311,7 +311,11 @@ static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) 
 	mirrorx(fit, FALSE);
 	/*  copy data to new array and normalize pixel data */
 	for (i = 0; i < fit->rx * fit->ry; i++) {
-		image[i] = (double) fit->pdata[channel][i] / USHRT_MAX_DOUBLE;
+		if (fit->type == DATA_USHORT) {
+			image[i] = (double) fit->pdata[channel][i] / USHRT_MAX_DOUBLE;
+		} else if (fit->type == DATA_FLOAT) {
+			image[i] = (double) fit->fpdata[channel][i];
+		}
 		if (add_dither) {
 			/* add dithering in order to avoid colour banding */
 			double dithering = (dither(999) * 1E-7);
@@ -334,12 +338,22 @@ static double *convert_fits_to_luminance(fits *fit) {
 	for (i = 0; i < ny * nx; i++) {
 		if (fit->naxes[2] > 1) {
 			double r, g, b;
-			r = (double) fit->pdata[RLAYER][i] / USHRT_MAX_DOUBLE;
-			g = (double) fit->pdata[GLAYER][i] / USHRT_MAX_DOUBLE;
-			b = (double) fit->pdata[BLAYER][i] / USHRT_MAX_DOUBLE;
+			if (fit->type == DATA_USHORT) {
+				r = (double) fit->pdata[RLAYER][i] / USHRT_MAX_DOUBLE;
+				g = (double) fit->pdata[GLAYER][i] / USHRT_MAX_DOUBLE;
+				b = (double) fit->pdata[BLAYER][i] / USHRT_MAX_DOUBLE;
+			} else if (fit->type == DATA_FLOAT) {
+				r = (double) fit->fpdata[RLAYER][i];
+				g = (double) fit->fpdata[GLAYER][i];
+				b = (double) fit->fpdata[BLAYER][i];
+			}
 			image[i] = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 		} else {
-			image[i] = (double) fit->pdata[RLAYER][i] / USHRT_MAX_DOUBLE;
+			if (fit->type == DATA_USHORT) {
+				image[i] = (double) fit->pdata[RLAYER][i] / USHRT_MAX_DOUBLE;
+			} else if (fit->type == DATA_FLOAT) {
+				image[i] = (double) fit->pdata[RLAYER][i];
+			}
 		}
 	}
 
@@ -353,10 +367,16 @@ static void convert_img_to_fits(double *image, fits *fit, int channel) {
 
 	mirrorx(fit, FALSE);
 
-	WORD *buf = fit->pdata[channel];
-
-	for (i = 0; i < fit->rx * fit->ry; i++) {
-		buf[i] = round_to_WORD(image[i] * USHRT_MAX_DOUBLE);
+	if (fit->type == DATA_USHORT) {
+		WORD *buf = fit->pdata[channel];
+		for (i = 0; i < fit->rx * fit->ry; i++) {
+			buf[i] = round_to_WORD(image[i] * USHRT_MAX_DOUBLE);
+		}
+	} else if (fit->type == DATA_FLOAT) {
+		float *buf = fit->fpdata[channel];
+		for (i = 0; i < fit->rx * fit->ry; i++) {
+			buf[i] = (float)image[i];
+		}
 	}
 
 	mirrorx(fit, FALSE);
@@ -432,10 +452,6 @@ static GSList *update_median_for_rgb_samples(GSList *orig, fits *fit) {
 	int channel;
 	double *rgb[3];
 
-	if (fit->type != DATA_USHORT) {
-		siril_log_message(_("background extraction: not yet working with 32-bit data."));
-		return NULL;
-	}
 	rgb[RLAYER] = convert_fits_to_img(fit, RLAYER, FALSE);
 	rgb[GLAYER] = convert_fits_to_img(fit, GLAYER, FALSE);
 	rgb[BLAYER] = convert_fits_to_img(fit, BLAYER, FALSE);
@@ -599,10 +615,6 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 	gchar *error;
 
 	if (com.grad_samples == NULL) return;
-	if (gfit.type != DATA_USHORT) {
-		siril_log_message(_("background extraction: not yet working with 32-bit data."));
-		return;
-	}
 
 	set_cursor_waiting(TRUE);
 
