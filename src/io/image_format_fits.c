@@ -664,6 +664,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		if (status) break;
 		convert_data_float(fit->bitpix, pixels_long, fit->fdata, nbdata);
 		free(pixels_long);
+		fit->bitpix = FLOAT_IMG;
 		break;
 	case FLOAT_IMG:		// 32-bit floating point pixels
 		// siril 1.0 native, no conversion required
@@ -674,6 +675,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		if (fit->data_max > 1.0) { // needed for some FLOAT_IMG
 			convert_data_float(fit->bitpix, fit->fdata, fit->fdata, nbdata);
 		}
+		fit->bitpix = FLOAT_IMG;
 		break;
 	}
 
@@ -1407,10 +1409,7 @@ int savefits(const char *name, fits *f) {
 		return 1;
 	}
 	status = 0;
-	/* some float cases where it is USHORT saved as float */
-//	if (f->bitpix != BYTE_IMG && f->data_max > 1.0 && f->data_max <= USHRT_MAX) {
-//		f->bitpix = USHORT_IMG;
-//	}
+
 	if (fits_create_img(f->fptr, f->bitpix, f->naxis, f->naxes, &status)) {
 		report_fits_error(status);
 		return 1;
@@ -1433,8 +1432,7 @@ int savefits(const char *name, fits *f) {
 		f->hi >>= 8;
 		if (fits_write_pix(f->fptr, TBYTE, orig, pixel_count, data8, &status)) {
 			report_fits_error(status);
-			if (data8)
-				free(data8);
+			free(data8);
 			return 1;
 		}
 		free(data8);
@@ -1471,7 +1469,6 @@ int savefits(const char *name, fits *f) {
 			return 1;
 		}
 		break;
-		
 	case LONG_IMG:
 	case LONGLONG_IMG:
 	case DOUBLE_IMG:
