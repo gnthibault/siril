@@ -38,6 +38,8 @@ remember_set_CFLAGS="$CFLAGS"
 
 AC_PROG_CC
 AC_HEADER_STDC
+
+m4_include(m4/openmp.m4)
 AC_OPENMP
 
 AC_LANG([C])
@@ -173,9 +175,10 @@ PKG_CHECK_MODULES(FFMPEG, [libavformat libavutil >= 55.20 libavcodec libswscale 
 		AC_MSG_WARN([ffmpeg libav libraries not found or too old. Not using film export formats.]))
 
 dnl checking libcurl
-PKG_CHECK_MODULES(CURL, [libcurl],
-		[AC_DEFINE([HAVE_LIBCURL], [1], [Using Libcurl ])],
-		AC_MSG_WARN([libcurl not found. Not using web interaction.]))
+m4_include([m4/libcurl.m4])
+LIBCURL_CHECK_CONFIG([yes], [7.10.0],
+        [AC_DEFINE([HAVE_LIBCURL], [1], [Using Libcurl ])],
+        AC_MSG_WARN([libcurl not found. Not using web interaction.]))
 
 dnl ================================================================
 dnl Collect some arguments.
