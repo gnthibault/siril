@@ -107,7 +107,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <float.h>
 #include <gtk/gtk.h>
 
 #include "gui/callbacks.h"
@@ -120,27 +119,24 @@
 
 int reget_rawdata(float *Imag, int Nl, int Nc, WORD *buf) {
 	float *im = Imag;
-	float minimum = FLT_MAX;
-	float maximum = FLT_MIN;
+	float maximum = 0.f;
+	double ratio;
 	int i;
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) schedule(static) reduction(min:minimum) reduction(max:maximum)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static) reduction(max:maximum)
 #endif
 	for (i = 0; i < Nl * Nc; ++i) {
-		if (im[i] < minimum)
-			minimum = im[i];
 		if (im[i] > maximum)
 			maximum = im[i];
 	}
-	float ratio = USHRT_MAX_SINGLE / (maximum - minimum);
+	ratio = (maximum > USHRT_MAX) ? USHRT_MAX_DOUBLE / maximum : 1.0;
+
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
 	for (i = 0; i < Nl * Nc; ++i) {
-		double tmp = (double)im[i] - (double)minimum;
-		tmp *= (double) ratio;
-		buf[i] = round_to_WORD(tmp);
+		buf[i] = round_to_WORD(im[i] * ratio);
 	}
 	return 0;
 }
