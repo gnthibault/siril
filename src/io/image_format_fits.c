@@ -437,10 +437,6 @@ static void convert_data_ushort(int bitpix, const void *from, WORD *to, unsigned
 	int i;
 	BYTE *data8;
 	int16_t *data16;
-	double *pixels_double;
-	double norm = 1.0;
-	long *sdata32;	// TO BE TESTED on 32-bit arch, seems to be a cfitsio bug
-	unsigned long *data32;
 
 	switch (bitpix) {
 		case BYTE_IMG:
@@ -459,32 +455,6 @@ static void convert_data_ushort(int bitpix, const void *from, WORD *to, unsigned
 				to[i] = (WORD)sum;
 			}
 			break;
-
-		/* This function is not used any more for the types below,
-		 * convert_data_float() is used instead
-		 */
-//		case ULONG_IMG:		// 32-bit unsigned integer pixels
-//			data32 = (unsigned long *)from;
-//			for (i = 0; i < nbdata; i++)
-//				to[i] = (WORD)(data32[i] >> 16);
-//			break;
-//		case LONG_IMG:		// 32-bit signed integer pixels
-//			sdata32 = (long *)from;
-//			for (i = 0; i < nbdata; i++)
-//				to[i] = (WORD)((sdata32[i] >> 16) + 32768);
-//			break;
-//		case DOUBLE_IMG:	// 64-bit floating point pixels
-//		case FLOAT_IMG:		// 32-bit floating point pixels
-//			pixels_double = (double *)from;
-//			/* various data values can be found in a float or
-//			 * double image. Sometimes it's normalized between 0
-//			 * and 1, but sometimes, DATAMIN and DATAMAX give the range.
-//			 */
-//			if (!values_above_1) norm = USHRT_MAX_DOUBLE;
-//			for (i = 0; i < nbdata; i++) {
-//				to[i] = round_to_WORD(norm * pixels_double[i]);
-//			}
-//			break;
 		case LONGLONG_IMG:	// 64-bit integer pixels
 		default:
 			siril_log_message(_("Unknown FITS data format in internal conversion\n"));

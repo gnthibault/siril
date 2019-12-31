@@ -346,7 +346,7 @@ static double *convert_fits_to_luminance(fits *fit) {
 				r = (double) fit->fpdata[RLAYER][i];
 				g = (double) fit->fpdata[GLAYER][i];
 				b = (double) fit->fpdata[BLAYER][i];
-			}
+			} else return NULL;
 			image[i] = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 		} else {
 			if (fit->type == DATA_USHORT) {

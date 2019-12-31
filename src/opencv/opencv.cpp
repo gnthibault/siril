@@ -868,12 +868,10 @@ static int cvLucyRichardson_float(fits *image, double sigma, int iterations) {
 
 	if (image->naxes[2] == 1) {
 		in = Mat(image->ry, image->rx, CV_32FC1, image->fdata);
-		out = Mat(image->ry, image->rx, CV_32FC1);
 	}
 	else if (image->naxes[2] == 3) {
 		bgrbgr = fits_to_bgrbgr_float(image);
 		in = Mat(image->ry, image->rx, CV_32FC3, bgrbgr);
-		out = Mat(image->ry, image->rx, CV_32FC3);
 	}
 	else {
 		siril_log_message(_("Deconvolution is not supported for images with %d channels\n"), image->naxes[2]);
