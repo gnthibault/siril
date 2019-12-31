@@ -285,7 +285,7 @@ static double siril_stats_robust_mean(const double sorted_data[],
 static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
 	int i = 0, ngood = 0;
 	gboolean no_phot = FALSE;
-	int k;
+	int k, progress = 0;
 	int chan;
 	double *data[3];
 
@@ -306,6 +306,9 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 		rectangle area = { 0 };
 		double flux[3] = { 0.0, 0.0, 0.0 };
 		double r, g, b, bv;
+		if (!(i % 16))	// every 16 iterations
+			set_progress_bar_data(NULL, (double)progress / (double) nb_stars);
+		progress++;
 
 		if (make_selection_around_a_star(stars[i], &area, fit)) {
 			i++;
@@ -523,6 +526,9 @@ static gpointer photometric_cc(gpointer p) {
 		apply_white_balance(&gfit, kw);
 		get_background_coefficients(&gfit, bkg_sel, bg, TRUE);
 		background_neutralize(&gfit, bg, chan, norm);
+		set_progress_bar_data(_("Photometric Color Calibration applied"), PROGRESS_DONE);
+	} else {
+		set_progress_bar_data(_("Photometric Color Calibration failed"), PROGRESS_DONE);
 	}
 
 	siril_add_idle(end_photometric_cc, args);
@@ -603,7 +609,6 @@ int apply_photometric_cc() {
 	}
 
 	struct photometric_cc_data *args = malloc(sizeof(struct photometric_cc_data));
-	set_cursor_waiting(TRUE);
 
 	args->stars = stars;
 	args->BV_file = BV_file;

@@ -20,6 +20,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/processing.h"
 #include "core/undo.h"
 #include "algos/background_extraction.h"
 #include "io/single_image.h"
@@ -519,8 +520,13 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 
 void on_drawingarea_leave_notify_event(GtkWidget *widget, GdkEvent *event,
 		gpointer user_data) {
-	/* trick to get default cursor */
-	set_cursor_waiting(FALSE);
+
+	if (get_thread_run()) {
+		set_cursor_waiting(TRUE);
+	} else {
+		/* trick to get default cursor */
+		set_cursor_waiting(FALSE);
+	}
 }
 
 static void get_scroll_position(GtkWidget *widget, int *x, int *y, int *width, int *height) {
