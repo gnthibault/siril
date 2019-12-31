@@ -285,7 +285,7 @@ static double siril_stats_robust_mean(const double sorted_data[],
 static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
 	int i = 0, ngood = 0;
 	gboolean no_phot = FALSE;
-	int k;
+	int k, progress;
 	int chan;
 	double *data[3];
 
@@ -306,6 +306,9 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 		rectangle area = { 0 };
 		double flux[3] = { 0.0, 0.0, 0.0 };
 		double r, g, b, bv;
+		if (!(i % 16))	// every 16 iterations
+			set_progress_bar_data(NULL, (double)progress / (double) nb_stars);
+		progress++;
 
 		if (make_selection_around_a_star(stars[i], &area, fit)) {
 			i++;
@@ -400,16 +403,25 @@ static void get_background_coefficients(fits *fit, rectangle *area, coeff bg[], 
 }
 
 static int apply_white_balance(fits *fit, double kw[]) {
-	WORD *buf;
 	int i, chan;
 
 	for (chan = 0; chan < 3; chan++) {
-		if (kw[chan] == 1.0)
-			continue;
-		buf = fit->pdata[chan];
-		for (i = 0; i < fit->rx * fit->ry; ++i) {
-			buf[i] = round_to_WORD((double)buf[i] * kw[chan]);
+		double scale = kw[chan];
+		if (scale == 1.0) continue;
+
+		if (fit->type == DATA_USHORT) {
+			WORD *buf = fit->pdata[chan];
+			for (i = 0; i < fit->rx * fit->ry; ++i) {
+				buf[i] = round_to_WORD((double)buf[i] * scale);
+			}
 		}
+		else if (fit->type == DATA_FLOAT) {
+			float *buf = fit->fpdata[chan];
+			for (i = 0; i < fit->rx * fit->ry; ++i) {
+				buf[i] = (float)((double)buf[i] * scale);
+			}
+		}
+		else return 1;
 	}
 	invalidate_stats_from_fit(fit);
 	return 0;
@@ -419,12 +431,24 @@ static int apply_white_balance(fits *fit, double kw[]) {
 static void background_neutralize(fits* fit, coeff bg[], int n_channel, double norm) {
 	int chan, i;
 
-	for (chan = 0; chan < 3; chan++) {
-		double offset = (bg[chan].value - bg[n_channel].value) * norm;
-		siril_debug_print("offset: %d, %f\n", chan, offset);
-		WORD *buf = fit->pdata[chan];
-		for (i = 0; i < fit->rx * fit->ry; i++) {
-			buf[i] = round_to_WORD((double)buf[i] - offset);
+	if (fit->type == DATA_USHORT) {
+		for (chan = 0; chan < 3; chan++) {
+			double offset = (bg[chan].value - bg[n_channel].value) * norm;
+			siril_debug_print("offset: %d, %f\n", chan, offset);
+			WORD *buf = fit->pdata[chan];
+			for (i = 0; i < fit->rx * fit->ry; i++) {
+				buf[i] = round_to_WORD((double)buf[i] - offset);
+			}
+		}
+	}
+	else if (fit->type == DATA_FLOAT) {
+		for (chan = 0; chan < 3; chan++) {
+			double offset = bg[chan].value - bg[n_channel].value;
+			siril_debug_print("offset: %d, %f\n", chan, offset);
+			float *buf = fit->fpdata[chan];
+			for (i = 0; i < fit->rx * fit->ry; i++) {
+				buf[i] = (float)((double)buf[i] - offset);
+			}
 		}
 	}
 	invalidate_stats_from_fit(fit);
@@ -498,10 +522,11 @@ static gpointer photometric_cc(gpointer p) {
 	siril_log_message(_("Normalizing on %s channel.\n"), (chan == 0) ? _("red") : ((chan == 1) ? _("green") : _("blue")));
 	int ret = get_white_balance_coeff(args->stars, nb_stars, &gfit, kw, chan);
 	if (!ret) {
-		norm = (double) get_normalized_value(&gfit);
+		norm = get_normalized_value(&gfit);
 		apply_white_balance(&gfit, kw);
 		get_background_coefficients(&gfit, bkg_sel, bg, TRUE);
 		background_neutralize(&gfit, bg, chan, norm);
+		set_progress_bar_data(_("Photometric Color Calibration applied"), PROGRESS_DONE);
 	}
 
 	siril_add_idle(end_photometric_cc, args);
@@ -582,7 +607,6 @@ int apply_photometric_cc() {
 	}
 
 	struct photometric_cc_data *args = malloc(sizeof(struct photometric_cc_data));
-	set_cursor_waiting(TRUE);
 
 	args->stars = stars;
 	args->BV_file = BV_file;
