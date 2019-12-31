@@ -27,9 +27,6 @@
 #include <float.h>
 #include <math.h>
 #include <gtk/gtk.h>
-#ifdef MAC_INTEGRATION
-#include <gtkosxapplication.h>
-#endif
 
 #include "core/siril.h"
 #include "gui/callbacks.h"
@@ -979,11 +976,6 @@ static gboolean end_register_idle(gpointer p) {
 	update_used_memory();
 	set_cursor_waiting(FALSE);
 
-#ifdef MAC_INTEGRATION
-	GtkosxApplication *osx_app = gtkosx_application_get();
-	gtkosx_application_attention_request(osx_app, INFO_REQUEST);
-	g_object_unref (osx_app);
-#endif
 	free(args);
 	return FALSE;
 }
