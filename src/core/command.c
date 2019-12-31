@@ -18,9 +18,6 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef MAC_INTEGRATION
-#include <gtkosxapplication.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
