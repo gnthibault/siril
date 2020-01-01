@@ -221,7 +221,7 @@ case "$host_os" in
 				;;
 		esac
 		;;
-	*-*-darwin*)
+	darwin*)
 		platform=osx
 		;;
 esac
