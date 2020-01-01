@@ -257,8 +257,5 @@ if !PLATFORM_OSX
 AM_LDFLAGS += -rdynamic
 endif #!PLATFORM_OSX
 endif #PLATFORM_WIN32
-if ENABLE_RELOCATABLE_RESOURCES
-AM_LDFLAGS += -Wl,-rpath '-Wl,$$ORIGIN/../Frameworks'
-endif
 
 siril_LINK = $(CXXLINK)
