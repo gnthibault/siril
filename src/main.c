@@ -28,10 +28,11 @@
 #include <string.h>
 #include <locale.h>
 #include <unistd.h>
-#if defined(ENABLE_RELOCATABLE_RESOURCES) && defined(__APPLE__)
+#if defined(ENABLE_RELOCATABLE_RESOURCES) && defined(OS_OSX)
 #include <sys/param.h> /* PATH_MAX */
 #include <libgen.h> /* dirname */
 #include <sys/stat.h>
+#import <AppKit/AppKit.h>
 #endif /* __APPLE__ */
 
 #include "core/siril.h"
@@ -153,6 +154,17 @@ static void updates_action_activate(GSimpleAction *action, GVariant *parameter,
 }
 #endif
 
+static void full_screen_action(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	if (com.is_fullscreen) {
+		gtk_window_unfullscreen(GTK_WINDOW(lookup_widget("control_window")));
+		com.is_fullscreen = FALSE;
+	} else {
+		gtk_window_fullscreen(GTK_WINDOW(lookup_widget("control_window")));
+		com.is_fullscreen = TRUE;
+	}
+}
+
 static GActionEntry app_entries[] = {
 		{ "quit", quit_action_activate },
 	    { "preferences", preferences_action_activate },
@@ -164,6 +176,7 @@ static GActionEntry app_entries[] = {
 #ifdef HAVE_LIBCURL
 	    { "updates", updates_action_activate },
 #endif
+		{"full_screen", full_screen_action},
 		{ "about", about_action_activate },
 		{ "cwd", cwd_action_activate }
 };
@@ -342,6 +355,23 @@ static void siril_app_activate(GApplication *application) {
 		gtk_window_set_application(GTK_WINDOW(lookup_widget("control_window")),	GTK_APPLICATION(application));
 		/* Load state of the main windows (position and mximized) */
 		load_main_window_state();
+#ifdef OS_OSX
+		/* see https://gitlab.gnome.org/GNOME/gtk/issues/2342 */
+		NSEvent *focusevent;
+		g_warning("workaround for the GTK3 #2342 bug");
+		focusevent = [NSEvent
+		    otherEventWithType: NSEventTypeAppKitDefined
+		    location: NSZeroPoint
+		    modifierFlags: 0x40
+		    timestamp: 0
+		    windowNumber: 0
+            context: nil
+            subtype: NSEventSubtypeApplicationActivated
+            data1: 0
+            data2: 0];
+
+        [NSApp postEvent:focusevent atStart:YES];
+#endif
 	}
 
 	if (changedir(com.wd, NULL))

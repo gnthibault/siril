@@ -223,6 +223,8 @@ case "$host_os" in
 		;;
 	darwin*)
 		platform=osx
+		AC_SUBST(EXTRA_LIBS,'-framework AppKit')
+		CFLAGS="$CFLAGS -ObjC"
 		;;
 esac
 AC_MSG_RESULT([$platform])
