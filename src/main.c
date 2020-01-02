@@ -151,6 +151,17 @@ static void updates_action_activate(GSimpleAction *action, GVariant *parameter,
 }
 #endif
 
+static void full_screen_action(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	if (com.is_fullscreen) {
+		gtk_window_unfullscreen(GTK_WINDOW(lookup_widget("control_window")));
+		com.is_fullscreen = FALSE;
+	} else {
+		gtk_window_fullscreen(GTK_WINDOW(lookup_widget("control_window")));
+		com.is_fullscreen = TRUE;
+	}
+}
+
 static GActionEntry app_entries[] = {
 		{ "quit", quit_action_activate },
 	    { "preferences", preferences_action_activate },
@@ -162,6 +173,7 @@ static GActionEntry app_entries[] = {
 #ifdef HAVE_LIBCURL
 	    { "updates", updates_action_activate },
 #endif
+		{"full_screen", full_screen_action},
 		{ "about", about_action_activate },
 		{ "cwd", cwd_action_activate }
 };
