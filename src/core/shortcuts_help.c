@@ -31,16 +31,9 @@ void siril_cmd_help_keyboard_shortcuts(GtkWindow *window) {
 	GError *err = NULL;
 
 	if (shortcuts_window == NULL) {
-		GtkBuilder *s_builder = gtk_builder_new();;
+		GtkBuilder *s_builder;
 
-//		s_builder = gtk_builder_new_from_file(shortcutfile);
-		if (!gtk_builder_add_from_file(s_builder, shortcutfile, &err)) {
-			g_error(_("%s was not found or contains errors, "
-					"cannot render GUI:\n%s\n Exiting.\n"), shortcutfile, err->message);
-			g_error_free(err);
-			exit(EXIT_FAILURE);
-		}
-
+		s_builder = gtk_builder_new_from_file(shortcutfile);
 		shortcuts_window = GTK_WIDGET(gtk_builder_get_object (s_builder, "shortcuts-siril"));
 
 		g_signal_connect(shortcuts_window, "destroy",
