@@ -1037,11 +1037,7 @@ static void load_accels() {
 	add_accelerator(GTK_APPLICATION(application), "app.preferences", "<Primary>P");
 	add_accelerator(GTK_APPLICATION(application), "app.open", "<Primary>O");
 	add_accelerator(GTK_APPLICATION(application), "app.undo", "<Primary>Z");
-#ifdef _WIN32
-	add_accelerator(GTK_APPLICATION(application), "app.redo", "<Primary>Y");
-#else
 	add_accelerator(GTK_APPLICATION(application), "app.redo", "<Primary><Shift>Z");
-#endif
 	add_accelerator(GTK_APPLICATION(application), "app.save_as", "<Primary><Shift>S");
 	add_accelerator(GTK_APPLICATION(application), "app.cwd", "<Primary>D");
 	add_accelerator(GTK_APPLICATION(application), "app.full_screen", "F11");

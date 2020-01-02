@@ -35,6 +35,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
+#include "core/shortcuts_help.h"
 #include "core/command_line_processor.h"
 #include "core/pipe.h"
 #include "core/undo.h"
@@ -151,15 +152,32 @@ static void updates_action_activate(GSimpleAction *action, GVariant *parameter,
 }
 #endif
 
-static void full_screen_action(GSimpleAction *action, GVariant *parameter,
+static void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
+	GtkApplication *app;
+	GtkWindow *window;
+
+	app = GTK_APPLICATION(user_data);
+	window = GTK_WINDOW(gtk_application_get_active_window(app));
+
 	if (com.is_fullscreen) {
-		gtk_window_unfullscreen(GTK_WINDOW(lookup_widget("control_window")));
+		gtk_window_unfullscreen(window);
 		com.is_fullscreen = FALSE;
 	} else {
-		gtk_window_fullscreen(GTK_WINDOW(lookup_widget("control_window")));
+		gtk_window_fullscreen(window);
 		com.is_fullscreen = TRUE;
 	}
+}
+
+static void keyboard_shortcuts_activated(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkApplication *app;
+	GtkWindow *window;
+
+	app = GTK_APPLICATION(user_data);
+	window = GTK_WINDOW(gtk_application_get_active_window(app));
+
+	siril_cmd_help_keyboard_shortcuts(window);
 }
 
 static GActionEntry app_entries[] = {
@@ -173,7 +191,8 @@ static GActionEntry app_entries[] = {
 #ifdef HAVE_LIBCURL
 	    { "updates", updates_action_activate },
 #endif
-		{"full_screen", full_screen_action},
+		{"full_screen", full_screen_activated},
+		{"shortcuts", keyboard_shortcuts_activated},
 		{ "about", about_action_activate },
 		{ "cwd", cwd_action_activate }
 };

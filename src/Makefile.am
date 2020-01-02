@@ -77,6 +77,8 @@ siril_SOURCES = \
 	core/processing.c \
 	core/sequence_filtering.c \
 	core/sequence_filtering.h \
+	core/shortcuts_help.c \
+	core/shortcuts_help.h \
 	core/signals.c \
 	core/signals.h \
 	core/siril.c \
@@ -239,6 +241,7 @@ siril_LDADD += $(OPENCV_LIBS) \
 
 pkgdata_DATA = \
 	gui/siril3.glade \
+	gui/siril-shortcuts.ui \
 	gui/gtk_old.css \
 	gui/gtk.css
 
