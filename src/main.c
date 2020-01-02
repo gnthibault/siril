@@ -28,7 +28,7 @@
 #include <string.h>
 #include <locale.h>
 #include <unistd.h>
-#ifdef PLATFORM_OSX
+#ifdef OS_OSX
 #import <AppKit/AppKit.h>
 #endif
 
@@ -340,7 +340,7 @@ static void siril_app_activate(GApplication *application) {
 		gtk_window_set_application(GTK_WINDOW(lookup_widget("control_window")),	GTK_APPLICATION(application));
 		/* Load state of the main windows (position and mximized) */
 		load_main_window_state();
-#ifdef PLATFORM_OSX
+#ifdef OS_OSX
 		/* see https://gitlab.gnome.org/GNOME/gtk/issues/2342 */
 		NSEvent *focusevent;
 		g_warning("workaround for the GTK3 #2342 bug");
