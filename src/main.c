@@ -168,7 +168,7 @@ static void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 	window = GTK_WINDOW(gtk_application_get_active_window(app));
 
 	GdkWindow *gdk_window = gtk_widget_get_window(GTK_WIDGET(window));
-	is_fullscreen = gdk_window_get_state (gdk_window) & GDK_WINDOW_STATE_FULLSCREEN;
+	is_fullscreen = gdk_window_get_state(gdk_window) & GDK_WINDOW_STATE_FULLSCREEN;
 
 	if (is_fullscreen) {
 		gtk_window_unfullscreen(window);
