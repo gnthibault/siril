@@ -17,9 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SRC_CORE_SHORTCUTS_HELP_H_
-#define SRC_CORE_SHORTCUTS_HELP_H_
+#ifndef SRC_CORE_SIRIL_CMD_HELP_H_
+#define SRC_CORE_SIRIL_CMD_HELP_H_
+
+#define SHORTCUTS_UI "siril-shortcuts.ui"
 
 void siril_cmd_help_keyboard_shortcuts(GtkWindow *window);
 
-#endif /* SRC_CORE_SHORTCUTS_HELP_H_ */
+#endif /* SRC_CORE_SIRIL_CMD_HELP_H_ */

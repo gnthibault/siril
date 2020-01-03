@@ -23,11 +23,11 @@
 #include "gui/callbacks.h"
 #include "core/siril_app_dirs.h"
 
-#include "core/shortcuts_help.h"
+#include "core/siril_cmd_help.h"
 
 void siril_cmd_help_keyboard_shortcuts(GtkWindow *window) {
 	static GtkWidget *shortcuts_window;
-	char *shortcutfile = g_build_filename(siril_get_system_data_dir(), "siril-shortcuts.ui", NULL);
+	char *shortcutfile = g_build_filename(siril_get_system_data_dir(), SHORTCUTS_UI, NULL);
 	GError *err = NULL;
 
 	if (shortcuts_window == NULL) {

@@ -77,13 +77,13 @@ siril_SOURCES = \
 	core/processing.c \
 	core/sequence_filtering.c \
 	core/sequence_filtering.h \
-	core/shortcuts_help.c \
-	core/shortcuts_help.h \
 	core/signals.c \
 	core/signals.h \
 	core/siril.c \
 	core/siril_app_dirs.c \
 	core/siril_app_dirs.h \
+	core/siril_cmd_help.c \
+	core/siril_cmd_help.h \
 	core/siril_log.c \
 	core/siril_update.c \
 	core/siril_update.h \

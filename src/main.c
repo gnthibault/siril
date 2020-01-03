@@ -35,8 +35,9 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
-#include "core/shortcuts_help.h"
+#include "core/siril_cmd_help.h"
 #include "core/command_line_processor.h"
+#include "core/command.h"
 #include "core/pipe.h"
 #include "core/undo.h"
 #include "core/signals.h"
@@ -140,6 +141,11 @@ static void preferences_action_activate(GSimpleAction *action, GVariant *paramet
 	siril_open_dialog("settings_window");
 }
 
+static void close_action_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	process_close(0);
+}
+
 static void scripts_action_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
 	siril_get_on_script_pages();
@@ -185,14 +191,15 @@ static GActionEntry app_entries[] = {
 	    { "preferences", preferences_action_activate },
 	    { "open",  open_action_activate },
 		{ "save_as", save_as_action_activate },
+		{ "close", close_action_activate },
 	    { "undo", undo_action_activate },
 	    { "redo", redo_action_activate },
 	    { "scripts", scripts_action_activate },
 #ifdef HAVE_LIBCURL
 	    { "updates", updates_action_activate },
 #endif
-		{"full_screen", full_screen_activated},
-		{"shortcuts", keyboard_shortcuts_activated},
+		{ "full_screen", full_screen_activated},
+		{ "shortcuts", keyboard_shortcuts_activated},
 		{ "about", about_action_activate },
 		{ "cwd", cwd_action_activate }
 };
