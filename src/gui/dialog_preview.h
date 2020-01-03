@@ -29,6 +29,6 @@ struct _fileChooserPreview {
 	GtkWidget *size_label;
 };
 
-void siril_file_chooser_add_preview(SirilWidget *widget);
+void siril_file_chooser_add_preview(GtkFileChooser *dialog);
 
 #endif /* SRC_GUI_DIALOG_PREVIEW_H_ */

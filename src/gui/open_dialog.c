@@ -202,6 +202,15 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 	}
 }
 
+static void siril_add_debayer_toggle_button(GtkFileChooser *dialog) {
+	GtkWidget *toggle_debayer;
+
+	toggle_debayer = gtk_check_button_new_with_label(_("Debayer"));
+	gtk_widget_show(toggle_debayer);
+	gtk_file_chooser_set_extra_widget(dialog, toggle_debayer);
+	g_signal_connect(toggle_debayer, "toggled", G_CALLBACK(on_demosaicing_toggled), NULL);
+}
+
 static void opendial(int whichdial) {
 	SirilWidget *widgetdialog;
 	GtkFileChooser *dialog = NULL;
@@ -223,7 +232,7 @@ static void opendial(int whichdial) {
 		gtk_file_chooser_set_current_folder(dialog, com.wd);
 		gtk_file_chooser_set_select_multiple(dialog, FALSE);
 		set_filters_dialog(dialog, whichdial);
-		siril_file_chooser_add_preview(widgetdialog);
+		siril_file_chooser_add_preview(dialog);
 		break;
 	case OD_CWD:
 		widgetdialog = siril_file_chooser_open(control_window, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
@@ -237,7 +246,8 @@ static void opendial(int whichdial) {
 		gtk_file_chooser_set_current_folder(dialog, com.wd);
 		gtk_file_chooser_set_select_multiple(dialog, FALSE);
 		set_filters_dialog(dialog, whichdial);
-		siril_file_chooser_add_preview(widgetdialog);
+		siril_file_chooser_add_preview(dialog);
+		siril_add_debayer_toggle_button(dialog);
 		break;
 	case OD_CONVERT:
 		widgetdialog = siril_file_chooser_add(control_window, GTK_FILE_CHOOSER_ACTION_OPEN);

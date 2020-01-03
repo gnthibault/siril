@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-03 08:55+0100\n"
-"PO-Revision-Date: 2020-01-03 09:06+0100\n"
+"POT-Creation-Date: 2020-01-03 21:51+0100\n"
+"PO-Revision-Date: 2020-01-03 21:52+0100\n"
 "Last-Translator: Cyril Richard\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -4253,35 +4253,40 @@ msgstr "Activer / désactiver le mode plein écran"
 
 #: ../src/gui/siril-shortcuts.ui.h:7
 msgctxt "shortcut window"
+msgid "Open application menu"
+msgstr "Ouvrir le menu de l'application"
+
+#: ../src/gui/siril-shortcuts.ui.h:8
+msgctxt "shortcut window"
 msgid "Quit the application"
 msgstr "Quitter l'application"
 
-#: ../src/gui/siril-shortcuts.ui.h:8
+#: ../src/gui/siril-shortcuts.ui.h:9
 msgctxt "shortcut window"
 msgid "Undo and Redo"
 msgstr "Annuler et rétablir"
 
-#: ../src/gui/siril-shortcuts.ui.h:9
+#: ../src/gui/siril-shortcuts.ui.h:10
 msgctxt "shortcut window"
 msgid "Undo previous command"
 msgstr "Annuler la commande précédente"
 
-#: ../src/gui/siril-shortcuts.ui.h:10
+#: ../src/gui/siril-shortcuts.ui.h:11
 msgctxt "shortcut window"
 msgid "Redo previous command"
 msgstr "Rétablir la commande précédente"
 
-#: ../src/gui/siril-shortcuts.ui.h:11
+#: ../src/gui/siril-shortcuts.ui.h:12
 msgctxt "shortcut window"
 msgid "Tools"
 msgstr "Outils"
 
-#: ../src/gui/siril-shortcuts.ui.h:12
+#: ../src/gui/siril-shortcuts.ui.h:13
 msgctxt "shortcut window"
 msgid "Open preferences"
 msgstr "Ouvrir les préférences"
 
-#: ../src/gui/siril-shortcuts.ui.h:13
+#: ../src/gui/siril-shortcuts.ui.h:14
 msgctxt "shortcut window"
 msgid "Change working directory"
 msgstr "Modifier le répertoire de travail"
@@ -4991,7 +4996,7 @@ msgstr "Exécution de la PSF sur la séquence chargée, canal %d\n"
 #: ../src/core/command.c:1770 ../src/core/command.c:1776
 #: ../src/core/command.c:1929 ../src/core/command.c:1936
 #: ../src/core/command.c:2193 ../src/core/command.c:2335
-#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:422
+#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:424
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Aucune séquence `%s' trouvée.\n"
@@ -6086,7 +6091,7 @@ msgid "Script execution failed.\n"
 msgstr "L'exécution du script a échoué.\n"
 
 #: ../src/core/command_line_processor.c:258 ../src/gui/script_menu.c:166
-#: ../src/main.c:354
+#: ../src/main.c:356
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Le fichier [%s] n'existe pas\n"
@@ -6547,7 +6552,7 @@ msgstr ""
 "Impossible de charger le fichier de la feuille de style CSS : %s. Veuillez "
 "réinstaller Siril\n"
 
-#: ../src/core/utils.c:642 ../src/main.c:222
+#: ../src/core/utils.c:642 ../src/main.c:224
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Chargé avec succès '%s'\n"
@@ -8293,7 +8298,7 @@ msgstr ""
 msgid "print the application’s version"
 msgstr "afficher la version de l'application"
 
-#: ../src/main.c:217
+#: ../src/main.c:219
 #, c-format
 msgid ""
 "%s was not found or contains errors, cannot render GUI:\n"
@@ -8305,7 +8310,7 @@ msgstr ""
 "%s\n"
 "Sortie.\n"
 
-#: ../src/main.c:254
+#: ../src/main.c:256
 #, c-format
 msgid ""
 "Questionable parallel processing efficiency - openmp reports %d %s. Possibly "
@@ -8314,45 +8319,45 @@ msgstr ""
 "Efficacité de traitement parallèle douteuse - openmp rapporte %d %s. "
 "Installation de opencv/openblas potentiellement cassée.\n"
 
-#: ../src/main.c:256 ../src/main.c:261
+#: ../src/main.c:258 ../src/main.c:263
 msgid "processor"
 msgid_plural "processors"
 msgstr[0] "processeur"
 msgstr[1] "processeurs"
 
-#: ../src/main.c:259
+#: ../src/main.c:261
 #, c-format
 msgid "Parallel processing %s: Using %d logical %s.\n"
 msgstr "Calcul parallèle %s : Utilisation de %d %s.\n"
 
-#: ../src/main.c:260
+#: ../src/main.c:262
 msgid "enabled"
 msgstr "activé"
 
-#: ../src/main.c:263
+#: ../src/main.c:265
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
 msgstr "Calcul parallèle %s : Utilisation de %d processeur.\n"
 
-#: ../src/main.c:263
+#: ../src/main.c:265
 msgid "disabled"
 msgstr "désactivé"
 
-#: ../src/main.c:287
+#: ../src/main.c:289
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Bienvenue dans %s v%s\n"
 
-#: ../src/main.c:314
+#: ../src/main.c:316
 #, c-format
 msgid "Could not load or create settings file, exiting.\n"
 msgstr "Impossible de charger ou de créer le fichier de paramètres.\n"
 
-#: ../src/main.c:464
+#: ../src/main.c:466
 msgid "Siril - A free astronomical image processing software."
 msgstr "Siril - Un logiciel libre de traitement d'images astronomiques."
 
-#: ../src/main.c:471
+#: ../src/main.c:473
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr ""

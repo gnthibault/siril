@@ -272,7 +272,7 @@ static int save_dialog() {
 	gtk_file_chooser_set_current_name(chooser, fname);
 	gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
 	set_filters_save_dialog(chooser);
-	siril_file_chooser_add_preview(saveDialog);
+	siril_file_chooser_add_preview(chooser);
 	g_free(fname);
 
 	res = siril_dialog_run(saveDialog);
