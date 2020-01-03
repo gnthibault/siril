@@ -35,7 +35,9 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
+#include "core/siril_cmd_help.h"
 #include "core/command_line_processor.h"
+#include "core/command.h"
 #include "core/pipe.h"
 #include "core/undo.h"
 #include "core/signals.h"
@@ -139,6 +141,11 @@ static void preferences_action_activate(GSimpleAction *action, GVariant *paramet
 	siril_open_dialog("settings_window");
 }
 
+static void close_action_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	process_close(0);
+}
+
 static void scripts_action_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
 	siril_get_on_script_pages();
@@ -151,15 +158,34 @@ static void updates_action_activate(GSimpleAction *action, GVariant *parameter,
 }
 #endif
 
-static void full_screen_action(GSimpleAction *action, GVariant *parameter,
+static void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
-	if (com.is_fullscreen) {
-		gtk_window_unfullscreen(GTK_WINDOW(lookup_widget("control_window")));
-		com.is_fullscreen = FALSE;
+	GtkApplication *app;
+	GtkWindow *window;
+	gboolean is_fullscreen;
+
+	app = GTK_APPLICATION(user_data);
+	window = GTK_WINDOW(gtk_application_get_active_window(app));
+
+	GdkWindow *gdk_window = gtk_widget_get_window(GTK_WIDGET(window));
+	is_fullscreen = gdk_window_get_state(gdk_window) & GDK_WINDOW_STATE_FULLSCREEN;
+
+	if (is_fullscreen) {
+		gtk_window_unfullscreen(window);
 	} else {
-		gtk_window_fullscreen(GTK_WINDOW(lookup_widget("control_window")));
-		com.is_fullscreen = TRUE;
+		gtk_window_fullscreen(window);
 	}
+}
+
+static void keyboard_shortcuts_activated(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkApplication *app;
+	GtkWindow *window;
+
+	app = GTK_APPLICATION(user_data);
+	window = GTK_WINDOW(gtk_application_get_active_window(app));
+
+	siril_cmd_help_keyboard_shortcuts(window);
 }
 
 static GActionEntry app_entries[] = {
@@ -167,13 +193,15 @@ static GActionEntry app_entries[] = {
 	    { "preferences", preferences_action_activate },
 	    { "open",  open_action_activate },
 		{ "save_as", save_as_action_activate },
+		{ "close", close_action_activate },
 	    { "undo", undo_action_activate },
 	    { "redo", redo_action_activate },
 	    { "scripts", scripts_action_activate },
 #ifdef HAVE_LIBCURL
 	    { "updates", updates_action_activate },
 #endif
-		{"full_screen", full_screen_action},
+		{ "full_screen", full_screen_activated},
+		{ "shortcuts", keyboard_shortcuts_activated},
 		{ "about", about_action_activate },
 		{ "cwd", cwd_action_activate }
 };
