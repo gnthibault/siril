@@ -1041,7 +1041,7 @@ static void load_accels() {
 	add_accelerator(GTK_APPLICATION(application), "app.save_as", "<Primary><Shift>S");
 	add_accelerator(GTK_APPLICATION(application), "app.close", "<Primary>W");
 	add_accelerator(GTK_APPLICATION(application), "app.cwd", "<Primary>D");
-	add_accelerator(GTK_APPLICATION(application), "app.full_screen", "F11");
+	add_accelerator(GTK_APPLICATION(application), "app.full_screen", "<Primary>F");
 }
 
 /* Initialize the combobox when loading new single_image */
