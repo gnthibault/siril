@@ -80,7 +80,11 @@ gpointer rgradient_filter_ushort(gpointer p) {
 	copyfits(args->fit, &imA, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 	copyfits(args->fit, &imB, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 
-	soper(args->fit, 2.0, OPER_MUL);
+	/* TODO: we should convert to 32 bits here, as the image * 2 overflows.
+	 * How did it work in the first place?
+	 * But then the code below will have to be modified.
+	 */
+	soper(args->fit, 2.0, OPER_MUL, FALSE);
 
 	for (layer = 0; layer < args->fit->naxes[2]; layer++) {
 		int i = 0;
@@ -158,7 +162,7 @@ static gpointer rgradient_filter_float(gpointer p) {
 	copyfits(args->fit, &imA, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 	copyfits(args->fit, &imB, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 
-	soper(args->fit, 2.0, OPER_MUL);
+	soper(args->fit, 2.0, OPER_MUL, TRUE);
 
 	for (layer = 0; layer < args->fit->naxes[2]; layer++) {
 		int i = 0;

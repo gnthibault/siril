@@ -213,14 +213,14 @@ int loglut(fits *fit) {
 }
 
 int ddp(fits *a, int level, float coeff, float sigma) {
-	fits fit;
-	memset(&fit, 0, sizeof(fits));
+	fits fit = { 0 };
+	// TODO: check retvals
 	copyfits(a, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 	unsharp(&fit, sigma, 0, FALSE);
-	soper(&fit, (double) level, OPER_ADD);
+	soper(&fit, (double)level, OPER_ADD, TRUE);
 	nozero(&fit, 1);
-	siril_fdiv(a, &fit, level);
-	soper(a, (double) coeff, OPER_MUL);
+	siril_fdiv(a, &fit, level, TRUE);
+	soper(a, (double)coeff, OPER_MUL, TRUE);
 	clearfits(&fit);
 	invalidate_stats_from_fit(a);
 	return 0;

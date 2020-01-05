@@ -22,10 +22,10 @@
 
 #include "core/siril.h"
 
-int soper(fits *a, double scalar, char oper);
-int imoper(fits *a, fits *b, char oper);
+int soper(fits *a, double scalar, image_operator oper, gboolean conv_to_float);
+int imoper(fits *a, fits *b, image_operator oper, gboolean allow_32bits);
 int addmax(fits *a, fits *b);
-int siril_fdiv(fits *a, fits *b, float scalar);
+int siril_fdiv(fits *a, fits *b, float scalar, gboolean allow_32bits);
 int siril_ndiv(fits *a, fits *b);
 
 #endif /* SRC_CORE_ARITHM_H_ */

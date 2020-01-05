@@ -226,12 +226,10 @@ int process_savepnm(int nb){
 
 int process_imoper(int nb){
 	fits fit = { 0 };
-
 	if (!single_image_is_loaded()) return 1;
+	if (readfits(word[1], &fit, NULL)) return -1;
+	imoper(&gfit, &fit, word[0][1], TRUE);
 
-	if (readfits(word[1], &fit, NULL))
-		return -1;
-	imoper(&gfit, &fit, word[0][1]);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -257,13 +255,12 @@ int process_fdiv(int nb){
 	// combines an image division and a scalar multiplication.
 	float norm;
 	fits fit = { 0 };
-
 	if (!single_image_is_loaded()) return 1;
 
 	norm = atof(word[2]);
-	if (readfits(word[1], &fit, NULL))
-		return -1;
-	siril_fdiv(&gfit, &fit, norm);
+	if (readfits(word[1], &fit, NULL)) return -1;
+	siril_fdiv(&gfit, &fit, norm, TRUE);
+
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -272,7 +269,6 @@ int process_fdiv(int nb){
 
 int process_fmul(int nb){
 	float coeff;
-
 	if (!single_image_is_loaded()) return 1;
 
 	coeff = atof(word[1]);
@@ -280,7 +276,8 @@ int process_fmul(int nb){
 		siril_log_message(_("Multiplying by a coefficient less than or equal to 0 is not possible.\n"));
 		return 1;
 	}
-	soper(&gfit, coeff, OPER_MUL);
+	soper(&gfit, coeff, OPER_MUL, TRUE);
+
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -2490,6 +2487,7 @@ int process_preprocess(int nb) {
 	args->sigma[0] = -1.00; /* cold pixels: it is better to deactive it */
 	args->sigma[1] =  3.00; /* hot pixels */
 	args->ppprefix = "pp_";
+	args->allow_32bit_output = args->seq->type == SEQ_REGULAR;
 
 	// start preprocessing
 	set_cursor_waiting(TRUE);

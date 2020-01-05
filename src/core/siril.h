@@ -167,12 +167,6 @@ typedef enum {
 #define CONV3X1	(1 << 7)
 #define CONV1X1	(1 << 8)
 
-/* operations on image data */
-#define OPER_ADD 'a'
-#define OPER_SUB 's'
-#define OPER_MUL 'm'
-#define OPER_DIV 'd'
-
 #define PREVIEW_NB 2
 
 /* special values for com.seq.current, the currently loaded image of the
@@ -207,6 +201,14 @@ typedef struct fwhm_struct fitted_PSF;
 typedef struct star_finder_struct star_finder_params;
 
 /* global structures */
+
+/* operations on image data */
+typedef enum {
+	OPER_ADD,
+	OPER_SUB,
+	OPER_MUL,
+	OPER_DIV
+} image_operator;
 
 /* ORDER OF POLYNOMES */
 typedef enum {
@@ -267,12 +269,12 @@ typedef enum {
 } opencv_interpolation;
 
 typedef enum {
-    BAYER_FILTER_RGGB,
-    BAYER_FILTER_BGGR,
-    BAYER_FILTER_GBRG,
-    BAYER_FILTER_GRBG,
+	BAYER_FILTER_RGGB,
+	BAYER_FILTER_BGGR,
+	BAYER_FILTER_GBRG,
+	BAYER_FILTER_GRBG,
 	XTRANS_FILTER,
-    BAYER_FILTER_NONE = -1		//case where pattern is undefined or untested
+	BAYER_FILTER_NONE = -1		//case where pattern is undefined or untested
 } sensor_pattern ;
 #define BAYER_FILTER_MIN BAYER_FILTER_RGGB
 #define BAYER_FILTER_MAX BAYER_FILTER_GRBG

@@ -144,6 +144,14 @@ int truncate_to_int32(uint64_t x) {
 	return (int)x;
 }
 
+WORD truncate_to_WORD(int x) {
+	if (x < 0)
+		return 0;
+	if (x > USHRT_MAX)
+		return USHRT_MAX;
+	return (WORD)x;
+}
+
 /**
  * convert an unsigned short value to siril's representation of float values [0, 1]
  * @param w value to convert

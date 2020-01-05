@@ -36,7 +36,8 @@
 
 #include "preprocess.h"
 
-static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
+static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark,
+		double k, gboolean allow_32bit_output) {
 	double noise = 0.0;
 	fits dark_tmp = { 0 }, fit_tmp = { 0 };
 	int chan, ret = 0;
@@ -52,8 +53,8 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 	copyfits(fit, &fit_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 
-	soper(&dark_tmp, k, OPER_MUL);
-	ret = imoper(&fit_tmp, &dark_tmp, OPER_SUB);
+	soper(&dark_tmp, k, OPER_MUL, allow_32bit_output);
+	ret = imoper(&fit_tmp, &dark_tmp, OPER_SUB, allow_32bit_output);
 	if (ret) {
 		clearfits(&dark_tmp);
 		clearfits(&fit_tmp);
@@ -78,7 +79,7 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 #define GR ((sqrt(5.0) - 1.0) / 2.0)
 
 static double goldenSectionSearch(fits *raw, fits *dark, double a, double b,
-		double tol) {
+		double tol, gboolean allow_32bits) {
 	double c, d;
 	double fc, fd;
 	int iter = 0;
@@ -86,8 +87,8 @@ static double goldenSectionSearch(fits *raw, fits *dark, double a, double b,
 	c = b - GR * (b - a);
 	d = a + GR * (b - a);
 	// TODO: check return values of evaluateNoiseOfCalibratedImage
-	fc = evaluateNoiseOfCalibratedImage(raw, dark, c);
-	fd = evaluateNoiseOfCalibratedImage(raw, dark, d);
+	fc = evaluateNoiseOfCalibratedImage(raw, dark, c, allow_32bits);
+	fd = evaluateNoiseOfCalibratedImage(raw, dark, d, allow_32bits);
 	do {
 		siril_debug_print("Iter: %d (%1.2lf, %1.2lf)\n", ++iter, c, d);
 		if (fc < 0.0 || fd < 0.0)
@@ -97,13 +98,13 @@ static double goldenSectionSearch(fits *raw, fits *dark, double a, double b,
 			d = c;
 			fd = fc;
 			c = b - GR * (b - a);
-			fc = evaluateNoiseOfCalibratedImage(raw, dark, c);
+			fc = evaluateNoiseOfCalibratedImage(raw, dark, c, allow_32bits);
 		} else {
 			a = c;
 			c = d;
 			fc = fd;
 			d = a + GR * (b - a);
-			fd = evaluateNoiseOfCalibratedImage(raw, dark, d);
+			fd = evaluateNoiseOfCalibratedImage(raw, dark, d, allow_32bits);
 
 		}
 	} while (fabs(c - d) > tol);
@@ -114,32 +115,33 @@ static double goldenSectionSearch(fits *raw, fits *dark, double a, double b,
 static int preprocess(fits *raw, struct preprocessing_data *args) {
 	int ret = 0;
 	if (args->use_bias) {
-		ret = imoper(raw, args->bias, OPER_SUB);
+		ret = imoper(raw, args->bias, OPER_SUB, args->allow_32bit_output);
 	}
 
 	/* if dark optimization, the master-dark has already been subtracted */
 	if (!ret && args->use_dark && !args->use_dark_optim) {
-		ret = imoper(raw, args->dark, OPER_SUB);
+		ret = imoper(raw, args->dark, OPER_SUB, args->allow_32bit_output);
 	}
 
 	if (!ret && args->use_flat) {
 		// return value is an error if there is an overflow, but it is usual
 		// for now, so don't treat as error
-		/*ret =*/ siril_fdiv(raw, args->flat, args->normalisation);
+		/*ret =*/ siril_fdiv(raw, args->flat, args->normalisation, args->allow_32bit_output);
 	}
 
 	return ret;
 }
 
-static int darkOptimization(fits *raw, fits *dark, fits *offset) {
+static int darkOptimization(fits *raw, struct preprocessing_data *args) {
 	double k0;
 	double lo = 0.0, up = 2.0;
 	int ret = 0;
+	fits *dark = args->dark;
 	fits dark_tmp = { 0 };
 
-	if (raw->rx != dark->rx || raw->ry != dark->ry) {
-		fprintf(stderr, "image size mismatch\n");
-		return -1;
+	if (memcmp(raw->naxes, dark->naxes, sizeof raw->naxes)) {
+		siril_log_message(_("imoper: images must have same dimensions\n"));
+		return 1;
 	}
 
 	if (copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, 0))
@@ -147,14 +149,15 @@ static int darkOptimization(fits *raw, fits *dark, fits *offset) {
 
 	/* Minimization of background noise to find better k */
 	invalidate_stats_from_fit(raw);
-	k0 = goldenSectionSearch(raw, &dark_tmp, lo, up, 1E-3);
+	k0 = goldenSectionSearch(raw, &dark_tmp, lo, up, 1E-3, args->allow_32bit_output);
 	if (k0 < 0.0) {
 		ret = -1;
 	} else {
 		siril_log_message(_("Dark optimization: k0=%.3lf\n"), k0);
 		/* Multiply coefficient to master-dark */
-		soper(&dark_tmp, k0, OPER_MUL);
-		ret = imoper(raw, &dark_tmp, OPER_SUB);
+		ret = soper(&dark_tmp, k0, OPER_MUL, args->allow_32bit_output);
+		if (!ret)
+			ret = imoper(raw, &dark_tmp, OPER_SUB, args->allow_32bit_output);
 	}
 	clearfits(&dark_tmp);
 	return ret;
@@ -214,7 +217,7 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 static int prepro_image_hook(struct generic_seq_args *args, int out_index, int in_index, fits *fit, rectangle *_) {
 	struct preprocessing_data *prepro = args->user;
 	if (prepro->use_dark_optim && prepro->use_dark) {
-		if (darkOptimization(fit, prepro->dark, prepro->bias))
+		if (darkOptimization(fit, prepro))
 			return 1;
 	}
 

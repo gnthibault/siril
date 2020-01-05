@@ -30,191 +30,270 @@
  *       S I R I L      A R I T H M E T I C      O P E R A T I O N S         *
  ****************************************************************************/
 
-/* equivalent to (map simple_operation a), with simple_operation being
- * (lambda (pixel) (oper pixel scalar))
- * oper is a for addition, s for substraction (i for difference) and so on. */
-int soper(fits *a, double scalar, char oper) {
-	WORD *gbuf;
-	int i, layer;
-	int n = a->rx * a->ry;
-
+static int soper_ushort_to_ushort(fits *a, double scalar, image_operator oper) {
+	WORD *data;
+	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 	g_assert(n > 0);
+	data = a->data;
 
-	for (layer = 0; layer < a->naxes[2]; ++layer) {
-		gbuf = a->pdata[layer];
-		switch (oper) {
+	switch (oper) {
 		case OPER_ADD:
 			for (i = 0; i < n; ++i) {
-				gbuf[i] = round_to_WORD((double) gbuf[i] + scalar);
+				data[i] = round_to_WORD((double)data[i] + scalar);
 			}
 			break;
 		case OPER_SUB:
 			for (i = 0; i < n; ++i) {
-				gbuf[i] = round_to_WORD((double) gbuf[i] - scalar);
+				data[i] = round_to_WORD((double)data[i] - scalar);
 			}
 			break;
 		case OPER_MUL:
 			for (i = 0; i < n; ++i) {
-				gbuf[i] = round_to_WORD((double) gbuf[i] * scalar);
+				data[i] = round_to_WORD((double)data[i] * scalar);
 			}
 			break;
 		case OPER_DIV:
 			for (i = 0; i < n; ++i) {
-				gbuf[i] = round_to_WORD((double) gbuf[i] / scalar);
+				data[i] = round_to_WORD((double)data[i] / scalar);
 			}
 			break;
+	}
+	invalidate_stats_from_fit(a);
+	return 0;
+}
+
+static int soper_ushort_to_float(fits *a, double scalar, image_operator oper) {
+	WORD *data;
+	float *result;
+	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+	g_assert(n > 0);
+	data = a->data;
+	result = malloc(n * sizeof(float));
+	if (!result) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
+
+	switch (oper) {
+		case OPER_ADD:
+			for (i = 0; i < n; ++i) {
+				result[i] = (float)((double)data[i] + scalar);
+			}
+			break;
+		case OPER_SUB:
+			for (i = 0; i < n; ++i) {
+				result[i] = (float)((double)data[i] - scalar);
+			}
+			break;
+		case OPER_MUL:
+			for (i = 0; i < n; ++i) {
+				result[i] = (float)((double)data[i] * scalar);
+			}
+			break;
+		case OPER_DIV:
+			for (i = 0; i < n; ++i) {
+				result[i] = (float)((double)data[i] / scalar);
+			}
+			break;
+	}
+	fit_replace_buffer(a, result, DATA_FLOAT);
+	return 0;
+}
+
+static int soper_float(fits *a, double scalar, image_operator oper) {
+	float *data;
+	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+	g_assert(n > 0);
+	data = a->fdata;
+
+	switch (oper) {
+		case OPER_ADD:
+			for (i = 0; i < n; ++i) {
+				data[i] = (float)((double)data[i] + scalar);
+			}
+			break;
+		case OPER_SUB:
+			for (i = 0; i < n; ++i) {
+				data[i] = (float)((double)data[i] - scalar);
+			}
+			break;
+		case OPER_MUL:
+			for (i = 0; i < n; ++i) {
+				data[i] = (float)((double)data[i] * scalar);
+			}
+			break;
+		case OPER_DIV:
+			for (i = 0; i < n; ++i) {
+				data[i] = (float)((double)data[i] / scalar);
+			}
+			break;
+	}
+	invalidate_stats_from_fit(a);
+	return 0;
+}
+
+/* equivalent to (map simple_operation a), with simple_operation being
+ * (lambda (pixel) (oper pixel scalar))
+ * oper is a for addition, s for substraction (i for difference) and so on. */
+int soper(fits *a, double scalar, image_operator oper, gboolean conv_to_float) {
+	if (a->type == DATA_USHORT) {
+		if (conv_to_float)
+			return soper_ushort_to_float(a, scalar, oper);
+		return soper_ushort_to_ushort(a, scalar, oper);
+	}
+	if (a->type == DATA_FLOAT)
+		return soper_float(a, scalar, oper);
+	return 1;
+}
+
+int imoper_ushort_to_ushort(fits *a, fits *b, float factor, image_operator oper) {
+	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+
+	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
+		siril_log_message(_("imoper: images must have same dimensions\n"));
+		return 1;
+	}
+
+	WORD *abuf = a->data, *bbuf = b->data;
+	if (oper == OPER_DIV) {
+		for (i = 0; i < n; ++i) {
+			if (bbuf[i] == 0)
+				abuf[i] = 0;
+			else {
+				float aval = (float)abuf[i];
+				float bval = (float)bbuf[i];
+				if (factor != 1.0f)
+					abuf[i] = round_to_WORD(factor * (aval / bval));
+				else abuf[i] = round_to_WORD(aval / bval);
+			}
+		}
+	} else {
+		for (i = 0; i < n; ++i) {
+			int aval = (int)abuf[i];
+			int bval = (int)bbuf[i];
+			switch (oper) {
+				case OPER_ADD:
+					abuf[i] = truncate_to_WORD(aval + bval);
+					break;
+				case OPER_SUB:
+					abuf[i] = truncate_to_WORD(aval - bval);
+					break;
+				case OPER_MUL:
+					abuf[i] = truncate_to_WORD(aval * bval);
+					break;
+				case OPER_DIV:	// handled above
+					break;
+			}
+			if (factor != 1.0f)
+				abuf[i] = round_to_WORD(factor * (float)abuf[i]);
 		}
 	}
 	invalidate_stats_from_fit(a);
+	return 0;
+}
+
+int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
+	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+	float *result;
+
+	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
+		siril_log_message(_("imoper: images must have same dimensions\n"));
+		return 1;
+	}
+
+	if (a->type == DATA_FLOAT)
+		result = a->fdata;
+	else {
+		result = malloc(n * sizeof(float));
+		if (!result) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
+	}
+
+	for (i = 0; i < n; ++i) {
+		float aval = a->type == DATA_USHORT ? ushort_to_float_range(a->data[i]) : a->fdata[i];
+		float bval = b->type == DATA_USHORT ? ushort_to_float_range(b->data[i]) : b->fdata[i];
+		switch (oper) {
+			case OPER_ADD:
+				result[i] = aval + bval;
+				break;
+			case OPER_SUB:
+				result[i] = aval - bval;
+				break;
+			case OPER_MUL:
+				result[i] = aval * bval;
+				break;
+			case OPER_DIV:
+				if (bval == 0.0f)
+					result[i] = 0.0f;
+				else result[i] = aval / bval;
+		}
+		if (factor != 1.0f)
+			result[i] *= factor;
+		if (result[i] > 1.0f)	// should we truncate by default?
+			result[i] = 1.0f;
+	}
+	if (a->type == DATA_FLOAT)
+		fit_replace_buffer(a, result, DATA_FLOAT);
+	else invalidate_stats_from_fit(a);
 	return 0;
 }
 
 /* applies operation of image a with image b, for all their layers:
- * a = a oper b
+ * a = factor * a oper b
  * returns 0 on success */
-int imoper(fits *a, fits *b, char oper) {
-	int i, layer;
-
-	if (a->rx != b->rx || a->ry != b->ry) {
-		siril_log_message(
-				_("imoper: images don't have the same size (w = %u|%u, h = %u|%u)\n"),
-				a->rx, b->rx, a->ry, b->ry);
-		return 1;
+static int imoper_with_factor(fits *a, fits *b, image_operator oper, float factor, gboolean allow_32bits) {
+	// ushort result can only be forced when both input images are ushort
+	if (allow_32bits)
+		return imoper_to_float(a, b, oper, 1.0f);
+	else {
+		if (a->type == DATA_USHORT && b->type == DATA_USHORT)
+			return imoper_ushort_to_ushort(a, b, oper, 1.0f);
+		siril_log_color_message(_("image operations can only be kept 16 bits if the two input images are 16 bits too. Aborting.\n"), "red");
 	}
-	for (layer = 0; layer < a->naxes[2]; ++layer) {
-		WORD *buf = b->pdata[layer];
-		WORD *gbuf = a->pdata[layer];
-		double dbuf, dgbuf;
-		for (i = 0; i < a->rx * a->ry; ++i) {
-			dbuf = (double) buf[i];
-			dgbuf = (double) gbuf[i];
-			switch (oper) {
-			case OPER_ADD:
-				gbuf[i] = round_to_WORD(dgbuf + dbuf);
-				break;
-			case OPER_SUB:
-				gbuf[i] = round_to_WORD(dgbuf - dbuf);
-				break;
-			case OPER_MUL:
-				gbuf[i] = round_to_WORD(dgbuf * dbuf);
-				break;
-			case OPER_DIV:
-				gbuf[i] = (buf[i] == 0) ? 0 : round_to_WORD(dgbuf / dbuf);
-				break;
-			}
-		}
-	}
-	invalidate_stats_from_fit(a);
-	return 0;
+	return 1;
 }
 
-int addmax(fits *a, fits *b) {
-	WORD *gbuf[3] = { a->pdata[RLAYER], a->pdata[GLAYER], a->pdata[BLAYER] };
-	WORD *buf[3] = { b->pdata[RLAYER], b->pdata[GLAYER], b->pdata[BLAYER] };
-	gint i, layer;
-
-	if (a->rx != b->rx || a->ry != b->ry || a->naxes[2] != b->naxes[2]) {
-		siril_log_message(
-				_("addmax: images don't have the same size (w = %d|%d, h = %d|%d, layers = %d|%d)\n"),
-				a->rx, b->rx, a->ry, b->ry, a->naxes[2], b->naxes[2]);
-		return 1;
-	}
-	g_assert(a->naxes[2] == 1 || a->naxes[2] == 3);
-
-	for (layer = 0; layer < a->naxes[2]; ++layer) {
-		for (i = 0; i < a->ry * a->rx; ++i) {
-			if (buf[layer][i] > gbuf[layer][i])
-				gbuf[layer][i] = buf[layer][i];
-		}
-	}
-	invalidate_stats_from_fit(a);
-	return 0;
+int imoper(fits *a, fits *b, image_operator oper, gboolean allow_32bits) {
+	return imoper_with_factor(a, b, oper, 1.0f, allow_32bits);
 }
 
 /* a = coef * a / b
  * a is expected as USHORT, returned as FLOAT. b is expected as USHORT.
  * If overflow, siril_fdiv returns 1*/
-int siril_fdiv(fits *a, fits *b, float coef) {
-	int i, retvalue = 0;
-	unsigned long nbdata;
-	float *newdata;
-	double coefd = (double)coef;
-
-	if (a->type != DATA_USHORT) {
-		siril_log_message(_("siril_fdiv: not yet working with 32-bit input data."));
-		return -1;
-	}
-	if (a->rx != b->rx || a->ry != b->ry || a->naxes[2] != b->naxes[2]) {
-		fprintf(stderr, "Wrong size or channel count: %u=%u? / %u=%u?\n", a->rx,
-				b->rx, a->ry, b->ry);
-		return -1;
-	}
-
-	nbdata = a->rx * a->ry * a->naxes[2];
-	newdata = malloc(nbdata * sizeof(float));
-	WORD *abuf = a->data;
-	WORD *bbuf = b->data;
-	float *fbbuf = b->fdata;
-
-	for (i = 0; i < nbdata; ++i) {
-		double val, denominator = 1.0;
-		if (b->type == DATA_USHORT && bbuf[i] != 0)
-			denominator = (double)bbuf[i];
-		else if (b->type == DATA_FLOAT && fbbuf[i] != 0.0f)
-			denominator = (double)fbbuf[i];
-		if (coef != 1.0f)
-			val = coefd * (double)abuf[i] / denominator;
-		else val = (double)abuf[i] / denominator;
-		if (val > USHRT_MAX_DOUBLE) {
-			siril_debug_print("OVERFLOW in FDIV: %lf\n", val);
-			retvalue = 1;
-		}
-
-		// normalize to float data range [0, 1]
-		newdata[i] = (float)(val / USHRT_MAX_DOUBLE);
-		if (newdata[i] > 1.0f) newdata[i] = 1.0f;
-		//if (newdata[i] < 0.0f) newdata[i] = 0.0f;
-	}
-
-	fit_replace_buffer(a, newdata, DATA_FLOAT);
-	return retvalue;
+int siril_fdiv(fits *a, fits *b, float coef, gboolean allow_32bits) {
+	return imoper_with_factor(a, b, OPER_DIV, coef, allow_32bits);
 }
 
-/* normalized division a/b, stored in a, with max value equal to the original
- * max value of a, for each layer. */
-int siril_ndiv(fits *a, fits *b) {
-	double *div;
-	int layer, i, nb_pixels;
-	if (a->rx != b->rx || a->ry != b->ry || a->naxes[2] != b->naxes[2]) {
-		fprintf(stderr,
-				"Wrong size or channel count: %u=%u? / %u=%u?, %ld=%ld?\n",
-				a->rx, b->rx, a->ry, b->ry, a->naxes[2], b->naxes[2]);
+// a = max(a, b)
+int addmax(fits *a, fits *b) {
+	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+
+	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
+		siril_log_message(_("addmax: images must have same dimensions\n"));
 		return 1;
 	}
-	nb_pixels = a->rx * a->ry;
-	div = malloc(nb_pixels * sizeof(double));
-	if (div == NULL) {
-		PRINT_ALLOC_ERR;
+	if (a->type != b->type) {
+		siril_log_message(_("addmax: images must have same data type\n"));
 		return 1;
 	}
+	g_assert(a->naxes[2] == 1 || a->naxes[2] == 3);
 
-	for (layer = 0; layer < a->naxes[2]; ++layer) {
-		double max = 0, norm;
-		for (i = 0; i < nb_pixels; ++i) {
-			if (!b->pdata[layer][i])
-				div[i] = (double) a->pdata[layer][i];
-			else
-				div[i] = (double) a->pdata[layer][i]
-						/ (double) b->pdata[layer][i];
-			max = max(div[i], max);
+	if (a->type == DATA_USHORT) {
+		WORD *abuf = a->data, *bbuf = b->data;
+		for (i = 0; i < n; ++i) {
+			if (bbuf[i] > abuf[i])
+				abuf[i] = bbuf[i];
 		}
-		norm = max / fit_get_max(a, layer);
-		for (i = 0; i < nb_pixels; ++i) {
-			a->pdata[layer][i] = round_to_WORD(div[i] / norm);
+	} else {
+		float *abuf = a->fdata, *bbuf = b->fdata;
+		for (i = 0; i < n; ++i) {
+			if (bbuf[i] > abuf[i])
+				abuf[i] = bbuf[i];
 		}
 	}
-
 	invalidate_stats_from_fit(a);
-	free(div);
 	return 0;
 }
+

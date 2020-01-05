@@ -192,7 +192,7 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 	}
 	for (chan = 0; chan < fit->naxes[2]; chan++)
 		fmul_layer(fiximage, chan, amount);
-	ret = imoper(fit, fiximage, OPER_ADD);
+	ret = imoper(fit, fiximage, OPER_ADD, FALSE);
 
 	invalidate_stats_from_fit(fit);
 	clearfits(fiximage);
