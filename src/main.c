@@ -378,7 +378,7 @@ static void siril_app_activate(GApplication *application) {
 		load_css_style_sheet();
 		/* Passing GApplication to the control center */
 		gtk_window_set_application(GTK_WINDOW(lookup_widget("control_window")),	GTK_APPLICATION(application));
-		/* Load state of the main windows (position and mximized) */
+		/* Load state of the main windows (position and maximized) */
 		load_main_window_state();
 #ifdef OS_OSX
 		/* see https://gitlab.gnome.org/GNOME/gtk/issues/2342 */

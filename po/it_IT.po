@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-03 21:51+0100\n"
+"POT-Creation-Date: 2020-01-04 20:26+0100\n"
 "PO-Revision-Date: 2019-10-06 11:17+0200\n"
 "Last-Translator: Luca Benassi <bennolo@gmail.com>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
@@ -468,7 +468,7 @@ msgstr ""
 "Indica l'indice di inizio dei tuoi file convertiti. Il valore deve essere "
 "incluso nel range [1, 65535]."
 
-#: ../src/gui/siril3.glade.h:101
+#: ../src/gui/siril3.glade.h:101 ../src/gui/open_dialog.c:208
 msgid "Debayer"
 msgstr "Debayer"
 
@@ -4295,59 +4295,95 @@ msgstr "Ritaglia la sequenza caricata"
 #: ../src/gui/siril-shortcuts.ui.h:5
 #, fuzzy
 msgctxt "shortcut window"
+msgid "Zoom in"
+msgstr "Adatta alla finestra"
+
+#: ../src/gui/siril-shortcuts.ui.h:6
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Zoom out"
+msgstr "Adatta alla finestra"
+
+#: ../src/gui/siril-shortcuts.ui.h:7
+#, fuzzy
+msgctxt "shortcut window"
 msgid "Windows and Application"
 msgstr "Chiusura dell'applicazione"
 
-#: ../src/gui/siril-shortcuts.ui.h:6
+#: ../src/gui/siril-shortcuts.ui.h:8
 msgctxt "shortcut window"
 msgid "Fullscreen on / off"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:7
+#: ../src/gui/siril-shortcuts.ui.h:9
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Open application menu"
 msgstr "Chiusura dell'applicazione"
 
-#: ../src/gui/siril-shortcuts.ui.h:8
+#: ../src/gui/siril-shortcuts.ui.h:10
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Quit the application"
 msgstr "Esci dall'applicazione"
 
-#: ../src/gui/siril-shortcuts.ui.h:9
+#: ../src/gui/siril-shortcuts.ui.h:11
 msgctxt "shortcut window"
 msgid "Undo and Redo"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:10
+#: ../src/gui/siril-shortcuts.ui.h:12
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Undo previous command"
 msgstr "Nessun aiuto per questo comando"
 
-#: ../src/gui/siril-shortcuts.ui.h:11
+#: ../src/gui/siril-shortcuts.ui.h:13
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Redo previous command"
 msgstr "Nessun aiuto per questo comando"
 
-#: ../src/gui/siril-shortcuts.ui.h:12
+#: ../src/gui/siril-shortcuts.ui.h:14
 msgctxt "shortcut window"
 msgid "Tools"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:13
+#: ../src/gui/siril-shortcuts.ui.h:15
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Open preferences"
 msgstr "Riferimento al bianco"
 
-#: ../src/gui/siril-shortcuts.ui.h:14
+#: ../src/gui/siril-shortcuts.ui.h:16
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Change working directory"
 msgstr "Cambia cartella di lavoro corrente"
+
+#: ../src/gui/siril-shortcuts.ui.h:17
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Image processing"
+msgstr "_Elaborazione dell'immagine"
+
+#: ../src/gui/siril-shortcuts.ui.h:18
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Negative transformation"
+msgstr "Trasformazione Negativa"
+
+#: ../src/gui/siril-shortcuts.ui.h:19
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, clockwise"
+msgstr "Ruota di 90 gradi in senso orario"
+
+#: ../src/gui/siril-shortcuts.ui.h:20
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, counter-clockwise"
+msgstr "Ruota di 90 gradi in senso antiorario"
 
 #: ../src/algos/background_extraction.c:116
 msgid ""
@@ -4560,7 +4596,7 @@ msgstr "Recupero fallito con codice %ld per l'UTL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1745 ../src/gui/open_dialog.c:303
+#: ../src/gui/callbacks.c:1745 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:624
 #: ../src/io/single_image.c:149
@@ -9125,9 +9161,6 @@ msgstr "Sequenza up-scaling per lo stacking"
 
 #~ msgid "Zoom level"
 #~ msgstr "Livello d'ingrandimento"
-
-#~ msgid "Zoom to fit"
-#~ msgstr "Adatta alla finestra"
 
 #~ msgid "Save as..."
 #~ msgstr "Salva come..."

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-03 21:51+0100\n"
-"PO-Revision-Date: 2020-01-03 21:52+0100\n"
+"POT-Creation-Date: 2020-01-04 20:26+0100\n"
+"PO-Revision-Date: 2020-01-04 20:27+0100\n"
 "Last-Translator: Cyril Richard\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -466,7 +466,7 @@ msgstr ""
 "Indique l'indice de départ des fichiers à convertir. Cette valeur doit être "
 "inclue dans l'intervalle [1, 65535]."
 
-#: ../src/gui/siril3.glade.h:101
+#: ../src/gui/siril3.glade.h:101 ../src/gui/open_dialog.c:208
 msgid "Debayer"
 msgstr "Dématricer"
 
@@ -4243,53 +4243,83 @@ msgstr "Fermer l'image / la séquence"
 
 #: ../src/gui/siril-shortcuts.ui.h:5
 msgctxt "shortcut window"
+msgid "Zoom in"
+msgstr "Zoomer"
+
+#: ../src/gui/siril-shortcuts.ui.h:6
+msgctxt "shortcut window"
+msgid "Zoom out"
+msgstr "Dézoomer"
+
+#: ../src/gui/siril-shortcuts.ui.h:7
+msgctxt "shortcut window"
 msgid "Windows and Application"
 msgstr "Fenêtres et application"
 
-#: ../src/gui/siril-shortcuts.ui.h:6
+#: ../src/gui/siril-shortcuts.ui.h:8
 msgctxt "shortcut window"
 msgid "Fullscreen on / off"
 msgstr "Activer / désactiver le mode plein écran"
 
-#: ../src/gui/siril-shortcuts.ui.h:7
+#: ../src/gui/siril-shortcuts.ui.h:9
 msgctxt "shortcut window"
 msgid "Open application menu"
 msgstr "Ouvrir le menu de l'application"
 
-#: ../src/gui/siril-shortcuts.ui.h:8
+#: ../src/gui/siril-shortcuts.ui.h:10
 msgctxt "shortcut window"
 msgid "Quit the application"
 msgstr "Quitter l'application"
 
-#: ../src/gui/siril-shortcuts.ui.h:9
+#: ../src/gui/siril-shortcuts.ui.h:11
 msgctxt "shortcut window"
 msgid "Undo and Redo"
 msgstr "Annuler et rétablir"
 
-#: ../src/gui/siril-shortcuts.ui.h:10
+#: ../src/gui/siril-shortcuts.ui.h:12
 msgctxt "shortcut window"
 msgid "Undo previous command"
 msgstr "Annuler la commande précédente"
 
-#: ../src/gui/siril-shortcuts.ui.h:11
+#: ../src/gui/siril-shortcuts.ui.h:13
 msgctxt "shortcut window"
 msgid "Redo previous command"
 msgstr "Rétablir la commande précédente"
 
-#: ../src/gui/siril-shortcuts.ui.h:12
+#: ../src/gui/siril-shortcuts.ui.h:14
 msgctxt "shortcut window"
 msgid "Tools"
 msgstr "Outils"
 
-#: ../src/gui/siril-shortcuts.ui.h:13
+#: ../src/gui/siril-shortcuts.ui.h:15
 msgctxt "shortcut window"
 msgid "Open preferences"
 msgstr "Ouvrir les préférences"
 
-#: ../src/gui/siril-shortcuts.ui.h:14
+#: ../src/gui/siril-shortcuts.ui.h:16
 msgctxt "shortcut window"
 msgid "Change working directory"
 msgstr "Modifier le répertoire de travail"
+
+#: ../src/gui/siril-shortcuts.ui.h:17
+msgctxt "shortcut window"
+msgid "Image processing"
+msgstr "Traitement de l'image"
+
+#: ../src/gui/siril-shortcuts.ui.h:18
+msgctxt "shortcut window"
+msgid "Negative transformation"
+msgstr "Transformation négative"
+
+#: ../src/gui/siril-shortcuts.ui.h:19
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, clockwise"
+msgstr "Rotation de 90 degrés, sens horaire"
+
+#: ../src/gui/siril-shortcuts.ui.h:20
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, counter-clockwise"
+msgstr "Rotation de 90 degrés, sens antihoraire"
 
 #: ../src/algos/background_extraction.c:116
 msgid ""
@@ -4500,7 +4530,7 @@ msgstr "Échec de la récupération avec le code %ld pour l'URL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1745 ../src/gui/open_dialog.c:303
+#: ../src/gui/callbacks.c:1745 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:624
 #: ../src/io/single_image.c:149
@@ -9055,9 +9085,6 @@ msgstr "Mise à l'échelle de la séquence pour l’empilement"
 
 #~ msgid "Zoom level"
 #~ msgstr "Niveau de zoom"
-
-#~ msgid "Zoom to fit"
-#~ msgstr "Ajuster le zoom"
 
 #~ msgid "Save as..."
 #~ msgstr "Enregistrer sous..."
