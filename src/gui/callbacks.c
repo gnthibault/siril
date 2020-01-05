@@ -449,7 +449,7 @@ void update_MenuItem() {
 	any_image_is_loaded = single_image_is_loaded() || sequence_is_loaded();
 
 	/* toolbar button */
-	gtk_widget_set_sensitive(lookup_widget("GtkToolMainBar"), any_image_is_loaded);
+	gtk_widget_set_sensitive(lookup_widget("toolbarbox"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
 	gtk_widget_set_sensitive(lookup_widget("header_redo_button"), is_redo_available());
 	/* File Menu */
@@ -612,7 +612,9 @@ void update_prepro_interface(gboolean allow_debayer) {
 			gtk_toggle_button_get_active(udark));
 	gtk_widget_set_sensitive(lookup_widget("checkDarkOptimize"),
 			gtk_toggle_button_get_active(udark));
-	gtk_widget_set_sensitive(lookup_widget("GtkBoxFlat"),
+	gtk_widget_set_sensitive(lookup_widget("checkbutton_equalize_cfa"),
+			gtk_toggle_button_get_active(uflat));
+	gtk_widget_set_sensitive(lookup_widget("checkbutton_auto_evaluate"),
 			gtk_toggle_button_get_active(uflat));
 	gtk_widget_set_sensitive(lookup_widget("entry_flat_norm"),
 			gtk_toggle_button_get_active(uflat)

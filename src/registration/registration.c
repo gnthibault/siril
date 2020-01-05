@@ -701,7 +701,7 @@ void update_reg_interface(gboolean dont_change_reg_radio) {
 	gtk_notebook_set_current_page(notebook_reg, REG_PAGE_MISC);
 	gtk_widget_set_visible(cumul_data, FALSE);
 	gtk_widget_set_sensitive(go_register, FALSE);
-	gtk_label_set_text(labelreginfo, _("Load a sequence first."));
+	gtk_label_set_text(labelreginfo, _("Load a sequence first"));
 
 	/* getting the selected registration method */
 	method = get_selected_registration_method();
@@ -723,15 +723,15 @@ void update_reg_interface(gboolean dont_change_reg_radio) {
 		if (nb_images_reg <= 1 && !selection_is_done) {
 			if (sequence_is_loaded()) {
 				if (method && method->sel == REQUIRES_NO_SELECTION) {
-					gtk_label_set_text(labelreginfo, _("Select images in the sequence."));
+					gtk_label_set_text(labelreginfo, _("Select images in the sequence"));
 				} else {
-					gtk_label_set_text(labelreginfo, _("Select an area in image first, and select images in the sequence."));
+					gtk_label_set_text(labelreginfo, _("Select an area in image first, and select images in the sequence"));
 				}
 			}
 		} else if (nb_images_reg <= 1) {
-			gtk_label_set_text(labelreginfo, _("Select images in the sequence."));
+			gtk_label_set_text(labelreginfo, _("Select images in the sequence"));
 		} else {
-			gtk_label_set_text(labelreginfo, _("Select an area in image first."));
+			gtk_label_set_text(labelreginfo, _("Select an area in image first"));
 		}
 	}
 }
