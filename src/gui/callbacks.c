@@ -1012,7 +1012,7 @@ void activate_tab(int vport) {
 }
 
 void control_window_switch_to_tab(main_tabs tab) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook2"));
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
 	gtk_notebook_set_current_page(notebook, tab);
 }
 
