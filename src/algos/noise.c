@@ -36,7 +36,6 @@
 #define MAX_ITER 15
 #define EPSILON 1E-4
 
-
 static gboolean end_noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
 	stop_processing_thread();

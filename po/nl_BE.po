@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-03 21:51+0100\n"
+"POT-Creation-Date: 2020-01-04 20:26+0100\n"
 "PO-Revision-Date: 2019-05-07 20:26+0200\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
@@ -466,7 +466,7 @@ msgstr ""
 "Geeft de beginindex van de geconverteerde bestanden. Deze waarde moet in het "
 "interval [1, 65335] gelegen zijn."
 
-#: ../src/gui/siril3.glade.h:101
+#: ../src/gui/siril3.glade.h:101 ../src/gui/open_dialog.c:208
 msgid "Debayer"
 msgstr "Debayer"
 
@@ -4207,59 +4207,95 @@ msgstr "Cropt de geladen sequentie"
 #: ../src/gui/siril-shortcuts.ui.h:5
 #, fuzzy
 msgctxt "shortcut window"
+msgid "Zoom in"
+msgstr "Herschaal op maat"
+
+#: ../src/gui/siril-shortcuts.ui.h:6
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Zoom out"
+msgstr "Herschaal op maat"
+
+#: ../src/gui/siril-shortcuts.ui.h:7
+#, fuzzy
+msgctxt "shortcut window"
 msgid "Windows and Application"
 msgstr "App sluiten"
 
-#: ../src/gui/siril-shortcuts.ui.h:6
+#: ../src/gui/siril-shortcuts.ui.h:8
 msgctxt "shortcut window"
 msgid "Fullscreen on / off"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:7
+#: ../src/gui/siril-shortcuts.ui.h:9
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Open application menu"
 msgstr "App sluiten"
 
-#: ../src/gui/siril-shortcuts.ui.h:8
+#: ../src/gui/siril-shortcuts.ui.h:10
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Quit the application"
 msgstr "Sluit het programma"
 
-#: ../src/gui/siril-shortcuts.ui.h:9
+#: ../src/gui/siril-shortcuts.ui.h:11
 msgctxt "shortcut window"
 msgid "Undo and Redo"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:10
+#: ../src/gui/siril-shortcuts.ui.h:12
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Undo previous command"
 msgstr "Helpfunctie niet beschikbaar voor deze commando"
 
-#: ../src/gui/siril-shortcuts.ui.h:11
+#: ../src/gui/siril-shortcuts.ui.h:13
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Redo previous command"
 msgstr "Helpfunctie niet beschikbaar voor deze commando"
 
-#: ../src/gui/siril-shortcuts.ui.h:12
+#: ../src/gui/siril-shortcuts.ui.h:14
 msgctxt "shortcut window"
 msgid "Tools"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:13
+#: ../src/gui/siril-shortcuts.ui.h:15
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Open preferences"
 msgstr "Referentie wit"
 
-#: ../src/gui/siril-shortcuts.ui.h:14
+#: ../src/gui/siril-shortcuts.ui.h:16
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Change working directory"
 msgstr "Verander de huidige werkmap"
+
+#: ../src/gui/siril-shortcuts.ui.h:17
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Image processing"
+msgstr "_Image Processing"
+
+#: ../src/gui/siril-shortcuts.ui.h:18
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Negative transformation"
+msgstr "Negatieve Transformatie"
+
+#: ../src/gui/siril-shortcuts.ui.h:19
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, clockwise"
+msgstr "Draai 90 graden, wijzerszin"
+
+#: ../src/gui/siril-shortcuts.ui.h:20
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, counter-clockwise"
+msgstr "Draai 90 graden, tegenwijzerszin"
 
 #: ../src/algos/background_extraction.c:116
 msgid ""
@@ -4473,7 +4509,7 @@ msgstr ""
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1745 ../src/gui/open_dialog.c:303
+#: ../src/gui/callbacks.c:1745 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:624
 #: ../src/io/single_image.c:149
@@ -9003,9 +9039,6 @@ msgstr "Sequentie herschaling voor stacking"
 
 #~ msgid "Zoom level"
 #~ msgstr "Schaal"
-
-#~ msgid "Zoom to fit"
-#~ msgstr "Herschaal op maat"
 
 #~ msgid "Save as..."
 #~ msgstr "Opslaan als..."

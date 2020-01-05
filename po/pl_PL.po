@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-03 21:51+0100\n"
+"POT-Creation-Date: 2020-01-04 20:26+0100\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -479,7 +479,7 @@ msgstr ""
 "Wskazuje indeks początkowy przekonwertowanych plików. Ta wartość musi być "
 "zawarta w zakresie [1, 65535]."
 
-#: ../src/gui/siril3.glade.h:101
+#: ../src/gui/siril3.glade.h:101 ../src/gui/open_dialog.c:208
 msgid "Debayer"
 msgstr "Debayer"
 
@@ -4167,59 +4167,95 @@ msgstr "Nie można załadować sekwencji %s\n"
 #: ../src/gui/siril-shortcuts.ui.h:5
 #, fuzzy
 msgctxt "shortcut window"
+msgid "Zoom in"
+msgstr "Powiększ do dopasowania"
+
+#: ../src/gui/siril-shortcuts.ui.h:6
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Zoom out"
+msgstr "Powiększ do dopasowania"
+
+#: ../src/gui/siril-shortcuts.ui.h:7
+#, fuzzy
+msgctxt "shortcut window"
 msgid "Windows and Application"
 msgstr "Kalibracja kolorów"
 
-#: ../src/gui/siril-shortcuts.ui.h:6
+#: ../src/gui/siril-shortcuts.ui.h:8
 msgctxt "shortcut window"
 msgid "Fullscreen on / off"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:7
+#: ../src/gui/siril-shortcuts.ui.h:9
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Open application menu"
 msgstr "Kalibracja kolorów"
 
-#: ../src/gui/siril-shortcuts.ui.h:8
+#: ../src/gui/siril-shortcuts.ui.h:10
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Quit the application"
 msgstr "Kalibracja kolorów"
 
-#: ../src/gui/siril-shortcuts.ui.h:9
+#: ../src/gui/siril-shortcuts.ui.h:11
 msgctxt "shortcut window"
 msgid "Undo and Redo"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:10
+#: ../src/gui/siril-shortcuts.ui.h:12
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Undo previous command"
 msgstr "Wpisz 'pomoc' dla listy obsługiwanych poleceń"
 
-#: ../src/gui/siril-shortcuts.ui.h:11
+#: ../src/gui/siril-shortcuts.ui.h:13
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Redo previous command"
 msgstr "Wpisz 'pomoc' dla listy obsługiwanych poleceń"
 
-#: ../src/gui/siril-shortcuts.ui.h:12
+#: ../src/gui/siril-shortcuts.ui.h:14
 msgctxt "shortcut window"
 msgid "Tools"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:13
+#: ../src/gui/siril-shortcuts.ui.h:15
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Open preferences"
 msgstr "Obraz odniesienia"
 
-#: ../src/gui/siril-shortcuts.ui.h:14
+#: ../src/gui/siril-shortcuts.ui.h:16
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Change working directory"
 msgstr "Zmień bieżący katalog roboczy"
+
+#: ../src/gui/siril-shortcuts.ui.h:17
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Image processing"
+msgstr "_Przetwarzanie obrazu"
+
+#: ../src/gui/siril-shortcuts.ui.h:18
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Negative transformation"
+msgstr "Transformacja histogramu..."
+
+#: ../src/gui/siril-shortcuts.ui.h:19
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, clockwise"
+msgstr "Obróć o 90 stopni zgodnie z ruchem wskazówek zegara"
+
+#: ../src/gui/siril-shortcuts.ui.h:20
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, counter-clockwise"
+msgstr "Obróć o 90 stopni w kierunku przeciwnym do ruchu wskazówek zegara"
 
 #: ../src/algos/background_extraction.c:116
 msgid ""
@@ -4437,7 +4473,7 @@ msgstr ""
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1745 ../src/gui/open_dialog.c:303
+#: ../src/gui/callbacks.c:1745 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:624
 #: ../src/io/single_image.c:149
@@ -8731,9 +8767,6 @@ msgstr "Skalowanie w górę dla stackowania"
 
 #~ msgid "Zoom level"
 #~ msgstr "Poziom powiększenia"
-
-#~ msgid "Zoom to fit"
-#~ msgstr "Powiększ do dopasowania"
 
 #, fuzzy
 #~ msgid "Save as..."

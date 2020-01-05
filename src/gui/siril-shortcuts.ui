@@ -7,7 +7,7 @@
       <object class="GtkShortcutsSection">
         <property name="visible">1</property>
         <property name="section-name">shortcuts</property>
-        <property name="max-height">12</property>
+        <property name="max-height">10</property>
         <child>
           <object class="GtkShortcutsGroup">
             <property name="visible">1</property>
@@ -31,6 +31,20 @@
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;Primary&gt;w</property>
                 <property name="title" translatable="yes" context="shortcut window">Close the image / sequence</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;Primary&gt;ScrollUp</property>
+                <property name="title" translatable="yes" context="shortcut window">Zoom in</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;Primary&gt;ScrollDown</property>
+                <property name="title" translatable="yes" context="shortcut window">Zoom out</property>
               </object>
             </child>
           </object>
@@ -101,6 +115,33 @@
               </object>
             </child>
           </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="visible">1</property>
+            <property name="title" translatable="yes" context="shortcut window">Image Processing</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;Primary&gt;i</property>
+                <property name="title" translatable="yes" context="shortcut window">Negative transformation</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;Primary&gt;Right</property>
+                <property name="title" translatable="yes" context="shortcut window">Rotate 90 degrees, clockwise</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;Primary&gt;Left</property>
+                <property name="title" translatable="yes" context="shortcut window">Rotate 90 degrees, counter-clockwise</property>
+              </object>
+            </child>
+           </object>
         </child>
       </object>
     </child>

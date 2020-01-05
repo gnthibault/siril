@@ -1301,8 +1301,6 @@ enter a visible wavelength in nm</property>
       <object class="GtkRadioMenuItem" id="16bits_item">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">16 bits</property>
-        <property name="use_underline">True</property>
         <property name="group">32bits_item</property>
       </object>
     </child>
@@ -1310,8 +1308,6 @@ enter a visible wavelength in nm</property>
       <object class="GtkRadioMenuItem" id="32bits_item">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">32 bits</property>
-        <property name="use_underline">True</property>
         <property name="active">True</property>
         <property name="draw_as_radio">True</property>
         <signal name="toggled" handler="on_precision_item_toggled" swapped="no"/>
@@ -1506,6 +1502,7 @@ enter a visible wavelength in nm</property>
                 <property name="label" translatable="yes">Rotate 90 degrees, clockwise</property>
                 <property name="use_underline">True</property>
                 <signal name="activate" handler="on_menuitem_rotation90_activate" swapped="no"/>
+                <accelerator key="Right" signal="activate" modifiers="GDK_CONTROL_MASK"/>
               </object>
             </child>
             <child>
@@ -1515,6 +1512,7 @@ enter a visible wavelength in nm</property>
                 <property name="label" translatable="yes">Rotate 90 degrees, counter-clockwise</property>
                 <property name="use_underline">True</property>
                 <signal name="activate" handler="on_menuitem_rotation270_activate" swapped="no"/>
+                <accelerator key="Left" signal="activate" modifiers="GDK_CONTROL_MASK"/>
               </object>
             </child>
             <child>
@@ -1767,6 +1765,25 @@ enter a visible wavelength in nm</property>
           </object>
         </child>
         <child>
+          <object class="GtkButton" id="cwd_button">
+            <property name="label" translatable="yes">Change dir...</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="has_tooltip">True</property>
+            <property name="tooltip_text" translatable="yes">Change current working directory</property>
+            <property name="action_name">app.cwd</property>
+            <property name="use_underline">True</property>
+            <property name="always_show_image">True</property>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkButtonBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -1819,7 +1836,7 @@ enter a visible wavelength in nm</property>
             </child>
           </object>
           <packing>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
@@ -1865,7 +1882,7 @@ enter a visible wavelength in nm</property>
             </child>
           </object>
           <packing>
-            <property name="position">5</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <child>
@@ -1912,7 +1929,7 @@ enter a visible wavelength in nm</property>
             </style>
           </object>
           <packing>
-            <property name="position">6</property>
+            <property name="position">5</property>
           </packing>
         </child>
         <child>
@@ -1933,7 +1950,7 @@ enter a visible wavelength in nm</property>
           </object>
           <packing>
             <property name="pack_type">end</property>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -1948,7 +1965,7 @@ enter a visible wavelength in nm</property>
           </object>
           <packing>
             <property name="pack_type">end</property>
-            <property name="position">4</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
@@ -1994,7 +2011,82 @@ enter a visible wavelength in nm</property>
           </object>
           <packing>
             <property name="pack_type">end</property>
-            <property name="position">6</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="spinCPU">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="tooltip_text" translatable="yes">Set number of threads manually.
+WARNING: Reducing the number of allowed processors too much will degrade performances.</property>
+            <property name="margin_bottom">1</property>
+            <property name="max_length">3</property>
+            <property name="width_chars">3</property>
+            <property name="max_width_chars">2</property>
+            <property name="text" translatable="yes">1</property>
+            <property name="progress_pulse_step">1</property>
+            <property name="input_purpose">digits</property>
+            <property name="adjustment">adjCPU</property>
+            <property name="numeric">True</property>
+            <property name="update_policy">if-valid</property>
+            <property name="value">1</property>
+            <signal name="value-changed" handler="on_spinCPU_value_changed" swapped="no"/>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="GtkBoxMem">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="labelmem">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Displays the amount of used RAM memory by Siril.</property>
+                <property name="halign">end</property>
+                <property name="label">Mem: 200MB</property>
+                <property name="justify">right</property>
+                <attributes>
+                  <attribute name="scale" value="0.80000000000000004"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">5</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="labelFreeSpace">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Displays the amount of disk space available on the file system containing the working directory.</property>
+                <property name="halign">end</property>
+                <property name="label" translatable="yes" context="GUI" comments="Must be short !!">Disk Space: N/A</property>
+                <property name="justify">right</property>
+                <attributes>
+                  <attribute name="scale" value="0.80000000000000004"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="pack_type">end</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">5</property>
           </packing>
         </child>
       </object>
@@ -2492,12 +2584,13 @@ enter a visible wavelength in nm</property>
                                   <object class="GtkDrawingArea" id="drawingareargb">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="events">GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+                                    <property name="events">GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
                                     <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
                                     <signal name="popup-menu" handler="rgb_area_popup_menu_handler" swapped="no"/>
+                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" object="zoom_to_fit_check_button" swapped="no"/>
                                   </object>
                                 </child>
                               </object>
@@ -3310,7 +3403,7 @@ WARNING: it will erase all registration and statistics data.</property>
                                   <object class="GtkComboBoxText" id="comboExport">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Export sequence format. MP4 and WEBM replaces GIF for modern Web publication, AVI is not compressed, FITS is 16 bits.</property>
+                                    <property name="tooltip_text" translatable="yes">Export sequence format. MP4 and WEBM replaces GIF for modern Web publication, AVI is not compressed.</property>
                                     <property name="active">0</property>
                                     <items>
                                       <item>FITS</item>
@@ -6218,6 +6311,29 @@ However you may want to disable this option when building master frames of 8-bit
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
+                                <child>
+                                  <object class="GtkButton" id="processes_button_cancel">
+                                    <property name="label">gtk-stop</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="tooltip_text" translatable="yes">Stop running processes</property>
+                                    <property name="halign">center</property>
+                                    <property name="valign">center</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="always_show_image">True</property>
+                                    <signal name="clicked" handler="on_processes_button_cancel_clicked" swapped="no"/>
+                                    <style>
+                                      <class name="destructive-action"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="pack_type">end</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -6251,207 +6367,6 @@ However you may want to disable this option when building master frames of 8-bit
                         <property name="fill">True</property>
                         <property name="padding">8</property>
                         <property name="position">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="box1">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel" id="label138">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Current working directory:</property>
-                            <attributes>
-                              <attribute name="style" value="italic"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="padding">2</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="labelcwd">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">The directory in which files will be read from and written to. Can be changed with the button Change dir on the right, or with the cd command.</property>
-                            <property name="label">/home/toto (filled at runtime)</property>
-                            <property name="ellipsize">start</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="cwd_button">
-                            <property name="label" translatable="yes">Change dir...</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="has_tooltip">True</property>
-                            <property name="tooltip_text" translatable="yes">Change current working directory</property>
-                            <property name="action_name">app.cwd</property>
-                            <property name="use_underline">True</property>
-                            <property name="always_show_image">True</property>
-                            <style>
-                              <class name="suggested-action"/>
-                            </style>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="padding">5</property>
-                            <property name="pack_type">end</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="processes_button_cancel">
-                            <property name="label">gtk-stop</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">Stop running processes</property>
-                            <property name="use_stock">True</property>
-                            <property name="always_show_image">True</property>
-                            <signal name="clicked" handler="on_processes_button_cancel_clicked" swapped="no"/>
-                            <style>
-                              <class name="destructive-action"/>
-                            </style>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="padding">5</property>
-                            <property name="pack_type">end</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="padding">2</property>
-                        <property name="position">7</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="box2">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_bottom">10</property>
-                        <child>
-                          <object class="GtkLabel" id="label139">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Current working sequence:</property>
-                            <attributes>
-                              <attribute name="style" value="italic"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="padding">2</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="labelseq">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label">seq, 5 images selected (filled at runtime)</property>
-                            <property name="ellipsize">start</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSpinButton" id="spinCPU">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Set number of threads manually.
-WARNING: Reducing the number of allowed processors too much will degrade performances.</property>
-                            <property name="margin_bottom">1</property>
-                            <property name="max_length">3</property>
-                            <property name="width_chars">3</property>
-                            <property name="max_width_chars">2</property>
-                            <property name="text" translatable="yes">1</property>
-                            <property name="progress_pulse_step">1</property>
-                            <property name="input_purpose">digits</property>
-                            <property name="adjustment">adjCPU</property>
-                            <property name="numeric">True</property>
-                            <property name="update_policy">if-valid</property>
-                            <property name="value">1</property>
-                            <signal name="value-changed" handler="on_spinCPU_value_changed" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="padding">5</property>
-                            <property name="pack_type">end</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkBox" id="GtkBoxMem">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <child>
-                              <object class="GtkLabel" id="labelmem">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">Displays the amount of used RAM memory by Siril.</property>
-                                <property name="halign">end</property>
-                                <property name="label">Mem: 200MB</property>
-                                <property name="justify">right</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="padding">5</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="labelFreeSpace">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">Displays the amount of disk space available on the file system containing the working directory.</property>
-                                <property name="halign">end</property>
-                                <property name="label" translatable="yes" context="GUI" comments="Must be short !!">Disk Space: N/A</property>
-                                <property name="justify">right</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="pack_type">end</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="pack_type">end</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="padding">2</property>
-                        <property name="position">8</property>
                       </packing>
                     </child>
                   </object>
@@ -6493,247 +6408,6 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
             <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkToolbar" id="GtkToolMainBar">
-            <property name="visible">True</property>
-            <property name="sensitive">False</property>
-            <property name="can_focus">False</property>
-            <property name="halign">start</property>
-            <property name="show_arrow">False</property>
-            <child>
-              <object class="GtkToolButton" id="rotate90_anticlock_button">
-                <property name="name">rotate90_anticlock_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Rotate 90 degrees, counter-clockwise</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">rotate90-acw</property>
-                <signal name="clicked" handler="on_menuitem_rotation270_activate" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="rotate90_clock_button">
-                <property name="name">rotate90_clock_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Rotate 90 degrees, clockwise</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">rotate90-cw</property>
-                <signal name="clicked" handler="on_menuitem_rotation90_activate" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="mirrorx_button">
-                <property name="name">mirrorx_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Horizontal mirror</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_mirrorx</property>
-                <signal name="clicked" handler="on_mirrorx_button_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="mirrory_button">
-                <property name="name">mirrory_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Vertical mirror</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_mirrory</property>
-                <signal name="clicked" handler="on_mirrory_button_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparatorToolItem" id="separateur6">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="histogram_button">
-                <property name="name">histogram_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Open/Close histogram toolbox</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_histogram</property>
-                <signal name="clicked" handler="toggle_histogram_window_visibility" object="histogram_dialog" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparatorToolItem" id="separateur5">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="seqlist_button">
-                <property name="name">seqlist_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Show/Hide list of images in the sequence with registration data</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_seqlist</property>
-                <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparatorToolItem" id="separateur4">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="neg_button">
-                <property name="name">neg_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Switch to normal and negative view</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_neg</property>
-                <signal name="clicked" handler="on_neg_button_clicked" object="checkbutton_chain" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleToolButton" id="colormap_button">
-                <property name="name">colormap_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Switch to normal and rainbow colormap (false color rendering)</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_colormap</property>
-                <signal name="toggled" handler="on_colormap_button_toggled" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolItem" id="toolbarView">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="valign">center</property>
-                <child>
-                  <object class="GtkComboBoxText" id="combodisplay">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="has_tooltip">True</property>
-                    <property name="tooltip_markup" translatable="yes">Display mode</property>
-                    <property name="tooltip_text" translatable="yes">Display mode</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="border_width">6</property>
-                    <property name="active">0</property>
-                    <items>
-                      <item translatable="yes">Linear</item>
-                      <item translatable="yes">Logarithm</item>
-                      <item translatable="yes">Square root</item>
-                      <item translatable="yes">Squared</item>
-                      <item translatable="yes">Asinh</item>
-                      <item id="&lt;Saisir un identifiant&gt;" translatable="yes">AutoStretch</item>
-                      <item translatable="yes">Histogram</item>
-                    </items>
-                    <signal name="changed" handler="on_combodisplay_changed" swapped="no"/>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparatorToolItem" id="separateur1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleToolButton" id="zoom_to_fit_check_button">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Fit the image to the window</property>
-                <property name="use_underline">True</property>
-                <property name="icon_name">zoom-fit-best-symbolic</property>
-                <property name="active">True</property>
-                <signal name="toggled" handler="on_zoom_to_fit_check_button_toggled" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="zoom_to_one_button">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Show the image at its normal size</property>
-                <property name="use_underline">True</property>
-                <property name="icon_name">zoom-original-symbolic</property>
-                <signal name="clicked" handler="on_zoom_to_one_button_clicked" object="zoom_to_fit_check_button" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <style>
-              <class name="main-toolbar"/>
-            </style>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -6809,6 +6483,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="digits">0</property>
                         <property name="draw_value">False</property>
                         <signal name="button-release-event" handler="on_maxscale_release" swapped="no"/>
+                        <signal name="key-release-event" handler="on_maxscale_release" swapped="no"/>
                         <signal name="value-changed" handler="on_maxscale_changed" object="max_entry" swapped="no"/>
                       </object>
                       <packing>
@@ -6821,9 +6496,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                       <object class="GtkEntry" id="max_entry">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="has_tooltip">True</property>
-                        <property name="tooltip_markup" translatable="yes">High</property>
-                        <property name="tooltip_text" translatable="yes">High</property>
+                        <property name="tooltip_text" translatable="yes">High value</property>
                         <property name="halign">end</property>
                         <property name="valign">center</property>
                         <property name="max_length">5</property>
@@ -6868,6 +6541,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="digits">0</property>
                         <property name="draw_value">False</property>
                         <signal name="button-release-event" handler="on_minscale_release" swapped="no"/>
+                        <signal name="key-release-event" handler="on_minscale_release" swapped="no"/>
                         <signal name="value-changed" handler="on_minscale_changed" object="min_entry" swapped="no"/>
                       </object>
                       <packing>
@@ -6880,9 +6554,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                       <object class="GtkEntry" id="min_entry">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="has_tooltip">True</property>
-                        <property name="tooltip_markup" translatable="yes">High</property>
-                        <property name="tooltip_text" translatable="yes">High</property>
+                        <property name="tooltip_text" translatable="yes">Low value</property>
                         <property name="halign">end</property>
                         <property name="valign">center</property>
                         <property name="max_length">5</property>
@@ -6935,6 +6607,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="halign">start</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="on_radiobutton_minmax_toggled" swapped="no"/>
@@ -6951,6 +6624,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="halign">start</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">radiobutton_minmax</property>
                     <signal name="toggled" handler="on_radiobutton_hilo_toggled" swapped="no"/>
@@ -6967,6 +6641,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="halign">start</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">radiobutton_minmax</property>
                     <signal name="toggled" handler="on_radiobutton_user_toggled" swapped="no"/>
@@ -6981,6 +6656,267 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolbar" id="GtkToolMainBar">
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="valign">center</property>
+                <property name="show_arrow">False</property>
+                <child>
+                  <object class="GtkToolButton" id="rotate90_anticlock_button">
+                    <property name="name">rotate90_anticlock_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Rotate 90 degrees, counter-clockwise</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">rotate90-acw</property>
+                    <signal name="clicked" handler="on_menuitem_rotation270_activate" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="rotate90_clock_button">
+                    <property name="name">rotate90_clock_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Rotate 90 degrees, clockwise</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">rotate90-cw</property>
+                    <signal name="clicked" handler="on_menuitem_rotation90_activate" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="mirrorx_button">
+                    <property name="name">mirrorx_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Horizontal mirror</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_mirrorx</property>
+                    <signal name="clicked" handler="on_mirrorx_button_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="mirrory_button">
+                    <property name="name">mirrory_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Vertical mirror</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_mirrory</property>
+                    <signal name="clicked" handler="on_mirrory_button_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur6">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="histogram_button">
+                    <property name="name">histogram_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Open/Close histogram toolbox</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_histogram</property>
+                    <signal name="clicked" handler="toggle_histogram_window_visibility" object="histogram_dialog" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur5">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="seqlist_button">
+                    <property name="name">seqlist_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Show/Hide list of images in the sequence with registration data</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_seqlist</property>
+                    <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur4">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="neg_button">
+                    <property name="name">neg_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Switch to normal and negative view</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_neg</property>
+                    <signal name="clicked" handler="on_neg_button_clicked" object="checkbutton_chain" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleToolButton" id="colormap_button">
+                    <property name="name">colormap_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Switch to normal and rainbow colormap (false color rendering)</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_colormap</property>
+                    <signal name="toggled" handler="on_colormap_button_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolItem" id="toolbarView">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">center</property>
+                    <child>
+                      <object class="GtkComboBoxText" id="combodisplay">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="has_tooltip">True</property>
+                        <property name="tooltip_markup" translatable="yes">Display mode</property>
+                        <property name="tooltip_text" translatable="yes">Display mode</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="border_width">6</property>
+                        <property name="active">0</property>
+                        <items>
+                          <item translatable="yes">Linear</item>
+                          <item translatable="yes">Logarithm</item>
+                          <item translatable="yes">Square root</item>
+                          <item translatable="yes">Squared</item>
+                          <item translatable="yes">Asinh</item>
+                          <item id="&lt;Saisir un identifiant&gt;" translatable="yes">AutoStretch</item>
+                          <item translatable="yes">Histogram</item>
+                        </items>
+                        <signal name="changed" handler="on_combodisplay_changed" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleToolButton" id="zoom_to_fit_check_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Fit the image to the window</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_name">zoom-fit-best-symbolic</property>
+                    <property name="active">True</property>
+                    <signal name="toggled" handler="on_zoom_to_fit_check_button_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="zoom_to_one_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Show the image at its normal size</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_name">zoom-original-symbolic</property>
+                    <signal name="clicked" handler="on_zoom_to_one_button_clicked" object="zoom_to_fit_check_button" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <style>
+                  <class name="main-toolbar"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
                 <property name="position">3</property>
               </packing>
             </child>
@@ -6988,6 +6924,49 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="box2">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="margin_bottom">3</property>
+            <child>
+              <object class="GtkLabel" id="label139">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Current working sequence:</property>
+                <attributes>
+                  <attribute name="style" value="italic"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">2</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="labelseq">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label">seq, 5 images selected (filled at runtime)</property>
+                <property name="ellipsize">start</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="padding">2</property>
             <property name="pack_type">end</property>
             <property name="position">2</property>
           </packing>
@@ -12969,7 +12948,6 @@ Uncheck if images come from a monochrome sensor.</property>
                                     <property name="receives_default">False</property>
                                     <property name="tooltip_text" translatable="yes">Not available</property>
                                     <property name="halign">start</property>
-                                    <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                     <property name="group">radiobutton_save_fit16</property>
                                   </object>
@@ -13003,7 +12981,6 @@ Uncheck if images come from a monochrome sensor.</property>
                                     <property name="receives_default">False</property>
                                     <property name="tooltip_text" translatable="yes">Not available</property>
                                     <property name="halign">start</property>
-                                    <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                     <property name="group">radiobutton_save_fit16</property>
                                   </object>
@@ -13021,7 +12998,6 @@ Uncheck if images come from a monochrome sensor.</property>
                                     <property name="receives_default">False</property>
                                     <property name="tooltip_text" translatable="yes">Not available</property>
                                     <property name="halign">start</property>
-                                    <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                     <property name="group">radiobutton_save_fit16</property>
                                   </object>
