@@ -449,7 +449,7 @@ void update_MenuItem() {
 	any_image_is_loaded = single_image_is_loaded() || sequence_is_loaded();
 
 	/* toolbar button */
-	gtk_widget_set_sensitive(lookup_widget("GtkToolMainBar"), any_image_is_loaded);
+	gtk_widget_set_sensitive(lookup_widget("toolbarbox"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
 	gtk_widget_set_sensitive(lookup_widget("header_redo_button"), is_redo_available());
 	/* File Menu */
