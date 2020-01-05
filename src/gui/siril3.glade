@@ -4088,6 +4088,7 @@ Hot pixels are located on the master-dark.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="tooltip_text" translatable="yes">Prefix of the image names resulting from the pre-processing.</property>
+                                    <property name="halign">start</property>
                                     <property name="text">pp_</property>
                                   </object>
                                   <packing>
@@ -4659,7 +4660,7 @@ WARNING: no new sequence is built, registration data is stored in the original s
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="halign">end</property>
-                                    <property name="label" translatable="yes">Load a sequence first.</property>
+                                    <property name="label" translatable="yes">Load a sequence first</property>
                                     <style>
                                       <class name="label-info"/>
                                     </style>
@@ -4850,12 +4851,13 @@ To be enabled, the reference image must have been explicitly set and already dis
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="hexpand">True</property>
+                                    <property name="spacing">5</property>
                                     <property name="layout_style">center</property>
                                     <child>
                                       <object class="GtkLabel" id="labelRegRef">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">Set reference image first.</property>
+                                        <property name="label" translatable="yes">Set reference image first</property>
                                         <style>
                                           <class name="label-info"/>
                                         </style>
