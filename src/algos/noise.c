@@ -64,7 +64,6 @@ int backgroundnoise(fits* fit, double sigma[]) {
 		WORD *buf = waveimage->pdata[layer];
 		unsigned int i;
 		unsigned int ndata = fit->rx * fit->ry;
-		g_assert(ndata > 0);
 
 		imstats *stat = statistics(NULL, -1, waveimage, layer, NULL, STATS_BASIC);
 		if (!stat) {
