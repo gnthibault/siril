@@ -612,7 +612,9 @@ void update_prepro_interface(gboolean allow_debayer) {
 			gtk_toggle_button_get_active(udark));
 	gtk_widget_set_sensitive(lookup_widget("checkDarkOptimize"),
 			gtk_toggle_button_get_active(udark));
-	gtk_widget_set_sensitive(lookup_widget("GtkBoxFlat"),
+	gtk_widget_set_sensitive(lookup_widget("checkbutton_equalize_cfa"),
+			gtk_toggle_button_get_active(uflat));
+	gtk_widget_set_sensitive(lookup_widget("checkbutton_auto_evaluate"),
 			gtk_toggle_button_get_active(uflat));
 	gtk_widget_set_sensitive(lookup_widget("entry_flat_norm"),
 			gtk_toggle_button_get_active(uflat)
