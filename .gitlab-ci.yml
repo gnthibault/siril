@@ -58,7 +58,7 @@ variables:
 siril-debian/testing-autotools:
   extends: .siril-debian/testing-base
   script:
-    - ../autogen.sh
+    - ./autogen.sh
         --prefix="${INSTALL_PREFIX}"
     - make -j "$(nproc)"
     # - make check
