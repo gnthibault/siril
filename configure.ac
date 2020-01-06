@@ -300,8 +300,8 @@ if test "x$enable_relocatable_bundle" != xno &&
   # By default, assume building for Windows or macOS everything to be on
   # the same prefix and can be relocated.
   # On other platforms, build-time paths are meaningful.
-  if test "x$platform_osx" = "xyes" ||
-     test "x$platform_win32" = "xyes"; then
+  if test "$platform" = "osx" ||
+     test "$platform" = "windows"; then
      enable_relocatable_bundle=yes
   else
      enable_relocatable_bundle=no
