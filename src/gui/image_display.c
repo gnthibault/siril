@@ -227,8 +227,8 @@ static int make_index_for_rainbow(BYTE index[][3]);
 /* Siril float format is [0, 1]. The UI still uses unsigned short controls,
  * for lo and hi cursors for example, that we convert to a float value here */
 static BYTE display_for_float_pixel(float pixel, display_mode mode, int vport, WORD lo, WORD hi) {
-	float offset = pixel - ((float)lo / USHRT_MAX_SINGLE);
-	float slope;
+	float slope, offset = pixel - ((float)lo / USHRT_MAX_SINGLE);
+	double mtf;
 	BYTE disp;
 	int i;
 	switch (mode) {
@@ -272,7 +272,12 @@ static BYTE display_for_float_pixel(float pixel, display_mode mode, int vport, W
 		case HISTEQ_DISPLAY:
 			i = 0;
 			while (i < 256 && float_hist_lookup[vport][i] < pixel) i++;
-			return (BYTE)(i == 256 ? 255 : i);
+			disp = (BYTE)(i == 256 ? 255 : i);
+			break;
+		case STF_DISPLAY:
+			mtf = MTF(pixel, stfM, stfShadows, stfHighlights);
+			disp = round_to_BYTE(mtf * UCHAR_MAX_DOUBLE);
+			break;
 	}
 	return disp;
 }
@@ -430,6 +435,10 @@ static void remap(int vport) {
 		set_viewer_mode_widgets_sensitive(FALSE);
 	} else {
 		// for all other modes and ushort data, the index can be reused
+		if (mode == STF_DISPLAY && !stfComputed) {
+			stfM = findMidtonesBalance(&gfit, &stfShadows, &stfHighlights);
+			stfComputed = TRUE;
+		}
 		if (gfit.type == DATA_USHORT) {
 			make_index_for_current_display(mode, lo, hi, vport);
 		}
@@ -508,12 +517,6 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 	int i;
 	BYTE *index;
 	double pxl;
-	if (mode == STF_DISPLAY) {
-		if (!stfComputed) {
-			stfM = findMidtonesBalance(&gfit, &stfShadows, &stfHighlights);
-			stfComputed = TRUE;
-		}
-	}
 
 	/* initialization of data required to build the remap_index */
 	switch (mode) {
