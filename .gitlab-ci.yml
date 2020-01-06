@@ -7,7 +7,6 @@ variables:
   GIT_DEPTH: "1"
   INSTALL_DIR: "_install"
   INSTALL_PREFIX: "${CI_PROJECT_DIR}/${INSTALL_DIR}"
-  PACMAN_CACHE:   "${CI_PROJECT_DIR}/_pacman_cache"
 
 ## GNU/Linux 64-bit CIs ##
 
@@ -66,3 +65,4 @@ siril-debian/testing-autotools:
         --prefix="${INSTALL_PREFIX}"
     - make -j "$(nproc)"
     # - make check
+
