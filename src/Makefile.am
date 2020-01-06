@@ -82,6 +82,8 @@ siril_SOURCES = \
 	core/siril.c \
 	core/siril_app_dirs.c \
 	core/siril_app_dirs.h \
+	core/siril_cmd_help.c \
+	core/siril_cmd_help.h \
 	core/siril_log.c \
 	core/siril_update.c \
 	core/siril_update.h \
@@ -239,6 +241,7 @@ siril_LDADD += $(OPENCV_LIBS) \
 
 pkgdata_DATA = \
 	gui/siril3.glade \
+	gui/siril-shortcuts.ui \
 	gui/gtk_old.css \
 	gui/gtk.css
 

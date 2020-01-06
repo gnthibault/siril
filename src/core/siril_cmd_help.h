@@ -1,7 +1,7 @@
 /*
  * This file is part of Siril, an astronomy image processor.
  * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
- * Copyright (C) 2012-2020 team free-astro (see more in AUTHORS file)
+ * Copyright (C) 2012-2019 team free-astro (see more in AUTHORS file)
  * Reference site is https://free-astro.org/index.php/Siril
  *
  * Siril is free software: you can redistribute it and/or modify
@@ -17,18 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SRC_GUI_DIALOG_PREVIEW_H_
-#define SRC_GUI_DIALOG_PREVIEW_H_
+#ifndef SRC_CORE_SIRIL_CMD_HELP_H_
+#define SRC_CORE_SIRIL_CMD_HELP_H_
 
-typedef struct _fileChooserPreview fileChooserPreview;
+#define SHORTCUTS_UI "siril-shortcuts.ui"
 
-struct _fileChooserPreview {
-	GtkWidget *image;
-	GtkWidget *name_label;
-	GtkWidget *dim_label;
-	GtkWidget *size_label;
-};
+void siril_cmd_help_keyboard_shortcuts(GtkWindow *window);
 
-void siril_file_chooser_add_preview(GtkFileChooser *dialog);
-
-#endif /* SRC_GUI_DIALOG_PREVIEW_H_ */
+#endif /* SRC_CORE_SIRIL_CMD_HELP_H_ */

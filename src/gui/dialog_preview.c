@@ -193,7 +193,7 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 	start_in_new_thread(update_preview_cb_idle, data);
 }
 
-void siril_file_chooser_add_preview(SirilWidget *widget) {
+void siril_file_chooser_add_preview(GtkFileChooser *dialog) {
 	if (com.show_preview) {
 		GtkWidget *vbox;
 
@@ -218,10 +218,10 @@ void siril_file_chooser_add_preview(SirilWidget *widget) {
 
 		gtk_widget_show_all(vbox);
 
-		gtk_file_chooser_set_preview_widget(GTK_FILE_CHOOSER(widget), vbox);
-		gtk_file_chooser_set_use_preview_label(GTK_FILE_CHOOSER(widget), FALSE);
-		gtk_file_chooser_set_preview_widget_active(GTK_FILE_CHOOSER(widget), FALSE);
+		gtk_file_chooser_set_preview_widget(dialog, vbox);
+		gtk_file_chooser_set_use_preview_label(dialog, FALSE);
+		gtk_file_chooser_set_preview_widget_active(dialog, FALSE);
 
-		g_signal_connect(widget, "update-preview", G_CALLBACK(update_preview_cb), NULL);
+		g_signal_connect(dialog, "update-preview", G_CALLBACK(update_preview_cb), NULL);
 	}
 }

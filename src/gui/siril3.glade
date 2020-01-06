@@ -1013,7 +1013,7 @@ enter a visible wavelength in nm</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">4</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
@@ -1024,7 +1024,7 @@ enter a visible wavelength in nm</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">5</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <child>
@@ -1038,7 +1038,7 @@ enter a visible wavelength in nm</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">6</property>
+            <property name="position">4</property>
           </packing>
         </child>
         <child>
@@ -1052,7 +1052,21 @@ enter a visible wavelength in nm</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">7</property>
+            <property name="position">5</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="main_menu_shortcuts">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="action_name">app.shortcuts</property>
+            <property name="text" translatable="yes">Keyboard Shortcuts</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">6</property>
           </packing>
         </child>
         <child>
@@ -1468,6 +1482,7 @@ enter a visible wavelength in nm</property>
                 <property name="label" translatable="yes">Rotate 90 degrees, clockwise</property>
                 <property name="use_underline">True</property>
                 <signal name="activate" handler="on_menuitem_rotation90_activate" swapped="no"/>
+                <accelerator key="Right" signal="activate" modifiers="GDK_CONTROL_MASK"/>
               </object>
             </child>
             <child>
@@ -1477,6 +1492,7 @@ enter a visible wavelength in nm</property>
                 <property name="label" translatable="yes">Rotate 90 degrees, counter-clockwise</property>
                 <property name="use_underline">True</property>
                 <signal name="activate" handler="on_menuitem_rotation270_activate" swapped="no"/>
+                <accelerator key="Left" signal="activate" modifiers="GDK_CONTROL_MASK"/>
               </object>
             </child>
             <child>
@@ -1729,6 +1745,25 @@ enter a visible wavelength in nm</property>
           </object>
         </child>
         <child>
+          <object class="GtkButton" id="cwd_button">
+            <property name="label" translatable="yes">Change dir...</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="has_tooltip">True</property>
+            <property name="tooltip_text" translatable="yes">Change current working directory</property>
+            <property name="action_name">app.cwd</property>
+            <property name="use_underline">True</property>
+            <property name="always_show_image">True</property>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkButtonBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -1781,7 +1816,7 @@ enter a visible wavelength in nm</property>
             </child>
           </object>
           <packing>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
@@ -1827,7 +1862,7 @@ enter a visible wavelength in nm</property>
             </child>
           </object>
           <packing>
-            <property name="position">5</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <child>
@@ -1874,7 +1909,7 @@ enter a visible wavelength in nm</property>
             </style>
           </object>
           <packing>
-            <property name="position">6</property>
+            <property name="position">5</property>
           </packing>
         </child>
         <child>
@@ -1911,6 +1946,81 @@ enter a visible wavelength in nm</property>
           <packing>
             <property name="pack_type">end</property>
             <property name="position">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinButton" id="spinCPU">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="tooltip_text" translatable="yes">Set number of threads manually.
+WARNING: Reducing the number of allowed processors too much will degrade performances.</property>
+            <property name="margin_bottom">1</property>
+            <property name="max_length">3</property>
+            <property name="width_chars">3</property>
+            <property name="max_width_chars">2</property>
+            <property name="text" translatable="yes">1</property>
+            <property name="progress_pulse_step">1</property>
+            <property name="input_purpose">digits</property>
+            <property name="adjustment">adjCPU</property>
+            <property name="numeric">True</property>
+            <property name="update_policy">if-valid</property>
+            <property name="value">1</property>
+            <signal name="value-changed" handler="on_spinCPU_value_changed" swapped="no"/>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">7</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="GtkBoxMem">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="labelmem">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Displays the amount of used RAM memory by Siril.</property>
+                <property name="halign">end</property>
+                <property name="label">Mem: N/A</property>
+                <property name="justify">right</property>
+                <attributes>
+                  <attribute name="scale" value="0.80000000000000004"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">5</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="labelFreeSpace">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Displays the amount of disk space available on the file system containing the working directory.</property>
+                <property name="halign">end</property>
+                <property name="label" translatable="yes" context="GUI" comments="Must be short !!">Disk Space: N/A</property>
+                <property name="justify">right</property>
+                <attributes>
+                  <attribute name="scale" value="0.80000000000000004"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="pack_type">end</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">8</property>
           </packing>
         </child>
       </object>
@@ -2408,12 +2518,13 @@ enter a visible wavelength in nm</property>
                                   <object class="GtkDrawingArea" id="drawingareargb">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="events">GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+                                    <property name="events">GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
                                     <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
                                     <signal name="popup-menu" handler="rgb_area_popup_menu_handler" swapped="no"/>
+                                    <signal name="scroll-event" handler="on_drawingarea_scroll_event" object="zoom_to_fit_check_button" swapped="no"/>
                                   </object>
                                 </child>
                               </object>
@@ -2498,9 +2609,10 @@ enter a visible wavelength in nm</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkNotebook" id="notebook2">
+                      <object class="GtkNotebook" id="notebook_center_box">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="show_border">False</property>
                         <property name="scrollable">True</property>
                         <child>
                           <object class="GtkBox" id="box52">
@@ -2517,7 +2629,6 @@ enter a visible wavelength in nm</property>
                                 <property name="single_line_mode">True</property>
                                 <attributes>
                                   <attribute name="style" value="italic"/>
-                                  <attribute name="stretch" value="semi-condensed"/>
                                 </attributes>
                               </object>
                               <packing>
@@ -3018,7 +3129,6 @@ SER files are directly handled as a sequence, and are not yet available for conv
                                 <property name="single_line_mode">True</property>
                                 <attributes>
                                   <attribute name="style" value="italic"/>
-                                  <attribute name="stretch" value="semi-condensed"/>
                                 </attributes>
                               </object>
                               <packing>
@@ -3056,10 +3166,11 @@ SER files are directly handled as a sequence, and are not yet available for conv
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkBox" id="hbox28">
+                              <object class="GtkGrid">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="spacing">7</property>
+                                <property name="row_spacing">10</property>
+                                <property name="column_spacing">10</property>
                                 <child>
                                   <object class="GtkLabel" id="seqtoproc_label">
                                     <property name="visible">True</property>
@@ -3068,9 +3179,8 @@ SER files are directly handled as a sequence, and are not yet available for conv
                                     <property name="justify">center</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="position">0</property>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -3081,9 +3191,9 @@ SER files are directly handled as a sequence, and are not yet available for conv
                                     <signal name="changed" handler="on_seqproc_entry_changed" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
+                                    <property name="width">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -3100,25 +3210,10 @@ SER files are directly handled as a sequence, and are not yet available for conv
                                     </style>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="padding">35</property>
-                                    <property name="position">2</property>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">1</property>
                                   </packing>
                                 </child>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="padding">5</property>
-                                <property name="position">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkBox" id="box54">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="orientation">vertical</property>
                                 <child>
                                   <object class="GtkCheckButton" id="checkforceseq">
                                     <property name="label" translatable="yes">Force .seq recomputation</property>
@@ -3133,31 +3228,29 @@ WARNING: it will erase all registration and statistics data.</property>
                                     <property name="draw_indicator">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton">
+                                    <property name="label" translatable="yes">Open Frame List</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="halign">center</property>
+                                    <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">1</property>
                                   </packing>
                                 </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">4</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButton">
-                                <property name="label" translatable="yes">Open Frame List</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="halign">center</property>
-                                <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">5</property>
+                                <property name="position">3</property>
                               </packing>
                             </child>
                             <child>
@@ -3171,7 +3264,7 @@ WARNING: it will erase all registration and statistics data.</property>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="padding">6</property>
-                                <property name="position">9</property>
+                                <property name="position">4</property>
                               </packing>
                             </child>
                             <child>
@@ -3188,7 +3281,7 @@ WARNING: it will erase all registration and statistics data.</property>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">10</property>
+                                <property name="position">5</property>
                               </packing>
                             </child>
                             <child>
@@ -3219,7 +3312,7 @@ WARNING: it will erase all registration and statistics data.</property>
                                     <signal name="insert-text" handler="insert_text_handler" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
+                                    <property name="expand">False</property>
                                     <property name="fill">True</property>
                                     <property name="position">1</property>
                                   </packing>
@@ -3247,18 +3340,18 @@ WARNING: it will erase all registration and statistics data.</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="buttonExportSeq">
-                                    <property name="label" translatable="yes">Export sequence</property>
+                                  <object class="GtkLabel" id="exportLabel">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="tooltip_text" translatable="yes">Export the loaded sequence in the selected format. It can be used to store a sequence in another format, make animated movies, or store a lighter version of a sequence with less images. Images of the exported selection can be cropped and selected with the same criteria as the stacking image selection.</property>
-                                    <signal name="clicked" handler="on_buttonExportSeq_clicked" swapped="no"/>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Select area to crop</property>
+                                    <style>
+                                      <class name="label-info"/>
+                                    </style>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="padding">20</property>
+                                    <property name="fill">True</property>
                                     <property name="position">3</property>
                                   </packing>
                                 </child>
@@ -3267,13 +3360,16 @@ WARNING: it will erase all registration and statistics data.</property>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="padding">6</property>
-                                <property name="position">11</property>
+                                <property name="position">6</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkBox" id="boxexportOpt">
+                              <object class="GtkGrid">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="row_spacing">5</property>
+                                <property name="column_spacing">5</property>
+                                <property name="column_homogeneous">True</property>
                                 <child>
                                   <object class="GtkCheckButton" id="exportNormalize">
                                     <property name="label" translatable="yes">Normalize images</property>
@@ -3283,14 +3379,41 @@ WARNING: it will erase all registration and statistics data.</property>
                                     <property name="tooltip_text" translatable="yes">Activate image normalisation for the export. This will make all images the same brightness and is thus recommended for sequences with inconsistent exposures or pixel values.
 A first computation pass will be done on all images before exporting, it may take some time, only the first export of a sequence.
 			</property>
-                                    <property name="halign">center</property>
+                                    <property name="halign">start</property>
                                     <property name="draw_indicator">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">4</property>
-                                    <property name="position">0</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkScale" id="exportQualScale">
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip_text" translatable="yes">Film quality: lower value will use more compression and less bitrate, also resulting is smaller file size.</property>
+                                    <property name="adjustment">adjustment3</property>
+                                    <property name="round_digits">0</property>
+                                    <property name="digits">0</property>
+                                    <property name="value_pos">left</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">3</property>
+                                    <property name="width">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="buttonExportSeq">
+                                    <property name="label" translatable="yes">Export sequence</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="tooltip_text" translatable="yes">Export the loaded sequence in the selected format. It can be used to store a sequence in another format, make animated movies, or store a lighter version of a sequence with less images. Images of the exported selection can be cropped and selected with the same criteria as the stacking image selection.</property>
+                                    <signal name="clicked" handler="on_buttonExportSeq_clicked" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -3399,65 +3522,21 @@ A first computation pass will be done on all images before exporting, it may tak
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">6</property>
-                                    <property name="position">1</property>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">2</property>
+                                    <property name="width">2</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <object class="GtkScale" id="exportQualScale">
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip_text" translatable="yes">Film quality: lower value will use more compression and less bitrate, also resulting is smaller file size.</property>
-                                    <property name="adjustment">adjustment3</property>
-                                    <property name="round_digits">0</property>
-                                    <property name="digits">0</property>
-                                    <property name="value_pos">left</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">6</property>
-                                    <property name="position">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="exportLabel">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Select area to crop</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">6</property>
-                                    <property name="pack_type">end</property>
-                                    <property name="position">3</property>
-                                  </packing>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="padding">6</property>
-                                <property name="position">12</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkBox" id="box667">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <child>
                                   <object class="GtkLabel" id="label210">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
                                     <property name="label" translatable="yes">Image selection uses the same controls as for stacking</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">4</property>
-                                    <property name="position">0</property>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -3466,22 +3545,19 @@ A first computation pass will be done on all images before exporting, it may tak
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <property name="halign">start</property>
                                     <signal name="clicked" handler="on_gotoStacking_button_clicked" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="padding">20</property>
-                                    <property name="pack_type">end</property>
-                                    <property name="position">1</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
                                   </packing>
                                 </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">6</property>
-                                <property name="position">13</property>
+                                <property name="position">7</property>
                               </packing>
                             </child>
                           </object>
@@ -3517,7 +3593,6 @@ A first computation pass will be done on all images before exporting, it may tak
                                 <property name="single_line_mode">True</property>
                                 <attributes>
                                   <attribute name="style" value="italic"/>
-                                  <attribute name="stretch" value="semi-condensed"/>
                                 </attributes>
                               </object>
                               <packing>
@@ -3575,7 +3650,7 @@ A first computation pass will be done on all images before exporting, it may tak
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
-                                    <property name="top_attach">3</property>
+                                    <property name="top_attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -3584,13 +3659,12 @@ A first computation pass will be done on all images before exporting, it may tak
                                     <property name="can_focus">True</property>
                                     <property name="tooltip_text" translatable="yes">Enter the master flat file name here, or use the browse button.
 All images in the sequence will be divided by the master flat image (each pixel value).</property>
-                                    <property name="hexpand">True</property>
                                     <property name="width_chars">45</property>
                                     <property name="text">master-flat.fit</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
-                                    <property name="top_attach">3</property>
+                                    <property name="top_attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -3606,7 +3680,7 @@ All images in the sequence will be divided by the master flat image (each pixel 
                                   </object>
                                   <packing>
                                     <property name="left_attach">2</property>
-                                    <property name="top_attach">3</property>
+                                    <property name="top_attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -3648,7 +3722,6 @@ All images in the sequence will be divided by the master flat image (each pixel 
                                     <property name="can_focus">True</property>
                                     <property name="tooltip_text" translatable="yes">Enter the master dark file name here, or use the browse button.
 The dark master image will be removed from all images in the sequence.</property>
-                                    <property name="hexpand">True</property>
                                     <property name="width_chars">45</property>
                                     <property name="text">master-dark.fit</property>
                                   </object>
@@ -3680,7 +3753,6 @@ The dark master image will be removed from all images in the sequence.</property
                                     <property name="can_focus">True</property>
                                     <property name="tooltip_text" translatable="yes">Enter the master bias/offset file name here, or use the browse button.
 The bias/offset master image will be removed from all images in the sequence.</property>
-                                    <property name="hexpand">True</property>
                                     <property name="width_chars">45</property>
                                     <property name="text">master-offset.fit</property>
                                   </object>
@@ -3706,23 +3778,6 @@ The bias/offset master image will be removed from all images in the sequence.</p
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkEntry" id="entry_flat_norm">
-                                    <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip_text" translatable="yes">Choose your own normalisation value.</property>
-                                    <property name="max_length">5</property>
-                                    <property name="width_chars">5</property>
-                                    <property name="max_width_chars">5</property>
-                                    <property name="text">5000</property>
-                                    <property name="input_purpose">number</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">4</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <object class="GtkCheckButton" id="checkDarkOptimize">
                                     <property name="label" translatable="yes">Dark optimization</property>
                                     <property name="visible">True</property>
@@ -3732,61 +3787,63 @@ The bias/offset master image will be removed from all images in the sequence.</p
                                     <property name="tooltip_text" translatable="yes">Dark subtraction can be optionally optimized so that the noise of the resulting picture (light frame minus dark frame) is minimized by applying a coefficient to the dark frame. This option is useful when dark frames have not been taken in optimal conditions.
 
 WARNING: Do not apply dark optimization on master-dark if master-bias has not been subtracted previously.</property>
-                                    <property name="halign">end</property>
                                     <property name="draw_indicator">True</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">0</property>
+                                    <property name="left_attach">3</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="checkbutton_equalize_cfa">
+                                    <property name="label" translatable="yes">Equalize CFA</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">This option equalizes the mean intensity of RGB layers in a CFA flat image.</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_checkbutton_equalize_cfa_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">3</property>
                                     <property name="top_attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="checkbutton_auto_evaluate">
+                                    <property name="label" translatable="yes">Auto evaluate normalisation value</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">If this box is checked, Siril will auto-evaluate the normalisation value.
+This value is the mean of the master flat calibrated with the master offset.</property>
+                                    <property name="halign">end</property>
+                                    <property name="active">True</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_checkbutton_auto_evaluate_toggled" object="entry_flat_norm" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">3</property>
                                     <property name="width">2</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkBox" id="GtkBoxFlat">
+                                  <object class="GtkEntry" id="entry_flat_norm">
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
-                                    <property name="can_focus">False</property>
-                                    <child>
-                                      <object class="GtkCheckButton" id="checkbutton_auto_evaluate">
-                                        <property name="label" translatable="yes">Auto evaluate normalisation value</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">If this box is checked, Siril will auto-evaluate the normalisation value.
-This value is the mean of the master flat calibrated with the master offset.</property>
-                                        <property name="halign">end</property>
-                                        <property name="active">True</property>
-                                        <property name="draw_indicator">True</property>
-                                        <signal name="toggled" handler="on_checkbutton_auto_evaluate_toggled" object="entry_flat_norm" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="pack_type">end</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkCheckButton" id="checkbutton_equalize_cfa">
-                                        <property name="label" translatable="yes">Equalize CFA</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">This option equalizes the mean intensity of RGB layers in a CFA flat image.</property>
-                                        <property name="draw_indicator">True</property>
-                                        <signal name="toggled" handler="on_checkbutton_equalize_cfa_toggled" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="pack_type">end</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip_text" translatable="yes">Choose your own normalisation value.</property>
+                                    <property name="halign">start</property>
+                                    <property name="max_length">5</property>
+                                    <property name="width_chars">5</property>
+                                    <property name="max_width_chars">5</property>
+                                    <property name="text">5000</property>
+                                    <property name="input_purpose">number</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">4</property>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">3</property>
                                     <property name="width">2</property>
                                   </packing>
                                 </child>
@@ -4010,9 +4067,57 @@ Hot pixels are located on the master-dark.</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkBox" id="GtkBoxPreprocessing">
+                              <object class="GtkGrid">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="column_homogeneous">True</property>
+                                <child>
+                                  <object class="GtkLabel" id="preproseqname_label">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">end</property>
+                                    <property name="label" translatable="yes">Store resulting sequence with prefix:</property>
+                                    <property name="justify">center</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkEntry" id="preproseqname_entry">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip_text" translatable="yes">Prefix of the image names resulting from the pre-processing.</property>
+                                    <property name="halign">start</property>
+                                    <property name="text">pp_</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="prepro_button">
+                                    <property name="label" translatable="yes">Start pre-processing</property>
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">Pre-process sequence with the above master files, resulting sequence will be in pp_&lt;seq.name&gt; or another prefix given aside.
+Once completed, the sequence of pre-processed images is automatically loaded as the current sequence.
+The next action for DSLR images would be to debayer the preprocessed images, go to the Conversion tab.</property>
+                                    <property name="use_underline">True</property>
+                                    <signal name="clicked" handler="on_prepro_button_clicked" swapped="no"/>
+                                    <style>
+                                      <class name="suggested-action"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
                                 <child>
                                   <object class="GtkCheckButton" id="checkButton_pp_dem">
                                     <property name="label" translatable="yes">Debayer FITS images before saving</property>
@@ -4026,49 +4131,8 @@ WARNING: this option is only available for FITS images as SER sequence can be de
                                     <property name="draw_indicator">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkBox" id="box11">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">end</property>
-                                    <property name="spacing">5</property>
-                                    <child>
-                                      <object class="GtkLabel" id="preproseqname_label">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="halign">end</property>
-                                        <property name="label" translatable="yes">Store resulting sequence with prefix:</property>
-                                        <property name="justify">center</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkEntry" id="preproseqname_entry">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="tooltip_text" translatable="yes">Prefix of the image names resulting from the pre-processing.</property>
-                                        <property name="text">pp_</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">2</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
                                   </packing>
                                 </child>
                               </object>
@@ -4076,28 +4140,6 @@ WARNING: this option is only available for FITS images as SER sequence can be de
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="position">8</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="prepro_button">
-                                <property name="label" translatable="yes">Start pre-processing</property>
-                                <property name="visible">True</property>
-                                <property name="sensitive">False</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Pre-process sequence with the above master files, resulting sequence will be in pp_&lt;seq.name&gt; or another prefix given aside.
-Once completed, the sequence of pre-processed images is automatically loaded as the current sequence.
-The next action for DSLR images would be to debayer the preprocessed images, go to the Conversion tab.</property>
-                                <property name="use_underline">True</property>
-                                <signal name="clicked" handler="on_prepro_button_clicked" swapped="no"/>
-                                <style>
-                                  <class name="suggested-action"/>
-                                </style>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">9</property>
                               </packing>
                             </child>
                           </object>
@@ -4132,7 +4174,6 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                                 <property name="label" translatable="yes">Registration is basically aligning the images from a sequence to be able to process them afterwards.</property>
                                 <attributes>
                                   <attribute name="style" value="italic"/>
-                                  <attribute name="stretch" value="semi-condensed"/>
                                 </attributes>
                               </object>
                               <packing>
@@ -4620,10 +4661,10 @@ WARNING: no new sequence is built, registration data is stored in the original s
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="halign">end</property>
-                                    <property name="label" translatable="yes">Load a sequence first.</property>
-                                    <attributes>
-                                      <attribute name="foreground" value="#bfb200000000"/>
-                                    </attributes>
+                                    <property name="label" translatable="yes">Load a sequence first</property>
+                                    <style>
+                                      <class name="label-info"/>
+                                    </style>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -4811,15 +4852,16 @@ To be enabled, the reference image must have been explicitly set and already dis
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="hexpand">True</property>
+                                    <property name="spacing">5</property>
                                     <property name="layout_style">center</property>
                                     <child>
                                       <object class="GtkLabel" id="labelRegRef">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">Set reference image first.</property>
-                                        <attributes>
-                                          <attribute name="foreground" value="#bfb200000000"/>
-                                        </attributes>
+                                        <property name="label" translatable="yes">Set reference image first</property>
+                                        <style>
+                                          <class name="label-info"/>
+                                        </style>
                                       </object>
                                       <packing>
                                         <property name="expand">True</property>
@@ -5128,7 +5170,6 @@ WARNING: gnuplot must be installed.</property>
                                 <property name="label" translatable="yes">Stacking of images, either summing, median, mean with rejection or pixel minimum/maximum.</property>
                                 <attributes>
                                   <attribute name="style" value="italic"/>
-                                  <attribute name="stretch" value="semi-condensed"/>
                                 </attributes>
                               </object>
                               <packing>
@@ -6139,6 +6180,29 @@ However you may want to disable this option when building master frames of 8-bit
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
+                                <child>
+                                  <object class="GtkButton" id="processes_button_cancel">
+                                    <property name="label">gtk-stop</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="tooltip_text" translatable="yes">Stop running processes</property>
+                                    <property name="halign">center</property>
+                                    <property name="valign">center</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="always_show_image">True</property>
+                                    <signal name="clicked" handler="on_processes_button_cancel_clicked" swapped="no"/>
+                                    <style>
+                                      <class name="destructive-action"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="pack_type">end</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -6172,207 +6236,6 @@ However you may want to disable this option when building master frames of 8-bit
                         <property name="fill">True</property>
                         <property name="padding">8</property>
                         <property name="position">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="box1">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel" id="label138">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Current working directory:</property>
-                            <attributes>
-                              <attribute name="style" value="italic"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="padding">2</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="labelcwd">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">The directory in which files will be read from and written to. Can be changed with the button Change dir on the right, or with the cd command.</property>
-                            <property name="label">/home/toto (filled at runtime)</property>
-                            <property name="ellipsize">start</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="cwd_button">
-                            <property name="label" translatable="yes">Change dir...</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="has_tooltip">True</property>
-                            <property name="tooltip_text" translatable="yes">Change current working directory</property>
-                            <property name="action_name">app.cwd</property>
-                            <property name="use_underline">True</property>
-                            <property name="always_show_image">True</property>
-                            <style>
-                              <class name="suggested-action"/>
-                            </style>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="padding">5</property>
-                            <property name="pack_type">end</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="processes_button_cancel">
-                            <property name="label">gtk-stop</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">Stop running processes</property>
-                            <property name="use_stock">True</property>
-                            <property name="always_show_image">True</property>
-                            <signal name="clicked" handler="on_processes_button_cancel_clicked" swapped="no"/>
-                            <style>
-                              <class name="destructive-action"/>
-                            </style>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="padding">5</property>
-                            <property name="pack_type">end</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="padding">2</property>
-                        <property name="position">7</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="box2">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_bottom">10</property>
-                        <child>
-                          <object class="GtkLabel" id="label139">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Current working sequence:</property>
-                            <attributes>
-                              <attribute name="style" value="italic"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="padding">2</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="labelseq">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label">seq, 5 images selected (filled at runtime)</property>
-                            <property name="ellipsize">start</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSpinButton" id="spinCPU">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Set number of threads manually.
-WARNING: Reducing the number of allowed processors too much will degrade performances.</property>
-                            <property name="margin_bottom">1</property>
-                            <property name="max_length">3</property>
-                            <property name="width_chars">3</property>
-                            <property name="max_width_chars">2</property>
-                            <property name="text" translatable="yes">1</property>
-                            <property name="progress_pulse_step">1</property>
-                            <property name="input_purpose">digits</property>
-                            <property name="adjustment">adjCPU</property>
-                            <property name="numeric">True</property>
-                            <property name="update_policy">if-valid</property>
-                            <property name="value">1</property>
-                            <signal name="value-changed" handler="on_spinCPU_value_changed" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="padding">5</property>
-                            <property name="pack_type">end</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkBox" id="GtkBoxMem">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <child>
-                              <object class="GtkLabel" id="labelmem">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">Displays the amount of used RAM memory by Siril.</property>
-                                <property name="halign">end</property>
-                                <property name="label">Mem: 200MB</property>
-                                <property name="justify">right</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="padding">5</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="labelFreeSpace">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">Displays the amount of disk space available on the file system containing the working directory.</property>
-                                <property name="halign">end</property>
-                                <property name="label" translatable="yes" context="GUI" comments="Must be short !!">Disk Space: N/A</property>
-                                <property name="justify">right</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="pack_type">end</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="pack_type">end</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="padding">2</property>
-                        <property name="position">8</property>
                       </packing>
                     </child>
                   </object>
@@ -6417,249 +6280,9 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
           </packing>
         </child>
         <child>
-          <object class="GtkToolbar" id="GtkToolMainBar">
+          <object class="GtkBox" id="toolbarbox">
             <property name="visible">True</property>
             <property name="sensitive">False</property>
-            <property name="can_focus">False</property>
-            <property name="halign">start</property>
-            <property name="show_arrow">False</property>
-            <child>
-              <object class="GtkToolButton" id="rotate90_anticlock_button">
-                <property name="name">rotate90_anticlock_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Rotate 90 degrees, counter-clockwise</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">rotate90-acw</property>
-                <signal name="clicked" handler="on_menuitem_rotation270_activate" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="rotate90_clock_button">
-                <property name="name">rotate90_clock_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Rotate 90 degrees, clockwise</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">rotate90-cw</property>
-                <signal name="clicked" handler="on_menuitem_rotation90_activate" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="mirrorx_button">
-                <property name="name">mirrorx_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Horizontal mirror</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_mirrorx</property>
-                <signal name="clicked" handler="on_mirrorx_button_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="mirrory_button">
-                <property name="name">mirrory_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Vertical mirror</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_mirrory</property>
-                <signal name="clicked" handler="on_mirrory_button_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparatorToolItem" id="separateur6">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="histogram_button">
-                <property name="name">histogram_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Open/Close histogram toolbox</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_histogram</property>
-                <signal name="clicked" handler="toggle_histogram_window_visibility" object="histogram_dialog" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparatorToolItem" id="separateur5">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="seqlist_button">
-                <property name="name">seqlist_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Show/Hide list of images in the sequence with registration data</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_seqlist</property>
-                <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparatorToolItem" id="separateur4">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="neg_button">
-                <property name="name">neg_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Switch to normal and negative view</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_neg</property>
-                <signal name="clicked" handler="on_neg_button_clicked" object="checkbutton_chain" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleToolButton" id="colormap_button">
-                <property name="name">colormap_button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Switch to normal and rainbow colormap (false color rendering)</property>
-                <property name="use_underline">True</property>
-                <property name="icon_widget">image_colormap</property>
-                <signal name="toggled" handler="on_colormap_button_toggled" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolItem" id="toolbarView">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="valign">center</property>
-                <child>
-                  <object class="GtkComboBoxText" id="combodisplay">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="has_tooltip">True</property>
-                    <property name="tooltip_markup" translatable="yes">Display mode</property>
-                    <property name="tooltip_text" translatable="yes">Display mode</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="border_width">6</property>
-                    <property name="active">0</property>
-                    <items>
-                      <item translatable="yes">Linear</item>
-                      <item translatable="yes">Logarithm</item>
-                      <item translatable="yes">Square root</item>
-                      <item translatable="yes">Squared</item>
-                      <item translatable="yes">Asinh</item>
-                      <item id="&lt;Saisir un identifiant&gt;" translatable="yes">AutoStretch</item>
-                      <item translatable="yes">Histogram</item>
-                    </items>
-                    <signal name="changed" handler="on_combodisplay_changed" swapped="no"/>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSeparatorToolItem" id="separateur1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToggleToolButton" id="zoom_to_fit_check_button">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Fit the image to the window</property>
-                <property name="use_underline">True</property>
-                <property name="icon_name">zoom-fit-best-symbolic</property>
-                <property name="active">True</property>
-                <signal name="toggled" handler="on_zoom_to_fit_check_button_toggled" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="zoom_to_one_button">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Show the image at its normal size</property>
-                <property name="use_underline">True</property>
-                <property name="icon_name">zoom-original-symbolic</property>
-                <signal name="clicked" handler="on_zoom_to_one_button_clicked" object="zoom_to_fit_check_button" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">False</property>
-              </packing>
-            </child>
-            <style>
-              <class name="main-toolbar"/>
-            </style>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="hbox6">
-            <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="spacing">2</property>
             <child>
@@ -6730,6 +6353,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="digits">0</property>
                         <property name="draw_value">False</property>
                         <signal name="button-release-event" handler="on_maxscale_release" swapped="no"/>
+                        <signal name="key-release-event" handler="on_maxscale_release" swapped="no"/>
                         <signal name="value-changed" handler="on_maxscale_changed" object="max_entry" swapped="no"/>
                       </object>
                       <packing>
@@ -6742,9 +6366,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                       <object class="GtkEntry" id="max_entry">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="has_tooltip">True</property>
-                        <property name="tooltip_markup" translatable="yes">High</property>
-                        <property name="tooltip_text" translatable="yes">High</property>
+                        <property name="tooltip_text" translatable="yes">High value</property>
                         <property name="halign">end</property>
                         <property name="valign">center</property>
                         <property name="max_length">5</property>
@@ -6789,6 +6411,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="digits">0</property>
                         <property name="draw_value">False</property>
                         <signal name="button-release-event" handler="on_minscale_release" swapped="no"/>
+                        <signal name="key-release-event" handler="on_minscale_release" swapped="no"/>
                         <signal name="value-changed" handler="on_minscale_changed" object="min_entry" swapped="no"/>
                       </object>
                       <packing>
@@ -6801,9 +6424,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                       <object class="GtkEntry" id="min_entry">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="has_tooltip">True</property>
-                        <property name="tooltip_markup" translatable="yes">High</property>
-                        <property name="tooltip_text" translatable="yes">High</property>
+                        <property name="tooltip_text" translatable="yes">Low value</property>
                         <property name="halign">end</property>
                         <property name="valign">center</property>
                         <property name="max_length">5</property>
@@ -6856,6 +6477,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="halign">start</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="on_radiobutton_minmax_toggled" swapped="no"/>
@@ -6872,6 +6494,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="halign">start</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">radiobutton_minmax</property>
                     <signal name="toggled" handler="on_radiobutton_hilo_toggled" swapped="no"/>
@@ -6888,6 +6511,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
+                    <property name="halign">start</property>
                     <property name="draw_indicator">True</property>
                     <property name="group">radiobutton_minmax</property>
                     <signal name="toggled" handler="on_radiobutton_user_toggled" swapped="no"/>
@@ -6902,6 +6526,266 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolbar" id="GtkToolMainBar">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="valign">center</property>
+                <property name="show_arrow">False</property>
+                <child>
+                  <object class="GtkToolButton" id="rotate90_anticlock_button">
+                    <property name="name">rotate90_anticlock_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Rotate 90 degrees, counter-clockwise</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">rotate90-acw</property>
+                    <signal name="clicked" handler="on_menuitem_rotation270_activate" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="rotate90_clock_button">
+                    <property name="name">rotate90_clock_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Rotate 90 degrees, clockwise</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">rotate90-cw</property>
+                    <signal name="clicked" handler="on_menuitem_rotation90_activate" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="mirrorx_button">
+                    <property name="name">mirrorx_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Horizontal mirror</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_mirrorx</property>
+                    <signal name="clicked" handler="on_mirrorx_button_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="mirrory_button">
+                    <property name="name">mirrory_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Vertical mirror</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_mirrory</property>
+                    <signal name="clicked" handler="on_mirrory_button_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur6">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="histogram_button">
+                    <property name="name">histogram_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Open/Close histogram toolbox</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_histogram</property>
+                    <signal name="clicked" handler="toggle_histogram_window_visibility" object="histogram_dialog" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur5">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="seqlist_button">
+                    <property name="name">seqlist_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Show/Hide list of images in the sequence with registration data</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_seqlist</property>
+                    <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur4">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="neg_button">
+                    <property name="name">neg_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Switch to normal and negative view</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_neg</property>
+                    <signal name="clicked" handler="on_neg_button_clicked" object="checkbutton_chain" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleToolButton" id="colormap_button">
+                    <property name="name">colormap_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Switch to normal and rainbow colormap (false color rendering)</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_colormap</property>
+                    <signal name="toggled" handler="on_colormap_button_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolItem" id="toolbarView">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">center</property>
+                    <child>
+                      <object class="GtkComboBoxText" id="combodisplay">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="has_tooltip">True</property>
+                        <property name="tooltip_markup" translatable="yes">Display mode</property>
+                        <property name="tooltip_text" translatable="yes">Display mode</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="border_width">6</property>
+                        <property name="active">0</property>
+                        <items>
+                          <item translatable="yes">Linear</item>
+                          <item translatable="yes">Logarithm</item>
+                          <item translatable="yes">Square root</item>
+                          <item translatable="yes">Squared</item>
+                          <item translatable="yes">Asinh</item>
+                          <item id="&lt;Saisir un identifiant&gt;" translatable="yes">AutoStretch</item>
+                          <item translatable="yes">Histogram</item>
+                        </items>
+                        <signal name="changed" handler="on_combodisplay_changed" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleToolButton" id="zoom_to_fit_check_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Fit the image to the window</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_name">zoom-fit-best-symbolic</property>
+                    <property name="active">True</property>
+                    <signal name="toggled" handler="on_zoom_to_fit_check_button_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="zoom_to_one_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Show the image at its normal size</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_name">zoom-original-symbolic</property>
+                    <signal name="clicked" handler="on_zoom_to_one_button_clicked" object="zoom_to_fit_check_button" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <style>
+                  <class name="main-toolbar"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
                 <property name="position">3</property>
               </packing>
             </child>
@@ -6909,6 +6793,49 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="box2">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="margin_bottom">3</property>
+            <child>
+              <object class="GtkLabel" id="label139">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Current working sequence:</property>
+                <attributes>
+                  <attribute name="style" value="italic"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">2</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="labelseq">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label">seq, 5 images selected (filled at runtime)</property>
+                <property name="ellipsize">start</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="padding">2</property>
             <property name="pack_type">end</property>
             <property name="position">2</property>
           </packing>
@@ -11081,9 +11008,9 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="halign">start</property>
                 <property name="hexpand">True</property>
                 <property name="label" translatable="yes">FWHM is converted into arcsec</property>
-                <attributes>
-                  <attribute name="foreground" value="#cccc00000000"/>
-                </attributes>
+                <style>
+                  <class name="label-info"/>
+                </style>
               </object>
               <packing>
                 <property name="left_attach">0</property>

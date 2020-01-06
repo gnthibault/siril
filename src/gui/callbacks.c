@@ -449,7 +449,7 @@ void update_MenuItem() {
 	any_image_is_loaded = single_image_is_loaded() || sequence_is_loaded();
 
 	/* toolbar button */
-	gtk_widget_set_sensitive(lookup_widget("GtkToolMainBar"), any_image_is_loaded);
+	gtk_widget_set_sensitive(lookup_widget("toolbarbox"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
 	gtk_widget_set_sensitive(lookup_widget("header_redo_button"), is_redo_available());
 	/* File Menu */
@@ -612,7 +612,9 @@ void update_prepro_interface(gboolean allow_debayer) {
 			gtk_toggle_button_get_active(udark));
 	gtk_widget_set_sensitive(lookup_widget("checkDarkOptimize"),
 			gtk_toggle_button_get_active(udark));
-	gtk_widget_set_sensitive(lookup_widget("GtkBoxFlat"),
+	gtk_widget_set_sensitive(lookup_widget("checkbutton_equalize_cfa"),
+			gtk_toggle_button_get_active(uflat));
+	gtk_widget_set_sensitive(lookup_widget("checkbutton_auto_evaluate"),
 			gtk_toggle_button_get_active(uflat));
 	gtk_widget_set_sensitive(lookup_widget("entry_flat_norm"),
 			gtk_toggle_button_get_active(uflat)
@@ -976,7 +978,7 @@ void activate_tab(int vport) {
 }
 
 void control_window_switch_to_tab(main_tabs tab) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook2"));
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
 	gtk_notebook_set_current_page(notebook, tab);
 }
 
@@ -1037,14 +1039,11 @@ static void load_accels() {
 	add_accelerator(GTK_APPLICATION(application), "app.preferences", "<Primary>P");
 	add_accelerator(GTK_APPLICATION(application), "app.open", "<Primary>O");
 	add_accelerator(GTK_APPLICATION(application), "app.undo", "<Primary>Z");
-#ifdef _WIN32
-	add_accelerator(GTK_APPLICATION(application), "app.redo", "<Primary>Y");
-#else
 	add_accelerator(GTK_APPLICATION(application), "app.redo", "<Primary><Shift>Z");
-#endif
 	add_accelerator(GTK_APPLICATION(application), "app.save_as", "<Primary><Shift>S");
+	add_accelerator(GTK_APPLICATION(application), "app.close", "<Primary>W");
 	add_accelerator(GTK_APPLICATION(application), "app.cwd", "<Primary>D");
-	add_accelerator(GTK_APPLICATION(application), "app.full_screen", "F11");
+	add_accelerator(GTK_APPLICATION(application), "app.full_screen", "<Primary>F");
 }
 
 /* Initialize the combobox when loading new single_image */
@@ -1087,10 +1086,7 @@ void set_GUI_CWD() {
 	if (!com.wd)
 		return;
 	gchar *str;
-	GtkLabel *label = GTK_LABEL(lookup_widget("labelcwd"));
 	GtkHeaderBar *bar = GTK_HEADER_BAR(lookup_widget("headerbar"));
-
-	gtk_label_set_text(label, com.wd);
 
 	str = g_strdup_printf("Siril-%s", VERSION);
 	gtk_header_bar_set_title(bar , str);

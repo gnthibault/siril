@@ -551,7 +551,6 @@ struct cominf {
 	gboolean remember_windows;
 	rectangle main_w_pos;
 	gboolean is_maximized;
-	gboolean is_fullscreen;
 
 	/* selection rectangle for registration, FWHM, PSF */
 	gboolean drawing;		// true if the rectangle is being set (clicked motion)
