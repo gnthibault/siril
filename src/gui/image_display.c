@@ -37,6 +37,7 @@
 
 /* remap index data, an index for each layer */
 static BYTE *remap_index[MAXGRAYVPORT];
+static float float_hist_lookup[MAXGRAYVPORT][256];
 static float last_pente[MAXGRAYVPORT];
 static display_mode last_mode[MAXGRAYVPORT];
 
@@ -225,10 +226,11 @@ static int make_index_for_rainbow(BYTE index[][3]);
 
 /* Siril float format is [0, 1]. The UI still uses unsigned short controls,
  * for lo and hi cursors for example, that we convert to a float value here */
-static BYTE display_for_float_pixel(float pixel, display_mode mode, WORD lo, WORD hi) {
+static BYTE display_for_float_pixel(float pixel, display_mode mode, int vport, WORD lo, WORD hi) {
 	float offset = pixel - ((float)lo / USHRT_MAX_SINGLE);
 	float slope;
 	BYTE disp;
+	int i;
 	switch (mode) {
 		case NORMAL_DISPLAY:
 		default:
@@ -267,6 +269,10 @@ static BYTE display_for_float_pixel(float pixel, display_mode mode, WORD lo, WOR
 				disp = roundf_to_BYTE(asinhf(USHRT_MAX_SINGLE * offset / 1000.0f) * slope); //1000.f is arbitrary: good matching with ds9, could be asinhf(a*Q*i)/Q
 			}
 			break;
+		case HISTEQ_DISPLAY:
+			i = 0;
+			while (i < 256 && float_hist_lookup[vport][i] < pixel) i++;
+			return (BYTE)(i == 256 ? 255 : i);
 	}
 	return disp;
 }
@@ -298,6 +304,8 @@ static void remap(int vport) {
 			no_data = 1;
 	}
 	else no_data = 1;
+	if (gfit.type == DATA_UNSUPPORTED)
+		no_data = 1;
 	if (no_data) {
 		siril_debug_print("vport is out of bounds or data is not loaded yet\n");
 		return;
@@ -366,30 +374,59 @@ static void remap(int vport) {
 		inverted = FALSE;
 
 	if (mode == HISTEQ_DISPLAY) {
-		double hist_sum;
-		double nb_pixels;
-		size_t hist_nb_bins;
-		size_t i;
-		gsl_histogram *histo;
+		if (gfit.type == DATA_USHORT) {
+			double hist_sum, nb_pixels;
+			size_t i, hist_nb_bins;
+			gsl_histogram *histo;
 
-		compute_histo_for_gfit();
-		histo = com.layers_hist[vport];
-		hist_nb_bins = gsl_histogram_bins(histo);
+			compute_histo_for_gfit();
+			histo = com.layers_hist[vport];
+			hist_nb_bins = gsl_histogram_bins(histo);
+			nb_pixels = (double)(gfit.rx * gfit.ry);
 
-		nb_pixels = (double) (gfit.rx * gfit.ry);
-		// build the remap_index
-		if (!remap_index[vport])
-			remap_index[vport] = malloc(USHRT_MAX + 1);
+			// build the remap_index
+			if (!remap_index[vport])
+				remap_index[vport] = malloc(USHRT_MAX + 1);
 
-		remap_index[vport][0] = 0;
-		hist_sum = gsl_histogram_get(histo, 0);
-		for (i = 1; i < hist_nb_bins; i++) {
-			hist_sum += gsl_histogram_get(histo, i);
-			remap_index[vport][i] = round_to_BYTE(
-					(hist_sum / nb_pixels) * UCHAR_MAX_DOUBLE);
+			remap_index[vport][0] = 0;
+			hist_sum = gsl_histogram_get(histo, 0);
+			for (i = 1; i < hist_nb_bins; i++) {
+				hist_sum += gsl_histogram_get(histo, i);
+				remap_index[vport][i] = round_to_BYTE(
+						(hist_sum / nb_pixels) * UCHAR_MAX_DOUBLE);
+			}
+
+			last_mode[vport] = mode;
 		}
+		else if (gfit.type == DATA_FLOAT) {
+			/* we can't make an index for float values, so we make
+			 * a lookup table, which works the other way around */
+			int j;
+			size_t i = 0, hist_nb_bins;
+			gsl_histogram *histo;
+			double hist_sum, nb_pixels;
 
-		last_mode[vport] = mode;
+			compute_histo_for_gfit();
+			histo = com.layers_hist[vport];
+			hist_nb_bins = gsl_histogram_bins(histo);
+			nb_pixels = (double)(gfit.rx * gfit.ry);
+
+			float_hist_lookup[vport][0] = 0;
+			hist_sum = gsl_histogram_get(histo, 0);
+			for (j = 1; j < 256; j++) {
+				do {
+					if (i >= hist_nb_bins) break;
+					double newsum = hist_sum + gsl_histogram_get(histo, i);
+					if (newsum / nb_pixels >= (double)j / 256.0) {
+						float_hist_lookup[vport][j] = (double)i / (double)hist_nb_bins;
+						hist_sum = newsum;
+						break;
+					}
+					hist_sum = newsum;
+					i++;
+				} while (i < hist_nb_bins);
+			}
+		}
 		set_viewer_mode_widgets_sensitive(FALSE);
 	} else {
 		// for all other modes and ushort data, the index can be reused
@@ -435,8 +472,9 @@ static void remap(int vport) {
 					dst_pixel_value = index[tmp_pixel_value];
 				}
 			} else if (gfit.type == DATA_FLOAT) {
-				dst_pixel_value = display_for_float_pixel(fsrc[src_index], mode, lo, hi);
+				dst_pixel_value = display_for_float_pixel(fsrc[src_index], mode, vport, lo, hi);
 			}
+
 			if (inverted)
 				dst_pixel_value = UCHAR_MAX - dst_pixel_value;
 
