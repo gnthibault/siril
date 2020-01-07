@@ -472,6 +472,9 @@ static void siril_macos_setenv(const char *progname) {
 		else
 			return;
 
+		/* we define the relocated resources path */
+		g_setenv("SIRIL_RELOCATED_RES_DIR", tmp, TRUE);
+
 		path_len = strlen(g_getenv("PATH") ? g_getenv("PATH") : "")
 				+ strlen(app_dir) + 2;
 		path = g_try_malloc(path_len);
@@ -484,7 +487,6 @@ static void siril_macos_setenv(const char *progname) {
 		else
 			g_snprintf(path, path_len, "%s", app_dir);
 		/* the relocated path is storred in this env. variable in order to be reused if needed */
-		g_setenv("SIRIL_RELOCATED_PATH", app_dir, TRUE);
 		g_free(app_dir);
 		g_setenv("PATH", path, TRUE);
 		g_free(path);
