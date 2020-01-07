@@ -125,12 +125,7 @@ static void search_for_locale_dir() {
 
 	siril_locale_dir = locale_dir;
 #elif defined(ENABLE_RELOCATABLE_RESOURCES) && defined(OS_OSX)
-	/* need that search_for_data_dir is called first */
-	if (siril_share_dir == NULL) {
-		g_warning("siril_data_dir is not defined. Should not happen");
-	} else {
-		siril_locale_dir = g_build_filename(siril_share_dir, "locale", NULL);
-	}
+	siril_locale_dir = g_build_filename("..", "Resources", "share", "locale", NULL);
 #else
 	gchar *path = g_build_filename(LOCALEDIR, NULL);
 		if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
