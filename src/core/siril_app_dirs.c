@@ -41,7 +41,7 @@ static void search_for_data_dir() {
 		siril_share_dir = g_strdup(path);
 	}
 	g_free(path);
-#elif (defined(__APPLE__) && defined(__MACH__))
+#elif defined(OS_OSX)
 	path = g_build_filename("..", "Resources", "share", PACKAGE, NULL);
 	if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
 		siril_share_dir = g_strdup(path);
@@ -118,12 +118,19 @@ static void search_for_locale_dir() {
 #ifdef _WIN32
 	gchar *win32_dir;
 
-	win32_dir = g_win32_get_package_installation_directory_of_module (NULL);
+	win32_dir = g_win32_get_package_installation_directory_of_module(NULL);
 	gchar *locale_dir = g_build_filename(win32_dir, "share", "locale", NULL);
 
 	g_free(win32_dir);
 
 	siril_locale_dir = locale_dir;
+#elif defined(ENABLE_RELOCATABLE_RESOURCES) && defined(OS_OSX)
+	/* need that search_for_data_dir is called first */
+	if (siril_share_dir == NULL) {
+		g_warning("siril_data_dir is not defined. Should not happen");
+	} else {
+		siril_locale_dir = g_build_filename(siril_share_dir, "locale", NULL);
+	}
 #else
 	gchar *path = g_build_filename(LOCALEDIR, NULL);
 		if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
@@ -151,9 +158,9 @@ const gchar* siril_get_config_dir() {
 }
 
 void initialize_siril_directories() {
+	search_for_data_dir();
 	search_for_locale_dir();
 	search_for_startup_dir();
 	search_for_config_dir();
-	search_for_data_dir();
 }
 

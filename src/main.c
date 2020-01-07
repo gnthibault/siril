@@ -447,7 +447,7 @@ static void siril_app_open(GApplication *application, GFile **files, gint n_file
 	}
 }
 
-#if defined(ENABLE_RELOCATABLE_RESOURCES) && defined(__APPLE__)
+#if defined(ENABLE_RELOCATABLE_RESOURCES) && defined(OS_OSX)
 static void siril_macos_setenv(const char *progname) {
   /* helper to set environment variables for Siril to be relocatable.
    * Due to the latest changes in Catalina it is not recommended
@@ -513,7 +513,7 @@ int main(int argc, char *argv[]) {
 	const gchar *dir;
 	gint status;
 
-	#if defined(ENABLE_RELOCATABLE_RESOURCES) && defined(__APPLE__)
+	#if defined(ENABLE_RELOCATABLE_RESOURCES) && defined(OS_OSX)
 	    // Remove macOS session identifier from command line arguments.
 	    // Code adopted from GIMP's app/main.c
 

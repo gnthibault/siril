@@ -13,14 +13,14 @@
  * on big endian systems.
  */
 
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+#if defined(__unix__) || (defined(OS_OSX))
 #include <sys/param.h>		// define or not BSD macro
 #endif
 
 #ifdef __linux__
 #define fseek64 fseeko  // Linux
 #define ftell64 ftello  // Linux
-#elif defined (__APPLE__) && defined(__MACH__)
+#elif defined (OS_OSX)
 #define fseek64 fseeko  // OS X
 #define ftell64 ftello  // OS X
 #elif defined(BSD)
