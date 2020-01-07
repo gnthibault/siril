@@ -1,6 +1,10 @@
 #ifndef _SER_H_
 #define _SER_H_
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #ifdef _OPENMP
