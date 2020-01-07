@@ -42,7 +42,7 @@ static void search_for_data_dir() {
 	}
 	g_free(path);
 #elif defined(ENABLE_RELOCATABLE_RESOURCES) && defined(OS_OSX)
-	gchar *relocated_path = g_getenv("SIRIL_RELOCATED_RES_DIR");
+	const gchar *relocated_path = g_getenv("SIRIL_RELOCATED_RES_DIR");
 	if (relocated_path != NULL) {
 		path = g_build_filename(relocated_path, "share", PACKAGE, NULL);
 		if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
@@ -128,16 +128,22 @@ static void search_for_locale_dir() {
 
 	siril_locale_dir = locale_dir;
 #elif defined(ENABLE_RELOCATABLE_RESOURCES) && defined(OS_OSX)
-	gchar *relocated_path = g_getenv("SIRIL_RELOCATED_RES_DIR");
+	const gchar *relocated_path = g_getenv("SIRIL_RELOCATED_RES_DIR");
 	if (relocated_path != NULL) {
 		siril_locale_dir = g_build_filename(relocated_path, "share", "locale", NULL);
-	}
-#else
-	gchar *path = g_build_filename(LOCALEDIR, NULL);
+	} else {
+		gchar *path = g_build_filename(LOCALEDIR, NULL);
 		if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
 			siril_locale_dir = g_strdup(path);
 		}
 		g_free(path);
+	}
+#else
+	gchar *path = g_build_filename(LOCALEDIR, NULL);
+	if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
+		siril_locale_dir = g_strdup(path);
+	}
+	g_free(path);
 #endif
 }
 
