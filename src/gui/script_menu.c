@@ -35,6 +35,7 @@
 #include "core/command_line_processor.h"
 #include "core/processing.h"
 #include "core/OS_utils.h"
+#include "core/siril_app_dirs.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
@@ -54,7 +55,7 @@ static GSList *initialize_script_paths(){
 	list = g_slist_prepend(list, g_build_filename(execpath, "scripts", NULL));
 	g_free(execpath);
 #else
-	list = g_slist_prepend(list, g_build_filename(PACKAGE_DATA_DIR, "scripts", NULL));
+	list = g_slist_prepend(list, g_build_filename(siril_get_system_data_dir(), "scripts", NULL));
 	list = g_slist_prepend(list, g_build_filename(g_get_home_dir(), ".siril", "scripts", NULL));
 	list = g_slist_prepend(list, g_build_filename(g_get_home_dir(), "siril", "scripts", NULL));
 #endif
