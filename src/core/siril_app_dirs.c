@@ -82,11 +82,7 @@ static void search_for_data_dir() {
 }
 
 static void search_for_config_dir() {
-#if (defined(__APPLE__) && defined(__MACH__))
-	siril_config_dir = g_build_filename(g_get_home_dir(), "Library", "Application Support")
-#else
 	siril_config_dir = g_get_user_config_dir();
-#endif
 }
 
 /** This function tries to set a startup directory. It first looks at the "Pictures" directory,
