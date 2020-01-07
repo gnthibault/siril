@@ -404,10 +404,7 @@ static int crop_ushort(fits *fit, rectangle *bounds) {
 static int crop_float(fits *fit, rectangle *bounds) {
 	int i, j, layer;
 	int newnbdata;
-	struct timeval t_start, t_end;
-
-	memset(&t_start, 0, sizeof(struct timeval));
-	memset(&t_end, 0, sizeof(struct timeval));
+	struct timeval t_start = { 0 }, t_end = { 0 };
 
 	if (fit == &gfit) {
 		siril_log_color_message(_("Crop: processing...\n"), "red");

@@ -514,7 +514,7 @@ struct historic_struct {
 	char *filename;
 	char history[FLEN_VALUE];
 	int rx, ry;
-	int type;
+	data_type type;
 };
 
 struct dateTime_struct {

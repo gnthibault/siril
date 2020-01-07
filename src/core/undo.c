@@ -173,7 +173,7 @@ static int undo_get_data_ushort(fits *fit, historic hist) {
 
 static int undo_get_data_float(fits *fit, historic hist) {
 	int fd;
-	unsigned int size;
+	long size;
 	float *buf;
 
 	if ((fd = g_open(hist.filename, O_RDONLY | O_BINARY, 0)) == -1) {
