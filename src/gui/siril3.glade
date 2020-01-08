@@ -3077,6 +3077,7 @@ SER files are directly handled as a sequence, and are not yet available for conv
                           <object class="GtkLabel" id="label22">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">This conversion tab is used to import files and convert them into a format with which Siril can work: FITS or SER.</property>
                             <property name="margin_top">2</property>
                             <property name="margin_bottom">2</property>
                             <property name="label" translatable="yes">File conversion</property>
@@ -3105,95 +3106,124 @@ SER files are directly handled as a sequence, and are not yet available for conv
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">2</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkGrid">
+                              <object class="GtkBox">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="row_spacing">10</property>
-                                <property name="column_spacing">10</property>
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">5</property>
                                 <child>
-                                  <object class="GtkLabel" id="seqtoproc_label">
+                                  <object class="GtkBox">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Sequence:</property>
-                                    <property name="justify">center</property>
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel" id="seqtoproc_label">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="label" translatable="yes">Sequence:</property>
+                                        <property name="justify">center</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkComboBoxText" id="sequence_list_combobox">
+                                        <property name="width_request">500</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <signal name="changed" handler="on_seqproc_entry_changed" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkComboBoxText" id="sequence_list_combobox">
-                                    <property name="width_request">500</property>
+                                  <object class="GtkBox">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <signal name="changed" handler="on_seqproc_entry_changed" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">0</property>
-                                    <property name="width">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="checkseqbutton">
-                                    <property name="label" translatable="yes">Search sequences</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Search current directory for sequences of FITS images, SER or film videos.</property>
-                                    <property name="use_underline">True</property>
-                                    <signal name="clicked" handler="on_checkseqbutton_clicked" object="checkforceseq" swapped="no"/>
-                                    <style>
-                                      <class name="suggested-action"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="checkforceseq">
-                                    <property name="label" translatable="yes">Force .seq recomputation</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">By default, Siril takes the data from seq file if already computed. However you can force Siril to recompute the file if some changes have not been taken into account.
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkButton" id="checkseqbutton">
+                                        <property name="label" translatable="yes">Search sequences</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Search current directory for sequences of FITS images, SER or film videos.</property>
+                                        <property name="use_underline">True</property>
+                                        <signal name="clicked" handler="on_checkseqbutton_clicked" object="checkforceseq" swapped="no"/>
+                                        <style>
+                                          <class name="suggested-action"/>
+                                        </style>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkforceseq">
+                                        <property name="label" translatable="yes">Force .seq recomputation</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">By default, Siril takes the data from seq file if already computed. However you can force Siril to recompute the file if some changes have not been taken into account.
 This button will be automatically unchecked after being used.
 
 WARNING: it will erase all registration and statistics data.</property>
-                                    <property name="halign">end</property>
-                                    <property name="draw_indicator">True</property>
+                                        <property name="halign">end</property>
+                                        <property name="draw_indicator">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton">
+                                        <property name="label" translatable="yes">Open Frame List</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="halign">center</property>
+                                        <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="pack_type">end</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton">
-                                    <property name="label" translatable="yes">Open Frame List</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="halign">center</property>
-                                    <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
                                   </packing>
                                 </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">3</property>
+                                <property name="position">1</property>
                               </packing>
                             </child>
                             <child>
@@ -3295,6 +3325,7 @@ WARNING: it will erase all registration and statistics data.</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="orientation">vertical</property>
+                                <property name="spacing">10</property>
                                 <child>
                                   <object class="GtkBox">
                                     <property name="visible">True</property>
@@ -3346,6 +3377,7 @@ A first computation pass will be done on all images before exporting, it may tak
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
+                                        <property name="pack_type">end</property>
                                         <property name="position">2</property>
                                       </packing>
                                     </child>
@@ -3366,7 +3398,7 @@ A first computation pass will be done on all images before exporting, it may tak
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Image selection uses the same controls as for stacking</property>
+                                        <property name="label" translatable="yes">Image selection uses the same controls as for stacking:</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -3538,6 +3570,7 @@ A first computation pass will be done on all images before exporting, it may tak
                           <object class="GtkLabel" id="label20">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Images are manipulated in sequences. Siril can find sequences in CWD, and you can filter images out.</property>
                             <property name="margin_top">2</property>
                             <property name="margin_bottom">2</property>
                             <property name="label" translatable="yes">Sequence</property>
@@ -4092,6 +4125,7 @@ WARNING: this option is only available for FITS images as SER sequence can be de
                           <object class="GtkLabel" id="label19">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Pre-processing is an optional step to apply to a sequence of images.</property>
                             <property name="margin_bottom">2</property>
                             <property name="label" translatable="yes">Pre-processing</property>
                             <property name="justify">center</property>
@@ -4923,6 +4957,7 @@ To be enabled, the reference image must have been explicitly set and already dis
                           <object class="GtkLabel" id="label28">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Registration is basically aligning the images from a sequence to be able to process them afterwards.</property>
                             <property name="margin_top">2</property>
                             <property name="margin_bottom">2</property>
                             <property name="label" translatable="yes">Registration</property>
@@ -5114,6 +5149,7 @@ WARNING: gnuplot must be installed.</property>
                           <object class="GtkLabel" id="labelPlot">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Show all relevant graphs using registration and / or photometry data.</property>
                             <property name="label" translatable="yes">Plot</property>
                           </object>
                           <packing>
@@ -5895,6 +5931,7 @@ However you may want to disable this option when building master frames of 8-bit
                           <object class="GtkLabel" id="label29">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Stacking of images, either summing, median, mean with rejection or pixel minimum/maximum.</property>
                             <property name="margin_top">2</property>
                             <property name="margin_bottom">2</property>
                             <property name="label" translatable="yes">Stacking</property>
@@ -6044,6 +6081,7 @@ However you may want to disable this option when building master frames of 8-bit
                           <object class="GtkLabel" id="label21">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">This tab shows the Siril logs.</property>
                             <property name="margin_top">2</property>
                             <property name="margin_bottom">2</property>
                             <property name="label" translatable="yes">Output logs</property>
@@ -6083,10 +6121,10 @@ However you may want to disable this option when building master frames of 8-bit
                                   <object class="GtkEntry" id="command">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip_text" translatable="yes">Input command. Typing 'help' here will bring the list of supported commands.</property>
+                                    <property name="tooltip_text" translatable="yes">Input command. Typing "help" here will bring the list of supported commands.</property>
                                     <property name="invisible_char">●</property>
                                     <property name="truncate_multiline">True</property>
-                                    <property name="placeholder_text" translatable="yes">Type help for the list of supported commands</property>
+                                    <property name="placeholder_text" translatable="yes">Type "help" for the list of supported commands</property>
                                     <property name="input_hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NONE</property>
                                     <signal name="key-press-event" handler="on_command_key_press_event" swapped="no"/>
                                   </object>
