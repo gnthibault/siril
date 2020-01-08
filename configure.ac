@@ -284,6 +284,37 @@ if test `uname` != "Darwin"; then
 	fi
 fi
 
+#################
+# Bundle packages
+#################
+
+AC_MSG_CHECKING([whether we build a relocatable package])
+AC_ARG_ENABLE(relocatable-bundle,
+              [  --enable-relocatable-bundle
+                          build with resources considered bundled under the same prefix
+                          (default=auto)],,
+              enable_relocatable_bundle=auto)
+
+if test "x$enable_relocatable_bundle" != xno &&
+   test "x$enable_relocatable_bundle" != xyes; then
+  # By default, assume building for Windows or macOS everything to be on
+  # the same prefix and can be relocated.
+  # On other platforms, build-time paths are meaningful.
+  if test "$platform" = "osx" ||
+     test "$platform" = "windows"; then
+     enable_relocatable_bundle=yes
+  else
+     enable_relocatable_bundle=no
+  fi
+fi
+if test "x$enable_relocatable_bundle" = xyes; then
+  AC_DEFINE(ENABLE_RELOCATABLE_RESOURCES, 1,
+            [Define to 1 if resources are considered bundled under the same prefix])
+fi
+AM_CONDITIONAL(ENABLE_RELOCATABLE_RESOURCES, test x$enable_relocatable_bundle = xyes)
+
+AC_MSG_RESULT([$enable_relocatable_bundle])
+
 AC_SUBST([AM_LDFLAGS])
 
 AC_CONFIG_FILES([Makefile src/Makefile pixmaps/Makefile pixmaps/icons/Makefile platform-specific/Makefile platform-specific/linux/Makefile po/Makefile.in])

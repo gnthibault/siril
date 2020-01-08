@@ -30,7 +30,12 @@
 #include <unistd.h>
 #ifdef OS_OSX
 #import <AppKit/AppKit.h>
-#endif
+#if defined(ENABLE_RELOCATABLE_RESOURCES)
+#include <sys/param.h> /* PATH_MAX */
+#include <libgen.h> /* dirname */
+#include <sys/stat.h>
+#endif /* ENABLE_RELOCATABLE_RESOURCES */
+#endif /* OS_OSX */
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -380,7 +385,7 @@ static void siril_app_activate(GApplication *application) {
 		gtk_window_set_application(GTK_WINDOW(lookup_widget("control_window")),	GTK_APPLICATION(application));
 		/* Load state of the main windows (position and maximized) */
 		load_main_window_state();
-#ifdef OS_OSX
+#if 0 //we need to think about it
 		/* see https://gitlab.gnome.org/GNOME/gtk/issues/2342 */
 		NSEvent *focusevent;
 		g_warning("workaround for the GTK3 #2342 bug");
@@ -442,10 +447,95 @@ static void siril_app_open(GApplication *application, GFile **files, gint n_file
 	}
 }
 
+#if defined(ENABLE_RELOCATABLE_RESOURCES) && defined(OS_OSX)
+static void siril_macos_setenv(const char *progname) {
+  /* helper to set environment variables for Siril to be relocatable.
+   * Due to the latest changes in Catalina it is not recommended
+   * to set it in the shell wrapper anymore.
+   */
+	gchar resolved_path[PATH_MAX];
+
+	if (realpath(progname, resolved_path)) {
+		static gboolean show_playground = TRUE;
+
+		gchar *path;
+		gchar tmp[PATH_MAX];
+		gchar *app_dir;
+		gchar lib_dir[PATH_MAX];
+		size_t path_len;
+		struct stat sb;
+		app_dir = g_path_get_dirname(resolved_path);
+
+		g_snprintf(tmp, sizeof(tmp), "%s/../Resources", app_dir);
+		if (realpath(tmp, lib_dir) && !stat(lib_dir, &sb) && S_ISDIR(sb.st_mode))
+			g_print("SiriL is started as MacOS application\n");
+		else
+			return;
+
+		/* we define the relocated resources path */
+		g_setenv("SIRIL_RELOCATED_RES_DIR", tmp, TRUE);
+
+		path_len = strlen(g_getenv("PATH") ? g_getenv("PATH") : "")
+				+ strlen(app_dir) + 2;
+		path = g_try_malloc(path_len);
+		if (path == NULL) {
+			g_warning("Failed to allocate memory");
+				exit(EXIT_FAILURE);
+		}
+		if (g_getenv("PATH"))
+			g_snprintf(path, path_len, "%s:%s", app_dir, g_getenv("PATH"));
+		else
+			g_snprintf(path, path_len, "%s", app_dir);
+		/* the relocated path is storred in this env. variable in order to be reused if needed */
+		g_free(app_dir);
+		g_setenv("PATH", path, TRUE);
+		g_free(path);
+		g_snprintf(tmp, sizeof(tmp), "%s/share", lib_dir);
+		g_setenv("XDG_DATA_DIRS", tmp, TRUE);
+		g_snprintf(tmp, sizeof(tmp), "%s/share/schemas", lib_dir);
+		g_setenv("GSETTINGS_SCHEMA_DIR", tmp, TRUE);
+		g_snprintf(tmp, sizeof(tmp), "%s/lib/gtk-3.0/3.0.0", lib_dir);
+		g_setenv("GTK_PATH", tmp, TRUE);
+		g_snprintf(tmp, sizeof(tmp), "%s/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache", lib_dir);
+		g_setenv("GDK_PIXBUF_MODULE_FILE", tmp, TRUE);
+		g_snprintf(tmp, sizeof(tmp), "%s/lib/gdk-pixbuf-2.0/2.10.0/loaders", lib_dir);
+		g_setenv("GDK_PIXBUF_MODULE_DIR", tmp, TRUE);
+		g_snprintf(tmp, sizeof(tmp), "%s/etc/fonts", lib_dir);
+		g_setenv("FONTCONFIG_PATH", tmp, TRUE);
+		if (g_getenv("HOME") != NULL) {
+			g_snprintf(tmp, sizeof(tmp), "%s/Library/Application Support", g_getenv("HOME"));
+			g_setenv("XDG_CONFIG_HOME", tmp, TRUE);
+		}
+
+	}
+}
+#endif
+
+
 int main(int argc, char *argv[]) {
 	GtkApplication *app;
 	const gchar *dir;
 	gint status;
+
+	#if defined(ENABLE_RELOCATABLE_RESOURCES) && defined(OS_OSX)
+	    // Remove macOS session identifier from command line arguments.
+	    // Code adopted from GIMP's app/main.c
+
+		int new_argc = 0;
+		for (int i = 0; i < argc; i++) {
+			// Rewrite argv[] without "-psn_..." argument.
+			if (!g_str_has_prefix(argv[i], "-psn_")) {
+				argv[new_argc] = argv[i];
+				new_argc++;
+			}
+		}
+		if (argc > new_argc) {
+			argv[new_argc] = NULL; // glib expects null-terminated array
+			argc = new_argc;
+		}
+
+		siril_macos_setenv(argv[0]);
+	#endif
 
 	initialize_siril_directories();
 

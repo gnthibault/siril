@@ -132,7 +132,7 @@ static int readinitfile() {
 	config_setting_t *misc_setting = config_lookup(&config, keywords[MISC]);
 	if (misc_setting) {
 		config_setting_lookup_bool(misc_setting, "confirm", &com.dontShowConfirm);
-#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
+#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
 		com.show_preview = FALSE;
 #else
 		config_setting_lookup_bool(misc_setting, "show_preview", &com.show_preview);

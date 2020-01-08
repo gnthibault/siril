@@ -41,10 +41,10 @@
 #else
 #include <sys/resource.h>
 #endif
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+#if defined(__unix__) || defined(OS_OSX)
 #include <sys/param.h>		// define or not BSD macro
 #endif
-#if (defined(__APPLE__) && defined(__MACH__))
+#ifdef OS_OSX
 #include <mach/task.h>
 #include <mach/mach_init.h>
 #include <mach/mach_types.h>
@@ -141,7 +141,7 @@ static unsigned long update_used_RAM_memory() {
 	fclose(f);
 	return (resident * page_size_in_k);
 }
-#elif (defined(__APPLE__) && defined(__MACH__))
+#elif defined(OS_OSX)
 static unsigned long update_used_RAM_memory() {
 	struct task_basic_info t_info;
 
@@ -253,7 +253,7 @@ int get_available_memory_in_MB() {
 	}
 	return mem;
 }
-#elif (defined(__APPLE__) && defined(__MACH__))
+#elif defined(OS_OSX)
 int get_available_memory_in_MB() {
 	int mem = 2048; /* this is the default value if we can't retrieve any values */
 	vm_size_t page_size;
@@ -425,7 +425,7 @@ SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction act
 	} else {
 		title = g_strdup(_("Open File"));
 	}
-#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
+#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
 	w = gtk_file_chooser_native_new(title, parent, action,
 			_("_Open"), _("_Cancel"));
 	g_free(title);
@@ -440,7 +440,7 @@ SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction act
 }
 
 SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction action) {
-#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
+#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
 	return gtk_file_chooser_native_new(_("Add Files"), parent, action,
 			_("_Add"), _("_Cancel"));
 #else
@@ -451,7 +451,7 @@ SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction acti
 }
 
 SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action) {
-#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
+#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
 	return gtk_file_chooser_native_new(_("Save File"), parent, action,
 			_("_Save"), _("_Cancel"));
 #else
@@ -462,7 +462,7 @@ SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction act
 }
 
 gint siril_dialog_run(SirilWidget *widgetdialog) {
-#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
+#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
 	return gtk_native_dialog_run(GTK_NATIVE_DIALOG(widgetdialog));
 #else
 	return gtk_dialog_run(GTK_DIALOG(GTK_FILE_CHOOSER(widgetdialog)));
@@ -470,7 +470,7 @@ gint siril_dialog_run(SirilWidget *widgetdialog) {
 }
 
 void siril_widget_destroy(SirilWidget *widgetdialog) {
-#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
+#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
 	g_object_unref(widgetdialog);
 #else
 	gtk_widget_destroy(widgetdialog);

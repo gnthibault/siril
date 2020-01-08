@@ -93,13 +93,13 @@ typedef unsigned short WORD;	// default type for internal image data
 typedef struct _SirilDialogEntry SirilDialogEntry;
 
 /* used for open and savedialog */
-#if ((defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))) && NATIVEFILLECHOOSER
+#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
 typedef GtkFileChooserNative SirilWidget;
 #else
 typedef GtkWidget SirilWidget;
 #endif
 
-#if (defined _WIN32) || (defined(__APPLE__) && defined(__MACH__))
+#if (defined _WIN32) || (defined(OS_OSX))
 #define SIRIL_EOL "\r\n"
 #else
 #define SIRIL_EOL "\n"

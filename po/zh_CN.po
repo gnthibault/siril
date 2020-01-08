@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-05 15:51+0100\n"
+"POT-Creation-Date: 2020-01-08 14:39+0100\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -4160,7 +4160,7 @@ msgstr "值: "
 #: ../src/filters/fft.c:377 ../src/filters/median.c:60
 #: ../src/filters/rgradient.c:185 ../src/filters/saturation.c:86
 #: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2194
-#: ../src/gui/callbacks.c:2357 ../src/gui/script_menu.c:151
+#: ../src/gui/callbacks.c:2357 ../src/gui/script_menu.c:152
 #: ../src/io/conversion.c:545 ../src/registration/registration.c:842
 #: ../src/stacking/stacking.c:1098 ../src/stacking/stacking.c:1222
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4729,7 +4729,7 @@ msgstr "于已载入队列中执行PSF，通道 %d\n"
 #: ../src/core/command.c:1770 ../src/core/command.c:1776
 #: ../src/core/command.c:1929 ../src/core/command.c:1936
 #: ../src/core/command.c:2193 ../src/core/command.c:2335
-#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:424
+#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:429
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "无法找到队列 %s。\n"
@@ -5776,14 +5776,14 @@ msgstr "总执行时间"
 msgid "Script execution failed.\n"
 msgstr "脚本执行失败。\n"
 
-#: ../src/core/command_line_processor.c:258 ../src/gui/script_menu.c:166
-#: ../src/main.c:356
+#: ../src/core/command_line_processor.c:258 ../src/gui/script_menu.c:167
+#: ../src/main.c:361
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "文件 [%s] 不存在\n"
 
 #. Then, run script
-#: ../src/core/command_line_processor.c:266 ../src/gui/script_menu.c:175
+#: ../src/core/command_line_processor.c:266 ../src/gui/script_menu.c:176
 #, c-format
 msgid "Starting script %s\n"
 msgstr "开始运行脚本%s\n"
@@ -6210,7 +6210,7 @@ msgstr "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 
-#: ../src/core/utils.c:642 ../src/main.c:224
+#: ../src/core/utils.c:642 ../src/main.c:229
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "成功载入'%s'\n"
@@ -6858,21 +6858,21 @@ msgstr "保存文件失败。 请查询日志。"
 msgid "This type of file is not handled. Should not happen"
 msgstr "该文件类型无法被识别"
 
-#: ../src/gui/script_menu.c:214
+#: ../src/gui/script_menu.c:215
 #, c-format
 msgid "Searching scripts in: \"%s\"...\n"
 msgstr "检索脚本于： \"%s\"...\n"
 
-#: ../src/gui/script_menu.c:226
+#: ../src/gui/script_menu.c:227
 #, c-format
 msgid "Loading script: %s\n"
 msgstr "载入脚本：%s\n"
 
-#: ../src/gui/script_menu.c:278
+#: ../src/gui/script_menu.c:279
 msgid "Could not show link"
 msgstr "无法显示链接"
 
-#: ../src/gui/script_menu.c:279
+#: ../src/gui/script_menu.c:280
 msgid "Please go to <a href=\""
 msgstr "Please go to <a href=\""
 
@@ -7859,35 +7859,35 @@ msgid ""
 "There was an error when opening this image. See the log for more information."
 msgstr "打开图像发生错误。请查询日志以获取更多信息。"
 
-#: ../src/main.c:89
+#: ../src/main.c:94
 #, fuzzy
 msgid "changing the current working directory as the argument"
 msgstr "更改当前工作目录"
 
-#: ../src/main.c:90
+#: ../src/main.c:95
 msgid "run the siril commands script in console mode"
 msgstr ""
 
-#: ../src/main.c:91
+#: ../src/main.c:96
 msgid ""
 "load configuration from file name instead of the default configuration file"
 msgstr ""
 
-#: ../src/main.c:92
+#: ../src/main.c:97
 msgid "run in console mode with command and log stream through named pipes"
 msgstr ""
 
-#: ../src/main.c:93
+#: ../src/main.c:98
 msgid ""
 "print all supported image file formats (depending on installed libraries)"
 msgstr ""
 
-#: ../src/main.c:94
+#: ../src/main.c:99
 #, fuzzy
 msgid "print the application’s version"
 msgstr "Quits the application"
 
-#: ../src/main.c:219
+#: ../src/main.c:224
 #, fuzzy, c-format
 msgid ""
 "%s was not found or contains errors, cannot render GUI:\n"
@@ -7895,7 +7895,7 @@ msgid ""
 " Exiting.\n"
 msgstr "%s was not found or contains errors, cannot render GUI. Exiting.\n"
 
-#: ../src/main.c:256
+#: ../src/main.c:261
 #, fuzzy, c-format
 msgid ""
 "Questionable parallel processing efficiency - openmp reports %d %s. Possibly "
@@ -7904,46 +7904,46 @@ msgstr ""
 "Questionable parallel processing efficiency - openmp reports %d processors. "
 "Possibly broken opencv/openblas installation.\n"
 
-#: ../src/main.c:258 ../src/main.c:263
+#: ../src/main.c:263 ../src/main.c:268
 #, fuzzy
 msgid "processor"
 msgid_plural "processors"
 msgstr[0] "预处理"
 
-#: ../src/main.c:261
+#: ../src/main.c:266
 #, fuzzy, c-format
 msgid "Parallel processing %s: Using %d logical %s.\n"
 msgstr "并行计算%s：当前使用 %d 逻辑处理器。\n"
 
-#: ../src/main.c:262
+#: ../src/main.c:267
 msgid "enabled"
 msgstr "启用"
 
-#: ../src/main.c:265
+#: ../src/main.c:270
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
 msgstr "并行计算%s：当前使用 %d 逻辑处理器。\n"
 
-#: ../src/main.c:265
+#: ../src/main.c:270
 msgid "disabled"
 msgstr "关闭"
 
-#: ../src/main.c:289
+#: ../src/main.c:294
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Welcome to %s v%s\n"
 
-#: ../src/main.c:316
+#: ../src/main.c:321
 #, c-format
 msgid "Could not load or create settings file, exiting.\n"
 msgstr "无法读取或创建配置文件，程序退出。\n"
 
-#: ../src/main.c:466
+#: ../src/main.c:556
 #, fuzzy
 msgid "Siril - A free astronomical image processing software."
 msgstr "天文图像（预）处理程序"
 
-#: ../src/main.c:473
+#: ../src/main.c:563
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr ""
