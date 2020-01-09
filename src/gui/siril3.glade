@@ -2616,6 +2616,8 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="show_border">False</property>
+                        <property name="scrollable">True</property>
+                        <property name="enable_popup">True</property>
                         <child>
                           <object class="GtkBox" id="box52">
                             <property name="visible">True</property>
@@ -3083,8 +3085,9 @@ SER files are directly handled as a sequence, and are not yet available for conv
                             <property name="tooltip_text" translatable="yes">This conversion tab is used to import files and convert them into a format with which Siril can work: FITS or SER.</property>
                             <property name="margin_top">2</property>
                             <property name="margin_bottom">2</property>
-                            <property name="label" translatable="yes">File conversion</property>
+                            <property name="label" translatable="yes">Conversion</property>
                             <property name="justify">center</property>
+                            <property name="wrap">True</property>
                           </object>
                           <packing>
                             <property name="tab_fill">False</property>
