@@ -332,10 +332,6 @@ static void check_for_conversion_form_completeness() {
 	update_statusbar_convert();
 }
 
-static void unset_debayer_in_convflags() {
-	convflags &= ~CONVDEBAYER;
-}
-
 /**************************Public functions***********************************************************/
 
 /* initialize converters (utilities used for different image types importing) *
@@ -1062,8 +1058,8 @@ void set_debayer_in_convflags() {
 	convflags |= CONVDEBAYER;
 }
 
-gboolean get_debayer_in_convflags() {
-	return convflags & CONVDEBAYER;
+void unset_debayer_in_convflags() {
+	convflags &= ~CONVDEBAYER;
 }
 
 /**************** Conversion tree managment ***********************************/
