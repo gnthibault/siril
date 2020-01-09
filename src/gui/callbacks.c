@@ -412,7 +412,7 @@ int adjust_sellabel() {
 		bufferglobal = g_strdup_printf(_("%s, %d images selected"), seq_basename, com.seq.selnum);
 		g_free(seq_basename);
 	} else {
-		bufferglobal = g_strdup("- none -");
+		bufferglobal = g_strdup(_("- none -"));
 		gtk_widget_set_sensitive(lookup_widget("goregister_button"), FALSE);
 	}
 
@@ -621,12 +621,9 @@ void update_prepro_interface(gboolean allow_debayer) {
 			&& !gtk_toggle_button_get_active(checkAutoEvaluate));
 
 	gtk_widget_set_sensitive(lookup_widget("checkButton_pp_dem"),
-			allow_debayer && (gtk_toggle_button_get_active(udark)
-				|| gtk_toggle_button_get_active(uoffset)
-				|| gtk_toggle_button_get_active(uflat)));
-	if (!allow_debayer) {
-		gtk_toggle_button_set_active(pp_debayer, FALSE);
-	}
+			allow_debayer && gtk_widget_get_sensitive(
+							lookup_widget("prepro_button")));
+
 }
 
 void clear_sampling_setting_box() {

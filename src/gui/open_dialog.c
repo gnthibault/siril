@@ -317,6 +317,11 @@ static void opendial(int whichdial) {
 		case OD_OPEN:
 			set_cursor_waiting(TRUE);
 			open_single_image(filename);
+
+			/* the widget is destroyed so we need to unset the flag */
+			unset_debayer_in_convflags();
+			com.debayer.open_debayer = FALSE;
+
 			set_cursor_waiting(FALSE);
 			break;
 

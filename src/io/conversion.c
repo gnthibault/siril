@@ -332,10 +332,6 @@ static void check_for_conversion_form_completeness() {
 	update_statusbar_convert();
 }
 
-static void unset_debayer_in_convflags() {
-	convflags &= ~CONVDEBAYER;
-}
-
 /**************************Public functions***********************************************************/
 
 /* initialize converters (utilities used for different image types importing) *
@@ -788,6 +784,7 @@ gpointer convert_thread_worker(gpointer p) {
 			fits *fit = calloc(1, sizeof(fits));
 			struct ser_struct tmp_ser;
 			ser_init_struct(&tmp_ser);
+			siril_log_message(_("Reading %s\n"), src_filename);
 			if (ser_open_file(src_filename, &tmp_ser)) {
 				siril_log_message(_("Error while opening ser file %s, aborting.\n"), src_filename);
 				clearfits(fit);
@@ -802,6 +799,18 @@ gpointer convert_thread_worker(gpointer p) {
 					free(fit);
 					break;
 				}
+			}
+			/* We want to copy header informations from the first SER file */
+			if (ser_frames == 0) {
+				ser_file->lu_id = tmp_ser.lu_id;
+				ser_file->date = tmp_ser.date;
+				ser_file->date_utc = tmp_ser.date_utc;
+				ser_file->file_id = strdup(tmp_ser.file_id);
+				memcpy(ser_file->observer, tmp_ser.observer, 40);
+				memcpy(ser_file->instrument, tmp_ser.instrument, 40);
+				memcpy(ser_file->telescope, tmp_ser.telescope, 40);
+				ser_file->byte_pixel_depth = tmp_ser.byte_pixel_depth;
+				ser_file->color_id = tmp_ser.color_id;
 			}
 			set_progress_bar_data(msg_bar, PROGRESS_PULSATE);
 			for (frame = 0; frame < tmp_ser.frame_count; frame++) {
@@ -1047,6 +1056,10 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean i
 
 void set_debayer_in_convflags() {
 	convflags |= CONVDEBAYER;
+}
+
+void unset_debayer_in_convflags() {
+	convflags &= ~CONVDEBAYER;
 }
 
 /**************** Conversion tree managment ***********************************/
