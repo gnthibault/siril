@@ -405,7 +405,8 @@ static void remap(int vport) {
 		}
 		else if (gfit.type == DATA_FLOAT) {
 			/* we can't make an index for float values, so we make
-			 * a lookup table, which works the other way around */
+			 * a lookup table, which works the other way around but
+			 * requires a loop for the lookup */
 			int j;
 			size_t i = 0, hist_nb_bins;
 			gsl_histogram *histo;

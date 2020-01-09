@@ -589,7 +589,7 @@ int copy_rendering_settings_when_chained(gboolean from_GUI) {
 
 void update_prepro_interface(gboolean allow_debayer) {
 	static GtkToggleButton *udark = NULL, *uoffset = NULL, *uflat = NULL,
-			       *checkAutoEvaluate = NULL, *pp_debayer = NULL;
+			       *checkAutoEvaluate = NULL;
 	if (udark == NULL) {
 		udark = GTK_TOGGLE_BUTTON(
 				gtk_builder_get_object(builder, "usedark_button"));
@@ -599,8 +599,6 @@ void update_prepro_interface(gboolean allow_debayer) {
 				gtk_builder_get_object(builder, "useflat_button"));
 		checkAutoEvaluate = GTK_TOGGLE_BUTTON(
 				gtk_builder_get_object(builder, "checkbutton_auto_evaluate"));
-		pp_debayer = GTK_TOGGLE_BUTTON(
-				gtk_builder_get_object(builder, "checkButton_pp_dem"));
 	}
 
 	gtk_widget_set_sensitive(lookup_widget("prepro_button"),
@@ -623,7 +621,6 @@ void update_prepro_interface(gboolean allow_debayer) {
 	gtk_widget_set_sensitive(lookup_widget("checkButton_pp_dem"),
 			allow_debayer && gtk_widget_get_sensitive(
 							lookup_widget("prepro_button")));
-
 }
 
 void clear_sampling_setting_box() {
@@ -810,15 +807,19 @@ void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_da
 		int ndata = gfit.rx * gfit.ry * gfit.naxes[2];
 
 		if (gfit.type == DATA_FLOAT) {
-			gboolean convert = siril_confirm_dialog(_("Loss precision"),
+			gboolean convert = siril_confirm_dialog(_("Precision loss"),
 					_("Converting the image from 32 bits to 16 bits may lead to a loss of numerical accuracy. "
 							"Getting back to 32 bits will not recover this loss.\n"
 							"Are you sure you want to convert your data?"), FALSE);
 			if (convert) {
 				fit_replace_buffer(&gfit, float_buffer_to_ushort(gfit.fdata, ndata), DATA_USHORT);
+				invalidate_gfit_histogram();
+				redraw(com.cvport, REMAP_ALL);
 			}
 		} else if (gfit.type == DATA_USHORT) {
 			fit_replace_buffer(&gfit, ushort_buffer_to_float(gfit.data, ndata), DATA_FLOAT);
+			invalidate_gfit_histogram();
+			redraw(com.cvport, REMAP_ALL);
 		}
 	}
 	set_precision_switch();

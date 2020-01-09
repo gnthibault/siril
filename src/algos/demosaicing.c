@@ -134,7 +134,7 @@ static int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
 	int start_with_green = tile == BAYER_FILTER_GBRG
 			|| tile == BAYER_FILTER_GRBG;
 
-	if ((tile > BAYER_FILTER_MAX) || (tile < BAYER_FILTER_MIN))
+	if (tile > BAYER_FILTER_MAX || tile < BAYER_FILTER_MIN)
 		return -1;
 
 	ClearBorders(rgb, sx, sy, 1);
