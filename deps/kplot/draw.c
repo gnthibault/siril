@@ -672,9 +672,9 @@ kplot_draw(struct kplot *p, double w, double h, cairo_t *cr)
 
 	if (KPLOTCTYPE_DEFAULT == ctx.cfg.axislabelfont.clr.type) {
 		ctx.cfg.axislabelfont.clr.type = KPLOTCTYPE_RGBA;
-		ctx.cfg.axislabelfont.clr.rgba[0] = 0.0;
-		ctx.cfg.axislabelfont.clr.rgba[1] = 0.0;
-		ctx.cfg.axislabelfont.clr.rgba[2] = 0.0;
+		ctx.cfg.axislabelfont.clr.rgba[0] = 0.5;
+		ctx.cfg.axislabelfont.clr.rgba[1] = 0.5;
+		ctx.cfg.axislabelfont.clr.rgba[2] = 0.5;
 		ctx.cfg.axislabelfont.clr.rgba[3] = 1.0;
 	}
 
