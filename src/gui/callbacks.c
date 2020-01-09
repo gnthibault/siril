@@ -412,7 +412,7 @@ int adjust_sellabel() {
 		bufferglobal = g_strdup_printf(_("%s, %d images selected"), seq_basename, com.seq.selnum);
 		g_free(seq_basename);
 	} else {
-		bufferglobal = g_strdup("- none -");
+		bufferglobal = g_strdup(_("- none -"));
 		gtk_widget_set_sensitive(lookup_widget("goregister_button"), FALSE);
 	}
 

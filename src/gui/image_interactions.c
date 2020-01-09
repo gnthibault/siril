@@ -402,11 +402,12 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 
 gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		GdkEventMotion *event, gpointer user_data) {
-	//static int delay = 5;
-	char label[32] = "labeldensity";
+
 	fits *fit = &(gfit);
 	double zoom = get_zoom_val();
 	gint zoomedX = 0, zoomedY = 0;
+	const char * suffix = vport_number_to_name(com.cvport);
+	gchar *label = g_strdup_printf("labeldensity_%s", suffix);
 
 	if (inimage((GdkEvent *) event)) {
 		char *buffer;
@@ -421,16 +422,6 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		if (fit->hi >= 10000)
 			val_width = 5;
 
-		/* TODO: fix to use the new function vport_number_to_name() */
-		if (widget == com.vport[RED_VPORT])
-			strcat(label, "r");
-		else if (widget == com.vport[GREEN_VPORT])
-			strcat(label, "g");
-		else if (widget == com.vport[BLUE_VPORT])
-			strcat(label, "b");
-		else
-			return FALSE;
-
 		format = g_strdup_printf(format_base, coords_width,
 				coords_width, val_width);
 		buffer = g_strdup_printf(format, zoomedX, zoomedY,
@@ -441,7 +432,11 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 
 		g_free(buffer);
 		g_free(format);
+	} else {
+		gtk_label_set_text(GTK_LABEL(lookup_widget(label)), "");
 	}
+
+	g_free(label);
 
 	if (com.drawing) {	// with button 1 down
 		if (!inimage((GdkEvent *) event)) {
