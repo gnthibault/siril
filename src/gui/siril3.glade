@@ -4221,7 +4221,8 @@ WARNING: this option is only available for FITS images as SER sequence can be de
                                   <object class="GtkLabel" id="label31">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Choose registration method:</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Registration method:</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -4244,7 +4245,8 @@ WARNING: this option is only available for FITS images as SER sequence can be de
                                   <object class="GtkLabel" id="label14">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Select registration layer: </property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Registration layer: </property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -4626,6 +4628,23 @@ WARNING: no new sequence is built, registration data is stored in the original s
                                 <property name="can_focus">False</property>
                                 <property name="spacing">10</property>
                                 <child>
+                                  <object class="GtkLabel" id="labelregisterinfo">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">end</property>
+                                    <property name="label" translatable="yes">Load a sequence first</property>
+                                    <style>
+                                      <class name="label-info"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="pack_type">end</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <object class="GtkButton" id="goregister_button">
                                     <property name="label" translatable="yes">Go register</property>
                                     <property name="visible">True</property>
@@ -4643,22 +4662,6 @@ WARNING: no new sequence is built, registration data is stored in the original s
                                     <property name="expand">True</property>
                                     <property name="fill">True</property>
                                     <property name="padding">16</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="labelregisterinfo">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">end</property>
-                                    <property name="label" translatable="yes">Load a sequence first</property>
-                                    <style>
-                                      <class name="label-info"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
@@ -4682,22 +4685,6 @@ WARNING: the counterpart of this technic is that the amount of memory and disk s
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkCheckButton" id="check_button_comet">
-                                    <property name="label" translatable="yes">Cumul reg. data</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Check this button if you want the new registration data to be added to the previous one.
-This option is useful when sequence has previously been aligned using a method that does not build a new sequence, but it should be unchecked when the comet/asteroid algorithm is applied several times.</property>
-                                    <property name="active">True</property>
-                                    <property name="draw_indicator">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">3</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <object class="GtkCheckButton" id="followStarCheckButton">
                                     <property name="label" translatable="yes">Follow star movement</property>
                                     <property name="can_focus">True</property>
@@ -4711,7 +4698,22 @@ WARNING: enabling this option requires the registration to not be parallelized, 
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
                                     <property name="padding">16</property>
-                                    <property name="pack_type">end</property>
+                                    <property name="position">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="check_button_comet">
+                                    <property name="label" translatable="yes">Cumul reg. data</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">Check this button if you want the new registration data to be added to the previous one.
+This option is useful when sequence has previously been aligned using a method that does not build a new sequence, but it should be unchecked when the comet/asteroid algorithm is applied several times.</property>
+                                    <property name="active">True</property>
+                                    <property name="draw_indicator">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
                                     <property name="position">4</property>
                                   </packing>
                                 </child>
@@ -4752,98 +4754,32 @@ WARNING: enabling this option requires the registration to not be parallelized, 
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkGrid" id="grid2">
+                              <object class="GtkBox">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="hexpand">True</property>
-                                <property name="row_spacing">3</property>
-                                <property name="column_spacing">5</property>
+                                <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="GtkCheckButton" id="checkbutton_displayref">
-                                    <property name="label" translatable="yes">Display reference image</property>
+                                  <object class="GtkBox">
                                     <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Display the reference image over the current image using a 50% transparency.
+                                    <property name="can_focus">False</property>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkbutton_displayref">
+                                        <property name="label" translatable="yes">Display reference image</property>
+                                        <property name="visible">True</property>
+                                        <property name="sensitive">False</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Display the reference image over the current image using a 50% transparency.
 To be enabled, the reference image must have been explicitly set and already displayed once on the selected registration layer.</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_checkbutton_displayref_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label38">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Change this value, using mouse wheel or up and down arrows, to align the image with the reference image on the X axis.</property>
-                                    <property name="label" translatable="yes">X translation:</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSpinButton" id="spinbut_shiftx">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="halign">start</property>
-                                    <property name="invisible_char">●</property>
-                                    <property name="width_chars">4</property>
-                                    <property name="max_width_chars">3</property>
-                                    <property name="text">0</property>
-                                    <property name="input_purpose">number</property>
-                                    <property name="adjustment">adjustment_shiftx</property>
-                                    <property name="numeric">True</property>
-                                    <signal name="value-changed" handler="on_spinbut_shift_value_change" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label39">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Change this value, using mouse wheel or up and down arrows, to align the image with the reference image on the Y axis.</property>
-                                    <property name="label" translatable="yes">Y translation:</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSpinButton" id="spinbut_shifty">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="halign">start</property>
-                                    <property name="invisible_char">●</property>
-                                    <property name="width_chars">4</property>
-                                    <property name="max_width_chars">3</property>
-                                    <property name="text">0</property>
-                                    <property name="input_purpose">number</property>
-                                    <property name="adjustment">adjustment_shifty</property>
-                                    <property name="numeric">True</property>
-                                    <signal name="value-changed" handler="on_spinbut_shift_value_change" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButtonBox" id="buttonbox1">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="spacing">5</property>
-                                    <property name="layout_style">center</property>
+                                        <property name="draw_indicator">True</property>
+                                        <signal name="toggled" handler="on_checkbutton_displayref_toggled" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
                                     <child>
                                       <object class="GtkLabel" id="labelRegRef">
                                         <property name="visible">True</property>
@@ -4854,46 +4790,94 @@ To be enabled, the reference image must have been explicitly set and already dis
                                         </style>
                                       </object>
                                       <packing>
-                                        <property name="expand">True</property>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="pack_type">end</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">center</property>
+                                    <property name="spacing">5</property>
+                                    <child>
+                                      <object class="GtkLabel" id="label38">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="tooltip_text" translatable="yes">Change this value, using mouse wheel or up and down arrows, to align the image with the reference image on the X axis.</property>
+                                        <property name="label" translatable="yes">X translation:</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
                                         <property name="fill">True</property>
                                         <property name="position">0</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkToggleButton" id="togglebutton2">
-                                        <property name="label" translatable="yes">Set first preview</property>
+                                      <object class="GtkSpinButton" id="spinbut_shiftx">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <property name="tooltip_text" translatable="yes">Allows a preview area to be displayed just below. After clicking on this button, click on the image to position the preview area's centre</property>
-                                        <signal name="toggled" handler="on_toggle_preview_toggled" swapped="no"/>
+                                        <property name="invisible_char">●</property>
+                                        <property name="width_chars">4</property>
+                                        <property name="max_width_chars">3</property>
+                                        <property name="text">0</property>
+                                        <property name="input_purpose">number</property>
+                                        <property name="adjustment">adjustment_shiftx</property>
+                                        <property name="numeric">True</property>
+                                        <signal name="value-changed" handler="on_spinbut_shift_value_change" swapped="no"/>
                                       </object>
                                       <packing>
-                                        <property name="expand">True</property>
+                                        <property name="expand">False</property>
                                         <property name="fill">True</property>
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkToggleButton" id="togglebutton3">
-                                        <property name="label" translatable="yes">Set second preview</property>
+                                      <object class="GtkLabel" id="label39">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <property name="tooltip_text" translatable="yes">Allows a preview area to be displayed just below. After clicking on this button, click on the image to position the preview area's centre</property>
-                                        <signal name="toggled" handler="on_toggle_preview_toggled" swapped="no"/>
+                                        <property name="can_focus">False</property>
+                                        <property name="tooltip_text" translatable="yes">Change this value, using mouse wheel or up and down arrows, to align the image with the reference image on the Y axis.</property>
+                                        <property name="label" translatable="yes">Y translation:</property>
                                       </object>
                                       <packing>
-                                        <property name="expand">True</property>
+                                        <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="position">2</property>
+                                        <property name="position">3</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSpinButton" id="spinbut_shifty">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="invisible_char">●</property>
+                                        <property name="width_chars">4</property>
+                                        <property name="max_width_chars">3</property>
+                                        <property name="text">0</property>
+                                        <property name="input_purpose">number</property>
+                                        <property name="adjustment">adjustment_shifty</property>
+                                        <property name="numeric">True</property>
+                                        <signal name="value-changed" handler="on_spinbut_shift_value_change" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">4</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">0</property>
-                                    <property name="width">3</property>
+                                    <property name="expand">True</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
                                   </packing>
                                 </child>
                               </object>
@@ -4909,10 +4893,38 @@ To be enabled, the reference image must have been explicitly set and already dis
                                 <property name="can_focus">False</property>
                                 <property name="spacing">2</property>
                                 <child>
-                                  <object class="GtkDrawingArea" id="drawingarea_preview1">
+                                  <object class="GtkBox">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <signal name="draw" handler="redraw_preview" swapped="no"/>
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkToggleButton" id="togglebutton2">
+                                        <property name="label" translatable="yes">Set first preview</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="tooltip_text" translatable="yes">Allows a preview area to be displayed just below. After clicking on this button, click on the image to position the preview area's centre</property>
+                                        <property name="halign">center</property>
+                                        <signal name="toggled" handler="on_toggle_preview_toggled" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkDrawingArea" id="drawingarea_preview1">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <signal name="draw" handler="redraw_preview" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
@@ -4921,10 +4933,38 @@ To be enabled, the reference image must have been explicitly set and already dis
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkDrawingArea" id="drawingarea_preview2">
+                                  <object class="GtkBox">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <signal name="draw" handler="redraw_preview" swapped="no"/>
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkToggleButton" id="togglebutton3">
+                                        <property name="label" translatable="yes">Set second preview</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="tooltip_text" translatable="yes">Allows a preview area to be displayed just below. After clicking on this button, click on the image to position the preview area's centre</property>
+                                        <property name="halign">center</property>
+                                        <signal name="toggled" handler="on_toggle_preview_toggled" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkDrawingArea" id="drawingarea_preview2">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <signal name="draw" handler="redraw_preview" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
@@ -4964,6 +5004,7 @@ To be enabled, the reference image must have been explicitly set and already dis
                           <object class="GtkBox" id="GtkBoxPlot">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="border_width">12</property>
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkViewport" id="GtkViewPortPlot">
