@@ -193,6 +193,48 @@ static void keyboard_shortcuts_activated(GSimpleAction *action,
 	siril_cmd_help_keyboard_shortcuts(window);
 }
 
+static void tab_conversion_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(FILE_CONVERSION);
+}
+
+static void tab_sequence_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(IMAGE_SEQ);
+}
+
+static void tab_prepro_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(PRE_PROC);
+}
+
+static void tab_registration_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(REGISTRATION);
+}
+
+static void tab_plot_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(PLOT);
+}
+
+static void tab_stacking_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(STACKING);
+}
+
+static void tab_logs_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(OUTPUT_LOGS);
+}
+
 static GActionEntry app_entries[] = {
 		{ "quit", quit_action_activate },
 	    { "preferences", preferences_action_activate },
@@ -208,7 +250,14 @@ static GActionEntry app_entries[] = {
 		{ "full_screen", full_screen_activated},
 		{ "shortcuts", keyboard_shortcuts_activated},
 		{ "about", about_action_activate },
-		{ "cwd", cwd_action_activate }
+		{ "cwd", cwd_action_activate },
+		{ "conversion", tab_conversion_activate },
+		{ "sequence", tab_sequence_activate },
+		{ "registration", tab_registration_activate },
+		{ "prepro", tab_prepro_activate },
+		{ "plot", tab_plot_activate },
+		{ "stacking", tab_stacking_activate },
+		{ "logs", tab_logs_activate }
 };
 
 void load_glade_file() {
