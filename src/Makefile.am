@@ -31,6 +31,7 @@ siril_SOURCES = \
 	algos/Def_Wavelet.h \
 	algos/Def_Mem.h \
 	algos/demosaicing.c \
+	algos/demosaicing_float.c \
 	algos/demosaicing.h \
 	algos/geometry.c \
 	algos/geometry.h \
