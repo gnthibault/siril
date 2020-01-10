@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-09 14:23+0100\n"
+"POT-Creation-Date: 2020-01-11 00:34+0100\n"
 "PO-Revision-Date: 2019-10-13 19:59+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -612,7 +612,8 @@ msgstr ""
 "FITS ή SER."
 
 #: ../src/gui/siril3.glade.h:130
-msgid "File conversion"
+#, fuzzy
+msgid "Conversion"
 msgstr "Μετατροπή αρχείου"
 
 #: ../src/gui/siril3.glade.h:131
@@ -1227,11 +1228,16 @@ msgstr "Ταχύτητα κομήτη σε εικονοστοιχεία ανά �
 msgid "Velocity: "
 msgstr "Ταχύτητα: "
 
-#: ../src/gui/siril3.glade.h:256
+#: ../src/gui/siril3.glade.h:256 ../src/registration/registration.c:703
+#, fuzzy
+msgid "Load a sequence first"
+msgstr "Φορτώστε πρώτα μια αληλλουχία."
+
+#: ../src/gui/siril3.glade.h:257
 msgid "Go register"
 msgstr "Εκκίνηση εγγραφής"
 
-#: ../src/gui/siril3.glade.h:257
+#: ../src/gui/siril3.glade.h:258
 msgid ""
 "Start the registration process. It will register images in the loaded "
 "sequence using the selected method and reference layer (loaded in the 'Image "
@@ -1241,11 +1247,6 @@ msgstr ""
 "φορτωμένη αλληλουχία χρησιμοποιώντας την επιλεγμένη μέθοδο και επίπεδο "
 "αναφοράς (φορτωμένο στην καρτέλα 'Αλληλουχίες Εικόνων', το τρέχων όνομα της "
 "αλληλουχίας είναι επίσης στο κάτω μέρος του παραθύρου)."
-
-#: ../src/gui/siril3.glade.h:258 ../src/registration/registration.c:703
-#, fuzzy
-msgid "Load a sequence first"
-msgstr "Φορτώστε πρώτα μια αληλλουχία."
 
 #: ../src/gui/siril3.glade.h:259
 msgid "Simplified Drizzle x2"
@@ -1285,29 +1286,10 @@ msgstr ""
 "παράγοντα drizzle."
 
 #: ../src/gui/siril3.glade.h:265
-msgid "Cumul reg. data"
-msgstr "Σωρευτικά δεδομένα εγγραφής"
-
-#: ../src/gui/siril3.glade.h:266
-msgid ""
-"Check this button if you want the new registration data to be added to the "
-"previous one.\n"
-"This option is useful when sequence has previously been aligned using a "
-"method that does not build a new sequence, but it should be unchecked when "
-"the comet/asteroid algorithm is applied several times."
-msgstr ""
-"Επιλέξτε αυτό το κουμπί αν θέλετε να προστεθούν τα νέα δεδομένα καταγραφής "
-"στην προηγούμενη.\n"
-"Αυτή η επιλογή είναι χρήσιμη όταν η ακολουθία έχει ευθυγραμμιστεί "
-"προηγουμένως με μια μέθοδο που δεν δημιουργεί μια νέα ακολουθία, αλλά θα "
-"πρέπει να μην είναι επιλεγμένη όταν ο αλγόριθμος κομήτη/αστεροειδή "
-"εφαρμόζεται αρκετές φορές."
-
-#: ../src/gui/siril3.glade.h:268
 msgid "Follow star movement"
 msgstr "Ακολούθηση κίνησης αστεριού"
 
-#: ../src/gui/siril3.glade.h:269
+#: ../src/gui/siril3.glade.h:266
 msgid ""
 "Use this option to use the position of the star found in the previous image "
 "as new centre for the current image registration. This allows the selection "
@@ -1323,6 +1305,25 @@ msgstr ""
 "αριθμό αστεριών.\n"
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: ενεργοποιώντας αυτή την επιλογή απαιτείται η εγγραφή να μην "
 "είναι παράλληλη, θα τρέξει μόνο σε ένα πυρήνα του επεξεργαστή."
+
+#: ../src/gui/siril3.glade.h:268
+msgid "Cumul reg. data"
+msgstr "Σωρευτικά δεδομένα εγγραφής"
+
+#: ../src/gui/siril3.glade.h:269
+msgid ""
+"Check this button if you want the new registration data to be added to the "
+"previous one.\n"
+"This option is useful when sequence has previously been aligned using a "
+"method that does not build a new sequence, but it should be unchecked when "
+"the comet/asteroid algorithm is applied several times."
+msgstr ""
+"Επιλέξτε αυτό το κουμπί αν θέλετε να προστεθούν τα νέα δεδομένα καταγραφής "
+"στην προηγούμενη.\n"
+"Αυτή η επιλογή είναι χρήσιμη όταν η ακολουθία έχει ευθυγραμμιστεί "
+"προηγουμένως με μια μέθοδο που δεν δημιουργεί μια νέα ακολουθία, αλλά θα "
+"πρέπει να μην είναι επιλεγμένη όταν ο αλγόριθμος κομήτη/αστεροειδή "
+"εφαρμόζεται αρκετές φορές."
 
 #: ../src/gui/siril3.glade.h:271
 msgid "Manual registration"
@@ -4329,44 +4330,45 @@ msgid "Zoom out"
 msgstr "Μεγέθυνση στο υπάρχων πλαίσιο"
 
 #: ../src/gui/siril-shortcuts.ui.h:7
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Windows and Application"
-msgstr "Κλείσιμο της εφαρμογής"
-
-#: ../src/gui/siril-shortcuts.ui.h:8
-msgctxt "shortcut window"
-msgid "Fullscreen on / off"
-msgstr ""
-
-#: ../src/gui/siril-shortcuts.ui.h:9
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Open application menu"
-msgstr "Κλείσιμο της εφαρμογής"
-
-#: ../src/gui/siril-shortcuts.ui.h:10
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Quit the application"
-msgstr "Έξοδος από την εφαρμογή"
-
-#: ../src/gui/siril-shortcuts.ui.h:11
 msgctxt "shortcut window"
 msgid "Undo and Redo"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:12
+#: ../src/gui/siril-shortcuts.ui.h:8
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Undo previous command"
 msgstr "Δεν υάρχει βοήθεια για αυτή την εντολή"
 
-#: ../src/gui/siril-shortcuts.ui.h:13
+#: ../src/gui/siril-shortcuts.ui.h:9
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Redo previous command"
 msgstr "Δεν υάρχει βοήθεια για αυτή την εντολή"
+
+#: ../src/gui/siril-shortcuts.ui.h:10
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Image Processing"
+msgstr "_Επεξεργασία Εικόνας"
+
+#: ../src/gui/siril-shortcuts.ui.h:11
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Negative transformation"
+msgstr "Αρνητικός Μετασχηματισμός"
+
+#: ../src/gui/siril-shortcuts.ui.h:12
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, clockwise"
+msgstr "Περιστροφή 90 μοιρών, δεξιόστροφα"
+
+#: ../src/gui/siril-shortcuts.ui.h:13
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, counter-clockwise"
+msgstr "Περιστροφή 90 μοιρών, αριστερόστροφα"
 
 #: ../src/gui/siril-shortcuts.ui.h:14
 msgctxt "shortcut window"
@@ -4382,32 +4384,73 @@ msgstr "Αναφορά άσπρου"
 #: ../src/gui/siril-shortcuts.ui.h:16
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Change working directory"
-msgstr "Αλλάζει τον τρέχων κατάλογο εργασίας"
+msgid "Open application menu"
+msgstr "Κλείσιμο της εφαρμογής"
 
 #: ../src/gui/siril-shortcuts.ui.h:17
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Image Processing"
-msgstr "_Επεξεργασία Εικόνας"
+msgid "Change working directory"
+msgstr "Αλλάζει τον τρέχων κατάλογο εργασίας"
 
 #: ../src/gui/siril-shortcuts.ui.h:18
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Negative transformation"
-msgstr "Αρνητικός Μετασχηματισμός"
+msgid "Windows and Application"
+msgstr "Κλείσιμο της εφαρμογής"
 
 #: ../src/gui/siril-shortcuts.ui.h:19
-#, fuzzy
 msgctxt "shortcut window"
-msgid "Rotate 90 degrees, clockwise"
-msgstr "Περιστροφή 90 μοιρών, δεξιόστροφα"
+msgid "Fullscreen on / off"
+msgstr ""
 
 #: ../src/gui/siril-shortcuts.ui.h:20
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Rotate 90 degrees, counter-clockwise"
-msgstr "Περιστροφή 90 μοιρών, αριστερόστροφα"
+msgid "Quit the application"
+msgstr "Έξοδος από την εφαρμογή"
+
+#: ../src/gui/siril-shortcuts.ui.h:21
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Conversion page"
+msgstr "Γίνεται αλλαγή στο επίπεδο εγγραφής\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:22
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Sequence page"
+msgstr "PSF για την αλληλουχία"
+
+#: ../src/gui/siril-shortcuts.ui.h:23
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Pre-Processing page"
+msgstr "Γίνεται αλλαγή στο επίπεδο εγγραφής\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:24
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Registration page"
+msgstr "Γίνεται αλλαγή στο επίπεδο εγγραφής\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:25
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Plot page"
+msgstr "Γίνεται αλλαγή στο επίπεδο εγγραφής\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:26
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Stacking page"
+msgstr "Μετάβαση στη καρτέλα σώρευσης"
+
+#: ../src/gui/siril-shortcuts.ui.h:27
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Output logs page"
+msgstr "Γίνεται αλλαγή στο επίπεδο εγγραφής\n"
 
 #: ../src/algos/background_extraction.c:116
 msgid ""
@@ -4510,8 +4553,8 @@ msgstr "Τιμή: "
 #: ../src/core/command_line_processor.c:248 ../src/filters/banding.c:236
 #: ../src/filters/fft.c:377 ../src/filters/median.c:60
 #: ../src/filters/rgradient.c:185 ../src/filters/saturation.c:86
-#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2191
-#: ../src/gui/callbacks.c:2354 ../src/gui/script_menu.c:152
+#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2199
+#: ../src/gui/callbacks.c:2362 ../src/gui/script_menu.c:152
 #: ../src/io/conversion.c:541 ../src/registration/registration.c:842
 #: ../src/stacking/stacking.c:1098 ../src/stacking/stacking.c:1222
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4617,7 +4660,7 @@ msgstr "Η ανάκτηση απέτυχε με κωδικό %ld για τη δ�
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1741 ../src/gui/open_dialog.c:313
+#: ../src/gui/callbacks.c:1749 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:620
 #: ../src/io/single_image.c:149
@@ -4844,15 +4887,15 @@ msgstr ""
 msgid "Unknown transform\n"
 msgstr "Άγνωστος μετασχηματισμός\n"
 
-#: ../src/algos/star_finder.c:173
+#: ../src/algos/star_finder.c:175
 msgid "Findstar: processing...\n"
 msgstr "Findstar: γίνεται επεξεργασία...\n"
 
-#: ../src/algos/star_finder.c:337
+#: ../src/algos/star_finder.c:339
 msgid "This star has already been picked !\n"
 msgstr "Αυτό το αστέρι έχει ήδη επιλεχθεί !\n"
 
-#: ../src/algos/star_finder.c:338
+#: ../src/algos/star_finder.c:340
 msgid "Peaker"
 msgstr "Peaker"
 
@@ -5118,7 +5161,7 @@ msgstr "Γίνεται εκτέλεση του PSF στην φορτωμένη �
 #: ../src/core/command.c:1770 ../src/core/command.c:1776
 #: ../src/core/command.c:1929 ../src/core/command.c:1936
 #: ../src/core/command.c:2193 ../src/core/command.c:2335
-#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:429
+#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:478
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Δεν βρέθηκε η αλληλουχία `%s' .\n"
@@ -5345,7 +5388,7 @@ msgstr "Ο τύπος μεθόδου σώρευσης '%s' δεν είναι έ�
 msgid "Stacked sequence successfully.\n"
 msgstr "Έγινε σώρευση της αλληλουχίας με επιτυχία.\n"
 
-#: ../src/core/command.c:2479 ../src/gui/callbacks.c:2198
+#: ../src/core/command.c:2479 ../src/gui/callbacks.c:2206
 msgid "Preprocessing...\n"
 msgstr "Γίνεται προ-επεξεργασία...\n"
 
@@ -6215,7 +6258,7 @@ msgid "Script execution failed.\n"
 msgstr "Η εκτέλεση της δέσμης ενεργειών απέτυχε.\n"
 
 #: ../src/core/command_line_processor.c:258 ../src/gui/script_menu.c:167
-#: ../src/main.c:361
+#: ../src/main.c:410
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Το αρχείο [%s] δεν υπάρχει\n"
@@ -6682,7 +6725,7 @@ msgstr ""
 "Δεν ήταν δυνατό να φορτωθεί το αρχείο CSS: %s. Παρακαλώ εγκαταστήστε ξανά το "
 "Siril\n"
 
-#: ../src/core/utils.c:642 ../src/main.c:229
+#: ../src/core/utils.c:642 ../src/main.c:278
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Το '%s' φορτώθηκε με επιτυχία\n"
@@ -6903,39 +6946,39 @@ msgstr "%d αρχείο επιλέχθηκε, %s"
 msgid "%d files selected, %s"
 msgstr "%d αρχεία επιλεχθηκαν, %s"
 
-#: ../src/gui/callbacks.c:1124
+#: ../src/gui/callbacks.c:1132
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Μνήμη: %ldMB"
 
-#: ../src/gui/callbacks.c:1126
+#: ../src/gui/callbacks.c:1134
 msgid "Mem: N/A"
 msgstr "Μνήμη: N/A"
 
-#: ../src/gui/callbacks.c:1135
+#: ../src/gui/callbacks.c:1143
 #, c-format
 msgid "Disk Space: %s"
 msgstr "Χωρος Δίσκου: %s"
 
-#: ../src/gui/callbacks.c:1138
+#: ../src/gui/callbacks.c:1146
 msgid "Disk Space: N/A"
 msgstr "Μέγεθος Δίσκου: Δεν είναι διαθέσιμο"
 
-#: ../src/gui/callbacks.c:1201
+#: ../src/gui/callbacks.c:1209
 msgid "This binning is not handled yet\n"
 msgstr "Αυτή η ομαδοποίηση δεν υποστηρίζεται ακόμα\n"
 
-#: ../src/gui/callbacks.c:1555 ../src/gui/callbacks.c:1556
+#: ../src/gui/callbacks.c:1563 ../src/gui/callbacks.c:1564
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr "<span foreground=\"red\">ΣΦΑΛΜΑ</span>"
 
-#: ../src/gui/callbacks.c:1568
+#: ../src/gui/callbacks.c:1576
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">Ψυχρά: %ld εικονοστοιχεία</span>"
 
-#: ../src/gui/callbacks.c:1569 ../src/gui/callbacks.c:1581
+#: ../src/gui/callbacks.c:1577 ../src/gui/callbacks.c:1589
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -6943,93 +6986,93 @@ msgstr ""
 "Αυτή η τιμή μπορεί να είναι πολύ υψηλή. Παρακαλώ, λάβετε υπόψη να αλλάξετε "
 "την τιμή σίγμα ή να αποεπιλέξετε του κουτί."
 
-#: ../src/gui/callbacks.c:1572
+#: ../src/gui/callbacks.c:1580
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Ψυχρά: %ld εικονοστοιχεία"
 
-#: ../src/gui/callbacks.c:1580
+#: ../src/gui/callbacks.c:1588
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">Θερμά: %ld εικονοστοιχεία</span>"
 
-#: ../src/gui/callbacks.c:1584
+#: ../src/gui/callbacks.c:1592
 #, c-format
 msgid "Hot: %ld px"
 msgstr "Θερμά: %ld εικονοστοιχεία"
 
-#: ../src/gui/callbacks.c:1740
+#: ../src/gui/callbacks.c:1748
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "Δεν έχετε άδεια να γράψετε σε αυτό τον κατάλογο: %s\n"
 
-#: ../src/gui/callbacks.c:1864
+#: ../src/gui/callbacks.c:1872
 msgid "Closing application"
 msgstr "Κλείσιμο της εφαρμογής"
 
-#: ../src/gui/callbacks.c:1864
+#: ../src/gui/callbacks.c:1872
 msgid "Are you sure you want to quit?"
 msgstr "Είστε σίγουροι ότι θέλετε να κλείσετε το πρόγραμμα;"
 
-#: ../src/gui/callbacks.c:2085
+#: ../src/gui/callbacks.c:2093
 msgid "Opening offset image..."
 msgstr "Γίνεται άνοιγμα της εικόνας offset..."
 
-#: ../src/gui/callbacks.c:2089
+#: ../src/gui/callbacks.c:2097
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr ""
 "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:2092
+#: ../src/gui/callbacks.c:2100
 msgid "NOT USING OFFSET: image dimensions are different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ OFFSET: οι διαστάσεις της εικόνας είναι διαφορετικές"
 
-#: ../src/gui/callbacks.c:2097
+#: ../src/gui/callbacks.c:2105
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ OFFSET: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:2117
+#: ../src/gui/callbacks.c:2125
 msgid "Opening dark image..."
 msgstr "Γίνεται άνοιγμα της εικόνας dark..."
 
-#: ../src/gui/callbacks.c:2121
+#: ../src/gui/callbacks.c:2129
 msgid "NOT USING DARK: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:2124
+#: ../src/gui/callbacks.c:2132
 msgid "NOT USING DARK: image dimensions are different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ DARK: οι διαστάσεις της εικόνας είναι διαφορετικές"
 
-#: ../src/gui/callbacks.c:2129
+#: ../src/gui/callbacks.c:2137
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ DARK: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:2156
+#: ../src/gui/callbacks.c:2164
 msgid "Opening flat image..."
 msgstr "Γίνεται άνοιγμα της εικόνας flat..."
 
-#: ../src/gui/callbacks.c:2160
+#: ../src/gui/callbacks.c:2168
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: ο αριθμός των καναλιών είναι διαφορετικός"
 
-#: ../src/gui/callbacks.c:2163
+#: ../src/gui/callbacks.c:2171
 msgid "NOT USING FLAT: image dimensions are different"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ FLAT: οι διαστάσεις της εικόνας είναι διαφορετικές"
 
-#: ../src/gui/callbacks.c:2168
+#: ../src/gui/callbacks.c:2176
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "ΔΕΝ ΓΙΝΕΤΑΙ ΧΡΗΣΗ ΤΟΥ FLAT: το αρχείο δεν μπορεί να ανοιχτεί\n"
 
-#: ../src/gui/callbacks.c:2255
+#: ../src/gui/callbacks.c:2263
 msgid "Error in preprocessing."
 msgstr "Σφάλμα στην προ-επεξεργασία."
 
-#: ../src/gui/callbacks.c:2294
+#: ../src/gui/callbacks.c:2302
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Έγινε επιλογή %s αλληλουχίας %s..."
 
-#: ../src/gui/callbacks.c:2360
+#: ../src/gui/callbacks.c:2368
 msgid "Searching for sequences in the current working directory..."
 msgstr "Γίνεται αναζήτηση για αλληλουχίες στον τρέχων κατάλογο εργασίας..."
 
@@ -8474,7 +8517,7 @@ msgstr ""
 msgid "print the application’s version"
 msgstr "Έξοδος από την εφαρμογή"
 
-#: ../src/main.c:224
+#: ../src/main.c:273
 #, fuzzy, c-format
 msgid ""
 "%s was not found or contains errors, cannot render GUI:\n"
@@ -8484,7 +8527,7 @@ msgstr ""
 "Το %s δεν βρέθηκε ή περιέχει σφάλματα, δεν μπορεί να γίνει render του GUI. "
 "Γίνεται έξοδος.\n"
 
-#: ../src/main.c:261
+#: ../src/main.c:310
 #, fuzzy, c-format
 msgid ""
 "Questionable parallel processing efficiency - openmp reports %d %s. Possibly "
@@ -8494,49 +8537,49 @@ msgstr ""
 "επεξεργαστές. Ενδεχομένως η εγκατάσταση του opencv/openblas να είναι "
 "προβληματική.\n"
 
-#: ../src/main.c:263 ../src/main.c:268
+#: ../src/main.c:312 ../src/main.c:317
 #, fuzzy
 msgid "processor"
 msgid_plural "processors"
 msgstr[0] "Γίνεται Προ-επεξεργασία"
 msgstr[1] "Γίνεται Προ-επεξεργασία"
 
-#: ../src/main.c:266
+#: ../src/main.c:315
 #, fuzzy, c-format
 msgid "Parallel processing %s: Using %d logical %s.\n"
 msgstr "Παράλληλη επεξεργασία %s : Γίνεται χρήση %d λογικού επεξεργαστή.\n"
 
-#: ../src/main.c:267
+#: ../src/main.c:316
 msgid "enabled"
 msgstr "ενεργοποιημένο"
 
-#: ../src/main.c:270
+#: ../src/main.c:319
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
 msgstr "Παράλληλη επεξεργασία %s : Γίνεται χρήση %d λογικού επεξεργαστή.\n"
 
-#: ../src/main.c:270
+#: ../src/main.c:319
 msgid "disabled"
 msgstr "απενεργοποιημένο"
 
-#: ../src/main.c:294
+#: ../src/main.c:343
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Καλώς ήρθατε στο %s v%s\n"
 
-#: ../src/main.c:321
+#: ../src/main.c:370
 #, c-format
 msgid "Could not load or create settings file, exiting.\n"
 msgstr ""
 "Δεν ήταν δυνατό να φορτωθεί ή να δημιουργηθεί αρχείο ρυθμίσεων, γίνεται "
 "έξοδος.\n"
 
-#: ../src/main.c:556
+#: ../src/main.c:605
 #, fuzzy
 msgid "Siril - A free astronomical image processing software."
 msgstr "Πρόγραμμα (προ-)επεξεργασίας αστρονομικών εικόνων"
 
-#: ../src/main.c:563
+#: ../src/main.c:612
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr ""

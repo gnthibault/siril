@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-09 14:23+0100\n"
-"PO-Revision-Date: 2020-01-09 14:24+0100\n"
+"POT-Creation-Date: 2020-01-11 00:34+0100\n"
+"PO-Revision-Date: 2020-01-11 00:37+0100\n"
 "Last-Translator: Cyril Richard\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -607,7 +607,7 @@ msgstr ""
 "dans le format utilisé par Siril : FITS ou SER."
 
 #: ../src/gui/siril3.glade.h:130
-msgid "File conversion"
+msgid "Conversion"
 msgstr "Conversion"
 
 #: ../src/gui/siril3.glade.h:131
@@ -1210,11 +1210,15 @@ msgstr "Vitesse de la comète en pixel par heure."
 msgid "Velocity: "
 msgstr "Vitesse : "
 
-#: ../src/gui/siril3.glade.h:256
+#: ../src/gui/siril3.glade.h:256 ../src/registration/registration.c:703
+msgid "Load a sequence first"
+msgstr "Charger d'abord une séquence"
+
+#: ../src/gui/siril3.glade.h:257
 msgid "Go register"
 msgstr "Aligner"
 
-#: ../src/gui/siril3.glade.h:257
+#: ../src/gui/siril3.glade.h:258
 msgid ""
 "Start the registration process. It will register images in the loaded "
 "sequence using the selected method and reference layer (loaded in the 'Image "
@@ -1224,10 +1228,6 @@ msgstr ""
 "utilisant la méthode sélectionnée et le canal de référence (chargé dans "
 "l'onglet 'Séquences d'images', le nom de la séquence courante est lui, "
 "visible en bas de la fenêtre également)."
-
-#: ../src/gui/siril3.glade.h:258 ../src/registration/registration.c:703
-msgid "Load a sequence first"
-msgstr "Charger d'abord une séquence"
 
 #: ../src/gui/siril3.glade.h:259
 msgid "Simplified Drizzle x2"
@@ -1266,28 +1266,10 @@ msgstr ""
 "multipliée par le carré du facteur Drizzle."
 
 #: ../src/gui/siril3.glade.h:265
-msgid "Cumul reg. data"
-msgstr "Cumul données de reg."
-
-#: ../src/gui/siril3.glade.h:266
-msgid ""
-"Check this button if you want the new registration data to be added to the "
-"previous one.\n"
-"This option is useful when sequence has previously been aligned using a "
-"method that does not build a new sequence, but it should be unchecked when "
-"the comet/asteroid algorithm is applied several times."
-msgstr ""
-"Cochez cette case si vous souhaitez que les nouvelles données "
-"d’enregistrement soient ajoutées aux précédentes.\n"
-"Cette option est utile lorsque la séquence a déjà été alignée à l'aide d'une "
-"méthode ne générant pas de nouvelle séquence, mais elle doit être décochée "
-"lorsque l'algorithme comète/astéroïde est appliqué plusieurs fois."
-
-#: ../src/gui/siril3.glade.h:268
 msgid "Follow star movement"
 msgstr "Suivre le mouvement de l'étoile"
 
-#: ../src/gui/siril3.glade.h:269
+#: ../src/gui/siril3.glade.h:266
 msgid ""
 "Use this option to use the position of the star found in the previous image "
 "as new centre for the current image registration. This allows the selection "
@@ -1303,6 +1285,24 @@ msgstr ""
 "nombre d'étoiles.\n"
 "ATTENTION : activer cette option désactive la parallélisation de "
 "l'algorithme."
+
+#: ../src/gui/siril3.glade.h:268
+msgid "Cumul reg. data"
+msgstr "Cumul données de reg."
+
+#: ../src/gui/siril3.glade.h:269
+msgid ""
+"Check this button if you want the new registration data to be added to the "
+"previous one.\n"
+"This option is useful when sequence has previously been aligned using a "
+"method that does not build a new sequence, but it should be unchecked when "
+"the comet/asteroid algorithm is applied several times."
+msgstr ""
+"Cochez cette case si vous souhaitez que les nouvelles données "
+"d’enregistrement soient ajoutées aux précédentes.\n"
+"Cette option est utile lorsque la séquence a déjà été alignée à l'aide d'une "
+"méthode ne générant pas de nouvelle séquence, mais elle doit être décochée "
+"lorsque l'algorithme comète/astéroïde est appliqué plusieurs fois."
 
 #: ../src/gui/siril3.glade.h:271
 msgid "Manual registration"
@@ -4257,38 +4257,38 @@ msgstr "Dézoomer"
 
 #: ../src/gui/siril-shortcuts.ui.h:7
 msgctxt "shortcut window"
-msgid "Windows and Application"
-msgstr "Fenêtres et application"
-
-#: ../src/gui/siril-shortcuts.ui.h:8
-msgctxt "shortcut window"
-msgid "Fullscreen on / off"
-msgstr "Activer / désactiver le mode plein écran"
-
-#: ../src/gui/siril-shortcuts.ui.h:9
-msgctxt "shortcut window"
-msgid "Open application menu"
-msgstr "Ouvrir le menu de l'application"
-
-#: ../src/gui/siril-shortcuts.ui.h:10
-msgctxt "shortcut window"
-msgid "Quit the application"
-msgstr "Quitter l'application"
-
-#: ../src/gui/siril-shortcuts.ui.h:11
-msgctxt "shortcut window"
 msgid "Undo and Redo"
 msgstr "Annuler et rétablir"
 
-#: ../src/gui/siril-shortcuts.ui.h:12
+#: ../src/gui/siril-shortcuts.ui.h:8
 msgctxt "shortcut window"
 msgid "Undo previous command"
 msgstr "Annuler la commande précédente"
 
-#: ../src/gui/siril-shortcuts.ui.h:13
+#: ../src/gui/siril-shortcuts.ui.h:9
 msgctxt "shortcut window"
 msgid "Redo previous command"
 msgstr "Rétablir la commande précédente"
+
+#: ../src/gui/siril-shortcuts.ui.h:10
+msgctxt "shortcut window"
+msgid "Image Processing"
+msgstr "Traitement de l'image"
+
+#: ../src/gui/siril-shortcuts.ui.h:11
+msgctxt "shortcut window"
+msgid "Negative transformation"
+msgstr "Transformation négative"
+
+#: ../src/gui/siril-shortcuts.ui.h:12
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, clockwise"
+msgstr "Rotation de 90 degrés, sens horaire"
+
+#: ../src/gui/siril-shortcuts.ui.h:13
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, counter-clockwise"
+msgstr "Rotation de 90 degrés, sens antihoraire"
 
 #: ../src/gui/siril-shortcuts.ui.h:14
 msgctxt "shortcut window"
@@ -4302,28 +4302,63 @@ msgstr "Ouvrir les préférences"
 
 #: ../src/gui/siril-shortcuts.ui.h:16
 msgctxt "shortcut window"
-msgid "Change working directory"
-msgstr "Modifier le répertoire de travail"
+msgid "Open application menu"
+msgstr "Ouvrir le menu de l'application"
 
 #: ../src/gui/siril-shortcuts.ui.h:17
 msgctxt "shortcut window"
-msgid "Image Processing"
-msgstr "Traitement de l'image"
+msgid "Change working directory"
+msgstr "Modifier le répertoire de travail"
 
 #: ../src/gui/siril-shortcuts.ui.h:18
 msgctxt "shortcut window"
-msgid "Negative transformation"
-msgstr "Transformation négative"
+msgid "Windows and Application"
+msgstr "Fenêtres et application"
 
 #: ../src/gui/siril-shortcuts.ui.h:19
 msgctxt "shortcut window"
-msgid "Rotate 90 degrees, clockwise"
-msgstr "Rotation de 90 degrés, sens horaire"
+msgid "Fullscreen on / off"
+msgstr "Activer / désactiver le mode plein écran"
 
 #: ../src/gui/siril-shortcuts.ui.h:20
 msgctxt "shortcut window"
-msgid "Rotate 90 degrees, counter-clockwise"
-msgstr "Rotation de 90 degrés, sens antihoraire"
+msgid "Quit the application"
+msgstr "Quitter l'application"
+
+#: ../src/gui/siril-shortcuts.ui.h:21
+msgctxt "shortcut window"
+msgid "Switch to the Conversion page"
+msgstr "Aller à l'onglet Conversion"
+
+#: ../src/gui/siril-shortcuts.ui.h:22
+msgctxt "shortcut window"
+msgid "Switch to the Sequence page"
+msgstr "Aller à l'onglet Séquence"
+
+#: ../src/gui/siril-shortcuts.ui.h:23
+msgctxt "shortcut window"
+msgid "Switch to the Pre-Processing page"
+msgstr "Aller à l'onglet Pré-traitement"
+
+#: ../src/gui/siril-shortcuts.ui.h:24
+msgctxt "shortcut window"
+msgid "Switch to the Registration page"
+msgstr "Aller à l'onglet Alignement"
+
+#: ../src/gui/siril-shortcuts.ui.h:25
+msgctxt "shortcut window"
+msgid "Switch to the Plot page"
+msgstr "Aller à l'onglet Graphique"
+
+#: ../src/gui/siril-shortcuts.ui.h:26
+msgctxt "shortcut window"
+msgid "Switch to the Stacking page"
+msgstr "Aller à l'onglet Empilement"
+
+#: ../src/gui/siril-shortcuts.ui.h:27
+msgctxt "shortcut window"
+msgid "Switch to the Output logs page"
+msgstr "Aller à l'onglet Console"
 
 #: ../src/algos/background_extraction.c:116
 msgid ""
@@ -4426,8 +4461,8 @@ msgstr "Valeur : "
 #: ../src/core/command_line_processor.c:248 ../src/filters/banding.c:236
 #: ../src/filters/fft.c:377 ../src/filters/median.c:60
 #: ../src/filters/rgradient.c:185 ../src/filters/saturation.c:86
-#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2191
-#: ../src/gui/callbacks.c:2354 ../src/gui/script_menu.c:152
+#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2199
+#: ../src/gui/callbacks.c:2362 ../src/gui/script_menu.c:152
 #: ../src/io/conversion.c:541 ../src/registration/registration.c:842
 #: ../src/stacking/stacking.c:1098 ../src/stacking/stacking.c:1222
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4534,7 +4569,7 @@ msgstr "Échec de la récupération avec le code %ld pour l'URL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1741 ../src/gui/open_dialog.c:313
+#: ../src/gui/callbacks.c:1749 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:620
 #: ../src/io/single_image.c:149
@@ -4761,15 +4796,15 @@ msgstr ""
 msgid "Unknown transform\n"
 msgstr "Transformation inconnue\n"
 
-#: ../src/algos/star_finder.c:173
+#: ../src/algos/star_finder.c:175
 msgid "Findstar: processing...\n"
 msgstr "Findstar : en cours...\n"
 
-#: ../src/algos/star_finder.c:337
+#: ../src/algos/star_finder.c:339
 msgid "This star has already been picked !\n"
 msgstr "Cette étoile a déjà été choisie !\n"
 
-#: ../src/algos/star_finder.c:338
+#: ../src/algos/star_finder.c:340
 msgid "Peaker"
 msgstr "Pointage"
 
@@ -5030,7 +5065,7 @@ msgstr "Exécution de la PSF sur la séquence chargée, canal %d\n"
 #: ../src/core/command.c:1770 ../src/core/command.c:1776
 #: ../src/core/command.c:1929 ../src/core/command.c:1936
 #: ../src/core/command.c:2193 ../src/core/command.c:2335
-#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:429
+#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:478
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Aucune séquence `%s' trouvée.\n"
@@ -5260,7 +5295,7 @@ msgstr "Le type de méthode d'empilement '%s' est invalide\n"
 msgid "Stacked sequence successfully.\n"
 msgstr "Séquence empilée avec succès.\n"
 
-#: ../src/core/command.c:2479 ../src/gui/callbacks.c:2198
+#: ../src/core/command.c:2479 ../src/gui/callbacks.c:2206
 msgid "Preprocessing...\n"
 msgstr "Prétraitement...\n"
 
@@ -6125,7 +6160,7 @@ msgid "Script execution failed.\n"
 msgstr "L'exécution du script a échoué.\n"
 
 #: ../src/core/command_line_processor.c:258 ../src/gui/script_menu.c:167
-#: ../src/main.c:361
+#: ../src/main.c:410
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Le fichier [%s] n'existe pas\n"
@@ -6586,7 +6621,7 @@ msgstr ""
 "Impossible de charger le fichier de la feuille de style CSS : %s. Veuillez "
 "réinstaller Siril\n"
 
-#: ../src/core/utils.c:642 ../src/main.c:229
+#: ../src/core/utils.c:642 ../src/main.c:278
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Chargé avec succès '%s'\n"
@@ -6805,39 +6840,39 @@ msgstr "%d fichier sélectionné, %s"
 msgid "%d files selected, %s"
 msgstr "%d fichiers sélectionnés, %s"
 
-#: ../src/gui/callbacks.c:1124
+#: ../src/gui/callbacks.c:1132
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Mem : %ldMo"
 
-#: ../src/gui/callbacks.c:1126
+#: ../src/gui/callbacks.c:1134
 msgid "Mem: N/A"
 msgstr "Mem : N/A"
 
-#: ../src/gui/callbacks.c:1135
+#: ../src/gui/callbacks.c:1143
 #, c-format
 msgid "Disk Space: %s"
 msgstr "Disque : %s"
 
-#: ../src/gui/callbacks.c:1138
+#: ../src/gui/callbacks.c:1146
 msgid "Disk Space: N/A"
 msgstr "Disque : N/A"
 
-#: ../src/gui/callbacks.c:1201
+#: ../src/gui/callbacks.c:1209
 msgid "This binning is not handled yet\n"
 msgstr "Ce binning n'est pas géré pour l'instant\n"
 
-#: ../src/gui/callbacks.c:1555 ../src/gui/callbacks.c:1556
+#: ../src/gui/callbacks.c:1563 ../src/gui/callbacks.c:1564
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr "<span foreground=\"red\">ERREUR</span>"
 
-#: ../src/gui/callbacks.c:1568
+#: ../src/gui/callbacks.c:1576
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">Froid : %ld px</span>"
 
-#: ../src/gui/callbacks.c:1569 ../src/gui/callbacks.c:1581
+#: ../src/gui/callbacks.c:1577 ../src/gui/callbacks.c:1589
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -6845,92 +6880,92 @@ msgstr ""
 "Cette valeur est peut-être trop haute. S'il vous plaît veuillez reconsidérer "
 "la valeur de sigma ou bien décocher l'option."
 
-#: ../src/gui/callbacks.c:1572
+#: ../src/gui/callbacks.c:1580
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Froid : %ld px"
 
-#: ../src/gui/callbacks.c:1580
+#: ../src/gui/callbacks.c:1588
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">Chaud : %ld px</span>"
 
-#: ../src/gui/callbacks.c:1584
+#: ../src/gui/callbacks.c:1592
 #, c-format
 msgid "Hot: %ld px"
 msgstr "Chaud : %ld px"
 
-#: ../src/gui/callbacks.c:1740
+#: ../src/gui/callbacks.c:1748
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "Vous n'avez pas la permission d'écrire dans ce dossier : %s\n"
 
-#: ../src/gui/callbacks.c:1864
+#: ../src/gui/callbacks.c:1872
 msgid "Closing application"
 msgstr "Fermeture de l'application"
 
-#: ../src/gui/callbacks.c:1864
+#: ../src/gui/callbacks.c:1872
 msgid "Are you sure you want to quit?"
 msgstr "Êtes vous sûr de vouloir quitter ?"
 
-#: ../src/gui/callbacks.c:2085
+#: ../src/gui/callbacks.c:2093
 msgid "Opening offset image..."
 msgstr "Ouverture de l'image d'offset..."
 
-#: ../src/gui/callbacks.c:2089
+#: ../src/gui/callbacks.c:2097
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "OFFSET NON UTILISÉ : nombre de canal différent"
 
-#: ../src/gui/callbacks.c:2092
+#: ../src/gui/callbacks.c:2100
 msgid "NOT USING OFFSET: image dimensions are different"
 msgstr "OFFSET NON UTILISÉ : les dimensions des images sont différentes"
 
-#: ../src/gui/callbacks.c:2097
+#: ../src/gui/callbacks.c:2105
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "OFFSET NON UTILISÉ : impossible d'ouvrir le fichier\n"
 
-#: ../src/gui/callbacks.c:2117
+#: ../src/gui/callbacks.c:2125
 msgid "Opening dark image..."
 msgstr "Ouverture de l'image dark..."
 
-#: ../src/gui/callbacks.c:2121
+#: ../src/gui/callbacks.c:2129
 msgid "NOT USING DARK: number of channels is different"
 msgstr "DARK NON UTILISÉ : nombre de canal différent"
 
-#: ../src/gui/callbacks.c:2124
+#: ../src/gui/callbacks.c:2132
 msgid "NOT USING DARK: image dimensions are different"
 msgstr "DARK NON UTILISÉ : les dimensions des images sont différentes"
 
-#: ../src/gui/callbacks.c:2129
+#: ../src/gui/callbacks.c:2137
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "DARK NON UTILISÉ : impossible d'ouvrir le fichier\n"
 
-#: ../src/gui/callbacks.c:2156
+#: ../src/gui/callbacks.c:2164
 msgid "Opening flat image..."
 msgstr "Ouverture de l'image falt..."
 
-#: ../src/gui/callbacks.c:2160
+#: ../src/gui/callbacks.c:2168
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "FLAT NON UTILISÉ : nombre de canal différent"
 
-#: ../src/gui/callbacks.c:2163
+#: ../src/gui/callbacks.c:2171
 msgid "NOT USING FLAT: image dimensions are different"
 msgstr "FLAT NON UTILISÉ : les dimensions des images sont différentes"
 
-#: ../src/gui/callbacks.c:2168
+#: ../src/gui/callbacks.c:2176
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "FLAT NON UTILISÉ : impossible d'ouvrir le fichier\n"
 
-#: ../src/gui/callbacks.c:2255
+#: ../src/gui/callbacks.c:2263
 msgid "Error in preprocessing."
 msgstr "Erreur dans le pré-traitement."
 
-#: ../src/gui/callbacks.c:2294
+#: ../src/gui/callbacks.c:2302
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Séquence %s sélectionnée %s..."
 
-#: ../src/gui/callbacks.c:2360
+#: ../src/gui/callbacks.c:2368
 msgid "Searching for sequences in the current working directory..."
 msgstr "Cherche des séquences dans le répertoire de travail..."
 
@@ -8336,7 +8371,7 @@ msgstr ""
 msgid "print the application’s version"
 msgstr "afficher la version de l'application"
 
-#: ../src/main.c:224
+#: ../src/main.c:273
 #, c-format
 msgid ""
 "%s was not found or contains errors, cannot render GUI:\n"
@@ -8348,7 +8383,7 @@ msgstr ""
 "%s\n"
 "Sortie.\n"
 
-#: ../src/main.c:261
+#: ../src/main.c:310
 #, c-format
 msgid ""
 "Questionable parallel processing efficiency - openmp reports %d %s. Possibly "
@@ -8357,45 +8392,45 @@ msgstr ""
 "Efficacité de traitement parallèle douteuse - openmp rapporte %d %s. "
 "Installation de opencv/openblas potentiellement cassée.\n"
 
-#: ../src/main.c:263 ../src/main.c:268
+#: ../src/main.c:312 ../src/main.c:317
 msgid "processor"
 msgid_plural "processors"
 msgstr[0] "processeur"
 msgstr[1] "processeurs"
 
-#: ../src/main.c:266
+#: ../src/main.c:315
 #, c-format
 msgid "Parallel processing %s: Using %d logical %s.\n"
 msgstr "Calcul parallèle %s : Utilisation de %d %s.\n"
 
-#: ../src/main.c:267
+#: ../src/main.c:316
 msgid "enabled"
 msgstr "activé"
 
-#: ../src/main.c:270
+#: ../src/main.c:319
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
 msgstr "Calcul parallèle %s : Utilisation de %d processeur.\n"
 
-#: ../src/main.c:270
+#: ../src/main.c:319
 msgid "disabled"
 msgstr "désactivé"
 
-#: ../src/main.c:294
+#: ../src/main.c:343
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Bienvenue dans %s v%s\n"
 
-#: ../src/main.c:321
+#: ../src/main.c:370
 #, c-format
 msgid "Could not load or create settings file, exiting.\n"
 msgstr "Impossible de charger ou de créer le fichier de paramètres.\n"
 
-#: ../src/main.c:556
+#: ../src/main.c:605
 msgid "Siril - A free astronomical image processing software."
 msgstr "Siril - Un logiciel libre de traitement d'images astronomiques."
 
-#: ../src/main.c:563
+#: ../src/main.c:612
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr ""
