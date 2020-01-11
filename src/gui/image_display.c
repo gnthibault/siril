@@ -270,9 +270,9 @@ static BYTE display_for_float_pixel(float pixel, display_mode mode, int vport, W
 			}
 			break;
 		case HISTEQ_DISPLAY:
-			i = 0;
+			i = 1;
 			while (i < 256 && float_hist_lookup[vport][i] < pixel) i++;
-			disp = (BYTE)(i == 256 ? 255 : i);
+			disp = (BYTE)(i - 1);
 			break;
 		case STF_DISPLAY:
 			mtf = MTF(pixel, stfM, stfShadows, stfHighlights);
@@ -418,12 +418,12 @@ static void remap(int vport) {
 			nb_pixels = (double)(gfit.rx * gfit.ry);
 
 			float_hist_lookup[vport][0] = 0;
-			hist_sum = gsl_histogram_get(histo, 0);
+			hist_sum = 0;
 			for (j = 1; j < 256; j++) {
 				do {
 					if (i >= hist_nb_bins) break;
 					double newsum = hist_sum + gsl_histogram_get(histo, i);
-					if (newsum / nb_pixels >= (double)j / 256.0) {
+					if (newsum / nb_pixels > (double)j / 255.0) {
 						float_hist_lookup[vport][j] = (double)i / (double)hist_nb_bins;
 						hist_sum = newsum;
 						break;
