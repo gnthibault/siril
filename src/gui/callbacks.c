@@ -1127,6 +1127,8 @@ void set_GUI_misc() {
 
 /* size is in kiB */
 void set_GUI_MEM(unsigned long size) {
+	if (com.headless)
+		return;
 	char *str;
 	if (size != 0)
 		str = g_strdup_printf(_("Mem: %ldMB"), size / 1024);
@@ -1137,6 +1139,8 @@ void set_GUI_MEM(unsigned long size) {
 }
 
 void set_GUI_DiskSpace(int64_t space) {
+	if (com.headless)
+		return;
 	gchar *str;
 	if (space > 0) {
 		gchar *mem = pretty_print_memory(space);

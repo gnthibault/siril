@@ -182,7 +182,8 @@ static char* siril_log_internal(const char* format, const char* color, va_list a
 		new_msg->timestamp = NULL;
 		new_msg->message = "\n";
 		new_msg->color = NULL;
-		gdk_threads_add_idle(idle_messaging, new_msg);
+		if (!com.headless)	// avoid adding things in lost memory
+			gdk_threads_add_idle(idle_messaging, new_msg);
 		return NULL;
 	}
 
