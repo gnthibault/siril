@@ -252,7 +252,7 @@ typedef enum {
 
 typedef enum {
 	BAYER_BILINEAR,
-	BAYER_NEARESNEIGHBOR,
+	BAYER_NEARESTNEIGHBOR,
 	BAYER_VNG,
 	BAYER_AHD,
 	BAYER_SUPER_PIXEL,
@@ -275,7 +275,7 @@ typedef enum {
 	BAYER_FILTER_GRBG,
 	XTRANS_FILTER,
 	BAYER_FILTER_NONE = -1		//case where pattern is undefined or untested
-} sensor_pattern ;
+} sensor_pattern;
 #define BAYER_FILTER_MIN BAYER_FILTER_RGGB
 #define BAYER_FILTER_MAX BAYER_FILTER_GRBG
 

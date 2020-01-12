@@ -16,6 +16,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * This file is a copy of demosaicing.c with WORD replaced by float, and
+ * related adjustments.
  */
 
 #include <string.h>
@@ -28,7 +31,6 @@
 #include "core/processing.h"
 #include "core/command.h"
 #include "gui/callbacks.h"
-#include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
 #include "gui/dialogs.h"
 #include "io/sequence.h"
@@ -42,10 +44,10 @@ static inline int FC(const size_t row, const size_t col, const uint32_t filters)
 }
 
 /* width and height are sizes of the original image */
-static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
+static int super_pixel(const float *buf, float *newbuf, int width, int height,
 		sensor_pattern pattern) {
 	int i, col, row;
-	double tmp;
+	float tmp;
 
 	i = 0;
 	for (row = 0; row < height - 1; row += 2) {
@@ -54,35 +56,35 @@ static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
 			default:
 			case BAYER_FILTER_RGGB:
 				newbuf[i + 0] = buf[col + row * width];
-				tmp = (double) buf[1 + col + row * width];
-				tmp += (double) buf[col + (1 + row) * width];
-				tmp *= 0.5;
-				newbuf[i + 1] = round_to_WORD(tmp);
+				tmp = buf[1 + col + row * width];
+				tmp += buf[col + (1 + row) * width];
+				tmp *= 0.5f;
+				newbuf[i + 1] = tmp;
 				newbuf[i + 2] = buf[1 + col + (1 + row) * width];
 				break;
 			case BAYER_FILTER_BGGR:
 				newbuf[i + 2] = buf[col + row * width];
-				tmp = (double) buf[1 + col + row * width];
-				tmp += (double) buf[(col + row * width) + width];
-				tmp *= 0.5;
-				newbuf[i + 1] = round_to_WORD(tmp);
+				tmp = buf[1 + col + row * width];
+				tmp += buf[(col + row * width) + width];
+				tmp *= 0.5f;
+				newbuf[i + 1] = tmp;
 				newbuf[i + 0] = buf[(1 + col + row * width) + width];
 				break;
 			case BAYER_FILTER_GBRG:
 				newbuf[i + 2] = buf[1 + col + row * width];
 				newbuf[i + 0] = buf[(col + row * width) + width];
-				tmp = (double) buf[col + row * width];
-				tmp += (double) buf[(1 + col + row * width) + width];
-				tmp *= 0.5;
-				newbuf[i + 1] = round_to_WORD(tmp);
+				tmp = buf[col + row * width];
+				tmp += buf[(1 + col + row * width) + width];
+				tmp *= 0.5f;
+				newbuf[i + 1] = tmp;
 				break;
 			case BAYER_FILTER_GRBG:
 				newbuf[i + 0] = buf[1 + col + row * width];
 				newbuf[i + 2] = buf[(col + row * width) + width];
-				tmp = (double) buf[col + row * width];
-				tmp += (double) buf[(1 + col + row * width) + width];
-				tmp *= 0.5;
-				newbuf[i + 1] = round_to_WORD(tmp);
+				tmp = buf[col + row * width];
+				tmp += buf[(1 + col + row * width) + width];
+				tmp *= 0.5f;
+				newbuf[i + 1] = tmp;
 				break;
 			}
 			i += 3;
@@ -99,15 +101,15 @@ static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
  * 
  * *************************************************/
 
-static void ClearBorders(WORD *rgb, int sx, int sy, int w) {
+static void ClearBorders(float *rgb, int sx, int sy, int w) {
 	int i, j;
 
 	/* black edges: */
 	i = 3 * sx * w - 1;
 	j = 3 * sx * sy - 1;
 	while (i >= 0) {
-		rgb[i--] = 0;
-		rgb[j--] = 0;
+		rgb[i--] = 0.0f;
+		rgb[j--] = 0.0f;
 	}
 
 	int low = sx * (w - 1) * 3 - 1 + w * 3;
@@ -115,7 +117,7 @@ static void ClearBorders(WORD *rgb, int sx, int sy, int w) {
 	while (i > low) {
 		j = 6 * w;
 		while (j > 0) {
-			rgb[i--] = 0;
+			rgb[i--] = 0.0F;
 			j--;
 		}
 		i -= (sx - 2 * w) * 3;
@@ -123,7 +125,7 @@ static void ClearBorders(WORD *rgb, int sx, int sy, int w) {
 }
 
 /* OpenCV's Bayer decoding */
-static int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
+static int bayer_Bilinear(const float *bayer, float *rgb, int sx, int sy,
 		sensor_pattern tile) {
 	const int bayerStep = sx;
 	const int rgbStep = 3 * sx;
@@ -142,15 +144,15 @@ static int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
 	width -= 2;
 
 	for (; height--; bayer += bayerStep, rgb += rgbStep) {
-		int t0, t1;
-		const WORD *bayerEnd = bayer + width;
+		float t0, t1;
+		const float *bayerEnd = bayer + width;
 
 		if (start_with_green) {
-			t0 = (bayer[1] + bayer[bayerStep * 2 + 1] + 1) >> 1;
-			t1 = (bayer[bayerStep] + bayer[bayerStep + 2] + 1) >> 1;
-			rgb[-blue] = round_to_WORD(t0);
+			t0 = (bayer[1] + bayer[bayerStep * 2 + 1] + 1) * 0.5f;
+			t1 = (bayer[bayerStep] + bayer[bayerStep + 2] + 1) * 0.5f;
+			rgb[-blue] = t0;
 			rgb[0] = bayer[bayerStep + 1];
-			rgb[blue] = round_to_WORD(t1);
+			rgb[blue] = t1;
 			bayer++;
 			rgb += 3;
 		}
@@ -158,44 +160,44 @@ static int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
 		if (blue > 0) {
 			for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
 				t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2]
-						+ bayer[bayerStep * 2 + 2] + 2) >> 2;
+						+ bayer[bayerStep * 2 + 2] + 2) * 0.25f;
 				t1 = (bayer[1] + bayer[bayerStep] + bayer[bayerStep + 2]
-						+ bayer[bayerStep * 2 + 1] + 2) >> 2;
-				rgb[-1] = round_to_WORD(t0);
-				rgb[0] = round_to_WORD(t1);
+						+ bayer[bayerStep * 2 + 1] + 2) * 0.25f;
+				rgb[-1] = t0;
+				rgb[0] = t1;
 				rgb[1] = bayer[bayerStep + 1];
 
-				t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) >> 1;
-				t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] + 1) >> 1;
-				rgb[2] = round_to_WORD(t0);
+				t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) * 0.5f;
+				t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] + 1) * 0.5f;
+				rgb[2] = t0;
 				rgb[3] = bayer[bayerStep + 2];
-				rgb[4] = round_to_WORD(t1);
+				rgb[4] = t1;
 			}
 		} else {
 			for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
 				t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2]
-						+ bayer[bayerStep * 2 + 2] + 2) >> 2;
+						+ bayer[bayerStep * 2 + 2] + 2) * 0.25f;
 				t1 = (bayer[1] + bayer[bayerStep] + bayer[bayerStep + 2]
-						+ bayer[bayerStep * 2 + 1] + 2) >> 2;
-				rgb[1] = round_to_WORD(t0);
-				rgb[0] = round_to_WORD(t1);
+						+ bayer[bayerStep * 2 + 1] + 2) * 0.25f;
+				rgb[1] = t0;
+				rgb[0] = t1;
 				rgb[-1] = bayer[bayerStep + 1];
 
-				t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) >> 1;
-				t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] + 1) >> 1;
-				rgb[4] = round_to_WORD(t0);
+				t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) * 0.5f;
+				t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] + 1) * 0.5f;
+				rgb[4] = t0;
 				rgb[3] = bayer[bayerStep + 2];
-				rgb[2] = round_to_WORD(t1);
+				rgb[2] = t1;
 			}
 		}
 
 		if (bayer < bayerEnd) {
 			t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2]
-					+ bayer[bayerStep * 2 + 2] + 2) >> 2;
+					+ bayer[bayerStep * 2 + 2] + 2) * 0.25f;
 			t1 = (bayer[1] + bayer[bayerStep] + bayer[bayerStep + 2]
-					+ bayer[bayerStep * 2 + 1] + 2) >> 2;
-			rgb[-blue] = round_to_WORD(t0);
-			rgb[0] = round_to_WORD(t1);
+					+ bayer[bayerStep * 2 + 1] + 2) * 0.25f;
+			rgb[-blue] = t0;
+			rgb[0] = t1;
 			rgb[blue] = bayer[bayerStep + 1];
 			bayer++;
 			rgb += 3;
@@ -212,7 +214,7 @@ static int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
 }
 
 /* insprired by OpenCV's Bayer decoding */
-static int bayer_NearestNeighbor(const WORD *bayer, WORD *rgb, int sx, int sy,
+static int bayer_NearestNeighbor(const float *bayer, float *rgb, int sx, int sy,
 		sensor_pattern tile) {
 	const int bayerStep = sx;
 	const int rgbStep = 3 * sx;
@@ -239,7 +241,7 @@ static int bayer_NearestNeighbor(const WORD *bayer, WORD *rgb, int sx, int sy,
 	height -= 1;
 	width -= 1;
 	for (; height--; bayer += bayerStep, rgb += rgbStep) {
-		const WORD *bayerEnd = bayer + width;
+		const float *bayerEnd = bayer + width;
 		if (start_with_green) {
 			rgb[-blue] = bayer[1];
 			rgb[0] = bayer[bayerStep + 1];
@@ -283,7 +285,7 @@ static int bayer_NearestNeighbor(const WORD *bayer, WORD *rgb, int sx, int sy,
 
 #define ABSOLU(x) (((int)(x) ^ ((int)(x) >> 31)) - ((int)(x) >> 31))
 
-static int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
+static int bayer_VNG(const float *bayer, float *dst, int sx, int sy,
 		sensor_pattern pattern) {
 	const signed char bayervng_terms[] = { -2, -2, +0, -1, 0, 0x01, -2, -2,
 			+0, +0, 1, 0x01, -2, -1, -1, +0, 0, 0x01, -2, -1, +0, -1, 0, 0x02, -2,
@@ -312,7 +314,7 @@ static int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
 			+1, 0, +1, -1, 0, -1 };
 	const int height = sy, width = sx;
 	const signed char *cp;
-	WORD (*brow[5])[3], *pix; /* [FD] */
+	float (*brow[5])[3], *pix; /* [FD] */
 	int code[8][2][320], *ip, gval[8], gmin, gmax, sum[4];
 	int row, col, x, y, x1, x2, y1, y2, t, weight, grads, color, diag;
 	int g, diff, thold, num, c;
@@ -409,25 +411,25 @@ static int bayer_VNG(const WORD *bayer, WORD *dst, int sx, int sy,
 				memcpy(brow[2][col], pix, 3 * sizeof *dst); /* [FD] */
 				continue;
 			}
-			thold = gmin + (gmax >> 1);
+			thold = gmin + (gmax * 0.5f);
 			memset(sum, 0, sizeof sum);
 			color = FC(row, col, filters);
 			for (num = g = 0; g < 8; g++, ip += 2) { /* Average the neighbors */
 				if (gval[g] <= thold) {
 					for (c = 0; c < 3; c++) /* [FD] */
 						if (c == color && ip[1])
-							sum[c] += (pix[c] + pix[ip[1]]) >> 1;
+							sum[c] += (pix[c] + pix[ip[1]]) * 0.5f;
 						else
 							sum[c] += pix[ip[0] + c];
 					num++;
 				}
 			}
 			for (c = 0; c < 3; c++) { /* [FD] Save to buffer */
-				t = pix[color];
+				float tmp = pix[color];
 				if (c != color)
-					t += (sum[c] - sum[color]) / num;
+					tmp += (sum[c] - sum[color]) / num;
 				//~ CLIP16(t,brow[2][col][c], 16); /* [FD] */
-				brow[2][col][c] = round_to_WORD(t); /* [FD] */
+				brow[2][col][c] = tmp; /* [FD] */
 			}
 		}
 		if (row > 3) /* Write buffer to image */
@@ -455,22 +457,15 @@ static const float xyz_rgb[3][3] = { /* XYZ from RGB */
 	{ 0.412453f, 0.357580f, 0.180423f },
 	{ 0.212671f, 0.715160f, 0.072169f },
 	{ 0.019334f, 0.119193f, 0.950227f } };
-/* TODO: is it wise to use a D65 here? */
-static const float d65_white[3] = { 0.950456f, 1.0f, 1.088754f };
-/* TODO: store the precomputation of xyz_rgb * d65 instead of running a silly init */
+static const float d65_white[3] = { 0.950456, 1, 1.088754 };
 
-static void cam_to_cielab(uint16_t cam[3], float lab[3]) /* [SA] */
+static void cam_to_cielab(float cam[3], float lab[3]) /* [SA] */
 {
 	float xyz[3];
-	static float cbrt[0x10000], xyz_cam[3][4];
+	static float xyz_cam[3][4];
 
-	if (cam == NULL) {
+	if (cam == NULL) {	// this is the init of this function...
 		int i, j;
-
-		for (i = 0; i < 0x10000; i++) {
-			float r = i / 65535.0;
-			cbrt[i] = r > 0.008856 ? pow(r, 1 / 3.0) : 7.787 * r + 16 / 116.0;
-		}
 		for (i = 0; i < 3; i++)
 			for (j = 0; j < 3; j++) /* [SA] */
 				xyz_cam[i][j] = xyz_rgb[i][j] / d65_white[i]; /* [SA] */
@@ -484,12 +479,13 @@ static void cam_to_cielab(uint16_t cam[3], float lab[3]) /* [SA] */
 			xyz[1] += xyz_cam[1][c] * cam[c];
 			xyz[2] += xyz_cam[2][c] * cam[c];
 		}
-		xyz[0] = cbrt[round_to_WORD(xyz[0])]; /* [SA] */
-		xyz[1] = cbrt[round_to_WORD(xyz[1])]; /* [SA] */
-		xyz[2] = cbrt[round_to_WORD(xyz[2])]; /* [SA] */
-		lab[0] = 116 * xyz[1] - 16;
-		lab[1] = 500 * (xyz[0] - xyz[1]);
-		lab[2] = 200 * (xyz[1] - xyz[2]);
+		xyz[0] = cbrtf(xyz[0]); /* [SA] */
+		xyz[1] = cbrtf(xyz[1]); /* [SA] */
+		xyz[2] = cbrtf(xyz[2]); /* [SA] */
+		/* TODO: LAB has int ranges, and the algorithms using it use this range too */
+		lab[0] = 116.0f * xyz[1] - 16.0f;
+		lab[1] = 500.0f * (xyz[0] - xyz[1]);
+		lab[2] = 200.0f * (xyz[1] - xyz[2]);
 	}
 }
 
@@ -499,21 +495,22 @@ static void cam_to_cielab(uint16_t cam[3], float lab[3]) /* [SA] */
  */
 #define TS 256 /* Tile Size */
 
-static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
+static int bayer_AHD(const float *bayer, float *dst, int sx, int sy,
 		sensor_pattern pattern) {
-	int i, j, top, left, row, col, tr, tc, fc, c, d, val, hm[2];
+	int i, j, top, left, row, col, tr, tc, fc, c, d, hm[2];
 	/* the following has the same type as the image */
-	uint16_t (*pix)[3], (*rix)[3]; /* [SA] */
+	float (*pix)[3], (*rix)[3]; /* [SA] */
 	static const int dir[4] = { -1, 1, -TS, TS };
 	unsigned ldiff[2][4], abdiff[2][4], leps, abeps;
 	float flab[3];
-	uint16_t (*rgb)[TS][TS][3]; /* [SA] */
+	float (*rgb)[TS][TS][3]; /* [SA] */
 	short (*lab)[TS][TS][3];
 	char (*homo)[TS][TS], *buffer;
 	/* start - new code for libdc1394 */
 	uint32_t filters;
 	const int height = sy, width = sx;
 	int x, y;
+	float val;
 
 	if (ahd_inited == FALSE) {
 		/* WARNING: this might not be multi-processor safe */
@@ -550,7 +547,8 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 	/* start - code from border_interpolate(int border) */
 	{
 		int border = 3;
-		unsigned row, col, y, x, f, c, sum[8];
+		unsigned row, col, y, x, f, c;
+		float sum[8];
 
 		for (row = 0; row < (unsigned int) height; row++)
 			for (col = 0; col < (unsigned int) width; col++) {
@@ -564,7 +562,7 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 								&& x < (unsigned int) width) {
 							f = FC(y, x, filters);
 							sum[f] += dst[(y * width + x) * 3 + f]; /* [SA] */
-							sum[f + 4]++;
+							sum[f + 4] += 1.0f;	// why?
 						}
 				f = FC(row, col, filters);
 				for (c = 0; c < 3; c++)
@@ -576,7 +574,7 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 
 	buffer = (char *) malloc(26 * TS * TS); /* 1664 kB */
 	/* merror (buffer, "ahd_interpolate()"); */
-	rgb = (uint16_t (*)[TS][TS][3]) buffer; /* [SA] */
+	rgb = (float (*)[TS][TS][3]) buffer; /* [SA] */
 	lab = (short (*)[TS][TS][3]) (buffer + 12 * TS * TS);
 	homo = (char (*)[TS][TS]) (buffer + 24 * TS * TS);
 
@@ -592,13 +590,13 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 					col += 2;
 				for (fc = FC(row, col, filters); col < left + TS && col < width - 2;
 						col += 2) {
-					pix = (uint16_t (*)[3]) dst + (row * width + col); /* [SA] */
-					val = ((pix[-1][1] + pix[0][fc] + pix[1][1]) * 2
-							- pix[-2][fc] - pix[2][fc]) >> 2;
+					pix = (float(*)[3]) dst + (row * width + col); /* [SA] */
+					val = ((pix[-1][1] + pix[0][fc] + pix[1][1]) * 2.0f
+							- pix[-2][fc] - pix[2][fc]) * 0.25f;
 					rgb[0][row - top][col - left][1] = ULIM(val, pix[-1][1],
 							pix[1][1]);
-					val = ((pix[-width][1] + pix[0][fc] + pix[width][1]) * 2
-							- pix[-2 * width][fc] - pix[2 * width][fc]) >> 2;
+					val = ((pix[-width][1] + pix[0][fc] + pix[width][1]) * 2.0f
+							- pix[-2 * width][fc] - pix[2 * width][fc]) * 0.25f;
 					rgb[1][row - top][col - left][1] = ULIM(val, pix[-width][1],
 							pix[width][1]);
 				}
@@ -609,17 +607,17 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 						row++)
 					for (col = left + 1; col < left + TS - 1 && col < width - 1;
 							col++) {
-						pix = (uint16_t (*)[3]) dst + (row * width + col); /* [SA] */
+						pix = (float (*)[3]) dst + (row * width + col); /* [SA] */
 						rix = &rgb[d][row - top][col - left];
 						if ((c = 2 - FC(row, col, filters)) == 1) {
 							c = FC(row + 1, col, filters);
 							val = pix[0][1]
 									+ ((pix[-1][2 - c] + pix[1][2 - c]
-											- rix[-1][1] - rix[1][1]) >> 1);
-							rix[0][2 - c] = round_to_WORD(val); /* [SA] */
+											- rix[-1][1] - rix[1][1]) * 0.5f);
+							rix[0][2 - c] = val; /* [SA] */
 							val = pix[0][1]
 									+ ((pix[-width][c] + pix[width][c]
-											- rix[-TS][1] - rix[TS][1]) >> 1);
+											- rix[-TS][1] - rix[TS][1]) * 0.5f);
 						} else
 							val = rix[0][1]
 									+ ((pix[-width - 1][c] + pix[-width + 1][c]
@@ -627,8 +625,8 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 											+ pix[+width + 1][c]
 											- rix[-TS - 1][1] - rix[-TS + 1][1]
 											- rix[+TS - 1][1] - rix[+TS + 1][1]
-											+ 1) >> 2);
-						rix[0][c] = round_to_WORD((double) val); /* [SA] */
+											+ 1) * 0.25f);
+						rix[0][c] = val; /* [SA] */
 						c = FC(row, col, filters);
 						rix[0][c] = pix[0][c];
 						cam_to_cielab(rix[0], flab);
@@ -651,7 +649,7 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 							MAX(ldiff[1][2],ldiff[1][3]));
 					for (d = 0; d < 2; d++)
 						for (i = 0; i < 4; i++)
-							if (i >> 1 == d || ldiff[d][i] <= leps)
+							if (i * 0.5f == d || ldiff[d][i] <= leps)
 								abdiff[d][i] =
 										SQR(
 												lab[d][tr][tc][1]
@@ -676,13 +674,13 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 								hm[d] += homo[d][i][j];
 					if (hm[0] != hm[1])
 						for (c = 0; c < 3; c++)
-							dst[(row * width + col) * 3 + c] = round_to_WORD(
-									rgb[hm[1] > hm[0]][tr][tc][c]); /* [SA] */
+							dst[(row * width + col) * 3 + c] = 
+									rgb[hm[1] > hm[0]][tr][tc][c]; /* [SA] */
 					else
 						for (c = 0; c < 3; c++)
-							dst[(row * width + col) * 3 + c] = round_to_WORD(
+							dst[(row * width + col) * 3 + c] =
 									(rgb[0][tr][tc][c] + rgb[1][tr][tc][c])
-											>> 1); /* [SA] */
+											* 0.5f; /* [SA] */
 				}
 			}
 		}
@@ -695,7 +693,7 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 
 /* Code from RAWTherapee:
  * It is a simple algorithm. Certainly not the best (probably the worst) but it works yet. */
-static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy, int xtrans[6][6]) {
+static int fast_xtrans_interpolate(const float *bayer, float *dst, int sx, int sy, int xtrans[6][6]) {
 	uint32_t filters = 9;
 	const int height = sy, width = sx;
 	int row;
@@ -703,7 +701,8 @@ static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
 	/* start - code from border_interpolate(int border) */
 	{
 		int border = 1;
-		unsigned row, col, y, x, f, c, sum[8];
+		unsigned row, col, y, x, f, c;
+	       	float sum[8];
 
 		for (row = 0; row < (unsigned int) height; row++)
 			for (col = 0; col < (unsigned int) width; col++) {
@@ -717,7 +716,7 @@ static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
 								&& x < (unsigned int) width) {
 							f = FC(y, x, filters);
 							sum[f] += dst[(y * width + x) * 3 + f]; /* [SA] */
-							sum[f + 4]++;
+							sum[f + 4] += 1.0f;
 						}
 				f = FC(row, col, filters);
 				for (c = 0; c < 3; c++)
@@ -780,9 +779,9 @@ static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
  * @param xtrans this array is only used in case of FUJI XTRANS RAWs. Can be NULL.
  * @return a new buffer of demosaiced data
  */
-WORD *debayer_buffer(WORD *buf, int *width, int *height,
+float *debayer_buffer_float(float *buf, int *width, int *height,
 		interpolation_method interpolation, sensor_pattern pattern, int xtrans[6][6]) {
-	WORD *newbuf;
+	float *newbuf;
 	long npixels;
 	int retval;
 	switch (interpolation) {
@@ -797,7 +796,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 			npixels = (*width / 2 + *width % 2) * (*height / 2 + *height % 2);
 			break;
 	}
-	newbuf = calloc(3, npixels * sizeof(WORD));
+	newbuf = calloc(3, npixels * sizeof(float));
 	if (newbuf == NULL) {
 		PRINT_ALLOC_ERR;
 		return NULL;
@@ -865,20 +864,16 @@ static int retrieveXTRANSPattern(char *bayer, int xtrans[6][6]) {
 	return 0;
 }
 
-int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa) {
+int debayer_float(fits* fit, interpolation_method interpolation, gboolean stretch_cfa) {
 	int i, j;
 	int width = fit->rx;
 	int height = fit->ry;
 	int npixels;
-	WORD *buf = fit->data;
-	WORD *newbuf;
+	float *buf = fit->fdata;
+	float *newbuf;
 	int xtrans[6][6] = { 0 };
 	int xbayeroff = 0;
 	int ybayeroff = 0;
-
-	if (fit->type == DATA_FLOAT) {
-		return debayer_float(fit, interpolation, stretch_cfa);
-	}
 
 	if (interpolation == XTRANS)
 		retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
@@ -901,7 +896,7 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 		buf++;
 	}
 
-	newbuf = debayer_buffer(buf, &width, &height, interpolation,
+	newbuf = debayer_buffer_float(buf, &width, &height, interpolation,
 			com.debayer.bayer_pattern, xtrans);
 	if (newbuf == NULL) {
 		return 1;
@@ -909,267 +904,32 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 	npixels = width * height;
 
 	// usual color RGBRGB format to fits RRGGBB format
-	fit->data = realloc(fit->data, 3 * npixels * sizeof(WORD));
+	fit->fdata = realloc(fit->fdata, 3 * npixels * sizeof(float));
 	fit->naxes[0] = width;
 	fit->naxes[1] = height;
 	fit->naxes[2] = 3;
 	fit->naxis = 3;
 	fit->rx = width;
 	fit->ry = height;
-	fit->pdata[RLAYER] = fit->data;
-	fit->pdata[GLAYER] = fit->data + npixels;
-	fit->pdata[BLAYER] = fit->data + npixels * 2;
+	fit->fpdata[RLAYER] = fit->fdata;
+	fit->fpdata[GLAYER] = fit->fdata + npixels;
+	fit->fpdata[BLAYER] = fit->fdata + npixels * 2;
 	fit->bitpix = fit->orig_bitpix;
 	for (i = 0, j = 0; j < npixels; i += 3, j++) {
-		double r = (double) newbuf[i + RLAYER];
-		double g = (double) newbuf[i + GLAYER];
-		double b = (double) newbuf[i + BLAYER];
+		float r = newbuf[i + RLAYER];
+		float g = newbuf[i + GLAYER];
+		float b = newbuf[i + BLAYER];
+		/* TODO:
 		if (stretch_cfa && fit->maximum_pixel_value) {
-			double norm = fit->bitpix == 8 ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
-			r = (r / (double) fit->maximum_pixel_value) * norm;
-			g = (g / (double) fit->maximum_pixel_value) * norm;
-			b = (b / (double) fit->maximum_pixel_value) * norm;
-		}
-		fit->pdata[RLAYER][j] =
-			(fit->bitpix == 8) ? round_to_BYTE(r) : round_to_WORD(r);
-		fit->pdata[GLAYER][j] =
-			(fit->bitpix == 8) ? round_to_BYTE(g) : round_to_WORD(g);
-		fit->pdata[BLAYER][j] =
-			(fit->bitpix == 8) ? round_to_BYTE(b) : round_to_WORD(b);
+			r = (r / (double) fit->maximum_pixel_value);
+			g = (g / (double) fit->maximum_pixel_value);
+			b = (b / (double) fit->maximum_pixel_value);
+		}*/
+		fit->fpdata[RLAYER][j] = r;
+		fit->fpdata[GLAYER][j] = g;
+		fit->fpdata[BLAYER][j] = b;
 	}
 	free(newbuf);
 	return 0;
 }
 
-/* From an area, get the area corresponding to the debayer data for all colors,
- * the dashed area below.
- * 0 1 2 3 4 5
- * - - - - - -
- * - - - - - -
- * - - G R - -
- * - - B G - -
- * - - - - - -
- * - - - - - -
- *
- * area is the requested area of an image (simplified as GRBG above)
- * debayer_area is the result of this function, the area with enough pixels to
- *	have a valid debayer
- * image_area is the size of the image, to avoid going out of bounds
- * debayer_offset_x and y are the offset that need to be applied to the debayer
- *	data to find the original area (between 0 and 3).
- */
-void get_debayer_area(const rectangle *area, rectangle *debayer_area,
-		const rectangle *image_area, int *debayer_offset_x,
-		int *debayer_offset_y) {
-	int right, bottom;	// temp debayer negative offsets
-
-	/* left side */
-	if (area->x & 1)
-		*debayer_offset_x = 3;
-	else
-		*debayer_offset_x = 2;
-	if (area->x - *debayer_offset_x < 0) {
-		debayer_area->x = 0;
-		*debayer_offset_x = area->x;
-	} else {
-		debayer_area->x = area->x - *debayer_offset_x;
-	}
-
-	/* right side */
-	int xend = area->x + area->w - 1;
-	if (xend & 1)
-		right = 2;
-	else
-		right = 3;
-	if (xend + right >= image_area->w) {
-		right = image_area->w - xend - 1;
-	}
-	debayer_area->w = area->w + (area->x - debayer_area->x) + right;
-
-	/* top */
-	if (area->y & 1)
-		*debayer_offset_y = 3;
-	else
-		*debayer_offset_y = 2;
-	if (area->y - *debayer_offset_y < 0) {
-		debayer_area->y = 0;
-		*debayer_offset_y = area->y;
-	} else {
-		debayer_area->y = area->y - *debayer_offset_y;
-	}
-
-	/* bottom */
-	int yend = area->y + area->h - 1;
-	if (yend & 1)
-		bottom = 2;
-	else
-		bottom = 3;
-	if (yend + bottom >= image_area->h) {
-		bottom = image_area->h - yend - 1;
-	}
-	debayer_area->h = area->h + (area->y - debayer_area->y) + bottom;
-
-	assert(debayer_area->x < image_area->w);
-	assert(debayer_area->y < image_area->h);
-	assert(debayer_area->h > 2);
-	assert(debayer_area->w > 2);
-}
-
-int split_cfa(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
-	int width = in->rx;
-	int height = in->ry;
-	int j, row, col;
-
-	if (strlen(in->bayer_pattern) > 4) {
-		siril_log_message(_("Split CFA does not work on non-Bayer filter camera images!\n"));
-		return 1;
-	}
-	if (in->type != DATA_USHORT) {
-		siril_log_message(_("debayer: not yet working with 32-bit data."));
-		return -1;
-	}
-
-	width = width / 2 + width % 2;
-	height = height / 2 + height % 2;
-
-	if (new_fit_image(&cfa0, width, height, 1, DATA_USHORT)) {
-		return 1;
-	}
-
-	if (new_fit_image(&cfa1, width, height, 1, DATA_USHORT)) {
-		return 1;
-	}
-
-	if (new_fit_image(&cfa2, width, height, 1, DATA_USHORT)) {
-		return 1;
-	}
-
-	if (new_fit_image(&cfa3, width, height, 1, DATA_USHORT)) {
-		return 1;
-	}
-
-	double c0, c1, c2, c3;
-	j = 0;
-
-	for (row = 0; row < in->ry - 1; row += 2) {
-		for (col = 0; col < in->rx - 1; col += 2) {
-			/* not c0, c1, c2 and c3 because of the read orientation */
-			c1 = in->data[col + row * in->rx];
-			c3 = in->data[1 + col + row * in->rx];
-			c0 = in->data[col + (1 + row) * in->rx];
-			c2 = in->data[1 + col + (1 + row) * in->rx];
-
-			cfa0->data[j] =
-				(in->bitpix == 8) ? round_to_BYTE(c0) : round_to_WORD(c0);
-			cfa1->data[j] =
-				(in->bitpix == 8) ? round_to_BYTE(c1) : round_to_WORD(c1);
-			cfa2->data[j] =
-				(in->bitpix == 8) ? round_to_BYTE(c2) : round_to_WORD(c2);
-			cfa3->data[j] =
-				(in->bitpix == 8) ? round_to_BYTE(c3) : round_to_WORD(c3);
-			j++;
-		}
-	}
-
-	return 0;
-}
-
-int split_cfa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
-	fits f_cfa0 = { 0 };
-	fits f_cfa1 = { 0 };
-	fits f_cfa2 = { 0 };
-	fits f_cfa3 = { 0 };
-
-	struct split_cfa_data *cfa_args = (struct split_cfa_data *) args->user;
-
-	gchar *cfa0 = g_strdup_printf("%s0_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
-	gchar *cfa1 = g_strdup_printf("%s1_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
-	gchar *cfa2 = g_strdup_printf("%s2_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
-	gchar *cfa3 = g_strdup_printf("%s3_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
-
-	int ret = split_cfa(fit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
-	if (ret) {
-		g_free(cfa0);
-		g_free(cfa1);
-		g_free(cfa2);
-		g_free(cfa3);
-		clearfits(&f_cfa0);
-		clearfits(&f_cfa1);
-		clearfits(&f_cfa2);
-		clearfits(&f_cfa3);
-		return ret;
-	}
-
-	save1fits16(cfa0, &f_cfa0, 0);
-	save1fits16(cfa1, &f_cfa1, 0);
-	save1fits16(cfa2, &f_cfa2, 0);
-	save1fits16(cfa3, &f_cfa3, 0);
-
-	g_free(cfa0);
-	g_free(cfa1);
-	g_free(cfa2);
-	g_free(cfa3);
-
-	clearfits(&f_cfa0);
-	clearfits(&f_cfa1);
-	clearfits(&f_cfa2);
-	clearfits(&f_cfa3);
-
-	return 0;
-}
-
-void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args) {
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
-	args->seq = split_cfa_args->seq;
-	args->partial_image = FALSE;
-	args->filtering_criterion = seq_filter_included;
-	args->nb_filtered_images = split_cfa_args->seq->selnum;
-	args->prepare_hook = ser_prepare_hook;
-	args->finalize_hook = ser_finalize_hook;
-	args->save_hook = NULL;
-	args->image_hook = split_cfa_image_hook;
-	args->idle_function = NULL;
-	args->stop_on_error = TRUE;
-	args->description = _("Split CFA");
-	args->has_output = FALSE;
-	args->new_seq_prefix = split_cfa_args->seqEntry;
-	args->load_new_sequence = FALSE;
-	args->force_ser_output = FALSE;
-	args->user = split_cfa_args;
-	args->already_in_a_thread = FALSE;
-	args->parallel = TRUE;
-
-	split_cfa_args->fit = NULL;	// not used here
-
-	start_in_new_thread(generic_sequence_worker, args);
-}
-
-/******* SPLIT CFA ******************************/
-
-void on_menu_slpitcfa_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_open_dialog("split_cfa_dialog");
-}
-
-void on_split_cfa_close_clicked(GtkButton *button, gpointer user_data) {
-	siril_close_dialog("split_cfa_dialog");
-}
-
-void on_split_cfa_apply_clicked(GtkButton *button, gpointer user_data) {
-	GtkToggleButton *seq = GTK_TOGGLE_BUTTON(lookup_widget("checkSplitCFASeq"));
-	GtkEntry *entrySplitCFA;
-
-	entrySplitCFA = GTK_ENTRY(lookup_widget("entrySplitCFA"));
-
-	if (gtk_toggle_button_get_active(seq) && sequence_is_loaded()) {
-		struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
-
-		set_cursor_waiting(TRUE);
-		args->seq = &com.seq;
-		args->seqEntry = gtk_entry_get_text(entrySplitCFA);
-		if (args->seqEntry && args->seqEntry[0] == '\0')
-			args->seqEntry = "CFA_";
-		apply_split_cfa_to_sequence(args);
-	} else {
-		process_split_cfa(0);
-	}
-}
