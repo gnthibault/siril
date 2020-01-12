@@ -338,6 +338,17 @@ static void siril_app_activate(GApplication *application) {
 	memset(&com, 0, sizeof(struct cominf));	// needed? doesn't hurt
 	com.initfile = NULL;
 
+	/* the first thing we need to do is to know if we are headless or not */
+	if (main_option_script || main_option_pipe) {
+		com.script = TRUE;
+		com.headless = TRUE;
+		/* need to force cwd to the current dir if no option -d */
+		if (!forcecwd) {
+			cwd_forced = g_strdup(g_get_current_dir());
+			forcecwd = TRUE;
+		}
+	}
+
 	global_initialization();
 
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
@@ -369,16 +380,6 @@ static void siril_app_activate(GApplication *application) {
 	if (checkinitfile()) {
 		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
 		exit(EXIT_FAILURE);
-	}
-
-	if (main_option_script || main_option_pipe) {
-		com.script = TRUE;
-		com.headless = TRUE;
-		/* need to force cwd to the current dir if no option -d */
-		if (!forcecwd) {
-			cwd_forced = g_strdup(g_get_current_dir());
-			forcecwd = TRUE;
-		}
 	}
 
 	if (main_option_initfile) {
@@ -422,7 +423,6 @@ static void siril_app_activate(GApplication *application) {
 			read_pipe(NULL);
 		}
 	}
-
 	if (!com.headless) {
 		/* Load preferred theme */
 		load_prefered_theme(com.combo_theme);
@@ -460,6 +460,7 @@ static void siril_app_activate(GApplication *application) {
 		gtk_builder_connect_signals (builder, NULL);
 		initialize_all_GUI(supported_files);
 	}
+
 	g_free(supported_files);
 }
 
