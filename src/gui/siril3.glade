@@ -1860,6 +1860,7 @@ enter a visible wavelength in nm</property>
                     <property name="valign">baseline</property>
                     <property name="label" translatable="yes">Image Processing</property>
                     <property name="use_underline">True</property>
+                    <property name="ellipsize">end</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1904,6 +1905,7 @@ enter a visible wavelength in nm</property>
                     <property name="valign">baseline</property>
                     <property name="label" translatable="yes">Scripts</property>
                     <property name="use_underline">True</property>
+                    <property name="ellipsize">end</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1935,7 +1937,7 @@ enter a visible wavelength in nm</property>
           </packing>
         </child>
         <child>
-          <object class="GtkMenuButton">
+          <object class="GtkMenuButton" id="hamburger-menu">
             <property name="name">menu-button</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -2034,6 +2036,9 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
             <property name="update_policy">if-valid</property>
             <property name="value">1</property>
             <signal name="value-changed" handler="on_spinCPU_value_changed" swapped="no"/>
+            <style>
+              <class name="small-spinbutton"/>
+            </style>
           </object>
           <packing>
             <property name="pack_type">end</property>

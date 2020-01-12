@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-09 14:23+0100\n"
+"POT-Creation-Date: 2020-01-11 00:34+0100\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -619,7 +619,8 @@ msgstr ""
 "do formatu, z którym może pracować Siril: FITS lub SER."
 
 #: ../src/gui/siril3.glade.h:130
-msgid "File conversion"
+#, fuzzy
+msgid "Conversion"
 msgstr "Konwertowanie pliku"
 
 #: ../src/gui/siril3.glade.h:131
@@ -1216,12 +1217,17 @@ msgstr ""
 msgid "Velocity: "
 msgstr "Jakość: "
 
-#: ../src/gui/siril3.glade.h:256
+#: ../src/gui/siril3.glade.h:256 ../src/registration/registration.c:703
+#, fuzzy
+msgid "Load a sequence first"
+msgstr "Najpierw wczytaj sekwencję."
+
+#: ../src/gui/siril3.glade.h:257
 #, fuzzy
 msgid "Go register"
 msgstr "Rejestracja: przetwarzanie obrazu  %s\n"
 
-#: ../src/gui/siril3.glade.h:257
+#: ../src/gui/siril3.glade.h:258
 msgid ""
 "Start the registration process. It will register images in the loaded "
 "sequence using the selected method and reference layer (loaded in the 'Image "
@@ -1231,11 +1237,6 @@ msgstr ""
 "sekwencji przy użyciu wybranej metody i warstwy odniesienia (ładowane w "
 "zakładce \"Kolejność obrazów\", obecna nazwa sekwencji znajduje się również "
 "w dolnej części okna)."
-
-#: ../src/gui/siril3.glade.h:258 ../src/registration/registration.c:703
-#, fuzzy
-msgid "Load a sequence first"
-msgstr "Najpierw wczytaj sekwencję."
 
 #: ../src/gui/siril3.glade.h:259
 msgid "Simplified Drizzle x2"
@@ -1273,23 +1274,10 @@ msgstr ""
 "przez kwadrat współczynnika drizzle ."
 
 #: ../src/gui/siril3.glade.h:265
-msgid "Cumul reg. data"
-msgstr ""
-
-#: ../src/gui/siril3.glade.h:266
-msgid ""
-"Check this button if you want the new registration data to be added to the "
-"previous one.\n"
-"This option is useful when sequence has previously been aligned using a "
-"method that does not build a new sequence, but it should be unchecked when "
-"the comet/asteroid algorithm is applied several times."
-msgstr ""
-
-#: ../src/gui/siril3.glade.h:268
 msgid "Follow star movement"
 msgstr "Obserwuj ruch gwiazdy"
 
-#: ../src/gui/siril3.glade.h:269
+#: ../src/gui/siril3.glade.h:266
 msgid ""
 "Use this option to use the position of the star found in the previous image "
 "as new centre for the current image registration. This allows the selection "
@@ -1304,6 +1292,19 @@ msgstr ""
 "lub obrazów z dużą liczbą gwiazd.\n"
 "OSTRZEŻENIE: włączenie tej opcji wymaga działania tylko na jednym rdzeniu "
 "procesora."
+
+#: ../src/gui/siril3.glade.h:268
+msgid "Cumul reg. data"
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:269
+msgid ""
+"Check this button if you want the new registration data to be added to the "
+"previous one.\n"
+"This option is useful when sequence has previously been aligned using a "
+"method that does not build a new sequence, but it should be unchecked when "
+"the comet/asteroid algorithm is applied several times."
+msgstr ""
 
 #: ../src/gui/siril3.glade.h:271
 msgid "Manual registration"
@@ -4187,44 +4188,45 @@ msgid "Zoom out"
 msgstr "Powiększ do dopasowania"
 
 #: ../src/gui/siril-shortcuts.ui.h:7
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Windows and Application"
-msgstr "Kalibracja kolorów"
-
-#: ../src/gui/siril-shortcuts.ui.h:8
-msgctxt "shortcut window"
-msgid "Fullscreen on / off"
-msgstr ""
-
-#: ../src/gui/siril-shortcuts.ui.h:9
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Open application menu"
-msgstr "Kalibracja kolorów"
-
-#: ../src/gui/siril-shortcuts.ui.h:10
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Quit the application"
-msgstr "Kalibracja kolorów"
-
-#: ../src/gui/siril-shortcuts.ui.h:11
 msgctxt "shortcut window"
 msgid "Undo and Redo"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:12
+#: ../src/gui/siril-shortcuts.ui.h:8
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Undo previous command"
 msgstr "Wpisz 'pomoc' dla listy obsługiwanych poleceń"
 
-#: ../src/gui/siril-shortcuts.ui.h:13
+#: ../src/gui/siril-shortcuts.ui.h:9
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Redo previous command"
 msgstr "Wpisz 'pomoc' dla listy obsługiwanych poleceń"
+
+#: ../src/gui/siril-shortcuts.ui.h:10
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Image Processing"
+msgstr "_Przetwarzanie obrazu"
+
+#: ../src/gui/siril-shortcuts.ui.h:11
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Negative transformation"
+msgstr "Transformacja histogramu..."
+
+#: ../src/gui/siril-shortcuts.ui.h:12
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, clockwise"
+msgstr "Obróć o 90 stopni zgodnie z ruchem wskazówek zegara"
+
+#: ../src/gui/siril-shortcuts.ui.h:13
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, counter-clockwise"
+msgstr "Obróć o 90 stopni w kierunku przeciwnym do ruchu wskazówek zegara"
 
 #: ../src/gui/siril-shortcuts.ui.h:14
 msgctxt "shortcut window"
@@ -4240,32 +4242,73 @@ msgstr "Obraz odniesienia"
 #: ../src/gui/siril-shortcuts.ui.h:16
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Change working directory"
-msgstr "Zmień bieżący katalog roboczy"
+msgid "Open application menu"
+msgstr "Kalibracja kolorów"
 
 #: ../src/gui/siril-shortcuts.ui.h:17
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Image Processing"
-msgstr "_Przetwarzanie obrazu"
+msgid "Change working directory"
+msgstr "Zmień bieżący katalog roboczy"
 
 #: ../src/gui/siril-shortcuts.ui.h:18
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Negative transformation"
-msgstr "Transformacja histogramu..."
+msgid "Windows and Application"
+msgstr "Kalibracja kolorów"
 
 #: ../src/gui/siril-shortcuts.ui.h:19
-#, fuzzy
 msgctxt "shortcut window"
-msgid "Rotate 90 degrees, clockwise"
-msgstr "Obróć o 90 stopni zgodnie z ruchem wskazówek zegara"
+msgid "Fullscreen on / off"
+msgstr ""
 
 #: ../src/gui/siril-shortcuts.ui.h:20
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Rotate 90 degrees, counter-clockwise"
-msgstr "Obróć o 90 stopni w kierunku przeciwnym do ruchu wskazówek zegara"
+msgid "Quit the application"
+msgstr "Kalibracja kolorów"
+
+#: ../src/gui/siril-shortcuts.ui.h:21
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Conversion page"
+msgstr "Przejście do warstwy rejestracyjnej\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:22
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Sequence page"
+msgstr "PFS dla sekwencji"
+
+#: ../src/gui/siril-shortcuts.ui.h:23
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Pre-Processing page"
+msgstr "Przejście do warstwy rejestracyjnej\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:24
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Registration page"
+msgstr "Przejście do warstwy rejestracyjnej\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:25
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Plot page"
+msgstr "Przejście do warstwy rejestracyjnej\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:26
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Stacking page"
+msgstr "Przejdź do zakładki stackowania"
+
+#: ../src/gui/siril-shortcuts.ui.h:27
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Output logs page"
+msgstr "Przejście do warstwy rejestracyjnej\n"
 
 #: ../src/algos/background_extraction.c:116
 msgid ""
@@ -4376,8 +4419,8 @@ msgstr "Niebieski:"
 #: ../src/core/command_line_processor.c:248 ../src/filters/banding.c:236
 #: ../src/filters/fft.c:377 ../src/filters/median.c:60
 #: ../src/filters/rgradient.c:185 ../src/filters/saturation.c:86
-#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2191
-#: ../src/gui/callbacks.c:2354 ../src/gui/script_menu.c:152
+#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2199
+#: ../src/gui/callbacks.c:2362 ../src/gui/script_menu.c:152
 #: ../src/io/conversion.c:541 ../src/registration/registration.c:842
 #: ../src/stacking/stacking.c:1098 ../src/stacking/stacking.c:1222
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4483,7 +4526,7 @@ msgstr ""
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1741 ../src/gui/open_dialog.c:313
+#: ../src/gui/callbacks.c:1749 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:620
 #: ../src/io/single_image.c:149
@@ -4673,17 +4716,17 @@ msgstr ""
 msgid "Unknown transform\n"
 msgstr "Nieznany błąd\n"
 
-#: ../src/algos/star_finder.c:173
+#: ../src/algos/star_finder.c:175
 msgid "Findstar: processing...\n"
 msgstr ""
 "Znajdź gwiazdę: przetwarzanie...\n"
 "\n"
 
-#: ../src/algos/star_finder.c:337
+#: ../src/algos/star_finder.c:339
 msgid "This star has already been picked !\n"
 msgstr "Ta gwiazda została już wybrana!\n"
 
-#: ../src/algos/star_finder.c:338
+#: ../src/algos/star_finder.c:340
 msgid "Peaker"
 msgstr ""
 
@@ -4936,7 +4979,7 @@ msgstr "Uruchamianie PSF w załadowanej sekwencji, warstwa %d\n"
 #: ../src/core/command.c:1770 ../src/core/command.c:1776
 #: ../src/core/command.c:1929 ../src/core/command.c:1936
 #: ../src/core/command.c:2193 ../src/core/command.c:2335
-#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:429
+#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:478
 #, fuzzy, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Nie wybrano sekwencji"
@@ -5156,7 +5199,7 @@ msgstr ""
 msgid "Stacked sequence successfully.\n"
 msgstr "Sekwencja stackowania: %s\n"
 
-#: ../src/core/command.c:2479 ../src/gui/callbacks.c:2198
+#: ../src/core/command.c:2479 ../src/gui/callbacks.c:2206
 msgid "Preprocessing...\n"
 msgstr "Wstępne przetwarzanie ...\n"
 
@@ -5802,7 +5845,7 @@ msgid "Script execution failed.\n"
 msgstr "Normalizacja nie powiodła się."
 
 #: ../src/core/command_line_processor.c:258 ../src/gui/script_menu.c:167
-#: ../src/main.c:361
+#: ../src/main.c:410
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Plik [%s] nie istnieje\n"
@@ -6253,7 +6296,7 @@ msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr ""
 "Nie można załadować pliku arkusza stylu CSS: %s. Zainstaluj ponownie %s\n"
 
-#: ../src/core/utils.c:642 ../src/main.c:229
+#: ../src/core/utils.c:642 ../src/main.c:278
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Pomyślnie załadowano '%s'\n"
@@ -6476,39 +6519,39 @@ msgstr "Wczytano %d plików"
 msgid "%d files selected, %s"
 msgstr "Wczytano %d plików"
 
-#: ../src/gui/callbacks.c:1124
+#: ../src/gui/callbacks.c:1132
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Pamięć: %ldMB"
 
-#: ../src/gui/callbacks.c:1126
+#: ../src/gui/callbacks.c:1134
 msgid "Mem: N/A"
 msgstr "Pamięć: Niedostępna"
 
-#: ../src/gui/callbacks.c:1135
+#: ../src/gui/callbacks.c:1143
 #, fuzzy, c-format
 msgid "Disk Space: %s"
 msgstr "Miejsce na dysku: %.0lf%s"
 
-#: ../src/gui/callbacks.c:1138
+#: ../src/gui/callbacks.c:1146
 msgid "Disk Space: N/A"
 msgstr "Miejsce na dysku: N/A"
 
-#: ../src/gui/callbacks.c:1201
+#: ../src/gui/callbacks.c:1209
 msgid "This binning is not handled yet\n"
 msgstr "Ten binning nie jest jeszcze obsługiwany\n"
 
-#: ../src/gui/callbacks.c:1555 ../src/gui/callbacks.c:1556
+#: ../src/gui/callbacks.c:1563 ../src/gui/callbacks.c:1564
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:1568
+#: ../src/gui/callbacks.c:1576
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:1569 ../src/gui/callbacks.c:1581
+#: ../src/gui/callbacks.c:1577 ../src/gui/callbacks.c:1589
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -6516,101 +6559,101 @@ msgstr ""
 "Ta wartość może być za wysoka. Proszę rozważyć zmianę wartości sigma lub "
 "odznaczenie tego pola."
 
-#: ../src/gui/callbacks.c:1572
+#: ../src/gui/callbacks.c:1580
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Zimny :%ld px"
 
-#: ../src/gui/callbacks.c:1580
+#: ../src/gui/callbacks.c:1588
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr ""
 
-#: ../src/gui/callbacks.c:1584
+#: ../src/gui/callbacks.c:1592
 #, fuzzy, c-format
 msgid "Hot: %ld px"
 msgstr "dx:%+*.2f px\n"
 
-#: ../src/gui/callbacks.c:1740
+#: ../src/gui/callbacks.c:1748
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "Nie masz uprawnień do zapisu w tym katalogu: %s\n"
 
-#: ../src/gui/callbacks.c:1864
+#: ../src/gui/callbacks.c:1872
 #, fuzzy
 msgid "Closing application"
 msgstr "Kalibracja kolorów"
 
-#: ../src/gui/callbacks.c:1864
+#: ../src/gui/callbacks.c:1872
 #, fuzzy
 msgid "Are you sure you want to quit?"
 msgstr "Czy na pewno chcesz zakończyć?"
 
-#: ../src/gui/callbacks.c:2085
+#: ../src/gui/callbacks.c:2093
 msgid "Opening offset image..."
 msgstr "Otwieranie obrazu przesunięcia..."
 
-#: ../src/gui/callbacks.c:2089
+#: ../src/gui/callbacks.c:2097
 #, fuzzy
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/gui/callbacks.c:2092
+#: ../src/gui/callbacks.c:2100
 #, fuzzy
 msgid "NOT USING OFFSET: image dimensions are different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/gui/callbacks.c:2097
+#: ../src/gui/callbacks.c:2105
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "NOT USING OFFSET: cannot open the file\n"
 
-#: ../src/gui/callbacks.c:2117
+#: ../src/gui/callbacks.c:2125
 #, fuzzy
 msgid "Opening dark image..."
 msgstr "Błąd otwarcia pliku BMP.\n"
 
-#: ../src/gui/callbacks.c:2121
+#: ../src/gui/callbacks.c:2129
 msgid "NOT USING DARK: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:2124
+#: ../src/gui/callbacks.c:2132
 #, fuzzy
 msgid "NOT USING DARK: image dimensions are different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/gui/callbacks.c:2129
+#: ../src/gui/callbacks.c:2137
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "BRAK UŻYCIA DARK: nie można otworzyć pliku\n"
 
-#: ../src/gui/callbacks.c:2156
+#: ../src/gui/callbacks.c:2164
 #, fuzzy
 msgid "Opening flat image..."
 msgstr "Błąd otwarcia pliku BMP.\n"
 
-#: ../src/gui/callbacks.c:2160
+#: ../src/gui/callbacks.c:2168
 msgid "NOT USING FLAT: number of channels is different"
 msgstr ""
 
-#: ../src/gui/callbacks.c:2163
+#: ../src/gui/callbacks.c:2171
 #, fuzzy
 msgid "NOT USING FLAT: image dimensions are different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/gui/callbacks.c:2168
+#: ../src/gui/callbacks.c:2176
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "NOT USING FLAT: cannot open the file\n"
 
-#: ../src/gui/callbacks.c:2255
+#: ../src/gui/callbacks.c:2263
 #, fuzzy
 msgid "Error in preprocessing."
 msgstr "Wstępne przetwarzanie ...\n"
 
-#: ../src/gui/callbacks.c:2294
+#: ../src/gui/callbacks.c:2302
 #, fuzzy, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Wybrano %s, %d zdjęć"
 
-#: ../src/gui/callbacks.c:2360
+#: ../src/gui/callbacks.c:2368
 msgid "Searching for sequences in the current working directory..."
 msgstr "Wyszukiwanie sekwencji w bieżącym katalogu roboczym..."
 
@@ -8026,7 +8069,7 @@ msgstr ""
 msgid "print the application’s version"
 msgstr ""
 
-#: ../src/main.c:224
+#: ../src/main.c:273
 #, fuzzy, c-format
 msgid ""
 "%s was not found or contains errors, cannot render GUI:\n"
@@ -8036,14 +8079,14 @@ msgstr ""
 "%s nie został znaleziony lub zawiera błędy, nie może renderować GUI. "
 "Wychodzę.\n"
 
-#: ../src/main.c:261
+#: ../src/main.c:310
 #, c-format
 msgid ""
 "Questionable parallel processing efficiency - openmp reports %d %s. Possibly "
 "broken opencv/openblas installation.\n"
 msgstr ""
 
-#: ../src/main.c:263 ../src/main.c:268
+#: ../src/main.c:312 ../src/main.c:317
 #, fuzzy
 msgid "processor"
 msgid_plural "processors"
@@ -8051,42 +8094,42 @@ msgstr[0] "Wstępne przetwarzanie"
 msgstr[1] "Wstępne przetwarzanie"
 msgstr[2] "Wstępne przetwarzanie"
 
-#: ../src/main.c:266
+#: ../src/main.c:315
 #, fuzzy, c-format
 msgid "Parallel processing %s: Using %d logical %s.\n"
 msgstr "Przetwarzanie równoległe %s: użycie procesorów logicznych %d.\n"
 
-#: ../src/main.c:267
+#: ../src/main.c:316
 msgid "enabled"
 msgstr "włączony"
 
-#: ../src/main.c:270
+#: ../src/main.c:319
 #, fuzzy, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
 msgstr "Przetwarzanie równoległe %s: użycie procesorów logicznych %d.\n"
 
-#: ../src/main.c:270
+#: ../src/main.c:319
 msgid "disabled"
 msgstr "wyłączony"
 
-#: ../src/main.c:294
+#: ../src/main.c:343
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Witaj w %s v%s\n"
 
-#: ../src/main.c:321
+#: ../src/main.c:370
 #, c-format
 msgid "Could not load or create settings file, exiting.\n"
 msgstr ""
 "Nie można załadować lub utworzyć pliku ustawień. Wychodzę.\n"
 "\n"
 
-#: ../src/main.c:556
+#: ../src/main.c:605
 #, fuzzy
 msgid "Siril - A free astronomical image processing software."
 msgstr "Program przetwarzania obrazu  astronomicznego"
 
-#: ../src/main.c:563
+#: ../src/main.c:612
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr ""

@@ -249,8 +249,8 @@ siril_LDADD += $(OPENCV_LIBS) \
 pkgdata_DATA = \
 	gui/siril3.glade \
 	gui/siril-shortcuts.ui \
-	gui/gtk_old.css \
-	gui/gtk.css
+	gui/siril_old.css \
+	gui/siril.css
 
 if PLATFORM_WIN32
 AM_LDFLAGS += -Wl,--export-all-symbols

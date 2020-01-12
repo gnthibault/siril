@@ -709,9 +709,9 @@ float computePente(WORD *lo, WORD *hi) {
 static const gchar *checking_css_filename() {
 	printf(_("Checking GTK version ... GTK-%d.%d\n"), GTK_MAJOR_VERSION, GTK_MINOR_VERSION);
 	if ((GTK_MAJOR_VERSION >= 3) && (GTK_MINOR_VERSION >= 18))
-		return "gtk.css";
+		return "siril.css";
 	else if ((GTK_MAJOR_VERSION >= 3) && (GTK_MINOR_VERSION < 18))
-		return "gtk_old.css";
+		return "siril_old.css";
 	else {
 		return NULL;
 	}

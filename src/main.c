@@ -193,6 +193,48 @@ static void keyboard_shortcuts_activated(GSimpleAction *action,
 	siril_cmd_help_keyboard_shortcuts(window);
 }
 
+static void tab_conversion_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(FILE_CONVERSION);
+}
+
+static void tab_sequence_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(IMAGE_SEQ);
+}
+
+static void tab_prepro_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(PRE_PROC);
+}
+
+static void tab_registration_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(REGISTRATION);
+}
+
+static void tab_plot_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(PLOT);
+}
+
+static void tab_stacking_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(STACKING);
+}
+
+static void tab_logs_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
+	control_window_switch_to_tab(OUTPUT_LOGS);
+}
+
 static GActionEntry app_entries[] = {
 		{ "quit", quit_action_activate },
 	    { "preferences", preferences_action_activate },
@@ -208,7 +250,14 @@ static GActionEntry app_entries[] = {
 		{ "full_screen", full_screen_activated},
 		{ "shortcuts", keyboard_shortcuts_activated},
 		{ "about", about_action_activate },
-		{ "cwd", cwd_action_activate }
+		{ "cwd", cwd_action_activate },
+		{ "conversion", tab_conversion_activate },
+		{ "sequence", tab_sequence_activate },
+		{ "registration", tab_registration_activate },
+		{ "prepro", tab_prepro_activate },
+		{ "plot", tab_plot_activate },
+		{ "stacking", tab_stacking_activate },
+		{ "logs", tab_logs_activate }
 };
 
 void load_glade_file() {
@@ -289,6 +338,17 @@ static void siril_app_activate(GApplication *application) {
 	memset(&com, 0, sizeof(struct cominf));	// needed? doesn't hurt
 	com.initfile = NULL;
 
+	/* the first thing we need to do is to know if we are headless or not */
+	if (main_option_script || main_option_pipe) {
+		com.script = TRUE;
+		com.headless = TRUE;
+		/* need to force cwd to the current dir if no option -d */
+		if (!forcecwd) {
+			cwd_forced = g_strdup(g_get_current_dir());
+			forcecwd = TRUE;
+		}
+	}
+
 	global_initialization();
 
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
@@ -320,16 +380,6 @@ static void siril_app_activate(GApplication *application) {
 	if (checkinitfile()) {
 		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
 		exit(EXIT_FAILURE);
-	}
-
-	if (main_option_script || main_option_pipe) {
-		com.script = TRUE;
-		com.headless = TRUE;
-		/* need to force cwd to the current dir if no option -d */
-		if (!forcecwd) {
-			cwd_forced = g_strdup(g_get_current_dir());
-			forcecwd = TRUE;
-		}
 	}
 
 	if (main_option_initfile) {
@@ -373,7 +423,6 @@ static void siril_app_activate(GApplication *application) {
 			read_pipe(NULL);
 		}
 	}
-
 	if (!com.headless) {
 		/* Load preferred theme */
 		load_prefered_theme(com.combo_theme);
@@ -411,6 +460,7 @@ static void siril_app_activate(GApplication *application) {
 		gtk_builder_connect_signals (builder, NULL);
 		initialize_all_GUI(supported_files);
 	}
+
 	g_free(supported_files);
 }
 

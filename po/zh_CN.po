@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-09 14:23+0100\n"
+"POT-Creation-Date: 2020-01-11 00:34+0100\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -584,7 +584,8 @@ msgid ""
 msgstr "转化标签页用于导入文件并且将其转化为Siril可以操作的格式：FITS 或 SER。"
 
 #: ../src/gui/siril3.glade.h:130
-msgid "File conversion"
+#, fuzzy
+msgid "Conversion"
 msgstr "文件转化"
 
 #: ../src/gui/siril3.glade.h:131
@@ -1138,11 +1139,16 @@ msgstr "彗星速率（像素/小时）。"
 msgid "Velocity: "
 msgstr "速率: "
 
-#: ../src/gui/siril3.glade.h:256
+#: ../src/gui/siril3.glade.h:256 ../src/registration/registration.c:703
+#, fuzzy
+msgid "Load a sequence first"
+msgstr "请先载入队列。"
+
+#: ../src/gui/siril3.glade.h:257
 msgid "Go register"
 msgstr "执行对齐"
 
-#: ../src/gui/siril3.glade.h:257
+#: ../src/gui/siril3.glade.h:258
 msgid ""
 "Start the registration process. It will register images in the loaded "
 "sequence using the selected method and reference layer (loaded in the 'Image "
@@ -1150,11 +1156,6 @@ msgid ""
 msgstr ""
 "开启对齐处理。将使用所选定的方法和参考通道来对齐队列中的图像（在“图像队列”标"
 "签页中载入，当前队列名称也会在窗口底部显示）。"
-
-#: ../src/gui/siril3.glade.h:258 ../src/registration/registration.c:703
-#, fuzzy
-msgid "Load a sequence first"
-msgstr "请先载入队列。"
 
 #: ../src/gui/siril3.glade.h:259
 msgid "Simplified Drizzle x2"
@@ -1187,26 +1188,10 @@ msgstr ""
 "相当于Drizzle因子的平方倍数量的需求。"
 
 #: ../src/gui/siril3.glade.h:265
-msgid "Cumul reg. data"
-msgstr "累计对齐数据"
-
-#: ../src/gui/siril3.glade.h:266
-msgid ""
-"Check this button if you want the new registration data to be added to the "
-"previous one.\n"
-"This option is useful when sequence has previously been aligned using a "
-"method that does not build a new sequence, but it should be unchecked when "
-"the comet/asteroid algorithm is applied several times."
-msgstr ""
-"选择此选项会将新的对齐数据累计到原有数据上。\n"
-"此选项可用于此队列之前已被用某算法对齐过，并未产生新的队列之情况下。但是当小"
-"行星/彗星对齐算法被使用过的情况下请不要选择。"
-
-#: ../src/gui/siril3.glade.h:268
 msgid "Follow star movement"
 msgstr "跟随星点移动"
 
-#: ../src/gui/siril3.glade.h:269
+#: ../src/gui/siril3.glade.h:266
 msgid ""
 "Use this option to use the position of the star found in the previous image "
 "as new centre for the current image registration. This allows the selection "
@@ -1218,6 +1203,22 @@ msgstr ""
 "本选项用于将之前图像中找到的星点的位置作为当前图像的中心来对齐。这将允许所选"
 "择区域可以更小，对齐更快，并且统计大量的星点。\n"
 "警告：开启本选项会要求对齐操作非并行，因此只能使用一个CPU核心来运行。"
+
+#: ../src/gui/siril3.glade.h:268
+msgid "Cumul reg. data"
+msgstr "累计对齐数据"
+
+#: ../src/gui/siril3.glade.h:269
+msgid ""
+"Check this button if you want the new registration data to be added to the "
+"previous one.\n"
+"This option is useful when sequence has previously been aligned using a "
+"method that does not build a new sequence, but it should be unchecked when "
+"the comet/asteroid algorithm is applied several times."
+msgstr ""
+"选择此选项会将新的对齐数据累计到原有数据上。\n"
+"此选项可用于此队列之前已被用某算法对齐过，并未产生新的队列之情况下。但是当小"
+"行星/彗星对齐算法被使用过的情况下请不要选择。"
 
 #: ../src/gui/siril3.glade.h:271
 msgid "Manual registration"
@@ -3998,44 +3999,45 @@ msgid "Zoom out"
 msgstr "适应窗口大小"
 
 #: ../src/gui/siril-shortcuts.ui.h:7
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Windows and Application"
-msgstr "关闭程序"
-
-#: ../src/gui/siril-shortcuts.ui.h:8
-msgctxt "shortcut window"
-msgid "Fullscreen on / off"
-msgstr ""
-
-#: ../src/gui/siril-shortcuts.ui.h:9
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Open application menu"
-msgstr "关闭程序"
-
-#: ../src/gui/siril-shortcuts.ui.h:10
-#, fuzzy
-msgctxt "shortcut window"
-msgid "Quit the application"
-msgstr "Quits the application"
-
-#: ../src/gui/siril-shortcuts.ui.h:11
 msgctxt "shortcut window"
 msgid "Undo and Redo"
 msgstr ""
 
-#: ../src/gui/siril-shortcuts.ui.h:12
+#: ../src/gui/siril-shortcuts.ui.h:8
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Undo previous command"
 msgstr "No help for this command"
 
-#: ../src/gui/siril-shortcuts.ui.h:13
+#: ../src/gui/siril-shortcuts.ui.h:9
 #, fuzzy
 msgctxt "shortcut window"
 msgid "Redo previous command"
 msgstr "No help for this command"
+
+#: ../src/gui/siril-shortcuts.ui.h:10
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Image Processing"
+msgstr "_图像处理"
+
+#: ../src/gui/siril-shortcuts.ui.h:11
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Negative transformation"
+msgstr "负片变换"
+
+#: ../src/gui/siril-shortcuts.ui.h:12
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, clockwise"
+msgstr "顺时针旋转90度"
+
+#: ../src/gui/siril-shortcuts.ui.h:13
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Rotate 90 degrees, counter-clockwise"
+msgstr "逆时针旋转90度"
 
 #: ../src/gui/siril-shortcuts.ui.h:14
 msgctxt "shortcut window"
@@ -4051,32 +4053,73 @@ msgstr "白点参考"
 #: ../src/gui/siril-shortcuts.ui.h:16
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Change working directory"
-msgstr "更改当前工作目录"
+msgid "Open application menu"
+msgstr "关闭程序"
 
 #: ../src/gui/siril-shortcuts.ui.h:17
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Image Processing"
-msgstr "_图像处理"
+msgid "Change working directory"
+msgstr "更改当前工作目录"
 
 #: ../src/gui/siril-shortcuts.ui.h:18
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Negative transformation"
-msgstr "负片变换"
+msgid "Windows and Application"
+msgstr "关闭程序"
 
 #: ../src/gui/siril-shortcuts.ui.h:19
-#, fuzzy
 msgctxt "shortcut window"
-msgid "Rotate 90 degrees, clockwise"
-msgstr "顺时针旋转90度"
+msgid "Fullscreen on / off"
+msgstr ""
 
 #: ../src/gui/siril-shortcuts.ui.h:20
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Rotate 90 degrees, counter-clockwise"
-msgstr "逆时针旋转90度"
+msgid "Quit the application"
+msgstr "Quits the application"
+
+#: ../src/gui/siril-shortcuts.ui.h:21
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Conversion page"
+msgstr "切换到对齐通道\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:22
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Sequence page"
+msgstr "队列的PSF"
+
+#: ../src/gui/siril-shortcuts.ui.h:23
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Pre-Processing page"
+msgstr "切换到对齐通道\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:24
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Registration page"
+msgstr "切换到对齐通道\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:25
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Plot page"
+msgstr "切换到对齐通道\n"
+
+#: ../src/gui/siril-shortcuts.ui.h:26
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Stacking page"
+msgstr "进入叠加标签页"
+
+#: ../src/gui/siril-shortcuts.ui.h:27
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Switch to the Output logs page"
+msgstr "切换到对齐通道\n"
 
 #: ../src/algos/background_extraction.c:116
 msgid ""
@@ -4175,8 +4218,8 @@ msgstr "值: "
 #: ../src/core/command_line_processor.c:248 ../src/filters/banding.c:236
 #: ../src/filters/fft.c:377 ../src/filters/median.c:60
 #: ../src/filters/rgradient.c:185 ../src/filters/saturation.c:86
-#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2191
-#: ../src/gui/callbacks.c:2354 ../src/gui/script_menu.c:152
+#: ../src/filters/scnr.c:143 ../src/gui/callbacks.c:2199
+#: ../src/gui/callbacks.c:2362 ../src/gui/script_menu.c:152
 #: ../src/io/conversion.c:541 ../src/registration/registration.c:842
 #: ../src/stacking/stacking.c:1098 ../src/stacking/stacking.c:1222
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4273,7 +4316,7 @@ msgstr "Fetch failed with code %ld for URL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1741 ../src/gui/open_dialog.c:313
+#: ../src/gui/callbacks.c:1749 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:620
 #: ../src/io/single_image.c:149
@@ -4490,15 +4533,15 @@ msgstr "请于执行PSF操作前载入一个队列。"
 msgid "Unknown transform\n"
 msgstr "未知的转换\n"
 
-#: ../src/algos/star_finder.c:173
+#: ../src/algos/star_finder.c:175
 msgid "Findstar: processing...\n"
 msgstr "星点侦测：执行中...\n"
 
-#: ../src/algos/star_finder.c:337
+#: ../src/algos/star_finder.c:339
 msgid "This star has already been picked !\n"
 msgstr "这颗星已经被选取了！\n"
 
-#: ../src/algos/star_finder.c:338
+#: ../src/algos/star_finder.c:340
 msgid "Peaker"
 msgstr "峰化"
 
@@ -4745,7 +4788,7 @@ msgstr "于已载入队列中执行PSF，通道 %d\n"
 #: ../src/core/command.c:1770 ../src/core/command.c:1776
 #: ../src/core/command.c:1929 ../src/core/command.c:1936
 #: ../src/core/command.c:2193 ../src/core/command.c:2335
-#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:429
+#: ../src/core/command.c:2408 ../src/core/command.c:2415 ../src/main.c:478
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "无法找到队列 %s。\n"
@@ -4957,7 +5000,7 @@ msgstr "叠加方式 '%s' 不可用\n"
 msgid "Stacked sequence successfully.\n"
 msgstr "队列叠加成功。\n"
 
-#: ../src/core/command.c:2479 ../src/gui/callbacks.c:2198
+#: ../src/core/command.c:2479 ../src/gui/callbacks.c:2206
 msgid "Preprocessing...\n"
 msgstr "预处理...\n"
 
@@ -5793,7 +5836,7 @@ msgid "Script execution failed.\n"
 msgstr "脚本执行失败。\n"
 
 #: ../src/core/command_line_processor.c:258 ../src/gui/script_menu.c:167
-#: ../src/main.c:361
+#: ../src/main.c:410
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "文件 [%s] 不存在\n"
@@ -6226,7 +6269,7 @@ msgstr "The version of GTK does not match requirements: (GTK-%d.%d)\n"
 msgid "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 msgstr "Unable to load CSS style sheet file: %s. Please reinstall Siril\n"
 
-#: ../src/core/utils.c:642 ../src/main.c:229
+#: ../src/core/utils.c:642 ../src/main.c:278
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "成功载入'%s'\n"
@@ -6440,130 +6483,130 @@ msgstr "%d个文件已选择，%s"
 msgid "%d files selected, %s"
 msgstr "%d个文件已选择，%s"
 
-#: ../src/gui/callbacks.c:1124
+#: ../src/gui/callbacks.c:1132
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Mem: %ldMB"
 
-#: ../src/gui/callbacks.c:1126
+#: ../src/gui/callbacks.c:1134
 msgid "Mem: N/A"
 msgstr "Mem: N/A"
 
-#: ../src/gui/callbacks.c:1135
+#: ../src/gui/callbacks.c:1143
 #, c-format
 msgid "Disk Space: %s"
 msgstr "磁盘空间：%s"
 
-#: ../src/gui/callbacks.c:1138
+#: ../src/gui/callbacks.c:1146
 msgid "Disk Space: N/A"
 msgstr "磁盘空间：N/A"
 
-#: ../src/gui/callbacks.c:1201
+#: ../src/gui/callbacks.c:1209
 msgid "This binning is not handled yet\n"
 msgstr "该合并模式不被支持\n"
 
-#: ../src/gui/callbacks.c:1555 ../src/gui/callbacks.c:1556
+#: ../src/gui/callbacks.c:1563 ../src/gui/callbacks.c:1564
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr "<span foreground=\"red\">错误</span>"
 
-#: ../src/gui/callbacks.c:1568
+#: ../src/gui/callbacks.c:1576
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">冷：%ld px</span>"
 
-#: ../src/gui/callbacks.c:1569 ../src/gui/callbacks.c:1581
+#: ../src/gui/callbacks.c:1577 ../src/gui/callbacks.c:1589
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
 msgstr "参数过大。请酌情改变sigma值或者取消本选项之选择。"
 
-#: ../src/gui/callbacks.c:1572
+#: ../src/gui/callbacks.c:1580
 #, c-format
 msgid "Cold: %ld px"
 msgstr "冷：%ld px"
 
-#: ../src/gui/callbacks.c:1580
+#: ../src/gui/callbacks.c:1588
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">热：%ld px</span>"
 
-#: ../src/gui/callbacks.c:1584
+#: ../src/gui/callbacks.c:1592
 #, c-format
 msgid "Hot: %ld px"
 msgstr "热：%ld px"
 
-#: ../src/gui/callbacks.c:1740
+#: ../src/gui/callbacks.c:1748
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "当前用户对目录%s没有写权限\n"
 
-#: ../src/gui/callbacks.c:1864
+#: ../src/gui/callbacks.c:1872
 msgid "Closing application"
 msgstr "关闭程序"
 
-#: ../src/gui/callbacks.c:1864
+#: ../src/gui/callbacks.c:1872
 msgid "Are you sure you want to quit?"
 msgstr "确定要退出吗？"
 
-#: ../src/gui/callbacks.c:2085
+#: ../src/gui/callbacks.c:2093
 msgid "Opening offset image..."
 msgstr "打开偏置帧..."
 
-#: ../src/gui/callbacks.c:2089
+#: ../src/gui/callbacks.c:2097
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "未使用偏置：通道数目不一致"
 
-#: ../src/gui/callbacks.c:2092
+#: ../src/gui/callbacks.c:2100
 msgid "NOT USING OFFSET: image dimensions are different"
 msgstr "未使用偏置：图像尺寸不一致"
 
-#: ../src/gui/callbacks.c:2097
+#: ../src/gui/callbacks.c:2105
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "未使用偏置：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:2117
+#: ../src/gui/callbacks.c:2125
 msgid "Opening dark image..."
 msgstr "打开暗场帧…"
 
-#: ../src/gui/callbacks.c:2121
+#: ../src/gui/callbacks.c:2129
 msgid "NOT USING DARK: number of channels is different"
 msgstr "未使用暗场：通道数目不一致"
 
-#: ../src/gui/callbacks.c:2124
+#: ../src/gui/callbacks.c:2132
 msgid "NOT USING DARK: image dimensions are different"
 msgstr "未使用暗场：图像尺寸不一致"
 
-#: ../src/gui/callbacks.c:2129
+#: ../src/gui/callbacks.c:2137
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "未使用暗场：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:2156
+#: ../src/gui/callbacks.c:2164
 msgid "Opening flat image..."
 msgstr "打开平场帧..."
 
-#: ../src/gui/callbacks.c:2160
+#: ../src/gui/callbacks.c:2168
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "未使用平场：通道数目不一致"
 
-#: ../src/gui/callbacks.c:2163
+#: ../src/gui/callbacks.c:2171
 msgid "NOT USING FLAT: image dimensions are different"
 msgstr "未使用平场：图像尺寸不一致"
 
-#: ../src/gui/callbacks.c:2168
+#: ../src/gui/callbacks.c:2176
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "未使用平场：无法打开文件\n"
 
-#: ../src/gui/callbacks.c:2255
+#: ../src/gui/callbacks.c:2263
 msgid "Error in preprocessing."
 msgstr "Error in preprocessing."
 
-#: ../src/gui/callbacks.c:2294
+#: ../src/gui/callbacks.c:2302
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "已选择 %s 队列 %s..."
 
-#: ../src/gui/callbacks.c:2360
+#: ../src/gui/callbacks.c:2368
 msgid "Searching for sequences in the current working directory..."
 msgstr "在当前工作目录中搜索队列..."
 
@@ -7907,7 +7950,7 @@ msgstr ""
 msgid "print the application’s version"
 msgstr "Quits the application"
 
-#: ../src/main.c:224
+#: ../src/main.c:273
 #, fuzzy, c-format
 msgid ""
 "%s was not found or contains errors, cannot render GUI:\n"
@@ -7915,7 +7958,7 @@ msgid ""
 " Exiting.\n"
 msgstr "%s was not found or contains errors, cannot render GUI. Exiting.\n"
 
-#: ../src/main.c:261
+#: ../src/main.c:310
 #, fuzzy, c-format
 msgid ""
 "Questionable parallel processing efficiency - openmp reports %d %s. Possibly "
@@ -7924,46 +7967,46 @@ msgstr ""
 "Questionable parallel processing efficiency - openmp reports %d processors. "
 "Possibly broken opencv/openblas installation.\n"
 
-#: ../src/main.c:263 ../src/main.c:268
+#: ../src/main.c:312 ../src/main.c:317
 #, fuzzy
 msgid "processor"
 msgid_plural "processors"
 msgstr[0] "预处理"
 
-#: ../src/main.c:266
+#: ../src/main.c:315
 #, fuzzy, c-format
 msgid "Parallel processing %s: Using %d logical %s.\n"
 msgstr "并行计算%s：当前使用 %d 逻辑处理器。\n"
 
-#: ../src/main.c:267
+#: ../src/main.c:316
 msgid "enabled"
 msgstr "启用"
 
-#: ../src/main.c:270
+#: ../src/main.c:319
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
 msgstr "并行计算%s：当前使用 %d 逻辑处理器。\n"
 
-#: ../src/main.c:270
+#: ../src/main.c:319
 msgid "disabled"
 msgstr "关闭"
 
-#: ../src/main.c:294
+#: ../src/main.c:343
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Welcome to %s v%s\n"
 
-#: ../src/main.c:321
+#: ../src/main.c:370
 #, c-format
 msgid "Could not load or create settings file, exiting.\n"
 msgstr "无法读取或创建配置文件，程序退出。\n"
 
-#: ../src/main.c:556
+#: ../src/main.c:605
 #, fuzzy
 msgid "Siril - A free astronomical image processing software."
 msgstr "天文图像（预）处理程序"
 
-#: ../src/main.c:563
+#: ../src/main.c:612
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr ""

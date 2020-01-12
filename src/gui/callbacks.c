@@ -1076,6 +1076,14 @@ static void load_accels() {
 	add_accelerator(GTK_APPLICATION(application), "app.close", "<Primary>W");
 	add_accelerator(GTK_APPLICATION(application), "app.cwd", "<Primary>D");
 	add_accelerator(GTK_APPLICATION(application), "app.full_screen", "<Primary>F");
+
+	add_accelerator(GTK_APPLICATION(application), "app.conversion", "<alt>1");
+	add_accelerator(GTK_APPLICATION(application), "app.sequence", "<alt>2");
+	add_accelerator(GTK_APPLICATION(application), "app.prepro", "<alt>3");
+	add_accelerator(GTK_APPLICATION(application), "app.registration", "<alt>4");
+	add_accelerator(GTK_APPLICATION(application), "app.plot", "<alt>5");
+	add_accelerator(GTK_APPLICATION(application), "app.stacking", "<alt>6");
+	add_accelerator(GTK_APPLICATION(application), "app.logs", "<alt>7");
 }
 
 /* Initialize the combobox when loading new single_image */
@@ -1154,6 +1162,8 @@ void set_GUI_misc() {
 
 /* size is in kiB */
 void set_GUI_MEM(unsigned long size) {
+	if (com.headless)
+		return;
 	char *str;
 	if (size != 0)
 		str = g_strdup_printf(_("Mem: %ldMB"), size / 1024);
@@ -1164,6 +1174,8 @@ void set_GUI_MEM(unsigned long size) {
 }
 
 void set_GUI_DiskSpace(int64_t space) {
+	if (com.headless)
+		return;
 	gchar *str;
 	if (space > 0) {
 		gchar *mem = pretty_print_memory(space);
