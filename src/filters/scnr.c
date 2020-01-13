@@ -42,7 +42,7 @@ static gboolean end_scnr(gpointer p) {
 	redraw_previews();
 	update_gfit_histogram_if_needed();
 	set_cursor_waiting(FALSE);
-	update_used_memory();
+	
 
 	return FALSE;
 }

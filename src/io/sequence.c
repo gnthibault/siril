@@ -494,7 +494,7 @@ int set_seq(const char *name){
 	redraw(com.cvport, REMAP_ALL);
 	drawPlot();
 
-	update_used_memory();
+	
 	return 0;
 }
 
@@ -546,7 +546,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 	update_MenuItem();		// initialize menu gui
 	sequence_list_change_current();
 	adjust_refimage(index);	// check or uncheck reference image checkbox
-	update_used_memory();
+	
 	return 0;
 }
 
@@ -1341,7 +1341,7 @@ gboolean end_crop_sequence(gpointer p) {
 		free(rseqname);
 	}
 	set_cursor_waiting(FALSE);
-	update_used_memory();
+	
 	free(args);
 	return FALSE;
 }

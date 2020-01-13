@@ -471,7 +471,7 @@ static gboolean end_photometric_cc(gpointer p) {
 
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
-	update_used_memory();
+	
 	set_cursor_waiting(FALSE);
 	return FALSE;
 }

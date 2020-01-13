@@ -408,7 +408,7 @@ int process_crop(int nb) {
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
-	update_used_memory();
+	
 	return 0;
 }
 
@@ -704,7 +704,7 @@ int process_resample(int nb) {
 	
 	set_cursor_waiting(TRUE);
 	verbose_resize_gaussian(&gfit, toX, toY, OPENCV_LINEAR);
-	update_used_memory();
+	
 	adjust_vport_size_to_image();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -1429,7 +1429,7 @@ int process_close(int nb) {
 		update_MenuItem();
 		reset_plot(); // reset all plots
 		close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
-		update_used_memory();
+		
 	}
 	return 0;
 }

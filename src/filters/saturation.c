@@ -139,7 +139,7 @@ gboolean end_enhance_saturation(gpointer p) {
 	update_gfit_histogram_if_needed();
 	free(args);
 	set_cursor_waiting(FALSE);
-	update_used_memory();
+	
 
 	return FALSE;
 }

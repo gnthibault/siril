@@ -155,7 +155,7 @@ int stack_create_result_fit(fits *fit, int bitpix, int naxis, long *naxes) {
 		fit->pdata[GLAYER] = fit->data;
 		fit->pdata[BLAYER] = fit->data;
 	}
-	update_used_memory();
+	
 	return 0;
 }
 

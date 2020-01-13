@@ -201,7 +201,7 @@ int stack_median(struct stacking_args *args) {
 			data_pool[i].pix[j] = data_pool[i].tmp + j * npixels_in_block;
 		}
 	}
-	update_used_memory();
+	
 
 	siril_log_message(_("Starting stacking...\n"));
 	set_progress_bar_data(_("Median stacking in progress..."), PROGRESS_RESET);
@@ -331,7 +331,7 @@ free_and_close:
 		set_progress_bar_data(_("Median stacking complete."), PROGRESS_DONE);
 		siril_log_message(_("Median stacking complete. %d have been stacked.\n"), nb_frames);
 	}
-	update_used_memory();
+	
 	return retval;
 }
 
@@ -423,7 +423,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 			goto free_and_reset_progress_bar;
 		}
 
-		update_used_memory();
+		
 
 		/* load registration data for current image */
 		if(reglayer != -1 && args->seq->regparam[reglayer]) {
@@ -496,7 +496,7 @@ free_and_reset_progress_bar:
 	} else {
 		set_progress_bar_data(_("Stacking complete."), PROGRESS_DONE);
 	}
-	update_used_memory();
+	
 	return retval;
 }
 
@@ -699,7 +699,7 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 			data_pool[i].pix[j] = data_pool[i].tmp + j * npixels_in_block;
 		}
 	}
-	update_used_memory();
+	
 
 	siril_log_message(_("Starting stacking...\n"));
 	set_progress_bar_data(_("Rejection stacking in progress..."), PROGRESS_RESET);
@@ -1026,7 +1026,7 @@ free_and_close:
 	} else {
 		set_progress_bar_data(_("Rejection stacking complete."), PROGRESS_DONE);
 	}
-	update_used_memory();
+	
 	return retval;
 }
 

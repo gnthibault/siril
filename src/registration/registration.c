@@ -388,7 +388,7 @@ int register_shift_dft(struct registration_args *args) {
 		else
 			args->seq->upscale_at_stacking = 1.0;
 		normalizeQualityData(args, q_min, q_max);
-		update_used_memory();
+		
 		siril_log_message(_("Registration finished.\n"));
 		siril_log_color_message(_("Best frame: #%d.\n"), "bold", q_index);
 	} else {
@@ -475,7 +475,7 @@ int register_shift_fwhm(struct registration_args *args) {
 		args->seq->upscale_at_stacking = 2.0;
 	else
 		args->seq->upscale_at_stacking = 1.0;
-	update_used_memory();
+	
 	siril_log_message(_("Registration finished.\n"));
 	siril_log_color_message(_("Best frame: #%d with fwhm=%.3g.\n"), "bold",
 			fwhm_index, fwhm_min);
@@ -618,7 +618,7 @@ int register_ecc(struct registration_args *args) {
 
 	normalizeQualityData(args, q_min, q_max);
 	clearfits(&ref);
-	update_used_memory();
+	
 	siril_log_message(_("Registration finished.\n"));
 	if (failed) {
 		siril_log_color_message(_("%d frames were excluded.\n"), "red", failed);
@@ -972,7 +972,7 @@ static gboolean end_register_idle(gpointer p) {
 		update_stack_interface(TRUE);
 		adjust_sellabel();
 //	}
-	update_used_memory();
+	
 	set_cursor_waiting(FALSE);
 
 	free(args);

@@ -231,7 +231,7 @@ static gboolean end_convert_idle(gpointer p) {
 		update_sequences_list(ppseqname);
 		free(ppseqname);
 	}
-	update_used_memory();
+	
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_DONE);
 	set_cursor_waiting(FALSE);
 	gettimeofday(&t_end, NULL);

@@ -485,7 +485,7 @@ sequence * readseqfile(const char *name){
 		}
 	}
 
-	update_used_memory();
+	
 	free(seqfilename);
 	return seq;
 error:
@@ -494,7 +494,7 @@ error:
 		free(seq->seqname);
 	free(seq);
 	siril_log_message(_("Could not load sequence %s\n"), name);
-	update_used_memory();
+	
 	free(seqfilename);
 	return NULL;
 }

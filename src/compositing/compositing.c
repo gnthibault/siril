@@ -530,7 +530,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		set_cutoff_sliders_values();
 		set_display_mode();
 		redraw(com.cvport, REMAP_ALL);
-		update_used_memory();
+		
 		sequence_list_change_current();
 		gtk_window_present_with_time(GTK_WINDOW(lookup_widget("composition_dialog")), GDK_CURRENT_TIME);
 	}
@@ -1084,7 +1084,7 @@ void on_compositing_reset_clicked(GtkButton *button, gpointer user_data){
 	update_compositing_interface();
 	open_compositing_window();	// update the CWD just in case
 
-	update_used_memory();
+	
 }
 
 /* Reduce brightness of colours associated to layers so that they never overflow on composition.
