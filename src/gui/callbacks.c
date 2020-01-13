@@ -73,22 +73,33 @@ layer_info predefined_layers_colors[] = {
 
 struct _label_data {
 	const char *label_name;
+	const char *color;
 	char *text;
 };
 
 static gboolean set_label_text_idle(gpointer p) {
 	struct _label_data *args = (struct _label_data *) p;
-	GtkLabel *label = GTK_LABEL(
-			gtk_builder_get_object(builder, args->label_name));
-	gtk_label_set_text(label, args->text);
+	GtkLabel *label = GTK_LABEL(lookup_widget(args->label_name));
+	const char *format = "<span foreground=\"%s\">\%s</span>";
+	char *markup;
+
+	if (args->color == NULL) {
+		gtk_label_set_text(label, args->text);
+	} else {
+		markup = g_markup_printf_escaped(format, args->color, args->text);
+		gtk_label_set_markup(GTK_LABEL(label), markup);
+
+		g_free(markup);
+	}
 	free(args->text);
 	free(args);
 	return FALSE;
 }
 
-static void set_label_text_from_main_thread(const char *label_name, const char *text) {
+static void set_label_text_from_main_thread(const char *label_name, const char *text, const char *color) {
 	struct _label_data *data = malloc(sizeof(struct _label_data));
 	data->label_name = label_name;
+	data->color = color;
 	data->text = strdup(text);
 	gdk_threads_add_idle(set_label_text_idle, data);
 }
@@ -1169,7 +1180,7 @@ void set_GUI_MEM(unsigned long size) {
 		str = g_strdup_printf(_("Mem: %ldMB"), size / 1024);
 	else
 		str = g_strdup(_("Mem: N/A"));
-	set_label_text_from_main_thread("labelmem", str);
+	set_label_text_from_main_thread("labelmem", str, NULL);
 	g_free(str);
 }
 
@@ -1177,13 +1188,19 @@ void set_GUI_DiskSpace(int64_t space) {
 	if (com.headless)
 		return;
 	gchar *str;
+	const gchar *color = NULL;
+
 	if (space > 0) {
+		if (space < 1000000000) { // we wabt to warn user of space is less than 1GB
+			color = "red";
+		}
 		gchar *mem = pretty_print_memory(space);
 		str = g_strdup_printf(_("Disk Space: %s"), mem);
 		g_free(mem);
-	} else
+	} else {
 		str = g_strdup(_("Disk Space: N/A"));
-	set_label_text_from_main_thread("labelFreeSpace", str);
+	}
+	set_label_text_from_main_thread("labelFreeSpace", str, color);
 	g_free(str);
 }
 
