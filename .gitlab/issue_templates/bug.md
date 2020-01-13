@@ -25,4 +25,5 @@ Actual result:
 
 Please provide any backtrace or warnings/error you could have, paste it here.
 
+/label ~"Bug"
 
