@@ -52,6 +52,10 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	com.seq.previewW[current_preview] = area_width;
 	com.seq.previewH[current_preview] = area_height;
 
+	/* fill preview bacground */
+	cairo_rectangle(cr, 0, 0, area_width, area_height);
+	cairo_fill(cr);
+
 	/* display current image with shifts */
 	if (!com.preview_surface[current_preview]) {
 		GtkStyleContext *context = gtk_widget_get_style_context(widget);
@@ -73,8 +77,8 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		pango_layout_get_pixel_size(layout, &w, &h);
 		gtk_widget_get_allocation(widget, &allocation);
 
-		scale = MIN(((gdouble ) allocation.width / 2.0) / (gdouble ) w,
-				((gdouble ) allocation.height / 2.0) / (gdouble ) h);
+		scale = MIN(((gdouble ) allocation.width / 3.0) / (gdouble ) w,
+				((gdouble ) allocation.height / 3.0) / (gdouble ) h);
 
 		gtk_style_context_get_color(context, state, &color);
 		gdk_cairo_set_source_rgba(cr, &color);
