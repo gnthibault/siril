@@ -1053,13 +1053,13 @@ static void load_accels() {
 	add_accelerator(GTK_APPLICATION(application), "app.cwd", "<Primary>D");
 	add_accelerator(GTK_APPLICATION(application), "app.full_screen", "<Primary>F");
 
-	add_accelerator(GTK_APPLICATION(application), "app.conversion", "1");
-	add_accelerator(GTK_APPLICATION(application), "app.sequence", "2");
-	add_accelerator(GTK_APPLICATION(application), "app.prepro", "3");
-	add_accelerator(GTK_APPLICATION(application), "app.registration", "4");
-	add_accelerator(GTK_APPLICATION(application), "app.plot", "5");
-	add_accelerator(GTK_APPLICATION(application), "app.stacking", "6");
-	add_accelerator(GTK_APPLICATION(application), "app.logs", "7");
+	add_accelerator(GTK_APPLICATION(application), "app.conversion", "<alt>1");
+	add_accelerator(GTK_APPLICATION(application), "app.sequence", "<alt>2");
+	add_accelerator(GTK_APPLICATION(application), "app.prepro", "<alt>3");
+	add_accelerator(GTK_APPLICATION(application), "app.registration", "<alt>4");
+	add_accelerator(GTK_APPLICATION(application), "app.plot", "<alt>5");
+	add_accelerator(GTK_APPLICATION(application), "app.stacking", "<alt>6");
+	add_accelerator(GTK_APPLICATION(application), "app.logs", "<alt>7");
 }
 
 /* Initialize the combobox when loading new single_image */
