@@ -195,43 +195,36 @@ static void keyboard_shortcuts_activated(GSimpleAction *action,
 
 static void tab_conversion_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
 	control_window_switch_to_tab(FILE_CONVERSION);
 }
 
 static void tab_sequence_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
 	control_window_switch_to_tab(IMAGE_SEQ);
 }
 
 static void tab_prepro_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
 	control_window_switch_to_tab(PRE_PROC);
 }
 
 static void tab_registration_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
 	control_window_switch_to_tab(REGISTRATION);
 }
 
 static void tab_plot_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
 	control_window_switch_to_tab(PLOT);
 }
 
 static void tab_stacking_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
 	control_window_switch_to_tab(STACKING);
 }
 
 static void tab_logs_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook_center_box"));
 	control_window_switch_to_tab(OUTPUT_LOGS);
 }
 
