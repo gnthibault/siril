@@ -885,8 +885,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->translation_only = gtk_toggle_button_get_active(no_translate);
 	reg_args->x2upscale = gtk_toggle_button_get_active(x2upscale);
 	reg_args->cumul = gtk_toggle_button_get_active(cumul);
-	reg_args->prefix = gtk_entry_get_text(
-			GTK_ENTRY(gtk_builder_get_object(builder, "regseqname_entry")));
+	reg_args->prefix = gtk_entry_get_text(GTK_ENTRY(lookup_widget("regseqname_entry")));
 
 	/* We check that available disk space is enough when:
 	 * - activating the subpixel alignment, which requires generating a new
@@ -967,11 +966,9 @@ static gboolean end_register_idle(gpointer p) {
 	}
 	set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
 
-//	if (!args->load_new_sequence) {	// already done in set_seq()
-		drawPlot();
-		update_stack_interface(TRUE);
-		adjust_sellabel();
-//	}
+	drawPlot();
+	update_stack_interface(TRUE);
+	adjust_sellabel();
 	
 	set_cursor_waiting(FALSE);
 

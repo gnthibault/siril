@@ -46,8 +46,9 @@
  * no version up to 0.9.9
  * version 1 introduced roundness in regdata, 0.9.9
  * version 2 allowed regdata to be stored for CFA SER sequences, 0.9.11
+ * version 3 introduced new weighted fwhm criteria, 0.99.0
  */
-#define CURRENT_SEQFILE_VERSION 2	// to increment on format change
+#define CURRENT_SEQFILE_VERSION 3	// to increment on format change
 
 /* File format (lines starting with # are comments, lines that are (for all
  * something) need to be in all in sequence of this only type of line):
@@ -273,14 +274,26 @@ sequence * readseqfile(const char *name){
 							goto error;
 						}
 					}
+				} else if (version == 2) {
+					// version 2 with roundness instead of weird things
+						if (sscanf(line+3, "%f %f %g %g %lg",
+									&(regparam[i].shiftx),
+									&(regparam[i].shifty),
+									&(regparam[i].fwhm),
+									&(regparam[i].roundness),
+									&(regparam[i].quality)) != 5) {
+						fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
+						goto error;
+					}
 				} else {
-					// new file format with roundness instead of weird things
-					if (sscanf(line+3, "%f %f %g %g %lg",
+					// version 3 with weighted_fwhm
+					if (sscanf(line+3, "%f %f %g %g %g %lg",
 								&(regparam[i].shiftx),
 								&(regparam[i].shifty),
 								&(regparam[i].fwhm),
+								&(regparam[i].weighted_fwhm),
 								&(regparam[i].roundness),
-								&(regparam[i].quality)) != 5) {
+								&(regparam[i].quality)) != 6) {
 						fprintf(stderr,"readseqfile: sequence file format error: %s\n",line);
 						goto error;
 					}
@@ -548,11 +561,12 @@ int writeseqfile(sequence *seq){
 	for (layer = 0; layer < seq->nb_layers; layer++) {
 		if (seq->regparam[layer]) {
 			for (i=0; i < seq->number; ++i) {
-				fprintf(seqfile, "R%c %f %f %g %g %g\n",
+				fprintf(seqfile, "R%c %f %f %g %g %g %g\n",
 						seq->cfa_opened_monochrome ? '*' : '0' + layer,
 						seq->regparam[layer][i].shiftx,
 						seq->regparam[layer][i].shifty,
 						seq->regparam[layer][i].fwhm,
+						seq->regparam[layer][i].weighted_fwhm,
 						seq->regparam[layer][i].roundness,
 						seq->regparam[layer][i].quality
 				       );
@@ -585,11 +599,12 @@ int writeseqfile(sequence *seq){
 	for (layer = 0; layer < 3; layer++) {
 		if (seq->regparam_bkp && seq->regparam_bkp[layer]) {
 			for (i=0; i < seq->number; ++i) {
-				fprintf(seqfile, "R%c %f %f %g %g %g\n",
+				fprintf(seqfile, "R%c %f %f %g %g %g %g\n",
 						seq->cfa_opened_monochrome ? '0' + layer : '*',
 						seq->regparam_bkp[layer][i].shiftx,
 						seq->regparam_bkp[layer][i].shifty,
 						seq->regparam_bkp[layer][i].fwhm,
+						seq->regparam_bkp[layer][i].weighted_fwhm,
 						seq->regparam_bkp[layer][i].roundness,
 						seq->regparam_bkp[layer][i].quality
 				       );
