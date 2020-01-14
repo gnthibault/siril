@@ -5226,7 +5226,7 @@ WARNING: gnuplot must be installed.</property>
                               <object class="GtkGrid" id="grid13">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="row_spacing">10</property>
+                                <property name="row_spacing">5</property>
                                 <property name="column_spacing">5</property>
                                 <child>
                                   <object class="GtkLabel" id="label71">
@@ -5747,6 +5747,7 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                                         <property name="tooltip_text" translatable="yes">Select the set of images to be stacked:
 - selected: only use image that have not been unselected from the sequence
 - FWHM: images with best computed FWHM (star-based registration only)
+- weighted FWHM: this is an improvement of a simple FWHM. It allows to exclude much more spurious images by using the number of stars detected compared to the reference image (star-based registration only)
 - roundness: images with best star roundness (star-based registration only)
 - quality: images with best quality (planetary DFT or ECC registrations)</property>
                                         <property name="active">0</property>
@@ -5754,6 +5755,7 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                                           <item translatable="yes">all</item>
                                           <item translatable="yes">selected</item>
                                           <item translatable="yes">FWHM</item>
+                                          <item translatable="yes">weighted FWHM</item>
                                           <item translatable="yes">roundness</item>
                                           <item translatable="yes">quality</item>
                                         </items>
@@ -5837,12 +5839,18 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                                     <child>
                                       <object class="GtkComboBoxText" id="combofilter2">
                                         <property name="can_focus">False</property>
-                                        <property name="tooltip_text" translatable="yes">Select the set of images to be stacked. All the images or only the manually selected can be used. But it is possible to only select the percentage of best images following quality criteria (planetary, roundness or fwhm).</property>
+                                        <property name="tooltip_text" translatable="yes">Select the set of images to be stacked:
+- selected: only use image that have not been unselected from the sequence
+- FWHM: images with best computed FWHM (star-based registration only)
+- weighted FWHM: this is an improvement of a simple FWHM. It allows to exclude much more spurious images by using the number of stars detected compared to the reference image (star-based registration only)
+- roundness: images with best star roundness (star-based registration only)
+- quality: images with best quality (planetary DFT or ECC registrations)</property>
                                         <property name="active">0</property>
                                         <items>
                                           <item translatable="yes">all</item>
                                           <item translatable="yes">selected</item>
                                           <item translatable="yes">FWHM</item>
+                                          <item translatable="yes">weighted FWHM</item>
                                           <item translatable="yes">roundness</item>
                                           <item translatable="yes">quality</item>
                                         </items>
@@ -5856,12 +5864,18 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                                     <child>
                                       <object class="GtkComboBoxText" id="combofilter3">
                                         <property name="can_focus">False</property>
-                                        <property name="tooltip_text" translatable="yes">Select the set of images to be stacked. All the images or only the manually selected can be used. But it is possible to only select the percentage of best images following quality criteria (planetary, roundness or fwhm).</property>
+                                        <property name="tooltip_text" translatable="yes">Select the set of images to be stacked:
+- selected: only use image that have not been unselected from the sequence
+- FWHM: images with best computed FWHM (star-based registration only)
+- weighted FWHM: this is an improvement of a simple FWHM. It allows to exclude much more spurious images by using the number of stars detected compared to the reference image (star-based registration only)
+- roundness: images with best star roundness (star-based registration only)
+- quality: images with best quality (planetary DFT or ECC registrations)</property>
                                         <property name="active">0</property>
                                         <items>
                                           <item translatable="yes">all</item>
                                           <item translatable="yes">selected</item>
                                           <item translatable="yes">FWHM</item>
+                                          <item translatable="yes">weighted FWHM</item>
                                           <item translatable="yes">roundness</item>
                                           <item translatable="yes">quality</item>
                                         </items>
@@ -5929,6 +5943,7 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                                   <packing>
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">3</property>
+                                    <property name="width">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5947,9 +5962,6 @@ However you may want to disable this option when building master frames of 8-bit
                                     <property name="left_attach">2</property>
                                     <property name="top_attach">1</property>
                                   </packing>
-                                </child>
-                                <child>
-                                  <placeholder/>
                                 </child>
                                 <child>
                                   <placeholder/>

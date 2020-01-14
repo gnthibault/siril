@@ -16,6 +16,7 @@ struct filtering_tuple {
 int seq_filter_all(sequence *seq, int nb_img, double any);
 int seq_filter_included(sequence *seq, int nb_img, double any);
 int seq_filter_fwhm(sequence *seq, int nb_img, double max_fwhm);
+int seq_filter_weighted_fwhm(sequence *seq, int nb_img, double max_fwhm);
 int seq_filter_quality(sequence *seq, int nb_img, double max_quality);
 int seq_filter_roundness(sequence *seq, int nb_img, double min_rnd);
 
@@ -31,6 +32,7 @@ int setup_filtered_data(struct stacking_args *args);
 
 int stack_fill_list_of_unfiltered_images(struct stacking_args *args);
 double compute_highest_accepted_fwhm(sequence *seq, int layer, double percent);
+double compute_highest_accepted_weighted_fwhm(sequence *seq, int layer, double percent);
 double compute_lowest_accepted_quality(sequence *seq, int layer, double percent);
 double compute_lowest_accepted_roundness(sequence *seq, int layer, double percent);
 

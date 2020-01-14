@@ -64,6 +64,17 @@ int seq_filter_fwhm(sequence *seq, int nb_img, double max_fwhm) {
 	else return 0;
 }
 
+int seq_filter_weighted_fwhm(sequence *seq, int nb_img, double max_fwhm) {
+	int layer;
+	if (!seq->regparam) return 0;
+	layer = get_registration_layer(seq);
+	if (layer == -1) return 0;
+	if (!seq->regparam[layer]) return 0;
+	if (seq->regparam[layer][nb_img].weighted_fwhm > 0.0f)
+		return seq->regparam[layer][nb_img].weighted_fwhm <= max_fwhm;
+	else return 0;
+}
+
 int seq_filter_roundness(sequence *seq, int nb_img, double min_rnd) {
 	int layer;
 	if (!seq->regparam) return 0;
@@ -296,6 +307,7 @@ int stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
 typedef double (*regdata_selector)(regdata *reg);
 
 static double regdata_fwhm(regdata *reg) { return reg->fwhm; }
+static double regdata_weighted_fwhm(regdata *reg) { return reg->weighted_fwhm; }
 static double regdata_roundness(regdata *reg) { return reg->roundness; }
 static double regdata_quality(regdata *reg) { return reg->quality; }
 
@@ -350,6 +362,10 @@ double compute_highest_accepted_fwhm(sequence *seq, int layer, double percent) {
 	return generic_compute_accepted_value(seq, layer, percent, TRUE, regdata_fwhm);
 }
 
+double compute_highest_accepted_weighted_fwhm(sequence *seq, int layer, double percent) {
+	return generic_compute_accepted_value(seq, layer, percent, TRUE, regdata_weighted_fwhm);
+}
+
 double compute_lowest_accepted_quality(sequence *seq, int layer, double percent) {
 	return generic_compute_accepted_value(seq, layer, percent, FALSE, regdata_quality);
 }
@@ -365,30 +381,28 @@ char *describe_filter(sequence *seq, seq_image_filter filtering_criterion, doubl
 
 	if (filtering_criterion == seq_filter_all) {
 		g_string_printf(str, _("Processing all images in the sequence (%d)\n"), seq->number);
-	}
-	else if (filtering_criterion == seq_filter_included) {
+	} else if (filtering_criterion == seq_filter_included) {
 		g_string_printf(str, _("Processing only selected images in the sequence (%d)\n"), seq->selnum);
-	}
-	else if (filtering_criterion == seq_filter_fwhm) {
+	} else if (filtering_criterion == seq_filter_fwhm) {
 		g_string_printf(str, _("Processing images of the sequence "
 					"with a FWHM lower or equal than %g (%d)\n"),
 				filtering_parameter, nb_images_to_stack);
-	}
-	else if (filtering_criterion == seq_filter_roundness) {
+	} else if (filtering_criterion == seq_filter_weighted_fwhm) {
+			g_string_printf(str, _("Processing images of the sequence "
+						"with a weighted FWHM lower or equal than %g (%d)\n"),
+					filtering_parameter, nb_images_to_stack);
+	} else if (filtering_criterion == seq_filter_roundness) {
 		g_string_printf(str, _("Processing images of the sequence "
 					"with a roundness higher or equal than %g (%d)\n"),
 				filtering_parameter, nb_images_to_stack);
-	}
-	else if (filtering_criterion == seq_filter_quality) {
+	} else if (filtering_criterion == seq_filter_quality) {
 		g_string_printf(str, _("Processing images of the sequence "
 					"with a quality higher or equal than %g (%d)\n"),
 				filtering_parameter, nb_images_to_stack);
-	}
-	else if (filtering_criterion == seq_filter_output_doesnt_already_exists) {
+	} else if (filtering_criterion == seq_filter_output_doesnt_already_exists) {
 		g_string_printf(str, _("Processing images whose output don't already exist (%d)"),
 				nb_images_to_stack);
-	}
-	else if (filtering_criterion == seq_filter_multiple) {
+	} else if (filtering_criterion == seq_filter_multiple) {
 		int f = 0;
 		while (f < MAX_FILTERS && _filters[f].filter) {
 			struct filtering_tuple *filter = _filters + f;
