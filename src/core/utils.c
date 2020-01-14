@@ -186,12 +186,10 @@ WORD float_to_ushort_range(float f) {
  * @param ndata
  * @return
  */
-WORD *float_buffer_to_ushort(float *buffer, int ndata) {
+WORD *float_buffer_to_ushort(float *buffer, long ndata) {
 	int i;
-	WORD *buf;
-
-	buf = malloc(ndata * sizeof(WORD));
-	if (buf == NULL) {
+	WORD *buf = malloc(ndata * sizeof(WORD));
+	if (!buf) {
 		PRINT_ALLOC_ERR;
 	} else {
 		for (i = 0; i < ndata; i++) {
@@ -207,12 +205,10 @@ WORD *float_buffer_to_ushort(float *buffer, int ndata) {
  * @param ndata
  * @return
  */
-float *ushort_buffer_to_float(WORD *buffer, int ndata) {
-	int i;
-	float *buf;
-
-	buf = malloc(ndata * sizeof(float));
-	if (buf == NULL) {
+float *ushort_buffer_to_float(WORD *buffer, long ndata) {
+	long i;
+	float *buf = malloc(ndata * sizeof(float));
+	if (!buf) {
 		PRINT_ALLOC_ERR;
 	} else {
 		for (i = 0; i < ndata; i++) {

@@ -106,8 +106,8 @@ WORD truncate_to_WORD(int x);
 float ushort_to_float_range(WORD w);
 float double_ushort_to_float_range(double d);
 WORD float_to_ushort_range(float f);
-WORD *float_buffer_to_ushort(float *buffer, int ndata);
-float *ushort_buffer_to_float(WORD *buffer, int ndata);
+WORD *float_buffer_to_ushort(float *buffer, long ndata);
+float *ushort_buffer_to_float(WORD *buffer, long ndata);
 
 gboolean isrgb(fits *fit);
 gboolean ends_with(const char *str, const char *ending);

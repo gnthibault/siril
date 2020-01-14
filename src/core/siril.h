@@ -448,7 +448,7 @@ struct ffit {
 
 	fitsfile *fptr;		// file descriptor. Only used for file read and write.
 
-	data_type type;	// use of data or fdata is managed by this
+	data_type type;		// use of data or fdata is managed by this
 	WORD *data;		// 16-bit image data (depending on image type)
 	WORD *pdata[3];		// pointers on data, per layer data access (RGB)
 	float *fdata;		// same with float

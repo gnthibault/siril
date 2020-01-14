@@ -359,13 +359,10 @@ void mirrory(fits *fit, gboolean verbose) {
  * data is correctly written to this new area, which makes this function
  * quite dangerous to use when fit is used for something else afterwards.
  */
-static int crop_ushort(fits *fit, rectangle *bounds) {
+static void crop_ushort(fits *fit, rectangle *bounds) {
 	int i, j, layer;
 	int newnbdata;
-	struct timeval t_start, t_end;
-
-	memset(&t_start, 0, sizeof(struct timeval));
-	memset(&t_end, 0, sizeof(struct timeval));
+	struct timeval t_start = { 0 }, t_end = { 0 };
 
 	if (fit == &gfit) {
 		siril_log_color_message(_("Crop: processing...\n"), "red");
@@ -397,11 +394,9 @@ static int crop_ushort(fits *fit, rectangle *bounds) {
 	}
 	invalidate_stats_from_fit(fit);
 	invalidate_WCS_keywords(fit);
-
-	return 0;
 }
 
-static int crop_float(fits *fit, rectangle *bounds) {
+static void crop_float(fits *fit, rectangle *bounds) {
 	int i, j, layer;
 	int newnbdata;
 	struct timeval t_start = { 0 }, t_end = { 0 };
@@ -436,18 +431,17 @@ static int crop_float(fits *fit, rectangle *bounds) {
 	}
 	invalidate_stats_from_fit(fit);
 	invalidate_WCS_keywords(fit);
-
-	return 0;
 }
 
 int crop(fits *fit, rectangle *bounds) {
 	if (fit->type == DATA_USHORT) {
-		return crop_ushort(fit, bounds);
+		crop_ushort(fit, bounds);
 	} else if (fit->type == DATA_FLOAT) {
-		return crop_float(fit, bounds);
+		crop_float(fit, bounds);
 	} else {
 		return -1;
 	}
+	return 0;
 }
 
 /************************* CALLBACKS *************************************/

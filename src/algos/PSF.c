@@ -670,14 +670,6 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg, int layer,
 			}
 		}
 
-		/* We normalize B, A and the RMSE for the output */
-		/* TODO: WHY? AND WHY GFIT?
-		WORD norm = get_normalized_value(&gfit);
-		psf->B = psf->B / (double) norm;
-		psf->A = psf->A / (double) norm;
-		psf->rmse = psf->rmse / (double) norm;
-		*/
-
 		/* We quickly test the result. If it is bad we return NULL */
 		if (!isfinite(psf->fwhmx) || !isfinite(psf->fwhmy) ||
 				psf->fwhmx <= 0.0 || psf->fwhmy <= 0.0) {
