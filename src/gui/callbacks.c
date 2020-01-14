@@ -1431,7 +1431,7 @@ void initialize_all_GUI(gchar *supported_files) {
 #endif
 	update_spinCPU(com.max_thread);
 	/* every 0.25sec update memory display */
-	g_timeout_add_seconds(0.25, update_displayed_memory, NULL);
+	g_timeout_add_seconds(1.0, update_displayed_memory, NULL);
 }
 
 /*****************************************************************************
