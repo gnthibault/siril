@@ -1356,46 +1356,54 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 	GtkLabel *label_rejection[2] = {NULL, NULL};
 
 	if (!label_rejection[0]) {
-		label_rejection[0] = GTK_LABEL(lookup_widget("label120"));
-		label_rejection[1] = GTK_LABEL(lookup_widget("label122"));
+		label_rejection[0] = GTK_LABEL(lookup_widget("label_low"));
+		label_rejection[1] = GTK_LABEL(lookup_widget("label_high"));
 	}
 	/* set default values */
 	switch (type_of_rejection) {
 		case NO_REJEC:
-			gtk_widget_set_sensitive(lookup_widget("stack_siglow_button"), FALSE);
-			gtk_widget_set_sensitive(lookup_widget("stack_sighigh_button"), FALSE);
+			gtk_widget_set_visible(lookup_widget("stack_siglow_button"), FALSE);
+			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), FALSE);
+			gtk_widget_set_visible(lookup_widget("label_low"), FALSE);
+			gtk_widget_set_visible(lookup_widget("label_high"), FALSE);
 			break;
 		case PERCENTILE :
-			gtk_widget_set_sensitive(lookup_widget("stack_siglow_button"), TRUE);
-			gtk_widget_set_sensitive(lookup_widget("stack_sighigh_button"), TRUE);
-			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 1.0);
-			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 1.0);
+			gtk_widget_set_visible(lookup_widget("stack_siglow_button"), TRUE);
+			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
+			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
+			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 1.0);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 1.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.2);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.1);
-			gtk_label_set_text (label_rejection[0], _("Percentile low: "));
-			gtk_label_set_text (label_rejection[1], _("Percentile high: "));
+			gtk_label_set_text(label_rejection[0], _("Percentile low: "));
+			gtk_label_set_text(label_rejection[1], _("Percentile high: "));
 			break;
 		case LINEARFIT:
-			gtk_widget_set_sensitive(lookup_widget("stack_siglow_button"), TRUE);
-			gtk_widget_set_sensitive(lookup_widget("stack_sighigh_button"), TRUE);
-			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
-			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
+			gtk_widget_set_visible(lookup_widget("stack_siglow_button"), TRUE);
+			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
+			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
+			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 5.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 5.0);
-			gtk_label_set_text (label_rejection[0], _("Linear low: "));
-			gtk_label_set_text (label_rejection[1], _("Linear high: "));
+			gtk_label_set_text(label_rejection[0], _("Linear low: "));
+			gtk_label_set_text(label_rejection[1], _("Linear high: "));
 			break;
 		default:
 		case SIGMA:
 		case WINSORIZED:
-			gtk_widget_set_sensitive(lookup_widget("stack_siglow_button"), TRUE);
-			gtk_widget_set_sensitive(lookup_widget("stack_sighigh_button"), TRUE);
-			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
-			gtk_spin_button_set_range (GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
+			gtk_widget_set_visible(lookup_widget("stack_siglow_button"), TRUE);
+			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
+			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
+			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 4.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 3.0);
-			gtk_label_set_text (label_rejection[0], _("Sigma low: "));
-			gtk_label_set_text (label_rejection[1], _("Sigma high: "));
+			gtk_label_set_text(label_rejection[0], _("Sigma low: "));
+			gtk_label_set_text(label_rejection[1], _("Sigma high: "));
 	}
 	com.stack.rej_method = gtk_combo_box_get_active(box);
 	writeinitfile();
