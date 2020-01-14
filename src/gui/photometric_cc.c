@@ -301,6 +301,7 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 	}
 
 	siril_log_message(_("Applying aperture photometry to %d stars.\n"), nb_stars);
+	set_progress_bar_data(_("Photometry color calibration in progress..."), PROGRESS_RESET);
 
 	while (stars[i]) {
 		rectangle area = { 0 };
@@ -492,7 +493,7 @@ static gboolean end_photometric_cc(gpointer p) {
 
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
-	update_used_memory();
+	
 	set_cursor_waiting(FALSE);
 	return FALSE;
 }

@@ -1615,7 +1615,7 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		if (from->stats && from->stats[layer])
 			add_stats_to_fit(to, 0, from->stats[layer]);
 	}
-	update_used_memory();
+	
 	return 0;
 }
 

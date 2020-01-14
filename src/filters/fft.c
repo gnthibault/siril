@@ -435,7 +435,7 @@ static gboolean end_fourier_transform(gpointer p) {
 	free(args->type);
 	free(args);
 	set_cursor_waiting(FALSE);
-	update_used_memory();
+	
 
 	return FALSE;
 }

@@ -55,7 +55,7 @@ static gboolean end_rgradient_filter(gpointer p) {
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
-	update_used_memory();
+	
 	free(args);
 	return FALSE;
 }

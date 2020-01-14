@@ -597,7 +597,6 @@ void on_background_generate_clicked(GtkButton *button, gpointer user_data) {
 	}
 
 	redraw(com.cvport, REMAP_ALL);
-	update_used_memory();
 	set_cursor_waiting(FALSE);
 }
 
@@ -630,7 +629,7 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 			if (error) {
 				siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
 			}
-			update_used_memory();
+
 			set_cursor_waiting(FALSE);
 			free(image[channel]);
 			return;
@@ -647,7 +646,7 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 	invalidate_stats_from_fit(&gfit);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
-	update_used_memory();
+
 	set_cursor_waiting(FALSE);
 }
 

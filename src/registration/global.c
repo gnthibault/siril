@@ -155,8 +155,9 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	FWHM_average(sadata->refstars, sadata->fitted_stars, &FWHMx, &FWHMy, &units);
 	siril_log_message(_("FWHMx:%*.2f %s\n"), 12, FWHMx, units);
 	siril_log_message(_("FWHMy:%*.2f %s\n"), 12, FWHMy, units);
-	sadata->current_regdata[regargs->reference_image].fwhm = FWHMx;
 	sadata->current_regdata[regargs->reference_image].roundness = FWHMy/FWHMx;
+	sadata->current_regdata[regargs->reference_image].fwhm = FWHMx;
+	sadata->current_regdata[regargs->reference_image].weighted_fwhm = FWHMx;
 	
 	if (!regargs->translation_only) {
 		// allocate destination sequence data
@@ -262,8 +263,12 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		FWHM_average(stars, nbpoints, &FWHMx, &FWHMy, &units);
 #pragma omp critical
 		print_alignment_results(H, filenum, FWHMx, FWHMy, units);
-		sadata->current_regdata[in_index].fwhm = FWHMx;
+
 		sadata->current_regdata[in_index].roundness = FWHMy/FWHMx;
+		sadata->current_regdata[in_index].fwhm =  FWHMx;
+		sadata->current_regdata[in_index].weighted_fwhm = 2 * FWHMx
+				* (((double) sadata->fitted_stars) - (double) H.pair_matched)
+				/ (double) sadata->fitted_stars + FWHMx;
 
 		if (!regargs->translation_only) {
 			if (regargs->x2upscale) {
@@ -287,10 +292,11 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		regargs->imgparam[out_index].filenum = args->seq->imgparam[in_index].filenum;
 		regargs->imgparam[out_index].incl = SEQUENCE_DEFAULT_INCLUDE;
 		regargs->regparam[out_index].fwhm = sadata->current_regdata[in_index].fwhm;	// not FWHMx because of the ref frame
+		regargs->regparam[out_index].weighted_fwhm = sadata->current_regdata[in_index].weighted_fwhm;
 		regargs->regparam[out_index].roundness = sadata->current_regdata[in_index].roundness;
 	} else {
-		set_shifts(args->seq, in_index, regargs->layer, (float)H.h02, (float)-H.h12,
-				fit->top_down);
+		set_shifts(args->seq, in_index, regargs->layer, (float) H.h02,
+				(float) -H.h12, fit->top_down);
 		args->seq->imgparam[out_index].incl = SEQUENCE_DEFAULT_INCLUDE;
 	}
 	sadata->success[out_index] = 1;
@@ -343,7 +349,7 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 	free(sadata);
 	args->user = NULL;
 
-	update_used_memory();
+	
 
 	if (!args->retval) {
 		siril_log_message(_("Registration finished.\n"));

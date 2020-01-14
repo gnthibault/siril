@@ -407,7 +407,7 @@ int process_crop(int nb) {
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
-	update_used_memory();
+	
 	return 0;
 }
 
@@ -703,7 +703,7 @@ int process_resample(int nb) {
 	
 	set_cursor_waiting(TRUE);
 	verbose_resize_gaussian(&gfit, toX, toY, OPENCV_LINEAR);
-	update_used_memory();
+	
 	adjust_vport_size_to_image();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -1429,7 +1429,7 @@ int process_close(int nb) {
 		update_MenuItem();
 		reset_plot(); // reset all plots
 		close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
-		update_used_memory();
+		
 	}
 	return 0;
 }
@@ -2038,9 +2038,7 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 				else if (!strcmp(value, "mulscale"))
 					arg->norm = MULTIPLICATIVE_SCALING;
 			}
-		}
-
-		else if (g_str_has_prefix(current, "-filter-fwhm=")) {
+		} else if (g_str_has_prefix(current, "-filter-fwhm=")) {
 			value = strchr(current, '=') + 1;
 			if (value[0] != '\0') {
 				char *end;
@@ -2056,8 +2054,7 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 				return 1;
 			}
-		}
-		else if (g_str_has_prefix(current, "-filter-round=") ||
+		} else if (g_str_has_prefix(current, "-filter-round=") ||
 				g_str_has_prefix(current, "-filter-roundness=")) {
 			value = strchr(current, '=') + 1;
 			if (value[0] != '\0') {
@@ -2074,8 +2071,7 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 				return 1;
 			}
-		}
-		else if (g_str_has_prefix(current, "-filter-qual=") ||
+		} else if (g_str_has_prefix(current, "-filter-qual=") ||
 				g_str_has_prefix(current, "-filter-quality=")) {
 			value = strchr(current, '=') + 1;
 			if (value[0] != '\0') {
@@ -2092,13 +2088,10 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 				return 1;
 			}
-		}
-		else if (g_str_has_prefix(current, "-filter-incl") ||
+		} else if (g_str_has_prefix(current, "-filter-incl") ||
 				g_str_has_prefix(current, "-filter-included")) {
 			arg->filter_included = TRUE;
-		}
-
-		else if (g_str_has_prefix(current, "-out=")) {
+		} else if (g_str_has_prefix(current, "-out=")) {
 			if (out_allowed) {
 				value = current + 5;
 				if (value[0] == '\0') {

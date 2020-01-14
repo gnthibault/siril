@@ -1465,7 +1465,8 @@ void initialize_all_GUI(gchar *supported_files) {
 	set_libraw_settings_menu_available(FALSE);	// disable libraw settings
 #endif
 	update_spinCPU(com.max_thread);
-	update_used_memory();
+	/* every 0.25sec update memory display */
+	g_timeout_add_seconds(1.0, update_displayed_memory, NULL);
 }
 
 /*****************************************************************************
@@ -2395,7 +2396,6 @@ static gboolean end_checkSeq(gpointer p) {
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 	set_cursor_waiting(FALSE);
 	free(args);
-	update_used_memory();
 
 	return FALSE;
 }

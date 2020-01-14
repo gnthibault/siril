@@ -1081,7 +1081,7 @@ static gboolean end_plate_solver(gpointer p) {
 	g_free(args->catalogStars);
 	g_free(args->message);
 	free(args);
-	update_used_memory();
+	
 	return FALSE;
 }
 

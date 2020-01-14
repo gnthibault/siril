@@ -159,7 +159,7 @@ static gboolean end_wavelets_filter(gpointer p) {
 	struct wavelets_filter_data *args = (struct wavelets_filter_data *) p;
 	stop_processing_thread();// can it be done here in case there is no thread?
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_DONE);
-	update_used_memory();
+	
 	set_cursor_waiting(FALSE);
 	free(args);
 	return FALSE;

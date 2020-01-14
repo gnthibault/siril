@@ -681,7 +681,6 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			else 	data_pool[i].pix[j] = ((WORD *)data_pool[i].tmp) + j * npixels_in_block;
 		}
 	}
-	update_used_memory();
 
 	siril_log_message(_("Starting stacking...\n"));
 	if (is_mean)
@@ -948,7 +947,6 @@ free_and_close:
 			siril_log_message(_("Median stacking complete. %d imageshave been stacked.\n"), nb_frames);
 		}
 	}
-	update_used_memory();
 	return retval;
 }
 

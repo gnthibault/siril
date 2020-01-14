@@ -174,14 +174,17 @@ static unsigned long update_used_RAM_memory() {
 /**
  * Updates RAM memory used by siril, available free disk space
  * and displays information on the control window.
+ * @return always return TRUE
  */
-void update_used_memory() {
+gboolean update_displayed_memory() {
 	unsigned long ram = update_used_RAM_memory();
 	int64_t freeDisk = find_space(com.wd);
 
 	/* update GUI */
 	set_GUI_MEM(ram);
 	set_GUI_DiskSpace((double)freeDisk);
+
+	return TRUE;
 }
 
 /**

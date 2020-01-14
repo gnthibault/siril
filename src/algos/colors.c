@@ -364,7 +364,7 @@ static gboolean end_extract_channels(gpointer p) {
 	stop_processing_thread();
 	free(args);
 	set_cursor_waiting(FALSE);
-	update_used_memory();
+	
 	return FALSE;
 }
 

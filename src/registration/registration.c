@@ -397,7 +397,7 @@ int register_shift_dft(struct registration_args *args) {
 		else
 			args->seq->upscale_at_stacking = 1.0;
 		normalizeQualityData(args, q_min, q_max);
-		update_used_memory();
+		
 		siril_log_message(_("Registration finished.\n"));
 		siril_log_color_message(_("Best frame: #%d.\n"), "bold", q_index);
 	} else {
@@ -483,7 +483,7 @@ int register_shift_fwhm(struct registration_args *args) {
 		args->seq->upscale_at_stacking = 2.0;
 	else
 		args->seq->upscale_at_stacking = 1.0;
-	update_used_memory();
+	
 	siril_log_message(_("Registration finished.\n"));
 	siril_log_color_message(_("Best frame: #%d with fwhm=%.3g.\n"), "bold",
 			fwhm_index, fwhm_min);
@@ -619,7 +619,7 @@ int register_ecc(struct registration_args *args) {
 
 	normalizeQualityData(args, q_min, q_max);
 	clearfits(&ref);
-	update_used_memory();
+	
 	siril_log_message(_("Registration finished.\n"));
 	if (failed) {
 		siril_log_color_message(_("%d frames were excluded.\n"), "red", failed);
@@ -886,8 +886,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->translation_only = gtk_toggle_button_get_active(no_translate);
 	reg_args->x2upscale = gtk_toggle_button_get_active(x2upscale);
 	reg_args->cumul = gtk_toggle_button_get_active(cumul);
-	reg_args->prefix = gtk_entry_get_text(
-			GTK_ENTRY(gtk_builder_get_object(builder, "regseqname_entry")));
+	reg_args->prefix = gtk_entry_get_text(GTK_ENTRY(lookup_widget("regseqname_entry")));
 
 	/* We check that available disk space is enough when:
 	 * - activating the subpixel alignment, which requires generating a new
@@ -968,12 +967,10 @@ static gboolean end_register_idle(gpointer p) {
 	}
 	set_progress_bar_data(_("Registration complete."), PROGRESS_DONE);
 
-	//	if (!args->load_new_sequence) {	// already done in set_seq()
 	drawPlot();
 	update_stack_interface(TRUE);
 	adjust_sellabel();
-	//	}
-	update_used_memory();
+	
 	set_cursor_waiting(FALSE);
 
 	free(args);

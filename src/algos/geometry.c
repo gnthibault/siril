@@ -174,7 +174,7 @@ static void rotate_gui(fits *fit) {
 		undo_save_state(&gfit, "Processing: Rotation (%.1lfdeg, cropped=%s)", angle,
 				cropped ? "TRUE" : "FALSE");
 		verbose_rotate_image(fit, angle, interpolation, cropped);
-		update_used_memory();
+		
 		adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
@@ -561,7 +561,7 @@ void on_button_resample_ok_clicked(GtkButton *button, gpointer user_data) {
 		undo_save_state(&gfit, "Processing: Resample (%g - %g)", sample[0] / 100.0,
 				sample[1] / 100.0);
 		verbose_resize_gaussian(&gfit, toX, toY, interpolation);
-		update_used_memory();
+		
 		adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
@@ -623,7 +623,7 @@ void on_menu_gray_crop_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
-		update_used_memory();
+		
 	}
 }
 

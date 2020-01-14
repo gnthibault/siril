@@ -176,7 +176,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 			goto free_and_reset_progress_bar;
 		}
 
-		update_used_memory();
+		
 
 		/* load registration data for current image */
 		if(reglayer != -1 && args->seq->regparam[reglayer]) {
@@ -249,10 +249,9 @@ free_and_reset_progress_bar:
 	} else {
 		set_progress_bar_data(_("Stacking complete."), PROGRESS_DONE);
 	}
-	update_used_memory();
+	
 	return retval;
 }
-
 
 /* the function that prepares the stacking and runs it */
 void main_stack(struct stacking_args *args) {
@@ -753,6 +752,12 @@ void get_sequence_filtering_from_gui(seq_image_filter *filtering_criterion,
 						stackparam.seq, channel, percent);
 				gtk_widget_set_visible(spin[guifilter], TRUE);
 				break;
+			case BEST_WPSF_IMAGES:
+				stackfilters[filter].filter = seq_filter_weighted_fwhm;
+				stackfilters[filter].param = compute_highest_accepted_weighted_fwhm(
+						stackparam.seq, channel, percent);
+				gtk_widget_set_visible(spin[guifilter], TRUE);
+				break;
 			case BEST_ROUND_IMAGES:
 				stackfilters[filter].filter = seq_filter_roundness;
 				stackfilters[filter].param = compute_lowest_accepted_roundness(
@@ -814,6 +819,7 @@ static void update_filter_label() {
 				filter_str = g_strdup("");
 				break;
 			case BEST_PSF_IMAGES:
+			case BEST_WPSF_IMAGES:
 				filter_str = g_strdup_printf("< %.2lf", param);
 				break;
 			case BEST_ROUND_IMAGES:

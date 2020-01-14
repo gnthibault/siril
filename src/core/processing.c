@@ -412,7 +412,7 @@ void unreserve_thread() {
  */
 gboolean end_generic(gpointer arg) {
 	stop_processing_thread();
-	update_used_memory();
+	
 	set_cursor_waiting(FALSE);
 	return FALSE;
 }

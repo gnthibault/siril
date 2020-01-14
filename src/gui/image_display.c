@@ -747,7 +747,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	}
 
 	/* draw detected stars and highlight the selected star */
-	if (com.stars) {
+	if (com.stars && !com.script) {
 		/* com.stars is a NULL-terminated array */
 		cairo_set_dash(cr, NULL, 0, 0);
 		cairo_set_source_rgba(cr, 1.0, 0.4, 0.0, 0.9);
