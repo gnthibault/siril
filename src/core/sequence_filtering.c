@@ -200,6 +200,7 @@ int convert_stack_data_to_filter(struct stacking_configuration *arg, struct stac
 	struct filtering_tuple filters[5] = { { NULL, 0.0 } };
 
 	if ((arg->f_fwhm_p > 0.0f && arg->f_fwhm > 0.0f) ||
+			(arg->f_wfwhm_p > 0.0f && arg->f_wfwhm > 0.0f) ||
 			(arg->f_round_p > 0.0f && arg->f_round > 0.0f) ||
 			(arg->f_quality_p > 0.0f && arg->f_quality > 0.0f)) {
 		siril_log_message(_("Sequence filter: values can only be either literal or percent\n"));
@@ -213,12 +214,20 @@ int convert_stack_data_to_filter(struct stacking_configuration *arg, struct stac
 		nb_filters++;
 	}
 	if (arg->f_fwhm_p > 0.0f || arg->f_fwhm > 0.0f) {
-		filters[nb_filters].filter = seq_filter_fwhm;
-		filters[nb_filters].param = arg->f_fwhm > 0.f ? arg->f_fwhm :
-			compute_highest_accepted_fwhm(stackargs->seq, layer, arg->f_fwhm_p);
-		siril_log_message(_("Using star FWHM images filter (below %f)\n"),
-				filters[nb_filters].param);
-	       	nb_filters++;
+			filters[nb_filters].filter = seq_filter_fwhm;
+			filters[nb_filters].param = arg->f_fwhm > 0.f ? arg->f_fwhm :
+				compute_highest_accepted_fwhm(stackargs->seq, layer, arg->f_fwhm_p);
+			siril_log_message(_("Using star FWHM images filter (below %f)\n"),
+					filters[nb_filters].param);
+		       	nb_filters++;
+	}
+	if (arg->f_wfwhm_p > 0.0f || arg->f_wfwhm > 0.0f) {
+			filters[nb_filters].filter = seq_filter_fwhm;
+			filters[nb_filters].param = arg->f_wfwhm > 0.f ? arg->f_wfwhm :
+				compute_highest_accepted_fwhm(stackargs->seq, layer, arg->f_wfwhm_p);
+			siril_log_message(_("Using star weighted FWHM images filter (below %f)\n"),
+					filters[nb_filters].param);
+		       	nb_filters++;
 	}
 	if (arg->f_round_p > 0.0f || arg->f_round > 0.0f) {
 		filters[nb_filters].filter = seq_filter_roundness;

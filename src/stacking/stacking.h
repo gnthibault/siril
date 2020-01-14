@@ -88,7 +88,7 @@ struct stacking_configuration {
 	gboolean force_no_norm;
 	normalization norm;
 	int number_of_loaded_sequences;
-	float f_fwhm, f_fwhm_p, f_round, f_round_p, f_quality, f_quality_p; // on if >0
+	float f_fwhm, f_fwhm_p, f_wfwhm, f_wfwhm_p, f_round, f_round_p, f_quality, f_quality_p; // on if >0
 	gboolean filter_included;
 };
 
