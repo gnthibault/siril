@@ -2054,6 +2054,22 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 				return 1;
 			}
+		} else if (g_str_has_prefix(current, "-filter-wfwhm=")) {
+			value = strchr(current, '=') + 1;
+			if (value[0] != '\0') {
+				char *end;
+				float val = strtof(value, &end);
+				if (end == value) {
+					siril_log_message(_("Could not parse argument `%s' to the filter `%s', aborting.\n"), value, current);
+					return 1;
+				}
+				if (*end == '%')
+					arg->f_wfwhm_p = val;
+				else arg->f_wfwhm = val;
+			} else {
+				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+				return 1;
+			}
 		} else if (g_str_has_prefix(current, "-filter-round=") ||
 				g_str_has_prefix(current, "-filter-roundness=")) {
 			value = strchr(current, '=') + 1;
@@ -2238,7 +2254,7 @@ int process_stackall(int nb) {
 	arg->f_round_p = -1.f; arg->f_quality = -1.f; arg->f_quality_p = -1.f;
 	arg->filter_included = FALSE; arg->norm = NO_NORM; arg->force_no_norm = FALSE;
 
-	// stackall { sum | min | max } [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]
+	// stackall { sum | min | max } [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]
 	// stackall { med | median } [-nonorm, norm=] [-filter-incl[uded]]
 	// stackall { rej | mean } sigma_low sigma_high [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]
 	if (!word[1]) {
@@ -2333,7 +2349,7 @@ int process_stackone(int nb) {
 	}
 	arg->seqfile = file;
 
-	// stack seqfilename { sum | min | max } [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]] -out=result_filename
+	// stack seqfilename { sum | min | max } [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]] -out=result_filename
 	// stack seqfilename { med | median } [-nonorm, norm=] [-filter-incl[uded]] -out=result_filename
 	// stack seqfilename { rej | mean } sigma_low sigma_high [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]] -out=result_filename
 	if (!word[2]) {
