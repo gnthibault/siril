@@ -417,15 +417,16 @@ static void remap(int vport) {
 			hist_nb_bins = gsl_histogram_bins(histo);
 			nb_pixels = (double)(gfit.rx * gfit.ry);
 
-			float_hist_lookup[vport][0] = 0;
-			hist_sum = 0;
+			float_hist_lookup[vport][0] = 0.0f;
+			hist_sum = 0.0;
 			for (j = 1; j < 256; j++) {
 				do {
 					if (i >= hist_nb_bins) break;
 					double newsum = hist_sum + gsl_histogram_get(histo, i);
 					if (newsum / nb_pixels > (double)j / 255.0) {
-						float_hist_lookup[vport][j] = (double)i / (double)hist_nb_bins;
+						float_hist_lookup[vport][j] = (float)i / (float)hist_nb_bins;
 						hist_sum = newsum;
+						i++;
 						break;
 					}
 					hist_sum = newsum;
