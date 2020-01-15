@@ -737,7 +737,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			if (com.seq.previewX[i] >= 0) {
 				int textX, textY;
 				gchar *text;
-				cairo_set_line_width(cr, 0.5 / zoom);
+				cairo_set_line_width(cr, 0.5);
 				cairo_set_source_rgb(cr, 0.1, 0.6, 0.0);
 				cairo_rectangle(cr,
 						com.seq.previewX[i] - com.seq.previewW[i] / 2,
@@ -758,7 +758,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 				text = g_strdup_printf("%d", i + 1);
 
-				cairo_set_font_size(cr, 12.0 / zoom);
+				cairo_set_font_size(cr, 12.0);
 				cairo_move_to(cr, textX, textY);
 				cairo_show_text(cr, text);
 				g_free(text);
