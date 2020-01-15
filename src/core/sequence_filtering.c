@@ -214,18 +214,18 @@ int convert_stack_data_to_filter(struct stacking_configuration *arg, struct stac
 		nb_filters++;
 	}
 	if (arg->f_fwhm_p > 0.0f || arg->f_fwhm > 0.0f) {
-			filters[nb_filters].filter = seq_filter_fwhm;
-			filters[nb_filters].param = arg->f_fwhm > 0.f ? arg->f_fwhm :
+		filters[nb_filters].filter = seq_filter_fwhm;
+		filters[nb_filters].param = arg->f_fwhm > 0.f ? arg->f_fwhm :
 				compute_highest_accepted_fwhm(stackargs->seq, layer, arg->f_fwhm_p);
-			siril_log_message(_("Using star FWHM images filter (below %f)\n"),
+		siril_log_message(_("Using star FWHM images filter (below %f)\n"),
 					filters[nb_filters].param);
 		       	nb_filters++;
 	}
 	if (arg->f_wfwhm_p > 0.0f || arg->f_wfwhm > 0.0f) {
-			filters[nb_filters].filter = seq_filter_fwhm;
-			filters[nb_filters].param = arg->f_wfwhm > 0.f ? arg->f_wfwhm :
-				compute_highest_accepted_fwhm(stackargs->seq, layer, arg->f_wfwhm_p);
-			siril_log_message(_("Using star weighted FWHM images filter (below %f)\n"),
+		filters[nb_filters].filter = seq_filter_weighted_fwhm;
+		filters[nb_filters].param = arg->f_wfwhm > 0.f ? arg->f_wfwhm :
+				compute_highest_accepted_weighted_fwhm(stackargs->seq, layer, arg->f_wfwhm_p);
+		siril_log_message(_("Using star weighted FWHM images filter (below %f)\n"),
 					filters[nb_filters].param);
 		       	nb_filters++;
 	}

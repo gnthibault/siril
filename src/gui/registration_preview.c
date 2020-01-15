@@ -20,6 +20,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "io/sequence.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/image_interactions.h"
@@ -69,7 +70,11 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 		layout = gtk_widget_create_pango_layout(widget, NULL);
 
-		msg = g_strdup_printf(_("Preview %d"), current_preview + 1);
+		if (sequence_is_loaded()) {
+			msg = g_strdup_printf(_("Preview %d"), current_preview + 1);
+		} else {
+			msg = g_strdup(_("Load\nsequences"));
+		}
 		pango_layout_set_markup(layout, msg, -1);
 		g_free(msg);
 		pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
@@ -164,28 +169,33 @@ void set_preview_area(int preview_area, int centerX, int centerY) {
 
 void on_toggle_preview_toggled(GtkToggleButton *toggle, gpointer user_data) {
 	static GtkToggleButton *preview1 = NULL;
-	if (preview1 == NULL)
-		preview1 = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "togglebutton2"));
-	if (gtk_toggle_button_get_active(toggle)) {
-		if (toggle == preview1)
-			mouse_status = MOUSE_ACTION_SELECT_PREVIEW1;
-		else mouse_status = MOUSE_ACTION_SELECT_PREVIEW2;
-	}
-	else {
-		/* deactivate preview */
-		int preview_area;
-		mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
-		if (toggle == preview1)
-			preview_area = 0;
-		else preview_area = 1;
-		cairo_surface_destroy(com.preview_surface[preview_area]);
-		com.preview_surface[preview_area] = NULL;
-		com.seq.previewX[preview_area] = -1;
-		com.seq.previewY[preview_area] = -1;
-		com.seq.previewH[preview_area] = 0;
-		com.seq.previewW[preview_area] = 0;
-		// queue for redraw
-		gtk_widget_queue_draw(com.preview_area[preview_area]);
+
+	if (sequence_is_loaded()) {
+
+		if (preview1 == NULL)
+			preview1 = GTK_TOGGLE_BUTTON(lookup_widget("togglebutton2"));
+		if (gtk_toggle_button_get_active(toggle)) {
+			if (toggle == preview1)
+				mouse_status = MOUSE_ACTION_SELECT_PREVIEW1;
+			else
+				mouse_status = MOUSE_ACTION_SELECT_PREVIEW2;
+		} else {
+			/* deactivate preview */
+			int preview_area;
+			mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
+			if (toggle == preview1)
+				preview_area = 0;
+			else
+				preview_area = 1;
+			cairo_surface_destroy(com.preview_surface[preview_area]);
+			com.preview_surface[preview_area] = NULL;
+			com.seq.previewX[preview_area] = -1;
+			com.seq.previewY[preview_area] = -1;
+			com.seq.previewH[preview_area] = 0;
+			com.seq.previewW[preview_area] = 0;
+			// queue for redraw
+			gtk_widget_queue_draw(com.preview_area[preview_area]);
+		}
 	}
 }
 
