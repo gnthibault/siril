@@ -23,6 +23,8 @@
 #include "core/command.h" // for process_clear()
 #include "core/OS_utils.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
+
 
 #if !GLIB_CHECK_VERSION(2,62,0)
 /**
