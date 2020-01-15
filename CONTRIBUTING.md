@@ -1,6 +1,6 @@
 # Contributing to Siril
 
-:+1::tada: First, thanks for taking the time to contribute! :tada::+1:
+First, thanks for taking the time to contribute!
 
 ## How Can I Contribute?
 
