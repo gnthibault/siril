@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-15 15:39+0100\n"
+"POT-Creation-Date: 2020-01-15 17:16+0100\n"
 "PO-Revision-Date: 2019-10-06 11:17+0200\n"
 "Last-Translator: Luca Benassi <bennolo@gmail.com>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
@@ -1892,7 +1892,7 @@ msgstr ""
 msgid "Export the log"
 msgstr "Esporta i log"
 
-#: ../src/gui/siril3.glade.h:414
+#: ../src/gui/siril3.glade.h:414 ../src/core/siril_log.c:164
 msgid "Clear the log"
 msgstr "Cancella il log"
 
@@ -1901,8 +1901,9 @@ msgid "This tab shows the Siril logs."
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:416
-msgid "Output logs"
-msgstr "Log di output"
+#, fuzzy
+msgid "Console"
+msgstr "<b>Terminale</b>"
 
 #: ../src/gui/siril3.glade.h:417
 #, fuzzy
@@ -6610,6 +6611,10 @@ msgstr ""
 msgid "Log files (*.log)"
 msgstr "File di log (*.log)"
 
+#: ../src/core/siril_log.c:165
+msgid "Are you sure you want to clear the log? There is no possible undo."
+msgstr ""
+
 #: ../src/core/siril_update.c:260
 msgid "Unable to check updates! Please Check your network connection\n"
 msgstr ""
@@ -7098,7 +7103,7 @@ msgstr ""
 "ridisegno: il numero massimo di livelli supportati è %d (l'immagine attuale "
 "ne ha %d).\n"
 
-#: ../src/gui/message_dialog.c:186
+#: ../src/gui/message_dialog.c:187
 msgid "_Do not show this dialog again"
 msgstr "_Non mostrare nuovamente questo messaggio"
 
@@ -9239,6 +9244,9 @@ msgstr ""
 msgid "Up-scaling sequence for stacking"
 msgstr "Sequenza up-scaling per lo stacking"
 
+#~ msgid "Output logs"
+#~ msgstr "Log di output"
+
 #~ msgid ""
 #~ "Select the set of images to be stacked. All the images or only the "
 #~ "manually selected can be used. But it is possible to only select the "
@@ -9252,9 +9260,6 @@ msgstr "Sequenza up-scaling per lo stacking"
 
 #~ msgid "Stack this set of images:"
 #~ msgstr "Effettua lo stacking di questo insieme di immagini:"
-
-#~ msgid "<b>Console</b>"
-#~ msgstr "<b>Terminale</b>"
 
 #~ msgid "Current working directory:"
 #~ msgstr "Cartella di lavoro corrente:"

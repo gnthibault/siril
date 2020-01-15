@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-15 15:39+0100\n"
-"PO-Revision-Date: 2020-01-15 15:39+0100\n"
+"POT-Creation-Date: 2020-01-15 17:16+0100\n"
+"PO-Revision-Date: 2020-01-15 17:18+0100\n"
 "Last-Translator: Cyril Richard\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -1872,7 +1872,7 @@ msgstr ""
 msgid "Export the log"
 msgstr "Exporter les logs"
 
-#: ../src/gui/siril3.glade.h:414
+#: ../src/gui/siril3.glade.h:414 ../src/core/siril_log.c:164
 msgid "Clear the log"
 msgstr "Effacer les logs"
 
@@ -1881,7 +1881,7 @@ msgid "This tab shows the Siril logs."
 msgstr "Cet onglet présente les logs de Siril."
 
 #: ../src/gui/siril3.glade.h:416
-msgid "Output logs"
+msgid "Console"
 msgstr "Console"
 
 #: ../src/gui/siril3.glade.h:417
@@ -6524,6 +6524,12 @@ msgstr ""
 msgid "Log files (*.log)"
 msgstr "Fichiers log (*.log)"
 
+#: ../src/core/siril_log.c:165
+msgid "Are you sure you want to clear the log? There is no possible undo."
+msgstr ""
+"Êtes-vous sûr de vouloir effacer les logs ? Il n'y a pas de retour en "
+"arrière possible."
+
 #: ../src/core/siril_update.c:260
 msgid "Unable to check updates! Please Check your network connection\n"
 msgstr ""
@@ -7017,7 +7023,7 @@ msgstr ""
 "redraw : le nombre maximum de couches supportées est %d (l'image chargée a "
 "%d).\n"
 
-#: ../src/gui/message_dialog.c:186
+#: ../src/gui/message_dialog.c:187
 msgid "_Do not show this dialog again"
 msgstr "_Ne plus afficher cette fenêtre"
 
@@ -9147,6 +9153,12 @@ msgstr ""
 msgid "Up-scaling sequence for stacking"
 msgstr "Mise à l'échelle de la séquence pour l’empilement"
 
+#~ msgid "Logs"
+#~ msgstr "Console"
+
+#~ msgid "Output logs"
+#~ msgstr "Console"
+
 #~ msgid ""
 #~ "Select the set of images to be stacked. All the images or only the "
 #~ "manually selected can be used. But it is possible to only select the "
@@ -9161,9 +9173,6 @@ msgstr "Mise à l'échelle de la séquence pour l’empilement"
 
 #~ msgid "Stack this set of images:"
 #~ msgstr "Empiler cet ensemble d'images :"
-
-#~ msgid "<b>Console</b>"
-#~ msgstr "<b>Console</b>"
 
 #~ msgid "Current working directory:"
 #~ msgstr "Répertoire de travail :"

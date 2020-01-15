@@ -24,6 +24,7 @@
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 
 #include "message_dialog.h"
 
