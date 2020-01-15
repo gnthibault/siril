@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-14 10:46+0100\n"
+"POT-Creation-Date: 2020-01-15 15:39+0100\n"
 "PO-Revision-Date: 2019-05-07 20:26+0200\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
@@ -1565,11 +1565,11 @@ msgstr "Pixel maximum stacking"
 msgid "Pixel minimum stacking"
 msgstr "Pixel minimum stacking"
 
-#: ../src/gui/siril3.glade.h:340 ../src/stacking/stacking.c:1397
+#: ../src/gui/siril3.glade.h:340 ../src/stacking/stacking.c:1405
 msgid "Sigma low: "
 msgstr "Sigmaa laag: "
 
-#: ../src/gui/siril3.glade.h:341 ../src/stacking/stacking.c:1398
+#: ../src/gui/siril3.glade.h:341 ../src/stacking/stacking.c:1406
 msgid "Sigma high: "
 msgstr "Sigma hoog: "
 
@@ -4927,7 +4927,7 @@ msgstr ""
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Crop: kies een regio of voer x, y, breedte en hoogte in\n"
 
-#: ../src/core/command.c:485 ../src/core/command.c:2558
+#: ../src/core/command.c:485 ../src/core/command.c:2574
 #: ../src/filters/wavelets.c:316 ../src/filters/wavelets.c:381
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
@@ -4990,7 +4990,7 @@ msgstr "Sequentie: %s\n"
 msgid "Image: %s\n"
 msgstr "Afbeelding: %s\n"
 
-#: ../src/core/command.c:669 ../src/core/command.c:2538
+#: ../src/core/command.c:669 ../src/core/command.c:2554
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* EINDE VAN DE LIJST *********\n"
 
@@ -5065,8 +5065,8 @@ msgstr "Voer de PSF uit op de geladen sequentie, laag %d\n"
 #: ../src/core/command.c:1578 ../src/core/command.c:1584
 #: ../src/core/command.c:1770 ../src/core/command.c:1776
 #: ../src/core/command.c:1929 ../src/core/command.c:1936
-#: ../src/core/command.c:2186 ../src/core/command.c:2328
-#: ../src/core/command.c:2401 ../src/core/command.c:2408 ../src/main.c:472
+#: ../src/core/command.c:2202 ../src/core/command.c:2344
+#: ../src/core/command.c:2417 ../src/core/command.c:2424 ../src/main.c:472
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Geen sequentie `%s' gevonden.\n"
@@ -5211,60 +5211,61 @@ msgstr "Registratie: processing met methode: %s\n"
 msgid "Normalization options are not allowed in this context, ignoring.\n"
 msgstr "Normalisatieopties niet toegestaan in deze context, genegeerd.\n"
 
-#: ../src/core/command.c:2047 ../src/core/command.c:2064
-#: ../src/core/command.c:2081
+#: ../src/core/command.c:2047 ../src/core/command.c:2063
+#: ../src/core/command.c:2080 ../src/core/command.c:2097
 #, c-format
 msgid "Could not parse argument `%s' to the filter `%s', aborting.\n"
 msgstr "Kon argument `%s' aan de filter `%s' niet ontleden , stoppen.\n"
 
-#: ../src/core/command.c:2054 ../src/core/command.c:2071
-#: ../src/core/command.c:2088 ../src/core/command.c:2098
+#: ../src/core/command.c:2054 ../src/core/command.c:2070
+#: ../src/core/command.c:2087 ../src/core/command.c:2104
+#: ../src/core/command.c:2114
 #, c-format
 msgid "Missing argument to %s, aborting.\n"
 msgstr "Argument ontbreekt aan %s, stopt.\n"
 
-#: ../src/core/command.c:2104
+#: ../src/core/command.c:2120
 msgid "Output filename option is not allowed in this context, ignoring.\n"
 msgstr ""
 "Output bestandsnaam niet toegestaan in deze context, wordt genegeerd.\n"
 
-#: ../src/core/command.c:2108
+#: ../src/core/command.c:2124
 #, c-format
 msgid "Unexpected argument to stacking `%s', aborting.\n"
 msgstr "Onverwacht argument aan de stack `%s'. Stopgezet.\n"
 
-#: ../src/core/command.c:2125
+#: ../src/core/command.c:2141
 #, c-format
 msgid "Stacking sequence %s\n"
 msgstr "Stack sequentie %s\n"
 
-#: ../src/core/command.c:2135
+#: ../src/core/command.c:2151
 msgid "Not using rejection for stacking\n"
 msgstr "Verwerping voor de stacking niet toegepast\n"
 
-#: ../src/core/command.c:2178
+#: ../src/core/command.c:2194
 #, c-format
 msgid "Could not save the stacking result %s\n"
 msgstr "Kan de resultaat %s van de staking niet oplsaan\n"
 
-#: ../src/core/command.c:2200
+#: ../src/core/command.c:2216
 msgid "Looking for sequences in current working directory...\n"
 msgstr "Zoekt zequenties in huidige werkfolder...\n"
 
-#: ../src/core/command.c:2202
+#: ../src/core/command.c:2218
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr "Fout tijdens het zoeken van sequenties of bij het openen van de map.\n"
 
-#: ../src/core/command.c:2211
+#: ../src/core/command.c:2227
 msgid "Starting stacking of found sequences...\n"
 msgstr "Begin stacking van de gevonden sequenties\n"
 
-#: ../src/core/command.c:2219
+#: ../src/core/command.c:2235
 #, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr "Stackte %d sequenties succesvol.\n"
 
-#: ../src/core/command.c:2259 ../src/core/command.c:2354
+#: ../src/core/command.c:2275 ../src/core/command.c:2370
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
@@ -5272,20 +5273,20 @@ msgstr ""
 "De gemiddelde stackingmethode gebruikt Winsorised afwijzing an heeft twee "
 "extra parameters nodig: sigma laag en hoog.\n"
 
-#: ../src/core/command.c:2268 ../src/core/command.c:2363
+#: ../src/core/command.c:2284 ../src/core/command.c:2379
 #, c-format
 msgid "Stacking method type '%s' is invalid\n"
 msgstr "Stackingsmethode van type '%s' is ongeldig\n"
 
-#: ../src/core/command.c:2299
+#: ../src/core/command.c:2315
 msgid "Stacked sequence successfully.\n"
 msgstr "Sequentie succesvol gestackt.\n"
 
-#: ../src/core/command.c:2472 ../src/gui/callbacks.c:2228
+#: ../src/core/command.c:2488 ../src/gui/callbacks.c:2228
 msgid "Preprocessing...\n"
 msgstr "Preprocessing...\n"
 
-#: ../src/core/command.c:2497
+#: ../src/core/command.c:2513
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -5294,12 +5295,12 @@ msgstr ""
 "Aantal logische processoren MOET groter dan 0 en kleiner of gelijk aan %d "
 "zijn.\n"
 
-#: ../src/core/command.c:2507
+#: ../src/core/command.c:2523
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "Gebruikt nu %d logische processoren\n"
 
-#: ../src/core/command.c:2519
+#: ../src/core/command.c:2535
 #, fuzzy
 msgid ""
 "The accepted range for the ratio of memory used for stacking is [0.05, 4], "
@@ -5308,7 +5309,7 @@ msgstr ""
 "De toegelaten grenswaarden voor de geheugen ratio voor de stacking zijn "
 "[0.05, 2], met waarden onder de beschibare geheugen aangeraden\n"
 
-#: ../src/core/command.c:2523
+#: ../src/core/command.c:2539
 #, fuzzy, c-format
 msgid ""
 "Setting the ratio of memory used for stacking above 1 will require the use "
@@ -5319,12 +5320,12 @@ msgstr ""
 "disk geheugen, dewelke heel traag is, wat niet aangeraden is (%g "
 "aangevraagd)\n"
 
-#: ../src/core/command.c:2527
+#: ../src/core/command.c:2543
 #, c-format
 msgid "Usable memory for stacking changed to %g\n"
 msgstr "Bruikbare geheugen voor de stacking aangepast tot %g\n"
 
-#: ../src/core/command.c:2533
+#: ../src/core/command.c:2549
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* LIJST VAN BESCHIKBARE COMMANDO'S *********\n"
 
@@ -5969,6 +5970,7 @@ msgstr ""
 "slaat deze op als \"r\" \"g\" en \"b\" bestanden"
 
 #: ../src/core/command_def.h:98
+#, fuzzy
 msgid ""
 "Stacks the \"sequencename\" sequence, using options. The allowed types are: "
 "sum, max, min, med or median, and rej or mean that requires the use of "
@@ -5976,7 +5978,7 @@ msgid ""
 "sigma clipping rejection algorithm (cannot be changed from here).\n"
 "Different types of normalisation are allowed: \"-norm=add\" for addition, \"-"
 "norm=mul\" for multiplicative. Options \"-norm=addscale\" and \"-"
-"norm=mulscale\" apply same normalisations but with scale operations.\n"
+"norm=mulscale\" apply same normalization but with scale operations.\n"
 "If no argument other than the sequence name is provided, sum stacking is "
 "assumed.\n"
 "Result image's name can be set with the \"-out=\" option.\n"
@@ -6354,32 +6356,37 @@ msgstr "Finalisatie van de sequentie gefaald.\n"
 msgid "Process aborted by user\n"
 msgstr "Process stopgezet door de gebruiker\n"
 
-#: ../src/core/sequence_filtering.c:205
+#: ../src/core/sequence_filtering.c:206
 msgid "Sequence filter: values can only be either literal or percent\n"
 msgstr ""
 "Sequentie filter: waarden kunnen enkel letterlijk of percentueel zijn\n"
 
-#: ../src/core/sequence_filtering.c:211
+#: ../src/core/sequence_filtering.c:212
 #, c-format
 msgid "Using selected images filter (%d/%d of the sequence)\n"
 msgstr "Gebruikt geselecteerde filter (%d/%d van de sequentie)\n"
 
-#: ../src/core/sequence_filtering.c:219
+#: ../src/core/sequence_filtering.c:220
 #, c-format
 msgid "Using star FWHM images filter (below %f)\n"
 msgstr "Gebruikt ster FWHM filter (onder %f)\n"
 
-#: ../src/core/sequence_filtering.c:227
+#: ../src/core/sequence_filtering.c:228
+#, fuzzy, c-format
+msgid "Using star weighted FWHM images filter (below %f)\n"
+msgstr "Gebruikt ster FWHM filter (onder %f)\n"
+
+#: ../src/core/sequence_filtering.c:236
 #, c-format
 msgid "Using star roundness images filter (above %f)\n"
 msgstr "Gebruikt rondheid filter (boven %f)\n"
 
-#: ../src/core/sequence_filtering.c:235
+#: ../src/core/sequence_filtering.c:244
 #, c-format
 msgid "Using image quality filter (below %f)\n"
 msgstr "Gebruikt kwaliteit filter (onder %f)\n"
 
-#: ../src/core/sequence_filtering.c:262
+#: ../src/core/sequence_filtering.c:271
 msgid ""
 "Provided filtering options do not allow at least two images to be "
 "processed.\n"
@@ -6387,7 +6394,7 @@ msgstr ""
 "De gekozen filter opties bieden niet tenminste 2 beelden om bewerkt te "
 "worden.\n"
 
-#: ../src/core/sequence_filtering.c:295
+#: ../src/core/sequence_filtering.c:304
 msgid ""
 "The reference image is not in the selected set of images. To avoid issues, "
 "please change it or change the filtering parameters.\n"
@@ -6396,12 +6403,12 @@ msgstr ""
 "problemen te voorkomen, gelieven van beeld te veranderen of de filter "
 "parameters aan te passen.\n"
 
-#: ../src/core/sequence_filtering.c:302
+#: ../src/core/sequence_filtering.c:311
 #, c-format
 msgid "Using image %d as temporary reference image\n"
 msgstr "Gebruikt refentiebeeld %d als tijdelijke referentiebeeld\n"
 
-#: ../src/core/sequence_filtering.c:342
+#: ../src/core/sequence_filtering.c:351
 #, c-format
 msgid ""
 "Warning: some images don't have information available for best images "
@@ -6410,17 +6417,17 @@ msgstr ""
 "Opgelet: sommige beelden ontbreken informatie voor de keuze van de beste "
 "beelden. Gebruikt enkel de beschikbare gegens (%d beelden uit %d).\n"
 
-#: ../src/core/sequence_filtering.c:383
+#: ../src/core/sequence_filtering.c:392
 #, c-format
 msgid "Processing all images in the sequence (%d)\n"
 msgstr "Alle beelden van de sequentie (%d) bewerken\n"
 
-#: ../src/core/sequence_filtering.c:385
+#: ../src/core/sequence_filtering.c:394
 #, c-format
 msgid "Processing only selected images in the sequence (%d)\n"
 msgstr "Enkel de geselecteerde beelden van de sequentie (%d) bewerken\n"
 
-#: ../src/core/sequence_filtering.c:387
+#: ../src/core/sequence_filtering.c:396
 #, c-format
 msgid ""
 "Processing images of the sequence with a FWHM lower or equal than %g (%d)\n"
@@ -6428,7 +6435,7 @@ msgstr ""
 "De beelden van de sequentie met een FWHM lager of gelijk aan %g bewerken "
 "(%d)\n"
 
-#: ../src/core/sequence_filtering.c:391
+#: ../src/core/sequence_filtering.c:400
 #, fuzzy, c-format
 msgid ""
 "Processing images of the sequence with a weighted FWHM lower or equal than "
@@ -6437,7 +6444,7 @@ msgstr ""
 "De beelden van de sequentie met een FWHM lager of gelijk aan %g bewerken "
 "(%d)\n"
 
-#: ../src/core/sequence_filtering.c:395
+#: ../src/core/sequence_filtering.c:404
 #, c-format
 msgid ""
 "Processing images of the sequence with a roundness higher or equal than %g "
@@ -6446,7 +6453,7 @@ msgstr ""
 "De beelden van de sequentie met een rondheid hoger of gelijk aan %g bewerken "
 "(%d)\n"
 
-#: ../src/core/sequence_filtering.c:399
+#: ../src/core/sequence_filtering.c:408
 #, c-format
 msgid ""
 "Processing images of the sequence with a quality higher or equal than %g "
@@ -6455,12 +6462,12 @@ msgstr ""
 "De beelden van de sequentie met een kwaliteit hoger of gelijk aan %g "
 "bewerken (%d)\n"
 
-#: ../src/core/sequence_filtering.c:403
+#: ../src/core/sequence_filtering.c:412
 #, c-format
 msgid "Processing images whose output don't already exist (%d)"
 msgstr "Alle beelden die nog geen output hebben bewerken (%d)"
 
-#: ../src/core/sequence_filtering.c:419
+#: ../src/core/sequence_filtering.c:428
 #, c-format
 msgid "for a total of images processed of %d)\n"
 msgstr ""
@@ -7212,12 +7219,19 @@ msgstr "Ster lijst bestand (*.lst)"
 msgid "Load an image first, aborted.\n"
 msgstr "Laad eerst een beeld, gestopt.\n"
 
-#: ../src/gui/registration_preview.c:72
+#: ../src/gui/registration_preview.c:74
 #, c-format
 msgid "Preview %d"
 msgstr "Preview %d"
 
-#: ../src/gui/registration_preview.c:248
+#: ../src/gui/registration_preview.c:76
+#, fuzzy
+msgid ""
+"Load\n"
+"sequences"
+msgstr "Geen sequentie"
+
+#: ../src/gui/registration_preview.c:258
 msgid "Switching to the registration layer\n"
 msgstr "Shakel over naar de registratielaag\n"
 
@@ -9045,37 +9059,37 @@ msgstr "Stacking resultaat"
 msgid "Unsaved stacking result"
 msgstr "Onopgeslagen stacking resultaat"
 
-#: ../src/stacking/stacking.c:1375
+#: ../src/stacking/stacking.c:1379
 #, fuzzy
 msgid "Percentile low: "
 msgstr "Precentile Clipping"
 
-#: ../src/stacking/stacking.c:1376
+#: ../src/stacking/stacking.c:1380
 #, fuzzy
 msgid "Percentile high: "
 msgstr "Precentile Clipping"
 
-#: ../src/stacking/stacking.c:1385
+#: ../src/stacking/stacking.c:1391
 #, fuzzy
 msgid "Linear low: "
 msgstr "Sigmaa laag: "
 
-#: ../src/stacking/stacking.c:1386
+#: ../src/stacking/stacking.c:1392
 #, fuzzy
 msgid "Linear high: "
 msgstr "Sigma hoog: "
 
-#: ../src/stacking/stacking.c:1407
+#: ../src/stacking/stacking.c:1415
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "Gebruikt maximaal %d MB geheugen voor de stacking\n"
 
-#: ../src/stacking/stacking.c:1419
+#: ../src/stacking/stacking.c:1427
 #, fuzzy
 msgid "Not using limits on maximum memory for stacking\n"
 msgstr "Verwerping voor de stacking niet toegepast\n"
 
-#: ../src/stacking/stacking.c:1669
+#: ../src/stacking/stacking.c:1677
 #, c-format
 msgid "Stacking %d images of the %d of the sequence"
 msgstr "Stackt %d uit de %d beelden van de sequentie"
@@ -9209,9 +9223,6 @@ msgstr "Sequentie herschaling voor stacking"
 #~ msgid "<%s.seq>: %d images selected out of %d, no reference image set"
 #~ msgstr ""
 #~ "<%s.seq>: %d images geselecteerd uit %d, geen referentiebeeld gekozen"
-
-#~ msgid "No sequence"
-#~ msgstr "Geen sequentie"
 
 #~ msgid "Unknown zoom_value value, what is the current zoom?\n"
 #~ msgstr "Onbekende zoom_value value, was is de huidige zoom?\n"

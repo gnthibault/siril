@@ -73,7 +73,7 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		if (sequence_is_loaded()) {
 			msg = g_strdup_printf(_("Preview %d"), current_preview + 1);
 		} else {
-			msg = g_strdup(_("No loaded\nsequences"));
+			msg = g_strdup(_("Load\nsequences"));
 		}
 		pango_layout_set_markup(layout, msg, -1);
 		g_free(msg);
