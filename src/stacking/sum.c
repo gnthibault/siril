@@ -162,7 +162,6 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	}
 
 	gfit.exposure = ssdata->exposure;
-	gfit.fhi = 1.0f;
 	nbdata = args->seq->ry * args->seq->rx;
 
 	if (ssdata->output_32bits) {

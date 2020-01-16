@@ -162,6 +162,22 @@ static void fits_read_history(fitsfile *fptr, GSList **history, int *status) {
 	*history = list;
 }
 
+static int try_read_float_lo_hi(fitsfile *fptr, WORD *lo, WORD *hi) {
+	float fhi, flo;
+	int status = 0;
+	fits_read_key(fptr, TFLOAT, "MIPS-FHI", &fhi, NULL, &status);
+	if (!status) {
+		*hi = float_to_ushort_range(fhi);
+		status = 0;
+		fits_read_key(fptr, TFLOAT, "MIPS-FLO", &flo, NULL, &status);
+		if (!status) {
+			*lo = float_to_ushort_range(flo);
+		}
+	}
+	return status;
+}
+
+
 /* reading the FITS header to get useful information
  * stored in the fit, requires an opened file descriptor */
 static void read_fits_header(fits *fit) {
@@ -173,6 +189,9 @@ static void read_fits_header(fits *fit) {
 
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSLO, &fit->lo);
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSHI, &fit->hi);
+	if (fit->orig_bitpix <= FLOAT_IMG) {
+		try_read_float_lo_hi(fit->fptr, &fit->lo, &fit->hi);
+	}
 
 	if (fit->orig_bitpix == SHORT_IMG) {
 		if (fit->lo)
@@ -770,13 +789,20 @@ static void save_fits_header(fits *fit) {
 	char comment[FLEN_COMMENT];
 
 	if (fit->hi) { /* may not be initialized */
-		if (fit->type != DATA_FLOAT) {
+		if (fit->type == DATA_USHORT) {
 			fits_update_key(fit->fptr, TUSHORT, "MIPS-HI", &(fit->hi),
-					"Upper visualization cutoff ", &status);
+					"Upper visualization cutoff", &status);
 			fits_update_key(fit->fptr, TUSHORT, "MIPS-LO", &(fit->lo),
-					"Lower visualization cutoff ", &status);
+					"Lower visualization cutoff", &status);
 		}
-
+		else if (fit->type == DATA_FLOAT) {
+			float fhi = ushort_to_float_range(fit->hi);
+			fits_update_key(fit->fptr, TFLOAT, "MIPS-FHI", &(fhi),
+					"Upper visualization cutoff", &status);
+			float flo = ushort_to_float_range(fit->lo);
+			fits_update_key(fit->fptr, TFLOAT, "MIPS-FLO", &(flo),
+					"Lower visualization cutoff", &status);
+		}
 	}
 	// physical_value = BZERO + BSCALE * array_value
 	// https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node26.html
@@ -2009,7 +2035,6 @@ static double logviz(double arg) {
  * @return a GdkPixbuf containing the preview or NULL
  */
 GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
-	gboolean status;
 	fitsfile *fp;
 	double (*color)(double);
 	int MAX_SIZE = thumbnail_size;
@@ -2018,7 +2043,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	float nullval = 0.;
 	int i, j, k, l, N, M, stat;
 	int naxis, w, h, pixScale, Ws, Hs, dtype, n_channels;
-	int sz;
+	int status, sz;
 
 	// array for preview picture line
 	float *pix = malloc(MAX_SIZE * sizeof(float));
@@ -2090,7 +2115,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	}
 	avr /= (float) sz;
 
-/* use FITS keyword if available for a better visualization */
+	/* use FITS keyword if available for a better visualization */
 	lo = hi = 0.f;
 	__tryToFindKeywords(fp, TFLOAT, MIPSLO, &lo);
 	__tryToFindKeywords(fp, TFLOAT, MIPSHI, &hi);
@@ -2098,6 +2123,12 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	if (hi != lo && hi != 0.f && abs(dtype) <= USHORT_IMG) {
 		min = lo;
 		max = hi;
+	}
+	else if (dtype <= FLOAT_IMG) {
+		WORD wlo, whi;
+		try_read_float_lo_hi(fp, &wlo, &whi);
+		min = (float)wlo;
+		max = (float)whi;
 	}
 
 	wd = max - min;
