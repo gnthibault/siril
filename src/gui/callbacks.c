@@ -1813,8 +1813,11 @@ void siril_quit() {
 	if (com.dontShowConfirm) {
 		gtk_main_quit();
 	}
-	gboolean quit = siril_confirm_dialog(_("Closing application"), _("Are you sure you want to quit?"), TRUE);
+	gboolean quit = siril_confirm_dialog_and_remember(_("Closing application"),
+			_("Are you sure you want to quit?"), &com.dontShowConfirm);
 	if (quit) {
+		set_GUI_misc();
+		writeinitfile();
 		gtk_main_quit();
 	} else {
 		fprintf(stdout, "Staying on the application.\n");

@@ -160,11 +160,12 @@ void siril_data_dialog(GtkMessageType type, char *title, char *text, gchar *data
 	show_modal_dialog(args);
 }
 
-gboolean siril_confirm_dialog(gchar *title, gchar *msg, gboolean show_checkbutton) {
+static gboolean siril_confirm_dialog_internal(gchar *title, gchar *msg, gboolean checkbutton, gboolean *user_data) {
 	GtkWindow *parent;
 	GtkWidget *dialog, *check = NULL;
 	gint res;
 	gboolean ok = FALSE;
+	gboolean var_to_return = FALSE;
 
 	parent = siril_get_active_window();
 	if (!GTK_IS_WINDOW(parent)) {
@@ -182,7 +183,7 @@ gboolean siril_confirm_dialog(gchar *title, gchar *msg, gboolean show_checkbutto
 	dialog = gtk_message_dialog_new(parent, GTK_DIALOG_MODAL,
 			GTK_MESSAGE_QUESTION, GTK_BUTTONS_OK_CANCEL, "%s", title);
 	gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), "%s", msg);
-	if (show_checkbutton) {
+	if (checkbutton) {
 		check = gtk_check_button_new_with_mnemonic(_("_Do not show this dialog again"));
 		gtk_box_pack_end(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG (dialog))),
 				check, FALSE, FALSE, 0);
@@ -194,12 +195,22 @@ gboolean siril_confirm_dialog(gchar *title, gchar *msg, gboolean show_checkbutto
 	if (res == GTK_RESPONSE_OK) {
 		ok = TRUE;
 		if (check) {
-			com.dontShowConfirm = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check));
-			set_GUI_misc();
-			writeinitfile();
+			var_to_return = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check));
 		}
 	}
+	if (user_data) {
+		*user_data = var_to_return;
+	}
+
 	gtk_widget_destroy(dialog);
 
 	return ok;
+}
+
+gboolean siril_confirm_dialog(gchar *title, gchar *msg) {
+	return siril_confirm_dialog_internal(title, msg, FALSE, NULL);
+}
+
+gboolean siril_confirm_dialog_and_remember(gchar *title, gchar *msg, gboolean *user_data) {
+	return siril_confirm_dialog_internal(title, msg, TRUE, user_data);
 }

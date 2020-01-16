@@ -1390,9 +1390,10 @@ gboolean confirm_delete_wcs_keywords(fits *fit) {
 	gboolean erase = TRUE;
 
 	if (fit->wcs.equinox > 0) {
-		erase = siril_confirm_dialog(_("Astrometric solution detected"), _("The astrometric solution contained in "
+		erase = siril_confirm_dialog(_("Astrometric solution detected"),
+				_("The astrometric solution contained in "
 				"the image will be erased by the geometric transformation and no undo "
-				"will be possible."), FALSE);
+				"will be possible."));
 	}
 	return erase;
 }
