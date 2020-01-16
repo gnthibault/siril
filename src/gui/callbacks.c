@@ -1336,6 +1336,20 @@ static GtkTargetEntry drop_types[] = {
 	{ "text/uri-list", 0, 0 }
 };
 
+static gboolean on_control_window_configure_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+
+	save_main_window_state();
+	return FALSE;
+}
+
+static gboolean on_control_window_window_state_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+
+	save_main_window_state();
+	return FALSE;
+}
+
 void initialize_all_GUI(gchar *supported_files) {
 	/* initializing internal structures with widgets (drawing areas) */
 	com.vport[RED_VPORT] = lookup_widget("drawingarear");
@@ -1413,6 +1427,11 @@ void initialize_all_GUI(gchar *supported_files) {
 	update_spinCPU(com.max_thread);
 	/* every 0.25sec update memory display */
 	g_timeout_add_seconds(1.0, update_displayed_memory, NULL);
+
+	/* now that everything is loaded we can connect these signals
+	 * Doing it in the glade file is a bad idea because they are called too many times during loading */
+	g_signal_connect(lookup_widget("control_window"), "configure-event", G_CALLBACK(on_control_window_configure_event), NULL);
+	g_signal_connect(lookup_widget("control_window"), "window-state-event", G_CALLBACK(on_control_window_window_state_event), NULL);
 }
 
 /*****************************************************************************
@@ -1785,20 +1804,6 @@ void load_main_window_state() {
 			gtk_window_resize(GTK_WINDOW(win), w, h);
 		}
 	}
-}
-
-gboolean on_control_window_configure_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-
-	save_main_window_state();
-	return FALSE;
-}
-
-gboolean on_control_window_window_state_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-
-	save_main_window_state();
-	return FALSE;
 }
 
 void gtk_main_quit() {

@@ -169,7 +169,7 @@ static gboolean siril_confirm_dialog_internal(gchar *title, gchar *msg, gboolean
 
 	parent = siril_get_active_window();
 	if (!GTK_IS_WINDOW(parent)) {
-		/* could happend if the GtkWindow has been destroyed right after the call
+		/* could happen if the GtkWindow has been destroyed right after the call
 		 * This is the case for chooser dialog */
 		parent = GTK_WINDOW(lookup_widget("control_window"));
 	}
