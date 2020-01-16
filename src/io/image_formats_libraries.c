@@ -1688,5 +1688,4 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 
 	return 0;
 }
-
 #endif
