@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-15 15:39+0100\n"
+"POT-Creation-Date: 2020-01-15 17:16+0100\n"
 "PO-Revision-Date: 2019-05-07 20:26+0200\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
@@ -1855,7 +1855,7 @@ msgstr ""
 msgid "Export the log"
 msgstr "Exporteer de log"
 
-#: ../src/gui/siril3.glade.h:414
+#: ../src/gui/siril3.glade.h:414 ../src/core/siril_log.c:164
 msgid "Clear the log"
 msgstr "Wis de log"
 
@@ -1864,8 +1864,9 @@ msgid "This tab shows the Siril logs."
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:416
-msgid "Output logs"
-msgstr "Output logs"
+#, fuzzy
+msgid "Console"
+msgstr "<b>Console</b>"
 
 #: ../src/gui/siril3.glade.h:417
 #, fuzzy
@@ -6506,6 +6507,10 @@ msgstr "Normalisatie kon voor de beelden niet worden berekend, stopgezet.\n"
 msgid "Log files (*.log)"
 msgstr "Log bestanden (*.log)"
 
+#: ../src/core/siril_log.c:165
+msgid "Are you sure you want to clear the log? There is no possible undo."
+msgstr ""
+
 #: ../src/core/siril_update.c:260
 msgid "Unable to check updates! Please Check your network connection\n"
 msgstr ""
@@ -6992,7 +6997,7 @@ msgid ""
 msgstr ""
 "redraw: maximaal aantal lagen ondersteund is %d (huidig beeld heeft er %d).\n"
 
-#: ../src/gui/message_dialog.c:186
+#: ../src/gui/message_dialog.c:187
 msgid "_Do not show this dialog again"
 msgstr "_Dit dialoog niet opnieuw weergeven"
 
@@ -9120,6 +9125,9 @@ msgstr "Stacking wordt zonder heschaling toegepast (zonder 'drizzle')\n"
 msgid "Up-scaling sequence for stacking"
 msgstr "Sequentie herschaling voor stacking"
 
+#~ msgid "Output logs"
+#~ msgstr "Output logs"
+
 #~ msgid ""
 #~ "Select the set of images to be stacked. All the images or only the "
 #~ "manually selected can be used. But it is possible to only select the "
@@ -9133,9 +9141,6 @@ msgstr "Sequentie herschaling voor stacking"
 
 #~ msgid "Stack this set of images:"
 #~ msgstr "Stak deze set afbeeldingen:"
-
-#~ msgid "<b>Console</b>"
-#~ msgstr "<b>Console</b>"
 
 #~ msgid "Current working directory:"
 #~ msgstr "Huidige werkmap:"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-15 15:39+0100\n"
+"POT-Creation-Date: 2020-01-15 17:16+0100\n"
 "PO-Revision-Date: 2019-10-13 19:59+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -1900,7 +1900,7 @@ msgstr ""
 msgid "Export the log"
 msgstr "Εξαγωγή του αρχείου καταγραφής"
 
-#: ../src/gui/siril3.glade.h:414
+#: ../src/gui/siril3.glade.h:414 ../src/core/siril_log.c:164
 msgid "Clear the log"
 msgstr "Καθαρισμός του αρχείου καταγραφής"
 
@@ -1909,8 +1909,9 @@ msgid "This tab shows the Siril logs."
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:416
-msgid "Output logs"
-msgstr "Αρχεία καταγραφής εξόδου"
+#, fuzzy
+msgid "Console"
+msgstr "<b>Κονσόλα</b>"
 
 #: ../src/gui/siril3.glade.h:417
 #, fuzzy
@@ -6626,6 +6627,10 @@ msgstr ""
 msgid "Log files (*.log)"
 msgstr "Αρχεία καταγραφής (*.log)"
 
+#: ../src/core/siril_log.c:165
+msgid "Are you sure you want to clear the log? There is no possible undo."
+msgstr ""
+
 #: ../src/core/siril_update.c:260
 msgid "Unable to check updates! Please Check your network connection\n"
 msgstr ""
@@ -7117,7 +7122,7 @@ msgstr ""
 "redraw: ο μέγιστος αριθμός των επιπέδων που υποστηρίζονται είναι %d (η "
 "τρέχουσα εικόνα έχει %d).\n"
 
-#: ../src/gui/message_dialog.c:186
+#: ../src/gui/message_dialog.c:187
 msgid "_Do not show this dialog again"
 msgstr "_Να μην εμφανιστεί ξανά αυτό το παράθυρο διαλόγου"
 
@@ -9293,6 +9298,9 @@ msgstr ""
 msgid "Up-scaling sequence for stacking"
 msgstr "Αλληλουχία αύξησης της κλίμακας για σώρευση"
 
+#~ msgid "Output logs"
+#~ msgstr "Αρχεία καταγραφής εξόδου"
+
 #~ msgid ""
 #~ "Select the set of images to be stacked. All the images or only the "
 #~ "manually selected can be used. But it is possible to only select the "
@@ -9306,9 +9314,6 @@ msgstr "Αλληλουχία αύξησης της κλίμακας για σώ�
 
 #~ msgid "Stack this set of images:"
 #~ msgstr "Να γίνει σώρευση αυτής της σειράς εικόνων:"
-
-#~ msgid "<b>Console</b>"
-#~ msgstr "<b>Κονσόλα</b>"
 
 #~ msgid "Current working directory:"
 #~ msgstr "Τρέχων κατάλος εργασίας:"

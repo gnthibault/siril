@@ -204,7 +204,6 @@ int initialize_script_menu() {
 		if (list) {
 			GSList *l;
 			gtk_widget_show(menuscript);
-//			gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuscript), menu);
 			gtk_menu_button_set_popup(GTK_MENU_BUTTON(menuscript), menu);
 			/* write separator but not for the first one */
 			if (nb_item != 0) {
@@ -212,7 +211,7 @@ int initialize_script_menu() {
 				gtk_menu_shell_append(GTK_MENU_SHELL(menu), separator);
 				gtk_widget_show(separator);
 			}
-			siril_log_message(_("Searching scripts in: \"%s\"...\n"), s->data);
+			siril_log_color_message(_("Searching scripts in: \"%s\"...\n"), "green", s->data);
 			for (l = list; l; l = l->next) {
 				nb_item ++;
 				/* write an item per script file */

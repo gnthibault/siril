@@ -409,17 +409,6 @@ int adjust_sellabel() {
 	if (sequence_is_loaded()) {
 		gchar *seq_basename = g_path_get_basename(com.seq.seqname);
 
-		if (com.seq.reference_image != -1) {
-			char format[150];
-			if (com.seq.fixed <= 1) {
-				g_snprintf(format, sizeof(format),
-						_("<%%s.seq>: %%d images selected out of %%d, reference image is %%d"));
-			} else {
-				g_snprintf(format, sizeof(format),
-						_("<%%s.seq>: %%d images selected out of %%d, reference image is %%.%dd"),
-						com.seq.fixed);
-			}
-		}
 		bufferglobal = g_strdup_printf(_("%s, %d images selected"), seq_basename, com.seq.selnum);
 		g_free(seq_basename);
 	} else {
@@ -745,7 +734,7 @@ void calculate_fwhm(GtkWidget *widget) {
 	/* calculate and display FWHM */
 	int layer = match_drawing_area_widget(widget, FALSE);
 	if (layer != -1) {
-		char buf[64], label_name[16];
+		gchar *buf, *label_name;
 		char *layer_name = vport_number_to_name(layer);
 		GtkLabel *label;
 		if (com.selection.w && com.selection.h) {// Now we don't care about the size of the sample. Minimization checks that
@@ -754,17 +743,20 @@ void calculate_fwhm(GtkWidget *widget) {
 				double fwhm_val;
 
 				fwhm_val = psf_get_fwhm(&gfit, layer, &roundness);
-				g_snprintf(buf, sizeof(buf), "fwhm = %.2f, r = %.2f", fwhm_val,
+				buf = g_strdup_printf(_("fwhm = %.2f, r = %.2f"), fwhm_val,
 						roundness);
 			} else
-				g_snprintf(buf, sizeof(buf), _("fwhm: selection is too large"));
+				buf = g_strdup_printf(_("fwhm: selection is too large"));
 		} else {
-			g_snprintf(buf, sizeof(buf), _("fwhm: no selection"));
+			buf = g_strdup_printf(("fwhm: no selection"));
 		}
-		g_snprintf(label_name, sizeof(label_name), "labelfwhm%s", layer_name);
-		free(layer_name);
-		label = GTK_LABEL(gtk_builder_get_object(builder, label_name));
+		label_name = g_strdup_printf("labelfwhm%s", layer_name);
+		label = GTK_LABEL(lookup_widget(label_name));
 		gtk_label_set_text(label, buf);
+
+		free(layer_name);
+		g_free(label_name);
+		g_free(buf);
 	}
 }
 
@@ -854,7 +846,6 @@ void set_layers_for_assign() {
 	if (!com.seq.layers)
 		return;
 	for (i = 0; i < com.seq.nb_layers; i++) {
-		char layer[100];
 		if (!com.seq.layers[i].name) {
 			if (com.seq.nb_layers == 1) {
 				com.seq.layers[i].name = strdup(
@@ -871,7 +862,6 @@ void set_layers_for_assign() {
 				com.seq.layers[i].wavelength = -1.0;
 			}
 		}
-		g_snprintf(layer, sizeof(layer), "%d: %s", i, com.seq.layers[i].name);
 	}
 }
 
@@ -1270,31 +1260,26 @@ void set_GUI_CAMERA() {
 static void set_GUI_LIBRAW() {
 
 	/**********COLOR ADJUSTEMENT**************/
-	gtk_spin_button_set_value(
-			GTK_SPIN_BUTTON(lookup_widget("Brightness_spinbutton")),
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("Brightness_spinbutton")),
 			com.raw_set.bright);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("Red_spinbutton")),
 			com.raw_set.mul[0]);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("Blue_spinbutton")),
 			com.raw_set.mul[2]);
 
-	gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_multipliers")),
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_multipliers")),
 			com.raw_set.auto_mul);
-	gtk_toggle_button_set_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_blackpoint")),
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_blackpoint")),
 			com.raw_set.user_black);
 
 	/**************WHITE BALANCE**************/
 	if (com.raw_set.use_camera_wb) {
-		gtk_toggle_button_set_active(
-				GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_cam")),
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_cam")),
 				com.raw_set.use_camera_wb);
 	}
 
 	if (com.raw_set.use_auto_wb) {
-		gtk_toggle_button_set_active(
-				GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_auto")),
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_auto")),
 				com.raw_set.use_auto_wb);
 	}
 
@@ -1304,14 +1289,11 @@ static void set_GUI_LIBRAW() {
 
 	/********GAMMA CORRECTION**************/
 	if (com.raw_set.gamm[0] == 1.0 && com.raw_set.gamm[1] == 1.0)
-		gtk_toggle_button_set_active(
-				GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_gamm0")), TRUE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_gamm0")), TRUE);
 	else if (com.raw_set.gamm[0] == 2.222 && com.raw_set.gamm[1] == 4.5)
-		gtk_toggle_button_set_active(
-				GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_gamm1")), TRUE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_gamm1")), TRUE);
 	else
-		gtk_toggle_button_set_active(
-				GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_gamm2")), TRUE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_gamm2")), TRUE);
 
 	/********** DEBAYER ******************/
 	GtkComboBox *pattern = GTK_COMBO_BOX(lookup_widget("comboBayer_pattern"));

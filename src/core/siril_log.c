@@ -23,6 +23,8 @@
 #include "core/command.h" // for process_clear()
 #include "core/OS_utils.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
+
 
 #if !GLIB_CHECK_VERSION(2,62,0)
 /**
@@ -161,7 +163,11 @@ static void save_log_dialog() {
 /************** Callbacks function ***********/
 
 void on_clear_log_button_clicked(GtkButton *button, gpointer user_data) {
-	process_clear(0);
+	gboolean ret = siril_confirm_dialog(_("Clear the log"),
+			_("Are you sure you want to clear the log? There is no possible undo."), FALSE);
+	if (ret) {
+		process_clear(0);
+	}
 }
 
 void on_export_log_button_clicked(GtkButton *button, gpointer user_data) {

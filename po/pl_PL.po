@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-15 15:39+0100\n"
+"POT-Creation-Date: 2020-01-15 17:16+0100\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1843,7 +1843,7 @@ msgstr ""
 msgid "Export the log"
 msgstr "Eksport do pliku CSV"
 
-#: ../src/gui/siril3.glade.h:414
+#: ../src/gui/siril3.glade.h:414 ../src/core/siril_log.c:164
 #, fuzzy
 msgid "Clear the log"
 msgstr "Wyczyść ostatnie"
@@ -1853,8 +1853,9 @@ msgid "This tab shows the Siril logs."
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:416
-msgid "Output logs"
-msgstr "Dziennik wyjściowy"
+#, fuzzy
+msgid "Console"
+msgstr "<b>Konsola</b>"
 
 #: ../src/gui/siril3.glade.h:417
 #, fuzzy
@@ -6201,6 +6202,10 @@ msgstr ""
 msgid "Log files (*.log)"
 msgstr "Pliki SER (*.ser)"
 
+#: ../src/core/siril_log.c:165
+msgid "Are you sure you want to clear the log? There is no possible undo."
+msgstr ""
+
 #: ../src/core/siril_update.c:260
 msgid "Unable to check updates! Please Check your network connection\n"
 msgstr ""
@@ -6695,7 +6700,7 @@ msgstr ""
 "przerysuj: maksymalna liczba obsługiwanych warstw to%d (bieżący obraz ma "
 "%d).\n"
 
-#: ../src/gui/message_dialog.c:186
+#: ../src/gui/message_dialog.c:187
 msgid "_Do not show this dialog again"
 msgstr ""
 
@@ -8840,6 +8845,9 @@ msgstr ""
 msgid "Up-scaling sequence for stacking"
 msgstr "Skalowanie w górę dla stackowania"
 
+#~ msgid "Output logs"
+#~ msgstr "Dziennik wyjściowy"
+
 #, fuzzy
 #~ msgid ""
 #~ "Select the set of images to be stacked. All the images or only the "
@@ -8853,9 +8861,6 @@ msgstr "Skalowanie w górę dla stackowania"
 
 #~ msgid "Stack this set of images:"
 #~ msgstr "Stackowanie tego zestawu obrazów:"
-
-#~ msgid "<b>Console</b>"
-#~ msgstr "<b>Konsola</b>"
 
 #~ msgid "Current working directory:"
 #~ msgstr "Bieżący katalog roboczy:"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-15 15:39+0100\n"
+"POT-Creation-Date: 2020-01-15 17:16+0100\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -1747,7 +1747,7 @@ msgstr "Siril输出窗口，显示各种程序执行过程的信息，并且对�
 msgid "Export the log"
 msgstr "导出日志"
 
-#: ../src/gui/siril3.glade.h:414
+#: ../src/gui/siril3.glade.h:414 ../src/core/siril_log.c:164
 msgid "Clear the log"
 msgstr "清除日志"
 
@@ -1756,8 +1756,9 @@ msgid "This tab shows the Siril logs."
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:416
-msgid "Output logs"
-msgstr "输出记录"
+#, fuzzy
+msgid "Console"
+msgstr "<b>控制台</b>"
 
 #: ../src/gui/siril3.glade.h:417
 #, fuzzy
@@ -6180,6 +6181,10 @@ msgstr "无法计算图像归一化数值，异常终止。\n"
 msgid "Log files (*.log)"
 msgstr "日志文件 (*.log)"
 
+#: ../src/core/siril_log.c:165
+msgid "Are you sure you want to clear the log? There is no possible undo."
+msgstr ""
+
 #: ../src/core/siril_update.c:260
 msgid "Unable to check updates! Please Check your network connection\n"
 msgstr "无法检查更新！请检查您的网络连接\n"
@@ -6648,7 +6653,7 @@ msgid ""
 "redraw: maximum number of layers supported is %d (current image has %d).\n"
 msgstr "redraw: 最大支持的通道数为 %d （当前文件为 %d）。\n"
 
-#: ../src/gui/message_dialog.c:186
+#: ../src/gui/message_dialog.c:187
 msgid "_Do not show this dialog again"
 msgstr "_不再显示此对话框"
 
@@ -8672,6 +8677,9 @@ msgstr "叠加将不会使用超采样（ ‘drizzle’关闭）\n"
 msgid "Up-scaling sequence for stacking"
 msgstr "超采样叠加"
 
+#~ msgid "Output logs"
+#~ msgstr "输出记录"
+
 #~ msgid ""
 #~ "Select the set of images to be stacked. All the images or only the "
 #~ "manually selected can be used. But it is possible to only select the "
@@ -8684,9 +8692,6 @@ msgstr "超采样叠加"
 
 #~ msgid "Stack this set of images:"
 #~ msgstr "要叠加的图像集合:"
-
-#~ msgid "<b>Console</b>"
-#~ msgstr "<b>控制台</b>"
 
 #~ msgid "Current working directory:"
 #~ msgstr "当前工作目录:"
