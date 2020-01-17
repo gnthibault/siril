@@ -386,7 +386,7 @@ static int line_clipping(WORD pixel, double sig[], double sigma, int i, double a
 }
 
 int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]) {
-	int N = nb_frames;// N is the number of pixels kept from the current stack
+	int N = nb_frames;	// N is the number of pixels kept from the current stack
 	double median, sigma = -1.0;
 	int frame, pixel, output, changed, n, r = 0;
 
@@ -750,7 +750,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 				set_progress_bar_data(NULL, (double)cur_nb/total);
 
 			for (x = 0; x < naxes[0]; ++x){
-				int frame, kept_pixels;
+				int frame;
 				/* copy all images pixel values in the same row array `stack'
 				 * to optimize caching and improve readability */
 				for (frame = 0; frame < nb_frames; ++frame) {
@@ -767,7 +767,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 							/* outside bounds, images are black. We could
 							 * also set the background value instead, if available */
 							if (itype == DATA_FLOAT)
-								((float*)data->stack)[frame] = 0;
+								((float*)data->stack)[frame] = 0.0f;
 							else	((WORD *)data->stack)[frame] = 0;
 							continue;
 						}
@@ -821,16 +821,16 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 				if (is_mean) {
 					double mean;
 					if (itype == DATA_USHORT) {
-						kept_pixels = apply_rejection_ushort(data, nb_frames, args, crej);
+						int kept_pixels = apply_rejection_ushort(data, nb_frames, args, crej);
 						int64_t sum = 0L;
 						for (frame = 0; frame < kept_pixels; ++frame) {
 							sum += ((WORD *)data->stack)[frame];
 						}
 						mean = sum / (double)kept_pixels;
 					} else {
-						double sum = 0.0;
 						// NO REJECTION YET FOR FLOAT
-						kept_pixels = nb_frames;
+						int kept_pixels = nb_frames;
+						double sum = 0.0;
 						for (frame = 0; frame < kept_pixels; ++frame) {
 							sum += ((float*)data->stack)[frame];
 						}
@@ -847,11 +847,15 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 					normalize_to16bit(bitpix, &result);
 				}
 				if (args->use_32bit_output) {
+					if (isnan(result))
+						fit.fpdata[my_block->channel][pdata_idx] = 0.0f;
 					if (itype == DATA_USHORT)
 						fit.fpdata[my_block->channel][pdata_idx] = double_ushort_to_float_range(result);
 					else	fit.fpdata[my_block->channel][pdata_idx] = (float)result;
 				} else {
-					fit.pdata[my_block->channel][pdata_idx] = round_to_WORD(result);
+					if (isnan(result))
+						fit.pdata[my_block->channel][pdata_idx] = 0;
+					else fit.pdata[my_block->channel][pdata_idx] = round_to_WORD(result);
 				}
 				pdata_idx++;
 			} // end of for x
@@ -884,12 +888,12 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 
 	set_progress_bar_data(_("Finalizing stacking..."), (double)cur_nb/total);
 	if (is_mean) {
-		double nb_tot = (double)naxes[0] * naxes[1] * nb_frames;
+		double nb_tot = (double)(naxes[0] * naxes[1] * nb_frames);
 		long channel;
 		for (channel = 0; channel < naxes[2]; channel++) {
 			siril_log_message(_("Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"),
-					channel, irej[channel][0] / (nb_tot) * 100.0,
-					irej[channel][1] / (nb_tot) * 100.0);
+					channel, irej[channel][0] / nb_tot * 100.0,
+					irej[channel][1] / nb_tot * 100.0);
 		}
 	}
 
