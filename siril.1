@@ -1,5 +1,5 @@
-.\" Manpage for Siril 0.9
-.TH SIRIL "1" "September 2019" "siril 0.9" "User Commands"
+.\" Manpage for Siril 1.0
+.TH SIRIL "1" "January 2020" "siril 1.0" "User Commands"
 .SH NAME
 siril \- image processing tool for astronomy and others
 .SH SYNOPSIS
@@ -20,11 +20,11 @@ Start siril without the graphical user interface and use the named pipes to acce
 .IP -d
 (or \fB\-\-directory\fR) Setting argument in cwd
 .IP -s
-Start siril without the graphical user interface and run a script instead. Scripts are text files that contain a list of commands to be executed sequentially. In these files, lines starting with a # are considered as comments.
+(or \fB\-\-script\fR) Start siril without the graphical user interface and run a script instead. Scripts are text files that contain a list of commands to be executed sequentially. In these files, lines starting with a # are considered as comments.
 .IP image_file_to_open
 Open an image or sequence file right after start-up
 .SH FILES
-.I ~/.siril/siril.cfg
+.I ~/.config/siril/siril.cfg
 .RS
 User preferences. Overridden by the
 .B -i
