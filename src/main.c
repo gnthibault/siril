@@ -228,6 +228,12 @@ static void tab_logs_activate(GSimpleAction *action,
 	control_window_switch_to_tab(OUTPUT_LOGS);
 }
 
+static void toolbar_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	GtkWidget *w = lookup_widget("toolbarbox");
+	gtk_widget_set_visible(w, !gtk_widget_get_visible(w));
+}
+
 static GActionEntry app_entries[] = {
 		{ "quit", quit_action_activate },
 	    { "preferences", preferences_action_activate },
@@ -250,7 +256,8 @@ static GActionEntry app_entries[] = {
 		{ "prepro", tab_prepro_activate },
 		{ "plot", tab_plot_activate },
 		{ "stacking", tab_stacking_activate },
-		{ "logs", tab_logs_activate }
+		{ "logs", tab_logs_activate },
+		{ "hide_show_toolbar", toolbar_activate }
 };
 
 void load_glade_file() {
