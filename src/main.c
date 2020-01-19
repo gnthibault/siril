@@ -39,27 +39,20 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_actions.h"
 #include "core/initfile.h"
-#include "core/siril_cmd_help.h"
 #include "core/command_line_processor.h"
 #include "core/command.h"
 #include "core/pipe.h"
-#include "core/undo.h"
 #include "core/signals.h"
 #include "core/siril_app_dirs.h"
-#include "core/siril_update.h"
 #include "core/OS_utils.h"
 #include "algos/star_finder.h"
 #include "algos/photometry.h"
 #include "io/sequence.h"
 #include "io/conversion.h"
 #include "io/single_image.h"
-#include "gui/about_dialog.h"
 #include "gui/callbacks.h"
-#include "gui/dialogs.h"
-#include "gui/open_dialog.h"
-#include "gui/save_dialog.h"
-#include "gui/script_menu.h"
 #include "gui/progress_and_log.h"
 #include "registration/registration.h"
 #include "stacking/stacking.h"
@@ -99,142 +92,6 @@ static GOptionEntry main_option[] = {
 		{ "version", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, _print_version_and_exit, N_("print the application’s version"), NULL},
 		{ NULL },
 };
-
-static void open_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	header_open_button_clicked();
-}
-
-static void cwd_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	cwd_btton_clicked();
-}
-
-static void save_as_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	on_header_save_button_clicked();
-}
-
-static void undo_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	set_cursor_waiting(TRUE);
-	undo_display_data(UNDO);
-	set_cursor_waiting(FALSE);
-	update_MenuItem();
-}
-
-static void redo_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	set_cursor_waiting(TRUE);
-	undo_display_data(REDO);
-	set_cursor_waiting(FALSE);
-	update_MenuItem();
-}
-
-static void quit_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	siril_quit();
-}
-
-static void about_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	siril_show_about_dialog();
-}
-
-static void preferences_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	siril_open_dialog("settings_window");
-}
-
-static void close_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	process_close(0);
-}
-
-static void scripts_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	siril_get_on_script_pages();
-}
-
-#ifdef HAVE_LIBCURL
-static void updates_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	siril_check_updates();
-}
-#endif
-
-static void full_screen_activated(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	GtkApplication *app;
-	GtkWindow *window;
-	GtkWidget *toolbarbox = lookup_widget("toolbarbox");
-	gboolean is_fullscreen;
-
-	app = GTK_APPLICATION(user_data);
-	window = GTK_WINDOW(gtk_application_get_active_window(app));
-
-	GdkWindow *gdk_window = gtk_widget_get_window(GTK_WIDGET(window));
-	is_fullscreen = gdk_window_get_state(gdk_window) & GDK_WINDOW_STATE_FULLSCREEN;
-
-	if (is_fullscreen) {
-		gtk_window_unfullscreen(window);
-	} else {
-		gtk_window_fullscreen(window);
-	}
-	gtk_widget_set_visible(toolbarbox, is_fullscreen);
-}
-
-static void keyboard_shortcuts_activated(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
-	GtkApplication *app;
-	GtkWindow *window;
-
-	app = GTK_APPLICATION(user_data);
-	window = GTK_WINDOW(gtk_application_get_active_window(app));
-
-	siril_cmd_help_keyboard_shortcuts(window);
-}
-
-static void tab_conversion_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
-	control_window_switch_to_tab(FILE_CONVERSION);
-}
-
-static void tab_sequence_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
-	control_window_switch_to_tab(IMAGE_SEQ);
-}
-
-static void tab_prepro_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
-	control_window_switch_to_tab(PRE_PROC);
-}
-
-static void tab_registration_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
-	control_window_switch_to_tab(REGISTRATION);
-}
-
-static void tab_plot_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
-	control_window_switch_to_tab(PLOT);
-}
-
-static void tab_stacking_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
-	control_window_switch_to_tab(STACKING);
-}
-
-static void tab_logs_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
-	control_window_switch_to_tab(OUTPUT_LOGS);
-}
-
-static void toolbar_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
-	GtkWidget *w = lookup_widget("toolbarbox");
-	gtk_widget_set_visible(w, !gtk_widget_get_visible(w));
-}
 
 static GActionEntry app_entries[] = {
 		{ "quit", quit_action_activate },
