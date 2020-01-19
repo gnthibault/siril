@@ -557,7 +557,7 @@ static void initialize_convert() {
 		char *title = siril_log_message(_("A file named %s already exists. "
 				"Do you want to replace it?\n"), destroot);
 		gboolean replace = siril_confirm_dialog(title, _("The file already exists. "
-				"Replacing it will overwrite its contents."), FALSE);
+				"Replacing it will overwrite its contents."));
 		if (!replace) return;
 	}
 

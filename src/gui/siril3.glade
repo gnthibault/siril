@@ -1712,9 +1712,7 @@ enter a visible wavelength in nm</property>
     <property name="window_position">center</property>
     <property name="icon">pixmaps/siril.svg</property>
     <property name="urgency_hint">True</property>
-    <signal name="configure-event" handler="on_control_window_configure_event" swapped="no"/>
     <signal name="delete-event" handler="siril_quit" swapped="no"/>
-    <signal name="window-state-event" handler="on_control_window_window_state_event" swapped="no"/>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="headerbar">
         <property name="visible">True</property>
@@ -6372,7 +6370,7 @@ However you may want to disable this option when building master frames of 8-bit
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox">
+              <object class="GtkEventBox" id="eventbox_panel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="events">GDK_BUTTON_PRESS_MASK</property>

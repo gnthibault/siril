@@ -26,6 +26,10 @@
 #include "gui/histogram.h"
 #include "io/ser.h"
 
+#ifdef HAVE_LIBHEIF
+#include <libheif/heif.h>
+#endif
+
 #include "dialog_preview.h"
 
 static fileChooserPreview preview;
@@ -112,6 +116,7 @@ static gpointer update_preview_cb_idle(gpointer p) {
 	char *mime_type = NULL;
 	GdkPixbuf *pixbuf = NULL;
 	image_type im_type;
+	gboolean libheif_is_ok = FALSE;
 
 	struct _updta_preview_data *args = (struct _updta_preview_data *) p;
 
@@ -150,7 +155,13 @@ static gpointer update_preview_cb_idle(gpointer p) {
 		}
 
 		/* if no pixbuf created try to directly read the file */
-		if (!pixbuf && im_type != TYPEHEIF) { //FIXME
+		/* libheif < 1.6.2 has a bug, therefore we can't open preview if libheif is too old
+		 * bug fixed in https://github.com/strukturag/libheif/commit/fbd6d28e8604ecb53a2eb33b522a664b6bcabd0b*/
+#ifdef HAVE_LIBHEIF
+		libheif_is_ok = LIBHEIF_HAVE_VERSION(1, 6, 2);
+#endif
+
+		if (!pixbuf && (im_type != TYPEHEIF || libheif_is_ok)) {
 			pixbuf = gdk_pixbuf_new_from_file_at_size(args->filename,
 					thumbnail_size, thumbnail_size, NULL);
 			args->description = siril_get_file_info(args->filename, pixbuf);

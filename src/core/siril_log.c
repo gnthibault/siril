@@ -164,7 +164,7 @@ static void save_log_dialog() {
 
 void on_clear_log_button_clicked(GtkButton *button, gpointer user_data) {
 	gboolean ret = siril_confirm_dialog(_("Clear the log"),
-			_("Are you sure you want to clear the log? There is no possible undo."), FALSE);
+			_("Are you sure you want to clear the log? There is no possible undo."));
 	if (ret) {
 		process_clear(0);
 	}

@@ -87,6 +87,8 @@ siril_SOURCES = \
 	core/signals.c \
 	core/signals.h \
 	core/siril.c \
+	core/siril_actions.c \
+	core/siril_actions.h \
 	core/siril_app_dirs.c \
 	core/siril_app_dirs.h \
 	core/siril_cmd_help.c \
