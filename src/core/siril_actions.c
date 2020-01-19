@@ -54,7 +54,6 @@ void undo_action_activate(GSimpleAction *action, GVariant *parameter,
 	set_cursor_waiting(TRUE);
 	undo_display_data(UNDO);
 	set_cursor_waiting(FALSE);
-	update_MenuItem();
 }
 
 void redo_action_activate(GSimpleAction *action, GVariant *parameter,
@@ -62,7 +61,6 @@ void redo_action_activate(GSimpleAction *action, GVariant *parameter,
 	set_cursor_waiting(TRUE);
 	undo_display_data(REDO);
 	set_cursor_waiting(FALSE);
-	update_MenuItem();
 }
 
 void quit_action_activate(GSimpleAction *action, GVariant *parameter,

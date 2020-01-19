@@ -785,6 +785,35 @@ int process_set_mag(int nb) {
 	return 0;
 }
 
+int process_set_ref(int nb) {
+	if (single_image_is_loaded()) return 1;
+	int n = atoi(word[1]) - 1;
+	if (n < 0 || n > com.seq.number) {
+		siril_log_message(_("The reference image must be set between 1 and %d\n"), com.seq.number);
+		return 1;
+	}
+	if (sequence_is_loaded()) {
+		free_reference_image();
+
+		com.seq.reference_image = n;
+		test_and_allocate_reference_image(-1);
+		// a reference image should not be excluded to avoid confusion
+		if (!com.seq.imgparam[com.seq.current].incl) {
+			toggle_image_selection(com.seq.current);
+		}
+
+		if (!com.script) {
+			sequence_list_change_reference();
+			update_stack_interface(FALSE);// get stacking info and enable the Go button
+			adjust_sellabel();	// reference image is named in the label
+			drawPlot();		// update plots
+		}
+		writeseqfile(&com.seq);
+	}
+
+	return 0;
+}
+
 int process_unset_mag(int nb) {
 	com.magOffset = 0.0;
 	return 0;
