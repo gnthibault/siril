@@ -2223,11 +2223,9 @@ gboolean on_right_panel_image_button_press_event(GtkWidget *event_box,
 		gtk_widget_set_visible(widget, !panel_is_extended);
 
 		if (!panel_is_extended) {
-			gtk_image_set_from_icon_name(image, "pan-end-symbolic",
-					GTK_ICON_SIZE_BUTTON);
+			gtk_image_set_from_icon_name(image, "pan-end-symbolic", GTK_ICON_SIZE_BUTTON);
 		} else {
-			gtk_image_set_from_icon_name(image, "pan-start-symbolic",
-					GTK_ICON_SIZE_BUTTON);
+			gtk_image_set_from_icon_name(image, "pan-start-symbolic", GTK_ICON_SIZE_BUTTON);
 		}
 		panel_is_extended = !panel_is_extended;
 	}

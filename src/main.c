@@ -167,6 +167,7 @@ static void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
 	GtkApplication *app;
 	GtkWindow *window;
+	GtkWidget *toolbarbox = lookup_widget("toolbarbox");
 	gboolean is_fullscreen;
 
 	app = GTK_APPLICATION(user_data);
@@ -180,6 +181,7 @@ static void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 	} else {
 		gtk_window_fullscreen(window);
 	}
+	gtk_widget_set_visible(toolbarbox, is_fullscreen);
 }
 
 static void keyboard_shortcuts_activated(GSimpleAction *action,
