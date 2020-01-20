@@ -1180,8 +1180,8 @@ gboolean sequence_is_loaded() {
 
 /* Close the com.seq sequence */
 void close_sequence(int loading_another) {
-	fprintf(stdout, "MODE: closing sequence\n");
 	if (sequence_is_loaded()) {
+		fprintf(stdout, "MODE: closing sequence\n");
 		siril_log_message(_("Closing sequence %s\n"), com.seq.seqname);
 		if (!com.headless) {
 			free_cbbt_layers();
