@@ -3611,7 +3611,7 @@ A first computation pass will be done on all images before exporting, it may tak
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="padding">10</property>
-                                <property name="position">2</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
@@ -3652,7 +3652,6 @@ All images in the sequence will be divided by the master flat image (each pixel 
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="flatfile_button">
-                                    <property name="label" translatable="yes">Browse...</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
@@ -3660,6 +3659,13 @@ All images in the sequence will be divided by the master flat image (each pixel 
                                     <property name="halign">start</property>
                                     <property name="use_underline">True</property>
                                     <signal name="clicked" handler="on_flatfile_button_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="icon_name">document-open-symbolic</property>
+                                      </object>
+                                    </child>
                                   </object>
                                   <packing>
                                     <property name="left_attach">2</property>
@@ -3685,7 +3691,6 @@ All images in the sequence will be divided by the master flat image (each pixel 
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="darkfile_button">
-                                    <property name="label" translatable="yes">Browse...</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
@@ -3693,6 +3698,13 @@ All images in the sequence will be divided by the master flat image (each pixel 
                                     <property name="halign">start</property>
                                     <property name="use_underline">True</property>
                                     <signal name="clicked" handler="on_darkfile_button_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="icon_name">document-open-symbolic</property>
+                                      </object>
+                                    </child>
                                   </object>
                                   <packing>
                                     <property name="left_attach">2</property>
@@ -3746,7 +3758,6 @@ The bias/offset master image will be removed from all images in the sequence.</p
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="offsetfile_button">
-                                    <property name="label" translatable="yes">Browse...</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
@@ -3754,6 +3765,13 @@ The bias/offset master image will be removed from all images in the sequence.</p
                                     <property name="halign">start</property>
                                     <property name="use_underline">True</property>
                                     <signal name="clicked" handler="on_offsetfile_button_clicked" swapped="no"/>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="icon_name">document-open-symbolic</property>
+                                      </object>
+                                    </child>
                                   </object>
                                   <packing>
                                     <property name="left_attach">2</property>
@@ -3839,6 +3857,20 @@ This value is the mean of the master flat calibrated with the master offset.</pr
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator" id="hseparator1">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_top">6</property>
+                                <property name="margin_bottom">6</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">2</property>
                                 <property name="position">3</property>
                               </packing>
                             </child>
@@ -5243,7 +5275,7 @@ WARNING: gnuplot must be installed.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="halign">end</property>
-                                    <property name="label" translatable="yes">Stacking Methods:</property>
+                                    <property name="label" translatable="yes">Methods:</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -5587,18 +5619,6 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                                     <property name="left_attach">0</property>
                                     <property name="top_attach">5</property>
                                     <property name="width">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label30">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">end</property>
-                                    <property name="label" translatable="yes">Store result in file:</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">4</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5986,6 +6006,18 @@ However you may want to disable this option when building master frames of 8-bit
                                   <packing>
                                     <property name="left_attach">2</property>
                                     <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label30">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">end</property>
+                                    <property name="label" translatable="yes" comments="Must be short">Save in:</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">4</property>
                                   </packing>
                                 </child>
                                 <child>
