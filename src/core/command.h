@@ -91,6 +91,7 @@ int	process_set_findstar(int nb);
 int	process_set_mag(int nb);
 int	process_set_mag_seq(int nb);
 int	process_set_mem(int nb);
+int process_set_ref(int nb);
 int	process_seq_crop(int nb);
 int	process_seq_psf(int nb);
 int	process_seq_split_cfa(int nb);

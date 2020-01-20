@@ -126,6 +126,7 @@ static command commands[] = {
 	{"setmag", 1, "setmag magnitude", process_set_mag, STR_SETMAG, FALSE},
 	{"setmagseq", 1, "setmagseq magnitude", process_set_mag_seq, STR_SETMAGSEQ, FALSE},
 	{"setmem", 1, "setmem ratio", process_set_mem, STR_SETMEM, TRUE},
+	{"setref", 1, "setref image_number", process_set_ref, STR_SETREF, TRUE},
 	{"split", 3, "split R G B", process_split, STR_SPLIT, TRUE},
 	{"split_cfa", 0, "split_cfa", process_split_cfa, STR_SPLIT_CFA, TRUE},
 	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=] [-out=result_filename] [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackone, STR_STACK, TRUE},

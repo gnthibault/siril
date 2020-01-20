@@ -280,6 +280,7 @@ int undo_display_data(int dir) {
 			invalidate_gfit_histogram();
 			invalidate_stats_from_fit(&gfit);
 			update_gfit_histogram_if_needed();
+			update_MenuItem();
 			redraw(com.cvport, REMAP_ALL);
 		}
 		break;
@@ -290,6 +291,7 @@ int undo_display_data(int dir) {
 			invalidate_gfit_histogram();
 			invalidate_stats_from_fit(&gfit);
 			update_gfit_histogram_if_needed();
+			update_MenuItem();
 			redraw(com.cvport, REMAP_ALL);
 		}
 		break;

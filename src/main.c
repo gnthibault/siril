@@ -285,10 +285,10 @@ static void siril_app_activate(GApplication *application) {
 	if (!com.headless) {
 		/* Load preferred theme */
 		load_prefered_theme(com.combo_theme);
-		/* Load glade file */
-		load_glade_file();
 		/* Load the css sheet for general style */
 		load_css_style_sheet();
+		/* Load glade file */
+		load_glade_file();
 		/* Passing GApplication to the control center */
 		gtk_window_set_application(GTK_WINDOW(lookup_widget("control_window")),	GTK_APPLICATION(application));
 		/* Load state of the main windows (position and maximized) */
