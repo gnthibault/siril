@@ -6302,11 +6302,11 @@ However you may want to disable this option when building master frames of 8-bit
               </packing>
             </child>
             <child>
-              <object class="GtkEventBox" id="eventbox_panel">
+              <object class="GtkButton" id="button_paned">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="events">GDK_BUTTON_PRESS_MASK</property>
-                <signal name="button-press-event" handler="on_right_panel_image_button_press_event" object="main_panel" swapped="no"/>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_button_paned_clicked" object="main_panel" swapped="no"/>
                 <child>
                   <object class="GtkImage" id="right_panel_image">
                     <property name="visible">True</property>
@@ -6315,6 +6315,9 @@ However you may want to disable this option when building master frames of 8-bit
                     <property name="icon_name">pan-end-symbolic</property>
                   </object>
                 </child>
+                <style>
+                  <class name="small-button"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>

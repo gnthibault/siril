@@ -100,6 +100,9 @@ void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 	GtkApplication *app;
 	GtkWindow *window;
 	GtkWidget *toolbarbox = lookup_widget("toolbarbox");
+	GtkWidget *control_center_box = lookup_widget("control_center_box");
+	GtkButton *button = GTK_BUTTON(lookup_widget("button_paned"));
+	gboolean is_control_box_visible;
 	gboolean is_fullscreen;
 
 	app = GTK_APPLICATION(user_data);
@@ -107,11 +110,16 @@ void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 
 	GdkWindow *gdk_window = gtk_widget_get_window(GTK_WIDGET(window));
 	is_fullscreen = gdk_window_get_state(gdk_window) & GDK_WINDOW_STATE_FULLSCREEN;
+	is_control_box_visible = gtk_widget_get_visible(control_center_box);
 
 	if (is_fullscreen) {
 		gtk_window_unfullscreen(window);
+		gtk_button_clicked(button);
 	} else {
 		gtk_window_fullscreen(window);
+		if (is_control_box_visible) {
+			gtk_button_clicked(button);
+		}
 	}
 	gtk_widget_set_visible(toolbarbox, is_fullscreen);
 }
