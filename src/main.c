@@ -37,6 +37,7 @@
 #endif /* ENABLE_RELOCATABLE_RESOURCES */
 #endif /* OS_OSX */
 
+#include "git-version.h"
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/siril_actions.h"
@@ -71,7 +72,11 @@ static gboolean main_option_pipe = FALSE;
 
 static gboolean _print_version_and_exit(const gchar *option_name,
 		const gchar *value, gpointer data, GError **error) {
+#ifdef SIRIL_UNSTABLE
+	g_print("%s %s-%s\n", PACKAGE, VERSION, SIRIL_GIT_VERSION_ABBREV);
+#else
 	g_print("%s %s\n", PACKAGE, VERSION);
+#endif
 	exit(EXIT_SUCCESS);
 	return TRUE;
 }

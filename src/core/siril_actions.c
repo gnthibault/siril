@@ -95,6 +95,8 @@ void updates_action_activate(GSimpleAction *action, GVariant *parameter,
 }
 #endif
 
+static gboolean is_extended = FALSE;
+
 void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
 	GtkApplication *app;
@@ -114,12 +116,14 @@ void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 
 	if (is_fullscreen) {
 		gtk_window_unfullscreen(window);
-		gtk_button_clicked(button);
+		if (is_extended)
+			gtk_button_clicked(button);
 	} else {
 		gtk_window_fullscreen(window);
 		if (is_control_box_visible) {
 			gtk_button_clicked(button);
 		}
+		is_extended = is_control_box_visible;
 	}
 	gtk_widget_set_visible(toolbarbox, is_fullscreen);
 }
