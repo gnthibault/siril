@@ -463,12 +463,16 @@ int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stack
 					sigma = 1.134 * gsl_stats_ushort_sd(w_stack, 1, N);
 				} while ((fabs(sigma - sigma0) / sigma0) > 0.0005);
 				for (frame = 0; frame < N; frame++) {
-					rejected[frame] = sigma_clipping(
-							stack[frame], args->sig, sigma,
-							median, crej);
-					if (rejected[frame] != 0)
-						r++;
-					if (N - r <= 4) break;
+					if (N - r <= 4) {
+						// no more rejections
+						rejected[frame] = 0;
+					} else {
+						rejected[frame] = sigma_clipping(
+								stack[frame], args->sig, sigma,
+								median, crej);
+						if (rejected[frame] != 0)
+							r++;
+					}
 
 				}
 				for (pixel = 0, output = 0; pixel < N; pixel++) {
