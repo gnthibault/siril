@@ -416,10 +416,14 @@ int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stack
 				sigma = gsl_stats_ushort_sd(stack, 1, N);
 				median = quickmedian (stack, N);
 				for (frame = 0; frame < N; frame++) {
-					rejected[frame] = sigma_clipping(stack[frame], args->sig, sigma, median, crej);
-					if (rejected[frame])
-						r++;
-					if (N - r <= 4) break;
+					if (N - r <= 4) {
+						// no more rejections
+						rejected[frame] = 0;
+					} else {
+						rejected[frame] = sigma_clipping(stack[frame], args->sig, sigma, median, crej);
+						if (rejected[frame])
+							r++;
+					}
 				}
 				for (pixel = 0, output = 0; pixel < N; pixel++) {
 					if (!rejected[pixel]) {
@@ -501,11 +505,15 @@ int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stack
 					sigma += (fabs((double)stack[frame] - (a*(double)frame + b)));
 				sigma /= (double)N;
 				for (frame = 0; frame < N; frame++) {
-					rejected[frame] =
-						line_clipping(stack[frame], args->sig, sigma, frame, a, b, crej);
-					if (rejected[frame] != 0)
-						r++;
-					if (N - r <= 4) break;
+					if (N - r <= 4) {
+						// no more rejections
+						rejected[frame] = 0;
+					} else {
+						rejected[frame] =
+							line_clipping(stack[frame], args->sig, sigma, frame, a, b, crej);
+						if (rejected[frame] != 0)
+							r++;
+					}
 				}
 				for (pixel = 0, output = 0; pixel < N; pixel++) {
 					if (!rejected[pixel]) {
