@@ -389,14 +389,28 @@ int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stack
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
 	double median, sigma = -1.0;
 	int frame, pixel, output, changed, n, r = 0;
+	int firstloop = 1;
 
 	WORD *stack = (WORD *)data->stack;
 	WORD *w_stack = (WORD *)data->w_stack;
 	WORD *rejected = (WORD *)data->rejected;
 
+	/* prepare median and check that the stack is not mostly zero */
 	switch (args->type_of_rejection) {
 		case PERCENTILE:
+		case SIGMA:
+		case SIGMEDIAN:
+		case WINSORIZED:
 			median = quickmedian (stack, N);
+			if (median == 0.0)
+				return 0;
+			break;
+		default:
+			break;
+	}
+
+	switch (args->type_of_rejection) {
+		case PERCENTILE:
 			for (frame = 0; frame < N; frame++) {
 				rejected[frame] = percentile_clipping(stack[frame], args->sig, median, crej);
 			}
@@ -414,7 +428,9 @@ int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stack
 		case SIGMA:
 			do {
 				sigma = gsl_stats_ushort_sd(stack, 1, N);
-				median = quickmedian (stack, N);
+				if (!firstloop)
+					median = quickmedian (stack, N);
+				else firstloop = 0;
 				for (frame = 0; frame < N; frame++) {
 					if (N - r <= 4) {
 						// no more rejections
@@ -440,7 +456,9 @@ int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stack
 		case SIGMEDIAN:
 			do {
 				sigma = gsl_stats_ushort_sd(stack, 1, N);
-				median = quickmedian (stack, N);
+				if (!firstloop)
+					median = quickmedian (stack, N);
+				else firstloop = 0;
 				n = 0;
 				for (frame = 0; frame < N; frame++) {
 					if (sigma_clipping(stack[frame], args->sig, sigma, median, crej)) {
@@ -448,13 +466,15 @@ int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stack
 						n++;
 					}
 				}
-			} while (n > 0 && N > 3);
+			} while (n > 0);
 			break;
 		case WINSORIZED:
 			do {
 				double sigma0;
 				sigma = gsl_stats_ushort_sd(stack, 1, N);
-				median = quickmedian (stack, N);
+				if (!firstloop)
+					median = quickmedian (stack, N);
+				else firstloop = 0;
 				memcpy(w_stack, stack, N * sizeof(WORD));
 				do {
 					int jj;
@@ -834,11 +854,15 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 					double mean;
 					if (itype == DATA_USHORT) {
 						int kept_pixels = apply_rejection_ushort(data, nb_frames, args, crej);
-						int64_t sum = 0L;
-						for (frame = 0; frame < kept_pixels; ++frame) {
-							sum += ((WORD *)data->stack)[frame];
+						if (kept_pixels == 0)
+							mean = 0.0;
+						else {
+							int64_t sum = 0L;
+							for (frame = 0; frame < kept_pixels; ++frame) {
+								sum += ((WORD *)data->stack)[frame];
+							}
+							mean = sum / (double)kept_pixels;
 						}
-						mean = sum / (double)kept_pixels;
 					} else {
 						// NO REJECTION YET FOR FLOAT
 						int kept_pixels = nb_frames;
@@ -859,15 +883,11 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 					normalize_to16bit(bitpix, &result);
 				}
 				if (args->use_32bit_output) {
-					if (isnan(result))
-						fit.fpdata[my_block->channel][pdata_idx] = 0.0f;
 					if (itype == DATA_USHORT)
 						fit.fpdata[my_block->channel][pdata_idx] = double_ushort_to_float_range(result);
 					else	fit.fpdata[my_block->channel][pdata_idx] = (float)result;
 				} else {
-					if (isnan(result))
-						fit.pdata[my_block->channel][pdata_idx] = 0;
-					else fit.pdata[my_block->channel][pdata_idx] = round_to_WORD(result);
+					fit.pdata[my_block->channel][pdata_idx] = round_to_WORD(result);
 				}
 				pdata_idx++;
 			} // end of for x
