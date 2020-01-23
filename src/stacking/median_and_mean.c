@@ -45,8 +45,6 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean);
  *
  * Median stacking does not use registration data, as it's generally used for
  * preprocessing master file creation. Mean stacking however does.
- * TODO: mean is sometimes used for master bias/dark/flat creation, we should
- * deactivate registration data in this case (see the variable use_regdata).
  *
  * The difference between median and mean stacking is that once we have pixel
  * data for all images, in the first case the result is the median of all
@@ -344,7 +342,7 @@ static int percentile_clipping(WORD pixel, double sig[], double median, uint64_t
 		rej[1]++;
 		return 1;
 	}
-	else return 0;
+	return 0;
 }
 
 /* Rejection of pixels, following sigma_(high/low) * sigma.
@@ -362,7 +360,7 @@ static int sigma_clipping(WORD pixel, double sig[], double sigma, double median,
 		rej[1]++;
 		return 1;
 	}
-	else return 0;
+	return 0;
 }
 
 static void Winsorize(WORD *pixel, double m0, double m1) {
@@ -382,10 +380,10 @@ static int line_clipping(WORD pixel, double sig[], double sigma, int i, double a
 		rej[1]++;
 		return 1;
 	}
-	else return 0;
+	return 0;
 }
 
-int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]) {
+static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]) {
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
 	double median, sigma = -1.0;
 	int frame, pixel, output, changed, n, r = 0;
@@ -864,8 +862,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 							mean = sum / (double)kept_pixels;
 						}
 					} else {
-						// NO REJECTION YET FOR FLOAT
-						int kept_pixels = nb_frames;
+						int kept_pixels = apply_rejection_float(data, nb_frames, args, crej);
 						double sum = 0.0;
 						for (frame = 0; frame < kept_pixels; ++frame) {
 							sum += ((float*)data->stack)[frame];

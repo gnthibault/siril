@@ -143,4 +143,9 @@ int find_refimage_in_indices(int *indices, int nb, int ref);
 int upscale_sequence(struct stacking_args *args);
 void remove_tmp_drizzle_files(struct stacking_args *args);
 
+
+	/* rejection_float.c */
+
+int apply_rejection_float(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]);
+
 #endif

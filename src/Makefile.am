@@ -186,6 +186,7 @@ siril_SOURCES = \
 	registration/registration.c \
 	registration/registration.h \
 	stacking/median_and_mean.c \
+	stacking/rejection_float.c \
 	stacking/normalization.c \
 	stacking/stacking.c \
 	stacking/stacking.h \
