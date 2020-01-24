@@ -4680,27 +4680,26 @@ WARNING: no new sequence is built, registration data is stored in the original s
                               </packing>
                             </child>
                             <child>
+                              <object class="GtkLabel" id="labelregisterinfo">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">end</property>
+                                <property name="label" translatable="yes">Load a sequence first</property>
+                                <style>
+                                  <class name="label-info"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
                               <object class="GtkBox" id="box4">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="spacing">10</property>
-                                <child>
-                                  <object class="GtkLabel" id="labelregisterinfo">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">end</property>
-                                    <property name="label" translatable="yes">Load a sequence first</property>
-                                    <style>
-                                      <class name="label-info"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="pack_type">end</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
                                 <child>
                                   <object class="GtkButton" id="goregister_button">
                                     <property name="label" translatable="yes">Go register</property>
