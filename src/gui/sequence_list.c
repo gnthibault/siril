@@ -106,6 +106,7 @@ static void initialize_title() {
 	gtk_header_bar_set_title(bar, _("Frame List"));
 	gtk_header_bar_set_subtitle(bar, seq_basename);
 	gtk_widget_set_sensitive(lookup_widget("seqlist_buttonbar"), sequence_is_loaded());
+	gtk_widget_set_sensitive(lookup_widget("seqlist_navigate"), sequence_is_loaded());
 	gtk_widget_set_sensitive(lookup_widget("seqlist_dialog_combo"), sequence_is_loaded());
 	gtk_widget_set_sensitive(lookup_widget("refframe2"), sequence_is_loaded());
 
@@ -459,12 +460,42 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	}
 }
 
+static void center_cell(GtkTreeView *treeview, gint index, gfloat align) {
+	GtkTreePath *path = gtk_tree_path_new_from_indices(index, -1);
+	gtk_tree_view_scroll_to_cell(treeview, path, NULL, TRUE, align, 0);
+	gtk_tree_path_free(path);
+}
+
+void on_backward_clicked(GtkButton *button, gpointer user_data) {
+	if (sequence_is_loaded()) {
+		GtkTreeSelection *selec = (GtkTreeSelection*)user_data;
+		int new = com.seq.current - 1;
+		if (new < 0) new = 0;
+		if (new == com.seq.number) new = com.seq.number - 1;
+		seq_load_image(&com.seq, new, TRUE);
+		gtk_tree_selection_unselect_all(selec);
+		center_cell(gtk_tree_selection_get_tree_view(selec), new, 0);
+	}
+}
+
+void on_forward_clicked(GtkButton *button, gpointer user_data) {
+	if (sequence_is_loaded()) {
+		GtkTreeSelection *selec = (GtkTreeSelection*)user_data;
+		int new = com.seq.current + 1;
+		if (new < 0) new = 0;
+		if (new == com.seq.number) new = com.seq.number - 1;
+		seq_load_image(&com.seq, new, TRUE);
+		gtk_tree_selection_unselect_all(selec);
+		center_cell(gtk_tree_selection_get_tree_view(selec), new, 1);
+	}
+}
+
 /****************** modification of the list store (tree model) ******************/
 
 void sequence_list_change_selection_index(int index) {
-	sequence_list_change_selection(
-			gtk_tree_path_to_string(gtk_tree_path_new_from_indices(index, -1)),
-			com.seq.imgparam[index].incl);
+	GtkTreePath *path = gtk_tree_path_new_from_indices(index, -1);
+	sequence_list_change_selection(	gtk_tree_path_to_string(path), com.seq.imgparam[index].incl);
+	gtk_tree_path_free(path);
 }
 
 void sequence_list_change_current() {
