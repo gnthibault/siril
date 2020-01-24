@@ -2717,6 +2717,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               <object class="GtkBox" id="box74">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="orientation">vertical</property>
                                 <child>
                                   <object class="GtkScrolledWindow" id="scrolledwindow8">
                                     <property name="visible">True</property>
@@ -2783,60 +2784,84 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkToolbar" id="convert_toolbar">
+                                  <object class="GtkBox">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_top">5</property>
-                                    <property name="margin_bottom">5</property>
-                                    <property name="orientation">vertical</property>
-                                    <property name="toolbar_style">both</property>
-                                    <property name="show_arrow">False</property>
                                     <child>
-                                      <object class="GtkToolButton" id="select_convert_button">
+                                      <object class="GtkToolbar" id="convert_toolbar">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="tooltip_text" translatable="yes">Add files to convert</property>
-                                        <property name="valign">center</property>
-                                        <property name="label" translatable="yes">Add</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-add</property>
-                                        <signal name="clicked" handler="on_select_convert_button_clicked" swapped="no"/>
+                                        <property name="halign">start</property>
+                                        <property name="margin_top">5</property>
+                                        <property name="margin_bottom">5</property>
+                                        <property name="show_arrow">False</property>
+                                        <property name="icon_size">2</property>
+                                        <child>
+                                          <object class="GtkToolButton" id="select_convert_button">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="tooltip_text" translatable="yes">Add files to convert</property>
+                                            <property name="valign">center</property>
+                                            <property name="label" translatable="yes">Add</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="stock_id">gtk-add</property>
+                                            <signal name="clicked" handler="on_select_convert_button_clicked" swapped="no"/>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">True</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkToolButton" id="remove_convert_button">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="tooltip_text" translatable="yes">Remove selected files</property>
+                                            <property name="valign">center</property>
+                                            <property name="label" translatable="yes">Remove</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="stock_id">gtk-remove</property>
+                                            <signal name="clicked" handler="on_remove_convert_button_clicked" swapped="no"/>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">True</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkToolButton" id="clear_convert_button">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="tooltip_text" translatable="yes">Remove all files from the list</property>
+                                            <property name="valign">center</property>
+                                            <property name="label" translatable="yes">Clear</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="stock_id">gtk-clear</property>
+                                            <signal name="clicked" handler="on_clear_convert_button_clicked" swapped="no"/>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">True</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
-                                        <property name="expand">True</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">0</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkToolButton" id="remove_convert_button">
+                                      <object class="GtkLabel" id="statuslabel_convert">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="tooltip_text" translatable="yes">Remove selected files</property>
-                                        <property name="valign">center</property>
-                                        <property name="label" translatable="yes">Remove</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-remove</property>
-                                        <signal name="clicked" handler="on_remove_convert_button_clicked" swapped="no"/>
+                                        <property name="halign">end</property>
+                                        <property name="hexpand">True</property>
                                       </object>
                                       <packing>
-                                        <property name="expand">True</property>
-                                        <property name="homogeneous">True</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkToolButton" id="clear_convert_button">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="tooltip_text" translatable="yes">Remove all files from the list</property>
-                                        <property name="valign">center</property>
-                                        <property name="label" translatable="yes">Clear</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="stock_id">gtk-clear</property>
-                                        <signal name="clicked" handler="on_clear_convert_button_clicked" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">True</property>
-                                        <property name="homogeneous">True</property>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
@@ -3132,19 +3157,6 @@ SER files are directly handled as a sequence, and are not yet available for conv
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="position">5</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="statuslabel_convert">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="halign">end</property>
-                                <property name="hexpand">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">6</property>
                               </packing>
                             </child>
                           </object>
@@ -4736,27 +4748,26 @@ WARNING: no new sequence is built, registration data is stored in the original s
                               </packing>
                             </child>
                             <child>
+                              <object class="GtkLabel" id="labelregisterinfo">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">end</property>
+                                <property name="label" translatable="yes">Load a sequence first</property>
+                                <style>
+                                  <class name="label-info"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
                               <object class="GtkBox" id="box4">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="spacing">10</property>
-                                <child>
-                                  <object class="GtkLabel" id="labelregisterinfo">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">end</property>
-                                    <property name="label" translatable="yes">Load a sequence first</property>
-                                    <style>
-                                      <class name="label-info"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="pack_type">end</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
                                 <child>
                                   <object class="GtkButton" id="goregister_button">
                                     <property name="label" translatable="yes">Go register</property>

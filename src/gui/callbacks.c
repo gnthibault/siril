@@ -1462,8 +1462,8 @@ void initialize_all_GUI(gchar *supported_files) {
 	set_libraw_settings_menu_available(FALSE);	// disable libraw settings
 #endif
 	update_spinCPU(com.max_thread);
-	/* every 0.25sec update memory display */
-	g_timeout_add_seconds(1.0, update_displayed_memory, NULL);
+	/* every 0.5sec update memory display */
+	g_timeout_add_seconds(0.5, update_displayed_memory, NULL);
 
 	/* now that everything is loaded we can connect these signals
 	 * Doing it in the glade file is a bad idea because they are called too many times during loading */
