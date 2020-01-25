@@ -705,7 +705,7 @@ double encodeJD(dateTime dt) {
  */
 gchar* siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
 	int width, height;
-	int n_channel;
+	int n_channel = 0;
 
 	GdkPixbufFormat *pixbuf_file_info = gdk_pixbuf_get_file_info(filename,
 			&width, &height);

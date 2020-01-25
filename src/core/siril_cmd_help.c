@@ -28,7 +28,6 @@
 void siril_cmd_help_keyboard_shortcuts(GtkWindow *window) {
 	static GtkWidget *shortcuts_window;
 	char *shortcutfile = g_build_filename(siril_get_system_data_dir(), SHORTCUTS_UI, NULL);
-	GError *err = NULL;
 
 	if (shortcuts_window == NULL) {
 		GtkBuilder *s_builder;

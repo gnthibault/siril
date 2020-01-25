@@ -588,7 +588,7 @@ int copy_rendering_settings_when_chained(gboolean from_GUI) {
 
 void update_prepro_interface(gboolean allow_debayer) {
 	static GtkToggleButton *udark = NULL, *uoffset = NULL, *uflat = NULL,
-			       *checkAutoEvaluate = NULL, *pp_debayer = NULL;
+			       *checkAutoEvaluate = NULL;
 	if (udark == NULL) {
 		udark = GTK_TOGGLE_BUTTON(
 				gtk_builder_get_object(builder, "usedark_button"));
@@ -598,8 +598,6 @@ void update_prepro_interface(gboolean allow_debayer) {
 				gtk_builder_get_object(builder, "useflat_button"));
 		checkAutoEvaluate = GTK_TOGGLE_BUTTON(
 				gtk_builder_get_object(builder, "checkbutton_auto_evaluate"));
-		pp_debayer = GTK_TOGGLE_BUTTON(
-				gtk_builder_get_object(builder, "checkButton_pp_dem"));
 	}
 
 	gtk_widget_set_sensitive(lookup_widget("prepro_button"),
