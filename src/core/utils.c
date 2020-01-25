@@ -493,7 +493,7 @@ void expand_home_in_filename(char *filename, int size) {
 			filename[j + homelen - 1] = filename[j];
 		// the -1 above is tricky: it's the removal of the ~ character from
 		// the original string
-		strncpy(filename, homepath, homelen);
+		strcpy(filename, homepath);
 	}
 }
 
