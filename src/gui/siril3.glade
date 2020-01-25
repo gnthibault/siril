@@ -13177,6 +13177,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="icon_name">emblem-ok-symbolic</property>
                   </object>
                 </child>
+                <accelerator key="space" signal="clicked"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -13222,64 +13223,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
             <property name="position">3</property>
           </packing>
         </child>
-        <child>
-          <object class="GtkButtonBox" id="seqlist_navigate">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="homogeneous">True</property>
-            <property name="layout_style">expand</property>
-            <child>
-              <object class="GtkButton">
-                <property name="name">undo-button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Display previous frame in the list</property>
-                <signal name="clicked" handler="on_backward_clicked" object="tree_selection_seqlist" swapped="no"/>
-                <child>
-                  <object class="GtkImage">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="icon_name">media-seek-backward</property>
-                  </object>
-                </child>
-                <accelerator key="Up" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="name">undo-button</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Display next frame in the list</property>
-                <signal name="clicked" handler="on_forward_clicked" object="tree_selection_seqlist" swapped="no"/>
-                <child>
-                  <object class="GtkImage">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="icon_name">media-seek-forward-symbolic</property>
-                  </object>
-                </child>
-                <accelerator key="Down" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="pack_type">end</property>
-            <property name="position">4</property>
-          </packing>
-        </child>
       </object>
     </child>
     <child>
@@ -13305,7 +13248,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                 <property name="show_expanders">False</property>
                 <property name="enable_grid_lines">horizontal</property>
                 <property name="activate_on_single_click">True</property>
-                <signal name="row-activated" handler="on_treeview1_row_activated" swapped="no"/>
+                <signal name="cursor-changed" handler="on_treeview1_cursor_changed" swapped="no"/>
                 <child internal-child="selection">
                   <object class="GtkTreeSelection" id="tree_selection_seqlist">
                     <property name="mode">multiple</property>
