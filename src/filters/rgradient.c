@@ -21,6 +21,7 @@
 #include <math.h>
 #include "core/siril.h"
 #include "core/proto.h"
+//#include "core/sleef.h"
 #include "core/processing.h"
 #include "core/undo.h"
 #include "core/OS_utils.h"
@@ -33,19 +34,21 @@
 #include "io/single_image.h"
 
 #include "rgradient.h"
-#include "core/sleef.h"
 
 static void to_polar(int x, int y, point center, double *r, double *theta) {
 	double dx = x - center.x;
 	double dy = y - center.y;
 	*r = sqrt(dx * dx + dy * dy);
-	*theta = xatan2(dy, dx);
+//	*theta = xatan2(dy, dx);
+	*theta = atan2(dy, dx);
 }
 
 static void to_cartesian(double r, double theta, point center, point *p) {
-    const double2 sincosval = xsincos(theta);
-	p->x = center.x + r * sincosval.y;
-	p->y = center.y + r * sincosval.x;
+//    const double2 sincosval = xsincos(theta);
+//	p->x = center.x + r * sincosval.y;
+//	p->y = center.y + r * sincosval.x;
+	p->x = center.x + r * cos(theta);
+	p->y = center.y + r * sin(theta);
 }
 
 static gboolean end_rgradient_filter(gpointer p) {
