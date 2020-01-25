@@ -33,17 +33,19 @@
 #include "io/single_image.h"
 
 #include "rgradient.h"
+#include "core/sleef.h"
 
 static void to_polar(int x, int y, point center, double *r, double *theta) {
 	double dx = x - center.x;
 	double dy = y - center.y;
 	*r = sqrt(dx * dx + dy * dy);
-	*theta = atan2(dy, dx);
+	*theta = xatan2(dy, dx);
 }
 
 static void to_cartesian(double r, double theta, point center, point *p) {
-	p->x = center.x + r * cos(theta);
-	p->y = center.y + r * sin(theta);
+    const double2 sincosval = xsincos(theta);
+	p->x = center.x + r * sincosval.y;
+	p->y = center.y + r * sincosval.x;
 }
 
 static gboolean end_rgradient_filter(gpointer p) {
@@ -59,6 +61,11 @@ static gboolean end_rgradient_filter(gpointer p) {
 }
 
 gpointer rgradient_filter(gpointer p) {
+	struct timeval t_start, t_end;
+
+	siril_log_color_message(_("Rotational gradient: processing...\n"), "red");
+	gettimeofday(&t_start, NULL);
+
 	struct rgradient_filter_data *args = (struct rgradient_filter_data *) p;
 
 	fits imA = { 0 };
@@ -83,6 +90,8 @@ gpointer rgradient_filter(gpointer p) {
 	for (layer = 0; layer < args->fit->naxes[2]; layer++) {
 		int i = 0;
 		for (y = 0; y < args->fit->ry; y++) {
+            if (!(i % 256))
+                set_progress_bar_data(NULL, (double) cur_nb / total);
 			for (x = 0; x < args->fit->rx; x++) {
 				double r, theta;
 				point delta;
@@ -90,8 +99,6 @@ gpointer rgradient_filter(gpointer p) {
 				WORD *Abuf = imA.pdata[layer];
 				WORD *Bbuf = imB.pdata[layer];
 
-				if (!(i % 256))
-					set_progress_bar_data(NULL, (double) cur_nb / total);
 
 				to_polar(x, y, center, &r, &theta);
 
@@ -132,6 +139,9 @@ gpointer rgradient_filter(gpointer p) {
 	invalidate_stats_from_fit(args->fit);
 	update_gfit_histogram_if_needed();
 	siril_add_idle(end_rgradient_filter, args);
+
+    gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
 
 	return GINT_TO_POINTER(0);
 }
