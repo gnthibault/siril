@@ -70,13 +70,13 @@ gpointer rgradient_filter(gpointer p) {
 
 	fits imA = { 0 };
 	fits imB = { 0 };
-	point center = {args->xc, args->yc};
-	int x, y, layer, cur_nb = 0;
-	int w = args->fit->rx - 1;
-	int h = args->fit->ry - 1;
-	double dAlpha = M_PI / 180.0 * args->da;
+	const point center = {args->xc, args->yc};
+	const int w = args->fit->rx - 1;
+	const int h = args->fit->ry - 1;
+	const double dAlpha = M_PI / 180.0 * args->da;
 
-	double total = (double)(args->fit->rx * args->fit->ry * args->fit->naxes[2]);	// only used for progress bar
+	int cur_nb = 0;	// only used for progress bar
+	const double total = args->fit->ry * args->fit->naxes[2];	// only used for progress bar
 	set_progress_bar_data(_("Rotational gradient in progress..."), PROGRESS_RESET);
 
 	/* convenient transformation to not inverse y sign */
@@ -86,64 +86,76 @@ gpointer rgradient_filter(gpointer p) {
 	copyfits(args->fit, &imB, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 
 	soper(args->fit, 2.0, OPER_MUL);
+    const double w2 = 2 * w;
+    const double h2 = 2 * h;
+    const double wd = w;
+    const double hd = h;
+    for (int layer = 0; layer < args->fit->naxes[2]; layer++) {
+        WORD *gbuf = args->fit->pdata[layer];
+        WORD *Abuf = imA.pdata[layer];
+        WORD *Bbuf = imB.pdata[layer];
+#ifdef _OPENMP
+        #pragma omp parallel for
+#endif
+        for (int y = 0; y < args->fit->ry; y++) {
+            int i = y * args->fit->rx;
+#ifdef _OPENMP
+            #pragma omp critical
+#endif
+            {
+            set_progress_bar_data(NULL, cur_nb / total);
+            cur_nb++;
+            }
+            for (int x = 0; x < args->fit->rx; x++) {
+                double r, theta;
+                point delta;
 
-	for (layer = 0; layer < args->fit->naxes[2]; layer++) {
-		int i = 0;
-		for (y = 0; y < args->fit->ry; y++) {
-            if (!(i % 256))
-                set_progress_bar_data(NULL, (double) cur_nb / total);
-			for (x = 0; x < args->fit->rx; x++) {
-				double r, theta;
-				point delta;
-				WORD *gbuf = args->fit->pdata[layer];
-				WORD *Abuf = imA.pdata[layer];
-				WORD *Bbuf = imB.pdata[layer];
+                to_polar(x, y, center, &r, &theta);
 
+                // Positive differential
+                to_cartesian(r - args->dR, theta + dAlpha, center, &delta);
 
-				to_polar(x, y, center, &r, &theta);
+                if (delta.x < 0)
+                    delta.x = fabs(delta.x);
+                else if (delta.x > wd)
+                    delta.x = w2 - delta.x;
 
-				// Positive differential
-				to_cartesian(r - args->dR, theta + dAlpha, center, &delta);
-				if (delta.x < 0)
-					delta.x = fabs(delta.x);
-				else if (delta.x > w)
-					delta.x = 2 * w - delta.x;
-				if (delta.y < 0)
-					delta.y = fabs(delta.y);
-				else if (delta.y > h)
-					delta.y = 2 * h - delta.y;
-				gbuf[i] -= Abuf[(int)delta.x + (int)delta.y * args->fit->rx];
+                if (delta.y < 0)
+                    delta.y = fabs(delta.y);
+                else if (delta.y > hd)
+                    delta.y = h2 - delta.y;
 
-				// Negative differential
-				to_cartesian(r - args->dR, theta - dAlpha, center, &delta);
-				if (delta.x < 0)
-					delta.x = fabs(delta.x);
-				else if (delta.x > w)
-					delta.x = 2 * w - delta.x;
-				if (delta.y < 0)
-					delta.y = fabs(delta.y);
-				else if (delta.y > h)
-					delta.y = 2 * h - delta.y;
-				gbuf[i] -= Bbuf[(int)delta.x + (int)delta.y * args->fit->rx];
-				i++;
-				cur_nb++;
-			}
-		}
-	}
+                gbuf[i] -= Abuf[(int)delta.x + (int)delta.y * args->fit->rx];
 
-	fits_flip_top_to_bottom(args->fit);
-	set_progress_bar_data(_("Rotational gradient complete."), PROGRESS_DONE);
+                // Negative differential
+                to_cartesian(r - args->dR, theta - dAlpha, center, &delta);
+                if (delta.x < 0)
+                    delta.x = fabs(delta.x);
+                else if (delta.x > wd)
+                    delta.x = w2 - delta.x;
+                if (delta.y < 0)
+                    delta.y = fabs(delta.y);
+                else if (delta.y > hd)
+                    delta.y = h2 - delta.y;
+                gbuf[i] -= Bbuf[(int)delta.x + (int)delta.y * args->fit->rx];
+                i++;
+            }
+        }
+    }
 
-	clearfits(&imA);
-	clearfits(&imB);
-	invalidate_stats_from_fit(args->fit);
-	update_gfit_histogram_if_needed();
-	siril_add_idle(end_rgradient_filter, args);
+    fits_flip_top_to_bottom(args->fit);
+    set_progress_bar_data(_("Rotational gradient complete."), PROGRESS_DONE);
+
+    clearfits(&imA);
+    clearfits(&imB);
+    invalidate_stats_from_fit(args->fit);
+    update_gfit_histogram_if_needed();
+    siril_add_idle(end_rgradient_filter, args);
 
     gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
+    show_time(t_start, t_end);
 
-	return GINT_TO_POINTER(0);
+    return GINT_TO_POINTER(0);
 }
 
 /// GUI
