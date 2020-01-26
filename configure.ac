@@ -54,7 +54,7 @@ if test "x$remember_set_CFLAGS" = "x"; then
 	fi
 fi
 
-CFLAGS="-Werror=unknown-pragmas $CFLAGS $OPENMP_CFLAGS"
+CFLAGS="-Werror=unknown-pragmas -Werror=unused-label $CFLAGS $OPENMP_CFLAGS"
 CXXFLAGS="$CFLAGS"
 
 if test "x$SIRIL_UNSTABLE" = "xyes"; then
