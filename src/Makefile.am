@@ -89,6 +89,7 @@ siril_SOURCES = \
 	core/siril_log.c \
 	core/siril_update.c \
 	core/siril_update.h \
+	core/sleef.h \
 	core/undo.c \
 	core/undo.h \
 	core/utils.c \
