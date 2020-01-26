@@ -75,9 +75,6 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 	long n = nbpixels * fit->naxes[2];
 
 	/* prepare the buffer */
-	if (fit->type == DATA_USHORT) {
-		return 1;
-	}
 	fprintf(stdout, "starting librtprocess debayer\n");
 
 	float **rawdata = (float **)malloc(fit->ry * sizeof(float *));
@@ -85,12 +82,27 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 		PRINT_ALLOC_ERR;
 		return -1;
 	}
-	rawdata[0] = fit->fdata;
+	if (fit->type == DATA_USHORT) {
+		rawdata[0] = (float *)malloc(nbpixels * sizeof(float));
+		if (!rawdata[0]) {
+			PRINT_ALLOC_ERR;
+			free(rawdata);
+			return -1;
+		}
+		// TODO: vectorize!
+		for (j = 0; j < n; j++)
+			rawdata[0][j] = (float)fit->data[j];
+	}
+	else if (fit->type == DATA_FLOAT) {
+		rawdata[0] = fit->fdata;
+		// TODO: vectorize!
+		for (j = 0; j < n; j++)
+			fit->fdata[j] = fit->fdata[j] * 65535.0f;
+	}
+	else return -1;
+
 	for (i=1; i<fit->ry; i++)
 		rawdata[i] = rawdata[i - 1] + fit->rx;
-	// TODO: vectorize!
-	for (j = 0; j < n; j++)
-		fit->fdata[j] = fit->fdata[j] * 65535.0f;
 
 	// allocate the demosaiced image buffer
 	n *= 3;
@@ -146,20 +158,37 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 			   */
 	}
 
-	/* get the result */
-	// TODO: vectorize!
-	for (j = 0; j < n; j++)
-		newdata[j] = newdata[j] * 1.52590219e-5f; // 1/65535
-
 	fprintf(stdout, "saving ibrtprocess debayer\n");
+	/* get the result */
+	if (fit->type == DATA_USHORT) {
+		WORD *newfitdata = (WORD *)realloc(fit->data, n * sizeof(WORD));
+		if (!newfitdata) {
+			PRINT_ALLOC_ERR;
+			retval = RP_MEMORY_ERROR;
+			goto free_and_return;
+		}
+		for (j = 0; j < n; j++)
+			newfitdata[j] = (WORD)newdata[j];	// or is rounding required?
+		fit->naxes[2] = 3;
+		fit->naxis = 3;
+		free(newdata);
+		fit_replace_buffer(fit, newfitdata, DATA_USHORT);
+	}
+	else if (fit->type == DATA_FLOAT) {
+		// TODO: vectorize!
+		for (j = 0; j < n; j++)
+			newdata[j] = newdata[j] * 1.52590219e-5f; // 1/65535
+		fit->naxes[2] = 3;
+		fit->naxis = 3;
+		free(fit->fdata);
+		fit_replace_buffer(fit, newdata, DATA_FLOAT);
+	}
+
+free_and_return:
 	free(blue);
 	free(green);
 	free(red);
 	free(rawdata);
-	fit->naxes[2] = 3;
-	fit->naxis = 3;
-	free(fit->fdata);
-	fit_replace_buffer(fit, newdata, DATA_FLOAT);
 
 	return retval != RP_NO_ERROR;
 }
