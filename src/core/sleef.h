@@ -12,35 +12,27 @@
 #include <assert.h>
 #include <stdint.h>
 
-#ifdef __GNUC__
-#define INLINE __inline
-#else
-#define INLINE inline
+#ifndef INLINE
+#define INLINE extern inline
 #endif
 
-const int MAXVAL = 0xffff;
-const float MAXVALF = MAXVAL;  // float version of MAXVAL
-const double MAXVALD = MAXVAL; // double version of MAXVAL
+#define RT_PI 3.14159265358979323846 // pi
+#define RT_PI_2 1.57079632679489661923 // pi/2
+#define RT_PI_180 0.017453292519943295769 // pi/180
+#define RT_1_PI 0.31830988618379067154 // 1/pi
+#define RT_2_PI 0.63661977236758134308 // 2/pi
+#define RT_SQRT1_2 0.70710678118654752440 // 1/sqrt(2)
 
-const double RT_PI = 3.14159265358979323846; // pi
-const double RT_PI_2 = 1.57079632679489661923; // pi/2
-const double RT_PI_180 = 0.017453292519943295769; // pi/180
-const double RT_1_PI = 0.31830988618379067154; // 1/pi
-const double RT_2_PI = 0.63661977236758134308; // 2/pi
-const double RT_SQRT1_2 = 0.70710678118654752440; // 1/sqrt(2)
+#define RT_PI_F 3.14159265358979323846f // pi
+#define RT_PI_F_2 1.57079632679489661923f // pi/2
+#define RT_PI_F_180 0.017453292519943295769f // pi/180
+#define RT_1_PI_F 0.31830988618379067154f // 1/pi
+#define RT_2_PI_F 0.63661977236758134308f // 2/pi
 
-const double RT_INFINITY = __builtin_infl();
-const double RT_NAN = __builtin_nanl("");
-
-const float RT_PI_F = RT_PI;
-const float RT_PI_F_2 = RT_PI_2;
-const float RT_PI_F_180 = RT_PI_180;
-const float RT_1_PI_F = RT_1_PI;
-const float RT_2_PI_F = RT_2_PI;
-
-const float RT_INFINITY_F = __builtin_inff();
-const float RT_NAN_F = __builtin_nanf("");
-
+#define RT_INFINITY __builtin_infl()
+#define RT_NAN __builtin_nanl("")
+#define RT_INFINITY_F __builtin_inff()
+#define RT_NAN_F __builtin_nanf("")
 
 #define PI4_A .7853981554508209228515625
 #define PI4_B .794662735614792836713604629039764404296875e-8
