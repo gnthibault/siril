@@ -3,6 +3,7 @@
 export CC CFLAGS CPPFLAGS
 
 SUBDIRS = deps/kplot \
+	deps/librtprocess/build \
 	po \
 	src \
 	pixmaps \

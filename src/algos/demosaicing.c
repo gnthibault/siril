@@ -865,6 +865,7 @@ static int retrieveXTRANSPattern(char *bayer, int xtrans[6][6]) {
 	return 0;
 }
 
+#if 0
 int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa) {
 	int i, j;
 	int width = fit->rx;
@@ -940,6 +941,7 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 	free(newbuf);
 	return 0;
 }
+#endif
 
 /* From an area, get the area corresponding to the debayer data for all colors,
  * the dashed area below.

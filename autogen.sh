@@ -21,6 +21,17 @@ intltoolize --force --copy --automake || exit 1
 autoreconf --verbose --force --install -Wno-portability || exit 1
 { set +x; } 2>/dev/null
 
+# Manage librtprocess automatically, for the first autogen.
+# It will be cloned from git in deps/librtprocess if this directory does not already exist.
+# To update librtprocess, manual intervention, like 'git pull' then cmake and make, is required.
+cd deps
+[ -d librtprocess ] || ( echo 'Cloning librtprocess...' && git clone 'https://github.com/CarVac/librtprocess.git' )
+cd librtprocess || ( echo 'Failed to get librtprocess, please download it and compile it yourself. Aborting.' && exit 1 )
+if [ ! -d build ] ; then
+	mkdir build && cd build &&
+	cmake -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON .. || exit 1
+fi
+
 cd $ORIGDIR
 
 if [ "$NOCONFIGURE" = "" ]; then

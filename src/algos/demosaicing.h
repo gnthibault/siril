@@ -9,7 +9,13 @@ struct split_cfa_data {
 
 WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		interpolation_method interpolation, sensor_pattern pattern, int xtrans[6][6]);
+#ifdef __cplusplus
+extern "C" {
+#endif
 int debayer(fits*, interpolation_method, gboolean);
+#ifdef __cplusplus
+}
+#endif
 int debayer_float(fits* fit, interpolation_method, gboolean);
 
 void get_debayer_area(const rectangle *area, rectangle *debayer_area,

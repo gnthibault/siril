@@ -17,7 +17,8 @@ AM_CPPFLAGS = \
 	$(GSL_CFLAGS) \
 	$(FFMS2_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
-	-I$(top_builddir)/deps/kplot
+	-I$(top_builddir)/deps/kplot \
+	-I$(top_builddir)/deps/librtprocess/src/include
 
 siril_SOURCES = \
 	core/siril.h \
@@ -200,6 +201,7 @@ endif
 
 siril_LDADD = \
 	$(top_builddir)/deps/kplot/libkplot.a \
+	$(top_builddir)/deps/librtprocess/build/src/librtprocess_static.a \
 	$(FFMPEG_LIBS) \
 	$(GTK_LIBS) \
 	${GTK_MAC_LIBS} \
@@ -217,6 +219,7 @@ siril_LDADD = \
 	$(libdbghelp)
 
 siril_SOURCES += \
+	algos/demosaicing_rtp.cpp \
 	io/avi_pipp/pipp_avi_write.cpp \
 	io/avi_pipp/pipp_avi_write.h \
 	io/avi_pipp/pipp_avi_write_dib.cpp \
@@ -226,23 +229,17 @@ siril_SOURCES += \
 	io/avi_pipp/pipp_buffer.h \
 	io/avi_pipp/pipp_video_write.h \
 	io/avi_pipp/avi_writer.cpp \
-	io/avi_pipp/avi_writer.h
-
-siril_SOURCES += \
+	io/avi_pipp/avi_writer.h \
 	opencv/opencv.cpp \
 	opencv/opencv.h \
 	opencv/ecc/ecc.cpp \
-	opencv/ecc/ecc.h
-
-siril_SOURCES += \
+	opencv/ecc/ecc.h \
 	opencv/findHomography/fundam.cpp \
 	opencv/findHomography/calibration.cpp \
 	opencv/findHomography/modelest.cpp \
 	opencv/findHomography/_modelest.h \
 	opencv/findHomography/calib3d.hpp \
-	opencv/findHomography/precomp.hpp
-
-siril_SOURCES += \
+	opencv/findHomography/precomp.hpp \
 	core/exif.cpp \
 	core/exif.h
 
