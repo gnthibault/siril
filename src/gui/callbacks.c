@@ -1426,7 +1426,7 @@ void initialize_all_GUI(gchar *supported_files) {
 #endif
 	update_spinCPU(com.max_thread);
 	/* every 0.5sec update memory display */
-	g_timeout_add_seconds(0.5, update_displayed_memory, NULL);
+	g_timeout_add(500, update_displayed_memory, NULL);
 
 	/* now that everything is loaded we can connect these signals
 	 * Doing it in the glade file is a bad idea because they are called too many times during loading */
