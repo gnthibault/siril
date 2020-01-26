@@ -39,6 +39,7 @@ static const char *bg_colour[] = { "WhiteSmoke", "#1B1B1B" };
 static const char *ref_bg_colour[] = { "Beige", "#4A4A39" };
 
 struct _seq_list {
+	GtkTreeView *tview;
 	sequence *seq;
 	int layer;
 };
@@ -304,9 +305,7 @@ void on_treeview1_cursor_changed(GtkTreeView *tree_view, gpointer user_data) {
 void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data) {
 	int active = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	if (active >= 0) {
-		g_signal_handlers_block_by_func((GtkTreeView*) user_data, on_treeview1_cursor_changed, NULL);
 		fill_sequence_list(&com.seq, active, FALSE);
-		g_signal_handlers_unblock_by_func((GtkTreeView*) user_data, on_treeview1_cursor_changed, NULL);
 	}
 }
 
@@ -326,6 +325,10 @@ void fill_sequence_list(sequence *seq, int layer, gboolean as_idle) {
 	args = malloc(sizeof(struct _seq_list));
 	args->seq = seq;
 	args->layer = layer;
+	args->tview = GTK_TREE_VIEW(lookup_widget("treeview1"));
+
+	g_signal_handlers_block_by_func(args->tview, on_treeview1_cursor_changed, NULL);
+
 	if (as_idle)
 		gdk_threads_add_idle(fill_sequence_list_idle, args);
 	else fill_sequence_list_idle(args);
@@ -340,6 +343,8 @@ static gboolean fill_sequence_list_idle(gpointer p) {
 			add_image_to_sequence_list(args->seq, i, args->layer);
 		}
 	}
+	g_signal_handlers_unblock_by_func(args->tview, on_treeview1_cursor_changed, NULL);
+
 	free(args);
 	return FALSE;
 }
