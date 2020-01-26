@@ -514,8 +514,10 @@ void sequence_list_change_reference() {
 }
 
 void clear_sequence_list() {
+	g_signal_handlers_block_by_func(GTK_TREE_VIEW(lookup_widget("treeview1")), on_treeview1_cursor_changed, NULL);
 	get_list_store();
 	gtk_list_store_clear(list_store);
+	g_signal_handlers_unblock_by_func(GTK_TREE_VIEW(lookup_widget("treeview1")), on_treeview1_cursor_changed, NULL);
 }
 
 void adjust_refimage(int n) {

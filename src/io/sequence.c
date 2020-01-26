@@ -475,7 +475,7 @@ int set_seq(const char *name){
 	adjust_refimage(seq->current);	// check or uncheck reference image checkbox
 	update_prepro_interface(seq->type == SEQ_REGULAR); // enable or not the preprobutton
 	update_reg_interface(FALSE);	// change the registration prereq message
-	update_stack_interface(FALSE);	// get stacking info and enable the Go button
+//	update_stack_interface(FALSE);	// get stacking info and enable the Go button, already done in set_layers_for_registration
 	adjust_reginfo();		// change registration displayed/editable values
 	update_gfit_histogram_if_needed();
 	adjust_sellabel();
