@@ -15,12 +15,6 @@ if [ "$#" = 0 -a "x$NOCONFIGURE" = "x" ]; then
         echo "" >&2
 fi
 
-set -x
-aclocal --install || exit 1
-intltoolize --force --copy --automake || exit 1
-autoreconf --verbose --force --install -Wno-portability || exit 1
-{ set +x; } 2>/dev/null
-
 # Manage librtprocess automatically, for the first autogen.
 # It will be cloned from git in deps/librtprocess if this directory does not already exist.
 # To update librtprocess, manual intervention, like 'git pull' then cmake and make, is required.
@@ -30,7 +24,15 @@ cd librtprocess || ( echo 'Failed to get librtprocess, please download it and co
 if [ ! -d build ] ; then
 	mkdir build && cd build &&
 	cmake -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON .. || exit 1
+	cd ..
 fi
+cd ../..
+
+set -x
+aclocal --install || exit 1
+intltoolize --force --copy --automake || exit 1
+autoreconf --verbose --force --install -Wno-portability || exit 1
+{ set +x; } 2>/dev/null
 
 cd $ORIGDIR
 
