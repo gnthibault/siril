@@ -304,7 +304,9 @@ void on_treeview1_cursor_changed(GtkTreeView *tree_view, gpointer user_data) {
 void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data) {
 	int active = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	if (active >= 0) {
+		g_signal_handlers_block_by_func((GtkTreeView*) user_data, on_treeview1_cursor_changed, NULL);
 		fill_sequence_list(&com.seq, active, FALSE);
+		g_signal_handlers_unblock_by_func((GtkTreeView*) user_data, on_treeview1_cursor_changed, NULL);
 	}
 }
 
@@ -320,6 +322,7 @@ void update_seqlist() {
 void fill_sequence_list(sequence *seq, int layer, gboolean as_idle) {
 	struct _seq_list *args;
 	if (seq == NULL || layer >= seq->nb_layers) return;
+
 	args = malloc(sizeof(struct _seq_list));
 	args->seq = seq;
 	args->layer = layer;
