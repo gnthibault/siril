@@ -8,9 +8,15 @@
 ////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <math.h>
 #include <assert.h>
 #include <stdint.h>
-#include <x86intrin.h>
+
+#ifdef __GNUC__
+#define INLINE __inline
+#else
+#define INLINE inline
+#endif
 
 const int MAXVAL = 0xffff;
 const float MAXVALF = MAXVAL;  // float version of MAXVAL
