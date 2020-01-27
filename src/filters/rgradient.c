@@ -88,10 +88,10 @@ gpointer rgradient_filter(gpointer p) {
 	retval = copyfits(args->fit, &imA, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 	if (retval) { retval = 1; goto end_rgradient; }
 	if (was_ushort) {
-		const long n = args->fit->naxes[0] * args->fit->naxes[1] * args->fit->naxes[2];
-		float *newbuf = ushort_buffer_to_float(args->fit->data, n);
+		const long n = imA.naxes[0] * imA.naxes[1] * imA.naxes[2];
+		float *newbuf = ushort_buffer_to_float(imA.data, n);
 		if (!newbuf) { retval = 1; goto end_rgradient; }
-		fit_replace_buffer(args->fit, newbuf, DATA_FLOAT);
+		fit_replace_buffer(&imA, newbuf, DATA_FLOAT);
 	}
 
 	retval = copyfits(&imA, &imB, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
