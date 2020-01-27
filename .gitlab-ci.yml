@@ -10,6 +10,7 @@ stages:
     GIT_DEPTH: "1"
     INSTALL_DIR: "_install"
     INSTALL_PREFIX: "${CI_PROJECT_DIR}/${INSTALL_DIR}"
+    GIT_SUBMODULE_STRATEGY: recursive
   artifacts:
     expire_in: 1 week
     when: always
@@ -46,8 +47,6 @@ stages:
         libswscale-dev
         libswresample-dev
         libcurl4-gnutls-dev
-    - git submodule sync --recursive
-    - git submodule update --init --recursive
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/pkgconfig:${INSTALL_PREFIX}/share/pkgconfig"
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/share/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"

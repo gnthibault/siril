@@ -105,14 +105,15 @@ gpointer rgradient_filter(gpointer p) {
     const double h2 = 2 * h;
     const double wd = w;
     const double hd = h;
-    for (int layer = 0; layer < args->fit->naxes[2]; layer++) {
+    int layer, y;
+    for (layer = 0; layer < args->fit->naxes[2]; layer++) {
 		float *gbuf = args->fit->fpdata[layer];
 		float *Abuf = imA.fpdata[layer];
 		float *Bbuf = imB.fpdata[layer];
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
-        for (int y = 0; y < args->fit->ry; y++) {
+        for (y = 0; y < args->fit->ry; y++) {
         	int i = y * args->fit->rx;
 #ifdef _OPENMP
 #pragma omp critical
@@ -121,7 +122,8 @@ gpointer rgradient_filter(gpointer p) {
 				set_progress_bar_data(NULL, cur_nb / total);
 				cur_nb++;
 			}
-			for (int x = 0; x < args->fit->rx; x++) {
+			int x;
+			for (x = 0; x < args->fit->rx; x++) {
 				double r, theta;
 				point delta;
 
