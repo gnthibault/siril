@@ -16,10 +16,8 @@ if [ "$#" = 0 -a "x$NOCONFIGURE" = "x" ]; then
 fi
 
 # Manage librtprocess automatically, for the first autogen.
-# It will be cloned from git in deps/librtprocess if this directory does not already exist.
-# To update librtprocess, manual intervention, like 'git pull' then cmake and make, is required.
+# To update librtprocess, manual intervention, like 'git submodule update' then cmake and make, is required.
 cd deps
-[ -d librtprocess ] || ( echo 'Cloning librtprocess...' && git clone 'https://github.com/CarVac/librtprocess.git' )
 cd librtprocess || ( echo 'Failed to get librtprocess, please download it and compile it yourself. Aborting.' && exit 1 )
 if [ ! -d build ] ; then
 	mkdir build && cd build &&
