@@ -16,7 +16,6 @@ int debayer(fits*, interpolation_method, gboolean);
 #ifdef __cplusplus
 }
 #endif
-int debayer_float(fits* fit, interpolation_method, gboolean);
 
 void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 		const rectangle *image_area, int *debayer_offset_x,
