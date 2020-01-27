@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 #include "core/proto.h"
+#include "gui/progress_and_log.h"
 #ifdef __cplusplus
 }
 #endif
@@ -63,6 +64,35 @@ static void pattern_to_cfarray2(sensor_pattern pattern, unsigned int cfarray[2][
 	}
 }
 
+/* This function retrieve the xtrans matrix from the FITS header */
+static int retrieveXTRANSPattern(char *bayer, unsigned int xtrans[6][6]) {
+	int x, y, i = 0;
+
+	if (strlen(bayer) != 36) {
+		siril_log_color_message(_("FITS header does not contain a proper XTRANS pattern, demosaicing cannot be done"), "red");
+		return 1;
+	}
+
+	for (x = 0; x < 6; x++) {
+		for (y = 0; y < 6; y++) {
+			switch (bayer[i]) {
+				default:	// shouldn't default be an error?
+				case 'R':
+					xtrans[x][y] = 0;
+					break;
+				case 'G':
+					xtrans[x][y] = 1;
+					break;
+				case 'B':
+					xtrans[x][y] = 2;
+					break;
+			}
+			i++;
+		}
+	}
+	return 0;
+}
+
 static bool progress(double p) {
 	// p is [0, 1] progress of the debayer process
 	return true;
@@ -70,9 +100,10 @@ static bool progress(double p) {
 
 int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa) {
 	rpError retval;
-	unsigned int i, cfarray[2][2];
+	unsigned int i, cfarray[2][2], xtrans_array[6][6];
 	long j, nbpixels = fit->naxes[0] * fit->naxes[1];
 	long n = nbpixels * fit->naxes[2];
+	float rgb_cam[3][4] = { 1.0f };	// our white balance: we don't care
 
 	/* prepare the buffer */
 	fprintf(stdout, "starting librtprocess debayer\n");
@@ -95,6 +126,8 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 	}
 	else if (fit->type == DATA_FLOAT) {
 		rawdata[0] = fit->fdata;
+		/* some demosaicing functions support [0, 1] range with a factor
+		 * given in argument, but not all so for now we'll do it here */
 		// TODO: vectorize!
 		for (j = 0; j < n; j++)
 			fit->fdata[j] = fit->fdata[j] * 65535.0f;
@@ -135,8 +168,10 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 			retval = vng4_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_BILINEAR:
+		case BAYER_NEARESTNEIGHBOR:
 			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
-
+			/* bayerfast: This demosaicer is not intended for final
+			 * output, only for fast preview. */
 			retval = bayerfast_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, progress, 1.0);
 			break;
 		default:
@@ -144,18 +179,37 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
 			retval = rcd_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, progress);
 			break;
-			/* 
-			   ahd_demosaic
-			   amaze_demosaic
-			   bayerfast_demosaic
-			   dcb_demosaic
-			   hphd_demosaic
-			   igv_demosaic
-			   lmmse_demosaic
-			   vng4_demosaic
-			   markesteijn_demosaic
-			   xtransfast_demosaic
-			   */
+
+		case BAYER_AHD:
+			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			retval = ahd_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, rgb_cam, progress);
+			break;
+		//case BAYER_SUPER_PIXEL:
+			// is it supported by librtprocess? our old code below:
+			// retval = super_pixel(buf, newbuf, *width, *height, pattern);
+		//case BAYER_AMAZE:
+			// retval = amaze_demosaic // need documentation about arguments
+		//case BAYER_DCB:
+			// retval = dcb_demosaic // need documentation about arguments
+		case BAYER_HPHD:
+			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			retval = hphd_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, progress);
+			break;
+		case BAYER_IGV:
+			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			retval = igv_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, progress);
+			break;
+		case BAYER_LMMSE:
+			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			retval = lmmse_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, progress, 1);
+			// need documentation about last argument, 'iterations'
+			break;
+		//case BAYER_MARKESTEIJN:
+			// retval = markesteijn_demosaic // need documentation about arguments
+		case XTRANS:
+			retrieveXTRANSPattern(fit->bayer_pattern, xtrans_array);
+			retval = xtransfast_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, xtrans_array, progress);
+			break;
 	}
 
 	fprintf(stdout, "saving ibrtprocess debayer\n");
