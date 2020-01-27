@@ -149,6 +149,31 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adj_deconv_corner">
+    <property name="lower">-0.5</property>
+    <property name="upper">0.5</property>
+    <property name="step_increment">0.10000000000000001</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_deconv_iterations">
+    <property name="upper">100</property>
+    <property name="value">20</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_deconv_radius">
+    <property name="lower">0.40000000000000002</property>
+    <property name="upper">1.1499999999999999</property>
+    <property name="value">1</property>
+    <property name="step_increment">0.10000000000000001</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_deconv_threshold">
+    <property name="upper">200</property>
+    <property name="value">20</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="adj_extract_w">
     <property name="lower">2</property>
     <property name="upper">9</property>
@@ -235,13 +260,6 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   <object class="GtkAdjustment" id="adj_shadows">
     <property name="upper">1</property>
     <property name="step_increment">0.01</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="adj_sigma_deconvolution">
-    <property name="lower">0.01</property>
-    <property name="upper">10</property>
-    <property name="value">2</property>
-    <property name="step_increment">0.5</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_w0">
@@ -7029,7 +7047,7 @@ However you may want to disable this option when building master frames of 8-bit
                 <property name="adjustment">adj_clahe_clip</property>
                 <property name="round_digits">2</property>
                 <property name="digits">2</property>
-                <property name="value_pos">right</property>
+                <property name="value_pos">bottom</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -8112,7 +8130,7 @@ If the parameters is null, so no filter is apply at all.</property>
                     <property name="adjustment">adj_median_amount</property>
                     <property name="round_digits">2</property>
                     <property name="digits">2</property>
-                    <property name="value_pos">right</property>
+                    <property name="value_pos">bottom</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -8311,7 +8329,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
                 <property name="adjustment">adjustment_scnr</property>
                 <property name="round_digits">2</property>
                 <property name="digits">2</property>
-                <property name="value_pos">right</property>
+                <property name="value_pos">bottom</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -8644,7 +8662,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
                 <property name="hexpand">True</property>
                 <property name="adjustment">adjustment_asinh</property>
                 <property name="round_digits">1</property>
-                <property name="value_pos">right</property>
+                <property name="value_pos">bottom</property>
                 <signal name="button-release-event" handler="on_scale_asinh_button_release_event" swapped="no"/>
                 <signal name="key-release-event" handler="on_scale_asinh_key_release_event" swapped="no"/>
               </object>
@@ -8674,7 +8692,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
                 <property name="adjustment">adj_black_point_asinh</property>
                 <property name="round_digits">5</property>
                 <property name="digits">5</property>
-                <property name="value_pos">right</property>
+                <property name="value_pos">bottom</property>
                 <signal name="button-release-event" handler="on_black_point_asinh_button_release_event" swapped="no"/>
                 <signal name="key-release-event" handler="on_black_point_asinh_key_release_event" swapped="no"/>
               </object>
@@ -8810,7 +8828,7 @@ This is useful when modulation parameter is different to 1 helping the whole pro
                             <property name="adjustment">adj_background_nb_samples</property>
                             <property name="round_digits">1</property>
                             <property name="digits">2</property>
-                            <property name="value_pos">right</property>
+                            <property name="value_pos">bottom</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -9192,7 +9210,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                 <property name="adjustment">adj_fixbanding_invsigma</property>
                 <property name="round_digits">2</property>
                 <property name="digits">2</property>
-                <property name="value_pos">right</property>
+                <property name="value_pos">bottom</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -9236,7 +9254,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                 <property name="adjustment">adj_fixbanding_amount</property>
                 <property name="round_digits">2</property>
                 <property name="digits">2</property>
-                <property name="value_pos">right</property>
+                <property name="value_pos">bottom</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -9928,7 +9946,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="adjustment">adjCosmeAmount</property>
                     <property name="round_digits">1</property>
                     <property name="digits">2</property>
-                    <property name="value_pos">right</property>
+                    <property name="value_pos">bottom</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -10181,6 +10199,21 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
+              <object class="GtkButton" id="deconvolution_reset">
+                <property name="label" translatable="yes">Reset</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Reset</property>
+                <signal name="clicked" handler="on_deconvolution_reset_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="deconvolution_cancel">
                 <property name="label">gtk-close</property>
                 <property name="visible">True</property>
@@ -10229,58 +10262,19 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="column_spacing">5</property>
             <property name="row_homogeneous">True</property>
             <child>
-              <object class="GtkLabel" id="label171">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Sigma:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScale" id="scale_deconvolution">
+              <object class="GtkScale" id="scale_deconv_corner">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">This represents the size of the gaussian kernel which is applied. The higher the value is, the stronger the effect is.</property>
+                <property name="tooltip_text" translatable="yes">Corner radius boost is a value which is added to gaussian sigma for the tiles in the corners of an image.</property>
                 <property name="hexpand">True</property>
-                <property name="adjustment">adj_sigma_deconvolution</property>
-                <property name="round_digits">2</property>
+                <property name="adjustment">adj_deconv_corner</property>
+                <property name="round_digits">1</property>
                 <property name="digits">2</property>
-                <property name="value_pos">right</property>
+                <property name="value_pos">bottom</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="combo_deconvolution">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="hexpand">True</property>
-                <property name="active">0</property>
-                <items>
-                  <item>Lucy-Richardson</item>
-                </items>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label174">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Algorithm:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
+                <property name="top_attach">3</property>
               </packing>
             </child>
             <child>
@@ -10288,29 +10282,126 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">start</property>
+                <property name="label" translatable="yes">Contrast threshold:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Radius:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Corner radius boost:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
                 <property name="label" translatable="yes">Iterations:</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
+                <property name="top_attach">4</property>
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="spin_iterations">
+              <object class="GtkScale" id="scale_deconv_threshold">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Number of iterations.</property>
-                <property name="hexpand">True</property>
-                <property name="width_chars">6</property>
-                <property name="text">0</property>
-                <property name="input_purpose">number</property>
-                <property name="adjustment">adj_iter_deconvolution</property>
-                <property name="numeric">True</property>
-                <property name="value">10</property>
+                <property name="tooltip_text" translatable="yes">Contrast threshold generates an internal mask based on microcontrast in the image which then is used to blend the deconvoluted with the convoluted image.</property>
+                <property name="adjustment">adj_deconv_threshold</property>
+                <property name="round_digits">1</property>
+                <property name="digits">0</property>
+                <property name="value_pos">bottom</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="scale_deconv_radius">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">This is the size of the kernel to be applied.</property>
+                <property name="adjustment">adj_deconv_radius</property>
+                <property name="round_digits">1</property>
+                <property name="digits">2</property>
+                <property name="value_pos">bottom</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale" id="scale_deconv_iterations">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">Number of iterations to apply.</property>
+                <property name="adjustment">adj_deconv_iterations</property>
+                <property name="round_digits">1</property>
+                <property name="digits">0</property>
+                <property name="value_pos">bottom</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="toggle_deconv_auto">
+                <property name="label" translatable="yes">Auto limit iterations</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="tooltip_text" translatable="yes">Auto limit iterations is a stopping criteria which is applied per tile to reduce artifacts.</property>
+                <property name="halign">start</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">5</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="toggle_deconv_trheshold">
+                <property name="label" translatable="yes">Auto value</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="tooltip_text" translatable="yes">The contrast threshold value is evaluated automatically.</property>
+                <property name="halign">start</property>
+                <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_toggle_deconv_trheshold_toggled" object="scale_deconv_threshold" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
                 <property name="top_attach">1</property>
+                <property name="width">2</property>
               </packing>
             </child>
           </object>
@@ -11938,7 +12029,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="adjustment">adj_rad_rgradient</property>
                 <property name="round_digits">1</property>
                 <property name="digits">2</property>
-                <property name="value_pos">right</property>
+                <property name="value_pos">bottom</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -11966,7 +12057,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="adjustment">adj_rot_rgradient</property>
                 <property name="round_digits">2</property>
                 <property name="digits">2</property>
-                <property name="value_pos">right</property>
+                <property name="value_pos">bottom</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -12310,7 +12401,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="adjustment">adjustment_satu</property>
                 <property name="round_digits">2</property>
                 <property name="digits">2</property>
-                <property name="value_pos">right</property>
+                <property name="value_pos">bottom</property>
                 <signal name="button-release-event" handler="on_scale_satu_button_release_event" swapped="no"/>
                 <signal name="key-release-event" handler="on_scale_satu_key_release_event" swapped="no"/>
               </object>
@@ -14286,7 +14377,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                     <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="can_focus">False</property>
-                    <property name="row_spacing">10</property>
+                    <property name="row_spacing">5</property>
                     <property name="column_spacing">5</property>
                     <property name="row_homogeneous">True</property>
                     <child>
@@ -14297,7 +14388,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                         <property name="adjustment">adj_w0</property>
                         <property name="round_digits">1</property>
                         <property name="digits">2</property>
-                        <property name="value_pos">right</property>
+                        <property name="value_pos">bottom</property>
                         <signal name="button-release-event" handler="on_scale_w0_button_release_event" swapped="no"/>
                         <signal name="key-release-event" handler="on_scale_w0_key_release_event" swapped="no"/>
                       </object>
@@ -14314,7 +14405,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                         <property name="adjustment">adj_w1</property>
                         <property name="round_digits">1</property>
                         <property name="digits">2</property>
-                        <property name="value_pos">right</property>
+                        <property name="value_pos">bottom</property>
                         <signal name="button-release-event" handler="on_scale_w1_button_release_event" swapped="no"/>
                         <signal name="key-release-event" handler="on_scale_w1_key_release_event" swapped="no"/>
                       </object>
@@ -14331,7 +14422,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                         <property name="adjustment">adj_w2</property>
                         <property name="round_digits">1</property>
                         <property name="digits">2</property>
-                        <property name="value_pos">right</property>
+                        <property name="value_pos">bottom</property>
                         <signal name="button-release-event" handler="on_scale_w2_button_release_event" swapped="no"/>
                         <signal name="key-release-event" handler="on_scale_w2_key_release_event" swapped="no"/>
                       </object>
@@ -14348,7 +14439,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                         <property name="adjustment">adj_w3</property>
                         <property name="round_digits">1</property>
                         <property name="digits">2</property>
-                        <property name="value_pos">right</property>
+                        <property name="value_pos">bottom</property>
                         <signal name="button-release-event" handler="on_scale_w3_button_release_event" swapped="no"/>
                         <signal name="key-release-event" handler="on_scale_w3_key_release_event" swapped="no"/>
                       </object>
@@ -14365,7 +14456,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                         <property name="adjustment">adj_w4</property>
                         <property name="round_digits">1</property>
                         <property name="digits">2</property>
-                        <property name="value_pos">right</property>
+                        <property name="value_pos">bottom</property>
                         <signal name="button-release-event" handler="on_scale_w4_button_release_event" swapped="no"/>
                         <signal name="key-release-event" handler="on_scale_w4_key_release_event" swapped="no"/>
                       </object>
@@ -14382,7 +14473,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                         <property name="adjustment">adj_w5</property>
                         <property name="round_digits">1</property>
                         <property name="digits">2</property>
-                        <property name="value_pos">right</property>
+                        <property name="value_pos">bottom</property>
                         <signal name="button-release-event" handler="on_scale_w5_button_release_event" swapped="no"/>
                         <signal name="key-release-event" handler="on_scale_w5_key_release_event" swapped="no"/>
                       </object>
@@ -14796,7 +14887,7 @@ This step should be run before any attempt of color calibration.</property>
                                 <property name="adjustment">adjustment_scale_r</property>
                                 <property name="round_digits">1</property>
                                 <property name="digits">3</property>
-                                <property name="value_pos">right</property>
+                                <property name="value_pos">bottom</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -14811,7 +14902,7 @@ This step should be run before any attempt of color calibration.</property>
                                 <property name="adjustment">adjustment_scale_g</property>
                                 <property name="round_digits">1</property>
                                 <property name="digits">3</property>
-                                <property name="value_pos">right</property>
+                                <property name="value_pos">bottom</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -14826,7 +14917,7 @@ This step should be run before any attempt of color calibration.</property>
                                 <property name="adjustment">adjustment_scale_b</property>
                                 <property name="round_digits">1</property>
                                 <property name="digits">3</property>
-                                <property name="value_pos">right</property>
+                                <property name="value_pos">bottom</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>

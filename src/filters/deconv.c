@@ -33,14 +33,14 @@
 
 #include "deconv.h"
 
-gpointer LRdeconv(gpointer p) {
-	struct RL_data *args = (struct RL_data *) p;
+gpointer RTdeconv(gpointer p) {
+	struct deconv_data *args = (struct deconv_data *) p;
 	struct timeval t_start, t_end;
 
-	siril_log_color_message(_("Lucy-Richardson deconvolution: processing...\n"), "red");
+	siril_log_color_message(_("Deconvolution: processing...\n"), "red");
 	gettimeofday(&t_start, NULL);
 
-	cvLucyRichardson(args->fit, args->sigma, args->iter);
+	deconvolution(args);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
@@ -61,22 +61,54 @@ void on_deconvolution_cancel_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("deconvolution_dialog");
 }
 
+void on_deconvolution_reset_clicked(GtkButton *button, gpointer user_data) {
+	GtkRange *threshold, *sigma, *corner_radius, *iterations;
+	GtkToggleButton *auto_limit, *auto_threshold;
+
+	threshold = GTK_RANGE(lookup_widget("scale_deconv_threshold"));
+	sigma = GTK_RANGE(lookup_widget("scale_deconv_radius"));
+	corner_radius = GTK_RANGE(lookup_widget("scale_deconv_corner"));
+	iterations = GTK_RANGE(lookup_widget("scale_deconv_iterations"));
+	auto_limit = GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_auto"));
+	auto_threshold = GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_trheshold"));
+
+	gtk_range_set_value(threshold, 20);
+	gtk_range_set_value(sigma, 1.0);
+	gtk_range_set_value(corner_radius, 0.0);
+	gtk_range_set_value(iterations, 20);
+	gtk_toggle_button_set_active(auto_limit, TRUE);
+	gtk_toggle_button_set_active(auto_threshold, FALSE);
+}
+
+void on_toggle_deconv_trheshold_toggled(GtkToggleButton *button, gpointer user_data) {
+	gtk_widget_set_sensitive((GtkWidget *)user_data, !gtk_toggle_button_get_active(button));
+}
+
 void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
-	GtkSpinButton *iter;
-	GtkRange *sigma;
+	GtkRange *threshold, *sigma, *corner_radius, *iterations;
+	GtkToggleButton *auto_limit, *auto_threshold;
 
-	iter = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spin_iterations"));
-	sigma = GTK_RANGE(gtk_builder_get_object(builder, "scale_deconvolution"));
+	threshold = GTK_RANGE(lookup_widget("scale_deconv_threshold"));
+	sigma = GTK_RANGE(lookup_widget("scale_deconv_radius"));
+	corner_radius = GTK_RANGE(lookup_widget("scale_deconv_corner"));
+	iterations = GTK_RANGE(lookup_widget("scale_deconv_iterations"));
+	auto_limit = GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_auto"));
+	auto_threshold = GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_trheshold"));
 
-	struct RL_data *args = malloc(sizeof(struct RL_data));
+	struct deconv_data *args = malloc(sizeof(struct deconv_data));
 
 	set_cursor_waiting(TRUE);
 
 	args->fit = &gfit;
+	args->clip = args->fit->maxi;
+	args->contrast_threshold = (size_t)gtk_range_get_value(threshold);
 	args->sigma = gtk_range_get_value(sigma);
-	args->iter = gtk_spin_button_get_value(iter);
+	args->corner_radius = gtk_range_get_value(corner_radius);
+	args->iterations = (size_t)gtk_range_get_value(iterations);
+	args->auto_limit = gtk_toggle_button_get_active(auto_limit);
+	args->auto_contrast_threshold = gtk_toggle_button_get_active(auto_threshold);
 
-	undo_save_state(&gfit, "Processing: Deconvolution (iter=%d, sig=%.3f)", args->iter,
-			args->sigma);
-	start_in_new_thread(LRdeconv, args);
+	undo_save_state(&gfit, "Processing: Deconv. (iter=%d, sig=%.3f)", args->iterations, args->sigma);
+
+	start_in_new_thread(RTdeconv, args);
 }
