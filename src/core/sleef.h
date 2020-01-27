@@ -31,8 +31,11 @@
 
 #define RT_INFINITY __builtin_infl()
 #define RT_NAN __builtin_nanl("")
+
 #define RT_INFINITY_F __builtin_inff()
 #define RT_NAN_F __builtin_nanf("")
+
+
 
 #define PI4_A .7853981554508209228515625
 #define PI4_B .794662735614792836713604629039764404296875e-8

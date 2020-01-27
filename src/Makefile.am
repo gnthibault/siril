@@ -185,7 +185,11 @@ siril_SOURCES = \
 	stacking/stacking.h \
 	stacking/sum.c \
 	stacking/sum.h \
-	stacking/upscaling.c
+	stacking/upscaling.c \
+	rt/deconvolution.cc \
+	rt/rt_algo.cc \
+	rt/gauss.cc \
+	rt/boxblur.cc
 
 if PLATFORM_WIN32
 libdbghelp = -ldbghelp
