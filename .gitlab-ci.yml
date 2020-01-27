@@ -60,10 +60,10 @@ siril-debian/testing-autotools:
   extends: .siril-debian/testing-base
   script:
     - mkdir _build
-    - cp -r deps _build/
     - cd _build
     - ../autogen.sh
         --prefix="${INSTALL_PREFIX}"
+    - cp -r deps _build/
     - make -j "$(nproc)"
     # - make check
 
