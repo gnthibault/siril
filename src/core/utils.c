@@ -589,7 +589,7 @@ void expand_home_in_filename(char *filename, int size) {
 			filename[j + homelen - 1] = filename[j];
 		// the -1 above is tricky: it's the removal of the ~ character from
 		// the original string
-		strncpy(filename, homepath, homelen);
+		strcpy(filename, homepath);
 	}
 }
 
@@ -807,7 +807,7 @@ double encodeJD(dateTime dt) {
  */
 gchar* siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
 	int width, height;
-	int n_channel;
+	int n_channel = 0;
 
 	GdkPixbufFormat *pixbuf_file_info = gdk_pixbuf_get_file_info(filename,
 			&width, &height);

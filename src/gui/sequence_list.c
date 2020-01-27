@@ -39,6 +39,7 @@ static const char *bg_colour[] = { "WhiteSmoke", "#1B1B1B" };
 static const char *ref_bg_colour[] = { "Beige", "#4A4A39" };
 
 struct _seq_list {
+	GtkTreeView *tview;
 	sequence *seq;
 	int layer;
 };
@@ -274,8 +275,7 @@ static void sequence_setselect_all(gboolean include_all) {
 
 /**** Callbacks *****/
 
-void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
-		GtkTreeViewColumn *column, gpointer user_data) {
+void on_treeview1_cursor_changed(GtkTreeView *tree_view, gpointer user_data) {
 	GtkTreeModel *tree_model;
 	GtkTreeSelection *selection;
 	GtkTreeIter iter;
@@ -288,7 +288,7 @@ void on_treeview1_row_activated(GtkTreeView *tree_view, GtkTreePath *path,
 	if (g_list_length(list) == 1) {
 		gint idx;
 		GValue value = G_VALUE_INIT;
-		gtk_tree_model_get_iter(tree_model, &iter, path);
+		gtk_tree_model_get_iter(tree_model, &iter, (GtkTreePath *)list->data);
 
 		gtk_tree_model_get_value(tree_model, &iter, COLUMN_INDEX, &value);
 		idx = g_value_get_int(&value) - 1;
@@ -321,9 +321,14 @@ void update_seqlist() {
 void fill_sequence_list(sequence *seq, int layer, gboolean as_idle) {
 	struct _seq_list *args;
 	if (seq == NULL || layer >= seq->nb_layers) return;
+
 	args = malloc(sizeof(struct _seq_list));
 	args->seq = seq;
 	args->layer = layer;
+	args->tview = GTK_TREE_VIEW(lookup_widget("treeview1"));
+
+	g_signal_handlers_block_by_func(args->tview, on_treeview1_cursor_changed, NULL);
+
 	if (as_idle)
 		gdk_threads_add_idle(fill_sequence_list_idle, args);
 	else fill_sequence_list_idle(args);
@@ -338,6 +343,8 @@ static gboolean fill_sequence_list_idle(gpointer p) {
 			add_image_to_sequence_list(args->seq, i, args->layer);
 		}
 	}
+	g_signal_handlers_unblock_by_func(args->tview, on_treeview1_cursor_changed, NULL);
+
 	free(args);
 	return FALSE;
 }
@@ -462,9 +469,9 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 /****************** modification of the list store (tree model) ******************/
 
 void sequence_list_change_selection_index(int index) {
-	sequence_list_change_selection(
-			gtk_tree_path_to_string(gtk_tree_path_new_from_indices(index, -1)),
-			com.seq.imgparam[index].incl);
+	GtkTreePath *path = gtk_tree_path_new_from_indices(index, -1);
+	sequence_list_change_selection(	gtk_tree_path_to_string(path), com.seq.imgparam[index].incl);
+	gtk_tree_path_free(path);
 }
 
 void sequence_list_change_current() {
@@ -507,8 +514,10 @@ void sequence_list_change_reference() {
 }
 
 void clear_sequence_list() {
+	g_signal_handlers_block_by_func(GTK_TREE_VIEW(lookup_widget("treeview1")), on_treeview1_cursor_changed, NULL);
 	get_list_store();
 	gtk_list_store_clear(list_store);
+	g_signal_handlers_unblock_by_func(GTK_TREE_VIEW(lookup_widget("treeview1")), on_treeview1_cursor_changed, NULL);
 }
 
 void adjust_refimage(int n) {

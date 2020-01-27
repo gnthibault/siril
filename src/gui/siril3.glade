@@ -13261,6 +13261,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="icon_name">emblem-ok-symbolic</property>
                   </object>
                 </child>
+                <accelerator key="space" signal="clicked"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -13331,9 +13332,9 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                 <property name="show_expanders">False</property>
                 <property name="enable_grid_lines">horizontal</property>
                 <property name="activate_on_single_click">True</property>
-                <signal name="row-activated" handler="on_treeview1_row_activated" swapped="no"/>
+                <signal name="cursor-changed" handler="on_treeview1_cursor_changed" swapped="no"/>
                 <child internal-child="selection">
-                  <object class="GtkTreeSelection">
+                  <object class="GtkTreeSelection" id="tree_selection_seqlist">
                     <property name="mode">multiple</property>
                   </object>
                 </child>

@@ -801,7 +801,7 @@ gpointer convert_thread_worker(gpointer p) {
 				}
 			}
 			/* We want to copy header informations from the first SER file */
-			if (ser_frames == 0) {
+			if (ser_file && ser_frames == 0) {
 				ser_file->lu_id = tmp_ser.lu_id;
 				ser_file->date = tmp_ser.date;
 				ser_file->date_utc = tmp_ser.date_utc;
