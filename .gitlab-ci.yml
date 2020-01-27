@@ -18,6 +18,8 @@ stages:
     - _build
     #- "${INSTALL_DIR}"
   before_script:
+    - git submodule sync --recursive
+    - git submodule update --init --recursive
     - apt-get update
     - apt-get install -y --no-install-recommends
         build-essential
