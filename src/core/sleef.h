@@ -8,7 +8,6 @@
 ////////////////////////////////////////////////////////////////
 #pragma once
 
-#include <math.h>
 #include <assert.h>
 #include <stdint.h>
 
@@ -47,7 +46,7 @@
 #define R_LN2 1.442695040888963407359924681001892137426645954152985934135449406931
 #define pow_F(a,b) (xexpf(b*xlogf(a)))
 
-__inline int64_t doubleToRawLongBits(double d) {
+__inline __attribute__((always_inline)) int64_t doubleToRawLongBits(double d) {
     union {
         double f;
         int64_t i;
@@ -56,7 +55,7 @@ __inline int64_t doubleToRawLongBits(double d) {
     return tmp.i;
 }
 
-__inline double longBitsToDouble(int64_t i) {
+__inline __attribute__((always_inline)) double longBitsToDouble(int64_t i) {
     union {
         double f;
         int64_t i;
@@ -65,24 +64,24 @@ __inline double longBitsToDouble(int64_t i) {
     return tmp.f;
 }
 
-__inline double xfabs(double x) {
+__inline __attribute__((always_inline)) double xfabs(double x) {
     return longBitsToDouble(0x7fffffffffffffffLL & doubleToRawLongBits(x));
 }
 
-__inline double mulsign(double x, double y) {
+__inline __attribute__((always_inline)) double mulsign(double x, double y) {
     return longBitsToDouble(doubleToRawLongBits(x) ^ (doubleToRawLongBits(y) & (1LL << 63)));
 }
 
-__inline double sign(double d) { return mulsign(1, d); }
-__inline double mla(double x, double y, double z) { return x * y + z; }
-__inline double xrint(double x) { return x < 0 ? (int)(x - 0.5) : (int)(x + 0.5); }
+__inline __attribute__((always_inline)) double sign(double d) { return mulsign(1, d); }
+__inline __attribute__((always_inline)) double mla(double x, double y, double z) { return x * y + z; }
+__inline __attribute__((always_inline)) double xrint(double x) { return x < 0 ? (int)(x - 0.5) : (int)(x + 0.5); }
 
-__inline int xisnan(double x) { return x != x; }
-__inline int xisinf(double x) { return x == RT_INFINITY || x == -RT_INFINITY; }
-__inline int xisminf(double x) { return x == -RT_INFINITY; }
-__inline int xispinf(double x) { return x == RT_INFINITY; }
+__inline __attribute__((always_inline)) int xisnan(double x) { return x != x; }
+__inline __attribute__((always_inline)) int xisinf(double x) { return x == RT_INFINITY || x == -RT_INFINITY; }
+__inline __attribute__((always_inline)) int xisminf(double x) { return x == -RT_INFINITY; }
+__inline __attribute__((always_inline)) int xispinf(double x) { return x == RT_INFINITY; }
 
-__inline double ldexpk(double x, int q) {
+__inline __attribute__((always_inline)) double ldexpk(double x, int q) {
     double u;
     int m;
     m = q >> 31;
@@ -96,9 +95,9 @@ __inline double ldexpk(double x, int q) {
     return x * u;
 }
 
-__inline double xldexp(double x, int q) { return ldexpk(x, q); }
+__inline __attribute__((always_inline)) double xldexp(double x, int q) { return ldexpk(x, q); }
 
-__inline int ilogbp1(double d) {
+__inline __attribute__((always_inline)) int ilogbp1(double d) {
     int m = d < 4.9090934652977266E-91;
     d = m ? 2.037035976334486E90 * d : d;
     int q = (doubleToRawLongBits(d) >> 52) & 0x7ff;
@@ -106,14 +105,14 @@ __inline int ilogbp1(double d) {
     return q;
 }
 
-__inline int xilogb(double d) {
+__inline __attribute__((always_inline)) int xilogb(double d) {
     int e = ilogbp1(xfabs(d)) - 1;
     e = d == 0 ? (-2147483647 - 1) : e;
     e = d == RT_INFINITY || d == -RT_INFINITY ? 2147483647 : e;
     return e;
 }
 
-__inline double upper(double d) {
+__inline __attribute__((always_inline)) double upper(double d) {
     return longBitsToDouble(doubleToRawLongBits(d) & 0xfffffffff8000000LL);
 }
 
@@ -125,13 +124,13 @@ typedef struct {
     float x, y;
 } float2;
 
-__inline double2 dd(double h, double l) {
+__inline __attribute__((always_inline)) double2 dd(double h, double l) {
     double2 ret;
     ret.x = h; ret.y = l;
     return ret;
 }
 
-__inline double2 normalize_d(double2 t) {
+__inline __attribute__((always_inline)) double2 normalize_d(double2 t) {
     double2 s;
 
     s.x = t.x + t.y;
@@ -140,7 +139,7 @@ __inline double2 normalize_d(double2 t) {
     return s;
 }
 
-__inline double2 scale_d(double2 d, double s) {
+__inline __attribute__((always_inline)) double2 scale_d(double2 d, double s) {
     double2 r;
 
     r.x = d.x * s;
@@ -149,7 +148,7 @@ __inline double2 scale_d(double2 d, double s) {
     return r;
 }
 
-__inline double2 add2_ss(double x, double y) {
+__inline __attribute__((always_inline)) double2 add2_ss(double x, double y) {
     double2 r;
 
     r.x = x + y;
@@ -159,7 +158,7 @@ __inline double2 add2_ss(double x, double y) {
     return r;
 }
 
-__inline double2 add_ds(double2 x, double y) {
+__inline __attribute__((always_inline)) double2 add_ds(double2 x, double y) {
     // |x| >= |y|
 
     double2 r;
@@ -172,7 +171,7 @@ __inline double2 add_ds(double2 x, double y) {
     return r;
 }
 
-__inline double2 add2_ds(double2 x, double y) {
+__inline __attribute__((always_inline)) double2 add2_ds(double2 x, double y) {
     // |x| >= |y|
 
     double2 r;
@@ -185,7 +184,7 @@ __inline double2 add2_ds(double2 x, double y) {
     return r;
 }
 
-__inline double2 add_sd(double x, double2 y) {
+__inline __attribute__((always_inline)) double2 add_sd(double x, double2 y) {
     // |x| >= |y|
 
     double2 r;
@@ -198,7 +197,7 @@ __inline double2 add_sd(double x, double2 y) {
     return r;
 }
 
-__inline double2 add_dd(double2 x, double2 y) {
+__inline __attribute__((always_inline)) double2 add_dd(double2 x, double2 y) {
     // |x| >= |y|
 
     double2 r;
@@ -211,7 +210,7 @@ __inline double2 add_dd(double2 x, double2 y) {
     return r;
 }
 
-__inline double2 add2_dd(double2 x, double2 y) {
+__inline __attribute__((always_inline)) double2 add2_dd(double2 x, double2 y) {
     double2 r;
 
     r.x  = x.x + y.x;
@@ -222,7 +221,7 @@ __inline double2 add2_dd(double2 x, double2 y) {
     return r;
 }
 
-__inline double2 div_dd(double2 n, double2 d) {
+__inline __attribute__((always_inline)) double2 div_dd(double2 n, double2 d) {
     double t = 1.0 / d.x;
     double dh  = upper(d.x), dl  = d.x - dh;
     double th  = upper(t  ), tl  = t   - th;
@@ -240,7 +239,7 @@ __inline double2 div_dd(double2 n, double2 d) {
     return q;
 }
 
-__inline double2 mul_ss(double x, double y) {
+__inline __attribute__((always_inline)) double2 mul_ss(double x, double y) {
     double xh = upper(x), xl = x - xh;
     double yh = upper(y), yl = y - yh;
     double2 r;
@@ -251,7 +250,7 @@ __inline double2 mul_ss(double x, double y) {
     return r;
 }
 
-__inline double2 mul_ds(double2 x, double y) {
+__inline __attribute__((always_inline)) double2 mul_ds(double2 x, double y) {
     double xh = upper(x.x), xl = x.x - xh;
     double yh = upper(y  ), yl = y   - yh;
     double2 r;
@@ -262,7 +261,7 @@ __inline double2 mul_ds(double2 x, double y) {
     return r;
 }
 
-__inline double2 mul_dd(double2 x, double2 y) {
+__inline __attribute__((always_inline)) double2 mul_dd(double2 x, double2 y) {
     double xh = upper(x.x), xl = x.x - xh;
     double yh = upper(y.x), yl = y.x - yh;
     double2 r;
@@ -273,7 +272,7 @@ __inline double2 mul_dd(double2 x, double2 y) {
     return r;
 }
 
-__inline double2 squ_d(double2 x) {
+__inline __attribute__((always_inline)) double2 squ_d(double2 x) {
     double xh = upper(x.x), xl = x.x - xh;
     double2 r;
 
@@ -283,7 +282,7 @@ __inline double2 squ_d(double2 x) {
     return r;
 }
 
-__inline double2 rec_s(double d) {
+__inline __attribute__((always_inline)) double2 rec_s(double d) {
     double t = 1.0 / d;
     double dh = upper(d), dl = d - dh;
     double th = upper(t), tl = t - th;
@@ -295,12 +294,12 @@ __inline double2 rec_s(double d) {
     return q;
 }
 
-__inline double2 sqrt_d(double2 d) {
+__inline __attribute__((always_inline)) double2 sqrt_d(double2 d) {
     double t = sqrt(d.x + d.y);
     return scale_d(mul_dd(add2_dd(d, mul_ss(t, t)), rec_s(t)), 0.5);
 }
 
-__inline double atan2k(double y, double x) {
+__inline __attribute__((always_inline)) double atan2k(double y, double x) {
     double s, t, u;
     int q = 0;
 
@@ -336,7 +335,7 @@ __inline double atan2k(double y, double x) {
     return t;
 }
 
-__inline double xatan2(double y, double x) {
+__inline __attribute__((always_inline)) double xatan2(double y, double x) {
     double r = atan2k(xfabs(y), x);
 
     r = mulsign(r, x);
@@ -347,15 +346,15 @@ __inline double xatan2(double y, double x) {
     return xisnan(x) || xisnan(y) ? RT_NAN : mulsign(r, y);
 }
 
-__inline double xasin(double d) {
+__inline __attribute__((always_inline)) double xasin(double d) {
     return mulsign(atan2k(xfabs(d), sqrt((1+d)*(1-d))), d);
 }
 
-__inline double xacos(double d) {
+__inline __attribute__((always_inline)) double xacos(double d) {
     return mulsign(atan2k(sqrt((1+d)*(1-d)), xfabs(d)), d) + (d < 0 ? RT_PI : 0);
 }
 
-__inline double xatan(double s) {
+__inline __attribute__((always_inline)) double xatan(double s) {
     double t, u;
     int q = 0;
 
@@ -392,7 +391,7 @@ __inline double xatan(double s) {
     return t;
 }
 
-__inline double xsin(double d) {
+__inline __attribute__((always_inline)) double xsin(double d) {
     int q;
     double u, s;
 
@@ -421,7 +420,7 @@ __inline double xsin(double d) {
     return u;
 }
 
-__inline double xcos(double d) {
+__inline __attribute__((always_inline)) double xcos(double d) {
     int q;
     double u, s;
 
@@ -450,7 +449,7 @@ __inline double xcos(double d) {
     return u;
 }
 
-__inline double2 xsincos(double d) {
+__inline __attribute__((always_inline)) double2 xsincos(double d) {
     int q;
     double u, s, t;
     double2 r;
@@ -496,7 +495,7 @@ __inline double2 xsincos(double d) {
     return r;
 }
 
-__inline double xtan(double d) {
+__inline __attribute__((always_inline)) double xtan(double d) {
     int q;
     double u, s, x;
 
@@ -535,7 +534,7 @@ __inline double xtan(double d) {
     return u;
 }
 
-__inline double xlog(double d) {
+__inline __attribute__((always_inline)) double xlog(double d) {
     double x, x2, t, m;
     int e;
 
@@ -563,7 +562,7 @@ __inline double xlog(double d) {
     return x;
 }
 
-__inline double xexp(double d) {
+__inline __attribute__((always_inline)) double xexp(double d) {
     int q = (int)xrint(d * R_LN2);
     double s, u;
 
@@ -590,7 +589,7 @@ __inline double xexp(double d) {
     return u;
 }
 
-__inline double2 logk(double d) {
+__inline __attribute__((always_inline)) double2 logk(double d) {
     double2 x, x2;
     double m, t;
     int e;
@@ -614,7 +613,7 @@ __inline double2 logk(double d) {
             add2_dd(scale_d(x, 2), mul_ds(mul_dd(x2, x), t)));
 }
 
-__inline double expk(double2 d) {
+__inline __attribute__((always_inline)) double expk(double2 d) {
     int q = (int)rint((d.x + d.y) * R_LN2);
     double2 s, t;
     double u;
@@ -641,7 +640,7 @@ __inline double expk(double2 d) {
     return ldexpk(t.x + t.y, q);
 }
 
-__inline double xpow(double x, double y) {
+__inline __attribute__((always_inline)) double xpow(double x, double y) {
     int yisint = (int)y == y;
     int yisodd = (1 & (int)y) != 0 && yisint;
 
@@ -659,7 +658,7 @@ __inline double xpow(double x, double y) {
     return result;
 }
 
-__inline double2 expk2(double2 d) {
+__inline __attribute__((always_inline)) double2 expk2(double2 d) {
     int q = (int)rint((d.x + d.y) * R_LN2);
     double2 s, t;
     double u;
@@ -686,7 +685,7 @@ __inline double2 expk2(double2 d) {
     return dd(ldexpk(t.x, q), ldexpk(t.y, q));
 }
 
-__inline double xsinh(double x) {
+__inline __attribute__((always_inline)) double xsinh(double x) {
     double y = xfabs(x);
     double2 d = expk2(dd(y, 0));
     d = add2_dd(d, div_dd(dd(-1, 0), d));
@@ -699,7 +698,7 @@ __inline double xsinh(double x) {
     return y;
 }
 
-__inline double xcosh(double x) {
+__inline __attribute__((always_inline)) double xcosh(double x) {
     double2 d = expk2(dd(x, 0));
     d = add2_dd(d, div_dd(dd(1, 0), d));
     double y = (d.x + d.y) * 0.5;
@@ -710,7 +709,7 @@ __inline double xcosh(double x) {
     return y;
 }
 
-__inline double xtanh(double x) {
+__inline __attribute__((always_inline)) double xtanh(double x) {
     double y = xfabs(x);
     double2 d = expk2(dd(y, 0));
     double2 e = div_dd(dd(1, 0), d);
@@ -724,7 +723,7 @@ __inline double xtanh(double x) {
     return y;
 }
 
-__inline double2 logk2(double2 d) {
+__inline __attribute__((always_inline)) double2 logk2(double2 d) {
     double2 x, x2, m;
     double t;
     int e;
@@ -749,7 +748,7 @@ __inline double2 logk2(double2 d) {
             add2_dd(scale_d(x, 2), mul_ds(mul_dd(x2, x), t)));
 }
 
-__inline double xasinh(double x) {
+__inline __attribute__((always_inline)) double xasinh(double x) {
     double y = xfabs(x);
     double2 d = logk2(add2_ds(sqrt_d(add2_ds(mul_ss(y, y),  1)), y));
     y = d.x + d.y;
@@ -761,7 +760,7 @@ __inline double xasinh(double x) {
     return y;
 }
 
-__inline double xacosh(double x) {
+__inline __attribute__((always_inline)) double xacosh(double x) {
     double2 d = logk2(add2_ds(sqrt_d(add2_ds(mul_ss(x, x), -1)), x));
     double y = d.x + d.y;
 
@@ -773,7 +772,7 @@ __inline double xacosh(double x) {
     return y;
 }
 
-__inline double xatanh(double x) {
+__inline __attribute__((always_inline)) double xatanh(double x) {
     double y = xfabs(x);
     double2 d = logk2(div_dd(add2_ss(1, y), add2_ss(1, -y)));
     y = y > 1.0 ? RT_NAN : (y == 1.0 ? RT_INFINITY : (d.x + d.y) * 0.5);
@@ -787,7 +786,7 @@ __inline double xatanh(double x) {
 
 //
 
-__inline double xfma(double x, double y, double z) {
+__inline __attribute__((always_inline)) double xfma(double x, double y, double z) {
     union {
         double f;
         long long int i;
@@ -813,7 +812,7 @@ __inline double xfma(double x, double y, double z) {
     return h2 + l2;
 }
 
-__inline double xsqrt(double d) { // max error : 0.5 ulp
+__inline __attribute__((always_inline)) double xsqrt(double d) { // max error : 0.5 ulp
     double q = 1;
 
     if (d < 8.636168555094445E-78) {
@@ -834,7 +833,7 @@ __inline double xsqrt(double d) { // max error : 0.5 ulp
     return d == RT_INFINITY ? RT_INFINITY : x * q;
 }
 
-__inline double xcbrt(double d) { // max error : 2 ulps
+__inline __attribute__((always_inline)) double xcbrt(double d) { // max error : 2 ulps
     double x, y, q = 1.0;
     int e, r;
 
@@ -862,21 +861,21 @@ __inline double xcbrt(double d) { // max error : 2 ulps
     return y;
 }
 
-__inline double xexp2(double a) {
+__inline __attribute__((always_inline)) double xexp2(double a) {
     double u = expk(mul_ds(dd(0.69314718055994528623, 2.3190468138462995584e-17), a));
     if (xispinf(a)) u = RT_INFINITY;
     if (xisminf(a)) u = 0;
     return u;
 }
 
-__inline double xexp10(double a) {
+__inline __attribute__((always_inline)) double xexp10(double a) {
     double u = expk(mul_ds(dd(2.3025850929940459011, -2.1707562233822493508e-16), a));
     if (xispinf(a)) u = RT_INFINITY;
     if (xisminf(a)) u = 0;
     return u;
 }
 
-__inline double xexpm1(double a) {
+__inline __attribute__((always_inline)) double xexpm1(double a) {
     double2 d = add2_ds(expk2(dd(a, 0)), -1.0);
     double x = d.x + d.y;
     if (xispinf(a)) x = RT_INFINITY;
@@ -884,7 +883,7 @@ __inline double xexpm1(double a) {
     return x;
 }
 
-__inline double xlog10(double a) {
+__inline __attribute__((always_inline)) double xlog10(double a) {
     double2 d = mul_dd(logk(a), dd(0.43429448190325176116, 6.6494347733425473126e-17));
     double x = d.x + d.y;
 
@@ -895,7 +894,7 @@ __inline double xlog10(double a) {
     return x;
 }
 
-__inline double xlog1p(double a) {
+__inline __attribute__((always_inline)) double xlog1p(double a) {
     double2 d = logk2(add2_ss(a, 1));
     double x = d.x + d.y;
 
@@ -919,15 +918,15 @@ __inline double xlog1p(double a) {
 #define R_LN2f 1.442695040888963407359924681001892137426645954152985934135449406931f
 
 #ifdef __SSE299__
-__inline int xrintf(float x) {
+__inline __attribute__((always_inline)) int xrintf(float x) {
     return _mm_cvt_ss2si(_mm_set_ss(x));
 }
 #else
-__inline int xrintf(float x) {
+__inline __attribute__((always_inline)) int xrintf(float x) {
     return x + (x < 0 ? -0.5f : 0.5f);
 }
 #endif
-__inline int32_t floatToRawIntBits(float d) {
+__inline __attribute__((always_inline)) int32_t floatToRawIntBits(float d) {
     union {
         float f;
         int32_t i;
@@ -936,7 +935,7 @@ __inline int32_t floatToRawIntBits(float d) {
     return tmp.i;
 }
 
-__inline float intBitsToFloat(int32_t i) {
+__inline __attribute__((always_inline)) float intBitsToFloat(int32_t i) {
     union {
         float f;
         int32_t i;
@@ -945,23 +944,23 @@ __inline float intBitsToFloat(int32_t i) {
     return tmp.f;
 }
 
-__inline float xfabsf(float x) {
+__inline __attribute__((always_inline)) float xfabsf(float x) {
     return intBitsToFloat(0x7fffffffL & floatToRawIntBits(x));
 }
 
-__inline float mulsignf(float x, float y) {
+__inline __attribute__((always_inline)) float mulsignf(float x, float y) {
     return intBitsToFloat(floatToRawIntBits(x) ^ (floatToRawIntBits(y) & (1 << 31)));
 }
 
-__inline float signf(float d) { return copysign(1.f, d); }
-__inline float mlaf(float x, float y, float z) { return x * y + z; }
+__inline __attribute__((always_inline)) float signf(float d) { return copysign(1.f, d); }
+__inline __attribute__((always_inline)) float mlaf(float x, float y, float z) { return x * y + z; }
 
-__inline int xisnanf(float x) { return x != x; }
-__inline int xisinff(float x) { return x == RT_INFINITY_F || x == -RT_INFINITY_F; }
-__inline int xisminff(float x) { return x == -RT_INFINITY_F; }
-__inline int xispinff(float x) { return x == RT_INFINITY_F; }
+__inline __attribute__((always_inline)) int xisnanf(float x) { return x != x; }
+__inline __attribute__((always_inline)) int xisinff(float x) { return x == RT_INFINITY_F || x == -RT_INFINITY_F; }
+__inline __attribute__((always_inline)) int xisminff(float x) { return x == -RT_INFINITY_F; }
+__inline __attribute__((always_inline)) int xispinff(float x) { return x == RT_INFINITY_F; }
 
-__inline int ilogbp1f(float d) {
+__inline __attribute__((always_inline)) int ilogbp1f(float d) {
     int m = d < 5.421010862427522E-20f;
     d = m ? 1.8446744073709552E19f * d : d;
     int q = (floatToRawIntBits(d) >> 23) & 0xff;
@@ -969,7 +968,7 @@ __inline int ilogbp1f(float d) {
     return q;
 }
 
-__inline float ldexpkf(float x, int q) {
+__inline __attribute__((always_inline)) float ldexpkf(float x, int q) {
     float u;
     int m;
     m = q >> 31;
@@ -982,7 +981,7 @@ __inline float ldexpkf(float x, int q) {
     return x * u;
 }
 
-__inline float xcbrtf(float d) { // max error : 2 ulps
+__inline __attribute__((always_inline)) float xcbrtf(float d) { // max error : 2 ulps
     float x, y, q = 1.0f;
     int e, r;
 
@@ -1009,7 +1008,7 @@ __inline float xcbrtf(float d) { // max error : 2 ulps
     return y;
 }
 
-__inline float xsinf(float d) {
+__inline __attribute__((always_inline)) float xsinf(float d) {
     int q;
     float u, s;
 
@@ -1034,7 +1033,7 @@ __inline float xsinf(float d) {
     return u;
 }
 
-__inline float xcosf(float d) {
+__inline __attribute__((always_inline)) float xcosf(float d) {
 #ifdef __SSE299__
     // faster than scalar version
     return xcosf(_mm_set_ss(d))[0];
@@ -1064,7 +1063,7 @@ __inline float xcosf(float d) {
 #endif
 }
 
-__inline float2 xsincosf(float d) {
+__inline __attribute__((always_inline)) float2 xsincosf(float d) {
 #ifdef __SSE299__
     // faster than scalar version
     vfloat2 res = xsincosf(_mm_set_ss(d));
@@ -1112,7 +1111,7 @@ __inline float2 xsincosf(float d) {
 #endif
 }
 
-__inline float xtanf(float d) {
+__inline __attribute__((always_inline)) float xtanf(float d) {
     int q;
     float u, s, x;
 
@@ -1145,7 +1144,7 @@ __inline float xtanf(float d) {
     return u;
 }
 
-__inline float xatanf(float s) {
+__inline __attribute__((always_inline)) float xatanf(float s) {
     float t, u;
     int q = 0;
 
@@ -1171,7 +1170,7 @@ __inline float xatanf(float s) {
     return t;
 }
 
-__inline float atan2kf(float y, float x) {
+__inline __attribute__((always_inline)) float atan2kf(float y, float x) {
     float s, t, u;
     float q = 0.f;
 
@@ -1195,7 +1194,7 @@ __inline float atan2kf(float y, float x) {
     return mlaf(q,(float)(RT_PI_F_2),t);
 }
 
-__inline float xatan2f(float y, float x) {
+__inline __attribute__((always_inline)) float xatan2f(float y, float x) {
     float r = atan2kf(xfabsf(y), x);
 
     r = mulsignf(r, x);
@@ -1206,15 +1205,15 @@ __inline float xatan2f(float y, float x) {
     return xisnanf(x) || xisnanf(y) ? RT_NAN_F : mulsignf(r, y);
 }
 
-__inline float xasinf(float d) {
+__inline __attribute__((always_inline)) float xasinf(float d) {
     return mulsignf(atan2kf(fabsf(d), sqrtf((1.0f+d)*(1.0f-d))), d);
 }
 
-__inline float xacosf(float d) {
+__inline __attribute__((always_inline)) float xacosf(float d) {
     return mulsignf(atan2kf(sqrtf((1.0f+d)*(1.0f-d)), fabsf(d)), d) + (d < 0 ? (float)RT_PI : 0.0f);
 }
 
-__inline float xlogf(float d) {
+__inline __attribute__((always_inline)) float xlogf(float d) {
     float x, x2, t, m;
     int e;
 
@@ -1239,7 +1238,7 @@ __inline float xlogf(float d) {
     return x;
 }
 
-__inline float xlogf1(float d) { // does xlogf(vmaxf(d, 1.f)) but faster
+__inline __attribute__((always_inline)) float xlogf1(float d) { // does xlogf(vmaxf(d, 1.f)) but faster
     float x, x2, t, m;
     int e;
 
@@ -1263,7 +1262,7 @@ __inline float xlogf1(float d) { // does xlogf(vmaxf(d, 1.f)) but faster
     return x;
 }
 
-__inline float xexpf(float d) {
+__inline __attribute__((always_inline)) float xexpf(float d) {
     if(d<=-104.0f) return 0.0f;
 
     int q = xrintf(d * R_LN2f);
@@ -1283,7 +1282,7 @@ __inline float xexpf(float d) {
 
 }
 
-__inline float xmul2f(float d) {
+__inline __attribute__((always_inline)) float xmul2f(float d) {
     union {
         float floatval;
         int intval;
@@ -1295,7 +1294,7 @@ __inline float xmul2f(float d) {
     return uflint.floatval;
 }
 
-__inline float xdiv2f(float d) {
+__inline __attribute__((always_inline)) float xdiv2f(float d) {
     union {
         float floatval;
         int intval;
@@ -1307,7 +1306,7 @@ __inline float xdiv2f(float d) {
     return uflint.floatval;
 }
 
-__inline float xdivf( float d, int n){
+__inline __attribute__((always_inline)) float xdivf( float d, int n){
     union {
         float floatval;
         int intval;

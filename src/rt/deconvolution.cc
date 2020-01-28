@@ -32,10 +32,11 @@
 #undef max
 #undef SQR
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC push_options
 #pragma GCC optimize ("O3")
-#endif // __GNUC__
+#endif
+
 namespace {
 
 inline float computeXYZ2LabY(float f, const LUTf& cachefy)
@@ -836,6 +837,6 @@ BENCHFUN
     return GINT_TO_POINTER(0);
 }
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC pop_options
-#endif // __GNUC__
+#endif
