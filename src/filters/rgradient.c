@@ -93,53 +93,53 @@ gpointer rgradient_filter(gpointer p) {
         WORD *Abuf = imA.pdata[layer];
         WORD *Bbuf = imB.pdata[layer];
 #ifdef _OPENMP
-#pragma omp parallel for
+        #pragma omp parallel for
 #endif
         for (int y = 0; y < args->fit->ry; y++) {
-        	int i = y * args->fit->rx;
+            int i = layer * args->fit->ry * args->fit->rx + y * args->fit->rx;
 #ifdef _OPENMP
-#pragma omp critical
+            #pragma omp critical
 #endif
-			{
-				set_progress_bar_data(NULL, cur_nb / total);
-				cur_nb++;
-			}
-			for (int x = 0; x < args->fit->rx; x++) {
-				double r, theta;
-				point delta;
+            {
+            set_progress_bar_data(NULL, cur_nb / total);
+            cur_nb++;
+            }
+            for (int x = 0; x < args->fit->rx; x++) {
+                double r, theta;
+                point delta;
 
-				to_polar(x, y, center, &r, &theta);
+                to_polar(x, y, center, &r, &theta);
 
-				// Positive differential
-				to_cartesian(r - args->dR, theta + dAlpha, center, &delta);
+                // Positive differential
+                to_cartesian(r - args->dR, theta + dAlpha, center, &delta);
 
-				if (delta.x < 0)
-					delta.x = fabs(delta.x);
-				else if (delta.x > wd)
-					delta.x = w2 - delta.x;
+                if (delta.x < 0)
+                    delta.x = fabs(delta.x);
+                else if (delta.x > wd)
+                    delta.x = w2 - delta.x;
 
-				if (delta.y < 0)
-					delta.y = fabs(delta.y);
-				else if (delta.y > hd)
-					delta.y = h2 - delta.y;
+                if (delta.y < 0)
+                    delta.y = fabs(delta.y);
+                else if (delta.y > hd)
+                    delta.y = h2 - delta.y;
 
-				gbuf[i] -= Abuf[(int) delta.x + (int) delta.y * args->fit->rx];
+                gbuf[i] -= Abuf[(int)delta.x + (int)delta.y * args->fit->rx];
 
-				// Negative differential
-				to_cartesian(r - args->dR, theta - dAlpha, center, &delta);
-				if (delta.x < 0)
-					delta.x = fabs(delta.x);
-				else if (delta.x > wd)
-					delta.x = w2 - delta.x;
-				if (delta.y < 0)
-					delta.y = fabs(delta.y);
-				else if (delta.y > hd)
-					delta.y = h2 - delta.y;
-				gbuf[i] -= Bbuf[(int) delta.x + (int) delta.y * args->fit->rx];
-				i++;
-			}
-		}
-	}
+                // Negative differential
+                to_cartesian(r - args->dR, theta - dAlpha, center, &delta);
+                if (delta.x < 0)
+                    delta.x = fabs(delta.x);
+                else if (delta.x > wd)
+                    delta.x = w2 - delta.x;
+                if (delta.y < 0)
+                    delta.y = fabs(delta.y);
+                else if (delta.y > hd)
+                    delta.y = h2 - delta.y;
+                gbuf[i] -= Bbuf[(int)delta.x + (int)delta.y * args->fit->rx];
+                i++;
+            }
+        }
+    }
 
     fits_flip_top_to_bottom(args->fit);
     set_progress_bar_data(_("Rotational gradient complete."), PROGRESS_DONE);
