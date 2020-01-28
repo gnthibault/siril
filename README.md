@@ -1,7 +1,7 @@
 SIRIL
 =====
 
-> Copyright &copy; 2012-2019, Team free-astro
+> Copyright &copy; 2012-2020, Team free-astro
 > <<https://free-astro.org/index.php/Siril>>
 > <<https://www.siril.org>>
 
@@ -14,7 +14,7 @@ ratio of an image from multiple captures, as required in astronomy.
 SIRIL can align automatically or manually, stack and enhance pictures from various file formats,
 even image sequence files (films and SER files).
 
-Contributors are welcome. Programming language is C.
+Contributors are welcome. Programming language is C, with parts in C++.
 Main development is done with most recent versions of libraries.
 
 Requirements
@@ -152,7 +152,7 @@ Useful links
 ------------
  * [Project Homepage](https://www.siril.org)
  * [Documentation](https://free-astro.org/siril_doc-en)
- * [Forum](https://www.forum-siril.linux-astro.fr/index.php)
+ * [Forum](https://discuss.pixls.us/c/software/siril)
  * [Releases and Downloads](https://free-astro.org/index.php?title=Siril:releases)
  * [Report a bug](https://gitlab.com/free-astro/siril/issues)
  * [Supported commands](https://free-astro.org/index.php?title=Siril:Commands)
