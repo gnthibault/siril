@@ -110,5 +110,17 @@ void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
 
 	undo_save_state(&gfit, "Processing: Deconv. (iter=%d, sig=%.3f)", args->iterations, args->sigma);
 
+	if (args->fit->type == DATA_USHORT) {
+		const long n = args->fit->naxes[0] * args->fit->naxes[1] * args->fit->naxes[2];
+		float *newbuf = ushort_buffer_to_float(args->fit->data, n);
+		if (!newbuf) {
+			return;
+		}
+		fit_replace_buffer(args->fit, newbuf, DATA_FLOAT);
+		set_precision_switch();
+	} else {
+		args->clip = args->fit->maxi * USHRT_MAX_DOUBLE;
+	}
+
 	start_in_new_thread(RTdeconv, args);
 }

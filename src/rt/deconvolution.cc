@@ -784,9 +784,12 @@ BENCHFUN
     for (int i = 0; i < H; ++i) {
         int fitn = i * W;
         for (int j = 0; j < W; ++j) {
-            redVals[i][j] = args->fit->pdata[RLAYER][fitn];
-            greenVals[i][j] = args->fit->pdata[GLAYER][fitn];
-            blueVals[i][j] = args->fit->pdata[BLAYER][fitn];
+            redVals[i][j] = args->fit->fpdata[RLAYER][fitn] > 0.f ?
+            		args->fit->fpdata[RLAYER][fitn] * USHRT_MAX_SINGLE : 0.f;
+            greenVals[i][j] = args->fit->fpdata[GLAYER][fitn] > 0.f ?
+            		args->fit->fpdata[GLAYER][fitn] * USHRT_MAX_SINGLE : 0.f;
+            blueVals[i][j] = args->fit->fpdata[BLAYER][fitn] > 0.f ?
+            		args->fit->fpdata[BLAYER][fitn]* USHRT_MAX_SINGLE : 0.f;
             ++fitn;
         }
     }
@@ -825,10 +828,10 @@ BENCHFUN
         int fitn = i * W;
         for (int j = 0; j < W; ++j) {
             const float factor = YNew[i][j] / std::max(YOld[i][j], 0.00001f);
-            args->fit->pdata[RLAYER][fitn] = rtengine::CLIP<float>(redVals[i][j] * factor);
+            args->fit->fpdata[RLAYER][fitn] = (redVals[i][j] * factor) / USHRT_MAX_SINGLE;
             if (channels == 3) {
-                args->fit->pdata[GLAYER][fitn] = rtengine::CLIP<float>(greenVals[i][j] * factor);
-                args->fit->pdata[BLAYER][fitn] = rtengine::CLIP<float>(blueVals[i][j] * factor);
+                args->fit->fpdata[GLAYER][fitn] = (greenVals[i][j] * factor) / USHRT_MAX_SINGLE;
+                args->fit->fpdata[BLAYER][fitn] = (blueVals[i][j] * factor) / USHRT_MAX_SINGLE;
             }
             ++fitn;
         }

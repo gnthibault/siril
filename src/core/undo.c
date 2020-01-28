@@ -218,12 +218,14 @@ static int undo_get_data(fits *fit, historic hist) {
 		if (gfit.type != DATA_USHORT) {
 			long ndata = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 			fit_replace_buffer(fit, float_buffer_to_ushort(fit->fdata, ndata), DATA_USHORT);
+			set_precision_switch();
 		}
 		return undo_get_data_ushort(fit, hist);
 	} else if (hist.type == DATA_FLOAT) {
 		if (gfit.type != DATA_FLOAT) {
 			long ndata = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 			fit_replace_buffer(fit, ushort_buffer_to_float(fit->data, ndata), DATA_FLOAT);
+			set_precision_switch();
 		}
 		return undo_get_data_float(fit, hist);
 	}
