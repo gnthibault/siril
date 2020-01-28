@@ -77,22 +77,22 @@ static int soper_ushort_to_float(fits *a, double scalar, image_operator oper) {
 	switch (oper) {
 		case OPER_ADD:
 			for (i = 0; i < n; ++i) {
-				result[i] = (float)((double)data[i] + scalar);
+				result[i] = double_ushort_to_float_range((double)data[i] + scalar);
 			}
 			break;
 		case OPER_SUB:
 			for (i = 0; i < n; ++i) {
-				result[i] = (float)((double)data[i] - scalar);
+				result[i] = double_ushort_to_float_range((double)data[i] - scalar);
 			}
 			break;
 		case OPER_MUL:
 			for (i = 0; i < n; ++i) {
-				result[i] = (float)((double)data[i] * scalar);
+				result[i] = double_ushort_to_float_range((double)data[i] * scalar);
 			}
 			break;
 		case OPER_DIV:
 			for (i = 0; i < n; ++i) {
-				result[i] = (float)((double)data[i] / scalar);
+				result[i] = double_ushort_to_float_range((double)data[i] / scalar);
 			}
 			break;
 	}
@@ -134,7 +134,9 @@ static int soper_float(fits *a, double scalar, image_operator oper) {
 
 /* equivalent to (map simple_operation a), with simple_operation being
  * (lambda (pixel) (oper pixel scalar))
- * oper is a for addition, s for substraction (i for difference) and so on. */
+ * If oper is ADD or SUB, it will be applied on the original type of the image,
+ * in case conversion to 32 bits is required.
+ */
 int soper(fits *a, double scalar, image_operator oper, gboolean conv_to_float) {
 	if (a->type == DATA_USHORT) {
 		if (conv_to_float)

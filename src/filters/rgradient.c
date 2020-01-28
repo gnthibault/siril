@@ -45,7 +45,7 @@ static void to_polar(int x, int y, point center, double *r, double *theta) {
 }
 
 static void to_cartesian(double r, double theta, point center, point *p) {
-    const double2 sincosval = xsincos(theta);
+	const double2 sincosval = xsincos(theta);
 	p->x = center.x + r * sincosval.y;
 	p->y = center.y + r * sincosval.x;
 }
@@ -103,20 +103,16 @@ gpointer rgradient_filter(gpointer p) {
 	if (retval) { retval = 1; goto end_rgradient; }
 	// args->fit will be float data after soper
 
-    const double w2 = 2 * w;
-    const double h2 = 2 * h;
-    const double wd = w;
-    const double hd = h;
-    int layer, y;
-    for (layer = 0; layer < args->fit->naxes[2]; layer++) {
+	int layer, y;
+	for (layer = 0; layer < args->fit->naxes[2]; layer++) {
 		float *gbuf = args->fit->fpdata[layer];
 		float *Abuf = imA.fpdata[layer];
 		float *Bbuf = imB.fpdata[layer];
 #ifdef _OPENMP
-#pragma omp parallel for
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-        for (y = 0; y < args->fit->ry; y++) {
-        	int i = y * args->fit->rx;
+		for (y = 0; y < args->fit->ry; y++) {
+			int i = y * args->fit->rx;
 #ifdef _OPENMP
 #pragma omp critical
 #endif
@@ -159,8 +155,9 @@ gpointer rgradient_filter(gpointer p) {
 		}
 	}
 
-	end_rgradient: fits_flip_top_to_bottom(args->fit);
-    set_progress_bar_data(_("Rotational gradient complete."), PROGRESS_DONE);
+end_rgradient:
+	fits_flip_top_to_bottom(args->fit);
+	set_progress_bar_data(_("Rotational gradient complete."), PROGRESS_DONE);
 
 	clearfits(&imA);
 	clearfits(&imB);
@@ -173,8 +170,8 @@ gpointer rgradient_filter(gpointer p) {
 	update_gfit_histogram_if_needed();
 	siril_add_idle(end_rgradient_filter, args);
 
-    gettimeofday(&t_end, NULL);
-    show_time(t_start, t_end);
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
 
 	return GINT_TO_POINTER(retval);
 }
