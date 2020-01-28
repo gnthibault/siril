@@ -341,8 +341,8 @@ int process_rl(int nb) {
 		return 1;
 	}
 
-	if (sigma < 0.4 || sigma > 1.15) {
-		siril_log_message(_("Sigma must be between [0.4, 1.50]\n"));
+	if (sigma < 0.4 || sigma > 2.0) {
+		siril_log_message(_("Sigma must be between [0.4, 2.0]\n"));
 		return 1;
 	}
 

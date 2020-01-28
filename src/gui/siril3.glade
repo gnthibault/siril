@@ -163,7 +163,7 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   </object>
   <object class="GtkAdjustment" id="adj_deconv_radius">
     <property name="lower">0.40000000000000002</property>
-    <property name="upper">1.5</property>
+    <property name="upper">2</property>
     <property name="value">1</property>
     <property name="step_increment">0.10000000000000001</property>
     <property name="page_increment">10</property>
@@ -10395,6 +10395,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="receives_default">False</property>
                 <property name="tooltip_text" translatable="yes">The contrast threshold value is evaluated automatically.</property>
                 <property name="halign">start</property>
+                <property name="active">True</property>
                 <property name="draw_indicator">True</property>
                 <signal name="toggled" handler="on_toggle_deconv_trheshold_toggled" object="scale_deconv_threshold" swapped="no"/>
               </object>
