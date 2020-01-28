@@ -2124,11 +2124,12 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 		min = lo;
 		max = hi;
 	}
-	else if (dtype <= FLOAT_IMG) {
+	else if (dtype <= FLOAT_IMG) {	// means float or double image
 		WORD wlo, whi;
-		try_read_float_lo_hi(fp, &wlo, &whi);
-		min = (float)wlo;
-		max = (float)whi;
+		if (!try_read_float_lo_hi(fp, &wlo, &whi)) {
+			min = (float)wlo;
+			max = (float)whi;
+		}
 	}
 
 	wd = max - min;

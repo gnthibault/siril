@@ -786,11 +786,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 	long npixels;
 	int retval;
 	switch (interpolation) {
-		case BAYER_BILINEAR:
-		case BAYER_NEARESTNEIGHBOR:
-		case BAYER_VNG:
-		case BAYER_AHD:
-		case XTRANS:
+		default:
 			npixels = (*width) * (*height);
 			break;
 		case BAYER_SUPER_PIXEL:
@@ -798,7 +794,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 			break;
 	}
 	newbuf = calloc(3, npixels * sizeof(WORD));
-	if (newbuf == NULL) {
+	if (!newbuf) {
 		PRINT_ALLOC_ERR;
 		return NULL;
 	}
@@ -823,7 +819,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		*height = *height / 2 + *height % 2;
 		break;
 	case XTRANS:
-		if (xtrans == NULL)
+		if (!xtrans)
 			return NULL;
 		retval = fast_xtrans_interpolate(buf, newbuf, *width, *height, xtrans);
 		break;
@@ -835,6 +831,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 	return newbuf;
 }
 
+#if 0
 /* This function retrieve the xtrans matrix from the FITS header
  */
 static int retrieveXTRANSPattern(char *bayer, int xtrans[6][6]) {
@@ -865,7 +862,6 @@ static int retrieveXTRANSPattern(char *bayer, int xtrans[6][6]) {
 	return 0;
 }
 
-#if 0
 int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa) {
 	int i, j;
 	int width = fit->rx;

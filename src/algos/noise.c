@@ -53,7 +53,7 @@ static gboolean end_noise(gpointer p) {
 gpointer noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
 	int chan;
-	double norm;
+	double norm = 1.0;
 	args->retval = 0;
 
 	if (args->verbose) {
