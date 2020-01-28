@@ -112,6 +112,28 @@ void RGB2Y(const float* R, const float* G, const float* B, float* Y1, float * Y2
     }
 }
 
+void compute9x9kernel(float sigma, float kernel[9][9]) {
+
+    const double temp = -2.f * rtengine::SQR(sigma);
+    float sum = 0.f;
+    for (int i = -4; i <= 4; ++i) {
+        for (int j = -4; j <= 4; ++j) {
+            if((rtengine::SQR(i) + rtengine::SQR(j)) <= rtengine::SQR(3.0 * 1.5)) {
+                kernel[i + 4][j + 4] = std::exp((rtengine::SQR(i) + rtengine::SQR(j)) / temp);
+                sum += kernel[i + 4][j + 4];
+            } else {
+                kernel[i + 4][j + 4] = 0.f;
+            }
+        }
+    }
+
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            kernel[i][j] /= sum;
+        }
+    }
+}
+
 void compute7x7kernel(float sigma, float kernel[7][7]) {
 
     const double temp = -2.f * rtengine::SQR(sigma);
@@ -228,6 +250,50 @@ void gauss5x5div (float** RESTRICT src, float** RESTRICT dst, float** RESTRICT d
     }
 }
 
+void gauss9x9div(float** RESTRICT src, float** RESTRICT dst, float** RESTRICT divBuffer, const int tileSize, const float kernel[9][9])
+{
+
+    const float c42 = kernel[0][2];
+    const float c41 = kernel[0][3];
+    const float c40 = kernel[0][4];
+    const float c33 = kernel[1][1];
+    const float c32 = kernel[1][2];
+    const float c31 = kernel[1][3];
+    const float c30 = kernel[1][4];
+    const float c22 = kernel[2][2];
+    const float c21 = kernel[2][3];
+    const float c20 = kernel[2][4];
+    const float c11 = kernel[3][3];
+    const float c10 = kernel[3][4];
+    const float c00 = kernel[4][4];
+
+    for (int i = 4; i < tileSize - 4; ++i) {
+        // I tried hand written SSE code but gcc vectorizes better
+#if defined(__clang__)
+        #pragma clang loop vectorize(assume_safety)
+#elif defined(__GNUC__)
+        #pragma GCC ivdep
+#endif
+        for (int j = 4; j < tileSize - 4; ++j) {
+            const float val = c42 * ((src[i - 4][j - 2] + src[i - 4][j + 2]) + (src[i - 2][j - 4] + src[i - 2][j + 4]) + (src[i + 2][j - 4] + src[i + 2][j + 4]) + (src[i + 4][j - 2] + src[i + 4][j + 2])) +
+                              c41 * ((src[i - 4][j - 1] + src[i - 4][j + 1]) + (src[i - 1][j - 4] + src[i - 1][j + 4]) + (src[i + 1][j - 4] + src[i + 1][j + 4]) + (src[i + 4][j - 1] + src[i + 4][j + 1])) +
+                              c40 * (src[i - 4][j] + src[i][j - 4] + src[i][j + 4] + src[i + 4][j]) +
+                              c33 * (src[i - 3][j - 3] + src[i - 3][j + 3] + src[i + 3][j - 3] + src[i + 3][j + 3]) +
+                              c32 * ((src[i - 3][j - 2] + src[i - 3][j + 2]) + (src[i - 2][j - 3] + src[i - 2][j + 3]) + (src[i + 2][j - 3] + src[i + 2][j + 3]) + (src[i + 3][j - 2] + src[i + 3][j + 2])) +
+                              c31 * ((src[i - 3][j - 1] + src[i - 3][j + 1]) + (src[i - 1][j - 3] + src[i - 1][j + 3]) + (src[i + 1][j - 3] + src[i + 1][j + 3]) + (src[i + 3][j - 1] + src[i + 3][j + 1])) +
+                              c30 * (src[i - 3][j] + src[i][j - 3] + src[i][j + 3] + src[i + 3][j]) +
+                              c22 * (src[i - 2][j - 2] + src[i - 2][j + 2] + src[i + 2][j - 2] + src[i + 2][j + 2]) +
+                              c21 * ((src[i - 2][j - 1] + src[i - 2][j + 1]) + (src[i - 1][j - 2] + src[i - 1][j + 2]) + (src[i + 1][j - 2] + src[i + 1][j + 2]) + (src[i + 2][j - 1] + src[i + 2][j + 1])) +
+                              c20 * (src[i - 2][j] + src[i][j - 2] + src[i][j + 2] + src[i + 2][j]) +
+                              c11 * (src[i - 1][j - 1] + src[i - 1][j + 1] + src[i + 1][j - 1] + src[i + 1][j + 1]) +
+                              c10 * (src[i - 1][j] + src[i][j - 1] + src[i][j + 1] + src[i + 1][j]) +
+                              c00 * src[i][j];
+
+            dst[i][j] = divBuffer[i][j] / std::max(val, 0.00001f);
+        }
+    }
+}
+
 void gauss7x7div(float** RESTRICT src, float** RESTRICT dst, float** RESTRICT divBuffer, const int tileSize, const float kernel[7][7])
 {
 
@@ -307,6 +373,49 @@ void gauss5x5mult (float** RESTRICT src, float** RESTRICT dst, const int tileSiz
                               c10 * (src[i - 1][j] + src[i][j - 1] + src[i][j + 1] + src[i + 1][j]) +
                               c00 * src[i][j];
 
+            dst[i][j] *= val;
+        }
+    }
+}
+
+void gauss9x9mult(float** RESTRICT src, float** RESTRICT dst, const int tileSize, const float kernel[9][9])
+{
+
+    const float c42 = kernel[0][2];
+    const float c41 = kernel[0][3];
+    const float c40 = kernel[0][4];
+    const float c33 = kernel[1][1];
+    const float c32 = kernel[1][2];
+    const float c31 = kernel[1][3];
+    const float c30 = kernel[1][4];
+    const float c22 = kernel[2][2];
+    const float c21 = kernel[2][3];
+    const float c20 = kernel[2][4];
+    const float c11 = kernel[3][3];
+    const float c10 = kernel[3][4];
+    const float c00 = kernel[4][4];
+
+    for (int i = 4; i < tileSize - 4; ++i) {
+        // I tried hand written SSE code but gcc vectorizes better
+#if defined(__clang__)
+        #pragma clang loop vectorize(assume_safety)
+#elif defined(__GNUC__)
+        #pragma GCC ivdep
+#endif
+        for (int j = 4; j < tileSize - 4; ++j) {
+            const float val = c42 * ((src[i - 4][j - 2] + src[i - 4][j + 2]) + (src[i - 2][j - 4] + src[i - 2][j + 4]) + (src[i + 2][j - 4] + src[i + 2][j + 4]) + (src[i + 4][j - 2] + src[i + 4][j + 2])) +
+                              c41 * ((src[i - 4][j - 1] + src[i - 4][j + 1]) + (src[i - 1][j - 4] + src[i - 1][j + 4]) + (src[i + 1][j - 4] + src[i + 1][j + 4]) + (src[i + 4][j - 1] + src[i + 4][j + 1])) +
+                              c40 * (src[i - 4][j] + src[i][j - 4] + src[i][j + 4] + src[i + 4][j]) +
+                              c33 * (src[i - 3][j - 3] + src[i - 3][j + 3] + src[i + 3][j - 3] + src[i + 3][j + 3]) +
+                              c32 * ((src[i - 3][j - 2] + src[i - 3][j + 2]) + (src[i - 2][j - 3] + src[i - 2][j + 3]) + (src[i + 2][j - 3] + src[i + 2][j + 3]) + (src[i + 3][j - 2] + src[i + 3][j + 2])) +
+                              c31 * ((src[i - 3][j - 1] + src[i - 3][j + 1]) + (src[i - 1][j - 3] + src[i - 1][j + 3]) + (src[i + 1][j - 3] + src[i + 1][j + 3]) + (src[i + 3][j - 1] + src[i + 3][j + 1])) +
+                              c30 * (src[i - 3][j] + src[i][j - 3] + src[i][j + 3] + src[i + 3][j]) +
+                              c22 * (src[i - 2][j - 2] + src[i - 2][j + 2] + src[i + 2][j - 2] + src[i + 2][j + 2]) +
+                              c21 * ((src[i - 2][j - 1] + src[i - 2][j + 1]) + (src[i - 1][j - 2] + src[i - 1][j + 2]) + (src[i + 1][j - 2] + src[i + 1][j + 2]) + (src[i + 2][j - 1] + src[i + 2][j + 1])) +
+                              c20 * (src[i - 2][j] + src[i][j - 2] + src[i][j + 2] + src[i + 2][j]) +
+                              c11 * (src[i - 1][j - 1] + src[i - 1][j + 1] + src[i + 1][j - 1] + src[i + 1][j + 1]) +
+                              c10 * (src[i - 1][j] + src[i][j - 1] + src[i][j + 1] + src[i + 1][j]) +
+                              c00 * src[i][j];
             dst[i][j] *= val;
         }
     }
@@ -425,8 +534,10 @@ bool checkForStop(float** tmpIThr, float** iterCheck, int fullTileSize, int bord
 void CaptureDeconvSharpening (float** luminance, const float* const * oldLuminance, const float * const * blend, int W, int H, double sigma, double sigmaCornerOffset, int iterations, bool checkIterStop)
 {
 BENCHFUN
+    const bool is7x7 = (sigma <= 1.15 && sigmaCornerOffset == 0.0);
     const bool is5x5 = (sigma <= 0.84 && sigmaCornerOffset == 0.0);
     const bool is3x3 = (sigma < 0.6 && sigmaCornerOffset == 0.0);
+    float kernel9[9][9];
     float kernel7[7][7];
     float kernel5[5][5];
     float kernel3[3][3];
@@ -434,14 +545,16 @@ BENCHFUN
         compute3x3kernel(sigma, kernel3);
     } else if (is5x5) {
         compute5x5kernel(sigma, kernel5);
-    } else {
+    } else if (is7x7) {
         compute7x7kernel(sigma, kernel7);
+    } else {
+        compute9x9kernel(sigma, kernel9);
     }
 
     constexpr int tileSize = 32;
     const int border = iterations <= 30 ? 5 : 7;
     const int fullTileSize = tileSize + 2 * border;
-    const float cornerRadius = std::min<float>(1.15f, sigma + sigmaCornerOffset);
+    const float cornerRadius = std::min<float>(1.5f, sigma + sigmaCornerOffset);
     const float cornerDistance = sqrt(rtengine::SQR(W * 0.5f) + rtengine::SQR(H * 0.5f));
     const float distanceFactor = (cornerRadius - sigma) / cornerDistance;
 
@@ -537,12 +650,32 @@ BENCHFUN
                             break;
                         }
                     }
+                } else if (is7x7) {
+                    for (int k = 0; k < iterations; ++k) {
+                        // apply 5x5 gaussian blur and divide luminance by result of gaussian blur
+                        gauss7x7div(tmpIThr, tmpThr, lumThr, fullTileSize, kernel7);
+                        gauss7x7mult(tmpThr, tmpIThr, fullTileSize, kernel7);
+                        if (checkIterStop && k < iterations - 1 && checkForStop(tmpIThr, iterCheck, fullTileSize, border)) {
+                            break;
+                        }
+                    }
                 } else {
                     if (sigmaCornerOffset != 0.0) {
                         const float distance = sqrt(rtengine::SQR(i + tileSize / 2 - H / 2) + rtengine::SQR(j + tileSize / 2 - W / 2));
                         const float sigmaTile = static_cast<float>(sigma) + distanceFactor * distance;
                         if (sigmaTile >= 0.4f) {
-                            if (sigmaTile > 0.84) { // have to use 7x7 kernel
+                            if (sigmaTile > 1.15) { // have to use 9x9 kernel
+                                float lkernel9[9][9];
+                                compute9x9kernel(static_cast<float>(sigma) + distanceFactor * distance, lkernel9);
+                                for (int k = 0; k < iterations; ++k) {
+                                    // apply 7x7 gaussian blur and divide luminance by result of gaussian blur
+                                    gauss9x9div(tmpIThr, tmpThr, lumThr, fullTileSize, lkernel9);
+                                    gauss9x9mult(tmpThr, tmpIThr, fullTileSize, lkernel9);
+                                    if (checkIterStop && k < iterations - 1 && checkForStop(tmpIThr, iterCheck, fullTileSize, border)) {
+                                        break;
+                                    }
+                                }
+                            } else if (sigmaTile > 0.84) { // have to use 7x7 kernel
                                 float lkernel7[7][7];
                                 compute7x7kernel(static_cast<float>(sigma) + distanceFactor * distance, lkernel7);
                                 for (int k = 0; k < iterations; ++k) {
@@ -569,8 +702,8 @@ BENCHFUN
                     } else {
                         for (int k = 0; k < iterations; ++k) {
                             // apply 7x7 gaussian blur and divide luminance by result of gaussian blur
-                            gauss7x7div(tmpIThr, tmpThr, lumThr, fullTileSize, kernel7);
-                            gauss7x7mult(tmpThr, tmpIThr, fullTileSize, kernel7);
+                            gauss9x9div(tmpIThr, tmpThr, lumThr, fullTileSize, kernel9);
+                            gauss9x9mult(tmpThr, tmpIThr, fullTileSize, kernel9);
                             if (checkIterStop && k < iterations - 1 && checkForStop(tmpIThr, iterCheck, fullTileSize, border)) {
                                 break;
                             }

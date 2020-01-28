@@ -337,17 +337,17 @@ int process_rl(int nb) {
 	iter = atoi(word[4]);
 
 	if (threshold < 0 || threshold > 200) {
-		siril_log_message(_("threshold must be >= 0 and <= 200.\n"));
+		siril_log_message(_("threshold must be between [0, 200].\n"));
 		return 1;
 	}
 
 	if (sigma < 0.4 || sigma > 1.15) {
-		siril_log_message(_("Sigma must be >= 0.4 and <= 1.15 .\n"));
+		siril_log_message(_("Sigma must be between [0.4, 1.50]\n"));
 		return 1;
 	}
 
 	if (corner < -0.5 || corner > 0.5) {
-		siril_log_message(_("Corner radius boost must be >= -0.5 and <= 0.5 .\n"));
+		siril_log_message(_("Corner radius boost must be between [0.5, 0.5]\n"));
 		return 1;
 	}
 
@@ -367,7 +367,6 @@ int process_rl(int nb) {
 	args->fit = &gfit;
 	args->contrast_threshold = threshold;
 	args->sigma = sigma;
-	args->iterations = iter;
 	args->corner_radius = corner;
 	args->auto_limit = TRUE;
 
