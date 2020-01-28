@@ -62,7 +62,7 @@ siril-debian/testing-autotools:
     - cd _build
     - ../autogen.sh
         --prefix="${INSTALL_PREFIX}"
-    - cp -r ../deps .
+    - ln -s ../deps .
     - make -j "$(nproc)"
     # - make check
 
