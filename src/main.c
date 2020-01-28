@@ -58,8 +58,6 @@
 #include "registration/registration.h"
 #include "stacking/stacking.h"
 
-#define INLINE inline
-#include "core/sleef.h"
 /* the global variables of the whole project */
 cominfo com;	// the main data struct
 fits gfit;	// currently loaded image
