@@ -80,6 +80,9 @@
 #include "command_list.h"
 #include "command_line_processor.h"
 
+char *word[MAX_COMMAND_WORDS];	// NULL terminated
+
+
 int process_load(int nb){
 	char filename[256];
 	int retval, i;
