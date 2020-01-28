@@ -323,22 +323,35 @@ int process_grey_flat(int nb) {
 }
 
 int process_rl(int nb) {
-	double sigma;
-	int iter;
+	double sigma, corner;
+	size_t threshold, iter;
 
 	if (!single_image_is_loaded()) return 1;
 
 	if (!com.script)
 		control_window_switch_to_tab(OUTPUT_LOGS);
-	iter = atoi(word[1]);
+	threshold = atoi(word[1]);
 	sigma = atof(word[2]);
-	if (iter <= 0) {
-		siril_log_message(_("Number of iterations must be > 0.\n"));
+	corner = atof(word[3]);
+	iter = atoi(word[4]);
+
+	if (threshold < 0 || threshold > 200) {
+		siril_log_message(_("threshold must be between [0, 200].\n"));
 		return 1;
 	}
 
-	if (sigma <= 0) {
-		siril_log_message(_("Sigma must be > 0.\n"));
+	if (sigma < 0.4 || sigma > 1.15) {
+		siril_log_message(_("Sigma must be between [0.4, 1.50]\n"));
+		return 1;
+	}
+
+	if (corner < -0.5 || corner > 0.5) {
+		siril_log_message(_("Corner radius boost must be between [0.5, 0.5]\n"));
+		return 1;
+	}
+
+	if (iter <= 0) {
+		siril_log_message(_("Number of iterations must be > 0.\n"));
 		return 1;
 	}
 
@@ -348,15 +361,17 @@ int process_rl(int nb) {
 		return 1;
 	}
 
-	struct RL_data *args = malloc(sizeof(struct RL_data));
+	struct deconv_data *args = malloc(sizeof(struct deconv_data));
 
 	args->fit = &gfit;
+	args->contrast_threshold = threshold;
 	args->sigma = sigma;
-	args->iter = iter;
+	args->corner_radius = corner;
+	args->auto_limit = TRUE;
 
 	set_cursor_waiting(TRUE);
 
-	start_in_new_thread(LRdeconv, args);
+	start_in_new_thread(RTdeconv, args);
 
 	return 0;
 }

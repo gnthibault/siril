@@ -335,6 +335,7 @@ void set_cutoff_sliders_values() {
 	static GtkEntry *maxentry = NULL, *minentry = NULL;
 	static GtkToggleButton *cutmax = NULL;
 	WORD hi, lo;
+	int vport;
 	gboolean cut_over;
 	if (adjmin == NULL) {
 		adjmax = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment1")); // scalemax
@@ -344,19 +345,21 @@ void set_cutoff_sliders_values() {
 		cutmax = GTK_TOGGLE_BUTTON(
 				gtk_builder_get_object(builder, "checkcut_max"));
 	}
-	if (single_image_is_loaded() && com.cvport < com.uniq->nb_layers &&
+	vport = com.cvport;
+	if (com.cvport ==  RGB_VPORT) vport = GREEN_VPORT;
+	if (single_image_is_loaded() && vport < com.uniq->nb_layers &&
 			com.uniq->layers && com.seq.current != RESULT_IMAGE) {
-		hi = com.uniq->layers[com.cvport].hi;
-		lo = com.uniq->layers[com.cvport].lo;
-		cut_over = com.uniq->layers[com.cvport].cut_over;
+		hi = com.uniq->layers[vport].hi;
+		lo = com.uniq->layers[vport].lo;
+		cut_over = com.uniq->layers[vport].cut_over;
 	}
 	/* When com.seq.current == RESULT_IMAGE we take sequence values */
-	else if (sequence_is_loaded() && com.cvport < com.seq.nb_layers
+	else if (sequence_is_loaded() && vport < com.seq.nb_layers
 			&& com.seq.layers) {
-		hi = com.seq.layers[com.cvport].hi;
-		lo = com.seq.layers[com.cvport].lo;
-		cut_over = com.seq.layers[com.cvport].cut_over;
-	} else 
+		hi = com.seq.layers[vport].hi;
+		lo = com.seq.layers[vport].lo;
+		cut_over = com.seq.layers[vport].cut_over;
+	} else
 		return;	// there should be no other normal cases
 	siril_debug_print(_("Setting ranges scalemin=%d, scalemax=%d\n"), lo, hi);
 	gtk_adjustment_set_value(adjmin, (gdouble)lo);
@@ -377,16 +380,19 @@ void set_cutoff_sliders_values() {
 void set_display_mode() {
 	static GtkComboBox *modecombo = NULL;
 	display_mode mode;
+	int vport;
 
 	if (!modecombo)
 		modecombo = GTK_COMBO_BOX(lookup_widget("combodisplay"));
 
-	if (single_image_is_loaded() && com.cvport < com.uniq->nb_layers && com.uniq->layers
+	vport = com.cvport;
+	if (com.cvport ==  RGB_VPORT) vport = GREEN_VPORT;
+	if (single_image_is_loaded() && vport < com.uniq->nb_layers && com.uniq->layers
 			&& com.seq.current != RESULT_IMAGE)
-		mode = com.uniq->layers[com.cvport].rendering_mode;
-	else if (sequence_is_loaded() && com.cvport < com.seq.nb_layers
+		mode = com.uniq->layers[vport].rendering_mode;
+	else if (sequence_is_loaded() && vport < com.seq.nb_layers
 			&& com.seq.layers)
-		mode = com.seq.layers[com.cvport].rendering_mode;
+		mode = com.seq.layers[vport].rendering_mode;
 	else
 		return;
 
