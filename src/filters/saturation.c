@@ -341,6 +341,12 @@ gboolean on_scale_satu_key_release_event(GtkWidget *widget, GdkEvent *event,
 	return FALSE;
 }
 
+void on_spin_satu_changed(GtkEditable *editable, gpointer user_data) {
+	gchar *txt = gtk_editable_get_chars(editable, 0, -1);
+	satu_amount = atof(txt);
+	satu_recompute();
+}
+
 void on_preserve_bg_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	satu_preserve_bkg = gtk_toggle_button_get_active(togglebutton);
 	satu_recompute();

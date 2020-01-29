@@ -8,7 +8,7 @@
 
 #define MAX_COMMAND_WORDS 16		// max number of words to split in command line input
 
-char *word[MAX_COMMAND_WORDS];	// NULL terminated
+extern char *word[MAX_COMMAND_WORDS];	// NULL terminated
 
 typedef
 struct {

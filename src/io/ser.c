@@ -569,14 +569,21 @@ void ser_display_info(struct ser_struct *ser_file) {
 	fprintf(stdout, "========================================\n");
 }
 
+int ser_close_and_delete_file(struct ser_struct *ser_file) {
+	int retval;
+	char *filename = ser_file->filename;
+	ser_file->filename = NULL;
+	retval = ser_close_file(ser_file); // closes, frees and zeroes
+	g_unlink(filename);
+	free(filename);
+	return retval;
+}
+
 int ser_write_and_close(struct ser_struct *ser_file) {
 	if (ser_file == NULL) return -1;
 	if (!ser_file->frame_count) {
 		siril_log_color_message(_("The SER sequence is being created with no image in it.\n"), "red");
-		char *filename = ser_file->filename;
-		ser_file->filename = NULL;
-		ser_close_file(ser_file);// closes, frees and zeroes
-		g_unlink(filename);
+		ser_close_and_delete_file(ser_file);
 		return -1;
 	}
 	ser_write_header(ser_file);	// writes the header

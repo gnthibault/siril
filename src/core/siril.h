@@ -295,7 +295,7 @@ struct layer_info_struct {
 	display_mode rendering_mode;	// defaults to NORMAL_DISPLAY
 };
 
-typedef enum { SEQ_REGULAR, SEQ_SER, SEQ_CUBE,
+typedef enum { SEQ_REGULAR, SEQ_SER, /*SEQ_CUBE,*/
 #ifdef HAVE_FFMS2
 	SEQ_AVI,
 #endif

@@ -81,7 +81,8 @@ void on_deconvolution_reset_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_toggle_deconv_trheshold_toggled(GtkToggleButton *button, gpointer user_data) {
-	gtk_widget_set_sensitive((GtkWidget *)user_data, !gtk_toggle_button_get_active(button));
+	gtk_widget_set_sensitive(lookup_widget("scale_deconv_threshold"), !gtk_toggle_button_get_active(button));
+	gtk_widget_set_sensitive(lookup_widget("spin_deconv_threshold"), !gtk_toggle_button_get_active(button));
 }
 
 void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
