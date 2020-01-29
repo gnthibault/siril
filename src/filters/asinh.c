@@ -49,7 +49,8 @@ static void asinh_close(gboolean revert) {
 		redraw_previews();
 	} else {
 		invalidate_stats_from_fit(&gfit);
-		undo_save_state(&asinh_gfit_backup, "Processing: Asinh Transformation: (stretch=%6.1lf, bp=%7.5lf)",
+		undo_save_state(&asinh_gfit_backup,
+				"Processing: Asinh Transformation: (stretch=%6.1lf, bp=%7.5lf)",
 				asinh_stretch_value, asinh_black_value);
 	}
 	clearfits(&asinh_gfit_backup);
@@ -57,6 +58,10 @@ static void asinh_close(gboolean revert) {
 }
 
 static void asinh_recompute() {
+	if (asinh_stretch_value == 0) {
+		// sometimes this happens in gui
+		return;
+	}
 	set_cursor_waiting(TRUE);
 	copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
 	asinhlut(&gfit, asinh_stretch_value, asinh_black_value, asinh_rgb_space);
@@ -67,74 +72,109 @@ static void asinh_recompute() {
 }
 
 static int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBspace) {
-	int i, layer;
-	WORD *buf[3] = { fit->pdata[RLAYER],
-			fit->pdata[GLAYER], fit->pdata[BLAYER] };
-	double norm;
+	siril_log_color_message(_("Asinh transformation: processing...\n"), "red");
+
+	struct timeval t_start, t_end;
+	gettimeofday(&t_start, NULL);
+
+	int i;
+	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	double norm, asinh_beta, factor_red, factor_green, factor_blue;
 
 	norm = get_normalized_value(fit);
+	asinh_beta = asinh(beta);
+	factor_red = RGBspace ? 0.2126 : 0.3333;
+	factor_green = RGBspace ? 0.7152 : 0.3333;
+	factor_blue = RGBspace ? 0.0722 : 0.3333;
 
-	for (i = 0; i < fit->ry * fit->rx; i++) {
-		double x, k;
-		if (fit->naxes[2] > 1) {
+	if (fit->naxes[2] > 1) {
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic, fit->ry * 16)
+#endif
+		for (i = 0; i < fit->ry * fit->rx; i++) {
+			int layer;
+			double x, k;
 			double r, g, b;
 
 			r = (double) buf[RLAYER][i] / norm;
 			g = (double) buf[GLAYER][i] / norm;
 			b = (double) buf[BLAYER][i] / norm;
-			/* RGB space */
-			if (RGBspace)
-				x = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-			else
-				x = 0.3333 * r + 0.3333 * g + 0.3333 * b;
-		} else {
-			x = buf[RLAYER][i] / norm;
+
+			x = factor_red * r + factor_green * g + factor_blue * b;
+
+			k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh_beta);
+
+			buf[RLAYER][i] = round_to_WORD((r - offset) * k * norm);
+			buf[GLAYER][i] = round_to_WORD((g - offset) * k * norm);
+			buf[BLAYER][i] = round_to_WORD((b - offset) * k * norm);
 		}
-
-		k = asinh(beta * x) / (x * asinh(beta));
-
-		for (layer = 0; layer < fit->naxes[2]; ++layer) {
-			double px = (double) buf[layer][i] / norm;
-			px -= offset;
-			px *= k;
-			buf[layer][i] = round_to_WORD(px * norm);
+	} else {
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic, fit->ry * 16)
+#endif
+		for (i = 0; i < fit->ry * fit->rx; i++) {
+			double x, k;
+			x = buf[RLAYER][i] / norm;
+			k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh_beta);
+			buf[RLAYER][i] = round_to_WORD((x - offset) * k * norm);
 		}
 	}
 	invalidate_stats_from_fit(fit);
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
 	return 0;
 }
 
 static int asinhlut_float(fits *fit, double beta, double offset, gboolean RGBspace) {
-	int i, layer;
-	float *buf[3] = { fit->fpdata[RLAYER],
-			fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
+	siril_log_color_message(_("Asinh transformation: processing...\n"), "red");
 
-	for (i = 0; i < fit->ry * fit->rx; i++) {
-		double x, k;
-		if (fit->naxes[2] > 1) {
-			double r, g, b;
-			r = (double)buf[RLAYER][i];
-			g = (double)buf[GLAYER][i];
-			b = (double)buf[BLAYER][i];
-			/* RGB space */
-			if (RGBspace)
-				x = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-			else
-				x = 0.3333 * r + 0.3333 * g + 0.3333 * b;
-		} else {
-			x = buf[RLAYER][i];
+	struct timeval t_start, t_end;
+	gettimeofday(&t_start, NULL);
+
+	int i;
+	float *buf[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
+	double asinh_beta, factor_red, factor_green, factor_blue;
+
+	asinh_beta = asinh(beta);
+	factor_red = RGBspace ? 0.2126 : 0.3333;
+	factor_green = RGBspace ? 0.7152 : 0.3333;
+	factor_blue = RGBspace ? 0.0722 : 0.3333;
+
+	if (fit->naxes[2] > 1) {
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic, fit->ry * 16)
+#endif
+		for (i = 0; i < fit->ry * fit->rx; i++) {
+			int layer;
+			double x, k;
+			float r, g, b;
+
+			r = buf[RLAYER][i];
+			g = buf[GLAYER][i];
+			b = buf[BLAYER][i];
+
+			x = factor_red * r + factor_green * g + factor_blue * b;
+
+			k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh_beta);
+
+			buf[RLAYER][i] = (r - offset) * k;
+			buf[GLAYER][i] = (g - offset) * k;
+			buf[BLAYER][i] = (b - offset) * k;
 		}
-
-		k = asinh(beta * x) / (x * asinh(beta));
-
-		for (layer = 0; layer < fit->naxes[2]; ++layer) {
-			double px = (double)buf[layer][i];
-			px -= offset;
-			px *= k;
-			buf[layer][i] = px;
+	} else {
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic, fit->ry * 16)
+#endif
+		for (i = 0; i < fit->ry * fit->rx; i++) {
+			double x, k;
+			x = buf[RLAYER][i];
+			k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh_beta);
+			buf[RLAYER][i] = (x - offset) * k;
 		}
 	}
 	invalidate_stats_from_fit(fit);
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
 	return 0;
 }
 
@@ -180,34 +220,6 @@ void on_asinh_ok_clicked(GtkButton *button, gpointer user_data) {
 
 void on_asinh_dialog_close(GtkDialog *dialog, gpointer user_data) {
 	apply_asinh_changes();
-}
-
-gboolean on_scale_asinh_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	asinh_stretch_value = gtk_range_get_value(GTK_RANGE(widget));
-	asinh_recompute();
-	return FALSE;
-}
-
-gboolean on_scale_asinh_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	asinh_stretch_value = gtk_range_get_value(GTK_RANGE(widget));
-	asinh_recompute();
-	return FALSE;
-}
-
-gboolean on_black_point_asinh_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	asinh_black_value = gtk_range_get_value(GTK_RANGE(widget));
-	asinh_recompute();
-	return FALSE;
-}
-
-gboolean on_black_point_asinh_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	asinh_black_value = gtk_range_get_value(GTK_RANGE(widget));
-	asinh_recompute();
-	return FALSE;
 }
 
 void on_spin_asinh_changed(GtkEditable *editable, gpointer user_data) {
