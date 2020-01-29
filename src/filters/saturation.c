@@ -239,20 +239,6 @@ void on_satu_dialog_show(GtkWidget *widget, gpointer user_data) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg")), satu_preserve_bkg);
 }
 
-gboolean on_scale_satu_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	satu_amount = gtk_range_get_value(GTK_RANGE(widget));
-	satu_recompute();
-	return FALSE;
-}
-
-gboolean on_scale_satu_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	satu_amount = gtk_range_get_value(GTK_RANGE(widget));
-	satu_recompute();
-	return FALSE;
-}
-
 void on_spin_satu_changed(GtkEditable *editable, gpointer user_data) {
 	gchar *txt = gtk_editable_get_chars(editable, 0, -1);
 	satu_amount = atof(txt);
