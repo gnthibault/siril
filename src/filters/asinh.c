@@ -89,7 +89,7 @@ static int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBsp
 
 	if (fit->naxes[2] > 1) {
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic, fit->rx * 16)
+#pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->rx * 16)
 #endif
 		for (i = 0; i < fit->ry * fit->rx; i++) {
 			int layer;
@@ -110,7 +110,7 @@ static int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBsp
 		}
 	} else {
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic, fit->rx * 16)
+#pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->rx * 16)
 #endif
 		for (i = 0; i < fit->ry * fit->rx; i++) {
 			double x, k;
