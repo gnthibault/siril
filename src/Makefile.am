@@ -195,7 +195,7 @@ if PLATFORM_WIN32
 libdbghelp = -ldbghelp
 endif
 
-if PLATFORM_OSX
+if !PLATFORM_OSX
 libatomic = -latomic
 endif
 
