@@ -195,6 +195,10 @@ if PLATFORM_WIN32
 libdbghelp = -ldbghelp
 endif
 
+if PLATFORM_OSX
+libatomic = -latomic
+endif
+
 siril_LDADD = \
 	$(top_builddir)/deps/kplot/libkplot.a \
 	$(FFMPEG_LIBS) \
@@ -211,7 +215,7 @@ siril_LDADD = \
 	$(LIBCONFIG_LIBS) \
 	$(LIBCURL) \
 	$(EXTRA_LIBS) \
-	-latomic \
+	$(libatomic) \
 	$(libdbghelp)
 
 siril_SOURCES += \
