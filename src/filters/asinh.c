@@ -90,7 +90,7 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 
 	if (fit->naxes[2] > 1) {
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic, fit->ry * 16)
+#pragma omp parallel for schedule(dynamic, fit->rx * 16)
 #endif
 		for (i = 0; i < fit->ry * fit->rx; i++) {
 			int layer;
@@ -111,7 +111,7 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 		}
 	} else {
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic, fit->ry * 16)
+#pragma omp parallel for schedule(dynamic, fit->rx * 16)
 #endif
 		for (i = 0; i < fit->ry * fit->rx; i++) {
 			double x, k;
