@@ -91,7 +91,7 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 			x = buf[RLAYER][i] / norm;
 		}
 
-		k = asinh(beta * x) / (x * asinh(beta));
+		k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh(beta));
 
 		for (layer = 0; layer < fit->naxes[2]; ++layer) {
 			double px = (double) buf[layer][i] / norm;
@@ -100,6 +100,7 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 			buf[layer][i] = round_to_WORD(px * norm);
 		}
 	}
+
 	invalidate_stats_from_fit(fit);
 	return 0;
 }
@@ -140,34 +141,6 @@ void on_asinh_dialog_close(GtkDialog *dialog, gpointer user_data) {
 	apply_asinh_changes();
 }
 
-gboolean on_scale_asinh_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	asinh_stretch_value = gtk_range_get_value(GTK_RANGE(widget));
-	asinh_recompute();
-	return FALSE;
-}
-
-gboolean on_scale_asinh_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	asinh_stretch_value = gtk_range_get_value(GTK_RANGE(widget));
-	asinh_recompute();
-	return FALSE;
-}
-
-gboolean on_black_point_asinh_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	asinh_black_value = gtk_range_get_value(GTK_RANGE(widget));
-	asinh_recompute();
-	return FALSE;
-}
-
-gboolean on_black_point_asinh_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	asinh_black_value = gtk_range_get_value(GTK_RANGE(widget));
-	asinh_recompute();
-	return FALSE;
-}
-
 void on_spin_asinh_changed(GtkEditable *editable, gpointer user_data) {
 	gchar *txt = gtk_editable_get_chars(editable, 0, -1);
 	asinh_stretch_value = atof(txt);
@@ -178,6 +151,20 @@ void on_black_point_spin_asinh_changed(GtkEditable *editable, gpointer user_data
 	gchar *txt = gtk_editable_get_chars(editable, 0, -1);
 	asinh_black_value = atof(txt);
 	asinh_recompute();
+}
+
+gboolean on_scale_asinh_button_release_event(GtkWidget *widget,
+		GdkEventButton *event, gpointer user_data) {
+	asinh_stretch_value = gtk_range_get_value(GTK_RANGE(widget));
+	asinh_recompute();
+	return FALSE;
+}
+
+gboolean on_black_point_asinh_button_release_event(GtkWidget *widget,
+		GdkEventButton *event, gpointer user_data) {
+	asinh_black_value = gtk_range_get_value(GTK_RANGE(widget));
+	asinh_recompute();
+	return FALSE;
 }
 
 void on_asinh_RGBspace_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
