@@ -211,6 +211,7 @@ siril_LDADD = \
 	$(LIBCONFIG_LIBS) \
 	$(LIBCURL) \
 	$(EXTRA_LIBS) \
+	-latomic \
 	$(libdbghelp)
 
 siril_SOURCES += \
