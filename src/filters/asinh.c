@@ -168,6 +168,18 @@ gboolean on_black_point_asinh_key_release_event(GtkWidget *widget, GdkEvent *eve
 	return FALSE;
 }
 
+void on_spin_asinh_changed(GtkEditable *editable, gpointer user_data) {
+	gchar *txt = gtk_editable_get_chars(editable, 0, -1);
+	asinh_stretch_value = atof(txt);
+	asinh_recompute();
+}
+
+void on_black_point_spin_asinh_changed(GtkEditable *editable, gpointer user_data) {
+	gchar *txt = gtk_editable_get_chars(editable, 0, -1);
+	asinh_black_value = atof(txt);
+	asinh_recompute();
+}
+
 void on_asinh_RGBspace_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	asinh_rgb_space = gtk_toggle_button_get_active(togglebutton);
 	asinh_recompute();

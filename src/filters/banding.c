@@ -278,13 +278,16 @@ void on_button_apply_fixbanding_clicked(GtkButton *button, gpointer user_data) {
 
 void on_checkbutton_fixbanding_toggled(GtkToggleButton *togglebutton,
 		gpointer user_data) {
-	static GtkWidget *bandingHighlightBox = NULL;
+	static GtkWidget *scalebandingHighlightBox = NULL;
+	static GtkWidget *spinbandingHighlightBox = NULL;
 	gboolean is_active;
 
-	if (bandingHighlightBox == NULL) {
-		bandingHighlightBox = lookup_widget("bandingHighlightBox");
+	if (scalebandingHighlightBox == NULL) {
+		scalebandingHighlightBox = lookup_widget("scale_fixbanding_invsigma");
+		spinbandingHighlightBox = lookup_widget("spin_fixbanding_invsigma");
 	}
 
 	is_active = gtk_toggle_button_get_active(togglebutton);
-	gtk_widget_set_sensitive(bandingHighlightBox, is_active);
+	gtk_widget_set_sensitive(scalebandingHighlightBox, is_active);
+	gtk_widget_set_sensitive(spinbandingHighlightBox, is_active);
 }
