@@ -150,6 +150,9 @@ gpointer rgradient_filter(gpointer p) {
 				else if (delta.y > h)
 					delta.y = 2 * h - delta.y;
 				gbuf[i] -= Bbuf[(int)delta.x + (int)delta.y * args->fit->rx];
+
+				if (gbuf[i] > 1.0f) gbuf[i] = 1.0f;
+				else if (gbuf[i] < 0.0f) gbuf[i] = 0.0f;
 				i++;
 			}
 		}
