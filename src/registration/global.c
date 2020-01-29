@@ -331,12 +331,12 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 			// that failed to be registered if we don't do that
 			if (args->seq->type == SEQ_SER)
 				ser_compact_file(args->new_ser, sadata->success, args->nb_filtered_images);
+		}
 
-			// same as ser_finalize_hook()
-			if (args->seq->type == SEQ_SER) {
-				ser_write_and_close(args->new_ser);
-				free(args->new_ser);
-			}
+		// same as ser_finalize_hook()
+		if (args->seq->type == SEQ_SER) {
+			ser_write_and_close(args->new_ser);
+			free(args->new_ser);
 		}
 	} else {
 		regargs->new_total = 0;
