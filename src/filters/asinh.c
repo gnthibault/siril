@@ -57,6 +57,10 @@ static void asinh_close(gboolean revert) {
 }
 
 static void asinh_recompute() {
+    if (asinh_stretch_value == 0) {
+        // sometimes this happens in gui
+        return;
+    }
 	set_cursor_waiting(TRUE);
 	copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
 	asinhlut(&gfit, asinh_stretch_value, asinh_black_value, asinh_rgb_space);
@@ -67,41 +71,57 @@ static void asinh_recompute() {
 }
 
 int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
-	int i, layer;
+	siril_log_color_message(_("Asinh transformation: processing...\n"), "red");
+
+	struct timeval t_start, t_end;
+	gettimeofday(&t_start, NULL);
+
+	int i;
 	WORD *buf[3] = { fit->pdata[RLAYER],
 			fit->pdata[GLAYER], fit->pdata[BLAYER] };
-	double norm;
+	double norm, asinh_beta, factor_red, factor_green, factor_blue;
 
 	norm = get_normalized_value(fit);
+    asinh_beta = asinh(beta);
+    factor_red = RGBspace ? 0.2126 : 0.3333;
+    factor_green = RGBspace ? 0.7152 : 0.3333;
+    factor_blue = RGBspace ? 0.0722 : 0.3333;
 
-	for (i = 0; i < fit->ry * fit->rx; i++) {
-		double x, k;
-		if (fit->naxes[2] > 1) {
-			double r, g, b;
+    if (fit->naxes[2] > 1) {
+#ifdef _OPENMP
+	    #pragma omp parallel for schedule(dynamic, fit->ry * 16)
+#endif
+        for (i = 0; i < fit->ry * fit->rx; i++) {
+            int layer;
+            double x, k;
+            double r, g, b;
 
-			r = (double) buf[RLAYER][i] / norm;
-			g = (double) buf[GLAYER][i] / norm;
-			b = (double) buf[BLAYER][i] / norm;
-			/* RGB space */
-			if (RGBspace)
-				x = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-			else
-				x = 0.3333 * r + 0.3333 * g + 0.3333 * b;
-		} else {
-			x = buf[RLAYER][i] / norm;
-		}
+            r = (double) buf[RLAYER][i] / norm;
+            g = (double) buf[GLAYER][i] / norm;
+            b = (double) buf[BLAYER][i] / norm;
 
-		k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh(beta));
+            x = factor_red * r + factor_green * g + factor_blue * b;
 
-		for (layer = 0; layer < fit->naxes[2]; ++layer) {
-			double px = (double) buf[layer][i] / norm;
-			px -= offset;
-			px *= k;
-			buf[layer][i] = round_to_WORD(px * norm);
-		}
-	}
+            k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh_beta);
 
+            buf[RLAYER][i] = round_to_WORD((r - offset) * k * norm);
+            buf[GLAYER][i] = round_to_WORD((g - offset) * k * norm);
+            buf[BLAYER][i] = round_to_WORD((b - offset) * k * norm);
+        }
+    } else {
+#ifdef _OPENMP
+        #pragma omp parallel for schedule(dynamic, fit->ry * 16)
+#endif
+        for (i = 0; i < fit->ry * fit->rx; i++) {
+            double x, k;
+            x = buf[RLAYER][i] / norm;
+            k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh_beta);
+            buf[RLAYER][i] = round_to_WORD((x - offset) * k * norm);
+        }
+    }
 	invalidate_stats_from_fit(fit);
+    gettimeofday(&t_end, NULL);
+    show_time(t_start, t_end);
 	return 0;
 }
 
