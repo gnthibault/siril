@@ -72,7 +72,7 @@ static void asinh_recompute() {
 }
 
 int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
-	siril_log_color_message(_("Asinh transformation: processing...\n"), "red");
+//	siril_log_color_message(_("Asinh transformation: processing...\n"), "red");
 
 	struct timeval t_start, t_end;
 	gettimeofday(&t_start, NULL);
@@ -122,7 +122,7 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 	}
 	invalidate_stats_from_fit(fit);
 	gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
+//	show_time(t_start, t_end);
 	return 0;
 }
 

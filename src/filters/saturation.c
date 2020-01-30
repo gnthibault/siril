@@ -82,8 +82,7 @@ void on_satu_dialog_close(GtkDialog *dialog, gpointer user_data) {
 
 void satu_recompute() {
 	if (get_thread_run()) {
-		siril_log_message(
-				_("Another task is already in progress, ignoring new request.\n"));
+		siril_debug_print(_("Another task is already in progress, ignoring new request.\n"));
 		return;
 	}
 	if (satu_amount == 0.0) return;
@@ -166,7 +165,7 @@ gpointer enhance_saturation(gpointer p) {
 	WORD *out[3] = { args->output->pdata[RLAYER], args->output->pdata[GLAYER],
 			args->output->pdata[BLAYER] };
 
-	siril_log_color_message(_("Saturation enhancement: processing...\n"), "red");
+//	siril_log_color_message(_("Saturation enhancement: processing...\n"), "red");
 	gettimeofday(&t_start, NULL);
 
 	args->h_min /= 360.0;
@@ -214,7 +213,7 @@ gpointer enhance_saturation(gpointer p) {
 	}
 	invalidate_stats_from_fit(args->output);
 	gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
+//	show_time(t_start, t_end);
 	siril_add_idle(end_enhance_saturation, args);
 
 	return GINT_TO_POINTER(0);
