@@ -1,22 +1,23 @@
 ############################################
-# Script for Siril 0.9
-# March 2019
+# Script for Siril
+# January 2020
 # (C) Cyril Richard
 # Modified by Colmic
-# DSLR_preprocessing+CC v1.5
+# DSLR_preprocessing+CC v1.6
 ########### PREPROCESSING SCRIPT ###########
 # Script for DSLR color camera preprocessing
 # needs 4 sets of RAW images in the working
 # directory, within 4 directories:
-# biases, flats, darks and lights 
+# bias, flats, darks and lights 
 # In addition to DSLR_preprocessing it
 # applies an automatic cosmetic correction
 # and drizzle 2x
 #
+# v 1.6: change biases to bias
 ############################################
 
 #build master-bias
-cd biases
+cd bias
 convertraw bias_
 stack bias_ rej 3 3 -nonorm
 cd ..
@@ -24,7 +25,7 @@ cd ..
 cd flats
 #preprocess flats
 convertraw flat_
-preprocess flat_ -bias=../biases/bias_stacked
+preprocess flat_ -bias=../bias/bias_stacked
 
 #build master-flat
 stack pp_flat_ rej 3 3 -norm=mul

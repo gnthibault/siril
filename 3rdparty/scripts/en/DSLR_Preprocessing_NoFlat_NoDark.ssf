@@ -1,21 +1,22 @@
 ############################################
 # Script for Siril 0.9
-# March 2019
+# January 2020
 # (C) Cyril Richard
 # Modified by Colmic
-# DSLR_preprocessing v1.5
+# DSLR_preprocessing v1.6
 ########### PREPROCESSING SCRIPT ###########
 #             No Flat No Dark
 #
 # Script for DSLR color camera preprocessing
 # needs 4 sets of RAW images in the working
 # directory, within 4 directories:
-# biases, flats, darks and lights 
+# bias, flats, darks and lights 
 #
+# v 1.6: change biases to bias
 ############################################
 
 #build master-bias
-cd biases
+cd bias
 convertraw bias_
 stack bias_ rej 3 3 -nonorm
 cd ..
@@ -23,7 +24,7 @@ cd ..
 #preprocess lights
 cd lights
 convertraw light_
-preprocess light_ -bias=../biases/bias_stacked -debayer -stretch
+preprocess light_ -bias=../bias/bias_stacked -debayer -stretch
 
 #align lights
 register pp_light_
