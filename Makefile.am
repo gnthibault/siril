@@ -3,11 +3,16 @@
 export CC CFLAGS CPPFLAGS
 
 SUBDIRS = deps/kplot \
-	deps/librtprocess/build \
 	po \
 	src \
 	pixmaps \
 	platform-specific
+
+build-librtprocess:
+	$(MAKE) -C deps/librtprocess/build
+
+#all: build-librtprocess
+#clean: build-librtprocess
 
 # TODO add a conditionnal and a configure switch
 # to be able to choose the language. Also, this should
