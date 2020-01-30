@@ -16,7 +16,7 @@
 #include "core/siril.h"
 
 imstats* statistics(sequence *seq, int image_index, fits *fit, int layer,
-		rectangle *selection, int option);
+		rectangle *selection, int option, gboolean multithread);
 
 int compute_means_from_flat_cfa(fits *fit, double mean[4]);
 

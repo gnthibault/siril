@@ -171,7 +171,7 @@ gpointer enhance_saturation(gpointer p) {
 	args->h_min /= 360.0;
 	args->h_max /= 360.0;
 	if (args->preserve) {
-		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC);
+		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			siril_add_idle(end_enhance_saturation, args);

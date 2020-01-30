@@ -36,7 +36,7 @@ int test_quickselect(int datasize) {
 	quicksort_s(data1, datasize);
 	result_qsort = median_from_sorted_array(data1, datasize);
 	result_qsel1 = quickmedian(data2, datasize);
-	result_qsel2 = histogram_median(data3, datasize);
+	result_qsel2 = histogram_median(data3, datasize, FALSE);
 
 	if (result_qsel1 != result_qsort || result_qsel2 != result_qsort) {
 		for (i=0; i<datasize; i++)
@@ -77,7 +77,7 @@ void measure_big() {
 	t2 = clock();
 	result_qsel1 = quickmedian(data2, datasize);
 	t3 = clock();
-	result_qsel2 = histogram_median(data3, datasize);
+	result_qsel2 = histogram_median(data3, datasize, FALSE);
 	t4 = clock();
 	fprintf(stdout, "siril quicksort time:\t%ld\n", t2-t1);
 	fprintf(stdout, "quickmedian time:\t%ld\n", t3-t2);
@@ -140,7 +140,7 @@ void measure_small() {
 		}
 
 		for (times = 0; times < nb_times_each; times++) {
-			result_qsel2 = histogram_median(data, datasize);
+			result_qsel2 = histogram_median(data, datasize, FALSE);
 
 			for (i=0; i<datasize; i++)
 				data[i] = data_backup[i];

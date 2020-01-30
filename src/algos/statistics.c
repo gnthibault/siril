@@ -69,7 +69,7 @@ static void select_area(fits *fit, WORD *data, int layer, rectangle *bounds) {
  *  MAD = median (| Xi − median(X) |)
  */
 static double siril_stats_ushort_mad(WORD* data, const size_t stride,
-		const size_t n, const double m) {
+		const size_t n, const double m, gboolean multithread) {
 	size_t i;
 	double mad;
 	int median = round_to_int(m);	// we use it on integer data anyway
@@ -81,7 +81,7 @@ static double siril_stats_ushort_mad(WORD* data, const size_t stride,
 		tmp[i] = (WORD)abs(delta);
 	}
 
-	mad = histogram_median (tmp, n);
+	mad = histogram_median(tmp, n, multithread);
 	free(tmp);
 	return mad;
 }
@@ -241,7 +241,8 @@ static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
 
 /* this function tries to get the requested stats from the passed stats,
  * computes them and stores them in it if they have not already been */
-static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, int option, imstats *stats) {
+static imstats* statistics_internal(fits *fit, int layer, rectangle *selection,
+		int option, imstats *stats, gboolean multithread) {
 	int nx, ny;
 	WORD *data = NULL;
 	int stat_is_local = 0, free_data = 0;
@@ -304,7 +305,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		siril_debug_print("- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
 		fits_img_stats_ushort(data, nx, ny, 1, 0, &stat->ngoodpix,
 				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
-				NULL, NULL, NULL, &status);
+				NULL, NULL, NULL, multithread, &status);
 		if (status) {
 			if (free_data) free(data);
 			if (stat_is_local) free(stat);
@@ -335,7 +336,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing median\n", stat, fit, layer);
-		stat->median = histogram_median(data, stat->ngoodpix);
+		stat->median = histogram_median(data, stat->ngoodpix, multithread);
 	}
 
 	/* Calculation of average absolute deviation from the median */
@@ -355,7 +356,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing mad\n", stat, fit, layer);
-		stat->mad = siril_stats_ushort_mad(data, 1, stat->ngoodpix, stat->median);
+		stat->mad = siril_stats_ushort_mad(data, 1, stat->ngoodpix, stat->median, multithread);
 	}
 
 	/* Calculation of Bidweight Midvariance */
@@ -415,18 +416,18 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
  * function because of the special rule of this object that has a reference
  * counter because it can be referenced in 3 different places.
  */
-imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectangle *selection, int option) {
+imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectangle *selection, int option, gboolean multithread) {
 	imstats *oldstat = NULL, *stat;
 	if (selection && selection->h > 0 && selection->w > 0) {
 		// we have a selection, don't store anything
-		return statistics_internal(fit, layer, selection, option, NULL);
+		return statistics_internal(fit, layer, selection, option, NULL, multithread);
 	} else if (!seq || image_index < 0) {
 		// we have a single image, store in the fits
 		if (fit->stats && fit->stats[layer]) {
 			oldstat = fit->stats[layer];
 			oldstat->_nb_refs++;
 		}
-		stat = statistics_internal(fit, layer, NULL, option, oldstat);
+		stat = statistics_internal(fit, layer, NULL, option, oldstat, multithread);
 		if (!stat) {
 			fprintf(stderr, "- stats failed for fit %p (%d)\n", fit, layer);
 			if (oldstat) {
@@ -445,7 +446,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 			if (oldstat)	// can be NULL here
 				oldstat->_nb_refs++;
 		}
-		stat = statistics_internal(fit, layer, NULL, option, oldstat);
+		stat = statistics_internal(fit, layer, NULL, option, oldstat, multithread);
 		if (!stat) {
 			if (fit)
 				fprintf(stderr, "- stats failed for %d in seq (%d)\n",

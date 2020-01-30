@@ -136,7 +136,7 @@ long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 	double sigma, median, thresHot, thresCold;
 
 	/** statistics **/
-	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC);
+	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC, TRUE);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
 		return 0L;
@@ -185,7 +185,7 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 	deviant_pixel *dev;
 
 	/** statistics **/
-	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC);
+	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC, FALSE);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
 		return NULL;
@@ -400,7 +400,7 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 
 	/* XXX: if cfa, stats are irrelevant. We should compute them taking
 	 * into account the Bayer pattern */
-	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC | STATS_AVGDEV);
+	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC | STATS_AVGDEV, FALSE);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
 		return 1;

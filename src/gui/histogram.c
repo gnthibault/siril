@@ -677,7 +677,7 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 	n = fit->naxes[2];
 
 	for (i = 0; i < n; ++i) {
-		stat[i] = statistics(NULL, -1, fit, i, NULL, STATS_BASIC | STATS_MAD);
+		stat[i] = statistics(NULL, -1, fit, i, NULL, STATS_BASIC | STATS_MAD, TRUE);
 		if (!stat[i]) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			return 0.0;
