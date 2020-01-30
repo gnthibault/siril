@@ -84,8 +84,11 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 		normValue[BLAYER] = stat[RLAYER]->normValue;
 		sprintf(format, "%%.5e");
 	}
-	else
-		sprintf(format, "%%.1lf");
+	else {
+		if (stat[RLAYER]->max <= 1.0)	// special case of float images
+			sprintf(format, "%%.5e");
+		else sprintf(format, "%%.1lf");
+	}
 
 	sprintf(rvalue, "%.4lf", ((double) stat[RLAYER]->ngoodpix / (double) stat[RLAYER]->total) * 100.0);
 	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {

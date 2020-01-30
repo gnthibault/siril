@@ -22,8 +22,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define SIRIL_OUTPUT_DEBUG
-
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
