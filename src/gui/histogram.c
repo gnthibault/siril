@@ -291,25 +291,82 @@ size_t get_histo_size(fits *fit) {
 }
 
 // create a new histrogram object for the passed fit and layer
-gsl_histogram* computeHisto(fits* fit, int layer) {
+gsl_histogram* computeHisto(fits *fit, int layer) {
 	g_assert(layer < 3);
 	size_t i, ndata, size;
 
 	size = get_histo_size(fit);
-	gsl_histogram* histo = gsl_histogram_alloc(size + 1);
-	gsl_histogram_set_ranges_uniform(histo, 0, fit->type == DATA_FLOAT ? 1.0 : size);
+	gsl_histogram *histo = gsl_histogram_alloc(size + 1);
+	gsl_histogram_set_ranges_uniform(histo, 0,
+			fit->type == DATA_FLOAT ? 1.0 : size);
 	ndata = fit->rx * fit->ry;
 
 	if (fit->type == DATA_USHORT) {
 		WORD *buf = fit->pdata[layer];
-		//#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) // causes errors !!!
-		for (i = 0; i < ndata; i++) {
-			gsl_histogram_increment(histo, (double)buf[i]);
+		if (com.max_thread == 1) {
+			for (i = 0; i < ndata; i++) {
+				gsl_histogram_increment(histo, (double) buf[i]);
+			}
+		} else {
+#ifdef _OPENMP
+#pragma omp parallel num_threads(com.max_thread)
+#endif
+			{
+				gsl_histogram *histo_thr = gsl_histogram_alloc(size + 1);
+				gsl_histogram_set_ranges_uniform(histo_thr, 0, size);
+
+#ifdef _OPENMP
+#pragma omp for private(i) schedule(static) nowait
+#endif
+				for (i = 0; i < ndata; i++) {
+					gsl_histogram_increment(histo_thr, (double) buf[i]);
+				}
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+				{
+					size_t j;
+					for (j = 0; j < size + 1; ++j) {
+						gsl_histogram_accumulate(histo, j,
+								gsl_histogram_get(histo_thr, j));
+					}
+				}
+				gsl_histogram_free(histo_thr);
+			}
 		}
 	} else if (fit->type == DATA_FLOAT) {
 		float *buf = fit->fpdata[layer];
-		for (i = 0; i < ndata; i++) {
-			gsl_histogram_increment(histo, (double)buf[i]);
+		if (com.max_thread == 1) {
+			for (i = 0; i < ndata; i++) {
+				gsl_histogram_increment(histo, (double) buf[i]);
+			}
+		} else {
+#ifdef _OPENMP
+#pragma omp parallel num_threads(com.max_thread)
+#endif
+			{
+				gsl_histogram *histo_thr = gsl_histogram_alloc(size + 1);
+				gsl_histogram_set_ranges_uniform(histo_thr, 0, size);
+
+#ifdef _OPENMP
+#pragma omp for private(i) schedule(static) nowait
+#endif
+				for (i = 0; i < ndata; i++) {
+					gsl_histogram_increment(histo_thr, (double) buf[i]);
+				}
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+				{
+					size_t j;
+					for (j = 0; j < size + 1; ++j) {
+						gsl_histogram_accumulate(histo, j,
+								gsl_histogram_get(histo_thr, j));
+					}
+				}
+				gsl_histogram_free(histo_thr);
+			}
+
 		}
 	}
 	return histo;
