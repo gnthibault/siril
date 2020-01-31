@@ -10,6 +10,8 @@ struct extract_channels_data {
 	const char* str_type;
 };
 
+void rgb_to_hsl_float(float, float, float, float, float *, float *, float *);
+void hsl_to_rgb_float(float, float, float, float *, float *, float *);
 void rgb_to_hsl(double, double, double, double *, double *, double *);
 void hsl_to_rgb(double, double, double, double *, double *, double *);
 void rgb_to_hsv(double, double, double, double *, double *, double *);

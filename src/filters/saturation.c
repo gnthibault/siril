@@ -145,7 +145,6 @@ gboolean end_enhance_saturation(gpointer p) {
 
 static gpointer enhance_saturation_ushort(gpointer p) {
 	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
-	struct timeval t_start, t_end;
 	double bg = 0;
 	int i;
 
@@ -164,9 +163,6 @@ static gpointer enhance_saturation_ushort(gpointer p) {
 			args->input->pdata[BLAYER] };
 	WORD *out[3] = { args->output->pdata[RLAYER], args->output->pdata[GLAYER],
 			args->output->pdata[BLAYER] };
-
-//	siril_log_color_message(_("Saturation enhancement: processing...\n"), "red");
-	gettimeofday(&t_start, NULL);
 
 	args->h_min /= 360.0;
 	args->h_max /= 360.0;
@@ -212,8 +208,6 @@ static gpointer enhance_saturation_ushort(gpointer p) {
 		out[BLAYER][i] = round_to_WORD(b * USHRT_MAX_DOUBLE);
 	}
 	invalidate_stats_from_fit(args->output);
-	gettimeofday(&t_end, NULL);
-//	show_time(t_start, t_end);
 	siril_add_idle(end_enhance_saturation, args);
 
 	return GINT_TO_POINTER(0);
@@ -221,7 +215,6 @@ static gpointer enhance_saturation_ushort(gpointer p) {
 
 static gpointer enhance_saturation_float(gpointer p) {
 	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
-	struct timeval t_start, t_end;
 	double bg = 0;
 	int i;
 
@@ -241,11 +234,8 @@ static gpointer enhance_saturation_float(gpointer p) {
 	float *out[3] = { args->output->fpdata[RLAYER], args->output->fpdata[GLAYER],
 			args->output->fpdata[BLAYER] };
 
-	siril_log_color_message(_("Saturation enhancement: processing...\n"), "red");
-	gettimeofday(&t_start, NULL);
-
-	args->h_min /= 360.0;
-	args->h_max /= 360.0;
+	args->h_min /= 60.0;
+	args->h_max /= 60.0;
 	if (args->preserve) {
 		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
 		if (!stat) {
@@ -258,39 +248,42 @@ static gpointer enhance_saturation_float(gpointer p) {
 		free_stats(stat);
 	}
 
+	float s_mult = 1.f + args->coeff;
+    gboolean red_case = args->h_min > args->h_max;
+	float h_min = args->h_min;
+	float h_max = args->h_max;
+
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
 	for (i = 0; i < args->input->rx * args->input->ry; i++) {
-		double h, s, l;
-		double r = (double) in[RLAYER][i];
-		double g = (double) in[GLAYER][i];
-		double b = (double) in[BLAYER][i];
+		float h, s, l;
+		float r = in[RLAYER][i];
+		float g = in[GLAYER][i];
+		float b = in[BLAYER][i];
 
-		rgb_to_hsl(r, g, b, &h, &s, &l);
+		rgb_to_hsl_float(r, g, b, bg, &h, &s, &l);
 		if (l > bg) {
-			if (args->h_min > args->h_max) {// Red case. TODO: find a nicer way to do it
-				if (h >= args->h_min || h <= args->h_max) {
-					s += (s * args->coeff);
+			if (red_case) {// Red case. TODO: find a nicer way to do it
+				if (h >= h_min || h <= h_max) {
+					s *= s_mult;
 				}
 			} else {
-				if (h >= args->h_min && h <= args->h_max) {
-					s += (s * args->coeff);
+				if (h >= h_min && h <= h_max) {
+					s *= s_mult;
 				}
 			}
-			if (s < 0.0)
-				s = 0.0;
-			else if (s > 1.0)
-				s = 1.0;
+			if (s < 0.f)
+				s = 0.f;
+			else if (s > 1.f)
+				s = 1.f;
+    		hsl_to_rgb_float(h, s, l, &r, &g, &b);
 		}
-		hsl_to_rgb(h, s, l, &r, &g, &b);
 		out[RLAYER][i] = r;
 		out[GLAYER][i] = g;
 		out[BLAYER][i] = b;
 	}
 	invalidate_stats_from_fit(args->output);
-	gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
 	siril_add_idle(end_enhance_saturation, args);
 
 	return GINT_TO_POINTER(0);

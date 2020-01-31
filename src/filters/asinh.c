@@ -87,7 +87,6 @@ static int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBsp
 #pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->rx * 16)
 #endif
 		for (i = 0; i < fit->ry * fit->rx; i++) {
-			int layer;
 			double x, k;
 			double r, g, b;
 
@@ -119,11 +118,6 @@ static int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBsp
 }
 
 static int asinhlut_float(fits *fit, double beta, double offset, gboolean RGBspace) {
-	siril_log_color_message(_("Asinh transformation: processing...\n"), "red");
-
-	struct timeval t_start, t_end;
-	gettimeofday(&t_start, NULL);
-
 	int i;
 	float *buf[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
 	double asinh_beta, factor_red, factor_green, factor_blue;
@@ -138,7 +132,6 @@ static int asinhlut_float(fits *fit, double beta, double offset, gboolean RGBspa
 #pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->ry * 16)
 #endif
 		for (i = 0; i < fit->ry * fit->rx; i++) {
-			int layer;
 			double x, k;
 			float r, g, b;
 
@@ -166,8 +159,6 @@ static int asinhlut_float(fits *fit, double beta, double offset, gboolean RGBspa
 		}
 	}
 	invalidate_stats_from_fit(fit);
-	gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
 	return 0;
 }
 
