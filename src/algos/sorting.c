@@ -1,6 +1,7 @@
 #include "sorting.h"
 #include <string.h>
 #include <math.h>
+#include "rt/rt_algo.h"
 
 /*
  * This file is part of Siril, an astronomy image processor.
@@ -454,25 +455,10 @@ double histogram_median(WORD *a, int n, gboolean mutlithread) {
 }
 
 double histogram_median_float(float *a, int n, gboolean multithread) {
-	unsigned int i, j, k = n / 2, nb_bins = 100000;
-	size_t s = sizeof(unsigned int);
-	unsigned int *h = calloc(nb_bins + 1, s);
+    float median;
+    findMinMaxPercentile(a, n, 0.5f, &median, 0.5f, &median, multithread);
+    return median;
 
-	for (i = 0; i < n; i++)
-		h[(unsigned int) (a[i] * nb_bins)]++;	// warning: this is not a rounding
-
-	i = j = 0;
-	if (n % 2 == 0) {
-		for (; h[j] <= k - 1; j++)
-			h[j + 1] += h[j];
-		i = j;
-	}
-
-	for (; h[i] <= k; i++)
-		h[i + 1] += h[i];
-
-	free(h);
-	return (n % 2 == 0) ? (double)(i + j) / (2.0 * (double)nb_bins) : (double)i / (double)nb_bins;
 }
 /*
  * Histogram median for very large array of double in [0,1] range

@@ -222,7 +222,7 @@ static gpointer enhance_saturation_ushort(gpointer p) {
 static gpointer enhance_saturation_float(gpointer p) {
 	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
 	struct timeval t_start, t_end;
-	double bg = 0;
+	float bg = 0;
 	int i;
 
 	if (!isrgb(args->input) || !isrgb(args->output) ||
@@ -244,8 +244,8 @@ static gpointer enhance_saturation_float(gpointer p) {
 	siril_log_color_message(_("Saturation enhancement: processing...\n"), "red");
 	gettimeofday(&t_start, NULL);
 
-	args->h_min /= 360.0;
-	args->h_max /= 360.0;
+	args->h_min /= 60.0;
+	args->h_max /= 60.0;
 	if (args->preserve) {
 		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
 		if (!stat) {
@@ -258,32 +258,34 @@ static gpointer enhance_saturation_float(gpointer p) {
 		free_stats(stat);
 	}
 
+	float s_mult = 1.f + args->coeff;
+    gboolean red_case = args->h_min > args->h_max;
+	float h_min = args->h_min;
+	float h_max = args->h_max;
+
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(dynamic, args->input->rx * 16)
 #endif
 	for (i = 0; i < args->input->rx * args->input->ry; i++) {
-		double h, s, l;
-		double r = (double) in[RLAYER][i];
-		double g = (double) in[GLAYER][i];
-		double b = (double) in[BLAYER][i];
+		float h, s, l;
+		float r = in[RLAYER][i];
+		float g = in[GLAYER][i];
+		float b = in[BLAYER][i];
 
-		rgb_to_hsl(r, g, b, &h, &s, &l);
+		rgb_to_hsl_float_sat(r, g, b, bg, &h, &s, &l);
 		if (l > bg) {
-			if (args->h_min > args->h_max) {// Red case. TODO: find a nicer way to do it
-				if (h >= args->h_min || h <= args->h_max) {
-					s += (s * args->coeff);
+			if (red_case) {// Red case. TODO: find a nicer way to do it
+				if (h >= h_min || h <= h_max) {
+					s *= s_mult;
 				}
 			} else {
-				if (h >= args->h_min && h <= args->h_max) {
-					s += (s * args->coeff);
+				if (h >= h_min && h <= h_max) {
+					s *= s_mult;
 				}
 			}
-			if (s < 0.0)
-				s = 0.0;
-			else if (s > 1.0)
-				s = 1.0;
+			s = s > 1.f ? 1.f : s;
+    		hsl_to_rgb_float_sat(h, s, l, &r, &g, &b);
 		}
-		hsl_to_rgb(h, s, l, &r, &g, &b);
 		out[RLAYER][i] = r;
 		out[GLAYER][i] = g;
 		out[BLAYER][i] = b;

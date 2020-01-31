@@ -163,7 +163,9 @@ float calcContrastThreshold(const float* const * luminance, int tileY, int tileX
 namespace rtengine
 {
 
-void findMinMaxPercentile(const float* data, size_t size, float minPrct, float& minOut, float maxPrct, float& maxOut, bool multithread)
+extern "C" void findMinMaxPercentile(const float* data, size_t size, float minPrct, float* minOut, float maxPrct, float* maxOut, int multithread);
+
+void findMinMaxPercentile(const float* data, size_t size, float minPrct, float* minOut, float maxPrct, float* maxOut, int multithread)
 {
     // Copyright (c) 2017 Ingo Weyrich <heckflosse67@gmx.de>
     // We need to find the (minPrct*size) smallest value and the (maxPrct*size) smallest value in data.
@@ -205,7 +207,7 @@ void findMinMaxPercentile(const float* data, size_t size, float minPrct, float& 
     }
 
     if (std::fabs(maxVal - minVal) == 0.f) { // fast exit, also avoids division by zero in calculation of scale factor
-        minOut = maxOut = minVal;
+        *minOut = *maxOut = minVal;
         return;
     }
 
@@ -270,14 +272,14 @@ void findMinMaxPercentile(const float* data, size_t size, float minPrct, float& 
         const size_t count_ = count - histo[k - 1];
         const float c0 = count - threshmin;
         const float c1 = threshmin - count_;
-        minOut = (c1 * k + c0 * (k - 1)) / (c0 + c1);
+        *minOut = (c1 * k + c0 * (k - 1)) / (c0 + c1);
     } else {
-        minOut = k;
+        *minOut = k;
     }
     // go back to original range
-    minOut /= scale;
-    minOut += minVal;
-    minOut = rtengine::LIM(minOut, minVal, maxVal);
+    *minOut /= scale;
+    *minOut += minVal;
+    *minOut = rtengine::LIM(*minOut, minVal, maxVal);
 
     // find (maxPrct*size) smallest value
     const float threshmax = maxPrct * size;
@@ -289,14 +291,14 @@ void findMinMaxPercentile(const float* data, size_t size, float minPrct, float& 
         const size_t count_ = count - histo[k - 1];
         const float c0 = count - threshmax;
         const float c1 = threshmax - count_;
-        maxOut = (c1 * k + c0 * (k - 1)) / (c0 + c1);
+        *maxOut = (c1 * k + c0 * (k - 1)) / (c0 + c1);
     } else {
-        maxOut = k;
+        *maxOut = k;
     }
     // go back to original range
-    maxOut /= scale;
-    maxOut += minVal;
-    maxOut = rtengine::LIM(maxOut, minVal, maxVal);
+    *maxOut /= scale;
+    *maxOut += minVal;
+    *maxOut = rtengine::LIM(*maxOut, minVal, maxVal);
 }
 
 void buildBlendMask(const float* const * luminance, float **blend, int W, int H, float &contrastThreshold, bool autoContrast, float ** clipMask) {

@@ -18,11 +18,13 @@
  */
 
 #pragma once
-
-#include <cstddef>
-
-namespace rtengine
-{
-void findMinMaxPercentile(const float* data, size_t size, float minPrct, float& minOut, float maxPrct, float& maxOut, bool multiThread = true);
-void buildBlendMask(const float* const * luminance, float **blend, int W, int H, float &contrastThreshold, bool autoContrast = false, float ** clipmask = nullptr);
+#ifdef __cplusplus
+extern "C" {
+namespace rtengine {
+    void buildBlendMask(const float* const * luminance, float **blend, int W, int H, float &contrastThreshold, bool autoContrast, float ** clipmask);
 }
+#endif
+void findMinMaxPercentile(const float* data, size_t size, float minPrct, float* minOut, float maxPrct, float* maxOut, int multiThread);
+#ifdef __cplusplus
+}
+#endif

@@ -158,7 +158,7 @@ static void draw_empty_image(cairo_t *cr, guint width, guint height) {
 static void remaprgb(void) {
 	guchar *dst;
 	guchar *bufr, *bufg, *bufb;
-	gint i, j;
+	gint i;
 	int nbdata;
 
 	siril_debug_print("remaprgb\n");
@@ -472,14 +472,12 @@ static void remap(int vport) {
 			guint src_index = y * gfit.rx + x;
 			BYTE dst_pixel_value = 0;
 			if (gfit.type == DATA_USHORT) {
-				WORD tmp_pixel_value;
 				if (special_mode) // special case, no lo & hi
 					dst_pixel_value = index[src[src_index]];
 				else if (do_cut_over && src[src_index] > hi)	// cut
 					dst_pixel_value = 0;
     			else {
 	    			dst_pixel_value = index[src[src_index] - lo < 0 ? 0 : src[src_index] - lo];
-					dst_pixel_value = index[tmp_pixel_value];
 				}
 			} else if (gfit.type == DATA_FLOAT) {
 				dst_pixel_value = display_for_float_pixel(fsrc[src_index], mode, vport, lo, hi);
