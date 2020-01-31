@@ -296,9 +296,35 @@ gsl_histogram* computeHisto(fits* fit, int layer) {
 
 	buf = fit->pdata[layer];
 	ndata = fit->rx * fit->ry;
-//#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) // cause errors !!!
-	for (i = 0; i < ndata; i++) {
-		gsl_histogram_increment(histo, (double)buf[i]);
+	if (com.max_thread == 1) {
+        for (i = 0; i < ndata; i++) {
+            gsl_histogram_increment(histo, (double)buf[i]);
+        }
+	} else {
+#ifdef _OPENMP
+        #pragma omp parallel num_threads(com.max_thread)
+#endif
+    {
+            gsl_histogram* histo_thr = gsl_histogram_alloc(size + 1);
+            gsl_histogram_set_ranges_uniform(histo_thr, 0, size);
+
+#ifdef _OPENMP
+            #pragma omp for private(i) schedule(static) nowait
+#endif
+            for (i = 0; i < ndata; i++) {
+                gsl_histogram_increment(histo_thr, (double)buf[i]);
+            }
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+            {
+                size_t j;
+                for (j = 0; j < size + 1; ++j) {
+                    gsl_histogram_accumulate(histo, j, gsl_histogram_get(histo_thr, j));
+                }
+            }
+            gsl_histogram_free(histo_thr);
+        }
 	}
 	return histo;
 }
