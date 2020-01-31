@@ -49,12 +49,12 @@
  *  * given h,s,l on [0..1],
  *   * return r,g,b on [0..1]
  *    */
-void hsl_to_rgb_float(float h, float sl, float l, float * r, float * g,
+void hsl_to_rgb_float_sat(float h, float sl, float l, float * r, float * g,
 		float * b) {
 	float v;
 
-	assert(h >= 0.f && h <= 6.f);
-	if (h >= 6.f) h -= 6.f;		// this code doesn't work for h = 1
+    h = h >= 6.f ? h - 6.f : h;
+
 	v = (l <= 0.5f) ? (l * (1.f + sl)) : (l + sl - l * sl);
 	if (v <= 0.f) {
 		*r = *g = *b = 0.f;
@@ -114,7 +114,7 @@ void hsl_to_rgb_float(float h, float sl, float l, float * r, float * g,
  *  * given r,g,b on [0 ... 1],
  *   * return (h,s,l) on [0 ... 1]
  *    */
-void rgb_to_hsl_float(float r, float g, float b, float low, float *h, float *s, float *l) {
+void rgb_to_hsl_float_sat(float r, float g, float b, float low, float *h, float *s, float *l) {
 	float v;
 	float m;
 	float vm;
@@ -129,28 +129,28 @@ void rgb_to_hsl_float(float r, float g, float b, float low, float *h, float *s, 
         *l = 0.f;
         return;
     }
+    *l = (m + v) / 2.f;
 	*h = 0.f;
 	*s = 0.f;	// init values
 
-	if ((*l = (m + v) / 2.f) <= 0.f) {
-		*l = 0.f;
-		return;
-	}
 	if ((*s = vm = v - m) > 0.f) {
 		*s /= (*l <= 0.5f) ? (v + m) : (2.f - v - m);
 	} else
 		return;
 
-	r2 = (v - r) / vm;
-	g2 = (v - g) / vm;
-	b2 = (v - b) / vm;
-
-	if (r == v)
+	if (r == v) {
+        g2 = (v - g) / vm;
+        b2 = (v - b) / vm;
 		*h = (g == m ? 5.f + b2 : 1.f - g2);
-	else if (g == v)
+	}else if (g == v) {
+        r2 = (v - r) / vm;
+        b2 = (v - b) / vm;
 		*h = (b == m ? 1.f + r2 : 3.f - b2);
-	else
+	} else {
+        r2 = (v - r) / vm;
+        g2 = (v - g) / vm;
 		*h = (r == m ? 3.f + g2 : 5.f - r2);
+	}
 
 }
 
