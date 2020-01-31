@@ -207,11 +207,13 @@ static void remaprgb(void) {
 	dst = com.rgbbuf;	// index is j
 	nbdata = gfit.rx * gfit.ry * 4;	// source images are 32-bit RGBA
 
-	for (i = 0, j = 0; i < nbdata; i += 4) {
-		dst[j++] = bufb[i];
-		dst[j++] = bufg[i];
-		dst[j++] = bufr[i];
-		j++;		// alpha padding
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread)
+#endif
+	for (i = 0; i < nbdata; i += 4) {
+		dst[i] = bufb[i];
+		dst[i + 1] = bufg[i];
+		dst[i + 2] = bufr[i];
 	}
 
 	// flush to ensure all writing to the image was done and redraw the surface
@@ -243,23 +245,20 @@ static void remap(int vport) {
 	if (single_image_is_loaded()) {
 		if (vport >= com.uniq->nb_layers)
 			no_data = 1;
-	}
-	else if (sequence_is_loaded()) {
+	} else if (sequence_is_loaded()) {
 		if (vport >= com.seq.nb_layers)
 			no_data = 1;
-	}
-	else no_data = 1;
+	} else
+		no_data = 1;
 	if (no_data) {
 		siril_debug_print("vport is out of bounds or data is not loaded yet\n");
 		return;
 	}
 
 	// allocate if not already done or the same size
-	if (cairo_format_stride_for_width(CAIRO_FORMAT_RGB24, gfit.rx) !=
-			com.surface_stride[vport] ||
-			gfit.ry != com.surface_height[vport] ||
-			!com.surface[vport] ||
-			!com.graybuf[vport]) {
+	if (cairo_format_stride_for_width(CAIRO_FORMAT_RGB24, gfit.rx)
+			!= com.surface_stride[vport] || gfit.ry != com.surface_height[vport]
+			|| !com.surface[vport] || !com.graybuf[vport]) {
 		guchar *oldbuf = com.graybuf[vport];
 		siril_debug_print("Gray display buffers and surface (re-)allocation\n");
 		if (gfit.rx == 0 || gfit.ry == 0) {
@@ -362,41 +361,38 @@ static void remap(int vport) {
 		make_index_for_rainbow(rainbow_index);
 	index = remap_index[vport];
 
+    gboolean special_mode = HISTEQ_DISPLAY || mode == STF_DISPLAY;
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(y) schedule(static)
 #endif
 	for (y = 0; y < gfit.ry; y++) {
 		guint x;
-		for (x = 0; x < gfit.rx; x++) {
-			guint src_index = y * gfit.rx + x;
+		guint src_index = y * gfit.rx;
+		guint dst_index = ((gfit.ry - 1 - y) * gfit.rx) * 4;
+		for (x = 0; x < gfit.rx; ++x, ++src_index, dst_index += 2) {
 			BYTE dst_pixel_value;
-			WORD tmp_pixel_value;
-			if (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY)	// special case, no lo & hi
+			if (special_mode)	// special case, no lo & hi
 				dst_pixel_value = index[src[src_index]];
 			else if (do_cut_over && src[src_index] > hi)	// cut
 				dst_pixel_value = 0;
 			else {
-				if (src[src_index] - lo < 0)
-					tmp_pixel_value = 0;
-				else
-					tmp_pixel_value = src[src_index] - lo;
-				dst_pixel_value = index[tmp_pixel_value];
+				dst_pixel_value = index[src[src_index] - lo < 0 ? 0 : src[src_index] - lo];
 			}
-			if (inverted)
-				dst_pixel_value = UCHAR_MAX - dst_pixel_value;
 
-			guint dst_index = ((gfit.ry - 1 - y) * gfit.rx + x) * 4;
+			dst_pixel_value =
+					inverted ? UCHAR_MAX - dst_pixel_value : dst_pixel_value;
+
 			switch (color) {
-				default:
-				case NORMAL_COLOR:
-					dst[dst_index++] = dst_pixel_value;
-					dst[dst_index++] = dst_pixel_value;
-					dst[dst_index++] = dst_pixel_value;
-					break;
-				case RAINBOW_COLOR:
-					dst[dst_index++] = rainbow_index[dst_pixel_value][0];
-					dst[dst_index++] = rainbow_index[dst_pixel_value][1];
-					dst[dst_index++] = rainbow_index[dst_pixel_value][2];
+			default:
+			case NORMAL_COLOR:
+				dst[dst_index++] = dst_pixel_value;
+				dst[dst_index++] = dst_pixel_value;
+				dst[dst_index] = dst_pixel_value;
+				break;
+			case RAINBOW_COLOR:
+				dst[dst_index++] = rainbow_index[dst_pixel_value][0];
+				dst[dst_index++] = rainbow_index[dst_pixel_value][1];
+				dst[dst_index] = rainbow_index[dst_pixel_value][2];
 			}
 		}
 	}

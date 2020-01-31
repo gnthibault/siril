@@ -548,7 +548,7 @@ int lrgb(fits *l, fits *r, fits *g, fits *b, fits *lrgb) {
 
 /* computes the background value using the histogram and/or median value.
  * The argument layer can be -1 for automatic setting (= green for RGB) */
-double background(fits* fit, int reqlayer, rectangle *selection) {
+double background(fits* fit, int reqlayer, rectangle *selection, gboolean multithread) {
 	int layer = RLAYER;
 	double bg;
 
@@ -557,7 +557,7 @@ double background(fits* fit, int reqlayer, rectangle *selection) {
 	else if (isrgb(&gfit))
 		layer = GLAYER;		//GLAYER is better to evaluate background
 
-	imstats* stat = statistics(NULL, -1, fit, layer, selection, STATS_BASIC);
+	imstats* stat = statistics(NULL, -1, fit, layer, selection, STATS_BASIC, multithread);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
 		return 0.0;

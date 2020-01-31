@@ -44,7 +44,7 @@ static int FnMeanSigma_int(int *array, long npix, int nullcheck, int nullvalue,
 		long *ngoodpix, double *mean, double *sigma, int *status);
 
 static int FnNoise1_ushort(WORD *array, long nx, long ny, int nullcheck,
-		WORD nullvalue, double *noise, int *status);
+		WORD nullvalue, double *noise, gboolean multithread, int *status);
 
 static int FnNoise5_ushort(WORD *array, long nx, long ny, int nullcheck,
 		WORD nullvalue, long *ngood, WORD *minval, WORD *maxval, double *n2,
@@ -71,6 +71,7 @@ double *noise1, /* 1st order estimate of noise in image background level */
 double *noise2, /* 2nd order estimate of noise in image background level */
 double *noise3, /* 3rd order estimate of noise in image background level */
 double *noise5, /* 5th order estimate of noise in image background level */
+gboolean multithread,
 int *status) /* error status */
 
 /*
@@ -96,7 +97,7 @@ int *status) /* error status */
 	}
 
 	if (noise1) {
-		FnNoise1_ushort(array, nx, ny, nullcheck, nullvalue, &xnoise, status);
+		FnNoise1_ushort(array, nx, ny, nullcheck, nullvalue, &xnoise, multithread, status);
 
 		*noise1 = xnoise;
 	}
@@ -662,6 +663,7 @@ int nullcheck, /* check for null values, if true */
 WORD nullvalue, /* value of null pixels, if nullcheck is true */
 /* returned parameters */
 double *noise, /* returned R.M.S. value of all non-null pixels */
+gboolean multithread,
 int *status) /* error status */
 /*
  Estimate the background noise in the input image using sigma of 1st order differences.
@@ -672,12 +674,8 @@ int *status) /* error status */
  row of the image.
  */
 {
-	int iter;
-	long ii, jj, kk, nrows = 0, nvals;
-	int *differences;
-	WORD *rowpix, v1;
-	double *diffs, xnoise, mean, stdev;
-
+	long jj, nrows = 0;
+	double *diffs, xnoise;
 	/* rows must have at least 3 pixels to estimate noise */
 	if (nx < 3) {
 		*noise = 0;
@@ -685,98 +683,118 @@ int *status) /* error status */
 	}
 
 	/* allocate arrays used to compute the median and noise estimates */
-	differences = calloc(nx, sizeof(int));
-	if (!differences) {
-		*status = MEMORY_ALLOCATION;
-		return (*status);
-	}
-
+//	differences = calloc(nx, sizeof(int));
+//	if (!differences) {
+//		*status = MEMORY_ALLOCATION;
+//		return (*status);
+//	}
 	diffs = calloc(ny, sizeof(double));
 	if (!diffs) {
-		free(differences);
+//		free(differences);
 		*status = MEMORY_ALLOCATION;
 		return (*status);
 	}
 
 	/* loop over each row of the image */
-	for (jj = 0; jj < ny; jj++) {
+#ifdef _OPENMP
+#pragma omp parallel num_threads(com.max_thread) if (multithread)
+#endif
+	{
+		WORD *rowpix, v1;
+		double mean, stdev;
+		int *differences;
+		differences = calloc(nx, sizeof(int)); // no check here at the moment, allocation is small, should be no problem
+	    
+#ifdef _OPENMP
+#pragma omp for schedule (dynamic, 16)
+#endif
+			for (jj = 0; jj < ny; jj++) {
+				long ii, kk, nvals;
+				rowpix = array + (jj * nx); /* point to first pixel in the row */
+				int iter;
 
-		rowpix = array + (jj * nx); /* point to first pixel in the row */
+				/***** find the first valid pixel in row */
+				ii = 0;
+				if (nullcheck)
+					while (ii < nx && rowpix[ii] == nullvalue)
+						ii++;
 
-		/***** find the first valid pixel in row */
-		ii = 0;
-		if (nullcheck)
-			while (ii < nx && rowpix[ii] == nullvalue)
-				ii++;
+				if (ii == nx)
+					continue; /* hit end of row */
+				v1 = rowpix[ii]; /* store the good pixel value */
 
-		if (ii == nx)
-			continue; /* hit end of row */
-		v1 = rowpix[ii]; /* store the good pixel value */
+				/* now continue populating the differences arrays */
+				/* for the remaining pixels in the row */
+				nvals = 0;
+				for (ii++; ii < nx; ii++) {
 
-		/* now continue populating the differences arrays */
-		/* for the remaining pixels in the row */
-		nvals = 0;
-		for (ii++; ii < nx; ii++) {
+					/* find the next valid pixel in row */
+					if (nullcheck)
+						while (ii < nx && rowpix[ii] == nullvalue)
+							ii++;
 
-			/* find the next valid pixel in row */
-			if (nullcheck)
-				while (ii < nx && rowpix[ii] == nullvalue)
-					ii++;
+					if (ii == nx)
+						break; /* hit end of row */
 
-			if (ii == nx)
-				break; /* hit end of row */
+					/* construct array of 1st order differences */
+					differences[nvals] = v1 - rowpix[ii];
 
-			/* construct array of 1st order differences */
-			differences[nvals] = v1 - rowpix[ii];
+					nvals++;
+					/* shift over 1 pixel */
+					v1 = rowpix[ii];
+				} /* end of loop over pixels in the row */
 
-			nvals++;
-			/* shift over 1 pixel */
-			v1 = rowpix[ii];
-		} /* end of loop over pixels in the row */
+				if (nvals < 2)
+					continue;
+				else {
 
-		if (nvals < 2)
-			continue;
-		else {
-
-			FnMeanSigma_int(differences, nvals, 0, 0, 0, &mean, &stdev, status);
-
-			if (stdev > 0.) {
-				for (iter = 0; iter < NITER; iter++) {
-					kk = 0;
-					for (ii = 0; ii < nvals; ii++) {
-						if (fabs(differences[ii] - mean) < SIGMA_CLIP * stdev) {
-							if (kk < ii)
-								differences[kk] = differences[ii];
-							kk++;
-						}
-					}
-					if (kk == nvals)
-						break;
-
-					nvals = kk;
 					FnMeanSigma_int(differences, nvals, 0, 0, 0, &mean, &stdev,
 							status);
+
+					if (stdev > 0.) {
+						for (iter = 0; iter < NITER; iter++) {
+							kk = 0;
+							for (ii = 0; ii < nvals; ii++) {
+								if (fabs(differences[ii] - mean)
+										< SIGMA_CLIP * stdev) {
+									if (kk < ii)
+										differences[kk] = differences[ii];
+									kk++;
+								}
+							}
+							if (kk == nvals)
+								break;
+
+							nvals = kk;
+							FnMeanSigma_int(differences, nvals, 0, 0, 0, &mean,
+									&stdev, status);
+						}
+					}
+
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+					{
+						diffs[nrows] = stdev;
+						nrows++;
+					}
 				}
-			}
+			} /* end of loop over rows */
+		free(differences);
 
-			diffs[nrows] = stdev;
-			nrows++;
-		}
-	} /* end of loop over rows */
-
+	}
 	/* compute median of the values for each row */
 	if (nrows == 0) {
 		xnoise = 0;
 	} else if (nrows == 1) {
 		xnoise = diffs[0];
 	} else {
-		xnoise = quickmedian_double (diffs, nrows);
+		xnoise = quickmedian_double(diffs, nrows);
 	}
 
 	*noise = .70710678 * xnoise;
 
 	free(diffs);
-	free(differences);
 
 	return (*status);
 }

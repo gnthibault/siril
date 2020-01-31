@@ -333,18 +333,40 @@ void sortnet (WORD *a, int n) {
  * @return median as a double (for n odd)
  * Use temp storage h to build the histogram. Complexity O(2*N)
  */
-double histogram_median(WORD *a, int n) {
+double histogram_median(WORD *a, int n, gboolean mutlithread) {
 	// For arrays n < 10 histogram is use fast and simple sortnet_median
 	if (n < 10)
 		return sortnet_median(a, n);
 
 	unsigned int i, j, k = n / 2;
 	size_t s = sizeof(unsigned int);
-	unsigned int *h = (unsigned int *) calloc(USHRT_MAX + 1, s);
+	unsigned int *h = (unsigned int*) calloc(USHRT_MAX + 1, s);
 
-	for (i = 0; i < n; i++)
-		h[a[i]]++;
-
+#ifdef _OPENMP
+#pragma omp parallel num_threads(com.max_thread) if (mutlithread)
+#endif
+	{
+		unsigned int *hthr = (unsigned int*) calloc(USHRT_MAX + 1, s);
+#ifdef _OPENMP
+#pragma omp for nowait
+#endif
+		for (i = 0; i < n; i++) {
+			hthr[a[i]]++;
+		}
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+		{
+			// add per thread histogram to main histogram
+#ifdef _OPENMP
+#pragma omp simd
+#endif
+			for (size_t i = 0; i < USHRT_MAX; ++i) {
+				h[i] += hthr[i];
+			}
+		}
+		free(hthr);
+	}
 	i = j = 0;
 	if (n % 2 == 0) {
 		for (; h[j] <= k - 1; j++)
