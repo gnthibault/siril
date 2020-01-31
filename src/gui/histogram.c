@@ -295,82 +295,62 @@ gsl_histogram* computeHisto(fits *fit, int layer) {
 	g_assert(layer < 3);
 	size_t i, ndata, size;
 
-	size = get_histo_size(fit);
-	gsl_histogram *histo = gsl_histogram_alloc(size + 1);
-	gsl_histogram_set_ranges_uniform(histo, 0,
-			fit->type == DATA_FLOAT ? 1.0 : size);
-	ndata = fit->rx * fit->ry;
-
 	if (fit->type == DATA_USHORT) {
-		WORD *buf = fit->pdata[layer];
-		if (com.max_thread == 1) {
-			for (i = 0; i < ndata; i++) {
-				gsl_histogram_increment(histo, (double) buf[i]);
-			}
-		} else {
-#ifdef _OPENMP
-#pragma omp parallel num_threads(com.max_thread)
-#endif
-			{
-				gsl_histogram *histo_thr = gsl_histogram_alloc(size + 1);
-				gsl_histogram_set_ranges_uniform(histo_thr, 0, size);
+		size = (size_t) get_normalized_value(fit); // that could be 8bit.
+	}
+	else {
+		size = USHRT_MAX;
+	}
+	gsl_histogram *histo = gsl_histogram_alloc(size + 1);
+	gsl_histogram_set_ranges_uniform(histo, 0, size);
 
-#ifdef _OPENMP
-#pragma omp for private(i) schedule(static) nowait
-#endif
-				for (i = 0; i < ndata; i++) {
-					gsl_histogram_increment(histo_thr, (double) buf[i]);
-				}
-#ifdef _OPENMP
-#pragma omp critical
-#endif
-				{
-					size_t j;
-					for (j = 0; j < size + 1; ++j) {
-						gsl_histogram_accumulate(histo, j,
-								gsl_histogram_get(histo_thr, j));
-					}
-				}
-				gsl_histogram_free(histo_thr);
+	ndata = fit->rx * fit->ry;
+	if (com.max_thread == 1) {
+		for (i = 0; i < ndata; i++) {
+			double buf;
+			if (fit->type == DATA_USHORT) {
+				buf = (double) fit->pdata[layer][i];
+			} else {
+				buf = (double) fit->fpdata[layer][i] * USHRT_MAX_SINGLE;
 			}
+			gsl_histogram_increment(histo, buf);
 		}
-	} else if (fit->type == DATA_FLOAT) {
-		float *buf = fit->fpdata[layer];
-		if (com.max_thread == 1) {
-			for (i = 0; i < ndata; i++) {
-				gsl_histogram_increment(histo, (double) buf[i]);
-			}
-		} else {
+	} else {
 #ifdef _OPENMP
 #pragma omp parallel num_threads(com.max_thread)
 #endif
-			{
-				gsl_histogram *histo_thr = gsl_histogram_alloc(size + 1);
-				gsl_histogram_set_ranges_uniform(histo_thr, 0, size);
+		{
+			gsl_histogram *histo_thr = gsl_histogram_alloc(size + 1);
+			gsl_histogram_set_ranges_uniform(histo_thr, 0, size);
 
 #ifdef _OPENMP
 #pragma omp for private(i) schedule(static) nowait
 #endif
-				for (i = 0; i < ndata; i++) {
-					gsl_histogram_increment(histo_thr, (double) buf[i]);
+			for (i = 0; i < ndata; i++) {
+				double buf;
+				if (fit->type == DATA_USHORT) {
+					buf = (double) fit->pdata[layer][i];
+				} else {
+					buf = (double) fit->fpdata[layer][i] * USHRT_MAX_SINGLE;
 				}
+				gsl_histogram_increment(histo_thr, buf);
+			}
 #ifdef _OPENMP
 #pragma omp critical
 #endif
-				{
-					size_t j;
-					for (j = 0; j < size + 1; ++j) {
-						gsl_histogram_accumulate(histo, j,
-								gsl_histogram_get(histo_thr, j));
-					}
+			{
+				size_t j;
+				for (j = 0; j < size + 1; ++j) {
+					gsl_histogram_accumulate(histo, j,
+							gsl_histogram_get(histo_thr, j));
 				}
-				gsl_histogram_free(histo_thr);
 			}
-
+			gsl_histogram_free(histo_thr);
 		}
 	}
 	return histo;
 }
+
 
 static void draw_curve(cairo_t *cr, int width, int height) {
 	// draw curve

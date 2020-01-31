@@ -65,7 +65,7 @@ static void select_area_float(fits *fit, float *data, int layer, rectangle *boun
  * of the absolute deviations from the data's median:
  *  MAD = median (| Xi − median(X) |)
  */
-static double siril_stats_float_mad(const float *data, const size_t n, const double m) {
+static double siril_stats_float_mad(const float *data, const size_t n, const double m, gboolean multithread) {
 	size_t i;
 	double mad;
 	const float median = (float)m;
@@ -80,7 +80,7 @@ static double siril_stats_float_mad(const float *data, const size_t n, const dou
 		tmp[i] = fabsf(data[i] - median);
 	}
 
-	mad = histogram_median_float(tmp, n);
+	mad = histogram_median_float(tmp, n, multithread);
 	free(tmp);
 	return mad;
 }
@@ -112,7 +112,7 @@ static double siril_stats_float_bwmv(const float* data, const size_t n,
 	return bwmv;
 }
 
-static int IKSS(float *data, int n, double *location, double *scale) {
+static int IKSS(float *data, int n, double *location, double *scale, gboolean multithread) {
 	size_t i, j;
 	double mad, s, s0, m, xlow, xhigh;
 
@@ -126,7 +126,7 @@ static int IKSS(float *data, int n, double *location, double *scale) {
 			break;
 		}
 		m = gsl_stats_float_median_from_sorted_data(data + i, 1, j - i);
-		mad = siril_stats_float_mad(data + i, j - i, m);
+		mad = siril_stats_float_mad(data + i, j - i, m, multithread);
 		s = sqrt(siril_stats_float_bwmv(data + i, j - i, mad, m));
 		if (s < 2E-23) {
 			*location = m;
@@ -175,7 +175,7 @@ static void siril_stats_float_minmax(float *min_out, float *max_out,
 
 /* this function tries to get the requested stats from the passed stats,
  * computes them and stores them in it if they have not already been */
-imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, int option, imstats *stats) {
+imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, int option, imstats *stats, gboolean multithread) {
 	int nx, ny;
 	float *data = NULL;
 	int stat_is_local = 0, free_data = 0;
@@ -237,9 +237,9 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
-		fits_img_stats_float(data, nx, ny, 0, 0.0f, &stat->ngoodpix,
+		siril_fits_img_stats_float(data, nx, ny, 0, 0.0f, &stat->ngoodpix,
 				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
-				NULL, NULL, NULL, &status);
+				NULL, NULL, NULL, multithread, &status);
 		if (status) {
 			if (free_data) free(data);
 			if (stat_is_local) free(stat);
@@ -273,7 +273,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing median\n", stat, fit, layer);
-		stat->median = histogram_median_float(data, stat->ngoodpix);
+		stat->median = histogram_median_float(data, stat->ngoodpix, multithread);
 	}
 
 	/* Calculation of average absolute deviation from the median */
@@ -293,7 +293,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing mad\n", stat, fit, layer);
-		stat->mad = siril_stats_float_mad(data, stat->ngoodpix, stat->median);
+		stat->mad = siril_stats_float_mad(data, stat->ngoodpix, stat->median, multithread);
 	}
 
 	/* Calculation of Bidweight Midvariance */
@@ -322,7 +322,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;
 		}
 
-		IKSS(data, stat->ngoodpix, &stat->location, &stat->scale);
+		IKSS(data, stat->ngoodpix, &stat->location, &stat->scale, multithread);
 	}
 
 	if (free_data) free(data);

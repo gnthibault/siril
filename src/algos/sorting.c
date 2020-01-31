@@ -453,7 +453,7 @@ double histogram_median(WORD *a, int n, gboolean mutlithread) {
 	return (n % 2 == 0) ? (double) (i + j) / 2.0 : (double) i;
 }
 
-double histogram_median_float(float *a, int n) {
+double histogram_median_float(float *a, int n, gboolean multithread) {
 	unsigned int i, j, k = n / 2, nb_bins = 100000;
 	size_t s = sizeof(unsigned int);
 	unsigned int *h = calloc(nb_bins + 1, s);

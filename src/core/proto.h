@@ -132,8 +132,13 @@ double encodeJD(dateTime dt);
 gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf);
 
 /****************** quantize.h ***************/
-int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,
+int siril_fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,
 		WORD nullvalue, long *ngoodpix, WORD *minvalue, WORD *maxvalue,
+		double *mean, double *sigma, double *noise1, double *noise2,
+		double *noise3, double *noise5, gboolean multithread, int *status);
+
+int siril_fits_img_stats_float(float *array, long nx, long ny, int nullcheck,
+		float nullvalue, long *ngoodpix, float *minvalue, float *maxvalue,
 		double *mean, double *sigma, double *noise1, double *noise2,
 		double *noise3, double *noise5, gboolean multithread, int *status);
 

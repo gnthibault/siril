@@ -304,7 +304,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
-		fits_img_stats_ushort(data, nx, ny, 1, 0, &stat->ngoodpix,
+		siril_fits_img_stats_ushort(data, nx, ny, 1, 0, &stat->ngoodpix,
 				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
 				NULL, NULL, NULL, multithread, &status);
 		if (status) {
@@ -408,7 +408,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		if (fit->type == DATA_USHORT)
 			return statistics_internal_ushort(fit, layer, selection, option, stats, multithread);
 		if (fit->type == DATA_FLOAT)
-			return statistics_internal_float(fit, layer, selection, option, stats);
+			return statistics_internal_float(fit, layer, selection, option, stats, multithread);
 	}
 	return statistics_internal_ushort(fit, layer, selection, option, stats, multithread);
 }
