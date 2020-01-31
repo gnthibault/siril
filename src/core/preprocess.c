@@ -65,7 +65,7 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark,
 	}
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, &fit_tmp, chan, &area, STATS_BASIC);
+		imstats *stat = statistics(NULL, -1, &fit_tmp, chan, &area, STATS_BASIC, FALSE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			return 0.0;	// not -1?
@@ -191,7 +191,7 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 			compute_grey_flat(prepro->flat);
 		}
 		if (prepro->autolevel) {
-			imstats *stat = statistics(NULL, -1, prepro->flat, RLAYER, NULL, STATS_BASIC);
+			imstats *stat = statistics(NULL, -1, prepro->flat, RLAYER, NULL, STATS_BASIC, FALSE);
 			if (!stat) {
 				siril_log_message(_("Error: statistics computation failed.\n"));
 				return 1;

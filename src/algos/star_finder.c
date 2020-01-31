@@ -47,7 +47,7 @@ static WORD Compute_threshold_ushort(fits *fit, double ksigma, int layer, WORD *
 
 	assert(layer <= 3);
 
-	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC);
+	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC, FALSE);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
 		*norm = 0;
@@ -68,7 +68,7 @@ static float Compute_threshold_float(fits *fit, double ksigma, int layer, float 
 
 	assert(layer <= 3);
 
-	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC);
+	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC, FALSE);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
 		*norm = 0;
@@ -482,7 +482,7 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 	gboolean already_found = FALSE;
 
 	*index = -1;
-	fitted_PSF * result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE, TRUE);
+	fitted_PSF * result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE, TRUE, TRUE);
 	if (!result)
 		return NULL;
 	/* We do not check if it's matching with the "is_star()" criteria.

@@ -551,7 +551,7 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf, gboolean fo
 /* Returns the largest FWHM.
  * The optional output parameter roundness is the ratio between the two axis FWHM */
 double psf_get_fwhm(fits *fit, int layer, double *roundness) {
-	fitted_PSF *result = psf_get_minimisation(fit, layer, &com.selection, FALSE, TRUE);
+	fitted_PSF *result = psf_get_minimisation(fit, layer, &com.selection, FALSE, TRUE, TRUE);
 	if (result == NULL) {
 		*roundness = 0.0;
 		return 0.0;
@@ -568,10 +568,11 @@ double psf_get_fwhm(fits *fit, int layer, double *roundness) {
  * Selection rectangle is passed as third argument.
  * Return value is a structure, type fitted_PSF, that has to be freed after use.
  */
-fitted_PSF *psf_get_minimisation(fits *fit, int layer, rectangle *area, gboolean for_photometry, gboolean verbose) {
+fitted_PSF *psf_get_minimisation(fits *fit, int layer, rectangle *area,
+		gboolean for_photometry, gboolean verbose, gboolean multithread_stat) {
 	int stridefrom, i, j;
 	fitted_PSF *result;
-	double bg = background(fit, layer, area);
+	double bg = background(fit, layer, area, multithread_stat);
 
 	// fprintf(stdout, "background: %g\n", bg);
 	gsl_matrix *z = gsl_matrix_alloc(area->h, area->w);
@@ -746,7 +747,7 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 		return;
 	}
-	result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE);
+	result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
 	if (!result)
 		return;
 

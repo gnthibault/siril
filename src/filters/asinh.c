@@ -72,11 +72,6 @@ static void asinh_recompute() {
 }
 
 static int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBspace) {
-	siril_log_color_message(_("Asinh transformation: processing...\n"), "red");
-
-	struct timeval t_start, t_end;
-	gettimeofday(&t_start, NULL);
-
 	int i;
 	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 	double norm, asinh_beta, factor_red, factor_green, factor_blue;
@@ -120,8 +115,6 @@ static int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBsp
 		}
 	}
 	invalidate_stats_from_fit(fit);
-	gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
 	return 0;
 }
 

@@ -790,7 +790,7 @@ int process_set_mag(int nb) {
 			siril_log_message(_("Select an area first\n"));
 			return 1;
 		}
-		fitted_PSF *result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE);
+		fitted_PSF *result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
 		if (result) {
 			com.magOffset = mag - result->mag;
 			siril_log_message(_("Relative magnitude: %.3lf, "
@@ -917,7 +917,7 @@ int process_psf(int nb){
 			siril_log_message(_("Select an area first\n"));
 			return 1;
 		}
-		fitted_PSF *result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE);
+		fitted_PSF *result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
 		if (result) {
 			psf_display_result(result, &com.selection);
 			free(result);
@@ -1035,7 +1035,7 @@ int process_seq_crop(int nb) {
 int process_bg(int nb){
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	WORD bg = round_to_WORD(background(&gfit, -1, &com.selection));
+	WORD bg = round_to_WORD(background(&gfit, -1, &com.selection, TRUE));
 	siril_log_message(_("Background value: %d\n"), bg);
 	return 0;
 }
@@ -1852,7 +1852,7 @@ int process_stat(int nb){
 	nplane = gfit.naxes[2];
 
 	for (layer = 0; layer < nplane; layer++) {
-		imstats* stat = statistics(NULL, -1, &gfit, layer, &com.selection, STATS_MAIN);
+		imstats* stat = statistics(NULL, -1, &gfit, layer, &com.selection, STATS_MAIN, TRUE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			return 1;

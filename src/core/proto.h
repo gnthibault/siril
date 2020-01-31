@@ -135,7 +135,7 @@ gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf);
 int fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,
 		WORD nullvalue, long *ngoodpix, WORD *minvalue, WORD *maxvalue,
 		double *mean, double *sigma, double *noise1, double *noise2,
-		double *noise3, double *noise5, int *status);
+		double *noise3, double *noise5, gboolean multithread, int *status);
 
 /****************** siril.h ******************/
 
@@ -149,7 +149,7 @@ int ddp(fits *a, int lev, float coef, float sig);
 int visu(fits *fit, int low, int high);
 int fill(fits *fit, int level, rectangle *arearg);
 int off(fits *a, float level);
-double background(fits *fit, int reqlayer, rectangle *selection);
+double background(fits *fit, int reqlayer, rectangle *selection, gboolean multithread);
 void show_FITS_header(fits*);
 void compute_grey_flat(fits *fit);
 
