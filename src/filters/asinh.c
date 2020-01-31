@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #include <math.h>
 
@@ -78,8 +78,7 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 	gettimeofday(&t_start, NULL);
 
 	int i;
-	WORD *buf[3] =
-			{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 	double norm, asinh_beta, factor_red, factor_green, factor_blue;
 
 	norm = get_normalized_value(fit);
@@ -93,7 +92,6 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 #pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->rx * 16)
 #endif
 		for (i = 0; i < fit->ry * fit->rx; i++) {
-			int layer;
 			double x, k;
 			double r, g, b;
 

@@ -51,14 +51,13 @@ static void stats_set_default_values(imstats *stat);
 static void select_area(fits *fit, WORD *data, int layer, rectangle *bounds) {
 	int i, j, k = 0;
 
-	WORD *from = fit->pdata[layer] + (fit->ry - bounds->y - bounds->h) * fit->rx
-			+ bounds->x;
+	WORD *from = fit->pdata[layer] +
+		(fit->ry - bounds->y - bounds->h) * fit->rx + bounds->x;
 	int stridefrom = fit->rx - bounds->w;
 
 	for (i = 0; i < bounds->h; ++i) {
 		for (j = 0; j < bounds->w; ++j) {
-			data[k] = *from++;
-			k++;
+			data[k++] = *from++;
 		}
 		from += stridefrom;
 	}
@@ -68,17 +67,19 @@ static void select_area(fits *fit, WORD *data, int layer, rectangle *bounds) {
  * of the absolute deviations from the data's median:
  *  MAD = median (| Xi − median(X) |)
  */
-static double siril_stats_ushort_mad(WORD* data, const size_t stride,
-		const size_t n, const double m) {
+static double siril_stats_ushort_mad(WORD* data, const size_t n, const double m) {
 	size_t i;
 	double mad;
 	int median = round_to_int(m);	// we use it on integer data anyway
-	WORD *tmp = calloc(n, sizeof(WORD));
+	WORD *tmp = malloc(n * sizeof(WORD));
+	if (!tmp) {
+		PRINT_ALLOC_ERR;
+		return 0.0f; // TODO: check return value
+	}
 
 #pragma omp parallel for num_threads(com.max_thread) if(n > 10000) private(i) schedule(static)
 	for (i = 0; i < n; i++) {
-		int delta = data[i * stride] - median;
-		tmp[i] = (WORD)abs(delta);
+		tmp[i] = (WORD)abs(data[i] - median);
 	}
 
 	mad = histogram_median (tmp, n);
@@ -86,15 +87,18 @@ static double siril_stats_ushort_mad(WORD* data, const size_t stride,
 	return mad;
 }
 
-static double siril_stats_double_mad(const double* data, const size_t stride,
-		const size_t n, const double median) {
+static double siril_stats_double_mad(const double* data, const size_t n, const double median) {
 	size_t i;
-	double *tmp = calloc(n, sizeof(double));
 	double mad;
+	double *tmp = malloc(n * sizeof(double));
+	if (!tmp) {
+		PRINT_ALLOC_ERR;
+		return 0.0f; // TODO: check return value
+	}
 
 #pragma omp parallel for num_threads(com.max_thread) if(n > 10000) private(i) schedule(static)
 	for (i = 0; i < n; i++) {
-		tmp[i] = fabs(data[i * stride] - median);
+		tmp[i] = fabs(data[i] - median);
 	}
 
 	mad = histogram_median_double (tmp, n);
@@ -167,7 +171,7 @@ static int IKSS(double *data, int n, double *location, double *scale) {
 			break;
 		}
 		m = gsl_stats_median_from_sorted_data(data + i, 1, j - i);
-		mad = siril_stats_double_mad(data + i, 1, j - i, m);
+		mad = siril_stats_double_mad(data + i, j - i, m);
 		s = sqrt(siril_stats_double_bwmv(data + i, j - i, mad, m));
 		if (s < 2E-23) {
 			*location = m;
@@ -215,7 +219,7 @@ static WORD* reassign_to_non_null_data(WORD *data, long inputlen, long outputlen
 }
 
 static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
-		const WORD data[], const size_t stride, const size_t n) {
+		const WORD data[], const size_t n) {
 	/* finds the smallest and largest members of a dataset */
 
 	if (n > 0 && data) {
@@ -225,11 +229,9 @@ static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
 
 #pragma omp parallel for num_threads(com.max_thread) schedule(static) if(n > 10000) reduction(max:max) reduction(min:min)
 		for (i = 0; i < n; i++) {
-			WORD xi = data[i * stride];
-
+			WORD xi = data[i];
 			if (xi < min)
 				min = xi;
-
 			if (xi > max)
 				max = xi;
 		}
@@ -260,7 +262,12 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		if (selection && selection->h > 0 && selection->w > 0) {
 			nx = selection->w;
 			ny = selection->h;
-			data = calloc(nx * ny, sizeof(WORD));
+			data = malloc(nx * ny * sizeof(WORD));
+			if (!data) {
+				PRINT_ALLOC_ERR;
+				if (stat_is_local) free(stat);
+				return NULL;
+			}
 			select_area(fit, data, layer, selection);
 			free_data = 1;
 		} else {
@@ -284,7 +291,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
-		siril_stats_ushort_minmax(&min, &max, data, 1, stat->total);
+		siril_stats_ushort_minmax(&min, &max, data, stat->total);
 		if (fit->bitpix == BYTE_IMG)
 			norm = UCHAR_MAX;
 		else norm = USHRT_MAX;
@@ -355,7 +362,7 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing mad\n", stat, fit, layer);
-		stat->mad = siril_stats_ushort_mad(data, 1, stat->ngoodpix, stat->median);
+		stat->mad = siril_stats_ushort_mad(data, stat->ngoodpix, stat->median);
 	}
 
 	/* Calculation of Bidweight Midvariance */
