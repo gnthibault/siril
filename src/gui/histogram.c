@@ -53,7 +53,7 @@
 static double histo_color_r[] = { 1.0, 0.0, 0.0, 0.0 };
 static double histo_color_g[] = { 0.0, 1.0, 0.0, 0.0 };
 static double histo_color_b[] = { 0.0, 0.0, 1.0, 0.0 };
-static double graph_height = 0.;	// the max value of all bins
+static float graph_height = 0.;	// the max value of all bins
 static uint64_t clipped[] = { 0, 0 };
 
 static GtkToggleToolButton *toggles[MAXVPORT] = { NULL };
@@ -63,7 +63,7 @@ static GtkToggleToolButton *toggleGrid = NULL, *toggleCurve = NULL;
 static fits histo_gfit_backup;
 static gsl_histogram *hist_backup[MAXVPORT] = { NULL, NULL, NULL, NULL };
 
-static double _midtones, _shadows, _highlights;
+static float _midtones, _shadows, _highlights;
 
 static gboolean _click_on_histo = FALSE;
 static ScaleType _type_of_scale;
@@ -166,18 +166,18 @@ static void _update_entry_text() {
 
 static void _update_clipped_pixels(int data) {
 	static GtkEntry *clip_high = NULL, *clip_low = NULL;
-	double tmp;
+	float tmp;
 	char buffer[16];
 
 	if (clip_high == NULL) {
 		clip_high = GTK_ENTRY(lookup_widget("clip_highlights"));
 		clip_low = GTK_ENTRY(lookup_widget("clip_shadows"));
 	}
-	tmp = (double)clipped[1] * 100.0 / data;
-	g_snprintf(buffer, sizeof(buffer), "%.3lf%%", tmp);
+	tmp = (float)clipped[1] * 100.0 / data;
+	g_snprintf(buffer, sizeof(buffer), "%.3f%%", tmp);
 	gtk_entry_set_text(clip_high, buffer);
-	tmp = (double)clipped[0] * 100.0 / data;
-	g_snprintf(buffer, sizeof(buffer), "%.3lf%%", tmp);
+	tmp = (float)clipped[0] * 100.0 / data;
+	g_snprintf(buffer, sizeof(buffer), "%.3f%%", tmp);
 	gtk_entry_set_text(clip_low, buffer);
 
 }
@@ -287,7 +287,7 @@ static void adjust_histogram_vport_size() {
 size_t get_histo_size(fits *fit) {
 	if (fit->type == DATA_USHORT)
 		return (size_t)get_normalized_value(fit);
-	return (size_t)100000;
+	return (size_t)1000000;
 }
 
 // create a new histrogram object for the passed fit and layer
@@ -295,62 +295,45 @@ gsl_histogram* computeHisto(fits *fit, int layer) {
 	g_assert(layer < 3);
 	size_t i, ndata, size;
 
-	if (fit->type == DATA_USHORT) {
-		size = (size_t) get_normalized_value(fit); // that could be 8bit.
-	}
-	else {
-		size = USHRT_MAX;
-	}
+	size = get_histo_size(fit);
 	gsl_histogram *histo = gsl_histogram_alloc(size + 1);
-	gsl_histogram_set_ranges_uniform(histo, 0, size);
-
+	gsl_histogram_set_ranges_uniform(histo, 0, fit->type == DATA_FLOAT ? 1.0 + 1.0 / size : size + 1);
 	ndata = fit->rx * fit->ry;
-	if (com.max_thread == 1) {
-		for (i = 0; i < ndata; i++) {
-			double buf;
-			if (fit->type == DATA_USHORT) {
-				buf = (double) fit->pdata[layer][i];
-			} else {
-				buf = (double) fit->fpdata[layer][i] * USHRT_MAX_SINGLE;
-			}
-			gsl_histogram_increment(histo, buf);
-		}
-	} else {
+
 #ifdef _OPENMP
 #pragma omp parallel num_threads(com.max_thread)
 #endif
-		{
-			gsl_histogram *histo_thr = gsl_histogram_alloc(size + 1);
-			gsl_histogram_set_ranges_uniform(histo_thr, 0, size);
+	{
+		gsl_histogram *histo_thr = gsl_histogram_alloc(size + 1);
+		gsl_histogram_set_ranges_uniform(histo_thr, 0, fit->type == DATA_FLOAT ? 1.0 + 1.0 / size : size + 1);
 
+		if (fit->type == DATA_USHORT) {
+			WORD *buf = fit->pdata[layer];
 #ifdef _OPENMP
-#pragma omp for private(i) schedule(static) nowait
+#pragma omp for private(i) schedule(static)
 #endif
 			for (i = 0; i < ndata; i++) {
-				double buf;
-				if (fit->type == DATA_USHORT) {
-					buf = (double) fit->pdata[layer][i];
-				} else {
-					buf = (double) fit->fpdata[layer][i] * USHRT_MAX_SINGLE;
-				}
-				gsl_histogram_increment(histo_thr, buf);
+				gsl_histogram_increment(histo_thr, (double) buf[i]);
 			}
+		} else if (fit->type == DATA_FLOAT) {
+			float *buf = fit->fpdata[layer];
+#ifdef _OPENMP
+#pragma omp for private(i) schedule(static)
+#endif
+			for (i = 0; i < ndata; i++) {
+				gsl_histogram_increment(histo_thr, (double) buf[i]);
+			}
+		}
 #ifdef _OPENMP
 #pragma omp critical
 #endif
-			{
-				size_t j;
-				for (j = 0; j < size + 1; ++j) {
-					gsl_histogram_accumulate(histo, j,
-							gsl_histogram_get(histo_thr, j));
-				}
-			}
-			gsl_histogram_free(histo_thr);
+		{
+			gsl_histogram_add(histo, histo_thr);
 		}
+		gsl_histogram_free(histo_thr);
 	}
 	return histo;
 }
-
 
 static void draw_curve(cairo_t *cr, int width, int height) {
 	// draw curve
@@ -360,8 +343,8 @@ static void draw_curve(cairo_t *cr, int width, int height) {
 	cairo_set_source_rgb(cr, .9, .9, .9);
 
 	for (k = 0; k < USHRT_MAX + 1; k++) {
-		double x = k / (USHRT_MAX_SINGLE);
-		double y = MTF(x, _midtones, _shadows, _highlights);
+		float x = k / (USHRT_MAX_SINGLE);
+		float y = MTF(x, _midtones, _shadows, _highlights);
 		cairo_line_to(cr, x * width, height * (1 - y));
 	}
 	cairo_stroke(cr);
@@ -470,7 +453,7 @@ static void draw_slider(cairo_t *cr, int width, int height, int xpos) {
 
 static void display_scale(cairo_t *cr, int width, int height) {
 	draw_gradient(cr, width, height);
-	double delta = ((_highlights - _shadows) * _midtones) + _shadows;
+	float delta = ((_highlights - _shadows) * _midtones) + _shadows;
 	draw_slider(cr, width, height, _shadows * width);
 	draw_slider(cr, width, height, (delta) * width);
 	draw_slider(cr, width, height, _highlights * width);
@@ -519,14 +502,14 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 	i = 0;
 	current_bin = 0;
 	do {
-		double bin_val = 0.0;
+		float bin_val = 0.0;
 		while (i < nb_orig_bins
 				&& (float)i / vals_per_px <= (float)current_bin + 0.5f) {
 			bin_val += gsl_histogram_get(histo, i);
 			i++;
 		}
 		if (is_log_scale() && bin_val != 0.0) {
-			bin_val = log(bin_val);
+			bin_val = logf(bin_val);
 		}
 		displayed_values[current_bin] = bin_val;
 		if (bin_val > graph_height)	// check for maximum
@@ -534,7 +517,7 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 		current_bin++;
 	} while (i < nb_orig_bins && current_bin < nb_bins_allocated);
 	for (i = 0; i < nb_bins_allocated; i++) {
-		double bin_height = height - height * displayed_values[i] / graph_height;
+		float bin_height = height - height * displayed_values[i] / graph_height;
 		cairo_line_to(cr, i, bin_height);
 	}
 	cairo_stroke(cr);
@@ -550,13 +533,13 @@ static void apply_mtf_to_fits(fits *from, fits *to) {
 
 	for (chan = 0; chan < nb_chan; chan++) {
 		if (from->type == DATA_USHORT) {
-			double norm = get_normalized_value(from);
+			float norm = (float)get_normalized_value(from);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
 			for (i = 0; i < ndata; i++) {
-				double pxl = ((double)from->pdata[chan][i] / norm);
-				double mtf = MTF(pxl, _midtones, _shadows, _highlights);
+				float pxl = ((float)from->pdata[chan][i] / norm);
+				float mtf = MTF(pxl, _midtones, _shadows, _highlights);
 				to->pdata[chan][i] = round_to_WORD(mtf * norm);
 			}
 		}
@@ -574,8 +557,8 @@ static void apply_mtf_to_fits(fits *from, fits *to) {
 	invalidate_stats_from_fit(to);
 }
 
-static void apply_mtf_to_histo(gsl_histogram *histo, double norm,
-		double m, double lo, double hi) {
+static void apply_mtf_to_histo(gsl_histogram *histo, float norm,
+		float m, float lo, float hi) {
 	gsl_histogram *mtf_histo;
 	unsigned short i;
 
@@ -585,8 +568,8 @@ static void apply_mtf_to_histo(gsl_histogram *histo, double norm,
 // #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) // disabled because of ISSUE #136 (https://free-astro.org/bugs/view.php?id=136)
 	for (i = 0; i < round_to_WORD(norm); i++) {
 		WORD mtf;
-		double binval = gsl_histogram_get(histo, i);
-		double pxl = ((double)i / norm);
+		float binval = gsl_histogram_get(histo, i);
+		float pxl = ((float)i / norm);
 		uint64_t clip[2] = { 0, 0 };
 
 		if (i < round_to_WORD(lo * norm)) {
@@ -597,7 +580,7 @@ static void apply_mtf_to_histo(gsl_histogram *histo, double norm,
 			clip[1] += binval;
 		}
 		mtf = round_to_WORD(MTF(pxl, m, lo, hi) * norm);
-		gsl_histogram_accumulate(mtf_histo, mtf, binval);
+		gsl_histogram_accumulate(mtf_histo, (double)mtf, (double)binval);
 //#ifdef _OPENMP
 //#pragma omp critical
 //#endif
@@ -611,10 +594,10 @@ static void apply_mtf_to_histo(gsl_histogram *histo, double norm,
 }
 
 static void reset_cursors_and_values() {
-	_shadows = 0.0;
-	_midtones = 0.5;
-	_highlights = 1.0;
-	graph_height = 0.;
+	_shadows = 0.f;
+	_midtones = 0.5f;
+	_highlights = 1.0f;
+	graph_height = 0.f;
 
 	_init_clipped_pixels();
 	_initialize_clip_text();
@@ -631,7 +614,7 @@ static void queue_window_redraw() {
 
 static void update_histo_mtf() {
 	unsigned int i, data = 0;
-	double norm = (double)gsl_histogram_bins(com.layers_hist[0]) - 1;
+	float norm = (float)gsl_histogram_bins(com.layers_hist[0]) - 1;
 
 	_init_clipped_pixels();
 	for (i = 0; i < gfit.naxes[2]; i++) {
@@ -730,20 +713,20 @@ void clear_histograms() {
 	// TODO: call histo_close? should it be done by the caller?
 }
 
-double MTF(double x, double m, double lo, double hi) {
+float MTF(float x, float m, float lo, float hi) {
 	if (x <= lo)
-		return 0.0;
+		return 0.f;
 	if (x >= hi)
-		return 1.0;
+		return 1.f;
 
-	double xp = (x - lo) / (hi - lo);
+	float xp = (x - lo) / (hi - lo);
 
-	return ((m - 1.0) * xp) / (((2.0 * m - 1.0) * xp) - m);
+	return ((m - 1.f) * xp) / (((2.f * m - 1.f) * xp) - m);
 }
 
-double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
-	double c0 = 0.0, c1 = 0.0;
-	double m = 0.0;
+float findMidtonesBalance(fits *fit, float *shadows, float *highlights) {
+	float c0 = 0.0, c1 = 0.0;
+	float m = 0.0;
 	int i, n, invertedChannels = 0;
 	imstats *stat[3];
 
@@ -753,50 +736,50 @@ double findMidtonesBalance(fits *fit, double *shadows, double *highlights) {
 		stat[i] = statistics(NULL, -1, fit, i, NULL, STATS_BASIC | STATS_MAD, TRUE);
 		if (!stat[i]) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
-			return 0.0;
+			return 0.f;
 		}
 
-		if (stat[i]->median / stat[i]->normValue > 0.5)
+		if (stat[i]->median / stat[i]->normValue > 0.5f)
 			++invertedChannels;
 	}
 
 	if (invertedChannels < n) {
 		for (i = 0; i < n; ++i) {
-			double median, mad, normValue;
+			float median, mad, normValue;
 
-			normValue = stat[i]->normValue;
-			median = stat[i]->median / normValue;
-			mad = stat[i]->mad / normValue * MAD_NORM;
+			normValue = (float)stat[i]->normValue;
+			median = (float) stat[i]->median / normValue;
+			mad = (float) stat[i]->mad / normValue * MAD_NORM;
 			/* this is a guard to avoid breakdown point */
-			if (mad == 0.0) mad = 0.001;
+			if (mad == 0.f) mad = 0.001f;
 
 			c0 += median + shadowsClipping * mad;
 			m += median;
 		}
-		c0 /= (double) n;
-		if (c0 < 0.0) c0 = 0.0;
-		double m2 = m / (double) n - c0;
-		m = MTF(m2, targetBackground, 0.0, 1.0);
+		c0 /= (float) n;
+		if (c0 < 0.f) c0 = 0.f;
+		float m2 = m / (float) n - c0;
+		m = MTF(m2, targetBackground, 0.f, 1.f);
 		*shadows = c0;
 		*highlights = 1.0;
 	} else {
 		for (i = 0; i < n; ++i) {
-			double median, mad, normValue;
+			float median, mad, normValue;
 
-			normValue = stat[i]->normValue;
-			median = stat[i]->median / normValue;
-			mad = stat[i]->mad / normValue * MAD_NORM;
+			normValue = (float) stat[i]->normValue;
+			median = (float) stat[i]->median / normValue;
+			mad = (float) stat[i]->mad / normValue * MAD_NORM;
 			/* this is a guard to avoid breakdown point */
-			if (mad == 0.0) mad = 0.001;
+			if (mad == 0.f) mad = 0.001f;
 
 			m += median;
 			c1 += median - shadowsClipping * mad;
 		}
-		c1 /= (double) n;
-		if (c1 > 1.0) c1 = 1.0;
-		double m2 = c1 - m / (double) n;
-		m = 1.0 - MTF(m2, targetBackground, 0.0, 1.0);
-		*shadows = 0.0;
+		c1 /= (float) n;
+		if (c1 > 1.f) c1 = 1.f;
+		float m2 = c1 - m / (float) n;
+		m = 1.f - MTF(m2, targetBackground, 0.f, 1.f);
+		*shadows = 0.f;
 		*highlights = c1;
 
 	}
@@ -913,14 +896,14 @@ void on_histoSpinZoom_value_changed(GtkRange *range, gpointer user_data) {
 }
 
 void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) {
-	double m, shadows = 0.0, highlights = 0.0;
+	float m, shadows = 0.f, highlights = 0.f;
 
 	set_cursor_waiting(TRUE);
 	/* we always apply this function on original data */
 	m = findMidtonesBalance(&histo_gfit_backup, &shadows, &highlights);
 	_shadows = shadows;
 	_midtones = m;
-	_highlights = 1.0;
+	_highlights = 1.f;
 
 	_update_entry_text();
 	update_histo_mtf();
@@ -1018,17 +1001,17 @@ gboolean on_drawingarea_histograms_button_press_event(GtkWidget *widget,
 	int height = get_height_of_histo();
 
 	if (on_gradient((GdkEvent *) event, width, height)) {
-		double delta = ((_highlights - _shadows) * _midtones) + _shadows;
+		float delta = ((_highlights - _shadows) * _midtones) + _shadows;
 
 		_click_on_histo = TRUE;
-		gdouble xpos = ((GdkEventButton*) event)->x / (gdouble) width;
-		if (fabs(xpos - _highlights) < fabs(xpos - _shadows) && fabs(xpos - _highlights) < fabs(xpos - delta)) {
+		gfloat xpos = ((GdkEventButton*) event)->x / (gfloat) width;
+		if (fabsf(xpos - _highlights) < fabsf(xpos - _shadows) && fabsf(xpos - _highlights) < fabsf(xpos - delta)) {
 			_type_of_scale = SCALE_HI;
-		} else if (fabs(xpos - _shadows) < fabs(xpos - delta) && fabs(xpos - _shadows) < fabs(xpos - _highlights)) {
+		} else if (fabsf(xpos - _shadows) < fabsf(xpos - delta) && fabsf(xpos - _shadows) < fabsf(xpos - _highlights)) {
 			_type_of_scale = SCALE_LOW;
-		} else if ((_shadows == _highlights) && (_shadows > 0.0)) {
+		} else if ((_shadows == _highlights) && (_shadows > 0.f)) {
 			_type_of_scale = SCALE_LOW;
-		} else if ((_shadows == _highlights) && (_shadows == 0.0)) {
+		} else if ((_shadows == _highlights) && (_shadows == 0.f)) {
 			_type_of_scale = SCALE_HI;
 		} else {
 			_type_of_scale = SCALE_MID;
@@ -1053,7 +1036,7 @@ gboolean on_drawingarea_histograms_button_release_event(GtkWidget *widget,
 }
 
 void on_histoMidEntry_activate(GtkEntry *entry, gpointer user_data) {
-	double mid = atof(gtk_entry_get_text(entry));
+	float mid = atof(gtk_entry_get_text(entry));
 	if (mid <= _shadows) mid = _shadows;
 	if (mid >= _highlights) mid = _highlights;
 	_midtones = mid;
@@ -1067,8 +1050,8 @@ void on_histoMidEntry_activate(GtkEntry *entry, gpointer user_data) {
 }
 
 void on_histoShadEntry_activate(GtkEntry *entry, gpointer user_data) {
-	double lo = atof(gtk_entry_get_text(entry));
-	if (lo <= 0.0) lo = 0.0;
+	float lo = atof(gtk_entry_get_text(entry));
+	if (lo <= 0.f) lo = 0.f;
 	if (lo >= _highlights) lo = _highlights;
 	_shadows = lo;
 	set_cursor_waiting(TRUE);
@@ -1081,9 +1064,9 @@ void on_histoShadEntry_activate(GtkEntry *entry, gpointer user_data) {
 }
 
 void on_histoHighEntry_activate(GtkEntry *entry, gpointer user_data) {
-	double hi = atof(gtk_entry_get_text(entry));
+	float hi = atof(gtk_entry_get_text(entry));
 	if (hi <= _shadows) hi = _shadows;
-	if (hi >= 1.0) hi = 1.0;
+	if (hi >= 1.f) hi = 1.f;
 	_highlights = hi;
 	set_cursor_waiting(TRUE);
 	update_histo_mtf();

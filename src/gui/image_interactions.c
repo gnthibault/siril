@@ -438,7 +438,7 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 			buffer = g_strdup_printf(format, zoomedX, zoomedY,
 					fit->fpdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
 					+ zoomedX]);
-		}
+		} else return FALSE;
 
 		gtk_label_set_text(GTK_LABEL(lookup_widget(label)), buffer);
 		g_free(buffer);

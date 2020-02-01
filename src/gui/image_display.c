@@ -43,7 +43,7 @@ static display_mode last_mode[MAXGRAYVPORT];
 
 /* STF (auto-stretch) data */
 static gboolean stfComputed;	// Flag to know if STF parameters are available
-static double stfShadows, stfHighlights, stfM;
+static float stfShadows, stfHighlights, stfM;
 
 void initialize_image_display() {
 	int i;

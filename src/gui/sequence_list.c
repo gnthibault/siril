@@ -206,7 +206,7 @@ static GList *get_row_references_of_selected_rows(GtkTreeSelection *selection,
 	return ref;
 }
 
-static void unselect_select_frame_from_list(gboolean select, GtkTreeView *tree_view) {
+static void unselect_select_frame_from_list(GtkTreeView *tree_view) {
 	GtkTreeSelection *selection;
 	GtkTreeModel *model;
 	GList *references, *list;
@@ -421,7 +421,7 @@ void toggle_image_selection(int image_num) {
 }
 
 void on_selected_frames_select(GtkButton *button, gpointer user_data) {
-	unselect_select_frame_from_list(TRUE, (GtkTreeView *)user_data);
+	unselect_select_frame_from_list((GtkTreeView *)user_data);
 }
 
 void on_seqexcludeall_button_clicked(GtkButton *button, gpointer user_data) {
