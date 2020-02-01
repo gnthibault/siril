@@ -287,7 +287,7 @@ static void adjust_histogram_vport_size() {
 size_t get_histo_size(fits *fit) {
 	if (fit->type == DATA_USHORT)
 		return (size_t)get_normalized_value(fit);
-	return (size_t)1000000;
+	return (size_t)100000;
 }
 
 // create a new histrogram object for the passed fit and layer
