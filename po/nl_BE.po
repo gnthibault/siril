@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-29 16:12+0100\n"
+"POT-Creation-Date: 2020-02-01 21:24+0100\n"
 "PO-Revision-Date: 2019-05-07 20:26+0200\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
@@ -47,7 +47,7 @@ msgstr "Gemiddelde PSF parameters voor de geselecteerde sterren"
 
 #: ../src/gui/siril3.glade.h:7
 #, fuzzy
-msgid "Image Informations"
+msgid "Image Information"
 msgstr "Informatie"
 
 #: ../src/gui/siril3.glade.h:8
@@ -67,7 +67,8 @@ msgid "Noise Estimation"
 msgstr "Ruisschatting"
 
 #: ../src/gui/siril3.glade.h:12
-msgid "Informations..."
+#, fuzzy
+msgid "Information..."
 msgstr "Informatie..."
 
 #: ../src/gui/siril3.glade.h:13
@@ -387,7 +388,7 @@ msgid "fwhm: no selection"
 msgstr "fwhm: geen selectie"
 
 #: ../src/gui/siril3.glade.h:86 ../src/compositing/compositing.c:461
-#: ../src/gui/callbacks.c:965 ../src/gui/histogram.c:233
+#: ../src/gui/callbacks.c:966 ../src/gui/histogram.c:233
 #: ../src/gui/sequence_list.c:90
 msgid "Red channel"
 msgstr "Rood kanaal"
@@ -2986,8 +2987,8 @@ msgstr "Aantal Lagen: "
 msgid "Interpolation: "
 msgstr "Interpolatie"
 
-#: ../src/gui/siril3.glade.h:654
-msgid "Informations"
+#: ../src/gui/siril3.glade.h:654 ../src/gui/plot.c:385 ../src/gui/plot.c:454
+msgid "Information"
 msgstr "Informatie"
 
 #: ../src/gui/siril3.glade.h:655
@@ -4428,14 +4429,14 @@ msgstr "Er is geen selectie"
 msgid "Make a selection of the background area"
 msgstr "Maak een selectie van de background"
 
-#: ../src/algos/colors.c:519 ../src/algos/colors.c:640 ../src/algos/noise.c:70
-#: ../src/algos/noise.c:162 ../src/algos/star_finder.c:52
-#: ../src/core/command.c:1857 ../src/core/preprocess.c:68
-#: ../src/core/preprocess.c:191 ../src/core/siril.c:562
-#: ../src/filters/banding.c:142 ../src/filters/cosmetic_correction.c:141
+#: ../src/algos/colors.c:519 ../src/algos/colors.c:640 ../src/algos/noise.c:72
+#: ../src/algos/star_finder.c:52 ../src/core/command.c:1857
+#: ../src/core/preprocess.c:68 ../src/core/preprocess.c:191
+#: ../src/core/siril.c:562 ../src/filters/banding.c:142
+#: ../src/filters/cosmetic_correction.c:141
 #: ../src/filters/cosmetic_correction.c:190
-#: ../src/filters/cosmetic_correction.c:405 ../src/filters/saturation.c:177
-#: ../src/gui/histogram.c:682 ../src/gui/photometric_cc.c:396
+#: ../src/filters/cosmetic_correction.c:405 ../src/filters/saturation.c:176
+#: ../src/gui/histogram.c:708 ../src/gui/photometric_cc.c:396
 #: ../src/gui/statistics_list.c:313
 msgid "Error: statistics computation failed.\n"
 msgstr "Fout: berekening van de statistiek gefaald.\n"
@@ -4482,7 +4483,7 @@ msgstr "Helderheid"
 msgid "Value: "
 msgstr "Blauw:"
 
-#: ../src/algos/colors.c:887 ../src/algos/noise.c:188 ../src/core/command.c:104
+#: ../src/algos/colors.c:887 ../src/algos/noise.c:98 ../src/core/command.c:104
 #: ../src/core/command.c:364 ../src/core/command.c:577
 #: ../src/core/command.c:735 ../src/core/command.c:932
 #: ../src/core/command.c:967 ../src/core/command.c:1047
@@ -4493,8 +4494,8 @@ msgstr "Blauw:"
 #: ../src/core/command_line_processor.c:248 ../src/core/preprocess.c:462
 #: ../src/filters/banding.c:236 ../src/filters/fft.c:377
 #: ../src/filters/median.c:60 ../src/filters/rgradient.c:207
-#: ../src/filters/saturation.c:86 ../src/filters/scnr.c:143
-#: ../src/gui/callbacks.c:2126 ../src/gui/script_menu.c:152
+#: ../src/filters/saturation.c:85 ../src/filters/scnr.c:143
+#: ../src/gui/callbacks.c:2127 ../src/gui/script_menu.c:152
 #: ../src/io/conversion.c:541 ../src/registration/registration.c:842
 #: ../src/stacking/stacking.c:1098 ../src/stacking/stacking.c:1222
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4551,19 +4552,11 @@ msgstr ""
 msgid "Not a valid sequence for cropping.\n"
 msgstr "Sequentie niet geldig voor cropping\n"
 
-#: ../src/algos/noise.c:113
-msgid "backgroundnoise: Error, no data computed\n"
-msgstr "backgroundnoise: Foutmelding, geen gegevens berekend\n"
-
-#: ../src/algos/noise.c:123
-msgid "backgroundnoise: does not converge\n"
-msgstr "backgroundnoise: geen convergentie\n"
-
-#: ../src/algos/noise.c:153
+#: ../src/algos/noise.c:63
 msgid "Noise standard deviation: calculating...\n"
 msgstr "Ruis starndaarddeviatie: berekening...\n"
 
-#: ../src/algos/noise.c:173
+#: ../src/algos/noise.c:83
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
 msgstr "Background noise waarde (kanaal: #%d): %0.3lf (%.3e)\n"
@@ -4600,7 +4593,7 @@ msgstr ""
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1718 ../src/gui/open_dialog.c:313
+#: ../src/gui/callbacks.c:1719 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:620
 #: ../src/io/single_image.c:149
@@ -4734,7 +4727,7 @@ msgstr ""
 "uitvoeren van de geometrische transformatie en ongedaan maken is niet "
 "mogelijk."
 
-#: ../src/algos/PSF.c:713
+#: ../src/algos/PSF.c:714
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -4755,15 +4748,15 @@ msgstr ""
 "Magnitude (%s)=%0.2f\n"
 "RMSE=%.3e\n"
 
-#: ../src/algos/PSF.c:764 ../src/algos/PSF.c:809
+#: ../src/algos/PSF.c:765 ../src/algos/PSF.c:810
 msgid "Current selection is too large"
 msgstr "Huidige selectie is te groot"
 
-#: ../src/algos/PSF.c:765 ../src/algos/PSF.c:810
+#: ../src/algos/PSF.c:766 ../src/algos/PSF.c:811
 msgid "To determine the PSF, please make a selection around a star."
 msgstr "Kies een regio rond een ster om de PSF te berekenen."
 
-#: ../src/algos/PSF.c:777
+#: ../src/algos/PSF.c:778
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -4812,11 +4805,11 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/algos/PSF.c:794
+#: ../src/algos/PSF.c:795
 msgid "PSF for the sequence only applies on sequences"
 msgstr "PSF voor de sequenties wordt enkel op sequenties toegepast"
 
-#: ../src/algos/PSF.c:795
+#: ../src/algos/PSF.c:796
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr ""
 "Gelieve een sequentie te lade alvorens de PSF voor de sequentie toe te "
@@ -6865,10 +6858,6 @@ msgstr "Roterend gradient bezig..."
 msgid "Rotational gradient complete."
 msgstr "Roterend gradient klaar."
 
-#: ../src/filters/saturation.c:169
-msgid "Saturation enhancement: processing...\n"
-msgstr "Verhoging van de saturatie: bezig...\n"
-
 #: ../src/filters/scnr.c:61
 msgid "SCNR: processing...\n"
 msgstr "SCNR: bezig...\n"
@@ -6925,107 +6914,107 @@ msgid ""
 "This sequence name already exists!! Please change the name before converting."
 msgstr ""
 
-#: ../src/gui/callbacks.c:752
+#: ../src/gui/callbacks.c:753
 #, c-format
 msgid "fwhm = %.2f, r = %.2f"
 msgstr ""
 
-#: ../src/gui/callbacks.c:755
+#: ../src/gui/callbacks.c:756
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "fwhm: selectie is te groot"
 
-#: ../src/gui/callbacks.c:787
+#: ../src/gui/callbacks.c:788
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (kanaal 0)"
 
-#: ../src/gui/callbacks.c:794
+#: ../src/gui/callbacks.c:795
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (kanaal 1)"
 
-#: ../src/gui/callbacks.c:800
+#: ../src/gui/callbacks.c:801
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (kanaal 2)"
 
-#: ../src/gui/callbacks.c:829
+#: ../src/gui/callbacks.c:830
 msgid "Unassigned"
 msgstr "Niet-toegewezen"
 
-#: ../src/gui/callbacks.c:853
+#: ../src/gui/callbacks.c:854
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: nog niet beïnvloed"
 
-#: ../src/gui/callbacks.c:962 ../src/gui/sequence_list.c:88
+#: ../src/gui/callbacks.c:963 ../src/gui/sequence_list.c:88
 msgid "B&W channel"
 msgstr "B&W kanaal"
 
-#: ../src/gui/callbacks.c:996
+#: ../src/gui/callbacks.c:997
 #, c-format
 msgid "%d file loaded"
 msgstr "%d bestand geladen"
 
-#: ../src/gui/callbacks.c:998
+#: ../src/gui/callbacks.c:999
 #, c-format
 msgid "%d files loaded"
 msgstr "%d bestanden geladen"
 
-#: ../src/gui/callbacks.c:1003
+#: ../src/gui/callbacks.c:1004
 #, c-format
 msgid "%d file selected, %s"
 msgstr "%d beeld geselecteerd, %s"
 
-#: ../src/gui/callbacks.c:1005
+#: ../src/gui/callbacks.c:1006
 #, c-format
 msgid "%d files selected, %s"
 msgstr "%d beelden geselecteerd, %s"
 
-#: ../src/gui/callbacks.c:1140
+#: ../src/gui/callbacks.c:1141
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Mem: %ldMB"
 
-#: ../src/gui/callbacks.c:1142
+#: ../src/gui/callbacks.c:1143
 msgid "Mem: N/A"
 msgstr "Mem: N/A"
 
-#: ../src/gui/callbacks.c:1158
+#: ../src/gui/callbacks.c:1159
 #, c-format
 msgid "Disk Space: %s"
 msgstr "Schijfruimte: %s"
 
-#: ../src/gui/callbacks.c:1161
+#: ../src/gui/callbacks.c:1162
 msgid "Disk Space: N/A"
 msgstr "Schijfruimte: N/A"
 
-#: ../src/gui/callbacks.c:1225
+#: ../src/gui/callbacks.c:1226
 msgid "This binning is not handled yet\n"
 msgstr "Deze binning is nog niet ondersteund\n"
 
-#: ../src/gui/callbacks.c:1717
+#: ../src/gui/callbacks.c:1718
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr ""
 "Schrijven in deze map is niet toegestaan: %s\n"
 "\n"
 
-#: ../src/gui/callbacks.c:1827
+#: ../src/gui/callbacks.c:1828
 msgid "Closing application"
 msgstr "App sluiten"
 
-#: ../src/gui/callbacks.c:1828
+#: ../src/gui/callbacks.c:1829
 msgid "Are you sure you want to quit?"
 msgstr "Bent u zeker dat u wilt sluiten ?"
 
-#: ../src/gui/callbacks.c:2067
+#: ../src/gui/callbacks.c:2068
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Gekozen %s sequentie %s..."
 
-#: ../src/gui/callbacks.c:2132
+#: ../src/gui/callbacks.c:2133
 msgid "Searching for sequences in the current working directory..."
 msgstr "Sequenties aan het zoeken in werkfolder..."
 
@@ -7049,7 +7038,7 @@ msgid ""
 "before reporting them.</small>"
 msgstr ""
 
-#: ../src/gui/image_display.c:536
+#: ../src/gui/image_display.c:532
 #, c-format
 msgid ""
 "redraw: maximum number of layers supported is %d (current image has %d).\n"
@@ -7166,10 +7155,6 @@ msgstr "Gnuplot is niet beschikbaar"
 #, c-format
 msgid "%s has been saved.\n"
 msgstr "%s werd opgeslaan.\n"
-
-#: ../src/gui/plot.c:385 ../src/gui/plot.c:454
-msgid "Information"
-msgstr "Informatie"
 
 #: ../src/gui/plot.c:389 ../src/gui/plot.c:457
 msgid "Something went wrong while saving plot"
@@ -9183,6 +9168,18 @@ msgstr "Stacking wordt zonder heschaling toegepast (zonder 'drizzle')\n"
 #: ../src/stacking/upscaling.c:177
 msgid "Up-scaling sequence for stacking"
 msgstr "Sequentie herschaling voor stacking"
+
+#~ msgid "Informations"
+#~ msgstr "Informatie"
+
+#~ msgid "backgroundnoise: Error, no data computed\n"
+#~ msgstr "backgroundnoise: Foutmelding, geen gegevens berekend\n"
+
+#~ msgid "backgroundnoise: does not converge\n"
+#~ msgstr "backgroundnoise: geen convergentie\n"
+
+#~ msgid "Saturation enhancement: processing...\n"
+#~ msgstr "Verhoging van de saturatie: bezig...\n"
 
 #, fuzzy
 #~ msgid "Amount: "
