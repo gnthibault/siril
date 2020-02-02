@@ -278,7 +278,7 @@ static BYTE display_for_float_pixel(float pixel, display_mode mode, int vport, W
 			break;
 		case STF_DISPLAY:
 			mtf = MTF(pixel, stfM, stfShadows, stfHighlights);
-			disp = round_to_BYTE(mtf * UCHAR_MAX_DOUBLE);
+			disp = round_to_BYTE(mtf * UCHAR_MAX_SINGLE);
 			break;
 	}
 	return disp;
