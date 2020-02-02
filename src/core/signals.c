@@ -36,10 +36,12 @@
 #define STACK_DEPTH 256
 
 static void signal_handled(int s) {
-	gchar *visit = NULL;
-
+#ifdef _OPENMP
+#pragma omp single
+#endif
+	{
 	g_printf("Error, signal %d:\n", s);
-	visit = g_strdup_printf(_("Please report this bug to: %s"), PACKAGE_BUGREPORT);
+	gchar *visit = g_strdup_printf(_("Please report this bug to: %s"), PACKAGE_BUGREPORT);
 	switch (s) {
 	case SIGSEGV:
 	case SIGFPE:
@@ -86,6 +88,7 @@ static void signal_handled(int s) {
 	free(symbol);
 #endif
 	g_free(visit);
+	}
 	exit(EXIT_FAILURE);
 }
 
