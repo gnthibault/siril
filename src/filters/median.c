@@ -164,6 +164,33 @@ double get_median_float(float *buf, const int xx, const int yy, const int w,
 	return median;
 }
 
+double get_median_float_fast(float *buf, const int xx, const int yy, const int w,
+		const int h, int radius, gboolean is_cfa, gboolean include_self) {
+	int n = 0, step = 1, x, y, ksize;
+	double median;
+
+	if (is_cfa) {
+		step = 2;
+		radius *= 2;
+	}
+	ksize = radius * 2 + 1;
+	float values[ksize * ksize];
+
+	for (y = yy - radius; y <= yy + radius; y += step) {
+		for (x = xx - radius; x <= xx + radius; x += step) {
+			if (y >= 0 && y < h && x >= 0 && x < w) {
+				// ^ limit to image bounds ^
+				// v exclude centre pixel v
+				if (include_self || x != xx || y != yy) {
+					values[n++] = buf[x + y * w];
+				}
+			}
+		}
+	}
+	median = quickmedian_float(values, n);
+	return median;
+}
+
 double get_median_gsl(gsl_matrix *mat, const int xx, const int yy, const int w,
 		const int h, int radius, gboolean is_cfa, gboolean include_self) {
 	int n = 0, step = 1, x, y, ksize;
@@ -289,7 +316,7 @@ static gpointer median_filter_float(gpointer p) {
 					set_progress_bar_data(NULL, (double)progress / total);
 				progress++;
 				for (x = 0; x < nx; x++) {
-					double median = get_median_float(data, x, y, nx, ny, radius, FALSE, TRUE);
+					double median = get_median_float_fast(data, x, y, nx, ny, radius, FALSE, TRUE);
 					if (args->amount != 1.0) {
 						double pixel = args->amount * median;
 						pixel += (1.0 - args->amount) * (double)data[pix_idx];
