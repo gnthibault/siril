@@ -34,7 +34,7 @@
 #include "io/single_image.h"
 
 #include "median.h"
-
+#include "algos/median_fast.h"
 
 void on_menuitem_medianfilter_activate(GtkMenuItem *menuitem,
 		gpointer user_data) {
@@ -305,23 +305,73 @@ static gpointer median_filter_float(gpointer p) {
         for (int iter = 0; iter < args->iterations; ++iter) {
 			float *dst = iter % 2 ? args->fit->fpdata[layer] : temp;
 			float *src = iter % 2 ? temp : args->fit->fpdata[layer];
-#ifdef _OPENMP
-            #pragma omp parallel for schedule(dynamic, 16)
-#endif
-            for (int y = 0; y < ny; y++) {
-                int pix_idx = y * nx;
-                for (int x = 0; x < nx; x++) {
-                    float median = get_median_float_fast(src, x, y, nx, ny, radius);
-                    if (amountf != 1.f) {
-                        float pixel = amountf * median;
-                        pixel += (1.f - amountf) * src[pix_idx];
-                        dst[pix_idx] = pixel;
-                    } else {
-                        dst[pix_idx] = median;
+			if (args->ksize == 3) {
+                for (int y = 0; y < ny; y++) {
+                    if (y < 1 || y > ny - 2) {
+                        for (int x = 0; x < nx; x++) {
+                            if (x < 1 || x > nx - 2) {
+                                int pix_idx = y * nx + x;
+                                float median = get_median_float_fast(src, x, y, nx, ny, radius);
+                                if (amountf != 1.f) {
+                                    float pixel = amountf * median;
+                                    pixel += (1.f - amountf) * src[pix_idx];
+                                    dst[pix_idx] = pixel;
+                                } else {
+                                    dst[pix_idx] = median;
+                                }
+                                pix_idx++;
+                            }
+                        }
                     }
-                    pix_idx++;
                 }
-            }
+#ifdef _OPENMP
+                #pragma omp parallel
+                {
+                float medbuf[9];
+#endif
+#ifdef _OPENMP
+                #pragma omp for schedule(dynamic,16)
+#endif
+                    for (int y = 1; y < ny - 1; y++) {
+                        int pix_idx = y * nx + 1;
+                        for (int x = 1; x < nx - 1; x++) {
+                            int nb = 0;
+                            for (int i = -1; i <= 1; ++i) {
+                                for (int j = -1; j <= 1; ++j) {
+                                    medbuf[nb++] = src[(y + i) * nx + x + j];
+                                }
+                            }
+                            float median = median3x3(medbuf);
+                            if (amountf != 1.f) {
+                                float pixel = amountf * median;
+                                pixel += (1.f - amountf) * src[pix_idx];
+                                dst[pix_idx] = pixel;
+                            } else {
+                                dst[pix_idx] = median;
+                            }
+                            pix_idx++;
+                        }
+                    }
+                }
+			} else {
+#ifdef _OPENMP
+                #pragma omp parallel for schedule(dynamic, 16)
+#endif
+                for (int y = 0; y < ny; y++) {
+                    int pix_idx = y * nx;
+                    for (int x = 0; x < nx; x++) {
+                        float median = get_median_float_fast(src, x, y, nx, ny, radius);
+                        if (amountf != 1.f) {
+                            float pixel = amountf * median;
+                            pixel += (1.f - amountf) * src[pix_idx];
+                            dst[pix_idx] = pixel;
+                        } else {
+                            dst[pix_idx] = median;
+                        }
+                        pix_idx++;
+                    }
+                }
+			}
 		}
 		if (args->iterations % 2) {
 			float *dst = args->fit->fpdata[layer];
