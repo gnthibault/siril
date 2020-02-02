@@ -459,7 +459,6 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 
 		GtkTreePath *path = gtk_tree_row_reference_get_path((GtkTreeRowReference*)references->data);
 		if (path) {
-			gint *new_index = gtk_tree_path_get_indices(path);
 			if ((gtk_toggle_button_get_active(togglebutton) == FALSE)) {
 				if (com.seq.reference_image == com.seq.current)
 					com.seq.reference_image = -1;
@@ -513,7 +512,6 @@ void sequence_list_change_current() {
 void sequence_list_change_reference() {
 	GtkTreeIter iter;
 	gboolean valid;
-	gint row_count = 0;
 	int color;
 
 	color = (com.combo_theme == 0) ? 1 : 0;
@@ -521,11 +519,16 @@ void sequence_list_change_reference() {
 	get_list_store();
 	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store), &iter);
 	while (valid) {
+		gint index = 0;
+		GValue value = G_VALUE_INIT;
+
+		gtk_tree_model_get_value (GTK_TREE_MODEL(list_store), &iter, COLUMN_INDEX, &value);
+		index = g_value_get_int(&value) - 1;
+		g_value_unset(&value);
 		gtk_list_store_set(list_store, &iter,
-				COLUMN_REFERENCE,
-				(row_count == com.seq.reference_image) ?
-				ref_bg_colour[color] : bg_colour[color], -1);
-		row_count++;
+						COLUMN_REFERENCE,
+						(index == com.seq.reference_image) ?
+						ref_bg_colour[color] : bg_colour[color], -1);
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store), &iter);
 	}
 }
