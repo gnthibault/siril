@@ -514,12 +514,14 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	if (sequence_is_loaded()) {
 		args->is_sequence = TRUE;
 		args->seq = &com.seq;
+		args->allow_32bit_output = args->seq->type == SEQ_REGULAR;
 		set_cursor_waiting(TRUE);
 		control_window_switch_to_tab(OUTPUT_LOGS);
 		start_sequence_preprocessing(args, FALSE);
 	} else {
 		int retval;
 		args->is_sequence = FALSE;
+		args->allow_32bit_output = TRUE;
 		set_cursor_waiting(TRUE);
 		control_window_switch_to_tab(OUTPUT_LOGS);
 
