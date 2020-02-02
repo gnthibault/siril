@@ -339,6 +339,7 @@ double histogram_median(WORD *a, int n, gboolean mutlithread) {
 		return sortnet_median(a, n);
 
 	unsigned int i, j, k = n / 2;
+	size_t ii;
 	size_t s = sizeof(unsigned int);
 	unsigned int *h = (unsigned int*) calloc(USHRT_MAX + 1, s);
 
@@ -361,8 +362,8 @@ double histogram_median(WORD *a, int n, gboolean mutlithread) {
 #ifdef _OPENMP
 #pragma omp simd
 #endif
-			for (size_t i = 0; i < USHRT_MAX; ++i) {
-				h[i] += hthr[i];
+			for (ii = 0; ii < USHRT_MAX; ++ii) {
+				h[ii] += hthr[ii];
 			}
 		}
 		free(hthr);
