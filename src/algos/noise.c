@@ -76,9 +76,14 @@ gpointer noise(gpointer p) {
 
 	if (!args->retval) {
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
-			siril_log_message(
-					_("Background noise value (channel: #%d): %0.3lf (%.3e)\n"), chan,
-					args->bgnoise[chan], args->bgnoise[chan] / norm);
+			if (args->fit->type == DATA_USHORT)
+				siril_log_message(
+						_("Background noise value (channel: #%d): %0.3f (%.3e)\n"),
+						chan, args->bgnoise[chan], args->bgnoise[chan] / norm);
+			else 
+				siril_log_message(
+						_("Background noise value (channel: #%d): %0.3e\n"),
+						chan, args->bgnoise[chan]);
 	}
 
 	int retval = args->retval;
