@@ -62,7 +62,7 @@
 cominfo com;	// the main data struct
 fits gfit;	// currently loaded image
 GtkBuilder *builder = NULL;	// get widget references anywhere
-gchar *startup_cwd = NULL;
+const gchar *startup_cwd = NULL;
 gboolean forcecwd = FALSE;
 
 static gchar *main_option_directory = NULL;
@@ -258,8 +258,6 @@ static void siril_app_activate(GApplication *application) {
 		}
 		forcecwd = TRUE;
 	}
-
-	g_free(startup_cwd);
 
 	if (forcecwd && cwd_forced) {
 		changedir(cwd_forced, NULL);
