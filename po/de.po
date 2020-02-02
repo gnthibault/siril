@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-29 16:12+0100\n"
+"POT-Creation-Date: 2020-02-01 21:24+0100\n"
 "PO-Revision-Date: 2019-12-29 12:33+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -48,7 +48,8 @@ msgid "Average PSF parameters for selected stars"
 msgstr "Durchschnittliche PSF Parameter ausgewählter Sterne"
 
 #: ../src/gui/siril3.glade.h:7
-msgid "Image Informations"
+#, fuzzy
+msgid "Image Information"
 msgstr "Bildinformationen"
 
 #: ../src/gui/siril3.glade.h:8
@@ -68,7 +69,8 @@ msgid "Noise Estimation"
 msgstr "Einschätzung des Rauschens"
 
 #: ../src/gui/siril3.glade.h:12
-msgid "Informations..."
+#, fuzzy
+msgid "Information..."
 msgstr "Informationen..."
 
 #: ../src/gui/siril3.glade.h:13
@@ -391,7 +393,7 @@ msgid "fwhm: no selection"
 msgstr "FWHM: nichts ausgewählt"
 
 #: ../src/gui/siril3.glade.h:86 ../src/compositing/compositing.c:461
-#: ../src/gui/callbacks.c:965 ../src/gui/histogram.c:233
+#: ../src/gui/callbacks.c:966 ../src/gui/histogram.c:233
 #: ../src/gui/sequence_list.c:90
 msgid "Red channel"
 msgstr "Rot-Kanal"
@@ -3000,9 +3002,9 @@ msgstr "Anzahl der Layer: "
 msgid "Interpolation: "
 msgstr "Interpolation "
 
-#: ../src/gui/siril3.glade.h:654
-msgid "Informations"
-msgstr "Informationen"
+#: ../src/gui/siril3.glade.h:654 ../src/gui/plot.c:385 ../src/gui/plot.c:454
+msgid "Information"
+msgstr "Information"
 
 #: ../src/gui/siril3.glade.h:655
 msgid "Focal length (mm): "
@@ -4456,14 +4458,14 @@ msgstr "Keine Auswahl getroffen"
 msgid "Make a selection of the background area"
 msgstr "Wählen Sie einen Bereich aus dem Hintergrund aus"
 
-#: ../src/algos/colors.c:519 ../src/algos/colors.c:640 ../src/algos/noise.c:70
-#: ../src/algos/noise.c:162 ../src/algos/star_finder.c:52
-#: ../src/core/command.c:1857 ../src/core/preprocess.c:68
-#: ../src/core/preprocess.c:191 ../src/core/siril.c:562
-#: ../src/filters/banding.c:142 ../src/filters/cosmetic_correction.c:141
+#: ../src/algos/colors.c:519 ../src/algos/colors.c:640 ../src/algos/noise.c:72
+#: ../src/algos/star_finder.c:52 ../src/core/command.c:1857
+#: ../src/core/preprocess.c:68 ../src/core/preprocess.c:191
+#: ../src/core/siril.c:562 ../src/filters/banding.c:142
+#: ../src/filters/cosmetic_correction.c:141
 #: ../src/filters/cosmetic_correction.c:190
-#: ../src/filters/cosmetic_correction.c:405 ../src/filters/saturation.c:177
-#: ../src/gui/histogram.c:682 ../src/gui/photometric_cc.c:396
+#: ../src/filters/cosmetic_correction.c:405 ../src/filters/saturation.c:176
+#: ../src/gui/histogram.c:708 ../src/gui/photometric_cc.c:396
 #: ../src/gui/statistics_list.c:313
 msgid "Error: statistics computation failed.\n"
 msgstr "Fehler: Statistik-Berechnung fehlgeschlagen.\n"
@@ -4506,7 +4508,7 @@ msgstr "Helligkeit "
 msgid "Value: "
 msgstr "Wert "
 
-#: ../src/algos/colors.c:887 ../src/algos/noise.c:188 ../src/core/command.c:104
+#: ../src/algos/colors.c:887 ../src/algos/noise.c:98 ../src/core/command.c:104
 #: ../src/core/command.c:364 ../src/core/command.c:577
 #: ../src/core/command.c:735 ../src/core/command.c:932
 #: ../src/core/command.c:967 ../src/core/command.c:1047
@@ -4517,8 +4519,8 @@ msgstr "Wert "
 #: ../src/core/command_line_processor.c:248 ../src/core/preprocess.c:462
 #: ../src/filters/banding.c:236 ../src/filters/fft.c:377
 #: ../src/filters/median.c:60 ../src/filters/rgradient.c:207
-#: ../src/filters/saturation.c:86 ../src/filters/scnr.c:143
-#: ../src/gui/callbacks.c:2126 ../src/gui/script_menu.c:152
+#: ../src/filters/saturation.c:85 ../src/filters/scnr.c:143
+#: ../src/gui/callbacks.c:2127 ../src/gui/script_menu.c:152
 #: ../src/io/conversion.c:541 ../src/registration/registration.c:842
 #: ../src/stacking/stacking.c:1098 ../src/stacking/stacking.c:1222
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4576,19 +4578,11 @@ msgstr ""
 msgid "Not a valid sequence for cropping.\n"
 msgstr "Keine gültige Sequenz für das Cropping\n"
 
-#: ../src/algos/noise.c:113
-msgid "backgroundnoise: Error, no data computed\n"
-msgstr "Hintergrund-Rauschen: Fehler, keine Daten berechnet\n"
-
-#: ../src/algos/noise.c:123
-msgid "backgroundnoise: does not converge\n"
-msgstr "Hintergrund-Rauschen: nicht konvergent\n"
-
-#: ../src/algos/noise.c:153
+#: ../src/algos/noise.c:63
 msgid "Noise standard deviation: calculating...\n"
 msgstr "Rauschen Standard-Abweichung: berechne...\n"
 
-#: ../src/algos/noise.c:173
+#: ../src/algos/noise.c:83
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
 msgstr "Wert Hintergrund-Rauschen (Kanal: #%d): %0.3lf(%.3e)\n"
@@ -4623,7 +4617,7 @@ msgstr "Holen fehlgeschlagen mit Code %ld für URL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1718 ../src/gui/open_dialog.c:313
+#: ../src/gui/callbacks.c:1719 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:620
 #: ../src/io/single_image.c:149
@@ -4757,7 +4751,7 @@ msgstr ""
 "geometrische Transformation verloren und kann durch 'undo' NICHT "
 "wiederhergestellt werden."
 
-#: ../src/algos/PSF.c:713
+#: ../src/algos/PSF.c:714
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -4778,15 +4772,15 @@ msgstr ""
 "Magnitude (%s)=%0.2f\n"
 "RMSE=%.3e\n"
 
-#: ../src/algos/PSF.c:764 ../src/algos/PSF.c:809
+#: ../src/algos/PSF.c:765 ../src/algos/PSF.c:810
 msgid "Current selection is too large"
 msgstr "Aktuelle Auswahl ist zu groß"
 
-#: ../src/algos/PSF.c:765 ../src/algos/PSF.c:810
+#: ../src/algos/PSF.c:766 ../src/algos/PSF.c:811
 msgid "To determine the PSF, please make a selection around a star."
 msgstr "Um die PSF zu bestimmen, treffen Sie eine Auswahl um einen Stern."
 
-#: ../src/algos/PSF.c:777
+#: ../src/algos/PSF.c:778
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -4835,11 +4829,11 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/algos/PSF.c:794
+#: ../src/algos/PSF.c:795
 msgid "PSF for the sequence only applies on sequences"
 msgstr "Die PSF für die Sequenzen gilt ausschließlich für Sequenzen"
 
-#: ../src/algos/PSF.c:795
+#: ../src/algos/PSF.c:796
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr ""
 "Bitte laden Sie zuerst eine Sequenz, bevor Sie eine PSF darauf anwenden."
@@ -6873,10 +6867,6 @@ msgstr "Rotatorischer Gradient: in Bearbeitung..."
 msgid "Rotational gradient complete."
 msgstr "Rotatorischer Gradient abgeschlossen."
 
-#: ../src/filters/saturation.c:169
-msgid "Saturation enhancement: processing...\n"
-msgstr "Erhöhung der Sättigung: in Bearbeitung...\n"
-
 #: ../src/filters/scnr.c:61
 msgid "SCNR: processing...\n"
 msgstr ""
@@ -6943,105 +6933,105 @@ msgstr ""
 "Dieser Sequenzname ist bereits vorhanden! Bitte ändern Sie den Namen vor der "
 "Konvertierung."
 
-#: ../src/gui/callbacks.c:752
+#: ../src/gui/callbacks.c:753
 #, c-format
 msgid "fwhm = %.2f, r = %.2f"
 msgstr ""
 
-#: ../src/gui/callbacks.c:755
+#: ../src/gui/callbacks.c:756
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "FWHM: Auswahl zu groß"
 
-#: ../src/gui/callbacks.c:787
+#: ../src/gui/callbacks.c:788
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (Kanal 0)"
 
-#: ../src/gui/callbacks.c:794
+#: ../src/gui/callbacks.c:795
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (Kanal 1)"
 
-#: ../src/gui/callbacks.c:800
+#: ../src/gui/callbacks.c:801
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (Kanal 2)"
 
-#: ../src/gui/callbacks.c:829
+#: ../src/gui/callbacks.c:830
 msgid "Unassigned"
 msgstr "Nicht zugewiesen"
 
-#: ../src/gui/callbacks.c:853
+#: ../src/gui/callbacks.c:854
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: noch nicht betroffen"
 
-#: ../src/gui/callbacks.c:962 ../src/gui/sequence_list.c:88
+#: ../src/gui/callbacks.c:963 ../src/gui/sequence_list.c:88
 msgid "B&W channel"
 msgstr "S/W-Kanal"
 
-#: ../src/gui/callbacks.c:996
+#: ../src/gui/callbacks.c:997
 #, c-format
 msgid "%d file loaded"
 msgstr "%d Dateien geladen"
 
-#: ../src/gui/callbacks.c:998
+#: ../src/gui/callbacks.c:999
 #, c-format
 msgid "%d files loaded"
 msgstr "%d Dateien geladen"
 
-#: ../src/gui/callbacks.c:1003
+#: ../src/gui/callbacks.c:1004
 #, c-format
 msgid "%d file selected, %s"
 msgstr "%d Dateien ausgewählt, %s"
 
-#: ../src/gui/callbacks.c:1005
+#: ../src/gui/callbacks.c:1006
 #, c-format
 msgid "%d files selected, %s"
 msgstr "%d Dateien ausgewählt, %s"
 
-#: ../src/gui/callbacks.c:1140
+#: ../src/gui/callbacks.c:1141
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Speicher: %ldMB"
 
-#: ../src/gui/callbacks.c:1142
+#: ../src/gui/callbacks.c:1143
 msgid "Mem: N/A"
 msgstr "Speicher: N/A"
 
-#: ../src/gui/callbacks.c:1158
+#: ../src/gui/callbacks.c:1159
 #, c-format
 msgid "Disk Space: %s"
 msgstr "HDD-Speicherplatz: %s"
 
-#: ../src/gui/callbacks.c:1161
+#: ../src/gui/callbacks.c:1162
 msgid "Disk Space: N/A"
 msgstr "HDD-Speicherplatz: N/A"
 
-#: ../src/gui/callbacks.c:1225
+#: ../src/gui/callbacks.c:1226
 msgid "This binning is not handled yet\n"
 msgstr "Dieses Binning wird noch nicht unterstützt\n"
 
-#: ../src/gui/callbacks.c:1717
+#: ../src/gui/callbacks.c:1718
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "Sie haben keine Schreib-Berechtigung im Verzeichnis: %s\n"
 
-#: ../src/gui/callbacks.c:1827
+#: ../src/gui/callbacks.c:1828
 msgid "Closing application"
 msgstr "Schließe Anwendung"
 
-#: ../src/gui/callbacks.c:1828
+#: ../src/gui/callbacks.c:1829
 msgid "Are you sure you want to quit?"
 msgstr "Wirklich beenden?"
 
-#: ../src/gui/callbacks.c:2067
+#: ../src/gui/callbacks.c:2068
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Sequenz %s ausgwählt %s..."
 
-#: ../src/gui/callbacks.c:2132
+#: ../src/gui/callbacks.c:2133
 msgid "Searching for sequences in the current working directory..."
 msgstr "Suche nach Sequenzen im aktuellen Arbeitsverzeichnis..."
 
@@ -7071,7 +7061,7 @@ msgstr ""
 "Fehlermeldung erfolgt.\n"
 "</small>"
 
-#: ../src/gui/image_display.c:536
+#: ../src/gui/image_display.c:532
 #, c-format
 msgid ""
 "redraw: maximum number of layers supported is %d (current image has %d).\n"
@@ -7187,10 +7177,6 @@ msgstr "Gnuplot ist nicht verfügbar"
 #, c-format
 msgid "%s has been saved.\n"
 msgstr "%s wurden gespeichert.\n"
-
-#: ../src/gui/plot.c:385 ../src/gui/plot.c:454
-msgid "Information"
-msgstr "Information"
 
 #: ../src/gui/plot.c:389 ../src/gui/plot.c:457
 msgid "Something went wrong while saving plot"
@@ -9200,6 +9186,18 @@ msgstr "Das Stacken erfolgt ohne Hochskalierung (ohne 'Drizzle')\n"
 #: ../src/stacking/upscaling.c:177
 msgid "Up-scaling sequence for stacking"
 msgstr "Skaliere Sequenz für's Stacken"
+
+#~ msgid "Informations"
+#~ msgstr "Informationen"
+
+#~ msgid "backgroundnoise: Error, no data computed\n"
+#~ msgstr "Hintergrund-Rauschen: Fehler, keine Daten berechnet\n"
+
+#~ msgid "backgroundnoise: does not converge\n"
+#~ msgstr "Hintergrund-Rauschen: nicht konvergent\n"
+
+#~ msgid "Saturation enhancement: processing...\n"
+#~ msgstr "Erhöhung der Sättigung: in Bearbeitung...\n"
 
 #~ msgid "Amount: "
 #~ msgstr "Wert: "

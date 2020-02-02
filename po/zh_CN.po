@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-29 16:12+0100\n"
+"POT-Creation-Date: 2020-02-01 21:24+0100\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -45,7 +45,7 @@ msgstr "所选择星点的平均PSF"
 
 #: ../src/gui/siril3.glade.h:7
 #, fuzzy
-msgid "Image Informations"
+msgid "Image Information"
 msgstr "信息"
 
 #: ../src/gui/siril3.glade.h:8
@@ -65,7 +65,8 @@ msgid "Noise Estimation"
 msgstr "噪声评估"
 
 #: ../src/gui/siril3.glade.h:12
-msgid "Informations..."
+#, fuzzy
+msgid "Information..."
 msgstr "信息…"
 
 #: ../src/gui/siril3.glade.h:13
@@ -382,7 +383,7 @@ msgid "fwhm: no selection"
 msgstr "fwhm: 无选择"
 
 #: ../src/gui/siril3.glade.h:86 ../src/compositing/compositing.c:461
-#: ../src/gui/callbacks.c:965 ../src/gui/histogram.c:233
+#: ../src/gui/callbacks.c:966 ../src/gui/histogram.c:233
 #: ../src/gui/sequence_list.c:90
 msgid "Red channel"
 msgstr "红色通道"
@@ -2821,8 +2822,8 @@ msgstr "图层数: "
 msgid "Interpolation: "
 msgstr "插值: "
 
-#: ../src/gui/siril3.glade.h:654
-msgid "Informations"
+#: ../src/gui/siril3.glade.h:654 ../src/gui/plot.c:385 ../src/gui/plot.c:454
+msgid "Information"
 msgstr "信息"
 
 #: ../src/gui/siril3.glade.h:655
@@ -4200,14 +4201,14 @@ msgstr "无效选择"
 msgid "Make a selection of the background area"
 msgstr "请先选择一个背景区域"
 
-#: ../src/algos/colors.c:519 ../src/algos/colors.c:640 ../src/algos/noise.c:70
-#: ../src/algos/noise.c:162 ../src/algos/star_finder.c:52
-#: ../src/core/command.c:1857 ../src/core/preprocess.c:68
-#: ../src/core/preprocess.c:191 ../src/core/siril.c:562
-#: ../src/filters/banding.c:142 ../src/filters/cosmetic_correction.c:141
+#: ../src/algos/colors.c:519 ../src/algos/colors.c:640 ../src/algos/noise.c:72
+#: ../src/algos/star_finder.c:52 ../src/core/command.c:1857
+#: ../src/core/preprocess.c:68 ../src/core/preprocess.c:191
+#: ../src/core/siril.c:562 ../src/filters/banding.c:142
+#: ../src/filters/cosmetic_correction.c:141
 #: ../src/filters/cosmetic_correction.c:190
-#: ../src/filters/cosmetic_correction.c:405 ../src/filters/saturation.c:177
-#: ../src/gui/histogram.c:682 ../src/gui/photometric_cc.c:396
+#: ../src/filters/cosmetic_correction.c:405 ../src/filters/saturation.c:176
+#: ../src/gui/histogram.c:708 ../src/gui/photometric_cc.c:396
 #: ../src/gui/statistics_list.c:313
 msgid "Error: statistics computation failed.\n"
 msgstr "错误：数据统计计算失败。\n"
@@ -4250,7 +4251,7 @@ msgstr "亮度: "
 msgid "Value: "
 msgstr "值: "
 
-#: ../src/algos/colors.c:887 ../src/algos/noise.c:188 ../src/core/command.c:104
+#: ../src/algos/colors.c:887 ../src/algos/noise.c:98 ../src/core/command.c:104
 #: ../src/core/command.c:364 ../src/core/command.c:577
 #: ../src/core/command.c:735 ../src/core/command.c:932
 #: ../src/core/command.c:967 ../src/core/command.c:1047
@@ -4261,8 +4262,8 @@ msgstr "值: "
 #: ../src/core/command_line_processor.c:248 ../src/core/preprocess.c:462
 #: ../src/filters/banding.c:236 ../src/filters/fft.c:377
 #: ../src/filters/median.c:60 ../src/filters/rgradient.c:207
-#: ../src/filters/saturation.c:86 ../src/filters/scnr.c:143
-#: ../src/gui/callbacks.c:2126 ../src/gui/script_menu.c:152
+#: ../src/filters/saturation.c:85 ../src/filters/scnr.c:143
+#: ../src/gui/callbacks.c:2127 ../src/gui/script_menu.c:152
 #: ../src/io/conversion.c:541 ../src/registration/registration.c:842
 #: ../src/stacking/stacking.c:1098 ../src/stacking/stacking.c:1222
 msgid "Another task is already in progress, ignoring new request.\n"
@@ -4315,19 +4316,11 @@ msgstr "AVI文件不支持裁剪。请先将文件转化为SER格式。\n"
 msgid "Not a valid sequence for cropping.\n"
 msgstr "企图裁剪非有效队列。\n"
 
-#: ../src/algos/noise.c:113
-msgid "backgroundnoise: Error, no data computed\n"
-msgstr "背景噪声：错误，无可用数据\n"
-
-#: ../src/algos/noise.c:123
-msgid "backgroundnoise: does not converge\n"
-msgstr "背景噪声：无法汇聚\n"
-
-#: ../src/algos/noise.c:153
+#: ../src/algos/noise.c:63
 msgid "Noise standard deviation: calculating...\n"
 msgstr "噪声标准背离：计算中...\n"
 
-#: ../src/algos/noise.c:173
+#: ../src/algos/noise.c:83
 #, c-format
 msgid "Background noise value (channel: #%d): %0.3lf (%.3e)\n"
 msgstr "背景噪声值（通道：#%d）: %0.3lf（%.3e）\n"
@@ -4359,7 +4352,7 @@ msgstr "Fetch failed with code %ld for URL %s\n"
 
 #: ../src/algos/plateSolver.c:499 ../src/filters/fft.c:393
 #: ../src/filters/fft.c:399 ../src/filters/fft.c:420
-#: ../src/gui/callbacks.c:1718 ../src/gui/open_dialog.c:313
+#: ../src/gui/callbacks.c:1719 ../src/gui/open_dialog.c:313
 #: ../src/gui/plot.c:388 ../src/gui/plot.c:456 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/conversion.c:620
 #: ../src/io/single_image.c:149
@@ -4486,7 +4479,7 @@ msgid ""
 "geometric transformation and no undo will be possible."
 msgstr "图像中已包含的天体测量信息会被几何光学计算数据所覆盖，并且无法撤销。"
 
-#: ../src/algos/PSF.c:713
+#: ../src/algos/PSF.c:714
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -4507,15 +4500,15 @@ msgstr ""
 "Magnitude (%s)=%0.2f\n"
 "RMSE=%.3e\n"
 
-#: ../src/algos/PSF.c:764 ../src/algos/PSF.c:809
+#: ../src/algos/PSF.c:765 ../src/algos/PSF.c:810
 msgid "Current selection is too large"
 msgstr "当前所选区域太大"
 
-#: ../src/algos/PSF.c:765 ../src/algos/PSF.c:810
+#: ../src/algos/PSF.c:766 ../src/algos/PSF.c:811
 msgid "To determine the PSF, please make a selection around a star."
 msgstr "若要计算PSF，请选择一个星点周围的区域。"
 
-#: ../src/algos/PSF.c:777
+#: ../src/algos/PSF.c:778
 #, c-format
 msgid ""
 "Centroid Coordinates:\n"
@@ -4564,11 +4557,11 @@ msgstr ""
 "RMSE:\n"
 "\t\tRMSE=%.3e"
 
-#: ../src/algos/PSF.c:794
+#: ../src/algos/PSF.c:795
 msgid "PSF for the sequence only applies on sequences"
 msgstr "只能于队列上执行队列PSF操作"
 
-#: ../src/algos/PSF.c:795
+#: ../src/algos/PSF.c:796
 msgid "Please load a sequence before trying to apply the PSF for the sequence."
 msgstr "请于执行PSF操作前载入一个队列。"
 
@@ -6528,10 +6521,6 @@ msgstr "旋转渐变执行中..."
 msgid "Rotational gradient complete."
 msgstr "旋转渐变完成。"
 
-#: ../src/filters/saturation.c:169
-msgid "Saturation enhancement: processing...\n"
-msgstr "饱和度增强：执行中...\n"
-
 #: ../src/filters/scnr.c:61
 msgid "SCNR: processing...\n"
 msgstr "SCNR: 处理中...\n"
@@ -6590,105 +6579,105 @@ msgid ""
 "This sequence name already exists!! Please change the name before converting."
 msgstr "队列名称已存在！请更名。"
 
-#: ../src/gui/callbacks.c:752
+#: ../src/gui/callbacks.c:753
 #, c-format
 msgid "fwhm = %.2f, r = %.2f"
 msgstr ""
 
-#: ../src/gui/callbacks.c:755
+#: ../src/gui/callbacks.c:756
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "fwhm: 选择区域太大"
 
-#: ../src/gui/callbacks.c:787
+#: ../src/gui/callbacks.c:788
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (通道 0)"
 
-#: ../src/gui/callbacks.c:794
+#: ../src/gui/callbacks.c:795
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (通道 1)"
 
-#: ../src/gui/callbacks.c:800
+#: ../src/gui/callbacks.c:801
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (通道 2)"
 
-#: ../src/gui/callbacks.c:829
+#: ../src/gui/callbacks.c:830
 msgid "Unassigned"
 msgstr "未指定"
 
-#: ../src/gui/callbacks.c:853
+#: ../src/gui/callbacks.c:854
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: 未生效"
 
-#: ../src/gui/callbacks.c:962 ../src/gui/sequence_list.c:88
+#: ../src/gui/callbacks.c:963 ../src/gui/sequence_list.c:88
 msgid "B&W channel"
 msgstr "黑白通道"
 
-#: ../src/gui/callbacks.c:996
+#: ../src/gui/callbacks.c:997
 #, c-format
 msgid "%d file loaded"
 msgstr "%d个文件已载入"
 
-#: ../src/gui/callbacks.c:998
+#: ../src/gui/callbacks.c:999
 #, c-format
 msgid "%d files loaded"
 msgstr "%d个文件已载入"
 
-#: ../src/gui/callbacks.c:1003
+#: ../src/gui/callbacks.c:1004
 #, c-format
 msgid "%d file selected, %s"
 msgstr "%d个文件已选择，%s"
 
-#: ../src/gui/callbacks.c:1005
+#: ../src/gui/callbacks.c:1006
 #, c-format
 msgid "%d files selected, %s"
 msgstr "%d个文件已选择，%s"
 
-#: ../src/gui/callbacks.c:1140
+#: ../src/gui/callbacks.c:1141
 #, c-format
 msgid "Mem: %ldMB"
 msgstr "Mem: %ldMB"
 
-#: ../src/gui/callbacks.c:1142
+#: ../src/gui/callbacks.c:1143
 msgid "Mem: N/A"
 msgstr "Mem: N/A"
 
-#: ../src/gui/callbacks.c:1158
+#: ../src/gui/callbacks.c:1159
 #, c-format
 msgid "Disk Space: %s"
 msgstr "磁盘空间：%s"
 
-#: ../src/gui/callbacks.c:1161
+#: ../src/gui/callbacks.c:1162
 msgid "Disk Space: N/A"
 msgstr "磁盘空间：N/A"
 
-#: ../src/gui/callbacks.c:1225
+#: ../src/gui/callbacks.c:1226
 msgid "This binning is not handled yet\n"
 msgstr "该合并模式不被支持\n"
 
-#: ../src/gui/callbacks.c:1717
+#: ../src/gui/callbacks.c:1718
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "当前用户对目录%s没有写权限\n"
 
-#: ../src/gui/callbacks.c:1827
+#: ../src/gui/callbacks.c:1828
 msgid "Closing application"
 msgstr "关闭程序"
 
-#: ../src/gui/callbacks.c:1828
+#: ../src/gui/callbacks.c:1829
 msgid "Are you sure you want to quit?"
 msgstr "确定要退出吗？"
 
-#: ../src/gui/callbacks.c:2067
+#: ../src/gui/callbacks.c:2068
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "已选择 %s 队列 %s..."
 
-#: ../src/gui/callbacks.c:2132
+#: ../src/gui/callbacks.c:2133
 msgid "Searching for sequences in the current working directory..."
 msgstr "在当前工作目录中搜索队列..."
 
@@ -6712,7 +6701,7 @@ msgid ""
 "before reporting them.</small>"
 msgstr ""
 
-#: ../src/gui/image_display.c:536
+#: ../src/gui/image_display.c:532
 #, c-format
 msgid ""
 "redraw: maximum number of layers supported is %d (current image has %d).\n"
@@ -6827,10 +6816,6 @@ msgstr "Gnuplot 不可用"
 #, c-format
 msgid "%s has been saved.\n"
 msgstr "%s 已保存。\n"
-
-#: ../src/gui/plot.c:385 ../src/gui/plot.c:454
-msgid "Information"
-msgstr "信息"
 
 #: ../src/gui/plot.c:389 ../src/gui/plot.c:457
 msgid "Something went wrong while saving plot"
@@ -8741,6 +8726,18 @@ msgstr "叠加将不会使用超采样（ ‘drizzle’关闭）\n"
 #: ../src/stacking/upscaling.c:177
 msgid "Up-scaling sequence for stacking"
 msgstr "超采样叠加"
+
+#~ msgid "Informations"
+#~ msgstr "信息"
+
+#~ msgid "backgroundnoise: Error, no data computed\n"
+#~ msgstr "背景噪声：错误，无可用数据\n"
+
+#~ msgid "backgroundnoise: does not converge\n"
+#~ msgstr "背景噪声：无法汇聚\n"
+
+#~ msgid "Saturation enhancement: processing...\n"
+#~ msgstr "饱和度增强：执行中...\n"
 
 #~ msgid "1,00"
 #~ msgstr "1,00"

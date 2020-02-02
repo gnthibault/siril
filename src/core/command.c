@@ -327,7 +327,7 @@ int process_grey_flat(int nb) {
 
 int process_rl(int nb) {
 	double sigma, corner;
-	size_t threshold, iter;
+	int threshold, iter;
 
 	if (!single_image_is_loaded()) return 1;
 
@@ -367,9 +367,10 @@ int process_rl(int nb) {
 	struct deconv_data *args = malloc(sizeof(struct deconv_data));
 
 	args->fit = &gfit;
-	args->contrast_threshold = threshold;
+	args->contrast_threshold = (size_t)threshold;
 	args->sigma = sigma;
 	args->corner_radius = corner;
+	args->iterations = (size_t)iter;
 	args->auto_limit = TRUE;
 
 	set_cursor_waiting(TRUE);

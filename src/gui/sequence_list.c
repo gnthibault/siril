@@ -206,6 +206,19 @@ static GList *get_row_references_of_selected_rows(GtkTreeSelection *selection,
 	return ref;
 }
 
+static int get_image_index_from_path(GtkTreePath *path) {
+	GValue value = G_VALUE_INIT;
+	gint index;
+	GtkTreeIter iter;
+	get_list_store();
+	gtk_tree_model_get_iter(GTK_TREE_MODEL(list_store), &iter, path);
+	gtk_tree_model_get_value(GTK_TREE_MODEL(list_store), &iter, COLUMN_INDEX, &value);
+	index = g_value_get_int(&value) - 1;
+	g_value_unset(&value);
+	return index;
+}
+
+
 static void unselect_select_frame_from_list(GtkTreeView *tree_view) {
 	GtkTreeSelection *selection;
 	GtkTreeModel *model;
@@ -217,15 +230,10 @@ static void unselect_select_frame_from_list(GtkTreeView *tree_view) {
 	selection = gtk_tree_view_get_selection(tree_view);
 	references = get_row_references_of_selected_rows(selection, model);
 	for (list = references; list; list = list->next) {
-		GtkTreeIter iter;
 		GtkTreePath *path = gtk_tree_row_reference_get_path((GtkTreeRowReference*)list->data);
 		if (path) {
-			if (gtk_tree_model_get_iter(model, &iter, path)) {
-				gint idx;
-				gtk_tree_model_get(model, &iter, COLUMN_INDEX, &idx, -1);
-				idx --; // we count frames from 1 !!
-				toggle_image_selection(idx);
-			}
+			gint *new_index = gtk_tree_path_get_indices(path);
+			toggle_image_selection(new_index[0]);
 			gtk_tree_path_free(path);
 		}
 	}
@@ -358,25 +366,15 @@ void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
 	}
 }
 
-int get_image_index_from_path(GtkTreePath *path) {
-	GValue value = G_VALUE_INIT;
-	gint index;
-	GtkTreeIter iter;
-	get_list_store();
-	gtk_tree_model_get_iter(GTK_TREE_MODEL(list_store), &iter, path);
-	gtk_tree_model_get_value(GTK_TREE_MODEL(list_store), &iter, COLUMN_INDEX, &value);
-	index = g_value_get_int(&value) - 1;
-	g_value_unset(&value);
-	return index;
-}
-
 void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
-		gchar *path, gpointer user_data) {
-	gint index = get_image_index_from_path(gtk_tree_path_new_from_string(path));
+		gchar *char_path, gpointer user_data) {
+	GtkTreePath *path = gtk_tree_path_new_from_string(char_path);
+	gint index = get_image_index_from_path(path);
+	gtk_tree_path_free(path);
 	if (index < 0 || index >= com.seq.number) return;
 	fprintf(stdout, "toggle selection index = %d\n", index);
 
-	sequence_list_change_selection(path, !com.seq.imgparam[index].incl);
+	sequence_list_change_selection(char_path, !com.seq.imgparam[index].incl);
 	siril_log_message(_("%s image %d in sequence %s\n"),
 			com.seq.imgparam[index].incl ? _("excluding") : _("including"),
 			index, com.seq.seqname);
@@ -447,17 +445,36 @@ void on_seqselectall_button_clicked(GtkButton *button, gpointer user_data) {
 void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	if (sequence_is_loaded()) {
 		free_reference_image();
-		if ((gtk_toggle_button_get_active(togglebutton) == FALSE)) {
-			if (com.seq.reference_image == com.seq.current)
-				com.seq.reference_image = -1;
-		} else {
-			com.seq.reference_image = com.seq.current;
-			test_and_allocate_reference_image(-1);
-			// a reference image should not be excluded to avoid confusion
-			if (!com.seq.imgparam[com.seq.current].incl) {
-				toggle_image_selection(com.seq.current);
+		GtkTreeSelection *selection;
+		GtkTreeModel *model;
+		GList *references;
+
+		get_list_store();
+
+		model = gtk_tree_view_get_model((GtkTreeView* ) user_data);
+		selection = gtk_tree_view_get_selection((GtkTreeView* ) user_data);
+		references = get_row_references_of_selected_rows(selection, model);
+
+		references = g_list_first(references);
+		if (!references) return;
+
+		GtkTreePath *path = gtk_tree_row_reference_get_path((GtkTreeRowReference*)references->data);
+		if (path) {
+			if ((gtk_toggle_button_get_active(togglebutton) == FALSE)) {
+				if (com.seq.reference_image == com.seq.current)
+					com.seq.reference_image = -1;
+			} else {
+				com.seq.reference_image = com.seq.current;
+				test_and_allocate_reference_image(-1);
+				// a reference image should not be excluded to avoid confusion
+				if (!com.seq.imgparam[com.seq.current].incl) {
+					toggle_image_selection(com.seq.current);
+				}
 			}
+			gtk_tree_path_free(path);
 		}
+
+		g_list_free(references);
 		sequence_list_change_reference();
 		update_stack_interface(FALSE);// get stacking info and enable the Go button
 		adjust_sellabel();	// reference image is named in the label
@@ -470,7 +487,7 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 
 void sequence_list_change_selection_index(int index) {
 	GtkTreePath *path = gtk_tree_path_new_from_indices(index, -1);
-	sequence_list_change_selection(	gtk_tree_path_to_string(path), com.seq.imgparam[index].incl);
+	sequence_list_change_selection(gtk_tree_path_to_string(path), com.seq.imgparam[index].incl);
 	gtk_tree_path_free(path);
 }
 
@@ -496,7 +513,6 @@ void sequence_list_change_current() {
 void sequence_list_change_reference() {
 	GtkTreeIter iter;
 	gboolean valid;
-	gint row_count = 0;
 	int color;
 
 	color = (com.combo_theme == 0) ? 1 : 0;
@@ -504,11 +520,16 @@ void sequence_list_change_reference() {
 	get_list_store();
 	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store), &iter);
 	while (valid) {
+		gint index = 0;
+		GValue value = G_VALUE_INIT;
+
+		gtk_tree_model_get_value (GTK_TREE_MODEL(list_store), &iter, COLUMN_INDEX, &value);
+		index = g_value_get_int(&value) - 1;
+		g_value_unset(&value);
 		gtk_list_store_set(list_store, &iter,
-				COLUMN_REFERENCE,
-				(row_count == com.seq.reference_image) ?
-				ref_bg_colour[color] : bg_colour[color], -1);
-		row_count++;
+						COLUMN_REFERENCE,
+						(index == com.seq.reference_image) ?
+						ref_bg_colour[color] : bg_colour[color], -1);
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(list_store), &iter);
 	}
 }
