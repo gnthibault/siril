@@ -833,7 +833,7 @@ static void save_fits_header(fits *fit) {
 			&status);
 
 	status = 0;
-	if (fit->maximum_pixel_value)
+	if (fit->maximum_pixel_value && fit->naxes[2] == 1 && fit->type == DATA_USHORT)
 		fits_update_key(fit->fptr, TUSHORT, "MAXCFA",
 				&(fit->maximum_pixel_value), "maximum raw pixel value", &status);
 

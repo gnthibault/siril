@@ -124,12 +124,20 @@ static int preprocess(fits *raw, struct preprocessing_data *args) {
 	/* if dark optimization, the master-dark has already been subtracted */
 	if (!ret && args->use_dark && !args->use_dark_optim) {
 		ret = imoper(raw, args->dark, OPER_SUB, args->allow_32bit_output);
+#ifdef SIRIL_OUTPUT_DEBUG
+		image_find_minmax(raw);
+		fprintf(stdout, "after dark: min=%f, max=%f\n", raw->mini, raw->maxi);
+#endif
 	}
 
 	if (!ret && args->use_flat) {
 		// return value is an error if there is an overflow, but it is usual
 		// for now, so don't treat as error
 		/*ret =*/ siril_fdiv(raw, args->flat, args->normalisation, args->allow_32bit_output);
+#ifdef SIRIL_OUTPUT_DEBUG
+		image_find_minmax(raw);
+		fprintf(stdout, "after flat: min=%f, max=%f\n", raw->mini, raw->maxi);
+#endif
 	}
 
 	return ret;
@@ -227,8 +235,14 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 	if (preprocess(fit, prepro))
 		return 1;
 
-	if (prepro->use_cosmetic_correction && prepro->use_dark && prepro->dark->naxes[2] == 1)
+	if (prepro->use_cosmetic_correction && prepro->use_dark && prepro->dark->naxes[2] == 1) {
 		cosmeticCorrection(fit, prepro->dev, prepro->icold + prepro->ihot, prepro->is_cfa);
+
+#ifdef SIRIL_OUTPUT_DEBUG
+		image_find_minmax(fit);
+		fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n", fit->mini, fit->maxi);
+#endif
+	}
 
 	if (prepro->debayer) {
 		if (!prepro->seq || prepro->seq->type == SEQ_REGULAR) {
@@ -236,6 +250,11 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 			debayer_if_needed(TYPEFITS, fit,
 					prepro->compatibility, TRUE, prepro->stretch_cfa);
 		}
+
+#ifdef SIRIL_OUTPUT_DEBUG
+		image_find_minmax(fit);
+		fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n", fit->mini, fit->maxi);
+#endif
 	}
 
 	return 0;

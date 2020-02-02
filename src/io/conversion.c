@@ -214,7 +214,7 @@ static void initialize_ser_debayer_settings() {
 	com.debayer.stretch = TRUE;
 	com.debayer.compatibility = FALSE;
 	com.debayer.bayer_pattern = BAYER_FILTER_RGGB;
-	com.debayer.bayer_inter = BAYER_VNG;
+	com.debayer.bayer_inter = BAYER_RCD;
 	com.debayer.xbayeroff= 0;
 	com.debayer.ybayeroff= 0;
 }

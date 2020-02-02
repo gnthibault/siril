@@ -82,7 +82,7 @@ static int readinitfile() {
 		config_setting_lookup_bool(debayer_setting, "ser_use_bayer_header", &com.debayer.use_bayer_header);
 		config_setting_lookup_int(debayer_setting, "pattern", &com.debayer.bayer_pattern);
 		config_setting_lookup_bool(debayer_setting, "compatibility", &com.debayer.compatibility);
-		config_setting_lookup_int(debayer_setting, "inter", (int*)&com.debayer.bayer_inter);
+		//config_setting_lookup_int(debayer_setting, "inter", (int*)&com.debayer.bayer_inter);
 		config_setting_lookup_bool(debayer_setting, "stretch", &com.debayer.stretch);
 		config_setting_lookup_int(debayer_setting, "xbayeroff", &com.debayer.xbayeroff);
 		config_setting_lookup_int(debayer_setting, "ybayeroff", &com.debayer.ybayeroff);

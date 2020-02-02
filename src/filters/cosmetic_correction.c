@@ -186,7 +186,7 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 	deviant_pixel *dev;
 
 	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(_("Finding deviant pixels is not supported yet in 32-bit images"), "red");
+		siril_log_color_message(_("Finding deviant pixels is not supported yet in 32-bit images\n"), "red");
 		return NULL;
 	}
 

@@ -129,8 +129,23 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 		/* some demosaicing functions support [0, 1] range with a factor
 		 * given in argument, but not all so for now we'll do it here */
 		// TODO: vectorize!
-		for (j = 0; j < n; j++)
-			fit->fdata[j] = fit->fdata[j] * 65535.0f;
+#ifdef SIRIL_OUTPUT_DEBUG
+		float min = 100000.0f, max = 0.0f;
+#endif
+		for (j = 0; j < n; j++) {
+			if (fit->fdata[j] < 0.0f)
+				fit->fdata[j] = 0.0f;
+			else fit->fdata[j] = fit->fdata[j] * 65535.0f;
+#ifdef SIRIL_OUTPUT_DEBUG
+			if (fit->fdata[j] > max)
+				max = fit->fdata[j];
+			if (fit->fdata[j] < min)
+				min = fit->fdata[j];
+#endif
+		}
+#ifdef SIRIL_OUTPUT_DEBUG
+		fprintf(stdout, "****** before debayer, data is [%f, %f] (should be [0, 65535]) ******\n", min, max);
+#endif
 	}
 	else return -1;
 
@@ -230,8 +245,21 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 	}
 	else if (fit->type == DATA_FLOAT) {
 		// TODO: vectorize!
-		for (j = 0; j < n; j++)
+#ifdef SIRIL_OUTPUT_DEBUG
+		float min = 100000.0f, max = 0.0f;
+#endif
+		for (j = 0; j < n; j++) {
+#ifdef SIRIL_OUTPUT_DEBUG
+			if (newdata[j] > max)
+				max = newdata[j];
+			if (newdata[j] < min)
+				min = newdata[j];
+#endif
 			newdata[j] = newdata[j] * 1.52590219e-5f; // 1/65535
+		}
+#ifdef SIRIL_OUTPUT_DEBUG
+		fprintf(stdout, "****** after debayer, data is [%f, %f] (should be [0, 65535]) ******\n", min, max);
+#endif
 		fit->naxes[2] = 3;
 		fit->naxis = 3;
 		free(fit->fdata);
