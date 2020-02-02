@@ -299,30 +299,44 @@ static gpointer median_filter_float(gpointer p) {
 	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
 
-	do {
-		for (layer = 0; layer < args->fit->naxes[2]; layer++) {
-			float *data = args->fit->fpdata[layer];
-			for (y = 0; y < ny; y++) {
-				int pix_idx = y * nx;
-				if (!get_thread_run()) break;
-				if (!(y % 16))	// every 16 iterations
-					set_progress_bar_data(NULL, (double)progress / total);
-				progress++;
-				for (x = 0; x < nx; x++) {
-					double median = get_median_float_fast(data, x, y, nx, ny, radius);
-					if (args->amount != 1.0) {
-						double pixel = args->amount * median;
-						pixel += (1.0 - args->amount) * (double)data[pix_idx];
-						data[pix_idx] = (float)pixel;
-					} else {
-						data[pix_idx] = (float)median;
-					}
-					pix_idx++;
-				}
-			}
+	float *temp = calloc(ny * nx, sizeof(float)); // we need a temporary buffer
+    float amountf = args->amount;
+	for (layer = 0; layer < args->fit->naxes[2]; layer++) {
+        for (int iter = 0; iter < args->iterations; ++iter) {
+			float *dst = iter % 2 ? args->fit->fpdata[layer] : temp;
+			float *src = iter % 2 ? temp : args->fit->fpdata[layer];
+#ifdef _OPENMP
+            #pragma omp parallel for schedule(dynamic, 16)
+#endif
+            for (int y = 0; y < ny; y++) {
+                int pix_idx = y * nx;
+                for (int x = 0; x < nx; x++) {
+                    float median = get_median_float_fast(src, x, y, nx, ny, radius);
+                    if (amountf != 1.f) {
+                        float pixel = amountf * median;
+                        pixel += (1.f - amountf) * src[pix_idx];
+                        dst[pix_idx] = pixel;
+                    } else {
+                        dst[pix_idx] = median;
+                    }
+                    pix_idx++;
+                }
+            }
 		}
-		iter++;
-	} while (iter < args->iterations && get_thread_run());
+		if (args->iterations % 2) {
+			float *dst = args->fit->fpdata[layer];
+			float *src = temp;
+#ifdef _OPENMP
+            #pragma omp parallel for
+#endif
+            for (int y = 0; y < ny; y++) {
+                for (int x = 0; x < nx; x++) {
+                    dst[y * nx + x] = src[y * nx + x];
+                }
+            }
+		}
+	}
+	free(temp);
 	invalidate_stats_from_fit(args->fit);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
