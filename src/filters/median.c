@@ -327,8 +327,8 @@ static gpointer median_filter_float(gpointer p) {
 #ifdef _OPENMP
                 #pragma omp parallel
                 {
-                float medbuf[9];
 #endif
+                float medbuf[9];
 #ifdef _OPENMP
                 #pragma omp for schedule(dynamic,16)
 #endif
@@ -375,8 +375,8 @@ static gpointer median_filter_float(gpointer p) {
 #ifdef _OPENMP
                 #pragma omp parallel
                 {
-                float medbuf[25];
 #endif
+                float medbuf[25];
 #ifdef _OPENMP
                 #pragma omp for schedule(dynamic,16)
 #endif
@@ -424,15 +424,35 @@ static gpointer median_filter_float(gpointer p) {
                 #pragma omp parallel
                 {
                 float medbuf[49];
+#ifdef __SSE2__
+                __m128 medbufv[49];
+#endif
+
 #endif
 #ifdef _OPENMP
                 #pragma omp for schedule(dynamic,16)
 #endif
                     for (int y = 3; y < ny - 3; y++) {
                         int pix_idx = y * nx + 3;
-                        for (int x = 3; x < nx - 3; x++) {
+                        int x = 3;
+#ifdef __SSE2__
+                        for (; x < nx - 6; x += 4) {
                             int nb = 0;
                             for (int i = -3; i <= 3; ++i) {
+                                for (int j = -3; j <= 3; ++j) {
+                                    _mm_storeu_ps((float*)&medbufv[nb++], _mm_loadu_ps(&src[(y + i) * nx + x + j]));
+                                }
+                            }
+                            __m128 medianv = median7x7sse(medbufv);
+                            __m128 amountv = _mm_set1_ps(amountf);
+                            __m128 amount1v = _mm_set1_ps(1.f - amountf);
+                            _mm_storeu_ps(&dst[pix_idx], amountv * medianv + amount1v * _mm_loadu_ps(&src[pix_idx]));
+                            pix_idx += 4;
+                        }
+#endif
+                        for (; x < nx - 3; x++) {
+                            int nb = 0;
+                            for (int i = -3; i <= 3 ; ++i) {
                                 for (int j = -3; j <= 3; ++j) {
                                     medbuf[nb++] = src[(y + i) * nx + x + j];
                                 }
@@ -451,7 +471,7 @@ static gpointer median_filter_float(gpointer p) {
                 }
 			} else if (args->ksize == 9) {
                 for (int y = 0; y < ny; y++) {
-                    if (y < 3 || y > ny - 5) {
+                    if (y < 4 || y > ny - 5) {
                         for (int x = 0; x < nx; x++) {
                             if (x < 4 || x > nx - 5) {
                                 int pix_idx = y * nx + x;
@@ -472,13 +492,33 @@ static gpointer median_filter_float(gpointer p) {
                 #pragma omp parallel
                 {
                 float medbuf[81];
+#ifdef __SSE2__
+                __m128 medbufv[81];
+#endif
+
 #endif
 #ifdef _OPENMP
                 #pragma omp for schedule(dynamic,16)
 #endif
                     for (int y = 4; y < ny - 4; y++) {
                         int pix_idx = y * nx + 4;
-                        for (int x = 4; x < nx - 4; x++) {
+                        int x = 4;
+#ifdef __SSE2__
+                        for (; x < nx - 7; x += 4) {
+                            int nb = 0;
+                            for (int i = -4; i <= 4; ++i) {
+                                for (int j = -4; j <= 4; ++j) {
+                                    _mm_storeu_ps((float*)&medbufv[nb++], _mm_loadu_ps(&src[(y + i) * nx + x + j]));
+                                }
+                            }
+                            __m128 medianv = median9x9sse(medbufv);
+                            __m128 amountv = _mm_set1_ps(amountf);
+                            __m128 amount1v = _mm_set1_ps(1.f - amountf);
+                            _mm_storeu_ps(&dst[pix_idx], amountv * medianv + amount1v * _mm_loadu_ps(&src[pix_idx]));
+                            pix_idx += 4;
+                        }
+#endif
+                        for (; x < nx - 4; x++) {
                             int nb = 0;
                             for (int i = -4; i <= 4 ; ++i) {
                                 for (int j = -4; j <= 4; ++j) {
