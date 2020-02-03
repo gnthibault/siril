@@ -303,8 +303,8 @@ static gpointer median_filter_float(gpointer p) {
     float amountf = args->amount;
 	for (int layer = 0; layer < args->fit->naxes[2]; layer++) {
         for (int iter = 0; iter < args->iterations; ++iter) {
-			float *dst = iter % 2 ? args->fit->fpdata[layer] : temp;
-			float *src = iter % 2 ? temp : args->fit->fpdata[layer];
+			float *dst = (iter % 2) ? args->fit->fpdata[layer] : temp;
+			float *src = (iter % 2) ? temp : args->fit->fpdata[layer];
 			// borders
             for (int y = 0; y < ny; y++) {
                 if (y < radius || y >= ny - radius) {
