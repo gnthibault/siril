@@ -5108,6 +5108,7 @@ To be enabled, the reference image must have been explicitly set and already dis
                               <object class="GtkBox" id="GtkBoxPng">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="spacing">5</property>
                                 <child>
                                   <object class="GtkLabel" id="GtkLabelPng">
                                     <property name="visible">True</property>
@@ -5187,23 +5188,18 @@ To be enabled, the reference image must have been explicitly set and already dis
                                     <property name="position">4</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <object class="GtkButton" id="varCurvePhotometry">
-                                    <property name="label" translatable="yes" comments="This is the button for plotting variable star graph">Light Curve</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="tooltip_text" translatable="yes">Plot a graph of the variable star. The variable star must be analysed in first, then other PSF are applied to references. A maximum of 6 references is allowed. To enable this function, choose 'Magnitude' in the type of displayed graph.
-WARNING: gnuplot must be installed.</property>
-                                    <property name="halign">center</property>
-                                    <signal name="clicked" handler="on_varCurvePhotometry_clicked" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">5</property>
-                                  </packing>
-                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="spacing">5</property>
                                 <child>
                                   <object class="GtkComboBoxText" id="plotSourceCombo">
                                     <property name="can_focus">False</property>
@@ -5220,7 +5216,7 @@ WARNING: gnuplot must be installed.</property>
                                     <property name="fill">True</property>
                                     <property name="padding">6</property>
                                     <property name="pack_type">end</property>
-                                    <property name="position">5</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5243,7 +5239,24 @@ WARNING: gnuplot must be installed.</property>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
                                     <property name="pack_type">end</property>
-                                    <property name="position">6</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="varCurvePhotometry">
+                                    <property name="label" translatable="yes" comments="This is the button for plotting variable star graph">Light Curve</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="tooltip_text" translatable="yes">Plot a graph of the variable star. The variable star must be analysed in first, then other PSF are applied to references. A maximum of 6 references is allowed. To enable this function, choose 'Magnitude' in the type of displayed graph.
+WARNING: gnuplot must be installed.</property>
+                                    <property name="halign">center</property>
+                                    <signal name="clicked" handler="on_varCurvePhotometry_clicked" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">2</property>
                                   </packing>
                                 </child>
                               </object>
