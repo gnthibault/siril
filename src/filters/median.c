@@ -372,6 +372,16 @@ static gpointer median_filter_float(gpointer p) {
                             }
                             pix_idx++;
                         }
+#ifdef _OPENMP
+
+                    #pragma omp critical
+#endif
+                    {
+                        ++progress;
+                        if (!(progress % 32)) {
+                            set_progress_bar_data(NULL, (double)progress / total);
+                        }
+                    }
                     }
                 }
 			} else if (args->ksize == 5) {
@@ -422,6 +432,16 @@ static gpointer median_filter_float(gpointer p) {
                             }
                             pix_idx++;
                         }
+#ifdef _OPENMP
+
+                    #pragma omp critical
+#endif
+                    {
+                        ++progress;
+                        if (!(progress % 32)) {
+                            set_progress_bar_data(NULL, (double)progress / total);
+                        }
+                    }
                     }
                 }
 			} else if (args->ksize == 7) {
@@ -472,6 +492,16 @@ static gpointer median_filter_float(gpointer p) {
                             }
                             pix_idx++;
                         }
+#ifdef _OPENMP
+
+                    #pragma omp critical
+#endif
+                    {
+                        ++progress;
+                        if (!(progress % 32)) {
+                            set_progress_bar_data(NULL, (double)progress / total);
+                        }
+                    }
                     }
                 }
 			} else if (args->ksize == 9) {
@@ -522,6 +552,16 @@ static gpointer median_filter_float(gpointer p) {
                             }
                             pix_idx++;
                         }
+#ifdef _OPENMP
+
+                    #pragma omp critical
+#endif
+                    {
+                        ++progress;
+                        if (!(progress % 32)) {
+                            set_progress_bar_data(NULL, (double)progress / total);
+                        }
+                    }
                     }
                 }
 			} else {
@@ -540,6 +580,16 @@ static gpointer median_filter_float(gpointer p) {
                             dst[pix_idx] = median;
                         }
                         pix_idx++;
+                    }
+#ifdef _OPENMP
+
+                    #pragma omp critical
+#endif
+                    {
+                        ++progress;
+                        if (!(progress % 32)) {
+                            set_progress_bar_data(NULL, (double)progress / total);
+                        }
                     }
                 }
 			}
