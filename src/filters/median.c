@@ -327,13 +327,13 @@ static gpointer median_filter_float(gpointer p) {
 			if (args->ksize == 3) {
 #ifdef _OPENMP
                 #pragma omp parallel
+#endif
                 {
                 float medbuf[9];
 #ifdef __SSE2__
                 __m128 medbufv[9];
 #endif
 
-#endif
 #ifdef _OPENMP
                 #pragma omp for schedule(dynamic,16)
 #endif
@@ -378,12 +378,12 @@ static gpointer median_filter_float(gpointer p) {
 #ifdef _OPENMP
                 #pragma omp parallel
                 {
+#endif
                 float medbuf[25];
 #ifdef __SSE2__
                 __m128 medbufv[25];
 #endif
 
-#endif
 #ifdef _OPENMP
                 #pragma omp for schedule(dynamic,16)
 #endif
@@ -427,13 +427,13 @@ static gpointer median_filter_float(gpointer p) {
 			} else if (args->ksize == 7) {
 #ifdef _OPENMP
                 #pragma omp parallel
+#endif
                 {
                 float medbuf[49];
 #ifdef __SSE2__
                 __m128 medbufv[49];
 #endif
 
-#endif
 #ifdef _OPENMP
                 #pragma omp for schedule(dynamic,16)
 #endif
@@ -477,15 +477,15 @@ static gpointer median_filter_float(gpointer p) {
 			} else if (args->ksize == 9) {
 #ifdef _OPENMP
                 #pragma omp parallel
+#endif
                 {
                 float medbuf[81];
 #ifdef __SSE2__
                 __m128 medbufv[81];
 #endif
 
-#endif
 #ifdef _OPENMP
-                #pragma omp for schedule(dynamic,16)
+                    #pragma omp for schedule(dynamic,16)
 #endif
                     for (int y = 4; y < ny - 4; y++) {
                         int pix_idx = y * nx + 4;
