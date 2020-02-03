@@ -305,38 +305,59 @@ static gpointer median_filter_float(gpointer p) {
         for (int iter = 0; iter < args->iterations; ++iter) {
 			float *dst = iter % 2 ? args->fit->fpdata[layer] : temp;
 			float *src = iter % 2 ? temp : args->fit->fpdata[layer];
-			if (args->ksize == 3) {
-                for (int y = 0; y < ny; y++) {
-                    if (y < 1 || y > ny - 2) {
-                        for (int x = 0; x < nx; x++) {
-                            if (x < 1 || x > nx - 2) {
-                                int pix_idx = y * nx + x;
-                                float median = get_median_float_fast(src, x, y, nx, ny, radius);
-                                if (amountf != 1.f) {
-                                    float pixel = amountf * median;
-                                    pixel += (1.f - amountf) * src[pix_idx];
-                                    dst[pix_idx] = pixel;
-                                } else {
-                                    dst[pix_idx] = median;
-                                }
-                                pix_idx++;
+			// borders
+            for (int y = 0; y < ny; y++) {
+                if (y < radius || y >= ny - radius) {
+                    for (int x = 0; x < nx; x++) {
+                        if (x < radius || x >= nx - radius) {
+                            int pix_idx = y * nx + x;
+                            float median = get_median_float_fast(src, x, y, nx, ny, radius);
+                            if (amountf != 1.f) {
+                                float pixel = amountf * median;
+                                pixel += (1.f - amountf) * src[pix_idx];
+                                dst[pix_idx] = pixel;
+                            } else {
+                                dst[pix_idx] = median;
                             }
+                            pix_idx++;
                         }
                     }
                 }
+            }
+			if (args->ksize == 3) {
 #ifdef _OPENMP
                 #pragma omp parallel
                 {
-#endif
                 float medbuf[9];
+#ifdef __SSE2__
+                __m128 medbufv[9];
+#endif
+
+#endif
 #ifdef _OPENMP
                 #pragma omp for schedule(dynamic,16)
 #endif
                     for (int y = 1; y < ny - 1; y++) {
                         int pix_idx = y * nx + 1;
-                        for (int x = 1; x < nx - 1; x++) {
+                        int x = 1;
+#ifdef __SSE2__
+                        for (; x <= nx - 4; x += 4) {
                             int nb = 0;
                             for (int i = -1; i <= 1; ++i) {
+                                for (int j = -1; j <= 1; ++j) {
+                                    _mm_storeu_ps((float*)&medbufv[nb++], _mm_loadu_ps(&src[(y + i) * nx + x + j]));
+                                }
+                            }
+                            __m128 medianv = median3x3sse(medbufv);
+                            __m128 amountv = _mm_set1_ps(amountf);
+                            __m128 amount1v = _mm_set1_ps(1.f - amountf);
+                            _mm_storeu_ps(&dst[pix_idx], amountv * medianv + amount1v * _mm_loadu_ps(&src[pix_idx]));
+                            pix_idx += 4;
+                        }
+#endif
+                        for (; x < nx - 1; x++) {
+                            int nb = 0;
+                            for (int i = -1; i <= 1 ; ++i) {
                                 for (int j = -1; j <= 1; ++j) {
                                     medbuf[nb++] = src[(y + i) * nx + x + j];
                                 }
@@ -354,37 +375,39 @@ static gpointer median_filter_float(gpointer p) {
                     }
                 }
 			} else if (args->ksize == 5) {
-                for (int y = 0; y < ny; y++) {
-                    if (y < 2 || y > ny - 3) {
-                        for (int x = 0; x < nx; x++) {
-                            if (x < 2 || x > nx - 3) {
-                                int pix_idx = y * nx + x;
-                                float median = get_median_float_fast(src, x, y, nx, ny, radius);
-                                if (amountf != 1.f) {
-                                    float pixel = amountf * median;
-                                    pixel += (1.f - amountf) * src[pix_idx];
-                                    dst[pix_idx] = pixel;
-                                } else {
-                                    dst[pix_idx] = median;
-                                }
-                                pix_idx++;
-                            }
-                        }
-                    }
-                }
 #ifdef _OPENMP
                 #pragma omp parallel
                 {
-#endif
                 float medbuf[25];
+#ifdef __SSE2__
+                __m128 medbufv[25];
+#endif
+
+#endif
 #ifdef _OPENMP
                 #pragma omp for schedule(dynamic,16)
 #endif
                     for (int y = 2; y < ny - 2; y++) {
                         int pix_idx = y * nx + 2;
-                        for (int x = 2; x < nx - 2; x++) {
+                        int x = 2;
+#ifdef __SSE2__
+                        for (; x <= nx - 5; x += 4) {
                             int nb = 0;
                             for (int i = -2; i <= 2; ++i) {
+                                for (int j = -2; j <= 2; ++j) {
+                                    _mm_storeu_ps((float*)&medbufv[nb++], _mm_loadu_ps(&src[(y + i) * nx + x + j]));
+                                }
+                            }
+                            __m128 medianv = median5x5sse(medbufv);
+                            __m128 amountv = _mm_set1_ps(amountf);
+                            __m128 amount1v = _mm_set1_ps(1.f - amountf);
+                            _mm_storeu_ps(&dst[pix_idx], amountv * medianv + amount1v * _mm_loadu_ps(&src[pix_idx]));
+                            pix_idx += 4;
+                        }
+#endif
+                        for (; x < nx - 2; x++) {
+                            int nb = 0;
+                            for (int i = -2; i <= 2 ; ++i) {
                                 for (int j = -2; j <= 2; ++j) {
                                     medbuf[nb++] = src[(y + i) * nx + x + j];
                                 }
@@ -402,24 +425,6 @@ static gpointer median_filter_float(gpointer p) {
                     }
                 }
 			} else if (args->ksize == 7) {
-                for (int y = 0; y < ny; y++) {
-                    if (y < 3 || y > ny - 4) {
-                        for (int x = 0; x < nx; x++) {
-                            if (x < 3 || x > nx - 4) {
-                                int pix_idx = y * nx + x;
-                                float median = get_median_float_fast(src, x, y, nx, ny, radius);
-                                if (amountf != 1.f) {
-                                    float pixel = amountf * median;
-                                    pixel += (1.f - amountf) * src[pix_idx];
-                                    dst[pix_idx] = pixel;
-                                } else {
-                                    dst[pix_idx] = median;
-                                }
-                                pix_idx++;
-                            }
-                        }
-                    }
-                }
 #ifdef _OPENMP
                 #pragma omp parallel
                 {
@@ -470,24 +475,6 @@ static gpointer median_filter_float(gpointer p) {
                     }
                 }
 			} else if (args->ksize == 9) {
-                for (int y = 0; y < ny; y++) {
-                    if (y < 4 || y > ny - 5) {
-                        for (int x = 0; x < nx; x++) {
-                            if (x < 4 || x > nx - 5) {
-                                int pix_idx = y * nx + x;
-                                float median = get_median_float_fast(src, x, y, nx, ny, radius);
-                                if (amountf != 1.f) {
-                                    float pixel = amountf * median;
-                                    pixel += (1.f - amountf) * src[pix_idx];
-                                    dst[pix_idx] = pixel;
-                                } else {
-                                    dst[pix_idx] = median;
-                                }
-                                pix_idx++;
-                            }
-                        }
-                    }
-                }
 #ifdef _OPENMP
                 #pragma omp parallel
                 {
