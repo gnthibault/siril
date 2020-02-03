@@ -326,7 +326,7 @@ static gpointer median_filter_float(gpointer p) {
             }
 			if (args->ksize == 3) {
 #ifdef _OPENMP
-                #pragma omp parallel
+                #pragma omp parallel num_threads(com.max_thread)
 #endif
                 {
                 float medbuf[9];
@@ -386,7 +386,7 @@ static gpointer median_filter_float(gpointer p) {
                 }
 			} else if (args->ksize == 5) {
 #ifdef _OPENMP
-                #pragma omp parallel
+                #pragma omp parallel num_threads(com.max_thread)
                 {
 #endif
                 float medbuf[25];
@@ -446,7 +446,7 @@ static gpointer median_filter_float(gpointer p) {
                 }
 			} else if (args->ksize == 7) {
 #ifdef _OPENMP
-                #pragma omp parallel
+                #pragma omp parallel num_threads(com.max_thread)
 #endif
                 {
                 float medbuf[49];
@@ -506,7 +506,7 @@ static gpointer median_filter_float(gpointer p) {
                 }
 			} else if (args->ksize == 9) {
 #ifdef _OPENMP
-                #pragma omp parallel
+                #pragma omp parallel num_threads(com.max_thread)
 #endif
                 {
                 float medbuf[81];
@@ -566,7 +566,7 @@ static gpointer median_filter_float(gpointer p) {
                 }
 			} else {
 #ifdef _OPENMP
-                #pragma omp parallel for schedule(dynamic, 16)
+                #pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, 16)
 #endif
                 for (int y = 0; y < ny; y++) {
                     int pix_idx = y * nx;
