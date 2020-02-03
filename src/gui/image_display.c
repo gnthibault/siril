@@ -403,35 +403,28 @@ static void remap(int vport) {
 			last_mode[vport] = mode;
 		}
 		else if (gfit.type == DATA_FLOAT) {
-			/* we can't make an index for float values, so we make
-			 * a lookup table, which works the other way around but
-			 * requires a loop for the lookup */
-			int j;
-			size_t i = 0, hist_nb_bins;
-			gsl_histogram *histo;
 			double hist_sum, nb_pixels;
+			size_t i, hist_nb_bins;
+			gsl_histogram *histo;
 
 			compute_histo_for_gfit();
 			histo = com.layers_hist[vport];
 			hist_nb_bins = gsl_histogram_bins(histo);
 			nb_pixels = (double)(gfit.rx * gfit.ry);
 
-			float_hist_lookup[vport][0] = 0.0f;
-			hist_sum = 0.0;
-			for (j = 1; j < 256; j++) {
-				do {
-					if (i >= hist_nb_bins) break;
-					double newsum = hist_sum + gsl_histogram_get(histo, i);
-					if (newsum / nb_pixels > (double)j / 255.0) {
-						float_hist_lookup[vport][j] = (float)i / (float)hist_nb_bins;
-						hist_sum = newsum;
-						i++;
-						break;
-					}
-					hist_sum = newsum;
-					i++;
-				} while (i < hist_nb_bins);
+			// build the remap_index
+			if (!remap_index[vport])
+				remap_index[vport] = malloc(USHRT_MAX + 1);
+
+			remap_index[vport][0] = 0;
+			hist_sum = gsl_histogram_get(histo, 0);
+			for (i = 1; i < hist_nb_bins; i++) {
+				hist_sum += gsl_histogram_get(histo, i);
+				remap_index[vport][i] = round_to_BYTE(
+						(hist_sum / nb_pixels) * UCHAR_MAX_DOUBLE);
 			}
+
+			last_mode[vport] = mode;
 		}
 		set_viewer_mode_widgets_sensitive(FALSE);
 	} else {
@@ -440,9 +433,7 @@ static void remap(int vport) {
 			stfM = findMidtonesBalance(&gfit, &stfShadows, &stfHighlights);
 			stfComputed = TRUE;
 		}
-		if (gfit.type == DATA_USHORT) {
-			make_index_for_current_display(mode, lo, hi, vport);
-		}
+		make_index_for_current_display(mode, lo, hi, vport);
 		if (mode == STF_DISPLAY)
 			set_viewer_mode_widgets_sensitive(FALSE);
 		else
@@ -460,7 +451,7 @@ static void remap(int vport) {
 		make_index_for_rainbow(rainbow_index);
 	index = remap_index[vport];
 
-    gboolean special_mode = HISTEQ_DISPLAY || mode == STF_DISPLAY;
+    gboolean special_mode = (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(y) schedule(static)
 #endif
@@ -480,11 +471,18 @@ static void remap(int vport) {
 	    			dst_pixel_value = index[src[src_index] - lo < 0 ? 0 : src[src_index] - lo];
 				}
 			} else if (gfit.type == DATA_FLOAT) {
-				dst_pixel_value = display_for_float_pixel(fsrc[src_index], mode, vport, lo, hi);
+				if (special_mode) // special case, no lo & hi
+					dst_pixel_value = index[roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE)];
+				else if (do_cut_over && roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) > hi)	// cut
+					dst_pixel_value = 0;
+    			else {
+					dst_pixel_value = index[
+							roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) - lo < 0 ? 0 :
+									roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) - lo];
+				}
 			}
 
-			dst_pixel_value =
-					inverted ? UCHAR_MAX - dst_pixel_value : dst_pixel_value;
+			dst_pixel_value = inverted ? UCHAR_MAX - dst_pixel_value : dst_pixel_value;
 
 			// Siril's FITS are stored bottom to top, so mapping needs to revert data order
 			guint dst_index = ((gfit.ry - 1 - y) * gfit.rx + x) * 4;
