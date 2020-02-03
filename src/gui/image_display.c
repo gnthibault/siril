@@ -361,7 +361,7 @@ static void remap(int vport) {
 		make_index_for_rainbow(rainbow_index);
 	index = remap_index[vport];
 
-    gboolean special_mode = HISTEQ_DISPLAY || mode == STF_DISPLAY;
+    gboolean special_mode = (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(y) schedule(static)
 #endif
