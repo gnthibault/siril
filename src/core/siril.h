@@ -15,6 +15,10 @@
 #endif
 #include <libintl.h>
 
+#ifdef __SSE2__
+#include <x86intrin.h>
+#endif
+
 #define _(String) gettext (String)
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
@@ -690,6 +694,26 @@ struct image_layer_struct {
 extern GtkBuilder *builder;	// get widget references anywhere
 extern cominfo com;		// the main data struct
 extern fits gfit;		// currently loaded image
+#endif
+
+// some convenience functions from RT
+inline float intpf(float a, float b, float c)
+{
+    // calculate a * b + (1 - a) * c
+    // following is valid:
+    // intp(a, b+x, c+x) = intp(a, b, c) + x
+    // intp(a, b*x, c*x) = intp(a, b, c) * x
+    return a * (b - c) + c;
+}
+#ifdef __SSE2__
+inline __m128 intpsse(__m128 a, __m128 b, __m128 c)
+{
+    // calculate a * b + (1 - a) * c
+    // following is valid:
+    // intp(a, b+x, c+x) = intp(a, b, c) + x
+    // intp(a, b*x, c*x) = intp(a, b, c) * x
+    return a * (b - c) + c;
+}
 #endif
 
 #endif /*SIRIL */
