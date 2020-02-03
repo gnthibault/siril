@@ -36,6 +36,7 @@ siril_SOURCES = \
 	algos/geometry.c \
 	algos/geometry.h \
 	algos/io_wave.c \
+	algos/median_fast.c \
 	algos/noise.c \
 	algos/noise.h \
 	algos/pave.c \
