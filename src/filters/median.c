@@ -373,8 +373,8 @@ static gpointer median_filter_float(gpointer p) {
 			} else if (args->ksize == 5) {
 #ifdef _OPENMP
                 #pragma omp parallel num_threads(com.max_thread)
-                {
 #endif
+                {
                 float medbuf[25];
 #ifdef __SSE2__
                 __m128 medbufv[25];
@@ -383,34 +383,34 @@ static gpointer median_filter_float(gpointer p) {
 #ifdef _OPENMP
                 #pragma omp for schedule(dynamic,16)
 #endif
-                    for (int y = 2; y < ny - 2; y++) {
-                        int pix_idx = y * nx + 2;
-                        int x = 2;
+                for (int y = 2; y < ny - 2; y++) {
+                    int pix_idx = y * nx + 2;
+                    int x = 2;
 #ifdef __SSE2__
-                        for (; x <= nx - 5; x += 4) {
-                            int nb = 0;
-                            for (int i = -2; i <= 2; ++i) {
-                                for (int j = -2; j <= 2; ++j) {
-                                    _mm_storeu_ps((float*)&medbufv[nb++], _mm_loadu_ps(&src[(y + i) * nx + x + j]));
-                                }
+                    for (; x <= nx - 5; x += 4) {
+                        int nb = 0;
+                        for (int i = -2; i <= 2; ++i) {
+                            for (int j = -2; j <= 2; ++j) {
+                                _mm_storeu_ps((float*)&medbufv[nb++], _mm_loadu_ps(&src[(y + i) * nx + x + j]));
                             }
-                            __m128 medianv = median5x5sse(medbufv);
-                            __m128 amountv = _mm_set1_ps(amountf);
-                            _mm_storeu_ps(&dst[pix_idx], intpsse(amountv, medianv, _mm_loadu_ps(&src[pix_idx])));
-                            pix_idx += 4;
                         }
+                        __m128 medianv = median5x5sse(medbufv);
+                        __m128 amountv = _mm_set1_ps(amountf);
+                        _mm_storeu_ps(&dst[pix_idx], intpsse(amountv, medianv, _mm_loadu_ps(&src[pix_idx])));
+                        pix_idx += 4;
+                    }
 #endif
-                        for (; x < nx - 2; x++) {
-                            int nb = 0;
-                            for (int i = -2; i <= 2 ; ++i) {
-                                for (int j = -2; j <= 2; ++j) {
-                                    medbuf[nb++] = src[(y + i) * nx + x + j];
-                                }
+                    for (; x < nx - 2; x++) {
+                        int nb = 0;
+                        for (int i = -2; i <= 2 ; ++i) {
+                            for (int j = -2; j <= 2; ++j) {
+                                medbuf[nb++] = src[(y + i) * nx + x + j];
                             }
-                            float median = median5x5(medbuf);
-                            dst[pix_idx] = intpf(amountf, median, src[pix_idx]);
-                            pix_idx++;
                         }
+                        float median = median5x5(medbuf);
+                        dst[pix_idx] = intpf(amountf, median, src[pix_idx]);
+                        pix_idx++;
+                    }
 #ifdef _OPENMP
                     #pragma omp critical
 #endif
@@ -420,9 +420,9 @@ static gpointer median_filter_float(gpointer p) {
                             set_progress_bar_data(NULL, (double)progress / total);
                         }
                     }
-                    }
                 }
-			} else if (args->ksize == 7) {
+            }
+        } else if (args->ksize == 7) {
 #ifdef _OPENMP
                 #pragma omp parallel num_threads(com.max_thread)
 #endif
