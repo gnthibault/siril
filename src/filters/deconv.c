@@ -101,27 +101,18 @@ void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 
 	args->fit = &gfit;
-	args->clip = args->fit->maxi;
 	args->contrast_threshold = (size_t)gtk_range_get_value(threshold);
 	args->sigma = gtk_range_get_value(sigma);
 	args->corner_radius = gtk_range_get_value(corner_radius);
 	args->iterations = (size_t)gtk_range_get_value(iterations);
 	args->auto_limit = gtk_toggle_button_get_active(auto_limit);
 	args->auto_contrast_threshold = gtk_toggle_button_get_active(auto_threshold);
-
-	undo_save_state(&gfit, "Processing: Deconv. (iter=%d, sig=%.3f)", args->iterations, args->sigma);
-
 	if (args->fit->type == DATA_USHORT) {
-		const long n = args->fit->naxes[0] * args->fit->naxes[1] * args->fit->naxes[2];
-		float *newbuf = ushort_buffer_to_float(args->fit->data, n);
-		if (!newbuf) {
-			return;
-		}
-		fit_replace_buffer(args->fit, newbuf, DATA_FLOAT);
-		set_precision_switch();
+		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi;
 	} else {
-		args->clip = args->fit->maxi * USHRT_MAX_DOUBLE;
+		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi * USHRT_MAX_DOUBLE;
 	}
+	undo_save_state(args->fit, "Processing: Deconv. (iter=%d, sig=%.3f)", args->iterations, args->sigma);
 
 	start_in_new_thread(RTdeconv, args);
 }
