@@ -10,6 +10,10 @@
 #undef int64
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /****************** image_format_fits.h ******************/
 int readfits(const char *filename, fits *fit, char *realname);
 double get_exposure_from_fitsfile(fitsfile *fptr);
@@ -96,6 +100,21 @@ WORD round_to_WORD(double x);
 BYTE round_to_BYTE(double x);
 BYTE conv_to_BYTE(double x);
 int truncate_to_int32(uint64_t x);
+uint16_t change_endianness16(uint16_t x);
+uint16_t cpu_to_le16(uint16_t x);
+uint16_t cpu_to_be16(uint16_t x);
+uint16_t le16_to_cpu(uint16_t x);
+uint16_t be16_to_cpu(uint16_t x);
+uint32_t change_endianness32(uint32_t x);
+uint32_t cpu_to_le32(uint32_t x);
+uint32_t cpu_to_be32(uint32_t x);
+uint32_t le32_to_cpu(uint32_t x);
+uint32_t be32_to_cpu(uint32_t x);
+uint64_t change_endianness64(uint64_t x);
+uint64_t cpu_to_le64(uint64_t x);
+uint64_t cpu_to_be64(uint64_t x);
+uint64_t le64_to_cpu(uint64_t x);
+uint64_t be64_to_cpu(uint64_t x);
 gboolean isrgb(fits *fit);
 gboolean ends_with(const char *str, const char *ending);
 int get_extension_index(const char *filename);
@@ -161,5 +180,9 @@ void on_spinbut_shift_value_change(GtkSpinButton *spinbutton,
 
 /****************** statistics_list.h ******************/
 void computeStat();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -524,7 +524,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 			/* change endianness in place */
 			nbdata = fit->rx * fit->ry;
 			for (i = 0; i < nbdata; i++)
-				fit->data[i] = (fit->data[i] >> 8) | (fit->data[i] << 8);
+				fit->data[i] = change_endianness16(fit->data[i]);
 			fit->pdata[0] = fit->data;
 			fit->pdata[1] = fit->data;
 			fit->pdata[2] = fit->data;
@@ -598,9 +598,9 @@ static int saveppm(const char *name, fits *fit) {
 		 * this swap is not required and causes bad image 
 		 * THIS CASE SHOULD NOT BE VERY FREQUENT */
 
-		color[0] = (color[0] >> 8) | (color[0] << 8);
-		color[1] = (color[1] >> 8) | (color[1] << 8);
-		color[2] = (color[2] >> 8) | (color[2] << 8);
+		color[0] = change_endianness16(color[0]);
+		color[1] = change_endianness16(color[1]);
+		color[2] = change_endianness16(color[2]);
 		fwrite(color, sizeof(WORD), 3, fp);
 	}
 	fclose(fp);

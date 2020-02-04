@@ -123,6 +123,173 @@ int truncate_to_int32(uint64_t x) {
 }
 
 /**
+ * change endianness of a 16 bit unsigned int
+ * @param x value to convert
+ * @return byte-swapped value
+ */
+uint16_t change_endianness16(uint16_t x) {
+    return (x >> 8) | (x << 8);
+}
+
+/**
+ * convert a 16 bit unsigned int in CPU byte order to little endian
+ * @param x value to convert
+ * @return little endian value
+ */
+uint16_t cpu_to_le16(uint16_t x) {
+#ifdef __BIG_ENDIAN__
+    return change_endianness16(x);
+#else
+    return x;
+#endif
+}
+
+/**
+ * convert a 16 bit unsigned int in CPU byte order to big endian
+ * @param x value to convert
+ * @return big endian value
+ */
+uint16_t cpu_to_be16(uint16_t x) {
+#ifdef __BIG_ENDIAN__
+    return x;
+#else
+    return change_endianness16(x);
+#endif
+}
+
+/**
+ * convert a 16 bit unsigned int from little endian to CPU byte order
+ * @param x little endian value to convert
+ * @return value
+ */
+uint16_t le16_to_cpu(uint16_t x) {
+    return cpu_to_le16(x);
+}
+
+/**
+ * convert a 16 bit unsigned int from big endian to CPU byte order
+ * @param x big endian value to convert
+ * @return value
+ */
+uint16_t be16_to_cpu(uint16_t x) {
+    return cpu_to_be16(x);
+}
+
+/**
+ * change endianness of a 32 bit unsigned int
+ * @param x value to convert
+ * @return byte-swapped value
+ */
+uint32_t change_endianness32(uint32_t x) {
+    return (x >> 24) | ((x & 0xFF0000) >> 8) | ((x & 0xFF00) << 8) | (x << 24);
+}
+
+/**
+ * convert a 32 bit unsigned int in CPU byte order to little endian
+ * @param x value to convert
+ * @return little endian value
+ */
+uint32_t cpu_to_le32(uint32_t x) {
+#ifdef __BIG_ENDIAN__
+    return change_endianness32(x);
+#else
+    return x;
+#endif
+}
+
+/**
+ * convert a 32 bit unsigned int in CPU byte order to big endian
+ * @param x value to convert
+ * @return big endian value
+ */
+uint32_t cpu_to_be32(uint32_t x) {
+#ifdef __BIG_ENDIAN__
+    return x;
+#else
+    return change_endianness32(x);
+#endif
+}
+
+/**
+ * convert a 32 bit unsigned int from little endian to CPU byte order
+ * @param x little endian value to convert
+ * @return value
+ */
+uint32_t le32_to_cpu(uint32_t x) {
+    return cpu_to_le32(x);
+}
+
+/**
+ * convert a 32 bit unsigned int from big endian to CPU byte order
+ * @param x big endian value to convert
+ * @return value
+ */
+uint32_t be32_to_cpu(uint32_t x) {
+    return cpu_to_be32(x);
+}
+
+/**
+ * change endianness of a 64 bit unsigned int
+ * @param x value to convert
+ * @return byte-swapped value
+ */
+uint64_t change_endianness64(uint64_t x) {
+    return
+        (x >> 56)
+        | ((x & 0xFF000000000000) >> 40)
+        | ((x & 0xFF0000000000) >> 24)
+        | ((x & 0xFF00000000) >> 8)
+        | ((x & 0xFF000000) << 8)
+        | ((x & 0xFF0000) << 24)
+        | ((x & 0xFF00) << 40)
+        | (x << 56);
+}
+
+/**
+ * convert a 64 bit unsigned int in CPU byte order to little endian
+ * @param x value to convert
+ * @return little endian value
+ */
+uint64_t cpu_to_le64(uint64_t x) {
+#ifdef __BIG_ENDIAN__
+    return change_endianness64(x);
+#else
+    return x;
+#endif
+}
+
+/**
+ * convert a 64 bit unsigned int in CPU byte order to big endian
+ * @param x value to convert
+ * @return big endian value
+ */
+uint64_t cpu_to_be64(uint64_t x) {
+#ifdef __BIG_ENDIAN__
+    return x;
+#else
+    return change_endianness64(x);
+#endif
+}
+
+/**
+ * convert a 64 bit unsigned int from little endian to CPU byte order
+ * @param x little endian value to convert
+ * @return value
+ */
+uint64_t le64_to_cpu(uint64_t x) {
+    return cpu_to_le64(x);
+}
+
+/**
+ * convert a 64 bit unsigned int from big endian to CPU byte order
+ * @param x big endian value to convert
+ * @return value
+ */
+uint64_t be64_to_cpu(uint64_t x) {
+    return cpu_to_be64(x);
+}
+
+/**
  * Test if fit has 3 channels
  * @param fit input FITS image
  * @return TRUE if fit image has 3 channels
