@@ -17,11 +17,45 @@
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SRC_CORE_SIRIL_CMD_HELP_H_
-#define SRC_CORE_SIRIL_CMD_HELP_H_
 
-#define SHORTCUTS_UI "siril-shortcuts.ui"
+#include "core/siril.h"
+#include "core/proto.h"
+#include "gui/progress_and_log.h"
+#include "gui/image_display.h"
+#include "io/single_image.h"
 
-void siril_cmd_help_keyboard_shortcuts(GtkWindow *window);
+#include "preview_timer.h"
 
-#endif /* SRC_CORE_SIRIL_CMD_HELP_H_ */
+#define PREVIEW_DELAY 200
+
+static guint timer_id;
+
+static gboolean update_preview(gpointer user_data) {
+	update_image *im = (update_image*) user_data;
+
+	set_cursor_waiting(TRUE);
+
+	im->update_preview_fn();
+
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	set_cursor_waiting(FALSE);
+	return FALSE;
+}
+
+static void free_struct(gpointer user_data) {
+	update_image *im = (update_image*) user_data;
+
+	timer_id = 0;
+	free(im);
+}
+
+void notify_update(gpointer user_data) {
+	if (timer_id != 0) {
+		g_source_remove(timer_id);
+	}
+	timer_id = g_timeout_add_full(G_PRIORITY_DEFAULT_IDLE,
+			PREVIEW_DELAY, (GSourceFunc) update_preview, user_data,
+			(GDestroyNotify) free_struct);
+}

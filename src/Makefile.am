@@ -147,6 +147,8 @@ siril_SOURCES = \
 	gui/photometric_cc.h \
 	gui/plot.c \
 	gui/plot.h \
+	gui/preview_timer.c \
+	gui/preview_timer.h \
 	gui/progress_and_log.c \
 	gui/progress_and_log.h \
 	gui/PSF_list.h \

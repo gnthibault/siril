@@ -28,6 +28,7 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/dialogs.h"
+#include "gui/preview_timer.h"
 #include "core/undo.h"
 
 #include "asinh.h"
@@ -57,14 +58,19 @@ static void asinh_close(gboolean revert) {
 	set_cursor_waiting(FALSE);
 }
 
+static int asinh_update_preview() {
+	copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
+	asinhlut(&gfit, asinh_stretch_value, asinh_black_value, asinh_rgb_space);
+	return 0;
+}
+
 static void asinh_recompute() {
 	if (asinh_stretch_value == 0) {
 		// sometimes this happens in gui
 		return;
 	}
 	set_cursor_waiting(TRUE);
-	copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
-	asinhlut(&gfit, asinh_stretch_value, asinh_black_value, asinh_rgb_space);
+	asinh_update_preview();
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -170,18 +176,10 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 	return 1;
 }
 
-void on_menuitem_asinh_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_open_dialog("asinh_dialog");
-}
 
-void on_asinh_dialog_show(GtkWidget *widget, gpointer user_data) {
-	asinh_startup();
-	asinh_stretch_value = 1.0;
-	asinh_black_value = 0.0;
-	asinh_rgb_space = FALSE;
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_RGBspace")), asinh_rgb_space);
-	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_asinh")), asinh_stretch_value);
-	gtk_range_set_value(GTK_RANGE(lookup_widget("black_point_asinh")), asinh_black_value);
+static void apply_asinh_changes() {
+	gboolean status = (asinh_stretch_value != 1.0) || (asinh_black_value != 0.0) || asinh_rgb_space;
+	asinh_close(!status);
 }
 
 void apply_asinh_cancel() {
@@ -189,14 +187,31 @@ void apply_asinh_cancel() {
 	siril_close_dialog("asinh_dialog");
 }
 
+/*** callbacks **/
+
+void on_menuitem_asinh_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	siril_open_dialog("asinh_dialog");
+}
+
+void on_asinh_dialog_show(GtkWidget *widget, gpointer user_data) {
+	GtkSpinButton *spin_stretch = GTK_SPIN_BUTTON(lookup_widget("spin_asinh"));
+	GtkSpinButton *spin_black_p = GTK_SPIN_BUTTON(lookup_widget("black_point_spin_asinh"));
+	GtkToggleButton *toggle_rgb = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_RGBspace"));
+
+	asinh_startup();
+	asinh_stretch_value = 1.0;
+	asinh_black_value = 0.0;
+	asinh_rgb_space = FALSE;
+	gtk_toggle_button_set_active(toggle_rgb, asinh_rgb_space);
+	gtk_spin_button_set_value(spin_stretch, asinh_stretch_value);
+	gtk_spin_button_set_value(spin_black_p, asinh_black_value);
+	gtk_spin_button_set_increments(spin_stretch, 0.001, 0.01);
+}
+
 void on_asinh_cancel_clicked(GtkButton *button, gpointer user_data) {
 	apply_asinh_cancel();
 }
 
-static void apply_asinh_changes() {
-	gboolean status = (asinh_stretch_value != 1.0) || (asinh_black_value != 0.0) || asinh_rgb_space;
-	asinh_close(!status);
-}
 void on_asinh_ok_clicked(GtkButton *button, gpointer user_data) {
 	apply_asinh_changes();
 	siril_close_dialog("asinh_dialog");
@@ -206,37 +221,46 @@ void on_asinh_dialog_close(GtkDialog *dialog, gpointer user_data) {
 	apply_asinh_changes();
 }
 
-void on_spin_asinh_changed(GtkEditable *editable, gpointer user_data) {
-	gchar *txt = gtk_editable_get_chars(editable, 0, -1);
-	asinh_stretch_value = atof(txt);
-	asinh_recompute();
-}
-
-void on_black_point_spin_asinh_changed(GtkEditable *editable, gpointer user_data) {
-	gchar *txt = gtk_editable_get_chars(editable, 0, -1);
-	asinh_black_value = atof(txt);
-	asinh_recompute();
-}
-
 void on_asinh_RGBspace_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	asinh_rgb_space = gtk_toggle_button_get_active(togglebutton);
 	asinh_recompute();
 }
 
 void on_asinh_undo_clicked(GtkButton *button, gpointer user_data) {
-	set_cursor_waiting(TRUE);
+	GtkSpinButton *spin_stretch = GTK_SPIN_BUTTON(lookup_widget("spin_asinh"));
+	GtkSpinButton *spin_black_p = GTK_SPIN_BUTTON(lookup_widget("black_point_spin_asinh"));
+	GtkToggleButton *toggle_rgb = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_RGBspace"));
 	asinh_stretch_value = 1.0;
 	asinh_black_value = 0.0;
 	asinh_rgb_space = FALSE;
-	GtkToggleButton *check_button = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_RGBspace"));
-	g_signal_handlers_block_by_func(check_button, on_asinh_RGBspace_toggled, NULL);
-	gtk_toggle_button_set_active(check_button, asinh_rgb_space);
-	g_signal_handlers_unblock_by_func(check_button, on_asinh_RGBspace_toggled, NULL);
-	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_asinh")), asinh_stretch_value);
-	gtk_range_set_value(GTK_RANGE(lookup_widget("black_point_asinh")), asinh_black_value);
+
+	set_cursor_waiting(TRUE);
+	g_signal_handlers_block_by_func(toggle_rgb, on_asinh_RGBspace_toggled, NULL);
+	gtk_toggle_button_set_active(toggle_rgb, asinh_rgb_space);
+	g_signal_handlers_unblock_by_func(toggle_rgb, on_asinh_RGBspace_toggled, NULL);
+
+	gtk_spin_button_set_value(spin_stretch, asinh_stretch_value);
+	gtk_spin_button_set_value(spin_black_p, asinh_black_value);
+
 	copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
+
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
+}
+
+/*** adjusters **/
+void on_spin_asinh_value_changed(GtkSpinButton *button, gpointer user_data) {
+	asinh_stretch_value = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = asinh_update_preview;
+	notify_update((gpointer) param);
+}
+
+void on_black_point_spin_asinh_value_changed(GtkSpinButton *button, gpointer user_data) {
+	asinh_black_value = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = asinh_update_preview;
+	notify_update((gpointer) param);
 }
