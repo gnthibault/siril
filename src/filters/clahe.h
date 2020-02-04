@@ -9,5 +9,6 @@ struct CLAHE_data {
 };
 
 gpointer clahe(gpointer p);
+void apply_clahe_cancel();
 
 #endif /* SRC_GUI_CLAHE_H_ */

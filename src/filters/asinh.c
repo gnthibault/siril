@@ -187,10 +187,10 @@ void on_asinh_undo_clicked(GtkButton *button, gpointer user_data) {
 
 	copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
 
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
+	/* default parameters transform image, we need to update preview */
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = asinh_update_preview;
+	notify_update((gpointer) param);
 }
 
 /*** adjusters **/
