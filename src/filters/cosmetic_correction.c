@@ -131,7 +131,7 @@ long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 	double sigma, median, thresHot, thresCold;
 
 	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(_("Counting deviant pixels is not supported yet in 32-bit images"), "red");
+		siril_log_color_message(_("Counting deviant pixels is not supported yet in 32-bit images\n"), "red");
 		return 0;
 	}
 
@@ -283,7 +283,7 @@ int cosmeticCorrOnePoint(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 
 int cosmeticCorrOneLine(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(_("Cosmetic correction for one line is not supported yet in 32-bit images"), "red");
+		siril_log_color_message(_("Cosmetic correction for one line is not supported yet in 32-bit images\n"), "red");
 		return 1;
 	}
 	WORD *buf = fit->pdata[RLAYER];
@@ -404,7 +404,7 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 	imstats *stat;
 
 	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(_("Autodetect cosmetic correction is not supported yet in 32-bit images"), "red");
+		siril_log_color_message(_("Autodetect cosmetic correction is not supported yet in 32-bit images\n"), "red");
 		return 1;
 	}
 
