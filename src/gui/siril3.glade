@@ -8787,9 +8787,12 @@ If the parameters is null, so no filter is apply at all.</property>
               <object class="GtkSpinButton" id="spin_asinh">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="progress_fraction">0.01</property>
+                <property name="progress_pulse_step">0.01</property>
                 <property name="adjustment">adjustment_asinh</property>
                 <property name="digits">1</property>
-                <signal name="changed" handler="on_spin_asinh_changed" swapped="no"/>
+                <property name="numeric">True</property>
+                <signal name="value-changed" handler="on_spin_asinh_value_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -8846,7 +8849,8 @@ If the parameters is null, so no filter is apply at all.</property>
                 <property name="width_chars">8</property>
                 <property name="adjustment">adj_black_point_asinh</property>
                 <property name="digits">5</property>
-                <signal name="changed" handler="on_black_point_spin_asinh_changed" swapped="no"/>
+                <property name="numeric">True</property>
+                <signal name="value-changed" handler="on_black_point_spin_asinh_value_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -12868,7 +12872,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adjustment_satu</property>
                 <property name="digits">2</property>
-                <signal name="changed" handler="on_spin_satu_changed" swapped="no"/>
+                <signal name="value-changed" handler="on_spin_satu_value_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
