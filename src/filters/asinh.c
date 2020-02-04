@@ -143,7 +143,7 @@ void on_asinh_dialog_show(GtkWidget *widget, gpointer user_data) {
 	gtk_spin_button_set_increments(spin_stretch, 0.001, 0.01);
 	set_notify_block(FALSE);
 
-	/* default parameters start deconvolution, we need to update preview */
+	/* default parameters transform image, we need to update preview */
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = asinh_update_preview;
 	notify_update((gpointer) param);
