@@ -697,7 +697,7 @@ extern fits gfit;		// currently loaded image
 #endif
 
 // some convenience functions from RT
-inline float intpf(float a, float b, float c)
+inline __attribute__((always_inline)) float intpf(float a, float b, float c)
 {
     // calculate a * b + (1 - a) * c
     // following is valid:
@@ -706,7 +706,7 @@ inline float intpf(float a, float b, float c)
     return a * (b - c) + c;
 }
 #ifdef __SSE2__
-inline __m128 intpsse(__m128 a, __m128 b, __m128 c)
+inline __attribute__((always_inline)) __m128 intpsse(__m128 a, __m128 b, __m128 c)
 {
     // calculate a * b + (1 - a) * c
     // following is valid:
