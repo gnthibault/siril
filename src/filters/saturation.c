@@ -206,11 +206,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 	if (!isrgb(args->input) || !isrgb(args->output) ||
 			args->input->naxes[0] != args->output->naxes[0] ||
 			args->input->naxes[1] != args->output->naxes[1]) {
-		siril_add_idle(end_enhance_saturation, args);
-		return GINT_TO_POINTER(1);
-	}
-	if (args->coeff == 0.0) {
-		siril_add_idle(end_enhance_saturation, args);
+		siril_add_idle(end_generic, args);
 		return GINT_TO_POINTER(1);
 	}
 
@@ -228,7 +224,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
-			siril_add_idle(end_enhance_saturation, args);
+			siril_add_idle(end_generic, args);
 			return GINT_TO_POINTER(1);
 		}
 		bg = stat->median + stat->sigma;
@@ -271,7 +267,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 	invalidate_stats_from_fit(args->output);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
-	siril_add_idle(end_enhance_saturation, args);
+	siril_add_idle(end_generic, args);
 
 	return GINT_TO_POINTER(0);
 }
