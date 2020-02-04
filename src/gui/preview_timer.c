@@ -29,14 +29,18 @@
 #define PREVIEW_DELAY 200
 
 static guint timer_id;
+static gboolean notify_is_blocked;
 
 static gboolean update_preview(gpointer user_data) {
 	update_image *im = (update_image*) user_data;
+
+	if (notify_is_blocked == TRUE) return FALSE;
 
 	set_cursor_waiting(TRUE);
 
 	im->update_preview_fn();
 
+	printf("update preview\n");
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -49,6 +53,10 @@ static void free_struct(gpointer user_data) {
 
 	timer_id = 0;
 	free(im);
+}
+
+void set_notify_block(gboolean value) {
+	notify_is_blocked = value;
 }
 
 void notify_update(gpointer user_data) {
