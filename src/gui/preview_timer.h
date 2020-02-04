@@ -24,6 +24,7 @@ typedef struct update_preview_struct {
 	int (*update_preview_fn)(void);
 } update_image;
 
+void set_notify_block(gboolean value);
 void notify_update(gpointer user_data);
 
 #endif /* SRC_GUI_PREVIEW_TIMER_H_ */
