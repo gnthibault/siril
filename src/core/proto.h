@@ -10,10 +10,6 @@
 #undef int64
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /****************** image_format_fits.h ******************/
 int readfits(const char *filename, fits *fit, char *realname);
 double get_exposure_from_fitsfile(fitsfile *fptr);
@@ -180,9 +176,5 @@ void on_spinbut_shift_value_change(GtkSpinButton *spinbutton,
 
 /****************** statistics_list.h ******************/
 void computeStat();
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
