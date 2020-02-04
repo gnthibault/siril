@@ -64,19 +64,6 @@ static int asinh_update_preview() {
 	return 0;
 }
 
-static void asinh_recompute() {
-	if (asinh_stretch_value == 0) {
-		// sometimes this happens in gui
-		return;
-	}
-	set_cursor_waiting(TRUE);
-	asinh_update_preview();
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
-}
-
 int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 	int i;
 	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
@@ -148,10 +135,18 @@ void on_asinh_dialog_show(GtkWidget *widget, gpointer user_data) {
 	asinh_stretch_value = 1.0;
 	asinh_black_value = 0.0;
 	asinh_rgb_space = FALSE;
+
+	set_notify_block(TRUE);
 	gtk_toggle_button_set_active(toggle_rgb, asinh_rgb_space);
 	gtk_spin_button_set_value(spin_stretch, asinh_stretch_value);
 	gtk_spin_button_set_value(spin_black_p, asinh_black_value);
 	gtk_spin_button_set_increments(spin_stretch, 0.001, 0.01);
+	set_notify_block(FALSE);
+
+	/* default parameters start deconvolution, we need to update preview */
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = asinh_update_preview;
+	notify_update((gpointer) param);
 }
 
 void on_asinh_cancel_clicked(GtkButton *button, gpointer user_data) {
@@ -169,7 +164,9 @@ void on_asinh_dialog_close(GtkDialog *dialog, gpointer user_data) {
 
 void on_asinh_RGBspace_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	asinh_rgb_space = gtk_toggle_button_get_active(togglebutton);
-	asinh_recompute();
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = asinh_update_preview;
+	notify_update((gpointer) param);
 }
 
 void on_asinh_undo_clicked(GtkButton *button, gpointer user_data) {

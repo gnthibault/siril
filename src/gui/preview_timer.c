@@ -40,7 +40,7 @@ static gboolean update_preview(gpointer user_data) {
 
 	im->update_preview_fn();
 
-	printf("update preview\n");
+	siril_debug_print("update preview\n");
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
