@@ -43,7 +43,7 @@
 static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,
 		const int h, gboolean is_cfa) {
 	int step, radius, x, y;
-	WORD *value, median;
+	WORD median;
 
 	if (is_cfa) {
 		step = 2;
@@ -55,7 +55,7 @@ static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,
 	}
 
 	int n = 0;
-	value = calloc(24, sizeof(WORD));
+	WORD value[24];
 	for (y = yy - radius; y <= yy + radius; y += step) {
 		for (x = xx - radius; x <= xx + radius; x += step) {
 			if (y >= 0 && y < h && x >= 0 && x < w) {
@@ -68,7 +68,6 @@ static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,
 		}
 	}
 	median = round_to_WORD (quickmedian (value, n));
-	free(value);
 	return median;
 }
 
@@ -410,34 +409,37 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 	free_stats(stat);
 
 	WORD *buf = fit->pdata[layer];
+    double k1 = avgDev;
+    double k2 = k1 / 2;
+    double k3 = sig[1] * k1;
+    double k = avgDev * sig[0];
+    const gboolean doHot = sig[1] != -1.0;
+    const gboolean doCold = sig[0] != -1.0;
+ 	for (y = 0; y < height; y++) {
+ 		for (x = 0; x < width; x++) {
+ 			WORD pixel = buf[x + y * width];
+			if ((doHot && pixel > bkg + k1) || (doCold && pixel + k < bkg)) {
+                WORD a = getAverage3x3(buf, x, y, width, height, is_cfa);
+                WORD m = getMedian5x5(buf, x, y, width, height, is_cfa);
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			WORD pixel = buf[x + y * width];
-			WORD a = getAverage3x3(buf, x, y, width, height, is_cfa);
-			WORD m = getMedian5x5(buf, x, y, width, height, is_cfa);
+                /* Hot autodetect */
+                if (doHot) {
+                    if (a < bkg + k2 && pixel > bkg + k1 && pixel > m + k3) {
+                        (*ihot)++;
+                        buf[x + y * width] = a * f0 + pixel * f1;
+                    }
+                }
 
-			/* Hot autodetect */
-			if (sig[1] != -1.0) {
-				double k1 = avgDev;
-				double k2 = k1 / 2;
-				double k3 = sig[1] * k1;
-				if ((a < bkg + k2) && (pixel > bkg + k1) && (pixel > m + k3)) {
-					(*ihot)++;
-					buf[x + y * width] = a * f0 + pixel * f1;
-				}
-			}
-
-			/* Cold autodetect */
-			if (sig[0] != -1.0) {
-				double k = avgDev * sig[0];
-				if (((pixel + k) < bkg) && ((pixel + k) < m)) {
-					(*icold)++;
-					buf[x + y * width] = m * f0 + pixel * f1;
-				}
-			}
-		}
-	}
+                /* Cold autodetect */
+                if (doCold) {
+                    if (pixel + k < bkg && pixel + k < m) {
+                        (*icold)++;
+                        buf[x + y * width] = m * f0 + pixel * f1;
+                    }
+                }
+ 			}
+ 		}
+ 	}
 	invalidate_stats_from_fit(fit);
 	return 0;
 }
