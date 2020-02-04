@@ -199,7 +199,6 @@ static gpointer enhance_saturation_ushort(gpointer p) {
 
 static gpointer enhance_saturation_float(gpointer p) {
 	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
-	struct timeval t_start, t_end;
 	float bg = 0;
 	int i;
 
@@ -215,8 +214,6 @@ static gpointer enhance_saturation_float(gpointer p) {
 	float *out[3] = { args->output->fpdata[RLAYER], args->output->fpdata[GLAYER],
 			args->output->fpdata[BLAYER] };
 
-	siril_log_color_message(_("Saturation enhancement: processing...\n"), "red");
-	gettimeofday(&t_start, NULL);
 
 	args->h_min /= 60.0;
 	args->h_max /= 60.0;
@@ -265,8 +262,6 @@ static gpointer enhance_saturation_float(gpointer p) {
 		out[BLAYER][i] = b;
 	}
 	invalidate_stats_from_fit(args->output);
-	gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
 	siril_add_idle(end_generic, args);
 
 	return GINT_TO_POINTER(0);
