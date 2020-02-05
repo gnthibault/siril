@@ -321,10 +321,12 @@ void on_satu_undo_clicked(GtkButton *button, gpointer user_data) {
 	satu_preserve_bkg = TRUE;
 	satu_amount = 0.0;
 	GtkToggleButton *check_button = GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg"));
-	g_signal_handlers_block_by_func(check_button, on_preserve_bg_toggled, NULL);
+
+	set_notify_block(TRUE);
 	gtk_toggle_button_set_active(check_button, satu_preserve_bkg);
-	g_signal_handlers_unblock_by_func(check_button, on_preserve_bg_toggled, NULL);
 	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_satu")), satu_amount);
+	set_notify_block(FALSE);
+
 	copyfits(&satu_gfit_backup, &gfit, CP_COPYA, -1);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);

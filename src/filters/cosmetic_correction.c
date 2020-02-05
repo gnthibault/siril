@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #include <stdio.h>
 #include <string.h>
@@ -40,9 +40,39 @@
 
 #include "cosmetic_correction.h"
 
+/* see also getMedian3x3 in algos/PSF.c */
+static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,
+		const int h, gboolean is_cfa) {
+	int step, radius, x, y;
+	WORD median;
 
-static WORD *getAverage3x3Line(WORD *buf, const int yy, const int w, const int h,
-		gboolean is_cfa) {
+	if (is_cfa) {
+		step = 2;
+		radius = 4;
+	} else {
+		step = 1;
+		radius = 2;
+	}
+
+	int n = 0;
+	WORD value[24];
+	for (y = yy - radius; y <= yy + radius; y += step) {
+		for (x = xx - radius; x <= xx + radius; x += step) {
+			if (y >= 0 && y < h && x >= 0 && x < w) {
+				// ^ limit to image bounds ^
+				// v exclude centre pixel v
+				if (x != xx || y != yy) {
+					value[n++] = buf[x + y * w];
+				}
+			}
+		}
+	}
+	median = round_to_WORD(quickmedian(value, n));
+	return median;
+}
+
+static WORD* getAverage3x3Line(WORD *buf, const int yy, const int w,
+		const int h, gboolean is_cfa) {
 	int step, radius, x, xx, y;
 	WORD *cpyline;
 
@@ -70,9 +100,8 @@ static WORD *getAverage3x3Line(WORD *buf, const int yy, const int w, const int h
 	return cpyline;
 }
 
-
-static WORD getAverage3x3_ushort(WORD *buf, const int xx, const int yy, const int w,
-		const int h, gboolean is_cfa) {
+static WORD getAverage3x3_ushort(WORD *buf, const int xx, const int yy,
+		const int w, const int h, gboolean is_cfa) {
 	int step, radius, x, y;
 	double value = 0;
 
@@ -87,18 +116,18 @@ static WORD getAverage3x3_ushort(WORD *buf, const int xx, const int yy, const in
 			if (y >= 0 && y < h) {
 				if (x >= 0 && x < w) {
 					if ((x != xx) || (y != yy)) {
-						value += (double)buf[x + y * w];
+						value += (double) buf[x + y * w];
 						n++;
 					}
 				}
 			}
 		}
 	}
-	return round_to_WORD(value / (double)n);
+	return round_to_WORD(value / (double) n);
 }
 
-static float getAverage3x3_float(float *buf, const int xx, const int yy, const int w,
-		const int h, gboolean is_cfa) {
+static float getAverage3x3_float(float *buf, const int xx, const int yy,
+		const int w, const int h, gboolean is_cfa) {
 	int step, radius, x, y;
 	double value = 0;
 
@@ -113,16 +142,15 @@ static float getAverage3x3_float(float *buf, const int xx, const int yy, const i
 			if (y >= 0 && y < h) {
 				if (x >= 0 && x < w) {
 					if ((x != xx) || (y != yy)) {
-						value += (double)buf[x + y * w];
+						value += (double) buf[x + y * w];
 						n++;
 					}
 				}
 			}
 		}
 	}
-	return (float)(value / (double)n);
+	return (float) (value / (double) n);
 }
-
 
 long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 	int i;
@@ -131,7 +159,10 @@ long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 	double sigma, median, thresHot, thresCold;
 
 	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(_("Counting deviant pixels is not supported yet in 32-bit images\n"), "red");
+		siril_log_color_message(
+				_(
+						"Counting deviant pixels is not supported yet in 32-bit images\n"),
+				"red");
 		return 0;
 	}
 
@@ -146,15 +177,13 @@ long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 
 	if (sig[0] == -1.0) {	// flag for no cold detection
 		thresCold = -1.0;
-	}
-	else {
+	} else {
 		double val = median - (sig[0] * sigma);
 		thresCold = (val > 0) ? val : 0.0;
 	}
 	if (sig[1] == -1.0) {	// flag for no hot detection
 		thresHot = USHRT_MAX_DOUBLE + 1;
-	}
-	else {
+	} else {
 		double val = median + (sig[1] * sigma);
 		thresHot = (val > USHRT_MAX_DOUBLE) ? USHRT_MAX_DOUBLE : val;
 	}
@@ -166,19 +195,21 @@ long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
 	*ihot = 0;
 	buf = fit->pdata[RLAYER];
 	for (i = 0; i < fit->rx * fit->ry; i++) {
-		if (buf[i] >= thresHot) (*ihot)++;
-		else if (buf[i] < thresCold) (*icold)++;
+		if (buf[i] >= thresHot)
+			(*ihot)++;
+		else if (buf[i] < thresCold)
+			(*icold)++;
 	}
 
 	return (*icold + *ihot);
 }
 
-
 /* Gives a list of point p containing deviant pixel coordinates
  * p MUST be freed after the call
  * if cold == -1 or hot == -1, this is a flag to not compute cold or hot
  */
-deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
+deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
+		long *ihot) {
 	int x, y, i;
 	WORD *buf;
 	imstats *stat;
@@ -186,7 +217,10 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 	deviant_pixel *dev;
 
 	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(_("Finding deviant pixels is not supported yet in 32-bit images\n"), "red");
+		siril_log_color_message(
+				_(
+						"Finding deviant pixels is not supported yet in 32-bit images\n"),
+				"red");
 		return NULL;
 	}
 
@@ -201,15 +235,13 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 
 	if (sig[0] == -1.0) {	// flag for no cold detection
 		thresCold = -1.0;
-	}
-	else {
+	} else {
 		double val = median - (sig[0] * sigma);
 		thresCold = (val > 0) ? val : 0.0;
 	}
 	if (sig[1] == -1.0) {	// flag for no hot detection
 		thresHot = USHRT_MAX_DOUBLE + 1;
-	}
-	else {
+	} else {
 		double val = median + (sig[1] * sigma);
 		thresHot = (val > USHRT_MAX_DOUBLE) ? USHRT_MAX_DOUBLE : val;
 	}
@@ -221,13 +253,16 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 	*ihot = 0;
 	buf = fit->pdata[RLAYER];
 	for (i = 0; i < fit->rx * fit->ry; i++) {
-		if (buf[i] >= thresHot) (*ihot)++;
-		else if (buf[i] < thresCold) (*icold)++;
+		if (buf[i] >= thresHot)
+			(*ihot)++;
+		else if (buf[i] < thresCold)
+			(*icold)++;
 	}
 
 	/** Second we store deviant pixels in p*/
 	int n = (*icold) + (*ihot);
-	if (n <= 0) return NULL;
+	if (n <= 0)
+		return NULL;
 	dev = calloc(n, sizeof(deviant_pixel));
 	if (!dev) {
 		PRINT_ALLOC_ERR;
@@ -236,14 +271,13 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 	i = 0;
 	for (y = 0; y < fit->ry; y++) {
 		for (x = 0; x < fit->rx; x++) {
-			double pixel = (double)buf[x + y * fit->rx];
+			double pixel = (double) buf[x + y * fit->rx];
 			if (pixel >= thresHot) {
 				dev[i].p.x = x;
 				dev[i].p.y = y;
 				dev[i].type = HOT_PIXEL;
 				i++;
-			}
-			else if (pixel < thresCold) {
+			} else if (pixel < thresCold) {
 				dev[i].p.x = x;
 				dev[i].p.y = y;
 				dev[i].type = COLD_PIXEL;
@@ -265,15 +299,19 @@ int cosmeticCorrOnePoint(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 		WORD *buf = fit->pdata[RLAYER];
 		WORD newpixel;
 		if (dev.type == COLD_PIXEL)
-			newpixel = get_median_ushort(buf, x, y, width, height, 2, is_cfa, FALSE);
-		else	newpixel = getAverage3x3_ushort(buf, x, y, width, height, is_cfa);
+			newpixel = get_median_ushort(buf, x, y, width, height, 2, is_cfa,
+					FALSE);
+		else
+			newpixel = getAverage3x3_ushort(buf, x, y, width, height, is_cfa);
 		buf[x + y * fit->rx] = newpixel;
 	} else if (fit->type == DATA_FLOAT) {
 		float *buf = fit->fpdata[RLAYER];
 		float newpixel;
 		if (dev.type == COLD_PIXEL)
-			newpixel = get_median_float(buf, x, y, width, height, 2, is_cfa, FALSE);
-		else	newpixel = getAverage3x3_float(buf, x, y, width, height, is_cfa);
+			newpixel = get_median_float(buf, x, y, width, height, 2, is_cfa,
+					FALSE);
+		else
+			newpixel = getAverage3x3_float(buf, x, y, width, height, is_cfa);
 		buf[x + y * fit->rx] = newpixel;
 	}
 
@@ -283,14 +321,17 @@ int cosmeticCorrOnePoint(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 
 int cosmeticCorrOneLine(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(_("Cosmetic correction for one line is not supported yet in 32-bit images\n"), "red");
+		siril_log_color_message(
+				_(
+						"Cosmetic correction for one line is not supported yet in 32-bit images\n"),
+				"red");
 		return 1;
 	}
 	WORD *buf = fit->pdata[RLAYER];
 	WORD *line, *newline;
 	int width = fit->rx;
 	int height = fit->ry;
-	int row = (int)dev.p.y;
+	int row = (int) dev.p.y;
 
 	line = buf + row * width;
 	newline = getAverage3x3Line(buf, row, width, height, is_cfa);
@@ -310,8 +351,9 @@ int cosmeticCorrection(fits *fit, deviant_pixel *dev, int size, gboolean is_cfa)
 }
 
 /**** Autodetect *****/
-int cosmetic_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
-	struct cosmetic_data *c_args = (struct cosmetic_data *) args->user;
+int cosmetic_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
+		rectangle *_) {
+	struct cosmetic_data *c_args = (struct cosmetic_data*) args->user;
 	int retval, chan;
 	/* Count variables, icold and ihot, need to be local in order to be parallelized */
 	long icold, ihot;
@@ -361,12 +403,12 @@ gboolean end_autoDetect(gpointer p) {
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
-	
+
 	return FALSE;
 }
 
 gpointer autoDetectThreaded(gpointer p) {
-	struct cosmetic_data *args = (struct cosmetic_data *) p;
+	struct cosmetic_data *args = (struct cosmetic_data*) p;
 	struct timeval t_start, t_end;
 	int retval = 0, chan;
 	long icold, ihot;
@@ -383,8 +425,8 @@ gpointer autoDetectThreaded(gpointer p) {
 	}
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
-	siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
-			icold + ihot, icold, ihot);
+	siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"), icold + ihot,
+			icold, ihot);
 
 	free(args);
 	siril_add_idle(end_autoDetect, NULL);
@@ -393,8 +435,8 @@ gpointer autoDetectThreaded(gpointer p) {
 
 /* this is an autodetect algorithm. Cold and hot pixels
  *  are corrected in the same time */
-int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, double amount,
-		gboolean is_cfa) {
+int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
+		double amount, gboolean is_cfa) {
 	int x, y;
 	int width = fit->rx;
 	int height = fit->ry;
@@ -404,13 +446,17 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 	imstats *stat;
 
 	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(_("Autodetect cosmetic correction is not supported yet in 32-bit images\n"), "red");
+		siril_log_color_message(
+				_(
+						"Autodetect cosmetic correction is not supported yet in 32-bit images\n"),
+				"red");
 		return 1;
 	}
 
 	/* XXX: if cfa, stats are irrelevant. We should compute them taking
 	 * into account the Bayer pattern */
-	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC | STATS_AVGDEV, FALSE);
+	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC | STATS_AVGDEV,
+			FALSE);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
 		return 1;
@@ -420,30 +466,33 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 	free_stats(stat);
 
 	WORD *buf = fit->pdata[layer];
-
+	double k1 = avgDev;
+	double k2 = k1 / 2;
+	double k3 = sig[1] * k1;
+	double k = avgDev * sig[0];
+	const gboolean doHot = sig[1] != -1.0;
+	const gboolean doCold = sig[0] != -1.0;
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
 			WORD pixel = buf[x + y * width];
-			WORD a = getAverage3x3_ushort(buf, x, y, width, height, is_cfa);
-			WORD m = get_median_ushort(buf, x, y, width, height, 2, is_cfa, FALSE);
+			if ((doHot && pixel > bkg + k1) || (doCold && pixel + k < bkg)) {
+				WORD a = getAverage3x3_ushort(buf, x, y, width, height, is_cfa);
+				WORD m = getMedian5x5(buf, x, y, width, height, is_cfa);
 
-			/* Hot autodetect */
-			if (sig[1] != -1.0) {
-				double k1 = avgDev;
-				double k2 = k1 / 2;
-				double k3 = sig[1] * k1;
-				if ((a < bkg + k2) && (pixel > bkg + k1) && (pixel > m + k3)) {
-					(*ihot)++;
-					buf[x + y * width] = a * f0 + pixel * f1;
+				/* Hot autodetect */
+				if (doHot) {
+					if (a < bkg + k2 && pixel > bkg + k1 && pixel > m + k3) {
+						(*ihot)++;
+						buf[x + y * width] = a * f0 + pixel * f1;
+					}
 				}
-			}
 
-			/* Cold autodetect */
-			if (sig[0] != -1.0) {
-				double k = avgDev * sig[0];
-				if (((pixel + k) < bkg) && ((pixel + k) < m)) {
-					(*icold)++;
-					buf[x + y * width] = m * f0 + pixel * f1;
+				/* Cold autodetect */
+				if (doCold) {
+					if (pixel + k < bkg && pixel + k < m) {
+						(*icold)++;
+						buf[x + y * width] = m * f0 + pixel * f1;
+					}
 				}
 			}
 		}
@@ -454,13 +503,13 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 
 void on_menuitem_cosmetic_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (sequence_is_loaded()) {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq")), TRUE);
-	}
-	else if (single_image_is_loaded()) {
+		gtk_toggle_button_set_active(
+				GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq")), TRUE);
+	} else if (single_image_is_loaded()) {
 		// not a processing result
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq")), FALSE);
-	}
-	else
+		gtk_toggle_button_set_active(
+				GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq")), FALSE);
+	} else
 		return;
 	siril_open_dialog("cosmetic_dialog");
 }
@@ -491,12 +540,15 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 	GtkSpinButton *sigma[2];
 	GtkAdjustment *adjCosmeAmount;
 
-	CFA = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"cosmCFACheckBox"));
-	sigma[0] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinSigCosmeColdBox"));
-	sigma[1] = GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinSigCosmeHotBox"));
+	CFA = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "cosmCFACheckBox"));
+	sigma[0] = GTK_SPIN_BUTTON(
+			gtk_builder_get_object(builder, "spinSigCosmeColdBox"));
+	sigma[1] = GTK_SPIN_BUTTON(
+			gtk_builder_get_object(builder, "spinSigCosmeHotBox"));
 	seq = GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq"));
 	cosmeticSeqEntry = GTK_ENTRY(lookup_widget("entryCosmeticSeq"));
-	adjCosmeAmount = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjCosmeAmount"));
+	adjCosmeAmount = GTK_ADJUSTMENT(
+			gtk_builder_get_object(builder, "adjCosmeAmount"));
 
 	struct cosmetic_data *args = malloc(sizeof(struct cosmetic_data));
 
@@ -506,7 +558,8 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 	else
 		args->sigma[0] = -1.0;
 
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkSigHotBox"))))
+	if (gtk_toggle_button_get_active(
+			GTK_TOGGLE_BUTTON(lookup_widget("checkSigHotBox"))))
 		args->sigma[1] = gtk_spin_button_get_value(sigma[1]);
 	else
 		args->sigma[1] = -1.0;
@@ -528,3 +581,4 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 		start_in_new_thread(autoDetectThreaded, args);
 	}
 }
+

@@ -7048,7 +7048,9 @@ However you may want to disable this option when building master frames of 8-bit
     <property name="default_width">400</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
-    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+    <signal name="close" handler="on_CLAHE_dialog_close" swapped="no"/>
+    <signal name="delete-event" handler="on_clahe_cancel_clicked" swapped="no"/>
+    <signal name="show" handler="on_CLAHE_dialog_show" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -7062,8 +7064,22 @@ However you may want to disable this option when building master frames of 8-bit
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
+              <object class="GtkButton" id="clahe_undo">
+                <property name="label" translatable="yes">Reset</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_clahe_undo_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="clahe_cancel">
-                <property name="label">gtk-close</property>
+                <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -7073,7 +7089,7 @@ However you may want to disable this option when building master frames of 8-bit
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">0</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -7091,7 +7107,7 @@ However you may want to disable this option when building master frames of 8-bit
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -7130,6 +7146,7 @@ However you may want to disable this option when building master frames of 8-bit
                 <property name="adjustment">adj_clahe_size</property>
                 <property name="numeric">True</property>
                 <property name="value">8</property>
+                <signal name="value-changed" handler="on_clahe_tiles_size_spin_value_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -7143,6 +7160,19 @@ However you may want to disable this option when building master frames of 8-bit
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScale">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="adjustment">adj_clahe_size</property>
+            <property name="round_digits">1</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -7163,11 +7193,12 @@ However you may want to disable this option when building master frames of 8-bit
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton">
+              <object class="GtkSpinButton" id="spin_clahe">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj_clahe_clip</property>
                 <property name="digits">2</property>
+                <signal name="value-changed" handler="on_spin_clahe_value_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -8765,7 +8796,7 @@ If the parameters is null, so no filter is apply at all.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="close" handler="on_asinh_dialog_close" swapped="no"/>
-    <signal name="delete-event" handler="on_asinh_cancel_clicked" swapped="no"/>
+    <signal name="delete-event" handler="apply_clahe_cancel" swapped="no"/>
     <signal name="show" handler="on_asinh_dialog_show" swapped="no"/>
     <child>
       <placeholder/>
@@ -10117,6 +10148,19 @@ Modifying parameters in this windows afterward will void the colour balance, and
               </packing>
             </child>
             <child>
+              <object class="GtkScale">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="adjustment">adjSigCosmeCold</property>
+                <property name="round_digits">1</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -10164,7 +10208,20 @@ Modifying parameters in this windows afterward will void the colour balance, and
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="adjustment">adjSigCosmeHot</property>
+                <property name="round_digits">1</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
               </packing>
             </child>
             <child>
@@ -10203,7 +10260,7 @@ Modifying parameters in this windows afterward will void the colour balance, and
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">3</property>
+                <property name="position">4</property>
               </packing>
             </child>
             <child>
@@ -10219,7 +10276,7 @@ Modifying parameters in this windows afterward will void the colour balance, and
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">4</property>
+                <property name="position">5</property>
               </packing>
             </child>
             <child>
@@ -10236,7 +10293,7 @@ Uncheck if images come from a monochrome sensor.</property>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">5</property>
+                <property name="position">6</property>
               </packing>
             </child>
             <child>
@@ -10292,7 +10349,7 @@ Uncheck if images come from a monochrome sensor.</property>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">6</property>
+                <property name="position">7</property>
               </packing>
             </child>
           </object>

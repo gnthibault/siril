@@ -64,20 +64,7 @@ static int asinh_update_preview() {
 	return 0;
 }
 
-static void asinh_recompute() {
-	if (asinh_stretch_value == 0) {
-		// sometimes this happens in gui
-		return;
-	}
-	set_cursor_waiting(TRUE);
-	asinh_update_preview();
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
-}
-
-static int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBspace) {
+int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBspace) {
 	int i;
 	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 	double norm, asinh_beta, factor_red, factor_green, factor_blue;
@@ -202,10 +189,18 @@ void on_asinh_dialog_show(GtkWidget *widget, gpointer user_data) {
 	asinh_stretch_value = 1.0;
 	asinh_black_value = 0.0;
 	asinh_rgb_space = FALSE;
+
+	set_notify_block(TRUE);
 	gtk_toggle_button_set_active(toggle_rgb, asinh_rgb_space);
 	gtk_spin_button_set_value(spin_stretch, asinh_stretch_value);
 	gtk_spin_button_set_value(spin_black_p, asinh_black_value);
 	gtk_spin_button_set_increments(spin_stretch, 0.001, 0.01);
+	set_notify_block(FALSE);
+
+	/* default parameters transform image, we need to update preview */
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = asinh_update_preview;
+	notify_update((gpointer) param);
 }
 
 void on_asinh_cancel_clicked(GtkButton *button, gpointer user_data) {
@@ -221,11 +216,6 @@ void on_asinh_dialog_close(GtkDialog *dialog, gpointer user_data) {
 	apply_asinh_changes();
 }
 
-void on_asinh_RGBspace_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	asinh_rgb_space = gtk_toggle_button_get_active(togglebutton);
-	asinh_recompute();
-}
-
 void on_asinh_undo_clicked(GtkButton *button, gpointer user_data) {
 	GtkSpinButton *spin_stretch = GTK_SPIN_BUTTON(lookup_widget("spin_asinh"));
 	GtkSpinButton *spin_black_p = GTK_SPIN_BUTTON(lookup_widget("black_point_spin_asinh"));
@@ -235,19 +225,18 @@ void on_asinh_undo_clicked(GtkButton *button, gpointer user_data) {
 	asinh_rgb_space = FALSE;
 
 	set_cursor_waiting(TRUE);
-	g_signal_handlers_block_by_func(toggle_rgb, on_asinh_RGBspace_toggled, NULL);
+	set_notify_block(TRUE);
 	gtk_toggle_button_set_active(toggle_rgb, asinh_rgb_space);
-	g_signal_handlers_unblock_by_func(toggle_rgb, on_asinh_RGBspace_toggled, NULL);
-
 	gtk_spin_button_set_value(spin_stretch, asinh_stretch_value);
 	gtk_spin_button_set_value(spin_black_p, asinh_black_value);
+	set_notify_block(FALSE);
 
 	copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
 
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
+	/* default parameters transform image, we need to update preview */
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = asinh_update_preview;
+	notify_update((gpointer) param);
 }
 
 /*** adjusters **/
@@ -260,6 +249,13 @@ void on_spin_asinh_value_changed(GtkSpinButton *button, gpointer user_data) {
 
 void on_black_point_spin_asinh_value_changed(GtkSpinButton *button, gpointer user_data) {
 	asinh_black_value = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = asinh_update_preview;
+	notify_update((gpointer) param);
+}
+
+void on_asinh_RGBspace_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	asinh_rgb_space = gtk_toggle_button_get_active(togglebutton);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = asinh_update_preview;
 	notify_update((gpointer) param);
