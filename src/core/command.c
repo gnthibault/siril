@@ -587,6 +587,9 @@ int process_clahe(int nb) {
 	set_cursor_waiting(TRUE);
 
 	start_in_new_thread(clahe, args);
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
 
 	return 0;
 }

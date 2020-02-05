@@ -112,8 +112,10 @@ void on_clahe_undo_clicked(GtkButton *button, gpointer user_data) {
 
 	set_cursor_waiting(TRUE);
 
+	set_notify_block(TRUE);
 	gtk_spin_button_set_value(liit_value, clahe_limit_value);
 	gtk_spin_button_set_value(tiles_size, clahe_tile_size);
+	set_notify_block(FALSE);
 
 	copyfits(&clahe_gfit_backup, &gfit, CP_COPYA, -1);
 
@@ -132,9 +134,6 @@ gpointer clahe(gpointer p) {
 
 	siril_add_idle(end_generic, args);
 	set_progress_bar_data(_("CLAHE applied"), PROGRESS_DONE);
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
 	return GINT_TO_POINTER(0);
 }
 
