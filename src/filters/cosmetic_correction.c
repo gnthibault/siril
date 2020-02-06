@@ -424,7 +424,7 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot, dou
 
                 /* Hot autodetect */
                 if (doHot) {
-                    if (a < bkg + k2 && pixel > bkg + k1 && pixel > m + k3) {
+                    if (a < m + k2 && pixel > m + k1 && pixel > m + k3) {
                         (*ihot)++;
                         buf[x + y * width] = a * f0 + pixel * f1;
                     }
