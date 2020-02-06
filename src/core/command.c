@@ -1656,8 +1656,10 @@ int process_findcosme(int nb) {
 
 	if (is_sequence) {
 		args->seqEntry = "cc_";
+		args->multithread = FALSE;
 		apply_cosmetic_to_sequence(args);
 	} else {
+	    args->multithread = TRUE;
 		start_in_new_thread(autoDetectThreaded, args);
 	}
 

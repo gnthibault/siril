@@ -716,4 +716,11 @@ inline __attribute__((always_inline)) __m128 intpsse(__m128 a, __m128 b, __m128 
 }
 #endif
 
+inline __attribute__((always_inline)) gboolean inInterval(float val, float low, float high)
+{
+    // returns TRUE if val is in [low;high]
+    float maxVal = max(val, low);
+    return val == min(maxVal, high);
+}
+
 #endif /*SIRIL */

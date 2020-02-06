@@ -36,39 +36,34 @@
 #include "io/ser.h"
 #include "algos/statistics.h"
 #include "algos/sorting.h"
+#include "algos/median_fast.h"
 #include "filters/median.h"
 
 #include "cosmetic_correction.h"
 
 /* see also getMedian3x3 in algos/PSF.c */
-static WORD getMedian5x5(WORD *buf, const int xx, const int yy, const int w,
+static float getMedian5x5_float(float *buf, const int xx, const int yy, const int w,
 		const int h, gboolean is_cfa) {
-	int step, radius, x, y;
-	WORD median;
 
-	if (is_cfa) {
-		step = 2;
-		radius = 4;
-	} else {
-		step = 1;
-		radius = 2;
-	}
+	const int step = is_cfa ? 2 : 1;
+	const int radius = 2 * step;
 
 	int n = 0;
-	WORD value[24];
-	for (y = yy - radius; y <= yy + radius; y += step) {
-		for (x = xx - radius; x <= xx + radius; x += step) {
-			if (y >= 0 && y < h && x >= 0 && x < w) {
-				// ^ limit to image bounds ^
-				// v exclude centre pixel v
-				if (x != xx || y != yy) {
-					value[n++] = buf[x + y * w];
-				}
-			}
-		}
+	float value[24];
+	for (int y = yy - radius; y <= yy + radius; y += step) {
+    	if (y >= 0 && y < h) {
+	    	for (int x = xx - radius; x <= xx + radius; x += step) {
+		    	if (x >= 0 && x < w) {
+                // ^ limit to image bounds ^
+				    // exclude centre pixel v
+				    if (x != xx || y != yy) {
+					    value[n++] = buf[x + y * w];
+				    }
+			    }
+		    }
+    	}
 	}
-	median = round_to_WORD(quickmedian(value, n));
-	return median;
+	return quickmedian_float(value, n);
 }
 
 static WORD* getAverage3x3Line(WORD *buf, const int yy, const int w,
@@ -100,10 +95,10 @@ static WORD* getAverage3x3Line(WORD *buf, const int yy, const int w,
 	return cpyline;
 }
 
-static WORD getAverage3x3_ushort(WORD *buf, const int xx, const int yy,
+static double getAverage3x3_float(float *buf, const int xx, const int yy,
 		const int w, const int h, gboolean is_cfa) {
 	int step, radius, x, y;
-	double value = 0;
+	float value = 0;
 
 	if (is_cfa)
 		step = radius = 2;
@@ -116,17 +111,17 @@ static WORD getAverage3x3_ushort(WORD *buf, const int xx, const int yy,
 			if (y >= 0 && y < h) {
 				if (x >= 0 && x < w) {
 					if ((x != xx) || (y != yy)) {
-						value += (double) buf[x + y * w];
+						value += buf[x + y * w];
 						n++;
 					}
 				}
 			}
 		}
 	}
-	return round_to_WORD(value / (double) n);
+	return value / n;
 }
 
-static float getAverage3x3_float(float *buf, const int xx, const int yy,
+static double getAverage3x3_ushort(WORD *buf, const int xx, const int yy,
 		const int w, const int h, gboolean is_cfa) {
 	int step, radius, x, y;
 	double value = 0;
@@ -149,7 +144,7 @@ static float getAverage3x3_float(float *buf, const int xx, const int yy,
 			}
 		}
 	}
-	return (float) (value / (double) n);
+	return value / n;
 }
 
 long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
@@ -302,7 +297,7 @@ int cosmeticCorrOnePoint(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 			newpixel = get_median_ushort(buf, x, y, width, height, 2, is_cfa,
 					FALSE);
 		else
-			newpixel = getAverage3x3_ushort(buf, x, y, width, height, is_cfa);
+			newpixel = round_to_WORD(getAverage3x3_ushort(buf, x, y, width, height, is_cfa));
 		buf[x + y * fit->rx] = newpixel;
 	} else if (fit->type == DATA_FLOAT) {
 		float *buf = fit->fpdata[RLAYER];
@@ -361,7 +356,7 @@ int cosmetic_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 	icold = ihot = 0L;
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
 		retval = autoDetect(fit, chan, c_args->sigma, &icold, &ihot,
-				c_args->amount, c_args->is_cfa);
+				c_args->amount, c_args->is_cfa, c_args->multithread);
 		if (retval)
 			return retval;
 	}
@@ -419,7 +414,7 @@ gpointer autoDetectThreaded(gpointer p) {
 	icold = ihot = 0L;
 	for (chan = 0; chan < args->fit->naxes[2]; chan++) {
 		retval = autoDetect(args->fit, chan, args->sigma, &icold, &ihot,
-				args->amount, args->is_cfa);
+				args->amount, args->is_cfa, args->multithread);
 		if (retval)
 			break;
 	}
@@ -436,67 +431,120 @@ gpointer autoDetectThreaded(gpointer p) {
 /* this is an autodetect algorithm. Cold and hot pixels
  *  are corrected in the same time */
 int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
-		double amount, gboolean is_cfa) {
-	int x, y;
-	int width = fit->rx;
-	int height = fit->ry;
-	double bkg, avgDev;
-	double f0 = amount;
-	double f1 = 1 - f0;
-	imstats *stat;
-
-	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(
-				_(
-						"Autodetect cosmetic correction is not supported yet in 32-bit images\n"),
-				"red");
-		return 1;
-	}
+		double amount, gboolean is_cfa, gboolean multithread) {
 
 	/* XXX: if cfa, stats are irrelevant. We should compute them taking
 	 * into account the Bayer pattern */
-	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC | STATS_AVGDEV,
-			FALSE);
+	imstats *stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC | STATS_AVGDEV,
+			multithread);
+
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
 		return 1;
 	}
-	bkg = stat->median;
-	avgDev = stat->avgDev;
+	const float bkg = stat->median;
+	const float avgDev = stat->avgDev;
 	free_stats(stat);
+	const int width = fit->rx;
+	const int height = fit->ry;
+	const float f0 = amount;
+	const float f1 = 1 - f0;
 
+    const gboolean isFloat = fit->type == DATA_FLOAT;
 	WORD *buf = fit->pdata[layer];
-	double k1 = avgDev;
-	double k2 = k1 / 2;
-	double k3 = sig[1] * k1;
-	double k = avgDev * sig[0];
+	float *fbuf = fit->fpdata[layer];
+	const float k1 = avgDev;
+	const float k2 = k1 / 2;
+	const float k3 = sig[1] * k1;
+	const float k = avgDev * sig[0];
 	const gboolean doHot = sig[1] != -1.0;
 	const gboolean doCold = sig[0] != -1.0;
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			WORD pixel = buf[x + y * width];
-			if ((doHot && pixel > bkg + k1) || (doCold && pixel + k < bkg)) {
-				WORD a = getAverage3x3_ushort(buf, x, y, width, height, is_cfa);
-				WORD m = getMedian5x5(buf, x, y, width, height, is_cfa);
+	const float coldVal = doCold ? bkg - k : 0.0;
+	const float hotVal = doHot ? bkg + k1 : isFloat ? 1.f : 65535.f;
+	float *temp = malloc(width * height * sizeof(float));
 
-				/* Hot autodetect */
-				if (doHot) {
-					if (a < bkg + k2 && pixel > bkg + k1 && pixel > m + k3) {
-						(*ihot)++;
-						buf[x + y * width] = a * f0 + pixel * f1;
-					}
-				}
+    if (isFloat) {
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) if(multithread)
+#endif
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                temp[y * width + x] = fbuf[y * width + x];
+            }
+        }
+    } else {
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) if(multithread)
+#endif
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                temp[y * width + x] = buf[y * width + x];
+            }
+        }
+    }
+	const int step = is_cfa ? 2 : 1;
+	const int radius = 2 * step;
 
-				/* Cold autodetect */
-				if (doCold) {
-					if (pixel + k < bkg && pixel + k < m) {
-						(*icold)++;
-						buf[x + y * width] = m * f0 + pixel * f1;
-					}
-				}
-			}
-		}
-	}
+	long icoldL = *icold;
+	long ihotL = *ihot;
+#ifdef _OPENMP
+#pragma omp parallel num_threads(com.max_thread) if(multithread)
+#endif
+    {
+    	float medianin[24];
+#ifdef _OPENMP
+#pragma omp for reduction(+:icoldL, ihotL) schedule(dynamic,16)
+#endif
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                const float pixel = temp[x + y * width];
+                if (!inInterval(pixel, coldVal, hotVal)) {
+                    float m;
+                    if (y >= radius && y < height - radius && x >= radius && x < width - radius) {
+                        // use fast median24 network
+                        int nbm = 0;
+                        for (int i = -radius; i <= radius; i += step) {
+                            for (int j = -radius; j <= radius; j += step) {
+                                if (i != 0 || j != 0) {
+                                    medianin[nbm++] = temp[(y + i) * width + x + j];
+                                }
+                            }
+                        }
+                        m = median24(medianin);
+                    } else {
+                        m = getMedian5x5_float(temp, x, y, width, height, is_cfa);
+                    }
+
+                    /* Hot autodetect */
+                    if (doHot && pixel > hotVal && pixel > m + k3) {
+                        const float a = getAverage3x3_float(temp, x, y, width, height, is_cfa);
+                        if (a < bkg + k2) {
+                            ihotL++;
+                            if (isFloat) {
+                                fbuf[x + y * width] = a * f0 + pixel * f1;
+                            } else {
+                                buf[x + y * width] = a * f0 + pixel * f1;
+                            }
+                        }
+                    }
+
+                    /* Cold autodetect */
+                    if (doCold && pixel < coldVal && pixel + k < m) {
+                        icoldL++;
+                        if (isFloat) {
+                            fbuf[x + y * width] = m * f0 + pixel * f1;
+                        } else {
+                            buf[x + y * width] = m * f0 + pixel * f1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    (*icold) = icoldL;
+    (*ihot) = ihotL;
+	free(temp);
+
 	invalidate_stats_from_fit(fit);
 	return 0;
 }
@@ -575,8 +623,10 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 		if (args->seqEntry && args->seqEntry[0] == '\0')
 			args->seqEntry = "cc_";
 		args->seq = &com.seq;
+		args->multithread = FALSE;
 		apply_cosmetic_to_sequence(args);
 	} else {
+	    args->multithread = TRUE;
 		undo_save_state(&gfit, "Processing: Cosmetic Correction");
 		start_in_new_thread(autoDetectThreaded, args);
 	}
