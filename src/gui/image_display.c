@@ -37,7 +37,6 @@
 
 /* remap index data, an index for each layer */
 static BYTE *remap_index[MAXGRAYVPORT];
-static float float_hist_lookup[MAXGRAYVPORT][256];
 static float last_pente[MAXGRAYVPORT];
 static display_mode last_mode[MAXGRAYVPORT];
 
@@ -224,64 +223,6 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 		int vport);
 static int make_index_for_rainbow(BYTE index[][3]);
 
-/* Siril float format is [0, 1]. The UI still uses unsigned short controls,
- * for lo and hi cursors for example, that we convert to a float value here */
-static BYTE display_for_float_pixel(float pixel, display_mode mode, int vport, WORD lo, WORD hi) {
-	float slope, offset = pixel - ((float)lo / USHRT_MAX_SINGLE);
-	double mtf;
-	BYTE disp;
-	int i;
-	switch (mode) {
-		case NORMAL_DISPLAY:
-		default:
-			if (offset < 0.0f) disp = 0;
-			else {
-				// slope and offset should not be computed for all pixels
-				slope = USHRT_MAX_SINGLE * UCHAR_MAX_SINGLE / (float)(hi - lo);
-				disp = roundf_to_BYTE(offset * slope);
-			}
-			break;
-		case LOG_DISPLAY:
-			if (offset < 0.0f) disp = 0;
-			else {
-				slope = fabsf(UCHAR_MAX_SINGLE / logf((float)(hi - lo) * 0.1f));
-				disp = roundf_to_BYTE(logf(USHRT_MAX_SINGLE * offset / 10.f) * slope); //10.f is arbitrary: good matching with ds9
-			}
-			break;
-		case SQRT_DISPLAY:
-			if (offset < 0.0f) disp = 0;
-			else {
-				slope = UCHAR_MAX_SINGLE / sqrtf((float)(hi - lo));
-				disp = roundf_to_BYTE(sqrtf(USHRT_MAX_SINGLE * offset) * slope);
-			}
-			break;
-		case SQUARED_DISPLAY:
-			if (offset < 0.0f) disp = 0;
-			else {
-				slope = UCHAR_MAX_SINGLE / SQR((float)(hi - lo));
-				disp = roundf_to_BYTE(SQR(USHRT_MAX_SINGLE * offset) * slope);
-			}
-			break;
-		case ASINH_DISPLAY:
-			if (offset < 0.0f) disp = 0;
-			else {
-				slope = UCHAR_MAX_SINGLE / asinhf((float)(hi - lo) * 0.001f);
-				disp = roundf_to_BYTE(asinhf(USHRT_MAX_SINGLE * offset / 1000.0f) * slope); //1000.f is arbitrary: good matching with ds9, could be asinhf(a*Q*i)/Q
-			}
-			break;
-		case HISTEQ_DISPLAY:
-			i = 1;
-			while (i < 256 && float_hist_lookup[vport][i] < pixel) i++;
-			disp = (BYTE)(i - 1);
-			break;
-		case STF_DISPLAY:
-			mtf = MTF(pixel, stfM, stfShadows, stfHighlights);
-			disp = round_to_BYTE(mtf * UCHAR_MAX_SINGLE);
-			break;
-	}
-	return disp;
-}
-
 static void remap(int vport) {
 	// This function maps fit data with a linear LUT between lo and hi levels
 	// to the buffer to be displayed; display only is modified
@@ -449,7 +390,7 @@ static void remap(int vport) {
 		make_index_for_rainbow(rainbow_index);
 	index = remap_index[vport];
 
-    gboolean special_mode = (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY);
+	gboolean special_mode = (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(y) schedule(static)
 #endif
@@ -465,18 +406,18 @@ static void remap(int vport) {
 					dst_pixel_value = index[src[src_index]];
 				else if (do_cut_over && src[src_index] > hi)	// cut
 					dst_pixel_value = 0;
-    			else {
-	    			dst_pixel_value = index[src[src_index] - lo < 0 ? 0 : src[src_index] - lo];
+				else {
+					dst_pixel_value = index[src[src_index] - lo < 0 ? 0 : src[src_index] - lo];
 				}
 			} else if (gfit.type == DATA_FLOAT) {
 				if (special_mode) // special case, no lo & hi
 					dst_pixel_value = index[roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE)];
 				else if (do_cut_over && roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) > hi)	// cut
 					dst_pixel_value = 0;
-    			else {
+				else {
 					dst_pixel_value = index[
-							roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) - lo < 0 ? 0 :
-									roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) - lo];
+						roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) - lo < 0 ? 0 :
+							roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) - lo];
 				}
 			}
 
@@ -485,12 +426,12 @@ static void remap(int vport) {
 			// Siril's FITS are stored bottom to top, so mapping needs to revert data order
 			guint dst_index = ((gfit.ry - 1 - y) * gfit.rx + x) * 4;
 			switch (color) {
-			default:
-			case NORMAL_COLOR:
-				*(uint32_t*)(dst + dst_index) = dst_pixel_value << 16 | dst_pixel_value << 8 | dst_pixel_value;
-				break;
-			case RAINBOW_COLOR:
-				*(uint32_t*)(dst + dst_index) = rainbow_index[dst_pixel_value][0] << 16 | rainbow_index[dst_pixel_value][1] << 8 | rainbow_index[dst_pixel_value][2];
+				default:
+				case NORMAL_COLOR:
+					*(uint32_t*)(dst + dst_index) = dst_pixel_value << 16 | dst_pixel_value << 8 | dst_pixel_value;
+					break;
+				case RAINBOW_COLOR:
+					*(uint32_t*)(dst + dst_index) = rainbow_index[dst_pixel_value][0] << 16 | rainbow_index[dst_pixel_value][1] << 8 | rainbow_index[dst_pixel_value][2];
 			}
 		}
 	}
