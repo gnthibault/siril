@@ -526,10 +526,8 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
                                 buf[x + y * width] = a * f0 + pixel * f1;
                             }
                         }
-                    }
-
-                    /* Cold autodetect */
-                    if (doCold && pixel < coldVal && pixel + k < m) {
+                    } else if (doCold && pixel < coldVal && pixel + k < m) {
+                        /* Cold autodetect */
                         icoldL++;
                         if (isFloat) {
                             fbuf[x + y * width] = m * f0 + pixel * f1;
