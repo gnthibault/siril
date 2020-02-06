@@ -15,6 +15,7 @@ struct deconv_data {
 	gboolean auto_contrast_threshold;
 };
 
+void apply_deconv_cancel();
 gpointer RTdeconv(gpointer p);
 #ifdef __cplusplus
 extern "C" {
