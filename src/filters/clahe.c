@@ -44,6 +44,8 @@ static fits clahe_gfit_backup;
 
 static void clahe_startup() {
 	copyfits(&gfit, &clahe_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	clahe_limit_value = 2.0;
+	clahe_tile_size = 8;
 }
 
 static void clahe_close(gboolean revert) {
@@ -78,7 +80,6 @@ void on_clahe_Apply_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_CLAHE_dialog_close(GtkDialog *dialog, gpointer user_data) {
-	printf("test\n");
 	clahe_close(TRUE);
 }
 
@@ -128,12 +129,9 @@ void on_clahe_undo_clicked(GtkButton *button, gpointer user_data) {
 gpointer clahe(gpointer p) {
 	struct CLAHE_data *args = (struct CLAHE_data*) p;
 
-	set_progress_bar_data(_("CLAHE: processing..."), PROGRESS_PULSATE);
-
 	cvClahe(args->fit, args->clip, args->tileSize);
 
 	siril_add_idle(end_generic, args);
-	set_progress_bar_data(_("CLAHE applied"), PROGRESS_DONE);
 	return GINT_TO_POINTER(0);
 }
 
@@ -146,8 +144,6 @@ void apply_clahe_cancel() {
 
 void on_CLAHE_dialog_show(GtkWidget *widget, gpointer user_data) {
 	clahe_startup();
-	clahe_limit_value = 2.0;
-	clahe_tile_size = 8;
 
 	set_notify_block(TRUE);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("clahe_tiles_size_spin")), clahe_tile_size);
@@ -159,7 +155,6 @@ void on_CLAHE_dialog_show(GtkWidget *widget, gpointer user_data) {
 	param->update_preview_fn = clahe_update_preview;
 	notify_update((gpointer) param);
 }
-
 
 /** adjusters **/
 void on_spin_clahe_value_changed(GtkSpinButton *button, gpointer user_data) {

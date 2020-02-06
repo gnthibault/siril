@@ -33,9 +33,11 @@
 #include "gui/dialogs.h"
 #include "io/single_image.h"
 #include "algos/Def_Wavelet.h"
+#include "gui/preview_timer.h"
 
 #include "wavelets.h"
 
+static float wavelet_value[6];
 static fits wavelets_gfit_backup;
 
 static void reset_scale_w() {
@@ -51,14 +53,14 @@ static void reset_scale_w() {
 		range_w[5] = GTK_RANGE(lookup_widget("scale_w5"));
 	}
 
+	set_notify_block(TRUE);
 	for (i = 0; i < 6; i++) {
 		gtk_range_set_value(range_w[i], 1.f);
 	}
+	set_notify_block(FALSE);
 }
 
-static void update_wavelets() {
-	float scale[6];
-	static GtkRange *range_w[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
+static int update_wavelets() {
 	int i;
 	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
 			"b_rawdata.wave" }, *dir[3];
@@ -66,33 +68,21 @@ static void update_wavelets() {
 
 	tmpdir = g_get_tmp_dir();
 
-	if (range_w[0] == NULL) {
-		range_w[0] = GTK_RANGE(lookup_widget("scale_w0"));
-		range_w[1] = GTK_RANGE(lookup_widget("scale_w1"));
-		range_w[2] = GTK_RANGE(lookup_widget("scale_w2"));
-		range_w[3] = GTK_RANGE(lookup_widget("scale_w3"));
-		range_w[4] = GTK_RANGE(lookup_widget("scale_w4"));
-		range_w[5] = GTK_RANGE(lookup_widget("scale_w5"));
-	}
-
-	for (i = 0; i < 6; i++)
-		scale[i] = (float) gtk_range_get_value(range_w[i]);
-
 	set_cursor_waiting(TRUE);
 
 	for (i = 0; i < gfit.naxes[2]; i++) {
 		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
-		wavelet_reconstruct_file(dir[i], scale, gfit.pdata[i]);
+		wavelet_reconstruct_file(dir[i], wavelet_value, gfit.pdata[i]);
 		g_free(dir[i]);
 	}
-
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
+	return 0;
 }
 
 static void wavelets_startup() {
+	int i;
+	for (i = 0; i < 6; i++) {
+		wavelet_value[i] = 1.f;
+	}
 	copyfits(&gfit, &wavelets_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 }
 
@@ -203,85 +193,11 @@ void on_wavelets_dialog_show(GtkWidget *widget, gpointer user_data) {
 	wavelets_startup();
 }
 
-gboolean on_scale_w0_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-gboolean on_scale_w1_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-gboolean on_scale_w2_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-gboolean on_scale_w3_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-gboolean on_scale_w4_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-gboolean on_scale_w5_button_release_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-
-gboolean on_scale_w0_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-gboolean on_scale_w1_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-gboolean on_scale_w2_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-gboolean on_scale_w3_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-gboolean on_scale_w4_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
-gboolean on_scale_w5_key_release_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-	update_wavelets();
-	return FALSE;
-}
-
 void on_wavelets_dialog_hide(GtkWidget *widget, gpointer user_data) {
-	gtk_widget_set_sensitive(lookup_widget("grid_w"), FALSE);
+	gtk_widget_set_sensitive(lookup_widget("frame_wavelets"), FALSE);
 	gtk_widget_set_sensitive(lookup_widget("button_reset_w"), FALSE);
 	clearfits(&wavelets_gfit_backup);
 }
-
 
 void on_button_reset_w_clicked(GtkButton *button, gpointer user_data) {
 	reset_scale_w();
@@ -289,14 +205,14 @@ void on_button_reset_w_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void apply_wavelets_cancel() {
-	if (gtk_widget_get_sensitive(lookup_widget("grid_w")) == TRUE) {
+	if (gtk_widget_get_sensitive(lookup_widget("frame_wavelets")) == TRUE) {
 		reset_scale_w();
 		update_wavelets();
 	}
 }
 
 void on_button_ok_w_clicked(GtkButton *button, gpointer user_data) {
-	if (gtk_widget_get_sensitive(lookup_widget("grid_w")) == TRUE) {
+	if (gtk_widget_get_sensitive(lookup_widget("frame_wavelets")) == TRUE) {
 		update_wavelets();
 		undo_save_state(&wavelets_gfit_backup, "Processing: Wavelets Transformation");
 	}
@@ -358,7 +274,7 @@ void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 
 	free(Imag);
 	Imag = NULL;
-	gtk_widget_set_sensitive(lookup_widget("grid_w"), TRUE);
+	gtk_widget_set_sensitive(lookup_widget("frame_wavelets"), TRUE);
 	gtk_widget_set_sensitive(lookup_widget("button_reset_w"), TRUE);
 	set_cursor_waiting(FALSE);
 	return;
@@ -411,3 +327,56 @@ void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
 void on_button_extract_w_close_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("extract_wavelets_layers_dialog");
 }
+
+void on_spinbutton_plans_w_value_changed(GtkSpinButton *button, gpointer user_data) {
+	int i;
+	gint current_value = gtk_spin_button_get_value_as_int(button);
+	for (i = 0; i < 6; i++) {
+		gchar *tmp = g_strdup_printf("box_w%d", i);
+		gtk_widget_set_visible(lookup_widget(tmp), current_value > i);
+		g_free(tmp);
+	}
+}
+
+void on_spin_w0_value_changed(GtkSpinButton *button, gpointer user_data) {
+	wavelet_value[0] = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = update_wavelets;
+	notify_update((gpointer) param);
+}
+
+void on_spin_w1_value_changed(GtkSpinButton *button, gpointer user_data) {
+	wavelet_value[1] = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = update_wavelets;
+	notify_update((gpointer) param);
+}
+
+void on_spin_w2_value_changed(GtkSpinButton *button, gpointer user_data) {
+	wavelet_value[2] = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = update_wavelets;
+	notify_update((gpointer) param);
+}
+
+void on_spin_w3_value_changed(GtkSpinButton *button, gpointer user_data) {
+	wavelet_value[3] = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = update_wavelets;
+	notify_update((gpointer) param);
+}
+
+void on_spin_w4_value_changed(GtkSpinButton *button, gpointer user_data) {
+	wavelet_value[4] = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = update_wavelets;
+	notify_update((gpointer) param);
+}
+
+void on_spin_w5_value_changed(GtkSpinButton *button, gpointer user_data) {
+	wavelet_value[5] = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = update_wavelets;
+	notify_update((gpointer) param);
+}
+

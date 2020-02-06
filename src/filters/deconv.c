@@ -22,6 +22,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 
+#include "algos/statistics.h"
 #include "core/undo.h"
 #include "core/processing.h"
 #include "io/single_image.h"
@@ -29,21 +30,73 @@
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
-#include "opencv/opencv.h"
+#include "gui/preview_timer.h"
 
 #include "deconv.h"
 
+static int deconv_threshold, deconv_iterations;
+static double deconv_radius, deconv_boost;
+static gboolean deconv_auto_thres, deconv_auto_iter;
+static fits deconv_gfit_backup;
+
+static void deconv_startup() {
+	copyfits(&gfit, &deconv_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	deconv_threshold = 20;
+	deconv_iterations = 20;
+	deconv_radius = 1.0;
+	deconv_boost = 0.0;
+	deconv_auto_thres = TRUE;
+	deconv_auto_iter = TRUE;
+}
+
+static void deconv_close(gboolean revert) {
+	set_cursor_waiting(TRUE);
+	if (revert) {
+		copyfits(&deconv_gfit_backup, &gfit, CP_COPYA, -1);
+		adjust_cutoff_from_updated_gfit();
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+	} else {
+		invalidate_stats_from_fit(&gfit);
+		undo_save_state(&deconv_gfit_backup,
+				"Processing: Deconv. (iter=%d, sig=%.3f)", deconv_iterations,
+				deconv_radius);
+
+	}
+	clearfits(&deconv_gfit_backup);
+	set_cursor_waiting(FALSE);
+}
+
+int deconv_update_preview() {
+	copyfits(&deconv_gfit_backup, &gfit, CP_COPYA, -1);
+
+	struct deconv_data *args = malloc(sizeof(struct deconv_data));
+
+	set_cursor_waiting(TRUE);
+
+	args->fit = &gfit;
+	if (args->fit->type == DATA_USHORT) {
+		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi;
+	} else {
+		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi * USHRT_MAX_DOUBLE;
+	}
+
+	args->contrast_threshold = (size_t)deconv_threshold;
+	args->sigma = deconv_radius;
+	args->corner_radius = deconv_boost;
+	args->iterations = (size_t)deconv_iterations;
+	args->auto_limit = deconv_auto_iter;
+	args->auto_contrast_threshold = deconv_auto_thres;
+
+	start_in_new_thread(RTdeconv, args);
+	return 0;
+}
+
+
 gpointer RTdeconv(gpointer p) {
 	struct deconv_data *args = (struct deconv_data *) p;
-	struct timeval t_start, t_end;
-
-	siril_log_color_message(_("Deconvolution: processing...\n"), "red");
-	gettimeofday(&t_start, NULL);
 
 	deconvolution(args);
-
-	gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
 
 	siril_add_idle(end_generic, args);
 	adjust_cutoff_from_updated_gfit();
@@ -52,67 +105,112 @@ gpointer RTdeconv(gpointer p) {
 	return 0;
 }
 
-/************************ GUI for deconvolution ***********************/
+
+/** callbacks **/
+void on_deconvolution_dialog_show(GtkWidget *widget, gpointer user_data) {
+	deconv_startup();
+
+	set_notify_block(TRUE);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spin_deconv_threshold")), deconv_threshold);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spin_deconv_radius")),	deconv_radius);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spin_deconv_boost")),	deconv_boost);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spin_deconv_iterations")),	deconv_iterations);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_trheshold")),	deconv_auto_iter);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_auto")),	deconv_auto_thres);
+	set_notify_block(FALSE);
+
+	/* default parameters transform image, we need to update preview */
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = deconv_update_preview;
+	notify_update((gpointer) param);
+}
+
+
 void on_menuitem_deconvolution_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	siril_open_dialog("deconvolution_dialog");
 }
 
 void on_deconvolution_cancel_clicked(GtkButton *button, gpointer user_data) {
+	deconv_close(TRUE);
 	siril_close_dialog("deconvolution_dialog");
 }
 
 void on_deconvolution_reset_clicked(GtkButton *button, gpointer user_data) {
-	GtkRange *threshold, *sigma, *corner_radius, *iterations;
-	GtkToggleButton *auto_limit, *auto_threshold;
+	deconv_threshold = 20;
+	deconv_iterations = 20;
+	deconv_radius = 1.0;
+	deconv_boost = 0.0;
+	deconv_auto_thres = TRUE;
+	deconv_auto_iter = TRUE;
 
-	threshold = GTK_RANGE(lookup_widget("scale_deconv_threshold"));
-	sigma = GTK_RANGE(lookup_widget("scale_deconv_radius"));
-	corner_radius = GTK_RANGE(lookup_widget("scale_deconv_corner"));
-	iterations = GTK_RANGE(lookup_widget("scale_deconv_iterations"));
-	auto_limit = GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_auto"));
-	auto_threshold = GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_trheshold"));
+	set_cursor_waiting(TRUE);
+	set_notify_block(TRUE);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spin_deconv_threshold")), deconv_threshold);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spin_deconv_radius")),	deconv_radius);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spin_deconv_boost")),	deconv_boost);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spin_deconv_iterations")),	deconv_iterations);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_trheshold")),	deconv_auto_iter);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_auto")),	deconv_auto_thres);
+	set_notify_block(FALSE);
 
-	gtk_range_set_value(threshold, 20);
-	gtk_range_set_value(sigma, 1.0);
-	gtk_range_set_value(corner_radius, 0.0);
-	gtk_range_set_value(iterations, 20);
-	gtk_toggle_button_set_active(auto_limit, TRUE);
-	gtk_toggle_button_set_active(auto_threshold, FALSE);
+	copyfits(&deconv_gfit_backup, &gfit, CP_COPYA, -1);
+
+	/* default parameters transform image, we need to update preview */
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = deconv_update_preview;
+	notify_update((gpointer) param);
+}
+
+void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
+	deconv_close(FALSE);
+	siril_close_dialog("deconvolution_dialog");
+}
+
+void on_deconvolution_dialog_close(GtkDialog *dialog, gpointer user_data) {
+	deconv_close(TRUE);
+}
+
+void on_spin_deconv_threshold_value_changed(GtkSpinButton *button, gpointer user_data) {
+	deconv_threshold = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = deconv_update_preview;
+	notify_update((gpointer) param);
+}
+
+void on_spin_deconv_radius_value_changed(GtkSpinButton *button, gpointer user_data) {
+	deconv_radius = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = deconv_update_preview;
+	notify_update((gpointer) param);
+}
+
+void on_spin_deconv_boost_value_changed(GtkSpinButton *button, gpointer user_data) {
+	deconv_boost = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = deconv_update_preview;
+	notify_update((gpointer) param);
+}
+
+void on_spin_deconv_iterations_value_changed(GtkSpinButton *button, gpointer user_data) {
+	deconv_iterations = gtk_spin_button_get_value(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = deconv_update_preview;
+	notify_update((gpointer) param);
 }
 
 void on_toggle_deconv_trheshold_toggled(GtkToggleButton *button, gpointer user_data) {
 	gtk_widget_set_sensitive(lookup_widget("scale_deconv_threshold"), !gtk_toggle_button_get_active(button));
 	gtk_widget_set_sensitive(lookup_widget("spin_deconv_threshold"), !gtk_toggle_button_get_active(button));
+
+	deconv_auto_thres = gtk_toggle_button_get_active(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = deconv_update_preview;
+	notify_update((gpointer) param);
 }
 
-void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
-	GtkRange *threshold, *sigma, *corner_radius, *iterations;
-	GtkToggleButton *auto_limit, *auto_threshold;
-
-	threshold = GTK_RANGE(lookup_widget("scale_deconv_threshold"));
-	sigma = GTK_RANGE(lookup_widget("scale_deconv_radius"));
-	corner_radius = GTK_RANGE(lookup_widget("scale_deconv_corner"));
-	iterations = GTK_RANGE(lookup_widget("scale_deconv_iterations"));
-	auto_limit = GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_auto"));
-	auto_threshold = GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_trheshold"));
-
-	struct deconv_data *args = malloc(sizeof(struct deconv_data));
-
-	set_cursor_waiting(TRUE);
-
-	args->fit = &gfit;
-	args->contrast_threshold = (size_t)gtk_range_get_value(threshold);
-	args->sigma = gtk_range_get_value(sigma);
-	args->corner_radius = gtk_range_get_value(corner_radius);
-	args->iterations = (size_t)gtk_range_get_value(iterations);
-	args->auto_limit = gtk_toggle_button_get_active(auto_limit);
-	args->auto_contrast_threshold = gtk_toggle_button_get_active(auto_threshold);
-	if (args->fit->type == DATA_USHORT) {
-		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi;
-	} else {
-		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi * USHRT_MAX_DOUBLE;
-	}
-	undo_save_state(args->fit, "Processing: Deconv. (iter=%d, sig=%.3f)", args->iterations, args->sigma);
-
-	start_in_new_thread(RTdeconv, args);
+void on_toggle_deconv_auto_toggled(GtkToggleButton *button, gpointer user_data) {
+	deconv_auto_iter = gtk_toggle_button_get_active(button);
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = deconv_update_preview;
+	notify_update((gpointer) param);
 }
