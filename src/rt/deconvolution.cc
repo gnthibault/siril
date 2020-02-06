@@ -970,7 +970,7 @@ BENCHFUN
 
     // calculate contrast based blend factors to reduce sharpening in regions with low contrast
     buildBlendMask(L, clipMask, W, H, contrast, args->auto_contrast_threshold, clipMask);
-    std::cout << "contrast : " << contrast << std::endl;
+//    std::cout << "contrast : " << contrast << std::endl;
     if (args->auto_contrast_threshold) {
         args->contrast_threshold = contrast * 100.0;
     }
