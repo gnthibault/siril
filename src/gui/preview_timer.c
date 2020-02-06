@@ -42,6 +42,7 @@ static gboolean update_preview(gpointer user_data) {
 	im->update_preview_fn();
 
 	waiting_for_thread(); // in case function is run in another thread
+	set_progress_bar_data(NULL, PROGRESS_DONE);
 	siril_debug_print("update preview\n");
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
