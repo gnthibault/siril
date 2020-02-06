@@ -78,7 +78,6 @@ void on_clahe_Apply_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_CLAHE_dialog_close(GtkDialog *dialog, gpointer user_data) {
-	printf("test\n");
 	clahe_close(TRUE);
 }
 
