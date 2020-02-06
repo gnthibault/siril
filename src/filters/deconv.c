@@ -156,6 +156,11 @@ void on_deconvolution_reset_clicked(GtkButton *button, gpointer user_data) {
 	notify_update((gpointer) param);
 }
 
+void apply_deconv_cancel() {
+	deconv_close(TRUE);
+	siril_close_dialog("deconvolution_dialog");
+}
+
 void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
 	deconv_close(FALSE);
 	siril_close_dialog("deconvolution_dialog");
