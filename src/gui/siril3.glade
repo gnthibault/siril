@@ -10565,7 +10565,9 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="window_position">center</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
-    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+    <signal name="close" handler="on_deconvolution_dialog_close" swapped="no"/>
+    <signal name="delete-event" handler="on_deconvolution_cancel_clicked" swapped="no"/>
+    <signal name="show" handler="on_deconvolution_dialog_show" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -10595,7 +10597,7 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="deconvolution_cancel">
-                <property name="label">gtk-close</property>
+                <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -10662,6 +10664,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
                     <property name="adjustment">adj_deconv_threshold</property>
+                    <signal name="value-changed" handler="on_spin_deconv_threshold_value_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -10730,11 +10733,12 @@ Uncheck if images come from a monochrome sensor.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton">
+                  <object class="GtkSpinButton" id="spin_deconv_radius">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="adjustment">adj_deconv_radius</property>
                     <property name="digits">2</property>
+                    <signal name="value-changed" handler="on_spin_deconv_radius_value_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -10785,11 +10789,12 @@ Uncheck if images come from a monochrome sensor.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton">
+                  <object class="GtkSpinButton" id="spin_deconv_boost">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="adjustment">adj_deconv_corner</property>
                     <property name="digits">2</property>
+                    <signal name="value-changed" handler="on_spin_deconv_boost_value_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -10841,10 +10846,11 @@ Uncheck if images come from a monochrome sensor.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton">
+                  <object class="GtkSpinButton" id="spin_deconv_iterations">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="adjustment">adj_deconv_iterations</property>
+                    <signal name="value-changed" handler="on_spin_deconv_iterations_value_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -10887,6 +10893,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="halign">start</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_toggle_deconv_auto_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
