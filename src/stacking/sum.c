@@ -103,7 +103,9 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 
 	nbdata = args->seq->ry * args->seq->rx * args->seq->nb_layers;
 	// find the max first
+#ifdef _OPENMP
 	#pragma omp parallel for reduction(max:max)
+#endif
 	for (i=0; i < nbdata; ++i)
 		if (ssdata->sum[0][i] > max)
 			max = ssdata->sum[0][i];

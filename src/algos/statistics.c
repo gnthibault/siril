@@ -78,7 +78,9 @@ static double siril_stats_ushort_mad(WORD* data, const size_t n, const double m,
 		return 0.0f; // TODO: check return value
 	}
 
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) if(n > 10000) private(i) schedule(static)
+#endif
 	for (i = 0; i < n; i++) {
 		tmp[i] = (WORD)abs(data[i] - median);
 	}
@@ -97,7 +99,9 @@ static double siril_stats_double_mad(const double* data, const size_t n, const d
 		return 0.0f; // TODO: check return value
 	}
 
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) if(n > 10000) private(i) schedule(static)
+#endif
 	for (i = 0; i < n; i++) {
 		tmp[i] = fabs(data[i] - median);
 	}
@@ -115,7 +119,9 @@ static double siril_stats_ushort_bwmv(const WORD* data, const size_t n,
 	size_t i;
 
 	if (mad > 0.0) {
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) reduction(+:up,down)
+#endif
 		for (i = 0; i < n; i++) {
 			double yi, ai, yi2;
 
@@ -141,7 +147,9 @@ static double siril_stats_double_bwmv(const double* data, const size_t n,
 	size_t i;
 
 	if (mad > 0.0) {
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) reduction(+:up,down)
+#endif
 		for (i = 0; i < n; i++) {
 			double yi, ai, yi2;
 
@@ -228,7 +236,9 @@ static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
 		WORD max = data[0];
 		size_t i;
 
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static) if(n > 10000) reduction(max:max) reduction(min:min)
+#endif
 		for (i = 0; i < n; i++) {
 			WORD xi = data[i];
 			if (xi < min)
@@ -395,7 +405,9 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection,
 		}
 
 		/* we convert in the [0, 1] range */
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#endif
 		for (i = 0; i < stat->ngoodpix; i++) {
 			newdata[i] = (double)data[i] / stat->normValue;
 		}
