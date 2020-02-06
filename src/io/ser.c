@@ -511,7 +511,6 @@ static int get_SER_Bayer_Pattern(ser_color pattern) {
  * reorganized to match Siril's data format . */
 static void ser_manage_endianess_and_depth(struct ser_struct *ser_file,
 		WORD *data, int64_t frame_size) {
-	WORD pixel;
 	int i;
 	if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) {
 		// inline conversion to 16 bit
@@ -520,9 +519,12 @@ static void ser_manage_endianess_and_depth(struct ser_struct *ser_file,
 	} else if (ser_file->little_endian == SER_BIG_ENDIAN) {
 		// inline conversion
 		for (i = frame_size - 1; i >= 0; i--) {
-			pixel = data[i];
-			pixel = (pixel >> 8) | (pixel << 8);
-			data[i] = pixel;
+			data[i] = be16_to_cpu(data[i]);
+		}
+	} else if (ser_file->little_endian == SER_LITTLE_ENDIAN) {
+		// inline conversion
+		for (i = frame_size - 1; i >= 0; i--) {
+			data[i] = le16_to_cpu(data[i]);
 		}
 	}
 }

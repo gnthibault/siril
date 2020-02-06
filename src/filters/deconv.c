@@ -58,7 +58,9 @@ static void deconv_close(gboolean revert) {
 		redraw_previews();
 	} else {
 		invalidate_stats_from_fit(&gfit);
-		undo_save_state(&gfit, "Processing: Deconv. (iter=%d, sig=%.3f)", deconv_iterations, deconv_radius);
+		undo_save_state(&deconv_gfit_backup,
+				"Processing: Deconv. (iter=%d, sig=%.3f)", deconv_iterations,
+				deconv_radius);
 
 	}
 	clearfits(&deconv_gfit_backup);
@@ -105,7 +107,6 @@ gpointer RTdeconv(gpointer p) {
 
 
 /** callbacks **/
-
 void on_deconvolution_dialog_show(GtkWidget *widget, gpointer user_data) {
 	deconv_startup();
 
