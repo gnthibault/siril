@@ -53,9 +53,11 @@ static void reset_scale_w() {
 		range_w[5] = GTK_RANGE(lookup_widget("scale_w5"));
 	}
 
+	set_notify_block(TRUE);
 	for (i = 0; i < 6; i++) {
 		gtk_range_set_value(range_w[i], 1.f);
 	}
+	set_notify_block(FALSE);
 }
 
 static int update_wavelets() {

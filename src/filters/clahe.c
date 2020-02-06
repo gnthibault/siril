@@ -159,7 +159,6 @@ void on_CLAHE_dialog_show(GtkWidget *widget, gpointer user_data) {
 	notify_update((gpointer) param);
 }
 
-
 /** adjusters **/
 void on_spin_clahe_value_changed(GtkSpinButton *button, gpointer user_data) {
 	clahe_limit_value = gtk_spin_button_get_value(button);
