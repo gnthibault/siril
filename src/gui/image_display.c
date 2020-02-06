@@ -157,7 +157,7 @@ static void draw_empty_image(cairo_t *cr, guint width, guint height) {
 static void remaprgb(void) {
 	guchar *dst;
 	guchar *bufr, *bufg, *bufb;
-	gint i, j;
+	gint i;
 	int nbdata;
 
 	siril_debug_print("remaprgb\n");
@@ -211,9 +211,7 @@ static void remaprgb(void) {
 #pragma omp parallel for num_threads(com.max_thread)
 #endif
 	for (i = 0; i < nbdata; i += 4) {
-		dst[i] = bufb[i];
-		dst[i + 1] = bufg[i];
-		dst[i + 2] = bufr[i];
+		*(uint32_t*)(dst + i) = bufr[i] << 16 | bufg[i] << 8 | bufb[i];
 	}
 
 	// flush to ensure all writing to the image was done and redraw the surface
@@ -369,7 +367,7 @@ static void remap(int vport) {
 		guint x;
 		guint src_index = y * gfit.rx;
 		guint dst_index = ((gfit.ry - 1 - y) * gfit.rx) * 4;
-		for (x = 0; x < gfit.rx; ++x, ++src_index, dst_index += 2) {
+		for (x = 0; x < gfit.rx; ++x, ++src_index, dst_index += 4) {
 			BYTE dst_pixel_value;
 			if (special_mode)	// special case, no lo & hi
 				dst_pixel_value = index[src[src_index]];
@@ -385,14 +383,10 @@ static void remap(int vport) {
 			switch (color) {
 			default:
 			case NORMAL_COLOR:
-				dst[dst_index++] = dst_pixel_value;
-				dst[dst_index++] = dst_pixel_value;
-				dst[dst_index] = dst_pixel_value;
+				*(uint32_t*)(dst + dst_index) = dst_pixel_value << 16 | dst_pixel_value << 8 | dst_pixel_value;
 				break;
 			case RAINBOW_COLOR:
-				dst[dst_index++] = rainbow_index[dst_pixel_value][0];
-				dst[dst_index++] = rainbow_index[dst_pixel_value][1];
-				dst[dst_index] = rainbow_index[dst_pixel_value][2];
+				*(uint32_t*)(dst + dst_index) = rainbow_index[dst_pixel_value][0] << 16 | rainbow_index[dst_pixel_value][1] << 8 | rainbow_index[dst_pixel_value][2];
 			}
 		}
 	}
