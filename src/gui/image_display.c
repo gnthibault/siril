@@ -155,8 +155,8 @@ static void draw_empty_image(cairo_t *cr, guint width, guint height) {
 }
 
 static void remaprgb(void) {
-	guchar *dst;
-	guchar *bufr, *bufg, *bufb;
+	uint32_t *dst;
+	const uint32_t *bufr, *bufg, *bufb;
 	gint i;
 	int nbdata;
 
@@ -197,21 +197,21 @@ static void remaprgb(void) {
 	}
 	// WARNING : this assumes that R, G and B buffers are already allocated and mapped
 	// it seems ok, but one can probably imagine situations where it segfaults
-	bufr = com.graybuf[RED_VPORT];
-	bufg = com.graybuf[GREEN_VPORT];
-	bufb = com.graybuf[BLUE_VPORT];
+	bufr = (const uint32_t*) com.graybuf[RED_VPORT];
+	bufg = (const uint32_t*) com.graybuf[GREEN_VPORT];
+	bufb = (const uint32_t*) com.graybuf[BLUE_VPORT];
 	if (bufr == NULL || bufg == NULL || bufb == NULL) {
 		siril_debug_print("remaprgb: gray buffers not allocated for display\n");
 		return;
 	}
-	dst = com.rgbbuf;	// index is j
-	nbdata = gfit.rx * gfit.ry * 4;	// source images are 32-bit RGBA
+	dst = (uint32_t*) com.rgbbuf;	// index is j
+	nbdata = gfit.rx * gfit.ry;	// source images are 32-bit RGBA
 
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread)
 #endif
-	for (i = 0; i < nbdata; i += 4) {
-		*(uint32_t*)(dst + i) = bufr[i] << 16 | bufg[i] << 8 | bufb[i];
+	for (i = 0; i < nbdata; ++i) {
+		dst[i] = (bufr[i] & 0xFF0000) | (bufg[i] & 0xFF00) | (bufb[i] & 0xFF);
 	}
 
 	// flush to ensure all writing to the image was done and redraw the surface
