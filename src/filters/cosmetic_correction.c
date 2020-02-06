@@ -142,79 +142,21 @@ static double getAverage3x3_ushort(WORD *buf, const int xx, const int yy,
 	return value / n;
 }
 
-long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot) {
-	int i;
-	WORD *buf;
-	imstats *stat;
-	double sigma, median, thresHot, thresCold;
-
-	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(
-				_(
-						"Counting deviant pixels is not supported yet in 32-bit images\n"),
-				"red");
-		return 0;
-	}
-
-	/** statistics **/
-	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC, TRUE);
-	if (!stat) {
-		siril_log_message(_("Error: statistics computation failed.\n"));
-		return 0L;
-	}
-	sigma = stat->sigma;
-	median = stat->median;
-
-	if (sig[0] == -1.0) {	// flag for no cold detection
-		thresCold = -1.0;
-	} else {
-		double val = median - (sig[0] * sigma);
-		thresCold = (val > 0) ? val : 0.0;
-	}
-	if (sig[1] == -1.0) {	// flag for no hot detection
-		thresHot = USHRT_MAX_DOUBLE + 1;
-	} else {
-		double val = median + (sig[1] * sigma);
-		thresHot = (val > USHRT_MAX_DOUBLE) ? USHRT_MAX_DOUBLE : val;
-	}
-
-	free_stats(stat);
-
-	/** We count deviant pixels **/
-	*icold = 0;
-	*ihot = 0;
-	buf = fit->pdata[RLAYER];
-	for (i = 0; i < fit->rx * fit->ry; i++) {
-		if (buf[i] >= thresHot)
-			(*ihot)++;
-		else if (buf[i] < thresCold)
-			(*icold)++;
-	}
-
-	return (*icold + *ihot);
-}
-
-/* Gives a list of point p containing deviant pixel coordinates
- * p MUST be freed after the call
- * if cold == -1 or hot == -1, this is a flag to not compute cold or hot
+/* Gives a list of point p containing deviant pixel coordinates, to be freed by
+ * caller.
+ * If eval_only is true, the function only counts the deviant pixels and
+ * returns NULL. It also returns NULL when no deviant pixel is found.
+ * If cold == -1 or hot == -1, this is a flag to not compute cold or hot
  */
 deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
-		long *ihot) {
+		long *ihot, gboolean eval_only) {
 	int x, y, i;
 	WORD *buf;
+	float *fbuf;
 	imstats *stat;
 	double sigma, median, thresHot, thresCold;
 	deviant_pixel *dev;
 
-	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(
-				_(
-						"Finding deviant pixels is not supported yet in 32-bit images\n"),
-				"red");
-		return NULL;
-	}
-
-	/** statistics **/
 	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC, FALSE);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
@@ -227,13 +169,13 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 		thresCold = -1.0;
 	} else {
 		double val = median - (sig[0] * sigma);
-		thresCold = (val > 0) ? val : 0.0;
+		thresCold = max(val, 0.0);
 	}
 	if (sig[1] == -1.0) {	// flag for no hot detection
 		thresHot = USHRT_MAX_DOUBLE + 1;
 	} else {
 		double val = median + (sig[1] * sigma);
-		thresHot = (val > USHRT_MAX_DOUBLE) ? USHRT_MAX_DOUBLE : val;
+		thresHot = min(val, fit->type == DATA_FLOAT ? 1.0 : USHRT_MAX_DOUBLE);
 	}
 
 	free_stats(stat);
@@ -242,18 +184,22 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 	*icold = 0;
 	*ihot = 0;
 	buf = fit->pdata[RLAYER];
+	fbuf = fit->fpdata[RLAYER];
 	for (i = 0; i < fit->rx * fit->ry; i++) {
-		if (buf[i] >= thresHot)
+		double pixel = fit->type == DATA_FLOAT ? fbuf[i] : (double)buf[i];
+		if (pixel >= thresHot)
 			(*ihot)++;
-		else if (buf[i] < thresCold)
+		else if (pixel < thresCold)
 			(*icold)++;
 	}
+
+	if (eval_only) return NULL;
 
 	/** Second we store deviant pixels in p*/
 	int n = (*icold) + (*ihot);
 	if (n <= 0)
 		return NULL;
-	dev = calloc(n, sizeof(deviant_pixel));
+	dev = malloc(n * sizeof(deviant_pixel));
 	if (!dev) {
 		PRINT_ALLOC_ERR;
 		return NULL;
@@ -261,7 +207,8 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 	i = 0;
 	for (y = 0; y < fit->ry; y++) {
 		for (x = 0; x < fit->rx; x++) {
-			double pixel = (double) buf[x + y * fit->rx];
+			double pixel = fit->type == DATA_FLOAT ?
+				fbuf[x + y * fit->rx] : (double)buf[x + y * fit->rx];
 			if (pixel >= thresHot) {
 				dev[i].p.x = x;
 				dev[i].p.y = y;
@@ -305,7 +252,7 @@ int cosmeticCorrOnePoint(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 		buf[x + y * fit->rx] = newpixel;
 	}
 
-	invalidate_stats_from_fit(fit);
+	// the caller should call invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -328,15 +275,15 @@ int cosmeticCorrOneLine(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 	memcpy(line, newline, width * sizeof(WORD));
 
 	free(newline);
-	invalidate_stats_from_fit(fit);
+	//invalidate_stats_from_fit(fit);
 	return 0;
 }
 
 int cosmeticCorrection(fits *fit, deviant_pixel *dev, int size, gboolean is_cfa) {
-	int i;
-	for (i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
 		cosmeticCorrOnePoint(fit, dev[i], is_cfa);
 	}
+	invalidate_stats_from_fit(fit);
 	return 0;
 }
 
@@ -445,7 +392,7 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
 	const float f0 = amount;
 	const float f1 = 1 - f0;
 
-    const gboolean isFloat = fit->type == DATA_FLOAT;
+	const gboolean isFloat = fit->type == DATA_FLOAT;
 	WORD *buf = fit->pdata[layer];
 	float *fbuf = fit->fpdata[layer];
 	const float k1 = avgDev;
@@ -458,25 +405,25 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
 	const float hotVal = doHot ? bkg + k1 : isFloat ? 1.f : 65535.f;
 	float *temp = malloc(width * height * sizeof(float));
 
-    if (isFloat) {
+	if (isFloat) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) if(multithread)
 #endif
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                temp[y * width + x] = fbuf[y * width + x];
-            }
-        }
-    } else {
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				temp[y * width + x] = fbuf[y * width + x];
+			}
+		}
+	} else {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) if(multithread)
 #endif
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                temp[y * width + x] = buf[y * width + x];
-            }
-        }
-    }
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				temp[y * width + x] = buf[y * width + x];
+			}
+		}
+	}
 	const int step = is_cfa ? 2 : 1;
 	const int radius = 2 * step;
 
@@ -485,57 +432,57 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
 #ifdef _OPENMP
 #pragma omp parallel num_threads(com.max_thread) if(multithread)
 #endif
-    {
-    	float medianin[24];
+	{
+		float medianin[24];
 #ifdef _OPENMP
 #pragma omp for reduction(+:icoldL, ihotL) schedule(dynamic,16)
 #endif
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                const float pixel = temp[x + y * width];
-                if (!inInterval(pixel, coldVal, hotVal)) {
-                    float m;
-                    if (y >= radius && y < height - radius && x >= radius && x < width - radius) {
-                        // use fast median24 network
-                        int nbm = 0;
-                        for (int i = -radius; i <= radius; i += step) {
-                            for (int j = -radius; j <= radius; j += step) {
-                                if (i != 0 || j != 0) {
-                                    medianin[nbm++] = temp[(y + i) * width + x + j];
-                                }
-                            }
-                        }
-                        m = median24(medianin);
-                    } else {
-                        m = getMedian5x5_float(temp, x, y, width, height, is_cfa);
-                    }
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				const float pixel = temp[x + y * width];
+				if (!inInterval(pixel, coldVal, hotVal)) {
+					float m;
+					if (y >= radius && y < height - radius && x >= radius && x < width - radius) {
+						// use fast median24 network
+						int nbm = 0;
+						for (int i = -radius; i <= radius; i += step) {
+							for (int j = -radius; j <= radius; j += step) {
+								if (i != 0 || j != 0) {
+									medianin[nbm++] = temp[(y + i) * width + x + j];
+								}
+							}
+						}
+						m = median24(medianin);
+					} else {
+						m = getMedian5x5_float(temp, x, y, width, height, is_cfa);
+					}
 
-                    /* Hot autodetect */
-                    if (doHot && pixel > hotVal && pixel > m + k3) {
-                        const float a = getAverage3x3_float(temp, x, y, width, height, is_cfa);
-                        if (a < bkg + k2) {
-                            ihotL++;
-                            if (isFloat) {
-                                fbuf[x + y * width] = a * f0 + pixel * f1;
-                            } else {
-                                buf[x + y * width] = a * f0 + pixel * f1;
-                            }
-                        }
-                    } else if (doCold && pixel < coldVal && pixel + k < m) {
-                        /* Cold autodetect */
-                        icoldL++;
-                        if (isFloat) {
-                            fbuf[x + y * width] = m * f0 + pixel * f1;
-                        } else {
-                            buf[x + y * width] = m * f0 + pixel * f1;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    (*icold) = icoldL;
-    (*ihot) = ihotL;
+					/* Hot autodetect */
+					if (doHot && pixel > hotVal && pixel > m + k3) {
+						const float a = getAverage3x3_float(temp, x, y, width, height, is_cfa);
+						if (a < bkg + k2) {
+							ihotL++;
+							if (isFloat) {
+								fbuf[x + y * width] = a * f0 + pixel * f1;
+							} else {
+								buf[x + y * width] = a * f0 + pixel * f1;
+							}
+						}
+					} else if (doCold && pixel < coldVal && pixel + k < m) {
+						/* Cold autodetect */
+						icoldL++;
+						if (isFloat) {
+							fbuf[x + y * width] = m * f0 + pixel * f1;
+						} else {
+							buf[x + y * width] = m * f0 + pixel * f1;
+						}
+					}
+				}
+			}
+		}
+	}
+	(*icold) = icoldL;
+	(*ihot) = ihotL;
 	free(temp);
 
 	invalidate_stats_from_fit(fit);
@@ -594,13 +541,13 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 	struct cosmetic_data *args = malloc(sizeof(struct cosmetic_data));
 
 	if (gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("checkSigColdBox"))))
+				GTK_TOGGLE_BUTTON(lookup_widget("checkSigColdBox"))))
 		args->sigma[0] = gtk_spin_button_get_value(sigma[0]);
 	else
 		args->sigma[0] = -1.0;
 
 	if (gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("checkSigHotBox"))))
+				GTK_TOGGLE_BUTTON(lookup_widget("checkSigHotBox"))))
 		args->sigma[1] = gtk_spin_button_get_value(sigma[1]);
 	else
 		args->sigma[1] = -1.0;
@@ -619,7 +566,7 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 		args->multithread = FALSE;
 		apply_cosmetic_to_sequence(args);
 	} else {
-	    args->multithread = TRUE;
+		args->multithread = TRUE;
 		undo_save_state(&gfit, "Processing: Cosmetic Correction");
 		start_in_new_thread(autoDetectThreaded, args);
 	}
