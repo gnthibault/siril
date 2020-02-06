@@ -20,6 +20,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/processing.h"
 #include "gui/progress_and_log.h"
 #include "gui/image_display.h"
 #include "io/single_image.h"
@@ -40,6 +41,7 @@ static gboolean update_preview(gpointer user_data) {
 
 	im->update_preview_fn();
 
+	waiting_for_thread(); // in case function is run in another thread
 	siril_debug_print("update preview\n");
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);

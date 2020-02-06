@@ -369,7 +369,7 @@ gpointer waiting_for_thread() {
 
 void stop_processing_thread() {
 	if (com.thread == NULL) {
-		fprintf(stderr, "The processing thread is not running.\n");
+		siril_debug_print("The processing thread is not running.\n");
 		return;
 	}
 
