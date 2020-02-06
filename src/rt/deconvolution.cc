@@ -942,8 +942,10 @@ BENCHFUN
         int fitn = i * W;
         for (int j = 0; j < W; ++j) {
             redVals[i][j] = args->fit->pdata[RLAYER][fitn];
-            greenVals[i][j] = args->fit->pdata[GLAYER][fitn];
-            blueVals[i][j] = args->fit->pdata[BLAYER][fitn];
+            if (channels == 3) {
+            	greenVals[i][j] = args->fit->pdata[GLAYER][fitn];
+            	blueVals[i][j] = args->fit->pdata[BLAYER][fitn];
+            }
             ++fitn;
         }
     }
