@@ -97,28 +97,23 @@ static WORD* getAverage3x3Line(WORD *buf, const int yy, const int w,
 
 static double getAverage3x3_float(float *buf, const int xx, const int yy,
 		const int w, const int h, gboolean is_cfa) {
-	int step, radius, x, y;
-	float value = 0;
 
-	if (is_cfa)
-		step = radius = 2;
-	else
-		step = radius = 1;
+    const int step = is_cfa ? 2 : 1;
+    const int radius = step;
 
-	int n = 0;
-	for (y = yy - radius; y <= yy + radius; y += step) {
-		for (x = xx - radius; x <= xx + radius; x += step) {
-			if (y >= 0 && y < h) {
-				if (x >= 0 && x < w) {
-					if ((x != xx) || (y != yy)) {
-						value += buf[x + y * w];
-						n++;
-					}
-				}
-			}
-		}
-	}
-	return value / n;
+    int n = -1;
+    float value = -buf[xx + yy * w];
+    for (int y = yy - radius; y <= yy + radius; y += step) {
+        if (y >= 0 && y < h) {
+            for (int x = xx - radius; x <= xx + radius; x += step) {
+                if (x >= 0 && x < w) {
+                    value += buf[x + y * w];
+                    n++;
+                }
+            }
+        }
+    }
+    return value / n;
 }
 
 static double getAverage3x3_ushort(WORD *buf, const int xx, const int yy,
