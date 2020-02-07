@@ -939,16 +939,22 @@ BENCHFUN
         for (int j = 0; j < W; ++j) {
         	if (args->fit->type == DATA_USHORT) {
                 redVals[i][j] = args->fit->pdata[RLAYER][fitn];
-			if (channels == 3) {
-                		greenVals[i][j] = args->fit->pdata[GLAYER][fitn];
-                		blueVals[i][j] = args->fit->pdata[BLAYER][fitn];
-			}
+                if (channels == 3) {
+                    greenVals[i][j] = args->fit->pdata[GLAYER][fitn];
+                    blueVals[i][j] = args->fit->pdata[BLAYER][fitn];
+                } else { // for single layer we have to fill green and blue with red
+                    greenVals[i][j] = args->fit->pdata[RLAYER][fitn];
+                    blueVals[i][j] = args->fit->pdata[RLAYER][fitn];
+                }
         	} else {
         		redVals[i][j] = args->fit->fpdata[RLAYER][fitn] > 0.f ? args->fit->fpdata[RLAYER][fitn] * USHRT_MAX_SINGLE : 0.f;
-			if (channels == 3) {
-        			greenVals[i][j] = args->fit->fpdata[GLAYER][fitn] > 0.f ? args->fit->fpdata[GLAYER][fitn] * USHRT_MAX_SINGLE : 0.f;
-        			blueVals[i][j] = args->fit->fpdata[BLAYER][fitn] > 0.f ? args->fit->fpdata[BLAYER][fitn]* USHRT_MAX_SINGLE : 0.f;
-			}
+                if (channels == 3) {
+                    greenVals[i][j] = args->fit->fpdata[GLAYER][fitn] > 0.f ? args->fit->fpdata[GLAYER][fitn] * USHRT_MAX_SINGLE : 0.f;
+                    blueVals[i][j] = args->fit->fpdata[BLAYER][fitn] > 0.f ? args->fit->fpdata[BLAYER][fitn]* USHRT_MAX_SINGLE : 0.f;
+                } else { // for single layer we have to fill green and blue with red
+                    greenVals[i][j] = args->fit->fpdata[RLAYER][fitn] > 0.f ? args->fit->fpdata[RLAYER][fitn] * USHRT_MAX_SINGLE : 0.f;
+                    blueVals[i][j] = args->fit->fpdata[RLAYER][fitn] > 0.f ? args->fit->fpdata[RLAYER][fitn]* USHRT_MAX_SINGLE : 0.f;
+                }
         	}
 
             ++fitn;
