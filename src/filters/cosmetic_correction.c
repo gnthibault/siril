@@ -398,6 +398,7 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
 	const float k1 = avgDev;
 	const float k2 = k1 / 2;
 	const float k3 = sig[1] * k1;
+	const float k4 = max(k1, k3);
 	const float k = avgDev * sig[0];
 	const gboolean doHot = sig[1] != -1.0;
 	const gboolean doCold = sig[0] != -1.0;
@@ -458,9 +459,9 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
 					}
 
 					/* Hot autodetect */
-					if (doHot && pixel > hotVal && pixel > m + k3) {
+					if (doHot && pixel > hotVal && pixel > m + k4) {
 						const float a = getAverage3x3_float(temp, x, y, width, height, is_cfa);
-						if (a < bkg + k2) {
+						if (a < m + k2) {
 							ihotL++;
 							if (isFloat) {
 								fbuf[x + y * width] = a * f0 + pixel * f1;
