@@ -945,6 +945,10 @@ BENCHFUN
             if (channels == 3) {
             	greenVals[i][j] = args->fit->pdata[GLAYER][fitn];
             	blueVals[i][j] = args->fit->pdata[BLAYER][fitn];
+            } else {
+                // for single layer we have to fill green and blue with red
+            	greenVals[i][j] = args->fit->pdata[RLAYER][fitn];
+            	blueVals[i][j] = args->fit->pdata[RLAYER][fitn];
             }
             ++fitn;
         }
