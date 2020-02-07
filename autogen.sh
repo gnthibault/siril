@@ -20,8 +20,9 @@ fi
 cd deps
 cd librtprocess || ( echo 'Failed to get librtprocess, please download it and compile it yourself. Aborting.' && exit 1 )
 if [ ! -d build ] ; then
+	CMAKE_FLAGS="$(uname -s | grep '^MSYS' && echo ' -G "MSYS Makefiles" ')"
 	mkdir build && cd build &&
-	cmake -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON .. || exit 1
+	cmake $CMAKE_FLAGS -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON -DOPTION_OMP=OFF .. || exit 1
 	cd ..
 fi
 cd ../..

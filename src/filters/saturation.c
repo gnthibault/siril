@@ -33,6 +33,7 @@
 #include "gui/callbacks.h"
 #include "gui/histogram.h"
 #include "gui/dialogs.h"
+#include "gui/preview_timer.h"
 
 #include "saturation.h"
 
@@ -76,16 +77,15 @@ void on_satu_apply_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_satu_dialog_close(GtkDialog *dialog, gpointer user_data) {
-	if (satu_amount != 0.0)
-		apply_satu_changes();
+	apply_satu_changes();
 }
 
-void satu_recompute() {
+static int satu_recompute() {
 	if (get_thread_run()) {
 		siril_debug_print(_("Another task is already in progress, ignoring new request.\n"));
-		return;
+		return 1;
 	}
-	if (satu_amount == 0.0) return;
+
 	set_cursor_waiting(TRUE);
 
 	struct enhance_saturation_data *args = malloc(sizeof(struct enhance_saturation_data));
@@ -126,37 +126,19 @@ void satu_recompute() {
 	args->coeff = satu_amount;
 	args->preserve = satu_preserve_bkg;
 	start_in_new_thread(enhance_saturation, args);
-}
 
-// idle function executed at the end of the enhance_saturation processing
-gboolean end_enhance_saturation(gpointer p) {
-	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
-	stop_processing_thread();
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	update_gfit_histogram_if_needed();
-	free(args);
-	set_cursor_waiting(FALSE);
-	
-
-	return FALSE;
+	return 0;
 }
 
 static gpointer enhance_saturation_ushort(gpointer p) {
 	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
-	struct timeval t_start, t_end;
 	double bg = 0;
 	int i;
 
 	if (!isrgb(args->input) || !isrgb(args->output) ||
 			args->input->naxes[0] != args->output->naxes[0] ||
 			args->input->naxes[1] != args->output->naxes[1]) {
-		siril_add_idle(end_enhance_saturation, args);
-		return GINT_TO_POINTER(1);
-	}
-	if (args->coeff == 0.0) {
-		siril_add_idle(end_enhance_saturation, args);
+		siril_add_idle(end_generic, args);
 		return GINT_TO_POINTER(1);
 	}
 
@@ -165,16 +147,13 @@ static gpointer enhance_saturation_ushort(gpointer p) {
 	WORD *out[3] = { args->output->pdata[RLAYER], args->output->pdata[GLAYER],
 			args->output->pdata[BLAYER] };
 
-//	siril_log_color_message(_("Saturation enhancement: processing...\n"), "red");
-	gettimeofday(&t_start, NULL);
-
 	args->h_min /= 360.0;
 	args->h_max /= 360.0;
 	if (args->preserve) {
 		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
-			siril_add_idle(end_enhance_saturation, args);
+			siril_add_idle(end_generic, args);
 			return GINT_TO_POINTER(1);
 		}
 		bg = stat->median + stat->sigma;
@@ -212,27 +191,21 @@ static gpointer enhance_saturation_ushort(gpointer p) {
 		out[BLAYER][i] = round_to_WORD(b * USHRT_MAX_DOUBLE);
 	}
 	invalidate_stats_from_fit(args->output);
-	gettimeofday(&t_end, NULL);
-//	show_time(t_start, t_end);
-	siril_add_idle(end_enhance_saturation, args);
+
+	siril_add_idle(end_generic, args);
 
 	return GINT_TO_POINTER(0);
 }
 
 static gpointer enhance_saturation_float(gpointer p) {
 	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
-	struct timeval t_start, t_end;
 	float bg = 0;
 	int i;
 
 	if (!isrgb(args->input) || !isrgb(args->output) ||
 			args->input->naxes[0] != args->output->naxes[0] ||
 			args->input->naxes[1] != args->output->naxes[1]) {
-		siril_add_idle(end_enhance_saturation, args);
-		return GINT_TO_POINTER(1);
-	}
-	if (args->coeff == 0.0) {
-		siril_add_idle(end_enhance_saturation, args);
+		siril_add_idle(end_generic, args);
 		return GINT_TO_POINTER(1);
 	}
 
@@ -241,8 +214,6 @@ static gpointer enhance_saturation_float(gpointer p) {
 	float *out[3] = { args->output->fpdata[RLAYER], args->output->fpdata[GLAYER],
 			args->output->fpdata[BLAYER] };
 
-	siril_log_color_message(_("Saturation enhancement: processing...\n"), "red");
-	gettimeofday(&t_start, NULL);
 
 	args->h_min /= 60.0;
 	args->h_max /= 60.0;
@@ -250,7 +221,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
-			siril_add_idle(end_enhance_saturation, args);
+			siril_add_idle(end_generic, args);
 			return GINT_TO_POINTER(1);
 		}
 		bg = stat->median + stat->sigma;
@@ -291,9 +262,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 		out[BLAYER][i] = b;
 	}
 	invalidate_stats_from_fit(args->output);
-	gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
-	siril_add_idle(end_enhance_saturation, args);
+	siril_add_idle(end_generic, args);
 
 	return GINT_TO_POINTER(0);
 }
@@ -309,6 +278,7 @@ gpointer enhance_saturation(gpointer p) {
 	return GINT_TO_POINTER(-1);
 }
 
+/** callbacks **/
 
 void on_menuitem_satu_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (!single_image_is_loaded() || !isrgb(&gfit))
@@ -323,25 +293,27 @@ void on_satu_dialog_show(GtkWidget *widget, gpointer user_data) {
 	satu_hue_type = 6;
 	satu_preserve_bkg = TRUE;
 
+	set_notify_block(TRUE);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("combo_saturation")), satu_hue_type);
 	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_satu")), satu_amount);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg")), satu_preserve_bkg);
-}
-
-void on_spin_satu_changed(GtkEditable *editable, gpointer user_data) {
-	gchar *txt = gtk_editable_get_chars(editable, 0, -1);
-	satu_amount = atof(txt);
-	satu_recompute();
+	set_notify_block(FALSE);
 }
 
 void on_preserve_bg_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	satu_preserve_bkg = gtk_toggle_button_get_active(togglebutton);
-	satu_recompute();
+
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = 	satu_recompute;
+	notify_update((gpointer) param);
 }
 
 void on_combo_saturation_changed(GtkComboBox* box, gpointer user_data) {
 	satu_hue_type = gtk_combo_box_get_active(box);
-	satu_recompute();
+
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = 	satu_recompute;
+	notify_update((gpointer) param);
 }
 
 void on_satu_undo_clicked(GtkButton *button, gpointer user_data) {
@@ -349,10 +321,12 @@ void on_satu_undo_clicked(GtkButton *button, gpointer user_data) {
 	satu_preserve_bkg = TRUE;
 	satu_amount = 0.0;
 	GtkToggleButton *check_button = GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg"));
-	g_signal_handlers_block_by_func(check_button, on_preserve_bg_toggled, NULL);
+
+	set_notify_block(TRUE);
 	gtk_toggle_button_set_active(check_button, satu_preserve_bkg);
-	g_signal_handlers_unblock_by_func(check_button, on_preserve_bg_toggled, NULL);
 	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_satu")), satu_amount);
+	set_notify_block(FALSE);
+
 	copyfits(&satu_gfit_backup, &gfit, CP_COPYA, -1);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
@@ -362,4 +336,13 @@ void on_satu_undo_clicked(GtkButton *button, gpointer user_data) {
 
 void apply_satu_cancel() {
 	satu_close(TRUE);
+}
+
+/*** adjusters **/
+void on_spin_satu_value_changed(GtkSpinButton *button, gpointer user_data) {
+	satu_amount = gtk_spin_button_get_value(button);
+
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = 	satu_recompute;
+	notify_update((gpointer) param);
 }

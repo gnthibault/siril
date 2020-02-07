@@ -231,6 +231,8 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 
 			if (8 != fread(&ser_file->ts[i], 1, 8, ser_file->file))
 				return 0;
+
+			ser_file->ts[i] = le64_to_cpu(ser_file->ts[i]);
 		}
 
 		/* Check order of Timestamps */
@@ -325,8 +327,19 @@ static int ser_read_header(struct ser_struct *ser_file) {
 	// modify this to support big endian
 	memcpy(&ser_file->lu_id, header + 14, 28);	// read all integers
 
+	ser_file->lu_id = le32_to_cpu(ser_file->lu_id);
+	ser_file->color_id = le32_to_cpu(ser_file->color_id);
+	ser_file->little_endian = le32_to_cpu(ser_file->little_endian);
+	ser_file->image_width = le32_to_cpu(ser_file->image_width);
+	ser_file->image_height = le32_to_cpu(ser_file->image_height);
+	ser_file->bit_pixel_depth = le32_to_cpu(ser_file->bit_pixel_depth);
+	ser_file->frame_count = le32_to_cpu(ser_file->frame_count);
+
 	memcpy(&ser_file->date, header + 162, 8);
 	memcpy(&ser_file->date_utc, header + 170, 8);
+
+	ser_file->date = le64_to_cpu(ser_file->date);
+	ser_file->date_utc = le64_to_cpu(ser_file->date_utc);
 
 	// strings
 	ser_file->file_id = g_strndup(header, 14);
@@ -380,12 +393,17 @@ static int ser_write_timestamps(struct ser_struct *ser_file) {
 			(int64_t)ser_file->byte_pixel_depth * (int64_t)ser_file->frame_count;
 
 		for (i = 0; i < ser_file->frame_count; i++) {
+			uint64_t ts;
+
 			if (i >= ser_file->ts_alloc)
 				break;
 			if ((int64_t)-1 == fseek64(ser_file->file, offset+(i*8), SEEK_SET)) {
 				return -1;
 			}
-			if (8 != fwrite(&ser_file->ts[i], 1, 8, ser_file->file)) {
+
+			ts = cpu_to_le64(ser_file->ts[i]);
+
+			if (8 != fwrite(&ts, 1, 8, ser_file->file)) {
 				perror("write timestamps:");
 				return -1;
 			}
@@ -397,6 +415,7 @@ static int ser_write_timestamps(struct ser_struct *ser_file) {
 /* (over)write the header of the opened file on the disk */
 static int ser_write_header(struct ser_struct *ser_file) {
 	char header[SER_HEADER_LEN];
+	struct ser_struct ser_file_le;
 
 	if (!ser_file || ser_file->file == NULL)
 		return -1;
@@ -405,15 +424,26 @@ static int ser_write_header(struct ser_struct *ser_file) {
 		return -1;
 	}
 
-	// modify this to support big endian
+	memcpy(&ser_file_le, ser_file, sizeof(struct ser_struct));
+
+	ser_file_le.lu_id = cpu_to_le32(ser_file_le.lu_id);
+	ser_file_le.color_id = cpu_to_le32(ser_file_le.color_id);
+	ser_file_le.little_endian = cpu_to_le32(ser_file_le.little_endian);
+	ser_file_le.image_width = cpu_to_le32(ser_file_le.image_width);
+	ser_file_le.image_height = cpu_to_le32(ser_file_le.image_height);
+	ser_file_le.bit_pixel_depth = cpu_to_le32(ser_file_le.bit_pixel_depth);
+	ser_file_le.frame_count = cpu_to_le32(ser_file_le.frame_count);
+	ser_file_le.date = cpu_to_le64(ser_file_le.date);
+	ser_file_le.date_utc = cpu_to_le64(ser_file_le.date_utc);
+
 	memset(header, 0, sizeof(header));
-	memcpy(header, ser_file->file_id, 14);
-	memcpy(header + 14, &ser_file->lu_id, 28);
-	memcpy(header + 42, ser_file->observer, 40);
-	memcpy(header + 82, ser_file->instrument, 40);
-	memcpy(header + 122, ser_file->telescope, 40);
-	memcpy(header + 162, &ser_file->date, 8);
-	memcpy(header + 170, &ser_file->date_utc, 8);
+	memcpy(header, ser_file_le.file_id, 14);
+	memcpy(header + 14, &ser_file_le.lu_id, 28);
+	memcpy(header + 42, ser_file_le.observer, 40);
+	memcpy(header + 82, ser_file_le.instrument, 40);
+	memcpy(header + 122, ser_file_le.telescope, 40);
+	memcpy(header + 162, &ser_file_le.date, 8);
+	memcpy(header + 170, &ser_file_le.date_utc, 8);
 
 	if (sizeof(header) != fwrite(header, 1, sizeof(header), ser_file->file)) {
 		perror("write");
@@ -481,7 +511,6 @@ static int get_SER_Bayer_Pattern(ser_color pattern) {
  * reorganized to match Siril's data format . */
 static void ser_manage_endianess_and_depth(struct ser_struct *ser_file,
 		WORD *data, int64_t frame_size) {
-	WORD pixel;
 	int i;
 	if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) {
 		// inline conversion to 16 bit
@@ -490,9 +519,12 @@ static void ser_manage_endianess_and_depth(struct ser_struct *ser_file,
 	} else if (ser_file->little_endian == SER_BIG_ENDIAN) {
 		// inline conversion
 		for (i = frame_size - 1; i >= 0; i--) {
-			pixel = data[i];
-			pixel = (pixel >> 8) | (pixel << 8);
-			data[i] = pixel;
+			data[i] = be16_to_cpu(data[i]);
+		}
+	} else if (ser_file->little_endian == SER_LITTLE_ENDIAN) {
+		// inline conversion
+		for (i = frame_size - 1; i >= 0; i--) {
+			data[i] = le16_to_cpu(data[i]);
 		}
 	}
 }

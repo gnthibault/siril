@@ -21,7 +21,8 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <interface>
   <requires lib="gtk+" version="3.16"/>
-  <!-- interface-local-resource-path ../../ -->
+  <!-- interface-local-resource-path ../.. -->
+  <!-- interface-css-provider-path siril.css -->
   <!-- interface-license-type gplv3 -->
   <!-- interface-name Siril -->
   <!-- interface-description Tool for astronomy image processing -->
@@ -2277,7 +2278,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                       <object class="GtkLabel" id="label_layer1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Red channel</property>
+                        <property name="label" translatable="yes">Red</property>
                         <property name="justify">center</property>
                       </object>
                       <packing>
@@ -2430,7 +2431,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                       <object class="GtkLabel" id="label_layer2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Green channel</property>
+                        <property name="label" translatable="yes">Green</property>
                         <property name="justify">center</property>
                       </object>
                       <packing>
@@ -2585,7 +2586,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                       <object class="GtkLabel" id="label_layer3">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Blue channel</property>
+                        <property name="label" translatable="yes">Blue</property>
                         <property name="justify">center</property>
                       </object>
                       <packing>
@@ -7048,7 +7049,9 @@ However you may want to disable this option when building master frames of 8-bit
     <property name="default_width">400</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
-    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+    <signal name="close" handler="on_CLAHE_dialog_close" swapped="no"/>
+    <signal name="delete-event" handler="on_clahe_cancel_clicked" swapped="no"/>
+    <signal name="show" handler="on_CLAHE_dialog_show" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -7062,8 +7065,22 @@ However you may want to disable this option when building master frames of 8-bit
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
+              <object class="GtkButton" id="clahe_undo">
+                <property name="label" translatable="yes">Reset</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_clahe_undo_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="clahe_cancel">
-                <property name="label">gtk-close</property>
+                <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -7073,7 +7090,7 @@ However you may want to disable this option when building master frames of 8-bit
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">0</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -7091,7 +7108,7 @@ However you may want to disable this option when building master frames of 8-bit
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -7130,6 +7147,7 @@ However you may want to disable this option when building master frames of 8-bit
                 <property name="adjustment">adj_clahe_size</property>
                 <property name="numeric">True</property>
                 <property name="value">8</property>
+                <signal name="value-changed" handler="on_clahe_tiles_size_spin_value_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -7143,6 +7161,19 @@ However you may want to disable this option when building master frames of 8-bit
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScale">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="adjustment">adj_clahe_size</property>
+            <property name="round_digits">1</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -7163,11 +7194,12 @@ However you may want to disable this option when building master frames of 8-bit
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton">
+              <object class="GtkSpinButton" id="spin_clahe">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj_clahe_clip</property>
                 <property name="digits">2</property>
+                <signal name="value-changed" handler="on_spin_clahe_value_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -8855,9 +8887,12 @@ If the parameters is null, so no filter is apply at all.</property>
               <object class="GtkSpinButton" id="spin_asinh">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="progress_fraction">0.01</property>
+                <property name="progress_pulse_step">0.01</property>
                 <property name="adjustment">adjustment_asinh</property>
                 <property name="digits">1</property>
-                <signal name="changed" handler="on_spin_asinh_changed" swapped="no"/>
+                <property name="numeric">True</property>
+                <signal name="value-changed" handler="on_spin_asinh_value_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -8914,7 +8949,8 @@ If the parameters is null, so no filter is apply at all.</property>
                 <property name="width_chars">8</property>
                 <property name="adjustment">adj_black_point_asinh</property>
                 <property name="digits">5</property>
-                <signal name="changed" handler="on_black_point_spin_asinh_changed" swapped="no"/>
+                <property name="numeric">True</property>
+                <signal name="value-changed" handler="on_black_point_spin_asinh_value_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -10113,6 +10149,19 @@ Modifying parameters in this windows afterward will void the colour balance, and
               </packing>
             </child>
             <child>
+              <object class="GtkScale">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="adjustment">adjSigCosmeCold</property>
+                <property name="round_digits">1</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -10160,7 +10209,20 @@ Modifying parameters in this windows afterward will void the colour balance, and
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="adjustment">adjSigCosmeHot</property>
+                <property name="round_digits">1</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
               </packing>
             </child>
             <child>
@@ -10199,7 +10261,7 @@ Modifying parameters in this windows afterward will void the colour balance, and
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">3</property>
+                <property name="position">4</property>
               </packing>
             </child>
             <child>
@@ -10215,7 +10277,7 @@ Modifying parameters in this windows afterward will void the colour balance, and
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">4</property>
+                <property name="position">5</property>
               </packing>
             </child>
             <child>
@@ -10232,7 +10294,7 @@ Uncheck if images come from a monochrome sensor.</property>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">5</property>
+                <property name="position">6</property>
               </packing>
             </child>
             <child>
@@ -10288,7 +10350,7 @@ Uncheck if images come from a monochrome sensor.</property>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">6</property>
+                <property name="position">7</property>
               </packing>
             </child>
           </object>
@@ -10503,7 +10565,9 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="window_position">center</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
-    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+    <signal name="close" handler="on_deconvolution_dialog_close" swapped="no"/>
+    <signal name="delete-event" handler="on_deconvolution_cancel_clicked" swapped="no"/>
+    <signal name="show" handler="on_deconvolution_dialog_show" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -10533,7 +10597,7 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="deconvolution_cancel">
-                <property name="label">gtk-close</property>
+                <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -10600,6 +10664,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
                     <property name="adjustment">adj_deconv_threshold</property>
+                    <signal name="value-changed" handler="on_spin_deconv_threshold_value_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -10668,11 +10733,12 @@ Uncheck if images come from a monochrome sensor.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton">
+                  <object class="GtkSpinButton" id="spin_deconv_radius">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="adjustment">adj_deconv_radius</property>
                     <property name="digits">2</property>
+                    <signal name="value-changed" handler="on_spin_deconv_radius_value_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -10723,11 +10789,12 @@ Uncheck if images come from a monochrome sensor.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton">
+                  <object class="GtkSpinButton" id="spin_deconv_boost">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="adjustment">adj_deconv_corner</property>
                     <property name="digits">2</property>
+                    <signal name="value-changed" handler="on_spin_deconv_boost_value_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -10779,10 +10846,11 @@ Uncheck if images come from a monochrome sensor.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton">
+                  <object class="GtkSpinButton" id="spin_deconv_iterations">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="adjustment">adj_deconv_iterations</property>
+                    <signal name="value-changed" handler="on_spin_deconv_iterations_value_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -10825,6 +10893,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="halign">start</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_toggle_deconv_auto_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -12936,7 +13005,7 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adjustment_satu</property>
                 <property name="digits">2</property>
-                <signal name="changed" handler="on_spin_satu_changed" swapped="no"/>
+                <signal name="value-changed" handler="on_spin_satu_value_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -14839,6 +14908,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                             <property name="snap_to_ticks">True</property>
                             <property name="numeric">True</property>
                             <property name="value">6</property>
+                            <signal name="value-changed" handler="on_spinbutton_plans_w_value_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="left_attach">3</property>
@@ -14897,8 +14967,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
           </packing>
         </child>
         <child>
-          <object class="GtkFrame" id="frame33">
+          <object class="GtkFrame" id="frame_wavelets">
             <property name="visible">True</property>
+            <property name="sensitive">False</property>
             <property name="can_focus">False</property>
             <property name="label_xalign">0</property>
             <property name="shadow_type">none</property>
@@ -14908,185 +14979,422 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                 <property name="can_focus">False</property>
                 <property name="left_padding">12</property>
                 <child>
-                  <object class="GtkGrid" id="grid_w">
+                  <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="sensitive">False</property>
                     <property name="can_focus">False</property>
-                    <property name="row_spacing">5</property>
-                    <property name="column_spacing">5</property>
-                    <property name="row_homogeneous">True</property>
+                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkScale" id="scale_w0">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="adjustment">adj_w0</property>
-                        <property name="round_digits">1</property>
-                        <property name="digits">2</property>
-                        <property name="value_pos">bottom</property>
-                        <signal name="button-release-event" handler="on_scale_w0_button_release_event" swapped="no"/>
-                        <signal name="key-release-event" handler="on_scale_w0_key_release_event" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkScale" id="scale_w1">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="adjustment">adj_w1</property>
-                        <property name="round_digits">1</property>
-                        <property name="digits">2</property>
-                        <property name="value_pos">bottom</property>
-                        <signal name="button-release-event" handler="on_scale_w1_button_release_event" swapped="no"/>
-                        <signal name="key-release-event" handler="on_scale_w1_key_release_event" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkScale" id="scale_w2">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="adjustment">adj_w2</property>
-                        <property name="round_digits">1</property>
-                        <property name="digits">2</property>
-                        <property name="value_pos">bottom</property>
-                        <signal name="button-release-event" handler="on_scale_w2_button_release_event" swapped="no"/>
-                        <signal name="key-release-event" handler="on_scale_w2_key_release_event" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkScale" id="scale_w3">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="adjustment">adj_w3</property>
-                        <property name="round_digits">1</property>
-                        <property name="digits">2</property>
-                        <property name="value_pos">bottom</property>
-                        <signal name="button-release-event" handler="on_scale_w3_button_release_event" swapped="no"/>
-                        <signal name="key-release-event" handler="on_scale_w3_key_release_event" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkScale" id="scale_w4">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="adjustment">adj_w4</property>
-                        <property name="round_digits">1</property>
-                        <property name="digits">2</property>
-                        <property name="value_pos">bottom</property>
-                        <signal name="button-release-event" handler="on_scale_w4_button_release_event" swapped="no"/>
-                        <signal name="key-release-event" handler="on_scale_w4_key_release_event" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">4</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkScale" id="scale_w5">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="adjustment">adj_w5</property>
-                        <property name="round_digits">1</property>
-                        <property name="digits">2</property>
-                        <property name="value_pos">bottom</property>
-                        <signal name="button-release-event" handler="on_scale_w5_button_release_event" swapped="no"/>
-                        <signal name="key-release-event" handler="on_scale_w5_key_release_event" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="label121">
+                      <object class="GtkBox" id="box_w0">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">1st Plan:</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="label121">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">1st Plan</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="spin_w0">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="text" translatable="yes">0,99</property>
+                                <property name="adjustment">adj_w0</property>
+                                <property name="digits">2</property>
+                                <property name="value">0.98999999999999999</property>
+                                <signal name="value-changed" handler="on_spin_w0_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="scale_w0">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="adjustment">adj_w0</property>
+                            <property name="digits">2</property>
+                            <property name="draw_value">False</property>
+                            <property name="value_pos">bottom</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label125">
+                      <object class="GtkBox" id="box_w1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">2nd Plan:</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="label125">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">2nd Plan</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="spin_w1">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="text" translatable="yes">1,00</property>
+                                <property name="adjustment">adj_w1</property>
+                                <property name="digits">2</property>
+                                <property name="value">1</property>
+                                <signal name="value-changed" handler="on_spin_w1_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="scale_w1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="adjustment">adj_w1</property>
+                            <property name="digits">2</property>
+                            <property name="draw_value">False</property>
+                            <property name="value_pos">bottom</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">1</property>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label126">
+                      <object class="GtkBox" id="box_w2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">3th Plan:</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="label126">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">3th Plan</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="spin_w2">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="text" translatable="yes">1,00</property>
+                                <property name="adjustment">adj_w2</property>
+                                <property name="digits">2</property>
+                                <property name="value">1</property>
+                                <signal name="value-changed" handler="on_spin_w2_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="scale_w2">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="adjustment">adj_w2</property>
+                            <property name="digits">2</property>
+                            <property name="draw_value">False</property>
+                            <property name="value_pos">bottom</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">2</property>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label127">
+                      <object class="GtkBox" id="box_w3">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">4th Plan:</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="label127">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">4th Plan</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="spin_3">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="text" translatable="yes">1,00</property>
+                                <property name="adjustment">adj_w3</property>
+                                <property name="digits">2</property>
+                                <property name="value">1</property>
+                                <signal name="value-changed" handler="on_spin_w3_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="scale_w3">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="adjustment">adj_w3</property>
+                            <property name="digits">2</property>
+                            <property name="draw_value">False</property>
+                            <property name="value_pos">bottom</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">3</property>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label128">
+                      <object class="GtkBox" id="box_w4">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">5th Plan:</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="label128">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">5th Plan</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="spin_w4">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="text" translatable="yes">1,00</property>
+                                <property name="adjustment">adj_w4</property>
+                                <property name="digits">2</property>
+                                <property name="value">1</property>
+                                <signal name="value-changed" handler="on_spin_w4_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="scale_w4">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="adjustment">adj_w4</property>
+                            <property name="digits">2</property>
+                            <property name="draw_value">False</property>
+                            <property name="value_pos">bottom</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">4</property>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">4</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label129">
+                      <object class="GtkBox" id="box_w5">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">6th Plan:</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="label129">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">6th Plan</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="spin_w5">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="text" translatable="yes">1,00</property>
+                                <property name="adjustment">adj_w5</property>
+                                <property name="digits">2</property>
+                                <property name="value">1</property>
+                                <signal name="value-changed" handler="on_spin_w5_value_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="scale_w5">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="adjustment">adj_w5</property>
+                            <property name="digits">2</property>
+                            <property name="draw_value">False</property>
+                            <property name="value_pos">bottom</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">5</property>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                   </object>

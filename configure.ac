@@ -187,13 +187,14 @@ AC_ARG_ENABLE(debug,
 		[AC_HELP_STRING([--enable-debug],
 		[enable debug build [default=no]])],,
 		[enable_debug="no"])
-
+		
 AM_CONDITIONAL([SIRIL_DEBUG],[test "x$enable_debug" = "xyes"])
 
 if test "x$enable_debug" = "xyes"; then
 	AC_DEFINE([SIRIL_OUTPUT_DEBUG], [1], [Using debug output])
+	CFLAGS="-g $CFLAGS"
+	CXXFLAGS="$CFLAGS"
 fi
-
 
 dnl Compute the canonical host-system type variable (need config.guess and config.sub)
 AC_CANONICAL_HOST

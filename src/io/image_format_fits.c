@@ -1755,7 +1755,7 @@ void rgb48bit_to_fits48bit(WORD *rgbbuf, fits *fit, gboolean inverted,
 		for (j = 0; j < fit->ry; ++j) {
 			curval = *rgbbuf++;
 			if (change_endian)
-				curval = (curval >> 8) | (curval << 8);
+				curval = change_endianness16(curval);
 			if (inverted)
 				*bdata++ = curval;
 			else
@@ -1763,12 +1763,12 @@ void rgb48bit_to_fits48bit(WORD *rgbbuf, fits *fit, gboolean inverted,
 
 			curval = *rgbbuf++;
 			if (change_endian)
-				curval = (curval >> 8) | (curval << 8);
+				curval = change_endianness16(curval);
 			*gdata++ = curval;
 
 			curval = *rgbbuf++;
 			if (change_endian)
-				curval = (curval >> 8) | (curval << 8);
+				curval = change_endianness16(curval);
 			if (inverted)
 				*rdata++ = curval;
 			else

@@ -36,6 +36,7 @@ siril_SOURCES = \
 	algos/geometry.c \
 	algos/geometry.h \
 	algos/io_wave.c \
+	algos/median_fast.c \
 	algos/noise.c \
 	algos/noise.h \
 	algos/pave.c \
@@ -146,6 +147,8 @@ siril_SOURCES = \
 	gui/photometric_cc.h \
 	gui/plot.c \
 	gui/plot.h \
+	gui/preview_timer.c \
+	gui/preview_timer.h \
 	gui/progress_and_log.c \
 	gui/progress_and_log.h \
 	gui/PSF_list.h \
