@@ -129,11 +129,11 @@ static void undo_add_item(fits *fit, char *filename, char *histo) {
 
 static int undo_get_data_ushort(fits *fit, historic hist) {
 	int fd;
-	long size;
+	unsigned int size;
 	WORD *buf;
 
 	if ((fd = g_open(hist.filename, O_RDONLY | O_BINARY, 0)) == -1) {
-		siril_log_color_message(_("Error opening swap file: %s\n"), "red", hist.filename);
+		printf("Error opening swap file : %s\n", hist.filename);
 		return 1;
 	}
 
@@ -141,42 +141,44 @@ static int undo_get_data_ushort(fits *fit, historic hist) {
 	fit->rx = hist.rx;
 	fit->ry = hist.ry;
 
-	size = fit->naxes[0] * fit->naxes[1] * fit->naxes[2] * sizeof(WORD);
-	buf = malloc(size);
-	if (!buf) {
-		PRINT_ALLOC_ERR;
-		return 1;
-	}
+	size = fit->rx * fit->ry * fit->naxes[2];
+	buf = calloc(1, size * sizeof(WORD));
 	// read the data from temporary file
-	if (read(fd, buf, size) < size) {
-		siril_log_color_message(_("Undo failed. Read of [%s], failed with error [%s]\n"), "red", hist.filename, strerror(errno));
+	if ((read(fd, buf, size * sizeof(WORD)) < size * sizeof(WORD))) {
+		printf("Undo Read of [%s], failed with error [%s]\n", hist.filename, strerror(errno));
 		free(buf);
 		g_close(fd, NULL);
 		return 1;
 	}
-	if (fit->data)
-		free(fit->data);
-	fit->data = buf;
+	/* need to reallocate data as size may have changed */
+	WORD *newdata = (WORD*) realloc(fit->data, size * sizeof(WORD));
+	if (!newdata) {
+		PRINT_ALLOC_ERR;
+		free(newdata);
+		free(buf);
+		g_close(fd, NULL);
+		return 1;
+	}
+	fit->data = newdata;
+	memcpy(fit->data, buf, size * sizeof(WORD));
 	fit->pdata[RLAYER] = fit->data;
 	if (fit->naxes[2] > 1) {
 		fit->pdata[GLAYER] = fit->data + fit->rx * fit->ry;
 		fit->pdata[BLAYER] = fit->data + fit->rx * fit->ry * 2;
-	} else {
-		fit->pdata[GLAYER] = fit->data;
-		fit->pdata[BLAYER] = fit->data;
 	}
 	full_stats_invalidation_from_fit(fit);
+	free(buf);
 	g_close(fd, NULL);
 	return 0;
 }
 
 static int undo_get_data_float(fits *fit, historic hist) {
 	int fd;
-	long size;
+	unsigned int size;
 	float *buf;
 
 	if ((fd = g_open(hist.filename, O_RDONLY | O_BINARY, 0)) == -1) {
-		siril_log_color_message(_("Error opening swap file: %s\n"), "red", hist.filename);
+		printf("Error opening swap file : %s\n", hist.filename);
 		return 1;
 	}
 
@@ -184,31 +186,33 @@ static int undo_get_data_float(fits *fit, historic hist) {
 	fit->rx = hist.rx;
 	fit->ry = hist.ry;
 
-	size = fit->naxes[0] * fit->naxes[1] * fit->naxes[2] * sizeof(float);
-	buf = malloc(size);
-	if (!buf) {
-		PRINT_ALLOC_ERR;
-		return 1;
-	}
+	size = fit->rx * fit->ry * fit->naxes[2];
+	buf = calloc(1, size * sizeof(float));
 	// read the data from temporary file
-	if (read(fd, buf, size) < size) {
-		siril_log_color_message(_("Undo failed. Read of [%s], failed with error [%s]\n"), "red", hist.filename, strerror(errno));
+	if ((read(fd, buf, size * sizeof(float)) < size * sizeof(float))) {
+		printf("Undo Read of [%s], failed with error [%s]\n", hist.filename, strerror(errno));
 		free(buf);
 		g_close(fd, NULL);
 		return 1;
 	}
-	if (fit->fdata)
-		free(fit->fdata);
-	fit->fdata = buf;
+	/* need to reallocate data as size may have changed */
+	float *newdata = (float*) realloc(fit->data, size * sizeof(float));
+	if (!newdata) {
+		PRINT_ALLOC_ERR;
+		free(newdata);
+		free(buf);
+		g_close(fd, NULL);
+		return 1;
+	}
+	fit->fdata = newdata;
+	memcpy(fit->fdata, buf, size * sizeof(float));
 	fit->fpdata[RLAYER] = fit->fdata;
 	if (fit->naxes[2] > 1) {
 		fit->fpdata[GLAYER] = fit->fdata + fit->rx * fit->ry;
 		fit->fpdata[BLAYER] = fit->fdata + fit->rx * fit->ry * 2;
-	} else {
-		fit->fpdata[GLAYER] = fit->fdata;
-		fit->fpdata[BLAYER] = fit->fdata;
 	}
 	full_stats_invalidation_from_fit(fit);
+	free(buf);
 	g_close(fd, NULL);
 	return 0;
 }
