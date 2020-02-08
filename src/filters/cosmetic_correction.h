@@ -12,6 +12,7 @@ struct cosmetic_data {
 	double sigma[2];
 	double amount;
 	gboolean is_cfa;
+	gboolean multithread;
 	const gchar *seqEntry;
 };
 
@@ -24,10 +25,9 @@ struct deviant_struct {
 	typeOfDeviant type;
 };
 
-long count_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot);
-deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot);
+deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *ihot, gboolean eval_only);
 int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
-		double amount, gboolean is_cfa);
+		double amount, gboolean is_cfa, gboolean multithread);
 void apply_cosmetic_to_sequence(struct cosmetic_data *cosme_args);
 gpointer autoDetectThreaded(gpointer p);
 int cosmeticCorrection(fits *fit, deviant_pixel *dev, int size, gboolean is_CFA);

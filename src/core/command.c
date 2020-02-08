@@ -1280,7 +1280,7 @@ int process_findhot(int nb){
 	sig[0] = atof(word[2]);
 	sig[1] = atof(word[3]);
 
-	deviant_pixel *dev = find_deviant_pixels(&gfit, sig, &icold, &ihot);
+	deviant_pixel *dev = find_deviant_pixels(&gfit, sig, &icold, &ihot, FALSE);
 	siril_log_message(_("%ld cold and %ld hot pixels\n"), icold, ihot);
 
 	sprintf(filename, "%s.lst", word[1]);
@@ -1656,8 +1656,10 @@ int process_findcosme(int nb) {
 
 	if (is_sequence) {
 		args->seqEntry = "cc_";
+		args->multithread = FALSE;
 		apply_cosmetic_to_sequence(args);
 	} else {
+		args->multithread = TRUE;
 		start_in_new_thread(autoDetectThreaded, args);
 	}
 

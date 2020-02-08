@@ -22,20 +22,12 @@
  *  http://pages.ripco.net/~jgamble/nw.html
  *  https://github.com/hoytech/Algorithm-Networksort-Chooser
  *
- *  Instead of using the PIX_SORT and PIX_SWAP macros we use std::min() and std::max()
+ *  Instead of using the PIX_SORT and PIX_SWAP macros we use mymin() and mymax()
  *  because it turned out that it generates much faster (branch free) code on machines which support SSE
  *
 */
  
 #include "median_fast.h"
-
-inline __attribute__((always_inline)) float mymin(float a, float b) {
-    return b < a ? b : a;
-}
-
-inline __attribute__((always_inline))float mymax(float a, float b) {
-    return a < b ? b : a;
-}
 
 float median3x3(float* array)
 {
@@ -77,6 +69,154 @@ float median3x3(float* array)
     array[2] = mymax(array[4], array[2]);
     array[4] = mymax(array[6], tmp);
     return mymin(array[4], array[2]);
+}
+
+#define CSWAP(a,b) t = mymax(a,b); a = mymin(a,b); b = t;
+
+float median24(float *array) {
+    float t;
+    CSWAP(array[1], array[2]);
+    CSWAP(array[0], array[2]);
+    CSWAP(array[0], array[1]);
+    CSWAP(array[4], array[5]);
+    CSWAP(array[3], array[5]);
+    CSWAP(array[3], array[4]);
+    CSWAP(array[0], array[3]);
+    CSWAP(array[1], array[4]);
+    CSWAP(array[2], array[5]);
+    CSWAP(array[2], array[4]);
+    CSWAP(array[1], array[3]);
+    CSWAP(array[2], array[3]);
+    CSWAP(array[7], array[8]);
+    CSWAP(array[6], array[8]);
+    CSWAP(array[6], array[7]);
+    float a11 = array[11];
+    CSWAP(array[10], a11);
+    CSWAP(array[9], a11);
+    CSWAP(array[9], array[10]);
+    CSWAP(array[6], array[9]);
+    CSWAP(array[7], array[10]);
+    CSWAP(array[8], a11);
+    CSWAP(array[8], array[10]);
+    CSWAP(array[7], array[9]);
+    CSWAP(array[8], array[9]);
+    CSWAP(array[0], array[6]);
+    CSWAP(array[1], array[7]);
+    CSWAP(array[2], array[8]);
+    CSWAP(array[2], array[7]);
+    CSWAP(array[1], array[6]);
+    CSWAP(array[2], array[6]);
+    CSWAP(array[3], array[9]);
+    CSWAP(array[4], array[10]);
+    CSWAP(array[5], a11);
+    CSWAP(array[5], array[10]);
+    CSWAP(array[4], array[9]);
+    CSWAP(array[5], array[9]);
+    CSWAP(array[3], array[6]);
+    CSWAP(array[4], array[7]);
+    CSWAP(array[5], array[8]);
+    CSWAP(array[5], array[7]);
+    CSWAP(array[4], array[6]);
+    CSWAP(array[5], array[6]);
+    CSWAP(array[13], array[14]);
+    float a12 = array[12];
+    CSWAP(a12, array[14]);
+    CSWAP(a12, array[13]);
+    CSWAP(array[16], array[17]);
+    CSWAP(array[15], array[17]);
+    CSWAP(array[15], array[16]);
+    CSWAP(a12, array[15]);
+    CSWAP(array[13], array[16]);
+    CSWAP(array[14], array[17]);
+    CSWAP(array[14], array[16]);
+    CSWAP(array[13], array[15]);
+    CSWAP(array[14], array[15]);
+    CSWAP(array[19], array[20]);
+    CSWAP(array[18], array[20]);
+    CSWAP(array[18], array[19]);
+    CSWAP(array[22], array[23]);
+    CSWAP(array[21], array[23]);
+    CSWAP(array[21], array[22]);
+    CSWAP(array[18], array[21]);
+    CSWAP(array[19], array[22]);
+    CSWAP(array[20], array[23]);
+    CSWAP(array[20], array[22]);
+    CSWAP(array[19], array[21]);
+    CSWAP(array[20], array[21]);
+    CSWAP(a12, array[18]);
+    CSWAP(array[13], array[19]);
+    CSWAP(array[14], array[20]);
+    CSWAP(array[14], array[19]);
+    CSWAP(array[13], array[18]);
+    CSWAP(array[14], array[18]);
+    CSWAP(array[15], array[21]);
+    CSWAP(array[16], array[22]);
+    CSWAP(array[17], array[23]);
+    CSWAP(array[17], array[22]);
+    CSWAP(array[16], array[21]);
+    CSWAP(array[17], array[21]);
+    CSWAP(array[15], array[18]);
+    CSWAP(array[16], array[19]);
+    CSWAP(array[17], array[20]);
+    CSWAP(array[17], array[19]);
+    CSWAP(array[16], array[18]);
+    CSWAP(array[17], array[18]);
+    a12 = mymax(a12, array[0]);
+    CSWAP(array[1], array[13]);
+    CSWAP(array[2], array[14]);
+    CSWAP(array[2], array[13]);
+    a12 = mymax(a12, array[1]);
+    a12 = mymax(a12, array[2]);
+    CSWAP(array[3], array[15]);
+    CSWAP(array[4], array[16]);
+    CSWAP(array[5], array[17]);
+    CSWAP(array[5], array[16]);
+    CSWAP(array[4], array[15]);
+    CSWAP(array[5], array[15]);
+    a12 = mymax(a12, array[3]);
+    CSWAP(array[4], array[13]);
+    CSWAP(array[5], array[14]);
+    CSWAP(array[5], array[13]);
+    a12 = mymax(a12, array[4]);
+    a12 = mymax(a12, array[5]);
+    CSWAP(array[6], array[18]);
+    CSWAP(array[7], array[19]);
+    CSWAP(array[8], array[20]);
+    CSWAP(array[8], array[19]);
+    CSWAP(array[7], array[18]);
+    CSWAP(array[8], array[18]);
+    CSWAP(array[9], array[21]);
+    CSWAP(array[10], array[22]);
+    a11 = mymin(a11, array[23]);
+    a11 = mymin(a11, array[22]);
+    CSWAP(array[10], array[21]);
+    a11 = mymin(a11, array[21]);
+    CSWAP(array[9], array[18]);
+    CSWAP(array[10], array[19]);
+    a11 = mymin(a11, array[20]);
+    a11 = mymin(a11, array[20]);
+    a11 = mymin(a11, array[19]);
+    CSWAP(array[10], array[18]);
+    a11 = mymin(a11, array[18]);
+    a12 = mymax(a12, array[6]);
+    CSWAP(array[7], array[13]);
+    CSWAP(array[8], array[14]);
+    CSWAP(array[8], array[13]);
+    a12 = mymax(a12, array[7]);
+    a12 = mymax(a12, array[8]);
+    CSWAP(array[9], array[15]);
+    CSWAP(array[10], array[16]);
+    a11 = mymin(a11, array[17]);
+    a11 = mymin(a11, array[16]);
+    CSWAP(array[10], array[15]);
+    a11 = mymin(a11, array[15]);
+    a12 = mymax(a12, array[9]);
+    CSWAP(array[10], array[13]);
+    a11 = mymin(a11, array[14]);
+    a11 = mymin(a11, array[13]);
+    a12 = mymax(a12, array[10]);
+
+    return (a11 + a12) / 2;
 }
 
 float median5x5(float* array)

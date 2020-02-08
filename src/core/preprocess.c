@@ -215,7 +215,7 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 	if (prepro->use_cosmetic_correction && prepro->use_dark) {
 		if (prepro->dark->naxes[2] == 1) {
 			prepro->dev = find_deviant_pixels(prepro->dark, prepro->sigma,
-					&(prepro->icold), &(prepro->ihot));
+					&(prepro->icold), &(prepro->ihot), FALSE);
 			siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
 					prepro->icold + prepro->ihot, prepro->icold, prepro->ihot);
 		} else
@@ -587,7 +587,7 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 		set_cursor_waiting(FALSE);
 		return;
 	}
-	count_deviant_pixels(&fit, sig, &icold, &ihot);
+	find_deviant_pixels(&fit, sig, &icold, &ihot, TRUE);
 	total = fit.rx * fit.ry;
 	clearfits(&fit);
 	rate = (double)icold / total;
