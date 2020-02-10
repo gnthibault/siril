@@ -956,7 +956,6 @@ BENCHFUN
                     blueVals[i][j] = args->fit->fpdata[RLAYER][fitn] > 0.f ? args->fit->fpdata[RLAYER][fitn]* USHRT_MAX_SINGLE : 0.f;
                 }
         	}
-
             ++fitn;
         }
     }

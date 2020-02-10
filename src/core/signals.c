@@ -29,8 +29,10 @@
 #include <execinfo.h>
 #endif
 
-#include "siril.h"
-#include "proto.h"
+#include "core/siril.h"
+#include "core/proto.h"
+#include "core/undo.h"
+
 #include "signals.h"
 
 #define STACK_DEPTH 256
@@ -51,18 +53,18 @@ static void signal_handled(int s) {
 	}
 
 #if (!defined _WIN32 && defined HAVE_EXECINFO_H)
-	int i;
-	void *stack[STACK_DEPTH];
+		int i;
+		void *stack[STACK_DEPTH];
 
-	size_t size = backtrace(stack, sizeof(stack) / sizeof(void*));
+		size_t size = backtrace(stack, sizeof(stack) / sizeof(void*));
 
-	char **message = backtrace_symbols(stack, size);
-	if (message != NULL && message[0] != NULL) {
-		for (i = 0; i < size && message != NULL; ++i) {
-			g_printf("[#%i] in %s\n", i, message[i]);
+		char **message = backtrace_symbols(stack, size);
+		if (message != NULL && message[0] != NULL) {
+			for (i = 0; i < size && message != NULL; ++i) {
+				g_printf("[#%i] in %s\n", i, message[i]);
+			}
+			free(message);
 		}
-		free(message);
-	}
 #else
 	unsigned int i;
 	void *stack[STACK_DEPTH];
@@ -87,8 +89,9 @@ static void signal_handled(int s) {
 
 	free(symbol);
 #endif
-	g_free(visit);
+		g_free(visit);
 	}
+	undo_flush();
 	exit(EXIT_FAILURE);
 }
 

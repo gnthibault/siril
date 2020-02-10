@@ -343,10 +343,10 @@ static void draw_curve(cairo_t *cr, int width, int height) {
 	cairo_set_line_width(cr, 1.0);
 	cairo_set_source_rgb(cr, .9, .9, .9);
 
-	for (k = 0; k < USHRT_MAX + 1; k++) {
-		float x = k / (USHRT_MAX_SINGLE);
+	for (k = 0; k < width + 1; k++) {
+		float x = k / (float) width;
 		float y = MTF(x, _midtones, _shadows, _highlights);
-		cairo_line_to(cr, x * width, height * (1 - y));
+		cairo_line_to(cr, k, height * (1 - y));
 	}
 	cairo_stroke(cr);
 }
