@@ -710,8 +710,8 @@ void psf_display_result(fitted_PSF *result, rectangle *area) {
 void fwhm_to_arcsec_if_needed(fits* fit, fitted_PSF **result) {
 
 	if (result == NULL) return;
-	if (fit->focal_length <= 0.0 || fit->pixel_size_x <= 0.0
-			|| fit->pixel_size_y <= 0.0 || fit->binning_x <= 0
+	if (fit->focal_length <= 0.0 || fit->pixel_size_x <= 0.f
+			|| fit->pixel_size_y <= 0.f || fit->binning_x <= 0
 			|| fit->binning_y <= 0)
 		return;
 
@@ -724,8 +724,8 @@ void fwhm_to_arcsec_if_needed(fits* fit, fitted_PSF **result) {
 	bin_X = fit->unbinned ? (double) fit->binning_x : 1.0;
 	bin_Y = fit->unbinned ? (double) fit->binning_y : 1.0;
 
-	(*result)->fwhmx = fwhmx * (radian_conversion * fit->pixel_size_x / fit->focal_length) * bin_X;
-	(*result)->fwhmy = fwhmy * (radian_conversion * fit->pixel_size_y / fit->focal_length) * bin_Y;
+	(*result)->fwhmx = fwhmx * (radian_conversion * (double)fit->pixel_size_x / fit->focal_length) * bin_X;
+	(*result)->fwhmy = fwhmy * (radian_conversion * (double)fit->pixel_size_y / fit->focal_length) * bin_Y;
 	(*result)->units = "\"";
 }
 

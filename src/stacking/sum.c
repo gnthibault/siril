@@ -87,8 +87,8 @@ static int sum_stacking_image_hook(struct generic_seq_args *args, int o, int i, 
 	ssdata->exposure += fit->exposure;
 	
 	if (ssdata->reglayer != -1 && args->seq->regparam[ssdata->reglayer]) {
-		shiftx = round_to_int(args->seq->regparam[ssdata->reglayer][i].shiftx * args->seq->upscale_at_stacking);
-		shifty = round_to_int(args->seq->regparam[ssdata->reglayer][i].shifty * args->seq->upscale_at_stacking);
+		shiftx = round_to_int(args->seq->regparam[ssdata->reglayer][i].shiftx * (float)args->seq->upscale_at_stacking);
+		shifty = round_to_int(args->seq->regparam[ssdata->reglayer][i].shifty * (float)args->seq->upscale_at_stacking);
 	} else {
 		shiftx = 0;
 		shifty = 0;

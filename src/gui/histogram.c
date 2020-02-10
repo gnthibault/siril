@@ -36,8 +36,8 @@
 
 #include "histogram.h"
 
-#define shadowsClipping -2.80 /* Shadows clipping point measured in sigma units from the main histogram peak. */
-#define targetBackground 0.25 /* final "luminance" of the image for autostretch in the [0,1] range */
+#define shadowsClipping -2.80f /* Shadows clipping point measured in sigma units from the main histogram peak. */
+#define targetBackground 0.25f /* final "luminance" of the image for autostretch in the [0,1] range */
 #define GRADIENT_HEIGHT 12
 
 #undef HISTO_DEBUG
@@ -53,7 +53,7 @@
 static double histo_color_r[] = { 1.0, 0.0, 0.0, 0.0 };
 static double histo_color_g[] = { 0.0, 1.0, 0.0, 0.0 };
 static double histo_color_b[] = { 0.0, 0.0, 1.0, 0.0 };
-static float graph_height = 0.;	// the max value of all bins
+static float graph_height = 0.f;	// the max value of all bins
 static uint64_t clipped[] = { 0, 0 };
 
 static GtkToggleToolButton *toggles[MAXVPORT] = { NULL };
@@ -153,13 +153,13 @@ static void _update_entry_text() {
 	GtkEntry *histoHighEntry = GTK_ENTRY(lookup_widget("histoHighEntry"));
 	gchar *buffer;
 
-	buffer = g_strdup_printf("%.7lf", _shadows);
+	buffer = g_strdup_printf("%.7f", _shadows);
 	gtk_entry_set_text(histoShadEntry, buffer);
 	g_free(buffer);
-	buffer = g_strdup_printf("%.7lf", _highlights);
+	buffer = g_strdup_printf("%.7f", _highlights);
 	gtk_entry_set_text(histoHighEntry, buffer);
 	g_free(buffer);
-	buffer = g_strdup_printf("%.7lf", _midtones);
+	buffer = g_strdup_printf("%.7f", _midtones);
 	gtk_entry_set_text(histoMidEntry, buffer);
 	g_free(buffer);
 }
@@ -173,10 +173,10 @@ static void _update_clipped_pixels(int data) {
 		clip_high = GTK_ENTRY(lookup_widget("clip_highlights"));
 		clip_low = GTK_ENTRY(lookup_widget("clip_shadows"));
 	}
-	tmp = (float)clipped[1] * 100.0 / data;
+	tmp = (float)clipped[1] * 100.f / (float)data;
 	g_snprintf(buffer, sizeof(buffer), "%.3f%%", tmp);
 	gtk_entry_set_text(clip_high, buffer);
-	tmp = (float)clipped[0] * 100.0 / data;
+	tmp = (float)clipped[0] * 100.f / (float)data;
 	g_snprintf(buffer, sizeof(buffer), "%.3f%%", tmp);
 	gtk_entry_set_text(clip_low, buffer);
 
@@ -470,14 +470,14 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 	size_t i, nb_orig_bins = gsl_histogram_bins(histo);
 
 	// We need to store the binned histogram in order to find the binned maximum
-	static gdouble *displayed_values = NULL;
+	static gfloat *displayed_values = NULL;
 	static int nb_bins_allocated = 0;
 	/* we create a bin for each pixel in the displayed width.
 	 * nb_bins_allocated is thus equal to the width of the image */
 	if (nb_bins_allocated != width) {
-		gdouble *tmp;
+		gfloat *tmp;
 		nb_bins_allocated = width;
-		tmp = realloc(displayed_values, nb_bins_allocated * sizeof(gdouble));
+		tmp = realloc(displayed_values, nb_bins_allocated * sizeof(gfloat));
 		if (!tmp) {
 			if (displayed_values != NULL) {
 				g_free(displayed_values);
@@ -503,13 +503,13 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 	i = 0;
 	current_bin = 0;
 	do {
-		float bin_val = 0.0;
+		float bin_val = 0.f;
 		while (i < nb_orig_bins
 				&& (float)i / vals_per_px <= (float)current_bin + 0.5f) {
-			bin_val += gsl_histogram_get(histo, i);
+			bin_val += (float)gsl_histogram_get(histo, i);
 			i++;
 		}
-		if (is_log_scale() && bin_val != 0.0) {
+		if (is_log_scale() && bin_val != 0.f) {
 			bin_val = logf(bin_val);
 		}
 		displayed_values[current_bin] = bin_val;
@@ -740,7 +740,7 @@ float findMidtonesBalance(fits *fit, float *shadows, float *highlights) {
 			return 0.f;
 		}
 
-		if (stat[i]->median / stat[i]->normValue > 0.5f)
+		if (stat[i]->median / stat[i]->normValue > 0.5)
 			++invertedChannels;
 	}
 
@@ -750,7 +750,7 @@ float findMidtonesBalance(fits *fit, float *shadows, float *highlights) {
 
 			normValue = (float)stat[i]->normValue;
 			median = (float) stat[i]->median / normValue;
-			mad = (float) stat[i]->mad / normValue * MAD_NORM;
+			mad = (float) stat[i]->mad / normValue * (float)MAD_NORM;
 			/* this is a guard to avoid breakdown point */
 			if (mad == 0.f) mad = 0.001f;
 
@@ -769,7 +769,7 @@ float findMidtonesBalance(fits *fit, float *shadows, float *highlights) {
 
 			normValue = (float) stat[i]->normValue;
 			median = (float) stat[i]->median / normValue;
-			mad = (float) stat[i]->mad / normValue * MAD_NORM;
+			mad = (float) stat[i]->mad / normValue * (float)MAD_NORM;
 			/* this is a guard to avoid breakdown point */
 			if (mad == 0.f) mad = 0.001f;
 
@@ -854,14 +854,14 @@ gboolean on_scale_key_release_event(GtkWidget *widget, GdkEvent *event,
 }
 
 void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
-	if ((_midtones != 0.5) || (_shadows != 0.0) || (_highlights != 1.0)) {
+	if ((_midtones != 0.5f) || (_shadows != 0.f) || (_highlights != 1.f)) {
 		// the apply button resets everything after recomputing with the current values
 		histo_recompute();
 		// partial cleanup
-		fprintf(stdout, "Applying histogram (mid=%.3lf, lo=%.3lf, hi=%.3lf)\n",
+		fprintf(stdout, "Applying histogram (mid=%.3f, lo=%.3f, hi=%.3f)\n",
 				_midtones, _shadows, _highlights);
 		undo_save_state(&histo_gfit_backup, "Processing: Histogram Transf. "
-				"(mid=%.3lf, lo=%.3lf, hi=%.3lf)", _midtones, _shadows,
+				"(mid=%.3f, lo=%.3f, hi=%.3f)", _midtones, _shadows,
 				_highlights);
 
 		clearfits(&histo_gfit_backup);
@@ -953,12 +953,12 @@ gboolean on_drawingarea_histograms_motion_notify_event(GtkWidget *widget, GdkEve
 
 		switch (_type_of_scale) {
 		case SCALE_LOW:
-			if (xpos > _highlights) {
+			if ((float)xpos > _highlights) {
 				_shadows = _highlights;
 			} else {
-				_shadows = xpos;
+				_shadows = (float)xpos;
 			}
-			buffer = g_strdup_printf("%.7lf", _shadows);
+			buffer = g_strdup_printf("%.7f", _shadows);
 			gtk_entry_set_text(histoShadEntry, buffer);
 			break;
 
@@ -966,21 +966,21 @@ gboolean on_drawingarea_histograms_motion_notify_event(GtkWidget *widget, GdkEve
 			if (_highlights == _shadows) {
 				_midtones = _highlights;
 			} else {
-				_midtones = (xpos - _shadows) / (_highlights - _shadows);
+				_midtones = ((float)xpos - _shadows) / (_highlights - _shadows);
 			}
-			if (_midtones > 1.0) _midtones = 1.0;
-			if (_midtones < 0.0) _midtones = 0.0;
-			buffer = g_strdup_printf("%.7lf", _midtones);
+			if (_midtones > 1.f) _midtones = 1.f;
+			if (_midtones < 0.f) _midtones = 0.f;
+			buffer = g_strdup_printf("%.7f", _midtones);
 			gtk_entry_set_text(histoMidEntry, buffer);
 			break;
 
 		case SCALE_HI:
-			if (xpos < _shadows) {
+			if ((float)xpos < _shadows) {
 				_shadows =_highlights;
 			} else {
-				_highlights = xpos;
+				_highlights = (float)xpos;
 			}
-			buffer = g_strdup_printf("%.7lf", _highlights);
+			buffer = g_strdup_printf("%.7f", _highlights);
 			gtk_entry_set_text(histoHighEntry, buffer);
 			break;
 		}
@@ -1005,10 +1005,10 @@ gboolean on_drawingarea_histograms_button_press_event(GtkWidget *widget,
 		float delta = ((_highlights - _shadows) * _midtones) + _shadows;
 
 		_click_on_histo = TRUE;
-		gfloat xpos = ((GdkEventButton*) event)->x / (gfloat) width;
-		if (fabsf(xpos - _highlights) < fabsf(xpos - _shadows) && fabsf(xpos - _highlights) < fabsf(xpos - delta)) {
+		gdouble xpos = ((GdkEventButton*) event)->x / (gdouble) width;
+		if (fabsf((float)xpos - _highlights) < fabsf((float)xpos - _shadows) && fabsf((float)xpos - _highlights) < fabsf((float)xpos - delta)) {
 			_type_of_scale = SCALE_HI;
-		} else if (fabsf(xpos - _shadows) < fabsf(xpos - delta) && fabsf(xpos - _shadows) < fabsf(xpos - _highlights)) {
+		} else if (fabsf((float)xpos - _shadows) < fabsf((float)xpos - delta) && fabsf((float)xpos - _shadows) < fabsf((float)xpos - _highlights)) {
 			_type_of_scale = SCALE_LOW;
 		} else if ((_shadows == _highlights) && (_shadows > 0.f)) {
 			_type_of_scale = SCALE_LOW;

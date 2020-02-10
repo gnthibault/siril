@@ -114,7 +114,8 @@ static double siril_stats_float_bwmv(const float* data, const size_t n,
 
 static int IKSS(float *data, int n, double *location, double *scale, gboolean multithread) {
 	size_t i, j;
-	double mad, s, s0, m, xlow, xhigh;
+	double mad, s, s0, m;
+	float xlow, xhigh;
 
 	quicksort_f(data, n);	// this sort is mandatory
 	i = 0;

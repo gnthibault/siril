@@ -275,7 +275,7 @@ int process_fmul(int nb){
 	if (!single_image_is_loaded()) return 1;
 
 	coeff = atof(word[1]);
-	if (coeff <= 0.0) {
+	if (coeff <= 0.f) {
 		siril_log_message(_("Multiplying by a coefficient less than or equal to 0 is not possible.\n"));
 		return 1;
 	}

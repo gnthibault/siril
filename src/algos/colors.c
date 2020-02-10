@@ -1008,25 +1008,17 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 	gboolean is_manual = gtk_toggle_button_get_active(manual);
 
 	if (!selection_black_value[0]) {
-		selection_black_value[0] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_bkg_x"));
-		selection_black_value[1] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_bkg_y"));
-		selection_black_value[2] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_bkg_w"));
-		selection_black_value[3] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_bkg_h"));
+		selection_black_value[0] = GTK_SPIN_BUTTON(lookup_widget("spin_bkg_x"));
+		selection_black_value[1] = GTK_SPIN_BUTTON(lookup_widget("spin_bkg_y"));
+		selection_black_value[2] = GTK_SPIN_BUTTON(lookup_widget("spin_bkg_w"));
+		selection_black_value[3] = GTK_SPIN_BUTTON(lookup_widget("spin_bkg_h"));
 	}
 
 	if (!selection_white_value[0]) {
-		selection_white_value[0] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_white_x"));
-		selection_white_value[1] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_white_y"));
-		selection_white_value[2] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_white_w"));
-		selection_white_value[3] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_white_h"));
+		selection_white_value[0] = GTK_SPIN_BUTTON(lookup_widget("spin_white_x"));
+		selection_white_value[1] = GTK_SPIN_BUTTON(lookup_widget("spin_white_y"));
+		selection_white_value[2] = GTK_SPIN_BUTTON(lookup_widget("spin_white_w"));
+		selection_white_value[3] = GTK_SPIN_BUTTON(lookup_widget("spin_white_h"));
 	}
 
 	black_selection.x = gtk_spin_button_get_value(selection_black_value[0]);

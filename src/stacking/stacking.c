@@ -180,8 +180,8 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 		/* load registration data for current image */
 		if(reglayer != -1 && args->seq->regparam[reglayer]) {
-			shiftx = round_to_int(args->seq->regparam[reglayer][j].shiftx * args->seq->upscale_at_stacking);
-			shifty = round_to_int(args->seq->regparam[reglayer][j].shifty * args->seq->upscale_at_stacking);
+			shiftx = round_to_int(args->seq->regparam[reglayer][j].shiftx * (float)args->seq->upscale_at_stacking);
+			shifty = round_to_int(args->seq->regparam[reglayer][j].shifty * (float)args->seq->upscale_at_stacking);
 		} else {
 			shiftx = 0;
 			shifty = 0;

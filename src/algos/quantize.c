@@ -1446,7 +1446,7 @@ row of the image.
 					for (iter = 0; iter < NITER; iter++) {
 						kk = 0;
 						for (ii = 0; ii < nvals; ii++) {
-							if (fabs(differences[ii] - mean)
+							if (fabs(differences[ii] - (float)mean)
 									< SIGMA_CLIP * stdev) {
 								if (kk < ii)
 									differences[kk] = differences[ii];

@@ -372,7 +372,7 @@ gboolean allow_to_open_files(int nb_frames, int *nb_allowed_file) {
 
 	/* get the limit of cfitsio */
 	fits_get_version(&version);
-	MAX_NO_FILE_CFITSIO = (version < 3.45) ? 1000 : 10000;
+	MAX_NO_FILE_CFITSIO = (version < 3.45f) ? 1000 : 10000;
 
 	/* get the OS limit and extend it if possible */
 #ifdef _WIN32

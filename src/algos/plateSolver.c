@@ -645,8 +645,8 @@ static void update_coordinates(RA ra, DEC Dec, gboolean south) {
 
 static gboolean has_any_keywords() {
 	return (gfit.focal_length > 0.0 ||
-			gfit.pixel_size_x > 0.0 ||
-			gfit.pixel_size_y > 0.0 ||
+			gfit.pixel_size_x > 0.f ||
+			gfit.pixel_size_y > 0.f ||
 			(gfit.wcs.crval1 > 0.0 && gfit.wcs.crval2 != 0.0) ||
 			(gfit.wcs.objctra[0] != '\0' && gfit.wcs.objctdec[0] != '\0'));
 }
