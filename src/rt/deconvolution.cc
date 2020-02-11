@@ -702,7 +702,6 @@ BENCHFUN
     #pragma omp parallel
 #endif
     {
-        int progresscounter = 0;
         array2D<float> tmpIThr(fullTileSize, fullTileSize);
         array2D<float> tmpThr(fullTileSize, fullTileSize);
         tmpThr.fill(1.f);
@@ -908,12 +907,9 @@ BENCHFUN
 
     float contrast = args->contrast_threshold / 100.f;
 
-    const float clipVal = 1234;
-
     array2D<float> clipMask(W, H);
 
     constexpr float clipLimit = 0.95f;
-    constexpr float maxSigma = 1.15f;
 
     LUTf cachefy(65536, LUT_CLIP_BELOW);
     {

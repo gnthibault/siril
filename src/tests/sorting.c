@@ -10,6 +10,7 @@
  * It compares the results with the quicksort*/
 
 #define NBTRIES 200	// for result checking, unit test of implementations
+#define USE_MULTITHREADING TRUE
 
 double median_from_sorted_array(WORD *arr, int size) {
 	if (size % 2)
@@ -36,7 +37,7 @@ int test_quickselect(int datasize) {
 	quicksort_s(data1, datasize);
 	result_qsort = median_from_sorted_array(data1, datasize);
 	result_qsel1 = quickmedian(data2, datasize);
-	result_qsel2 = histogram_median(data3, datasize, FALSE);
+	result_qsel2 = histogram_median(data3, datasize, USE_MULTITHREADING);
 
 	if (result_qsel1 != result_qsort || result_qsel2 != result_qsort) {
 		for (i=0; i<datasize; i++)
@@ -77,8 +78,9 @@ void measure_big() {
 	t2 = clock();
 	result_qsel1 = quickmedian(data2, datasize);
 	t3 = clock();
-	result_qsel2 = histogram_median(data3, datasize, FALSE);
+	result_qsel2 = histogram_median(data3, datasize, USE_MULTITHREADING);
 	t4 = clock();
+	fprintf(stdout, "large dataset (%d elements, same for each)\n", datasize);
 	fprintf(stdout, "siril quicksort time:\t%ld\n", t2-t1);
 	fprintf(stdout, "quickmedian time:\t%ld\n", t3-t2);
 	fprintf(stdout, "histogram_median time:\t%ld\n", t4-t3);
@@ -149,6 +151,8 @@ void measure_small() {
 	}
 	t4 = clock();
 
+	fprintf(stdout, "small dataset (%d elements, %d different draws run %d times)\n",
+			datasize, nb_draws, nb_times_each);
 	fprintf(stdout, "siril quicksort time:\t%ld\n", t2-t1);
 	fprintf(stdout, "quickmedian time:\t%ld\n", t3-t2);
 	fprintf(stdout, "histogram_median time:\t%ld\n", t4-t3);
@@ -157,17 +161,25 @@ void measure_small() {
 	free(data_backup);
 }
 
+
+cominfo com;	// the main data struct
+
 int main(void)
 {
 	int i, size = 1;
 	srand(time(NULL));
+	com.max_thread = g_get_num_processors();
+
+	//  verify that the sorting works
 	for (i = 0; i < NBTRIES; i++, size++) {
 		if (test_quickselect(size)) {
 			fprintf(stderr, "FAILED\n");
 			exit(1);
 		}
 	}
+	exit(0); // testing validity only, comment to test performance
 
+	// measure performances, big dataset and small dataset
 	measure_big();
 	measure_small();
 	return 0;
