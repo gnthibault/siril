@@ -7007,7 +7007,7 @@ However you may want to disable this option when building master frames of 8-bit
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">0</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -7022,7 +7022,7 @@ However you may want to disable this option when building master frames of 8-bit
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child>
@@ -7040,7 +7040,7 @@ However you may want to disable this option when building master frames of 8-bit
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">2</property>
+                <property name="position">3</property>
               </packing>
             </child>
           </object>
@@ -7173,6 +7173,22 @@ However you may want to disable this option when building master frames of 8-bit
 stacking residuals by cropping the image. If you don't,
 artifacts may appear.</property>
             <property name="wrap">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="clahe_preview">
+            <property name="label" translatable="yes">preview</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="active">True</property>
+            <property name="draw_indicator">True</property>
+            <signal name="toggled" handler="on_clahe_preview_toggled" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -8164,7 +8180,7 @@ artifacts may appear.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">start</property>
-                    <property name="label" translatable="yes">Kernel Size: </property>
+                    <property name="label" translatable="yes">Kernel Size</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -8177,6 +8193,7 @@ artifacts may appear.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Kernel Size. This is the odd size of the neighborhood considered for each pixel.</property>
+                    <property name="halign">end</property>
                     <property name="hexpand">True</property>
                     <property name="active">0</property>
                     <items>
