@@ -21,6 +21,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
+#include "core/undo.h"
 #include "gui/progress_and_log.h"
 #include "gui/image_display.h"
 #include "io/single_image.h"
@@ -31,6 +32,7 @@
 
 static guint timer_id;
 static gboolean notify_is_blocked;
+static fits preview_gfit_backup;
 
 static gboolean update_preview(gpointer user_data) {
 	update_image *im = (update_image*) user_data;
@@ -56,6 +58,22 @@ static void free_struct(gpointer user_data) {
 
 	timer_id = 0;
 	free(im);
+}
+
+void copy_gfit_to_backup() {
+	copyfits(&gfit, &preview_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+}
+
+void copy_backup_to_gfit() {
+	copyfits(&preview_gfit_backup, &gfit, CP_COPYA, -1);
+}
+
+fits *get_preview_gfit_backup() {
+	return &preview_gfit_backup;
+}
+
+void clear_backup() {
+	clearfits(&preview_gfit_backup);
 }
 
 void set_notify_block(gboolean value) {

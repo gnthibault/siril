@@ -87,3 +87,11 @@ void *lookup_widget(char *w) {
 	return NULL;
 }
 
+void invalidate_stats_from_fit(fits *fit) {
+        fprintf(stderr, "ERROR: calling undefined function invalidate_stats_from_fit\n");
+}
+
+const gchar* siril_get_system_data_dir() {
+        fprintf(stderr, "ERROR: calling undefined function siril_get_system_data_dir\n");
+	return NULL;
+}

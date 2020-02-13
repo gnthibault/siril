@@ -151,9 +151,7 @@ static void global_initialization() {
 	com.stars = NULL;
 	com.uniq = NULL;
 	com.color = NORMAL_COLOR;
-	int i;
-
-	for (i = 0; i < MAXVPORT; i++)
+	for (int i = 0; i < MAXVPORT; i++)
 		com.buf_is_dirty[i] = TRUE;
 	memset(&com.selection, 0, sizeof(rectangle));
 	memset(com.layers_hist, 0, sizeof(com.layers_hist));

@@ -435,21 +435,22 @@ double histogram_median(WORD *a, int n, gboolean mutlithread) {
 #ifdef _OPENMP
 #pragma omp simd
 #endif
-			for (ii = 0; ii < USHRT_MAX; ++ii) {
+			for (ii = 0; ii <= USHRT_MAX; ++ii) {
 				h[ii] += hthr[ii];
 			}
 		}
 		free(hthr);
 	}
 	i = j = 0;
+	unsigned int sum = 0;
 	if (n % 2 == 0) {
-		for (; h[j] <= k - 1; j++)
-			h[j + 1] += h[j];
+		for (; sum <= k - 1; j++)
+			sum += h[j];
 		i = j;
 	}
 
-	for (; h[i] <= k; i++)
-		h[i + 1] += h[i];
+	for (; sum <= k; i++)
+		sum += h[i];
 
 	free(h);
 	return (n % 2 == 0) ? (double) (i + j) / 2.0 : (double) i;
@@ -479,14 +480,15 @@ double histogram_median_double(double *a, int n) {
 		h[(unsigned int) (a[i] * nb_bins)]++;	// warning: this is not a rounding
 
 	i = j = 0;
+	unsigned int sum = 0;
 	if (n % 2 == 0) {
-		for (; h[j] <= k - 1; j++)
-			h[j + 1] += h[j];
+		for (; sum <= k - 1; j++)
+			sum += h[j];
 		i = j;
 	}
 
-	for (; h[i] <= k; i++)
-		h[i + 1] += h[i];
+	for (; sum <= k; i++)
+		sum += h[i];
 
 	free(h);
 	return (n % 2 == 0) ? (double) (i + j) / ( 2.0 * (double) nb_bins) : (double) i / (double) nb_bins;
