@@ -23,9 +23,9 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
-#include "core/undo.h"
 #include "algos/statistics.h"
 #include "core/processing.h"
+#include "core/undo.h"
 #include "algos/colors.h"
 #include "opencv/opencv.h"
 #include "gui/image_display.h"
@@ -40,10 +40,9 @@
 
 static double clahe_limit_value;
 static int clahe_tile_size;
-static fits clahe_gfit_backup;
 
 static void clahe_startup() {
-	copyfits(&gfit, &clahe_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	copy_gfit_to_backup();
 	clahe_limit_value = 2.0;
 	clahe_tile_size = 8;
 }
@@ -51,40 +50,21 @@ static void clahe_startup() {
 static void clahe_close(gboolean revert) {
 	set_cursor_waiting(TRUE);
 	if (revert) {
-		copyfits(&clahe_gfit_backup, &gfit, CP_COPYA, -1);
+		copy_backup_to_gfit();
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 	} else {
 		invalidate_stats_from_fit(&gfit);
-		undo_save_state(&clahe_gfit_backup,
-				"Processing: CLAHE (size=%d, clip=%.2f)", clahe_tile_size,
-				clahe_limit_value);
+		undo_save_state(get_preview_gfit_backup(),
+				"Processing: CLAHE (size=%d, clip=%.2f)", clahe_tile_size, clahe_limit_value);
 	}
-	clearfits(&clahe_gfit_backup);
+	clear_backup();
 	set_cursor_waiting(FALSE);
 }
 
-void on_menuitem_clahe_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_open_dialog("CLAHE_dialog");
-}
-
-void on_clahe_cancel_clicked(GtkMenuItem *menuitem, gpointer user_data) {
-	clahe_close(TRUE);
-	siril_close_dialog("CLAHE_dialog");
-}
-
-void on_clahe_Apply_clicked(GtkButton *button, gpointer user_data) {
-	clahe_close(FALSE);
-	siril_close_dialog("CLAHE_dialog");
-}
-
-void on_CLAHE_dialog_close(GtkDialog *dialog, gpointer user_data) {
-	clahe_close(TRUE);
-}
-
-int clahe_update_preview() {
-	copyfits(&clahe_gfit_backup, &gfit, CP_COPYA, -1);
+static int clahe_update_preview() {
+	copy_backup_to_gfit();
 	if (CV_MAJOR_VERSION < 3) {
 		char *error = siril_log_message(_("Your version of opencv is "
 				"too old for this feature. Please upgrade your system."));
@@ -105,27 +85,6 @@ int clahe_update_preview() {
 	return 0;
 }
 
-void on_clahe_undo_clicked(GtkButton *button, gpointer user_data) {
-	GtkSpinButton *liit_value = GTK_SPIN_BUTTON(lookup_widget("spin_clahe"));
-	GtkSpinButton *tiles_size = GTK_SPIN_BUTTON(lookup_widget("clahe_tiles_size_spin"));
-	clahe_limit_value = 2.0;
-	clahe_tile_size = 8;
-
-	set_cursor_waiting(TRUE);
-
-	set_notify_block(TRUE);
-	gtk_spin_button_set_value(liit_value, clahe_limit_value);
-	gtk_spin_button_set_value(tiles_size, clahe_tile_size);
-	set_notify_block(FALSE);
-
-	copyfits(&clahe_gfit_backup, &gfit, CP_COPYA, -1);
-
-	/* default parameters transform image, we need to update preview */
-	update_image *param = malloc(sizeof(update_image));
-	param->update_preview_fn = clahe_update_preview;
-	notify_update((gpointer) param);
-}
-
 gpointer clahe(gpointer p) {
 	struct CLAHE_data *args = (struct CLAHE_data*) p;
 
@@ -141,6 +100,45 @@ void apply_clahe_cancel() {
 }
 
 /** callbacks **/
+
+void on_menuitem_clahe_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	siril_open_dialog("CLAHE_dialog");
+}
+
+void on_clahe_cancel_clicked(GtkMenuItem *menuitem, gpointer user_data) {
+	clahe_close(TRUE);
+	siril_close_dialog("CLAHE_dialog");
+}
+
+void on_CLAHE_dialog_close(GtkDialog *dialog, gpointer user_data) {
+	clahe_close(TRUE);
+}
+
+void on_clahe_undo_clicked(GtkButton *button, gpointer user_data) {
+	GtkSpinButton *liit_value = GTK_SPIN_BUTTON(lookup_widget("spin_clahe"));
+	GtkSpinButton *tiles_size = GTK_SPIN_BUTTON(lookup_widget("clahe_tiles_size_spin"));
+	clahe_limit_value = 2.0;
+	clahe_tile_size = 8;
+
+	set_cursor_waiting(TRUE);
+
+	set_notify_block(TRUE);
+	gtk_spin_button_set_value(liit_value, clahe_limit_value);
+	gtk_spin_button_set_value(tiles_size, clahe_tile_size);
+	set_notify_block(FALSE);
+
+	copy_backup_to_gfit();
+
+	/* default parameters transform image, we need to update preview */
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = clahe_update_preview;
+	notify_update((gpointer) param);
+}
+
+void on_clahe_Apply_clicked(GtkButton *button, gpointer user_data) {
+	clahe_close(FALSE);
+	siril_close_dialog("CLAHE_dialog");
+}
 
 void on_CLAHE_dialog_show(GtkWidget *widget, gpointer user_data) {
 	clahe_startup();
