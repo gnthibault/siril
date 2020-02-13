@@ -39,17 +39,20 @@ static gboolean update_preview(gpointer user_data) {
 
 	if (notify_is_blocked == TRUE) return FALSE;
 
-	set_cursor_waiting(TRUE);
-
-	im->update_preview_fn();
+	if (im->show_preview) {
+		siril_debug_print("update preview\n");
+		set_cursor_waiting(TRUE);
+		im->update_preview_fn();
+	}
 
 	waiting_for_thread(); // in case function is run in another thread
 	set_progress_bar_data(NULL, PROGRESS_DONE);
-	siril_debug_print("update preview\n");
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
+	if (im->show_preview) {
+		adjust_cutoff_from_updated_gfit();
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+		set_cursor_waiting(FALSE);
+	}
 	return FALSE;
 }
 

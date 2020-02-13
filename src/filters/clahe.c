@@ -40,6 +40,7 @@
 
 static double clahe_limit_value;
 static int clahe_tile_size;
+static gboolean clahe_show_preview;
 
 static void clahe_startup() {
 	copy_gfit_to_backup();
@@ -120,8 +121,6 @@ void on_clahe_undo_clicked(GtkButton *button, gpointer user_data) {
 	clahe_limit_value = 2.0;
 	clahe_tile_size = 8;
 
-	set_cursor_waiting(TRUE);
-
 	set_notify_block(TRUE);
 	gtk_spin_button_set_value(liit_value, clahe_limit_value);
 	gtk_spin_button_set_value(tiles_size, clahe_tile_size);
@@ -132,10 +131,18 @@ void on_clahe_undo_clicked(GtkButton *button, gpointer user_data) {
 	/* default parameters transform image, we need to update preview */
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = clahe_update_preview;
+	param->show_preview = clahe_show_preview;
 	notify_update((gpointer) param);
 }
 
 void on_clahe_Apply_clicked(GtkButton *button, gpointer user_data) {
+	if (clahe_show_preview == FALSE) {
+		update_image *param = malloc(sizeof(update_image));
+		param->update_preview_fn = clahe_update_preview;
+		param->show_preview = TRUE;
+		notify_update((gpointer) param);
+	}
+
 	clahe_close(FALSE);
 	siril_close_dialog("CLAHE_dialog");
 }
@@ -148,10 +155,30 @@ void on_CLAHE_dialog_show(GtkWidget *widget, gpointer user_data) {
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spin_clahe")),	clahe_limit_value);
 	set_notify_block(FALSE);
 
+	clahe_show_preview = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("clahe_preview")));
+
 	/* default parameters transform image, we need to update preview */
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = clahe_update_preview;
+	param->show_preview = clahe_show_preview;
 	notify_update((gpointer) param);
+}
+
+void on_clahe_preview_toggled(GtkToggleButton *button, gpointer user_data) {
+	if (clahe_show_preview == TRUE) {
+		copy_backup_to_gfit();
+		adjust_cutoff_from_updated_gfit();
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+	} else {
+		copy_gfit_to_backup();
+
+		update_image *param = malloc(sizeof(update_image));
+		param->update_preview_fn = clahe_update_preview;
+		param->show_preview = TRUE;
+		notify_update((gpointer) param);
+	}
+	clahe_show_preview = !clahe_show_preview;
 }
 
 /** adjusters **/
@@ -159,6 +186,7 @@ void on_spin_clahe_value_changed(GtkSpinButton *button, gpointer user_data) {
 	clahe_limit_value = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = clahe_update_preview;
+	param->show_preview = clahe_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -166,5 +194,6 @@ void on_clahe_tiles_size_spin_value_changed(GtkSpinButton *button, gpointer user
 	clahe_tile_size = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = clahe_update_preview;
+	param->show_preview = clahe_show_preview;
 	notify_update((gpointer) param);
 }

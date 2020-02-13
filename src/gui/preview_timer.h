@@ -23,6 +23,7 @@
 #include "core/siril.h"
 
 typedef struct update_preview_struct {
+	gboolean show_preview;
 	int (*update_preview_fn)(void);
 } update_image;
 
