@@ -37,10 +37,9 @@
 static int deconv_threshold, deconv_iterations;
 static double deconv_radius, deconv_boost;
 static gboolean deconv_auto_thres, deconv_auto_iter;
-static fits deconv_gfit_backup;
 
 static void deconv_startup() {
-	copyfits(&gfit, &deconv_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	copy_gfit_to_backup();
 	deconv_threshold = 20;
 	deconv_iterations = 20;
 	deconv_radius = 1.0;
@@ -52,23 +51,23 @@ static void deconv_startup() {
 static void deconv_close(gboolean revert) {
 	set_cursor_waiting(TRUE);
 	if (revert) {
-		copyfits(&deconv_gfit_backup, &gfit, CP_COPYA, -1);
+		copy_backup_to_gfit();
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 	} else {
 		invalidate_stats_from_fit(&gfit);
-		undo_save_state(&deconv_gfit_backup,
+		undo_save_state(get_preview_gfit_backup(),
 				"Processing: Deconv. (iter=%d, sig=%.3f)", deconv_iterations,
 				deconv_radius);
 
 	}
-	clearfits(&deconv_gfit_backup);
+	clear_backup();
 	set_cursor_waiting(FALSE);
 }
 
 int deconv_update_preview() {
-	copyfits(&deconv_gfit_backup, &gfit, CP_COPYA, -1);
+	copy_backup_to_gfit();
 
 	struct deconv_data *args = malloc(sizeof(struct deconv_data));
 
@@ -153,7 +152,7 @@ void on_deconvolution_reset_clicked(GtkButton *button, gpointer user_data) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_auto")),	deconv_auto_thres);
 	set_notify_block(FALSE);
 
-	copyfits(&deconv_gfit_backup, &gfit, CP_COPYA, -1);
+	copy_backup_to_gfit();
 
 	/* default parameters transform image, we need to update preview */
 	update_image *param = malloc(sizeof(update_image));
