@@ -32,6 +32,7 @@
 #include "gui/callbacks.h"	// for lookup_widget()
 #include "gui/progress_and_log.h"
 #include "gui/dialogs.h"
+#include "gui/preview_timer.h"
 #include "core/undo.h"
 
 #include "histogram.h"
@@ -59,8 +60,7 @@ static uint64_t clipped[] = { 0, 0 };
 static GtkToggleToolButton *toggles[MAXVPORT] = { NULL };
 static GtkToggleToolButton *toggleGrid = NULL, *toggleCurve = NULL;
 
-/* the original image and its histogram, used as starting point of each computation */
-static fits histo_gfit_backup;
+/* the original histogram, used as starting point of each computation */
 static gsl_histogram *hist_backup[MAXVPORT] = { NULL, NULL, NULL, NULL };
 
 static double _midtones, _shadows, _highlights;
@@ -90,7 +90,7 @@ static void clear_hist_backup() {
 }
 
 static void histo_startup() {
-	copyfits(&gfit, &histo_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	copy_gfit_to_backup();
 	// also get the backup histogram
 	compute_histo_for_gfit();
 	int i;
@@ -107,7 +107,7 @@ static void histo_close(gboolean revert) {
 			set_histogram(hist_backup[i], i);
 			hist_backup[i] = NULL;
 		}
-		copyfits(&histo_gfit_backup, &gfit, CP_COPYA, -1);
+		copy_backup_to_gfit();
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
@@ -115,15 +115,15 @@ static void histo_close(gboolean revert) {
 	}
 
 	// free data
-	clearfits(&histo_gfit_backup);
+	clear_backup();
 	clear_hist_backup();
 }
 
 static void histo_recompute() {
 	set_cursor("progress");
-	copyfits(&histo_gfit_backup, &gfit, CP_COPYA, -1);
+	copy_backup_to_gfit();
 
-	apply_mtf_to_fits(&histo_gfit_backup, &gfit);
+	apply_mtf_to_fits(get_preview_gfit_backup(), &gfit);
 	// com.layers_hist should be good, update_histo_mtf() is always called before
 
 	adjust_cutoff_from_updated_gfit();
@@ -829,11 +829,11 @@ void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
 		// partial cleanup
 		fprintf(stdout, "Applying histogram (mid=%.3lf, lo=%.3lf, hi=%.3lf)\n",
 				_midtones, _shadows, _highlights);
-		undo_save_state(&histo_gfit_backup, "Processing: Histogram Transf. "
+		undo_save_state(get_preview_gfit_backup(), "Processing: Histogram Transf. "
 				"(mid=%.3lf, lo=%.3lf, hi=%.3lf)", _midtones, _shadows,
 				_highlights);
 
-		clearfits(&histo_gfit_backup);
+		clear_backup();
 		clear_hist_backup();
 		// reinit
 		histo_startup();
@@ -870,7 +870,7 @@ void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) 
 
 	set_cursor_waiting(TRUE);
 	/* we always apply this function on original data */
-	m = findMidtonesBalance(&histo_gfit_backup, &shadows, &highlights);
+	m = findMidtonesBalance(get_preview_gfit_backup(), &shadows, &highlights);
 	_shadows = shadows;
 	_midtones = m;
 	_highlights = 1.0;

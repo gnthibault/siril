@@ -35,31 +35,30 @@
 
 static gboolean asinh_rgb_space = FALSE;
 static double asinh_stretch_value = 1.0, asinh_black_value = 0.0;
-static fits asinh_gfit_backup;
 
 static void asinh_startup() {
-	copyfits(&gfit, &asinh_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	copy_gfit_to_backup();
 }
 
 static void asinh_close(gboolean revert) {
 	set_cursor_waiting(TRUE);
 	if (revert) {
-		copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
+		copy_backup_to_gfit();
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 	} else {
 		invalidate_stats_from_fit(&gfit);
-		undo_save_state(&asinh_gfit_backup,
+		undo_save_state(get_preview_gfit_backup(),
 				"Processing: Asinh Transformation: (stretch=%6.1lf, bp=%7.5lf)",
 				asinh_stretch_value, asinh_black_value);
 	}
-	clearfits(&asinh_gfit_backup);
+	clear_backup();
 	set_cursor_waiting(FALSE);
 }
 
 static int asinh_update_preview() {
-	copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
+	copy_backup_to_gfit();
 	asinhlut(&gfit, asinh_stretch_value, asinh_black_value, asinh_rgb_space);
 	return 0;
 }
@@ -177,7 +176,7 @@ void on_asinh_undo_clicked(GtkButton *button, gpointer user_data) {
 	gtk_spin_button_set_value(spin_black_p, asinh_black_value);
 	set_notify_block(FALSE);
 
-	copyfits(&asinh_gfit_backup, &gfit, CP_COPYA, -1);
+	copy_backup_to_gfit();
 
 	/* default parameters transform image, we need to update preview */
 	update_image *param = malloc(sizeof(update_image));

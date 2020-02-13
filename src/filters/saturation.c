@@ -40,23 +40,23 @@
 static gboolean satu_preserve_bkg = TRUE;
 static double satu_amount = 0.0;
 static int satu_hue_type = 6;
-static fits satu_gfit_backup;
 
 static void satu_startup() {
-	copyfits(&gfit, &satu_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	copy_gfit_to_backup();
 }
 
 static void satu_close(gboolean revert) {
 	set_cursor_waiting(TRUE);
 	if (revert) {
-		copyfits(&satu_gfit_backup, &gfit, CP_COPYA, -1);
+		copy_backup_to_gfit();
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 	} else {
-		undo_save_state(&satu_gfit_backup, "Processing: Saturation enhancement (amount=%4.2lf)", satu_amount);
+		undo_save_state(get_preview_gfit_backup(),
+				"Processing: Saturation enhancement (amount=%4.2lf)", satu_amount);
 	}
-	clearfits(&satu_gfit_backup);
+	clear_backup();
 	set_cursor_waiting(FALSE);
 }
 
@@ -121,7 +121,7 @@ static int satu_recompute() {
 		args->h_max = 360.0;
 	}
 
-	args->input = &satu_gfit_backup;
+	args->input = get_preview_gfit_backup();
 	args->output = &gfit;
 	args->coeff = satu_amount;
 	args->preserve = satu_preserve_bkg;
@@ -246,7 +246,7 @@ void on_satu_undo_clicked(GtkButton *button, gpointer user_data) {
 	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_satu")), satu_amount);
 	set_notify_block(FALSE);
 
-	copyfits(&satu_gfit_backup, &gfit, CP_COPYA, -1);
+	copy_backup_to_gfit();
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();

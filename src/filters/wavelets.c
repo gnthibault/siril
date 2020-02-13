@@ -38,7 +38,6 @@
 #include "wavelets.h"
 
 static float wavelet_value[6];
-static fits wavelets_gfit_backup;
 
 static void reset_scale_w() {
 	static GtkRange *range_w[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
@@ -83,7 +82,7 @@ static void wavelets_startup() {
 	for (i = 0; i < 6; i++) {
 		wavelet_value[i] = 1.f;
 	}
-	copyfits(&gfit, &wavelets_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	copy_gfit_to_backup();
 }
 
 /* This function computes wavelets with the number of Nbr_Plan and
@@ -181,7 +180,7 @@ void on_wavelets_dialog_show(GtkWidget *widget, gpointer user_data) {
 void on_wavelets_dialog_hide(GtkWidget *widget, gpointer user_data) {
 	gtk_widget_set_sensitive(lookup_widget("frame_wavelets"), FALSE);
 	gtk_widget_set_sensitive(lookup_widget("button_reset_w"), FALSE);
-	clearfits(&wavelets_gfit_backup);
+	clear_backup();
 }
 
 void on_button_reset_w_clicked(GtkButton *button, gpointer user_data) {
@@ -199,7 +198,7 @@ void apply_wavelets_cancel() {
 void on_button_ok_w_clicked(GtkButton *button, gpointer user_data) {
 	if (gtk_widget_get_sensitive(lookup_widget("frame_wavelets")) == TRUE) {
 		update_wavelets();
-		undo_save_state(&wavelets_gfit_backup, "Processing: Wavelets Transformation");
+		undo_save_state(get_preview_gfit_backup(), "Processing: Wavelets Transformation");
 	}
 	siril_close_dialog("wavelets_dialog");
 }
