@@ -368,17 +368,6 @@ void on_button_rotation_close_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("rotation_dialog");
 }
 
-void on_spinbutton_rotation_value_changed(GtkSpinButton *spin_button,
-		gpointer user_data) {
-	double angle = gtk_spin_button_get_value(spin_button);
-
-	angle = fmod(angle, 360);
-	while (angle < 0) {
-		angle += 360.0;
-	}
-	gtk_spin_button_set_value(spin_button, angle);
-}
-
 void on_button_rotation_ok_clicked(GtkButton *button, gpointer user_data) {
 	rotate_gui(&gfit);
 }
