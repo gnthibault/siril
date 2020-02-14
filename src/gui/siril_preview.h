@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SRC_GUI_PREVIEW_TIMER_H_
-#define SRC_GUI_PREVIEW_TIMER_H_
+#ifndef SRC_GUI_SIRIL_PREVIEW_H_
+#define SRC_GUI_SIRIL_PREVIEW_H_
 
 #include "core/siril.h"
 
@@ -31,7 +31,8 @@ void copy_gfit_to_backup();
 void copy_backup_to_gfit();
 fits *get_preview_gfit_backup();
 void clear_backup();
+
 void set_notify_block(gboolean value);
 void notify_update(gpointer user_data);
 
-#endif /* SRC_GUI_PREVIEW_TIMER_H_ */
+#endif /* SRC_GUI_SIRIL_PREVIEW_H_ */

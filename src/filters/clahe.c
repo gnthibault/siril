@@ -34,7 +34,7 @@
 #include "gui/callbacks.h"
 #include "io/single_image.h"
 #include "gui/message_dialog.h"
-#include "gui/preview_timer.h"
+#include "gui/siril_preview.h"
 
 #include "clahe.h"
 
@@ -166,6 +166,7 @@ void on_CLAHE_dialog_show(GtkWidget *widget, gpointer user_data) {
 
 void on_clahe_preview_toggled(GtkToggleButton *button, gpointer user_data) {
 	if (clahe_show_preview == TRUE) {
+		waiting_for_thread();
 		copy_backup_to_gfit();
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);

@@ -33,7 +33,7 @@
 #include "gui/callbacks.h"
 #include "gui/histogram.h"
 #include "gui/dialogs.h"
-#include "gui/preview_timer.h"
+#include "gui/siril_preview.h"
 
 #include "saturation.h"
 
