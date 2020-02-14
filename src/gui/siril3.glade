@@ -14855,7 +14855,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="pack_type">end</property>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -15443,6 +15443,22 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                 </attributes>
               </object>
             </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="wavelet_preview">
+            <property name="label" translatable="yes">Preview</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="active">True</property>
+            <property name="draw_indicator">True</property>
+            <signal name="toggled" handler="on_wavelet_preview_toggled" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
