@@ -10936,6 +10936,23 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="position">9</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkCheckButton" id="deconv_preview">
+                <property name="label" translatable="yes">Preview</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="margin_top">10</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_deconv_preview_toggled" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">10</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>

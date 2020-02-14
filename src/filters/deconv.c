@@ -37,6 +37,7 @@
 static int deconv_threshold, deconv_iterations;
 static double deconv_radius, deconv_boost;
 static gboolean deconv_auto_thres, deconv_auto_iter;
+static gboolean deconv_show_preview;
 
 static void deconv_startup() {
 	copy_gfit_to_backup();
@@ -118,9 +119,12 @@ void on_deconvolution_dialog_show(GtkWidget *widget, gpointer user_data) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("toggle_deconv_auto")),	deconv_auto_thres);
 	set_notify_block(FALSE);
 
+	deconv_show_preview = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("deconv_preview")));
+
 	/* default parameters transform image, we need to update preview */
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = deconv_update_preview;
+	param->show_preview = deconv_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -157,6 +161,7 @@ void on_deconvolution_reset_clicked(GtkButton *button, gpointer user_data) {
 	/* default parameters transform image, we need to update preview */
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = deconv_update_preview;
+	param->show_preview = deconv_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -166,6 +171,13 @@ void apply_deconv_cancel() {
 }
 
 void on_deconvolution_Apply_clicked(GtkButton *button, gpointer user_data) {
+	if (deconv_show_preview == FALSE) {
+		update_image *param = malloc(sizeof(update_image));
+		param->update_preview_fn = deconv_update_preview;
+		param->show_preview = TRUE;
+		notify_update((gpointer) param);
+	}
+
 	deconv_close(FALSE);
 	siril_close_dialog("deconvolution_dialog");
 }
@@ -178,6 +190,7 @@ void on_spin_deconv_threshold_value_changed(GtkSpinButton *button, gpointer user
 	deconv_threshold = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = deconv_update_preview;
+	param->show_preview = deconv_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -185,6 +198,7 @@ void on_spin_deconv_radius_value_changed(GtkSpinButton *button, gpointer user_da
 	deconv_radius = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = deconv_update_preview;
+	param->show_preview = deconv_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -192,6 +206,7 @@ void on_spin_deconv_boost_value_changed(GtkSpinButton *button, gpointer user_dat
 	deconv_boost = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = deconv_update_preview;
+	param->show_preview = deconv_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -199,6 +214,7 @@ void on_spin_deconv_iterations_value_changed(GtkSpinButton *button, gpointer use
 	deconv_iterations = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = deconv_update_preview;
+	param->show_preview = deconv_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -209,6 +225,7 @@ void on_toggle_deconv_trheshold_toggled(GtkToggleButton *button, gpointer user_d
 	deconv_auto_thres = gtk_toggle_button_get_active(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = deconv_update_preview;
+	param->show_preview = deconv_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -216,5 +233,22 @@ void on_toggle_deconv_auto_toggled(GtkToggleButton *button, gpointer user_data) 
 	deconv_auto_iter = gtk_toggle_button_get_active(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = deconv_update_preview;
+	param->show_preview = deconv_show_preview;
 	notify_update((gpointer) param);
+}
+
+void on_deconv_preview_toggled(GtkToggleButton *button, gpointer user_data) {
+	if (deconv_show_preview == TRUE) {
+		/* if user click very fast */
+		waiting_for_thread();
+		siril_preview_hide();
+	} else {
+		copy_gfit_to_backup();
+
+		update_image *param = malloc(sizeof(update_image));
+		param->update_preview_fn = deconv_update_preview;
+		param->show_preview = TRUE;
+		notify_update((gpointer) param);
+	}
+	deconv_show_preview = !deconv_show_preview;
 }

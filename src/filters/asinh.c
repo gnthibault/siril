@@ -199,6 +199,7 @@ void on_asinh_dialog_show(GtkWidget *widget, gpointer user_data) {
 	/* default parameters transform image, we need to update preview */
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = asinh_update_preview;
+	param->show_preview = asinh_show_preview;
 	notify_update((gpointer) param);
 }
 
