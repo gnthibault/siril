@@ -10676,6 +10676,7 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
+            <property name="spacing">10</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
@@ -10942,7 +10943,6 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="margin_top">10</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
                 <signal name="toggled" handler="on_deconv_preview_toggled" swapped="no"/>
@@ -11832,7 +11832,7 @@ Uncheck if images come from a monochrome sensor.</property>
       <object class="GtkBox">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
+        <property name="spacing">10</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
             <property name="can_focus">False</property>
@@ -11966,7 +11966,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
@@ -11998,7 +11998,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -12129,7 +12129,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">3</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
@@ -13029,7 +13029,7 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="pack_type">end</property>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -13077,7 +13077,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">3</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -13116,7 +13116,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">4</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
@@ -13134,7 +13134,7 @@ Uncheck if images come from a monochrome sensor.</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">5</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <child>
@@ -13147,6 +13147,22 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="active">True</property>
             <property name="draw_indicator">True</property>
             <signal name="toggled" handler="on_preserve_bg_toggled" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="satu_preview">
+            <property name="label" translatable="yes">Preview</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="active">True</property>
+            <property name="draw_indicator">True</property>
+            <signal name="toggled" handler="on_satu_preview_toggled" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -14923,7 +14939,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="pack_type">end</property>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -15511,6 +15527,22 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                 </attributes>
               </object>
             </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="wavelet_preview">
+            <property name="label" translatable="yes">Preview</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="active">True</property>
+            <property name="draw_indicator">True</property>
+            <signal name="toggled" handler="on_wavelet_preview_toggled" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>

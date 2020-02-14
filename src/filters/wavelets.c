@@ -37,6 +37,7 @@
 #include "wavelets.h"
 
 static float wavelet_value[6];
+static gboolean wavelet_show_preview;
 
 static void reset_scale_w() {
 	static GtkRange *range_w[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
@@ -187,6 +188,7 @@ void on_menuitem_wavelets_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_wavelets_dialog_show(GtkWidget *widget, gpointer user_data) {
+	wavelet_show_preview = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("wavelet_preview")));
 	reset_scale_w();
 	wavelets_startup();
 }
@@ -210,10 +212,15 @@ void apply_wavelets_cancel() {
 }
 
 void on_button_ok_w_clicked(GtkButton *button, gpointer user_data) {
-	if (gtk_widget_get_sensitive(lookup_widget("frame_wavelets")) == TRUE) {
-		update_wavelets();
-		undo_save_state(get_preview_gfit_backup(), "Processing: Wavelets Transformation");
+	gboolean is_active = gtk_widget_get_sensitive(lookup_widget("frame_wavelets")) == TRUE;
+	if (is_active && wavelet_show_preview == FALSE) {
+		update_image *param = malloc(sizeof(update_image));
+		param->update_preview_fn = update_wavelets;
+		param->show_preview = TRUE;
+		notify_update((gpointer) param);
 	}
+	undo_save_state(get_preview_gfit_backup(), "Processing: Wavelets Transformation");
+
 	siril_close_dialog("wavelets_dialog");
 }
 
@@ -340,6 +347,7 @@ void on_spin_w0_value_changed(GtkSpinButton *button, gpointer user_data) {
 	wavelet_value[0] = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = update_wavelets;
+	param->show_preview = wavelet_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -347,6 +355,7 @@ void on_spin_w1_value_changed(GtkSpinButton *button, gpointer user_data) {
 	wavelet_value[1] = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = update_wavelets;
+	param->show_preview = wavelet_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -354,6 +363,7 @@ void on_spin_w2_value_changed(GtkSpinButton *button, gpointer user_data) {
 	wavelet_value[2] = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = update_wavelets;
+	param->show_preview = wavelet_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -361,6 +371,7 @@ void on_spin_w3_value_changed(GtkSpinButton *button, gpointer user_data) {
 	wavelet_value[3] = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = update_wavelets;
+	param->show_preview = wavelet_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -368,6 +379,7 @@ void on_spin_w4_value_changed(GtkSpinButton *button, gpointer user_data) {
 	wavelet_value[4] = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = update_wavelets;
+	param->show_preview = wavelet_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -375,6 +387,23 @@ void on_spin_w5_value_changed(GtkSpinButton *button, gpointer user_data) {
 	wavelet_value[5] = gtk_spin_button_get_value(button);
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = update_wavelets;
+	param->show_preview = wavelet_show_preview;
 	notify_update((gpointer) param);
+}
+
+void on_wavelet_preview_toggled(GtkToggleButton *button, gpointer user_data) {
+	if (wavelet_show_preview == TRUE) {
+		/* if user click very fast */
+		waiting_for_thread();
+		siril_preview_hide();
+	} else {
+		copy_gfit_to_backup();
+
+		update_image *param = malloc(sizeof(update_image));
+		param->update_preview_fn = update_wavelets;
+		param->show_preview = TRUE;
+		notify_update((gpointer) param);
+	}
+	wavelet_show_preview = !wavelet_show_preview;
 }
 
