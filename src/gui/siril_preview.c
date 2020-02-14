@@ -84,6 +84,13 @@ void set_notify_block(gboolean value) {
 	notify_is_blocked = value;
 }
 
+void siril_preview_hide() {
+	copy_backup_to_gfit();
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+}
+
 void notify_update(gpointer user_data) {
 	if (timer_id != 0) {
 		g_source_remove(timer_id);

@@ -51,10 +51,7 @@ static void clahe_startup() {
 static void clahe_close(gboolean revert) {
 	set_cursor_waiting(TRUE);
 	if (revert) {
-		copy_backup_to_gfit();
-		adjust_cutoff_from_updated_gfit();
-		redraw(com.cvport, REMAP_ALL);
-		redraw_previews();
+		siril_preview_hide();
 	} else {
 		invalidate_stats_from_fit(&gfit);
 		undo_save_state(get_preview_gfit_backup(),
@@ -166,11 +163,9 @@ void on_CLAHE_dialog_show(GtkWidget *widget, gpointer user_data) {
 
 void on_clahe_preview_toggled(GtkToggleButton *button, gpointer user_data) {
 	if (clahe_show_preview == TRUE) {
+		/* if user click very fast */
 		waiting_for_thread();
-		copy_backup_to_gfit();
-		adjust_cutoff_from_updated_gfit();
-		redraw(com.cvport, REMAP_ALL);
-		redraw_previews();
+		siril_preview_hide();
 	} else {
 		copy_gfit_to_backup();
 
