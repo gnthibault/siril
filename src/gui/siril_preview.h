@@ -32,6 +32,8 @@ void copy_backup_to_gfit();
 fits *get_preview_gfit_backup();
 void clear_backup();
 
+void siril_preview_hide();
+
 void set_notify_block(gboolean value);
 void notify_update(gpointer user_data);
 
