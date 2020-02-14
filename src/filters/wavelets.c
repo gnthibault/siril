@@ -31,10 +31,9 @@
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
 #include "gui/dialogs.h"
+#include "gui/siril_preview.h"
 #include "io/single_image.h"
 #include "algos/Def_Wavelet.h"
-#include "gui/preview_timer.h"
-
 #include "wavelets.h"
 
 static float wavelet_value[6];

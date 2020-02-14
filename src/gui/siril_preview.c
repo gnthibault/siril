@@ -18,6 +18,8 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "siril_preview.h"
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
@@ -26,7 +28,6 @@
 #include "gui/image_display.h"
 #include "io/single_image.h"
 
-#include "preview_timer.h"
 
 #define PREVIEW_DELAY 200
 

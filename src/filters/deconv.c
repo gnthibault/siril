@@ -30,7 +30,7 @@
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
-#include "gui/preview_timer.h"
+#include "gui/siril_preview.h"
 
 #include "deconv.h"
 
