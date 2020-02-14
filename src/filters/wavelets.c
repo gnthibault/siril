@@ -174,7 +174,6 @@ void on_menuitem_wavelets_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 void on_wavelets_dialog_show(GtkWidget *widget, gpointer user_data) {
 	wavelet_show_preview = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("wavelet_preview")));
-	reset_scale_w();
 	wavelets_startup();
 }
 
