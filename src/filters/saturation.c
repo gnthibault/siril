@@ -37,21 +37,21 @@
 
 #include "saturation.h"
 
-static gboolean satu_preserve_bkg = TRUE;
-static double satu_amount = 0.0;
-static int satu_hue_type = 6;
+static gboolean satu_preserve_bkg;
+static double satu_amount;
+static int satu_hue_type;
+static gboolean satu_show_preview;
 
 static void satu_startup() {
 	copy_gfit_to_backup();
+	satu_amount = 0.0;
+	satu_hue_type = 6;
 }
 
 static void satu_close(gboolean revert) {
 	set_cursor_waiting(TRUE);
 	if (revert) {
-		copy_backup_to_gfit();
-		adjust_cutoff_from_updated_gfit();
-		redraw(com.cvport, REMAP_ALL);
-		redraw_previews();
+		siril_preview_hide();
 	} else {
 		undo_save_state(get_preview_gfit_backup(),
 				"Processing: Saturation enhancement (amount=%4.2lf)", satu_amount);
@@ -66,21 +66,7 @@ static void apply_satu_changes() {
 	satu_close(!status);
 }
 
-void on_satu_cancel_clicked(GtkButton *button, gpointer user_data) {
-	satu_close(TRUE);
-	siril_close_dialog("satu_dialog");
-}
-
-void on_satu_apply_clicked(GtkButton *button, gpointer user_data) {
-	apply_satu_changes();
-	siril_close_dialog("satu_dialog");
-}
-
-void on_satu_dialog_close(GtkDialog *dialog, gpointer user_data) {
-	apply_satu_changes();
-}
-
-static int satu_recompute() {
+static int satu_update_preview() {
 	if (get_thread_run()) {
 		siril_debug_print(_("Another task is already in progress, ignoring new request.\n"));
 		return 1;
@@ -121,7 +107,7 @@ static int satu_recompute() {
 		args->h_max = 360.0;
 	}
 
-	args->input = get_preview_gfit_backup();
+	args->input = satu_show_preview ? get_preview_gfit_backup() : &gfit;
 	args->output = &gfit;
 	args->coeff = satu_amount;
 	args->preserve = satu_preserve_bkg;
@@ -130,17 +116,31 @@ static int satu_recompute() {
 	return 0;
 }
 
+void on_satu_cancel_clicked(GtkButton *button, gpointer user_data) {
+	satu_close(TRUE);
+	siril_close_dialog("satu_dialog");
+}
+
+void on_satu_apply_clicked(GtkButton *button, gpointer user_data) {
+	if (satu_show_preview == FALSE) {
+		update_image *param = malloc(sizeof(update_image));
+		param->update_preview_fn = satu_update_preview;
+		param->show_preview = TRUE;
+		notify_update((gpointer) param);
+	}
+
+	apply_satu_changes();
+	siril_close_dialog("satu_dialog");
+}
+
+void on_satu_dialog_close(GtkDialog *dialog, gpointer user_data) {
+	apply_satu_changes();
+}
+
 gpointer enhance_saturation(gpointer p) {
 	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
 	double bg = 0;
 	int i;
-
-	if (!isrgb(args->input) || !isrgb(args->output) ||
-			args->input->naxes[0] != args->output->naxes[0] ||
-			args->input->naxes[1] != args->output->naxes[1]) {
-		siril_add_idle(end_generic, args);
-		return GINT_TO_POINTER(1);
-	}
 
 	WORD *in[3] = { args->input->pdata[RLAYER], args->input->pdata[GLAYER],
 			args->input->pdata[BLAYER] };
@@ -150,6 +150,7 @@ gpointer enhance_saturation(gpointer p) {
 	args->h_min /= 360.0;
 	args->h_max /= 360.0;
 	if (args->preserve) {
+		printf("preserve\n\n\n");
 		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
@@ -217,13 +218,16 @@ void on_satu_dialog_show(GtkWidget *widget, gpointer user_data) {
 	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_satu")), satu_amount);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg")), satu_preserve_bkg);
 	set_notify_block(FALSE);
+
+	satu_show_preview = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("satu_preview")));
 }
 
 void on_preserve_bg_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	satu_preserve_bkg = gtk_toggle_button_get_active(togglebutton);
 
 	update_image *param = malloc(sizeof(update_image));
-	param->update_preview_fn = 	satu_recompute;
+	param->update_preview_fn = 	satu_update_preview;
+	param->show_preview = satu_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -231,7 +235,8 @@ void on_combo_saturation_changed(GtkComboBox* box, gpointer user_data) {
 	satu_hue_type = gtk_combo_box_get_active(box);
 
 	update_image *param = malloc(sizeof(update_image));
-	param->update_preview_fn = 	satu_recompute;
+	param->update_preview_fn = 	satu_update_preview;
+	param->show_preview = satu_show_preview;
 	notify_update((gpointer) param);
 }
 
@@ -262,6 +267,23 @@ void on_spin_satu_value_changed(GtkSpinButton *button, gpointer user_data) {
 	satu_amount = gtk_spin_button_get_value(button);
 
 	update_image *param = malloc(sizeof(update_image));
-	param->update_preview_fn = 	satu_recompute;
+	param->update_preview_fn = 	satu_update_preview;
+	param->show_preview = satu_show_preview;
 	notify_update((gpointer) param);
+}
+
+void on_satu_preview_toggled(GtkToggleButton *button, gpointer user_data) {
+	if (satu_show_preview == TRUE) {
+		/* if user click very fast */
+		waiting_for_thread();
+		siril_preview_hide();
+	} else {
+		copy_gfit_to_backup();
+
+		update_image *param = malloc(sizeof(update_image));
+		param->update_preview_fn = satu_update_preview;
+		param->show_preview = TRUE;
+		notify_update((gpointer) param);
+	}
+	satu_show_preview = !satu_show_preview;
 }

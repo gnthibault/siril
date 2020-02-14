@@ -52,10 +52,7 @@ static void deconv_startup() {
 static void deconv_close(gboolean revert) {
 	set_cursor_waiting(TRUE);
 	if (revert) {
-		copy_backup_to_gfit();
-		adjust_cutoff_from_updated_gfit();
-		redraw(com.cvport, REMAP_ALL);
-		redraw_previews();
+		siril_preview_hide();
 	} else {
 		invalidate_stats_from_fit(&gfit);
 		undo_save_state(get_preview_gfit_backup(),
