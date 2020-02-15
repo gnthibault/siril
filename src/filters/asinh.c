@@ -191,7 +191,7 @@ void on_asinh_dialog_show(GtkWidget *widget, gpointer user_data) {
 	gtk_toggle_button_set_active(toggle_rgb, asinh_rgb_space);
 	gtk_spin_button_set_value(spin_stretch, asinh_stretch_value);
 	gtk_spin_button_set_value(spin_black_p, asinh_black_value);
-	gtk_spin_button_set_increments(spin_stretch, 0.001, 0.01);
+	gtk_spin_button_set_increments(spin_black_p, 0.001, 0.01);
 	set_notify_block(FALSE);
 
 	asinh_show_preview = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("asinh_preview")));

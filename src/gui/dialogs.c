@@ -95,7 +95,7 @@ void siril_open_dialog(gchar *id) {
 	if (win_already_shown && x >=0 && y >= 0) {
 		gtk_window_move(win, x, y);
 	} else {
-		gtk_window_set_position (win, GTK_WIN_POS_NONE);
+		gtk_window_set_position (win, GTK_WIN_POS_CENTER);
 	}
 	gtk_window_set_type_hint(win, GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_window_set_transient_for(win, GTK_WINDOW(lookup_widget("control_window")));
