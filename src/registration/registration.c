@@ -183,8 +183,8 @@ static void normalizeQualityData(struct registration_args *args, double q_min, d
 int register_shift_dft(struct registration_args *args) {
 	fits fit_ref = { 0 };
 	int frame, size, sqsize;
-	fftw_complex *ref, *in, *out, *convol;
-	fftw_plan p, q;
+	fftwf_complex *ref, *in, *out, *convol;
+	fftwf_plan p, q;
 	int ret, j;
 	int plan;
 	int abort = 0;
@@ -238,33 +238,39 @@ int register_shift_dft(struct registration_args *args) {
 		return ret;
 	}
 
-	ref = fftw_malloc(sizeof(fftw_complex) * sqsize);
-	in = fftw_malloc(sizeof(fftw_complex) * sqsize);
-	out = fftw_malloc(sizeof(fftw_complex) * sqsize);
-	convol = fftw_malloc(sizeof(fftw_complex) * sqsize);
+	ref = fftwf_malloc(sizeof(fftwf_complex) * sqsize);
+	in = fftwf_malloc(sizeof(fftwf_complex) * sqsize);
+	out = fftwf_malloc(sizeof(fftwf_complex) * sqsize);
+	convol = fftwf_malloc(sizeof(fftwf_complex) * sqsize);
 
 	if (nb_frames > 200.f)
 		plan = FFTW_MEASURE;
 	else
 		plan = FFTW_ESTIMATE;
 
-	p = fftw_plan_dft_2d(size, size, ref, out, FFTW_FORWARD, plan);
-	q = fftw_plan_dft_2d(size, size, convol, out, FFTW_BACKWARD, plan);
+	p = fftwf_plan_dft_2d(size, size, ref, out, FFTW_FORWARD, plan);
+	q = fftwf_plan_dft_2d(size, size, convol, out, FFTW_BACKWARD, plan | FFTW_DESTROY_INPUT); // we can allow destroy of input here
+
+    fftwf_free(out); // was needed to build the plan, can be freed now
+	fftwf_free(convol); // was needed to build the plan, can be freed now
 
 	// copying image selection into the fftw data
 	if (fit_ref.type == DATA_USHORT) {
 		for (j = 0; j < sqsize; j++)
-			ref[j] = (double)fit_ref.data[j];
+			ref[j] = (float)fit_ref.data[j];
 	}
 	else if (fit_ref.type == DATA_FLOAT) {
 		for (j = 0; j < sqsize; j++)
-			ref[j] = (double)fit_ref.fdata[j];
+			ref[j] = fit_ref.fdata[j];
 	}
 
 	// We don't need fit_ref anymore, we can destroy it.
 	current_regdata[ref_image].quality = QualityEstimate(&fit_ref, args->layer);
 	clearfits(&fit_ref);
-	fftw_execute_dft(p, ref, in); /* repeat as needed */
+	fftwf_execute_dft(p, ref, in); /* repeat as needed */
+
+	fftwf_free(ref); // not needed anymore
+
 	set_shifts(args->seq, ref_image, args->layer, 0.0, 0.0, FALSE);
 
 	q_min = q_max = current_regdata[ref_image].quality;
@@ -295,17 +301,17 @@ int register_shift_dft(struct registration_args *args) {
 		if (!(seq_read_frame_part(args->seq, args->layer, frame, &fit,
 						&args->selection, FALSE))) {
 			int x;
-			fftw_complex *img = fftw_malloc(sizeof(fftw_complex) * sqsize);
-			fftw_complex *out2 = fftw_malloc(sizeof(fftw_complex) * sqsize);
+			fftwf_complex *img = fftwf_malloc(sizeof(fftwf_complex) * sqsize);
+			fftwf_complex *out2 = fftwf_malloc(sizeof(fftwf_complex) * sqsize);
 
 			// copying image selection into the fftw data
 			if (fit.type == DATA_USHORT) {
 				for (x = 0; x < sqsize; x++)
-					img[x] = (double)fit.data[x];
+					img[x] = (float)fit.data[x];
 			}
 			if (fit.type == DATA_FLOAT) {
 				for (x = 0; x < sqsize; x++)
-					img[x] = (double)fit.fdata[x];
+					img[x] = fit.fdata[x];
 			}
 
 			current_regdata[frame].quality = QualityEstimate(&fit, args->layer);
@@ -323,20 +329,19 @@ int register_shift_dft(struct registration_args *args) {
 				q_min = min(q_min, qual);
 			}
 
-			fftw_execute_dft(p, img, out2); /* repeat as needed */
+			fftwf_execute_dft(p, img, out2); /* repeat as needed */
 
-			fftw_complex *convol2 = fftw_malloc(sizeof(fftw_complex) * sqsize);
+			fftwf_complex *convol2 = img; // reuse buffer
 
 			for (x = 0; x < sqsize; x++) {
-				convol2[x] = in[x] * conj(out2[x]);
+				convol2[x] = in[x] * conjf(out2[x]);
 			}
 
-			fftw_execute_dft(q, convol2, out2); /* repeat as needed */
-			fftw_free(convol2);
+			fftwf_execute_dft(q, convol2, out2); /* repeat as needed */
 
 			int shift = 0;
 			for (x = 1; x < sqsize; ++x) {
-				if (creal(out2[x]) > creal(out2[shift])) {
+				if (crealf(out2[x]) > crealf(out2[shift])) {
 					shift = x;
 					// break or get last value?
 				}
@@ -374,8 +379,8 @@ int register_shift_dft(struct registration_args *args) {
 #endif
 			cur_nb += 1.f;
 			set_progress_bar_data(NULL, cur_nb / nb_frames);
-			fftw_free(img);
-			fftw_free(out2);
+			fftwf_free(img);
+			fftwf_free(out2);
 		} else {
 			//report_fits_error(ret, error_buffer);
 			args->seq->regparam[args->layer] = NULL;
@@ -385,12 +390,9 @@ int register_shift_dft(struct registration_args *args) {
 		}
 	}
 
-	fftw_destroy_plan(p);
-	fftw_destroy_plan(q);
-	fftw_free(in);
-	fftw_free(out);
-	fftw_free(ref);
-	fftw_free(convol);
+	fftwf_destroy_plan(p);
+	fftwf_destroy_plan(q);
+	fftwf_free(in);
 	if (!ret) {
 		if (args->x2upscale)
 			args->seq->upscale_at_stacking = 2.0;
