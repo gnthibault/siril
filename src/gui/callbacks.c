@@ -960,10 +960,10 @@ void close_tab() {
 		page = gtk_notebook_get_nth_page(Color_Layers, BLUE_VPORT);
 		gtk_widget_hide(page);
 		page = gtk_notebook_get_nth_page(Color_Layers, RED_VPORT);
-		gtk_notebook_set_tab_label_text(Color_Layers, page, _("B&W channel"));
+		gtk_notebook_set_tab_label_text(Color_Layers, page, _("B&W"));
 	} else {
 		page = gtk_notebook_get_nth_page(Color_Layers, RED_VPORT);
-		gtk_notebook_set_tab_label_text(Color_Layers, page, _("Red channel"));
+		gtk_notebook_set_tab_label_text(Color_Layers, page, _("Red"));
 		page = gtk_notebook_get_nth_page(Color_Layers, GREEN_VPORT);
 		gtk_widget_show(page);
 		page = gtk_notebook_get_nth_page(Color_Layers, BLUE_VPORT);
