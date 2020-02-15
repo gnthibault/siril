@@ -458,7 +458,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		/* Force first tab to be Red and not B&W if an image was already loaded */
 		GtkNotebook* Color_Layers = GTK_NOTEBOOK(gtk_builder_get_object(builder, "notebook1"));
 		GtkWidget *page = gtk_notebook_get_nth_page(Color_Layers, RED_VPORT);
-		gtk_notebook_set_tab_label_text(GTK_NOTEBOOK(Color_Layers), page, _("Red channel"));
+		gtk_notebook_set_tab_label_text(GTK_NOTEBOOK(Color_Layers), page, _("Red"));
 
 		if (number_of_images_loaded() > 1 &&
 				(gfit.rx != layers[layer]->the_fit.rx ||
