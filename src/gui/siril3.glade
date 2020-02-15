@@ -7047,7 +7047,7 @@ However you may want to disable this option when building master frames of 8-bit
     <property name="resizable">False</property>
     <property name="window_position">center</property>
     <property name="default_width">400</property>
-    <property name="type_hint">normal</property>
+    <property name="type_hint">dialog</property>
     <property name="transient_for">control_window</property>
     <signal name="close" handler="on_CLAHE_dialog_close" swapped="no"/>
     <signal name="delete-event" handler="on_clahe_cancel_clicked" swapped="no"/>
@@ -8813,7 +8813,7 @@ If the parameters is null, so no filter is apply at all.</property>
     <property name="title" translatable="yes">Asinh Transformation</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
-    <property name="type_hint">normal</property>
+    <property name="type_hint">dialog</property>
     <property name="transient_for">control_window</property>
     <signal name="close" handler="on_asinh_dialog_close" swapped="no"/>
     <signal name="delete-event" handler="on_asinh_cancel_clicked" swapped="no"/>
@@ -10408,6 +10408,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="window_position">center</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -10598,7 +10599,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="title" translatable="yes">Deconvolution</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
-    <property name="type_hint">normal</property>
+    <property name="type_hint">dialog</property>
     <property name="transient_for">control_window</property>
     <signal name="close" handler="on_deconvolution_dialog_close" swapped="no"/>
     <signal name="delete-event" handler="on_deconvolution_cancel_clicked" swapped="no"/>
@@ -12959,7 +12960,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="title" translatable="yes">Color saturation</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
-    <property name="type_hint">normal</property>
+    <property name="type_hint">dialog</property>
     <property name="transient_for">control_window</property>
     <signal name="close" handler="on_satu_dialog_close" swapped="no"/>
     <signal name="delete-event" handler="on_satu_cancel_clicked" swapped="no"/>
@@ -14866,7 +14867,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
     <property name="title" translatable="yes">Wavelets control</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
-    <property name="type_hint">normal</property>
+    <property name="type_hint">dialog</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="on_button_cancel_w_clicked" swapped="no"/>
     <signal name="hide" handler="on_wavelets_dialog_hide" swapped="no"/>
