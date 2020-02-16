@@ -33,7 +33,7 @@
 #include "algos/quality.h"
 
 static float SubSample(float *ptr, int img_wid, int x_size, int y_size);
-static float *_smooth_image_float(float *buf, int width, int height);
+static void _smooth_image_float(float *buf, int width, int height);
 static double Gradient(float *buf, int width, int height);
 
 // -------------------------------------------------------
@@ -59,7 +59,7 @@ double QualityEstimate_float(fits *fit, int layer) {
 	region_h = height - 1;
 
 	// Allocate the intermediate buffer. Will be 16bpp greyscale
-	buf = calloc(region_w * region_h, sizeof(float));
+	buf = calloc((region_w / QSUBSAMPLE_MIN + 1) * (region_h / QSUBSAMPLE_MIN + 1), sizeof(float));
 
 	subsample = QSUBSAMPLE_MIN;
 	while (subsample <= QSUBSAMPLE_MAX) {
@@ -94,7 +94,7 @@ double QualityEstimate_float(fits *fit, int layer) {
 			for (x = 0; x < x_samples; ++x, ptr += x_inc) {
 				float v = SubSample(ptr, width, subsample, subsample);
 
-				if (v > maxp[2] && v < 65530) {
+				if (v > maxp[2] && v < 0.99) {
 					int slot;
 					if (v > maxp[0]) {
 						slot = 0;
@@ -104,10 +104,9 @@ double QualityEstimate_float(fits *fit, int layer) {
 						slot = 2;
 					}
 
-					for (j = MAXP - 1; j > slot; --j) {
+					for (j = MAXP - 1; j > slot; --j)
 						maxp[j] = maxp[j - 1];
-						maxp[j] = v;
-					}
+					maxp[j] = v;
 				}
 
 				buf[n++] = v;
@@ -121,9 +120,9 @@ double QualityEstimate_float(fits *fit, int layer) {
 		}
 
 		// 3x3 smoothing
-		new_image = _smooth_image_float(buf, x_samples, y_samples);
+		_smooth_image_float(buf, x_samples, y_samples);
 
-		q = Gradient(new_image, x_samples, y_samples);
+		q = Gradient(buf, x_samples, y_samples);
 
 		dval += (q * ((QSUBSAMPLE_MIN * QSUBSAMPLE_MIN)
 					/ (subsample * subsample)));
@@ -134,7 +133,6 @@ double QualityEstimate_float(fits *fit, int layer) {
 		} while (width / subsample == x_samples &&
 				height / subsample == y_samples);
 
-		free(new_image);
 	}
 
 	dval = sqrt(dval);
@@ -218,23 +216,33 @@ end:
 	return val;
 }
 
-/* 3*3 averaging convolution filter, does nothing on the edges */
-static float *_smooth_image_float(float *buf, int width, int height) {
-	float *new_buff = calloc(width * height, sizeof(float));
-	int x, y;
+/* 3*3 averaging convolution filter, does nothing on the edges, overwrites buf */
+static void _smooth_image_float(float *buf, int width, int height) {
 
+	float lineBuffer[2][width];
+	// copy first line to lineBuffer
+	for (int x = 0; x < width; ++x) {
+        lineBuffer[0][x] = buf[x];
+	}
+	int prevLine = 0;
+	int currLine = 1;
 	const float r9 = 1.f / 9.f;
-	for (y = 1; y < height - 1; ++y) {
-		int o = y * width + 1;
-		for (x = 1; x < width - 1; ++x, ++o) {
-			const float v = (buf[o - width - 1] + buf[o - width])
-					+ (buf[o - width + 1] + buf[o - 1]) + (buf[o] + buf[o + 1])
+	for (int y = 1; y < height - 1; ++y) {
+		int o = y * width;
+    	// copy current line to lineBuffer
+        for (int x = 0; x < width; ++x) {
+            lineBuffer[currLine][x] = buf[o + x];
+        }
+        ++o; // increment because we start at x = 1
+		for (int x = 1; x < width - 1; ++x, ++o) {
+            const float v = (lineBuffer[prevLine][x - 1] + lineBuffer[prevLine][x])
+      				+ (lineBuffer[prevLine][x + 1] + lineBuffer[currLine][x - 1]) + (lineBuffer[currLine][x] + lineBuffer[currLine][x + 1])
 					+ (buf[o + width - 1] + buf[o + width])
 					+ buf[o + width + 1];
-
-			new_buff[o] = v * r9;
+			buf[o] = v * r9;
 		}
+		// swap lineBuffers
+        prevLine ^= 1;
+        currLine ^= 1;
 	}
-
-	return new_buff;
 }

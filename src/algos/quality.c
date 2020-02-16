@@ -113,10 +113,9 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 						slot = 2;
 					}
 
-					for (j = MAXP - 1; j > slot; --j) {
+					for (j = MAXP - 1; j > slot; --j)
 						maxp[j] = maxp[j - 1];
-						maxp[j] = v;
-					}
+					maxp[j] = v;
 				}
 
 				buf[n++] = v;
