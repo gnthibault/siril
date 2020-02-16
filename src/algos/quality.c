@@ -34,7 +34,7 @@
 
 static double QualityEstimate_ushort(fits *fit, int layer);
 static int32_t SubSample(WORD *ptr, int img_wid, int x_size, int y_size);
-static unsigned short *_smooth_image_16(unsigned short *buf, int width, int height);
+static void _smooth_image_16(unsigned short *buf, int width, int height);
 static double Gradient(WORD *buf, int width, int height);
 
 double QualityEstimate(fits *fit, int layer) {
@@ -57,7 +57,6 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 	int i, j, n, x, y, max, x_inc;
 	int x_samples, y_samples, y_last;
 	WORD *buffer, *buf, maxp[MAXP];
-	WORD *new_image = NULL;
 	double q, dval = 0.0;
 
 	buffer = fit->pdata[layer];
@@ -68,8 +67,7 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 	region_h = height - 1;
 
 	// Allocate the intermediate buffer. Will be 16bpp greyscale
-	buf = calloc(region_w * region_h, sizeof(WORD));
-
+	buf = calloc((region_w / QSUBSAMPLE_MIN + 1) * (region_h / QSUBSAMPLE_MIN + 1), sizeof(WORD));
 	subsample = QSUBSAMPLE_MIN;
 	while (subsample <= QSUBSAMPLE_MAX) {
 		WORD* ptr;
@@ -151,7 +149,7 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 		}
 
 		// 3x3 smoothing
-		new_image = _smooth_image_16(buf, x_samples, y_samples);
+		_smooth_image_16(buf, x_samples, y_samples);
 
 #ifdef DEBUG
 		/*******************************/
@@ -164,12 +162,12 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 		else {
 			fprintf(out, "P5\n%d %d\n255\n", x_samples, y_samples);
 			for (i = 0; i < n; ++i)
-				putc(new_image[i] >> 8, out);
+				putc(buf[i] >> 8, out);
 			fclose(out);
 		}
 		/*********************************/
 #endif
-		q = Gradient(new_image, x_samples, y_samples);
+		q = Gradient(buf, x_samples, y_samples);
 
 		dval += (q * ((QSUBSAMPLE_MIN * QSUBSAMPLE_MIN)
 					/ (subsample * subsample)));
@@ -180,7 +178,6 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 		} while (width / subsample == x_samples &&
 				height / subsample == y_samples);
 
-		free(new_image);
 	}
 
 	dval = sqrt(dval);
@@ -264,31 +261,34 @@ end:
 }
 
 /* 3*3 averaging convolution filter, does nothing on the edges */
-static unsigned short *_smooth_image_16(unsigned short *buf, int width,
+static void _smooth_image_16(unsigned short *buf, int width,
 		int height) {
-	unsigned short *new_buff = calloc(width * height, sizeof(WORD));
-	int x, y;
 
-	for (y = 1; y < height - 1; ++y) {
-		int o = y * width + 1;
-		for (x = 1; x < width - 1; ++x, ++o) {
-			unsigned int v = (unsigned int) buf[o];
-			v += (unsigned int) buf[o - width - 1];
-			v += (unsigned int) buf[o - width];
-			v += (unsigned int) buf[o - width + 1];
-
-			v += (unsigned int) buf[o - 1];
-			v += (unsigned int) buf[o + 1];
-
-			v += (unsigned int) buf[o + width - 1];
-			v += (unsigned int) buf[o + width];
-			v += (unsigned int) buf[o + width + 1];
-
-			new_buff[o] = v / 9;
-		}
+	unsigned short lineBuffer[2][width];
+	// copy first line to lineBuffer
+	for (int x = 0; x < width; ++x) {
+        lineBuffer[0][x] = buf[x];
 	}
-
-	return new_buff;
+	int prevLine = 0;
+	int currLine = 1;
+	for (int y = 1; y < height - 1; ++y) {
+		int o = y * width;
+    	// copy current line to lineBuffer
+        for (int x = 0; x < width; ++x) {
+            lineBuffer[currLine][x] = buf[o + x];
+        }
+        ++o; // increment because we start at x = 1
+		for (int x = 1; x < width - 1; ++x, ++o) {
+            const unsigned int v = (lineBuffer[prevLine][x - 1] + lineBuffer[prevLine][x])
+      				+ (lineBuffer[prevLine][x + 1] + lineBuffer[currLine][x - 1]) + (lineBuffer[currLine][x] + lineBuffer[currLine][x + 1])
+					+ (buf[o + width - 1] + buf[o + width])
+					+ buf[o + width + 1];
+			buf[o] = v / 9;
+		}
+		// swap lineBuffers
+        prevLine ^= 1;
+        currLine ^= 1;
+	}
 }
 
 // Scan the region given by (x1,y1) - (x2,y2) and return the barycentre (centre of brightness)
