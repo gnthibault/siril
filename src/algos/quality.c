@@ -180,6 +180,8 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 			subsample += QSUBSAMPLE_INC;
 		} while (width / subsample == x_samples &&
 				height / subsample == y_samples);
+
+		free(new_image);
 	}
 
 	dval = sqrt(dval);
@@ -265,7 +267,7 @@ end:
 /* 3*3 averaging convolution filter, does nothing on the edges */
 static unsigned short *_smooth_image_16(unsigned short *buf, int width,
 		int height) {
-	unsigned short *new_buff = calloc(width * height * 2, sizeof(WORD));
+	unsigned short *new_buff = calloc(width * height, sizeof(WORD));
 	int x, y;
 
 	for (y = 1; y < height - 1; ++y) {

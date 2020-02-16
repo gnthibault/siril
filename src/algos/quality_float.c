@@ -133,6 +133,8 @@ double QualityEstimate_float(fits *fit, int layer) {
 			subsample += QSUBSAMPLE_INC;
 		} while (width / subsample == x_samples &&
 				height / subsample == y_samples);
+
+		free(new_image);
 	}
 
 	dval = sqrt(dval);
@@ -218,26 +220,19 @@ end:
 
 /* 3*3 averaging convolution filter, does nothing on the edges */
 static float *_smooth_image_float(float *buf, int width, int height) {
-	float *new_buff = calloc(width * height * 2, sizeof(float));
+	float *new_buff = calloc(width * height, sizeof(float));
 	int x, y;
 
+	const float r9 = 1.f / 9.f;
 	for (y = 1; y < height - 1; ++y) {
 		int o = y * width + 1;
 		for (x = 1; x < width - 1; ++x, ++o) {
-			float v = 0.0f;
-			v += buf[o - width - 1];
-			v += buf[o - width];
-			v += buf[o - width + 1];
+			const float v = (buf[o - width - 1] + buf[o - width])
+					+ (buf[o - width + 1] + buf[o - 1]) + (buf[o] + buf[o + 1])
+					+ (buf[o + width - 1] + buf[o + width])
+					+ buf[o + width + 1];
 
-			v += buf[o - 1];
-			v += buf[o];
-			v += buf[o + 1];
-
-			v += buf[o + width - 1];
-			v += buf[o + width];
-			v += buf[o + width + 1];
-
-			new_buff[o] = v / 9.0f;
+			new_buff[o] = v * r9;
 		}
 	}
 
