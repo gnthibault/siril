@@ -75,7 +75,9 @@ static double siril_stats_float_mad(const float *data, const size_t n, const dou
 		return 0.0f;	// TODO: check return value
 	}
 
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) if(n > 10000) private(i) schedule(static)
+#endif
 	for (i = 0; i < n; i++) {
 		tmp[i] = fabsf(data[i] - median);
 	}
@@ -93,7 +95,9 @@ static double siril_stats_float_bwmv(const float* data, const size_t n,
 	size_t i;
 
 	if (mad > 0.0) {
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) reduction(+:up,down)
+#endif
 		for (i = 0; i < n; i++) {
 			double yi, ai, yi2;
 			double i_med = (double)data[i] - median;
@@ -158,8 +162,9 @@ static void siril_stats_float_minmax(float *min_out, float *max_out,
 		float min = data[0];
 		float max = data[0];
 		size_t i;
-
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static) if(n > 10000) reduction(max:max) reduction(min:min)
+#endif
 		for (i = 0; i < n; i++) {
 			float xi = data[i];
 			if (xi < min)

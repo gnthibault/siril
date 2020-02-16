@@ -48,7 +48,6 @@ double QualityEstimate_float(fits *fit, int layer) {
 	int i, j, n, x, y, x_inc;
 	int x_samples, y_samples, y_last;
 	float *buffer, *buf, maxp[MAXP];
-	float *new_image = NULL;
 	double q, dval = 0.0;
 
 	buffer = fit->fpdata[layer];
@@ -94,7 +93,7 @@ double QualityEstimate_float(fits *fit, int layer) {
 			for (x = 0; x < x_samples; ++x, ptr += x_inc) {
 				float v = SubSample(ptr, width, subsample, subsample);
 
-				if (v > maxp[2] && v < 0.99) {
+				if (v > maxp[2] && v < 0.99f) {
 					int slot;
 					if (v > maxp[0]) {
 						slot = 0;
