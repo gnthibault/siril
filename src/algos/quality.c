@@ -198,8 +198,11 @@ double QualityEstimate(fits *fit, int layer, int qtype) {
 
 		do {
 			subsample += QSUBSAMPLE_INC;
-		} while (width / subsample == x_samples
-				&& height / subsample == y_samples);
+
+		} while (width / subsample == x_samples &&
+				height / subsample == y_samples);
+
+		free(new_image);
 	}
 
 	if (qtype == QUALTYPE_NORMAL || qtype == QUALTYPE_NINOX) {
@@ -323,7 +326,7 @@ static double Gradient(WORD *buf, int width, int height, int qtype) {
 /* 3*3 averaging convolution filter */
 static unsigned short *_smooth_image_16(unsigned short *buf, int width,
 		int height) {
-	unsigned short *new_buff = calloc(width * height * 2, sizeof(WORD));
+	unsigned short *new_buff = calloc(width * height, sizeof(WORD));
 	int x, y;
 
 	for (y = 1; y < height - 1; ++y) {
