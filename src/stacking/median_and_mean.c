@@ -741,8 +741,12 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		data = &data_pool[data_idx];
 
 		/**** Step 2: load image data for the corresponding image block ****/
-		stack_read_block_data(args, use_regdata, my_block, data, naxes, itype);
-
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+        {
+		    stack_read_block_data(args, use_regdata, my_block, data, naxes, itype);
+        }
 #if defined _OPENMP && defined STACK_DEBUG
 		{
 			struct timeval thread_mid;
@@ -760,7 +764,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			/* index of the pixel in the result image
 			 * we read line y, but we need to store it at
 			 * ry - y - 1 to not have the image mirrored. */
-			int pdata_idx = (naxes[1] - (my_block->start_row + y) - 1) * naxes[0]; 
+			int pdata_idx = (naxes[1] - (my_block->start_row + y) - 1) * naxes[0];
 			/* index of the line in the read data, data->pix[frame] */
 			int line_idx = y * naxes[0];
 			uint64_t crej[2] = {0, 0};
