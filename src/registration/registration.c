@@ -186,7 +186,6 @@ int register_shift_dft(struct registration_args *args) {
 	fftwf_complex *ref, *in, *out, *convol;
 	fftwf_plan p, q;
 	int ret, j;
-	int plan;
 	int abort = 0;
 	float nb_frames, cur_nb;
 	int ref_image;
@@ -221,7 +220,7 @@ int register_shift_dft(struct registration_args *args) {
 
 	/* loading reference frame */
 	ref_image = sequence_find_refimage(args->seq);
-	
+
 	set_progress_bar_data(
 			_("Register DFT: loading and processing reference frame"),
 			PROGRESS_NONE);
@@ -243,15 +242,38 @@ int register_shift_dft(struct registration_args *args) {
 	out = fftwf_malloc(sizeof(fftwf_complex) * sqsize);
 	convol = fftwf_malloc(sizeof(fftwf_complex) * sqsize);
 
-	if (nb_frames > 200.f)
-		plan = FFTW_MEASURE;
-	else
-		plan = FFTW_ESTIMATE;
+	gchar* wisdomFile = g_build_filename(g_get_user_cache_dir(), "siril_fftw.wisdom", NULL);
 
-	p = fftwf_plan_dft_2d(size, size, ref, out, FFTW_FORWARD, plan);
-	q = fftwf_plan_dft_2d(size, size, convol, out, FFTW_BACKWARD, plan | FFTW_DESTROY_INPUT); // we can allow destroy of input here
+	// test for available wisdom
+	p = fftwf_plan_dft_2d(size, size, ref, out, FFTW_FORWARD, FFTW_WISDOM_ONLY);
+	if (!p) {
+		// no wisdom available, load wisdom from file
+		fftwf_import_wisdom_from_filename(wisdomFile);
+		// test again for wisdom
+		p = fftwf_plan_dft_2d(size, size, ref, out, FFTW_FORWARD, FFTW_WISDOM_ONLY);
+		if (!p) {
+			// build plan with FFTW_MEASURE
+			p = fftwf_plan_dft_2d(size, size, ref, out, FFTW_FORWARD, FFTW_MEASURE);
+			// save the wisdom
+			fftwf_export_wisdom_to_filename(wisdomFile);
+		}
+	}
 
-    fftwf_free(out); // was needed to build the plan, can be freed now
+	q = fftwf_plan_dft_2d(size, size, convol, out, FFTW_BACKWARD, FFTW_WISDOM_ONLY | FFTW_DESTROY_INPUT);
+	if (!q) {
+		// no wisdom available, load wisdom from file
+		fftwf_import_wisdom_from_filename(wisdomFile);
+		// test again for wisdom
+		q = fftwf_plan_dft_2d(size, size, convol, out, FFTW_BACKWARD, FFTW_WISDOM_ONLY | FFTW_DESTROY_INPUT);
+		if (!q) {
+			// build plan with FFTW_MEASURE
+			q = fftwf_plan_dft_2d(size, size, convol, out, FFTW_BACKWARD, FFTW_MEASURE | FFTW_DESTROY_INPUT);
+			// save the wisdom
+			fftwf_export_wisdom_to_filename(wisdomFile);
+		}
+	}
+	g_free(wisdomFile);
+	fftwf_free(out); // was needed to build the plan, can be freed now
 	fftwf_free(convol); // was needed to build the plan, can be freed now
 
 	// copying image selection into the fftw data
@@ -361,7 +383,6 @@ int register_shift_dft(struct registration_args *args) {
 			// We don't need fit anymore, we can destroy it.
 			clearfits(&fit);
 
-
 			/* shiftx and shifty are the x and y values for translation that
 			 * would make this image aligned with the reference image.
 			 * WARNING: the y value is counted backwards, since the FITS is
@@ -399,7 +420,7 @@ int register_shift_dft(struct registration_args *args) {
 		else
 			args->seq->upscale_at_stacking = 1.0;
 		normalizeQualityData(args, q_min, q_max);
-		
+
 		siril_log_message(_("Registration finished.\n"));
 		siril_log_color_message(_("Best frame: #%d.\n"), "bold", q_index);
 	} else {
@@ -485,7 +506,7 @@ int register_shift_fwhm(struct registration_args *args) {
 		args->seq->upscale_at_stacking = 2.0;
 	else
 		args->seq->upscale_at_stacking = 1.0;
-	
+
 	siril_log_message(_("Registration finished.\n"));
 	siril_log_color_message(_("Best frame: #%d with fwhm=%.3g.\n"), "bold",
 			fwhm_index, fwhm_min);
@@ -621,7 +642,7 @@ int register_ecc(struct registration_args *args) {
 
 	normalizeQualityData(args, q_min, q_max);
 	clearfits(&ref);
-	
+
 	siril_log_message(_("Registration finished.\n"));
 	if (failed) {
 		siril_log_color_message(_("%d frames were excluded.\n"), "red", failed);
@@ -972,7 +993,7 @@ static gboolean end_register_idle(gpointer p) {
 	drawPlot();
 	update_stack_interface(TRUE);
 	adjust_sellabel();
-	
+
 	set_cursor_waiting(FALSE);
 
 	free(args);
