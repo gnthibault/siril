@@ -148,7 +148,7 @@ int soper(fits *a, double scalar, image_operator oper, gboolean conv_to_float) {
 	return 1;
 }
 
-int imoper_ushort_to_ushort(fits *a, fits *b, float factor, image_operator oper) {
+static int imoper_ushort_to_ushort(fits *a, fits *b, image_operator oper, float factor) {
 	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 
 	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
