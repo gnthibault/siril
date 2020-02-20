@@ -33,6 +33,7 @@
 
 static guint timer_id;
 static gboolean notify_is_blocked;
+static gboolean preview_is_active;
 static fits preview_gfit_backup;
 
 static gboolean update_preview(gpointer user_data) {
@@ -66,6 +67,7 @@ static void free_struct(gpointer user_data) {
 
 void copy_gfit_to_backup() {
 	copyfits(&gfit, &preview_gfit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	preview_is_active = TRUE;
 }
 
 void copy_backup_to_gfit() {
@@ -76,8 +78,13 @@ fits *get_preview_gfit_backup() {
 	return &preview_gfit_backup;
 }
 
+gboolean is_preview_active() {
+	return preview_is_active;
+}
+
 void clear_backup() {
 	clearfits(&preview_gfit_backup);
+	preview_is_active = FALSE;
 }
 
 void set_notify_block(gboolean value) {

@@ -48,6 +48,7 @@
 #include "gui/image_display.h"
 #include "gui/image_interactions.h"
 #include "gui/sequence_list.h"
+#include "gui/siril_preview.h"
 #include "filters/asinh.h"
 #include "filters/banding.h"
 #include "filters/clahe.h"
@@ -393,6 +394,12 @@ int process_unsharp(int nb) {
 
 int process_crop(int nb) {
 	if (!single_image_is_loaded()) return 1;
+	if (is_preview_active()) {
+		siril_log_message(_("It is impossible to crop the image when a filter with preview session is active. "
+						"Please consider to close the filter dialog first.\n"));
+		return 1;
+	}
+
 
 	rectangle area;
 	if ((!com.selection.h) || (!com.selection.w)) {
