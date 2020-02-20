@@ -33,6 +33,8 @@
 #include "gui/image_interactions.h"
 #include "gui/PSF_list.h"
 #include "gui/dialogs.h"
+#include "gui/message_dialog.h"
+#include "gui/siril_preview.h"
 #include "opencv/opencv.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
@@ -607,12 +609,17 @@ void on_menu_gray_crop_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		undo_save_state(&gfit, "Processing: Crop (x=%d, y=%d, w=%d, h=%d)",
 				com.selection.x, com.selection.y, com.selection.w,
 				com.selection.h);
+		if (is_preview_active()) {
+			siril_message_dialog(GTK_MESSAGE_INFO, _("A live preview session is active"),
+					_("It is impossible to crop the image when a filter with preview session is active. "
+							"Please consider to close the filter dialog first."));
+			return;
+		}
 		crop(&gfit, &com.selection);
 		delete_selected_area();
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
-		
 	}
 }
 

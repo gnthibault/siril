@@ -30,6 +30,7 @@ typedef struct update_preview_struct {
 void copy_gfit_to_backup();
 void copy_backup_to_gfit();
 fits *get_preview_gfit_backup();
+gboolean is_preview_active();
 void clear_backup();
 
 void siril_preview_hide();
