@@ -25,6 +25,7 @@
 #include "core/undo.h"
 #include "core/processing.h"
 #include "core/OS_utils.h"
+#include "core/optimize_utils.h"
 #include "algos/statistics.h"
 #include "algos/sorting.h"
 #include "gui/image_display.h"

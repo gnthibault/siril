@@ -15,10 +15,6 @@
 #endif
 #include <libintl.h>
 
-#ifdef __SSE2__
-#include <x86intrin.h>
-#endif
-
 #define _(String) gettext (String)
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
@@ -40,6 +36,7 @@
 
 #define PRINT_ALLOC_ERR fprintf(stderr, "Out of memory in %s (%s:%d) - aborting\n", __func__, __FILE__, __LINE__)
 
+#ifndef RT_INCLUDE
 #undef max
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
@@ -55,6 +52,7 @@
 #define SWAP(a,b)  { double temp = (a); (a) = (b); (b) = temp; }
 
 #define SQR(x) ((x)*(x))
+#endif
 
 #define USHRT_MAX_DOUBLE ((double)USHRT_MAX)
 #define SHRT_MAX_DOUBLE ((double)SHRT_MAX)
@@ -695,32 +693,5 @@ extern GtkBuilder *builder;	// get widget references anywhere
 extern cominfo com;		// the main data struct
 extern fits gfit;		// currently loaded image
 #endif
-
-// some convenience functions from RT
-inline __attribute__((always_inline)) float intpf(float a, float b, float c)
-{
-    // calculate a * b + (1 - a) * c
-    // following is valid:
-    // intp(a, b+x, c+x) = intp(a, b, c) + x
-    // intp(a, b*x, c*x) = intp(a, b, c) * x
-    return a * (b - c) + c;
-}
-#ifdef __SSE2__
-inline __attribute__((always_inline)) __m128 intpsse(__m128 a, __m128 b, __m128 c)
-{
-    // calculate a * b + (1 - a) * c
-    // following is valid:
-    // intp(a, b+x, c+x) = intp(a, b, c) + x
-    // intp(a, b*x, c*x) = intp(a, b, c) * x
-    return a * (b - c) + c;
-}
-#endif
-
-inline __attribute__((always_inline)) gboolean inInterval(float val, float low, float high)
-{
-    // returns TRUE if val is in [low;high]
-    float maxVal = max(val, low);
-    return val == min(maxVal, high);
-}
 
 #endif /*SIRIL */

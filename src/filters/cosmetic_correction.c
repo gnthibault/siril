@@ -27,6 +27,7 @@
 #include "core/processing.h"
 #include "core/undo.h"
 #include "core/OS_utils.h"
+#include "core/optimize_utils.h"
 #include "gui/image_display.h"
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"
