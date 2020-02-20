@@ -165,10 +165,16 @@ end_rgradient:
 
 	clearfits(&imA);
 	clearfits(&imB);
-	//if (was_ushort && !args->allow_32_bits) convert back to 16
-	if (!retval)
-		set_progress_bar_data(_("Rotational gradient complete."),
-				PROGRESS_DONE);
+	if (!retval) {
+		if (was_ushort) {
+			const long n = args->fit->naxes[0] * args->fit->naxes[1] * args->fit->naxes[2];
+			WORD *newbuf = float_buffer_to_ushort(args->fit->fdata, n);
+			if (!newbuf)
+				retval = 1;
+			else fit_replace_buffer(args->fit, newbuf, DATA_USHORT);
+		}
+		set_progress_bar_data(_("Rotational gradient complete."), PROGRESS_DONE);
+	}
 
 	invalidate_stats_from_fit(args->fit);
 	update_gfit_histogram_if_needed();
