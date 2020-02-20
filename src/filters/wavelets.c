@@ -144,13 +144,12 @@ gpointer extract_plans(gpointer p) {
 	fits fit = { 0 };
 	struct wavelets_filter_data *args = (struct wavelets_filter_data *) p;
 
-	copyfits(args->fit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
-
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 
 	for (i = 0; i < args->Nbr_Plan; i++) {
 		gchar *filename, *msg;
 
+		copyfits(args->fit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 		filename = g_strdup_printf("layer%02d", i);
 		msg = g_strdup_printf(_("Extracting %s..."), filename);
 		set_progress_bar_data(msg, (float)i / args->Nbr_Plan);
