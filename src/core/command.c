@@ -476,7 +476,11 @@ int process_wrecons(int nb) {
 
 	for (i = 0; i < nb_chan; i++) {
 		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
-		wavelet_reconstruct_file(dir[i], coef, gfit.pdata[i]);
+		if (gfit.type == DATA_USHORT) {
+			wavelet_reconstruct_file(dir[i], coef, gfit.pdata[i]);
+		} else {
+			wavelet_reconstruct_file_float(dir[i], coef, gfit.fpdata[i]);
+		}
 		g_free(dir[i]);
 	}
 
@@ -491,7 +495,6 @@ int process_wavelet(int nb) {
 			"b_rawdata.wave" }, *dir[3];
 	const char* tmpdir;
 	int Type_Transform, Nbr_Plan, maxplan, mins, chan, nb_chan;
-	float *Imag;
 
 	if (!single_image_is_loaded()) return 1;
 
@@ -517,15 +520,25 @@ int process_wavelet(int nb) {
 		return 1;
 	}
 
-	Imag = f_vector_alloc (gfit.rx * gfit.ry);
-	
-	for (chan = 0; chan < nb_chan; chan++) {
-		dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan], NULL);
-		wavelet_transform_file (Imag, gfit.ry, gfit.rx, dir[chan], Type_Transform, Nbr_Plan, gfit.pdata[chan]);
-		g_free(dir[chan]);
+	if (gfit.type == DATA_USHORT) {
+		float *Imag = f_vector_alloc(gfit.rx * gfit.ry);
+
+		for (chan = 0; chan < nb_chan; chan++) {
+			dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan],	NULL);
+			wavelet_transform_file(Imag, gfit.ry, gfit.rx, dir[chan],
+					Type_Transform, Nbr_Plan, gfit.pdata[chan]);
+			g_free(dir[chan]);
+		}
+
+		free(Imag);
+	} else {
+		for (chan = 0; chan < nb_chan; chan++) {
+			dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan],	NULL);
+			wavelet_transform_file_float(gfit.fpdata[chan], gfit.ry, gfit.rx, dir[chan],
+					Type_Transform, Nbr_Plan);
+			g_free(dir[chan]);
+		}
 	}
-	
-	free (Imag);
 	return 0;
 }
 

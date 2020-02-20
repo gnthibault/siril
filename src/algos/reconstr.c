@@ -169,6 +169,23 @@ int wavelet_reconstruct_file(char *File_Name_Transform, float *coef, WORD *data)
 	return 0;
 }
 
+int wavelet_reconstruct_file_float(char *File_Name_Transform, float *coef, float *data) {
+	wave_transf_des Wavelet;
+	int Nl, Nc;
+
+	/* read the wavelet file */
+	if (wave_io_read(File_Name_Transform, &Wavelet))
+		return 1;
+
+	Nl = Wavelet.Nbr_Ligne;
+	Nc = Wavelet.Nbr_Col;
+
+	wavelet_reconstruct_data(&Wavelet, data, coef);
+
+	wave_io_free(&Wavelet);
+	return 0;
+}
+
 /*****************************************************************************/
 
 int wavelet_reconstruct_data(wave_transf_des *Wavelet, float *Imag, float *coef) {
