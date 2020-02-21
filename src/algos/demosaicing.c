@@ -905,7 +905,7 @@ void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 	assert(debayer_area->w > 2);
 }
 
-int split_cfa(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
+int split_cfa_ushort(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 	int width = in->rx;
 	int height = in->ry;
 	int j, row, col;
@@ -914,36 +914,24 @@ int split_cfa(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 		siril_log_message(_("Split CFA does not work on non-Bayer filter camera images!\n"));
 		return 1;
 	}
-	if (in->type != DATA_USHORT) {
-		siril_log_message(_("debayer: not yet working with 32-bit data."));
-		return -1;
-	}
 
 	width = width / 2 + width % 2;
 	height = height / 2 + height % 2;
 
-	if (new_fit_image(&cfa0, width, height, 1, DATA_USHORT)) {
+	if (new_fit_image(&cfa0, width, height, 1, DATA_USHORT) ||
+			new_fit_image(&cfa1, width, height, 1, DATA_USHORT) ||
+			new_fit_image(&cfa2, width, height, 1, DATA_USHORT) ||
+			new_fit_image(&cfa3, width, height, 1, DATA_USHORT)) {
 		return 1;
 	}
 
-	if (new_fit_image(&cfa1, width, height, 1, DATA_USHORT)) {
-		return 1;
-	}
-
-	if (new_fit_image(&cfa2, width, height, 1, DATA_USHORT)) {
-		return 1;
-	}
-
-	if (new_fit_image(&cfa3, width, height, 1, DATA_USHORT)) {
-		return 1;
-	}
-
-	double c0, c1, c2, c3;
+	WORD c0, c1, c2, c3;
 	j = 0;
 
 	for (row = 0; row < in->ry - 1; row += 2) {
 		for (col = 0; col < in->rx - 1; col += 2) {
 			/* not c0, c1, c2 and c3 because of the read orientation */
+			// TODO: why ushort becomes double then becomes clipped ushort?
 			c1 = in->data[col + row * in->rx];
 			c3 = in->data[1 + col + row * in->rx];
 			c0 = in->data[col + (1 + row) * in->rx];
@@ -964,48 +952,81 @@ int split_cfa(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 	return 0;
 }
 
-int split_cfa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
-	fits f_cfa0 = { 0 };
-	fits f_cfa1 = { 0 };
-	fits f_cfa2 = { 0 };
-	fits f_cfa3 = { 0 };
+int split_cfa_float(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
+	int width = in->rx;
+	int height = in->ry;
+	int j, row, col;
 
+	if (strlen(in->bayer_pattern) > 4) {
+		siril_log_message(_("Split CFA does not work on non-Bayer filter camera images!\n"));
+		return 1;
+	}
+
+	width = width / 2 + width % 2;
+	height = height / 2 + height % 2;
+
+	if (new_fit_image(&cfa0, width, height, 1, DATA_FLOAT) ||
+			new_fit_image(&cfa1, width, height, 1, DATA_FLOAT) ||
+			new_fit_image(&cfa2, width, height, 1, DATA_FLOAT) ||
+			new_fit_image(&cfa3, width, height, 1, DATA_FLOAT)) {
+		return 1;
+	}
+
+	float c0, c1, c2, c3;
+	j = 0;
+
+	for (row = 0; row < in->ry - 1; row += 2) {
+		for (col = 0; col < in->rx - 1; col += 2) {
+			/* not c0, c1, c2 and c3 because of the read orientation */
+			c1 = in->fdata[col + row * in->rx];
+			c3 = in->fdata[1 + col + row * in->rx];
+			c0 = in->fdata[col + (1 + row) * in->rx];
+			c2 = in->fdata[1 + col + (1 + row) * in->rx];
+
+			cfa0->fdata[j] = c0;
+			cfa1->fdata[j] = c1;
+			cfa2->fdata[j] = c2;
+			cfa3->fdata[j] = c3;
+			j++;
+		}
+	}
+
+	return 0;
+}
+
+int split_cfa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
+	int ret = 1;
 	struct split_cfa_data *cfa_args = (struct split_cfa_data *) args->user;
+
+	fits f_cfa0 = { 0 }, f_cfa1 = { 0 }, f_cfa2 = { 0 }, f_cfa3 = { 0 };
 
 	gchar *cfa0 = g_strdup_printf("%s0_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
 	gchar *cfa1 = g_strdup_printf("%s1_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
 	gchar *cfa2 = g_strdup_printf("%s2_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
 	gchar *cfa3 = g_strdup_printf("%s3_%s_%05d%s", cfa_args->seqEntry, cfa_args->seq->seqname, o, com.ext);
 
-	int ret = split_cfa(fit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
-	if (ret) {
-		g_free(cfa0);
-		g_free(cfa1);
-		g_free(cfa2);
-		g_free(cfa3);
-		clearfits(&f_cfa0);
-		clearfits(&f_cfa1);
-		clearfits(&f_cfa2);
-		clearfits(&f_cfa3);
-		return ret;
+	if (fit->type == DATA_USHORT) {
+		if (!(ret = split_cfa_ushort(fit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3))) {
+			ret = save1fits16(cfa0, &f_cfa0, 0) ||
+				save1fits16(cfa1, &f_cfa1, 0) ||
+				save1fits16(cfa2, &f_cfa2, 0) ||
+				save1fits16(cfa3, &f_cfa3, 0);
+		}
+	}
+	else if (fit->type == DATA_FLOAT) {
+		if (!(ret = split_cfa_float(fit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3))) {
+			ret = save1fits32(cfa0, &f_cfa0, 0) ||
+				save1fits32(cfa1, &f_cfa1, 0) ||
+				save1fits32(cfa2, &f_cfa2, 0) ||
+				save1fits32(cfa3, &f_cfa3, 0);
+		}
 	}
 
-	save1fits16(cfa0, &f_cfa0, 0);
-	save1fits16(cfa1, &f_cfa1, 0);
-	save1fits16(cfa2, &f_cfa2, 0);
-	save1fits16(cfa3, &f_cfa3, 0);
-
-	g_free(cfa0);
-	g_free(cfa1);
-	g_free(cfa2);
-	g_free(cfa3);
-
-	clearfits(&f_cfa0);
-	clearfits(&f_cfa1);
-	clearfits(&f_cfa2);
-	clearfits(&f_cfa3);
-
-	return 0;
+	g_free(cfa0); g_free(cfa1);
+	g_free(cfa2); g_free(cfa3);
+	clearfits(&f_cfa0); clearfits(&f_cfa1);
+	clearfits(&f_cfa2); clearfits(&f_cfa3);
+	return ret;
 }
 
 void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args) {

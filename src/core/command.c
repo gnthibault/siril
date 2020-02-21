@@ -1770,11 +1770,9 @@ int process_split_cfa(int nb) {
 		return 1;
 	}
 	char *filename = NULL;
+	int ret = 1;
 
-	fits f_cfa0 = { 0 };
-	fits f_cfa1 = { 0 };
-	fits f_cfa2 = { 0 };
-	fits f_cfa3 = { 0 };
+	fits f_cfa0 = { 0 }, f_cfa1 = { 0 }, f_cfa2 = { 0 }, f_cfa3 = { 0 };
 
 	if (sequence_is_loaded() && !single_image_is_loaded()) {
 		filename = g_path_get_basename(com.seq.seqname);
@@ -1792,36 +1790,29 @@ int process_split_cfa(int nb) {
 	gchar *cfa2 = g_strdup_printf("CFA2_%s%s", filename, com.ext);
 	gchar *cfa3 = g_strdup_printf("CFA3_%s%s", filename, com.ext);
 
-	int ret = split_cfa(&gfit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
-	if (ret) {
-		g_free(cfa0);
-		g_free(cfa1);
-		g_free(cfa2);
-		g_free(cfa3);
-		clearfits(&f_cfa0);
-		clearfits(&f_cfa1);
-		clearfits(&f_cfa2);
-		clearfits(&f_cfa3);
-		return ret;
+	if (gfit.type == DATA_USHORT) {
+		if (!(ret = split_cfa_ushort(&gfit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3))) {
+			ret = save1fits16(cfa0, &f_cfa0, 0) ||
+				save1fits16(cfa1, &f_cfa1, 0) ||
+				save1fits16(cfa2, &f_cfa2, 0) ||
+				save1fits16(cfa3, &f_cfa3, 0);
+		}
+	}
+	else if (gfit.type == DATA_FLOAT) {
+		if (!(ret = split_cfa_float(&gfit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3))) {
+			ret = save1fits32(cfa0, &f_cfa0, 0) ||
+				save1fits32(cfa1, &f_cfa1, 0) ||
+				save1fits32(cfa2, &f_cfa2, 0) ||
+				save1fits32(cfa3, &f_cfa3, 0);
+		}
 	}
 
-	save1fits16(cfa0, &f_cfa0, 0);
-	save1fits16(cfa1, &f_cfa1, 0);
-	save1fits16(cfa2, &f_cfa2, 0);
-	save1fits16(cfa3, &f_cfa3, 0);
-
-	g_free(cfa0);
-	g_free(cfa1);
-	g_free(cfa2);
-	g_free(cfa3);
-
-	clearfits(&f_cfa0);
-	clearfits(&f_cfa1);
-	clearfits(&f_cfa2);
-	clearfits(&f_cfa3);
-
+	g_free(cfa0); g_free(cfa1);
+	g_free(cfa2); g_free(cfa3);
+	clearfits(&f_cfa0); clearfits(&f_cfa1);
+	clearfits(&f_cfa2); clearfits(&f_cfa3);
 	free(filename);
-	return 0;
+	return ret;
 }
 
 int process_seq_split_cfa(int nb) {
@@ -1866,7 +1857,6 @@ int process_seq_split_cfa(int nb) {
 
 	return 0;
 }
-
 
 int process_stat(int nb){
 	int nplane;
