@@ -197,6 +197,7 @@ typedef struct cominf cominfo;
 typedef struct image_stats imstats;
 typedef struct rectangle_struct rectangle;
 typedef struct point_struct point;
+typedef struct pointf_struct pointf;
 typedef struct historic_struct historic;
 typedef struct dateTime_struct dateTime;
 typedef struct fwhm_struct fitted_PSF;
@@ -512,6 +513,10 @@ struct rectangle_struct {
 
 struct point_struct {
 	double x, y;
+};
+
+struct pointf_struct {
+	float x, y;
 };
 
 struct gradient_struct {

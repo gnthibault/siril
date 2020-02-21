@@ -28,17 +28,17 @@
 #include "gui/message_dialog.h"
 #include "registration.h"
 
-static point velocity = { 0.0, 0.0 };
+static pointf velocity = { 0.f, 0.f };
 static time_t t_of_image_1 = { 0 };
 static time_t t_of_image_2 = { 0 };
-static point pos_of_image1 = { 0 };
-static point pos_of_image2 = { 0 };
+static pointf pos_of_image1 = { 0 };
+static pointf pos_of_image2 = { 0 };
 
 static time_t FITS_date_key_to_sec(char *date) {
 	struct tm timeinfo = { };
 	time_t t;
 	int year = 0, month = 0, day = 0, hour = 0, min = 0;
-	float sec = 0.0;
+	float sec = 0.f;
 
 	if (date[0] == '\0')
 		return -1;
@@ -64,25 +64,25 @@ static time_t FITS_date_key_to_sec(char *date) {
 	return t;
 }
 
-static point compute_velocity(time_t t1, time_t t2, point d1, point d2) {
-	double delta_t;
-	point delta_d, px_per_hour;
+static pointf compute_velocity(time_t t1, time_t t2, pointf d1, pointf d2) {
+	float delta_t;
+	pointf delta_d, px_per_hour;
 
-	delta_t = (double) t2 - (double) t1;
+	delta_t = (float) t2 - (float) t1;
 	delta_d.x = d2.x - d1.x;
 	delta_d.y = d2.y - d1.y;
 
-	px_per_hour.x = delta_d.x / delta_t * 3600.0;
-	px_per_hour.y = delta_d.y / delta_t * 3600.0;
+	px_per_hour.x = delta_d.x / delta_t * 3600.f;
+	px_per_hour.y = delta_d.y / delta_t * 3600.f;
 
 	return px_per_hour;
 }
 
-static int get_comet_shift(time_t ref, time_t img, point px_per_hour, float *reg_x, float *reg_y) {
-	double delta_t;
+static int get_comet_shift(time_t ref, time_t img, pointf px_per_hour, float *reg_x, float *reg_y) {
+	float delta_t;
 
-	delta_t = (double)img - (double)ref;
-	delta_t /= 3600.0;
+	delta_t = (float)img - (float)ref;
+	delta_t /= 3600.f;
 	*reg_x = delta_t * px_per_hour.x;
 	*reg_y = delta_t * px_per_hour.y;
 
@@ -100,13 +100,13 @@ static void update_velocity() {
 	g_free(v_txt);
 }
 
-static void update_entry1(double x, double y) {
+static void update_entry1(float x, float y) {
 	GtkEntry *entry_x = GTK_ENTRY(lookup_widget("entry1_x_comet"));
 	GtkEntry *entry_y = GTK_ENTRY(lookup_widget("entry1_y_comet"));
 	gchar *txt_x, *txt_y;
 
-	txt_x = g_strdup_printf("%7.2lf", x);
-	txt_y = g_strdup_printf("%7.2lf", y);
+	txt_x = g_strdup_printf("%7.2f", x);
+	txt_y = g_strdup_printf("%7.2f", y);
 
 	gtk_entry_set_text(entry_x, txt_x);
 	gtk_entry_set_text(entry_y, txt_y);
@@ -115,13 +115,13 @@ static void update_entry1(double x, double y) {
 	g_free(txt_y);
 }
 
-static void update_entry2(double x, double y) {
+static void update_entry2(float x, float y) {
 	GtkEntry *entry_x = GTK_ENTRY(lookup_widget("entry2_x_comet"));
 	GtkEntry *entry_y = GTK_ENTRY(lookup_widget("entry2_y_comet"));
 	gchar *txt_x, *txt_y;
 
-	txt_x = g_strdup_printf("%7.2lf", x);
-	txt_y = g_strdup_printf("%7.2lf", y);
+	txt_x = g_strdup_printf("%7.2f", x);
+	txt_y = g_strdup_printf("%7.2f", y);
 
 	gtk_entry_set_text(entry_x, txt_x);
 	gtk_entry_set_text(entry_y, txt_y);
@@ -248,7 +248,7 @@ static int comet_align_image_hook(struct generic_seq_args *args, int out_index, 
 
 	if (!regargs->cumul) {
 		/* data initialization */
-		set_shifts(args->seq, in_index, regargs->layer, 0.0, 0.0, FALSE);
+		set_shifts(args->seq, in_index, regargs->layer, 0.f, 0.f, FALSE);
 	}
 
 	time_t date_obs = FITS_date_key_to_sec(fit->date_obs);
