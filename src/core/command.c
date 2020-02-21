@@ -1754,9 +1754,15 @@ int process_split(int nb){
 	gchar *G = g_strdup_printf("%s%s", word[2], com.ext);
 	gchar *B = g_strdup_printf("%s%s", word[3], com.ext);
 
-	save1fits16(R, &gfit, RLAYER);
-	save1fits16(G, &gfit, GLAYER);
-	save1fits16(B, &gfit, BLAYER);
+	if (gfit.type == DATA_USHORT) {
+		save1fits16(R, &gfit, RLAYER);
+		save1fits16(G, &gfit, GLAYER);
+		save1fits16(B, &gfit, BLAYER);
+	} else {
+		save1fits32(R, &gfit, RLAYER);
+		save1fits32(G, &gfit, GLAYER);
+		save1fits32(B, &gfit, BLAYER);
+	}
 
 	g_free(R);
 	g_free(G);

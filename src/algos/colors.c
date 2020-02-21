@@ -645,7 +645,7 @@ static gpointer extract_channels_float(gpointer p) {
 
 	}
 	for (i = 0; i < 3; i++)
-		save1fits16(args->channel[i], args->fit, i);
+		save1fits32(args->channel[i], args->fit, i);
 	clearfits(args->fit);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
