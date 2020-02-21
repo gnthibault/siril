@@ -85,9 +85,13 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 		sprintf(format, "%%.5e");
 	}
 	else {
-		if (stat[RLAYER]->max <= 1.0)	// special case of float images
-			sprintf(format, "%%.5e");
-		else sprintf(format, "%%.1lf");
+		if (stat[RLAYER]->max <= 1.0) {	// special case of float images
+			/* by default it is shown in ushort mode */
+			normValue[RLAYER] = 1.0 / USHRT_MAX_DOUBLE;
+			normValue[GLAYER] = 1.0 / USHRT_MAX_DOUBLE;
+			normValue[BLAYER] = 1.0 / USHRT_MAX_DOUBLE;
+		}
+		sprintf(format, "%%.1lf");
 	}
 
 	sprintf(rvalue, "%.4lf", ((double) stat[RLAYER]->ngoodpix / (double) stat[RLAYER]->total) * 100.0);
