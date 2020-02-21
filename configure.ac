@@ -80,6 +80,22 @@ AC_CHECK_FUNCS(backtrace, , AC_CHECK_LIB(execinfo, backtrace))
 dnl Set PACKAGE_DOC_DIR in config.h.
 dnl AC_DEFINE_UNQUOTED(PACKAGE_DOC_DIR, "${ac_default_prefix}/share/doc/${PACKAGE}", "package doc dir")
 
+dnl On some platforms, std::atomic needs a helper library
+AC_MSG_CHECKING(whether -latomic is needed)
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
+  #include <atomic>
+  #include <cstdint>
+  std::atomic<std::int64_t> v;
+  int main() {
+    return v;
+  }
+]])], STD_ATOMIC_NEED_LIBATOMIC=no, STD_ATOMIC_NEED_LIBATOMIC=yes)
+AC_MSG_RESULT($STD_ATOMIC_NEED_LIBATOMIC)
+if test "x$STD_ATOMIC_NEED_LIBATOMIC" = xyes; then
+  LIBATOMIC_LIBS="-latomic"
+fi
+AC_SUBST([LIBATOMIC_LIBS])
+
 dnl ================ MANDATORY DEPENDECIES ================
 dnl check math lib
 AC_CHECK_LIB(m, log, LIBS="$LIBS -lm")
