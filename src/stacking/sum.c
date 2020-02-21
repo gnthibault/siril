@@ -107,8 +107,7 @@ static int sum_stacking_image_hook(struct generic_seq_args *args, int o, int i, 
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
-							ssdata->fsum[layer][pixel] += (double)fit->fpdata[layer][ii] + 1.0;
-							// we keep data positive in the sum, hence the +1
+							ssdata->fsum[layer][pixel] += (double)fit->fpdata[layer][ii];
 						}
 						else
 #ifdef _OPENMP
