@@ -491,8 +491,10 @@ gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
 		handled = 1;
 		text = gtk_entry_get_text(entry);
 		history_add_line(strdup(text));
-		if (!(processcommand(text)))
+		if (!(processcommand(text))) {
 			gtk_entry_set_text(entry, "");
+			set_precision_switch();
+		}
 		break;
 	case GDK_KEY_Up:
 		handled = 1;
