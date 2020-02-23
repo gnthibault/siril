@@ -118,7 +118,6 @@ int process_satu(int nb){
 	args->h_max = 360.0;
 	args->preserve = FALSE;
 
-	set_cursor_waiting(TRUE);
 	enhance_saturation(args);
 
 	adjust_cutoff_from_updated_gfit();
@@ -359,21 +358,15 @@ int process_grey_flat(int nb) {
 
 int process_rl(int nb) {
 	double sigma, corner;
-	int threshold, iter;
+	int iter;
 
 	if (!single_image_is_loaded()) return 1;
 
 	if (!com.script)
 		control_window_switch_to_tab(OUTPUT_LOGS);
-	threshold = atoi(word[1]);
-	sigma = atof(word[2]);
-	corner = atof(word[3]);
-	iter = atoi(word[4]);
-
-	if (threshold < 0 || threshold > 200) {
-		siril_log_message(_("threshold must be between [0, 200].\n"));
-		return 1;
-	}
+	sigma = atof(word[1]);
+	corner = atof(word[2]);
+	iter = atoi(word[3]);
 
 	if (sigma < 0.4 || sigma > 2.0) {
 		siril_log_message(_("Sigma must be between [0.4, 2.0]\n"));
@@ -399,7 +392,12 @@ int process_rl(int nb) {
 	struct deconv_data *args = malloc(sizeof(struct deconv_data));
 
 	args->fit = &gfit;
-	args->contrast_threshold = (size_t)threshold;
+	if (args->fit->type == DATA_USHORT) {
+		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi;
+	} else {
+		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi * USHRT_MAX_DOUBLE;
+	}
+	args->auto_contrast_threshold = TRUE;
 	args->sigma = sigma;
 	args->corner_radius = corner;
 	args->iterations = (size_t)iter;
