@@ -104,15 +104,14 @@ int stack_addmin(struct stacking_args *args) {
 
 static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 	int x, y, nx, ny, i, ii, j, shiftx, shifty, layer, reglayer;
-	WORD *final_pixel[3], *from, *to, minmaxim = ismax ? 0 : USHRT_MAX;;
+	WORD *final_pixel[3];
+	float *ffinal_pixel[3];
 	double exposure=0.0;
-	unsigned int nbdata = 0;
-	char filename[256];
-	int retval = 0;
-	int nb_frames, cur_nb = 0;
-	fits fit;
-	char *tmpmsg;
-	memset(&fit, 0, sizeof(fits));
+	gboolean is_float;
+	long nbdata = 0;
+	char *tmpmsg, filename[256];
+	int retval = 0, nb_frames, cur_nb = 0;
+	fits fit = { 0 };
 
 	/* should be pre-computed to display it in the stacking tab */
 	nb_frames = args->nb_images_to_stack;
@@ -124,6 +123,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 	}
 
 	final_pixel[0] = NULL;
+	ffinal_pixel[0] = NULL;
 	g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
 	g_assert(nb_frames <= args->seq->number);
 
@@ -158,25 +158,50 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 		/* first loaded image: init data structures for stacking */
 		if (!nbdata) {
-			nbdata = fit.ry * fit.rx;
-			final_pixel[0] = malloc(nbdata * fit.naxes[2] * sizeof(WORD));
-			memset(final_pixel[0], ismax ? 0 : USHRT_MAX, nbdata * fit.naxes[2] * sizeof(WORD));
-			if (final_pixel[0] == NULL){
-				printf("Stacking: memory allocation failure\n");
-				retval = -2;
-				goto free_and_reset_progress_bar;
-			}
-			if(args->seq->nb_layers == 3){
-				final_pixel[1] = final_pixel[0] + nbdata;	// index of green layer in final_pixel[0]
-				final_pixel[2] = final_pixel[0] + nbdata*2;	// index of blue layer in final_pixel[0]
+			is_float = fit.type == DATA_FLOAT;
+			nbdata = fit.naxes[0] * fit.naxes[1];
+			if (is_float) {
+				if (ismax)
+					ffinal_pixel[0] = calloc(nbdata * fit.naxes[2], sizeof(float));
+				else {
+					long i;
+					ffinal_pixel[0] = malloc(nbdata * fit.naxes[2] * sizeof(float));
+					for (i = 0; i < nbdata * fit.naxes[2]; i++)
+						ffinal_pixel[0][i] = 1.0;
+				}
+				if (!ffinal_pixel[0]) {
+					PRINT_ALLOC_ERR;
+					retval = -2;
+					goto free_and_reset_progress_bar;
+				}
+				if(args->seq->nb_layers == 3){
+					ffinal_pixel[1] = ffinal_pixel[0] + nbdata;
+					ffinal_pixel[2] = ffinal_pixel[1] + nbdata;
+				}
+			} else {
+				if (ismax)
+					final_pixel[0] = calloc(nbdata * fit.naxes[2], sizeof(WORD));
+				else {
+					long i;
+					final_pixel[0] = malloc(nbdata * fit.naxes[2] * sizeof(WORD));
+					for (i = 0; i < nbdata * fit.naxes[2]; i++)
+						final_pixel[0][i] = USHRT_MAX;
+				}
+				if (!final_pixel[0]) {
+					PRINT_ALLOC_ERR;
+					retval = -2;
+					goto free_and_reset_progress_bar;
+				}
+				if(args->seq->nb_layers == 3){
+					final_pixel[1] = final_pixel[0] + nbdata;
+					final_pixel[2] = final_pixel[1] + nbdata;
+				}
 			}
 		} else if (fit.ry * fit.rx != nbdata) {
 			siril_log_message(_("Stacking: image in sequence doesn't has the same dimensions\n"));
 			retval = -3;
 			goto free_and_reset_progress_bar;
 		}
-
-		
 
 		/* load registration data for current image */
 		if(reglayer != -1 && args->seq->regparam[reglayer]) {
@@ -205,13 +230,20 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 					//printf("shiftx=%d shifty=%d i=%d ii=%d\n",shiftx,shifty,i,ii);
 					if (ii > 0 && ii < fit.rx * fit.ry){
 						for(layer=0; layer<args->seq->nb_layers; ++layer){
-							WORD current_pixel = fit.pdata[layer][ii];
-							if ((ismax && current_pixel > final_pixel[layer][i]) ||	// we take the brighter pixel
-									(!ismax && current_pixel < final_pixel[layer][i]))	// we take the darker pixel
-								final_pixel[layer][i] = current_pixel;
-							if ((ismax && final_pixel[layer][i] > minmaxim) ||
-									(!ismax && final_pixel[layer][i] < minmaxim)){
-								minmaxim = final_pixel[layer][i];
+							if (is_float) {
+								float current_pixel = fit.fpdata[layer][ii];
+								// we take the brightest pixel
+								if ((ismax && current_pixel > ffinal_pixel[layer][i]) ||	
+										// we take the darkest pixel
+										(!ismax && current_pixel < ffinal_pixel[layer][i]))
+									ffinal_pixel[layer][i] = current_pixel;
+							} else {
+								WORD current_pixel = fit.pdata[layer][ii];
+								// we take the brightest pixel
+								if ((ismax && current_pixel > final_pixel[layer][i]) ||	
+										// we take the darkest pixel
+										(!ismax && current_pixel < final_pixel[layer][i]))
+									final_pixel[layer][i] = current_pixel;
 							}
 						}
 					}
@@ -226,23 +258,31 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 	}
 	set_progress_bar_data(_("Finalizing stacking..."), (double)nb_frames/((double)nb_frames+1.));
 
-	copyfits(&fit, &gfit, CP_ALLOC|CP_FORMAT, 0);
-	gfit.hi = round_to_WORD(minmaxim);
-	gfit.bitpix = USHORT_IMG;
-
-	if (final_pixel[0]) {
-		g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
-		for (layer=0; layer<args->seq->nb_layers; ++layer){
-			from = final_pixel[layer];
-			to = gfit.pdata[layer];
-			for (y=0; y < fit.ry * fit.rx; ++y) {
-				*to++ = *from++;
-			}
+	clearfits(&gfit);
+	copyfits(&fit, &gfit, CP_FORMAT, 0);
+	if (is_float) {
+		gfit.fdata = ffinal_pixel[0];
+		gfit.fpdata[RLAYER] = gfit.fdata;
+		if (fit.naxes[2] == 3) {
+			gfit.fpdata[GLAYER] = gfit.fdata + nbdata;
+			gfit.fpdata[BLAYER] = gfit.fdata + 2 * nbdata;
+		} else {
+			gfit.fpdata[GLAYER] = gfit.fdata;
+			gfit.fpdata[BLAYER] = gfit.fdata;
+		}
+	} else {
+		gfit.data = final_pixel[0];
+		gfit.pdata[RLAYER] = gfit.data;
+		if (fit.naxes[2] == 3) {
+			gfit.pdata[GLAYER] = gfit.data + nbdata;
+			gfit.pdata[BLAYER] = gfit.data + 2 * nbdata;
+		} else {
+			gfit.pdata[GLAYER] = gfit.data;
+			gfit.pdata[BLAYER] = gfit.data;
 		}
 	}
 
 free_and_reset_progress_bar:
-	if (final_pixel[0]) free(final_pixel[0]);
 	if (retval) {
 		set_progress_bar_data(_("Stacking failed. Check the log."), PROGRESS_RESET);
 		siril_log_message(_("Stacking failed.\n"));
