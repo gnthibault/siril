@@ -93,7 +93,7 @@ static command commands[] = {
 	{"register", 1, "register sequence [-norot] [-drizzle]", process_register, STR_REGISTER, TRUE},
 	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE, TRUE},
 	{"rgradient", 4, "rgradient xc yc dR dalpha", process_rgradient, STR_RGRADIENT, TRUE},
-	{"rl", 4, "rl threshold sigma corner_radius_boost iterations", process_rl, STR_RL, TRUE},
+	{"rl", 3, "rl sigma corner_radius_boost iterations", process_rl, STR_RL, TRUE},
 	{"rmgreen", 1, "rmgreen type", process_scnr, STR_RMGREEN, TRUE},
 	{"rotate", 1, "rotate degree", process_rotate, STR_ROTATE, TRUE},
 	{"rotatePi", 0, "rotatePi", process_rotatepi, STR_ROTATEPI, TRUE},
