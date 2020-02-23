@@ -110,13 +110,13 @@ int process_satu(int nb){
 	struct enhance_saturation_data *args = malloc(sizeof(struct enhance_saturation_data));
 	
 	args->coeff = atof(word[1]);
-	if (args->coeff == 0.0) args->coeff = 1.0;
 
 	args->input = &gfit;
 	args->output = &gfit;
 	args->h_min = 0.0;
 	args->h_max = 360.0;
-	args->preserve = TRUE;
+	args->preserve = FALSE;
+	args->force_remap = TRUE;
 
 	set_cursor_waiting(TRUE);
 	start_in_new_thread(enhance_saturation, args);
