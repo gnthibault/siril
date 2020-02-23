@@ -591,6 +591,7 @@ int process_clahe(int nb) {
 
 	args->fit = &gfit;
 	args->clip = clip_limit;
+	args->tileSize = size;
 
 	set_cursor_waiting(TRUE);
 
