@@ -117,10 +117,13 @@ int process_satu(int nb){
 	args->h_min = 0.0;
 	args->h_max = 360.0;
 	args->preserve = FALSE;
-	args->force_remap = TRUE;
 
 	set_cursor_waiting(TRUE);
-	start_in_new_thread(enhance_saturation, args);
+	enhance_saturation(args);
+
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
 
 	return 0;
 }

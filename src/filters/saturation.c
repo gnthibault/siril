@@ -111,7 +111,6 @@ static int satu_update_preview() {
 	args->output = &gfit;
 	args->coeff = satu_amount;
 	args->preserve = satu_preserve_bkg;
-	args->force_remap = FALSE;
 	start_in_new_thread(enhance_saturation, args);
 
 	return 0;
@@ -136,20 +135,6 @@ void on_satu_apply_clicked(GtkButton *button, gpointer user_data) {
 
 void on_satu_dialog_close(GtkDialog *dialog, gpointer user_data) {
 	apply_satu_changes();
-}
-
-gboolean end_saturation(gpointer arg) {
-	struct enhance_saturation_data *args = (struct enhance_saturation_data *) arg;
-	stop_processing_thread();
-
-	if (args->force_remap) {
-		adjust_cutoff_from_updated_gfit();
-		redraw(com.cvport, REMAP_ALL);
-		redraw_previews();
-	}
-
-	set_cursor_waiting(FALSE);
-	return FALSE;
 }
 
 gpointer enhance_saturation_ushort(gpointer p) {
@@ -207,7 +192,7 @@ gpointer enhance_saturation_ushort(gpointer p) {
 	}
 	invalidate_stats_from_fit(args->output);
 
-	siril_add_idle(end_saturation, args);
+	siril_add_idle(end_generic, args);
 
 	return GINT_TO_POINTER(0);
 }
@@ -269,7 +254,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 		out[BLAYER][i] = b;
 	}
 	invalidate_stats_from_fit(args->output);
-	siril_add_idle(end_saturation, args);
+	siril_add_idle(end_generic, args);
 
 	return GINT_TO_POINTER(0);
 }
