@@ -278,6 +278,7 @@ int process_addmax(int nb){
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 	}
+	clearfits(&fit);
 	return 0;
 }
 
@@ -291,6 +292,7 @@ int process_fdiv(int nb){
 	if (readfits(word[1], &fit, NULL)) return -1;
 	siril_fdiv(&gfit, &fit, norm, TRUE);
 
+	clearfits(&fit);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
