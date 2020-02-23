@@ -175,7 +175,7 @@ static int loglut_ushort(fits *fit) {
 		double wd = stat->max - stat->min;
 		for (i = 0; i < fit->ry * fit->rx; i++) {
 			float px = (float)buf[layer][i];
-			buf[layer][i] = round_to_WORD(logf((px - min) / wd) * norm);
+			buf[layer][i] = round_to_WORD(log1pf((px - min) / wd) * norm);
 		}
 		free_stats(stat);
 	}
