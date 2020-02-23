@@ -229,15 +229,41 @@ int process_savepnm(int nb){
 }
 
 int process_imoper(int nb){
+	int retval;
 	fits fit = { 0 };
 	if (!single_image_is_loaded()) return 1;
 	if (readfits(word[1], &fit, NULL)) return -1;
-	imoper(&gfit, &fit, word[0][1], TRUE);
 
+	image_operator oper;
+	switch (word[0][1]) {
+		case 'a':
+		case 'A':
+			oper = OPER_ADD;
+			break;
+		case 's':
+		case 'S':
+			oper = OPER_SUB;
+			break;
+		case 'm':
+		case 'M':
+			oper = OPER_MUL;
+			break;
+		case 'd':
+		case 'D':
+			oper = OPER_DIV;
+			break;
+		default:
+			siril_log_color_message(_("Could not understand the requested operator\n"), "red");
+			clearfits(&fit);
+			return 1;
+	}
+	retval = imoper(&gfit, &fit, oper, TRUE);
+
+	clearfits(&fit);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
-	return 0;
+	return retval;
 }
 
 int process_addmax(int nb){
