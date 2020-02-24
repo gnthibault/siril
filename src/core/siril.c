@@ -50,9 +50,10 @@ int threshlo(fits *fit, int level) {
 				buf++;
 			}
 		} else if (fit->type == DATA_FLOAT) {
+			float l = level / USHRT_MAX_SINGLE;
 			float *buf = fit->fpdata[layer];
 			for (i = 0; i < fit->rx * fit->ry; ++i) {
-				*buf = max(level, *buf);
+				*buf = max(l, *buf);
 				buf++;
 			}
 		}
@@ -72,9 +73,10 @@ int threshhi(fits *fit, int level) {
 				buf++;
 			}
 		} else if (fit->type == DATA_FLOAT) {
+			float l = level / USHRT_MAX_SINGLE;
 			float *buf = fit->fpdata[layer];
 			for (i = 0; i < fit->rx * fit->ry; ++i) {
-				*buf = min(level, *buf);
+				*buf = min(l, *buf);
 				buf++;
 			}
 		}
@@ -95,10 +97,11 @@ int nozero(fits *fit, int level) {
 				buf++;
 			}
 		} else if (fit->type == DATA_FLOAT) {
+			float l = level / USHRT_MAX_SINGLE;
 			float *buf = fit->fpdata[layer];
 			for (i = 0; i < fit->rx * fit->ry; ++i) {
 				if (*buf == 0)
-					*buf = level;
+					*buf = l;
 				buf++;
 			}
 		}
