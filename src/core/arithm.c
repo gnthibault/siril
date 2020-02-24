@@ -203,8 +203,9 @@ int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
 		return 1;
 	}
 
-	if (a->type == DATA_FLOAT)
-		result = a->fdata;
+	if (factor > 1.0) {
+		factor /= USHRT_MAX_SINGLE;
+	}
 	else {
 		result = malloc(n * sizeof(float));
 		if (!result) {
@@ -236,9 +237,9 @@ int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
 		if (result[i] > 1.0f)	// should we truncate by default?
 			result[i] = 1.0f;
 	}
-	if (a->type == DATA_USHORT)
+	if (a->type == DATA_USHORT) {
 		fit_replace_buffer(a, result, DATA_FLOAT);
-	else invalidate_stats_from_fit(a);
+	} else invalidate_stats_from_fit(a);
 	return 0;
 }
 
@@ -248,7 +249,7 @@ int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
 static int imoper_with_factor(fits *a, fits *b, image_operator oper, float factor, gboolean allow_32bits) {
 	// ushort result can only be forced when both input images are ushort
 	if (allow_32bits)
-		return imoper_to_float(a, b, oper, 1.0f);
+		return imoper_to_float(a, b, oper, factor);
 	else {
 		if (a->type == DATA_USHORT && b->type == DATA_USHORT)
 			return imoper_ushort_to_ushort(a, b, oper, 1.0f);
