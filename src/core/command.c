@@ -365,11 +365,7 @@ int process_rl(int nb) {
 	struct deconv_data *args = malloc(sizeof(struct deconv_data));
 
 	args->fit = &gfit;
-	if (args->fit->type == DATA_USHORT) {
-		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi;
-	} else {
-		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi * USHRT_MAX_DOUBLE;
-	}
+	args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi;
 	args->auto_contrast_threshold = TRUE;
 	args->sigma = sigma;
 	args->corner_radius = corner;
