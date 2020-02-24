@@ -863,11 +863,15 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 						}
 					} else {
 						int kept_pixels = apply_rejection_float(data, nb_frames, args, crej);
-						double sum = 0.0;
-						for (frame = 0; frame < kept_pixels; ++frame) {
-							sum += ((float*)data->stack)[frame];
+						if (kept_pixels == 0)
+							mean = 0.0;
+						else {
+							double sum = 0.0;
+							for (frame = 0; frame < kept_pixels; ++frame) {
+								sum += ((float*)data->stack)[frame];
+							}
+							mean = sum / (double)kept_pixels;
 						}
-						mean = sum / (double)kept_pixels;
 					}
 					result = mean;
 				} else {
