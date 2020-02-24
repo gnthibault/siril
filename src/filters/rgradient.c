@@ -31,6 +31,7 @@
 #include "gui/histogram.h"
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"
+#include "gui/message_dialog.h"
 #include "opencv/opencv.h"
 #include "io/single_image.h"
 
@@ -218,12 +219,18 @@ void on_rgradient_Apply_clicked(GtkButton *button, gpointer user_data) {
 	args->da = get_da();
 	args->fit = &gfit;
 
+	if ((args->xc >= args->fit->rx) || (args->yc >= args->fit->ry)) {
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Wrong center coordinates"),
+				_("The coordinates cannot be greater than the size of the image. Please change their values and retry."));
+	} else {
+
 	set_cursor_waiting(TRUE);
 
 	undo_save_state(&gfit, "Processing: RGradient: (dR=%5.2lf, dA=%4.2lf, xc=%7.1lf, yc=%7.1lf)",
 			args->dR, args->da, args->xc, args->yc);
 
 	start_in_new_thread(rgradient_filter, args);
+	}
 }
 
 void on_button_rgradient_selection_clicked(GtkButton *button, gpointer user_data) {

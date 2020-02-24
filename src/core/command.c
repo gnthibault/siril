@@ -754,9 +754,15 @@ int process_rgradient(int nb) {
 	args->da = atof(word[4]);
 	args->fit = &gfit;
 
-	set_cursor_waiting(TRUE);
+	if ((args->xc >= args->fit->rx) || (args->yc >= args->fit->ry)) {
+		siril_log_message(_("The coordinates cannot be greater than the size of the image. "
+				"Please change their values and retry.\n"));
+	} else {
 
-	start_in_new_thread(rgradient_filter, args);
+		set_cursor_waiting(TRUE);
+
+		start_in_new_thread(rgradient_filter, args);
+	}
 	return 0;
 }
 
