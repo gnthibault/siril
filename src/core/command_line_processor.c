@@ -237,6 +237,85 @@ gpointer execute_script(gpointer p) {
 	return GINT_TO_POINTER(retval);
 }
 
+	static GtkWidget *popover_new(GtkWidget *widget, const gchar *text) {
+		GtkWidget *popover, *box, *image, *label;
+
+		popover = gtk_popover_new(widget);
+		label = gtk_label_new(NULL);
+		box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+		image = gtk_image_new_from_icon_name("dialog-information-symbolic",
+				GTK_ICON_SIZE_DIALOG);
+
+		gtk_label_set_markup(GTK_LABEL(label), text);
+		gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
+		gtk_label_set_max_width_chars(GTK_LABEL(label), 64);
+
+		gtk_box_pack_start(GTK_BOX(box), image, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
+		gtk_container_add(GTK_CONTAINER(popover), box);
+
+		gtk_widget_show_all(box);
+
+		return popover;
+	}
+
+static void show_command_help_popup(GtkEntry *entry) {
+	GString *str;
+	GtkWidget *popover;
+	gchar **command_line;
+	const gchar *text;
+	gchar *helper = NULL;
+
+	text = gtk_entry_get_text(entry);
+	if (*text == '\0')
+		return;
+
+	command *current = commands;
+
+	command_line = g_strsplit_set(text, " ", -1);
+	while (current->process) {
+		if (!g_ascii_strcasecmp(current->name, command_line[0])) {
+			gchar **token;
+
+			token = g_strsplit_set(current->usage, " ", -1);
+			str = g_string_new(token[0]);
+			str = g_string_prepend(str, "<span foreground=\"red\"><b>");
+			str = g_string_append(str, "</b>");
+			if (token[1] != NULL) {
+				str = g_string_append(str, current->usage + strlen(token[0]));
+			}
+			str = g_string_append(str, "</span>\n\n\t");
+			str = g_string_append(str, _(current->definition));
+			str = g_string_append(str, "\n\n<b>");
+			str = g_string_append(str, _("Can be used in a script: "));
+			str = g_string_append(str, "<span foreground=\"red\">");
+			if (current->scriptable) {
+				str = g_string_append(str, _("YES"));
+			} else {
+				str = g_string_append(str, _("NO"));
+			}
+			str = g_string_append(str, "</span></b>");
+			helper = g_string_free(str, FALSE);
+			g_strfreev(token);
+			break;
+		}
+		current++;
+	}
+	if (!helper) {
+		helper = g_strdup(_("No help for this command"));
+	}
+
+	g_strfreev(command_line);
+
+	popover = popover_new(lookup_widget("command"), helper);
+#if GTK_CHECK_VERSION(3, 22, 0)
+	gtk_popover_popup(GTK_POPOVER(popover));
+#else
+	gtk_widget_show(popover);
+#endif
+	g_free(helper);
+}
+
 int processcommand(const char *line) {
 	int wordnb = 0, len;
 	char *myline;
@@ -271,6 +350,9 @@ int processcommand(const char *line) {
 		parseLine(myline, len, &wordnb);
 		if (executeCommand(wordnb)) {
 			siril_log_message(_("Command execution failed.\n"));
+			if (!com.script && !com.headless) {
+				show_command_help_popup(GTK_ENTRY(lookup_widget("command")));
+			}
 			free(myline);
 			return 1;
 		}
@@ -342,28 +424,6 @@ static gboolean completion_match_func(GtkEntryCompletion *completion,
 	return res;
 }
 
-static GtkWidget *popover_new(GtkWidget *widget, const gchar *text) {
-	GtkWidget *popover, *box, *image, *label;
-
-	popover = gtk_popover_new(widget);
-	label = gtk_label_new(NULL);
-	box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-	image = gtk_image_new_from_icon_name("dialog-information-symbolic",
-			GTK_ICON_SIZE_DIALOG);
-
-	gtk_label_set_markup(GTK_LABEL(label), text);
-	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-	gtk_label_set_max_width_chars(GTK_LABEL(label), 64);
-
-	gtk_box_pack_start(GTK_BOX(box), image, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
-	gtk_container_add(GTK_CONTAINER(popover), box);
-
-	gtk_widget_show_all(box);
-
-	return popover;
-}
-
 void init_completion_command() {
 	GtkEntryCompletion *completion = gtk_entry_completion_new();
 	GtkListStore *model = gtk_list_store_new(1, G_TYPE_STRING);
@@ -391,62 +451,7 @@ void init_completion_command() {
 }
 
 void on_GtkCommandHelper_clicked(GtkButton *button, gpointer user_data) {
-	GtkEntry *entry;
-	GString *str;
-	GtkWidget *popover;
-	gchar **command_line;
-	const gchar *text;
-	gchar *helper = NULL;
-
-	entry = GTK_ENTRY(lookup_widget("command"));
-	text = gtk_entry_get_text(entry);
-	if (*text == '\0')
-		return;
-
-	command *current = commands;
-
-	command_line = g_strsplit_set(text, " ", -1);
-	while (current->process) {
-		if (!g_ascii_strcasecmp(current->name, command_line[0])) {
-			gchar **token;
-
-			token = g_strsplit_set(current->usage, " ", -1);
-			str = g_string_new(token[0]);
-			str = g_string_prepend(str, "<span foreground=\"red\"><b>");
-			str = g_string_append(str, "</b>");
-			if (token[1] != NULL) {
-				str = g_string_append(str, current->usage + strlen(token[0]));
-			}
-			str = g_string_append(str, "</span>\n\n\t");
-			str = g_string_append(str, _(current->definition));
-			str = g_string_append(str, "\n\n<b>");
-			str = g_string_append(str, _("Can be used in a script: "));
-			str = g_string_append(str, "<span foreground=\"red\">");
-			if (current->scriptable) {
-				str = g_string_append(str, _("YES"));
-			} else {
-				str = g_string_append(str, _("NO"));
-			}
-			str = g_string_append(str, "</span></b>");
-			helper = g_string_free(str, FALSE);
-			g_strfreev(token);
-			break;
-		}
-		current++;
-	}
-	if (!helper) {
-		helper = g_strdup(_("No help for this command"));
-	}
-
-	g_strfreev(command_line);
-
-	popover = popover_new(lookup_widget("command"), helper);
-#if GTK_CHECK_VERSION(3, 22, 0)
-	gtk_popover_popup(GTK_POPOVER(popover));
-#else
-	gtk_widget_show(popover);
-#endif
-	g_free(helper);
+	show_command_help_popup((GtkEntry *)user_data);
 }
 
 /** Callbacks **/
