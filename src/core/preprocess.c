@@ -41,9 +41,10 @@
 
 static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark,
 		double k, gboolean allow_32bit_output) {
+	long chan;
+	int ret = 0;
 	double noise = 0.0;
 	fits dark_tmp = { 0 }, fit_tmp = { 0 };
-	int chan, ret = 0;
 	rectangle area = { 0 };
 
 	/* square of 512x512 in the center of the image */
@@ -56,8 +57,8 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark,
 	copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 	copyfits(fit, &fit_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 
-	soper(&dark_tmp, k, OPER_MUL, allow_32bit_output);
-	ret = imoper(&fit_tmp, &dark_tmp, OPER_SUB, allow_32bit_output);
+	ret = soper(&dark_tmp, k, OPER_MUL, allow_32bit_output);
+	if (!ret) ret = imoper(&fit_tmp, &dark_tmp, OPER_SUB, allow_32bit_output);
 	if (ret) {
 		clearfits(&dark_tmp);
 		clearfits(&fit_tmp);
@@ -68,7 +69,7 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark,
 		imstats *stat = statistics(NULL, -1, &fit_tmp, chan, &area, STATS_BASIC, FALSE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
-			return 0.0;	// not -1?
+			return -1.0;
 		}
 		noise += stat->sigma;
 		free_stats(stat);
@@ -89,7 +90,6 @@ static double goldenSectionSearch(fits *raw, fits *dark, double a, double b,
 
 	c = b - GR * (b - a);
 	d = a + GR * (b - a);
-	// TODO: check return values of evaluateNoiseOfCalibratedImage
 	fc = evaluateNoiseOfCalibratedImage(raw, dark, c, allow_32bits);
 	fd = evaluateNoiseOfCalibratedImage(raw, dark, d, allow_32bits);
 	do {
@@ -111,7 +111,7 @@ static double goldenSectionSearch(fits *raw, fits *dark, double a, double b,
 
 		}
 	} while (fabs(c - d) > tol);
-	return ((b + a) / 2.0);
+	return ((b + a) * 0.5);
 }
 
 

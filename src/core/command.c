@@ -1203,7 +1203,11 @@ int process_nozero(int nb){
 	if (!single_image_is_loaded()) return 1;
 
 	level = atoi(word[1]);
-	nozero(&gfit, level);
+	if (level < 0 || level > USHRT_MAX) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+		return 1;
+	}
+	nozero(&gfit, (WORD)level);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();

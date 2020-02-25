@@ -160,7 +160,7 @@ int siril_fits_img_stats_float(float *array, long nx, long ny, int nullcheck,
 
 int threshlo(fits *fit, int level);
 int threshhi(fits *fit, int level);
-int nozero(fits *fit, int level);
+int nozero(fits *fit, WORD level);
 int unsharp(fits*, double sigma, double mult, gboolean verbose);
 double entropy(fits *fit, int layer, rectangle *area, imstats *opt_stats);
 int loglut(fits *fit);

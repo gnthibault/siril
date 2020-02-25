@@ -230,7 +230,7 @@ int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
 				result[i] = aval * bval;
 				break;
 			case OPER_DIV:
-				printf("aval=%g\tbval=%g\tfactor=%g\n", aval, bval, factor);
+				//printf("aval=%g\tbval=%g\tfactor=%g\n", aval, bval, factor);
 				if (bval == 0.0f)
 					result[i] = 0.0f;
 				else result[i] = aval / bval;

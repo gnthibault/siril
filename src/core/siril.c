@@ -85,7 +85,8 @@ int threshhi(fits *fit, int level) {
 	return 0;
 }
 
-int nozero(fits *fit, int level) {
+// level is for ushort data, adapted automatically in case of float data
+int nozero(fits *fit, WORD level) {
 	int i, layer;
 
 	for (layer = 0; layer < fit->naxes[2]; ++layer) {
@@ -97,7 +98,7 @@ int nozero(fits *fit, int level) {
 				buf++;
 			}
 		} else if (fit->type == DATA_FLOAT) {
-			float l = level / USHRT_MAX_SINGLE;
+			float l = (float)level / USHRT_MAX_SINGLE;
 			float *buf = fit->fpdata[layer];
 			for (i = 0; i < fit->rx * fit->ry; ++i) {
 				if (*buf == 0)
@@ -217,16 +218,15 @@ int loglut(fits *fit) {
 
 int ddp(fits *a, int level, float coeff, float sigma) {
 	fits fit = { 0 };
-	// TODO: check retvals
-	copyfits(a, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
-	unsharp(&fit, sigma, 0, FALSE);
-	soper(&fit, (double)level, OPER_ADD, TRUE);
-	nozero(&fit, 1);
-	siril_fdiv(a, &fit, level, TRUE);
-	soper(a, (double)coeff, OPER_MUL, TRUE);
+	int ret = copyfits(a, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
+	if (!ret) ret = unsharp(&fit, sigma, 0, FALSE);
+	if (!ret) ret = soper(&fit, (double)level, OPER_ADD, TRUE);
+	if (!ret) ret = nozero(&fit, 1);
+	if (!ret) ret = siril_fdiv(a, &fit, (float)level, TRUE);
+	if (!ret) ret = soper(a, (double)coeff, OPER_MUL, TRUE);
 	clearfits(&fit);
 	invalidate_stats_from_fit(a);
-	return 0;
+	return ret;
 }
 
 int visu(fits *fit, int low, int high) {
