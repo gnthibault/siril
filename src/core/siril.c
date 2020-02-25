@@ -39,7 +39,7 @@
 #include "algos/statistics.h"
 #include "opencv/opencv.h"
 
-int threshlo(fits *fit, int level) {
+int threshlo(fits *fit, WORD level) {
 	int i, layer;
 
 	for (layer = 0; layer < fit->naxes[2]; ++layer) {
@@ -50,7 +50,7 @@ int threshlo(fits *fit, int level) {
 				buf++;
 			}
 		} else if (fit->type == DATA_FLOAT) {
-			float l = level / USHRT_MAX_SINGLE;
+			float l = (float) level / USHRT_MAX_SINGLE;
 			float *buf = fit->fpdata[layer];
 			for (i = 0; i < fit->rx * fit->ry; ++i) {
 				*buf = max(l, *buf);
@@ -62,7 +62,7 @@ int threshlo(fits *fit, int level) {
 	return 0;
 }
 
-int threshhi(fits *fit, int level) {
+int threshhi(fits *fit, WORD level) {
 	int i, layer;
 
 	for (layer = 0; layer < fit->naxes[2]; ++layer) {
@@ -73,7 +73,7 @@ int threshhi(fits *fit, int level) {
 				buf++;
 			}
 		} else if (fit->type == DATA_FLOAT) {
-			float l = level / USHRT_MAX_SINGLE;
+			float l = (float) level / USHRT_MAX_SINGLE;
 			float *buf = fit->fpdata[layer];
 			for (i = 0; i < fit->rx * fit->ry; ++i) {
 				*buf = min(l, *buf);
@@ -218,11 +218,18 @@ int loglut(fits *fit) {
 
 int ddp(fits *a, int level, float coeff, float sigma) {
 	fits fit = { 0 };
+	double l_add = (float) level;
+	float l_div = (float) l_add / USHRT_MAX_SINGLE;
+
+	if (a->type == DATA_FLOAT) {
+		l_add /= USHRT_MAX_DOUBLE;
+	}
+
 	int ret = copyfits(a, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 	if (!ret) ret = unsharp(&fit, sigma, 0, FALSE);
-	if (!ret) ret = soper(&fit, (double)level, OPER_ADD, TRUE);
+	if (!ret) ret = soper(&fit, l_add, OPER_ADD, TRUE);
 	if (!ret) ret = nozero(&fit, 1);
-	if (!ret) ret = siril_fdiv(a, &fit, (float)level, TRUE);
+	if (!ret) ret = siril_fdiv(a, &fit, l_div, TRUE);
 	if (!ret) ret = soper(a, (double)coeff, OPER_MUL, TRUE);
 	clearfits(&fit);
 	invalidate_stats_from_fit(a);

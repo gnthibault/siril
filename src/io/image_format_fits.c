@@ -1418,7 +1418,6 @@ int savefits(const char *name, fits *f) {
 	switch (f->bitpix) {
 	case BYTE_IMG:
 		data8 = malloc(pixel_count * sizeof(BYTE));
-
 		if (f->type == DATA_FLOAT) {
 			for (i = 0; i < pixel_count; i++) {
 				data8[i] = (BYTE) (f->fdata[i] * UCHAR_MAX_SINGLE);

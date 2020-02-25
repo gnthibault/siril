@@ -1162,7 +1162,15 @@ int process_thresh(int nb){
 	if (!single_image_is_loaded()) return 1;
 
 	lo = atoi(word[1]);
+	if (lo < 0 || lo > USHRT_MAX) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+		return 1;
+	}
 	hi = atoi(word[2]);
+	if (hi < 0 || hi > USHRT_MAX) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+		return 1;
+	}
 	threshlo(&gfit, lo);
 	threshhi(&gfit, hi);
 	adjust_cutoff_from_updated_gfit();
@@ -1177,6 +1185,10 @@ int process_threshlo(int nb){
 	if (!single_image_is_loaded()) return 1;
 
 	lo = atoi(word[1]);
+	if (lo < 0 || lo > USHRT_MAX) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+		return 1;
+	}
 	threshlo(&gfit, lo);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
@@ -1190,6 +1202,10 @@ int process_threshhi(int nb){
 	if (!single_image_is_loaded()) return 1;
 
 	hi = atoi(word[1]);
+	if (hi < 0 || hi > USHRT_MAX) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+		return 1;
+	}
 	threshhi(&gfit, hi);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
