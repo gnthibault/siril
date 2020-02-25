@@ -1516,12 +1516,11 @@ int process_fmedian(int nb){
  * was done to be consistent with IRIS
  */
 int process_cdg(int nb) {
-	double x_avg, y_avg;
+	float x_avg, y_avg;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	if (!FindCentre(&gfit, &x_avg, &y_avg)) {
-		y_avg = gfit.ry - y_avg;	// FITS are stored bottom to top
 		siril_log_message(_("Center of gravity coordinates are (%.3lf, %.3lf)\n"), x_avg, y_avg);
 		return 0;
 	}

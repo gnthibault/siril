@@ -34,7 +34,7 @@
 #undef DEBUG
 
 double QualityEstimate(fits *fit, int layer);
-int FindCentre(fits *fit, double *x_avg, double *y_avg);
+int FindCentre(fits *fit, float *x_avg, float *y_avg);
 
 // from quality_float.c
 double QualityEstimate_float(fits *fit, int layer);

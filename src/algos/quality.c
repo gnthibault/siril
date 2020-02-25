@@ -301,14 +301,14 @@ static void _smooth_image_16(unsigned short *buf, int width,
 int BlankImageCount = 0;
 int MinPixels = 50;
 
-static int _FindCentre_Barycentre(fits *fit, int x1, int y1, int x2, int y2,
-		double *x_avg, double *y_avg) {
+static int _FindCentre_Barycentre_ushort(fits *fit, int x1, int y1, int x2, int y2,
+		float *x_avg, float *y_avg) {
 	int img_width = fit->rx;
 	int img_height = fit->ry;
 	int x, y;
 	int count = 0;	// count of significant pixels
-	double x_total = 0, y_total = 0;
-	double RealThreshHold;
+	float x_total = 0.f, y_total = 0.F;
+	float RealThreshHold;
 
 	// must prevent scanning near the edge due to the extended tests below that look
 	// +/- 1 pixel above and below
@@ -343,37 +343,98 @@ static int _FindCentre_Barycentre(fits *fit, int x1, int y1, int x2, int y2,
 		printf("[no image] ");
 		if (BlankImageCount >= 0)
 			++BlankImageCount;
-		return (0);
+		return 1;
 	}
 
 	if (count < MinPixels) {
 		printf("[Not enough pixels. Found %d, require %d] ", count, MinPixels);
 		if (BlankImageCount >= 0)
 			++BlankImageCount;
-		return (0);
+		return 1;
 	}
 
 	if (count > 0) {
-		*x_avg = ((double) x_total / (double) count + 0.5);
-		*y_avg = ((double) y_total / (double) count + 0.5);
+		*x_avg = (x_total / (float) count + 0.5f);
+		*y_avg = (y_total / (float) count + 0.5f);
 		BlankImageCount = 0;
 	}
 
 	*y_avg = img_height - *y_avg;
 
-	return 1;
+	return 0;
+}
+
+static int _FindCentre_Barycentre_float(fits *fit, int x1, int y1, int x2, int y2,
+		float *x_avg, float *y_avg) {
+	int img_width = fit->rx;
+	int img_height = fit->ry;
+	int x, y;
+	int count = 0;	// count of significant pixels
+	float x_total = 0.f, y_total = 0.f;
+	float RealThreshHold;
+
+	// must prevent scanning near the edge due to the extended tests below that look
+	// +/- 1 pixel above and below
+	if (x1 < 1)
+		x1 = 1;
+	if (y1 < 1)
+		y1 = 1;
+	if (x2 >= img_width - 1)
+		x2 = img_width - 2;
+	if (y2 >= img_height - 1)
+		y2 = img_height - 2;
+
+	RealThreshHold = THRESHOLD_FLOAT;
+
+	for (y = y1; y <= y2; ++y) {
+		float *iptr = fit->fdata + y * img_width + x1;
+		for (x = x1; x <= x2; ++x, ++iptr) {
+			if (*iptr >= RealThreshHold && *(iptr - 1) >= RealThreshHold
+					&& *(iptr + 1) >= RealThreshHold
+					&& *(iptr - img_width) >= RealThreshHold
+					&& *(iptr + img_width) >= RealThreshHold) {
+				x_total += x;
+				y_total += y;
+				count++;
+			}
+		}
+	}
+
+	if (count == 0) {
+		printf("[no image] ");
+		if (BlankImageCount >= 0)
+			++BlankImageCount;
+		return 1;
+	}
+
+	if (count < MinPixels) {
+		printf("[Not enough pixels. Found %d, require %d] ", count, MinPixels);
+		if (BlankImageCount >= 0)
+			++BlankImageCount;
+		return 1;
+	}
+
+	if (count > 0) {
+		*x_avg = (x_total / (float) count + 0.5f);
+		*y_avg = (y_total / (float) count + 0.5f);
+		BlankImageCount = 0;
+	}
+
+	*y_avg = img_height - *y_avg;
+
+	return 0;
 }
 
 // find the centre of brightness of the whole image
-int FindCentre(fits *fit, double *x_avg, double *y_avg) {
+int FindCentre(fits *fit, float *x_avg, float *y_avg) {
 	int x1 = 2;
 	int x2 = fit->rx - 3;
 	int y1 = 0;
 	int y2 = fit->ry - 1;
 
-	if (fit->type != DATA_USHORT) {
-		siril_log_color_message(_("Computing the centre of gravity is only possible with 16-bit images currently\n"), "red");
-		return 1;
+	if (fit->type == DATA_USHORT) {
+		return _FindCentre_Barycentre_ushort(fit, x1, y1, x2, y2, x_avg, y_avg);
+	} else {
+		return _FindCentre_Barycentre_float(fit, x1, y1, x2, y2, x_avg, y_avg);
 	}
-	return _FindCentre_Barycentre(fit, x1, y1, x2, y2, x_avg, y_avg);
 }
