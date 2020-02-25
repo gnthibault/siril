@@ -164,10 +164,9 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 				if (ismax)
 					ffinal_pixel[0] = calloc(nbdata * fit.naxes[2], sizeof(float));
 				else {
-					long i;
 					ffinal_pixel[0] = malloc(nbdata * fit.naxes[2] * sizeof(float));
-					for (i = 0; i < nbdata * fit.naxes[2]; i++)
-						ffinal_pixel[0][i] = 1.0;
+					for (long k = 0; k < nbdata * fit.naxes[2]; k++)
+						ffinal_pixel[0][k] = 1.0;
 				}
 				if (!ffinal_pixel[0]) {
 					PRINT_ALLOC_ERR;
@@ -182,10 +181,9 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 				if (ismax)
 					final_pixel[0] = calloc(nbdata * fit.naxes[2], sizeof(WORD));
 				else {
-					long i;
 					final_pixel[0] = malloc(nbdata * fit.naxes[2] * sizeof(WORD));
-					for (i = 0; i < nbdata * fit.naxes[2]; i++)
-						final_pixel[0][i] = USHRT_MAX;
+					for (long k = 0; k < nbdata * fit.naxes[2]; k++)
+						final_pixel[0][k] = USHRT_MAX;
 				}
 				if (!final_pixel[0]) {
 					PRINT_ALLOC_ERR;

@@ -931,7 +931,6 @@ int split_cfa_ushort(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 	for (row = 0; row < in->ry - 1; row += 2) {
 		for (col = 0; col < in->rx - 1; col += 2) {
 			/* not c0, c1, c2 and c3 because of the read orientation */
-			// TODO: why ushort becomes double then becomes clipped ushort?
 			c1 = in->data[col + row * in->rx];
 			c3 = in->data[1 + col + row * in->rx];
 			c0 = in->data[col + (1 + row) * in->rx];

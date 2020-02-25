@@ -396,9 +396,9 @@ static void remap(int vport) {
 #endif
 	for (y = 0; y < gfit.ry; y++) {
 		guint x;
-		guint src_index = y * gfit.rx;
-		guint dst_index = ((gfit.ry - 1 - y) * gfit.rx) * 4;
-		for (x = 0; x < gfit.rx; ++x, ++src_index, dst_index += 2) {
+		guint src_i = y * gfit.rx;
+		guint dst_i = ((gfit.ry - 1 - y) * gfit.rx) * 4;
+		for (x = 0; x < gfit.rx; ++x, ++src_i, dst_i += 2) {
 			guint src_index = y * gfit.rx + x;
 			BYTE dst_pixel_value = 0;
 			if (gfit.type == DATA_USHORT) {

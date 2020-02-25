@@ -146,8 +146,10 @@ int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa)
 #ifdef SIRIL_OUTPUT_DEBUG
 		fprintf(stdout, "****** before debayer, data is [%f, %f] (should be [0, 65535]) ******\n", min, max);
 #endif
+	} else {
+		free(rawdata);
+		return -1;
 	}
-	else return -1;
 
 	for (i=1; i<fit->ry; i++)
 		rawdata[i] = rawdata[i - 1] + fit->rx;
