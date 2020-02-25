@@ -21,8 +21,9 @@ cd deps
 cd librtprocess || ( echo 'Failed to get librtprocess, please download it and compile it yourself. Aborting.' && exit 1 )
 if [ ! -d build ] ; then
 	mkdir build && cd build &&
-	uname -s | grep -q '^MINGW64_NT' && cmake -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON -DOPTION_OMP=OFF .. || cmake -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON -DOPTION_OMP=OFF .. || exit 1
+	uname -s | grep -q '^MINGW64_NT' && cmake -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON -DOPTION_OMP=OFF .. || cmake -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON -DOPTION_OMP=OFF ..
 	cd ..
+	if [ ! -f build/Makefile ] ; then echo 'cmake failed, removing build directory' ; rm -rf build ; exit 1 ; fi
 fi
 cd ../..
 
