@@ -357,8 +357,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		return 1;
 	}
 
-	WORD *gbuf[3] =
-			{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	WORD *gbuf[3] =	{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	float *gbuff[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
 
 	switch (bitspersample) {
 	case 8:
@@ -369,7 +369,11 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 				for (n = 0; n < nsamples; n++) {
 					/* UCHAR_MAX / USHRT_MAX is constant, it's 1/255
 					 * This operation should be speed-up by doing a shift */
-					buf8[col * nsamples + n] = (*gbuf[n]++) * norm;
+					if (fit->type == DATA_USHORT) {
+						buf8[col * nsamples + n] = (*gbuf[n]++) * norm;
+					} else {
+						buf8[col * nsamples + n] = (*gbuff[n]++) * UCHAR_MAX_SINGLE;
+					}
 				}
 			}
 			TIFFWriteScanline(tif, buf8, row, 0);
@@ -383,7 +387,11 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		for (row = 0; row < height; row++) {
 			for (col = 0; col < width; col++) {
 				for (n = 0; n < nsamples; n++)
-					buf16[col * nsamples + n] = (*gbuf[n]++) * norm;
+					if (fit->type == DATA_USHORT) {
+						buf16[col * nsamples + n] = (*gbuf[n]++) * norm;
+					} else {
+						buf16[col * nsamples + n] = float_to_ushort_range(*gbuff[n]++);
+					}
 			}
 			TIFFWriteScanline(tif, buf16, row, 0);
 		}
@@ -472,7 +480,6 @@ int readjpg(const char* name, fits *fit){
 int savejpg(const char *name, fits *fit, int quality){
 	FILE *f;
 	int i, j;
-	WORD red, blue, green;
 	struct jpeg_compress_struct cinfo;    // Basic info for JPEG properties.
 	struct jpeg_error_mgr jerr;           // In case of error.
 	JSAMPROW row_pointer[1];              // Pointer to JSAMPLE row[s].
@@ -503,6 +510,7 @@ int savejpg(const char *name, fits *fit, int quality){
 	cinfo.in_color_space = (fit->naxes[2] == 3) ? JCS_RGB : JCS_GRAYSCALE; // Colorspace of input image as RGB.
 
 	WORD *gbuf[3] =	{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	float *gbuff[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
 
 	jpeg_set_defaults(&cinfo);
 	jpeg_set_quality(&cinfo, quality, TRUE);
@@ -517,13 +525,24 @@ int savejpg(const char *name, fits *fit, int quality){
 	for (i = (cinfo.image_height - 1); i >= 0; i--) {
 		for (j = 0; j < cinfo.image_width; j++) {
 			int pixelIdx = ((i * cinfo.image_width) + j) * cinfo.input_components;
-			red = *gbuf[RLAYER]++;
-			image_buffer[pixelIdx + 0] = round_to_BYTE(red * norm);         // r |-- Set r,g,b components to
-			if (cinfo.input_components == 3) {
-				green = *gbuf[GLAYER]++;
-				blue = *gbuf[BLAYER]++;
-				image_buffer[pixelIdx + 1] = round_to_BYTE(green * norm); // g |   make this pixel
-				image_buffer[pixelIdx + 2] = round_to_BYTE(blue * norm);  // b |
+			if (fit->type == DATA_USHORT) {
+				WORD red = *gbuf[RLAYER]++;
+				image_buffer[pixelIdx + 0] = round_to_BYTE(red * norm); // r |-- Set r,g,b components to
+				if (cinfo.input_components == 3) {
+					WORD green = *gbuf[GLAYER]++;
+					WORD blue = *gbuf[BLAYER]++;
+					image_buffer[pixelIdx + 1] = round_to_BYTE(green * norm); // g |   make this pixel
+					image_buffer[pixelIdx + 2] = round_to_BYTE(blue * norm); // b |
+				}
+			} else {
+				float red = *gbuff[RLAYER]++;
+				image_buffer[pixelIdx + 0] = red * UCHAR_MAX_SINGLE; // r |-- Set r,g,b components to
+				if (cinfo.input_components == 3) {
+					float green = *gbuff[GLAYER]++;
+					float blue = *gbuff[BLAYER]++;
+					image_buffer[pixelIdx + 1] = green * UCHAR_MAX_SINGLE; // g |   make this pixel
+					image_buffer[pixelIdx + 2] = blue * UCHAR_MAX_SINGLE; // b |
+				}
 			}
 		}
 	}
@@ -769,10 +788,18 @@ static WORD *convert_data(fits *image) {
 
 	WORD *buffer = malloc(ndata * ch * sizeof(WORD));
 	for (i = 0, j = 0; i < ndata * ch; i += ch, j++) {
-		buffer[i + 0] = image->pdata[RLAYER][j];
-		if (ch > 1) {
-			buffer[i + 1] = image->pdata[GLAYER][j];
-			buffer[i + 2] = image->pdata[BLAYER][j];
+		if (image->type == DATA_USHORT) {
+			buffer[i + 0] = image->pdata[RLAYER][j];
+			if (ch > 1) {
+				buffer[i + 1] = image->pdata[GLAYER][j];
+				buffer[i + 2] = image->pdata[BLAYER][j];
+			}
+		} else {
+			buffer[i + 0] = float_to_ushort_range(image->fpdata[RLAYER][j]);
+			if (ch > 1) {
+				buffer[i + 1] = float_to_ushort_range(image->fpdata[GLAYER][j]);
+				buffer[i + 2] = float_to_ushort_range(image->fpdata[BLAYER][j]);
+			}
 		}
 	}
 	return buffer;
@@ -785,10 +812,18 @@ static uint8_t *convert_data8(fits *image) {
 
 	uint8_t *buffer = malloc(ndata * ch * sizeof(uint8_t));
 	for (i = 0, j = 0; i < ndata * ch; i += ch, j++) {
-		buffer[i + 0] = (uint8_t)image->pdata[RLAYER][j];
-		if (ch > 1) {
-			buffer[i + 1] = (uint8_t) image->pdata[GLAYER][j];
-			buffer[i + 2] = (uint8_t) image->pdata[BLAYER][j];
+		if (image->type == DATA_USHORT) {
+			buffer[i + 0] = (uint8_t) image->pdata[RLAYER][j];
+			if (ch > 1) {
+				buffer[i + 1] = (uint8_t) image->pdata[GLAYER][j];
+				buffer[i + 2] = (uint8_t) image->pdata[BLAYER][j];
+			}
+		} else {
+			buffer[i + 0] = image->fpdata[RLAYER][j] * UCHAR_MAX_SINGLE;
+			if (ch > 1) {
+				buffer[i + 1] = image->fpdata[GLAYER][j] * UCHAR_MAX_SINGLE;
+				buffer[i + 2] = image->fpdata[BLAYER][j] * UCHAR_MAX_SINGLE;
+			}
 		}
 	}
 	return buffer;
@@ -821,7 +856,8 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 	} else {
 		// Create monochrome PNG file
 		if (bytes_per_sample == 2) {
-			ret = save_mono_file(filename, fit->data, width, height,
+			WORD *data = convert_data(fit);
+			ret = save_mono_file(filename, data, width, height,
 					bytes_per_sample);
 		} else {
 			uint8_t *data = convert_data8(fit);

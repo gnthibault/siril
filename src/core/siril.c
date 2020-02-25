@@ -345,6 +345,7 @@ int off(fits *fit, float level) {
 	if (fit->type == DATA_USHORT) {
 		return off_ushort(fit, level);
 	} else if (fit->type == DATA_FLOAT) {
+		level /= USHRT_MAX_SINGLE;
 		return off_float(fit, level);
 	}
 	return -1;
