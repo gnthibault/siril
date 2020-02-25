@@ -1379,6 +1379,7 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
 /* creates, saves and closes the file associated to f, overwriting previous  */
 int savefits(const char *name, fits *f) {
 	int status, i;
+	int type;
 	long orig[3] = { 1L, 1L, 1L }, pixel_count;
 	char filename[256];
 	BYTE *data8;
@@ -1416,39 +1417,50 @@ int savefits(const char *name, fits *f) {
 	status = 0;
 	switch (f->bitpix) {
 	case BYTE_IMG:
-		data8 = calloc(pixel_count, sizeof(BYTE));
-		double norm = get_normalized_value(f);
-		for (i = 0; i < pixel_count; i++) {
-			if (norm == USHRT_MAX_DOUBLE)
-				data8[i] = conv_to_BYTE(f->data[i]);
-			else
-				data8[i] = (BYTE) (f->data[i]);
+		data8 = malloc(pixel_count * sizeof(BYTE));
+
+		if (f->type == DATA_FLOAT) {
+			for (i = 0; i < pixel_count; i++) {
+				data8[i] = (BYTE) (f->fdata[i] * UCHAR_MAX_SINGLE);
+			}
+		} else {
+			double norm = get_normalized_value(f);
+			for (i = 0; i < pixel_count; i++) {
+				if (norm == USHRT_MAX_DOUBLE)
+					data8[i] = conv_to_BYTE((double)f->data[i]);
+				else
+					data8[i] = (BYTE) (f->data[i]);
+			}
 		}
-		f->lo >>= 8;
-		f->hi >>= 8;
 		if (fits_write_pix(f->fptr, TBYTE, orig, pixel_count, data8, &status)) {
 			report_fits_error(status);
 			free(data8);
 			return 1;
 		}
+		f->lo >>= 8;
+		f->hi >>= 8;
 		free(data8);
 		break;
 	case SHORT_IMG:
-		if (f->orig_bitpix == BYTE_IMG) {
-			conv_8_to_16(f->data, pixel_count);
-		}
-		if (fits_write_pix(f->fptr, TSHORT, orig, pixel_count, f->data, &status)) {
-			report_fits_error(status);
-			return 1;
-		}
-		break;
 	case USHORT_IMG:
-		if (f->orig_bitpix == BYTE_IMG) {
-			conv_8_to_16(f->data, pixel_count);
-		}
-		if (fits_write_pix(f->fptr, TUSHORT, orig, pixel_count, f->data, &status)) {
-			report_fits_error(status);
-			return 1;
+		type = f->bitpix == SHORT_IMG ? TSHORT : TUSHORT;
+		if (f->type == DATA_FLOAT) {
+			WORD *data = float_buffer_to_ushort(f->fdata, f->naxes[0] * f->naxes[1] * f->naxes[2]);
+			if (fits_write_pix(f->fptr, type, orig, pixel_count, data, &status)) {
+				report_fits_error(status);
+				free(data);
+				return 1;
+			}
+			free(data);
+		} else {
+			if (f->orig_bitpix == BYTE_IMG) {
+				conv_8_to_16(f->data, pixel_count);
+			}
+			if (fits_write_pix(f->fptr, type, orig, pixel_count, f->data,
+					&status)) {
+				report_fits_error(status);
+				return 1;
+			}
 		}
 		break;
 	case FLOAT_IMG:
