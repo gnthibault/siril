@@ -2126,8 +2126,8 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	else if (dtype <= FLOAT_IMG) {	// means float or double image
 		WORD wlo, whi;
 		if (!try_read_float_lo_hi(fp, &wlo, &whi)) {
-			min = (float)wlo;
-			max = (float)whi;
+			min = (float) wlo / USHRT_MAX_SINGLE;
+			max = (float) whi / USHRT_MAX_SINGLE;
 		}
 	}
 
