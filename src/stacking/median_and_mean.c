@@ -568,7 +568,8 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	struct _data_block *data_pool = NULL;
 	struct _image_block *blocks = NULL;
 	data_type itype;	// input data type
-	fits fit = { 0 }, *fptr;
+	fits fit = { 0 }, *fptr; // output result
+	fits ref = { 0 }; // reference image, used to get metadata back
 	// data for mean/rej only
 	uint64_t irej[3][2] = {{0,0}, {0,0}, {0,0}};
 	regdata *layerparam = NULL;
@@ -592,7 +593,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	set_progress_bar_data(NULL, PROGRESS_RESET);
 
 	/* first loop: open all fits files and check they are of same size */
-	if ((retval = stack_open_all_files(args, &bitpix, &naxis, naxes, &exposure, &fit))) {
+	if ((retval = stack_open_all_files(args, &bitpix, &naxis, naxes, &exposure, &ref))) {
 		goto free_and_close;
 	}
 
@@ -613,6 +614,8 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 					args->use_32bit_output ? DATA_FLOAT : DATA_USHORT))) {
 		goto free_and_close;
 	}
+	copy_fits_metadata(&ref, fptr);
+	clearfits(&ref);
 	if (!args->use_32bit_output && (args->norm_to_16 || fit.orig_bitpix != BYTE_IMG)) {
 		fit.bitpix = USHORT_IMG;
 		if (args->norm_to_16)
