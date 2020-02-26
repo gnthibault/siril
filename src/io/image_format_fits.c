@@ -1420,7 +1420,7 @@ int savefits(const char *name, fits *f) {
 		data8 = malloc(pixel_count * sizeof(BYTE));
 		if (f->type == DATA_FLOAT) {
 			for (i = 0; i < pixel_count; i++) {
-				data8[i] = (BYTE) (f->fdata[i] * UCHAR_MAX_SINGLE);
+				data8[i] = float_to_uchar_range(f->fdata[i]);
 			}
 		} else {
 			double norm = get_normalized_value(f);

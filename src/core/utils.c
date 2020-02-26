@@ -181,6 +181,15 @@ WORD float_to_ushort_range(float f) {
 }
 
 /**
+ * convert a siril float [0, 1] to an unsigned char
+ * @param f value to convert
+ * @return the unsigned char equivalent
+ */
+BYTE float_to_uchar_range(float f) {
+	return roundf_to_BYTE(f * UCHAR_MAX_SINGLE);
+}
+
+/**
  * convert a float type buffer into a WORD buffer
  * @param buffer in float
  * @param ndata

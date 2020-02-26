@@ -106,6 +106,7 @@ WORD truncate_to_WORD(int x);
 float ushort_to_float_range(WORD w);
 float double_ushort_to_float_range(double d);
 WORD float_to_ushort_range(float f);
+BYTE float_to_uchar_range(float f);
 WORD *float_buffer_to_ushort(float *buffer, long ndata);
 float *ushort_buffer_to_float(WORD *buffer, long ndata);
 uint16_t change_endianness16(uint16_t x);

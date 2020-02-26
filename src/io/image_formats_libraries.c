@@ -372,7 +372,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 					if (fit->type == DATA_USHORT) {
 						buf8[col * nsamples + n] = (*gbuf[n]++) * norm;
 					} else {
-						buf8[col * nsamples + n] = (*gbuff[n]++) * UCHAR_MAX_SINGLE;
+						buf8[col * nsamples + n] = float_to_uchar_range(*gbuff[n]++);
 					}
 				}
 			}
@@ -536,12 +536,12 @@ int savejpg(const char *name, fits *fit, int quality){
 				}
 			} else {
 				float red = *gbuff[RLAYER]++;
-				image_buffer[pixelIdx + 0] = red * UCHAR_MAX_SINGLE; // r |-- Set r,g,b components to
+				image_buffer[pixelIdx + 0] = float_to_uchar_range(red); // r |-- Set r,g,b components to
 				if (cinfo.input_components == 3) {
 					float green = *gbuff[GLAYER]++;
 					float blue = *gbuff[BLAYER]++;
-					image_buffer[pixelIdx + 1] = green * UCHAR_MAX_SINGLE; // g |   make this pixel
-					image_buffer[pixelIdx + 2] = blue * UCHAR_MAX_SINGLE; // b |
+					image_buffer[pixelIdx + 1] = float_to_uchar_range(green); // g |   make this pixel
+					image_buffer[pixelIdx + 2] = float_to_uchar_range(blue); // b |
 				}
 			}
 		}
@@ -819,10 +819,10 @@ static uint8_t *convert_data8(fits *image) {
 				buffer[i + 2] = (uint8_t) image->pdata[BLAYER][j];
 			}
 		} else {
-			buffer[i + 0] = image->fpdata[RLAYER][j] * UCHAR_MAX_SINGLE;
+			buffer[i + 0] = float_to_uchar_range(image->fpdata[RLAYER][j]);
 			if (ch > 1) {
-				buffer[i + 1] = image->fpdata[GLAYER][j] * UCHAR_MAX_SINGLE;
-				buffer[i + 2] = image->fpdata[BLAYER][j] * UCHAR_MAX_SINGLE;
+				buffer[i + 1] = float_to_uchar_range(image->fpdata[GLAYER][j]);
+				buffer[i + 2] = float_to_uchar_range(image->fpdata[BLAYER][j]);
 			}
 		}
 	}

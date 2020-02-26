@@ -383,9 +383,9 @@ int savebmp(const char *name, fits *fit) {
 					bluef = redf;
 				}
 
-				pixel[0] = round_to_BYTE(bluef * UCHAR_MAX_SINGLE); /* swap Blue and Red */
-				pixel[1] = round_to_BYTE(greenf * UCHAR_MAX_SINGLE);
-				pixel[2] = round_to_BYTE(redf * UCHAR_MAX_SINGLE);
+				pixel[0] = float_to_uchar_range(bluef); /* swap Blue and Red */
+				pixel[1] = float_to_uchar_range(greenf);
+				pixel[2] = float_to_uchar_range(redf);
 
 				fwrite(pixel, sizeof(pixel), 1, f);
 			}
