@@ -19,7 +19,6 @@ struct preprocessing_data {
 	gboolean is_cfa;
 	gboolean debayer;
 	gboolean compatibility;
-	gboolean stretch_cfa;
 	gboolean equalize_cfa;
 	gboolean allow_32bit_output;
 	float normalisation;

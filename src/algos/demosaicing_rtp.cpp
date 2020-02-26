@@ -98,7 +98,7 @@ static bool progress(double p) {
 	return true;
 }
 
-int debayer(fits* fit, interpolation_method interpolation, gboolean stretch_cfa) {
+int debayer(fits* fit, interpolation_method interpolation) {
 	rpError retval;
 	unsigned int i, cfarray[2][2], xtrans_array[6][6];
 	long j, nbpixels = fit->naxes[0] * fit->naxes[1];

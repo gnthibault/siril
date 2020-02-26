@@ -12,7 +12,7 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 #ifdef __cplusplus
 extern "C" {
 #endif
-int debayer(fits*, interpolation_method, gboolean);
+int debayer(fits*, interpolation_method);
 #ifdef __cplusplus
 }
 #endif

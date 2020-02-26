@@ -247,8 +247,7 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 	if (prepro->debayer) {
 		if (!prepro->seq || prepro->seq->type == SEQ_REGULAR) {
 			// not for SER because it is done on-the-fly
-			debayer_if_needed(TYPEFITS, fit,
-					prepro->compatibility, TRUE, prepro->stretch_cfa);
+			debayer_if_needed(TYPEFITS, fit, prepro->compatibility, TRUE);
 		}
 
 #ifdef SIRIL_OUTPUT_DEBUG
@@ -476,7 +475,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	struct preprocessing_data *args;
 	GtkEntry *entry;
 	GtkWidget *autobutton;
-	GtkToggleButton *CFA, *debayer, *equalize_cfa, *compatibility, *stretch_cfa;
+	GtkToggleButton *CFA, *debayer, *equalize_cfa, *compatibility;
 	GtkSpinButton *sigHot, *sigCold;
 
 	if (!single_image_is_loaded() && !sequence_is_loaded())
@@ -509,7 +508,6 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	CFA = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
 	debayer = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_pp_dem"));
 	compatibility = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility"));
-	stretch_cfa = GTK_TOGGLE_BUTTON(lookup_widget("stretch_CFA_to16_button"));
 	equalize_cfa = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
 	sigHot = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeHot"));
 	sigCold = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeCold"));
@@ -525,7 +523,6 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	args->is_cfa = gtk_toggle_button_get_active(CFA);
 	args->compatibility = gtk_toggle_button_get_active(compatibility);
 	args->debayer = gtk_toggle_button_get_active(debayer);
-	args->stretch_cfa =  gtk_toggle_button_get_active(stretch_cfa);
 	args->equalize_cfa = gtk_toggle_button_get_active(equalize_cfa);
 
 	/****/

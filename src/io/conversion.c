@@ -211,7 +211,6 @@ static void initialize_libraw_settings() {
 static void initialize_ser_debayer_settings() {
 	com.debayer.open_debayer = FALSE;
 	com.debayer.use_bayer_header = TRUE;
-	com.debayer.stretch = TRUE;
 	com.debayer.compatibility = FALSE;
 	com.debayer.bayer_pattern = BAYER_FILTER_RGGB;
 	com.debayer.bayer_inter = BAYER_RCD;
@@ -281,14 +280,14 @@ static int save_to_target_fits(fits *fit, const char *dest_filename) {
 }
 
 /* open the file with path source from any image type and load it into a new FITS object */
-static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility, gboolean stretch_cfa) {
+static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility) {
 	int retval = 0;
 	fits *tmpfit = calloc(1, sizeof(fits));
 
 	retval = any_to_fits(imagetype, source, tmpfit, FALSE);
 
 	if (!retval)
-		retval = debayer_if_needed(imagetype, tmpfit, compatibility, FALSE, stretch_cfa);
+		retval = debayer_if_needed(imagetype, tmpfit, compatibility, FALSE);
 
 	if (retval) {
 		clearfits(tmpfit);
@@ -640,7 +639,6 @@ static void initialize_convert() {
 	args->t_start.tv_sec = t_start.tv_sec;
 	args->t_start.tv_usec = t_start.tv_usec;
 	args->compatibility = com.debayer.compatibility;
-	args->stretch_cfa = com.debayer.stretch;
 	args->command_line = FALSE;
 	args->several_type_of_files = several_type_of_files;
 	args->destroot = g_strdup(destroot);
@@ -852,7 +850,7 @@ gpointer convert_thread_worker(gpointer p) {
 			free(fit);
 		}
 		else {	// single image
-			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility, args->stretch_cfa);
+			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility);
 			if (fit) {
 				if (convflags & CONVDSTSER) {
 					if (convflags & CONV1X1)
@@ -893,7 +891,7 @@ clean_exit:
 	return NULL;
 }
 
-int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer, gboolean stretch_cfa) {
+int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer) {
 	int retval = 0;
 	sensor_pattern tmp;
 	/* What the hell?
@@ -936,11 +934,7 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 			siril_log_message(_("Filter Pattern: %s\n"), filter_pattern[com.debayer.bayer_pattern]);
 		}
 
-		if (stretch_cfa && fit->maximum_pixel_value) {
-			siril_log_message(_("The FITS file is being normalized to 16-bit\n"));
-		}
-
-		if (debayer(fit, com.debayer.bayer_inter, stretch_cfa)) {
+		if (debayer(fit, com.debayer.bayer_inter)) {
 			siril_log_message(_("Cannot perform debayering\n"));
 			retval = -1;
 		} else {

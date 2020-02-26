@@ -87,7 +87,7 @@ static command commands[] = {
 
 	{"offset", 1, "offset value", process_offset, STR_OFFSET, TRUE},
 
-	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-stretch] [-flip] [-equalize_cfa] [-opt]", process_preprocess, STR_PREPROCESS, TRUE},
+	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-flip] [-equalize_cfa] [-opt]", process_preprocess, STR_PREPROCESS, TRUE},
 	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 
 	{"register", 1, "register sequence [-norot] [-drizzle]", process_register, STR_REGISTER, TRUE},

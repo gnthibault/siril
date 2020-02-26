@@ -157,7 +157,7 @@ int read_single_image(const char* filename, fits *dest, char **realname_out, gbo
 	} else {
 		retval = any_to_fits(imagetype, realname, dest, TRUE);
 		if (!retval)
-			debayer_if_needed(imagetype, dest, com.debayer.compatibility, FALSE, com.debayer.stretch);
+			debayer_if_needed(imagetype, dest, com.debayer.compatibility, FALSE);
 	}
 	if (is_sequence) {
 		*is_sequence = single_sequence;

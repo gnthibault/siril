@@ -2597,7 +2597,7 @@ int process_preprocess(int nb) {
 			} else if (!strcmp(word[i], "-debayer")) {
 				args->debayer = TRUE;
 			} else if (!strcmp(word[i], "-stretch")) {
-				args->stretch_cfa = TRUE;
+				siril_log_message(_("-stretch option is now deprecated.\n")); // TODO. Should we keep it only for compatibility
 			} else if (!strcmp(word[i], "-flip")) {
 				args->compatibility = TRUE;
 			} else if (!strcmp(word[i], "-equalize_cfa")) {
