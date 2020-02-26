@@ -156,7 +156,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 
 int stack_compute_parallel_blocks(struct _image_block **blocksptr, int max_number_of_rows,
 		int nb_channels, long *naxes, long *largest_block_height,
-		int *nb_blocks) {
+		int *nb_blocks, int nb_threads) {
 	int size_of_stacks = max_number_of_rows;
 	if (size_of_stacks == 0)
 		size_of_stacks = 1;
@@ -165,16 +165,22 @@ int stack_compute_parallel_blocks(struct _image_block **blocksptr, int max_numbe
 	 * Now we compute the total number of "stacks" which are the independent areas where
 	 * the stacking will occur. This will then be used to create the image areas. */
 	int remainder;
-	if (naxes[1] / size_of_stacks < 4) {
-		/* We have enough RAM to process each channel with 4 threads.
-		 * We should cut images at least in 4 on one channel to use enough threads,
+	if (naxes[1] / size_of_stacks < nb_threads) {
+		/* We have enough RAM to process each channel with nb_threads threads.
+		 * We should cut images at least in nb_threads on one channel to use enough threads,
 		 * and if only one is available, it will use much less RAM for a small time overhead.
 		 * Also, for slow data access like rotating drives or on-the-fly debayer,
 		 * it feels more responsive this way.
 		 */
-		*nb_blocks = 4 * nb_channels;
-		size_of_stacks = naxes[1] / 4;
-		remainder = naxes[1] % 4;
+        int mult = 1;
+        // calculate mult so nb_blocks will be a multiple of nb_channels * nb_threads
+        while ((mult * nb_channels) % nb_threads) {
+            ++mult;
+        }
+
+		*nb_blocks = mult * nb_channels;
+		size_of_stacks = naxes[1] / mult;
+		remainder = naxes[1] % mult;
 	} else {
 		/* We don't have enough RAM to process a channel with all available threads */
 		*nb_blocks = naxes[1] * nb_channels / size_of_stacks;
@@ -653,7 +659,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	int nb_blocks;
 	/* Compute parallel processing data: the data blocks, later distributed to threads */
 	if ((retval = stack_compute_parallel_blocks(&blocks, args->max_number_of_rows, nb_channels,
-					naxes, &largest_block_height, &nb_blocks))) {
+					naxes, &largest_block_height, &nb_blocks, nb_threads))) {
 		goto free_and_close;
 	}
 
@@ -744,7 +750,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		data = &data_pool[data_idx];
 
 		/**** Step 2: load image data for the corresponding image block ****/
-		stack_read_block_data(args, use_regdata, my_block, data, naxes, itype);
+	    stack_read_block_data(args, use_regdata, my_block, data, naxes, itype);
 
 #if defined _OPENMP && defined STACK_DEBUG
 		{
@@ -763,7 +769,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			/* index of the pixel in the result image
 			 * we read line y, but we need to store it at
 			 * ry - y - 1 to not have the image mirrored. */
-			int pdata_idx = (naxes[1] - (my_block->start_row + y) - 1) * naxes[0]; 
+			int pdata_idx = (naxes[1] - (my_block->start_row + y) - 1) * naxes[0];
 			/* index of the line in the read data, data->pix[frame] */
 			int line_idx = y * naxes[0];
 			uint64_t crej[2] = {0, 0};
