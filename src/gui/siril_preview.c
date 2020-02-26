@@ -93,6 +93,7 @@ void set_notify_block(gboolean value) {
 
 void siril_preview_hide() {
 	copy_backup_to_gfit();
+	clear_backup();
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
