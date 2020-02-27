@@ -654,11 +654,11 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		// siril 1.0 native, no conversion required
 	case DOUBLE_IMG:	// 64-bit floating point pixels
 		// let cfitsio do the conversion
+		/* we assume we are in the range [0, 1]. But, for some images
+		 * Some values can be a bit negative or greater than 1.f
+		 */
 		fits_read_pix(fit->fptr, TFLOAT, orig, nbdata, &zero, fit->fdata, &zero,
 				&status);
-		if (fit->data_max > 1.0) { // needed for some FLOAT_IMG
-			convert_data_float(fit->bitpix, fit->fdata, fit->fdata, nbdata);
-		}
 		fit->bitpix = FLOAT_IMG;
 		break;
 	}
@@ -808,8 +808,6 @@ static void save_fits_header(fits *fit) {
 		scale = 1.0;
 		break;
 	case FLOAT_IMG:
-		//zero = 0.5;	// siril format [-1, 1]
-		//scale = 0.5;
 		zero = 0.0;
 		scale = 1.0;
 		break;
@@ -1370,6 +1368,7 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
 int savefits(const char *name, fits *f) {
 	int status, i;
 	int type;
+	float zero = 0.f;
 	long orig[3] = { 1L, 1L, 1L }, pixel_count;
 	char filename[256];
 	BYTE *data8;
@@ -1460,8 +1459,10 @@ int savefits(const char *name, fits *f) {
 			f->fdata = malloc(pixel_count * sizeof(float));
 			conv_16_to_32(f->data, f->fdata, pixel_count);
 			fit_replace_buffer(f, f->fdata, DATA_FLOAT);
+		} else {
+
 		}
-		if (fits_write_pix(f->fptr, TFLOAT, orig, pixel_count, f->fdata, &status)) {
+		if (fits_write_pixnull(f->fptr, TFLOAT, orig, pixel_count, f->fdata, &zero, &status)) {
 			report_fits_error(status);
 			return 1;
 		}
