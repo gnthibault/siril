@@ -1950,11 +1950,22 @@ int process_stat(int nb){
 				break;
 		}
 
-		siril_log_message(
-				_("%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, "
-						"AvgDev: %0.1lf, Min: %0.1lf, Max: %0.1lf\n"),
-				layername, stat->mean, stat->median, stat->sigma,
-				stat->avgDev, stat->min, stat->max);
+		if (gfit.type == DATA_USHORT) {
+			siril_log_message(
+					_("%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, "
+							"AvgDev: %0.1lf, Min: %0.1lf, Max: %0.1lf\n"),
+					layername, stat->mean, stat->median, stat->sigma,
+					stat->avgDev, stat->min, stat->max);
+		} else {
+			siril_log_message(
+					_("%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, "
+							"AvgDev: %0.1lf, Min: %0.1lf, Max: %0.1lf\n"),
+					layername, stat->mean * USHRT_MAX_DOUBLE,
+					stat->median * USHRT_MAX_DOUBLE,
+					stat->sigma * USHRT_MAX_DOUBLE,
+					stat->avgDev * USHRT_MAX_DOUBLE,
+					stat->min * USHRT_MAX_DOUBLE, stat->max * USHRT_MAX_DOUBLE);
+		}
 		free_stats(stat);
 	}
 	return 0;

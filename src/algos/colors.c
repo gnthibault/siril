@@ -120,10 +120,10 @@ void rgb_to_hsl_float_sat(float r, float g, float b, float low, float *h, float 
 	float vm;
 	float r2, g2, b2;
 
-	v = MAX(r, g);
-	v = MAX(v, b);
-	m = MIN(r, g);
-	m = MIN(m, b);
+	v = max(r, g);
+	v = max(v, b);
+	m = min(r, g);
+	m = min(m, b);
 
     if (m + v < low + low) {
         *l = 0.f;
@@ -235,10 +235,10 @@ void rgb_to_hsl(double r, double g, double b, double *h, double *s, double *l) {
 	double vm;
 	double r2, g2, b2;
 
-	v = MAX(r, g);
-	v = MAX(v, b);
-	m = MIN(r, g);
-	m = MIN(m, b);
+	v = max(r, g);
+	v = max(v, b);
+	m = min(r, g);
+	m = min(m, b);
 	*h = 0.0;
 	*s = 0.0;	// init values
 
