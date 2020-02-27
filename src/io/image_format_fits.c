@@ -1368,7 +1368,6 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
 int savefits(const char *name, fits *f) {
 	int status, i;
 	int type;
-	float zero = 0.f;
 	long orig[3] = { 1L, 1L, 1L }, pixel_count;
 	char filename[256];
 	BYTE *data8;
@@ -1462,7 +1461,7 @@ int savefits(const char *name, fits *f) {
 		} else {
 
 		}
-		if (fits_write_pixnull(f->fptr, TFLOAT, orig, pixel_count, f->fdata, &zero, &status)) {
+		if (fits_write_pix(f->fptr, TFLOAT, orig, pixel_count, f->fdata, &status)) {
 			report_fits_error(status);
 			return 1;
 		}
