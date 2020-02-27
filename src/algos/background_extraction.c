@@ -352,7 +352,7 @@ static double *convert_fits_to_luminance(fits *fit) {
 			if (fit->type == DATA_USHORT) {
 				image[i] = (double) fit->pdata[RLAYER][i] / USHRT_MAX_DOUBLE;
 			} else if (fit->type == DATA_FLOAT) {
-				image[i] = (double) fit->pdata[RLAYER][i];
+				image[i] = (double) fit->fpdata[RLAYER][i];
 			}
 		}
 	}
