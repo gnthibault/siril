@@ -888,14 +888,16 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 						result = quickmedian(data->stack, nb_frames);
 					else 	result = quickmedian_float(data->stack, nb_frames);
 				}
-
 				if (args->norm_to_16) {
 					normalize_to16bit(bitpix, &result);
 				}
 				if (args->use_32bit_output) {
-					if (itype == DATA_USHORT)
-						fit.fpdata[my_block->channel][pdata_idx] = double_ushort_to_float_range(result);
-					else	fit.fpdata[my_block->channel][pdata_idx] = (float)result;
+					if (itype == DATA_USHORT) {
+						fit.fpdata[my_block->channel][pdata_idx] =
+								set_float_in_interval(double_ushort_to_float_range(result),	0.f, 1.f);
+					} else {
+						fit.fpdata[my_block->channel][pdata_idx] = set_float_in_interval(result, 0.f, 1.f);
+					}
 				} else {
 					fit.pdata[my_block->channel][pdata_idx] = round_to_WORD(result);
 				}
