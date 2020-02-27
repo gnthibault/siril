@@ -56,12 +56,12 @@ char *statName[] = {
 		N_("normalization")
 };
 
-void get_statlist_store() {
+static void get_statlist_store() {
 	if (list_store == NULL)
 		list_store = GTK_LIST_STORE(gtk_builder_get_object(builder, "liststoreStat"));
 }
 /* Add a statistic to the list. If imstats is NULL, the list is cleared. */
-void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
+static void add_stats_to_list(imstats *stat[], int nblayer, data_type type, gboolean normalized) {
 	static GtkTreeSelection *selection = NULL;
 	GtkTreeIter iter;
 	char format[6];
@@ -85,7 +85,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 		sprintf(format, "%%.5e");
 	}
 	else {
-		if (stat[RLAYER]->max <= 1.0) {	// special case of float images
+		if (type == DATA_FLOAT) {
 			/* by default it is shown in ushort mode */
 			normValue[RLAYER] = 1.0 / USHRT_MAX_DOUBLE;
 			normValue[GLAYER] = 1.0 / USHRT_MAX_DOUBLE;
@@ -320,7 +320,7 @@ void computeStat() {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 		}
 	}
-	add_stats_to_list(stat, gfit.naxes[2], normalized);
+	add_stats_to_list(stat, gfit.naxes[2], gfit.type, normalized);
 
 	for (channel = 0; channel < gfit.naxes[2]; channel++)
 		free_stats(stat[channel]);
