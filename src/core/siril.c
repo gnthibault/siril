@@ -332,9 +332,7 @@ static int off_float(fits *fit, float level) {
 	for (i = 0; i < fit->rx * fit->ry; ++i) {
 		for (layer = 0; layer < fit->naxes[2]; ++layer) {
 			float val = buf[layer][i];
-			buf[layer][i] = val + level;
-			buf[layer][i] = buf[layer][i] > 1.f ? 1.f : buf[layer][i];
-			buf[layer][i] = buf[layer][i] < 0.f ? 0.f : buf[layer][i];
+			buf[layer][i] = set_float_in_interval(val + level, 0.f, 1.f);
 		}
 	}
 	invalidate_stats_from_fit(fit);
