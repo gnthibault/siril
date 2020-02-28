@@ -192,6 +192,8 @@ siril_SOURCES = \
 	stacking/median_and_mean.c \
 	stacking/rejection_float.c \
 	stacking/normalization.c \
+	stacking/siril_fit_linear.c \
+	stacking/siril_fit_linear.h \
 	stacking/stacking.c \
 	stacking/stacking.h \
 	stacking/sum.c \

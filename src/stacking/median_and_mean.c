@@ -20,7 +20,6 @@
 
 #include <string.h>
 #include <math.h>
-#include <gsl/gsl_fit.h>
 #include <gsl/gsl_statistics_ushort.h>
 
 #include "core/siril.h"
@@ -31,6 +30,7 @@
 #include "io/ser.h"
 #include "gui/progress_and_log.h"
 #include "algos/sorting.h"
+#include "stacking/siril_fit_linear.h"
 
 static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean);
 
@@ -391,7 +391,7 @@ static int line_clipping(WORD pixel, double sig[], double sigma, int i, double a
 
 static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]) {
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
-	double median, sigma = -1.0;
+	double median;
 	int frame, pixel, output, changed, n, r = 0;
 	int firstloop = 1;
 
@@ -431,7 +431,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case SIGMA:
 			do {
-				sigma = gsl_stats_ushort_sd(stack, 1, N);
+				double sigma = gsl_stats_ushort_sd(stack, 1, N);
 				if (!firstloop)
 					median = quickmedian (stack, N);
 				else firstloop = 0;
@@ -459,7 +459,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case SIGMEDIAN:
 			do {
-				sigma = gsl_stats_ushort_sd(stack, 1, N);
+				double sigma = gsl_stats_ushort_sd(stack, 1, N);
 				if (!firstloop)
 					median = quickmedian (stack, N);
 				else firstloop = 0;
@@ -475,7 +475,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 		case WINSORIZED:
 			do {
 				double sigma0;
-				sigma = gsl_stats_ushort_sd(stack, 1, N);
+				double sigma = gsl_stats_ushort_sd(stack, 1, N);
 				if (!firstloop)
 					median = quickmedian (stack, N);
 				else firstloop = 0;
@@ -517,17 +517,17 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case LINEARFIT:
 			do {
-				double a, b, cov00, cov01, cov11, sumsq;
+				float a, b, cov00, cov01, cov11, sumsq;
 				quicksort_s(stack, N);
 				for (frame = 0; frame < N; frame++) {
-					data->xf[frame] = (double)frame;
-					data->yf[frame] = (double)stack[frame];
+					data->xf[frame] = (float)frame;
+					data->yf[frame] = (float)stack[frame];
 				}
-				gsl_fit_linear(data->xf, 1, data->yf, 1, N, &b, &a, &cov00, &cov01, &cov11, &sumsq);
-				sigma = 0.0;
+				siril_fit_linear(data->xf, 1, data->yf, 1, N, &b, &a, &cov00, &cov01, &cov11, &sumsq);
+				float sigma = 0.f;
 				for (frame = 0; frame < N; frame++)
-					sigma += (fabs((double)stack[frame] - (a*(double)frame + b)));
-				sigma /= (double)N;
+					sigma += (fabsf((float)stack[frame] - (a*(float)frame + b)));
+				sigma /= (float)N;
 				for (frame = 0; frame < N; frame++) {
 					if (N - r <= 4) {
 						// no more rejections

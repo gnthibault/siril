@@ -20,12 +20,12 @@
 
 #include <string.h>
 #include <math.h>
-#include <gsl/gsl_fit.h>
 #include <gsl/gsl_statistics_float.h>
 #include <stdint.h>
 
 #include "core/siril.h"
-#include "stacking.h"
+#include "stacking/siril_fit_linear.h"
+#include "stacking/stacking.h"
 #include "algos/sorting.h"
 
 static float siril_stats_float_sd(const float data[], int N) {
@@ -87,8 +87,8 @@ int sigma_clipping_float(float pixel, float sigma, float sigmalow,
 	return 0;
 }
 
-static int line_clipping(float pixel, double sig[], double sigma, int i,
-		double a, double b, uint64_t rej[]) {
+static int line_clipping(float pixel, double sig[], float sigma, int i,
+		float a, float b, uint64_t rej[]) {
 	double sigmalow = sig[0];
 	double sigmahigh = sig[1];
 
@@ -228,18 +228,17 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		break;
 	case LINEARFIT:
 		do {
-			double a, b, cov00, cov01, cov11, sumsq;
+			float a, b, cov00, cov01, cov11, sumsq;
 			quicksort_f(stack, N);
 			for (int frame = 0; frame < N; frame++) {
-				data->xf[frame] = (double) frame;
-				data->yf[frame] = (double) stack[frame];
+				data->xf[frame] = (float) frame;
+				data->yf[frame] = (float) stack[frame];
 			}
-			gsl_fit_linear(data->xf, 1, data->yf, 1, N, &b, &a, &cov00, &cov01, &cov11, &sumsq);
-			double sigma = 0.0;
+			siril_fit_linear(data->xf, 1, data->yf, 1, N, &b, &a, &cov00, &cov01, &cov11, &sumsq);
+			float sigma = 0.f;
 			for (int frame = 0; frame < N; frame++)
-				sigma +=
-						(fabs((double) stack[frame] - (a * (double) frame + b)));
-			sigma /= (double) N;
+				sigma += (fabsf((float) stack[frame] - (a * (float) frame + b)));
+			sigma /= (float) N;
 			for (int frame = 0; frame < N; frame++) {
 				if (N - r <= 4) {
 					// no more rejections

@@ -129,7 +129,7 @@ struct _data_block {
 	void *stack;	// the reordered stack for one pixel in all images
 	int *rejected;  // 0 if pixel ok, 1 or -1 if rejected
 	void *w_stack;	// stack for the winsorized rejection
-	double *xf, *yf;// data for the linear fit rejection
+	float *xf, *yf;// data for the linear fit rejection
 };
 
 int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, double *exposure, fits *fit);
