@@ -1,7 +1,12 @@
-#include "sorting.h"
 #include <string.h>
 #include <math.h>
+
+#include "core/siril.h"
+#include "core/proto.h"
+
 #include "rt/rt_algo.h"
+#include "sorting.h"
+
 
 /*
  * This file is part of Siril, an astronomy image processor.
@@ -475,8 +480,9 @@ double histogram_median_double(double *a, int n) {
 	size_t s = sizeof(unsigned int);
 	unsigned int *h = calloc(nb_bins + 1, s);
 
-	for (i = 0; i < n; i++)
-		h[(unsigned int) (a[i] * nb_bins)]++;	// warning: this is not a rounding
+	for (i = 0; i < n; i++) {
+		h[(unsigned int) (set_double_in_interval(a[i], 0.0, 1.0) * nb_bins)]++;	// warning: this is not a rounding
+	}
 
 	i = j = 0;
 	unsigned int sum = 0;
