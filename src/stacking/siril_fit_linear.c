@@ -25,14 +25,12 @@ int siril_fit_linear(const float *x, const float *y, const size_t n, float *c0,
 		float *c1) {
 	float m_x = 0.f, m_y = 0.f, m_dx2 = 0.f, m_dxdy = 0.f;
 
-	size_t i;
-
-	for (i = 0; i < n; i++) {
+	for (size_t i = 0; i < n; i++) {
 		m_x += (x[i] - m_x) / (i + 1.f);
 		m_y += (y[i] - m_y) / (i + 1.f);
 	}
 
-	for (i = 0; i < n; i++) {
+	for (size_t i = 0; i < n; i++) {
 		const float dx = x[i] - m_x;
 		const float dy = y[i] - m_y;
 
@@ -42,26 +40,11 @@ int siril_fit_linear(const float *x, const float *y, const size_t n, float *c0,
 
 	/* In terms of y = a + b x */
 
-	{
-		float s2 = 0.f, d2 = 0.f;
-		float b = m_dxdy / m_dx2;
-		float a = m_y - m_x * b;
+	float b = m_dxdy / m_dx2;
+	float a = m_y - m_x * b;
 
-		*c0 = a;
-		*c1 = b;
-
-		/* Compute chi^2 = \sum (y_i - (a + b * x_i))^2 */
-
-		for (i = 0; i < n; i++) {
-			const float dx = x[i] - m_x;
-			const float dy = y[i] - m_y;
-			const float d = dy - b * dx;
-			d2 += d * d;
-		}
-
-		s2 = d2 / (n - 2.f); /* chisq per degree of freedom */
-
-	}
+	*c0 = a;
+	*c1 = b;
 
 	return 0;
 }
