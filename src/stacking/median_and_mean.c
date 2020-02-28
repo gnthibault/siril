@@ -397,7 +397,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 
 	WORD *stack = (WORD *)data->stack;
 	WORD *w_stack = (WORD *)data->w_stack;
-	WORD *rejected = (WORD *)data->rejected;
+	int *rejected = (int *)data->rejected;
 
 	/* prepare median and check that the stack is not mostly zero */
 	switch (args->type_of_rejection) {

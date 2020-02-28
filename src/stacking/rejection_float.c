@@ -111,7 +111,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 
 	float *stack = (float*) data->stack;
 	float *w_stack = (float*) data->w_stack;
-	float *rejected = (float*) data->rejected;
+	int *rejected = (int*) data->rejected;
 	const float siglow = args->sig[0];
 	const float sighigh = args->sig[1];
 
@@ -148,7 +148,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		break;
 	case SIGMA:
 		do {
-			double sigma = gsl_stats_float_sd(stack, 1, N);
+			const float sigma = siril_stats_float_sd(stack, N);
 			if (!firstloop)
 				median = quickmedian_float(stack, N);
 			else
@@ -159,7 +159,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 					rejected[frame] = 0;
 				} else {
 					rejected[frame] = sigma_clipping(stack[frame], args->sig,
-							sigma, median, crej);
+							(double) sigma, median, crej);
 					if (rejected[frame])
 						r++;
 				}
