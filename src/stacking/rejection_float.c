@@ -105,8 +105,8 @@ static int line_clipping(float pixel, double sig[], double sigma, int i,
 int apply_rejection_float(struct _data_block *data, int nb_frames,
 		struct stacking_args *args, uint64_t crej[2]) {
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
-	double median, sigma = -1.0;
-	int frame, pixel, output, changed, n, r = 0;
+	double median;
+	int pixel, output, changed, n, r = 0;
 	int firstloop = 1;
 
 	float *stack = (float*) data->stack;
@@ -131,7 +131,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 
 	switch (args->type_of_rejection) {
 	case PERCENTILE:
-		for (frame = 0; frame < N; frame++) {
+		for (int frame = 0; frame < N; frame++) {
 			rejected[frame] = percentile_clipping(stack[frame], args->sig,
 					median, crej);
 		}
@@ -148,12 +148,12 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		break;
 	case SIGMA:
 		do {
-			sigma = gsl_stats_float_sd(stack, 1, N);
+			double sigma = gsl_stats_float_sd(stack, 1, N);
 			if (!firstloop)
 				median = quickmedian_float(stack, N);
 			else
 				firstloop = 0;
-			for (frame = 0; frame < N; frame++) {
+			for (int frame = 0; frame < N; frame++) {
 				if (N - r <= 4) {
 					// no more rejections
 					rejected[frame] = 0;
@@ -230,17 +230,17 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		do {
 			double a, b, cov00, cov01, cov11, sumsq;
 			quicksort_f(stack, N);
-			for (frame = 0; frame < N; frame++) {
+			for (int frame = 0; frame < N; frame++) {
 				data->xf[frame] = (double) frame;
 				data->yf[frame] = (double) stack[frame];
 			}
 			gsl_fit_linear(data->xf, 1, data->yf, 1, N, &b, &a, &cov00, &cov01, &cov11, &sumsq);
-			sigma = 0.0;
-			for (frame = 0; frame < N; frame++)
+			double sigma = 0.0;
+			for (int frame = 0; frame < N; frame++)
 				sigma +=
 						(fabs((double) stack[frame] - (a * (double) frame + b)));
 			sigma /= (double) N;
-			for (frame = 0; frame < N; frame++) {
+			for (int frame = 0; frame < N; frame++) {
 				if (N - r <= 4) {
 					// no more rejections
 					rejected[frame] = 0;
