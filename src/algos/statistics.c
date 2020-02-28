@@ -91,10 +91,10 @@ static double siril_stats_ushort_mad(WORD* data, const size_t n, const double m,
 	return mad;
 }
 
-static double siril_stats_double_mad(const double* data, const size_t n, const double median) {
+static float siril_stats_float_mad(const float* data, const size_t n, const float median) {
 	size_t i;
-	double mad;
-	double *tmp = malloc(n * sizeof(double));
+	float mad;
+	float *tmp = malloc(n * sizeof(float));
 	if (!tmp) {
 		PRINT_ALLOC_ERR;
 		return 0.0f; // TODO: check return value
@@ -104,10 +104,10 @@ static double siril_stats_double_mad(const double* data, const size_t n, const d
 #pragma omp parallel for num_threads(com.max_thread) if(n > 10000) private(i) schedule(static)
 #endif
 	for (i = 0; i < n; i++) {
-		tmp[i] = fabs(data[i] - median);
+		tmp[i] = fabsf(data[i] - median);
 	}
 
-	mad = histogram_median_double (tmp, n);
+	mad = histogram_median_float(tmp, n, FALSE);
 	free(tmp);
 	return mad;
 }
@@ -140,26 +140,26 @@ static double siril_stats_ushort_bwmv(const WORD* data, const size_t n,
 	return bwmv;
 }
 
-static double siril_stats_double_bwmv(const double* data, const size_t n,
-		const double mad, const double median) {
+static float siril_stats_float_bwmv(const float* data, const size_t n,
+		const float mad, const float median) {
 
-	double bwmv = 0.0;
-	double up = 0.0, down = 0.0;
+	float bwmv = 0.f;
+	float up = 0.f, down = 0.f;
 	size_t i;
 
-	if (mad > 0.0) {
+	if (mad > 0.f) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) reduction(+:up,down)
 #endif
 		for (i = 0; i < n; i++) {
-			double yi, ai, yi2;
+			float yi, ai, yi2;
 
-			yi = (data[i] - median) / (9 * mad);
+			yi = (data[i] - median) / (9.f * mad);
 			yi2 = yi * yi;
-			ai = (fabs(yi) < 1.0) ? 1.0 : 0.0;
+			ai = (fabsf(yi) < 1.f) ? 1.f : 0.f;
 
-			up += ai * SQR(data[i] - median) * SQR(SQR (1 - yi2));
-			down += (ai * (1 - yi2) * (1 - 5 * yi2));
+			up += ai * SQR(data[i] - median) * SQR(SQR (1.f - yi2));
+			down += (ai * (1.f - yi2) * (1.f - 5.f * yi2));
 		}
 		bwmv = n * (up / (down * down));
 	}
@@ -167,35 +167,35 @@ static double siril_stats_double_bwmv(const double* data, const size_t n,
 	return bwmv;
 }
 
-static int IKSS(double *data, int n, double *location, double *scale) {
+static int IKSS(float *data, int n, double *location, double *scale) {
 	size_t i, j;
-	double mad, s, s0, m, xlow, xhigh;
+	float mad, s, s0, m, xlow, xhigh;
 
-	quicksort_d(data, n);	// this sort is mandatory
+	quicksort_f(data, n);	// this sort is mandatory
 	i = 0;
 	j = n;
-	s0 = 1;
+	s0 = 1.f;
 	for (;;) {
 		if (j - i < 1) {
 			*location = *scale = 0;
 			break;
 		}
-		m = gsl_stats_median_from_sorted_data(data + i, 1, j - i);
-		mad = siril_stats_double_mad(data + i, j - i, m);
-		s = sqrt(siril_stats_double_bwmv(data + i, j - i, mad, m));
+		m = (float) gsl_stats_float_median_from_sorted_data(data + i, 1, j - i);
+		mad = siril_stats_float_mad(data + i, j - i, m);
+		s = sqrtf(siril_stats_float_bwmv(data + i, j - i, mad, m));
 		if (s < 2E-23) {
-			*location = m;
-			*scale = 0;
+			*location = (double)m;
+			*scale = 0.0;
 			break;
 		}
 		if (((s0 - s) / s) < 10E-6) {
-			*location = m;
+			*location = (double)m;
 			*scale = 0.991 * s;
 			break;
 		}
 		s0 = s;
-		xlow = m - 4 * s;
-		xhigh = m + 4 * s;
+		xlow = m - 4.f * s;
+		xhigh = m + 4.f * s;
 		while (data[i] < xlow)
 			i++;
 		while (data[j - 1] > xhigh)
@@ -397,7 +397,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
 		long i;
-		double *newdata = malloc(stat->ngoodpix * sizeof(double));
+		float *newdata = malloc(stat->ngoodpix * sizeof(float));
 		if (!newdata) {
 			if (stat_is_local) free(stat);
 			if (free_data) free(data);

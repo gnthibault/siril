@@ -104,6 +104,7 @@ BYTE conv_to_BYTE(double x);
 int truncate_to_int32(uint64_t x);
 WORD truncate_to_WORD(int x);
 float set_float_in_interval(float val, float low, float high);
+double set_double_in_interval(double val, double low, double high);
 float ushort_to_float_range(WORD w);
 float double_ushort_to_float_range(double d);
 WORD float_to_ushort_range(float f);

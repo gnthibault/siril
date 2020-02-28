@@ -223,7 +223,7 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 	return background;
 }
 
-static background_sample *get_sample(double *buf, const int xx,
+static background_sample *get_sample(float *buf, const int xx,
 		const int yy, const int w, const int h) {
 	int radius, x, y;
 	double *data;
@@ -238,7 +238,7 @@ static background_sample *get_sample(double *buf, const int xx,
 		for (x = xx - radius; x <= xx + radius; x ++) {
 			if (y >= 0 && y < h) {
 				if (x >= 0 && x < w) {
-					data[n++] = buf[x + y * w];
+					data[n++] = (double)buf[x + y * w];
 				}
 			}
 		}
@@ -326,33 +326,33 @@ static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) 
 	return image;
 }
 
-static double *convert_fits_to_luminance(fits *fit) {
+static float *convert_fits_to_luminance(fits *fit) {
 	int nx = fit->rx;
 	int ny = fit->ry;
 	int i;
 	/* allocating memory to image */
-	double *image = malloc(nx * ny * sizeof(double));
+	float *image = malloc(nx * ny * sizeof(float));
 
 	mirrorx(fit, FALSE);
 
 	for (i = 0; i < ny * nx; i++) {
 		if (fit->naxes[2] > 1) {
-			double r, g, b;
+			float r, g, b;
 			if (fit->type == DATA_USHORT) {
-				r = (double) fit->pdata[RLAYER][i] / USHRT_MAX_DOUBLE;
-				g = (double) fit->pdata[GLAYER][i] / USHRT_MAX_DOUBLE;
-				b = (double) fit->pdata[BLAYER][i] / USHRT_MAX_DOUBLE;
+				r = (float) fit->pdata[RLAYER][i] / USHRT_MAX_SINGLE;
+				g = (float) fit->pdata[GLAYER][i] / USHRT_MAX_SINGLE;
+				b = (float) fit->pdata[BLAYER][i] / USHRT_MAX_SINGLE;
 			} else if (fit->type == DATA_FLOAT) {
-				r = (double) fit->fpdata[RLAYER][i];
-				g = (double) fit->fpdata[GLAYER][i];
-				b = (double) fit->fpdata[BLAYER][i];
+				r = fit->fpdata[RLAYER][i];
+				g = fit->fpdata[GLAYER][i];
+				b = fit->fpdata[BLAYER][i];
 			} else return NULL;
-			image[i] = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+			image[i] = 0.2126f * r + 0.7152f * g + 0.0722f * b;
 		} else {
 			if (fit->type == DATA_USHORT) {
-				image[i] = (double) fit->pdata[RLAYER][i] / USHRT_MAX_DOUBLE;
+				image[i] = (float) fit->pdata[RLAYER][i] / USHRT_MAX_SINGLE;
 			} else if (fit->type == DATA_FLOAT) {
-				image[i] = (double) fit->fpdata[RLAYER][i];
+				image[i] = fit->fpdata[RLAYER][i];
 			}
 		}
 	}
@@ -382,29 +382,25 @@ static void convert_img_to_fits(double *image, fits *fit, int channel) {
 	mirrorx(fit, FALSE);
 }
 
-static double siril_stats_mad(const double data[], const size_t stride,
-		const size_t n, double work[]) {
-#if (GSL_MAJOR_VERSION <= 2) || ((GSL_MAJOR_VERSION == 2) && GSL_MINOR_VERSION < 5)
-	double median, mad;
+static double siril_stats_mad(const float data[], const size_t stride,
+		const size_t n, float work[]) {
+	float median, mad;
 	size_t i;
 
 	/* copy input data to work */
 	for (i = 0; i < n; ++i)
-		work[i] = (double) data[i * stride];
+		work[i] = (float) data[i * stride];
 
 	/* compute median of input data using double version */
-	median = histogram_median_double(work, n);
+	median = histogram_median_float(work, n, TRUE);
 
 	/* compute absolute deviations from median */
 	for (i = 0; i < n; ++i)
-		work[i] = fabs((double) data[i * stride] - median);
+		work[i] = fabsf((float) data[i * stride] - median);
 
-	mad = histogram_median_double(work, n);
+	mad = histogram_median_float(work, n, TRUE);
 
 	return mad;
-#else
-	return gsl_stats_mad0(data, stride, n, work);
-#endif
 }
 
 static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, size_t size) {
@@ -412,20 +408,20 @@ static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, si
 	int ny = fit->ry;
 	int dist, starty, startx;
 	int x, y;
-	double median, mad0, *work;
+	float median, mad0, *work;
 	size_t radius;
 	GSList *list = NULL;
 
-	double *image = convert_fits_to_luminance(fit);
+	float *image = convert_fits_to_luminance(fit);
 
-	work = malloc(nx * ny * sizeof(double));
+	work = malloc(nx * ny * sizeof(float));
 
 	dist = (int) (nx / nb_per_line);
 	radius = size / 2;
 	startx = ((nx - size) % dist) / 2;
 	starty = ((ny - size) % dist) / 2;
 	mad0 = siril_stats_mad(image, 1, nx * ny, work);
-	median = histogram_median_double(image, nx * ny);
+	median = histogram_median_float(image, nx * ny, TRUE);
 
 	for (y = starty; y <= ny - radius; y = y + dist) {
 		for (x = startx; x <= nx - radius; x = x + dist) {
@@ -534,7 +530,7 @@ GSList *add_background_sample(GSList *orig, fits *fit, point pt) {
 	GSList *list;
 	int nx = fit->rx;
 	int ny = fit->ry;
-	double *image;
+	float *image;
 
 	image = convert_fits_to_luminance(fit);
 
@@ -550,7 +546,7 @@ GSList *add_background_sample(GSList *orig, fits *fit, point pt) {
 
 GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 	GSList *list;
-	double *image;
+	float *image;
 
 	image = convert_fits_to_luminance(fit);
 

@@ -164,6 +164,17 @@ float set_float_in_interval(float val, float low, float high) {
 }
 
 /**
+ * Set a double value in the interval given by [low, high]
+ * @param val value to be checked
+ * @param low low value of the interval
+ * @param high high value of the interval
+ * @return a new value set in the [low, high] interval
+ */
+double set_double_in_interval(double val, double low, double high) {
+	return max(low, min(val, high));
+}
+
+/**
  * convert an unsigned short value to siril's representation of float values [0, 1]
  * @param w value to convert
  * @return the float equivalent

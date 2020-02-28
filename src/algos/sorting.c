@@ -464,39 +464,6 @@ double histogram_median_float(float *a, int n, gboolean multithread) {
     float median;
     findMinMaxPercentile(a, n, 0.5f, &median, 0.5f, &median, multithread);
     return median;
-
-}
-/*
- * Histogram median for very large array of double in [0,1] range
- * (C) Emmanuel Brandt 2019-02
- * @param a array of unsigned short to search
- * @param n size of the array
- * @return median as a double (for n odd)
- * Use temp storage h for the histogram. Complexity O(2*N)
- * faster than quickmedian_double for array > 20000
- */
-double histogram_median_double(double *a, int n) {
-	unsigned int i, j, k = n / 2, nb_bins = 100000;
-	size_t s = sizeof(unsigned int);
-	unsigned int *h = calloc(nb_bins + 1, s);
-
-	for (i = 0; i < n; i++) {
-		h[(unsigned int) (set_double_in_interval(a[i], 0.0, 1.0) * nb_bins)]++;	// warning: this is not a rounding
-	}
-
-	i = j = 0;
-	unsigned int sum = 0;
-	if (n % 2 == 0) {
-		for (; sum <= k - 1; j++)
-			sum += h[j];
-		i = j;
-	}
-
-	for (; sum <= k; i++)
-		sum += h[i];
-
-	free(h);
-	return (n % 2 == 0) ? (double) (i + j) / ( 2.0 * (double) nb_bins) : (double) i / (double) nb_bins;
 }
 
 /**

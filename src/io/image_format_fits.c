@@ -544,7 +544,6 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	int status = 0, zero = 0, datatype;
 	BYTE *data8;
 	unsigned long *pixels_long;
-	long orig[3] = { 1L, 1L, 1L };
 	// orig ^ gives the coordinate in each dimension of the first pixel to be read
 	unsigned int nbpix = fit->naxes[0] * fit->naxes[1];
 	unsigned int nbdata = nbpix * fit->naxes[2];
@@ -605,27 +604,24 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	case BYTE_IMG:
 		data8 = malloc(nbdata * sizeof(BYTE));
 		datatype = fit->bitpix == BYTE_IMG ? TBYTE : TSBYTE;
-		fits_read_pix(fit->fptr, datatype, orig, nbdata, &zero,
-				data8, &zero, &status);
+		fits_read_img(fit->fptr, datatype, 1, nbdata, &zero, data8, &zero, &status);
 		if (status) break;
 		convert_data_ushort(fit->bitpix, data8, fit->data, nbdata, FALSE);
 		free(data8);
 		break;
 	case SHORT_IMG:
-		fits_read_pix(fit->fptr, TSHORT, orig, nbdata, &zero,
-				fit->data, &zero, &status);
+		fits_read_img(fit->fptr, TSHORT, 1, nbdata, &zero, fit->data, &zero, &status);
 		if (status) break;
 		convert_data_ushort(fit->bitpix, fit->data, fit->data, nbdata, FALSE);
 		fit->bitpix = USHORT_IMG;
 		break;
 	case USHORT_IMG:
 		// siril 0.9 native, no conversion required
-		fits_read_pix(fit->fptr, TUSHORT, orig, nbdata, &zero,
-				fit->data, &zero, &status);
+		fits_read_img(fit->fptr, TUSHORT, 1, nbdata, &zero, fit->data, &zero, &status);
 		if (status == NUM_OVERFLOW) {
 			// in case there are errors, we try short data
 			status = 0;
-			fits_read_pix(fit->fptr, TSHORT, orig, nbdata, &zero, fit->data,
+			fits_read_img(fit->fptr, TSHORT, 1, nbdata, &zero, fit->data,
 					&zero, &status);
 			if (status)
 				break;
@@ -643,8 +639,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		pixels_long = malloc(nbdata * sizeof(unsigned long));
 		status = 0;
 		datatype = fit->bitpix == LONG_IMG ? TLONG : TULONG;
-		fits_read_pix(fit->fptr, datatype, orig, nbdata, &zero,
-				pixels_long, &zero, &status);
+		fits_read_img(fit->fptr, datatype, 1, nbdata, &zero, pixels_long, &zero, &status);
 		if (status) break;
 		convert_data_float(fit->bitpix, pixels_long, fit->fdata, nbdata);
 		free(pixels_long);
@@ -655,10 +650,12 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 	case DOUBLE_IMG:	// 64-bit floating point pixels
 		// let cfitsio do the conversion
 		/* we assume we are in the range [0, 1]. But, for some images
-		 * Some values can be a bit negative or greater than 1.f
+		 * some values can be a negative
 		 */
-		fits_read_pix(fit->fptr, TFLOAT, orig, nbdata, &zero, fit->fdata, &zero,
-				&status);
+		fits_read_img(fit->fptr, TFLOAT, 1, nbdata, &zero, fit->fdata, &zero, &status);
+		if (fit->data_max > 1.0) { // needed for some FLOAT_IMG
+			convert_data_float(fit->bitpix, fit->fdata, fit->fdata, nbdata);
+		}
 		fit->bitpix = FLOAT_IMG;
 		break;
 	}
@@ -1458,8 +1455,6 @@ int savefits(const char *name, fits *f) {
 			f->fdata = malloc(pixel_count * sizeof(float));
 			conv_16_to_32(f->data, f->fdata, pixel_count);
 			fit_replace_buffer(f, f->fdata, DATA_FLOAT);
-		} else {
-
 		}
 		if (fits_write_pix(f->fptr, TFLOAT, orig, pixel_count, f->fdata, &status)) {
 			report_fits_error(status);
