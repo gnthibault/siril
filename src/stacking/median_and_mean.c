@@ -517,13 +517,13 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case LINEARFIT:
 			do {
-				float a, b, cov00, cov01, cov11, sumsq;
+				float a, b;
 				quicksort_s(stack, N);
 				for (frame = 0; frame < N; frame++) {
 					data->xf[frame] = (float)frame;
 					data->yf[frame] = (float)stack[frame];
 				}
-				siril_fit_linear(data->xf, 1, data->yf, 1, N, &b, &a, &cov00, &cov01, &cov11, &sumsq);
+				siril_fit_linear(data->xf, data->yf, N, &b, &a);
 				float sigma = 0.f;
 				for (frame = 0; frame < N; frame++)
 					sigma += (fabsf((float)stack[frame] - (a*(float)frame + b)));

@@ -21,21 +21,20 @@
 #include "siril_fit_linear.h"
 
 /* code from gsl */
-int siril_fit_linear(const float *x, const size_t xstride,
-		const float *y, const size_t ystride, const size_t n, float *c0,
-		float *c1, float *cov_00, float *cov_01, float *cov_11, float *sumsq) {
+int siril_fit_linear(const float *x, const float *y, const size_t n, float *c0,
+		float *c1) {
 	float m_x = 0.f, m_y = 0.f, m_dx2 = 0.f, m_dxdy = 0.f;
 
 	size_t i;
 
 	for (i = 0; i < n; i++) {
-		m_x += (x[i * xstride] - m_x) / (i + 1.f);
-		m_y += (y[i * ystride] - m_y) / (i + 1.f);
+		m_x += (x[i] - m_x) / (i + 1.f);
+		m_y += (y[i] - m_y) / (i + 1.f);
 	}
 
 	for (i = 0; i < n; i++) {
-		const float dx = x[i * xstride] - m_x;
-		const float dy = y[i * ystride] - m_y;
+		const float dx = x[i] - m_x;
+		const float dy = y[i] - m_y;
 
 		m_dx2 += (dx * dx - m_dx2) / (i + 1.f);
 		m_dxdy += (dx * dy - m_dxdy) / (i + 1.f);
@@ -54,20 +53,14 @@ int siril_fit_linear(const float *x, const size_t xstride,
 		/* Compute chi^2 = \sum (y_i - (a + b * x_i))^2 */
 
 		for (i = 0; i < n; i++) {
-			const float dx = x[i * xstride] - m_x;
-			const float dy = y[i * ystride] - m_y;
+			const float dx = x[i] - m_x;
+			const float dy = y[i] - m_y;
 			const float d = dy - b * dx;
 			d2 += d * d;
 		}
 
 		s2 = d2 / (n - 2.f); /* chisq per degree of freedom */
 
-		*cov_00 = s2 * (1.f / n) * (1.f + m_x * m_x / m_dx2);
-		*cov_11 = s2 * 1.f / (n * m_dx2);
-
-		*cov_01 = s2 * (-m_x) / (n * m_dx2);
-
-		*sumsq = d2;
 	}
 
 	return 0;
