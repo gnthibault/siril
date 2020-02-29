@@ -114,7 +114,7 @@ int debayer(fits* fit, interpolation_method interpolation) {
 		return -1;
 	}
 	if (fit->type == DATA_USHORT) {
-		rawdata[0] = (float *)malloc(nbpixels * sizeof(float));
+		rawdata[0] = (float *)malloc(n * sizeof(float));
 		if (!rawdata[0]) {
 			PRINT_ALLOC_ERR;
 			free(rawdata);
