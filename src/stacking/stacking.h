@@ -69,7 +69,7 @@ struct stacking_args {
 	int retval;
 	int max_number_of_rows;	/* number of rows that can be processed simultaneously,
 				   function of max memory, image size and nb_images_to_stack */
-	double sig[2];		/* low and high sigma rejection */
+	float sig[2];		/* low and high sigma rejection */
 	rejection type_of_rejection;	/* type of rejection */
 	normalization normalize;	/* type of normalization */
 	norm_coeff coeff;		/* normalization data */

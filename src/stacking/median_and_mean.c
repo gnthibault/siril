@@ -336,15 +336,15 @@ static void normalize_to16bit(int bitpix, double *mean) {
  * after and similar to median but takes into account the registration data and
  * does a different operation to keep the final pixel values.
  *********************************************************************************/
-static int percentile_clipping(WORD pixel, double sig[], double median, uint64_t rej[]) {
+static int percentile_clipping(WORD pixel, float sig[], float median, uint64_t rej[]) {
 	double plow = sig[0];
 	double phigh = sig[1];
 
-	if ((median - (double)pixel) / median > plow) {
+	if ((median - pixel) / median > plow) {
 		rej[0]++;
 		return -1;
 	}
-	else if (((double)pixel - median) / median > phigh) {
+	else if ((pixel - median) / median > phigh) {
 		rej[1]++;
 		return 1;
 	}
@@ -354,35 +354,35 @@ static int percentile_clipping(WORD pixel, double sig[], double median, uint64_t
 /* Rejection of pixels, following sigma_(high/low) * sigma.
  * The function returns 0 if no rejections are required, 1 if it's a high
  * rejection and -1 for a low-rejection */
-static int sigma_clipping(WORD pixel, double sig[], double sigma, double median, uint64_t rej[]) {
-	double sigmalow = sig[0];
-	double sigmahigh = sig[1];
+static int sigma_clipping(WORD pixel, float sig[], float sigma, float median, uint64_t rej[]) {
+	float sigmalow = sig[0];
+	float sigmahigh = sig[1];
 
-	if (median - (double)pixel > sigmalow * sigma) {
+	if (median - pixel > sigmalow * sigma) {
 		rej[0]++;
 		return -1;
 	}
-	else if ((double)pixel - median > sigmahigh * sigma) {
+	else if (pixel - median > sigmahigh * sigma) {
 		rej[1]++;
 		return 1;
 	}
 	return 0;
 }
 
-static void Winsorize(WORD *pixel, double m0, double m1) {
-	if (*pixel < m0) *pixel = round_to_WORD(m0);
-	else if (*pixel > m1) *pixel = round_to_WORD(m1);
+static void Winsorize(WORD *pixel, float m0, float m1) {
+	if (*pixel < m0) *pixel = roundf_to_WORD(m0);
+	else if (*pixel > m1) *pixel = roundf_to_WORD(m1);
 }
 
-static int line_clipping(WORD pixel, double sig[], double sigma, int i, double a, double b, uint64_t rej[]) {
-	double sigmalow = sig[0];
-	double sigmahigh = sig[1];
+static int line_clipping(WORD pixel, float sig[], float sigma, int i, float a, float b, uint64_t rej[]) {
+	float sigmalow = sig[0];
+	float sigmahigh = sig[1];
 
-	if (((a * (double)i + b - (double)pixel) / sigma) > sigmalow) {
+	if (((a * (float)i + b - pixel) / sigma) > sigmalow) {
 		rej[0]++;
 		return -1;
 	}
-	else if ((((double)pixel - a * (double)i - b) / sigma) > sigmahigh) {
+	else if (((pixel - a * (float)i - b) / sigma) > sigmahigh) {
 		rej[1]++;
 		return 1;
 	}
@@ -416,7 +416,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 	switch (args->type_of_rejection) {
 		case PERCENTILE:
 			for (frame = 0; frame < N; frame++) {
-				rejected[frame] = percentile_clipping(stack[frame], args->sig, median, crej);
+				rejected[frame] = percentile_clipping(stack[frame], args->sig, (float) median, crej);
 			}
 
 			for (pixel = 0, output = 0; pixel < N; pixel++) {
@@ -431,7 +431,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case SIGMA:
 			do {
-				double sigma = gsl_stats_ushort_sd(stack, 1, N);
+				float sigma = (float) gsl_stats_ushort_sd(stack, 1, N);
 				if (!firstloop)
 					median = quickmedian (stack, N);
 				else firstloop = 0;
@@ -440,7 +440,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 						// no more rejections
 						rejected[frame] = 0;
 					} else {
-						rejected[frame] = sigma_clipping(stack[frame], args->sig, sigma, median, crej);
+						rejected[frame] = sigma_clipping(stack[frame], args->sig, sigma, (float) median, crej);
 						if (rejected[frame])
 							r++;
 					}
@@ -459,13 +459,13 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case SIGMEDIAN:
 			do {
-				double sigma = gsl_stats_ushort_sd(stack, 1, N);
+				float sigma = (float) gsl_stats_ushort_sd(stack, 1, N);
 				if (!firstloop)
 					median = quickmedian (stack, N);
 				else firstloop = 0;
 				n = 0;
 				for (frame = 0; frame < N; frame++) {
-					if (sigma_clipping(stack[frame], args->sig, sigma, median, crej)) {
+					if (sigma_clipping(stack[frame], args->sig, sigma, (float) median, crej)) {
 						stack[frame] = median;
 						n++;
 					}
@@ -475,7 +475,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 		case WINSORIZED:
 			do {
 				double sigma0;
-				double sigma = gsl_stats_ushort_sd(stack, 1, N);
+				float sigma = (float) gsl_stats_ushort_sd(stack, 1, N);
 				if (!firstloop)
 					median = quickmedian (stack, N);
 				else firstloop = 0;
@@ -495,9 +495,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 						// no more rejections
 						rejected[frame] = 0;
 					} else {
-						rejected[frame] = sigma_clipping(
-								stack[frame], args->sig, sigma,
-								median, crej);
+						rejected[frame] = sigma_clipping(stack[frame], args->sig, sigma, (float) median, crej);
 						if (rejected[frame] != 0)
 							r++;
 					}

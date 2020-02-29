@@ -362,8 +362,8 @@ static void start_stacking() {
 		return;
 	}
 
-	stackparam.sig[0] = gtk_spin_button_get_value(sigSpin[0]);
-	stackparam.sig[1] = gtk_spin_button_get_value(sigSpin[1]);
+	stackparam.sig[0] = (float) gtk_spin_button_get_value(sigSpin[0]);
+	stackparam.sig[1] = (float) gtk_spin_button_get_value(sigSpin[1]);
 	stackparam.type_of_rejection = gtk_combo_box_get_active(rejec_combo);
 	stackparam.normalize = gtk_combo_box_get_active(norm_combo);
 	stackparam.force_norm = gtk_toggle_button_get_active(force_norm);
