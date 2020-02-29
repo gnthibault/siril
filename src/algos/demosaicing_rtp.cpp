@@ -196,18 +196,16 @@ int debayer(fits* fit, interpolation_method interpolation) {
 			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
 			retval = rcd_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, progress);
 			break;
-
 		case BAYER_AHD:
 			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
 			retval = ahd_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, rgb_cam, progress);
 			break;
-		//case BAYER_SUPER_PIXEL:
-			// is it supported by librtprocess? our old code below:
-			// retval = super_pixel(buf, newbuf, *width, *height, pattern);
 		//case BAYER_AMAZE:
 			// retval = amaze_demosaic // need documentation about arguments
-		//case BAYER_DCB:
-			// retval = dcb_demosaic // need documentation about arguments
+		case BAYER_DCB:
+			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			retval = dcb_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, progress, 1, TRUE);
+			break;
 		case BAYER_HPHD:
 			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
 			retval = hphd_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, progress);
@@ -221,15 +219,17 @@ int debayer(fits* fit, interpolation_method interpolation) {
 			retval = lmmse_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, cfarray, progress, 1);
 			// need documentation about last argument, 'iterations'
 			break;
-		//case BAYER_MARKESTEIJN:
-			// retval = markesteijn_demosaic // need documentation about arguments
+		//case BAYER_SUPER_PIXEL:
+			// is it supported by librtprocess? our old code below:
+			// retval = super_pixel(buf, newbuf, *width, *height, pattern);
 		case XTRANS:
 			retrieveXTRANSPattern(fit->bayer_pattern, xtrans_array);
-			retval = xtransfast_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, xtrans_array, progress);
+			//retval = xtransfast_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, xtrans_array, progress);
+			retval = markesteijn_demosaic(fit->rx, fit->ry, rawdata, red, green, blue, xtrans_array, rgb_cam, progress, 1, TRUE, 16, FALSE);
 			break;
 	}
 
-	fprintf(stdout, "saving ibrtprocess debayer\n");
+	fprintf(stdout, "saving librtprocess debayer\n");
 	/* get the result */
 	if (fit->type == DATA_USHORT) {
 		WORD *newfitdata = (WORD *)realloc(fit->data, n * sizeof(WORD));

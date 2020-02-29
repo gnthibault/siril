@@ -16838,13 +16838,16 @@ by averaging the entire image</property>
                             <property name="can_focus">False</property>
                             <property name="tooltip_text" translatable="yes">Select an interpolation method to perform demosaicing.</property>
                             <property name="hexpand">True</property>
-                            <property name="active">0</property>
+                            <property name="active">7</property>
                             <items>
                               <item translatable="yes">Bilinear</item>
-                              <item translatable="yes">Nearest Neighbor</item>
                               <item translatable="yes">VNG</item>
                               <item translatable="yes">AHD</item>
-                              <item translatable="yes">Super Pixel</item>
+                              <item translatable="yes">DCB</item>
+                              <item translatable="yes">HPHD</item>
+                              <item translatable="yes">IGV</item>
+                              <item translatable="yes">LMMSE</item>
+                              <item translatable="yes">RCD</item>
                             </items>
                             <signal name="changed" handler="on_comboBayer_inter_changed" swapped="no"/>
                           </object>

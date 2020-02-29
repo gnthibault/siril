@@ -59,22 +59,7 @@ static int percentile_clipping(float pixel, float sig[], float median,
 /* Rejection of pixels, following sigma_(high/low) * sigma.
  * The function returns 0 if no rejections are required, 1 if it's a high
  * rejection and -1 for a low-rejection */
-static int sigma_clipping(float pixel, float sig[], float sigma,
-		float median, uint64_t rej[]) {
-	float sigmalow = sig[0];
-	float sigmahigh = sig[1];
-
-	if (median - pixel > sigmalow * sigma) {
-		rej[0]++;
-		return -1;
-	} else if (pixel - median > sigmahigh * sigma) {
-		rej[1]++;
-		return 1;
-	}
-	return 0;
-}
-
-int sigma_clipping_float(float pixel, float sigma, float sigmalow,
+static int sigma_clipping_float(float pixel, float sigma, float sigmalow,
 		float sigmahigh, float median, uint64_t rej[]) {
 
 	if (median - pixel > sigma * sigmalow) {
@@ -157,7 +142,8 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 					// no more rejections
 					rejected[frame] = 0;
 				} else {
-					rejected[frame] = sigma_clipping(stack[frame], args->sig, sigma, (float) median, crej);
+					rejected[frame] = sigma_clipping_float(stack[frame], sigma,
+							siglow, sighigh, (float) median, crej);
 					if (rejected[frame])
 						r++;
 				}
