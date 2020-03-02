@@ -202,13 +202,23 @@ static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 	}
 }
 
+static void on_debayer_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	GtkToggleButton *main_debayer_button;
+
+	main_debayer_button = GTK_TOGGLE_BUTTON(lookup_widget("demosaicingButton"));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(main_debayer_button), gtk_toggle_button_get_active(togglebutton));
+}
+
 static void siril_add_debayer_toggle_button(GtkFileChooser *dialog) {
 	GtkWidget *toggle_debayer;
+	GtkToggleButton *main_debayer_button;
 
+	main_debayer_button = GTK_TOGGLE_BUTTON(lookup_widget("demosaicingButton"));
 	toggle_debayer = gtk_check_button_new_with_label(_("Debayer"));
 	gtk_widget_show(toggle_debayer);
 	gtk_file_chooser_set_extra_widget(dialog, toggle_debayer);
-	g_signal_connect(toggle_debayer, "toggled", G_CALLBACK(on_demosaicing_toggled), NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle_debayer), gtk_toggle_button_get_active(main_debayer_button));
+	g_signal_connect(toggle_debayer, "toggled", G_CALLBACK(on_debayer_toggled), NULL);
 }
 
 static void opendial(int whichdial) {
@@ -317,10 +327,6 @@ static void opendial(int whichdial) {
 		case OD_OPEN:
 			set_cursor_waiting(TRUE);
 			open_single_image(filename);
-
-			/* the widget is destroyed so we need to unset the flag */
-			unset_debayer_in_convflags();
-			com.debayer.open_debayer = FALSE;
 
 			set_cursor_waiting(FALSE);
 			break;
