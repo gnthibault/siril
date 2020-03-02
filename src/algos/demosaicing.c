@@ -1011,42 +1011,43 @@ int retrieveXTRANSPattern(char *bayer, unsigned int xtrans[6][6]) {
 	return 0;
 }
 
-static int debayer_ushort(fits* fit, interpolation_method interpolation) {
-        int i, j;
-        int width = fit->rx;
-        int height = fit->ry;
-        long npixels;
-        WORD *buf = fit->data;
-        int xbayeroff = 0, ybayeroff = 0;
+static int debayer_ushort(fits *fit, interpolation_method interpolation) {
+	int i, j;
+	int width = fit->rx;
+	int height = fit->ry;
+	long npixels;
+	WORD *buf = fit->data;
+	int xbayeroff = 0, ybayeroff = 0;
 
 	unsigned int xtrans[6][6];
 	if (interpolation == XTRANS) {
 		retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
 	}
 
-        if (!com.debayer.use_bayer_header) {
-                xbayeroff = com.debayer.xbayeroff;
-                ybayeroff = com.debayer.ybayeroff;
-        } else {
-                xbayeroff = fit->bayer_xoffset;
-                ybayeroff = fit->bayer_yoffset;
-        }
+	if (!com.debayer.use_bayer_header) {
+		xbayeroff = com.debayer.xbayeroff;
+		ybayeroff = com.debayer.ybayeroff;
+	} else {
+		xbayeroff = fit->bayer_xoffset;
+		ybayeroff = fit->bayer_yoffset;
+	}
 
-        if (xbayeroff == 1) {
-                buf += width;
-                height--;
-        }
-        if (ybayeroff == 1)
-                buf++;
+	if (xbayeroff == 1) {
+		buf += width;
+		height--;
+	}
+	if (ybayeroff == 1)
+		buf++;
 
 	if (USE_SIRIL_DEBAYER) {
 		WORD *newbuf = debayer_buffer_siril(buf, &width, &height, interpolation,
 				com.debayer.bayer_pattern, xtrans);
-		if (!newbuf) return 1;
+		if (!newbuf)
+			return 1;
 
 		// color RGBRGB format to fits RRGGBB format
 		npixels = width * height;
-		WORD *newdata = (WORD *)realloc(fit->data, 3 * npixels * sizeof(WORD));
+		WORD *newdata = (WORD*) realloc(fit->data, 3 * npixels * sizeof(WORD));
 		if (!newdata) {
 			PRINT_ALLOC_ERR;
 			return 1;
@@ -1067,11 +1068,11 @@ static int debayer_ushort(fits* fit, interpolation_method interpolation) {
 			double g = (double) newbuf[i + GLAYER];
 			double b = (double) newbuf[i + BLAYER];
 			fit->pdata[RLAYER][j] =
-				(fit->bitpix == 8) ? round_to_BYTE(r) : round_to_WORD(r);
+					(fit->bitpix == 8) ? round_to_BYTE(r) : round_to_WORD(r);
 			fit->pdata[GLAYER][j] =
-				(fit->bitpix == 8) ? round_to_BYTE(g) : round_to_WORD(g);
+					(fit->bitpix == 8) ? round_to_BYTE(g) : round_to_WORD(g);
 			fit->pdata[BLAYER][j] =
-				(fit->bitpix == 8) ? round_to_BYTE(b) : round_to_WORD(b);
+					(fit->bitpix == 8) ? round_to_BYTE(b) : round_to_WORD(b);
 		}
 		free(newbuf);
 		full_stats_invalidation_from_fit(fit);
@@ -1080,7 +1081,8 @@ static int debayer_ushort(fits* fit, interpolation_method interpolation) {
 		// use librtprocess debayer
 		WORD *newbuf = debayer_buffer_new_ushort(buf, &width, &height,
 				interpolation, com.debayer.bayer_pattern, xtrans);
-		if (!newbuf) return 1;
+		if (!newbuf)
+			return 1;
 
 		fit->naxes[2] = 3;
 		fit->naxis = 3;

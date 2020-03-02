@@ -406,8 +406,9 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	fits *fit = &(gfit);
 	double zoom = get_zoom_val();
 	gint zoomedX = 0, zoomedY = 0;
-	const char * suffix = vport_number_to_name(com.cvport);
+	char *suffix = vport_number_to_name(com.cvport);
 	gchar *label = g_strdup_printf("labeldensity_%s", suffix);
+	free(suffix);
 	if (fit->type == DATA_UNSUPPORTED) return FALSE;
 
 	if (inimage((GdkEvent *) event)) {
