@@ -35,6 +35,7 @@
 #include "algos/demosaicing.h"
 #include "algos/statistics.h"
 
+#define USE_SIRIL_DEBAYER FALSE
 
 /** Calculate the bayer pattern color from the row and column **/
 static inline int FC(const size_t row, const size_t col, const uint32_t filters) {
@@ -42,53 +43,89 @@ static inline int FC(const size_t row, const size_t col, const uint32_t filters)
 }
 
 /* width and height are sizes of the original image */
-static int super_pixel(const WORD *buf, WORD *newbuf, int width, int height,
+static void super_pixel_ushort(const WORD *buf, WORD *newbuf, int width, int height,
 		sensor_pattern pattern) {
-	int i, col, row;
-	double tmp;
-
-	i = 0;
-	for (row = 0; row < height - 1; row += 2) {
-		for (col = 0; col < width - 1; col += 2) {
+	long i = 0;
+	for (int row = 0; row < height - 1; row += 2) {
+		for (int col = 0; col < width - 1; col += 2) {
+			float tmp;
 			switch (pattern) {
 			default:
 			case BAYER_FILTER_RGGB:
 				newbuf[i + 0] = buf[col + row * width];
-				tmp = (double) buf[1 + col + row * width];
-				tmp += (double) buf[col + (1 + row) * width];
-				tmp *= 0.5;
-				newbuf[i + 1] = round_to_WORD(tmp);
+				tmp = buf[1 + col + row * width];
+				tmp += buf[col + (1 + row) * width];
+				newbuf[i + 1] = round_to_WORD(tmp * 0.5f);
 				newbuf[i + 2] = buf[1 + col + (1 + row) * width];
 				break;
 			case BAYER_FILTER_BGGR:
 				newbuf[i + 2] = buf[col + row * width];
-				tmp = (double) buf[1 + col + row * width];
-				tmp += (double) buf[(col + row * width) + width];
-				tmp *= 0.5;
-				newbuf[i + 1] = round_to_WORD(tmp);
+				tmp = buf[1 + col + row * width];
+				tmp += buf[(col + row * width) + width];
+				newbuf[i + 1] = round_to_WORD(tmp * 0.5f);
 				newbuf[i + 0] = buf[(1 + col + row * width) + width];
 				break;
 			case BAYER_FILTER_GBRG:
 				newbuf[i + 2] = buf[1 + col + row * width];
 				newbuf[i + 0] = buf[(col + row * width) + width];
-				tmp = (double) buf[col + row * width];
-				tmp += (double) buf[(1 + col + row * width) + width];
-				tmp *= 0.5;
-				newbuf[i + 1] = round_to_WORD(tmp);
+				tmp = buf[col + row * width];
+				tmp += buf[(1 + col + row * width) + width];
+				newbuf[i + 1] = round_to_WORD(tmp * 0.5f);
 				break;
 			case BAYER_FILTER_GRBG:
 				newbuf[i + 0] = buf[1 + col + row * width];
 				newbuf[i + 2] = buf[(col + row * width) + width];
-				tmp = (double) buf[col + row * width];
-				tmp += (double) buf[(1 + col + row * width) + width];
-				tmp *= 0.5;
-				newbuf[i + 1] = round_to_WORD(tmp);
+				tmp = buf[col + row * width];
+				tmp += buf[(1 + col + row * width) + width];
+				newbuf[i + 1] = round_to_WORD(tmp * 0.5f);
 				break;
 			}
 			i += 3;
 		}
 	}
-	return 0;
+}
+
+/* width and height are sizes of the original image */
+static void super_pixel_float(const float *buf, float *newbuf, int width, int height,
+		sensor_pattern pattern) {
+	long i = 0;
+	for (int row = 0; row < height - 1; row += 2) {
+		for (int col = 0; col < width - 1; col += 2) {
+			float tmp;
+			switch (pattern) {
+			default:
+			case BAYER_FILTER_RGGB:
+				newbuf[i + 0] = buf[col + row * width];
+				tmp = buf[1 + col + row * width];
+				tmp += buf[col + (1 + row) * width];
+				newbuf[i + 1] = tmp * 0.5f;
+				newbuf[i + 2] = buf[1 + col + (1 + row) * width];
+				break;
+			case BAYER_FILTER_BGGR:
+				newbuf[i + 2] = buf[col + row * width];
+				tmp = buf[1 + col + row * width];
+				tmp += buf[(col + row * width) + width];
+				newbuf[i + 1] = tmp * 0.5f;
+				newbuf[i + 0] = buf[(1 + col + row * width) + width];
+				break;
+			case BAYER_FILTER_GBRG:
+				newbuf[i + 2] = buf[1 + col + row * width];
+				newbuf[i + 0] = buf[(col + row * width) + width];
+				tmp = buf[col + row * width];
+				tmp += buf[(1 + col + row * width) + width];
+				newbuf[i + 1] = tmp * 0.5f;
+				break;
+			case BAYER_FILTER_GRBG:
+				newbuf[i + 0] = buf[1 + col + row * width];
+				newbuf[i + 2] = buf[(col + row * width) + width];
+				tmp = buf[col + row * width];
+				tmp += buf[(1 + col + row * width) + width];
+				newbuf[i + 1] = tmp * 0.5f;
+				break;
+			}
+			i += 3;
+		}
+	}
 }
 
 /***************************************************
@@ -695,7 +732,8 @@ static int bayer_AHD(const WORD *bayer, WORD *dst, int sx, int sy,
 
 /* Code from RAWTherapee:
  * It is a simple algorithm. Certainly not the best (probably the worst) but it works yet. */
-static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy, int xtrans[6][6]) {
+static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
+		unsigned int xtrans[6][6]) {
 	uint32_t filters = 9;
 	const int height = sy, width = sx;
 	int row;
@@ -768,20 +806,8 @@ static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
 
 #undef fcol
 
-/**
- * debayer a buffer of a given size into a newly allocated and returned buffer,
- * using the given bayer pattern and interpolation
- *
- * @param buf original RAW data
- * @param width width of image
- * @param height height of image
- * @param interpolation type of interpolation used for demosaicing algorithm
- * @param pattern type of pattern used for demosaicing algorithm
- * @param xtrans this array is only used in case of FUJI XTRANS RAWs. Can be NULL.
- * @return a new buffer of demosaiced data
- */
-WORD *debayer_buffer(WORD *buf, int *width, int *height,
-		interpolation_method interpolation, sensor_pattern pattern, int xtrans[6][6]) {
+static WORD *debayer_buffer_siril(WORD *buf, int *width, int *height,
+		interpolation_method interpolation, sensor_pattern pattern, unsigned int xtrans[6][6]) {
 	WORD *newbuf;
 	long npixels;
 	int retval;
@@ -814,9 +840,10 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		retval = bayer_AHD(buf, newbuf, *width, *height, pattern);
 		break;
 	case BAYER_SUPER_PIXEL:
-		retval = super_pixel(buf, newbuf, *width, *height, pattern);
+		super_pixel_ushort(buf, newbuf, *width, *height, pattern);
 		*width = *width / 2 + *width % 2;
 		*height = *height / 2 + *height % 2;
+		retval = 0;
 		break;
 	case XTRANS:
 		if (!xtrans)
@@ -828,6 +855,54 @@ WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		free(newbuf);
 		return NULL;
 	}
+	return newbuf;
+}
+
+WORD *debayer_buffer_superpixel_ushort(WORD *buf, int *width, int *height, sensor_pattern pattern) {
+	int new_rx = *width / 2 + *width % 2;
+	int new_ry = *height / 2 + *height % 2;
+	long npixels = new_rx * new_ry;
+	WORD *newbuf = malloc(3 * npixels * sizeof(WORD));
+	if (!newbuf) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
+	super_pixel_ushort(buf, newbuf, *width, *height, pattern);
+	*width = new_rx;
+	*height = new_ry;
+	return newbuf;
+}
+
+/**
+ * debayer a buffer of a given size into a newly allocated and returned buffer,
+ * using the given bayer pattern and interpolation (only used for SER demosaicing)
+ *
+ * @param buf original RAW data
+ * @param width width of image
+ * @param height height of image
+ * @param interpolation type of interpolation used for demosaicing algorithm
+ * @param pattern type of pattern used for demosaicing algorithm
+ * @return a new buffer of demosaiced data
+ */
+WORD *debayer_buffer(WORD *buf, int *width, int *height,
+		interpolation_method interpolation, sensor_pattern pattern) {
+	if (USE_SIRIL_DEBAYER)
+		return debayer_buffer_siril(buf, width, height, interpolation, pattern, NULL);
+	return debayer_buffer_new_ushort(buf, width, height, interpolation, pattern, NULL);
+}
+
+float *debayer_buffer_superpixel_float(float *buf, int *width, int *height, sensor_pattern pattern) {
+	int new_rx = *width / 2 + *width % 2;
+	int new_ry = *height / 2 + *height % 2;
+	long npixels = new_rx * new_ry;
+	float *newbuf = malloc(3 * npixels * sizeof(float));
+	if (!newbuf) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
+	super_pixel_float(buf, newbuf, *width, *height, pattern);
+	*width = new_rx;
+	*height = new_ry;
 	return newbuf;
 }
 
@@ -903,6 +978,159 @@ void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 	assert(debayer_area->y < image_area->h);
 	assert(debayer_area->h > 2);
 	assert(debayer_area->w > 2);
+}
+
+/* This function retrieve the xtrans matrix from the FITS header */
+int retrieveXTRANSPattern(char *bayer, unsigned int xtrans[6][6]) {
+	int x, y, i = 0;
+
+	if (strlen(bayer) != 36) {
+		siril_log_color_message(_("FITS header does not contain a proper XTRANS pattern, demosaicing cannot be done"), "red");
+		return 1;
+	}
+
+	for (x = 0; x < 6; x++) {
+		for (y = 0; y < 6; y++) {
+			switch (bayer[i]) {
+				default:	// shouldn't default be an error?
+				case 'R':
+					xtrans[x][y] = 0;
+					break;
+				case 'G':
+					xtrans[x][y] = 1;
+					break;
+				case 'B':
+					xtrans[x][y] = 2;
+					break;
+			}
+			i++;
+		}
+	}
+	return 0;
+}
+
+static int debayer_ushort(fits* fit, interpolation_method interpolation) {
+        int i, j;
+        int width = fit->rx;
+        int height = fit->ry;
+        long npixels;
+        WORD *buf = fit->data;
+        int xbayeroff = 0, ybayeroff = 0;
+
+	unsigned int xtrans[6][6];
+	if (interpolation == XTRANS) {
+		retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
+	}
+
+        if (!com.debayer.use_bayer_header) {
+                xbayeroff = com.debayer.xbayeroff;
+                ybayeroff = com.debayer.ybayeroff;
+        } else {
+                xbayeroff = fit->bayer_xoffset;
+                ybayeroff = fit->bayer_yoffset;
+        }
+
+        if (xbayeroff == 1) {
+                buf += width;
+                height--;
+        }
+        if (ybayeroff == 1)
+                buf++;
+
+	if (USE_SIRIL_DEBAYER) {
+		WORD *newbuf = debayer_buffer_siril(buf, &width, &height, interpolation,
+				com.debayer.bayer_pattern, xtrans);
+		if (!newbuf) return 1;
+
+		// color RGBRGB format to fits RRGGBB format
+		npixels = width * height;
+		WORD *newdata = (WORD *)realloc(fit->data, 3 * npixels * sizeof(WORD));
+		if (!newdata) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
+		fit->data = newdata;
+		fit->naxes[0] = width;
+		fit->naxes[1] = height;
+		fit->naxes[2] = 3;
+		fit->naxis = 3;
+		fit->rx = width;
+		fit->ry = height;
+		fit->pdata[RLAYER] = fit->data;
+		fit->pdata[GLAYER] = fit->data + npixels;
+		fit->pdata[BLAYER] = fit->data + npixels * 2;
+		fit->bitpix = fit->orig_bitpix;
+		for (i = 0, j = 0; j < npixels; i += 3, j++) {
+			double r = (double) newbuf[i + RLAYER];
+			double g = (double) newbuf[i + GLAYER];
+			double b = (double) newbuf[i + BLAYER];
+			fit->pdata[RLAYER][j] =
+				(fit->bitpix == 8) ? round_to_BYTE(r) : round_to_WORD(r);
+			fit->pdata[GLAYER][j] =
+				(fit->bitpix == 8) ? round_to_BYTE(g) : round_to_WORD(g);
+			fit->pdata[BLAYER][j] =
+				(fit->bitpix == 8) ? round_to_BYTE(b) : round_to_WORD(b);
+		}
+		free(newbuf);
+		full_stats_invalidation_from_fit(fit);
+
+	} else {
+		// use librtprocess debayer
+		WORD *newbuf = debayer_buffer_new_ushort(buf, &width, &height,
+				interpolation, com.debayer.bayer_pattern, xtrans);
+		if (!newbuf) return 1;
+
+		fit->naxes[2] = 3;
+		fit->naxis = 3;
+		fit_replace_buffer(fit, newbuf, DATA_USHORT);
+	}
+
+	return 0;
+}
+
+static int debayer_float(fits* fit, interpolation_method interpolation) {
+	int width = fit->rx;
+	int height = fit->ry;
+	float *buf = fit->fdata;
+	int xbayeroff = 0, ybayeroff = 0;
+
+	unsigned int xtrans[6][6];
+	if (interpolation == XTRANS) {
+		retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
+	}
+
+	if (!com.debayer.use_bayer_header) {
+		xbayeroff = com.debayer.xbayeroff;
+		ybayeroff = com.debayer.ybayeroff;
+	} else {
+		xbayeroff = fit->bayer_xoffset;
+		ybayeroff = fit->bayer_yoffset;
+	}
+
+	if (xbayeroff == 1) {
+		buf += width;
+		height--;
+	}
+	if (ybayeroff == 1)
+		buf++;
+
+	float *newbuf = debayer_buffer_new_float(buf, &width, &height, interpolation,
+			com.debayer.bayer_pattern, xtrans);
+	if (!newbuf)
+		return 1;
+
+	fit->naxes[2] = 3;
+	fit->naxis = 3;
+	fit_replace_buffer(fit, newbuf, DATA_FLOAT);
+	return 0;
+}
+
+int debayer(fits* fit, interpolation_method interpolation) {
+	if (fit->type == DATA_USHORT)
+		return debayer_ushort(fit, interpolation);
+	else if (fit->type == DATA_FLOAT)
+		return debayer_float(fit, interpolation);
+	else return -1;
 }
 
 int split_cfa_ushort(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {

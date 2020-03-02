@@ -1946,7 +1946,7 @@ void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype) {
 		fit->fpdata[0] = NULL;
 		fit->fpdata[1] = NULL;
 		fit->fpdata[2] = NULL;
-		siril_debug_print("Changed a fit data to WORD\n");
+		siril_debug_print("Changed a fit data (WORD)\n");
 	} else if (newtype == DATA_FLOAT) {
 		fit->bitpix = FLOAT_IMG;
 		fit->orig_bitpix = FLOAT_IMG;
@@ -1966,7 +1966,7 @@ void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype) {
 		fit->pdata[0] = NULL;
 		fit->pdata[1] = NULL;
 		fit->pdata[2] = NULL;
-		siril_debug_print("Changed a fit data to FLOAT\n");
+		siril_debug_print("Changed a fit data (FLOAT)\n");
 	}
 }
 
