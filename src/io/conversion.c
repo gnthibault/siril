@@ -1297,7 +1297,7 @@ void on_convtoroot_changed(GtkEditable *editable, gpointer user_data){
 	check_for_conversion_form_completeness();
 }
 
-void on_demosaicing_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
+void check_debayer_button (GtkToggleButton *togglebutton) {
 	static GtkToggleButton *but = NULL;
 	if (!but) but = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton1"));
 	if (gtk_toggle_button_get_active(togglebutton)) {
@@ -1309,6 +1309,10 @@ void on_demosaicing_toggled (GtkToggleButton *togglebutton, gpointer user_data) 
 		unset_debayer_in_convflags();	// used for conversion
 		com.debayer.open_debayer = FALSE;	// used for image opening
 	}
+}
+
+void on_demosaicing_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	check_debayer_button(togglebutton);
 }
 
 void on_multipleSER_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
