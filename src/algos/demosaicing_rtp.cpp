@@ -132,7 +132,7 @@ WORD *debayer_buffer_new_ushort(WORD *buf, int *width, int *height,
 			retval = vng4_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_BILINEAR:
-		case BAYER_NEARESTNEIGHBOR:
+//		case BAYER_NEARESTNEIGHBOR:
 			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
 			/* bayerfast: This demosaicer is not intended for final
 			 * output, only for fast preview. */
@@ -270,7 +270,7 @@ float *debayer_buffer_new_float(float *buf, int *width, int *height,
 			retval = vng4_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_BILINEAR:
-		case BAYER_NEARESTNEIGHBOR:
+//		case BAYER_NEARESTNEIGHBOR:
 			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
 			/* bayerfast: This demosaicer is not intended for final
 			 * output, only for fast preview. */

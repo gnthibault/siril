@@ -248,6 +248,7 @@ static int bayer_Bilinear(const WORD *bayer, WORD *rgb, int sx, int sy,
 	return 0;
 }
 
+#if 0
 /* insprired by OpenCV's Bayer decoding */
 static int bayer_NearestNeighbor(const WORD *bayer, WORD *rgb, int sx, int sy,
 		sensor_pattern tile) {
@@ -317,6 +318,7 @@ static int bayer_NearestNeighbor(const WORD *bayer, WORD *rgb, int sx, int sy,
 	}
 	return 0;
 }
+#endif
 
 #define ABSOLU(x) (((int)(x) ^ ((int)(x) >> 31)) - ((int)(x) >> 31))
 
@@ -829,9 +831,9 @@ static WORD *debayer_buffer_siril(WORD *buf, int *width, int *height,
 	case BAYER_BILINEAR:
 		retval = bayer_Bilinear(buf, newbuf, *width, *height, pattern);
 		break;
-	case BAYER_NEARESTNEIGHBOR:
-		retval = bayer_NearestNeighbor(buf, newbuf, *width, *height, pattern);
-		break;
+//	case BAYER_NEARESTNEIGHBOR:
+//		retval = bayer_NearestNeighbor(buf, newbuf, *width, *height, pattern);
+//		break;
 	default:
 	case BAYER_VNG:
 		retval = bayer_VNG(buf, newbuf, *width, *height, pattern);
