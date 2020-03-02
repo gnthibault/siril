@@ -1815,9 +1815,9 @@ static void fits_flip_top_to_bottom_float(fits *fit) {
 
 void fits_flip_top_to_bottom(fits *fit) {
 	if (fit->type == DATA_USHORT)
-		return fits_flip_top_to_bottom_ushort(fit);
-	if (fit->type == DATA_FLOAT)
-		return fits_flip_top_to_bottom_float(fit);
+		fits_flip_top_to_bottom_ushort(fit);
+	else if (fit->type == DATA_FLOAT)
+		fits_flip_top_to_bottom_float(fit);
 }
 
 /* This function copies an area from the fits 'from' on layer 'layer' into
