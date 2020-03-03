@@ -54,6 +54,8 @@ static gboolean end_update_preview_cb(gpointer p) {
 	char *info_str = NULL;
 	GFileType type;
 
+	if (!(GTK_IS_IMAGE((preview.image)))) return FALSE;
+
 	name_str = g_path_get_basename(args->filename);
 
 	type = g_file_info_get_file_type(args->file_info);
@@ -87,7 +89,7 @@ static gboolean end_update_preview_cb(gpointer p) {
 	}
 
 	/* information strings */
-	const char *format = "<span style=\"italic\">\%s</span>";
+	const char *format = "<span style=\"italic\">%s</span>";
 	char *markup = g_markup_printf_escaped(format, name_str);
 	gtk_label_set_markup(GTK_LABEL(preview.name_label), markup);
 	gtk_label_set_ellipsize(GTK_LABEL(preview.name_label), PANGO_ELLIPSIZE_MIDDLE);
