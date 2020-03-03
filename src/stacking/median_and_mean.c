@@ -725,8 +725,8 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 				}
 			}
 			if (args->type_of_rejection == LINEARFIT) {
-				data_pool[i].xf = malloc(nb_frames * sizeof(double));
-				data_pool[i].yf = malloc(nb_frames * sizeof(double));
+				data_pool[i].xf = malloc(nb_frames * sizeof(float));
+				data_pool[i].yf = malloc(nb_frames * sizeof(float));
 				if (!data_pool[i].xf || !data_pool[i].yf) {
 					PRINT_ALLOC_ERR;
 					fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
