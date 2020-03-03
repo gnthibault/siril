@@ -343,7 +343,7 @@ static void start_stacking() {
 	static GtkEntry *output_file = NULL;
 	static GtkToggleButton *overwrite = NULL, *force_norm = NULL;
 	static GtkSpinButton *sigSpin[2] = {NULL, NULL};
-	static GtkWidget *norm_to_16 = NULL;
+	static GtkWidget *norm_to_max = NULL;
 
 	if (method_combo == NULL) {
 		method_combo = GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods"));
@@ -354,7 +354,7 @@ static void start_stacking() {
 		rejec_combo = GTK_COMBO_BOX(lookup_widget("comborejection"));
 		norm_combo = GTK_COMBO_BOX(lookup_widget("combonormalize"));
 		force_norm = GTK_TOGGLE_BUTTON(lookup_widget("checkforcenorm"));
-		norm_to_16 = lookup_widget("check_normalise_to_16b");
+		norm_to_max = lookup_widget("check_normalise_to_max");
 	}
 
 	if (get_thread_run()) {
@@ -367,8 +367,8 @@ static void start_stacking() {
 	stackparam.type_of_rejection = gtk_combo_box_get_active(rejec_combo);
 	stackparam.normalize = gtk_combo_box_get_active(norm_combo);
 	stackparam.force_norm = gtk_toggle_button_get_active(force_norm);
-	stackparam.norm_to_16 = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(norm_to_16)) && gtk_widget_is_visible(norm_to_16);
+	stackparam.norm_to_max= gtk_toggle_button_get_active(
+			GTK_TOGGLE_BUTTON(norm_to_max)) && gtk_widget_is_visible(norm_to_max);
 	stackparam.coeff.offset = NULL;
 	stackparam.coeff.mul = NULL;
 	stackparam.coeff.scale = NULL;
@@ -885,7 +885,7 @@ static void update_filter_label() {
  */
 void update_stack_interface(gboolean dont_change_stack_type) {
 	static GtkWidget *go_stack = NULL,
-			 *widgetnormalize = NULL, *force_norm = NULL, *norm_to_16 = NULL;
+			 *widgetnormalize = NULL, *force_norm = NULL, *norm_to_max = NULL;
 	static GtkComboBox *method_combo = NULL, *filter_combo = NULL;
 	static GtkLabel *result_label = NULL;
 	gchar *labelbuffer;
@@ -896,7 +896,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 		method_combo = GTK_COMBO_BOX(lookup_widget("comboboxstack_methods"));
 		widgetnormalize = lookup_widget("combonormalize");
 		force_norm = lookup_widget("checkforcenorm");
-		norm_to_16 = lookup_widget("check_normalise_to_16b");
+		norm_to_max = lookup_widget("check_normalise_to_max");
 		result_label = GTK_LABEL(lookup_widget("stackfilter_label"));
 	}
 	if (!sequence_is_loaded()) {
@@ -924,7 +924,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 		gtk_widget_set_sensitive(widgetnormalize, TRUE);
 		gtk_widget_set_sensitive(force_norm,
 				gtk_combo_box_get_active(GTK_COMBO_BOX(widgetnormalize)) != 0);
-		gtk_widget_set_visible(norm_to_16, stackparam.seq->bitpix == BYTE_IMG);
+		gtk_widget_set_visible(norm_to_max, TRUE);
 	}
 
 	if (com.seq.reference_image == -1)

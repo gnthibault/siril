@@ -46,6 +46,7 @@ static char *PixSizeY[] = { "YPIXSZ", "YPIXELSZ", "PIXSIZE2", NULL };
 static char *BinX[] = { "XBINNING", "BINX", NULL };
 static char *BinY[] = { "YBINNING", "BINY", NULL };
 static char *Focal[] = { "FOCAL", "FOCALLEN", NULL };
+static char *CCD_TEMP[] = { "CCD-TEMP", "CCD_TEMP", "CCDTEMP", "TEMPERAT", NULL };
 static char *Exposure[] = { "EXPTIME", "EXPOSURE", NULL };
 
 #define __tryToFindKeywords(fptr, type, keywords, value) \
@@ -271,10 +272,7 @@ static void read_fits_header(fits *fit) {
 				fit->pixel_size_x, fit->pixel_size_y, fit->binning_x,
 				fit->binning_y, fit->focal_length);
 
-	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CCD-TEMP", &(fit->ccd_temp), NULL,
-			&status);	// Non-standard keywords used in MaxIm DL
-
+	__tryToFindKeywords(fit->fptr, TDOUBLE, CCD_TEMP, &fit->focal_length);
 	__tryToFindKeywords(fit->fptr, TDOUBLE, Exposure, &fit->exposure);
 
 	status = 0;

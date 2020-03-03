@@ -1355,7 +1355,7 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 		//pptr = &pixbuf_data[i * Ws * 3];
 		for (j = 0; j < MAX_SIZE; j++)
 			pix[j] = 0;
-		m = 0.; // amount of strings read in block
+		m = 0.f; // amount of strings read in block
 		for (l = 0; l < pixScale; l++, m++) { // cycle through a block lines
 			ptr = &ima_data[M * w];
 			N = 0; // number of column
@@ -1399,9 +1399,9 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 	for (i = Hs - 1; i > -1; i--) {	// fill pixbuf mirroring image by vertical
 		pptr = &pixbuf_data[Ws * i * 3];
 		for (j = 0; j < Ws; j++) {
-			*pptr++ = (guchar) round_to_BYTE(255. * (*ptr - min) / wd);
-			*pptr++ = (guchar) round_to_BYTE(255. * (*ptr - min) / wd);
-			*pptr++ = (guchar) round_to_BYTE(255. * (*ptr - min) / wd);
+			*pptr++ = (guchar) round_to_BYTE(255.f * (*ptr - min) / wd);
+			*pptr++ = (guchar) round_to_BYTE(255.f * (*ptr - min) / wd);
+			*pptr++ = (guchar) round_to_BYTE(255.f * (*ptr - min) / wd);
 			ptr++;
 		}
 	}

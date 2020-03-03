@@ -331,6 +331,31 @@ static void normalize_to16bit(int bitpix, double *mean) {
 	}
 }
 
+static void norm_to_0_1_range(fits *fit) {
+	float mini = fit->fdata[0];
+	float maxi = fit->fdata[0];
+	long n = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
+
+	/* search for min / max */
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) schedule(static) reduction(max:maxi) reduction(min:mini)
+#endif
+	for (int i = 1; i < n; i++) {
+		float tmp = fit->fdata[i];
+		if (tmp < mini)
+			mini = tmp;
+		if (tmp > maxi)
+			maxi = tmp;
+	}
+	/* normalize to [0, 1] range */
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
+#endif
+	for (int i = 0; i < n; i++) {
+		fit->fdata[i] = (fit->fdata[i] - mini) / (maxi - mini);
+	}
+}
+
 /******************************* REJECTION STACKING ******************************
  * The functions below are those managing the rejection, the stacking code is
  * after and similar to median but takes into account the registration data and
@@ -612,7 +637,6 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	fprintf(stdout, "image size: %ldx%ld, %ld layers\n", naxes[0], naxes[1], naxes[2]);
 
 	/* initialize result image */
-	// TODO: ensure norm_to_16 is not activated when  use_32bit_output is, because it's useless
 	fptr = &fit;
 	if ((retval = new_fit_image(&fptr, naxes[0], naxes[1], naxes[2],
 					args->use_32bit_output ? DATA_FLOAT : DATA_USHORT))) {
@@ -620,9 +644,9 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	}
 	copy_fits_metadata(&ref, fptr);
 	clearfits(&ref);
-	if (!args->use_32bit_output && (args->norm_to_16 || fit.orig_bitpix != BYTE_IMG)) {
+	if (!args->use_32bit_output && (args->norm_to_max || fit.orig_bitpix != BYTE_IMG)) {
 		fit.bitpix = USHORT_IMG;
-		if (args->norm_to_16)
+		if (args->norm_to_max)
 			fit.orig_bitpix = USHORT_IMG;
 	}
 
@@ -886,14 +910,16 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 						result = quickmedian(data->stack, nb_frames);
 					else 	result = quickmedian_float(data->stack, nb_frames);
 				}
-				if (args->norm_to_16) {
-					normalize_to16bit(bitpix, &result);
-				}
+
 				if (args->use_32bit_output) {
 					if (itype == DATA_USHORT)
 						fit.fpdata[my_block->channel][pdata_idx] = min(double_ushort_to_float_range(result), 1.f);
 					else	fit.fpdata[my_block->channel][pdata_idx] = min((float)result, 1.f);
 				} else {
+					/* in case of 8bit data we may want to normalize to 16bits */
+					if (args->norm_to_max) {
+						normalize_to16bit(bitpix, &result);
+					}
 					fit.pdata[my_block->channel][pdata_idx] = round_to_WORD(result);
 				}
 				pdata_idx++;
@@ -943,6 +969,10 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		gfit.fdata = fit.fdata;
 		for (i = 0; i < fit.naxes[2]; i++)
 			gfit.fpdata[i] = fit.fpdata[i];
+
+		if (args->norm_to_max) {
+			norm_to_0_1_range(&gfit);
+		}
 	} else {
 		gfit.data = fit.data;
 		for (i = 0; i < fit.naxes[2]; i++)

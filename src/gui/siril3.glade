@@ -5800,7 +5800,7 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                                     </child>
                                     <child>
                                       <object class="GtkCheckButton" id="checkforcenorm">
-                                        <property name="label" translatable="yes">Force recomputing</property>
+                                        <property name="label" translatable="yes">Recompute</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
@@ -6103,23 +6103,6 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkCheckButton" id="check_normalise_to_16b">
-                                    <property name="label" translatable="yes">Normalise to 16-bit
-(Don't check for Masters)</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">If you check this button, the final image will be normalized to 16-bit per channel. This is important when input sequence has a depth of 8-bit per channel.
-However you may want to disable this option when building master frames of 8-bit sequences.</property>
-                                    <property name="halign">start</property>
-                                    <property name="active">True</property>
-                                    <property name="draw_indicator">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <object class="GtkLabel" id="label30">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
@@ -6129,6 +6112,22 @@ However you may want to disable this option when building master frames of 8-bit
                                   <packing>
                                     <property name="left_attach">0</property>
                                     <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="check_normalise_to_max">
+                                    <property name="label" translatable="yes">Output
+Normalisation</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">If you check this button, the final image will be normalized in the [0, 1] range if you work.</property>
+                                    <property name="halign">start</property>
+                                    <property name="active">True</property>
+                                    <property name="draw_indicator">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">1</property>
                                   </packing>
                                 </child>
                                 <child>

@@ -2294,7 +2294,7 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 		else args.normalize = NO_NORM;
 		args.method = arg->method;
 		args.force_norm = FALSE;
-		args.norm_to_16 = TRUE;
+		args.norm_to_max = TRUE;
 		args.reglayer = args.seq->nb_layers == 1 ? 0 : 1;
 
 		// manage filters

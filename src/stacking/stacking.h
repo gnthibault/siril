@@ -74,7 +74,7 @@ struct stacking_args {
 	normalization normalize;	/* type of normalization */
 	norm_coeff coeff;		/* normalization data */
 	gboolean force_norm;		/* TRUE = force normalization */
-	gboolean norm_to_16;		/* normalize final image to 16bits */
+	gboolean norm_to_max;		/* normalize final image to the [0, 1] range */
 	gboolean use_32bit_output;	/* output to 32 bit float */
 	int reglayer;		/* layer used for registration data */
 };
