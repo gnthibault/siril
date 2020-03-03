@@ -49,7 +49,7 @@ static int percentile_clipping(float pixel, float sig[], float median,
 	if ((median - pixel) / median > plow) {
 		rej[0]++;
 		return -1;
-	} else if (((double) pixel - median) / median > phigh) {
+	} else if ((pixel - median) / median > phigh) {
 		rej[1]++;
 		return 1;
 	}

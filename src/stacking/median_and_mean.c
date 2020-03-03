@@ -362,14 +362,14 @@ static void norm_to_0_1_range(fits *fit) {
  * does a different operation to keep the final pixel values.
  *********************************************************************************/
 static int percentile_clipping(WORD pixel, float sig[], float median, uint64_t rej[]) {
-	double plow = sig[0];
-	double phigh = sig[1];
+	float plow = sig[0];
+	float phigh = sig[1];
 
-	if ((median - pixel) / median > plow) {
+	if ((median - (float) pixel) / median > plow) {
 		rej[0]++;
 		return -1;
 	}
-	else if ((pixel - median) / median > phigh) {
+	else if (((float)pixel - median) / median > phigh) {
 		rej[1]++;
 		return 1;
 	}
