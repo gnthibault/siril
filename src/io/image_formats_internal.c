@@ -271,6 +271,7 @@ int readbmp(const char *name, fits *fit) {
 		siril_log_message(_("Sorry but Siril cannot "
 				"open this kind of BMP. Try to convert it before.\n"));
 	}
+	fit->type = DATA_USHORT;
 	free(buf);
 	char *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading BMP: file %s, %ld layer(s), %ux%u pixels\n"),
@@ -591,6 +592,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		fclose(file);
 		return -1;
 	}
+	fit->type = DATA_USHORT;
 	fclose(file);
 	char *basename = g_path_get_basename(filename);
 	siril_log_message(_("Reading NetPBM: file %s, %ld layer(s), %ux%u pixels\n"),
@@ -841,6 +843,7 @@ int readpic(const char *name, fits *fit) {
 	fit->binning_y = (unsigned int) pic_file->bin[5];
 	fit->hi = pic_file->hi;
 	fit->lo = pic_file->lo;
+	fit->type = DATA_USHORT;
 
 	nbdata = fit->rx * fit->ry;
 

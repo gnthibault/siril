@@ -124,6 +124,73 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	return retval;
 }
 
+static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, float **data) {
+	unsigned int npixels;
+	int i, j, scanline, retval = nsamples;
+	float *buf;
+	uint32 rowsperstrip;
+	uint16 config;
+	unsigned long nrow, row;
+
+	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
+	TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
+
+	npixels = width * height;
+	*data = malloc(npixels * sizeof(float) * nsamples);
+	float *gbuf[3] = {*data, *data, *data};
+	if (nsamples == 4) {
+		siril_log_message(_("Alpha channel is ignored.\n"));
+	}
+	if ((nsamples == 3) || (nsamples == 4)) {
+		gbuf[1] = *data + npixels;
+		gbuf[2] = *data + npixels * 2;
+	}
+
+	scanline = TIFFScanlineSize(tif);
+	buf = _TIFFmalloc(TIFFStripSize(tif));
+	if (!buf) {
+		PRINT_ALLOC_ERR;
+		return -1;
+	}
+	for (row = 0; row < height; row += rowsperstrip){
+		nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
+		switch(config){
+			case PLANARCONFIG_CONTIG:
+				if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow*scanline) < 0){
+					siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
+					retval = -1;
+					break;
+				}
+				for (i = 0; i < width*nrow; i++) {
+					*gbuf[RLAYER]++ = buf[i*nsamples+0];
+					if ((nsamples == 3) || (nsamples == 4)) {
+						*gbuf[GLAYER]++ = buf[i*nsamples+1];
+						*gbuf[BLAYER]++ = buf[i*nsamples+2];
+					}
+				}
+				break;
+			case PLANARCONFIG_SEPARATE:
+				if (nsamples >= 3)		//don't need to read the alpha
+					nsamples = 3;
+				for (j=0; j<nsamples; j++){	//loop on the layer
+					if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, j), buf, nrow*scanline) < 0){
+						siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
+						retval = -1;
+						break;
+					}
+					for (i = 0; i < width*nrow; i++)
+						*gbuf[j]++ = buf[i];
+				}
+				break;
+			default:
+				siril_log_message(_("Unknown TIFF file.\n"));
+				retval = -1;
+		}
+	}
+	_TIFFfree(buf);
+	return retval;
+}
+
 static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
 	uint32 npixels;
 	int retval = nsamples;
@@ -199,7 +266,8 @@ int readtif(const char *name, fits *fit) {
 	int retval = 0;
 	uint32 height, width, npixels;
 	uint16 nbits, nsamples, color;
-	WORD *data;
+	WORD *data = NULL;
+	float *fdata = NULL;
 	
 	TIFF* tif = Siril_TIFFOpen(name, "r");
 
@@ -227,46 +295,74 @@ int readtif(const char *name, fits *fit) {
 			break;
 
 		case 16:
-			/* Lower level functions in readtifstrip: 
-			 * maybe some particular TIFF files could not be read.
-			 * No such files are known yet */
 			retval = readtifstrip(tif, width, height, nsamples, &data);
 			break;
 
+		case 32:
+			retval = readtifstrip32(tif, width, height, nsamples, &fdata);
+			break;
+
 		default :
-			siril_log_message(_("Siril only works with 8/16-bit TIFF format.\n"));
+			siril_log_message(_("Siril cannot read this TIFF format.\n"));
 			retval = -1;
 	}
 	TIFFClose(tif);
-	if (retval <= 0) {
-		if (data)
-			free(data);
-	} else if (data != NULL) {
-		clearfits(fit);
-		fit->rx = width;
-		fit->ry = height;
-		fit->naxes[0] = width;
-		fit->naxes[1] = height;
-		fit->data = data;
-		fit->binning_x=fit->binning_y=1;
-		if (nsamples == 1 || nsamples == 2) {
-			fit->naxes[2] = 1;
-			fit->naxis = 2;
-			fit->pdata[RLAYER]=fit->data;
-			fit->pdata[GLAYER]=fit->data;
-			fit->pdata[BLAYER]=fit->data;
-		} else {
-			fit->naxes[2] = 3;
-			fit->naxis = 3;
-			fit->pdata[RLAYER]=fit->data;
-			fit->pdata[GLAYER]=fit->data + npixels;
-			fit->pdata[BLAYER]=fit->data + npixels * 2;
-		}
-		fit->bitpix = (nbits == 8) ? BYTE_IMG : USHORT_IMG;
-		fit->orig_bitpix = fit->bitpix;
-		retval = nsamples;
+	if (retval < 0) {
+		free(data);
+		free(fdata);
+		return -1;
 	}
-	if (nbits==16) mirrorx(fit, FALSE);
+	clearfits(fit);
+	fit->rx = width;
+	fit->ry = height;
+	fit->naxes[0] = width;
+	fit->naxes[1] = height;
+	fit->data = data;
+	fit->fdata = fdata;
+	fit->binning_x = fit->binning_y = 1;
+	if (nsamples == 1 || nsamples == 2) {
+		fit->naxes[2] = 1;
+		fit->naxis = 2;
+		if (data) {
+			fit->pdata[RLAYER] = fit->data;
+			fit->pdata[GLAYER] = fit->data;
+			fit->pdata[BLAYER] = fit->data;
+		} else {
+			fit->fpdata[RLAYER] = fit->fdata;
+			fit->fpdata[GLAYER] = fit->fdata;
+			fit->fpdata[BLAYER] = fit->fdata;
+		}
+	} else {
+		fit->naxes[2] = 3;
+		fit->naxis = 3;
+		if (data) {
+			fit->pdata[RLAYER] = fit->data;
+			fit->pdata[GLAYER] = fit->data + npixels;
+			fit->pdata[BLAYER] = fit->data + npixels * 2;
+		} else {
+			fit->fpdata[RLAYER] = fit->fdata;
+			fit->fpdata[GLAYER] = fit->fdata + npixels;
+			fit->fpdata[BLAYER] = fit->fdata + npixels * 2;
+		}
+	}
+	switch (nbits) {
+	case 8:
+		fit->bitpix = BYTE_IMG;
+		fit->type = DATA_USHORT;
+		break;
+	case 16:
+		fit->bitpix = USHORT_IMG;
+		fit->type = DATA_USHORT;
+		mirrorx(fit, FALSE);
+		break;
+	case 32:
+		fit->bitpix = FLOAT_IMG;
+		fit->type = DATA_FLOAT;
+		mirrorx(fit, FALSE);
+	}
+	fit->orig_bitpix = fit->bitpix;
+	retval = nsamples;
+
 	gchar *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
 						nbits, basename, fit->naxes[2], fit->rx, fit->ry);
@@ -467,6 +563,7 @@ int readjpg(const char* name, fits *fit){
 		fit->pdata[GLAYER]=fit->data + npixels;
 		fit->pdata[BLAYER]=fit->data + npixels * 2;
 		fit->binning_x = fit->binning_y = 1;
+		fit->type = DATA_USHORT;
 	}
 	mirrorx(fit, FALSE);
 	gchar *basename = g_path_get_basename(name);
@@ -692,6 +789,7 @@ int readpng(const char *name, fits* fit) {
 		else
 			fit->naxis = 3;
 		fit->bitpix = (bit_depth == 16) ? USHORT_IMG : BYTE_IMG;
+		fit->type = DATA_USHORT;
 		fit->orig_bitpix = fit->bitpix;
 		fit->data = data;
 		fit->pdata[RLAYER] = fit->data;
@@ -1115,6 +1213,7 @@ static int readraw(const char *name, fits *fit) {
 	if (data != NULL) {
 		clearfits(fit);
 		fit->bitpix = fit->orig_bitpix = USHORT_IMG;
+		fit->type = DATA_USHORT;
 		fit->rx = (unsigned int) width;
 		fit->ry = (unsigned int) height;
 		fit->naxes[0] = (long) width;
@@ -1287,6 +1386,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 
 	clearfits(fit);
 	fit->bitpix = fit->orig_bitpix = USHORT_IMG;
+	fit->type = DATA_USHORT;
 	fit->rx = (unsigned int) (width);
 	fit->ry = (unsigned int) (height);
 	fit->naxes[0] = (long) (width);
@@ -1699,6 +1799,7 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 	if (data != NULL) {
 		clearfits(fit);
 		fit->bitpix = fit->orig_bitpix = BYTE_IMG;
+		fit->type = DATA_USHORT;
 		fit->naxis = 3;
 		fit->rx = width;
 		fit->ry = height;
