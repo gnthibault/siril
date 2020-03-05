@@ -2049,47 +2049,47 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 
 	const int n_channels = naxis == 3 ? naxis : 1;
 
-	gchar *description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)\n%s", w, h,
-						ngettext("pixel", "pixels", h), n_channels,
-						ngettext("channel", "channels", n_channels),
-						abs(dtype), _("(Monochrome Preview)"));
+	gchar *description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)\n%s", w,
+			h, ngettext("pixel", "pixels", h), n_channels,
+			ngettext("channel", "channels", n_channels), abs(dtype),
+			_("(Monochrome Preview)"));
 
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-{
-	// array for preview picture line
-    float pix[MAX_SIZE];
-    #pragma omp for
-	for (int i = 0; i < Hs; i++) { // cycle through a blocks by lines
-        int M = i * pixScale;
-		for (int j = 0; j < MAX_SIZE; j++) { // zero line buffer
-			pix[j] = 0;
-		}
-		unsigned int m = 0; // amount of strings read in block
-		for (int l = 0; l < pixScale; l++, m++) { // cycle through a block lines
-			float *ptr = &ima_data[M * w];
-			int N = 0; // number of column
-			for (int j = 0; j < Ws; j++) { // cycle through a blocks by columns
-				unsigned int n = 0;	// amount of columns read in block
-				float sum = 0.f; // average intensity in block
-				for (int k = 0; k < pixScale; k++, n++) { // cycle through block pixels
-					if (N++ < w) // row didn't end
-						sum += *ptr++; // sum[(pix-min)/wd]/n = [sum(pix)/n-min]/wd
-					else
-						break;
-				}
-				pix[j] += sum / n; //(byte / n - min)/wd;
+	{
+		// array for preview picture line
+		float pix[MAX_SIZE];
+#pragma omp for
+		for (int i = 0; i < Hs; i++) { // cycle through a blocks by lines
+			int M = i * pixScale;
+			for (int j = 0; j < MAX_SIZE; j++) { // zero line buffer
+				pix[j] = 0;
 			}
-			if (++M >= h)
-				break;
+			unsigned int m = 0; // amount of strings read in block
+			for (int l = 0; l < pixScale; l++, m++) { // cycle through a block lines
+				float *ptr = &ima_data[M * w];
+				int N = 0; // number of column
+				for (int j = 0; j < Ws; j++) { // cycle through a blocks by columns
+					unsigned int n = 0;	// amount of columns read in block
+					float sum = 0.f; // average intensity in block
+					for (int k = 0; k < pixScale; k++, n++) { // cycle through block pixels
+						if (N++ < w) // row didn't end
+							sum += *ptr++; // sum[(pix-min)/wd]/n = [sum(pix)/n-min]/wd
+						else
+							break;
+					}
+					pix[j] += sum / n; //(byte / n - min)/wd;
+				}
+				if (++M >= h)
+					break;
+			}
+			// fill unused picture pixels
+			float *ptr = &ima_data[i * Ws];
+			for (int l = 0; l < Ws; l++)
+				*ptr++ = pix[l] / m;
 		}
-		// fill unused picture pixels
-		float *ptr = &ima_data[i * Ws];
-		for (int l = 0; l < Ws; l++)
-			*ptr++ = pix[l] / m;
 	}
-}
 
 	float *ptr = ima_data;
 	sz = Ws * Hs;
@@ -2113,8 +2113,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	if (hi != lo && hi != 0.f && abs(dtype) <= USHORT_IMG) {
 		min = lo;
 		max = hi;
-	}
-	else if (dtype <= FLOAT_IMG) {	// means float or double image
+	} else if (dtype <= FLOAT_IMG) {	// means float or double image
 		WORD wlo, whi;
 		if (!try_read_float_lo_hi(fp, &wlo, &whi)) {
 			min = (float) wlo / USHRT_MAX_SINGLE;
@@ -2129,7 +2128,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 		wd /= avr;
 	}
 
-    guchar *pixbuf_data = malloc(3 * MAX_SIZE * MAX_SIZE * sizeof(guchar));
+	guchar *pixbuf_data = malloc(3 * MAX_SIZE * MAX_SIZE * sizeof(guchar));
 
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread)
@@ -2144,15 +2143,14 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	}
 	fits_close_file(fp, &status);
 	free(ima_data);
-	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(pixbuf_data,		// guchar* data
+	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(pixbuf_data,	// guchar* data
 			GDK_COLORSPACE_RGB,	// only this supported
 			FALSE,				// no alpha
 			8,				// number of bits
 			Ws, Hs,				// size
 			Ws * 3,				// line length in bytes
 			(GdkPixbufDestroyNotify) free_preview_data, // function (*GdkPixbufDestroyNotify) (guchar *pixels, gpointer data);
-			NULL
-			);
+			NULL);
 	*descr = description;
 	return pixbuf;
 }
