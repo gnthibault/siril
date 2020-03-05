@@ -208,6 +208,8 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 				return 1;
 			}
 			prepro->normalisation = stat->mean;
+			if (prepro->allow_32bit_output)
+				prepro->normalisation = ushort_to_float_range(prepro->normalisation);
 			siril_log_message(_("Normalisation value auto evaluated: %.2f\n"),
 					prepro->normalisation);
 			free_stats(stat);
