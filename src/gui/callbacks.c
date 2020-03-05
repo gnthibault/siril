@@ -1137,10 +1137,13 @@ void set_GUI_MEM(unsigned long size) {
 	if (com.headless)
 		return;
 	char *str;
-	if (size != 0)
-		str = g_strdup_printf(_("Mem: %ldMB"), size / 1024);
-	else
+	if (size != 0) {
+		gchar *mem = pretty_print_memory(size * 1024);
+		str = g_strdup_printf(_("Mem: %s"), mem);
+		g_free(mem);
+	} else {
 		str = g_strdup(_("Mem: N/A"));
+	}
 	set_label_text_from_main_thread("labelmem", str, NULL);
 	g_free(str);
 }
