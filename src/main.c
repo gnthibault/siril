@@ -446,8 +446,6 @@ int main(int argc, char *argv[]) {
 
 		siril_macos_setenv(argv[0]);
 #elif _WIN32
-    bool consoleOpened = false;
-
     // suppression of annoying error boxes, hack from RawTherapee
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
 #endif
