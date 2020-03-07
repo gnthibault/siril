@@ -2022,7 +2022,6 @@ static double logviz(double arg) {
  * @return a GdkPixbuf containing the preview or NULL
  */
 GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
-
 	fitsfile *fp;
 	const int MAX_SIZE = thumbnail_size;
 	float nullval = 0.;
@@ -2041,9 +2040,9 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 
 	TRYFITS(fits_read_img, fp, TFLOAT, 1, sz, &nullval, ima_data, &stat);
 
-	const int i = (int) ceil((float) w / MAX_SIZE);
-	const int j = (int) ceil((float) h / MAX_SIZE);
-	const int pixScale = (i > j) ? i : j;	// picture scale factor
+	const int x = (int) ceil((float) w / MAX_SIZE);
+	const int y = (int) ceil((float) h / MAX_SIZE);
+	const int pixScale = (x > y) ? x : y;	// picture scale factor
 	const int Ws = w / pixScale; 			// picture width in pixScale blocks
 	const int Hs = h / pixScale; 			// -//- height pixScale
 
@@ -2094,7 +2093,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	float *ptr = ima_data;
 	sz = Ws * Hs;
 	float max = *ptr;
-	float min = *ptr;
+	float min = max;
 	float avr = 0.f;
 	for (int i = 0; i < sz; i++, ptr++) {
 		const float val = *ptr;
@@ -2135,9 +2134,9 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 #endif
 	for (int i = Hs - 1; i > -1; i--) {	// fill pixbuf mirroring image by vertical
 		guchar *pptr = &pixbuf_data[Ws * i * 3];
-		float *ptr = &ima_data[(Hs - i - 1) * Ws];
+		float *p = &ima_data[(Hs - i - 1) * Ws];
 		for (int j = 0; j < Ws; j++) {
-			gray2rgb(logviz((*ptr++ - min) / wd), pptr);
+			gray2rgb(logviz((*p++ - min) / wd), pptr);
 			pptr += 3;
 		}
 	}

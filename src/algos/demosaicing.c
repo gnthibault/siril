@@ -1011,7 +1011,7 @@ int retrieveXTRANSPattern(char *bayer, unsigned int xtrans[6][6]) {
 	return 0;
 }
 
-static int debayer_ushort(fits *fit, interpolation_method interpolation) {
+static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_pattern pattern) {
 	int i, j;
 	int width = fit->rx;
 	int height = fit->ry;
@@ -1033,15 +1033,27 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation) {
 	}
 
 	if (xbayeroff == 1) {
-		buf += width;
-		height--;
+		switch (pattern) {
+		case BAYER_FILTER_RGGB:
+			pattern = BAYER_FILTER_GBRG;
+			break;
+		case BAYER_FILTER_BGGR:
+			pattern = BAYER_FILTER_GRBG;
+			break;
+		case BAYER_FILTER_GBRG:
+			pattern = BAYER_FILTER_RGGB;
+			break;
+		case BAYER_FILTER_GRBG:
+			pattern = BAYER_FILTER_BGGR;
+		}
 	}
-	if (ybayeroff == 1)
+
+	if (ybayeroff == 1) {
 		buf++;
+	}
 
 	if (USE_SIRIL_DEBAYER) {
-		WORD *newbuf = debayer_buffer_siril(buf, &width, &height, interpolation,
-				com.debayer.bayer_pattern, xtrans);
+		WORD *newbuf = debayer_buffer_siril(buf, &width, &height, interpolation, pattern, xtrans);
 		if (!newbuf)
 			return 1;
 
@@ -1079,8 +1091,7 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation) {
 
 	} else {
 		// use librtprocess debayer
-		WORD *newbuf = debayer_buffer_new_ushort(buf, &width, &height,
-				interpolation, com.debayer.bayer_pattern, xtrans);
+		WORD *newbuf = debayer_buffer_new_ushort(buf, &width, &height, interpolation, pattern, xtrans);
 		if (!newbuf)
 			return 1;
 
@@ -1092,7 +1103,7 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation) {
 	return 0;
 }
 
-static int debayer_float(fits* fit, interpolation_method interpolation) {
+static int debayer_float(fits* fit, interpolation_method interpolation, sensor_pattern pattern) {
 	int width = fit->rx;
 	int height = fit->ry;
 	float *buf = fit->fdata;
@@ -1112,14 +1123,25 @@ static int debayer_float(fits* fit, interpolation_method interpolation) {
 	}
 
 	if (xbayeroff == 1) {
-		buf += width;
-		height--;
+		switch (pattern) {
+		case BAYER_FILTER_RGGB:
+			pattern = BAYER_FILTER_GBRG;
+			break;
+		case BAYER_FILTER_BGGR:
+			pattern = BAYER_FILTER_GRBG;
+			break;
+		case BAYER_FILTER_GBRG:
+			pattern = BAYER_FILTER_RGGB;
+			break;
+		case BAYER_FILTER_GRBG:
+			pattern = BAYER_FILTER_BGGR;
+		}
 	}
-	if (ybayeroff == 1)
+	if (ybayeroff == 1) {
 		buf++;
+	}
 
-	float *newbuf = debayer_buffer_new_float(buf, &width, &height, interpolation,
-			com.debayer.bayer_pattern, xtrans);
+	float *newbuf = debayer_buffer_new_float(buf, &width, &height, interpolation, pattern, xtrans);
 	if (!newbuf)
 		return 1;
 
@@ -1129,11 +1151,11 @@ static int debayer_float(fits* fit, interpolation_method interpolation) {
 	return 0;
 }
 
-int debayer(fits* fit, interpolation_method interpolation) {
+int debayer(fits* fit, interpolation_method interpolation, sensor_pattern pattern) {
 	if (fit->type == DATA_USHORT)
-		return debayer_ushort(fit, interpolation);
+		return debayer_ushort(fit, interpolation, pattern);
 	else if (fit->type == DATA_FLOAT)
-		return debayer_float(fit, interpolation);
+		return debayer_float(fit, interpolation, pattern);
 	else return -1;
 }
 

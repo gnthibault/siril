@@ -891,7 +891,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 		/* for performance consideration (and many others) we force the interpolation algorithm
 		 * to be BAYER_BILINEAR
 		 */
-		debayer(fit, BAYER_BILINEAR);
+		debayer(fit, BAYER_BILINEAR, com.debayer.bayer_pattern);
 		com.debayer.bayer_pattern = sensortmp;
 		break;
 	case SER_BGR:

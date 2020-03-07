@@ -9,7 +9,7 @@ struct split_cfa_data {
 
 WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		interpolation_method interpolation, sensor_pattern pattern);
-int debayer(fits*, interpolation_method);
+int debayer(fits*, interpolation_method, sensor_pattern pattern);
 
 #ifdef __cplusplus
 extern "C" {
