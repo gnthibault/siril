@@ -1035,6 +1035,22 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 	if (xbayeroff == 1) {
 		switch (pattern) {
 		case BAYER_FILTER_RGGB:
+			pattern = BAYER_FILTER_GRBG;
+			break;
+		case BAYER_FILTER_BGGR:
+			pattern = BAYER_FILTER_GBRG;
+			break;
+		case BAYER_FILTER_GBRG:
+			pattern = BAYER_FILTER_BGGR;
+			break;
+		case BAYER_FILTER_GRBG:
+			pattern = BAYER_FILTER_RGGB;
+		}
+	}
+
+	if (ybayeroff == 1) {
+		switch (pattern) {
+		case BAYER_FILTER_RGGB:
 			pattern = BAYER_FILTER_GBRG;
 			break;
 		case BAYER_FILTER_BGGR:
@@ -1046,10 +1062,6 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 		case BAYER_FILTER_GRBG:
 			pattern = BAYER_FILTER_BGGR;
 		}
-	}
-
-	if (ybayeroff == 1) {
-		buf++;
 	}
 
 	if (USE_SIRIL_DEBAYER) {
@@ -1125,6 +1137,22 @@ static int debayer_float(fits* fit, interpolation_method interpolation, sensor_p
 	if (xbayeroff == 1) {
 		switch (pattern) {
 		case BAYER_FILTER_RGGB:
+			pattern = BAYER_FILTER_GRBG;
+			break;
+		case BAYER_FILTER_BGGR:
+			pattern = BAYER_FILTER_GBRG;
+			break;
+		case BAYER_FILTER_GBRG:
+			pattern = BAYER_FILTER_BGGR;
+			break;
+		case BAYER_FILTER_GRBG:
+			pattern = BAYER_FILTER_RGGB;
+		}
+	}
+
+	if (ybayeroff == 1) {
+		switch (pattern) {
+		case BAYER_FILTER_RGGB:
 			pattern = BAYER_FILTER_GBRG;
 			break;
 		case BAYER_FILTER_BGGR:
@@ -1136,9 +1164,6 @@ static int debayer_float(fits* fit, interpolation_method interpolation, sensor_p
 		case BAYER_FILTER_GRBG:
 			pattern = BAYER_FILTER_BGGR;
 		}
-	}
-	if (ybayeroff == 1) {
-		buf++;
 	}
 
 	float *newbuf = debayer_buffer_new_float(buf, &width, &height, interpolation, pattern, xtrans);
