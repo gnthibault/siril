@@ -218,7 +218,11 @@ int loglut(fits *fit) {
 
 int ddp(fits *a, int level, float coeff, float sigma) {
 	fits fit = { 0 };
-	double l_add = (float) level;
+	if (level < 0 || level > USHRT_MAX) {
+		siril_log_color_message(_("ddp level argument must be [0, 65535]\n"), "red");
+		return 1;
+	}
+	float l_add = ushort_to_float_range(level);
 	float l_div = (float) l_add / USHRT_MAX_SINGLE;
 
 	if (a->type == DATA_FLOAT) {
@@ -230,7 +234,7 @@ int ddp(fits *a, int level, float coeff, float sigma) {
 	if (!ret) ret = soper(&fit, l_add, OPER_ADD, TRUE);
 	if (!ret) ret = nozero(&fit, 1);
 	if (!ret) ret = siril_fdiv(a, &fit, l_div, TRUE);
-	if (!ret) ret = soper(a, (double)coeff, OPER_MUL, TRUE);
+	if (!ret) ret = soper(a, coeff, OPER_MUL, TRUE);
 	clearfits(&fit);
 	invalidate_stats_from_fit(a);
 	return ret;

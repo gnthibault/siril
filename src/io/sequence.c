@@ -390,7 +390,7 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 			memset(fit, 0, sizeof(fits));
 		}
 
-		if (seq_read_frame(seq, image_to_load, fit)) {
+		if (seq_read_frame(seq, image_to_load, fit, FALSE)) {
 			fprintf(stderr, "could not load first image from sequence\n");
 			return -1;
 		}
@@ -440,7 +440,7 @@ int set_seq(const char *name){
 	}
 	if (retval == 0) {
 		int image_to_load = sequence_find_refimage(seq);
-		if (seq_read_frame(seq, image_to_load, &gfit)) {
+		if (seq_read_frame(seq, image_to_load, &gfit, FALSE)) {
 			fprintf(stderr, "could not load first image from sequence\n");
 			free(seq);
 			return 1;
@@ -520,7 +520,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 
 	if (load_it) {
 		set_cursor_waiting(TRUE);
-		if (seq_read_frame(seq, index, &gfit)) {
+		if (seq_read_frame(seq, index, &gfit, FALSE)) {
 			set_cursor_waiting(FALSE);
 			return 1;
 		}
@@ -685,13 +685,13 @@ char *seq_get_image_filename(sequence *seq, int index, char *name_buf) {
 /* Read an entire image from a sequence, inside a pre-allocated fits.
  * Opens the file, reads data, closes the file.
  */
-int seq_read_frame(sequence *seq, int index, fits *dest) {
+int seq_read_frame(sequence *seq, int index, fits *dest, gboolean force_float) {
 	char filename[256];
 	assert(index < seq->number);
 	switch (seq->type) {
 		case SEQ_REGULAR:
 			fit_sequence_get_image_filename(seq, index, filename, TRUE);
-			if (readfits(filename, dest, NULL)) {
+			if (readfits(filename, dest, NULL, force_float)) {
 				siril_log_message(_("Could not load image %d from sequence %s\n"),
 						index, seq->seqname);
 				return 1;
@@ -1382,7 +1382,7 @@ gpointer crop_sequence(gpointer p) {
 			break;
 		fits fit;
 		memset(&fit, 0, sizeof(fits));
-		ret = seq_read_frame(args->seq, frame, &fit);
+		ret = seq_read_frame(args->seq, frame, &fit, FALSE);
 		if (!ret) {
 			char dest[256], filename[256];
 
@@ -1643,6 +1643,7 @@ int seqpsf(sequence *seq, int layer, gboolean for_registration, gboolean regall,
 	spsfargs->list = NULL;	// GSList init is NULL
 
 	args->seq = seq;
+	args->force_float = FALSE;
 	args->partial_image = TRUE;
 	memcpy(&args->area, &com.selection, sizeof(rectangle));
 	args->layer_for_partial = layer;

@@ -180,7 +180,7 @@ double set_double_in_interval(double val, double low, double high) {
  * @return the float equivalent
  */
 float ushort_to_float_range(WORD w) {
-	return (float)w / (float)USHRT_MAX;
+	return (float)w * INV_USHRT_MAX_SINGLE;
 }
 
 /**
@@ -209,6 +209,19 @@ WORD float_to_ushort_range(float f) {
  */
 BYTE float_to_uchar_range(float f) {
 	return roundf_to_BYTE(f * UCHAR_MAX_SINGLE);
+}
+
+/**
+ * convert the pixel value of an image to a float [0, 1] normalized using bitpix
+ * value depending on btpix
+ * @param fit the image the data is from
+ * @return a float [0, 1] value for the given integer value
+ */
+float ushort_to_float_bitpix(fits *fit, WORD value) {
+	float fval = (float)value;
+	return fit->orig_bitpix == BYTE_IMG ?
+		fval * INV_UCHAR_MAX_SINGLE :
+		fval * INV_USHRT_MAX_SINGLE;
 }
 
 /**

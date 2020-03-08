@@ -101,7 +101,7 @@ gpointer rgradient_filter(gpointer p) {
 	retval = copyfits(&imA, &imB, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 	if (retval) { retval = 1; goto end_rgradient; }
 
-	retval = soper(args->fit, 2.0, OPER_MUL, TRUE);
+	retval = soper(args->fit, 2.0f, OPER_MUL, TRUE);
 	if (retval) { retval = 1; goto end_rgradient; }
 	// args->fit will be float data after soper
 

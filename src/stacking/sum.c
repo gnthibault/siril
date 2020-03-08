@@ -216,6 +216,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 int stack_summing_generic(struct stacking_args *stackargs) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = stackargs->seq;
+	args->force_float = FALSE;
 	args->partial_image = FALSE;
 	args->filtering_criterion = stackargs->filtering_criterion;
 	args->filtering_parameter = stackargs->filtering_parameter;

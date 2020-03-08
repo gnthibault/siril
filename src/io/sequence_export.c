@@ -231,7 +231,7 @@ static gpointer export_sequence(gpointer ptr) {
 		set_progress_bar_data(tmpmsg, (double)cur_nb / (double)nb_frames);
 		free(tmpmsg);
 
-		if (seq_read_frame(args->seq, i, &fit)) {
+		if (seq_read_frame(args->seq, i, &fit, FALSE)) {
 			siril_log_message(_("Export: could not read frame, aborting\n"));
 			retval = -3;
 			goto free_and_reset_progress_bar;

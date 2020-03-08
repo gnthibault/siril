@@ -1263,6 +1263,7 @@ int split_cfa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = split_cfa_args->seq;
+	args->force_float = FALSE;
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = split_cfa_args->seq->selnum;

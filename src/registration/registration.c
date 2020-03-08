@@ -542,7 +542,7 @@ int register_ecc(struct registration_args *args) {
 	/* loading reference frame */
 	ref_image = sequence_find_refimage(args->seq);
 
-	ret = seq_read_frame(args->seq, ref_image, &ref);
+	ret = seq_read_frame(args->seq, ref_image, &ref, FALSE);
 	if (ret) {
 		siril_log_message(_("Could not load reference image\n"));
 		args->seq->regparam[args->layer] = NULL;
@@ -553,7 +553,7 @@ int register_ecc(struct registration_args *args) {
 	/* we make sure to free data in the destroyed fit */
 	clearfits(&ref);
 	/* Ugly code: as QualityEstimate destroys fit we need to reload it */
-	seq_read_frame(args->seq, ref_image, &ref);
+	seq_read_frame(args->seq, ref_image, &ref, FALSE);
 	image_find_minmax(&ref);
 	q_min = q_max = current_regdata[ref_image].quality;
 	q_index = ref_image;
@@ -587,7 +587,7 @@ int register_ecc(struct registration_args *args) {
 
 			if (frame != ref_image) {
 				fits im = { 0 };
-				ret = seq_read_frame(args->seq, frame, &im);
+				ret = seq_read_frame(args->seq, frame, &im, FALSE);
 				if (!ret) {
 					reg_ecc reg_param = { 0 };
 					image_find_minmax(&im);

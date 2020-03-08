@@ -226,7 +226,8 @@ static int comet_align_prepare_hook(struct generic_seq_args *args) {
 	/* loading reference frame */
 	ref_image = sequence_find_refimage(args->seq);
 
-	if (seq_read_frame(args->seq, ref_image, &ref)) {
+	// TODO: reading only the date can be made in a less resource-consuming way
+	if (seq_read_frame(args->seq, ref_image, &ref, FALSE)) {
 		siril_log_message(_("Could not load reference image\n"));
 		args->seq->regparam[regargs->layer] = NULL;
 		free(cadata->current_regdata);
@@ -276,6 +277,7 @@ static int comet_align_finalize_hook(struct generic_seq_args *args) {
 int register_comet(struct registration_args *regargs) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = regargs->seq;
+	args->force_float = FALSE;
 	/* we don't need to read image data, for simplicity we just read one
 	 * pixel from it, making sure the header is read */
 	args->partial_image = TRUE;

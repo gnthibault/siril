@@ -14,6 +14,8 @@
 struct generic_seq_args {
 	/** sequence that will be processed */
 	sequence *seq;
+	/** read images as float data in all cases */
+	gboolean force_float;
 
 	/** process a partial image read from area instead of full-frame reading */
 	gboolean partial_image;

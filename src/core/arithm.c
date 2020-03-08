@@ -30,7 +30,7 @@
  *       S I R I L      A R I T H M E T I C      O P E R A T I O N S         *
  ****************************************************************************/
 
-static int soper_ushort_to_ushort(fits *a, double scalar, image_operator oper) {
+static int soper_ushort_to_ushort(fits *a, float scalar, image_operator oper) {
 	WORD *data;
 	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 	g_assert(n > 0);
@@ -39,12 +39,14 @@ static int soper_ushort_to_ushort(fits *a, double scalar, image_operator oper) {
 	switch (oper) {
 		case OPER_ADD:
 			for (i = 0; i < n; ++i) {
-				data[i] = round_to_WORD((double)data[i] + scalar);
+				float pixel = ushort_to_float_bitpix(a, data[i]);
+				data[i] = float_to_ushort_range(pixel + scalar);
 			}
 			break;
 		case OPER_SUB:
 			for (i = 0; i < n; ++i) {
-				data[i] = round_to_WORD((double)data[i] - scalar);
+				float pixel = ushort_to_float_bitpix(a, data[i]);
+				data[i] = float_to_ushort_range(pixel - scalar);
 			}
 			break;
 		case OPER_MUL:
@@ -62,7 +64,7 @@ static int soper_ushort_to_ushort(fits *a, double scalar, image_operator oper) {
 	return 0;
 }
 
-static int soper_ushort_to_float(fits *a, double scalar, image_operator oper) {
+static int soper_ushort_to_float(fits *a, float scalar, image_operator oper) {
 	WORD *data;
 	float *result;
 	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
@@ -77,22 +79,26 @@ static int soper_ushort_to_float(fits *a, double scalar, image_operator oper) {
 	switch (oper) {
 		case OPER_ADD:
 			for (i = 0; i < n; ++i) {
-				result[i] = double_ushort_to_float_range((double)data[i] + scalar);
+				float pixel = ushort_to_float_bitpix(a, data[i]);
+				result[i] = pixel + scalar;
 			}
 			break;
 		case OPER_SUB:
 			for (i = 0; i < n; ++i) {
-				result[i] = double_ushort_to_float_range((double)data[i] - scalar);
+				float pixel = ushort_to_float_bitpix(a, data[i]);
+				result[i] = pixel - scalar;
 			}
 			break;
 		case OPER_MUL:
 			for (i = 0; i < n; ++i) {
-				result[i] = double_ushort_to_float_range((double)data[i] * scalar);
+				float pixel = ushort_to_float_bitpix(a, data[i]);
+				result[i] = pixel * scalar;
 			}
 			break;
 		case OPER_DIV:
 			for (i = 0; i < n; ++i) {
-				result[i] = double_ushort_to_float_range((double)data[i] / scalar);
+				float pixel = ushort_to_float_bitpix(a, data[i]);
+				result[i] = pixel / scalar;
 			}
 			break;
 	}
@@ -100,7 +106,7 @@ static int soper_ushort_to_float(fits *a, double scalar, image_operator oper) {
 	return 0;
 }
 
-static int soper_float(fits *a, double scalar, image_operator oper) {
+static int soper_float(fits *a, float scalar, image_operator oper) {
 	float *data;
 	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 	g_assert(n > 0);
@@ -109,22 +115,22 @@ static int soper_float(fits *a, double scalar, image_operator oper) {
 	switch (oper) {
 		case OPER_ADD:
 			for (i = 0; i < n; ++i) {
-				data[i] = (float)((double)data[i] + scalar);
+				data[i] = data[i] + scalar;
 			}
 			break;
 		case OPER_SUB:
 			for (i = 0; i < n; ++i) {
-				data[i] = (float)((double)data[i] - scalar);
+				data[i] = data[i] - scalar;
 			}
 			break;
 		case OPER_MUL:
 			for (i = 0; i < n; ++i) {
-				data[i] = (float)((double)data[i] * scalar);
+				data[i] = data[i] * scalar;
 			}
 			break;
 		case OPER_DIV:
 			for (i = 0; i < n; ++i) {
-				data[i] = (float)((double)data[i] / scalar);
+				data[i] = data[i] / scalar;
 			}
 			break;
 	}
@@ -134,10 +140,13 @@ static int soper_float(fits *a, double scalar, image_operator oper) {
 
 /* equivalent to (map simple_operation a), with simple_operation being
  * (lambda (pixel) (oper pixel scalar))
- * If oper is ADD or SUB, it will be applied on the original type of the image,
- * in case conversion to 32 bits is required.
+ * scalar is applied on images with data in [0, 1]
  */
-int soper(fits *a, double scalar, image_operator oper, gboolean conv_to_float) {
+int soper(fits *a, float scalar, image_operator oper, gboolean conv_to_float) {
+	if (oper == OPER_DIV && scalar == 0.f) {
+		siril_log_message(_("Cannot divide by zero, aborting."));
+		return 1;
+	}
 	if (a->type == DATA_USHORT) {
 		if (conv_to_float)
 			return soper_ushort_to_float(a, scalar, oper);
@@ -214,8 +223,8 @@ int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
 	}
 
 	for (i = 0; i < n; ++i) {
-		float aval = a->type == DATA_USHORT ? ushort_to_float_range(a->data[i]) : a->fdata[i];
-		float bval = b->type == DATA_USHORT ? ushort_to_float_range(b->data[i]) : b->fdata[i];
+		float aval = a->type == DATA_USHORT ? ushort_to_float_bitpix(a, a->data[i]) : a->fdata[i];
+		float bval = b->type == DATA_USHORT ? ushort_to_float_bitpix(b, b->data[i]) : b->fdata[i];
 		switch (oper) {
 			case OPER_ADD:
 				result[i] = aval + bval;

@@ -165,7 +165,7 @@ gpointer generic_sequence_worker(gpointer p) {
 				savefits(tmpfn, &fit);*/
 			} else {
 				// image is obtained bottom to top here, while it's in natural order for partial images!
-				if (seq_read_frame(args->seq, input_idx, &fit)) {
+				if (seq_read_frame(args->seq, input_idx, &fit, args->force_float)) {
 					abort = 1;
 					clearfits(&fit);
 					continue;

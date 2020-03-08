@@ -147,7 +147,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 		cur_nb++;	// only used for progress bar
 
-		if (seq_read_frame(args->seq, j, &fit)) {
+		if (seq_read_frame(args->seq, j, &fit, FALSE)) {
 			siril_log_message(_("Stacking: could not read frame, aborting\n"));
 			retval = -3;
 			goto free_and_reset_progress_bar;

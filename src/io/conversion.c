@@ -982,7 +982,7 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean i
 
 	switch (imagetype) {
 		case TYPEFITS:
-			retval = (readfits(source, dest, NULL) != 0);
+			retval = (readfits(source, dest, NULL, FALSE) != 0);
 			break;
 		case TYPEBMP:
 			retval = (readbmp(source, dest) < 0);

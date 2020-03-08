@@ -52,6 +52,7 @@ int banding_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, r
 void apply_banding_to_sequence(struct banding_data *banding_args) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = &com.seq;
+	args->force_float = FALSE;
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = com.seq.selnum;

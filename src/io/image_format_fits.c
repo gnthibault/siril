@@ -190,7 +190,7 @@ static void read_fits_header(fits *fit) {
 
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSLO, &fit->lo);
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSHI, &fit->hi);
-	if (fit->orig_bitpix <= FLOAT_IMG) {
+	if (fit->orig_bitpix == FLOAT_IMG || fit->orig_bitpix == DOUBLE_IMG) {
 		try_read_float_lo_hi(fit->fptr, &fit->lo, &fit->hi);
 	}
 
@@ -476,8 +476,8 @@ static void convert_data_ushort(int bitpix, const void *from, WORD *to, unsigned
 /* convert FITS data formats to siril native.
  * nbdata is the number of pixels, w * h.
  * from is not freed, to must be allocated and can be the same as from */
-static void convert_data_float(int bitpix, const void *from, float *to, unsigned int nbdata) {
-	int i;
+static void convert_data_float(int bitpix, const void *from, float *to, long nbdata) {
+	long i;
 	BYTE *data8;
 	WORD *ushort;
 	int16_t *data16;
@@ -490,12 +490,12 @@ static void convert_data_float(int bitpix, const void *from, float *to, unsigned
 		case BYTE_IMG:
 			data8 = (BYTE *)from;
 			for (i = 0; i < nbdata; i++)
-				to[i] = (float)data8[i];
+				to[i] = (float)data8[i] * INV_UCHAR_MAX_SINGLE;
 			break;
 		case USHORT_IMG:	// siril 0.9 native
 			ushort = (WORD *)from;
 			for (i = 0; i < nbdata; i++) {
-				to[i] = (float)ushort[i];
+				to[i] = (float)ushort[i] * INV_USHRT_MAX_SINGLE;
 			}
 			break;
 		case SHORT_IMG:
@@ -503,7 +503,7 @@ static void convert_data_float(int bitpix, const void *from, float *to, unsigned
 			data16 = (int16_t *)from;
 			for (i = 0; i < nbdata; i++) {
 				int sum = 32768 + (int)data16[i];
-				to[i] = (float)sum;
+				to[i] = (float)sum * INV_USHRT_MAX_SINGLE;
 			}
 			break;
 		case ULONG_IMG:		// 32-bit unsigned integer pixels
@@ -533,20 +533,43 @@ static void convert_data_float(int bitpix, const void *from, float *to, unsigned
 	}
 }
 
+static void convert_floats(int bitpix, float *data, long nbdata) {
+	long i;
+	switch (bitpix) {
+		case BYTE_IMG:
+			for (i = 0; i < nbdata; i++)
+				data[i] = data[i] * INV_UCHAR_MAX_SINGLE;
+			break;
+		default:
+		case USHORT_IMG:	// siril 0.9 native
+			for (i = 0; i < nbdata; i++)
+				data[i] = data[i] * INV_USHRT_MAX_SINGLE;
+			break;
+		case SHORT_IMG:
+			// add 2^15 to the read data to obtain unsigned
+			for (i = 0; i < nbdata; i++) {
+				data[i] = (32768.f + data[i]) * INV_USHRT_MAX_SINGLE;
+			}
+			break;
+	}
+}
+
 /* read buffer from an already open FITS file, fit should have all metadata
  * correct, and convert the buffer to fit->data with the given type, which
  * currently should be TBYTE or TUSHORT because fit doesn't contain other data.
  * filename is for error reporting
  */
-static int read_fits_with_convert(fits* fit, const char* filename) {
+static int read_fits_with_convert(fits* fit, const char* filename, gboolean force_float) {
 	int status = 0, zero = 0, datatype;
 	BYTE *data8;
 	unsigned long *pixels_long;
 	// orig ^ gives the coordinate in each dimension of the first pixel to be read
-	unsigned int nbpix = fit->naxes[0] * fit->naxes[1];
-	unsigned int nbdata = nbpix * fit->naxes[2];
+	long nbpix = fit->naxes[0] * fit->naxes[1];
+	long nbdata = nbpix * fit->naxes[2];
+	// with force_float, image is read as float data, type is stored as DATA_FLOAT
+	int fake_bitpix = force_float ? FLOAT_IMG : fit->bitpix;
 
-	switch (fit->bitpix) {
+	switch (fake_bitpix) {
 		case BYTE_IMG:
 		case SHORT_IMG:
 		case USHORT_IMG:
@@ -598,7 +621,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 
 	fits_movabs_hdu(fit->fptr, 1, 0, &status); // make sure reading primary HDU
 
-	switch (fit->bitpix) {
+	switch (fake_bitpix) {
 	case BYTE_IMG:
 		data8 = malloc(nbdata * sizeof(BYTE));
 		datatype = fit->bitpix == BYTE_IMG ? TBYTE : TSBYTE;
@@ -652,7 +675,7 @@ static int read_fits_with_convert(fits* fit, const char* filename) {
 		 */
 		fits_read_img(fit->fptr, TFLOAT, 1, nbdata, &zero, fit->fdata, &zero, &status);
 		if (fit->data_max > 1.0) { // needed for some FLOAT_IMG
-			convert_data_float(fit->bitpix, fit->fdata, fit->fdata, nbdata);
+			convert_floats(fit->bitpix, fit->fdata, nbdata);
 		}
 		fit->bitpix = FLOAT_IMG;
 		break;
@@ -1016,14 +1039,12 @@ int import_metadata_from_fitsfile(fitsfile *fptr, fits *to) {
 }
 
 // return 0 on success, fills realname if not NULL with the opened file's name
-int readfits(const char *filename, fits *fit, char *realname) {
+int readfits(const char *filename, fits *fit, char *realname, gboolean force_float) {
 	int status, retval;
 	char *name = NULL;
 	gchar *basename;
 	image_type imagetype;
 	double offset;
-
-	fit->naxes[2] = 1; //initialization of the axis number before opening : NEED TO BE OPTIMIZED
 
 	if (stat_file(filename, &imagetype, &name)) {
 		siril_log_message(_("%s.[any_allowed_extension] not found.\n"),
@@ -1052,6 +1073,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 	free(name);
 
 	status = 0;
+	fit->naxes[2] = 1;
 	fits_get_img_param(fit->fptr, 3, &(fit->bitpix), &(fit->naxis), fit->naxes, &status);
 	if (status) {
 		siril_log_message(
@@ -1110,7 +1132,7 @@ int readfits(const char *filename, fits *fit, char *realname) {
 
 	read_fits_header(fit);	// stores useful header data in fit
 
-	retval = read_fits_with_convert(fit, filename);
+	retval = read_fits_with_convert(fit, filename, force_float);
 	fit->top_down = FALSE;
 
 	if (!retval) {

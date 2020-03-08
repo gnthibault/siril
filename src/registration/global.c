@@ -84,7 +84,7 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	}
 
 	/* first we're looking for stars in reference image */
-	if (seq_read_frame(args->seq, regargs->reference_image, &fit)) {
+	if (seq_read_frame(args->seq, regargs->reference_image, &fit, FALSE)) {
 		siril_log_message(_("Could not load reference image\n"));
 		args->seq->regparam[regargs->layer] = NULL;
 		free(sadata->current_regdata);
@@ -383,6 +383,7 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 int register_star_alignment(struct registration_args *regargs) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = regargs->seq;
+	args->force_float = FALSE;
 	args->partial_image = FALSE;
 	if (regargs->process_all_frames) {
 		args->filtering_criterion = seq_filter_all;

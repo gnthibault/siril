@@ -12,7 +12,7 @@
 
 /****************** image_format_fits.h ******************/
 data_type get_data_type(int bitpix);
-int readfits(const char *filename, fits *fit, char *realname);
+int readfits(const char *filename, fits *fit, char *realname, gboolean force_float);
 double get_exposure_from_fitsfile(fitsfile *fptr);
 int import_metadata_from_fitsfile(fitsfile *fptr, fits *to);
 void clearfits(fits*);
@@ -109,6 +109,7 @@ float ushort_to_float_range(WORD w);
 float double_ushort_to_float_range(double d);
 WORD float_to_ushort_range(float f);
 BYTE float_to_uchar_range(float f);
+float ushort_to_float_bitpix(fits *fit, WORD value);
 WORD *float_buffer_to_ushort(float *buffer, long ndata);
 float *ushort_buffer_to_float(WORD *buffer, long ndata);
 uint16_t change_endianness16(uint16_t x);

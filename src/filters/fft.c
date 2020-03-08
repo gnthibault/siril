@@ -490,13 +490,13 @@ gpointer fourier_transform(gpointer p) {
 	case 'i':
 	case 'I':
 		tmp = calloc(1, sizeof(fits));
-		if (!tmp || readfits(args->modulus, tmp, NULL)) {
+		if (!tmp || readfits(args->modulus, tmp, NULL, FALSE)) {
 			PRINT_ALLOC_ERR;
 			args->retval = 1;
 			goto end;
 		}
 		tmp1 = calloc(1, sizeof(fits));
-		if (!tmp1 || readfits(args->phase, tmp1, NULL)) {
+		if (!tmp1 || readfits(args->phase, tmp1, NULL, FALSE)) {
 			PRINT_ALLOC_ERR;
 			args->retval = 1;
 			goto end;

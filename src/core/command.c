@@ -234,7 +234,7 @@ int process_imoper(int nb){
 	int retval;
 	fits fit = { 0 };
 	if (!single_image_is_loaded()) return 1;
-	if (readfits(word[1], &fit, NULL)) return -1;
+	if (readfits(word[1], &fit, NULL, TRUE)) return -1;
 
 	image_operator oper;
 	switch (word[0][1]) {
@@ -273,7 +273,7 @@ int process_addmax(int nb){
 
 	if (!single_image_is_loaded()) return 1;
 
-	if (readfits(word[1], &fit, NULL))
+	if (readfits(word[1], &fit, NULL, gfit.type == DATA_FLOAT))
 		return -1;
 	if (addmax(&gfit, &fit) == 0) {
 		adjust_cutoff_from_updated_gfit();
@@ -291,7 +291,7 @@ int process_fdiv(int nb){
 	if (!single_image_is_loaded()) return 1;
 
 	norm = atof(word[2]);
-	if (readfits(word[1], &fit, NULL)) return -1;
+	if (readfits(word[1], &fit, NULL, TRUE)) return -1;
 	siril_fdiv(&gfit, &fit, norm, TRUE);
 
 	clearfits(&fit);
@@ -2575,7 +2575,7 @@ int process_preprocess(int nb) {
 		if (word[i]) {
 			if (g_str_has_prefix(word[i], "-bias=")) {
 				args->bias = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, args->bias, NULL)) {
+				if (!readfits(word[i] + 6, args->bias, NULL, TRUE)) {
 					args->use_bias = TRUE;
 				} else {
 					retvalue = 1;
@@ -2584,7 +2584,7 @@ int process_preprocess(int nb) {
 				}
 			} else if (g_str_has_prefix(word[i], "-dark=")) {
 				args->dark = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, args->dark, NULL)) {
+				if (!readfits(word[i] + 6, args->dark, NULL, TRUE)) {
 					args->use_dark = TRUE;
 					args->use_cosmetic_correction = TRUE;
 				} else {
@@ -2594,7 +2594,7 @@ int process_preprocess(int nb) {
 				}
 			} else if (g_str_has_prefix(word[i], "-flat=")) {
 				args->flat = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, args->flat, NULL)) {
+				if (!readfits(word[i] + 6, args->flat, NULL, TRUE)) {
 					args->use_flat = TRUE;
 				} else {
 					retvalue = 1;
