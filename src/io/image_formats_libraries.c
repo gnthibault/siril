@@ -275,10 +275,37 @@ int readtif(const char *name, fits *fit) {
 	return retval;
 }
 
+static void get_tif_data_from_ui(gchar **description, gchar **copyright) {
+	if (!com.script && !com.headless) {
+		/*******************************************************************
+		 * If the user saves a tif from the graphical menu, he can set
+		 * the Description and the Copyright of the Image
+		 ******************************************************************/
+		GtkTextView *description_txt_view = GTK_TEXT_VIEW(lookup_widget("Description_txt"));
+		GtkTextView *copyright_txt_view = GTK_TEXT_VIEW(lookup_widget("Copyright_txt"));
+		GtkTextBuffer *desbuf = gtk_text_view_get_buffer(description_txt_view);
+		GtkTextBuffer *copybuf = gtk_text_view_get_buffer(copyright_txt_view);
+		GtkTextIter itDebut;
+		GtkTextIter itFin;
+
+		gtk_text_buffer_get_start_iter(desbuf, &itDebut);
+		gtk_text_buffer_get_end_iter(desbuf, &itFin);
+		*description = gtk_text_buffer_get_text(desbuf, &itDebut, &itFin, TRUE);
+		gtk_text_buffer_get_bounds(desbuf, &itDebut, &itFin);
+		gtk_text_buffer_delete(desbuf, &itDebut, &itFin);
+		gtk_text_buffer_get_start_iter(copybuf, &itDebut);
+		gtk_text_buffer_get_end_iter(copybuf, &itFin);
+		*copyright = gtk_text_buffer_get_text(copybuf, &itDebut, &itFin, TRUE);
+		gtk_text_buffer_get_bounds(copybuf, &itDebut, &itFin);
+		gtk_text_buffer_delete(copybuf, &itDebut, &itFin);
+	}
+}
+
 /*** This function save the current image into a uncompressed 8- or 16-bit file *************/
 
 int savetif(const char *name, fits *fit, uint16 bitspersample){
 	int retval = 0;
+	gchar *description, *copyright;
 	char *filename;
 	unsigned char *buf8;
 	WORD *buf16;
@@ -304,30 +331,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	width = (uint32) fit->rx;
 	height = (uint32) fit->ry;
 	
-	/*******************************************************************
-	 * If the user saves a tif from the graphical menu, he can set
-	 * the Description and the Copyright of the Image 
-	 ******************************************************************/
-	gchar *img_desc = NULL, *img_copy = NULL;
-	GtkTextView *description = GTK_TEXT_VIEW(lookup_widget("Description_txt"));
-	GtkTextView *copyright = GTK_TEXT_VIEW(lookup_widget("Copyright_txt"));
-	GtkTextBuffer *desbuf = gtk_text_view_get_buffer(description);
-	GtkTextBuffer *copybuf = gtk_text_view_get_buffer(copyright);
-	GtkTextIter itDebut;
-	GtkTextIter itFin;
-
-	gtk_text_buffer_get_start_iter(desbuf, &itDebut);
-	gtk_text_buffer_get_end_iter(desbuf, &itFin);
-	if (desbuf)
-		img_desc = gtk_text_buffer_get_text(desbuf, &itDebut, &itFin, TRUE);
-	gtk_text_buffer_get_bounds(desbuf, &itDebut, &itFin);
-	gtk_text_buffer_delete(desbuf, &itDebut, &itFin);
-	gtk_text_buffer_get_start_iter(copybuf, &itDebut);
-	gtk_text_buffer_get_end_iter(copybuf, &itFin);
-	if (copybuf)
-		img_copy = gtk_text_buffer_get_text(copybuf, &itDebut, &itFin, TRUE);
-	gtk_text_buffer_get_bounds(copybuf, &itDebut, &itFin);
-	gtk_text_buffer_delete(copybuf, &itDebut, &itFin);
+	get_tif_data_from_ui(&description, &copyright);
 
 	/*******************************************************************/
 
@@ -339,8 +343,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, nsamples);
 	TIFFSetField(tif, TIFFTAG_COMPRESSION, get_compression_mode());
-	TIFFSetField(tif, TIFFTAG_IMAGEDESCRIPTION, img_desc);
-	TIFFSetField(tif, TIFFTAG_COPYRIGHT, img_copy);
+	TIFFSetField(tif, TIFFTAG_IMAGEDESCRIPTION, description);
+	TIFFSetField(tif, TIFFTAG_COPYRIGHT, copyright);
 	TIFFSetField(tif, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
 	TIFFSetField(tif, TIFFTAG_MINSAMPLEVALUE, fit->mini);
 	TIFFSetField(tif, TIFFTAG_MAXSAMPLEVALUE, fit->maxi);
