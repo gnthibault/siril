@@ -305,7 +305,7 @@ static void get_tif_data_from_ui(gchar **description, gchar **copyright) {
 
 int savetif(const char *name, fits *fit, uint16 bitspersample){
 	int retval = 0;
-	gchar *description, *copyright;
+	gchar *description = NULL, *copyright = NULL;
 	char *filename;
 	unsigned char *buf8;
 	WORD *buf16;
@@ -343,8 +343,10 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, nsamples);
 	TIFFSetField(tif, TIFFTAG_COMPRESSION, get_compression_mode());
-	TIFFSetField(tif, TIFFTAG_IMAGEDESCRIPTION, description);
-	TIFFSetField(tif, TIFFTAG_COPYRIGHT, copyright);
+	if (description)
+		TIFFSetField(tif, TIFFTAG_IMAGEDESCRIPTION, description);
+	if (copyright)
+		TIFFSetField(tif, TIFFTAG_COPYRIGHT, copyright);
 	TIFFSetField(tif, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
 	TIFFSetField(tif, TIFFTAG_MINSAMPLEVALUE, fit->mini);
 	TIFFSetField(tif, TIFFTAG_MAXSAMPLEVALUE, fit->maxi);
