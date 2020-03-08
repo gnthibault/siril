@@ -96,6 +96,7 @@ gpointer RTdeconv(gpointer p) {
 	deconvolution(args);
 
 	siril_add_idle(end_generic, args);
+	free(args);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
