@@ -35,7 +35,9 @@
 #include <libgen.h> /* dirname */
 #include <sys/stat.h>
 #endif /* ENABLE_RELOCATABLE_RESOURCES */
-#endif /* OS_OSX */
+#elif _WIN32
+#include <windows.h>
+#endif
 
 #include "git-version.h"
 #include "core/siril.h"
