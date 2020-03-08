@@ -89,6 +89,7 @@ gpointer clahe(gpointer p) {
 	cvClahe(args->fit, args->clip, args->tileSize);
 
 	siril_add_idle(end_generic, args);
+	free(args);
 	return GINT_TO_POINTER(0);
 }
 

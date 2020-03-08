@@ -154,6 +154,7 @@ gpointer enhance_saturation_ushort(gpointer p) {
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			siril_add_idle(end_generic, args);
+			free(args);
 			return GINT_TO_POINTER(1);
 		}
 		bg = stat->median + stat->sigma;
@@ -193,6 +194,7 @@ gpointer enhance_saturation_ushort(gpointer p) {
 	invalidate_stats_from_fit(args->output);
 
 	siril_add_idle(end_generic, args);
+	free(args);
 
 	return GINT_TO_POINTER(0);
 }
@@ -214,6 +216,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			siril_add_idle(end_generic, args);
+			free(args);
 			return GINT_TO_POINTER(1);
 		}
 		bg = stat->median + stat->sigma;
@@ -255,6 +258,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 	}
 	invalidate_stats_from_fit(args->output);
 	siril_add_idle(end_generic, args);
+	free(args);
 
 	return GINT_TO_POINTER(0);
 }
