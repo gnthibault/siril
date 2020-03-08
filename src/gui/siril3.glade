@@ -6120,9 +6120,10 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
 Normalisation</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">If you check this button, the final image will be normalized in the [0, 1] range if you work.</property>
+                                    <property name="tooltip_text" translatable="yes">If you check this button, the final image will be normalized in the [0, 1] range if you work in 32-bit format precision, or in [0, 65535] otherwise.
+
+WARNING: This option should not be checked for master stacking.</property>
                                     <property name="halign">start</property>
-                                    <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
                                   </object>
                                   <packing>

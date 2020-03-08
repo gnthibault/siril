@@ -1,8 +1,8 @@
 ############################################
 # Script for Siril 0.9
-# March 2019
+# March 2020
 # (C) Cyril Richard
-# DSLR_preprocessing v1.5
+# DSLR_preprocessing v1.6
 ########### PREPROCESSING SCRIPT ###########
 # Script for DSLR color camera preprocessing
 # needs 4 sets of RAW images in the working
@@ -41,7 +41,7 @@ preprocess light_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cf
 register pp_light_
 
 #stack calibrated lights
-stack r_pp_light_ rej 3 3 -norm=addscale -out=../result
+stack r_pp_light_ rej 3 3 -norm=addscale -output_norm -out=../result
 
 cd ..
 close

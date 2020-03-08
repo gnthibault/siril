@@ -367,7 +367,7 @@ static void start_stacking() {
 	stackparam.type_of_rejection = gtk_combo_box_get_active(rejec_combo);
 	stackparam.normalize = gtk_combo_box_get_active(norm_combo);
 	stackparam.force_norm = gtk_toggle_button_get_active(force_norm);
-	stackparam.norm_to_max= gtk_toggle_button_get_active(
+	stackparam.output_norm= gtk_toggle_button_get_active(
 			GTK_TOGGLE_BUTTON(norm_to_max)) && gtk_widget_is_visible(norm_to_max);
 	stackparam.coeff.offset = NULL;
 	stackparam.coeff.mul = NULL;

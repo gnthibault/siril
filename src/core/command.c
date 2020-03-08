@@ -2159,7 +2159,9 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 		char *current = word[first], *value;
 		if (!strcmp(current, "-nonorm") || !strcmp(current, "-no_norm"))
 			arg->force_no_norm = TRUE;
-		else if (g_str_has_prefix(current, "-norm=")) {
+		else if (!strcmp(current, "-output_norm")) {
+			arg->output_norm = TRUE;
+		} else if (g_str_has_prefix(current, "-norm=")) {
 			if (!norm_allowed) {
 				siril_log_message(_("Normalization options are not allowed in this context, ignoring.\n"));
 			} else {
@@ -2294,7 +2296,7 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 		else args.normalize = NO_NORM;
 		args.method = arg->method;
 		args.force_norm = FALSE;
-		args.norm_to_max = FALSE;
+		args.output_norm = arg->output_norm;
 		args.reglayer = args.seq->nb_layers == 1 ? 0 : 1;
 
 		// manage filters

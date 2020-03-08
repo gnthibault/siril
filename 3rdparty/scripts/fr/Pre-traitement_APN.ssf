@@ -1,9 +1,9 @@
 ############################################
 # Script pour Siril 0.9
-# Mars 2019
+# Mars 2020
 # (C) Cyril Richard
 # Adapté, modifié et traduit par Colmic
-# Pre-traitement_APN v1.5
+# Pre-traitement_APN v1.6
 # 
 # Pré-traitement pour APN en taille originale
 # 
@@ -44,7 +44,7 @@ preprocess brute_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cf
 register pp_brute_ 
 
 #Empilement des brutes calibrées
-stack r_pp_brute_ rej 3 3 -norm=addscale -out=../resultat
+stack r_pp_brute_ rej 3 3 -norm=addscale -output_norm -out=../resultat
 
 cd ..
 close

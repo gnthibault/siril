@@ -74,7 +74,7 @@ struct stacking_args {
 	normalization normalize;	/* type of normalization */
 	norm_coeff coeff;		/* normalization data */
 	gboolean force_norm;		/* TRUE = force normalization */
-	gboolean norm_to_max;		/* normalize final image to the [0, 1] range */
+	gboolean output_norm;		/* normalize final image to the [0, 1] range */
 	gboolean use_32bit_output;	/* output to 32 bit float */
 	int reglayer;		/* layer used for registration data */
 };
@@ -87,6 +87,7 @@ struct stacking_configuration {
 	stack_method method;
 	double sig[2];
 	gboolean force_no_norm;
+	gboolean output_norm;
 	normalization norm;
 	int number_of_loaded_sequences;
 	float f_fwhm, f_fwhm_p, f_wfwhm, f_wfwhm_p, f_round, f_round_p, f_quality, f_quality_p; // on if >0

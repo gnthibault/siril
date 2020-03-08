@@ -223,7 +223,7 @@ int ddp(fits *a, int level, float coeff, float sigma) {
 		return 1;
 	}
 	float l_add = ushort_to_float_range(level);
-	float l_div = (float) l_add / USHRT_MAX_SINGLE;
+	float l_div = (float) l_add;
 
 	if (a->type == DATA_FLOAT) {
 		l_add /= USHRT_MAX_DOUBLE;

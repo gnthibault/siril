@@ -1,9 +1,9 @@
 ############################################
 # Script for Siril 0.9
-# March 2019
+# March 2020
 # (C) Cyril Richard
 # Modified by Colmic
-# DSLR_preprocessing v1.5
+# DSLR_preprocessing v1.6
 ########### PREPROCESSING SCRIPT ###########
 #              With Drizzle 2x
 #
@@ -44,7 +44,7 @@ preprocess light_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cf
 register pp_light_ -drizzle
 
 #stack calibrated lights
-stack r_pp_light_ rej 3 3 -norm=addscale -out=../result
+stack r_pp_light_ rej 3 3 -norm=addscale -output_norm -out=../result
 
 cd ..
 close

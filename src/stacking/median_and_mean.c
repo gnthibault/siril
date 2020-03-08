@@ -644,9 +644,9 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	}
 	copy_fits_metadata(&ref, fptr);
 	clearfits(&ref);
-	if (!args->use_32bit_output && (args->norm_to_max || fit.orig_bitpix != BYTE_IMG)) {
+	if (!args->use_32bit_output && (args->output_norm || fit.orig_bitpix != BYTE_IMG)) {
 		fit.bitpix = USHORT_IMG;
-		if (args->norm_to_max)
+		if (args->output_norm)
 			fit.orig_bitpix = USHORT_IMG;
 	}
 
@@ -917,7 +917,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 					else	fit.fpdata[my_block->channel][pdata_idx] = min((float)result, 1.f);
 				} else {
 					/* in case of 8bit data we may want to normalize to 16bits */
-					if (args->norm_to_max) {
+					if (args->output_norm) {
 						normalize_to16bit(bitpix, &result);
 					}
 					fit.pdata[my_block->channel][pdata_idx] = round_to_WORD(result);
@@ -970,7 +970,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		for (i = 0; i < fit.naxes[2]; i++)
 			gfit.fpdata[i] = fit.fpdata[i];
 
-		if (args->norm_to_max) {
+		if (args->output_norm) {
 			norm_to_0_1_range(&gfit);
 		}
 	} else {
