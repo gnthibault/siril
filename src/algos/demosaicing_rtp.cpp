@@ -128,41 +128,41 @@ WORD *debayer_buffer_new_ushort(WORD *buf, int *width, int *height,
 	rpError retval;
 	switch (interpolation) {
 		case BAYER_VNG:
-			pattern_to_cfarray2(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray2(pattern, cfarray);
 			retval = vng4_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_BILINEAR:
 //		case BAYER_NEARESTNEIGHBOR:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			/* bayerfast: This demosaicer is not intended for final
 			 * output, only for fast preview. */
 			retval = bayerfast_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 1.0);
 			break;
 		default:
 		case BAYER_RCD:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = rcd_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_AHD:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = ahd_demosaic(rx, ry, rawdata, red, green, blue, cfarray, rgb_cam, progress);
 			break;
 		//case BAYER_AMAZE:
 			// retval = amaze_demosaic // need documentation about arguments
 		case BAYER_DCB:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = dcb_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 1, TRUE);
 			break;
 		case BAYER_HPHD:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = hphd_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_IGV:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = igv_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_LMMSE:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = lmmse_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 1);
 			// need documentation about last argument, 'iterations'
 			break;
@@ -266,41 +266,41 @@ float *debayer_buffer_new_float(float *buf, int *width, int *height,
 	rpError retval;
 	switch (interpolation) {
 		case BAYER_VNG:
-			pattern_to_cfarray2(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray2(pattern, cfarray);
 			retval = vng4_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_BILINEAR:
 //		case BAYER_NEARESTNEIGHBOR:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			/* bayerfast: This demosaicer is not intended for final
 			 * output, only for fast preview. */
 			retval = bayerfast_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 1.0);
 			break;
 		default:
 		case BAYER_RCD:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = rcd_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_AHD:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = ahd_demosaic(rx, ry, rawdata, red, green, blue, cfarray, rgb_cam, progress);
 			break;
 		//case BAYER_AMAZE:
 			// retval = amaze_demosaic // need documentation about arguments
 		case BAYER_DCB:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = dcb_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 1, TRUE);
 			break;
 		case BAYER_HPHD:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = hphd_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_IGV:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = igv_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_LMMSE:
-			pattern_to_cfarray(com.debayer.bayer_pattern, cfarray);
+			pattern_to_cfarray(pattern, cfarray);
 			retval = lmmse_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 1);
 			// need documentation about last argument, 'iterations'
 			break;
