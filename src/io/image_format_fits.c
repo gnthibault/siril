@@ -678,6 +678,7 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 			convert_floats(fit->bitpix, fit->fdata, nbdata);
 		}
 		fit->bitpix = FLOAT_IMG;
+		fit->orig_bitpix = FLOAT_IMG; // force this, to avoid problems saving the FITS if needed
 		break;
 	}
 
