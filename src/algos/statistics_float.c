@@ -320,14 +320,6 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
-		double *newdata = malloc(stat->ngoodpix * sizeof(double));
-		if (!newdata) {
-			if (stat_is_local) free(stat);
-			if (free_data) free(data);
-			PRINT_ALLOC_ERR;
-			return NULL;
-		}
-
 		IKSS(data, stat->ngoodpix, &stat->location, &stat->scale, multithread);
 	}
 

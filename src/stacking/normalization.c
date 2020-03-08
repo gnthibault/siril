@@ -50,7 +50,8 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 	// try with no fit passed: fails if data is needed because data is not cached
 	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, reglayer, NULL, STATS_EXTRA, FALSE))) {
 		fits fit = { 0 };
-		if (seq_read_frame(args->seq, args->image_indices[i], &fit, FALSE)) {
+		// read frames as float, it's faster to compute stats
+		if (seq_read_frame(args->seq, args->image_indices[i], &fit, TRUE)) {
 			return 1;
 		}
 		// retry with the fit to compute it
