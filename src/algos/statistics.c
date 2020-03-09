@@ -184,12 +184,12 @@ static int IKSS(float *data, int n, double *location, double *scale) {
 		mad = siril_stats_float_mad(data + i, j - i, m);
 		s = sqrtf(siril_stats_float_bwmv(data + i, j - i, mad, m));
 		if (s < 2E-23) {
-			*location = (double)m;
+			*location = (double) m;
 			*scale = 0.0;
 			break;
 		}
 		if (((s0 - s) / s) < 10E-6) {
-			*location = (double)m;
+			*location = (double) m;
 			*scale = 0.991 * s;
 			break;
 		}
@@ -308,9 +308,9 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 		if (fit->bitpix == BYTE_IMG)
 			norm = UCHAR_MAX;
 		else norm = USHRT_MAX;
-		stat->min = (double)min;
-		stat->max = (double)max;
-		stat->normValue = (double)norm;
+		stat->min = (double) min;
+		stat->max = (double) max;
+		stat->normValue = (double) norm;
 	}
 
 	/* Calculation of ngoodpix, mean, sigma and background noise */
@@ -410,7 +410,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
 		for (i = 0; i < stat->ngoodpix; i++) {
-			newdata[i] = (double)data[i] / stat->normValue;
+			newdata[i] = (float) data[i] / (float) stat->normValue;
 		}
 		IKSS(newdata, stat->ngoodpix, &stat->location, &stat->scale);
 		/* go back to the original range */
