@@ -674,7 +674,7 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 		 * some values can be a negative
 		 */
 		fits_read_img(fit->fptr, TFLOAT, 1, nbdata, &zero, fit->fdata, &zero, &status);
-		if (fit->data_max > 1.0) { // needed for some FLOAT_IMG
+		if (fit->data_max > 2.0) { // needed for some FLOAT_IMG
 			convert_floats(fit->bitpix, fit->fdata, nbdata);
 		}
 		fit->bitpix = FLOAT_IMG;
