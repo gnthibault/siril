@@ -1107,6 +1107,7 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 		if (!newbuf)
 			return 1;
 
+		full_stats_invalidation_from_fit(fit);	// required before naxis change
 		fit->naxes[2] = 3;
 		fit->naxis = 3;
 		fit_replace_buffer(fit, newbuf, DATA_USHORT);
@@ -1170,6 +1171,7 @@ static int debayer_float(fits* fit, interpolation_method interpolation, sensor_p
 	if (!newbuf)
 		return 1;
 
+	full_stats_invalidation_from_fit(fit);	// required before naxis change
 	fit->naxes[2] = 3;
 	fit->naxis = 3;
 	fit_replace_buffer(fit, newbuf, DATA_FLOAT);
