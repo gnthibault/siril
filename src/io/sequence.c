@@ -719,10 +719,18 @@ int seq_read_frame(sequence *seq, int index, fits *dest, gboolean force_float) {
 		case SEQ_INTERNAL:
 			assert(seq->internal_fits);
 			copyfits(seq->internal_fits[index], dest, CP_FORMAT, -1);
-			dest->data = seq->internal_fits[index]->data;
-			dest->pdata[0] = seq->internal_fits[index]->pdata[0];
-			dest->pdata[1] = seq->internal_fits[index]->pdata[1];
-			dest->pdata[2] = seq->internal_fits[index]->pdata[2];
+			if (seq->internal_fits[index]->type == DATA_FLOAT) {
+				dest->fdata = seq->internal_fits[index]->fdata;
+				dest->fpdata[0] = seq->internal_fits[index]->fpdata[0];
+				dest->fpdata[1] = seq->internal_fits[index]->fpdata[1];
+				dest->fpdata[2] = seq->internal_fits[index]->fpdata[2];
+			}
+			else if (seq->internal_fits[index]->type == DATA_USHORT) {
+				dest->data = seq->internal_fits[index]->data;
+				dest->pdata[0] = seq->internal_fits[index]->pdata[0];
+				dest->pdata[1] = seq->internal_fits[index]->pdata[1];
+				dest->pdata[2] = seq->internal_fits[index]->pdata[2];
+			}
 			break;
 	}
 	full_stats_invalidation_from_fit(dest);

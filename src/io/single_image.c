@@ -137,7 +137,7 @@ static gboolean end_read_single_image(gpointer p) {
  * @param is_sequence is set to TRUE if the loaded image is in fact a SER or AVI sequence. Can be NULL
  * @return
  */
-int read_single_image(const char* filename, fits *dest, char **realname_out, gboolean *is_sequence) {
+int read_single_image(const char* filename, fits *dest, char **realname_out, gboolean allow_sequences, gboolean *is_sequence, gboolean allow_dialogs, gboolean force_float) {
 	int retval;
 	image_type imagetype;
 	char *realname = NULL;
@@ -152,10 +152,15 @@ int read_single_image(const char* filename, fits *dest, char **realname_out, gbo
 		return 1;
 	}
 	if (imagetype == TYPESER || imagetype == TYPEAVI) {
-		retval = read_single_sequence(realname, imagetype);
-		single_sequence = TRUE;
+		if (allow_sequences) {
+			retval = read_single_sequence(realname, imagetype);
+			single_sequence = TRUE;
+		} else {
+			siril_log_message(_("Cannot open a sequence from here\n"));
+			return 1;
+		}
 	} else {
-		retval = any_to_fits(imagetype, realname, dest, TRUE);
+		retval = any_to_fits(imagetype, realname, dest, allow_dialogs, force_float);
 		if (!retval)
 			debayer_if_needed(imagetype, dest, com.debayer.compatibility, FALSE);
 	}
@@ -191,7 +196,7 @@ int open_single_image(const char* filename) {
 	close_sequence(FALSE);	// closing a sequence if loaded
 	close_single_image();	// close the previous image and free resources
 
-	retval = read_single_image(filename, &gfit, &realname, &is_single_sequence);
+	retval = read_single_image(filename, &gfit, &realname, TRUE, &is_single_sequence, TRUE, FALSE);
 	if (retval == 2) {
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error opening file"),
 				_("This file could not be opened because "

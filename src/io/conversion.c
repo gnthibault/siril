@@ -284,7 +284,7 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 	int retval = 0;
 	fits *tmpfit = calloc(1, sizeof(fits));
 
-	retval = any_to_fits(imagetype, source, tmpfit, FALSE);
+	retval = any_to_fits(imagetype, source, tmpfit, FALSE, FALSE);
 
 	if (!retval)
 		retval = debayer_if_needed(imagetype, tmpfit, compatibility, FALSE);
@@ -977,12 +977,12 @@ char* g_real_path(const char *source) {
 #endif
 
 /* open the file with path source from any image type and load it into the given FITS object */
-int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean interactive) {
+int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean interactive, gboolean force_float) {
 	int retval = 0;
 
 	switch (imagetype) {
 		case TYPEFITS:
-			retval = (readfits(source, dest, NULL, FALSE) != 0);
+			retval = (readfits(source, dest, NULL, force_float) != 0);
 			break;
 		case TYPEBMP:
 			retval = (readbmp(source, dest) < 0);

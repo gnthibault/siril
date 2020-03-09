@@ -1845,13 +1845,9 @@ void fits_flip_top_to_bottom(fits *fit) {
  * another and initializes all relevant data */
 /* the crop function does the same but in place and for all channels without
  * reallocating */
-void extract_region_from_fits(fits *from, int layer, fits *to,
+static void extract_region_from_fits_ushort(fits *from, int layer, fits *to,
 		const rectangle *area) {
 	int x, y, d, ystart, yend;
-	if (from->type != DATA_USHORT) {
-		siril_log_color_message(_("This operation is not yet supported for 32-bit images\n"), "red");
-		return;
-	}
 	clearfits(to);
 	to->data = malloc(area->w * area->h * sizeof(WORD));
 
@@ -1873,7 +1869,44 @@ void extract_region_from_fits(fits *from, int layer, fits *to,
 	to->pdata[0] = to->data;
 	to->pdata[1] = to->data;
 	to->pdata[2] = to->data;
-	to->bitpix = (from->bitpix ? from->bitpix : USHRT_MAX);
+	to->bitpix = from->bitpix;
+	to->type = DATA_USHORT;
+}
+
+static void extract_region_from_fits_float(fits *from, int layer, fits *to,
+		const rectangle *area) {
+	int x, y, d, ystart, yend;
+	clearfits(to);
+	to->fdata = malloc(area->w * area->h * sizeof(float));
+
+	d = 0;
+	ystart = from->ry - area->y - area->h;
+	yend = from->ry - area->y;
+	for (y = ystart; y < yend; y++) {
+		for (x = area->x; x < area->x + area->w; x++) {
+			to->fdata[d++] = from->fpdata[layer][x + y * from->rx];
+		}
+	}
+
+	to->rx = area->w;
+	to->ry = area->h;
+	to->naxes[0] = area->w;
+	to->naxes[1] = area->h;
+	to->naxes[2] = 1;
+	to->naxis = 2;
+	to->fpdata[0] = to->fdata;
+	to->fpdata[1] = to->fdata;
+	to->fpdata[2] = to->fdata;
+	to->bitpix = from->bitpix;
+	to->type = DATA_FLOAT;
+}
+
+void extract_region_from_fits(fits *from, int layer, fits *to,
+		const rectangle *area) {
+	if (from->type == DATA_USHORT)
+		extract_region_from_fits_ushort(from, layer, to, area);
+	else if (from->type == DATA_FLOAT)
+		extract_region_from_fits_float(from, layer, to, area);
 }
 
 /* creates a new fit image from scratch (NULL fit) or into a fits * previously
