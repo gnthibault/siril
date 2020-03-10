@@ -201,10 +201,14 @@ gpointer generic_sequence_worker(gpointer p) {
 					clearfits(&fit);
 					continue;
 				}
+			} else {
+				/* save stats that may have been computed for the first
+				 * time, but if fit has been modified for the new
+				 * sequence, we shouldn't save it for the old one.
+				 */
+				save_stats_from_fit(&fit, args->seq, input_idx);
 			}
 
-			// save stats that may have been computed for the first time
-			save_stats_from_fit(&fit, args->seq, input_idx);
 			clearfits(&fit);
 
 #ifdef _OPENMP

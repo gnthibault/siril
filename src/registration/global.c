@@ -28,6 +28,7 @@
 #include "core/proto.h"
 #include "core/OS_utils.h"
 #include "algos/star_finder.h"
+#include "algos/statistics.h"
 #include "algos/PSF.h"
 #include "gui/image_display.h"
 #include "gui/PSF_list.h"
@@ -296,6 +297,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		regargs->regparam[out_index].fwhm = sadata->current_regdata[in_index].fwhm;	// not FWHMx because of the ref frame
 		regargs->regparam[out_index].weighted_fwhm = sadata->current_regdata[in_index].weighted_fwhm;
 		regargs->regparam[out_index].roundness = sadata->current_regdata[in_index].roundness;
+		invalidate_stats_from_fit(fit);
 	} else {
 		set_shifts(args->seq, in_index, regargs->layer, (float) H.h02,
 				(float) -H.h12, fit->top_down);

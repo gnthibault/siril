@@ -130,6 +130,7 @@ static int preprocess(fits *raw, struct preprocessing_data *args) {
 #ifdef SIRIL_OUTPUT_DEBUG
 		image_find_minmax(raw);
 		fprintf(stdout, "after dark: min=%f, max=%f\n", raw->mini, raw->maxi);
+		invalidate_stats_from_fit(raw);
 #endif
 	}
 
@@ -140,6 +141,7 @@ static int preprocess(fits *raw, struct preprocessing_data *args) {
 #ifdef SIRIL_OUTPUT_DEBUG
 		image_find_minmax(raw);
 		fprintf(stdout, "after flat: min=%f, max=%f\n", raw->mini, raw->maxi);
+		invalidate_stats_from_fit(raw);
 #endif
 	}
 
@@ -162,7 +164,7 @@ static int darkOptimization(fits *raw, struct preprocessing_data *args) {
 		return 1;
 
 	/* Minimization of background noise to find better k */
-	invalidate_stats_from_fit(raw);
+	//invalidate_stats_from_fit(raw);	// why?
 	k0 = goldenSectionSearch(raw, &dark_tmp, lo, up, 0.001f, args->allow_32bit_output);
 	if (k0 < 0.f) {
 		ret = -1;
@@ -245,21 +247,31 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 #ifdef SIRIL_OUTPUT_DEBUG
 		image_find_minmax(fit);
 		fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n", fit->mini, fit->maxi);
+		invalidate_stats_from_fit(fit);
 #endif
 	}
 
 	if (prepro->debayer) {
+		// not for SER because it is done on-the-fly
 		if (!prepro->seq || prepro->seq->type == SEQ_REGULAR) {
-			// not for SER because it is done on-the-fly
 			debayer_if_needed(TYPEFITS, fit, prepro->compatibility, TRUE);
 		}
 
 #ifdef SIRIL_OUTPUT_DEBUG
 		image_find_minmax(fit);
 		fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n", fit->mini, fit->maxi);
+		invalidate_stats_from_fit(fit);
 #endif
 	}
 
+	/* we need to do something special here because it's a 1-channel sequence and
+	 * image that will become 3-channel after this call, so stats caching will
+	 * not be correct. Preprocessing does not compute new stats so we don't need
+	 * to save them into cache now.
+	 * Destroying the stats from the fit will also prevent saving them in the
+	 * sequence, which may be done automatically by the caller.
+	 */
+	full_stats_invalidation_from_fit(fit);
 	return 0;
 }
 

@@ -894,10 +894,11 @@ clean_exit:
 int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer) {
 	int retval = 0;
 	sensor_pattern tmp;
-	/* What the hell?
-	 * Siril's FITS are stored bottom to top, debayering will throw 
-	 * wrong results. So before demosacaing we need to transforme the image
-	 * with fits_flip_top_to_bottom() function */
+	/* Siril's FITS are stored bottom-up, debayering will give wrong results.
+	 * So before demosacaing we need to flip the image with fits_flip_top_to_bottom().
+	 * But sometimes FITS are created by acquisition software top-down, in that case
+	 * the user can indicate it ('compatibility') and we don't flip for debayer.
+	 */
 	if (imagetype == TYPEFITS && (((convflags & CONVDEBAYER) && !force_debayer) || force_debayer)) {
 		tmp = com.debayer.bayer_pattern;
 		if (fit->naxes[2] != 1) {
@@ -945,6 +946,7 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 	}
 	return retval;
 }
+
 #ifdef _WIN32
 char* g_real_path(const char *source) {
 	HANDLE hFile;
