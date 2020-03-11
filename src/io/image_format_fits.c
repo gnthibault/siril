@@ -671,7 +671,7 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 	case DOUBLE_IMG:	// 64-bit floating point pixels
 		// let cfitsio do the conversion
 		/* we assume we are in the range [0, 1]. But, for some images
-		 * some values can be a negative
+		 * some values can be negative
 		 */
 		fits_read_img(fit->fptr, TFLOAT, 1, nbdata, &zero, fit->fdata, &zero, &status);
 		if (fit->data_max > 2.0) { // needed for some FLOAT_IMG

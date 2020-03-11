@@ -445,35 +445,35 @@ static void remap(int vport) {
 
 static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 		int vport) {
-	float pente;
+	float slope;
 	int i;
 	BYTE *index;
-	double pxl;
+	float pxl;
 
 	/* initialization of data required to build the remap_index */
 	switch (mode) {
 		case NORMAL_DISPLAY:
-			pente = UCHAR_MAX_SINGLE / (float) (hi - lo);
+			slope = UCHAR_MAX_SINGLE / (float) (hi - lo);
 			break;
 		case LOG_DISPLAY:
-			pente = fabsf(UCHAR_MAX_SINGLE / logf((float)(hi - lo) * 0.1f));
+			slope = fabsf(UCHAR_MAX_SINGLE / logf((float)(hi - lo) * 0.1f));
 			break;
 		case SQRT_DISPLAY:
-			pente = UCHAR_MAX_SINGLE / sqrtf((float)(hi - lo));
+			slope = UCHAR_MAX_SINGLE / sqrtf((float)(hi - lo));
 			break;
 		case SQUARED_DISPLAY:
-			pente = UCHAR_MAX_SINGLE / SQR((float)(hi - lo));
+			slope = UCHAR_MAX_SINGLE / SQR((float)(hi - lo));
 			break;
 		case ASINH_DISPLAY:
-			pente = UCHAR_MAX_SINGLE / asinhf((float)(hi - lo) * 0.001f);
+			slope = UCHAR_MAX_SINGLE / asinhf((float)(hi - lo) * 0.001f);
 			break;
 		case STF_DISPLAY:
-			pente = UCHAR_MAX_SINGLE;
+			slope = UCHAR_MAX_SINGLE;
 			break;
 		default:
 			return 1;
 	}
-	if ((mode != HISTEQ_DISPLAY && mode != STF_DISPLAY) && pente == last_pente[vport]
+	if ((mode != HISTEQ_DISPLAY && mode != STF_DISPLAY) && slope == last_pente[vport]
 			&& mode == last_mode[vport]) {
 		siril_debug_print("Re-using previous remap_index\n");
 		return 0;
@@ -497,28 +497,28 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 				if (i < 10)
 					index[i] = 0; /* avoid null and negative values */
 				else
-					index[i] = round_to_BYTE(logf((float) i / 10.f) * pente); //10.f is arbitrary: good matching with ds9
+					index[i] = round_to_BYTE(logf((float) i / 10.f) * slope); //10.f is arbitrary: good matching with ds9
 				break;
 			case SQRT_DISPLAY:
 				// sqrt(2^16) = 2^8
-				index[i] = round_to_BYTE(sqrtf((float) i) * pente);
+				index[i] = round_to_BYTE(sqrtf((float) i) * slope);
 				break;
 			case SQUARED_DISPLAY:
 				// pow(2^4,2) = 2^8
-				index[i] = round_to_BYTE(SQR((float)i) * pente);
+				index[i] = round_to_BYTE(SQR((float)i) * slope);
 				break;
 			case ASINH_DISPLAY:
 				// asinh(2.78*10^110) = 255
-				index[i] = round_to_BYTE(asinhf((float) i / 1000.f) * pente); //1000.f is arbitrary: good matching with ds9, could be asinhf(a*Q*i)/Q
+				index[i] = round_to_BYTE(asinhf((float) i / 1000.f) * slope); //1000.f is arbitrary: good matching with ds9, could be asinhf(a*Q*i)/Q
 				break;
 			case NORMAL_DISPLAY:
-				index[i] = round_to_BYTE((float) i * pente);
+				index[i] = round_to_BYTE((float) i * slope);
 				break;
 			case STF_DISPLAY:
 				pxl = (gfit.orig_bitpix == BYTE_IMG ?
-						(double) i / UCHAR_MAX_DOUBLE :
-						(double) i / USHRT_MAX_DOUBLE);
-				index[i] = round_to_BYTE((float) (MTF(pxl, stfM, stfShadows, stfHighlights)) * pente);
+						(float) i / UCHAR_MAX_SINGLE :
+						(float) i / USHRT_MAX_SINGLE);
+				index[i] = round_to_BYTE((MTF(pxl, stfM, stfShadows, stfHighlights)) * slope);
 				break;
 			default:
 				return 1;
@@ -533,7 +533,7 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 			index[i] = UCHAR_MAX;
 	}
 
-	last_pente[vport] = pente;
+	last_pente[vport] = slope;
 	last_mode[vport] = mode;
 	return 0;
 }
