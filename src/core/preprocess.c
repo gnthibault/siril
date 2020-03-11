@@ -282,6 +282,7 @@ static void clear_preprocessing_data(struct preprocessing_data *prepro) {
 		clearfits(prepro->dark);
 	if (prepro->use_flat && prepro->flat)
 		clearfits(prepro->flat);
+	free(prepro->dev);
 }
 
 static int prepro_finalize_hook(struct generic_seq_args *args) {
