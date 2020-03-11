@@ -157,7 +157,7 @@ int soper(fits *a, float scalar, image_operator oper, gboolean conv_to_float) {
 	return 1;
 }
 
-static int imoper_ushort_to_ushort(fits *a, fits *b, image_operator oper, float factor) {
+static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor) {
 	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 
 	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
@@ -165,24 +165,26 @@ static int imoper_ushort_to_ushort(fits *a, fits *b, image_operator oper, float 
 		return 1;
 	}
 
-	WORD *abuf = a->data, *bbuf = b->data;
-	if (oper == OPER_DIV) {
-		for (i = 0; i < n; ++i) {
-			if (bbuf[i] == 0)
-				abuf[i] = 0;
-			else {
-				float aval = (float)abuf[i];
-				float bval = (float)bbuf[i];
-				if (factor != 1.0f)
-					abuf[i] = round_to_WORD(factor * (aval / bval));
-				else abuf[i] = round_to_WORD(aval / bval);
+	if (b->type == DATA_USHORT) {
+		WORD *abuf = a->data, *bbuf = b->data;
+		if (oper == OPER_DIV) {
+			for (i = 0; i < n; ++i) {
+				if (bbuf[i] == 0)
+					abuf[i] = 0;
+				else {
+					float aval = (float) abuf[i];
+					float bval = (float) bbuf[i];
+					if (factor != 1.0f)
+						abuf[i] = roundf_to_WORD(factor * (aval / bval));
+					else
+						abuf[i] = roundf_to_WORD(aval / bval);
+				}
 			}
-		}
-	} else {
-		for (i = 0; i < n; ++i) {
-			int aval = (int)abuf[i];
-			int bval = (int)bbuf[i];
-			switch (oper) {
+		} else {
+			for (i = 0; i < n; ++i) {
+				int aval = (int) abuf[i];
+				int bval = (int) bbuf[i];
+				switch (oper) {
 				case OPER_ADD:
 					abuf[i] = truncate_to_WORD(aval + bval);
 					break;
@@ -194,9 +196,47 @@ static int imoper_ushort_to_ushort(fits *a, fits *b, image_operator oper, float 
 					break;
 				case OPER_DIV:	// handled above
 					break;
+				}
+				if (factor != 1.0f)
+					abuf[i] = round_to_WORD(factor * (float) abuf[i]);
 			}
-			if (factor != 1.0f)
-				abuf[i] = round_to_WORD(factor * (float)abuf[i]);
+		}
+	} else if (b->type == DATA_FLOAT) {
+		WORD *abuf = a->data;
+		float *bbuf = b->fdata;
+		if (oper == OPER_DIV) {
+			for (i = 0; i < n; ++i) {
+				if (bbuf[i] == 0.f)
+					abuf[i] = 0;
+				else {
+					float aval = (float) abuf[i];
+					float bval = bbuf[i];
+					if (factor != 1.0f)
+						abuf[i] = roundf_to_WORD(factor * (aval / bval));
+					else
+						abuf[i] = roundf_to_WORD(aval / bval);
+				}
+			}
+		} else {
+			for (i = 0; i < n; ++i) {
+				int aval = (int) abuf[i];
+				int bval = (int) (bbuf[i] * USHRT_MAX_SINGLE);
+				switch (oper) {
+				case OPER_ADD:
+					abuf[i] = truncate_to_WORD(aval + bval);
+					break;
+				case OPER_SUB:
+					abuf[i] = truncate_to_WORD(aval - bval);
+					break;
+				case OPER_MUL:
+					abuf[i] = truncate_to_WORD(aval * bval);
+					break;
+				case OPER_DIV:	// handled above
+					break;
+				}
+				if (factor != 1.0f)
+					abuf[i] = round_to_WORD(factor * (float) abuf[i]);
+			}
 		}
 	}
 	invalidate_stats_from_fit(a);
@@ -259,9 +299,9 @@ static int imoper_with_factor(fits *a, fits *b, image_operator oper, float facto
 	if (allow_32bits)
 		return imoper_to_float(a, b, oper, factor);
 	else {
-		if (a->type == DATA_USHORT && b->type == DATA_USHORT)
-			return imoper_ushort_to_ushort(a, b, oper, factor);
-		siril_log_color_message(_("image operations can only be kept 16 bits if the two input images are 16 bits too. Aborting.\n"), "red");
+		if (a->type == DATA_USHORT)
+			return imoper_to_ushort(a, b, oper, factor);
+		siril_log_color_message(_("image operations can only be kept 16 bits if first input images are 16 bits. Aborting.\n"), "red");
 	}
 	return 1;
 }
