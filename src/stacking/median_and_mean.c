@@ -33,16 +33,16 @@
 #include "stacking/siril_fit_linear.h"
 
 static float siril_stats_ushort_sd(const WORD data[], int N) {
-    double accumulator = 0.0; // accumulating in double precision is important for accuracy
+	double accumulator = 0.0; // accumulating in double precision is important for accuracy
 	for (int i = 0; i < N; ++i) {
 		accumulator += data[i];
 	}
-	float mean = (float)accumulator / N;
+	float mean = (float) accumulator / N;
 	accumulator = 0.0;
 	for (int i = 0; i < N; ++i)
-		accumulator += (float)((data[i] - mean) * (data[i] - mean));
+		accumulator += (float) ((data[i] - mean) * (data[i] - mean));
 
-	return sqrtf((float)accumulator / (N - 1));
+	return sqrtf((float) accumulator / (N - 1));
 }
 
 static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean);
@@ -185,11 +185,14 @@ int stack_compute_parallel_blocks(struct _image_block **blocksptr, int max_numbe
 		 * Also, for slow data access like rotating drives or on-the-fly debayer,
 		 * it feels more responsive this way.
 		 */
-        int mult = 1;
-        // calculate mult so nb_blocks will be a multiple of nb_channels * nb_threads
-        while ((mult * nb_channels) % nb_threads) {
-            ++mult;
-        }
+		int mult = 1;
+		// calculate mult so nb_blocks will be a multiple of nb_channels * nb_threads
+		while ((mult * nb_channels) % nb_threads) {
+			++mult;
+		}
+		if (nb_channels == 1) {
+			mult *= 2;
+		}
 
 		*nb_blocks = mult * nb_channels;
 		size_of_stacks = naxes[1] / mult;
@@ -407,9 +410,11 @@ static int sigma_clipping(WORD pixel, float sig[], float sigma, float median, ui
 	return 0;
 }
 
-static void Winsorize(WORD *pixel, float m0, float m1) {
-	if (*pixel < m0) *pixel = roundf_to_WORD(m0);
-	else if (*pixel > m1) *pixel = roundf_to_WORD(m1);
+static void Winsorize(WORD *pixel, WORD m0, WORD m1, int N) {
+	for (int j = 0; j < N; ++j) {
+		pixel[j] = pixel[j] < m0 ? m0 : pixel[j];
+		pixel[j] = pixel[j] > m1 ? m1 : pixel[j];
+	}
 }
 
 static int line_clipping(WORD pixel, float sig[], float sigma, int i, float a, float b, uint64_t rej[]) {
@@ -519,15 +524,10 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 				else firstloop = 0;
 				memcpy(w_stack, stack, N * sizeof(WORD));
 				do {
-					int jj;
-					double m0 = median - 1.5 * sigma;
-					double m1 = median + 1.5 * sigma;
-					for (jj = 0; jj < N; jj++)
-						Winsorize(w_stack+jj, m0, m1);
-//					median = quickmedian (w_stack, N);
+					Winsorize(w_stack, roundf_to_WORD(median - 1.5 * sigma), roundf_to_WORD(median + 1.5 * sigma), N);
 					sigma0 = sigma;
 					sigma = 1.134 * siril_stats_ushort_sd(w_stack, N);
-				} while ((fabs(sigma - sigma0) / sigma0) > 0.0005);
+				} while (fabs(sigma - sigma0) > sigma0 * 0.0005);
 				for (frame = 0; frame < N; frame++) {
 					if (N - r <= 4) {
 						// no more rejections
@@ -542,8 +542,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 				for (pixel = 0, output = 0; pixel < N; pixel++) {
 					if (!rejected[pixel]) {
 						// copy only if there was a rejection
-						if (pixel != output)
-							stack[output] = stack[pixel];
+						stack[output] = stack[pixel];
 						output++;
 					}
 				}
@@ -785,7 +784,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		data = &data_pool[data_idx];
 
 		/**** Step 2: load image data for the corresponding image block ****/
-	    stack_read_block_data(args, use_regdata, my_block, data, naxes, itype);
+		stack_read_block_data(args, use_regdata, my_block, data, naxes, itype);
 
 #if defined _OPENMP && defined STACK_DEBUG
 		{
@@ -852,7 +851,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 					WORD pixel; float fpixel;
 					if (itype == DATA_FLOAT)
 						fpixel = ((float*)data->pix[frame])[pix_idx];
-					else	pixel  = ((WORD *)data->pix[frame])[pix_idx];
+					else	pixel = ((WORD *)data->pix[frame])[pix_idx];
 					double tmp;
 					switch (args->normalize) {
 						default:

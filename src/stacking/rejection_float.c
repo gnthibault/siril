@@ -29,16 +29,16 @@
 #include "algos/sorting.h"
 
 static float siril_stats_float_sd(const float data[], int N) {
-    double accumulator = 0.0; // accumulating in double precision is important for accuracy
+	double accumulator = 0.0; // accumulating in double precision is important for accuracy
 	for (int i = 0; i < N; ++i) {
 		accumulator += data[i];
 	}
-	float mean = (float)accumulator / N;
+	float mean = (float) accumulator / N;
 	accumulator = 0.0;
 	for (int i = 0; i < N; ++i)
-		accumulator += (float)((data[i] - mean) * (data[i] - mean));
+		accumulator += (float) ((data[i] - mean) * (data[i] - mean));
 
-	return sqrtf((float)accumulator / (N - 1));
+	return sqrtf((float) accumulator / (N - 1));
 }
 
 static int percentile_clipping(float pixel, float sig[], float median,
@@ -72,15 +72,15 @@ static int sigma_clipping_float(float pixel, float sigma, float sigmalow,
 	return 0;
 }
 
-static int line_clipping(float pixel, float sig[], float sigma, int i,
-		float a, float b, uint64_t rej[]) {
+static int line_clipping(float pixel, float sig[], float sigma, int i, float a,
+		float b, uint64_t rej[]) {
 	float sigmalow = sig[0];
 	float sigmahigh = sig[1];
 
 	if (((a * (float) i + b - pixel) / sigma) > sigmalow) {
 		rej[0]++;
 		return -1;
-	} else if ((( pixel - a * (float) i - b) / sigma) >  sigmahigh) {
+	} else if (((pixel - a * (float) i - b) / sigma) > sigmahigh) {
 		rej[1]++;
 		return 1;
 	}
