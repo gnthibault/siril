@@ -204,13 +204,15 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 	} else if (b->type == DATA_FLOAT) {
 		WORD *abuf = a->data;
 		float *bbuf = b->fdata;
+		float norm = (a->bitpix == BYTE_IMG) ? UCHAR_MAX_SINGLE : USHRT_MAX_SINGLE;
+
 		if (oper == OPER_DIV) {
 			for (i = 0; i < n; ++i) {
 				if (bbuf[i] == 0.f)
 					abuf[i] = 0;
 				else {
 					float aval = (float) abuf[i];
-					float bval = bbuf[i];
+					float bval = bbuf[i] * norm;
 					if (factor != 1.0f)
 						abuf[i] = roundf_to_WORD(factor * (aval / bval));
 					else
@@ -220,7 +222,7 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 		} else {
 			for (i = 0; i < n; ++i) {
 				int aval = (int) abuf[i];
-				int bval = (int) (bbuf[i] * USHRT_MAX_SINGLE);
+				int bval = (int) (bbuf[i] * norm);
 				switch (oper) {
 				case OPER_ADD:
 					abuf[i] = truncate_to_WORD(aval + bval);
