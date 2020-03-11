@@ -32,6 +32,19 @@
 #include "algos/sorting.h"
 #include "stacking/siril_fit_linear.h"
 
+static float siril_stats_ushort_sd(const WORD data[], int N) {
+    double accumulator = 0.0; // accumulating in double precision is important for accuracy
+	for (int i = 0; i < N; ++i) {
+		accumulator += data[i];
+	}
+	float mean = (float)accumulator / N;
+	accumulator = 0.0;
+	for (int i = 0; i < N; ++i)
+		accumulator += (float)((data[i] - mean) * (data[i] - mean));
+
+	return sqrtf((float)accumulator / (N - 1));
+}
+
 static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean);
 
 /*************************** MEDIAN AND MEAN STACKING **************************
@@ -500,7 +513,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 		case WINSORIZED:
 			do {
 				double sigma0;
-				float sigma = (float) gsl_stats_ushort_sd(stack, 1, N);
+				float sigma = (float) siril_stats_ushort_sd(stack, N);
 				if (!firstloop)
 					median = quickmedian (stack, N);
 				else firstloop = 0;
@@ -511,9 +524,9 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 					double m1 = median + 1.5 * sigma;
 					for (jj = 0; jj < N; jj++)
 						Winsorize(w_stack+jj, m0, m1);
-					median = quickmedian (w_stack, N);
+//					median = quickmedian (w_stack, N);
 					sigma0 = sigma;
-					sigma = 1.134 * gsl_stats_ushort_sd(w_stack, 1, N);
+					sigma = 1.134 * siril_stats_ushort_sd(w_stack, N);
 				} while ((fabs(sigma - sigma0) / sigma0) > 0.0005);
 				for (frame = 0; frame < N; frame++) {
 					if (N - r <= 4) {
