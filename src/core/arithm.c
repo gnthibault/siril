@@ -51,12 +51,12 @@ static int soper_ushort_to_ushort(fits *a, float scalar, image_operator oper) {
 			break;
 		case OPER_MUL:
 			for (i = 0; i < n; ++i) {
-				data[i] = round_to_WORD((double)data[i] * scalar);
+				data[i] = roundf_to_WORD((float)data[i] * scalar);
 			}
 			break;
 		case OPER_DIV:
 			for (i = 0; i < n; ++i) {
-				data[i] = round_to_WORD((double)data[i] / scalar);
+				data[i] = roundf_to_WORD((float)data[i] / scalar);
 			}
 			break;
 	}
@@ -198,7 +198,7 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 					break;
 				}
 				if (factor != 1.0f)
-					abuf[i] = round_to_WORD(factor * (float) abuf[i]);
+					abuf[i] = roundf_to_WORD(factor * (float) abuf[i]);
 			}
 		}
 	} else if (b->type == DATA_FLOAT) {
@@ -237,7 +237,7 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 					break;
 				}
 				if (factor != 1.0f)
-					abuf[i] = round_to_WORD(factor * (float) abuf[i]);
+					abuf[i] = roundf_to_WORD(factor * (float) abuf[i]);
 			}
 		}
 	}
