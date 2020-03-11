@@ -534,20 +534,19 @@ static void convert_data_float(int bitpix, const void *from, float *to, long nbd
 }
 
 static void convert_floats(int bitpix, float *data, long nbdata) {
-	long i;
 	switch (bitpix) {
 		case BYTE_IMG:
-			for (i = 0; i < nbdata; i++)
+			for (long i = 0; i < nbdata; i++)
 				data[i] = data[i] * INV_UCHAR_MAX_SINGLE;
 			break;
 		default:
 		case USHORT_IMG:	// siril 0.9 native
-			for (i = 0; i < nbdata; i++)
+			for (long i = 0; i < nbdata; i++)
 				data[i] = data[i] * INV_USHRT_MAX_SINGLE;
 			break;
 		case SHORT_IMG:
 			// add 2^15 to the read data to obtain unsigned
-			for (i = 0; i < nbdata; i++) {
+			for (long i = 0; i < nbdata; i++) {
 				data[i] = (32768.f + data[i]) * INV_USHRT_MAX_SINGLE;
 			}
 			break;

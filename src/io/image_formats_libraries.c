@@ -1421,7 +1421,6 @@ struct HeifImage {
 };
 
 static gboolean load_thumbnails(struct heif_context *heif, struct HeifImage *images) {
-	int i;
 	int numImages = heif_context_get_number_of_top_level_images(heif);
 
 	// get list of all (top level) image IDs
@@ -1431,7 +1430,7 @@ static gboolean load_thumbnails(struct heif_context *heif, struct HeifImage *ima
 
 	// --- Load a thumbnail for each image.
 
-	for (i = 0; i < numImages; i++) {
+	for (int i = 0; i < numImages; i++) {
 
 		images[i].ID = IDs[i];
 		images[i].caption[0] = 0;
@@ -1554,11 +1553,6 @@ static gboolean load_thumbnails(struct heif_context *heif, struct HeifImage *ima
 }
 
 static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image) {
-	GtkWidget *dlg;
-	GtkWidget *frame;
-	gboolean run = FALSE;
-	int i;
-
 	int numImages = heif_context_get_number_of_top_level_images(heif);
 
 	struct HeifImage *heif_images = malloc(numImages * sizeof(struct HeifImage));
@@ -1568,7 +1562,7 @@ static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image)
 		return FALSE;
 	}
 
-	dlg = gtk_dialog_new_with_buttons(_("Load HEIF image content"),
+	GtkWidget *dlg = gtk_dialog_new_with_buttons(_("Load HEIF image content"),
 			GTK_WINDOW(lookup_widget("control_window")), GTK_DIALOG_MODAL,
 			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_OK"), GTK_RESPONSE_OK, NULL);
 	gtk_dialog_set_default_response(GTK_DIALOG(dlg), GTK_RESPONSE_OK);
@@ -1576,7 +1570,7 @@ static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image)
 	GtkContainer *content_area = GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dlg)));
 	gtk_container_set_border_width(GTK_CONTAINER(content_area), 12);
 
-	frame = gtk_frame_new(_("Select image"));
+	GtkWidget *frame = gtk_frame_new(_("Select image"));
 	gtk_container_add(content_area, GTK_WIDGET(frame));
 	gtk_widget_show(frame);
 
@@ -1587,7 +1581,7 @@ static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image)
 
 	liststore = gtk_list_store_new(2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
 
-	for (i = 0; i < numImages; i++) {
+	for (int i = 0; i < numImages; i++) {
 		gtk_list_store_append(liststore, &iter);
 		gtk_list_store_set(liststore, &iter, 0, heif_images[i].caption, -1);
 
@@ -1622,7 +1616,7 @@ static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image)
 // pre-select the primary image
 
 	int selected_idx = -1;
-	for (i = 0; i < numImages; i++) {
+	for (int i = 0; i < numImages; i++) {
 		if (heif_images[i].ID == *selected_image) {
 			selected_idx = i;
 			break;
@@ -1637,7 +1631,7 @@ static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image)
 
 	gtk_widget_show(dlg);
 
-	run = (gtk_dialog_run(GTK_DIALOG(dlg)) == GTK_RESPONSE_OK);
+	gboolean run = (gtk_dialog_run(GTK_DIALOG(dlg)) == GTK_RESPONSE_OK);
 
 	if (run) {
 		GList *selected_items = gtk_icon_view_get_selected_items(
@@ -1658,7 +1652,7 @@ static gboolean heif_dialog(struct heif_context *heif, uint32_t *selected_image)
 
 // release thumbnail images
 
-	for (i = 0; i < numImages; i++) {
+	for (int i = 0; i < numImages; i++) {
 		heif_image_release(heif_images[i].thumbnail);
 	}
 
