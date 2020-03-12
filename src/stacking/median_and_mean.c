@@ -502,7 +502,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case SIGMEDIAN:
 			do {
-				float sigma = (float) gsl_stats_ushort_sd(stack, 1, N);
+				float sigma = (float) siril_stats_ushort_sd(stack, N);
 				if (!firstloop)
 					median = quickmedian (stack, N);
 				else firstloop = 0;
@@ -715,8 +715,8 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	for (i = 0; i < pool_size; i++) {
 		int j;
 		data_pool[i].pix = malloc(nb_frames * sizeof(void *));
-		data_pool[i].tmp = malloc(nb_frames * npixels_in_block * ielem_size);
-		data_pool[i].stack = malloc(nb_frames * ielem_size);
+		data_pool[i].tmp = malloc(nb_frames * (npixels_in_block + 1 + (args->type_of_rejection == WINSORIZED ? 1 : 0)) * ielem_size);
+		data_pool[i].stack = data_pool[i].tmp + nb_frames * npixels_in_block * ielem_size;
 		if (is_mean)
 			data_pool[i].rejected = calloc(nb_frames, sizeof(int));
 		if (!data_pool[i].pix || !data_pool[i].tmp || !data_pool[i].stack || (is_mean && !data_pool[i].rejected)) {
@@ -728,7 +728,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 
 		if (is_mean) {
 			if (args->type_of_rejection == WINSORIZED) {
-				data_pool[i].w_stack = malloc(nb_frames * ielem_size);
+				data_pool[i].w_stack = data_pool[i].stack + nb_frames * ielem_size;
 				if (!data_pool[i].w_stack) {
 					PRINT_ALLOC_ERR;
 					fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
@@ -1001,11 +1001,9 @@ free_and_close:
 
 	if (data_pool) {
 		for (i=0; i<pool_size; i++) {
-			if (data_pool[i].stack) free(data_pool[i].stack);
 			if (data_pool[i].pix) free(data_pool[i].pix);
 			if (data_pool[i].tmp) free(data_pool[i].tmp);
 			if (data_pool[i].rejected) free(data_pool[i].rejected);
-			if (data_pool[i].w_stack) free(data_pool[i].w_stack);
 			if (data_pool[i].xf) free(data_pool[i].xf);
 			if (data_pool[i].yf) free(data_pool[i].yf);
 		}
