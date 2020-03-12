@@ -20,7 +20,6 @@
 
 #include <string.h>
 #include <math.h>
-#include <gsl/gsl_statistics_ushort.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -474,7 +473,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case SIGMA:
 			do {
-				float sigma = (float) gsl_stats_ushort_sd(stack, 1, N);
+				float sigma = (float) siril_stats_ushort_sd(stack, N);
 				if (!firstloop)
 					median = quickmedian (stack, N);
 				else firstloop = 0;
