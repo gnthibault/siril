@@ -568,6 +568,13 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 	// with force_float, image is read as float data, type is stored as DATA_FLOAT
 	int fake_bitpix = force_float ? FLOAT_IMG : fit->bitpix;
 
+	status = 0;
+	fits_movabs_hdu(fit->fptr, 1, 0, &status); // make sure reading primary HDU
+	if (status) {
+		siril_log_message(_("Selecting the primary header failed, is the FITS file '%s' malformed?\n"), filename);
+		return -1;
+	}
+
 	switch (fake_bitpix) {
 		case BYTE_IMG:
 		case SHORT_IMG:
@@ -575,8 +582,6 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 			/* we store these types as unsigned short */
 			if ((fit->data = malloc(nbdata * sizeof(WORD))) == NULL) {
 				PRINT_ALLOC_ERR;
-				status = 0;
-				fits_close_file(fit->fptr, &status);
 				return -1;
 			}
 			fit->pdata[RLAYER] = fit->data;
@@ -597,8 +602,6 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 			/* we store these types as float */
 			if ((fit->fdata = malloc(nbdata * sizeof(float))) == NULL) {
 				PRINT_ALLOC_ERR;
-				status = 0;
-				fits_close_file(fit->fptr, &status);
 				return -1;
 			}
 			fit->fpdata[RLAYER] = fit->fdata;
@@ -618,8 +621,7 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 			return -1;
 	}
 
-	fits_movabs_hdu(fit->fptr, 1, 0, &status); // make sure reading primary HDU
-
+	status = 0;
 	switch (fake_bitpix) {
 	case BYTE_IMG:
 		data8 = malloc(nbdata * sizeof(BYTE));
@@ -657,7 +659,6 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 	case ULONG_IMG:		// 32-bit unsigned integer pixels
 	case LONG_IMG:		// 32-bit signed integer pixels
 		pixels_long = malloc(nbdata * sizeof(unsigned long));
-		status = 0;
 		datatype = fit->bitpix == LONG_IMG ? TLONG : TULONG;
 		fits_read_img(fit->fptr, datatype, 1, nbdata, &zero, pixels_long, &zero, &status);
 		if (status) break;
@@ -1979,7 +1980,7 @@ void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype) {
 	fit->type = newtype;
 	invalidate_stats_from_fit(fit);
 
-	unsigned int nbdata = fit->rx * fit->ry;
+	long nbdata = fit->rx * fit->ry;
 	if (newtype == DATA_USHORT) {
 		fit->bitpix = USHORT_IMG;
 		fit->orig_bitpix = USHORT_IMG;
@@ -2020,6 +2021,33 @@ void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype) {
 		fit->pdata[1] = NULL;
 		fit->pdata[2] = NULL;
 		siril_debug_print("Changed a fit data (FLOAT)\n");
+	}
+}
+
+void fit_debayer_buffer(fits *fit, void *newbuf) {
+	long nbdata = fit->rx * fit->ry;
+
+	/* before changing naxis, we clear fit->stats that was allocated for
+	 * one channel */
+	full_stats_invalidation_from_fit(fit);
+
+	fit->naxis = 3;
+	fit->naxes[2] = 3;
+	if (fit->type == DATA_USHORT) {
+		if (fit->data)
+			free(fit->data);
+		fit->data = (WORD *)newbuf;
+		fit->pdata[RLAYER] = fit->data;
+		fit->pdata[GLAYER] = fit->data + nbdata;
+		fit->pdata[BLAYER] = fit->data + nbdata * 2;
+	}
+	else if (fit->type == DATA_FLOAT) {
+		if (fit->fdata)
+			free(fit->fdata);
+		fit->fdata = (float *)newbuf;
+		fit->fpdata[RLAYER] = fit->fdata;
+		fit->fpdata[GLAYER] = fit->fdata + nbdata;
+		fit->fpdata[BLAYER] = fit->fdata + nbdata * 2;
 	}
 }
 

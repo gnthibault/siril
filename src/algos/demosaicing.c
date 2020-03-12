@@ -1069,24 +1069,14 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 		if (!newbuf)
 			return 1;
 
-		// color RGBRGB format to fits RRGGBB format
-		npixels = width * height;
-		WORD *newdata = (WORD*) realloc(fit->data, 3 * npixels * sizeof(WORD));
-		if (!newdata) {
-			PRINT_ALLOC_ERR;
-			return 1;
-		}
-		fit->data = newdata;
+		fit_debayer_buffer(fit, newbuf);
+		// size might have changed, in case of superpixel
 		fit->naxes[0] = width;
 		fit->naxes[1] = height;
-		fit->naxes[2] = 3;
-		fit->naxis = 3;
 		fit->rx = width;
 		fit->ry = height;
-		fit->pdata[RLAYER] = fit->data;
-		fit->pdata[GLAYER] = fit->data + npixels;
-		fit->pdata[BLAYER] = fit->data + npixels * 2;
 		fit->bitpix = fit->orig_bitpix;
+		// color RGBRGB format to fits RRGGBB format
 		for (i = 0, j = 0; j < npixels; i += 3, j++) {
 			double r = (double) newbuf[i + RLAYER];
 			double g = (double) newbuf[i + GLAYER];
@@ -1098,19 +1088,13 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 			fit->pdata[BLAYER][j] =
 					(fit->bitpix == 8) ? round_to_BYTE(b) : round_to_WORD(b);
 		}
-		free(newbuf);
-		full_stats_invalidation_from_fit(fit);
-
 	} else {
 		// use librtprocess debayer
 		WORD *newbuf = debayer_buffer_new_ushort(buf, &width, &height, interpolation, pattern, xtrans);
 		if (!newbuf)
 			return 1;
 
-		full_stats_invalidation_from_fit(fit);	// required before naxis change
-		fit->naxes[2] = 3;
-		fit->naxis = 3;
-		fit_replace_buffer(fit, newbuf, DATA_USHORT);
+		fit_debayer_buffer(fit, newbuf);
 	}
 
 	return 0;
@@ -1171,10 +1155,7 @@ static int debayer_float(fits* fit, interpolation_method interpolation, sensor_p
 	if (!newbuf)
 		return 1;
 
-	full_stats_invalidation_from_fit(fit);	// required before naxis change
-	fit->naxes[2] = 3;
-	fit->naxis = 3;
-	fit_replace_buffer(fit, newbuf, DATA_FLOAT);
+	fit_debayer_buffer(fit, newbuf);
 	return 0;
 }
 

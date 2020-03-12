@@ -256,13 +256,15 @@ int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
 
 	if (a->type == DATA_FLOAT) {
 		result = a->fdata;
-	} else {
+	}
+	else if (a->type == DATA_USHORT) {
 		result = malloc(n * sizeof(float));
 		if (!result) {
 			PRINT_ALLOC_ERR;
 			return 1;
 		}
 	}
+	else return 1;
 
 	for (i = 0; i < n; ++i) {
 		float aval = a->type == DATA_USHORT ? ushort_to_float_bitpix(a, a->data[i]) : a->fdata[i];

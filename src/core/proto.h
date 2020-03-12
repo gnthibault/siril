@@ -38,6 +38,7 @@ void extract_region_from_fits(fits *from, int layer, fits *to,
 		const rectangle *area);
 int new_fit_image(fits **fit, int width, int height, int nblayer, data_type type);
 void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype);
+void fit_debayer_buffer(fits *fit, void *newbuf);
 
 void keep_first_channel_from_fits(fits *fit);
 GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr);

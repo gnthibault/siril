@@ -36,12 +36,12 @@ static float siril_stats_ushort_sd(const WORD data[], int N) {
 	for (int i = 0; i < N; ++i) {
 		accumulator += data[i];
 	}
-	float mean = (float) accumulator / N;
+	float mean = (float) (accumulator / N);
 	accumulator = 0.0;
 	for (int i = 0; i < N; ++i)
-		accumulator += (float) ((data[i] - mean) * (data[i] - mean));
+		accumulator += (data[i] - mean) * (data[i] - mean);
 
-	return sqrtf((float) accumulator / (N - 1));
+	return sqrtf((float) (accumulator / (N - 1)));
 }
 
 static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean);
