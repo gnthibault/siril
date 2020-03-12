@@ -1331,6 +1331,7 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 	i = (int) ceil((float) w / MAX_SIZE);
 	j = (int) ceil((float) h / MAX_SIZE);
 	pixScale = (i > j) ? i : j;	// picture scale factor
+	if (pixScale == 0) return NULL;
 	Ws = w / pixScale; 			// picture width in pixScale blocks
 	Hs = h / pixScale; 			// -//- height pixScale
 
