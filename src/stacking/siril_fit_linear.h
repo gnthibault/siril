@@ -22,6 +22,6 @@
 
 #include <stdio.h>
 
-int siril_fit_linear(const float *x, const float *y, const size_t n, float *c0, float *c1);
+int siril_fit_linear(const float *x, const float *y, const float m_x, const float m_dx2, const size_t n, float *c0, float *c1);
 
 #endif /* SRC_STACKING_SIRIL_FIT_LINEAR_H_ */

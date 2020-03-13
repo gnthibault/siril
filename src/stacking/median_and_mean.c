@@ -420,11 +420,10 @@ static int line_clipping(WORD pixel, float sig[], float sigma, int i, float a, f
 	float sigmalow = sig[0];
 	float sigmahigh = sig[1];
 
-	if (((a * (float)i + b - pixel) / sigma) > sigmalow) {
+	if (a * i + b - pixel > sigma * sigmalow) {
 		rej[0]++;
 		return -1;
-	}
-	else if (((pixel - a * (float)i - b) / sigma) > sigmahigh) {
+	} else if (pixel - a * i - b > sigma * sigmahigh) {
 		rej[1]++;
 		return 1;
 	}
@@ -433,8 +432,8 @@ static int line_clipping(WORD pixel, float sig[], float sigma, int i, float a, f
 
 static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]) {
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
-	double median;
-	int frame, pixel, output, changed, n, r = 0;
+	float median;
+	int pixel, output, changed, n, r = 0;
 	int firstloop = 1;
 
 	WORD *stack = (WORD *)data->stack;
@@ -457,7 +456,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 
 	switch (args->type_of_rejection) {
 		case PERCENTILE:
-			for (frame = 0; frame < N; frame++) {
+			for (int frame = 0; frame < N; frame++) {
 				rejected[frame] = percentile_clipping(stack[frame], args->sig, (float) median, crej);
 			}
 
@@ -473,18 +472,21 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case SIGMA:
 			do {
-				float sigma = (float) siril_stats_ushort_sd(stack, N);
-				if (!firstloop)
-					median = quickmedian (stack, N);
-				else firstloop = 0;
-				for (frame = 0; frame < N; frame++) {
+				const float sigma = (float) siril_stats_ushort_sd(stack, N);
+				if (!firstloop) {
+					median = quickmedian(stack, N);
+				} else {
+					firstloop = 0;
+				}
+				for (int frame = 0; frame < N; frame++) {
 					if (N - r <= 4) {
-						// no more rejections
+					// no more rejections
 						rejected[frame] = 0;
 					} else {
-						rejected[frame] = sigma_clipping(stack[frame], args->sig, sigma, (float) median, crej);
-						if (rejected[frame])
+						rejected[frame] = sigma_clipping(stack[frame], args->sig, sigma, median, crej);
+						if (rejected[frame]) {
 							r++;
+						}
 					}
 				}
 				for (pixel = 0, output = 0; pixel < N; pixel++) {
@@ -501,13 +503,15 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case SIGMEDIAN:
 			do {
-				float sigma = (float) siril_stats_ushort_sd(stack, N);
-				if (!firstloop)
+				const float sigma = siril_stats_ushort_sd(stack, N);
+				if (!firstloop) {
 					median = quickmedian (stack, N);
-				else firstloop = 0;
+				} else {
+					firstloop = 0;
+				}
 				n = 0;
-				for (frame = 0; frame < N; frame++) {
-					if (sigma_clipping(stack[frame], args->sig, sigma, (float) median, crej)) {
+				for (int frame = 0; frame < N; frame++) {
+					if (sigma_clipping(stack[frame], args->sig, sigma, median, crej)) {
 						stack[frame] = median;
 						n++;
 					}
@@ -527,7 +531,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 					sigma0 = sigma;
 					sigma = 1.134 * siril_stats_ushort_sd(w_stack, N);
 				} while (fabs(sigma - sigma0) > sigma0 * 0.0005);
-				for (frame = 0; frame < N; frame++) {
+				for (int frame = 0; frame < N; frame++) {
 					if (N - r <= 4) {
 						// no more rejections
 						rejected[frame] = 0;
@@ -551,18 +555,17 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			break;
 		case LINEARFIT:
 			do {
-				float a, b;
 				quicksort_s(stack, N);
-				for (frame = 0; frame < N; frame++) {
-					data->xf[frame] = (float)frame;
+				for (int frame = 0; frame < N; frame++) {
 					data->yf[frame] = (float)stack[frame];
 				}
-				siril_fit_linear(data->xf, data->yf, N, &b, &a);
+				float a, b;
+				siril_fit_linear(data->xf, data->yf, data->m_x, data->m_dx2, N, &b, &a);
 				float sigma = 0.f;
-				for (frame = 0; frame < N; frame++)
-					sigma += (fabsf((float)stack[frame] - (a*(float)frame + b)));
+				for (int frame = 0; frame < N; frame++)
+					sigma += fabsf(stack[frame] - (a * frame + b));
 				sigma /= (float)N;
-				for (frame = 0; frame < N; frame++) {
+				for (int frame = 0; frame < N; frame++) {
 					if (N - r <= 4) {
 						// no more rejections
 						rejected[frame] = 0;
@@ -711,39 +714,50 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	fprintf(stdout, "allocating data for %d threads (each %'lu MB)\n", pool_size,
 			(unsigned long)(nb_frames * npixels_in_block * ielem_size) / BYTES_IN_A_MB);
 	data_pool = calloc(pool_size, sizeof(struct _data_block));
+	size_t bufferSize = ielem_size * nb_frames * (npixels_in_block + 1) + 4; // buffer for tmp and stack, added 4 byte for alignment
+	if (is_mean) {
+		bufferSize += nb_frames * sizeof(int); // for rejected
+		if (args->type_of_rejection == WINSORIZED) {
+			bufferSize += ielem_size * nb_frames; // for w_frame
+		} else if (args->type_of_rejection == LINEARFIT) {
+			bufferSize += 2 * sizeof(float) * nb_frames; // for xc and yc
+		}
+	}
 	for (i = 0; i < pool_size; i++) {
 		int j;
 		data_pool[i].pix = malloc(nb_frames * sizeof(void *));
-		data_pool[i].tmp = malloc(nb_frames * (npixels_in_block + 1 + (args->type_of_rejection == WINSORIZED ? 1 : 0)) * ielem_size);
-		data_pool[i].stack = data_pool[i].tmp + nb_frames * npixels_in_block * ielem_size;
-		if (is_mean)
-			data_pool[i].rejected = calloc(nb_frames, sizeof(int));
-		if (!data_pool[i].pix || !data_pool[i].tmp || !data_pool[i].stack || (is_mean && !data_pool[i].rejected)) {
+		data_pool[i].tmp = malloc(bufferSize);
+		if (!data_pool[i].pix || !data_pool[i].tmp) {
 			PRINT_ALLOC_ERR;
 			fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
 			retval = -1;
 			goto free_and_close;
 		}
-
+		data_pool[i].stack = (void*) ((char*) data_pool[i].tmp
+				+ nb_frames * npixels_in_block * ielem_size);
 		if (is_mean) {
-			if (args->type_of_rejection == WINSORIZED) {
-				data_pool[i].w_stack = data_pool[i].stack + nb_frames * ielem_size;
-				if (!data_pool[i].w_stack) {
-					PRINT_ALLOC_ERR;
-					fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
-					retval = -1;
-					goto free_and_close;
-				}
+			int offset = ielem_size * nb_frames * (npixels_in_block + 1);
+			int temp = offset % sizeof(int);
+			if (temp > 0) { // align buffer
+				offset += sizeof(int) - temp;
 			}
-			if (args->type_of_rejection == LINEARFIT) {
-				data_pool[i].xf = malloc(nb_frames * sizeof(float));
-				data_pool[i].yf = malloc(nb_frames * sizeof(float));
-				if (!data_pool[i].xf || !data_pool[i].yf) {
-					PRINT_ALLOC_ERR;
-					fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
-					retval = -1;
-					goto free_and_close;
+			data_pool[i].rejected = (int*)((char*)data_pool[i].tmp + offset);
+			if (args->type_of_rejection == WINSORIZED) {
+				data_pool[i].w_stack = (void*)((char*)data_pool[i].rejected + sizeof(int) * nb_frames);
+			} else if (args->type_of_rejection == LINEARFIT) {
+				data_pool[i].xf = (float*) ((char*) data_pool[i].rejected
+						+ sizeof(int) * nb_frames);
+				data_pool[i].yf = data_pool[i].xf + nb_frames;
+				// precalculate some stuff
+				data_pool[i].m_x = (nb_frames - 1) * 0.5f;
+				data_pool[i].m_dx2 = 0.f;
+				for (int j = 0; j < nb_frames; ++j) {
+					const float dx = j - data_pool[i].m_x;
+					data_pool[i].xf[i] = 1.f / (j + 1);
+					data_pool[i].m_dx2 += (dx * dx - data_pool[i].m_dx2)
+							* data_pool[i].xf[i];
 				}
+				data_pool[i].m_dx2 = 1.f / data_pool[i].m_dx2;
 			}
 		}
 
@@ -1002,9 +1016,6 @@ free_and_close:
 		for (i=0; i<pool_size; i++) {
 			if (data_pool[i].pix) free(data_pool[i].pix);
 			if (data_pool[i].tmp) free(data_pool[i].tmp);
-			if (data_pool[i].rejected) free(data_pool[i].rejected);
-			if (data_pool[i].xf) free(data_pool[i].xf);
-			if (data_pool[i].yf) free(data_pool[i].yf);
 		}
 		free(data_pool);
 	}

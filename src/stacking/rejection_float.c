@@ -46,10 +46,10 @@ static int percentile_clipping(float pixel, float sig[], float median,
 	float plow = sig[0];
 	float phigh = sig[1];
 
-	if ((median - pixel) / median > plow) {
+	if (median - pixel > median * plow) {
 		rej[0]++;
 		return -1;
-	} else if ((pixel - median) / median > phigh) {
+	} else if (pixel - median > median * phigh) {
 		rej[1]++;
 		return 1;
 	}
@@ -77,10 +77,10 @@ static int line_clipping(float pixel, float sig[], float sigma, int i, float a,
 	float sigmalow = sig[0];
 	float sigmahigh = sig[1];
 
-	if (((a * (float) i + b - pixel) / sigma) > sigmalow) {
+	if (a * i + b - pixel> sigma * sigmalow) {
 		rej[0]++;
 		return -1;
-	} else if (((pixel - a * (float) i - b) / sigma) > sigmahigh) {
+	} else if (pixel - a * i - b > sigma * sigmahigh) {
 		rej[1]++;
 		return 1;
 	}
@@ -212,16 +212,15 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		break;
 	case LINEARFIT:
 		do {
-			float a, b;
 			quicksort_f(stack, N);
 			for (int frame = 0; frame < N; frame++) {
-				data->xf[frame] = (float) frame;
-				data->yf[frame] = (float) stack[frame];
+				data->yf[frame] = stack[frame];
 			}
-			siril_fit_linear(data->xf, data->yf, N, &b, &a);
+			float a, b;
+			siril_fit_linear(data->xf, data->yf, data->m_x, data->m_dx2, N, &b,	&a);
 			float sigma = 0.f;
 			for (int frame = 0; frame < N; frame++)
-				sigma += (fabsf((float) stack[frame] - (a * (float) frame + b)));
+				sigma += fabsf(stack[frame] - (a * frame + b));
 			sigma /= (float) N;
 			for (int frame = 0; frame < N; frame++) {
 				if (N - r <= 4) {
