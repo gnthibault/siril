@@ -33,13 +33,34 @@
  */
 
 /**
+ * In-place insertion sort of array of double a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
+void insertionSort_d(double a[], int n) {
+	for (int i = 1; i < n; i++) {
+		const double val = a[i];
+		int j = i - 1;
+
+		/* Move elements of a[0..i-1], that are greater than val, to one position ahead of their current position */
+		while (j >= 0 && a[j] > val) {
+			a[j + 1] = a[j];
+			j = j - 1;
+		}
+		a[j + 1] = val;
+	}
+}
+
+/**
  * In-place quick sort of array of double a of size n
  * @param a array to sort
  * @param n size of the array
  */
 void quicksort_d (double *a, int n) {
-	if (n < 2)
-		return;
+	if (n <= 32) {
+		return insertionSort_d(a, n);
+	}
+
 	double pivot = a[n / 2];
 	double *left = a;
 	double *right = a + n - 1;
@@ -63,13 +84,34 @@ void quicksort_d (double *a, int n) {
 }
 
 /**
+ * In-place insertion sort of array of float a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
+ void insertionSort_f(float a[], int n) {
+	for (int i = 1; i < n; i++) {
+		const float val = a[i];
+		int j = i - 1;
+
+		/* Move elements of a[0..i-1], that are greater than val, to one position ahead of their current position */
+		while (j >= 0 && a[j] > val) {
+			a[j + 1] = a[j];
+			j = j - 1;
+		}
+		a[j + 1] = val;
+	}
+}
+
+/**
  * In-place quick sort of array of float a of size n
  * @param a array to sort
  * @param n size of the array
  */
 void quicksort_f (float *a, int n) {
-	if (n < 2)
-		return;
+	if (n <= 32) {
+		return insertionSort_f(a, n);
+	}
+
 	float pivot = a[n / 2];
 	float *left = a;
 	float *right = a + n - 1;
@@ -93,13 +135,33 @@ void quicksort_f (float *a, int n) {
 }
 
 /**
+ * In-place insertion sort of array of WORD a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
+void insertionSort_s(WORD a[], int n) {
+	for (int i = 1; i < n; i++) {
+		const WORD val = a[i];
+		int j = i - 1;
+
+		/* Move elements of a[0..i-1], that are greater than val, to one position ahead of their current position */
+		while (j >= 0 && a[j] > val) {
+			a[j + 1] = a[j];
+			--j;
+		}
+		a[j + 1] = val;
+	}
+}
+
+/**
  * In-place quick sort of array of WORD a of size n
  * @param a array to sort
  * @param n size of the array
  */
-void quicksort_s (WORD *a, int n) {
-	if (n < 2)
-		return;
+void quicksort_s(WORD *a, int n) {
+	if (n <= 32) {
+		return insertionSort_s(a, n);
+	}
 	WORD pivot = a[n / 2];
 	WORD *left = a;
 	WORD *right = a + n - 1;
@@ -130,7 +192,7 @@ void quicksort_s (WORD *a, int n) {
  * @param n size of the array
  * @return median as double for even size average the middle two elements
 */
-double quickmedian (WORD *a, int n) {
+double quickmedian(WORD *a, int n) {
 	int i;
 	int k = n / 2;		// size to sort
 	int pindex;		// pivot index
@@ -177,7 +239,7 @@ double quickmedian (WORD *a, int n) {
  * @param n size of the array
  * @return median as double for even size average the middle two elements
  */
-double quickmedian_float (float *a, int n) {
+double quickmedian_float(float *a, int n) {
 	int i;
 	int k = n / 2;		// size to sort
 	int pindex;		// pivot index
@@ -208,7 +270,7 @@ double quickmedian_float (float *a, int n) {
 			// pindex >= k
 			right = pindex;
 	}
-	return (n % 2 == 0) ? ((double)a[k - 1] + a[k]) / 2.0 : (double)a[k];
+	return (n % 2 == 0) ? ((double) a[k - 1] + a[k]) / 2.0 : (double) a[k];
 }
 
 /* quickmedian_double returns the median from array of length n
@@ -219,7 +281,7 @@ double quickmedian_float (float *a, int n) {
  * @param n size of the array
  * @return median as double for even size average the middle two elements
  */
-double quickmedian_double (double *a, int n) {
+double quickmedian_double(double *a, int n) {
 	int i;
 	int k = n / 2;		// size to sort
 	int pindex;		// pivot index
@@ -260,7 +322,7 @@ double quickmedian_double (double *a, int n) {
  * @param n size of the array
  * @return median as double
  */
-double quickmedian_int (int *a, int n) {
+double quickmedian_int(int *a, int n) {
 	int i;
 	int k = n / 2;		// size to sort
 	int pindex;		// pivot index
@@ -461,9 +523,9 @@ double histogram_median(WORD *a, int n, gboolean mutlithread) {
 }
 
 double histogram_median_float(float *a, int n, gboolean multithread) {
-    float median;
-    findMinMaxPercentile(a, n, 0.5f, &median, 0.5f, &median, multithread);
-    return median;
+	float median;
+	findMinMaxPercentile(a, n, 0.5f, &median, 0.5f, &median, multithread);
+	return median;
 }
 
 /**
