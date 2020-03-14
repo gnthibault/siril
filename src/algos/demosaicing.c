@@ -1015,7 +1015,7 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 	int i, j;
 	int width = fit->rx;
 	int height = fit->ry;
-	long npixels;
+	long npixels = width * height;
 	WORD *buf = fit->data;
 	int xbayeroff = 0, ybayeroff = 0;
 

@@ -679,12 +679,12 @@ static void update_coords() {
 static void update_pixel_size() {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_pixels"));
 	gchar *cpixels;
-	double pixel;
+	float pixel;
 
 	pixel = gfit.pixel_size_x > gfit.pixel_size_y ? gfit.pixel_size_x : gfit.pixel_size_y;
 
-	if (pixel > 0.0) {
-		cpixels = g_strdup_printf("%.2lf", pixel);
+	if (pixel > 0.f) {
+		cpixels = g_strdup_printf("%.2lf", (double) pixel);
 		gtk_entry_set_text(entry, cpixels);
 		g_free(cpixels);
 	}

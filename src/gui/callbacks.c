@@ -832,7 +832,7 @@ void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_da
 }
 
 void set_precision_switch() {
-	if (!com.script && !com.headless) {
+	if (!com.script) {
 		GtkLabel *label = GTK_LABEL(lookup_widget("precision_button_name"));
 		GtkCheckMenuItem *float_button = GTK_CHECK_MENU_ITEM(lookup_widget("32bits_item"));
 		GtkCheckMenuItem *ushort_button = GTK_CHECK_MENU_ITEM(lookup_widget("16bits_item"));
