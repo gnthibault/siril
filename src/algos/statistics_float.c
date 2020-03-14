@@ -103,7 +103,7 @@ static double siril_stats_float_bwmv(const float* data, const size_t n,
 			const float i_med = data[i] - median;
 
 			const float yi = i_med * factor;
-			const float yi2 = fabs(yi) < 1.f ? yi * yi : 1.f;
+			const float yi2 = fabsf(yi) < 1.f ? yi * yi : 1.f;
 
 			up += SQR(i_med * SQR (1 - yi2));
 			down += (1 - yi2) * (1 - 5 * yi2);

@@ -37,7 +37,7 @@
  * @param a array to sort
  * @param n size of the array
  */
-void insertionSort_d(double a[], int n) {
+static void insertionSort_d(double a[], int n) {
 	for (int i = 1; i < n; i++) {
 		const double val = a[i];
 		int j = i - 1;
@@ -88,7 +88,7 @@ void quicksort_d (double *a, int n) {
  * @param a array to sort
  * @param n size of the array
  */
- void insertionSort_f(float a[], int n) {
+ static void insertionSort_f(float a[], int n) {
 	for (int i = 1; i < n; i++) {
 		const float val = a[i];
 		int j = i - 1;
@@ -139,7 +139,7 @@ void quicksort_f (float *a, int n) {
  * @param a array to sort
  * @param n size of the array
  */
-void insertionSort_s(WORD a[], int n) {
+static void insertionSort_s(WORD a[], int n) {
 	for (int i = 1; i < n; i++) {
 		const WORD val = a[i];
 		int j = i - 1;

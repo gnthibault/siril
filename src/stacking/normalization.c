@@ -41,21 +41,21 @@ int do_normalization(struct stacking_args *args) {
 /* scale0, mul0 and offset0 are output arguments when i = ref_image, input arguments otherwise */
 static int _compute_normalization_for_image(struct stacking_args *args, int i, int ref_image,
 		double *offset, double *mul, double *scale, normalization mode, double *scale0,
-		double *mul0, double *offset0) {
+		double *mul0, double *offset0, gboolean multithread) {
 	imstats *stat = NULL;
 	int reglayer;
 
 	reglayer = (args->reglayer == -1) ? 0 : args->reglayer;
 
 	// try with no fit passed: fails if data is needed because data is not cached
-	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, reglayer, NULL, STATS_EXTRA, FALSE))) {
+	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, reglayer, NULL, STATS_EXTRA, multithread))) {
 		fits fit = { 0 };
 		// read frames as float, it's faster to compute stats
 		if (seq_read_frame(args->seq, args->image_indices[i], &fit, TRUE)) {
 			return 1;
 		}
 		// retry with the fit to compute it
-		if (!(stat = statistics(args->seq, args->image_indices[i], &fit, reglayer, NULL, STATS_EXTRA, FALSE)))
+		if (!(stat = statistics(args->seq, args->image_indices[i], &fit, reglayer, NULL, STATS_EXTRA, multithread)))
 			return 1;
 		if (args->seq->type != SEQ_INTERNAL)
 			clearfits(&fit);
@@ -161,7 +161,7 @@ static int compute_normalization(struct stacking_args *args) {
 	if (_compute_normalization_for_image(args,
 				ref_image_filtred_idx, ref_image_filtred_idx,
 				coeff->offset, coeff->mul, coeff->scale,
-				args->normalize, &scale0, &mul0, &offset0)) {
+				args->normalize, &scale0, &mul0, &offset0, TRUE)) {
 		set_progress_bar_data(_("Normalization failed."), PROGRESS_NONE);
 		return 1;
 	}
@@ -179,7 +179,7 @@ static int compute_normalization(struct stacking_args *args) {
 			}
 			if (_compute_normalization_for_image(args, i, ref_image_filtred_idx,
 						coeff->offset, coeff->mul, coeff->scale,
-						args->normalize, &scale0, &mul0, &offset0)) {
+						args->normalize, &scale0, &mul0, &offset0, FALSE)) {
 				retval = 1;
 				continue;
 			}
