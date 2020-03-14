@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <fcntl.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -119,54 +120,68 @@ static int64_t find_space(const gchar *name) {
 #endif /*HAVE_SYS_STATVFS_H*/
 
 #if defined(__linux__) || defined(__CYGWIN__)
-static unsigned long update_used_RAM_memory() {
-	unsigned long size, resident, share, text, lib, data, dt;
-	static int page_size_in_k = 0;
-	const char* statm_path = "/proc/self/statm";
-	FILE *f = fopen(statm_path, "r");
+static unsigned long long update_used_RAM_memory() {
+	static gboolean initialized = FALSE;
+	static long page_size;
+	static gint fd = -1;
+	gchar buffer[128];
+	gint size;
+	unsigned long long resident;
+	unsigned long long shared;
 
-	if (page_size_in_k == 0) {
-		page_size_in_k = getpagesize() / 1024;
+	if (!initialized) {
+		page_size = getpagesize() / 1024L;
+
+		if (page_size > 0)
+			fd = g_open("/proc/self/statm", O_RDONLY);
+
+		initialized = TRUE;
 	}
-	if (!f) {
-		perror(statm_path);
-		return 0UL;
-	}
-	if (7 != fscanf(f, "%lu %lu %lu %lu %lu %lu %lu",
-			&size, &resident, &share, &text, &lib, &data, &dt)) {
-		perror(statm_path);
-		fclose(f);
-		return 0UL;
-	}
-	fclose(f);
-	return (resident * page_size_in_k);
+
+	if (fd < 0)
+		return 0ULL;
+
+	if (lseek(fd, 0, SEEK_SET))
+		return 0ULL;
+
+	size = read(fd, buffer, sizeof(buffer) - 1);
+
+	if (size <= 0)
+		return 0ULL;
+
+	buffer[size] = '\0';
+
+	if (sscanf(buffer, "%*u %llu %llu", &resident, &shared) != 2)
+		return 0ULL;
+
+	return (unsigned long long) (resident /*- shared*/) * page_size;
 }
 #elif defined(OS_OSX)
-static unsigned long update_used_RAM_memory() {
+static unsigned long long update_used_RAM_memory() {
 	struct task_basic_info t_info;
 
 	mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 	task_info(current_task(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count);
-	return ((unsigned long) t_info.resident_size / 1024UL);
+	return ((unsigned long long) t_info.resident_size / 1024ULL);
 }
 #elif defined(BSD) /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD). In fact, it could work with linux */
-static unsigned long update_used_RAM_memory() {
+static unsigned long long update_used_RAM_memory() {
 	struct rusage usage;
 
 	getrusage(RUSAGE_SELF, &usage);
-	return ((unsigned long) usage.ru_maxrss);
+	return ((unsigned long long) usage.ru_maxrss);
 }
 #elif defined(_WIN32) /* Windows */
-static unsigned long update_used_RAM_memory() {
+static unsigned long long update_used_RAM_memory() {
     PROCESS_MEMORY_COUNTERS memCounter;
-    
+
 	if (GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter)))
-        return (memCounter.WorkingSetSize / 1024UL);
-	return 0UL;
+        return (memCounter.WorkingSetSize / 1024ULL);
+	return 0ULL;
 }
 #else
-static unsigned long update_used_RAM_memory() {
-	return 0UL;
+static unsigned long long update_used_RAM_memory() {
+	return 0ULL;
 }
 #endif
 
@@ -237,28 +252,81 @@ int test_available_space(int64_t req_size) {
  */
 #if defined(__linux__) || defined(__CYGWIN__)
 int get_available_memory_in_MB() {
-	int mem = 2048; /* this is the default value if we can't retrieve any values */
-	FILE* fp = fopen("/proc/meminfo", "r");
-	if (fp != NULL) {
-		size_t bufsize = 1024 * sizeof(char);
-		gchar *buf = g_new(gchar, bufsize);
-		long value = -1L;
-		while (getline(&buf, &bufsize, fp) >= 0) {
-			if (strncmp(buf, "MemAvailable", 12) != 0)
-				continue;
-			sscanf(buf, "%*s%ld", &value);
-			break;
-		}
-		fclose(fp);
-		g_free(buf);
-		if (value != -1L)
-			mem = (int) (value / 1024L);
+	static gboolean initialized = FALSE;
+	static int64_t last_check_time = 0;
+	static gint fd;
+	static uint64_t available;
+	static gboolean has_available = FALSE;
+	int64_t time;
+
+	if (!initialized) {
+		fd = open("/proc/meminfo", O_RDONLY);
+
+		initialized = TRUE;
 	}
-	return mem;
+
+	if (fd < 0)
+		return 0;
+
+	/* we don't have a config option for limiting the swap size, so we simply
+	 * return the free space available on the filesystem containing the swap
+	 */
+
+	time = g_get_monotonic_time();
+
+	if (time - last_check_time >= G_TIME_SPAN_SECOND) {
+		gchar buffer[512];
+		gint size;
+		gchar *str;
+
+		last_check_time = time;
+
+		has_available = FALSE;
+
+		if (lseek(fd, 0, SEEK_SET))
+			return 0;
+
+		size = read(fd, buffer, sizeof(buffer) - 1);
+
+		if (size <= 0)
+			return 0;
+
+		buffer[size] = '\0';
+
+		str = strstr(buffer, "MemAvailable:");
+
+		if (!str)
+			return 0;
+
+		available = strtoull(str + 13, &str, 0);
+
+		if (!str)
+			return 0;
+
+		for (; *str; str++) {
+			if (*str == 'k') {
+				available <<= 10;
+				break;
+			} else if (*str == 'M') {
+				available <<= 20;
+				break;
+			}
+		}
+
+		if (!*str)
+			return 0;
+
+		has_available = TRUE;
+	}
+
+	if (!has_available)
+		return 0;
+
+	return (int) (available / (uint64_t)1048576);
 }
 #elif defined(OS_OSX)
 int get_available_memory_in_MB() {
-	int mem = 2048; /* this is the default value if we can't retrieve any values */
+	int mem = 0; /* this is the default value if we can't retrieve any values */
 	vm_size_t page_size;
 	mach_port_t mach_port;
 	mach_msg_type_number_t count;
@@ -274,13 +342,13 @@ int get_available_memory_in_MB() {
 				(int64_t)vm_stats.inactive_count +
 				(int64_t)vm_stats.wire_count) * (int64_t)page_size;
 
-		mem = (int) ((unused_memory) / (1024 * 1024));
+		mem = (int) ((unused_memory) / 1048576);
 	}
 	return mem;
 }
 #elif defined(BSD) /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD). ----------- */
 int get_available_memory_in_MB() {
-	int mem = 2048; /* this is the default value if we can't retrieve any values */
+	int mem = 0; /* this is the default value if we can't retrieve any values */
 	FILE* fp = fopen("/var/run/dmesg.boot", "r");
 	if (fp != NULL) {
 		size_t bufsize = 1024 * sizeof(char);
@@ -301,18 +369,18 @@ int get_available_memory_in_MB() {
 }
 #elif defined(_WIN32) /* Windows */
 int get_available_memory_in_MB() {
-	int mem = 2048; /* this is the default value if we can't retrieve any values */
+	int mem = 0; /* this is the default value if we can't retrieve any values */
 	MEMORYSTATUSEX memStatusEx = { 0 };
 	memStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
 	if (GlobalMemoryStatusEx(&memStatusEx)) {
-		mem = (int) (memStatusEx.ullAvailPhys / (1024 * 1024));
+		mem = (int) (memStatusEx.ullAvailPhys / 1048576);
 	}
 	return mem;
 }
 #else
 int get_available_memory_in_MB() {
 	fprintf(stderr, "Siril failed to get available free RAM memory\n");
-	return 2048;
+	return 0;
 }
 #endif
 
