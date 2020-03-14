@@ -832,15 +832,17 @@ void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_da
 }
 
 void set_precision_switch() {
-	GtkLabel *label = GTK_LABEL(lookup_widget("precision_button_name"));
-	GtkCheckMenuItem *float_button = GTK_CHECK_MENU_ITEM(lookup_widget("32bits_item"));
-	GtkCheckMenuItem *ushort_button = GTK_CHECK_MENU_ITEM(lookup_widget("16bits_item"));
+	if (!com.script && !com.headless) {
+		GtkLabel *label = GTK_LABEL(lookup_widget("precision_button_name"));
+		GtkCheckMenuItem *float_button = GTK_CHECK_MENU_ITEM(lookup_widget("32bits_item"));
+		GtkCheckMenuItem *ushort_button = GTK_CHECK_MENU_ITEM(lookup_widget("16bits_item"));
 
-	gtk_label_set_text(label, gfit.type == DATA_USHORT ? _("16 bits") : _("32 bits"));
-	g_signal_handlers_block_by_func(float_button, on_precision_item_toggled, NULL);
-	gtk_check_menu_item_set_active(float_button, gfit.type == DATA_FLOAT);
-	gtk_check_menu_item_set_active(ushort_button, gfit.type == DATA_USHORT);
-	g_signal_handlers_unblock_by_func(float_button, on_precision_item_toggled, NULL);
+		gtk_label_set_text(label, gfit.type == DATA_USHORT ? _("16 bits") : _("32 bits"));
+		g_signal_handlers_block_by_func(float_button, on_precision_item_toggled, NULL);
+		gtk_check_menu_item_set_active(float_button, gfit.type == DATA_FLOAT);
+		gtk_check_menu_item_set_active(ushort_button, gfit.type == DATA_USHORT);
+		g_signal_handlers_unblock_by_func(float_button,	on_precision_item_toggled, NULL);
+	}
 }
 
 /* set available layers in the layer list of registration */
