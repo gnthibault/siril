@@ -724,7 +724,6 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		}
 	}
 	for (i = 0; i < pool_size; i++) {
-		int j;
 		data_pool[i].pix = malloc(nb_frames * sizeof(void *));
 		data_pool[i].tmp = malloc(bufferSize);
 		if (!data_pool[i].pix || !data_pool[i].tmp) {
@@ -761,7 +760,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			}
 		}
 
-		for (j=0; j<nb_frames; ++j) {
+		for (int j = 0; j < nb_frames; ++j) {
 			if (itype == DATA_FLOAT)
 				data_pool[i].pix[j] = ((float*)data_pool[i].tmp) + j * npixels_in_block;
 			else 	data_pool[i].pix[j] = ((WORD *)data_pool[i].tmp) + j * npixels_in_block;

@@ -27,6 +27,6 @@ struct preprocessing_data {
 };
 
 int preprocess_single_image(struct preprocessing_data *args);
-void start_sequence_preprocessing(struct preprocessing_data *prepro, gboolean from_script);
+void start_sequence_preprocessing(struct preprocessing_data *prepro);
 
 #endif

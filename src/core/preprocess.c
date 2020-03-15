@@ -303,7 +303,7 @@ gpointer prepro_worker(gpointer p) {
 	return retval;
 }
 
-void start_sequence_preprocessing(struct preprocessing_data *prepro, gboolean from_script) {
+void start_sequence_preprocessing(struct preprocessing_data *prepro) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = prepro->seq;
 	args->force_float = TRUE;
@@ -324,7 +324,7 @@ void start_sequence_preprocessing(struct preprocessing_data *prepro, gboolean fr
 	args->parallel = TRUE;
 	args->user = prepro;
 
-	if (from_script) {
+	if (com.script) {
 		args->already_in_a_thread = TRUE;
 		start_in_new_thread(prepro_worker, args);
 	} else {
@@ -552,7 +552,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 		args->allow_32bit_output = args->seq->type == SEQ_REGULAR;
 		set_cursor_waiting(TRUE);
 		control_window_switch_to_tab(OUTPUT_LOGS);
-		start_sequence_preprocessing(args, FALSE);
+		start_sequence_preprocessing(args);
 	} else {
 		int retval;
 		args->is_sequence = FALSE;

@@ -2638,7 +2638,7 @@ int process_preprocess(int nb) {
 	// start preprocessing
 	set_cursor_waiting(TRUE);
 
-	start_sequence_preprocessing(args, TRUE);
+	start_sequence_preprocessing(args);
 	return 0;
 }
 
