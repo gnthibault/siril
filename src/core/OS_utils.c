@@ -192,12 +192,8 @@ static unsigned long long update_used_RAM_memory() {
  * @return always return TRUE
  */
 gboolean update_displayed_memory() {
-	unsigned long ram = update_used_RAM_memory();
-	int64_t freeDisk = find_space(com.wd);
-
-	/* update GUI */
-	set_GUI_MEM(ram);
-	set_GUI_DiskSpace((double)freeDisk);
+	set_GUI_MEM(update_used_RAM_memory());
+	set_GUI_DiskSpace((double)find_space(com.wd));
 
 	return TRUE;
 }

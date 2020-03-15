@@ -1169,7 +1169,7 @@ void set_GUI_misc() {
 }
 
 /* size is in kiB */
-void set_GUI_MEM(unsigned long size) {
+void set_GUI_MEM(unsigned long long size) {
 	if (com.headless)
 		return;
 	char *str;
