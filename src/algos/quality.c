@@ -177,7 +177,6 @@ static double QualityEstimate_ushort(fits *fit, int layer) {
 			subsample += QSUBSAMPLE_INC;
 		} while (width / subsample == x_samples &&
 				height / subsample == y_samples);
-
 	}
 
 	dval = sqrt(dval);
@@ -263,31 +262,30 @@ end:
 /* 3*3 averaging convolution filter, does nothing on the edges */
 static void _smooth_image_16(unsigned short *buf, int width,
 		int height) {
-
 	unsigned short lineBuffer[2][width];
 	// copy first line to lineBuffer
 	for (int x = 0; x < width; ++x) {
-        lineBuffer[0][x] = buf[x];
+		lineBuffer[0][x] = buf[x];
 	}
 	int prevLine = 0;
 	int currLine = 1;
 	for (int y = 1; y < height - 1; ++y) {
 		int o = y * width;
-    	// copy current line to lineBuffer
-        for (int x = 0; x < width; ++x) {
-            lineBuffer[currLine][x] = buf[o + x];
-        }
-        ++o; // increment because we start at x = 1
+		// copy current line to lineBuffer
+		for (int x = 0; x < width; ++x) {
+			lineBuffer[currLine][x] = buf[o + x];
+		}
+		++o; // increment because we start at x = 1
 		for (int x = 1; x < width - 1; ++x, ++o) {
-            const unsigned int v = (lineBuffer[prevLine][x - 1] + lineBuffer[prevLine][x])
-      				+ (lineBuffer[prevLine][x + 1] + lineBuffer[currLine][x - 1]) + (lineBuffer[currLine][x] + lineBuffer[currLine][x + 1])
-					+ (buf[o + width - 1] + buf[o + width])
-					+ buf[o + width + 1];
+			const unsigned int v = (lineBuffer[prevLine][x - 1] + lineBuffer[prevLine][x])
+				+ (lineBuffer[prevLine][x + 1] + lineBuffer[currLine][x - 1]) + (lineBuffer[currLine][x] + lineBuffer[currLine][x + 1])
+				+ (buf[o + width - 1] + buf[o + width])
+				+ buf[o + width + 1];
 			buf[o] = v / 9;
 		}
 		// swap lineBuffers
-        prevLine ^= 1;
-        currLine ^= 1;
+		prevLine ^= 1;
+		currLine ^= 1;
 	}
 }
 

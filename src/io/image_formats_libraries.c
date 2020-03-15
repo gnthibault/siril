@@ -394,7 +394,6 @@ static void get_tif_data_from_ui(gchar **description, gchar **copyright) {
 int savetif(const char *name, fits *fit, uint16 bitspersample){
 	int retval = 0;
 	gchar *description = NULL, *copyright = NULL;
-
 	gchar *filename = g_strdup(name);
 	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
 		filename = str_append(&filename, ".tif");
