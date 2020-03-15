@@ -744,8 +744,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			if (args->type_of_rejection == WINSORIZED) {
 				data_pool[i].w_stack = (void*)((char*)data_pool[i].rejected + sizeof(int) * nb_frames);
 			} else if (args->type_of_rejection == LINEARFIT) {
-				data_pool[i].xf = (float*) ((char*) data_pool[i].rejected
-						+ sizeof(int) * nb_frames);
+				data_pool[i].xf = (float*) ((char*) data_pool[i].rejected + sizeof(int) * nb_frames);
 				data_pool[i].yf = data_pool[i].xf + nb_frames;
 				// precalculate some stuff
 				data_pool[i].m_x = (nb_frames - 1) * 0.5f;

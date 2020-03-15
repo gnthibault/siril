@@ -173,10 +173,10 @@ static unsigned long long update_used_RAM_memory() {
 }
 #elif defined(_WIN32) /* Windows */
 static unsigned long long update_used_RAM_memory() {
-    PROCESS_MEMORY_COUNTERS memCounter;
+	PROCESS_MEMORY_COUNTERS memCounter;
 
 	if (GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter)))
-        return (memCounter.WorkingSetSize / 1024ULL);
+		return (memCounter.WorkingSetSize / 1024ULL);
 	return 0ULL;
 }
 #else
