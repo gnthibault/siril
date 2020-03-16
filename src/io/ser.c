@@ -891,7 +891,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 		/* for performance consideration (and many others) we force the interpolation algorithm
 		 * to be BAYER_BILINEAR
 		 */
-		debayer(fit, BAYER_BILINEAR, com.debayer.bayer_pattern);
+		debayer(fit, BAYER_RCD, com.debayer.bayer_pattern);
 		com.debayer.bayer_pattern = sensortmp;
 		break;
 	case SER_BGR:
@@ -1133,9 +1133,10 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		 * debayer_area is the demosaiced buf area.
 		 * xoffset and yoffset are the x,y offsets of area in the debayer area.
 		 */
+        const int nbpixels = debayer_area.w * debayer_area.h;
 		for (y = 0; y < area->h; y++) {
 			for (x = 0; x < area->w; x++) {
-				buffer[y*area->w + x] = demosaiced_buf[(yoffset+y)*debayer_area.w*3 + xoffset+x*3 + layer]; 
+				buffer[y*area->w + x] = demosaiced_buf[layer * nbpixels + (yoffset+y)*debayer_area.w + xoffset+x]; 
 			}
 		}
 
