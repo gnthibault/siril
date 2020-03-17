@@ -375,8 +375,8 @@ void show_FITS_header(fits *fit) {
 }
 
 void compute_grey_flat(fits *fit) {
-	double mean[4];
-	double diag1, diag2, coeff1, coeff2;
+	float mean[4];
+	float diag1, diag2, coeff1, coeff2;
 	int config;
 
 	/* compute means of 4 channels */
@@ -390,7 +390,7 @@ void compute_grey_flat(fits *fit) {
 
 	/* BAYER_FILTER_RGGB
 	 * BAYER_FILTER_BGGR */
-	if (fabs(1 - diag1) < fabs(1 - diag2)) {
+	if (fabs(1.f - diag1) < fabs(1.f - diag2)) {
 		coeff1 = mean[1] / mean[0];
 		coeff2 = mean[2] / mean[3];
 		config = 0;

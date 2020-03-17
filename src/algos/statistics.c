@@ -496,7 +496,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 	}
 }
 
-int compute_means_from_flat_cfa_ushort(fits *fit, double mean[4]) {
+int compute_means_from_flat_cfa_ushort(fits *fit, float mean[4]) {
 	int row, col, c, i = 0;
 	WORD *data;
 	unsigned int width, height;
@@ -523,21 +523,21 @@ int compute_means_from_flat_cfa_ushort(fits *fit, double mean[4]) {
 	/* Compute mean of each channel */
 	for (row = starty; row < height - 1 - starty; row += 2) {
 		for (col = startx; col < width - 1 - startx; col += 2) {
-			mean[0] += (double) data[col + row * width];
-			mean[1] += (double) data[1 + col + row * width];
-			mean[2] += (double) data[col + (1 + row) * width];
-			mean[3] += (double) data[1 + col + (1 + row) * width];
+			mean[0] += (float) data[col + row * width];
+			mean[1] += (float) data[1 + col + row * width];
+			mean[2] += (float) data[col + (1 + row) * width];
+			mean[3] += (float) data[1 + col + (1 + row) * width];
 			i++;
 		}
 	}
 
 	for (c = 0; c < 4; c++) {
-		mean[c] /= (double) i;
+		mean[c] /= (float) i;
 	}
 	return 0;
 }
 
-int compute_means_from_flat_cfa(fits *fit, double mean[4]) {
+int compute_means_from_flat_cfa(fits *fit, float mean[4]) {
 	if (fit->type == DATA_USHORT)
 		return compute_means_from_flat_cfa_ushort(fit, mean);
 	if (fit->type == DATA_FLOAT)

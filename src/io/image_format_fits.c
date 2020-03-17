@@ -1434,7 +1434,7 @@ int savefits(const char *name, fits *f) {
 				if (norm == USHRT_MAX_DOUBLE)
 					data8[i] = conv_to_BYTE((double)f->data[i]);
 				else
-					data8[i] = (BYTE) (f->data[i]);
+					data8[i] = round_to_BYTE(f->data[i]);
 			}
 		}
 		if (fits_write_pix(f->fptr, TBYTE, orig, pixel_count, data8, &status)) {

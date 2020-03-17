@@ -244,7 +244,7 @@ int test_available_space(int64_t req_size) {
 
 /**
  * Gets available memory for stacking process
- * @return available memory in MB, 2048 if it fails.
+ * @return available memory in MB, 0 if it fails.
  */
 #if defined(__linux__) || defined(__CYGWIN__)
 int get_available_memory_in_MB() {
@@ -405,7 +405,7 @@ int get_max_memory_in_MB() {
  */
 #ifdef _WIN32
 /* stolen from gimp which in turn stole it from glib 2.35 */
-gchar *get_special_folder(int csidl) {
+gchar* get_special_folder(int csidl) {
 	wchar_t path[MAX_PATH + 1];
 	HRESULT hr;
 	LPITEMIDLIST pidl = NULL;
@@ -498,8 +498,8 @@ SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction act
 	g_free(title);
 	return w;
 #else
-	w = gtk_file_chooser_dialog_new(title, parent, action,
-			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT,
+	w = gtk_file_chooser_dialog_new(title, parent, action, _("_Cancel"),
+			GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT,
 			NULL);
 	g_free(title);
 	return w;
@@ -512,8 +512,8 @@ SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction acti
 			_("_Add"), _("_Cancel"));
 #else
 	return gtk_file_chooser_dialog_new(_("Add Files"), parent, action,
-				_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Add"), GTK_RESPONSE_ACCEPT,
-				NULL);
+			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Add"), GTK_RESPONSE_ACCEPT,
+			NULL);
 #endif
 }
 

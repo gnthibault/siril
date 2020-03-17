@@ -22,7 +22,7 @@ void LAB_to_xyz(double, double, double, double *, double *, double *);
 void xyz_to_rgb(double, double, double, double *, double *, double *);
 double BV_to_T(double BV);
 
-int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2, int config);
+int equalize_cfa_fit_with_coeffs(fits *fit, float coeff1, float coeff2, int config);
 
 gpointer extract_channels(gpointer p);
 

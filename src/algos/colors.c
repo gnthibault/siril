@@ -420,26 +420,26 @@ double BV_to_T(double BV) {
 }
 
 
-int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2,
+int equalize_cfa_fit_with_coeffs(fits *fit, float coeff1, float coeff2,
 		int config) {
 	int row, col;
-	double tmp1, tmp2;
+	float tmp1, tmp2;
 	if (fit->type == DATA_USHORT) {
 		WORD *data = fit->data;
 		for (row = 0; row < fit->ry - 1; row += 2) {
 			for (col = 0; col < fit->rx - 1; col += 2) {
 				if (config == 0) {
-					tmp1 = (double)data[1 + col + row * fit->rx] / coeff1;
+					tmp1 = (float)data[1 + col + row * fit->rx] / coeff1;
 					data[1 + col + row * fit->rx] = round_to_WORD(tmp1);
 
-					tmp2 = (double)data[col + (1 + row) * fit->rx] / coeff2;
+					tmp2 = (float)data[col + (1 + row) * fit->rx] / coeff2;
 					data[col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
 
 				} else {
-					tmp1 = (double)data[col + row * fit->rx] / coeff1;
+					tmp1 = (float)data[col + row * fit->rx] / coeff1;
 					data[col + row * fit->rx] = round_to_WORD(tmp1);
 
-					tmp2 = (double)data[1 + col + (1 + row) * fit->rx] / coeff2;
+					tmp2 = (float)data[1 + col + (1 + row) * fit->rx] / coeff2;
 					data[1 + col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
 
 				}
@@ -451,18 +451,18 @@ int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2,
 		for (row = 0; row < fit->ry - 1; row += 2) {
 			for (col = 0; col < fit->rx - 1; col += 2) {
 				if (config == 0) {
-					tmp1 = (double)data[1 + col + row * fit->rx] / coeff1;
-					data[1 + col + row * fit->rx] = (float)tmp1;
+					tmp1 = data[1 + col + row * fit->rx] / coeff1;
+					data[1 + col + row * fit->rx] = tmp1;
 
-					tmp2 = (double)data[col + (1 + row) * fit->rx] / coeff2;
-					data[col + (1 + row) * fit->rx] = (float)tmp2;
+					tmp2 = data[col + (1 + row) * fit->rx] / coeff2;
+					data[col + (1 + row) * fit->rx] = tmp2;
 
 				} else {
-					tmp1 = (double)data[col + row * fit->rx] / coeff1;
-					data[col + row * fit->rx] = (float)tmp1;
+					tmp1 = data[col + row * fit->rx] / coeff1;
+					data[col + row * fit->rx] = tmp1;
 
-					tmp2 = (double)data[1 + col + (1 + row) * fit->rx] / coeff2;
-					data[1 + col + (1 + row) * fit->rx] = (float)tmp2;
+					tmp2 = data[1 + col + (1 + row) * fit->rx] / coeff2;
+					data[1 + col + (1 + row) * fit->rx] = tmp2;
 
 				}
 			}
