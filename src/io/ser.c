@@ -874,11 +874,11 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 			sensor_pattern bayer;
 			bayer = get_SER_Bayer_Pattern(type_ser);
 			if (bayer != com.debayer.bayer_pattern) {
-				if (bayer == BAYER_FILTER_NONE  && user_warned == FALSE) {
+				if (bayer == BAYER_FILTER_NONE  && !user_warned) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 				}
 				else {
-					if (user_warned == FALSE) {
+					if (!user_warned) {
 						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
 								"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
@@ -1085,11 +1085,11 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 			sensor_pattern bayer;
 			bayer = get_SER_Bayer_Pattern(type_ser);
 			if (bayer != com.debayer.bayer_pattern) {
-				if (bayer == BAYER_FILTER_NONE && user_warned == FALSE) {
+				if (bayer == BAYER_FILTER_NONE && !user_warned) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 				}
 				else {
-					if (user_warned == FALSE) {
+					if (!user_warned) {
 						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
 								"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
@@ -1281,10 +1281,6 @@ int64_t ser_compute_file_size(struct ser_struct *ser_file, int nb_frames) {
 		frame_size = (size - SER_HEADER_LEN) / ser_file->frame_count;
 		size = SER_HEADER_LEN + frame_size * nb_frames;
 	}
-	/* SER can be demosaiced on the fly on creation.
-	 * TODO: Is this the good test? */
-	if (ser_is_cfa(ser_file) && com.debayer.open_debayer)
-		size *= 3;
 	return size;
 }
 

@@ -186,8 +186,11 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 		// checking disk space: removing old sequence and computing free space
 		remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
 
-		int64_t size = seq_compute_size(args->seq, args->seq->number,
-				prepro->use_flat ? DATA_FLOAT : DATA_USHORT);
+		// float output is always used in case of FITS sequence
+		data_type output_depth =
+			args->force_ser_output || args->seq->type == SEQ_SER ?
+			DATA_USHORT : DATA_FLOAT;
+		int64_t size = seq_compute_size(args->seq, args->seq->number, output_depth);
 		if (prepro->debayer)
 			size *= 3;
 		if (test_available_space(size))
