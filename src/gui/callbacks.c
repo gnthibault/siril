@@ -706,16 +706,30 @@ void update_photometry_interface() {
 	writeinitfile();
 }
 
-char *vport_number_to_name(int vport) {
+const char *vport_number_to_name(int vport) {
 	switch (vport) {
 		case RED_VPORT:
-			return strdup(_("red"));
+			return (_("red"));
 		case GREEN_VPORT:
-			return strdup(_("green"));
+			return (_("green"));
 		case BLUE_VPORT:
-			return strdup(_("blue"));
+			return (_("blue"));
 		case RGB_VPORT:
-			return strdup(_("rgb"));
+			return (_("rgb"));
+	}
+	return NULL;
+}
+
+const char *untranslated_vport_number_to_name(int vport) {
+	switch (vport) {
+		case RED_VPORT:
+			return ("red");
+		case GREEN_VPORT:
+			return ("green");
+		case BLUE_VPORT:
+			return ("blue");
+		case RGB_VPORT:
+			return ("rgb");
 	}
 	return NULL;
 }
@@ -738,7 +752,7 @@ void calculate_fwhm(GtkWidget *widget) {
 	int layer = match_drawing_area_widget(widget, FALSE);
 	if (layer != -1) {
 		gchar *buf, *label_name;
-		char *layer_name = vport_number_to_name(layer);
+		const char *layer_name = untranslated_vport_number_to_name(layer);
 		GtkLabel *label;
 		if (com.selection.w && com.selection.h) {// Now we don't care about the size of the sample. Minimization checks that
 			if (com.selection.w < 300 && com.selection.h < 300) {
@@ -757,7 +771,6 @@ void calculate_fwhm(GtkWidget *widget) {
 		label = GTK_LABEL(lookup_widget(label_name));
 		gtk_label_set_text(label, buf);
 
-		free(layer_name);
 		g_free(label_name);
 		g_free(buf);
 	}
@@ -780,20 +793,18 @@ void display_filename() {
 		nb_layers = com.seq.nb_layers;
 	}
 	base_name = g_path_get_basename(filename);
-	fn_label = GTK_LABEL(gtk_builder_get_object(builder, "labelfilename_red"));
+	fn_label = GTK_LABEL(lookup_widget("labelfilename_red"));
 	str = g_strdup_printf(_("%s (channel 0)"), base_name);
 	gtk_label_set_text(fn_label, str);
 	g_free(str);
 
 	if (nb_layers == 3) {	//take in charge both sequence and single image
-		fn_label = GTK_LABEL(
-				gtk_builder_get_object(builder, "labelfilename_green"));
+		fn_label = GTK_LABEL(lookup_widget("labelfilename_green"));
 		str = g_strdup_printf(_("%s (channel 1)"), base_name);
 		gtk_label_set_text(fn_label, str);
 		g_free(str);
 
-		fn_label = GTK_LABEL(
-				gtk_builder_get_object(builder, "labelfilename_blue"));
+		fn_label = GTK_LABEL(lookup_widget("labelfilename_blue"));
 		str = g_strdup_printf(_("%s (channel 2)"), base_name);
 		gtk_label_set_text(fn_label, str);
 		g_free(str);

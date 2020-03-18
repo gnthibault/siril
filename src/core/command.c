@@ -1115,7 +1115,7 @@ int process_bgnoise(int nb){
 int process_histo(int nb){
 	size_t i;
 	int nlayer = atoi(word[1]);
-	char* clayer;
+	const char* clayer;
 	char name [20];
 	
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
@@ -1123,14 +1123,13 @@ int process_histo(int nb){
 	if (nlayer>3 || nlayer <0)
 		return 1;
 	gsl_histogram* histo = computeHisto(&gfit, nlayer);
-	if (!isrgb(&gfit)) clayer = strdup("bw");		//if B&W
+	if (!isrgb(&gfit)) clayer = "bw";		//if B&W
 	else clayer = vport_number_to_name(nlayer);
 	snprintf(name, 20, "histo_%s.dat",clayer);
 
 	FILE *f = g_fopen(name, "w");
 
 	if (f == NULL) {
-		free(clayer);
 		return 1;
 	}
 	for (i = 0; i < USHRT_MAX + 1; i++)
@@ -1138,7 +1137,6 @@ int process_histo(int nb){
 	fclose(f);
 	gsl_histogram_free(histo);
 	siril_log_message(_("The file %s has been created for the %s layer.\n"), name, clayer);
-	free(clayer);
 	return 0;
 }
 

@@ -31,7 +31,8 @@ void set_GUI_CAMERA();
 void set_GUI_photometry();
 
 int match_drawing_area_widget(GtkWidget *drawing_area, gboolean allow_rgb);
-char *vport_number_to_name(int);
+const char *vport_number_to_name(int);
+const char *untranslated_vport_number_to_name(int);
 void calculate_fwhm(GtkWidget *);
 void display_filename();
 void set_precision_switch();
