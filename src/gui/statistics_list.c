@@ -113,7 +113,7 @@ static void add_stats_to_list(imstats *stat[], int nblayer, data_type type, gboo
 			COLUMN_BVALUE, bvalue,
 			COLUMN_COLOR, first_colour[color],
 			-1);
-*/
+
 	sprintf(rvalue, "%lu", stat[RLAYER]->total);
 	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, "%lu", stat[GLAYER]->total);
@@ -130,7 +130,7 @@ static void add_stats_to_list(imstats *stat[], int nblayer, data_type type, gboo
 			COLUMN_BVALUE, bvalue,
 			COLUMN_COLOR, second_colour[color],
 			-1);
-
+*/
 	/** Mean */
 	sprintf(rvalue, format, stat[RLAYER]->mean / normValue[RLAYER]);
 	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
