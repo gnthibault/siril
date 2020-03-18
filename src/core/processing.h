@@ -65,6 +65,8 @@ struct generic_seq_args {
 
 	/** some processing may create a new image sequence */
 	gboolean has_output;
+	/** the type of the created sequence, for disk space checks only */
+	data_type output_type;
 	/** output files: prefix for the new sequence and automatic loading */
 	const char *new_seq_prefix;
 	/** flag to load or not a new sequence */

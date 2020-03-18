@@ -195,6 +195,7 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 			size *= 3;
 		if (test_available_space(size))
 			return 1;
+		// another generic disk check is done in the generic function after this one
 
 		// handling SER
 		if (ser_prepare_hook(args))
@@ -321,6 +322,7 @@ void start_sequence_preprocessing(struct preprocessing_data *prepro) {
 	args->stop_on_error = TRUE;
 	args->description = _("Preprocessing");
 	args->has_output = TRUE;
+	args->output_type = DATA_USHORT; // we don't need it, minimize it
 	args->new_seq_prefix = prepro->ppprefix;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;

@@ -56,7 +56,7 @@ static void insertionSort_d(double a[], int n) {
  * @param a array to sort
  * @param n size of the array
  */
-void quicksort_d (double *a, int n) {
+void quicksort_d (double *a, long n) {
 	if (n <= 32) {
 		return insertionSort_d(a, n);
 	}
@@ -107,7 +107,7 @@ void quicksort_d (double *a, int n) {
  * @param a array to sort
  * @param n size of the array
  */
-void quicksort_f (float *a, int n) {
+void quicksort_f (float *a, long n) {
 	if (n <= 32) {
 		return insertionSort_f(a, n);
 	}
@@ -158,7 +158,7 @@ static void insertionSort_s(WORD a[], int n) {
  * @param a array to sort
  * @param n size of the array
  */
-void quicksort_s(WORD *a, int n) {
+void quicksort_s(WORD *a, long n) {
 	if (n <= 32) {
 		return insertionSort_s(a, n);
 	}

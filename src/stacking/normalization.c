@@ -95,13 +95,19 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 
 static int normalization_get_max_number_of_threads(sequence *seq) {
 	int max_memory_MB = get_max_memory_in_MB();
-	/* for DATA_USHORT, we have: the image (2), possibly rewrite without zeros (2), conversion to float (4)
-	 * for DATA_FLOAT, we have: the image (4)
+	/* Normalization uses IKSS computation in stats, which can be done only
+	 * on float data.
+	 * IKSS requires computing the MAD, which requires a copy of the float data.
+	 * for DATA_USHORT, we have: the image (2), (deactivated: possibly
+	 *   rewrite without zeros (2)), conversion to float for IKSS (4) and
+	 *   another float for MAD (4)
+	 * for DATA_FLOAT, we have: the image (4) used directly for IKSS and a
+	 * copy for MAD (4)
 	 */
 	uint64_t memory_per_image = seq->rx * seq->ry * seq->nb_layers;
 	if (get_data_type(seq->bitpix) == DATA_FLOAT)
-		memory_per_image *= sizeof(float);
-	else memory_per_image = 2 * memory_per_image * sizeof(WORD) + memory_per_image * sizeof(float);
+		memory_per_image *= 2 * sizeof(float);
+	else memory_per_image *= sizeof(WORD) + 2 * sizeof(float);
 	unsigned int memory_per_image_MB = memory_per_image / BYTES_IN_A_MB;
 
 	if (max_memory_MB < 0) {

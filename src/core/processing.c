@@ -82,6 +82,11 @@ gpointer generic_sequence_worker(gpointer p) {
 	 * This is mandatory for SER contiguous output. */
 	if (args->filtering_criterion) {
 		index_mapping = malloc(nb_frames * sizeof(int));
+		if (!index_mapping) {
+			PRINT_ALLOC_ERR;
+			args->retval = 1;
+			goto the_end;
+		}
 		for (input_idx = 0, frame = 0; input_idx < args->seq->number; input_idx++) {
 			if (!args->filtering_criterion(args->seq, input_idx, args->filtering_parameter)) {
 				continue;
@@ -95,8 +100,8 @@ gpointer generic_sequence_worker(gpointer p) {
 		}
 	}
 
-	if (args->has_output && !args->partial_image) {	// TODO partial, float
-		int64_t size = seq_compute_size(args->seq, nb_frames, DATA_USHORT);
+	if (args->has_output && !args->partial_image) {
+		int64_t size = seq_compute_size(args->seq, nb_frames, args->output_type);
 		if (test_available_space(size)) {
 			args->retval = 1;
 			goto the_end;

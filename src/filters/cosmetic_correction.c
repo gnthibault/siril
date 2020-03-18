@@ -52,17 +52,17 @@ static float getMedian5x5_float(float *buf, const int xx, const int yy, const in
 	int n = 0;
 	float value[24];
 	for (int y = yy - radius; y <= yy + radius; y += step) {
-    	if (y >= 0 && y < h) {
-	    	for (int x = xx - radius; x <= xx + radius; x += step) {
-		    	if (x >= 0 && x < w) {
-                // ^ limit to image bounds ^
-				    // exclude centre pixel v
-				    if (x != xx || y != yy) {
-					    value[n++] = buf[x + y * w];
-				    }
-			    }
-		    }
-    	}
+		if (y >= 0 && y < h) {
+			for (int x = xx - radius; x <= xx + radius; x += step) {
+				if (x >= 0 && x < w) {
+					// ^ limit to image bounds ^
+					// exclude centre pixel v
+					if (x != xx || y != yy) {
+						value[n++] = buf[x + y * w];
+					}
+				}
+			}
+		}
 	}
 	return quickmedian_float(value, n);
 }
@@ -323,6 +323,7 @@ void apply_cosmetic_to_sequence(struct cosmetic_data *cosme_args) {
 	args->stop_on_error = FALSE;
 	args->description = _("Cosmetic Correction");
 	args->has_output = TRUE;
+	args->output_type = get_data_type(args->seq->bitpix);
 	args->new_seq_prefix = cosme_args->seqEntry;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
@@ -407,24 +408,44 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
 	const float coldVal = doCold ? bkg - k : 0.0;
 	const float hotVal = doHot ? bkg + k1 : isFloat ? 1.f : 65535.f;
 	float *temp = malloc(width * height * sizeof(float));
+	if (!temp) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
+
+#ifndef _OPENMP
+	multithread = FALSE;
+#endif
+	if (com.max_thread == 1)
+		multithread = FALSE;
 
 	if (isFloat) {
+		if (multithread) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) if(multithread)
 #endif
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				temp[y * width + x] = fbuf[y * width + x];
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					temp[y * width + x] = fbuf[y * width + x];
+				}
 			}
+		} else {
+			// this should be faster in a single-threaded case
+			memcpy(temp, fbuf, width * height * sizeof(float));
 		}
 	} else {
+		if (multithread) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) if(multithread)
 #endif
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				temp[y * width + x] = buf[y * width + x];
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					temp[y * width + x] = (float) buf[y * width + x];
+				}
 			}
+		} else {
+			// this should be faster in a single-threaded case
+			memcpy(temp, fbuf, width * height * sizeof(WORD));
 		}
 	}
 	const int step = is_cfa ? 2 : 1;

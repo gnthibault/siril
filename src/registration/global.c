@@ -402,6 +402,7 @@ int register_star_alignment(struct registration_args *regargs) {
 	args->stop_on_error = FALSE;
 	args->description = _("Global star registration");
 	args->has_output = !regargs->translation_only;
+	args->output_type = get_data_type(args->seq->bitpix);
 	args->new_seq_prefix = regargs->prefix;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;

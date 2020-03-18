@@ -91,27 +91,6 @@ static double siril_stats_ushort_mad(WORD* data, const size_t n, const double m,
 	return mad;
 }
 
-static float siril_stats_float_mad(const float* data, const size_t n, const float median) {
-	size_t i;
-	float mad;
-	float *tmp = malloc(n * sizeof(float));
-	if (!tmp) {
-		PRINT_ALLOC_ERR;
-		return 0.0f; // TODO: check return value
-	}
-
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) if(n > 10000) private(i) schedule(static)
-#endif
-	for (i = 0; i < n; i++) {
-		tmp[i] = fabsf(data[i] - median);
-	}
-
-	mad = histogram_median_float(tmp, n, FALSE);
-	free(tmp);
-	return mad;
-}
-
 static double siril_stats_ushort_bwmv(const WORD* data, const size_t n,
 		const double mad, const double median) {
 
@@ -138,70 +117,6 @@ static double siril_stats_ushort_bwmv(const WORD* data, const size_t n,
 	}
 
 	return bwmv;
-}
-
-static float siril_stats_float_bwmv(const float* data, const size_t n,
-		const float mad, const float median) {
-
-	float bwmv = 0.f;
-	float up = 0.f, down = 0.f;
-	size_t i;
-
-	if (mad > 0.f) {
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) reduction(+:up,down)
-#endif
-		for (i = 0; i < n; i++) {
-			float yi, ai, yi2;
-
-			yi = (data[i] - median) / (9.f * mad);
-			yi2 = yi * yi;
-			ai = (fabsf(yi) < 1.f) ? 1.f : 0.f;
-
-			up += ai * SQR(data[i] - median) * SQR(SQR (1.f - yi2));
-			down += (ai * (1.f - yi2) * (1.f - 5.f * yi2));
-		}
-		bwmv = n * (up / (down * down));
-	}
-
-	return bwmv;
-}
-
-static int IKSS(float *data, int n, double *location, double *scale) {
-	size_t i, j;
-	float mad, s, s0, m, xlow, xhigh;
-
-	quicksort_f(data, n);	// this sort is mandatory
-	i = 0;
-	j = n;
-	s0 = 1.f;
-	for (;;) {
-		if (j - i < 1) {
-			*location = *scale = 0;
-			break;
-		}
-		m = (float) gsl_stats_float_median_from_sorted_data(data + i, 1, j - i);
-		mad = siril_stats_float_mad(data + i, j - i, m);
-		s = sqrtf(siril_stats_float_bwmv(data + i, j - i, mad, m));
-		if (s < 2E-23) {
-			*location = (double) m;
-			*scale = 0.0;
-			break;
-		}
-		if (((s0 - s) / s) < 10E-6) {
-			*location = (double) m;
-			*scale = 0.991 * s;
-			break;
-		}
-		s0 = s;
-		xlow = m - 4.f * s;
-		xhigh = m + 4.f * s;
-		while (data[i] < xlow)
-			i++;
-		while (data[j - 1] > xhigh)
-			j--;
-	}
-	return 0;
 }
 
 static WORD* reassign_to_non_null_data_ushort(WORD *data, long inputlen, long outputlen, int free_input) {
@@ -322,7 +237,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
-		siril_fits_img_stats_ushort(data, nx, ny, 1, 0, &stat->ngoodpix,
+		siril_fits_img_stats_ushort(data, nx, ny, 0, 0, &stat->ngoodpix,
 				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
 				NULL, NULL, NULL, multithread, &status);
 		if (status) {
@@ -338,8 +253,8 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	}
 
 	/* we exclude 0 if some computations remain to be done or copy data if
-	 * median has to be computed */
-	if (fit && (compute_median || ((option & STATS_IKSS) && stat->total != stat->ngoodpix))) {
+	 * median has to be computed (this is deactivated in the ngoodpix computation) */
+	if (fit && (compute_median || (option & STATS_IKSS)) && stat->total != stat->ngoodpix) {
 		data = reassign_to_non_null_data_ushort(data, stat->total, stat->ngoodpix, free_data);
 		if (!data) {
 			if (stat_is_local) free(stat);
@@ -406,13 +321,19 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 		}
 
 		/* we convert in the [0, 1] range */
+		float invertNormValue = (float)(1.0 / stat->normValue);
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) if (multithread) private(i) schedule(static)
 #endif
 		for (i = 0; i < stat->ngoodpix; i++) {
-			newdata[i] = (float) data[i] / (float) stat->normValue;
+			newdata[i] = (float) data[i] * invertNormValue;
 		}
-		IKSS(newdata, stat->ngoodpix, &stat->location, &stat->scale);
+		if (IKSS(newdata, stat->ngoodpix, &stat->location, &stat->scale, multithread)) {
+			if (stat_is_local) free(stat);
+			if (free_data) free(data);
+			free(newdata);
+			return NULL;
+		}
 		/* go back to the original range */
 		stat->location *= stat->normValue;
 		stat->scale *= stat->normValue;

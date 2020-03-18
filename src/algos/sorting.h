@@ -4,9 +4,9 @@
 #include "core/siril.h"	// for types
 
 /* the quicksorts */
-void quicksort_d (double *a, int n);
-void quicksort_f (float *a, int n);
-void quicksort_s (WORD *a, int n);
+void quicksort_d (double *a, long n);
+void quicksort_f (float *a, long n);
+void quicksort_s (WORD *a, long n);
 
 /* Quick median based on quick select */
 double quickmedian (WORD *a, int n);

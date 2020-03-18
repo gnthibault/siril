@@ -64,6 +64,7 @@ void apply_banding_to_sequence(struct banding_data *banding_args) {
 	args->stop_on_error = FALSE;
 	args->description = _("Banding Reduction");
 	args->has_output = TRUE;
+	args->output_type = get_data_type(args->seq->bitpix);
 	args->new_seq_prefix = banding_args->seqEntry;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
@@ -338,7 +339,7 @@ void on_button_apply_fixbanding_clicked(GtkButton *button, gpointer user_data) {
 
 	if (get_thread_run()) {
 		siril_log_message(
-				_(	"Another task is already in progress, ignoring new request.\n"));
+				_("Another task is already in progress, ignoring new request.\n"));
 		return;
 	}
 

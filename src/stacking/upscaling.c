@@ -177,6 +177,7 @@ int upscale_sequence(struct stacking_args *stackargs) {
 	args->stop_on_error = TRUE;
 	args->description = _("Up-scaling sequence for stacking");
 	args->has_output = TRUE;
+	args->output_type = get_data_type(args->seq->bitpix);
 	args->new_seq_prefix = TMP_UPSCALED_PREFIX;
 	args->load_new_sequence = FALSE;
 	args->force_ser_output = FALSE;

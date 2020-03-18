@@ -71,7 +71,7 @@ static double siril_stats_float_mad(const float *data, const size_t n, const dou
 	float *tmp = buffer ? buffer : malloc(n * sizeof(float));
 	if (!tmp) {
 		PRINT_ALLOC_ERR;
-		return 0.0f;	// TODO: check return value
+		return 0.0;
 	}
 
 #ifdef _OPENMP
@@ -115,7 +115,7 @@ static double siril_stats_float_bwmv(const float* data, const size_t n,
 	return bwmv;
 }
 
-static int IKSS(float *data, int n, double *location, double *scale, gboolean multithread) {
+int IKSS(float *data, long n, double *location, double *scale, gboolean multithread) {
 	size_t i, j;
 	double mad, s, s0, m;
 	float xlow, xhigh;
@@ -125,6 +125,10 @@ static int IKSS(float *data, int n, double *location, double *scale, gboolean mu
 	j = n;
 	s0 = 1;
 	float *buffer = malloc(n * sizeof(float));
+	if (!buffer) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
 	for (;;) {
 		if (j - i < 1) {
 			*location = *scale = 0;
@@ -132,6 +136,10 @@ static int IKSS(float *data, int n, double *location, double *scale, gboolean mu
 		}
 		m = gsl_stats_float_median_from_sorted_data(data + i, 1, j - i);
 		mad = siril_stats_float_mad(data + i, j - i, m, multithread, buffer);
+		if (mad == 0.0f) {
+			free(buffer);
+			return 1;
+		}
 		s = sqrt(siril_stats_float_bwmv(data + i, j - i, mad, m, multithread));
 		if (s < 2E-23) {
 			*location = m;
@@ -260,7 +268,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 #if 0
 	/* we exclude 0 if some computations remain to be done or copy data if
 	 * median has to be computed */
-	if (fit && (compute_median || ((option & STATS_IKSS) && stat->total != stat->ngoodpix))) {
+	if (fit && (compute_median || (option & STATS_IKSS)) && stat->total != stat->ngoodpix) {
 		data = reassign_to_positive_data_float(data, stat->total, stat->ngoodpix, free_data);
 		if (!data) {
 			if (stat_is_local) free(stat);
@@ -318,7 +326,11 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
-		IKSS(data, stat->ngoodpix, &stat->location, &stat->scale, multithread);
+		if (IKSS(data, stat->ngoodpix, &stat->location, &stat->scale, multithread)) {
+			if (stat_is_local) free(stat);
+			if (free_data) free(data);
+			return NULL;
+		}
 	}
 
 	if (free_data) free(data);

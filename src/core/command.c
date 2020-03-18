@@ -2121,7 +2121,7 @@ int process_register(int nb) {
 		remove_prefixed_sequence_files(reg_args->seq, reg_args->prefix);
 
 		int nb_frames = reg_args->process_all_frames ? reg_args->seq->number : reg_args->seq->selnum;
-		int64_t size = seq_compute_size(reg_args->seq, nb_frames, DATA_USHORT);
+		int64_t size = seq_compute_size(reg_args->seq, nb_frames, get_data_type(seq->bitpix));
 		if (reg_args->x2upscale)
 			size *= 4;
 		if (test_available_space(size) > 0) {
