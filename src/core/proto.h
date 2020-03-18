@@ -167,7 +167,7 @@ int threshlo(fits *fit, WORD level);
 int threshhi(fits *fit, WORD level);
 int nozero(fits *fit, WORD level);
 int unsharp(fits*, double sigma, double mult, gboolean verbose);
-double entropy(fits *fit, int layer, rectangle *area, imstats *opt_stats);
+float entropy(fits *fit, int layer, rectangle *area, imstats *opt_stats);
 int loglut(fits *fit);
 int ddp(fits *a, int lev, float coef, float sig);
 int visu(fits *fit, int low, int high);

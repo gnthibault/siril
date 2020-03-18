@@ -87,17 +87,16 @@ char *word[MAX_COMMAND_WORDS];	// NULL terminated
 
 int process_load(int nb){
 	char filename[256];
-	int retval, i;
 	
 	strncpy(filename, word[1], 250);
 	filename[250] = '\0';
 	
-	for (i = 1; i < nb - 1; ++i) {
+	for (int i = 1; i < nb - 1; ++i) {
 		strcat(filename, " ");
 		strcat(filename, word[i + 1]);
 	}
 	expand_home_in_filename(filename, 256);
-	retval = open_single_image(filename);
+	int retval = open_single_image(filename);
 	return retval;
 }
 
@@ -128,9 +127,6 @@ int process_satu(int nb){
 }
 
 int process_save(int nb){
-	gchar *filename;
-	int retval;
-	
 	if (sequence_is_loaded() && !single_image_is_loaded()) {
 		gfit.hi = com.seq.layers[RLAYER].hi;
 		gfit.lo = com.seq.layers[RLAYER].lo;
@@ -142,9 +138,9 @@ int process_save(int nb){
 		return 1;
 	}
 
-	filename = g_strdup(word[1]);
+	gchar *filename = g_strdup(word[1]);
 	set_cursor_waiting(TRUE);
-	retval = savefits(filename, &(gfit));
+	int retval = savefits(filename, &(gfit));
 	set_precision_switch();
 	set_cursor_waiting(FALSE);
 	g_free(filename);
@@ -152,11 +148,9 @@ int process_save(int nb){
 }
 
 int process_savebmp(int nb){
-	gchar *filename;
-	
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	filename = g_strdup_printf("%s.bmp", word[1]);
+	gchar *filename = g_strdup_printf("%s.bmp", word[1]);
 
 	set_cursor_waiting(TRUE);
 	savebmp(filename, &(gfit));
@@ -167,8 +161,6 @@ int process_savebmp(int nb){
 
 #ifdef HAVE_LIBJPEG
 int process_savejpg(int nb){
-	gchar *filename;
-
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	int quality = 100;
@@ -176,7 +168,7 @@ int process_savejpg(int nb){
 	if ((nb == 3) && atoi(word[2]) <= 100 && atoi(word[2]) > 0)
 		quality = atoi(word[2]);
 
-	filename = g_strdup_printf("%s.jpg", word[1]);
+	gchar *filename = g_strdup_printf("%s.jpg", word[1]);
 
 	set_cursor_waiting(TRUE);
 	savejpg(filename, &gfit, quality);
@@ -188,15 +180,13 @@ int process_savejpg(int nb){
 
 #ifdef HAVE_LIBPNG
 int process_savepng(int nb){
-	gchar *filename;
-	uint32_t bytes_per_sample;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	filename = g_strdup_printf("%s.png", word[1]);
+	gchar *filename = g_strdup_printf("%s.png", word[1]);
 
 	set_cursor_waiting(TRUE);
-	bytes_per_sample = gfit.orig_bitpix != BYTE_IMG ? 2 : 1;
+	uint32_t bytes_per_sample = gfit.orig_bitpix != BYTE_IMG ? 2 : 1;
 	savepng(filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
 	set_cursor_waiting(FALSE);
 	g_free(filename);
@@ -206,7 +196,6 @@ int process_savepng(int nb){
 
 #ifdef HAVE_LIBTIFF
 int process_savetif(int nb){
-	gchar *filename;
 	uint16 bitspersample = 16;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded()))
@@ -214,7 +203,7 @@ int process_savetif(int nb){
 
 	if (strcasecmp(word[0], "savetif8") == 0)
 		bitspersample = 8;
-	filename = g_strdup_printf("%s.tif", word[1]);
+	gchar *filename = g_strdup_printf("%s.tif", word[1]);
 	set_cursor_waiting(TRUE);
 	savetif(filename, &gfit, bitspersample);
 	set_cursor_waiting(FALSE);
@@ -231,7 +220,6 @@ int process_savepnm(int nb){
 }
 
 int process_imoper(int nb){
-	int retval;
 	fits fit = { 0 };
 	if (!single_image_is_loaded()) return 1;
 	if (readfits(word[1], &fit, NULL, TRUE)) return -1;
@@ -259,7 +247,7 @@ int process_imoper(int nb){
 			clearfits(&fit);
 			return 1;
 	}
-	retval = imoper(&gfit, &fit, oper, TRUE);
+	int retval = imoper(&gfit, &fit, oper, TRUE);
 
 	clearfits(&fit);
 	adjust_cutoff_from_updated_gfit();
@@ -286,11 +274,10 @@ int process_addmax(int nb){
 
 int process_fdiv(int nb){
 	// combines an image division and a scalar multiplication.
-	float norm;
 	fits fit = { 0 };
 	if (!single_image_is_loaded()) return 1;
 
-	norm = atof(word[2]);
+	float norm = atof(word[2]);
 	if (readfits(word[1], &fit, NULL, TRUE)) return -1;
 	siril_fdiv(&gfit, &fit, norm, TRUE);
 
@@ -302,10 +289,9 @@ int process_fdiv(int nb){
 }
 
 int process_fmul(int nb){
-	float coeff;
 	if (!single_image_is_loaded()) return 1;
 
-	coeff = atof(word[1]);
+	float coeff = atof(word[1]);
 	if (coeff <= 0.f) {
 		siril_log_message(_("Multiplying by a coefficient less than or equal to 0 is not possible.\n"));
 		return 1;
@@ -320,7 +306,7 @@ int process_fmul(int nb){
 
 int process_entropy(int nb){
 	rectangle area;
-	double e;
+	float e;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
@@ -331,7 +317,7 @@ int process_entropy(int nb){
 	else {
 		e = entropy(&gfit, com.cvport, NULL, NULL);
 	}
-	siril_log_message(_("Entropy: %.3lf\n"), e);
+	siril_log_message(_("Entropy: %.3f\n"), e);
 	return 0;
 }
 
