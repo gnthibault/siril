@@ -631,13 +631,15 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 			return;
 		}
 		/* remove background */
-		siril_log_message(_("Background extraction from channel %d.\n"), channel);
+		char *c_name = vport_number_to_name(channel);
+		siril_log_message(_("Background extraction from channel %s.\n"), c_name);
 		remove_gradient(image[channel], background, gfit.rx * gfit.ry, correction);
 		convert_img_to_fits(image[channel], &gfit, channel);
 
 		/* free memory */
 		free(image[channel]);
 		free(background);
+		free(c_name);
 	}
 
 	invalidate_stats_from_fit(&gfit);

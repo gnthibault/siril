@@ -709,13 +709,13 @@ void update_photometry_interface() {
 char *vport_number_to_name(int vport) {
 	switch (vport) {
 		case RED_VPORT:
-			return strdup("red");
+			return strdup(_("red"));
 		case GREEN_VPORT:
-			return strdup("green");
+			return strdup(_("green"));
 		case BLUE_VPORT:
-			return strdup("blue");
+			return strdup(_("blue"));
 		case RGB_VPORT:
-			return strdup("rgb");
+			return strdup(_("rgb"));
 	}
 	return NULL;
 }

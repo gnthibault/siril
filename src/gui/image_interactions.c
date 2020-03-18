@@ -400,13 +400,27 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 	return FALSE;
 }
 
+static char *untranslated_vport_number_to_name(int vport) {
+	switch (vport) {
+		case RED_VPORT:
+			return strdup("red");
+		case GREEN_VPORT:
+			return strdup("green");
+		case BLUE_VPORT:
+			return strdup("blue");
+		case RGB_VPORT:
+			return strdup("rgb");
+	}
+	return NULL;
+}
+
 gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		GdkEventMotion *event, gpointer user_data) {
 
 	fits *fit = &(gfit);
 	double zoom = get_zoom_val();
 	gint zoomedX = 0, zoomedY = 0;
-	char *suffix = vport_number_to_name(com.cvport);
+	char *suffix = untranslated_vport_number_to_name(com.cvport);
 	gchar *label = g_strdup_printf("labeldensity_%s", suffix);
 	free(suffix);
 	if (fit->type == DATA_UNSUPPORTED) return FALSE;
