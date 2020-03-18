@@ -94,7 +94,9 @@ static void add_stats_to_list(imstats *stat[], int nblayer, data_type type, gboo
 		sprintf(format, "%%.1lf");
 	}
 
-	sprintf(rvalue, "%.4lf", ((double) stat[RLAYER]->ngoodpix / (double) stat[RLAYER]->total) * 100.0);
+	color = (com.combo_theme == 0) ? 1 : 0;
+
+/*	sprintf(rvalue, "%.4lf", ((double) stat[RLAYER]->ngoodpix / (double) stat[RLAYER]->total) * 100.0);
 	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, "%.4lf", ((double) stat[GLAYER]->ngoodpix / (double) stat[GLAYER]->total) * 100.0);
 		sprintf(bvalue, "%.4lf", ((double) stat[BLAYER]->ngoodpix / (double) stat[BLAYER]->total) * 100.0);
@@ -103,7 +105,6 @@ static void add_stats_to_list(imstats *stat[], int nblayer, data_type type, gboo
 		sprintf(bvalue, "--");
 	}
 
-	color = (com.combo_theme == 0) ? 1 : 0;
 
 	gtk_list_store_append(list_store, &iter);
 	gtk_list_store_set(list_store, &iter, COLUMN_NAME, _(statName[0]),
@@ -112,7 +113,7 @@ static void add_stats_to_list(imstats *stat[], int nblayer, data_type type, gboo
 			COLUMN_BVALUE, bvalue,
 			COLUMN_COLOR, first_colour[color],
 			-1);
-
+*/
 	sprintf(rvalue, "%lu", stat[RLAYER]->total);
 	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, "%lu", stat[GLAYER]->total);
