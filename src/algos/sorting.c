@@ -88,7 +88,7 @@ void quicksort_d (double *a, long n) {
  * @param a array to sort
  * @param n size of the array
  */
- static void insertionSort_f(float a[], int n) {
+ static void insertionSort_f(float a[], long n) {
 	for (int i = 1; i < n; i++) {
 		const float val = a[i];
 		int j = i - 1;
