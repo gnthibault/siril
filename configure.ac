@@ -110,7 +110,7 @@ dnl check GTK
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.17.0)
 
 dnl check fftw3
-PKG_CHECK_MODULES(FFTW, [fftw3f])
+PKG_CHECK_MODULES(FFTW, [fftw3])
 
 dnl check GNU Scientific Library
 PKG_CHECK_MODULES(GSL, [gsl < 2],
