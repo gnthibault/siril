@@ -194,7 +194,6 @@ static unsigned long long update_used_RAM_memory() {
 gboolean update_displayed_memory() {
 	set_GUI_MEM(update_used_RAM_memory());
 	set_GUI_DiskSpace((double)find_space(com.wd));
-
 	return TRUE;
 }
 
@@ -239,6 +238,8 @@ int test_available_space(int64_t req_size) {
 		g_free(missing);
 		return 1;
 	}
+	siril_debug_print("Tested free space ok: %lld for %lld MB free\n",
+			req_size / BYTES_IN_A_MB, free_space / BYTES_IN_A_MB);
 	return 0;
 }
 
@@ -318,7 +319,7 @@ int get_available_memory_in_MB() {
 	if (!has_available)
 		return 0;
 
-	return (int) (available / (uint64_t)1048576);
+	return (int) (available / (uint64_t)BYTES_IN_A_MB);
 }
 #elif defined(OS_OSX)
 int get_available_memory_in_MB() {
@@ -338,7 +339,7 @@ int get_available_memory_in_MB() {
 				(int64_t)vm_stats.inactive_count +
 				(int64_t)vm_stats.wire_count) * (int64_t)page_size;
 
-		mem = (int) ((unused_memory) / 1048576);
+		mem = (int) ((unused_memory) / BYTES_IN_A_MB);
 	}
 	return mem;
 }
@@ -369,7 +370,7 @@ int get_available_memory_in_MB() {
 	MEMORYSTATUSEX memStatusEx = { 0 };
 	memStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
 	if (GlobalMemoryStatusEx(&memStatusEx)) {
-		mem = (int) (memStatusEx.ullAvailPhys / 1048576);
+		mem = (int) (memStatusEx.ullAvailPhys / BYTES_IN_A_MB);
 	}
 	return mem;
 }
