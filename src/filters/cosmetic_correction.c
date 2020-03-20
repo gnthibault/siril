@@ -96,6 +96,35 @@ static WORD* getAverage3x3Line(WORD *buf, const int yy, const int w,
 	return cpyline;
 }
 
+static WORD* getAverage3x3Line_float(float *buf, const int yy, const int w,
+		const int h, gboolean is_cfa) {
+	int step, radius, x, xx, y;
+	float *cpyline;
+
+	if (is_cfa)
+		step = radius = 2;
+	else
+		step = radius = 1;
+
+	cpyline = calloc(w, sizeof(float));
+	for (xx = 0; xx < w; ++xx) {
+		int n = 0;
+		float value = 0.f;
+		for (y = yy - radius; y <= yy + radius; y += step) {
+			if (y != yy) {	// we skip the line
+				for (x = xx - radius; x <= xx + radius; x += step) {
+					if (y >= 0 && y < h && x >= 0 && x < w) {
+						value += buf[x + y * w];
+						n++;
+					}
+				}
+			}
+		}
+		cpyline[xx] = (value / n);
+	}
+	return cpyline;
+}
+
 static double getAverage3x3_float(float *buf, const int xx, const int yy,
 		const int w, const int h, gboolean is_cfa) {
 
@@ -259,25 +288,35 @@ int cosmeticCorrOnePoint(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 
 int cosmeticCorrOneLine(fits *fit, deviant_pixel dev, gboolean is_cfa) {
 	if (fit->type == DATA_FLOAT) {
-		siril_log_color_message(
-				_(
-						"Cosmetic correction for one line is not supported yet in 32-bit images\n"),
-				"red");
-		return 1;
+		float *buf = fit->fpdata[RLAYER];
+		float *line, *newline;
+		int width = fit->rx;
+		int height = fit->ry;
+		int row = (int) dev.p.y;
+
+		line = buf + row * width;
+		newline = getAverage3x3Line_float(buf, row, width, height, is_cfa);
+		memcpy(line, newline, width * sizeof(float));
+
+		free(newline);
+		//invalidate_stats_from_fit(fit);
+		return 0;
+	} else if (fit->type == DATA_USHORT) {
+		WORD *buf = fit->pdata[RLAYER];
+		WORD *line, *newline;
+		int width = fit->rx;
+		int height = fit->ry;
+		int row = (int) dev.p.y;
+
+		line = buf + row * width;
+		newline = getAverage3x3Line(buf, row, width, height, is_cfa);
+		memcpy(line, newline, width * sizeof(WORD));
+
+		free(newline);
+		//invalidate_stats_from_fit(fit);
+		return 0;
 	}
-	WORD *buf = fit->pdata[RLAYER];
-	WORD *line, *newline;
-	int width = fit->rx;
-	int height = fit->ry;
-	int row = (int) dev.p.y;
-
-	line = buf + row * width;
-	newline = getAverage3x3Line(buf, row, width, height, is_cfa);
-	memcpy(line, newline, width * sizeof(WORD));
-
-	free(newline);
-	//invalidate_stats_from_fit(fit);
-	return 0;
+	return 1;
 }
 
 int cosmeticCorrection(fits *fit, deviant_pixel *dev, int size, gboolean is_cfa) {
