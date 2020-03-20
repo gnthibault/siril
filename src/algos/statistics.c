@@ -46,6 +46,15 @@
 #include "statistics.h"
 #include "statistics_float.h"
 
+/* Activating nullcheck will treat pixels with 0 value as null and remove them
+ * from stats computation. This can be useful when a large area is black, but
+ * this shouldn't happen often. Maybe we could detect it instead of hardcoding
+ * it...
+ * Deactivating this will take less memory and make a faster statistics
+ * computation. ngoodpix will be equal to total if deactivated.
+ * Set to 0 to deactivate or 1 to activate. */
+#define ACTIVATE_NULLCHECK 0
+
 static void stats_set_default_values(imstats *stat);
 
 // copies the area of an image into the memory buffer data
@@ -237,7 +246,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
-		siril_fits_img_stats_ushort(data, nx, ny, 0, 0, &stat->ngoodpix,
+		siril_fits_img_stats_ushort(data, nx, ny, ACTIVATE_NULLCHECK, 0, &stat->ngoodpix,
 				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
 				NULL, NULL, NULL, multithread, &status);
 		if (status) {

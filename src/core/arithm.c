@@ -33,8 +33,12 @@
 static int soper_ushort_to_ushort(fits *a, float scalar, image_operator oper) {
 	WORD *data;
 	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
-	g_assert(n > 0);
+	if (!n) return 1;
 	data = a->data;
+	if (oper == OPER_DIV) {
+		scalar = 1.0f / scalar;
+		oper = OPER_MUL;
+	}
 
 	switch (oper) {
 		case OPER_ADD:
@@ -50,13 +54,9 @@ static int soper_ushort_to_ushort(fits *a, float scalar, image_operator oper) {
 			}
 			break;
 		case OPER_MUL:
+		default:
 			for (i = 0; i < n; ++i) {
 				data[i] = roundf_to_WORD((float)data[i] * scalar);
-			}
-			break;
-		case OPER_DIV:
-			for (i = 0; i < n; ++i) {
-				data[i] = roundf_to_WORD((float)data[i] / scalar);
 			}
 			break;
 	}
@@ -68,12 +68,16 @@ static int soper_ushort_to_float(fits *a, float scalar, image_operator oper) {
 	WORD *data;
 	float *result;
 	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
-	g_assert(n > 0);
+	if (!n) return 1;
 	data = a->data;
 	result = malloc(n * sizeof(float));
 	if (!result) {
 		PRINT_ALLOC_ERR;
 		return 1;
+	}
+	if (oper == OPER_DIV) {
+		scalar = 1.0f / scalar;
+		oper = OPER_MUL;
 	}
 
 	switch (oper) {
@@ -90,15 +94,10 @@ static int soper_ushort_to_float(fits *a, float scalar, image_operator oper) {
 			}
 			break;
 		case OPER_MUL:
+		default:
 			for (i = 0; i < n; ++i) {
 				float pixel = ushort_to_float_bitpix(a, data[i]);
 				result[i] = pixel * scalar;
-			}
-			break;
-		case OPER_DIV:
-			for (i = 0; i < n; ++i) {
-				float pixel = ushort_to_float_bitpix(a, data[i]);
-				result[i] = pixel / scalar;
 			}
 			break;
 	}
@@ -109,8 +108,12 @@ static int soper_ushort_to_float(fits *a, float scalar, image_operator oper) {
 static int soper_float(fits *a, float scalar, image_operator oper) {
 	float *data;
 	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
-	g_assert(n > 0);
+	if (!n) return 1;
 	data = a->fdata;
+	if (oper == OPER_DIV) {
+		scalar = 1.0f / scalar;
+		oper = OPER_MUL;
+	}
 
 	switch (oper) {
 		case OPER_ADD:
@@ -124,13 +127,9 @@ static int soper_float(fits *a, float scalar, image_operator oper) {
 			}
 			break;
 		case OPER_MUL:
+		default:
 			for (i = 0; i < n; ++i) {
 				data[i] = data[i] * scalar;
-			}
-			break;
-		case OPER_DIV:
-			for (i = 0; i < n; ++i) {
-				data[i] = data[i] / scalar;
 			}
 			break;
 	}
