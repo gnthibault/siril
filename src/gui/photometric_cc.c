@@ -29,15 +29,13 @@
 #include <math.h>
 #include <float.h>
 #include <gsl/gsl_statistics.h>
-#include <gsl/gsl_sort.h>
-#include <gsl/gsl_version.h>
 
-#include "photometric_cc.h"
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
 #include "core/undo.h"
 #include "core/OS_utils.h"
+#include "algos/sorting.h"
 #include "algos/statistics.h"
 #include "algos/photometry.h"
 #include "algos/PSF.h"
@@ -49,6 +47,8 @@
 #include "gui/progress_and_log.h"
 #include "gui/histogram.h"
 #include "gui/dialogs.h"
+
+#include "photometric_cc.h"
 
 enum {
 	RED, GREEN, BLUE
@@ -113,12 +113,11 @@ static void start_photometric_cc() {
 
 static void read_photometry_cc_file(FILE *BV_file, fitted_PSF **stars, int *nb_stars) {
 	char line[512];
-	fitted_PSF *star;
 	int i = 0;
 
 	while (fgets(line, 512, BV_file) != NULL) {
 		int tmp;
-		star = malloc(sizeof(fitted_PSF));
+		fitted_PSF *star = malloc(sizeof(fitted_PSF));
 
 		sscanf(line, "%d %lf %lf %lf\n", &tmp, &(star->xpos), &(star->ypos), &(star->BV));
 
@@ -129,47 +128,45 @@ static void read_photometry_cc_file(FILE *BV_file, fitted_PSF **stars, int *nb_s
 	*nb_stars = i;
 }
 
-static void bv2rgb(double *r, double *g, double *b, double bv) { // RGB <0,1> <- BV <-0.4,+2.0> [-]
-	double t;
-	*r = 0.0;
-	*g = 0.0;
-	*b = 0.0;
-	if (bv < -0.4)
-		bv = -0.4;
-	if (bv > 2.0)
-		bv = 2.0;
-	if ((bv >= -0.40) && (bv < 0.00)) {
-		t = (bv + 0.40) / (0.00 + 0.40);
-		*r = 0.61 + (0.11 * t) + (0.1 * t * t);
-	} else if ((bv >= 0.00) && (bv < 0.40)) {
-		t = (bv - 0.00) / (0.40 - 0.00);
-		*r = 0.83 + (0.17 * t);
-	} else if ((bv >= 0.40) && (bv < 2.10)) {
-//		t = (bv - 0.40) / (2.10 - 0.40);
-		*r = 1.00;
+static void bv2rgb(float *r, float *g, float *b, float bv) { // RGB <0,1> <- BV <-0.4,+2.0> [-]
+	float t;
+	*r = 0.f;
+	*g = 0.f;
+	*b = 0.f;
+	if (bv < -0.4f)
+		bv = -0.4f;
+	if (bv > 2.f)
+		bv = 2.f;
+	if ((bv >= -0.4f) && (bv < 0.0f)) {
+		t = (bv + 0.4f) / (0.f + 0.4f);
+		*r = 0.61f + (0.11f * t) + (0.1f * t * t);
+	} else if ((bv >= 0.f) && (bv < 0.4f)) {
+		t = (bv - 0.0f) / (0.4f - 0.f);
+		*r = 0.83f + (0.17f * t);
+	} else if ((bv >= 0.4f) && (bv < 2.1f)) {
+		*r = 1.f;
 	}
-	if ((bv >= -0.40) && (bv < 0.00)) {
-		t = (bv + 0.40) / (0.00 + 0.40);
-		*g = 0.70 + (0.07 * t) + (0.1 * t * t);
-	} else if ((bv >= 0.00) && (bv < 0.40)) {
-		t = (bv - 0.00) / (0.40 - 0.00);
-		*g = 0.87 + (0.11 * t);
-	} else if ((bv >= 0.40) && (bv < 1.60)) {
-		t = (bv - 0.40) / (1.60 - 0.40);
-		*g = 0.98 - (0.16 * t);
-	} else if ((bv >= 1.60) && (bv < 2.00)) {
-		t = (bv - 1.60) / (2.00 - 1.60);
-		*g = 0.82 - (0.5 * t * t);
+	if ((bv >= -0.4f) && (bv < 0.f)) {
+		t = (bv + 0.4f) / (0.f + 0.4f);
+		*g = 0.7f + (0.07f * t) + (0.1f * t * t);
+	} else if ((bv >= 0.f) && (bv < 0.4f)) {
+		t = (bv - 0.f) / (0.4f - 0.f);
+		*g = 0.87f + (0.11f * t);
+	} else if ((bv >= 0.4f) && (bv < 1.6f)) {
+		t = (bv - 0.4f) / (1.6f - 0.4f);
+		*g = 0.98f - (0.16f * t);
+	} else if ((bv >= 1.6f) && (bv < 2.f)) {
+		t = (bv - 1.6f) / (2.f - 1.6f);
+		*g = 0.82f - (0.5f * t * t);
 	}
-	if ((bv >= -0.40) && (bv < 0.40)) {
-//		t = (bv + 0.40) / (0.40 + 0.40);
-		*b = 1.00;
-	} else if ((bv >= 0.40) && (bv < 1.50)) {
-		t = (bv - 0.40) / (1.50 - 0.40);
-		*b = 1.00 - (0.47 * t) + (0.1 * t * t);
-	} else if ((bv >= 1.50) && (bv < 1.94)) {
-		t = (bv - 1.50) / (1.94 - 1.50);
-		*b = 0.63 - (0.6 * t * t);
+	if ((bv >= -0.4f) && (bv < 0.4f)) {
+		*b = 1.f;
+	} else if ((bv >= 0.4f) && (bv < 1.5f)) {
+		t = (bv - 0.4f) / (1.5f - 0.4f);
+		*b = 1.f - (0.47f * t) + (0.1f * t * t);
+	} else if ((bv >= 1.5f) && (bv < 1.94f)) {
+		t = (bv - 1.5f) / (1.94f - 1.5f);
+		*b = 0.63f - (0.6f * t * t);
 	}
 }
 
@@ -196,108 +193,88 @@ static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits
 	return 0;
 }
 
-static double Qn0(const double sorted_data[], const size_t stride, const size_t n) {
-	double Qn;
-#if (GSL_MAJOR_VERSION <= 2) || ((GSL_MAJOR_VERSION == 2) && GSL_MINOR_VERSION < 5)
+static float Qn0(const float sorted_data[], const size_t stride, const size_t n) {
 	const size_t wsize = n * (n - 1) / 2;
 	const size_t n_2 = n / 2;
 	const size_t k = ((n_2 + 1) * n_2) / 2;
-	double *work;
 	size_t idx = 0;
-	size_t i, j;
 
 	if (n < 2)
 		return (0.0);
 
-	work = malloc(wsize * sizeof(double));
+	float *work = malloc(wsize * sizeof(float));
 
-	for (i = 0; i < n; ++i) {
-		for (j = i + 1; j < n; ++j)
-			work[idx++] = fabs(sorted_data[i] - sorted_data[j]);
+	for (size_t i = 0; i < n; ++i) {
+		for (size_t j = i + 1; j < n; ++j)
+			work[idx++] = fabsf(sorted_data[i] - sorted_data[j]);
 	}
 
-	gsl_sort(work, 1, idx);
-	Qn = work[k - 1];
+	quickmedian_float(work, idx);
+	float Qn = work[k - 1];
 
 	free(work);
-#else
-	double *work = malloc(3 * n * sizeof(double));
-	int *work_int = malloc(5 * n * sizeof(int));
-
-	Qn = gsl_stats_Qn0_from_sorted_data(sorted_data, stride, n, work, work_int);
-	free(work);
-	free(work_int);
-#endif
 	return Qn;
 }
 
-static double siril_stats_trmean_from_sorted_data(const double trim,
-		const double sorted_data[], const size_t stride, const size_t size) {
-#if (GSL_MAJOR_VERSION <= 2) || ((GSL_MAJOR_VERSION == 2) && GSL_MINOR_VERSION < 5)
-	if (trim >= 0.5) {
-		return gsl_stats_median_from_sorted_data(sorted_data, stride, size);
+static float siril_stats_trmean_from_sorted_data(const float trim,
+		const float sorted_data[], const size_t stride, const size_t size) {
+	if (trim >= 0.5f) {
+		return (float) gsl_stats_float_median_from_sorted_data(sorted_data, stride, size);
 	} else {
-		size_t ilow = (size_t) floor(trim * size);
+		size_t ilow = (size_t) floorf(trim * size);
 		size_t ihigh = size - ilow - 1;
-		double mean = 0.0;
-		double k = 0.0;
-		size_t i;
+		float mean = 0.f;
+		float k = 0.f;
 
 		/* compute mean of middle samples in [ilow,ihigh] */
-		for (i = ilow; i <= ihigh; ++i) {
-			double delta = sorted_data[i * stride] - mean;
-			k += 1.0;
+		for (size_t i = ilow; i <= ihigh; ++i) {
+			float delta = sorted_data[i * stride] - mean;
+			k += 1.f;
 			mean += delta / k;
 		}
-
 		return mean;
 	}
 }
-#else
-	return gsl_stats_trmean_from_sorted_data(trim, sorted_data, stride, size);
-}
-#endif
 
-static double siril_stats_robust_mean(const double sorted_data[],
+static float siril_stats_robust_mean(const float sorted_data[],
 		const size_t stride, const size_t size) {
-	double mx = gsl_stats_median_from_sorted_data(sorted_data, stride, size);
-	double sx = 2.2219 * Qn0(sorted_data, 1, size);
-	double *x, mean;
+	float mx = (float) gsl_stats_float_median_from_sorted_data(sorted_data, stride, size);
+	float sx = 2.2219f * Qn0(sorted_data, 1, size);
+	float *x, mean;
 	int i, j;
 
-	x = malloc(size * sizeof(double));
+	x = malloc(size * sizeof(float));
 	for (i = 0, j = 0; i < size; ++i) {
-		if (fabs(sorted_data[i] - mx) < 3 * sx) {
+		if (fabsf(sorted_data[i] - (float) mx) < 3 * (float) sx) {
 			x[j++] = sorted_data[i];
 		}
 	}
 	/* not enough stars, try something anyway */
 	if (j < 5) {
-		mean = siril_stats_trmean_from_sorted_data(0.3, sorted_data, stride,
+		mean = (float) siril_stats_trmean_from_sorted_data(0.3f, sorted_data, stride,
 				size);
 	} else {
-		mean = gsl_stats_mean(x, stride, j);
+		mean = (float) gsl_stats_float_mean(x, stride, j);
 	}
 	free(x);
 	return mean;
 }
 
-static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, double kw[], int n_channel) {
+static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, float kw[], int n_channel) {
 	int i = 0, ngood = 0;
 	gboolean no_phot = FALSE;
-	int k, progress = 0;
-	int chan;
-	double *data[3];
+	int progress = 0;
+	float *data[3];
 
-	data[RED] = malloc(sizeof(double) * nb_stars);
-	data[GREEN] = malloc(sizeof(double) * nb_stars);
-	data[BLUE] = malloc(sizeof(double) * nb_stars);
+	data[RED] = malloc(sizeof(float) * nb_stars);
+	data[GREEN] = malloc(sizeof(float) * nb_stars);
+	data[BLUE] = malloc(sizeof(float) * nb_stars);
 
 	/* initialize to DBL_MAX */
-	for (k = 0; k < nb_stars; k++) {
-		data[RED][k] = DBL_MAX;
-		data[GREEN][k] = DBL_MAX;
-		data[BLUE][k] = DBL_MAX;
+	for (int k = 0; k < nb_stars; k++) {
+		data[RED][k] = FLT_MAX;
+		data[GREEN][k] = FLT_MAX;
+		data[BLUE][k] = FLT_MAX;
 	}
 
 	siril_log_message(_("Applying aperture photometry to %d stars.\n"), nb_stars);
@@ -305,10 +282,10 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 
 	while (stars[i]) {
 		rectangle area = { 0 };
-		double flux[3] = { 0.0, 0.0, 0.0 };
-		double r, g, b, bv;
+		float flux[3] = { 0.f, 0.f, 0.f };
+		float r, g, b, bv;
 		if (!(i % 16))	// every 16 iterations
-			set_progress_bar_data(NULL, (double)progress / (double) nb_stars);
+			set_progress_bar_data(NULL, (double) progress / (double) nb_stars);
 		progress++;
 
 		if (make_selection_around_a_star(stars[i], &area, fit)) {
@@ -316,13 +293,13 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 			continue;
 		}
 
-		for (chan = 0; chan < 3; chan ++) {
+		for (int chan = 0; chan < 3; chan ++) {
 			fitted_PSF *photometry = psf_get_minimisation(fit, chan, &area, TRUE, FALSE, TRUE);
 			if (!photometry || !photometry->phot_is_valid) {
 				no_phot = TRUE;
 				break;
 			}
-			flux[chan] = pow(10, -0.4 * photometry->mag);
+			flux[chan] = powf(10.f, -0.4f * (float) photometry->mag);
 			free(photometry);
 		}
 		if (no_phot) {
@@ -339,10 +316,10 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 		data[GREEN][i] = (flux[n_channel] / flux[GREEN]) * g;
 		data[BLUE][i] = (flux[n_channel] / flux[BLUE]) * b;
 
-		if (isnan(data[RED][i]) || isnan(data[GREEN][i]) || isnan(data[BLUE][i])) {
-			data[RED][i] = DBL_MAX;
-			data[GREEN][i] = DBL_MAX;
-			data[BLUE][i] = DBL_MAX;
+		if (isnanf(data[RED][i]) || isnanf(data[GREEN][i]) || isnanf(data[BLUE][i])) {
+			data[RED][i] = FLT_MAX;
+			data[GREEN][i] = FLT_MAX;
+			data[BLUE][i] = FLT_MAX;
 			i++;
 			continue;
 		}
@@ -361,9 +338,9 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 	}
 	/* sort in ascending order before using siril_stats_mean_from_linearFit
 	 Hence, DBL_MAX are at the end of the tab */
-	gsl_sort(data[RED], 1, nb_stars);
-	gsl_sort(data[GREEN], 1, nb_stars);
-	gsl_sort(data[BLUE], 1, nb_stars);
+	quickmedian_float(data[RED], nb_stars);
+	quickmedian_float(data[GREEN], nb_stars);
+	quickmedian_float(data[BLUE], nb_stars);
 
 	/* we do not take into account DBL_MAX values */
 	kw[RED] = siril_stats_robust_mean(data[RED], 1, ngood);
@@ -375,7 +352,7 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 	kw[GREEN] /= (kw[n_channel]);
 	kw[BLUE] /= (kw[n_channel]);
 	siril_log_message(_("Color calibration factors:\n"));
-	for (chan = 0; chan < 3; chan++) {
+	for (int chan = 0; chan < 3; chan++) {
 		siril_log_message("K%d: %5.3lf\n", chan, kw[chan]);
 	}
 
@@ -387,10 +364,9 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 }
 
 static void get_background_coefficients(fits *fit, rectangle *area, coeff bg[], gboolean verbose) {
-	int chan;
 
 	if (verbose) siril_log_message(_("Background reference:\n"));
-	for (chan = 0; chan < 3; chan++) {
+	for (int chan = 0; chan < 3; chan++) {
 		imstats *stat = statistics(NULL, -1, fit, chan, area, STATS_BASIC, TRUE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
@@ -403,23 +379,21 @@ static void get_background_coefficients(fits *fit, rectangle *area, coeff bg[], 
 	}
 }
 
-static int apply_white_balance(fits *fit, double kw[]) {
-	int i, chan;
-
-	for (chan = 0; chan < 3; chan++) {
-		double scale = kw[chan];
+static int apply_white_balance(fits *fit, float kw[]) {
+	for (int chan = 0; chan < 3; chan++) {
+		float scale = kw[chan];
 		if (scale == 1.0) continue;
 
 		if (fit->type == DATA_USHORT) {
 			WORD *buf = fit->pdata[chan];
-			for (i = 0; i < fit->rx * fit->ry; ++i) {
-				buf[i] = round_to_WORD((double)buf[i] * scale);
+			for (int i = 0; i < fit->rx * fit->ry; ++i) {
+				buf[i] = roundf_to_WORD((float)buf[i] * scale);
 			}
 		}
 		else if (fit->type == DATA_FLOAT) {
 			float *buf = fit->fpdata[chan];
-			for (i = 0; i < fit->rx * fit->ry; ++i) {
-				buf[i] = (float)((double)buf[i] * scale);
+			for (int i = 0; i < fit->rx * fit->ry; ++i) {
+				buf[i] = buf[i] * scale;
 			}
 		}
 		else return 1;
@@ -430,25 +404,23 @@ static int apply_white_balance(fits *fit, double kw[]) {
 
 /* This function equalize the background by giving equal value for all layers */
 static void background_neutralize(fits* fit, coeff bg[], int n_channel, double norm) {
-	int chan, i;
-
 	if (fit->type == DATA_USHORT) {
-		for (chan = 0; chan < 3; chan++) {
-			double offset = (bg[chan].value - bg[n_channel].value) * norm;
+		for (int chan = 0; chan < 3; chan++) {
+			float offset = (bg[chan].value - bg[n_channel].value) * norm;
 			siril_debug_print("offset: %d, %f\n", chan, offset);
 			WORD *buf = fit->pdata[chan];
-			for (i = 0; i < fit->rx * fit->ry; i++) {
-				buf[i] = round_to_WORD((double)buf[i] - offset);
+			for (int i = 0; i < fit->rx * fit->ry; i++) {
+				buf[i] = roundf_to_WORD((float)buf[i] - offset);
 			}
 		}
 	}
 	else if (fit->type == DATA_FLOAT) {
-		for (chan = 0; chan < 3; chan++) {
-			double offset = bg[chan].value - bg[n_channel].value;
+		for (int chan = 0; chan < 3; chan++) {
+			float offset = bg[chan].value - bg[n_channel].value;
 			siril_debug_print("offset: %d, %f\n", chan, offset);
 			float *buf = fit->fpdata[chan];
-			for (i = 0; i < fit->rx * fit->ry; i++) {
-				buf[i] = (float)((double)buf[i] - offset);
+			for (int i = 0; i < fit->rx * fit->ry; i++) {
+				buf[i] = buf[i] - offset;
 			}
 		}
 	}
@@ -500,7 +472,7 @@ static gboolean end_photometric_cc(gpointer p) {
 
 static gpointer photometric_cc(gpointer p) {
 	struct photometric_cc_data *args = (struct photometric_cc_data *) p;
-	double kw[3], norm;
+	float kw[3];
 	coeff bg[3];
 	int nb_stars, chan;
 	rectangle *bkg_sel;
@@ -523,7 +495,7 @@ static gpointer photometric_cc(gpointer p) {
 	siril_log_message(_("Normalizing on %s channel.\n"), (chan == 0) ? _("red") : ((chan == 1) ? _("green") : _("blue")));
 	int ret = get_white_balance_coeff(args->stars, nb_stars, &gfit, kw, chan);
 	if (!ret) {
-		norm = get_normalized_value(&gfit);
+		double norm = get_normalized_value(&gfit);
 		apply_white_balance(&gfit, kw);
 		get_background_coefficients(&gfit, bkg_sel, bg, TRUE);
 		background_neutralize(&gfit, bg, chan, norm);
@@ -538,7 +510,6 @@ static gpointer photometric_cc(gpointer p) {
 
 static gboolean is_selection_ok() {
 	static GtkSpinButton *selection_black_value[4] = { NULL, NULL, NULL, NULL };
-	int width, height;
 
 	if (!selection_black_value[0]) {
 		selection_black_value[0] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_x"));
@@ -546,8 +517,8 @@ static gboolean is_selection_ok() {
 		selection_black_value[2] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_w"));
 		selection_black_value[3] = GTK_SPIN_BUTTON(lookup_widget("spin_cc_bkg_h"));
 	}
-	width = (int) gtk_spin_button_get_value(selection_black_value[2]);
-	height = (int) gtk_spin_button_get_value(selection_black_value[3]);
+	int width = (int) gtk_spin_button_get_value(selection_black_value[2]);
+	int height = (int) gtk_spin_button_get_value(selection_black_value[3]);
 
 	if ((!width) || (!height)) {
 		return FALSE;

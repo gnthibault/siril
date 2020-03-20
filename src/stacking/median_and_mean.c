@@ -1035,7 +1035,7 @@ free_and_close:
 			siril_log_message(_("Rejection stacking complete. %d images have been stacked.\n"), nb_frames);
 		} else {
 			set_progress_bar_data(_("Median stacking complete."), PROGRESS_DONE);
-			siril_log_message(_("Median stacking complete. %d imageshave been stacked.\n"), nb_frames);
+			siril_log_message(_("Median stacking complete. %d images have been stacked.\n"), nb_frames);
 		}
 	}
 	return retval;
