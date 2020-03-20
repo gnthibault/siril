@@ -42,7 +42,7 @@ static display_mode last_mode[MAXGRAYVPORT];
 
 /* STF (auto-stretch) data */
 static gboolean stfComputed;	// Flag to know if STF parameters are available
-static double stfShadows, stfHighlights, stfM;
+static float stfShadows, stfHighlights, stfM;
 
 void initialize_image_display() {
 	int i;
@@ -229,6 +229,7 @@ static void remap(int vport) {
 	guint y;
 	BYTE *dst, *index, rainbow_index[UCHAR_MAX + 1][3];
 	WORD *src, hi, lo;
+	float *fsrc;
 	display_mode mode;
 	color_map color;
 	gboolean do_cut_over, inverted;
@@ -246,7 +247,9 @@ static void remap(int vport) {
 	} else if (sequence_is_loaded()) {
 		if (vport >= com.seq.nb_layers)
 			no_data = 1;
-	} else
+	}
+	else no_data = 1;
+	if (gfit.type == DATA_UNSUPPORTED)
 		no_data = 1;
 	if (no_data) {
 		siril_debug_print("vport is out of bounds or data is not loaded yet\n");
@@ -314,33 +317,61 @@ static void remap(int vport) {
 		inverted = FALSE;
 
 	if (mode == HISTEQ_DISPLAY) {
-		double hist_sum;
-		double nb_pixels;
-		size_t hist_nb_bins;
-		size_t i;
-		gsl_histogram *histo;
+		if (gfit.type == DATA_USHORT) {
+			double hist_sum, nb_pixels;
+			size_t i, hist_nb_bins;
+			gsl_histogram *histo;
 
-		compute_histo_for_gfit();
-		histo = com.layers_hist[vport];
-		hist_nb_bins = gsl_histogram_bins(histo);
+			compute_histo_for_gfit();
+			histo = com.layers_hist[vport];
+			hist_nb_bins = gsl_histogram_bins(histo);
+			nb_pixels = (double)(gfit.rx * gfit.ry);
 
-		nb_pixels = (double) (gfit.rx * gfit.ry);
-		// build the remap_index
-		if (!remap_index[vport])
-			remap_index[vport] = malloc(USHRT_MAX + 1);
+			// build the remap_index
+			if (!remap_index[vport])
+				remap_index[vport] = malloc(USHRT_MAX + 1);
 
-		remap_index[vport][0] = 0;
-		hist_sum = gsl_histogram_get(histo, 0);
-		for (i = 1; i < hist_nb_bins; i++) {
-			hist_sum += gsl_histogram_get(histo, i);
-			remap_index[vport][i] = round_to_BYTE(
-					(hist_sum / nb_pixels) * UCHAR_MAX_DOUBLE);
+			remap_index[vport][0] = 0;
+			hist_sum = gsl_histogram_get(histo, 0);
+			for (i = 1; i < hist_nb_bins; i++) {
+				hist_sum += gsl_histogram_get(histo, i);
+				remap_index[vport][i] = round_to_BYTE(
+						(hist_sum / nb_pixels) * UCHAR_MAX_DOUBLE);
+			}
+
+			last_mode[vport] = mode;
 		}
+		else if (gfit.type == DATA_FLOAT) {
+			double hist_sum, nb_pixels;
+			size_t i, hist_nb_bins;
+			gsl_histogram *histo;
 
-		last_mode[vport] = mode;
+			compute_histo_for_gfit();
+			histo = com.layers_hist[vport];
+			hist_nb_bins = gsl_histogram_bins(histo);
+			nb_pixels = (double)(gfit.rx * gfit.ry);
+
+			// build the remap_index
+			if (!remap_index[vport])
+				remap_index[vport] = malloc(USHRT_MAX + 1);
+
+			remap_index[vport][0] = 0;
+			hist_sum = gsl_histogram_get(histo, 0);
+			for (i = 1; i < hist_nb_bins; i++) {
+				hist_sum += gsl_histogram_get(histo, i);
+				remap_index[vport][i] = round_to_BYTE(
+						(hist_sum / nb_pixels) * UCHAR_MAX_DOUBLE);
+			}
+
+			last_mode[vport] = mode;
+		}
 		set_viewer_mode_widgets_sensitive(FALSE);
 	} else {
-		// for all other modes, the index can be reused
+		// for all other modes and ushort data, the index can be reused
+		if (mode == STF_DISPLAY && !stfComputed) {
+			stfM = findMidtonesBalance(&gfit, &stfShadows, &stfHighlights);
+			stfComputed = TRUE;
+		}
 		make_index_for_current_display(mode, lo, hi, vport);
 		if (mode == STF_DISPLAY)
 			set_viewer_mode_widgets_sensitive(FALSE);
@@ -349,7 +380,7 @@ static void remap(int vport) {
 	}
 
 	src = gfit.pdata[vport];
-	/* Siril's FITS are stored bottom to top, so mapping needs to revert data order */
+	fsrc = gfit.fpdata[vport];
 	dst = com.graybuf[vport];
 
 	color = gtk_toggle_tool_button_get_active(
@@ -359,34 +390,48 @@ static void remap(int vport) {
 		make_index_for_rainbow(rainbow_index);
 	index = remap_index[vport];
 
-    gboolean special_mode = (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY);
+	gboolean special_mode = (mode == HISTEQ_DISPLAY || mode == STF_DISPLAY);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(y) schedule(static)
 #endif
 	for (y = 0; y < gfit.ry; y++) {
 		guint x;
-		guint src_index = y * gfit.rx;
-		guint dst_index = ((gfit.ry - 1 - y) * gfit.rx) * 4;
-		for (x = 0; x < gfit.rx; ++x, ++src_index, dst_index += 4) {
-			BYTE dst_pixel_value;
-			if (special_mode)	// special case, no lo & hi
-				dst_pixel_value = index[src[src_index]];
-			else if (do_cut_over && src[src_index] > hi)	// cut
-				dst_pixel_value = 0;
-			else {
-				dst_pixel_value = index[src[src_index] - lo < 0 ? 0 : src[src_index] - lo];
+		guint src_i = y * gfit.rx;
+		guint dst_i = ((gfit.ry - 1 - y) * gfit.rx) * 4;
+		for (x = 0; x < gfit.rx; ++x, ++src_i, dst_i += 2) {
+			guint src_index = y * gfit.rx + x;
+			BYTE dst_pixel_value = 0;
+			if (gfit.type == DATA_USHORT) {
+				if (special_mode) // special case, no lo & hi
+					dst_pixel_value = index[src[src_index]];
+				else if (do_cut_over && src[src_index] > hi)	// cut
+					dst_pixel_value = 0;
+				else {
+					dst_pixel_value = index[src[src_index] - lo < 0 ? 0 : src[src_index] - lo];
+				}
+			} else if (gfit.type == DATA_FLOAT) {
+				if (special_mode) // special case, no lo & hi
+					dst_pixel_value = index[roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE)];
+				else if (do_cut_over && roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) > hi)	// cut
+					dst_pixel_value = 0;
+				else {
+					dst_pixel_value = index[
+						roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) - lo < 0 ? 0 :
+							roundf_to_WORD(fsrc[src_index] * USHRT_MAX_SINGLE) - lo];
+				}
 			}
 
-			dst_pixel_value =
-					inverted ? UCHAR_MAX - dst_pixel_value : dst_pixel_value;
+			dst_pixel_value = inverted ? UCHAR_MAX - dst_pixel_value : dst_pixel_value;
 
+			// Siril's FITS are stored bottom to top, so mapping needs to revert data order
+			guint dst_index = ((gfit.ry - 1 - y) * gfit.rx + x) * 4;
 			switch (color) {
-			default:
-			case NORMAL_COLOR:
-				*(uint32_t*)(dst + dst_index) = dst_pixel_value << 16 | dst_pixel_value << 8 | dst_pixel_value;
-				break;
-			case RAINBOW_COLOR:
-				*(uint32_t*)(dst + dst_index) = rainbow_index[dst_pixel_value][0] << 16 | rainbow_index[dst_pixel_value][1] << 8 | rainbow_index[dst_pixel_value][2];
+				default:
+				case NORMAL_COLOR:
+					*(uint32_t*)(dst + dst_index) = dst_pixel_value << 16 | dst_pixel_value << 8 | dst_pixel_value;
+					break;
+				case RAINBOW_COLOR:
+					*(uint32_t*)(dst + dst_index) = rainbow_index[dst_pixel_value][0] << 16 | rainbow_index[dst_pixel_value][1] << 8 | rainbow_index[dst_pixel_value][2];
 			}
 		}
 	}
@@ -400,41 +445,35 @@ static void remap(int vport) {
 
 static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 		int vport) {
-	float pente;
+	float slope;
 	int i;
 	BYTE *index;
-	double pxl;
-	if (mode == STF_DISPLAY) {
-		if (!stfComputed) {
-			stfM = findMidtonesBalance(&gfit, &stfShadows, &stfHighlights);
-			stfComputed = TRUE;
-		}
-	}
+	float pxl;
 
 	/* initialization of data required to build the remap_index */
 	switch (mode) {
 		case NORMAL_DISPLAY:
-			pente = UCHAR_MAX_SINGLE / (float) (hi - lo);
+			slope = UCHAR_MAX_SINGLE / (float) (hi - lo);
 			break;
 		case LOG_DISPLAY:
-			pente = fabsf(UCHAR_MAX_SINGLE / logf(((float) (hi - lo)) * 0.1f));
+			slope = fabsf(UCHAR_MAX_SINGLE / logf((float)(hi - lo) * 0.1f));
 			break;
 		case SQRT_DISPLAY:
-			pente = UCHAR_MAX_SINGLE / sqrtf((float) (hi - lo));
+			slope = UCHAR_MAX_SINGLE / sqrtf((float)(hi - lo));
 			break;
 		case SQUARED_DISPLAY:
-			pente = UCHAR_MAX_SINGLE / SQR((float )(hi - lo));
+			slope = UCHAR_MAX_SINGLE / SQR((float)(hi - lo));
 			break;
 		case ASINH_DISPLAY:
-			pente = UCHAR_MAX_SINGLE / asinhf(((float) (hi - lo)) * 0.001f);
+			slope = UCHAR_MAX_SINGLE / asinhf((float)(hi - lo) * 0.001f);
 			break;
 		case STF_DISPLAY:
-			pente = UCHAR_MAX_SINGLE;
+			slope = UCHAR_MAX_SINGLE;
 			break;
 		default:
 			return 1;
 	}
-	if ((mode != HISTEQ_DISPLAY && mode != STF_DISPLAY) && pente == last_pente[vport]
+	if ((mode != HISTEQ_DISPLAY && mode != STF_DISPLAY) && slope == last_pente[vport]
 			&& mode == last_mode[vport]) {
 		siril_debug_print("Re-using previous remap_index\n");
 		return 0;
@@ -458,28 +497,28 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 				if (i < 10)
 					index[i] = 0; /* avoid null and negative values */
 				else
-					index[i] = round_to_BYTE(logf((float) i / 10.f) * pente); //10.f is arbitrary: good matching with ds9
+					index[i] = round_to_BYTE(logf((float) i / 10.f) * slope); //10.f is arbitrary: good matching with ds9
 				break;
 			case SQRT_DISPLAY:
 				// sqrt(2^16) = 2^8
-				index[i] = round_to_BYTE(sqrtf((float) i) * pente);
+				index[i] = round_to_BYTE(sqrtf((float) i) * slope);
 				break;
 			case SQUARED_DISPLAY:
 				// pow(2^4,2) = 2^8
-				index[i] = round_to_BYTE(SQR((float)i) * pente);
+				index[i] = round_to_BYTE(SQR((float)i) * slope);
 				break;
 			case ASINH_DISPLAY:
 				// asinh(2.78*10^110) = 255
-				index[i] = round_to_BYTE(asinhf((float) i / 1000.f) * pente); //1000.f is arbitrary: good matching with ds9, could be asinhf(a*Q*i)/Q
+				index[i] = round_to_BYTE(asinhf((float) i / 1000.f) * slope); //1000.f is arbitrary: good matching with ds9, could be asinhf(a*Q*i)/Q
 				break;
 			case NORMAL_DISPLAY:
-				index[i] = round_to_BYTE((float) i * pente);
+				index[i] = round_to_BYTE((float) i * slope);
 				break;
 			case STF_DISPLAY:
 				pxl = (gfit.orig_bitpix == BYTE_IMG ?
-						(double) i / UCHAR_MAX_DOUBLE :
-						(double) i / USHRT_MAX_DOUBLE);
-				index[i] = round_to_BYTE((float) (MTF(pxl, stfM, stfShadows, stfHighlights)) * pente);
+						(float) i / UCHAR_MAX_SINGLE :
+						(float) i / USHRT_MAX_SINGLE);
+				index[i] = round_to_BYTE((MTF(pxl, stfM, stfShadows, stfHighlights)) * slope);
 				break;
 			default:
 				return 1;
@@ -494,7 +533,7 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 			index[i] = UCHAR_MAX;
 	}
 
-	last_pente[vport] = pente;
+	last_pente[vport] = slope;
 	last_mode[vport] = mode;
 	return 0;
 }

@@ -169,6 +169,28 @@ int wavelet_transform_file(float *Imag, int Nl, int Nc,
 	return 0;
 }
 
+int wavelet_transform_file_float(float *Imag, int Nl, int Nc,
+		char *File_Name_Transform, int Type_Transform, int Nbr_Plan) {
+	wave_transf_des Wavelet;
+	memset(&Wavelet, 0, sizeof(wave_transf_des));
+
+	/* read the input image */
+	snprintf(Wavelet.Name_Imag, MAX_SIZE_NAME_IMAG - 1, "%s",
+			File_Name_Transform);
+	Wavelet.Name_Imag[MAX_SIZE_NAME_IMAG - 1] = '\0';
+
+	if (wavelet_transform_data(Imag, Nl, Nc, &Wavelet, Type_Transform,
+			Nbr_Plan)) {
+		return 1;
+	}
+	if (wave_io_write(File_Name_Transform, &Wavelet)) {
+		return 1;
+	}
+
+	wave_io_free(&Wavelet);
+	return 0;
+}
+
 /*****************************************************************************/
 
 // alternative to wavelet_transform_file that does not use a file
@@ -190,6 +212,18 @@ int wavelet_transform(float *Imag, int Nl, int Nc,
 	return 0;
 }
 
+int wavelet_transform_float(float *Imag, int Nl, int Nc,
+		wave_transf_des *Wavelet, int Type_Transform, int Nbr_Plan) {
+
+	memset(Wavelet, 0, sizeof(wave_transf_des));
+
+	if (wavelet_transform_data(Imag, Nl, Nc, Wavelet, Type_Transform,
+				Nbr_Plan)) {
+		wave_io_free(Wavelet);
+		return 1;
+	}
+	return 0;
+}
 /*****************************************************************************/
 
 

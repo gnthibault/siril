@@ -72,6 +72,11 @@ Source download
 You can get SIRIL source code from the release archives on their webpage, or the latest version from git:
 
     git clone https://gitlab.com/free-astro/siril.git 
+    
+So far, we are using submodule for the use of some algorithms. You must therefore run the following commands:
+
+    git submodule sync --recursive
+    git submodule update --init --recursive 
 
 Building SIRIL for GNU/Linux
 ----------------------------

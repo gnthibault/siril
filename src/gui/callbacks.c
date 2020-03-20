@@ -77,7 +77,7 @@ struct _label_data {
 static gboolean set_label_text_idle(gpointer p) {
 	struct _label_data *args = (struct _label_data *) p;
 	GtkLabel *label = GTK_LABEL(lookup_widget(args->label_name));
-	const char *format = "<span foreground=\"%s\">\%s</span>";
+	const char *format = "<span foreground=\"%s\">%s</span>";
 	char *markup;
 
 	if (args->color == NULL) {
@@ -310,12 +310,15 @@ void set_cutoff_sliders_max_values() {
 		adj1 = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment1"));// scalemax
 		adj2 = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment2"));// scalemin
 	}
-	siril_debug_print(_("Setting MAX value for cutoff sliders adjustments\n"));
 	/* set max value for range according to number of bits of original image
 	 * We should use gfit.bitpix for this, but it's currently always USHORT_IMG.
 	 * Since 0.9.8 we have orig_bitpix, but it's not filled for SER and other images.
 	 */
-	max_val = (double)get_normalized_value(&gfit);
+
+	max_val = (gfit.type == DATA_FLOAT ? USHRT_MAX_DOUBLE : (double)get_normalized_value(&gfit));
+	siril_debug_print(_("Setting MAX value for cutoff sliders adjustments (%f)\n"), max_val);
+	gtk_adjustment_set_lower(adj1, 0.0);
+	gtk_adjustment_set_lower(adj2, 0.0);
 	gtk_adjustment_set_upper(adj1, max_val);
 	gtk_adjustment_set_upper(adj2, max_val);
 }
@@ -356,14 +359,9 @@ void set_cutoff_sliders_values() {
 		cut_over = com.seq.layers[vport].cut_over;
 	} else
 		return;	// there should be no other normal cases
-	siril_debug_print(_("setting ranges scalemin=%d, scalemax=%d\n"), lo, hi);
-	WORD maxvalue = get_normalized_value(&gfit);
-	gtk_adjustment_set_lower(adjmin, 0.0);
-	gtk_adjustment_set_lower(adjmax, 0.0);
-	gtk_adjustment_set_upper(adjmin, (gdouble) maxvalue);
-	gtk_adjustment_set_upper(adjmax, (gdouble) maxvalue);
-	gtk_adjustment_set_value(adjmin, (gdouble) lo);
-	gtk_adjustment_set_value(adjmax, (gdouble) hi);
+	siril_debug_print(_("Setting ranges scalemin=%d, scalemax=%d\n"), lo, hi);
+	gtk_adjustment_set_value(adjmin, (gdouble)lo);
+	gtk_adjustment_set_value(adjmax, (gdouble)hi);
 	g_snprintf(buffer, 6, "%u", hi);
 	g_signal_handlers_block_by_func(maxentry, on_max_entry_changed, NULL);
 	gtk_entry_set_text(maxentry, buffer);
@@ -454,6 +452,7 @@ void update_MenuItem() {
 	any_image_is_loaded = single_image_is_loaded() || sequence_is_loaded();
 
 	/* toolbar button */
+	gtk_widget_set_sensitive(lookup_widget("header_precision_button"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("toolbarbox"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
 	gtk_widget_set_sensitive(lookup_widget("header_redo_button"), is_redo_available());
@@ -471,7 +470,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menu_channel_separation"), is_a_singleRGB_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_slpitcfa"), any_image_is_loaded && !isrgb(&gfit));
 	gtk_widget_set_sensitive(lookup_widget("menuitem_histo"), any_image_is_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_asinh"), any_image_is_loaded);
+	gtk_widget_set_sensitive(lookup_widget("menuitem_asinh"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_fixbanding"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_cosmetic"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_fft"), is_a_single_image_loaded);
@@ -627,7 +626,6 @@ void update_prepro_interface(gboolean allow_debayer) {
 	gtk_widget_set_sensitive(lookup_widget("checkButton_pp_dem"),
 			allow_debayer && gtk_widget_get_sensitive(
 							lookup_widget("prepro_button")));
-
 }
 
 void clear_sampling_setting_box() {
@@ -689,8 +687,6 @@ void update_libraw_and_debayer_interface() {
 			GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_SER_use_header")));
 	com.debayer.compatibility = gtk_toggle_button_get_active(
 			GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility")));
-	com.debayer.stretch = gtk_toggle_button_get_active(
-			GTK_TOGGLE_BUTTON(lookup_widget("stretch_CFA_to16_button")));
 	com.debayer.xbayeroff = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget("xbayeroff_spin")));
 	com.debayer.ybayeroff = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget("ybayeroff_spin")));
 	writeinitfile();
@@ -710,16 +706,30 @@ void update_photometry_interface() {
 	writeinitfile();
 }
 
-char *vport_number_to_name(int vport) {
+const char *vport_number_to_name(int vport) {
 	switch (vport) {
 		case RED_VPORT:
-			return strdup("red");
+			return (_("red"));
 		case GREEN_VPORT:
-			return strdup("green");
+			return (_("green"));
 		case BLUE_VPORT:
-			return strdup("blue");
+			return (_("blue"));
 		case RGB_VPORT:
-			return strdup("rgb");
+			return (_("rgb"));
+	}
+	return NULL;
+}
+
+const char *untranslated_vport_number_to_name(int vport) {
+	switch (vport) {
+		case RED_VPORT:
+			return ("red");
+		case GREEN_VPORT:
+			return ("green");
+		case BLUE_VPORT:
+			return ("blue");
+		case RGB_VPORT:
+			return ("rgb");
 	}
 	return NULL;
 }
@@ -742,7 +752,7 @@ void calculate_fwhm(GtkWidget *widget) {
 	int layer = match_drawing_area_widget(widget, FALSE);
 	if (layer != -1) {
 		gchar *buf, *label_name;
-		char *layer_name = vport_number_to_name(layer);
+		const char *layer_name = untranslated_vport_number_to_name(layer);
 		GtkLabel *label;
 		if (com.selection.w && com.selection.h) {// Now we don't care about the size of the sample. Minimization checks that
 			if (com.selection.w < 300 && com.selection.h < 300) {
@@ -761,7 +771,6 @@ void calculate_fwhm(GtkWidget *widget) {
 		label = GTK_LABEL(lookup_widget(label_name));
 		gtk_label_set_text(label, buf);
 
-		free(layer_name);
 		g_free(label_name);
 		g_free(buf);
 	}
@@ -784,20 +793,18 @@ void display_filename() {
 		nb_layers = com.seq.nb_layers;
 	}
 	base_name = g_path_get_basename(filename);
-	fn_label = GTK_LABEL(gtk_builder_get_object(builder, "labelfilename_red"));
+	fn_label = GTK_LABEL(lookup_widget("labelfilename_red"));
 	str = g_strdup_printf(_("%s (channel 0)"), base_name);
 	gtk_label_set_text(fn_label, str);
 	g_free(str);
 
 	if (nb_layers == 3) {	//take in charge both sequence and single image
-		fn_label = GTK_LABEL(
-				gtk_builder_get_object(builder, "labelfilename_green"));
+		fn_label = GTK_LABEL(lookup_widget("labelfilename_green"));
 		str = g_strdup_printf(_("%s (channel 1)"), base_name);
 		gtk_label_set_text(fn_label, str);
 		g_free(str);
 
-		fn_label = GTK_LABEL(
-				gtk_builder_get_object(builder, "labelfilename_blue"));
+		fn_label = GTK_LABEL(lookup_widget("labelfilename_blue"));
 		str = g_strdup_printf(_("%s (channel 2)"), base_name);
 		gtk_label_set_text(fn_label, str);
 		g_free(str);
@@ -807,6 +814,46 @@ void display_filename() {
 		free(filename);
 	}
 	g_free(base_name);
+}
+
+void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_data) {
+	if (!single_image_is_loaded()) {
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("Cannot convert a sequence file"),
+				_("A sequence file cannot be converted to 32 bits. This operation can only be done on a single file."));
+	} else {
+		int ndata = gfit.rx * gfit.ry * gfit.naxes[2];
+
+		if (gfit.type == DATA_FLOAT) {
+			gboolean convert = siril_confirm_dialog(_("Precision loss"),
+					_("Converting the image from 32 bits to 16 bits may lead to a loss of numerical accuracy. "
+							"Getting back to 32 bits will not recover this loss.\n"
+							"Are you sure you want to convert your data?"));
+			if (convert) {
+				fit_replace_buffer(&gfit, float_buffer_to_ushort(gfit.fdata, ndata), DATA_USHORT);
+				invalidate_gfit_histogram();
+				redraw(com.cvport, REMAP_ALL);
+			}
+		} else if (gfit.type == DATA_USHORT) {
+			fit_replace_buffer(&gfit, ushort_buffer_to_float(gfit.data, ndata), DATA_FLOAT);
+			invalidate_gfit_histogram();
+			redraw(com.cvport, REMAP_ALL);
+		}
+	}
+	set_precision_switch();
+}
+
+void set_precision_switch() {
+	if (!com.script) {
+		GtkLabel *label = GTK_LABEL(lookup_widget("precision_button_name"));
+		GtkCheckMenuItem *float_button = GTK_CHECK_MENU_ITEM(lookup_widget("32bits_item"));
+		GtkCheckMenuItem *ushort_button = GTK_CHECK_MENU_ITEM(lookup_widget("16bits_item"));
+
+		gtk_label_set_text(label, gfit.type == DATA_USHORT ? _("16 bits") : _("32 bits"));
+		g_signal_handlers_block_by_func(float_button, on_precision_item_toggled, NULL);
+		gtk_check_menu_item_set_active(float_button, gfit.type == DATA_FLOAT);
+		gtk_check_menu_item_set_active(ushort_button, gfit.type == DATA_USHORT);
+		g_signal_handlers_unblock_by_func(float_button,	on_precision_item_toggled, NULL);
+	}
 }
 
 /* set available layers in the layer list of registration */
@@ -1133,7 +1180,7 @@ void set_GUI_misc() {
 }
 
 /* size is in kiB */
-void set_GUI_MEM(unsigned long size) {
+void set_GUI_MEM(unsigned long long size) {
 	if (com.headless)
 		return;
 	char *str;
@@ -1274,7 +1321,6 @@ static void set_GUI_LIBRAW() {
 	GtkComboBox *inter = GTK_COMBO_BOX(lookup_widget("comboBayer_inter"));
 	GtkToggleButton *compat = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility"));
 	GtkToggleButton *use_header = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_SER_use_header"));
-	GtkToggleButton *stretch_cfa = GTK_TOGGLE_BUTTON(lookup_widget("stretch_CFA_to16_button"));
 	GtkToggleButton *demosaicingButton = GTK_TOGGLE_BUTTON(lookup_widget("demosaicingButton"));
 	GtkSpinButton *xbayer_spin = GTK_SPIN_BUTTON(lookup_widget("xbayeroff_spin"));
 	GtkSpinButton *ybayer_spin = GTK_SPIN_BUTTON(lookup_widget("ybayeroff_spin"));
@@ -1283,7 +1329,6 @@ static void set_GUI_LIBRAW() {
 	gtk_toggle_button_set_active(compat, com.debayer.compatibility);
 	gtk_toggle_button_set_active(use_header, com.debayer.use_bayer_header);
 	gtk_toggle_button_set_active(demosaicingButton,	com.debayer.open_debayer);
-	gtk_toggle_button_set_active(stretch_cfa, com.debayer.stretch);
 	gtk_spin_button_set_value(xbayer_spin, com.debayer.xbayeroff);
 	gtk_spin_button_set_value(ybayer_spin, com.debayer.ybayeroff);
 }

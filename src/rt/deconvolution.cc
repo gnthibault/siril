@@ -937,15 +937,25 @@ BENCHFUN
     for (int i = 0; i < H; ++i) {
         int fitn = i * W;
         for (int j = 0; j < W; ++j) {
-            redVals[i][j] = args->fit->pdata[RLAYER][fitn];
-            if (channels == 3) {
-            	greenVals[i][j] = args->fit->pdata[GLAYER][fitn];
-            	blueVals[i][j] = args->fit->pdata[BLAYER][fitn];
-            } else {
-                // for single layer we have to fill green and blue with red
-            	greenVals[i][j] = args->fit->pdata[RLAYER][fitn];
-            	blueVals[i][j] = args->fit->pdata[RLAYER][fitn];
-            }
+        	if (args->fit->type == DATA_USHORT) {
+                redVals[i][j] = args->fit->pdata[RLAYER][fitn];
+                if (channels == 3) {
+                    greenVals[i][j] = args->fit->pdata[GLAYER][fitn];
+                    blueVals[i][j] = args->fit->pdata[BLAYER][fitn];
+                } else { // for single layer we have to fill green and blue with red
+                    greenVals[i][j] = args->fit->pdata[RLAYER][fitn];
+                    blueVals[i][j] = args->fit->pdata[RLAYER][fitn];
+                }
+        	} else {
+        		redVals[i][j] = args->fit->fpdata[RLAYER][fitn] > 0.f ? args->fit->fpdata[RLAYER][fitn] * USHRT_MAX_SINGLE : 0.f;
+                if (channels == 3) {
+                    greenVals[i][j] = args->fit->fpdata[GLAYER][fitn] > 0.f ? args->fit->fpdata[GLAYER][fitn] * USHRT_MAX_SINGLE : 0.f;
+                    blueVals[i][j] = args->fit->fpdata[BLAYER][fitn] > 0.f ? args->fit->fpdata[BLAYER][fitn]* USHRT_MAX_SINGLE : 0.f;
+                } else { // for single layer we have to fill green and blue with red
+                    greenVals[i][j] = args->fit->fpdata[RLAYER][fitn] > 0.f ? args->fit->fpdata[RLAYER][fitn] * USHRT_MAX_SINGLE : 0.f;
+                    blueVals[i][j] = args->fit->fpdata[RLAYER][fitn] > 0.f ? args->fit->fpdata[RLAYER][fitn]* USHRT_MAX_SINGLE : 0.f;
+                }
+        	}
             ++fitn;
         }
     }
@@ -984,10 +994,18 @@ BENCHFUN
         int fitn = i * W;
         for (int j = 0; j < W; ++j) {
             const float factor = YNew[i][j] / std::max(YOld[i][j], 0.00001f);
-            args->fit->pdata[RLAYER][fitn] = rtengine::CLIP<float>(redVals[i][j] * factor);
-            if (channels == 3) {
-                args->fit->pdata[GLAYER][fitn] = rtengine::CLIP<float>(greenVals[i][j] * factor);
-                args->fit->pdata[BLAYER][fitn] = rtengine::CLIP<float>(blueVals[i][j] * factor);
+            if (args->fit->type == DATA_USHORT) {
+            	args->fit->pdata[RLAYER][fitn] = rtengine::CLIP<float>(redVals[i][j] * factor);
+            	if (channels == 3) {
+            		args->fit->pdata[GLAYER][fitn] = rtengine::CLIP<float>(greenVals[i][j] * factor);
+            		args->fit->pdata[BLAYER][fitn] = rtengine::CLIP<float>(blueVals[i][j] * factor);
+            	}
+            } else {
+            	args->fit->fpdata[RLAYER][fitn] = (redVals[i][j] * factor) / USHRT_MAX_SINGLE;
+            	if (channels == 3) {
+            		args->fit->fpdata[GLAYER][fitn] = (greenVals[i][j] * factor) / USHRT_MAX_SINGLE;
+            		args->fit->fpdata[BLAYER][fitn] = (blueVals[i][j] * factor) / USHRT_MAX_SINGLE;
+            	}
             }
             ++fitn;
         }

@@ -36,10 +36,6 @@
 #define MAX_ITER 15
 #define EPSILON 1E-4
 
-/*****************************************************************************
- *       N O I S E     C O M P U T A T I O N      M A N A G E M E N T        *
- ****************************************************************************/
-
 static gboolean end_noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
 	stop_processing_thread();
@@ -57,6 +53,7 @@ static gboolean end_noise(gpointer p) {
 gpointer noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
 	int chan;
+	double norm = 1.0;
 	args->retval = 0;
 
 	if (args->verbose) {
@@ -73,15 +70,20 @@ gpointer noise(gpointer p) {
 			break;
 		}
 		args->bgnoise[chan] = stat->bgnoise;
+		norm = stat->normValue;
 		free_stats(stat);
 	}
 
 	if (!args->retval) {
-		double norm = (double) get_normalized_value(args->fit);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
-			siril_log_message(
-					_("Background noise value (channel: #%d): %0.3lf (%.3e)\n"), chan,
-					args->bgnoise[chan], args->bgnoise[chan] / norm);
+			if (args->fit->type == DATA_USHORT)
+				siril_log_message(
+						_("Background noise value (channel: #%d): %0.3f (%.3e)\n"),
+						chan, args->bgnoise[chan], args->bgnoise[chan] / norm);
+			else 
+				siril_log_message(
+						_("Background noise value (channel: #%d): %0.3e\n"),
+						chan, args->bgnoise[chan]);
 	}
 
 	int retval = args->retval;

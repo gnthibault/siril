@@ -1,6 +1,12 @@
-#include "sorting.h"
 #include <string.h>
 #include <math.h>
+
+#include "core/siril.h"
+#include "core/proto.h"
+
+#include "rt/rt_algo.h"
+#include "sorting.h"
+
 
 /*
  * This file is part of Siril, an astronomy image processor.
@@ -27,13 +33,34 @@
  */
 
 /**
+ * In-place insertion sort of array of double a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
+static void insertionSort_d(double a[], long n) {
+	for (long i = 1; i < n; i++) {
+		const double val = a[i];
+		long j = i - 1;
+
+		/* Move elements of a[0..i-1], that are greater than val, to one position ahead of their current position */
+		while (j >= 0 && a[j] > val) {
+			a[j + 1] = a[j];
+			j = j - 1;
+		}
+		a[j + 1] = val;
+	}
+}
+
+/**
  * In-place quick sort of array of double a of size n
  * @param a array to sort
  * @param n size of the array
  */
-void quicksort_d (double *a, int n) {
-	if (n < 2)
-		return;
+void quicksort_d (double *a, long n) {
+	if (n <= 32) {
+		return insertionSort_d(a, n);
+	}
+
 	double pivot = a[n / 2];
 	double *left = a;
 	double *right = a + n - 1;
@@ -57,13 +84,84 @@ void quicksort_d (double *a, int n) {
 }
 
 /**
+ * In-place insertion sort of array of float a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
+ static void insertionSort_f(float a[], long n) {
+	for (long i = 1; i < n; i++) {
+		const float val = a[i];
+		int j = i - 1;
+
+		/* Move elements of a[0..i-1], that are greater than val, to one position ahead of their current position */
+		while (j >= 0 && a[j] > val) {
+			a[j + 1] = a[j];
+			j = j - 1;
+		}
+		a[j + 1] = val;
+	}
+}
+
+/**
+ * In-place quick sort of array of float a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
+void quicksort_f (float *a, long n) {
+	if (n <= 32) {
+		return insertionSort_f(a, n);
+	}
+
+	float pivot = a[n / 2];
+	float *left = a;
+	float *right = a + n - 1;
+	register float t;
+
+	while (left <= right) {
+		if (*left < pivot) {
+			left++;
+			continue;
+		}
+		if (*right > pivot) {
+			right--;
+			continue;
+		}
+		t = *left;
+		*left++ = *right;
+		*right-- = t;
+	}
+	quicksort_f(a, right - a + 1);
+	quicksort_f(left, a + n - left);
+}
+
+/**
+ * In-place insertion sort of array of WORD a of size n
+ * @param a array to sort
+ * @param n size of the array
+ */
+static void insertionSort_s(WORD a[], long n) {
+	for (long i = 1; i < n; i++) {
+		const WORD val = a[i];
+		long j = i - 1;
+
+		/* Move elements of a[0..i-1], that are greater than val, to one position ahead of their current position */
+		while (j >= 0 && a[j] > val) {
+			a[j + 1] = a[j];
+			--j;
+		}
+		a[j + 1] = val;
+	}
+}
+
+/**
  * In-place quick sort of array of WORD a of size n
  * @param a array to sort
  * @param n size of the array
  */
-void quicksort_s (WORD *a, int n) {
-	if (n < 2)
-		return;
+void quicksort_s(WORD *a, long n) {
+	if (n <= 32) {
+		return insertionSort_s(a, n);
+	}
 	WORD pivot = a[n / 2];
 	WORD *left = a;
 	WORD *right = a + n - 1;
@@ -94,7 +192,7 @@ void quicksort_s (WORD *a, int n) {
  * @param n size of the array
  * @return median as double for even size average the middle two elements
 */
-double quickmedian (WORD *a, int n) {
+double quickmedian(WORD *a, int n) {
 	int i;
 	int k = n / 2;		// size to sort
 	int pindex;		// pivot index
@@ -133,6 +231,48 @@ double quickmedian (WORD *a, int n) {
 			((double) a[k - 1] + (double) a[k]) / 2.0 : (double) a[k];
 }
 
+/* quickmedian_float returns the median from array of length n
+ * Derived from the original quickselect algorithm from Hoare
+ * warning: data are sorted in place
+ * non recurssive version modified to return median value
+ * @param a array of float to search
+ * @param n size of the array
+ * @return median as double for even size average the middle two elements
+ */
+double quickmedian_float(float *a, int n) {
+	int i;
+	int k = n / 2;		// size to sort
+	int pindex;		// pivot index
+	int left = 0; 		// left index
+	int right = n - 1; 	// right index
+	float pivot, tmp;
+
+	while (left < right) { //we stop when our indicies have crossed
+		pindex = (left + right) / 2; // pivot selection, this can be whatever
+		pivot = a[pindex];
+		a[pindex] = a[right];
+		a[right] = pivot; // SWAP(pivot,right)
+
+		for (i = pindex = left; i < right; i++) {
+			if (a[i] < pivot) { // SWAP
+				tmp = a[pindex];
+				a[pindex] = a[i];
+				a[i] = tmp;
+				pindex++;
+			}
+		}
+		a[right] = a[pindex];
+		a[pindex] = pivot; // SWAP(right,j)
+
+		if (pindex < k)
+			left = pindex + 1;
+		else
+			// pindex >= k
+			right = pindex;
+	}
+	return (n % 2 == 0) ? ((double) a[k - 1] + a[k]) / 2.0 : (double) a[k];
+}
+
 /* quickmedian_double returns the median from array of length n
  * Derived from the original quickselect algorithm from Hoare
  * warning: data are sorted in place
@@ -141,7 +281,7 @@ double quickmedian (WORD *a, int n) {
  * @param n size of the array
  * @return median as double for even size average the middle two elements
  */
-double quickmedian_double (double *a, int n) {
+double quickmedian_double(double *a, int n) {
 	int i;
 	int k = n / 2;		// size to sort
 	int pindex;		// pivot index
@@ -172,7 +312,7 @@ double quickmedian_double (double *a, int n) {
 			// pindex >= k
 			right = pindex;
 	}
-	return (n % 2 == 0) ? (a[k - 1] + a[k]) / 2 : a[k];
+	return (n % 2 == 0) ? (a[k - 1] + a[k]) / 2.0 : a[k];
 }
 
 /*
@@ -182,7 +322,7 @@ double quickmedian_double (double *a, int n) {
  * @param n size of the array
  * @return median as double
  */
-double quickmedian_int (int *a, int n) {
+double quickmedian_int(int *a, int n) {
 	int i;
 	int k = n / 2;		// size to sort
 	int pindex;		// pivot index
@@ -338,9 +478,7 @@ double histogram_median(WORD *a, int n, gboolean mutlithread) {
 	if (n < 10)
 		return sortnet_median(a, n);
 
-	unsigned int i, j, k = n / 2;
-	size_t ii;
-	size_t s = sizeof(unsigned int);
+	const size_t s = sizeof(unsigned int);
 	unsigned int *h = (unsigned int*) calloc(USHRT_MAX + 1, s);
 
 #ifdef _OPENMP
@@ -351,7 +489,7 @@ double histogram_median(WORD *a, int n, gboolean mutlithread) {
 #ifdef _OPENMP
 #pragma omp for nowait
 #endif
-		for (i = 0; i < n; i++) {
+		for (unsigned int i = 0; i < n; i++) {
 			hthr[a[i]]++;
 		}
 #ifdef _OPENMP
@@ -362,13 +500,14 @@ double histogram_median(WORD *a, int n, gboolean mutlithread) {
 #ifdef _OPENMP
 #pragma omp simd
 #endif
-			for (ii = 0; ii <= USHRT_MAX; ++ii) {
+			for (size_t ii = 0; ii <= USHRT_MAX; ++ii) {
 				h[ii] += hthr[ii];
 			}
 		}
 		free(hthr);
 	}
-	i = j = 0;
+	unsigned int i= 0, j = 0, k = n / 2;
+
 	unsigned int sum = 0;
 	if (n % 2 == 0) {
 		for (; sum <= k - 1; j++)
@@ -383,36 +522,10 @@ double histogram_median(WORD *a, int n, gboolean mutlithread) {
 	return (n % 2 == 0) ? (double) (i + j) / 2.0 : (double) i;
 }
 
-/*
- * Histogram median for very large array of double in [0,1] range
- * (C) Emmanuel Brandt 2019-02
- * @param a array of unsigned short to search
- * @param n size of the array
- * @return median as a double (for n odd)
- * Use temp storage h for the histogram. Complexity O(2*N)
- * faster than quickmedian_double for array > 20000
- */
-double histogram_median_double(double *a, int n) {
-	unsigned int i, j, k = n / 2, nb_bins = 100000;
-	size_t s = sizeof(unsigned int);
-	unsigned int *h = (unsigned int *) calloc(nb_bins + 1, s);
-
-	for (i = 0; i < n; i++)
-		h[(unsigned int) (a[i] * nb_bins)]++;
-
-	i = j = 0;
-	unsigned int sum = 0;
-	if (n % 2 == 0) {
-		for (; sum <= k - 1; j++)
-			sum += h[j];
-		i = j;
-	}
-
-	for (; sum <= k; i++)
-		sum += h[i];
-
-	free(h);
-	return (n % 2 == 0) ? (double) (i + j) / ( 2.0 * (double) nb_bins) : (double) i / (double) nb_bins;
+double histogram_median_float(float *a, int n, gboolean multithread) {
+	float median;
+	findMinMaxPercentile(a, n, 0.5f, &median, 0.5f, &median, multithread);
+	return median;
 }
 
 /**

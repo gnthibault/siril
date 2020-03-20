@@ -169,6 +169,19 @@ int wavelet_reconstruct_file(char *File_Name_Transform, float *coef, WORD *data)
 	return 0;
 }
 
+int wavelet_reconstruct_file_float(char *File_Name_Transform, float *coef, float *data) {
+	wave_transf_des Wavelet;
+
+	/* read the wavelet file */
+	if (wave_io_read(File_Name_Transform, &Wavelet))
+		return 1;
+
+	wavelet_reconstruct_data(&Wavelet, data, coef);
+
+	wave_io_free(&Wavelet);
+	return 0;
+}
+
 /*****************************************************************************/
 
 int wavelet_reconstruct_data(wave_transf_des *Wavelet, float *Imag, float *coef) {

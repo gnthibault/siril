@@ -271,6 +271,7 @@ int readbmp(const char *name, fits *fit) {
 		siril_log_message(_("Sorry but Siril cannot "
 				"open this kind of BMP. Try to convert it before.\n"));
 	}
+	fit->type = DATA_USHORT;
 	free(buf);
 	char *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading BMP: file %s, %ld layer(s), %ux%u pixels\n"),
@@ -302,12 +303,14 @@ int savebmp(const char *name, fits *fit) {
 	FILE *f;
 
 	WORD *gbuf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	float *gbuff[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
 
 	int padsize = (4 - (width * 3) % 4) % 4;
 	int datasize = width * height * 3 + padsize * height;
 	int filesize = datasize + sizeof(bmpfileheader) + sizeof(bmpinfoheader);
 	int i, j;
 	WORD red, blue, green;
+	float redf, bluef, greenf;
 	unsigned char pixel[3];
 
 	bmpfileheader[2] = (unsigned char) (filesize);
@@ -348,6 +351,7 @@ int savebmp(const char *name, fits *fit) {
 	fwrite(bmpfileheader, sizeof(bmpfileheader), 1, f);
 	fwrite(bmpinfoheader, sizeof(bmpinfoheader), 1, f);
 
+	if (fit->type == DATA_USHORT) {
 	for (i = 0; i < height; i++) {
 		for (j = 0; j < width; j++) {
 			red = *gbuf[RLAYER]++;
@@ -367,6 +371,28 @@ int savebmp(const char *name, fits *fit) {
 		}
 		if (padsize != 0)
 			fwrite("0", 1, padsize, f);		//We fill the end of width with 0
+		}
+	} else {
+		for (i = 0; i < height; i++) {
+			for (j = 0; j < width; j++) {
+				redf = *gbuff[RLAYER]++;
+				if (fit->naxes[2] == 3) {
+					greenf = *gbuff[GLAYER]++;
+					bluef = *gbuff[BLAYER]++;
+				} else {
+					greenf = redf;
+					bluef = redf;
+				}
+
+				pixel[0] = float_to_uchar_range(bluef); /* swap Blue and Red */
+				pixel[1] = float_to_uchar_range(greenf);
+				pixel[2] = float_to_uchar_range(redf);
+
+				fwrite(pixel, sizeof(pixel), 1, f);
+			}
+			if (padsize != 0)
+				fwrite("0", 1, padsize, f);	//We fill the end of width with 0
+		}
 	}
 	fclose(f);
 	siril_log_message(_("Saving BMP: file %s, %ld layer(s), %ux%u pixels\n"), filename,
@@ -566,6 +592,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		fclose(file);
 		return -1;
 	}
+	fit->type = DATA_USHORT;
 	fclose(file);
 	char *basename = g_path_get_basename(filename);
 	siril_log_message(_("Reading NetPBM: file %s, %ld layer(s), %ux%u pixels\n"),
@@ -582,26 +609,34 @@ static int saveppm(const char *name, fits *fit) {
 	const char *comment = "# CREATOR : SIRIL";
 
 	fprintf(fp, "P6\n%s\n%u %u\n%u\n", comment, fit->rx, fit->ry, USHRT_MAX);
-	WORD *gbuf[3] =
-			{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	WORD *gbuf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
+	float *gbuff[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
 	fits_flip_top_to_bottom(fit);
 	norm = (fit->orig_bitpix != BYTE_IMG) ? 1.0 : USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE;
-	for (i = 0; i < ndata; i++) {
-		WORD color[3];
-		color[0] = *gbuf[RLAYER]++ * norm;
-		color[1] = *gbuf[GLAYER]++ * norm;
-		color[2] = *gbuf[BLAYER]++ * norm;
+	if (fit->type == DATA_USHORT) {
+		for (i = 0; i < ndata; i++) {
+			WORD color[3];
+			color[0] = *gbuf[RLAYER]++ * norm;
+			color[1] = *gbuf[GLAYER]++ * norm;
+			color[2] = *gbuf[BLAYER]++ * norm;
 
-		/* change endianness in place */
-		/* FIX ME : For a small amount of files (for example,
-		 * jpg converted to fit with iris),
-		 * this swap is not required and causes bad image 
-		 * THIS CASE SHOULD NOT BE VERY FREQUENT */
+			color[0] = change_endianness16(color[0]);
+			color[1] = change_endianness16(color[1]);
+			color[2] = change_endianness16(color[2]);
+			fwrite(color, sizeof(WORD), 3, fp);
+		}
+	} else {
+		for (i = 0; i < ndata; i++) {
+			WORD color[3];
+			color[0] = float_to_ushort_range(*gbuff[RLAYER]++);
+			color[1] = float_to_ushort_range(*gbuff[GLAYER]++);
+			color[2] = float_to_ushort_range(*gbuff[BLAYER]++);
 
-		color[0] = change_endianness16(color[0]);
-		color[1] = change_endianness16(color[1]);
-		color[2] = change_endianness16(color[2]);
-		fwrite(color, sizeof(WORD), 3, fp);
+			color[0] = change_endianness16(color[0]);
+			color[1] = change_endianness16(color[1]);
+			color[2] = change_endianness16(color[2]);
+			fwrite(color, sizeof(WORD), 3, fp);
+		}
 	}
 	fclose(fp);
 	fits_flip_top_to_bottom(fit);
@@ -616,6 +651,7 @@ static int savepgm(const char *name, fits *fit) {
 	int ndata = fit->rx * fit->ry;
 	double norm;
 	WORD *gbuf = fit->pdata[RLAYER];
+	float *gbuff = fit->fpdata[RLAYER];
 	const char *comment = "# CREATOR : SIRIL";
 
 	fp = g_fopen(name, "wb");
@@ -625,12 +661,22 @@ static int savepgm(const char *name, fits *fit) {
 
 	fits_flip_top_to_bottom(fit);
 	norm = (fit->orig_bitpix != BYTE_IMG) ? 1.0 : USHRT_MAX_DOUBLE / UCHAR_MAX_DOUBLE;
-	for (i = 0; i < ndata; i++) {
-		WORD tmp = *gbuf++ * norm;
-		/* change endianness in place */
-		WORD data[1];
-		data[0] = (tmp >> 8) | (tmp << 8);
-		fwrite(data, sizeof(data), 1, fp);
+	if (fit->type == DATA_USHORT) {
+		for (i = 0; i < ndata; i++) {
+			WORD tmp = *gbuf++ * norm;
+			/* change endianness in place */
+			WORD data[1];
+			data[0] = (tmp >> 8) | (tmp << 8);
+			fwrite(data, sizeof(data), 1, fp);
+		}
+	} else {
+		for (i = 0; i < ndata; i++) {
+			WORD tmp = float_to_ushort_range(*gbuff++);
+			/* change endianness in place */
+			WORD data[1];
+			data[0] = (tmp >> 8) | (tmp << 8);
+			fwrite(data, sizeof(data), 1, fp);
+		}
 	}
 	fclose(fp);
 	fits_flip_top_to_bottom(fit);
@@ -797,6 +843,7 @@ int readpic(const char *name, fits *fit) {
 	fit->binning_y = (unsigned int) pic_file->bin[5];
 	fit->hi = pic_file->hi;
 	fit->lo = pic_file->lo;
+	fit->type = DATA_USHORT;
 
 	nbdata = fit->rx * fit->ry;
 

@@ -24,6 +24,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/arithm.h"
 #include "core/processing.h"
 #include "core/OS_utils.h"
 #include "algos/statistics.h"
@@ -38,14 +39,18 @@
 
 #include "preprocess.h"
 
-static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
-	double noise = 0.0;
+#define SQUARE_SIZE 512
+
+static float evaluateNoiseOfCalibratedImage(fits *fit, fits *dark,
+		float k, gboolean allow_32bit_output) {
+	long chan;
+	int ret = 0;
+	float noise = 0.f;
 	fits dark_tmp = { 0 }, fit_tmp = { 0 };
-	int chan, ret = 0;
 	rectangle area = { 0 };
 
 	/* square of 512x512 in the center of the image */
-	int size = 512;
+	int size = SQUARE_SIZE;
 	area.x = (fit->rx - size) / 2;
 	area.y = (fit->ry - size) / 2;
 	area.w = size;
@@ -54,8 +59,8 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 	copyfits(fit, &fit_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 
-	soper(&dark_tmp, k, OPER_MUL);
-	ret = imoper(&fit_tmp, &dark_tmp, OPER_SUB);
+	ret = soper(&dark_tmp, k, OPER_MUL, allow_32bit_output);
+	if (!ret) ret = imoper(&fit_tmp, &dark_tmp, OPER_SUB, allow_32bit_output);
 	if (ret) {
 		clearfits(&dark_tmp);
 		clearfits(&fit_tmp);
@@ -66,9 +71,9 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 		imstats *stat = statistics(NULL, -1, &fit_tmp, chan, &area, STATS_BASIC, FALSE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
-			return 0.0;	// not -1?
+			return -1.0;
 		}
-		noise += stat->sigma;
+		noise += (float) stat->sigma;
 		free_stats(stat);
 	}
 	clearfits(&dark_tmp);
@@ -77,86 +82,98 @@ static double evaluateNoiseOfCalibratedImage(fits *fit, fits *dark, double k) {
 	return noise;
 }
 
-#define GR ((sqrt(5.0) - 1.0) / 2.0)
+#undef GR
+#define GR ((sqrtf(5.f) - 1.f) / 2.f)
 
-static double goldenSectionSearch(fits *raw, fits *dark, double a, double b,
-		double tol) {
-	double c, d;
-	double fc, fd;
+static float goldenSectionSearch(fits *raw, fits *dark, float a, float b,
+		float tol, gboolean allow_32bits) {
+	float c, d;
+	float fc, fd;
 	int iter = 0;
 
 	c = b - GR * (b - a);
 	d = a + GR * (b - a);
-	// TODO: check return values of evaluateNoiseOfCalibratedImage
-	fc = evaluateNoiseOfCalibratedImage(raw, dark, c);
-	fd = evaluateNoiseOfCalibratedImage(raw, dark, d);
+	fc = evaluateNoiseOfCalibratedImage(raw, dark, c, allow_32bits);
+	fd = evaluateNoiseOfCalibratedImage(raw, dark, d, allow_32bits);
 	do {
-		siril_debug_print("Iter: %d (%1.2lf, %1.2lf)\n", ++iter, c, d);
-		if (fc < 0.0 || fd < 0.0)
-			return -1.0;
+		siril_debug_print("Iter: %d (%1.2f, %1.2f)\n", ++iter, c, d);
+		if (fc < 0.f || fd < 0.f)
+			return -1.f;
 		if (fc < fd) {
 			b = d;
 			d = c;
 			fd = fc;
 			c = b - GR * (b - a);
-			fc = evaluateNoiseOfCalibratedImage(raw, dark, c);
+			fc = evaluateNoiseOfCalibratedImage(raw, dark, c, allow_32bits);
 		} else {
 			a = c;
 			c = d;
 			fc = fd;
 			d = a + GR * (b - a);
-			fd = evaluateNoiseOfCalibratedImage(raw, dark, d);
+			fd = evaluateNoiseOfCalibratedImage(raw, dark, d, allow_32bits);
 
 		}
-	} while (fabs(c - d) > tol);
-	return ((b + a) / 2.0);
+	} while (fabsf(c - d) > tol);
+	return ((b + a) * 0.5f);
 }
 
 
 static int preprocess(fits *raw, struct preprocessing_data *args) {
 	int ret = 0;
 	if (args->use_bias) {
-		ret = imoper(raw, args->bias, OPER_SUB);
+		ret = imoper(raw, args->bias, OPER_SUB, args->allow_32bit_output);
 	}
 
 	/* if dark optimization, the master-dark has already been subtracted */
 	if (!ret && args->use_dark && !args->use_dark_optim) {
-		ret = imoper(raw, args->dark, OPER_SUB);
+		ret = imoper(raw, args->dark, OPER_SUB, args->allow_32bit_output);
+#ifdef SIRIL_OUTPUT_DEBUG
+		image_find_minmax(raw);
+		fprintf(stdout, "after dark: min=%f, max=%f\n", raw->mini, raw->maxi);
+		invalidate_stats_from_fit(raw);
+#endif
 	}
 
 	if (!ret && args->use_flat) {
 		// return value is an error if there is an overflow, but it is usual
 		// for now, so don't treat as error
-		/*ret =*/ siril_fdiv(raw, args->flat, args->normalisation);
+		/*ret =*/ siril_fdiv(raw, args->flat, args->normalisation, args->allow_32bit_output);
+#ifdef SIRIL_OUTPUT_DEBUG
+		image_find_minmax(raw);
+		fprintf(stdout, "after flat: min=%f, max=%f\n", raw->mini, raw->maxi);
+		invalidate_stats_from_fit(raw);
+#endif
 	}
 
 	return ret;
 }
 
-static int darkOptimization(fits *raw, fits *dark, fits *offset) {
-	double k0;
-	double lo = 0.0, up = 2.0;
+static int darkOptimization(fits *raw, struct preprocessing_data *args) {
+	float k0;
+	float lo = 0.f, up = 2.f;
 	int ret = 0;
+	fits *dark = args->dark;
 	fits dark_tmp = { 0 };
 
-	if (raw->rx != dark->rx || raw->ry != dark->ry) {
-		fprintf(stderr, "image size mismatch\n");
-		return -1;
+	if (memcmp(raw->naxes, dark->naxes, sizeof raw->naxes)) {
+		siril_log_message(_("imoper: images must have same dimensions\n"));
+		return 1;
 	}
 
 	if (copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, 0))
 		return 1;
 
 	/* Minimization of background noise to find better k */
-	invalidate_stats_from_fit(raw);
-	k0 = goldenSectionSearch(raw, &dark_tmp, lo, up, 1E-3);
-	if (k0 < 0.0) {
+	//invalidate_stats_from_fit(raw);	// why?
+	k0 = goldenSectionSearch(raw, &dark_tmp, lo, up, 0.001f, args->allow_32bit_output);
+	if (k0 < 0.f) {
 		ret = -1;
 	} else {
-		siril_log_message(_("Dark optimization: k0=%.3lf\n"), k0);
+		siril_log_message(_("Dark optimization: k0=%.3f\n"), k0);
 		/* Multiply coefficient to master-dark */
-		soper(&dark_tmp, k0, OPER_MUL);
-		ret = imoper(raw, &dark_tmp, OPER_SUB);
+		ret = soper(&dark_tmp, k0, OPER_MUL, args->allow_32bit_output);
+		if (!ret)
+			ret = imoper(raw, &dark_tmp, OPER_SUB, args->allow_32bit_output);
 	}
 	clearfits(&dark_tmp);
 	return ret;
@@ -169,11 +186,16 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 		// checking disk space: removing old sequence and computing free space
 		remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
 
-		int64_t size = seq_compute_size(args->seq, args->seq->number);
+		// float output is always used in case of FITS sequence
+		data_type output_depth =
+			args->force_ser_output || args->seq->type == SEQ_SER ?
+			DATA_USHORT : DATA_FLOAT;
+		int64_t size = seq_compute_size(args->seq, args->seq->number, output_depth);
 		if (prepro->debayer)
 			size *= 3;
 		if (test_available_space(size))
 			return 1;
+		// another generic disk check is done in the generic function after this one
 
 		// handling SER
 		if (ser_prepare_hook(args))
@@ -192,9 +214,10 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 				return 1;
 			}
 			prepro->normalisation = stat->mean;
-			siril_log_message(_("Normalisation value auto evaluated: %.2lf\n"),
-					prepro->normalisation);
 			free_stats(stat);
+
+			siril_log_message(_("Normalisation value auto evaluated: %.2f\n"),
+					prepro->normalisation);
 		}
 	}
 
@@ -202,7 +225,7 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 	if (prepro->use_cosmetic_correction && prepro->use_dark) {
 		if (prepro->dark->naxes[2] == 1) {
 			prepro->dev = find_deviant_pixels(prepro->dark, prepro->sigma,
-					&(prepro->icold), &(prepro->ihot));
+					&(prepro->icold), &(prepro->ihot), FALSE);
 			siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
 					prepro->icold + prepro->ihot, prepro->icold, prepro->ihot);
 		} else
@@ -215,24 +238,44 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 static int prepro_image_hook(struct generic_seq_args *args, int out_index, int in_index, fits *fit, rectangle *_) {
 	struct preprocessing_data *prepro = args->user;
 	if (prepro->use_dark_optim && prepro->use_dark) {
-		if (darkOptimization(fit, prepro->dark, prepro->bias))
+		if (darkOptimization(fit, prepro))
 			return 1;
 	}
 
 	if (preprocess(fit, prepro))
 		return 1;
 
-	if (prepro->use_cosmetic_correction && prepro->use_dark && prepro->dark->naxes[2] == 1)
+	if (prepro->use_cosmetic_correction && prepro->use_dark && prepro->dark->naxes[2] == 1) {
 		cosmeticCorrection(fit, prepro->dev, prepro->icold + prepro->ihot, prepro->is_cfa);
 
-	if (prepro->debayer) {
-		if (!prepro->seq || prepro->seq->type == SEQ_REGULAR) {
-			// not for SER because it is done on-the-fly
-			debayer_if_needed(TYPEFITS, fit,
-					prepro->compatibility, TRUE, prepro->stretch_cfa);
-		}
+#ifdef SIRIL_OUTPUT_DEBUG
+		image_find_minmax(fit);
+		fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n", fit->mini, fit->maxi);
+		invalidate_stats_from_fit(fit);
+#endif
 	}
 
+	if (prepro->debayer) {
+		// not for SER because it is done on-the-fly
+		if (!prepro->seq || prepro->seq->type == SEQ_REGULAR) {
+			debayer_if_needed(TYPEFITS, fit, prepro->compatibility, TRUE);
+		}
+
+#ifdef SIRIL_OUTPUT_DEBUG
+		image_find_minmax(fit);
+		fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n", fit->mini, fit->maxi);
+		invalidate_stats_from_fit(fit);
+#endif
+	}
+
+	/* we need to do something special here because it's a 1-channel sequence and
+	 * image that will become 3-channel after this call, so stats caching will
+	 * not be correct. Preprocessing does not compute new stats so we don't need
+	 * to save them into cache now.
+	 * Destroying the stats from the fit will also prevent saving them in the
+	 * sequence, which may be done automatically by the caller.
+	 */
+	full_stats_invalidation_from_fit(fit);
 	return 0;
 }
 
@@ -243,7 +286,8 @@ static void clear_preprocessing_data(struct preprocessing_data *prepro) {
 		clearfits(prepro->dark);
 	if (prepro->use_flat && prepro->flat)
 		clearfits(prepro->flat);
-	free(prepro->dev);
+	if (prepro->dev)
+		free(prepro->dev);
 }
 
 static int prepro_finalize_hook(struct generic_seq_args *args) {
@@ -263,9 +307,10 @@ gpointer prepro_worker(gpointer p) {
 	return retval;
 }
 
-void start_sequence_preprocessing(struct preprocessing_data *prepro, gboolean from_script) {
+void start_sequence_preprocessing(struct preprocessing_data *prepro) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = prepro->seq;
+	args->force_float = TRUE;
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_all;
 	args->nb_filtered_images = prepro->seq->number;
@@ -277,13 +322,14 @@ void start_sequence_preprocessing(struct preprocessing_data *prepro, gboolean fr
 	args->stop_on_error = TRUE;
 	args->description = _("Preprocessing");
 	args->has_output = TRUE;
+	args->output_type = DATA_USHORT; // we don't need it, minimize it
 	args->new_seq_prefix = prepro->ppprefix;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
 	args->parallel = TRUE;
 	args->user = prepro;
 
-	if (from_script) {
+	if (com.script) {
 		args->already_in_a_thread = TRUE;
 		start_in_new_thread(prepro_worker, args);
 	} else {
@@ -356,7 +402,7 @@ static void test_for_master_files(struct preprocessing_data *args) {
 			const char *error = NULL;
 			set_progress_bar_data(_("Opening offset image..."), PROGRESS_NONE);
 			args->bias = calloc(1, sizeof(fits));
-			if (!readfits(filename, args->bias, NULL)) {
+			if (!readfits(filename, args->bias, NULL, TRUE)) {
 				if (args->bias->naxes[2] != gfit.naxes[2]) {
 					error = _("NOT USING OFFSET: number of channels is different");
 				} else if (args->bias->naxes[0] != gfit.naxes[0] ||
@@ -388,7 +434,7 @@ static void test_for_master_files(struct preprocessing_data *args) {
 			const char *error = NULL;
 			set_progress_bar_data(_("Opening dark image..."), PROGRESS_NONE);
 			args->dark = calloc(1, sizeof(fits));
-			if (!readfits(filename, args->dark, NULL)) {
+			if (!readfits(filename, args->dark, NULL, TRUE)) {
 				if (args->dark->naxes[2] != gfit.naxes[2]) {
 					error = _("NOT USING DARK: number of channels is different");
 				} else if (args->dark->naxes[0] != gfit.naxes[0] ||
@@ -427,7 +473,7 @@ static void test_for_master_files(struct preprocessing_data *args) {
 			const char *error = NULL;
 			set_progress_bar_data(_("Opening flat image..."), PROGRESS_NONE);
 			args->flat = calloc(1, sizeof(fits));
-			if (!readfits(filename, args->flat, NULL)) {
+			if (!readfits(filename, args->flat, NULL, TRUE)) {
 				if (args->flat->naxes[2] != gfit.naxes[2]) {
 					error = _("NOT USING FLAT: number of channels is different");
 				} else if (args->flat->naxes[0] != gfit.naxes[0] ||
@@ -453,7 +499,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	struct preprocessing_data *args;
 	GtkEntry *entry;
 	GtkWidget *autobutton;
-	GtkToggleButton *CFA, *debayer, *equalize_cfa, *compatibility, *stretch_cfa;
+	GtkToggleButton *CFA, *debayer, *equalize_cfa, *compatibility;
 	GtkSpinButton *sigHot, *sigCold;
 
 	if (!single_image_is_loaded() && !sequence_is_loaded())
@@ -486,7 +532,6 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	CFA = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
 	debayer = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_pp_dem"));
 	compatibility = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility"));
-	stretch_cfa = GTK_TOGGLE_BUTTON(lookup_widget("stretch_CFA_to16_button"));
 	equalize_cfa = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
 	sigHot = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeHot"));
 	sigCold = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeCold"));
@@ -502,7 +547,6 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	args->is_cfa = gtk_toggle_button_get_active(CFA);
 	args->compatibility = gtk_toggle_button_get_active(compatibility);
 	args->debayer = gtk_toggle_button_get_active(debayer);
-	args->stretch_cfa =  gtk_toggle_button_get_active(stretch_cfa);
 	args->equalize_cfa = gtk_toggle_button_get_active(equalize_cfa);
 
 	/****/
@@ -510,12 +554,14 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	if (sequence_is_loaded()) {
 		args->is_sequence = TRUE;
 		args->seq = &com.seq;
+		args->allow_32bit_output = args->seq->type == SEQ_REGULAR;
 		set_cursor_waiting(TRUE);
 		control_window_switch_to_tab(OUTPUT_LOGS);
-		start_sequence_preprocessing(args, FALSE);
+		start_sequence_preprocessing(args);
 	} else {
 		int retval;
 		args->is_sequence = FALSE;
+		args->allow_32bit_output = TRUE;
 		set_cursor_waiting(TRUE);
 		control_window_switch_to_tab(OUTPUT_LOGS);
 
@@ -554,7 +600,7 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	label[1] = GTK_LABEL(lookup_widget("GtkLabelHotCC"));
 	entry = GTK_ENTRY(lookup_widget("darkname_entry"));
 	filename = gtk_entry_get_text(entry);
-	if (readfits(filename, &fit, NULL)) {
+	if (readfits(filename, &fit, NULL, TRUE)) {
 		str[0] = g_markup_printf_escaped(_("<span foreground=\"red\">ERROR</span>"));
 		str[1] = g_markup_printf_escaped(_("<span foreground=\"red\">ERROR</span>"));
 		gtk_label_set_markup(label[0], str[0]);
@@ -562,7 +608,7 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 		set_cursor_waiting(FALSE);
 		return;
 	}
-	count_deviant_pixels(&fit, sig, &icold, &ihot);
+	find_deviant_pixels(&fit, sig, &icold, &ihot, TRUE);
 	total = fit.rx * fit.ry;
 	clearfits(&fit);
 	rate = (double)icold / total;

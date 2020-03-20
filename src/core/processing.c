@@ -36,7 +36,7 @@
 // called in start_in_new_thread only
 // works in parallel if the arg->parallel is TRUE for FITS or SER sequences
 gpointer generic_sequence_worker(gpointer p) {
-	struct generic_seq_args *args = (struct generic_seq_args *) p;
+	struct generic_seq_args *args = (struct generic_seq_args *)p;
 	struct timeval t_start, t_end;
 	int frame;	// output frame index
 	int input_idx;	// index of the frame being processed in the sequence
@@ -45,7 +45,6 @@ gpointer generic_sequence_worker(gpointer p) {
 	float nb_framesf;
 	int abort = 0;	// variable for breaking out of loop
 	GString *desc;	// temporary string description for logs
-	fits fit = { 0 };
 
 	assert(args);
 	assert(args->seq);
@@ -83,6 +82,11 @@ gpointer generic_sequence_worker(gpointer p) {
 	 * This is mandatory for SER contiguous output. */
 	if (args->filtering_criterion) {
 		index_mapping = malloc(nb_frames * sizeof(int));
+		if (!index_mapping) {
+			PRINT_ALLOC_ERR;
+			args->retval = 1;
+			goto the_end;
+		}
 		for (input_idx = 0, frame = 0; input_idx < args->seq->number; input_idx++) {
 			if (!args->filtering_criterion(args->seq, input_idx, args->filtering_parameter)) {
 				continue;
@@ -96,8 +100,8 @@ gpointer generic_sequence_worker(gpointer p) {
 		}
 	}
 
-	if (args->has_output && !args->partial_image) {	// TODO partial
-		int64_t size = seq_compute_size(args->seq, nb_frames);
+	if (args->has_output && !args->partial_image) {
+		int64_t size = seq_compute_size(args->seq, nb_frames, args->output_type);
 		if (test_available_space(size)) {
 			args->retval = 1;
 			goto the_end;
@@ -117,11 +121,12 @@ gpointer generic_sequence_worker(gpointer p) {
 #endif
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) firstprivate(fit) private(input_idx) schedule(static) \
+#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(static) \
 	if(args->parallel && ((args->seq->type == SEQ_REGULAR && fits_is_reentrant()) || args->seq->type == SEQ_SER))
 #endif
 	for (frame = 0; frame < nb_frames; frame++) {
 		if (!abort) {
+			fits fit = { 0 };
 			char filename[256], msg[256];
 			rectangle area = { .x = args->area.x, .y = args->area.y,
 				.w = args->area.w, .h = args->area.h };
@@ -165,7 +170,7 @@ gpointer generic_sequence_worker(gpointer p) {
 				savefits(tmpfn, &fit);*/
 			} else {
 				// image is obtained bottom to top here, while it's in natural order for partial images!
-				if (seq_read_frame(args->seq, input_idx, &fit)) {
+				if (seq_read_frame(args->seq, input_idx, &fit, args->force_float)) {
 					abort = 1;
 					clearfits(&fit);
 					continue;
@@ -201,10 +206,14 @@ gpointer generic_sequence_worker(gpointer p) {
 					clearfits(&fit);
 					continue;
 				}
+			} else {
+				/* save stats that may have been computed for the first
+				 * time, but if fit has been modified for the new
+				 * sequence, we shouldn't save it for the old one.
+				 */
+				save_stats_from_fit(&fit, args->seq, input_idx);
 			}
 
-			// save stats that may have been computed for the first time
-			save_stats_from_fit(&fit, args->seq, input_idx);
 			clearfits(&fit);
 
 #ifdef _OPENMP

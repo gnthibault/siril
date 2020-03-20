@@ -56,12 +56,12 @@ char *statName[] = {
 		N_("normalization")
 };
 
-void get_statlist_store() {
+static void get_statlist_store() {
 	if (list_store == NULL)
 		list_store = GTK_LIST_STORE(gtk_builder_get_object(builder, "liststoreStat"));
 }
 /* Add a statistic to the list. If imstats is NULL, the list is cleared. */
-void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
+static void add_stats_to_list(imstats *stat[], int nblayer, data_type type, gboolean normalized) {
 	static GtkTreeSelection *selection = NULL;
 	GtkTreeIter iter;
 	char format[6];
@@ -84,10 +84,19 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 		normValue[BLAYER] = stat[RLAYER]->normValue;
 		sprintf(format, "%%.5e");
 	}
-	else
+	else {
+		if (type == DATA_FLOAT) {
+			/* by default it is shown in ushort mode */
+			normValue[RLAYER] = 1.0 / USHRT_MAX_DOUBLE;
+			normValue[GLAYER] = 1.0 / USHRT_MAX_DOUBLE;
+			normValue[BLAYER] = 1.0 / USHRT_MAX_DOUBLE;
+		}
 		sprintf(format, "%%.1lf");
+	}
 
-	sprintf(rvalue, "%.4lf", ((double) stat[RLAYER]->ngoodpix / (double) stat[RLAYER]->total) * 100.0);
+	color = (com.combo_theme == 0) ? 1 : 0;
+
+/*	sprintf(rvalue, "%.4lf", ((double) stat[RLAYER]->ngoodpix / (double) stat[RLAYER]->total) * 100.0);
 	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
 		sprintf(gvalue, "%.4lf", ((double) stat[GLAYER]->ngoodpix / (double) stat[GLAYER]->total) * 100.0);
 		sprintf(bvalue, "%.4lf", ((double) stat[BLAYER]->ngoodpix / (double) stat[BLAYER]->total) * 100.0);
@@ -96,7 +105,6 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 		sprintf(bvalue, "--");
 	}
 
-	color = (com.combo_theme == 0) ? 1 : 0;
 
 	gtk_list_store_append(list_store, &iter);
 	gtk_list_store_set(list_store, &iter, COLUMN_NAME, _(statName[0]),
@@ -122,7 +130,7 @@ void add_stats_to_list(imstats *stat[], int nblayer, gboolean normalized) {
 			COLUMN_BVALUE, bvalue,
 			COLUMN_COLOR, second_colour[color],
 			-1);
-
+*/
 	/** Mean */
 	sprintf(rvalue, format, stat[RLAYER]->mean / normValue[RLAYER]);
 	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {
@@ -313,7 +321,7 @@ void computeStat() {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 		}
 	}
-	add_stats_to_list(stat, gfit.naxes[2], normalized);
+	add_stats_to_list(stat, gfit.naxes[2], gfit.type, normalized);
 
 	for (channel = 0; channel < gfit.naxes[2]; channel++)
 		free_stats(stat[channel]);

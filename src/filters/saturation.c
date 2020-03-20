@@ -137,7 +137,7 @@ void on_satu_dialog_close(GtkDialog *dialog, gpointer user_data) {
 	apply_satu_changes();
 }
 
-gpointer enhance_saturation(gpointer p) {
+gpointer enhance_saturation_ushort(gpointer p) {
 	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
 	double bg = 0;
 	int i;
@@ -150,11 +150,11 @@ gpointer enhance_saturation(gpointer p) {
 	args->h_min /= 360.0;
 	args->h_max /= 360.0;
 	if (args->preserve) {
-		printf("preserve\n\n\n");
 		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			siril_add_idle(end_generic, args);
+			free(args);
 			return GINT_TO_POINTER(1);
 		}
 		bg = stat->median + stat->sigma;
@@ -194,8 +194,84 @@ gpointer enhance_saturation(gpointer p) {
 	invalidate_stats_from_fit(args->output);
 
 	siril_add_idle(end_generic, args);
+	free(args);
 
 	return GINT_TO_POINTER(0);
+}
+
+static gpointer enhance_saturation_float(gpointer p) {
+	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
+	float bg = 0;
+	int i;
+
+	float *in[3] = { args->input->fpdata[RLAYER], args->input->fpdata[GLAYER],
+			args->input->fpdata[BLAYER] };
+	float *out[3] = { args->output->fpdata[RLAYER], args->output->fpdata[GLAYER],
+			args->output->fpdata[BLAYER] };
+
+	args->h_min /= 60.0;
+	args->h_max /= 60.0;
+	if (args->preserve) {
+		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
+		if (!stat) {
+			siril_log_message(_("Error: statistics computation failed.\n"));
+			siril_add_idle(end_generic, args);
+			free(args);
+			return GINT_TO_POINTER(1);
+		}
+		bg = stat->median + stat->sigma;
+		bg /= stat->normValue;
+		free_stats(stat);
+	}
+
+	float s_mult = 1.f + args->coeff;
+	gboolean red_case = args->h_min > args->h_max;
+	float h_min = args->h_min;
+	float h_max = args->h_max;
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(dynamic, args->input->rx * 16)
+#endif
+	for (i = 0; i < args->input->rx * args->input->ry; i++) {
+		float h, s, l;
+		float r = in[RLAYER][i];
+		float g = in[GLAYER][i];
+		float b = in[BLAYER][i];
+
+		rgb_to_hsl_float_sat(r, g, b, bg, &h, &s, &l);
+		if (l > bg) {
+			if (red_case) {// Red case. TODO: find a nicer way to do it
+				if (h >= h_min || h <= h_max) {
+					s *= s_mult;
+				}
+			} else {
+				if (h >= h_min && h <= h_max) {
+					s *= s_mult;
+				}
+			}
+			s = s > 1.f ? 1.f : s;
+    		hsl_to_rgb_float_sat(h, s, l, &r, &g, &b);
+		}
+		out[RLAYER][i] = r;
+		out[GLAYER][i] = g;
+		out[BLAYER][i] = b;
+	}
+	invalidate_stats_from_fit(args->output);
+	siril_add_idle(end_generic, args);
+	free(args);
+
+	return GINT_TO_POINTER(0);
+}
+
+gpointer enhance_saturation(gpointer p) {
+	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
+
+	if (args->input->type == DATA_USHORT) {
+		return enhance_saturation_ushort(args);
+	} else if (args->input->type == DATA_FLOAT) {
+		return enhance_saturation_float(args);
+	}
+	return GINT_TO_POINTER(-1);
 }
 
 /** callbacks **/

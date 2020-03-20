@@ -51,24 +51,29 @@ static gboolean end_scnr(gpointer p) {
  * No unprotected GTK+ calls can go there. */
 gpointer scnr(gpointer p) {
 	struct scnr_data *args = (struct scnr_data *) p;
-	WORD *buf[3] = { args->fit->pdata[RLAYER], args->fit->pdata[GLAYER],
-			args->fit->pdata[BLAYER] };
 	double m;
-	int nbdata = args->fit->rx * args->fit->ry;
-	int i;
+	int i, nbdata = args->fit->rx * args->fit->ry;
 	struct timeval t_start, t_end;
+	double norm = get_normalized_value(args->fit);
 
 	siril_log_color_message(_("SCNR: processing...\n"), "red");
 	gettimeofday(&t_start, NULL);
 
-	WORD norm = get_normalized_value(args->fit);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
 	for (i = 0; i < nbdata; i++) {
-		double red = (double) buf[RLAYER][i] / norm;
-		double green = (double) buf[GLAYER][i] / norm;
-		double blue = (double) buf[BLAYER][i] / norm;
+		double red, green, blue;
+		if (args->fit->type == DATA_USHORT) {
+			red = (double)args->fit->pdata[RLAYER][i] / norm;
+			green = (double)args->fit->pdata[GLAYER][i] / norm;
+			blue = (double)args->fit->pdata[BLAYER][i] / norm;
+		}
+		else if (args->fit->type == DATA_FLOAT) {
+			red = (double)args->fit->fpdata[RLAYER][i];
+			green = (double)args->fit->fpdata[GLAYER][i];
+			blue = (double)args->fit->fpdata[BLAYER][i];
+		}
 		double x, y, z, L, a, b;
 
 		if (args->preserve) {
@@ -76,21 +81,21 @@ gpointer scnr(gpointer p) {
 			xyz_to_LAB(x, y, z, &L, &a, &b);
 		}
 		switch (args->type) {
-		case 0:
-			m = 0.5 * (red + blue);
-			green = min(green, m);
-			break;
-		case 1:
-			m = max(red, blue);
-			green = min(green, m);
-			break;
-		case 2:
-			m = max(red, blue);
-			green = (green * (1.0 - args->amount) * (1.0 - m)) + (m * green);
-			break;
-		case 3:
-			m = min(1.0, red + blue);
-			green = (green * (1.0 - args->amount) * (1.0 - m)) + (m * green);
+			case 0:
+				m = 0.5 * (red + blue);
+				green = min(green, m);
+				break;
+			case 1:
+				m = max(red, blue);
+				green = min(green, m);
+				break;
+			case 2:
+				m = max(red, blue);
+				green = (green * (1.0 - args->amount) * (1.0 - m)) + (m * green);
+				break;
+			case 3:
+				m = min(1.0, red + blue);
+				green = (green * (1.0 - args->amount) * (1.0 - m)) + (m * green);
 		}
 		if (args->preserve) {
 			double tmp;
@@ -99,9 +104,16 @@ gpointer scnr(gpointer p) {
 			LAB_to_xyz(L, a, b, &x, &y, &z);
 			xyz_to_rgb(x, y, z, &red, &green, &blue);
 		}
-		buf[RLAYER][i] = round_to_WORD(red * (double) norm);
-		buf[GLAYER][i] = round_to_WORD(green * (double) norm);
-		buf[BLAYER][i] = round_to_WORD(blue * (double) norm);
+		if (args->fit->type == DATA_USHORT) {
+			args->fit->pdata[RLAYER][i] = round_to_WORD(red * (double)norm);
+			args->fit->pdata[GLAYER][i] = round_to_WORD(green * (double)norm);
+			args->fit->pdata[BLAYER][i] = round_to_WORD(blue * (double)norm);
+		}
+		else if (args->fit->type == DATA_FLOAT) {
+			args->fit->fpdata[RLAYER][i] = (float)red;
+			args->fit->fpdata[GLAYER][i] = (float)green;
+			args->fit->fpdata[BLAYER][i] = (float)blue;
+		}
 	}
 
 	invalidate_stats_from_fit(args->fit);

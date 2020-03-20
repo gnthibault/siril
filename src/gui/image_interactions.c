@@ -402,34 +402,45 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 
 gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		GdkEventMotion *event, gpointer user_data) {
-
 	fits *fit = &(gfit);
 	double zoom = get_zoom_val();
 	gint zoomedX = 0, zoomedY = 0;
-	const char * suffix = vport_number_to_name(com.cvport);
+	const char *suffix = untranslated_vport_number_to_name(com.cvport);
 	gchar *label = g_strdup_printf("labeldensity_%s", suffix);
+
+	if (fit->type == DATA_UNSUPPORTED) return FALSE;
 
 	if (inimage((GdkEvent *) event)) {
 		char *buffer;
-		char *format, *format_base = "x: %%.%dd y: %%.%dd = %%.%dd";
-		int coords_width = 3, val_width = 3;
+		char *format;
+		int coords_width = 3;
 		zoomedX = (gint) (event->x / zoom);
 		zoomedY = (gint) (event->y / zoom);
+
 		if (fit->rx >= 1000 || fit->ry >= 1000)
 			coords_width = 4;
-		if (fit->hi >= 1000)
-			val_width = 4;
-		if (fit->hi >= 10000)
-			val_width = 5;
+		if (fit->type == DATA_USHORT) {
+			int val_width = 3;
+			char *format_base_ushort = "x: %%.%dd y: %%.%dd = %%.%dd";
+			if (fit->hi >= 1000)
+				val_width = 4;
+			if (fit->hi >= 10000)
+				val_width = 5;
+			format = g_strdup_printf(format_base_ushort,
+					coords_width, coords_width, val_width);
+			buffer = g_strdup_printf(format, zoomedX, zoomedY,
+					fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
+					+ zoomedX]);
+		} else if (fit->type == DATA_FLOAT) {
+			char *format_base_float = "x: %%.%dd y: %%.%dd = %%f";
+			format = g_strdup_printf(format_base_float,
+					coords_width, coords_width);
+			buffer = g_strdup_printf(format, zoomedX, zoomedY,
+					fit->fpdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
+					+ zoomedX]);
+		} else return FALSE;
 
-		format = g_strdup_printf(format_base, coords_width,
-				coords_width, val_width);
-		buffer = g_strdup_printf(format, zoomedX, zoomedY,
-				fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
-				+ zoomedX]);
-		gtk_label_set_text(GTK_LABEL(lookup_widget(label)),
-				buffer);
-
+		gtk_label_set_text(GTK_LABEL(lookup_widget(label)), buffer);
 		g_free(buffer);
 		g_free(format);
 	} else {

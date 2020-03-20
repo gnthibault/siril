@@ -20,22 +20,23 @@
 #ifndef SRC_QUALITY_H_
 #define SRC_QUALITY_H_
 
-// How many bright pixels to we average to get the real maximum value
+// How many bright pixels do we average to get the real maximum value
 #define MAXP 6
 #define QMARGIN 0.1
 #define QSUBSAMPLE_INC 1
 #define QSUBSAMPLE_MAX 5
 #define QSUBSAMPLE_MIN 3
-#define THRESHOLD 40
+#define THRESHOLD_UCHAR 40
+#define THRESHOLD_USHRT 10240
+#define THRESHOLD_FLOAT 0.156863f
 #define QF_APERTURE_RADIUS 0
 
 #undef DEBUG
 
-enum {
-	QUALTYPE_NORMAL, QUALTYPE_NINOX
-};
+double QualityEstimate(fits *fit, int layer);
+int FindCentre(fits *fit, float *x_avg, float *y_avg);
 
-double QualityEstimate(fits *fit, int layer, int qtype);
-int FindCentre(fits *fit, double *x_avg, double *y_avg);
+// from quality_float.c
+double QualityEstimate_float(fits *fit, int layer);
 
 #endif /* SRC_QUALITY_H_ */

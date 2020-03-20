@@ -390,7 +390,7 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 			memset(fit, 0, sizeof(fits));
 		}
 
-		if (seq_read_frame(seq, image_to_load, fit)) {
+		if (seq_read_frame(seq, image_to_load, fit, FALSE)) {
 			fprintf(stderr, "could not load first image from sequence\n");
 			return -1;
 		}
@@ -440,7 +440,7 @@ int set_seq(const char *name){
 	}
 	if (retval == 0) {
 		int image_to_load = sequence_find_refimage(seq);
-		if (seq_read_frame(seq, image_to_load, &gfit)) {
+		if (seq_read_frame(seq, image_to_load, &gfit, FALSE)) {
 			fprintf(stderr, "could not load first image from sequence\n");
 			free(seq);
 			return 1;
@@ -472,6 +472,7 @@ int set_seq(const char *name){
 	/* initialize image-related runtime data */
 	set_display_mode();		// display the display mode in the combo box
 	display_filename();		// display filename in gray window
+	set_precision_switch(); // set precision on screen
 	adjust_refimage(seq->current);	// check or uncheck reference image checkbox
 	update_prepro_interface(seq->type == SEQ_REGULAR); // enable or not the preprobutton
 	update_reg_interface(FALSE);	// change the registration prereq message
@@ -494,7 +495,6 @@ int set_seq(const char *name){
 	redraw(com.cvport, REMAP_ALL);
 	drawPlot();
 
-	
 	return 0;
 }
 
@@ -519,7 +519,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 
 	if (load_it) {
 		set_cursor_waiting(TRUE);
-		if (seq_read_frame(seq, index, &gfit)) {
+		if (seq_read_frame(seq, index, &gfit, FALSE)) {
 			set_cursor_waiting(FALSE);
 			return 1;
 		}
@@ -537,6 +537,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 			redraw(com.cvport, REMAP_ONLY);
 		redraw_previews();		// redraw registration preview areas
 		display_filename();		// display filename in gray window
+		set_precision_switch(); // set precision on screen
 		adjust_reginfo();		// change registration displayed/editable values
 		calculate_fwhm(com.vport[com.cvport]);
 		update_gfit_histogram_if_needed();
@@ -546,7 +547,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 	update_MenuItem();		// initialize menu gui
 	sequence_list_change_current();
 	adjust_refimage(index);	// check or uncheck reference image checkbox
-	
+
 	return 0;
 }
 
@@ -559,45 +560,22 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
  * @param nb_frames number of frames to compute the size of the sequence of
  * @return the size of the sequence in bytes, or -1 if an error happened.
  */
-int64_t seq_compute_size(sequence *seq, int nb_frames) {
+int64_t seq_compute_size(sequence *seq, int nb_frames, data_type depth) {
 	int64_t frame_size, size = -1LL;
-	char filename[256];
 	GStatBuf sts;
-	int ref;
 
 	switch(seq->type) {
 	case SEQ_SER:
 		size = ser_compute_file_size(seq->ser_file, nb_frames);
 		break;
 	case SEQ_REGULAR:
-		ref = sequence_find_refimage(seq);
-		if (fit_sequence_get_image_filename(seq, ref, filename, TRUE)) {
-			if (!g_lstat(filename, &sts)) {				
-#ifndef _WIN32
-				if ( S_ISLNK(sts.st_mode) )
-#else
-				if (GetFileAttributesA(filename) & FILE_ATTRIBUTE_REPARSE_POINT )
-#endif					
-				{
-					gchar *target_link = g_file_read_link(filename, NULL); 
-					if ( !g_lstat(target_link, &sts) )
-					{
-						frame_size = sts.st_size;       // force 64 bits
-					}
-					else {
-						fprintf(stderr, "Could not open reference image of the sequence\n");
-						return size;
-					}
-					g_free(target_link);
-				}
-				else
-				{
-					frame_size = sts.st_size;       // force 64 bits
-				}
-
-				size = frame_size * nb_frames;
-			}
-		}
+		frame_size = seq->rx * seq->ry * seq->nb_layers;
+		if (depth == DATA_USHORT)
+			frame_size *= sizeof(WORD);
+		else if (depth == DATA_FLOAT)
+			frame_size *= sizeof(float);
+		frame_size += 5760; // FITS double HDU size
+		size = frame_size * nb_frames;
 		break;
 #ifdef HAVE_FFMS2
 	case SEQ_AVI:
@@ -683,13 +661,13 @@ char *seq_get_image_filename(sequence *seq, int index, char *name_buf) {
 /* Read an entire image from a sequence, inside a pre-allocated fits.
  * Opens the file, reads data, closes the file.
  */
-int seq_read_frame(sequence *seq, int index, fits *dest) {
+int seq_read_frame(sequence *seq, int index, fits *dest, gboolean force_float) {
 	char filename[256];
 	assert(index < seq->number);
 	switch (seq->type) {
 		case SEQ_REGULAR:
 			fit_sequence_get_image_filename(seq, index, filename, TRUE);
-			if (readfits(filename, dest, NULL)) {
+			if (readfits(filename, dest, NULL, force_float)) {
 				siril_log_message(_("Could not load image %d from sequence %s\n"),
 						index, seq->seqname);
 				return 1;
@@ -717,10 +695,18 @@ int seq_read_frame(sequence *seq, int index, fits *dest) {
 		case SEQ_INTERNAL:
 			assert(seq->internal_fits);
 			copyfits(seq->internal_fits[index], dest, CP_FORMAT, -1);
-			dest->data = seq->internal_fits[index]->data;
-			dest->pdata[0] = seq->internal_fits[index]->pdata[0];
-			dest->pdata[1] = seq->internal_fits[index]->pdata[1];
-			dest->pdata[2] = seq->internal_fits[index]->pdata[2];
+			if (seq->internal_fits[index]->type == DATA_FLOAT) {
+				dest->fdata = seq->internal_fits[index]->fdata;
+				dest->fpdata[0] = seq->internal_fits[index]->fpdata[0];
+				dest->fpdata[1] = seq->internal_fits[index]->fpdata[1];
+				dest->fpdata[2] = seq->internal_fits[index]->fpdata[2];
+			}
+			else if (seq->internal_fits[index]->type == DATA_USHORT) {
+				dest->data = seq->internal_fits[index]->data;
+				dest->pdata[0] = seq->internal_fits[index]->pdata[0];
+				dest->pdata[1] = seq->internal_fits[index]->pdata[1];
+				dest->pdata[2] = seq->internal_fits[index]->pdata[2];
+			}
 			break;
 	}
 	full_stats_invalidation_from_fit(dest);
@@ -855,8 +841,10 @@ void seq_close_image(sequence *seq, int index) {
 }
 
 /* read a region in a layer of an opened file from a sequence.
- * The buffer must have been allocated to the size of the area. */
-int seq_opened_read_region(sequence *seq, int layer, int index, WORD *buffer, const rectangle *area) {
+ * The buffer must have been allocated to the size of the area, with type of
+ * float if seq->bitpix is FLOAT_IMG, with 16-bit type otherwise
+ */
+int seq_opened_read_region(sequence *seq, int layer, int index, void *buffer, const rectangle *area) {
 	switch (seq->type) {
 		case SEQ_REGULAR:
 			return read_opened_fits_partial(seq, layer, index, buffer, area);
@@ -1341,7 +1329,7 @@ gboolean end_crop_sequence(gpointer p) {
 		free(rseqname);
 	}
 	set_cursor_waiting(FALSE);
-	
+
 	free(args);
 	return FALSE;
 }
@@ -1378,7 +1366,7 @@ gpointer crop_sequence(gpointer p) {
 			break;
 		fits fit;
 		memset(&fit, 0, sizeof(fits));
-		ret = seq_read_frame(args->seq, frame, &fit);
+		ret = seq_read_frame(args->seq, frame, &fit, FALSE);
 		if (!ret) {
 			char dest[256], filename[256];
 
@@ -1639,6 +1627,7 @@ int seqpsf(sequence *seq, int layer, gboolean for_registration, gboolean regall,
 	spsfargs->list = NULL;	// GSList init is NULL
 
 	args->seq = seq;
+	args->force_float = FALSE;
 	args->partial_image = TRUE;
 	memcpy(&args->area, &com.selection, sizeof(rectangle));
 	args->layer_for_partial = layer;

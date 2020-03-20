@@ -29,65 +29,50 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/progress_and_log.h"
 #include "algos/quality.h"
 
+static double QualityEstimate_ushort(fits *fit, int layer);
 static int32_t SubSample(WORD *ptr, int img_wid, int x_size, int y_size);
+static void _smooth_image_16(unsigned short *buf, int width, int height);
+static double Gradient(WORD *buf, int width, int height);
 
-static unsigned short *_smooth_image_16(unsigned short *buf, int width,
-		int height);
-
-static double Gradient(WORD *buf, int width, int height, int qtype);
+double QualityEstimate(fits *fit, int layer) {
+	if (fit->type == DATA_USHORT)
+		return QualityEstimate_ushort(fit, layer);
+	if (fit->type == DATA_FLOAT)
+		return QualityEstimate_float(fit, layer);
+	return -1.0;
+}
 
 // -------------------------------------------------------
 // Method to estimate quality.
 // Runs on the complete layer and destroys it.
-// What is qtype?
 // -------------------------------------------------------
-double QualityEstimate(fits *fit, int layer, int qtype) {
-	WORD *buffer;
+static double QualityEstimate_ushort(fits *fit, int layer) {
 	int width = fit->rx;
 	int height = fit->ry;
 	int x1, y1;
 	int subsample, region_w, region_h;
-	int i, j, n, x, y, max, maxp[MAXP], x_inc;
+	int i, j, n, x, y, max, x_inc;
 	int x_samples, y_samples, y_last;
-	WORD *buf;
-	WORD *new_image = NULL;
-	double mult, q, dval = 0.0;
+	WORD *buffer, *buf, maxp[MAXP];
+	double q, dval = 0.0;
 
 	buffer = fit->pdata[layer];
 
-#if 0
-	if (qtype == QUALTYPE_HISTO) {
-		double size_d = (double) ((m_y_planet_max - m_y_planet_min)
-				* (m_x_planet_max - m_x_planet_min));
-		return histo_quality(colour) / size_d;
-	}
-
-	if (qtype == QUALTYPE_TOTAL) {
-		return average_pixel_quality(colour);
-	}
-#endif
-
-	/* dimensions of the region we want to analyse
-	 * We take all the tmpfit
-	 */
+	// dimensions of the region we want to analyse
+	x1 = 0; y1 = 0;
 	region_w = width - 1;
 	region_h = height - 1;
 
-	x1 = 0;
-	y1 = 0;
-
 	// Allocate the intermediate buffer. Will be 16bpp greyscale
-	buf = calloc(region_w * region_h, sizeof(WORD));
-
+	buf = calloc((region_w / QSUBSAMPLE_MIN + 1) * (region_h / QSUBSAMPLE_MIN + 1), sizeof(WORD));
 	subsample = QSUBSAMPLE_MIN;
 	while (subsample <= QSUBSAMPLE_MAX) {
 		WORD* ptr;
 
-		/*
-		 * Number of h & v pixels in subimage
-		 */
+		// Number of h & v pixels in subimage
 		x_samples = region_w / subsample;
 		y_samples = region_h / subsample;
 
@@ -114,7 +99,7 @@ double QualityEstimate(fits *fit, int layer, int qtype) {
 		for (y += subsample; y < y_last; y += subsample) {
 			ptr = buffer + (y * width + x1);
 			for (x = 0; x < x_samples; ++x, ptr += x_inc) {
-				register int v = SubSample(ptr, width, subsample, subsample);
+				WORD v = SubSample(ptr, width, subsample, subsample);
 
 				if (v > maxp[2] && v < 65530) {
 					int slot;
@@ -153,10 +138,10 @@ double QualityEstimate(fits *fit, int layer, int qtype) {
 
 		// Stretch histogram
 		if (max > 0) {
-			mult = (double) 60000 / (double) max;
+			double mult = 60000.0 / (double)max;
 			for (i = 0; i < n; ++i) {
 				unsigned int v = buf[i];
-				v = (unsigned int) ((double) v * mult);
+				v = (unsigned int)((double)v * mult);
 				if (v > 65535)
 					v = 65535;
 				buf[i] = v;
@@ -164,56 +149,43 @@ double QualityEstimate(fits *fit, int layer, int qtype) {
 		}
 
 		// 3x3 smoothing
-		new_image = _smooth_image_16(buf, x_samples, y_samples);
+		_smooth_image_16(buf, x_samples, y_samples);
 
 #ifdef DEBUG
 		/*******************************/
 		char filename[1024];
 		FILE *out;
-
 		sprintf(filename, "sample_%d.ppm", subsample);
 		out = g_fopen(filename, "wb");
 		if (out == NULL)
-		printf("Cannot write subsampled image %d\n", subsample);
+			printf("Cannot write subsampled image %d\n", subsample);
 		else {
 			fprintf(out, "P5\n%d %d\n255\n", x_samples, y_samples);
 			for (i = 0; i < n; ++i)
-			putc(new_image[i] >> 8, out);
+				putc(buf[i] >> 8, out);
 			fclose(out);
 		}
 		/*********************************/
 #endif
-		q = Gradient(new_image, x_samples, y_samples, qtype);
+		q = Gradient(buf, x_samples, y_samples);
 
-		if (qtype == QUALTYPE_NINOX) {
-			dval += q;
-		} else {
-			dval += (q
-					* ((QSUBSAMPLE_MIN * QSUBSAMPLE_MIN)
-							/ (subsample * subsample))); // New scheme
-		}
-
+		dval += (q * ((QSUBSAMPLE_MIN * QSUBSAMPLE_MIN)
+					/ (subsample * subsample)));
 		//printf("dval val : %f\n", dval);
 
 		do {
 			subsample += QSUBSAMPLE_INC;
-
 		} while (width / subsample == x_samples &&
 				height / subsample == y_samples);
-
-		free(new_image);
 	}
 
-	if (qtype == QUALTYPE_NORMAL || qtype == QUALTYPE_NINOX) {
-		dval = sqrt(dval);
-	}
+	dval = sqrt(dval);
 
-	/*	if (qtype == QUALTYPE_NORMAL) {
+	/*
 	 double histo_val;
 	 histo_val = histo_quality(colour);
 	 histo_val = histo_val / (50 * 255 * 255);
 	 dval = dval * histo_val;
-	 }
 	 */
 	free(buf);
 	return dval;
@@ -224,40 +196,36 @@ double QualityEstimate(fits *fit, int layer, int qtype) {
  */
 static int32_t SubSample(WORD *ptr, int img_wid, int x_size, int y_size) {
 	int x, y, val = 0;
-
 	for (y = 0; y < y_size; ++y) {
 		for (x = 0; x < x_size; x++) {
 			val += ptr[x];
 		}
 		ptr += img_wid;
 	}
-
-	return val / (x_size * y_size);
+	return round_to_WORD((double)val / (double)(x_size * y_size));
 }
 
-static double Gradient(WORD *buf, int width, int height, int qtype) {
+static double Gradient(WORD *buf, int width, int height) {
 	int pixels;
 	int x, y;
 	int yborder = (int) ((double) height * QMARGIN) + 1;
 	int xborder = (int) ((double) width * QMARGIN) + 1;
 	double d1, d2;
-	double val, avg = 0;
-	int threshhold = (THRESHOLD) << 8;
+	double val;
+	int threshold = THRESHOLD_USHRT;
 	unsigned char *map = calloc(width * height, sizeof(unsigned char));
 
-	// pass 1 locate all pixels > threshhold and flag the 3x3 region
+	// pass 1 locate all pixels > threshold and flag the 3x3 region
 	// around them for inclusion in the algorithm
 	pixels = 0;
-	avg = 0;
 	for (y = yborder; y < height - yborder; ++y) {
 		int o = y * width + xborder;
 		for (x = xborder; x < width - xborder; ++x, ++o) {
-			if (buf[o] >= threshhold) {
+			if (buf[o] >= threshold) {
 				map[o - width - 1] = map[o - width] = map[o - width + 1] = 1;
 				map[o - 1] = map[o] = map[o + 1] = 1;
 				map[o + width - 1] = map[o + width] = map[o + width + 1] = 1;
 				++pixels;
-				avg += buf[o];
 			}
 		}
 	}
@@ -268,86 +236,57 @@ static double Gradient(WORD *buf, int width, int height, int qtype) {
 		goto end;
 	}
 
-	avg /= (double) pixels;
-
-	val = 0;
+	val = 0.0;
 	pixels = 0;
 
-	if (qtype == QUALTYPE_NINOX) {
-		for (y = yborder; y < height - yborder; ++y) {
-			int o = y * width + xborder;      // start of row y
-			for (x = xborder; x < width - xborder; ++x, ++o)
-				if (map[o]) {
-					// Pixel differences
-					d1 = buf[o];
-					d2 = buf[o];
-
-					d1 = fabs(d1 - (int) (buf[o + 1]));
-					d2 = fabs(d2 - (int) (buf[o + width]));
-
-					val += d1 + d2;
-					pixels++;
-				}
-		}
-	} else {
-		for (y = yborder; y < height - yborder; ++y) {
-			int o = y * width + xborder;      // start of row y
-			for (x = xborder; x < width - xborder; ++x, ++o)
-				if (map[o]) {
-					// Pixel differences
-					d1 = buf[o];
-					d2 = buf[o];
-
-					d1 = d1 - (int) (buf[o + 1]);
-					d2 = d2 - (int) (buf[o + width]);
-
-					val += (d1 * d1 + d2 * d2);
-					pixels++;
-				}
-		}
+	for (y = yborder; y < height - yborder; ++y) {
+		int o = y * width + xborder;      // start of row y
+		for (x = xborder; x < width - xborder; ++x, ++o)
+			if (map[o]) {
+				// Pixel differences
+				d1 = buf[o] - buf[o+1];
+				d2 = buf[o] - buf[o+width];
+				val += (d1 * d1 + d2 * d2);
+				pixels++;
+			}
 	}
 
-	if (qtype == QUALTYPE_NINOX) {
-		val = val / (double) pixels; // normalise value to per-pixel
-		val = (val * 50) / avg;    // arbitrary increase +
-								   // normalise differences to compensate for dim/bright images
-	} else {
-		val = val / (double) pixels; // normalise value to per-pixel
-		val = val / 10;
-	}
-
-	end:
+	val = val / (double)pixels; // normalise value to per-pixel
+	val = val / 10.0;
+end:
 	free(map);
 
 	return val;
 }
 
-/* 3*3 averaging convolution filter */
-static unsigned short *_smooth_image_16(unsigned short *buf, int width,
+/* 3*3 averaging convolution filter, does nothing on the edges */
+static void _smooth_image_16(unsigned short *buf, int width,
 		int height) {
-	unsigned short *new_buff = calloc(width * height, sizeof(WORD));
-	int x, y;
-
-	for (y = 1; y < height - 1; ++y) {
-		int o = y * width + 1;
-		for (x = 1; x < width - 1; ++x, ++o) {
-			unsigned int v = (unsigned int) buf[o];
-			v += (unsigned int) buf[o - width - 1];
-			v += (unsigned int) buf[o - width];
-			v += (unsigned int) buf[o - width + 1];
-
-			v += (unsigned int) buf[o - 1];
-			v += (unsigned int) buf[o + 1];
-
-			v += (unsigned int) buf[o + width - 1];
-			v += (unsigned int) buf[o + width];
-			v += (unsigned int) buf[o + width + 1];
-
-			new_buff[o] = v / 9;
-		}
+	unsigned short lineBuffer[2][width];
+	// copy first line to lineBuffer
+	for (int x = 0; x < width; ++x) {
+		lineBuffer[0][x] = buf[x];
 	}
-
-	return new_buff;
+	int prevLine = 0;
+	int currLine = 1;
+	for (int y = 1; y < height - 1; ++y) {
+		int o = y * width;
+		// copy current line to lineBuffer
+		for (int x = 0; x < width; ++x) {
+			lineBuffer[currLine][x] = buf[o + x];
+		}
+		++o; // increment because we start at x = 1
+		for (int x = 1; x < width - 1; ++x, ++o) {
+			const unsigned int v = (lineBuffer[prevLine][x - 1] + lineBuffer[prevLine][x])
+				+ (lineBuffer[prevLine][x + 1] + lineBuffer[currLine][x - 1]) + (lineBuffer[currLine][x] + lineBuffer[currLine][x + 1])
+				+ (buf[o + width - 1] + buf[o + width])
+				+ buf[o + width + 1];
+			buf[o] = v / 9;
+		}
+		// swap lineBuffers
+		prevLine ^= 1;
+		currLine ^= 1;
+	}
 }
 
 // Scan the region given by (x1,y1) - (x2,y2) and return the barycentre (centre of brightness)
@@ -360,14 +299,14 @@ static unsigned short *_smooth_image_16(unsigned short *buf, int width,
 int BlankImageCount = 0;
 int MinPixels = 50;
 
-static int _FindCentre_Barycentre(fits *fit, int x1, int y1, int x2, int y2,
-		double *x_avg, double *y_avg) {
+static int _FindCentre_Barycentre_ushort(fits *fit, int x1, int y1, int x2, int y2,
+		float *x_avg, float *y_avg) {
 	int img_width = fit->rx;
 	int img_height = fit->ry;
 	int x, y;
 	int count = 0;	// count of significant pixels
-	double x_total = 0, y_total = 0;
-	double RealThreshHold;
+	float x_total = 0.f, y_total = 0.F;
+	float RealThreshHold;
 
 	// must prevent scanning near the edge due to the extended tests below that look
 	// +/- 1 pixel above and below
@@ -380,14 +319,11 @@ static int _FindCentre_Barycentre(fits *fit, int x1, int y1, int x2, int y2,
 	if (y2 >= img_height - 1)
 		y2 = img_height - 2;
 
-	if (get_normalized_value(fit) == UCHAR_MAX)
-		RealThreshHold = THRESHOLD;
-	else
-		RealThreshHold = THRESHOLD * 256;
+	if (get_normalized_value(fit) == UCHAR_MAX_DOUBLE)
+		RealThreshHold = THRESHOLD_UCHAR;
+	else	RealThreshHold = THRESHOLD_USHRT;
 
 	for (y = y1; y <= y2; ++y) {
-//		int rowcount = 0;
-
 		unsigned short *iptr = fit->data + y * img_width + x1;
 		for (x = x1; x <= x2; ++x, ++iptr) {
 			if (*iptr >= RealThreshHold && *(iptr - 1) >= RealThreshHold
@@ -397,7 +333,6 @@ static int _FindCentre_Barycentre(fits *fit, int x1, int y1, int x2, int y2,
 				x_total += x;
 				y_total += y;
 				count++;
-//				rowcount++;
 			}
 		}
 	}
@@ -406,103 +341,98 @@ static int _FindCentre_Barycentre(fits *fit, int x1, int y1, int x2, int y2,
 		printf("[no image] ");
 		if (BlankImageCount >= 0)
 			++BlankImageCount;
-		return (0);
+		return 1;
 	}
 
 	if (count < MinPixels) {
 		printf("[Not enough pixels. Found %d, require %d] ", count, MinPixels);
 		if (BlankImageCount >= 0)
 			++BlankImageCount;
-		return (0);
+		return 1;
 	}
 
 	if (count > 0) {
-		*x_avg = ((double) x_total / (double) count + 0.5);
-		*y_avg = ((double) y_total / (double) count + 0.5);
+		*x_avg = (x_total / (float) count + 0.5f);
+		*y_avg = (y_total / (float) count + 0.5f);
 		BlankImageCount = 0;
 	}
 
 	*y_avg = img_height - *y_avg;
 
-	return (1);
+	return 0;
 }
 
-static int _FindCentre(fits *fit, int x1, int y1, int x2, int y2, double *x_avg,
-		double *y_avg) {
+static int _FindCentre_Barycentre_float(fits *fit, int x1, int y1, int x2, int y2,
+		float *x_avg, float *y_avg) {
+	int img_width = fit->rx;
+	int img_height = fit->ry;
+	int x, y;
+	int count = 0;	// count of significant pixels
+	float x_total = 0.f, y_total = 0.f;
+	float RealThreshHold;
 
-	return _FindCentre_Barycentre(fit, x1, y1, x2, y2, x_avg, y_avg);
+	// must prevent scanning near the edge due to the extended tests below that look
+	// +/- 1 pixel above and below
+	if (x1 < 1)
+		x1 = 1;
+	if (y1 < 1)
+		y1 = 1;
+	if (x2 >= img_width - 1)
+		x2 = img_width - 2;
+	if (y2 >= img_height - 1)
+		y2 = img_height - 2;
+
+	RealThreshHold = THRESHOLD_FLOAT;
+
+	for (y = y1; y <= y2; ++y) {
+		float *iptr = fit->fdata + y * img_width + x1;
+		for (x = x1; x <= x2; ++x, ++iptr) {
+			if (*iptr >= RealThreshHold && *(iptr - 1) >= RealThreshHold
+					&& *(iptr + 1) >= RealThreshHold
+					&& *(iptr - img_width) >= RealThreshHold
+					&& *(iptr + img_width) >= RealThreshHold) {
+				x_total += x;
+				y_total += y;
+				count++;
+			}
+		}
+	}
+
+	if (count == 0) {
+		printf("[no image] ");
+		if (BlankImageCount >= 0)
+			++BlankImageCount;
+		return 1;
+	}
+
+	if (count < MinPixels) {
+		printf("[Not enough pixels. Found %d, require %d] ", count, MinPixels);
+		if (BlankImageCount >= 0)
+			++BlankImageCount;
+		return 1;
+	}
+
+	if (count > 0) {
+		*x_avg = (x_total / (float) count + 0.5f);
+		*y_avg = (y_total / (float) count + 0.5f);
+		BlankImageCount = 0;
+	}
+
+	*y_avg = img_height - *y_avg;
 
 	return 0;
 }
 
 // find the centre of brightness of the whole image
-int FindCentre(fits *fit, double *x_avg, double *y_avg) {
+int FindCentre(fits *fit, float *x_avg, float *y_avg) {
 	int x1 = 2;
 	int x2 = fit->rx - 3;
 	int y1 = 0;
 	int y2 = fit->ry - 1;
 
-	return _FindCentre(fit, x1, y1, x2, y2, x_avg, y_avg);
-}
-
-/* Aperture algorithm for determining quality of small objects (round, featureless).
- Uses global value QF_APERTURE_RADIUS as the radius of a circle centered on the target.
- Create a second circle around that so that the annulus between them has the same area (ie
- radius of outer circle = QF_APERTURE_RADIUS * 1.414
- Then calculate difference in adu count between the inner circle and annulus. Higher difference
- values indicate better quality
- Code comes from NINOX
- */
-
-double Aperture(fits *fit, int layer) {
-	int width = fit->rx;
-	int height = fit->ry;
-	WORD *ubuf = (WORD *) fit->pdata[layer];
-	int x, y, x1, y1, x2, y2, r1, r2, r;
-	double xc, yc;
-	double total1, total2, rval;
-
-	xc = yc = 0;
-
-	FindCentre(fit, &xc, &yc);
-
-	r1 = QF_APERTURE_RADIUS;
-	r2 = r1 * 1.414 + 0.5;
-
-	x1 = xc - r2;
-	if (x1 < 1)
-		x1 = 1;
-	x2 = xc + r2;
-	if (x2 > width - 1)
-		x2 = width - 1;
-	y1 = yc - r2;
-	if (y1 < 1)
-		y1 = 1;
-	y2 = yc + r2;
-	if (y2 > height - 1)
-		y2 = height - 1;
-
-	r1 *= r1;
-	r2 *= r2;
-
-	total1 = total2 = 0;
-
-	for (y = y1; y <= y2; ++y) {
-		int o = y * width + x1;
-		int yp = (y - yc) * (y - yc);
-		for (x = x1; x <= x2; ++x, ++o) {
-			r = yp + (x - xc) * (x - xc);
-			if (r <= r2)
-				total2 += ubuf[o];
-			if (r <= r1) {
-				total1 += ubuf[o];
-			}
-		}
+	if (fit->type == DATA_USHORT) {
+		return _FindCentre_Barycentre_ushort(fit, x1, y1, x2, y2, x_avg, y_avg);
+	} else {
+		return _FindCentre_Barycentre_float(fit, x1, y1, x2, y2, x_avg, y_avg);
 	}
-
-	if (total2 == 0)
-		total2 = 1;
-	rval = total1 / total2;
-	return rval;
 }
-

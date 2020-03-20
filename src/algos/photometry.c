@@ -224,12 +224,20 @@ static double getMagErr(double intensity, double area, int nsky, double skysig) 
 	return fmin(9.999, 1.0857 * sqrt(err1 + err2 + err3) / intensity);
 }
 
-static int lo_data() {
-	return com.phot_set.minval;
+static double lo_data() {
+	if (gfit.type == DATA_FLOAT) {
+		return (double) com.phot_set.minval / USHRT_MAX_DOUBLE;
+	} else {
+		return (double) com.phot_set.minval;
+	}
 }
 
-static int hi_data() {
-	return com.phot_set.maxval;
+static double hi_data() {
+	if (gfit.type == DATA_FLOAT) {
+		return (double) com.phot_set.maxval / USHRT_MAX_DOUBLE;
+	} else {
+		return (double) com.phot_set.maxval;
+	}
 }
 
 /* Function that compute all photometric data. The result must be freed */

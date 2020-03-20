@@ -23,6 +23,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/arithm.h"
 #include "core/undo.h"
 #include "core/processing.h"
 #include "core/OS_utils.h"
@@ -51,6 +52,7 @@ int banding_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, r
 void apply_banding_to_sequence(struct banding_data *banding_args) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = &com.seq;
+	args->force_float = FALSE;
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = com.seq.selnum;
@@ -62,6 +64,7 @@ void apply_banding_to_sequence(struct banding_data *banding_args) {
 	args->stop_on_error = FALSE;
 	args->description = _("Banding Reduction");
 	args->has_output = TRUE;
+	args->output_type = get_data_type(args->seq->bitpix);
 	args->new_seq_prefix = banding_args->seqEntry;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
@@ -87,7 +90,7 @@ gboolean end_BandingEngine(gpointer p) {
 	return FALSE;
 }
 
-static int fmul_layer(fits *a, int layer, float coeff) {
+static int fmul_layer_ushort(fits *a, int layer, float coeff) {
 	WORD *buf;
 	int i;
 
@@ -96,6 +99,20 @@ static int fmul_layer(fits *a, int layer, float coeff) {
 	buf = a->pdata[layer];
 	for (i = 0; i < a->rx * a->ry; ++i) {
 		buf[i] = round_to_WORD(buf[i] * coeff);
+	}
+	invalidate_stats_from_fit(a);
+	return 0;
+}
+
+static int fmul_layer_float(fits *a, int layer, float coeff) {
+	float *buf;
+	int i;
+
+	if (coeff < 0.0)
+		return 1;
+	buf = a->fpdata[layer];
+	for (i = 0; i < a->rx * a->ry; ++i) {
+		buf[i] = buf[i] * coeff;
 	}
 	invalidate_stats_from_fit(a);
 	return 0;
@@ -121,7 +138,7 @@ gpointer BandingEngineThreaded(gpointer p) {
 	return GINT_TO_POINTER(retval);
 }
 
-int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highlights, gboolean applyRotation) {
+static int BandingEngine_ushort(fits *fit, double sigma, double amount, gboolean protect_highlights, gboolean applyRotation) {
 	int chan, row, i, ret = 0;
 	WORD *line, *fixline;
 	double minimum = DBL_MAX, globalsigma = 0.0;
@@ -133,7 +150,7 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 		cvRotateImage(fit, center, 90.0, -1, OPENCV_LINEAR);
 	}
 
-	if (new_fit_image(&fiximage, fit->rx, fit->ry, fit->naxes[2]))
+	if (new_fit_image(&fiximage, fit->rx, fit->ry, fit->naxes[2], DATA_USHORT))
 		return 1;
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
@@ -190,8 +207,8 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 		free(rowvalue);
 	}
 	for (chan = 0; chan < fit->naxes[2]; chan++)
-		fmul_layer(fiximage, chan, amount);
-	ret = imoper(fit, fiximage, OPER_ADD);
+		fmul_layer_ushort(fiximage, chan, amount);
+	ret = imoper(fit, fiximage, OPER_ADD, FALSE);
 
 	invalidate_stats_from_fit(fit);
 	clearfits(fiximage);
@@ -201,6 +218,95 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 	}
 
 	return ret;
+}
+
+static int BandingEngine_float(fits *fit, double sigma, double amount, gboolean protect_highlights, gboolean applyRotation) {
+	int chan, row, i, ret = 0;
+	float *line, *fixline;
+	double minimum = DBL_MAX, globalsigma = 0.0;
+	fits *fiximage = NULL;
+	double invsigma = 1.0 / sigma;
+
+	if (applyRotation) {
+		point center = {gfit.rx / 2.0, gfit.ry / 2.0};
+		cvRotateImage(fit, center, 90.0, -1, OPENCV_LINEAR);
+	}
+
+	if (new_fit_image(&fiximage, fit->rx, fit->ry, fit->naxes[2], DATA_FLOAT))
+		return 1;
+
+	for (chan = 0; chan < fit->naxes[2]; chan++) {
+		imstats *stat = statistics(NULL, -1, fit, chan, NULL, STATS_BASIC | STATS_MAD, TRUE);
+		if (!stat) {
+			siril_log_message(_("Error: statistics computation failed.\n"));
+			return 1;
+		}
+		double background = stat->median;
+		double *rowvalue = calloc(fit->ry, sizeof(double));
+		if (rowvalue == NULL) {
+			PRINT_ALLOC_ERR;
+			free_stats(stat);
+			return 1;
+		}
+		if (protect_highlights) {
+			globalsigma = stat->mad * MAD_NORM;
+		}
+		free_stats(stat);
+		for (row = 0; row < fit->ry; row++) {
+			line = fit->fpdata[chan] + row * fit->rx;
+			float *cpyline = calloc(fit->rx, sizeof(float));
+			if (cpyline == NULL) {
+				PRINT_ALLOC_ERR;
+				free(rowvalue);
+				return 1;
+			}
+			memcpy(cpyline, line, fit->rx * sizeof(float));
+			int n = fit->rx;
+			double median;
+			if (protect_highlights) {
+				quicksort_f(cpyline, n);
+				float reject = background + invsigma * globalsigma;
+				for (i = fit->rx - 1; i >= 0; i--) {
+					if (cpyline[i] < reject)
+						break;
+					n--;
+				}
+				median = gsl_stats_float_median_from_sorted_data(cpyline, 1, n);
+			} else {
+				median = quickmedian_float(cpyline, n);
+			}
+
+			rowvalue[row] = background - median;
+			minimum = min(minimum, rowvalue[row]);
+			free(cpyline);
+		}
+		for (row = 0; row < fit->ry; row++) {
+			fixline = fiximage->fpdata[chan] + row * fiximage->rx;
+			for (i = 0; i < fit->rx; i++)
+				fixline[i] = rowvalue[row] - minimum;
+		}
+		free(rowvalue);
+	}
+	for (chan = 0; chan < fit->naxes[2]; chan++)
+		fmul_layer_float(fiximage, chan, amount);
+	ret = imoper(fit, fiximage, OPER_ADD, TRUE);
+
+	invalidate_stats_from_fit(fit);
+	clearfits(fiximage);
+	if ((!ret) && applyRotation) {
+		point center = {gfit.rx / 2.0, gfit.ry / 2.0};
+		cvRotateImage(fit, center, -90.0, -1, OPENCV_LINEAR);
+	}
+
+	return ret;
+}
+
+int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highlights, gboolean applyRotation) {
+	if (fit->type == DATA_FLOAT)
+		return BandingEngine_float(fit, sigma, amount, protect_highlights, applyRotation);
+	if (fit->type == DATA_USHORT)
+		return BandingEngine_ushort(fit, sigma, amount, protect_highlights, applyRotation);
+	return -1;
 }
 
 /***************** GUI for Canon Banding Reduction ********************/
@@ -233,7 +339,7 @@ void on_button_apply_fixbanding_clicked(GtkButton *button, gpointer user_data) {
 
 	if (get_thread_run()) {
 		siril_log_message(
-				_(	"Another task is already in progress, ignoring new request.\n"));
+				_("Another task is already in progress, ignoring new request.\n"));
 		return;
 	}
 

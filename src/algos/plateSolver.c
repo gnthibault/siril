@@ -645,8 +645,8 @@ static void update_coordinates(RA ra, DEC Dec, gboolean south) {
 
 static gboolean has_any_keywords() {
 	return (gfit.focal_length > 0.0 ||
-			gfit.pixel_size_x > 0.0 ||
-			gfit.pixel_size_y > 0.0 ||
+			gfit.pixel_size_x > 0.f ||
+			gfit.pixel_size_y > 0.f ||
 			(gfit.wcs.crval1 > 0.0 && gfit.wcs.crval2 != 0.0) ||
 			(gfit.wcs.objctra[0] != '\0' && gfit.wcs.objctdec[0] != '\0'));
 }
@@ -679,12 +679,12 @@ static void update_coords() {
 static void update_pixel_size() {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_pixels"));
 	gchar *cpixels;
-	double pixel;
+	float pixel;
 
 	pixel = gfit.pixel_size_x > gfit.pixel_size_y ? gfit.pixel_size_x : gfit.pixel_size_y;
 
-	if (pixel > 0.0) {
-		cpixels = g_strdup_printf("%.2lf", pixel);
+	if (pixel > 0.f) {
+		cpixels = g_strdup_printf("%.2lf", (double) pixel);
 		gtk_entry_set_text(entry, cpixels);
 		g_free(cpixels);
 	}

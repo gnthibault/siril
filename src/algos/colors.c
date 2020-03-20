@@ -49,6 +49,120 @@
  *  * given h,s,l on [0..1],
  *   * return r,g,b on [0..1]
  *    */
+void hsl_to_rgb_float_sat(float h, float sl, float l, float * r, float * g,
+		float * b) {
+	float v;
+
+    h = h >= 6.f ? h - 6.f : h;
+
+	v = (l <= 0.5f) ? (l * (1.f + sl)) : (l + sl - l * sl);
+	if (v <= 0.f) {
+		*r = *g = *b = 0.f;
+	} else {
+		float m;
+		float sv;
+		int sextant;
+		float fract, vsf, mid1, mid2;
+
+		m = l + l - v;
+		sv = (v - m) / v;
+		sextant = h;
+		fract = h - sextant;
+		vsf = v * sv * fract;
+		mid1 = m + vsf;
+		mid2 = v - vsf;
+		switch (sextant) {
+		case 0:
+			*r = v;
+			*g = mid1;
+			*b = m;
+			break;
+		case 1:
+			*r = mid2;
+			*g = v;
+			*b = m;
+			break;
+		case 2:
+			*r = m;
+			*g = v;
+			*b = mid1;
+			break;
+		case 3:
+			*r = m;
+			*g = mid2;
+			*b = v;
+			break;
+		case 4:
+			*r = mid1;
+			*g = m;
+			*b = v;
+			break;
+		case 5:
+			*r = v;
+			*g = m;
+			*b = mid2;
+			break;
+		}
+	}
+}
+/*
+ *  * RGB-HSL transforms.
+ *   * Ken Fishkin, Pixar Inc., January 1989.
+ *    */
+
+/*
+ *  * given r,g,b on [0 ... 1],
+ *   * return (h,s,l) on [0 ... 1]
+ *    */
+void rgb_to_hsl_float_sat(float r, float g, float b, float low, float *h, float *s, float *l) {
+	float v;
+	float m;
+	float vm;
+	float r2, g2, b2;
+
+	v = max(r, g);
+	v = max(v, b);
+	m = min(r, g);
+	m = min(m, b);
+
+    if (m + v < low + low) {
+        *l = 0.f;
+        return;
+    }
+    *l = (m + v) / 2.f;
+	*h = 0.f;
+	*s = 0.f;	// init values
+
+	if ((*s = vm = v - m) > 0.f) {
+		*s /= (*l <= 0.5f) ? (v + m) : (2.f - v - m);
+	} else
+		return;
+
+	if (r == v) {
+        g2 = (v - g) / vm;
+        b2 = (v - b) / vm;
+		*h = (g == m ? 5.f + b2 : 1.f - g2);
+	}else if (g == v) {
+        r2 = (v - r) / vm;
+        b2 = (v - b) / vm;
+		*h = (b == m ? 1.f + r2 : 3.f - b2);
+	} else {
+        r2 = (v - r) / vm;
+        g2 = (v - g) / vm;
+		*h = (r == m ? 3.f + g2 : 5.f - r2);
+	}
+
+}
+
+/*
+ * A Fast HSL-to-RGB Transform
+ * by Ken Fishkin
+ * from "Graphics Gems", Academic Press, 1990
+ * */
+/*
+ *  * given h,s,l on [0..1],
+ *   * return r,g,b on [0..1]
+ *    */
 void hsl_to_rgb(double h, double sl, double l, double * r, double * g,
 		double * b) {
 	double v;
@@ -121,10 +235,10 @@ void rgb_to_hsl(double r, double g, double b, double *h, double *s, double *l) {
 	double vm;
 	double r2, g2, b2;
 
-	v = MAX(r, g);
-	v = MAX(v, b);
-	m = MIN(r, g);
-	m = MIN(m, b);
+	v = max(r, g);
+	v = max(v, b);
+	m = min(r, g);
+	m = min(m, b);
 	*h = 0.0;
 	*s = 0.0;	// init values
 
@@ -306,33 +420,55 @@ double BV_to_T(double BV) {
 }
 
 
-int equalize_cfa_fit_with_coeffs(fits *fit, double coeff1, double coeff2,
+int equalize_cfa_fit_with_coeffs(fits *fit, float coeff1, float coeff2,
 		int config) {
 	int row, col;
-	double tmp1, tmp2;
-	WORD *data;
+	float tmp1, tmp2;
+	if (fit->type == DATA_USHORT) {
+		WORD *data = fit->data;
+		for (row = 0; row < fit->ry - 1; row += 2) {
+			for (col = 0; col < fit->rx - 1; col += 2) {
+				if (config == 0) {
+					tmp1 = (float)data[1 + col + row * fit->rx] / coeff1;
+					data[1 + col + row * fit->rx] = round_to_WORD(tmp1);
 
-	data = fit->data;
+					tmp2 = (float)data[col + (1 + row) * fit->rx] / coeff2;
+					data[col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
 
-	for (row = 0; row < fit->ry - 1; row += 2) {
-		for (col = 0; col < fit->rx - 1; col += 2) {
-			if (config == 0) {
-				tmp1 = (double) data[1 + col + row * fit->rx] / coeff1;
-				data[1 + col + row * fit->rx] = round_to_WORD(tmp1);
+				} else {
+					tmp1 = (float)data[col + row * fit->rx] / coeff1;
+					data[col + row * fit->rx] = round_to_WORD(tmp1);
 
-				tmp2 = (double) data[col + (1 + row) * fit->rx] / coeff2;
-				data[col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
+					tmp2 = (float)data[1 + col + (1 + row) * fit->rx] / coeff2;
+					data[1 + col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
 
-			} else {
-				tmp1 = (double) data[col + row * fit->rx] / coeff1;
-				data[col + row * fit->rx] = round_to_WORD(tmp1);
-
-				tmp2 = (double) data[1 + col + (1 + row) * fit->rx] / coeff2;
-				data[1 + col + (1 + row) * fit->rx] = round_to_WORD(tmp2);
-
+				}
 			}
 		}
 	}
+	else if (fit->type == DATA_FLOAT) {
+		float *data = fit->fdata;
+		for (row = 0; row < fit->ry - 1; row += 2) {
+			for (col = 0; col < fit->rx - 1; col += 2) {
+				if (config == 0) {
+					tmp1 = data[1 + col + row * fit->rx] / coeff1;
+					data[1 + col + row * fit->rx] = tmp1;
+
+					tmp2 = data[col + (1 + row) * fit->rx] / coeff2;
+					data[col + (1 + row) * fit->rx] = tmp2;
+
+				} else {
+					tmp1 = data[col + row * fit->rx] / coeff1;
+					data[col + row * fit->rx] = tmp1;
+
+					tmp2 = data[1 + col + (1 + row) * fit->rx] / coeff2;
+					data[1 + col + (1 + row) * fit->rx] = tmp2;
+
+				}
+			}
+		}
+	}
+	else return 1;
 	return 0;
 }
 
@@ -346,7 +482,7 @@ static gboolean end_extract_channels(gpointer p) {
 	return FALSE;
 }
 
-gpointer extract_channels(gpointer p) {
+static gpointer extract_channels_ushort(gpointer p) {
 	struct extract_channels_data *args = (struct extract_channels_data *) p;
 	WORD *buf[3] = { args->fit->pdata[RLAYER], args->fit->pdata[GLAYER],
 			args->fit->pdata[BLAYER] };
@@ -382,7 +518,7 @@ gpointer extract_channels(gpointer p) {
 			double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
 			double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
 			rgb_to_hsl(r, g, b, &h, &s, &l);
-			buf[RLAYER][i] = round_to_WORD(h * 360.0);
+			buf[RLAYER][i] = round_to_WORD(h * 360.0);	// TODO: what's that?
 			buf[GLAYER][i] = round_to_WORD(s * USHRT_MAX_DOUBLE);
 			buf[BLAYER][i] = round_to_WORD(l * USHRT_MAX_DOUBLE);
 		}
@@ -431,6 +567,101 @@ gpointer extract_channels(gpointer p) {
 	siril_add_idle(end_extract_channels, args);
 
 	return GINT_TO_POINTER(0);
+}
+
+static gpointer extract_channels_float(gpointer p) {
+	struct extract_channels_data *args = (struct extract_channels_data *) p;
+	float *buf[3] = { args->fit->fpdata[RLAYER], args->fit->fpdata[GLAYER],
+			args->fit->fpdata[BLAYER] };
+	int i;
+	struct timeval t_start, t_end;
+	args->process = TRUE;
+
+	if (args->fit->naxes[2] != 3) {
+		siril_log_message(
+				_("Siril cannot extract layers. Make sure your image is in RGB mode.\n"));
+		args->process = FALSE;
+		clearfits(args->fit);
+		siril_add_idle(end_extract_channels, args);
+		return GINT_TO_POINTER(1);
+	}
+
+	siril_log_color_message(_("%s channel extraction: processing...\n"), "red",
+			args->str_type);
+	gettimeofday(&t_start, NULL);
+
+	switch (args->type) {
+	/* RGB space: nothing to do */
+	case 0:
+		break;
+		/* HSL space */
+	case 1:
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#endif
+		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
+			double h, s, l;
+			double r = (double)buf[RLAYER][i];
+			double g = (double)buf[GLAYER][i];
+			double b = (double)buf[BLAYER][i];
+			rgb_to_hsl(r, g, b, &h, &s, &l);
+			buf[RLAYER][i] = (float)h;
+			buf[GLAYER][i] = (float)s;
+			buf[BLAYER][i] = (float)l;
+		}
+		break;
+		/* HSV space */
+	case 2:
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#endif
+		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
+			double h, s, v;
+			double r = (double)buf[RLAYER][i];
+			double g = (double)buf[GLAYER][i];
+			double b = (double)buf[BLAYER][i];
+			rgb_to_hsv(r, g, b, &h, &s, &v);
+			buf[RLAYER][i] = (float)h;
+			buf[GLAYER][i] = (float)s;
+			buf[BLAYER][i] = (float)v;
+		}
+		break;
+		/* CIE L*a*b */
+	case 3:
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#endif
+		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
+			double x, y, z, L, a, b;
+			double red = (double)buf[RLAYER][i];
+			double green = (double)buf[GLAYER][i];
+			double blue = (double)buf[BLAYER][i];
+			rgb_to_xyz(red, green, blue, &x, &y, &z);
+			xyz_to_LAB(x, y, z, &L, &a, &b);
+			buf[RLAYER][i] = (float)(L / 100.);		// 0 < L < 100
+			buf[GLAYER][i] = (float)((a + 128.) / 255.);	// -128 < a < 127
+			buf[BLAYER][i] = (float)((b + 128.) / 255.);	// -128 < b < 127
+		}
+
+	}
+	for (i = 0; i < 3; i++)
+		save1fits32(args->channel[i], args->fit, i);
+	clearfits(args->fit);
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
+	siril_add_idle(end_extract_channels, args);
+
+	return GINT_TO_POINTER(0);
+}
+
+gpointer extract_channels(gpointer p) {
+	struct extract_channels_data *args = (struct extract_channels_data *)p;
+	if (args->fit->type == DATA_USHORT)
+		return extract_channels_ushort(p);
+	if (args->fit->type == DATA_FLOAT)
+		return extract_channels_float(p);
+	siril_add_idle(end_extract_channels, args);
+	return GINT_TO_POINTER(1);
 }
 
 /****************** Color calibration ************************/
@@ -523,14 +754,25 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 	}
 	ref /= 3.0;
 
-	for (chan = 0; chan < 3; chan++) {
-		double offset = stats[chan]->mean - ref;
-
-		WORD *buf = fit->pdata[chan];
-		for (i = 0; i < fit->rx * fit->ry; i++) {
-			buf[i] = round_to_WORD((double)buf[i] - offset);
+	if (fit->type == DATA_USHORT) {
+		for (chan = 0; chan < 3; chan++) {
+			double offset = stats[chan]->mean - ref;
+			WORD *buf = fit->pdata[chan];
+			for (i = 0; i < fit->rx * fit->ry; i++) {
+				buf[i] = round_to_WORD((double)buf[i] - offset);
+			}
+			free_stats(stats[chan]);
 		}
-		free_stats(stats[chan]);
+	}
+	else if (fit->type == DATA_FLOAT) {
+		for (chan = 0; chan < 3; chan++) {
+			double offset = stats[chan]->mean - ref;
+			float *buf = fit->fpdata[chan];
+			for (i = 0; i < fit->rx * fit->ry; i++) {
+				buf[i] = (float)((double)buf[i] - offset);
+			}
+			free_stats(stats[chan]);
+		}
 	}
 
 	invalidate_stats_from_fit(fit);
@@ -606,32 +848,56 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 		double kw[], double bg[], double norm, double low, double high) {
 	int chan, i, j, n;
 	double tmp[3] = { 0.0, 0.0, 0.0 };
-	WORD lo, hi;
 
 	assert(fit->naxes[2] == 3);
 
-	lo = round_to_WORD(low * (norm));
-	hi = round_to_WORD(high * (norm));
+	if (fit->type == DATA_USHORT) {
+		WORD lo = round_to_WORD(low * (norm));
+		WORD hi = round_to_WORD(high * (norm));
 
-	for (chan = 0; chan < 3; chan++) {
-		n = 0;
-		WORD *from = fit->pdata[chan] + (fit->ry - white.y - white.h) * fit->rx
+		for (chan = 0; chan < 3; chan++) {
+			n = 0;
+			WORD *from = fit->pdata[chan] + (fit->ry - white.y - white.h) * fit->rx
 				+ white.x;
-		int stridefrom = fit->rx - white.w;
+			int stridefrom = fit->rx - white.w;
 
-		for (i = 0; i < white.h; i++) {
-			for (j = 0; j < white.w; j++) {
-				if (*from > lo && *from < hi ) {
-					kw[chan] += (double) *from / norm;
-					n++;
+			for (i = 0; i < white.h; i++) {
+				for (j = 0; j < white.w; j++) {
+					if (*from > lo && *from < hi ) {
+						kw[chan] += (double)*from / norm;
+						n++;
+					}
+					from++;
 				}
-				from++;
+				from += stridefrom;
 			}
-			from += stridefrom;
+			if (n > 0)
+				kw[chan] /= (double)n;
 		}
-		if (n > 0)
-			kw[chan] /= (double) n;
 	}
+	else if (fit->type == DATA_FLOAT) {
+		for (chan = 0; chan < 3; chan++) {
+			n = 0;
+			float *from = fit->fpdata[chan] + (fit->ry - white.y - white.h) * fit->rx
+				+ white.x;
+			int stridefrom = fit->rx - white.w;
+
+			for (i = 0; i < white.h; i++) {
+				for (j = 0; j < white.w; j++) {
+					double f = (double)*from;
+					if (f > low && f < high) {
+						kw[chan] += f;
+						n++;
+					}
+					from++;
+				}
+				from += stridefrom;
+			}
+			if (n > 0)
+				kw[chan] /= (double)n;
+		}
+	}
+	else return;
 
 	siril_log_message(_("Background reference:\n"));
 	for (chan = 0; chan < 3; chan++) {
@@ -669,16 +935,21 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 }
 
 static int calibrate(fits *fit, int layer, double kw, double bg, double norm) {
-	WORD *buf;
-	double bgNorm;
 	int i;
-
-	bgNorm = bg * norm;
-
-	buf = fit->pdata[layer];
-	for (i = 0; i < fit->rx * fit->ry; ++i) {
-		buf[i] = round_to_WORD((buf[i] - bgNorm) * kw + bgNorm);
+	if (fit->type == DATA_USHORT) {
+		double bgNorm = bg * norm;
+		WORD *buf = fit->pdata[layer];
+		for (i = 0; i < fit->rx * fit->ry; ++i) {
+			buf[i] = round_to_WORD((buf[i] - bgNorm) * kw + bgNorm);
+		}
 	}
+	else if (fit->type == DATA_FLOAT) {
+		float *buf = fit->fpdata[layer];
+		for (i = 0; i < fit->rx * fit->ry; ++i) {
+			buf[i] = (float)((double)buf[i] - bg) * kw + bg;
+		}
+	}
+	else return 1;
 	return 0;
 }
 
@@ -701,7 +972,7 @@ static void white_balance(fits *fit, gboolean is_manual, rectangle white_selecti
 	}
 
 	assert(fit->naxes[2] == 3);
-	norm = (double) get_normalized_value(fit);
+	norm = get_normalized_value(fit);
 
 	if (is_manual) {
 		kw[RLAYER] = gtk_range_get_value(scale_white_balance[RLAYER]);
@@ -737,25 +1008,17 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 	gboolean is_manual = gtk_toggle_button_get_active(manual);
 
 	if (!selection_black_value[0]) {
-		selection_black_value[0] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_bkg_x"));
-		selection_black_value[1] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_bkg_y"));
-		selection_black_value[2] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_bkg_w"));
-		selection_black_value[3] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_bkg_h"));
+		selection_black_value[0] = GTK_SPIN_BUTTON(lookup_widget("spin_bkg_x"));
+		selection_black_value[1] = GTK_SPIN_BUTTON(lookup_widget("spin_bkg_y"));
+		selection_black_value[2] = GTK_SPIN_BUTTON(lookup_widget("spin_bkg_w"));
+		selection_black_value[3] = GTK_SPIN_BUTTON(lookup_widget("spin_bkg_h"));
 	}
 
 	if (!selection_white_value[0]) {
-		selection_white_value[0] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_white_x"));
-		selection_white_value[1] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_white_y"));
-		selection_white_value[2] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_white_w"));
-		selection_white_value[3] = GTK_SPIN_BUTTON(
-				gtk_builder_get_object(builder, "spin_white_h"));
+		selection_white_value[0] = GTK_SPIN_BUTTON(lookup_widget("spin_white_x"));
+		selection_white_value[1] = GTK_SPIN_BUTTON(lookup_widget("spin_white_y"));
+		selection_white_value[2] = GTK_SPIN_BUTTON(lookup_widget("spin_white_w"));
+		selection_white_value[3] = GTK_SPIN_BUTTON(lookup_widget("spin_white_h"));
 	}
 
 	black_selection.x = gtk_spin_button_get_value(selection_black_value[0]);
@@ -807,17 +1070,29 @@ void on_checkbutton_manual_calibration_toggled(GtkToggleButton *togglebutton,
 }
 
 static int pos_to_neg(fits *fit) {
-	WORD norm;
 	int chan, i;
-	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER],
+	if (fit->type == DATA_USHORT) {
+		WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER],
 			fit->pdata[BLAYER] };
 
-	norm = get_normalized_value(fit);
-	for (chan = 0; chan < fit->naxes[2]; chan ++) {
-		for (i = 0; i < fit->rx * fit->ry; i++) {
-			buf[chan][i] = norm - buf[chan][i];
+		WORD norm = (WORD)get_normalized_value(fit);
+		for (chan = 0; chan < fit->naxes[2]; chan ++) {
+			for (i = 0; i < fit->rx * fit->ry; i++) {
+				buf[chan][i] = norm - buf[chan][i];
+			}
 		}
 	}
+	else if (fit->type == DATA_FLOAT) {
+		float *buf[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER],
+			fit->fpdata[BLAYER] };
+
+		for (chan = 0; chan < fit->naxes[2]; chan ++) {
+			for (i = 0; i < fit->rx * fit->ry; i++) {
+				buf[chan][i] = 1.0f - buf[chan][i];
+			}
+		}
+	}
+	else return 1;
 
 	return 0;
 }

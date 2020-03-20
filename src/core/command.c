@@ -31,6 +31,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/arithm.h"
 #include "core/undo.h"
 #include "core/initfile.h"
 #include "core/preprocess.h"
@@ -86,17 +87,16 @@ char *word[MAX_COMMAND_WORDS];	// NULL terminated
 
 int process_load(int nb){
 	char filename[256];
-	int retval, i;
 	
 	strncpy(filename, word[1], 250);
 	filename[250] = '\0';
 	
-	for (i = 1; i < nb - 1; ++i) {
+	for (int i = 1; i < nb - 1; ++i) {
 		strcat(filename, " ");
 		strcat(filename, word[i + 1]);
 	}
 	expand_home_in_filename(filename, 256);
-	retval = open_single_image(filename);
+	int retval = open_single_image(filename);
 	return retval;
 }
 
@@ -127,9 +127,6 @@ int process_satu(int nb){
 }
 
 int process_save(int nb){
-	gchar *filename;
-	int retval;
-	
 	if (sequence_is_loaded() && !single_image_is_loaded()) {
 		gfit.hi = com.seq.layers[RLAYER].hi;
 		gfit.lo = com.seq.layers[RLAYER].lo;
@@ -141,20 +138,19 @@ int process_save(int nb){
 		return 1;
 	}
 
-	filename = g_strdup(word[1]);
+	gchar *filename = g_strdup(word[1]);
 	set_cursor_waiting(TRUE);
-	retval = savefits(filename, &(gfit));
+	int retval = savefits(filename, &(gfit));
+	set_precision_switch();
 	set_cursor_waiting(FALSE);
 	g_free(filename);
 	return retval;
 }
 
 int process_savebmp(int nb){
-	gchar *filename;
-	
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	filename = g_strdup_printf("%s.bmp", word[1]);
+	gchar *filename = g_strdup_printf("%s.bmp", word[1]);
 
 	set_cursor_waiting(TRUE);
 	savebmp(filename, &(gfit));
@@ -165,8 +161,6 @@ int process_savebmp(int nb){
 
 #ifdef HAVE_LIBJPEG
 int process_savejpg(int nb){
-	gchar *filename;
-
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	int quality = 100;
@@ -174,7 +168,7 @@ int process_savejpg(int nb){
 	if ((nb == 3) && atoi(word[2]) <= 100 && atoi(word[2]) > 0)
 		quality = atoi(word[2]);
 
-	filename = g_strdup_printf("%s.jpg", word[1]);
+	gchar *filename = g_strdup_printf("%s.jpg", word[1]);
 
 	set_cursor_waiting(TRUE);
 	savejpg(filename, &gfit, quality);
@@ -186,15 +180,13 @@ int process_savejpg(int nb){
 
 #ifdef HAVE_LIBPNG
 int process_savepng(int nb){
-	gchar *filename;
-	uint32_t bytes_per_sample;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	filename = g_strdup_printf("%s.png", word[1]);
+	gchar *filename = g_strdup_printf("%s.png", word[1]);
 
 	set_cursor_waiting(TRUE);
-	bytes_per_sample = gfit.orig_bitpix != BYTE_IMG ? 2 : 1;
+	uint32_t bytes_per_sample = gfit.orig_bitpix != BYTE_IMG ? 2 : 1;
 	savepng(filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
 	set_cursor_waiting(FALSE);
 	g_free(filename);
@@ -204,7 +196,6 @@ int process_savepng(int nb){
 
 #ifdef HAVE_LIBTIFF
 int process_savetif(int nb){
-	gchar *filename;
 	uint16 bitspersample = 16;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded()))
@@ -212,7 +203,7 @@ int process_savetif(int nb){
 
 	if (strcasecmp(word[0], "savetif8") == 0)
 		bitspersample = 8;
-	filename = g_strdup_printf("%s.tif", word[1]);
+	gchar *filename = g_strdup_printf("%s.tif", word[1]);
 	set_cursor_waiting(TRUE);
 	savetif(filename, &gfit, bitspersample);
 	set_cursor_waiting(FALSE);
@@ -230,16 +221,39 @@ int process_savepnm(int nb){
 
 int process_imoper(int nb){
 	fits fit = { 0 };
-
 	if (!single_image_is_loaded()) return 1;
+	if (readfits(word[1], &fit, NULL, TRUE)) return -1;
 
-	if (readfits(word[1], &fit, NULL))
-		return -1;
-	imoper(&gfit, &fit, word[0][1]);
+	image_operator oper;
+	switch (word[0][1]) {
+		case 'a':
+		case 'A':
+			oper = OPER_ADD;
+			break;
+		case 's':
+		case 'S':
+			oper = OPER_SUB;
+			break;
+		case 'm':
+		case 'M':
+			oper = OPER_MUL;
+			break;
+		case 'd':
+		case 'D':
+			oper = OPER_DIV;
+			break;
+		default:
+			siril_log_color_message(_("Could not understand the requested operator\n"), "red");
+			clearfits(&fit);
+			return 1;
+	}
+	int retval = imoper(&gfit, &fit, oper, TRUE);
+
+	clearfits(&fit);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
-	return 0;
+	return retval;
 }
 
 int process_addmax(int nb){
@@ -247,27 +261,27 @@ int process_addmax(int nb){
 
 	if (!single_image_is_loaded()) return 1;
 
-	if (readfits(word[1], &fit, NULL))
+	if (readfits(word[1], &fit, NULL, gfit.type == DATA_FLOAT))
 		return -1;
-	if (addmax(&gfit, &fit)==0) {
+	if (addmax(&gfit, &fit) == 0) {
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 	}
+	clearfits(&fit);
 	return 0;
 }
 
 int process_fdiv(int nb){
 	// combines an image division and a scalar multiplication.
-	float norm;
 	fits fit = { 0 };
-
 	if (!single_image_is_loaded()) return 1;
 
-	norm = atof(word[2]);
-	if (readfits(word[1], &fit, NULL))
-		return -1;
-	siril_fdiv(&gfit, &fit, norm);
+	float norm = atof(word[2]);
+	if (readfits(word[1], &fit, NULL, TRUE)) return -1;
+	siril_fdiv(&gfit, &fit, norm, TRUE);
+
+	clearfits(&fit);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -275,16 +289,15 @@ int process_fdiv(int nb){
 }
 
 int process_fmul(int nb){
-	float coeff;
-
 	if (!single_image_is_loaded()) return 1;
 
-	coeff = atof(word[1]);
-	if (coeff <= 0.0) {
+	float coeff = atof(word[1]);
+	if (coeff <= 0.f) {
 		siril_log_message(_("Multiplying by a coefficient less than or equal to 0 is not possible.\n"));
 		return 1;
 	}
-	soper(&gfit, coeff, OPER_MUL);
+	soper(&gfit, coeff, OPER_MUL, TRUE);
+
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -293,7 +306,7 @@ int process_fmul(int nb){
 
 int process_entropy(int nb){
 	rectangle area;
-	double e;
+	float e;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
@@ -304,7 +317,7 @@ int process_entropy(int nb){
 	else {
 		e = entropy(&gfit, com.cvport, NULL, NULL);
 	}
-	siril_log_message(_("Entropy: %.3lf\n"), e);
+	siril_log_message(_("Entropy: %.3f\n"), e);
 	return 0;
 }
 
@@ -365,7 +378,11 @@ int process_rl(int nb) {
 	struct deconv_data *args = malloc(sizeof(struct deconv_data));
 
 	args->fit = &gfit;
-	args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi;
+	if (args->fit->type == DATA_USHORT) {
+		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi;
+	} else {
+		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi * USHRT_MAX_DOUBLE;
+	}
 	args->auto_contrast_threshold = TRUE;
 	args->sigma = sigma;
 	args->corner_radius = corner;
@@ -474,7 +491,11 @@ int process_wrecons(int nb) {
 
 	for (i = 0; i < nb_chan; i++) {
 		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
-		wavelet_reconstruct_file(dir[i], coef, gfit.pdata[i]);
+		if (gfit.type == DATA_USHORT) {
+			wavelet_reconstruct_file(dir[i], coef, gfit.pdata[i]);
+		} else {
+			wavelet_reconstruct_file_float(dir[i], coef, gfit.fpdata[i]);
+		}
 		g_free(dir[i]);
 	}
 
@@ -489,7 +510,6 @@ int process_wavelet(int nb) {
 			"b_rawdata.wave" }, *dir[3];
 	const char* tmpdir;
 	int Type_Transform, Nbr_Plan, maxplan, mins, chan, nb_chan;
-	float *Imag;
 
 	if (!single_image_is_loaded()) return 1;
 
@@ -515,15 +535,25 @@ int process_wavelet(int nb) {
 		return 1;
 	}
 
-	Imag = f_vector_alloc (gfit.rx * gfit.ry);
-	
-	for (chan = 0; chan < nb_chan; chan++) {
-		dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan], NULL);
-		wavelet_transform_file (Imag, gfit.ry, gfit.rx, dir[chan], Type_Transform, Nbr_Plan, gfit.pdata[chan]);
-		g_free(dir[chan]);
+	if (gfit.type == DATA_USHORT) {
+		float *Imag = f_vector_alloc(gfit.rx * gfit.ry);
+
+		for (chan = 0; chan < nb_chan; chan++) {
+			dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan],	NULL);
+			wavelet_transform_file(Imag, gfit.ry, gfit.rx, dir[chan],
+					Type_Transform, Nbr_Plan, gfit.pdata[chan]);
+			g_free(dir[chan]);
+		}
+
+		free(Imag);
+	} else {
+		for (chan = 0; chan < nb_chan; chan++) {
+			dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan],	NULL);
+			wavelet_transform_file_float(gfit.fpdata[chan], gfit.ry, gfit.rx, dir[chan],
+					Type_Transform, Nbr_Plan);
+			g_free(dir[chan]);
+		}
 	}
-	
-	free (Imag);
 	return 0;
 }
 
@@ -1085,7 +1115,7 @@ int process_bgnoise(int nb){
 int process_histo(int nb){
 	size_t i;
 	int nlayer = atoi(word[1]);
-	char* clayer;
+	const char* clayer;
 	char name [20];
 	
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
@@ -1093,14 +1123,13 @@ int process_histo(int nb){
 	if (nlayer>3 || nlayer <0)
 		return 1;
 	gsl_histogram* histo = computeHisto(&gfit, nlayer);
-	if (!isrgb(&gfit)) clayer = strdup("bw");		//if B&W
+	if (!isrgb(&gfit)) clayer = "bw";		//if B&W
 	else clayer = vport_number_to_name(nlayer);
 	snprintf(name, 20, "histo_%s.dat",clayer);
 
 	FILE *f = g_fopen(name, "w");
 
 	if (f == NULL) {
-		free(clayer);
 		return 1;
 	}
 	for (i = 0; i < USHRT_MAX + 1; i++)
@@ -1108,7 +1137,6 @@ int process_histo(int nb){
 	fclose(f);
 	gsl_histogram_free(histo);
 	siril_log_message(_("The file %s has been created for the %s layer.\n"), name, clayer);
-	free(clayer);
 	return 0;
 }
 
@@ -1118,7 +1146,15 @@ int process_thresh(int nb){
 	if (!single_image_is_loaded()) return 1;
 
 	lo = atoi(word[1]);
+	if (lo < 0 || lo > USHRT_MAX) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+		return 1;
+	}
 	hi = atoi(word[2]);
+	if (hi < 0 || hi > USHRT_MAX) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+		return 1;
+	}
 	threshlo(&gfit, lo);
 	threshhi(&gfit, hi);
 	adjust_cutoff_from_updated_gfit();
@@ -1133,6 +1169,10 @@ int process_threshlo(int nb){
 	if (!single_image_is_loaded()) return 1;
 
 	lo = atoi(word[1]);
+	if (lo < 0 || lo > USHRT_MAX) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+		return 1;
+	}
 	threshlo(&gfit, lo);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
@@ -1146,6 +1186,10 @@ int process_threshhi(int nb){
 	if (!single_image_is_loaded()) return 1;
 
 	hi = atoi(word[1]);
+	if (hi < 0 || hi > USHRT_MAX) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+		return 1;
+	}
 	threshhi(&gfit, hi);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
@@ -1159,7 +1203,11 @@ int process_nozero(int nb){
 	if (!single_image_is_loaded()) return 1;
 
 	level = atoi(word[1]);
-	nozero(&gfit, level);
+	if (level < 0 || level > USHRT_MAX) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+		return 1;
+	}
+	nozero(&gfit, (WORD)level);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -1199,9 +1247,9 @@ int process_new(int nb){
 	close_sequence(FALSE);
 
 	fits *fit = &gfit;
-	if (new_fit_image(&fit, width, height, layers))
+	if (new_fit_image(&fit, width, height, layers, DATA_FLOAT))
 		return 1;
-	memset(gfit.data, 0, width * height * layers * sizeof(WORD));
+	memset(gfit.fdata, 0, width * height * layers * sizeof(float));
 
 	com.seq.current = UNRELATED_IMAGE;
 	com.uniq = calloc(1, sizeof(single));
@@ -1292,7 +1340,7 @@ int process_findhot(int nb){
 	sig[0] = atof(word[2]);
 	sig[1] = atof(word[3]);
 
-	deviant_pixel *dev = find_deviant_pixels(&gfit, sig, &icold, &ihot);
+	deviant_pixel *dev = find_deviant_pixels(&gfit, sig, &icold, &ihot, FALSE);
 	siril_log_message(_("%ld cold and %ld hot pixels\n"), icold, ihot);
 
 	sprintf(filename, "%s.lst", word[1]);
@@ -1452,15 +1500,15 @@ int process_fmedian(int nb){
  * was done to be consistent with IRIS
  */
 int process_cdg(int nb) {
-	double x_avg, y_avg;
+	float x_avg, y_avg;
 
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
-	FindCentre(&gfit, &x_avg, &y_avg);
-	y_avg = gfit.ry - y_avg;	// FITS are stored bottom to top
-	siril_log_message(_("Center of gravity coordinates are (%.3lf, %.3lf)\n"), x_avg, y_avg);
-
-	return 0;
+	if (!FindCentre(&gfit, &x_avg, &y_avg)) {
+		siril_log_message(_("Center of gravity coordinates are (%.3lf, %.3lf)\n"), x_avg, y_avg);
+		return 0;
+	}
+	return 1;
 }
 
 int process_clear(int nb) {
@@ -1531,7 +1579,7 @@ int process_offset(int nb){
 	
 	if (!single_image_is_loaded()) return 1;
 
-	level = atoi(word[1]);
+	level = atof(word[1]);
 	off(&gfit, level);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
@@ -1667,8 +1715,10 @@ int process_findcosme(int nb) {
 
 	if (is_sequence) {
 		args->seqEntry = "cc_";
+		args->multithread = FALSE;
 		apply_cosmetic_to_sequence(args);
 	} else {
+		args->multithread = TRUE;
 		start_in_new_thread(autoDetectThreaded, args);
 	}
 
@@ -1743,9 +1793,15 @@ int process_split(int nb){
 	gchar *G = g_strdup_printf("%s%s", word[2], com.ext);
 	gchar *B = g_strdup_printf("%s%s", word[3], com.ext);
 
-	save1fits16(R, &gfit, RLAYER);
-	save1fits16(G, &gfit, GLAYER);
-	save1fits16(B, &gfit, BLAYER);
+	if (gfit.type == DATA_USHORT) {
+		save1fits16(R, &gfit, RLAYER);
+		save1fits16(G, &gfit, GLAYER);
+		save1fits16(B, &gfit, BLAYER);
+	} else {
+		save1fits32(R, &gfit, RLAYER);
+		save1fits32(G, &gfit, GLAYER);
+		save1fits32(B, &gfit, BLAYER);
+	}
 
 	g_free(R);
 	g_free(G);
@@ -1759,11 +1815,9 @@ int process_split_cfa(int nb) {
 		return 1;
 	}
 	char *filename = NULL;
+	int ret = 1;
 
-	fits f_cfa0 = { 0 };
-	fits f_cfa1 = { 0 };
-	fits f_cfa2 = { 0 };
-	fits f_cfa3 = { 0 };
+	fits f_cfa0 = { 0 }, f_cfa1 = { 0 }, f_cfa2 = { 0 }, f_cfa3 = { 0 };
 
 	if (sequence_is_loaded() && !single_image_is_loaded()) {
 		filename = g_path_get_basename(com.seq.seqname);
@@ -1781,36 +1835,29 @@ int process_split_cfa(int nb) {
 	gchar *cfa2 = g_strdup_printf("CFA2_%s%s", filename, com.ext);
 	gchar *cfa3 = g_strdup_printf("CFA3_%s%s", filename, com.ext);
 
-	int ret = split_cfa(&gfit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3);
-	if (ret) {
-		g_free(cfa0);
-		g_free(cfa1);
-		g_free(cfa2);
-		g_free(cfa3);
-		clearfits(&f_cfa0);
-		clearfits(&f_cfa1);
-		clearfits(&f_cfa2);
-		clearfits(&f_cfa3);
-		return ret;
+	if (gfit.type == DATA_USHORT) {
+		if (!(ret = split_cfa_ushort(&gfit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3))) {
+			ret = save1fits16(cfa0, &f_cfa0, 0) ||
+				save1fits16(cfa1, &f_cfa1, 0) ||
+				save1fits16(cfa2, &f_cfa2, 0) ||
+				save1fits16(cfa3, &f_cfa3, 0);
+		}
+	}
+	else if (gfit.type == DATA_FLOAT) {
+		if (!(ret = split_cfa_float(&gfit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3))) {
+			ret = save1fits32(cfa0, &f_cfa0, 0) ||
+				save1fits32(cfa1, &f_cfa1, 0) ||
+				save1fits32(cfa2, &f_cfa2, 0) ||
+				save1fits32(cfa3, &f_cfa3, 0);
+		}
 	}
 
-	save1fits16(cfa0, &f_cfa0, 0);
-	save1fits16(cfa1, &f_cfa1, 0);
-	save1fits16(cfa2, &f_cfa2, 0);
-	save1fits16(cfa3, &f_cfa3, 0);
-
-	g_free(cfa0);
-	g_free(cfa1);
-	g_free(cfa2);
-	g_free(cfa3);
-
-	clearfits(&f_cfa0);
-	clearfits(&f_cfa1);
-	clearfits(&f_cfa2);
-	clearfits(&f_cfa3);
-
+	g_free(cfa0); g_free(cfa1);
+	g_free(cfa2); g_free(cfa3);
+	clearfits(&f_cfa0); clearfits(&f_cfa1);
+	clearfits(&f_cfa2); clearfits(&f_cfa3);
 	free(filename);
-	return 0;
+	return ret;
 }
 
 int process_seq_split_cfa(int nb) {
@@ -1856,7 +1903,6 @@ int process_seq_split_cfa(int nb) {
 	return 0;
 }
 
-
 int process_stat(int nb){
 	int nplane;
 	int layer;
@@ -1888,11 +1934,22 @@ int process_stat(int nb){
 				break;
 		}
 
-		siril_log_message(
-				_("%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, "
-						"AvgDev: %0.1lf, Min: %0.1lf, Max: %0.1lf\n"),
-				layername, stat->mean, stat->median, stat->sigma,
-				stat->avgDev, stat->min, stat->max);
+		if (gfit.type == DATA_USHORT) {
+			siril_log_message(
+					_("%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, "
+							"AvgDev: %0.1lf, Min: %0.1lf, Max: %0.1lf\n"),
+					layername, stat->mean, stat->median, stat->sigma,
+					stat->avgDev, stat->min, stat->max);
+		} else {
+			siril_log_message(
+					_("%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, "
+							"AvgDev: %0.1lf, Min: %0.1lf, Max: %0.1lf\n"),
+					layername, stat->mean * USHRT_MAX_DOUBLE,
+					stat->median * USHRT_MAX_DOUBLE,
+					stat->sigma * USHRT_MAX_DOUBLE,
+					stat->avgDev * USHRT_MAX_DOUBLE,
+					stat->min * USHRT_MAX_DOUBLE, stat->max * USHRT_MAX_DOUBLE);
+		}
 		free_stats(stat);
 	}
 	return 0;
@@ -2048,7 +2105,7 @@ int process_register(int nb) {
 		remove_prefixed_sequence_files(reg_args->seq, reg_args->prefix);
 
 		int nb_frames = reg_args->process_all_frames ? reg_args->seq->number : reg_args->seq->selnum;
-		int64_t size = seq_compute_size(reg_args->seq, nb_frames);
+		int64_t size = seq_compute_size(reg_args->seq, nb_frames, get_data_type(seq->bitpix));
 		if (reg_args->x2upscale)
 			size *= 4;
 		if (test_available_space(size) > 0) {
@@ -2086,7 +2143,9 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 		char *current = word[first], *value;
 		if (!strcmp(current, "-nonorm") || !strcmp(current, "-no_norm"))
 			arg->force_no_norm = TRUE;
-		else if (g_str_has_prefix(current, "-norm=")) {
+		else if (!strcmp(current, "-output_norm")) {
+			arg->output_norm = TRUE;
+		} else if (g_str_has_prefix(current, "-norm=")) {
 			if (!norm_allowed) {
 				siril_log_message(_("Normalization options are not allowed in this context, ignoring.\n"));
 			} else {
@@ -2221,7 +2280,7 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 		else args.normalize = NO_NORM;
 		args.method = arg->method;
 		args.force_norm = FALSE;
-		args.norm_to_16 = TRUE;
+		args.output_norm = arg->output_norm;
 		args.reglayer = args.seq->nb_layers == 1 ? 0 : 1;
 
 		// manage filters
@@ -2231,6 +2290,8 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 			return 1;
 		}
 		args.description = describe_filter(seq, args.filtering_criterion, args.filtering_parameter);
+		args.use_32bit_output = evaluate_stacking_should_output_32bits(args.method,
+			args.seq, args.nb_images_to_stack);
 
 		if (!arg->result_file) {
 			char filename[256];
@@ -2500,7 +2561,7 @@ int process_preprocess(int nb) {
 		if (word[i]) {
 			if (g_str_has_prefix(word[i], "-bias=")) {
 				args->bias = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, args->bias, NULL)) {
+				if (!readfits(word[i] + 6, args->bias, NULL, TRUE)) {
 					args->use_bias = TRUE;
 				} else {
 					retvalue = 1;
@@ -2509,7 +2570,7 @@ int process_preprocess(int nb) {
 				}
 			} else if (g_str_has_prefix(word[i], "-dark=")) {
 				args->dark = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, args->dark, NULL)) {
+				if (!readfits(word[i] + 6, args->dark, NULL, TRUE)) {
 					args->use_dark = TRUE;
 					args->use_cosmetic_correction = TRUE;
 				} else {
@@ -2519,7 +2580,7 @@ int process_preprocess(int nb) {
 				}
 			} else if (g_str_has_prefix(word[i], "-flat=")) {
 				args->flat = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, args->flat, NULL)) {
+				if (!readfits(word[i] + 6, args->flat, NULL, TRUE)) {
 					args->use_flat = TRUE;
 				} else {
 					retvalue = 1;
@@ -2533,7 +2594,7 @@ int process_preprocess(int nb) {
 			} else if (!strcmp(word[i], "-debayer")) {
 				args->debayer = TRUE;
 			} else if (!strcmp(word[i], "-stretch")) {
-				args->stretch_cfa = TRUE;
+				siril_log_message(_("-stretch option is now deprecated.\n")); // TODO. Should we keep it only for compatibility
 			} else if (!strcmp(word[i], "-flip")) {
 				args->compatibility = TRUE;
 			} else if (!strcmp(word[i], "-equalize_cfa")) {
@@ -2556,11 +2617,12 @@ int process_preprocess(int nb) {
 	args->sigma[0] = -1.00; /* cold pixels: it is better to deactive it */
 	args->sigma[1] =  3.00; /* hot pixels */
 	args->ppprefix = "pp_";
+	args->allow_32bit_output = args->seq->type == SEQ_REGULAR;
 
 	// start preprocessing
 	set_cursor_waiting(TRUE);
 
-	start_sequence_preprocessing(args, TRUE);
+	start_sequence_preprocessing(args);
 	return 0;
 }
 

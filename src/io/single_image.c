@@ -137,7 +137,7 @@ static gboolean end_read_single_image(gpointer p) {
  * @param is_sequence is set to TRUE if the loaded image is in fact a SER or AVI sequence. Can be NULL
  * @return
  */
-int read_single_image(const char* filename, fits *dest, char **realname_out, gboolean *is_sequence) {
+int read_single_image(const char* filename, fits *dest, char **realname_out, gboolean allow_sequences, gboolean *is_sequence, gboolean allow_dialogs, gboolean force_float) {
 	int retval;
 	image_type imagetype;
 	char *realname = NULL;
@@ -152,12 +152,17 @@ int read_single_image(const char* filename, fits *dest, char **realname_out, gbo
 		return 1;
 	}
 	if (imagetype == TYPESER || imagetype == TYPEAVI) {
-		retval = read_single_sequence(realname, imagetype);
-		single_sequence = TRUE;
+		if (allow_sequences) {
+			retval = read_single_sequence(realname, imagetype);
+			single_sequence = TRUE;
+		} else {
+			siril_log_message(_("Cannot open a sequence from here\n"));
+			return 1;
+		}
 	} else {
-		retval = any_to_fits(imagetype, realname, dest, TRUE);
+		retval = any_to_fits(imagetype, realname, dest, allow_dialogs, force_float);
 		if (!retval)
-			debayer_if_needed(imagetype, dest, com.debayer.compatibility, FALSE, com.debayer.stretch);
+			debayer_if_needed(imagetype, dest, com.debayer.compatibility, FALSE);
 	}
 	if (is_sequence) {
 		*is_sequence = single_sequence;
@@ -191,7 +196,7 @@ int open_single_image(const char* filename) {
 	close_sequence(FALSE);	// closing a sequence if loaded
 	close_single_image();	// close the previous image and free resources
 
-	retval = read_single_image(filename, &gfit, &realname, &is_single_sequence);
+	retval = read_single_image(filename, &gfit, &realname, TRUE, &is_single_sequence, TRUE, FALSE);
 	if (retval == 2) {
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error opening file"),
 				_("This file could not be opened because "
@@ -239,6 +244,7 @@ void open_single_image_from_gfit() {
 	adjust_sellabel();
 
 	display_filename();	// display filename in gray window
+	set_precision_switch(); // set precision on screen
 
 	/* update menus */
 	update_MenuItem();
@@ -260,7 +266,7 @@ int image_find_minmax(fits *fit) {
 		// calling statistics() saves stats in the fit already, we don't need
 		// to use the returned handle
 		free_stats(statistics(NULL, -1, fit, layer, NULL, STATS_MINMAX, TRUE));
-		if (!fit->stats[layer])
+		if (!fit->stats || !fit->stats[layer])
 			return -1;
 		fit->maxi = max(fit->maxi, fit->stats[layer]->max);
 		fit->mini = min(fit->mini, fit->stats[layer]->min);
@@ -287,6 +293,17 @@ double fit_get_min(fits *fit, int layer) {
 	if (fit_get_minmax(fit, layer))
 		return -1.0;
 	return fit->stats[layer]->min;
+}
+
+static void fit_lohi_to_layers(fits *fit, double lo, double hi, layer_info *layer) {
+	if (fit->type == DATA_USHORT) {
+		layer->lo = (WORD)lo;
+		layer->hi = (WORD)hi;
+	}
+	else if (fit->type == DATA_FLOAT) {
+		layer->lo = float_to_ushort_range((float)lo);
+		layer->hi = float_to_ushort_range((float)hi);
+	}
 }
 
 /* gfit has been loaded, now we copy the hi and lo values into the com.uniq or com.seq layers.
@@ -319,13 +336,12 @@ void init_layers_hi_and_lo_values(sliders_mode force_minmax) {
 		if (gfit.hi == 0 || force_minmax == MINMAX) {
 			com.sliders = MINMAX;
 			if (!is_chained) {
-				layers[i].hi = fit_get_max(&gfit, i);
-				layers[i].lo = fit_get_min(&gfit, i);
+				fit_lohi_to_layers(&gfit, fit_get_min(&gfit, i),
+						fit_get_max(&gfit, i), &layers[i]);
 			}
 			else {
 				image_find_minmax(&gfit);
-				layers[i].hi = gfit.maxi;
-				layers[i].lo = gfit.mini;
+				fit_lohi_to_layers(&gfit, gfit.mini, gfit.maxi, &layers[i]);
 			}
 		} else {
 			com.sliders = MIPSLOHI;

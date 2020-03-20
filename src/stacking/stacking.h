@@ -69,12 +69,13 @@ struct stacking_args {
 	int retval;
 	int max_number_of_rows;	/* number of rows that can be processed simultaneously,
 				   function of max memory, image size and nb_images_to_stack */
-	double sig[2];		/* low and high sigma rejection */
+	float sig[2];		/* low and high sigma rejection */
 	rejection type_of_rejection;	/* type of rejection */
 	normalization normalize;	/* type of normalization */
 	norm_coeff coeff;		/* normalization data */
 	gboolean force_norm;		/* TRUE = force normalization */
-	gboolean norm_to_16;		/* normalize final image to 16bits */
+	gboolean output_norm;		/* normalize final image to the [0, 1] range */
+	gboolean use_32bit_output;	/* output to 32 bit float */
 	int reglayer;		/* layer used for registration data */
 };
 
@@ -86,6 +87,7 @@ struct stacking_configuration {
 	stack_method method;
 	double sig[2];
 	gboolean force_no_norm;
+	gboolean output_norm;
 	normalization norm;
 	int number_of_loaded_sequences;
 	float f_fwhm, f_fwhm_p, f_wfwhm, f_wfwhm_p, f_round, f_round_p, f_quality, f_quality_p; // on if >0
@@ -93,6 +95,7 @@ struct stacking_configuration {
 };
 
 void initialize_stacking_methods();
+gboolean evaluate_stacking_should_output_32bits(stack_method method, sequence *seq, int nb_img_to_stack);
 
 int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack);
 
@@ -122,26 +125,28 @@ struct _image_block {
 
 /* pool of memory blocks for parallel processing */
 struct _data_block {
-	WORD **pix;	// buffer for a block on all images
-	WORD *tmp;	// the actual single buffer for pix
-	WORD *stack;	// the reordered stack for one pixel in all images
+	void **pix;	// buffer for a block on all images
+	void *tmp;	// the actual single buffer for pix
+	void *stack;	// the reordered stack for one pixel in all images
 	int *rejected;  // 0 if pixel ok, 1 or -1 if rejected
-	WORD *w_stack;	// stack for the winsorized rejection
-	double *xf, *yf;// data for the linear fit rejection
+	void *w_stack;	// stack for the winsorized rejection
+	float *xf, *yf, m_x, m_dx2;// data for the linear fit rejection
 };
 
 int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, double *exposure, fits *fit);
-int stack_create_result_fit(fits *fit, int bitpix, int naxis, long *naxes);
 int stack_compute_parallel_blocks(struct _image_block **blocks, int max_number_of_rows,
 		int nb_channels, long *naxes, long *largest_block_height,
-		int *nb_parallel_stacks);
-void stack_read_block_data(struct stacking_args *args, int use_regdata,
-		struct _image_block *my_block, struct _data_block *data, long *naxes);
+		int *nb_parallel_stacks, int nb_threads);
 int find_refimage_in_indices(int *indices, int nb, int ref);
 
 	/* up-scaling functions */
 
 int upscale_sequence(struct stacking_args *args);
 void remove_tmp_drizzle_files(struct stacking_args *args);
+
+
+	/* rejection_float.c */
+
+int apply_rejection_float(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]);
 
 #endif

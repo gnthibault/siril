@@ -36,6 +36,7 @@
 
 #define PRINT_ALLOC_ERR fprintf(stderr, "Out of memory in %s (%s:%d) - aborting\n", __func__, __FILE__, __LINE__)
 
+#ifndef RT_INCLUDE
 #undef max
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
@@ -51,22 +52,27 @@
 #define SWAP(a,b)  { double temp = (a); (a) = (b); (b) = temp; }
 
 #define SQR(x) ((x)*(x))
+#endif
 
 #define USHRT_MAX_DOUBLE ((double)USHRT_MAX)
+#define SHRT_MAX_DOUBLE ((double)SHRT_MAX)
 #define USHRT_MAX_SINGLE ((float)USHRT_MAX)
+#define SHRT_MAX_SINGLE ((float)SHRT_MAX)
 #define UCHAR_MAX_DOUBLE ((double)UCHAR_MAX)
 #define UCHAR_MAX_SINGLE ((float)UCHAR_MAX)
+#define INV_USHRT_MAX_SINGLE .000015259022f	// 1/255
+#define INV_UCHAR_MAX_SINGLE .0039215686f	// 1/65535
 
 #define BYTES_IN_A_MB 1048576	// 1024
 
 #define SEQUENCE_DEFAULT_INCLUDE TRUE	// select images by default
 
-typedef unsigned char BYTE;		// default type for image display data
-typedef unsigned short WORD;		// default type for internal image data
+typedef unsigned char BYTE;	// default type for image display data
+typedef unsigned short WORD;	// default type for internal image data
 
-#define MAX_SEQPSF 7			// max number of stars for which seqpsf can be run
+#define MAX_SEQPSF 7	// max number of stars for which seqpsf can be run
 
-#define CMD_HISTORY_SIZE 50		// size of the command line history
+#define CMD_HISTORY_SIZE 50	// size of the command line history
 
 #define ZOOM_MAX	128
 #define ZOOM_MIN	0.03125
@@ -165,12 +171,6 @@ typedef enum {
 #define CONV3X1	(1 << 7)
 #define CONV1X1	(1 << 8)
 
-/* operations on image data */
-#define OPER_ADD 'a'
-#define OPER_SUB 's'
-#define OPER_MUL 'm'
-#define OPER_DIV 'd'
-
 #define PREVIEW_NB 2
 
 /* special values for com.seq.current, the currently loaded image of the
@@ -199,12 +199,21 @@ typedef struct cominf cominfo;
 typedef struct image_stats imstats;
 typedef struct rectangle_struct rectangle;
 typedef struct point_struct point;
+typedef struct pointf_struct pointf;
 typedef struct historic_struct historic;
 typedef struct dateTime_struct dateTime;
 typedef struct fwhm_struct fitted_PSF;
 typedef struct star_finder_struct star_finder_params;
 
 /* global structures */
+
+/* operations on image data */
+typedef enum {
+	OPER_ADD,
+	OPER_SUB,
+	OPER_MUL,
+	OPER_DIV
+} image_operator;
 
 /* ORDER OF POLYNOMES */
 typedef enum {
@@ -248,9 +257,15 @@ typedef enum {
 
 typedef enum {
 	BAYER_BILINEAR,
-	BAYER_NEARESNEIGHBOR,
+//	BAYER_NEARESTNEIGHBOR,
 	BAYER_VNG,
 	BAYER_AHD,
+//	BAYER_AMAZE,
+	BAYER_DCB,
+	BAYER_HPHD,
+	BAYER_IGV,
+	BAYER_LMMSE,
+	BAYER_RCD,
 	BAYER_SUPER_PIXEL,
 	XTRANS
 } interpolation_method;
@@ -265,13 +280,13 @@ typedef enum {
 } opencv_interpolation;
 
 typedef enum {
-    BAYER_FILTER_RGGB,
-    BAYER_FILTER_BGGR,
-    BAYER_FILTER_GBRG,
-    BAYER_FILTER_GRBG,
+	BAYER_FILTER_RGGB,
+	BAYER_FILTER_BGGR,
+	BAYER_FILTER_GBRG,
+	BAYER_FILTER_GRBG,
 	XTRANS_FILTER,
-    BAYER_FILTER_NONE = -1		//case where pattern is undefined or untested
-} sensor_pattern ;
+	BAYER_FILTER_NONE = -1		//case where pattern is undefined or untested
+} sensor_pattern;
 #define BAYER_FILTER_MIN BAYER_FILTER_RGGB
 #define BAYER_FILTER_MAX BAYER_FILTER_GRBG
 
@@ -389,6 +404,8 @@ struct dft_struct {
 	char ord[FLEN_VALUE];		// regular, centered
 };
 
+typedef enum { DATA_USHORT, DATA_FLOAT, DATA_UNSUPPORTED } data_type;
+
 struct ffit {
 	unsigned int rx;	// image width	(naxes[0])
 	unsigned int ry;	// image height	(naxes[1])
@@ -397,7 +414,7 @@ struct ffit {
 	/* bitpix can take the following values:
 	 * BYTE_IMG	(8-bit byte pixels, 0 - 255)
 	 * SHORT_IMG	(16 bit signed integer pixels)	
-	 * USHORT_IMG	(16 bit unsigned integer pixels)	(used by Siril, quite off-standard)
+	 * USHORT_IMG	(16 bit unsigned integer pixels)	(used by Siril, a bit unusual)
 	 * LONG_IMG	(32-bit integer pixels)
 	 * FLOAT_IMG	(32-bit floating point pixels)
 	 * DOUBLE_IMG	(64-bit floating point pixels)
@@ -414,8 +431,7 @@ struct ffit {
 	char *header;	// entire header of the FITS file. NULL for non-FITS file.
 	WORD lo;	// MIPS-LO key in FITS file, which is "Lower visualization cutoff"
 	WORD hi;	// MIPS-HI key in FITS file, which is "Upper visualization cutoff"
-	double data_max; // used to check if 32b float is between 0 and 1
-	WORD maximum_pixel_value; // value obtained from libraw, Maximum pixel value. Calculated from the data for most cameras, hardcoded for others.
+	double data_max; // used to check if 32b float is in the [0, 1] range
 	float pixel_size_x, pixel_size_y;	// XPIXSZ and YPIXSZ keys
 	unsigned int binning_x, binning_y;		// XBINNING and YBINNING keys
 	gboolean unbinned;
@@ -441,8 +457,12 @@ struct ffit {
 	double mini, maxi;	// min and max of the stats->max[3]
 
 	fitsfile *fptr;		// file descriptor. Only used for file read and write.
+
+	data_type type;		// use of data or fdata is managed by this
 	WORD *data;		// 16-bit image data (depending on image type)
 	WORD *pdata[3];		// pointers on data, per layer data access (RGB)
+	float *fdata;		// same with float
+	float *fpdata[3];	// same with float
 
 	gboolean top_down;	// image data is stored top-down, normally false for FITS, true for SER
 
@@ -474,7 +494,6 @@ struct debayer_config {
 	sensor_pattern bayer_pattern;		// user-defined Bayer pattern
 	interpolation_method bayer_inter;	// interpolation method for non-libraw debayer
 	gboolean compatibility;				// ensure KSTARS compatibility if TRUE
-	gboolean stretch;                  // stretch DSLR CFA data to 16-bit if wanted
 	int xbayeroff, ybayeroff;			// x and y Bayer offsets
 };
 
@@ -495,6 +514,10 @@ struct point_struct {
 	double x, y;
 };
 
+struct pointf_struct {
+	float x, y;
+};
+
 struct gradient_struct {
 	point centre;
 	double boxvalue[3];
@@ -504,6 +527,7 @@ struct historic_struct {
 	char *filename;
 	char history[FLEN_VALUE];
 	int rx, ry;
+	data_type type;
 };
 
 struct dateTime_struct {

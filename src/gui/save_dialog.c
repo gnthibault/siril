@@ -302,6 +302,7 @@ gboolean end_save(gpointer p) {
 
 	gtk_entry_set_text(args->entry, "");
 	gtk_widget_hide(lookup_widget("savepopup"));
+	set_precision_switch();
 	stop_processing_thread();
 	set_cursor_waiting(FALSE);
 	close_dialog();	// is this different from the hide above?
@@ -316,6 +317,7 @@ static void initialize_data(gpointer p) {
 
 	GtkToggleButton *fits_8 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit8"));
 	GtkToggleButton *fits_16s = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16s"));
+	GtkToggleButton *fits_16 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16"));
 	GtkToggleButton *update_hilo = (GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_update_hilo")));
 #ifdef HAVE_LIBJPEG
 	GtkSpinButton *qlty_spin_button = GTK_SPIN_BUTTON(lookup_widget("quality_spinbutton"));
@@ -332,8 +334,10 @@ static void initialize_data(gpointer p) {
 		args->bitpix = BYTE_IMG;
 	else if (gtk_toggle_button_get_active(fits_16s))
 		args->bitpix = SHORT_IMG;
-	else
+	else if (gtk_toggle_button_get_active(fits_16))
 		args->bitpix = USHORT_IMG;
+	else
+		args->bitpix = FLOAT_IMG;
 
 	args->update_hilo = gtk_toggle_button_get_active(update_hilo);
 }
@@ -610,6 +614,12 @@ void on_savepopup_show(GtkWidget *widget, gpointer user_data) {
 	} else {
 		width = 100;
 		height = 50;
+	}
+	if (whichminisave == TYPEFITS) {
+		GtkToggleButton *b16bitu = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16"));
+		GtkToggleButton *b32bits = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit32f"));
+		gtk_toggle_button_set_active(b32bits, gfit.type == DATA_FLOAT);
+		gtk_toggle_button_set_active(b16bitu, gfit.type == DATA_USHORT);
 	}
 
 	gtk_scrolled_window_set_min_content_height(scrolled_window, height);

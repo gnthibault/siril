@@ -361,10 +361,10 @@ static void siril_app_open(GApplication *application, GFile **files, gint n_file
 
 #if defined(ENABLE_RELOCATABLE_RESOURCES) && defined(OS_OSX)
 static void siril_macos_setenv(const char *progname) {
-  /* helper to set environment variables for Siril to be relocatable.
-   * Due to the latest changes in Catalina it is not recommended
-   * to set it in the shell wrapper anymore.
-   */
+	/* helper to set environment variables for Siril to be relocatable.
+	 * Due to the latest changes in Catalina it is not recommended
+	 * to set it in the shell wrapper anymore.
+	 */
 	gchar resolved_path[PATH_MAX];
 
 	if (realpath(progname, resolved_path)) {
@@ -388,11 +388,11 @@ static void siril_macos_setenv(const char *progname) {
 		g_setenv("SIRIL_RELOCATED_RES_DIR", tmp, TRUE);
 
 		path_len = strlen(g_getenv("PATH") ? g_getenv("PATH") : "")
-				+ strlen(app_dir) + 2;
+			+ strlen(app_dir) + 2;
 		path = g_try_malloc(path_len);
 		if (path == NULL) {
 			g_warning("Failed to allocate memory");
-				exit(EXIT_FAILURE);
+			exit(EXIT_FAILURE);
 		}
 		if (g_getenv("PATH"))
 			g_snprintf(path, path_len, "%s:%s", app_dir, g_getenv("PATH"));
@@ -417,8 +417,11 @@ static void siril_macos_setenv(const char *progname) {
 		if (g_getenv("HOME") != NULL) {
 			g_snprintf(tmp, sizeof(tmp), "%s/Library/Application Support", g_getenv("HOME"));
 			g_setenv("XDG_CONFIG_HOME", tmp, TRUE);
-		}
+			g_snprintf (tmp, sizeof(tmp), "%s/Library/Application Support/SiriL/1.00/cache",
+					g_getenv("HOME"));
+			g_setenv ("XDG_CACHE_HOME", tmp, TRUE);
 
+		}
 	}
 }
 #endif

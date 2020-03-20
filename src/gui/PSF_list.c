@@ -390,7 +390,7 @@ void fill_stars_list(fits *fit, fitted_PSF **stars) {
 
 	while (stars[i]) {
 		/* update units if needed */
-		fwhm_to_arcsec_if_needed(fit, &stars[i]);
+		fwhm_to_arcsec_if_needed(fit, stars[i]);
 		add_star_to_list(stars[i]);
 		i++;
 	}

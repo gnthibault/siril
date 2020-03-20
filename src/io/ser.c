@@ -874,11 +874,11 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 			sensor_pattern bayer;
 			bayer = get_SER_Bayer_Pattern(type_ser);
 			if (bayer != com.debayer.bayer_pattern) {
-				if (bayer == BAYER_FILTER_NONE  && user_warned == FALSE) {
+				if (bayer == BAYER_FILTER_NONE  && !user_warned) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 				}
 				else {
-					if (user_warned == FALSE) {
+					if (!user_warned) {
 						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
 								"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
@@ -891,7 +891,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 		/* for performance consideration (and many others) we force the interpolation algorithm
 		 * to be BAYER_BILINEAR
 		 */
-		debayer(fit, BAYER_BILINEAR, FALSE);
+		debayer(fit, BAYER_RCD, com.debayer.bayer_pattern);
 		com.debayer.bayer_pattern = sensortmp;
 		break;
 	case SER_BGR:
@@ -1085,11 +1085,11 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 			sensor_pattern bayer;
 			bayer = get_SER_Bayer_Pattern(type_ser);
 			if (bayer != com.debayer.bayer_pattern) {
-				if (bayer == BAYER_FILTER_NONE && user_warned == FALSE) {
+				if (bayer == BAYER_FILTER_NONE && !user_warned) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 				}
 				else {
-					if (user_warned == FALSE) {
+					if (!user_warned) {
 						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
 								"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
@@ -1124,8 +1124,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		 * to be BAYER_BILINEAR
 		 */
 		demosaiced_buf = debayer_buffer(rawbuf, &debayer_area.w,
-				&debayer_area.h, BAYER_BILINEAR, com.debayer.bayer_pattern,
-				NULL);
+				&debayer_area.h, BAYER_BILINEAR, com.debayer.bayer_pattern);
 		free(rawbuf);
 		if (!demosaiced_buf)
 			return -1;
@@ -1134,9 +1133,10 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		 * debayer_area is the demosaiced buf area.
 		 * xoffset and yoffset are the x,y offsets of area in the debayer area.
 		 */
+        const int nbpixels = debayer_area.w * debayer_area.h;
 		for (y = 0; y < area->h; y++) {
 			for (x = 0; x < area->w; x++) {
-				buffer[y*area->w + x] = demosaiced_buf[(yoffset+y)*debayer_area.w*3 + xoffset+x*3 + layer]; 
+				buffer[y*area->w + x] = demosaiced_buf[layer * nbpixels + (yoffset+y)*debayer_area.w + xoffset+x]; 
 			}
 		}
 
@@ -1161,7 +1161,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 
 int ser_read_opened_partial_fits(struct ser_struct *ser_file, int layer,
 		int frame_no, fits *fit, const rectangle *area) {
-	if (new_fit_image(&fit, area->w, area->h, 1))
+	if (new_fit_image(&fit, area->w, area->h, 1, DATA_USHORT))
 		return -1;
 	fit->top_down = TRUE;
 	if (ser_file->ts) {
@@ -1212,7 +1212,7 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 		for (pixel = 0; pixel < ser_file->image_width * ser_file->image_height;
 				pixel++) {
 			if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8)
-				data8[dest] = (BYTE)(fit->pdata[plane][pixel]);
+				data8[dest] = round_to_BYTE(fit->pdata[plane][pixel]);
 			else {
 				if (ser_file->little_endian == SER_BIG_ENDIAN)
 					data16[dest] = (fit->pdata[plane][pixel] >> 8 | fit->pdata[plane][pixel] << 8);
@@ -1281,10 +1281,6 @@ int64_t ser_compute_file_size(struct ser_struct *ser_file, int nb_frames) {
 		frame_size = (size - SER_HEADER_LEN) / ser_file->frame_count;
 		size = SER_HEADER_LEN + frame_size * nb_frames;
 	}
-	/* SER can be demosaiced on the fly on creation.
-	 * TODO: Is this the good test? */
-	if (ser_is_cfa(ser_file) && com.debayer.open_debayer)
-		size *= 3;
 	return size;
 }
 
@@ -1332,6 +1328,7 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 	i = (int) ceil((float) w / MAX_SIZE);
 	j = (int) ceil((float) h / MAX_SIZE);
 	pixScale = (i > j) ? i : j;	// picture scale factor
+	if (pixScale == 0) return NULL;
 	Ws = w / pixScale; 			// picture width in pixScale blocks
 	Hs = h / pixScale; 			// -//- height pixScale
 
@@ -1356,7 +1353,7 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 		//pptr = &pixbuf_data[i * Ws * 3];
 		for (j = 0; j < MAX_SIZE; j++)
 			pix[j] = 0;
-		m = 0.; // amount of strings read in block
+		m = 0.f; // amount of strings read in block
 		for (l = 0; l < pixScale; l++, m++) { // cycle through a block lines
 			ptr = &ima_data[M * w];
 			N = 0; // number of column
@@ -1400,9 +1397,9 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 	for (i = Hs - 1; i > -1; i--) {	// fill pixbuf mirroring image by vertical
 		pptr = &pixbuf_data[Ws * i * 3];
 		for (j = 0; j < Ws; j++) {
-			*pptr++ = (guchar) round_to_BYTE(255. * (*ptr - min) / wd);
-			*pptr++ = (guchar) round_to_BYTE(255. * (*ptr - min) / wd);
-			*pptr++ = (guchar) round_to_BYTE(255. * (*ptr - min) / wd);
+			*pptr++ = (guchar) round_to_BYTE(255.f * (*ptr - min) / wd);
+			*pptr++ = (guchar) round_to_BYTE(255.f * (*ptr - min) / wd);
+			*pptr++ = (guchar) round_to_BYTE(255.f * (*ptr - min) / wd);
 			ptr++;
 		}
 	}

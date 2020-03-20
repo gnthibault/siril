@@ -61,7 +61,7 @@ static int asinh_update_preview() {
 	return 0;
 }
 
-int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
+int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBspace) {
 	int i;
 	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 	double norm, asinh_beta, factor_red, factor_green, factor_blue;
@@ -106,6 +106,60 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 	invalidate_stats_from_fit(fit);
 	return 0;
 }
+
+static int asinhlut_float(fits *fit, double beta, double offset, gboolean RGBspace) {
+	int i;
+	float *buf[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
+	double asinh_beta, factor_red, factor_green, factor_blue;
+
+	asinh_beta = asinh(beta);
+	factor_red = RGBspace ? 0.2126 : 0.3333;
+	factor_green = RGBspace ? 0.7152 : 0.3333;
+	factor_blue = RGBspace ? 0.0722 : 0.3333;
+
+	if (fit->naxes[2] > 1) {
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->ry * 16)
+#endif
+		for (i = 0; i < fit->ry * fit->rx; i++) {
+			double x, k;
+			float r, g, b;
+
+			r = buf[RLAYER][i];
+			g = buf[GLAYER][i];
+			b = buf[BLAYER][i];
+
+			x = factor_red * r + factor_green * g + factor_blue * b;
+
+			k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh_beta);
+
+			buf[RLAYER][i] = (r - offset) * k;
+			buf[GLAYER][i] = (g - offset) * k;
+			buf[BLAYER][i] = (b - offset) * k;
+		}
+	} else {
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->ry * 16)
+#endif
+		for (i = 0; i < fit->ry * fit->rx; i++) {
+			double x, k;
+			x = buf[RLAYER][i];
+			k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh_beta);
+			buf[RLAYER][i] = (x - offset) * k;
+		}
+	}
+	invalidate_stats_from_fit(fit);
+	return 0;
+}
+
+int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
+	if (fit->type == DATA_USHORT)
+		return asinhlut_ushort(fit, beta, offset, RGBspace);
+	if (fit->type == DATA_FLOAT)
+		return asinhlut_float(fit, beta, offset, RGBspace);
+	return 1;
+}
+
 
 static void apply_asinh_changes() {
 	gboolean status = (asinh_stretch_value != 1.0) || (asinh_black_value != 0.0) || asinh_rgb_space;

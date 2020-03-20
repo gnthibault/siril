@@ -19,8 +19,10 @@
  */
 
 #include <math.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/arithm.h"
 #include "core/sleef.h"
 #include "core/processing.h"
 #include "core/undo.h"
@@ -45,19 +47,19 @@ static void to_polar(int x, int y, point center, double *r, double *theta) {
 }
 
 static void to_cartesian(double r, double theta, point center, point *p) {
-    const double2 sincosval = xsincos(theta);
+	const double2 sincosval = xsincos(theta);
 	p->x = center.x + r * sincosval.y;
 	p->y = center.y + r * sincosval.x;
 }
 
 static gboolean end_rgradient_filter(gpointer p) {
 	struct median_filter_data *args = (struct median_filter_data *) p;
-	stop_processing_thread();// can it be done here in case there is no thread?
+	stop_processing_thread();
 	adjust_vport_size_to_image();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
-	
+
 	free(args);
 	return FALSE;
 }
@@ -70,8 +72,9 @@ gpointer rgradient_filter(gpointer p) {
 
 	struct rgradient_filter_data *args = (struct rgradient_filter_data *) p;
 
-	fits imA = { 0 };
-	fits imB = { 0 };
+	gboolean was_ushort;
+	fits imA = { 0 }, imB = { 0 };
+	int retval = 0;
 	const point center = {args->xc, args->yc};
 	const int w = args->fit->rx - 1;
 	const int h = args->fit->ry - 1;
@@ -81,26 +84,37 @@ gpointer rgradient_filter(gpointer p) {
 	const double total = args->fit->ry * args->fit->naxes[2];	// only used for progress bar
 	set_progress_bar_data(_("Rotational gradient in progress..."), PROGRESS_RESET);
 
+	was_ushort = args->fit->type == DATA_USHORT;
+
 	/* convenient transformation to not inverse y sign */
 	fits_flip_top_to_bottom(args->fit);
 
-	copyfits(args->fit, &imA, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
-	copyfits(args->fit, &imB, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	retval = copyfits(args->fit, &imA, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	if (retval) { retval = 1; goto end_rgradient; }
+	if (was_ushort) {
+		const long n = imA.naxes[0] * imA.naxes[1] * imA.naxes[2];
+		float *newbuf = ushort_buffer_to_float(imA.data, n);
+		if (!newbuf) { retval = 1; goto end_rgradient; }
+		fit_replace_buffer(&imA, newbuf, DATA_FLOAT);
+	}
 
-	soper(args->fit, 2.0, OPER_MUL);
-    const double w2 = 2 * w;
-    const double h2 = 2 * h;
-    const double wd = w;
-    const double hd = h;
-    for (int layer = 0; layer < args->fit->naxes[2]; layer++) {
-        WORD *gbuf = args->fit->pdata[layer];
-        WORD *Abuf = imA.pdata[layer];
-        WORD *Bbuf = imB.pdata[layer];
+	retval = copyfits(&imA, &imB, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	if (retval) { retval = 1; goto end_rgradient; }
+
+	retval = soper(args->fit, 2.0f, OPER_MUL, TRUE);
+	if (retval) { retval = 1; goto end_rgradient; }
+	// args->fit will be float data after soper
+
+	int layer, y;
+	for (layer = 0; layer < args->fit->naxes[2]; layer++) {
+		float *gbuf = args->fit->fpdata[layer];
+		float *Abuf = imA.fpdata[layer];
+		float *Bbuf = imB.fpdata[layer];
 #ifdef _OPENMP
-#pragma omp parallel for
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-        for (int y = 0; y < args->fit->ry; y++) {
-        	int i = y * args->fit->rx;
+		for (y = 0; y < args->fit->ry; y++) {
+			int i = y * args->fit->rx;
 #ifdef _OPENMP
 #pragma omp critical
 #endif
@@ -108,7 +122,8 @@ gpointer rgradient_filter(gpointer p) {
 				set_progress_bar_data(NULL, cur_nb / total);
 				cur_nb++;
 			}
-			for (int x = 0; x < args->fit->rx; x++) {
+			int x;
+			for (x = 0; x < args->fit->rx; x++) {
 				double r, theta;
 				point delta;
 
@@ -116,48 +131,60 @@ gpointer rgradient_filter(gpointer p) {
 
 				// Positive differential
 				to_cartesian(r - args->dR, theta + dAlpha, center, &delta);
-
 				if (delta.x < 0)
 					delta.x = fabs(delta.x);
-				else if (delta.x > wd)
-					delta.x = w2 - delta.x;
-
+				else if (delta.x > w)
+					delta.x = 2 * w - delta.x;
 				if (delta.y < 0)
 					delta.y = fabs(delta.y);
-				else if (delta.y > hd)
-					delta.y = h2 - delta.y;
-
-				gbuf[i] -= Abuf[(int) delta.x + (int) delta.y * args->fit->rx];
+				else if (delta.y > h)
+					delta.y = 2 * h - delta.y;
+				gbuf[i] -= Abuf[(int)delta.x + (int)delta.y * args->fit->rx];
 
 				// Negative differential
 				to_cartesian(r - args->dR, theta - dAlpha, center, &delta);
 				if (delta.x < 0)
 					delta.x = fabs(delta.x);
-				else if (delta.x > wd)
-					delta.x = w2 - delta.x;
+				else if (delta.x > w)
+					delta.x = 2 * w - delta.x;
 				if (delta.y < 0)
 					delta.y = fabs(delta.y);
-				else if (delta.y > hd)
-					delta.y = h2 - delta.y;
-				gbuf[i] -= Bbuf[(int) delta.x + (int) delta.y * args->fit->rx];
+				else if (delta.y > h)
+					delta.y = 2 * h - delta.y;
+				gbuf[i] -= Bbuf[(int)delta.x + (int)delta.y * args->fit->rx];
+
+				if (gbuf[i] > 1.0f) gbuf[i] = 1.0f;
+				else if (gbuf[i] < 0.0f) gbuf[i] = 0.0f;
 				i++;
 			}
 		}
 	}
 
-    fits_flip_top_to_bottom(args->fit);
-    set_progress_bar_data(_("Rotational gradient complete."), PROGRESS_DONE);
+end_rgradient:
+	fits_flip_top_to_bottom(args->fit);
+	set_progress_bar_data(_("Rotational gradient complete."), PROGRESS_DONE);
 
-    clearfits(&imA);
-    clearfits(&imB);
-    invalidate_stats_from_fit(args->fit);
-    update_gfit_histogram_if_needed();
-    siril_add_idle(end_rgradient_filter, args);
+	clearfits(&imA);
+	clearfits(&imB);
+	if (!retval) {
+		if (was_ushort) {
+			const long n = args->fit->naxes[0] * args->fit->naxes[1] * args->fit->naxes[2];
+			WORD *newbuf = float_buffer_to_ushort(args->fit->fdata, n);
+			if (!newbuf)
+				retval = 1;
+			else fit_replace_buffer(args->fit, newbuf, DATA_USHORT);
+		}
+		set_progress_bar_data(_("Rotational gradient complete."), PROGRESS_DONE);
+	}
 
-    gettimeofday(&t_end, NULL);
-    show_time(t_start, t_end);
+	invalidate_stats_from_fit(args->fit);
+	update_gfit_histogram_if_needed();
+	siril_add_idle(end_rgradient_filter, args);
 
-    return GINT_TO_POINTER(0);
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
+
+	return GINT_TO_POINTER(retval);
 }
 
 /// GUI

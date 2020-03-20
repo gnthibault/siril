@@ -557,23 +557,30 @@ double findTransform_ECC(InputArray templateImage, InputArray inputImage,
 
 int findTransform(fits *reference, fits *image, int layer,
 		reg_ecc *reg_param) {
-	Mat ref(reference->ry, reference->rx, CV_16UC1, reference->pdata[layer]);
-	Mat im(image->ry, image->rx, CV_16UC1, image->pdata[layer]);
+	Mat *ref, *im;
 	Mat warp_matrix = Mat::eye(2, 3, CV_32F);
 	WARP_MODE warp_mode = WARP_MODE_TRANSLATION;
 	int number_of_iterations = 180;
 	double termination_eps = 0.002;
 	int retvalue = 0;
 
-	/* this conversion operation of the reference could be avoided since
-	 * it's the same for all tested images */
-	ref.convertTo(ref, CV_32FC1, 1.0/reference->stats[layer]->max);
-	im.convertTo(im, CV_32FC1, 1.0/image->stats[layer]->max);
+	if (reference->type == DATA_USHORT) {
+		ref = new Mat(reference->ry, reference->rx, CV_16UC1, reference->pdata[layer]);
+		im = new Mat(image->ry, image->rx, CV_16UC1, image->pdata[layer]);
+		/* this conversion operation of the reference could be avoided since
+		 * it's the same for all tested images */
+		ref->convertTo(*ref, CV_32FC1, 1.0/reference->stats[layer]->max);
+		im->convertTo(*im, CV_32FC1, 1.0/image->stats[layer]->max);
+	}
+	else if (reference->type == DATA_FLOAT) {
+		ref = new Mat(reference->ry, reference->rx, CV_32FC1, reference->fpdata[layer]);
+		im = new Mat(image->ry, image->rx, CV_32FC1, image->fpdata[layer]);
+	} else return 1;
 
 	// Define termination criteria
 	TermCriteria criteria (TermCriteria::COUNT+TermCriteria::EPS, number_of_iterations, termination_eps);
 
-	double ecc = findTransform_ECC(ref, im, warp_matrix, warp_mode, criteria, noArray());
+	double ecc = findTransform_ECC(*ref, *im, warp_matrix, warp_mode, criteria, noArray());
 #ifdef ECC_DEBUG
 	std::cout << "ecc = " << ecc << std::endl;
 	std::cout << "result = " << std::endl << warp_matrix << std::endl;
@@ -585,7 +592,6 @@ int findTransform(fits *reference, fits *image, int layer,
 	else retvalue = 1;
 
 	warp_matrix.release();
-	ref.release();
-	im.release();
+	delete ref; delete im;
 	return retvalue;
 }

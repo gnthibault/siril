@@ -15,6 +15,18 @@ if [ "$#" = 0 -a "x$NOCONFIGURE" = "x" ]; then
         echo "" >&2
 fi
 
+# Manage librtprocess automatically, for the first autogen.
+# To update librtprocess, manual intervention, like 'git submodule update' then cmake and make, is required.
+cd deps
+cd librtprocess || ( echo 'Failed to get librtprocess, please download it and compile it yourself. Aborting.' && exit 1 )
+if [ ! -d build ] ; then
+	mkdir build && cd build &&
+	uname -s | grep -q '^MINGW64_NT' && cmake -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON -DOPTION_OMP=OFF .. || cmake -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON -DOPTION_OMP=OFF ..
+	cd ..
+	if [ ! -f build/Makefile ] ; then echo 'cmake failed, removing build directory' ; rm -rf build ; exit 1 ; fi
+fi
+cd ../..
+
 set -x
 aclocal --install || exit 1
 intltoolize --force --copy --automake || exit 1

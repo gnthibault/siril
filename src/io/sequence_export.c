@@ -231,7 +231,7 @@ static gpointer export_sequence(gpointer ptr) {
 		set_progress_bar_data(tmpmsg, (double)cur_nb / (double)nb_frames);
 		free(tmpmsg);
 
-		if (seq_read_frame(args->seq, i, &fit)) {
+		if (seq_read_frame(args->seq, i, &fit, FALSE)) {
 			siril_log_message(_("Export: could not read frame, aborting\n"));
 			retval = -3;
 			goto free_and_reset_progress_bar;
@@ -344,7 +344,7 @@ static gpointer export_sequence(gpointer ptr) {
 
 				if (args->resize) {
 					uint8_t *newdata = malloc(out_width * out_height * destfit.naxes[2]);
-					cvResizeGaussian_data8(data, destfit.rx, destfit.ry, newdata,
+					cvResizeGaussian_uchar(data, destfit.rx, destfit.ry, newdata,
 							out_width, out_height, destfit.naxes[2], OPENCV_CUBIC);
 					avi_file_write_frame(0, newdata);
 					free(newdata);

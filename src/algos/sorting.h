@@ -4,17 +4,19 @@
 #include "core/siril.h"	// for types
 
 /* the quicksorts */
-void quicksort_d (double *a, int n);
-void quicksort_s (WORD *a, int n);
+void quicksort_d (double *a, long n);
+void quicksort_f (float *a, long n);
+void quicksort_s (WORD *a, long n);
 
 /* Quick median based on quick select */
 double quickmedian (WORD *a, int n);
+double quickmedian_float (float *a, int n);
 double quickmedian_double(double *a, int n);
 double quickmedian_int (int *a, int n);
 
 /* Histogram median for very large array of unsigned short */
 double histogram_median (WORD *a, int n, gboolean multithread);
-double histogram_median_double (double *a, int n);
+double histogram_median_float(float *a, int n, gboolean multithread);
 
 /* Sorting netnork */
 double sortnet_median (WORD *a, int n);

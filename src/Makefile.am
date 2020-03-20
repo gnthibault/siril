@@ -17,7 +17,8 @@ AM_CPPFLAGS = \
 	$(GSL_CFLAGS) \
 	$(FFMS2_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
-	-I$(top_builddir)/deps/kplot
+	-I$(top_builddir)/deps/kplot \
+	-I$(top_builddir)/deps/librtprocess/src/include
 
 siril_SOURCES = \
 	core/siril.h \
@@ -35,6 +36,7 @@ siril_SOURCES = \
 	algos/geometry.c \
 	algos/geometry.h \
 	algos/io_wave.c \
+	algos/median_fast.c \
 	algos/noise.c \
 	algos/noise.h \
 	algos/pave.c \
@@ -45,6 +47,7 @@ siril_SOURCES = \
 	algos/PSF.c \
 	algos/PSF.h \
 	algos/quality.c \
+	algos/quality_float.c \
 	algos/quality.h \
 	algos/quantize.c \
 	algos/reconstr.c \
@@ -53,6 +56,9 @@ siril_SOURCES = \
 	algos/star_finder.c \
 	algos/star_finder.h \
 	algos/statistics.c \
+	algos/statistics.h \
+	algos/statistics_float.c \
+	algos/statistics_float.h \
 	algos/transform.c \
 	compositing/align_rgb.c \
 	compositing/align_rgb.h \
@@ -60,6 +66,8 @@ siril_SOURCES = \
 	compositing/compositing.h \
 	compositing/filters.c \
 	compositing/filters.h \
+	core/arithm.c \
+	core/arithm.h \
 	core/command.c \
 	core/command.h \
 	core/command_def.h \
@@ -182,7 +190,10 @@ siril_SOURCES = \
 	registration/registration.c \
 	registration/registration.h \
 	stacking/median_and_mean.c \
+	stacking/rejection_float.c \
 	stacking/normalization.c \
+	stacking/siril_fit_linear.c \
+	stacking/siril_fit_linear.h \
 	stacking/stacking.c \
 	stacking/stacking.h \
 	stacking/sum.c \
@@ -199,6 +210,7 @@ endif
 
 siril_LDADD = \
 	$(top_builddir)/deps/kplot/libkplot.a \
+	$(top_builddir)/deps/librtprocess/build/src/librtprocess_static.a \
 	$(FFMPEG_LIBS) \
 	$(GTK_LIBS) \
 	${GTK_MAC_LIBS} \
@@ -217,6 +229,7 @@ siril_LDADD = \
 	$(libdbghelp)
 
 siril_SOURCES += \
+	algos/demosaicing_rtp.cpp \
 	io/avi_pipp/pipp_avi_write.cpp \
 	io/avi_pipp/pipp_avi_write.h \
 	io/avi_pipp/pipp_avi_write_dib.cpp \
@@ -226,23 +239,17 @@ siril_SOURCES += \
 	io/avi_pipp/pipp_buffer.h \
 	io/avi_pipp/pipp_video_write.h \
 	io/avi_pipp/avi_writer.cpp \
-	io/avi_pipp/avi_writer.h
-
-siril_SOURCES += \
+	io/avi_pipp/avi_writer.h \
 	opencv/opencv.cpp \
 	opencv/opencv.h \
 	opencv/ecc/ecc.cpp \
-	opencv/ecc/ecc.h
-
-siril_SOURCES += \
+	opencv/ecc/ecc.h \
 	opencv/findHomography/fundam.cpp \
 	opencv/findHomography/calibration.cpp \
 	opencv/findHomography/modelest.cpp \
 	opencv/findHomography/_modelest.h \
 	opencv/findHomography/calib3d.hpp \
-	opencv/findHomography/precomp.hpp
-
-siril_SOURCES += \
+	opencv/findHomography/precomp.hpp \
 	core/exif.cpp \
 	core/exif.h
 

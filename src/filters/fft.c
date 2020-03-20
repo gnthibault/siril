@@ -46,26 +46,26 @@ enum {
 	TYPE_REGULAR
 };
 
-static void fft_to_spectra(fftw_complex *frequency_repr, double *as, double *ps,
-		double *maxi, int nbdata) {
-	unsigned int i;
+static void fft_to_spectra(fftwf_complex *frequency_repr, float *as, float *ps,
+		float *maxi, long nbdata) {
+	long i;
 	*maxi = 0.0;
 
 	for (i = 0; i < nbdata; i++) {
-		double r = creal(frequency_repr[i]);
-		double im = cimag(frequency_repr[i]);
-		as[i] = hypot(r, im);
-		ps[i] = atan2(im, r);
+		float r = crealf(frequency_repr[i]);
+		float im = cimagf(frequency_repr[i]);
+		as[i] = hypotf(r, im);
+		ps[i] = atan2f(im, r);
 		*maxi = max(as[i], *maxi);
 	}
 }
 
-static void fft_to_freq(fftw_complex *frequency_repr, double *as, double *ps,
-		int nbdata) {
-	unsigned int i;
+static void fft_to_freq(fftwf_complex *frequency_repr, float *as, float *ps,
+		long nbdata) {
+	long i;
 
 	for (i = 0; i < nbdata; i++) {
-		frequency_repr[i] = as[i] * (cos(ps[i]) + I * sin(ps[i]));
+		frequency_repr[i] = as[i] * (cosf(ps[i]) + I * sinf(ps[i]));
 	}
 }
 
@@ -95,7 +95,7 @@ static void change_symmetry_backward(unsigned int width, unsigned int height,
 	}
 }
 
-static void centered(WORD *buf, unsigned int width, unsigned int height,
+static void centered_ushort(WORD *buf, unsigned int width, unsigned int height,
 		int type) {
 	unsigned int i, j;
 
@@ -118,13 +118,46 @@ static void centered(WORD *buf, unsigned int width, unsigned int height,
 	free(temp);
 }
 
-static void normalisation_spectra(unsigned int w, unsigned int h, double *modul, double *phase,
-		WORD *abuf, WORD *pbuf, double maxi) {
-	unsigned int i;
+static void centered_float(float *buf, unsigned int width, unsigned int height,
+		int type) {
+	unsigned int i, j;
+
+	float *temp = malloc(width * height * sizeof(float));
+	for (j = 0; j < height; j++) {
+		for (i = 0; i < width; i++) {
+			unsigned int x = i;
+			unsigned int y = j;
+			if (type == FFTW_FORWARD) {
+				change_symmetry_forward(width, height, i, j, &x, &y);
+			} else {
+				change_symmetry_backward(width, height, i, j, &x, &y);
+			}
+
+			temp[j * width + i] = buf[y * width + x];
+		}
+	}
+
+	memcpy(buf, temp, sizeof(float) * width * height);
+	free(temp);
+}
+
+static void normalisation_spectra_ushort(unsigned int w, unsigned int h, float *modul, float *phase,
+		WORD *abuf, WORD *pbuf, float maxi) {
+	long i;
 
 	for (i = 0; i < h * w; i++) {
-		pbuf[i] = round_to_WORD(((phase[i] + M_PI) * USHRT_MAX_DOUBLE / (2 * M_PI)));
-		abuf[i] = round_to_WORD((modul[i] * USHRT_MAX_DOUBLE / maxi));
+		pbuf[i] = roundf_to_WORD(((phase[i] + (float)M_PI) * USHRT_MAX_SINGLE / (2.f * (float)M_PI)));
+		abuf[i] = roundf_to_WORD((modul[i] * USHRT_MAX_SINGLE / maxi));
+	}
+}
+
+static void normalisation_spectra_float(unsigned int w, unsigned int h, float *modul, float *phase,
+		float *abuf, float *pbuf, float maxi) {
+	long i;
+
+	for (i = 0; i < h * w; i++) {
+		pbuf[i] = (phase[i] + (float)M_PI) / (2.f * (float)M_PI);
+		abuf[i] = (modul[i] / maxi);
 	}
 }
 
@@ -138,24 +171,24 @@ static void save_dft_information_in_gfit(fits *fit) {
 
 }
 
-static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
+static void FFTD_ushort(fits *fit, fits *x, fits *y, int type_order, int layer) {
 	WORD *xbuf = x->pdata[layer];
 	WORD *ybuf = y->pdata[layer];
 	WORD *gbuf = fit->pdata[layer];
-	unsigned int i;
 	unsigned int width = fit->rx, height = fit->ry;
-	double maxi;
-	int nbdata = width * height;
+	float maxi;
+	long nbdata = width * height;
+	long i;
 
-	fftw_complex *spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
+	fftwf_complex *spatial_repr = fftwf_malloc(sizeof(fftwf_complex) * nbdata);
 	if (!spatial_repr) {
 		PRINT_ALLOC_ERR;
 		return;
 	}
-	fftw_complex *frequency_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
+	fftwf_complex *frequency_repr = fftwf_malloc(sizeof(fftwf_complex) * nbdata);
 	if (!frequency_repr) {
 		PRINT_ALLOC_ERR;
-		fftw_free(spatial_repr);
+		fftwf_free(spatial_repr);
 		return;
 	}
 
@@ -164,63 +197,130 @@ static void FFTD(fits *fit, fits *x, fits *y, int type_order, int layer) {
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) if(nbdata > 15000)
 #endif
 	for (i = 0; i < nbdata; i++) {
-		spatial_repr[i] = (double) gbuf[i];
+		spatial_repr[i] = (float) gbuf[i];
 	}
 
 	/* we run the Fourier Transform */
-	fftw_plan p = fftw_plan_dft_2d(height, width, spatial_repr, frequency_repr,
+	fftwf_plan p = fftwf_plan_dft_2d(height, width, spatial_repr, frequency_repr,
 			FFTW_FORWARD, FFTW_ESTIMATE);
-	fftw_execute(p);
+	fftwf_execute(p);
 
 	/* we compute modulus and phase */
-	double *modul = malloc(nbdata * sizeof(double));
-	double *phase = malloc(nbdata * sizeof(double));
+	float *modul = malloc(nbdata * sizeof(float));
+	float *phase = malloc(nbdata * sizeof(float));
 
 	fft_to_spectra(frequency_repr, modul, phase, &maxi, nbdata);
 
 	//We normalize the modulus and the phase
-	normalisation_spectra(width, height, modul, phase, xbuf, ybuf, maxi);
+	normalisation_spectra_ushort(width, height, modul, phase, xbuf, ybuf, maxi);
 	if (type_order == TYPE_CENTERED) {
 		strcpy(x->dft.ord, "CENTERED");
-		centered(xbuf, width, height, FFTW_FORWARD);
-		centered(ybuf, width, height, FFTW_FORWARD);
+		centered_ushort(xbuf, width, height, FFTW_FORWARD);
+		centered_ushort(ybuf, width, height, FFTW_FORWARD);
 	} else {
 		strcpy(x->dft.ord, "REGULAR");
 	}
 	strcpy(y->dft.ord, x->dft.ord);
-	x->dft.norm[layer] = maxi / USHRT_MAX_DOUBLE;
+	x->dft.norm[layer] = maxi / USHRT_MAX_SINGLE;
 
 	free(modul);
 	free(phase);
-	fftw_destroy_plan(p);
-	fftw_free(spatial_repr);
-	fftw_free(frequency_repr);
+	fftwf_destroy_plan(p);
+	fftwf_free(spatial_repr);
+	fftwf_free(frequency_repr);
 }
 
-static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
+static void FFTD_float(fits *fit, fits *x, fits *y, int type_order, int layer) {
+	float *xbuf = x->fpdata[layer];
+	float *ybuf = y->fpdata[layer];
+	float *gbuf = fit->fpdata[layer];
+	unsigned int width = fit->rx, height = fit->ry;
+	float maxi;
+	long nbdata = width * height;
+	long i;
+
+	fftwf_complex *spatial_repr = fftwf_malloc(sizeof(fftwf_complex) * nbdata);
+	if (!spatial_repr) {
+		PRINT_ALLOC_ERR;
+		return;
+	}
+	fftwf_complex *frequency_repr = fftwf_malloc(sizeof(fftwf_complex) * nbdata);
+	if (!frequency_repr) {
+		PRINT_ALLOC_ERR;
+		fftwf_free(spatial_repr);
+		return;
+	}
+
+	/* copying image selection into the fftw data */
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) if(nbdata > 15000)
+#endif
+	for (i = 0; i < nbdata; i++) {
+		spatial_repr[i] = (float) gbuf[i];
+	}
+
+	/* we run the Fourier Transform */
+	fftwf_plan p = fftwf_plan_dft_2d(height, width, spatial_repr, frequency_repr,
+			FFTW_FORWARD, FFTW_ESTIMATE);
+	fftwf_execute(p);
+
+	/* we compute modulus and phase */
+	float *modul = malloc(nbdata * sizeof(float));
+	float *phase = malloc(nbdata * sizeof(float));
+
+	fft_to_spectra(frequency_repr, modul, phase, &maxi, nbdata);
+
+	//We normalize the modulus and the phase
+	normalisation_spectra_float(width, height, modul, phase, xbuf, ybuf, maxi);
+	if (type_order == TYPE_CENTERED) {
+		strcpy(x->dft.ord, "CENTERED");
+		centered_float(xbuf, width, height, FFTW_FORWARD);
+		centered_float(ybuf, width, height, FFTW_FORWARD);
+	} else {
+		strcpy(x->dft.ord, "REGULAR");
+	}
+	strcpy(y->dft.ord, x->dft.ord);
+	x->dft.norm[layer] = maxi / USHRT_MAX_SINGLE;
+
+	free(modul);
+	free(phase);
+	fftwf_destroy_plan(p);
+	fftwf_free(spatial_repr);
+	fftwf_free(frequency_repr);
+}
+
+static void FFTD(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
+	if (fit->type == DATA_USHORT) {
+		FFTD_ushort(fit, xfit, yfit, type_order, layer);
+	} else if (fit->type == DATA_FLOAT) {
+		FFTD_float(fit, xfit, yfit, type_order, layer);
+	}
+}
+
+static void FFTI_ushort(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 	WORD *xbuf = xfit->pdata[layer];
 	WORD *ybuf = yfit->pdata[layer];
 	WORD *gbuf = fit->pdata[layer];
-	unsigned int i;
 	unsigned int width = xfit->rx;
 	unsigned int height = xfit->ry;
-	int nbdata = width * height;
+	long nbdata = width * height;
+	long i;
 
-	double *modul = calloc(1, nbdata * sizeof(double));
-	double *phase = calloc(1, nbdata * sizeof(double));
+	float *modul = calloc(1, nbdata * sizeof(float));
+	float *phase = calloc(1, nbdata * sizeof(float));
 
 	if (type_order == TYPE_CENTERED) {
-		centered(xbuf, width, height, FFTW_BACKWARD);
-		centered(ybuf, width, height, FFTW_BACKWARD);
+		centered_ushort(xbuf, width, height, FFTW_BACKWARD);
+		centered_ushort(ybuf, width, height, FFTW_BACKWARD);
 	}
 
 	for (i = 0; i < height * width; i++) {
-		modul[i] = (double) xbuf[i] * (xfit->dft.norm[layer]);
-		phase[i] = (double) ybuf[i] * (2 * M_PI / USHRT_MAX_DOUBLE);
-		phase[i] -= M_PI;
+		modul[i] = (float) xbuf[i] * (xfit->dft.norm[layer]);
+		phase[i] = (float) ybuf[i] * (2.f * (float)M_PI / USHRT_MAX_SINGLE);
+		phase[i] -= (float)M_PI;
 	}
 
-	fftw_complex* spatial_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
+	fftwf_complex* spatial_repr = fftwf_malloc(sizeof(fftwf_complex) * nbdata);
 	if (!spatial_repr) {
 		PRINT_ALLOC_ERR;
 		free(modul);
@@ -228,10 +328,10 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 		return;
 	}
 
-	fftw_complex* frequency_repr = fftw_malloc(sizeof(fftw_complex) * nbdata);
+	fftwf_complex* frequency_repr = fftwf_malloc(sizeof(fftwf_complex) * nbdata);
 	if (!frequency_repr) {
 		PRINT_ALLOC_ERR;
-		fftw_free(spatial_repr);
+		fftwf_free(spatial_repr);
 		free(modul);
 		free(phase);
 		return;
@@ -239,22 +339,90 @@ static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
 
 	fft_to_freq(frequency_repr, modul, phase, nbdata);
 
-	fftw_plan p = fftw_plan_dft_2d(height, width, frequency_repr, spatial_repr,
+	fftwf_plan p = fftwf_plan_dft_2d(height, width, frequency_repr, spatial_repr,
 			FFTW_BACKWARD, FFTW_ESTIMATE);
-	fftw_execute(p);
+	fftwf_execute(p);
 
 	for (i = 0; i < nbdata; i++) {
-		double pxl = creal(spatial_repr[i]) / nbdata;
-		gbuf[i] = round_to_WORD(pxl);
+		float pxl = crealf(spatial_repr[i]) / nbdata;
+		gbuf[i] = roundf_to_WORD(pxl);
 	}
 	delete_selected_area();
 	invalidate_stats_from_fit(fit);
 
 	free(modul);
 	free(phase);
-	fftw_destroy_plan(p);
-	fftw_free(spatial_repr);
-	fftw_free(frequency_repr);
+	fftwf_destroy_plan(p);
+	fftwf_free(spatial_repr);
+	fftwf_free(frequency_repr);
+}
+
+static void FFTI_float(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
+	float *xbuf = xfit->fpdata[layer];
+	float *ybuf = yfit->fpdata[layer];
+	float *gbuf = fit->fpdata[layer];
+	unsigned int width = xfit->rx;
+	unsigned int height = xfit->ry;
+	int nbdata = width * height;
+	long i;
+
+	float *modul = calloc(1, nbdata * sizeof(float));
+	float *phase = calloc(1, nbdata * sizeof(float));
+
+	if (type_order == TYPE_CENTERED) {
+		centered_float(xbuf, width, height, FFTW_BACKWARD);
+		centered_float(ybuf, width, height, FFTW_BACKWARD);
+	}
+
+	for (i = 0; i < height * width; i++) {
+		modul[i] = xbuf[i] * (xfit->dft.norm[layer]);
+		phase[i] = ybuf[i] * (2.f * (float)M_PI);
+		phase[i] -= (float)M_PI;
+	}
+
+	fftwf_complex* spatial_repr = fftwf_malloc(sizeof(fftwf_complex) * nbdata);
+	if (!spatial_repr) {
+		PRINT_ALLOC_ERR;
+		free(modul);
+		free(phase);
+		return;
+	}
+
+	fftwf_complex* frequency_repr = fftwf_malloc(sizeof(fftwf_complex) * nbdata);
+	if (!frequency_repr) {
+		PRINT_ALLOC_ERR;
+		fftwf_free(spatial_repr);
+		free(modul);
+		free(phase);
+		return;
+	}
+
+	fft_to_freq(frequency_repr, modul, phase, nbdata);
+
+	fftwf_plan p = fftwf_plan_dft_2d(height, width, frequency_repr, spatial_repr,
+			FFTW_BACKWARD, FFTW_ESTIMATE);
+	fftwf_execute(p);
+
+	for (i = 0; i < nbdata; i++) {
+		float pxl = crealf(spatial_repr[i]) / nbdata;
+		gbuf[i] = pxl;
+	}
+	delete_selected_area();
+	invalidate_stats_from_fit(fit);
+
+	free(modul);
+	free(phase);
+	fftwf_destroy_plan(p);
+	fftwf_free(spatial_repr);
+	fftwf_free(frequency_repr);
+}
+
+static void FFTI(fits *fit, fits *xfit, fits *yfit, int type_order, int layer) {
+	if (fit->type == DATA_USHORT) {
+		FFTI_ushort(fit, xfit, yfit, type_order, layer);
+	} else if (fit->type == DATA_FLOAT) {
+		FFTI_float(fit, xfit, yfit, type_order, layer);
+	}
 }
 
 // idle function executed at the end of the fourier_transform processing
@@ -280,6 +448,8 @@ gpointer fourier_transform(gpointer p) {
 	struct timeval t_start, t_end;
 	fits *tmp = NULL, *tmp1 = NULL, *tmp2 = NULL;
 
+	data_type type = args->fit->type;
+
 	siril_log_color_message(_("Fourier Transform: processing...\n"), "red");
 	gettimeofday(&t_start, NULL);
 	args->retval = 0;
@@ -289,8 +459,8 @@ gpointer fourier_transform(gpointer p) {
 	default:
 	case 'd':
 	case 'D':
-		if (new_fit_image(&tmp1, width, height, args->fit->naxes[2]) ||
-				new_fit_image(&tmp2, width, height, args->fit->naxes[2])) {
+		if (new_fit_image(&tmp1, width, height, args->fit->naxes[2], type) ||
+				new_fit_image(&tmp2, width, height, args->fit->naxes[2], type)) {
 			args->retval = 1;
 			goto end;
 		}
@@ -320,13 +490,13 @@ gpointer fourier_transform(gpointer p) {
 	case 'i':
 	case 'I':
 		tmp = calloc(1, sizeof(fits));
-		if (!tmp || readfits(args->modulus, tmp, NULL)) {
+		if (!tmp || readfits(args->modulus, tmp, NULL, FALSE)) {
 			PRINT_ALLOC_ERR;
 			args->retval = 1;
 			goto end;
 		}
 		tmp1 = calloc(1, sizeof(fits));
-		if (!tmp1 || readfits(args->phase, tmp1, NULL)) {
+		if (!tmp1 || readfits(args->phase, tmp1, NULL, FALSE)) {
 			PRINT_ALLOC_ERR;
 			args->retval = 1;
 			goto end;
@@ -340,7 +510,7 @@ gpointer fourier_transform(gpointer p) {
 			siril_log_message(_("There is something wrong in your files\n"));
 			goto end;
 		}
-		new_fit_image(&tmp2, width, height, tmp->naxes[2]);
+		new_fit_image(&tmp2, width, height, tmp->naxes[2], type);
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
 			FFTI(tmp2, tmp, tmp1, args->type_order, chan);
 		/* We display the result on screen */

@@ -72,7 +72,12 @@ int deconv_update_preview() {
 	set_cursor_waiting(TRUE);
 
 	args->fit = &gfit;
-	args->clip = args->fit->maxi;
+	if (args->fit->type == DATA_USHORT) {
+		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi;
+	} else {
+		args->clip = (args->fit->maxi <= 0) ? USHRT_MAX_DOUBLE : args->fit->maxi * USHRT_MAX_DOUBLE;
+	}
+
 	args->contrast_threshold = (size_t)deconv_threshold;
 	args->sigma = deconv_radius;
 	args->corner_radius = deconv_boost;
@@ -91,6 +96,7 @@ gpointer RTdeconv(gpointer p) {
 	deconvolution(args);
 
 	siril_add_idle(end_generic, args);
+	free(args);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();

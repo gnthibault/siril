@@ -28,6 +28,7 @@
 #include "core/proto.h"
 #include "core/OS_utils.h"
 #include "algos/star_finder.h"
+#include "algos/statistics.h"
 #include "algos/PSF.h"
 #include "gui/image_display.h"
 #include "gui/PSF_list.h"
@@ -84,12 +85,13 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	}
 
 	/* first we're looking for stars in reference image */
-	if (seq_read_frame(args->seq, regargs->reference_image, &fit)) {
+	if (seq_read_frame(args->seq, regargs->reference_image, &fit, FALSE)) {
 		siril_log_message(_("Could not load reference image\n"));
 		args->seq->regparam[regargs->layer] = NULL;
 		free(sadata->current_regdata);
 		return 1;
 	}
+
 	siril_log_color_message(_("Reference Image:\n"), "green");
 
 	if (regargs->matchSelection && regargs->selection.w > 0 && regargs->selection.h > 0) {
@@ -295,6 +297,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		regargs->regparam[out_index].fwhm = sadata->current_regdata[in_index].fwhm;	// not FWHMx because of the ref frame
 		regargs->regparam[out_index].weighted_fwhm = sadata->current_regdata[in_index].weighted_fwhm;
 		regargs->regparam[out_index].roundness = sadata->current_regdata[in_index].roundness;
+		invalidate_stats_from_fit(fit);
 	} else {
 		set_shifts(args->seq, in_index, regargs->layer, (float) H.h02,
 				(float) -H.h12, fit->top_down);
@@ -382,6 +385,7 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 int register_star_alignment(struct registration_args *regargs) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = regargs->seq;
+	args->force_float = FALSE;
 	args->partial_image = FALSE;
 	if (regargs->process_all_frames) {
 		args->filtering_criterion = seq_filter_all;
@@ -398,6 +402,7 @@ int register_star_alignment(struct registration_args *regargs) {
 	args->stop_on_error = FALSE;
 	args->description = _("Global star registration");
 	args->has_output = !regargs->translation_only;
+	args->output_type = get_data_type(args->seq->bitpix);
 	args->new_seq_prefix = regargs->prefix;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;

@@ -41,20 +41,21 @@ int do_normalization(struct stacking_args *args) {
 /* scale0, mul0 and offset0 are output arguments when i = ref_image, input arguments otherwise */
 static int _compute_normalization_for_image(struct stacking_args *args, int i, int ref_image,
 		double *offset, double *mul, double *scale, normalization mode, double *scale0,
-		double *mul0, double *offset0) {
+		double *mul0, double *offset0, gboolean multithread) {
 	imstats *stat = NULL;
 	int reglayer;
 
 	reglayer = (args->reglayer == -1) ? 0 : args->reglayer;
 
 	// try with no fit passed: fails if data is needed because data is not cached
-	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, reglayer, NULL, STATS_EXTRA, FALSE))) {
+	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, reglayer, NULL, STATS_EXTRA, multithread))) {
 		fits fit = { 0 };
-		if (seq_read_frame(args->seq, args->image_indices[i], &fit)) {
+		// read frames as float, it's faster to compute stats
+		if (seq_read_frame(args->seq, args->image_indices[i], &fit, TRUE)) {
 			return 1;
 		}
 		// retry with the fit to compute it
-		if (!(stat = statistics(args->seq, args->image_indices[i], &fit, reglayer, NULL, STATS_EXTRA, FALSE)))
+		if (!(stat = statistics(args->seq, args->image_indices[i], &fit, reglayer, NULL, STATS_EXTRA, multithread)))
 			return 1;
 		if (args->seq->type != SEQ_INTERNAL)
 			clearfits(&fit);
@@ -94,7 +95,19 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 
 static int normalization_get_max_number_of_threads(sequence *seq) {
 	int max_memory_MB = get_max_memory_in_MB();
-	uint64_t memory_per_image = seq->rx * seq->ry * seq->nb_layers * (2 * sizeof(WORD) + 2 * sizeof(double));
+	/* Normalization uses IKSS computation in stats, which can be done only
+	 * on float data.
+	 * IKSS requires computing the MAD, which requires a copy of the float data.
+	 * for DATA_USHORT, we have: the image (2), (deactivated: possibly
+	 *   rewrite without zeros (2)), conversion to float for IKSS (4) and
+	 *   another float for MAD (4)
+	 * for DATA_FLOAT, we have: the image (4) used directly for IKSS and a
+	 * copy for MAD (4)
+	 */
+	uint64_t memory_per_image = seq->rx * seq->ry * seq->nb_layers;
+	if (get_data_type(seq->bitpix) == DATA_FLOAT)
+		memory_per_image *= 2 * sizeof(float);
+	else memory_per_image *= sizeof(WORD) + 2 * sizeof(float);
 	unsigned int memory_per_image_MB = memory_per_image / BYTES_IN_A_MB;
 
 	if (max_memory_MB < 0) {
@@ -159,7 +172,7 @@ static int compute_normalization(struct stacking_args *args) {
 	if (_compute_normalization_for_image(args,
 				ref_image_filtred_idx, ref_image_filtred_idx,
 				coeff->offset, coeff->mul, coeff->scale,
-				args->normalize, &scale0, &mul0, &offset0)) {
+				args->normalize, &scale0, &mul0, &offset0, TRUE)) {
 		set_progress_bar_data(_("Normalization failed."), PROGRESS_NONE);
 		return 1;
 	}
@@ -177,7 +190,7 @@ static int compute_normalization(struct stacking_args *args) {
 			}
 			if (_compute_normalization_for_image(args, i, ref_image_filtred_idx,
 						coeff->offset, coeff->mul, coeff->scale,
-						args->normalize, &scale0, &mul0, &offset0)) {
+						args->normalize, &scale0, &mul0, &offset0, FALSE)) {
 				retval = 1;
 				continue;
 			}

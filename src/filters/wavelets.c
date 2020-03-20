@@ -71,7 +71,12 @@ static int update_wavelets() {
 
 	for (i = 0; i < gfit.naxes[2]; i++) {
 		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
-		wavelet_reconstruct_file(dir[i], wavelet_value, gfit.pdata[i]);
+		if (gfit.type == DATA_USHORT) {
+			wavelet_reconstruct_file(dir[i], wavelet_value, gfit.pdata[i]);
+		} else {
+			wavelet_reconstruct_file_float(dir[i], wavelet_value,
+					gfit.fpdata[i]);
+		}
 		g_free(dir[i]);
 	}
 	return 0;
@@ -94,10 +99,13 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 
 	g_assert(fit->naxes[2] <= 3);
 
-	float *Imag = f_vector_alloc(fit->ry * fit->rx);
-	if (Imag == NULL) {
-		PRINT_ALLOC_ERR;
-		return 1;
+	float *Imag;
+	if (fit->type == DATA_USHORT) {
+		Imag = f_vector_alloc(fit->ry * fit->rx);
+		if (Imag == NULL) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
 	}
 
 	if (reqlayer < 0 || reqlayer > 3) {
@@ -112,20 +120,32 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 	for (chan = start; chan < end; chan++) {
 		int Nl, Nc;
 
-		if (wavelet_transform(Imag, fit->ry, fit->rx, &wavelet[chan],
-					Type, Nbr_Plan, fit->pdata[chan])) {
-			retval = 1;
-			break;
+		if (fit->type == DATA_USHORT) {
+			if (wavelet_transform(Imag, fit->ry, fit->rx, &wavelet[chan],
+						Type, Nbr_Plan, fit->pdata[chan])) {
+				retval = 1;
+				break;
+			}
+		}
+		else if (fit->type == DATA_FLOAT) {
+			Imag = fit->fpdata[chan];
+			if (wavelet_transform_float(Imag, fit->ry, fit->rx, &wavelet[chan],
+						Type, Nbr_Plan)) {
+				retval = 1;
+				break;
+			}
 		}
 		Nl = wavelet[chan].Nbr_Ligne;
 		Nc = wavelet[chan].Nbr_Col;
 		pave_2d_extract_plan(wavelet[chan].Pave.Data, Imag, Nl, Nc, Plan);
-		reget_rawdata(Imag, Nl, Nc, fit->pdata[chan]);
+		if (fit->type == DATA_USHORT)
+			reget_rawdata(Imag, Nl, Nc, fit->pdata[chan]);
 		wave_io_free(&wavelet[chan]);
 	}
 
 	/* Free */
-	free(Imag);
+	if (fit->type == DATA_USHORT)
+		free(Imag);
 	return retval;
 }
 
@@ -215,7 +235,6 @@ void on_button_cancel_w_clicked(GtkButton *button, gpointer user_data) {
 void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 	int Type_Transform, Nbr_Plan, maxplan, mins, i;
 	int nb_chan = gfit.naxes[2];
-	float *Imag;
 	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
 			"b_rawdata.wave" }, *dir[3];
 	const char *tmpdir;
@@ -248,20 +267,33 @@ void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 
 	set_cursor_waiting(TRUE);
 
-	Imag = (float *) malloc(gfit.rx * gfit.ry * sizeof(float));
+	if (gfit.type == DATA_USHORT) {
+		float *Imag = (float*) malloc(gfit.rx * gfit.ry * sizeof(float));
 
-	for (i = 0; i < nb_chan; i++) {
-		dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
-		strcpy(dir[i], tmpdir);
-		strcat(dir[i], G_DIR_SEPARATOR_S);
-		strcat(dir[i], File_Name_Transform[i]);
-		wavelet_transform_file(Imag, gfit.ry, gfit.rx, dir[i], Type_Transform, Nbr_Plan,
-				gfit.pdata[i]);
-		free(dir[i]);
+		for (i = 0; i < nb_chan; i++) {
+			dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
+			strcpy(dir[i], tmpdir);
+			strcat(dir[i], G_DIR_SEPARATOR_S);
+			strcat(dir[i], File_Name_Transform[i]);
+			wavelet_transform_file(Imag, gfit.ry, gfit.rx, dir[i],
+					Type_Transform, Nbr_Plan, gfit.pdata[i]);
+			free(dir[i]);
+		}
+
+		free(Imag);
+		Imag = NULL;
+	} else {
+		for (i = 0; i < nb_chan; i++) {
+			dir[i] = malloc(
+					strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
+			strcpy(dir[i], tmpdir);
+			strcat(dir[i], G_DIR_SEPARATOR_S);
+			strcat(dir[i], File_Name_Transform[i]);
+			wavelet_transform_file_float(gfit.fpdata[i], gfit.ry, gfit.rx, dir[i],
+					Type_Transform, Nbr_Plan);
+			free(dir[i]);
+		}
 	}
-
-	free(Imag);
-	Imag = NULL;
 	gtk_widget_set_sensitive(lookup_widget("frame_wavelets"), TRUE);
 	gtk_widget_set_sensitive(lookup_widget("button_reset_w"), TRUE);
 	set_cursor_waiting(FALSE);

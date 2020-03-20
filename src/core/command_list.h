@@ -87,7 +87,7 @@ static command commands[] = {
 
 	{"offset", 1, "offset value", process_offset, STR_OFFSET, TRUE},
 
-	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-stretch] [-flip] [-equalize_cfa] [-opt]", process_preprocess, STR_PREPROCESS, TRUE},
+	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-flip] [-equalize_cfa] [-opt]", process_preprocess, STR_PREPROCESS, TRUE},
 	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 
 	{"register", 1, "register sequence [-norot] [-drizzle]", process_register, STR_REGISTER, TRUE},
@@ -129,8 +129,8 @@ static command commands[] = {
 	{"setref", 1, "setref image_number", process_set_ref, STR_SETREF, TRUE},
 	{"split", 3, "split R G B", process_split, STR_SPLIT, TRUE},
 	{"split_cfa", 0, "split_cfa", process_split_cfa, STR_SPLIT_CFA, TRUE},
-	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=] [-out=result_filename] [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackone, STR_STACK, TRUE},
-	{"stackall", 0, "stackall [type] [sigma low] [sigma high] [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackall, STR_STACKALL, TRUE},
+	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=] [-output_norm] [-out=result_filename] [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackone, STR_STACK, TRUE},
+	{"stackall", 0, "stackall [type] [sigma low] [sigma high] [-nonorm, norm=] [-output_norm] [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackall, STR_STACKALL, TRUE},
 	{"stat", 0, "stat", process_stat, STR_STAT, TRUE},
 
 	{"threshlo", 1, "threshlo level", process_threshlo, STR_THRESHLO, TRUE},

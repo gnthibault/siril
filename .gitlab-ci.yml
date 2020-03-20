@@ -10,6 +10,7 @@ stages:
     GIT_DEPTH: "1"
     INSTALL_DIR: "_install"
     INSTALL_PREFIX: "${CI_PROJECT_DIR}/${INSTALL_DIR}"
+    GIT_SUBMODULE_STRATEGY: recursive
   artifacts:
     expire_in: 1 week
     when: always
@@ -21,6 +22,7 @@ stages:
     - apt-get update
     - apt-get install -y --no-install-recommends
         build-essential
+        cmake
         desktop-file-utils
         hicolor-icon-theme
         git
@@ -57,10 +59,10 @@ siril-debian/testing-autotools:
   extends: .siril-debian/testing-base
   script:
     - mkdir _build
-    - cp -r deps _build/
     - cd _build
     - ../autogen.sh
         --prefix="${INSTALL_PREFIX}"
+    - ln -s ../deps .
     - make -j "$(nproc)"
     # - make check
 
