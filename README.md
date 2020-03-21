@@ -19,6 +19,12 @@ Main development is done with most recent versions of libraries.
 
 Requirements
 ------------
+For compilation, these tools are needed:
+ * **autoconf**
+ * **automake**
+ * **cmake**
+ 
+Then, mandatory build dependencies:
  * **GTK+ 3**, (>= 3.17) as GUI toolkit
  * **cfitsio** for FITS image read and write
  * **fftw3** for Fourier transforms
@@ -134,8 +140,8 @@ of scientific and other images.
 FITS is the most commonly used digital file format in astronomy.
 
 Since FITS is a container and doesn't specify the order and size of data, it's
-useful to fix it at some point. Currently, SIRIL uses unsigned 16-bit per
-channel values (TUSHORT), and images are stored channel after channel on a
+useful to fix it at some point. Currently, SIRIL uses 32-bit floating point per
+channel values (TFLOAT), and images are stored channel after channel on a
 bottom-to-top, left-to-right order.
 
 All files imported and converted in SIRIL or files exported by SIRIL are in this
