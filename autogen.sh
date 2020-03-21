@@ -33,11 +33,9 @@ intltoolize --force --copy --automake || exit 1
 autoreconf --verbose --force --install -Wno-portability || exit 1
 { set +x; } 2>/dev/null
 
-cd $ORIGDIR
-
 if [ "$NOCONFIGURE" = "" ]; then
         set -x
-        $srcdir/configure "$@" || exit 1
+        ./configure "$@" || exit 1
         { set +x; } 2>/dev/null
 
         if [ "$1" = "--help" ]; then exit 0 else
