@@ -751,7 +751,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 				data_pool[i].m_dx2 = 0.f;
 				for (int j = 0; j < nb_frames; ++j) {
 					const float dx = j - data_pool[i].m_x;
-					data_pool[i].xf[i] = 1.f / (j + 1);
+					data_pool[i].xf[j] = 1.f / (j + 1);
 					data_pool[i].m_dx2 += (dx * dx - data_pool[i].m_dx2)
 							* data_pool[i].xf[i];
 				}
