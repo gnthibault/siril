@@ -96,7 +96,7 @@ static WORD* getAverage3x3Line(WORD *buf, const int yy, const int w,
 	return cpyline;
 }
 
-static WORD* getAverage3x3Line_float(float *buf, const int yy, const int w,
+static float* getAverage3x3Line_float(float *buf, const int yy, const int w,
 		const int h, gboolean is_cfa) {
 	int step, radius, x, xx, y;
 	float *cpyline;
