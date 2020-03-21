@@ -735,7 +735,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		data_pool[i].stack = (void*) ((char*) data_pool[i].tmp
 				+ nb_frames * npixels_in_block * ielem_size);
 		if (is_mean) {
-			int offset = ielem_size * nb_frames * (npixels_in_block + 1);
+			size_t offset = (size_t)ielem_size * nb_frames * (npixels_in_block + 1);
 			int temp = offset % sizeof(int);
 			if (temp > 0) { // align buffer
 				offset += sizeof(int) - temp;
