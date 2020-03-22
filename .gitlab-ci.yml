@@ -59,7 +59,7 @@ siril-debian/testing-autotools:
   extends: .siril-debian/testing-base
   script:
     - mkdir _build
-    - ../autogen.sh
+    - ./autogen.sh
         --prefix=`pwd`/_build
     - make -j "$(nproc)"
     # - make check
