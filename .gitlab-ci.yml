@@ -61,7 +61,7 @@ siril-debian/testing-autotools:
     - mkdir _build
     - ./autogen.sh
         --prefix=`pwd`/_build
-    - make -j "$(nproc)"
+    - make -j "$(nproc)" install
     # - make check
 
 flatpak:
