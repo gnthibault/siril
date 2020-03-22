@@ -16,8 +16,8 @@ stages:
     when: always
     name: "app-build-${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
     paths:
-    - _build
-    #- "${INSTALL_DIR}"
+    #- _build
+    - "${INSTALL_DIR}"
   before_script:
     - apt-get update
     - apt-get install -y --no-install-recommends
@@ -58,9 +58,9 @@ stages:
 siril-debian/testing-autotools:
   extends: .siril-debian/testing-base
   script:
-    - mkdir _build
+    # - mkdir _build
     - ./autogen.sh
-        --prefix=`pwd`/_build
+        --prefix=INSTALL_PREFIX
     - make -j "$(nproc)"
     # - make check
 
