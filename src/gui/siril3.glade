@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 
+<!-- Generated with glade 3.22.2 
 
 Copyright (C) The free-astro development team, 2019
 
@@ -559,7 +559,7 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="use_alpha">False</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <signal name="response" handler="on_colordialog_response" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -7116,7 +7116,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
     <signal name="close" handler="on_CLAHE_dialog_close" swapped="no"/>
     <signal name="delete-event" handler="on_clahe_cancel_clicked" swapped="no"/>
     <signal name="show" handler="on_CLAHE_dialog_show" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -7346,7 +7346,7 @@ artifacts may appear.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -8245,7 +8245,7 @@ artifacts may appear.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -8511,7 +8511,7 @@ If the parameters is null, so no filter is apply at all.</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <signal name="show" handler="on_SCNR_dialog_show" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -8699,7 +8699,7 @@ If the parameters is null, so no filter is apply at all.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -8883,7 +8883,7 @@ If the parameters is null, so no filter is apply at all.</property>
     <signal name="close" handler="on_asinh_dialog_close" swapped="no"/>
     <signal name="delete-event" handler="on_asinh_cancel_clicked" swapped="no"/>
     <signal name="show" handler="on_asinh_dialog_show" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -9120,7 +9120,7 @@ If the parameters is null, so no filter is apply at all.</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <signal name="hide" handler="on_background_extraction_dialog_hide" swapped="no"/>
     <signal name="show" handler="on_background_extraction_dialog_show" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -9462,7 +9462,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -9726,7 +9726,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <signal name="hide" handler="on_composition_dialog_hide" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -9931,6 +9931,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                   <object class="GtkButton" id="composition_rgbcolor">
                     <property name="label" translatable="yes">Finalize colour balance</property>
                     <property name="visible">True</property>
+                    <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="tooltip_text" translatable="yes">Open the RGB calibration tool on the resulting image. This will modify the result in a destructive way to align the three channels of the result.
@@ -10135,7 +10136,7 @@ Modifying parameters in this windows afterward will void the colour balance, and
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -10475,7 +10476,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -10583,7 +10584,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -10670,7 +10671,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <signal name="close" handler="on_deconvolution_dialog_close" swapped="no"/>
     <signal name="delete-event" handler="on_deconvolution_cancel_clicked" swapped="no"/>
     <signal name="show" handler="on_deconvolution_dialog_show" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -11044,7 +11045,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -11297,7 +11298,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -11503,7 +11504,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -11644,7 +11645,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
     <property name="transient_for">control_window</property>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -11893,7 +11894,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="on_button_histo_close_clicked" swapped="no"/>
     <signal name="show" handler="on_histogram_window_show" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -12359,7 +12360,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -12566,7 +12567,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -12838,7 +12839,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -13032,7 +13033,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <signal name="close" handler="on_satu_dialog_close" swapped="no"/>
     <signal name="delete-event" handler="on_satu_cancel_clicked" swapped="no"/>
     <signal name="show" handler="on_satu_dialog_show" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -13256,7 +13257,7 @@ Uncheck if images come from a monochrome sensor.</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <signal name="show" handler="on_savepopup_show" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -14260,7 +14261,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -14384,7 +14385,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <signal name="hide" handler="on_stars_list_window_hide" swapped="no"/>
     <signal name="show" handler="on_stars_list_window_show" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -14940,7 +14941,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
     <signal name="delete-event" handler="on_button_cancel_w_clicked" swapped="no"/>
     <signal name="hide" handler="on_wavelets_dialog_hide" swapped="no"/>
     <signal name="show" handler="on_wavelets_dialog_show" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -15638,7 +15639,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">
@@ -16264,7 +16265,7 @@ If the selection is empty, the whole image will be used as reference.</property>
     <property name="type_hint">dialog</property>
     <property name="transient_for">control_window</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-    <child>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child internal-child="vbox">

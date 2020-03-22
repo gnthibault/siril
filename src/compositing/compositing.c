@@ -527,6 +527,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		set_precision_switch();
 		sliders_mode_set_state(com.sliders);
 
+		gtk_widget_set_sensitive(lookup_widget("composition_rgbcolor"), FALSE);
 		init_layers_hi_and_lo_values(MIPSLOHI);
 		set_cutoff_sliders_max_values();
 		set_cutoff_sliders_values();
@@ -538,6 +539,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 	}
 	else {
 		update_MenuItem();
+		gtk_widget_set_sensitive(lookup_widget("composition_rgbcolor"), TRUE);
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 	}

@@ -342,7 +342,7 @@ int cosmetic_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 		if (retval)
 			return retval;
 	}
-	siril_log_color_message(_("Image %d: %ld pixels corrected (%ld + %ld)\n"),
+	siril_log_color_message(_("Image %d: %ld pixel corrected (%ld + %ld)\n"),
 			"bold", i, icold + ihot, icold, ihot);
 	return 0;
 }
@@ -404,7 +404,7 @@ gpointer autoDetectThreaded(gpointer p) {
 	}
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
-	siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"), icold + ihot,
+	siril_log_message(_("%ld pixel corrected (%ld + %ld)\n"), icold + ihot,
 			icold, ihot);
 
 	free(args);
