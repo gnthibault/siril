@@ -2,14 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-20 21:58+0100\n"
-"PO-Revision-Date: 2020-02-23 22:08+0100\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2020-03-22 14:39+0100\n"
+"Last-Translator: Stefan Beck <stefan@cometchaser.de>\n"
 "Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -172,11 +172,11 @@ msgstr "Einzelstern-Registrierung (deep-sky)"
 
 #: ../src/gui/siril3.glade.h:35 ../src/gui/callbacks.c:851
 msgid "16 bits"
-msgstr ""
+msgstr "16 Bit"
 
 #: ../src/gui/siril3.glade.h:36 ../src/gui/callbacks.c:851
 msgid "32 bits"
-msgstr ""
+msgstr "32 Bit"
 
 #: ../src/gui/siril3.glade.h:37
 msgid "Asinh Transformation..."
@@ -303,7 +303,7 @@ msgstr "SIRIL Kontrollzentrum"
 
 #: ../src/gui/siril3.glade.h:67
 msgid "Open"
-msgstr "_Open"
+msgstr "Öffnen"
 
 #: ../src/gui/siril3.glade.h:68
 msgid "Open an image or a SER/AVI sequence"
@@ -356,7 +356,7 @@ msgstr "Skripte"
 
 #: ../src/gui/siril3.glade.h:78
 msgid "Precision"
-msgstr ""
+msgstr "Präzision"
 
 #: ../src/gui/siril3.glade.h:79
 msgid ""
@@ -531,9 +531,8 @@ msgstr ""
 "Format: FITS oder SER, mit oder ohne Farbe."
 
 #: ../src/gui/siril3.glade.h:115
-#, fuzzy
 msgid "Multiple SER"
-msgstr "Multiplikativ"
+msgstr "Mehrere SER"
 
 #: ../src/gui/siril3.glade.h:116
 msgid ""
@@ -1462,6 +1461,8 @@ msgstr ""
 #: ../src/gui/siril3.glade.h:307
 msgid "Show all relevant graphs using registration and / or photometry data."
 msgstr ""
+"Zeige alle relevanten Grafiken zur verwendeten Registrierung und / oder "
+"Photometriedaten."
 
 #: ../src/gui/siril3.glade.h:308
 msgid "Plot"
@@ -1533,9 +1534,8 @@ msgid "Multiplicative with scaling"
 msgstr "Multiplikativ mit Skalierung"
 
 #: ../src/gui/siril3.glade.h:327
-#, fuzzy
 msgid "Recompute"
-msgstr "Berechne"
+msgstr "Neu Berechnen"
 
 #: ../src/gui/siril3.glade.h:328
 msgid ""
@@ -1638,11 +1638,12 @@ msgid "Rejection:"
 msgstr "Ausschluss:"
 
 #: ../src/gui/siril3.glade.h:354
-#, fuzzy
 msgid ""
 "Output\n"
 "Normalisation"
-msgstr "Normalisierung:"
+msgstr ""
+"Ausgabe\n"
+"Normalisierung"
 
 #: ../src/gui/siril3.glade.h:356
 msgid ""
@@ -1651,6 +1652,11 @@ msgid ""
 "\n"
 "WARNING: This option should not be checked for master stacking."
 msgstr ""
+"Wenn Sie dieen Butten drücken, wird das endgültige Bild auf Wert von [0,1] "
+"normalisiert wenn 32-Bit Genauigkeit benutzt wird, oder andernfalls im "
+"Wertebereich [0, 65535].\n"
+"\n"
+"WARNUNG: Diese Option kann für Master-Stacking nicht gewählt werden."
 
 #: ../src/gui/siril3.glade.h:359
 msgid "Normalisation:"
@@ -2049,9 +2055,8 @@ msgstr ""
 "Artefakte auftreten."
 
 #: ../src/gui/siril3.glade.h:459
-#, fuzzy
 msgid "Preview"
-msgstr "Vorschau %d"
+msgstr "Vorschau"
 
 #: ../src/gui/siril3.glade.h:460 ../src/algos/plateSolver.c:100
 msgid "Image Plate Solver"
@@ -2358,9 +2363,8 @@ msgid "Median Filter"
 msgstr "Median Filter"
 
 #: ../src/gui/siril3.glade.h:520
-#, fuzzy
 msgid "Kernel Size"
-msgstr "Filter-Größe: "
+msgstr "Kernel Size"
 
 #: ../src/gui/siril3.glade.h:521
 msgid ""
@@ -2792,6 +2796,9 @@ msgid ""
 "Contrast threshold generates an internal mask based on microcontrast in the "
 "image which then is used to blend the deconvoluted with the convoluted image."
 msgstr ""
+"Die Kontrastschwelle erzeugt eine interne Maske auf der Grundlage des "
+"Mikrokontrastes im Bild, die dann dazu verwendet wird, das entfaltete mit "
+"dem gefalteten Bild zu überblenden."
 
 #: ../src/gui/siril3.glade.h:614
 msgid "Auto value"
@@ -2799,7 +2806,7 @@ msgstr "Automatischer Wert"
 
 #: ../src/gui/siril3.glade.h:615
 msgid "The contrast threshold value is evaluated automatically."
-msgstr ""
+msgstr "Der Wert für die Kontrastschwelle wird automatisch bewertet."
 
 #: ../src/gui/siril3.glade.h:616
 msgid "Radius"
@@ -2818,6 +2825,8 @@ msgid ""
 "Corner radius boost is a value which is added to gaussian sigma for the "
 "tiles in the corners of an image."
 msgstr ""
+"Die Verstärkung der Kantenrundung ist ein Wert, der zum Gaußschen Sigma für "
+"die Kacheln in den Ecken eines Bildes hinzugefügt wird."
 
 #: ../src/gui/siril3.glade.h:620
 msgid "Number of iterations to apply."
@@ -2832,6 +2841,8 @@ msgid ""
 "Auto limit iterations is a stopping criteria which is applied per tile to "
 "reduce artifacts."
 msgstr ""
+"Die automatische Iterationsbegrenzung ist ein Stoppkriterium, das pro Kachel "
+"angewendet wird, um Artefakte zu reduzieren."
 
 #: ../src/gui/siril3.glade.h:623
 msgid "Fourier Transform"
@@ -3185,6 +3196,7 @@ msgstr ""
 #: ../src/gui/siril3.glade.h:704
 msgid "You should specify a selection around the object you want to analyze."
 msgstr ""
+"Sie sollten eine Auswahl um das Objekt wählen, dass Sie analysieren wollen."
 
 #: ../src/gui/siril3.glade.h:705
 msgid "X centre:"
@@ -3207,9 +3219,8 @@ msgid "Rotation"
 msgstr "Rotation"
 
 #: ../src/gui/siril3.glade.h:710
-#, fuzzy
 msgid "Angle (°)"
-msgstr "Winkel (°): "
+msgstr "Winkel (°)"
 
 #: ../src/gui/siril3.glade.h:711
 msgid "Angle in degrees. Rotation center is the center of the image."
@@ -3330,7 +3341,7 @@ msgstr "16-bit Integer (signed)"
 
 #: ../src/gui/siril3.glade.h:739
 msgid "32-bit floating point"
-msgstr ""
+msgstr "32-Bit Fließkomma"
 
 #: ../src/gui/siril3.glade.h:740
 msgid "Sample Format"
@@ -3590,34 +3601,28 @@ msgid "Compute wavelets"
 msgstr "Berechne Wavelet"
 
 #: ../src/gui/siril3.glade.h:797
-#, fuzzy
 msgid "1st Plan"
-msgstr "1ster Plan:"
+msgstr "1ster Plan"
 
 #: ../src/gui/siril3.glade.h:798
-#, fuzzy
 msgid "2nd Plan"
-msgstr "2ter Plan:"
+msgstr "2ter Plan"
 
 #: ../src/gui/siril3.glade.h:799
-#, fuzzy
 msgid "3th Plan"
-msgstr "3ter Plan:"
+msgstr "3ter Plan"
 
 #: ../src/gui/siril3.glade.h:800
-#, fuzzy
 msgid "4th Plan"
-msgstr "4ter Plan:"
+msgstr "4ter Plan"
 
 #: ../src/gui/siril3.glade.h:801
-#, fuzzy
 msgid "5th Plan"
-msgstr "5ter Plan:"
+msgstr "5ter Plan"
 
 #: ../src/gui/siril3.glade.h:802
-#, fuzzy
 msgid "6th Plan"
-msgstr "6ter Plan:"
+msgstr "6ter Plan"
 
 #: ../src/gui/siril3.glade.h:803
 msgid "Adjust"
@@ -4406,9 +4411,11 @@ msgid "Not enough samples."
 msgstr "Nicht genügend Samples."
 
 #: ../src/algos/background_extraction.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Background extraction from channel %s.\n"
-msgstr "Hintergrund-Extraktion: in Bearbeitung...\n"
+msgstr ""
+"Hintergrund-Extraktion von Kanal %s.\n"
+"\n"
 
 #: ../src/algos/colors.c:495 ../src/algos/colors.c:582
 msgid "Siril cannot extract layers. Make sure your image is in RGB mode.\n"
@@ -4509,6 +4516,8 @@ msgid ""
 "FITS header does not contain a proper XTRANS pattern, demosaicing cannot be "
 "done"
 msgstr ""
+"FITS Header enthält keinen korrekten XTRANS Wert, Rekonstruktion "
+"(Demosaicing) kann nicht durchgeführt werden"
 
 #: ../src/algos/demosaicing.c:1176 ../src/algos/demosaicing.c:1222
 msgid "Split CFA does not work on non-Bayer filter camera images!\n"
@@ -4552,13 +4561,15 @@ msgstr "Zuschneiden: in Bearbeitung...\n"
 
 #: ../src/algos/geometry.c:613
 msgid "A live preview session is active"
-msgstr ""
+msgstr "Eine Live-Vorschau ist aktiv"
 
 #: ../src/algos/geometry.c:614
 msgid ""
 "It is impossible to crop the image when a filter with preview session is "
 "active. Please consider to close the filter dialog first."
 msgstr ""
+"Das Bild zu beschneiden/verkleinern ist nicht möglich wenn ein Filter mit "
+"Vorschau aktiv ist. Bitte erst den Filterdialog schließen."
 
 #: ../src/algos/geometry.c:640
 msgid ""
@@ -4576,14 +4587,16 @@ msgid "Noise standard deviation: calculating...\n"
 msgstr "Rauschen Standard-Abweichung: berechne...\n"
 
 #: ../src/algos/noise.c:81
-#, fuzzy, c-format
+#, c-format
 msgid "Background noise value (channel: #%d): %0.3f (%.3e)\n"
-msgstr "Wert Hintergrund-Rauschen (Kanal: #%d): %0.3lf(%.3e)\n"
+msgstr ""
+"Wert Hintergrund-Rauschen (Kanal: #%d): %0.3lf(%.3e)\n"
+"\n"
 
 #: ../src/algos/noise.c:85
-#, fuzzy, c-format
+#, c-format
 msgid "Background noise value (channel: #%d): %0.3e\n"
-msgstr "Wert Hintergrund-Rauschen (Kanal: #%d): %0.3lf(%.3e)\n"
+msgstr "Wert Hintergrund-Rauschen (Kanal: #%d): %0.3e\n"
 
 #. Translator note: radii is plural for radius
 #: ../src/algos/photometry.c:268
@@ -4941,43 +4954,48 @@ msgstr "Neujustierung Layer %d auf %g mal heller\n"
 
 #: ../src/core/arithm.c:146
 msgid "Cannot divide by zero, aborting."
-msgstr ""
+msgstr "Division durch Null, Abbruch."
 
 #: ../src/core/arithm.c:163 ../src/core/arithm.c:252
 #: ../src/core/preprocess.c:159
-#, fuzzy
 msgid "imoper: images must have same dimensions\n"
-msgstr "Stacking: nicht alle Bilder in der Sequenz haben dieselbe Größe\n"
+msgstr ""
+"Stacking: nicht alle Bilder in der Sequenz haben dieselbe Größe\n"
+"\n"
 
 #: ../src/core/arithm.c:307
 msgid ""
 "image operations can only be kept 16 bits if first input images are 16 bits. "
 "Aborting.\n"
 msgstr ""
+"Bildoperationen können nur in 16 Bit durchgeführt werden, wenn die Bilder in "
+"16 Bit - Format gespeichert sind. Abbruch.\n"
 
 #: ../src/core/arithm.c:328
-#, fuzzy
 msgid "addmax: images must have same dimensions\n"
-msgstr "Stacking: nicht alle Bilder in der Sequenz haben dieselbe Größe\n"
+msgstr ""
+"Stacking: nicht alle Bilder in der Sequenz haben dieselbe Größe\n"
+"\n"
 
 #: ../src/core/arithm.c:332
 msgid "addmax: images must have same data type\n"
-msgstr ""
+msgstr "Addmax: Bilder müssen vom gleichen Datentyp sein\n"
 
 # pipe-tube-Rohr... wäre Pfad adäquat?
 #: ../src/core/command.c:246
-#, fuzzy
 msgid "Could not understand the requested operator\n"
-msgstr "Konnte den genannten Pipeline nicht öffnen\n"
+msgstr ""
+"Verstehe den angeforderten Operator nicht\n"
+"\n"
 
 #: ../src/core/command.c:296
 msgid "Multiplying by a coefficient less than or equal to 0 is not possible.\n"
 msgstr "Multiplikation mit einem Koeffizienten = 0 ist nicht gestattet.\n"
 
 #: ../src/core/command.c:320
-#, fuzzy, c-format
+#, c-format
 msgid "Entropy: %.3f\n"
-msgstr "Entropie: %.3lf\n"
+msgstr "Entropie: %.3f\n"
 
 #: ../src/core/command.c:358
 msgid "Sigma must be between [0.4, 2.0]\n"
@@ -4996,6 +5014,8 @@ msgid ""
 "It is impossible to crop the image when a filter with preview session is "
 "active. Please consider to close the filter dialog first.\n"
 msgstr ""
+"Wenn ein Filter mit Vorschau aktiv ist, ist es nicht möglich ein Bild "
+"auszuschneiden. Bitte schließen Sie zuerst den Filterdialog.\n"
 
 #: ../src/core/command.c:422 ../src/core/command.c:1023
 msgid "Crop: x and y must be positive values.\n"
@@ -5084,6 +5104,8 @@ msgid ""
 "The coordinates cannot be greater than the size of the image. Please change "
 "their values and retry.\n"
 msgstr ""
+"Die Koordinaten können nicht größer als die Größe des Bildes sein. Bitte "
+"ändern Sie deren Werte und versuchen Sie es erneut.\n"
 
 #: ../src/core/command.c:832 ../src/core/command.c:959
 #: ../src/core/command.c:981
@@ -5174,7 +5196,7 @@ msgstr "Die Datei %s wurde für Layer %s generiert.\n"
 #: ../src/core/command.c:1207
 #, c-format
 msgid "replacement value is out of range (0 - %d)\n"
-msgstr ""
+msgstr "Wert zum Ersetzen ist ausserhalb des Wertebereiches (0 - %d)\n"
 
 #: ../src/core/command.c:1241
 msgid "Number of layers MUST be 1 or 3\n"
@@ -5385,9 +5407,8 @@ msgid "Stacked sequence successfully.\n"
 msgstr "Sequenz erfolgreich gestackt.\n"
 
 #: ../src/core/command.c:2597
-#, fuzzy
 msgid "-stretch option is now deprecated.\n"
-msgstr "Astrometrische Auflösung (plate solving) erkannt"
+msgstr "-Option ist veraltet.\n"
 
 #: ../src/core/command.c:2611 ../src/core/preprocess.c:516
 msgid "Preprocessing...\n"
@@ -5871,6 +5892,11 @@ msgid ""
 "added to Gaussian sigma for the tiles in the corners of an image. "
 "\"Iterations\" is the number of iterations to be performed"
 msgstr ""
+"Stellt ein Bild mit der Richardson-Lucy-Methode wieder her. \"Sigma\" ist "
+"die Größe des anzuwendenden Kernels, während \"Verstärkung Kantenrundung\" "
+"ein Wert ist, der zum Gauß'schen Sigma für die Kacheln in den Ecken eines "
+"Bildes hinzugefügt wird. \"Iterationen\" ist die Anzahl der durchzuführenden "
+"Iterationen"
 
 #: ../src/core/command_def.h:72
 msgid ""
@@ -6372,14 +6398,14 @@ msgid "command interrupted\n"
 msgstr "Befehlsausführung unterbrochen\n"
 
 #: ../src/core/preprocess.c:172
-#, fuzzy, c-format
+#, c-format
 msgid "Dark optimization: k0=%.3f\n"
-msgstr "Dark Optimierung: k0=%.3lf\n"
+msgstr "Dark Optimierung: k0=%.3f\n"
 
 #: ../src/core/preprocess.c:219
-#, fuzzy, c-format
+#, c-format
 msgid "Normalisation value auto evaluated: %.2f\n"
-msgstr "Automatisch ermittelter Normalisierungswert: %.2lf\n"
+msgstr "Automatisch ermittelter Normalisierungswert: %.2f\n"
 
 #: ../src/core/preprocess.c:229 ../src/filters/cosmetic_correction.c:368
 #, c-format
@@ -6682,7 +6708,7 @@ msgstr "Unscharf maskieren: in Bearbeitung...\n"
 
 #: ../src/core/siril.c:220
 msgid "ddp level argument must be [0, 65535]\n"
-msgstr ""
+msgstr "DDP Level muss zwischen [0, 65535] sein\n"
 
 #: ../src/core/siril_log.c:127
 msgid "Log files (*.log)"
@@ -6833,12 +6859,10 @@ msgid "Upgrade your system"
 msgstr "Aktualisieren Sie Ihr System"
 
 #: ../src/filters/cosmetic_correction.c:264
-#, fuzzy
 msgid ""
 "Cosmetic correction for one line is not supported yet in 32-bit images\n"
 msgstr ""
-"Die kosmetische Korrektur mittels Master-Dark wird nur für Einzel-Kanal-"
-"Bilder unterstützt\n"
+"Die kosmetische Korrektur für eine Linie wird in 32-Bit Bildern noch nicht\n"
 
 #: ../src/filters/cosmetic_correction.c:306
 #, c-format
@@ -6893,13 +6917,15 @@ msgstr "Rotatorischer Gradient abgeschlossen."
 
 #: ../src/filters/rgradient.c:250
 msgid "Wrong center coordinates"
-msgstr ""
+msgstr "Falsche Koordinaten für das Zentrum"
 
 #: ../src/filters/rgradient.c:251
 msgid ""
 "The coordinates cannot be greater than the size of the image. Please change "
 "their values and retry."
 msgstr ""
+"Die Koordinaten dürfen nicht größer als die Bildgröße sein. Bitte die Werte "
+"ändern und nochmal versuchen."
 
 #: ../src/filters/scnr.c:59
 msgid "SCNR: processing...\n"
@@ -6919,6 +6945,7 @@ msgid ""
 "Cyril Richard <cyril@free-astro.org>\n"
 "Vincent Hourdin <vh@free-astro.vinvin.tf>"
 msgstr ""
+"Stefan Beck, <astro@cometchaser.de>\n"
 "Jörg Schipke, <joergsbox@gmx.net>\n"
 "Stephan Wörmke <woermke@posteo.de>"
 
@@ -6942,15 +6969,15 @@ msgid "Visit the Siril website"
 msgstr "Besuchen Sie die SIRIL Website"
 
 #: ../src/gui/callbacks.c:319
-#, fuzzy, c-format
+#, c-format
 msgid "Setting MAX value for cutoff sliders adjustments (%f)\n"
-msgstr "MAX-Wert über die Schieberegler vorgeben\n"
+msgstr "Setze den MAX-Wert für den Cutoff Schieberegler (%f)\n"
 
 #. there should be no other normal cases
 #: ../src/gui/callbacks.c:362
-#, fuzzy, c-format
+#, c-format
 msgid "Setting ranges scalemin=%d, scalemax=%d\n"
-msgstr "Initialisiere scalemin=%d, scalemax=%d\n"
+msgstr "Wertebereich scalemin=%d, scalemax=%d\n"
 
 #: ../src/gui/callbacks.c:415
 #, c-format
@@ -6982,7 +7009,7 @@ msgstr "Blau"
 
 #: ../src/gui/callbacks.c:718
 msgid "rgb"
-msgstr ""
+msgstr "RGB"
 
 #: ../src/gui/callbacks.c:763
 #, c-format
@@ -7011,17 +7038,19 @@ msgstr "%s (Kanal 2)"
 
 #: ../src/gui/callbacks.c:821
 msgid "Cannot convert a sequence file"
-msgstr ""
+msgstr "Kann ein Sequenzdatei nicht konvertieren"
 
 #: ../src/gui/callbacks.c:822
 msgid ""
 "A sequence file cannot be converted to 32 bits. This operation can only be "
 "done on a single file."
 msgstr ""
+"Eine Sequenzdatei kann nicht in 32 Bit konvertiert werden. Diese Operation "
+"kann nur mit einer einzelnen Datei durchgeführt werden."
 
 #: ../src/gui/callbacks.c:827
 msgid "Precision loss"
-msgstr ""
+msgstr "Verlust der Genauigkeit"
 
 #: ../src/gui/callbacks.c:828
 msgid ""
@@ -7029,6 +7058,10 @@ msgid ""
 "accuracy. Getting back to 32 bits will not recover this loss.\n"
 "Are you sure you want to convert your data?"
 msgstr ""
+"Die Konvertierung eines Bildes von 32 Bit in 16 Bit führt eventuell zu einer "
+"Verringerung der numerischen Genauigkeit. Rückkonvertierung in 32 Bit wird "
+"die Genauigkeit nicht wiederherstellen.\n"
+"Wollen Sie wirklich die Daten konvertieren?"
 
 #: ../src/gui/callbacks.c:877
 msgid "Unassigned"
@@ -7064,9 +7097,9 @@ msgid "%d files selected, %s"
 msgstr "%d Dateien ausgewählt, %s"
 
 #: ../src/gui/callbacks.c:1189
-#, fuzzy, c-format
+#, c-format
 msgid "Mem: %s"
-msgstr "Speicher: %ldMB"
+msgstr "Speicher: %s"
 
 #: ../src/gui/callbacks.c:1192
 msgid "Mem: N/A"
@@ -7815,6 +7848,7 @@ msgstr "Unbekanntes FITS Datenformat bei interner Konvertierung\n"
 #, c-format
 msgid "Selecting the primary header failed, is the FITS file '%s' malformed?\n"
 msgstr ""
+"Auswahl des Hauptheaders schlug fehl, ist die FITS Datei '%s' fehlerhaft?\n"
 
 #: ../src/io/image_format_fits.c:620 ../src/io/image_format_fits.c:754
 #, c-format
@@ -7883,11 +7917,10 @@ msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Speichere FITS: Datei %s, %ld Layer, %ux%u Pixel\n"
 
 #: ../src/io/image_format_fits.c:2060
-#, fuzzy
 msgid "This operation is not yet supported for 32-bit images\n"
 msgstr ""
-"Diese Operation wird für interne Sequenzen (seq_open_image) nicht "
-"unterstützt\n"
+"Diese Operation wird für 32-bit Bilder noch nicht unterstützt\n"
+"\n"
 
 #: ../src/io/image_format_fits.c:2137 ../src/io/ser.c:1349
 msgid "(Monochrome Preview)"
@@ -8016,9 +8049,8 @@ msgid "Could not open the TIFF file %s\n"
 msgstr "Konnte TIFF-Datei %s nicht öffnen\n"
 
 #: ../src/io/image_formats_libraries.c:298
-#, fuzzy
 msgid "Siril cannot read this TIFF format.\n"
-msgstr "SIRIL kann TIFF-Datei nicht erstellen.\n"
+msgstr "SIRIL kann diese TIFF-Datei nicht lesen.\n"
 
 #: ../src/io/image_formats_libraries.c:359
 #, c-format
@@ -8472,9 +8504,8 @@ msgstr ""
 "unterstützt.\n"
 
 #: ../src/io/single_image.c:159
-#, fuzzy
 msgid "Cannot open a sequence from here\n"
-msgstr "Konnte Sequenz %s nicht laden\n"
+msgstr "Kann Sequenz %s nicht laden\n"
 
 #: ../src/io/single_image.c:171
 #, c-format
@@ -8540,13 +8571,13 @@ msgstr ""
 "Beende.\n"
 
 #: ../src/main.c:174
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Questionable parallel processing efficiency - openmp reports %d %s. Possibly "
 "broken opencv/openblas installation.\n"
 msgstr ""
-"Bedenkliche parallele Verarbeitungseffizienz - openmp berichtet %d-"
-"Prozessoren. Möglicherweise defekte opencv/openblas Installation.\n"
+"Bedenkliche parallele Verarbeitungseffizienz - openmp meldet %d %s. "
+"Möglicherweise defekte opencv/openblas Installation.\n"
 
 #: ../src/main.c:176 ../src/main.c:181
 #, fuzzy
@@ -9010,18 +9041,18 @@ msgid "Rejection stacking complete."
 msgstr "Stacken mit Ausschluss abgeschlossen."
 
 #: ../src/stacking/median_and_mean.c:1035
-#, fuzzy, c-format
+#, c-format
 msgid "Rejection stacking complete. %d images have been stacked.\n"
-msgstr "Median Stacking abgeschlossen. %d wurden gestackt.\n"
+msgstr "Median Stacking abgeschlossen. %d Bilder wurden gestackt.\n"
 
 #: ../src/stacking/median_and_mean.c:1037
 msgid "Median stacking complete."
 msgstr "Median Stacking abgeschlossen."
 
 #: ../src/stacking/median_and_mean.c:1038
-#, fuzzy, c-format
+#, c-format
 msgid "Median stacking complete. %d images have been stacked.\n"
-msgstr "Median Stacking abgeschlossen. %d wurden gestackt.\n"
+msgstr "Median Stacking abgeschlossen. %d Bilder wurden gestackt.\n"
 
 #: ../src/stacking/normalization.c:121
 #, c-format
@@ -9043,7 +9074,7 @@ msgstr ""
 
 #: ../src/stacking/normalization.c:147
 msgid "Computing normalization...\n"
-msgstr "Berchne Normalisierung\n"
+msgstr "Berechne Normalisierung\n"
 
 #: ../src/stacking/normalization.c:155
 msgid ""
@@ -9091,9 +9122,8 @@ msgstr ""
 "eine SER-Sequenz zu konvertieren oder mit der „Summen“-Methode zu stacken.\n"
 
 #: ../src/stacking/stacking.c:314
-#, fuzzy
 msgid "Stacking result will be stored as a 32-bit image\n"
-msgstr "Stacking Ergebnis Bild"
+msgstr "Stacking Ergebnis wird als 32-bit Bild gespeichert\n"
 
 #: ../src/stacking/stacking.c:386
 #, c-format
@@ -9242,6 +9272,8 @@ msgid ""
 "Reducing the stacking output to a 16-bit image will result in precision "
 "loss\n"
 msgstr ""
+"Die Reduzierung der Stapelausgabe auf ein 16-Bit-Bild führt zu einem "
+"Präzisionsverlust\n"
 
 #: ../src/stacking/upscaling.c:100
 #, c-format
