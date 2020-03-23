@@ -32,6 +32,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/sleef.h"
 #include "core/processing.h"
 #include "core/undo.h"
 #include "core/OS_utils.h"
@@ -316,7 +317,7 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 		data[GREEN][i] = (flux[n_channel] / flux[GREEN]) * g;
 		data[BLUE][i] = (flux[n_channel] / flux[BLUE]) * b;
 
-		if (isnanf(data[RED][i]) || isnanf(data[GREEN][i]) || isnanf(data[BLUE][i])) {
+		if (xisnanf(data[RED][i]) || xisnanf(data[GREEN][i]) || xisnanf(data[BLUE][i])) {
 			data[RED][i] = FLT_MAX;
 			data[GREEN][i] = FLT_MAX;
 			data[BLUE][i] = FLT_MAX;
