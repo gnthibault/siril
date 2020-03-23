@@ -268,7 +268,8 @@ if !SIRIL_DEBUG
 AM_LDFLAGS += -mwindows
 endif #!SIRIL_DEBUG
 if HAVE_WINDRES
-$(top_builddir)/platform-specific/windows/siril.res.o: $(top_builddir)/platform-specific/windows/siril.rc
+$(top_builddir)/platform-specific/windows/siril.res.o: $(top_srcdir)/platform-specific/windows/siril.rc
+	mkdir -p $(top_builddir)/platform-specific/windows/
 	$(WINDRES) $< $@
 siril_LDADD += $(top_builddir)/platform-specific/windows/siril.res.o
 endif #HAVE_WINDRES
