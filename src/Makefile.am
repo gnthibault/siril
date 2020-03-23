@@ -18,7 +18,7 @@ AM_CPPFLAGS = \
 	$(FFMS2_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
 	-I$(top_builddir)/deps/kplot \
-	-I$(top_builddir)/deps/librtprocess/src/include
+	-I$(top_srcdir)/deps/librtprocess/src/include
 
 siril_SOURCES = \
 	core/siril.h \
