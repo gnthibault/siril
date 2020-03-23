@@ -2,7 +2,7 @@
 
 export CC CFLAGS CPPFLAGS
 
-SUBDIRS = deps/kplot \
+SUBDIRS = deps \
 	po \
 	src \
 	pixmaps \
