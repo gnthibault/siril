@@ -272,7 +272,7 @@ static void read_fits_header(fits *fit) {
 				fit->pixel_size_x, fit->pixel_size_y, fit->binning_x,
 				fit->binning_y, fit->focal_length);
 
-	__tryToFindKeywords(fit->fptr, TDOUBLE, CCD_TEMP, &fit->focal_length);
+	__tryToFindKeywords(fit->fptr, TDOUBLE, CCD_TEMP, &fit->ccd_temp);
 	__tryToFindKeywords(fit->fptr, TDOUBLE, Exposure, &fit->exposure);
 
 	status = 0;
