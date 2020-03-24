@@ -2056,16 +2056,20 @@ void fit_debayer_buffer(fits *fit, void *newbuf) {
 void keep_first_channel_from_fits(fits *fit) {
 	if (fit->naxis == 1)
 		return;
-	if (fit->type != DATA_USHORT) {
-		siril_log_color_message(_("This operation is not yet supported for 32-bit images\n"), "red");
-		return;
-	}
 	fit->naxis = 2;
 	fit->naxes[2] = 1;
-	fit->data = realloc(fit->data, fit->rx * fit->ry * sizeof(WORD));
-	fit->pdata[RLAYER] = fit->data;
-	fit->pdata[GLAYER] = fit->data;
-	fit->pdata[BLAYER] = fit->data;
+	if (fit->type == DATA_USHORT) {
+		fit->data = realloc(fit->data, fit->rx * fit->ry * sizeof(WORD));
+		fit->pdata[RLAYER] = fit->data;
+		fit->pdata[GLAYER] = fit->data;
+		fit->pdata[BLAYER] = fit->data;
+	}
+	else if (fit->type == DATA_FLOAT) {
+		fit->fdata = realloc(fit->fdata, fit->rx * fit->ry * sizeof(float));
+		fit->fpdata[RLAYER] = fit->fdata;
+		fit->fpdata[GLAYER] = fit->fdata;
+		fit->fpdata[BLAYER] = fit->fdata;
+	}
 	if (fit->maxi > 0) {
 		if (fit->maxi != fit_get_max(fit, 0))
 			fit->maxi = 0;

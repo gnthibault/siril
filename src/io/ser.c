@@ -606,6 +606,7 @@ int ser_close_and_delete_file(struct ser_struct *ser_file) {
 	char *filename = ser_file->filename;
 	ser_file->filename = NULL;
 	retval = ser_close_file(ser_file); // closes, frees and zeroes
+	siril_log_message(_("Removing failed SER file: %s\n"), filename);
 	g_unlink(filename);
 	free(filename);
 	return retval;

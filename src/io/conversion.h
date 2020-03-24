@@ -1,11 +1,8 @@
 #ifndef CONVERSION_H
 #define CONVERSION_H
 
-enum {
-	COLUMN_FILENAME,		// string
-	COLUMN_DATE,		// string
-	N_COLUMNS_CONVERT
-};
+#include <glib.h>
+#include "core/siril.h" // for image_type
 
 typedef struct {
 	char *extension;			// name of the extension of raw
@@ -15,29 +12,29 @@ typedef struct {
 struct _convert_data {
 	struct timeval t_start;
 	GDir *dir;
-	GList *list;
+	gchar **list;
 	int start;
 	int total;
 	int nb_converted;
 	gboolean compatibility;
 	gboolean command_line;
-	gboolean several_type_of_files;
+	gboolean input_has_a_seq;
 	gchar *destroot;
+	int retval;
 };
 
+#define MAX_EXTENSIONS 50	// actual size of supported_extensions
+
 extern supported_raw_list supported_raw[];	//supported raw extensions
-extern char **supported_extensions;
+extern char *supported_extensions[MAX_EXTENSIONS];
 extern char *filter_pattern[];
+extern unsigned int convflags;
 
 int get_nb_raw_supported();
-
-void fill_convert_list(GSList *list);
 
 void list_format_available();
 image_type get_type_for_extension(const char *extension);
 gchar *initialize_converters();
-int count_selected_files();
-int count_converted_files();
 gpointer convert_thread_worker(gpointer p);
 int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer);
 int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean interactive, gboolean force_float);

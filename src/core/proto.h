@@ -133,6 +133,8 @@ gboolean ends_with(const char *str, const char *ending);
 int get_extension_index(const char *filename);
 image_type get_type_from_filename(const gchar *filename);
 int is_readable_file(const char *filename);
+gboolean is_forbiden_in_filename(gchar c);
+gboolean file_name_has_invalid_chars(const char *name);
 int stat_file(const char *filename2, image_type *type, char **realname);
 const char* get_filename_ext(const char *filename);
 

@@ -528,6 +528,25 @@ int is_readable_file(const char *filename) {
 	return 0;
 }
 
+static gchar forbidden_char[] = { '/', '\\', '"', '\'' };
+
+gboolean is_forbiden_in_filename(gchar c) {
+	for (int i = 0; i < G_N_ELEMENTS(forbidden_char); i++) {
+		if (c == forbidden_char[i])
+			return TRUE;
+	}
+	return FALSE;
+}
+
+gboolean file_name_has_invalid_chars(const char *name) {
+	if (!name)
+		return TRUE;	// NULL is kind of invalid
+	for (int i = 0; i < strlen(name); i++)
+		if (is_forbiden_in_filename(name[i]))
+			return TRUE;
+	return FALSE;
+}
+
 /** Tests if filename is the canonical name of a known file type
  *  If filename contains an extension, only this file name is tested, else all
  *  extensions are tested for the file name until one is found.
