@@ -920,9 +920,13 @@ void on_menuitem_histo_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_data) {
-	if (gtk_widget_get_visible((GtkWidget *)user_data))
+	if (gtk_widget_get_visible((GtkWidget *)user_data)) {
+		set_cursor_waiting(TRUE);
+		reset_cursors_and_values();
+		histo_close(TRUE);
+		set_cursor_waiting(FALSE);
 		siril_close_dialog("histogram_dialog");
-	else {
+	} else {
 		on_menuitem_histo_activate(NULL, NULL);
 	}
 }
