@@ -153,6 +153,24 @@ else
 	AC_MSG_ERROR([no C++ compiler found])
 fi
 
+PKG_CHECK_MODULES(LIBRTPROCESS, [rtprocess], have_rtprocess="yes", have_rtprocess="no")
+if test "x$have_rtprocess" = "xno"; then
+  AC_MSG_NOTICE([librtprocess not found])
+  if test "$cross_compiling" != "yes"; then
+    dnl check CMake used for librtprocess
+    AC_PATH_PROG(CMAKE, cmake, no)
+    if test "x$CMAKE" = xno; then
+      AC_MSG_ERROR([CMAKE not found (needed to built internal librtprocess)])
+    fi
+    AC_MSG_NOTICE([librtprocess will be built statically])
+  else
+    # When cross-compiling, you should build rtprocess yourself and
+    # install it yourself.
+    AC_MSG_ERROR([librtprocess not found])
+  fi
+fi
+AM_CONDITIONAL(HAVE_LIBRTPROCESS, test "x$have_rtprocess" = "xyes")
+
 dnl ================ OPTIONAL DEPENDECIES ================
 dnl check raw lib
 PKG_CHECK_MODULES(LIBRAW, [libraw >= 0.17],

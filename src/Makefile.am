@@ -208,9 +208,14 @@ if PLATFORM_WIN32
 libdbghelp = -ldbghelp
 endif
 
+if HAVE_LIBRTPROCESS
+librtprocesslibs = $(LIBRTPROCESS_LIBS)
+else
+librtprocesslibs = $(top_builddir)/deps/librtprocess/build/src/librtprocess_static.a
+endif
+
 siril_LDADD = \
 	$(top_builddir)/deps/kplot/libkplot.a \
-	$(top_builddir)/deps/librtprocess/build/src/librtprocess_static.a \
 	$(FFMPEG_LIBS) \
 	$(GTK_LIBS) \
 	${GTK_MAC_LIBS} \
@@ -226,7 +231,8 @@ siril_LDADD = \
 	$(LIBCURL) \
 	$(EXTRA_LIBS) \
 	$(LIBATOMIC_LIBS) \
-	$(libdbghelp)
+	$(libdbghelp) \
+	$(librtprocesslibs)
 
 siril_SOURCES += \
 	algos/demosaicing_rtp.cpp \
