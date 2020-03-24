@@ -288,7 +288,7 @@ gchar *initialize_converters() {
 
 	/* internal converters */
 	supported_filetypes |= TYPEBMP;
-	string = g_string_new("BMP images, ");
+	string = g_string_new(_("BMP images, "));
 	supported_filetypes |= TYPEPIC;
 	string = g_string_append(string, _("PIC images (IRIS), "));
 	supported_filetypes |= TYPEPNM;
