@@ -127,6 +127,8 @@ siril_SOURCES = \
 	gui/about_dialog.h \
 	gui/callbacks.c \
 	gui/callbacks.h \
+	gui/conversion.c \
+	gui/conversion.h \
 	gui/dialog_preview.c \
 	gui/dialog_preview.h \
 	gui/dialogs.c \

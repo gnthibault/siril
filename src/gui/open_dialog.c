@@ -38,6 +38,7 @@
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
 #include "gui/dialog_preview.h"
+#include "gui/conversion.h"
 
 #include "open_dialog.h"
 

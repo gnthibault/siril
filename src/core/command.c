@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <opencv2/core/version.hpp>
+#include <glib.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -1961,8 +1962,6 @@ int process_convertraw(int nb) {
 	const gchar *file;
 	GList *list = NULL;
 
-	struct timeval t_start;
-
 	if (get_thread_run()) {
 		siril_log_message(_("Another task is "
 				"already in progress, ignoring new request.\n"));
@@ -1983,45 +1982,57 @@ int process_convertraw(int nb) {
 		return 1;
 	}
 
+	int count = 0;
 	while ((file = g_dir_read_name(dir)) != NULL) {
 		const char *ext = get_filename_ext(file);
 		if (!ext)
 			continue;
 		image_type type = get_type_for_extension(ext);
 		if (type == TYPERAW) {
-			list = g_list_append (list, g_strdup(file));
+			list = g_list_append(list, g_strdup(file));
+			count++;
 		}
+	}
+	if (!count) {
+		siril_log_message(_("No RAW files were found for conversion\n"));
+		return 1;
 	}
 	/* sort list */
 	list = g_list_sort(list, (GCompareFunc) strcompare);
+	/* convert the list to an array for parallel processing */
+	char **files_to_convert = malloc(count * sizeof(char *));
+	if (!files_to_convert) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
+	GList *orig_list = list;
+	for (int i = 0; i < count && list; list = list->next, i++)
+		files_to_convert[i] = g_strdup(list->data);
+	g_list_free_full(orig_list, g_free);
 
-	siril_log_color_message(_("Conversion: processing...\n"), "red");
-	gettimeofday(&t_start, NULL);
+	siril_log_color_message(_("Conversion: processing %d RAW files...\n"), "red", count);
 
 	set_cursor_waiting(TRUE);
 	if (!com.script)
 		control_window_switch_to_tab(OUTPUT_LOGS);
 
-	/* then, convert files to Siril's FITS format */
-	struct _convert_data *args;
-	set_cursor_waiting(TRUE);
 	if (!com.wd) {
 		siril_log_message(_("Conversion: no working directory set.\n"));
 		set_cursor_waiting(FALSE);
 		return 1;
 	}
 
-	args = malloc(sizeof(struct _convert_data));
+	struct _convert_data *args = malloc(sizeof(struct _convert_data));
 	args->start = 1;
 	args->dir = dir;
-	args->list = list;
-	args->total = g_list_length(list);
+	args->list = files_to_convert;
+	args->total = count;
 	args->nb_converted = 0;
-	args->t_start.tv_sec = t_start.tv_sec;
-	args->t_start.tv_usec = t_start.tv_usec;
 	args->compatibility = FALSE;	// not used here
 	args->command_line = TRUE;
 	args->destroot = g_strdup(word[1]);
+	args->input_has_a_seq = FALSE;
+	gettimeofday(&(args->t_start), NULL);
 	start_in_new_thread(convert_thread_worker, args);
 	return 0;
 }

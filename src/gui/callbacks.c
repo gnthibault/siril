@@ -1031,33 +1031,6 @@ void control_window_switch_to_tab(main_tabs tab) {
 	gtk_notebook_set_current_page(notebook, tab);
 }
 
-void update_statusbar_convert() {
-	GtkLabel *status_label = GTK_LABEL(lookup_widget("statuslabel_convert"));
-
-	int nb_files = count_converted_files();
-	if (nb_files == 0)
-		gtk_label_set_text(status_label, " ");
-	else {
-		int selected = count_selected_files();
-		gchar *str, *total;
-		if (nb_files == 1) {
-			str = g_strdup_printf(_("%d file loaded"), nb_files);
-		} else {
-			str = g_strdup_printf(_("%d files loaded"), nb_files);
-		}
-		if (selected == 0) {
-			total = g_strdup(str);
-		} else if (selected == 1) {
-			total = g_strdup_printf(_("%d file selected, %s"), selected, str);
-		} else {
-			total = g_strdup_printf(_("%d files selected, %s"), selected, str);
-		}
-		gtk_label_set_text(status_label, total);
-		g_free(str);
-		g_free(total);
-	}
-}
-
 void update_spinCPU(int max) {
 	static GtkSpinButton *spin_cpu = NULL;
 
