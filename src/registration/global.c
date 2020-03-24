@@ -406,6 +406,7 @@ int register_star_alignment(struct registration_args *regargs) {
 	args->new_seq_prefix = regargs->prefix;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
+	args->new_ser = NULL;
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
 
