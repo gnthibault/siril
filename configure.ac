@@ -96,6 +96,20 @@ if test "x$STD_ATOMIC_NEED_LIBATOMIC" = xyes; then
 fi
 AC_SUBST([LIBATOMIC_LIBS])
 
+dnl ================ PLATFORM CHECKS ================
+
+AC_MSG_CHECKING([if compiling for Win32])
+case "$host_os" in
+  mingw* | cygwin*)
+    platform_win32=yes
+    ;;
+  *)
+    platform_win32=no
+    ;;
+esac
+AC_MSG_RESULT([$platform_win32])
+AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
+
 dnl ================ MANDATORY DEPENDECIES ================
 dnl check math lib
 AC_CHECK_LIB(m, log, LIBS="$LIBS -lm")
@@ -162,6 +176,13 @@ if test "x$have_rtprocess" = "xno"; then
     if test "x$CMAKE" = xno; then
       AC_MSG_ERROR([CMAKE not found (needed to built internal librtprocess)])
     fi
+
+    CMAKE_GENERATOR=
+    if test "$platform_win32" = "yes"; then
+      CMAKE_GENERATOR="-G \"MSYS Makefiles\""
+    fi
+    AC_SUBST([CMAKE_GENERATOR])
+
     AC_MSG_NOTICE([librtprocess will be built statically])
   else
     # When cross-compiling, you should build rtprocess yourself and
