@@ -2,18 +2,11 @@
 
 export CC CFLAGS CPPFLAGS
 
-SUBDIRS = deps/kplot \
+SUBDIRS = deps \
 	po \
 	src \
 	pixmaps \
 	platform-specific
-
-# not adding it in subdirs because we don't want to run most targets in it, and specifying
-# the rtprocess_static target allows us to build only the static lib we link against
-build-librtprocess:
-	$(MAKE) -C deps/librtprocess/build rtprocess_static
-
-all: build-librtprocess
 
 # TODO add a conditionnal and a configure switch
 # to be able to choose the language. Also, this should
