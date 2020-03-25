@@ -733,8 +733,9 @@ static void update_gfit(image_solved image) {
 	gfit.wcs.equinox = 2000;
 	deg_to_HMS(image.ra, "ra", gfit.wcs.objctra);
 	deg_to_HMS(image.dec, "dec", gfit.wcs.objctdec);
-	gfit.wcs.cdelt1 = gfit.wcs.cdelt2 = image.resolution / 3600.0;
-	gfit.wcs.crota1 = gfit.wcs.crota2 = image.crota;
+	gfit.wcs.cdelt1 = image.resolution / 3600.0;
+	gfit.wcs.cdelt2 = -gfit.wcs.cdelt1;
+	gfit.wcs.crota1 = gfit.wcs.crota2 = -image.crota;
 }
 
 static void print_platesolving_results(Homography H, image_solved image) {
