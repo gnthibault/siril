@@ -774,6 +774,13 @@ static void save_wcs_keywords(fits *fit) {
 		fits_update_key(fit->fptr, TSTRING, "CTYPE1", "RA---TAN", "Coordinate type for the first axis", &status);
 		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "CTYPE2", "DEC--TAN", "Coordinate type for the second axis", &status);
+
+		/* Needed for Aladin compatibility */
+		if (fit->naxes[2] == 3) {
+			status = 0;
+			fits_update_key(fit->fptr, TSTRING, "CTYPE3", "RGB", "RGB image", &status);
+		}
+
 		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcs.objctra),	"Image center R.A. (hms)", &status);
 		status = 0;
