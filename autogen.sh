@@ -3,7 +3,6 @@
 
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
-ORIGDIR=`pwd`
 cd $srcdir
 
 PKG_NAME=`autoconf --trace 'AC_INIT:$1' "$srcdir/configure.ac"`
