@@ -18,7 +18,7 @@ AM_CPPFLAGS = \
 	$(FFMS2_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
 	-I$(top_builddir)/deps/kplot \
-	-I$(top_builddir)/deps/librtprocess/src/include
+	-I$(top_srcdir)/deps/librtprocess/src/include
 
 siril_SOURCES = \
 	core/siril.h \
@@ -210,9 +210,14 @@ if PLATFORM_WIN32
 libdbghelp = -ldbghelp
 endif
 
+if HAVE_LIBRTPROCESS
+librtprocesslibs = $(LIBRTPROCESS_LIBS)
+else
+librtprocesslibs = $(top_builddir)/deps/librtprocess/build/src/librtprocess_static.a
+endif
+
 siril_LDADD = \
 	$(top_builddir)/deps/kplot/libkplot.a \
-	$(top_builddir)/deps/librtprocess/build/src/librtprocess_static.a \
 	$(FFMPEG_LIBS) \
 	$(GTK_LIBS) \
 	${GTK_MAC_LIBS} \
@@ -228,7 +233,8 @@ siril_LDADD = \
 	$(LIBCURL) \
 	$(EXTRA_LIBS) \
 	$(LIBATOMIC_LIBS) \
-	$(libdbghelp)
+	$(libdbghelp) \
+	$(librtprocesslibs)
 
 siril_SOURCES += \
 	algos/demosaicing_rtp.cpp \
@@ -270,7 +276,8 @@ if !SIRIL_DEBUG
 AM_LDFLAGS += -mwindows
 endif #!SIRIL_DEBUG
 if HAVE_WINDRES
-$(top_builddir)/platform-specific/windows/siril.res.o: $(top_builddir)/platform-specific/windows/siril.rc
+$(top_builddir)/platform-specific/windows/siril.res.o: $(top_srcdir)/platform-specific/windows/siril.rc
+	mkdir -p $(top_builddir)/platform-specific/windows/
 	$(WINDRES) $< $@
 siril_LDADD += $(top_builddir)/platform-specific/windows/siril.res.o
 endif #HAVE_WINDRES

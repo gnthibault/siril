@@ -324,6 +324,7 @@ static gpointer export_sequence(gpointer ptr) {
 					goto free_and_reset_progress_bar;
 				}
 				break;
+#ifdef HAVE_LIBTIFF
 			case TYPETIFF:
 				snprintf(dest, 255, "%s%05d%s", args->basename, i, com.ext);
 				if (savetif(dest, &destfit, 16)) {
@@ -332,6 +333,7 @@ static gpointer export_sequence(gpointer ptr) {
 				}
 
 				break;
+#endif
 			case TYPESER:
 				strTime = strdup(destfit.date_obs);
 				timestamp = g_slist_append (timestamp, strTime);

@@ -96,6 +96,20 @@ if test "x$STD_ATOMIC_NEED_LIBATOMIC" = xyes; then
 fi
 AC_SUBST([LIBATOMIC_LIBS])
 
+dnl ================ PLATFORM CHECKS ================
+
+AC_MSG_CHECKING([if compiling for Win32])
+case "$host_os" in
+  mingw* | cygwin*)
+    platform_win32=yes
+    ;;
+  *)
+    platform_win32=no
+    ;;
+esac
+AC_MSG_RESULT([$platform_win32])
+AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
+
 dnl ================ MANDATORY DEPENDECIES ================
 dnl check math lib
 AC_CHECK_LIB(m, log, LIBS="$LIBS -lm")
@@ -152,6 +166,31 @@ if test -n "$CXX" && ( test "X$CXX" != "Xno" &&
 else
 	AC_MSG_ERROR([no C++ compiler found])
 fi
+
+PKG_CHECK_MODULES(LIBRTPROCESS, [rtprocess], have_rtprocess="yes", have_rtprocess="no")
+if test "x$have_rtprocess" = "xno"; then
+  AC_MSG_NOTICE([librtprocess not found])
+  if test "$cross_compiling" != "yes"; then
+    dnl check CMake used for librtprocess
+    AC_PATH_PROG(CMAKE, cmake, no)
+    if test "x$CMAKE" = xno; then
+      AC_MSG_ERROR([CMAKE not found (needed to built internal librtprocess)])
+    fi
+
+    CMAKE_GENERATOR=
+    if test "$platform_win32" = "yes"; then
+      CMAKE_GENERATOR="-G \"MSYS Makefiles\""
+    fi
+    AC_SUBST([CMAKE_GENERATOR])
+
+    AC_MSG_NOTICE([librtprocess will be built statically])
+  else
+    # When cross-compiling, you should build rtprocess yourself and
+    # install it yourself.
+    AC_MSG_ERROR([librtprocess not found])
+  fi
+fi
+AM_CONDITIONAL(HAVE_LIBRTPROCESS, test "x$have_rtprocess" = "xyes")
 
 dnl ================ OPTIONAL DEPENDECIES ================
 dnl check raw lib
@@ -334,6 +373,6 @@ AC_MSG_RESULT([$enable_relocatable_bundle])
 
 AC_SUBST([AM_LDFLAGS])
 
-AC_CONFIG_FILES([Makefile src/Makefile pixmaps/Makefile pixmaps/icons/Makefile platform-specific/Makefile platform-specific/linux/Makefile po/Makefile.in])
+AC_CONFIG_FILES([Makefile src/Makefile deps/Makefile pixmaps/Makefile pixmaps/icons/Makefile platform-specific/Makefile platform-specific/linux/Makefile po/Makefile.in])
 AC_OUTPUT
 
