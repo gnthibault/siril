@@ -1047,6 +1047,7 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 			pattern = BAYER_FILTER_RGGB;
 			break;
 		default:
+		case BAYER_FILTER_NONE:
 			return 1;
 		}
 	}
@@ -1066,6 +1067,7 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 			pattern = BAYER_FILTER_BGGR;
 			break;
 		default:
+		case BAYER_FILTER_NONE:
 			return 1;
 		}
 	}
@@ -1138,6 +1140,10 @@ static int debayer_float(fits* fit, interpolation_method interpolation, sensor_p
 			break;
 		case BAYER_FILTER_GRBG:
 			pattern = BAYER_FILTER_RGGB;
+			break;
+		default:
+		case BAYER_FILTER_NONE:
+			return 1;
 		}
 	}
 
@@ -1154,6 +1160,10 @@ static int debayer_float(fits* fit, interpolation_method interpolation, sensor_p
 			break;
 		case BAYER_FILTER_GRBG:
 			pattern = BAYER_FILTER_BGGR;
+			break;
+		default:
+		case BAYER_FILTER_NONE:
+			return 1;
 		}
 	}
 
