@@ -238,7 +238,7 @@ int test_available_space(int64_t req_size) {
 		g_free(missing);
 		return 1;
 	}
-	siril_debug_print("Tested free space ok: %lld for %lld MB free\n",
+	siril_debug_print("Tested free space ok: %ld for %ld MB free\n",
 			req_size / BYTES_IN_A_MB, free_space / BYTES_IN_A_MB);
 	return 0;
 }
