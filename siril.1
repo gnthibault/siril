@@ -3,12 +3,16 @@
 .SH NAME
 siril \- image processing tool for astronomy and others
 .SH SYNOPSIS
-.B siril [-i conf_file] [-f] [-v] [-h] [-p] [-d working_directory] [-s script_file] [image_file_to_open]
+Siril GUI
+ siril <file>             Start Siril with file.
+  
+Siril CLI
+ siril-cli [-i conf_file] [-f] [-v] [-h] [-p] [-d working_directory] [-s script_file] [image_file_to_open]
 .SH DESCRIPTION
-Siril is an image processing tool specially tailored for noise reduction and improving the signal/noise ratio of an image from multiple captures, as required in astronomy. Siril can align, stack and enhance pictures from various file formats, even image sequences (movies and SER files).
+\fBSiril\fP is an image processing tool specially tailored for noise reduction and improving the signal/noise ratio of an image from multiple captures, as required in astronomy. \fBSiril\fP can align, stack and enhance pictures from various file formats, even image sequences (movies and SER files). It makes use of OpenMP, supports all the cameras supported by libraw, and carries out its calculations in a high precision 32-bit floating point engine.
 .SH OPTIONS
 .IP -i
-Starts Siril with configuration file which path is given in conf_file
+Starts \fBSiril\fP with configuration file which path is given in conf_file
 .IP -f
 (or \fB\-\-format\fR) Prints all supported image input formats, depending on the libraries detected at compile-time
 .IP -v
@@ -16,11 +20,11 @@ Starts Siril with configuration file which path is given in conf_file
 .IP -h
 (or \fB\-\-help\fR) Short usage help
 .IP -p
-Start siril without the graphical user interface and use the named pipes to accept commands and print logs and status information. On POSIX systems, the named pipes are created in /tmp/siril_commands.in and /tmp/siril_commands.out
+Starts \fBSiril\fP without the graphical user interface and use the named pipes to accept commands and print logs and status information. On POSIX systems, the named pipes are created in /tmp/siril_commands.in and /tmp/siril_commands.out
 .IP -d
 (or \fB\-\-directory\fR) Setting argument in cwd
 .IP -s
-(or \fB\-\-script\fR) Start siril without the graphical user interface and run a script instead. Scripts are text files that contain a list of commands to be executed sequentially. In these files, lines starting with a # are considered as comments.
+(or \fB\-\-script\fR) Starts \fBSiril\fP without the graphical user interface and run a script instead. Scripts are text files that contain a list of commands to be executed sequentially. In these files, lines starting with a # are considered as comments.
 .IP image_file_to_open
 Open an image or sequence file right after start-up
 .SH FILES
@@ -32,9 +36,12 @@ option.
 .RE
 .I ~/.siril/siril.css
 .RS
-The stylesheet used to change colours of the graphical user interface. This is useful for personalisation or if a GTK theme is incompatible with some coloured elements of Siril.
-.SH BUGS
-A list of bugs is maintained in gitlab, available at https://gitlab.com/free-astro/siril/issues
+The stylesheet used to change colours of the graphical user interface. This is useful for personalisation or if a GTK theme is incompatible with some coloured elements of \fBSiril\fP.
+.SH LINKS
+ Website: https://www.siril.org/
+ Documentation: https://free-astro.org/siril_doc-en/
+ Forum: https://discuss.pixls.us/siril
+ Code and bug reports: https://gitlab.com/free-astro/siril/issues
 .SH AUTHOR
-Vincent Hourdin <debian-siril at free-astro.org>
-Cyril Richard <cyril at free-astro.org>
+ Vincent Hourdin <debian-siril at free-astro.org>
+ Cyril Richard <cyril at free-astro.org>

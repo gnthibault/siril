@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-bin_PROGRAMS = siril
+bin_PROGRAMS = siril siril-cli
 
 AM_CPPFLAGS = \
 	-DPACKAGE_DATA_DIR='"$(datadir)/${PACKAGE}"' \
@@ -20,10 +20,9 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/deps/kplot \
 	-I$(top_srcdir)/deps/librtprocess/src/include
 
-siril_SOURCES = \
+siril_common_SOURCES = \
 	core/siril.h \
 	core/proto.h \
-	main.c \
 	algos/background_extraction.c \
 	algos/background_extraction.h \
 	algos/colors.c \
@@ -216,7 +215,7 @@ else
 librtprocesslibs = $(top_builddir)/deps/librtprocess/build/src/librtprocess_static.a
 endif
 
-siril_LDADD = \
+siril_common_LDADD = \
 	$(top_builddir)/deps/kplot/libkplot.a \
 	$(FFMPEG_LIBS) \
 	$(GTK_LIBS) \
@@ -236,7 +235,7 @@ siril_LDADD = \
 	$(libdbghelp) \
 	$(librtprocesslibs)
 
-siril_SOURCES += \
+siril_common_SOURCES += \
 	algos/demosaicing_rtp.cpp \
 	io/avi_pipp/pipp_avi_write.cpp \
 	io/avi_pipp/pipp_avi_write.h \
@@ -261,8 +260,13 @@ siril_SOURCES += \
 	core/exif.cpp \
 	core/exif.h
 
-siril_LDADD += $(OPENCV_LIBS) \
-               $(EXIV2_LIBS)
+siril_common_LDADD += $(OPENCV_LIBS) \
+		      $(EXIV2_LIBS)
+
+siril_SOURCES = $(siril_common_SOURCES) main.c
+siril_cli_SOURCES = $(siril_common_SOURCES) main-cli.c
+siril_LDADD = $(siril_common_LDADD)
+siril_cli_LDADD = $(siril_common_LDADD)
 
 pkgdata_DATA = \
 	gui/siril3.glade \

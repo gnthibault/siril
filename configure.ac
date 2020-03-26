@@ -295,6 +295,7 @@ if test "$platform" = "windows"; then
 	AC_CHECK_TOOL(WINDRES, windres, :)
 else
 	WINDRES=":"
+	AC_PROG_LN_S
 fi
 
 AM_CONDITIONAL(MS_LIB_AVAILABLE, test "x$ms_librarian" = xyes)
