@@ -26,6 +26,14 @@ doc_DATA = AUTHORS \
 
 man_MANS = siril.1
 
+if !PLATFORM_WIN32
+install-exec-hook:
+	(cd ${mandir}/man1; $(LN_S) siril.1 siril_cli.1)
+
+uninstall-hook:
+	(cd ${mandir}/man1; rm -f siril_cli.1)
+endif
+
 ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = config.rpath \
              git-version.h

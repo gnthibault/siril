@@ -100,51 +100,6 @@ static GOptionEntry main_option[] = {
 	{ NULL },
 };
 
-static GActionEntry app_entries[] = {
-	{ "quit", quit_action_activate },
-	{ "preferences", preferences_action_activate },
-	{ "open",  open_action_activate },
-	{ "save_as", save_as_action_activate },
-	{ "close", close_action_activate },
-	{ "undo", undo_action_activate },
-	{ "redo", redo_action_activate },
-	{ "scripts", scripts_action_activate },
-#ifdef HAVE_LIBCURL
-	{ "updates", updates_action_activate },
-#endif
-	{ "full_screen", full_screen_activated},
-	{ "shortcuts", keyboard_shortcuts_activated},
-	{ "about", about_action_activate },
-	{ "cwd", cwd_action_activate },
-	{ "conversion", tab_conversion_activate },
-	{ "sequence", tab_sequence_activate },
-	{ "registration", tab_registration_activate },
-	{ "prepro", tab_prepro_activate },
-	{ "plot", tab_plot_activate },
-	{ "stacking", tab_stacking_activate },
-	{ "logs", tab_logs_activate },
-	{ "hide_show_toolbar", toolbar_activate }
-};
-
-void load_glade_file() {
-	GError *err = NULL;
-	gchar* gladefile;
-
-	gladefile = g_build_filename(siril_get_system_data_dir(), GLADE_FILE, NULL);
-
-	/* try to load the glade file, from the sources defined above */
-	builder = gtk_builder_new();
-
-	if (!gtk_builder_add_from_file(builder, gladefile, &err)) {
-		g_error(_("%s was not found or contains errors, "
-					"cannot render GUI:\n%s\n Exiting.\n"), gladefile, err->message);
-		g_error_free(err);
-		exit(EXIT_FAILURE);
-	}
-	g_printf(_("Successfully loaded '%s'\n"), gladefile);
-	g_free(gladefile);
-}
-
 static void global_initialization() {
 	com.cvport = RED_VPORT;
 	com.show_excluded = TRUE;
@@ -184,33 +139,18 @@ static void init_num_procs() {
 #endif
 }
 
-static void siril_app_startup (GApplication *application) {
-	signals_init();
-
-	g_set_application_name(PACKAGE_NAME);
-	gtk_window_set_default_icon_name("siril");
-	g_application_set_resource_base_path(application, "/org/free_astro/siril/pixmaps/");
-
-	g_action_map_add_action_entries(G_ACTION_MAP(application), app_entries,
-			G_N_ELEMENTS(app_entries), application);
-
-}
-
 static void siril_app_activate(GApplication *application) {
 	gchar *cwd_forced = NULL;
 
 	memset(&com, 0, sizeof(struct cominf));	// needed? doesn't hurt
 	com.initfile = NULL;
 
-	/* the first thing we need to do is to know if we are headless or not */
-	if (main_option_script || main_option_pipe) {
-		com.script = TRUE;
-		com.headless = TRUE;
-		/* need to force cwd to the current dir if no option -d */
-		if (!forcecwd) {
-			cwd_forced = g_strdup(g_get_current_dir());
-			forcecwd = TRUE;
-		}
+	com.script = TRUE;
+	com.headless = TRUE;
+	/* need to force cwd to the current dir if no option -d */
+	if (!forcecwd) {
+		cwd_forced = g_strdup(g_get_current_dir());
+		forcecwd = TRUE;
 	}
 
 	global_initialization();
@@ -266,62 +206,26 @@ static void siril_app_activate(GApplication *application) {
 
 	init_num_procs();
 
-	if (com.headless) {
-		if (main_option_script) {
-			FILE *fp = g_fopen(main_option_script, "r");
-			if (fp == NULL) {
-				siril_log_message(_("File [%s] does not exist\n"),
-						main_option_script);
-				exit(EXIT_FAILURE);
-			}
-#ifdef _WIN32
-			ReconnectIO(1);
-#endif
-			if (execute_script(fp)) {
-				exit(EXIT_FAILURE);
-			}
-		} else {
-			pipe_start();
-			read_pipe(NULL);
+	if (main_option_script) {
+		FILE *fp = g_fopen(main_option_script, "r");
+		if (fp == NULL) {
+			siril_log_message(_("File [%s] does not exist\n"),
+					main_option_script);
+			exit(EXIT_FAILURE);
 		}
-	}
-	if (!com.headless) {
-		/* Load preferred theme */
-		load_prefered_theme(com.combo_theme);
-		/* Load the css sheet for general style */
-		load_css_style_sheet();
-		/* Load glade file */
-		load_glade_file();
-		/* Passing GApplication to the control center */
-		gtk_window_set_application(GTK_WINDOW(lookup_widget("control_window")),	GTK_APPLICATION(application));
-		/* Load state of the main windows (position and maximized) */
-		load_main_window_state();
-#if 0 //we need to think about it
-		/* see https://gitlab.gnome.org/GNOME/gtk/issues/2342 */
-		NSEvent *focusevent;
-		g_warning("workaround for the GTK3 #2342 bug");
-		focusevent = [NSEvent
-			otherEventWithType: NSEventTypeAppKitDefined
-			location: NSZeroPoint
-			modifierFlags: 0x40
-			timestamp: 0
-			windowNumber: 0
-			context: nil
-			subtype: NSEventSubtypeApplicationActivated
-			data1: 0
-			data2: 0];
-
-		[NSApp postEvent:focusevent atStart:YES];
+#ifdef _WIN32
+		ReconnectIO(1);
 #endif
+		if (execute_script(fp)) {
+			exit(EXIT_FAILURE);
+		}
+	} else {
+		pipe_start();
+		read_pipe(NULL);
 	}
 
 	if (changedir(com.wd, NULL))
 		com.wd = g_strdup(siril_get_startup_dir());
-
-	if (!com.headless) {
-		gtk_builder_connect_signals (builder, NULL);
-		initialize_all_GUI(supported_files);
-	}
 
 	g_free(supported_files);
 }
@@ -428,7 +332,7 @@ static void siril_macos_setenv(const char *progname) {
 
 
 int main(int argc, char *argv[]) {
-	GtkApplication *app;
+	GApplication *app;
 	const gchar *dir;
 	gint status;
 
@@ -465,9 +369,8 @@ int main(int argc, char *argv[]) {
 
 	g_setenv("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
-	app = gtk_application_new("org.free_astro.siril", G_APPLICATION_HANDLES_OPEN | G_APPLICATION_NON_UNIQUE);
+	app = g_application_new("org.free_astro.siril", G_APPLICATION_HANDLES_OPEN | G_APPLICATION_NON_UNIQUE);
 
-	g_signal_connect(app, "startup", G_CALLBACK(siril_app_startup), NULL);
 	g_signal_connect(app, "activate", G_CALLBACK(siril_app_activate), NULL);
 	g_signal_connect(app, "open", G_CALLBACK(siril_app_open), NULL);
 

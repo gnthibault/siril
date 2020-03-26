@@ -319,6 +319,7 @@ static gboolean idle_set_cursor(gpointer garg) {
 }
 
 void set_cursor_waiting(gboolean waiting) {
+	if (com.headless) return;
 	struct _cursor_data *arg = malloc(sizeof (struct _cursor_data));
 
 	arg->change = waiting;
