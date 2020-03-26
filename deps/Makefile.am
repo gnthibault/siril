@@ -16,8 +16,8 @@ if !HAVE_LIBRTPROCESS
 # the rtprocess_static target allows us to build only the static lib we link against
 build-librtprocess:
 	mkdir -p $(top_builddir)/deps/librtprocess/build
-	cd $(top_builddir)/deps/librtprocess/
-	$(CMAKE) $(CMAKE_GENERATOR) -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON -DOPTION_OMP=OFF $(top_builddir)/deps/librtprocess/build
+	cd $(top_builddir)/deps/librtprocess/build
+	$(CMAKE) $(CMAKE_GENERATOR) -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON -DOPTION_OMP=OFF $(top_builddir)/deps/librtprocess/
 	$(MAKE) -C $(top_builddir)/deps/librtprocess/build rtprocess_static
 
 all: build-librtprocess
