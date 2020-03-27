@@ -573,7 +573,9 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
  */
 int64_t seq_compute_size(sequence *seq, int nb_frames, data_type depth) {
 	int64_t frame_size, size = -1LL;
+#ifdef HAVE_FFMS2
 	GStatBuf sts;
+#endif
 
 	switch(seq->type) {
 	case SEQ_SER:
