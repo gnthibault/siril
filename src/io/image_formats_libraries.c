@@ -562,25 +562,23 @@ int readjpg(const char* name, fits *fit){
 	fclose(f);
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
-	if (data != NULL) {
-		clearfits(fit);
-		fit->bitpix = fit->orig_bitpix = BYTE_IMG;
-		if (cinfo.output_components == 1)
-			fit->naxis = 2;
-		else
-			fit->naxis = 3;
-		fit->rx = cinfo.output_width;
-		fit->ry = cinfo.output_height;
-		fit->naxes[0] = cinfo.output_width;
-		fit->naxes[1] = cinfo.output_height;
-		fit->naxes[2] = cinfo.output_components;
-		fit->data = data;
-		fit->pdata[RLAYER] = fit->data;
-		fit->pdata[GLAYER] = fit->data + npixels;
-		fit->pdata[BLAYER] = fit->data + npixels * 2;
-		fit->binning_x = fit->binning_y = 1;
-		fit->type = DATA_USHORT;
-	}
+	clearfits(fit);
+	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
+	if (cinfo.output_components == 1)
+		fit->naxis = 2;
+	else
+		fit->naxis = 3;
+	fit->rx = cinfo.output_width;
+	fit->ry = cinfo.output_height;
+	fit->naxes[0] = cinfo.output_width;
+	fit->naxes[1] = cinfo.output_height;
+	fit->naxes[2] = cinfo.output_components;
+	fit->data = data;
+	fit->pdata[RLAYER] = fit->data;
+	fit->pdata[GLAYER] = fit->data + npixels;
+	fit->pdata[BLAYER] = fit->data + npixels * 2;
+	fit->binning_x = fit->binning_y = 1;
+	fit->type = DATA_USHORT;
 	mirrorx(fit, FALSE);
 	gchar *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading JPG: file %s, %ld layer(s), %ux%u pixels\n"),
@@ -1808,23 +1806,21 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 		}
 	}
 
-	if (data != NULL) {
-		clearfits(fit);
-		fit->bitpix = fit->orig_bitpix = BYTE_IMG;
-		fit->type = DATA_USHORT;
-		fit->naxis = 3;
-		fit->rx = width;
-		fit->ry = height;
-		fit->naxes[0] = fit->rx;
-		fit->naxes[1] = fit->ry;
-		fit->naxes[2] = 3;
-		fit->data = data;
-		fit->pdata[RLAYER] = fit->data;
-		fit->pdata[GLAYER] = fit->data + npixels;
-		fit->pdata[BLAYER] = fit->data + npixels * 2;
-		fit->binning_x = fit->binning_y = 1;
-		mirrorx(fit, FALSE);
-	}
+	clearfits(fit);
+	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
+	fit->type = DATA_USHORT;
+	fit->naxis = 3;
+	fit->rx = width;
+	fit->ry = height;
+	fit->naxes[0] = fit->rx;
+	fit->naxes[1] = fit->ry;
+	fit->naxes[2] = 3;
+	fit->data = data;
+	fit->pdata[RLAYER] = fit->data;
+	fit->pdata[GLAYER] = fit->data + npixels;
+	fit->pdata[BLAYER] = fit->data + npixels * 2;
+	fit->binning_x = fit->binning_y = 1;
+	mirrorx(fit, FALSE);
 
 	heif_image_handle_release(handle);
 	heif_context_free(ctx);

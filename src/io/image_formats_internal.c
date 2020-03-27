@@ -700,7 +700,6 @@ static int pictofit(WORD *buf, fits *fit) {
 	WORD *data, *olddata = fit->data;
 
 	size_t i, nbdata = fit->rx * fit->ry;
-	nbdata = fit->rx * fit->ry;
 	if ((fit->data = realloc(fit->data, nbdata * sizeof(WORD))) == NULL) {
 		PRINT_ALLOC_ERR;
 		if (olddata)
