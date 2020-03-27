@@ -401,6 +401,7 @@ static void get_tif_data_from_ui(gchar **description, gchar **copyright) {
 
 int savetif(const char *name, fits *fit, uint16 bitspersample){
 	int retval = 0;
+	float norm;
 	gchar *description = NULL, *copyright = NULL;
 	gchar *filename = g_strdup(name);
 	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
@@ -451,7 +452,6 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 	WORD *gbuf[3] =	{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 	float *gbuff[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
-	float norm = fit->orig_bitpix != BYTE_IMG ? UCHAR_MAX_SINGLE / USHRT_MAX_SINGLE : 1.f;
 
 	mirrorx(fit, FALSE);
 
@@ -464,6 +464,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 			retval = -1;
 			break;
 		}
+
+		norm = fit->orig_bitpix != BYTE_IMG ? UCHAR_MAX_SINGLE / USHRT_MAX_SINGLE : 1.f;
 
 		for (uint32 row = 0; row < height; row++) {
 			for (uint32 col = 0; col < width; col++) {
@@ -490,6 +492,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 			retval = -1;
 			break;
 		}
+
+		norm = fit->orig_bitpix == BYTE_IMG ? USHRT_MAX_SINGLE / UCHAR_MAX_SINGLE : 1.f;
 
 		for (uint32 row = 0; row < height; row++) {
 			for (uint32 col = 0; col < width; col++) {
