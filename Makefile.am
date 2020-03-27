@@ -28,10 +28,12 @@ man_MANS = siril.1
 
 if !PLATFORM_WIN32
 install-exec-hook:
-	(cd ${mandir}/man1; $(LN_S) siril.1 siril-cli.1)
+	(cd $(DESTDIR)$(mandir)/man1; \
+	rm -f siril-cli.1; \
+	$(LN_S) siril.1 siril-cli.1)
 
 uninstall-hook:
-	(cd ${mandir}/man1; rm -f siril-cli.1)
+	(cd $(DESTDIR)$(mandir)/man1; rm -f siril-cli.1)
 endif
 
 ACLOCAL_AMFLAGS = -I m4
