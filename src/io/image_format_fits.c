@@ -793,6 +793,14 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcs.crval2), "Axis2 reference value", &status);
 		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CD1_1", &(fit->wcs.cd1_1), "Scale matrix (1, 1)", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CD1_2", &(fit->wcs.cd1_2), "Scale matrix (1, 2)", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CD2_1", &(fit->wcs.cd2_1), "Scale matrix (2, 1)", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CD2_2", &(fit->wcs.cd2_2), "Scale matrix (2, 2)", &status);
+		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CDELT1", &(fit->wcs.cdelt1), "Axis1 scale", &status);
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcs.cdelt2), "Axis2 scale", &status);

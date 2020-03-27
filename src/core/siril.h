@@ -393,6 +393,8 @@ struct wcs_struct {
 	double crpix1, crpix2;
 	double crval1, crval2;
 	double cdelt1, cdelt2;
+	double cd1_1, cd1_2;
+	double cd2_1, cd2_2;
 	double crota1, crota2;
 	char objctra[FLEN_VALUE];
 	char objctdec[FLEN_VALUE];

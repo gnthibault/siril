@@ -32,13 +32,14 @@
 #endif
 #include "core/siril.h"
 #include "core/proto.h"
-#include "gui/message_dialog.h"
+#include "core/sleef.h"
 #include "core/processing.h"
 #include "core/OS_utils.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/photometric_cc.h"
 #include "gui/dialogs.h"
+#include "gui/message_dialog.h"
 
 #ifdef HAVE_LIBCURL
 
@@ -723,6 +724,20 @@ static void update_image_parameters_GUI() {
 	update_coords();
 }
 
+static void cd_x(wcs_info *wcs) {
+	double rot = (wcs->crota1 + wcs->crota2) / 2;
+	rot = rot * M_PI / 180.0;
+	double sinrot, cosrot;
+	double2 sc;
+	sc = xsincos(rot);
+	sinrot = sc.x;
+	cosrot = sc.y;
+	wcs->cd1_1 = wcs->cdelt1 * cosrot;
+	wcs->cd2_2 = wcs->cdelt2 * cosrot;
+	wcs->cd2_1 = wcs->cdelt1 * sinrot;
+	wcs->cd1_2 = -wcs->cdelt2 * sinrot;
+}
+
 static void update_gfit(image_solved image) {
 	gfit.focal_length = image.focal;
 	gfit.pixel_size_x = gfit.pixel_size_y = image.pixel_size;
@@ -736,6 +751,7 @@ static void update_gfit(image_solved image) {
 	gfit.wcs.cdelt1 = image.resolution / 3600.0;
 	gfit.wcs.cdelt2 = -gfit.wcs.cdelt1;
 	gfit.wcs.crota1 = gfit.wcs.crota2 = -image.crota;
+	cd_x(&gfit.wcs);
 }
 
 static void print_platesolving_results(Homography H, image_solved image) {
@@ -1401,16 +1417,6 @@ gboolean confirm_delete_wcs_keywords(fits *fit) {
 
 void invalidate_WCS_keywords(fits *fit) {
 	if (fit->wcs.equinox > 0) {
-		fit->wcs.equinox = 0;
-		fit->wcs.crpix1 = 0.0;
-		fit->wcs.crpix2 = 0.0;
-		fit->wcs.crval1 = 0.0;
-		fit->wcs.crval2 = 0.0;
-		fit->wcs.cdelt1 = 0.0;
-		fit->wcs.cdelt2 = 0.0;
-		fit->wcs.crota1 = 0.0;
-		fit->wcs.crota2 = 0.0;
-		memset(fit->wcs.objctra, 0, FLEN_VALUE);
-		memset(fit->wcs.objctdec, 0, FLEN_VALUE);
+		memset(&fit->wcs, 0, sizeof(fit->wcs));
 	}
 }

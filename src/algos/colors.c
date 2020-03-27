@@ -482,7 +482,7 @@ static gpointer extract_channels_ushort(gpointer p) {
 	struct extract_channels_data *args = (struct extract_channels_data *) p;
 	WORD *buf[3] = { args->fit->pdata[RLAYER], args->fit->pdata[GLAYER],
 		args->fit->pdata[BLAYER] };
-	size_t i, n = args->fit->naxes[0] * args->fit->naxes[1];
+	size_t n = args->fit->naxes[0] * args->fit->naxes[1];
 	struct timeval t_start, t_end;
 	args->process = TRUE;
 
@@ -506,53 +506,53 @@ static gpointer extract_channels_ushort(gpointer p) {
 			/* HSL space */
 		case 1:
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-			for (i = 0; i < n; i++) {
-				double h, s, l;
-				double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
-				double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
-				double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
-				rgb_to_hsl(r, g, b, &h, &s, &l);
-				buf[RLAYER][i] = round_to_WORD(h * 360.0);	// TODO: what's that?
-				buf[GLAYER][i] = round_to_WORD(s * USHRT_MAX_DOUBLE);
-				buf[BLAYER][i] = round_to_WORD(l * USHRT_MAX_DOUBLE);
-			}
-			break;
-			/* HSV space */
-		case 2:
+		for (int i = 0; i < n; i++) {
+			double h, s, l;
+			double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
+			double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
+			double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
+			rgb_to_hsl(r, g, b, &h, &s, &l);
+			buf[RLAYER][i] = round_to_WORD(h * 360.0);	// TODO: what's that?
+			buf[GLAYER][i] = round_to_WORD(s * USHRT_MAX_DOUBLE);
+			buf[BLAYER][i] = round_to_WORD(l * USHRT_MAX_DOUBLE);
+		}
+		break;
+		/* HSV space */
+	case 2:
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-			for (i = 0; i < n; i++) {
-				double h, s, v;
-				double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
-				double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
-				double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
-				rgb_to_hsv(r, g, b, &h, &s, &v);
-				buf[RLAYER][i] = round_to_WORD(h * 360.0);
-				buf[GLAYER][i] = round_to_WORD(s * USHRT_MAX_DOUBLE);
-				buf[BLAYER][i] = round_to_WORD(v * USHRT_MAX_DOUBLE);
-			}
-			break;
-			/* CIE L*a*b */
-		case 3:
+		for (int i = 0; i < n; i++) {
+			double h, s, v;
+			double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
+			double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
+			double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
+			rgb_to_hsv(r, g, b, &h, &s, &v);
+			buf[RLAYER][i] = round_to_WORD(h * 360.0);
+			buf[GLAYER][i] = round_to_WORD(s * USHRT_MAX_DOUBLE);
+			buf[BLAYER][i] = round_to_WORD(v * USHRT_MAX_DOUBLE);
+		}
+		break;
+		/* CIE L*a*b */
+	case 3:
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-			for (i = 0; i < n; i++) {
-				double x, y, z, L, a, b;
-				double red = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
-				double green = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
-				double blue = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
-				rgb_to_xyz(red, green, blue, &x, &y, &z);
-				xyz_to_LAB(x, y, z, &L, &a, &b);
-				buf[RLAYER][i] = round_to_WORD(L / 100. * USHRT_MAX_DOUBLE);// 0 < L < 100
-				buf[GLAYER][i] = round_to_WORD(
-						((a + 128) / 255.) * USHRT_MAX_DOUBLE);	// -128 < a < 127
-				buf[BLAYER][i] = round_to_WORD(
-						((b + 128) / 255.) * USHRT_MAX_DOUBLE);	// -128 < b < 127
-			}
+		for (int i = 0; i < n; i++) {
+			double x, y, z, L, a, b;
+			double red = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
+			double green = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
+			double blue = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
+			rgb_to_xyz(red, green, blue, &x, &y, &z);
+			xyz_to_LAB(x, y, z, &L, &a, &b);
+			buf[RLAYER][i] = round_to_WORD(L / 100. * USHRT_MAX_DOUBLE);// 0 < L < 100
+			buf[GLAYER][i] = round_to_WORD(
+					((a + 128) / 255.) * USHRT_MAX_DOUBLE);	// -128 < a < 127
+			buf[BLAYER][i] = round_to_WORD(
+					((b + 128) / 255.) * USHRT_MAX_DOUBLE);	// -128 < b < 127
+		}
 
 	}
 	for (int i = 0; i < 3; i++)
@@ -570,7 +570,7 @@ static gpointer extract_channels_float(gpointer p) {
 	float *buf[3] = { args->fit->fpdata[RLAYER], args->fit->fpdata[GLAYER],
 		args->fit->fpdata[BLAYER] };
 	struct timeval t_start, t_end;
-	size_t i, n = args->fit->naxes[0] * args->fit->naxes[1];
+	size_t n = args->fit->naxes[0] * args->fit->naxes[1];
 	args->process = TRUE;
 
 	if (args->fit->naxes[2] != 3) {
@@ -587,57 +587,57 @@ static gpointer extract_channels_float(gpointer p) {
 	gettimeofday(&t_start, NULL);
 
 	switch (args->type) {
-		/* RGB space: nothing to do */
-		case 0:
-			break;
-			/* HSL space */
-		case 1:
+	/* RGB space: nothing to do */
+	case 0:
+		break;
+		/* HSL space */
+	case 1:
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-			for (i = 0; i < n; i++) {
-				double h, s, l;
-				double r = (double)buf[RLAYER][i];
-				double g = (double)buf[GLAYER][i];
-				double b = (double)buf[BLAYER][i];
-				rgb_to_hsl(r, g, b, &h, &s, &l);
-				buf[RLAYER][i] = (float)h;
-				buf[GLAYER][i] = (float)s;
-				buf[BLAYER][i] = (float)l;
-			}
-			break;
-			/* HSV space */
-		case 2:
+		for (int i = 0; i < n; i++) {
+			double h, s, l;
+			double r = (double) buf[RLAYER][i];
+			double g = (double) buf[GLAYER][i];
+			double b = (double) buf[BLAYER][i];
+			rgb_to_hsl(r, g, b, &h, &s, &l);
+			buf[RLAYER][i] = (float) h;
+			buf[GLAYER][i] = (float) s;
+			buf[BLAYER][i] = (float) l;
+		}
+		break;
+		/* HSV space */
+	case 2:
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-			for (i = 0; i < n; i++) {
-				double h, s, v;
-				double r = (double)buf[RLAYER][i];
-				double g = (double)buf[GLAYER][i];
-				double b = (double)buf[BLAYER][i];
-				rgb_to_hsv(r, g, b, &h, &s, &v);
-				buf[RLAYER][i] = (float)h;
-				buf[GLAYER][i] = (float)s;
-				buf[BLAYER][i] = (float)v;
-			}
-			break;
-			/* CIE L*a*b */
-		case 3:
+		for (int i = 0; i < n; i++) {
+			double h, s, v;
+			double r = (double) buf[RLAYER][i];
+			double g = (double) buf[GLAYER][i];
+			double b = (double) buf[BLAYER][i];
+			rgb_to_hsv(r, g, b, &h, &s, &v);
+			buf[RLAYER][i] = (float) h;
+			buf[GLAYER][i] = (float) s;
+			buf[BLAYER][i] = (float) v;
+		}
+		break;
+		/* CIE L*a*b */
+	case 3:
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-			for (i = 0; i < n; i++) {
-				double x, y, z, L, a, b;
-				double red = (double)buf[RLAYER][i];
-				double green = (double)buf[GLAYER][i];
-				double blue = (double)buf[BLAYER][i];
-				rgb_to_xyz(red, green, blue, &x, &y, &z);
-				xyz_to_LAB(x, y, z, &L, &a, &b);
-				buf[RLAYER][i] = (float)(L / 100.);		// 0 < L < 100
-				buf[GLAYER][i] = (float)((a + 128.) / 255.);	// -128 < a < 127
-				buf[BLAYER][i] = (float)((b + 128.) / 255.);	// -128 < b < 127
-			}
+		for (int i = 0; i < n; i++) {
+			double x, y, z, L, a, b;
+			double red = (double) buf[RLAYER][i];
+			double green = (double) buf[GLAYER][i];
+			double blue = (double) buf[BLAYER][i];
+			rgb_to_xyz(red, green, blue, &x, &y, &z);
+			xyz_to_LAB(x, y, z, &L, &a, &b);
+			buf[RLAYER][i] = (float) (L / 100.);		// 0 < L < 100
+			buf[GLAYER][i] = (float) ((a + 128.) / 255.);	// -128 < a < 127
+			buf[BLAYER][i] = (float) ((b + 128.) / 255.);	// -128 < b < 127
+		}
 
 	}
 	for (int i = 0; i < 3; i++)
