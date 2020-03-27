@@ -44,7 +44,7 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 	gchar *nameBuff;
 	char name[] = "siril_swp-XXXXXX";
 	gchar *tmpdir;
-	int fd, size;
+	int fd;
 
 	tmpdir = com.swap_dir;
 	nameBuff = g_build_filename(tmpdir, name, NULL);
@@ -56,7 +56,7 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 		return 1;
 	}
 
-	size = fit->rx * fit->ry * fit->naxes[2];
+	size_t size = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 
 	errno = 0;
 	// Write some data to the temporary file
@@ -129,7 +129,6 @@ static void undo_add_item(fits *fit, char *filename, char *histo) {
 
 static int undo_get_data_ushort(fits *fit, historic hist) {
 	int fd;
-	unsigned int size;
 	WORD *buf;
 
 	if ((fd = g_open(hist.filename, O_RDONLY | O_BINARY, 0)) == -1) {
@@ -140,18 +139,20 @@ static int undo_get_data_ushort(fits *fit, historic hist) {
 	errno = 0;
 	fit->rx = hist.rx;
 	fit->ry = hist.ry;
+	/* TODO: fit->naxes[0] = fit->rx ? what about naxes[2] ? */
 
-	size = fit->rx * fit->ry * fit->naxes[2];
-	buf = calloc(1, size * sizeof(WORD));
+	size_t n = fit->naxes[0] * fit->naxes[1];
+	size_t size = n * fit->naxes[2] * sizeof(WORD);
+	buf = calloc(1, size);
 	// read the data from temporary file
-	if ((read(fd, buf, size * sizeof(WORD)) < size * sizeof(WORD))) {
+	if ((read(fd, buf, size)) < size) {
 		printf("Undo Read of [%s], failed with error [%s]\n", hist.filename, strerror(errno));
 		free(buf);
 		g_close(fd, NULL);
 		return 1;
 	}
 	/* need to reallocate data as size may have changed */
-	WORD *newdata = (WORD*) realloc(fit->data, size * sizeof(WORD));
+	WORD *newdata = (WORD*) realloc(fit->data, size);
 	if (!newdata) {
 		PRINT_ALLOC_ERR;
 		free(newdata);
@@ -160,11 +161,11 @@ static int undo_get_data_ushort(fits *fit, historic hist) {
 		return 1;
 	}
 	fit->data = newdata;
-	memcpy(fit->data, buf, size * sizeof(WORD));
+	memcpy(fit->data, buf, size);
 	fit->pdata[RLAYER] = fit->data;
 	if (fit->naxes[2] > 1) {
-		fit->pdata[GLAYER] = fit->data + fit->rx * fit->ry;
-		fit->pdata[BLAYER] = fit->data + fit->rx * fit->ry * 2;
+		fit->pdata[GLAYER] = fit->data + n;
+		fit->pdata[BLAYER] = fit->data + n * 2;
 	}
 	full_stats_invalidation_from_fit(fit);
 	free(buf);
@@ -174,7 +175,6 @@ static int undo_get_data_ushort(fits *fit, historic hist) {
 
 static int undo_get_data_float(fits *fit, historic hist) {
 	int fd;
-	unsigned int size;
 	float *buf;
 
 	if ((fd = g_open(hist.filename, O_RDONLY | O_BINARY, 0)) == -1) {
@@ -186,17 +186,18 @@ static int undo_get_data_float(fits *fit, historic hist) {
 	fit->rx = hist.rx;
 	fit->ry = hist.ry;
 
-	size = fit->rx * fit->ry * fit->naxes[2];
-	buf = calloc(1, size * sizeof(float));
+	size_t n = fit->naxes[0] * fit->naxes[1];
+	size_t size = n * fit->naxes[2] * sizeof(WORD);
+	buf = calloc(1, size);
 	// read the data from temporary file
-	if ((read(fd, buf, size * sizeof(float)) < size * sizeof(float))) {
+	if ((read(fd, buf, size) < size)) {
 		printf("Undo Read of [%s], failed with error [%s]\n", hist.filename, strerror(errno));
 		free(buf);
 		g_close(fd, NULL);
 		return 1;
 	}
 	/* need to reallocate data as size may have changed */
-	float *newdata = (float*) realloc(fit->data, size * sizeof(float));
+	float *newdata = (float*) realloc(fit->data, size);
 	if (!newdata) {
 		PRINT_ALLOC_ERR;
 		free(newdata);
@@ -205,11 +206,11 @@ static int undo_get_data_float(fits *fit, historic hist) {
 		return 1;
 	}
 	fit->fdata = newdata;
-	memcpy(fit->fdata, buf, size * sizeof(float));
+	memcpy(fit->fdata, buf, size);
 	fit->fpdata[RLAYER] = fit->fdata;
 	if (fit->naxes[2] > 1) {
-		fit->fpdata[GLAYER] = fit->fdata + fit->rx * fit->ry;
-		fit->fpdata[BLAYER] = fit->fdata + fit->rx * fit->ry * 2;
+		fit->fpdata[GLAYER] = fit->fdata + n;
+		fit->fpdata[BLAYER] = fit->fdata + n * 2;
 	}
 	full_stats_invalidation_from_fit(fit);
 	free(buf);
@@ -220,14 +221,14 @@ static int undo_get_data_float(fits *fit, historic hist) {
 static int undo_get_data(fits *fit, historic hist) {
 	if (hist.type == DATA_USHORT) {
 		if (gfit.type != DATA_USHORT) {
-			long ndata = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
+			size_t ndata = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 			fit_replace_buffer(fit, float_buffer_to_ushort(fit->fdata, ndata), DATA_USHORT);
 			set_precision_switch();
 		}
 		return undo_get_data_ushort(fit, hist);
 	} else if (hist.type == DATA_FLOAT) {
 		if (gfit.type != DATA_FLOAT) {
-			long ndata = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
+			size_t ndata = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 			fit_replace_buffer(fit, ushort_buffer_to_float(fit->data, ndata), DATA_FLOAT);
 			set_precision_switch();
 		}
@@ -308,12 +309,10 @@ int undo_display_data(int dir) {
 }
 
 int undo_flush() {
-	int i;
-
 	if (!com.history) {
 		return 1;
 	}
-	for (i = 0; i < com.hist_current; i++) {
+	for (int i = 0; i < com.hist_current; i++) {
 		undo_remove_item(com.history, i);
 	}
 	free(com.history);

@@ -92,12 +92,12 @@ gboolean end_BandingEngine(gpointer p) {
 
 static int fmul_layer_ushort(fits *a, int layer, float coeff) {
 	WORD *buf;
-	int i;
+	size_t i, n = a->naxes[0] * a->naxes[1];
 
 	if (coeff < 0.0)
 		return 1;
 	buf = a->pdata[layer];
-	for (i = 0; i < a->rx * a->ry; ++i) {
+	for (i = 0; i < n; ++i) {
 		buf[i] = round_to_WORD(buf[i] * coeff);
 	}
 	invalidate_stats_from_fit(a);
@@ -106,12 +106,12 @@ static int fmul_layer_ushort(fits *a, int layer, float coeff) {
 
 static int fmul_layer_float(fits *a, int layer, float coeff) {
 	float *buf;
-	int i;
+	size_t i, n = a->naxes[0] * a->naxes[1];
 
 	if (coeff < 0.0)
 		return 1;
 	buf = a->fpdata[layer];
-	for (i = 0; i < a->rx * a->ry; ++i) {
+	for (i = 0; i < n; ++i) {
 		buf[i] = buf[i] * coeff;
 	}
 	invalidate_stats_from_fit(a);

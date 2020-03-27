@@ -40,22 +40,18 @@
 #include "opencv/opencv.h"
 
 int threshlo(fits *fit, WORD level) {
-	int i, layer;
+	size_t i, n = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 
-	for (layer = 0; layer < fit->naxes[2]; ++layer) {
-		if (fit->type == DATA_USHORT) {
-			WORD *buf = fit->pdata[layer];
-			for (i = 0; i < fit->rx * fit->ry; ++i) {
-				*buf = max(level, *buf);
-				buf++;
-			}
-		} else if (fit->type == DATA_FLOAT) {
-			float l = (float) level / USHRT_MAX_SINGLE;
-			float *buf = fit->fpdata[layer];
-			for (i = 0; i < fit->rx * fit->ry; ++i) {
-				*buf = max(l, *buf);
-				buf++;
-			}
+	if (fit->type == DATA_USHORT) {
+		WORD *buf = fit->data;
+		for (i = 0; i < n; ++i) {
+			buf[i] = max(level, buf[i]);
+		}
+	} else if (fit->type == DATA_FLOAT) {
+		float l = (float) level / USHRT_MAX_SINGLE;
+		float *buf = fit->fdata;
+		for (i = 0; i < n; ++i) {
+			buf[i] = max(l, buf[i]);
 		}
 	}
 	invalidate_stats_from_fit(fit);
@@ -63,22 +59,18 @@ int threshlo(fits *fit, WORD level) {
 }
 
 int threshhi(fits *fit, WORD level) {
-	int i, layer;
+	size_t i, n = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 
-	for (layer = 0; layer < fit->naxes[2]; ++layer) {
-		if (fit->type == DATA_USHORT) {
-			WORD *buf = fit->pdata[layer];
-			for (i = 0; i < fit->rx * fit->ry; ++i) {
-				*buf = min(level, *buf);
-				buf++;
-			}
-		} else if (fit->type == DATA_FLOAT) {
-			float l = (float) level / USHRT_MAX_SINGLE;
-			float *buf = fit->fpdata[layer];
-			for (i = 0; i < fit->rx * fit->ry; ++i) {
-				*buf = min(l, *buf);
-				buf++;
-			}
+	if (fit->type == DATA_USHORT) {
+		WORD *buf = fit->data;
+		for (i = 0; i < n; ++i) {
+			buf[i] = min(level, buf[i]);
+		}
+	} else if (fit->type == DATA_FLOAT) {
+		float l = (float) level / USHRT_MAX_SINGLE;
+		float *buf = fit->fdata;
+		for (i = 0; i < n; ++i) {
+			buf[i] = min(l, buf[i]);
 		}
 	}
 	invalidate_stats_from_fit(fit);
@@ -87,24 +79,20 @@ int threshhi(fits *fit, WORD level) {
 
 // level is for ushort data, adapted automatically in case of float data
 int nozero(fits *fit, WORD level) {
-	int i, layer;
+	size_t i, n = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 
-	for (layer = 0; layer < fit->naxes[2]; ++layer) {
-		if (fit->type == DATA_USHORT) {
-			WORD *buf = fit->pdata[layer];
-			for (i = 0; i < fit->rx * fit->ry; ++i) {
-				if (*buf == 0)
-					*buf = level;
-				buf++;
-			}
-		} else if (fit->type == DATA_FLOAT) {
-			float l = (float)level / USHRT_MAX_SINGLE;
-			float *buf = fit->fpdata[layer];
-			for (i = 0; i < fit->rx * fit->ry; ++i) {
-				if (*buf == 0)
-					*buf = l;
-				buf++;
-			}
+	if (fit->type == DATA_USHORT) {
+		WORD *buf = fit->data;
+		for (i = 0; i < n; ++i) {
+			if (buf[i] == 0)
+				buf[i] = level;
+		}
+	} else if (fit->type == DATA_FLOAT) {
+		float l = (float) level / USHRT_MAX_SINGLE;
+		float *buf = fit->fdata;
+		for (i = 0; i < n; ++i) {
+			if (buf[i] <= 0.0)
+				buf[i] = l;
 		}
 	}
 	invalidate_stats_from_fit(fit);
@@ -152,7 +140,7 @@ float entropy(fits *fit, int layer, rectangle *area, imstats *opt_stats) {
 	else
 		histo = computeHisto_Selection(fit, layer, area);
 
-	long n = fit->rx * fit->ry;
+	size_t n = fit->naxes[0] * fit->naxes[1];
 	g_assert (n > 0);
 	size_t size = gsl_histogram_bins(histo);
 	for (size_t i = 0; i < size; i++) {
@@ -176,7 +164,8 @@ static int loglut_ushort(fits *fit) {
 		imstats *stat = statistics(NULL, -1, fit, layer, NULL, STATS_MINMAX, TRUE);
 		double min = stat->min;
 		double wd = stat->max - stat->min;
-		for (int i = 0; i < fit->ry * fit->rx; i++) {
+		size_t i, n = fit->naxes[0] * fit->naxes[1];
+		for (i = 0; i < n; i++) {
 			float px = (float)buf[layer][i];
 			buf[layer][i] = round_to_WORD(log1pf((px - min) / wd) * norm);
 		}
@@ -195,7 +184,8 @@ static int loglut_float(fits *fit) {
 		imstats *stat = statistics(NULL, -1, fit, layer, NULL, STATS_MINMAX, TRUE);
 		double min = stat->min;
 		double wd = stat->max - stat->min;
-		for (int i = 0; i < fit->ry * fit->rx; i++) {
+		size_t i, n = fit->naxes[0] * fit->naxes[1];
+		for (i = 0; i < n; i++) {
 			float px = buf[layer][i];
 			buf[layer][i] = log1pf((px - min) / wd);
 		}
@@ -303,7 +293,8 @@ static int off_ushort(fits *fit, float level) {
 		level = -USHRT_MAX;
 	else if (level > USHRT_MAX)
 		level = USHRT_MAX;
-	for (int i = 0; i < fit->rx * fit->ry; ++i) {
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
+	for (i = 0; i < n; ++i) {
 		for (int layer = 0; layer < fit->naxes[2]; ++layer) {
 			float val = (float)buf[layer][i];
 			buf[layer][i] = roundf_to_WORD(val + level);
@@ -323,7 +314,8 @@ static int off_float(fits *fit, float level) {
 		level = -1.f;
 	else if (level > 1.f)
 		level = 1.f;
-	for (int i = 0; i < fit->rx * fit->ry; ++i) {
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
+	for (i = 0; i < n; ++i) {
 		for (int layer = 0; layer < fit->naxes[2]; ++layer) {
 			float val = buf[layer][i];
 			buf[layer][i] = set_float_in_interval(val + level, 0.f, 1.f);

@@ -222,6 +222,10 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 	/* Check if file is large enough to have timestamps */
 	if (ser_file->filesize >= offset + (8 * ser_file->frame_count)) {
 		ser_file->ts = calloc(8, ser_file->frame_count);
+		if (!ser_file->ts) {
+			PRINT_ALLOC_ERR;
+			return 0;
+		}
 		ser_file->ts_alloc = ser_file->frame_count;
 
 		// Seek to start of timestamps
@@ -569,6 +573,10 @@ void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp) {
 	if (ser_file->ts)
 		free(ser_file->ts);
 	ser_file->ts = calloc(8, ser_file->frame_count);
+	if (!ser_file->ts) {
+		PRINT_ALLOC_ERR;
+		return;
+	}
 	ser_file->ts_alloc = ser_file->frame_count;
 
 	GSList *t = timestamp;
@@ -718,7 +726,10 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 
 		if (copy_from->ts && copy_from->frame_count > 0) {
 			ser_file->ts = calloc(8, copy_from->frame_count);
-			ser_file->ts_alloc = copy_from->frame_count;
+			if (!ser_file->ts) {
+				PRINT_ALLOC_ERR;
+			}
+			else ser_file->ts_alloc = copy_from->frame_count;
 		}
 		/* we write the header now, but it should be written again
 		 * before closing in case the number of the image in the new
@@ -900,6 +911,10 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 		/* no break */
 	case SER_RGB:
 		tmp = malloc(frame_size * sizeof(WORD));
+		if (!tmp) {
+			PRINT_ALLOC_ERR;
+			return -1;
+		}
 		memcpy(tmp, fit->data, sizeof(WORD) * frame_size);
 		fit->naxes[0] = fit->rx = ser_file->image_width;
 		fit->naxes[1] = fit->ry = ser_file->image_height;
@@ -989,6 +1004,10 @@ static int read_area_from_image(struct ser_struct *ser_file, const int frame_no,
 		// allocated space is probably not enough to
 		// store whole lines or RGB data
 		read_buffer = malloc(read_size);
+		if (!read_buffer) {
+			PRINT_ALLOC_ERR;
+			return -1;
+		}
 	}
 	else read_buffer = outbuf;
 
@@ -1202,10 +1221,16 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 
 	if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) {
 		data8 = malloc(frame_size * ser_file->byte_pixel_depth);
-		if (!data8) return -1;
+		if (!data8) {
+			PRINT_ALLOC_ERR;
+			return -1;
+		}
 	} else {
 		data16 = malloc(frame_size * ser_file->byte_pixel_depth);
-		if (!data16) return -1;
+		if (!data16) {
+			PRINT_ALLOC_ERR;
+			return -1;
+		}
 	}
 
 	for (plane = 0; plane < ser_file->number_of_planes; plane++) {

@@ -65,8 +65,12 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
 	TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
 
-	const unsigned long npixels = width * height;
+	size_t npixels = width * height;
 	*data = malloc(npixels * sizeof(WORD) * nsamples);
+	if (!*data) {
+		PRINT_ALLOC_ERR;
+		return -1;
+	}
 	WORD *gbuf[3] = {*data, *data, *data};
 	if (nsamples == 4) {
 		siril_log_message(_("Alpha channel is ignored.\n"));
@@ -91,7 +95,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 				retval = -1;
 				break;
 			}
-			for (int i = 0; i < width * nrow; i++) {
+			for (size_t i = 0; i < width * nrow; i++) {
 				*gbuf[RLAYER]++ = buf[i * nsamples + 0];
 				if ((nsamples == 3) || (nsamples == 4)) {
 					*gbuf[GLAYER]++ = buf[i * nsamples + 1];
@@ -108,7 +112,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 					retval = -1;
 					break;
 				}
-				for (int i = 0; i < width * nrow; i++)
+				for (size_t i = 0; i < width * nrow; i++)
 					*gbuf[j]++ = buf[i];
 			}
 			break;
@@ -129,8 +133,12 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
 	TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
 
-	const unsigned long npixels = width * height;
+	size_t npixels = width * height;
 	*data = malloc(npixels * sizeof(float) * nsamples);
+	if (!*data) {
+		PRINT_ALLOC_ERR;
+		return -1;
+	}
 	float *gbuf[3] = { *data, *data, *data };
 	if (nsamples == 4) {
 		siril_log_message(_("Alpha channel is ignored.\n"));
@@ -147,8 +155,7 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 		return -1;
 	}
 	for (uint32 row = 0; row < height; row += rowsperstrip) {
-		uint32 nrow =
-				(row + rowsperstrip > height ? height - row : rowsperstrip);
+		uint32 nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
 		switch (config) {
 		case PLANARCONFIG_CONTIG:
 			if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow * scanline) < 0) {
@@ -156,7 +163,7 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 				retval = -1;
 				break;
 			}
-			for (int i = 0; i < width * nrow; i++) {
+			for (size_t i = 0; i < width * nrow; i++) {
 				*gbuf[RLAYER]++ = buf[i * nsamples + 0];
 				if ((nsamples == 3) || (nsamples == 4)) {
 					*gbuf[GLAYER]++ = buf[i * nsamples + 1];
@@ -174,7 +181,7 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 					retval = -1;
 					break;
 				}
-				for (int i = 0; i < width * nrow; i++)
+				for (size_t i = 0; i < width * nrow; i++)
 					*gbuf[j]++ = buf[i];
 			}
 			break;
@@ -190,8 +197,12 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
 	int retval = nsamples;
 
-	const unsigned long npixels = width * height;
+	size_t npixels = width * height;
 	*data = malloc(npixels * sizeof(WORD) * nsamples);
+	if (!*data) {
+		PRINT_ALLOC_ERR;
+		return -1;
+	}
 	WORD *gbuf[3] = { *data, *data, *data };
 	if (nsamples == 4) {
 		siril_log_message(_("Alpha channel is ignored.\n"));
@@ -227,9 +238,7 @@ static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 }
 
 static uint16_t get_compression_mode() {
-	GtkToggleButton *button;
-
-	button = GTK_TOGGLE_BUTTON(lookup_widget("radiobuttonCompDeflate"));
+	GtkToggleButton *button = GTK_TOGGLE_BUTTON(lookup_widget("radiobuttonCompDeflate"));
 	if (gtk_toggle_button_get_active(button))
 		return (uint16_t) COMPRESSION_ADOBE_DEFLATE;
 	else
@@ -264,7 +273,6 @@ int readtif(const char *name, fits *fit) {
 	float *fdata = NULL;
 	
 	TIFF* tif = Siril_TIFFOpen(name, "r");
-
 	if (!tif) {
 		siril_log_message(_("Could not open the TIFF file %s\n"), name);
 		return -1;
@@ -278,7 +286,7 @@ int readtif(const char *name, fits *fit) {
 	TIFFGetField(tif, TIFFTAG_MINSAMPLEVALUE, &(fit->lo));
 	TIFFGetField(tif, TIFFTAG_MAXSAMPLEVALUE, &(fit->hi));
 
-	const unsigned long npixels = width * height;
+	size_t npixels = width * height;
 
 	switch(nbits){
 		case 8:
@@ -400,8 +408,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	}
 
 	TIFF* tif = Siril_TIFFOpen(filename, "w");
-
-	if (tif == NULL) {
+	if (!tif) {
 		siril_log_message(_("Siril cannot create TIFF file.\n"));
 		free(filename);
 		return 1;
@@ -452,6 +459,11 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	case 8:
 		siril_debug_print("Saving 8-bit TIFF file.\n");
 		BYTE *buf8 = _TIFFmalloc(width * sizeof(unsigned char) * nsamples);
+		if (!buf8) {
+			PRINT_ALLOC_ERR;
+			retval = -1;
+			break;
+		}
 
 		for (uint32 row = 0; row < height; row++) {
 			for (uint32 col = 0; col < width; col++) {
@@ -473,6 +485,11 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 	case 16:
 		siril_debug_print("Saving 16-bit TIFF file.\n");
 		WORD *buf16 = _TIFFmalloc(width * sizeof(WORD) * nsamples);
+		if (!buf16) {
+			PRINT_ALLOC_ERR;
+			retval = -1;
+			break;
+		}
 
 		for (uint32 row = 0; row < height; row++) {
 			for (uint32 col = 0; col < width; col++) {
@@ -522,8 +539,13 @@ int readjpg(const char* name, fits *fit){
 	jpeg_read_header(&cinfo, TRUE);
 	jpeg_start_decompress(&cinfo);
 
-	const unsigned long npixels = cinfo.output_width * cinfo.output_height;
+	size_t npixels = cinfo.output_width * cinfo.output_height;
 	WORD *data = malloc(npixels * sizeof(WORD) * 3);
+	if (!data) {
+		PRINT_ALLOC_ERR;
+		fclose(f);
+		return -1;
+	}
 	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 	int row_stride = cinfo.output_width * cinfo.output_components;
 	JSAMPARRAY pJpegBuffer = (*cinfo.mem->alloc_sarray)((j_common_ptr) &cinfo, JPOOL_IMAGE,	row_stride, 1);
@@ -605,6 +627,12 @@ int savejpg(const char *name, fits *fit, int quality){
 	//## CREATE IMAGE BUFFER TO WRITE FROM AND MODIFY THE IMAGE TO LOOK LIKE CHECKERBOARD:
 	unsigned char *image_buffer = (unsigned char*) malloc(
 			cinfo.image_width * cinfo.image_height * cinfo.num_components);
+	if (!image_buffer) {
+		PRINT_ALLOC_ERR;
+		free(filename);
+		fclose(f);
+		return 1;
+	}
 
 	float norm = (fit->orig_bitpix != BYTE_IMG ?
 			UCHAR_MAX_SINGLE / USHRT_MAX_SINGLE : 1.f);
@@ -685,11 +713,16 @@ int readpng(const char *name, fits* fit) {
 
 	const int width = png_get_image_width(png, info);
 	const int height = png_get_image_height(png, info);
-	const unsigned long npixels = (unsigned long) width * (unsigned long) height;
+	size_t npixels = width * height;
 	png_byte color_type = png_get_color_type(png, info);
 	png_byte bit_depth = png_get_bit_depth(png, info);
 
 	WORD *data = malloc(npixels * sizeof(WORD) * 3);
+	if (!data) {
+		PRINT_ALLOC_ERR;
+		fclose(f);
+		return -1;
+	}
 	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 
 	if (color_type == PNG_COLOR_TYPE_PALETTE)
@@ -863,46 +896,62 @@ static int32_t save_mono_file(const char *filename, const void *p_image_data,
 }
 
 static WORD *convert_data(fits *image) {
-	int ndata = image->rx * image->ry;
+	size_t ndata = image->rx * image->ry;
 	int ch = image->naxes[2];
 
 	WORD *buffer = malloc(ndata * ch * sizeof(WORD));
-	for (int i = 0, j = 0; i < ndata * ch; i += ch, j++) {
+	if (!buffer) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
+	for (size_t i = 0, j = 0; i < ndata * ch; i += ch, j++) {
 		if (image->type == DATA_USHORT) {
 			buffer[i + 0] = image->pdata[RLAYER][j];
 			if (ch > 1) {
 				buffer[i + 1] = image->pdata[GLAYER][j];
 				buffer[i + 2] = image->pdata[BLAYER][j];
 			}
-		} else {
+		} else if (image->type == DATA_FLOAT) {
 			buffer[i + 0] = float_to_ushort_range(image->fpdata[RLAYER][j]);
 			if (ch > 1) {
 				buffer[i + 1] = float_to_ushort_range(image->fpdata[GLAYER][j]);
 				buffer[i + 2] = float_to_ushort_range(image->fpdata[BLAYER][j]);
 			}
 		}
+		else {
+			free(buffer);
+			return NULL;
+		}
 	}
 	return buffer;
 }
 
 static uint8_t *convert_data8(fits *image) {
-	int ndata = image->rx * image->ry;
+	size_t ndata = image->rx * image->ry;
 	const long ch = image->naxes[2];
 
 	uint8_t *buffer = malloc(ndata * ch * sizeof(uint8_t));
-	for (int i = 0, j = 0; i < ndata * ch; i += ch, j++) {
+	if (!buffer) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
+	for (size_t i = 0, j = 0; i < ndata * ch; i += ch, j++) {
 		if (image->type == DATA_USHORT) {
 			buffer[i + 0] = (uint8_t) image->pdata[RLAYER][j];
 			if (ch > 1) {
 				buffer[i + 1] = (uint8_t) image->pdata[GLAYER][j];
 				buffer[i + 2] = (uint8_t) image->pdata[BLAYER][j];
 			}
-		} else {
+		} else if (image->type == DATA_FLOAT) {
 			buffer[i + 0] = float_to_uchar_range(image->fpdata[RLAYER][j]);
 			if (ch > 1) {
 				buffer[i + 1] = float_to_uchar_range(image->fpdata[GLAYER][j]);
 				buffer[i + 2] = float_to_uchar_range(image->fpdata[BLAYER][j]);
 			}
+		}
+		else {
+			free(buffer);
+			return NULL;
 		}
 	}
 	return buffer;
@@ -1124,7 +1173,7 @@ static int readraw(const char *name, fits *fit) {
 	const ushort width = raw->sizes.iwidth;
 	const ushort height = raw->sizes.iheight;
 	const float pitch = estimate_pixel_pitch(raw);
-	const unsigned long npixels = width * height;
+	size_t npixels = width * height;
 
 	WORD *data = malloc(npixels * sizeof(WORD) * 3);
 	if (!data) {
@@ -1170,7 +1219,7 @@ static int readraw(const char *name, fits *fit) {
 	}
 	// only for 16-bits because of endianness. Are there 8-bits RAW ???
 
-	for (int i = 0; i < image->data_size; i += 6) {
+	for (unsigned int i = 0; i < image->data_size; i += 6) {
 		*buf[RLAYER]++ = (image->data[i + 0]) + (image->data[i + 1] << 8);
 		*buf[GLAYER]++ = (image->data[i + 2]) + (image->data[i + 3] << 8);
 		*buf[BLAYER]++ = (image->data[i + 4]) + (image->data[i + 5] << 8);
@@ -1300,7 +1349,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 	}
 
 	float pitch = estimate_pixel_pitch(raw);
-	const int npixels = width * height;
+	size_t npixels = width * height;
 	
 	if (raw->other.shutter > 0 && raw->other.shutter < 1)
 		siril_log_message(_("Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"),
@@ -1738,9 +1787,15 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 	const int width = heif_image_get_width(img, heif_channel_interleaved);
 	const int height = heif_image_get_height(img, heif_channel_interleaved);
 
-	long npixels = width * height;
+	size_t npixels = width * height;
 
 	WORD *data = malloc(npixels * sizeof(WORD) * 3);
+	if (!data) {
+		PRINT_ALLOC_ERR;
+		heif_image_handle_release(handle);
+		heif_context_free(ctx);
+		return 1;
+	}
 	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 
 	unsigned int nchannels = has_alpha ? 4 : 3;

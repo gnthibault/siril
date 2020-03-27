@@ -180,7 +180,7 @@ static double getAverage3x3_ushort(WORD *buf, const int xx, const int yy,
  */
 deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 		long *ihot, gboolean eval_only) {
-	int x, y, i;
+	int x, y;
 	WORD *buf;
 	float *fbuf;
 	imstats *stat;
@@ -215,7 +215,8 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 	*ihot = 0;
 	buf = fit->pdata[RLAYER];
 	fbuf = fit->fpdata[RLAYER];
-	for (i = 0; i < fit->rx * fit->ry; i++) {
+	size_t i, nbpix = fit->naxes[0] * fit->naxes[1];
+	for (i = 0; i < nbpix; i++) {
 		double pixel = fit->type == DATA_FLOAT ? fbuf[i] : (double)buf[i];
 		if (pixel >= thresHot)
 			(*ihot)++;
@@ -225,7 +226,7 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 
 	if (eval_only) return NULL;
 
-	/** Second we store deviant pixels in p*/
+	/** Second we store deviant pixels in p */
 	int n = (*icold) + (*ihot);
 	if (n <= 0)
 		return NULL;
@@ -446,7 +447,8 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
 	const gboolean doCold = sig[0] != -1.0;
 	const float coldVal = doCold ? bkg - k : 0.0;
 	const float hotVal = doHot ? bkg + k1 : isFloat ? 1.f : 65535.f;
-	float *temp = malloc(width * height * sizeof(float));
+	size_t n = fit->naxes[0] * fit->naxes[1] * sizeof(float); 
+	float *temp = malloc(n);
 	if (!temp) {
 		PRINT_ALLOC_ERR;
 		return 1;
@@ -473,18 +475,13 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
 			memcpy(temp, fbuf, width * height * sizeof(float));
 		}
 	} else {
-		if (multithread) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) if(multithread)
 #endif
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < width; x++) {
-					temp[y * width + x] = (float) buf[y * width + x];
-				}
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				temp[y * width + x] = (float) buf[y * width + x];
 			}
-		} else {
-			// this should be faster in a single-threaded case
-			memcpy(temp, fbuf, width * height * sizeof(WORD));
 		}
 	}
 	const int step = is_cfa ? 2 : 1;

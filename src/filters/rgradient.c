@@ -114,7 +114,7 @@ gpointer rgradient_filter(gpointer p) {
 #pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
 		for (y = 0; y < args->fit->ry; y++) {
-			int i = y * args->fit->rx;
+			size_t i = y * args->fit->rx;
 #ifdef _OPENMP
 #pragma omp critical
 #endif

@@ -70,7 +70,8 @@ static uint8_t *fits_to_uint8(fits *fit) {
 static gpointer export_sequence(gpointer ptr) {
 	int i, x, y, nx, ny, shiftx, shifty, layer, retval = 0, reglayer,
 	    nb_layers, skipped, nb_frames, cur_nb = 0;
-	unsigned int out_width, out_height, in_width, in_height, nbdata = 0;
+	unsigned int out_width, out_height, in_width, in_height;
+	size_t nbdata = 0;
 	uint8_t *data;
 	fits fit = { 0 };
 	fits destfit = { 0 };

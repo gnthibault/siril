@@ -191,6 +191,11 @@ int check_seq(int recompute_stats) {
 	}
 
 	sequences = malloc(sizeof(sequence *) * max_seq);
+	if (!sequences) {
+		PRINT_ALLOC_ERR;
+		g_dir_close(dir);
+		return 1;
+	}
 	set_progress_bar_data(NULL, PROGRESS_PULSATE);
 
 	while ((file = g_dir_read_name(dir)) != NULL) {
@@ -390,6 +395,7 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 			memset(fit, 0, sizeof(fits));
 		}
 
+		/* TODO: we could only read the header if !load_ref_into_gfit */
 		if (seq_read_frame(seq, image_to_load, fit, FALSE)) {
 			fprintf(stderr, "could not load first image from sequence\n");
 			return -1;
@@ -404,6 +410,11 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 			seq->nb_layers = fit->naxes[2];
 			seq->regparam = calloc(seq->nb_layers, sizeof(regdata*));
 			seq->layers = calloc(seq->nb_layers, sizeof(layer_info));
+			if (!seq->regparam || !seq->layers) {
+				PRINT_ALLOC_ERR;
+				clearfits(fit);
+				return 1;
+			}
 		}
 		seq->needs_saving = TRUE;
 
@@ -1463,6 +1474,10 @@ struct seqpsf_data {
 int seqpsf_image_hook(struct generic_seq_args *args, int out_index, int index, fits *fit, rectangle *area) {
 	struct seqpsf_args *spsfargs = (struct seqpsf_args *)args->user;
 	struct seqpsf_data *data = malloc(sizeof(struct seqpsf_data));
+	if (!data) {
+		PRINT_ALLOC_ERR;
+		return -1;
+	}
 	data->image_index = index;
 
 	rectangle psfarea = { .x = 0, .y = 0, .w = fit->rx, .h = fit->ry };
@@ -1670,5 +1685,4 @@ void free_reference_image() {
 	if (com.seq.reference_image == -1)
 		enable_view_reference_checkbox(FALSE);
 }
-
 

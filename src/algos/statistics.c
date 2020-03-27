@@ -85,7 +85,7 @@ static double siril_stats_ushort_mad(WORD* data, const size_t n, const double m,
 	WORD *tmp = malloc(n * sizeof(WORD));
 	if (!tmp) {
 		PRINT_ALLOC_ERR;
-		return 0.0f; // TODO: check return value
+		return 0.0f;
 	}
 
 #ifdef _OPENMP
@@ -128,8 +128,8 @@ static double siril_stats_ushort_bwmv(const WORD* data, const size_t n,
 	return bwmv;
 }
 
-static WORD* reassign_to_non_null_data_ushort(WORD *data, long inputlen, long outputlen, int free_input) {
-	int i, j = 0;
+static WORD* reassign_to_non_null_data_ushort(WORD *data, size_t inputlen, size_t outputlen, int free_input) {
+	size_t i, j = 0;
 	WORD *ndata = malloc(outputlen * sizeof(WORD));
 	if (!ndata) {
 		PRINT_ALLOC_ERR;
@@ -139,8 +139,7 @@ static WORD* reassign_to_non_null_data_ushort(WORD *data, long inputlen, long ou
 	for (i = 0; i < inputlen; i++) {
 		if (data[i] > 0) {
 			if (j >= outputlen) {
-				//assert(0);
-				fprintf(stderr, "\n- stats MISMATCH in sizes (in: %ld, out: %ld), THIS IS A BUG: seqfile is wrong *********\n\n", inputlen, outputlen);
+				fprintf(stderr, "\n- stats MISMATCH in sizes (in: %zd, out: %zd), THIS IS A BUG: seqfile is wrong *********\n\n", inputlen, outputlen);
 				break;
 			}
 			ndata[j] = data[i];
@@ -320,7 +319,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
-		long i;
+		size_t i;
 		float *newdata = malloc(stat->ngoodpix * sizeof(float));
 		if (!newdata) {
 			if (stat_is_local) free(stat);
@@ -479,8 +478,13 @@ int compute_means_from_flat_cfa(fits *fit, float mean[4]) {
 
 /* reference an imstats struct to a fits, creates the stats array if needed */
 void add_stats_to_fit(fits *fit, int layer, imstats *stat) {
-	if (!fit->stats)
+	if (!fit->stats) {
 		fit->stats = calloc(fit->naxes[2], sizeof(imstats *));
+		if (!fit->stats) {
+			PRINT_ALLOC_ERR;
+			return;
+		}
+	}
 	if (fit->stats[layer]) {
 		if (fit->stats[layer] != stat) {
 			siril_debug_print("- stats %p in fit %p (%d) is being replaced\n", fit->stats[layer], fit, layer);
@@ -493,10 +497,21 @@ void add_stats_to_fit(fits *fit, int layer, imstats *stat) {
 }
 
 static void add_stats_to_stats(sequence *seq, int nb_layers, imstats ****stats, int image_index, int layer, imstats *stat) {
-	if (!*stats)
+	if (!*stats) {
 		*stats = calloc(nb_layers, sizeof(imstats **));
-	if (!(*stats)[layer])
+		if (!*stats) {
+			PRINT_ALLOC_ERR;
+			return;
+		}
+	}
+	if (!(*stats)[layer]) {
 		(*stats)[layer] = calloc(seq->number, sizeof(imstats *));
+		if (!(*stats)[layer]) {
+			PRINT_ALLOC_ERR;
+			return;
+		}
+	}
+
 	if ((*stats)[layer][image_index]) {
 		if ((*stats)[layer][image_index] != stat) {
 			siril_debug_print("- stats %p, %d in seq (%d) is being replaced\n", (*stats)[layer][image_index], image_index, layer);

@@ -77,7 +77,7 @@ static double dhampel(double x) {
 }
 
 static double qmedD(int n, double *a)
-/* Vypocet medianu algoritmem Quick Median (Wirth) */
+	/* Vypocet medianu algoritmem Quick Median (Wirth) */
 {
 	double w, x;
 	int i, j;
@@ -111,7 +111,7 @@ static double qmedD(int n, double *a)
 }
 
 static int robustmean(int n, double *x, double *mean, double *stdev)
-/* Newton's iterations */
+	/* Newton's iterations */
 {
 	int i, it;
 	double a, c, d, dt, r, s, sum1, sum2, sum3, psir;
@@ -133,9 +133,13 @@ static int robustmean(int n, double *x, double *mean, double *stdev)
 	}
 
 	/* initial values:
-	 - median is the first approximation of location
-	 - MAD/0.6745 is the first approximation of scale */
+	   - median is the first approximation of location
+	   - MAD/0.6745 is the first approximation of scale */
 	xx = malloc(n * sizeof(double));
+	if (!xx) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
 	memcpy(xx, x, n * sizeof(double));
 	a = qmedD(n, xx);
 	for (i = 0; i < n; i++)
@@ -190,7 +194,7 @@ static photometry *phot_alloc() {
 	if (phot == NULL) {
 		PRINT_ALLOC_ERR;
 	}
-	return (phot);
+	return phot;
 }
 
 static double getMagnitude(double intensity) {
@@ -250,7 +254,6 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 	double xc, yc;
 	double apmag = 0.0, mean = 0.0, stdev = 0.0, area = 0.0;
 	double signalIntensity;
-	double *data;
 	gboolean valid = TRUE;
 	photometry *phot;
 
@@ -287,7 +290,11 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 	r2 *= r2;
 	rmin_sq = (appRadius - 0.5) * (appRadius - 0.5);
 
-	data = calloc((y2 - y1) * (x2 - x1), sizeof(double));
+	double *data = calloc((y2 - y1) * (x2 - x1), sizeof(double));
+	if (!data) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
 
 	for (y = y1; y <= y2; ++y) {
 		int yp = (y - yc) * (y - yc);
@@ -317,15 +324,15 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 	if (n_sky < min_sky) {
 		if (verbose) {
 			siril_log_message(_("Warning: There aren't enough pixels"
-					" in the sky annulus. You need to make a larger selection.\n"));
+						" in the sky annulus. You need to make a larger selection.\n"));
 		}
 		free(data);
 		return NULL;
 	}
 
 	ret = robustmean(n_sky, data, &mean, &stdev);
+	free(data);
 	if (ret > 0) {
-		free(data);
 		return NULL;
 	}
 
@@ -338,7 +345,6 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 		phot->valid = valid;
 	}
 
-	free(data);
 	return phot;
 }
 

@@ -695,6 +695,7 @@ static int ser_conversion(const char *src_filename, int index, unsigned int *add
 	}
 	/* We want to copy header informations from the first SER file */
 	if (ser_file && ser_frames == 0) {
+		/* TODO: this code should be in io/ser.c, common with ser_create_file() */
 		ser_file->lu_id = tmp_ser.lu_id;
 		ser_file->date = tmp_ser.date;
 		ser_file->date_utc = tmp_ser.date_utc;

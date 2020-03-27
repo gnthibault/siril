@@ -204,6 +204,10 @@ static float Qn0(const float sorted_data[], const size_t stride, const size_t n)
 		return (0.0);
 
 	float *work = malloc(wsize * sizeof(float));
+	if (!work) {
+		PRINT_ALLOC_ERR;
+		return -1.0f;
+	}
 
 	for (size_t i = 0; i < n; ++i) {
 		for (size_t j = i + 1; j < n; ++j)
@@ -240,11 +244,19 @@ static float siril_stats_trmean_from_sorted_data(const float trim,
 static float siril_stats_robust_mean(const float sorted_data[],
 		const size_t stride, const size_t size) {
 	float mx = (float) gsl_stats_float_median_from_sorted_data(sorted_data, stride, size);
-	float sx = 2.2219f * Qn0(sorted_data, 1, size);
+	float qn0 = Qn0(sorted_data, 1, size);
+	if (qn0 < 0)
+		return -1.0f;
+	float sx = 2.2219f * qn0;
 	float *x, mean;
 	int i, j;
 
 	x = malloc(size * sizeof(float));
+	if (!x) {
+		PRINT_ALLOC_ERR;
+		return -1.0f;
+	}
+
 	for (i = 0, j = 0; i < size; ++i) {
 		if (fabsf(sorted_data[i] - (float) mx) < 3 * (float) sx) {
 			x[j++] = sorted_data[i];
@@ -270,6 +282,10 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 	data[RED] = malloc(sizeof(float) * nb_stars);
 	data[GREEN] = malloc(sizeof(float) * nb_stars);
 	data[BLUE] = malloc(sizeof(float) * nb_stars);
+	if (!data[RED] || !data[GREEN] || !data[BLUE]) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
 
 	/* initialize to DBL_MAX */
 	for (int k = 0; k < nb_stars; k++) {
@@ -347,6 +363,12 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 	kw[RED] = siril_stats_robust_mean(data[RED], 1, ngood);
 	kw[GREEN] = siril_stats_robust_mean(data[GREEN], 1, ngood);
 	kw[BLUE] = siril_stats_robust_mean(data[BLUE], 1, ngood);
+	if (kw[RED] < 0.f || kw[GREEN] < 0.f || kw[BLUE] < 0.f) {
+		free(data[RED]);
+		free(data[GREEN]);
+		free(data[BLUE]);
+		return 1;
+	}
 
 	/* normalize factors */
 	kw[RED] /= (kw[n_channel]);
@@ -385,15 +407,16 @@ static int apply_white_balance(fits *fit, float kw[]) {
 		float scale = kw[chan];
 		if (scale == 1.0) continue;
 
+		size_t i, n = fit->naxes[0] * fit->naxes[1];
 		if (fit->type == DATA_USHORT) {
 			WORD *buf = fit->pdata[chan];
-			for (int i = 0; i < fit->rx * fit->ry; ++i) {
+			for (i = 0; i < n; ++i) {
 				buf[i] = roundf_to_WORD((float)buf[i] * scale);
 			}
 		}
 		else if (fit->type == DATA_FLOAT) {
 			float *buf = fit->fpdata[chan];
-			for (int i = 0; i < fit->rx * fit->ry; ++i) {
+			for (i = 0; i < n; ++i) {
 				buf[i] = buf[i] * scale;
 			}
 		}
@@ -405,12 +428,13 @@ static int apply_white_balance(fits *fit, float kw[]) {
 
 /* This function equalize the background by giving equal value for all layers */
 static void background_neutralize(fits* fit, coeff bg[], int n_channel, double norm) {
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
 	if (fit->type == DATA_USHORT) {
 		for (int chan = 0; chan < 3; chan++) {
 			float offset = (bg[chan].value - bg[n_channel].value) * norm;
 			siril_debug_print("offset: %d, %f\n", chan, offset);
 			WORD *buf = fit->pdata[chan];
-			for (int i = 0; i < fit->rx * fit->ry; i++) {
+			for (i = 0; i < n; ++i) {
 				buf[i] = roundf_to_WORD((float)buf[i] - offset);
 			}
 		}
@@ -420,7 +444,7 @@ static void background_neutralize(fits* fit, coeff bg[], int n_channel, double n
 			float offset = bg[chan].value - bg[n_channel].value;
 			siril_debug_print("offset: %d, %f\n", chan, offset);
 			float *buf = fit->fpdata[chan];
-			for (int i = 0; i < fit->rx * fit->ry; i++) {
+			for (i = 0; i < n; ++i) {
 				buf[i] = buf[i] - offset;
 			}
 		}

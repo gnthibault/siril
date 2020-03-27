@@ -53,7 +53,7 @@ void hsl_to_rgb_float_sat(float h, float sl, float l, float * r, float * g,
 		float * b) {
 	float v;
 
-    h = h >= 6.f ? h - 6.f : h;
+	h = h >= 6.f ? h - 6.f : h;
 
 	v = (l <= 0.5f) ? (l * (1.f + sl)) : (l + sl - l * sl);
 	if (v <= 0.f) {
@@ -72,36 +72,36 @@ void hsl_to_rgb_float_sat(float h, float sl, float l, float * r, float * g,
 		mid1 = m + vsf;
 		mid2 = v - vsf;
 		switch (sextant) {
-		case 0:
-			*r = v;
-			*g = mid1;
-			*b = m;
-			break;
-		case 1:
-			*r = mid2;
-			*g = v;
-			*b = m;
-			break;
-		case 2:
-			*r = m;
-			*g = v;
-			*b = mid1;
-			break;
-		case 3:
-			*r = m;
-			*g = mid2;
-			*b = v;
-			break;
-		case 4:
-			*r = mid1;
-			*g = m;
-			*b = v;
-			break;
-		case 5:
-			*r = v;
-			*g = m;
-			*b = mid2;
-			break;
+			case 0:
+				*r = v;
+				*g = mid1;
+				*b = m;
+				break;
+			case 1:
+				*r = mid2;
+				*g = v;
+				*b = m;
+				break;
+			case 2:
+				*r = m;
+				*g = v;
+				*b = mid1;
+				break;
+			case 3:
+				*r = m;
+				*g = mid2;
+				*b = v;
+				break;
+			case 4:
+				*r = mid1;
+				*g = m;
+				*b = v;
+				break;
+			case 5:
+				*r = v;
+				*g = m;
+				*b = mid2;
+				break;
 		}
 	}
 }
@@ -125,11 +125,11 @@ void rgb_to_hsl_float_sat(float r, float g, float b, float low, float *h, float 
 	m = min(r, g);
 	m = min(m, b);
 
-    if (m + v < low + low) {
-        *l = 0.f;
-        return;
-    }
-    *l = (m + v) / 2.f;
+	if (m + v < low + low) {
+		*l = 0.f;
+		return;
+	}
+	*l = (m + v) / 2.f;
 	*h = 0.f;
 	*s = 0.f;	// init values
 
@@ -139,16 +139,16 @@ void rgb_to_hsl_float_sat(float r, float g, float b, float low, float *h, float 
 		return;
 
 	if (r == v) {
-        g2 = (v - g) / vm;
-        b2 = (v - b) / vm;
+		g2 = (v - g) / vm;
+		b2 = (v - b) / vm;
 		*h = (g == m ? 5.f + b2 : 1.f - g2);
 	}else if (g == v) {
-        r2 = (v - r) / vm;
-        b2 = (v - b) / vm;
+		r2 = (v - r) / vm;
+		b2 = (v - b) / vm;
 		*h = (b == m ? 1.f + r2 : 3.f - b2);
 	} else {
-        r2 = (v - r) / vm;
-        g2 = (v - g) / vm;
+		r2 = (v - r) / vm;
+		g2 = (v - g) / vm;
 		*h = (r == m ? 3.f + g2 : 5.f - r2);
 	}
 
@@ -187,48 +187,46 @@ void hsl_to_rgb(double h, double sl, double l, double * r, double * g,
 		mid1 = m + vsf;
 		mid2 = v - vsf;
 		switch (sextant) {
-		case 0:
-			*r = v;
-			*g = mid1;
-			*b = m;
-			break;
-		case 1:
-			*r = mid2;
-			*g = v;
-			*b = m;
-			break;
-		case 2:
-			*r = m;
-			*g = v;
-			*b = mid1;
-			break;
-		case 3:
-			*r = m;
-			*g = mid2;
-			*b = v;
-			break;
-		case 4:
-			*r = mid1;
-			*g = m;
-			*b = v;
-			break;
-		case 5:
-			*r = v;
-			*g = m;
-			*b = mid2;
-			break;
+			case 0:
+				*r = v;
+				*g = mid1;
+				*b = m;
+				break;
+			case 1:
+				*r = mid2;
+				*g = v;
+				*b = m;
+				break;
+			case 2:
+				*r = m;
+				*g = v;
+				*b = mid1;
+				break;
+			case 3:
+				*r = m;
+				*g = mid2;
+				*b = v;
+				break;
+			case 4:
+				*r = mid1;
+				*g = m;
+				*b = v;
+				break;
+			case 5:
+				*r = v;
+				*g = m;
+				*b = mid2;
+				break;
 		}
 	}
 }
-/*
- *  * RGB-HSL transforms.
- *   * Ken Fishkin, Pixar Inc., January 1989.
- *    */
 
-/*
- *  * given r,g,b on [0 ... 1],
- *   * return (h,s,l) on [0 ... 1]
- *    */
+/* RGB-HSL transforms.
+ * Ken Fishkin, Pixar Inc., January 1989.
+ *
+ * given r,g,b on [0 ... 1],
+ * return (h,s,l) on [0 ... 1]
+ */
 void rgb_to_hsl(double r, double g, double b, double *h, double *s, double *l) {
 	double v;
 	double m;
@@ -307,37 +305,37 @@ void hsv_to_rgb(double h, double s, double v, double *r, double *g, double *b) {
 	t = v * (1.0 - (s * (1.0 - f)));
 
 	switch (i) {
-	case 0:
-		*r = v;
-		*g = t;
-		*b = p;
-		break;
-	case 1:
-		*r = q;
-		*g = v;
-		*b = p;
-		break;
-	case 2:
-		*r = p;
-		*g = v;
-		*b = t;
-		break;
-	case 3:
-		*r = p;
-		*g = q;
-		*b = v;
-		break;
-	case 4:
-		*r = t;
-		*g = p;
-		*b = v;
-		break;
-	case 5:
-	default:
-		*r = v;
-		*g = p;
-		*b = q;
-		break;
+		case 0:
+			*r = v;
+			*g = t;
+			*b = p;
+			break;
+		case 1:
+			*r = q;
+			*g = v;
+			*b = p;
+			break;
+		case 2:
+			*r = p;
+			*g = v;
+			*b = t;
+			break;
+		case 3:
+			*r = p;
+			*g = q;
+			*b = v;
+			break;
+		case 4:
+			*r = t;
+			*g = p;
+			*b = v;
+			break;
+		case 5:
+		default:
+			*r = v;
+			*g = p;
+			*b = q;
+			break;
 	}
 }
 
@@ -419,10 +417,8 @@ double BV_to_T(double BV) {
 	return T;
 }
 
-
-int equalize_cfa_fit_with_coeffs(fits *fit, float coeff1, float coeff2,
-		int config) {
-	int row, col;
+int equalize_cfa_fit_with_coeffs(fits *fit, float coeff1, float coeff2, int config) {
+	unsigned int row, col;
 	float tmp1, tmp2;
 	if (fit->type == DATA_USHORT) {
 		WORD *data = fit->data;
@@ -478,15 +474,15 @@ static gboolean end_extract_channels(gpointer p) {
 	stop_processing_thread();
 	free(args);
 	set_cursor_waiting(FALSE);
-	
+
 	return FALSE;
 }
 
 static gpointer extract_channels_ushort(gpointer p) {
 	struct extract_channels_data *args = (struct extract_channels_data *) p;
 	WORD *buf[3] = { args->fit->pdata[RLAYER], args->fit->pdata[GLAYER],
-			args->fit->pdata[BLAYER] };
-	int i;
+		args->fit->pdata[BLAYER] };
+	size_t i, n = args->fit->naxes[0] * args->fit->naxes[1];
 	struct timeval t_start, t_end;
 	args->process = TRUE;
 
@@ -504,62 +500,62 @@ static gpointer extract_channels_ushort(gpointer p) {
 	gettimeofday(&t_start, NULL);
 
 	switch (args->type) {
-	/* RGB space: nothing to do */
-	case 0:
-		break;
-		/* HSL space */
-	case 1:
+		/* RGB space: nothing to do */
+		case 0:
+			break;
+			/* HSL space */
+		case 1:
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
-		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
-			double h, s, l;
-			double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
-			double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
-			double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
-			rgb_to_hsl(r, g, b, &h, &s, &l);
-			buf[RLAYER][i] = round_to_WORD(h * 360.0);	// TODO: what's that?
-			buf[GLAYER][i] = round_to_WORD(s * USHRT_MAX_DOUBLE);
-			buf[BLAYER][i] = round_to_WORD(l * USHRT_MAX_DOUBLE);
-		}
-		break;
-		/* HSV space */
-	case 2:
+			for (i = 0; i < n; i++) {
+				double h, s, l;
+				double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
+				double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
+				double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
+				rgb_to_hsl(r, g, b, &h, &s, &l);
+				buf[RLAYER][i] = round_to_WORD(h * 360.0);	// TODO: what's that?
+				buf[GLAYER][i] = round_to_WORD(s * USHRT_MAX_DOUBLE);
+				buf[BLAYER][i] = round_to_WORD(l * USHRT_MAX_DOUBLE);
+			}
+			break;
+			/* HSV space */
+		case 2:
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
-		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
-			double h, s, v;
-			double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
-			double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
-			double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
-			rgb_to_hsv(r, g, b, &h, &s, &v);
-			buf[RLAYER][i] = round_to_WORD(h * 360.0);
-			buf[GLAYER][i] = round_to_WORD(s * USHRT_MAX_DOUBLE);
-			buf[BLAYER][i] = round_to_WORD(v * USHRT_MAX_DOUBLE);
-		}
-		break;
-		/* CIE L*a*b */
-	case 3:
+			for (i = 0; i < n; i++) {
+				double h, s, v;
+				double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
+				double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
+				double b = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
+				rgb_to_hsv(r, g, b, &h, &s, &v);
+				buf[RLAYER][i] = round_to_WORD(h * 360.0);
+				buf[GLAYER][i] = round_to_WORD(s * USHRT_MAX_DOUBLE);
+				buf[BLAYER][i] = round_to_WORD(v * USHRT_MAX_DOUBLE);
+			}
+			break;
+			/* CIE L*a*b */
+		case 3:
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
-		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
-			double x, y, z, L, a, b;
-			double red = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
-			double green = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
-			double blue = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
-			rgb_to_xyz(red, green, blue, &x, &y, &z);
-			xyz_to_LAB(x, y, z, &L, &a, &b);
-			buf[RLAYER][i] = round_to_WORD(L / 100. * USHRT_MAX_DOUBLE);// 0 < L < 100
-			buf[GLAYER][i] = round_to_WORD(
-					((a + 128) / 255.) * USHRT_MAX_DOUBLE);	// -128 < a < 127
-			buf[BLAYER][i] = round_to_WORD(
-					((b + 128) / 255.) * USHRT_MAX_DOUBLE);	// -128 < b < 127
-		}
+			for (i = 0; i < n; i++) {
+				double x, y, z, L, a, b;
+				double red = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
+				double green = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
+				double blue = (double) buf[BLAYER][i] / USHRT_MAX_DOUBLE;
+				rgb_to_xyz(red, green, blue, &x, &y, &z);
+				xyz_to_LAB(x, y, z, &L, &a, &b);
+				buf[RLAYER][i] = round_to_WORD(L / 100. * USHRT_MAX_DOUBLE);// 0 < L < 100
+				buf[GLAYER][i] = round_to_WORD(
+						((a + 128) / 255.) * USHRT_MAX_DOUBLE);	// -128 < a < 127
+				buf[BLAYER][i] = round_to_WORD(
+						((b + 128) / 255.) * USHRT_MAX_DOUBLE);	// -128 < b < 127
+			}
 
 	}
-	for (i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 		save1fits16(args->channel[i], args->fit, i);
 	clearfits(args->fit);
 	gettimeofday(&t_end, NULL);
@@ -572,9 +568,9 @@ static gpointer extract_channels_ushort(gpointer p) {
 static gpointer extract_channels_float(gpointer p) {
 	struct extract_channels_data *args = (struct extract_channels_data *) p;
 	float *buf[3] = { args->fit->fpdata[RLAYER], args->fit->fpdata[GLAYER],
-			args->fit->fpdata[BLAYER] };
-	int i;
+		args->fit->fpdata[BLAYER] };
 	struct timeval t_start, t_end;
+	size_t i, n = args->fit->naxes[0] * args->fit->naxes[1];
 	args->process = TRUE;
 
 	if (args->fit->naxes[2] != 3) {
@@ -591,60 +587,60 @@ static gpointer extract_channels_float(gpointer p) {
 	gettimeofday(&t_start, NULL);
 
 	switch (args->type) {
-	/* RGB space: nothing to do */
-	case 0:
-		break;
-		/* HSL space */
-	case 1:
+		/* RGB space: nothing to do */
+		case 0:
+			break;
+			/* HSL space */
+		case 1:
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
-		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
-			double h, s, l;
-			double r = (double)buf[RLAYER][i];
-			double g = (double)buf[GLAYER][i];
-			double b = (double)buf[BLAYER][i];
-			rgb_to_hsl(r, g, b, &h, &s, &l);
-			buf[RLAYER][i] = (float)h;
-			buf[GLAYER][i] = (float)s;
-			buf[BLAYER][i] = (float)l;
-		}
-		break;
-		/* HSV space */
-	case 2:
+			for (i = 0; i < n; i++) {
+				double h, s, l;
+				double r = (double)buf[RLAYER][i];
+				double g = (double)buf[GLAYER][i];
+				double b = (double)buf[BLAYER][i];
+				rgb_to_hsl(r, g, b, &h, &s, &l);
+				buf[RLAYER][i] = (float)h;
+				buf[GLAYER][i] = (float)s;
+				buf[BLAYER][i] = (float)l;
+			}
+			break;
+			/* HSV space */
+		case 2:
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
-		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
-			double h, s, v;
-			double r = (double)buf[RLAYER][i];
-			double g = (double)buf[GLAYER][i];
-			double b = (double)buf[BLAYER][i];
-			rgb_to_hsv(r, g, b, &h, &s, &v);
-			buf[RLAYER][i] = (float)h;
-			buf[GLAYER][i] = (float)s;
-			buf[BLAYER][i] = (float)v;
-		}
-		break;
-		/* CIE L*a*b */
-	case 3:
+			for (i = 0; i < n; i++) {
+				double h, s, v;
+				double r = (double)buf[RLAYER][i];
+				double g = (double)buf[GLAYER][i];
+				double b = (double)buf[BLAYER][i];
+				rgb_to_hsv(r, g, b, &h, &s, &v);
+				buf[RLAYER][i] = (float)h;
+				buf[GLAYER][i] = (float)s;
+				buf[BLAYER][i] = (float)v;
+			}
+			break;
+			/* CIE L*a*b */
+		case 3:
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
-		for (i = 0; i < args->fit->rx * args->fit->ry; i++) {
-			double x, y, z, L, a, b;
-			double red = (double)buf[RLAYER][i];
-			double green = (double)buf[GLAYER][i];
-			double blue = (double)buf[BLAYER][i];
-			rgb_to_xyz(red, green, blue, &x, &y, &z);
-			xyz_to_LAB(x, y, z, &L, &a, &b);
-			buf[RLAYER][i] = (float)(L / 100.);		// 0 < L < 100
-			buf[GLAYER][i] = (float)((a + 128.) / 255.);	// -128 < a < 127
-			buf[BLAYER][i] = (float)((b + 128.) / 255.);	// -128 < b < 127
-		}
+			for (i = 0; i < n; i++) {
+				double x, y, z, L, a, b;
+				double red = (double)buf[RLAYER][i];
+				double green = (double)buf[GLAYER][i];
+				double blue = (double)buf[BLAYER][i];
+				rgb_to_xyz(red, green, blue, &x, &y, &z);
+				xyz_to_LAB(x, y, z, &L, &a, &b);
+				buf[RLAYER][i] = (float)(L / 100.);		// 0 < L < 100
+				buf[GLAYER][i] = (float)((a + 128.) / 255.);	// -128 < a < 127
+				buf[BLAYER][i] = (float)((b + 128.) / 255.);	// -128 < b < 127
+			}
 
 	}
-	for (i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 		save1fits32(args->channel[i], args->fit, i);
 	clearfits(args->fit);
 	gettimeofday(&t_end, NULL);
@@ -693,9 +689,9 @@ void on_button_bkg_selection_clicked(GtkButton *button, gpointer user_data) {
 
 void initialize_calibration_interface() {
 	static GtkAdjustment *selection_black_adjustment[4] = { NULL, NULL, NULL,
-			NULL };
+		NULL };
 	static GtkAdjustment *selection_white_adjustment[4] = { NULL, NULL, NULL,
-			NULL };
+		NULL };
 
 	if (!selection_black_adjustment[0]) {
 		selection_black_adjustment[0] = GTK_ADJUSTMENT(
@@ -738,7 +734,8 @@ void initialize_calibration_interface() {
 
 /* This function equalize the background by giving equal value for all layers */
 static void background_neutralize(fits* fit, rectangle black_selection) {
-	int chan, i;
+	int chan;
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
 	imstats* stats[3];
 	double ref = 0;
 
@@ -758,7 +755,7 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 		for (chan = 0; chan < 3; chan++) {
 			double offset = stats[chan]->mean - ref;
 			WORD *buf = fit->pdata[chan];
-			for (i = 0; i < fit->rx * fit->ry; i++) {
+			for (i = 0; i < n; i++) {
 				buf[i] = round_to_WORD((double)buf[i] - offset);
 			}
 			free_stats(stats[chan]);
@@ -766,10 +763,10 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 	}
 	else if (fit->type == DATA_FLOAT) {
 		for (chan = 0; chan < 3; chan++) {
-			double offset = stats[chan]->mean - ref;
+			float offset = stats[chan]->mean - ref;
 			float *buf = fit->fpdata[chan];
-			for (i = 0; i < fit->rx * fit->ry; i++) {
-				buf[i] = (float)((double)buf[i] - offset);
+			for (i = 0; i < n; i++) {
+				buf[i] = buf[i] - offset;
 			}
 			free_stats(stats[chan]);
 		}
@@ -919,7 +916,7 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 	}
 
 	int rc = (kw[0] > kw[1]) ? ((kw[0] > kw[2]) ? 0 : 2) :
-					((kw[1] > kw[2]) ? 1 : 2);
+		((kw[1] > kw[2]) ? 1 : 2);
 	for (chan = 0; chan < 3; chan++) {
 		if (chan == rc)
 			tmp[chan] = 1.0;
@@ -935,18 +932,18 @@ static void get_coeff_for_wb(fits *fit, rectangle white, rectangle black,
 }
 
 static int calibrate(fits *fit, int layer, double kw, double bg, double norm) {
-	int i;
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
 	if (fit->type == DATA_USHORT) {
 		double bgNorm = bg * norm;
 		WORD *buf = fit->pdata[layer];
-		for (i = 0; i < fit->rx * fit->ry; ++i) {
+		for (i = 0; i < n; ++i) {
 			buf[i] = round_to_WORD((buf[i] - bgNorm) * kw + bgNorm);
 		}
 	}
 	else if (fit->type == DATA_FLOAT) {
 		float *buf = fit->fpdata[layer];
-		for (i = 0; i < fit->rx * fit->ry; ++i) {
-			buf[i] = (float)((double)buf[i] - bg) * kw + bg;
+		for (i = 0; i < n; ++i) {
+			buf[i] = (float)(((double)buf[i] - bg) * kw + bg);
 		}
 	}
 	else return 1;
@@ -1070,26 +1067,22 @@ void on_checkbutton_manual_calibration_toggled(GtkToggleButton *togglebutton,
 }
 
 static int pos_to_neg(fits *fit) {
-	int chan, i;
+	size_t i, n = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 	if (fit->type == DATA_USHORT) {
-		WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER],
-			fit->pdata[BLAYER] };
-
 		WORD norm = (WORD)get_normalized_value(fit);
-		for (chan = 0; chan < fit->naxes[2]; chan ++) {
-			for (i = 0; i < fit->rx * fit->ry; i++) {
-				buf[chan][i] = norm - buf[chan][i];
-			}
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread)
+#endif
+		for (i = 0; i < n; i++) {
+			fit->data[i] = norm - fit->data[i];
 		}
 	}
 	else if (fit->type == DATA_FLOAT) {
-		float *buf[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER],
-			fit->fpdata[BLAYER] };
-
-		for (chan = 0; chan < fit->naxes[2]; chan ++) {
-			for (i = 0; i < fit->rx * fit->ry; i++) {
-				buf[chan][i] = 1.0f - buf[chan][i];
-			}
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread)
+#endif
+		for (i = 0; i < n; i++) {
+			fit->fdata[i] = 1.0f - fit->fdata[i];
 		}
 	}
 	else return 1;

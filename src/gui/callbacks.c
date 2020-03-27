@@ -821,7 +821,7 @@ void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_da
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("Cannot convert a sequence file"),
 				_("A sequence file cannot be converted to 32 bits. This operation can only be done on a single file."));
 	} else {
-		int ndata = gfit.rx * gfit.ry * gfit.naxes[2];
+		size_t ndata = gfit.naxes[0] * gfit.naxes[1] * gfit.naxes[2];
 
 		if (gfit.type == DATA_FLOAT) {
 			gboolean convert = siril_confirm_dialog(_("Precision loss"),

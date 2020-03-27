@@ -85,8 +85,7 @@ static double poly_1(gsl_vector *c, double x, double y) {
 	return (value);
 }
 
-static double *computeBackground(GSList *list, int channel, size_t width, size_t height, poly_order order, gchar **err) {
-	size_t n, i, j;
+static double *computeBackground(GSList *list, int channel, unsigned int width, unsigned int height, poly_order order, gchar **err) {
 	size_t k = 0;
 	double chisq, pixel;
 	double row, col;
@@ -94,7 +93,7 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 	gsl_vector *y, *w, *c;
 	GSList *l;
 
-	n = g_slist_length(list);
+	guint n = g_slist_length(list);
 
 	int nbParam;
 	switch (order) {
@@ -192,8 +191,8 @@ static double *computeBackground(GSList *list, int channel, size_t width, size_t
 		return NULL;
 	}
 
-	for (i = 0; i < height; i++) {
-		for (j = 0; j < width; j++) {
+	for (unsigned int i = 0; i < height; i++) {
+		for (unsigned int j = 0; j < width; j++) {
 			switch (order) {
 			case POLY_1:
 				pixel = poly_1(c, (double) j, (double) i);
@@ -229,11 +228,20 @@ static background_sample *get_sample(float *buf, const int xx,
 	double *data;
 	size_t size = SAMPLE_SIZE * SAMPLE_SIZE;
 	background_sample *sample = (background_sample *) g_malloc(sizeof(background_sample));
+	if (!sample) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
 
 	radius = (int) (SAMPLE_SIZE / 2);
 
 	int n = 0;
 	data = calloc(size, sizeof(double));
+	if (!data) {
+		free(sample);
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
 	for (y = yy - radius; y <= yy + radius; y ++) {
 		for (x = xx - radius; x <= xx + radius; x ++) {
 			if (y >= 0 && y < h) {
@@ -266,6 +274,10 @@ static double get_sample_median(double *buf, const int xx,
 
 	n = 0;
 	data = calloc(size, sizeof(double));
+	if (!data) {
+		PRINT_ALLOC_ERR;
+		return -1.0;
+	}
 	for (y = yy - radius; y <= yy + radius; y ++) {
 		for (x = xx - radius; x <= xx + radius; x ++) {
 			if (y >= 0 && y < h) {
@@ -300,8 +312,12 @@ static long dither(long max) {
 }
 
 static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) {
-	int i;
-	double *image = malloc(fit->rx * fit->ry * sizeof(double));
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
+	double *image = malloc(n * sizeof(double));
+	if (!image) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
 
 	if (add_dither) {
 		/* initialize random seed: */
@@ -310,7 +326,7 @@ static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) 
 
 	mirrorx(fit, FALSE);
 	/*  copy data to new array and normalize pixel data */
-	for (i = 0; i < fit->rx * fit->ry; i++) {
+	for (i = 0; i < n; i++) {
 		if (fit->type == DATA_USHORT) {
 			image[i] = (double) fit->pdata[channel][i] / USHRT_MAX_DOUBLE;
 		} else if (fit->type == DATA_FLOAT) {
@@ -327,15 +343,17 @@ static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) 
 }
 
 static float *convert_fits_to_luminance(fits *fit) {
-	int nx = fit->rx;
-	int ny = fit->ry;
-	int i;
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
 	/* allocating memory to image */
-	float *image = malloc(nx * ny * sizeof(float));
+	float *image = malloc(n * sizeof(float));
+	if (!image) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
 
 	mirrorx(fit, FALSE);
 
-	for (i = 0; i < ny * nx; i++) {
+	for (i = 0; i < n; i++) {
 		if (fit->naxes[2] > 1) {
 			float r, g, b;
 			if (fit->type == DATA_USHORT) {
@@ -363,18 +381,17 @@ static float *convert_fits_to_luminance(fits *fit) {
 }
 
 static void convert_img_to_fits(double *image, fits *fit, int channel) {
-	int i;
-
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
 	mirrorx(fit, FALSE);
 
 	if (fit->type == DATA_USHORT) {
 		WORD *buf = fit->pdata[channel];
-		for (i = 0; i < fit->rx * fit->ry; i++) {
+		for (i = 0; i < n; i++) {
 			buf[i] = round_to_WORD(image[i] * USHRT_MAX_DOUBLE);
 		}
 	} else if (fit->type == DATA_FLOAT) {
 		float *buf = fit->fpdata[channel];
-		for (i = 0; i < fit->rx * fit->ry; i++) {
+		for (i = 0; i < n; i++) {
 			buf[i] = (float)image[i];
 		}
 	}
@@ -407,14 +424,19 @@ static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, si
 	int nx = fit->rx;
 	int ny = fit->ry;
 	int dist, starty, startx;
-	int x, y;
+	unsigned int x, y;
 	float median, mad0, *work;
 	size_t radius;
+	size_t n = fit->naxes[0] * fit->naxes[1];
 	GSList *list = NULL;
 
 	float *image = convert_fits_to_luminance(fit);
 
-	work = malloc(nx * ny * sizeof(float));
+	work = malloc(n * sizeof(float));
+	if (!work) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
 
 	dist = (int) (nx / nb_per_line);
 	radius = size / 2;
@@ -493,8 +515,8 @@ static double get_tolerance_value() {
 	return gtk_range_get_value(tol);
 }
 
-static void remove_gradient(double *img, double *background, int ndata, int type) {
-	int i;
+static void remove_gradient(double *img, double *background, size_t ndata, int type) {
+	size_t i;
 	double mean;
 
 	mean = gsl_stats_mean(img, 1, ndata);
@@ -633,7 +655,7 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 		/* remove background */
 		const char *c_name = vport_number_to_name(channel);
 		siril_log_message(_("Background extraction from channel %s.\n"), c_name);
-		remove_gradient(image[channel], background, gfit.rx * gfit.ry, correction);
+		remove_gradient(image[channel], background, gfit.naxes[0] * gfit.naxes[1], correction);
 		convert_img_to_fits(image[channel], &gfit, channel);
 
 		/* free memory */

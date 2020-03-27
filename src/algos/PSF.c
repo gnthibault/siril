@@ -56,10 +56,14 @@
 const double radian_conversion = ((3600.0 * 180.0) / M_PI) / 1.0E3;
 
 static gsl_matrix *removeHotPixels(gsl_matrix *in) {
-	int width = in->size2;
-	int height = in->size1;
-	int x, y;
+	size_t width = in->size2;
+	size_t height = in->size1;
+	size_t x, y;
 	gsl_matrix *out = gsl_matrix_alloc (in->size1, in->size2);
+	if (!out) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
 
 	gsl_matrix_memcpy (out, in);
 	for (y = 0; y < height; y++) {
@@ -82,6 +86,7 @@ static gsl_vector* psf_init_data(gsl_matrix* z, double bg) {
 	/* find maximum */
 	/* first we remove hot pixels in the matrix */
 	gsl_matrix *m_tmp = removeHotPixels(z);
+	if (!m_tmp) return NULL;
 	max = gsl_matrix_max(m_tmp);
 	gsl_matrix_max_index(m_tmp, &i, &j);
 	gsl_matrix_free(m_tmp);
@@ -301,13 +306,19 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background,
 	size_t NbCols = z->size2;
 	const size_t p = 6;			// Number of parameters fitted
 	const size_t n = NbRows * NbCols;
-	fitted_PSF *psf = malloc(sizeof(fitted_PSF));
 	gsl_vector *MaxV = psf_init_data(z, background);
+	if (!MaxV)
+		return NULL;
 	int status;
 	unsigned int iter = 0;
 	gsl_matrix *covar = gsl_matrix_alloc(p, p);
 	double *y = malloc(n * sizeof(double));
 	double *sigma = malloc(n * sizeof(double));
+	fitted_PSF *psf = malloc(sizeof(fitted_PSF));
+	if (!y || !sigma || !psf) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
 	struct PSF_data d = { n, y, sigma, NbRows, NbCols, 0 };
 	gsl_multifit_function_fdf f;
 	const gsl_rng_type * type;
@@ -420,12 +431,16 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf, gboolean fo
 	const size_t p = 7;			// Number of parameters fitted
 	const size_t n = NbRows * NbCols;
 	g_assert (n > 0);
-	fitted_PSF *psf_angle = malloc(sizeof(fitted_PSF));
 	int status;
 	unsigned int iter = 0;
+	fitted_PSF *psf_angle = malloc(sizeof(fitted_PSF));
 	gsl_matrix *covar = gsl_matrix_alloc(p, p);
 	double *y = malloc(n * sizeof(double));
 	double *sigma = malloc(n * sizeof(double));
+	if (!psf_angle || !covar || !y || !sigma) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
 	struct PSF_data d = { n, y, sigma, NbRows, NbCols, 0 };
 	gsl_multifit_function_fdf f_angle;
 	double x_init[7] = { psf->B, psf->A, psf->x0, psf->y0, psf->sx, psf->sy, 0 };

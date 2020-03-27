@@ -764,7 +764,7 @@ void luminance_and_colors_align_and_compose() {
 	if (no_color_available()) {
 		/* luminance only: we copy its data to all result layers */
 		int i;
-		unsigned int nbdata = gfit.rx * gfit.ry;
+		size_t nbdata = gfit.rx * gfit.ry;
 		fprintf(stdout, "luminance-only, no composition\n");
 		for (i=0; i<3; i++)
 			memcpy(gfit.fpdata[i], layers[0]->the_fit.fdata, nbdata*sizeof(float));
@@ -824,7 +824,7 @@ void luminance_and_colors_align_and_compose() {
 			rgb_pixel_limiter(&pixel);
 
 			/* and store in gfit */
-			int dst_index = y * gfit.rx + x;
+			size_t dst_index = y * gfit.rx + x;
 			gfit.fpdata[RLAYER][dst_index] = pixel.red;
 			gfit.fpdata[GLAYER][dst_index] = pixel.green;
 			gfit.fpdata[BLAYER][dst_index] = pixel.blue;

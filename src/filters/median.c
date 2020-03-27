@@ -300,7 +300,12 @@ static gpointer median_filter_float(gpointer p) {
 	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
 
-	float *temp = calloc(ny * nx, sizeof(float)); // we need a temporary buffer
+	size_t alloc_size = args->fit->naxes[0] * args->fit->naxes[1] * sizeof(float);
+	float *temp = calloc(1, alloc_size); // we need a temporary buffer
+	if (!temp) {
+		PRINT_ALLOC_ERR;
+		return GINT_TO_POINTER(-1);
+	}
 	float amountf = args->amount;
 	for (int layer = 0; layer < args->fit->naxes[2]; layer++) {
 		for (int iter = 0; iter < args->iterations; ++iter) {

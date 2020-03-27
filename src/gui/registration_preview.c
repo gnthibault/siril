@@ -82,8 +82,8 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		pango_layout_get_pixel_size(layout, &w, &h);
 		gtk_widget_get_allocation(widget, &allocation);
 
-		scale = MIN(((gdouble ) allocation.width / 3.0) / (gdouble ) w,
-				((gdouble ) allocation.height / 3.0) / (gdouble ) h);
+		scale = MIN(((gdouble) allocation.width / 3.0) / (gdouble ) w,
+				((gdouble) allocation.height / 3.0) / (gdouble ) h);
 
 		gtk_style_context_get_color(context, state, &color);
 		gdk_cairo_set_source_rgba(cr, &color);

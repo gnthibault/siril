@@ -526,7 +526,6 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 
 int get_size_star_tab() {
 	int i = 0;
-
 	while (com.stars[i])
 		i++;
 	return i;

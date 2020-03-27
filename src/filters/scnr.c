@@ -52,7 +52,7 @@ static gboolean end_scnr(gpointer p) {
 gpointer scnr(gpointer p) {
 	struct scnr_data *args = (struct scnr_data *) p;
 	double m;
-	int i, nbdata = args->fit->rx * args->fit->ry;
+	size_t i, nbdata = args->fit->naxes[0] * args->fit->naxes[1];
 	struct timeval t_start, t_end;
 	double norm = get_normalized_value(args->fit);
 

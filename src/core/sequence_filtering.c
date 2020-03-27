@@ -291,6 +291,10 @@ int stack_fill_list_of_unfiltered_images(struct stacking_args *args) {
 		args->image_indices = newptr;
 	} else {
 		args->image_indices = malloc(args->nb_images_to_stack * sizeof(int));
+		if (!args->image_indices) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
 	}
 
 	for (i = 0, j = 0; i < args->seq->number; i++) {

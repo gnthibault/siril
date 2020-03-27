@@ -40,7 +40,7 @@ static gboolean end_noise(gpointer p) {
 	struct noise_data *args = (struct noise_data *) p;
 	stop_processing_thread();
 	set_cursor_waiting(FALSE);
-	
+
 	if (args->verbose) {
 		struct timeval t_end;
 		gettimeofday(&t_end, NULL);

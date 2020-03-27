@@ -494,9 +494,10 @@ int process_wrecons(int nb) {
 		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
 		if (gfit.type == DATA_USHORT) {
 			wavelet_reconstruct_file(dir[i], coef, gfit.pdata[i]);
-		} else {
+		} else if (gfit.type == DATA_FLOAT) {
 			wavelet_reconstruct_file_float(dir[i], coef, gfit.fpdata[i]);
 		}
+		else return 1;
 		g_free(dir[i]);
 	}
 
@@ -538,6 +539,10 @@ int process_wavelet(int nb) {
 
 	if (gfit.type == DATA_USHORT) {
 		float *Imag = f_vector_alloc(gfit.rx * gfit.ry);
+		if (!Imag) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
 
 		for (chan = 0; chan < nb_chan; chan++) {
 			dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan],	NULL);
@@ -547,7 +552,7 @@ int process_wavelet(int nb) {
 		}
 
 		free(Imag);
-	} else {
+	} else if (gfit.type == DATA_FLOAT) {
 		for (chan = 0; chan < nb_chan; chan++) {
 			dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan],	NULL);
 			wavelet_transform_file_float(gfit.fpdata[chan], gfit.ry, gfit.rx, dir[chan],
@@ -555,6 +560,7 @@ int process_wavelet(int nb) {
 			g_free(dir[chan]);
 		}
 	}
+	else return 1;
 	return 0;
 }
 

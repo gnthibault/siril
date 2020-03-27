@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #include <stdlib.h>
 
@@ -77,34 +77,34 @@ static int satu_update_preview() {
 	struct enhance_saturation_data *args = malloc(sizeof(struct enhance_saturation_data));
 
 	switch (satu_hue_type) {
-	case 0:		// Pink-Red to Red-Orange
-		args->h_min = 346.0;
-		args->h_max = 20.0;
-		break;
-	case 1:		// Orange-Brown to Yellow
-		args->h_min = 21.0;
-		args->h_max = 60.0;
-		break;
-	case 2:		// Yellow-Green to Green-Cyan
-		args->h_min = 61.0;
-		args->h_max = 200.0;
-		break;
-	case 3:		// Cyan
-		args->h_min = 170.0;
-		args->h_max = 200.0;
-		break;
-	case 4:		// Cyan-Blue to Blue-Magenta
-		args->h_min = 201.0;
-		args->h_max = 280.0;
-		break;
-	case 5:		// Magenta to Pink
-		args->h_min = 281.0;
-		args->h_max = 345.0;
-		break;
-	default:
-	case 6:		// Global
-		args->h_min = 0.0;
-		args->h_max = 360.0;
+		case 0:		// Pink-Red to Red-Orange
+			args->h_min = 346.0;
+			args->h_max = 20.0;
+			break;
+		case 1:		// Orange-Brown to Yellow
+			args->h_min = 21.0;
+			args->h_max = 60.0;
+			break;
+		case 2:		// Yellow-Green to Green-Cyan
+			args->h_min = 61.0;
+			args->h_max = 200.0;
+			break;
+		case 3:		// Cyan
+			args->h_min = 170.0;
+			args->h_max = 200.0;
+			break;
+		case 4:		// Cyan-Blue to Blue-Magenta
+			args->h_min = 201.0;
+			args->h_max = 280.0;
+			break;
+		case 5:		// Magenta to Pink
+			args->h_min = 281.0;
+			args->h_max = 345.0;
+			break;
+		default:
+		case 6:		// Global
+			args->h_min = 0.0;
+			args->h_max = 360.0;
 	}
 
 	args->input = satu_show_preview ? get_preview_gfit_backup() : &gfit;
@@ -140,12 +140,11 @@ void on_satu_dialog_close(GtkDialog *dialog, gpointer user_data) {
 gpointer enhance_saturation_ushort(gpointer p) {
 	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
 	double bg = 0;
-	int i;
 
 	WORD *in[3] = { args->input->pdata[RLAYER], args->input->pdata[GLAYER],
-			args->input->pdata[BLAYER] };
+		args->input->pdata[BLAYER] };
 	WORD *out[3] = { args->output->pdata[RLAYER], args->output->pdata[GLAYER],
-			args->output->pdata[BLAYER] };
+		args->output->pdata[BLAYER] };
 
 	args->h_min /= 360.0;
 	args->h_max /= 360.0;
@@ -162,10 +161,11 @@ gpointer enhance_saturation_ushort(gpointer p) {
 		free_stats(stat);
 	}
 
+	size_t i, n = args->input->naxes[0] * args->input->naxes[1];
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
-	for (i = 0; i < args->input->rx * args->input->ry; i++) {
+	for (i = 0; i < n; i++) {
 		double h, s, l;
 		double r = (double) in[RLAYER][i] / USHRT_MAX_DOUBLE;
 		double g = (double) in[GLAYER][i] / USHRT_MAX_DOUBLE;
@@ -202,12 +202,11 @@ gpointer enhance_saturation_ushort(gpointer p) {
 static gpointer enhance_saturation_float(gpointer p) {
 	struct enhance_saturation_data *args = (struct enhance_saturation_data *) p;
 	float bg = 0;
-	int i;
 
 	float *in[3] = { args->input->fpdata[RLAYER], args->input->fpdata[GLAYER],
-			args->input->fpdata[BLAYER] };
+		args->input->fpdata[BLAYER] };
 	float *out[3] = { args->output->fpdata[RLAYER], args->output->fpdata[GLAYER],
-			args->output->fpdata[BLAYER] };
+		args->output->fpdata[BLAYER] };
 
 	args->h_min /= 60.0;
 	args->h_max /= 60.0;
@@ -229,10 +228,11 @@ static gpointer enhance_saturation_float(gpointer p) {
 	float h_min = args->h_min;
 	float h_max = args->h_max;
 
+	size_t i, n = args->input->naxes[0] * args->input->naxes[1];
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(dynamic, args->input->rx * 16)
 #endif
-	for (i = 0; i < args->input->rx * args->input->ry; i++) {
+	for (i = 0; i < n; i++) {
 		float h, s, l;
 		float r = in[RLAYER][i];
 		float g = in[GLAYER][i];
@@ -250,7 +250,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 				}
 			}
 			s = s > 1.f ? 1.f : s;
-    		hsl_to_rgb_float_sat(h, s, l, &r, &g, &b);
+			hsl_to_rgb_float_sat(h, s, l, &r, &g, &b);
 		}
 		out[RLAYER][i] = r;
 		out[GLAYER][i] = g;

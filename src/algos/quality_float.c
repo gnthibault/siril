@@ -59,6 +59,10 @@ double QualityEstimate_float(fits *fit, int layer) {
 
 	// Allocate the intermediate buffer. Will be 16bpp greyscale
 	buf = calloc((region_w / QSUBSAMPLE_MIN + 1) * (region_h / QSUBSAMPLE_MIN + 1), sizeof(float));
+	if (!buf) {
+		PRINT_ALLOC_ERR;
+		return -1.0;
+	}
 
 	subsample = QSUBSAMPLE_MIN;
 	while (subsample <= QSUBSAMPLE_MAX) {
@@ -170,6 +174,10 @@ static double Gradient(float *buf, int width, int height) {
 	double val;
 	float threshold = THRESHOLD_FLOAT;
 	unsigned char *map = calloc(width * height, sizeof(unsigned char));
+	if (!map) {
+		PRINT_ALLOC_ERR;
+		return -1.0;
+	}
 
 	// pass 1 locate all pixels > threshold and flag the 3x3 region
 	// around them for inclusion in the algorithm

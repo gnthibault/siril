@@ -164,22 +164,21 @@ static void _update_entry_text() {
 	g_free(buffer);
 }
 
-static void _update_clipped_pixels(int data) {
+static void _update_clipped_pixels(size_t data) {
 	static GtkEntry *clip_high = NULL, *clip_low = NULL;
-	float tmp;
+	double tmp;
 	char buffer[16];
 
 	if (clip_high == NULL) {
 		clip_high = GTK_ENTRY(lookup_widget("clip_highlights"));
 		clip_low = GTK_ENTRY(lookup_widget("clip_shadows"));
 	}
-	tmp = (float)clipped[1] * 100.f / (float)data;
+	tmp = (double)clipped[1] * 100.0 / (double)data;
 	g_snprintf(buffer, sizeof(buffer), "%.3f%%", tmp);
 	gtk_entry_set_text(clip_high, buffer);
-	tmp = (float)clipped[0] * 100.f / (float)data;
+	tmp = (double)clipped[0] * 100.0 / (double)data;
 	g_snprintf(buffer, sizeof(buffer), "%.3f%%", tmp);
 	gtk_entry_set_text(clip_low, buffer);
-
 }
 
 static int is_histogram_visible() {
@@ -298,7 +297,7 @@ gsl_histogram* computeHisto(fits *fit, int layer) {
 	size = get_histo_size(fit);
 	gsl_histogram *histo = gsl_histogram_alloc(size + 1);
 	gsl_histogram_set_ranges_uniform(histo, 0, fit->type == DATA_FLOAT ? 1.0 + 1.0 / size : size + 1);
-	ndata = fit->rx * fit->ry;
+	ndata = fit->naxes[0] * fit->naxes[1];
 
 #ifdef _OPENMP
 #pragma omp parallel num_threads(com.max_thread)
@@ -525,35 +524,32 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 }
 
 static void apply_mtf_to_fits(fits *from, fits *to) {
-	int i, chan, nb_chan, ndata;
+	size_t i, ndata;
 
 	g_assert(from->naxes[2] == 1 || from->naxes[2] == 3);
-	nb_chan = from->naxes[2];
-	ndata = from->rx * from->ry;
+	ndata = from->naxes[0] * from->naxes[1] * from->naxes[2];
 	g_assert(from->type == to->type);
 
-	for (chan = 0; chan < nb_chan; chan++) {
-		if (from->type == DATA_USHORT) {
-			float norm = (float)get_normalized_value(from);
+	if (from->type == DATA_USHORT) {
+		float norm = (float)get_normalized_value(from);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
 #endif
-			for (i = 0; i < ndata; i++) {
-				float pxl = ((float)from->pdata[chan][i] / norm);
-				float mtf = MTF(pxl, _midtones, _shadows, _highlights);
-				to->pdata[chan][i] = round_to_WORD(mtf * norm);
-			}
+		for (i = 0; i < ndata; i++) {
+			float pxl = (float)from->data[i] / norm;
+			float mtf = MTF(pxl, _midtones, _shadows, _highlights);
+			to->data[i] = round_to_WORD(mtf * norm);
 		}
-		else if (from->type == DATA_FLOAT) {
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
-#endif
-			for (i = 0; i < ndata; i++) {
-				to->fpdata[chan][i] = MTF(from->fpdata[chan][i], _midtones, _shadows, _highlights);
-			}
-		}
-		else return;
 	}
+	else if (from->type == DATA_FLOAT) {
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#endif
+		for (i = 0; i < ndata; i++) {
+			to->fdata[i] = MTF(from->fdata[i], _midtones, _shadows, _highlights);
+		}
+	}
+	else return;
 
 	invalidate_stats_from_fit(to);
 }
@@ -563,11 +559,13 @@ static void apply_mtf_to_histo(gsl_histogram *histo, float norm,
 	gsl_histogram *mtf_histo;
 	unsigned short i;
 
-	mtf_histo = gsl_histogram_alloc((size_t)norm + 1);
+	size_t int_norm = (size_t)norm;
+
+	mtf_histo = gsl_histogram_alloc(int_norm + 1);
 	gsl_histogram_set_ranges_uniform(mtf_histo, 0, norm);
 
 // #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) // disabled because of ISSUE #136 (https://free-astro.org/bugs/view.php?id=136)
-	for (i = 0; i < round_to_WORD(norm); i++) {
+	for (i = 0; i < int_norm; i++) {
 		WORD mtf;
 		float binval = gsl_histogram_get(histo, i);
 		float pxl = ((float)i / norm);
@@ -614,15 +612,14 @@ static void queue_window_redraw() {
 }
 
 static void update_histo_mtf() {
-	unsigned int i, data = 0;
 	float norm = (float)gsl_histogram_bins(com.layers_hist[0]) - 1;
 
 	_init_clipped_pixels();
-	for (i = 0; i < gfit.naxes[2]; i++) {
+	for (long i = 0; i < gfit.naxes[2]; i++) {
 		gsl_histogram_memcpy(com.layers_hist[i], hist_backup[i]);
 		apply_mtf_to_histo(com.layers_hist[i], norm, _midtones, _shadows, _highlights);
 	}
-	data = gfit.rx * gfit.ry * gfit.naxes[2];
+	size_t data = gfit.naxes[0] * gfit.naxes[1] * gfit.naxes[2];
 	_update_clipped_pixels(data);
 	queue_window_redraw();
 }
@@ -682,10 +679,9 @@ gsl_histogram* computeHisto_Selection(fits* fit, int layer,
 
 void compute_histo_for_gfit() {
 	int nb_layers = 3;
-	int i;
 	if (gfit.naxis == 2)
 		nb_layers = 1;
-	for (i = 0; i < nb_layers; i++) {
+	for (int i = 0; i < nb_layers; i++) {
 		if (!com.layers_hist[i])
 			set_histogram(computeHisto(&gfit, i), i);
 	}
@@ -693,8 +689,7 @@ void compute_histo_for_gfit() {
 }
 
 void invalidate_gfit_histogram() {
-	int layer;
-	for (layer = 0; layer < MAXVPORT; layer++) {
+	for (int layer = 0; layer < MAXVPORT; layer++) {
 		set_histogram(NULL, layer);
 	}
 }
@@ -707,8 +702,7 @@ void update_gfit_histogram_if_needed() {
 }
 
 void clear_histograms() {
-	int i;
-	for (i = 0; i < MAXVPORT; i++) {
+	for (int i = 0; i < MAXVPORT; i++) {
 		set_histogram(NULL, i);
 	}
 	// TODO: call histo_close? should it be done by the caller?

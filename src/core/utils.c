@@ -230,13 +230,12 @@ float ushort_to_float_bitpix(fits *fit, WORD value) {
  * @param ndata
  * @return
  */
-WORD *float_buffer_to_ushort(float *buffer, long ndata) {
-	int i;
+WORD *float_buffer_to_ushort(float *buffer, size_t ndata) {
 	WORD *buf = malloc(ndata * sizeof(WORD));
 	if (!buf) {
 		PRINT_ALLOC_ERR;
 	} else {
-		for (i = 0; i < ndata; i++) {
+		for (size_t i = 0; i < ndata; i++) {
 			buf[i] = float_to_ushort_range(buffer[i]);
 		}
 	}
@@ -249,13 +248,12 @@ WORD *float_buffer_to_ushort(float *buffer, long ndata) {
  * @param ndata
  * @return
  */
-float *ushort_buffer_to_float(WORD *buffer, long ndata) {
-	long i;
+float *ushort_buffer_to_float(WORD *buffer, size_t ndata) {
 	float *buf = malloc(ndata * sizeof(float));
 	if (!buf) {
 		PRINT_ALLOC_ERR;
 	} else {
-		for (i = 0; i < ndata; i++) {
+		for (size_t i = 0; i < ndata; i++) {
 			buf[i] = ushort_to_float_range(buffer[i]);
 		}
 	}

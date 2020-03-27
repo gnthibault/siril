@@ -32,7 +32,7 @@
 
 static int soper_ushort_to_ushort(fits *a, float scalar, image_operator oper) {
 	WORD *data;
-	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+	size_t i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 	if (!n) return 1;
 	data = a->data;
 	if (oper == OPER_DIV) {
@@ -67,7 +67,7 @@ static int soper_ushort_to_ushort(fits *a, float scalar, image_operator oper) {
 static int soper_ushort_to_float(fits *a, float scalar, image_operator oper) {
 	WORD *data;
 	float *result;
-	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+	size_t i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 	if (!n) return 1;
 	data = a->data;
 	result = malloc(n * sizeof(float));
@@ -107,7 +107,7 @@ static int soper_ushort_to_float(fits *a, float scalar, image_operator oper) {
 
 static int soper_float(fits *a, float scalar, image_operator oper) {
 	float *data;
-	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+	size_t i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 	if (!n) return 1;
 	data = a->fdata;
 	if (oper == OPER_DIV) {
@@ -157,7 +157,7 @@ int soper(fits *a, float scalar, image_operator oper, gboolean conv_to_float) {
 }
 
 static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor) {
-	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+	size_t i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 
 	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
 		siril_log_message(_("imoper: images must have same dimensions\n"));
@@ -245,7 +245,7 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 }
 
 int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
-	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+	size_t i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 	float *result;
 
 	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
@@ -322,7 +322,7 @@ int siril_fdiv(fits *a, fits *b, float coef, gboolean allow_32bits) {
 
 // a = max(a, b)
 int addmax(fits *a, fits *b) {
-	long i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+	size_t i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 
 	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
 		siril_log_message(_("addmax: images must have same dimensions\n"));

@@ -62,7 +62,6 @@ static int asinh_update_preview() {
 }
 
 int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBspace) {
-	int i;
 	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 	double norm, asinh_beta, factor_red, factor_green, factor_blue;
 
@@ -72,11 +71,12 @@ int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBspace) {
 	factor_green = RGBspace ? 0.7152 : 0.3333;
 	factor_blue = RGBspace ? 0.0722 : 0.3333;
 
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
 	if (fit->naxes[2] > 1) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->rx * 16)
 #endif
-		for (i = 0; i < fit->ry * fit->rx; i++) {
+		for (i = 0; i < n; i++) {
 			double x, k;
 			double r, g, b;
 
@@ -96,7 +96,7 @@ int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBspace) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->rx * 16)
 #endif
-		for (i = 0; i < fit->ry * fit->rx; i++) {
+		for (i = 0; i < n; i++) {
 			double x, k;
 			x = buf[RLAYER][i] / norm;
 			k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh_beta);
@@ -108,7 +108,6 @@ int asinhlut_ushort(fits *fit, double beta, double offset, gboolean RGBspace) {
 }
 
 static int asinhlut_float(fits *fit, double beta, double offset, gboolean RGBspace) {
-	int i;
 	float *buf[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
 	double asinh_beta, factor_red, factor_green, factor_blue;
 
@@ -117,11 +116,12 @@ static int asinhlut_float(fits *fit, double beta, double offset, gboolean RGBspa
 	factor_green = RGBspace ? 0.7152 : 0.3333;
 	factor_blue = RGBspace ? 0.0722 : 0.3333;
 
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
 	if (fit->naxes[2] > 1) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->ry * 16)
 #endif
-		for (i = 0; i < fit->ry * fit->rx; i++) {
+		for (i = 0; i < n; i++) {
 			double x, k;
 			float r, g, b;
 
@@ -141,7 +141,7 @@ static int asinhlut_float(fits *fit, double beta, double offset, gboolean RGBspa
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, fit->ry * 16)
 #endif
-		for (i = 0; i < fit->ry * fit->rx; i++) {
+		for (i = 0; i < n; i++) {
 			double x, k;
 			x = buf[RLAYER][i];
 			k = (x == 0.0) ? 0.0 : asinh(beta * x) / (x * asinh_beta);

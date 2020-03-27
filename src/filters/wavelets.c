@@ -99,9 +99,10 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 
 	g_assert(fit->naxes[2] <= 3);
 
-	float *Imag;
+	float *Imag = NULL;
+	size_t n = fit->naxes[0] * fit->naxes[1];
 	if (fit->type == DATA_USHORT) {
-		Imag = f_vector_alloc(fit->ry * fit->rx);
+		Imag = f_vector_alloc(n);
 		if (Imag == NULL) {
 			PRINT_ALLOC_ERR;
 			return 1;
@@ -268,24 +269,23 @@ void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 
 	if (gfit.type == DATA_USHORT) {
-		float *Imag = (float*) malloc(gfit.rx * gfit.ry * sizeof(float));
-
-		for (i = 0; i < nb_chan; i++) {
-			dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
-			strcpy(dir[i], tmpdir);
-			strcat(dir[i], G_DIR_SEPARATOR_S);
-			strcat(dir[i], File_Name_Transform[i]);
-			wavelet_transform_file(Imag, gfit.ry, gfit.rx, dir[i],
-					Type_Transform, Nbr_Plan, gfit.pdata[i]);
-			free(dir[i]);
+		size_t n = gfit.naxes[0] * gfit.naxes[1] * sizeof(float);
+		float *Imag = malloc(n);
+		if (Imag) {
+			for (i = 0; i < nb_chan; i++) {
+				dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
+				strcpy(dir[i], tmpdir);
+				strcat(dir[i], G_DIR_SEPARATOR_S);
+				strcat(dir[i], File_Name_Transform[i]);
+				wavelet_transform_file(Imag, gfit.ry, gfit.rx, dir[i],
+						Type_Transform, Nbr_Plan, gfit.pdata[i]);
+				free(dir[i]);
+			}
+			free(Imag);
 		}
-
-		free(Imag);
-		Imag = NULL;
 	} else {
 		for (i = 0; i < nb_chan; i++) {
-			dir[i] = malloc(
-					strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
+			dir[i] = malloc(strlen(tmpdir) + strlen(File_Name_Transform[i]) + 2);
 			strcpy(dir[i], tmpdir);
 			strcat(dir[i], G_DIR_SEPARATOR_S);
 			strcat(dir[i], File_Name_Transform[i]);

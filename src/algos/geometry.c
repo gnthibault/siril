@@ -44,12 +44,16 @@
 /* this method rotates the image 180 degrees, useful after german mount flip.
  * fit->rx, fit->ry, fit->naxes[2] and fit->pdata[*] are required to be assigned correctly */
 static void fits_rotate_pi_ushort(fits *fit) {
-	int i, line, axis, line_size;
+	int i, line, axis;
 	WORD *line1, *line2, *src, *dst, swap;
 
-	line_size = fit->rx * sizeof(WORD);
+	size_t line_size = fit->rx * sizeof(WORD);
 	line1 = malloc(line_size);
 	line2 = malloc(line_size);
+	if (!line1 || !line2) {
+		PRINT_ALLOC_ERR;
+		return;
+	}
 
 	for (axis = 0; axis < fit->naxes[2]; axis++) {
 		for (line = 0; line < fit->ry / 2; line++) {
@@ -86,12 +90,16 @@ static void fits_rotate_pi_ushort(fits *fit) {
 }
 
 static void fits_rotate_pi_float(fits *fit) {
-	int i, line, axis, line_size;
+	int i, line, axis;
 	float *line1, *line2, *src, *dst, swap;
 
-	line_size = fit->rx * sizeof(float);
+	size_t line_size = fit->rx * sizeof(float);
 	line1 = malloc(line_size);
 	line2 = malloc(line_size);
+	if (!line1 || !line2) {
+		PRINT_ALLOC_ERR;
+		return;
+	}
 
 	for (axis = 0; axis < fit->naxes[2]; axis++) {
 		for (line = 0; line < fit->ry / 2; line++) {
@@ -133,6 +141,7 @@ static void fits_rotate_pi(fits *fit) {
 	} else if (fit->type == DATA_FLOAT) {
 		fits_rotate_pi_float(fit);
 	}
+	invalidate_WCS_keywords(&gfit);
 }
 
 static void mirrorx_gui(fits *fit) {
@@ -269,7 +278,7 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
 }
 
 static void mirrorx_ushort(fits *fit, gboolean verbose) {
-	int line, axis, line_size;
+	int line, axis;
 	WORD *swapline, *src, *dst;
 	struct timeval t_start, t_end;
 
@@ -278,8 +287,12 @@ static void mirrorx_ushort(fits *fit, gboolean verbose) {
 		gettimeofday(&t_start, NULL);
 	}
 
-	line_size = fit->rx * sizeof(WORD);
+	size_t line_size = fit->rx * sizeof(WORD);
 	swapline = malloc(line_size);
+	if (!swapline) {
+		PRINT_ALLOC_ERR;
+		return;
+	}
 
 	for (axis = 0; axis < fit->naxes[2]; axis++) {
 		for (line = 0; line < fit->ry / 2; line++) {
@@ -300,7 +313,7 @@ static void mirrorx_ushort(fits *fit, gboolean verbose) {
 }
 
 static void mirrorx_float(fits *fit, gboolean verbose) {
-	int line, axis, line_size;
+	int line, axis;
 	float *swapline, *src, *dst;
 	struct timeval t_start, t_end;
 
@@ -309,8 +322,12 @@ static void mirrorx_float(fits *fit, gboolean verbose) {
 		gettimeofday(&t_start, NULL);
 	}
 
-	line_size = fit->rx * sizeof(float);
+	size_t line_size = fit->rx * sizeof(float);
 	swapline = malloc(line_size);
+	if (!swapline) {
+		PRINT_ALLOC_ERR;
+		return;
+	}
 
 	for (axis = 0; axis < fit->naxes[2]; axis++) {
 		for (line = 0; line < fit->ry / 2; line++) {

@@ -301,6 +301,10 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	err = calloc(nbImages, sizeof(double));
 	x = calloc(nbImages, sizeof(double));
 	real_x = calloc(nbImages, sizeof(double));
+	if (!vmag || !err || !x || !real_x) {
+		PRINT_ALLOC_ERR;
+		return -1;
+	}
 	for (i = 0, j = 0; i < plot->nb; i++) {
 		if (!seq->imgparam[i].incl)
 			continue;

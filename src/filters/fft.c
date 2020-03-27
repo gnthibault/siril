@@ -47,11 +47,10 @@ enum {
 };
 
 static void fft_to_spectra(fftwf_complex *frequency_repr, float *as, float *ps,
-		float *maxi, long nbdata) {
-	long i;
+		float *maxi, size_t nbdata) {
 	*maxi = 0.0;
 
-	for (i = 0; i < nbdata; i++) {
+	for (size_t i = 0; i < nbdata; i++) {
 		float r = crealf(frequency_repr[i]);
 		float im = cimagf(frequency_repr[i]);
 		as[i] = hypotf(r, im);
@@ -61,10 +60,8 @@ static void fft_to_spectra(fftwf_complex *frequency_repr, float *as, float *ps,
 }
 
 static void fft_to_freq(fftwf_complex *frequency_repr, float *as, float *ps,
-		long nbdata) {
-	long i;
-
-	for (i = 0; i < nbdata; i++) {
+		size_t nbdata) {
+	for (size_t i = 0; i < nbdata; i++) {
 		frequency_repr[i] = as[i] * (cosf(ps[i]) + I * sinf(ps[i]));
 	}
 }
@@ -143,9 +140,7 @@ static void centered_float(float *buf, unsigned int width, unsigned int height,
 
 static void normalisation_spectra_ushort(unsigned int w, unsigned int h, float *modul, float *phase,
 		WORD *abuf, WORD *pbuf, float maxi) {
-	long i;
-
-	for (i = 0; i < h * w; i++) {
+	for (size_t i = 0; i < h * w; i++) {
 		pbuf[i] = roundf_to_WORD(((phase[i] + (float)M_PI) * USHRT_MAX_SINGLE / (2.f * (float)M_PI)));
 		abuf[i] = roundf_to_WORD((modul[i] * USHRT_MAX_SINGLE / maxi));
 	}
@@ -153,9 +148,7 @@ static void normalisation_spectra_ushort(unsigned int w, unsigned int h, float *
 
 static void normalisation_spectra_float(unsigned int w, unsigned int h, float *modul, float *phase,
 		float *abuf, float *pbuf, float maxi) {
-	long i;
-
-	for (i = 0; i < h * w; i++) {
+	for (size_t i = 0; i < h * w; i++) {
 		pbuf[i] = (phase[i] + (float)M_PI) / (2.f * (float)M_PI);
 		abuf[i] = (modul[i] / maxi);
 	}
@@ -177,8 +170,7 @@ static void FFTD_ushort(fits *fit, fits *x, fits *y, int type_order, int layer) 
 	WORD *gbuf = fit->pdata[layer];
 	unsigned int width = fit->rx, height = fit->ry;
 	float maxi;
-	long nbdata = width * height;
-	long i;
+	size_t i, nbdata = width * height;
 
 	fftwf_complex *spatial_repr = fftwf_malloc(sizeof(fftwf_complex) * nbdata);
 	if (!spatial_repr) {
@@ -236,8 +228,7 @@ static void FFTD_float(fits *fit, fits *x, fits *y, int type_order, int layer) {
 	float *gbuf = fit->fpdata[layer];
 	unsigned int width = fit->rx, height = fit->ry;
 	float maxi;
-	long nbdata = width * height;
-	long i;
+	size_t i, nbdata = width * height;
 
 	fftwf_complex *spatial_repr = fftwf_malloc(sizeof(fftwf_complex) * nbdata);
 	if (!spatial_repr) {
@@ -303,8 +294,7 @@ static void FFTI_ushort(fits *fit, fits *xfit, fits *yfit, int type_order, int l
 	WORD *gbuf = fit->pdata[layer];
 	unsigned int width = xfit->rx;
 	unsigned int height = xfit->ry;
-	long nbdata = width * height;
-	long i;
+	size_t i, nbdata = width * height;
 
 	float *modul = calloc(1, nbdata * sizeof(float));
 	float *phase = calloc(1, nbdata * sizeof(float));
@@ -363,8 +353,7 @@ static void FFTI_float(fits *fit, fits *xfit, fits *yfit, int type_order, int la
 	float *gbuf = fit->fpdata[layer];
 	unsigned int width = xfit->rx;
 	unsigned int height = xfit->ry;
-	int nbdata = width * height;
-	long i;
+	size_t i, nbdata = width * height;
 
 	float *modul = calloc(1, nbdata * sizeof(float));
 	float *phase = calloc(1, nbdata * sizeof(float));
