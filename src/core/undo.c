@@ -129,7 +129,6 @@ static void undo_add_item(fits *fit, char *filename, char *histo) {
 
 static int undo_get_data_ushort(fits *fit, historic hist) {
 	int fd;
-	WORD *buf;
 
 	if ((fd = g_open(hist.filename, O_RDONLY | O_BINARY, 0)) == -1) {
 		printf("Error opening swap file : %s\n", hist.filename);
@@ -141,9 +140,10 @@ static int undo_get_data_ushort(fits *fit, historic hist) {
 	fit->ry = hist.ry;
 	/* TODO: fit->naxes[0] = fit->rx ? what about naxes[2] ? */
 
-	size_t n = fit->naxes[0] * fit->naxes[1];
+	/* we need to take fit->rx and fit->ry because size can change */
+	size_t n = fit->rx * fit->ry;
 	size_t size = n * fit->naxes[2] * sizeof(WORD);
-	buf = calloc(1, size);
+	WORD *buf = calloc(1, size);
 	// read the data from temporary file
 	if ((read(fd, buf, size)) < size) {
 		printf("Undo Read of [%s], failed with error [%s]\n", hist.filename, strerror(errno));
@@ -175,7 +175,6 @@ static int undo_get_data_ushort(fits *fit, historic hist) {
 
 static int undo_get_data_float(fits *fit, historic hist) {
 	int fd;
-	float *buf;
 
 	if ((fd = g_open(hist.filename, O_RDONLY | O_BINARY, 0)) == -1) {
 		printf("Error opening swap file : %s\n", hist.filename);
@@ -186,9 +185,10 @@ static int undo_get_data_float(fits *fit, historic hist) {
 	fit->rx = hist.rx;
 	fit->ry = hist.ry;
 
-	size_t n = fit->naxes[0] * fit->naxes[1];
-	size_t size = n * fit->naxes[2] * sizeof(WORD);
-	buf = calloc(1, size);
+	/* we need to take fit->rx and fit->ry because size can change */
+	size_t n = fit->rx * fit->ry;
+	size_t size = n * fit->naxes[2] * sizeof(float);
+	float *buf = calloc(1, size);
 	// read the data from temporary file
 	if ((read(fd, buf, size) < size)) {
 		printf("Undo Read of [%s], failed with error [%s]\n", hist.filename, strerror(errno));
