@@ -80,12 +80,12 @@ static WORD* getAverage3x3Line(WORD *buf, const int yy, const int w,
 	cpyline = calloc(w, sizeof(WORD));
 	for (xx = 0; xx < w; ++xx) {
 		int n = 0;
-		double value = 0;
+		float value = 0.f;
 		for (y = yy - radius; y <= yy + radius; y += step) {
 			if (y != yy) {	// we skip the line
 				for (x = xx - radius; x <= xx + radius; x += step) {
 					if (y >= 0 && y < h && x >= 0 && x < w) {
-						value += (double) buf[x + y * w];
+						value += (float) buf[x + y * w];
 						n++;
 					}
 				}
@@ -125,7 +125,7 @@ static float* getAverage3x3Line_float(float *buf, const int yy, const int w,
 	return cpyline;
 }
 
-static double getAverage3x3_float(float *buf, const int xx, const int yy,
+static float getAverage3x3_float(float *buf, const int xx, const int yy,
 		const int w, const int h, gboolean is_cfa) {
 
     const int step = is_cfa ? 2 : 1;
@@ -146,10 +146,10 @@ static double getAverage3x3_float(float *buf, const int xx, const int yy,
     return value / n;
 }
 
-static double getAverage3x3_ushort(WORD *buf, const int xx, const int yy,
+static float getAverage3x3_ushort(WORD *buf, const int xx, const int yy,
 		const int w, const int h, gboolean is_cfa) {
 	int step, radius, x, y;
-	double value = 0;
+	float value = 0.f;
 
 	if (is_cfa)
 		step = radius = 2;
@@ -162,7 +162,7 @@ static double getAverage3x3_ushort(WORD *buf, const int xx, const int yy,
 			if (y >= 0 && y < h) {
 				if (x >= 0 && x < w) {
 					if ((x != xx) || (y != yy)) {
-						value += (double) buf[x + y * w];
+						value += (float) buf[x + y * w];
 						n++;
 					}
 				}
@@ -184,7 +184,8 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 	WORD *buf;
 	float *fbuf;
 	imstats *stat;
-	double sigma, median, thresHot, thresCold;
+	double sigma, median;
+	float thresHot, thresCold;
 	deviant_pixel *dev;
 
 	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC, FALSE);
@@ -196,16 +197,16 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 	median = stat->median;
 
 	if (sig[0] == -1.0) {	// flag for no cold detection
-		thresCold = -1.0;
+		thresCold = -1.f;
 	} else {
 		double val = median - (sig[0] * sigma);
-		thresCold = max(val, 0.0);
+		thresCold = max((float) val, 0.f);
 	}
 	if (sig[1] == -1.0) {	// flag for no hot detection
-		thresHot = USHRT_MAX_DOUBLE + 1;
+		thresHot = USHRT_MAX_SINGLE + 1.f;
 	} else {
 		double val = median + (sig[1] * sigma);
-		thresHot = min(val, fit->type == DATA_FLOAT ? 1.0 : USHRT_MAX_DOUBLE);
+		thresHot = min((float) val, fit->type == DATA_FLOAT ? 1.f : USHRT_MAX_SINGLE);
 	}
 
 	free_stats(stat);
@@ -217,7 +218,7 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 	fbuf = fit->fpdata[RLAYER];
 	size_t i, nbpix = fit->naxes[0] * fit->naxes[1];
 	for (i = 0; i < nbpix; i++) {
-		double pixel = fit->type == DATA_FLOAT ? fbuf[i] : (double)buf[i];
+		float pixel = fit->type == DATA_FLOAT ? fbuf[i] : (float) buf[i];
 		if (pixel >= thresHot)
 			(*ihot)++;
 		else if (pixel < thresCold)
@@ -238,8 +239,8 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 	i = 0;
 	for (y = 0; y < fit->ry; y++) {
 		for (x = 0; x < fit->rx; x++) {
-			double pixel = fit->type == DATA_FLOAT ?
-				fbuf[x + y * fit->rx] : (double)buf[x + y * fit->rx];
+			float pixel = fit->type == DATA_FLOAT ?
+							fbuf[x + y * fit->rx] : (float) buf[x + y * fit->rx];
 			if (pixel >= thresHot) {
 				dev[i].p.x = x;
 				dev[i].p.y = y;
