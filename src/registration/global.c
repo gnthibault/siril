@@ -139,8 +139,17 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	 */
 	i = 0;
 	sadata->refstars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
+	if (!sadata->refstars) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
 	while (i < MAX_STARS && com.stars[i]) {
 		fitted_PSF *tmp = malloc(sizeof(fitted_PSF));
+		if (!tmp) {
+			PRINT_ALLOC_ERR;
+			sadata->refstars[i] = NULL;
+			return 1;
+		}
 		memcpy(tmp, com.stars[i], sizeof(fitted_PSF));
 		sadata->refstars[i] = tmp;
 		sadata->refstars[i+1] = NULL;
@@ -164,6 +173,10 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 		// allocate destination sequence data
 		regargs->imgparam = calloc(args->nb_filtered_images, sizeof(imgdata));
 		regargs->regparam = calloc(args->nb_filtered_images, sizeof(regdata));
+		if (!regargs->imgparam  || !regargs->regparam) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
 	}
 
 	if (args->seq->type == SEQ_SER) {
@@ -171,6 +184,10 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 		char dest[256];
 
 		args->new_ser = malloc(sizeof(struct ser_struct));
+		if (!args->new_ser) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
 
 		const char *ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
 		if (ptr)
@@ -192,6 +209,10 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	}
 
 	sadata->success = calloc(args->nb_filtered_images, sizeof(BYTE));
+	if (!sadata->success) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
 	return 0;
 }
 
@@ -275,11 +296,17 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 
 		if (!regargs->translation_only) {
 			if (regargs->x2upscale) {
-				cvResizeGaussian(fit, fit->rx * 2, fit->ry * 2, OPENCV_NEAREST);
+				if (cvResizeGaussian(fit, fit->rx * 2, fit->ry * 2, OPENCV_NEAREST)) {
+					free_fitted_stars(stars);
+					return 1;
+				}
 				cvApplyScaleToH(&H, 2.0);
 			}
 			fits_flip_top_to_bottom(fit);
-			cvTransformImage(fit, (long) sadata->ref.x, (long) sadata->ref.y, H, regargs->interpolation);
+			if (cvTransformImage(fit, (long) sadata->ref.x, (long) sadata->ref.y, H, regargs->interpolation)) {
+				free_fitted_stars(stars);
+				return 1;
+			}
 			fits_flip_top_to_bottom(fit);
 		}
 
@@ -287,7 +314,8 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 	}
 	else {
 		if (regargs->x2upscale && !regargs->translation_only) {
-			cvResizeGaussian(fit, fit->rx * 2, fit->ry * 2, OPENCV_NEAREST);
+			if (cvResizeGaussian(fit, fit->rx * 2, fit->ry * 2, OPENCV_NEAREST))
+				return 1;
 		}
 	}
 

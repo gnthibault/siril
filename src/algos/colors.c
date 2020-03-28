@@ -508,7 +508,7 @@ static gpointer extract_channels_ushort(gpointer p) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-		for (int i = 0; i < n; i++) {
+		for (size_t i = 0; i < n; i++) {
 			double h, s, l;
 			double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
 			double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
@@ -524,7 +524,7 @@ static gpointer extract_channels_ushort(gpointer p) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-		for (int i = 0; i < n; i++) {
+		for (size_t i = 0; i < n; i++) {
 			double h, s, v;
 			double r = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
 			double g = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
@@ -540,7 +540,7 @@ static gpointer extract_channels_ushort(gpointer p) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-		for (int i = 0; i < n; i++) {
+		for (size_t i = 0; i < n; i++) {
 			double x, y, z, L, a, b;
 			double red = (double) buf[RLAYER][i] / USHRT_MAX_DOUBLE;
 			double green = (double) buf[GLAYER][i] / USHRT_MAX_DOUBLE;
@@ -595,7 +595,7 @@ static gpointer extract_channels_float(gpointer p) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-		for (int i = 0; i < n; i++) {
+		for (size_t i = 0; i < n; i++) {
 			double h, s, l;
 			double r = (double) buf[RLAYER][i];
 			double g = (double) buf[GLAYER][i];
@@ -611,7 +611,7 @@ static gpointer extract_channels_float(gpointer p) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-		for (int i = 0; i < n; i++) {
+		for (size_t i = 0; i < n; i++) {
 			double h, s, v;
 			double r = (double) buf[RLAYER][i];
 			double g = (double) buf[GLAYER][i];
@@ -627,7 +627,7 @@ static gpointer extract_channels_float(gpointer p) {
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-		for (int i = 0; i < n; i++) {
+		for (size_t i = 0; i < n; i++) {
 			double x, y, z, L, a, b;
 			double red = (double) buf[RLAYER][i];
 			double green = (double) buf[GLAYER][i];

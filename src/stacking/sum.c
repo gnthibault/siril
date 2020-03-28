@@ -40,7 +40,7 @@ struct sum_stacking_data {
 
 static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 	struct sum_stacking_data *ssdata = args->user;
-	unsigned int nbdata = args->seq->ry * args->seq->rx;
+	size_t nbdata = args->seq->ry * args->seq->rx;
 
 	if (ssdata->input_32bits) {
 		ssdata->fsum[0] = calloc(nbdata, sizeof(double) * args->seq->nb_layers);
@@ -78,8 +78,8 @@ static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 
 static int sum_stacking_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
 	struct sum_stacking_data *ssdata = args->user;
-	int shiftx, shifty, nx, ny, x, y, ii, layer;
-	int pixel = 0;	// index in sum[0]
+	int shiftx, shifty, nx, ny, x, y, layer;
+	size_t ii, pixel = 0;	// index in sum[0]
 
 #ifdef _OPENMP
 #pragma omp atomic
@@ -128,7 +128,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	struct sum_stacking_data *ssdata = args->user;
 	uint64_t max = 0L;	// max value of the image's channels
 	double fmax = 0.0;
-	unsigned int i, nbdata;
+	size_t i, nbdata;
 	int layer;
 
 	nbdata = args->seq->ry * args->seq->rx * args->seq->nb_layers;

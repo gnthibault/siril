@@ -31,6 +31,7 @@
 #include "algos/sorting.h"
 #include "stacking/siril_fit_linear.h"
 
+// in this case, N is the number of frames, so int is fine
 static float siril_stats_ushort_sd(const WORD data[], int N) {
 	double accumulator = 0.0; // accumulating in double precision is important for accuracy
 	for (int i = 0; i < N; ++i) {
@@ -814,9 +815,9 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			/* index of the pixel in the result image
 			 * we read line y, but we need to store it at
 			 * ry - y - 1 to not have the image mirrored. */
-			int pdata_idx = (naxes[1] - (my_block->start_row + y) - 1) * naxes[0];
+			size_t pdata_idx = (naxes[1] - (my_block->start_row + y) - 1) * naxes[0];
 			/* index of the line in the read data, data->pix[frame] */
-			int line_idx = y * naxes[0];
+			size_t line_idx = y * naxes[0];
 			uint64_t crej[2] = {0, 0};
 			if (retval) break;
 

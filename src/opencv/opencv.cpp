@@ -59,9 +59,9 @@ extern "C" {
 using namespace cv;
 
 static WORD *fits_to_bgrbgr_ushort(fits *image) {
-	int ndata = image->rx * image->ry;
-	WORD *bgrbgr = new WORD[ndata * 3];
-	for (int i = 0, j = 0; i < ndata * 3; i += 3, j++) {
+	size_t ndata = image->rx * image->ry * 3;
+	WORD *bgrbgr = new WORD[ndata];
+	for (size_t i = 0, j = 0; i < ndata; i += 3, j++) {
 		bgrbgr[i + 0] = image->pdata[BLAYER][j];
 		bgrbgr[i + 1] = image->pdata[GLAYER][j];
 		bgrbgr[i + 2] = image->pdata[RLAYER][j];
@@ -70,9 +70,9 @@ static WORD *fits_to_bgrbgr_ushort(fits *image) {
 }
 
 static float *fits_to_bgrbgr_float(fits *image) {
-	int ndata = image->rx * image->ry;
-	float *bgrbgr = new float[ndata * 3];
-	for (int i = 0, j = 0; i < ndata * 3; i += 3, j++) {
+	size_t ndata = image->rx * image->ry * 3;
+	float *bgrbgr = new float[ndata];
+	for (size_t i = 0, j = 0; i < ndata; i += 3, j++) {
 		bgrbgr[i + 0] = image->fpdata[BLAYER][j];
 		bgrbgr[i + 1] = image->fpdata[GLAYER][j];
 		bgrbgr[i + 2] = image->fpdata[RLAYER][j];
@@ -81,9 +81,9 @@ static float *fits_to_bgrbgr_float(fits *image) {
 }
 
 static BYTE *fits8_to_bgrbgr(fits *image) {
-	int ndata = image->rx * image->ry;
-	BYTE *bgrbgr = new BYTE[ndata * 3];
-	for (int i = 0, j = 0; i < ndata * 3; i += 3, j++) {
+	size_t ndata = image->rx * image->ry * 3;
+	BYTE *bgrbgr = new BYTE[ndata];
+	for (size_t i = 0, j = 0; i < ndata; i += 3, j++) {
 		bgrbgr[i + 0] = (BYTE)image->pdata[BLAYER][j];
 		bgrbgr[i + 1] = (BYTE)image->pdata[GLAYER][j];
 		bgrbgr[i + 2] = (BYTE)image->pdata[RLAYER][j];
@@ -100,7 +100,8 @@ int cvResizeGaussian_uchar(uint8_t *dataIn, int rx, int ry, uint8_t *dataOut,
 
 	resize(in, out, out.size(), 0, 0, interpolation);
 
-	for (int i = 0; i < toX * toY * chan; i++)
+	size_t ndata = toX * toY * chan;
+	for (size_t i = 0; i < ndata; i++)
 		dataOut[i] = (uint8_t) out.data[i];
 
 	in.release();
@@ -135,10 +136,11 @@ static int cvResizeGaussian_ushort(fits *image, int toX, int toY, int interpolat
 	resize(in, out, out.size(), 0, 0, interpolation);
 
 	// saving result
-	WORD *newdata = (WORD*) realloc(image->data,
-			toX * toY * sizeof(WORD) * image->naxes[2]);
+	size_t nbpixels = toX * toY;
+	size_t dataSize = nbpixels * sizeof(WORD);
+	WORD *newdata = (WORD*) realloc(image->data, dataSize * image->naxes[2]);
 	if (!newdata) {
-		free(newdata);
+		PRINT_ALLOC_ERR;
 		return 1;
 	}
 	image->rx = toX;
@@ -147,9 +149,8 @@ static int cvResizeGaussian_ushort(fits *image, int toX, int toY, int interpolat
 	image->naxes[1] = toY;
 	image->data = newdata;
 
-	unsigned int dataSize = toX * toY;
 	if (image->naxes[2] == 1) {
-		memcpy(image->data, out.data, dataSize * sizeof(WORD));
+		memcpy(image->data, out.data, dataSize);
 		image->pdata[0] = image->data;
 		image->pdata[1] = image->data;
 		image->pdata[2] = image->data;
@@ -157,13 +158,13 @@ static int cvResizeGaussian_ushort(fits *image, int toX, int toY, int interpolat
 	else {
 		std::vector<Mat> channel(3);
 		split(out, channel);
-		memcpy(image->data, channel[2].data, dataSize * sizeof(WORD));
-		memcpy(image->data + dataSize, channel[1].data, dataSize * sizeof(WORD));
-		memcpy(image->data + dataSize * 2, channel[0].data, dataSize * sizeof(WORD));
+		memcpy(image->data, channel[2].data, dataSize);
+		memcpy(image->data + nbpixels, channel[1].data, dataSize);
+		memcpy(image->data + nbpixels * 2, channel[0].data, dataSize);
 
 		image->pdata[0] = image->data;
-		image->pdata[1] = image->data + dataSize;
-		image->pdata[2] = image->data + dataSize * 2;
+		image->pdata[1] = image->data + nbpixels;
+		image->pdata[2] = image->data + nbpixels * 2;
 
 		channel[0].release();
 		channel[1].release();
@@ -202,10 +203,11 @@ static int cvResizeGaussian_float(fits *image, int toX, int toY, int interpolati
 	resize(in, out, out.size(), 0, 0, interpolation);
 
 	// saving result
-	float *newdata = (float*) realloc(image->fdata,
-			toX * toY * sizeof(float) * image->naxes[2]);
+	size_t nbpixels = toX * toY;
+	size_t dataSize = nbpixels * sizeof(float);
+	float *newdata = (float*) realloc(image->fdata, dataSize * image->naxes[2]);
 	if (!newdata) {
-		free(newdata);
+		PRINT_ALLOC_ERR;
 		return 1;
 	}
 	image->rx = toX;
@@ -214,9 +216,8 @@ static int cvResizeGaussian_float(fits *image, int toX, int toY, int interpolati
 	image->naxes[1] = toY;
 	image->fdata = newdata;
 
-	unsigned int dataSize = toX * toY;
 	if (image->naxes[2] == 1) {
-		memcpy(image->fdata, out.data, dataSize * sizeof(float));
+		memcpy(image->fdata, out.data, dataSize);
 		image->fpdata[0] = image->fdata;
 		image->fpdata[1] = image->fdata;
 		image->fpdata[2] = image->fdata;
@@ -224,13 +225,13 @@ static int cvResizeGaussian_float(fits *image, int toX, int toY, int interpolati
 	else {
 		std::vector<Mat> channel(3);
 		split(out, channel);
-		memcpy(image->fdata, channel[2].data, dataSize * sizeof(float));
-		memcpy(image->fdata + dataSize, channel[1].data, dataSize * sizeof(float));
-		memcpy(image->fdata + dataSize * 2, channel[0].data, dataSize * sizeof(float));
+		memcpy(image->fdata, channel[2].data, dataSize);
+		memcpy(image->fdata + nbpixels, channel[1].data, dataSize);
+		memcpy(image->fdata + nbpixels * 2, channel[0].data, dataSize);
 
 		image->fpdata[0] = image->fdata;
-		image->fpdata[1] = image->fdata + dataSize;
-		image->fpdata[2] = image->fdata + dataSize * 2;
+		image->fpdata[1] = image->fdata + nbpixels;
+		image->fpdata[2] = image->fdata + nbpixels * 2;
 
 		channel[0].release();
 		channel[1].release();
@@ -258,8 +259,7 @@ int cvRotateImage_ushort(fits *image, point center, double angle, int interpolat
 	assert(image->rx);
 	assert(image->ry);
 
-	int ndata = image->rx * image->ry;
-
+	size_t ndata;
 	WORD *bgrbgr = NULL;
 	Mat in, out;
 
@@ -283,11 +283,13 @@ int cvRotateImage_ushort(fits *image, point center, double angle, int interpolat
 			flip(out, out, 0);
 		else // 270, -90
 			flip(out, out, 1);
+		ndata = image->naxes[0] * image->naxes[1];
 	} else {
 		Point2f pt(center.x, center.y);
 		Mat r = getRotationMatrix2D(pt, angle, 1.0);
 		if (cropped == 1) {
 			warpAffine(in, out, r, in.size(), interpolation);
+			ndata = image->naxes[0] * image->naxes[1];
 		} else {
 
 			// determine bounding rectangle
@@ -301,7 +303,7 @@ int cvRotateImage_ushort(fits *image, point center, double angle, int interpolat
 			WORD *newdata = (WORD*) realloc(image->data,
 					ndata * image->naxes[2] * sizeof(WORD));
 			if (!newdata) {
-				free(newdata);
+				PRINT_ALLOC_ERR;
 				return 1;
 			}
 			image->data = newdata;
@@ -344,8 +346,7 @@ int cvRotateImage_float(fits *image, point center, double angle, int interpolati
 	assert(image->rx);
 	assert(image->ry);
 
-	int ndata = image->rx * image->ry;
-
+	size_t ndata;
 	float *bgrbgr = NULL;
 	Mat in, out;
 
@@ -369,11 +370,13 @@ int cvRotateImage_float(fits *image, point center, double angle, int interpolati
 			flip(out, out, 0);
 		else // 270, -90
 			flip(out, out, 1);
+		ndata = image->naxes[0] * image->naxes[1];
 	} else {
 		Point2f pt(center.x, center.y);
 		Mat r = getRotationMatrix2D(pt, angle, 1.0);
 		if (cropped == 1) {
 			warpAffine(in, out, r, in.size(), interpolation);
+			ndata = image->naxes[0] * image->naxes[1];
 		} else {
 
 			// determine bounding rectangle
@@ -386,7 +389,7 @@ int cvRotateImage_float(fits *image, point center, double angle, int interpolati
 			ndata = out.cols * out.rows;
 			float *newdata = (float*) realloc(image->fdata, ndata * image->naxes[2] * sizeof(float));
 			if (!newdata) {
-				free(newdata);
+				PRINT_ALLOC_ERR;
 				return 1;
 			}
 			image->fdata = newdata;
@@ -453,7 +456,7 @@ static void convert_MatH_to_H(Mat from, Homography *to) {
 	to->h12 = from.at<double>(1, 2);
 	to->h20 = from.at<double>(2, 0);
 	to->h21 = from.at<double>(2, 1);
-    to->h22 = from.at<double>(2, 2);
+	to->h22 = from.at<double>(2, 2);
 }
 
 unsigned char *cvCalculH(s_star *star_array_img,
@@ -550,9 +553,8 @@ static int cvTransformImage_ushort(fits *image, long width, long height, Homogra
 	warpPerspective(in, out, H, Size(width, height), interpolation);
 
 	// saving result
-	long ndata = height * width;
-
-	if (image->ry != (unsigned long)height || image->rx != (unsigned long)width) {
+	size_t ndata = height * width;
+	if (image->naxes[1] != height || image->naxes[0] != width) {
 		newdata = (WORD*) realloc(image->data, ndata * sizeof(WORD) * image->naxes[2]);
 		if (!newdata) {
 			PRINT_ALLOC_ERR;
@@ -619,9 +621,8 @@ int cvTransformImage_float(fits *image, long width, long height, Homography Hom,
 	warpPerspective(in, out, H, Size(width, height), interpolation);
 
 	// saving result
-	long ndata = height * width;
-
-	if (image->ry != (unsigned long)height || image->rx != (unsigned long)width) {
+	size_t ndata = height * width;
+	if (image->naxes[1] != height || image->naxes[0] != width) {
 		newdata = (float*) realloc(image->fdata, ndata * sizeof(float) * image->naxes[2]);
 		if (!newdata) {
 			PRINT_ALLOC_ERR;
@@ -687,16 +688,17 @@ static int cvUnsharpFilter_ushort(fits* image, double sigma, double amount) {
 		sharpened.release();
 	}
 
+	size_t nbpixels = image->naxes[0] * image->naxes[1];
 	memcpy(image->data, out.data,
-			image->rx * image->ry * sizeof(WORD) * image->naxes[2]);
+			nbpixels * sizeof(WORD) * image->naxes[2]);
 	if (image->naxes[2] == 1) {
 		image->pdata[0] = image->data;
 		image->pdata[1] = image->data;
 		image->pdata[2] = image->data;
 	} else {
 		image->pdata[0] = image->data;
-		image->pdata[1] = image->data + (image->rx * image->ry);
-		image->pdata[2] = image->data + (image->rx * image->ry) * 2;
+		image->pdata[1] = image->data + nbpixels;
+		image->pdata[2] = image->data + nbpixels * 2;
 	}
 	in.release();
 	invalidate_stats_from_fit(image);
@@ -719,16 +721,17 @@ static int cvUnsharpFilter_float(fits* image, double sigma, double amount) {
 		sharpened.release();
 	}
 
+	size_t nbpixels = image->naxes[0] * image->naxes[1];
 	memcpy(image->fdata, out.data,
-			image->rx * image->ry * sizeof(float) * image->naxes[2]);
+			nbpixels * sizeof(float) * image->naxes[2]);
 	if (image->naxes[2] == 1) {
 		image->fpdata[0] = image->fdata;
 		image->fpdata[1] = image->fdata;
 		image->fpdata[2] = image->fdata;
 	} else {
 		image->fpdata[0] = image->fdata;
-		image->fpdata[1] = image->fdata + (image->rx * image->ry);
-		image->fpdata[2] = image->fdata + (image->rx * image->ry) * 2;
+		image->fpdata[1] = image->fdata + nbpixels;
+		image->fpdata[2] = image->fdata + nbpixels * 2;
 	}
 	in.release();
 	invalidate_stats_from_fit(image);
@@ -781,7 +784,6 @@ static int cvLucyRichardson_ushort(fits *image, double sigma, int iterations) {
 	assert(image->rx);
 	assert(image->ry);
 
-	int ndata = image->rx * image->ry;
 	int ksize = (int)((KERNEL_SIZE_FACTOR * sigma) + 0.5);
 	ksize = ksize % 2 != 0 ? ksize : ksize + 1;
 	Mat in, out;
@@ -822,15 +824,17 @@ static int cvLucyRichardson_ushort(fits *image, double sigma, int iterations) {
 	std::vector<Mat> channel(3);
 	split(out, channel);
 
+	size_t nbpixels = image->naxes[0] * image->naxes[1];
+	size_t ndata = nbpixels * sizeof(WORD);
 	if (image->naxes[2] == 3) {
-		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
-		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
-		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
+		memcpy(image->data, channel[2].data, ndata);
+		memcpy(image->data + nbpixels, channel[1].data, ndata);
+		memcpy(image->data + nbpixels * 2, channel[0].data, ndata);
 		image->pdata[RLAYER] = image->data;
-		image->pdata[GLAYER] = image->data + ndata;
-		image->pdata[BLAYER] = image->data + ndata * 2;
+		image->pdata[GLAYER] = image->data + nbpixels;
+		image->pdata[BLAYER] = image->data + nbpixels* 2;
 	} else {
-		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
+		memcpy(image->data, channel[0].data, ndata);
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data;
 		image->pdata[BLAYER] = image->data;
@@ -859,7 +863,6 @@ static int cvLucyRichardson_float(fits *image, double sigma, int iterations) {
 	assert(image->rx);
 	assert(image->ry);
 
-	int ndata = image->rx * image->ry;
 	int ksize = (int)((KERNEL_SIZE_FACTOR * sigma) + 0.5);
 	ksize = ksize % 2 != 0 ? ksize : ksize + 1;
 	Mat in, out;
@@ -892,15 +895,17 @@ static int cvLucyRichardson_float(fits *image, double sigma, int iterations) {
 	std::vector<Mat> channel(3);
 	split(out, channel);
 
+	size_t nbpixels = image->naxes[0] * image->naxes[1];
+	size_t ndata = nbpixels * sizeof(float);
 	if (image->naxes[2] == 3) {
-		memcpy(image->fdata, channel[2].data, ndata * sizeof(float));
-		memcpy(image->fdata + ndata, channel[1].data, ndata * sizeof(float));
-		memcpy(image->fdata + ndata * 2, channel[0].data, ndata * sizeof(float));
+		memcpy(image->fdata, channel[2].data, ndata);
+		memcpy(image->fdata + nbpixels, channel[1].data, ndata);
+		memcpy(image->fdata + nbpixels * 2, channel[0].data, ndata);
 		image->fpdata[RLAYER] = image->fdata;
-		image->fpdata[GLAYER] = image->fdata + ndata;
-		image->fpdata[BLAYER] = image->fdata + ndata * 2;
+		image->fpdata[GLAYER] = image->fdata + nbpixels;
+		image->fpdata[BLAYER] = image->fdata + nbpixels* 2;
 	} else {
-		memcpy(image->fdata, channel[0].data, ndata * sizeof(float));
+		memcpy(image->fdata, channel[0].data, ndata);
 		image->fpdata[RLAYER] = image->fdata;
 		image->fpdata[GLAYER] = image->fdata;
 		image->fpdata[BLAYER] = image->fdata;
@@ -943,8 +948,6 @@ static int cvClahe_ushort(fits *image, double clip_limit, int size) {
 	assert(image->rx);
 	assert(image->ry);
 
-	int ndata = image->rx * image->ry;
-
 	// preparing data
 	Mat in, out;
 
@@ -959,84 +962,86 @@ static int cvClahe_ushort(fits *image, double clip_limit, int size) {
 		WORD *bgrbgr;
 
 		switch (image->bitpix) {
-		case BYTE_IMG:
-			bgrbgr8 = fits8_to_bgrbgr(image);
-			in = Mat(image->ry, image->rx, CV_8UC3, bgrbgr8);
-			out = Mat();
-			// convert the RGB color image to Lab
-			cvtColor(in, lab_image, COLOR_BGR2Lab);
+			case BYTE_IMG:
+				bgrbgr8 = fits8_to_bgrbgr(image);
+				in = Mat(image->ry, image->rx, CV_8UC3, bgrbgr8);
+				out = Mat();
+				// convert the RGB color image to Lab
+				cvtColor(in, lab_image, COLOR_BGR2Lab);
 
-			// Extract the L channel
-			split(lab_image, lab_planes); // now we have the L image in lab_planes[0]
+				// Extract the L channel
+				split(lab_image, lab_planes); // now we have the L image in lab_planes[0]
 
-			// apply the CLAHE algorithm to the L channel
-			clahe->apply(lab_planes[0], lab_planes[0]);
+				// apply the CLAHE algorithm to the L channel
+				clahe->apply(lab_planes[0], lab_planes[0]);
 
-			// Merge the color planes back into an Lab image
-			merge(lab_planes, lab_image);
+				// Merge the color planes back into an Lab image
+				merge(lab_planes, lab_image);
 
-			// convert back to RGB
-			cvtColor(lab_image, out, COLOR_Lab2BGR);
-			out.convertTo(out, CV_16UC3, 1.0);
+				// convert back to RGB
+				cvtColor(lab_image, out, COLOR_Lab2BGR);
+				out.convertTo(out, CV_16UC3, 1.0);
 
-			delete[] bgrbgr8;
+				delete[] bgrbgr8;
 
-			break;
-		default:
-		case USHORT_IMG:
-			bgrbgr = fits_to_bgrbgr_ushort(image);
-			in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
-			in.convertTo(in, CV_32F, 1.0 / USHRT_MAX_DOUBLE);
-			out = Mat();
+				break;
+			default:
+			case USHORT_IMG:
+				bgrbgr = fits_to_bgrbgr_ushort(image);
+				in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr);
+				in.convertTo(in, CV_32F, 1.0 / USHRT_MAX_DOUBLE);
+				out = Mat();
 
-			// convert the RGB color image to Lab
-			cvtColor(in, lab_image, COLOR_BGR2Lab);
+				// convert the RGB color image to Lab
+				cvtColor(in, lab_image, COLOR_BGR2Lab);
 
-			// Extract the L channel
-			split(lab_image, lab_planes); // now we have the L image in lab_planes[0]
+				// Extract the L channel
+				split(lab_image, lab_planes); // now we have the L image in lab_planes[0]
 
-			// apply the CLAHE algorithm to the L channel (does not work with 32F images)
-			lab_planes[0].convertTo(lab_planes[0], CV_16U,	USHRT_MAX_DOUBLE / 100.0);
-			clahe->apply(lab_planes[0], lab_planes[0]);
-			lab_planes[0].convertTo(lab_planes[0], CV_32F, 100.0 / USHRT_MAX_DOUBLE);
+				// apply the CLAHE algorithm to the L channel (does not work with 32F images)
+				lab_planes[0].convertTo(lab_planes[0], CV_16U,	USHRT_MAX_DOUBLE / 100.0);
+				clahe->apply(lab_planes[0], lab_planes[0]);
+				lab_planes[0].convertTo(lab_planes[0], CV_32F, 100.0 / USHRT_MAX_DOUBLE);
 
-			// Merge the color planes back into an Lab image
-			merge(lab_planes, lab_image);
+				// Merge the color planes back into an Lab image
+				merge(lab_planes, lab_image);
 
-			// convert back to RGB
-			cvtColor(lab_image, out, COLOR_Lab2BGR);
-			out.convertTo(out, CV_16UC3, USHRT_MAX_DOUBLE);
+				// convert back to RGB
+				cvtColor(lab_image, out, COLOR_Lab2BGR);
+				out.convertTo(out, CV_16UC3, USHRT_MAX_DOUBLE);
 
-			delete[] bgrbgr;
+				delete[] bgrbgr;
 		}
 
 	} else {
 		in = Mat(image->ry, image->rx, CV_16UC1, image->data);
 		out = Mat();
 		switch (image->bitpix) {
-		case BYTE_IMG:
-			in.convertTo(in, CV_8U, 1.0);
-			clahe->apply(in, out);
-			out.convertTo(out, CV_16UC3, 1.0);
-			break;
-		default:
-		case USHORT_IMG:
-			clahe->apply(in, out);
+			case BYTE_IMG:
+				in.convertTo(in, CV_8U, 1.0);
+				clahe->apply(in, out);
+				out.convertTo(out, CV_16UC3, 1.0);
+				break;
+			default:
+			case USHORT_IMG:
+				clahe->apply(in, out);
 		}
 	}
 
 	std::vector<Mat> channel(3);
 	split(out, channel);
 
+	size_t nbpixels = image->naxes[0] * image->naxes[1];
+	size_t ndata = nbpixels * sizeof(WORD);
 	if (image->naxes[2] == 3) {
-		memcpy(image->data, channel[2].data, ndata * sizeof(WORD));
-		memcpy(image->data + ndata, channel[1].data, ndata * sizeof(WORD));
-		memcpy(image->data + ndata * 2, channel[0].data, ndata * sizeof(WORD));
+		memcpy(image->data, channel[2].data, ndata);
+		memcpy(image->data + nbpixels, channel[1].data, ndata);
+		memcpy(image->data + nbpixels * 2, channel[0].data, ndata);
 		image->pdata[RLAYER] = image->data;
-		image->pdata[GLAYER] = image->data + ndata;
-		image->pdata[BLAYER] = image->data + ndata * 2;
+		image->pdata[GLAYER] = image->data + nbpixels;
+		image->pdata[BLAYER] = image->data + nbpixels* 2;
 	} else {
-		memcpy(image->data, channel[0].data, ndata * sizeof(WORD));
+		memcpy(image->data, channel[0].data, ndata);
 		image->pdata[RLAYER] = image->data;
 		image->pdata[GLAYER] = image->data;
 		image->pdata[BLAYER] = image->data;
@@ -1062,8 +1067,6 @@ static int cvClahe_float(fits *image, double clip_limit, int size) {
 	assert(image->fdata);
 	assert(image->rx);
 	assert(image->ry);
-
-	int ndata = image->rx * image->ry;
 
 	// preparing data
 	Mat in, out;
@@ -1113,15 +1116,17 @@ static int cvClahe_float(fits *image, double clip_limit, int size) {
 	std::vector<Mat> channel(3);
 	split(out, channel);
 
+	size_t nbpixels = image->naxes[0] * image->naxes[1];
+	size_t ndata = nbpixels * sizeof(float);
 	if (image->naxes[2] == 3) {
-		memcpy(image->fdata, channel[2].data, ndata * sizeof(float));
-		memcpy(image->fdata + ndata, channel[1].data, ndata * sizeof(float));
-		memcpy(image->fdata + ndata * 2, channel[0].data, ndata * sizeof(float));
+		memcpy(image->fdata, channel[2].data, ndata);
+		memcpy(image->fdata + nbpixels, channel[1].data, ndata);
+		memcpy(image->fdata + nbpixels * 2, channel[0].data, ndata);
 		image->fpdata[RLAYER] = image->fdata;
-		image->fpdata[GLAYER] = image->fdata + ndata;
-		image->fpdata[BLAYER] = image->fdata + ndata * 2;
+		image->fpdata[GLAYER] = image->fdata + nbpixels;
+		image->fpdata[BLAYER] = image->fdata + nbpixels* 2;
 	} else {
-		memcpy(image->fdata, channel[0].data, ndata * sizeof(float));
+		memcpy(image->fdata, channel[0].data, ndata);
 		image->fpdata[RLAYER] = image->fdata;
 		image->fpdata[GLAYER] = image->fdata;
 		image->fpdata[BLAYER] = image->fdata;

@@ -83,7 +83,7 @@ CvHomographyEstimator::CvHomographyEstimator(int _modelPoints)
 
 int CvHomographyEstimator::runKernel( const CvMat* m1, const CvMat* m2, CvMat* H )
 {
-    int i, count = m1->rows*m1->cols;
+    size_t i, count = m1->rows * m1->cols;
     const CvPoint2D64f* M = (const CvPoint2D64f*)m1->data.ptr;
     const CvPoint2D64f* m = (const CvPoint2D64f*)m2->data.ptr;
 
@@ -168,7 +168,7 @@ void CvHomographyEstimator::computeReprojError( const CvMat* m1, const CvMat* m2
 bool CvHomographyEstimator::refine( const CvMat* m1, const CvMat* m2, CvMat* model, int maxIters )
 {
     CvLevMarq solver(8, 0, cvTermCriteria(CV_TERMCRIT_ITER+CV_TERMCRIT_EPS, maxIters, DBL_EPSILON));
-    int i, j, k, count = m1->rows*m1->cols;
+    size_t i, count = m1->rows * m1->cols;
     const CvPoint2D64f* M = (const CvPoint2D64f*)m1->data.ptr;
     const CvPoint2D64f* m = (const CvPoint2D64f*)m2->data.ptr;
     CvMat modelPart = cvMat( solver.param->rows, solver.param->cols, model->type, model->data.ptr );
@@ -200,9 +200,9 @@ bool CvHomographyEstimator::refine( const CvMat* m1, const CvMat* m2, CvMat* mod
                     { 0, 0, 0, Mx*ww, My*ww, ww, -Mx*ww*_yi, -My*ww*_yi }
                 };
 
-                for( j = 0; j < 8; j++ )
+                for( int j = 0; j < 8; j++ )
                 {
-                    for( k = j; k < 8; k++ )
+                    for( int k = j; k < 8; k++ )
                         _JtJ->data.db[j*8+k] += J[0][j]*J[0][k] + J[1][j]*J[1][k];
                     _JtErr->data.db[j] += J[0][j]*err[0] + J[1][j]*err[1];
                 }
@@ -448,7 +448,7 @@ int CvFMEstimator::run8Point( const CvMat* _m1, const CvMat* _m2, CvMat* _fmatri
     const CvPoint2D64f* m2 = (const CvPoint2D64f*)_m2->data.ptr;
     double* fmatrix = _fmatrix->data.db;
     assert( (_m1->cols == 1 || _m1->rows == 1) && CV_ARE_SIZES_EQ(_m1, _m2));
-    int i, j, k, count = _m1->cols*_m1->rows;
+    size_t i, count = _m1->cols * _m1->rows;
 
     // compute centers and average distances for each of the two point sets
     for( i = 0; i < count; i++ )
@@ -497,8 +497,8 @@ int CvFMEstimator::run8Point( const CvMat* _m1, const CvMat* _m2, CvMat* _fmatri
         double x1 = (m2[i].x - m1c.x)*scale1;
         double y1 = (m2[i].y - m1c.y)*scale1;
         double r[9] = { x1*x0, x1*y0, x1, y1*x0, y1*y0, y1, x0, y0, 1 };
-        for( j = 0; j < 9; j++ )
-            for( k = 0; k < 9; k++ )
+        for( int j = 0; j < 9; j++ )
+            for( int k = 0; k < 9; k++ )
                 a[j*9+k] += r[j]*r[k];
     }
 
@@ -559,7 +559,7 @@ int CvFMEstimator::run8Point( const CvMat* _m1, const CvMat* _m2, CvMat* _fmatri
 void CvFMEstimator::computeReprojError( const CvMat* _m1, const CvMat* _m2,
                                         const CvMat* model, CvMat* _err )
 {
-    int i, count = _m1->rows*_m1->cols;
+    size_t i, count = _m1->rows*_m1->cols;
     const CvPoint2D64f* m1 = (const CvPoint2D64f*)_m1->data.ptr;
     const CvPoint2D64f* m2 = (const CvPoint2D64f*)_m2->data.ptr;
     const double* F = model->data.db;

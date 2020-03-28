@@ -182,10 +182,10 @@ static void normalizeQualityData(struct registration_args *args, double q_min, d
  */
 int register_shift_dft(struct registration_args *args) {
 	fits fit_ref = { 0 };
-	int frame, size, sqsize;
+	unsigned int frame, size, sqsize, j;
 	fftwf_complex *ref, *in, *out, *convol;
 	fftwf_plan p, q;
-	int ret, j;
+	int ret;
 	int abort = 0;
 	float nb_frames, cur_nb;
 	int ref_image;
