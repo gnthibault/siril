@@ -136,12 +136,11 @@ static int undo_get_data_ushort(fits *fit, historic hist) {
 	}
 
 	errno = 0;
-	fit->rx = hist.rx;
-	fit->ry = hist.ry;
+	fit->rx = fit->naxes[0] = hist.rx;
+	fit->ry = fit->naxes[1] = hist.ry;
 	/* TODO: fit->naxes[0] = fit->rx ? what about naxes[2] ? */
 
-	/* we need to take fit->rx and fit->ry because size can change */
-	size_t n = fit->rx * fit->ry;
+	size_t n = fit->naxes[0] * fit->naxes[1];
 	size_t size = n * fit->naxes[2] * sizeof(WORD);
 	WORD *buf = calloc(1, size);
 	// read the data from temporary file
@@ -182,11 +181,10 @@ static int undo_get_data_float(fits *fit, historic hist) {
 	}
 
 	errno = 0;
-	fit->rx = hist.rx;
-	fit->ry = hist.ry;
+	fit->rx = fit->naxes[0] = hist.rx;
+	fit->ry = fit->naxes[1] = hist.ry;
 
-	/* we need to take fit->rx and fit->ry because size can change */
-	size_t n = fit->rx * fit->ry;
+	size_t n = fit->naxes[0] * fit->naxes[1];
 	size_t size = n * fit->naxes[2] * sizeof(float);
 	float *buf = calloc(1, size);
 	// read the data from temporary file
