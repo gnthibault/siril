@@ -30,6 +30,7 @@ extern char *supported_extensions[MAX_EXTENSIONS];
 extern char *filter_pattern[];
 extern unsigned int convflags;
 
+int retrieveBayerPattern(char *bayer);
 int get_nb_raw_supported();
 
 void list_format_available();

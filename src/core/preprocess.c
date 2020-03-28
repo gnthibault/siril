@@ -245,14 +245,21 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 	if (preprocess(fit, prepro))
 		return 1;
 
-	if (prepro->use_cosmetic_correction && prepro->use_dark && prepro->dark->naxes[2] == 1) {
-		cosmeticCorrection(fit, prepro->dev, prepro->icold + prepro->ihot, prepro->is_cfa);
-
+	if (prepro->use_cosmetic_correction && prepro->use_dark
+			&& prepro->dark->naxes[2] == 1) {
+		/* we don't want apply it on xtrans sensor */
+		sensor_pattern bayer = retrieveBayerPattern(fit->bayer_pattern);
+		if (bayer <= BAYER_FILTER_MAX) {
+			cosmeticCorrection(fit, prepro->dev, prepro->icold + prepro->ihot, prepro->is_cfa);
 #ifdef SIRIL_OUTPUT_DEBUG
-		image_find_minmax(fit);
-		fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n", fit->mini, fit->maxi);
-		invalidate_stats_from_fit(fit);
+			image_find_minmax(fit);
+			fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n",
+					fit->mini, fit->maxi);
+			invalidate_stats_from_fit(fit);
 #endif
+		} else {
+			siril_log_color_message(_("Cannot apply cosmetic correction on XTRANS sensor yet\n"), "red");
+		}
 	}
 
 	if (prepro->debayer) {

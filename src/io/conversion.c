@@ -265,6 +265,8 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 	return tmpfit;
 }
 
+/**************************Public functions***********************************************************/
+
 int retrieveBayerPattern(char *bayer) {
 	int i;
 
@@ -275,8 +277,6 @@ int retrieveBayerPattern(char *bayer) {
 	}
 	return BAYER_FILTER_NONE;
 }
-
-/**************************Public functions***********************************************************/
 
 /* initialize converters (utilities used for different image types importing) *
  * updates the label listing the supported input file formats, and modifies the
