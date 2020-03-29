@@ -232,7 +232,6 @@ static void remap(int vport) {
 	float *fsrc;
 	display_mode mode;
 	color_map color;
-	gboolean negative;
 	gboolean do_cut_over, inverted;
 
 	siril_debug_print("remap %d\n", vport);
@@ -291,7 +290,7 @@ static void remap(int vport) {
 			return;
 		}
 	}
-	negative = gtk_toggle_tool_button_get_active(
+	inverted = gtk_toggle_tool_button_get_active(
 			GTK_TOGGLE_TOOL_BUTTON(lookup_widget("neg_button")));
 
 	if (single_image_is_loaded() && com.seq.current != RESULT_IMAGE) {
@@ -310,13 +309,6 @@ static void remap(int vport) {
 		siril_debug_print("BUG in unique image remap\n");
 		return;
 	}
-
-	if (negative) {
-		WORD temp = lo;
-		lo = hi;
-		hi = temp;
-	}
-	inverted = negative;
 
 	if (mode == HISTEQ_DISPLAY) {
 		if (gfit.type == DATA_USHORT) {
