@@ -2145,8 +2145,7 @@ void on_checkseqbutton_clicked(GtkButton *button, gpointer user_data) {
 	force = gtk_toggle_button_get_active(forceButton);
 
 	if (get_thread_run()) {
-		siril_log_message(_("Another task is already "
-					"in progress, ignoring new request.\n"));
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 

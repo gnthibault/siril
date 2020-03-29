@@ -1151,8 +1151,7 @@ void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data)
 	static GtkComboBox *combo_extract_channel = NULL;
 
 	if (get_thread_run()) {
-		siril_log_message(
-				_("Another task is already in progress, ignoring new request.\n"));
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 

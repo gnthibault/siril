@@ -861,8 +861,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	GtkComboBoxText *ComboBoxRegInter;
 
 	if (!reserve_thread()) {	// reentrant from here
-		siril_log_message(
-				_("Another task is already in progress, ignoring new request.\n"));
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 

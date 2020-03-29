@@ -532,8 +532,7 @@ void on_button_fft_apply_clicked(GtkButton *button, gpointer user_data) {
 	static GtkNotebook* notebookFFT = NULL;
 
 	if (get_thread_run()) {
-		siril_log_message(
-				_("Another task is already in progress, ignoring new request.\n"));
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 

@@ -149,8 +149,7 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 	GString *str;
 
 	if (get_thread_run()) {
-		siril_log_message(_("Another task is already in "
-				"progress, ignoring new request.\n"));
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 

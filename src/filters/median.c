@@ -57,8 +57,7 @@ void on_Median_Apply_clicked(GtkButton *button, gpointer user_data) {
 	int iterations = round_to_int(gtk_spin_button_get_value(GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "median_button_iterations"))));
 
 	if (get_thread_run()) {
-		siril_log_message(
-				_(	"Another task is already in progress, ignoring new request.\n"));
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 

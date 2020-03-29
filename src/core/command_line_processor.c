@@ -324,7 +324,7 @@ int processcommand(const char *line) {
 		return 0;
 	if (line[0] == '@') { // case of files
 		if (get_thread_run()) {
-			siril_log_message(_("Another task is already in progress, ignoring new request.\n"));
+			PRINT_ANOTHER_THREAD_RUNNING;
 			return 1;
 		}
 		if (com.script_thread)

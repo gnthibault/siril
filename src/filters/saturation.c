@@ -68,7 +68,7 @@ static void apply_satu_changes() {
 
 static int satu_update_preview() {
 	if (get_thread_run()) {
-		siril_debug_print(_("Another task is already in progress, ignoring new request.\n"));
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
 

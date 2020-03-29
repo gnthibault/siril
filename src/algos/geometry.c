@@ -647,8 +647,7 @@ void on_menu_gray_crop_seq_activate(GtkMenuItem *menuitem, gpointer user_data) {
 /*** GUI for crop sequence */
 void on_crop_Apply_clicked(GtkButton *button, gpointer user_data) {
 	if (get_thread_run()) {
-		siril_log_message(
-				"Another task is already in progress, ignoring new request.\n");
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 

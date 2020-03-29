@@ -513,8 +513,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 		return;
 
 	if (!single_image_is_loaded() && get_thread_run()) {
-		siril_log_message(_("Another task is already in "
-					"progress, ignoring new request.\n"));
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 

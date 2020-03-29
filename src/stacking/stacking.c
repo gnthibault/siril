@@ -359,7 +359,7 @@ static void start_stacking() {
 	}
 
 	if (get_thread_run()) {
-		siril_log_message(_("Another task is already in progress, ignoring new request.\n"));
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 
@@ -486,8 +486,7 @@ static void _show_summary(struct stacking_args *args) {
 
 static void _show_bgnoise(gpointer p) {
 	if (get_thread_run()) {
-		siril_log_message(
-				_("Another task is already in progress, ignoring new request.\n"));
+		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 	set_cursor_waiting(TRUE);
