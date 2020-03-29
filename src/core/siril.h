@@ -83,9 +83,6 @@ typedef unsigned short WORD;	// default type for internal image data
 #define ZOOM_FIT	-1.0	// or any value < 0
 #define ZOOM_DEFAULT	ZOOM_FIT
 
-#define LOW_BOUND  0.00002
-#define HIGH_BOUND 0.99998
-
 /* Some statistic constants */
 #define SIGMA_PER_FWHM 2.35482
 #define AVGDEV_NORM 1.2533
