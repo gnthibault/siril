@@ -6972,7 +6972,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToolButton" id="neg_button">
+                  <object class="GtkToggleToolButton" id="neg_button">
                     <property name="name">neg_button</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -6981,7 +6981,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="valign">center</property>
                     <property name="use_underline">True</property>
                     <property name="icon_widget">image_neg</property>
-                    <signal name="clicked" handler="on_neg_button_clicked" object="checkbutton_chain" swapped="no"/>
+                    <signal name="toggled" handler="on_neg_button_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>

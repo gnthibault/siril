@@ -1893,50 +1893,10 @@ void on_radiobutton_user_toggled(GtkToggleButton *togglebutton,
 	}
 }
 
-void on_neg_button_clicked(GtkToolButton *button, gpointer user_data) {
-	int tmp;
-	GtkToggleButton *chainedbutton;
-	gboolean is_chained;
-
+void on_neg_button_toggled(GtkToggleToolButton *togglebutton,
+		gpointer user_data) {
 	set_cursor_waiting(TRUE);
-
-	chainedbutton = (GtkToggleButton *)user_data;
-	is_chained = gtk_toggle_button_get_active(chainedbutton);
-
-	/* swaps values of hi and lo and redraw */
-	if (!is_chained) {
-		if (single_image_is_loaded() && com.cvport < com.uniq->nb_layers
-				&& com.seq.current != RESULT_IMAGE) {
-			tmp = com.uniq->layers[com.cvport].hi;
-			com.uniq->layers[com.cvport].hi = com.uniq->layers[com.cvport].lo;
-			com.uniq->layers[com.cvport].lo = tmp;
-		} else if (sequence_is_loaded() && com.cvport < com.seq.nb_layers) {
-			tmp = com.seq.layers[com.cvport].hi;
-			com.seq.layers[com.cvport].hi = com.seq.layers[com.cvport].lo;
-			com.seq.layers[com.cvport].lo = tmp;
-		} else
-			return;
-		set_cutoff_sliders_values();
-		redraw(com.cvport, REMAP_ONLY);	// sliders are only set for cvport
-	} else {
-		int i;
-		if (single_image_is_loaded() && com.seq.current != RESULT_IMAGE) {
-			for (i = 0; i < com.uniq->nb_layers; i++) {
-				tmp = com.uniq->layers[i].hi;
-				com.uniq->layers[i].hi = com.uniq->layers[i].lo;
-				com.uniq->layers[i].lo = tmp;
-			}
-		} else if (sequence_is_loaded()) {
-			for (i = 0; i < com.seq.nb_layers; i++) {
-				tmp = com.seq.layers[i].hi;
-				com.seq.layers[i].hi = com.seq.layers[i].lo;
-				com.seq.layers[i].lo = tmp;
-			}
-		} else
-			return;
-		set_cutoff_sliders_values();
-		redraw(com.cvport, REMAP_ALL);
-	}
+	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
 }
