@@ -316,15 +316,7 @@ static void remap(int vport) {
 		lo = hi;
 		hi = temp;
 	}
-
-	if (lo > hi) {
-		// negative display
-		WORD tmp = hi;
-		hi = lo;
-		lo = tmp;
-		inverted = TRUE;
-	} else
-		inverted = FALSE;
+	inverted = negative;
 
 	if (mode == HISTEQ_DISPLAY) {
 		if (gfit.type == DATA_USHORT) {
