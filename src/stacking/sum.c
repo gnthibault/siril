@@ -94,15 +94,15 @@ static int sum_stacking_image_hook(struct generic_seq_args *args, int o, int i, 
 		shifty = 0;
 	}
 
-	for (y=0; y < fit->ry; ++y){
-		for (x=0; x < fit->rx; ++x){
+	for (y = 0; y < fit->ry; ++y) {
+		for (x = 0; x < fit->rx; ++x) {
 			nx = x - shiftx;
 			ny = y - shifty;
 			if (nx >= 0 && nx < fit->rx && ny >= 0 && ny < fit->ry) {
 				// we have data for this pixel
 				ii = ny * fit->rx + nx;		// index in source image
-				if (ii >= 0 && ii < fit->rx * fit->ry){
-					for(layer=0; layer<args->seq->nb_layers; ++layer) {
+				if (ii < fit->rx * fit->ry) {
+					for (layer = 0; layer < args->seq->nb_layers; ++layer) {
 						if (ssdata->input_32bits) {
 #ifdef _OPENMP
 #pragma omp atomic
