@@ -596,9 +596,38 @@ GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 	return orig;
 }
 
+void remove_gradient_from_image(int correction, poly_order degree) {
+	double *background, *image[3] = {0};
+	gchar *error;
+
+	for (int channel = 0; channel < gfit.naxes[2]; channel++) {
+		/* compute background */
+		image[channel] = convert_fits_to_img(&gfit, channel, TRUE);
+		background = computeBackground(com.grad_samples, channel, gfit.rx, gfit.ry, degree, &error);
+		if (background == NULL) {
+			if (error && !com.script) {
+				siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
+			}
+
+			free(image[channel]);
+			set_cursor_waiting(FALSE);
+			return;
+		}
+		/* remove background */
+		const char *c_name = vport_number_to_name(channel);
+		siril_log_message(_("Background extraction from channel %s.\n"), c_name);
+		remove_gradient(image[channel], background,	gfit.naxes[0] * gfit.naxes[1], correction);
+		convert_img_to_fits(image[channel], &gfit, channel);
+
+		/* free memory */
+		free(image[channel]);
+		free(background);
+	}
+}
+
 /** Apply for sequence **/
 
-int background_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
+static int background_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 		rectangle *_) {
 	struct background_data *b_args = (struct background_data*) args->user;
 
@@ -701,9 +730,6 @@ void on_background_clear_all_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
-	double *background, *image[3] = {0};
-	gchar *error;
-
 	set_cursor_waiting(TRUE);
 
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkBkgSeq")))
@@ -740,33 +766,10 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 		}
 
 		int correction = get_correction_type();
+		poly_order degree = get_poly_order();
 		undo_save_state(&gfit, "Processing: Background extraction (Correction: %s)",
 				correction ? "Division" : "Subtraction");
-
-		for (int channel = 0; channel < gfit.naxes[2]; channel++) {
-			/* compute background */
-			image[channel] = convert_fits_to_img(&gfit, channel, TRUE);
-			background = computeBackground(com.grad_samples, channel, gfit.rx,
-					gfit.ry, get_poly_order(), &error);
-			if (background == NULL) {
-				if (error) {
-					siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
-				}
-
-				free(image[channel]);
-				set_cursor_waiting(FALSE);
-				return;
-			}
-			/* remove background */
-			const char *c_name = vport_number_to_name(channel);
-			siril_log_message(_("Background extraction from channel %s.\n"), c_name);
-			remove_gradient(image[channel], background,	gfit.naxes[0] * gfit.naxes[1], correction);
-			convert_img_to_fits(image[channel], &gfit, channel);
-
-			/* free memory */
-			free(image[channel]);
-			free(background);
-		}
+		remove_gradient_from_image(correction, degree);
 
 		invalidate_stats_from_fit(&gfit);
 		adjust_cutoff_from_updated_gfit();
