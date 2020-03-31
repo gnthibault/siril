@@ -118,6 +118,7 @@ static command commands[] = {
 	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},
 	{"seqpsf", 0, "seqpsf", process_seq_psf, STR_SEQPSF, FALSE},
 	{"seqsplit_cfa", 0, "seqsplit_cfa sequencename", process_seq_split_cfa, STR_SEQSPLIT_CFA, FALSE},
+	{"seqsubsky", 2, "sessubsky sequencename degree", process_subsky, STR_SEQSUBSKY, TRUE},
 #ifdef _OPENMP
 	{"setcpu", 1, "setcpu number", process_set_cpu, STR_SETCPU, TRUE},
 #endif
@@ -132,6 +133,7 @@ static command commands[] = {
 	{"stack", 1, "stack sequencename [type] [sigma low] [sigma high] [-nonorm, norm=] [-output_norm] [-out=result_filename] [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackone, STR_STACK, TRUE},
 	{"stackall", 0, "stackall [type] [sigma low] [sigma high] [-nonorm, norm=] [-output_norm] [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]", process_stackall, STR_STACKALL, TRUE},
 	{"stat", 0, "stat", process_stat, STR_STAT, TRUE},
+	{"subsky", 1, "subsky degree", process_subsky, STR_SUBSKY, TRUE},
 
 	{"threshlo", 1, "threshlo level", process_threshlo, STR_THRESHLO, TRUE},
 	{"threshhi", 1, "threshi level", process_threshhi, STR_THRESHHI, TRUE},

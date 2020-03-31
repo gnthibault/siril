@@ -66,6 +66,7 @@
 #include "algos/star_finder.h"
 #include "algos/Def_Math.h"
 #include "algos/Def_Wavelet.h"
+#include "algos/background_extraction.h"
 #include "algos/demosaicing.h"
 #include "algos/quality.h"
 #include "algos/noise.h"
@@ -1801,6 +1802,84 @@ int process_fixbanding(int nb) {
 
 	start_in_new_thread(BandingEngineThreaded, args);
 	
+	return 0;
+}
+
+
+int process_subsky(int nb) {
+	gboolean is_sequence;
+	sequence *seq = NULL;
+	int i = 0;
+
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	is_sequence = (word[0][2] == 'q');
+
+	if (is_sequence) {
+		gchar *file = g_strdup(word[1]);
+		if (!ends_with(file, ".seq")) {
+			str_append(&file, ".seq");
+		}
+
+		if (!existseq(file)) {
+			if (check_seq(FALSE)) {
+				siril_log_message(_("No sequence `%s' found.\n"), file);
+				return 1;
+			}
+		}
+		seq = readseqfile(file);
+		if (seq == NULL) {
+			siril_log_message(_("No sequence `%s' found.\n"), file);
+			return 1;
+		}
+		if (seq_check_basic_data(seq, FALSE) == -1) {
+			free(seq);
+			return 1;
+		}
+		i++;
+	} else {
+		if (!single_image_is_loaded()) return 1;
+	}
+
+	set_cursor_waiting(TRUE);
+
+	if (is_sequence) {
+		struct background_data *args = malloc(sizeof(struct background_data));
+
+		args->seq = seq;
+		args->nb_of_samples = 20;
+		args->tolerance = 1.0;
+		args->correction = 0; //subtraction
+		args->degree = atof(word[2]) - 1;
+		args->seqEntry = "bkg_";
+
+		if (args->degree < 1 || args->degree > 4) {
+			siril_log_message("Polynomial degree order must be within the [1, 4] range.\n");
+			return 1;
+		}
+
+		apply_background_extraction_to_sequence(args);
+	} else {
+		poly_order degree = atof(word[1]) - 1;
+		if (degree < 1 || degree > 4) {
+			siril_log_message("Polynomial degree order must be within the [1, 4] range.\n");
+			return 1;
+		}
+
+		generate_background_samples(20, 1.0);
+		remove_gradient_from_image(0, degree);
+		free_background_sample_list(com.grad_samples);
+		com.grad_samples = NULL;
+
+		invalidate_stats_from_fit(&gfit);
+		adjust_cutoff_from_updated_gfit();
+		redraw(com.cvport, REMAP_ALL);
+	}
+	set_cursor_waiting(FALSE);
+
 	return 0;
 }
 

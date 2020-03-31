@@ -596,6 +596,20 @@ GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 	return orig;
 }
 
+void generate_background_samples(int nb_of_samples, double tolerance) {
+	set_cursor_waiting(TRUE);
+
+	free_background_sample_list(com.grad_samples);
+	com.grad_samples = generate_samples(&gfit, nb_of_samples, tolerance, SAMPLE_SIZE);
+	if (gfit.naxes[2] > 1) {
+		com.grad_samples = update_median_for_rgb_samples(com.grad_samples,
+				&gfit);
+	}
+
+	redraw(com.cvport, REMAP_ALL);
+	set_cursor_waiting(FALSE);
+}
+
 void remove_gradient_from_image(int correction, poly_order degree) {
 	double *background, *image[3] = {0};
 	gchar *error;
@@ -711,11 +725,8 @@ void on_background_generate_clicked(GtkButton *button, gpointer user_data) {
 
 	nb_of_samples = get_nb_samples_per_line();
 	tolerance = get_tolerance_value();
-	free_background_sample_list(com.grad_samples);
-	com.grad_samples = generate_samples(&gfit, nb_of_samples, tolerance, SAMPLE_SIZE);
-	if (gfit.naxes[2] > 1) {
-		com.grad_samples = update_median_for_rgb_samples(com.grad_samples, &gfit);
-	}
+
+	generate_background_samples(nb_of_samples, tolerance);
 
 	redraw(com.cvport, REMAP_ALL);
 	set_cursor_waiting(FALSE);
