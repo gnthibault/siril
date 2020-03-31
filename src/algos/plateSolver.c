@@ -1053,7 +1053,7 @@ static gboolean check_affine_TRANS_sanity(TRANS trans) {
 	double var2 = fabs(trans.c) - fabs(trans.e);
 	siril_debug_print("abs(b+f)=%f et abs(c+e)=%f\n", var1, var2);
 
-	return ((fabs(var1) < 0.1) && fabs(var2 < 0.1));
+	return ((fabs(var1) < 0.1) && fabs(var2) < 0.1);
 }
 
 static gboolean end_plate_solver(gpointer p) {
