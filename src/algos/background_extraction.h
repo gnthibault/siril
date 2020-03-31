@@ -12,6 +12,16 @@ typedef struct sample {
 	gboolean valid;
 } background_sample;
 
+struct background_data {
+	int nb_of_samples;
+	double tolerance;
+	int correction;
+	poly_order degree;
+	fits *fit;
+	sequence *seq;
+	const gchar *seqEntry;
+};
+
 int get_sample_radius();
 void free_background_sample_list(GSList *list);
 GSList *add_background_sample(GSList *list, fits *fit, point pt);

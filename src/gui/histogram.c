@@ -852,7 +852,7 @@ void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
 		// the apply button resets everything after recomputing with the current values
 		histo_recompute();
 		// partial cleanup
-		fprintf(stdout, "Applying histogram (mid=%.3f, lo=%.3f, hi=%.3f)\n",
+		siril_debug_print("Applying histogram (mid=%.3f, lo=%.3f, hi=%.3f)\n",
 				_midtones, _shadows, _highlights);
 		undo_save_state(get_preview_gfit_backup(), "Processing: Histogram Transf. "
 				"(mid=%.3f, lo=%.3f, hi=%.3f)", _midtones, _shadows,

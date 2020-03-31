@@ -28,9 +28,11 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/processing.h"
 #include "core/undo.h"
 #include "core/OS_utils.h"
 #include "io/single_image.h"
+#include "io/sequence.h"
 #include "algos/statistics.h"
 #include "algos/geometry.h"
 #include "algos/sorting.h"
@@ -594,6 +596,78 @@ GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 	return orig;
 }
 
+/** Apply for sequence **/
+
+int background_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
+		rectangle *_) {
+	struct background_data *b_args = (struct background_data*) args->user;
+
+	double *background, *image[3] = {0};
+	gchar *error;
+
+	GSList *samples = generate_samples(fit, b_args->nb_of_samples, b_args->tolerance, SAMPLE_SIZE);
+	if (samples == NULL) {
+		return 1;
+	}
+
+	if (fit->naxes[2] > 1) {
+		samples = update_median_for_rgb_samples(samples, fit);
+	}
+
+	for (int channel = 0; channel < fit->naxes[2]; channel++) {
+		/* compute background */
+		image[channel] = convert_fits_to_img(fit, channel, TRUE);
+		background = computeBackground(samples, channel, fit->rx, fit->ry, b_args->degree, &error);
+		if (background == NULL) {
+			if (error) {
+				siril_log_message(error);
+			}
+
+			set_cursor_waiting(FALSE);
+			free(image[channel]);
+			free_background_sample_list(samples);
+			return 1;
+		}
+		/* remove background */
+		remove_gradient(image[channel], background, fit->naxes[0] * fit->naxes[1], b_args->correction);
+		convert_img_to_fits(image[channel], fit, channel);
+
+		/* free memory */
+		free(image[channel]);
+		free(background);
+	}
+	free_background_sample_list(samples);
+
+	return 0;
+}
+void apply_background_extraction_to_sequence(struct background_data *background_args) {
+	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	args->seq = background_args->seq;
+	args->force_float = FALSE;
+	args->partial_image = FALSE;
+	args->filtering_criterion = seq_filter_included;
+	args->nb_filtered_images = background_args->seq->selnum;
+	args->prepare_hook = ser_prepare_hook;
+	args->finalize_hook = ser_finalize_hook;
+	args->save_hook = NULL;
+	args->image_hook = background_image_hook;
+	args->idle_function = NULL;
+	args->stop_on_error = FALSE;
+	args->description = _("Background Extraction");
+	args->has_output = TRUE;
+	args->output_type = get_data_type(args->seq->bitpix);
+	args->new_seq_prefix = background_args->seqEntry;
+	args->load_new_sequence = TRUE;
+	args->force_ser_output = FALSE;
+	args->user = background_args;
+	args->already_in_a_thread = FALSE;
+	args->parallel = TRUE;
+
+	background_args->fit = NULL;	// not used here
+
+	start_in_new_thread(generic_sequence_worker, args);
+}
+
 /************* CALLBACKS *************/
 
 void on_menuitem_background_extraction_activate(GtkMenuItem *menuitem,
@@ -628,45 +702,77 @@ void on_background_clear_all_clicked(GtkButton *button, gpointer user_data) {
 
 void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 	double *background, *image[3] = {0};
-	int correction, channel;
 	gchar *error;
-
-	if (com.grad_samples == NULL) return;
 
 	set_cursor_waiting(TRUE);
 
-	correction = get_correction_type();
-	undo_save_state(&gfit, "Processing: Background extraction (Correction: %s)",
-				correction ? "Division" : "Subtraction");
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkBkgSeq")))
+			&& sequence_is_loaded()) {
+		struct background_data *args = malloc(sizeof(struct background_data));
 
-	for (channel = 0; channel < gfit.naxes[2]; channel++) {
-		/* compute background */
-		image[channel] = convert_fits_to_img(&gfit, channel, TRUE);
-		background = computeBackground(com.grad_samples, channel, gfit.rx, gfit.ry, get_poly_order(), &error);
-		if (background == NULL) {
-			if (error) {
-				siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
+		args->nb_of_samples = get_nb_samples_per_line();
+		args->tolerance = get_tolerance_value();
+		args->correction = get_correction_type();
+		args->degree = get_poly_order();
+		if (args->degree > POLY_1) {
+			int confirm = siril_confirm_dialog(_("Polynomial order seems too high."),
+					_("You are about to process a sequence of preprocessed files with "
+							"a polynomial degree greater than 1. This is unlikely because such "
+							"gradients are often linear and a correction with a polynomial "
+							"function of degree 1 is probably enough. Click OK to confirm or "
+							"cancel to change your mind."));
+			if (!confirm) {
+				free(args);
+				set_cursor_waiting(FALSE);
+				return;
 			}
+		}
 
+		args->seqEntry = gtk_entry_get_text(GTK_ENTRY(lookup_widget("entryBkgSeq")));
+		if (args->seqEntry && args->seqEntry[0] == '\0')
+			args->seqEntry = "bkg_";
+		args->seq = &com.seq;
+		apply_background_extraction_to_sequence(args);
+	} else {
+		if (com.grad_samples == NULL) {
 			set_cursor_waiting(FALSE);
-			free(image[channel]);
 			return;
 		}
-		/* remove background */
-		const char *c_name = vport_number_to_name(channel);
-		siril_log_message(_("Background extraction from channel %s.\n"), c_name);
-		remove_gradient(image[channel], background, gfit.naxes[0] * gfit.naxes[1], correction);
-		convert_img_to_fits(image[channel], &gfit, channel);
 
-		/* free memory */
-		free(image[channel]);
-		free(background);
+		int correction = get_correction_type();
+		undo_save_state(&gfit, "Processing: Background extraction (Correction: %s)",
+				correction ? "Division" : "Subtraction");
+
+		for (int channel = 0; channel < gfit.naxes[2]; channel++) {
+			/* compute background */
+			image[channel] = convert_fits_to_img(&gfit, channel, TRUE);
+			background = computeBackground(com.grad_samples, channel, gfit.rx,
+					gfit.ry, get_poly_order(), &error);
+			if (background == NULL) {
+				if (error) {
+					siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
+				}
+
+				free(image[channel]);
+				set_cursor_waiting(FALSE);
+				return;
+			}
+			/* remove background */
+			const char *c_name = vport_number_to_name(channel);
+			siril_log_message(_("Background extraction from channel %s.\n"), c_name);
+			remove_gradient(image[channel], background,	gfit.naxes[0] * gfit.naxes[1], correction);
+			convert_img_to_fits(image[channel], &gfit, channel);
+
+			/* free memory */
+			free(image[channel]);
+			free(background);
+		}
+
+		invalidate_stats_from_fit(&gfit);
+		adjust_cutoff_from_updated_gfit();
+		redraw(com.cvport, REMAP_ALL);
+
 	}
-
-	invalidate_stats_from_fit(&gfit);
-	adjust_cutoff_from_updated_gfit();
-	redraw(com.cvport, REMAP_ALL);
-
 	set_cursor_waiting(FALSE);
 }
 
