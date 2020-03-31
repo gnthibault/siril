@@ -1049,18 +1049,11 @@ static TRANS H_to_linear_TRANS(Homography H) {
 }
 
 static gboolean check_affine_TRANS_sanity(TRANS trans) {
-	gboolean ok = FALSE;
+	double var1 = fabs(trans.b) - fabs(trans.f);
+	double var2 = fabs(trans.c) - fabs(trans.e);
+	siril_debug_print("abs(b+f)=%f et abs(c+e)=%f\n", var1, var2);
 
-	double var1 = fabs(trans.b / trans.f);
-	double var2 = fabs(trans.c / trans.e);
-	siril_debug_print("abs(b/f)=%f et abs(c/e)=%f\n", var1, var2);
-
-	if (0.8 < var1 && var1 < 1.2) {
-		if (0.8 < var2 && var2 < 1.2) {
-			ok = TRUE;
-		}
-	}
-	return ok;
+	return ((fabs(var1) < 0.1) && fabs(var2 < 0.1));
 }
 
 static gboolean end_plate_solver(gpointer p) {
