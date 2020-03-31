@@ -60,7 +60,8 @@ Scripting
 SIRIL accepts commands from the graphical command line, from scripts as a file
 that contains a sequence of commands, or from a named pipe. The list of
 supported commands is documented
-[here](https://free-astro.org/index.php?title=Siril:Commands).
+[here](https://free-astro.org/index.php?title=Siril:Commands). We recommend to use
+the **siril-cli** binary for that as no X-server is needed.
 
 Some general purpose scripts have been made by the developers and some power
 users, and are provided with the source code and some installers. When they are
@@ -93,6 +94,12 @@ Run with the following commands:
     ./autogen.sh
     make
     sudo make install
+    
+To update Siril, run the following commands
+    
+    git pull --recurse-submodules
+    sudo make install
+
 
 Note that a binary package for stable version of SIRIL is maintained for Debian. 
 PPA repositories for Ubuntu and Linux Mint maintained by SIRIL's authors are
@@ -108,11 +115,12 @@ but you can also install SIRIL from source using homebrew.
 
     brew install siril
 
-SIRIL on Windows
+SIRIL on Microsoft Windows
 ----------------
-SIRIL is supported on windows since version 0.9.8. An installer has been
-created by a SIRIL user and he maintains it. We only provide an archive
-containing the binaries as the official Windows release.
+SIRIL is supported on Microsoft Windows since version 0.9.8.  We provide binary files
+in two formats:
+ * an installer.
+ * an archive (zip file).
 
 You can also build it from source yourself with msys2, it is documented
 [here](https://free-astro.org/index.php?title=Siril:install#Installing_on_Windows).
