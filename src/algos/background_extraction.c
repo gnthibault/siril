@@ -57,32 +57,32 @@
 #define C(i) (gsl_vector_get(c,(i)))
 
 static double poly_4(gsl_vector *c, double x, double y) {
-	double value = C(0) * 1.0 + C(1) * x + C(2) * y + C(3) * (x * x) + C(4) * (x * y)
-			+ C(5) * (y * y) + C(6) * (x * x) * x + C(7) * (x * x) * y
-			+ C(8) * x * (y * y) + C(9) * (y * y) * y + C(10) * (x * x) * (x * x)
-			+ C(11) * (x * x) * (x * y) + C(12) * (x * x) * (y * y)
-			+ C(13) * (x * y) * (y * y) + C(14) * (y * y) * (y * y);
+	double value = C(0) * C(1) * x + C(2) * y + (x * x) * C(3) + (x * y) * C(4)
+			+ (y * y) * C(5) + (x * x) * x * C(6) + (x * x) * y * C(7)
+			+ x * (y * y) * C(8)+ (y * y) * y * C(9) + (x * x) * (x * x) * C(10)
+			+ (x * x) * (x * y) * C(11)+ (x * x) * (y * y) * C(12)
+			+ (x * y) * (y * y) * C(13) + (y * y) * (y * y) * C(14);
 
 	return (value);
 }
 
 static double poly_3(gsl_vector *c, double x, double y) {
-	double value = C(0) * 1.0 + C(1) * x + C(2) * y + C(3) * (x * x) + C(4) * (y * x)
-			+ C(5) * (y * y) + C(6) * (x * x) * x + C(7) * (x * x) * y + C(8) * x * (y * y)
-			+ C(9) * (y * y) * y;
+	double value = C(0) + C(1) * x + C(2) * y + (x * x) * C(3) + (y * x) * C(4)
+			+ (y * y) * C(5) + (x * x) * x * C(6) + (x * x) * y * C(7) + x * (y * y) * C(8)
+			+ (y * y) * y * C(9);
 
 	return (value);
 }
 
 static double poly_2(gsl_vector *c, double x, double y) {
-	double value = C(0) * 1.0 + C(1) * x + C(2) * y + C(3) * (x * x) + C(4) * (y * x)
+	double value = C(0) + C(1) * x + C(2) * y + C(3) * (x * x) + C(4) * (y * x)
 			+ C(5) * (y * y);
 
 	return (value);
 }
 
 static double poly_1(gsl_vector *c, double x, double y) {
-	double value = C(0) * 1.0 + C(1) * x + C(2) * y;
+	double value = C(0) + C(1) * x + C(2) * y;
 
 	return (value);
 }
