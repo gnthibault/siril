@@ -184,6 +184,26 @@ float get_median_float_fast(float *buf, const int xx, const int yy, const int w,
 	return quickmedian_float(values, n);
 }
 
+float get_median_ushort_fast(WORD *buf, const int xx, const int yy, const int w,
+		const int h, int radius) {
+
+	int ksize = radius * 2 + 1;
+	WORD values[ksize * ksize];
+
+	int ystart = (yy - radius) < 0 ? 0 : yy - radius;
+	int yend = (yy + radius) >= h ? h - 1 : yy + radius;
+	int xstart = (xx - radius) < 0 ? 0 : xx - radius;
+	int xend = (xx + radius) >= w ? w - 1 : xx + radius;
+	int n = 0;
+	for (int y = ystart; y <= yend; ++y) {
+		for (int x = xstart; x <= xend; ++x) {
+			// ^ limit to image bounds ^
+			values[n++] = buf[x + y * w];
+		}
+	}
+	return quickmedian(values, n);
+}
+
 double get_median_gsl(gsl_matrix *mat, const int xx, const int yy, const int w,
 		const int h, int radius, gboolean is_cfa, gboolean include_self) {
 	int n = 0, step = 1, x, y, ksize;
@@ -231,10 +251,10 @@ static gboolean end_median_filter(gpointer p) {
 
 static gpointer median_filter_ushort(gpointer p) {
 	struct median_filter_data *args = (struct median_filter_data *)p;
-	int progress = 0, x, y, layer, iter = 0;
+	int progress = 0;
 	int nx = args->fit->rx;
 	int ny = args->fit->ry;
-	double total, norm = get_normalized_value(args->fit);
+	double total;
 	struct timeval t_start, t_end;
 	int radius = (args->ksize - 1) / 2;
 
@@ -247,31 +267,203 @@ static gpointer median_filter_ushort(gpointer p) {
 	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
 
-	do {
-		for (layer = 0; layer < args->fit->naxes[2]; layer++) {
-			WORD *data = args->fit->pdata[layer];
-			for (y = 0; y < ny; y++) {
-				int pix_idx = y * nx;
-				if (!get_thread_run()) break;
-				if (!(y % 16))	// every 16 iterations
-					set_progress_bar_data(NULL, (double)progress / total);
-				progress++;
-				for (x = 0; x < nx; x++) {
-					double median = get_median_ushort(data, x, y, nx, ny, radius, FALSE, TRUE);
-					if (args->amount != 1.0) {
-						double pixel = args->amount * (median / norm);
-						pixel += (1.0 - args->amount)
-							* ((double)data[pix_idx] / norm);
-						data[pix_idx] = round_to_WORD(pixel * norm);
-					} else {
-						data[pix_idx] = round_to_WORD(median);
+	size_t alloc_size = args->fit->naxes[0] * args->fit->naxes[1] * sizeof(WORD);
+	WORD *temp = calloc(1, alloc_size); // we need a temporary buffer
+	if (!temp) {
+		PRINT_ALLOC_ERR;
+		return GINT_TO_POINTER(-1);
+	}
+	float amountf = args->amount;
+	for (int layer = 0; layer < args->fit->naxes[2]; layer++) {
+		for (int iter = 0; iter < args->iterations; ++iter) {
+			WORD *dst = (iter % 2) ? args->fit->pdata[layer] : temp;
+			WORD *src = (iter % 2) ? temp : args->fit->pdata[layer];
+			// borders
+			for (int y = 0; y < ny; y++) {
+				if (y < radius || y >= ny - radius) {
+					for (int x = 0; x < nx; x++) {
+						if (x < radius || x >= nx - radius) {
+							int pix_idx = y * nx + x;
+							float median = get_median_ushort_fast(src, x, y, nx, ny, radius);
+							dst[pix_idx] = roundf_to_WORD(intpf(amountf, median, (float) src[pix_idx]));
+							pix_idx++;
+						}
 					}
-					pix_idx++;
+				}
+			}
+			if (args->ksize == 3) {
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic,16) num_threads(com.max_thread)
+#endif
+				for (int y = 1; y < ny - 1; y++) {
+					int pix_idx = y * nx + 1;
+					int x = 1;
+					for (; x < nx - 1; x++) {
+						float median = median9f(src[(y - 1) * nx + x - 1],
+								src[(y - 1) * nx + x],
+								src[(y - 1) * nx + x + 1],
+								src[y * nx + x - 1],
+								src[y * nx + x],
+								src[y * nx + x + 1],
+								src[(y + 1) * nx + x - 1],
+								src[(y + 1) * nx + x],
+								src[(y + 1) * nx + x + 1]);
+						dst[pix_idx] = roundf_to_WORD(intpf(amountf, median, (float) src[pix_idx]));
+						pix_idx++;
+					}
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+					{
+						++progress;
+						if (!(progress % 32)) {
+							set_progress_bar_data(NULL, (double)progress / total);
+						}
+					}
+				}
+			} else if (args->ksize == 5) {
+#ifdef _OPENMP
+#pragma omp parallel num_threads(com.max_thread)
+#endif
+				{
+					float medbuf[25];
+
+#ifdef _OPENMP
+#pragma omp for schedule(dynamic,16)
+#endif
+					for (int y = 2; y < ny - 2; y++) {
+						int pix_idx = y * nx + 2;
+						int x = 2;
+						for (; x < nx - 2; x++) {
+							int nb = 0;
+							for (int i = -2; i <= 2 ; ++i) {
+								for (int j = -2; j <= 2; ++j) {
+									medbuf[nb++] = (float) src[(y + i) * nx + x + j];
+								}
+							}
+							float median = median5x5(medbuf);
+							dst[pix_idx] = roundf_to_WORD(intpf(amountf, median, (float) src[pix_idx]));
+							pix_idx++;
+						}
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+						{
+							++progress;
+							if (!(progress % 32)) {
+								set_progress_bar_data(NULL, (double)progress / total);
+							}
+						}
+					}
+				}
+			} else if (args->ksize == 7) {
+#ifdef _OPENMP
+#pragma omp parallel num_threads(com.max_thread)
+#endif
+				{
+					float medbuf[49];
+
+#ifdef _OPENMP
+#pragma omp for schedule(dynamic,16)
+#endif
+					for (int y = 3; y < ny - 3; y++) {
+						int pix_idx = y * nx + 3;
+						int x = 3;
+						for (; x < nx - 3; x++) {
+							int nb = 0;
+							for (int i = -3; i <= 3 ; ++i) {
+								for (int j = -3; j <= 3; ++j) {
+									medbuf[nb++] = (float) src[(y + i) * nx + x + j];
+								}
+							}
+							float median = median7x7(medbuf);
+							dst[pix_idx] = roundf_to_WORD(intpf(amountf, median, (float) src[pix_idx]));
+							pix_idx++;
+						}
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+						{
+							++progress;
+							if (!(progress % 32)) {
+								set_progress_bar_data(NULL, (double)progress / total);
+							}
+						}
+					}
+				}
+			} else if (args->ksize == 9) {
+#ifdef _OPENMP
+#pragma omp parallel num_threads(com.max_thread)
+#endif
+				{
+					float medbuf[81];
+
+#ifdef _OPENMP
+#pragma omp for schedule(dynamic,16)
+#endif
+					for (int y = 4; y < ny - 4; y++) {
+						int pix_idx = y * nx + 4;
+						int x = 4;
+						for (; x < nx - 4; x++) {
+							int nb = 0;
+							for (int i = -4; i <= 4 ; ++i) {
+								for (int j = -4; j <= 4; ++j) {
+									medbuf[nb++] = (float) src[(y + i) * nx + x + j];
+								}
+							}
+							float median = median9x9(medbuf);
+							dst[pix_idx] = roundf_to_WORD(intpf(amountf, median, (float) src[pix_idx]));
+							pix_idx++;
+						}
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+						{
+							++progress;
+							if (!(progress % 32)) {
+								set_progress_bar_data(NULL, (double)progress / total);
+							}
+						}
+					}
+				}
+			} else {
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) schedule(dynamic, 16)
+#endif
+				for (int y = 0; y < ny; y++) {
+					int pix_idx = y * nx;
+					for (int x = 0; x < nx; x++) {
+						float median = get_median_ushort_fast(src, x, y, nx, ny, radius);
+						dst[pix_idx] = roundf_to_WORD(intpf(amountf, median, (float) src[pix_idx]));
+						pix_idx++;
+					}
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+					{
+						++progress;
+						if (!(progress % 32)) {
+							set_progress_bar_data(NULL, (double)progress / total);
+						}
+					}
 				}
 			}
 		}
-		iter++;
-	} while (iter < args->iterations && get_thread_run());
+		if (args->iterations % 2) {
+			// for odd number of iterations (1, 3, 5, ...) we have to copy the data back at the end
+			WORD *dst = args->fit->pdata[layer];
+			WORD *src = temp;
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread)
+#endif
+			for (int y = 0; y < ny; y++) {
+				for (int x = 0; x < nx; x++) {
+					dst[y * nx + x] = src[y * nx + x];
+				}
+			}
+		}
+	}
+	free(temp);
 	invalidate_stats_from_fit(args->fit);
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
