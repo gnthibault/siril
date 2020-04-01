@@ -1809,7 +1809,6 @@ int process_fixbanding(int nb) {
 int process_subsky(int nb) {
 	gboolean is_sequence;
 	sequence *seq = NULL;
-	int i = 0;
 
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
@@ -1839,7 +1838,6 @@ int process_subsky(int nb) {
 			free(seq);
 			return 1;
 		}
-		i++;
 	} else {
 		if (!single_image_is_loaded()) return 1;
 	}
@@ -1858,6 +1856,7 @@ int process_subsky(int nb) {
 
 		if (args->degree < 1 || args->degree > 4) {
 			siril_log_message("Polynomial degree order must be within the [1, 4] range.\n");
+			free(args);
 			return 1;
 		}
 
