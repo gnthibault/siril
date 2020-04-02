@@ -15,7 +15,7 @@
 #define STR_CLEAR N_("Clears the graphical output logs")
 #define STR_CLEARSTAR N_("Clear all the stars saved in memory and displayed on the screen")
 #define STR_CLOSE N_("Properly closes the opened image and the opened sequence, if any")
-#define STR_CONVERT N_("Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" is the basename of the new sequence. The option \"-debayer\" applies demosaicing to images")
+#define STR_CONVERT N_("Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" is the basename of the new sequence. The option \"-debayer\" applies demosaicing to images while \"-start=index\" sets the starting index parameter")
 #define STR_COSME N_("Apply the local mean to a set of pixels on the in-memory image (cosmetic correction). The coordinates of these pixels are in an ASCII file [.lst file]. COSME is adapted to correct residual hot and cold pixels after preprocessing")
 #define STR_COSME_CFA N_("Same function that COSME but applying to RAW CFA images")
 #define STR_CROP N_("It can be used with the GUI: if a selection has been made with the mouse, calling the CROP command without arguments crops it on this selection. Otherwise, or in scripts, arguments have to be given, with \"x\" and \"y\" being the coordinates of the top left corner, and \"width\" and \"height\" the size of the selection")

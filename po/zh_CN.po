@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-02 16:02+0200\n"
+"POT-Creation-Date: 2020-04-02 21:09+0200\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -4780,7 +4780,7 @@ msgstr "Crop: width and height, respectively, must be less than %d and %d.\n"
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Crop: select a region or provide x, y, width, height\n"
 
-#: ../src/core/command.c:579 ../src/core/command.c:2926
+#: ../src/core/command.c:579 ../src/core/command.c:2933
 #: ../src/filters/wavelets.c:252 ../src/filters/wavelets.c:330
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
@@ -4833,7 +4833,7 @@ msgstr "队列：%s\n"
 msgid "Image: %s\n"
 msgstr "图像：%s\n"
 
-#: ../src/core/command.c:790 ../src/core/command.c:2906
+#: ../src/core/command.c:790 ../src/core/command.c:2913
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* 列表完 *********\n"
 
@@ -4908,9 +4908,9 @@ msgstr "于已载入队列中执行PSF，通道 %d\n"
 #: ../src/core/command.c:1829 ../src/core/command.c:1835
 #: ../src/core/command.c:1903 ../src/core/command.c:1909
 #: ../src/core/command.c:2096 ../src/core/command.c:2102
-#: ../src/core/command.c:2276 ../src/core/command.c:2283
-#: ../src/core/command.c:2553 ../src/core/command.c:2695
-#: ../src/core/command.c:2768 ../src/core/command.c:2775 ../src/main.c:341
+#: ../src/core/command.c:2283 ../src/core/command.c:2290
+#: ../src/core/command.c:2560 ../src/core/command.c:2702
+#: ../src/core/command.c:2775 ../src/core/command.c:2782 ../src/main.c:341
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "无法找到队列 %s。\n"
@@ -5032,93 +5032,93 @@ msgstr ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
 "%0.1lf, Max: %0.1lf\n"
 
-#: ../src/core/command.c:2196
+#: ../src/core/command.c:2203
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "转化：无法打开工作目录 %s.\n"
 
-#: ../src/core/command.c:2215
+#: ../src/core/command.c:2222
 #, fuzzy
 msgid "No RAW files were found for conversion\n"
 msgstr "错误：不支持的输入文件类型。"
 
-#: ../src/core/command.c:2231
+#: ../src/core/command.c:2238
 #, fuzzy, c-format
 msgid "Conversion: processing %d RAW files...\n"
 msgstr "转化：处理中...\n"
 
-#: ../src/core/command.c:2238
+#: ../src/core/command.c:2245
 msgid "Conversion: no working directory set.\n"
 msgstr "转化：工作目录未设置。\n"
 
-#: ../src/core/command.c:2296 ../src/registration/registration.c:105
+#: ../src/core/command.c:2303 ../src/registration/registration.c:105
 msgid "Global Star Alignment (deep-sky)"
 msgstr "全局星点对齐（深空）"
 
 #. only TRUE for global registration. Will be updated in this case
-#: ../src/core/command.c:2356 ../src/registration/registration.c:942
+#: ../src/core/command.c:2363 ../src/registration/registration.c:942
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "对齐：处理中，使用方法：%s\n"
 
-#: ../src/core/command.c:2378
+#: ../src/core/command.c:2385
 msgid "Normalization options are not allowed in this context, ignoring.\n"
 msgstr "Normalization options are not allowed in this context, ignoring.\n"
 
-#: ../src/core/command.c:2396 ../src/core/command.c:2412
-#: ../src/core/command.c:2429 ../src/core/command.c:2446
+#: ../src/core/command.c:2403 ../src/core/command.c:2419
+#: ../src/core/command.c:2436 ../src/core/command.c:2453
 #, c-format
 msgid "Could not parse argument `%s' to the filter `%s', aborting.\n"
 msgstr "Could not parse argument `%s' to the filter `%s', aborting.\n"
 
-#: ../src/core/command.c:2403 ../src/core/command.c:2419
-#: ../src/core/command.c:2436 ../src/core/command.c:2453
-#: ../src/core/command.c:2463
+#: ../src/core/command.c:2410 ../src/core/command.c:2426
+#: ../src/core/command.c:2443 ../src/core/command.c:2460
+#: ../src/core/command.c:2470
 #, c-format
 msgid "Missing argument to %s, aborting.\n"
 msgstr "Missing argument to %s, aborting.\n"
 
-#: ../src/core/command.c:2469
+#: ../src/core/command.c:2476
 msgid "Output filename option is not allowed in this context, ignoring.\n"
 msgstr "Output filename option is not allowed in this context, ignoring.\n"
 
-#: ../src/core/command.c:2473
+#: ../src/core/command.c:2480
 #, c-format
 msgid "Unexpected argument to stacking `%s', aborting.\n"
 msgstr "Unexpected argument to stacking `%s', aborting.\n"
 
-#: ../src/core/command.c:2490
+#: ../src/core/command.c:2497
 #, c-format
 msgid "Stacking sequence %s\n"
 msgstr "叠加队列%s\n"
 
-#: ../src/core/command.c:2500
+#: ../src/core/command.c:2507
 msgid "Not using rejection for stacking\n"
 msgstr "叠加操作未使用像素剔除算法\n"
 
-#: ../src/core/command.c:2545
+#: ../src/core/command.c:2552
 #, c-format
 msgid "Could not save the stacking result %s\n"
 msgstr "无法保存叠加结果 %s\n"
 
-#: ../src/core/command.c:2567
+#: ../src/core/command.c:2574
 msgid "Looking for sequences in current working directory...\n"
 msgstr "在当前工作目录中搜索队列...\n"
 
-#: ../src/core/command.c:2569
+#: ../src/core/command.c:2576
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr "搜索或打开目录出错。\n"
 
-#: ../src/core/command.c:2578
+#: ../src/core/command.c:2585
 msgid "Starting stacking of found sequences...\n"
 msgstr "开始对已找到的队列进行叠加...\n"
 
-#: ../src/core/command.c:2586
+#: ../src/core/command.c:2593
 #, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr "%d 队列叠加成功。\n"
 
-#: ../src/core/command.c:2626 ../src/core/command.c:2721
+#: ../src/core/command.c:2633 ../src/core/command.c:2728
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
@@ -5126,43 +5126,43 @@ msgstr ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
 
-#: ../src/core/command.c:2635 ../src/core/command.c:2730
+#: ../src/core/command.c:2642 ../src/core/command.c:2737
 #, c-format
 msgid "Stacking method type '%s' is invalid\n"
 msgstr "叠加方式 '%s' 不可用\n"
 
-#: ../src/core/command.c:2666
+#: ../src/core/command.c:2673
 msgid "Stacked sequence successfully.\n"
 msgstr "队列叠加成功。\n"
 
-#: ../src/core/command.c:2825
+#: ../src/core/command.c:2832
 #, fuzzy
 msgid "-stretch option is now deprecated.\n"
 msgstr "发现天体测量信息"
 
-#: ../src/core/command.c:2839 ../src/core/preprocess.c:522
+#: ../src/core/command.c:2846 ../src/core/preprocess.c:522
 msgid "Preprocessing...\n"
 msgstr "预处理...\n"
 
-#: ../src/core/command.c:2865
+#: ../src/core/command.c:2872
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
 "%d.\n"
 msgstr "逻辑处理器的数量必须大于0并且小于等于%d.\n"
 
-#: ../src/core/command.c:2875
+#: ../src/core/command.c:2882
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "当前使用[%d]逻辑处理器\n"
 
-#: ../src/core/command.c:2887
+#: ../src/core/command.c:2894
 msgid ""
 "The accepted range for the ratio of memory used for stacking is [0.05, 4], "
 "with values below the available memory recommended\n"
 msgstr "用于叠加的可接受内存使用率为[0.05, 4]，建议使用低于总内存量\n"
 
-#: ../src/core/command.c:2891
+#: ../src/core/command.c:2898
 #, c-format
 msgid ""
 "Setting the ratio of memory used for stacking above 1 will require the use "
@@ -5173,12 +5173,12 @@ msgstr ""
 "of on-disk memory, which can be very slow and is unrecommended (%g "
 "requested)\n"
 
-#: ../src/core/command.c:2895
+#: ../src/core/command.c:2902
 #, c-format
 msgid "Usable memory for stacking changed to %g\n"
 msgstr "可用于叠加的内存变为%g\n"
 
-#: ../src/core/command.c:2901
+#: ../src/core/command.c:2908
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* 可用指令列表 *********\n"
 
@@ -5243,10 +5243,12 @@ msgid "Properly closes the opened image and the opened sequence, if any"
 msgstr "Properly closes the opened image and the opened sequence, if any"
 
 #: ../src/core/command_def.h:18
+#, fuzzy
 msgid ""
 "Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" "
 "is the basename of the new sequence. The option \"-debayer\" applies "
-"demosaicing to images"
+"demosaicing to images while \"-start=index\" sets the starting index "
+"parameter"
 msgstr ""
 "Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" "
 "is the basename of the new sequence. The option \"-debayer\" applies "

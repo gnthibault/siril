@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-02 16:02+0200\n"
+"POT-Creation-Date: 2020-04-02 21:09+0200\n"
 "PO-Revision-Date: 2019-10-13 19:59+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -5139,7 +5139,7 @@ msgstr ""
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Περικοπή: επιλέξτε μια περιοχή ή δώστε τα x,y, πλάτος, ύψος\n"
 
-#: ../src/core/command.c:579 ../src/core/command.c:2926
+#: ../src/core/command.c:579 ../src/core/command.c:2933
 #: ../src/filters/wavelets.c:252 ../src/filters/wavelets.c:330
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
@@ -5197,7 +5197,7 @@ msgstr "Αλληλουχία: %s\n"
 msgid "Image: %s\n"
 msgstr "Εικόνα: %s\n"
 
-#: ../src/core/command.c:790 ../src/core/command.c:2906
+#: ../src/core/command.c:790 ../src/core/command.c:2913
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* ΤΕΛΟΣ ΛΙΣΤΑΣ *********\n"
 
@@ -5277,9 +5277,9 @@ msgstr "Γίνεται εκτέλεση του PSF στην φορτωμένη �
 #: ../src/core/command.c:1829 ../src/core/command.c:1835
 #: ../src/core/command.c:1903 ../src/core/command.c:1909
 #: ../src/core/command.c:2096 ../src/core/command.c:2102
-#: ../src/core/command.c:2276 ../src/core/command.c:2283
-#: ../src/core/command.c:2553 ../src/core/command.c:2695
-#: ../src/core/command.c:2768 ../src/core/command.c:2775 ../src/main.c:341
+#: ../src/core/command.c:2283 ../src/core/command.c:2290
+#: ../src/core/command.c:2560 ../src/core/command.c:2702
+#: ../src/core/command.c:2775 ../src/core/command.c:2782 ../src/main.c:341
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Δεν βρέθηκε η αλληλουχία `%s' .\n"
@@ -5410,101 +5410,101 @@ msgstr ""
 "Επίπεδο %s : Μέσος όρος: %0.1lf, Διάμεσος: %0.1lf, Σίγμα: %0.1lf, Απόκλιση "
 "Μέσου Όρου: %0.1lf, Ελάχιστο: %0.1lf, Μέγιστο: %0.1lf\n"
 
-#: ../src/core/command.c:2196
+#: ../src/core/command.c:2203
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Μετατροπή: σφάλμα ανοίγματος καταλόγου εργασίας %s.\n"
 
-#: ../src/core/command.c:2215
+#: ../src/core/command.c:2222
 #, fuzzy
 msgid "No RAW files were found for conversion\n"
 msgstr ""
 "ΣΦΑΛΜΑ: δεν υπάρχει τύπος αρχείου εισαγωγής που να υποστηρίζεται για την "
 "μετατροπή."
 
-#: ../src/core/command.c:2231
+#: ../src/core/command.c:2238
 #, fuzzy, c-format
 msgid "Conversion: processing %d RAW files...\n"
 msgstr "Μετατροπή: γίνεται επεξεργασία...\n"
 
-#: ../src/core/command.c:2238
+#: ../src/core/command.c:2245
 msgid "Conversion: no working directory set.\n"
 msgstr "Μετατροπή: δεν έχει οριστεί κατάλογος εργασίας.\n"
 
-#: ../src/core/command.c:2296 ../src/registration/registration.c:105
+#: ../src/core/command.c:2303 ../src/registration/registration.c:105
 msgid "Global Star Alignment (deep-sky)"
 msgstr "Ευθυγράμμιση Καθολικών Αστεριών (βαθύ ουρανού)"
 
 #. only TRUE for global registration. Will be updated in this case
-#: ../src/core/command.c:2356 ../src/registration/registration.c:942
+#: ../src/core/command.c:2363 ../src/registration/registration.c:942
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "Εγγραφή: γίνεται επεξεργασία με την μέθοδο: %s\n"
 
-#: ../src/core/command.c:2378
+#: ../src/core/command.c:2385
 msgid "Normalization options are not allowed in this context, ignoring.\n"
 msgstr ""
 "Οι επιλογές ομαλοποιησης δεν επιτρέπονται σε αυτό το γενικό πλαίσιο, δεν "
 "λαμβάνονται υπόψη.\n"
 
-#: ../src/core/command.c:2396 ../src/core/command.c:2412
-#: ../src/core/command.c:2429 ../src/core/command.c:2446
+#: ../src/core/command.c:2403 ../src/core/command.c:2419
+#: ../src/core/command.c:2436 ../src/core/command.c:2453
 #, c-format
 msgid "Could not parse argument `%s' to the filter `%s', aborting.\n"
 msgstr ""
 "Δεν ήταν δυνατή η ανάλυση του ορίσματος '%s' στο φίλτρο '%s', γίνεται "
 "ακύρωση.\n"
 
-#: ../src/core/command.c:2403 ../src/core/command.c:2419
-#: ../src/core/command.c:2436 ../src/core/command.c:2453
-#: ../src/core/command.c:2463
+#: ../src/core/command.c:2410 ../src/core/command.c:2426
+#: ../src/core/command.c:2443 ../src/core/command.c:2460
+#: ../src/core/command.c:2470
 #, c-format
 msgid "Missing argument to %s, aborting.\n"
 msgstr "Λείπει το όρισμα σε %s, γίνεται ακύρωση.\n"
 
-#: ../src/core/command.c:2469
+#: ../src/core/command.c:2476
 msgid "Output filename option is not allowed in this context, ignoring.\n"
 msgstr ""
 "Η επιλογή του ονόματος αρχείου εξόδου δεν επιτρέπεται σε αυτό το γενικό "
 "πλαίσιο, δεν λαμβάνεται υπόψη.\n"
 
-#: ../src/core/command.c:2473
+#: ../src/core/command.c:2480
 #, c-format
 msgid "Unexpected argument to stacking `%s', aborting.\n"
 msgstr "Μη αναμενόμενο όρισμα για σώρευση `%s', γίνεται ακύρωση.\n"
 
-#: ../src/core/command.c:2490
+#: ../src/core/command.c:2497
 #, c-format
 msgid "Stacking sequence %s\n"
 msgstr "Γίνεται σώρευση της αλληλουχίας %s.\n"
 
-#: ../src/core/command.c:2500
+#: ../src/core/command.c:2507
 msgid "Not using rejection for stacking\n"
 msgstr "Δεν γίνεται χρήση απόρριψης στη σώρευση\n"
 
-#: ../src/core/command.c:2545
+#: ../src/core/command.c:2552
 #, c-format
 msgid "Could not save the stacking result %s\n"
 msgstr "Το αποτέλεσμα της σώρευσης δεν μπορούσε να αποθηκευτεί %s\n"
 
-#: ../src/core/command.c:2567
+#: ../src/core/command.c:2574
 msgid "Looking for sequences in current working directory...\n"
 msgstr "Γίνεται αναζήτηση για αλληλουχίες στον τρέχων κατάλογο...\n"
 
-#: ../src/core/command.c:2569
+#: ../src/core/command.c:2576
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr "Σφάλμα κατά την αναζήτηση αλληλουχιών ή ανοίγματος του καταλόγου.\n"
 
-#: ../src/core/command.c:2578
+#: ../src/core/command.c:2585
 msgid "Starting stacking of found sequences...\n"
 msgstr "Γίνεται εκκίνηση σώρευσης των αλληλουχιών που βρέθηκαν...\n"
 
-#: ../src/core/command.c:2586
+#: ../src/core/command.c:2593
 #, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr "Έγινε σώρευση %d αλληλουχιών με επιτυχία.\n"
 
-#: ../src/core/command.c:2626 ../src/core/command.c:2721
+#: ../src/core/command.c:2633 ../src/core/command.c:2728
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
@@ -5512,25 +5512,25 @@ msgstr ""
 "Η σώρευση μέσου όρου με απόρριψη χρησιμοποιεί την απόρριψη Winsor και "
 "απαιτεί δυο ορισμούς: κάτω σίγμα και άνω σίγμα. \n"
 
-#: ../src/core/command.c:2635 ../src/core/command.c:2730
+#: ../src/core/command.c:2642 ../src/core/command.c:2737
 #, c-format
 msgid "Stacking method type '%s' is invalid\n"
 msgstr "Ο τύπος μεθόδου σώρευσης '%s' δεν είναι έγκυρος\n"
 
-#: ../src/core/command.c:2666
+#: ../src/core/command.c:2673
 msgid "Stacked sequence successfully.\n"
 msgstr "Έγινε σώρευση της αλληλουχίας με επιτυχία.\n"
 
-#: ../src/core/command.c:2825
+#: ../src/core/command.c:2832
 #, fuzzy
 msgid "-stretch option is now deprecated.\n"
 msgstr "Εντοπίστηκε αστρομετρική λύση"
 
-#: ../src/core/command.c:2839 ../src/core/preprocess.c:522
+#: ../src/core/command.c:2846 ../src/core/preprocess.c:522
 msgid "Preprocessing...\n"
 msgstr "Γίνεται προ-επεξεργασία...\n"
 
-#: ../src/core/command.c:2865
+#: ../src/core/command.c:2872
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -5539,12 +5539,12 @@ msgstr ""
 "Ο αριθμός των λογικών επεξεργαστών ΠΡΕΠΕΙ να είναι μεγαλύτερος του 0 και "
 "μικρότερος ή ίσος με %d.\n"
 
-#: ../src/core/command.c:2875
+#: ../src/core/command.c:2882
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "Γίνεται χρήση %d λογικών επεξεργαστών\n"
 
-#: ../src/core/command.c:2887
+#: ../src/core/command.c:2894
 msgid ""
 "The accepted range for the ratio of memory used for stacking is [0.05, 4], "
 "with values below the available memory recommended\n"
@@ -5552,7 +5552,7 @@ msgstr ""
 "Το αποδεκτό εύρος για το λόγο της μνήμης που χρησιμοποιείται για την σωρευση "
 "είναι [0.05, 4], με τιμές κάτω από τη διαθέσιμη μνήμη που συνιστάται\n"
 
-#: ../src/core/command.c:2891
+#: ../src/core/command.c:2898
 #, c-format
 msgid ""
 "Setting the ratio of memory used for stacking above 1 will require the use "
@@ -5563,12 +5563,12 @@ msgstr ""
 "θα απαιτήσει τη χρήση μνήμης στο δίσκο, η οποία είναι πολύ αργή και δεν "
 "συνιστάται (%g ζητήθηκε)\n"
 
-#: ../src/core/command.c:2895
+#: ../src/core/command.c:2902
 #, c-format
 msgid "Usable memory for stacking changed to %g\n"
 msgstr "Η χρησιμοποιήσιμη μνήμη για την σώρεσυη άλλαξε σε %g\n"
 
-#: ../src/core/command.c:2901
+#: ../src/core/command.c:2908
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* ΛΙΣΤΑ ΔΙΑΘΕΣΙΜΩΝ ΕΝΤΟΛΩΝ *********\n"
 
@@ -5636,10 +5636,12 @@ msgstr ""
 "Κλείνει σωστά την ανοιγμένη εικόνα και την ανοιγμένη ακολουθία, εάν υπάρχει"
 
 #: ../src/core/command_def.h:18
+#, fuzzy
 msgid ""
 "Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" "
 "is the basename of the new sequence. The option \"-debayer\" applies "
-"demosaicing to images"
+"demosaicing to images while \"-start=index\" sets the starting index "
+"parameter"
 msgstr ""
 "Μετατρέπει τα αρχεία DSLR RAW σε εικόνες FITS του Siril. Το όρισμα \"basename"
 "\" είναι το όνομα βάσης της νέας ακολουθίας. Η επιλογή \"-debayer\" "

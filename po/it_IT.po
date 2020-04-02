@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-02 16:02+0200\n"
+"POT-Creation-Date: 2020-04-02 21:09+0200\n"
 "PO-Revision-Date: 2019-10-06 11:17+0200\n"
 "Last-Translator: Luca Benassi <bennolo@gmail.com>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
@@ -5122,7 +5122,7 @@ msgstr ""
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Ritaglio: seleziona una regione o fornisci x, y, larghezza e altezza\n"
 
-#: ../src/core/command.c:579 ../src/core/command.c:2926
+#: ../src/core/command.c:579 ../src/core/command.c:2933
 #: ../src/filters/wavelets.c:252 ../src/filters/wavelets.c:330
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
@@ -5179,7 +5179,7 @@ msgstr "Sequenza: %s\n"
 msgid "Image: %s\n"
 msgstr "Immagine: %s\n"
 
-#: ../src/core/command.c:790 ../src/core/command.c:2906
+#: ../src/core/command.c:790 ../src/core/command.c:2913
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* FINE DELLA LISTA *********\n"
 
@@ -5259,9 +5259,9 @@ msgstr "Elaborando la PSF sulla sequenza caricata, livello %d\n"
 #: ../src/core/command.c:1829 ../src/core/command.c:1835
 #: ../src/core/command.c:1903 ../src/core/command.c:1909
 #: ../src/core/command.c:2096 ../src/core/command.c:2102
-#: ../src/core/command.c:2276 ../src/core/command.c:2283
-#: ../src/core/command.c:2553 ../src/core/command.c:2695
-#: ../src/core/command.c:2768 ../src/core/command.c:2775 ../src/main.c:341
+#: ../src/core/command.c:2283 ../src/core/command.c:2290
+#: ../src/core/command.c:2560 ../src/core/command.c:2702
+#: ../src/core/command.c:2775 ../src/core/command.c:2782 ../src/main.c:341
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Nessuna sequenza `%s' trovata.\n"
@@ -5395,99 +5395,99 @@ msgstr ""
 "%s livelli: Media: %0.1lf, Mediana: %0.1lf, Sigma: %0.1lf, Deviazione media: "
 "%0.1lf, Min: %0.1lf, Max: %0.1lf\n"
 
-#: ../src/core/command.c:2196
+#: ../src/core/command.c:2203
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Conversione: errore durante l'apertura della directory di lavoro %s.\n"
 
-#: ../src/core/command.c:2215
+#: ../src/core/command.c:2222
 #, fuzzy
 msgid "No RAW files were found for conversion\n"
 msgstr "ERRORE: nessun tipo di file di input supportato per la conversione."
 
-#: ../src/core/command.c:2231
+#: ../src/core/command.c:2238
 #, fuzzy, c-format
 msgid "Conversion: processing %d RAW files...\n"
 msgstr "Conversione: elaborazione...\n"
 
-#: ../src/core/command.c:2238
+#: ../src/core/command.c:2245
 msgid "Conversion: no working directory set.\n"
 msgstr "Conversione: nessuna cartella di lavoro impostata.\n"
 
-#: ../src/core/command.c:2296 ../src/registration/registration.c:105
+#: ../src/core/command.c:2303 ../src/registration/registration.c:105
 msgid "Global Star Alignment (deep-sky)"
 msgstr "Allineamento Global Star (cielo profondo)"
 
 #. only TRUE for global registration. Will be updated in this case
-#: ../src/core/command.c:2356 ../src/registration/registration.c:942
+#: ../src/core/command.c:2363 ../src/registration/registration.c:942
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "Registrazione: elaborazione utilizzando il metodo %s\n"
 
-#: ../src/core/command.c:2378
+#: ../src/core/command.c:2385
 msgid "Normalization options are not allowed in this context, ignoring.\n"
 msgstr ""
 "Le opzioni di normalizzazione non sono ammesse in questo contesto, verranno "
 "ignorate.\n"
 
-#: ../src/core/command.c:2396 ../src/core/command.c:2412
-#: ../src/core/command.c:2429 ../src/core/command.c:2446
+#: ../src/core/command.c:2403 ../src/core/command.c:2419
+#: ../src/core/command.c:2436 ../src/core/command.c:2453
 #, c-format
 msgid "Could not parse argument `%s' to the filter `%s', aborting.\n"
 msgstr ""
 "Non posso calcolare l'argomento `%s' per il filtro `%s' interruzione.\n"
 
-#: ../src/core/command.c:2403 ../src/core/command.c:2419
-#: ../src/core/command.c:2436 ../src/core/command.c:2453
-#: ../src/core/command.c:2463
+#: ../src/core/command.c:2410 ../src/core/command.c:2426
+#: ../src/core/command.c:2443 ../src/core/command.c:2460
+#: ../src/core/command.c:2470
 #, c-format
 msgid "Missing argument to %s, aborting.\n"
 msgstr "Argomento mancante a %s, interruzione.\n"
 
-#: ../src/core/command.c:2469
+#: ../src/core/command.c:2476
 msgid "Output filename option is not allowed in this context, ignoring.\n"
 msgstr ""
 "Il opzioni per il nome del file di output non sono ammesse in questo "
 "contesto, verranno ignorate.\n"
 
-#: ../src/core/command.c:2473
+#: ../src/core/command.c:2480
 #, c-format
 msgid "Unexpected argument to stacking `%s', aborting.\n"
 msgstr "Argomento non valido per lo stacking `%s', interruzione.\n"
 
-#: ../src/core/command.c:2490
+#: ../src/core/command.c:2497
 #, c-format
 msgid "Stacking sequence %s\n"
 msgstr "Sequenza di stacking %s\n"
 
-#: ../src/core/command.c:2500
+#: ../src/core/command.c:2507
 msgid "Not using rejection for stacking\n"
 msgstr "Non si sta utilizzando la rejection per lo stacking\n"
 
-#: ../src/core/command.c:2545
+#: ../src/core/command.c:2552
 #, c-format
 msgid "Could not save the stacking result %s\n"
 msgstr "Non posso salvare il risultato dello stacking %s\n"
 
-#: ../src/core/command.c:2567
+#: ../src/core/command.c:2574
 msgid "Looking for sequences in current working directory...\n"
 msgstr "Ricerca sequenze nella cartella di lavoro corrente...\n"
 
-#: ../src/core/command.c:2569
+#: ../src/core/command.c:2576
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr ""
 "Errore durante la ricerca delle sequenze o l'apertura della cartella.\n"
 
-#: ../src/core/command.c:2578
+#: ../src/core/command.c:2585
 msgid "Starting stacking of found sequences...\n"
 msgstr "Inizio dello stacking delle sequenze trovate...\n"
 
-#: ../src/core/command.c:2586
+#: ../src/core/command.c:2593
 #, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr "Stacking applicato con successo a %d sequenze.\n"
 
-#: ../src/core/command.c:2626 ../src/core/command.c:2721
+#: ../src/core/command.c:2633 ../src/core/command.c:2728
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
@@ -5495,27 +5495,27 @@ msgstr ""
 "Lo stacking medio con rejection qui utilizza la Winsorized rejection e "
 "richiede due argomenti extra: sigma basso e alto.\n"
 
-#: ../src/core/command.c:2635 ../src/core/command.c:2730
+#: ../src/core/command.c:2642 ../src/core/command.c:2737
 #, c-format
 msgid "Stacking method type '%s' is invalid\n"
 msgstr "Il metodo di stacking '%s' non è valido\n"
 
-#: ../src/core/command.c:2666
+#: ../src/core/command.c:2673
 msgid "Stacked sequence successfully.\n"
 msgstr ""
 "Stacking eseguito con successo sulla sequenza.\n"
 "\n"
 
-#: ../src/core/command.c:2825
+#: ../src/core/command.c:2832
 #, fuzzy
 msgid "-stretch option is now deprecated.\n"
 msgstr "Soluzione astrometrica rilevata"
 
-#: ../src/core/command.c:2839 ../src/core/preprocess.c:522
+#: ../src/core/command.c:2846 ../src/core/preprocess.c:522
 msgid "Preprocessing...\n"
 msgstr "Pre-elaborazione...\n"
 
-#: ../src/core/command.c:2865
+#: ../src/core/command.c:2872
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -5524,12 +5524,12 @@ msgstr ""
 "Il numero di processori logici DEVE essere maggiore di 0 e minore o uguale a "
 "%d.\n"
 
-#: ../src/core/command.c:2875
+#: ../src/core/command.c:2882
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "Ora in uso %d processori logici\n"
 
-#: ../src/core/command.c:2887
+#: ../src/core/command.c:2894
 msgid ""
 "The accepted range for the ratio of memory used for stacking is [0.05, 4], "
 "with values below the available memory recommended\n"
@@ -5537,7 +5537,7 @@ msgstr ""
 "Il range del rapporto di memoria accettabile per lo stacking è [0.05, 2], "
 "con valori più bassi della memoria disponibile raccomandata\n"
 
-#: ../src/core/command.c:2891
+#: ../src/core/command.c:2898
 #, c-format
 msgid ""
 "Setting the ratio of memory used for stacking above 1 will require the use "
@@ -5548,12 +5548,12 @@ msgstr ""
 "comporta l'utulizzo della memoria sull'hard-disk, che potrebbe essere molto "
 "lenta e ciò è sconsigliabile (richiesta %g)\n"
 
-#: ../src/core/command.c:2895
+#: ../src/core/command.c:2902
 #, c-format
 msgid "Usable memory for stacking changed to %g\n"
 msgstr "Memoria utilizzabile per lo stacking cambiata in %g\n"
 
-#: ../src/core/command.c:2901
+#: ../src/core/command.c:2908
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* LISTA DEI COMANDI DISPONIBILI *********\n"
 
@@ -5621,10 +5621,12 @@ msgstr ""
 "Chiude opportunamente l'immagine aperta e la sequenza aperta, se ce ne sono"
 
 #: ../src/core/command_def.h:18
+#, fuzzy
 msgid ""
 "Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" "
 "is the basename of the new sequence. The option \"-debayer\" applies "
-"demosaicing to images"
+"demosaicing to images while \"-start=index\" sets the starting index "
+"parameter"
 msgstr ""
 "Converte file RAW DSLR in immagini FITS di Siril. L'argomento \"basename\" è "
 "il nome di base della nuova sequenza. L'opzione \"-debayer\" applica la "

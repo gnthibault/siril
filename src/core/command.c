@@ -2180,19 +2180,26 @@ int process_convertraw(int nb) {
 	GError *error = NULL;
 	const gchar *file;
 	GList *list = NULL;
+	int idx = 1;
 
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
 
-	if (word[2]) {
-		if (!strcmp(word[2], "-debayer")) {
-			set_debayer_in_convflags();
+	for (int i = 2; i < 4; i++) {
+		if (word[i]) {
+			char *current = word[i], *value;
+			if (!strcmp(current, "-debayer")) {
+				set_debayer_in_convflags();
+			} else if (g_str_has_prefix(current, "-start=")) {
+				value = current + 7;
+				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ? 1 : atoi(value);
+			}
 		}
 	}
 
-	if((dir = g_dir_open(com.wd, 0, &error)) == NULL){
+	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL){
 		siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
 		fprintf (stderr, "Conversion: %s\n", error->message);
 		g_error_free(error);
@@ -2241,7 +2248,7 @@ int process_convertraw(int nb) {
 	}
 
 	struct _convert_data *args = malloc(sizeof(struct _convert_data));
-	args->start = 1;
+	args->start = idx;
 	args->dir = dir;
 	args->list = files_to_convert;
 	args->total = count;
@@ -2377,7 +2384,7 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 			if (!norm_allowed) {
 				siril_log_message(_("Normalization options are not allowed in this context, ignoring.\n"));
 			} else {
-				value = current+6;
+				value = current + 6;
 				if (!strcmp(value, "add"))
 					arg->norm = ADDITIVE;
 				else if (!strcmp(value, "addscale"))

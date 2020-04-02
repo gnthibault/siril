@@ -189,7 +189,7 @@ static void initialize_convert() {
 		PRINT_ALLOC_ERR;
 		return;
 	}
-	args->start = (atof(index) <= 0 || atof(index) >= 100000) ? 1 : (int)atof(index);
+	args->start = (atoi(index) <= 0 || atoi(index) >= 100000) ? 1 : atoi(index);
 	args->dir = dir;
 	args->list = files_to_convert;
 	args->total = count;
