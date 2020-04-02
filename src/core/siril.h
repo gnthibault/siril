@@ -35,8 +35,6 @@
    do { if (DEBUG_TEST) fprintf(stdout, fmt, ##__VA_ARGS__); } while (0)
 
 #define PRINT_ALLOC_ERR fprintf(stderr, "Out of memory in %s (%s:%d) - aborting\n", __func__, __FILE__, __LINE__)
-#define PRINT_NOT_FOR_SEQUENCE siril_log_message(_("This command cannot be applied on a sequence.\n"))
-#define PRINT_NOT_FOR_SINGLE siril_log_message(_("This command can only be used when a sequence is loaded.\n"))
 #define PRINT_ANOTHER_THREAD_RUNNING siril_log_message(_("Another task is already in progress, ignoring new request.\n"))
 
 #ifndef RT_INCLUDE

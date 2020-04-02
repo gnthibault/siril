@@ -84,6 +84,9 @@
 #include "command_list.h"
 #include "command_line_processor.h"
 
+#define PRINT_NOT_FOR_SEQUENCE siril_log_message(_("This command cannot be applied on a sequence.\n"))
+#define PRINT_NOT_FOR_SINGLE siril_log_message(_("This command can only be used when a sequence is loaded.\n"))
+
 char *word[MAX_COMMAND_WORDS];	// NULL terminated
 
 int process_load(int nb){

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-02 21:09+0200\n"
+"POT-Creation-Date: 2020-04-02 21:32+0200\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -4433,7 +4433,7 @@ msgstr "Wybierz najpierw obszar tła"
 
 #: ../src/algos/colors.c:747 ../src/algos/colors.c:903 ../src/algos/noise.c:69
 #: ../src/algos/star_finder.c:52 ../src/algos/star_finder.c:73
-#: ../src/core/command.c:2138 ../src/core/preprocess.c:73
+#: ../src/core/command.c:2141 ../src/core/preprocess.c:73
 #: ../src/core/preprocess.c:213 ../src/core/siril.c:350
 #: ../src/filters/banding.c:159 ../src/filters/banding.c:241
 #: ../src/filters/cosmetic_correction.c:193
@@ -4913,129 +4913,139 @@ msgstr ""
 msgid "addmax: images must have same data type\n"
 msgstr ""
 
-#: ../src/core/command.c:264
+#: ../src/core/command.c:87
+#, fuzzy
+msgid "This command cannot be applied on a sequence.\n"
+msgstr "Tego polecenia można użyć tylko po załadowaniu sekwencji\n"
+
+#: ../src/core/command.c:88
+#, fuzzy
+msgid "This command can only be used when a sequence is loaded.\n"
+msgstr "Tego polecenia można użyć tylko po załadowaniu sekwencji\n"
+
+#: ../src/core/command.c:267
 #, fuzzy
 msgid "Could not understand the requested operator\n"
 msgstr "Nie można otworzyć pliku TIFF %s\n"
 
-#: ../src/core/command.c:323
+#: ../src/core/command.c:326
 msgid "Multiplying by a coefficient less than or equal to 0 is not possible.\n"
 msgstr "Pomnożenie przez współczynnik mniejszy lub równy 0 nie jest możliwe.\n"
 
-#: ../src/core/command.c:350
+#: ../src/core/command.c:353
 #, fuzzy, c-format
 msgid "Entropy: %.3f\n"
 msgstr "Entropia: %.3lf\n"
 
-#: ../src/core/command.c:397
+#: ../src/core/command.c:400
 #, fuzzy
 msgid "Sigma must be between [0.4, 2.0]\n"
 msgstr "Sigma musi być > 0.\n"
 
-#: ../src/core/command.c:402
+#: ../src/core/command.c:405
 msgid "Corner radius boost must be between [0.5, 0.5]\n"
 msgstr ""
 
-#: ../src/core/command.c:407
+#: ../src/core/command.c:410
 msgid "Number of iterations must be > 0.\n"
 msgstr "Liczba iteracji musi być > 0.\n"
 
-#: ../src/core/command.c:456
+#: ../src/core/command.c:459
 msgid ""
 "It is impossible to crop the image when a filter with preview session is "
 "active. Please consider to close the filter dialog first.\n"
 msgstr ""
 
-#: ../src/core/command.c:466 ../src/core/command.c:1114
+#: ../src/core/command.c:469 ../src/core/command.c:1117
 msgid "Crop: x and y must be positive values.\n"
 msgstr "Przytnij: wartości x i y muszą być wartościami dodatnimi.\n"
 
-#: ../src/core/command.c:470 ../src/core/command.c:1118
+#: ../src/core/command.c:473 ../src/core/command.c:1121
 msgid "Crop: width and height must be greater than 0.\n"
 msgstr "Przytnij: szerokość i wysokość muszą być większe niż 0.\n"
 
-#: ../src/core/command.c:474 ../src/core/command.c:1155
+#: ../src/core/command.c:477 ../src/core/command.c:1158
 #, c-format
 msgid "Crop: width and height, respectively, must be less than %d and %d.\n"
 msgstr "Przytnij: szerokość i wysokość muszą być mniejsze niż %d oraz %d.\n"
 
-#: ../src/core/command.c:483 ../src/core/command.c:1127
+#: ../src/core/command.c:486 ../src/core/command.c:1130
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Przytnij: wybierz regionu lub podaj x, y, szerokość, wysokość\n"
 
-#: ../src/core/command.c:579 ../src/core/command.c:2933
+#: ../src/core/command.c:582 ../src/core/command.c:2936
 #: ../src/filters/wavelets.c:252 ../src/filters/wavelets.c:330
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
 
-#: ../src/core/command.c:585 ../src/filters/wavelets.c:261
+#: ../src/core/command.c:588 ../src/filters/wavelets.c:261
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: typ musi być %d lub %d\n"
 
-#: ../src/core/command.c:649 ../src/filters/clahe.c:67
+#: ../src/core/command.c:652 ../src/filters/clahe.c:67
 msgid ""
 "Your version of opencv is too old for this feature. Please upgrade your "
 "system."
 msgstr ""
 
-#: ../src/core/command.c:664
+#: ../src/core/command.c:667
 #, fuzzy
 msgid "Clip limit must be > 0.\n"
 msgstr "Sigma musi być > 0.\n"
 
-#: ../src/core/command.c:671
+#: ../src/core/command.c:674
 #, fuzzy
 msgid "Tile size must be > 0.\n"
 msgstr "Sigma musi być > 0.\n"
 
-#: ../src/core/command.c:727
+#: ../src/core/command.c:730
 msgid "Cannot list files, set working directory first.\n"
 msgstr "Nie można wyświetlić listy plików, ustaw najpierw katalog roboczy.\n"
 
-#: ../src/core/command.c:733 ../src/core/command.c:742
+#: ../src/core/command.c:736 ../src/core/command.c:745
 msgid "Siril cannot open the directory.\n"
 msgstr ""
 "Siril nie może otworzyć katalogu.\n"
 "\n"
 
-#: ../src/core/command.c:764
+#: ../src/core/command.c:767
 #, fuzzy, c-format
 msgid "Link: %s\n"
 msgstr "Obraz: %s\n"
 
-#: ../src/core/command.c:768
+#: ../src/core/command.c:771
 #, c-format
 msgid "Directory: %s\n"
 msgstr "Katalog: %s\n"
 
-#: ../src/core/command.c:778 ../src/core/command.c:785
+#: ../src/core/command.c:781 ../src/core/command.c:788
 #, c-format
 msgid "Sequence: %s\n"
 msgstr "Sekwencja: %s\n"
 
-#: ../src/core/command.c:781 ../src/core/command.c:783
+#: ../src/core/command.c:784 ../src/core/command.c:786
 #, c-format
 msgid "Image: %s\n"
 msgstr "Obraz: %s\n"
 
-#: ../src/core/command.c:790 ../src/core/command.c:2913
+#: ../src/core/command.c:793 ../src/core/command.c:2916
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* KONIEC LISTY *********\n"
 
-#: ../src/core/command.c:829
+#: ../src/core/command.c:832
 msgid "The scaling factor must be less than 5.0\n"
 msgstr "Współczynnik skalowania musi być mniejszy niż 5.0\n"
 
-#: ../src/core/command.c:864
+#: ../src/core/command.c:867
 msgid ""
 "The coordinates cannot be greater than the size of the image. Please change "
 "their values and retry.\n"
 msgstr ""
 
-#: ../src/core/command.c:917 ../src/core/command.c:1051
-#: ../src/core/command.c:1073
+#: ../src/core/command.c:920 ../src/core/command.c:1054
+#: ../src/core/command.c:1076
 msgid ""
 "Current selection is too large. To determine the PSF, please make a "
 "selection around a single star.\n"
@@ -5043,300 +5053,300 @@ msgstr ""
 "Bieżący wybór jest zbyt duży. Aby określić PSF, dokonaj wyboru wokół "
 "pojedynczej gwiazdy\n"
 
-#: ../src/core/command.c:921 ../src/core/command.c:1055
-#: ../src/core/command.c:1077 ../src/io/sequence.c:1631
+#: ../src/core/command.c:924 ../src/core/command.c:1058
+#: ../src/core/command.c:1080 ../src/io/sequence.c:1631
 msgid "Select an area first\n"
 msgstr "Najpierw wybierz obszar\n"
 
-#: ../src/core/command.c:927
+#: ../src/core/command.c:930
 #, c-format
 msgid ""
 "Relative magnitude: %.3lf, True reduced magnitude: %.3lf, Offset: %.3lf\n"
 msgstr ""
 
-#: ../src/core/command.c:944
+#: ../src/core/command.c:947
 #, c-format
 msgid "The reference image must be set between 1 and %d\n"
 msgstr ""
 
-#: ../src/core/command.c:984
+#: ../src/core/command.c:987
 msgid "Run a PSF for the sequence first (see seqpsf)\n"
 msgstr "Uruchom najpierw PSF dla sekwencji (patrz seqpsf)\n"
 
-#: ../src/core/command.c:988
+#: ../src/core/command.c:991
 #, c-format
 msgid ""
 "Reference magnitude has been set for star %d to %f and will be computed for "
 "each image\n"
 msgstr ""
 
-#: ../src/core/command.c:1000
+#: ../src/core/command.c:1003
 #, c-format
 msgid "FITS extension unknown: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:1023
+#: ../src/core/command.c:1026
 msgid ""
 "Wrong parameter values. Sigma must be >= 0.05 and roundness between 0 and "
 "0.9.\n"
 msgstr ""
 
-#: ../src/core/command.c:1036
+#: ../src/core/command.c:1039
 msgid "Reference magnitude unset for sequence\n"
 msgstr ""
 
-#: ../src/core/command.c:1091
+#: ../src/core/command.c:1094
 #, c-format
 msgid "Running the PSF on the loaded sequence, layer %d\n"
 msgstr "Uruchamianie PSF w załadowanej sekwencji, warstwa %d\n"
 
-#: ../src/core/command.c:1141 ../src/core/command.c:1147
-#: ../src/core/command.c:1829 ../src/core/command.c:1835
-#: ../src/core/command.c:1903 ../src/core/command.c:1909
-#: ../src/core/command.c:2096 ../src/core/command.c:2102
-#: ../src/core/command.c:2283 ../src/core/command.c:2290
-#: ../src/core/command.c:2560 ../src/core/command.c:2702
-#: ../src/core/command.c:2775 ../src/core/command.c:2782 ../src/main.c:341
+#: ../src/core/command.c:1144 ../src/core/command.c:1150
+#: ../src/core/command.c:1832 ../src/core/command.c:1838
+#: ../src/core/command.c:1906 ../src/core/command.c:1912
+#: ../src/core/command.c:2099 ../src/core/command.c:2105
+#: ../src/core/command.c:2286 ../src/core/command.c:2293
+#: ../src/core/command.c:2563 ../src/core/command.c:2705
+#: ../src/core/command.c:2778 ../src/core/command.c:2785 ../src/main.c:341
 #, fuzzy, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Nie wybrano sekwencji"
 
-#: ../src/core/command.c:1176
+#: ../src/core/command.c:1179
 #, c-format
 msgid "Background value: %d\n"
 msgstr "Wartość tła: %d\n"
 
-#: ../src/core/command.c:1232
+#: ../src/core/command.c:1235
 #, c-format
 msgid "The file %s has been created for the %s layer.\n"
 msgstr "Plik %s został utworzony dla warstwy %s.\n"
 
-#: ../src/core/command.c:1246 ../src/core/command.c:1251
-#: ../src/core/command.c:1272 ../src/core/command.c:1292
-#: ../src/core/command.c:1312
+#: ../src/core/command.c:1249 ../src/core/command.c:1254
+#: ../src/core/command.c:1275 ../src/core/command.c:1295
+#: ../src/core/command.c:1315
 #, c-format
 msgid "replacement value is out of range (0 - %d)\n"
 msgstr ""
 
-#: ../src/core/command.c:1349
+#: ../src/core/command.c:1352
 msgid "Number of layers MUST be 1 or 3\n"
 msgstr "Number of layers MUST be 1 or 3\n"
 
-#: ../src/core/command.c:1364
+#: ../src/core/command.c:1367
 msgid "new empty image"
 msgstr "nowy pusty obraz"
 
-#: ../src/core/command.c:1384
+#: ../src/core/command.c:1387
 #, c-format
 msgid "Values must be positive and less than %d.\n"
 msgstr "Wartości muszą być dodatnie i mniejsze niż %d.\n"
 
-#: ../src/core/command.c:1407 ../src/core/command.c:1690
+#: ../src/core/command.c:1410 ../src/core/command.c:1693
 msgid "Wrong parameters.\n"
 msgstr ""
 
-#: ../src/core/command.c:1412
+#: ../src/core/command.c:1415
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr ""
 
-#: ../src/core/command.c:1433 ../src/gui/PSF_list.c:498
+#: ../src/core/command.c:1436 ../src/gui/PSF_list.c:498
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Znaleziono %d gwiazd w zdjęciu, kanał #%d\n"
 
-#: ../src/core/command.c:1451
+#: ../src/core/command.c:1454
 msgid "find_hot must be applied on an one-channel master-dark frame"
 msgstr ""
 
-#: ../src/core/command.c:1459
+#: ../src/core/command.c:1462
 #, c-format
 msgid "%ld cold and %ld hot pixels\n"
 msgstr ""
 
-#: ../src/core/command.c:1464 ../src/core/command.c:1506
+#: ../src/core/command.c:1467 ../src/core/command.c:1509
 #, c-format
 msgid "Cannot open file: %s\n"
 msgstr "Nie można otworzyć pliku: %s\n"
 
-#: ../src/core/command.c:1569
+#: ../src/core/command.c:1572
 #, c-format
 msgid "cosmetic correction: cosme file format error at line %d: %s\n"
 msgstr ""
 
-#: ../src/core/command.c:1577
+#: ../src/core/command.c:1580
 msgid "There were some errors, please check your input file.\n"
 msgstr "Wystąpiły błędy, sprawdź plik wejściowy.\n"
 
-#: ../src/core/command.c:1602
+#: ../src/core/command.c:1605
 msgid "The size of the kernel MUST be odd and greater than 1.\n"
 msgstr "Rozmiar jądra MUSI być nieparzysty i większy niż 1.\n"
 
-#: ../src/core/command.c:1607
+#: ../src/core/command.c:1610
 msgid "Modulation value MUST be between 0 and 1\n"
 msgstr "Wartość modulacji MUSI być pomiędzy 0 i 1\n"
 
-#: ../src/core/command.c:1632
+#: ../src/core/command.c:1635
 #, c-format
 msgid "Center of gravity coordinates are (%.3lf, %.3lf)\n"
 msgstr "Współrzędne środka ciężkości wynoszą (%.3lf, %.3lf)\n"
 
-#: ../src/core/command.c:1759
+#: ../src/core/command.c:1762
 msgid "FFT does not work with sequences\n"
 msgstr "FFT nie działa z sekwencjami\n"
 
-#: ../src/core/command.c:1945
+#: ../src/core/command.c:1948
 msgid ""
 "Use this command to select images in a sequence, load a sequence first.\n"
 msgstr ""
 "Użyj tego polecenia aby wybrać obrazy w sekwencji, najpierw załaduj "
 "sekwencję.\n"
 
-#: ../src/core/command.c:1951
+#: ../src/core/command.c:1954
 msgid ""
 "The first argument must be between 0 and the number of images minus one.\n"
 msgstr ""
 "Pierwszy argument musi zawierać się pomiędzy 0 a liczbą obrazów minus "
 "jeden.\n"
 
-#: ../src/core/command.c:1987
+#: ../src/core/command.c:1990
 #, c-format
 msgid "Selection update finished, %d images are selected in the sequence\n"
 msgstr ""
 "Aktualizacja selekcji zakończona, %d obrazy zostały wybrane w sekwencji\n"
 
-#: ../src/core/command.c:2007
+#: ../src/core/command.c:2010
 msgid "Siril cannot split layers. Make sure your image is in RGB mode.\n"
 msgstr ""
 "Siril nie może podzielić warstw. Upewnij się, że obraz jest w trybie RGB.\n"
 
-#: ../src/core/command.c:2032
+#: ../src/core/command.c:2035
 #, fuzzy
 msgid "Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"
 msgstr ""
 "Siril nie może podzielić warstw. Upewnij się, że obraz jest w trybie RGB.\n"
 
-#: ../src/core/command.c:2159 ../src/core/command.c:2165
+#: ../src/core/command.c:2162 ../src/core/command.c:2168
 #, c-format
 msgid ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
 "%0.1lf, Max: %0.1lf\n"
 msgstr ""
 
-#: ../src/core/command.c:2203
+#: ../src/core/command.c:2206
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Konwersja: błąd otwarcia katalogu roboczego %s.\n"
 
-#: ../src/core/command.c:2222
+#: ../src/core/command.c:2225
 msgid "No RAW files were found for conversion\n"
 msgstr ""
 
-#: ../src/core/command.c:2238
+#: ../src/core/command.c:2241
 #, fuzzy, c-format
 msgid "Conversion: processing %d RAW files...\n"
 msgstr "Konwersja: przetwarzanie...\n"
 
-#: ../src/core/command.c:2245
+#: ../src/core/command.c:2248
 msgid "Conversion: no working directory set.\n"
 msgstr "Konwersja: brak ustawienia katalogu roboczego.\n"
 
-#: ../src/core/command.c:2303 ../src/registration/registration.c:105
+#: ../src/core/command.c:2306 ../src/registration/registration.c:105
 msgid "Global Star Alignment (deep-sky)"
 msgstr "Globalne wyrównanie gwiazdy (głębokie niebo)"
 
 #. only TRUE for global registration. Will be updated in this case
-#: ../src/core/command.c:2363 ../src/registration/registration.c:942
+#: ../src/core/command.c:2366 ../src/registration/registration.c:942
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr ""
 "Rejestracja: przetwarzanie przy użyciu metody:%s\n"
 "\n"
 
-#: ../src/core/command.c:2385
+#: ../src/core/command.c:2388
 msgid "Normalization options are not allowed in this context, ignoring.\n"
 msgstr ""
 
-#: ../src/core/command.c:2403 ../src/core/command.c:2419
-#: ../src/core/command.c:2436 ../src/core/command.c:2453
+#: ../src/core/command.c:2406 ../src/core/command.c:2422
+#: ../src/core/command.c:2439 ../src/core/command.c:2456
 #, fuzzy, c-format
 msgid "Could not parse argument `%s' to the filter `%s', aborting.\n"
 msgstr ""
 "Zarejestruj: nie można załadować pierwszego obrazu do zarejestrowania, "
 "przerwanie.\n"
 
-#: ../src/core/command.c:2410 ../src/core/command.c:2426
-#: ../src/core/command.c:2443 ../src/core/command.c:2460
-#: ../src/core/command.c:2470
+#: ../src/core/command.c:2413 ../src/core/command.c:2429
+#: ../src/core/command.c:2446 ../src/core/command.c:2463
+#: ../src/core/command.c:2473
 #, fuzzy, c-format
 msgid "Missing argument to %s, aborting.\n"
 msgstr "Błąd podczas odczytu klatki %d z %s, przerwanie.\n"
 
-#: ../src/core/command.c:2476
+#: ../src/core/command.c:2479
 msgid "Output filename option is not allowed in this context, ignoring.\n"
 msgstr ""
 
-#: ../src/core/command.c:2480
+#: ../src/core/command.c:2483
 #, fuzzy, c-format
 msgid "Unexpected argument to stacking `%s', aborting.\n"
 msgstr "Wybierz co najmniej dwie ramki do stackowania. Przerwanie.\n"
 
-#: ../src/core/command.c:2497
+#: ../src/core/command.c:2500
 #, c-format
 msgid "Stacking sequence %s\n"
 msgstr "Sekwencja stackowania: %s\n"
 
-#: ../src/core/command.c:2507
+#: ../src/core/command.c:2510
 #, fuzzy
 msgid "Not using rejection for stacking\n"
 msgstr "Skalowanie w górę dla stackowania"
 
-#: ../src/core/command.c:2552
+#: ../src/core/command.c:2555
 #, c-format
 msgid "Could not save the stacking result %s\n"
 msgstr ""
 
-#: ../src/core/command.c:2574
+#: ../src/core/command.c:2577
 msgid "Looking for sequences in current working directory...\n"
 msgstr "Szukam sekwencji w bieżącym katalogu roboczym...\n"
 
-#: ../src/core/command.c:2576
+#: ../src/core/command.c:2579
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr "Error while searching sequences or opening the directory.\n"
 
-#: ../src/core/command.c:2585
+#: ../src/core/command.c:2588
 msgid "Starting stacking of found sequences...\n"
 msgstr ""
 
-#: ../src/core/command.c:2593
+#: ../src/core/command.c:2596
 #, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr ""
 
-#: ../src/core/command.c:2633 ../src/core/command.c:2728
+#: ../src/core/command.c:2636 ../src/core/command.c:2731
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
 msgstr ""
 
-#: ../src/core/command.c:2642 ../src/core/command.c:2737
+#: ../src/core/command.c:2645 ../src/core/command.c:2740
 #, c-format
 msgid "Stacking method type '%s' is invalid\n"
 msgstr ""
 
-#: ../src/core/command.c:2673
+#: ../src/core/command.c:2676
 #, fuzzy
 msgid "Stacked sequence successfully.\n"
 msgstr "Sekwencja stackowania: %s\n"
 
-#: ../src/core/command.c:2832
+#: ../src/core/command.c:2835
 msgid "-stretch option is now deprecated.\n"
 msgstr ""
 
-#: ../src/core/command.c:2846 ../src/core/preprocess.c:522
+#: ../src/core/command.c:2849 ../src/core/preprocess.c:522
 msgid "Preprocessing...\n"
 msgstr "Wstępne przetwarzanie ...\n"
 
-#: ../src/core/command.c:2872
+#: ../src/core/command.c:2875
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -5344,18 +5354,18 @@ msgid ""
 msgstr ""
 "Liczba procesorów logicznych MUSI być większa od 0 i mniejsza lub równa %d.\n"
 
-#: ../src/core/command.c:2882
+#: ../src/core/command.c:2885
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "Używanie teraz %d procesorów logicznych\n"
 
-#: ../src/core/command.c:2894
+#: ../src/core/command.c:2897
 msgid ""
 "The accepted range for the ratio of memory used for stacking is [0.05, 4], "
 "with values below the available memory recommended\n"
 msgstr ""
 
-#: ../src/core/command.c:2898
+#: ../src/core/command.c:2901
 #, c-format
 msgid ""
 "Setting the ratio of memory used for stacking above 1 will require the use "
@@ -5363,12 +5373,12 @@ msgid ""
 "requested)\n"
 msgstr ""
 
-#: ../src/core/command.c:2902
+#: ../src/core/command.c:2905
 #, c-format
 msgid "Usable memory for stacking changed to %g\n"
 msgstr ""
 
-#: ../src/core/command.c:2908
+#: ../src/core/command.c:2911
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* LISTA DOSTĘPNYCH POLECEŃ *********\n"
 
@@ -8986,9 +8996,6 @@ msgstr "Skalowanie w górę dla stackowania"
 
 #~ msgid "Another task is already in progress, ignoring new request.\n"
 #~ msgstr "Inne zadanie jest już w toku, ignorowanie nowego żądania.\n"
-
-#~ msgid "This command can be used only when a sequence is loaded\n"
-#~ msgstr "Tego polecenia można użyć tylko po załadowaniu sekwencji\n"
 
 #, fuzzy
 #~ msgid ""
