@@ -1062,8 +1062,18 @@ void on_calibration_close_button_clicked(GtkButton *button, gpointer user_data) 
 
 void on_checkbutton_manual_calibration_toggled(GtkToggleButton *togglebutton,
 		gpointer user_data) {
-	GtkWidget *manual_components = lookup_widget("grid25");
-	gtk_widget_set_sensitive(manual_components,	gtk_toggle_button_get_active(togglebutton));
+	GtkWidget *cc_box_red = lookup_widget("cc_box_red");
+	GtkWidget *scale_r = lookup_widget("scale_r");
+	GtkWidget *cc_box_green = lookup_widget("cc_box_green");
+	GtkWidget *scale_g = lookup_widget("scale_g");
+	GtkWidget *cc_box_blue = lookup_widget("cc_box_blue");
+	GtkWidget *scale_b = lookup_widget("scale_b");
+	gtk_widget_set_sensitive(cc_box_red, gtk_toggle_button_get_active(togglebutton));
+	gtk_widget_set_sensitive(scale_r, gtk_toggle_button_get_active(togglebutton));
+	gtk_widget_set_sensitive(cc_box_green, gtk_toggle_button_get_active(togglebutton));
+	gtk_widget_set_sensitive(scale_g, gtk_toggle_button_get_active(togglebutton));
+	gtk_widget_set_sensitive(cc_box_blue, gtk_toggle_button_get_active(togglebutton));
+	gtk_widget_set_sensitive(scale_b, gtk_toggle_button_get_active(togglebutton));
 }
 
 static int pos_to_neg(fits *fit) {

@@ -1809,6 +1809,7 @@ int process_fixbanding(int nb) {
 int process_subsky(int nb) {
 	gboolean is_sequence;
 	sequence *seq = NULL;
+	int degree = 0;
 
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
@@ -1838,8 +1839,16 @@ int process_subsky(int nb) {
 			free(seq);
 			return 1;
 		}
+		degree = atoi(word[2]);
 	} else {
 		if (!single_image_is_loaded()) return 1;
+		degree = atoi(word[1]);
+	}
+
+	if (degree < 1 || degree > 4) {
+		siril_log_message("Polynomial degree order must be within the [1, 4] range.\n");
+		printf("test %d\n", degree);
+		return 1;
 	}
 
 	set_cursor_waiting(TRUE);
@@ -1851,25 +1860,13 @@ int process_subsky(int nb) {
 		args->nb_of_samples = 20;
 		args->tolerance = 1.0;
 		args->correction = 0; //subtraction
-		args->degree = atof(word[2]) - 1;
 		args->seqEntry = "bkg_";
-
-		if (args->degree < 1 || args->degree > 4) {
-			siril_log_message("Polynomial degree order must be within the [1, 4] range.\n");
-			free(args);
-			return 1;
-		}
+		args->degree = (poly_order) (degree - 1);
 
 		apply_background_extraction_to_sequence(args);
 	} else {
-		poly_order degree = atof(word[1]) - 1;
-		if (degree < 1 || degree > 4) {
-			siril_log_message("Polynomial degree order must be within the [1, 4] range.\n");
-			return 1;
-		}
-
 		generate_background_samples(20, 1.0);
-		remove_gradient_from_image(0, degree);
+		remove_gradient_from_image(0, (poly_order) (degree - 1));
 		free_background_sample_list(com.grad_samples);
 		com.grad_samples = NULL;
 

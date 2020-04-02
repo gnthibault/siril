@@ -9128,7 +9128,7 @@ If the parameters is null, so no filter is apply at all.</property>
       <object class="GtkBox" id="box_dialog_bkg">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
+        <property name="spacing">10</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
             <property name="can_focus">False</property>
@@ -9461,7 +9461,6 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="tooltip_text" translatable="yes">If a sequence is loaded and this is activated, perform the processing on all images of the sequence instead of only the loaded image.</property>
-                <property name="halign">start</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -9474,7 +9473,6 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
               <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="halign">start</property>
                 <property name="label" translatable="yes">Output prefix:</property>
               </object>
               <packing>
@@ -9790,7 +9788,7 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
       <object class="GtkBox" id="dialog-vbox">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">4</property>
+        <property name="spacing">10</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area">
             <property name="can_focus">False</property>
@@ -10035,6 +10033,9 @@ Modifying parameters in this windows afterward will void the colour balance, and
                 <property name="halign">start</property>
                 <property name="label" translatable="yes">WARNING: You should not perform a LRGB combination with linear images. Process images before.</property>
                 <property name="single_line_mode">True</property>
+                <style>
+                  <class name="label-info"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -15757,7 +15758,7 @@ The Background Neutralization should be applied before this operation.</property
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">20</property>
+            <property name="spacing">10</property>
             <child>
               <object class="GtkFrame" id="frame22">
                 <property name="visible">True</property>
@@ -15954,6 +15955,7 @@ This step should be run before any attempt of color calibration.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
+                        <property name="spacing">5</property>
                         <child>
                           <object class="GtkCheckButton" id="checkbutton_manual_calibration">
                             <property name="label" translatable="yes">Manual White Balance</property>
@@ -15972,100 +15974,175 @@ This step should be run before any attempt of color calibration.</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkGrid" id="grid25">
+                          <object class="GtkBox" id="cc_box_red">
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_left">40</property>
-                            <property name="margin_right">40</property>
-                            <property name="row_spacing">3</property>
-                            <property name="column_spacing">5</property>
-                            <child>
-                              <object class="GtkScale" id="scale_r">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="hexpand">True</property>
-                                <property name="adjustment">adjustment_scale_r</property>
-                                <property name="round_digits">1</property>
-                                <property name="digits">3</property>
-                                <property name="value_pos">bottom</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkScale" id="scale_g">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="hexpand">True</property>
-                                <property name="adjustment">adjustment_scale_g</property>
-                                <property name="round_digits">1</property>
-                                <property name="digits">3</property>
-                                <property name="value_pos">bottom</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkScale" id="scale_b">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="hexpand">True</property>
-                                <property name="adjustment">adjustment_scale_b</property>
-                                <property name="round_digits">1</property>
-                                <property name="digits">3</property>
-                                <property name="value_pos">bottom</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">2</property>
-                              </packing>
-                            </child>
                             <child>
                               <object class="GtkLabel" id="label104">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="halign">start</property>
-                                <property name="label" translatable="yes">Red:</property>
+                                <property name="label" translatable="yes">Red</property>
                               </object>
                               <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">0</property>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="label105">
+                              <object class="GtkSpinButton">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="halign">start</property>
-                                <property name="label" translatable="yes">Green:</property>
+                                <property name="can_focus">True</property>
+                                <property name="adjustment">adjustment_scale_r</property>
+                                <property name="digits">3</property>
                               </object>
                               <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="label106">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="halign">start</property>
-                                <property name="label" translatable="yes">Blue:</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">2</property>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="scale_r">
+                            <property name="visible">True</property>
+                            <property name="sensitive">False</property>
+                            <property name="can_focus">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="adjustment">adjustment_scale_r</property>
+                            <property name="round_digits">3</property>
+                            <property name="digits">3</property>
+                            <property name="draw_value">False</property>
+                            <property name="value_pos">bottom</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="cc_box_green">
+                            <property name="visible">True</property>
+                            <property name="sensitive">False</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="label105">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">Green</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="adjustment">adjustment_scale_g</property>
+                                <property name="digits">3</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="scale_g">
+                            <property name="visible">True</property>
+                            <property name="sensitive">False</property>
+                            <property name="can_focus">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="adjustment">adjustment_scale_g</property>
+                            <property name="round_digits">3</property>
+                            <property name="digits">3</property>
+                            <property name="draw_value">False</property>
+                            <property name="value_pos">bottom</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="cc_box_blue">
+                            <property name="visible">True</property>
+                            <property name="sensitive">False</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="label106">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">Blue</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="adjustment">adjustment_scale_b</property>
+                                <property name="digits">3</property>
+                                <property name="numeric">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkScale" id="scale_b">
+                            <property name="visible">True</property>
+                            <property name="sensitive">False</property>
+                            <property name="can_focus">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="adjustment">adjustment_scale_b</property>
+                            <property name="round_digits">3</property>
+                            <property name="digits">3</property>
+                            <property name="draw_value">False</property>
+                            <property name="value_pos">bottom</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">7</property>
                           </packing>
                         </child>
                         <child>
@@ -16268,7 +16345,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">8</property>
                           </packing>
                         </child>
                       </object>
@@ -16898,7 +16975,7 @@ by averaging the entire image</property>
                             <property name="tooltip_text" translatable="yes">Due to algorithm constraints more complex demosaicing algorithms cannot be used in the rejection stacking. Our tests also showed that there is no gain in quaity when many images are used, while processing time increases 20-fold.</property>
                             <property name="valign">center</property>
                             <property name="hexpand">True</property>
-                            <property name="label" translatable="yes">Warning: For SER on-the-fly demosaicing, the bilinear algorithm is always used.</property>
+                            <property name="label" translatable="yes">Warning: For SER on-the-fly demosaicing, the RCD algorithm is always used.</property>
                             <property name="justify">fill</property>
                             <property name="wrap">True</property>
                             <property name="max_width_chars">40</property>

@@ -139,7 +139,7 @@ static WORD* reassign_to_non_null_data_ushort(WORD *data, size_t inputlen, size_
 	for (i = 0; i < inputlen; i++) {
 		if (data[i] > 0) {
 			if (j >= outputlen) {
-				fprintf(stderr, "\n- stats MISMATCH in sizes (in: %zd, out: %zd), THIS IS A BUG: seqfile is wrong *********\n\n", inputlen, outputlen);
+				fprintf(stderr, "\n- stats MISMATCH in sizes (in: %zu, out: %zu), THIS IS A BUG: seqfile is wrong *********\n\n", inputlen, outputlen);
 				break;
 			}
 			ndata[j] = data[i];

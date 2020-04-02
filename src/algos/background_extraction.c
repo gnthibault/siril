@@ -757,7 +757,7 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 							"a polynomial degree greater than 1. This is unlikely because such "
 							"gradients are often linear and a correction with a polynomial "
 							"function of degree 1 is probably enough. Click OK to confirm or "
-							"cancel to change your mind."));
+							"Cancel to change your mind."));
 			if (!confirm) {
 				free(args);
 				set_cursor_waiting(FALSE);
