@@ -54,7 +54,7 @@ git-version.h: update-git-version-header
 	  git_version_abbrev="`git --git-dir=$(top_srcdir)/.git rev-parse --short HEAD`"; \
 	  git_last_commit_year="`git --git-dir=$(top_srcdir)/.git log -n1 --reverse --pretty=%ci | cut -b 1-4`"; \
 	elif test ! -f "$@"; then \
-	  git_version="Unknown, shouldn't happen"; \
+	  git_version="Unknown"; \
 	  git_version_abbrev="$$git_version"; \
 	  git_last_commit_timestamp=-1; \
 	  git_last_commit_year="`date -u '+%Y'`"; \
