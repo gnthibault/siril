@@ -41,7 +41,6 @@ static gboolean wavelet_show_preview;
 
 static void reset_scale_w() {
 	static GtkRange *range_w[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
-	int i;
 
 	if (range_w[0] == NULL) {
 		range_w[0] = GTK_RANGE(lookup_widget("scale_w0"));
@@ -53,14 +52,13 @@ static void reset_scale_w() {
 	}
 
 	set_notify_block(TRUE);
-	for (i = 0; i < 6; i++) {
+	for (int i = 0; i < 6; i++) {
 		gtk_range_set_value(range_w[i], 1.f);
 	}
 	set_notify_block(FALSE);
 }
 
 static int update_wavelets() {
-	int i;
 	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
 			"b_rawdata.wave" }, *dir[3];
 	const char *tmpdir;
@@ -69,7 +67,7 @@ static int update_wavelets() {
 
 	set_cursor_waiting(TRUE);
 
-	for (i = 0; i < gfit.naxes[2]; i++) {
+	for (int i = 0; i < gfit.naxes[2]; i++) {
 		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
 		if (gfit.type == DATA_USHORT) {
 			wavelet_reconstruct_file(dir[i], wavelet_value, gfit.pdata[i]);
@@ -83,8 +81,7 @@ static int update_wavelets() {
 }
 
 static void wavelets_startup() {
-	int i;
-	for (i = 0; i < 6; i++) {
+	for (int i = 0; i < 6; i++) {
 		wavelet_value[i] = 1.f;
 	}
 	copy_gfit_to_backup();
@@ -296,6 +293,7 @@ void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 	}
 	gtk_widget_set_sensitive(lookup_widget("frame_wavelets"), TRUE);
 	gtk_widget_set_sensitive(lookup_widget("button_reset_w"), TRUE);
+	reset_scale_w();
 	set_cursor_waiting(FALSE);
 	return;
 }
