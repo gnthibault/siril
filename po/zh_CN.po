@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-02 21:32+0200\n"
+"POT-Creation-Date: 2020-04-03 09:05+0200\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -1457,11 +1457,11 @@ msgstr ""
 "缺省下，Siril会从seq文件中读取已经计算好的归一化系数。不过用户可以强制Siril在"
 "叠加前重新计算。"
 
-#: ../src/gui/siril3.glade.h:329 ../src/stacking/stacking.c:673
+#: ../src/gui/siril3.glade.h:329 ../src/stacking/stacking.c:675
 msgid "Sigma low: "
 msgstr "Sigma下限: "
 
-#: ../src/gui/siril3.glade.h:330 ../src/stacking/stacking.c:674
+#: ../src/gui/siril3.glade.h:330 ../src/stacking/stacking.c:676
 msgid "Sigma high: "
 msgstr "Sigma上限: "
 
@@ -8765,32 +8765,37 @@ msgstr "叠加最终目标图像"
 msgid "Unsaved stacking result"
 msgstr "未保存的叠加结果"
 
-#: ../src/stacking/stacking.c:647
+#: ../src/stacking/stacking.c:584
+#, fuzzy
+msgid "Stacking failed, please check the log to fix your issue.\n"
+msgstr "叠加失败，请检查日志。"
+
+#: ../src/stacking/stacking.c:649
 msgid "Percentile low: "
 msgstr "Percentile下限: "
 
-#: ../src/stacking/stacking.c:648
+#: ../src/stacking/stacking.c:650
 msgid "Percentile high: "
 msgstr "Percentile上限: "
 
-#: ../src/stacking/stacking.c:659
+#: ../src/stacking/stacking.c:661
 msgid "Linear low: "
 msgstr "Linear下限: "
 
-#: ../src/stacking/stacking.c:660
+#: ../src/stacking/stacking.c:662
 msgid "Linear high: "
 msgstr "Linear上限: "
 
-#: ../src/stacking/stacking.c:683
+#: ../src/stacking/stacking.c:685
 #, c-format
 msgid "Using %d MB memory maximum for stacking\n"
 msgstr "叠加操作共使用内存%d MB\n"
 
-#: ../src/stacking/stacking.c:696
+#: ../src/stacking/stacking.c:698
 msgid "Not using limits on maximum memory for stacking\n"
 msgstr "叠加操作未使用内存上限\n"
 
-#: ../src/stacking/stacking.c:946
+#: ../src/stacking/stacking.c:948
 #, c-format
 msgid "Stacking %d images of the %d of the sequence"
 msgstr "叠加 %d 个图像于队列 %d"

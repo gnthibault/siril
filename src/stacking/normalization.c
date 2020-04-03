@@ -173,7 +173,9 @@ static int compute_normalization(struct stacking_args *args) {
 				ref_image_filtred_idx, ref_image_filtred_idx,
 				coeff->offset, coeff->mul, coeff->scale,
 				args->normalize, &scale0, &mul0, &offset0, TRUE)) {
-		set_progress_bar_data(_("Normalization failed."), PROGRESS_NONE);
+		const char *msg = (_("Normalization failed."));
+		siril_log_color_message("%s\n", "red", msg);
+		set_progress_bar_data(msg, PROGRESS_NONE);
 		return 1;
 	}
 
