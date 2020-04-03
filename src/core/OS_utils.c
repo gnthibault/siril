@@ -82,7 +82,7 @@
 static int64_t find_space(const gchar *name) {
 	NSError *error;
 
-	NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfFileSystemForPath:@"/"
+	NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfFileSystemForPath:@name
 	                                                                                   error:&error];
 	int64_t freeSpace = [[fileAttributes objectForKey:NSFileSystemFreeSize] longLongValue];
 	return freeSpace;
