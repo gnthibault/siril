@@ -90,6 +90,8 @@ static gboolean is_star(fitted_PSF *result, star_finder_params *sf) {
 		return FALSE;
 	if (isnan(result->mag))
 		return FALSE;
+	if (result->B < 0.0)
+		return FALSE;
 	if ((result->x0 <= 0.0) || (result->y0 <= 0.0))
 		return FALSE;
 	if (result->A < 0.01)
@@ -100,9 +102,6 @@ static gboolean is_star(fitted_PSF *result, star_finder_params *sf) {
 		return FALSE;
 	if ((result->fwhmy / result->fwhmx) < sf->roundness)
 		return FALSE;
-	if (result->A < result->B)
-		return FALSE;
-
 	return TRUE;
 }
 
