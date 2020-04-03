@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 09:05+0200\n"
+"POT-Creation-Date: 2020-04-03 09:55+0200\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -7194,11 +7194,13 @@ msgid "%s image %d in sequence %s\n"
 msgstr "%s obraz %d w sekwencji %s\n"
 
 #: ../src/gui/sequence_list.c:379
-msgid "excluding"
+#, fuzzy
+msgid "Excluding"
 msgstr "wykluczając"
 
 #: ../src/gui/sequence_list.c:379
-msgid "including"
+#, fuzzy
+msgid "Including"
 msgstr "włącznie"
 
 #: ../src/gui/sequence_list.c:399
@@ -8752,9 +8754,15 @@ msgstr ""
 "Obraz odniesienia nie znajduje się w wybranym zbiorze obrazów. Wybierz inny "
 "obraz referencyjny.\n"
 
-#: ../src/stacking/normalization.c:163 ../src/stacking/normalization.c:176
+#. check memory first
+#: ../src/stacking/normalization.c:161
 msgid "Normalization failed."
 msgstr "Normalizacja nie powiodła się."
+
+#: ../src/stacking/normalization.c:176 ../src/stacking/normalization.c:196
+#, fuzzy, c-format
+msgid "%s Check image %d first.\n"
+msgstr "Najpierw ustaw obraz referencyjny."
 
 #: ../src/stacking/stacking.c:122
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"

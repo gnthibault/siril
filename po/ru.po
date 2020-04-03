@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 09:05+0200\n"
+"POT-Creation-Date: 2020-04-03 09:55+0200\n"
 "PO-Revision-Date: 2020-03-24 14:05+0300\n"
 "Last-Translator: Alexandre Prokoudine <alexandre.prokoudine@gmail.com>\n"
 "Language-Team: русский <gnome-cyr@lists.gnome.org>\n"
@@ -6516,11 +6516,13 @@ msgid "%s image %d in sequence %s\n"
 msgstr ""
 
 #: ../src/gui/sequence_list.c:379
-msgid "excluding"
+#, fuzzy
+msgid "Excluding"
 msgstr "исключая"
 
 #: ../src/gui/sequence_list.c:379
-msgid "including"
+#, fuzzy
+msgid "Including"
 msgstr "включая"
 
 #: ../src/gui/sequence_list.c:399
@@ -7927,9 +7929,15 @@ msgid ""
 "another reference image.\n"
 msgstr ""
 
-#: ../src/stacking/normalization.c:163 ../src/stacking/normalization.c:176
+#. check memory first
+#: ../src/stacking/normalization.c:161
 msgid "Normalization failed."
 msgstr "Не удалось выполнить нормировку."
+
+#: ../src/stacking/normalization.c:176 ../src/stacking/normalization.c:196
+#, fuzzy, c-format
+msgid "%s Check image %d first.\n"
+msgstr "Укажите опорное фото"
 
 #: ../src/stacking/stacking.c:122
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"

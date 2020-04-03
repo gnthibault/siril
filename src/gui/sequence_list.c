@@ -376,7 +376,7 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 
 	sequence_list_change_selection(char_path, !com.seq.imgparam[index].incl);
 	siril_log_message(_("%s image %d in sequence %s\n"),
-			com.seq.imgparam[index].incl ? _("excluding") : _("including"),
+			com.seq.imgparam[index].incl ? _("Excluding") : _("Including"),
 			index + 1, com.seq.seqname);
 
 	com.seq.imgparam[index].incl = !com.seq.imgparam[index].incl;

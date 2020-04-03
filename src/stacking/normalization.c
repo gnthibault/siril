@@ -158,9 +158,10 @@ static int compute_normalization(struct stacking_args *args) {
 	}
 
 	// check memory first
+	const char *error_msg = (_("Normalization failed."));
 	int nb_threads = normalization_get_max_number_of_threads(args->seq);
 	if (nb_threads == 0) {
-		set_progress_bar_data(_("Normalization failed."), PROGRESS_NONE);
+		set_progress_bar_data(error_msg, PROGRESS_NONE);
 		return 1;
 	}
 
@@ -169,13 +170,12 @@ static int compute_normalization(struct stacking_args *args) {
 		clear_stats(args->seq, args->reglayer);
 
 	// compute for the first image to have scale0 mul0 and offset0
-	if (_compute_normalization_for_image(args,
-				ref_image_filtred_idx, ref_image_filtred_idx,
-				coeff->offset, coeff->mul, coeff->scale,
-				args->normalize, &scale0, &mul0, &offset0, TRUE)) {
-		const char *msg = (_("Normalization failed."));
-		siril_log_color_message("%s\n", "red", msg);
-		set_progress_bar_data(msg, PROGRESS_NONE);
+	if (_compute_normalization_for_image(args, ref_image_filtred_idx,
+			ref_image_filtred_idx, coeff->offset, coeff->mul, coeff->scale,
+			args->normalize, &scale0, &mul0, &offset0, TRUE)) {
+		siril_log_color_message(_("%s Check image %d first.\n"), "red", error_msg,
+				ref_image_filtred_idx + 1);
+		set_progress_bar_data(error_msg, PROGRESS_NONE);
 		return 1;
 	}
 
@@ -193,6 +193,9 @@ static int compute_normalization(struct stacking_args *args) {
 			if (_compute_normalization_for_image(args, i, ref_image_filtred_idx,
 						coeff->offset, coeff->mul, coeff->scale,
 						args->normalize, &scale0, &mul0, &offset0, FALSE)) {
+				siril_log_color_message(_("%s Check image %d first.\n"), "red",
+						error_msg, args->image_indices[i] + 1);
+				set_progress_bar_data(error_msg, PROGRESS_NONE);
 				retval = 1;
 				continue;
 			}

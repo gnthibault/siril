@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 09:05+0200\n"
-"PO-Revision-Date: 2020-04-03 09:06+0200\n"
+"POT-Creation-Date: 2020-04-03 09:55+0200\n"
+"PO-Revision-Date: 2020-04-03 09:55+0200\n"
 "Last-Translator: Cyril Richard\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -7507,12 +7507,12 @@ msgid "%s image %d in sequence %s\n"
 msgstr "%s image %d dans la séquence %s\n"
 
 #: ../src/gui/sequence_list.c:379
-msgid "excluding"
-msgstr "excluant"
+msgid "Excluding"
+msgstr "Exclure"
 
 #: ../src/gui/sequence_list.c:379
-msgid "including"
-msgstr "incluant"
+msgid "Including"
+msgstr "Inclure"
 
 #: ../src/gui/sequence_list.c:399
 #, c-format
@@ -9062,9 +9062,15 @@ msgstr ""
 "L'image de référence n'est pas dans le jeu d'images sélectionnées. Veuillez "
 "choisir une autre image de référence.\n"
 
-#: ../src/stacking/normalization.c:163 ../src/stacking/normalization.c:176
+#. check memory first
+#: ../src/stacking/normalization.c:161
 msgid "Normalization failed."
 msgstr "Échec de la normalisation."
+
+#: ../src/stacking/normalization.c:176 ../src/stacking/normalization.c:196
+#, c-format
+msgid "%s Check image %d first.\n"
+msgstr "%s Vérifier l'image %d.\n"
 
 #: ../src/stacking/stacking.c:122
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"

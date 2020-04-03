@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 09:05+0200\n"
+"POT-Creation-Date: 2020-04-03 09:55+0200\n"
 "PO-Revision-Date: 2020-03-22 14:39+0100\n"
 "Last-Translator: Stefan Beck <stefan@cometchaser.de>\n"
 "Language-Team: \n"
@@ -7476,11 +7476,13 @@ msgid "%s image %d in sequence %s\n"
 msgstr "%s Bild %d in Sequenz %s\n"
 
 #: ../src/gui/sequence_list.c:379
-msgid "excluding"
+#, fuzzy
+msgid "Excluding"
 msgstr "ausgenommen"
 
 #: ../src/gui/sequence_list.c:379
-msgid "including"
+#, fuzzy
+msgid "Including"
 msgstr "eingeschlossen"
 
 #: ../src/gui/sequence_list.c:399
@@ -9022,9 +9024,15 @@ msgstr ""
 "Das Referenzbild ist nicht in der Bilderauswahl. Bitte wählen Sie ein "
 "anderes Referenzbild aus.\n"
 
-#: ../src/stacking/normalization.c:163 ../src/stacking/normalization.c:176
+#. check memory first
+#: ../src/stacking/normalization.c:161
 msgid "Normalization failed."
 msgstr "Normalisierung fehlgeschlagen."
+
+#: ../src/stacking/normalization.c:176 ../src/stacking/normalization.c:196
+#, fuzzy, c-format
+msgid "%s Check image %d first.\n"
+msgstr "Definieren Sie zunächst das Referenz-Bild"
 
 #: ../src/stacking/stacking.c:122
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"

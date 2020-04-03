@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-03 09:05+0200\n"
+"POT-Creation-Date: 2020-04-03 09:55+0200\n"
 "PO-Revision-Date: 2019-10-06 11:17+0200\n"
 "Last-Translator: Luca Benassi <bennolo@gmail.com>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
@@ -7589,11 +7589,13 @@ msgid "%s image %d in sequence %s\n"
 msgstr "%s immagine %d nella sequenza %s\n"
 
 #: ../src/gui/sequence_list.c:379
-msgid "excluding"
+#, fuzzy
+msgid "Excluding"
 msgstr "escludendo"
 
 #: ../src/gui/sequence_list.c:379
-msgid "including"
+#, fuzzy
+msgid "Including"
 msgstr "includendo"
 
 #: ../src/gui/sequence_list.c:399
@@ -9152,9 +9154,15 @@ msgstr ""
 "L'immagine di riferimento non è nell'insieme di immagini selezionate. Si "
 "prega di scegliere un'altra immagine di riferimento.\n"
 
-#: ../src/stacking/normalization.c:163 ../src/stacking/normalization.c:176
+#. check memory first
+#: ../src/stacking/normalization.c:161
 msgid "Normalization failed."
 msgstr "Normalizzazione fallita."
+
+#: ../src/stacking/normalization.c:176 ../src/stacking/normalization.c:196
+#, fuzzy, c-format
+msgid "%s Check image %d first.\n"
+msgstr "Imposta prima l'immagine di riferimento."
 
 #: ../src/stacking/stacking.c:122
 msgid "No frame selected for stacking (select at least 2). Aborting.\n"
