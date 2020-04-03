@@ -221,7 +221,7 @@ int verbose_resize_gaussian(fits *image, int toX, int toY, int interpolation) {
 	}
 
 	siril_log_color_message(_("Resample (%s interpolation): processing...\n"),
-			"red", str_inter);
+			"green", str_inter);
 
 	gettimeofday(&t_start, NULL);
 
@@ -262,7 +262,7 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
 	}
 
 	siril_log_color_message(
-			_("Rotation (%s interpolation, angle=%g): processing...\n"), "red",
+			_("Rotation (%s interpolation, angle=%g): processing...\n"), "green",
 			str_inter, angle);
 	gettimeofday(&t_start, NULL);
 
@@ -318,7 +318,7 @@ static void mirrorx_float(fits *fit, gboolean verbose) {
 	struct timeval t_start, t_end;
 
 	if (verbose) {
-		siril_log_color_message(_("Horizontal mirror: processing...\n"), "red");
+		siril_log_color_message(_("Horizontal mirror: processing...\n"), "green");
 		gettimeofday(&t_start, NULL);
 	}
 
@@ -359,7 +359,7 @@ void mirrory(fits *fit, gboolean verbose) {
 	struct timeval t_start, t_end;
 
 	if (verbose) {
-		siril_log_color_message(_("Vertical mirror: processing...\n"), "red");
+		siril_log_color_message(_("Vertical mirror: processing...\n"), "green");
 		gettimeofday(&t_start, NULL);
 	}
 
@@ -421,7 +421,7 @@ static void crop_float(fits *fit, rectangle *bounds) {
 	struct timeval t_start = { 0 }, t_end = { 0 };
 
 	if (fit == &gfit) {
-		siril_log_color_message(_("Crop: processing...\n"), "red");
+		siril_log_color_message(_("Crop: processing...\n"), "green");
 		gettimeofday(&t_start, NULL);
 	}
 

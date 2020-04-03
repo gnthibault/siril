@@ -262,7 +262,7 @@ static gpointer median_filter_ushort(gpointer p) {
 	g_assert(nx > 0 && ny > 0);
 	total = ny * args->fit->naxes[2] * args->iterations;
 
-	char *msg = siril_log_color_message(_("Median Filter: processing...\n"), "red");
+	char *msg = siril_log_color_message(_("Median Filter: processing...\n"), "green");
 	msg[strlen(msg) - 1] = '\0';
 	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
@@ -486,7 +486,7 @@ static gpointer median_filter_float(gpointer p) {
 	g_assert(nx > 0 && ny > 0);
 	total = ny * args->fit->naxes[2] * args->iterations;
 
-	char *msg = siril_log_color_message(_("Median Filter: processing...\n"), "red");
+	char *msg = siril_log_color_message(_("Median Filter: processing...\n"), "green");
 	msg[strlen(msg) - 1] = '\0';
 	set_progress_bar_data(msg, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);

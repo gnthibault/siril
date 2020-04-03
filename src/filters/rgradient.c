@@ -67,7 +67,7 @@ static gboolean end_rgradient_filter(gpointer p) {
 gpointer rgradient_filter(gpointer p) {
 	struct timeval t_start, t_end;
 
-	siril_log_color_message(_("Rotational gradient: processing...\n"), "red");
+	siril_log_color_message(_("Rotational gradient: processing...\n"), "green");
 	gettimeofday(&t_start, NULL);
 
 	struct rgradient_filter_data *args = (struct rgradient_filter_data *) p;

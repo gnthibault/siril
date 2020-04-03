@@ -1149,7 +1149,7 @@ static int readraw(const char *name, fits *fit) {
 	}
 
 	if (raw->idata.filters == 9) {
-		siril_log_color_message(_("XTRANS Sensor detected.\n"), "red");
+		siril_log_color_message(_("XTRANS Sensor detected.\n"), "salmon");
 	}
 
 	switch (com.raw_set.user_qual) { /* Set interpolation                                        */

@@ -109,7 +109,7 @@ int unsharp(fits *fit, double sigma, double amount, gboolean verbose) {
 	if (sigma <= 0.0)
 		return 1;
 	if (verbose) {
-		siril_log_color_message(_("Unsharp: processing...\n"), "red");
+		siril_log_color_message(_("Unsharp: processing...\n"), "green");
 		gettimeofday(&t_start, NULL);
 	}
 	cvUnsharpFilter(fit, sigma, amount);
@@ -207,7 +207,7 @@ int loglut(fits *fit) {
 int ddp(fits *a, int level, float coeff, float sigma) {
 	fits fit = { 0 };
 	if (level < 0 || level > USHRT_MAX) {
-		siril_log_color_message(_("ddp level argument must be [0, 65535]\n"), "red");
+		siril_log_color_message(_("ddp level argument must be [0, 65535]\n"), "green");
 		return 1;
 	}
 	float l = ushort_to_float_range(level);

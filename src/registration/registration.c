@@ -940,7 +940,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->load_new_sequence = FALSE; // only TRUE for global registration. Will be updated in this case
 
 	msg = siril_log_color_message(_("Registration: processing using method: %s\n"),
-			"red", method->name);
+			"green", method->name);
 	msg[strlen(msg) - 1] = '\0';
 	set_cursor_waiting(TRUE);
 	set_progress_bar_data(msg, PROGRESS_RESET);

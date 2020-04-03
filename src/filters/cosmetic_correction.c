@@ -394,7 +394,7 @@ gpointer autoDetectThreaded(gpointer p) {
 	int retval = 0, chan;
 	long icold, ihot;
 
-	siril_log_color_message(_("Cosmetic Correction: processing...\n"), "red");
+	siril_log_color_message(_("Cosmetic Correction: processing...\n"), "green");
 	gettimeofday(&t_start, NULL);
 
 	icold = ihot = 0L;

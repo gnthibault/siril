@@ -439,7 +439,7 @@ gpointer fourier_transform(gpointer p) {
 
 	data_type type = args->fit->type;
 
-	siril_log_color_message(_("Fourier Transform: processing...\n"), "red");
+	siril_log_color_message(_("Fourier Transform: processing...\n"), "green");
 	gettimeofday(&t_start, NULL);
 	args->retval = 0;
 

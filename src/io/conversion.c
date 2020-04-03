@@ -590,7 +590,7 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 			} else {
 				com.debayer.bayer_pattern = XTRANS_FILTER;
 				com.debayer.bayer_inter = XTRANS;
-				siril_log_color_message(_("XTRANS Sensor detected. Using special algorithm.\n"), "red");
+				siril_log_color_message(_("XTRANS Sensor detected. Using special algorithm.\n"), "green");
 			}
 		}
 		if (com.debayer.bayer_pattern >= BAYER_FILTER_MIN

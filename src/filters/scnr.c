@@ -56,7 +56,7 @@ gpointer scnr(gpointer p) {
 	struct timeval t_start, t_end;
 	double norm = get_normalized_value(args->fit);
 
-	siril_log_color_message(_("SCNR: processing...\n"), "red");
+	siril_log_color_message(_("SCNR: processing...\n"), "green");
 	gettimeofday(&t_start, NULL);
 
 #ifdef _OPENMP

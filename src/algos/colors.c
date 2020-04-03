@@ -495,7 +495,7 @@ static gpointer extract_channels_ushort(gpointer p) {
 		return GINT_TO_POINTER(1);
 	}
 
-	siril_log_color_message(_("%s channel extraction: processing...\n"), "red",
+	siril_log_color_message(_("%s channel extraction: processing...\n"), "green",
 			args->str_type);
 	gettimeofday(&t_start, NULL);
 
@@ -582,7 +582,7 @@ static gpointer extract_channels_float(gpointer p) {
 		return GINT_TO_POINTER(1);
 	}
 
-	siril_log_color_message(_("%s channel extraction: processing...\n"), "red",
+	siril_log_color_message(_("%s channel extraction: processing...\n"), "green",
 			args->str_type);
 	gettimeofday(&t_start, NULL);
 
@@ -997,7 +997,7 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 	static GtkSpinButton *selection_white_value[4] = { NULL, NULL, NULL, NULL };
 	struct timeval t_start, t_end;
 
-	siril_log_color_message(_("Color Calibration: processing...\n"), "red");
+	siril_log_color_message(_("Color Calibration: processing...\n"), "green");
 	gettimeofday(&t_start, NULL);
 
 	GtkToggleButton *manual = GTK_TOGGLE_BUTTON(

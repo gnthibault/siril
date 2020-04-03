@@ -390,7 +390,7 @@ static void start_stacking() {
 	 * displays this text
 	 */
 	if (stackparam.method != &stack_summing_generic)
-		siril_log_color_message(_("Stacking: processing...\n"), "red");
+		siril_log_color_message(_("Stacking: processing...\n"), "green");
 	gettimeofday(&stackparam.t_start, NULL);
 	set_cursor_waiting(TRUE);
 
@@ -580,6 +580,8 @@ static gboolean end_stacking(gpointer p) {
 		redraw_previews();
 		sequence_list_change_current();
 		update_stack_interface(TRUE);
+	} else {
+		siril_log_color_message(_("Stacking failed, please check the log to fix your issue.\n"), "red");
 	}
 
 	set_cursor_waiting(FALSE);

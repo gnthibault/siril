@@ -112,7 +112,7 @@ gpointer generic_sequence_worker(gpointer p) {
 	desc = g_string_new(args->description);
 	if (desc) {
 		desc = g_string_append(desc, _(": processing...\n"));
-		siril_log_color_message(desc->str, "red");
+		siril_log_color_message(desc->str, "green");
 		g_string_free(desc, TRUE);
 	}
 

@@ -126,7 +126,7 @@ gpointer BandingEngineThreaded(gpointer p) {
 	struct banding_data *args = (struct banding_data *) p;
 	struct timeval t_start, t_end;
 
-	siril_log_color_message(_("Banding Reducing: processing...\n"), "red");
+	siril_log_color_message(_("Banding Reducing: processing...\n"), "green");
 	gettimeofday(&t_start, NULL);
 
 	int retval = BandingEngine(args->fit, args->sigma, args->amount, args->protect_highlights, args->applyRotation);

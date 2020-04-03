@@ -152,7 +152,7 @@ static void initialize_convert() {
 
 	index = gtk_entry_get_text(startEntry);
 
-	siril_log_color_message(_("Conversion: processing %d files...\n"), "red", count);
+	siril_log_color_message(_("Conversion: processing %d files...\n"), "green", count);
 	
 	set_cursor_waiting(TRUE);
 	control_window_switch_to_tab(OUTPUT_LOGS);

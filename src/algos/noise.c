@@ -58,7 +58,7 @@ gpointer noise(gpointer p) {
 
 	if (args->verbose) {
 		siril_log_color_message(_("Noise standard deviation: calculating...\n"),
-				"red");
+				"green");
 		gettimeofday(&args->t_start, NULL);
 	}
 

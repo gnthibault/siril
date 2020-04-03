@@ -193,7 +193,7 @@ static fitted_PSF **peaker_ushort(fits *fit, int layer, star_finder_params *sf, 
 		return NULL;
 	}
 
-	siril_log_color_message(_("Findstar: processing...\n"), "red");
+	siril_log_color_message(_("Findstar: processing...\n"), "green");
 	gettimeofday(&t_start, NULL);
 
 	results[0] = NULL;
@@ -337,7 +337,7 @@ static fitted_PSF **peaker_float(fits *fit, int layer, star_finder_params *sf, i
 		return NULL;
 	}
 
-	siril_log_color_message(_("Findstar: processing...\n"), "red");
+	siril_log_color_message(_("Findstar: processing...\n"), "green");
 	gettimeofday(&t_start, NULL);
 
 	results[0] = NULL;

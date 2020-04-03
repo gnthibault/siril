@@ -2238,7 +2238,7 @@ int process_convertraw(int nb) {
 		files_to_convert[i] = g_strdup(list->data);
 	g_list_free_full(orig_list, g_free);
 
-	siril_log_color_message(_("Conversion: processing %d RAW files...\n"), "red", count);
+	siril_log_color_message(_("Conversion: processing %d RAW files...\n"), "green", count);
 
 	set_cursor_waiting(TRUE);
 	if (!com.script)
@@ -2363,7 +2363,7 @@ int process_register(int nb) {
 	reg_args->load_new_sequence = FALSE;	// don't load it for command line execution
 
 	msg = siril_log_color_message(
-			_("Registration: processing using method: %s\n"), "red",
+			_("Registration: processing using method: %s\n"), "green",
 			method->name);
 	free(method);
 	msg[strlen(msg) - 1] = '\0';
@@ -2846,7 +2846,7 @@ int process_preprocess(int nb) {
 		return -1;
 	}
 
-	siril_log_color_message(_("Preprocessing...\n"), "red");
+	siril_log_color_message(_("Preprocessing...\n"), "green");
 	gettimeofday(&args->t_start, NULL);
 	args->seq = seq;
 	args->is_sequence = TRUE;
