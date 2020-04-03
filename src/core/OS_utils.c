@@ -78,7 +78,16 @@
  * @param name the path of the directory to be tested
  * @return the disk space remaining in bytes, or a negative value if error
  */
-#ifdef HAVE_SYS_STATVFS_H
+#ifdef OS_X
+static int64_t find_space(const gchar *name) {
+	NSError *error;
+
+	NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfFileSystemForPath:@"/"
+	                                                                                   error:&error];
+	int64_t freeSpace = [[fileAttributes objectForKey:NSFileSystemFreeSize] longLongValue];
+	return freeSpace;
+}
+#elif HAVE_SYS_STATVFS_H
 static int64_t find_space(const gchar *name) {
 	struct statvfs st;
 	int64_t available;
