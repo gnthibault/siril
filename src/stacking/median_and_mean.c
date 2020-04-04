@@ -447,7 +447,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 		case SIGMA:
 		case SIGMEDIAN:
 		case WINSORIZED:
-			median = quickmedian (stack, N);
+			median = quickmedian(stack, N);
 			if (median == 0.0)
 				return 0;
 			break;
@@ -908,7 +908,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 					if (itype == DATA_USHORT) {
 						int kept_pixels = apply_rejection_ushort(data, nb_frames, args, crej);
 						if (kept_pixels == 0)
-							mean = 0.0;
+							mean = quickmedian(data->stack, nb_frames);
 						else {
 							int64_t sum = 0L;
 							for (frame = 0; frame < kept_pixels; ++frame) {
@@ -919,7 +919,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 					} else {
 						int kept_pixels = apply_rejection_float(data, nb_frames, args, crej);
 						if (kept_pixels == 0)
-							mean = 0.0;
+							mean = quickmedian_float(data->stack, nb_frames);
 						else {
 							double sum = 0.0;
 							for (frame = 0; frame < kept_pixels; ++frame) {

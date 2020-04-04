@@ -120,7 +120,6 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		for (int frame = 0; frame < N; frame++) {
 			rejected[frame] = percentile_clipping(stack[frame], args->sig, (float) median, crej);
 		}
-
 		for (pixel = 0, output = 0; pixel < N; pixel++) {
 			if (!rejected[pixel]) {
 				// copy only if there was a rejection

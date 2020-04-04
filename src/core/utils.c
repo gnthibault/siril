@@ -190,7 +190,7 @@ float ushort_to_float_range(WORD w) {
  * @return the float equivalent
  */
 float double_ushort_to_float_range(double d) {
-	return (float)(d / USHRT_MAX_DOUBLE);
+	return (float)d * INV_USHRT_MAX_SINGLE;
 }
 
 /**
