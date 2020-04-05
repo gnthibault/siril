@@ -319,7 +319,7 @@ static gpointer export_sequence(gpointer ptr) {
 
 		switch (args->convflags) {
 			case TYPEFITS:
-				snprintf(dest, 255, "%s%05d", args->basename, i);
+				snprintf(dest, 255, "%s%05d%s", args->basename, i, com.ext);
 				if (savefits(dest, &destfit)) {
 					retval = -1;
 					goto free_and_reset_progress_bar;
@@ -327,7 +327,7 @@ static gpointer export_sequence(gpointer ptr) {
 				break;
 #ifdef HAVE_LIBTIFF
 			case TYPETIFF:
-				snprintf(dest, 255, "%s%05d%s", args->basename, i, com.ext);
+				snprintf(dest, 255, "%s%05d", args->basename, i);
 				if (savetif(dest, &destfit, 16)) {
 					retval = -1;
 					goto free_and_reset_progress_bar;
