@@ -1112,7 +1112,7 @@ gchar *siril_truncate_str(gchar *str, gint size) {
 	if (len > size) {
 		gint pos = len - size;
 		/* locate first "/" */
-		char *ptr = strchr(str + pos, '/');
+		char *ptr = strchr(str + pos, G_DIR_SEPARATOR);
 		if (ptr != NULL) {
 			pos = ptr - str;
 		}
