@@ -1102,14 +1102,21 @@ gchar* siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf) {
  * Truncate a string str to not exceed an length of size
  * @param str the string to be truncated
  * @param size maximum size of the string
- * @return the truncated size starting by "..."
+ * @return the truncated size starting by "..." and followed by "/"
+ * if possible
  */
 gchar *siril_truncate_str(gchar *str, gint size) {
 	GString *trunc_str = g_string_new(str);
 	gint len = strlen(str);
 
 	if (len > size) {
-		trunc_str = g_string_erase(trunc_str, 0, len - size);
+		gint pos = len - size;
+		/* locate first "/" */
+		char *ptr = strchr(str + pos, '/');
+		if (ptr != NULL) {
+			pos = ptr - str;
+		}
+		trunc_str = g_string_erase(trunc_str, 0, pos);
 		trunc_str = g_string_prepend(trunc_str, "...");
 	}
 	return g_string_free(trunc_str, FALSE);
