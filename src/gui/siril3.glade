@@ -1777,7 +1777,6 @@ enter a visible wavelength in nm</property>
         </child>
         <child>
           <object class="GtkButton" id="cwd_button">
-            <property name="label" translatable="yes">Change dir...</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -1786,6 +1785,13 @@ enter a visible wavelength in nm</property>
             <property name="action_name">app.cwd</property>
             <property name="use_underline">True</property>
             <property name="always_show_image">True</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="stock">gtk-home</property>
+              </object>
+            </child>
             <style>
               <class name="suggested-action"/>
             </style>
