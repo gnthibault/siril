@@ -1117,14 +1117,16 @@ void initialize_display_mode() {
 void set_GUI_CWD() {
 	if (!com.wd)
 		return;
-	gchar *str;
 	GtkHeaderBar *bar = GTK_HEADER_BAR(lookup_widget("headerbar"));
 
-	str = g_strdup_printf("Siril-%s", VERSION);
+	gchar *str = g_strdup_printf("Siril-%s", VERSION);
 	gtk_header_bar_set_title(bar , str);
-	gtk_header_bar_set_subtitle(bar, com.wd);
+
+	gchar *truncated_wd = siril_truncate_str(com.wd, 50);
+	gtk_header_bar_set_subtitle(bar, truncated_wd);
 
 	g_free(str);
+	g_free(truncated_wd);
 }
 
 void set_GUI_misc() {

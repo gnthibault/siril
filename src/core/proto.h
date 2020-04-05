@@ -154,6 +154,7 @@ float computePente(WORD *lo, WORD *hi);
 void load_css_style_sheet();
 double encodeJD(dateTime dt);
 gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf);
+gchar *siril_truncate_str(gchar *str, gint size);
 
 /****************** quantize.h ***************/
 int siril_fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,
