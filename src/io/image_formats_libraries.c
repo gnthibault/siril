@@ -265,7 +265,7 @@ static TIFF* Siril_TIFFOpen(const char *name, const char *mode) {
 /* reads a TIFF file and stores it in the fits argument.
  * If file loading fails, the argument is untouched.
  */
-int readtif(const char *name, fits *fit) {
+int readtif(const char *name, fits *fit, gboolean force_float) {
 	int retval = 0;
 	uint32 height, width;
 	uint16 nbits, nsamples, color;
@@ -349,10 +349,18 @@ int readtif(const char *name, fits *fit) {
 	case 8:
 		fit->bitpix = BYTE_IMG;
 		fit->type = DATA_USHORT;
+		if (force_float) {
+			size_t ndata = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
+			fit_replace_buffer(fit, ushort8_buffer_to_float(fit->data, ndata), DATA_FLOAT);
+		}
 		break;
 	case 16:
 		fit->bitpix = USHORT_IMG;
 		fit->type = DATA_USHORT;
+		if (force_float) {
+			size_t ndata = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
+			fit_replace_buffer(fit, ushort_buffer_to_float(fit->data, ndata), DATA_FLOAT);
+		}
 		mirrorx(fit, FALSE);
 		break;
 	case 32:

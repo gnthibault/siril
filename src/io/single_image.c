@@ -137,7 +137,9 @@ static gboolean end_read_single_image(gpointer p) {
  * @param is_sequence is set to TRUE if the loaded image is in fact a SER or AVI sequence. Can be NULL
  * @return
  */
-int read_single_image(const char* filename, fits *dest, char **realname_out, gboolean allow_sequences, gboolean *is_sequence, gboolean allow_dialogs, gboolean force_float) {
+int read_single_image(const char *filename, fits *dest, char **realname_out,
+		gboolean allow_sequences, gboolean *is_sequence, gboolean allow_dialogs,
+		gboolean force_float) {
 	int retval;
 	image_type imagetype;
 	char *realname = NULL;

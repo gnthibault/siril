@@ -184,6 +184,15 @@ float ushort_to_float_range(WORD w) {
 }
 
 /**
+ * convert an unsigned char value to siril's representation of float values [0, 1]
+ * @param w value to convert
+ * @return the float equivalent
+ */
+float uchar_to_float_range(BYTE w) {
+	return (float)w * INV_UCHAR_MAX_SINGLE;
+}
+
+/**
  * convert an double value from the unsigned short range to siril's representation
  * of float values [0, 1]
  * @param d value to convert
@@ -243,6 +252,24 @@ WORD *float_buffer_to_ushort(float *buffer, size_t ndata) {
 }
 
 /**
+ * convert a BYTE type buffer into a float buffer
+ * @param buffer in BYTE
+ * @param ndata
+ * @return
+ */
+float *uchar_buffer_to_float(BYTE *buffer, size_t ndata) {
+	float *buf = malloc(ndata * sizeof(float));
+	if (!buf) {
+		PRINT_ALLOC_ERR;
+	} else {
+		for (size_t i = 0; i < ndata; i++) {
+			buf[i] = uchar_to_float_range(buffer[i]);
+		}
+	}
+	return buf;
+}
+
+/**
  * convert a WORD type buffer into a float buffer
  * @param buffer in WORD
  * @param ndata
@@ -255,6 +282,24 @@ float *ushort_buffer_to_float(WORD *buffer, size_t ndata) {
 	} else {
 		for (size_t i = 0; i < ndata; i++) {
 			buf[i] = ushort_to_float_range(buffer[i]);
+		}
+	}
+	return buf;
+}
+
+/**
+ * convert a WORD type buffer representing 8bit data into a float buffer
+ * @param buffer in WORD
+ * @param ndata
+ * @return
+ */
+float *ushort8_buffer_to_float(WORD *buffer, size_t ndata) {
+	float *buf = malloc(ndata * sizeof(float));
+	if (!buf) {
+		PRINT_ALLOC_ERR;
+	} else {
+		for (size_t i = 0; i < ndata; i++) {
+			buf[i] = uchar_to_float_range((BYTE) buffer[i]);
 		}
 	}
 	return buf;

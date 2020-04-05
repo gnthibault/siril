@@ -71,7 +71,7 @@ int readpic(const char *name, fits *fit);
 
 /****************** image_formats_libraries.h ******************/
 #ifdef HAVE_LIBTIFF
-int readtif(const char *name, fits *fit);
+int readtif(const char *name, fits *fit, gboolean force_float);
 int savetif(const char *name, fits *fit, uint16 bitspersample);
 #endif
 
@@ -107,12 +107,15 @@ WORD truncate_to_WORD(int x);
 float set_float_in_interval(float val, float low, float high);
 double set_double_in_interval(double val, double low, double high);
 float ushort_to_float_range(WORD w);
+float uchar_to_float_range(BYTE w);
 float double_ushort_to_float_range(double d);
 WORD float_to_ushort_range(float f);
 BYTE float_to_uchar_range(float f);
 float ushort_to_float_bitpix(fits *fit, WORD value);
 WORD *float_buffer_to_ushort(float *buffer, size_t ndata);
+float *uchar_buffer_to_float(BYTE *buffer, size_t ndata);
 float *ushort_buffer_to_float(WORD *buffer, size_t ndata);
+float *ushort8_buffer_to_float(WORD *buffer, size_t ndata);
 uint16_t change_endianness16(uint16_t x);
 uint16_t cpu_to_le16(uint16_t x);
 uint16_t cpu_to_be16(uint16_t x);

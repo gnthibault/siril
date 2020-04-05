@@ -791,7 +791,7 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean i
 			break;
 #ifdef HAVE_LIBTIFF
 		case TYPETIFF:
-			retval = (readtif(source, dest) < 0);
+			retval = (readtif(source, dest, force_float) < 0);
 			break;
 #endif
 		case TYPEPNM:
