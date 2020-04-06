@@ -295,6 +295,11 @@ static double get_sample_median(double *buf, const int xx,
 	return median;
 }
 
+static unsigned int _rand(uint64_t *const p_rng) {
+      *p_rng = *p_rng*1103515245 + 12345U;
+      return (unsigned int)*p_rng;
+}
+
 static long dither(long max) {
 	unsigned long
 	// max <= RAND_MAX < ULONG_MAX, so this is okay.
@@ -314,6 +319,11 @@ static long dither(long max) {
 }
 
 static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) {
+	struct timeval t_start, t_end;
+
+	siril_log_color_message(_("convert_fits_to_img: processing...\n"), "green");
+	gettimeofday(&t_start, NULL);
+
 	size_t i, n = fit->naxes[0] * fit->naxes[1];
 	double *image = malloc(n * sizeof(double));
 	if (!image) {
@@ -321,26 +331,34 @@ static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) 
 		return NULL;
 	}
 
-	if (add_dither) {
-		/* initialize random seed: */
-		srand(time(NULL));
-	}
+	uint64_t seed = time(NULL);
 
-	mirrorx(fit, FALSE);
-	/*  copy data to new array and normalize pixel data */
-	for (i = 0; i < n; i++) {
-		if (fit->type == DATA_USHORT) {
-			image[i] = (double) fit->pdata[channel][i] / USHRT_MAX_DOUBLE;
-		} else if (fit->type == DATA_FLOAT) {
-			image[i] = (double) fit->fpdata[channel][i];
-		}
-		if (add_dither) {
-			/* add dithering in order to avoid colour banding */
-			double dithering = (dither(999) * 1E-7);
-			image[i] += dithering;
-		}
-	}
-	mirrorx(fit, FALSE);
+    if (fit->type == DATA_USHORT) {
+        for (int y = 0; y < fit->ry; ++y) {
+            for (int x = 0; x < fit->rx; ++x) {
+                image[y * fit->rx + x] = fit->pdata[channel][(fit->ry - y - 1) * fit->rx + x] / USHRT_MAX_SINGLE;
+                if (add_dither) {
+                    /* add dithering in order to avoid colour banding */
+                    const double dithering = (_rand(&seed) % 1048576) * 0.000000000095367431640625f;
+                    image[y * fit->rx + x] += dithering;
+                }
+            }
+        }
+    } else {
+        for (int y = 0; y < fit->ry; ++y) {
+            for (int x = 0; x < fit->rx; ++x) {
+                image[y * fit->rx + x] = fit->fpdata[channel][(fit->ry - y - 1) * fit->rx + x];
+                if (add_dither) {
+                    /* add dithering in order to avoid colour banding */
+                    const double dithering = (_rand(&seed) % 1048576) * 0.000000000095367431640625f;
+                    image[y * fit->rx + x] += dithering;
+                }
+            }
+        }
+    }
+	gettimeofday(&t_end, NULL);
+	show_time(t_start, t_end);
+
 	return image;
 }
 
