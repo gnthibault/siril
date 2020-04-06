@@ -226,12 +226,11 @@ static int fill_rgb_image(AVFrame *pict, int frame_index,
 	BYTE map[USHRT_MAX + 1];
 	WORD tmp_pixel_value, hi, lo;
 	int i;
-	float pente;
-
-	pente = computePente(&lo, &hi);
 	
+	float slope = compute_slope(&lo, &hi);
+
 	for (i = 0; i <= USHRT_MAX; i++) {
-		map[i] = round_to_BYTE((float) i * pente);
+		map[i] = round_to_BYTE((float) i * slope);
 		if (map[i] == UCHAR_MAX)
 			break;
 	}

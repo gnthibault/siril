@@ -47,21 +47,20 @@ enum {
 static uint8_t *fits_to_uint8(fits *fit) {
 	uint8_t *data;
 	int w, h, i, j, channel, step;
-	float pente;
 	WORD lo, hi;
 
 	w = fit->rx;
 	h = fit->ry;
 	channel = fit->naxes[2];
 	step = (channel == 3 ? 2 : 0);
-	pente = computePente(&lo, &hi);
+	float slope = compute_slope(&lo, &hi);
 
 	data = malloc(w * h * channel * sizeof(uint8_t));
 	for (i = 0, j = 0; i < w * h * channel; i += channel, j++) {
-		data[i + step] = (uint8_t) round_to_BYTE(((double) fit->pdata[RLAYER][j] * pente));
+		data[i + step] = (uint8_t) round_to_BYTE(((double) fit->pdata[RLAYER][j] * slope));
 		if (channel > 1) {
-			data[i + 1] = (uint8_t) round_to_BYTE(((double) fit->pdata[GLAYER][j] * pente));
-			data[i + 2 - step] = (uint8_t) round_to_BYTE(((double) fit->pdata[BLAYER][j] * pente));
+			data[i + 1] = (uint8_t) round_to_BYTE(((double) fit->pdata[GLAYER][j] * slope));
+			data[i + 2 - step] = (uint8_t) round_to_BYTE(((double) fit->pdata[BLAYER][j] * slope));
 		}
 	}
 	return data;
@@ -357,9 +356,10 @@ static gpointer export_sequence(gpointer ptr) {
 									float tmp =	fit.fpdata[layer][x + y * fit.rx];
 									tmp *= (float) coeff.scale[i];
 									tmp -= (float) coeff.offset[i];
-									destfit.pdata[layer][nx + ny * fit.rx] = tmp * USHRT_MAX_SINGLE;
+									destfit.pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(tmp * USHRT_MAX_SINGLE);
 								} else {
-									destfit.pdata[layer][nx + ny * fit.rx] = fit.fpdata[layer][x + y * fit.rx] * USHRT_MAX_SINGLE;
+									float tmp = fit.fpdata[layer][x + y * fit.rx] * USHRT_MAX_SINGLE;
+									destfit.pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(tmp);
 								}
 							}
 						} else {
