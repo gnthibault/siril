@@ -246,22 +246,41 @@ static gpointer export_sequence(gpointer ptr) {
 			destfit.header = NULL;
 			destfit.fptr = NULL;
 			nbdata = fit.rx * fit.ry;
-			destfit.data = calloc(nbdata * fit.naxes[2], sizeof(WORD));
-			destfit.stats = NULL;
-			if (!destfit.data) {
-				PRINT_ALLOC_ERR;
-				retval = -1;
-				goto free_and_reset_progress_bar;
-			}
-			destfit.pdata[0] = destfit.data;
-			if (fit.naxes[2] == 1) {
-				destfit.pdata[1] = destfit.data;
-				destfit.pdata[2] = destfit.data;
+			if ((fit.type == DATA_FLOAT) && (args->convflags == TYPEFITS)) {
+				destfit.fdata = calloc(nbdata * fit.naxes[2], sizeof(float));
+				destfit.stats = NULL;
+				if (!destfit.fdata) {
+					PRINT_ALLOC_ERR;
+					retval = -1;
+					goto free_and_reset_progress_bar;
+				}
+				destfit.fpdata[0] = destfit.fdata;
+				if (fit.naxes[2] == 1) {
+					destfit.fpdata[1] = destfit.fdata;
+					destfit.fpdata[2] = destfit.fdata;
+				} else {
+					destfit.fpdata[1] = destfit.fdata + nbdata;
+					destfit.fpdata[2] = destfit.fdata + nbdata * 2;
+				}
+				nb_layers = fit.naxes[2];
 			} else {
-				destfit.pdata[1] = destfit.data + nbdata;
-				destfit.pdata[2] = destfit.data + nbdata * 2;
+				destfit.data = calloc(nbdata * fit.naxes[2], sizeof(WORD));
+				destfit.stats = NULL;
+				if (!destfit.data) {
+					PRINT_ALLOC_ERR;
+					retval = -1;
+					goto free_and_reset_progress_bar;
+				}
+				destfit.pdata[0] = destfit.data;
+				if (fit.naxes[2] == 1) {
+					destfit.pdata[1] = destfit.data;
+					destfit.pdata[2] = destfit.data;
+				} else {
+					destfit.pdata[1] = destfit.data + nbdata;
+					destfit.pdata[2] = destfit.data + nbdata * 2;
+				}
+				nb_layers = fit.naxes[2];
 			}
-			nb_layers = fit.naxes[2];
 		}
 		else if (fit.ry * fit.rx != nbdata || nb_layers != fit.naxes[2]) {
 			fprintf(stderr, "An image of the sequence doesn't have the same dimensions\n");
@@ -272,15 +291,28 @@ static gpointer export_sequence(gpointer ptr) {
 			/* we want copy the header */
 			// TODO: why not use copyfits here?
 			copy_fits_metadata(&fit, &destfit);
-			memset(destfit.data, 0, nbdata * fit.naxes[2] * sizeof(WORD));
-			if (args->crop) {
-				/* reset destfit damaged by the crop function */
-				if (fit.naxes[2] == 3) {
-					destfit.pdata[1] = destfit.data + nbdata;
-					destfit.pdata[2] = destfit.data + nbdata * 2;
+			if ((fit.type == DATA_FLOAT) && (args->convflags == TYPEFITS)) {
+				memset(destfit.fdata, 0, nbdata * fit.naxes[2] * sizeof(float));
+				if (args->crop) {
+					/* reset destfit damaged by the crop function */
+					if (fit.naxes[2] == 3) {
+						destfit.fpdata[1] = destfit.fdata + nbdata;
+						destfit.fpdata[2] = destfit.fdata + nbdata * 2;
+					}
+					destfit.rx = destfit.naxes[0] = fit.rx;
+					destfit.ry = destfit.naxes[1] = fit.ry;
 				}
-				destfit.rx = destfit.naxes[0] = fit.rx;
-				destfit.ry = destfit.naxes[1] = fit.ry;
+			} else {
+				memset(destfit.data, 0, nbdata * fit.naxes[2] * sizeof(WORD));
+				if (args->crop) {
+					/* reset destfit damaged by the crop function */
+					if (fit.naxes[2] == 3) {
+						destfit.pdata[1] = destfit.data + nbdata;
+						destfit.pdata[2] = destfit.data + nbdata * 2;
+					}
+					destfit.rx = destfit.naxes[0] = fit.rx;
+					destfit.ry = destfit.naxes[1] = fit.ry;
+				}
 			}
 		}
 
@@ -294,19 +326,45 @@ static gpointer export_sequence(gpointer ptr) {
 		}
 
 		/* fill the image with shift data and normalization */
-		for (layer=0; layer<fit.naxes[2]; ++layer) {
-			for (y=0; y < fit.ry; ++y){
-				for (x=0; x < fit.rx; ++x){
+		for (layer = 0; layer < fit.naxes[2]; ++layer) {
+			for (y = 0; y < fit.ry; ++y) {
+				for (x = 0; x < fit.rx; ++x) {
 					nx = x + shiftx;
 					ny = y + shifty;
 					if (nx >= 0 && nx < fit.rx && ny >= 0 && ny < fit.ry) {
-						if (args->normalize) {
-							double tmp = fit.pdata[layer][x + y * fit.rx];
-							tmp *= coeff.scale[i];
-							tmp -= coeff.offset[i];
-							destfit.pdata[layer][nx + ny * fit.rx] = round_to_WORD(tmp);
+						if (fit.type == DATA_USHORT) {
+							if (args->normalize) {
+								float tmp = fit.pdata[layer][x + y * fit.rx];
+								tmp *= (float) coeff.scale[i];
+								tmp -= (float) coeff.offset[i];
+								destfit.pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(tmp);
+							} else {
+								destfit.pdata[layer][nx + ny * fit.rx] = fit.pdata[layer][x + y * fit.rx];
+							}
+						} else if (fit.type == DATA_FLOAT) {
+							destfit.bitpix = USHORT_IMG;
+							if (args->convflags == TYPEFITS) {
+								if (args->normalize) {
+									float tmp =	fit.fpdata[layer][x + y * fit.rx];
+									tmp *= (float) coeff.scale[i];
+									tmp -= (float) coeff.offset[i];
+									destfit.fpdata[layer][nx + ny * fit.rx] = tmp;
+								} else {
+									destfit.fpdata[layer][nx + ny * fit.rx] = fit.fpdata[layer][x + y * fit.rx];
+								}
+							} else {
+								if (args->normalize) {
+									float tmp =	fit.fpdata[layer][x + y * fit.rx];
+									tmp *= (float) coeff.scale[i];
+									tmp -= (float) coeff.offset[i];
+									destfit.pdata[layer][nx + ny * fit.rx] = tmp * USHRT_MAX_SINGLE;
+								} else {
+									destfit.pdata[layer][nx + ny * fit.rx] = fit.fpdata[layer][x + y * fit.rx] * USHRT_MAX_SINGLE;
+								}
+							}
 						} else {
-							destfit.pdata[layer][nx + ny * fit.rx] = fit.pdata[layer][x + y * fit.rx];
+							retval = -1;
+							goto free_and_reset_progress_bar;
 						}
 					}
 				}
@@ -369,7 +427,11 @@ static gpointer export_sequence(gpointer ptr) {
 
 free_and_reset_progress_bar:
 	clearfits(&fit);	// in case of goto
-	free(destfit.data);
+	if ((fit.type == DATA_FLOAT) && (args->convflags == TYPEFITS)) {
+		free(destfit.fdata);
+	} else {
+		free(destfit.data);
+	}
 	if (args->normalize) {
 		free(coeff.offset);
 		free(coeff.scale);
