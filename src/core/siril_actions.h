@@ -27,6 +27,7 @@
 
 void open_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void cwd_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void save_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void save_as_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void undo_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void redo_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);

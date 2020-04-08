@@ -457,7 +457,8 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
 	gtk_widget_set_sensitive(lookup_widget("header_redo_button"), is_redo_available());
 	/* File Menu */
-	gtk_widget_set_sensitive(lookup_widget("header_save_button"), any_image_is_loaded);
+	gtk_widget_set_sensitive(lookup_widget("header_save_as_button"), any_image_is_loaded);
+	gtk_widget_set_sensitive(lookup_widget("header_save_button"), is_a_single_image_loaded && com.uniq->fileexist);
 	gtk_widget_set_sensitive(lookup_widget("info_menu_headers"), any_image_is_loaded && gfit.header != NULL);
 	gtk_widget_set_sensitive(lookup_widget("info_menu_informations"), is_a_single_image_loaded);
 
@@ -1062,6 +1063,7 @@ static void load_accels() {
 	add_accelerator(GTK_APPLICATION(application), "app.open", "<Primary>O");
 	add_accelerator(GTK_APPLICATION(application), "app.undo", "<Primary>Z");
 	add_accelerator(GTK_APPLICATION(application), "app.redo", "<Primary><Shift>Z");
+	add_accelerator(GTK_APPLICATION(application), "app.save", "<Primary>S");
 	add_accelerator(GTK_APPLICATION(application), "app.save_as", "<Primary><Shift>S");
 	add_accelerator(GTK_APPLICATION(application), "app.close", "<Primary>W");
 	add_accelerator(GTK_APPLICATION(application), "app.cwd", "<Primary>D");

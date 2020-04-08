@@ -779,8 +779,7 @@ int update_sequences_list(const char *sequence_name_to_select) {
 	char *seqname = NULL;
 
 	// clear the previous list
-	seqcombo = GTK_COMBO_BOX_TEXT(
-			gtk_builder_get_object(builder, "sequence_list_combobox"));
+	seqcombo = GTK_COMBO_BOX_TEXT(lookup_widget("sequence_list_combobox"));
 	gtk_combo_box_text_remove_all(seqcombo);
 
 	if (sequence_name_to_select) {

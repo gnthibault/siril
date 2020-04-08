@@ -104,6 +104,7 @@ static GActionEntry app_entries[] = {
 	{ "quit", quit_action_activate },
 	{ "preferences", preferences_action_activate },
 	{ "open",  open_action_activate },
+	{ "save", save_action_activate },
 	{ "save_as", save_as_action_activate },
 	{ "close", close_action_activate },
 	{ "undo", undo_action_activate },

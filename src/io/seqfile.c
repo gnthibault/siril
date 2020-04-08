@@ -74,7 +74,7 @@ sequence * readseqfile(const char *name){
 	int i, nbsel, nb_tokens, allocated = 0, current_layer = -1, image;
 	int to_backup = 0, version = -1;
 	FILE *seqfile;
-       	sequence *seq;
+	sequence *seq;
 	imstats *stats;
 	regdata *regparam;
 

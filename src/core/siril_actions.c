@@ -44,9 +44,14 @@ void cwd_action_activate(GSimpleAction *action, GVariant *parameter,
 	cwd_btton_clicked();
 }
 
-void save_as_action_activate(GSimpleAction *action, GVariant *parameter,
+void save_action_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
 	on_header_save_button_clicked();
+}
+
+void save_as_action_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	on_header_save_as_button_clicked();
 }
 
 void undo_action_activate(GSimpleAction *action, GVariant *parameter,

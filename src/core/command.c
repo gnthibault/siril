@@ -1365,6 +1365,7 @@ int process_new(int nb){
 	com.seq.current = UNRELATED_IMAGE;
 	com.uniq = calloc(1, sizeof(single));
 	com.uniq->filename = strdup(_("new empty image"));
+	com.uniq->fileexist = FALSE;
 	com.uniq->nb_layers = gfit.naxes[2];
 	com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
 	com.uniq->fit = &gfit;

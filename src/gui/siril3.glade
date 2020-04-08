@@ -1789,7 +1789,7 @@ enter a visible wavelength in nm</property>
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="stock">gtk-home</property>
+                <property name="icon_name">go-home-symbolic</property>
               </object>
             </child>
             <style>
@@ -1973,21 +1973,6 @@ enter a visible wavelength in nm</property>
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="header_save_button">
-            <property name="label">gtk-save-as</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">app.save_as</property>
-            <property name="use_underline">True</property>
-            <property name="use_stock">True</property>
-          </object>
-          <packing>
-            <property name="pack_type">end</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkMenuButton" id="header_precision_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -2003,7 +1988,7 @@ enter a visible wavelength in nm</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="valign">baseline</property>
-                    <property name="label" translatable="yes">Precision</property>
+                    <property name="label" translatable="yes">32 bits</property>
                     <property name="use_underline">True</property>
                   </object>
                   <packing>
@@ -2026,6 +2011,55 @@ enter a visible wavelength in nm</property>
                   </packing>
                 </child>
               </object>
+            </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkButton" id="header_save_button">
+                <property name="label" translatable="yes">Save</property>
+                <property name="name">save-button</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Save the current FITS image</property>
+                <property name="action_name">app.save</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="header_save_as_button">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Save the current image in a different name</property>
+                <property name="action_name">app.save_as</property>
+                <property name="use_underline">True</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">document-save-as-symbolic</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
             </child>
           </object>
           <packing>

@@ -302,6 +302,7 @@ gboolean end_save(gpointer p) {
 
 	gtk_entry_set_text(args->entry, "");
 	gtk_widget_hide(lookup_widget("savepopup"));
+	display_filename(); // update filename display
 	set_precision_switch();
 	stop_processing_thread();
 	set_cursor_waiting(FALSE);
@@ -397,6 +398,10 @@ static gpointer minisavedial(gpointer p) {
 				}
 			}
 			args->retval = savefits(args->filename, &gfit);
+			if (!args->retval) {
+				com.uniq->filename = strdup(args->filename);
+				com.uniq->fileexist = TRUE;
+			}
 			break;
 		case TYPEPNM:
 			args->retval = saveNetPBM(args->filename, &gfit);
@@ -575,7 +580,7 @@ void on_button_cancelpopup_clicked(GtkButton *button, gpointer user_data) {
 	gtk_widget_hide(lookup_widget("savepopup"));
 }
 
-void on_header_save_button_clicked() {
+void on_header_save_as_button_clicked() {
 	if (single_image_is_loaded() || sequence_is_loaded()) {
 		GtkWidget *savepopup = lookup_widget("savepopup");
 
@@ -593,14 +598,19 @@ void on_header_save_button_clicked() {
 				gtk_window_present_with_time(GTK_WINDOW(savepopup),
 						GDK_CURRENT_TIME);
 			} else {
-				struct savedial_data *args = malloc(
-						sizeof(struct savedial_data));
+				struct savedial_data *args = malloc(sizeof(struct savedial_data));
 
 				set_cursor_waiting(TRUE);
 				initialize_data(args);
 				start_in_new_thread(minisavedial, args);
 			}
 		}
+	}
+}
+
+void on_header_save_button_clicked() {
+	if (com.uniq->fileexist) {
+		savefits(com.uniq->filename, &gfit);
 	}
 }
 

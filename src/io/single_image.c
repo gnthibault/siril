@@ -98,6 +98,7 @@ void free_image_data() {
 	}
 	if (com.uniq) {
 		free(com.uniq->filename);
+		com.uniq->fileexist = FALSE;
 		free(com.uniq->comment);
 		free(com.uniq->layers);
 		free(com.uniq);
@@ -219,6 +220,7 @@ int open_single_image(const char* filename) {
 		com.seq.current = UNRELATED_IMAGE;
 		com.uniq = calloc(1, sizeof(single));
 		com.uniq->filename = realname;
+		com.uniq->fileexist = get_type_from_filename(com.uniq->filename) == TYPEFITS;
 		com.uniq->nb_layers = gfit.naxes[2];
 		com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
 		com.uniq->fit = &gfit;

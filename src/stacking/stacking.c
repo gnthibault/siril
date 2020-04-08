@@ -544,16 +544,24 @@ static gboolean end_stacking(gpointer p) {
 						failed = 1;
 					if (!failed && savefits(args->output_filename, &gfit))
 						failed = 1;
-					if (!failed)
+					if (!failed) {
 						com.uniq->filename = strdup(args->output_filename);
+						com.uniq->fileexist = TRUE;
+					}
 				}
-				if (failed)
+				if (failed) {
 					com.uniq->filename = strdup(_("Unsaved stacking result"));
+					com.uniq->fileexist = FALSE;
+				}
 			}
 			else {
-				if (!savefits(args->output_filename, &gfit))
+				if (!savefits(args->output_filename, &gfit)) {
 					com.uniq->filename = strdup(args->output_filename);
-				else com.uniq->filename = strdup(_("Unsaved stacking result"));
+					com.uniq->fileexist = TRUE;
+				} else {
+					com.uniq->filename = strdup(_("Unsaved stacking result"));
+					com.uniq->fileexist = FALSE;
+				}
 			}
 			display_filename();
 			set_precision_switch(); // set precision on screen

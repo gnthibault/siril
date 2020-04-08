@@ -380,6 +380,7 @@ struct sequ {
 /* this struct is used to manage data associated with a single image loaded, outside a sequence */
 struct single_image {
 	char *filename;		// the name of the file
+	gboolean fileexist;// flag of existing file
 	char *comment;		// comment on how the file got there (user load, result...)
 	int nb_layers;		// number of layers embedded in each image file
 	layer_info *layers;	// info about layers
