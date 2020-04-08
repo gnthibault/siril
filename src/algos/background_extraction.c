@@ -301,12 +301,12 @@ static unsigned int _rand(uint64_t *const p_rng) {
 }
 
 static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) {
-	struct timeval t_start, t_end;
+	//struct timeval t_start, t_end;
 
-	siril_log_color_message(_("convert_fits_to_img: processing...\n"), "green");
-	gettimeofday(&t_start, NULL);
+	//siril_log_color_message(_("convert_fits_to_img: processing...\n"), "green");
+	//gettimeofday(&t_start, NULL);
 
-	size_t i, n = fit->naxes[0] * fit->naxes[1];
+	size_t n = fit->naxes[0] * fit->naxes[1];
 	double *image = malloc(n * sizeof(double));
 	if (!image) {
 		PRINT_ALLOC_ERR;
@@ -338,8 +338,8 @@ static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) 
             }
         }
     }
-	gettimeofday(&t_end, NULL);
-	show_time(t_start, t_end);
+	//gettimeofday(&t_end, NULL);
+	//show_time(t_start, t_end);
 
 	return image;
 }
