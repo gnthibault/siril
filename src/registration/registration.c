@@ -129,7 +129,7 @@ void initialize_registration_methods() {
 	i = 0;
 	while (reg_methods[i] != NULL) {
 		gtk_combo_box_text_append_text(regcombo, reg_methods[i]->name);
-		siril_log_message(_("Added a registration method: %s\n"),
+		siril_log_message(_("Loading registration method: %s\n"),
 				reg_methods[i]->name);
 		i++;
 	}

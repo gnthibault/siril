@@ -4466,7 +4466,7 @@ When processing images, registration data is taken from the default layer if ava
                                       <object class="GtkBox" id="box29">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="spacing">5</property>
+                                        <property name="spacing">10</property>
                                         <child>
                                           <object class="GtkLabel" id="preproseqname_label1">
                                             <property name="visible">True</property>
@@ -4532,6 +4532,28 @@ When processing images, registration data is taken from the default layer if ava
                                             <property name="position">3</property>
                                           </packing>
                                         </child>
+                                        <child>
+                                          <object class="GtkButton">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="receives_default">True</property>
+                                            <property name="tooltip_text" translatable="yes">Hit this button for star detection settings</property>
+                                            <signal name="clicked" handler="on_info_menu_dynamic_psf_clicked" swapped="no"/>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="icon_name">applications-system-symbolic</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="pack_type">end</property>
+                                            <property name="position">4</property>
+                                          </packing>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -4543,6 +4565,7 @@ When processing images, registration data is taken from the default layer if ava
                                       <object class="GtkBox">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="spacing">10</property>
                                         <child>
                                           <object class="GtkCheckButton" id="checkStarSelect">
                                             <property name="label" translatable="yes">Match stars in selection</property>
