@@ -69,7 +69,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	*data = malloc(npixels * sizeof(WORD) * nsamples);
 	if (!*data) {
 		PRINT_ALLOC_ERR;
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	WORD *gbuf[3] = {*data, *data, *data};
 	if (nsamples == 4) {
@@ -84,7 +84,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	WORD *buf = (WORD *)_TIFFmalloc(TIFFStripSize(tif));
 	if (!buf) {
 		PRINT_ALLOC_ERR;
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	for (uint32 row = 0; row < height; row += rowsperstrip){
 		uint32 nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
@@ -92,7 +92,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 		case PLANARCONFIG_CONTIG:
 			if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow * scanline) < 0) {
 				siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-				retval = -1;
+				retval = OPEN_IMAGE_ERROR;
 				break;
 			}
 			for (size_t i = 0; i < width * nrow; i++) {
@@ -109,7 +109,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 			for (int j = 0; j < nsamples; j++) {	//loop on the layer
 				if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, j), buf, nrow * scanline) < 0) {
 					siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-					retval = -1;
+					retval = OPEN_IMAGE_ERROR;
 					break;
 				}
 				for (size_t i = 0; i < width * nrow; i++)
@@ -118,7 +118,7 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 			break;
 		default:
 			siril_log_message(_("Unknown TIFF file.\n"));
-			retval = -1;
+			retval = OPEN_IMAGE_ERROR;
 		}
 	}
 	_TIFFfree(buf);
@@ -137,7 +137,7 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 	*data = malloc(npixels * sizeof(float) * nsamples);
 	if (!*data) {
 		PRINT_ALLOC_ERR;
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	float *gbuf[3] = { *data, *data, *data };
 	if (nsamples == 4) {
@@ -152,7 +152,7 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 	float *buf = (float *)_TIFFmalloc(TIFFStripSize(tif));
 	if (!buf) {
 		PRINT_ALLOC_ERR;
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	for (uint32 row = 0; row < height; row += rowsperstrip) {
 		uint32 nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
@@ -160,7 +160,7 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 		case PLANARCONFIG_CONTIG:
 			if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow * scanline) < 0) {
 				siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-				retval = -1;
+				retval = OPEN_IMAGE_ERROR;
 				break;
 			}
 			for (size_t i = 0; i < width * nrow; i++) {
@@ -178,7 +178,7 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 				if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, j),
 						buf, nrow * scanline) < 0) {
 					siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-					retval = -1;
+					retval = OPEN_IMAGE_ERROR;
 					break;
 				}
 				for (size_t i = 0; i < width * nrow; i++)
@@ -187,7 +187,7 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 			break;
 		default:
 			siril_log_message(_("Unknown TIFF file.\n"));
-			retval = -1;
+			retval = OPEN_IMAGE_ERROR;
 		}
 	}
 	_TIFFfree(buf);
@@ -201,7 +201,7 @@ static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	*data = malloc(npixels * sizeof(WORD) * nsamples);
 	if (!*data) {
 		PRINT_ALLOC_ERR;
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	WORD *gbuf[3] = { *data, *data, *data };
 	if (nsamples == 4) {
@@ -229,11 +229,11 @@ static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 		}
 		else {
 			siril_log_message(_("An unexpected error was encountered while trying to read the file.\n"));
-			retval = -1;
+			retval = OPEN_IMAGE_ERROR;
 		}
 		_TIFFfree(raster);
 	}
-	else retval = -1;
+	else retval = OPEN_IMAGE_ERROR;
 	return retval;
 }
 
@@ -275,7 +275,7 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 	TIFF* tif = Siril_TIFFOpen(name, "r");
 	if (!tif) {
 		siril_log_message(_("Could not open the TIFF file %s\n"), name);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	
 	TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
@@ -304,13 +304,13 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 
 		default :
 			siril_log_message(_("Siril cannot read this TIFF format.\n"));
-			retval = -1;
+			retval = OPEN_IMAGE_ERROR;
 	}
 	TIFFClose(tif);
 	if (retval < 0) {
 		free(data);
 		free(fdata);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	clearfits(fit);
 	fit->rx = width;
@@ -469,7 +469,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		BYTE *buf8 = _TIFFmalloc(width * sizeof(unsigned char) * nsamples);
 		if (!buf8) {
 			PRINT_ALLOC_ERR;
-			retval = -1;
+			retval = OPEN_IMAGE_ERROR;
 			break;
 		}
 
@@ -486,7 +486,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 			}
 			if (TIFFWriteScanline(tif, buf8, row, 0) < 0) {
 				siril_debug_print("Error while writing in TIFF File.\n");
-				retval = -1;
+				retval = OPEN_IMAGE_ERROR;
 				break;
 			}
 		}
@@ -497,7 +497,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		WORD *buf16 = _TIFFmalloc(width * sizeof(WORD) * nsamples);
 		if (!buf16) {
 			PRINT_ALLOC_ERR;
-			retval = -1;
+			retval = OPEN_IMAGE_ERROR;
 			break;
 		}
 
@@ -514,7 +514,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 			}
 			if (TIFFWriteScanline(tif, buf16, row, 0) < 0) {
 				siril_debug_print("Error while writing in TIFF File.\n");
-				retval = -1;
+				retval = OPEN_IMAGE_ERROR;
 				break;
 			}
 		}
@@ -543,7 +543,7 @@ int readjpg(const char* name, fits *fit){
 	FILE *f = g_fopen(name, "rb");
 	if (f == NULL) {
 		siril_log_message(_("Sorry but Siril cannot open the file: %s.\n"),	name);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_decompress(&cinfo);
@@ -556,7 +556,7 @@ int readjpg(const char* name, fits *fit){
 	if (!data) {
 		PRINT_ALLOC_ERR;
 		fclose(f);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 	int row_stride = cinfo.output_width * cinfo.output_components;
@@ -692,7 +692,7 @@ int savejpg(const char *name, fits *fit, int quality){
 	siril_log_message(_("Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"),
 						filename, quality, fit->naxes[2], fit->rx, fit->ry);
 	free(filename);
-	return 0;
+	return OPEN_IMAGE_OK;
 }
 #endif	// HAVE_LIBJPEG
 
@@ -706,15 +706,15 @@ int readpng(const char *name, fits* fit) {
 	png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL,	NULL);
 	if (!png) {
 		siril_log_message(_("Sorry but Siril cannot open the file: %s.\n"),	name);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	png_infop info = png_create_info_struct(png);
 	if (!info)
-		return -1;
+		return OPEN_IMAGE_ERROR;
 
 	if (setjmp(png_jmpbuf(png)))
-		return -1;
+		return OPEN_IMAGE_ERROR;
 
 	FILE *f = g_fopen(name, "rb");
 	png_init_io(png, f);
@@ -731,7 +731,7 @@ int readpng(const char *name, fits* fit) {
 	if (!data) {
 		PRINT_ALLOC_ERR;
 		fclose(f);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 
@@ -843,7 +843,7 @@ int readpng(const char *name, fits* fit) {
 static int32_t save_colour_file(const char *filename,
 		const void *p_image_data, uint32_t width, uint32_t height,
 		uint32_t bytes_per_sample) {
-	int32_t ret = -1;
+	int32_t ret = OPEN_IMAGE_ERROR;
 	png_image image; // The control structure used by libpng
 
 	// Initialize the 'png_image' structure.
@@ -864,7 +864,7 @@ static int32_t save_colour_file(const char *filename,
 				(png_bytep) (p_image_data), row_stride,  // row_stride
 				NULL);  // colormap
 
-		ret = 0;
+		ret = OPEN_IMAGE_OK;
 		fclose(p_png_file);
 	}
 
@@ -876,7 +876,7 @@ static int32_t save_colour_file(const char *filename,
 // ------------------------------------------
 static int32_t save_mono_file(const char *filename, const void *p_image_data,
 		uint32_t width, uint32_t height, uint32_t bytes_per_sample) {
-	int32_t ret = -1;
+	int32_t ret = OPEN_IMAGE_ERROR;
 	png_image image; // The control structure used by libpng
 
 	// Initialize the 'png_image' structure.
@@ -898,7 +898,7 @@ static int32_t save_mono_file(const char *filename, const void *p_image_data,
 		png_image_write_to_stdio(&image, p_png_file, 0,  // convert_to_8bit
 				(png_bytep) p_image_data, row_stride,  // row_stride
 				NULL);  // colormap
-		ret = 0;
+		ret = OPEN_IMAGE_OK;
 		fclose(p_png_file);
 	}
 
@@ -969,7 +969,7 @@ static uint8_t *convert_data8(fits *image) {
 
 int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 		gboolean is_colour) {
-	int ret = -1;
+	int ret = OPEN_IMAGE_ERROR;
 	const uint32_t width = fit->rx;
 	const uint32_t height = fit->ry;
 
@@ -1116,7 +1116,7 @@ static int readraw(const char *name, fits *fit) {
 		siril_log_message(_("Error in libraw %s\n"), libraw_strerror(ret));
 		libraw_recycle(raw);
 		libraw_close(raw);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	
 	if (raw->other.shutter > 1.0)
@@ -1188,7 +1188,7 @@ static int readraw(const char *name, fits *fit) {
 	WORD *data = malloc(npixels * sizeof(WORD) * 3);
 	if (!data) {
 		PRINT_ALLOC_ERR;
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 	ret = libraw_unpack(raw);
@@ -1197,7 +1197,7 @@ static int readraw(const char *name, fits *fit) {
 		free(data);
 		libraw_recycle(raw);
 		libraw_close(raw);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	ret = libraw_dcraw_process(raw);
@@ -1206,7 +1206,7 @@ static int readraw(const char *name, fits *fit) {
 		free(data);
 		libraw_recycle(raw);
 		libraw_close(raw);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	libraw_processed_image_t *image = libraw_dcraw_make_mem_image(raw, &ret);
@@ -1216,7 +1216,7 @@ static int readraw(const char *name, fits *fit) {
 		libraw_dcraw_clear_mem(image);
 		libraw_recycle(raw);
 		libraw_close(raw);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	int nbplanes = image->colors;
@@ -1225,7 +1225,7 @@ static int readraw(const char *name, fits *fit) {
 		libraw_dcraw_clear_mem(image);
 		libraw_recycle(raw);
 		libraw_close(raw);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 	// only for 16-bits because of endianness. Are there 8-bits RAW ???
 
@@ -1320,13 +1320,13 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 	int ret = siril_libraw_open_file(raw, name);
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	ret = libraw_unpack(raw);
 	if (ret) {
 		printf("Error in libraw %s\n", libraw_strerror(ret));
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	/* This test checks if raw data exist. Sometimes it doesn't. This is
@@ -1335,7 +1335,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 			&& (raw->rawdata.color3_image || raw->rawdata.color4_image)) {
 		siril_log_message(_("Siril cannot open this file in CFA mode (no data available). "
 				"Try to switch into RGB.\n"));
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	raw->params.user_flip = 0;				/* no flip                                 */
@@ -1396,7 +1396,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 		PRINT_ALLOC_ERR;
 		libraw_recycle(raw);
 		libraw_close(raw);
-		return -1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	WORD *buf = data;
@@ -1727,7 +1727,7 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 	if (err.code) {
 		g_printf("%s\n", err.message);
 		heif_context_free(ctx);
-		return 1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	// analyze image content
@@ -1735,7 +1735,7 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 	if (num == 0) {
 		siril_log_message(_("Input file contains no readable images.\n"));
 		heif_context_free(ctx);
-		return 1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	  // get the primary image
@@ -1746,7 +1746,7 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 	if (err.code) {
 		g_printf("%s\n", err.message);
 		heif_context_free(ctx);
-		return 1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	// if primary image is no top level image or not present (invalid file), just take the first image
@@ -1765,7 +1765,7 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 		} else {
 			if (!heif_dialog(ctx, &selected_image)) {
 				heif_context_free(ctx);
-				return 1;
+				return OPEN_IMAGE_CANCEL;
 			}
 		}
 	}
@@ -1776,7 +1776,7 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 	if (err.code) {
 		g_printf("%s\n", err.message);
 		heif_context_free(ctx);
-		return 1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	int has_alpha = heif_image_handle_has_alpha_channel(handle);
@@ -1789,7 +1789,7 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 		g_printf("%s\n", err.message);
 		heif_image_handle_release(handle);
 		heif_context_free(ctx);
-		return 1;
+		return OPEN_IMAGE_ERROR;
 	}
 
 	int stride;
@@ -1804,7 +1804,7 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 		PRINT_ALLOC_ERR;
 		heif_image_handle_release(handle);
 		heif_context_free(ctx);
-		return 1;
+		return OPEN_IMAGE_ERROR;
 	}
 	WORD *buf[3] = { data, data + npixels, data + npixels * 2 };
 
@@ -1842,6 +1842,6 @@ int readheif(const char* name, fits *fit, gboolean interactive){
 			basename, fit->naxes[2], fit->rx, fit->ry);
 	g_free(basename);
 
-	return 0;
+	return OPEN_IMAGE_OK;
 }
 #endif

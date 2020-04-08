@@ -243,6 +243,12 @@ typedef enum {
 	USER
 } sliders_mode;
 
+enum {
+	OPEN_IMAGE_ERROR = -1,
+	OPEN_IMAGE_OK = 0,
+	OPEN_IMAGE_CANCEL = 10,
+};
+
 typedef enum {
 	FILE_CONVERSION,
 	IMAGE_SEQ,

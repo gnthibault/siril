@@ -82,6 +82,7 @@ You can get SIRIL source code from the release archives on their webpage, or the
     
 So far, we are using submodule for the use of some algorithms. You must therefore run the following commands:
 
+    cd siril
     git submodule sync --recursive
     git submodule update --init --recursive 
 

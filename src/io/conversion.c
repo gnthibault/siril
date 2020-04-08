@@ -804,7 +804,8 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean i
 #endif
 #ifdef HAVE_LIBHEIF
 		case TYPEHEIF:
-			retval = (readheif(source, dest, interactive) < 0);
+			/* need to retrieve all return values */
+			retval = readheif(source, dest, interactive);
 			break;
 #endif
 #ifdef HAVE_LIBPNG

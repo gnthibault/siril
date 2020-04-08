@@ -170,7 +170,7 @@ int read_single_image(const char *filename, fits *dest, char **realname_out,
 	if (is_sequence) {
 		*is_sequence = single_sequence;
 	}
-	if (retval)
+	if (retval && retval != OPEN_IMAGE_CANCEL)
 		siril_log_message(_("Opening %s failed.\n"), realname);
 	if (realname_out)
 		*realname_out = realname;
@@ -206,14 +206,14 @@ int open_single_image(const char* filename) {
 						"its extension is not supported."));
 		return 1;
 	}
-	if (retval == 1) {
+	if (retval == OPEN_IMAGE_ERROR) {
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error opening file"),
 				_("There was an error when opening this image. "
 						"See the log for more information."));
 		return 1;
 	}
 
-	if (!is_single_sequence) {
+	if (!is_single_sequence && retval != OPEN_IMAGE_CANCEL) {
 		fprintf(stdout, "Loading image OK, now displaying\n");
 
 		/* Now initializing com struct */
