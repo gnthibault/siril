@@ -212,7 +212,7 @@ endif
 if HAVE_LIBRTPROCESS
 librtprocesslibs = $(LIBRTPROCESS_LIBS)
 else
-librtprocesslibs = $(top_builddir)/deps/librtprocess/build/src/librtprocess_static.a
+librtprocesslibs = $(top_builddir)/deps/librtprocess/build/src/librtprocess.a
 endif
 
 siril_common_LDADD = \

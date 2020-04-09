@@ -18,8 +18,8 @@ build-librtprocess:
 	mkdir -p $(abs_builddir)/librtprocess/build && \
 	cd $(abs_builddir)/librtprocess/build && \
 	ls $(abs_srcdir)/librtprocess/ && \
-	$(CMAKE) $(CMAKE_GENERATOR) -DCMAKE_BUILD_TYPE="Release" -DWITH_STATIC_LIB=ON -DOPTION_OMP=OFF $(abs_srcdir)/librtprocess/ && \
-	$(MAKE) rtprocess_static
+	$(CMAKE) $(CMAKE_GENERATOR) -DCMAKE_BUILD_TYPE="Release" -DBUILD_SHARED_LIBS=OFF -DOPTION_OMP=OFF $(abs_srcdir)/librtprocess/ && \
+	$(MAKE)
 
 all: build-librtprocess
 endif
