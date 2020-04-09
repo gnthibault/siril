@@ -1040,7 +1040,7 @@ static void get_FITS_date(time_t date, char *date_obs) {
 	}
 }
 
-#if (LIBRAW_MAJOR_VERSION == 0) && (LIBRAW_MINOR_VERSION < 18)
+#if LIBRAW_VERSION < LIBRAW_MAKE_VERSION(0, 18, 0)
 #define LIBRAW_FORMAT_1INCH 5
 #endif
 

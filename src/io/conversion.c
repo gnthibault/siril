@@ -28,7 +28,6 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
-#include "conversion.h"
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/OS_utils.h"
@@ -40,6 +39,11 @@
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "algos/demosaicing.h"
+#include "conversion.h"
+
+#ifdef HAVE_LIBRAW
+#include <libraw/libraw.h>
+#endif
 
 static unsigned int supported_filetypes = 0;	// initialized by initialize_converters()
 
@@ -54,6 +58,9 @@ supported_raw_list supported_raw[] = {
 	{"mos",	"Aptus"},
 	{"cr2",	"Canon"},
 	{"crw",	"Canon"},
+#if LIBRAW_VERSION > LIBRAW_MAKE_VERSION(0, 19, 5)
+	{"cr3",	"Canon"},
+#endif
 	{"bay",	"Casio"},		// Not tested
 	{"erf",	"Epson"},
 	{"raf",	"Fuji"},
