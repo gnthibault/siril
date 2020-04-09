@@ -296,12 +296,11 @@ static double get_sample_median(double *buf, const int xx,
 }
 
 static unsigned int _rand(uint64_t *const p_rng) {
-      *p_rng = *p_rng*1103515245 + 12345U;
-      return (unsigned int)*p_rng;
+	*p_rng = *p_rng * 1103515245 + 12345U;
+	return (unsigned int) *p_rng;
 }
 
 static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) {
-
 	const size_t n = fit->naxes[0] * fit->naxes[1];
 	double *image = malloc(n * sizeof(double));
 	if (!image) {
@@ -313,32 +312,31 @@ static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) 
 
 	const int height = fit->ry;
 	const int width = fit->rx;
-    if (fit->type == DATA_USHORT) {
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                image[y * width + x] = fit->pdata[channel][(height- y - 1) * width + x] / USHRT_MAX_SINGLE;
-                if (add_dither) {
-                    /* add dithering in order to avoid colour banding */
-                    image[y * width + x] += (_rand(&seed) % 1048576) * 0.000000000095367431640625f;
-                }
-            }
-        }
-    } else {
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                image[y * width + x] = fit->fpdata[channel][(height - y - 1) * width + x];
-                if (add_dither) {
-                    /* add dithering in order to avoid colour banding */
-                    image[y * width + x] += (_rand(&seed) % 1048576) * 0.000000000095367431640625f;
-                }
-            }
-        }
-    }
-
+	if (fit->type == DATA_USHORT) {
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; ++x) {
+				image[y * width + x] = fit->pdata[channel][(height - y - 1)	* width + x] / USHRT_MAX_SINGLE;
+				if (add_dither) {
+					/* add dithering in order to avoid colour banding */
+					image[y * width + x] += (_rand(&seed) % 1048576) * 0.000000000095367431640625f;
+				}
+			}
+		}
+	} else {
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; ++x) {
+				image[y * width + x] = fit->fpdata[channel][(height - y - 1) * width + x];
+				if (add_dither) {
+					/* add dithering in order to avoid colour banding */
+					image[y * width + x] += (_rand(&seed) % 1048576) * 0.000000000095367431640625f;
+				}
+			}
+		}
+	}
 	return image;
 }
 
-static float *convert_fits_to_luminance(fits *fit) {
+static float* convert_fits_to_luminance(fits *fit) {
 	const size_t n = fit->naxes[0] * fit->naxes[1];
 	/* allocating memory to image */
 	float *image = malloc(n * sizeof(float));
@@ -350,50 +348,50 @@ static float *convert_fits_to_luminance(fits *fit) {
 	const int height = fit->ry;
 	const int width = fit->rx;
 
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            if (fit->naxes[2] > 1) {
-                float r, g, b;
-                if (fit->type == DATA_USHORT) {
-                    r = fit->pdata[RLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
-                    g = fit->pdata[GLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
-                    b = fit->pdata[BLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
-                } else if (fit->type == DATA_FLOAT) {
-                    r = fit->fpdata[RLAYER][(height - y - 1) * width + x];
-                    g = fit->fpdata[GLAYER][(height - y - 1) * width + x];
-                    b = fit->fpdata[BLAYER][(height - y - 1) * width + x];
-                } else return NULL;
-                image[y * width + x] = 0.2126f * r + 0.7152f * g + 0.0722f * b;
-            } else {
-                if (fit->type == DATA_USHORT) {
-                    image[y * width + x] = fit->pdata[RLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
-                } else if (fit->type == DATA_FLOAT) {
-                    image[y * width + x] = fit->fpdata[RLAYER][(height - y - 1) * width + x];
-                }
-            }
-        }
+	for (int y = 0; y < height; ++y) {
+		for (int x = 0; x < width; ++x) {
+			if (fit->naxes[2] > 1) {
+				float r, g, b;
+				if (fit->type == DATA_USHORT) {
+					r = fit->pdata[RLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
+					g = fit->pdata[GLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
+					b = fit->pdata[BLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
+				} else if (fit->type == DATA_FLOAT) {
+					r = fit->fpdata[RLAYER][(height - y - 1) * width + x];
+					g = fit->fpdata[GLAYER][(height - y - 1) * width + x];
+					b = fit->fpdata[BLAYER][(height - y - 1) * width + x];
+				} else
+					return NULL;
+				image[y * width + x] = 0.2126f * r + 0.7152f * g + 0.0722f * b;
+			} else {
+				if (fit->type == DATA_USHORT) {
+					image[y * width + x] = fit->pdata[RLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
+				} else if (fit->type == DATA_FLOAT) {
+					image[y * width + x] = fit->fpdata[RLAYER][(height - y - 1) * width + x];
+				}
+			}
+		}
 	}
 
 	return image;
 }
 
 static void convert_img_to_fits(double *image, fits *fit, int channel) {
-
 	const int height = fit->ry;
 	const int width = fit->rx;
 	if (fit->type == DATA_USHORT) {
 		WORD *buf = fit->pdata[channel];
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                buf[y * width + x] = round_to_WORD(image[(height - y - 1) * width + x] * USHRT_MAX_SINGLE);
-            }
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; ++x) {
+				buf[y * width + x] = round_to_WORD(	image[(height - y - 1) * width + x] * USHRT_MAX_SINGLE);
+			}
 		}
 	} else if (fit->type == DATA_FLOAT) {
 		float *buf = fit->fpdata[channel];
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                buf[y * width + x] = (float)image[(height - y - 1) * width + x];
-            }
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; ++x) {
+				buf[y * width + x] = (float) image[(height - y - 1) * width + x];
+			}
 		}
 	}
 }
