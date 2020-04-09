@@ -301,12 +301,8 @@ static unsigned int _rand(uint64_t *const p_rng) {
 }
 
 static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) {
-	//struct timeval t_start, t_end;
 
-	//siril_log_color_message(_("convert_fits_to_img: processing...\n"), "green");
-	//gettimeofday(&t_start, NULL);
-
-	size_t n = fit->naxes[0] * fit->naxes[1];
+	const size_t n = fit->naxes[0] * fit->naxes[1];
 	double *image = malloc(n * sizeof(double));
 	if (!image) {
 		PRINT_ALLOC_ERR;
@@ -315,37 +311,35 @@ static double *convert_fits_to_img(fits *fit, int channel, gboolean add_dither) 
 
 	uint64_t seed = time(NULL);
 
+	const int height = fit->ry;
+	const int width = fit->rx;
     if (fit->type == DATA_USHORT) {
-        for (int y = 0; y < fit->ry; ++y) {
-            for (int x = 0; x < fit->rx; ++x) {
-                image[y * fit->rx + x] = fit->pdata[channel][(fit->ry - y - 1) * fit->rx + x] / USHRT_MAX_SINGLE;
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                image[y * width + x] = fit->pdata[channel][(height- y - 1) * width + x] / USHRT_MAX_SINGLE;
                 if (add_dither) {
                     /* add dithering in order to avoid colour banding */
-                    const double dithering = (_rand(&seed) % 1048576) * 0.000000000095367431640625f;
-                    image[y * fit->rx + x] += dithering;
+                    image[y * width + x] += (_rand(&seed) % 1048576) * 0.000000000095367431640625f;
                 }
             }
         }
     } else {
-        for (int y = 0; y < fit->ry; ++y) {
-            for (int x = 0; x < fit->rx; ++x) {
-                image[y * fit->rx + x] = fit->fpdata[channel][(fit->ry - y - 1) * fit->rx + x];
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                image[y * width + x] = fit->fpdata[channel][(height - y - 1) * width + x];
                 if (add_dither) {
                     /* add dithering in order to avoid colour banding */
-                    const double dithering = (_rand(&seed) % 1048576) * 0.000000000095367431640625f;
-                    image[y * fit->rx + x] += dithering;
+                    image[y * width + x] += (_rand(&seed) % 1048576) * 0.000000000095367431640625f;
                 }
             }
         }
     }
-	//gettimeofday(&t_end, NULL);
-	//show_time(t_start, t_end);
 
 	return image;
 }
 
 static float *convert_fits_to_luminance(fits *fit) {
-	size_t i, n = fit->naxes[0] * fit->naxes[1];
+	const size_t n = fit->naxes[0] * fit->naxes[1];
 	/* allocating memory to image */
 	float *image = malloc(n * sizeof(float));
 	if (!image) {
@@ -353,73 +347,72 @@ static float *convert_fits_to_luminance(fits *fit) {
 		return NULL;
 	}
 
-	mirrorx(fit, FALSE);
+	const int height = fit->ry;
+	const int width = fit->rx;
 
-	for (i = 0; i < n; i++) {
-		if (fit->naxes[2] > 1) {
-			float r, g, b;
-			if (fit->type == DATA_USHORT) {
-				r = (float) fit->pdata[RLAYER][i] / USHRT_MAX_SINGLE;
-				g = (float) fit->pdata[GLAYER][i] / USHRT_MAX_SINGLE;
-				b = (float) fit->pdata[BLAYER][i] / USHRT_MAX_SINGLE;
-			} else if (fit->type == DATA_FLOAT) {
-				r = fit->fpdata[RLAYER][i];
-				g = fit->fpdata[GLAYER][i];
-				b = fit->fpdata[BLAYER][i];
-			} else return NULL;
-			image[i] = 0.2126f * r + 0.7152f * g + 0.0722f * b;
-		} else {
-			if (fit->type == DATA_USHORT) {
-				image[i] = (float) fit->pdata[RLAYER][i] / USHRT_MAX_SINGLE;
-			} else if (fit->type == DATA_FLOAT) {
-				image[i] = fit->fpdata[RLAYER][i];
-			}
-		}
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            if (fit->naxes[2] > 1) {
+                float r, g, b;
+                if (fit->type == DATA_USHORT) {
+                    r = fit->pdata[RLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
+                    g = fit->pdata[GLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
+                    b = fit->pdata[BLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
+                } else if (fit->type == DATA_FLOAT) {
+                    r = fit->fpdata[RLAYER][(height - y - 1) * width + x];
+                    g = fit->fpdata[GLAYER][(height - y - 1) * width + x];
+                    b = fit->fpdata[BLAYER][(height - y - 1) * width + x];
+                } else return NULL;
+                image[y * width + x] = 0.2126f * r + 0.7152f * g + 0.0722f * b;
+            } else {
+                if (fit->type == DATA_USHORT) {
+                    image[y * width + x] = fit->pdata[RLAYER][(height - y - 1) * width + x] / USHRT_MAX_SINGLE;
+                } else if (fit->type == DATA_FLOAT) {
+                    image[y * width + x] = fit->fpdata[RLAYER][(height - y - 1) * width + x];
+                }
+            }
+        }
 	}
-
-	mirrorx(fit, FALSE);
 
 	return image;
 }
 
 static void convert_img_to_fits(double *image, fits *fit, int channel) {
-	size_t i, n = fit->naxes[0] * fit->naxes[1];
-	mirrorx(fit, FALSE);
 
+	const int height = fit->ry;
+	const int width = fit->rx;
 	if (fit->type == DATA_USHORT) {
 		WORD *buf = fit->pdata[channel];
-		for (i = 0; i < n; i++) {
-			buf[i] = round_to_WORD(image[i] * USHRT_MAX_DOUBLE);
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                buf[y * width + x] = round_to_WORD(image[(height - y - 1) * width + x] * USHRT_MAX_SINGLE);
+            }
 		}
 	} else if (fit->type == DATA_FLOAT) {
 		float *buf = fit->fpdata[channel];
-		for (i = 0; i < n; i++) {
-			buf[i] = (float)image[i];
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                buf[y * width + x] = (float)image[(height - y - 1) * width + x];
+            }
 		}
 	}
-
-	mirrorx(fit, FALSE);
 }
 
 static double siril_stats_mad(const float data[], const size_t stride,
 		const size_t n, float work[]) {
-	float median, mad;
-	size_t i;
 
 	/* copy input data to work */
-	for (i = 0; i < n; ++i)
-		work[i] = (float) data[i * stride];
+	for (size_t i = 0; i < n; ++i)
+		work[i] = data[i * stride];
 
 	/* compute median of input data using double version */
-	median = histogram_median_float(work, n, TRUE);
+	const float median = histogram_median_float(work, n, TRUE);
 
 	/* compute absolute deviations from median */
-	for (i = 0; i < n; ++i)
-		work[i] = fabsf((float) data[i * stride] - median);
+	for (size_t i = 0; i < n; ++i)
+		work[i] = fabsf(data[i * stride] - median);
 
-	mad = histogram_median_float(work, n, TRUE);
-
-	return mad;
+	return histogram_median_float(work, n, TRUE);
 }
 
 static GSList *generate_samples(fits *fit, int nb_per_line, double tolerance, size_t size) {
