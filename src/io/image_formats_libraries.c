@@ -41,6 +41,7 @@
 #endif
 #ifdef HAVE_LIBRAW
 #include <libraw/libraw.h>
+#include <libraw/libraw_version.h>
 #endif
 #ifdef HAVE_LIBHEIF
 #include <libheif/heif.h>
@@ -1113,7 +1114,7 @@ static int readraw(const char *name, fits *fit) {
 
 	int ret = siril_libraw_open_file(raw, name);
 	if (ret) {
-		siril_log_message(_("Error in libraw %s\n"), libraw_strerror(ret));
+		siril_log_message(_("Error in libraw %s.\n"), libraw_strerror(ret));
 		libraw_recycle(raw);
 		libraw_close(raw);
 		return OPEN_IMAGE_ERROR;

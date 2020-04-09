@@ -42,7 +42,7 @@
 #include "conversion.h"
 
 #ifdef HAVE_LIBRAW
-#include <libraw/libraw.h>
+#include <libraw/libraw_version.h>
 #endif
 
 static unsigned int supported_filetypes = 0;	// initialized by initialize_converters()
@@ -58,8 +58,10 @@ supported_raw_list supported_raw[] = {
 	{"mos",	"Aptus"},
 	{"cr2",	"Canon"},
 	{"crw",	"Canon"},
+#ifdef HAVE_LIBRAW
 #if LIBRAW_VERSION > LIBRAW_MAKE_VERSION(0, 19, 5)
 	{"cr3",	"Canon"},
+#endif
 #endif
 	{"bay",	"Casio"},		// Not tested
 	{"erf",	"Epson"},

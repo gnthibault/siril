@@ -206,14 +206,17 @@ int open_single_image(const char* filename) {
 						"its extension is not supported."));
 		return 1;
 	}
-	if (retval == OPEN_IMAGE_ERROR) {
+	if (retval == OPEN_IMAGE_CANCEL) {
+		return 0;
+	}
+	if (retval) {
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error opening file"),
 				_("There was an error when opening this image. "
 						"See the log for more information."));
 		return 1;
 	}
 
-	if (!is_single_sequence && retval != OPEN_IMAGE_CANCEL) {
+	if (!is_single_sequence) {
 		fprintf(stdout, "Loading image OK, now displaying\n");
 
 		/* Now initializing com struct */
