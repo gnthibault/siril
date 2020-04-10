@@ -530,6 +530,10 @@ int get_sample_radius() {
 	return (int) (SAMPLE_SIZE / 2);
 }
 
+gboolean is_dither_checked() {
+	return (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("bkg_dither_button"))));
+}
+
 void free_background_sample_list(GSList *list) {
 	if (list == NULL) return;
 	g_slist_free_full(list, g_free);
@@ -609,7 +613,7 @@ void remove_gradient_from_image(int correction, poly_order degree) {
 
 	for (int channel = 0; channel < gfit.naxes[2]; channel++) {
 		/* compute background */
-		image[channel] = convert_fits_to_img(&gfit, channel, TRUE);
+		image[channel] = convert_fits_to_img(&gfit, channel, is_dither_checked());
 		if (!computeBackground(com.grad_samples, background, channel, gfit.rx, gfit.ry, degree, &error)) {
             siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
             set_cursor_waiting(FALSE);
@@ -655,7 +659,7 @@ static int background_image_hook(struct generic_seq_args *args, int o, int i, fi
 
 	for (int channel = 0; channel < fit->naxes[2]; channel++) {
 		/* compute background */
-		image[channel] = convert_fits_to_img(fit, channel, TRUE);
+		image[channel] = convert_fits_to_img(fit, channel, is_dither_checked());
 		if (!computeBackground(samples, background, channel, fit->rx, fit->ry, b_args->degree, &error)) {
 			if (error) {
 				siril_log_message(error);

@@ -9341,6 +9341,22 @@ The higher the degree order is, the more complex the gradient can be removed.</p
                             <property name="top_attach">0</property>
                           </packing>
                         </child>
+                        <child>
+                          <object class="GtkCheckButton" id="bkg_dither_button">
+                            <property name="label" translatable="yes">Add dither</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="tooltip_text" translatable="yes">Hit this option when color banding is produced after background extraction.
+Dither is an intentionally applied form of noise used to randomize quantization error, preventing large-scale patterns such as color banding in images.</property>
+                            <property name="draw_indicator">True</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">3</property>
+                            <property name="width">2</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
