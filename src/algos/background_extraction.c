@@ -456,10 +456,10 @@ static GSList *update_median_for_rgb_samples(GSList *orig, fits *fit) {
 		return NULL;
 	}
 
-    for (int channel = 0; channel < fit->naxes[2]; channel++) {
-    	convert_fits_to_img(fit, channelData, channel, FALSE);
-        for (GSList *list = orig; list; list = list->next) {
-            background_sample *sample = (background_sample *)list->data;
+	for (int channel = 0; channel < fit->naxes[2]; channel++) {
+		convert_fits_to_img(fit, channelData, channel, FALSE);
+		for (GSList *list = orig; list; list = list->next) {
+			background_sample *sample = (background_sample*) list->data;
 			sample->median[channel] = get_sample_median(channelData,
 					sample->position.x, sample->position.y, nx, ny);
 		}
@@ -594,7 +594,7 @@ void generate_background_samples(int nb_of_samples, double tolerance) {
 }
 
 gboolean remove_gradient_from_image(int correction, poly_order degree) {
-    gchar *error;
+	gchar *error;
 	double *background = malloc(gfit.ry * gfit.rx * sizeof(double));
 	if (!background && !com.script) {
 		PRINT_ALLOC_ERR;
@@ -607,7 +607,7 @@ gboolean remove_gradient_from_image(int correction, poly_order degree) {
 	const size_t n = gfit.naxes[0] * gfit.naxes[1];
 	double *image = malloc(n * sizeof(double));
 	if (!image) {
-        free(background);
+		free(background);
 		PRINT_ALLOC_ERR;
 		return FALSE;
 	}
@@ -615,22 +615,24 @@ gboolean remove_gradient_from_image(int correction, poly_order degree) {
 	for (int channel = 0; channel < gfit.naxes[2]; channel++) {
 		/* compute background */
 		convert_fits_to_img(&gfit, image, channel, is_dither_checked());
-		if (!computeBackground(com.grad_samples, background, channel, gfit.rx, gfit.ry, degree, &error)) {
-            free(image);
-            free(background);
-            siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
-            set_cursor_waiting(FALSE);
-            return FALSE;
+		if (!computeBackground(com.grad_samples, background, channel, gfit.rx,
+				gfit.ry, degree, &error)) {
+			free(image);
+			free(background);
+			siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."),
+					error);
+			set_cursor_waiting(FALSE);
+			return FALSE;
 		}
 		/* remove background */
 		const char *c_name = vport_number_to_name(channel);
 		siril_log_message(_("Background extraction from channel %s.\n"), c_name);
-		remove_gradient(image, background,	gfit.naxes[0] * gfit.naxes[1], correction);
+		remove_gradient(image, background, gfit.naxes[0] * gfit.naxes[1], correction);
 		convert_img_to_fits(image, &gfit, channel);
 
 	}
-    /* free memory */
-    free(image);
+	/* free memory */
+	free(image);
 	free(background);
 	return TRUE;
 }
@@ -653,7 +655,7 @@ static int background_image_hook(struct generic_seq_args *args, int o, int i, fi
 
 	GSList *samples = generate_samples(fit, b_args->nb_of_samples, b_args->tolerance, SAMPLE_SIZE);
 	if (!samples) {
-    	free(background);
+		free(background);
 		return 1;
 	}
 
@@ -664,8 +666,8 @@ static int background_image_hook(struct generic_seq_args *args, int o, int i, fi
 	const size_t n = fit->naxes[0] * fit->naxes[1];
 	double *image = malloc(n * sizeof(double));
 	if (!image) {
-    	free(background);
-    	free_background_sample_list(samples);
+		free(background);
+		free_background_sample_list(samples);
 		PRINT_ALLOC_ERR;
 		return 1;
 	}
