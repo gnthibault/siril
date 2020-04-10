@@ -27,7 +27,7 @@ void free_background_sample_list(GSList *list);
 GSList *add_background_sample(GSList *list, fits *fit, point pt);
 GSList *remove_background_sample(GSList *orig, fits *fit, point pt);
 void generate_background_samples(int nb_of_samples, double tolerance);
-void remove_gradient_from_image(int correction, poly_order degree);
+gboolean remove_gradient_from_image(int correction, poly_order degree);
 void apply_background_extraction_to_sequence(struct background_data *background_args);
 
 #endif /* SRC_ALGOS_BACKGROUND_EXTRACTION_H_ */
