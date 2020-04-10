@@ -87,7 +87,7 @@ static double poly_1(gsl_vector *c, double x, double y) {
 	return (value);
 }
 
-static double *computeBackground(GSList *list, int channel, unsigned int width, unsigned int height, poly_order order, gchar **err) {
+static gboolean computeBackground(GSList *list, double *background, int channel, unsigned int width, unsigned int height, poly_order order, gchar **err) {
 	size_t k = 0;
 	double chisq, pixel;
 	double row, col;
@@ -116,7 +116,7 @@ static double *computeBackground(GSList *list, int channel, unsigned int width, 
 	if (n < nbParam) {
 		*err = siril_log_message(_("There are not enough background samples. "
 				"The background to be extracted cannot be computed.\n"));
-		return NULL;
+		return FALSE;
 	}
 
 	// J is the Jacobian
@@ -182,16 +182,10 @@ static double *computeBackground(GSList *list, int channel, unsigned int width, 
 		gsl_vector_free(w);
 		gsl_vector_free(c);
 		gsl_matrix_free(cov);
-		return NULL;
+		return FALSE;
 	}
 
 	// Calculation of the background with the same dimension that the input matrix.
-	double *background = malloc(height * width * sizeof(double));
-	if (!background) {
-		PRINT_ALLOC_ERR;
-		*err = _("Out of memory - aborting");
-		return NULL;
-	}
 
 	for (unsigned int i = 0; i < height; i++) {
 		for (unsigned int j = 0; j < width; j++) {
@@ -221,7 +215,7 @@ static double *computeBackground(GSList *list, int channel, unsigned int width, 
 	gsl_vector_free(c);
 	gsl_matrix_free(cov);
 
-	return background;
+	return TRUE;
 }
 
 static background_sample *get_sample(float *buf, const int xx,
@@ -602,21 +596,24 @@ void generate_background_samples(int nb_of_samples, double tolerance) {
 }
 
 void remove_gradient_from_image(int correction, poly_order degree) {
-	double *background, *image[3] = {0};
-	gchar *error;
+	double *image[3] = {0};
+    gchar *error;
+	double *background = malloc(gfit.ry * gfit.rx * sizeof(double));
+	if (!background && !com.script) {
+		PRINT_ALLOC_ERR;
+		error = _("Out of memory - aborting");
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
+		set_cursor_waiting(FALSE);
+		return;
+	}
 
 	for (int channel = 0; channel < gfit.naxes[2]; channel++) {
 		/* compute background */
 		image[channel] = convert_fits_to_img(&gfit, channel, TRUE);
-		background = computeBackground(com.grad_samples, channel, gfit.rx, gfit.ry, degree, &error);
-		if (background == NULL) {
-			if (error && !com.script) {
-				siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
-			}
-
-			free(image[channel]);
-			set_cursor_waiting(FALSE);
-			return;
+		if (!computeBackground(com.grad_samples, background, channel, gfit.rx, gfit.ry, degree, &error)) {
+            siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
+            set_cursor_waiting(FALSE);
+            return;
 		}
 		/* remove background */
 		const char *c_name = vport_number_to_name(channel);
@@ -626,8 +623,8 @@ void remove_gradient_from_image(int correction, poly_order degree) {
 
 		/* free memory */
 		free(image[channel]);
-		free(background);
 	}
+	free(background);
 }
 
 /** Apply for sequence **/
@@ -636,8 +633,16 @@ static int background_image_hook(struct generic_seq_args *args, int o, int i, fi
 		rectangle *_) {
 	struct background_data *b_args = (struct background_data*) args->user;
 
-	double *background, *image[3] = {0};
+	double *image[3] = {0};
 	gchar *error;
+	double *background = malloc(fit->ry * fit->rx * sizeof(double));
+	if (!background) {
+		PRINT_ALLOC_ERR;
+		error = _("Out of memory - aborting");
+		siril_log_message(error);
+		set_cursor_waiting(FALSE);
+		return 1;
+	}
 
 	GSList *samples = generate_samples(fit, b_args->nb_of_samples, b_args->tolerance, SAMPLE_SIZE);
 	if (samples == NULL) {
@@ -651,8 +656,7 @@ static int background_image_hook(struct generic_seq_args *args, int o, int i, fi
 	for (int channel = 0; channel < fit->naxes[2]; channel++) {
 		/* compute background */
 		image[channel] = convert_fits_to_img(fit, channel, TRUE);
-		background = computeBackground(samples, channel, fit->rx, fit->ry, b_args->degree, &error);
-		if (background == NULL) {
+		if (!computeBackground(samples, background, channel, fit->rx, fit->ry, b_args->degree, &error)) {
 			if (error) {
 				siril_log_message(error);
 			}
@@ -668,8 +672,8 @@ static int background_image_hook(struct generic_seq_args *args, int o, int i, fi
 
 		/* free memory */
 		free(image[channel]);
-		free(background);
 	}
+	free(background);
 	free_background_sample_list(samples);
 
 	return 0;
