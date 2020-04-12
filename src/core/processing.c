@@ -221,7 +221,7 @@ gpointer generic_sequence_worker(gpointer p) {
 #pragma omp atomic
 #endif
 		progress++;
-		snprintf(msg, 256, _("%s. Processing image %d (%s)"), args->description, input_idx, filename);
+		snprintf(msg, 256, _("%s. Processing image %d (%s)"), args->description, input_idx + 1, filename);
 		set_progress_bar_data(msg, (float)progress / nb_framesf);
 	}
 
