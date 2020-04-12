@@ -524,18 +524,17 @@ static void display_histo(gsl_histogram *histo, cairo_t *cr, int layer, int widt
 }
 
 static void apply_mtf_to_fits(fits *from, fits *to) {
-	size_t i, ndata;
 
 	g_assert(from->naxes[2] == 1 || from->naxes[2] == 3);
-	ndata = from->naxes[0] * from->naxes[1] * from->naxes[2];
+	const size_t ndata = from->naxes[0] * from->naxes[1] * from->naxes[2];
 	g_assert(from->type == to->type);
 
 	if (from->type == DATA_USHORT) {
 		float norm = (float)get_normalized_value(from);
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-		for (i = 0; i < ndata; i++) {
+		for (size_t i = 0; i < ndata; i++) {
 			float pxl = (float)from->data[i] / norm;
 			float mtf = MTF(pxl, _midtones, _shadows, _highlights);
 			to->data[i] = round_to_WORD(mtf * norm);
@@ -543,9 +542,9 @@ static void apply_mtf_to_fits(fits *from, fits *to) {
 	}
 	else if (from->type == DATA_FLOAT) {
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static)
 #endif
-		for (i = 0; i < ndata; i++) {
+		for (size_t i = 0; i < ndata; i++) {
 			to->fdata[i] = MTF(from->fdata[i], _midtones, _shadows, _highlights);
 		}
 	}
@@ -556,16 +555,14 @@ static void apply_mtf_to_fits(fits *from, fits *to) {
 
 static void apply_mtf_to_histo(gsl_histogram *histo, float norm,
 		float m, float lo, float hi) {
-	gsl_histogram *mtf_histo;
-	unsigned short i;
 
 	size_t int_norm = (size_t)norm;
+	gsl_histogram *mtf_histo = gsl_histogram_alloc(int_norm + 1);
 
-	mtf_histo = gsl_histogram_alloc(int_norm + 1);
 	gsl_histogram_set_ranges_uniform(mtf_histo, 0, norm);
 
 // #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) // disabled because of ISSUE #136 (https://free-astro.org/bugs/view.php?id=136)
-	for (i = 0; i < int_norm; i++) {
+	for (size_t i = 0; i < int_norm; i++) {
 		WORD mtf;
 		float binval = gsl_histogram_get(histo, i);
 		float pxl = ((float)i / norm);
@@ -645,18 +642,17 @@ static gboolean on_gradient(GdkEvent *event, int width, int height) {
 gsl_histogram* computeHisto_Selection(fits* fit, int layer,
 		rectangle *selection) {
 	g_assert(layer < 3);
-	size_t stridefrom, i, j, size;
 
-	size = get_histo_size(fit);
+	size_t size = get_histo_size(fit);
 	gsl_histogram* histo = gsl_histogram_alloc(size + 1);
 	gsl_histogram_set_ranges_uniform(histo, 0, fit->type == DATA_FLOAT ? 1.0 : size);
-	stridefrom = fit->rx - selection->w;
+	size_t stridefrom = fit->rx - selection->w;
 
 	if (fit->type == DATA_USHORT) {
 		WORD *from = fit->pdata[layer] + (fit->ry - selection->y - selection->h) * fit->rx
 			+ selection->x;
-		for (i = 0; i < selection->h; i++) {
-			for (j = 0; j < selection->w; j++) {
+		for (size_t i = 0; i < selection->h; i++) {
+			for (size_t j = 0; j < selection->w; j++) {
 				gsl_histogram_increment(histo, (double)*from);
 				from++;
 			}
@@ -666,8 +662,8 @@ gsl_histogram* computeHisto_Selection(fits* fit, int layer,
 	else if (fit->type == DATA_FLOAT) {
 		float *from = fit->fpdata[layer] + (fit->ry - selection->y - selection->h) * fit->rx
 			+ selection->x;
-		for (i = 0; i < selection->h; i++) {
-			for (j = 0; j < selection->w; j++) {
+		for (size_t i = 0; i < selection->h; i++) {
+			for (size_t j = 0; j < selection->w; j++) {
 				gsl_histogram_increment(histo, (double)*from);
 				from++;
 			}
