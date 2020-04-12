@@ -8370,7 +8370,7 @@ artifacts may appear.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">start</property>
-                    <property name="label" translatable="yes">Kernel Size</property>
+                    <property name="label" translatable="yes">Kernel Size:</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -8383,7 +8383,7 @@ artifacts may appear.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Kernel Size. This is the odd size of the neighborhood considered for each pixel.</property>
-                    <property name="halign">end</property>
+                    <property name="halign">start</property>
                     <property name="hexpand">True</property>
                     <property name="active">0</property>
                     <items>
@@ -8643,6 +8643,7 @@ If the parameters is null, so no filter is apply at all.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Average Neutral Protection is the default option. This is the recommended option in most cases.</property>
+                <property name="halign">start</property>
                 <property name="hexpand">True</property>
                 <property name="active">0</property>
                 <items>
@@ -12674,6 +12675,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="tooltip_text" translatable="yes">Type of algorithm used for resampling</property>
+                    <property name="halign">start</property>
                     <property name="valign">center</property>
                     <property name="hexpand">True</property>
                     <property name="active">1</property>
@@ -12694,7 +12696,7 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkSpinButton" id="spinbutton_resample_Y">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hexpand">True</property>
+                    <property name="halign">start</property>
                     <property name="width_chars">9</property>
                     <property name="text">100,00</property>
                     <property name="input_purpose">number</property>
@@ -12714,7 +12716,7 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkSpinButton" id="spinbutton_resample_X">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hexpand">True</property>
+                    <property name="halign">start</property>
                     <property name="invisible_char">●</property>
                     <property name="width_chars">9</property>
                     <property name="text">100,00</property>
@@ -13315,7 +13317,7 @@ Uncheck if images come from a monochrome sensor.</property>
               <object class="GtkComboBoxText" id="combo_saturation">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="hexpand">True</property>
+                <property name="halign">start</property>
                 <property name="active">6</property>
                 <items>
                   <item translatable="yes">Pink-Red / Red-Orange</item>
@@ -17986,6 +17988,7 @@ Configuring a memory amount larger than what is available on your system may res
                                 <property name="receives_default">False</property>
                                 <property name="tooltip_text" translatable="yes">Remember position and size of image displaying windows. This feature may not work on all architectures.</property>
                                 <property name="halign">start</property>
+                                <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="on_rememberWindowsCheck_toggled" swapped="no"/>
                               </object>

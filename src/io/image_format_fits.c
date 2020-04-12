@@ -2155,7 +2155,9 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	{
 		// array for preview picture line
 		float pix[MAX_SIZE];
+#ifdef _OPENMP
 #pragma omp for
+#endif
 		for (int i = 0; i < Hs; i++) { // cycle through a blocks by lines
 			int M = i * pixScale;
 			for (int j = 0; j < MAX_SIZE; j++) { // zero line buffer
