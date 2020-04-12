@@ -9248,52 +9248,21 @@ If the parameters is null, so no filter is apply at all.</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">10</property>
                     <child>
-                      <object class="GtkGrid" id="grid_background">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="row_spacing">10</property>
+                        <property name="spacing">10</property>
                         <child>
-                          <object class="GtkScale" id="scale_background_nb_samples">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Tolerance of global sample rejection, in sigma units. By decreasing this value, Siril will be more restrictive to select background samples.</property>
-                            <property name="hexpand">True</property>
-                            <property name="adjustment">adj_background_nb_samples</property>
-                            <property name="round_digits">1</property>
-                            <property name="digits">2</property>
-                            <property name="value_pos">bottom</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="background_label_tolorence">
+                          <object class="GtkLabel" id="background_label_degree">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="halign">start</property>
-                            <property name="label" translatable="yes">Tolerance: </property>
+                            <property name="label" translatable="yes">Degree order: </property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSpinButton" id="spin_background_nb_samples">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">Number of sample per line that will be automatically placed.</property>
-                            <property name="hexpand">True</property>
-                            <property name="input_purpose">digits</property>
-                            <property name="adjustment">adjustment_background_nb_samples</property>
-                            <property name="numeric">True</property>
-                            <property name="value">20</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">1</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
@@ -9303,6 +9272,7 @@ If the parameters is null, so no filter is apply at all.</property>
                             <property name="tooltip_text" translatable="yes">Choose the degree order of the polynomial function used in the fit.
 By default the value is of 4.
 The higher the degree order is, the more complex the gradient can be removed.</property>
+                            <property name="halign">start</property>
                             <property name="hexpand">True</property>
                             <property name="active">3</property>
                             <items>
@@ -9313,55 +9283,149 @@ The higher the degree order is, the more complex the gradient can be removed.</p
                             </items>
                           </object>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="background_label_samples">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">Samples per line: </property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="background_label_degree">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">Degree order: </property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="bkg_dither_button">
-                            <property name="label" translatable="yes">Add dither</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">Hit this option when color banding is produced after background extraction.
-Dither is an intentionally applied form of noise used to randomize quantization error, preventing large-scale patterns such as color banding in images.</property>
-                            <property name="draw_indicator">True</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">3</property>
-                            <property name="width">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">False</property>
+                        <property name="fill">True</property>
                         <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkLabel" id="background_label_samples">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="label" translatable="yes">Samples per line</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="spin_background_nb_samples">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Number of sample per line that will be automatically placed.</property>
+                            <property name="halign">end</property>
+                            <property name="hexpand">True</property>
+                            <property name="text" translatable="yes">20</property>
+                            <property name="input_purpose">digits</property>
+                            <property name="adjustment">adjustment_background_nb_samples</property>
+                            <property name="numeric">True</property>
+                            <property name="value">20</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="adjustment">adjustment_background_nb_samples</property>
+                        <property name="round_digits">1</property>
+                        <property name="draw_value">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkLabel" id="background_label_tolorence">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="label" translatable="yes">Tolerance</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="input_purpose">digits</property>
+                            <property name="adjustment">adj_background_nb_samples</property>
+                            <property name="digits">2</property>
+                            <property name="numeric">True</property>
+                            <property name="value">1</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="pack_type">end</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="scale_background_nb_samples">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip_text" translatable="yes">Tolerance of global sample rejection, in sigma units. By decreasing this value, Siril will be more restrictive to select background samples.</property>
+                        <property name="hexpand">True</property>
+                        <property name="adjustment">adj_background_nb_samples</property>
+                        <property name="round_digits">2</property>
+                        <property name="digits">2</property>
+                        <property name="draw_value">False</property>
+                        <property name="value_pos">bottom</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="bkg_dither_button">
+                        <property name="label" translatable="yes">Add dither</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="tooltip_text" translatable="yes">Hit this option when color banding is produced after background extraction.
+Dither is an intentionally applied form of noise used to randomize quantization error, preventing large-scale patterns such as color banding in images.</property>
+                        <property name="halign">start</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
@@ -9411,7 +9475,7 @@ Dither is an intentionally applied form of noise used to randomize quantization 
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="position">6</property>
                       </packing>
                     </child>
                     <child>
@@ -9424,7 +9488,7 @@ Left click adds samples while right click removes them.</property>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">2</property>
+                        <property name="position">7</property>
                       </packing>
                     </child>
                   </object>
@@ -9479,14 +9543,13 @@ Left click adds samples while right click removes them.</property>
                     </child>
                     <child>
                       <object class="GtkComboBoxText" id="box_background_correction">
-                        <property name="width_request">210</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Choose the type of correction you want apply:
 Subtraction: it is mainly used to correct additive effects, such as gradients caused by light pollution or by the Moon.
 Division: it is mainly used to correct multiplicative phenomena, such as vignetting or differential atmospheric absorption for example. However, this kind of operation should be done by master-flat correction.</property>
+                        <property name="halign">start</property>
                         <property name="valign">start</property>
-                        <property name="hexpand">True</property>
                         <property name="active">0</property>
                         <items>
                           <item translatable="yes">Subtraction</item>
