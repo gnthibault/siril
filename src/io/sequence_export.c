@@ -247,6 +247,7 @@ static gpointer export_sequence(gpointer ptr) {
 			nbdata = fit.rx * fit.ry;
 			if ((fit.type == DATA_FLOAT) && (args->convflags == TYPEFITS)) {
 				destfit.fdata = calloc(nbdata * fit.naxes[2], sizeof(float));
+				destfit.type = DATA_FLOAT;
 				destfit.stats = NULL;
 				if (!destfit.fdata) {
 					PRINT_ALLOC_ERR;
@@ -264,6 +265,7 @@ static gpointer export_sequence(gpointer ptr) {
 				nb_layers = fit.naxes[2];
 			} else {
 				destfit.data = calloc(nbdata * fit.naxes[2], sizeof(WORD));
+				destfit.type = DATA_USHORT;
 				destfit.stats = NULL;
 				if (!destfit.data) {
 					PRINT_ALLOC_ERR;
@@ -292,6 +294,7 @@ static gpointer export_sequence(gpointer ptr) {
 			copy_fits_metadata(&fit, &destfit);
 			if ((fit.type == DATA_FLOAT) && (args->convflags == TYPEFITS)) {
 				memset(destfit.fdata, 0, nbdata * fit.naxes[2] * sizeof(float));
+				destfit.type = DATA_FLOAT;
 				if (args->crop) {
 					/* reset destfit damaged by the crop function */
 					if (fit.naxes[2] == 3) {
@@ -302,6 +305,7 @@ static gpointer export_sequence(gpointer ptr) {
 					destfit.ry = destfit.naxes[1] = fit.ry;
 				}
 			} else {
+				destfit.type = DATA_USHORT;
 				memset(destfit.data, 0, nbdata * fit.naxes[2] * sizeof(WORD));
 				if (args->crop) {
 					/* reset destfit damaged by the crop function */
