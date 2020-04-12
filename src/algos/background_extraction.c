@@ -598,8 +598,6 @@ gboolean remove_gradient_from_image(int correction, poly_order degree) {
 	double *background = malloc(gfit.ry * gfit.rx * sizeof(double));
 	if (!background && !com.script) {
 		PRINT_ALLOC_ERR;
-		error = _("Out of memory - aborting");
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("Not enough samples."), error);
 		set_cursor_waiting(FALSE);
 		return FALSE;
 	}
