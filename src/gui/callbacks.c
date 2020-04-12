@@ -830,11 +830,13 @@ void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_da
 							"Getting back to 32 bits will not recover this loss.\n"
 							"Are you sure you want to convert your data?"));
 			if (convert) {
+				siril_close_preview_dialogs();
 				fit_replace_buffer(&gfit, float_buffer_to_ushort(gfit.fdata, ndata), DATA_USHORT);
 				invalidate_gfit_histogram();
 				redraw(com.cvport, REMAP_ALL);
 			}
 		} else if (gfit.type == DATA_USHORT) {
+			siril_close_preview_dialogs();
 			fit_replace_buffer(&gfit, ushort_buffer_to_float(gfit.data, ndata), DATA_FLOAT);
 			invalidate_gfit_histogram();
 			redraw(com.cvport, REMAP_ALL);

@@ -107,8 +107,7 @@ void siril_close_dialog(gchar *id) {
 }
 
 void siril_close_preview_dialogs() {
-	int i;
-	for (i = 0; i < G_N_ELEMENTS(entries); i++) {
+	for (int i = 0; i < G_N_ELEMENTS(entries); i++) {
 		GtkWidget *w = lookup_widget(entries[i].identifier);
 		if (gtk_widget_get_visible(w) && (entries[i].has_preview)) {
 			entries[i].apply_function();
