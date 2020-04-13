@@ -130,7 +130,8 @@ static int readinitfile() {
 	/* Misc setting */
 	config_setting_t *misc_setting = config_lookup(&config, keywords[MISC]);
 	if (misc_setting) {
-		config_setting_lookup_bool(misc_setting, "confirm", &com.dontShowConfirm);
+		config_setting_lookup_bool(misc_setting, "confirm_quit", &com.save.quit);
+		config_setting_lookup_bool(misc_setting, "confirm_script", &com.save.script);
 #if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
 		com.show_preview = FALSE;
 #else
@@ -306,8 +307,11 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 	misc_setting = config_setting_add(misc_group, "extension", CONFIG_TYPE_STRING);
 	config_setting_set_string(misc_setting, com.ext);
 
-	misc_setting = config_setting_add(misc_group, "confirm", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(misc_setting, com.dontShowConfirm);
+	misc_setting = config_setting_add(misc_group, "confirm_quit", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(misc_setting, com.save.quit);
+
+	misc_setting = config_setting_add(misc_group, "confirm_script", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(misc_setting, com.save.script);
 
 	misc_setting = config_setting_add(misc_group, "show_preview", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.show_preview);

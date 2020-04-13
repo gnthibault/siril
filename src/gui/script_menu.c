@@ -43,6 +43,7 @@
 #include "script_menu.h"
 
 #define SCRIPT_EXT ".ssf"
+#define CONFIRM_RUN_SCRIPTS _("You are about to use scripts. Running automatic scripts is something that is easy and generally it provides a nice image. However you have to keep in mind that scripts are not magic; automatic choices are made where human decision would probably be better. Also, every commands used in a script are available on the interface with a better parameter control.\n\nAre you sure you want to continue?")
 
 static GSList *initialize_script_paths(){
 	GSList *list = NULL;
@@ -151,6 +152,18 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
+	}
+
+	if (!com.save.script) {
+		gboolean confirm = siril_confirm_dialog_and_remember(
+				_("Please read me before using scripts"), CONFIRM_RUN_SCRIPTS, &com.save.script);
+		/* update setting buttons */
+		set_GUI_misc();
+		/* update config file */
+		writeinitfile();
+		if (!confirm) {
+			return;
+		}
 	}
 
 	if (com.script_thread)

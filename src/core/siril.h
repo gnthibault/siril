@@ -202,6 +202,7 @@ typedef struct historic_struct historic;
 typedef struct dateTime_struct dateTime;
 typedef struct fwhm_struct fitted_PSF;
 typedef struct star_finder_struct star_finder_params;
+typedef struct save_config_struct save_config;
 
 /* global structures */
 
@@ -553,6 +554,11 @@ struct star_finder_struct {
 	double roundness;
 };
 
+struct save_config_struct {
+	gboolean quit;
+	gboolean script;
+};
+
 /* The global data structure of siril, the only with gfit and the gtk builder,
  * declared in main.c */
 struct cominf {
@@ -604,7 +610,7 @@ struct cominf {
 
 	int reg_settings;		// Use to save registration method in the init file
 	
-	gboolean dontShowConfirm;
+	save_config save;
 	gboolean show_preview; // show or don't show preview in open dialog box
 
 	gint combo_theme;           // value of the combobox theme

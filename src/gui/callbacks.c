@@ -1143,7 +1143,9 @@ void set_GUI_misc() {
 	GtkSpinButton *memory_percent, *memory_amount;
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
-	gtk_toggle_button_set_active(ToggleButton, com.dontShowConfirm);
+	gtk_toggle_button_set_active(ToggleButton, com.save.quit);
+	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskScript"));
+	gtk_toggle_button_set_active(ToggleButton, com.save.script);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button"));
 	gtk_toggle_button_set_active(ToggleButton, com.show_preview);
 #if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
@@ -1854,11 +1856,11 @@ void gtk_main_quit() {
 }
 
 void siril_quit() {
-	if (com.dontShowConfirm) {
+	if (com.save.quit) {
 		gtk_main_quit();
 	}
 	gboolean quit = siril_confirm_dialog_and_remember(_("Closing application"),
-			_("Are you sure you want to quit?"), &com.dontShowConfirm);
+			_("Are you sure you want to quit?"), &com.save.quit);
 	if (quit) {
 		set_GUI_misc();
 		writeinitfile();
@@ -2136,7 +2138,15 @@ void on_checkseqbutton_clicked(GtkButton *button, gpointer user_data) {
 void on_confirmDontShowButton_toggled(GtkToggleButton *togglebutton,
 		gpointer user_data) {
 
-	com.dontShowConfirm = gtk_toggle_button_get_active(togglebutton);
+	com.save.quit = gtk_toggle_button_get_active(togglebutton);
+	set_GUI_misc();
+	writeinitfile();
+}
+
+void on_miscAskScript_toggled(GtkToggleButton *togglebutton,
+		gpointer user_data) {
+
+	com.save.script = gtk_toggle_button_get_active(togglebutton);
 	set_GUI_misc();
 	writeinitfile();
 }
