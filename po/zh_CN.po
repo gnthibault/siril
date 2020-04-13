@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-10 18:48+0200\n"
+"POT-Creation-Date: 2020-04-13 23:48+0200\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -169,11 +169,11 @@ msgstr "图像模式对齐（行星/深空）"
 msgid "One star registration (deep-sky)"
 msgstr "单星对齐（深空）"
 
-#: ../src/gui/siril3.glade.h:35 ../src/gui/callbacks.c:852
+#: ../src/gui/siril3.glade.h:35 ../src/gui/callbacks.c:859
 msgid "16 bits"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:36 ../src/gui/callbacks.c:852
+#: ../src/gui/siril3.glade.h:36 ../src/gui/callbacks.c:859
 msgid "32 bits"
 msgstr ""
 
@@ -394,7 +394,7 @@ msgstr "磁盘空间：N/A"
 
 #. no color, undefined value is <0
 #: ../src/gui/siril3.glade.h:88 ../src/compositing/compositing.c:462
-#: ../src/gui/callbacks.c:59 ../src/gui/callbacks.c:1014
+#: ../src/gui/callbacks.c:60 ../src/gui/callbacks.c:1021
 msgid "Red"
 msgstr "红色"
 
@@ -407,7 +407,7 @@ msgid "fwhm: no selection"
 msgstr "fwhm: 无选择"
 
 #. approx. of the middle of the color
-#: ../src/gui/siril3.glade.h:91 ../src/gui/callbacks.c:60
+#: ../src/gui/siril3.glade.h:91 ../src/gui/callbacks.c:61
 msgid "Green"
 msgstr "绿色"
 
@@ -416,7 +416,7 @@ msgid "current green file"
 msgstr "当前绿色文件"
 
 #. approx. of the middle of the color
-#: ../src/gui/siril3.glade.h:93 ../src/gui/callbacks.c:61
+#: ../src/gui/siril3.glade.h:93 ../src/gui/callbacks.c:62
 msgid "Blue"
 msgstr "蓝色"
 
@@ -694,7 +694,7 @@ msgstr ""
 "耗一些时间来处理。\n"
 "\t\t\t"
 
-#: ../src/gui/siril3.glade.h:154 ../src/io/sequence_export.c:570
+#: ../src/gui/siril3.glade.h:154 ../src/io/sequence_export.c:572
 msgid "Select area to crop"
 msgstr "选择裁减区域"
 
@@ -2242,7 +2242,7 @@ msgstr "中位数过滤"
 
 #: ../src/gui/siril3.glade.h:523
 #, fuzzy
-msgid "Kernel Size"
+msgid "Kernel Size:"
 msgstr "内核大小: "
 
 #: ../src/gui/siril3.glade.h:524
@@ -2369,7 +2369,7 @@ msgstr "从图像中所减去的连续值。"
 msgid "Use RGB working space"
 msgstr "使用RGB工作空间"
 
-#: ../src/gui/siril3.glade.h:553 ../src/algos/background_extraction.c:698
+#: ../src/gui/siril3.glade.h:553 ../src/algos/background_extraction.c:711
 msgid "Background Extraction"
 msgstr "背景提取"
 
@@ -2380,20 +2380,10 @@ msgid ""
 msgstr "计算非自然背景并执行所选定的修正。"
 
 #: ../src/gui/siril3.glade.h:555
-msgid ""
-"Tolerance of global sample rejection, in sigma units. By decreasing this "
-"value, Siril will be more restrictive to select background samples."
-msgstr "全局样本剔除容差，单位sigma。降低该值会使Siril更加谨慎的选取背景样本。"
+msgid "Degree order: "
+msgstr "有序度: "
 
 #: ../src/gui/siril3.glade.h:556
-msgid "Tolerance: "
-msgstr "容差: "
-
-#: ../src/gui/siril3.glade.h:557
-msgid "Number of sample per line that will be automatically placed."
-msgstr "自动安置的每行样本数。"
-
-#: ../src/gui/siril3.glade.h:558
 msgid ""
 "Choose the degree order of the polynomial function used in the fit.\n"
 "By default the value is of 4.\n"
@@ -2403,13 +2393,25 @@ msgstr ""
 "缺省值为4。\n"
 "有序度越高，则越强的渐变会被去除。"
 
-#: ../src/gui/siril3.glade.h:561
-msgid "Samples per line: "
+#: ../src/gui/siril3.glade.h:559
+#, fuzzy
+msgid "Samples per line"
 msgstr "每行样本数: "
 
+#: ../src/gui/siril3.glade.h:560
+msgid "Number of sample per line that will be automatically placed."
+msgstr "自动安置的每行样本数。"
+
+#: ../src/gui/siril3.glade.h:561
+#, fuzzy
+msgid "Tolerance"
+msgstr "容差: "
+
 #: ../src/gui/siril3.glade.h:562
-msgid "Degree order: "
-msgstr "有序度: "
+msgid ""
+"Tolerance of global sample rejection, in sigma units. By decreasing this "
+"value, Siril will be more restrictive to select background samples."
+msgstr "全局样本剔除容差，单位sigma。降低该值会使Siril更加谨慎的选取背景样本。"
 
 #: ../src/gui/siril3.glade.h:563
 #, fuzzy
@@ -2611,7 +2613,7 @@ msgid "For LRGB composition, the reference layer should be luminance."
 msgstr "在执行LRGB合成时，应选择明度通道为参考通道。"
 
 #. name, lambda, lo, hi, c/over, c/under, mode
-#: ../src/gui/siril3.glade.h:608 ../src/gui/callbacks.c:58
+#: ../src/gui/siril3.glade.h:608 ../src/gui/callbacks.c:59
 msgid "Luminance"
 msgstr "明度"
 
@@ -3985,52 +3987,57 @@ msgid "<b>FITS Format</b>"
 msgstr "<b>FITS 格式</b>"
 
 #: ../src/gui/siril3.glade.h:916
-msgid "Don't ask before quitting"
+#, fuzzy
+msgid "Don't warn before script"
 msgstr "退出前不询问"
 
 #: ../src/gui/siril3.glade.h:917
+msgid "Don't ask before quitting"
+msgstr "退出前不询问"
+
+#: ../src/gui/siril3.glade.h:918
 msgid "<b>Confirmation Dialog</b>"
 msgstr "<b>确认对话框</b>"
 
-#: ../src/gui/siril3.glade.h:918
+#: ../src/gui/siril3.glade.h:919
 msgid ""
 "Change the theme of the interface. This feature may not work on all "
 "architectures."
 msgstr "更改界面主题风格。该功能不保证在所有的平台上都奏效。"
 
-#: ../src/gui/siril3.glade.h:919
+#: ../src/gui/siril3.glade.h:920
 msgid "Dark theme"
 msgstr "暗色主题"
 
-#: ../src/gui/siril3.glade.h:920
+#: ../src/gui/siril3.glade.h:921
 msgid "Light theme"
 msgstr "亮色主题"
 
-#: ../src/gui/siril3.glade.h:921
+#: ../src/gui/siril3.glade.h:922
 msgid "Remember window size and position"
 msgstr "记住窗口尺寸和位置"
 
-#: ../src/gui/siril3.glade.h:922
+#: ../src/gui/siril3.glade.h:923
 msgid ""
 "Remember position and size of image displaying windows. This feature may not "
 "work on all architectures."
 msgstr "记住已打开窗口的位置和尺寸。该功能不保证在所有的平台上都奏效。"
 
-#: ../src/gui/siril3.glade.h:923
+#: ../src/gui/siril3.glade.h:924
 msgid "Show preview in file chooser"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:924
+#: ../src/gui/siril3.glade.h:925
 msgid ""
 "Show preview, if possible, in the file chooser dialog bow when opening an "
 "unique file."
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:925
+#: ../src/gui/siril3.glade.h:926
 msgid "<b>Look and Feel</b>"
 msgstr "<b>外观</b>"
 
-#: ../src/gui/siril3.glade.h:926
+#: ../src/gui/siril3.glade.h:927
 msgid ""
 "The paths written in this text box will be checked in order to load scripts "
 "that have been put inside. Write a path per line with as many lines you "
@@ -4040,11 +4047,11 @@ msgstr ""
 "该文本窗口中的路径用于读取脚本文件。每行存放一个路径，行数不限。但请注意，更"
 "多的路径会造成启动时更长的检索时间。"
 
-#: ../src/gui/siril3.glade.h:927
+#: ../src/gui/siril3.glade.h:928
 msgid "<b>Scripts Storage Directories</b>"
 msgstr "<b>脚本存放目录</b>"
 
-#: ../src/gui/siril3.glade.h:928
+#: ../src/gui/siril3.glade.h:929
 msgid "Misc."
 msgstr "杂项."
 
@@ -4223,26 +4230,24 @@ msgid ""
 "cannot be computed.\n"
 msgstr "没有足够的背景采样。所需提取的背景无法被计算。\n"
 
-#: ../src/algos/background_extraction.c:608
-#: ../src/algos/background_extraction.c:645
-msgid "Out of memory - aborting"
-msgstr "内存不足 - 异常中止"
-
-#: ../src/algos/background_extraction.c:609
-#: ../src/algos/background_extraction.c:618
+#: ../src/algos/background_extraction.c:620
 msgid "Not enough samples."
 msgstr "没有足够的采样。"
 
-#: ../src/algos/background_extraction.c:624
+#: ../src/algos/background_extraction.c:627
 #, fuzzy, c-format
 msgid "Background extraction from channel %s.\n"
 msgstr "背景提取：处理中...\n"
 
-#: ../src/algos/background_extraction.c:754
+#: ../src/algos/background_extraction.c:648
+msgid "Out of memory - aborting"
+msgstr "内存不足 - 异常中止"
+
+#: ../src/algos/background_extraction.c:767
 msgid "Polynomial order seems too high."
 msgstr ""
 
-#: ../src/algos/background_extraction.c:755
+#: ../src/algos/background_extraction.c:768
 msgid ""
 "You are about to process a sequence of preprocessed files with a polynomial "
 "degree greater than 1. This is unlikely because such gradients are often "
@@ -4279,7 +4284,7 @@ msgstr "请先选择一个背景区域"
 #: ../src/filters/banding.c:159 ../src/filters/banding.c:241
 #: ../src/filters/cosmetic_correction.c:193
 #: ../src/filters/cosmetic_correction.c:428 ../src/filters/saturation.c:154
-#: ../src/filters/saturation.c:216 ../src/gui/histogram.c:733
+#: ../src/filters/saturation.c:216 ../src/gui/histogram.c:729
 #: ../src/gui/photometric_cc.c:395 ../src/gui/statistics_list.c:321
 msgid "Error: statistics computation failed.\n"
 msgstr "错误：数据统计计算失败。\n"
@@ -4426,7 +4431,7 @@ msgstr "Fetch failed with code %ld for URL %s\n"
 
 #: ../src/algos/plateSolver.c:500 ../src/filters/fft.c:551
 #: ../src/filters/fft.c:557 ../src/filters/fft.c:578
-#: ../src/gui/callbacks.c:1744 ../src/gui/open_dialog.c:324
+#: ../src/gui/callbacks.c:1753 ../src/gui/open_dialog.c:324
 #: ../src/gui/plot.c:392 ../src/gui/plot.c:460 ../src/gui/PSF_list.c:217
 #: ../src/gui/save_dialog.c:301 ../src/io/single_image.c:152
 msgid "Error"
@@ -6058,14 +6063,14 @@ msgstr "NO"
 msgid "No help for this command"
 msgstr "No help for this command"
 
-#: ../src/core/command_line_processor.c:337 ../src/gui/script_menu.c:166
+#: ../src/core/command_line_processor.c:337 ../src/gui/script_menu.c:179
 #: ../src/main.c:274
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "文件 [%s] 不存在\n"
 
 #. Then, run script
-#: ../src/core/command_line_processor.c:345 ../src/gui/script_menu.c:175
+#: ../src/core/command_line_processor.c:345 ../src/gui/script_menu.c:188
 #, c-format
 msgid "Starting script %s\n"
 msgstr "开始运行脚本%s\n"
@@ -6693,147 +6698,147 @@ msgstr "天文图像（预）处理程序"
 msgid "Visit the Siril website"
 msgstr "访问Siril网站"
 
-#: ../src/gui/callbacks.c:319
+#: ../src/gui/callbacks.c:320
 #, fuzzy, c-format
 msgid "Setting MAX value for cutoff sliders adjustments (%f)\n"
 msgstr "Setting MAX value for cutoff sliders adjustments\n"
 
 #. there should be no other normal cases
-#: ../src/gui/callbacks.c:362
+#: ../src/gui/callbacks.c:363
 #, fuzzy, c-format
 msgid "Setting ranges scalemin=%d, scalemax=%d\n"
 msgstr "setting ranges scalemin=%d, scalemax=%d\n"
 
-#: ../src/gui/callbacks.c:415
+#: ../src/gui/callbacks.c:416
 #, c-format
 msgid "%s, %d images selected"
 msgstr "%s, %d 图像已被选择"
 
-#: ../src/gui/callbacks.c:418
+#: ../src/gui/callbacks.c:419
 msgid "- none -"
 msgstr "- 无 -"
 
-#: ../src/gui/callbacks.c:431
+#: ../src/gui/callbacks.c:432
 msgid ""
 "This sequence name already exists!! Please change the name before converting."
 msgstr "队列名称已存在！请更名。"
 
-#: ../src/gui/callbacks.c:713 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:714 ../src/gui/photometric_cc.c:520
 msgid "red"
 msgstr "红色"
 
-#: ../src/gui/callbacks.c:715 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:716 ../src/gui/photometric_cc.c:520
 msgid "green"
 msgstr "绿色"
 
-#: ../src/gui/callbacks.c:717 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:718 ../src/gui/photometric_cc.c:520
 msgid "blue"
 msgstr "蓝色"
 
-#: ../src/gui/callbacks.c:719
+#: ../src/gui/callbacks.c:720
 msgid "rgb"
 msgstr ""
 
-#: ../src/gui/callbacks.c:764
+#: ../src/gui/callbacks.c:765
 #, c-format
 msgid "fwhm = %.2f, r = %.2f"
 msgstr ""
 
-#: ../src/gui/callbacks.c:767
+#: ../src/gui/callbacks.c:768
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "fwhm: 选择区域太大"
 
-#: ../src/gui/callbacks.c:798
+#: ../src/gui/callbacks.c:799
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (通道 0)"
 
-#: ../src/gui/callbacks.c:804
+#: ../src/gui/callbacks.c:805
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (通道 1)"
 
-#: ../src/gui/callbacks.c:809
+#: ../src/gui/callbacks.c:810
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (通道 2)"
 
-#: ../src/gui/callbacks.c:822
+#: ../src/gui/callbacks.c:823
 msgid "Cannot convert a sequence file"
 msgstr ""
 
-#: ../src/gui/callbacks.c:823
+#: ../src/gui/callbacks.c:824
 msgid ""
 "A sequence file cannot be converted to 32 bits. This operation can only be "
 "done on a single file."
 msgstr ""
 
-#: ../src/gui/callbacks.c:828
+#: ../src/gui/callbacks.c:829
 msgid "Precision loss"
 msgstr ""
 
-#: ../src/gui/callbacks.c:829
+#: ../src/gui/callbacks.c:830
 msgid ""
 "Converting the image from 32 bits to 16 bits may lead to a loss of numerical "
 "accuracy. Getting back to 32 bits will not recover this loss.\n"
 "Are you sure you want to convert your data?"
 msgstr ""
 
-#: ../src/gui/callbacks.c:878
+#: ../src/gui/callbacks.c:885
 msgid "Unassigned"
 msgstr "未指定"
 
-#: ../src/gui/callbacks.c:902
+#: ../src/gui/callbacks.c:909
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: 未生效"
 
-#: ../src/gui/callbacks.c:1011
+#: ../src/gui/callbacks.c:1018
 msgid "B&W"
 msgstr ""
 
-#: ../src/gui/callbacks.c:1166
+#: ../src/gui/callbacks.c:1175
 #, fuzzy, c-format
 msgid "Mem: %s"
 msgstr "Mem: %ldMB"
 
-#: ../src/gui/callbacks.c:1169
+#: ../src/gui/callbacks.c:1178
 msgid "Mem: N/A"
 msgstr "Mem: N/A"
 
-#: ../src/gui/callbacks.c:1186
+#: ../src/gui/callbacks.c:1195
 #, c-format
 msgid "Disk Space: %s"
 msgstr "磁盘空间：%s"
 
-#: ../src/gui/callbacks.c:1189
+#: ../src/gui/callbacks.c:1198
 msgid "Disk Space: N/A"
 msgstr "磁盘空间：N/A"
 
-#: ../src/gui/callbacks.c:1253
+#: ../src/gui/callbacks.c:1262
 msgid "This binning is not handled yet\n"
 msgstr "该合并模式不被支持\n"
 
-#: ../src/gui/callbacks.c:1743
+#: ../src/gui/callbacks.c:1752
 #, c-format
 msgid "You don't have permission to write in this directory: %s\n"
 msgstr "当前用户对目录%s没有写权限\n"
 
-#: ../src/gui/callbacks.c:1853
+#: ../src/gui/callbacks.c:1862
 msgid "Closing application"
 msgstr "关闭程序"
 
-#: ../src/gui/callbacks.c:1854
+#: ../src/gui/callbacks.c:1863
 msgid "Are you sure you want to quit?"
 msgstr "确定要退出吗？"
 
-#: ../src/gui/callbacks.c:2053
+#: ../src/gui/callbacks.c:2062
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "已选择 %s 队列 %s..."
 
-#: ../src/gui/callbacks.c:2117
+#: ../src/gui/callbacks.c:2126
 msgid "Searching for sequences in the current working directory..."
 msgstr "在当前工作目录中搜索队列..."
 
@@ -7139,21 +7144,36 @@ msgstr "保存文件失败。 请查询日志。"
 msgid "This type of file is not handled. Should not happen"
 msgstr "该文件类型无法被识别"
 
-#: ../src/gui/script_menu.c:213
+#: ../src/gui/script_menu.c:46
+msgid ""
+"You are about to use scripts. Running automatic scripts is something that is "
+"easy and generally it provides a nice image. However you have to keep in "
+"mind that scripts are not magic; automatic choices are made where human "
+"decision would probably be better. Also, every commands used in a script are "
+"available on the interface with a better parameter control.\n"
+"\n"
+"Are you sure you want to continue?"
+msgstr ""
+
+#: ../src/gui/script_menu.c:159
+msgid "Please read me before using scripts"
+msgstr ""
+
+#: ../src/gui/script_menu.c:226
 #, c-format
 msgid "Searching scripts in: \"%s\"...\n"
 msgstr "检索脚本于： \"%s\"...\n"
 
-#: ../src/gui/script_menu.c:225
+#: ../src/gui/script_menu.c:238
 #, c-format
 msgid "Loading script: %s\n"
 msgstr "载入脚本：%s\n"
 
-#: ../src/gui/script_menu.c:277
+#: ../src/gui/script_menu.c:290
 msgid "Could not show link"
 msgstr "无法显示链接"
 
-#: ../src/gui/script_menu.c:278
+#: ../src/gui/script_menu.c:291
 msgid "Please go to <a href=\""
 msgstr "Please go to <a href=\""
 
@@ -7369,7 +7389,7 @@ msgstr ""
 
 #: ../src/io/conversion.c:514 ../src/io/conversion.c:661
 #: ../src/io/conversion.c:737 ../src/io/sequence.c:1399
-#: ../src/io/sequence_export.c:403
+#: ../src/io/sequence_export.c:405
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Error while converting to SER (no space left?)\n"
 
@@ -8006,27 +8026,27 @@ msgstr "处理图像 "
 msgid "Export: could not read frame, aborting\n"
 msgstr "导出：无法读取帧，异常终止\n"
 
-#: ../src/io/sequence_export.c:458
+#: ../src/io/sequence_export.c:460
 msgid "Sequence export failed. Check the log."
 msgstr "队列导出错误，请查询日志。"
 
-#: ../src/io/sequence_export.c:459
+#: ../src/io/sequence_export.c:461
 msgid "Sequence export failed\n"
 msgstr "队列导出错误\n"
 
-#: ../src/io/sequence_export.c:462
+#: ../src/io/sequence_export.c:464
 msgid "Sequence export succeeded."
 msgstr "队列导出成功。"
 
-#: ../src/io/sequence_export.c:463
+#: ../src/io/sequence_export.c:465
 msgid "Sequence export succeeded.\n"
 msgstr "队列导出成功。\n"
 
-#: ../src/io/sequence_export.c:524
+#: ../src/io/sequence_export.c:526
 msgid "Width or height cannot be null. Not resizing.\n"
 msgstr "宽度和高度不能为空。缩放不成功。\n"
 
-#: ../src/io/sequence_export.c:569
+#: ../src/io/sequence_export.c:571
 msgid "Cropping to selection"
 msgstr "裁减到所选区域"
 
@@ -8870,6 +8890,10 @@ msgstr "叠加将不会使用超采样（ ‘drizzle’关闭）\n"
 #: ../src/stacking/upscaling.c:178
 msgid "Up-scaling sequence for stacking"
 msgstr "超采样叠加"
+
+#, fuzzy
+#~ msgid "20"
+#~ msgstr "0"
 
 #~ msgid "Added a registration method: %s\n"
 #~ msgstr "启用一种对齐方法: %s\n"
