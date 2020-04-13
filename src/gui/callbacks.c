@@ -48,6 +48,7 @@
 #include "script_menu.h"
 #include "progress_and_log.h"
 #include "dialogs.h"
+#include "siril_preview.h"
 
 #ifndef W_OK
 #define W_OK 2
@@ -830,15 +831,19 @@ void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_da
 							"Getting back to 32 bits will not recover this loss.\n"
 							"Are you sure you want to convert your data?"));
 			if (convert) {
-				siril_close_preview_dialogs();
+				if (is_preview_active())
+					fit_replace_buffer(get_preview_gfit_backup(), float_buffer_to_ushort(gfit.fdata, ndata), DATA_USHORT);
 				fit_replace_buffer(&gfit, float_buffer_to_ushort(gfit.fdata, ndata), DATA_USHORT);
 				invalidate_gfit_histogram();
+				update_gfit_histogram_if_needed();
 				redraw(com.cvport, REMAP_ALL);
 			}
 		} else if (gfit.type == DATA_USHORT) {
-			siril_close_preview_dialogs();
+			if (is_preview_active())
+				fit_replace_buffer(get_preview_gfit_backup(), ushort_buffer_to_float(gfit.data, ndata), DATA_FLOAT);
 			fit_replace_buffer(&gfit, ushort_buffer_to_float(gfit.data, ndata), DATA_FLOAT);
 			invalidate_gfit_histogram();
+			update_gfit_histogram_if_needed();
 			redraw(com.cvport, REMAP_ALL);
 		}
 	}
