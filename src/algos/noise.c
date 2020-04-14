@@ -82,8 +82,8 @@ gpointer noise(gpointer p) {
 						chan, args->bgnoise[chan], args->bgnoise[chan] / norm);
 			else 
 				siril_log_message(
-						_("Background noise value (channel: #%d): %0.3e\n"),
-						chan, args->bgnoise[chan]);
+						_("Background noise value (channel: #%d): %0.3f (%.3e)\n"),
+						chan, args->bgnoise[chan] * USHRT_MAX_DOUBLE, args->bgnoise[chan]);
 	}
 
 	int retval = args->retval;
