@@ -562,7 +562,7 @@ static void apply_mtf_to_histo(gsl_histogram *histo, float norm,
 	gsl_histogram_set_ranges_uniform(mtf_histo, 0, norm);
 
 // #pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static) // disabled because of ISSUE #136 (https://free-astro.org/bugs/view.php?id=136)
-	for (size_t i = 0; i < int_norm; i++) {
+	for (size_t i = 0; i < int_norm + 1; i++) {
 		WORD mtf;
 		float binval = gsl_histogram_get(histo, i);
 		float pxl = ((float)i / norm);
