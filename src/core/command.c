@@ -1174,9 +1174,16 @@ int process_seq_crop(int nb) {
 
 int process_bg(int nb){
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
+	WORD us_bg;
 
-	WORD bg = round_to_WORD(background(&gfit, -1, &com.selection, TRUE));
-	siril_log_message(_("Background value: %d\n"), bg);
+	double bg = background(&gfit, -1, &com.selection, TRUE);
+	if (gfit.type == DATA_USHORT) {
+		us_bg = round_to_WORD(bg);
+		bg = bg / get_normalized_value(&gfit);
+	} else if (gfit.type == DATA_FLOAT) {
+		us_bg = float_to_ushort_range(bg);
+	}
+	siril_log_message(_("Background value: %d (%lf)\n"), us_bg, bg);
 	return 0;
 }
 
