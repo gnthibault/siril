@@ -1182,7 +1182,7 @@ int process_bg(int nb){
 		bg = bg / get_normalized_value(&gfit);
 	} else if (gfit.type == DATA_FLOAT) {
 		us_bg = float_to_ushort_range(bg);
-	}
+	} else return 1;
 	siril_log_message(_("Background value: %d (%lf)\n"), us_bg, bg);
 	return 0;
 }
