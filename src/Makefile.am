@@ -148,6 +148,8 @@ siril_common_SOURCES = \
 	gui/photometric_cc.h \
 	gui/plot.c \
 	gui/plot.h \
+	gui/preferences.c \
+	gui/preferences.h \
 	gui/progress_and_log.c \
 	gui/progress_and_log.h \
 	gui/PSF_list.h \

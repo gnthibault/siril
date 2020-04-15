@@ -25,10 +25,8 @@ void update_MenuItem();
 void sliders_mode_set_state(sliders_mode);
 int copy_rendering_settings_when_chained(gboolean from_GUI);
 
-void update_photometry_interface();
 void clear_sampling_setting_box();
 void set_GUI_CAMERA();
-void set_GUI_photometry();
 
 int match_drawing_area_widget(GtkWidget *drawing_area, gboolean allow_rgb);
 const char *vport_number_to_name(int);
@@ -42,6 +40,7 @@ void show_dialog(const char *text, const char *title, const char *icon);
 void show_txt_and_data_dialog(const char *text, const char *data, const char *title, const char *icon);
 void show_data_dialog(char *text, char *title);
 GtkWindow *siril_get_active_window();
+void initialize_FITS_name_entries();
 
 void adjust_vport_size_to_image();
 void scrollbars_hadjustment_changed_handler(GtkAdjustment *adjustment, gpointer user_data);

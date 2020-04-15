@@ -27,6 +27,7 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
+#include "gui/preferences.h"
 #include "algos/PSF.h"
 #include "algos/photometry.h"
 
@@ -354,16 +355,6 @@ void initialize_photometric_param() {
 	com.phot_set.gain = 2.3;
 	com.phot_set.minval = 0;
 	com.phot_set.maxval = 65535;
-}
-
-void on_button_reset_photometry_clicked(GtkButton *button, gpointer user_data) {
-	double tmp;
-
-	initialize_photometric_param();
-	tmp = gfit.cvf;
-	gfit.cvf = 0.0;
-	set_GUI_photometry();
-	gfit.cvf = tmp;
 }
 
 void on_spinInner_value_changed(GtkSpinButton *inner, gpointer user_data) {

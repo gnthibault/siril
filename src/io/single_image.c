@@ -33,6 +33,7 @@
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"
 #include "gui/message_dialog.h"
+#include "gui/preferences.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
 #include "io/single_image.h"

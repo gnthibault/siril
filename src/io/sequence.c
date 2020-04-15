@@ -58,6 +58,7 @@
 #include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"	// clear_stars_list
 #include "gui/sequence_list.h"
+#include "gui/preferences.h"
 #include "algos/PSF.h"
 #include "algos/quality.h"
 #include "algos/statistics.h"
