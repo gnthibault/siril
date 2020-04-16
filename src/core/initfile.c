@@ -37,7 +37,7 @@ static const char *keywords[] = { "working-directory", "libraw-settings",
 
 static int readinitfile() {
 	config_t config;
-	const char *dir = NULL, *swap_dir = NULL, *extension = NULL;
+	const char *dir = NULL, *swap_dir = NULL, *extension = NULL, *lang = NULL;
 	GSList *list = NULL;
 
 	if (!com.initfile)
@@ -138,6 +138,8 @@ static int readinitfile() {
 		config_setting_lookup_bool(misc_setting, "show_preview", &com.show_preview);
 #endif
 		config_setting_lookup_int(misc_setting, "theme", &com.combo_theme);
+		config_setting_lookup_string(misc_setting, "lang", &lang);
+		com.combo_lang = g_strdup(lang);
 		config_setting_lookup_bool(misc_setting, "remember_winpos", &com.remember_windows);
 		config_setting_lookup_bool(misc_setting, "is_maximized", &com.is_maximized);
 		config_setting_lookup_string(misc_setting, "swap_directory", &swap_dir);
@@ -318,6 +320,9 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_setting = config_setting_add(misc_group, "theme", CONFIG_TYPE_INT);
 	config_setting_set_int(misc_setting, com.combo_theme);
+
+	misc_setting = config_setting_add(misc_group, "lang", CONFIG_TYPE_STRING);
+	config_setting_set_string(misc_setting, com.combo_lang);
 
 	misc_setting = config_setting_add(misc_group, "remember_winpos", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.remember_windows);

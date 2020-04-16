@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-15 22:27+0200\n"
+"POT-Creation-Date: 2020-04-16 22:38+0200\n"
 "PO-Revision-Date: 2020-03-22 14:39+0100\n"
 "Last-Translator: Stefan Beck <stefan@cometchaser.de>\n"
 "Language-Team: \n"
@@ -170,11 +170,11 @@ msgstr "Ausrichtung an Mustern und Strukturen (Planeten/Deep Sky)"
 msgid "One star registration (deep-sky)"
 msgstr "Einzelstern-Registrierung (deep-sky)"
 
-#: ../src/gui/siril3.glade.h:35 ../src/gui/callbacks.c:774
+#: ../src/gui/siril3.glade.h:35 ../src/gui/callbacks.c:775
 msgid "16 bits"
 msgstr "16 Bit"
 
-#: ../src/gui/siril3.glade.h:36 ../src/gui/callbacks.c:774
+#: ../src/gui/siril3.glade.h:36 ../src/gui/callbacks.c:775
 msgid "32 bits"
 msgstr "32 Bit"
 
@@ -403,7 +403,7 @@ msgstr "Disk Space: n/v"
 
 #. no color, undefined value is <0
 #: ../src/gui/siril3.glade.h:88 ../src/compositing/compositing.c:462
-#: ../src/gui/callbacks.c:57 ../src/gui/callbacks.c:933
+#: ../src/gui/callbacks.c:58 ../src/gui/callbacks.c:934
 msgid "Red"
 msgstr "Rot"
 
@@ -416,7 +416,7 @@ msgid "fwhm: no selection"
 msgstr "FWHM: nichts ausgewählt"
 
 #. approx. of the middle of the color
-#: ../src/gui/siril3.glade.h:91 ../src/gui/callbacks.c:58
+#: ../src/gui/siril3.glade.h:91 ../src/gui/callbacks.c:59
 msgid "Green"
 msgstr "Grün"
 
@@ -425,7 +425,7 @@ msgid "current green file"
 msgstr "Aktuelle Grün-Datei"
 
 #. approx. of the middle of the color
-#: ../src/gui/siril3.glade.h:93 ../src/gui/callbacks.c:59
+#: ../src/gui/siril3.glade.h:93 ../src/gui/callbacks.c:60
 msgid "Blue"
 msgstr "Blau"
 
@@ -2769,7 +2769,7 @@ msgstr ""
 "werden."
 
 #. name, lambda, lo, hi, c/over, c/under, mode
-#: ../src/gui/siril3.glade.h:608 ../src/gui/callbacks.c:56
+#: ../src/gui/siril3.glade.h:608 ../src/gui/callbacks.c:57
 msgid "Luminance"
 msgstr "Luminanz"
 
@@ -4002,11 +4002,13 @@ msgid "RCD"
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:876
-msgid "X offset"
+#, fuzzy
+msgid "X offset:"
 msgstr "X Offset"
 
 #: ../src/gui/siril3.glade.h:877
-msgid "Y offset"
+#, fuzzy
+msgid "Y offset:"
 msgstr "Y Offset"
 
 #: ../src/gui/siril3.glade.h:878
@@ -4101,14 +4103,76 @@ msgid "Don't show warning before script execution"
 msgstr "Nicht nachfragen vor dem Verlassen"
 
 #: ../src/gui/siril3.glade.h:896
-msgid "Advisories"
-msgstr ""
+#, fuzzy
+msgid "Warning Dialog"
+msgstr "Warnung"
 
 #: ../src/gui/siril3.glade.h:897
-msgid "Miscellaneous"
+msgid "User Interface"
 msgstr ""
 
 #: ../src/gui/siril3.glade.h:898
+msgid ""
+"Change the theme of the interface. This feature may not work on all "
+"architectures."
+msgstr ""
+"Ändern Sie das Design der Benutzeroberfläche. Diese Funktion funktioniert "
+"möglicherweise nicht auf allen Architekturen."
+
+#: ../src/gui/siril3.glade.h:899
+msgid "System Language"
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:900
+msgid "Language"
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:901
+msgid "Dark theme"
+msgstr "Dark Theme"
+
+#: ../src/gui/siril3.glade.h:902
+msgid "Light theme"
+msgstr "Light Theme"
+
+#: ../src/gui/siril3.glade.h:903
+msgid "Remember window size and position"
+msgstr "Fenstergröße und -position speichern"
+
+#: ../src/gui/siril3.glade.h:904
+msgid ""
+"Remember position and size of image displaying windows. This feature may not "
+"work on all architectures."
+msgstr ""
+"Speichern Sie Position und Größe des Bilddarstellungsfensters. Diese "
+"Funktion funktioniert möglicherweise nicht auf allen Architekturen."
+
+#: ../src/gui/siril3.glade.h:905
+msgid "Show preview in file chooser"
+msgstr "Vorschau in Dateiauswahl anzeigen"
+
+#: ../src/gui/siril3.glade.h:906
+msgid ""
+"Show preview, if possible, in the file chooser dialog bow when opening an "
+"unique file."
+msgstr ""
+"Wenn möglich, Voransicht anzeigen, Show preview, if possible, in the file "
+"chooser dialog bow when opening an unique file."
+
+#: ../src/gui/siril3.glade.h:907
+#, fuzzy
+msgid "Look and Feel"
+msgstr "<b>Aussehen</b>"
+
+#: ../src/gui/siril3.glade.h:908
+msgid "Interface"
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:909
+msgid "Miscellaneous"
+msgstr ""
+
+#: ../src/gui/siril3.glade.h:910
 msgid ""
 "Select an existing directory. Make sure you have write permissions and "
 "enough spaces."
@@ -4116,24 +4180,24 @@ msgstr ""
 "Wählen Sie ein existierendes Verzeichnis. Stellen Sie sicher, daß Sie über "
 "die nötigen Zugriffsrechte verfügen und genügend Speicherplatz vorhanden ist."
 
-#: ../src/gui/siril3.glade.h:899
+#: ../src/gui/siril3.glade.h:911
 msgid "Select Swap Directory"
 msgstr "Wählen Sie das Swap-Verzeichnis"
 
-#: ../src/gui/siril3.glade.h:900
+#: ../src/gui/siril3.glade.h:912
 msgid "Restore the defaut swap storage directory"
 msgstr "Standard Swap-Speicher-Verzeichnis wiederherstellen"
 
-#: ../src/gui/siril3.glade.h:901
+#: ../src/gui/siril3.glade.h:913
 msgid "<b>Swap Storage Directory</b>"
 msgstr "<b>Swap-Speicher Verzeichnis</b>"
 
 # Ratio  not available ???
-#: ../src/gui/siril3.glade.h:902
+#: ../src/gui/siril3.glade.h:914
 msgid "Ratio of available"
 msgstr "Nicht verfügbar"
 
-#: ../src/gui/siril3.glade.h:903
+#: ../src/gui/siril3.glade.h:915
 msgid ""
 "Siril will limit itself to a ratio of the amount of free physical memory and "
 "will decrease the size of work tasks if needed.\n"
@@ -4152,11 +4216,11 @@ msgstr ""
 "oder höher wahrscheinlich zu einem Absturz von SIRIL oder des "
 "Betriebssystems führen."
 
-#: ../src/gui/siril3.glade.h:906
+#: ../src/gui/siril3.glade.h:918
 msgid "Fixed amount (GB)"
 msgstr "Fester Wert (GB)"
 
-#: ../src/gui/siril3.glade.h:907
+#: ../src/gui/siril3.glade.h:919
 msgid ""
 "Siril will limit itself to a fixed amount of memory and will decrease the "
 "size of work tasks if needed.\n"
@@ -4169,7 +4233,7 @@ msgstr ""
 "System verfügbare, kann zu einem Absturz von SIRIL oder des Betriebssystems "
 "führen."
 
-#: ../src/gui/siril3.glade.h:909 ../src/core/command_def.h:96
+#: ../src/gui/siril3.glade.h:921 ../src/core/command_def.h:96
 msgid ""
 "Sets a new ratio of free memory on memory used for stacking. Value should be "
 "between 0.05 and 2, depending on other activities of the machine. A higher "
@@ -4184,11 +4248,11 @@ msgstr ""
 "erfordert die Verwendung von Festplattenspeicher, der sehr langsam ist und "
 "hierfür nicht empfohlen wird"
 
-#: ../src/gui/siril3.glade.h:910
+#: ../src/gui/siril3.glade.h:922
 msgid "Unlimited"
 msgstr "Unbegrenzt"
 
-#: ../src/gui/siril3.glade.h:911
+#: ../src/gui/siril3.glade.h:923
 msgid ""
 "Siril will not enforce memory limits and will let the operating system "
 "manage the required memory. Using a smaller number of threads parameter will "
@@ -4198,85 +4262,37 @@ msgstr ""
 "benötigten Speicher verwalten. Bei Verwendung einer kleineren Anzahl von "
 "Threads verringert der Parameter den belegten Speicherplatz."
 
-#: ../src/gui/siril3.glade.h:912
+#: ../src/gui/siril3.glade.h:924
 msgid "<b>Memory management</b>"
 msgstr "<b>Speicher-Verwaltung</b>"
 
-#: ../src/gui/siril3.glade.h:913
-msgid ""
-"Change the theme of the interface. This feature may not work on all "
-"architectures."
-msgstr ""
-"Ändern Sie das Design der Benutzeroberfläche. Diese Funktion funktioniert "
-"möglicherweise nicht auf allen Architekturen."
-
-#: ../src/gui/siril3.glade.h:914
-msgid "Dark theme"
-msgstr "Dark Theme"
-
-#: ../src/gui/siril3.glade.h:915
-msgid "Light theme"
-msgstr "Light Theme"
-
-#: ../src/gui/siril3.glade.h:916
-msgid "Remember window size and position"
-msgstr "Fenstergröße und -position speichern"
-
-#: ../src/gui/siril3.glade.h:917
-msgid ""
-"Remember position and size of image displaying windows. This feature may not "
-"work on all architectures."
-msgstr ""
-"Speichern Sie Position und Größe des Bilddarstellungsfensters. Diese "
-"Funktion funktioniert möglicherweise nicht auf allen Architekturen."
-
-#: ../src/gui/siril3.glade.h:918
-msgid "Show preview in file chooser"
-msgstr "Vorschau in Dateiauswahl anzeigen"
-
-#: ../src/gui/siril3.glade.h:919
-msgid ""
-"Show preview, if possible, in the file chooser dialog bow when opening an "
-"unique file."
-msgstr ""
-"Wenn möglich, Voransicht anzeigen, Show preview, if possible, in the file "
-"chooser dialog bow when opening an unique file."
-
-#: ../src/gui/siril3.glade.h:920
-msgid "<b>Look and Feel</b>"
-msgstr "<b>Aussehen</b>"
-
-#: ../src/gui/siril3.glade.h:921
+#: ../src/gui/siril3.glade.h:925
 msgid "Choose the type of extension used by Siril. By default it is .fit."
 msgstr ""
 "Wählen Sie die Art der von SIRIL verwendeten Dateierweiterung. Standardmäßig "
 "ist es .fit."
 
-#: ../src/gui/siril3.glade.h:922
+#: ../src/gui/siril3.glade.h:926
 msgid ".fit"
 msgstr ".fit"
 
-#: ../src/gui/siril3.glade.h:923
+#: ../src/gui/siril3.glade.h:927
 msgid ".fits"
 msgstr ".FITS"
 
-#: ../src/gui/siril3.glade.h:924
+#: ../src/gui/siril3.glade.h:928
 msgid ".fts"
 msgstr ".fts"
 
-#: ../src/gui/siril3.glade.h:925
+#: ../src/gui/siril3.glade.h:929
 msgid "<b>FITS Format</b>"
 msgstr "<b>FITS Format</b>"
 
-#: ../src/gui/siril3.glade.h:926
+#: ../src/gui/siril3.glade.h:930
 msgid "Don't ask before quitting"
 msgstr "Nicht nachfragen vor dem Verlassen"
 
-#: ../src/gui/siril3.glade.h:927
-msgid "<b>Confirmation Dialog</b>"
-msgstr "<b>Bestätigungsdialog</b>"
-
-#: ../src/gui/siril3.glade.h:928
+#: ../src/gui/siril3.glade.h:931
 msgid "Misc."
 msgstr "Verschiedenes."
 
@@ -5200,7 +5216,7 @@ msgstr "PSF läuft für geladene Sequenz auf Layer %d\n"
 #: ../src/core/command.c:2107 ../src/core/command.c:2113
 #: ../src/core/command.c:2294 ../src/core/command.c:2301
 #: ../src/core/command.c:2571 ../src/core/command.c:2713
-#: ../src/core/command.c:2786 ../src/core/command.c:2793 ../src/main.c:342
+#: ../src/core/command.c:2786 ../src/core/command.c:2793 ../src/main.c:347
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Sequenz '%s' nicht gefunden.\n"
@@ -6339,7 +6355,7 @@ msgid "No help for this command"
 msgstr "Für diesen Befehl ist keine Hilfe verfügbar"
 
 #: ../src/core/command_line_processor.c:337 ../src/gui/script_menu.c:179
-#: ../src/main.c:274
+#: ../src/main.c:279
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Datei [%s] existiert nicht\n"
@@ -6878,7 +6894,7 @@ msgstr ""
 "CSS-Stylesheet-Datei kann nicht geladen werden: %s. Bitte installieren Sie "
 "Siril erneut.\n"
 
-#: ../src/core/utils.c:1011 ../src/main.c:145
+#: ../src/core/utils.c:1011 ../src/main.c:146
 #, c-format
 msgid "Successfully loaded '%s'\n"
 msgstr "Erfolgreich geladen '%s'\n"
@@ -7014,79 +7030,79 @@ msgstr "Astronomisches Bild(vor)verarbeitungsprogaramm"
 msgid "Visit the Siril website"
 msgstr "Besuchen Sie die SIRIL Website"
 
-#: ../src/gui/callbacks.c:300
+#: ../src/gui/callbacks.c:301
 #, c-format
 msgid "Setting MAX value for cutoff sliders adjustments (%f)\n"
 msgstr "Setze den MAX-Wert für den Cutoff Schieberegler (%f)\n"
 
 #. there should be no other normal cases
-#: ../src/gui/callbacks.c:343
+#: ../src/gui/callbacks.c:344
 #, c-format
 msgid "Setting ranges scalemin=%d, scalemax=%d\n"
 msgstr "Wertebereich scalemin=%d, scalemax=%d\n"
 
-#: ../src/gui/callbacks.c:396
+#: ../src/gui/callbacks.c:397
 #, c-format
 msgid "%s, %d images selected"
 msgstr "%s, %d Bilder ausgewählt"
 
-#: ../src/gui/callbacks.c:399
+#: ../src/gui/callbacks.c:400
 msgid "- none -"
 msgstr "- keins -"
 
-#: ../src/gui/callbacks.c:412
+#: ../src/gui/callbacks.c:413
 msgid ""
 "This sequence name already exists!! Please change the name before converting."
 msgstr ""
 "Dieser Sequenzname ist bereits vorhanden! Bitte ändern Sie den Namen vor der "
 "Konvertierung."
 
-#: ../src/gui/callbacks.c:629 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:630 ../src/gui/photometric_cc.c:520
 msgid "red"
 msgstr "Rot"
 
-#: ../src/gui/callbacks.c:631 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:632 ../src/gui/photometric_cc.c:520
 msgid "green"
 msgstr "Grün"
 
-#: ../src/gui/callbacks.c:633 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:634 ../src/gui/photometric_cc.c:520
 msgid "blue"
 msgstr "Blau"
 
-#: ../src/gui/callbacks.c:635
+#: ../src/gui/callbacks.c:636
 msgid "rgb"
 msgstr "RGB"
 
-#: ../src/gui/callbacks.c:680
+#: ../src/gui/callbacks.c:681
 #, c-format
 msgid "fwhm = %.2f, r = %.2f"
 msgstr "FWHM = %.2f, r = %.2f"
 
-#: ../src/gui/callbacks.c:683
+#: ../src/gui/callbacks.c:684
 #, c-format
 msgid "fwhm: selection is too large"
 msgstr "FWHM: Auswahl zu groß"
 
-#: ../src/gui/callbacks.c:714
+#: ../src/gui/callbacks.c:715
 #, c-format
 msgid "%s (channel 0)"
 msgstr "%s (Kanal 0)"
 
-#: ../src/gui/callbacks.c:720
+#: ../src/gui/callbacks.c:721
 #, c-format
 msgid "%s (channel 1)"
 msgstr "%s (Kanal 1)"
 
-#: ../src/gui/callbacks.c:725
+#: ../src/gui/callbacks.c:726
 #, c-format
 msgid "%s (channel 2)"
 msgstr "%s (Kanal 2)"
 
-#: ../src/gui/callbacks.c:738
+#: ../src/gui/callbacks.c:739
 msgid "Cannot convert a sequence file"
 msgstr "Kann ein Sequenzdatei nicht konvertieren"
 
-#: ../src/gui/callbacks.c:739
+#: ../src/gui/callbacks.c:740
 msgid ""
 "A sequence file cannot be converted to 32 bits. This operation can only be "
 "done on a single file."
@@ -7094,11 +7110,11 @@ msgstr ""
 "Eine Sequenzdatei kann nicht in 32 Bit konvertiert werden. Diese Operation "
 "kann nur mit einer einzelnen Datei durchgeführt werden."
 
-#: ../src/gui/callbacks.c:744
+#: ../src/gui/callbacks.c:745
 msgid "Precision loss"
 msgstr "Verlust der Genauigkeit"
 
-#: ../src/gui/callbacks.c:745
+#: ../src/gui/callbacks.c:746
 msgid ""
 "Converting the image from 32 bits to 16 bits may lead to a loss of numerical "
 "accuracy. Getting back to 32 bits will not recover this loss.\n"
@@ -7109,55 +7125,55 @@ msgstr ""
 "die Genauigkeit nicht wiederherstellen.\n"
 "Wollen Sie wirklich die Daten konvertieren?"
 
-#: ../src/gui/callbacks.c:800
+#: ../src/gui/callbacks.c:801
 msgid "Unassigned"
 msgstr "Nicht zugewiesen"
 
-#: ../src/gui/callbacks.c:824
+#: ../src/gui/callbacks.c:825
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d: noch nicht betroffen"
 
-#: ../src/gui/callbacks.c:930
+#: ../src/gui/callbacks.c:931
 msgid "B&W"
 msgstr ""
 
-#: ../src/gui/callbacks.c:1087
+#: ../src/gui/callbacks.c:1088
 #, c-format
 msgid "Mem: %s"
 msgstr "Speicher: %s"
 
-#: ../src/gui/callbacks.c:1090
+#: ../src/gui/callbacks.c:1091
 msgid "Mem: N/A"
 msgstr "Speicher: N/A"
 
-#: ../src/gui/callbacks.c:1107
+#: ../src/gui/callbacks.c:1108
 #, c-format
 msgid "Disk Space: %s"
 msgstr "HDD-Speicherplatz: %s"
 
-#: ../src/gui/callbacks.c:1110
+#: ../src/gui/callbacks.c:1111
 msgid "Disk Space: N/A"
 msgstr "HDD-Speicherplatz: N/A"
 
-#: ../src/gui/callbacks.c:1165
+#: ../src/gui/callbacks.c:1166
 msgid "This binning is not handled yet\n"
 msgstr "Dieses Binning wird noch nicht unterstützt\n"
 
-#: ../src/gui/callbacks.c:1545
+#: ../src/gui/callbacks.c:1540
 msgid "Closing application"
 msgstr "Schließe Anwendung"
 
-#: ../src/gui/callbacks.c:1546
+#: ../src/gui/callbacks.c:1541
 msgid "Are you sure you want to quit?"
 msgstr "Wirklich beenden?"
 
-#: ../src/gui/callbacks.c:1745
+#: ../src/gui/callbacks.c:1740
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Sequenz %s ausgwählt %s..."
 
-#: ../src/gui/callbacks.c:1809
+#: ../src/gui/callbacks.c:1804
 msgid "Searching for sequences in the current working directory..."
 msgstr "Suche nach Sequenzen im aktuellen Arbeitsverzeichnis..."
 
@@ -8517,37 +8533,37 @@ msgstr ""
 "Ein Fehler ist beim Öffnen der Datei aufgetreten. Schauen Sie ins Log-"
 "Protokoll für weitere Informationen."
 
-#: ../src/main.c:94
+#: ../src/main.c:95
 msgid "changing the current working directory as the argument"
 msgstr "Wechsle das aktuelle Arbeitsverzeichnis"
 
-#: ../src/main.c:95
+#: ../src/main.c:96
 msgid "run the siril commands script in console mode"
 msgstr "Starte die SIRIL Befehle im Konsolenmodus"
 
-#: ../src/main.c:96
+#: ../src/main.c:97
 msgid ""
 "load configuration from file name instead of the default configuration file"
 msgstr ""
 "Laden der Konfiguration aus dem Dateinamen anstelle der "
 "Standardkonfigurationsdatei"
 
-#: ../src/main.c:97
+#: ../src/main.c:98
 msgid "run in console mode with command and log stream through named pipes"
 msgstr "im Konsolenmodus mit Befehls- und Protokoll Datenströmen laufen lassen"
 
-#: ../src/main.c:98
+#: ../src/main.c:99
 msgid ""
 "print all supported image file formats (depending on installed libraries)"
 msgstr ""
 "alle unterstützten Bilddateiformate anzeigen (abhängig von den installierten "
 "Bibliotheken)"
 
-#: ../src/main.c:99
+#: ../src/main.c:100
 msgid "print the application’s version"
 msgstr "Version der Anwendung anzeigen"
 
-#: ../src/main.c:140
+#: ../src/main.c:141
 #, c-format
 msgid ""
 "%s was not found or contains errors, cannot render GUI:\n"
@@ -8559,7 +8575,7 @@ msgstr ""
 "%s\n"
 "Beende.\n"
 
-#: ../src/main.c:175
+#: ../src/main.c:176
 #, c-format
 msgid ""
 "Questionable parallel processing efficiency - openmp reports %d %s. Possibly "
@@ -8568,46 +8584,46 @@ msgstr ""
 "Bedenkliche parallele Verarbeitungseffizienz - openmp meldet %d %s. "
 "Möglicherweise defekte opencv/openblas Installation.\n"
 
-#: ../src/main.c:177 ../src/main.c:182
+#: ../src/main.c:178 ../src/main.c:183
 #, fuzzy
 msgid "processor"
 msgid_plural "processors"
 msgstr[0] "Vorverarbeitung"
 msgstr[1] "Vorverarbeitung"
 
-#: ../src/main.c:180
+#: ../src/main.c:181
 #, c-format
 msgid "Parallel processing %s: Using %d logical %s.\n"
 msgstr "Parallel-Verarbeitung %s: Benutze %d logische Prozessoren %s.\n"
 
-#: ../src/main.c:181
+#: ../src/main.c:182
 msgid "enabled"
 msgstr "aktiviert"
 
-#: ../src/main.c:184
+#: ../src/main.c:185
 #, c-format
 msgid "Parallel processing %s: Using %d logical processor.\n"
 msgstr "Parallelverarbeitung %s: Verwendung des logischen Prozessors %d.\n"
 
-#: ../src/main.c:184
+#: ../src/main.c:185
 msgid "disabled"
 msgstr "deaktiviert"
 
-#: ../src/main.c:219
+#: ../src/main.c:220
 #, c-format
 msgid "Welcome to %s v%s\n"
 msgstr "Wilkommen zu %s v%s\n"
 
-#: ../src/main.c:246
+#: ../src/main.c:247
 #, c-format
 msgid "Could not load or create settings file, exiting.\n"
 msgstr "Konnte Settings-Datei nicht laden oder erstellen.\n"
 
-#: ../src/main.c:475
+#: ../src/main.c:480
 msgid "Siril - A free astronomical image processing software."
 msgstr "SIRIL - Ein kostenloses Astronomisches Bild(vor)verarbeitungsprogramm."
 
-#: ../src/main.c:482
+#: ../src/main.c:487
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr ""
@@ -9300,6 +9316,9 @@ msgstr "Das Stacken erfolgt ohne Hochskalierung (ohne 'Drizzle')\n"
 #: ../src/stacking/upscaling.c:178
 msgid "Up-scaling sequence for stacking"
 msgstr "Skaliere Sequenz für's Stacken"
+
+#~ msgid "<b>Confirmation Dialog</b>"
+#~ msgstr "<b>Bestätigungsdialog</b>"
 
 #~ msgid "Type of extension: "
 #~ msgstr "Datei-Extension Typ: "

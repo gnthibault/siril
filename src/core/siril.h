@@ -614,6 +614,7 @@ struct cominf {
 	gboolean show_preview; // show or don't show preview in open dialog box
 
 	gint combo_theme;           // value of the combobox theme
+	gchar *combo_lang;           // string value of the combobox lang
 
 	stackconf stack;
 

@@ -21,10 +21,14 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
-#include "gui/callbacks.h"
+#include "core/siril_language.h"
 #include "algos/photometry.h"
+#include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
+#include "gui/script_menu.h"
+#include "gui/dialogs.h"
+#include "gui/PSF_list.h"
 
 #include "preferences.h"
 
@@ -306,5 +310,15 @@ void on_filechooser_swap_file_set(GtkFileChooserButton *fileChooser, gpointer us
 	g_free(com.swap_dir);
 	com.swap_dir = dir;
 	writeinitfile();
+}
+
+void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
+	update_libraw_and_debayer_interface();
+	update_photometry_interface();
+	update_language();
+	fill_script_paths_list();
+	refresh_stars_list(com.stars);
+	save_main_window_state();
+	siril_close_dialog("settings_window");
 }
 

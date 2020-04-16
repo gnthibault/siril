@@ -17,14 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SRC_GUI_PREFERENCES_H_
-#define SRC_GUI_PREFERENCES_H_
 
-void set_GUI_LIBRAW();
-void update_libraw_and_debayer_interface();
-void update_photometry_interface();
-void set_GUI_photometry();
-void initialize_path_directory();
-void set_libraw_settings_menu_available(gboolean activate);
+#ifndef SRC_CORE_SIRIL_LANGUAGE_H_
+#define SRC_CORE_SIRIL_LANGUAGE_H_
 
-#endif /* SRC_GUI_PREFERENCES_H_ */
+typedef struct {
+	char *locale;
+	char *language_name;
+} parsed_code;
+
+
+void siril_language_parser_init();
+void siril_language_fill_combo();
+void language_init(const gchar *language);
+void update_language();
+
+#endif /* SRC_CORE_SIRIL_LANGUAGE_H_ */

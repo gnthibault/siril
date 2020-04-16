@@ -29,6 +29,7 @@
 #include "core/command.h"
 #include "core/command_line_processor.h"
 #include "core/siril_app_dirs.h"
+#include "core/siril_language.h"
 #include "core/OS_utils.h"
 #include "algos/star_finder.h"
 #include "io/conversion.h"
@@ -1216,6 +1217,9 @@ void initialize_all_GUI(gchar *supported_files) {
 	initialize_scrollbars();
 	init_mouse();
 
+	/* populate language combo */
+	siril_language_fill_combo();
+
 	/* Keybord Shortcuts */
 	load_accels();
 
@@ -1417,15 +1421,6 @@ void on_checkbutton_equalize_cfa_toggled(GtkToggleButton *button, gpointer user_
 
 void on_info_menu_headers_clicked(GtkButton *button, gpointer user_data) {
 	show_FITS_header(&gfit);
-}
-
-void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
-	update_libraw_and_debayer_interface();
-	update_photometry_interface();
-	fill_script_paths_list();
-	refresh_stars_list(com.stars);
-	save_main_window_state();
-	siril_close_dialog("settings_window");
 }
 
 void on_focal_entry_changed(GtkEditable *editable, gpointer user_data) {

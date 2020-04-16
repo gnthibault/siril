@@ -93,6 +93,8 @@ siril_common_SOURCES = \
 	core/siril_app_dirs.h \
 	core/siril_cmd_help.c \
 	core/siril_cmd_help.h \
+	core/siril_language.c \
+	core/siril_language.h \
 	core/siril_log.c \
 	core/siril_update.c \
 	core/siril_update.h \
