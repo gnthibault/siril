@@ -39,11 +39,11 @@ static GHashTable *l10n_lang_list = NULL;
 static GHashTable *string_lang_list = NULL;
 
 parsed_code locale_str_test[] = {
-	{"de",	"Deutsch"},
-	{"el",	"Greek"},
-	{"en",	"English"},
+	{"de", "Deutsch"},
+	{"el", "Greek"},
+	{"en", "English"},
 	{"es_ES", "Espanol"},
-	{"fr",	"Français"},
+	{"fr", "Français"},
 	{"it_IT", "Italiano"},
 	{"nl_BE", "Nederlands"},
 	{"pl_PL", "Polish"},
@@ -79,6 +79,9 @@ static GHashTable *parse_locale_codes(GHashTable *table) {
 	return string_lang;
 }
 
+/* extract locale from a string following this pattern:
+ * xxxxxxxxx [locale]
+ */
 static gchar *extract_locale_from_string(gchar *str) {
 	gchar *locale = g_strstr_len(str, -1, "[");
 	return g_strndup(locale + 1, strlen(locale) - 2);
