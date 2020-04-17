@@ -123,6 +123,9 @@ PKG_CHECK_MODULES(EXIV2, exiv2 >= 0.25)
 dnl check GTK
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.17.0)
 
+dnl check cairo
+PKG_CHECK_MODULES(CAIRO, cairo)
+
 dnl check fftw3
 PKG_CHECK_MODULES(FFTW, [fftw3f])
 
