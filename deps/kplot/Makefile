@@ -2,11 +2,11 @@
 
 CFLAGS		?= -g -W -Wall -Wstrict-prototypes -Wno-unused-parameter -Wwrite-strings
 #If you're on Mac OSX without XQuarts, you'll need /usr/X11 instead of /opt/X11!
-CPPFLAGS	+= `pkg-config --cflags --silence-errors cairo || echo '-I/opt/X11/include/cairo'`
+CPPFLAGS	+= $(CAIRO_CFLAGS)
 VERSION		= 0.1.14
-LDADD		= `pkg-config --libs --silence-errors cairo || echo '-L/opt/X11/lib -lcairo'`
+LDADD		= $(CAIRO_LIBS)
 #If you're on GNU/Linux, you'll need to uncomment this.
-LDADD		+= `pkg-config --libs libbsd`
+LDADD		+= `$(PKG_CONFIG) --libs libbsd`
 VERSIONS	= version_0_1_4.xml \
 		  version_0_1_5.xml \
 		  version_0_1_6.xml \

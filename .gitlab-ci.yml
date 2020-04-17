@@ -110,3 +110,63 @@ flatpak:
       - '.flatpak-builder/downloads'
       - '.flatpak-builder/git'
 
+## Windows 64-bit CIs ##
+
+siril-win64:
+  image: fedora:31
+  stage: siril
+  variables:
+    GIT_DEPTH: "1"
+    XDG_CACHE_HOME: "$CI_PROJECT_DIR/.cache/"
+    XDG_DATA_HOME:  "$CI_PROJECT_DIR/.local/share/"
+  cache:
+    paths:
+    - .cache/crossroad/
+    - dnf_cache
+  before_script:
+    - dnf install --assumeyes --setopt=cachedir=`pwd`/dnf_cache --verbose
+        automake
+        autoconf
+        cmake
+        gettext
+        git
+        intltool
+        libtool
+        libxslt
+        make
+        python3
+        mingw64-gcc
+        mingw64-gcc-c++
+        mingw64-binutils
+        mingw64-libgomp
+        cpio rpm
+        python3-docutils
+        python3-setuptools
+        shared-mime-info
+        which
+    - git clone --depth=${GIT_DEPTH} git://git.tuxfamily.org/gitroot/crossroad/crossroad.git
+    - cd crossroad
+    - ./setup.py install --prefix=`pwd`/../.local
+    - cd ..
+    - git submodule sync --recursive
+    - git submodule update --init --recursive
+  script:
+    - export PATH="`pwd`/.local/bin:$PATH"
+    # Pre-built dependencies
+    - echo 'crossroad source msys2' | crossroad w64 siril --run="-"
+    - echo 'crossroad install fftw cfitsio exiv2 gtk3 libconfig gsl opencv' | crossroad w64 siril --run="-"
+    # librtprocess
+    - mkdir deps/librtprocess/_build && cd deps/librtprocess/_build
+    - echo 'crossroad cmake .. && make && make install' | crossroad w64 siril --run="-"
+    ## Build Siril ##
+    - cd ../../.. && mkdir _build && cd _build
+    - echo 'crossroad ../configure && make && make install &&
+            cp -fr $CROSSROAD_PREFIX/ ../siril/' | crossroad w64 siril --run="-"
+  artifacts:
+    name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
+    when: always
+    expire_in: 1 week
+    paths:
+      - _build/
+      - deps/librtprocess/_build
+      - siril/
