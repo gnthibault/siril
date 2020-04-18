@@ -132,11 +132,8 @@ static int readinitfile() {
 	if (misc_setting) {
 		config_setting_lookup_bool(misc_setting, "confirm_quit", &com.save.quit);
 		config_setting_lookup_bool(misc_setting, "confirm_script", &com.save.script);
-#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
-		com.show_preview = FALSE;
-#else
-		config_setting_lookup_bool(misc_setting, "show_preview", &com.show_preview);
-#endif
+		config_setting_lookup_bool(misc_setting, "show_thumbnails", &com.show_thumbnails);
+		config_setting_lookup_int(misc_setting, "thumbnail_size", &com.thumbnail_size);
 		config_setting_lookup_int(misc_setting, "theme", &com.combo_theme);
 		config_setting_lookup_string(misc_setting, "lang", &lang);
 		com.combo_lang = g_strdup(lang);
@@ -315,8 +312,11 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 	misc_setting = config_setting_add(misc_group, "confirm_script", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.save.script);
 
-	misc_setting = config_setting_add(misc_group, "show_preview", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(misc_setting, com.show_preview);
+	misc_setting = config_setting_add(misc_group, "show_thumbnails", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(misc_setting, com.show_thumbnails);
+
+	misc_setting = config_setting_add(misc_group, "thumbnail_size", CONFIG_TYPE_INT);
+	config_setting_set_int(misc_setting, com.thumbnail_size);
 
 	misc_setting = config_setting_add(misc_group, "theme", CONFIG_TYPE_INT);
 	config_setting_set_int(misc_setting, com.combo_theme);

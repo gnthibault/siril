@@ -502,56 +502,31 @@ SirilWidget *siril_file_chooser_open(GtkWindow *parent, GtkFileChooserAction act
 	} else {
 		title = g_strdup(_("Open File"));
 	}
-#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
-	w = gtk_file_chooser_native_new(title, parent, action,
-			_("_Open"), _("_Cancel"));
-	g_free(title);
-	return w;
-#else
 	w = gtk_file_chooser_dialog_new(title, parent, action, _("_Cancel"),
 			GTK_RESPONSE_CANCEL, _("_Open"), GTK_RESPONSE_ACCEPT,
 			NULL);
 	g_free(title);
 	return w;
-#endif
 }
 
 SirilWidget *siril_file_chooser_add(GtkWindow *parent, GtkFileChooserAction action) {
-#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
-	return gtk_file_chooser_native_new(_("Add Files"), parent, action,
-			_("_Add"), _("_Cancel"));
-#else
 	return gtk_file_chooser_dialog_new(_("Add Files"), parent, action,
 			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Add"), GTK_RESPONSE_ACCEPT,
 			NULL);
-#endif
 }
 
 SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action) {
-#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
-	return gtk_file_chooser_native_new(_("Save File"), parent, action,
-			_("_Save"), _("_Cancel"));
-#else
 	return gtk_file_chooser_dialog_new(_("Save File"), parent, action,
 			_("_Cancel"), GTK_RESPONSE_CANCEL, _("_Save"), GTK_RESPONSE_ACCEPT,
 			NULL);
-#endif
 }
 
 gint siril_dialog_run(SirilWidget *widgetdialog) {
-#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
-	return gtk_native_dialog_run(GTK_NATIVE_DIALOG(widgetdialog));
-#else
 	return gtk_dialog_run(GTK_DIALOG(GTK_FILE_CHOOSER(widgetdialog)));
-#endif
 }
 
 void siril_widget_destroy(SirilWidget *widgetdialog) {
-#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
-	g_object_unref(widgetdialog);
-#else
 	gtk_widget_destroy(widgetdialog);
-#endif
 }
 
 #ifdef _WIN32

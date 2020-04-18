@@ -2119,7 +2119,7 @@ static double logviz(double arg) {
  */
 GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	fitsfile *fp;
-	const int MAX_SIZE = thumbnail_size;
+	const int MAX_SIZE = com.thumbnail_size;
 	float nullval = 0.;
 	int naxis, dtype, stat, status;
 

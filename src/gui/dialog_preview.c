@@ -76,7 +76,7 @@ static gboolean end_update_preview_cb(gpointer p) {
 		info_str = args->description;
 	} else if (type == G_FILE_TYPE_DIRECTORY) {
 		gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "folder-symbolic", GTK_ICON_SIZE_DIALOG);
-		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), thumbnail_size);
+		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), com.thumbnail_size);
 		info_str = g_strdup(_("Folder"));
 	} else {
 		image_type im_type = get_type_from_filename(args->filename);
@@ -85,7 +85,7 @@ static gboolean end_update_preview_cb(gpointer p) {
 		} else {
 			gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "image-symbolic", GTK_ICON_SIZE_DIALOG);
 		}
-		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), thumbnail_size);
+		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), com.thumbnail_size);
 	}
 
 	/* information strings */
@@ -146,7 +146,7 @@ static gpointer update_preview_cb_idle(gpointer p) {
 			if (!(tmp = gdk_pixbuf_loader_get_pixbuf(loader)))
 				goto cleanup;
 			float ratio = 1.0 * gdk_pixbuf_get_height(tmp) / gdk_pixbuf_get_width(tmp);
-			int width = thumbnail_size, height = thumbnail_size * ratio;
+			int width = com.thumbnail_size, height = com.thumbnail_size * ratio;
 			pixbuf = gdk_pixbuf_scale_simple(tmp, width, height, GDK_INTERP_BILINEAR);
 			args->description = siril_get_file_info(args->filename, pixbuf);
 
@@ -165,7 +165,7 @@ static gpointer update_preview_cb_idle(gpointer p) {
 
 		if (!pixbuf && (im_type != TYPEHEIF || libheif_is_ok)) {
 			pixbuf = gdk_pixbuf_new_from_file_at_size(args->filename,
-					thumbnail_size, thumbnail_size, NULL);
+					com.thumbnail_size, com.thumbnail_size, NULL);
 			args->description = siril_get_file_info(args->filename, pixbuf);
 		}
 	}
@@ -207,7 +207,7 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 }
 
 void siril_file_chooser_add_preview(GtkFileChooser *dialog) {
-	if (com.show_preview) {
+	if (com.show_thumbnails) {
 		GtkWidget *vbox;
 
 		vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -222,7 +222,7 @@ void siril_file_chooser_add_preview(GtkFileChooser *dialog) {
 		gtk_label_set_justify(GTK_LABEL(preview.dim_label), GTK_JUSTIFY_CENTER);
 		gtk_label_set_justify(GTK_LABEL(preview.dim_label), GTK_JUSTIFY_CENTER);
 
-		gtk_widget_set_size_request(preview.image, thumbnail_size, thumbnail_size);
+		gtk_widget_set_size_request(preview.image, com.thumbnail_size, com.thumbnail_size);
 
 		gtk_box_pack_start(GTK_BOX(vbox), preview.image, FALSE, TRUE, 0);
 		gtk_box_pack_start(GTK_BOX(vbox), preview.name_label, FALSE, TRUE, 10);

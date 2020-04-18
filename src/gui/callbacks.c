@@ -1054,16 +1054,16 @@ void set_GUI_CWD() {
 void set_GUI_misc() {
 	GtkToggleButton *ToggleButton;
 	GtkSpinButton *memory_percent, *memory_amount;
+	GtkComboBox *thumb_box;
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.save.quit);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskScript"));
 	gtk_toggle_button_set_active(ToggleButton, com.save.script);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button"));
-	gtk_toggle_button_set_active(ToggleButton, com.show_preview);
-#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
-	gtk_widget_set_visible(GTK_WIDGET(ToggleButton), FALSE);
-#endif
+	gtk_toggle_button_set_active(ToggleButton, com.show_thumbnails);
+	thumb_box = GTK_COMBO_BOX(lookup_widget("thumbnails_box_size"));
+	gtk_combo_box_set_active(thumb_box, com.thumbnail_size == 256 ? 1: 0);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck"));
 	gtk_toggle_button_set_active(ToggleButton, com.remember_windows);
 
@@ -1865,14 +1865,6 @@ void scrollbars_vadjustment_changed_handler(GtkAdjustment *adjustment,
 
 void on_spinCPU_value_changed (GtkSpinButton *spinbutton, gpointer user_data) {
 	com.max_thread = gtk_spin_button_get_value_as_int(spinbutton);
-}
-
-void on_rememberWindowsCheck_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	com.remember_windows = gtk_toggle_button_get_active(togglebutton);
-}
-
-void on_show_preview_button_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	com.show_preview = gtk_toggle_button_get_active(togglebutton);
 }
 
 void on_menu_rgb_align_select(GtkMenuItem *menuitem, gpointer user_data) {

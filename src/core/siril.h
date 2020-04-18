@@ -28,8 +28,6 @@
 
 #define GLADE_FILE "siril3.glade"
 
-#define thumbnail_size 256
-
 /* https://stackoverflow.com/questions/1644868/define-macro-for-debug-printing-in-c */
 #define siril_debug_print(fmt, ...) \
    do { if (DEBUG_TEST) fprintf(stdout, fmt, ##__VA_ARGS__); } while (0)
@@ -90,16 +88,10 @@ typedef unsigned short WORD;	// default type for internal image data
 #define SN_NORM 1.1926
 #define QN_NORM 2.2191
 
-#undef NATIVEFILLECHOOSER // disable native file chooser
-
 typedef struct _SirilDialogEntry SirilDialogEntry;
 
 /* used for open and savedialog */
-#if ((defined _WIN32) || (defined(OS_OSX))) && NATIVEFILLECHOOSER
-typedef GtkFileChooserNative SirilWidget;
-#else
 typedef GtkWidget SirilWidget;
-#endif
 
 #if (defined _WIN32) || (defined(OS_OSX))
 #define SIRIL_EOL "\r\n"
@@ -611,7 +603,8 @@ struct cominf {
 	int reg_settings;		// Use to save registration method in the init file
 	
 	save_config save;
-	gboolean show_preview; // show or don't show preview in open dialog box
+	gboolean show_thumbnails; // show or don't show thumbnails in open dialog box
+	gint thumbnail_size;
 
 	gint combo_theme;           // value of the combobox theme
 	gchar *combo_lang;           // string value of the combobox lang

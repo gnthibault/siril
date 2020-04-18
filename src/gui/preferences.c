@@ -312,6 +312,18 @@ void on_filechooser_swap_file_set(GtkFileChooserButton *fileChooser, gpointer us
 	writeinitfile();
 }
 
+void on_rememberWindowsCheck_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	com.remember_windows = gtk_toggle_button_get_active(togglebutton);
+}
+
+void on_show_preview_button_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	com.show_thumbnails = gtk_toggle_button_get_active(togglebutton);
+}
+
+void on_thumbnails_box_size_changed(GtkComboBoxText *box, gpointer user_data) {
+	com.thumbnail_size = (gtk_combo_box_get_active(GTK_COMBO_BOX(box)) == 0) ? 128 : 256;
+}
+
 void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_libraw_and_debayer_interface();
 	update_photometry_interface();

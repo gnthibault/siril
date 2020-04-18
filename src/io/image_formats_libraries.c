@@ -1470,7 +1470,7 @@ int open_raw_files(const char *name, fits *fit, int type) {
 #endif
 
 #ifdef HAVE_LIBHEIF
-#define MAX_THUMBNAIL_SIZE thumbnail_size
+#define MAX_THUMBNAIL_SIZE com.thumbnail_size
 
 struct HeifImage {
 	uint32_t ID;
