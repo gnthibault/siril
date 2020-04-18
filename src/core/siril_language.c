@@ -30,25 +30,24 @@
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "core/siril_app_dirs.h"
-#include "algos/sorting.h"
 #include "gui/callbacks.h"
 
 #include "siril_language.h"
 
 static GHashTable *l10n_lang_list = NULL;
-static GHashTable *string_lang_list = NULL;
+static GHashTable *full_lang_list = NULL;
 
-parsed_code locale_str_test[] = {
+parsed_code locale_str[] = {
 	{"de", "Deutsch"},
-	{"el", "Greek"},
+	{"el", "Ελληνικά"},
 	{"en", "English"},
 	{"es_ES", "Espanol"},
 	{"fr", "Français"},
 	{"it_IT", "Italiano"},
 	{"nl_BE", "Nederlands"},
 	{"pl_PL", "Polish"},
-	{"ru", "Russian"},
-	{"zh_CN", "Chinese (Simplified)"},
+	{"ru", "русский"},
+	{"zh_CN", "汉语"},
 	{NULL, NULL}
 };
 
@@ -65,9 +64,9 @@ static GHashTable *parse_locale_codes(GHashTable *table) {
 		gchar *str_name = NULL;
 		int i = 0;
 
-		while (locale_str_test[i].locale) {
-			if (!g_strcmp0(code, locale_str_test[i].locale)) {
-				str_name = g_strdup(locale_str_test[i].language_name);
+		while (locale_str[i].locale) {
+			if (!g_strcmp0(code, locale_str[i].locale)) {
+				str_name = g_strdup(locale_str[i].language_name);
 				break;
 			}
 			i++;
@@ -82,7 +81,7 @@ static GHashTable *parse_locale_codes(GHashTable *table) {
 /* extract locale from a string following this pattern:
  * xxxxxxxxx [locale]
  */
-static gchar *extract_locale_from_string(gchar *str) {
+static gchar *extract_locale_from_string(const gchar *str) {
 	gchar *locale = g_strstr_len(str, -1, "[");
 	return g_strndup(locale + 1, strlen(locale) - 2);
 }
@@ -118,16 +117,30 @@ void siril_language_parser_init() {
 
 		g_dir_close(locales_dir);
 	}
-	string_lang_list = parse_locale_codes(l10n_lang_list);
+	full_lang_list = parse_locale_codes(l10n_lang_list);
+}
+
+static gint locale_compare(gconstpointer *a, gconstpointer *b) {
+	const gchar *s1 = (const gchar *) a;
+	const gchar *s2 = (const gchar *) b;
+
+	gchar *k1 = extract_locale_from_string(s1);
+	gchar *k2 = extract_locale_from_string(s2);
+
+	gint result = g_strcmp0(k1, k2);
+	g_free(k1);
+	g_free(k2);
+
+	return result;
 }
 
 void siril_language_fill_combo() {
 	GtkComboBoxText *lang_combo = GTK_COMBO_BOX_TEXT(lookup_widget("combo_language"));
-	GList *list = g_hash_table_get_keys(string_lang_list);
+	GList *list = g_hash_table_get_keys(full_lang_list);
 	gboolean lang_changed = FALSE;
 	int i = 1;
 
-	list = g_list_sort(list, (GCompareFunc) strcompare);
+	list = g_list_sort(list, (GCompareFunc) locale_compare);
 
 	for (GList *l = list; l; l = l->next) {
 		gtk_combo_box_text_append_text(lang_combo, l->data);
@@ -145,7 +158,7 @@ void siril_language_fill_combo() {
 }
 
 void language_init(const gchar *language) {
-	if (!language)
+	if ((!language) || (language[0] == '\0'))
 		return;
 
 	g_setenv("LANGUAGE", language, TRUE);
