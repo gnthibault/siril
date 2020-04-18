@@ -53,6 +53,7 @@ int	process_ls(int nb);
 int	process_mirrorx(int nb);
 int	process_mirrory(int nb);
 
+int process_neg(int nb);
 int	process_new(int nb);
 int	process_nozero(int nb);
 

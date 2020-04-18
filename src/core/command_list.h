@@ -82,6 +82,7 @@ static command commands[] = {
 	{"mirrorx", 0, "mirrorx", process_mirrorx, STR_MIRRORX, TRUE},
 	{"mirrory", 0, "mirrory", process_mirrory, STR_MIRRORY, TRUE},
 
+	{"neg", 0, "neg", process_neg, STR_NEG, TRUE},
 	{"new", 3, "new width height nb_channel", process_new, STR_NEW, FALSE},
 	{"nozero", 1, "nozero level (replaces null values by level)", process_nozero, STR_NOZERO, TRUE}, /* replaces null values by level */
 

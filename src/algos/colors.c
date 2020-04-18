@@ -1076,7 +1076,7 @@ void on_checkbutton_manual_calibration_toggled(GtkToggleButton *togglebutton,
 	gtk_widget_set_sensitive(scale_b, gtk_toggle_button_get_active(togglebutton));
 }
 
-static int pos_to_neg(fits *fit) {
+int pos_to_neg(fits *fit) {
 	size_t i, n = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 	if (fit->type == DATA_USHORT) {
 		WORD norm = (WORD)get_normalized_value(fit);

@@ -68,6 +68,7 @@
 #include "algos/Def_Wavelet.h"
 #include "algos/background_extraction.h"
 #include "algos/demosaicing.h"
+#include "algos/colors.h"
 #include "algos/quality.h"
 #include "algos/noise.h"
 #include "algos/statistics.h"
@@ -1306,6 +1307,17 @@ int process_threshhi(int nb){
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	return 0;
+}
+
+int process_neg(int nb) {
+	set_cursor_waiting(TRUE);
+	pos_to_neg(&gfit);
+	update_gfit_histogram_if_needed();
+	invalidate_stats_from_fit(&gfit);
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	set_cursor_waiting(FALSE);
 	return 0;
 }
 
