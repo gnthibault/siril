@@ -56,6 +56,7 @@
 
 #define STR_MIRRORX N_("Rotates the image around a vertical axis")
 #define STR_MIRRORY N_("Rotates the image around an horizontal axis")
+#define STR_MTF N_("Applies midtone transfer function to the current loaded image")
 
 #define STR_NEG N_("Shows the negative view of the current image")
 #define STR_NEW N_("Creates a new image filled with zeros with a size of \"width\" x \"height\". The image is in 16-bit format, and it contains \"nb_channel\" channels, \"nb_channel\" being 1 or 3. It is not saved, but displayed and can be saved afterwards")
@@ -86,6 +87,7 @@
 #define STR_SEQCROP N_("Crops the loaded sequence")
 #define STR_SEQFIND_COSME N_("Same command than FIND_COSME but for the sequence \"sequencename\"")
 #define STR_SEQFIND_COSME_CFA N_("Same command than FIND_COSME_CFA but for the sequence \"sequencename\"")
+#define STR_SEQMTF N_("Same command than MTF but for the sequence \"sequencename\"")
 #define STR_SEQPSF N_("Same command than PSF but works for sequences. Results are dumped in the console in a form that can be used to produce brightness variation curves")
 #define STR_SEQSPLIT_CFA N_("Same command than SPLIT_CFA but for the sequence \"sequencename\"")
 #define STR_SEQSUBSKY N_("Same command that SUBSKY but for the sequence \"sequencename\"")

@@ -695,6 +695,7 @@ static int background_image_hook(struct generic_seq_args *args, int o, int i, fi
 
 	return 0;
 }
+
 void apply_background_extraction_to_sequence(struct background_data *background_args) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = background_args->seq;
@@ -776,6 +777,8 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 				return;
 			}
 		}
+
+		set_cursor_waiting(TRUE);
 
 		args->seqEntry = gtk_entry_get_text(GTK_ENTRY(lookup_widget("entryBkgSeq")));
 		if (args->seqEntry && args->seqEntry[0] == '\0')

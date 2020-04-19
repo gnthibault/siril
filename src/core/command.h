@@ -52,6 +52,7 @@ int	process_ls(int nb);
 
 int	process_mirrorx(int nb);
 int	process_mirrory(int nb);
+int process_mtf(int nb);
 
 int process_neg(int nb);
 int	process_new(int nb);
@@ -94,6 +95,7 @@ int	process_set_mag_seq(int nb);
 int	process_set_mem(int nb);
 int process_set_ref(int nb);
 int	process_seq_crop(int nb);
+int process_seq_mtf(int nb);
 int	process_seq_psf(int nb);
 int	process_seq_split_cfa(int nb);
 int process_subsky(int nb);

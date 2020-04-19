@@ -25,9 +25,11 @@
 #include <float.h>
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/processing.h"
 #include "core/siril_app_dirs.h"
 #include "algos/statistics.h"
 #include "io/single_image.h"
+#include "io/sequence.h"
 #include "gui/image_display.h"
 #include "gui/callbacks.h"	// for lookup_widget()
 #include "gui/progress_and_log.h"
@@ -81,8 +83,7 @@ static int get_height_of_histo() {
 
 static void clear_hist_backup() {
 	if (hist_backup[0]) {
-		int i;
-		for (i = 0; i < gfit.naxes[2]; i++) {
+		for (int i = 0; i < gfit.naxes[2]; i++) {
 			gsl_histogram_free(hist_backup[i]);
 			hist_backup[i] = NULL;
 		}
@@ -93,8 +94,7 @@ static void histo_startup() {
 	copy_gfit_to_backup();
 	// also get the backup histogram
 	compute_histo_for_gfit();
-	int i;
-	for (i = 0; i < gfit.naxes[2]; i++)
+	for (int i = 0; i < gfit.naxes[2]; i++)
 		hist_backup[i] = gsl_histogram_clone(com.layers_hist[i]);
 }
 
@@ -639,6 +639,13 @@ static gboolean on_gradient(GdkEvent *event, int width, int height) {
  * Public functions
  */
 
+void mtf_with_parameters(fits *fit, float lo, float mid, float hi) {
+	_shadows = lo;
+	_midtones = mid;
+	_highlights = hi;
+	apply_mtf_to_fits(fit, fit);
+}
+
 gsl_histogram* computeHisto_Selection(fits* fit, int layer,
 		rectangle *selection) {
 	g_assert(layer < 3);
@@ -779,6 +786,14 @@ float findMidtonesBalance(fits *fit, float *shadows, float *highlights) {
 	return m;
 }
 
+static int mtf_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
+		rectangle *_) {
+	struct mtf_data *m_args = (struct mtf_data*) args->user;
+
+	mtf_with_parameters(fit, m_args->lo, m_args->mid, m_args->hi);
+	return 0;
+}
+
 /* Callback functions */
 
 gboolean redraw_histo(GtkWidget *widget, cairo_t *cr, gpointer data) {
@@ -844,14 +859,42 @@ gboolean on_scale_key_release_event(GtkWidget *widget, GdkEvent *event,
 }
 
 void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
-	if ((_midtones != 0.5f) || (_shadows != 0.f) || (_highlights != 1.f)) {
+	if ((_midtones == 0.5f) && (_shadows == 0.f) && (_highlights == 1.f)) {
+		return;
+	}
+
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkMTFSeq")))
+			&& sequence_is_loaded()) {
+		/* Apply to the whole sequence */
+		struct mtf_data *args = malloc(sizeof(struct mtf_data));
+
+		args->lo = _shadows;
+		args->mid = _midtones;
+		args->hi = _highlights;
+		args->seqEntry = gtk_entry_get_text(GTK_ENTRY(lookup_widget("entryMTFSeq")));
+		if (args->seqEntry && args->seqEntry[0] == '\0')
+			args->seqEntry = "mtf_";
+		args->seq = &com.seq;
+		/* here it is a bit tricky.
+		 * It is better to first close the window as it is a liveview tool
+		 * TODO: could we improve this behavior?
+		 */
+		reset_cursors_and_values();
+		histo_close(TRUE);
+		siril_close_dialog("histogram_dialog");
+
+		/* apply the process */
+		apply_mtf_to_sequence(args);
+
+	} else {
 		// the apply button resets everything after recomputing with the current values
 		histo_recompute();
 		// partial cleanup
 		siril_debug_print("Applying histogram (mid=%.3f, lo=%.3f, hi=%.3f)\n",
 				_midtones, _shadows, _highlights);
-		undo_save_state(get_preview_gfit_backup(), "Processing: Histogram Transf. "
-				"(mid=%.3f, lo=%.3f, hi=%.3f)", _midtones, _shadows,
+		undo_save_state(get_preview_gfit_backup(),
+				"Processing: Histogram Transf. "
+						"(mid=%.3f, lo=%.3f, hi=%.3f)", _midtones, _shadows,
 				_highlights);
 
 		clear_backup();
@@ -859,9 +902,9 @@ void on_button_histo_apply_clicked(GtkButton *button, gpointer user_data) {
 		// reinit
 		histo_startup();
 		reset_cursors_and_values();
-	}
 
-	set_cursor("default");
+		set_cursor("default");
+	}
 }
 
 void apply_histo_cancel() {
@@ -1070,4 +1113,31 @@ void on_histoHighEntry_activate(GtkEntry *entry, gpointer user_data) {
 	gtk_entry_set_text(entry, str);
 	g_free(str);
 	set_cursor_waiting(FALSE);
+}
+
+void apply_mtf_to_sequence(struct mtf_data *mtf_args) {
+	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	args->seq = mtf_args->seq;
+	args->force_float = FALSE;
+	args->partial_image = FALSE;
+	args->filtering_criterion = seq_filter_included;
+	args->nb_filtered_images = mtf_args->seq->selnum;
+	args->prepare_hook = ser_prepare_hook;
+	args->finalize_hook = ser_finalize_hook;
+	args->save_hook = NULL;
+	args->image_hook = mtf_image_hook;
+	args->idle_function = NULL;
+	args->stop_on_error = FALSE;
+	args->description = _("Midtone Transfer Function");
+	args->has_output = TRUE;
+	args->new_seq_prefix = mtf_args->seqEntry;
+	args->load_new_sequence = TRUE;
+	args->force_ser_output = FALSE;
+	args->user = mtf_args;
+	args->already_in_a_thread = FALSE;
+	args->parallel = TRUE;
+
+	mtf_args->fit = NULL;	// not used here
+
+	start_in_new_thread(generic_sequence_worker, args);
 }

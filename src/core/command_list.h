@@ -81,6 +81,7 @@ static command commands[] = {
 
 	{"mirrorx", 0, "mirrorx", process_mirrorx, STR_MIRRORX, TRUE},
 	{"mirrory", 0, "mirrory", process_mirrory, STR_MIRRORY, TRUE},
+	{"mtf", 3, "mtf", process_mtf, STR_MTF, TRUE},
 
 	{"neg", 0, "neg", process_neg, STR_NEG, TRUE},
 	{"new", 3, "new width height nb_channel", process_new, STR_NEW, FALSE},
@@ -117,6 +118,7 @@ static command commands[] = {
 	{"seqcrop", 1, "seqcrop sequencename [x y width height]", process_seq_crop, STR_SEQCROP, TRUE},
 	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME, TRUE},
 	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},
+	{"seqmtf", 4, "seqmtf sequencename low mid high", process_seq_mtf, STR_SEQMTF, TRUE},
 	{"seqpsf", 0, "seqpsf", process_seq_psf, STR_SEQPSF, FALSE},
 	{"seqsplit_cfa", 0, "seqsplit_cfa sequencename", process_seq_split_cfa, STR_SEQSPLIT_CFA, FALSE},
 	{"seqsubsky", 2, "sessubsky sequencename degree", process_subsky, STR_SEQSUBSKY, TRUE},

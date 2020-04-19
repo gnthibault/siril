@@ -822,6 +822,19 @@ int	process_mirrory(int nb){
 	return 0;
 }
 
+int process_mtf(int nb) {
+	float lo = atof(word[1]);
+	float mid = atof(word[2]);
+	float hi = atof(word[3]);
+
+	mtf_with_parameters(&gfit, lo, mid, hi);
+
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	return 0;
+}
+
 int process_resample(int nb) {
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
@@ -2099,6 +2112,51 @@ int process_split_cfa(int nb) {
 	clearfits(&f_cfa2); clearfits(&f_cfa3);
 	free(filename);
 	return ret;
+}
+
+int process_seq_mtf(int nb) {
+	sequence *seq = NULL;
+
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	gchar *file = g_strdup(word[1]);
+	if (!ends_with(file, ".seq")) {
+		str_append(&file, ".seq");
+	}
+
+	if (!existseq(file)) {
+		if (check_seq(FALSE)) {
+			siril_log_message(_("No sequence `%s' found.\n"), file);
+			return 1;
+		}
+	}
+	seq = readseqfile(file);
+	if (seq == NULL) {
+		siril_log_message(_("No sequence `%s' found.\n"), file);
+		return 1;
+	}
+	if (seq_check_basic_data(seq, FALSE) == -1) {
+		free(seq);
+		return 1;
+	}
+
+	struct mtf_data *args = malloc(sizeof(struct mtf_data));
+
+	args->seq = seq;
+	args->fit = &gfit;
+	args->seqEntry = "mtf_";
+	args->lo = atof(word[2]);
+	args->mid = atof(word[3]);
+	args->hi = atof(word[4]);
+
+	set_cursor_waiting(TRUE);
+
+	apply_mtf_to_sequence(args);
+
+	return 0;
 }
 
 int process_seq_split_cfa(int nb) {
