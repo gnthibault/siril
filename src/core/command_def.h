@@ -57,7 +57,7 @@
 #define STR_MIRRORX N_("Rotates the image around a vertical axis")
 #define STR_MIRRORY N_("Rotates the image around an horizontal axis")
 
-#define STR_NEG N_("Show the negative view of the current image")
+#define STR_NEG N_("Shows the negative view of the current image")
 #define STR_NEW N_("Creates a new image filled with zeros with a size of \"width\" x \"height\". The image is in 16-bit format, and it contains \"nb_channel\" channels, \"nb_channel\" being 1 or 3. It is not saved, but displayed and can be saved afterwards")
 #define STR_NOZERO N_("Replaces null values by \"level\" values. Useful before an idiv or fdiv operation")
 
