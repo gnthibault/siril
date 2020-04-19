@@ -317,7 +317,12 @@ void on_rememberWindowsCheck_toggled(GtkToggleButton *togglebutton, gpointer use
 }
 
 void on_show_preview_button_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	GtkWidget *label = lookup_widget("thumbnails_label_size");
+	GtkWidget *box = lookup_widget("thumbnails_box_size");
+
 	com.show_thumbnails = gtk_toggle_button_get_active(togglebutton);
+	gtk_widget_set_sensitive(label, com.show_thumbnails);
+	gtk_widget_set_sensitive(box, com.show_thumbnails);
 }
 
 void on_thumbnails_box_size_changed(GtkComboBoxText *box, gpointer user_data) {

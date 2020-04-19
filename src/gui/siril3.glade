@@ -16939,18 +16939,42 @@ If the selection is empty, the whole image will be used as reference.</property>
                         <property name="can_focus">False</property>
                         <property name="left_padding">12</property>
                         <child>
-                          <object class="GtkComboBoxText" id="combo_dcraw_inter">
+                          <object class="GtkGrid">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Select an interpolation method to perform demosaicing before opening image.</property>
-                            <property name="valign">center</property>
-                            <property name="active">1</property>
-                            <items>
-                              <item translatable="yes">High-speed, low-quality bilinear</item>
-                              <item translatable="yes">Adaptive Homogeneity-Directed (AHD)</item>
-                              <item translatable="yes">Variable Number of Gradients (VNG)</item>
-                              <item translatable="yes">Patterned Pixel Grouping (PPG)</item>
-                            </items>
+                            <property name="column_homogeneous">True</property>
+                            <child>
+                              <object class="GtkComboBoxText" id="combo_dcraw_inter">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Select an interpolation method to perform demosaicing before opening image.</property>
+                                <property name="valign">center</property>
+                                <property name="active">1</property>
+                                <items>
+                                  <item translatable="yes">High-speed, low-quality bilinear</item>
+                                  <item translatable="yes">Adaptive Homogeneity-Directed (AHD)</item>
+                                  <item translatable="yes">Variable Number of Gradients (VNG)</item>
+                                  <item translatable="yes">Patterned Pixel Grouping (PPG)</item>
+                                </items>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label41">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Select an interpolation method to perform demosaicing.</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">Debayer interpolation: </property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">0</property>
+                              </packing>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -17988,10 +18012,10 @@ If the selection is empty, the whole image will be used as reference.</property>
                         <property name="can_focus">False</property>
                         <property name="left_padding">12</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkGrid">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="spacing">10</property>
+                            <property name="column_homogeneous">True</property>
                             <child>
                               <object class="GtkCheckButton" id="show_preview_button">
                                 <property name="label" translatable="yes">Show thumbnails in file chooser</property>
@@ -18005,21 +18029,21 @@ If the selection is empty, the whole image will be used as reference.</property>
                                 <signal name="toggled" handler="on_show_preview_button_toggled" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">0</property>
+                                <property name="width">2</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkLabel" id="thumbnails_label_size">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="halign">start</property>
                                 <property name="label" translatable="yes">Size of thumbnails:</property>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">1</property>
                               </packing>
                             </child>
                             <child>
@@ -18034,9 +18058,8 @@ If the selection is empty, the whole image will be used as reference.</property>
                                 <signal name="changed" handler="on_thumbnails_box_size_changed" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">2</property>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">1</property>
                               </packing>
                             </child>
                           </object>
@@ -18323,19 +18346,42 @@ Configuring a memory amount larger than what is available on your system may res
                         <property name="can_focus">False</property>
                         <property name="left_padding">12</property>
                         <child>
-                          <object class="GtkComboBoxText" id="combobox_ext">
+                          <object class="GtkGrid">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Choose the type of extension used by Siril. By default it is .fit.</property>
-                            <property name="valign">center</property>
-                            <property name="margin_top">4</property>
-                            <property name="active">0</property>
-                            <items>
-                              <item id=".fit" translatable="yes">.fit</item>
-                              <item id=".fits" translatable="yes">.fits</item>
-                              <item id=".fts" translatable="yes">.fts</item>
-                            </items>
-                            <signal name="changed" handler="on_combobox_ext_changed" swapped="no"/>
+                            <property name="column_homogeneous">True</property>
+                            <child>
+                              <object class="GtkComboBoxText" id="combobox_ext">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Choose the type of extension used by Siril. By default it is .fit.</property>
+                                <property name="valign">center</property>
+                                <property name="margin_top">4</property>
+                                <property name="active">0</property>
+                                <items>
+                                  <item id=".fit" translatable="yes">.fit</item>
+                                  <item id=".fits" translatable="yes">.fits</item>
+                                  <item id=".fts" translatable="yes">.fts</item>
+                                </items>
+                                <signal name="changed" handler="on_combobox_ext_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">Extension:</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">0</property>
+                              </packing>
+                            </child>
                           </object>
                         </child>
                       </object>
