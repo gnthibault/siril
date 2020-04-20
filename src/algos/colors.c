@@ -975,6 +975,7 @@ static void white_balance(fits *fit, gboolean is_manual, rectangle white_selecti
 		kw[RLAYER] = gtk_range_get_value(scale_white_balance[RLAYER]);
 		kw[GLAYER] = gtk_range_get_value(scale_white_balance[GLAYER]);
 		kw[BLAYER] = gtk_range_get_value(scale_white_balance[BLAYER]);
+
 	} else {
 		low = gtk_range_get_value(scaleLimit[0]);
 		high = gtk_range_get_value(scaleLimit[1]);
@@ -1000,8 +1001,7 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 	siril_log_color_message(_("Color Calibration: processing...\n"), "green");
 	gettimeofday(&t_start, NULL);
 
-	GtkToggleButton *manual = GTK_TOGGLE_BUTTON(
-			lookup_widget("checkbutton_manual_calibration"));
+	GtkToggleButton *manual = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_manual_calibration"));
 	gboolean is_manual = gtk_toggle_button_get_active(manual);
 
 	if (!selection_black_value[0]) {
@@ -1023,7 +1023,7 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 	black_selection.w = gtk_spin_button_get_value(selection_black_value[2]);
 	black_selection.h = gtk_spin_button_get_value(selection_black_value[3]);
 
-	if (!black_selection.w || !black_selection.h) {
+	if ((!black_selection.w || !black_selection.h) && !is_manual) {
 		siril_message_dialog( GTK_MESSAGE_WARNING, _("There is no selection"),
 				_("Make a selection of the background area"));
 		return;
