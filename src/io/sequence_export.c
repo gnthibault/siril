@@ -245,7 +245,7 @@ static gpointer export_sequence(gpointer ptr) {
 			destfit.header = NULL;
 			destfit.fptr = NULL;
 			nbdata = fit.rx * fit.ry;
-			if ((fit.type == DATA_FLOAT) && (args->convflags == TYPEFITS)) {
+			if ((args->convflags == TYPEFITS) && ((fit.type == DATA_FLOAT) || com.pref.force_to_16bit)) {
 				destfit.fdata = calloc(nbdata * fit.naxes[2], sizeof(float));
 				destfit.type = DATA_FLOAT;
 				destfit.stats = NULL;

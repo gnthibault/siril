@@ -294,6 +294,11 @@ void on_combobox_ext_changed(GtkComboBox *box, gpointer user_data) {
 	initialize_FITS_name_entries();
 }
 
+void on_combobox_type_changed(GtkComboBox *box, gpointer user_data) {
+	com.pref.force_to_16bit = gtk_combo_box_get_active(box) == 0;
+	writeinitfile();
+}
+
 void on_filechooser_swap_file_set(GtkFileChooserButton *fileChooser, gpointer user_data) {
 	GtkFileChooser *swap_dir = GTK_FILE_CHOOSER(fileChooser);
 	gchar *dir;

@@ -1260,9 +1260,11 @@ void initialize_all_GUI(gchar *supported_files) {
 	/* initialization of some paths */
 	initialize_path_directory();
 
-	/* initialization of default FITS extension */
-	GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
-	gtk_combo_box_set_active_id(box, com.pref.ext);
+	/* initialization of default FITS extension and type */
+	GtkComboBox *fit_ext = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
+	GtkComboBox *fit_type = GTK_COMBO_BOX(lookup_widget("combobox_type"));
+	gtk_combo_box_set_active_id(fit_ext, com.pref.ext);
+	gtk_combo_box_set_active(fit_type, com.pref.force_to_16bit ? 0 : 1);
 	initialize_FITS_name_entries();
 
 	initialize_log_tags();

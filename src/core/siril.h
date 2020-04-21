@@ -577,7 +577,7 @@ struct pref_struct {
 
 	stackconf stack;
 
-	gboolean depth16;
+	gboolean force_to_16bit;
 
 };
 

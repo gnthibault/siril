@@ -188,7 +188,7 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 
 		// float output is always used in case of FITS sequence
 		data_type output_depth =
-			args->force_ser_output || args->seq->type == SEQ_SER ?
+			args->force_ser_output || args->seq->type == SEQ_SER || com.pref.force_to_16bit ?
 			DATA_USHORT : DATA_FLOAT;
 		int64_t size = seq_compute_size(args->seq, args->seq->number, output_depth);
 		if (prepro->debayer)
