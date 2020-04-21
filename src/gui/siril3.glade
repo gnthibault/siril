@@ -13505,6 +13505,8 @@ Uncheck if images come from a monochrome sensor.</property>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="savepopup">
+    <property name="width_request">-1</property>
+    <property name="height_request">-1</property>
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="resizable">False</property>
@@ -17157,7 +17159,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                   <object class="GtkLabel" id="label26">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Other debayer</property>
+                    <property name="label" translatable="yes">FITS/SER debayer</property>
                     <property name="xalign">0</property>
                     <style>
                       <class name="title"/>
@@ -17396,7 +17398,7 @@ If the selection is empty, the whole image will be used as reference.</property>
               <object class="GtkLabel" id="label9">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Other debayer</property>
+                <property name="label" translatable="yes">FITS/SER debayer</property>
                 <property name="justify">center</property>
                 <property name="wrap">True</property>
               </object>
@@ -17867,6 +17869,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Scripts</property>
+                <property name="wrap">True</property>
               </object>
               <packing>
                 <property name="position">3</property>
@@ -17982,7 +17985,6 @@ If the selection is empty, the whole image will be used as reference.</property>
                           <object class="GtkBox" id="GtkBox_Lookandfeel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="valign">center</property>
                             <property name="orientation">vertical</property>
                             <property name="spacing">10</property>
                             <child>
@@ -18155,6 +18157,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Interface</property>
+                <property name="wrap">True</property>
               </object>
               <packing>
                 <property name="position">4</property>
@@ -18271,6 +18274,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="row_spacing">10</property>
+                            <property name="row_homogeneous">True</property>
                             <property name="column_homogeneous">True</property>
                             <child>
                               <object class="GtkRadioButton" id="memfreeratio_radio">
@@ -18517,7 +18521,7 @@ Configuring a memory amount larger than what is available on your system may res
               <object class="GtkLabel" id="label50">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Misc.</property>
+                <property name="label" translatable="yes">Miscellaneous</property>
                 <property name="justify">center</property>
                 <property name="wrap">True</property>
               </object>
