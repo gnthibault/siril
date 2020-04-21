@@ -231,10 +231,7 @@ void initialize_path_directory() {
 
 void set_libraw_settings_menu_available(gboolean activate) {
 	if (!com.script) {
-		GtkNotebook *notebook = GTK_NOTEBOOK(lookup_widget("notebook3"));
-		GtkWidget *widget = gtk_notebook_get_nth_page(notebook, 0);
-
-		gtk_widget_set_visible(widget, activate);
+		gtk_widget_set_visible(lookup_widget("box_stack_p1"), activate);
 	}
 }
 
