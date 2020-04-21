@@ -1118,9 +1118,9 @@ static void initialize_preprocessing() {
 	GtkToggleButton *cfaButton, *eqButton;
 
 	cfaButton = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
-	gtk_toggle_button_set_active(cfaButton, com.prepro_cfa);
+	gtk_toggle_button_set_active(cfaButton, com.pref.prepro_cfa);
 	eqButton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
-	gtk_toggle_button_set_active(eqButton, com.prepro_equalize_cfa);
+	gtk_toggle_button_set_active(eqButton, com.pref.prepro_equalize_cfa);
 
 	update_prepro_interface(FALSE);
 }
@@ -1410,12 +1410,12 @@ void on_cosmEnabledCheck_toggled(GtkToggleButton *button, gpointer user_data) {
 }
 
 void on_cosmCFACheck_toggled(GtkToggleButton *button, gpointer user_data) {
-	com.prepro_cfa = gtk_toggle_button_get_active(button);
+	com.pref.prepro_cfa = gtk_toggle_button_get_active(button);
 	writeinitfile();
 }
 
 void on_checkbutton_equalize_cfa_toggled(GtkToggleButton *button, gpointer user_data) {
-	com.prepro_equalize_cfa = gtk_toggle_button_get_active(button);
+	com.pref.prepro_equalize_cfa = gtk_toggle_button_get_active(button);
 	writeinitfile();
 }
 

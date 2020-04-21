@@ -91,8 +91,8 @@ static int readinitfile() {
 	/* Preprocessing settings */
 	config_setting_t *prepro_setting = config_lookup(&config, keywords[PRE]);
 	if (prepro_setting) {
-		config_setting_lookup_bool(prepro_setting, "cfa", &com.prepro_cfa);
-		config_setting_lookup_bool(prepro_setting, "equalize_cfa", &com.prepro_equalize_cfa);
+		config_setting_lookup_bool(prepro_setting, "cfa", &com.pref.prepro_cfa);
+		config_setting_lookup_bool(prepro_setting, "equalize_cfa", &com.pref.prepro_equalize_cfa);
 	}
 
 	/* Registration setting */
@@ -130,6 +130,7 @@ static int readinitfile() {
 	/* Misc setting */
 	config_setting_t *misc_setting = config_lookup(&config, keywords[MISC]);
 	if (misc_setting) {
+		int type;
 		config_setting_lookup_bool(misc_setting, "confirm_quit", &com.pref.save.quit);
 		config_setting_lookup_bool(misc_setting, "confirm_script", &com.pref.save.script);
 		config_setting_lookup_bool(misc_setting, "show_thumbnails", &com.pref.show_thumbnails);
@@ -143,6 +144,8 @@ static int readinitfile() {
 		com.pref.swap_dir = g_strdup(swap_dir);
 		config_setting_lookup_string(misc_setting, "extension", &extension);
 		com.pref.ext = g_strdup(extension);
+		config_setting_lookup_int(misc_setting, "FITS_type", &type);
+		com.pref.depth16 = (type == 0);
 
 
 		misc_setting = config_lookup(&config, "misc-settings.scripts_paths");
@@ -241,10 +244,10 @@ static void _save_preprocessing(config_t *config, config_setting_t *root) {
 	prepro_group = config_setting_add(root, keywords[PRE], CONFIG_TYPE_GROUP);
 
 	prepro_setting = config_setting_add(prepro_group, "cfa", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(prepro_setting, com.prepro_cfa);
+	config_setting_set_bool(prepro_setting, com.pref.prepro_cfa);
 
 	prepro_setting = config_setting_add(prepro_group, "equalize_cfa", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(prepro_setting, com.prepro_equalize_cfa);
+	config_setting_set_bool(prepro_setting, com.pref.prepro_equalize_cfa);
 }
 
 static void _save_registration(config_t *config, config_setting_t *root) {
@@ -305,6 +308,9 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_setting = config_setting_add(misc_group, "extension", CONFIG_TYPE_STRING);
 	config_setting_set_string(misc_setting, com.pref.ext);
+
+	misc_setting = config_setting_add(misc_group, "FITS_type", CONFIG_TYPE_INT);
+	config_setting_set_int(misc_setting, com.pref.depth16 ? 0 : 1);
 
 	misc_setting = config_setting_add(misc_group, "confirm_quit", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.save.quit);

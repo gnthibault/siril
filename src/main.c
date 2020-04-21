@@ -237,6 +237,7 @@ static void siril_app_activate(GApplication *application) {
 	com.pref.thumbnail_size = 256;
 	com.pref.remember_windows = TRUE;
 	com.pref.ext = g_strdup(".fit");
+	com.pref.depth16 = FALSE;
 	com.pref.swap_dir = g_strdup(g_get_tmp_dir());
 
 	/* set default CWD, and load init file

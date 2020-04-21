@@ -556,6 +556,9 @@ struct pref_struct {
 	rectangle main_w_pos;
 	gboolean is_maximized;
 
+	gboolean prepro_cfa;	// Use to save type of sensor for cosmetic correction in preprocessing
+	gboolean prepro_equalize_cfa;  // Use to save if flat will be equalized in preprocessing
+
 	save_config save;
 	gboolean show_thumbnails; // show or don't show thumbnails in open dialog box
 	gint thumbnail_size;
@@ -599,8 +602,6 @@ struct cominf {
 	GtkAdjustment *hadj[MAXVPORT];	// adjustments of vport scrollbars
 	GtkAdjustment *vadj[MAXVPORT];	// adjustments of vport scrollbars
 	sliders_mode sliders;		// 0: min/max, 1: MIPS-LO/HI, 2: user
-	gboolean prepro_cfa;	// Use to save type of sensor for cosmetic correction in preprocessing
-	gboolean prepro_equalize_cfa;  // Use to save if flat will be equalized in preprocessing
 	gboolean show_excluded;		// show excluded images in sequences
 	double zoom_value;		// 1.0 is normal zoom, use get_zoom_val() to access it
 
