@@ -145,7 +145,7 @@ sequence * readseqfile(const char *name){
 					 * set in SER opening below, so we keep the backup in this
 					 * case */
 					if (nbl_backup > 0 && ser_is_cfa(seq->ser_file)) {
-						if (com.debayer.open_debayer)
+						if (com.pref.debayer.open_debayer)
 							seq->nb_layers = nbl_backup;
 						else seq->nb_layers = 1;
 					}
@@ -209,7 +209,7 @@ sequence * readseqfile(const char *name){
 					 * CFA and those belonging to the demosaiced red
 					 * channel, both would have layer number 0 otherwise */
 					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
-							!com.debayer.open_debayer) {
+							!com.pref.debayer.open_debayer) {
 						siril_debug_print("- using CFA registration info\n");
 						to_backup = 0;
 					} else {
@@ -221,7 +221,7 @@ sequence * readseqfile(const char *name){
 				else {
 					to_backup = 0;
 					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
-							!com.debayer.open_debayer) {
+							!com.pref.debayer.open_debayer) {
 						to_backup = 1;
 						siril_debug_print("- stats: backing up demosaiced stats\n");
 					}
@@ -320,7 +320,7 @@ sequence * readseqfile(const char *name){
 					ser_display_info(seq->ser_file);
 
 					if (ser_is_cfa(seq->ser_file)) {
-						if (!com.debayer.open_debayer) {
+						if (!com.pref.debayer.open_debayer) {
 							// we set this flag instead of relying on the
 							// com.debayer.open_debayer flag which varies
 							// as the user changes the GUI
@@ -412,7 +412,7 @@ sequence * readseqfile(const char *name){
 					 * those belonging to the demosaiced red channel, both
 					 * would have layer number 0 otherwise */
 					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
-							!com.debayer.open_debayer) {
+							!com.pref.debayer.open_debayer) {
 						siril_debug_print("- stats: using CFA stats\n");
 						to_backup = 0;
 					} else {
@@ -424,7 +424,7 @@ sequence * readseqfile(const char *name){
 				else {
 					to_backup = 0;
 					if (seq->type == SEQ_SER && ser_is_cfa(seq->ser_file) &&
-							!com.debayer.open_debayer) {
+							!com.pref.debayer.open_debayer) {
 						to_backup = 1;
 						siril_debug_print("- stats: backing up demosaiced stats\n");
 					}
@@ -488,7 +488,7 @@ sequence * readseqfile(const char *name){
 	}
 	
 	// copy some regparam_bkp to regparam if it applies
-	if (ser_is_cfa(seq->ser_file) && com.debayer.open_debayer &&
+	if (ser_is_cfa(seq->ser_file) && com.pref.debayer.open_debayer &&
 			seq->regparam_bkp && seq->regparam_bkp[0] &&
 			seq->regparam && seq->nb_layers == 3 && !seq->regparam[1]) {
 		siril_log_color_message(_("%s: Copying registration data from non-demosaiced layer to green layer\n"), "salmon", seqfilename);

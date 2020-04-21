@@ -94,7 +94,7 @@ static void add_stats_to_list(imstats *stat[], int nblayer, data_type type, gboo
 		sprintf(format, "%%.1lf");
 	}
 
-	color = (com.combo_theme == 0) ? 1 : 0;
+	color = (com.pref.combo_theme == 0) ? 1 : 0;
 
 /*	sprintf(rvalue, "%.4lf", ((double) stat[RLAYER]->ngoodpix / (double) stat[RLAYER]->total) * 100.0);
 	if (nblayer > 1 && (stat[GLAYER] != NULL) && (stat[BLAYER]) != NULL) {

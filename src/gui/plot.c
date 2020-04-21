@@ -704,7 +704,7 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		width = gtk_widget_get_allocated_width(widget);
 		height = gtk_widget_get_allocated_height(widget);
 
-		color = (com.combo_theme == 0) ? 0.0 : 1.0;
+		color = (com.pref.combo_theme == 0) ? 0.0 : 1.0;
 
 		cairo_set_source_rgb(cr, color, color, color);
 		cairo_rectangle(cr, 0.0, 0.0, width, height);

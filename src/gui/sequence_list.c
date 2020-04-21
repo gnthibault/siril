@@ -157,7 +157,7 @@ static void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 			fwhm = seq->regparam[layer][index].quality;
 	}
 
-	color = (com.combo_theme == 0) ? 1 : 0;
+	color = (com.pref.combo_theme == 0) ? 1 : 0;
 
 	selection = GTK_TREE_SELECTION(gtk_builder_get_object(builder, "treeview-selection1"));
 
@@ -515,7 +515,7 @@ void sequence_list_change_reference() {
 	gboolean valid;
 	int color;
 
-	color = (com.combo_theme == 0) ? 1 : 0;
+	color = (com.pref.combo_theme == 0) ? 1 : 0;
 
 	get_list_store();
 	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list_store), &iter);

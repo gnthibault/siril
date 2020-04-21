@@ -149,12 +149,12 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 		naxes[1] = args->seq->ser_file->image_height;
 		ser_color type_ser = args->seq->ser_file->color_id;
 		*bitpix = (args->seq->ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) ? BYTE_IMG : USHORT_IMG;
-		if (!com.debayer.open_debayer && type_ser != SER_RGB && type_ser != SER_BGR)
+		if (!com.pref.debayer.open_debayer && type_ser != SER_RGB && type_ser != SER_BGR)
 			type_ser = SER_MONO;
 		naxes[2] = type_ser == SER_MONO ? 1 : 3;
 		*naxis = type_ser == SER_MONO ? 2 : 3;
 		/* case of Super Pixel not handled yet */
-		if (com.debayer.open_debayer && com.debayer.bayer_inter == BAYER_SUPER_PIXEL) {
+		if (com.pref.debayer.open_debayer && com.pref.debayer.bayer_inter == BAYER_SUPER_PIXEL) {
 			siril_log_message(_("Super-pixel is not handled yet for on the fly SER stacking\n"));
 			return 1;
 		}

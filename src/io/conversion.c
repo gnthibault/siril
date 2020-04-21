@@ -171,27 +171,27 @@ static char *create_sequence_filename(const char *destroot, int counter, char *o
  * not been initialized with the default GUI values (= initialized to 0).
  */
 static void initialize_libraw_settings() {
-	com.raw_set.bright = 1.0;		// brightness
-	com.raw_set.mul[0] = 1.0;		// multipliers: red
-	com.raw_set.mul[1] = 1.0;		// multipliers: green, not used because always equal to 1
-	com.raw_set.mul[2] = 1.0;		// multipliers: blue
-	com.raw_set.auto_mul = 1;		// multipliers are Either read from file, or calculated on the basis of file data, or taken from hardcoded constants
-	com.raw_set.user_black = 0;		// black point correction
-	com.raw_set.use_camera_wb = 0;	// if possible, use the white balance from the camera.
-	com.raw_set.use_auto_wb = 0;		// use automatic white balance obtained after averaging over the entire image
-	com.raw_set.user_qual = 1;		// type of interpolation. AHD by default
-	com.raw_set.gamm[0] = 1.0;		// gamma curve: linear by default
-	com.raw_set.gamm[1] = 1.0;
+	com.pref.raw_set.bright = 1.0;		// brightness
+	com.pref.raw_set.mul[0] = 1.0;		// multipliers: red
+	com.pref.raw_set.mul[1] = 1.0;		// multipliers: green, not used because always equal to 1
+	com.pref.raw_set.mul[2] = 1.0;		// multipliers: blue
+	com.pref.raw_set.auto_mul = 1;		// multipliers are Either read from file, or calculated on the basis of file data, or taken from hardcoded constants
+	com.pref.raw_set.user_black = 0;		// black point correction
+	com.pref.raw_set.use_camera_wb = 0;	// if possible, use the white balance from the camera.
+	com.pref.raw_set.use_auto_wb = 0;		// use automatic white balance obtained after averaging over the entire image
+	com.pref.raw_set.user_qual = 1;		// type of interpolation. AHD by default
+	com.pref.raw_set.gamm[0] = 1.0;		// gamma curve: linear by default
+	com.pref.raw_set.gamm[1] = 1.0;
 }
 
 static void initialize_ser_debayer_settings() {
-	com.debayer.open_debayer = FALSE;
-	com.debayer.use_bayer_header = TRUE;
-	com.debayer.compatibility = FALSE;
-	com.debayer.bayer_pattern = BAYER_FILTER_RGGB;
-	com.debayer.bayer_inter = BAYER_RCD;
-	com.debayer.xbayeroff= 0;
-	com.debayer.ybayeroff= 0;
+	com.pref.debayer.open_debayer = FALSE;
+	com.pref.debayer.use_bayer_header = TRUE;
+	com.pref.debayer.compatibility = FALSE;
+	com.pref.debayer.bayer_pattern = BAYER_FILTER_RGGB;
+	com.pref.debayer.bayer_inter = BAYER_RCD;
+	com.pref.debayer.xbayeroff= 0;
+	com.pref.debayer.ybayeroff= 0;
 }
 
 static gboolean end_convert_idle(gpointer p) {
@@ -536,7 +536,7 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 	 * the user can indicate it ('compatibility') and we don't flip for debayer.
 	 */
 	if (imagetype == TYPEFITS && (((convflags & CONVDEBAYER) && !force_debayer) || force_debayer)) {
-		tmp = com.debayer.bayer_pattern;
+		tmp = com.pref.debayer.bayer_pattern;
 		if (fit->naxes[2] != 1) {
 			siril_log_message(_("Cannot perform debayering on image with more than one channel\n"));
 			return retval;
@@ -544,41 +544,41 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 		if (!compatibility)
 			fits_flip_top_to_bottom(fit);
 		/* Get Bayer informations from header if available */
-		if (com.debayer.use_bayer_header) {
+		if (com.pref.debayer.use_bayer_header) {
 			sensor_pattern bayer;
 			bayer = retrieveBayerPattern(fit->bayer_pattern);
 
 			if (bayer <= BAYER_FILTER_MAX) {
-				if (bayer != com.debayer.bayer_pattern) {
+				if (bayer != com.pref.debayer.bayer_pattern) {
 					if (bayer == BAYER_FILTER_NONE) {
 						siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 					}
 					else {
 						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-								"red", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
-						com.debayer.bayer_pattern = bayer;
+								"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+						com.pref.debayer.bayer_pattern = bayer;
 					}
 				}
 			} else {
-				com.debayer.bayer_pattern = XTRANS_FILTER;
-				com.debayer.bayer_inter = XTRANS;
+				com.pref.debayer.bayer_pattern = XTRANS_FILTER;
+				com.pref.debayer.bayer_inter = XTRANS;
 				siril_log_color_message(_("XTRANS Sensor detected. Using special algorithm.\n"), "green");
 			}
 		}
-		if (com.debayer.bayer_pattern >= BAYER_FILTER_MIN
-				&& com.debayer.bayer_pattern <= BAYER_FILTER_MAX) {
-			siril_log_message(_("Filter Pattern: %s\n"), filter_pattern[com.debayer.bayer_pattern]);
+		if (com.pref.debayer.bayer_pattern >= BAYER_FILTER_MIN
+				&& com.pref.debayer.bayer_pattern <= BAYER_FILTER_MAX) {
+			siril_log_message(_("Filter Pattern: %s\n"), filter_pattern[com.pref.debayer.bayer_pattern]);
 		}
 
-		if (debayer(fit, com.debayer.bayer_inter, com.debayer.bayer_pattern)) {
+		if (debayer(fit, com.pref.debayer.bayer_inter, com.pref.debayer.bayer_pattern)) {
 			siril_log_message(_("Cannot perform debayering\n"));
 			retval = -1;
 		} else {
 			if (!compatibility)
 				fits_flip_top_to_bottom(fit);
 		}
-		com.debayer.bayer_pattern = tmp;
+		com.pref.debayer.bayer_pattern = tmp;
 	}
 	return retval;
 }

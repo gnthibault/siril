@@ -1017,11 +1017,11 @@ int process_set_ext(int nb) {
 			siril_log_message(_("FITS extension unknown: %s\n"), word[1]);
 		}
 
-		free(com.ext);
+		free(com.pref.ext);
 		str = g_string_new(".");
 		str = g_string_append(str, word[1]);
 		str = g_string_ascii_down(str);
-		com.ext = g_string_free(str, FALSE);
+		com.pref.ext = g_string_free(str, FALSE);
 		writeinitfile();
 	}
 
@@ -1683,11 +1683,6 @@ int process_clear(int nb) {
 }
 
 int process_clearstar(int nb){
-	if (!single_image_is_loaded()) {
-		PRINT_NOT_FOR_SEQUENCE;
-		return 1;
-	}
-
 	clear_stars_list();
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_NONE);
@@ -2043,9 +2038,9 @@ int process_split(int nb){
 		siril_log_message(_("Siril cannot split layers. Make sure your image is in RGB mode.\n"));
 		return 1;
 	}
-	gchar *R = g_strdup_printf("%s%s", word[1], com.ext);
-	gchar *G = g_strdup_printf("%s%s", word[2], com.ext);
-	gchar *B = g_strdup_printf("%s%s", word[3], com.ext);
+	gchar *R = g_strdup_printf("%s%s", word[1], com.pref.ext);
+	gchar *G = g_strdup_printf("%s%s", word[2], com.pref.ext);
+	gchar *B = g_strdup_printf("%s%s", word[3], com.pref.ext);
 
 	if (gfit.type == DATA_USHORT) {
 		save1fits16(R, &gfit, RLAYER);
@@ -2084,10 +2079,10 @@ int process_split_cfa(int nb) {
 		}
 	}
 
-	gchar *cfa0 = g_strdup_printf("CFA0_%s%s", filename, com.ext);
-	gchar *cfa1 = g_strdup_printf("CFA1_%s%s", filename, com.ext);
-	gchar *cfa2 = g_strdup_printf("CFA2_%s%s", filename, com.ext);
-	gchar *cfa3 = g_strdup_printf("CFA3_%s%s", filename, com.ext);
+	gchar *cfa0 = g_strdup_printf("CFA0_%s%s", filename, com.pref.ext);
+	gchar *cfa1 = g_strdup_printf("CFA1_%s%s", filename, com.pref.ext);
+	gchar *cfa2 = g_strdup_printf("CFA2_%s%s", filename, com.pref.ext);
+	gchar *cfa3 = g_strdup_printf("CFA3_%s%s", filename, com.pref.ext);
 
 	if (gfit.type == DATA_USHORT) {
 		if (!(ret = split_cfa_ushort(&gfit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3))) {
@@ -2614,7 +2609,7 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 			char *suffix = ends_with(seq->seqname, "_") ? "" :
 				(ends_with(com.seq.seqname, "-") ? "" : "_");
 			snprintf(filename, 256, "%s%sstacked%s",
-					seq->seqname, suffix, com.ext);
+					seq->seqname, suffix, com.pref.ext);
 			arg->result_file = strdup(filename);
 		}
 
@@ -2978,7 +2973,7 @@ int process_set_mem(int nb){
 	if (ratio > 1.0) {
 		siril_log_message(_("Setting the ratio of memory used for stacking above 1 will require the use of on-disk memory, which can be very slow and is unrecommended (%g requested)\n"), ratio);
 	}
-	com.stack.memory_ratio = ratio;
+	com.pref.stack.memory_ratio = ratio;
 	if (!writeinitfile())
 		siril_log_message(_("Usable memory for stacking changed to %g\n"), ratio);
 	return 0;

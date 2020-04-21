@@ -64,27 +64,27 @@ static int readinitfile() {
 	/* Libraw setting */
 	config_setting_t *raw_setting = config_lookup(&config, keywords[RAW]);
 	if (raw_setting) {
-		config_setting_lookup_float(raw_setting, "mul_0", &com.raw_set.mul[0]);
-		config_setting_lookup_float(raw_setting, "mul_2", &com.raw_set.mul[2]);
-		config_setting_lookup_float(raw_setting, "bright", &com.raw_set.bright);
-		config_setting_lookup_int(raw_setting, "auto", &com.raw_set.auto_mul);
-		config_setting_lookup_int(raw_setting, "cam_wb", &com.raw_set.use_camera_wb);
-		config_setting_lookup_int(raw_setting, "auto_wb", &com.raw_set.use_auto_wb);
-		config_setting_lookup_int(raw_setting, "user_qual", &com.raw_set.user_qual);
-		config_setting_lookup_float(raw_setting, "gamm_0", &com.raw_set.gamm[0]);
-		config_setting_lookup_float(raw_setting, "gamm_1", &com.raw_set.gamm[1]);
-		config_setting_lookup_int(raw_setting, "user_black", &com.raw_set.user_black);
+		config_setting_lookup_float(raw_setting, "mul_0", &com.pref.raw_set.mul[0]);
+		config_setting_lookup_float(raw_setting, "mul_2", &com.pref.raw_set.mul[2]);
+		config_setting_lookup_float(raw_setting, "bright", &com.pref.raw_set.bright);
+		config_setting_lookup_int(raw_setting, "auto", &com.pref.raw_set.auto_mul);
+		config_setting_lookup_int(raw_setting, "cam_wb", &com.pref.raw_set.use_camera_wb);
+		config_setting_lookup_int(raw_setting, "auto_wb", &com.pref.raw_set.use_auto_wb);
+		config_setting_lookup_int(raw_setting, "user_qual", &com.pref.raw_set.user_qual);
+		config_setting_lookup_float(raw_setting, "gamm_0", &com.pref.raw_set.gamm[0]);
+		config_setting_lookup_float(raw_setting, "gamm_1", &com.pref.raw_set.gamm[1]);
+		config_setting_lookup_int(raw_setting, "user_black", &com.pref.raw_set.user_black);
 	}
 
 	/* Debayer setting */
 	config_setting_t *debayer_setting = config_lookup(&config, keywords[BAY]);
 	if (debayer_setting) {
-		config_setting_lookup_bool(debayer_setting, "ser_use_bayer_header", &com.debayer.use_bayer_header);
-		config_setting_lookup_int(debayer_setting, "pattern", &com.debayer.bayer_pattern);
-		config_setting_lookup_bool(debayer_setting, "compatibility", &com.debayer.compatibility);
-		config_setting_lookup_int(debayer_setting, "inter", (int*)&com.debayer.bayer_inter);
-		config_setting_lookup_int(debayer_setting, "xbayeroff", &com.debayer.xbayeroff);
-		config_setting_lookup_int(debayer_setting, "ybayeroff", &com.debayer.ybayeroff);
+		config_setting_lookup_bool(debayer_setting, "ser_use_bayer_header", &com.pref.debayer.use_bayer_header);
+		config_setting_lookup_int(debayer_setting, "pattern", &com.pref.debayer.bayer_pattern);
+		config_setting_lookup_bool(debayer_setting, "compatibility", &com.pref.debayer.compatibility);
+		config_setting_lookup_int(debayer_setting, "inter", (int*)&com.pref.debayer.bayer_inter);
+		config_setting_lookup_int(debayer_setting, "xbayeroff", &com.pref.debayer.xbayeroff);
+		config_setting_lookup_int(debayer_setting, "ybayeroff", &com.pref.debayer.ybayeroff);
 
 	}
 
@@ -104,45 +104,45 @@ static int readinitfile() {
 	/* Stacking setting */
 	config_setting_t *stack_setting = config_lookup(&config, keywords[STK]);
 	if (stack_setting) {
-		config_setting_lookup_int(stack_setting, "method", &com.stack.method);
-		config_setting_lookup_int(stack_setting, "rejection", &com.stack.rej_method);
-		config_setting_lookup_int(stack_setting, "normalisation", &com.stack.normalisation_method);
+		config_setting_lookup_int(stack_setting, "method", &com.pref.stack.method);
+		config_setting_lookup_int(stack_setting, "rejection", &com.pref.stack.rej_method);
+		config_setting_lookup_int(stack_setting, "normalisation", &com.pref.stack.normalisation_method);
 
-		config_setting_lookup_int(stack_setting, "mem_mode", (int*)&com.stack.mem_mode);
-		config_setting_lookup_float(stack_setting, "maxmem", &com.stack.memory_ratio);
-		config_setting_lookup_float(stack_setting, "maxmem_gb",	&com.stack.memory_amount);
+		config_setting_lookup_int(stack_setting, "mem_mode", (int*)&com.pref.stack.mem_mode);
+		config_setting_lookup_float(stack_setting, "maxmem", &com.pref.stack.memory_ratio);
+		config_setting_lookup_float(stack_setting, "maxmem_gb",	&com.pref.stack.memory_amount);
 	}
-	if (com.stack.mem_mode < 0 || com.stack.mem_mode > 2)
-		com.stack.mem_mode = RATIO;
-	if (com.stack.memory_ratio <= 0.05)
-		com.stack.memory_ratio = 0.9;
+	if (com.pref.stack.mem_mode < 0 || com.pref.stack.mem_mode > 2)
+		com.pref.stack.mem_mode = RATIO;
+	if (com.pref.stack.memory_ratio <= 0.05)
+		com.pref.stack.memory_ratio = 0.9;
 
 	/* Photometry setting */
 	config_setting_t *photometry_setting = config_lookup(&config, keywords[PTM]);
 	if (photometry_setting) {
-		config_setting_lookup_float(photometry_setting, "gain", &com.phot_set.gain);
-		config_setting_lookup_float(photometry_setting, "inner-radius", &com.phot_set.inner);
-		config_setting_lookup_float(photometry_setting, "outer-radius", &com.phot_set.outer);
-		config_setting_lookup_int(photometry_setting, "minval", &com.phot_set.minval);
-		config_setting_lookup_int(photometry_setting, "maxval", &com.phot_set.maxval);
+		config_setting_lookup_float(photometry_setting, "gain", &com.pref.phot_set.gain);
+		config_setting_lookup_float(photometry_setting, "inner-radius", &com.pref.phot_set.inner);
+		config_setting_lookup_float(photometry_setting, "outer-radius", &com.pref.phot_set.outer);
+		config_setting_lookup_int(photometry_setting, "minval", &com.pref.phot_set.minval);
+		config_setting_lookup_int(photometry_setting, "maxval", &com.pref.phot_set.maxval);
 	}
 
 	/* Misc setting */
 	config_setting_t *misc_setting = config_lookup(&config, keywords[MISC]);
 	if (misc_setting) {
-		config_setting_lookup_bool(misc_setting, "confirm_quit", &com.save.quit);
-		config_setting_lookup_bool(misc_setting, "confirm_script", &com.save.script);
-		config_setting_lookup_bool(misc_setting, "show_thumbnails", &com.show_thumbnails);
-		config_setting_lookup_int(misc_setting, "thumbnail_size", &com.thumbnail_size);
-		config_setting_lookup_int(misc_setting, "theme", &com.combo_theme);
+		config_setting_lookup_bool(misc_setting, "confirm_quit", &com.pref.save.quit);
+		config_setting_lookup_bool(misc_setting, "confirm_script", &com.pref.save.script);
+		config_setting_lookup_bool(misc_setting, "show_thumbnails", &com.pref.show_thumbnails);
+		config_setting_lookup_int(misc_setting, "thumbnail_size", &com.pref.thumbnail_size);
+		config_setting_lookup_int(misc_setting, "theme", &com.pref.combo_theme);
 		config_setting_lookup_string(misc_setting, "lang", &lang);
-		com.combo_lang = g_strdup(lang);
-		config_setting_lookup_bool(misc_setting, "remember_winpos", &com.remember_windows);
-		config_setting_lookup_bool(misc_setting, "is_maximized", &com.is_maximized);
+		com.pref.combo_lang = g_strdup(lang);
+		config_setting_lookup_bool(misc_setting, "remember_winpos", &com.pref.remember_windows);
+		config_setting_lookup_bool(misc_setting, "is_maximized", &com.pref.is_maximized);
 		config_setting_lookup_string(misc_setting, "swap_directory", &swap_dir);
-		com.swap_dir = g_strdup(swap_dir);
+		com.pref.swap_dir = g_strdup(swap_dir);
 		config_setting_lookup_string(misc_setting, "extension", &extension);
-		com.ext = g_strdup(extension);
+		com.pref.ext = g_strdup(extension);
 
 
 		misc_setting = config_lookup(&config, "misc-settings.scripts_paths");
@@ -158,13 +158,13 @@ static int readinitfile() {
 		}
 		misc_setting = config_lookup(&config, "misc-settings.main_w_pos");
 		if (misc_setting != NULL) {
-			com.main_w_pos.x = config_setting_get_int_elem(misc_setting, 0);
-			com.main_w_pos.y = config_setting_get_int_elem(misc_setting, 1);
-			com.main_w_pos.w = config_setting_get_int_elem(misc_setting, 2);
-			com.main_w_pos.h = config_setting_get_int_elem(misc_setting, 3);
+			com.pref.main_w_pos.x = config_setting_get_int_elem(misc_setting, 0);
+			com.pref.main_w_pos.y = config_setting_get_int_elem(misc_setting, 1);
+			com.pref.main_w_pos.w = config_setting_get_int_elem(misc_setting, 2);
+			com.pref.main_w_pos.h = config_setting_get_int_elem(misc_setting, 3);
 		}
 	}
-	com.script_path = list;
+	com.pref.script_path = list;
 	config_destroy(&config);
 	return 0;
 }
@@ -182,34 +182,34 @@ static void _save_libraw(config_t *config, config_setting_t *root) {
 	libraw_group = config_setting_add(root, keywords[RAW], CONFIG_TYPE_GROUP);
 
 	raw_setting = config_setting_add(libraw_group, "mul_0", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(raw_setting, com.raw_set.mul[0]);
+	config_setting_set_float(raw_setting, com.pref.raw_set.mul[0]);
 
 	raw_setting = config_setting_add(libraw_group, "mul_2", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(raw_setting, com.raw_set.mul[2]);
+	config_setting_set_float(raw_setting, com.pref.raw_set.mul[2]);
 
 	raw_setting = config_setting_add(libraw_group, "bright", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(raw_setting, com.raw_set.bright);
+	config_setting_set_float(raw_setting, com.pref.raw_set.bright);
 
 	raw_setting = config_setting_add(libraw_group, "auto", CONFIG_TYPE_INT);
-	config_setting_set_int(raw_setting, com.raw_set.auto_mul);
+	config_setting_set_int(raw_setting, com.pref.raw_set.auto_mul);
 
 	raw_setting = config_setting_add(libraw_group, "cam_wb", CONFIG_TYPE_INT);
-	config_setting_set_int(raw_setting, com.raw_set.use_camera_wb);
+	config_setting_set_int(raw_setting, com.pref.raw_set.use_camera_wb);
 
 	raw_setting = config_setting_add(libraw_group, "auto_wb", CONFIG_TYPE_INT);
-	config_setting_set_int(raw_setting, com.raw_set.use_auto_wb);
+	config_setting_set_int(raw_setting, com.pref.raw_set.use_auto_wb);
 
 	raw_setting = config_setting_add(libraw_group, "user_qual",	CONFIG_TYPE_INT);
-	config_setting_set_int(raw_setting, com.raw_set.user_qual);
+	config_setting_set_int(raw_setting, com.pref.raw_set.user_qual);
 
 	raw_setting = config_setting_add(libraw_group, "gamm_0", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(raw_setting, com.raw_set.gamm[0]);
+	config_setting_set_float(raw_setting, com.pref.raw_set.gamm[0]);
 
 	raw_setting = config_setting_add(libraw_group, "gamm_1", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(raw_setting, com.raw_set.gamm[1]);
+	config_setting_set_float(raw_setting, com.pref.raw_set.gamm[1]);
 
 	raw_setting = config_setting_add(libraw_group, "user_black", CONFIG_TYPE_INT);
-	config_setting_set_int(raw_setting, com.raw_set.user_black);
+	config_setting_set_int(raw_setting, com.pref.raw_set.user_black);
 }
 
 static void _save_debayer(config_t *config, config_setting_t *root) {
@@ -218,21 +218,21 @@ static void _save_debayer(config_t *config, config_setting_t *root) {
 	debayer_group = config_setting_add(root, keywords[BAY], CONFIG_TYPE_GROUP);
 
 	debayer_setting = config_setting_add(debayer_group, "ser_use_bayer_header",	CONFIG_TYPE_BOOL);
-	config_setting_set_bool(debayer_setting, com.debayer.use_bayer_header);
+	config_setting_set_bool(debayer_setting, com.pref.debayer.use_bayer_header);
 
 	debayer_setting = config_setting_add(debayer_group, "pattern", CONFIG_TYPE_INT);
-	config_setting_set_int(debayer_setting, com.debayer.bayer_pattern);
+	config_setting_set_int(debayer_setting, com.pref.debayer.bayer_pattern);
 
 	debayer_setting = config_setting_add(debayer_group, "compatibility", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(debayer_setting, com.debayer.compatibility);
+	config_setting_set_bool(debayer_setting, com.pref.debayer.compatibility);
 
 	debayer_setting = config_setting_add(debayer_group, "inter", CONFIG_TYPE_INT);
-	config_setting_set_int(debayer_setting, com.debayer.bayer_inter);
+	config_setting_set_int(debayer_setting, com.pref.debayer.bayer_inter);
 
 	debayer_setting = config_setting_add(debayer_group, "xbayeroff", CONFIG_TYPE_INT);
-	config_setting_set_int(debayer_setting, com.debayer.xbayeroff);
+	config_setting_set_int(debayer_setting, com.pref.debayer.xbayeroff);
 	debayer_setting = config_setting_add(debayer_group, "ybayeroff", CONFIG_TYPE_INT);
-	config_setting_set_int(debayer_setting, com.debayer.ybayeroff);
+	config_setting_set_int(debayer_setting, com.pref.debayer.ybayeroff);
 }
 
 static void _save_preprocessing(config_t *config, config_setting_t *root) {
@@ -262,19 +262,19 @@ static void _save_stacking(config_t *config, config_setting_t *root) {
 	stk_group = config_setting_add(root, keywords[STK], CONFIG_TYPE_GROUP);
 
 	stk_setting = config_setting_add(stk_group, "method", CONFIG_TYPE_INT);
-	config_setting_set_int(stk_setting, com.stack.method);
+	config_setting_set_int(stk_setting, com.pref.stack.method);
 
 	stk_setting = config_setting_add(stk_group, "rejection", CONFIG_TYPE_INT);
-	config_setting_set_int(stk_setting, com.stack.rej_method);
+	config_setting_set_int(stk_setting, com.pref.stack.rej_method);
 
 	stk_setting = config_setting_add(stk_group, "mem_mode", CONFIG_TYPE_INT);
-	config_setting_set_int(stk_setting, com.stack.mem_mode);
+	config_setting_set_int(stk_setting, com.pref.stack.mem_mode);
 
 	stk_setting = config_setting_add(stk_group, "maxmem", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(stk_setting, com.stack.memory_ratio);
+	config_setting_set_float(stk_setting, com.pref.stack.memory_ratio);
 
 	stk_setting = config_setting_add(stk_group, "maxmem_gb", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(stk_setting, com.stack.memory_amount);
+	config_setting_set_float(stk_setting, com.pref.stack.memory_amount);
 }
 
 static void _save_photometry(config_t *config, config_setting_t *root) {
@@ -283,49 +283,49 @@ static void _save_photometry(config_t *config, config_setting_t *root) {
 	photometry_group = config_setting_add(root, keywords[PTM], CONFIG_TYPE_GROUP);
 
 	photometry_setting = config_setting_add(photometry_group, "gain", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(photometry_setting, com.phot_set.gain);
+	config_setting_set_float(photometry_setting, com.pref.phot_set.gain);
 	photometry_setting = config_setting_add(photometry_group, "inner-radius", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(photometry_setting, com.phot_set.inner);
+	config_setting_set_float(photometry_setting, com.pref.phot_set.inner);
 	photometry_setting = config_setting_add(photometry_group, "outer-radius", CONFIG_TYPE_FLOAT);
-	config_setting_set_float(photometry_setting, com.phot_set.outer);
+	config_setting_set_float(photometry_setting, com.pref.phot_set.outer);
 	photometry_setting = config_setting_add(photometry_group, "minval", CONFIG_TYPE_INT);
-	config_setting_set_int(photometry_setting, com.phot_set.minval);
+	config_setting_set_int(photometry_setting, com.pref.phot_set.minval);
 	photometry_setting = config_setting_add(photometry_group, "maxval", CONFIG_TYPE_INT);
-	config_setting_set_int(photometry_setting, com.phot_set.maxval);
+	config_setting_set_int(photometry_setting, com.pref.phot_set.maxval);
 }
 
 static void _save_misc(config_t *config, config_setting_t *root) {
 	config_setting_t *misc_group, *misc_setting;
-	GSList *list = com.script_path;
+	GSList *list = com.pref.script_path;
 
 	misc_group = config_setting_add(root, keywords[MISC], CONFIG_TYPE_GROUP);
 
 	misc_setting = config_setting_add(misc_group, "swap_directory", CONFIG_TYPE_STRING);
-	config_setting_set_string(misc_setting, com.swap_dir);
+	config_setting_set_string(misc_setting, com.pref.swap_dir);
 
 	misc_setting = config_setting_add(misc_group, "extension", CONFIG_TYPE_STRING);
-	config_setting_set_string(misc_setting, com.ext);
+	config_setting_set_string(misc_setting, com.pref.ext);
 
 	misc_setting = config_setting_add(misc_group, "confirm_quit", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(misc_setting, com.save.quit);
+	config_setting_set_bool(misc_setting, com.pref.save.quit);
 
 	misc_setting = config_setting_add(misc_group, "confirm_script", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(misc_setting, com.save.script);
+	config_setting_set_bool(misc_setting, com.pref.save.script);
 
 	misc_setting = config_setting_add(misc_group, "show_thumbnails", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(misc_setting, com.show_thumbnails);
+	config_setting_set_bool(misc_setting, com.pref.show_thumbnails);
 
 	misc_setting = config_setting_add(misc_group, "thumbnail_size", CONFIG_TYPE_INT);
-	config_setting_set_int(misc_setting, com.thumbnail_size);
+	config_setting_set_int(misc_setting, com.pref.thumbnail_size);
 
 	misc_setting = config_setting_add(misc_group, "theme", CONFIG_TYPE_INT);
-	config_setting_set_int(misc_setting, com.combo_theme);
+	config_setting_set_int(misc_setting, com.pref.combo_theme);
 
 	misc_setting = config_setting_add(misc_group, "lang", CONFIG_TYPE_STRING);
-	config_setting_set_string(misc_setting, com.combo_lang);
+	config_setting_set_string(misc_setting, com.pref.combo_lang);
 
 	misc_setting = config_setting_add(misc_group, "remember_winpos", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(misc_setting, com.remember_windows);
+	config_setting_set_bool(misc_setting, com.pref.remember_windows);
 
 	misc_setting = config_setting_add(misc_group, "scripts_paths", CONFIG_TYPE_LIST);
 	while (list) {
@@ -333,13 +333,13 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 		list = list->next;
 	}
 	misc_setting = config_setting_add(misc_group, "main_w_pos",	CONFIG_TYPE_LIST);
-	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.x);
-	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.y);
-	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.w);
-	config_setting_set_int_elem(misc_setting, -1, com.main_w_pos.h);
+	config_setting_set_int_elem(misc_setting, -1, com.pref.main_w_pos.x);
+	config_setting_set_int_elem(misc_setting, -1, com.pref.main_w_pos.y);
+	config_setting_set_int_elem(misc_setting, -1, com.pref.main_w_pos.w);
+	config_setting_set_int_elem(misc_setting, -1, com.pref.main_w_pos.h);
 
 	misc_setting = config_setting_add(misc_group, "is_maximized", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(misc_setting, com.is_maximized);
+	config_setting_set_bool(misc_setting, com.pref.is_maximized);
 
 }
 

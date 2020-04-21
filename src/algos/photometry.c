@@ -203,15 +203,15 @@ static double getMagnitude(double intensity) {
 }
 
 static double getCameraGain() {
-	return com.phot_set.gain;
+	return com.pref.phot_set.gain;
 }
 
 static double getInnerRadius() {
-	return com.phot_set.inner;
+	return com.pref.phot_set.inner;
 }
 
 static double getOuterRadius() {
-	return com.phot_set.outer;
+	return com.pref.phot_set.outer;
 }
 
 static double getMagErr(double intensity, double area, int nsky, double skysig) {
@@ -231,17 +231,17 @@ static double getMagErr(double intensity, double area, int nsky, double skysig) 
 
 static double lo_data() {
 	if (gfit.type == DATA_FLOAT) {
-		return (double) com.phot_set.minval / USHRT_MAX_DOUBLE;
+		return (double) com.pref.phot_set.minval / USHRT_MAX_DOUBLE;
 	} else {
-		return (double) com.phot_set.minval;
+		return (double) com.pref.phot_set.minval;
 	}
 }
 
 static double hi_data() {
 	if (gfit.type == DATA_FLOAT) {
-		return (double) com.phot_set.maxval / USHRT_MAX_DOUBLE;
+		return (double) com.pref.phot_set.maxval / USHRT_MAX_DOUBLE;
 	} else {
-		return (double) com.phot_set.maxval;
+		return (double) com.pref.phot_set.maxval;
 	}
 }
 
@@ -350,11 +350,11 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 }
 
 void initialize_photometric_param() {
-	com.phot_set.inner = 20;
-	com.phot_set.outer = 30;
-	com.phot_set.gain = 2.3;
-	com.phot_set.minval = 0;
-	com.phot_set.maxval = 65535;
+	com.pref.phot_set.inner = 20;
+	com.pref.phot_set.outer = 30;
+	com.pref.phot_set.gain = 2.3;
+	com.pref.phot_set.minval = 0;
+	com.pref.phot_set.maxval = 65535;
 }
 
 void on_spinInner_value_changed(GtkSpinButton *inner, gpointer user_data) {

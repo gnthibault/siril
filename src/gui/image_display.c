@@ -714,16 +714,16 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 				double size = the_psf->sx;
 				cairo_arc(cr, the_psf->xpos, the_psf->ypos, size, 0., 2. * M_PI);
 				cairo_stroke(cr);
-				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.phot_set.inner, 0.,
+				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.pref.phot_set.inner, 0.,
 						2. * M_PI);
 				cairo_stroke(cr);
-				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.phot_set.outer, 0.,
+				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.pref.phot_set.outer, 0.,
 						2. * M_PI);
 				cairo_stroke(cr);
 				cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL,
 						CAIRO_FONT_WEIGHT_BOLD);
 				cairo_set_font_size(cr, 40);
-				cairo_move_to(cr, the_psf->xpos + com.phot_set.outer + 5, the_psf->ypos);
+				cairo_move_to(cr, the_psf->xpos + com.pref.phot_set.outer + 5, the_psf->ypos);
 				if (i == 0) {
 					cairo_show_text(cr, "V");
 				}

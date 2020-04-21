@@ -1411,8 +1411,8 @@ int savefits(const char *name, fits *f) {
 		return 1;
 	}
 
-	if (!ends_with(name, com.ext)) {
-		snprintf(filename, 255, "%s%s", name, com.ext);
+	if (!ends_with(name, com.pref.ext)) {
+		snprintf(filename, 255, "%s%s", name, com.pref.ext);
 	} else {
 		snprintf(filename, 255, "%s", name);
 	}
@@ -2119,7 +2119,7 @@ static double logviz(double arg) {
  */
 GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	fitsfile *fp;
-	const int MAX_SIZE = com.thumbnail_size;
+	const int MAX_SIZE = com.pref.thumbnail_size;
 	float nullval = 0.;
 	int naxis, dtype, stat, status;
 

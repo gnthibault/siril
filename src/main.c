@@ -162,9 +162,9 @@ static void global_initialization() {
 	/* initialize the com struct and zoom level */
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
-	com.stack.mem_mode = 0;
-	com.stack.memory_ratio = 0.9;
-	com.stack.memory_amount = 4.0;
+	com.pref.stack.mem_mode = 0;
+	com.pref.stack.memory_ratio = 0.9;
+	com.pref.stack.memory_amount = 4.0;
 }
 
 static void init_num_procs() {
@@ -233,11 +233,11 @@ static void siril_app_activate(GApplication *application) {
 	initialize_sequence(&com.seq, TRUE);
 
 	/* we also initialize a couple of important variables */
-	com.show_thumbnails = TRUE;
-	com.thumbnail_size = 256;
-	com.remember_windows = TRUE;
-	com.ext = g_strdup(".fit");
-	com.swap_dir = g_strdup(g_get_tmp_dir());
+	com.pref.show_thumbnails = TRUE;
+	com.pref.thumbnail_size = 256;
+	com.pref.remember_windows = TRUE;
+	com.pref.ext = g_strdup(".fit");
+	com.pref.swap_dir = g_strdup(g_get_tmp_dir());
 
 	/* set default CWD, and load init file
 	 * checkinitfile will load all saved parameters
@@ -250,8 +250,8 @@ static void siril_app_activate(GApplication *application) {
 	}
 
 	siril_language_parser_init();
-	if (com.combo_lang)
-		language_init(com.combo_lang);
+	if (com.pref.combo_lang)
+		language_init(com.pref.combo_lang);
 
 	if (main_option_initfile) {
 		com.initfile = g_strdup(main_option_initfile);
@@ -294,7 +294,7 @@ static void siril_app_activate(GApplication *application) {
 	}
 	if (!com.headless) {
 		/* Load preferred theme */
-		load_prefered_theme(com.combo_theme);
+		load_prefered_theme(com.pref.combo_theme);
 		/* Load the css sheet for general style */
 		load_css_style_sheet();
 		/* Load glade file */

@@ -70,8 +70,8 @@ void initialize_stacking_methods() {
 
 	stackcombo = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "comboboxstack_methods"));
 	rejectioncombo = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "comborejection"));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(stackcombo), com.stack.method);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(rejectioncombo), com.stack.rej_method);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(stackcombo), com.pref.stack.method);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(rejectioncombo), com.pref.stack.rej_method);
 }
 
 gboolean evaluate_stacking_should_output_32bits(stack_method method, sequence *seq, int nb_img_to_stack) {
@@ -614,9 +614,9 @@ void on_comboboxstack_methods_changed (GtkComboBox *box, gpointer user_data) {
 	static GtkNotebook* notebook = NULL;
 	if (!notebook)
 		notebook = GTK_NOTEBOOK(gtk_builder_get_object(builder, "notebook4"));
-	com.stack.method = gtk_combo_box_get_active(box);
+	com.pref.stack.method = gtk_combo_box_get_active(box);
 
-	gtk_notebook_set_current_page(notebook, com.stack.method);
+	gtk_notebook_set_current_page(notebook, com.pref.stack.method);
 	update_stack_interface(TRUE);
 	writeinitfile();
 }
@@ -683,7 +683,7 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_label_set_text(label_rejection[0], _("Sigma low: "));
 			gtk_label_set_text(label_rejection[1], _("Sigma high: "));
 	}
-	com.stack.rej_method = gtk_combo_box_get_active(box);
+	com.pref.stack.rej_method = gtk_combo_box_get_active(box);
 	writeinitfile();
 }
 

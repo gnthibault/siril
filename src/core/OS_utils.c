@@ -395,14 +395,14 @@ int get_available_memory_in_MB() {
  * @return return the max memory, and -1 for unlimited
  */
 int get_max_memory_in_MB() {
-	switch (com.stack.mem_mode) {
+	switch (com.pref.stack.mem_mode) {
 		default:
 		case RATIO:
-			return round_to_int(com.stack.memory_ratio *
+			return round_to_int(com.pref.stack.memory_ratio *
 					(double)get_available_memory_in_MB());
 
 		case AMOUNT:
-			return round_to_int(com.stack.memory_amount * 1024.0);
+			return round_to_int(com.pref.stack.memory_amount * 1024.0);
 		case UNLIMITED:
 			return -1;
 	}

@@ -154,9 +154,9 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 		return;
 	}
 
-	if (!com.save.script) {
+	if (!com.pref.save.script) {
 		gboolean confirm = siril_confirm_dialog_and_remember(
-				_("Please read me before using scripts"), CONFIRM_RUN_SCRIPTS, &com.save.script);
+				_("Please read me before using scripts"), CONFIRM_RUN_SCRIPTS, &com.pref.save.script);
 		/* update setting buttons */
 		set_GUI_misc();
 		/* update config file */
@@ -201,11 +201,11 @@ int initialize_script_menu() {
 		menuscript = lookup_widget("header_scripts_button");
 	}
 
-	if (!com.script_path) {
+	if (!com.pref.script_path) {
 		script = initialize_script_paths();
-		com.script_path = script;
+		com.pref.script_path = script;
 	} else {
-		script = com.script_path;
+		script = com.pref.script_path;
 	}
 	fill_gtkText(script);
 
@@ -249,9 +249,9 @@ int initialize_script_menu() {
 void fill_script_paths_list() {
 	GSList *list;
 
-	g_slist_free_full(com.script_path, g_free);
+	g_slist_free_full(com.pref.script_path, g_free);
 	list = get_list_from_textview();
-	com.script_path = list;
+	com.pref.script_path = list;
 	writeinitfile();
 }
 

@@ -15,6 +15,8 @@
 #endif
 #include <libintl.h>
 
+#include "gui/preferences.h"
+
 #define _(String) gettext (String)
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
@@ -190,6 +192,7 @@ typedef struct historic_struct historic;
 typedef struct dateTime_struct dateTime;
 typedef struct fwhm_struct fitted_PSF;
 typedef struct star_finder_struct star_finder_params;
+typedef struct pref_struct preferences;
 typedef struct save_config_struct save_config;
 
 /* global structures */
@@ -547,6 +550,34 @@ struct save_config_struct {
 	gboolean script;
 };
 
+struct pref_struct {
+	/* state of window */
+	gboolean remember_windows;
+	rectangle main_w_pos;
+	gboolean is_maximized;
+
+	save_config save;
+	gboolean show_thumbnails; // show or don't show thumbnails in open dialog box
+	gint thumbnail_size;
+
+	gint combo_theme;           // value of the combobox theme
+	gchar *combo_lang;           // string value of the combobox lang
+
+	char *ext;		// FITS extension used in SIRIL
+
+	gchar *swap_dir;		// swap directory
+	GSList *script_path;	// script path directories
+
+	libraw raw_set;			// the libraw settings
+	struct debayer_config debayer;	// debayer settings
+	phot phot_set;          // photometry settings
+
+	stackconf stack;
+
+	gboolean depth16;
+
+};
+
 /* The global data structure of siril, the only with gfit and the gtk builder,
  * declared in main.c */
 struct cominf {
@@ -573,10 +604,7 @@ struct cominf {
 	gboolean show_excluded;		// show excluded images in sequences
 	double zoom_value;		// 1.0 is normal zoom, use get_zoom_val() to access it
 
-	/* state of window */
-	gboolean remember_windows;
-	rectangle main_w_pos;
-	gboolean is_maximized;
+	preferences pref; // saved variable in preferences
 
 	/* selection rectangle for registration, FWHM, PSF */
 	gboolean drawing;		// true if the rectangle is being set (clicked motion)
@@ -594,18 +622,7 @@ struct cominf {
 	gchar *wd;			// working directory, where images and sequences are
 	gchar *initfile;	// the path of the init file
 	
-	char *ext;		// FITS extension used in SIRIL
-
 	int reg_settings;		// Use to save registration method in the init file
-	
-	save_config save;
-	gboolean show_thumbnails; // show or don't show thumbnails in open dialog box
-	gint thumbnail_size;
-
-	gint combo_theme;           // value of the combobox theme
-	gchar *combo_lang;           // string value of the combobox lang
-
-	stackconf stack;
 
 	gboolean cache_upscaled;	// keep up-scaled files for 'drizzle' (only used by developers)
 	
@@ -625,12 +642,6 @@ struct cominf {
 	int hist_size;			// allocated size
 	int hist_current;		// current index
 	int hist_display;		// displayed index
-	gchar *swap_dir;		// swap directory
-	GSList *script_path;	// script path directories
-
-	libraw raw_set;			// the libraw settings
-	struct debayer_config debayer;	// debayer settings
-	phot phot_set;          // photometry settings
 
 	sequence seq;			// currently loaded sequence	TODO: *seq
 	single *uniq;			// currently loaded image, if outside sequence

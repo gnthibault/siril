@@ -145,7 +145,7 @@ void siril_language_fill_combo() {
 	for (GList *l = list; l; l = l->next) {
 		gtk_combo_box_text_append_text(lang_combo, l->data);
 		gchar *locale = extract_locale_from_string(l->data);
-		if (!g_strcmp0(com.combo_lang, locale)) {
+		if (!g_strcmp0(com.pref.combo_lang, locale)) {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(lang_combo), i);
 			lang_changed = TRUE;
 		}
@@ -168,12 +168,12 @@ void language_init(const gchar *language) {
 void update_language() {
 	GtkComboBoxText *lang_combo = GTK_COMBO_BOX_TEXT(lookup_widget("combo_language"));
 
-	g_free(com.combo_lang);
+	g_free(com.pref.combo_lang);
 	if (gtk_combo_box_get_active(GTK_COMBO_BOX(lang_combo)) == 0) {
-		com.combo_lang = g_strdup("");
+		com.pref.combo_lang = g_strdup("");
 	} else {
 		gchar *str = gtk_combo_box_text_get_active_text(lang_combo);
-		com.combo_lang = extract_locale_from_string(str);
+		com.pref.combo_lang = extract_locale_from_string(str);
 	}
 	writeinitfile();
 }

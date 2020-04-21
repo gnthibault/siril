@@ -244,7 +244,7 @@ int check_seq(int recompute_stats) {
 		}
 #endif
 
-		else if (!strcasecmp(ext, com.ext+1)) {
+		else if (!strcasecmp(ext, com.pref.ext+1)) {
 			if (!get_index_and_basename(file, &basename, &curidx, &fixed)) {
 				int current_seq = -1;
 				/* search in known sequences if we already have it */
@@ -306,7 +306,7 @@ int check_seq(int recompute_stats) {
 	}
 	free(sequences);
 	siril_log_message(_("No sequence found, verify working directory or "
-			"change FITS extension in settings (current is %s)\n"), com.ext);
+			"change FITS extension in settings (current is %s)\n"), com.pref.ext);
 	return 1;	// no sequence found
 }
 
@@ -914,7 +914,7 @@ char *fit_sequence_get_image_filename(sequence *seq, int index, char *name_buffe
 		sprintf(format, "%%s%%.%dd", seq->fixed);
 	}
 	if (add_fits_ext)
-		strcat(format, com.ext);
+		strcat(format, com.pref.ext);
 	snprintf(name_buffer, 255, format,
 			seq->seqname, seq->imgparam[index].filenum);
 	name_buffer[255] = '\0';
@@ -927,7 +927,7 @@ char *fit_sequence_get_image_filename_prefixed(sequence *seq, const char *prefix
 	sprintf(format, "%%s%%s%%0%dd%%s", seq->fixed);
 	g_string_printf(str, format, prefix,
 			seq->seqname, seq->imgparam[index].filenum,
-			com.ext);
+			com.pref.ext);
 	return g_string_free(str, FALSE);
 }
 
@@ -939,9 +939,9 @@ char *get_possible_image_filename(sequence *seq, int image_number, char *name_bu
 	if (image_number < seq->beg || image_number > seq->end || name_buffer == NULL)
 		return NULL;
 	if (seq->fixed <= 1){
-		sprintf(format, "%%s%%d%s", com.ext);
+		sprintf(format, "%%s%%d%s", com.pref.ext);
 	} else {
-		sprintf(format, "%%s%%.%dd%s", seq->fixed, com.ext);
+		sprintf(format, "%%s%%.%dd%s", seq->fixed, com.pref.ext);
 	}
 	sprintf(name_buffer, format, seq->seqname, image_number);
 	return name_buffer;
@@ -958,14 +958,14 @@ int	get_index_and_basename(const char *filename, char **basename, int *index, in
 	first_zero = -1;
 	*basename = NULL;
 	fnlen = strlen(filename);
-	if (fnlen < strlen(com.ext)+2) return -1;
-	if (!ends_with(filename, com.ext)) return -1;
-	i = fnlen-strlen(com.ext)-1;
+	if (fnlen < strlen(com.pref.ext)+2) return -1;
+	if (!ends_with(filename, com.pref.ext)) return -1;
+	i = fnlen-strlen(com.pref.ext)-1;
 	if (!isdigit(filename[i])) return -1;
 	digit_idx = i;
 
 	buffer = strdup(filename);
-	buffer[fnlen-strlen(com.ext)] = '\0';		// for atoi()
+	buffer[fnlen-strlen(com.pref.ext)] = '\0';		// for atoi()
 	do {
 		if (buffer[i] == '0' && first_zero < 0)
 			first_zero = i;
@@ -1427,7 +1427,7 @@ gboolean sequence_is_rgb(sequence *seq) {
 		case SEQ_REGULAR:
 			return seq->nb_layers == 3;
 		case SEQ_SER:
-			return (seq->ser_file->color_id != SER_MONO && com.debayer.open_debayer) ||
+			return (seq->ser_file->color_id != SER_MONO && com.pref.debayer.open_debayer) ||
 				seq->ser_file->color_id == SER_RGB ||
 				seq->ser_file->color_id == SER_BGR;
 		default:

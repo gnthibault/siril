@@ -243,11 +243,11 @@ static void update_icons_to_theme(gboolean is_dark) {
 void on_combo_theme_changed(GtkComboBox *box, gpointer user_data) {
 	GtkSettings *settings;
 
-	com.combo_theme = gtk_combo_box_get_active(box);
+	com.pref.combo_theme = gtk_combo_box_get_active(box);
 
 	settings = gtk_settings_get_default();
-	g_object_set(settings, "gtk-application-prefer-dark-theme", com.combo_theme == 0, NULL);
-	update_icons_to_theme(com.combo_theme == 0);
+	g_object_set(settings, "gtk-application-prefer-dark-theme", com.pref.combo_theme == 0, NULL);
+	update_icons_to_theme(com.pref.combo_theme == 0);
 }
 
 static void initialize_theme_GUI() {
@@ -256,9 +256,9 @@ static void initialize_theme_GUI() {
 	box = GTK_COMBO_BOX(lookup_widget("combo_theme"));
 
 	g_signal_handlers_block_by_func(box, on_combo_theme_changed, NULL);
-	gtk_combo_box_set_active(box, com.combo_theme);
+	gtk_combo_box_set_active(box, com.pref.combo_theme);
 	g_signal_handlers_unblock_by_func(box, on_combo_theme_changed, NULL);
-	update_icons_to_theme(com.combo_theme == 0);
+	update_icons_to_theme(com.pref.combo_theme == 0);
 }
 
 void load_prefered_theme(gint theme) {
@@ -266,7 +266,7 @@ void load_prefered_theme(gint theme) {
 
 	settings = gtk_settings_get_default();
 
-	g_object_set(settings, "gtk-application-prefer-dark-theme", com.combo_theme == 0, NULL);
+	g_object_set(settings, "gtk-application-prefer-dark-theme", com.pref.combo_theme == 0, NULL);
 }
 
 void set_sliders_value_to_gfit() {
@@ -885,10 +885,10 @@ void initialize_FITS_name_entries() {
 	mflat = GTK_ENTRY(lookup_widget("flatname_entry"));
 	final_stack = GTK_ENTRY(lookup_widget("entryresultfile"));
 
-	str[0] = g_strdup_printf("master-offset%s", com.ext);
-	str[1] = g_strdup_printf("master-dark%s", com.ext);
-	str[2] = g_strdup_printf("master-flat%s", com.ext);
-	str[3] = g_strdup_printf("stack_result%s", com.ext);
+	str[0] = g_strdup_printf("master-offset%s", com.pref.ext);
+	str[1] = g_strdup_printf("master-dark%s", com.pref.ext);
+	str[2] = g_strdup_printf("master-flat%s", com.pref.ext);
+	str[3] = g_strdup_printf("stack_result%s", com.pref.ext);
 
 	gtk_entry_set_text(moffset, str[0]);
 	gtk_entry_set_text(mdark, str[1]);
@@ -910,7 +910,7 @@ void set_output_filename_to_sequence_name() {
 		return;
 	msg = g_strdup_printf("%s%sstacked%s", com.seq.seqname,
 			ends_with(com.seq.seqname, "_") ?
-			"" : (ends_with(com.seq.seqname, "-") ? "" : "_"), com.ext);
+			"" : (ends_with(com.seq.seqname, "-") ? "" : "_"), com.pref.ext);
 	gtk_entry_set_text(output_file, msg);
 
 	g_free(msg);
@@ -1057,25 +1057,25 @@ void set_GUI_misc() {
 	GtkComboBox *thumb_box;
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
-	gtk_toggle_button_set_active(ToggleButton, com.save.quit);
+	gtk_toggle_button_set_active(ToggleButton, com.pref.save.quit);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskScript"));
-	gtk_toggle_button_set_active(ToggleButton, com.save.script);
+	gtk_toggle_button_set_active(ToggleButton, com.pref.save.script);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button"));
-	gtk_toggle_button_set_active(ToggleButton, com.show_thumbnails);
+	gtk_toggle_button_set_active(ToggleButton, com.pref.show_thumbnails);
 	thumb_box = GTK_COMBO_BOX(lookup_widget("thumbnails_box_size"));
-	gtk_combo_box_set_active(thumb_box, com.thumbnail_size == 256 ? 1: 0);
+	gtk_combo_box_set_active(thumb_box, com.pref.thumbnail_size == 256 ? 1: 0);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck"));
-	gtk_toggle_button_set_active(ToggleButton, com.remember_windows);
+	gtk_toggle_button_set_active(ToggleButton, com.pref.remember_windows);
 
 	memory_percent = GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_ratio"));
-	gtk_spin_button_set_value(memory_percent, com.stack.memory_ratio);
+	gtk_spin_button_set_value(memory_percent, com.pref.stack.memory_ratio);
 	memory_amount = GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_amount"));
-	gtk_spin_button_set_value(memory_amount, com.stack.memory_amount);
+	gtk_spin_button_set_value(memory_amount, com.pref.stack.memory_amount);
 
 	GtkToggleButton *modes[3] = { GTK_TOGGLE_BUTTON(lookup_widget("memfreeratio_radio")),
 		GTK_TOGGLE_BUTTON(lookup_widget("memfixed_radio")),
 		GTK_TOGGLE_BUTTON(lookup_widget("memunlimited_radio")) };
-	gtk_toggle_button_set_active(modes[com.stack.mem_mode], TRUE);
+	gtk_toggle_button_set_active(modes[com.pref.stack.mem_mode], TRUE);
 }
 
 /* size is in kiB */
@@ -1262,7 +1262,7 @@ void initialize_all_GUI(gchar *supported_files) {
 
 	/* initialization of default FITS extension */
 	GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
-	gtk_combo_box_set_active_id(box, com.ext);
+	gtk_combo_box_set_active_id(box, com.pref.ext);
 	initialize_FITS_name_entries();
 
 	initialize_log_tags();
@@ -1500,10 +1500,10 @@ static rectangle get_window_position(GtkWindow *window) {
 }
 
 void save_main_window_state() {
-	if (!com.script && com.remember_windows) {
+	if (!com.script && com.pref.remember_windows) {
 		GtkWidget *main_w = lookup_widget("control_window");
-		com.main_w_pos = get_window_position(GTK_WINDOW(main_w));
-		com.is_maximized = gtk_window_is_maximized(GTK_WINDOW(main_w));
+		com.pref.main_w_pos = get_window_position(GTK_WINDOW(main_w));
+		com.pref.is_maximized = gtk_window_is_maximized(GTK_WINDOW(main_w));
 	}
 }
 
@@ -1511,12 +1511,12 @@ void load_main_window_state() {
 	GtkWidget *win;
 
 	win = lookup_widget("control_window");
-	int x = com.main_w_pos.x;
-	int y = com.main_w_pos.y;
-	int w = com.main_w_pos.w;
-	int h = com.main_w_pos.h;
-	if (com.remember_windows && w > 0 && h > 0) {
-		if (com.is_maximized) {
+	int x = com.pref.main_w_pos.x;
+	int y = com.pref.main_w_pos.y;
+	int w = com.pref.main_w_pos.w;
+	int h = com.pref.main_w_pos.h;
+	if (com.pref.remember_windows && w > 0 && h > 0) {
+		if (com.pref.is_maximized) {
 			gtk_window_maximize(GTK_WINDOW(lookup_widget("control_window")));
 		} else {
 			gtk_window_move(GTK_WINDOW(win), x, y);
@@ -1529,16 +1529,16 @@ void gtk_main_quit() {
 	writeinitfile();		// save settings (like window positions)
 	close_sequence(FALSE);	// save unfinished business
 	close_single_image();	// close the previous image and free resources
-	g_slist_free_full(com.script_path, g_free);
+	g_slist_free_full(com.pref.script_path, g_free);
 	exit(EXIT_SUCCESS);
 }
 
 void siril_quit() {
-	if (com.save.quit) {
+	if (com.pref.save.quit) {
 		gtk_main_quit();
 	}
 	gboolean quit = siril_confirm_dialog_and_remember(_("Closing application"),
-			_("Are you sure you want to quit?"), &com.save.quit);
+			_("Are you sure you want to quit?"), &com.pref.save.quit);
 	if (quit) {
 		set_GUI_misc();
 		writeinitfile();
@@ -1816,7 +1816,7 @@ void on_checkseqbutton_clicked(GtkButton *button, gpointer user_data) {
 void on_confirmDontShowButton_toggled(GtkToggleButton *togglebutton,
 		gpointer user_data) {
 
-	com.save.quit = gtk_toggle_button_get_active(togglebutton);
+	com.pref.save.quit = gtk_toggle_button_get_active(togglebutton);
 	set_GUI_misc();
 	writeinitfile();
 }
@@ -1824,7 +1824,7 @@ void on_confirmDontShowButton_toggled(GtkToggleButton *togglebutton,
 void on_miscAskScript_toggled(GtkToggleButton *togglebutton,
 		gpointer user_data) {
 
-	com.save.script = gtk_toggle_button_get_active(togglebutton);
+	com.pref.save.script = gtk_toggle_button_get_active(togglebutton);
 	set_GUI_misc();
 	writeinitfile();
 }

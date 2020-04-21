@@ -173,9 +173,9 @@ static void bv2rgb(float *r, float *g, float *b, float bv) { // RGB <0,1> <- BV 
 
 static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits *fit) {
 	/* make a selection around the star */
-	area->x = round_to_int(stars->xpos - com.phot_set.outer);
-	area->y = round_to_int(stars->ypos - com.phot_set.outer);
-	area->w = area->h = round_to_int(com.phot_set.outer * 2);
+	area->x = round_to_int(stars->xpos - com.pref.phot_set.outer);
+	area->y = round_to_int(stars->ypos - com.pref.phot_set.outer);
+	area->w = area->h = round_to_int(com.pref.phot_set.outer * 2);
 
 	/* Don't want stars to close of the edge */
 	if (area->x + area->w >= fit->rx) {
@@ -509,7 +509,7 @@ static gpointer photometric_cc(gpointer p) {
 	}
 
 	/* make sure parameters are initialized in a good way */
-	if (com.phot_set.outer == 0.0) {
+	if (com.pref.phot_set.outer == 0.0) {
 		initialize_photometric_param();
 	}
 

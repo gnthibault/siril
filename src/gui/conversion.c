@@ -194,7 +194,7 @@ static void initialize_convert() {
 	args->list = files_to_convert;
 	args->total = count;
 	args->nb_converted = 0;
-	args->compatibility = com.debayer.compatibility;
+	args->compatibility = com.pref.debayer.compatibility;
 	args->command_line = FALSE;
 	args->input_has_a_seq = !no_sequence_to_convert;
 	args->destroot = g_strdup(destroot);
@@ -507,11 +507,11 @@ void check_debayer_button (GtkToggleButton *togglebutton) {
 	if (gtk_toggle_button_get_active(togglebutton)) {
 		set_debayer_in_convflags();
 		gtk_toggle_button_set_active(but, TRUE);
-		com.debayer.open_debayer = TRUE;
+		com.pref.debayer.open_debayer = TRUE;
 	}
 	else {
 		unset_debayer_in_convflags();	// used for conversion
-		com.debayer.open_debayer = FALSE;	// used for image opening
+		com.pref.debayer.open_debayer = FALSE;	// used for image opening
 	}
 }
 

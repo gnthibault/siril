@@ -207,7 +207,7 @@ static void set_histo_toggles_names() {
 	if (gfit.naxis == 2) {
 		gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), _("Gray channel"));
 		GtkWidget *w;
-		if (com.combo_theme == 0) {
+		if (com.pref.combo_theme == 0) {
 			image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "monochrome_dark.png", NULL);
 			w = gtk_image_new_from_file(image);
 		} else {

@@ -1130,20 +1130,20 @@ static int readraw(const char *name, fits *fit) {
 	raw->params.output_bps = 16;						/* 16-bits files                           */
 	raw->params.four_color_rgb = 0;						/* If == 1, interpolate RGB as four colors.*/
 	raw->params.no_auto_bright = 1;						/* no auto_bright                          */
-	raw->params.gamm[0] = 1.0 / com.raw_set.gamm[0];    /* Gamma curve set by the user             */
-	raw->params.gamm[1] = com.raw_set.gamm[1];	                                         
-	raw->params.bright = com.raw_set.bright;			/* Brightness                              */
+	raw->params.gamm[0] = 1.0 / com.pref.raw_set.gamm[0];    /* Gamma curve set by the user             */
+	raw->params.gamm[1] = com.pref.raw_set.gamm[1];
+	raw->params.bright = com.pref.raw_set.bright;			/* Brightness                              */
 	raw->params.user_flip = 0;							/* no flip                                 */
-	raw->params.use_camera_wb = com.raw_set.use_camera_wb;
-	raw->params.use_auto_wb = com.raw_set.use_auto_wb;
-	if (com.raw_set.user_black == 1)
+	raw->params.use_camera_wb = com.pref.raw_set.use_camera_wb;
+	raw->params.use_auto_wb = com.pref.raw_set.use_auto_wb;
+	if (com.pref.raw_set.user_black == 1)
 		raw->params.user_black = 0;						/* user black level equivalent to dcraw -k 0 */
 	raw->params.output_color = 0;						/* output colorspace, 0=raw, 1=sRGB, 2=Adobe, 3=Wide, 4=ProPhoto, 5=XYZ*/
 		
-	if (!(com.raw_set.auto_mul)) { /* 4 multipliers (r,g,b,g) of the user's white balance.    */
-		raw->params.user_mul[0] = (float) com.raw_set.mul[0];
+	if (!(com.pref.raw_set.auto_mul)) { /* 4 multipliers (r,g,b,g) of the user's white balance.    */
+		raw->params.user_mul[0] = (float) com.pref.raw_set.mul[0];
 		raw->params.user_mul[1] = raw->params.user_mul[3] = 1.0f;
-		raw->params.user_mul[2] = (float) com.raw_set.mul[2];
+		raw->params.user_mul[2] = (float) com.pref.raw_set.mul[2];
 		siril_log_message(_("Daylight multipliers: %f, %f, %f\n"),
 				raw->params.user_mul[0], raw->params.user_mul[1],
 				raw->params.user_mul[2]);
@@ -1161,7 +1161,7 @@ static int readraw(const char *name, fits *fit) {
 		siril_log_color_message(_("XTRANS Sensor detected.\n"), "salmon");
 	}
 
-	switch (com.raw_set.user_qual) { /* Set interpolation                                        */
+	switch (com.pref.raw_set.user_qual) { /* Set interpolation                                        */
 	case 0: /* bilinear interpolaton */
 		raw->params.user_qual = 0;
 		siril_log_message(_("Bilinear interpolation...\n"));
@@ -1470,7 +1470,7 @@ int open_raw_files(const char *name, fits *fit, int type) {
 #endif
 
 #ifdef HAVE_LIBHEIF
-#define MAX_THUMBNAIL_SIZE com.thumbnail_size
+#define MAX_THUMBNAIL_SIZE com.pref.thumbnail_size
 
 struct HeifImage {
 	uint32_t ID;

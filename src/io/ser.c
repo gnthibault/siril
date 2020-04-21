@@ -859,7 +859,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	 * RGB and BGR are not coming from raw data. In consequence CFA does
 	 * not exist for these kind of cam */
 	ser_color type_ser = ser_file->color_id;
-	if (!com.debayer.open_debayer && type_ser != SER_RGB && type_ser != SER_BGR)
+	if (!com.pref.debayer.open_debayer && type_ser != SER_RGB && type_ser != SER_BGR)
 		type_ser = SER_MONO;
 
 	switch (type_ser) {
@@ -881,11 +881,11 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 		fit->naxes[2] = 3;
 		/* Get Bayer informations from header if available */
 		sensor_pattern sensortmp;
-		sensortmp = com.debayer.bayer_pattern;
-		if (com.debayer.use_bayer_header) {
+		sensortmp = com.pref.debayer.bayer_pattern;
+		if (com.pref.debayer.use_bayer_header) {
 			sensor_pattern bayer;
 			bayer = get_SER_Bayer_Pattern(type_ser);
-			if (bayer != com.debayer.bayer_pattern) {
+			if (bayer != com.pref.debayer.bayer_pattern) {
 				if (bayer == BAYER_FILTER_NONE  && !user_warned) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 				}
@@ -893,9 +893,9 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 					if (!user_warned) {
 						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-								"salmon", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
+								"salmon", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
 					}
-					com.debayer.bayer_pattern = bayer;
+					com.pref.debayer.bayer_pattern = bayer;
 				}
 				user_warned = TRUE;
 			}
@@ -903,8 +903,8 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 		/* for performance consideration (and many others) we force the interpolation algorithm
 		 * to be BAYER_BILINEAR
 		 */
-		debayer(fit, BAYER_RCD, com.debayer.bayer_pattern);
-		com.debayer.bayer_pattern = sensortmp;
+		debayer(fit, BAYER_RCD, com.pref.debayer.bayer_pattern);
+		com.pref.debayer.bayer_pattern = sensortmp;
 		break;
 	case SER_BGR:
 		swap = 2;
@@ -1079,7 +1079,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		return -1;
 
 	type_ser = ser_file->color_id;
-	if (!com.debayer.open_debayer &&
+	if (!com.pref.debayer.open_debayer &&
 			type_ser != SER_RGB && type_ser != SER_BGR)
 		type_ser = SER_MONO;
 
@@ -1100,11 +1100,11 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		 * we extract one of the three channels and crop it to the requested area. */
 
 		/* Get Bayer informations from header if available */
-		sensortmp = com.debayer.bayer_pattern;
-		if (com.debayer.use_bayer_header) {
+		sensortmp = com.pref.debayer.bayer_pattern;
+		if (com.pref.debayer.use_bayer_header) {
 			sensor_pattern bayer;
 			bayer = get_SER_Bayer_Pattern(type_ser);
-			if (bayer != com.debayer.bayer_pattern) {
+			if (bayer != com.pref.debayer.bayer_pattern) {
 				if (bayer == BAYER_FILTER_NONE && !user_warned) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 				}
@@ -1112,9 +1112,9 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 					if (!user_warned) {
 						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-								"salmon", filter_pattern[bayer], filter_pattern[com.debayer.bayer_pattern]);
+								"salmon", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
 					}
-					com.debayer.bayer_pattern = bayer;
+					com.pref.debayer.bayer_pattern = bayer;
 				}
 				user_warned = TRUE;
 			}
@@ -1144,7 +1144,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		 * to be BAYER_BILINEAR
 		 */
 		demosaiced_buf = debayer_buffer(rawbuf, &debayer_area.w,
-				&debayer_area.h, BAYER_BILINEAR, com.debayer.bayer_pattern);
+				&debayer_area.h, BAYER_BILINEAR, com.pref.debayer.bayer_pattern);
 		free(rawbuf);
 		if (!demosaiced_buf)
 			return -1;
@@ -1161,7 +1161,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		}
 
 		free(demosaiced_buf);
-		com.debayer.bayer_pattern = sensortmp;
+		com.pref.debayer.bayer_pattern = sensortmp;
 		break;
 
 	case SER_BGR:
@@ -1323,7 +1323,7 @@ static GdkPixbufDestroyNotify free_preview_data(guchar *pixels, gpointer data) {
  */
 GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 	GdkPixbuf *pixbuf = NULL;
-	int MAX_SIZE = com.thumbnail_size;
+	int MAX_SIZE = com.pref.thumbnail_size;
 	gchar *description = NULL;
 	int i, j, k, l, N, M;
 	int w, h, pixScale, Ws, Hs, n_channels, n_frames, bit;

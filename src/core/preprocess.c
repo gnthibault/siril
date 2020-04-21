@@ -368,7 +368,7 @@ int preprocess_single_image(struct preprocessing_data *args) {
 		gchar *filename = g_path_get_basename(com.uniq->filename);
 		char *filename_noext = remove_ext_from_filename(filename);
 		g_free(filename);
-		dest_filename = g_strdup_printf("%s%s%s", args->ppprefix, filename_noext, com.ext);
+		dest_filename = g_strdup_printf("%s%s%s", args->ppprefix, filename_noext, com.pref.ext);
 		msg = g_strdup_printf(_("Saving image %s"), filename_noext);
 		set_progress_bar_data(msg, PROGRESS_NONE);
 		ret = savefits(dest_filename, &fit);

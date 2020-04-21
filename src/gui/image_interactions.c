@@ -373,9 +373,9 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 		if (inimage((GdkEvent *) event)) {
 			double dX, dY, w, h;
 
-			dX = 1.5 * com.phot_set.outer;
+			dX = 1.5 * com.pref.phot_set.outer;
 			dY = dX;
-			w = 3 * com.phot_set.outer;
+			w = 3 * com.pref.phot_set.outer;
 			h = w;
 
 			if ((dX <= zoomedX) && (dY <= zoomedY)

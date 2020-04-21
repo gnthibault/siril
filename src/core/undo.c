@@ -46,7 +46,7 @@ static int undo_build_swapfile(fits *fit, char **filename) {
 	gchar *tmpdir;
 	int fd;
 
-	tmpdir = com.swap_dir;
+	tmpdir = com.pref.swap_dir;
 	nameBuff = g_build_filename(tmpdir, name, NULL);
 	fd = g_mkstemp(nameBuff);
 	if (fd < 1) {
