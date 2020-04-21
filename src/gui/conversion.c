@@ -525,17 +525,3 @@ void on_multipleSER_toggled (GtkToggleButton *togglebutton, gpointer user_data) 
 	else convflags &= ~CONVMULTIPLE;
 }
 
-void on_conv3planefit_toggled (GtkToggleButton *togglebutton, gpointer user_data){
-	convflags |= CONV1X3;
-	convflags &= ~(CONV3X1|CONV1X1);
-}
-
-void on_conv3_1plane_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
-	convflags |= CONV3X1;
-	convflags &= ~(CONV1X1|CONV1X3);
-}
-
-void on_conv1_1plane_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
-	convflags |= CONV1X1;
-	convflags &= ~(CONV3X1|CONV1X3);
-}

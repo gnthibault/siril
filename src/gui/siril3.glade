@@ -3079,89 +3079,6 @@ Colour image target also applies to the debayer result for conversion.</property
                                     <property name="width">2</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <object class="GtkBox" id="box53">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="orientation">vertical</property>
-                                    <child>
-                                      <object class="GtkLabel" id="label124">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="margin_bottom">3</property>
-                                        <property name="label" translatable="yes">Colour image target</property>
-                                        <attributes>
-                                          <attribute name="style" value="italic"/>
-                                        </attributes>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">True</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkRadioButton" id="radiobutton1">
-                                        <property name="label" translatable="yes">Keep three channels</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Keep the destination image with RGB channels, do not change the channels configuration.</property>
-                                        <property name="halign">start</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="active">True</property>
-                                        <property name="draw_indicator">True</property>
-                                        <signal name="toggled" handler="on_conv3planefit_toggled" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">True</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkRadioButton" id="radiobutton2">
-                                        <property name="label" translatable="yes">Create three images</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Split an RGB image into three images, R, G and B.</property>
-                                        <property name="halign">start</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="draw_indicator">True</property>
-                                        <property name="group">radiobutton1</property>
-                                        <signal name="toggled" handler="on_conv3_1plane_toggled" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">True</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">2</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkRadioButton" id="radiobutton3">
-                                        <property name="label" translatable="yes">Keep only first channel</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">For an RGB image, only keep R. Useful for grey images stored as RGB.</property>
-                                        <property name="draw_indicator">True</property>
-                                        <property name="group">radiobutton1</property>
-                                        <signal name="toggled" handler="on_conv1_1plane_toggled" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">3</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="top_attach">0</property>
-                                    <property name="height">2</property>
-                                  </packing>
-                                </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -18444,6 +18361,37 @@ Configuring a memory amount larger than what is available on your system may res
                               <packing>
                                 <property name="left_attach">0</property>
                                 <property name="top_attach">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkComboBoxText" id="combobox_type">
+                                <property name="visible">True</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Choose the type of extension used by Siril. By default it is .fit.</property>
+                                <property name="valign">center</property>
+                                <property name="margin_top">4</property>
+                                <property name="active">1</property>
+                                <items>
+                                  <item translatable="yes">16-bit unsigned integer</item>
+                                  <item translatable="yes">32-bit floating point</item>
+                                </items>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">Default Type:</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">1</property>
                               </packing>
                             </child>
                           </object>

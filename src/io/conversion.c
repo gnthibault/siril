@@ -48,7 +48,7 @@
 static unsigned int supported_filetypes = 0;	// initialized by initialize_converters()
 
 // only used by the converter and its GUI
-unsigned int convflags = CONV1X3;	// default
+unsigned int convflags = CONVDSTFITS;
 
 // NULL-terminated array, initialized by initialize_converters(), used only by stat_file
 char *supported_extensions[MAX_EXTENSIONS];
@@ -219,38 +219,9 @@ static gboolean end_convert_idle(gpointer p) {
 
 /* from a fits object, save to file or files, based on the channel policy from convflags */
 static int save_to_target_fits(fits *fit, const char *dest_filename) {
-	if (convflags & CONV3X1) {	// an RGB image to 3 fits, one for each channel
-		char filename[130];
-
-		if (fit->naxis != 3) {
-			siril_log_message(_("Saving to 3 FITS files cannot be done because the source image does not have three channels\n"));
-			return 1;
-		}
-		sprintf(filename, "r_%s", dest_filename);
-		if (save1fits16(filename, fit, RLAYER)) {
-			printf("tofits: save1fit8 error, CONV3X1\n");
-			return 1;
-		}
-		sprintf(filename, "g_%s", dest_filename);
-		if (save1fits16(filename, fit, GLAYER)) {
-			printf("tofits: save1fit8 error, CONV3X1\n");
-			return 1;
-		}
-		sprintf(filename, "b_%s", dest_filename);
-		if (save1fits16(filename, fit, BLAYER)) {
-			printf("tofits: save1fit8 error, CONV3X1\n");
-			return 1;
-		}
-	} else if (convflags & CONV1X1) { // a single FITS to convert from an RGB grey image
-		if (save1fits16(dest_filename, fit, RLAYER)) {
-			printf("tofits: save1fit8 error, CONV1X1\n");
-			return 1;
-		}
-	} else {			// normal FITS save, any format
-		if (savefits(dest_filename, fit)) {
-			printf("tofits: savefit error, CONV1X3\n");
-			return 1;
-		}
+	if (savefits(dest_filename, fit)) {
+		printf("tofits: savefit error, CONV1X3\n");
+		return 1;
 	}
 	return 0;
 }
@@ -441,11 +412,6 @@ gpointer convert_thread_worker(gpointer p) {
 	int i;
 
 	if (convflags & CONVDSTSER) {
-		if (convflags & CONV3X1) {
-			siril_log_color_message(_("SER output will take precedence over the one-channel per image creation option.\n"), "salmon");
-			convflags &= ~CONV3X1;
-		}
-
 		if (!(convflags & CONVMULTIPLE)) {
 			if (ser_create_file(args->destroot, &ser_file, TRUE, NULL)) {
 				siril_log_message(_("Creating the SER file failed, aborting.\n"));
@@ -508,8 +474,6 @@ gpointer convert_thread_worker(gpointer p) {
 			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility);
 			if (fit) {
 				if (convflags & CONVDSTSER) {
-					if (convflags & CONV1X1)
-						keep_first_channel_from_fits(fit);
 					if (ser_write_frame_from_fit(&ser_file, fit, i)) {
 						siril_log_message(_("Error while converting to SER (no space left?)\n"));
 						args->retval = 1;
@@ -655,8 +619,6 @@ static int film_conversion(const char *src_filename, int index, unsigned int *ad
 
 		// save to the destination file
 		if (convflags & CONVDSTSER) {
-			if (convflags & CONV1X1)
-				keep_first_channel_from_fits(&fit);
 			if (ser_write_frame_from_fit(ser_file, &fit, frame + ser_frames)) {
 				siril_log_message(_("Error while converting to SER (no space left?)\n"));
 				retval = 1;
@@ -731,8 +693,6 @@ static int ser_conversion(const char *src_filename, int index, unsigned int *add
 
 		// save to the destination file
 		if (convflags & CONVDSTSER) {
-			if (convflags & CONV1X1)
-				keep_first_channel_from_fits(&fit);
 			if (ser_write_frame_from_fit(ser_file, &fit, frame + ser_frames)) {
 				siril_log_message(_("Error while converting to SER (no space left?)\n"));
 				retval = 1;

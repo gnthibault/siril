@@ -156,10 +156,6 @@ typedef enum {
 #define CONVDSTFITS (1 << 2)	// assumed as default
 #define CONVDSTSER (1 << 3)
 #define CONVMULTIPLE (1 << 4)
-/* channel conversion type */
-#define CONV1X3	(1 << 6)	// assumed as default
-#define CONV3X1	(1 << 7)
-#define CONV1X1	(1 << 8)
 
 #define PREVIEW_NB 2
 
