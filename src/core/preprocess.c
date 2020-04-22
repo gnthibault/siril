@@ -317,7 +317,7 @@ gpointer prepro_worker(gpointer p) {
 void start_sequence_preprocessing(struct preprocessing_data *prepro) {
 	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
 	args->seq = prepro->seq;
-	args->force_float = TRUE;
+	args->force_float = !com.pref.force_to_16bit;
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_all;
 	args->nb_filtered_images = prepro->seq->number;
@@ -409,7 +409,7 @@ static void test_for_master_files(struct preprocessing_data *args) {
 			const char *error = NULL;
 			set_progress_bar_data(_("Opening offset image..."), PROGRESS_NONE);
 			args->bias = calloc(1, sizeof(fits));
-			if (!readfits(filename, args->bias, NULL, TRUE)) {
+			if (!readfits(filename, args->bias, NULL, !com.pref.force_to_16bit)) {
 				if (args->bias->naxes[2] != gfit.naxes[2]) {
 					error = _("NOT USING OFFSET: number of channels is different");
 				} else if (args->bias->naxes[0] != gfit.naxes[0] ||
@@ -441,7 +441,7 @@ static void test_for_master_files(struct preprocessing_data *args) {
 			const char *error = NULL;
 			set_progress_bar_data(_("Opening dark image..."), PROGRESS_NONE);
 			args->dark = calloc(1, sizeof(fits));
-			if (!readfits(filename, args->dark, NULL, TRUE)) {
+			if (!readfits(filename, args->dark, NULL, !com.pref.force_to_16bit)) {
 				if (args->dark->naxes[2] != gfit.naxes[2]) {
 					error = _("NOT USING DARK: number of channels is different");
 				} else if (args->dark->naxes[0] != gfit.naxes[0] ||
@@ -480,7 +480,7 @@ static void test_for_master_files(struct preprocessing_data *args) {
 			const char *error = NULL;
 			set_progress_bar_data(_("Opening flat image..."), PROGRESS_NONE);
 			args->flat = calloc(1, sizeof(fits));
-			if (!readfits(filename, args->flat, NULL, TRUE)) {
+			if (!readfits(filename, args->flat, NULL, !com.pref.force_to_16bit)) {
 				if (args->flat->naxes[2] != gfit.naxes[2]) {
 					error = _("NOT USING FLAT: number of channels is different");
 				} else if (args->flat->naxes[0] != gfit.naxes[0] ||
@@ -606,7 +606,7 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	label[1] = GTK_LABEL(lookup_widget("GtkLabelHotCC"));
 	entry = GTK_ENTRY(lookup_widget("darkname_entry"));
 	filename = gtk_entry_get_text(entry);
-	if (readfits(filename, &fit, NULL, TRUE)) {
+	if (readfits(filename, &fit, NULL, !com.pref.force_to_16bit)) {
 		str[0] = g_markup_printf_escaped(_("<span foreground=\"red\">ERROR</span>"));
 		str[1] = g_markup_printf_escaped(_("<span foreground=\"red\">ERROR</span>"));
 		gtk_label_set_markup(label[0], str[0]);

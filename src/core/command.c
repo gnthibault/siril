@@ -244,7 +244,7 @@ int process_savepnm(int nb){
 int process_imoper(int nb){
 	fits fit = { 0 };
 	if (!single_image_is_loaded()) return 1;
-	if (readfits(word[1], &fit, NULL, TRUE)) return -1;
+	if (readfits(word[1], &fit, NULL, !com.pref.force_to_16bit)) return -1;
 
 	image_operator oper;
 	switch (word[0][1]) {
@@ -269,7 +269,7 @@ int process_imoper(int nb){
 			clearfits(&fit);
 			return 1;
 	}
-	int retval = imoper(&gfit, &fit, oper, TRUE);
+	int retval = imoper(&gfit, &fit, oper, !com.pref.force_to_16bit);
 
 	clearfits(&fit);
 	adjust_cutoff_from_updated_gfit();
@@ -306,7 +306,7 @@ int process_fdiv(int nb){
 	}
 
 	float norm = atof(word[2]);
-	if (readfits(word[1], &fit, NULL, TRUE)) return -1;
+	if (readfits(word[1], &fit, NULL, !com.pref.force_to_16bit)) return -1;
 	siril_fdiv(&gfit, &fit, norm, TRUE);
 
 	clearfits(&fit);
@@ -2872,7 +2872,7 @@ int process_preprocess(int nb) {
 		if (word[i]) {
 			if (g_str_has_prefix(word[i], "-bias=")) {
 				args->bias = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, args->bias, NULL, TRUE)) {
+				if (!readfits(word[i] + 6, args->bias, NULL, !com.pref.force_to_16bit)) {
 					args->use_bias = TRUE;
 				} else {
 					retvalue = 1;
@@ -2881,7 +2881,7 @@ int process_preprocess(int nb) {
 				}
 			} else if (g_str_has_prefix(word[i], "-dark=")) {
 				args->dark = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, args->dark, NULL, TRUE)) {
+				if (!readfits(word[i] + 6, args->dark, NULL, !com.pref.force_to_16bit)) {
 					args->use_dark = TRUE;
 					args->use_cosmetic_correction = TRUE;
 				} else {
@@ -2891,7 +2891,7 @@ int process_preprocess(int nb) {
 				}
 			} else if (g_str_has_prefix(word[i], "-flat=")) {
 				args->flat = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, args->flat, NULL, TRUE)) {
+				if (!readfits(word[i] + 6, args->flat, NULL, !com.pref.force_to_16bit)) {
 					args->use_flat = TRUE;
 				} else {
 					retvalue = 1;
@@ -2928,7 +2928,7 @@ int process_preprocess(int nb) {
 	args->sigma[0] = -1.00; /* cold pixels: it is better to deactive it */
 	args->sigma[1] =  3.00; /* hot pixels */
 	args->ppprefix = "pp_";
-	args->allow_32bit_output = args->seq->type == SEQ_REGULAR;
+	args->allow_32bit_output = args->seq->type == SEQ_REGULAR && !com.pref.force_to_16bit;
 
 	// start preprocessing
 	set_cursor_waiting(TRUE);

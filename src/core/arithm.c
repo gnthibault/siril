@@ -304,7 +304,7 @@ static int imoper_with_factor(fits *a, fits *b, image_operator oper, float facto
 	else {
 		if (a->type == DATA_USHORT)
 			return imoper_to_ushort(a, b, oper, factor);
-		siril_log_color_message(_("image operations can only be kept 16 bits if first input images are 16 bits. Aborting.\n"), "red");
+		siril_log_color_message(_("Image operations can only be kept 16 bits if first input images are 16 bits. Aborting.\n"), "red");
 	}
 	return 1;
 }
