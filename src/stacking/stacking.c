@@ -674,10 +674,10 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
 			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
 			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), com.pref.stack.linear_low);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), com.pref.stack.linear_high);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), com.pref.stack.linear_low);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), com.pref.stack.linear_high);
 			gtk_label_set_text(label_rejection[0], _("Linear low: "));
 			gtk_label_set_text(label_rejection[1], _("Linear high: "));
 			break;
@@ -688,10 +688,10 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
 			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
 			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), com.pref.stack.sigma_low);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), com.pref.stack.sigma_high);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), com.pref.stack.sigma_low);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), com.pref.stack.sigma_high);
 			gtk_label_set_text(label_rejection[0], _("Sigma low: "));
 			gtk_label_set_text(label_rejection[1], _("Sigma high: "));
 	}
