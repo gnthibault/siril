@@ -64,12 +64,23 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax);
 static void stacking_args_deep_copy(struct stacking_args *from, struct stacking_args *to);
 static void stacking_args_deep_free(struct stacking_args *args);
 
+void initialize_stacking_default() {
+	com.pref.stack.sigma_low = 4.0;
+	com.pref.stack.sigma_high = 3.0;
+	com.pref.stack.linear_low = 5.0;
+	com.pref.stack.linear_high = 5.0;
+	com.pref.stack.percentile_low = 0.2;
+	com.pref.stack.percentile_high = 0.1;
+}
 
 void initialize_stacking_methods() {
 	GtkComboBoxText *stackcombo, *rejectioncombo;
+	GtkSpinButton *low, *high;
 
-	stackcombo = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "comboboxstack_methods"));
-	rejectioncombo = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "comborejection"));
+	stackcombo = GTK_COMBO_BOX_TEXT(lookup_widget("comboboxstack_methods"));
+	rejectioncombo = GTK_COMBO_BOX_TEXT(lookup_widget("comborejection"));
+	low = GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button"));
+	high = GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button"));
 	gtk_combo_box_set_active(GTK_COMBO_BOX(stackcombo), com.pref.stack.method);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(rejectioncombo), com.pref.stack.rej_method);
 }
@@ -646,15 +657,15 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_widget_set_visible(lookup_widget("label_low"), FALSE);
 			gtk_widget_set_visible(lookup_widget("label_high"), FALSE);
 			break;
-		case PERCENTILE :
+		case PERCENTILE:
 			gtk_widget_set_visible(lookup_widget("stack_siglow_button"), TRUE);
 			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
 			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
 			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), com.pref.stack.percentile_low);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), com.pref.stack.percentile_high);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 1.0);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 1.0);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.2);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.1);
 			gtk_label_set_text(label_rejection[0], _("Percentile low: "));
 			gtk_label_set_text(label_rejection[1], _("Percentile high: "));
 			break;
@@ -663,10 +674,10 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
 			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
 			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), com.pref.stack.linear_low);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), com.pref.stack.linear_high);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 5.0);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 5.0);
 			gtk_label_set_text(label_rejection[0], _("Linear low: "));
 			gtk_label_set_text(label_rejection[1], _("Linear high: "));
 			break;
@@ -677,14 +688,56 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
 			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
 			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), com.pref.stack.sigma_low);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), com.pref.stack.sigma_high);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 4.0);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 3.0);
 			gtk_label_set_text(label_rejection[0], _("Sigma low: "));
 			gtk_label_set_text(label_rejection[1], _("Sigma high: "));
 	}
 	com.pref.stack.rej_method = gtk_combo_box_get_active(box);
+	writeinitfile();
+}
+
+void on_stack_siglow_button_value_changed(GtkSpinButton *button, gpointer user_data) {
+	rejection type_of_rejection = gtk_combo_box_get_active((GtkComboBox *)user_data);
+
+	switch (type_of_rejection) {
+	case PERCENTILE:
+		com.pref.stack.percentile_low = gtk_spin_button_get_value(button);
+		break;
+	case LINEARFIT:
+		com.pref.stack.linear_low = gtk_spin_button_get_value(button);
+		break;
+	case SIGMA:
+	case SIGMEDIAN:
+	case WINSORIZED:
+		com.pref.stack.sigma_low = gtk_spin_button_get_value(button);
+		break;
+	default:
+		return;
+	}
+	writeinitfile();
+}
+
+void on_stack_sighigh_button_value_changed(GtkSpinButton *button, gpointer user_data) {
+	rejection type_of_rejection = gtk_combo_box_get_active((GtkComboBox *)user_data);
+
+	switch (type_of_rejection) {
+	case PERCENTILE:
+		com.pref.stack.percentile_high = gtk_spin_button_get_value(button);
+		break;
+	case LINEARFIT:
+		com.pref.stack.linear_high = gtk_spin_button_get_value(button);
+		break;
+	case SIGMA:
+	case SIGMEDIAN:
+	case WINSORIZED:
+		com.pref.stack.sigma_high = gtk_spin_button_get_value(button);
+		break;
+	default:
+		return;
+	}
 	writeinitfile();
 }
 

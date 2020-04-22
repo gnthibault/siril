@@ -37,7 +37,7 @@ static const char *keywords[] = { "working-directory", "libraw-settings",
 
 static int readinitfile() {
 	config_t config;
-	const char *dir = NULL, *swap_dir = NULL, *extension = NULL, *lang = NULL;
+	const char *dir = NULL;
 	GSList *list = NULL;
 
 	if (!com.initfile)
@@ -91,8 +91,19 @@ static int readinitfile() {
 	/* Preprocessing settings */
 	config_setting_t *prepro_setting = config_lookup(&config, keywords[PRE]);
 	if (prepro_setting) {
+		const char *bias = NULL, *dark = NULL, *flat = NULL;
+
 		config_setting_lookup_bool(prepro_setting, "cfa", &com.pref.prepro_cfa);
 		config_setting_lookup_bool(prepro_setting, "equalize_cfa", &com.pref.prepro_equalize_cfa);
+		config_setting_lookup_string(prepro_setting, "bias_lib", &bias);
+		com.pref.prepro_bias_lib = g_strdup(bias);
+		config_setting_lookup_bool(prepro_setting, "use_bias_lib", &com.pref.use_bias_lib);
+		config_setting_lookup_string(prepro_setting, "dark_lib", &dark);
+		com.pref.prepro_dark_lib = g_strdup(dark);
+		config_setting_lookup_bool(prepro_setting, "use_dark_lib", &com.pref.use_dark_lib);
+		config_setting_lookup_string(prepro_setting, "flat_lib", &flat);
+		com.pref.prepro_flat_lib = g_strdup(flat);
+		config_setting_lookup_bool(prepro_setting, "use_flat_lib", &com.pref.use_flat_lib);
 	}
 
 	/* Registration setting */
@@ -107,6 +118,13 @@ static int readinitfile() {
 		config_setting_lookup_int(stack_setting, "method", &com.pref.stack.method);
 		config_setting_lookup_int(stack_setting, "rejection", &com.pref.stack.rej_method);
 		config_setting_lookup_int(stack_setting, "normalisation", &com.pref.stack.normalisation_method);
+		config_setting_lookup_float(stack_setting, "sigma_low", &com.pref.stack.sigma_low);
+		config_setting_lookup_float(stack_setting, "sigma_high", &com.pref.stack.sigma_high);
+		config_setting_lookup_float(stack_setting, "linear_low", &com.pref.stack.linear_low);
+		config_setting_lookup_float(stack_setting, "linear_high", &com.pref.stack.linear_high);
+		config_setting_lookup_float(stack_setting, "percentile_low", &com.pref.stack.percentile_low);
+		config_setting_lookup_float(stack_setting, "percentile_high", &com.pref.stack.percentile_high);
+
 
 		config_setting_lookup_int(stack_setting, "mem_mode", (int*)&com.pref.stack.mem_mode);
 		config_setting_lookup_float(stack_setting, "maxmem", &com.pref.stack.memory_ratio);
@@ -131,6 +149,8 @@ static int readinitfile() {
 	config_setting_t *misc_setting = config_lookup(&config, keywords[MISC]);
 	if (misc_setting) {
 		int type;
+		const char *swap_dir = NULL, *extension = NULL, *lang = NULL;
+
 		config_setting_lookup_bool(misc_setting, "confirm_quit", &com.pref.save.quit);
 		config_setting_lookup_bool(misc_setting, "confirm_script", &com.pref.save.script);
 		config_setting_lookup_bool(misc_setting, "show_thumbnails", &com.pref.show_thumbnails);
@@ -248,6 +268,21 @@ static void _save_preprocessing(config_t *config, config_setting_t *root) {
 
 	prepro_setting = config_setting_add(prepro_group, "equalize_cfa", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(prepro_setting, com.pref.prepro_equalize_cfa);
+
+	prepro_setting = config_setting_add(prepro_group, "bias_lib", CONFIG_TYPE_STRING);
+	config_setting_set_string(prepro_setting, com.pref.prepro_bias_lib);
+	prepro_setting = config_setting_add(prepro_group, "use_bias_lib", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(prepro_setting, com.pref.use_bias_lib);
+
+	prepro_setting = config_setting_add(prepro_group, "dark_lib", CONFIG_TYPE_STRING);
+	config_setting_set_string(prepro_setting, com.pref.prepro_dark_lib);
+	prepro_setting = config_setting_add(prepro_group, "use_dark_lib", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(prepro_setting, com.pref.use_dark_lib);
+
+	prepro_setting = config_setting_add(prepro_group, "flat_lib", CONFIG_TYPE_STRING);
+	config_setting_set_string(prepro_setting, com.pref.prepro_flat_lib);
+	prepro_setting = config_setting_add(prepro_group, "use_flat_lib", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(prepro_setting, com.pref.use_flat_lib);
 }
 
 static void _save_registration(config_t *config, config_setting_t *root) {
@@ -269,6 +304,24 @@ static void _save_stacking(config_t *config, config_setting_t *root) {
 
 	stk_setting = config_setting_add(stk_group, "rejection", CONFIG_TYPE_INT);
 	config_setting_set_int(stk_setting, com.pref.stack.rej_method);
+
+	stk_setting = config_setting_add(stk_group, "sigma_low", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(stk_setting, com.pref.stack.sigma_low);
+
+	stk_setting = config_setting_add(stk_group, "sigma_high", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(stk_setting, com.pref.stack.sigma_high);
+
+	stk_setting = config_setting_add(stk_group, "linear_low", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(stk_setting, com.pref.stack.linear_low);
+
+	stk_setting = config_setting_add(stk_group, "linear_high", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(stk_setting, com.pref.stack.linear_high);
+
+	stk_setting = config_setting_add(stk_group, "percentile_low", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(stk_setting, com.pref.stack.percentile_low);
+
+	stk_setting = config_setting_add(stk_group, "percentile_high", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(stk_setting, com.pref.stack.percentile_high);
 
 	stk_setting = config_setting_add(stk_group, "mem_mode", CONFIG_TYPE_INT);
 	config_setting_set_int(stk_setting, com.pref.stack.mem_mode);

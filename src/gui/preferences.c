@@ -288,7 +288,6 @@ void on_combobox_ext_changed(GtkComboBox *box, gpointer user_data) {
 
 	com.pref.ext = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(box));
 	writeinitfile();
-	initialize_FITS_name_entries();
 }
 
 void on_combobox_type_changed(GtkComboBox *box, gpointer user_data) {
@@ -331,10 +330,63 @@ void on_thumbnails_box_size_changed(GtkComboBoxText *box, gpointer user_data) {
 	com.pref.thumbnail_size = (gtk_combo_box_get_active(GTK_COMBO_BOX(box)) == 0) ? 128 : 256;
 }
 
+void on_cosmCFACheck_toggled(GtkToggleButton *button, gpointer user_data) {
+	com.pref.prepro_cfa = gtk_toggle_button_get_active(button);
+	writeinitfile();
+}
+
+void on_checkbutton_equalize_cfa_toggled(GtkToggleButton *button, gpointer user_data) {
+	com.pref.prepro_equalize_cfa = gtk_toggle_button_get_active(button);
+	writeinitfile();
+}
+
+void on_filechooser_bias_lib_file_set(GtkFileChooserButton *widget, gpointer user_data) {
+	g_free(com.pref.prepro_bias_lib);
+	com.pref.prepro_bias_lib = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+}
+
+void on_check_button_pref_bias_toggled(GtkToggleButton *button, gpointer user_data) {
+	com.pref.use_bias_lib = gtk_toggle_button_get_active(button);
+}
+
+void on_clear_bias_entry_clicked(GtkButton *button, gpointer user_data) {
+	g_free(com.pref.prepro_bias_lib);
+	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
+}
+
+void on_filechooser_dark_lib_file_set(GtkFileChooserButton *widget, gpointer user_data) {
+	g_free(com.pref.prepro_dark_lib);
+	com.pref.prepro_dark_lib = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+}
+
+void on_check_button_pref_dark_toggled(GtkToggleButton *button, gpointer user_data) {
+	com.pref.use_dark_lib = gtk_toggle_button_get_active(button);
+}
+
+void on_clear_dark_entry_clicked(GtkButton *button, gpointer user_data) {
+	g_free(com.pref.prepro_dark_lib);
+	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
+}
+
+void on_filechooser_flat_lib_file_set(GtkFileChooserButton *widget, gpointer user_data) {
+	g_free(com.pref.prepro_flat_lib);
+	com.pref.prepro_flat_lib = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+}
+
+void on_check_button_pref_flat_toggled(GtkToggleButton *button, gpointer user_data) {
+	com.pref.use_flat_lib = gtk_toggle_button_get_active(button);
+}
+
+void on_clear_flat_entry_clicked(GtkButton *button, gpointer user_data) {
+	g_free(com.pref.prepro_flat_lib);
+	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
+}
+
 void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_libraw_and_debayer_interface();
 	update_photometry_interface();
 	update_language();
+	initialize_FITS_name_entries();
 	fill_script_paths_list();
 	refresh_stars_list(com.stars);
 	save_main_window_state();

@@ -231,6 +231,8 @@ static void siril_app_activate(GApplication *application) {
 	init_peaker_default();
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
+	/* initialize stacking-relatede stuff */
+	initialize_stacking_default();
 
 	/* we also initialize a couple of important variables */
 	com.pref.show_thumbnails = TRUE;
@@ -245,6 +247,7 @@ static void siril_app_activate(GApplication *application) {
 	 * */
 	com.wd = g_strdup(siril_get_startup_dir());
 	startup_cwd = g_get_current_dir();
+
 	if (checkinitfile()) {
 		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
 		exit(EXIT_FAILURE);

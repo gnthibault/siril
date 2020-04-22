@@ -609,7 +609,7 @@ void on_header_save_as_button_clicked() {
 }
 
 void on_header_save_button_clicked() {
-	if (com.uniq->fileexist) {
+	if (single_image_is_loaded() && com.uniq->fileexist) {
 		savefits(com.uniq->filename, &gfit);
 	}
 }

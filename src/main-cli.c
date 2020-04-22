@@ -169,6 +169,8 @@ static void siril_app_activate(GApplication *application) {
 	init_peaker_default();
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
+	/* initialize stacking-relatede stuff */
+	initialize_stacking_default();
 
 	/* we also initialize a couple of important variables */
 	com.pref.show_thumbnails = TRUE;

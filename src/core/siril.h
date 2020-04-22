@@ -500,6 +500,9 @@ struct stack_config {
 	int method;				// 0=sum, 1=median, 2=average, 3=pixel max, 4=pixel min - Use to save preferences in the init file
 	int normalisation_method;
 	int rej_method;
+	double sigma_low, sigma_high;
+	double linear_low, linear_high;
+	double percentile_low, percentile_high;
 	enum { RATIO, AMOUNT, UNLIMITED } mem_mode; // mode of memory management
 	double memory_ratio;			// ratio of available memory to use for stacking (and others)
 	double memory_amount;			// amount of memory in GB to use for stacking (and others)
@@ -558,6 +561,12 @@ struct pref_struct {
 
 	gboolean prepro_cfa;	// Use to save type of sensor for cosmetic correction in preprocessing
 	gboolean prepro_equalize_cfa;  // Use to save if flat will be equalized in preprocessing
+	gchar *prepro_bias_lib;
+	gboolean use_bias_lib;
+	gchar *prepro_dark_lib;
+	gboolean use_dark_lib;
+	gchar *prepro_flat_lib;
+	gboolean use_flat_lib;
 
 	save_config save;
 	gboolean show_thumbnails; // show or don't show thumbnails in open dialog box

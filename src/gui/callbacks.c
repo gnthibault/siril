@@ -885,9 +885,51 @@ void initialize_FITS_name_entries() {
 	mflat = GTK_ENTRY(lookup_widget("flatname_entry"));
 	final_stack = GTK_ENTRY(lookup_widget("entryresultfile"));
 
-	str[0] = g_strdup_printf("master-offset%s", com.pref.ext);
-	str[1] = g_strdup_printf("master-dark%s", com.pref.ext);
-	str[2] = g_strdup_printf("master-flat%s", com.pref.ext);
+	if (com.pref.prepro_bias_lib && (g_file_test(com.pref.prepro_bias_lib, G_FILE_TEST_EXISTS))) {
+		GtkFileChooser *button = GTK_FILE_CHOOSER(lookup_widget("filechooser_bias_lib"));
+		GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_bias"));
+
+		gtk_file_chooser_set_filename(button, com.pref.prepro_bias_lib);
+		gtk_toggle_button_set_active(toggle, com.pref.use_bias_lib);
+		if (com.pref.use_bias_lib) {
+			str[0] = g_strdup_printf("%s", com.pref.prepro_bias_lib);
+		} else {
+			str[0] = g_strdup_printf("master-bias%s", com.pref.ext);
+		}
+	} else {
+		str[0] = g_strdup_printf("master-bias%s", com.pref.ext);
+	}
+
+	if (com.pref.prepro_dark_lib && (g_file_test(com.pref.prepro_dark_lib, G_FILE_TEST_EXISTS))) {
+		GtkFileChooser *button = GTK_FILE_CHOOSER(lookup_widget("filechooser_dark_lib"));
+		GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_dark"));
+
+		gtk_file_chooser_set_filename(button, com.pref.prepro_dark_lib);
+		gtk_toggle_button_set_active(toggle, com.pref.use_dark_lib);
+		if (com.pref.use_dark_lib) {
+			str[1] = g_strdup_printf("%s", com.pref.prepro_dark_lib);
+		} else {
+			str[1] = g_strdup_printf("master-dark%s", com.pref.ext);
+		}
+	} else {
+		str[1] = g_strdup_printf("master-dark%s", com.pref.ext);
+	}
+
+	if (com.pref.prepro_flat_lib && (g_file_test(com.pref.prepro_flat_lib, G_FILE_TEST_EXISTS))) {
+		GtkFileChooser *button = GTK_FILE_CHOOSER(lookup_widget("filechooser_flat_lib"));
+		GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_flat"));
+
+		gtk_file_chooser_set_filename(button, com.pref.prepro_flat_lib);
+		gtk_toggle_button_set_active(toggle, com.pref.use_flat_lib);
+		if (com.pref.use_flat_lib) {
+			str[2] = g_strdup_printf("%s", com.pref.prepro_flat_lib);
+		} else {
+			str[2] = g_strdup_printf("master-flat%s", com.pref.ext);
+		}
+
+	} else {
+		str[2] = g_strdup_printf("master-flat%s", com.pref.ext);
+	}
 	str[3] = g_strdup_printf("stack_result%s", com.pref.ext);
 
 	gtk_entry_set_text(moffset, str[0]);
@@ -1409,16 +1451,6 @@ void on_cosmEnabledCheck_toggled(GtkToggleButton *button, gpointer user_data) {
 	gtk_widget_set_sensitive(checkHot, is_active);
 	gtk_widget_set_sensitive(checkCold, is_active);
 	gtk_widget_set_sensitive(evaluateButton, is_active);
-}
-
-void on_cosmCFACheck_toggled(GtkToggleButton *button, gpointer user_data) {
-	com.pref.prepro_cfa = gtk_toggle_button_get_active(button);
-	writeinitfile();
-}
-
-void on_checkbutton_equalize_cfa_toggled(GtkToggleButton *button, gpointer user_data) {
-	com.pref.prepro_equalize_cfa = gtk_toggle_button_get_active(button);
-	writeinitfile();
 }
 
 void on_info_menu_headers_clicked(GtkButton *button, gpointer user_data) {
