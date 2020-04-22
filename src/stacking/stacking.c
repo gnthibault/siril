@@ -75,6 +75,7 @@ void initialize_stacking_methods() {
 }
 
 gboolean evaluate_stacking_should_output_32bits(stack_method method, sequence *seq, int nb_img_to_stack) {
+	if (com.pref.force_to_16bit) return FALSE;
 	if (method == stack_summing_generic) {
 		if (seq->bitpix == BYTE_IMG)
 			return nb_img_to_stack > 256;
