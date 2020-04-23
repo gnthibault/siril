@@ -16524,6 +16524,7 @@ If the selection is empty, the whole image will be used as reference.</property>
     <property name="window_position">center</property>
     <property name="type_hint">normal</property>
     <property name="transient_for">control_window</property>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <child type="titlebar">
       <placeholder/>
     </child>
