@@ -640,65 +640,6 @@ void on_combonormalize_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_combo_box_get_active(GTK_COMBO_BOX(widgetnormalize)) != 0);
 }
 
-
-void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
-	rejection type_of_rejection = gtk_combo_box_get_active(box);
-	GtkLabel *label_rejection[2] = {NULL, NULL};
-
-	if (!label_rejection[0]) {
-		label_rejection[0] = GTK_LABEL(lookup_widget("label_low"));
-		label_rejection[1] = GTK_LABEL(lookup_widget("label_high"));
-	}
-	/* set default values */
-	switch (type_of_rejection) {
-		case NO_REJEC:
-			gtk_widget_set_visible(lookup_widget("stack_siglow_button"), FALSE);
-			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), FALSE);
-			gtk_widget_set_visible(lookup_widget("label_low"), FALSE);
-			gtk_widget_set_visible(lookup_widget("label_high"), FALSE);
-			break;
-		case PERCENTILE:
-			gtk_widget_set_visible(lookup_widget("stack_siglow_button"), TRUE);
-			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
-			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
-			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), com.pref.stack.percentile_low);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), com.pref.stack.percentile_high);
-			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 1.0);
-			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 1.0);
-			gtk_label_set_text(label_rejection[0], _("Percentile low: "));
-			gtk_label_set_text(label_rejection[1], _("Percentile high: "));
-			break;
-		case LINEARFIT:
-			gtk_widget_set_visible(lookup_widget("stack_siglow_button"), TRUE);
-			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
-			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
-			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
-			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
-			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), com.pref.stack.linear_low);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), com.pref.stack.linear_high);
-			gtk_label_set_text(label_rejection[0], _("Linear low: "));
-			gtk_label_set_text(label_rejection[1], _("Linear high: "));
-			break;
-		default:
-		case SIGMA:
-		case WINSORIZED:
-			gtk_widget_set_visible(lookup_widget("stack_siglow_button"), TRUE);
-			gtk_widget_set_visible(lookup_widget("stack_sighigh_button"), TRUE);
-			gtk_widget_set_visible(lookup_widget("label_low"), TRUE);
-			gtk_widget_set_visible(lookup_widget("label_high"), TRUE);
-			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), 0.0, 10.0);
-			gtk_spin_button_set_range(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), 0.0, 10.0);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button")), com.pref.stack.sigma_low);
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button")), com.pref.stack.sigma_high);
-			gtk_label_set_text(label_rejection[0], _("Sigma low: "));
-			gtk_label_set_text(label_rejection[1], _("Sigma high: "));
-	}
-	com.pref.stack.rej_method = gtk_combo_box_get_active(box);
-	writeinitfile();
-}
-
 void on_stack_siglow_button_value_changed(GtkSpinButton *button, gpointer user_data) {
 	rejection type_of_rejection = gtk_combo_box_get_active((GtkComboBox *)user_data);
 
@@ -738,6 +679,74 @@ void on_stack_sighigh_button_value_changed(GtkSpinButton *button, gpointer user_
 	default:
 		return;
 	}
+	writeinitfile();
+}
+
+void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
+	rejection type_of_rejection = gtk_combo_box_get_active(box);
+	GtkWidget *labellow = NULL, *labelhigh = NULL;
+	GtkWidget *siglow = NULL, *sighigh = NULL;
+
+	if (!labellow) {
+		labellow = lookup_widget("label_low");
+		labelhigh = lookup_widget("label_high");
+		siglow = lookup_widget("stack_siglow_button");
+		sighigh = lookup_widget("stack_sighigh_button");
+	}
+
+	g_signal_handlers_block_by_func(GTK_SPIN_BUTTON(siglow), on_stack_siglow_button_value_changed, NULL);
+	g_signal_handlers_block_by_func(GTK_SPIN_BUTTON(sighigh), on_stack_sighigh_button_value_changed, NULL);
+	/* set default values */
+	switch (type_of_rejection) {
+		case NO_REJEC:
+			gtk_widget_set_visible(siglow, FALSE);
+			gtk_widget_set_visible(sighigh, FALSE);
+			gtk_widget_set_visible(labellow, FALSE);
+			gtk_widget_set_visible(labelhigh, FALSE);
+			break;
+		case PERCENTILE:
+			gtk_widget_set_visible(siglow, TRUE);
+			gtk_widget_set_visible(sighigh, TRUE);
+			gtk_widget_set_visible(labellow, TRUE);
+			gtk_widget_set_visible(labelhigh, TRUE);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(siglow), com.pref.stack.percentile_low);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(sighigh), com.pref.stack.percentile_high);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(siglow), 0.0, 1.0);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(sighigh), 0.0, 1.0);
+			gtk_label_set_text(GTK_LABEL(labellow), _("Percentile low: "));
+			gtk_label_set_text(GTK_LABEL(labelhigh), _("Percentile high: "));
+			break;
+		case LINEARFIT:
+			gtk_widget_set_visible(siglow, TRUE);
+			gtk_widget_set_visible(sighigh, TRUE);
+			gtk_widget_set_visible(labellow, TRUE);
+			gtk_widget_set_visible(labelhigh, TRUE);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(siglow), 0.0, 10.0);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(sighigh), 0.0, 10.0);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(siglow), com.pref.stack.linear_low);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(sighigh), com.pref.stack.linear_high);
+			gtk_label_set_text(GTK_LABEL(labellow), _("Linear low: "));
+			gtk_label_set_text(GTK_LABEL(labelhigh), _("Linear high: "));
+			break;
+		default:
+		case SIGMA:
+		case WINSORIZED:
+			gtk_widget_set_visible(siglow, TRUE);
+			gtk_widget_set_visible(sighigh, TRUE);
+			gtk_widget_set_visible(labellow, TRUE);
+			gtk_widget_set_visible(labelhigh, TRUE);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(siglow), 0.0, 10.0);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(sighigh), 0.0, 10.0);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(siglow), com.pref.stack.sigma_low);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(sighigh), com.pref.stack.sigma_high);
+			gtk_label_set_text(GTK_LABEL(labellow), _("Sigma low: "));
+			gtk_label_set_text(GTK_LABEL(labelhigh), _("Sigma high: "));
+	}
+
+	g_signal_handlers_unblock_by_func(GTK_SPIN_BUTTON(siglow), on_stack_siglow_button_value_changed, NULL);
+	g_signal_handlers_unblock_by_func(GTK_SPIN_BUTTON(sighigh), on_stack_sighigh_button_value_changed, NULL);
+
+	com.pref.stack.rej_method = gtk_combo_box_get_active(box);
 	writeinitfile();
 }
 
