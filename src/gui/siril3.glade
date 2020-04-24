@@ -17367,6 +17367,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                                   <object class="GtkFileChooserButton" id="filechooser_bias_lib">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Choose a master-bias that can be used as generic master-bias by clicking on the button "Use it as default".</property>
                                     <property name="filter">filefilter_fits</property>
                                     <property name="title" translatable="yes">master-bias</property>
                                     <property name="width_chars">40</property>
@@ -17381,6 +17382,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                                   <object class="GtkFileChooserButton" id="filechooser_dark_lib">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Choose a master-dark that can be used as generic master-dark by clicking on the button "Use it as default".</property>
                                     <property name="filter">filefilter_fits</property>
                                     <property name="title" translatable="yes">master-dark</property>
                                     <property name="width_chars">40</property>
@@ -17395,6 +17397,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                                   <object class="GtkFileChooserButton" id="filechooser_flat_lib">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Choose a master-flat that can be used as generic master-flat by clicking on the button "Use it as default".</property>
                                     <property name="filter">filefilter_fits</property>
                                     <property name="title" translatable="yes">master-flat</property>
                                     <property name="width_chars">40</property>
@@ -17410,6 +17413,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <property name="tooltip_text" translatable="yes">Delete the selected file</property>
                                     <property name="halign">end</property>
                                     <signal name="clicked" handler="on_clear_bias_entry_clicked" object="filechooser_bias_lib" swapped="no"/>
                                     <child>
@@ -17430,6 +17434,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <property name="tooltip_text" translatable="yes">Delete the selected file</property>
                                     <property name="halign">end</property>
                                     <signal name="clicked" handler="on_clear_dark_entry_clicked" object="filechooser_dark_lib" swapped="no"/>
                                     <child>
@@ -17450,6 +17455,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <property name="tooltip_text" translatable="yes">Delete the selected file</property>
                                     <property name="halign">end</property>
                                     <signal name="clicked" handler="on_clear_flat_entry_clicked" object="filechooser_flat_lib" swapped="no"/>
                                     <child>
@@ -17471,6 +17477,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">Use the chosen master as default file in the pre-processing tab</property>
                                     <property name="halign">start</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_check_button_pref_flat_toggled" swapped="no"/>
@@ -17486,6 +17493,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">Use the chosen master as default file in the pre-processing tab</property>
                                     <property name="halign">start</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_check_button_pref_dark_toggled" swapped="no"/>
@@ -17501,6 +17509,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">Use the chosen master as default file in the pre-processing tab</property>
                                     <property name="halign">start</property>
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_check_button_pref_bias_toggled" swapped="no"/>
