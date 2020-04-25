@@ -85,8 +85,19 @@ void initialize_stacking_methods() {
 	gtk_combo_box_set_active(GTK_COMBO_BOX(rejectioncombo), com.pref.stack.rej_method);
 }
 
-gboolean evaluate_stacking_should_output_32bits(stack_method method, sequence *seq, int nb_img_to_stack) {
-	if (com.pref.force_to_16bit) return FALSE;
+gboolean evaluate_stacking_should_output_32bits(stack_method method,
+		sequence *seq, int nb_img_to_stack, gchar **err) {
+	gchar *error = NULL;
+	if (com.pref.force_to_16bit) {
+		if (seq->bitpix == FLOAT_IMG) {
+			error = _("Input sequence is in 32-bit format but preferences are set to 16-bit output format. "
+					"Please, change your preference settings and retry.\n");
+		}
+		if (err) {
+			*err = error;
+		}
+		return FALSE;
+	}
 	if (method == stack_summing_generic) {
 		if (seq->bitpix == BYTE_IMG)
 			return nb_img_to_stack > 256;
@@ -352,6 +363,7 @@ gpointer stack_function_handler(gpointer p) {
 /* starts a summing operation using data stored in the stackparam structure
  * function is not reentrant but can be called again after it has returned and the thread is running */
 static void start_stacking() {
+	gchar *error = NULL;
 	static GtkComboBox *method_combo = NULL, *rejec_combo = NULL, *norm_combo = NULL;
 	static GtkEntry *output_file = NULL;
 	static GtkToggleButton *overwrite = NULL, *force_norm = NULL;
@@ -389,7 +401,11 @@ static void start_stacking() {
 			stacking_methods[gtk_combo_box_get_active(method_combo)];
 
 	stackparam.use_32bit_output = evaluate_stacking_should_output_32bits(stackparam.method,
-			&com.seq, stackparam.nb_images_to_stack);
+			&com.seq, stackparam.nb_images_to_stack, &error);
+	if (error) {
+		siril_log_color_message(error, "red");
+		return;
+	}
 
 	// ensure we have no normalization if not supported by the stacking method
 	if (stackparam.method != stack_median && stackparam.method != stack_mean_with_rejection)
@@ -957,8 +973,8 @@ static void update_filter_label() {
  * determined at stacking start.
  */
 void update_stack_interface(gboolean dont_change_stack_type) {
-	static GtkWidget *go_stack = NULL,
-			 *widgetnormalize = NULL, *force_norm = NULL, *norm_to_max = NULL;
+	static GtkWidget *go_stack = NULL, *widgetnormalize = NULL, *force_norm =
+			NULL, *norm_to_max = NULL, *output_norm = NULL;
 	static GtkComboBox *method_combo = NULL, *filter_combo = NULL;
 	static GtkLabel *result_label = NULL;
 	gchar *labelbuffer;
@@ -971,6 +987,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 		force_norm = lookup_widget("checkforcenorm");
 		norm_to_max = lookup_widget("check_normalise_to_max");
 		result_label = GTK_LABEL(lookup_widget("stackfilter_label"));
+		output_norm = lookup_widget("check_normalise_to_max");
 	}
 	if (!sequence_is_loaded()) {
 		gtk_widget_set_sensitive(go_stack, FALSE);
@@ -991,6 +1008,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 	case STACK_MIN:
 		gtk_widget_set_sensitive(widgetnormalize, FALSE);
 		gtk_widget_set_sensitive(force_norm, FALSE);
+		gtk_widget_set_visible(output_norm, FALSE);
 		break;
 	case STACK_MEAN:
 	case STACK_MEDIAN:
@@ -998,6 +1016,7 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 		gtk_widget_set_sensitive(force_norm,
 				gtk_combo_box_get_active(GTK_COMBO_BOX(widgetnormalize)) != 0);
 		gtk_widget_set_visible(norm_to_max, TRUE);
+		gtk_widget_set_visible(output_norm, TRUE);
 	}
 
 	if (com.seq.reference_image == -1)

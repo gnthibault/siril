@@ -96,7 +96,8 @@ struct stacking_configuration {
 
 void initialize_stacking_default();
 void initialize_stacking_methods();
-gboolean evaluate_stacking_should_output_32bits(stack_method method, sequence *seq, int nb_img_to_stack);
+gboolean evaluate_stacking_should_output_32bits(stack_method method,
+		sequence *seq, int nb_img_to_stack, gchar **err);
 
 int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack);
 

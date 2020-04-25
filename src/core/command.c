@@ -2566,6 +2566,7 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 	sequence *seq = readseqfile(arg->seqfile);
 	if (seq != NULL) {
 		struct stacking_args args = { 0 };
+		gchar *error = NULL;
 		if (seq_check_basic_data(seq, FALSE) == -1) {
 			free(seq);
 			return 1;
@@ -2602,7 +2603,12 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 		}
 		args.description = describe_filter(seq, args.filtering_criterion, args.filtering_parameter);
 		args.use_32bit_output = evaluate_stacking_should_output_32bits(args.method,
-			args.seq, args.nb_images_to_stack);
+			args.seq, args.nb_images_to_stack, &error);
+		if (error) {
+			siril_log_color_message(error, "red");
+			free_sequence(seq, TRUE);
+			return 1;
+		}
 
 		if (!arg->result_file) {
 			char filename[256];
