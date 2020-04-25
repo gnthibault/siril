@@ -2980,6 +2980,8 @@ int process_set_mem(int nb){
 }
 
 int process_help(int nb){
+	control_window_switch_to_tab(OUTPUT_LOGS);
+
 	command *current = commands;
 	siril_log_message(_("********* LIST OF AVAILABLE COMMANDS *********\n"));
 	while (current->process) {

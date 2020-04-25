@@ -264,7 +264,7 @@ static void show_command_help_popup(GtkEntry *entry) {
 
 	const gchar *text = gtk_entry_get_text(entry);
 	if (*text == '\0') {
-		helper = g_strdup(_("Please write an existing command before hitting this button"));
+		helper = g_strdup(_("Please enter an existing command before hitting this button"));
 	} else {
 		command *current = commands;
 		gchar **command_line = g_strsplit_set(text, " ", -1);

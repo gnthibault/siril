@@ -38,6 +38,7 @@ static GHashTable *l10n_lang_list = NULL;
 static GHashTable *full_lang_list = NULL;
 
 parsed_code locale_str[] = {
+	{"ar_DZ", "العربية"},
 	{"de", "Deutsch"},
 	{"el", "Ελληνικά"},
 	{"en", "English"},
@@ -46,6 +47,7 @@ parsed_code locale_str[] = {
 	{"it_IT", "Italiano"},
 	{"nl_BE", "Nederlands"},
 	{"pl_PL", "Polish"},
+	{"pt_PT", "Português"},
 	{"ru", "русский"},
 	{"zh_CN", "汉语"},
 	{NULL, NULL}
