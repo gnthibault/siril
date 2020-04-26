@@ -441,6 +441,9 @@ static gpointer mini_save_dialog(gpointer p) {
 			args->retval = savepng(args->filename, &gfit, bytes_per_sample, gfit.naxes[2] == 3);
 			break;
 #endif
+		default:
+			type_of_image = TYPEFITS;
+			/* no break */
 		case TYPEFITS:
 			gfit.bitpix = args->bitpix;
 			/* Check if MIPS-HI and MIPS-LO must be updated. If yes,
@@ -475,9 +478,6 @@ static gpointer mini_save_dialog(gpointer p) {
 			break;
 		case TYPEPNM:
 			args->retval = saveNetPBM(args->filename, &gfit);
-			break;
-		default:
-			siril_log_message(_("This type of file is not handled. Should not happen"));
 			break;
 		}
 	}
@@ -693,7 +693,7 @@ void on_savepopup_show(GtkWidget *widget, gpointer user_data) {
 		width = 100;
 		height = 50;
 	}
-	if (type_of_image == TYPEFITS) {
+	if (type_of_image & (TYPEFITS | TYPEUNDEF)) {
 		GtkToggleButton *b16bitu = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16"));
 		GtkToggleButton *b32bits = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit32f"));
 		gtk_toggle_button_set_active(b32bits, gfit.type == DATA_FLOAT);
