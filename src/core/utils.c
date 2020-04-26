@@ -500,24 +500,6 @@ gboolean ends_with(const char *str, const char *ending) {
 }
 
 /**
- *  Searches for an extension '.something' in filename from the end
- *  @param filename input filename
- *  @return the index of the first '.' found
- */
-int get_extension_index(const char *filename) {
-	int i;
-	if (filename == NULL || filename[0] == '\0')
-		return -1;
-	i = strlen(filename) - 1;
-	do {
-		if (filename[i] == '.')
-			return i;
-		i--;
-	} while (i > 0);
-	return -1;
-}
-
-/**
  * Get the extension of a file, without the dot.
  * @param filename input filename
  * @return extension pointed from the filename itself or NULL
