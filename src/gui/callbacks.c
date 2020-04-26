@@ -1266,7 +1266,7 @@ void initialize_all_GUI(gchar *supported_files) {
 	load_accels();
 
 	/* Select combo boxes that trigger some text display or other things */
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder, "comboboxstack_methods")), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("comboboxstack_methods")), 0);
 
 	GtkLabel *label_supported = GTK_LABEL(lookup_widget("label_supported_types"));
 	gtk_label_set_text(label_supported, supported_files);
@@ -1649,13 +1649,10 @@ void on_checkchain_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 }
 
 void on_max_entry_changed(GtkEditable *editable, gpointer user_data) {
-	const gchar *txt;
-	int value;
-
-	txt = gtk_entry_get_text(GTK_ENTRY(editable));
+	const gchar *txt = gtk_entry_get_text(GTK_ENTRY(editable));
 	if (g_ascii_isalnum(txt[0])) {
 
-		value = atoi(txt);
+		int value = atoi(txt);
 
 		if (com.sliders != USER) {
 			com.sliders = USER;
@@ -1680,13 +1677,11 @@ void on_max_entry_changed(GtkEditable *editable, gpointer user_data) {
 }
 
 gboolean on_max_entry_focus_out_event(GtkWidget *widget, gpointer user_data) {
-	const gchar *txt;
-	int len, i;
 	gboolean isalnum = TRUE;
 
-	txt = gtk_entry_get_text(GTK_ENTRY(widget));
-	len = gtk_entry_get_text_length(GTK_ENTRY(widget));
-	for (i = 0; i < len; i++)
+	const gchar *txt = gtk_entry_get_text(GTK_ENTRY(widget));
+	int len = gtk_entry_get_text_length(GTK_ENTRY(widget));
+	for (int i = 0; i < len; i++)
 		if (!g_ascii_isalnum(txt[i])) {
 			isalnum = FALSE;
 			break;
@@ -1697,13 +1692,11 @@ gboolean on_max_entry_focus_out_event(GtkWidget *widget, gpointer user_data) {
 }
 
 gboolean on_min_entry_focus_out_event(GtkWidget *widget, gpointer user_data) {
-	const gchar *txt;
-	int len, i;
 	gboolean isalnum = TRUE;
 
-	txt = gtk_entry_get_text(GTK_ENTRY(widget));
-	len = gtk_entry_get_text_length(GTK_ENTRY(widget));
-	for (i = 0; i < len; i++)
+	const gchar *txt = gtk_entry_get_text(GTK_ENTRY(widget));
+	int len = gtk_entry_get_text_length(GTK_ENTRY(widget));
+	for (int i = 0; i < len; i++)
 		if (!g_ascii_isalnum(txt[i])) {
 			isalnum = FALSE;
 			break;
@@ -1714,13 +1707,10 @@ gboolean on_min_entry_focus_out_event(GtkWidget *widget, gpointer user_data) {
 }
 
 void on_min_entry_changed(GtkEditable *editable, gpointer user_data) {
-	const gchar *txt;
-	int value;
-
-	txt = gtk_entry_get_text(GTK_ENTRY(editable));
+	const gchar *txt = gtk_entry_get_text(GTK_ENTRY(editable));
 	if (g_ascii_isalnum(txt[0])) {
 
-		value = atoi(txt);
+		int value = atoi(txt);
 
 		if (com.sliders != USER) {
 			com.sliders = USER;
@@ -1743,10 +1733,8 @@ void on_min_entry_changed(GtkEditable *editable, gpointer user_data) {
 }
 
 void on_regTranslationOnly_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	GtkWidget *Algo, *Prefix;
-
-	Algo = lookup_widget("ComboBoxRegInter");
-	Prefix = lookup_widget("regseqname_entry");
+	GtkWidget *Algo = lookup_widget("ComboBoxRegInter");
+	GtkWidget *Prefix = lookup_widget("regseqname_entry");
 
 	gtk_widget_set_sensitive(Algo, !gtk_toggle_button_get_active(togglebutton));
 	gtk_widget_set_sensitive(Prefix, !gtk_toggle_button_get_active(togglebutton));
@@ -1755,7 +1743,6 @@ void on_regTranslationOnly_toggled(GtkToggleButton *togglebutton, gpointer user_
 void on_seqproc_entry_changed(GtkComboBox *widget, gpointer user_data) {
 	gchar *name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
 	if (name && name[0] != '\0') {
-		gchar *msg;
 		gchar *type;
 
 		set_cursor_waiting(TRUE);
@@ -1771,7 +1758,7 @@ void on_seqproc_entry_changed(GtkComboBox *widget, gpointer user_data) {
 #endif
 		} else
 			type = "";
-		msg = g_strdup_printf(_("Selected %s sequence %s..."), type, name);
+		gchar *msg = g_strdup_printf(_("Selected %s sequence %s..."), type, name);
 		set_progress_bar_data(msg, PROGRESS_DONE);
 		set_seq(name);
 		set_cursor_waiting(FALSE);
@@ -1823,11 +1810,8 @@ static gpointer checkSeq(gpointer p) {
 }
 
 void on_checkseqbutton_clicked(GtkButton *button, gpointer user_data) {
-	GtkToggleButton *forceButton;
-	int force;
-
-	forceButton = (GtkToggleButton *)user_data;
-	force = gtk_toggle_button_get_active(forceButton);
+	GtkToggleButton *forceButton = (GtkToggleButton *)user_data;
+	int force = gtk_toggle_button_get_active(forceButton);
 
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
@@ -1847,22 +1831,6 @@ void on_checkseqbutton_clicked(GtkButton *button, gpointer user_data) {
 	start_in_new_thread(checkSeq, args);
 }
 
-void on_confirmDontShowButton_toggled(GtkToggleButton *togglebutton,
-		gpointer user_data) {
-
-	com.pref.save.quit = gtk_toggle_button_get_active(togglebutton);
-	set_GUI_misc();
-	writeinitfile();
-}
-
-void on_miscAskScript_toggled(GtkToggleButton *togglebutton,
-		gpointer user_data) {
-
-	com.pref.save.script = gtk_toggle_button_get_active(togglebutton);
-	set_GUI_misc();
-	writeinitfile();
-}
-
 void on_button_data_ok_clicked(GtkButton *button, gpointer user_data) {
 	gtk_widget_hide(lookup_widget("data_dialog"));
 }
@@ -1876,10 +1844,9 @@ void on_comboboxreglayer_changed(GtkComboBox *widget, gpointer user_data) {
 
 void scrollbars_hadjustment_changed_handler(GtkAdjustment *adjustment,
 		gpointer user_data) {
-	int i;
 	double value = gtk_adjustment_get_value(adjustment);
 
-	for (i = 0; i < MAXVPORT; i++) {
+	for (int i = 0; i < MAXVPORT; i++) {
 		if (com.hadj[i] != adjustment) {
 			gtk_adjustment_set_value(com.hadj[i], value);
 		}
@@ -1888,9 +1855,8 @@ void scrollbars_hadjustment_changed_handler(GtkAdjustment *adjustment,
 
 void scrollbars_vadjustment_changed_handler(GtkAdjustment *adjustment,
 		gpointer user_data) {
-	int i;
 	double value = gtk_adjustment_get_value(adjustment);
-	for (i = 0; i < MAXVPORT; i++) {
+	for (int i = 0; i < MAXVPORT; i++) {
 		if (com.vadj[i] != adjustment) {
 			gtk_adjustment_set_value(com.vadj[i], value);
 		}

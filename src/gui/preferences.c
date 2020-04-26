@@ -382,6 +382,22 @@ void on_clear_flat_entry_clicked(GtkButton *button, gpointer user_data) {
 	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
 }
 
+void on_confirmDontShowButton_toggled(GtkToggleButton *togglebutton,
+		gpointer user_data) {
+
+	com.pref.save.quit = gtk_toggle_button_get_active(togglebutton);
+	set_GUI_misc();
+	writeinitfile();
+}
+
+void on_miscAskScript_toggled(GtkToggleButton *togglebutton,
+		gpointer user_data) {
+
+	com.pref.save.script = gtk_toggle_button_get_active(togglebutton);
+	set_GUI_misc();
+	writeinitfile();
+}
+
 void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_libraw_and_debayer_interface();
 	update_photometry_interface();
