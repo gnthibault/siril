@@ -74,15 +74,31 @@ void initialize_stacking_default() {
 }
 
 void initialize_stacking_methods() {
-	GtkComboBoxText *stackcombo, *rejectioncombo;
-	GtkSpinButton *low, *high;
-
-	stackcombo = GTK_COMBO_BOX_TEXT(lookup_widget("comboboxstack_methods"));
-	rejectioncombo = GTK_COMBO_BOX_TEXT(lookup_widget("comborejection"));
-	low = GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button"));
-	high = GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button"));
+	GtkComboBoxText *stackcombo = GTK_COMBO_BOX_TEXT(lookup_widget("comboboxstack_methods"));
+	GtkComboBoxText *rejectioncombo = GTK_COMBO_BOX_TEXT(lookup_widget("comborejection"));
+	GtkSpinButton *low = GTK_SPIN_BUTTON(lookup_widget("stack_siglow_button"));
+	GtkSpinButton *high = GTK_SPIN_BUTTON(lookup_widget("stack_sighigh_button"));
 	gtk_combo_box_set_active(GTK_COMBO_BOX(stackcombo), com.pref.stack.method);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(rejectioncombo), com.pref.stack.rej_method);
+	switch (gtk_combo_box_get_active(GTK_COMBO_BOX(rejectioncombo))) {
+	case PERCENTILE:
+		gtk_spin_button_set_value(low, com.pref.stack.percentile_low);
+		gtk_spin_button_set_value(high, com.pref.stack.percentile_high);
+		break;
+	case LINEARFIT:
+		gtk_spin_button_set_value(low, com.pref.stack.linear_low);
+		gtk_spin_button_set_value(high, com.pref.stack.linear_high);
+		break;
+	case SIGMA:
+	case SIGMEDIAN:
+	case WINSORIZED:
+		gtk_spin_button_set_value(low, com.pref.stack.sigma_low);
+		gtk_spin_button_set_value(high, com.pref.stack.sigma_high);
+		break;
+	default:
+		return;
+	}
+
 }
 
 gboolean evaluate_stacking_should_output_32bits(stack_method method,
@@ -700,8 +716,8 @@ void on_stack_sighigh_button_value_changed(GtkSpinButton *button, gpointer user_
 
 void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 	rejection type_of_rejection = gtk_combo_box_get_active(box);
-	GtkWidget *labellow = NULL, *labelhigh = NULL;
-	GtkWidget *siglow = NULL, *sighigh = NULL;
+	static GtkWidget *labellow = NULL, *labelhigh = NULL;
+	static GtkWidget *siglow = NULL, *sighigh = NULL;
 
 	if (!labellow) {
 		labellow = lookup_widget("label_low");
