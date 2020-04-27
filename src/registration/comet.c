@@ -41,10 +41,12 @@ static time_t FITS_date_key_to_sec(char *date) {
 	float sec = 0.f;
 
 	if (date[0] == '\0')
-		return -1;
+		return 0;
 
-	sscanf(date, "%04d-%02d-%02dT%02d:%02d:%f", &year, &month, &day, &hour,
-			&min, &sec);
+	if (sscanf(date, "%04d-%02d-%02dT%02d:%02d:%f", &year, &month, &day, &hour,
+			&min, &sec) != 6) {
+		return 0;
+	}
 
 	timeinfo.tm_year = year - 1900;
 	timeinfo.tm_mon = month - 1;
@@ -153,6 +155,11 @@ void on_button1_comet_clicked(GtkButton *button, gpointer p) {
 						_("Siril cannot perform the registration without date information in the file."));
 			} else {
 				t_of_image_1 = FITS_date_key_to_sec(gfit.date_obs);
+				if (!t_of_image_1) {
+					siril_message_dialog(GTK_MESSAGE_ERROR,
+							_("Unable to convert DATE-OBS to a valid date"),
+							_("Siril cannot convert the DATE-OBS keyword into a valid date needed in the alignment."));
+				}
 				update_entry1(pos_of_image1.x, pos_of_image1.y);
 			}
 		}
@@ -177,6 +184,11 @@ void on_button2_comet_clicked(GtkButton *button, gpointer p) {
 						_("Siril cannot perform the registration without date information in the file."));
 			} else {
 				t_of_image_2 = FITS_date_key_to_sec(gfit.date_obs);
+				if (!t_of_image_2) {
+					siril_message_dialog(GTK_MESSAGE_ERROR,
+							_("Unable to convert DATE-OBS to a valid date"),
+							_("Siril cannot convert the DATE-OBS keyword into a valid date needed in the alignment."));
+				}
 				update_entry2(pos_of_image2.x, pos_of_image2.y);
 			}
 		}
