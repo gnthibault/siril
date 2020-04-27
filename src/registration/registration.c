@@ -977,8 +977,9 @@ static gboolean end_register_idle(gpointer p) {
 
 	if (!args->retval) {
 		if (!args->load_new_sequence) {
+			int chan = gtk_combo_box_get_active(GTK_COMBO_BOX(lookup_widget("seqlist_dialog_combo")));
 			update_seqlist();
-			fill_sequence_list(args->seq, RLAYER, FALSE); // TODO: which layer must be chosen
+			fill_sequence_list(args->seq, chan, FALSE);
 			set_layers_for_registration();	// update display of available reg data
 		}
 		else {

@@ -91,7 +91,7 @@ static void update_seqlist_dialog_combo() {
 		gtk_combo_box_text_append_text(seqcombo, _("Green channel"));
 		gtk_combo_box_text_append_text(seqcombo, _("Blue channel"));
 	}
-	gtk_combo_box_set_active(GTK_COMBO_BOX(seqcombo), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(seqcombo), com.cvport == RGB_VPORT ? 1 : com.cvport);
 	g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(seqcombo), on_seqlist_dialog_combo_changed, NULL);
 }
 
