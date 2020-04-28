@@ -5429,6 +5429,7 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="orientation">vertical</property>
+                                        <property name="spacing">5</property>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -5608,6 +5609,7 @@ gradients with differing spatial distributions and orientations.
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="orientation">vertical</property>
+                                        <property name="spacing">5</property>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -5632,6 +5634,7 @@ gradients with differing spatial distributions and orientations.
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="orientation">vertical</property>
+                                        <property name="spacing">5</property>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -5656,6 +5659,7 @@ gradients with differing spatial distributions and orientations.
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="orientation">vertical</property>
+                                        <property name="spacing">5</property>
                                         <child>
                                           <placeholder/>
                                         </child>
@@ -5680,23 +5684,6 @@ gradients with differing spatial distributions and orientations.
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">2</property>
                                     <property name="width">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="check_normalise_to_max">
-                                    <property name="label" translatable="yes">Output
-Normalisation</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">If you check this button, the final image will be normalized in the [0, 1] range if you work in 32-bit format precision, or in [0, 65535] otherwise.
-
-WARNING: This option should not be checked for master stacking.</property>
-                                    <property name="halign">start</property>
-                                    <property name="draw_indicator">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5738,6 +5725,7 @@ Pixels of the image are replaced by pixels at the same coordinates if intensity 
 
 Pixel minimum: This case could be useful to select the area to be cropped after the stack operation.
 Pixels of the image are replaced by pixels at the same coordinates if intensity is lower.</property>
+                                    <property name="valign">center</property>
                                     <property name="active">0</property>
                                     <items>
                                       <item translatable="yes">Sum stacking</item>
@@ -5771,6 +5759,7 @@ Pixels of the image are replaced by pixels at the same coordinates if intensity 
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="orientation">vertical</property>
+                                    <property name="spacing">5</property>
                                     <child>
                                       <object class="GtkLabel" id="stackfilter_label">
                                         <property name="visible">True</property>
@@ -6094,6 +6083,23 @@ Pixels of the image are replaced by pixels at the same coordinates if intensity 
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">3</property>
                                     <property name="width">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="check_normalise_to_max">
+                                    <property name="label" translatable="yes">Output
+Normalisation</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">If you check this button, the final image will be normalized in the [0, 1] range if you work in 32-bit format precision, or in [0, 65535] otherwise.
+
+WARNING: This option should not be checked for master stacking.</property>
+                                    <property name="halign">start</property>
+                                    <property name="draw_indicator">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
