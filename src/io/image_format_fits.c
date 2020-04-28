@@ -1156,8 +1156,8 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 		fit->header = copy_header(fit);
 
 		basename = g_path_get_basename(filename);
-		siril_log_message(_("Reading FITS: file %s, %ld layer(s), %ux%u pixels (%s)\n"),
-				basename, fit->naxes[2], fit->rx, fit->ry, fit->type == DATA_FLOAT ? _("32-bit") : _("16-bit"));
+		siril_log_message(_("Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"),
+				basename, fit->naxes[2], fit->rx, fit->ry) ;
 		g_free(basename);
 	}
 

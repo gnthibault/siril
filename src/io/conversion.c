@@ -404,12 +404,10 @@ image_type get_type_for_extension(const char *extension) {
 }
 
 gpointer convert_thread_worker(gpointer p) {
-	char dest_filename[128], msg_bar[256];
 	double progress = 0.0;
 	struct ser_struct ser_file;
 	struct _convert_data *args = (struct _convert_data *) p;
 	unsigned int frame_index = 0;
-	int i;
 
 	if (convflags & CONVDSTSER) {
 		if (!(convflags & CONVMULTIPLE)) {
@@ -426,7 +424,7 @@ gpointer convert_thread_worker(gpointer p) {
 	if(!args->input_has_a_seq && ((convflags & CONVDSTSER) || fits_is_reentrant()))
 	// we should run in parallel only when images are converted, not sequences
 #endif
-	for (i = 0; i < args->total; i++) {
+	for (int i = 0; i < args->total; i++) {
 		if (args->retval || !get_thread_run()) {
 			continue;
 		}
@@ -437,16 +435,16 @@ gpointer convert_thread_worker(gpointer p) {
 		int index = args->input_has_a_seq ? frame_index : args->start + i;
 
 		gchar *name = g_utf8_strrchr(src_filename, strlen(src_filename), G_DIR_SEPARATOR);
+		gchar *msg_bar;
 		if (name)
-			g_snprintf(msg_bar, 256, _("Converting %s..."), name + 1);
-		else g_snprintf(msg_bar, 256, _("Converting %s..."), src_filename);
+			msg_bar = g_strdup_printf(_("Converting %s..."), name + 1);
+		else msg_bar = g_strdup_printf(_("Converting %s..."), src_filename);
 
 		imagetype = get_type_for_extension(src_ext);
 		com.filter = (int) imagetype;
 		if (imagetype == TYPEUNDEF) {
-			char msg[512];
 			char *title = siril_log_message(_("Filetype is not supported, cannot convert: %s\n"), src_ext);
-			g_snprintf(msg, 512, _("File extension '%s' is not supported.\n"
+			gchar *msg = g_strdup_printf(_("File extension '%s' is not supported.\n"
 				"Verify that you typed the extension correctly.\n"
 				"If so, you may need to install third-party software to enable "
 				"this file type conversion, look at the README file.\n"
@@ -455,6 +453,7 @@ gpointer convert_thread_worker(gpointer p) {
 				"trying to use should be recognized for this type."), src_ext);
 			siril_message_dialog(GTK_MESSAGE_ERROR, title, msg);
 			args->retval = 1;
+			g_free(msg_bar);
 			continue;
 		}
 
@@ -479,11 +478,12 @@ gpointer convert_thread_worker(gpointer p) {
 						args->retval = 1;
 					}
 				} else {
-					g_snprintf(dest_filename, 128, "%s%05d", args->destroot, index);
+					gchar *dest_filename = g_strdup_printf("%s%05d", args->destroot, index);
 					if (save_to_target_fits(fit, dest_filename)) {
 						siril_log_message(_("Error while converting to FITS (no space left?)\n"));
 						args->retval = 1;
 					}
+					g_free(dest_filename);
 				}
 				clearfits(fit);
 				free(fit);
@@ -495,7 +495,8 @@ gpointer convert_thread_worker(gpointer p) {
 #pragma omp atomic
 #endif
 		progress += 1.0;
-		set_progress_bar_data(msg_bar, progress/((double)args->total));
+		set_progress_bar_data(msg_bar, progress / ((double) args->total));
+		g_free(msg_bar);
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
@@ -514,7 +515,7 @@ clean_exit:
 		unset_debayer_in_convflags();
 	}
 	g_dir_close(args->dir);
-	for (i = 0; i < args->total; i++)
+	for (int i = 0; i < args->total; i++)
 		g_free(args->list[i]);
 	if (args->retval)
 		siril_log_message(_("Conversion ended with error, %d/%d input files converted\n"), args->nb_converted, args->total);
@@ -527,7 +528,8 @@ clean_exit:
 	return NULL;
 }
 
-int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer) {
+int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility,
+		gboolean force_debayer) {
 	int retval = 0;
 	sensor_pattern tmp;
 	/* Siril's FITS are stored bottom-up, debayering will give wrong results.
@@ -583,7 +585,9 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, g
 	return retval;
 }
 
-static int film_conversion(const char *src_filename, int index, unsigned int *added_frames, struct ser_struct *ser_file, struct _convert_data *args) {
+static int film_conversion(const char *src_filename, int index,
+		unsigned int *added_frames, struct ser_struct *ser_file,
+		struct _convert_data *args) {
 	// we need to do a semi-recursive thing here,
 	// thankfully it's only one level deep
 	*added_frames = 0;
@@ -645,7 +649,9 @@ static int film_conversion(const char *src_filename, int index, unsigned int *ad
 #endif
 }
 
-static int ser_conversion(const char *src_filename, int index, unsigned int *added_frames, struct ser_struct *ser_file, struct _convert_data *args) {
+static int ser_conversion(const char *src_filename, int index,
+		unsigned int *added_frames, struct ser_struct *ser_file,
+		struct _convert_data *args) {
 	int frame, ser_frames = index;
 	int retval = 0;
 	*added_frames = 0;
@@ -745,7 +751,8 @@ char* g_real_path(const char *source) {
 #endif
 
 /* open the file with path source from any image type and load it into the given FITS object */
-int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean interactive, gboolean force_float) {
+int any_to_fits(image_type imagetype, const char *source, fits *dest,
+		gboolean interactive, gboolean force_float) {
 	int retval = 0;
 
 	switch (imagetype) {
