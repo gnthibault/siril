@@ -94,8 +94,6 @@ static gboolean is_star(fitted_PSF *result, star_finder_params *sf) {
 		return FALSE;
 	if ((result->x0 <= 0.0) || (result->y0 <= 0.0))
 		return FALSE;
-	if (result->A < 0.01)
-		return FALSE;
 	if (result->sx > 200 || result->sy > 200)
 		return FALSE;
 	if (result->fwhmx <= 0.0 || result->fwhmy <= 0.0)
@@ -202,6 +200,7 @@ static fitted_PSF **peaker_ushort(fits *fit, int layer, star_finder_params *sf, 
 		return NULL;
 	}
 
+	siril_debug_print("Threshold: %d\n", threshold);
 	copyfits(fit, &wave_fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
 	get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
 
@@ -286,8 +285,6 @@ static fitted_PSF **peaker_ushort(fits *fit, int layer, star_finder_params *sf, 
 							results[nbstars + 1] = NULL;
 							//printf("%f\t\t%f\t\t%f\n", cur_star->xpos, cur_star->ypos, cur_star->mag);
 							nbstars++;
-
-
 						}
 					}
 					gsl_matrix_free(z);
@@ -345,6 +342,7 @@ static fitted_PSF **peaker_float(fits *fit, int layer, star_finder_params *sf, i
 		free(results);
 		return NULL;
 	}
+	siril_debug_print("Threshold: %f\n", threshold);
 
 	copyfits(fit, &wave_fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
 	get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
@@ -430,7 +428,6 @@ static fitted_PSF **peaker_float(fits *fit, int layer, star_finder_params *sf, i
 							results[nbstars + 1] = NULL;
 							//printf("%f\t\t%f\t\t%f\n", cur_star->xpos, cur_star->ypos, cur_star->mag);
 							nbstars++;
-
 						}
 					}
 					gsl_matrix_free(z);
