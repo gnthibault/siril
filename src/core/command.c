@@ -1787,7 +1787,7 @@ int process_fft(int nb){
 	}
 
 	if (sequence_is_loaded()) {
-		siril_log_message(_("FFT does not work with sequences\n"));
+		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 

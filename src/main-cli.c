@@ -115,9 +115,6 @@ static void global_initialization() {
 	/* initialize the com struct and zoom level */
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
-	com.pref.stack.mem_mode = 0;
-	com.pref.stack.memory_ratio = 0.9;
-	com.pref.stack.memory_amount = 4.0;
 }
 
 static void init_num_procs() {
@@ -173,6 +170,9 @@ static void siril_app_activate(GApplication *application) {
 	initialize_stacking_default();
 
 	/* we also initialize a couple of important variables */
+	com.pref.stack.mem_mode = 0;
+	com.pref.stack.memory_ratio = 0.9;
+	com.pref.stack.memory_amount = 4.0;
 	com.pref.show_thumbnails = TRUE;
 	com.pref.thumbnail_size = 256;
 	com.pref.remember_windows = TRUE;
