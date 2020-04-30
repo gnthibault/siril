@@ -502,11 +502,8 @@ void on_convtoroot_changed(GtkEditable *editable, gpointer user_data){
 }
 
 void check_debayer_button (GtkToggleButton *togglebutton) {
-	static GtkToggleButton *but = NULL;
-	if (!but) but = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton1"));
 	if (gtk_toggle_button_get_active(togglebutton)) {
 		set_debayer_in_convflags();
-		gtk_toggle_button_set_active(but, TRUE);
 		com.pref.debayer.open_debayer = TRUE;
 	}
 	else {
