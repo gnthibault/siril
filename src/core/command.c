@@ -1125,8 +1125,11 @@ int process_seq_crop(int nb) {
 	sequence *seq;
 	gchar *file;
 
+	int startoptargs=6;
+	int nb_command_max = 7;
+
 	if ((!com.selection.h) || (!com.selection.w)) {
-		if (nb == 6) {
+		if (nb >= startoptargs) {
 			if (atoi(word[2]) < 0 || atoi(word[3]) < 0) {
 				siril_log_message(_("Crop: x and y must be positive values.\n"));
 				return 1;
@@ -1179,6 +1182,23 @@ int process_seq_crop(int nb) {
 	args->seq = seq;
 	args->area = area;
 	args->prefix = "cropped_";
+	
+	if (nb>startoptargs) { 
+		for (int i=startoptargs;i<nb_command_max;i++) {
+			if (word[i]) {
+				if (g_str_has_prefix(word[i], "-prefix=")) {
+					char *current = word[i], *value;
+					value = current + 8;
+					if (value[0] == '\0') {
+						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+						return 1;
+						break;
+					}
+					args->prefix = strdup(value);
+					}
+			}
+		}
+	}
 
 	set_cursor_waiting(TRUE);
 
@@ -1894,6 +1914,26 @@ int process_subsky(int nb) {
 		args->seqEntry = "bkg_";
 		args->degree = (poly_order) (degree - 1);
 
+		int startoptargs=3;
+		int nb_command_max=4;
+		if (nb>startoptargs) { 
+			for (int i=startoptargs;i<nb_command_max;i++) {
+				if (word[i]) {
+					if (g_str_has_prefix(word[i], "-prefix=")) {
+						char *current = word[i], *value;
+						value = current + 8;
+						if (value[0] == '\0') {
+							siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+							return 1;
+							break;
+						}
+						args->seqEntry = strdup(value);
+						}
+				}
+			}
+		}
+
+
 		apply_background_extraction_to_sequence(args);
 	} else {
 		generate_background_samples(20, 1.0);
@@ -1962,6 +2002,25 @@ int process_findcosme(int nb) {
 	if (is_sequence) {
 		args->seqEntry = "cc_";
 		args->multithread = FALSE;
+
+		int startoptargs=i+3;
+		int nb_command_max=i+4;
+		if (nb>startoptargs) { 
+			for (int i=startoptargs;i<nb_command_max;i++) {
+				if (word[i]) {
+					if (g_str_has_prefix(word[i], "-prefix=")) {
+						char *current = word[i], *value;
+						value = current + 8;
+						if (value[0] == '\0') {
+							siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+							return 1;
+							break;
+						}
+						args->seqEntry = strdup(value);
+						}
+				}
+			}
+		}
 		apply_cosmetic_to_sequence(args);
 	} else {
 		args->multithread = TRUE;
@@ -2147,6 +2206,25 @@ int process_seq_mtf(int nb) {
 	args->mid = atof(word[3]);
 	args->hi = atof(word[4]);
 
+	int startoptargs=5;
+	int nb_command_max=6;
+	if (nb>startoptargs) { 
+		for (int i=startoptargs;i<nb_command_max;i++) {
+			if (word[i]) {
+				if (g_str_has_prefix(word[i], "-prefix=")) {
+					char *current = word[i], *value;
+					value = current + 8;
+					if (value[0] == '\0') {
+						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+						return 1;
+						break;
+					}
+					args->seqEntry = strdup(value);
+					}
+			}
+		}
+	}
+
 	set_cursor_waiting(TRUE);
 
 	apply_mtf_to_sequence(args);
@@ -2187,7 +2265,26 @@ int process_seq_split_cfa(int nb) {
 
 	args->seq = seq;
 	args->fit = &gfit;
-	args->seqEntry = "CFA_";
+	args->seqEntry = "CFA_"; // propose to default to "CFA" for consistency of output names with single image split_cfa
+
+	int startoptargs=2;
+	int nb_command_max=3;
+	if (nb>startoptargs) { 
+		for (int i=startoptargs;i<nb_command_max;i++) {
+			if (word[i]) {
+				if (g_str_has_prefix(word[i], "-prefix=")) {
+					char *current = word[i], *value;
+					value = current + 8;
+					if (value[0] == '\0') {
+						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+						return 1;
+						break;
+					}
+					args->seqEntry = strdup(value);
+					}
+			}
+		}
+	}
 
 	set_cursor_waiting(TRUE);
 
@@ -2398,13 +2495,22 @@ int process_register(int nb) {
 	reg_args->prefix = "r_";
 
 	/* check for options */
-	for (i = 2; i < 4; i++) {
+	for (i = 2; i < 5; i++) {
 		if (word[i]) {
 			if (!strcmp(word[i], "-drizzle")) {
 				reg_args->x2upscale = TRUE;
 			} else if (!strcmp(word[i], "-norot")) {
 				reg_args->translation_only = TRUE;
-			}
+			} else if (g_str_has_prefix(word[i], "-prefix=")) {
+				char *current = word[i], *value;
+				value = current + 8;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
+					break;
+				}
+				reg_args->prefix = strdup(value);
+				}
 		}
 	}
 
@@ -2839,7 +2945,7 @@ failure:
 
 int process_preprocess(int nb) {
 	struct preprocessing_data *args;
-	int nb_command_max = 10;
+	int nb_command_max = 11;
 	gchar *file;
 	int i, retvalue = 0;
 
@@ -2872,7 +2978,8 @@ int process_preprocess(int nb) {
 	}
 
 	args = calloc(1, sizeof(struct preprocessing_data));
-
+	args->ppprefix = "pp_";
+	
 	/* checking for options */
 	for (i = 2; i < nb_command_max; i++) {
 		if (word[i]) {
@@ -2904,6 +3011,15 @@ int process_preprocess(int nb) {
 					free(args->flat);
 					break;
 				}
+			} else if (g_str_has_prefix(word[i], "-prefix=")) {
+				char *current = word[i], *value;
+				value = current + 8;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					retvalue = 1;
+					break;
+				}
+				args->ppprefix = strdup(value);
 			} else if (!strcmp(word[i], "-opt")) {
 				args->use_dark_optim = TRUE;
 			} else if (!strcmp(word[i], "-cfa")) {
@@ -2933,7 +3049,6 @@ int process_preprocess(int nb) {
 	args->normalisation = 1.0f;	// will be updated anyway
 	args->sigma[0] = -1.00; /* cold pixels: it is better to deactive it */
 	args->sigma[1] =  3.00; /* hot pixels */
-	args->ppprefix = "pp_";
 	args->allow_32bit_output = args->seq->type == SEQ_REGULAR && !com.pref.force_to_16bit;
 
 	// start preprocessing

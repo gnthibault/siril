@@ -89,10 +89,10 @@ static command commands[] = {
 
 	{"offset", 1, "offset value", process_offset, STR_OFFSET, TRUE},
 
-	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-flip] [-equalize_cfa] [-opt]", process_preprocess, STR_PREPROCESS, TRUE},
+	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-flip] [-equalize_cfa] [-opt] [-prefix=]", process_preprocess, STR_PREPROCESS, TRUE},
 	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 
-	{"register", 1, "register sequence [-norot] [-drizzle]", process_register, STR_REGISTER, TRUE},
+	{"register", 1, "register sequence [-norot] [-drizzle] [-prefix=]", process_register, STR_REGISTER, TRUE},
 	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE, TRUE},
 	{"rgradient", 4, "rgradient xc yc dR dalpha", process_rgradient, STR_RGRADIENT, TRUE},
 	{"rl", 3, "rl sigma corner_radius_boost iterations", process_rl, STR_RL, TRUE},
@@ -115,13 +115,13 @@ static command commands[] = {
 	{"savetif8", 1, "savetif8 filename", process_savetif, STR_SAVETIF8, TRUE},
 #endif
 	{"select", 2, "select from to", process_select, STR_SELECT, FALSE},
-	{"seqcrop", 1, "seqcrop sequencename [x y width height]", process_seq_crop, STR_SEQCROP, TRUE},
-	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME, TRUE},
-	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},
-	{"seqmtf", 4, "seqmtf sequencename low mid high", process_seq_mtf, STR_SEQMTF, TRUE},
+	{"seqcrop", 1, "seqcrop sequencename [x y width height] [-prefix=]", process_seq_crop, STR_SEQCROP, TRUE},
+	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma [-prefix=]", process_findcosme, STR_SEQFIND_COSME, TRUE},
+	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma [-prefix=]", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},
+	{"seqmtf", 4, "seqmtf sequencename low mid high [-prefix=]", process_seq_mtf, STR_SEQMTF, TRUE},
 	{"seqpsf", 0, "seqpsf", process_seq_psf, STR_SEQPSF, FALSE},
-	{"seqsplit_cfa", 0, "seqsplit_cfa sequencename", process_seq_split_cfa, STR_SEQSPLIT_CFA, FALSE},
-	{"seqsubsky", 2, "sessubsky sequencename degree", process_subsky, STR_SEQSUBSKY, TRUE},
+	{"seqsplit_cfa", 0, "seqsplit_cfa sequencename [-prefix=]", process_seq_split_cfa, STR_SEQSPLIT_CFA, FALSE},
+	{"seqsubsky", 2, "seqsubsky sequencename degree [-prefix=]", process_subsky, STR_SEQSUBSKY, TRUE},
 #ifdef _OPENMP
 	{"setcpu", 1, "setcpu number", process_set_cpu, STR_SETCPU, TRUE},
 #endif
