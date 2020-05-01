@@ -1096,7 +1096,7 @@ void set_GUI_CWD() {
 void set_GUI_misc() {
 	GtkToggleButton *ToggleButton;
 	GtkSpinButton *memory_percent, *memory_amount;
-	GtkSpinButton *comp_fits_quantization, *comp_fits_tileX, *comp_fits_tileY, *comp_fits_hcompress_scale;
+	GtkSpinButton *comp_fits_quantization, *comp_fits_hcompress_scale;
 	GtkComboBox *thumb_box, *comp_fits_method_box;
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
