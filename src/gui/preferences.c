@@ -264,8 +264,9 @@ void on_spinbutton_comp_fits_quantization_value_changed(GtkSpinButton *button, g
 	if (quantization == 0.0) {
 		GtkComboBox *combo = (GtkComboBox *)user_data;
 		if (gtk_combo_box_get_active(combo) != 1 && gtk_combo_box_get_active(combo) != 2) {
-			siril_message_dialog(GTK_MESSAGE_ERROR, _("Incorrect parameters"),
-								"Setting quantization to 0 has only a sense with a GZIP compression.");
+			siril_message_dialog(GTK_MESSAGE_ERROR, _("Incorrect parameters detected"),
+								"Setting quantization to 0 has only a sense with a GZIP compression "
+								"and GZIP 2 often produces better compression of floating­point images.");
 			gtk_spin_button_set_value(button, com.pref.comp.fits_quantization != 0.0 ? com.pref.comp.fits_quantization : 8.0);
 		}
 	}
