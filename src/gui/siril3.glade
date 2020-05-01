@@ -5389,7 +5389,7 @@ WARNING: gnuplot must be installed.</property>
                                       <object class="GtkComboBoxText" id="combonormalize">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="tooltip_text" translatable="yes">If one of these items is selected, a normalisation process will be applied to all input
+                                        <property name="tooltip_markup" translatable="yes">If one of these items is selected, a normalisation process will be applied to all input
 images before stacking.
 - Normalisation matches the mean background of all input images, then, the
 normalisation is processed by multiplication or addition. Keep in mind that both
@@ -5399,8 +5399,8 @@ prefered for image which will be used for multiplication or division as flat-fie
 the signal-to-noise ratio and therefore this is the option used by default with
 the additive normalisation.
 
-The offset and dark masters should not be processed with normalisation.
-However, multiplicative normalisation must be used with flat-field frames.</property>
+&lt;b&gt;The offset and dark masters should not be processed with normalisation.
+However, multiplicative normalisation must be used with flat-field frames.&lt;/b&gt;</property>
                                         <property name="halign">start</property>
                                         <property name="valign">center</property>
                                         <property name="active">3</property>
@@ -5559,16 +5559,16 @@ However, multiplicative normalisation must be used with flat-field frames.</prop
                                                   <object class="GtkComboBoxText" id="comborejection">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">False</property>
-                                                    <property name="tooltip_text" translatable="yes">Five rejection algorithms are available.
-- Percentile Clipping is a one-step rejection algorithm ideal for small sets of data (up
+                                                    <property name="tooltip_markup" translatable="yes">Five rejection algorithms are available.
+- &lt;b&gt;Percentile Clipping&lt;/b&gt; is a one-step rejection algorithm ideal for small sets of data (up
 to 6 images).
-- Sigma Clipping is an iterative algorithm which will reject pixels whose distance from
+- &lt;b&gt;Sigma Clipping&lt;/b&gt; is an iterative algorithm which will reject pixels whose distance from
 median will be farthest than two given values in sigma units.
-- Median Sigma Clipping is the same algorithm except than the rejected pixels are
+- &lt;b&gt;Median Sigma Clipping&lt;/b&gt; is the same algorithm except than the rejected pixels are
 replaced by the median value.
-- Winsorized Sigma Clipping is very similar to Sigma Clipping method but it uses an
+- &lt;b&gt;Winsorized Sigma Clipping&lt;/b&gt; is very similar to Sigma Clipping method but it uses an
 algorithm based on Huber's work [1] [2].
-- Linear Fit Clipping is an algorithm developed by Juan Conejero, main developer of
+- &lt;b&gt;Linear Fit Clipping&lt;/b&gt; is an algorithm developed by Juan Conejero, main developer of
 PixInsight [2]. It fits the best straight line (y=ax+b) of the pixel stack and rejects
 outliers. This algorithm performs very well with large stack and images containing sky
 gradients with differing spatial distributions and orientations.
@@ -5725,11 +5725,11 @@ gradients with differing spatial distributions and orientations.
                                   <object class="GtkComboBoxText" id="comboboxstack_methods">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Sum: This is the simplest method.
+                                    <property name="tooltip_markup" translatable="yes">&lt;b&gt;Sum&lt;/b&gt;: This is the simplest method.
 Pixel values are added in an image normalized to 16-bit values.
 It increases signal/noise ratio (SNR) as square root of number of images.
 
-Average with rejection: This method is used to reject deviant pixels iteratively.
+&lt;b&gt;Average with rejection&lt;/b&gt;: This method is used to reject deviant pixels iteratively.
 Five methods have been implemented:
 - Percentile Clipping
 - Sigma Clipping
@@ -5738,15 +5738,15 @@ Five methods have been implemented:
 - Linear Fit Clipping
 After pixel rejection, the mean of the stack is computed.
 
-Median: This method was mostly used for dark/flat/offset stacking although now we recommend the use of average with rejection stacking.
+&lt;b&gt;Median&lt;/b&gt;: This method was mostly used for dark/flat/offset stacking although now we recommend the use of average with rejection stacking.
 The median value of the pixels in the stack is computed for each pixel.
 As this method should only be used for dark/flat/offset stacking, it does not take
 into account shifts computed during registration.
 
-Pixel maximum: This case is mainly used to construct long exposure star-trails images.
+&lt;b&gt;Pixel maximum&lt;/b&gt;: This case is mainly used to construct long exposure star-trails images.
 Pixels of the image are replaced by pixels at the same coordinates if intensity is greater.
 
-Pixel minimum: This case could be useful to select the area to be cropped after the stack operation.
+&lt;b&gt;Pixel minimum&lt;/b&gt;: This case could be useful to select the area to be cropped after the stack operation.
 Pixels of the image are replaced by pixels at the same coordinates if intensity is lower.</property>
                                     <property name="valign">center</property>
                                     <property name="active">0</property>
@@ -16614,7 +16614,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                 <property name="name">siril-preferences</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="transition_type">slide-left-right</property>
+                <property name="transition_type">slide-up-down</property>
                 <property name="interpolate_size">True</property>
                 <child>
                   <object class="GtkBox" id="box_stack_p1">
@@ -17245,12 +17245,22 @@ If the selection is empty, the whole image will be used as reference.</property>
                                   <object class="GtkComboBoxText" id="comboBayer_inter">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Select an interpolation method to perform demosaicing.</property>
+                                    <property name="tooltip_markup" translatable="yes">Select an interpolation method to perform demosaicing.
+
+* &lt;b&gt;Fast Debayer&lt;/b&gt; is the fastest algorithm available in Siril. However, other algorithms listed below are often quite better.
+* &lt;b&gt;VNG4&lt;/b&gt;, Threshold-Based Variable Number of Gradients, works on a 5x5 pixel neighborhood around each source pixel. It is a very good algorithm for flat areas of the image (like sky background) but produces artifacts in high contrast areas (like stars).
+* &lt;b&gt;AHD&lt;/b&gt;, Adaptive Homogeneity-Directed, is another well known debayer algorithm. However it usually shows artefacts in the background and bad star shapes.
+* &lt;b&gt;DCB&lt;/b&gt;, a more recent algorithm, can show some artifact in the background like AHD.
+* &lt;b&gt;HPHD&lt;/b&gt;, Heterogeneity-Projection Hard-Decision, is an old algorithm giving some nice results but that is quite slow.
+* &lt;b&gt;IGV&lt;/b&gt; and &lt;b&gt;LMMSE&lt;/b&gt; are very good when working with very noisy images. However, IGV tends to lose some chromatic information, while LMMSE is one of the most computational expensive demosaicers and needs a lot of memory.
+* &lt;b&gt;RCD&lt;/b&gt;, Ratio Corrected Demosaicing, intends to smooth the colour correction errors that are common in many other interpolation methods. It does an excellent job for round edges, for example stars, and is therefore the default algorithm used in Siril.
+
+For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt; is used regardless of the method selected in the preferences.</property>
                                     <property name="hexpand">True</property>
                                     <property name="active">7</property>
                                     <items>
-                                      <item translatable="yes">Bilinear</item>
-                                      <item translatable="yes">VNG</item>
+                                      <item translatable="yes">Fast Debayer</item>
+                                      <item translatable="yes">VNG4</item>
                                       <item translatable="yes">AHD</item>
                                       <item translatable="yes">DCB</item>
                                       <item translatable="yes">HPHD</item>
@@ -18561,7 +18571,7 @@ Configuring a memory amount larger than what is available on your system may res
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip_text">While floating-point format images may be losslessly compressed (using gzip, since Rice and Hcompress only compress integer arrays), these images often do not compress very well because the pixel values are too noisy; the less significant bits in the mantissa of the pixel values effectively contain incompressible random bit patterns. In order to achieve higher compression, one needs to remove some of this noise, but without losing the useful information content. One commonly used technique for reducing the noise is to scale the floating-point values into quantized integers, and using the ZSCALE and ZZERO columns to record the 2 scaling coefficients that are used for each tile. Note that the absence of these 2 columns in a tile-compressed floating-point image is an indication that the image was not scaled and was instead losslessly compressed. The main challenge in quantizing the image in this way is in choosing an appropriate scaling factor. If it is too large, one undersamples the pixel values resulting in a loss of information in the image. If it is too small, however, it preserves too much of the noise (or even amplifies the noise) in the pixel values, resulting in poor compression.</property>
+                                    <property name="tooltip_text">While floating-point format images may be losslessly compressed (using gzip, since Rice and Hcompress only compress integer arrays), these images often do not compress very well because the pixel values are too noisy; the less significant bits in the mantissa of the pixel values effectively contain incompressible random bit patterns. In order to achieve higher compression, one needs to remove some of this noise, but without losing the useful information content. If it is too large, one undersamples the pixel values resulting in a loss of information in the image. If it is too small, however, it preserves too much of the noise (or even amplifies the noise) in the pixel values, resulting in poor compression.</property>
                                     <property name="halign">start</property>
                                     <property name="valign">center</property>
                                     <property name="width_chars">9</property>
@@ -18582,19 +18592,16 @@ Configuring a memory amount larger than what is available on your system may res
                                   <object class="GtkComboBoxText" id="combobox_comp_fits_method">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="tooltip_text">Select an algorithm method for FITS compression:
-* Rice: The Rice algorithm (Rice, R. F., Yeh, P.-S., and Miller, W. H. 1993, in Proc. of the 9th AIAA Computing in Aerospace Conf., AIAA-93-4541-CP, American Institute of Aeronautics
-and Astronautics) is simple and very fast 
-* GZIP 1 then the gzip algorithm is used to compress and uncompress the image pixels. Gzip is the compression algorithm used in the free GNU software utility of the same name. It was created by Jean-loup Gailly and Mark Adler and is based on the DEFLATE algorithm, which is a combination of LZ77 and Huffman coding. DEFLATE was intended as a replacement for LZW and other patent-encumbered data compression algorithms which, at the time, limited the usability of compress and other popular archivers. Further information about this compression technique is readily available on the Internet. The gzip algorithm has no associated parameters that need to be specified with the ZNAMEn and ZVALn keywords.
-* GZIP 2: the bytes in the array of image pixel values are shuffled into decreasing order of significance before being compressed with the gzip algorithm. In other words, bytes are shuffled so that the most significant byte of every pixel occurs first, in order, followed by the next most significant byte, and so on for every byte. Since the most significan bytes of the
-pixel values often have very similar values, grouping them together in this way often achieves better net compression of the array. This is usually especially effective when compressing floating-point arrays.
-* Hcompress is an the image compression package written by Richard L. White for use at the Space Telescope Science Institute. Hcompress was used to compress the STScI Digitized Sky Survey and has also been used to compress the preview images in the Hubble Data Archive. Briefly, the method used is:
-1. a wavelet transform called the H-transform (a Haar transform generalized to two dimensions), followed by
-2. quantization that discards noise in the image while retaining the signal on all scales, followed by 
-3. quadtree coding of the quantized coefficients.
-The technique gives very good compression for astronomical images and is relatively fast. The calculations are carried out using integer arithmetic and are entirely reversible. Consequently, the program can be used for either lossy or lossless compression, with no special approach needed for the lossless case (e.g. there is no need for a file of residuals.)
+                                    <property name="tooltip_markup">Select an algorithm method for FITS compression:
 
-</property>
+* &lt;b&gt;Rice&lt;/b&gt;: The Rice algorithm is simple and very fast 
+* &lt;b&gt;GZIP 1&lt;/b&gt;: The gzip algorithm is used to compress and uncompress the image pixels. Gzip is the compression algorithm used in the free GNU software utility of the same name. 
+* &lt;b&gt;GZIP 2&lt;/b&gt;: The bytes in the array of image pixel values are shuffled into decreasing order of significance before being compressed with the gzip algorithm. This is usually especially effective when compressing floating-point arrays.
+* &lt;b&gt;Hcompress&lt;/b&gt;: Briefly, the method used is:
+	- 1. a wavelet transform called the H-transform (a Haar transform generalized to two dimensions), followed by
+	- 2. quantization that discards noise in the image while retaining the signal on all scales, followed by
+	- 3. quadtree coding of the quantized coefficients.
+The technique gives very good compression for astronomical images and is relatively fast. The calculations are carried out using integer arithmetic and are entirely reversible. Consequently, the program can be used for either lossy or lossless compression, with no special approach needed for the lossless case (e.g. there is no need for a file of residuals.)</property>
                                     <property name="halign">start</property>
                                     <property name="valign">center</property>
                                     <property name="hexpand">True</property>
@@ -18673,9 +18680,7 @@ The technique gives very good compression for astronomical images and is relativ
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip_text">Scale Factor. The integer scale parameter determines the amount of compression. Scale = 0 or 1 leads to lossless compression, i.e. the decompressed image has exactly the same pixel values as the original image. If the scale factor is greater than 1 then the compression is lossy: the decompressed image will not be exactly the same as the original. For astronomical images, lossless compression is generally rather ineffective because the images have a good deal of noise, which is inherently incompressible. However, if some of this noise is discarded then the images compress very well. The scale factor determines how much of the noise is discarded. Setting scale to 2 times sigma, the RMS noise in the image, usually results in compression by about a factor of 10 (i.e. the compressed image requires about 1.5 bits/pixel),
-while producing a decompressed image that is nearly indistinguishable from the original. In fact, the RMS difference between the decompressed image and the original image will be only about 1/2 sigma. Experiments indicate that this level of loss has no noticeable effect on either the visual appearance of the image or on quantitative analysis of the image (e.g. measurements of positions and brightnesses of stars are not adversely affected.).
-Using a larger value for scale results in higher compression at the cost of larger differences between the compressed and original images. A rough rule of thumb is that if scale equals N sigma, then the image will compress to about 3/N bits/pixel, and the RMS difference between the original and the compressed image will be about N/4 sigma. This crude relationship is inaccurate both for very high compression ratios and for lossless compression, but it does at least give an indication of what to expect of the compressed images.</property>
+                                    <property name="tooltip_text">The integer scale parameter determines the amount of compression. Scale = 0 or 1 leads to lossless compression. If the scale factor is greater than 1 then the compression is lossy. For astronomical images, lossless compression is generally rather ineffective because the images have a good deal of noise, which is inherently incompressible. However, if some of this noise is discarded then the images compress very well. The scale factor determines how much of the noise is discarded. Setting scale to 2 times sigma, the RMS noise in the image, usually results in compression by about a factor of 10 (i.e. the compressed image requires about 1.5 bits/pixel), while producing a decompressed image that is nearly indistinguishable from the original.</property>
                                     <property name="halign">start</property>
                                     <property name="valign">center</property>
                                     <property name="width_chars">9</property>
