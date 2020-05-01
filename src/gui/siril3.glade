@@ -154,6 +154,29 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adj_comp_fits_hcompress_scale">
+    <property name="upper">256</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">4</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_comp_fits_quantization">
+    <property name="upper">256</property>
+    <property name="value">8</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">4</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_comp_fits_tilex">
+    <property name="upper">2048</property>
+    <property name="value">100</property>
+    <property name="step_increment">50</property>
+    <property name="page_increment">100</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_comp_fits_tiley">
+    <property name="upper">2048</property>
+    <property name="value">100</property>
+    <property name="step_increment">50</property>
+    <property name="page_increment">100</property>
+  </object>
   <object class="GtkAdjustment" id="adj_deconv_corner">
     <property name="lower">-0.5</property>
     <property name="upper">0.5</property>
@@ -18480,6 +18503,278 @@ Configuring a memory amount larger than what is available on your system may res
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFrame" id="frameSettingsCompression">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignmentSettingsCompression">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkGrid">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="row_spacing">10</property>
+                                <property name="row_homogeneous">True</property>
+                                <property name="column_homogeneous">True</property>
+                                <child>
+                                  <object class="GtkRadioButton" id="comp_fits_disabled_radio">
+                                    <property name="label" translatable="yes">None</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_bottom">1</property>
+                                    <property name="active">True</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_comp_fits_radio_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkRadioButton" id="comp_fits_enabled_radio">
+                                    <property name="label" translatable="yes">Enabled</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="draw_indicator">True</property>
+                                    <property name="group">comp_fits_disabled_radio</property>
+                                    <signal name="toggled" handler="on_comp_fits_radio_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_quantization">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip_text">While floating-point format images may be losslessly compressed (using gzip, since Rice and Hcompress only compress integer arrays), these images often do not compress very well because the pixel values are too noisy; the less significant bits in the mantissa of the pixel values effectively contain incompressible random bit patterns. In order to achieve higher compression, one needs to remove some of this noise, but without losing the useful information content. One commonly used technique for reducing the noise is to scale the floating-point values into quantized integers, and using the ZSCALE and ZZERO columns to record the 2 scaling coefficients that are used for each tile. Note that the absence of these 2 columns in a tile-compressed floating-point image is an indication that the image was not scaled and was instead losslessly compressed. The main challenge in quantizing the image in this way is in choosing an appropriate scaling factor. If it is too large, one undersamples the pixel values resulting in a loss of information in the image. If it is too small, however, it preserves too much of the noise (or even amplifies the noise) in the pixel values, resulting in poor compression.</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <property name="width_chars">9</property>
+                                    <property name="text">8,00</property>
+                                    <property name="input_purpose">number</property>
+                                    <property name="adjustment">adj_comp_fits_quantization</property>
+                                    <property name="digits">2</property>
+                                    <property name="numeric">True</property>
+                                    <property name="value">4</property>
+                                    <signal name="value-changed" handler="on_spinbutton_comp_fits_quantization_value_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="combobox_comp_fits_method">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text">Select an algorithm method for FITS compression:
+* Rice: The Rice algorithm (Rice, R. F., Yeh, P.-S., and Miller, W. H. 1993, in Proc. of the 9th AIAA Computing in Aerospace Conf., AIAA-93-4541-CP, American Institute of Aeronautics
+and Astronautics) is simple and very fast 
+* GZIP 1 then the gzip algorithm is used to compress and uncompress the image pixels. Gzip is the compression algorithm used in the free GNU software utility of the same name. It was created by Jean-loup Gailly and Mark Adler and is based on the DEFLATE algorithm, which is a combination of LZ77 and Huffman coding. DEFLATE was intended as a replacement for LZW and other patent-encumbered data compression algorithms which, at the time, limited the usability of compress and other popular archivers. Further information about this compression technique is readily available on the Internet. The gzip algorithm has no associated parameters that need to be specified with the ZNAMEn and ZVALn keywords.
+* GZIP 2: the bytes in the array of image pixel values are shuffled into decreasing order of significance before being compressed with the gzip algorithm. In other words, bytes are shuffled so that the most significant byte of every pixel occurs first, in order, followed by the next most significant byte, and so on for every byte. Since the most significan bytes of the
+pixel values often have very similar values, grouping them together in this way often achieves better net compression of the array. This is usually especially effective when compressing floating-point arrays.
+* Hcompress is an the image compression package written by Richard L. White for use at the Space Telescope Science Institute. Hcompress was used to compress the STScI Digitized Sky Survey and has also been used to compress the preview images in the Hubble Data Archive. Briefly, the method used is:
+1. a wavelet transform called the H-transform (a Haar transform generalized to two dimensions), followed by
+2. quantization that discards noise in the image while retaining the signal on all scales, followed by 
+3. quadtree coding of the quantized coefficients.
+The technique gives very good compression for astronomical images and is relatively fast. The calculations are carried out using integer arithmetic and are entirely reversible. Consequently, the program can be used for either lossy or lossless compression, with no special approach needed for the lossless case (e.g. there is no need for a file of residuals.)
+
+</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <property name="hexpand">True</property>
+                                    <property name="active">0</property>
+                                    <property name="active_id">rice</property>
+                                    <items>
+                                      <item id="rice">Rice</item>
+                                      <item id="gzip1" translatable="yes">GZIP1</item>
+                                      <item id="gzip2" translatable="yes">GZIP2</item>
+                                      <item id="hcompress" translatable="yes">Hcompress</item>
+                                    </items>
+                                    <signal name="changed" handler="on_combobox_comp_fits_method_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Method</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="single_line_mode">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Quantization level</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="single_line_mode">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Tile dimensions</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="single_line_mode">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">HCompress scale factor</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="single_line_mode">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_hcompress_scale">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Scale Factor. The integer scale parameter determines the amount of compression. Scale = 0 or 1 leads to lossless compression, i.e. the decompressed image has exactly the same pixel values as the original image. If the scale factor is greater than 1 then the compression is lossy: the decompressed image will not be exactly the same as the original. For astronomical images, lossless compression is generally rather ineffective because the images have a good deal of noise, which is inherently incompressible. However, if some of this noise is discarded then the images compress very well. The scale factor determines how much of the noise is discarded. Setting scale to 2 times sigma, the RMS noise in the image, usually results in compression by about a factor of 10 (i.e. the compressed image requires about 1.5 bits/pixel),
+while producing a decompressed image that is nearly indistinguishable from the original. In fact, the RMS difference between the decompressed image and the original image will be only about 1/2 sigma. Experiments indicate that this level of loss has no noticeable effect on either the visual appearance of the image or on quantitative analysis of the image (e.g. measurements of positions and brightnesses of stars are not adversely affected.).
+Using a larger value for scale results in higher compression at the cost of larger differences between the compressed and original images. A rough rule of thumb is that if scale equals N sigma, then the image will compress to about 3/N bits/pixel, and the RMS difference between the original and the compressed image will be about N/4 sigma. This crude relationship is inaccurate both for very high compression ratios and for lossless compression, but it does at least give an indication of what to expect of the compressed images.</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <property name="width_chars">9</property>
+                                    <property name="text">4,00</property>
+                                    <property name="input_purpose">number</property>
+                                    <property name="adjustment">adj_comp_fits_hcompress_scale</property>
+                                    <property name="digits">2</property>
+                                    <property name="numeric">True</property>
+                                    <property name="value">4</property>
+                                    <signal name="value-changed" handler="on_spinbutton_comp_fits_hcompress_scale_value_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_tileX">
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <property name="width_chars">9</property>
+                                    <property name="text">100,00</property>
+                                    <property name="input_purpose">number</property>
+                                    <property name="adjustment">adj_comp_fits_tilex</property>
+                                    <property name="digits">2</property>
+                                    <property name="numeric">True</property>
+                                    <property name="value">100</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_tileY">
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <property name="width_chars">9</property>
+                                    <property name="text">100,00</property>
+                                    <property name="input_purpose">number</property>
+                                    <property name="adjustment">adj_comp_fits_tiley</property>
+                                    <property name="digits">2</property>
+                                    <property name="numeric">True</property>
+                                    <property name="value">100</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">3</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;b&gt;FITS Compression&lt;/b&gt;</property>
+                            <property name="use_markup">True</property>
+                            <property name="single_line_mode">True</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                   </object>

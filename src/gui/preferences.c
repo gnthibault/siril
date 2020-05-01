@@ -259,6 +259,27 @@ void on_spinbutton_mem_amount_value_changed(GtkSpinButton *button, gpointer user
 	writeinitfile();
 }
 
+void on_spinbutton_comp_fits_quantization_value_changed(GtkSpinButton *button, gpointer user_data) {
+	gdouble quantization = gtk_spin_button_get_value(button);
+	com.pref.comp.fits_quantization = quantization;
+	writeinitfile();
+}
+
+void on_spinbutton_comp_fits_hcompress_scale_value_changed(GtkSpinButton *button, gpointer user_data) {
+	gdouble hcompress_scale = gtk_spin_button_get_value(button);
+	com.pref.comp.fits_hcompress_scale = hcompress_scale;
+	writeinitfile();
+}
+
+
+void on_combobox_comp_fits_method_changed(GtkComboBox *box, gpointer user_data) {
+	GtkWidget *hcompress_scale_spin = lookup_widget("spinbutton_comp_fits_hcompress_scale");
+	gint method = gtk_combo_box_get_active(GTK_COMBO_BOX(box));
+	com.pref.comp.fits_method = method;
+	writeinitfile();
+	gtk_widget_set_sensitive(hcompress_scale_spin, (method == 4) ? TRUE : FALSE);
+}
+
 void on_mem_radio_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	GtkToggleButton *ratio = GTK_TOGGLE_BUTTON(lookup_widget("memfreeratio_radio")),
 			*amount = GTK_TOGGLE_BUTTON(lookup_widget("memfixed_radio")),
@@ -279,6 +300,38 @@ void on_mem_radio_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 		com.pref.stack.mem_mode = 2;
 		gtk_widget_set_sensitive(ratio_spin, FALSE);
 		gtk_widget_set_sensitive(amount_spin, FALSE);
+	}
+}
+
+void on_comp_fits_radio_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	GtkToggleButton *disabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disabled_radio")),
+			*enabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio"));
+	GtkWidget *method_box = lookup_widget("combobox_comp_fits_method"),
+		*quantization_spin = lookup_widget("spinbutton_comp_fits_quantization"),
+		*tilex_spin = lookup_widget("spinbutton_comp_fits_tileX"),
+		*tiley_spin = lookup_widget("spinbutton_comp_fits_tileY"),
+		*hcompress_scale_spin = lookup_widget("spinbutton_comp_fits_hcompress_scale");
+	if (!gtk_toggle_button_get_active(togglebutton)) return;
+
+	if (togglebutton == disabled) {
+		gtk_widget_set_sensitive(method_box, FALSE);
+		gtk_widget_set_sensitive(quantization_spin, FALSE);
+		gtk_widget_set_sensitive(tilex_spin, FALSE);
+		gtk_widget_set_sensitive(tiley_spin, FALSE);
+		gtk_widget_set_sensitive(hcompress_scale_spin, FALSE);
+		com.pref.comp.fits_enabled = 0;
+	} else {
+		gint method = gtk_combo_box_get_active(GTK_COMBO_BOX(method_box));
+		gtk_widget_set_sensitive(method_box, TRUE);
+		gtk_widget_set_sensitive(quantization_spin, TRUE);
+		gtk_widget_set_sensitive(tilex_spin, FALSE);
+		gtk_widget_set_sensitive(tiley_spin, FALSE);
+		gtk_widget_set_sensitive(hcompress_scale_spin, (method == 4) ? TRUE : FALSE);
+		com.pref.comp.fits_enabled = 1;
+		com.pref.comp.fits_method = method;
+		com.pref.comp.fits_quantization = gtk_spin_button_get_value(GTK_SPIN_BUTTON(quantization_spin));
+		com.pref.comp.fits_hcompress_scale = gtk_spin_button_get_value(GTK_SPIN_BUTTON(hcompress_scale_spin));
+		writeinitfile();
 	}
 }
 

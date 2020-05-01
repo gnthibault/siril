@@ -1096,7 +1096,8 @@ void set_GUI_CWD() {
 void set_GUI_misc() {
 	GtkToggleButton *ToggleButton;
 	GtkSpinButton *memory_percent, *memory_amount;
-	GtkComboBox *thumb_box;
+	GtkSpinButton *comp_fits_quantization, *comp_fits_tileX, *comp_fits_tileY, *comp_fits_hcompress_scale;
+	GtkComboBox *thumb_box, *comp_fits_method_box;
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.quit);
@@ -1118,6 +1119,19 @@ void set_GUI_misc() {
 		GTK_TOGGLE_BUTTON(lookup_widget("memfixed_radio")),
 		GTK_TOGGLE_BUTTON(lookup_widget("memunlimited_radio")) };
 	gtk_toggle_button_set_active(modes[com.pref.stack.mem_mode], TRUE);
+	comp_fits_quantization = GTK_SPIN_BUTTON(lookup_widget("spinbutton_comp_fits_quantization"));
+	gtk_spin_button_set_value(comp_fits_quantization, com.pref.comp.fits_quantization);
+	comp_fits_hcompress_scale = GTK_SPIN_BUTTON(lookup_widget("spinbutton_comp_fits_hcompress_scale"));
+	gtk_spin_button_set_value(comp_fits_hcompress_scale, com.pref.comp.fits_hcompress_scale);
+	comp_fits_method_box = GTK_COMBO_BOX(lookup_widget("combobox_comp_fits_method"));
+	gtk_combo_box_set_active(comp_fits_method_box, com.pref.comp.fits_method);
+
+	if (com.pref.comp.fits_enabled) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio")), com.pref.comp.fits_enabled ? TRUE: FALSE);
+	} else {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio")), com.pref.comp.fits_enabled ? FALSE: TRUE);
+	}
+
 }
 
 /* size is in kiB */

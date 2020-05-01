@@ -183,6 +183,7 @@ typedef struct ffit fits;
 typedef struct libraw_config libraw;
 typedef struct phot_config phot;
 typedef struct stack_config stackconf;
+typedef struct comp_config compconf;
 typedef struct cominf cominfo;
 typedef struct image_stats imstats;
 typedef struct rectangle_struct rectangle;
@@ -508,6 +509,13 @@ struct stack_config {
 	double memory_amount;			// amount of memory in GB to use for stacking (and others)
 };
 
+struct comp_config {
+	int fits_enabled;		// 0=disabled, 1=enabled
+	int fits_method;		// 0=Rice, 1=GZIP1, 2=GZIP2, 3=Hcompress
+	double fits_quantization;	// quantization factor for floating point compression
+	double fits_hcompress_scale;		// scale factor for Hcompress compression
+};
+
 struct rectangle_struct {
 	int x, y, w, h;
 };
@@ -585,6 +593,7 @@ struct pref_struct {
 	phot phot_set;          // photometry settings
 
 	stackconf stack;
+	compconf comp;
 
 	gboolean force_to_16bit;
 
