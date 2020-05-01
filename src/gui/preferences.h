@@ -26,5 +26,6 @@ void update_photometry_interface();
 void set_GUI_photometry();
 void initialize_path_directory();
 void set_libraw_settings_menu_available(gboolean activate);
+void initialize_compression_param();
 
 #endif /* SRC_GUI_PREFERENCES_H_ */

@@ -510,7 +510,7 @@ struct stack_config {
 };
 
 struct comp_config {
-	int fits_enabled;		// 0=disabled, 1=enabled
+	gboolean fits_enabled;		// true enabled
 	int fits_method;		// 0=Rice, 1=GZIP1, 2=GZIP2, 3=Hcompress
 	double fits_quantization;	// quantization factor for floating point compression
 	double fits_hcompress_scale;		// scale factor for Hcompress compression

@@ -1125,13 +1125,7 @@ void set_GUI_misc() {
 	gtk_spin_button_set_value(comp_fits_hcompress_scale, com.pref.comp.fits_hcompress_scale);
 	comp_fits_method_box = GTK_COMBO_BOX(lookup_widget("combobox_comp_fits_method"));
 	gtk_combo_box_set_active(comp_fits_method_box, com.pref.comp.fits_method);
-
-	if (com.pref.comp.fits_enabled) {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio")), com.pref.comp.fits_enabled ? TRUE: FALSE);
-	} else {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio")), com.pref.comp.fits_enabled ? FALSE: TRUE);
-	}
-
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio")), com.pref.comp.fits_enabled);
 }
 
 /* size is in kiB */

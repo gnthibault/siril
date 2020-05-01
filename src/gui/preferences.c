@@ -261,6 +261,14 @@ void on_spinbutton_mem_amount_value_changed(GtkSpinButton *button, gpointer user
 
 void on_spinbutton_comp_fits_quantization_value_changed(GtkSpinButton *button, gpointer user_data) {
 	gdouble quantization = gtk_spin_button_get_value(button);
+	if (quantization == 0.0) {
+		GtkComboBox *combo = (GtkComboBox *)user_data;
+		if (gtk_combo_box_get_active(combo) != 1 && gtk_combo_box_get_active(combo) != 2) {
+			siril_message_dialog(GTK_MESSAGE_ERROR, _("Incorrect parameters"),
+								"Setting quantization to 0 has only a sense with a GZIP compression.");
+			gtk_spin_button_set_value(button, com.pref.comp.fits_quantization != 0.0 ? com.pref.comp.fits_quantization : 8.0);
+		}
+	}
 	com.pref.comp.fits_quantization = quantization;
 	writeinitfile();
 }
@@ -274,10 +282,21 @@ void on_spinbutton_comp_fits_hcompress_scale_value_changed(GtkSpinButton *button
 
 void on_combobox_comp_fits_method_changed(GtkComboBox *box, gpointer user_data) {
 	GtkWidget *hcompress_scale_spin = lookup_widget("spinbutton_comp_fits_hcompress_scale");
+	GtkSpinButton *button = (GtkSpinButton *)user_data;
 	gint method = gtk_combo_box_get_active(GTK_COMBO_BOX(box));
+	if (gtk_spin_button_get_value(button) == 0.0) {
+		gtk_spin_button_set_value(button, 8.0);
+	}
 	com.pref.comp.fits_method = method;
 	writeinitfile();
 	gtk_widget_set_sensitive(hcompress_scale_spin, (method == 4) ? TRUE : FALSE);
+}
+
+void initialize_compression_param() {
+	com.pref.comp.fits_method = 0;
+	com.pref.comp.fits_enabled = FALSE;
+	com.pref.comp.fits_quantization = 8.0;
+	com.pref.comp.fits_hcompress_scale = 4.0;
 }
 
 void on_mem_radio_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
@@ -304,8 +323,7 @@ void on_mem_radio_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 }
 
 void on_comp_fits_radio_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	GtkToggleButton *disabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disabled_radio")),
-			*enabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio"));
+	GtkToggleButton *disabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disabled_radio"));
 	GtkWidget *method_box = lookup_widget("combobox_comp_fits_method"),
 		*quantization_spin = lookup_widget("spinbutton_comp_fits_quantization"),
 		*tilex_spin = lookup_widget("spinbutton_comp_fits_tileX"),
@@ -319,7 +337,7 @@ void on_comp_fits_radio_toggled(GtkToggleButton *togglebutton, gpointer user_dat
 		gtk_widget_set_sensitive(tilex_spin, FALSE);
 		gtk_widget_set_sensitive(tiley_spin, FALSE);
 		gtk_widget_set_sensitive(hcompress_scale_spin, FALSE);
-		com.pref.comp.fits_enabled = 0;
+		com.pref.comp.fits_enabled = FALSE;
 	} else {
 		gint method = gtk_combo_box_get_active(GTK_COMBO_BOX(method_box));
 		gtk_widget_set_sensitive(method_box, TRUE);
@@ -327,7 +345,7 @@ void on_comp_fits_radio_toggled(GtkToggleButton *togglebutton, gpointer user_dat
 		gtk_widget_set_sensitive(tilex_spin, FALSE);
 		gtk_widget_set_sensitive(tiley_spin, FALSE);
 		gtk_widget_set_sensitive(hcompress_scale_spin, (method == 4) ? TRUE : FALSE);
-		com.pref.comp.fits_enabled = 1;
+		com.pref.comp.fits_enabled = TRUE;
 		com.pref.comp.fits_method = method;
 		com.pref.comp.fits_quantization = gtk_spin_button_get_value(GTK_SPIN_BUTTON(quantization_spin));
 		com.pref.comp.fits_hcompress_scale = gtk_spin_button_get_value(GTK_SPIN_BUTTON(hcompress_scale_spin));

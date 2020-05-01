@@ -235,7 +235,7 @@ int test_available_space(int64_t req_size) {
 	int64_t free_space = find_space(com.wd);
 	int res = -1;
 	if (free_space < 0 || req_size <= 0)
-		return -1;
+		return res;
 
 	if (req_size > free_space) {
 		char * msg;

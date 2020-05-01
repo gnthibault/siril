@@ -222,6 +222,8 @@ static void siril_app_activate(GApplication *application) {
 	 ***************/
 	/* initialize converters (utilities used for different image types importing) */
 	gchar *supported_files = initialize_converters();
+	/* initialize compression preferences */
+	initialize_compression_param();
 	/* initialize photometric variables */
 	initialize_photometric_param();
 	/* initialize peaker variables */
