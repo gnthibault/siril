@@ -33,7 +33,7 @@
 
 static const char *keywords[] = { "working-directory", "libraw-settings",
 		"debayer-settings", "prepro-settings", "registration-settings",
-		"stacking-settings", "photometry-settings", "misc-settings" };
+		"stacking-settings", "photometry-settings", "misc-settings", "compression-settings" };
 
 static int readinitfile() {
 	config_t config;
@@ -134,6 +134,15 @@ static int readinitfile() {
 		com.pref.stack.mem_mode = RATIO;
 	if (com.pref.stack.memory_ratio <= 0.05)
 		com.pref.stack.memory_ratio = 0.9;
+
+	/* FITS compression setting */
+	config_setting_t *comp_setting = config_lookup(&config, keywords[CMP]);
+	if (comp_setting) {
+		config_setting_lookup_int(comp_setting, "fits_enabled", &com.pref.comp.fits_enabled);
+		config_setting_lookup_int(comp_setting, "fits_method", &com.pref.comp.fits_method);
+		config_setting_lookup_float(comp_setting, "fits_quantization", &com.pref.comp.fits_quantization);
+		config_setting_lookup_float(comp_setting, "fits_hcompress_scale", &com.pref.comp.fits_hcompress_scale);
+	}
 
 	/* Photometry setting */
 	config_setting_t *photometry_setting = config_lookup(&config, keywords[PTM]);
@@ -333,6 +342,25 @@ static void _save_stacking(config_t *config, config_setting_t *root) {
 	config_setting_set_float(stk_setting, com.pref.stack.memory_amount);
 }
 
+static void _save_comp(config_t *config, config_setting_t *root) {
+	config_setting_t *cmp_group, *cmp_setting;
+
+	cmp_group = config_setting_add(root, keywords[CMP], CONFIG_TYPE_GROUP);
+
+	cmp_setting = config_setting_add(cmp_group, "fits_enabled", CONFIG_TYPE_INT);
+	config_setting_set_int(cmp_setting, com.pref.comp.fits_enabled);
+
+	cmp_setting = config_setting_add(cmp_group, "fits_method", CONFIG_TYPE_INT);
+	config_setting_set_int(cmp_setting, com.pref.comp.fits_method);
+
+	cmp_setting = config_setting_add(cmp_group, "fits_quantization", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(cmp_setting, com.pref.comp.fits_quantization);
+
+	cmp_setting = config_setting_add(cmp_group, "fits_hcompress_scale", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(cmp_setting, com.pref.comp.fits_hcompress_scale);
+
+}
+
 static void _save_photometry(config_t *config, config_setting_t *root) {
 	config_setting_t *photometry_group, *photometry_setting;
 
@@ -426,6 +454,7 @@ int writeinitfile() {
 	_save_preprocessing(&config, root);
 	_save_registration(&config, root);
 	_save_stacking(&config, root);
+	_save_comp(&config, root);
 	_save_photometry(&config, root);
 	_save_misc(&config, root);
 

@@ -30,6 +30,7 @@ enum token_index {
 	STK = 5,	/* Stacking settings */
 	PTM = 6,	/* Photometry settings */
 	MISC = 7,	/* Miscellaneous settings */
+	CMP = 8,	/* Compression settings */
 	NOTOK
 };
 

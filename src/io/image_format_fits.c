@@ -48,6 +48,7 @@ static char *BinY[] = { "YBINNING", "BINY", NULL };
 static char *Focal[] = { "FOCAL", "FOCALLEN", NULL };
 static char *CCD_TEMP[] = { "CCD-TEMP", "CCD_TEMP", "CCDTEMP", "TEMPERAT", NULL };
 static char *Exposure[] = { "EXPTIME", "EXPOSURE", NULL };
+static int CompressionMethods[] = { RICE_1, GZIP_1, GZIP_2, HCOMPRESS_1};
 
 #define __tryToFindKeywords(fptr, type, keywords, value) \
 { \
@@ -552,6 +553,58 @@ static void convert_floats(int bitpix, float *data, size_t nbdata) {
 	}
 }
 
+static int get_compression_type(int siril_compression_fits_method) {
+	if (siril_compression_fits_method < 0) {
+		return -1;
+	} else {
+		if (siril_compression_fits_method > sizeof(CompressionMethods)) {
+			return -1;
+		} else {
+			return CompressionMethods[siril_compression_fits_method];
+		}
+	}
+}
+
+/* Move to the first HDU of an opened FIT file
+ * with IMAGE type and with dimension > 0
+ */
+static int siril_fits_move_first_image(fitsfile* fp) {
+	int status = 0;
+	int naxis = 0;
+
+	/* Move to the first HDU of type image */
+	fits_movabs_hdu(fp, 1, IMAGE_HDU, &status);
+	if (status) {
+		siril_log_message(_("Cannot move to first image in FITS file\n"));
+		fits_report_error(stderr, status); /* print error message */
+		return status;
+	}
+
+	/* Find the first HDU of type image with dimension > 0 */
+	do {
+		//Check naxis for current image HDU
+		fits_get_img_dim(fp, &naxis, &status);
+		if (status) {
+			siril_log_message(_("Cannot get dimension of FITS file\n"));
+			fits_report_error(stderr, status); /* print error message */
+			return status;
+		}
+		if (naxis > 0) {
+			break;
+		}
+		//Check next image HDU
+		fits_movrel_hdu(fp, 1, IMAGE_HDU, &status);
+		if (status) {
+			siril_log_message(_("Cannot move to next image in FITS file\n"));
+			fits_report_error(stderr, status); /* print error message */
+			return status;
+		}
+	} while (!status);
+
+	siril_debug_print("Found image HDU with naxis %d (status %d)\n", naxis, status);
+	return status;
+}
+
 /* read buffer from an already open FITS file, fit should have all metadata
  * correct, and convert the buffer to fit->data with the given type, which
  * currently should be TBYTE or TUSHORT because fit doesn't contain other data.
@@ -567,9 +620,7 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 	// with force_float, image is read as float data, type is stored as DATA_FLOAT
 	int fake_bitpix = force_float ? FLOAT_IMG : fit->bitpix;
 
-	status = 0;
-	fits_movabs_hdu(fit->fptr, 1, 0, &status); // make sure reading primary HDU
-	if (status) {
+	if (siril_fits_move_first_image(fit->fptr)) {
 		siril_log_message(_("Selecting the primary header failed, is the FITS file '%s' malformed?\n"), filename);
 		return -1;
 	}
@@ -1086,6 +1137,11 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 	}
 	free(name);
 
+	if (siril_fits_move_first_image(fit->fptr)) {
+		siril_log_message(_("Selecting the primary header failed, is the FITS file '%s' malformed?\n"), filename);
+		return -1;
+	}
+
 	status = 0;
 	fit->naxes[2] = 1;
 	fits_get_img_param(fit->fptr, 3, &(fit->bitpix), &(fit->naxis), fit->naxes, &status);
@@ -1168,7 +1224,7 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 
 int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode, int *status) {
 	gchar *localefilename = get_locale_filename(filename);
-	fits_open_diskfile(fptr, localefilename, iomode, status);
+	fits_open_image(fptr, localefilename, iomode, status);
 	g_free(localefilename);
 	return *status;
 }
@@ -1208,6 +1264,11 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	if (siril_fits_open_diskfile(&(fit->fptr), filename, READONLY, &status)) {
 		report_fits_error(status);
 		return status;
+	}
+
+	if (siril_fits_move_first_image(fit->fptr)) {
+		siril_log_message(_("Selecting the primary header failed, is the FITS file '%s' malformed?\n"), filename);
+		return -1;
 	}
 
 	status = 0;
@@ -1425,6 +1486,43 @@ int savefits(const char *name, fits *f) {
 		return 1;
 	}
 	status = 0;
+
+	if (com.pref.comp.fits_enabled) {
+		int comp_type = -1;
+		siril_debug_print("Compressing FIT file with method %d and quantization %f\n",
+					com.pref.comp.fits_method,
+					com.pref.comp.fits_quantization);
+		comp_type = get_compression_type(com.pref.comp.fits_method);
+		siril_debug_print("cfitsio compression type %d\n",
+					comp_type);
+		if (comp_type < 0) {
+			siril_log_message(_("Unknown FITS compression method in internal conversion\n"));
+			return 1;
+		}
+		if (fits_set_compression_type(f->fptr, comp_type, &status)) {
+			report_fits_error(status);
+			return 1;
+		}
+		status = 0;
+
+		if (fits_set_quantize_level(f->fptr, com.pref.comp.fits_quantization, &status)) {
+			report_fits_error(status);
+			return 1;
+		}
+
+		status = 0;
+
+		/* Set the Hcompress scale factor if relevant */
+		if (comp_type == HCOMPRESS_1) {
+			if (fits_set_hcomp_scale(f->fptr, com.pref.comp.fits_hcompress_scale, &status)) {
+				report_fits_error(status);
+				return 1;
+			}
+			siril_debug_print("FITS HCompress scale factor %f\n",
+					com.pref.comp.fits_hcompress_scale);
+			status = 0;
+		}
+	}
 
 	if (fits_create_img(f->fptr, f->bitpix, f->naxis, f->naxes, &status)) {
 		report_fits_error(status);
@@ -2126,7 +2224,13 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	long naxes[4];
 	float *ima_data = NULL;
 
-	TRYFITS(fits_open_file, &fp, filename, READONLY);
+	TRYFITS(fits_open_diskfile, &fp, filename, READONLY);
+
+	if (siril_fits_move_first_image(fp)) {
+		siril_log_message(_("Selecting the primary header failed, is the FITS file '%s' malformed?\n"), filename);
+		return NULL;
+	}
+
 	TRYFITS(fits_get_img_param, fp, 4, &dtype, &naxis, naxes);
 
 	const int w = naxes[0];

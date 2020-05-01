@@ -223,6 +223,8 @@ gchar *pretty_print_memory(int64_t bytes) {
 	return g_strdup_printf("%.1f%s", mem, units[i]);
 }
 
+#define MAX_COMP_FREESPACE_RATIO 3
+
 /**
  * Test if there is enough free disk space by returning the difference
  * in bytes between available free disk space and the size given as parameter
@@ -231,21 +233,39 @@ gchar *pretty_print_memory(int64_t bytes) {
  */
 int test_available_space(int64_t req_size) {
 	int64_t free_space = find_space(com.wd);
+	int res = -1;
 	if (free_space < 0 || req_size <= 0)
 		return -1;
 
 	if (req_size > free_space) {
+		char * msg;
 		gchar *avail = pretty_print_memory(free_space);
 		gchar *required = pretty_print_memory(req_size);
 		gchar *missing = pretty_print_memory(req_size - free_space);
-		char *msg = siril_log_message(_("Not enough free disk space to perform this operation: "
-					"%sB available for %sB needed (missing %sB)\n"),
-				avail, required, missing);
-		queue_message_dialog(GTK_MESSAGE_ERROR, _("Not enough disk space"), msg);
+		if (com.pref.comp.fits_enabled) {
+			if (req_size/free_space < MAX_COMP_FREESPACE_RATIO) {
+				msg = siril_log_message(_("Compression enabled: There may no be enough free disk space to perform this operation: "
+						"%sB available for %sB needed (missing %sB)\n"),
+						avail, required, missing);
+				queue_message_dialog(GTK_MESSAGE_WARNING, _("Compression enabled: There may not be enough free disk space to perform this operation"), msg);
+			} else {
+				msg = siril_log_message(_("Compression enabled: It is likely that there is not enough free disk space to perform this operation: "
+						"%sB available for %sB needed (missing %sB)\n"),
+						avail, required, missing);
+				queue_message_dialog(GTK_MESSAGE_WARNING, _("Compression enabled: It is likely that there is not enough free disk space to perform this operation"), msg);
+			}
+			res = 0;
+		} else {
+			msg = siril_log_message(_("Not enough free disk space to perform this operation: "
+						"%sB available for %sB needed (missing %sB)\n"),
+						avail, required, missing);
+			queue_message_dialog(GTK_MESSAGE_ERROR, _("Not enough disk space"), msg);
+			res = 1;
+		}
 		g_free(avail);
 		g_free(required);
 		g_free(missing);
-		return 1;
+		return res;
 	}
 	siril_debug_print("Tested free space ok: %ld for %ld MB free\n",
 			(long)(req_size / BYTES_IN_A_MB), (long)(free_space / BYTES_IN_A_MB));
