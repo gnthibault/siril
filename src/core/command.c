@@ -1191,7 +1191,6 @@ int process_seq_crop(int nb) {
 					if (value[0] == '\0') {
 						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
 						return 1;
-						break;
 					}
 					args->prefix = strdup(value);
 				}
@@ -1924,7 +1923,6 @@ int process_subsky(int nb) {
 						if (value[0] == '\0') {
 							siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
 							return 1;
-							break;
 						}
 						args->seqEntry = strdup(value);
 					}
@@ -2006,15 +2004,14 @@ int process_findcosme(int nb) {
 		int startoptargs = i + 3;
 		int nb_command_max = i + 4;
 		if (nb > startoptargs) {
-			for (int i = startoptargs; i < nb_command_max; i++) {
-				if (word[i]) {
-					if (g_str_has_prefix(word[i], "-prefix=")) {
-						char *current = word[i], *value;
+			for (int j = startoptargs; j < nb_command_max; i++) {
+				if (word[j]) {
+					if (g_str_has_prefix(word[j], "-prefix=")) {
+						char *current = word[j], *value;
 						value = current + 8;
 						if (value[0] == '\0') {
 							siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 							return 1;
-							break;
 						}
 						args->seqEntry = strdup(value);
 					}
@@ -2217,7 +2214,6 @@ int process_seq_mtf(int nb) {
 					if (value[0] == '\0') {
 						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
 						return 1;
-						break;
 					}
 					args->seqEntry = strdup(value);
 				}
@@ -2278,7 +2274,6 @@ int process_seq_split_cfa(int nb) {
 					if (value[0] == '\0') {
 						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
 						return 1;
-						break;
 					}
 					args->seqEntry = strdup(value);
 				}
@@ -2507,7 +2502,6 @@ int process_register(int nb) {
 				if (value[0] == '\0') {
 					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 					return 1;
-					break;
 				}
 				reg_args->prefix = strdup(value);
 				}
