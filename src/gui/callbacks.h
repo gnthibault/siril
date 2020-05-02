@@ -71,7 +71,6 @@ void set_viewer_mode_widgets_sensitive(gboolean sensitive);
 void on_radiobutton_minmax_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_radiobutton_hilo_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_radiobutton_user_toggled(GtkToggleButton *togglebutton, gpointer user_data);
-void on_combodisplay_changed (GtkComboBox *widget, gpointer user_data);
 void on_checkchain_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_max_entry_changed(GtkEditable *editable, gpointer user_data);
 void on_min_entry_changed(GtkEditable *editable, gpointer user_data);

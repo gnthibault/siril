@@ -1128,6 +1128,81 @@ enter a visible wavelength in nm</property>
       </packing>
     </child>
   </object>
+  <object class="GtkMenu" id="menu_display">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <signal name="selection-done" handler="on_menu_display_selection_done" swapped="no"/>
+    <child>
+      <object class="GtkRadioMenuItem" id="linear_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Linear</property>
+        <property name="use_underline">True</property>
+        <property name="active">True</property>
+        <property name="draw_as_radio">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="log_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Logarithm</property>
+        <property name="use_underline">True</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">linear_item</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="square_root_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Square root</property>
+        <property name="use_underline">True</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">linear_item</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="squared_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Squared</property>
+        <property name="use_underline">True</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">linear_item</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="asinh_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Asinh</property>
+        <property name="use_underline">True</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">linear_item</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="auto_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">AutoStretch</property>
+        <property name="use_underline">True</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">linear_item</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioMenuItem" id="histo_item">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Histogram</property>
+        <property name="use_underline">True</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">linear_item</property>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="menugray">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -6847,6 +6922,148 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                 <property name="valign">center</property>
                 <property name="show_arrow">False</property>
                 <child>
+                  <object class="GtkToggleToolButton" id="neg_button">
+                    <property name="name">neg_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Switch to normal and negative view</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_neg</property>
+                    <signal name="toggled" handler="on_neg_button_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleToolButton" id="colormap_button">
+                    <property name="name">colormap_button</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Switch to normal and rainbow colormap (false color rendering)</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">image_colormap</property>
+                    <signal name="toggled" handler="on_colormap_button_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolItem">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">center</property>
+                    <child>
+                      <object class="GtkMenuButton" id="menu_display_button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Display mode</property>
+                        <property name="popup">menu_display</property>
+                        <property name="use_popover">False</property>
+                        <child>
+                          <object class="GtkBox" id="display_box">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="display_button_name">
+                                <property name="width_request">100</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="valign">baseline</property>
+                                <property name="label" translatable="yes">Linear</property>
+                                <property name="use_underline">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkImage" id="display_button_arrow">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="valign">baseline</property>
+                                <property name="icon_name">pan-down-symbolic</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur4">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleToolButton" id="zoom_to_fit_check_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Fit the image to the window</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_name">zoom-fit-best-symbolic</property>
+                    <property name="active">True</property>
+                    <signal name="toggled" handler="on_zoom_to_fit_check_button_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="zoom_to_one_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Show the image at its normal size</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_name">zoom-original-symbolic</property>
+                    <signal name="clicked" handler="on_zoom_to_one_button_clicked" object="zoom_to_fit_check_button" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkToolButton" id="rotate90_anticlock_button">
                     <property name="name">rotate90_anticlock_button</property>
                     <property name="visible">True</property>
@@ -6962,127 +7179,6 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="use_underline">True</property>
                     <property name="icon_widget">image_seqlist</property>
                     <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="homogeneous">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSeparatorToolItem" id="separateur4">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="homogeneous">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToggleToolButton" id="neg_button">
-                    <property name="name">neg_button</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Switch to normal and negative view</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_widget">image_neg</property>
-                    <signal name="toggled" handler="on_neg_button_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="homogeneous">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToggleToolButton" id="colormap_button">
-                    <property name="name">colormap_button</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Switch to normal and rainbow colormap (false color rendering)</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_widget">image_colormap</property>
-                    <signal name="toggled" handler="on_colormap_button_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="homogeneous">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToolItem" id="toolbarView">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="valign">center</property>
-                    <child>
-                      <object class="GtkComboBoxText" id="combodisplay">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="has_tooltip">True</property>
-                        <property name="tooltip_markup" translatable="yes">Display mode</property>
-                        <property name="tooltip_text" translatable="yes">Display mode</property>
-                        <property name="halign">center</property>
-                        <property name="valign">center</property>
-                        <property name="border_width">6</property>
-                        <property name="active">0</property>
-                        <items>
-                          <item translatable="yes">Linear</item>
-                          <item translatable="yes">Logarithm</item>
-                          <item translatable="yes">Square root</item>
-                          <item translatable="yes">Squared</item>
-                          <item translatable="yes">Asinh</item>
-                          <item id="&lt;Saisir un identifiant&gt;" translatable="yes">AutoStretch</item>
-                          <item translatable="yes">Histogram</item>
-                        </items>
-                        <signal name="changed" handler="on_combodisplay_changed" swapped="no"/>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="homogeneous">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSeparatorToolItem" id="separateur1">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="homogeneous">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToggleToolButton" id="zoom_to_fit_check_button">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Fit the image to the window</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_name">zoom-fit-best-symbolic</property>
-                    <property name="active">True</property>
-                    <signal name="toggled" handler="on_zoom_to_fit_check_button_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="homogeneous">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToolButton" id="zoom_to_one_button">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Show the image at its normal size</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="use_underline">True</property>
-                    <property name="icon_name">zoom-original-symbolic</property>
-                    <signal name="clicked" handler="on_zoom_to_one_button_clicked" object="zoom_to_fit_check_button" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>

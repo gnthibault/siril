@@ -800,3 +800,6 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	return FALSE;
 }
 
+void on_auto_item_activate(GtkMenuItem *item, gpointer user_data) {
+
+}

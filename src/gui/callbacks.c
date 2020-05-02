@@ -355,15 +355,31 @@ void set_cutoff_sliders_values() {
 	gtk_toggle_button_set_active(cutmax, cut_over);
 }
 
+void on_menu_display_selection_done(GtkMenuShell *menushell, gpointer user_data) {
+	GtkWidget *w = gtk_menu_get_active(GTK_MENU(menushell));
+	const GtkWidget *const lbl = gtk_bin_get_child(GTK_BIN(w));
+	const char *const text = gtk_label_get_text(GTK_LABEL(lbl));
+	GtkLabel *label = GTK_LABEL(lookup_widget("display_button_name"));
+
+	gtk_label_set_text(label, text);
+
+	if (copy_rendering_settings_when_chained(TRUE))
+		redraw(com.cvport, REMAP_ALL);
+	else
+		redraw(com.cvport, REMAP_ONLY);
+	redraw_previews();
+}
+
 /* Sets the display mode combo box to the value stored in the relevant struct.
  * The operation is purely graphical. */
 void set_display_mode() {
-	static GtkComboBox *modecombo = NULL;
+	static GtkMenu *display_menu = NULL;
 	display_mode mode;
 	int vport;
 
-	if (!modecombo)
-		modecombo = GTK_COMBO_BOX(lookup_widget("combodisplay"));
+	if (!display_menu) {
+		display_menu = GTK_MENU(lookup_widget("menu_display"));
+	}
 
 	vport = com.cvport;
 	if (com.cvport ==  RGB_VPORT) vport = GREEN_VPORT;
@@ -376,9 +392,9 @@ void set_display_mode() {
 	else
 		return;
 
-	g_signal_handlers_block_by_func(modecombo, on_combodisplay_changed, NULL);
-	gtk_combo_box_set_active(modecombo, mode);
-	g_signal_handlers_unblock_by_func(modecombo, on_combodisplay_changed, NULL);
+	g_signal_handlers_block_by_func(display_menu, on_menu_display_selection_done, NULL);
+	gtk_menu_set_active(display_menu, mode);
+	g_signal_handlers_unblock_by_func(display_menu, on_menu_display_selection_done, NULL);
 }
 
 /* fill the label indicating how many images are selected in the gray and
@@ -498,6 +514,24 @@ void sliders_mode_set_state(sliders_mode sliders) {
 	g_signal_handlers_unblock_by_func(radiobutton, func[sliders], NULL);
 }
 
+static display_mode get_display_mode_from_menu(GtkMenu *menu) {
+	GtkWidget *w = gtk_menu_get_active(menu);
+	if (w == lookup_widget("log_item"))
+		return LOG_DISPLAY;
+	else if (w == lookup_widget("square_root_item"))
+		return SQRT_DISPLAY;
+	else if (w == lookup_widget("squared_item"))
+		return SQUARED_DISPLAY;
+	else if (w == lookup_widget("asinh_item"))
+		return ASINH_DISPLAY;
+	else if (w == lookup_widget("auto_item"))
+		return STF_DISPLAY;
+	else if (w == lookup_widget("histo_item"))
+		return HISTEQ_DISPLAY;
+	else
+		return NORMAL_DISPLAY;
+}
+
 /* When rendering settings are chained, they need to be copied to other layers
  * when modified on the current layer. This procedure does that. It can be
  * called whenever a value has changed, or when the chaning has been enabled,
@@ -512,7 +546,7 @@ void sliders_mode_set_state(sliders_mode sliders) {
 int copy_rendering_settings_when_chained(gboolean from_GUI) {
 	static GtkToggleButton *chainedbutton = NULL;
 	static GtkRange *range_lo = NULL, *range_hi = NULL;
-	static GtkComboBox *modecombo = NULL;
+	static GtkMenu *display_menu = NULL;
 	static GtkToggleButton *cutmax = NULL;
 
 	gboolean is_chained;
@@ -524,7 +558,7 @@ int copy_rendering_settings_when_chained(gboolean from_GUI) {
 
 	if (!chainedbutton) {	// init widgets
 		chainedbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_chain"));
-		modecombo = GTK_COMBO_BOX(lookup_widget("combodisplay"));
+		display_menu = GTK_MENU(lookup_widget("menu_display"));
 		range_lo = GTK_RANGE(gtk_builder_get_object(builder, "scalemin"));
 		range_hi = GTK_RANGE(gtk_builder_get_object(builder, "scalemax"));
 		cutmax = GTK_TOGGLE_BUTTON(
@@ -548,7 +582,7 @@ int copy_rendering_settings_when_chained(gboolean from_GUI) {
 		return 0;
 
 	if (from_GUI) {
-		int raw_mode = gtk_combo_box_get_active(modecombo);
+		int raw_mode = get_display_mode_from_menu(display_menu);//gtk_combo_box_get_active(modecombo);
 		/* update values in the layer_info for cvport */
 		layers[cvport].rendering_mode =
 			raw_mode >= 0 ? raw_mode : NORMAL_DISPLAY;
@@ -1044,14 +1078,17 @@ static void load_accels() {
 
 /* Initialize the combobox when loading new single_image */
 void initialize_display_mode() {
-	static GtkComboBox *modecombo = NULL;
+	static GtkMenu *display_menu = NULL;
 	static GtkToggleButton *chainedbutton = NULL;
 	display_mode mode;
-	int i, raw_mode;
+	int i;
 
-	if (!modecombo)
-		modecombo = GTK_COMBO_BOX(lookup_widget("combodisplay"));
-	raw_mode = gtk_combo_box_get_active(modecombo);
+	if (!display_menu) {
+		display_menu = GTK_MENU(lookup_widget("menu_display"));
+	}
+	int raw_mode = get_display_mode_from_menu(display_menu);
+
+
 	/* Check if never initialized. In this case the mode is set to linear */
 	if (raw_mode == -1)
 		mode = NORMAL_DISPLAY;
@@ -1640,15 +1677,6 @@ void on_colormap_button_toggled(GtkToggleToolButton *togglebutton,
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
-}
-
-/* Callback for the display mode change */
-void on_combodisplay_changed(GtkComboBox *widget, gpointer user_data) {
-	if (copy_rendering_settings_when_chained(TRUE))
-		redraw(com.cvport, REMAP_ALL);
-	else
-		redraw(com.cvport, REMAP_ONLY);
-	redraw_previews();
 }
 
 void on_checkchain_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
