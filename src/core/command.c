@@ -1125,7 +1125,7 @@ int process_seq_crop(int nb) {
 	sequence *seq;
 	gchar *file;
 
-	int startoptargs=6;
+	int startoptargs = 6;
 	int nb_command_max = 7;
 
 	if ((!com.selection.h) || (!com.selection.w)) {
@@ -1142,8 +1142,7 @@ int process_seq_crop(int nb) {
 			area.y = atoi(word[3]);
 			area.w = atoi(word[4]);
 			area.h = atoi(word[5]);
-		}
-		else {
+		} else {
 			siril_log_message(_("Crop: select a region or provide x, y, width, height\n"));
 			return 1;
 		}
@@ -1183,19 +1182,19 @@ int process_seq_crop(int nb) {
 	args->area = area;
 	args->prefix = "cropped_";
 	
-	if (nb>startoptargs) { 
-		for (int i=startoptargs;i<nb_command_max;i++) {
+	if (nb > startoptargs) {
+		for (int i = startoptargs; i < nb_command_max; i++) {
 			if (word[i]) {
 				if (g_str_has_prefix(word[i], "-prefix=")) {
 					char *current = word[i], *value;
 					value = current + 8;
 					if (value[0] == '\0') {
-						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
 						return 1;
 						break;
 					}
 					args->prefix = strdup(value);
-					}
+				}
 			}
 		}
 	}
@@ -1914,21 +1913,21 @@ int process_subsky(int nb) {
 		args->seqEntry = "bkg_";
 		args->degree = (poly_order) (degree - 1);
 
-		int startoptargs=3;
-		int nb_command_max=4;
-		if (nb>startoptargs) { 
-			for (int i=startoptargs;i<nb_command_max;i++) {
+		int startoptargs = 3;
+		int nb_command_max = 4;
+		if (nb > startoptargs) {
+			for (int i = startoptargs; i < nb_command_max; i++) {
 				if (word[i]) {
 					if (g_str_has_prefix(word[i], "-prefix=")) {
 						char *current = word[i], *value;
 						value = current + 8;
 						if (value[0] == '\0') {
-							siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+							siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
 							return 1;
 							break;
 						}
 						args->seqEntry = strdup(value);
-						}
+					}
 				}
 			}
 		}
@@ -2004,10 +2003,10 @@ int process_findcosme(int nb) {
 		args->seqEntry = "cc_";
 		args->multithread = FALSE;
 
-		int startoptargs=i+3;
-		int nb_command_max=i+4;
-		if (nb>startoptargs) { 
-			for (int i=startoptargs;i<nb_command_max;i++) {
+		int startoptargs = i + 3;
+		int nb_command_max = i + 4;
+		if (nb > startoptargs) {
+			for (int i = startoptargs; i < nb_command_max; i++) {
 				if (word[i]) {
 					if (g_str_has_prefix(word[i], "-prefix=")) {
 						char *current = word[i], *value;
@@ -2018,7 +2017,7 @@ int process_findcosme(int nb) {
 							break;
 						}
 						args->seqEntry = strdup(value);
-						}
+					}
 				}
 			}
 		}
@@ -2207,21 +2206,21 @@ int process_seq_mtf(int nb) {
 	args->mid = atof(word[3]);
 	args->hi = atof(word[4]);
 
-	int startoptargs=5;
-	int nb_command_max=6;
-	if (nb>startoptargs) { 
-		for (int i=startoptargs;i<nb_command_max;i++) {
+	int startoptargs = 5;
+	int nb_command_max = 6;
+	if (nb > startoptargs) {
+		for (int i = startoptargs; i < nb_command_max; i++) {
 			if (word[i]) {
 				if (g_str_has_prefix(word[i], "-prefix=")) {
 					char *current = word[i], *value;
 					value = current + 8;
 					if (value[0] == '\0') {
-						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
 						return 1;
 						break;
 					}
 					args->seqEntry = strdup(value);
-					}
+				}
 			}
 		}
 	}
@@ -2268,21 +2267,21 @@ int process_seq_split_cfa(int nb) {
 	args->fit = &gfit;
 	args->seqEntry = "CFA_"; // propose to default to "CFA" for consistency of output names with single image split_cfa
 
-	int startoptargs=2;
-	int nb_command_max=3;
-	if (nb>startoptargs) { 
-		for (int i=startoptargs;i<nb_command_max;i++) {
+	int startoptargs = 2;
+	int nb_command_max = 3;
+	if (nb > startoptargs) {
+		for (int i = startoptargs; i < nb_command_max; i++) {
 			if (word[i]) {
 				if (g_str_has_prefix(word[i], "-prefix=")) {
 					char *current = word[i], *value;
 					value = current + 8;
 					if (value[0] == '\0') {
-						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
 						return 1;
 						break;
 					}
 					args->seqEntry = strdup(value);
-					}
+				}
 			}
 		}
 	}
