@@ -457,7 +457,7 @@ static int ser_write_header(struct ser_struct *ser_file) {
 }
 
 /* populate fields that are not already set in ser_create_file */
-static void ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
+static int ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 	ser_file->image_width = fit->rx;
 	ser_file->image_height = fit->ry;
 	fprintf(stdout, "setting SER image size as %dx%d\n", fit->rx, fit->ry);
@@ -477,6 +477,7 @@ static void ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 		ser_file->bit_pixel_depth = 16;
 	} else {
 		siril_log_message(_("Writing to SER files from larger than 16-bit FITS images is not yet implemented\n"));
+		return 1;
 	}
 	if (fit->instrume[0] != 0) {
 		memset(ser_file->instrument, 0, 40);
@@ -493,6 +494,7 @@ static void ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 
 	if (FITS_date_key_to_Unix_time(fit->date_obs, &ser_file->date_utc, &ser_file->date) == -1)
 		FITS_date_key_to_Unix_time(fit->date, &ser_file->date_utc, &ser_file->date);
+	return 0;
 }
 
 static int get_SER_Bayer_Pattern(ser_color pattern) {
@@ -1205,7 +1207,9 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 		return -1;
 	if (ser_file->number_of_planes == 0) {
 		// adding first frame of a new sequence, use it to populate the header
-		ser_write_header_from_fit(ser_file, fit);
+		if (ser_write_header_from_fit(ser_file, fit)) {
+			return 1;
+		}
 	}
 	if (fit->rx != ser_file->image_width || fit->ry != ser_file->image_height) {
 		siril_log_message(_("Trying to add an image of different size in a SER\n"));
