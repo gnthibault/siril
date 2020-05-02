@@ -1131,7 +1131,7 @@ enter a visible wavelength in nm</property>
   <object class="GtkMenu" id="menu_display">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <signal name="selection-done" handler="on_menu_display_selection_done" swapped="no"/>
+    <signal name="selection-done" handler="on_menu_display_selection_done" object="display_button_name" swapped="no"/>
     <child>
       <object class="GtkRadioMenuItem" id="linear_item">
         <property name="visible">True</property>
@@ -6922,6 +6922,61 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                 <property name="valign">center</property>
                 <property name="show_arrow">False</property>
                 <child>
+                  <object class="GtkToolItem">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">center</property>
+                    <child>
+                      <object class="GtkMenuButton" id="menu_display_button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip_text" translatable="yes">Display mode</property>
+                        <property name="popup">menu_display</property>
+                        <property name="use_popover">False</property>
+                        <child>
+                          <object class="GtkBox" id="display_box">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkLabel" id="display_button_name">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="valign">baseline</property>
+                                <property name="label" translatable="yes">Linear</property>
+                                <property name="use_underline">True</property>
+                                <property name="width_chars">20</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkImage" id="display_button_arrow">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="valign">baseline</property>
+                                <property name="icon_name">pan-down-symbolic</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkToggleToolButton" id="neg_button">
                     <property name="name">neg_button</property>
                     <property name="visible">True</property>
@@ -6953,61 +7008,6 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                   <packing>
                     <property name="expand">False</property>
                     <property name="homogeneous">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToolItem">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="valign">center</property>
-                    <child>
-                      <object class="GtkMenuButton" id="menu_display_button">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="tooltip_text" translatable="yes">Display mode</property>
-                        <property name="popup">menu_display</property>
-                        <property name="use_popover">False</property>
-                        <child>
-                          <object class="GtkBox" id="display_box">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <child>
-                              <object class="GtkLabel" id="display_button_name">
-                                <property name="width_request">100</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="valign">baseline</property>
-                                <property name="label" translatable="yes">Linear</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkImage" id="display_button_arrow">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="valign">baseline</property>
-                                <property name="icon_name">pan-down-symbolic</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="homogeneous">True</property>
                   </packing>
                 </child>
                 <child>

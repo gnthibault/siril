@@ -359,9 +359,8 @@ void on_menu_display_selection_done(GtkMenuShell *menushell, gpointer user_data)
 	GtkWidget *w = gtk_menu_get_active(GTK_MENU(menushell));
 	const GtkWidget *const lbl = gtk_bin_get_child(GTK_BIN(w));
 	const char *const text = gtk_label_get_text(GTK_LABEL(lbl));
-	GtkLabel *label = GTK_LABEL(lookup_widget("display_button_name"));
 
-	gtk_label_set_text(label, text);
+	gtk_label_set_text((GtkLabel *)user_data, text);
 
 	if (copy_rendering_settings_when_chained(TRUE))
 		redraw(com.cvport, REMAP_ALL);
