@@ -1955,6 +1955,7 @@ int process_findcosme(int nb) {
 	args->sigma[0] = atof(word[1 + i]);
 	args->sigma[1] = atof(word[2 + i]);
 	args->is_cfa = (word[0][10] == '_' || word[0][13] == '_');	// find_cosme_cfa or seqfind_cosme_cfa
+	args->amount = 1.0;
 	args->fit = &gfit;
 
 	set_cursor_waiting(TRUE);

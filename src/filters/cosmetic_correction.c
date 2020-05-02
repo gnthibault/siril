@@ -589,15 +589,12 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 	GtkSpinButton *sigma[2];
 	GtkAdjustment *adjCosmeAmount;
 
-	CFA = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "cosmCFACheckBox"));
-	sigma[0] = GTK_SPIN_BUTTON(
-			gtk_builder_get_object(builder, "spinSigCosmeColdBox"));
-	sigma[1] = GTK_SPIN_BUTTON(
-			gtk_builder_get_object(builder, "spinSigCosmeHotBox"));
+	CFA = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheckBox"));
+	sigma[0] = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeColdBox"));
+	sigma[1] = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeHotBox"));
 	seq = GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq"));
 	cosmeticSeqEntry = GTK_ENTRY(lookup_widget("entryCosmeticSeq"));
-	adjCosmeAmount = GTK_ADJUSTMENT(
-			gtk_builder_get_object(builder, "adjCosmeAmount"));
+	adjCosmeAmount = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjCosmeAmount"));
 
 	struct cosmetic_data *args = malloc(sizeof(struct cosmetic_data));
 

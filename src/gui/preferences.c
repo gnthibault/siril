@@ -267,7 +267,7 @@ void on_spinbutton_comp_fits_quantization_value_changed(GtkSpinButton *button, g
 			siril_message_dialog(GTK_MESSAGE_ERROR, _("Incorrect parameters detected"),
 								"Setting quantization to 0 has only a sense with a GZIP compression "
 								"and GZIP 2 often produces better compression of floating­point images.");
-			gtk_spin_button_set_value(button, com.pref.comp.fits_quantization != 0.0 ? com.pref.comp.fits_quantization : 8.0);
+			gtk_spin_button_set_value(button, com.pref.comp.fits_quantization != 0.0 ? com.pref.comp.fits_quantization : 16.0);
 		}
 	}
 	com.pref.comp.fits_quantization = quantization;
@@ -286,7 +286,7 @@ void on_combobox_comp_fits_method_changed(GtkComboBox *box, gpointer user_data) 
 	GtkSpinButton *button = (GtkSpinButton *)user_data;
 	gint method = gtk_combo_box_get_active(GTK_COMBO_BOX(box));
 	if (gtk_spin_button_get_value(button) == 0.0) {
-		gtk_spin_button_set_value(button, 8.0);
+		gtk_spin_button_set_value(button, 16.0);
 	}
 	com.pref.comp.fits_method = method;
 	writeinitfile();
@@ -296,7 +296,7 @@ void on_combobox_comp_fits_method_changed(GtkComboBox *box, gpointer user_data) 
 void initialize_compression_param() {
 	com.pref.comp.fits_method = RICE_COMP;
 	com.pref.comp.fits_enabled = FALSE;
-	com.pref.comp.fits_quantization = 8.0;
+	com.pref.comp.fits_quantization = 16.0;
 	com.pref.comp.fits_hcompress_scale = 4.0;
 }
 
