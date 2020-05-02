@@ -17250,7 +17250,7 @@ If the selection is empty, the whole image will be used as reference.</property>
 * &lt;b&gt;Fast Debayer&lt;/b&gt; is the fastest algorithm available in Siril. However, other algorithms listed below are often quite better.
 * &lt;b&gt;VNG4&lt;/b&gt;, Threshold-Based Variable Number of Gradients, works on a 5x5 pixel neighborhood around each source pixel. It is a very good algorithm for flat areas of the image (like sky background) but produces artifacts in high contrast areas (like stars).
 * &lt;b&gt;AHD&lt;/b&gt;, Adaptive Homogeneity-Directed, is another well known debayer algorithm. However it usually shows artefacts in the background and bad star shapes.
-* &lt;b&gt;DCB&lt;/b&gt;, a more recent algorithm, can show some artifact in the background like AHD.
+* &lt;b&gt;DCB&lt;/b&gt;, a more recent algorithm, can show some artifacts in the background like AHD.
 * &lt;b&gt;HPHD&lt;/b&gt;, Heterogeneity-Projection Hard-Decision, is an old algorithm giving some nice results but that is quite slow.
 * &lt;b&gt;IGV&lt;/b&gt; and &lt;b&gt;LMMSE&lt;/b&gt; are very good when working with very noisy images. However, IGV tends to lose some chromatic information, while LMMSE is one of the most computational expensive demosaicers and needs a lot of memory.
 * &lt;b&gt;RCD&lt;/b&gt;, Ratio Corrected Demosaicing, intends to smooth the colour correction errors that are common in many other interpolation methods. It does an excellent job for round edges, for example stars, and is therefore the default algorithm used in Siril.
@@ -18571,7 +18571,7 @@ Configuring a memory amount larger than what is available on your system may res
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip_text">While floating-point format images may be losslessly compressed (using gzip, since Rice and Hcompress only compress integer arrays), these images often do not compress very well because the pixel values are too noisy; the less significant bits in the mantissa of the pixel values effectively contain incompressible random bit patterns. In order to achieve higher compression, one needs to remove some of this noise, but without losing the useful information content. If it is too large, one undersamples the pixel values resulting in a loss of information in the image. If it is too small, however, it preserves too much of the noise (or even amplifies the noise) in the pixel values, resulting in poor compression.</property>
+                                    <property name="tooltip_text" translatable="yes">While floating-point format images may be losslessly compressed (using gzip, since Rice and Hcompress only compress integer arrays), these images often do not compress very well because the pixel values are too noisy; the less significant bits in the mantissa of the pixel values effectively contain incompressible random bit patterns. In order to achieve higher compression, one needs to remove some of this noise, but without losing the useful information content. If it is too large, one undersamples the pixel values resulting in a loss of information in the image. If it is too small, however, it preserves too much of the noise (or even amplifies the noise) in the pixel values, resulting in poor compression.</property>
                                     <property name="halign">start</property>
                                     <property name="valign">center</property>
                                     <property name="width_chars">9</property>
@@ -18592,7 +18592,7 @@ Configuring a memory amount larger than what is available on your system may res
                                   <object class="GtkComboBoxText" id="combobox_comp_fits_method">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="tooltip_markup">Select an algorithm method for FITS compression:
+                                    <property name="tooltip_markup" translatable="yes">Select an algorithm method for FITS compression:
 
 * &lt;b&gt;Rice&lt;/b&gt;: The Rice algorithm is simple and very fast 
 * &lt;b&gt;GZIP 1&lt;/b&gt;: The gzip algorithm is used to compress and uncompress the image pixels. Gzip is the compression algorithm used in the free GNU software utility of the same name. 
@@ -18680,7 +18680,7 @@ The technique gives very good compression for astronomical images and is relativ
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip_text">The integer scale parameter determines the amount of compression. Scale = 0 or 1 leads to lossless compression. If the scale factor is greater than 1 then the compression is lossy. For astronomical images, lossless compression is generally rather ineffective because the images have a good deal of noise, which is inherently incompressible. However, if some of this noise is discarded then the images compress very well. The scale factor determines how much of the noise is discarded. Setting scale to 2 times sigma, the RMS noise in the image, usually results in compression by about a factor of 10 (i.e. the compressed image requires about 1.5 bits/pixel), while producing a decompressed image that is nearly indistinguishable from the original.</property>
+                                    <property name="tooltip_text" translatable="yes">The integer scale parameter determines the amount of compression. Scale = 0 or 1 leads to lossless compression. If the scale factor is greater than 1 then the compression is lossy. For astronomical images, lossless compression is generally rather ineffective because the images have a good deal of noise, which is inherently incompressible. However, if some of this noise is discarded then the images compress very well. The scale factor determines how much of the noise is discarded. Setting scale to 2 times sigma, the RMS noise in the image, usually results in compression by about a factor of 10 (i.e. the compressed image requires about 1.5 bits/pixel), while producing a decompressed image that is nearly indistinguishable from the original.</property>
                                     <property name="halign">start</property>
                                     <property name="valign">center</property>
                                     <property name="width_chars">9</property>
