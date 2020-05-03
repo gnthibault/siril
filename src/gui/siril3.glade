@@ -6922,7 +6922,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                 <property name="valign">center</property>
                 <property name="show_arrow">False</property>
                 <child>
-                  <object class="GtkToolItem">
+                  <object class="GtkToolItem" id="tool_item_display">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="valign">center</property>
@@ -6945,11 +6945,10 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                                 <property name="valign">baseline</property>
                                 <property name="label" translatable="yes">Linear</property>
                                 <property name="use_underline">True</property>
-                                <property name="width_chars">20</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">True</property>
+                                <property name="fill">False</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
@@ -6972,7 +6971,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="homogeneous">True</property>
                   </packing>
                 </child>
