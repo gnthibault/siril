@@ -51,6 +51,7 @@
 #include "gui/image_interactions.h"
 #include "gui/sequence_list.h"
 #include "gui/siril_preview.h"
+#include "gui/script_menu.h"
 #include "filters/asinh.h"
 #include "filters/banding.h"
 #include "filters/clahe.h"
@@ -3136,4 +3137,8 @@ int process_extract(int nb) {
 	start_in_new_thread(extract_plans, args);
 
 	return 0;
+}
+
+int process_reloadscripts(int nb){
+	return initialize_script_menu(0);
 }

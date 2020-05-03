@@ -1322,7 +1322,7 @@ void initialize_all_GUI(gchar *supported_files) {
 
 	/* initialize menu gui */
 	update_MenuItem();
-	initialize_script_menu();
+	initialize_script_menu(1);
 
 	/* initialize command completion */
 	init_completion_command();
