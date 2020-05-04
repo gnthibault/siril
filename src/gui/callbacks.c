@@ -1279,14 +1279,12 @@ static GtkTargetEntry drop_types[] = {
 
 static gboolean on_control_window_configure_event(GtkWidget *widget, GdkEvent *event,
 		gpointer user_data) {
-
 	save_main_window_state();
 	return FALSE;
 }
 
 static gboolean on_control_window_window_state_event(GtkWidget *widget, GdkEvent *event,
 		gpointer user_data) {
-
 	save_main_window_state();
 	return FALSE;
 }
@@ -1578,8 +1576,10 @@ static rectangle get_window_position(GtkWindow *window) {
 }
 
 void save_main_window_state() {
+	static GtkWidget *main_w = NULL;
 	if (!com.script && com.pref.remember_windows) {
-		GtkWidget *main_w = lookup_widget("control_window");
+		if (!main_w)
+			main_w = lookup_widget("control_window");
 		com.pref.main_w_pos = get_window_position(GTK_WINDOW(main_w));
 		com.pref.is_maximized = gtk_window_is_maximized(GTK_WINDOW(main_w));
 	}
