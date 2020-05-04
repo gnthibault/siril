@@ -2712,8 +2712,8 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 
 		if (!arg->result_file) {
 			char filename[256];
-			char *suffix = ends_with(seq->seqname, "_") ? "" :
-				(ends_with(com.seq.seqname, "-") ? "" : "_");
+			char *suffix = ends_with(seq->seqname, "_") ||
+				ends_with(com.seq.seqname, "-") ? "" : "_";
 			snprintf(filename, 256, "%s%sstacked%s",
 					seq->seqname, suffix, com.pref.ext);
 			arg->result_file = strdup(filename);
@@ -2769,6 +2769,10 @@ static gpointer stackall_worker(gpointer garg) {
 		if (ends_with(file, ".seq")) {
 			arg->seqfile = strdup(file);
 			stack_one_seq(arg);
+
+			g_free(arg->result_file);
+			arg->result_file = NULL;
+			g_free(arg->seqfile);
 		}
 	}
 
@@ -2776,8 +2780,6 @@ static gpointer stackall_worker(gpointer garg) {
 	gettimeofday(&t_end, NULL);
 	show_time(arg->t_start, t_end);
 	g_dir_close(dir);
-	g_free(arg->result_file);
-	g_free(arg->seqfile);
 	free(arg);
 	com.script = was_in_script;
 	siril_add_idle(end_generic, NULL);

@@ -320,6 +320,8 @@ static void filter_changed(gpointer user_data) {
 		new_filename = g_strdup_printf("%s.png", file_no_ext);
 		break;
 #endif
+	default:
+		break;
 	}
 	if (new_filename) {
 		gchar *bname = g_path_get_basename(new_filename);
