@@ -1122,8 +1122,6 @@ int process_seq_crop(int nb) {
 	}
 
 	rectangle area;
-	sequence *seq;
-	gchar *file;
 
 	int startoptargs = 6;
 	int nb_command_max = 7;
@@ -1150,26 +1148,10 @@ int process_seq_crop(int nb) {
 		memcpy(&area, &com.selection, sizeof(rectangle));
 	}
 
-	file = g_strdup(word[1]);
-	if (!ends_with(file, ".seq")) {
-		str_append(&file, ".seq");
-	}
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
+		return 1;
 
-	if (!existseq(file)) {
-		if (check_seq(FALSE)) {
-			siril_log_message(_("No sequence `%s' found.\n"), file);
-			return 1;
-		}
-	}
-	seq = readseqfile(file);
-	if (seq == NULL) {
-		siril_log_message(_("No sequence `%s' found.\n"), file);
-		return 1;
-	}
-	if (seq_check_basic_data(seq, FALSE) == -1) {
-		free(seq);
-		return 1;
-	}
 	if (atoi(word[4]) > seq->rx || atoi(word[5]) > seq->ry) {
 		siril_log_message(_("Crop: width and height, respectively, must be less than %d and %d.\n"),
 				seq->rx, seq->ry);
@@ -1868,26 +1850,9 @@ int process_subsky(int nb) {
 	is_sequence = (word[0][2] == 'q');
 
 	if (is_sequence) {
-		gchar *file = g_strdup(word[1]);
-		if (!ends_with(file, ".seq")) {
-			str_append(&file, ".seq");
-		}
-
-		if (!existseq(file)) {
-			if (check_seq(FALSE)) {
-				siril_log_message(_("No sequence `%s' found.\n"), file);
-				return 1;
-			}
-		}
-		seq = readseqfile(file);
-		if (seq == NULL) {
-			siril_log_message(_("No sequence `%s' found.\n"), file);
+		seq = load_sequence(word[1], NULL);
+		if (!seq)
 			return 1;
-		}
-		if (seq_check_basic_data(seq, FALSE) == -1) {
-			free(seq);
-			return 1;
-		}
 		degree = atoi(word[2]);
 	} else {
 		if (!single_image_is_loaded()) return 1;
@@ -1961,26 +1926,9 @@ int process_findcosme(int nb) {
 	is_sequence = (word[0][0] == 's');
 
 	if (is_sequence) {
-		gchar *file = g_strdup(word[1]);
-		if (!ends_with(file, ".seq")) {
-			str_append(&file, ".seq");
-		}
-
-		if (!existseq(file)) {
-			if (check_seq(FALSE)) {
-				siril_log_message(_("No sequence `%s' found.\n"), file);
-				return 1;
-			}
-		}
-		seq = readseqfile(file);
-		if (seq == NULL) {
-			siril_log_message(_("No sequence `%s' found.\n"), file);
+		seq = load_sequence(word[1], NULL);
+		if (!seq)
 			return 1;
-		}
-		if (seq_check_basic_data(seq, FALSE) == -1) {
-			free(seq);
-			return 1;
-		}
 		i++;
 	} else {
 		if (!single_image_is_loaded()) return 1;
@@ -2166,33 +2114,13 @@ int process_split_cfa(int nb) {
 }
 
 int process_seq_mtf(int nb) {
-	sequence *seq = NULL;
-
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
-
-	gchar *file = g_strdup(word[1]);
-	if (!ends_with(file, ".seq")) {
-		str_append(&file, ".seq");
-	}
-
-	if (!existseq(file)) {
-		if (check_seq(FALSE)) {
-			siril_log_message(_("No sequence `%s' found.\n"), file);
-			return 1;
-		}
-	}
-	seq = readseqfile(file);
-	if (seq == NULL) {
-		siril_log_message(_("No sequence `%s' found.\n"), file);
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
 		return 1;
-	}
-	if (seq_check_basic_data(seq, FALSE) == -1) {
-		free(seq);
-		return 1;
-	}
 
 	struct mtf_data *args = malloc(sizeof(struct mtf_data));
 
@@ -2229,33 +2157,14 @@ int process_seq_mtf(int nb) {
 }
 
 int process_seq_split_cfa(int nb) {
-	sequence *seq = NULL;
-
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
 
-	gchar *file = g_strdup(word[1]);
-	if (!ends_with(file, ".seq")) {
-		str_append(&file, ".seq");
-	}
-
-	if (!existseq(file)) {
-		if (check_seq(FALSE)) {
-			siril_log_message(_("No sequence `%s' found.\n"), file);
-			return 1;
-		}
-	}
-	seq = readseqfile(file);
-	if (seq == NULL) {
-		siril_log_message(_("No sequence `%s' found.\n"), file);
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
 		return 1;
-	}
-	if (seq_check_basic_data(seq, FALSE) == -1) {
-		free(seq);
-		return 1;
-	}
 
 	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
 
@@ -2440,32 +2349,10 @@ int process_register(int nb) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
-
-	gchar *file = g_strdup(word[1]);
-	if (!ends_with(file, ".seq")) {
-		str_append(&file, ".seq");
-	}
-
-	if (!existseq(file)) {
-		if (check_seq(FALSE)) {
-			siril_log_message(_("No sequence `%s' found.\n"), file);
-			g_free(file);
-			return 1;
-		}
-	}
-	sequence *seq = readseqfile(file);
-	if (seq == NULL) {
-		siril_log_message(_("No sequence `%s' found.\n"), file);
-		g_free(file);
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
 		return 1;
-	}
-	if (seq_check_basic_data(seq, FALSE) == -1) {
-		g_free(file);
-		free(seq);
-		return 1;
-	}
 
-	g_free(file);
 	/* getting the selected registration method */
 	method = malloc(sizeof(struct registration_method));
 	method->name = strdup(_("Global Star Alignment (deep-sky)"));
@@ -2869,25 +2756,15 @@ static gpointer stackone_worker(gpointer garg) {
 
 int process_stackone(int nb) {
 	struct stacking_configuration *arg;
-	gchar *file;
 
 	arg = calloc(1, sizeof(struct stacking_configuration));
 	arg->f_fwhm = -1.f; arg->f_fwhm_p = -1.f; arg->f_round = -1.f;
 	arg->f_round_p = -1.f; arg->f_quality = -1.f; arg->f_quality_p = -1.f;
 	arg->filter_included = FALSE; arg->norm = NO_NORM; arg->force_no_norm = FALSE;
 
-	file = g_strdup(word[1]);
-	if (!ends_with(file, ".seq")) {
-		str_append(&file, ".seq"); // reallocs file
-	}
-
-	if (!existseq(file)) {
-		if (check_seq(FALSE)) {
-			siril_log_message(_("No sequence `%s' found.\n"), file);
-			goto failure;
-		}
-	}
-	arg->seqfile = file;
+	sequence *seq = load_sequence(word[1], &arg->seqfile);
+	if (!seq)
+		goto failure;
 
 	// stack seqfilename { sum | min | max } [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]] -out=result_filename
 	// stack seqfilename { med | median } [-nonorm, norm=] [-filter-incl[uded]] -out=result_filename
@@ -2942,36 +2819,15 @@ failure:
 int process_preprocess(int nb) {
 	struct preprocessing_data *args;
 	int nb_command_max = 11;
-	gchar *file;
 	int i, retvalue = 0;
 
 	if (word[1][0] == '\0') {
 		return -1;
 	}
 
-	file = g_strdup(word[1]);
-	if (!ends_with(file, ".seq")) {
-		str_append(&file, ".seq");
-	}
-
-	if (!existseq(file)) {
-		if (check_seq(FALSE)) {
-			siril_log_message(_("No sequence `%s' found.\n"), file);
-			g_free(file);
-			return 1;
-		}
-	}
-	sequence *seq = readseqfile(file);
-	if (seq == NULL) {
-		siril_log_message(_("No sequence `%s' found.\n"), file);
-		g_free(file);
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
 		return 1;
-	}
-	g_free(file);
-	if (seq_check_basic_data(seq, FALSE) == -1) {
-		free(seq);
-		return 1;
-	}
 
 	args = calloc(1, sizeof(struct preprocessing_data));
 	args->ppprefix = "pp_";

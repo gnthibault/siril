@@ -33,6 +33,7 @@
 #include "gui/progress_and_log.h"
 #include "core/processing.h"
 #include "core/command_list.h"
+#include "io/sequence.h"
 
 #include "command_line_processor.h"
 
@@ -356,6 +357,50 @@ int processcommand(const char *line) {
 	}
 	set_cursor_waiting(FALSE);
 	return 0;
+}
+
+sequence *load_sequence(const char *name, char **get_filename) {
+	gchar *file = g_strdup(name);
+	gchar *altfile = NULL;
+	if (!ends_with(name, ".seq")) {
+		str_append(&file, ".seq");
+		if (!ends_with(name, "_"))
+			altfile = g_strdup_printf("%s_.seq", name);
+	}
+
+	if (!is_readable_file(file) && (!altfile || !is_readable_file(altfile))) {
+		if (check_seq(FALSE)) {
+			siril_log_message(_("No sequence `%s' found.\n"), name);
+			g_free(file);
+			g_free(altfile);
+			return NULL;
+		}
+	}
+
+	sequence *seq;
+	if ((seq = readseqfile(file))) {
+		if (get_filename) {
+			*get_filename = file;
+			file = NULL; // do not free
+		}
+	}
+	else if (altfile && (seq = readseqfile(altfile))) {
+		if (get_filename) {
+			*get_filename = altfile;
+			altfile = NULL; // do not free
+		}
+	}
+	if (!seq)
+		siril_log_message(_("Loading sequence `%s' failed.\n"), name);
+	else {
+		if (seq_check_basic_data(seq, FALSE) == -1) {
+			free(seq);
+			seq = NULL;
+		}
+	}
+	g_free(file);
+	g_free(altfile);
+	return seq;
 }
 
 /* callback functions */
