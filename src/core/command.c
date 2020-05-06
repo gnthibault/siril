@@ -222,6 +222,8 @@ int process_savetif(int nb){
 
 	if (strcasecmp(word[0], "savetif8") == 0)
 		bitspersample = 8;
+	else if (strcasecmp(word[0], "savetif32") == 0)
+		bitspersample = 32;
 	gchar *filename = g_strdup_printf("%s.tif", word[1]);
 	set_cursor_waiting(TRUE);
 	savetif(filename, &gfit, bitspersample);

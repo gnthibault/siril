@@ -112,6 +112,7 @@ static command commands[] = {
 	{"savepnm", 1, "savepnm filename", process_savepnm, STR_SAVEPNM, TRUE},
 #ifdef HAVE_LIBTIFF
 	{"savetif", 1, "savetif filename", process_savetif, STR_SAVETIF, TRUE},
+	{"savetif32", 1, "savetif32 filename", process_savetif, STR_SAVETIF32, TRUE},
 	{"savetif8", 1, "savetif8 filename", process_savetif, STR_SAVETIF8, TRUE},
 #endif
 	{"select", 2, "select from to", process_select, STR_SELECT, FALSE},

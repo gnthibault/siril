@@ -13698,6 +13698,7 @@ Uncheck if images come from a monochrome sensor.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="orientation">vertical</property>
+                                    <property name="spacing">10</property>
                                     <child>
                                       <object class="GtkRadioButton" id="radiobutton8bits">
                                         <property name="label" translatable="yes">8-bit unsigned integer</property>
@@ -13705,14 +13706,12 @@ Uncheck if images come from a monochrome sensor.</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="halign">start</property>
-                                        <property name="hexpand">True</property>
                                         <property name="draw_indicator">True</property>
                                         <property name="group">radiobutton16bits</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="padding">10</property>
                                         <property name="position">0</property>
                                       </packing>
                                     </child>
@@ -13730,6 +13729,23 @@ Uncheck if images come from a monochrome sensor.</property>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
                                         <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkRadioButton" id="radiobutton32bit">
+                                        <property name="label" translatable="yes">32-bit floating point</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="halign">start</property>
+                                        <property name="active">True</property>
+                                        <property name="draw_indicator">True</property>
+                                        <property name="group">radiobutton16bits</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">2</property>
                                       </packing>
                                     </child>
                                   </object>
@@ -17345,7 +17361,7 @@ If the selection is empty, the whole image will be used as reference.</property>
 * &lt;b&gt;Fast Debayer&lt;/b&gt; is the fastest algorithm available in Siril. However, other algorithms listed below are often quite better.
 * &lt;b&gt;VNG4&lt;/b&gt;, Threshold-Based Variable Number of Gradients, works on a 5x5 pixel neighborhood around each source pixel. It is a very good algorithm for flat areas of the image (like sky background) but produces artifacts in high contrast areas (like stars).
 * &lt;b&gt;AHD&lt;/b&gt;, Adaptive Homogeneity-Directed, is another well known debayer algorithm. However it usually shows artefacts in the background and bad star shapes.
-* &lt;b&gt;DCB&lt;/b&gt;, a more recent algorithm, can show some artifacts in the background like AHD.
+* &lt;b&gt;DCB&lt;/b&gt;, Double Corrected Bilinear, a more recent algorithm, can show some artifacts in the background like AHD.
 * &lt;b&gt;HPHD&lt;/b&gt;, Heterogeneity-Projection Hard-Decision, is an old algorithm giving some nice results but that is quite slow.
 * &lt;b&gt;IGV&lt;/b&gt; and &lt;b&gt;LMMSE&lt;/b&gt; are very good when working with very noisy images. However, IGV tends to lose some chromatic information, while LMMSE is one of the most computational expensive demosaicers and needs a lot of memory.
 * &lt;b&gt;RCD&lt;/b&gt;, Ratio Corrected Demosaicing, intends to smooth the colour correction errors that are common in many other interpolation methods. It does an excellent job for round edges, for example stars, and is therefore the default algorithm used in Siril.

@@ -82,6 +82,7 @@
 #define STR_SAVEPNG N_("Saves current image into a PNG file: \"filename\".png")
 #define STR_SAVEPNM N_("Saves current image under the form of a Netpbm file format with 16-bit per channel. The extension of the output will be \"filename\".ppm for RGB image and \"filename\".pgm for gray-level image")
 #define STR_SAVETIF N_("Saves current image under the form of a uncompressed TIFF file with 16-bit per channel: \"filename\".tif")
+#define STR_SAVETIF32 N_("Same command than SAVE_TIF but the output file is saved in 32-bit per channel: \"filename\".tif")
 #define STR_SAVETIF8 N_("Same command than SAVE_TIF but the output file is saved in 8-bit per channel: \"filename\".tif")
 #define STR_SELECT N_("This command allows easy mass selection of images in the loaded sequence (from \"from\" to \"to\" included)")
 #define STR_SEQCROP N_("Crops the loaded sequence. The output sequence name starts with the prefix \"cropped_\" unless otherwise specified with \"-prefix=\" option")

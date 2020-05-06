@@ -433,6 +433,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 	/* TIFF TAG FIELD */
 	TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, bitspersample);
+	TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, bitspersample == 32 ? SAMPLEFORMAT_IEEEFP : SAMPLEFORMAT_UINT);
 	TIFFSetField(tif, TIFFTAG_IMAGEWIDTH, width);
 	TIFFSetField(tif, TIFFTAG_IMAGELENGTH, height);
 	TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tif, -1));
@@ -520,6 +521,32 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 			}
 		}
 		_TIFFfree(buf16);
+		break;
+	case 32:
+		siril_debug_print("Saving 32-bit TIFF file.\n");
+		float *buf32 = _TIFFmalloc(width * sizeof(float) * nsamples);
+		if (!buf32) {
+			PRINT_ALLOC_ERR;
+			retval = OPEN_IMAGE_ERROR;
+			break;
+		}
+
+		for (uint32 row = 0; row < height; row++) {
+			for (uint32 col = 0; col < width; col++) {
+				for (uint16 n = 0; n < nsamples; n++) {
+					buf32[col * nsamples + n] =
+							(fit->type == DATA_USHORT) ?
+									(fit->orig_bitpix == BYTE_IMG ? *gbuf[n]++ / UCHAR_MAX_SINGLE :
+											*gbuf[n]++ / USHRT_MAX_SINGLE) : *gbuff[n]++;
+				}
+			}
+			if (TIFFWriteScanline(tif, buf32, row, 0) < 0) {
+				siril_debug_print("Error while writing in TIFF File.\n");
+				retval = OPEN_IMAGE_ERROR;
+				break;
+			}
+		}
+		_TIFFfree(buf32);
 		break;
 	default:		// Should not happen
 		retval = 1;
