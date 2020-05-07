@@ -1242,8 +1242,7 @@ void clearfits(fits *fit) {
 	if (fit->history)
 		g_slist_free_full(fit->history, free);
 	if (fit->stats) {
-		int i;
-		for (i = 0; i < fit->naxes[2]; i++)
+		for (int i = 0; i < fit->naxes[2]; i++)
 			free_stats(fit->stats[i]);
 		free(fit->stats);
 	}
