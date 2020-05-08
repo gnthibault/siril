@@ -132,7 +132,6 @@ WORD *debayer_buffer_new_ushort(WORD *buf, int *width, int *height,
 			retval = vng4_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_BILINEAR:
-//		case BAYER_NEARESTNEIGHBOR:
 			pattern_to_cfarray(pattern, cfarray);
 			/* bayerfast: This demosaicer is not intended for final
 			 * output, only for fast preview. */
@@ -147,8 +146,10 @@ WORD *debayer_buffer_new_ushort(WORD *buf, int *width, int *height,
 			pattern_to_cfarray(pattern, cfarray);
 			retval = ahd_demosaic(rx, ry, rawdata, red, green, blue, cfarray, rgb_cam, progress);
 			break;
-		//case BAYER_AMAZE:
-			// retval = amaze_demosaic // need documentation about arguments
+		case BAYER_AMAZE:
+			pattern_to_cfarray(pattern, cfarray);
+			retval = amaze_demosaic(rx, ry, 0, 0, rx, ry, rawdata, red, green, blue, cfarray, progress, 1.0, 4, 65535.0, 65535.0);
+			break;
 		case BAYER_DCB:
 			pattern_to_cfarray(pattern, cfarray);
 			retval = dcb_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 1, TRUE);
@@ -163,11 +164,14 @@ WORD *debayer_buffer_new_ushort(WORD *buf, int *width, int *height,
 			break;
 		case BAYER_LMMSE:
 			pattern_to_cfarray(pattern, cfarray);
-			retval = lmmse_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 1);
-			// need documentation about last argument, 'iterations'
-			break;
+			retval = lmmse_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 2);
+			/* need documentation about last argument, 'iterations'
+			 * In RT the default value is 2. We use the same.
+			 */			break;
 		case XTRANS:
-			//retval = xtransfast_demosaic(rx, ry, rawdata, red, green, blue, xtrans, progress);
+			/* 3-pass gives better details for low-ISO files, while for high-ISO
+			 * files 1-pass gives almost the same results with less processing time
+			 * So in our case, 1-pass should be enough */
 			retval = markesteijn_demosaic(rx, ry, rawdata, red, green, blue, xtrans, rgb_cam, progress, 1, TRUE, 16, FALSE);
 			break;
 	}
@@ -217,25 +221,28 @@ float *debayer_buffer_new_float(float *buf, int *width, int *height,
 		return NULL;
 	}
 	rawdata[0] = buf; // no duplication, input will be overwritten
-	// TODO: do the following only for interpolations that need a conversion
+	// TODO: do the following only for interpolations that need a conversion.
+	// AMaZE is in [0, 1]
 	// TODO: vectorize!
 #ifdef SIRIL_OUTPUT_DEBUG
 	float min = 100000.0f, max = 0.0f;
 #endif
-	for (j = 0; j < nbpixels; j++) {
-		if (buf[j] < 0.0f)
-			buf[j] = 0.0f;
-		else buf[j] *= 65535.0f;
+	if (interpolation != BAYER_AMAZE) {
+		for (j = 0; j < nbpixels; j++) {
+			if (buf[j] < 0.0f)
+				buf[j] = 0.0f;
+			else buf[j] *= 65535.0f;
 #ifdef SIRIL_OUTPUT_DEBUG
-		if (buf[j] > max) max = buf[j];
-		if (buf[j] < min) min = buf[j];
+			if (buf[j] > max) max = buf[j];
+			if (buf[j] < min) min = buf[j];
+#endif
+		}
+#ifdef SIRIL_OUTPUT_DEBUG
+		fprintf(stdout, "****** before debayer, data is [%f, %f] (should be [0, 65535]) ******\n", min, max);
 #endif
 	}
-#ifdef SIRIL_OUTPUT_DEBUG
-	fprintf(stdout, "****** before debayer, data is [%f, %f] (should be [0, 65535]) ******\n", min, max);
-#endif
 
-	for (i=1; i<ry; i++)
+	for (i = 1; i < ry; i++)
 		rawdata[i] = rawdata[i - 1] + rx;
 
 	// 2. allocate the demosaiced image buffer
@@ -248,17 +255,17 @@ float *debayer_buffer_new_float(float *buf, int *width, int *height,
 
 	float **red = (float **)malloc(ry * sizeof(float *));
 	red[0] = newdata;
-	for (i=1; i<ry; i++)
+	for (i = 1; i < ry; i++)
 		red[i] = red[i - 1] + rx;
 
 	float **green = (float **)malloc(ry * sizeof(float *));
 	green[0] = red[0] + nbpixels;
-	for (i=1; i<ry; i++)
+	for (i = 1; i < ry; i++)
 		green[i] = green[i - 1] + rx;
 
 	float **blue = (float **)malloc(ry * sizeof(float *));
 	blue[0] = green[0] + nbpixels;
-	for (i=1; i<ry; i++)
+	for (i = 1; i < ry; i++)
 		blue[i] = blue[i - 1] + rx;
 
 	// 3. process
@@ -270,7 +277,6 @@ float *debayer_buffer_new_float(float *buf, int *width, int *height,
 			retval = vng4_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress);
 			break;
 		case BAYER_BILINEAR:
-//		case BAYER_NEARESTNEIGHBOR:
 			pattern_to_cfarray(pattern, cfarray);
 			/* bayerfast: This demosaicer is not intended for final
 			 * output, only for fast preview. */
@@ -285,8 +291,10 @@ float *debayer_buffer_new_float(float *buf, int *width, int *height,
 			pattern_to_cfarray(pattern, cfarray);
 			retval = ahd_demosaic(rx, ry, rawdata, red, green, blue, cfarray, rgb_cam, progress);
 			break;
-		//case BAYER_AMAZE:
-			// retval = amaze_demosaic // need documentation about arguments
+		case BAYER_AMAZE:
+			pattern_to_cfarray(pattern, cfarray);
+			retval = amaze_demosaic(rx, ry, 0, 0, rx, ry, rawdata, red, green, blue, cfarray, progress, 1.0, 4, 1.0, 1.0);
+			break;
 		case BAYER_DCB:
 			pattern_to_cfarray(pattern, cfarray);
 			retval = dcb_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 1, TRUE);
@@ -301,33 +309,39 @@ float *debayer_buffer_new_float(float *buf, int *width, int *height,
 			break;
 		case BAYER_LMMSE:
 			pattern_to_cfarray(pattern, cfarray);
-			retval = lmmse_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 1);
-			// need documentation about last argument, 'iterations'
+			/* need documentation about last argument, 'iterations'
+			 * In RT the default value is 2. We use the same.
+			 */
+			retval = lmmse_demosaic(rx, ry, rawdata, red, green, blue, cfarray, progress, 2);
 			break;
 		case XTRANS:
-			//retval = xtransfast_demosaic(rx, ry, rawdata, red, green, blue, xtrans, progress);
-			retval = markesteijn_demosaic(rx, ry, rawdata, red, green, blue, xtrans, rgb_cam, progress, 1, TRUE, 16, FALSE);
+			/* 3-pass gives better details for low-ISO files, while for high-ISO
+			 * files 1-pass gives almost the same results with less processing time
+			 * So in our case, 1-pass should be enough */
+			retval = markesteijn_demosaic(rx, ry, rawdata, red, green, blue, xtrans, rgb_cam, progress, 1, TRUE);
 			break;
 	}
 	free(rawdata);
 
 	// 4. convert back to siril range if needed
 	// TODO: do the following only for interpolations that needed a conversion
+	if (interpolation != BAYER_AMAZE) {
 #ifdef SIRIL_OUTPUT_DEBUG
-	min = 100000.0f; max = 0.0f;
+		min = 100000.0f; max = 0.0f;
 #endif
-	for (j = 0; j < n; j++) {
+		for (j = 0; j < n; j++) {
 #ifdef SIRIL_OUTPUT_DEBUG
-		if (newdata[j] > max)
-			max = newdata[j];
-		if (newdata[j] < min)
-			min = newdata[j];
+			if (newdata[j] > max)
+				max = newdata[j];
+			if (newdata[j] < min)
+				min = newdata[j];
 #endif
-		newdata[j] = newdata[j] * 1.52590219e-5f; // 1/65535
+			newdata[j] = newdata[j] * 1.52590219e-5f; // 1/65535
+		}
+#ifdef SIRIL_OUTPUT_DEBUG
+		fprintf(stdout, "****** after debayer, data is [%f, %f] (should be [0, 65535]) ******\n", min, max);
+#endif
 	}
-#ifdef SIRIL_OUTPUT_DEBUG
-	fprintf(stdout, "****** after debayer, data is [%f, %f] (should be [0, 65535]) ******\n", min, max);
-#endif
 
 	free(blue);
 	free(green);

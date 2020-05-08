@@ -190,8 +190,8 @@ static void initialize_ser_debayer_settings() {
 	com.pref.debayer.compatibility = FALSE;
 	com.pref.debayer.bayer_pattern = BAYER_FILTER_RGGB;
 	com.pref.debayer.bayer_inter = BAYER_RCD;
-	com.pref.debayer.xbayeroff= 0;
-	com.pref.debayer.ybayeroff= 0;
+	com.pref.debayer.xbayeroff = 0;
+	com.pref.debayer.ybayeroff = 0;
 }
 
 static gboolean end_convert_idle(gpointer p) {

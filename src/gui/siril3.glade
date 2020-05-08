@@ -17362,6 +17362,7 @@ If the selection is empty, the whole image will be used as reference.</property>
 * &lt;b&gt;Fast Debayer&lt;/b&gt; is the fastest algorithm available in Siril. However, other algorithms listed below are often quite better.
 * &lt;b&gt;VNG4&lt;/b&gt;, Threshold-Based Variable Number of Gradients, works on a 5x5 pixel neighborhood around each source pixel. It is a very good algorithm for flat areas of the image (like sky background) but produces artifacts in high contrast areas (like stars).
 * &lt;b&gt;AHD&lt;/b&gt;, Adaptive Homogeneity-Directed, is another well known debayer algorithm. However it usually shows artefacts in the background and bad star shapes.
+* &lt;b&gt;AMaZE&lt;/b&gt;, Aliasing Minimization and Zipper Elimination, is an algorithm that gives good results specially on low noise captures.
 * &lt;b&gt;DCB&lt;/b&gt;, Double Corrected Bilinear, a more recent algorithm, can show some artifacts in the background like AHD.
 * &lt;b&gt;HPHD&lt;/b&gt;, Heterogeneity-Projection Hard-Decision, is an old algorithm giving some nice results but that is quite slow.
 * &lt;b&gt;IGV&lt;/b&gt; and &lt;b&gt;LMMSE&lt;/b&gt; are very good when working with very noisy images. However, IGV tends to lose some chromatic information, while LMMSE is one of the most computational expensive demosaicers and needs a lot of memory.
@@ -17374,6 +17375,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                       <item translatable="yes">Fast Debayer</item>
                                       <item translatable="yes">VNG4</item>
                                       <item translatable="yes">AHD</item>
+                                      <item translatable="yes">AMaZE</item>
                                       <item translatable="yes">DCB</item>
                                       <item translatable="yes">HPHD</item>
                                       <item translatable="yes">IGV</item>

@@ -82,7 +82,7 @@ static int readinitfile() {
 		config_setting_lookup_bool(debayer_setting, "ser_use_bayer_header", &com.pref.debayer.use_bayer_header);
 		config_setting_lookup_int(debayer_setting, "pattern", &com.pref.debayer.bayer_pattern);
 		config_setting_lookup_bool(debayer_setting, "compatibility", &com.pref.debayer.compatibility);
-		config_setting_lookup_int(debayer_setting, "inter", (int*)&com.pref.debayer.bayer_inter);
+		config_setting_lookup_int(debayer_setting, "debayer_algo", (int*)&com.pref.debayer.bayer_inter);
 		config_setting_lookup_int(debayer_setting, "xbayeroff", &com.pref.debayer.xbayeroff);
 		config_setting_lookup_int(debayer_setting, "ybayeroff", &com.pref.debayer.ybayeroff);
 
@@ -258,7 +258,7 @@ static void _save_debayer(config_t *config, config_setting_t *root) {
 	debayer_setting = config_setting_add(debayer_group, "compatibility", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(debayer_setting, com.pref.debayer.compatibility);
 
-	debayer_setting = config_setting_add(debayer_group, "inter", CONFIG_TYPE_INT);
+	debayer_setting = config_setting_add(debayer_group, "debayer_algo", CONFIG_TYPE_INT);
 	config_setting_set_int(debayer_setting, com.pref.debayer.bayer_inter);
 
 	debayer_setting = config_setting_add(debayer_group, "xbayeroff", CONFIG_TYPE_INT);
