@@ -172,7 +172,7 @@ WORD *debayer_buffer_new_ushort(WORD *buf, int *width, int *height,
 			/* 3-pass gives better details for low-ISO files, while for high-ISO
 			 * files 1-pass gives almost the same results with less processing time
 			 * So in our case, 1-pass should be enough */
-			retval = markesteijn_demosaic(rx, ry, rawdata, red, green, blue, xtrans, rgb_cam, progress, 1, TRUE, 16, FALSE);
+			retval = markesteijn_demosaic(rx, ry, rawdata, red, green, blue, xtrans, rgb_cam, progress, 1, TRUE);
 			break;
 	}
 	free(rawdata[0]);
