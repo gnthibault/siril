@@ -1222,9 +1222,7 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode, int *status) {
 	gchar *localefilename = get_locale_filename(filename);
 	fits_open_diskfile(fptr, localefilename, iomode, status);
-	if (!status) {
-		siril_fits_move_first_image(*fptr);
-	}
+	siril_fits_move_first_image(*fptr);
 	g_free(localefilename);
 	return *status;
 }
