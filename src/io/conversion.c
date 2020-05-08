@@ -179,7 +179,7 @@ static void initialize_libraw_settings() {
 	com.pref.raw_set.user_black = 0;		// black point correction
 	com.pref.raw_set.use_camera_wb = 0;	// if possible, use the white balance from the camera.
 	com.pref.raw_set.use_auto_wb = 0;		// use automatic white balance obtained after averaging over the entire image
-	com.pref.raw_set.user_qual = 1;		// type of interpolation. AHD by default
+	com.pref.raw_set.user_qual = 2;		// type of interpolation. VNG by default
 	com.pref.raw_set.gamm[0] = 1.0;		// gamma curve: linear by default
 	com.pref.raw_set.gamm[1] = 1.0;
 }
