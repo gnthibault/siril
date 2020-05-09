@@ -217,15 +217,6 @@ static gboolean end_convert_idle(gpointer p) {
 	return FALSE;
 }
 
-/* from a fits object, save to file or files, based on the channel policy from convflags */
-static int save_to_target_fits(fits *fit, const char *dest_filename) {
-	if (savefits(dest_filename, fit)) {
-		printf("tofits: savefit error, CONV1X3\n");
-		return 1;
-	}
-	return 0;
-}
-
 /* open the file with path source from any image type and load it into a new FITS object */
 static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility) {
 	int retval = 0;
@@ -479,7 +470,7 @@ gpointer convert_thread_worker(gpointer p) {
 					}
 				} else {
 					gchar *dest_filename = g_strdup_printf("%s%05d", args->destroot, index);
-					if (save_to_target_fits(fit, dest_filename)) {
+					if (savefits(dest_filename, fit)) {
 						siril_log_message(_("Error while converting to FITS (no space left?)\n"));
 						args->retval = 1;
 					}
@@ -630,7 +621,7 @@ static int film_conversion(const char *src_filename, int index,
 		} else {
 			char dest_filename[128];
 			g_snprintf(dest_filename, 128, "%s%05d", args->destroot, index++);
-			if (save_to_target_fits(&fit, dest_filename)) {
+			if (savefits(dest_filename, &fit)) {
 				siril_log_message(_("Error while converting to FITS (no space left?)\n"));
 				retval = 1;
 			}
@@ -706,7 +697,7 @@ static int ser_conversion(const char *src_filename, int index,
 		} else {
 			char dest_filename[128];
 			g_snprintf(dest_filename, 128, "%s%05d", args->destroot, index++);
-			if (save_to_target_fits(&fit, dest_filename)) {
+			if (savefits(dest_filename, &fit)) {
 				siril_log_message(_("Error while converting to FITS (no space left?)\n"));
 				retval = 1;
 			}
