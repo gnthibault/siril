@@ -241,7 +241,7 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 int retrieveBayerPattern(char *bayer) {
 	int i;
 
-	for (i = 0; i < (sizeof(filter_pattern) / sizeof(char *)); i++) {
+	for (i = 0; i < G_N_ELEMENTS(filter_pattern); i++) {
 		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
 			return i;
 		}
