@@ -785,17 +785,15 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest,
 			{
 				const char *src = source ;
 #ifdef _WIN32
-				char *rsrc = g_real_path( source ) ;
-				if ( rsrc != NULL )
-				{
+				char *rsrc = g_real_path(source) ;
+				if (rsrc != NULL) {
 					src  = rsrc;					
 				}
 #endif
 				retval = (open_raw_files(src , dest, !(convflags & CONVDEBAYER)) < 0);
 #ifdef _WIN32
-				if ( rsrc != NULL )
-				{
-					g_free( rsrc ) ;					
+				if (rsrc != NULL) {
+					g_free(rsrc);
 				}
 #endif
 			}
