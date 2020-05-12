@@ -2140,6 +2140,54 @@ int process_split_cfa(int nb) {
 	return ret;
 }
 
+int process_extractHa(int nb) {
+	if (isrgb(&gfit)) {
+		siril_log_message(_("Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"));
+		return 1;
+	}
+	char *filename = NULL;
+	int ret = 1;
+
+	fits f_Ha = { 0 };
+
+	if (sequence_is_loaded() && !single_image_is_loaded()) {
+		filename = g_path_get_basename(com.seq.seqname);
+	}
+	else {
+		if (com.uniq->filename != NULL) {
+			char *tmp = remove_ext_from_filename(com.uniq->filename);
+			filename = g_path_get_basename(tmp);
+			free(tmp);
+		}
+	}
+
+	/* Get Bayer informations from header if available */
+	sensor_pattern bayer;
+
+	if (com.pref.debayer.use_bayer_header) {
+		bayer = retrieveBayerPattern(gfit.bayer_pattern);
+	} else {
+		bayer = com.pref.debayer.bayer_pattern;
+	}
+
+	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
+	if (gfit.type == DATA_USHORT) {
+		if (!(ret = extractHa_ushort(&gfit, &f_Ha, bayer))) {
+			ret = save1fits16(Ha, &f_Ha, 0);
+		}
+	}
+	else if (gfit.type == DATA_FLOAT) {
+		if (!(ret = extractHa_float(&gfit, &f_Ha, bayer))) {
+			ret = save1fits32(Ha, &f_Ha, 0);
+		}
+	}
+
+	g_free(Ha);
+	clearfits(&f_Ha);
+	free(filename);
+	return ret;
+}
+
 int process_seq_mtf(int nb) {
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
@@ -2220,6 +2268,47 @@ int process_seq_split_cfa(int nb) {
 	set_cursor_waiting(TRUE);
 
 	apply_split_cfa_to_sequence(args);
+
+	return 0;
+}
+
+int process_seq_extractHa(int nb) {
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
+		return 1;
+
+	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
+
+	args->seq = seq;
+	args->fit = &gfit;
+	args->seqEntry = "Ha_";
+
+	int startoptargs = 2;
+	int nb_command_max = 3;
+	if (nb > startoptargs) {
+		for (int i = startoptargs; i < nb_command_max; i++) {
+			if (word[i]) {
+				if (g_str_has_prefix(word[i], "-prefix=")) {
+					char *current = word[i], *value;
+					value = current + 8;
+					if (value[0] == '\0') {
+						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
+						return 1;
+					}
+					args->seqEntry = strdup(value);
+				}
+			}
+		}
+	}
+
+	set_cursor_waiting(TRUE);
+
+	apply_extractHa_to_sequence(args);
 
 	return 0;
 }

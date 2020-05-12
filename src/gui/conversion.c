@@ -194,7 +194,7 @@ static void initialize_convert() {
 	args->list = files_to_convert;
 	args->total = count;
 	args->nb_converted = 0;
-	args->compatibility = com.pref.debayer.compatibility;
+	args->compatibility = com.pref.debayer.up_bottom;
 	args->command_line = FALSE;
 	args->input_has_a_seq = !no_sequence_to_convert;
 	args->destroot = g_strdup(destroot);

@@ -492,7 +492,7 @@ struct debayer_config {
 	gboolean use_bayer_header;		// use the pattern given in the file header
 	sensor_pattern bayer_pattern;		// user-defined Bayer pattern
 	interpolation_method bayer_inter;	// interpolation method for non-libraw debayer
-	gboolean compatibility;				// ensure KSTARS compatibility if TRUE
+	gboolean up_bottom;				// debayer up-bottom orientation
 	int xbayeroff, ybayeroff;			// x and y Bayer offsets
 };
 

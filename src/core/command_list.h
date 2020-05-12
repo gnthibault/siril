@@ -22,8 +22,8 @@ struct {
 
 static command commands[] = {
 	/* name,	nbarg,	usage,		function pointer, definition, scriptable */
-	{"addmax",	1,	"addmax filename",	process_addmax, STR_ADDMAX, FALSE},
-	{"asinh",	1,	"asinh stretch",	process_asinh, STR_ASINH, TRUE},
+	{"addmax", 1,	"addmax filename", process_addmax, STR_ADDMAX, FALSE},
+	{"asinh", 1,	"asinh stretch", process_asinh, STR_ASINH, TRUE},
 
 	{"bg", 0, "bg", process_bg, STR_BG, TRUE},
 	{"bgnoise", 0, "bgnoise", process_bgnoise, STR_BGNOISE, TRUE},
@@ -44,6 +44,7 @@ static command commands[] = {
 	{"entropy", 0, "entropy", process_entropy, STR_ENTROPY, TRUE},
 	{"exit", 0, "exit", process_exit, STR_EXIT, TRUE},
 	{"extract", 1, "extract NbPlans", process_extract, STR_EXTRACT, TRUE},
+	{"extractHa", 0, "extractHa", process_extractHa, STR_EXTRACTHa, TRUE},
 
 	{"fdiv", 2, "fdiv filename scalar", process_fdiv, STR_FDIV, TRUE},
 	{"fftd", 2, "fftd modulus phase", process_fft, STR_FFTD, TRUE},
@@ -117,6 +118,7 @@ static command commands[] = {
 	{"savetif8", 1, "savetif8 filename", process_savetif, STR_SAVETIF8, TRUE},
 #endif
 	{"select", 2, "select from to", process_select, STR_SELECT, FALSE},
+	{"seqextractHa", 1, "seqextractHa sequencename [-prefix=]", process_seq_extractHa, STR_SEQEXTRACTHA, TRUE},
 	{"seqcrop", 1, "seqcrop sequencename [x y width height] [-prefix=]", process_seq_crop, STR_SEQCROP, TRUE},
 	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma [-prefix=]", process_findcosme, STR_SEQFIND_COSME, TRUE},
 	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma [-prefix=]", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},
