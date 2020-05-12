@@ -75,6 +75,7 @@ static command commands[] = {
 	// extension to a higher priority in case two files with same basename
 	// exist (stat_file() manages that priority order for now).
 	{"log", 0, "log", process_log, STR_LOG, TRUE}, /* logarifies current image */
+	{"linear_match", 2, "linear_match reference low high", process_linear_match, STR_LMATCH, TRUE}, /* logarifies current image */
 #ifndef _WIN32
 	{"ls", 0, "ls", process_ls, STR_LS, FALSE},
 #endif

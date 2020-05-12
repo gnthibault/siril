@@ -49,6 +49,7 @@
 #include "gui/progress_and_log.h"
 #include "gui/image_display.h"
 #include "gui/image_interactions.h"
+#include "gui/linear_match.h"
 #include "gui/sequence_list.h"
 #include "gui/siril_preview.h"
 #include "filters/asinh.h"
@@ -629,6 +630,30 @@ int process_log(int nb){
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	return 0;
+}
+
+int process_linear_match(int nb) {
+	if (!single_image_is_loaded()) {
+		PRINT_NOT_FOR_SEQUENCE;
+		return 1;
+	}
+	fits ref = { 0 };
+	double a[3] = { 0.0 }, b[3] = { 0.0 };
+	double low = atof(word[2]);
+	double high = atof(word[3]);
+	if (readfits(word[1], &ref, NULL, gfit.type == DATA_FLOAT))
+		return 1;
+	set_cursor_waiting(TRUE);
+	if (!find_linear_coeff(&gfit, &ref, low, high, a, b, NULL)) {
+		apply_linear_to_fits(&gfit, a, b);
+
+		adjust_cutoff_from_updated_gfit();
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
+	}
+	clearfits(&ref);
+	set_cursor_waiting(FALSE);
 	return 0;
 }
 

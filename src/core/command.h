@@ -48,7 +48,10 @@ int	process_imoper(int nb);
 
 int	process_load(int nb);
 int	process_log(int nb);
+int process_linear_match(int nb);
+#ifndef _WIN32
 int	process_ls(int nb);
+#endif
 
 int	process_mirrorx(int nb);
 int	process_mirrory(int nb);

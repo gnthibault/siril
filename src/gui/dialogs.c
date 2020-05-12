@@ -47,6 +47,7 @@ static const SirilDialogEntry entries[] =
 		{"file_information", INFORMATION_DIALOG, FALSE, NULL},
 		{"histogram_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_histo_cancel},
 		{"ImagePlateSolver_Dial", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
+		{"linearmatch_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"Median_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"resample_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"rgradient_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},

@@ -235,6 +235,17 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkAdjustment" id="adj_linearmatch_high">
+    <property name="upper">1</property>
+    <property name="value">0.92000000000000004</property>
+    <property name="step_increment">0.10000000000000001</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="adj_linearmatch_low">
+    <property name="upper">1</property>
+    <property name="step_increment">0.10000000000000001</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="adj_median_amount">
     <property name="upper">1</property>
     <property name="value">1</property>
@@ -1730,6 +1741,15 @@ enter a visible wavelength in nm</property>
             </child>
           </object>
         </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menu_linearmatch">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Linear Match...</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_menu_linearmatch_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -12648,6 +12668,244 @@ Uncheck if images come from a monochrome sensor.</property>
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkDialog" id="linearmatch_dialog">
+    <property name="width_request">400</property>
+    <property name="height_request">200</property>
+    <property name="can_focus">False</property>
+    <property name="border_width">5</property>
+    <property name="title" translatable="yes">Linear Match</property>
+    <property name="resizable">False</property>
+    <property name="window_position">center</property>
+    <property name="type_hint">normal</property>
+    <property name="transient_for">control_window</property>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="linearmatch_close">
+                <property name="label">gtk-close</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Close the dialog.</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_linearmatch_close_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="linearmatch_apply">
+                <property name="label">gtk-apply</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Computes a linear function between a reference image and a target.</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_linearmatch_apply_clicked" swapped="no"/>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Reference: </property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFileChooserButton" id="reference_filechooser_linearmatch">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Choose the reference image. This image must have same dimensions.</property>
+                    <property name="filter">filefilter_fits</property>
+                    <property name="title" translatable="yes">Choose Reference Image</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Reject low</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="spin_linearmatch_low">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="tooltip_text" translatable="yes">The algorithm will ignore all reference pixels whose values are outside of the [low, high] range.</property>
+                    <property name="width_chars">10</property>
+                    <property name="text" translatable="yes">0,00</property>
+                    <property name="adjustment">adj_linearmatch_low</property>
+                    <property name="digits">4</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="pack_type">end</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">The algorithm will ignore all reference pixels whose values are outside of the [low, high] range.</property>
+                <property name="hexpand">True</property>
+                <property name="adjustment">adj_linearmatch_low</property>
+                <property name="digits">2</property>
+                <property name="draw_value">False</property>
+                <property name="value_pos">bottom</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Reject high</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="spin_linearmatch_high">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="tooltip_text" translatable="yes">The algorithm will ignore all reference pixels whose values are outside of the [low, high] range.</property>
+                    <property name="width_chars">10</property>
+                    <property name="text" translatable="yes">20</property>
+                    <property name="adjustment">adj_linearmatch_high</property>
+                    <property name="digits">4</property>
+                    <property name="value">0.92000000000000004</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="pack_type">end</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScale">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">The algorithm will ignore all reference pixels whose values are outside of the [low, high] range.</property>
+                <property name="adjustment">adj_linearmatch_high</property>
+                <property name="digits">0</property>
+                <property name="draw_value">False</property>
+                <property name="value_pos">bottom</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">8</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="0">linearmatch_apply</action-widget>
+    </action-widgets>
   </object>
   <object class="GtkDialog" id="resample_dialog">
     <property name="width_request">400</property>

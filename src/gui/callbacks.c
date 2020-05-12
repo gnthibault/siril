@@ -485,6 +485,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menuitem_medianfilter"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rgradient"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_clahe"), is_a_single_image_loaded);
+	gtk_widget_set_sensitive(lookup_widget("menu_linearmatch"), is_a_single_image_loaded);
 
 	/* Image information menu */
 	gtk_widget_set_sensitive(lookup_widget("info_menu_noise_estimation"), any_image_is_loaded);
