@@ -27,6 +27,7 @@ int	process_entropy(int nb);
 int	process_exit(int nb);
 int	process_extract(int nb);
 int process_extractHa(int nb);
+int process_extractHaOIII(int nb);
 
 int	process_fdiv(int nb);
 int	process_fft(int nb);
@@ -94,6 +95,7 @@ int	process_set_cpu(int nb);
 #endif
 int	process_set_ext(int nb);
 int process_seq_extractHa(int nb);
+int process_seq_extractHaOIII(int nb);
 int	process_set_findstar(int nb);
 int	process_set_mag(int nb);
 int	process_set_mag_seq(int nb);

@@ -2169,6 +2169,22 @@ int process_extractHa(int nb) {
 	} else {
 		bayer = com.pref.debayer.bayer_pattern;
 	}
+	if (com.pref.debayer.up_bottom) {
+		switch(bayer) {
+		case BAYER_FILTER_RGGB:
+			bayer = BAYER_FILTER_BGGR;
+			break;
+		case BAYER_FILTER_BGGR:
+			bayer = BAYER_FILTER_RGGB;
+			break;
+		case BAYER_FILTER_GBRG:
+			bayer = BAYER_FILTER_GRBG;
+			break;
+		case BAYER_FILTER_GRBG:
+			bayer = BAYER_FILTER_GBRG;
+			break;
+		}
+	}
 
 	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
 	if (gfit.type == DATA_USHORT) {
@@ -2180,10 +2196,79 @@ int process_extractHa(int nb) {
 		if (!(ret = extractHa_float(&gfit, &f_Ha, bayer))) {
 			ret = save1fits32(Ha, &f_Ha, 0);
 		}
-	}
+	} else return 1;
 
 	g_free(Ha);
 	clearfits(&f_Ha);
+	free(filename);
+	return ret;
+}
+
+int process_extractHaOIII(int nb) {
+	if (isrgb(&gfit)) {
+		siril_log_message(_("Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"));
+		return 1;
+	}
+	char *filename = NULL;
+	int ret = 1;
+
+	fits f_Ha = { 0 }, f_OIII = { 0 };
+
+	if (sequence_is_loaded() && !single_image_is_loaded()) {
+		filename = g_path_get_basename(com.seq.seqname);
+	}
+	else {
+		if (com.uniq->filename != NULL) {
+			char *tmp = remove_ext_from_filename(com.uniq->filename);
+			filename = g_path_get_basename(tmp);
+			free(tmp);
+		}
+	}
+
+	/* Get Bayer informations from header if available */
+	sensor_pattern bayer;
+
+	if (com.pref.debayer.use_bayer_header) {
+		bayer = retrieveBayerPattern(gfit.bayer_pattern);
+	} else {
+		bayer = com.pref.debayer.bayer_pattern;
+	}
+	if (com.pref.debayer.up_bottom) {
+		switch(bayer) {
+		case BAYER_FILTER_RGGB:
+			bayer = BAYER_FILTER_BGGR;
+			break;
+		case BAYER_FILTER_BGGR:
+			bayer = BAYER_FILTER_RGGB;
+			break;
+		case BAYER_FILTER_GBRG:
+			bayer = BAYER_FILTER_GRBG;
+			break;
+		case BAYER_FILTER_GRBG:
+			bayer = BAYER_FILTER_GBRG;
+			break;
+		}
+	}
+
+	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
+	gchar *OIII = g_strdup_printf("OIII_%s%s", filename, com.pref.ext);
+	if (gfit.type == DATA_USHORT) {
+		if (!(ret = extractHaOIII_ushort(&gfit, &f_Ha, &f_OIII, bayer))) {
+			ret = save1fits16(Ha, &f_Ha, 0) ||
+					save1fits16(OIII, &f_OIII, 0);
+		}
+	}
+	else if (gfit.type == DATA_FLOAT) {
+		if (!(ret = extractHaOIII_float(&gfit, &f_Ha, &f_OIII, bayer))) {
+			ret = save1fits32(Ha, &f_Ha, 0) ||
+					save1fits16(OIII, &f_OIII, 0);
+		}
+	} else return 1;
+
+	g_free(Ha);
+	g_free(OIII);
+	clearfits(&f_Ha);
+	clearfits(&f_OIII);
 	free(filename);
 	return ret;
 }
@@ -2309,6 +2394,29 @@ int process_seq_extractHa(int nb) {
 	set_cursor_waiting(TRUE);
 
 	apply_extractHa_to_sequence(args);
+
+	return 0;
+}
+
+int process_seq_extractHaOIII(int nb) {
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
+		return 1;
+
+	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
+
+	args->seq = seq;
+	args->fit = &gfit;
+	args->seqEntry = ""; // not used
+
+	set_cursor_waiting(TRUE);
+
+	apply_extractHaOIII_to_sequence(args);
 
 	return 0;
 }

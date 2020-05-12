@@ -25,7 +25,8 @@
 #define STR_ENTROPY N_("Computes the entropy of the opened image on the displayed layer, only in the selected area if one has been selected or in the whole image. The entropy is one way of measuring the noise or the details in an image")
 #define STR_EXIT N_("Quits the application")
 #define STR_EXTRACT N_("Extracts \"NbPlans\" planes of wavelet domain")
-#define STR_EXTRACTHa N_("Extracts Ha signal from a CFA image")
+#define STR_EXTRACTHA N_("Extracts Ha signal from a CFA image")
+#define STR_EXTRACTHAOIII N_("Extracts Ha and OIII signals from a CFA image")
 
 #define STR_FDIV N_("Divides the image in memory by the image given in argument. The resulting image is multiplied by the value of the \"scalar\" argument. See also IDIV")
 #define STR_FFTD N_("Applies a Fast Fourier Transform to the image loaded in memory. \"Modulus\" and \"phase\" given in argument are saved in FITS files")
@@ -89,6 +90,7 @@
 #define STR_SELECT N_("This command allows easy mass selection of images in the loaded sequence (from \"from\" to \"to\" included)")
 #define STR_SEQCROP N_("Crops the loaded sequence. The output sequence name starts with the prefix \"cropped_\" unless otherwise specified with \"-prefix=\" option")
 #define STR_SEQEXTRACTHA N_("Same command than EXTRACT_HA but for the sequence \"sequencename\".")
+#define STR_SEQEXTRACTHAOIII N_("Same command than EXTRACT_HAOIII but for the sequence \"sequencename\".")
 #define STR_SEQFIND_COSME N_("Same command than FIND_COSME but for the sequence \"sequencename\". The output sequence name starts with the prefix \"cc_\" unless otherwise specified with \"-prefix=\" option")
 #define STR_SEQFIND_COSME_CFA N_("Same command than FIND_COSME_CFA but for the sequence \"sequencename\". The output sequence name starts with the prefix \"cc_\" unless otherwise specified with \"-prefix=\" option")
 #define STR_SEQMTF N_("Same command than MTF but for the sequence \"sequencename\".  The output sequence name starts with the prefix \"mtf_\" unless otherwise specified with \"-prefix=\" option")

@@ -44,7 +44,8 @@ static command commands[] = {
 	{"entropy", 0, "entropy", process_entropy, STR_ENTROPY, TRUE},
 	{"exit", 0, "exit", process_exit, STR_EXIT, TRUE},
 	{"extract", 1, "extract NbPlans", process_extract, STR_EXTRACT, TRUE},
-	{"extractHa", 0, "extractHa", process_extractHa, STR_EXTRACTHa, TRUE},
+	{"extractHa", 0, "extractHa", process_extractHa, STR_EXTRACTHA, TRUE},
+	{"extractHaOIII", 0, "extractHaIII", process_extractHaOIII, STR_EXTRACTHAOIII, TRUE},
 
 	{"fdiv", 2, "fdiv filename scalar", process_fdiv, STR_FDIV, TRUE},
 	{"fftd", 2, "fftd modulus phase", process_fft, STR_FFTD, TRUE},
@@ -119,6 +120,7 @@ static command commands[] = {
 #endif
 	{"select", 2, "select from to", process_select, STR_SELECT, FALSE},
 	{"seqextractHa", 1, "seqextractHa sequencename [-prefix=]", process_seq_extractHa, STR_SEQEXTRACTHA, TRUE},
+	{"seqextractHaOIII", 1, "seqextractHaOIII sequencename", process_seq_extractHaOIII, STR_SEQEXTRACTHAOIII, TRUE},
 	{"seqcrop", 1, "seqcrop sequencename [x y width height] [-prefix=]", process_seq_crop, STR_SEQCROP, TRUE},
 	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma [-prefix=]", process_findcosme, STR_SEQFIND_COSME, TRUE},
 	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma [-prefix=]", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},

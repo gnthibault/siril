@@ -1284,6 +1284,187 @@ void apply_extractHa_to_sequence(struct split_cfa_data *split_cfa_args) {
 	start_in_new_thread(generic_sequence_worker, args);
 }
 
+int extractHaOIII_ushort(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern) {
+	int width = in->rx;
+	int height = in->ry;
+
+	if (strlen(in->bayer_pattern) > 4) {
+		siril_log_message(_("ExtractHa does not work on non-Bayer filter camera images!\n"));
+		return 1;
+	}
+
+	width = width / 2 + width % 2;
+	height = height / 2 + height % 2;
+
+	if (new_fit_image(&Ha, width, height, 1, DATA_USHORT) ||
+			new_fit_image(&OIII, width, height, 1, DATA_USHORT)) {
+		return 1;
+	}
+
+	int j = 0;
+
+	for (int row = 0; row < in->ry - 1; row += 2) {
+		for (int col = 0; col < in->rx - 1; col += 2) {
+			/* not c0, c1, c2 and c3 because of the read orientation */
+			WORD c1 = in->data[col + row * in->rx];
+			WORD c3 = in->data[1 + col + row * in->rx];
+			WORD c0 = in->data[col + (1 + row) * in->rx];
+			WORD c2 = in->data[1 + col + (1 + row) * in->rx];
+
+			switch(pattern) {
+			case BAYER_FILTER_RGGB:
+				Ha->data[j] = (in->bitpix == 8) ? round_to_BYTE(c0) : c0;
+				OIII->data[j] = (c1 + c2 + c3) / 3;
+				break;
+			case BAYER_FILTER_BGGR:
+				Ha->data[j] = (in->bitpix == 8) ? round_to_BYTE(c3) : c3;
+				OIII->fdata[j] = (c1 + c2 + c0) / 3;
+				break;
+			case BAYER_FILTER_GRBG:
+				Ha->data[j] = (in->bitpix == 8) ? round_to_BYTE(c1) : c1;
+				OIII->fdata[j] = (c0 + c2 + c3) / 3;
+				break;
+			case BAYER_FILTER_GBRG:
+				Ha->data[j] = (in->bitpix == 8) ? round_to_BYTE(c2) : c2;
+				OIII->fdata[j] = (c1 + c0 + c3) / 3;
+				break;
+			}
+			j++;
+		}
+	}
+
+	return 0;
+}
+
+int extractHaOIII_float(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern) {
+	int width = in->rx;
+	int height = in->ry;
+
+	if (strlen(in->bayer_pattern) > 4) {
+		siril_log_message(_("ExtractHa does not work on non-Bayer filter camera images!\n"));
+		return 1;
+	}
+
+	width = width / 2 + width % 2;
+	height = height / 2 + height % 2;
+
+	if (new_fit_image(&Ha, width, height, 1, DATA_FLOAT) ||
+			new_fit_image(&OIII, width, height, 1, DATA_FLOAT)) {
+		return 1;
+	}
+
+	int j = 0;
+
+	for (int row = 0; row < in->ry - 1; row += 2) {
+		for (int col = 0; col < in->rx - 1; col += 2) {
+			/* not c0, c1, c2 and c3 because of the read orientation */
+			float c1 = in->fdata[col + row * in->rx];
+			float c3 = in->fdata[1 + col + row * in->rx];
+			float c0 = in->fdata[col + (1 + row) * in->rx];
+			float c2 = in->fdata[1 + col + (1 + row) * in->rx];
+
+			switch(pattern) {
+			case BAYER_FILTER_RGGB:
+				Ha->fdata[j] = c0;
+				OIII->fdata[j] = (c1 + c2 + c3) / 3;
+				break;
+			case BAYER_FILTER_BGGR:
+				Ha->fdata[j] = c3;
+				OIII->fdata[j] = (c1 + c2 + c0) / 3;
+				break;
+			case BAYER_FILTER_GRBG:
+				Ha->fdata[j] = c1;
+				OIII->fdata[j] = (c0 + c2 + c3) / 3;
+				break;
+			case BAYER_FILTER_GBRG:
+				Ha->fdata[j] = c2;
+				OIII->fdata[j] = (c1 + c0 + c3) / 3;
+				break;
+			}
+			j++;
+		}
+	}
+
+	return 0;
+}
+
+int extractHaOIII_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
+	int ret = 1;
+	struct split_cfa_data *cfa_args = (struct split_cfa_data *) args->user;
+
+	fits f_Ha = { 0 }, f_OIII = { 0 };
+	gchar *Ha = g_strdup_printf("Ha_%s%05d%s", cfa_args->seq->seqname, o, com.pref.ext);
+	gchar *OIII = g_strdup_printf("OIII_%s%05d%s", cfa_args->seq->seqname, o, com.pref.ext);
+
+	/* Get Bayer informations from header if available */
+	sensor_pattern bayer;
+
+	if (com.pref.debayer.use_bayer_header) {
+		bayer = retrieveBayerPattern(fit->bayer_pattern);
+	} else {
+		bayer = com.pref.debayer.bayer_pattern;
+	}
+	if (com.pref.debayer.up_bottom) {
+		switch(bayer) {
+		case BAYER_FILTER_RGGB:
+			bayer = BAYER_FILTER_BGGR;
+			break;
+		case BAYER_FILTER_BGGR:
+			bayer = BAYER_FILTER_RGGB;
+			break;
+		case BAYER_FILTER_GBRG:
+			bayer = BAYER_FILTER_GRBG;
+			break;
+		case BAYER_FILTER_GRBG:
+			bayer = BAYER_FILTER_GBRG;
+			break;
+		}
+	}
+
+	if (fit->type == DATA_USHORT) {
+		if (!(ret = extractHaOIII_ushort(fit, &f_Ha, &f_OIII, bayer))) {
+			ret = save1fits16(Ha, &f_Ha, 0) || save1fits16(OIII, &f_OIII, 0);
+		}
+	}
+	else if (fit->type == DATA_FLOAT) {
+		if (!(ret = extractHaOIII_float(fit, &f_Ha, &f_OIII, bayer))) {
+			ret = save1fits16(Ha, &f_Ha, 0) || save1fits16(OIII, &f_OIII, 0);
+		}
+	}
+	g_free(Ha);
+	g_free(OIII);
+	clearfits(&f_Ha);
+	clearfits(&f_OIII);
+	return ret;
+}
+
+void apply_extractHaOIII_to_sequence(struct split_cfa_data *split_cfa_args) {
+	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	args->seq = split_cfa_args->seq;
+	args->force_float = FALSE;
+	args->partial_image = FALSE;
+	args->filtering_criterion = seq_filter_included;
+	args->nb_filtered_images = split_cfa_args->seq->selnum;
+	args->prepare_hook = ser_prepare_hook;
+	args->finalize_hook = ser_finalize_hook;
+	args->save_hook = NULL;
+	args->image_hook = extractHaOIII_image_hook;
+	args->idle_function = NULL;
+	args->stop_on_error = TRUE;
+	args->description = _("Extract Ha and OIII");
+	args->has_output = FALSE;
+	args->new_seq_prefix = split_cfa_args->seqEntry;
+	args->load_new_sequence = FALSE;
+	args->force_ser_output = FALSE;
+	args->user = split_cfa_args;
+	args->already_in_a_thread = FALSE;
+	args->parallel = TRUE;
+
+	split_cfa_args->fit = NULL;	// not used here
+
+	start_in_new_thread(generic_sequence_worker, args);
+}
+
 int split_cfa_ushort(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 	int width = in->rx;
 	int height = in->ry;

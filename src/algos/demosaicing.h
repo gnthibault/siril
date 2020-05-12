@@ -27,6 +27,9 @@ void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 int extractHa_ushort(fits *in, fits *Ha, sensor_pattern pattern);
 int extractHa_float(fits *in, fits *Ha, sensor_pattern pattern);
 void apply_extractHa_to_sequence(struct split_cfa_data *split_cfa_args);
+int extractHaOIII_ushort(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern);
+int extractHaOIII_float(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern);
+void apply_extractHaOIII_to_sequence(struct split_cfa_data *split_cfa_args);
 int split_cfa_ushort(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3);
 int split_cfa_float(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3);
 void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args);
