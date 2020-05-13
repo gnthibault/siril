@@ -525,6 +525,8 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		com.uniq->nb_layers = gfit.naxes[2];
 		com.uniq->layers = calloc(com.uniq->nb_layers, sizeof(layer_info));
 		com.uniq->fit = &gfit;
+
+		initialize_display_mode();
 		display_filename();
 		set_precision_switch();
 		sliders_mode_set_state(com.sliders);
@@ -537,7 +539,6 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		redraw(com.cvport, REMAP_ALL);
 		
 		sequence_list_change_current();
-		gtk_window_present_with_time(GTK_WINDOW(lookup_widget("composition_dialog")), GDK_CURRENT_TIME);
 	}
 	else {
 		update_MenuItem();
