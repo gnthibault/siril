@@ -44,8 +44,8 @@ static command commands[] = {
 	{"entropy", 0, "entropy", process_entropy, STR_ENTROPY, TRUE},
 	{"exit", 0, "exit", process_exit, STR_EXIT, TRUE},
 	{"extract", 1, "extract NbPlans", process_extract, STR_EXTRACT, TRUE},
-	{"extractHa", 0, "extractHa", process_extractHa, STR_EXTRACTHA, TRUE},
-	{"extractHaOIII", 0, "extractHaIII", process_extractHaOIII, STR_EXTRACTHAOIII, TRUE},
+	{"extract_Ha", 0, "extract_Ha", process_extractHa, STR_EXTRACTHA, TRUE},
+	{"extract_HaOIII", 0, "extract_HaIII", process_extractHaOIII, STR_EXTRACTHAOIII, TRUE},
 
 	{"fdiv", 2, "fdiv filename scalar", process_fdiv, STR_FDIV, TRUE},
 	{"fftd", 2, "fftd modulus phase", process_fft, STR_FFTD, TRUE},
@@ -72,12 +72,12 @@ static command commands[] = {
 	{"imul", 1, "imul filename", process_imoper, STR_IMUL, TRUE},
 	{"isub", 1, "isub filename", process_imoper, STR_ISUB, TRUE},
 
+	{"linear_match", 2, "linear_match reference low high", process_linear_match, STR_LMATCH, TRUE}, /* logarifies current image */
 	{"load", 1, "load filename.[ext]", process_load, STR_LOAD, TRUE},
 	// specific loads are not required, but could be used to force the
 	// extension to a higher priority in case two files with same basename
 	// exist (stat_file() manages that priority order for now).
 	{"log", 0, "log", process_log, STR_LOG, TRUE}, /* logarifies current image */
-	{"linear_match", 2, "linear_match reference low high", process_linear_match, STR_LMATCH, TRUE}, /* logarifies current image */
 #ifndef _WIN32
 	{"ls", 0, "ls", process_ls, STR_LS, FALSE},
 #endif
@@ -119,8 +119,8 @@ static command commands[] = {
 	{"savetif8", 1, "savetif8 filename", process_savetif, STR_SAVETIF8, TRUE},
 #endif
 	{"select", 2, "select from to", process_select, STR_SELECT, FALSE},
-	{"seqextractHa", 1, "seqextractHa sequencename [-prefix=]", process_seq_extractHa, STR_SEQEXTRACTHA, TRUE},
-	{"seqextractHaOIII", 1, "seqextractHaOIII sequencename", process_seq_extractHaOIII, STR_SEQEXTRACTHAOIII, TRUE},
+	{"seqextract_Ha", 1, "seqextractHa sequencename [-prefix=]", process_seq_extractHa, STR_SEQEXTRACTHA, TRUE},
+	{"seqextract_HaOIII", 1, "seqextractHaOIII sequencename", process_seq_extractHaOIII, STR_SEQEXTRACTHAOIII, TRUE},
 	{"seqcrop", 1, "seqcrop sequencename [x y width height] [-prefix=]", process_seq_crop, STR_SEQCROP, TRUE},
 	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma [-prefix=]", process_findcosme, STR_SEQFIND_COSME, TRUE},
 	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma [-prefix=]", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},
