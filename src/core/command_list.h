@@ -97,6 +97,7 @@ static command commands[] = {
 
 	{"register", 1, "register sequence [-norot] [-drizzle] [-prefix=]", process_register, STR_REGISTER, TRUE},
 	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE, TRUE},
+	{"reloadscripts", 0, "reloadscripts", process_reloadscripts, STR_RELOADSCRIPTS, FALSE},	
 	{"rgradient", 4, "rgradient xc yc dR dalpha", process_rgradient, STR_RGRADIENT, TRUE},
 	{"rl", 3, "rl sigma corner_radius_boost iterations", process_rl, STR_RL, TRUE},
 	{"rmgreen", 1, "rmgreen type", process_scnr, STR_RMGREEN, TRUE},

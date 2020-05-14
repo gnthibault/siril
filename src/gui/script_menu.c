@@ -191,7 +191,7 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 	g_free(script_file);
 }
 
-int initialize_script_menu() {
+int initialize_script_menu(gboolean UpdateScriptPath) {
 	static GtkWidget *menuscript = NULL;
 	GSList *list, *script, *s;
 	GtkWidget *menu;
@@ -207,7 +207,10 @@ int initialize_script_menu() {
 	} else {
 		script = com.pref.script_path;
 	}
-	fill_gtkText(script);
+	
+	if (UpdateScriptPath) {
+		fill_gtkText(script);
+	}
 
 	menu = gtk_menu_new();
 
