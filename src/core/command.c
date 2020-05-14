@@ -3222,5 +3222,6 @@ int process_extract(int nb) {
 }
 
 int process_reloadscripts(int nb){
-	return initialize_script_menu(FALSE);
+	refresh_scripts();
+	return 0;
 }

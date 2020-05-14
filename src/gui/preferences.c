@@ -470,6 +470,10 @@ void on_miscAskScript_toggled(GtkToggleButton *togglebutton,
 	writeinitfile();
 }
 
+void on_reload_script_button_clicked(GtkButton *button, gpointer user_data) {
+	refresh_scripts();
+}
+
 void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_libraw_and_debayer_interface();
 	update_photometry_interface();

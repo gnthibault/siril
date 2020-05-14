@@ -249,11 +249,20 @@ int initialize_script_menu(gboolean UpdateScriptPath) {
 	return 0;
 }
 
-void fill_script_paths_list() {
-	GSList *list;
+void refresh_scripts() {
+	GSList *list = get_list_from_textview();
+	if (list == NULL) {
+		siril_log_color_message(_("Cannot refresh the scripts if the list is empty.\n"), "red");
+	} else {
+		g_slist_free_full(com.pref.script_path, g_free);
+		com.pref.script_path = list;
+		initialize_script_menu(FALSE);
+	}
+}
 
+void fill_script_paths_list() {
 	g_slist_free_full(com.pref.script_path, g_free);
-	list = get_list_from_textview();
+	GSList *list = get_list_from_textview();
 	com.pref.script_path = list;
 	writeinitfile();
 }
