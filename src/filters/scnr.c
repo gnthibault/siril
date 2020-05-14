@@ -176,8 +176,10 @@ void on_combo_scnr_changed(GtkComboBoxText *box, gpointer user_data) {
 			GTK_COMBO_BOX(gtk_builder_get_object(builder, "combo_scnr")));
 	GtkScale *scale = GTK_SCALE(lookup_widget("scale_scnr"));
 	GtkLabel *label = GTK_LABEL(lookup_widget("label56"));
+	GtkSpinButton *spinButton = GTK_SPIN_BUTTON(lookup_widget("spin_scnr"));
 
 	gtk_widget_set_sensitive(GTK_WIDGET(scale), type > 1);
 	gtk_widget_set_sensitive(GTK_WIDGET(label), type > 1);
+	gtk_widget_set_sensitive(GTK_WIDGET(spinButton), type > 1);
 }
 
