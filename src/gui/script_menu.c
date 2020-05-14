@@ -249,14 +249,15 @@ int initialize_script_menu(gboolean UpdateScriptPath) {
 	return 0;
 }
 
-void refresh_scripts() {
+int refresh_scripts() {
 	GSList *list = get_list_from_textview();
 	if (list == NULL) {
 		siril_log_color_message(_("Cannot refresh the scripts if the list is empty.\n"), "red");
+		return 1;
 	} else {
 		g_slist_free_full(com.pref.script_path, g_free);
 		com.pref.script_path = list;
-		initialize_script_menu(FALSE);
+		return initialize_script_menu(FALSE);
 	}
 }
 
