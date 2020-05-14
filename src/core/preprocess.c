@@ -208,7 +208,19 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 			compute_grey_flat(prepro->flat);
 		}
 		if (prepro->autolevel) {
-			imstats *stat = statistics(NULL, -1, prepro->flat, RLAYER, NULL, STATS_BASIC, FALSE);
+
+			const unsigned int width = prepro->flat->rx;
+			const unsigned int height = prepro->flat->ry;
+
+			/* due to vignetting it is better to take an area in the
+			 * center of the flat image
+			 */
+			const unsigned int startx = width / 3;
+			const unsigned int starty = height / 3;
+
+			rectangle selection = { startx, starty, width - 1 - startx, height - 1 - starty };
+
+			imstats *stat = statistics(NULL, -1, prepro->flat, RLAYER, &selection, STATS_BASIC, FALSE);
 			if (!stat) {
 				siril_log_message(_("Error: statistics computation failed.\n"));
 				return 1;
