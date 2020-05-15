@@ -14913,7 +14913,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
               </object>
               <packing>
                 <property name="left_attach">2</property>
-                <property name="top_attach">0</property>
+                <property name="top_attach">1</property>
               </packing>
             </child>
             <child>
@@ -14924,7 +14924,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
+                <property name="top_attach">1</property>
               </packing>
             </child>
             <child>
@@ -14939,7 +14939,38 @@ If not set manually, the first image of the sequence is taken as reference.</pro
               </object>
               <packing>
                 <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Method: </property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
                 <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="combo_split_cfa_method">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Select the method you want to apply.</property>
+                <property name="active">0</property>
+                <items>
+                  <item translatable="yes">Split CFA Channels</item>
+                  <item translatable="yes">Extract Ha</item>
+                  <item translatable="yes">Extract Ha/OIII</item>
+                </items>
+                <signal name="changed" handler="on_combo_split_cfa_method_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">0</property>
+                <property name="width">2</property>
               </packing>
             </child>
           </object>

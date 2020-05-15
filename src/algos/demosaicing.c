@@ -1619,9 +1619,8 @@ void on_split_cfa_close_clicked(GtkButton *button, gpointer user_data) {
 
 void on_split_cfa_apply_clicked(GtkButton *button, gpointer user_data) {
 	GtkToggleButton *seq = GTK_TOGGLE_BUTTON(lookup_widget("checkSplitCFASeq"));
-	GtkEntry *entrySplitCFA;
-
-	entrySplitCFA = GTK_ENTRY(lookup_widget("entrySplitCFA"));
+	GtkEntry *entrySplitCFA = GTK_ENTRY(lookup_widget("entrySplitCFA"));
+	gint method = gtk_combo_box_get_active(GTK_COMBO_BOX(lookup_widget("combo_split_cfa_method")));
 
 	if (gtk_toggle_button_get_active(seq) && sequence_is_loaded()) {
 		struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
@@ -1629,10 +1628,38 @@ void on_split_cfa_apply_clicked(GtkButton *button, gpointer user_data) {
 		set_cursor_waiting(TRUE);
 		args->seq = &com.seq;
 		args->seqEntry = gtk_entry_get_text(entrySplitCFA);
-		if (args->seqEntry && args->seqEntry[0] == '\0')
-			args->seqEntry = "CFA_";
-		apply_split_cfa_to_sequence(args);
+		if (method == 0) {
+			if (args->seqEntry && args->seqEntry[0] == '\0')
+				args->seqEntry = "CFA_";
+			apply_split_cfa_to_sequence(args);
+		} else if (method == 1) {
+			if (args->seqEntry && args->seqEntry[0] == '\0')
+				args->seqEntry = "Ha_";
+			apply_extractHa_to_sequence(args);
+		} else {
+			apply_extractHaOIII_to_sequence(args);
+		}
 	} else {
-		process_split_cfa(0);
+		if (method == 0) {
+			process_split_cfa(0);
+		} else if (method == 1) {
+			process_extractHa(0);
+		} else {
+			process_extractHaOIII(0);
+		}
+	}
+}
+
+void on_combo_split_cfa_method_changed(GtkComboBox *box, gpointer user_data) {
+	GtkWidget *w = lookup_widget("label10");
+	GtkWidget *txt = lookup_widget("entrySplitCFA");
+	gint method = gtk_combo_box_get_active(box);
+
+	gtk_widget_set_sensitive(w, method != 2);
+	gtk_widget_set_sensitive(txt, method != 2);
+	if (method == 0) {
+		gtk_entry_set_text(GTK_ENTRY(txt), "CFA_");
+	} else if (method == 1) {
+		gtk_entry_set_text(GTK_ENTRY(txt), "Ha_");
 	}
 }
