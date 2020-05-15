@@ -64,7 +64,11 @@ static int find_linear_coeff_ushort(fits *target_fit, fits *reference_fit, doubl
 		for (size_t i = 0, j = 0; i < ref_size; i++) {
 			if (inInterval(reference_fit->pdata[channel][i], low, high)) {
 				y[j] = (double) reference_fit->pdata[channel][i] / USHRT_MAX_DOUBLE;
-				x[j] = (double) target_fit->pdata[channel][i] / USHRT_MAX_DOUBLE;
+				if (target_fit->type == DATA_FLOAT) {
+					x[j] = (double) target_fit->fpdata[channel][i];
+				} else {
+					x[j] = (double) target_fit->pdata[channel][i] / USHRT_MAX_DOUBLE;
+				}
 				j++;
 			}
 		}
@@ -105,7 +109,11 @@ static int find_linear_coeff_float(fits *target_fit, fits *reference_fit, double
 		for (size_t i = 0, j = 0; i < ref_size; i++) {
 			if (inInterval(reference_fit->fpdata[channel][i], low, high)) {
 				y[j] = (double) reference_fit->fpdata[channel][i];
-				x[j] = (double) target_fit->fpdata[channel][i];
+				if (target_fit->type == DATA_FLOAT) {
+					x[j] = (double) target_fit->fpdata[channel][i];
+				} else {
+					x[j] = (double) target_fit->pdata[channel][i] / USHRT_MAX_DOUBLE;
+				}
 				j++;
 			}
 		}
