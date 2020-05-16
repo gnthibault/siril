@@ -1116,7 +1116,7 @@ int extractHa_ushort(fits *in, fits *Ha, sensor_pattern pattern) {
 	int height = in->ry;
 
 	if (strlen(in->bayer_pattern) > 4) {
-		siril_log_message(_("ExtractHa does not work on non-Bayer filter camera images!\n"));
+		siril_log_message(_("Extract_Ha does not work on non-Bayer filter camera images!\n"));
 		return 1;
 	}
 
@@ -1163,7 +1163,7 @@ int extractHa_float(fits *in, fits *Ha, sensor_pattern pattern) {
 	int height = in->ry;
 
 	if (strlen(in->bayer_pattern) > 4) {
-		siril_log_message(_("ExtractHa does not work on non-Bayer filter camera images!\n"));
+		siril_log_message(_("Extract_Ha does not work on non-Bayer filter camera images!\n"));
 		return 1;
 	}
 
@@ -1289,7 +1289,7 @@ int extractHaOIII_ushort(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern)
 	int height = in->ry;
 
 	if (strlen(in->bayer_pattern) > 4) {
-		siril_log_message(_("ExtractHa does not work on non-Bayer filter camera images!\n"));
+		siril_log_message(_("Extract_Ha does not work on non-Bayer filter camera images!\n"));
 		return 1;
 	}
 
@@ -1341,7 +1341,7 @@ int extractHaOIII_float(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern) 
 	int height = in->ry;
 
 	if (strlen(in->bayer_pattern) > 4) {
-		siril_log_message(_("ExtractHa does not work on non-Bayer filter camera images!\n"));
+		siril_log_message(_("Extract_HaOIII does not work on non-Bayer filter camera images!\n"));
 		return 1;
 	}
 

@@ -33,10 +33,10 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/OS_utils.h"
-#include "io/sequence.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "algos/statistics.h"
+#include "io/sequence.h"
 #include "io/single_image.h"
 
 static char *MIPSHI[] = {"MIPS-HI", "CWHITE", "DATAMAX", NULL };

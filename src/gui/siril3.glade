@@ -12802,7 +12802,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="can_focus">True</property>
                     <property name="tooltip_text" translatable="yes">The algorithm will ignore all reference pixels whose values are outside of the [low, high] range.</property>
                     <property name="width_chars">10</property>
-                    <property name="text" translatable="yes">0,00</property>
+                    <property name="text">0,00</property>
                     <property name="adjustment">adj_linearmatch_low</property>
                     <property name="digits">4</property>
                   </object>
@@ -12860,7 +12860,7 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="can_focus">True</property>
                     <property name="tooltip_text" translatable="yes">The algorithm will ignore all reference pixels whose values are outside of the [low, high] range.</property>
                     <property name="width_chars">10</property>
-                    <property name="text" translatable="yes">20</property>
+                    <property name="text">20</property>
                     <property name="adjustment">adj_linearmatch_high</property>
                     <property name="digits">4</property>
                     <property name="value">0.92000000000000004</property>
@@ -19359,7 +19359,7 @@ The technique gives very good compression for astronomical images and is relativ
                                   <object class="GtkComboBoxText" id="combobox_type">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Choose the type of FITS that will be used by default. 32-bit floating point is the format giving the best precision, however it takes twice as much disk space than unsigned 16-bit integers.</property>
+                                    <property name="tooltip_text" translatable="yes">Choose the type of FITS that will be used by default. 32-bit floating point is the format giving the best precision, however it takes twice as much disk space than unsigned 16-bit integers. All processing tool will work with the chosen format except the RGB compositing tool that always will convert images in 32-bit.</property>
                                     <property name="valign">center</property>
                                     <property name="margin_top">4</property>
                                     <property name="active">1</property>
