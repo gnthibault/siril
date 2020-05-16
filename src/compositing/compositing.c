@@ -453,7 +453,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		clearfits(&layers[layer]->the_fit);
 	}
 	if ((retval = read_single_image(filename, &layers[layer]->the_fit,
-					NULL, FALSE, NULL, FALSE, !com.pref.force_to_16bit))) {
+					NULL, FALSE, NULL, FALSE, TRUE))) {
 		gtk_label_set_text(layers[layer]->label, _("ERROR"));
 	} else {
 		/* Force first tab to be Red and not B&W if an image was already loaded */
