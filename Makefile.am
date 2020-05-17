@@ -13,6 +13,8 @@ SUBDIRS = deps \
 # be a recussive make with a separate file list.
 scriptsdir = $(pkgdatadir)/scripts
 scripts_DATA = scripts/DSLR_preprocessing.ssf \
+	scripts/DSLR_extract_Ha.ssf \
+	scripts/DSLR_extract_HaOIII.ssf \
 	3rdparty/scripts/en/DSLR_Preprocessing_Drizzle.ssf \
 	3rdparty/scripts/en/DSLR_Preprocessing_NoDark.ssf \
 	3rdparty/scripts/en/DSLR_Preprocessing_NoFlat_NoDark_NoBias.ssf \
