@@ -342,6 +342,9 @@ void set_cutoff_sliders_values() {
 	} else
 		return;	// there should be no other normal cases
 	siril_debug_print(_("Setting ranges scalemin=%d, scalemax=%d\n"), lo, hi);
+	if ((gtk_adjustment_get_upper(adjmax) == UCHAR_MAX_DOUBLE) && hi > UCHAR_MAX) {
+		gtk_adjustment_set_upper(adjmax, USHRT_MAX_DOUBLE);
+	}
 	gtk_adjustment_set_value(adjmin, (gdouble)lo);
 	gtk_adjustment_set_value(adjmax, (gdouble)hi);
 	g_snprintf(buffer, 6, "%u", hi);

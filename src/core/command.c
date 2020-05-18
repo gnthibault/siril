@@ -2014,9 +2014,8 @@ int select_unselect(gboolean select) {
 		siril_log_message(_("The first argument must be between 0 and the number of images minus one.\n"));
 		return 1;
 	}
-	int i;
 	gboolean current_updated = FALSE;
-	for (i = from; i <= to; i++) {
+	for (int i = from; i <= to; i++) {
 		if (i >= com.seq.number) break;
 		if (com.seq.imgparam[i].incl != select) {
 			com.seq.imgparam[i].incl = select;
