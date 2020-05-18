@@ -23,13 +23,13 @@
 #define SRC_GUI_SEQUENCE_LIST_H_
 
 void on_seqlist_dialog_combo_changed(GtkComboBoxText *widget, gpointer user_data);
-void sequence_list_change_selection_index(int index);
+void sequence_list_change_selection_index(int index_in_list, int real_index);
 void sequence_list_change_current();
 void sequence_list_change_reference();
 void fill_sequence_list(sequence *seq, int layer, gboolean as_idle);
 void clear_sequence_list();
 void update_seqlist();
-void toggle_image_selection(int image_num);
+void toggle_image_selection(int index_in_list, int real_index);
 void adjust_refimage(int n);
 
 

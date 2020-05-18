@@ -218,7 +218,6 @@ static int get_image_index_from_path(GtkTreePath *path) {
 	return index;
 }
 
-
 static void unselect_select_frame_from_list(GtkTreeView *tree_view) {
 	GtkTreeSelection *selection;
 	GtkTreeModel *model;
@@ -233,7 +232,7 @@ static void unselect_select_frame_from_list(GtkTreeView *tree_view) {
 		GtkTreePath *path = gtk_tree_row_reference_get_path((GtkTreeRowReference*)list->data);
 		if (path) {
 			gint *new_index = gtk_tree_path_get_indices(path);
-			toggle_image_selection(new_index[0]);
+			toggle_image_selection(new_index[0], com.seq.current);
 			gtk_tree_path_free(path);
 		}
 	}
@@ -260,7 +259,7 @@ static void sequence_setselect_all(gboolean include_all) {
 	for (i = 0; i < com.seq.number; ++i) {
 		if (com.seq.imgparam[i].incl != include_all) {
 			com.seq.imgparam[i].incl = include_all;
-			sequence_list_change_selection_index(i);
+			sequence_list_change_selection_index(i, i);
 		}
 	}
 	if (include_all) {
@@ -391,25 +390,25 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	writeseqfile(&com.seq);
 }
 
-void toggle_image_selection(int image_num) {
+void toggle_image_selection(int index_in_list, int real_index) {
 	gchar *msg;
-	if (com.seq.imgparam[image_num].incl) {
-		com.seq.imgparam[image_num].incl = FALSE;
+	if (com.seq.imgparam[real_index].incl) {
+		com.seq.imgparam[real_index].incl = FALSE;
 		--com.seq.selnum;
-		msg = g_strdup_printf(_("Image %d has been unselected from sequence\n"), image_num);
-		if (image_num == com.seq.reference_image) {
+		msg = g_strdup_printf(_("Image %d has been unselected from sequence\n"), real_index + 1);
+		if (real_index == com.seq.reference_image) {
 			com.seq.reference_image = -1;
 			sequence_list_change_reference();
-			adjust_refimage(image_num);
+			adjust_refimage(real_index);
 		}
 	} else {
-		com.seq.imgparam[image_num].incl = TRUE;
+		com.seq.imgparam[real_index].incl = TRUE;
 		++com.seq.selnum;
-		msg = g_strdup_printf(_("Image %d has been selected from sequence\n"), image_num);
+		msg = g_strdup_printf(_("Image %d has been selected from sequence\n"), real_index + 1);
 	}
 	siril_log_message(msg);
 	g_free(msg);
-	sequence_list_change_selection_index(image_num);
+	sequence_list_change_selection_index(index_in_list, real_index);
 	update_reg_interface(FALSE);
 	update_stack_interface(TRUE);
 	redraw(com.cvport, REMAP_NONE);
@@ -468,7 +467,7 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 				test_and_allocate_reference_image(-1);
 				// a reference image should not be excluded to avoid confusion
 				if (!com.seq.imgparam[com.seq.current].incl) {
-					toggle_image_selection(com.seq.current);
+					toggle_image_selection(com.seq.current, com.seq.current);
 				}
 			}
 			gtk_tree_path_free(path);
@@ -485,9 +484,9 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 
 /****************** modification of the list store (tree model) ******************/
 
-void sequence_list_change_selection_index(int index) {
-	GtkTreePath *path = gtk_tree_path_new_from_indices(index, -1);
-	sequence_list_change_selection(gtk_tree_path_to_string(path), com.seq.imgparam[index].incl);
+void sequence_list_change_selection_index(int index_in_list, int real_index) {
+	GtkTreePath *path = gtk_tree_path_new_from_indices(index_in_list, -1);
+	sequence_list_change_selection(gtk_tree_path_to_string(path), com.seq.imgparam[real_index].incl);
 	gtk_tree_path_free(path);
 }
 

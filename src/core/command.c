@@ -996,7 +996,7 @@ int process_set_ref(int nb) {
 		test_and_allocate_reference_image(-1);
 		// a reference image should not be excluded to avoid confusion
 		if (!com.seq.imgparam[com.seq.current].incl) {
-			toggle_image_selection(com.seq.current);
+			toggle_image_selection(com.seq.current, com.seq.current);
 		}
 
 		if (!com.script) {
@@ -2016,12 +2016,12 @@ int select_unselect(gboolean select) {
 	}
 	int i;
 	gboolean current_updated = FALSE;
-	for (i=from; i<=to; i++) {
+	for (i = from; i <= to; i++) {
 		if (i >= com.seq.number) break;
 		if (com.seq.imgparam[i].incl != select) {
 			com.seq.imgparam[i].incl = select;
 			if (!com.headless)
-				sequence_list_change_selection_index(i);
+				sequence_list_change_selection_index(i, i);
 			if (select)
 				com.seq.selnum++;
 			else	com.seq.selnum--;
