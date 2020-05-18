@@ -614,12 +614,12 @@ static gboolean end_stacking(gpointer p) {
 		remove_tmp_drizzle_files(args);
 
 		waiting_for_thread();		// bgnoise
-		adjust_cutoff_from_updated_gfit();	// computes min and max
-		set_sliders_value_to_gfit();
 		initialize_display_mode();
 
 		sliders_mode_set_state(com.sliders);
 		set_cutoff_sliders_max_values();
+		set_sliders_value_to_gfit();
+		adjust_cutoff_from_updated_gfit();	// computes min and max
 
 		set_display_mode();
 
