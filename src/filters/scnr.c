@@ -43,7 +43,6 @@ static gboolean end_scnr(gpointer p) {
 	update_gfit_histogram_if_needed();
 	set_cursor_waiting(FALSE);
 	
-
 	return FALSE;
 }
 

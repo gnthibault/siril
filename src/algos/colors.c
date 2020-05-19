@@ -1104,8 +1104,9 @@ void on_menu_negative_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	undo_save_state(&gfit, "Processing: Negative Transformation");
 	pos_to_neg(&gfit);
-	update_gfit_histogram_if_needed();
 	invalidate_stats_from_fit(&gfit);
+	invalidate_gfit_histogram();
+	update_gfit_histogram_if_needed();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
