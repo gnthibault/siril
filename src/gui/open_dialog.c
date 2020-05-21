@@ -222,6 +222,7 @@ static void opendial(int whichdial) {
 	GtkFileChooser *dialog = NULL;
 	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
 	gint res;
+	int retval;
 
 	if (!com.wd)
 		return;
@@ -266,6 +267,7 @@ static void opendial(int whichdial) {
 	if (!dialog)
 		return;
 
+	wait:
 	res = siril_dialog_run(widgetdialog);
 
 	if (res == GTK_RESPONSE_ACCEPT) {
@@ -279,7 +281,7 @@ static void opendial(int whichdial) {
 
 		filename = gtk_file_chooser_get_filename(chooser);
 		if (!filename)
-			return;
+			goto wait;
 
 		pbutton  = lookup_widget("prepro_button");
 		flat_entry = GTK_ENTRY(lookup_widget("flatname_entry"));
@@ -322,9 +324,9 @@ static void opendial(int whichdial) {
 
 		case OD_OPEN:
 			set_cursor_waiting(TRUE);
-			open_single_image(filename);
-
+			retval = open_single_image(filename);
 			set_cursor_waiting(FALSE);
+			if (retval == OPEN_IMAGE_CANCEL) goto wait;
 			break;
 
 		case OD_CONVERT:

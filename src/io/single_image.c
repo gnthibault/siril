@@ -207,10 +207,8 @@ int open_single_image(const char* filename) {
 						"its extension is not supported."));
 		return 1;
 	}
-	if (retval == OPEN_IMAGE_CANCEL) {
-		return 0;
-	}
-	if (retval) {
+
+	if (retval < 0) {
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error opening file"),
 				_("There was an error when opening this image. "
 						"See the log for more information."));
@@ -230,7 +228,7 @@ int open_single_image(const char* filename) {
 		com.uniq->fit = &gfit;
 		siril_add_idle(end_open_single_image, realname);
 	}
-	return 0;
+	return retval;
 }
 
 /* creates a single_image structure and displays a single image, found in gfit.

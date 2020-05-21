@@ -104,7 +104,7 @@ int process_load(int nb){
 	}
 	expand_home_in_filename(filename, 256);
 	int retval = open_single_image(filename);
-	return retval;
+	return (retval < 0);
 }
 
 int process_satu(int nb){
@@ -3123,7 +3123,7 @@ int process_preprocess(int nb) {
 	args->is_sequence = TRUE;
 	args->autolevel = TRUE;
 	args->normalisation = 1.0f;	// will be updated anyway
-	args->sigma[0] = -1.00; /* cold pixels: it is better to deactive it */
+	args->sigma[0] = -1.00; /* cold pixels: it is better to deactivate it */
 	args->sigma[1] =  3.00; /* hot pixels */
 	args->allow_32bit_output = args->seq->type == SEQ_REGULAR && !com.pref.force_to_16bit;
 
