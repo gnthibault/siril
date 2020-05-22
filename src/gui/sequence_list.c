@@ -218,6 +218,13 @@ static int get_image_index_from_path(GtkTreePath *path) {
 	return index;
 }
 
+static gint get_real_index_from_index_in_list(GtkTreeModel *model, GtkTreeIter *iter, int index_in_list) {
+	gint real_index;
+
+	gtk_tree_model_get(model, iter, COLUMN_INDEX, &real_index, -1);
+	return real_index - 1;
+}
+
 static void unselect_select_frame_from_list(GtkTreeView *tree_view) {
 	GtkTreeSelection *selection;
 	GtkTreeModel *model;
@@ -232,7 +239,11 @@ static void unselect_select_frame_from_list(GtkTreeView *tree_view) {
 		GtkTreePath *path = gtk_tree_row_reference_get_path((GtkTreeRowReference*)list->data);
 		if (path) {
 			gint *new_index = gtk_tree_path_get_indices(path);
-			toggle_image_selection(new_index[0], com.seq.current);
+			GtkTreeIter iter;
+
+			gtk_tree_model_get_iter(GTK_TREE_MODEL(list_store), &iter, path);
+			gint real_index = get_real_index_from_index_in_list(model, &iter, new_index[0]);
+			toggle_image_selection(new_index[0], real_index);
 			gtk_tree_path_free(path);
 		}
 	}
