@@ -474,7 +474,7 @@ static gpointer mini_save_dialog(gpointer p) {
 				}
 			}
 			args->retval = savefits(args->filename, &gfit);
-			if (!args->retval) {
+			if (!args->retval && single_image_is_loaded()) {
 				com.uniq->filename = strdup(args->filename);
 				com.uniq->fileexist = TRUE;
 			}

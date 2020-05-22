@@ -22,10 +22,6 @@
 #include <config.h>
 #endif
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdint.h>
