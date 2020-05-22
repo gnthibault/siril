@@ -51,7 +51,7 @@ static int find_linear_coeff_ushort(fits *target_fit, fits *reference_fit, doubl
 	low *= USHRT_MAX_DOUBLE;
 	high *= USHRT_MAX_DOUBLE;
 
-	siril_log_color_message("Linear fit functions:\n", "green");
+	siril_log_color_message(_("Linear fit functions:\n"), "green");
 	for (int channel = 0; channel < reference_fit->naxes[2]; channel++) {
 		for (size_t i = 0; i < ref_size; i++) {
 			if (inInterval(reference_fit->pdata[channel][i], low, high)) {
@@ -96,7 +96,7 @@ static int find_linear_coeff_float(fits *target_fit, fits *reference_fit, double
 		return -1;
 	}
 
-	siril_log_color_message("Linear fit functions:\n", "green");
+	siril_log_color_message(_("Linear fit functions:\n"), "green");
 	for (int channel = 0; channel < reference_fit->naxes[2]; channel++) {
 		for (size_t i = 0; i < ref_size; i++) {
 			if (inInterval(reference_fit->fpdata[channel][i], low, high)) {
