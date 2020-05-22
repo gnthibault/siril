@@ -420,6 +420,7 @@ void toggle_image_selection(int index_in_list, int real_index) {
 	siril_log_message(msg);
 	g_free(msg);
 	sequence_list_change_selection_index(index_in_list, real_index);
+	sequence_find_refimage(&com.seq);
 	update_reg_interface(FALSE);
 	update_stack_interface(TRUE);
 	redraw(com.cvport, REMAP_NONE);
