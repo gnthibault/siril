@@ -92,7 +92,7 @@ static gboolean _print_list_of_formats_and_exit(const gchar *option_name,
 
 static GOptionEntry main_option[] = {
 	{ "directory", 'd', 0, G_OPTION_ARG_FILENAME, &main_option_directory, N_("changing the current working directory as the argument"), NULL },
-	{ "script", 's', 0, G_OPTION_ARG_FILENAME, &main_option_script, N_("run the siril commands script in console mode"), NULL },
+	{ "script", 's', 0, G_OPTION_ARG_FILENAME, &main_option_script, N_("run the siril commands script in console mode. If argument is equal to \"-\", then siril will read stdin input"), NULL },
 	{ "initfile", 'i', 0, G_OPTION_ARG_FILENAME, &main_option_initfile, N_("load configuration from file name instead of the default configuration file"), NULL },
 	{ "pipe", 'p', 0, G_OPTION_ARG_NONE, &main_option_pipe, N_("run in console mode with command and log stream through named pipes"), NULL },
 	{ "format", 'f', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, _print_list_of_formats_and_exit, N_("print all supported image file formats (depending on installed libraries)" ), NULL },
@@ -211,11 +211,16 @@ static void siril_app_activate(GApplication *application) {
 	init_num_procs();
 
 	if (main_option_script) {
-		FILE *fp = g_fopen(main_option_script, "r");
-		if (fp == NULL) {
-			siril_log_message(_("File [%s] does not exist\n"),
-					main_option_script);
-			exit(EXIT_FAILURE);
+		FILE *fp;
+
+		if (g_strcmp0(main_option_script, "-") == 0) {
+			fp = stdin;
+		} else {
+			fp = g_fopen(main_option_script, "r");
+			if (fp == NULL) {
+				siril_log_message(_("File [%s] does not exist\n"), main_option_script);
+				exit(EXIT_FAILURE);
+			}
 		}
 #ifdef _WIN32
 		ReconnectIO(1);
