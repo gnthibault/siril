@@ -471,7 +471,12 @@ void on_miscAskScript_toggled(GtkToggleButton *togglebutton,
 }
 
 void on_reload_script_button_clicked(GtkButton *button, gpointer user_data) {
-	refresh_scripts();
+	gchar *error;
+	int retval = refresh_scripts(&error);
+
+	if (retval) {
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Cannot refresh script list"), error);
+	}
 }
 
 void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
