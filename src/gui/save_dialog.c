@@ -398,7 +398,7 @@ static void initialize_data(gpointer p) {
 #endif
 #ifdef HAVE_LIBTIFF
 	GtkToggleButton *button_8 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton8bits"));
-	GtkToggleButton *button_32 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton32bit"));
+	GtkToggleButton *button_32 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton32bits"));
 	args->bitspersamples = gtk_toggle_button_get_active(button_8) ? 8 : gtk_toggle_button_get_active(button_32) ? 32 : 16;
 #endif
 	args->entry = GTK_ENTRY(lookup_widget("savetxt"));
@@ -534,6 +534,10 @@ void on_menu_rgb_savetiff_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	}
 
 	if (single_image_is_loaded() || sequence_is_loaded()) {
+		GtkToggleButton *b16 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton16bits"));
+		GtkToggleButton *b32 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton32bits"));
+		gtk_toggle_button_set_active(b32, gfit.type == DATA_FLOAT);
+		gtk_toggle_button_set_active(b16, gfit.type == DATA_USHORT);
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving TIFF"));
 		set_entry_filename();
 		type_of_image = TYPETIFF;
@@ -689,13 +693,20 @@ void on_savepopup_show(GtkWidget *widget, gpointer user_data) {
 	GtkScrolledWindow *scrolled_window = GTK_SCROLLED_WINDOW(lookup_widget("scrolledwindow3"));
 	gint height, width;
 
-	if (type_of_image == TYPETIFF) {
+	if (type_of_image & TYPETIFF) {
+		GtkToggleButton *b16 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton16bits"));
+		GtkToggleButton *b32 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton32bits"));
+		gtk_toggle_button_set_active(b32, gfit.type == DATA_FLOAT);
+		gtk_toggle_button_set_active(b16, gfit.type == DATA_USHORT);
 		width = 400;
 		height = 100;
 	} else {
 		width = 100;
 		height = 50;
 	}
+	/* we need to handle TYPEUNDEF in the case the extension
+	 * is not explicitly written. In this case the FITS format will be chosen
+	 */
 	if (type_of_image & (TYPEFITS | TYPEUNDEF)) {
 		GtkToggleButton *b16bitu = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit16"));
 		GtkToggleButton *b32bits = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit32f"));
