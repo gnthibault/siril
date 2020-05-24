@@ -268,10 +268,18 @@ static void sequence_setselect_all(gboolean include_all) {
 	if (!com.seq.imgparam)
 		return;
 	for (i = 0; i < com.seq.number; ++i) {
-		if (com.seq.imgparam[i].incl != include_all) {
+		/* TODO: we include all and exclude all without checking if frame is already
+		 * included of already excluded.
+		 * Indeed, in the case of a list sorted by quality, index in lisrt and
+		 * real index are different.
+		 * We should find a way to compute the real index without using UI
+		 * like we do with get_real_index_from_index_in_list()
+		 *
+		 */
+//		if (com.seq.imgparam[i].incl != include_all) {
 			com.seq.imgparam[i].incl = include_all;
 			sequence_list_change_selection_index(i, i);
-		}
+//		}
 	}
 	if (include_all) {
 		com.seq.selnum = com.seq.number;
