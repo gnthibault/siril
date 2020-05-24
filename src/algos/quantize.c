@@ -161,7 +161,7 @@ int *status) /* error status */
  */
 {
 	long ngood;
-	float minval, maxval;
+	float minval = 0.f, maxval = 0.f;
 	double xmean = 0., xsigma = 0., xnoise = 0., xnoise2 = 0., xnoise3 = 0.,
 			xnoise5 = 0.;
 

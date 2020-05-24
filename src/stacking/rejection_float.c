@@ -91,7 +91,7 @@ static int line_clipping(float pixel, float sig[], float sigma, int i, float a,
 int apply_rejection_float(struct _data_block *data, int nb_frames,
 		struct stacking_args *args, uint64_t crej[2]) {
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
-	double median;
+	double median = 0.0;
 	int pixel, output, changed, n, r = 0;
 	int firstloop = 1;
 

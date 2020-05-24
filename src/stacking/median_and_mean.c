@@ -433,7 +433,7 @@ static int line_clipping(WORD pixel, float sig[], float sigma, int i, float a, f
 
 static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]) {
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
-	float median;
+	float median = 0.f;
 	int pixel, output, changed, n, r = 0;
 	int firstloop = 1;
 
@@ -448,7 +448,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 		case SIGMEDIAN:
 		case WINSORIZED:
 			median = quickmedian(stack, N);
-			if (median == 0.0)
+			if (median == 0.f)
 				return 0;
 			break;
 		default:
@@ -458,7 +458,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 	switch (args->type_of_rejection) {
 		case PERCENTILE:
 			for (int frame = 0; frame < N; frame++) {
-				rejected[frame] = percentile_clipping(stack[frame], args->sig, (float) median, crej);
+				rejected[frame] = percentile_clipping(stack[frame], args->sig, median, crej);
 			}
 
 			for (pixel = 0, output = 0; pixel < N; pixel++) {
