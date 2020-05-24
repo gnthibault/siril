@@ -979,8 +979,8 @@ int process_set_mag(int nb) {
 }
 
 int process_set_ref(int nb) {
-	if (!single_image_is_loaded()) {
-		PRINT_NOT_FOR_SEQUENCE;
+	if (!sequence_is_loaded()) {
+		PRINT_NOT_FOR_SINGLE;
 		return 1;
 	}
 
@@ -998,12 +998,8 @@ int process_set_ref(int nb) {
 		if (!com.seq.imgparam[com.seq.current].incl) {
 			toggle_image_selection(com.seq.current, com.seq.current);
 		}
-
 		if (!com.script) {
 			sequence_list_change_reference();
-			update_stack_interface(FALSE);// get stacking info and enable the Go button
-			adjust_sellabel();	// reference image is named in the label
-			drawPlot();		// update plots
 		}
 		writeseqfile(&com.seq);
 	}
