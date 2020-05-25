@@ -160,7 +160,7 @@ int *status) /* error status */
  Compute statistics of the input float image.
  */
 {
-	long ngood;
+	long ngood = 0L;
 	float minval = 0.f, maxval = 0.f;
 	double xmean = 0., xsigma = 0., xnoise = 0., xnoise2 = 0., xnoise3 = 0.,
 			xnoise5 = 0.;

@@ -128,7 +128,7 @@ siril-win64:
     - echo 'crossroad source msys2' | crossroad w64 siril --run="-"
     - echo 'crossroad install fftw cfitsio exiv2 gtk3 libconfig gsl opencv' | crossroad w64 siril --run="-"
     # librtprocess
-    - mkdir deps/librtprocess/_build && cd deps/librtprocess/_build
+    - mkdir subprojects/librtprocess/_build && cd subprojects/librtprocess/_build
     - echo 'crossroad cmake .. && make && make install' | crossroad w64 siril --run="-"
     ## Build Siril ##
     - cd ../../.. && mkdir _build && cd _build
@@ -140,7 +140,7 @@ siril-win64:
     expire_in: 1 week
     paths:
       - _build/
-      - deps/librtprocess/_build
+      - subprojects/librtprocess/_build
       - siril/
     
 flatpak:
