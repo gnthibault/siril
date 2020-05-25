@@ -154,6 +154,8 @@ libcurl_dep = dependency('libcurl', required : false)
 ## General and package configuration
 conf_data = configuration_data()
 
+conf_data.set10('SIRIL_UNSTABLE', siril_unstable)
+
 conf_data.set_quoted('PACKAGE', meson.project_name(), description : 'Name of package.')
 conf_data.set_quoted('PACKAGE_NAME', meson.project_name(), description : 'Define to the full name of this package.')
 conf_data.set_quoted('PACKAGE_VERSION', meson.project_version(), description : 'Define to the home page for this package.')

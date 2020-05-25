@@ -156,7 +156,7 @@ src_files = [ 'algos/background_extraction.c',
 ################################################################################
 # Build gui executable
 
-siril_gui = executable('siril-gui','main.c', src_files,
+siril_gui = executable('siril','main.c', src_files,
                       dependencies : [m_dep, glib_dep, gtk_dep, gsl_dep, opencv_dep, rtprocess_dep, exiv_dep, libconfig_dep,fftw3f_dep, cfitsio_dep, libraw_dep, libtiff_dep, libjpeg_dep, libpng_dep, libcurl_dep, libheif_dep, ffms2_dep, libcurl_dep, openmp_dep, kplot_dep],
                       link_args : '-rdynamic',
                       c_args : ['-DHAVE_CONFIG_H'],
