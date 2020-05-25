@@ -11,6 +11,10 @@ stages:
     INSTALL_DIR: "_install"
     INSTALL_PREFIX: "${CI_PROJECT_DIR}/${INSTALL_DIR}"
     GIT_SUBMODULE_STRATEGY: recursive
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  cache:
+    paths:
+      - .cache/pip
   artifacts:
     expire_in: 1 week
     when: always
@@ -47,6 +51,11 @@ stages:
         libswscale-dev
         libswresample-dev
         libcurl4-gnutls-dev
+        python3
+        python3-pip
+        ninja-build
+    - python3 -V
+    - pip3 install meson
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/pkgconfig:${INSTALL_PREFIX}/share/pkgconfig"
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/share/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
@@ -64,6 +73,12 @@ siril-debian/testing-autotools:
     - make -j "$(nproc)" all install
     # - make check
     
+siril-debian/testing-meson:
+  extends: .siril-debian/testing-base
+  script:
+    - meson --buildtype release --prefix ${INSTALL_PREFIX} _build
+    - ninja -v -C _build install
+
 ## Windows 64-bit CIs ##
 
 siril-win64:
@@ -77,6 +92,7 @@ siril-win64:
     paths:
     - .cache/crossroad/
     - dnf_cache
+    - .cache/pip
   before_script:
     - dnf install --assumeyes --setopt=cachedir=`pwd`/dnf_cache --verbose
         automake
@@ -95,9 +111,11 @@ siril-win64:
         mingw64-libgomp
         cpio rpm
         python3-docutils
+        python3-pip
         python3-setuptools
         shared-mime-info
         which
+    - pip3 install meson zstandard
     - git clone --depth=${GIT_DEPTH} git://git.tuxfamily.org/gitroot/crossroad/crossroad.git
     - cd crossroad
     - ./setup.py install --prefix=`pwd`/../.local

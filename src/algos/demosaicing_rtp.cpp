@@ -1,6 +1,12 @@
+#ifdef HAVE_LIBRTPROCESS
+#include "rtprocess/librtprocess.h"
+#else
 #include "librtprocess.h"
+#endif
+
 #include "core/siril.h"
 #include "algos/demosaicing.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -11,8 +11,8 @@ SUBDIRS = . \
 # with a raw Makefile. So let's just copy the whole source before
 # compiling if the build dir is different to the source dir.
 all-local:
-	if [ ! -f "$(top_builddir)/deps/kplot/Makefile" ]; then \
-		cp -fr "$(top_srcdir)/deps/kplot" "$(top_builddir)/deps/kplot"; \
+	if [ ! -f "$(top_builddir)/subprojects/kplot/Makefile" ]; then \
+		cp -fr "$(top_srcdir)/subprojects/kplot" "$(top_builddir)/subprojects/kplot"; \
 	fi
 
 if !HAVE_LIBRTPROCESS

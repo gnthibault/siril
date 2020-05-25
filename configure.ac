@@ -377,6 +377,6 @@ AC_MSG_RESULT([$enable_relocatable_bundle])
 
 AC_SUBST([AM_LDFLAGS])
 
-AC_CONFIG_FILES([Makefile src/Makefile deps/Makefile pixmaps/Makefile pixmaps/icons/Makefile platform-specific/Makefile platform-specific/linux/Makefile po/Makefile.in])
+AC_CONFIG_FILES([Makefile src/Makefile subprojects/Makefile pixmaps/Makefile pixmaps/icons/Makefile platform-specific/Makefile platform-specific/linux/Makefile po/Makefile.in])
 AC_OUTPUT
 

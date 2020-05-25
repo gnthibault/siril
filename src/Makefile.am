@@ -17,8 +17,7 @@ AM_CPPFLAGS = \
 	$(GSL_CFLAGS) \
 	$(FFMS2_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
-	-I$(top_builddir)/deps/kplot \
-	-I$(top_srcdir)/deps/librtprocess/src/include
+	-I$(top_builddir)/subprojects/kplot
 
 siril_common_SOURCES = \
 	core/siril.h \
@@ -216,13 +215,16 @@ libdbghelp = -ldbghelp
 endif
 
 if HAVE_LIBRTPROCESS
+AM_CPPFLAGS += -DHAVE_LIBRTPROCESS \
+						$(LIBRTPROCESS_CFLAGS)
 librtprocesslibs = $(LIBRTPROCESS_LIBS)
 else
-librtprocesslibs = $(top_builddir)/deps/librtprocess/build/src/librtprocess.a
+AM_CPPFLAGS += -I$(top_srcdir)/subprojects/librtprocess/src/include
+librtprocesslibs = $(top_builddir)/subprojects/librtprocess/build/src/librtprocess.a
 endif
 
 siril_common_LDADD = \
-	$(top_builddir)/deps/kplot/libkplot.a \
+	$(top_builddir)/subprojects/kplot/libkplot.a \
 	$(FFMPEG_LIBS) \
 	$(GTK_LIBS) \
 	${GTK_MAC_LIBS} \
