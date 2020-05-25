@@ -27,9 +27,16 @@
 
 project('siril', ['c','cpp'], version : '0.99.1', license : ['GPL3'], meson_version: '>=0.54.0', default_options : ['c_std=gnu11','cpp_std=c++11'])
 
+# General version
+siril_version = meson.project_version()
+
+version_array = siril_version.split('.')
+siril_version_major = version_array[0].to_int()
+siril_version_minor = version_array[1].to_int()
+siril_version_micro = version_array[2].to_int()
+
 ## Developement version
-version_array = meson.project_version().split('.')
-if (version_array[1].to_int() % 2) == 1
+if (siril_version_minor % 2) == 1
   message('Building development version')
   siril_unstable = true
 else
