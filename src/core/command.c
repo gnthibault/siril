@@ -2179,6 +2179,8 @@ int process_extractHa(int nb) {
 		case BAYER_FILTER_GRBG:
 			bayer = BAYER_FILTER_GBRG;
 			break;
+		default:
+			printf("XTRANS is not handled.\n");
 		}
 	}
 
@@ -2243,6 +2245,8 @@ int process_extractHaOIII(int nb) {
 		case BAYER_FILTER_GRBG:
 			bayer = BAYER_FILTER_GBRG;
 			break;
+		default:
+			printf("XTRANS is not handled.\n");
 		}
 	}
 
