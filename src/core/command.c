@@ -3136,6 +3136,64 @@ int process_set_32bits(int nb) {
 		siril_log_message(_("16-bit per channel in processed images mode is active\n"));
 	else siril_log_message(_("32-bit per channel in processed images mode is active\n"));
 	writeinitfile();
+	set_GUI_misc();
+	return 0;
+}
+
+int process_set_compress(int nb) {
+	gboolean compress = atoi(word[1]) == 1;
+	int method = 0;
+	double q = 16.0, hscale= 4.0;
+
+	if (compress) {
+		if (!word[2] || !word[3] || (!g_str_has_prefix(word[2], "-type="))) {
+			siril_log_message(_("Please specify the type of compression and quantization value.\n"));
+			return 1;
+		}
+		gchar *comp = NULL;
+		if (!g_ascii_strncasecmp(word[2] + 6, "rice", 4)) {
+			method = RICE_COMP;
+			comp = g_strdup("rice");
+		} else if (!g_ascii_strncasecmp(word[2] + 6, "gzip1", 5)) {
+			method = GZIP1_COMP;
+			comp = g_strdup("GZIP1");
+		} else if (!g_ascii_strncasecmp(word[2] + 6, "gzip2", 5))  {
+			method = GZIP2_COMP;
+			comp = g_strdup("GZIP2");
+		} else if (!g_ascii_strncasecmp(word[2] + 6, "hcompress", 9)) {
+			method = HCOMPRESS_COMP;
+			if (!word[4]) {
+				siril_log_message(_("Please specify the value of hcompress scale factor.\n"));
+				g_free(comp);
+				return 1;
+			}
+			hscale = atof(word[4]);
+			comp = g_strdup_printf("hcompress (scale factor = %.2lf) ", hscale);
+		} else {
+			siril_log_message(_("Wrong type of compression. Choice are rice, gzip1, gzip2 or hcompress\n"));
+			return 1;
+		}
+		if (!word[3]) {
+			siril_log_message(_("Please specify the value of quantization.\n"));
+			g_free(comp);
+			return 1;
+		}
+		q = atof(word[3]);
+		if (q == 0.0 && (method == RICE_COMP || (method == HCOMPRESS_COMP))) {
+			siril_log_message(_("Quantization can only be equal to 0 for GZIP1 and GZIP2 algorithms.\n"));
+			return 1;
+		}
+		siril_log_message(_("Compression enabled with the %s algorithm and a quantization value of %.2lf\n"), comp, q);
+		g_free(comp);
+	} else {
+		siril_log_message(_("No compression enabled.\n"));
+	}
+	com.pref.comp.fits_enabled = compress;
+	com.pref.comp.fits_method = method;
+	com.pref.comp.fits_quantization = q;
+	com.pref.comp.fits_hcompress_scale = hscale;
+	set_GUI_compression();
+	writeinitfile();
 	return 0;
 }
 
@@ -3175,8 +3233,9 @@ int process_set_mem(int nb){
 		siril_log_message(_("Setting the ratio of memory used for stacking above 1 will require the use of on-disk memory, which can be very slow and is unrecommended (%g requested)\n"), ratio);
 	}
 	com.pref.stack.memory_ratio = ratio;
-	if (!writeinitfile())
-		siril_log_message(_("Usable memory for stacking changed to %g\n"), ratio);
+	writeinitfile();
+	siril_log_message(_("Usable memory for stacking changed to %g\n"), ratio);
+	set_GUI_misc();
 	return 0;
 }
 

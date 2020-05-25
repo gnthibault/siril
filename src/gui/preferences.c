@@ -300,6 +300,25 @@ void initialize_compression_param() {
 	com.pref.comp.fits_hcompress_scale = 4.0;
 }
 
+void set_GUI_compression() {
+	if (com.pref.comp.fits_enabled) {
+		GtkToggleButton *enabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio"));
+		gtk_toggle_button_set_active(enabled, com.pref.comp.fits_enabled);
+		GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_comp_fits_method"));
+		GtkSpinButton *quantiz = GTK_SPIN_BUTTON(lookup_widget("spinbutton_comp_fits_quantization"));
+		GtkSpinButton *hscale = GTK_SPIN_BUTTON(lookup_widget("spinbutton_comp_fits_hcompress_scale"));
+
+		gtk_combo_box_set_active(box, com.pref.comp.fits_method);
+		gtk_spin_button_set_value(quantiz, com.pref.comp.fits_quantization);
+		if (com.pref.comp.fits_method == HCOMPRESS_COMP) {
+			gtk_spin_button_set_value(hscale, com.pref.comp.fits_hcompress_scale);
+		}
+	} else {
+		GtkToggleButton *disabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disabled_radio"));
+		gtk_toggle_button_set_active(disabled, !com.pref.comp.fits_enabled);
+	}
+}
+
 void on_mem_radio_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	GtkToggleButton *ratio = GTK_TOGGLE_BUTTON(lookup_widget("memfreeratio_radio")),
 			*amount = GTK_TOGGLE_BUTTON(lookup_widget("memfixed_radio")),

@@ -1133,8 +1133,6 @@ void set_GUI_CWD() {
 void set_GUI_misc() {
 	GtkToggleButton *ToggleButton;
 	GtkSpinButton *memory_percent, *memory_amount;
-	GtkSpinButton *comp_fits_quantization, *comp_fits_hcompress_scale;
-	GtkComboBox *thumb_box, *comp_fits_method_box;
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.quit);
@@ -1142,7 +1140,7 @@ void set_GUI_misc() {
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.script);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.show_thumbnails);
-	thumb_box = GTK_COMBO_BOX(lookup_widget("thumbnails_box_size"));
+	GtkComboBox *thumb_box = GTK_COMBO_BOX(lookup_widget("thumbnails_box_size"));
 	gtk_combo_box_set_active(thumb_box, com.pref.thumbnail_size == 256 ? 1: 0);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.remember_windows);
@@ -1156,13 +1154,12 @@ void set_GUI_misc() {
 		GTK_TOGGLE_BUTTON(lookup_widget("memfixed_radio")),
 		GTK_TOGGLE_BUTTON(lookup_widget("memunlimited_radio")) };
 	gtk_toggle_button_set_active(modes[com.pref.stack.mem_mode], TRUE);
-	comp_fits_quantization = GTK_SPIN_BUTTON(lookup_widget("spinbutton_comp_fits_quantization"));
-	gtk_spin_button_set_value(comp_fits_quantization, com.pref.comp.fits_quantization);
-	comp_fits_hcompress_scale = GTK_SPIN_BUTTON(lookup_widget("spinbutton_comp_fits_hcompress_scale"));
-	gtk_spin_button_set_value(comp_fits_hcompress_scale, com.pref.comp.fits_hcompress_scale);
-	comp_fits_method_box = GTK_COMBO_BOX(lookup_widget("combobox_comp_fits_method"));
-	gtk_combo_box_set_active(comp_fits_method_box, com.pref.comp.fits_method);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio")), com.pref.comp.fits_enabled);
+
+	/* initialization of default FITS extension and type */
+	GtkComboBox *combobox_type = GTK_COMBO_BOX(lookup_widget("combobox_type"));
+	gtk_combo_box_set_active(combobox_type, com.pref.force_to_16bit ? 0 : 1);
+	GtkComboBox *fit_ext = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
+	gtk_combo_box_set_active_id(fit_ext, com.pref.ext);
 }
 
 /* size is in kiB */
@@ -1345,11 +1342,6 @@ void initialize_all_GUI(gchar *supported_files) {
 	/* initialization of some paths */
 	initialize_path_directory();
 
-	/* initialization of default FITS extension and type */
-	GtkComboBox *fit_ext = GTK_COMBO_BOX(lookup_widget("combobox_ext"));
-	GtkComboBox *fit_type = GTK_COMBO_BOX(lookup_widget("combobox_type"));
-	gtk_combo_box_set_active_id(fit_ext, com.pref.ext);
-	gtk_combo_box_set_active(fit_type, com.pref.force_to_16bit ? 0 : 1);
 	initialize_FITS_name_entries();
 
 	initialize_log_tags();
@@ -1361,6 +1353,7 @@ void initialize_all_GUI(gchar *supported_files) {
 
 	set_GUI_CWD();
 	set_GUI_misc();
+	set_GUI_compression();
 	set_GUI_photometry();
 	init_peaker_GUI();
 #ifdef HAVE_LIBRAW
