@@ -1150,6 +1150,8 @@ int extractHa_ushort(fits *in, fits *Ha, sensor_pattern pattern) {
 			case BAYER_FILTER_GBRG:
 				Ha->data[j] = (in->bitpix == 8) ? round_to_BYTE(c2) : c2;
 				break;
+			default:
+				printf("Should not happen.\n");
 			}
 			j++;
 		}
@@ -1197,6 +1199,8 @@ int extractHa_float(fits *in, fits *Ha, sensor_pattern pattern) {
 			case BAYER_FILTER_GBRG:
 				Ha->fdata[j] = c2;
 				break;
+			default:
+				printf("Should not happen.\n");
 			}
 			j++;
 		}
@@ -1207,8 +1211,6 @@ int extractHa_float(fits *in, fits *Ha, sensor_pattern pattern) {
 
 int extractHa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
 	int ret = 1;
-	struct split_cfa_data *cfa_args = (struct split_cfa_data *) args->user;
-
 	fits f_Ha = { 0 };
 
 	/* Get Bayer informations from header if available */
@@ -1233,6 +1235,8 @@ int extractHa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 		case BAYER_FILTER_GRBG:
 			bayer = BAYER_FILTER_GBRG;
 			break;
+		default:
+			printf("XTRANS is not handled.\n");
 		}
 	}
 
@@ -1328,6 +1332,8 @@ int extractHaOIII_ushort(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern)
 				Ha->data[j] = (in->bitpix == 8) ? round_to_BYTE(c2) : c2;
 				OIII->fdata[j] = (c1 + c0 + c3) / 3;
 				break;
+			default:
+				printf("Should not happen.\n");
 			}
 			j++;
 		}
@@ -1380,6 +1386,8 @@ int extractHaOIII_float(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern) 
 				Ha->fdata[j] = c2;
 				OIII->fdata[j] = (c1 + c0 + c3) / 3;
 				break;
+			default:
+				printf("Should not happen.\n");
 			}
 			j++;
 		}
@@ -1418,6 +1426,8 @@ int extractHaOIII_image_hook(struct generic_seq_args *args, int o, int i, fits *
 		case BAYER_FILTER_GRBG:
 			bayer = BAYER_FILTER_GBRG;
 			break;
+		default:
+			printf("XTRANS is not handled.\n");
 		}
 	}
 
