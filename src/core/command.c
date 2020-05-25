@@ -3130,6 +3130,14 @@ int process_preprocess(int nb) {
 	return 0;
 }
 
+int process_set_32bits(int nb) {
+	com.pref.force_to_16bit = word[0][3] == '1';
+	if (com.pref.force_to_16bit)
+		siril_log_message(_("16-bit per channel in processed images mode is active\n"));
+	else siril_log_message(_("32-bit per channel in processed images mode is active\n"));
+	writeinitfile();
+	return 0;
+}
 
 #ifdef _OPENMP
 int process_set_cpu(int nb){

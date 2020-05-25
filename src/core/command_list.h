@@ -129,6 +129,8 @@ static command commands[] = {
 	{"seqpsf", 0, "seqpsf", process_seq_psf, STR_SEQPSF, FALSE},
 	{"seqsplit_cfa", 0, "seqsplit_cfa sequencename [-prefix=]", process_seq_split_cfa, STR_SEQSPLIT_CFA, TRUE},
 	{"seqsubsky", 2, "seqsubsky sequencename degree [-prefix=]", process_subsky, STR_SEQSUBSKY, TRUE},
+	{"set16bits", 0, "set16bits", process_set_32bits, STR_SET16, TRUE},
+	{"set32bits", 0, "set32bits", process_set_32bits, STR_SET32, TRUE},
 #ifdef _OPENMP
 	{"setcpu", 1, "setcpu number", process_set_cpu, STR_SETCPU, TRUE},
 #endif
