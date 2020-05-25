@@ -2,7 +2,7 @@
 
 export CC CFLAGS CPPFLAGS
 
-SUBDIRS = deps \
+SUBDIRS = subprojects \
 	po \
 	src \
 	pixmaps \

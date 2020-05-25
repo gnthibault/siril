@@ -16,7 +16,7 @@ fi
 
 # Manage librtprocess automatically, for the first autogen.
 # To update librtprocess, manual intervention, like 'git submodule update' then cmake and make, is required.
-ls deps/librtprocess >/dev/null 2>&1 || ( echo 'Failed to get librtprocess, please download it and compile it yourself. Aborting.' && exit 1 )
+ls subprojects/librtprocess >/dev/null 2>&1 || ( echo 'Failed to get librtprocess, please download it and compile it yourself. Aborting.' && exit 1 )
 
 set -x
 aclocal --install || exit 1
