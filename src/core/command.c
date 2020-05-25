@@ -3140,7 +3140,8 @@ int process_set_32bits(int nb) {
 		siril_log_message(_("16-bit per channel in processed images mode is active\n"));
 	else siril_log_message(_("32-bit per channel in processed images mode is active\n"));
 	writeinitfile();
-	set_GUI_misc();
+	if (!com.headless)
+		set_GUI_misc();
 	return 0;
 }
 
@@ -3196,7 +3197,8 @@ int process_set_compress(int nb) {
 	com.pref.comp.fits_method = method;
 	com.pref.comp.fits_quantization = q;
 	com.pref.comp.fits_hcompress_scale = hscale;
-	set_GUI_compression();
+	if (!com.headless)
+		set_GUI_compression();
 	writeinitfile();
 	return 0;
 }
@@ -3239,7 +3241,8 @@ int process_set_mem(int nb){
 	com.pref.stack.memory_ratio = ratio;
 	writeinitfile();
 	siril_log_message(_("Usable memory for stacking changed to %g\n"), ratio);
-	set_GUI_misc();
+	if (!com.headless)
+		set_GUI_misc();
 	return 0;
 }
 
