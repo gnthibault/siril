@@ -5,8 +5,7 @@
 ################################################################################
 # Generate configuration files
 
-configure_file(
-               output : 'git-version.h',
+configure_file(output : 'git-version.h',
                configuration : git_data)
 
 configure_file(output : 'config.h',
