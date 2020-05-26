@@ -1237,7 +1237,6 @@ int process_bgnoise(int nb){
 
 	if (!com.script) {
 		control_window_switch_to_tab(OUTPUT_LOGS);
-		set_cursor_waiting(TRUE);
 	}
 
 	args->fit = &gfit;
