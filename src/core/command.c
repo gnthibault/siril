@@ -2325,6 +2325,11 @@ int process_seq_split_cfa(int nb) {
 	if (!seq)
 		return 1;
 
+	if (seq->nb_layers > 1) {
+		siril_log_message(_("Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"));
+		return 1;
+	}
+
 	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
 
 	args->seq = seq;
@@ -2366,10 +2371,14 @@ int process_seq_extractHa(int nb) {
 	if (!seq)
 		return 1;
 
+	if (seq->nb_layers > 1) {
+		siril_log_message(_("Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"));
+		return 1;
+	}
+
 	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
 
 	args->seq = seq;
-	args->fit = &gfit;
 	args->seqEntry = "Ha_";
 
 	int startoptargs = 2;
@@ -2407,10 +2416,14 @@ int process_seq_extractHaOIII(int nb) {
 	if (!seq)
 		return 1;
 
+	if (seq->nb_layers > 1) {
+		siril_log_message(_("Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"));
+		return 1;
+	}
+
 	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
 
 	args->seq = seq;
-	args->fit = &gfit;
 	args->seqEntry = ""; // not used
 
 	set_cursor_waiting(TRUE);
