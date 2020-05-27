@@ -1322,15 +1322,15 @@ int extractHaOIII_ushort(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern)
 				break;
 			case BAYER_FILTER_BGGR:
 				Ha->data[j] = (in->bitpix == 8) ? round_to_BYTE(c3) : c3;
-				OIII->fdata[j] = (c1 + c2 + c0) / 3;
+				OIII->data[j] = (c1 + c2 + c0) / 3;
 				break;
 			case BAYER_FILTER_GRBG:
 				Ha->data[j] = (in->bitpix == 8) ? round_to_BYTE(c1) : c1;
-				OIII->fdata[j] = (c0 + c2 + c3) / 3;
+				OIII->data[j] = (c0 + c2 + c3) / 3;
 				break;
 			case BAYER_FILTER_GBRG:
 				Ha->data[j] = (in->bitpix == 8) ? round_to_BYTE(c2) : c2;
-				OIII->fdata[j] = (c1 + c0 + c3) / 3;
+				OIII->data[j] = (c1 + c0 + c3) / 3;
 				break;
 			default:
 				printf("Should not happen.\n");
