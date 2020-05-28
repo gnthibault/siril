@@ -1224,16 +1224,16 @@ int extractHa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 	if (com.pref.debayer.up_bottom) {
 		switch(bayer) {
 		case BAYER_FILTER_RGGB:
-			bayer = BAYER_FILTER_BGGR;
-			break;
-		case BAYER_FILTER_BGGR:
-			bayer = BAYER_FILTER_RGGB;
-			break;
-		case BAYER_FILTER_GBRG:
 			bayer = BAYER_FILTER_GRBG;
 			break;
-		case BAYER_FILTER_GRBG:
+		case BAYER_FILTER_BGGR:
 			bayer = BAYER_FILTER_GBRG;
+			break;
+		case BAYER_FILTER_GBRG:
+			bayer = BAYER_FILTER_BGGR;
+			break;
+		case BAYER_FILTER_GRBG:
+			bayer = BAYER_FILTER_RGGB;
 			break;
 		default:
 			printf("XTRANS is not handled.\n");
@@ -1415,16 +1415,16 @@ int extractHaOIII_image_hook(struct generic_seq_args *args, int o, int i, fits *
 	if (com.pref.debayer.up_bottom) {
 		switch(bayer) {
 		case BAYER_FILTER_RGGB:
-			bayer = BAYER_FILTER_BGGR;
-			break;
-		case BAYER_FILTER_BGGR:
-			bayer = BAYER_FILTER_RGGB;
-			break;
-		case BAYER_FILTER_GBRG:
 			bayer = BAYER_FILTER_GRBG;
 			break;
-		case BAYER_FILTER_GRBG:
+		case BAYER_FILTER_BGGR:
 			bayer = BAYER_FILTER_GBRG;
+			break;
+		case BAYER_FILTER_GBRG:
+			bayer = BAYER_FILTER_BGGR;
+			break;
+		case BAYER_FILTER_GRBG:
+			bayer = BAYER_FILTER_RGGB;
 			break;
 		default:
 			printf("XTRANS is not handled.\n");
