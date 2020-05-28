@@ -538,7 +538,7 @@ static gchar *download_catalog(online_catalog onlineCatalog, point catalog_cente
 	char *buffer = NULL;
 	FILE *catalog = NULL;
 	FILE *fproj = NULL;
-	gchar *filename, *foutput;
+	gchar *filename, *foutput = NULL;
 
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
 
@@ -551,31 +551,33 @@ static gchar *download_catalog(online_catalog onlineCatalog, point catalog_cente
 		return NULL;
 	}
 	buffer = fetch_url(url);
-	fprintf(catalog, "%s", buffer);
-	g_free(url);
-	free(buffer);
-	fclose(catalog);
+	if (buffer) {
+		fprintf(catalog, "%s", buffer);
+		g_free(url);
+		free(buffer);
+		fclose(catalog);
 
-	/* -------------------------------------------------------------------------------- */
+		/* -------------------------------------------------------------------------------- */
 
-	/* --------- Project coords of Vizier catalog and save it into catalog.proj ------- */
+		/* --------- Project coords of Vizier catalog and save it into catalog.proj ------- */
 
-	foutput = g_build_filename(g_get_tmp_dir(), "catalog.proj", NULL);
-	fproj = g_fopen(foutput, "w+t");
-	if (fproj == NULL) {
-		fprintf(stderr, "plateSolver: Cannot open fproj\n");
-		g_free(foutput);
-		return NULL;
+		foutput = g_build_filename(g_get_tmp_dir(), "catalog.proj", NULL);
+		fproj = g_fopen(foutput, "w+t");
+		if (fproj == NULL) {
+			fprintf(stderr, "plateSolver: Cannot open fproj\n");
+			g_free(foutput);
+			return NULL;
+		}
+
+		convert_catalog_coords(filename, catalog_center, fproj);
+		fclose(fproj);
+
+		/* -------------------------------------------------------------------------------- */
+
+		is_result.px_cat_center = catalog_center;
+
+		g_free(filename);
 	}
-
-	convert_catalog_coords(filename, catalog_center, fproj);
-	fclose(fproj);
-
-	/* -------------------------------------------------------------------------------- */
-
-	is_result.px_cat_center = catalog_center;
-
-	g_free(filename);
 	return foutput;
 }
 
@@ -1247,12 +1249,12 @@ static void search_object_in_catalogs(const gchar *object) {
 
 static void start_image_plate_solve() {
 	struct plate_solver_data *args = malloc(sizeof(struct plate_solver_data));
-	set_cursor_waiting(TRUE);
 
 	args->for_photometry_cc = FALSE;
-	fill_plate_solver_structure(args);
-
-	start_in_new_thread(match_catalog, args);
+	if (!fill_plate_solver_structure(args)) {
+		set_cursor_waiting(TRUE);
+		start_in_new_thread(match_catalog, args);
+	}
 }
 
 /*****
@@ -1375,7 +1377,7 @@ void on_GtkCheckButton_OnlineCat_toggled(GtkToggleButton *button,
  * Public functions
  */
 
-void fill_plate_solver_structure(struct plate_solver_data *args) {
+int fill_plate_solver_structure(struct plate_solver_data *args) {
 	double fov, px_size, scale, m;
 	point catalog_center;
 
@@ -1385,13 +1387,23 @@ void fill_plate_solver_structure(struct plate_solver_data *args) {
 	m = get_mag_limit(fov);
 	catalog_center = get_center_of_catalog();
 
+	if (catalog_center.x == 0.0 && catalog_center.y == 0.0) {
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("No coordinates"), _("Please enter object coordinates."));
+		return 1;
+	}
+
 	/* Filling structure */
 	args->onlineCatalog = args->for_photometry_cc ? get_photometry_catalog() : get_online_catalog(fov, m);
 	args->catalogStars = download_catalog(args->onlineCatalog, catalog_center, fov, m);
+	if (!args->catalogStars) {
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("No catalog"), _("Cannot download the online star catalog."));
+		return 1;
+	}
 	args->scale = scale;
 	args->pixel_size = px_size;
 	args->manual = is_detection_manual();
 	args->fit = &gfit;
+	return 0;
 }
 
 #endif

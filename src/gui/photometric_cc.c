@@ -104,12 +104,12 @@ static void initialize_photometric_cc_dialog() {
 
 static void start_photometric_cc() {
 	struct plate_solver_data *args = malloc(sizeof(struct plate_solver_data));
-	set_cursor_waiting(TRUE);
 
 	args->for_photometry_cc = TRUE;
-	fill_plate_solver_structure(args);
-
-	start_in_new_thread(match_catalog, args);
+	if (!fill_plate_solver_structure(args)) {
+		set_cursor_waiting(TRUE);
+		start_in_new_thread(match_catalog, args);
+	}
 }
 
 static void read_photometry_cc_file(FILE *BV_file, fitted_PSF **stars, int *nb_stars) {
