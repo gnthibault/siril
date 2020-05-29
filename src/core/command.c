@@ -1140,6 +1140,10 @@ int process_seq_psf(int nb) {
 }
 
 int process_seq_crop(int nb) {
+	if (!sequence_is_loaded()) {
+		PRINT_NOT_FOR_SINGLE;
+		return 1;
+	}
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
