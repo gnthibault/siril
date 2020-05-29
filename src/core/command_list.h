@@ -122,7 +122,7 @@ static command commands[] = {
 	{"select", 2, "select from to", process_select, STR_SELECT, FALSE},
 	{"seqextract_Ha", 1, "seqextractHa sequencename [-prefix=]", process_seq_extractHa, STR_SEQEXTRACTHA, TRUE},
 	{"seqextract_HaOIII", 1, "seqextractHaOIII sequencename", process_seq_extractHaOIII, STR_SEQEXTRACTHAOIII, TRUE},
-	{"seqcrop", 1, "seqcrop sequencename [x y width height] [-prefix=]", process_seq_crop, STR_SEQCROP, TRUE},
+	{"seqcrop", 0, "seqcrop [x y width height] [-prefix=]", process_seq_crop, STR_SEQCROP, FALSE},
 	{"seqfind_cosme", 3, "seqfind_cosme sequencename cold_sigma hot_sigma [-prefix=]", process_findcosme, STR_SEQFIND_COSME, TRUE},
 	{"seqfind_cosme_cfa", 3, "seqfind_cosme_cfa sequencename cold_sigma hot_sigma [-prefix=]", process_findcosme, STR_SEQFIND_COSME_CFA, TRUE},
 	{"seqmtf", 4, "seqmtf sequencename low mid high [-prefix=]", process_seq_mtf, STR_SEQMTF, TRUE},

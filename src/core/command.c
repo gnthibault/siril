@@ -1147,23 +1147,23 @@ int process_seq_crop(int nb) {
 
 	rectangle area;
 
-	int startoptargs = 6;
-	int nb_command_max = 7;
+	int startoptargs = 5;
+	int nb_command_max = 6;
 
 	if ((!com.selection.h) || (!com.selection.w)) {
 		if (nb >= startoptargs) {
-			if (atoi(word[2]) < 0 || atoi(word[3]) < 0) {
+			if (atoi(word[1]) < 0 || atoi(word[2]) < 0) {
 				siril_log_message(_("Crop: x and y must be positive values.\n"));
 				return 1;
 			}
-			if (atoi(word[4]) <= 0 || atoi(word[5]) <= 0) {
+			if (atoi(word[3]) <= 0 || atoi(word[4]) <= 0) {
 				siril_log_message(_("Crop: width and height must be greater than 0.\n"));
 				return 1;
 			}
-			area.x = atoi(word[2]);
-			area.y = atoi(word[3]);
-			area.w = atoi(word[4]);
-			area.h = atoi(word[5]);
+			area.x = atoi(word[1]);
+			area.y = atoi(word[2]);
+			area.w = atoi(word[3]);
+			area.h = atoi(word[4]);
 		} else {
 			siril_log_message(_("Crop: select a region or provide x, y, width, height\n"));
 			return 1;
@@ -1172,19 +1172,16 @@ int process_seq_crop(int nb) {
 		memcpy(&area, &com.selection, sizeof(rectangle));
 	}
 
-	sequence *seq = load_sequence(word[1], NULL);
-	if (!seq)
-		return 1;
 
-	if (atoi(word[4]) > seq->rx || atoi(word[5]) > seq->ry) {
+	if (atoi(word[3]) > com.seq.rx || atoi(word[4]) > com.seq.ry) {
 		siril_log_message(_("Crop: width and height, respectively, must be less than %d and %d.\n"),
-				seq->rx, seq->ry);
+				com.seq.rx, com.seq.ry);
 		return 1;
 	}
 
 	struct crop_sequence_data *args = malloc(sizeof(struct crop_sequence_data));
 
-	args->seq = seq;
+	args->seq = &com.seq;
 	args->area = area;
 	args->prefix = "cropped_";
 	
