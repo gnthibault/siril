@@ -1975,7 +1975,7 @@ int process_findcosme(int nb) {
 		int startoptargs = i + 3;
 		int nb_command_max = i + 4;
 		if (nb > startoptargs) {
-			for (int j = startoptargs; j < nb_command_max; i++) {
+			for (int j = startoptargs; j < nb_command_max; j++) {
 				if (word[j]) {
 					if (g_str_has_prefix(word[j], "-prefix=")) {
 						char *current = word[j], *value;
