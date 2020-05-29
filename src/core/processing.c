@@ -128,7 +128,7 @@ gpointer generic_sequence_worker(gpointer p) {
 		if (abort) continue;
 
 		fits fit = { 0 };
-		char filename[256], msg[256];
+		char filename[256];
 		rectangle area = { .x = args->area.x, .y = args->area.y,
 			.w = args->area.w, .h = args->area.h };
 
@@ -221,8 +221,9 @@ gpointer generic_sequence_worker(gpointer p) {
 #pragma omp atomic
 #endif
 		progress++;
-		snprintf(msg, 256, _("%s. Processing image %d (%s)"), args->description, input_idx + 1, filename);
+		gchar *msg = g_strdup_printf(_("%s. Processing image %d (%s)"), args->description, input_idx + 1, filename);
 		set_progress_bar_data(msg, (float)progress / nb_framesf);
+		g_free(msg);
 	}
 
 	if (abort) {
@@ -270,8 +271,7 @@ gboolean end_generic_sequence(gpointer p) {
 	if (args->has_output && args->load_new_sequence &&
 			args->new_seq_prefix && !args->retval) {
 		gchar *basename = g_path_get_basename(args->seq->seqname);
-		char *seqname = malloc(strlen(args->new_seq_prefix) + strlen(basename) + 5);
-		sprintf(seqname, "%s%s.seq", args->new_seq_prefix, basename);
+		gchar *seqname = g_strdup_printf("%s%s.seq", args->new_seq_prefix, basename);
 		check_seq(0);
 		update_sequences_list(seqname);
 		free(seqname);
