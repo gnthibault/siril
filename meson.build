@@ -25,7 +25,7 @@
 ################################################################################
 # Define project
 
-project('siril', ['c','cpp'], version : '0.99.1', license : ['GPL3'], meson_version: '>=0.54.0', default_options : ['c_std=gnu11','cpp_std=c++11'])
+project('siril', ['c','cpp'], version : '0.99.1', license : ['GPL3'], meson_version: '>=0.51.0', default_options : ['c_std=gnu11','cpp_std=c++11'])
 
 # General version
 siril_version = meson.project_version()
@@ -57,7 +57,7 @@ else
   git_info_array = git_info.split(' ')
   git_version = git_info_array[3]
   git_last_commit_year = git_info_array[0].split('-')[0]
-  message('Siril version:', git_version)
+  #message('Siril version:', git_version)
   errortxt = r.stderr().strip()
 endif
 
