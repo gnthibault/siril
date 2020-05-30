@@ -153,7 +153,7 @@ src_files = [ 'algos/background_extraction.c',
               'rt/rt_algo.cc']
               
 if platform_osx
-  link_args += osx_ldflags
+  link_args = osx_ldflags
 else
   link_args = [ '-rdynamic' ]
 endif
