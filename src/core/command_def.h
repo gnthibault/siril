@@ -126,7 +126,7 @@
 
 #define STR_VISU N_("Displays an image with \"low\" and \"high\" as the low and high threshold")
 
-#define STR_WAVELET N_("Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) or bspline (type=2) version of the 'a trous' algorithm. The result is stored in a file as a structure containing the planes, ready for weighted reconstruction with WRECONS")
+#define STR_WAVELET N_("Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) or bspline (type=2) version of the 'à trous' algorithm. The result is stored in a file as a structure containing the planes, ready for weighted reconstruction with WRECONS")
 #define STR_WRECONS N_("Reconstructs to current image from the planes previously computed with wavelets and weighted with coefficients \"c1\", \"c2\", ..., \"cn\" according to the number of planes used for wavelet transform")
 
 

@@ -1279,10 +1279,7 @@ static int readraw(const char *name, fits *fit) {
 		fit->naxes[0] = (long) width;
 		fit->naxes[1] = (long) height;
 		fit->naxes[2] = nbplanes;
-		if (nbplanes == 1)
-			fit->naxis = 2;
-		else
-			fit->naxis = 3;
+		fit->naxis = 3;
 		fit->data = data;
 		fit->pdata[RLAYER] = fit->data;
 		fit->pdata[GLAYER] = fit->data + npixels;
