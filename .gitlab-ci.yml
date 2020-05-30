@@ -15,6 +15,7 @@ stages:
   cache:
     paths:
       - .cache/pip
+      - apt-cache
   artifacts:
     expire_in: 1 week
     when: always
@@ -23,8 +24,9 @@ stages:
     - "${INSTALL_DIR}"
     - _build
   before_script:
+    - mkdir -p $APT_CACHE
     - apt-get update
-    - apt-get install -y --no-install-recommends
+    - apt-get install -y --no-install-recommends -o dir::cache::archives="$APT_CACHE"
         build-essential
         cmake
         desktop-file-utils
