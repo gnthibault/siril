@@ -179,6 +179,10 @@ conf_data.set10('SIRIL_UNSTABLE', siril_unstable)
 
 conf_data.set('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
 
+if platform_osx
+  conf_data.set('OS_OSX', 1)
+endif
+
 conf_data.set_quoted('PACKAGE', meson.project_name(), description : 'Name of package.')
 conf_data.set_quoted('PACKAGE_NAME', meson.project_name(), description : 'Define to the full name of this package.')
 conf_data.set_quoted('PACKAGE_VERSION', siril_version, description : 'Define to the home page for this package.')
