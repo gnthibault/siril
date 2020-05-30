@@ -11,10 +11,12 @@ stages:
     INSTALL_DIR: "_install"
     INSTALL_PREFIX: "${CI_PROJECT_DIR}/${INSTALL_DIR}"
     GIT_SUBMODULE_STRATEGY: recursive
-    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    PIP_CACHE_DIR: "${CI_PROJECT_DIR}/.cache/pip"
+    APT_CACHE: "${CI_PROJECT_DIR}/apt-cache"
   cache:
     paths:
       - .cache/pip
+      - apt-cache
   artifacts:
     expire_in: 1 week
     when: always
@@ -23,8 +25,9 @@ stages:
     - "${INSTALL_DIR}"
     - _build
   before_script:
+    - mkdir -p $APT_CACHE
     - apt-get update
-    - apt-get install -y --no-install-recommends
+    - apt-get install -y --no-install-recommends -o dir::cache::archives="$APT_CACHE"
         build-essential
         cmake
         desktop-file-utils
