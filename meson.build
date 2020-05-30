@@ -83,6 +83,15 @@ platform_osx = (
   host_os.contains('darwin')
 )
 
+# on OSX ObjC and C sources are mixed so adding objc to the linkflags
+
+osx_ldflags = []
+if platform_osx
+  add_languages('objc')
+  osx_ldflags += ['-Wl,-framework,Foundation', '-Wl,-framework,AppKit', '-ObjC']
+  add_project_link_arguments(osx_ldflags, language : ['objc', 'c'])
+endif
+
 ################################################################################
 # Meson modules and compilers
 
