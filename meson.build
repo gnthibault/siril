@@ -108,6 +108,22 @@ siril_locale = get_option('prefix') + '/' + get_option('localedir') + '/'
 ################################################################################
 # Dependencies
 
+if get_option('relocatable-bundle') == 'yes'
+  relocatable_bundle = true
+elif get_option('relocatable-bundle') == 'no'
+  relocatable_bundle = false
+else # == 'platform-default'
+  # By default, assume building for Windows or macOS everything to be on
+  # the same prefix and can be relocated.
+  # On other platforms, build-time paths are meaningful.
+  if platform_windows or platform_osx
+      relocatable_bundle = true
+  else
+      relocatable_bundle = false
+  endif
+endif
+conf.set('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
+
 ## Core dependencies
 glib_dep = dependency('glib-2.0', required : true)
 gtk_dep = dependency('gtk+-3.0', required : true)
