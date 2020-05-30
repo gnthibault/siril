@@ -88,7 +88,6 @@ platform_osx = (
 
 ## Modules
 cmake = import('cmake')
-fs = import('fs')
 i18n = import('i18n')
 
 ## Compilers
