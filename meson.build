@@ -122,7 +122,6 @@ else # == 'platform-default'
       relocatable_bundle = false
   endif
 endif
-conf.set('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
 
 ## Core dependencies
 glib_dep = dependency('glib-2.0', required : true)
@@ -178,6 +177,8 @@ libcurl_dep = dependency('libcurl', required : false)
 conf_data = configuration_data()
 
 conf_data.set10('SIRIL_UNSTABLE', siril_unstable)
+
+conf_data.set('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
 
 conf_data.set_quoted('PACKAGE', meson.project_name(), description : 'Name of package.')
 conf_data.set_quoted('PACKAGE_NAME', meson.project_name(), description : 'Define to the full name of this package.')
