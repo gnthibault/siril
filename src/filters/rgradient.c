@@ -21,7 +21,6 @@
 #include <math.h>
 
 #include "core/siril.h"
-#include "core/proto.h"
 #include "core/arithm.h"
 #include "core/sleef.h"
 #include "core/processing.h"
@@ -36,6 +35,7 @@
 #include "gui/message_dialog.h"
 #include "opencv/opencv.h"
 #include "io/single_image.h"
+#include "io/image_format_fits.h"
 
 #include "rgradient.h"
 

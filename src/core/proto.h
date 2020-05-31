@@ -10,39 +10,6 @@
 #undef int64
 #endif
 
-/****************** image_format_fits.h ******************/
-data_type get_data_type(int bitpix);
-int readfits(const char *filename, fits *fit, char *realname, gboolean force_float);
-double get_exposure_from_fitsfile(fitsfile *fptr);
-int import_metadata_from_fitsfile(fitsfile *fptr, fits *to);
-void clearfits(fits*);
-int readfits_partial(const char *filename, int layer, fits *fit,
-		const rectangle *area, gboolean read_date);
-int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
-		const rectangle *area);
-int savefits(const char*, fits*);
-int copyfits(fits *from, fits *to, unsigned char oper, int layer);
-int copy_fits_metadata(fits *from, fits *to);
-int save1fits16(const char *filename, fits *fit, int layer);
-int save1fits32(const char *filename, fits *fit, int layer);
-int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode,
-		int *status);
-
-void rgb24bit_to_fits48bit(unsigned char *rgbbuf, fits *fit, gboolean inverted);
-void rgb8bit_to_fits16bit(unsigned char *graybuf, fits *fit);
-void rgb48bit_to_fits48bit(WORD *rgbbuf, fits *fit, gboolean inverted,
-		gboolean change_endian);
-
-void fits_flip_top_to_bottom(fits *fit);
-void extract_region_from_fits(fits *from, int layer, fits *to,
-		const rectangle *area);
-int new_fit_image(fits **fit, int width, int height, int nblayer, data_type type);
-void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype);
-void fit_debayer_buffer(fits *fit, void *newbuf);
-
-void keep_first_channel_from_fits(fits *fit);
-GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr);
-
 /****************** image_formats_internal.h ******************/
 /* BMP */
 int readbmp(const char*, fits*);
@@ -87,7 +54,7 @@ int savepng(const char *filename, fits *fit, uint32_t bytes_per_sample,
 #endif
 
 #ifdef HAVE_LIBRAW
-int open_raw_files(const char*, fits*, int);
+int open_raw_files(const char*, fits*, gboolean);
 #endif
 
 #ifdef HAVE_LIBHEIF

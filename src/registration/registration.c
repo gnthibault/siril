@@ -50,6 +50,7 @@
 #include "io/sequence.h"
 #include "io/ser.h"
 #include "io/single_image.h"
+#include "io/image_format_fits.h"
 #include "opencv/opencv.h"
 #include "opencv/ecc/ecc.h"
 
@@ -225,8 +226,7 @@ int register_shift_dft(struct registration_args *args) {
 			_("Register DFT: loading and processing reference frame"),
 			PROGRESS_NONE);
 	ret = seq_read_frame_part(args->seq, args->layer, ref_image, &fit_ref,
-			&args->selection, FALSE);
-
+			&args->selection, FALSE, -1);
 
 	if (ret) {
 		siril_log_message(
@@ -302,7 +302,7 @@ int register_shift_dft(struct registration_args *args) {
 
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static) \
-	if((args->seq->type == SEQ_REGULAR && fits_is_reentrant()) || args->seq->type == SEQ_SER)
+	if(args->seq->type == SEQ_SER || fits_is_reentrant())
 #endif
 	for (frame = 0; frame < args->seq->number; ++frame) {
 		if (abort) continue;
@@ -320,8 +320,12 @@ int register_shift_dft(struct registration_args *args) {
 		seq_get_image_filename(args->seq, frame, tmpfilename);
 		g_snprintf(tmpmsg, 1024, _("Register: processing image %s"), tmpfilename);
 		set_progress_bar_data(tmpmsg, PROGRESS_NONE);
-		if (!(seq_read_frame_part(args->seq, args->layer, frame, &fit,
-						&args->selection, FALSE))) {
+		int thread_id = -1;
+#ifdef _OPENMP
+		thread_id = omp_get_thread_num();
+#endif
+		if (!seq_read_frame_part(args->seq, args->layer, frame, &fit,
+						&args->selection, FALSE, thread_id)) {
 			int x;
 			fftwf_complex *img = fftwf_malloc(sizeof(fftwf_complex) * sqsize);
 			fftwf_complex *out2 = fftwf_malloc(sizeof(fftwf_complex) * sqsize);
@@ -514,7 +518,7 @@ int register_shift_fwhm(struct registration_args *args) {
 }
 
 int register_ecc(struct registration_args *args) {
-	int frame, ref_image, ret, failed = 0;
+	int frame, ref_image, failed = 0;
 	float nb_frames, cur_nb;
 	regdata *current_regdata;
 	fits ref = { 0 };
@@ -542,8 +546,7 @@ int register_ecc(struct registration_args *args) {
 	/* loading reference frame */
 	ref_image = sequence_find_refimage(args->seq);
 
-	ret = seq_read_frame(args->seq, ref_image, &ref, FALSE);
-	if (ret) {
+	if (seq_read_frame(args->seq, ref_image, &ref, FALSE, -1)) {
 		siril_log_message(_("Could not load reference image\n"));
 		args->seq->regparam[args->layer] = NULL;
 		free(current_regdata);
@@ -553,7 +556,7 @@ int register_ecc(struct registration_args *args) {
 	/* we make sure to free data in the destroyed fit */
 	clearfits(&ref);
 	/* Ugly code: as QualityEstimate destroys fit we need to reload it */
-	seq_read_frame(args->seq, ref_image, &ref, FALSE);
+	seq_read_frame(args->seq, ref_image, &ref, FALSE, -1);
 	image_find_minmax(&ref);
 	q_min = q_max = current_regdata[ref_image].quality;
 	q_index = ref_image;
@@ -566,72 +569,72 @@ int register_ecc(struct registration_args *args) {
 	cur_nb = 0.f;
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(static) \
-	if((args->seq->type == SEQ_REGULAR && fits_is_reentrant()) || args->seq->type == SEQ_SER)
+	if(args->seq->type == SEQ_SER || fits_is_reentrant())
 #endif
 	for (frame = 0; frame < args->seq->number; frame++) {
-		if (!abort) {
-			if (args->run_in_thread && !get_thread_run()) {
-				abort = 1;
-				continue;
-			}
-			if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
-				continue;
-			set_shifts(args->seq, frame, args->layer, 0.0, 0.0, FALSE);
+		if (!abort) continue;
+		if (args->run_in_thread && !get_thread_run()) {
+			abort = 1;
+			continue;
+		}
+		if (frame == ref_image) continue;
+		if (!args->process_all_frames && !args->seq->imgparam[frame].incl)
+			continue;
 
-			char tmpmsg[1024], tmpfilename[256];
+		set_shifts(args->seq, frame, args->layer, 0.0, 0.0, FALSE);
+		fits im = { 0 };
+		char tmpmsg[1024], tmpfilename[256];
 
-			seq_get_image_filename(args->seq, frame, tmpfilename);
-			g_snprintf(tmpmsg, 1024, _("Register: processing image %s"),
-					tmpfilename);
-			set_progress_bar_data(tmpmsg, PROGRESS_NONE);
+		seq_get_image_filename(args->seq, frame, tmpfilename);
+		g_snprintf(tmpmsg, 1024, _("Register: processing image %s"),
+				tmpfilename);
+		set_progress_bar_data(tmpmsg, PROGRESS_NONE);
+		int thread_id = -1;
+#ifdef _OPENMP
+		thread_id = omp_get_thread_num();
+#endif
+		if (!seq_read_frame(args->seq, frame, &im, FALSE, thread_id)) {
+			reg_ecc reg_param = { 0 };
+			image_find_minmax(&im);
 
-			if (frame != ref_image) {
-				fits im = { 0 };
-				ret = seq_read_frame(args->seq, frame, &im, FALSE);
-				if (!ret) {
-					reg_ecc reg_param = { 0 };
-					image_find_minmax(&im);
-
-					if (findTransform(&ref, &im, args->layer, &reg_param)) {
-						siril_log_message(
-								_("Cannot perform ECC alignment for frame %d\n"),
-								frame);
-						/* We exclude this frame */
-						args->seq->imgparam[frame].incl = FALSE;
-						current_regdata[frame].quality = 0.0;
-						args->seq->selnum--;
+			if (findTransform(&ref, &im, args->layer, &reg_param)) {
+				siril_log_message(
+						_("Cannot perform ECC alignment for frame %d\n"),
+						frame);
+				/* We exclude this frame */
+				args->seq->imgparam[frame].incl = FALSE;
+				current_regdata[frame].quality = 0.0;
+				args->seq->selnum--;
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
-						++failed;
-						clearfits(&im);
-						continue;
-					}
+				++failed;
+				clearfits(&im);
+				continue;
+			}
 
-					current_regdata[frame].quality = QualityEstimate(&im,
-							args->layer);
+			current_regdata[frame].quality = QualityEstimate(&im,
+					args->layer);
 #ifdef _OPENMP
 #pragma omp critical
 #endif
-					{
-						double qual = current_regdata[frame].quality;
-						if (qual > q_max) {
-							q_max = qual;
-							q_index = frame;
-						}
-						q_min = min(q_min, qual);
-					}
+			{
+				double qual = current_regdata[frame].quality;
+				if (qual > q_max) {
+					q_max = qual;
+					q_index = frame;
+				}
+				q_min = min(q_min, qual);
+			}
 
-					set_shifts(args->seq, frame, args->layer, -reg_param.dx,
-							-reg_param.dy, im.top_down);
+			set_shifts(args->seq, frame, args->layer, -reg_param.dx,
+					-reg_param.dy, im.top_down);
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
-					cur_nb += 1.f;
-					set_progress_bar_data(NULL, cur_nb / nb_frames);
-					clearfits(&im);
-				}
-			}
+			cur_nb += 1.f;
+			set_progress_bar_data(NULL, cur_nb / nb_frames);
+			clearfits(&im);
 		}
 	}
 

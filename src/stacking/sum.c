@@ -25,6 +25,7 @@
 #include "core/processing.h"
 #include "core/proto.h"		// FITS functions
 #include "io/sequence.h"
+#include "io/image_format_fits.h"
 #include "stacking.h"
 #include "gui/progress_and_log.h"
 

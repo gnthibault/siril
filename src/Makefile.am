@@ -171,7 +171,10 @@ siril_common_SOURCES = \
 	io/conversion.h \
 	io/films.c \
 	io/films.h \
+	io/fits_sequence.c \
+	io/fits_sequence.h \
 	io/image_format_fits.c \
+	io/image_format_fits.h \
 	io/image_formats_internal.c \
 	io/image_formats_libraries.c \
 	io/mp4_output.c \

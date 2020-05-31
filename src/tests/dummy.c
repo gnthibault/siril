@@ -95,3 +95,13 @@ const gchar* siril_get_system_data_dir() {
         fprintf(stderr, "ERROR: calling undefined function siril_get_system_data_dir\n");
 	return NULL;
 }
+
+int fitseq_is_fitseq(const char *filename, int *frames) {
+        fprintf(stderr, "ERROR: calling undefined function fitseq_is_fitseq\n");
+	return 0;
+}
+
+void full_stats_invalidation_from_fit(fits *fit) {
+        fprintf(stderr, "ERROR: calling undefined function full_stats_invalidation_from_fit\n");
+}
+

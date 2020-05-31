@@ -25,6 +25,7 @@
 #include "gui/callbacks.h"
 #include "gui/histogram.h"
 #include "io/ser.h"
+#include "io/image_format_fits.h"
 
 #ifdef HAVE_LIBHEIF
 #include <libheif/heif.h>
@@ -80,11 +81,10 @@ static gboolean end_update_preview_cb(gpointer p) {
 		info_str = g_strdup(_("Folder"));
 	} else {
 		image_type im_type = get_type_from_filename(args->filename);
-		if (im_type == TYPEAVI || im_type == TYPESER) {
+		if (im_type == TYPEAVI || im_type == TYPESER ||
+				(im_type == TYPEFITS && fitseq_is_fitseq(args->filename, NULL)))
 			gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "video-symbolic", GTK_ICON_SIZE_DIALOG);
-		} else {
-			gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "image-symbolic", GTK_ICON_SIZE_DIALOG);
-		}
+		else gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "image-symbolic", GTK_ICON_SIZE_DIALOG);
 		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), com.pref.thumbnail_size);
 	}
 

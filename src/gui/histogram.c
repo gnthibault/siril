@@ -1122,8 +1122,8 @@ void apply_mtf_to_sequence(struct mtf_data *mtf_args) {
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = mtf_args->seq->selnum;
-	args->prepare_hook = ser_prepare_hook;
-	args->finalize_hook = ser_finalize_hook;
+	args->prepare_hook = seq_prepare_hook;
+	args->finalize_hook = seq_finalize_hook;
 	args->save_hook = NULL;
 	args->image_hook = mtf_image_hook;
 	args->idle_function = NULL;
@@ -1133,6 +1133,9 @@ void apply_mtf_to_sequence(struct mtf_data *mtf_args) {
 	args->new_seq_prefix = mtf_args->seqEntry;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
+	args->new_ser = NULL;
+	args->force_fitseq_output = FALSE;
+	args->new_fitseq = NULL;
 	args->user = mtf_args;
 	args->already_in_a_thread = FALSE;
 	args->parallel = TRUE;

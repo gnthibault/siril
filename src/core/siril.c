@@ -34,6 +34,7 @@
 #include "gui/histogram.h"
 #include "gui/progress_and_log.h"
 #include "io/sequence.h"
+#include "io/image_format_fits.h"
 #include "io/single_image.h"
 #include "algos/colors.h"
 #include "algos/statistics.h"

@@ -24,7 +24,6 @@
 #include <string.h>
 
 #include "core/siril.h"
-#include "core/proto.h"
 #include "core/OS_utils.h"
 #include "algos/statistics.h"
 #include "algos/background_extraction.h"
@@ -36,6 +35,7 @@
 #include "gui/preferences.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
+#include "io/image_format_fits.h"
 #include "io/single_image.h"
 #include "gui/PSF_list.h"
 #include "gui/histogram.h"
@@ -155,7 +155,8 @@ int read_single_image(const char *filename, fits *dest, char **realname_out,
 		free(realname);
 		return 1;
 	}
-	if (imagetype == TYPESER || imagetype == TYPEAVI) {
+	if (imagetype == TYPESER || imagetype == TYPEAVI ||
+				(imagetype == TYPEFITS && fitseq_is_fitseq(realname, NULL))) {
 		if (allow_sequences) {
 			retval = read_single_sequence(realname, imagetype);
 			single_sequence = TRUE;
@@ -164,7 +165,7 @@ int read_single_image(const char *filename, fits *dest, char **realname_out,
 			return 1;
 		}
 	} else {
-		retval = any_to_fits(imagetype, realname, dest, allow_dialogs, force_float);
+		retval = any_to_fits(imagetype, realname, dest, allow_dialogs, force_float, com.pref.debayer.open_debayer);
 		if (!retval)
 			debayer_if_needed(imagetype, dest, com.pref.debayer.up_bottom, FALSE);
 	}

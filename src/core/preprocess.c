@@ -35,6 +35,7 @@
 #include "io/single_image.h"
 #include "io/sequence.h"
 #include "io/conversion.h"
+#include "io/image_format_fits.h"
 #include "io/ser.h"
 
 #include "preprocess.h"
@@ -187,9 +188,11 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 		remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
 
 		// float output is always used in case of FITS sequence
-		data_type output_depth =
-			args->force_ser_output || args->seq->type == SEQ_SER || com.pref.force_to_16bit ?
-			DATA_USHORT : DATA_FLOAT;
+		data_type output_depth;
+		if (args->force_ser_output || com.pref.force_to_16bit ||
+			(args->seq->type == SEQ_SER && !args->force_fitseq_output))
+			output_depth = DATA_USHORT;
+		else output_depth = DATA_FLOAT;
 		int64_t size = seq_compute_size(args->seq, args->seq->number, output_depth);
 		if (prepro->debayer)
 			size *= 3;
@@ -197,8 +200,8 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 			return 1;
 		// another generic disk check is done in the generic function after this one
 
-		// handling SER
-		if (ser_prepare_hook(args))
+		// handling SER and FITSEQ
+		if (seq_prepare_hook(args))
 			return 1;
 	}
 
@@ -276,7 +279,7 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 
 	if (prepro->debayer) {
 		// not for SER because it is done on-the-fly
-		if (!prepro->seq || prepro->seq->type == SEQ_REGULAR) {
+		if (!prepro->seq || prepro->seq->type == SEQ_REGULAR || prepro->seq->type == SEQ_FITSEQ) {
 			debayer_if_needed(TYPEFITS, fit, prepro->compatibility, TRUE);
 		}
 
@@ -310,7 +313,7 @@ static void clear_preprocessing_data(struct preprocessing_data *prepro) {
 }
 
 static int prepro_finalize_hook(struct generic_seq_args *args) {
-	int retval = ser_finalize_hook(args);
+	int retval = seq_finalize_hook(args);
 	struct preprocessing_data *prepro = args->user;
 	clear_preprocessing_data(prepro);
 	free(args->user);
@@ -342,9 +345,13 @@ void start_sequence_preprocessing(struct preprocessing_data *prepro) {
 	args->description = _("Preprocessing");
 	args->has_output = TRUE;
 	args->output_type = DATA_USHORT; // we don't need it, minimize it
+	args->upscale_ratio = 1.0;
 	args->new_seq_prefix = prepro->ppprefix;
 	args->load_new_sequence = TRUE;
-	args->force_ser_output = FALSE;
+	args->force_ser_output = prepro->seq->type != SEQ_SER && prepro->output_seqtype == SEQ_SER;
+	args->new_ser = NULL;
+	args->force_fitseq_output = prepro->seq->type != SEQ_FITSEQ && prepro->output_seqtype == SEQ_FITSEQ;
+	args->new_fitseq = NULL;
 	args->parallel = TRUE;
 	args->user = prepro;
 
@@ -472,13 +479,30 @@ static void test_for_master_files(struct preprocessing_data *args) {
 				args->use_dark = FALSE;
 			}
 		}
-		// dark optimization
-		tbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkDarkOptimize"));
-		args->use_dark_optim = gtk_toggle_button_get_active(tbutton);
 
-		// cosmetic correction
-		tbutton = GTK_TOGGLE_BUTTON(lookup_widget("cosmEnabledCheck"));
-		args->use_cosmetic_correction = gtk_toggle_button_get_active(tbutton);
+		if (args->use_dark) {
+			// dark optimization
+			tbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkDarkOptimize"));
+			args->use_dark_optim = gtk_toggle_button_get_active(tbutton);
+
+			// cosmetic correction
+			tbutton = GTK_TOGGLE_BUTTON(lookup_widget("cosmEnabledCheck"));
+			args->use_cosmetic_correction = gtk_toggle_button_get_active(tbutton);
+
+			if (args->use_cosmetic_correction) {
+				tbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkSigCold"));
+				if (gtk_toggle_button_get_active(tbutton)) {
+					GtkSpinButton *sigCold = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeColdBox"));
+					args->sigma[0] = gtk_spin_button_get_value(sigCold);
+				} else args->sigma[0] = -1.0;
+
+				tbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkSigHot"));
+				if (gtk_toggle_button_get_active(tbutton)) {
+					GtkSpinButton *sigHot = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeHotBox"));
+					args->sigma[1] = gtk_spin_button_get_value(sigHot);
+				} else args->sigma[1] = -1.0;
+			}
+		}
 	}
 
 	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("useflat_button"));
@@ -510,57 +534,42 @@ static void test_for_master_files(struct preprocessing_data *args) {
 				gtk_entry_set_text(entry, "");
 				args->use_flat = FALSE;
 			}
+
+			if (args->use_flat) {
+				GtkToggleButton *autobutton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_auto_evaluate"));
+				args->autolevel = gtk_toggle_button_get_active(autobutton);
+				if (!args->autolevel) {
+					GtkEntry *norm_entry = GTK_ENTRY(lookup_widget("entry_flat_norm"));
+					args->normalisation = atof(gtk_entry_get_text(norm_entry));
+				}
+			}
 		}
 	}
 }
 
 void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
-	struct preprocessing_data *args;
-	GtkEntry *entry;
-	GtkWidget *autobutton;
-	GtkToggleButton *CFA, *debayer, *equalize_cfa, *compatibility;
-	GtkSpinButton *sigHot, *sigCold;
-
 	if (!single_image_is_loaded() && !sequence_is_loaded())
 		return;
-
 	if (!single_image_is_loaded() && get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return;
 	}
 
-	args = calloc(1, sizeof(struct preprocessing_data));
-	test_for_master_files(args);
+	GtkEntry *entry = GTK_ENTRY(lookup_widget("preproseqname_entry"));
+	GtkToggleButton *CFA = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
+	GtkToggleButton *debayer = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_pp_dem"));
+	GtkToggleButton *compatibility = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility"));
+	GtkToggleButton *equalize_cfa = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
+	GtkComboBox *output_type = GTK_COMBO_BOX(lookup_widget("prepro_output_type_combo"));
+
+	struct preprocessing_data *args = calloc(1, sizeof(struct preprocessing_data));
+	test_for_master_files(args);	// sets most properties
+
 	siril_log_color_message(_("Preprocessing...\n"), "green");
 	gettimeofday(&args->t_start, NULL);
-	args->autolevel = TRUE;
-	args->normalisation = 1.0f;	// will be updated anyway
 
 	// set output filename (preprocessed file name prefix)
-	entry = GTK_ENTRY(lookup_widget("preproseqname_entry"));
 	args->ppprefix = gtk_entry_get_text(entry);
-
-	autobutton = lookup_widget("checkbutton_auto_evaluate");
-	args->autolevel = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autobutton));
-	if (!args->autolevel) {
-		GtkEntry *norm_entry = GTK_ENTRY(lookup_widget("entry_flat_norm"));
-		args->normalisation = atof(gtk_entry_get_text(norm_entry));
-	}
-
-	CFA = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
-	debayer = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_pp_dem"));
-	compatibility = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility"));
-	equalize_cfa = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
-	sigHot = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeHot"));
-	sigCold = GTK_SPIN_BUTTON(lookup_widget("spinSigCosmeCold"));
-
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkSigCold"))))
-		args->sigma[0] = gtk_spin_button_get_value(sigCold);
-	else args->sigma[0] = -1.0;
-
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkSigHot"))))
-		args->sigma[1] = gtk_spin_button_get_value(sigHot);
-	else args->sigma[1] = -1.0;
 
 	args->is_cfa = gtk_toggle_button_get_active(CFA);
 	args->compatibility = gtk_toggle_button_get_active(compatibility);
@@ -572,7 +581,10 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	if (sequence_is_loaded()) {
 		args->is_sequence = TRUE;
 		args->seq = &com.seq;
-		args->allow_32bit_output = args->seq->type == SEQ_REGULAR && !com.pref.force_to_16bit;
+		args->output_seqtype = gtk_combo_box_get_active(output_type);
+		if (args->output_seqtype < 0 || args->output_seqtype > SEQ_FITSEQ)
+			args->output_seqtype = SEQ_REGULAR;
+		args->allow_32bit_output = !com.pref.force_to_16bit || args->output_seqtype != SEQ_SER;
 		set_cursor_waiting(TRUE);
 		control_window_switch_to_tab(OUTPUT_LOGS);
 		start_sequence_preprocessing(args);

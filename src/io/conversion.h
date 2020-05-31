@@ -15,12 +15,16 @@ struct _convert_data {
 	gchar **list;
 	int start;
 	int total;
-	int nb_converted;
+	int nb_converted_files;
 	gboolean compatibility;
 	gboolean command_line;
 	gboolean input_has_a_seq;
 	gchar *destroot;
 	int retval;
+
+	gboolean debayer;
+	sequence_type output_type;
+	gboolean multiple_output;	// multiple SER output
 };
 
 #define MAX_EXTENSIONS 50	// actual size of supported_extensions
@@ -28,7 +32,6 @@ struct _convert_data {
 extern supported_raw_list supported_raw[];	//supported raw extensions
 extern char *supported_extensions[MAX_EXTENSIONS];
 extern char *filter_pattern[];
-extern unsigned int convflags;
 
 int retrieveBayerPattern(char *bayer);
 int get_nb_raw_supported();
@@ -38,8 +41,6 @@ image_type get_type_for_extension(const char *extension);
 gchar *initialize_converters();
 gpointer convert_thread_worker(gpointer p);
 int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer);
-int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean interactive, gboolean force_float);
-void set_debayer_in_convflags();
-void unset_debayer_in_convflags();
+int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean interactive, gboolean force_float, gboolean debayer);
 
 #endif

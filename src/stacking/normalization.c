@@ -5,6 +5,7 @@
 #include "core/OS_utils.h"
 #include "algos/statistics.h"
 #include "stacking.h"
+#include "io/image_format_fits.h"
 #include "io/sequence.h"
 #include "gui/progress_and_log.h"
 #include "gui/callbacks.h"
@@ -41,7 +42,7 @@ int do_normalization(struct stacking_args *args) {
 /* scale0, mul0 and offset0 are output arguments when i = ref_image, input arguments otherwise */
 static int _compute_normalization_for_image(struct stacking_args *args, int i, int ref_image,
 		double *offset, double *mul, double *scale, normalization mode, double *scale0,
-		double *mul0, double *offset0, gboolean multithread) {
+		double *mul0, double *offset0, gboolean multithread, int thread_id) {
 	imstats *stat = NULL;
 	int reglayer;
 
@@ -51,7 +52,7 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 	if (!(stat = statistics(args->seq, args->image_indices[i], NULL, reglayer, NULL, STATS_EXTRA, multithread))) {
 		fits fit = { 0 };
 		// read frames as float, it's faster to compute stats
-		if (seq_read_frame(args->seq, args->image_indices[i], &fit, TRUE)) {
+		if (seq_read_frame(args->seq, args->image_indices[i], &fit, TRUE, thread_id)) {
 			return 1;
 		}
 		// retry with the fit to compute it
@@ -172,7 +173,7 @@ static int compute_normalization(struct stacking_args *args) {
 	// compute for the first image to have scale0 mul0 and offset0
 	if (_compute_normalization_for_image(args, ref_image_filtred_idx,
 			ref_image_filtred_idx, coeff->offset, coeff->mul, coeff->scale,
-			args->normalize, &scale0, &mul0, &offset0, TRUE)) {
+			args->normalize, &scale0, &mul0, &offset0, TRUE, -1)) {
 		siril_log_color_message(_("%s Check image %d first.\n"), "red", error_msg,
 				ref_image_filtred_idx + 1);
 		set_progress_bar_data(error_msg, PROGRESS_NONE);
@@ -190,9 +191,14 @@ static int compute_normalization(struct stacking_args *args) {
 				retval = 1;
 				continue;
 			}
+			int thread_id = -1;
+#ifdef _OPENMP
+			thread_id = omp_get_thread_num();
+#endif
 			if (_compute_normalization_for_image(args, i, ref_image_filtred_idx,
 						coeff->offset, coeff->mul, coeff->scale,
-						args->normalize, &scale0, &mul0, &offset0, FALSE)) {
+						args->normalize, &scale0, &mul0, &offset0,
+						FALSE, thread_id)) {
 				siril_log_color_message(_("%s Check image %d first.\n"), "red",
 						error_msg, args->image_indices[i] + 1);
 				set_progress_bar_data(error_msg, PROGRESS_NONE);

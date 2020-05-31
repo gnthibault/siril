@@ -2,6 +2,7 @@
 #define _PROCESSING_H_
 
 #include "sequence_filtering.h"
+#include "io/fits_sequence.h"
 
 /**
  *
@@ -67,6 +68,8 @@ struct generic_seq_args {
 	gboolean has_output;
 	/** the type of the created sequence, for disk space checks only */
 	data_type output_type;
+	/** size ratio of output images for memory evaluation */
+	double upscale_ratio;
 	/** output files: prefix for the new sequence and automatic loading */
 	const char *new_seq_prefix;
 	/** flag to load or not a new sequence */
@@ -75,6 +78,10 @@ struct generic_seq_args {
 	gboolean force_ser_output;
 	/** new output SER if seq->type == SEQ_SER or force_ser_output (internal) */
 	struct ser_struct *new_ser;
+	/** flag to force output to be FITS sequence file */
+	gboolean force_fitseq_output;
+	/** new output SER if seq->type == SEQ_FITSEQ or force_fitseq_output (internal) */
+	fitseq *new_fitseq;
 
 	/** user data: pointer to operation-specific data */
 	void *user;
@@ -94,8 +101,8 @@ struct generic_seq_args {
 gpointer generic_sequence_worker(gpointer p);
 gboolean end_generic_sequence(gpointer p);
 
-int ser_prepare_hook(struct generic_seq_args *args);
-int ser_finalize_hook(struct generic_seq_args *args);
+int seq_prepare_hook(struct generic_seq_args *args);
+int seq_finalize_hook(struct generic_seq_args *args);
 int generic_save(struct generic_seq_args *, int, int, fits *);
 
 void start_in_new_thread(gpointer(*f)(gpointer p), gpointer p);

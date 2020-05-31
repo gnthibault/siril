@@ -53,6 +53,7 @@
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "single_image.h"
+#include "image_format_fits.h"
 
 /********************* TIFF IMPORT AND EXPORT *********************/
 
@@ -1471,25 +1472,18 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 	return 1;
 }
 
-int open_raw_files(const char *name, fits *fit, int type) {
-	int retvalue = 1;
-
-	switch (type) {
-	default:
-	case 0:
-		retvalue = readraw(name, fit);
-		break;
-	case 1:
-		retvalue = readraw_in_cfa(name, fit);
-		break;
-	}
-	if (retvalue >= 0) {
+int open_raw_files(const char *name, fits *fit, gboolean debayer) {
+	int retval = 1;
+	if (debayer)
+		retval = readraw(name, fit);
+	else retval = readraw_in_cfa(name, fit);
+	if (retval >= 0) {
 		gchar *basename = g_path_get_basename(name);
 		siril_log_message(_("Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"),
 				basename, fit->naxes[2], fit->rx, fit->ry);
 		g_free(basename);
 	}
-	return retvalue;
+	return retval;
 }
 #endif
 

@@ -27,6 +27,7 @@
 #include "gui/progress_and_log.h"
 #include "gui/image_display.h"
 #include "io/single_image.h"
+#include "io/image_format_fits.h"
 
 
 #define PREVIEW_DELAY 200

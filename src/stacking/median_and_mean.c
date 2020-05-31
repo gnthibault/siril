@@ -27,6 +27,7 @@
 #include "stacking.h"
 #include "io/sequence.h"
 #include "io/ser.h"
+#include "io/image_format_fits.h"
 #include "gui/progress_and_log.h"
 #include "algos/sorting.h"
 #include "stacking/siril_fit_linear.h"
@@ -134,7 +135,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 			*exposure += get_exposure_from_fitsfile(args->seq->fptr[image_index]);
 
 			/* We copy metadata from reference to the final fit */
-			if (args->seq->type == SEQ_REGULAR && image_index == args->ref_image)
+			if (image_index == args->ref_image)
 				import_metadata_from_fitsfile(args->seq->fptr[image_index], fit);
 		}
 
@@ -159,7 +160,13 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 			return 1;
 		}
 	}
-	else {
+	else if (args->seq->type == SEQ_FITSEQ) {
+		g_assert(args->seq->fitseq_file);
+		memcpy(naxes, args->seq->fitseq_file->naxes, sizeof args->seq->fitseq_file->naxes);
+		*naxis = naxes[2] == 3 ? 3 : 2;
+		*bitpix = args->seq->fitseq_file->bitpix;
+		import_metadata_from_fitsfile(args->seq->fitseq_file->fptr, fit);
+	} else {
 		siril_log_message(_("Rejection stacking is only supported for FITS images and SER sequences.\nUse \"Sum Stacking\" instead.\n"));
 		return 2;
 	}
@@ -261,7 +268,7 @@ int stack_compute_parallel_blocks(struct _image_block **blocksptr, int max_numbe
 
 static void stack_read_block_data(struct stacking_args *args, int use_regdata,
 		struct _image_block *my_block, struct _data_block *data,
-		long *naxes, data_type itype) {
+		long *naxes, data_type itype, int thread_id) {
 
 	int frame, ielem_size = itype == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
 	/* Read the block from all images, store them in pix[image] */
@@ -324,7 +331,7 @@ static void stack_read_block_data(struct stacking_args *args, int use_regdata,
 				buffer = ((float*)data->pix[frame])+offset;
 			else 	buffer = ((WORD *)data->pix[frame])+offset;
 			int retval = seq_opened_read_region(args->seq, my_block->channel,
-					args->image_indices[frame], buffer, &area);
+					args->image_indices[frame], buffer, &area, thread_id);
 			if (retval) {
 #ifdef _OPENMP
 				int tid = omp_get_thread_num();
@@ -671,7 +678,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	int nb_threads;
 #ifdef _OPENMP
 	nb_threads = com.max_thread;
-	if (nb_threads > 1 && args->seq->type == SEQ_REGULAR) {
+	if (nb_threads > 1 && (args->seq->type == SEQ_REGULAR || args->seq->type == SEQ_FITSEQ)) {
 		if (fits_is_reentrant()) {
 			fprintf(stdout, "cfitsio was compiled with multi-thread support,"
 					" stacking will be executed by several cores\n");
@@ -796,7 +803,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		data = &data_pool[data_idx];
 
 		/**** Step 2: load image data for the corresponding image block ****/
-		stack_read_block_data(args, use_regdata, my_block, data, naxes, itype);
+		stack_read_block_data(args, use_regdata, my_block, data, naxes, itype, data_idx);
 
 #if defined _OPENMP && defined STACK_DEBUG
 		{

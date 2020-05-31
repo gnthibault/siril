@@ -32,6 +32,7 @@
 #include "gui/message_dialog.h"
 #include "gui/dialogs.h"
 #include "io/sequence.h"
+#include "io/image_format_fits.h"
 #include "io/conversion.h"
 #include "algos/demosaicing.h"
 #include "algos/statistics.h"
@@ -1268,8 +1269,8 @@ void apply_extractHa_to_sequence(struct split_cfa_data *split_cfa_args) {
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = split_cfa_args->seq->selnum;
-	args->prepare_hook = ser_prepare_hook;
-	args->finalize_hook = ser_finalize_hook;
+	args->prepare_hook = seq_prepare_hook;
+	args->finalize_hook = seq_finalize_hook;
 	args->save_hook = NULL;
 	args->image_hook = extractHa_image_hook;
 	args->idle_function = NULL;
@@ -1455,8 +1456,8 @@ void apply_extractHaOIII_to_sequence(struct split_cfa_data *split_cfa_args) {
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = split_cfa_args->seq->selnum;
-	args->prepare_hook = ser_prepare_hook;
-	args->finalize_hook = ser_finalize_hook;
+	args->prepare_hook = seq_prepare_hook;
+	args->finalize_hook = seq_finalize_hook;
 	args->save_hook = NULL;
 	args->image_hook = extractHaOIII_image_hook;
 	args->idle_function = NULL;
@@ -1597,8 +1598,8 @@ void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args) {
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = split_cfa_args->seq->selnum;
-	args->prepare_hook = ser_prepare_hook;
-	args->finalize_hook = ser_finalize_hook;
+	args->prepare_hook = seq_prepare_hook;
+	args->finalize_hook = seq_finalize_hook;
 	args->save_hook = NULL;
 	args->image_hook = split_cfa_image_hook;
 	args->idle_function = NULL;

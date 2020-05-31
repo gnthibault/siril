@@ -176,7 +176,8 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 					&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
 				/* Get SER start date */
 				julian0 = (int) serTimestamp_toJulian(seq->ser_file->ts[i]);
-			} else if (seq->type == SEQ_REGULAR && seq->imgparam[i].date_obs) {
+			} else if ((seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ) &&
+					seq->imgparam[i].date_obs) {
 				/* Get FITS start date */
 				char *ts0 = seq->imgparam[i].date_obs;
 				julian0 = (int) dateTimestamp_toJulian(ts0, seq->exposure);
@@ -193,7 +194,8 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 				&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
 			double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
 			plot->data[j].x = julian - (double)julian0;
-		} else if (julian0 && seq->type == SEQ_REGULAR && seq->imgparam[i].date_obs) {
+		} else if (julian0 && (seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ) &&
+					seq->imgparam[i].date_obs) {
 			char *tsi = seq->imgparam[i].date_obs;
 			double julian = dateTimestamp_toJulian(tsi, seq->exposure);
 			plot->data[j].x = julian - (double)julian0;

@@ -37,6 +37,7 @@
 #include "gui/histogram.h"
 #include "gui/dialogs.h"
 #include "io/single_image.h"
+#include "io/image_format_fits.h"
 #include "algos/colors.h"
 #include "algos/statistics.h"
 

@@ -26,6 +26,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
+#include "core/OS_utils.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
 #include "gui/callbacks.h"
@@ -36,18 +37,28 @@
 static gchar *destroot = NULL;
 static GtkListStore *liststore_convert = NULL;
 static GtkTreeView *tree_view = NULL;
-static void check_for_conversion_form_completeness();
+static GtkTreeModel *model = NULL;
+static gboolean warning_is_displayed = FALSE;
 
-static void init_tree_view() {
-	if (tree_view  == NULL)
+static void check_for_conversion_form_completeness();
+static void on_input_files_change();
+static sequence_type get_activated_output_type();
+
+static void init_widgets() {
+	if (!tree_view) {
 		tree_view = GTK_TREE_VIEW(gtk_builder_get_object(builder, "treeview_convert"));
+		model = gtk_tree_view_get_model(tree_view);
+		liststore_convert = GTK_LIST_STORE(
+				gtk_builder_get_object(builder, "liststore_convert"));
+	}
 	g_assert(tree_view);
+	g_assert(model);
+	g_assert(liststore_convert);
 }
 
 int count_converted_files() {
-	init_tree_view();
+	init_widgets();
 	GtkTreeIter iter;
-	GtkTreeModel *model = gtk_tree_view_get_model(tree_view);
 	gboolean valid = gtk_tree_model_get_iter_first(model, &iter);
 	
 	int count = 0;
@@ -60,7 +71,7 @@ int count_converted_files() {
 }
 
 int count_selected_files() {
-	init_tree_view();
+	init_widgets();
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(tree_view);
 	return gtk_tree_selection_count_selected_rows(selection);
 }
@@ -71,11 +82,10 @@ static void initialize_convert() {
 	gchar *file_data, *file_date;
 	const gchar *index;
 	static GtkEntry *startEntry = NULL;
-	GtkTreeModel *model = NULL;
 	GtkTreeIter iter;
 	GList *list = NULL;
 	
-	init_tree_view();
+	init_widgets();
 	if (!startEntry) {
 		startEntry = GTK_ENTRY(lookup_widget("startIndiceEntry"));
 	}
@@ -99,7 +109,6 @@ static void initialize_convert() {
 		if (!replace) return;
 	}
 
-	model = gtk_tree_view_get_model(tree_view);
 	gboolean valid = gtk_tree_model_get_iter_first(model, &iter);
 	if (!valid) return;	//The tree is empty
 
@@ -118,6 +127,19 @@ static void initialize_convert() {
 			there_is_a_ser = TRUE;
 		if (type == TYPEAVI || type == TYPESER)
 			no_sequence_to_convert = FALSE;
+		else if (type == TYPEUNDEF) {
+			char *title = siril_log_message(_("Filetype is not supported, cannot convert: %s\n"), src_ext);
+			gchar *msg = g_strdup_printf(_("File extension '%s' is not supported.\n"
+				"Verify that you typed the extension correctly.\n"
+				"If so, you may need to install third-party software to enable "
+				"this file type conversion, look at the README file.\n"
+				"If the file type you are trying to load is listed in supported "
+				"formats, you may notify the developers that the extension you are "
+				"trying to use should be recognized for this type."), src_ext);
+			siril_message_dialog(GTK_MESSAGE_ERROR, title, msg);
+			return;
+
+		}
 		else there_is_an_image = TRUE;
 		//if (count == 0)
 		//	first_type = type;
@@ -128,22 +150,38 @@ static void initialize_convert() {
 		count++;
 	}
 
+	sequence_type output_type = get_activated_output_type();
+	int nb_allowed;
+	if (!allow_to_open_files(count, &nb_allowed) && output_type == SEQ_REGULAR) {
+		gboolean confirm = siril_confirm_dialog(_("Too many files are being converted."),
+				_("You are about to convert a large amount of files into standard FITS files."
+						"However, your OS limits the number of files that will be processed in the same time."
+						"You may want to convert your input files into a FITS sequence."));
+		if (!confirm) return;
+	}
+
+	gboolean multiple, debayer;
+	GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "multipleSER"));
+	multiple = gtk_toggle_button_get_active(toggle);
+	toggle = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "demosaicingButton"));
+	debayer = gtk_toggle_button_get_active(toggle);
+
 	/* handle impossible cases */
-	/* why is it forbidden? and shouldn't it be CONVDSTSER instead?
+	/* why is it forbidden?
 	 * apparently SER cannot be converted to SER, wouldn't it be nice to debayer them? */
-	if ((convflags & CONVDEBAYER) && there_is_a_ser) {
+	if (debayer && there_is_a_ser) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
 				_("The Debayer option is not allowed in SER conversion, please uncheck the option."));
 		g_list_free_full(list, g_free);
 		return;
 	}
-	if ((convflags & CONVMULTIPLE) && there_is_a_ser) {
+	if (multiple && there_is_a_ser) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
 				_("The Multiple SER option is not allowed in SER conversion, please uncheck the option."));
 		g_list_free_full(list, g_free);
 		return;
 	}
-	if ((convflags & CONVMULTIPLE) && there_is_an_image) {
+	if (multiple && there_is_an_image) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
 				_("Creating multiple SER can only be done with only films as input."));
 		g_list_free_full(list, g_free);
@@ -165,7 +203,7 @@ static void initialize_convert() {
 		g_error_free(error);
 		g_list_free_full(list, g_free);
 		set_cursor_waiting(FALSE);
-		return ;
+		return;
 	}
 
 	/* g_list_append() has to traverse the entire list to find the end,
@@ -193,17 +231,20 @@ static void initialize_convert() {
 	args->dir = dir;
 	args->list = files_to_convert;
 	args->total = count;
-	args->nb_converted = 0;
+	args->nb_converted_files = 0;
 	args->compatibility = com.pref.debayer.up_bottom;
 	args->command_line = FALSE;
 	args->input_has_a_seq = !no_sequence_to_convert;
 	args->destroot = g_strdup(destroot);
+	args->debayer = debayer;
+	args->output_type = output_type;
+	args->multiple_output = multiple;
 	gettimeofday(&(args->t_start), NULL);
 	start_in_new_thread(convert_thread_worker, args);
 	return;
 }
 
-void on_entry2_activate(GtkEntry *entry, gpointer user_data) {
+void on_convroot_entry_activate(GtkEntry *entry, gpointer user_data) {
 	initialize_convert();
 }
 
@@ -221,11 +262,6 @@ static void add_convert_to_list(char *filename, GStatBuf st) {
 	gtk_list_store_append(liststore_convert, &iter);
 	gtk_list_store_set(liststore_convert, &iter, COLUMN_FILENAME, filename,	// copied in the store
 			COLUMN_DATE, date, -1);
-}
-static void get_convert_list_store() {
-	if (liststore_convert == NULL)
-		liststore_convert = GTK_LIST_STORE(
-				gtk_builder_get_object(builder, "liststore_convert"));
 }
 
 static GList *get_row_references_of_selected_rows(GtkTreeSelection *selection,
@@ -245,11 +281,9 @@ static GList *get_row_references_of_selected_rows(GtkTreeSelection *selection,
 
 static void remove_selected_files_from_list() {
 	GtkTreeSelection *selection;
-	GtkTreeModel *model;
 	GList *references, *list;
 
-	init_tree_view();
-	model = gtk_tree_view_get_model(tree_view);
+	init_widgets();
 	selection = gtk_tree_view_get_selection(tree_view);
 	references = get_row_references_of_selected_rows(selection, model);
 	for (list = references; list; list = list->next) {
@@ -291,8 +325,7 @@ static gint sort_conv_tree(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
 void fill_convert_list(GSList *list) {
 	GStatBuf st;
 	GSList *l;
-
-	get_convert_list_store();
+	init_widgets();
 
 	for (l = list; l; l = l->next) {
 		char *filename;
@@ -304,17 +337,21 @@ void fill_convert_list(GSList *list) {
 		g_free(filename);
 	}
 	check_for_conversion_form_completeness();
+	on_input_files_change();
 }
 
 void on_clear_convert_button_clicked(GtkToolButton *button, gpointer user_data) {
-	get_convert_list_store();
+	init_widgets();
 	gtk_list_store_clear(liststore_convert);
 	check_for_conversion_form_completeness();
+	on_input_files_change();
 }
 
 void on_remove_convert_button_clicked(GtkToolButton *button, gpointer user_data) {
+	init_widgets();
 	remove_selected_files_from_list();
 	check_for_conversion_form_completeness();
+	on_input_files_change();
 }
 
 void on_treeview_convert_drag_data_received(GtkWidget *widget,
@@ -363,6 +400,7 @@ void on_treeview_convert_drag_data_received(GtkWidget *widget,
 	}
 	g_strfreev(uris);
 	g_slist_free(list);
+	on_input_files_change();
 }
 
 gboolean on_treeview_convert_key_release_event(GtkWidget *widget, GdkEventKey *event,
@@ -371,23 +409,24 @@ gboolean on_treeview_convert_key_release_event(GtkWidget *widget, GdkEventKey *e
 			|| event->keyval == GDK_KEY_BackSpace) {
 		remove_selected_files_from_list();
 		check_for_conversion_form_completeness();
+		on_input_files_change();
 		return TRUE;
 	}
 	return FALSE;
 }
 
-
 static void check_for_conversion_form_completeness() {
 	GtkTreeIter iter;
-	GtkTreeModel *model = NULL;
-	gboolean valid;
-	GtkWidget *go_button = lookup_widget("convert_button");
+	static GtkWidget *go_button = NULL;
+	if (!go_button)
+		go_button = lookup_widget("convert_button");
 
-	init_tree_view();
-	model = gtk_tree_view_get_model(tree_view);
-	valid = gtk_tree_model_get_iter_first(model, &iter);
-	gtk_widget_set_sensitive (go_button, destroot && destroot[0] != '\0' && valid);
+	init_widgets();
+	gboolean valid = gtk_tree_model_get_iter_first(model, &iter);
+	gtk_widget_set_sensitive(go_button, destroot && destroot[0] != '\0' && valid);
+}
 
+static void on_input_files_change() {
 	/* we override the sort function in order to provide natural sort order */
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(model),
 			COLUMN_FILENAME, (GtkTreeIterCompareFunc) sort_conv_tree, NULL,
@@ -396,8 +435,7 @@ static void check_for_conversion_form_completeness() {
 	update_statusbar_convert();
 }
 
-/******************Callback functions*******************************************************************/
-
+/******************************* Callback functions ***********************************/
 
 // TODO: put a red lining around the entry instead of removing bad chars
 void insert_text_handler(GtkEntry *entry, const gchar *text, gint length,
@@ -426,7 +464,9 @@ void insert_text_handler(GtkEntry *entry, const gchar *text, gint length,
 }
 
 void update_statusbar_convert() {
-	GtkLabel *status_label = GTK_LABEL(lookup_widget("statuslabel_convert"));
+	static GtkLabel *status_label = NULL;
+	if (!status_label)
+		status_label = GTK_LABEL(lookup_widget("statuslabel_convert"));
 
 	int nb_files = count_converted_files();
 	if (nb_files == 0)
@@ -457,68 +497,75 @@ void on_treeview_selection5_changed(GtkTreeSelection *treeselection,
 	update_statusbar_convert();
 }
 
-// truncates destroot if it's more than 120 characters, append a '_' if it
-// doesn't end with one or a '-'. SER extensions are accepted and unmodified.
-void on_convtoroot_changed(GtkEditable *editable, gpointer user_data){
-	static GtkWidget *multiple_ser = NULL;
-	const gchar *name = gtk_entry_get_text(GTK_ENTRY(editable));
+void process_destroot(sequence_type output_type) {
+	static GtkEntry *convroot_entry = NULL;
+	if (!convroot_entry)
+		convroot_entry = GTK_ENTRY(lookup_widget("convroot_entry"));
 
-	if (*name != 0) {
-		if (!multiple_ser)
-			multiple_ser = lookup_widget("multipleSER");
-		if (destroot)
-			g_free(destroot);
-
-		destroot = g_str_to_ascii(name, NULL); // we want to avoid special char
-
-		const char *ext = get_filename_ext(destroot);
-		if (ext && !g_ascii_strcasecmp(ext, "ser")) {
-			convflags |= CONVDSTSER;
-			gtk_widget_set_visible(multiple_ser, TRUE);
-			char *base = remove_ext_from_filename(destroot);
-			if (check_if_seq_exist(base)) {
-				set_icon_entry(GTK_ENTRY(editable), "gtk-dialog-warning");
-			} else{
-				set_icon_entry(GTK_ENTRY(editable), NULL);
-			}
-			free(base);
-		} else {
-			convflags &= ~CONVDSTSER;
-			gtk_widget_set_visible(multiple_ser, FALSE);
-			destroot = format_basename(destroot);
-			if (check_if_seq_exist(destroot)) {
-				set_icon_entry(GTK_ENTRY(editable), "gtk-dialog-warning");
-			} else{
-				set_icon_entry(GTK_ENTRY(editable), NULL);
-			}
-		}
-
-	} else {
-		set_icon_entry(GTK_ENTRY(editable), NULL);
+	const gchar *name = gtk_entry_get_text(convroot_entry);
+	if (*name == '\0') {
 		g_free(destroot);
 		destroot = NULL;
+		return;
 	}
+	destroot = g_str_to_ascii(name, NULL); // we want to avoid special char
+	gboolean seq_exists = FALSE;
+	if (output_type == SEQ_SER) {
+		if (!ends_with(destroot, ".ser"))
+			str_append(&destroot, ".ser");
+		seq_exists = check_if_seq_exist(destroot, FALSE);
+	}
+	else if (output_type == SEQ_FITSEQ) {
+		if (!ends_with(destroot, com.pref.ext))
+			str_append(&destroot, com.pref.ext);
+		seq_exists = check_if_seq_exist(destroot, FALSE);
+	}
+	else {
+		destroot = format_basename(destroot);
+		seq_exists = check_if_seq_exist(destroot, TRUE);
+	}
+
+	if (seq_exists && !warning_is_displayed) {
+		set_icon_entry(convroot_entry, "gtk-dialog-warning");
+		warning_is_displayed = TRUE;
+	}
+	else if (!seq_exists && warning_is_displayed) {
+		set_icon_entry(convroot_entry, NULL);
+		warning_is_displayed = FALSE;
+	}
+}
+
+/* 0: FITS images
+ * 1: SER sequence
+ * 2: FITS sequence
+ */
+static sequence_type get_activated_output_type() {
+	static GtkComboBox *combo = NULL;
+	if (!combo)
+		combo = GTK_COMBO_BOX(gtk_builder_get_object(builder, "prepro_output_type_combo1"));
+	return (sequence_type)gtk_combo_box_get_active(combo);
+}
+
+// truncates destroot if it's more than 120 characters, append a '_' if it
+// doesn't end with one or a '-'
+void on_convtoroot_changed(GtkEditable *editable, gpointer user_data){
+	process_destroot(get_activated_output_type());
 	check_for_conversion_form_completeness();
 }
 
-void check_debayer_button (GtkToggleButton *togglebutton) {
-	if (gtk_toggle_button_get_active(togglebutton)) {
-		set_debayer_in_convflags();
-		com.pref.debayer.open_debayer = TRUE;
-	}
-	else {
-		unset_debayer_in_convflags();	// used for conversion
-		com.pref.debayer.open_debayer = FALSE;	// used for image opening
-	}
-}
-
+// used for global file opening
 void on_demosaicing_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	check_debayer_button(togglebutton);
+	com.pref.debayer.open_debayer = gtk_toggle_button_get_active(togglebutton);
 }
 
-void on_multipleSER_toggled (GtkToggleButton *togglebutton, gpointer user_data) {
-	if (gtk_toggle_button_get_active(togglebutton))
-		convflags |= CONVMULTIPLE;
-	else convflags &= ~CONVMULTIPLE;
+void on_prepro_output_type_combo1_changed(GtkComboBox *combo, gpointer user_data) {
+	static GtkWidget *multiple_ser = NULL;
+	if (!multiple_ser)
+		multiple_ser = lookup_widget("multipleSER");
+
+	sequence_type output = gtk_combo_box_get_active(combo);
+	gtk_widget_set_visible(multiple_ser, output == SEQ_SER);
+	process_destroot(output);
+	check_for_conversion_form_completeness();
 }
 

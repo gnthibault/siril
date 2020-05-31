@@ -38,6 +38,7 @@
 #include "algos/star_finder.h"
 #include "algos/statistics.h"
 #include "filters/wavelets.h"
+#include "io/image_format_fits.h"
 
 #define WAVELET_SCALE 3
 
