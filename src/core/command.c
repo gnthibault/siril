@@ -3204,7 +3204,7 @@ int process_set_compress(int nb) {
 			hscale = atof(word[4]);
 			comp = g_strdup_printf("hcompress (scale factor = %.2lf) ", hscale);
 		} else {
-			siril_log_message(_("Wrong type of compression. Choice are rice, gzip1, gzip2 or hcompress\n"));
+			siril_log_message(_("Wrong type of compression. Choices are rice, gzip1, gzip2 or hcompress\n"));
 			return 1;
 		}
 		if (!word[3]) {
