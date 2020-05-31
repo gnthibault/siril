@@ -40,6 +40,7 @@
 #include "core/sequence_filtering.h"
 #include "core/OS_utils.h"
 #include "io/conversion.h"
+#include "io/image_format_fits.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
 #include "gui/callbacks.h"
@@ -2495,6 +2496,9 @@ int process_convertraw(int nb) {
 	const gchar *file;
 	GList *list = NULL;
 	int idx = 1;
+	gchar *destroot = g_strdup(word[1]);
+	sequence_type output = SEQ_REGULAR;
+	gboolean debayer = FALSE;
 
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
@@ -2505,7 +2509,11 @@ int process_convertraw(int nb) {
 		if (word[i]) {
 			char *current = word[i], *value;
 			if (!strcmp(current, "-debayer")) {
-				set_debayer_in_convflags();
+				debayer = TRUE;
+			} else if (!strcmp(current, "-fitseq")) {
+				output = SEQ_FITSEQ;
+				if (!ends_with(destroot, com.pref.ext))
+					str_append(&destroot, com.pref.ext);
 			} else if (g_str_has_prefix(current, "-start=")) {
 				value = current + 7;
 				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ? 1 : atoi(value);
@@ -2566,11 +2574,14 @@ int process_convertraw(int nb) {
 	args->dir = dir;
 	args->list = files_to_convert;
 	args->total = count;
-	args->nb_converted = 0;
+	args->nb_converted_files = 0;
 	args->compatibility = FALSE;	// not used here
 	args->command_line = TRUE;
-	args->destroot = g_strdup(word[1]);
+	args->destroot = destroot;
 	args->input_has_a_seq = FALSE;
+	args->debayer = debayer;
+	args->output_type = output;
+	args->multiple_output = FALSE;
 	gettimeofday(&(args->t_start), NULL);
 	start_in_new_thread(convert_thread_worker, args);
 	return 0;
@@ -2845,6 +2856,8 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 
 		main_stack(&args);
 
+		if (seq->type == SEQ_FITSEQ)
+			fitseq_multiple_close(seq->fitseq_file);
 		retval = args.retval;
 		clean_end_stacking(&args);
 		free_sequence(seq, TRUE);
@@ -3121,6 +3134,8 @@ int process_preprocess(int nb) {
 				args->compatibility = TRUE;
 			} else if (!strcmp(word[i], "-equalize_cfa")) {
 				args->equalize_cfa = TRUE;
+			} else if (!strcmp(word[i], "-fitseq")) {
+				args->output_seqtype = SEQ_FITSEQ;
 			}
 		}
 	}
@@ -3138,7 +3153,8 @@ int process_preprocess(int nb) {
 	args->normalisation = 1.0f;	// will be updated anyway
 	args->sigma[0] = -1.00; /* cold pixels: it is better to deactivate it */
 	args->sigma[1] =  3.00; /* hot pixels */
-	args->allow_32bit_output = args->seq->type == SEQ_REGULAR && !com.pref.force_to_16bit;
+	args->allow_32bit_output = (args->seq->type == SEQ_REGULAR
+			|| args->seq->type == SEQ_FITSEQ) && !com.pref.force_to_16bit;
 
 	// start preprocessing
 	set_cursor_waiting(TRUE);

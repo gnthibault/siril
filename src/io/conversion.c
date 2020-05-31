@@ -33,6 +33,8 @@
 #include "core/OS_utils.h"
 #include "core/processing.h"
 #include "io/films.h"
+#include "io/fits_sequence.h"
+#include "io/image_format_fits.h"
 #include "io/sequence.h"
 #include "io/ser.h"
 #include "gui/callbacks.h"
@@ -46,9 +48,6 @@
 #endif
 
 static unsigned int supported_filetypes = 0;	// initialized by initialize_converters()
-
-// only used by the converter and its GUI
-unsigned int convflags = CONVDSTFITS;
 
 // NULL-terminated array, initialized by initialize_converters(), used only by stat_file
 char *supported_extensions[MAX_EXTENSIONS];
@@ -198,13 +197,25 @@ static gboolean end_convert_idle(gpointer p) {
 	struct _convert_data *args = (struct _convert_data *) p;
 	struct timeval t_end;
 
-	if (!args->retval && get_thread_run() && args->nb_converted > 1) {
+	if (!args->retval && get_thread_run() && args->nb_converted_files > 1) {
 		// load the sequence
-		char *ppseqname = malloc(strlen(args->destroot) + 5);
-		sprintf(ppseqname, "%s.seq", args->destroot);
+		char *converted_seqname = NULL;
+		if (args->output_type != SEQ_REGULAR) {
+			int extidx = get_extension_index(args->destroot);
+			if (extidx) {
+				converted_seqname = malloc(extidx + 5);
+				strncpy(converted_seqname, args->destroot, extidx);
+				strcpy(converted_seqname+extidx, ".seq");
+			}
+		} else {
+			converted_seqname = malloc(strlen(args->destroot) + 5);
+			sprintf(converted_seqname, "%s.seq", args->destroot);
+		}
 		check_seq(0);
-		update_sequences_list(ppseqname);
-		free(ppseqname);
+		if (converted_seqname) {
+			update_sequences_list(converted_seqname);
+			free(converted_seqname);
+		}
 	}
 
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_DONE);
@@ -218,14 +229,14 @@ static gboolean end_convert_idle(gpointer p) {
 }
 
 /* open the file with path source from any image type and load it into a new FITS object */
-static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility) {
+static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility, gboolean debayer) {
 	int retval = 0;
 	fits *tmpfit = calloc(1, sizeof(fits));
 
-	retval = any_to_fits(imagetype, source, tmpfit, FALSE, FALSE);
+	retval = any_to_fits(imagetype, source, tmpfit, FALSE, FALSE, debayer);
 
 	if (!retval)
-		retval = debayer_if_needed(imagetype, tmpfit, compatibility, FALSE);
+		retval = debayer_if_needed(imagetype, tmpfit, compatibility, debayer);
 
 	if (retval) {
 		clearfits(tmpfit);
@@ -394,25 +405,55 @@ image_type get_type_for_extension(const char *extension) {
 	return TYPEUNDEF; // not recognized or not supported
 }
 
+/* the list of files must be checked for unsupported file types before calling this
+ * destroot must contain the file name with extension in case of SER or FITS sequence output. */
 gpointer convert_thread_worker(gpointer p) {
 	double progress = 0.0;
 	struct ser_struct ser_file;
+	fitseq fitseq_file;
 	struct _convert_data *args = (struct _convert_data *) p;
 	unsigned int frame_index = 0;
 
-	if (convflags & CONVDSTSER) {
-		if (!(convflags & CONVMULTIPLE)) {
+	args->nb_converted_files = 0;
+	args->retval = 0;
+
+	if (args->output_type == SEQ_SER) {
+		if (!args->multiple_output) {
+			ser_init_struct(&ser_file);
 			if (ser_create_file(args->destroot, &ser_file, TRUE, NULL)) {
 				siril_log_message(_("Creating the SER file failed, aborting.\n"));
 				goto clean_exit;
 			}
 		}
 	}
+	else if (args->output_type == SEQ_FITSEQ) {
+		if (fitseq_create_file(args->destroot, &fitseq_file,
+					args->input_has_a_seq ? -1 : args->total)) {
+			siril_log_message(_("Creating the FITS sequence file failed, aborting.\n"));
+			args->retval = 1;
+			goto clean_exit;
+		}
 
-	args->retval = 0;
+		/* currently, we don't have any limits in memory for
+		 * conversion, but we might still put one in case we get a very
+		 * slow writing device.
+		 * If the write is fast compared to processing, then it's still
+		 * good to allow for all cores to work on it, and not cores-1
+		 */
+		int limit = 0;
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) schedule(dynamic,3) \
-	if(!args->input_has_a_seq && ((convflags & CONVDSTSER) || fits_is_reentrant()))
+		limit = com.max_thread;
+#endif
+		fitseq_set_max_active_blocks(limit);
+	}
+	else g_assert(args->output_type == SEQ_REGULAR);
+
+	if (args->multiple_output && args->output_type != SEQ_SER)
+		args->multiple_output = FALSE;
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(com.max_thread) schedule(guided) \
+	if(!args->input_has_a_seq && (args->output_type == SEQ_SER || fits_is_reentrant()))
 	// we should run in parallel only when images are converted, not sequences
 #endif
 	for (int i = 0; i < args->total; i++) {
@@ -422,7 +463,6 @@ gpointer convert_thread_worker(gpointer p) {
 
 		gchar *src_filename = args->list[i];
 		const char *src_ext = get_filename_ext(src_filename);
-		image_type imagetype;
 		int index = args->input_has_a_seq ? frame_index : args->start + i;
 
 		gchar *name = g_utf8_strrchr(src_filename, strlen(src_filename), G_DIR_SEPARATOR);
@@ -431,18 +471,9 @@ gpointer convert_thread_worker(gpointer p) {
 			msg_bar = g_strdup_printf(_("Converting %s..."), name + 1);
 		else msg_bar = g_strdup_printf(_("Converting %s..."), src_filename);
 
-		imagetype = get_type_for_extension(src_ext);
+		image_type imagetype = get_type_for_extension(src_ext);
 		com.filter = (int) imagetype;
 		if (imagetype == TYPEUNDEF) {
-			char *title = siril_log_message(_("Filetype is not supported, cannot convert: %s\n"), src_ext);
-			gchar *msg = g_strdup_printf(_("File extension '%s' is not supported.\n"
-				"Verify that you typed the extension correctly.\n"
-				"If so, you may need to install third-party software to enable "
-				"this file type conversion, look at the README file.\n"
-				"If the file type you are trying to load is listed in supported "
-				"formats, you may notify the developers that the extension you are "
-				"trying to use should be recognized for this type."), src_ext);
-			siril_message_dialog(GTK_MESSAGE_ERROR, title, msg);
 			args->retval = 1;
 			g_free(msg_bar);
 			continue;
@@ -461,10 +492,20 @@ gpointer convert_thread_worker(gpointer p) {
 			frame_index += added_frames;
 		}
 		else {	// single image
-			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility);
+			if (args->output_type == SEQ_FITSEQ)
+				fitseq_wait_for_memory();
+
+			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility, args->debayer);
 			if (fit) {
-				if (convflags & CONVDSTSER) {
+				if (args->output_type == SEQ_SER) {
 					if (ser_write_frame_from_fit(&ser_file, fit, i)) {
+						siril_log_message(_("Error while converting to SER (no space left?)\n"));
+						args->retval = 1;
+					}
+					clearfits(fit);
+					free(fit);
+				} else if (args->output_type == SEQ_FITSEQ) {
+					if (fitseq_write_image(&fitseq_file, fit, i)) {
 						siril_log_message(_("Error while converting to SER (no space left?)\n"));
 						args->retval = 1;
 					}
@@ -474,10 +515,10 @@ gpointer convert_thread_worker(gpointer p) {
 						siril_log_message(_("Error while converting to FITS (no space left?)\n"));
 						args->retval = 1;
 					}
+					clearfits(fit);
+					free(fit);
 					g_free(dest_filename);
 				}
-				clearfits(fit);
-				free(fit);
 			}
 			frame_index++;
 		}
@@ -491,88 +532,92 @@ gpointer convert_thread_worker(gpointer p) {
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
-		args->nb_converted++;
+		args->nb_converted_files++;
 	}
 
 clean_exit:
-	if (convflags & CONVDSTSER) {
-		if (!(convflags & CONVMULTIPLE)) {
-			if (args->retval)
+	if (args->output_type == SEQ_SER) {
+		if (!args->multiple_output) {
+			if (args->retval || args->nb_converted_files != args->total)
 				ser_close_and_delete_file(&ser_file);
 			else ser_write_and_close(&ser_file);
 		}
 	}
-	if (args->command_line) {
-		unset_debayer_in_convflags();
+	else if (args->output_type == SEQ_FITSEQ) {
+		if (args->retval || args->nb_converted_files != args->total)
+			fitseq_close_and_delete_file(&fitseq_file);
+		else fitseq_close_file(&fitseq_file);
 	}
 	g_dir_close(args->dir);
 	for (int i = 0; i < args->total; i++)
 		g_free(args->list[i]);
 	if (args->retval)
-		siril_log_message(_("Conversion ended with error, %d/%d input files converted\n"), args->nb_converted, args->total);
+		siril_log_message(_("Conversion ended with error, %d/%d input files converted\n"), args->nb_converted_files, args->total);
 	else {
-		if (args->nb_converted == args->total)
-			siril_log_message(_("Conversion succeeded, %d/%d input files converted\n"), args->nb_converted, args->total);
-		else siril_log_message(_("Conversion aborted, %d/%d input files converted\n"), args->nb_converted, args->total);
+		if (args->nb_converted_files == args->total)
+			siril_log_message(_("Conversion succeeded, %d/%d input files converted\n"), args->nb_converted_files, args->total);
+		else siril_log_message(_("Conversion aborted, %d/%d input files converted\n"), args->nb_converted_files, args->total);
 	}
 	siril_add_idle(end_convert_idle, args);
 	return NULL;
 }
 
+// debayers the image if it's a FITS image and if debayer is activated globally
+// or if the force argument is passed
 int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility,
 		gboolean force_debayer) {
-	int retval = 0;
-	sensor_pattern tmp;
+	if (imagetype != TYPEFITS || (!com.pref.debayer.open_debayer && !force_debayer))
+		return 0;
+
 	/* Siril's FITS are stored bottom-up, debayering will give wrong results.
 	 * So before demosacaing we need to flip the image with fits_flip_top_to_bottom().
 	 * But sometimes FITS are created by acquisition software top-down, in that case
 	 * the user can indicate it ('compatibility') and we don't flip for debayer.
 	 */
-	if (imagetype == TYPEFITS && (((convflags & CONVDEBAYER) && !force_debayer) || force_debayer)) {
-		tmp = com.pref.debayer.bayer_pattern;
-		if (fit->naxes[2] != 1) {
-			siril_log_message(_("Cannot perform debayering on image with more than one channel\n"));
-			return retval;
+	if (fit->naxes[2] != 1) {
+		siril_log_message(_("Cannot perform debayering on image with more than one channel\n"));
+		return 0;
+	}
+	if (!compatibility)
+		fits_flip_top_to_bottom(fit);
+	/* Get Bayer informations from header if available */
+	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
+	if (com.pref.debayer.use_bayer_header) {
+		sensor_pattern bayer;
+		bayer = retrieveBayerPattern(fit->bayer_pattern);
+
+		if (bayer <= BAYER_FILTER_MAX) {
+			if (bayer != com.pref.debayer.bayer_pattern) {
+				if (bayer == BAYER_FILTER_NONE) {
+					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+				}
+				else {
+					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+					com.pref.debayer.bayer_pattern = bayer;
+				}
+			}
+		} else {
+			com.pref.debayer.bayer_pattern = XTRANS_FILTER;
+			com.pref.debayer.bayer_inter = XTRANS;
+			siril_log_color_message(_("XTRANS Sensor detected. Using special algorithm.\n"), "green");
 		}
+	}
+	if (com.pref.debayer.bayer_pattern >= BAYER_FILTER_MIN
+			&& com.pref.debayer.bayer_pattern <= BAYER_FILTER_MAX) {
+		siril_log_message(_("Filter Pattern: %s\n"), filter_pattern[com.pref.debayer.bayer_pattern]);
+	}
+
+	int retval = 0;
+	if (debayer(fit, com.pref.debayer.bayer_inter, com.pref.debayer.bayer_pattern)) {
+		siril_log_message(_("Cannot perform debayering\n"));
+		retval = -1;
+	} else {
 		if (!compatibility)
 			fits_flip_top_to_bottom(fit);
-		/* Get Bayer informations from header if available */
-		if (com.pref.debayer.use_bayer_header) {
-			sensor_pattern bayer;
-			bayer = retrieveBayerPattern(fit->bayer_pattern);
-
-			if (bayer <= BAYER_FILTER_MAX) {
-				if (bayer != com.pref.debayer.bayer_pattern) {
-					if (bayer == BAYER_FILTER_NONE) {
-						siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
-					}
-					else {
-						siril_log_color_message(_("Bayer pattern found in header (%s) is different"
-								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-								"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
-						com.pref.debayer.bayer_pattern = bayer;
-					}
-				}
-			} else {
-				com.pref.debayer.bayer_pattern = XTRANS_FILTER;
-				com.pref.debayer.bayer_inter = XTRANS;
-				siril_log_color_message(_("XTRANS Sensor detected. Using special algorithm.\n"), "green");
-			}
-		}
-		if (com.pref.debayer.bayer_pattern >= BAYER_FILTER_MIN
-				&& com.pref.debayer.bayer_pattern <= BAYER_FILTER_MAX) {
-			siril_log_message(_("Filter Pattern: %s\n"), filter_pattern[com.pref.debayer.bayer_pattern]);
-		}
-
-		if (debayer(fit, com.pref.debayer.bayer_inter, com.pref.debayer.bayer_pattern)) {
-			siril_log_message(_("Cannot perform debayering\n"));
-			retval = -1;
-		} else {
-			if (!compatibility)
-				fits_flip_top_to_bottom(fit);
-		}
-		com.pref.debayer.bayer_pattern = tmp;
 	}
+	com.pref.debayer.bayer_pattern = tmp_pattern;
 	return retval;
 }
 
@@ -590,8 +635,9 @@ static int film_conversion(const char *src_filename, int index,
 		siril_log_message(_("Error while opening film %s, aborting.\n"), src_filename);
 		return 1;
 	}
-	if (convflags & CONVMULTIPLE) {
+	if (args->multiple_output) {
 		char dest_filename[128];
+		ser_init_struct(ser_file);
 		if (ser_create_file(create_sequence_filename(args->destroot, index, dest_filename, 128),
 					ser_file, TRUE, NULL)) {
 			siril_log_message(_("Creating the SER file failed, aborting.\n"));
@@ -613,12 +659,13 @@ static int film_conversion(const char *src_filename, int index,
 		}
 
 		// save to the destination file
-		if (convflags & CONVDSTSER) {
+		if (args->output_type == SEQ_SER) {
 			if (ser_write_frame_from_fit(ser_file, &fit, frame + ser_frames)) {
 				siril_log_message(_("Error while converting to SER (no space left?)\n"));
 				retval = 1;
 			}
 		} else {
+			// TODO: handle FITS sequence
 			char dest_filename[128];
 			g_snprintf(dest_filename, 128, "%s%05d", args->destroot, index++);
 			if (savefits(dest_filename, &fit)) {
@@ -628,7 +675,7 @@ static int film_conversion(const char *src_filename, int index,
 		}
 		clearfits(&fit);
 	}
-	if (convflags & CONVMULTIPLE) {
+	if (args->multiple_output) {
 		if (retval)
 			ser_close_and_delete_file(ser_file);
 		else ser_write_and_close(ser_file);
@@ -654,7 +701,7 @@ static int ser_conversion(const char *src_filename, int index,
 		siril_log_message(_("Error while opening ser file %s, aborting.\n"), src_filename);
 		return 1;
 	}
-	if (args->nb_converted > 0 && (convflags & CONVDSTSER)) {
+	if (args->nb_converted_files > 0 && args->output_type == SEQ_SER) {
 		if (tmp_ser.image_height != ser_file->image_height
 				|| tmp_ser.image_width != ser_file->image_width) {
 			siril_log_color_message(_("Input SER files must have the same size to be joined.\n"), "red");
@@ -689,12 +736,13 @@ static int ser_conversion(const char *src_filename, int index,
 		}
 
 		// save to the destination file
-		if (convflags & CONVDSTSER) {
+		if (args->output_type == SEQ_SER) {
 			if (ser_write_frame_from_fit(ser_file, &fit, frame + ser_frames)) {
 				siril_log_message(_("Error while converting to SER (no space left?)\n"));
 				retval = 1;
 			}
 		} else {
+			// TODO: handle FITS sequence
 			char dest_filename[128];
 			g_snprintf(dest_filename, 128, "%s%05d", args->destroot, index++);
 			if (savefits(dest_filename, &fit)) {
@@ -743,7 +791,7 @@ char* g_real_path(const char *source) {
 
 /* open the file with path source from any image type and load it into the given FITS object */
 int any_to_fits(image_type imagetype, const char *source, fits *dest,
-		gboolean interactive, gboolean force_float) {
+		gboolean interactive, gboolean force_float, gboolean debayer) {
 	int retval = 0;
 
 	switch (imagetype) {
@@ -790,7 +838,7 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest,
 					src  = rsrc;					
 				}
 #endif
-				retval = (open_raw_files(src , dest, !(convflags & CONVDEBAYER)) < 0);
+				retval = (open_raw_files(src , dest, debayer) < 0);
 #ifdef _WIN32
 				if (rsrc != NULL) {
 					g_free(rsrc);
@@ -811,13 +859,5 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest,
 	}
 
 	return retval;
-}
-
-void set_debayer_in_convflags() {
-	convflags |= CONVDEBAYER;
-}
-
-void unset_debayer_in_convflags() {
-	convflags &= ~CONVDEBAYER;
 }
 

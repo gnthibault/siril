@@ -32,6 +32,7 @@
 #include "core/proto.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "io/image_format_fits.h"
 
 #ifndef O_BINARY
 #define O_BINARY 0

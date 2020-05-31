@@ -9,6 +9,7 @@
 #include "registration/registration.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "io/image_format_fits.h"
 #ifdef HAVE_FFMS2
 #include "io/films.h"
 #endif
@@ -231,7 +232,7 @@ static gpointer export_sequence(gpointer ptr) {
 		set_progress_bar_data(tmpmsg, (double)cur_nb / (double)nb_frames);
 		free(tmpmsg);
 
-		if (seq_read_frame(args->seq, i, &fit, FALSE)) {
+		if (seq_read_frame(args->seq, i, &fit, FALSE, -1)) {
 			siril_log_message(_("Export: could not read frame, aborting\n"));
 			retval = -3;
 			goto free_and_reset_progress_bar;
@@ -574,24 +575,12 @@ void update_export_crop_label() {
 
 void on_entryExportSeq_changed(GtkEditable *editable, gpointer user_data){
 	gchar *name = (gchar *)gtk_entry_get_text(GTK_ENTRY(editable));
-
 	if (*name != 0) {
-
-		const char *ext = get_filename_ext(name);
-		if (ext && !g_ascii_strcasecmp(ext, "ser")) {
-			if (check_if_seq_exist(name)) {
-				set_icon_entry(GTK_ENTRY(editable), "gtk-dialog-warning");
-			} else{
-				set_icon_entry(GTK_ENTRY(editable), NULL);
-			}
+		if (check_if_seq_exist(name, !ends_with(name, ".ser"))) {
+			set_icon_entry(GTK_ENTRY(editable), "gtk-dialog-warning");
 		} else {
-			if (check_if_seq_exist(name)) {
-				set_icon_entry(GTK_ENTRY(editable), "gtk-dialog-warning");
-			} else{
-				set_icon_entry(GTK_ENTRY(editable), NULL);
-			}
+			set_icon_entry(GTK_ENTRY(editable), NULL);
 		}
-
 	} else {
 		set_icon_entry(GTK_ENTRY(editable), NULL);
 	}

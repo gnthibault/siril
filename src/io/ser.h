@@ -10,6 +10,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include "core/siril.h"
 
 /* This file is part of Siril, https://free-astro.org/
  *

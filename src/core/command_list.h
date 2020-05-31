@@ -34,7 +34,7 @@ static command commands[] = {
 	{"clear", 0, "clear", process_clear, STR_CLEAR, FALSE},
 	{"clearstar", 0, "clearstar", process_clearstar, STR_CLEARSTAR, FALSE},
 	{"close", 0, "close", process_close, STR_CLOSE, TRUE},
-	{"convertraw", 1, "convertraw basename [-debayer] [-start=index]", process_convertraw, STR_CONVERT, TRUE},
+	{"convertraw", 1, "convertraw basename [-debayer] [-fitseq] [-start=index]", process_convertraw, STR_CONVERT, TRUE},
 	{"cosme", 1, "cosme [filename].lst", process_cosme, STR_COSME, TRUE},
 	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme, STR_COSME_CFA, TRUE},
 	{"crop", 0, "crop [x y width height]", process_crop, STR_CROP, TRUE},

@@ -12,6 +12,7 @@ struct preprocessing_data {
 	gboolean use_dark_optim, use_cosmetic_correction;
 	gboolean is_sequence;
 	sequence *seq;
+	sequence_type output_seqtype;
 	gboolean autolevel;
 	double sigma[2];
 	long icold, ihot;

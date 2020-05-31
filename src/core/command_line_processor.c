@@ -100,6 +100,7 @@ static int executeCommand(int wordnb) {
 
 	// process the command
 	siril_log_color_message(_("Running command: %s\n"), "salmon", word[0]);
+	fprintf(stderr, "%lu: running command %s\n", time(NULL), word[0]);
 	return commands[i].process(wordnb);
 }
 

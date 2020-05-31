@@ -22,7 +22,6 @@
 #include <string.h>
 
 #include "core/siril.h"
-#include "core/proto.h"
 #include "core/undo.h"
 #include "core/processing.h"
 #include "core/OS_utils.h"
@@ -32,6 +31,7 @@
 #include "gui/message_dialog.h"
 #include "gui/dialogs.h"
 #include "gui/siril_preview.h"
+#include "io/image_format_fits.h"
 #include "io/single_image.h"
 #include "algos/Def_Wavelet.h"
 #include "wavelets.h"

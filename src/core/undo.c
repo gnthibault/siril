@@ -30,10 +30,10 @@
 #include "gui/histogram.h"
 #include "gui/progress_and_log.h"
 #include "io/single_image.h"
+#include "io/image_format_fits.h"
 #include "core/undo.h"
 #include "core/proto.h"
 #include "algos/statistics.h"
-
 
 #ifndef O_BINARY
 #define O_BINARY 0

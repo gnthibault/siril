@@ -23,7 +23,6 @@
 #include <gsl/gsl_statistics_ushort.h>
 
 #include "core/siril.h"
-#include "core/proto.h"
 #include "core/processing.h"
 #include "core/undo.h"
 #include "core/OS_utils.h"
@@ -32,6 +31,7 @@
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
+#include "io/image_format_fits.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
 #include "io/ser.h"
@@ -356,8 +356,8 @@ void apply_cosmetic_to_sequence(struct cosmetic_data *cosme_args) {
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = cosme_args->seq->selnum;
-	args->prepare_hook = ser_prepare_hook;
-	args->finalize_hook = ser_finalize_hook;
+	args->prepare_hook = seq_prepare_hook;
+	args->finalize_hook = seq_finalize_hook;
 	args->save_hook = NULL;
 	args->image_hook = cosmetic_image_hook;
 	args->idle_function = NULL;
@@ -365,9 +365,13 @@ void apply_cosmetic_to_sequence(struct cosmetic_data *cosme_args) {
 	args->description = _("Cosmetic Correction");
 	args->has_output = TRUE;
 	args->output_type = get_data_type(args->seq->bitpix);
+	args->upscale_ratio = 1.0;
 	args->new_seq_prefix = cosme_args->seqEntry;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
+	args->new_ser = NULL;
+	args->force_fitseq_output = FALSE;
+	args->new_fitseq = NULL;
 	args->user = cosme_args;
 	args->already_in_a_thread = FALSE;
 	args->parallel = TRUE;

@@ -152,13 +152,6 @@ typedef enum {
 #define CP_EXTRACT	0x10	// extract a 16bit plane from a 48 bit fit
 #define CP_EXPAND	0x20	// expands a 16bit fits to a 48bit one.
 
-/* processing */
-#define CONVDEBAYER (1 << 1)
-/* SER flags */
-#define CONVDSTFITS (1 << 2)	// assumed as default
-#define CONVDSTSER (1 << 3)
-#define CONVMULTIPLE (1 << 4)
-
 #define PREVIEW_NB 2
 
 /* special values for com.seq.current, the currently loaded image of the
@@ -295,7 +288,7 @@ struct layer_info_struct {
 	display_mode rendering_mode;	// defaults to NORMAL_DISPLAY
 };
 
-typedef enum { SEQ_REGULAR, SEQ_SER, /*SEQ_CUBE,*/
+typedef enum { SEQ_REGULAR, SEQ_SER, SEQ_FITSEQ,
 #ifdef HAVE_FFMS2
 	SEQ_AVI,
 #endif
@@ -349,6 +342,7 @@ struct sequ {
 	sequence_type type;
 	struct ser_struct *ser_file;
 	gboolean cfa_opened_monochrome;	// in case the CFA SER was opened in monochrome mode
+	struct fits_sequence *fitseq_file; // FITS sequence data structure
 #ifdef HAVE_FFMS2
 	struct film_struct *film_file;
 	char *ext;		// extension of video, NULL if not video

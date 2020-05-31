@@ -33,6 +33,7 @@
 #include "core/siril.h"
 #include "core/OS_utils.h"
 #include "algos/statistics.h"
+#include "io/fits_sequence.h"
 #include "io/ser.h"
 #include "io/sequence.h"
 #include "core/proto.h"
@@ -57,7 +58,7 @@
  * L nb_layers
  * (for all images) I filenum incl [stats+] <- stats added at some point, removed in 0.9.9
  * (for all layers (x)) Rx regparam+
- * TS | TA (type for ser or film)
+ * TS | TA | TF (type for ser or film (avi) or fits)
  * U up-scale_ratio
  * (for all images (y) and layers (x)) Mx-y stats+
  */
@@ -334,23 +335,40 @@ sequence * readseqfile(const char *name){
 						seq->needs_saving = TRUE;
 					}
 				}
+				else if (line[1] == 'F') {
+					seq->type = SEQ_FITSEQ;
+#ifdef HAVE_FFMS2
+					seq->ext = com.pref.ext + 1;
+#endif
+					if (seq->fitseq_file) break;
+					seq->fitseq_file = malloc(sizeof(struct ser_struct));
+					fitseq_init_struct(seq->fitseq_file);
+					GString *fileString = g_string_new(filename);
+					g_string_append(fileString, com.pref.ext);
+					seq->fitseq_file->filename = g_string_free(fileString, FALSE);
+					if (fitseq_open(seq->fitseq_file->filename, seq->fitseq_file)) {
+						free(seq->fitseq_file);
+						seq->fitseq_file = NULL;
+						goto error;
+					}
+				}
 #ifdef HAVE_FFMS2
 				else if (line[1] == 'A') {
 					seq->type = SEQ_AVI;
 					if (seq->film_file) break;
 					seq->film_file = malloc(sizeof(struct film_struct));
-					int ii = 0, nb_film = get_nb_film_ext_supported();
-
+					int nb_film = get_nb_film_ext_supported();
 					gchar *filmname = NULL;
-					while (ii < nb_film) {
+
+					for (int ii = 0; ii < nb_film; i++) {
 						GString *filmString;
-						/* test for extension in lowercase */
 						filmString = g_string_new(seqfilename);
 						filmString = g_string_truncate(filmString, strlen(seqfilename) - 3);
-						filmString = g_string_append(filmString, supported_film[i].extension);
+						filmString = g_string_append(filmString, supported_film[ii].extension);
 						g_free(filmname);
 						filmname = g_string_free(filmString, FALSE);
 
+						/* test for extension in lowercase, else in uppercase */
 						if (g_file_test(filmname, G_FILE_TEST_EXISTS)) {
 							break;
 						} else {
@@ -362,8 +380,8 @@ sequence * readseqfile(const char *name){
 
 							filmString = g_string_new(seqfilename);
 							g_string_truncate(filmString, strlen(seqfilename) - 3);
-							len_ext = strlen(supported_film[i].extension);
-							upcase = g_ascii_strup(supported_film[i].extension, len_ext);
+							len_ext = strlen(supported_film[ii].extension);
+							upcase = g_ascii_strup(supported_film[ii].extension, len_ext);
 							filmString = g_string_append(filmString, upcase);
 							filmname = g_string_free(filmString, FALSE);
 							g_free(upcase);
@@ -372,7 +390,6 @@ sequence * readseqfile(const char *name){
 								break;
 							}
 						}
-						ii++;
 					}
 
 					if (film_open_file(filmname, seq->film_file)) {
@@ -533,23 +550,27 @@ int writeseqfile(sequence *seq){
 
 	fprintf(seqfile,"#Siril sequence file. Contains list of files (images), selection, and registration data\n");
 	fprintf(seqfile,"#S 'sequence_name' start_index nb_images nb_selected fixed_len reference_image version\n");
-	fprintf(stderr,"S '%s' %d %d %d %d %d %d\n", 
-			seq->seqname, seq->beg, seq->number, seq->selnum, seq->fixed, seq->reference_image, CURRENT_SEQFILE_VERSION);
 	fprintf(seqfile,"S '%s' %d %d %d %d %d %d\n", 
 			seq->seqname, seq->beg, seq->number, seq->selnum, seq->fixed, seq->reference_image, CURRENT_SEQFILE_VERSION);
 	if (seq->type != SEQ_REGULAR) {
+		char type;
+		switch (seq->type) {
+			default: // cannot happen
+			case SEQ_SER: type = 'S'; break;
+#ifdef HAVE_FFMS2
+			case SEQ_AVI: type = 'A'; break;
+#endif
+			case SEQ_FITSEQ: type = 'F'; break;
+		}
 		/* sequence type, not needed for regular, S for ser, A for avi */
-		fprintf(stderr, "T%c\n", seq->type == SEQ_SER ? 'S' : 'A');
-		fprintf(seqfile, "T%c\n", seq->type == SEQ_SER ? 'S' : 'A');
+		fprintf(seqfile, "T%c\n", type);
 	}
 
 	if (seq->upscale_at_stacking != 1.0) {
 		// until we have a real drizzle
-		fprintf(stderr, "U %g\n", seq->upscale_at_stacking);
 		fprintf(seqfile, "U %g\n", seq->upscale_at_stacking);
 	}
 
-	fprintf(stderr, "L %d\n", seq->nb_layers);
 	fprintf(seqfile, "L %d\n", seq->nb_layers);
 
 	for(i=0; i < seq->number; ++i){
@@ -663,7 +684,7 @@ int buildseqfile(sequence *seq, int force_recompute) {
 
 	if (seq->end <= 0 || !seq->seqname || seq->seqname[0] == '\0') return 1;
 	if (existseq(seq->seqname) && !force_recompute) {
-		fprintf(stderr,"seqfile '%s.seq' already exists, not recomputing\n", seq->seqname);
+		fprintf(stderr, "seqfile '%s.seq' already exists, not overwriting\n", seq->seqname);
 		return 0;
 	}
 

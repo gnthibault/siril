@@ -32,6 +32,7 @@
 #include "algos/colors.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
+#include "io/image_format_fits.h"
 #include "gui/image_display.h"
 #include "gui/image_interactions.h"
 #include "gui/PSF_list.h"

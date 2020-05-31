@@ -36,6 +36,7 @@
 #include "gui/callbacks.h"
 #include "io/sequence.h"
 #include "io/ser.h"
+#include "io/image_format_fits.h"
 #include "registration/registration.h"
 #include "registration/matching/atpmatch.h"
 #include "registration/matching/match.h"
@@ -85,7 +86,7 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	}
 
 	/* first we're looking for stars in reference image */
-	if (seq_read_frame(args->seq, regargs->reference_image, &fit, FALSE)) {
+	if (seq_read_frame(args->seq, regargs->reference_image, &fit, FALSE, -1)) {
 		siril_log_message(_("Could not load reference image\n"));
 		args->seq->regparam[regargs->layer] = NULL;
 		free(sadata->current_regdata);
@@ -180,15 +181,14 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	}
 
 	if (args->seq->type == SEQ_SER) {
-		/* copied from ser_prepare_hook with one variation */
-		char dest[256];
-
+		/* copied from seq_prepare_hook with one variation */
 		args->new_ser = malloc(sizeof(struct ser_struct));
 		if (!args->new_ser) {
 			PRINT_ALLOC_ERR;
 			return 1;
 		}
 
+		char dest[256];
 		const char *ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
 		if (ptr)
 			snprintf(dest, 255, "%s%s.ser", regargs->prefix, ptr + 1);
@@ -206,6 +206,10 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 			args->new_ser = NULL;
 			return 1;
 		}
+	}
+	else if (args->seq->type == SEQ_FITSEQ) {
+		if (seq_prepare_hook(args))
+			return 1;
 	}
 
 	sadata->success = calloc(args->nb_filtered_images, sizeof(BYTE));
@@ -240,7 +244,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 
 	if (in_index != regargs->reference_image) {
 		fitted_PSF **stars;
-		if (args->seq->type == SEQ_SER) {
+		if (args->seq->type == SEQ_SER || args->seq->type == SEQ_FITSEQ) {
 			siril_log_color_message(_("Frame %d:\n"), "bold", filenum);
 		}
 		if (regargs->matchSelection && regargs->selection.w > 0 && regargs->selection.h > 0) {
@@ -371,6 +375,9 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 			ser_write_and_close(args->new_ser);
 			free(args->new_ser);
 		}
+		else if (args->seq->type == SEQ_FITSEQ) {
+			seq_finalize_hook(args);
+		}
 	} else {
 		regargs->new_total = 0;
 		free(args->seq->regparam[regargs->layer]);
@@ -380,6 +387,10 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 		if (args->seq->type == SEQ_SER && args->new_ser) {
 			ser_close_and_delete_file(args->new_ser);
 			free(args->new_ser);
+		}
+		else if (args->seq->type == SEQ_FITSEQ && args->new_fitseq) {
+			fitseq_close_and_delete_file(args->new_fitseq);
+			free(args->new_fitseq);
 		}
 	}
 
@@ -431,10 +442,13 @@ int register_star_alignment(struct registration_args *regargs) {
 	args->description = _("Global star registration");
 	args->has_output = !regargs->translation_only;
 	args->output_type = get_data_type(args->seq->bitpix);
+	args->upscale_ratio = regargs->x2upscale ? 2.0 : 1.0;
 	args->new_seq_prefix = regargs->prefix;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
 	args->new_ser = NULL;
+	args->force_fitseq_output = FALSE;
+	args->new_fitseq = NULL;
 	args->already_in_a_thread = TRUE;
 	args->parallel = TRUE;
 

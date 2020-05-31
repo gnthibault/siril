@@ -29,9 +29,9 @@
 #include <string.h>
 
 #include "core/siril.h"
-#include "core/proto.h"
 #include "gui/progress_and_log.h"
 #include "io/films.h"
+#include "io/image_format_fits.h"
 
 static int pixfmt_gray, pixfmt_rgb, pixfmt_gray16, pixfmt_rgb48;
 

@@ -19,10 +19,10 @@
  */
 
 #include "core/siril.h"
-#include "core/proto.h"
 #include "core/processing.h"
 #include "algos/PSF.h"
 #include "io/sequence.h"
+#include "io/image_format_fits.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
@@ -239,7 +239,7 @@ static int comet_align_prepare_hook(struct generic_seq_args *args) {
 	ref_image = sequence_find_refimage(args->seq);
 
 	// TODO: reading only the date can be made in a less resource-consuming way
-	if (seq_read_frame(args->seq, ref_image, &ref, FALSE)) {
+	if (seq_read_frame(args->seq, ref_image, &ref, FALSE, -1)) {
 		siril_log_message(_("Could not load reference image\n"));
 		args->seq->regparam[regargs->layer] = NULL;
 		free(cadata->current_regdata);

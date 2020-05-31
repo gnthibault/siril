@@ -30,9 +30,11 @@
 #include <windows.h>
 #endif
 
-#include "core/siril.h"
+#include "image_format_fits.h"
 #include "core/proto.h"
 #include "core/OS_utils.h"
+#include "io/sequence.h"
+#include "io/fits_sequence.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "algos/statistics.h"
@@ -78,6 +80,11 @@ static void read_fits_date_obs_header(fits *fit) {
 	}
 }
 
+void fit_get_photometry_data(fits *fit) {
+	read_fits_date_obs_header(fit);
+	__tryToFindKeywords(fit->fptr, TDOUBLE, Exposure, &fit->exposure);
+}
+
 static int fit_stats(fits *fit, double *mini, double *maxi) {
 	int status = 0;
 	int ii, anaxis;
@@ -94,7 +101,7 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 	fits_get_img_size(fit->fptr, 3, anaxes, &status);
 
 	if (status) {
-		fits_report_error(stderr, status); /* print error message */
+		report_fits_error(status); /* print error message */
 		return(status);
 	}
 
@@ -126,7 +133,7 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 	free(pix);
 
 	if (status) {
-		fits_report_error(stderr, status); /* print any error message */
+		report_fits_error(status); /* print any error message */
 	} else {
 		if (npixels > 0)
 			meanval = sum / npixels;
@@ -140,24 +147,48 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 	return status;
 }
 
-/* copy the complete header in a heap-allocated string */
-static void fits_read_history(fitsfile *fptr, GSList **history, int *status) {
-	int i, hdupos, nkeys;
+static void read_history_in_hdu(fitsfile *fptr, GSList **list) {
+	int nkeys, status = 0;
 	char card[FLEN_CARD];
-	GSList *list = NULL;
-
-	fits_get_hdu_num(fptr, &hdupos); /*Get the current HDU position */
-	for (; !*status; hdupos++) {
-		fits_get_hdrspace(fptr, &nkeys, NULL, status);
-		for (i = 1; i <= nkeys; i++) {
-			if (fits_read_record(fptr, i, card, status))
-				break;
-			if (!strncmp(card, "HISTORY", 7)) {
-				list = g_slist_prepend(list, g_strdup(card + 8));
-			}
+	fits_get_hdrspace(fptr, &nkeys, NULL, &status);
+	for (int i = 1; i <= nkeys; i++) {
+		if (fits_read_record(fptr, i, card, &status))
+			break;
+		if (!strncmp(card, "HISTORY", 7)) {
+			*list = g_slist_prepend(*list, g_strdup(card + 8));
 		}
-		fits_movrel_hdu(fptr, 1, NULL, status);
 	}
+}
+
+/* copy the header into a list of strings
+ * header is read from current HDU and the following HDU as long as they don't contain an image.
+ * Original active HDU is restored */
+static void fits_read_history(fitsfile *fptr, GSList **history) {
+	GSList *list = NULL;
+	read_history_in_hdu(fptr, &list); // read from current HDU
+
+	// browse following HDU
+	int orig_hdu, type, status;
+	gboolean hdu_changed = FALSE;
+	fits_get_hdu_num(fptr, &orig_hdu);
+	do {
+		status = 0;
+		fits_movrel_hdu(fptr, 1, &type, &status);
+		if (status)
+			break;
+		hdu_changed = TRUE;
+		if (type == IMAGE_HDU)
+			break;
+		siril_debug_print("history read from another HDU\n");
+		read_history_in_hdu(fptr, &list);
+	} while (1);
+
+	// restore
+	if (hdu_changed) {
+		status = 0;
+		fits_movabs_hdu(fptr, orig_hdu, NULL, &status);
+	}
+
 	if (*history)
 		g_slist_free_full(*history, free);
 	list = g_slist_reverse(list);
@@ -182,7 +213,7 @@ static int try_read_float_lo_hi(fitsfile *fptr, WORD *lo, WORD *hi) {
 
 /* reading the FITS header to get useful information
  * stored in the fit, requires an opened file descriptor */
-static void read_fits_header(fits *fit) {
+void read_fits_header(fits *fit) {
 	/* about the status argument: http://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node28.html */
 	int status = 0;
 	double mini, maxi, scale, zero;
@@ -346,15 +377,45 @@ static void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TSTRING, "DFTTYPE", &(fit->dft.type), NULL,
 			&status);
 
-	status = 0;
-	fits_read_history(fit->fptr, &(fit->history), &status);
+	fits_read_history(fit->fptr, &(fit->history));
+}
+
+/* copy the header for the current HDU in a heap-allocated string */
+static int copy_header_from_hdu(fitsfile *fptr, char **header, int *strsize, int *strlength) {
+	int nkeys, status = 0;
+	fits_get_hdrspace(fptr, &nkeys, NULL, &status);
+	if (status || nkeys < 0) {
+		free(*header);
+		return 1;
+	}
+	for (int i = 1; i <= nkeys; i++) {
+		int cardlen;
+		char *newstr;
+		char card[FLEN_CARD];
+		if (fits_read_record(fptr, i, card, &status))
+			break;
+		cardlen = strlen(card);
+		if (*strlength + cardlen + 1 >= *strsize) {
+			*strsize += 567;
+			newstr = realloc(*header, *strsize);
+			if (!newstr) {
+				PRINT_ALLOC_ERR;
+				free(*header);
+				return 1;
+			}
+			*header = newstr;
+		}
+		strcpy(*header + *strlength, card);
+		(*strlength) += cardlen;
+		strcpy(*header + *strlength, "\n");
+		(*strlength)++;
+	}
+	return 0;
 }
 
 /* copy the complete header in a heap-allocated string */
-static char *copy_header(fits *fit) {
-	int status = 0;
-	int i, hdupos, nkeys, strsize, strlength;
-	char card[FLEN_CARD];
+char *copy_header(fits *fit) {
+	int strsize, strlength;
 	char *header;
 
 	/* each line in the FITS header is 80 character wide
@@ -362,39 +423,34 @@ static char *copy_header(fits *fit) {
 	 * initial allocation is 20 times 81 = 1620
 	 * reallocations are 7 lines, 567 */
 	strsize = 1620;
-	header = malloc(strsize);
-	if (header == NULL) {
+	if (!(header = malloc(strsize))) {
 		PRINT_ALLOC_ERR;
 		return NULL;
 	}
 	header[0] = '\0';
 	strlength = 0;
-	fits_get_hdu_num(fit->fptr, &hdupos); /*Get the current HDU position */
-	for (; !status; hdupos++) {
-		fits_get_hdrspace(fit->fptr, &nkeys, NULL, &status);
-		//fprintf(stdout, "Header listing for HDU #%d:\n", hdupos);
-		for (i = 1; i <= nkeys; i++) {
-			int cardlen;
-			char *newstr;
-			if (fits_read_record(fit->fptr, i, card, &status))
-				break;
-			cardlen = strlen(card);
-			if (strlength + cardlen + 1 >= strsize) {
-				strsize += 567;
-				newstr = realloc(header, strsize);
-				if (newstr == NULL) {
-					PRINT_ALLOC_ERR;
-					free(header);
-					return NULL;
-				}
-				header = newstr;
-			}
-			strcpy(header + strlength, card);
-			strlength += cardlen;
-			strcpy(header + strlength, "\n");
-			strlength++;
-		}
-		fits_movrel_hdu(fit->fptr, 1, NULL, &status);
+	if (copy_header_from_hdu(fit->fptr, &header, &strsize, &strlength))
+		return NULL;
+
+	int orig_hdu, type, status;
+	gboolean hdu_changed = FALSE;
+	fits_get_hdu_num(fit->fptr, &orig_hdu);
+	do {
+		status = 0;
+		fits_movrel_hdu(fit->fptr, 1, &type, &status);
+		if (status || type == IMAGE_HDU)
+			break;
+
+		hdu_changed = TRUE;
+		siril_debug_print("header read from another HDU\n");
+		if (copy_header_from_hdu(fit->fptr, &header, &strsize, &strlength))
+			break;
+	} while (1);
+
+	// restore
+	if (hdu_changed) {
+		status = 0;
+		fits_movabs_hdu(fit->fptr, orig_hdu, NULL, &status);
 	}
 
 	if (header[0] == '\0') {
@@ -404,7 +460,7 @@ static char *copy_header(fits *fit) {
 	if (!header)
 		return NULL;
 	if (!sequence_is_loaded() || com.seq.current == 0)
-		siril_debug_print("%s", header);// don't display for all frames of a sequence
+		siril_debug_print("%s", header); // don't display for all frames of a sequence
 	return header;
 }
 
@@ -419,11 +475,12 @@ data_type get_data_type(int bitpix) {
 }
 
 
-static void report_fits_error(int status) {
+void report_fits_error(int status) {
 	if (status) {
 		char errmsg[FLEN_ERRMSG];
 		while (fits_read_errmsg(errmsg)) {
-			siril_log_message(_("FITS error: %s\n"), errmsg);
+			siril_log_message(_("FITS error: %s\n"),
+					errmsg[0] != '\0' ? errmsg : "unknown" );
 		}
 	}
 }
@@ -573,7 +630,7 @@ static int siril_fits_move_first_image(fitsfile* fp) {
 	fits_movabs_hdu(fp, 1, IMAGE_HDU, &status);
 	if (status) {
 		siril_log_message(_("Cannot move to first image in FITS file\n"));
-		fits_report_error(stderr, status); /* print error message */
+		report_fits_error(status); /* print error message */
 		return status;
 	}
 
@@ -583,7 +640,7 @@ static int siril_fits_move_first_image(fitsfile* fp) {
 		fits_get_img_dim(fp, &naxis, &status);
 		if (status) {
 			siril_log_message(_("Cannot get dimension of FITS file\n"));
-			fits_report_error(stderr, status); /* print error message */
+			report_fits_error(status); /* print error message */
 			return status;
 		}
 		if (naxis > 0) {
@@ -593,7 +650,7 @@ static int siril_fits_move_first_image(fitsfile* fp) {
 		fits_movrel_hdu(fp, 1, IMAGE_HDU, &status);
 		if (status) {
 			siril_log_message(_("Cannot move to next image in FITS file\n"));
-			fits_report_error(stderr, status); /* print error message */
+			report_fits_error(status); /* print error message */
 			return status;
 		}
 	} while (!status);
@@ -607,7 +664,7 @@ static int siril_fits_move_first_image(fitsfile* fp) {
  * currently should be TBYTE or TUSHORT because fit doesn't contain other data.
  * filename is for error reporting
  */
-static int read_fits_with_convert(fits* fit, const char* filename, gboolean force_float) {
+int read_fits_with_convert(fits* fit, const char* filename, gboolean force_float) {
 	int status = 0, zero = 0, datatype;
 	BYTE *data8;
 	unsigned long *pixels_long;
@@ -616,11 +673,6 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 	size_t nbdata = nbpix * fit->naxes[2];
 	// with force_float, image is read as float data, type is stored as DATA_FLOAT
 	int fake_bitpix = force_float ? FLOAT_IMG : fit->bitpix;
-
-	if (siril_fits_move_first_image(fit->fptr)) {
-		siril_log_message(_("Selecting the primary header failed, is the FITS file '%s' malformed?\n"), filename);
-		return -1;
-	}
 
 	switch (fake_bitpix) {
 		case BYTE_IMG:
@@ -740,7 +792,7 @@ static int read_fits_with_convert(fits* fit, const char* filename, gboolean forc
 
 /* This function reads partial data on one layer from the opened FITS and
  * convert it to siril's format (USHORT) */
-static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
+int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
 		int bitpix, void *dest, int layer, const rectangle *area) {
 	int datatype;
 	BYTE *data8;
@@ -804,7 +856,7 @@ static int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
 	return status;
 }
 
-static int siril_fits_create_diskfile(fitsfile **fptr, const char *filename, int *status) {
+int siril_fits_create_diskfile(fitsfile **fptr, const char *filename, int *status) {
 	gchar *localefilename = get_locale_filename(filename);
 	fits_create_diskfile(fptr, localefilename, status);
 	g_free(localefilename);
@@ -1092,12 +1144,39 @@ double get_exposure_from_fitsfile(fitsfile *fptr) {
 
 int import_metadata_from_fitsfile(fitsfile *fptr, fits *to) {
 	fits from = { 0 };
-
 	from.fptr = fptr;
-
 	read_fits_header(&from);
 	copy_fits_metadata(&from, to);
 	return 0;
+}
+
+/* from bitpix, depending on BZERO, bitpix and orig_bitpix are set.
+ *
+ * since USHORT_IMG is a cfitsio trick and doesn't really exist in the
+ * file, when we read it, the bitpix is given as SHORT_IMG. If BZERO is
+ * 2^15, it means that it is USHORT data and we force the bitpix to it
+ * in order to read it properly. Same thing for LONG and ULONG.
+ * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
+ */
+void manage_bitpix(fitsfile *fptr, int *bitpix, int *orig_bitpix) {
+	double offset;
+	int status = 0;
+	fits_read_key(fptr, TDOUBLE, "BZERO", &offset, NULL, &status);
+	if (!status) {
+		if (*bitpix == SHORT_IMG && offset != 0.0) {
+			*bitpix = USHORT_IMG;
+		}
+		else if (*bitpix == LONG_IMG && offset != 0.0)
+			*bitpix = ULONG_IMG;
+	} else {
+		/* but some software just put unsigned 16-bit data in the file
+		 * and don't set the BZERO keyword... */
+		if (status == KEY_NO_EXIST && *bitpix == SHORT_IMG)
+			*bitpix = USHORT_IMG;
+	}
+	// and we store the original bitpix to reuse it during later partial
+	// reads when we have no access to the header or a fits * struct.
+	*orig_bitpix = *bitpix;
 }
 
 // return 0 on success, fills realname if not NULL with the opened file's name
@@ -1106,7 +1185,6 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 	char *name = NULL;
 	gchar *basename;
 	image_type imagetype;
-	double offset;
 
 	if (stat_file(filename, &imagetype, &name)) {
 		siril_log_message(_("%s.[any_allowed_extension] not found.\n"),
@@ -1148,32 +1226,10 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 		report_fits_error(status);
 		status = 0;
 		fits_close_file(fit->fptr, &status);
-		return status;
+		return 1;
 	}
 
-	/* since USHORT_IMG is a cfitsio trick and doesn't really exist in the
-	 * file, when we read it, the bitpix is given as SHORT_IMG. If BZERO is
-	 * 2^15, it means that it is USHORT data and we force the bitpix to it
-	 * in order to read it properly. Same thing for LONG and ULONG.
-	 * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
-	 */
-	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &offset, NULL, &status);
-	if (!status) {
-		if (fit->bitpix == SHORT_IMG && offset != 0.0) {
-			fit->bitpix = USHORT_IMG;
-		}
-		else if (fit->bitpix == LONG_IMG && offset != 0.0)
-			fit->bitpix = ULONG_IMG;
-	} else {
-		/* but some software just put unsigned 16-bit data in the file
-		 * and don't set the BZERO keyword... */
-		if (status == KEY_NO_EXIST && fit->bitpix == SHORT_IMG)
-			fit->bitpix = USHORT_IMG;
-	}
-	// and we store the original bitpix to reuse it during later partial
-	// reads when we have no access to the header or a fits * struct.
-	fit->orig_bitpix = fit->bitpix;
+	manage_bitpix(fit->fptr, &(fit->bitpix), &(fit->orig_bitpix));
 
 	fit->rx = fit->naxes[0];
 	fit->ry = fit->naxes[1];
@@ -1256,7 +1312,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		const rectangle *area, gboolean do_photometry) {
 	int status;
 	size_t nbdata;
-	double offset, data_max = 0.0;
+	double data_max = 0.0;
 	double mini, maxi;
 
 	status = 0;
@@ -1282,27 +1338,10 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 
 	fit_stats(fit, &mini, &maxi);
 
-	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "BZERO", &offset, NULL, &status);
-	if (!status) {
-		if (fit->bitpix == SHORT_IMG && offset != 0.0) {
-			fit->bitpix = USHORT_IMG;
-		}
-		else if (fit->bitpix == LONG_IMG && offset != 0.0)
-			fit->bitpix = ULONG_IMG;
-	} else {
-		/* but some software just put unsigned 16-bit data in the file
-		 * and don't set the BZERO keyword... */
-		if (status == KEY_NO_EXIST && fit->bitpix == SHORT_IMG)
-			fit->bitpix = USHORT_IMG;
-	}
-	fit->orig_bitpix = fit->bitpix;
+	manage_bitpix(fit->fptr, &(fit->bitpix), &(fit->orig_bitpix));
 
-	if (do_photometry) {
-		read_fits_date_obs_header(fit);
-		status = 0;
-		__tryToFindKeywords(fit->fptr, TDOUBLE, Exposure, &fit->exposure);
-	}
+	if (do_photometry)
+		fit_get_photometry_data(fit);
 
 	if (fit->naxis == 2 && fit->naxes[2] == 0)
 		fit->naxes[2] = 1;	// see readfits for the explanation
@@ -1394,6 +1433,34 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	return 0;
 }
 
+void flip_buffer(int bitpix, void *buffer, const rectangle *area) {
+	/* reverse the read data, because it's stored upside-down */
+	if (get_data_type(bitpix) == DATA_FLOAT) {
+		int line_size = area->w * sizeof(float);
+		void *swap = malloc(line_size);
+		float *buf = (float *)buffer;
+		int i;
+		for (i = 0; i < area->h/2 ; i++) {
+			memcpy(swap, buf + i*area->w, line_size);
+			memcpy(buf + i*area->w, buf + (area->h - i - 1)*area->w, line_size);
+			memcpy(buf + (area->h - i - 1)*area->w, swap, line_size);
+		}
+		free(swap);
+	} else {
+		int line_size = area->w * sizeof(WORD);
+		void *swap = malloc(line_size);
+		WORD *buf = (WORD *)buffer;
+		int i;
+		for (i = 0; i < area->h/2 ; i++) {
+			memcpy(swap, buf + i*area->w, line_size);
+			memcpy(buf + i*area->w, buf + (area->h - i - 1)*area->w, line_size);
+			memcpy(buf + (area->h - i - 1)*area->w, swap, line_size);
+		}
+		free(swap);
+	}
+}
+
+
 /* read subset of an opened fits file.
  * The rectangle's coordinates x,y start at 0,0 for first pixel in the image.
  * layer and index also start at 0.
@@ -1427,41 +1494,14 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
 	if (status)
 		return 1;
 
-	/* reverse the read data, because it's stored upside-down */
-	if (get_data_type(seq->bitpix) == DATA_FLOAT) {
-		int line_size = area->w * sizeof(float);
-		void *swap = malloc(line_size);
-		float *buf = (float *)buffer;
-		int i;
-		for (i = 0; i < area->h/2 ; i++) {
-			memcpy(swap, buf + i*area->w, line_size);
-			memcpy(buf + i*area->w, buf + (area->h - i - 1)*area->w, line_size);
-			memcpy(buf + (area->h - i - 1)*area->w, swap, line_size);
-		}
-		free(swap);
-	} else {
-		int line_size = area->w * sizeof(WORD);
-		void *swap = malloc(line_size);
-		WORD *buf = (WORD *)buffer;
-		int i;
-		for (i = 0; i < area->h/2 ; i++) {
-			memcpy(swap, buf + i*area->w, line_size);
-			memcpy(buf + i*area->w, buf + (area->h - i - 1)*area->w, line_size);
-			memcpy(buf + (area->h - i - 1)*area->w, swap, line_size);
-		}
-		free(swap);
-	}
-
+	flip_buffer(seq->bitpix, buffer, area);
 	return 0;
 }
 
 /* creates, saves and closes the file associated to f, overwriting previous  */
 int savefits(const char *name, fits *f) {
-	int status, type;
-	size_t i, pixel_count;
-	long orig[3] = { 1L, 1L, 1L };
+	int status;
 	char filename[256];
-	BYTE *data8;
 
 	f->naxes[0] = f->rx;
 	f->naxes[1] = f->ry;
@@ -1484,7 +1524,6 @@ int savefits(const char *name, fits *f) {
 		report_fits_error(status);
 		return 1;
 	}
-	status = 0;
 
 	if (com.pref.comp.fits_enabled) {
 		int comp_type = -1;
@@ -1527,6 +1566,23 @@ int savefits(const char *name, fits *f) {
 		report_fits_error(status);
 		return 1;
 	}
+
+	save_opened_fits(f);
+
+	status = 0;
+	fits_close_file(f->fptr, &status);
+	if (!status) {
+		siril_log_message(_("Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"),
+				filename, f->naxes[2], f->rx, f->ry);
+	}
+	return 0;
+}
+
+int save_opened_fits(fits *f) {
+	BYTE *data8;
+	long orig[3] = { 1L, 1L, 1L };
+	size_t i, pixel_count;
+	int type, status = 0;
 
 	pixel_count = f->naxes[0] * f->naxes[1] * f->naxes[2];
 
@@ -1610,12 +1666,6 @@ int savefits(const char *name, fits *f) {
 		f->header = copy_header(f);
 	}
 
-	status = 0;
-	fits_close_file(f->fptr, &status);
-	if (!status) {
-		siril_log_message(_("Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"),
-				filename, f->naxes[2], f->rx, f->ry);
-	}
 	return 0;
 }
 
@@ -2216,9 +2266,10 @@ static double logviz(double arg) {
  */
 GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	fitsfile *fp;
+	gchar *description;
 	const int MAX_SIZE = com.pref.thumbnail_size;
 	float nullval = 0.;
-	int naxis, dtype, stat, status;
+	int naxis, dtype, stat, status, frames;
 
 	long naxes[4];
 	float *ima_data = NULL;
@@ -2247,10 +2298,17 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 
 	const int n_channels = naxis == 3 ? naxis : 1;
 
-	gchar *description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)\n%s", w,
-			h, ngettext("pixel", "pixels", h), n_channels,
-			ngettext("channel", "channels", n_channels), abs(dtype),
-			_("(Monochrome Preview)"));
+	if (fitseq_is_fitseq(filename, &frames)) { // FIXME: we reopen the file in this function
+		description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)\n%d %s\n%s", w,
+				h, ngettext("pixel", "pixels", h), n_channels,
+				ngettext("channel", "channels", n_channels), abs(dtype), frames,
+				ngettext("frame", "frames", frames), _("(Monochrome Preview)"));
+	} else {
+		description = g_strdup_printf("%d x %d %s\n%d %s (%d bits)\n%s", w,
+				h, ngettext("pixel", "pixels", h), n_channels,
+				ngettext("channel", "channels", n_channels), abs(dtype),
+				_("(Monochrome Preview)"));
+	}
 
 #ifdef _OPENMP
 #pragma omp parallel

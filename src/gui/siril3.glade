@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 
+<!-- Generated with glade 3.22.1 
 
 Copyright (C) The free-astro development team, 2019
 
@@ -3055,7 +3055,6 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               <object class="GtkSeparator" id="separator1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_top">6</property>
                                 <property name="margin_bottom">6</property>
                               </object>
                               <packing>
@@ -3086,6 +3085,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               <object class="GtkGrid" id="grid16">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="row_spacing">3</property>
                                 <property name="column_spacing">10</property>
                                 <child>
                                   <object class="GtkLabel" id="label62">
@@ -3099,13 +3099,13 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkEntry" id="entry2">
+                                  <object class="GtkEntry" id="convroot_entry">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="tooltip_text" translatable="yes">Enter the base name of the sequence, for example NGC_6822-L. It will create images in the form NGC_6822-L_00001.fit. The name can also end with .ser, which will enable SER output format for the conversion.</property>
                                     <property name="valign">center</property>
                                     <property name="hexpand">True</property>
-                                    <signal name="activate" handler="on_entry2_activate" swapped="no"/>
+                                    <signal name="activate" handler="on_convroot_entry_activate" swapped="no"/>
                                     <signal name="changed" handler="on_convtoroot_changed" swapped="no"/>
                                     <signal name="insert-text" handler="insert_text_handler" swapped="no"/>
                                   </object>
@@ -3127,7 +3127,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                                     <property name="input_purpose">digits</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">2</property>
+                                    <property name="left_attach">3</property>
                                     <property name="top_attach">0</property>
                                   </packing>
                                 </child>
@@ -3144,57 +3144,66 @@ Colour image target also applies to the debayer result for conversion.</property
                                     <signal name="toggled" handler="on_demosaicing_toggled" swapped="no"/>
                                   </object>
                                   <packing>
+                                    <property name="left_attach">3</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="multipleSER">
+                                    <property name="label" translatable="yes">Multiple SER</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">Tick this to create several SER files instead of a single SER file for all input elements. Use this if input elements (films) don't share the same image size or must not be processed together.</property>
+                                    <property name="draw_indicator">True</property>
+                                  </object>
+                                  <packing>
                                     <property name="left_attach">2</property>
                                     <property name="top_attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkBox" id="box32">
+                                  <object class="GtkButton" id="convert_button">
+                                    <property name="label">gtk-convert</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="spacing">13</property>
-                                    <child>
-                                      <object class="GtkButton" id="convert_button">
-                                        <property name="label">gtk-convert</property>
-                                        <property name="visible">True</property>
-                                        <property name="sensitive">False</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <property name="tooltip_text" translatable="yes">Start conversion of all source files into the configured output files, FITS or SER, with colour processing or not.</property>
-                                        <property name="use_stock">True</property>
-                                        <property name="always_show_image">True</property>
-                                        <signal name="clicked" handler="on_convert_button_clicked" swapped="no"/>
-                                        <style>
-                                          <class name="suggested-action"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">True</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkCheckButton" id="multipleSER">
-                                        <property name="label" translatable="yes">Multiple SER</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Tick this to create several SER files instead of a single SER file for all input elements. Use this if input elements (films) don't share the same image size or must not be processed together.</property>
-                                        <property name="draw_indicator">True</property>
-                                        <signal name="toggled" handler="on_multipleSER_toggled" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="pack_type">end</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="tooltip_text" translatable="yes">Start conversion of all source files into the configured output files, FITS or SER, with colour processing or not.</property>
+                                    <property name="use_stock">True</property>
+                                    <property name="always_show_image">True</property>
+                                    <signal name="clicked" handler="on_convert_button_clicked" swapped="no"/>
+                                    <style>
+                                      <class name="suggested-action"/>
+                                    </style>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
                                     <property name="top_attach">1</property>
                                     <property name="width">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="prepro_output_type_combo1">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">This sets the destination sequence type.
+FITS images: one FITS file per image.
+SER sequence: one SER file for the whole sequence (limited to 16 bits per channel).
+FITS sequence: one FITS file for the whole sequence.
+
+Note: FITS images will have no effect when the pre-processed sequence is SER or FITS sequence file.</property>
+                                    <property name="active">0</property>
+                                    <property name="active_id">0</property>
+                                    <items>
+                                      <item translatable="yes">FITS images</item>
+                                      <item translatable="yes">SER sequence</item>
+                                      <item translatable="yes">FITS sequence</item>
+                                    </items>
+                                    <signal name="changed" handler="on_prepro_output_type_combo1_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">0</property>
                                   </packing>
                                 </child>
                               </object>
@@ -3415,7 +3424,7 @@ WARNING: it will erase all registration and statistics data.</property>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">6</property>
+                                <property name="padding">10</property>
                                 <property name="position">4</property>
                               </packing>
                             </child>
@@ -4269,7 +4278,7 @@ Hot pixels are located on the master-dark.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="halign">end</property>
-                                    <property name="label" translatable="yes">Store resulting sequence with prefix:</property>
+                                    <property name="label" translatable="yes">Output prefix:</property>
                                     <property name="justify">center</property>
                                   </object>
                                   <packing>
@@ -4313,7 +4322,7 @@ The next action for DSLR images would be to debayer the preprocessed images, go 
                                 </child>
                                 <child>
                                   <object class="GtkCheckButton" id="checkButton_pp_dem">
-                                    <property name="label" translatable="yes">Debayer FITS images before saving</property>
+                                    <property name="label" translatable="yes">Debayer before saving</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
@@ -4327,6 +4336,30 @@ WARNING: this option is only available for FITS images as SER sequence can be de
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">1</property>
                                   </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="prepro_output_type_combo">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">This sets the destination sequence type.
+FITS images: one FITS file per image.
+SER sequence: one SER file for the whole sequence (limited to 16 bits per channel).
+FITS sequence: one FITS file for the whole sequence.</property>
+                                    <property name="active">0</property>
+                                    <property name="active_id">0</property>
+                                    <items>
+                                      <item translatable="yes">FITS images</item>
+                                      <item translatable="yes">SER sequence</item>
+                                      <item translatable="yes">FITS sequence</item>
+                                    </items>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <placeholder/>
                                 </child>
                               </object>
                               <packing>

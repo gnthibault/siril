@@ -27,11 +27,11 @@
 #include <gsl/gsl_version.h>
 
 #include "core/siril.h"
-#include "core/proto.h"
 #include "core/processing.h"
 #include "core/undo.h"
 #include "core/OS_utils.h"
 #include "io/single_image.h"
+#include "io/image_format_fits.h"
 #include "io/sequence.h"
 #include "algos/statistics.h"
 #include "algos/geometry.h"
@@ -703,8 +703,8 @@ void apply_background_extraction_to_sequence(struct background_data *background_
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = background_args->seq->selnum;
-	args->prepare_hook = ser_prepare_hook;
-	args->finalize_hook = ser_finalize_hook;
+	args->prepare_hook = seq_prepare_hook;
+	args->finalize_hook = seq_finalize_hook;
 	args->save_hook = NULL;
 	args->image_hook = background_image_hook;
 	args->idle_function = NULL;
@@ -712,9 +712,13 @@ void apply_background_extraction_to_sequence(struct background_data *background_
 	args->description = _("Background Extraction");
 	args->has_output = TRUE;
 	args->output_type = get_data_type(args->seq->bitpix);
+	args->upscale_ratio = 1.0;
 	args->new_seq_prefix = background_args->seqEntry;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
+	args->new_ser = NULL;
+	args->force_fitseq_output = FALSE;
+	args->new_fitseq = NULL;
 	args->user = background_args;
 	args->already_in_a_thread = FALSE;
 	args->parallel = TRUE;

@@ -39,7 +39,7 @@
 #include "gui/progress_and_log.h"
 #include "algos/demosaicing.h"
 #include "io/conversion.h"
-
+#include "io/image_format_fits.h"
 #include "ser.h"
 
 static gboolean user_warned = FALSE;
@@ -697,7 +697,7 @@ int ser_compact_file(struct ser_struct *ser_file, unsigned char *successful_fram
 	return 0;
 }
 
-/* ser_file must be allocated
+/* ser_file must be allocated and initialised with ser_init_struct()
  * the file is created with no image size, the first image added will set it. */
 int ser_create_file(const char *filename, struct ser_struct *ser_file,
 		gboolean overwrite, struct ser_struct *copy_from) {

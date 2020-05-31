@@ -36,6 +36,7 @@
 #include "gui/progress_and_log.h"
 #include "gui/PSF_list.h"
 #include "gui/sequence_list.h"
+#include "io/image_format_fits.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
 #include "io/ser.h"
@@ -187,7 +188,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 		cur_nb++;	// only used for progress bar
 
-		if (seq_read_frame(args->seq, j, &fit, FALSE)) {
+		if (seq_read_frame(args->seq, j, &fit, FALSE, -1)) {
 			siril_log_message(_("Stacking: could not read frame, aborting\n"));
 			retval = -3;
 			goto free_and_reset_progress_bar;
@@ -348,6 +349,9 @@ void main_stack(struct stacking_args *args) {
 			return;
 		}
 	}
+
+	if (args->seq->type == SEQ_FITSEQ)
+		fitseq_prepare_for_multiple_read(args->seq->fitseq_file);
 
 	siril_log_message(args->description);
 	if (args->use_32bit_output)
@@ -558,6 +562,8 @@ static gboolean end_stacking(gpointer p) {
 	struct stacking_args *args = (struct stacking_args *)p;
 	fprintf(stdout, "Ending stacking idle function, retval=%d\n", args->retval);
 	stop_processing_thread();	// can it be done here in case there is no thread?
+	if (args->seq->type == SEQ_FITSEQ)
+		fitseq_multiple_close(args->seq->fitseq_file);
 
 	if (!args->retval) {
 		clear_stars_list();

@@ -34,6 +34,7 @@
 #include "io/films.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
+#include "io/fits_sequence.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
@@ -282,6 +283,13 @@ static void opendial(int whichdial) {
 		filename = gtk_file_chooser_get_filename(chooser);
 		if (!filename)
 			goto wait;
+
+		if (fitseq_is_fitseq(filename, NULL)
+				&& ((whichdial == OD_FLAT) || (whichdial == OD_DARK) || (whichdial == OD_OFFSET))) {
+			siril_message_dialog(GTK_MESSAGE_ERROR, _("Format not supported."),
+					_("FITS sequences are not supported for master files. Please select a single FITS file."));
+			goto wait;
+		}
 
 		pbutton  = lookup_widget("prepro_button");
 		flat_entry = GTK_ENTRY(lookup_widget("flatname_entry"));

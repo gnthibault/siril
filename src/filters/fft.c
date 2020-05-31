@@ -26,7 +26,6 @@
 #include <fftw3.h>
 
 #include "core/siril.h"
-#include "core/proto.h"
 #include "gui/image_display.h"
 #include "gui/image_interactions.h"
 #include "gui/callbacks.h"
@@ -36,6 +35,7 @@
 #include "core/processing.h"
 #include "core/OS_utils.h"
 #include "io/single_image.h"
+#include "io/image_format_fits.h"
 #include "io/sequence.h"
 #include "algos/statistics.h"
 

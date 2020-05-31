@@ -33,6 +33,7 @@
 #include "io/conversion.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
+#include "io/image_format_fits.h"
 
 #include "save_dialog.h"
 
@@ -292,6 +293,7 @@ static void filter_changed(gpointer user_data) {
 	gchar *new_filename = NULL;
 
 	switch (format) {
+	default:
 	case TYPEFITS:
 		new_filename = g_strdup_printf("%s%s", file_no_ext, com.pref.ext);
 		break;
@@ -320,8 +322,6 @@ static void filter_changed(gpointer user_data) {
 		new_filename = g_strdup_printf("%s.png", file_no_ext);
 		break;
 #endif
-	default:
-		break;
 	}
 	if (new_filename) {
 		gchar *bname = g_path_get_basename(new_filename);

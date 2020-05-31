@@ -34,6 +34,7 @@
 #include "algos/star_finder.h"
 #include "io/conversion.h"
 #include "io/films.h"
+#include "io/image_format_fits.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
 #include "gui/preferences.h"
@@ -612,6 +613,10 @@ int copy_rendering_settings_when_chained(gboolean from_GUI) {
 void update_prepro_interface(gboolean allow_debayer) {
 	static GtkToggleButton *udark = NULL, *uoffset = NULL, *uflat = NULL,
 			       *checkAutoEvaluate = NULL;
+	static GtkWidget *prepro_button = NULL, *cosme_grid = NULL, *dark_optim = NULL;
+       	static GtkWidget *equalize = NULL, *auto_eval = NULL, *flat_norm = NULL;
+       	static GtkWidget *debayer = NULL;
+	static GtkComboBox *output_type = NULL;
 	if (udark == NULL) {
 		udark = GTK_TOGGLE_BUTTON(
 				gtk_builder_get_object(builder, "usedark_button"));
@@ -621,28 +626,37 @@ void update_prepro_interface(gboolean allow_debayer) {
 				gtk_builder_get_object(builder, "useflat_button"));
 		checkAutoEvaluate = GTK_TOGGLE_BUTTON(
 				gtk_builder_get_object(builder, "checkbutton_auto_evaluate"));
+		output_type = GTK_COMBO_BOX(
+				gtk_builder_get_object(builder, "prepro_output_type_combo"));
+		prepro_button = lookup_widget("prepro_button");
+		cosme_grid = lookup_widget("grid24");
+		dark_optim = lookup_widget("checkDarkOptimize");
+		equalize = lookup_widget("checkbutton_equalize_cfa");
+		auto_eval = lookup_widget("checkbutton_auto_evaluate");
+		flat_norm = lookup_widget("entry_flat_norm");
+		debayer = lookup_widget("checkButton_pp_dem");
 	}
 
-	gtk_widget_set_sensitive(lookup_widget("prepro_button"),
+	gtk_widget_set_sensitive(prepro_button,
 			(sequence_is_loaded() || single_image_is_loaded())
 			&& (gtk_toggle_button_get_active(udark)
 				|| gtk_toggle_button_get_active(uoffset)
 				|| gtk_toggle_button_get_active(uflat)));
-	gtk_widget_set_sensitive(lookup_widget("grid24"),
-			gtk_toggle_button_get_active(udark));
-	gtk_widget_set_sensitive(lookup_widget("checkDarkOptimize"),
-			gtk_toggle_button_get_active(udark));
-	gtk_widget_set_sensitive(lookup_widget("checkbutton_equalize_cfa"),
-			gtk_toggle_button_get_active(uflat));
-	gtk_widget_set_sensitive(lookup_widget("checkbutton_auto_evaluate"),
-			gtk_toggle_button_get_active(uflat));
-	gtk_widget_set_sensitive(lookup_widget("entry_flat_norm"),
-			gtk_toggle_button_get_active(uflat)
-			&& !gtk_toggle_button_get_active(checkAutoEvaluate));
+	gtk_widget_set_sensitive(cosme_grid, gtk_toggle_button_get_active(udark));
+	gtk_widget_set_sensitive(dark_optim, gtk_toggle_button_get_active(udark));
+	gtk_widget_set_sensitive(equalize, gtk_toggle_button_get_active(uflat));
+	gtk_widget_set_sensitive(auto_eval, gtk_toggle_button_get_active(uflat));
+	gtk_widget_set_sensitive(flat_norm,
+			gtk_toggle_button_get_active(uflat) &&
+			!gtk_toggle_button_get_active(checkAutoEvaluate));
 
-	gtk_widget_set_sensitive(lookup_widget("checkButton_pp_dem"),
-			allow_debayer && gtk_widget_get_sensitive(
-							lookup_widget("prepro_button")));
+	gtk_widget_set_sensitive(debayer, allow_debayer && gtk_widget_get_sensitive(prepro_button));
+
+	gtk_widget_set_sensitive(GTK_WIDGET(output_type), sequence_is_loaded());
+	int type = com.seq.type;
+	if (com.seq.type < 0 || com.seq.type > SEQ_FITSEQ)
+		type = SEQ_REGULAR;
+	gtk_combo_box_set_active(output_type, type);
 }
 
 void clear_sampling_setting_box() {

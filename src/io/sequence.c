@@ -44,11 +44,14 @@
 #include "gui/callbacks.h"
 #include "gui/plot.h"
 #include "ser.h"
+#include "fits_sequence.h"
+#include "fits_sequence.h"
 #ifdef HAVE_FFMS2
 #include "films.h"
 #endif
 #include "avi_pipp/avi_writer.h"
 #include "single_image.h"
+#include "image_format_fits.h"
 #include "gui/histogram.h"
 #include "gui/image_display.h"
 #include "gui/progress_and_log.h"
@@ -104,11 +107,12 @@ static void fillSeqAviExport() {
 	}
 }
 
+static sequence *check_seq_one_file(const char* name);
+
 /* when opening a file outside the main sequence loading system and that file
  * is a sequence (SER/AVI), this function is called to load this sequence. */
-int read_single_sequence(char *realname, int imagetype) {
-	int retval = 0;
-	char *name = strdup(realname);
+int read_single_sequence(char *realname, image_type imagetype) {
+	int retval = 0, len;
 	gchar *dirname = g_path_get_dirname(realname);
 	if (!changedir(dirname, NULL)) {
 		writeinitfile();
@@ -118,42 +122,52 @@ int read_single_sequence(char *realname, int imagetype) {
 	}
 	g_free(dirname);
 
-	if (check_only_one_film_seq(realname)) retval = 1;
-	else {
+	sequence *new_seq = check_seq_one_file(realname); // it's not the real .seq read
+	if (!new_seq)
+		return 1;
+	free_sequence(new_seq, TRUE);
+
+	char *name = strdup(realname);
+	const char *ext;
 #ifdef HAVE_FFMS2
-		const char *ext;
+	const char *film_ext;
 #endif
-		switch (imagetype) {
-			case TYPESER:
-				name[strlen(name)-1] = 'q';
-				break;
+	switch (imagetype) {
+		case TYPESER:
+			name[strlen(name)-1] = 'q';
+			break;
+		case TYPEFITS:
+			ext = get_filename_ext(realname);
+			assert(ext);
+			len = strlen(ext);
+			strncpy(name+strlen(name)-len, "seq", len);
+			break;
 #ifdef HAVE_FFMS2
-			case TYPEAVI:
-				ext = get_filename_ext(realname);
-				assert(ext);
-				int len = strlen(ext);
-				strncpy(name+strlen(name)-len, "seq", len);
-				break;
+		case TYPEAVI:
+			film_ext = get_filename_ext(realname);
+			assert(film_ext);
+			len = strlen(film_ext);
+			strncpy(name+strlen(name)-len, "seq", len);
+			break;
 #endif
-			default:
-				retval = 1;
-		}
-		gchar *fname = g_path_get_basename(name);
-		if (!set_seq(fname)) {
-			/* if it loads, make it selected and only element in the list of sequences */
-			control_window_switch_to_tab(IMAGE_SEQ);
-			GtkComboBoxText *combo_box_text = GTK_COMBO_BOX_TEXT(lookup_widget("sequence_list_combobox"));
-			gtk_combo_box_text_remove_all(combo_box_text);
-			gchar *rname = g_path_get_basename(realname);
-			gtk_combo_box_text_append(combo_box_text, 0, rname);
-			g_signal_handlers_block_by_func(GTK_COMBO_BOX(combo_box_text), on_seqproc_entry_changed, NULL);
-			gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box_text), 0);
-			g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(combo_box_text), on_seqproc_entry_changed, NULL);
-			g_free(rname);
-		}
-		else retval = 1;
-		g_free(fname);
+		default:
+			retval = 1;
 	}
+	gchar *fname = g_path_get_basename(name);
+	if (!set_seq(fname)) {
+		/* if it loads, make it selected and only element in the list of sequences */
+		control_window_switch_to_tab(IMAGE_SEQ);
+		GtkComboBoxText *combo_box_text = GTK_COMBO_BOX_TEXT(lookup_widget("sequence_list_combobox"));
+		gtk_combo_box_text_remove_all(combo_box_text);
+		gchar *rname = g_path_get_basename(realname);
+		gtk_combo_box_text_append(combo_box_text, 0, rname);
+		g_signal_handlers_block_by_func(GTK_COMBO_BOX(combo_box_text), on_seqproc_entry_changed, NULL);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box_text), 0);
+		g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(combo_box_text), on_seqproc_entry_changed, NULL);
+		g_free(rname);
+	}
+	else retval = 1;
+	g_free(fname);
 	free(name);
 	return retval;
 }
@@ -201,46 +215,12 @@ int check_seq(int recompute_stats) {
 		if (fnlen < 4) continue;
 		const char *ext = get_filename_ext(file);
 		if (!ext) continue;
-		if (!strcasecmp(ext, "ser")) {
-			struct ser_struct *ser_file = malloc(sizeof(struct ser_struct));
-			ser_init_struct(ser_file);
-			if (ser_open_file(file, ser_file))
-				continue;
-			new_seq = calloc(1, sizeof(sequence));
-			initialize_sequence(new_seq, TRUE);
-			new_seq->seqname = g_strndup(file, fnlen-4);
-			new_seq->beg = 0;
-			new_seq->end = ser_file->frame_count-1;
-			new_seq->number = ser_file->frame_count;
-			new_seq->type = SEQ_SER;
-			new_seq->ser_file = ser_file;
-			sequences[nb_seq] = new_seq;
-			nb_seq++;
-			fprintf(stdout, "Found a SER sequence (number %d)\n", nb_seq);
-		}
-#ifdef HAVE_FFMS2
-		else if (!check_for_film_extensions(ext)) {
-			struct film_struct *film_file = malloc(sizeof(struct film_struct));
-			if (film_open_file(file, film_file)) {
-				free(film_file);
-				continue;
-			}
-			new_seq = calloc(1, sizeof(sequence));
-			initialize_sequence(new_seq, TRUE);
-			int len = strlen(ext);
-			new_seq->seqname = g_strndup(file, fnlen - (len + 1));
-			new_seq->beg = 0;
-			new_seq->end = film_file->frame_count-1;
-			new_seq->number = film_file->frame_count;
-			new_seq->type = SEQ_AVI;
-			new_seq->film_file = film_file;
-			sequences[nb_seq] = new_seq;
-			nb_seq++;
-			fprintf(stdout, "Found a AVI sequence (number %d)\n", nb_seq);
-		}
-#endif
 
-		else if (!strcasecmp(ext, com.pref.ext+1)) {
+		if ((new_seq = check_seq_one_file(file))) {
+			sequences[nb_seq] = new_seq;
+			nb_seq++;
+		}
+		else if (!strcasecmp(ext, com.pref.ext + 1)) {
 			if (!get_index_and_basename(file, &basename, &curidx, &fixed)) {
 				int current_seq = -1;
 				/* search in known sequences if we already have it */
@@ -260,7 +240,7 @@ int check_seq(int recompute_stats) {
 					sequences[nb_seq] = new_seq;
 					current_seq = nb_seq;
 					nb_seq++;
-					fprintf(stdout, "Found a sequence (number %d) with base name"
+					siril_debug_print("Found a sequence (number %d) with base name"
 							" \"%s\", looking for first and last indexes.\n",
 							nb_seq, basename);
 				}
@@ -285,12 +265,12 @@ int check_seq(int recompute_stats) {
 	}
 	set_progress_bar_data(NULL, PROGRESS_DONE);
 	g_dir_close(dir);
+
 	if (nb_seq > 0) {
 		int retval = 1;
 		for (i=0; i<nb_seq; i++) {
 			if (sequences[i]->beg != sequences[i]->end) {
-				char msg[200];
-				sprintf(msg, _("sequence %d, found: %d to %d"),
+				siril_debug_print(_("sequence %d, found: %d to %d\n"),
 						i+1, sequences[i]->beg, sequences[i]->end);
 				if (!buildseqfile(sequences[i], recompute_stats) && retval)
 					retval = 0;	// at least one succeeded to be created
@@ -302,39 +282,25 @@ int check_seq(int recompute_stats) {
 	}
 	free(sequences);
 	siril_log_message(_("No sequence found, verify working directory or "
-			"change FITS extension in settings (current is %s)\n"), com.pref.ext);
+				"change FITS extension in settings (current is %s)\n"), com.pref.ext);
 	return 1;	// no sequence found
 }
 
-/* Check for on film sequence of the name passed in arguement
- * Returns 0 if OK */
-int check_only_one_film_seq(char* name) {
-	int retval = 1;
-	GDir *dir;
-	GError *error = NULL;
-	sequence *new_seq = NULL;
-
+/* Creates a .seq file for one-file sequence passed in argument */
+static sequence *check_seq_one_file(const char* name) {
 	if (!com.wd) {
 		siril_log_message(_("Current working directory is not set, aborting.\n"));
-		return 1;
+		return NULL;
 	}
-	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL) {
-		fprintf (stderr, "check_only_one_film_seq: %s\n", error->message);
-		g_error_free(error);
-		g_free(com.wd);
-		com.wd = NULL;
-		return 1;
-	}
-
 	int fnlen = strlen(name);
 	const char *ext = get_filename_ext(name);
+	sequence *new_seq = NULL;
 
 	if (!strcasecmp(ext, "ser")) {
 		struct ser_struct *ser_file = malloc(sizeof(struct ser_struct));
 		ser_init_struct(ser_file);
 		if (ser_open_file(name, ser_file)) {
-			g_dir_close(dir);
-			return 1;
+			return NULL;
 		}
 
 		new_seq = calloc(1, sizeof(sequence));
@@ -345,14 +311,14 @@ int check_only_one_film_seq(char* name) {
 		new_seq->number = ser_file->frame_count;
 		new_seq->type = SEQ_SER;
 		new_seq->ser_file = ser_file;
+		siril_debug_print("Found a SER sequence\n");
 	}
 #ifdef HAVE_FFMS2
 	else if (!check_for_film_extensions(ext)) {
 		struct film_struct *film_file = malloc(sizeof(struct film_struct));
 		if (film_open_file(name, film_file)) {
 			free(film_file);
-			g_dir_close(dir);
-			return 1;
+			return NULL;
 		}
 		new_seq = calloc(1, sizeof(sequence));
 		initialize_sequence(new_seq, TRUE);
@@ -363,17 +329,34 @@ int check_only_one_film_seq(char* name) {
 		new_seq->number = film_file->frame_count;
 		new_seq->type = SEQ_AVI;
 		new_seq->film_file = film_file;
-		fprintf(stdout, "Found a AVI sequence\n");
+		siril_debug_print("Found a AVI sequence\n");
 	}
 #endif
-	g_dir_close(dir);
-	if (!new_seq) return 0;
-	if (new_seq->beg != new_seq->end) {
-		if (!buildseqfile(new_seq, 0) && retval)
-			retval = 0;
+	else if (!strcasecmp(ext, com.pref.ext + 1) && fitseq_is_fitseq(name, NULL)) {
+		fitseq *fitseq_file = malloc(sizeof(fitseq));
+		fitseq_init_struct(fitseq_file);
+		if (fitseq_open(name, fitseq_file)) {
+			free(fitseq_file);
+			return NULL;
+		}
+		new_seq = calloc(1, sizeof(sequence));
+		initialize_sequence(new_seq, TRUE);
+		new_seq->seqname = g_strndup(name, fnlen-strlen(com.pref.ext));
+		new_seq->beg = 0;
+		new_seq->end = fitseq_file->frame_count - 1;
+		new_seq->number = fitseq_file->frame_count;
+		new_seq->type = SEQ_FITSEQ;
+		new_seq->fitseq_file = fitseq_file;
+		siril_debug_print("Found a FITS sequence\n");
 	}
-	free_sequence(new_seq, TRUE);
-	return retval;
+
+	if (new_seq && new_seq->beg != new_seq->end) {
+		if (buildseqfile(new_seq, 0)) {
+			free_sequence(new_seq, TRUE);
+			new_seq = NULL;
+		}
+	}
+	return new_seq;
 }
 
 // get the number of layers and image size for a new sequence
@@ -393,7 +376,7 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 		}
 
 		/* TODO: we could only read the header if !load_ref_into_gfit */
-		if (seq_read_frame(seq, image_to_load, fit, FALSE)) {
+		if (seq_read_frame(seq, image_to_load, fit, FALSE, -1)) {
 			fprintf(stderr, "could not load first image from sequence\n");
 			return -1;
 		}
@@ -448,7 +431,7 @@ int set_seq(const char *name){
 	}
 	if (retval == 0) {
 		int image_to_load = sequence_find_refimage(seq);
-		if (seq_read_frame(seq, image_to_load, &gfit, FALSE)) {
+		if (seq_read_frame(seq, image_to_load, &gfit, FALSE, -1)) {
 			fprintf(stderr, "could not load first image from sequence\n");
 			free(seq);
 			return 1;
@@ -482,7 +465,7 @@ int set_seq(const char *name){
 	display_filename();		// display filename in gray window
 	set_precision_switch(); // set precision on screen
 	adjust_refimage(seq->current);	// check or uncheck reference image checkbox
-	update_prepro_interface(seq->type == SEQ_REGULAR); // enable or not the preprobutton
+	update_prepro_interface(seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ); // enable or not the preprobutton
 	update_reg_interface(FALSE);	// change the registration prereq message
 //	update_stack_interface(FALSE);	// get stacking info and enable the Go button, already done in set_layers_for_registration
 	adjust_reginfo();		// change registration displayed/editable values
@@ -527,7 +510,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 
 	if (load_it) {
 		set_cursor_waiting(TRUE);
-		if (seq_read_frame(seq, index, &gfit, FALSE)) {
+		if (seq_read_frame(seq, index, &gfit, FALSE, -1)) {
 			set_cursor_waiting(FALSE);
 			return 1;
 		}
@@ -579,6 +562,7 @@ int64_t seq_compute_size(sequence *seq, int nb_frames, data_type depth) {
 		size = ser_compute_file_size(seq->ser_file, nb_frames);
 		break;
 	case SEQ_REGULAR:
+	case SEQ_FITSEQ:
 		frame_size = seq->rx * seq->ry * seq->nb_layers;
 		if (depth == DATA_USHORT)
 			frame_size *= sizeof(WORD);
@@ -603,33 +587,23 @@ int64_t seq_compute_size(sequence *seq, int nb_frames, data_type depth) {
 }
 
 /**
- * Check if a sequence with a basename 'basename' already exists
- * @param filename
+ * Check if a sequence with a basename 'name' or a full name 'name' already exists
+ * @param name either the base name of the sequence or its full name in case of
+ * single file sequence
+ * @param name_is_base TRUE is the name is a base name
  * @return TRUE if the name already exists, FALSE otherwise
  */
-gboolean check_if_seq_exist(gchar *basename) {
-	GDir *dir;
-	GError *error = NULL;
-	const gchar *file;
-
-	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL) {
-		fprintf(stderr, "check_if_seq_exist: %s\n", error->message);
-		g_error_free(error);
-		g_free(com.wd);
-		com.wd = NULL;
-		return 1;
-	}
-
-	while ((file = g_dir_read_name(dir)) != NULL) {
-		gchar *seq = g_strdup_printf("%s.seq", basename);
-
-		if (!g_ascii_strcasecmp(seq, file)) {
-			g_free(seq);
-			return TRUE;
-		}
+gboolean check_if_seq_exist(gchar *name, gboolean name_is_base) {
+	gchar *path;
+	if (name_is_base) {
+		gchar *seq = g_strdup_printf("%s.seq", name);
+		path = g_build_filename(com.wd, seq, NULL);
 		g_free(seq);
 	}
-	return FALSE;
+	else path = g_build_filename(com.wd, name, NULL);
+	gboolean retval = is_readable_file(path);
+	g_free(path);
+	return retval;
 }
 
 /*****************************************************************************
@@ -649,7 +623,12 @@ char *seq_get_image_filename(sequence *seq, int index, char *name_buf) {
 				return NULL;
 			}
 			snprintf(name_buf, 255, "%s_%d.ser", seq->seqname,  index);
-			name_buf[255] = '\0';
+			return name_buf;
+		case SEQ_FITSEQ:
+			if (!name_buf || index < 0 || index > seq->end) {
+				return NULL;
+			}
+			snprintf(name_buf, 255, "%s_%d%s", seq->seqname,  index, com.pref.ext);
 			return name_buf;
 #ifdef HAVE_FFMS2
 		case SEQ_AVI:
@@ -657,12 +636,10 @@ char *seq_get_image_filename(sequence *seq, int index, char *name_buf) {
 				return NULL;
 			}
 			snprintf(name_buf, 255, "%s_%d", seq->seqname, index);
-			name_buf[255] = '\0';
 			return name_buf;
 #endif
 		case SEQ_INTERNAL:
 			snprintf(name_buf, 255, "%s_%d", seq->seqname, index);
-			name_buf[255] = '\0';
 			return name_buf;
 	}
 	return NULL;
@@ -671,7 +648,7 @@ char *seq_get_image_filename(sequence *seq, int index, char *name_buf) {
 /* Read an entire image from a sequence, inside a pre-allocated fits.
  * Opens the file, reads data, closes the file.
  */
-int seq_read_frame(sequence *seq, int index, fits *dest, gboolean force_float) {
+int seq_read_frame(sequence *seq, int index, fits *dest, gboolean force_float, int thread_id) {
 	char filename[256];
 	assert(index < seq->number);
 	switch (seq->type) {
@@ -691,6 +668,15 @@ int seq_read_frame(sequence *seq, int index, fits *dest, gboolean force_float) {
 				return 1;
 			}
 			break;
+		case SEQ_FITSEQ:
+			assert(seq->fitseq_file);
+			if (fitseq_read_frame(seq->fitseq_file, index, dest, force_float, thread_id)) {
+				siril_log_message(_("Could not load frame %d from FITS sequence %s\n"),
+						index, seq->seqname);
+				return 1;
+			}
+			break;
+
 #ifdef HAVE_FFMS2
 		case SEQ_AVI:
 			assert(seq->film_file);
@@ -728,7 +714,7 @@ int seq_read_frame(sequence *seq, int index, fits *dest, gboolean force_float) {
  * rectangle only. layer is set to the layer number in the read partial frame.
  * The partial image result is only one-channel deep, so it cannot be used to
  * have a partial RGB image. */
-int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const rectangle *area, gboolean do_photometry) {
+int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const rectangle *area, gboolean do_photometry, int thread_id) {
 	char filename[256];
 #ifdef HAVE_FFMS2
 	fits tmp_fit;
@@ -749,8 +735,16 @@ int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const r
 						index, seq->seqname);
 				return 1;
 			}
-
 			break;
+		case SEQ_FITSEQ:
+			assert(seq->fitseq_file);
+			if (fitseq_read_partial_fits(seq->fitseq_file, layer, index, dest, area, do_photometry, thread_id)) {
+				siril_log_message(_("Could not load partial image %d from sequence %s\n"),
+						index, seq->seqname);
+				return 1;
+			}
+			break;
+
 #ifdef HAVE_FFMS2
 		case SEQ_AVI:
 			assert(seq->film_file);
@@ -823,6 +817,9 @@ int seq_open_image(sequence *seq, int index) {
 		case SEQ_SER:
 			assert(seq->ser_file->file == NULL);
 			break;
+		case SEQ_FITSEQ:
+			assert(seq->fitseq_file->fptr == NULL);
+			break;
 #ifdef HAVE_FFMS2
 		case SEQ_AVI:
 			siril_log_message(_("This operation is not supported on AVI sequences (seq_open_image)\n"));
@@ -853,13 +850,16 @@ void seq_close_image(sequence *seq, int index) {
 /* read a region in a layer of an opened file from a sequence.
  * The buffer must have been allocated to the size of the area, with type of
  * float if seq->bitpix is FLOAT_IMG, with 16-bit type otherwise
+ * Used only by median and rejection stacking.
  */
-int seq_opened_read_region(sequence *seq, int layer, int index, void *buffer, const rectangle *area) {
+int seq_opened_read_region(sequence *seq, int layer, int index, void *buffer, const rectangle *area, int thread_id) {
 	switch (seq->type) {
 		case SEQ_REGULAR:
 			return read_opened_fits_partial(seq, layer, index, buffer, area);
 		case SEQ_SER:
 			return ser_read_opened_partial(seq->ser_file, layer, index, buffer, area);
+		case SEQ_FITSEQ:
+			return fitseq_read_partial(seq->fitseq_file, layer, index, buffer, area, thread_id);
 		default:
 			break;
 	}
@@ -1016,7 +1016,10 @@ void remove_prefixed_sequence_files(sequence *seq, const char *prefix) {
 		}
 		break;
 	case SEQ_SER:
-		basename = seq->ser_file->filename;
+	case SEQ_FITSEQ:
+		if (seq->type == SEQ_SER)
+			basename = seq->ser_file->filename;
+		else basename = seq->fitseq_file->filename;
 		len = strlen(basename) + strlen(prefix) + 1;
 		seqname = malloc(len);
 		g_snprintf(seqname, len, "%s%s", prefix, basename);
@@ -1149,6 +1152,10 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 		free(seq->film_file);
 	}
 #endif
+	if (seq->fitseq_file) {
+		fitseq_close_file(seq->fitseq_file);
+		free(seq->fitseq_file);
+	}
 
 	if (seq->internal_fits) {
 		// Compositing still uses references to the images in the sequence
@@ -1344,23 +1351,24 @@ gboolean end_crop_sequence(gpointer p) {
 	return FALSE;
 }
 
+// this function should be remade with the generic function and partial reading
 gpointer crop_sequence(gpointer p) {
 	struct crop_sequence_data *args = (struct crop_sequence_data *) p;
 	int frame, ret;
 	float cur_nb;
 	struct ser_struct *ser_file = NULL;
+	fitseq *fitseq_file = NULL;
 
 	args->retvalue = 0;
 
 	if (args->seq->type == SEQ_SER) {
-		char dest[256];
-
 		ser_file = malloc(sizeof(struct ser_struct));
 		if (ser_file == NULL) {
 			PRINT_ALLOC_ERR;
 			args->retvalue = 1;
 			siril_add_idle(end_crop_sequence, args);
 		}
+		char dest[256];
 		sprintf(dest, "%s%s.ser", args->prefix, args->seq->seqname);
 		if (ser_create_file(dest, ser_file, TRUE, com.seq.ser_file)) {
 			siril_log_message(_("Creating the SER file failed, aborting.\n"));
@@ -1370,13 +1378,31 @@ gpointer crop_sequence(gpointer p) {
 			siril_add_idle(end_crop_sequence, args);
 		}
 	}
+	else if (args->seq->type == SEQ_FITSEQ) {
+		fitseq_file = malloc(sizeof(struct ser_struct));
+		if (fitseq_file == NULL) {
+			PRINT_ALLOC_ERR;
+			args->retvalue = 1;
+			siril_add_idle(end_crop_sequence, args);
+		}
+		char dest[256];
+		sprintf(dest, "%s%s%s", args->prefix, args->seq->seqname, com.pref.ext);
+		if (fitseq_create_file(dest, fitseq_file, args->seq->number)) {
+			siril_log_message(_("Creating the SER file failed, aborting.\n"));
+			free(fitseq_file);
+			fitseq_file = NULL;
+			args->retvalue = 1;
+			siril_add_idle(end_crop_sequence, args);
+		}
+	}
+
 	set_progress_bar_data(_("Processing..."), PROGRESS_RESET);
 	for (frame = 0, cur_nb = 0.f; frame < args->seq->number; frame++) {
 		if (!get_thread_run() || args->retvalue)
 			break;
 		fits fit;
 		memset(&fit, 0, sizeof(fits));
-		ret = seq_read_frame(args->seq, frame, &fit, FALSE);
+		ret = seq_read_frame(args->seq, frame, &fit, FALSE, -1);
 		if (!ret) {
 			char dest[256], filename[256];
 
@@ -1393,7 +1419,15 @@ gpointer crop_sequence(gpointer p) {
 					ser_file->image_width = fit.rx;
 					ser_file->image_height = fit.ry;
 					if (ser_write_frame_from_fit(ser_file, &fit, frame)) {
-						siril_log_message(_("Error while converting to SER (no space left?)\n"));
+						siril_log_message(_("Error while cropping to SER (no space left?)\n"));
+						args->retvalue = 1;
+					}
+				}
+				break;
+			case SEQ_FITSEQ:
+				if (fitseq_file) {
+					if (fitseq_write_image(fitseq_file, &fit, frame)) {
+						siril_log_message(_("Error while cropping to FITS sequence (no space left?)\n"));
 						args->retvalue = 1;
 					}
 				}
@@ -1407,9 +1441,14 @@ gpointer crop_sequence(gpointer p) {
 		}
 		clearfits(&fit);
 	}
+	// TODO: handle retvalue
 	if (args->seq->type == SEQ_SER) {
 		ser_write_and_close(ser_file);
 		free(ser_file);
+	}
+	else if (args->seq->type == SEQ_FITSEQ) {
+		fitseq_close_file(fitseq_file);
+		free(fitseq_file);
 	}
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 	siril_add_idle(end_crop_sequence, args);
@@ -1426,6 +1465,8 @@ gboolean sequence_is_rgb(sequence *seq) {
 			return (seq->ser_file->color_id != SER_MONO && com.pref.debayer.open_debayer) ||
 				seq->ser_file->color_id == SER_RGB ||
 				seq->ser_file->color_id == SER_BGR;
+		case SEQ_FITSEQ:
+			return seq->fitseq_file->naxes[2] == 3;
 		default:
 			return TRUE;
 	}
@@ -1685,3 +1726,31 @@ void free_reference_image() {
 		enable_view_reference_checkbox(FALSE);
 }
 
+/* returns the number of images of the sequence that can fit into memory based
+ * on the configured memory ratio. It can return -1 if there is no memory limit enforced. */
+int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_float, unsigned int *MB_per_image, int *max_mem_MB) {
+	int max_memory_MB = get_max_memory_in_MB();
+	if (max_memory_MB < 0) {
+		// unlimited
+		return -1;
+	}
+	if (factor < 1.0 || factor > 2.0) {
+		fprintf(stderr, "############ FACTOR UNINIT ############\n");
+		factor = 1.0;
+	}
+	uint64_t newx = round_to_int((double)seq->rx * factor);
+	uint64_t newy = round_to_int((double)seq->ry * factor);
+	uint64_t memory_per_image = newx * newy * seq->nb_layers;
+	if (force_float || get_data_type(seq->bitpix) == DATA_FLOAT)
+		memory_per_image *= sizeof(float);
+	else memory_per_image *= sizeof(WORD);
+	unsigned int memory_per_image_MB = memory_per_image / BYTES_IN_A_MB;
+	if (memory_per_image_MB == 0)
+		memory_per_image_MB = 1;
+	fprintf(stdout, "Memory per image: %u MB. Max memory: %d MB\n", memory_per_image_MB, max_memory_MB);
+	if (MB_per_image)
+		*MB_per_image = memory_per_image_MB;
+	if (max_mem_MB)
+		*max_mem_MB = max_memory_MB;
+	return max_memory_MB / memory_per_image_MB;
+}

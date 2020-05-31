@@ -33,6 +33,7 @@
 #include "registration/registration.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
+#include "io/image_format_fits.h"
 
 #define REGLAYER 0
 
