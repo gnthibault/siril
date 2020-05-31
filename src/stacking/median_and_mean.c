@@ -167,7 +167,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 		*bitpix = args->seq->fitseq_file->bitpix;
 		import_metadata_from_fitsfile(args->seq->fitseq_file->fptr, fit);
 	} else {
-		siril_log_message(_("Rejection stacking is only supported for FITS images and SER sequences.\nUse \"Sum Stacking\" instead.\n"));
+		siril_log_message(_("Rejection stacking is only supported for FITS images/sequences and SER sequences.\nUse \"Sum Stacking\" instead.\n"));
 		return 2;
 	}
 

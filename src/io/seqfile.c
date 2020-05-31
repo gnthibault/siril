@@ -729,10 +729,10 @@ int buildseqfile(sequence *seq, int force_recompute) {
 		if (seq->type == SEQ_REGULAR) {
 			get_possible_image_filename(seq, i, filename);
 			if (!stat_file(filename, &imagetype, NULL) && imagetype == TYPEFITS) {
-				if (seq->number+1 > alloc_size-1) {
+				if (seq->number + 1 > alloc_size - 1) {
 					alloc_size += 25;
 					oldparam = seq->imgparam;
-					if (!(seq->imgparam = realloc(seq->imgparam, alloc_size*sizeof(imgdata)))) {
+					if (!(seq->imgparam = realloc(seq->imgparam, alloc_size * sizeof(imgdata)))) {
 						PRINT_ALLOC_ERR;
 						if (oldparam) free(oldparam);
 						free(filename);

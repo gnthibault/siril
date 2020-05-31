@@ -219,12 +219,11 @@ int check_seq(int recompute_stats) {
 		if ((new_seq = check_seq_one_file(file))) {
 			sequences[nb_seq] = new_seq;
 			nb_seq++;
-		}
-		else if (!strcasecmp(ext, com.pref.ext + 1)) {
+		} else if (!strcasecmp(ext, com.pref.ext + 1)) {
 			if (!get_index_and_basename(file, &basename, &curidx, &fixed)) {
 				int current_seq = -1;
 				/* search in known sequences if we already have it */
-				for (i=0; i<nb_seq; i++) {
+				for (i = 0; i < nb_seq; i++) {
 					if (!strcmp(sequences[i]->seqname, basename)) {
 						current_seq = i;
 					}
@@ -268,10 +267,10 @@ int check_seq(int recompute_stats) {
 
 	if (nb_seq > 0) {
 		int retval = 1;
-		for (i=0; i<nb_seq; i++) {
+		for (i = 0; i < nb_seq; i++) {
 			if (sequences[i]->beg != sequences[i]->end) {
 				siril_debug_print(_("sequence %d, found: %d to %d\n"),
-						i+1, sequences[i]->beg, sequences[i]->end);
+						i + 1, sequences[i]->beg, sequences[i]->end);
 				if (!buildseqfile(sequences[i], recompute_stats) && retval)
 					retval = 0;	// at least one succeeded to be created
 			}
