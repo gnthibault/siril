@@ -57,7 +57,7 @@ else
   git_info_array = git_info.split(' ')
   git_version = git_info_array[3]
   git_last_commit_year = git_info_array[0].split('-')[0]
-  #message('Siril version:', git_version)
+  message('Siril version:' + git_version)
   errortxt = r.stderr().strip()
 endif
 
