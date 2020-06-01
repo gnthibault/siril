@@ -14,7 +14,7 @@ configure_file(output : 'config.h',
 ################################################################################
 # List sources
 src_files = [ 
-  'round_extraction.c',
+  'algos/background_extraction.c',
   'algos/colors.c',
   'algos/demosaicing.c',
   'algos/demosaicing_rtp.cpp',
