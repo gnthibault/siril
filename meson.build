@@ -35,15 +35,6 @@ siril_version_major = version_array[0].to_int()
 siril_version_minor = version_array[1].to_int()
 siril_version_micro = version_array[2].to_int()
 
-## Developement version
-if (siril_version_minor % 2) == 1
-  message('Building development version')
-  siril_unstable = true
-else
-  message('Building release version')
-  siril_unstable = false
-endif
-
 ## Get version from git
 r = run_command('git', 'show', '-s', '--format="%ci %h"','-n1')
 
@@ -184,7 +175,8 @@ libcurl_dep = dependency('libcurl', required : false)
 ## General and package configuration
 conf_data = configuration_data()
 
-conf_data.set10('SIRIL_UNSTABLE', siril_unstable)
+stable = (siril_version_minor % 2 == 0)
+conf_data.set10('SIRIL_UNSTABLE', not stable)
 
 conf_data.set('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
 
