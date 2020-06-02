@@ -57,6 +57,7 @@ endif
 
 host_cpu_family = host_machine.cpu_family()
 host_os = host_machine.system().to_lower()
+message('Host os: ' + host_os)
 
 platform_linux = (
   host_os.contains('linux')
@@ -214,9 +215,9 @@ if gsl_dep.found()
     conf_data.set('HAVE_GSL_1', 1, description : 'Use GSL 1.')
     conf_data.set('HAVE_GSL_2', 0, description : 'Use GSL 2.')
   endif
-  else
-    conf_data.set('HAVE_GSL_1', 0, description : 'Use GSL 1.')
-    conf_data.set('HAVE_GSL_2', 0, description : 'Use GSL 2.')
+else
+  conf_data.set('HAVE_GSL_1', 0, description : 'Use GSL 1.')
+  conf_data.set('HAVE_GSL_2', 0, description : 'Use GSL 2.')
 endif
 
 if libraw_dep.found()

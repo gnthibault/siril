@@ -5,7 +5,7 @@
 ################################################################################
 # Define project
 
-project('kplot', ['c','cpp'], version : '0.1.14', license : ['ISC'], meson_version: '>=0.54.0', default_options : ['c_std=gnu11','cpp_std=c++11'])
+project('kplot', ['c','cpp'], version : '0.1.14', license : ['ISC'], meson_version: '>=0.51.0', default_options : ['c_std=gnu11','cpp_std=c++11'])
 
 ################################################################################
 # Meson modules and compilers
