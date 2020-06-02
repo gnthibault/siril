@@ -156,11 +156,15 @@ src_files = [
 ]
               
 link_args = []
+
+if platform_windows
+  link_args += [ '-Wl,--export-all-symbols' ]
+else
+  link_args = []
+endif
                    
 if platform_osx
   link_args += osx_ldflags
-else
-  link_args += [ '-rdynamic' ]
 endif
 
 siril_dep = declare_dependency(

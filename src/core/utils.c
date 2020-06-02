@@ -773,7 +773,6 @@ static int ListSequences(const gchar *sDir, const char *sequence_name_to_select,
  */
 int update_sequences_list(const char *sequence_name_to_select) {
 	GtkComboBoxText *seqcombo;
-	struct dirent **list;
 	int number_of_loaded_sequences = 0;
 	int index_of_seq_to_load = -1;
 	char *seqname = NULL;
@@ -794,6 +793,7 @@ int update_sequences_list(const char *sequence_name_to_select) {
 #ifdef _WIN32
 	number_of_loaded_sequences = ListSequences(com.wd, seqname, seqcombo, &index_of_seq_to_load);
 #else
+	struct dirent **list;
 	int i, n;
 
 	n = scandir(com.wd, &list, 0, alphasort);

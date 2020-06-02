@@ -74,7 +74,9 @@ static GMutex write_mutex, read_mutex;
 static GList *command_list, *pending_writes;
 // ^ could use GQueue instead since it's used as a queue, avoids the cells memory leak
 
+#ifndef _WIN32
 static void sigpipe_handler(int signum) { }	// do nothing
+#endif
 
 int pipe_create() {
 #ifdef _WIN32
