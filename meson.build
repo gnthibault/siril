@@ -123,7 +123,11 @@ else # == 'platform-default'
   endif
 endif
 
+# Dependencies
+no_dep = dependency('', required: false)
+
 ## Core dependencies
+dbghelp = platform_windows ? cc.find_library('dbghelp') : no_dep
 glib_dep = dependency('glib-2.0', required : true)
 gtk_dep = dependency('gtk+-3.0', required : true)
 gsl_dep = dependency('gsl', required : true)

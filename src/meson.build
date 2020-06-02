@@ -169,6 +169,7 @@ endif
 
 siril_dep = declare_dependency(
   dependencies: [
+    dbghelp,
     m_dep,
     glib_dep,
     gtk_dep,
