@@ -196,7 +196,7 @@ siril_dep = declare_dependency(
 ################################################################################
 # Build gui executable
 
-siril_gui = executable('siril', 'main.c', src_files,
+siril_gui = executable('siril', 'main.c', src_files, win_res,
                       dependencies : siril_dep,
                       link_args : link_args,
                       c_args : ['-DHAVE_CONFIG_H'],
@@ -207,7 +207,7 @@ siril_gui = executable('siril', 'main.c', src_files,
 ################################################################################
 # Build cli executable
 
-siril_cli = executable('siril-cli', 'main-cli.c', src_files,
+siril_cli = executable('siril-cli', 'main-cli.c', src_files, win_res,
                       dependencies : siril_dep,
                       c_args : ['-DHAVE_CONFIG_H'],
                       cpp_args : siril_cpp_flag,

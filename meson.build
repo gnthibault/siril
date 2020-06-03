@@ -75,28 +75,43 @@ platform_osx = (
   host_os.contains('darwin')
 )
 
-# on OSX ObjC and C sources are mixed so adding objc to the linkflags
-
-osx_ldflags = []
-if platform_osx
-  add_languages('objc')
-  osx_ldflags += ['-Wl,-framework,Foundation', '-Wl,-framework,AppKit', '-ObjC']
-  add_project_link_arguments(osx_ldflags, language : ['objc', 'c'])
-endif
-
 ################################################################################
 # Meson modules and compilers
 
 ## Modules
 cmake = import('cmake')
 i18n = import('i18n')
+if platform_windows
+  winm = import('windows')
+endif
 
 ## Compilers
 cc = meson.get_compiler('c')
 cpp = meson.get_compiler('cpp')
 
+################################################################################
+# Set compiler and linker flags
+
 siril_cpp_flag = []
 siril_c_flag = []
+siril_link_option = []
+osx_ldflags = [] 
+
+if platform_linux
+  siril_link_option += '-rdynamic'
+elif platform_windows
+  siril_link_option += '-Wl,--export-all-symbols'
+  #TODO: Do Meson provide more elegant way?
+  siril_link_option += '-lpsapi'
+  siril_link_option += '-ldbghelp'
+elif platform_osx
+  # on OSX ObjC and C sources are mixed so adding objc to the linkflags
+  add_languages('objc')
+  osx_ldflags += ['-Wl,-framework,Foundation', '-Wl,-framework,AppKit', '-ObjC']
+  add_project_link_arguments(osx_ldflags, language : ['objc', 'c'])
+else
+  error('Unsupported OS.')
+endif
 
 ################################################################################
 # Directories 
@@ -283,10 +298,10 @@ git_data.set_quoted('SIRIL_GIT_LAST_COMMIT_YEAR', git_last_commit_year)
 ################################################################################
 # Sources directories
 
+subdir('platform-specific')
 subdir('po')
 subdir('src')
 subdir('pixmaps')
-subdir('platform-specific')
 
 ################################################################################
 # Install
