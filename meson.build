@@ -97,6 +97,8 @@ siril_c_flag = []
 siril_link_option = []
 osx_ldflags = [] 
 
+siril_cpp_flag += ['-DHAVE_CONFIG_H']
+
 if platform_linux
   siril_link_option += '-rdynamic'
 elif platform_windows
@@ -106,9 +108,9 @@ elif platform_windows
   siril_link_option += '-ldbghelp'
 elif platform_osx
   # on OSX ObjC and C sources are mixed so adding objc to the linkflags
-  add_languages('objc')
   osx_ldflags += ['-Wl,-framework,Foundation', '-Wl,-framework,AppKit', '-ObjC']
-  add_project_link_arguments(osx_ldflags, language : ['objc', 'c'])
+  add_project_arguments('-ObjC', language: [ 'c'])
+  add_project_link_arguments(osx_ldflags, language: [ 'c', 'cpp' ])
 else
   error('Unsupported OS.')
 endif
