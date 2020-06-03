@@ -143,11 +143,9 @@ int stack_addmin(struct stacking_args *args) {
 }
 
 static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
-	int x, y, nx, ny, j, shiftx, shifty, layer, reglayer;
-	size_t i, ii;
 	WORD *final_pixel[3];
 	float *ffinal_pixel[3];
-	double exposure=0.0;
+	double exposure = 0.0;
 	gboolean is_float = TRUE; // init only for warning
 	size_t nbdata = 0;
 	char *tmpmsg, filename[256];
@@ -156,7 +154,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 	/* should be pre-computed to display it in the stacking tab */
 	nb_frames = args->nb_images_to_stack;
-	reglayer = get_registration_layer(args->seq);
+	int reglayer = get_registration_layer(args->seq);
 
 	if (nb_frames <= 1) {
 		siril_log_message(_("No frame selected for stacking (select at least 2). Aborting.\n"));
@@ -168,7 +166,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 	g_assert(args->seq->nb_layers == 1 || args->seq->nb_layers == 3);
 	g_assert(nb_frames <= args->seq->number);
 
-	for (j=0; j<args->seq->number; ++j){
+	for (int j = 0; j < args->seq->number; ++j) {
 		if (!get_thread_run()) {
 			retval = -1;
 			goto free_and_reset_progress_bar;
@@ -183,7 +181,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 		}
 		tmpmsg = strdup(_("Processing image "));
 		tmpmsg = str_append(&tmpmsg, filename);
-		set_progress_bar_data(tmpmsg, (double)cur_nb/((double)nb_frames+1.));
+		set_progress_bar_data(tmpmsg, (double) cur_nb / ((double) nb_frames + 1.));
 		free(tmpmsg);
 
 		cur_nb++;	// only used for progress bar
@@ -243,9 +241,10 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 		}
 
 		/* load registration data for current image */
-		if(reglayer != -1 && args->seq->regparam[reglayer]) {
-			shiftx = round_to_int(args->seq->regparam[reglayer][j].shiftx * (float)args->seq->upscale_at_stacking);
-			shifty = round_to_int(args->seq->regparam[reglayer][j].shifty * (float)args->seq->upscale_at_stacking);
+		int shiftx, shifty;
+		if (reglayer != -1 && args->seq->regparam[reglayer]) {
+			shiftx = round_to_int(args->seq->regparam[reglayer][j].shiftx * (float) args->seq->upscale_at_stacking);
+			shifty = round_to_int(args->seq->regparam[reglayer][j].shifty * (float) args->seq->upscale_at_stacking);
 		} else {
 			shiftx = 0;
 			shifty = 0;
@@ -258,17 +257,17 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 		exposure += fit.exposure;
 
 		/* stack current image */
-		i=0;	// index in final_pixel[0]
-		for (y=0; y < fit.ry; ++y){
-			for (x=0; x < fit.rx; ++x){
-				nx = x - shiftx;
-				ny = y - shifty;
+		size_t i = 0;	// index in final_pixel[0]
+		for (int y = 0; y < fit.ry; ++y) {
+			for (int x = 0; x < fit.rx; ++x) {
+				int nx = x - shiftx;
+				int ny = y - shifty;
 				//printf("x=%d y=%d sx=%d sy=%d i=%d ii=%d\n",x,y,shiftx,shifty,i,ii);
 				if (nx >= 0 && nx < fit.rx && ny >= 0 && ny < fit.ry) {
-					ii = ny * fit.rx + nx;		// index in final_pixel[0] too
+					size_t ii = ny * fit.rx + nx;		// index in final_pixel[0] too
 					//printf("shiftx=%d shifty=%d i=%d ii=%d\n",shiftx,shifty,i,ii);
 					if (ii > 0 && ii < fit.rx * fit.ry){
-						for(layer=0; layer<args->seq->nb_layers; ++layer){
+						for (int layer = 0; layer < args->seq->nb_layers; ++layer) {
 							if (is_float) {
 								float current_pixel = fit.fpdata[layer][ii];
 								// we take the brightest pixel
@@ -295,7 +294,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 		retval = -1;
 		goto free_and_reset_progress_bar;
 	}
-	set_progress_bar_data(_("Finalizing stacking..."), (double)nb_frames/((double)nb_frames+1.));
+	set_progress_bar_data(_("Finalizing stacking..."), (double) nb_frames / ((double) nb_frames + 1.));
 
 	clearfits(&gfit);
 	copyfits(&fit, &gfit, CP_FORMAT, 0);
@@ -417,8 +416,7 @@ static void start_stacking() {
 	stackparam.coeff.offset = NULL;
 	stackparam.coeff.mul = NULL;
 	stackparam.coeff.scale = NULL;
-	stackparam.method =
-			stacking_methods[gtk_combo_box_get_active(method_combo)];
+	stackparam.method =	stacking_methods[gtk_combo_box_get_active(method_combo)];
 
 	stackparam.use_32bit_output = evaluate_stacking_should_output_32bits(stackparam.method,
 			&com.seq, stackparam.nb_images_to_stack, &error);
@@ -996,7 +994,7 @@ static void update_filter_label() {
  */
 void update_stack_interface(gboolean dont_change_stack_type) {
 	static GtkWidget *go_stack = NULL, *widgetnormalize = NULL, *force_norm =
-			NULL, *norm_to_max = NULL, *output_norm = NULL;
+			NULL, *output_norm = NULL;
 	static GtkComboBox *method_combo = NULL, *filter_combo = NULL;
 	static GtkLabel *result_label = NULL;
 	gchar *labelbuffer;
@@ -1007,7 +1005,6 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 		method_combo = GTK_COMBO_BOX(lookup_widget("comboboxstack_methods"));
 		widgetnormalize = lookup_widget("combonormalize");
 		force_norm = lookup_widget("checkforcenorm");
-		norm_to_max = lookup_widget("check_normalise_to_max");
 		result_label = GTK_LABEL(lookup_widget("stackfilter_label"));
 		output_norm = lookup_widget("check_normalise_to_max");
 	}
@@ -1037,7 +1034,6 @@ void update_stack_interface(gboolean dont_change_stack_type) {
 		gtk_widget_set_sensitive(widgetnormalize, TRUE);
 		gtk_widget_set_sensitive(force_norm,
 				gtk_combo_box_get_active(GTK_COMBO_BOX(widgetnormalize)) != 0);
-		gtk_widget_set_visible(norm_to_max, TRUE);
 		gtk_widget_set_visible(output_norm, TRUE);
 	}
 
