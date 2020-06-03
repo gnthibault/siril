@@ -84,7 +84,7 @@ siril-debian/testing-meson:
 
 ## Windows 64-bit CIs ##
 
-siril-win64:
+.siril-win64/win-base:
   image: fedora:31
   stage: siril
   variables:
@@ -125,7 +125,6 @@ siril-win64:
     - cd ..
     - git submodule sync --recursive
     - git submodule update --init --recursive
-  script:
     - export PATH="`pwd`/.local/bin:$PATH"
     # Pre-built dependencies
     - echo 'crossroad source msys2' | crossroad w64 siril --run="-"
@@ -133,10 +132,7 @@ siril-win64:
     # librtprocess
     - mkdir subprojects/librtprocess/_build && cd subprojects/librtprocess/_build
     - echo 'crossroad cmake .. && make && make install' | crossroad w64 siril --run="-"
-    ## Build Siril ##
-    - cd ../../.. && mkdir _build && cd _build
-    - echo 'crossroad ../configure && make && make install &&
-            cp -fr $CROSSROAD_PREFIX/ ../siril/' | crossroad w64 siril --run="-"
+    - cd ../../.. 
   artifacts:
     name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
     when: always
@@ -145,7 +141,23 @@ siril-win64:
       - _build/
       - subprojects/librtprocess/_build
       - siril/
-    
+
+siril-win64/autotools:
+  extends: .siril-win64/win-base
+  script:
+    ## Build Siril ##
+    - mkdir _build && cd _build
+    - echo 'crossroad ../configure && make && make install &&
+            cp -fr $CROSSROAD_PREFIX/ ../siril/' | crossroad w64 siril --run="-"
+
+# FIXME: Does not work yet.
+# siril-win64/meson:
+#   extends: .siril-win64/win-base
+#   script:
+#     ## Build Siril ##
+#     - mkdir _build 
+#     - echo 'crossroad meson _build &&  cd _build && ninja install &&
+#             cp -fr $CROSSROAD_PREFIX/ ../siril/' | crossroad w64 siril --run="-"
 flatpak:
   # Update the image URL whenever the runtime version in the flatpak manifest is changed
   image: 'registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:3.36'
