@@ -281,8 +281,6 @@ static void siril_macos_setenv(const char *progname) {
 	gchar resolved_path[PATH_MAX];
 
 	if (realpath(progname, resolved_path)) {
-		static gboolean show_playground = TRUE;
-
 		gchar *path;
 		gchar tmp[PATH_MAX];
 		gchar *app_dir;
