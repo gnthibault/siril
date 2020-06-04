@@ -43,7 +43,7 @@ static void signal_handled(int s) {
 #endif
 	{
 	g_printf("Error, signal %d:\n", s);
-	gchar *visit = g_strdup_printf(_("Please report this bug to: %s"), PACKAGE_BUGREPORT);
+	const gchar *visit = _("Please report this bug to: " PACKAGE_BUGREPORT);
 	switch (s) {
 	case SIGSEGV:
 	case SIGFPE:
@@ -89,7 +89,6 @@ static void signal_handled(int s) {
 
 	free(symbol);
 #endif
-		g_free(visit);
 	}
 	undo_flush();
 	exit(EXIT_FAILURE);
