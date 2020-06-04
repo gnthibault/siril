@@ -205,6 +205,7 @@ siril_common_SOURCES = \
 	stacking/siril_fit_linear.h \
 	stacking/stacking.c \
 	stacking/stacking.h \
+	stacking/stackminmax.c \
 	stacking/sum.c \
 	stacking/sum.h \
 	stacking/upscaling.c \

@@ -146,6 +146,7 @@ src_files = [
   'stacking/normalization.c',
   'stacking/siril_fit_linear.c',
   'stacking/stacking.c',
+  'stacking/stackminmax.c',
   'stacking/sum.c',
   'stacking/upscaling.c',
   
