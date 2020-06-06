@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-31 09:08+0200\n"
-"PO-Revision-Date: 2020-05-17 07:26+0200\n"
+"PO-Revision-Date: 2020-06-06 08:19+0200\n"
 "Last-Translator: Stefan Beck <stefan@cometchaser.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -310,14 +310,12 @@ msgid "Extraction"
 msgstr "Extraktion"
 
 #: ../src/gui/siril3.glade.h:69
-#, fuzzy
 msgid "Split Channels..."
-msgstr "CFA aufteilen"
+msgstr "Farbkänale aufteilen..."
 
 #: ../src/gui/siril3.glade.h:70
-#, fuzzy
 msgid "Split CFA Channels..."
-msgstr "CFA aufteilen"
+msgstr "CFA (Color Filter Array) aufteilen..."
 
 #: ../src/gui/siril3.glade.h:71
 msgid "Wavelet Layers..."
@@ -325,7 +323,7 @@ msgstr "Wavelet-Layer..."
 
 #: ../src/gui/siril3.glade.h:72
 msgid "Linear Match..."
-msgstr ""
+msgstr "Lineare Übereinstimmung..."
 
 #: ../src/gui/siril3.glade.h:73
 msgid "RGB Compositing..."
@@ -597,21 +595,26 @@ msgid ""
 "Note: FITS images will have no effect when the pre-processed sequence is SER "
 "or FITS sequence file."
 msgstr ""
+"Hiermit wird der Typ der Zielsequenz festgelegt.\n"
+"FITS-Bilder: eine FITS-Datei pro Bild.\n"
+"SER-Sequenz: eine SER-Datei für die gesamte Sequenz (begrenzt auf 16 Bit pro "
+"Kanal).\n"
+"FITS-Sequenz: eine FITS-Datei für die gesamte Sequenz.\n"
+"\n"
+"Hinweis: FITS-Bilder haben keine Wirkung, wenn es sich bei der "
+"vorverarbeiteten Sequenz um eine SER- oder FITS-Sequenzdatei handelt."
 
 #: ../src/gui/siril3.glade.h:133
-#, fuzzy
 msgid "FITS images"
-msgstr "FITS-CFA Bilder"
+msgstr "FITS Bilder"
 
 #: ../src/gui/siril3.glade.h:134
-#, fuzzy
 msgid "SER sequence"
-msgstr "SER Sequenzen"
+msgstr "SER Sequenze"
 
 #: ../src/gui/siril3.glade.h:135
-#, fuzzy
 msgid "FITS sequence"
-msgstr "SER Sequenzen"
+msgstr "FITS Sequenze"
 
 #: ../src/gui/siril3.glade.h:136
 msgid "Supported file types:"
@@ -1038,9 +1041,8 @@ msgstr ""
 "Wechseln Sie zum Konvertierungs-Reiter."
 
 #: ../src/gui/siril3.glade.h:226
-#, fuzzy
 msgid "Debayer before saving"
-msgstr "Debayern Sie Bilder vor dem Speichern"
+msgstr "Vor dem Speichern die Bilder Debayern"
 
 #: ../src/gui/siril3.glade.h:227
 msgid ""
@@ -1066,6 +1068,11 @@ msgid ""
 "channel).\n"
 "FITS sequence: one FITS file for the whole sequence."
 msgstr ""
+"Hiermit wird der Typ der Zielsequenz festgelegt.\n"
+"FITS-Bilder: eine FITS-Datei pro Bild.\n"
+"SER-Sequenz: eine SER-Datei für die gesamte Sequenz (begrenzt auf 16 Bit pro "
+"Kanal).\n"
+"FITS-Sequenz: eine FITS-Datei für die gesamte Sequenz."
 
 #: ../src/gui/siril3.glade.h:234
 msgid "Pre-processing is an optional step to apply to a sequence of images."
@@ -3189,49 +3196,46 @@ msgid "Prefix of the image names resulting from the mtf process."
 msgstr "Präfix der Bildnamen, die sich aus dem MTF-Prozess ergeben."
 
 #: ../src/gui/siril3.glade.h:704
-#, fuzzy
 msgid "Linear Match"
-msgstr "Linear"
+msgstr "Lineare Übereinstimmung"
 
 #: ../src/gui/siril3.glade.h:705
-#, fuzzy
 msgid "Close the dialog."
-msgstr "Fenster schließen."
+msgstr "Dialogfenster schließen."
 
 #: ../src/gui/siril3.glade.h:706
 msgid "Computes a linear function between a reference image and a target."
 msgstr ""
+"Berechnet eine lineare Funktion zwischen einem Referenzbild und einem "
+"Zielbild."
 
 #: ../src/gui/siril3.glade.h:707
-#, fuzzy
 msgid "Reference: "
-msgstr "Referenz-Bild"
+msgstr "Referenz-Bild: "
 
 #: ../src/gui/siril3.glade.h:708
-#, fuzzy
 msgid "Choose the reference image. This image must have same dimensions."
-msgstr "Stacking: nicht alle Bilder in der Sequenz haben dieselbe Größe\n"
+msgstr "Refernzbild wählen. Die Bilder müssen die gleiche Bildgröße haben."
 
 #: ../src/gui/siril3.glade.h:709
-#, fuzzy
 msgid "Choose Reference Image"
-msgstr "Referenz-Bild:\n"
+msgstr "Referenz-Bild wählen"
 
 #: ../src/gui/siril3.glade.h:710
-#, fuzzy
 msgid "Reject low"
-msgstr "Ausschluss:"
+msgstr "Ausschluss Low"
 
 #: ../src/gui/siril3.glade.h:711
 msgid ""
 "The algorithm will ignore all reference pixels whose values are outside of "
 "the [low, high] range."
 msgstr ""
+"Der Algorithmus ignoriert alle Referenzpixel, deren Werte außerhalb des "
+"Bereichs [niedrig, hoch] liegen."
 
 #: ../src/gui/siril3.glade.h:712
-#, fuzzy
 msgid "Reject high"
-msgstr "Ausschluss:"
+msgstr "Ausschluss High"
 
 #: ../src/gui/siril3.glade.h:713
 msgid "Resample"
@@ -3546,28 +3550,24 @@ msgid "Prefix of the image names resulting from the split cfa process."
 msgstr "Präfix der Bildnamen, die sich aus dem CFA-Prozess ergeben."
 
 #: ../src/gui/siril3.glade.h:787
-#, fuzzy
 msgid "Method: "
-msgstr "Stacking Methoden:"
+msgstr "Stacking Methoden: "
 
 #: ../src/gui/siril3.glade.h:788
-#, fuzzy
 msgid "Select the method you want to apply."
-msgstr "Farbkanal zur Anzeige auswählen."
+msgstr "Methode die angewendet werden soll auswählen."
 
 #: ../src/gui/siril3.glade.h:789
-#, fuzzy
 msgid "Split CFA Channels"
-msgstr "CFA aufteilen"
+msgstr "CFA (Color Filter Array) Kanäle aufteilen"
 
 #: ../src/gui/siril3.glade.h:790 ../src/algos/demosaicing.c:1278
-#, fuzzy
 msgid "Extract Ha"
-msgstr "Extraktion"
+msgstr "Ha Extrahieren"
 
 #: ../src/gui/siril3.glade.h:791
 msgid "Extract Ha/OIII"
-msgstr ""
+msgstr "Ha/OIII extrahieren"
 
 #: ../src/gui/siril3.glade.h:792
 msgid "Dynamic PSF"
@@ -4048,7 +4048,6 @@ msgid "Bayer/mosaic pattern: "
 msgstr "Bayer-Matrix: "
 
 #: ../src/gui/siril3.glade.h:889
-#, fuzzy
 msgid ""
 "Select an interpolation method to perform demosaicing.\n"
 "\n"
@@ -4297,7 +4296,7 @@ msgstr "<b>Speicherort für Skripte</b>"
 
 #: ../src/gui/siril3.glade.h:940
 msgid "Rescans the scripts folders and updates scripts menu."
-msgstr ""
+msgstr "Liest die Skriptverzeichisse erneut und aktualisiert das Skriptmenü."
 
 #: ../src/gui/siril3.glade.h:941
 msgid "Don't show warning before script execution"
@@ -4645,7 +4644,6 @@ msgid "Extension:"
 msgstr "Datei-Extension Typ:"
 
 #: ../src/gui/siril3.glade.h:1002
-#, fuzzy
 msgid ""
 "Choose the type of FITS that will be used by default. 32-bit floating point "
 "is the format giving the best precision, however it takes twice as much disk "
@@ -4653,9 +4651,11 @@ msgid ""
 "chosen format except the RGB compositing tool that always will convert "
 "images in 32-bit."
 msgstr ""
-"Bitte wählen Sie den ein FITS-Format als Standard aus. 32-bit "
-"Flieskommaformat gibt die beste Genauigkeit, benötigt aber 2 mal so viel "
-"Festplattenspeicher als Vorzeichenloses 16-bit Integer."
+"Bitte wählen Sie ein FITS-Format als Standard aus. 32-bit Flieskommaformat "
+"gibt die beste Genauigkeit, benötigt aber 2 mal so viel Festplattenspeicher "
+"als Vorzeichenloses 16-bit Integer. Alle Verarbeitungswerkzeuge arbeiten mit "
+"dem gewählten Format, mit Ausnahme des RGB-Compositing-Tools, das Bilder "
+"immer in 32-Bit konvertiert."
 
 #: ../src/gui/siril3.glade.h:1003
 msgid "Default Type:"
@@ -4936,18 +4936,16 @@ msgstr ""
 
 #: ../src/algos/demosaicing.c:1120 ../src/algos/demosaicing.c:1169
 #: ../src/algos/demosaicing.c:1297
-#, fuzzy
 msgid "Extract_Ha does not work on non-Bayer filter camera images!\n"
-msgstr "Trennung von CFA funktioniert nicht mit Monochromen Bildern!\n"
+msgstr "Extrahierung Ha funktioniert nicht mit Monochromen Bildern!\n"
 
 #: ../src/algos/demosaicing.c:1351
-#, fuzzy
 msgid "Extract_HaOIII does not work on non-Bayer filter camera images!\n"
-msgstr "Trennung von CFA funktioniert nicht mit Monochromen Bildern!\n"
+msgstr "Extrahierung HaOIII funktioniert nicht mit Monochromen Bildern!\n"
 
 #: ../src/algos/demosaicing.c:1465
 msgid "Extract Ha and OIII"
-msgstr ""
+msgstr "Ha und OIII extrahieren"
 
 #: ../src/algos/demosaicing.c:1484 ../src/algos/demosaicing.c:1524
 msgid "Split CFA does not work on non-Bayer filter camera images!\n"
@@ -5171,22 +5169,20 @@ msgid "No metadata"
 msgstr "Keine Metadaten"
 
 #: ../src/algos/plateSolver.c:1391
-#, fuzzy
 msgid "No coordinates"
-msgstr "Falsche Koordinaten für das Zentrum"
+msgstr "Keine Koordinaten"
 
 #: ../src/algos/plateSolver.c:1391
-#, fuzzy
 msgid "Please enter object coordinates."
-msgstr "Falsche Koordinaten für das Zentrum"
+msgstr "Bitte Koordinaten des Objektes eingeben."
 
 #: ../src/algos/plateSolver.c:1399
 msgid "No catalog"
-msgstr ""
+msgstr "Kein Katalog"
 
 #: ../src/algos/plateSolver.c:1399
 msgid "Cannot download the online star catalog."
-msgstr ""
+msgstr "Kann den Online Sternkatalog nicht laden."
 
 #: ../src/algos/plateSolver.c:1415
 msgid "Astrometric solution detected"
@@ -5422,7 +5418,7 @@ msgstr "Dieser Befehl kann in einer Sequenz nicht verwendet werden.\n"
 
 #: ../src/core/command.c:92
 msgid "This command can only be used when a sequence is loaded.\n"
-msgstr "Diese Befehl kann nur bei geladener Sequenz verwendet werden.\n"
+msgstr "Dieser Befehl kann nur bei geladener Sequenz verwendet werden.\n"
 
 # pipe-tube-Rohr... wäre Pfad adäquat?
 #: ../src/core/command.c:273
@@ -5856,42 +5852,47 @@ msgstr "Vorberechnung...\n"
 
 #: ../src/core/command.c:3169
 msgid "16-bit per channel in processed images mode is active\n"
-msgstr ""
+msgstr "Modus 16-Bit pro Kanal für bearbeitete Bilder ist aktiv\n"
 
 #: ../src/core/command.c:3170
 msgid "32-bit per channel in processed images mode is active\n"
-msgstr ""
+msgstr "Modus 32-Bit pro Kanal für bearbeitete Bilder ist aktiv\n"
 
 #: ../src/core/command.c:3184
 msgid "Please specify the type of compression and quantization value.\n"
 msgstr ""
+"Bitte geben Sie die Art der Komprimierung und den Quantisierungswert an.\n"
 
 #: ../src/core/command.c:3200
 msgid "Please specify the value of hcompress scale factor.\n"
-msgstr ""
+msgstr "Bitte geben Sie den Wert des hcompress-Skalierungsfaktors an.\n"
 
 #: ../src/core/command.c:3207
 msgid ""
 "Wrong type of compression. Choices are rice, gzip1, gzip2 or hcompress\n"
 msgstr ""
+"Falsche Komprimierungsart. Möglich sind Rice,Gzip1, Gzip2 oder Hcompress\n"
 
 #: ../src/core/command.c:3211
 msgid "Please specify the value of quantization.\n"
-msgstr ""
+msgstr "Bitte geben Sie den Wert der Quantisierung an.\n"
 
 #: ../src/core/command.c:3217
 msgid "Quantization can only be equal to 0 for GZIP1 and GZIP2 algorithms.\n"
 msgstr ""
+"Die Quantisierung kann bei GZIP1- und GZIP2-Algorithmen nur gleich 0 sein.\n"
 
 #: ../src/core/command.c:3220
 #, c-format
 msgid ""
 "Compression enabled with the %s algorithm and a quantization value of %.2lf\n"
 msgstr ""
+"Komprimierung mit dem %s-Algorithmus aktiviert und einem Quantisierungswert "
+"von %.2lf\n"
 
 #: ../src/core/command.c:3223
 msgid "No compression enabled.\n"
-msgstr ""
+msgstr "Kompression nicht aktiviert.\n"
 
 #: ../src/core/command.c:3242
 #, c-format
@@ -5996,7 +5997,6 @@ msgstr ""
 "Geordnetes Schließen des Bildes und der Sequenz, sofern eine vorhanden ist"
 
 #: ../src/core/command_def.h:18
-#, fuzzy
 msgid ""
 "Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" "
 "is the basename of the new sequence. The option \"-debayer\" applies "
@@ -6006,7 +6006,9 @@ msgid ""
 msgstr ""
 "Konvertiert DSLR RAW-Dateien in das SIRIL-FITS-Format. Der Platzhalter "
 "\"basename\" ist die Namens-Basis für die neue Sequenz. Die Option \"-debayer"
-"\" entfernt das Bayer-Pattern des Bildes"
+"\" wendet Demosaicing auf Bilder an, während \"-fitseq\" eine Option ist, "
+"die den Ausgabedateityp auf eine FITS-Sequenz setzt. \"-start=index\" setzt "
+"den Start-Index-Parameter"
 
 #: ../src/core/command_def.h:19
 msgid ""
@@ -6078,12 +6080,16 @@ msgid ""
 "Extracts Ha signal from a CFA image. The output file name starts with the "
 "prefix \"Ha_\""
 msgstr ""
+"Extrahiert Ha- Signale aus einem CFA (Color Filter Array) -Bild. Der Name "
+"der Ausgabedatei beginnt mit dem Präfix \"Ha_\""
 
 #: ../src/core/command_def.h:29
 msgid ""
 "Extracts Ha and OIII signals from a CFA image. The output file name start "
 "with the prefix \"Ha_\" and \"OIII_\""
 msgstr ""
+"Extrahiert Ha- und OIII-Signale aus einem CFA (Color Filter Array) -Bild. "
+"Der Name der Ausgabedatei beginnt mit dem Präfix \"Ha_\" und \"OIII_\"."
 
 #: ../src/core/command_def.h:31
 msgid ""
@@ -6272,6 +6278,10 @@ msgid ""
 "one. The algorithm will ignore all reference pixels whose values are outside "
 "of the [\"low\", \"high\"] range"
 msgstr ""
+"Berechnet eine lineare Funktion zwischen einem Referenzbild und einem Ziel. "
+"Die Funktion wird dann auf das Zielbild angewendet, um es an das "
+"Referenzbild anzupassen. Der Algorithmus ignoriert alle Referenzpixel, deren "
+"Werte außerhalb des Bereichs [\"niedrig\", \"hoch\"] liegen"
 
 #: ../src/core/command_def.h:58
 msgid "Lists files and directories in the working directory"
@@ -6327,7 +6337,6 @@ msgstr ""
 "übersteuert"
 
 #: ../src/core/command_def.h:70
-#, fuzzy
 msgid ""
 "Preprocesses the sequence \"sequencename\" using bias, dark and flat given "
 "in argument. It is possible to specify if images are CFA for cosmetic "
@@ -6388,7 +6397,7 @@ msgstr "Berechnet das Bild neu mit dem Faktor \"factor\""
 
 #: ../src/core/command_def.h:75
 msgid "Rescans the scripts folders and updates scripts menu"
-msgstr ""
+msgstr "Liest die Skriptverzeichnisse aus und aktualisiert das Skriptmenü"
 
 #: ../src/core/command_def.h:76
 msgid ""
@@ -6535,25 +6544,22 @@ msgstr ""
 "anderer Prefix vorgegeben wird"
 
 #: ../src/core/command_def.h:93
-#, fuzzy
 msgid ""
 "Same command than EXTRACT_HA but for the sequence \"sequencename\". The "
 "output sequence name starts with the prefix \"Ha_\" unless otherwise "
 "specified with option \"-prefix=\""
 msgstr ""
-"Gleicher Befehl wie MTF aber für die Sequenz \"sequencename\". Der "
-"Ausgabename der Sequenz beginnt mit dem Prefix \"mtf_\", sofern nicht mit "
-"der Option \"-prefix=\" ein anderer Prefix vorgegeben wird"
+"Gleicher Befehl wie EXTRACT_HA  aber für die Sequenz \"sequencename\". Der "
+"Ausgabename der Sequenz beginnt mit dem Prefix \"Ha_\", sofern nicht mit der "
+"Option \"-prefix=\" ein anderer Prefix vorgegeben wird"
 
 #: ../src/core/command_def.h:94
-#, fuzzy
 msgid ""
 "Same command than EXTRACT_HAOIII but for the sequence \"sequencename\". The "
 "output sequence name start with the prefix \"Ha_\" and \"OIII_\""
 msgstr ""
-"Gleicher Befehl wie SPLIT_CFA aber für die Sequenz \"sequencename\". Der "
-"Ausgabename der Sequenz beginnt mit dem Prefix \"cfa_\", sofern nicht mit "
-"der Option \"-prefix=\" ein anderer Prefix vorgegeben wird"
+"Gleicher Befehl wie EXTRACT_HAOIII aber für die Sequenz \"sequencename\". "
+"Der Ausgabename der Sequenz beginnt mit dem Prefix \"Ha_\" und \"OIII_\""
 
 #: ../src/core/command_def.h:95
 msgid ""
@@ -6619,10 +6625,14 @@ msgid ""
 "Disallow images to be saved with 32 bits per channel on processing, use 16 "
 "instead"
 msgstr ""
+"Verhindert, dass Bilder bei der Verarbeitung mit 32 Bit pro Kanal "
+"gespeichert werden, verwenden Sie stattdessen 16 Bit"
 
 #: ../src/core/command_def.h:102
 msgid "Allow images to be saved with 32 bits per channel on processing"
 msgstr ""
+"Ermöglicht das Speichern von Bildern mit 32 Bit pro Kanal bei der "
+"Verarbeitung"
 
 #: ../src/core/command_def.h:103
 msgid ""
@@ -6634,6 +6644,13 @@ msgid ""
 "\"setcompress 1 -type=rice 16\" set the rice compression with a quantization "
 "of 16"
 msgstr ""
+"Definiert, ob Bilder komprimiert sind oder nicht: 0 bedeutet keine "
+"Komprimierung. Wenn Komprimierung aktiviert ist, muss der Typ explizit in "
+"die Option \"-type=\" geschrieben werden (\"rice\", \"gzip1\", \"gzip2\" und "
+"\"hcompress\"). Im Zusammenhang mit der Komprimierung muss der "
+"Quantisierungswert [0, 256] und im Falle von \"hcompress\" auch der "
+"hcompress-Skalierungsfaktor [0, 256] folgen. Beispiel: \"setcompress 1 -"
+"type=rice 16\" setzt die rice - Kompression mit einer Quantisierung von 16"
 
 #: ../src/core/command_def.h:104
 msgid ""
@@ -6831,7 +6848,6 @@ msgstr "Zeigt ein Bild an mit \"hi\" bzw. \"lo\" als Schwellwerte"
 
 # "a trous" alors la, j'ai besoin encore d'une explication
 #: ../src/core/command_def.h:129
-#, fuzzy
 msgid ""
 "Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) "
 "or bspline (type=2) version of the 'à trous' algorithm. The result is stored "
@@ -7246,13 +7262,13 @@ msgid "Finalizing sequence processing failed.\n"
 msgstr "Finale Bearbeitung der Sequenz fehlgeschlagen.\n"
 
 #: ../src/core/processing.c:352
-#, fuzzy
 msgid ""
 "Configured memory limits do not seem to allow these images to be processed, "
 "aborting\n"
 msgstr ""
-"Die gegebenen Filter-Einstellungen erlauben nicht, mindestens 2 Bilder zu "
-"bearbeiten.\n"
+"Konfigurierte Speicherbegrenzung scheinen eine Verarbeitung dieser Bilder "
+"nicht zu erlauben, Abbruch\n"
+"\n"
 
 #: ../src/core/processing.c:515
 msgid "Process aborted by user\n"
@@ -7792,12 +7808,11 @@ msgid "Invalid char"
 msgstr "Ungültiges Zeichen"
 
 #: ../src/gui/conversion.c:99
-#, fuzzy
 msgid ""
 "Please remove invalid characters in the sequence name before trying to "
 "convert images into a new sequence again."
 msgstr ""
-"Bitte korrigieren Sie ungültige Zeichen im Sequenznamen, bevor Sie einen "
+"Bitte entfernen Sie ungültige Zeichen im Sequenznamen, bevor Sie einen "
 "erneuten Konvertierungsversuch starten."
 
 #: ../src/gui/conversion.c:105
@@ -7836,7 +7851,7 @@ msgstr ""
 
 #: ../src/gui/conversion.c:156
 msgid "Too many files are being converted."
-msgstr ""
+msgstr "Es werden zu viele Dateien konvertiert."
 
 #: ../src/gui/conversion.c:157
 msgid ""
@@ -7844,6 +7859,10 @@ msgid ""
 "However, your OS limits the number of files that will be processed in the "
 "same time.You may want to convert your input files into a FITS sequence."
 msgstr ""
+"Sie sind dabei, eine große Anzahl von Dateien in Standard-FITS-Dateien zu "
+"konvertieren. Ihr Betriebssystem begrenzt jedoch die Anzahl der Dateien, die "
+"in der gleichen Zeit verarbeitet werden. Vielleicht möchten Sie Ihre "
+"Eingabedateien in eine FITS-Sequenz konvertieren."
 
 #: ../src/gui/conversion.c:173 ../src/gui/conversion.c:179
 #: ../src/gui/conversion.c:185
@@ -7868,12 +7887,12 @@ msgstr ""
 
 #: ../src/gui/conversion.c:186
 msgid "Creating multiple SER can only be done with only films as input."
-msgstr ""
+msgstr "Die Erstellung mehrerer SER kann nur mit Filmen als Input erfolgen."
 
 #: ../src/gui/conversion.c:193
-#, fuzzy, c-format
+#, c-format
 msgid "Conversion: processing %d files...\n"
-msgstr "Konvertierung: bearbeite %d RAW Dateien... \n"
+msgstr "Konvertierung: bearbeite %d Dateien... \n"
 
 #: ../src/gui/conversion.c:395
 #, c-format
@@ -7952,18 +7971,16 @@ msgstr ""
 "Redraw: maximal unterstützte Anzahl Layer ist %d (aktuelles Bild hat %d).\n"
 
 #: ../src/gui/linear_match.c:45 ../src/gui/linear_match.c:93
-#, fuzzy
 msgid "Images must have same dimensions.\n"
-msgstr "Stacking: nicht alle Bilder in der Sequenz haben dieselbe Größe\n"
+msgstr "Bilder müssen die gleiche Größe haben.\n"
 
 #: ../src/gui/linear_match.c:55 ../src/gui/linear_match.c:100
-#, fuzzy
 msgid "Linear fit functions:\n"
-msgstr "Linear Fit Clipping"
+msgstr "Lineares Anpassungs-Clipping:\n"
 
 #: ../src/gui/linear_match.c:218
 msgid "Cannot compute linear coefficients."
-msgstr ""
+msgstr "Lineare Koeffizienten können nicht berechnet werden."
 
 #: ../src/gui/message_dialog.c:187
 msgid "_Do not show this dialog again"
@@ -8005,15 +8022,16 @@ msgid "All supported files"
 msgstr "Alle unterstützten Datei-Formate"
 
 #: ../src/gui/open_dialog.c:289
-#, fuzzy
 msgid "Format not supported."
-msgstr "Das FITS-Bildformat %d wird in SIRIL nicht unterstützt.\n"
+msgstr "Format wird nicht unterstützt."
 
 #: ../src/gui/open_dialog.c:290
 msgid ""
 "FITS sequences are not supported for master files. Please select a single "
 "FITS file."
 msgstr ""
+"FITS-Sequenzen werden für Masterdateien nicht unterstützt. Bitte wählen Sie "
+"eine einzelne FITS-Datei aus."
 
 #: ../src/gui/photometric_cc.c:92
 msgid "Photometric Color Calibration"
@@ -8106,7 +8124,7 @@ msgstr "Stern-Position auf der Y-Achse"
 
 #: ../src/gui/preferences.c:267
 msgid "Incorrect parameters detected"
-msgstr ""
+msgstr "Falsche Parameter festgestellt"
 
 #: ../src/gui/preferences.c:396
 #, c-format
@@ -8115,7 +8133,7 @@ msgstr "Sie haben keine Schreib-Berechtigung im Verzeichnis: %s\n"
 
 #: ../src/gui/preferences.c:497
 msgid "Cannot refresh script list"
-msgstr ""
+msgstr "Kann die Skriptliste nicht aktualisieren"
 
 #: ../src/gui/progress_and_log.c:243
 msgid "Execution time"
@@ -8298,7 +8316,7 @@ msgstr "Lade Script: %s\n"
 
 #: ../src/gui/script_menu.c:257
 msgid "Cannot refresh the scripts if the list is empty.\n"
-msgstr ""
+msgstr "Kann die Skripte nicht aktualisieren wenn die Liste leer ist.\n"
 
 #: ../src/gui/script_menu.c:309
 msgid "Could not show link"
@@ -8479,9 +8497,8 @@ msgid "Creating the SER file failed, aborting.\n"
 msgstr "SER-Datei Erstellung fehlgeschlagen. Abbruch.\n"
 
 #: ../src/io/conversion.c:432
-#, fuzzy
 msgid "Creating the FITS sequence file failed, aborting.\n"
-msgstr "SER-Datei Erstellung fehlgeschlagen. Abbruch.\n"
+msgstr "Erstellung der FITS Sequenz fehlgeschlagen. Abbruch.\n"
 
 #: ../src/io/conversion.c:471 ../src/io/conversion.c:472
 #, c-format
@@ -8588,14 +8605,16 @@ msgid "FILM ERROR: incompatible format\n"
 msgstr "FILM ERROR: inkompatibles Format\n"
 
 #: ../src/io/fits_sequence.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot open FITS file %s\n"
-msgstr "Kann Datei nicht öffnen: %s\n"
+msgstr "Kann FITS Datei nicht öffnen: %s\n"
 
 #: ../src/io/fits_sequence.c:151
 #, c-format
 msgid "Cannot open FITS file %s: doesn't seem to be a FITS sequence\n"
 msgstr ""
+"FITS-Datei %s kann nicht geöffnet werden: scheint keine FITS-Sequenz zu "
+"sein\n"
 
 #: ../src/io/fits_sequence.c:176 ../src/io/image_format_fits.c:1250
 msgid ""
@@ -8617,25 +8636,29 @@ msgstr "Unbekanntes FITS Datenformat bei interner Konvertierung\n"
 #: ../src/io/fits_sequence.c:357
 msgid "Cannot save image in sequence not opened for writing\n"
 msgstr ""
+"Bild kann nicht in einer Sequenz gespeichert werden, die nicht zum Schreiben "
+"geöffnet ist\n"
 
 #: ../src/io/fits_sequence.c:391
 msgid ""
 "Cannot add an image with different properties to an existing sequence.\n"
 msgstr ""
+"Es ist nicht möglich, ein Bild mit unterschiedlichen Eigenschaften zu einer "
+"bestehenden Sequenz hinzuzufügen.\n"
 
 #: ../src/io/fits_sequence.c:398
 msgid "Failed to initialize the FITS sequence, aborting\n"
-msgstr ""
+msgstr "Initialisierung der FITS-Sequenz fehlgeschlagen, Abbruch\n"
 
 #: ../src/io/fits_sequence.c:407
-#, fuzzy, c-format
+#, c-format
 msgid "Could not write image %d of the FITS sequence\n"
-msgstr "Konnte Bild %d aus Sequenz %s nicht laden\n"
+msgstr "Konnte Bild %d aus der FITS Sequenz nicht schreiben\n"
 
 #: ../src/io/fits_sequence.c:420
-#, fuzzy, c-format
+#, c-format
 msgid "Saving FITS: image %d, %ld layer(s), %ux%u pixels, %d bits\n"
-msgstr "Speichere FITS: Datei %s, %ld Layer, %ux%u Pixel\n"
+msgstr "Speichere FITS: Datei %d, %ld Layer, %ux%u Pixel, %d Bit\n"
 
 #: ../src/io/fits_sequence.c:445
 #, c-format
@@ -8643,26 +8666,27 @@ msgid ""
 "Frame number mismatch at the end of sequence saving (%d saved for %d "
 "written)\n"
 msgstr ""
+"Fehlanpassung der Bildnummer am Ende der Sequenzspeicherung (%d gespeichert "
+"für %d geschrieben)\n"
 
 #: ../src/io/fits_sequence.c:453
 #, c-format
 msgid "Successfully saved FITS sequence with %d images\n"
-msgstr ""
+msgstr "Erfolgreich gespeicherte FITS-Sequenz mit %d-Bildern\n"
 
 #: ../src/io/fits_sequence.c:486 ../src/io/fits_sequence.c:492
-#, fuzzy
 msgid "Failed to remove failed images from the sequence\n"
-msgstr "Alle Bilder der Sequenz auswählen\n"
+msgstr "Die fehlenden Bilder der Sequenz wurden nicht entfernt\n"
 
 #: ../src/io/fits_sequence.c:530
-#, fuzzy, c-format
+#, c-format
 msgid "Removing failed FITS sequence file: %s\n"
-msgstr "Fehlerafte SER-Datei wird entfrnt: %s\n"
+msgstr "Fehlerhafte FITS Sequenze Datei konnte nicht entfernt werden: %s\n"
 
 #: ../src/io/fits_sequence.c:599
 #, c-format
 msgid "Number of images allowed in the FITS write queue: %d\n"
-msgstr ""
+msgstr "Anzahl der erlaubten Bilder in der FITS Warteschlange: %d\n"
 
 #: ../src/io/image_format_fits.c:239
 #, c-format
@@ -9098,9 +9122,9 @@ msgid "Current working directory is not set, aborting.\n"
 msgstr "Aktuelles Arbeitsverzeichnis nicht festgelegt. Abbruch.\n"
 
 #: ../src/io/sequence.c:273
-#, fuzzy, c-format
+#, c-format
 msgid "sequence %d, found: %d to %d\n"
-msgstr "Sequenz %d, gefunden: %d bis %d"
+msgstr "Sequenz %d, gefunden: %d bis %d\n"
 
 #: ../src/io/sequence.c:284
 #, c-format
@@ -9127,9 +9151,9 @@ msgid "Could not load frame %d from SER sequence %s\n"
 msgstr "Konnte Frame %d aus SER-Sequenz %s nicht laden\n"
 
 #: ../src/io/sequence.c:674
-#, fuzzy, c-format
+#, c-format
 msgid "Could not load frame %d from FITS sequence %s\n"
-msgstr "Konnte Frame %d aus SER-Sequenz %s nicht laden\n"
+msgstr "Konnte Frame %d aus FITS-Sequenz %s nicht laden\n"
 
 #: ../src/io/sequence.c:684 ../src/io/sequence.c:753
 #, c-format
@@ -9167,14 +9191,12 @@ msgid "Processing..."
 msgstr "In Bearbeitung..."
 
 #: ../src/io/sequence.c:1422
-#, fuzzy
 msgid "Error while cropping to SER (no space left?)\n"
 msgstr "Fehler bei der Konvertierung zu SER (zu wenig Speicherplatz?)\n"
 
 #: ../src/io/sequence.c:1430
-#, fuzzy
 msgid "Error while cropping to FITS sequence (no space left?)\n"
-msgstr "Fehler bei der Konvertierung zu FITS (zu wenig Speicherplatz?)\n"
+msgstr "Fehler beim Verkleinern zur FITS Sequenz (zu wenig Speicherplatz?)\n"
 
 #: ../src/io/sequence.c:1544
 #, c-format
@@ -9392,6 +9414,8 @@ msgid ""
 "run the siril commands script in console mode. If argument is equal to \"-"
 "\", then siril will read stdin input"
 msgstr ""
+"Das Skript für die Siril-Befehle im Konsolenmodus ausführen. Wenn das "
+"Argument gleich \"-\" ist, dann liest siril die Standardeingabe"
 
 #: ../src/main.c:97
 msgid ""
