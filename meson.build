@@ -94,23 +94,22 @@ cpp = meson.get_compiler('cpp')
 
 siril_cpp_flag = []
 siril_c_flag = []
-siril_link_option = []
-osx_ldflags = [] 
+siril_link_arg = []
 
 siril_cpp_flag += ['-DHAVE_CONFIG_H']
 
 if platform_linux
-  siril_link_option += '-rdynamic'
+  siril_link_arg += '-rdynamic'
 elif platform_windows
-  siril_link_option += '-Wl,--export-all-symbols'
   #TODO: Do Meson provide more elegant way?
-  siril_link_option += '-lpsapi'
-  siril_link_option += '-ldbghelp'
+  siril_link_arg += '-Wl,--export-all-symbols'
+  siril_link_arg += '-lpsapi'
+  siril_link_arg += '-ldbghelp'
 elif platform_osx
   # on OSX ObjC and C sources are mixed so adding objc to the linkflags
-  osx_ldflags += ['-Wl,-framework,Foundation', '-Wl,-framework,AppKit', '-ObjC']
+  siril_link_arg += ['-Wl,-framework,Foundation', '-Wl,-framework,AppKit', '-ObjC']
   add_project_arguments('-ObjC', language: [ 'c'])
-  add_project_link_arguments(osx_ldflags, language: [ 'c', 'cpp' ])
+  add_project_link_arguments(siril_link_arg, language: [ 'c', 'cpp' ])
 else
   error('Unsupported OS.')
 endif
