@@ -30,9 +30,16 @@ conf_data = configuration_data()
 code = '''#include <stdlib.h>
 int main(void) { return( ! reallocarray(NULL, 2, 2));}
 '''
-result = cc.run(code, name : 'reallocarray check')
 
-if result.returncode() == 0
+# TODO: Better crosscompilation support.
+# TODO: Also has_exe_wrapper will be deperacted in meson version 0.55.
+rcode = 1
+if meson.has_exe_wrapper()
+    result = cc.run(code, name : 'reallocarray check')
+    rcode = result.returncode()
+endif
+
+if rcode == 0
   conf_data.set('HAVE_', true)
 else
   conf_data.set('HAVE_', false)

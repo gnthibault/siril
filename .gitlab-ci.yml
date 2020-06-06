@@ -1,64 +1,95 @@
+image: debian:testing
+
 stages:
+  - prepare
+  - dependencies
   - siril
 
-## GNU/Linux 64-bit CIs ##
- 
-.siril-debian/testing-base:
-  image: debian:testing
-  stage: siril
+variables:
+  GIT_DEPTH: "1"
+  INSTALL_DIR: "_install"
+  INSTALL_PREFIX: "${CI_PROJECT_DIR}/${INSTALL_DIR}"
+  APT_CACHE: "${CI_PROJECT_DIR}/apt-cache"
+
+## prepare docker images ##
+
+build-image:
+  stage: prepare
   variables:
-    GIT_DEPTH: "1"
-    INSTALL_DIR: "_install"
-    INSTALL_PREFIX: "${CI_PROJECT_DIR}/${INSTALL_DIR}"
-    GIT_SUBMODULE_STRATEGY: recursive
-    PIP_CACHE_DIR: "${CI_PROJECT_DIR}/.cache/pip"
-    APT_CACHE: "${CI_PROJECT_DIR}/apt-cache"
+    GIT_STRATEGY: none
+  cache: {}
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - echo "FROM debian:testing" > Dockerfile
+    - echo "RUN apt-get update" >> Dockerfile
+    - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
+    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libraw-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev libcurl4-gnutls-dev python3 ninja-build meson" >> Dockerfile
+
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-latest --cache=true --cache-ttl=120h
+
+
+build-image-win64:
+  stage: prepare
+  variables:
+    GIT_STRATEGY: none
+  cache: {}
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - echo "FROM debian:testing" > Dockerfile
+    - echo "RUN apt-get update" >> Dockerfile
+    - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
+    - echo "build-essential cmake cpio g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 git intltool libglib2.0-bin meson pkg-config python3 python3-distutils python3-docutils python3-pip rpm xsltproc" >> Dockerfile
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-win64-latest --cache=true --cache-ttl=120h
+
+## GNU/Linux 64-bit CIs ##
+
+deps-debian/testing:
+  stage: dependencies
+  image: $CI_REGISTRY_IMAGE:build-debian-latest
   cache:
     paths:
-      - .cache/pip
-      - apt-cache
+    - apt-cache
   artifacts:
-    expire_in: 1 week
+    expire_in: 2 hours
+    when: always
+    paths:
+    - "${INSTALL_DIR}"
+  before_script:
+    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/pkgconfig"
+    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
+    - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib:${LD_LIBRARY_PATH}"
+    - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`:$LD_LIBRARY_PATH"
+    - export XDG_DATA_DIRS="${INSTALL_PREFIX}/share:/usr/local/share:/usr/share"
+  script:
+    - echo ""
+  needs: ["build-image"]
+
+
+.siril-debian/testing-base:
+  stage: siril
+  image: $CI_REGISTRY_IMAGE:build-debian-latest
+  dependencies:
+    - deps-debian/testing
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  cache:
+    paths:
+    - apt-cache
+  artifacts:
+    expire_in: 1 days
     when: always
     name: "app-build-${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
     paths:
-    - "${INSTALL_DIR}"
     - _build
   before_script:
-    - mkdir -p $APT_CACHE
-    - apt-get update
-    - apt-get install -y --no-install-recommends -o dir::cache::archives="$APT_CACHE"
-        build-essential
-        cmake
-        desktop-file-utils
-        hicolor-icon-theme
-        git
-        intltool
-        libexiv2-dev
-        libgtk-3-dev
-        libcfitsio-dev
-        libfftw3-dev
-        libgsl-dev
-        libconfig-dev
-        libopencv-dev
-        librsvg2-dev
-        libraw-dev
-        libffms2-dev
-        libtiff-dev
-        libjpeg-dev
-        libheif-dev
-        libpng-dev
-        libavformat-dev
-        libavutil-dev
-        libavcodec-dev
-        libswscale-dev
-        libswresample-dev
-        libcurl4-gnutls-dev
-        python3
-        python3-pip
-        ninja-build
-    - python3 -V
-    - pip3 install meson
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/pkgconfig:${INSTALL_PREFIX}/share/pkgconfig"
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/share/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
@@ -66,6 +97,7 @@ stages:
     - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`:$LD_LIBRARY_PATH"
     - export XDG_DATA_DIRS="${INSTALL_PREFIX}/share:/usr/local/share:/usr/share"
     - export PATH="${INSTALL_PREFIX}/bin:$PATH"
+  needs: ["deps-debian/testing"]
 
 siril-debian/testing-autotools:
   extends: .siril-debian/testing-base
@@ -74,90 +106,106 @@ siril-debian/testing-autotools:
     - mkdir _build && cd _build
     - ../configure --prefix=${INSTALL_PREFIX}
     - make -j "$(nproc)" all install
-    # - make check
-    
+
 siril-debian/testing-meson:
   extends: .siril-debian/testing-base
   script:
-    - meson --buildtype release --prefix ${INSTALL_PREFIX} _build
-    - ninja -v -C _build install
+    - meson _build
+      --prefix="${INSTALL_PREFIX}"
+    - ninja -C _build
+    - ninja -C _build test
 
-## Windows 64-bit CIs ##
+## WINDOWS 64-bit CI ##
 
-.siril-win64/win-base:
-  image: fedora:31
-  stage: siril
+deps-win64:
+  stage: dependencies
+  image: $CI_REGISTRY_IMAGE:build-win64-latest
   variables:
-    GIT_DEPTH: "1"
     XDG_CACHE_HOME: "$CI_PROJECT_DIR/.cache/"
     XDG_DATA_HOME:  "$CI_PROJECT_DIR/.local/share/"
   cache:
     paths:
     - .cache/crossroad/
-    - dnf_cache
-    - .cache/pip
+    - apt-cache
   before_script:
-    - dnf install --assumeyes --setopt=cachedir=`pwd`/dnf_cache --verbose
-        automake
-        autoconf
-        cmake
-        gettext
-        git
-        intltool
-        libtool
-        libxslt
-        make
-        python3
-        mingw64-gcc
-        mingw64-gcc-c++
-        mingw64-binutils
-        mingw64-libgomp
-        cpio rpm
-        python3-docutils
-        python3-pip
-        python3-setuptools
-        shared-mime-info
-        which
-    - pip3 install meson zstandard
     - git clone --depth=${GIT_DEPTH} git://git.tuxfamily.org/gitroot/crossroad/crossroad.git
     - cd crossroad
     - ./setup.py install --prefix=`pwd`/../.local
     - cd ..
-    - git submodule sync --recursive
-    - git submodule update --init --recursive
+    - pip3 install zstandard
+  script:
     - export PATH="`pwd`/.local/bin:$PATH"
-    # Pre-built dependencies
-    - echo 'crossroad source msys2' | crossroad w64 siril --run="-"
-    - echo 'crossroad install fftw cfitsio exiv2 gtk3 libconfig gsl opencv' | crossroad w64 siril --run="-"
-    # librtprocess
-    - mkdir subprojects/librtprocess/_build && cd subprojects/librtprocess/_build
-    - echo 'crossroad cmake .. && make && make install' | crossroad w64 siril --run="-"
-    - cd ../../.. 
+    - crossroad w64 siril --run="build/windows/crossbuild-gitlab-ci/build-deps.sh"
   artifacts:
     name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
     when: always
-    expire_in: 1 week
+    expire_in: 2 hours
+    paths:
+      - .local/
+  needs: ["build-image-win64"]
+
+siril-win64/testing-meson:
+  stage: siril
+  image: $CI_REGISTRY_IMAGE:build-win64-latest
+  dependencies:
+    - deps-win64
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    XDG_CACHE_HOME: "$CI_PROJECT_DIR/.cache/"
+    XDG_DATA_HOME:  "$CI_PROJECT_DIR/.local/share/"
+  cache:
+    paths:
+    - .cache/crossroad/
+    - apt-cache
+  script:
+    - update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
+    - update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+    - export PATH="`pwd`/.local/bin:$PATH"
+    - mkdir subprojects/librtprocess/_build && cd subprojects/librtprocess/_build
+    - echo 'crossroad cmake .. && make && make install' | crossroad w64 siril --run="-"
+    - cd ../../.. 
+    - mkdir _build && cd _build
+    - echo 'crossroad meson .. && ninja install && cp ../build/windows/crossbuild-gitlab-ci/siril-wrapper.cmd $CROSSROAD_PREFIX/bin/ && cp -fr $CROSSROAD_PREFIX/ ../siril-prefix/' | crossroad w64 siril --run="-"
+  needs: ["deps-win64"]
+  artifacts:
+    name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
+    when: always
+    expire_in: 1 day
     paths:
       - _build/
-      - subprojects/librtprocess/_build
-      - siril/
+      - siril-prefix/
 
-siril-win64/autotools:
-  extends: .siril-win64/win-base
+siril-win64/testing-autotools:
+  stage: siril
+  image: $CI_REGISTRY_IMAGE:build-win64-latest
+  dependencies:
+    - deps-win64
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    XDG_CACHE_HOME: "$CI_PROJECT_DIR/.cache/"
+    XDG_DATA_HOME:  "$CI_PROJECT_DIR/.local/share/"
+  cache:
+    paths:
+    - .cache/crossroad/
+    - apt-cache
   script:
-    ## Build Siril ##
+    - update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
+    - update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+    - export PATH="`pwd`/.local/bin:$PATH"
+    - mkdir subprojects/librtprocess/_build && cd subprojects/librtprocess/_build
+    - echo 'crossroad cmake .. && make && make install' | crossroad w64 siril --run="-"
+    - cd ../../.. 
     - mkdir _build && cd _build
-    - echo 'crossroad ../configure && make && make install &&
-            cp -fr $CROSSROAD_PREFIX/ ../siril/' | crossroad w64 siril --run="-"
+    - echo 'crossroad ../configure .. && make install && cp ../build/windows/crossbuild-gitlab-ci/siril-wrapper.cmd $CROSSROAD_PREFIX/bin/ && cp -fr $CROSSROAD_PREFIX/ ../siril-prefix/' | crossroad w64 siril --run="-"
+  needs: ["deps-win64"]
+  artifacts:
+    name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
+    when: always
+    expire_in: 1 day
+    paths:
+      - _build/
+      - siril-prefix/
 
-# FIXME: Does not work yet.
-# siril-win64/meson:
-#   extends: .siril-win64/win-base
-#   script:
-#     ## Build Siril ##
-#     - mkdir _build 
-#     - echo 'crossroad meson _build &&  cd _build && ninja install &&
-#             cp -fr $CROSSROAD_PREFIX/ ../siril/' | crossroad w64 siril --run="-"
 flatpak:
   # Update the image URL whenever the runtime version in the flatpak manifest is changed
   image: 'registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:3.36'
@@ -203,3 +251,4 @@ flatpak:
     paths:
       - '.flatpak-builder/downloads'
       - '.flatpak-builder/git'
+  needs: []

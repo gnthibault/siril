@@ -13,6 +13,7 @@ configure_file(output : 'config.h',
 
 ################################################################################
 # List sources
+
 src_files = [ 
   'algos/background_extraction.c',
   'algos/colors.c',
@@ -155,18 +156,9 @@ src_files = [
   'rt/gauss.cc',
   'rt/rt_algo.cc'
 ]
-              
-link_args = []
 
-if platform_windows
-  link_args += [ '-Wl,--export-all-symbols' ]
-else
-  link_args = []
-endif
-                   
-if platform_osx
-  link_args += osx_ldflags
-endif
+################################################################################
+# List dependencies
 
 siril_dep = declare_dependency(
   dependencies: [
@@ -199,7 +191,7 @@ siril_dep = declare_dependency(
 
 siril_gui = executable('siril', 'main.c', src_files, win_res,
                       dependencies : siril_dep,
-                      link_args : link_args,
+                      link_args : siril_link_arg,
                       c_args : ['-DHAVE_CONFIG_H'],
                       cpp_args : siril_cpp_flag,
                       install : true
@@ -210,6 +202,7 @@ siril_gui = executable('siril', 'main.c', src_files, win_res,
 
 siril_cli = executable('siril-cli', 'main-cli.c', src_files, win_res,
                       dependencies : siril_dep,
+                      link_args : siril_link_arg,
                       c_args : ['-DHAVE_CONFIG_H'],
                       cpp_args : siril_cpp_flag,
                       install : true
