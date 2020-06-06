@@ -28,6 +28,7 @@
 #include "compositing/compositing.h"
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/command.h" // process_close
 #include "core/OS_utils.h"
 #include "algos/colors.h"
 #include "io/sequence.h"
@@ -441,6 +442,11 @@ void on_composition_use_lum_toggled(GtkToggleButton *togglebutton, gpointer user
 void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 	int layer, retval;
 	char buf[48], *filename;
+
+	if (!number_of_images_loaded()
+			&& (single_image_is_loaded() || (sequence_is_loaded()))) {
+		process_close(0);
+	}
 
 	for (layer = 0; layers[layer]; layer++)
 		if (layers[layer]->chooser == widget)
@@ -1047,14 +1053,11 @@ void on_wavelength_changed(GtkEditable *editable, gpointer user_data){
 void on_compositing_reset_clicked(GtkButton *button, gpointer user_data){
 	int i;
 
-	if (com.uniq) {
-		close_single_image();
-	} else if (sequence_is_loaded()) {
-		close_sequence(FALSE);
-	}
+	process_close(0);
+
 	if (has_fit(0))
 		clearfits(&layers[0]->the_fit);
-	for (i=1; layers[i]; i++) {
+	for (i = 1; layers[i]; i++) {
 		if (has_fit(i))
 			clearfits(&layers[i]->the_fit);
 		grid_remove_row(i, 1);
