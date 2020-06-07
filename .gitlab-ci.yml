@@ -51,44 +51,46 @@ build-image-win64:
 
 ## GNU/Linux 64-bit CIs ##
 
-deps-debian/testing:
-  stage: dependencies
-  image: $CI_REGISTRY_IMAGE:build-debian-latest
-  cache:
-    paths:
-    - apt-cache
-  artifacts:
-    expire_in: 2 hours
-    when: always
-    paths:
-    - "${INSTALL_DIR}"
-  before_script:
-    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/pkgconfig"
-    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
-    - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib:${LD_LIBRARY_PATH}"
-    - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`:$LD_LIBRARY_PATH"
-    - export XDG_DATA_DIRS="${INSTALL_PREFIX}/share:/usr/local/share:/usr/share"
-  script:
-    - echo ""
-  needs: ["build-image"]
+# Currently Siril does not need dependency compilation, so we can skip that.
+# deps-debian/testing:
+#   stage: dependencies
+#   image: $CI_REGISTRY_IMAGE:build-debian-latest
+#   cache:
+#     paths:
+#     - apt-cache
+#   artifacts:
+#     expire_in: 2 hours
+#     when: always
+#     paths:
+#     - "${INSTALL_DIR}"
+#   before_script:
+#     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/pkgconfig"
+#     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
+#     - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib:${LD_LIBRARY_PATH}"
+#     - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`:$LD_LIBRARY_PATH"
+#     - export XDG_DATA_DIRS="${INSTALL_PREFIX}/share:/usr/local/share:/usr/share"
+#   script:
+#     - echo ""
+#   needs: ["build-image"]
 
 
 .siril-debian/testing-base:
   stage: siril
   image: $CI_REGISTRY_IMAGE:build-debian-latest
   dependencies:
-    - deps-debian/testing
+    - build-image
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   cache:
     paths:
     - apt-cache
   artifacts:
-    expire_in: 1 days
+    expire_in: 1 week
     when: always
     name: "app-build-${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
     paths:
     - _build
+    - "${INSTALL_DIR}"
   before_script:
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/pkgconfig:${INSTALL_PREFIX}/share/pkgconfig"
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
@@ -97,7 +99,7 @@ deps-debian/testing:
     - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`:$LD_LIBRARY_PATH"
     - export XDG_DATA_DIRS="${INSTALL_PREFIX}/share:/usr/local/share:/usr/share"
     - export PATH="${INSTALL_PREFIX}/bin:$PATH"
-  needs: ["deps-debian/testing"]
+  needs: ["build-image"]
 
 siril-debian/testing-autotools:
   extends: .siril-debian/testing-base
@@ -113,7 +115,7 @@ siril-debian/testing-meson:
     - meson _build
       --prefix="${INSTALL_PREFIX}"
     - ninja -C _build
-    - ninja -C _build test
+    - ninja -C _build install
 
 ## WINDOWS 64-bit CI ##
 
@@ -170,7 +172,7 @@ siril-win64/testing-meson:
   artifacts:
     name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
     when: always
-    expire_in: 1 day
+    expire_in: 1 week
     paths:
       - _build/
       - siril-prefix/
@@ -201,7 +203,7 @@ siril-win64/testing-autotools:
   artifacts:
     name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
     when: always
-    expire_in: 1 day
+    expire_in: 1 week
     paths:
       - _build/
       - siril-prefix/
