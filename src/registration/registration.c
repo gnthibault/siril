@@ -426,7 +426,7 @@ int register_shift_dft(struct registration_args *args) {
 		normalizeQualityData(args, q_min, q_max);
 
 		siril_log_message(_("Registration finished.\n"));
-		siril_log_color_message(_("Best frame: #%d.\n"), "bold", q_index);
+		siril_log_color_message(_("Best frame: #%d.\n"), "bold", q_index + 1);
 	} else {
 		free(args->seq->regparam[args->layer]);
 		args->seq->regparam[args->layer] = NULL;
@@ -513,7 +513,7 @@ int register_shift_fwhm(struct registration_args *args) {
 
 	siril_log_message(_("Registration finished.\n"));
 	siril_log_color_message(_("Best frame: #%d with fwhm=%.3g.\n"), "bold",
-			fwhm_index, fwhm_min);
+			fwhm_index + 1, fwhm_min);
 	return 0;
 }
 
@@ -650,7 +650,7 @@ int register_ecc(struct registration_args *args) {
 	if (failed) {
 		siril_log_color_message(_("%d frames were excluded.\n"), "red", failed);
 	}
-	siril_log_color_message(_("Best frame: #%d.\n"), "bold", q_index);
+	siril_log_color_message(_("Best frame: #%d.\n"), "bold", q_index + 1);
 
 	return 0;
 }
