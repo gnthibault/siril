@@ -1111,7 +1111,7 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 	}
 
 	// free name of the layers
-	if (seq->nb_layers > 0) {
+	if (seq->nb_layers > 0 && seq->layers) {
 		for (layer = 0; layer < seq->nb_layers; layer++) {
 			free(seq->layers[layer].name);
 		}

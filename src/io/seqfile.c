@@ -34,6 +34,7 @@
 #include "core/OS_utils.h"
 #include "algos/statistics.h"
 #include "io/fits_sequence.h"
+#include "io/image_format_fits.h"
 #include "io/ser.h"
 #include "io/sequence.h"
 #include "core/proto.h"
@@ -580,7 +581,7 @@ int writeseqfile(sequence *seq){
 	}
 
 	for (layer = 0; layer < seq->nb_layers; layer++) {
-		if (seq->regparam[layer]) {
+		if (seq->regparam && seq->regparam[layer]) {
 			for (i=0; i < seq->number; ++i) {
 				fprintf(seqfile, "R%c %f %f %g %g %g %g\n",
 						seq->cfa_opened_monochrome ? '*' : '0' + layer,
@@ -725,10 +726,31 @@ int buildseqfile(sequence *seq, int force_recompute) {
 		free(filename);
 		return 2;
 	}
+	gboolean warning_shown = FALSE;
 	for (i = seq->beg; i <= seq->end; i++) {
 		if (seq->type == SEQ_REGULAR) {
 			get_possible_image_filename(seq, i, filename);
 			if (!stat_file(filename, &imagetype, NULL) && imagetype == TYPEFITS) {
+				int bitpix, nb_layers;
+				unsigned int rx, ry;
+				if (fitsdata(filename, &bitpix, &rx, &ry, &nb_layers)) {
+					// image cannot be opened or is not supported
+					continue;
+				}
+				if (seq->nb_layers == -1) {
+					seq->bitpix = bitpix;
+					seq->rx = rx;
+					seq->ry = ry;
+					seq->nb_layers = nb_layers;
+				}
+				if (seq->bitpix != bitpix || seq->rx != rx ||
+					seq->ry != ry || seq->nb_layers != nb_layers) {
+					if (!warning_shown) {
+						siril_log_color_message(_("Images with the same base name '%s' do not share the same dimensions or precision, you may need to clean-up your directory\n"), "salmon", filename);
+						warning_shown = TRUE;
+					}
+					continue;
+				}
 				if (seq->number + 1 > alloc_size - 1) {
 					alloc_size += 25;
 					oldparam = seq->imgparam;
