@@ -1,18 +1,30 @@
+################################################################################
+# Gitlab CI YAML configuration file
+################################################################################
+
+################################################################################
+# Global definitions
+
 image: debian:testing
 
 stages:
   - prepare
   - dependencies
   - siril
+  - packaging
 
 variables:
   GIT_DEPTH: "1"
-  INSTALL_DIR: "_install"
+  BUILD_DIR: "_build"
+  INSTALL_DIR: "siril"
   INSTALL_PREFIX: "${CI_PROJECT_DIR}/${INSTALL_DIR}"
-  APT_CACHE: "${CI_PROJECT_DIR}/apt-cache"
+  CROSSROAD_OUT: "crossroad-out"
+  APT_CACHE: "$CI_PROJECT_DIR/apt-cache"
 
-## prepare docker images ##
+################################################################################
+# Prepare Dockers images
 
+# Image for GNU/Linux build
 build-image:
   stage: prepare
   variables:
@@ -31,7 +43,7 @@ build-image:
 
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-latest --cache=true --cache-ttl=120h
 
-
+# Image for Windows64 build
 build-image-win64:
   stage: prepare
   variables:
@@ -49,7 +61,8 @@ build-image-win64:
     - echo "build-essential cmake cpio g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 git intltool libglib2.0-bin meson pkg-config python3 python3-distutils python3-docutils python3-pip rpm xsltproc" >> Dockerfile
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-win64-latest --cache=true --cache-ttl=120h
 
-## GNU/Linux 64-bit CIs ##
+################################################################################
+# GNU/Linux 64-bit CIs
 
 # Currently Siril does not need dependency compilation, so we can skip that.
 # deps-debian/testing:
@@ -73,7 +86,6 @@ build-image-win64:
 #     - echo ""
 #   needs: ["build-image"]
 
-
 .siril-debian/testing-base:
   stage: siril
   image: $CI_REGISTRY_IMAGE:build-debian-latest
@@ -83,14 +95,14 @@ build-image-win64:
     GIT_SUBMODULE_STRATEGY: recursive
   cache:
     paths:
-    - apt-cache
+      - apt-cache
   artifacts:
     expire_in: 1 week
     when: always
     name: "app-build-${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
     paths:
-    - _build
-    - "${INSTALL_DIR}"
+      - ${BUILD_DIR}
+      - ${INSTALL_DIR}
   before_script:
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/pkgconfig:${INSTALL_PREFIX}/share/pkgconfig"
     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
@@ -105,30 +117,29 @@ siril-debian/testing-autotools:
   extends: .siril-debian/testing-base
   script:
     - NOCONFIGURE=1 ./autogen.sh
-    - mkdir _build && cd _build
+    - mkdir ${BUILD_DIR} && cd ${BUILD_DIR}
     - ../configure --prefix=${INSTALL_PREFIX}
     - make -j "$(nproc)" all install
 
 siril-debian/testing-meson:
   extends: .siril-debian/testing-base
   script:
-    - meson _build
-      --prefix="${INSTALL_PREFIX}"
-    - ninja -C _build
-    - ninja -C _build install
+    - meson --prefix="${INSTALL_PREFIX}" ${BUILD_DIR}
+    - ninja -C ${BUILD_DIR} install
 
-## WINDOWS 64-bit CI ##
+################################################################################
+# WINDOWS 64-bit CI
 
 deps-win64:
   stage: dependencies
   image: $CI_REGISTRY_IMAGE:build-win64-latest
   variables:
     XDG_CACHE_HOME: "$CI_PROJECT_DIR/.cache/"
-    XDG_DATA_HOME:  "$CI_PROJECT_DIR/.local/share/"
+    XDG_DATA_HOME: "$CI_PROJECT_DIR/.local/share/"
   cache:
     paths:
-    - .cache/crossroad/
-    - apt-cache
+      - .cache/crossroad/
+      - apt-cache
   before_script:
     - git clone --depth=${GIT_DEPTH} git://git.tuxfamily.org/gitroot/crossroad/crossroad.git
     - cd crossroad
@@ -154,28 +165,29 @@ siril-win64/testing-meson:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
     XDG_CACHE_HOME: "$CI_PROJECT_DIR/.cache/"
-    XDG_DATA_HOME:  "$CI_PROJECT_DIR/.local/share/"
+    XDG_DATA_HOME: "$CI_PROJECT_DIR/.local/share/"
   cache:
     paths:
-    - .cache/crossroad/
-    - apt-cache
+      - .cache/crossroad/
+      - apt-cache
   script:
     - update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
     - update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
     - export PATH="`pwd`/.local/bin:$PATH"
     - mkdir subprojects/librtprocess/_build && cd subprojects/librtprocess/_build
     - echo 'crossroad cmake .. && make && make install' | crossroad w64 siril --run="-"
-    - cd ../../.. 
+    - cd ../../..
     - mkdir _build && cd _build
-    - echo 'crossroad meson .. && ninja install && cp ../build/windows/crossbuild-gitlab-ci/siril-wrapper.cmd $CROSSROAD_PREFIX/bin/ && cp -fr $CROSSROAD_PREFIX/ ../siril-prefix/' | crossroad w64 siril --run="-"
+    - echo 'crossroad meson --buildtype=release --prefix="${INSTALL_PREFIX}" .. && ninja install && cp -fr $CROSSROAD_PREFIX/ ../${CROSSROAD_OUT}' | crossroad w64 siril --run="-"
   needs: ["deps-win64"]
   artifacts:
     name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
     when: always
-    expire_in: 1 week
+    expire_in: 2 hours
     paths:
-      - _build/
-      - siril-prefix/
+      - ${BUILD_DIR}
+      - ${CROSSROAD_OUT}
+      - ${INSTALL_DIR}
 
 siril-win64/testing-autotools:
   stage: siril
@@ -185,20 +197,20 @@ siril-win64/testing-autotools:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
     XDG_CACHE_HOME: "$CI_PROJECT_DIR/.cache/"
-    XDG_DATA_HOME:  "$CI_PROJECT_DIR/.local/share/"
+    XDG_DATA_HOME: "$CI_PROJECT_DIR/.local/share/"
   cache:
     paths:
-    - .cache/crossroad/
-    - apt-cache
+      - .cache/crossroad/
+      - apt-cache
   script:
     - update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
     - update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
     - export PATH="`pwd`/.local/bin:$PATH"
     - mkdir subprojects/librtprocess/_build && cd subprojects/librtprocess/_build
     - echo 'crossroad cmake .. && make && make install' | crossroad w64 siril --run="-"
-    - cd ../../.. 
+    - cd ../../..
     - mkdir _build && cd _build
-    - echo 'crossroad ../configure .. && make install && cp ../build/windows/crossbuild-gitlab-ci/siril-wrapper.cmd $CROSSROAD_PREFIX/bin/ && cp -fr $CROSSROAD_PREFIX/ ../siril-prefix/' | crossroad w64 siril --run="-"
+    - echo 'crossroad ../configure --prefix=${INSTALL_PREFIX} .. && make install && cp -fr ${CROSSROAD_PREFIX} ../${CROSSROAD_OUT}' | crossroad w64 siril --run="-"
   needs: ["deps-win64"]
   artifacts:
     name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
@@ -206,12 +218,59 @@ siril-win64/testing-autotools:
     expire_in: 1 week
     paths:
       - _build/
-      - siril-prefix/
+      - ${CROSSROAD_OUT}
+      - ${INSTALL_DIR}
+
+################################################################################
+# Packaging
+
+siril-win64/packaging-meson:
+  stage: packaging
+  image: $CI_REGISTRY_IMAGE:build-win64-latest
+  dependencies:
+    - siril-win64/testing-meson
+  script:
+    # Package shared ressources
+    - cp -fr ${CROSSROAD_OUT}/share/glib-2.0/ ${INSTALL_PREFIX}/share
+    - cp -fr ${CROSSROAD_OUT}/share/icons/ ${INSTALL_PREFIX}/share
+
+    # Package executable
+    - cp -fr ${CROSSROAD_OUT}/bin/gdbus.exe ${INSTALL_PREFIX}/bin/
+    - cp -fr ${CROSSROAD_OUT}/bin/glib-compile-schemas.exe ${INSTALL_PREFIX}/bin/
+    - cp -fr ${CROSSROAD_OUT}/bin/gdk-pixbuf-query-loaders.exe ${INSTALL_PREFIX}/bin/
+    - cp -fr ${CROSSROAD_OUT}/bin/gdk-pixbuf-pixdata.exe ${INSTALL_PREFIX}/bin/
+    - cp -fr ${CROSSROAD_OUT}/bin/gdk-pixbuf-thumbnailer.exe ${INSTALL_PREFIX}/bin/
+    - cp -fr ${CROSSROAD_OUT}/bin/gspawn-win64-helper.exe ${INSTALL_PREFIX}/bin/
+    - cp -fr ${CROSSROAD_OUT}/bin/gspawn-win64-helper-console.exe ${INSTALL_PREFIX}/bin/
+    - cp build/windows/crossbuild-gitlab-ci/siril-wrapper.cmd ${INSTALL_PREFIX}/bin/
+
+    # Package lib
+    - mkdir ${INSTALL_PREFIX}/lib/
+    - cp -fr ${CROSSROAD_OUT}/lib/gdk-pixbuf-2.0 ${INSTALL_PREFIX}/lib/
+
+    # Package dll with a Python script using objdump
+    - python3 build/windows/dll_link.py ${INSTALL_PREFIX}/bin/siril.exe ${CROSSROAD_OUT}/ ${INSTALL_PREFIX}
+    - python3 build/windows/dll_link.py ${INSTALL_PREFIX}/bin/gdbus.exe ${CROSSROAD_OUT}/ ${INSTALL_PREFIX}
+    - python3 build/windows/dll_link.py ${CROSSROAD_OUT}/bin/gdk-pixbuf-query-loaders.exe ${CROSSROAD_OUT}/ ${INSTALL_PREFIX}
+    - python3 build/windows/dll_link.py ${CROSSROAD_OUT}/bin/gdk-pixbuf-pixdata.exe ${CROSSROAD_OUT}/ ${INSTALL_PREFIX}
+    - python3 build/windows/dll_link.py ${CROSSROAD_OUT}/bin/gdk-pixbuf-thumbnailer.exe ${CROSSROAD_OUT}/ ${INSTALL_PREFIX}
+    - python3 build/windows/dll_link.py ${CROSSROAD_OUT}/bin/gspawn-win64-helper.exe ${CROSSROAD_OUT}/ ${INSTALL_PREFIX}
+    - python3 build/windows/dll_link.py ${CROSSROAD_OUT}/bin/gspawn-win64-helper-console.exe ${CROSSROAD_OUT}/ ${INSTALL_PREFIX}
+    - python3 build/windows/dll_link.py ${CROSSROAD_OUT}/bin/glib-compile-schemas.exe ${CROSSROAD_OUT}/ ${INSTALL_PREFIX}
+    - python3 build/windows/dll_link.py ${CROSSROAD_OUT}/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-svg.dll ${CROSSROAD_OUT}/ ${INSTALL_PREFIX}
+
+  needs: ["siril-win64/testing-meson"]
+  artifacts:
+    name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
+    when: always
+    expire_in: 1 week
+    paths:
+      - ${INSTALL_DIR}
 
 flatpak:
   # Update the image URL whenever the runtime version in the flatpak manifest is changed
-  image: 'registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:3.36'
-  stage: 'siril'
+  image: "registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:3.36"
+  stage: "packaging"
   variables:
     MANIFEST_PATH: "build/flatpak/org.free_astro.siril.json"
     FLATPAK_MODULE: "siril"
@@ -227,7 +286,7 @@ flatpak:
     - flatpak build flatpak_app make
     - flatpak build flatpak_app make install
     - flatpak-builder --finish-only --repo=repo ${BRANCH:+--default-branch=$BRANCH} flatpak_app ${MANIFEST_PATH}
-    # TODO: Run automatic tests inside the Flatpak env 
+    # TODO: Run automatic tests inside the Flatpak env
     # - >
     #   xvfb-run -a -s "-screen 0 1024x768x24"
     #   flatpak build
@@ -241,16 +300,16 @@ flatpak:
     # Generate a Flatpak bundle
     - flatpak build-bundle repo ${BUNDLE} --runtime-repo=${RUNTIME_REPO} ${APP_ID} ${BRANCH}
   artifacts:
-    name: 'Flatpak artifacts'
-    expose_as: 'Get Flatpak bundle here'
-    when: 'always'
+    name: "Flatpak artifacts"
+    expose_as: "Get Flatpak bundle here"
+    when: "always"
     paths:
       - "${BUNDLE}"
-      - 'repo/'
+      - "repo/"
     expire_in: 1 week
   cache:
     key: "$CI_JOB_NAME"
     paths:
-      - '.flatpak-builder/downloads'
-      - '.flatpak-builder/git'
+      - ".flatpak-builder/downloads"
+      - ".flatpak-builder/git"
   needs: []
