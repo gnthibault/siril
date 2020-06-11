@@ -1053,6 +1053,7 @@ void on_wavelength_changed(GtkEditable *editable, gpointer user_data){
 void on_compositing_reset_clicked(GtkButton *button, gpointer user_data){
 	int i;
 
+	if (!single_image_is_loaded() && !sequence_is_loaded()) return;
 	process_close(0);
 
 	if (has_fit(0))
