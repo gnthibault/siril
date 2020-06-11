@@ -1285,25 +1285,6 @@ int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode, 
 	return *status;
 }
 
-int fitsdata(const char *filename, int *bitpix, unsigned int *rx, unsigned int *ry, int *nb_layers) {
-	int status = 0;
-	fitsfile *fptr;
-	siril_fits_open_diskfile(&fptr, filename, READONLY, &status);
-	if (status)
-		return -1;
-	int naxis;
-	long naxes[3];
-	fits_get_img_param(fptr, 3, bitpix, &naxis, naxes, &status);
-	fits_close_file(fptr, &status);
-
-	if (status || naxis < 2 || naxis > 3 || *bitpix == LONGLONG_IMG)
-		return -1;
-	*nb_layers = naxis == 2 ? 1 : 3;
-	*rx = naxes[0];
-	*ry = naxes[1];
-	return 0;
-}
-
 // reset a fit data structure, deallocates everything in it and zero the data
 void clearfits(fits *fit) {
 	if (fit == NULL)
