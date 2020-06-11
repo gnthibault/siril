@@ -213,6 +213,7 @@ int initialize_script_menu(gboolean UpdateScriptPath) {
 	}
 
 	menu = gtk_menu_new();
+	gtk_widget_hide(menuscript);
 
 	for (s = script; s; s = s->next) {
 		list = search_script(s->data);
