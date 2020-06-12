@@ -6,4 +6,4 @@
 # Use i18n module
 
 po_dir = meson.current_source_dir()
-i18n.gettext(meson.project_name()+meson.project_version(), preset: 'glib')
+i18n.gettext(meson.project_name(), preset: 'glib')
