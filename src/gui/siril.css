@@ -105,3 +105,16 @@ GtkButton {
   text-shadow: 1px 1px 2px black;
 }
 
+/* Siril Intro */
+
+@keyframes widget-highlight {
+  from { box-shadow: 0px 0px 10px @theme_selected_bg_color, inset 0px 0px 4px  @theme_selected_bg_color; }
+  to   { box-shadow: 0px 0px 4px  @theme_selected_bg_color, inset 0px 0px 10px @theme_selected_bg_color; }
+}
+
+button.siril-intro-highlight,
+buttonbox.siril-intro-highlight > button,
+entry.siril-intro-highlight,
+toolbar.siril-intro-highlight {
+  animation: widget-highlight 1s infinite alternate;
+}

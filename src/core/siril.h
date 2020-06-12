@@ -555,6 +555,7 @@ struct save_config_struct {
 };
 
 struct pref_struct {
+	gboolean first_use; // use to display information at first use
 	/* state of window */
 	gboolean remember_windows;
 	rectangle main_w_pos;
