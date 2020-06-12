@@ -301,18 +301,21 @@ git_data.set_quoted('SIRIL_GIT_LAST_COMMIT_YEAR', git_last_commit_year)
 # Sources directories
 
 subdir('platform-specific')
-subdir('po')
 subdir('build')
 subdir('src')
 subdir('pixmaps')
+subdir('po')
+subdir('scripts')
+subdir('3rdparty')
 
 ################################################################################
-# Install
+# Install misc
 
 install_man(meson.project_name() + '.1')
 install_data(['AUTHORS', 'LICENSE.md'],
              rename : ['doc/siril/AUTHORS', 'doc/siril/LICENSE.md'],
              install_dir : siril_share)
+
 
 ################################################################################
 # Post build
