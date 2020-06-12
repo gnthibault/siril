@@ -84,6 +84,7 @@ i18n = import('i18n')
 if platform_windows
   winm = import('windows')
 endif
+gnome = import('gnome')
 
 ## Compilers
 cc = meson.get_compiler('c')
@@ -301,6 +302,7 @@ git_data.set_quoted('SIRIL_GIT_LAST_COMMIT_YEAR', git_last_commit_year)
 
 subdir('platform-specific')
 subdir('po')
+subdir('build')
 subdir('src')
 subdir('pixmaps')
 
