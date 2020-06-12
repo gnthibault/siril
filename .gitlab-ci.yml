@@ -247,6 +247,8 @@ siril-win64/packaging-meson:
     # Package lib
     - mkdir ${INSTALL_PREFIX}/lib/
     - cp -fr ${CROSSROAD_OUT}/lib/gdk-pixbuf-2.0 ${INSTALL_PREFIX}/lib/
+    - cp build/windows/loaders.cache ${INSTALL_PREFIX}/lib/gdk-pixbuf-2.0/2.10.0/
+    - glib-compile-schemas --targetdir=${INSTALL_PREFIX}/share/glib-2.0/schemas ${CROSSROAD_OUT}/share/glib-2.0/schemas
 
     # Package dll with a Python script using objdump
     - python3 build/windows/dll_link.py ${INSTALL_PREFIX}/bin/siril.exe ${CROSSROAD_OUT}/ ${INSTALL_PREFIX}
