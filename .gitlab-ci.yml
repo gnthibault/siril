@@ -231,8 +231,10 @@ siril-win64/packaging-meson:
     - siril-win64/testing-meson
   script:
     # Package shared ressources
+    - cp -fr ${CROSSROAD_OUT}/ssl ${INSTALL_PREFIX}
     - cp -fr ${CROSSROAD_OUT}/share/glib-2.0/ ${INSTALL_PREFIX}/share
     - cp -fr ${CROSSROAD_OUT}/share/icons/ ${INSTALL_PREFIX}/share
+    - cp -fr ${CROSSROAD_OUT}/share/locale/ ${INSTALL_PREFIX}/share
 
     # Package executable
     - cp -fr ${CROSSROAD_OUT}/bin/gdbus.exe ${INSTALL_PREFIX}/bin/
