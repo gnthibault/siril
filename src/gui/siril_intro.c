@@ -32,6 +32,7 @@ static gboolean go_next;
 const SirilTipIntro intro_tips[] = {
 		{"headerbar", N_("Welcome to the new Siril version. Please take a moment to read tips about this release"), 6},
 		{"notebook1", N_("All the application windows have been merged into this window. In the left panel, you can see the image preview with the Red, Green, Blue channels and the RGB mix"), 7},
+		{"labelRGB", N_("The RGB tab is only for visualization. Operation must be done on R, G and B channels"), 6},
 		{"label22", N_("Pre-processing steps are grouped in the right panel. You can reach each step with the F1, F2, ... F7 keys"), 6},
 		{"button_paned", N_("Hitting this button will hide the right panel. You can also try the full screen mode (Control-F)"), 6},
 		{"hamburger-menu", N_("Press F10 or click on this button to open the menu. You can find here the shortcut list and the preference dialogs where many options are available"), 7},
