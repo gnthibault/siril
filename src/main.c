@@ -234,6 +234,7 @@ static void siril_app_activate(GApplication *application) {
 	initialize_stacking_default();
 
 	/* we also initialize a couple of important variables */
+	com.pref.first_use = TRUE;
 	com.pref.stack.mem_mode = 0;
 	com.pref.stack.memory_ratio = 0.9;
 	com.pref.stack.memory_amount = 4.0;

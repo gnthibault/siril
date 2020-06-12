@@ -304,9 +304,9 @@ static sequence *check_seq_one_file(const char* name) {
 
 		new_seq = calloc(1, sizeof(sequence));
 		initialize_sequence(new_seq, TRUE);
-		new_seq->seqname = g_strndup(name, fnlen-4);
+		new_seq->seqname = g_strndup(name, fnlen - 4);
 		new_seq->beg = 0;
-		new_seq->end = ser_file->frame_count-1;
+		new_seq->end = ser_file->frame_count - 1;
 		new_seq->number = ser_file->frame_count;
 		new_seq->type = SEQ_SER;
 		new_seq->ser_file = ser_file;

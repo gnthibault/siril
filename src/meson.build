@@ -130,6 +130,7 @@ src_files = [
   'gui/save_dialog.c',
   'gui/script_menu.c',
   'gui/sequence_list.c',
+  'gui/siril_intro.c',
   'gui/siril_preview.c',
   'gui/statistics_list.c',
   
