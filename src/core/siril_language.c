@@ -45,6 +45,7 @@ parsed_code locale_str[] = {
 	{"es_ES", "Espanol"},
 	{"fr", "Français"},
 	{"it_IT", "Italiano"},
+	{"ja_JP", "Japanese"},
 	{"nl_BE", "Nederlands"},
 	{"pl_PL", "Polish"},
 	{"pt_PT", "Português"},
