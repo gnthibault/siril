@@ -88,9 +88,9 @@ void fit_get_photometry_data(fits *fit) {
 static int fit_stats(fits *fit, double *mini, double *maxi) {
 	int status = 0;
 	int ii, anaxis;
-	long npixels = 1;
+	long npixels = 1L;
 	long anaxes[3] = {1,1,1}, firstpix[3] = {1,1,1};
-	double *pix, sum = 0.;
+	float *pix, sum = 0.;
 	double meanval = 0., minval = 1.E33, maxval = -1.E33;
 
 	/* initialize value in case where it does not work */
@@ -106,7 +106,7 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 	}
 
 	npixels = anaxes[0];  /* no. of pixels to read in each row */
-	pix = (double *) malloc(npixels * sizeof(double)); /* memory for 1 row */
+	pix = malloc(npixels * sizeof(float)); /* memory for 1 row */
 	if (pix == NULL) {
 		PRINT_ALLOC_ERR;
 		return (1);
@@ -117,7 +117,7 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 		/* loop over all rows of the plane */
 		for (firstpix[1] = 1; firstpix[1] <= anaxes[1]; firstpix[1]++) {
 			/* give starting pixel coordinate and number of pixels to read */
-			if (fits_read_pix(fit->fptr, TDOUBLE, firstpix, npixels, NULL, pix,
+			if (fits_read_pix(fit->fptr, TFLOAT, firstpix, npixels, NULL, pix,
 						NULL, &status))
 				break; /* jump out of loop on error */
 

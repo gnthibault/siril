@@ -1609,16 +1609,15 @@ void save_main_window_state() {
 }
 
 void load_main_window_state() {
-	GtkWidget *win;
+	GtkWidget *win = lookup_widget("control_window");
 
-	win = lookup_widget("control_window");
 	int x = com.pref.main_w_pos.x;
 	int y = com.pref.main_w_pos.y;
 	int w = com.pref.main_w_pos.w;
 	int h = com.pref.main_w_pos.h;
 	if (com.pref.remember_windows && w > 0 && h > 0) {
 		if (com.pref.is_maximized) {
-			gtk_window_maximize(GTK_WINDOW(lookup_widget("control_window")));
+			gtk_window_maximize(GTK_WINDOW(win));
 		} else {
 			gtk_window_move(GTK_WINDOW(win), x, y);
 			gtk_window_resize(GTK_WINDOW(win), w, h);
